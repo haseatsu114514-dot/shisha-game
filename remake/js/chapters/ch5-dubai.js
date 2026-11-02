@@ -3,8 +3,9 @@
 // 用意してくれる（無料）。飛行機は1回目はシェイクが往復の切符をくれる。2回目からは往復 DUBAI_ROUND_TRIP_FARE
 // （出発の時に払う。帰りは払わない）。移動は1行動。
 // 招待は手紙で届く（シェイクはLIMEの相手ではない）。最初に「ドバイへ」を選んだ時に読む。
-// 行き先: シェイクの屋敷（話す）・客間（休む）・スーク・路地裏のカフェ・クリーク沿い・Dr.fookah ドバイ店・空港（帰る）。
-// 地図と座標は第4章の日常ループ（ch4-dubai-daily.js）と同じ。FESTAは大会の出張ブースだったので出さない。
+// 行き先: シェイクの屋敷（話す）・中庭の太陽・客間（休む）・スーク・路地裏のカフェ・クリーク沿い・Dr.fookah ドバイ店・空港（帰る）。
+// 地図と座標は第4章の日常ループ（ch4-dubai-daily.js）と同じ。FESTAは大会の出張ブースだったので出さず、太陽は休暇で
+// シェイクの屋敷に遊びに来ている（2026-11-02 オーナー「任せる」）。心得の盤の授業（シェイク・太陽）は、ここで会った時に相談する（SBD52）。
 // 台詞は data/dialogue/ch5_dubai.json（クリーク沿いは第4章の場面を使う）。現在地は flags._ch2_region = "dubai"。
 import { state, save, timeOfDay, markMet } from "../core/state.js";
 import { DB, sceneBg } from "../core/data.js";
@@ -14,6 +15,7 @@ import { readDialogues } from "../core/chapter-data.js";
 import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
 import { DUBAI_ROUND_TRIP_FARE } from "../core/travel-budget.js";
 import { openShop } from "../daily/shop.js";
+import { consultLessons } from "../core/growth.js";
 
 export const DUBAI = "dubai";
 const LETTER_FLAG = "_ch5_dubai_letter"; // シェイクの招待の手紙を読んだ
@@ -29,7 +31,11 @@ const spot = fields => Object.freeze({ region: DUBAI, kind: "ch5_dubai", ...fiel
 export const DUBAI_SPOTS = Object.freeze([
   spot({ id: "ch5_dubai_sheikh", charId: "sheikh", label: "シェイクの屋敷", area: "中庭と低い卓の部屋", x: 19, y: 39, theme: "rival", glyph: "邸",
     face: "sheikh", preview: RESIDENCE_BG, stamina: -10, stat: "insight", affinity: 5, talks: ["ch5_dubai_sheikh", "ch5_dubai_sheikh_b", "ch5_dubai_sheikh_c"],
-    desc: "シェイクと話す。屋敷では、王族ではなく友人として。" }),
+    teacher: "sheikh", desc: "シェイクと話す。屋敷では、王族ではなく友人として。" }),
+  spot({ id: "ch5_dubai_taiyo", charId: "da_silva", label: "中庭の太陽", area: "シェイクの屋敷の中庭", x: 34, y: 32, theme: "rival", glyph: "陽",
+    face: "da_silva", preview: RESIDENCE_BG, stamina: -10, stat: "charm", affinity: 5, teacher: "da_silva",
+    talks: ["ch5_dubai_taiyo", "ch5_dubai_taiyo_b", "ch5_dubai_taiyo_c"],
+    desc: "休暇で屋敷に遊びに来ている太陽。今日は審査じゃなく、ただのフェスタ。" }),
   spot({ id: "ch5_dubai_souq", label: "スーク", area: "旧市街の市場", x: 22, y: 58, theme: "shop", glyph: "市",
     preview: "bg_dubai_souq_day", stamina: -10, stat: "insight", talks: ["ch5_dubai_souq", "ch5_dubai_souq_b"],
     desc: "スパイスの匂いが立つ市場を歩く。" }),
@@ -121,6 +127,8 @@ export async function performDubaiSpot(spot, { staminaGuard } = {}) {
   // 第5章の好感度はゆっくり（通いの +5。東京と同じ。台帳 AFB01）
   if (spot.charId) { gainAffinity(spot.charId, spot.affinity || 5); markMet(spot.charId); }
   earnStat(spot.stat, 4);
+  // 心得の盤で灯した授業があれば、会ったこの場で相談して習う（盤が無効な時は何もしない・SBD52）
+  if (spot.teacher && state === owner) await consultLessons(spot.teacher, { bg: sceneBg(spot.preview, timeOfDay()).url });
   return { used: true, exerted: true };
 }
 
