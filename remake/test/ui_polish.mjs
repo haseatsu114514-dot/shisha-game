@@ -79,6 +79,9 @@ try {
   if (shots) await page.screenshot({ path: `${shots}/choices.png` });
   await page.locator(".vn-choice").first().click();
   await page.evaluate(() => {
+    // 能力の通知カード（STEP UP・進化）とスロットの能力報酬は旧しくみ（?growth=0）の表示。心得の盤（通常プレイの既定・SBD93）では
+    // 能力を直接伸ばさないので、この端末を旧しくみにして見た目を確かめる（スロットの経験値の見た目は slot_exp・growth_levelup）
+    localStorage.setItem("suien_growth_preview", "0");
     T.core.newGame(); T.core.state.phase = "daily";
     T.ui.showScreen("map", document.createElement("div"));
     T.core.state.stats.technique = 20;
