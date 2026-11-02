@@ -74,7 +74,9 @@ for (const [, scene] of scenes) {
 }
 // 第5章の回想は、交流した相手（人物タブの顔ぶれ）だけ。未交流でもスミさんで成立する（正本: 第5章「回想は本当にプレイした交流だけ」）。
 const statusSource = fs.readFileSync(new URL('remake/js/daily/status.js', root), 'utf8');
-const people = JSON.parse(statusSource.match(/^const PEOPLE = (\[[^\]]*\]);/m)[1]);
+const peopleMatch = statusSource.match(/^const PEOPLE = (\[[^\]]*\]);/m);
+assert(peopleMatch, 'status.js PEOPLE not found (keep it a one-line array)');
+const people = JSON.parse(peopleMatch[1]);
 const ch5Reflection = reflections(scenes.get(eveScenes[5]))[0];
 assert.deepEqual(ch5Reflection.chars, people, 'ch5 reflection must recall the People tab cast (status.js PEOPLE)');
 assert(people.includes('sumi'), 'ch5 reflection falls back to Sumi');
