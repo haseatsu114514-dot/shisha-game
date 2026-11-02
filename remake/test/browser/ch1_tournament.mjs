@@ -375,6 +375,7 @@ await suite("ch1-tournament", async check => {
       return legend.bottom <= n.querySelector('.sd-rows').getBoundingClientRect().top;
     }), 'Judge legend overlaps the ranking rows');
     await capture(page, `standings-${label}`);
+    await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/night-standings-${viewport.width}x${viewport.height}.png` });
     if (label === "portrait") {
       // Keep the portrait layout checks, then follow the guide to rotate before tapping.
       assert(await page.locator("#rotate-hint").isVisible());
