@@ -3,6 +3,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 import { el, yen } from "../core/util.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { venueHost } from "../core/venue-host.js";
+import { gearOffer, ownsGear } from "../core/hobby-gear.js";
 import { newDayTrial, rollDayTrial, stopDayTrial } from "./day-trial.js";
 import { loadTrpgLibrary, preloadTrpgAssets, runTrpg } from "./index.js";
 import { displayName, portraitUrl, portraitTop, sceneArt } from "./presentation.js";
@@ -146,6 +147,10 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
           })),
       ]));
     }
+    // マイダイス（VOL07）: サイの店で一度だけ買える。卓の盛り上がりが1から始まる（出目は変わらない）。
+    const dice = !readOnly && state ? gearOffer(state, "gear_dice", { isCurrent: () => !disposed && !busy && getState() === owner,
+      onBought: item => { save(); render(`「${item.name}」を買った。${item.effect}。`); } }) : null;
+    if (dice) root.append(el("div.trpg-campaign-gear", { dataset: { test: "trpg-gear" } }, [dice]));
     const books = el("div.trpg-campaign-books", { dataset: { many: String(scenarios.length > 2) } });
     for (const scenario of scenarios) {
       const book = catalog.scenarios.find(b => b.id === scenario.id);
@@ -201,7 +206,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       const table = materializeTrpgCast(scenario, cast.assignments);
       await runTrpg(host, { resources: { ...resources, scenario: table }, signal: abort.signal,
         seed: ((state.seed || 1) ^ state.day * 7919 ^ state.chapter * 104729 ^ scenario.title.length * 997) >>> 0,
-        allowReplay: false, closeLabel: "思い出を本棚へ",
+        allowReplay: false, closeLabel: "思い出を本棚へ", warmStart: ownsGear(state, "gear_dice"),
         // The shopkeeper explains the table until the first story is finished; the cover button replays it any time.
         tutorial: !state.flags?._trpg_tutorial_seen,
         onComplete: result => {
