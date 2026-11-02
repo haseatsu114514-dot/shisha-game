@@ -11,6 +11,15 @@ set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 dirs=(assets remake/img)
 
+# The NF04 quick test checks carton files, but the quick job's sparse checkout
+# predates this image directory. Include it before computing the cache key or
+# replacing LFS pointers so the checked files are actually present.
+if [ -f remake/js/daily/shop-art-new-flavors.js ] \
+  && [ ! -f remake/img/shop/new-flavors/grapefruit.webp ] \
+  && [ "$(git config --bool core.sparseCheckout || true)" = true ]; then
+  GIT_LFS_SKIP_SMUDGE=1 git sparse-checkout add --no-cone '/remake/img/shop/new-flavors/'
+fi
+
 pointers() {
   find "${dirs[@]}" -type f -size -2k \
     \( -iname '*.png' -o -iname '*.webp' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.gif' -o -path 'assets/audio/dj/*.mp3' \) \
