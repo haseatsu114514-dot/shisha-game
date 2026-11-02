@@ -423,6 +423,8 @@ export const FLAG_EXACT_RULES = [
   ["_rest_after_tournament", "progression"],
   ["_rin_sample", "person"],
   ["_rin_sample_received", "person"],
+  ["_roam_day", "progression"],
+  ["_roam_seen_dr_kemuri", "person"], // 第5章の ch5_opening が読む（よその店で博士に居合わせた回数）
   ["_ryuji_melty_greeting", "person"],
   ["_ryuji_melty_visit", "person"],
   ["_salaryman_service_order", "progression"],
@@ -566,6 +568,7 @@ export const FLAG_FAMILY_RULES = [
   ["_ch3_trial_*", "progression"],
   ["_cafe_recall_*", "progression"],
   ["_city_guest_seen_*", "progression"],
+  ["_roam_seen_*", "person"],
   ["_date_inv_*", "person"],
   ["_delivery_*", "progression"],
   ["_fortune_*", "progression"],

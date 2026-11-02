@@ -19,7 +19,7 @@ const ports={
  DB:{dialogues:{},characters:{},lime:[]},CRAFT_STEPS:[],SE:{},displayName:id=>id,el:noop,
  playTsumugiStory:async day=>{state.flags[day===11?'_tsumugi_contest_submitted':'_tsumugi_contest_eve']=true;},
  isUnlocked:()=>true,isClosed:()=>false,isTemporaryClosed:()=>false,visitedToday:()=>false,openingStatus:()=>({ok:true}),spendableMoney:s=>s.money,returnFareReserve:()=>0,
- hiyoriFirstMeetingReady:()=>false,tsumugiAtTonari:()=>true,cityGuestAtShop:()=>null,ryujiAtMeltyPuff:()=>false,
+ hiyoriFirstMeetingReady:()=>false,tsumugiAtTonari:()=>true,cityGuestAtShop:()=>null,ryujiAtMeltyPuff:()=>false,roamerAt:()=>null,meetRoamer:async()=>false,
  showHud:noop,initHud:noop,setPhoneBadge:noop,updateHud:noop,unreadCount:()=>0,syncSamechanKnowledge:noop,expireInvitations:noop,presentNow:async()=>{},
  spotById:id=>id==='tonari'?tonari:other,facilityGrowth:()=>({}),toast:text=>notices.push(text),
  paidAction:async fn=>{paid++;return {value:await fn(),spent:0};},addStamina:n=>{staminaCalls++;state.stamina+=n;},
