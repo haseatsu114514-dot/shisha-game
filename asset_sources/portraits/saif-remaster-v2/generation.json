@@ -1,7 +1,7 @@
 {
  "phase": "立ち絵そろえ 第2期（規格そろえ）TS13",
  "face": "normal",
- "status": "生成済み・オーナー確認待ち（未採用・ゲーム未組み込み）",
+ "status": "通常・表情とも組み込み済み",
  "source": {
   "generated_by": "Codex built-in image_gen",
   "delivered_as": "camel-ts13-2390-20261102-NORMALS-REVIEW-NO-REFS.zip",
@@ -115,5 +115,105 @@
     "status": "review candidate; not selected"
    }
   ]
+ },
+ "expressions": {
+  "smile": {
+   "original_sha256": "b0a3274d18b6ba1decc1dfc9999267702ed067b6c0937ba2f7b7db6ac3ebebe3",
+   "head_size_vs_normal_codex": "+0.66%",
+   "placement": "通常と同じ縮小率・原点で置き、足元を通常の地面にそろえた（fit_portrait.py は同じ表情の今の絵が無いと使えないため）",
+   "foot_shift_px": -1,
+   "head_offset_vs_normal_px": {
+    "dx": 0,
+    "dy": -2
+   }
+  },
+  "surprise": {
+   "original_sha256": "99bedc7e426252b76b6d945beccc3ed86840720f4d57e67e6038d29f5420a10f",
+   "head_size_vs_normal_codex": "-0.16%",
+   "placement": "通常と同じ縮小率・原点で置き、足元を通常の地面にそろえた（fit_portrait.py は同じ表情の今の絵が無いと使えないため）",
+   "foot_shift_px": 4,
+   "head_offset_vs_normal_px": {
+    "dx": 4,
+    "dy": -23
+   }
+  },
+  "excited": {
+   "original_sha256": "5efd21f7985e1d794a83d2b5277f89a3f738f091cb3d1a9348a8347f02f4bbe5",
+   "head_size_vs_normal_codex": "-2.77%",
+   "placement": "通常と同じ縮小率・原点で置き、足元を通常の地面にそろえた（fit_portrait.py は同じ表情の今の絵が無いと使えないため）",
+   "foot_shift_px": -1,
+   "head_offset_vs_normal_px": {
+    "dx": 2,
+    "dy": 8
+   }
+  },
+  "wink": {
+   "original_sha256": "dc3bf02ae43bdcdab4f8fcb849182496c5b9893d367f982a67bbdde271fc4920",
+   "head_size_vs_normal_codex": "+0.59%",
+   "placement": "通常と同じ縮小率・原点で置き、足元を通常の地面にそろえた（fit_portrait.py は同じ表情の今の絵が無いと使えないため）",
+   "foot_shift_px": -2,
+   "head_offset_vs_normal_px": {
+    "dx": 0,
+    "dy": -3
+   }
+  },
+  "_note": "saif surprise は肩をすくめて背筋を伸ばすポーズのため頭が23px上がる。頭の大きさは通常と同じ。excited は前のめりで8px下がる"
+ },
+ "expressions_source": {
+  "generated_by": "Codex built-in image_gen",
+  "delivered_as": "camel-ts13-2396-expressions-20261102-FIVE-REVIEW-NO-REFS.zip (GigaFile 1110-b578256cbc96a3d6f57925af6acf56d61)",
+  "zip_sha256": "4982fc3cedb9e36fb8786dea2a8bf6e1bc3d386fb7588cbf8230708a03b3f848",
+  "codex_generation_record": {
+   "source_pr": 2396,
+   "source_commit": "d6ec5764dfdef893dbda177cb737bb4173992f84",
+   "prompt_blob": "24164bc61e627048bbb6034f4f363d61fe7d311f",
+   "authorization": "User explicitly requested TS13 five expressions at 2026-11-02T16:44 turn, after normal selection; no integration authorized.",
+   "tool": "built-in image_gen",
+   "records": [
+    {
+     "character": "saif",
+     "expression": "smile",
+     "prompt": "Expression variant of the SAME character. Reference roles IN ORDER: image 1 is the APPROVED new Saif normal original: keep this exact person's face design, age, hair, skin tone, outfit, accessories, colors, head size and head-to-body ratio (about 7 heads tall), linework, figure height and standing position, so that image 1 and this sprite can switch in the game without the head changing size or the feet moving. Image 2 Nagumo is head-to-body proportion context only, never identity. Images 3 Minto and 4 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes. Change only the facial expression and the small matching pose change described below. Do not add props that are not in image 1.\n\nJapanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.\n\nOutput ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the top of the hair or headcloth to the soles. Entire hair or headcloth, both hands (five fingers each) and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.\n\nExpression: a big open friendly grin showing a little of the upper teeth, eyes narrowed by the smile, eyebrows relaxed; the tin hand and the pocket hand stay as in image 1.",
+     "file": "originals/saif-smile.png",
+     "status": "review candidate; not adopted"
+    },
+    {
+     "character": "saif",
+     "expression": "surprise",
+     "prompt": "Expression variant of the SAME character. Reference roles IN ORDER: image 1 is the APPROVED new Saif normal original: keep this exact person's face design, age, hair, skin tone, outfit, accessories, colors, head size and head-to-body ratio (about 7 heads tall), linework, figure height and standing position, so that image 1 and this sprite can switch in the game without the head changing size or the feet moving. Image 2 Nagumo is head-to-body proportion context only, never identity. Images 3 Minto and 4 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes. Change only the facial expression and the small matching pose change described below. Do not add props that are not in image 1.\n\nJapanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.\n\nOutput ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the top of the hair or headcloth to the soles. Entire hair or headcloth, both hands (five fingers each) and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.\n\nExpression: genuine surprise: eyebrows raised high, eyes wide open, mouth open in a small round \"oh\"; the tin hand lifts slightly and the shoulders rise a little. Not comical.",
+     "file": "originals/saif-surprise.png",
+     "status": "review candidate; not adopted"
+    },
+    {
+     "character": "saif",
+     "expression": "excited",
+     "prompt": "Expression variant of the SAME character. Reference roles IN ORDER: image 1 is the APPROVED new Saif normal original: keep this exact person's face design, age, hair, skin tone, outfit, accessories, colors, head size and head-to-body ratio (about 7 heads tall), linework, figure height and standing position, so that image 1 and this sprite can switch in the game without the head changing size or the feet moving. Image 2 Nagumo is head-to-body proportion context only, never identity. Images 3 Minto and 4 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes. Change only the facial expression and the small matching pose change described below. Do not add props that are not in image 1.\n\nJapanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.\n\nOutput ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the top of the hair or headcloth to the soles. Entire hair or headcloth, both hands (five fingers each) and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.\n\nExpression: excitedly explaining something: eyebrows up, bright eyes, mouth open mid-sentence, leaning slightly forward; the tin is put away (not visible) and both empty hands are held in front of the chest about a tin's width apart, palms facing each other, as if showing the size of a small tobacco tin.",
+     "file": "originals/saif-excited.png",
+     "status": "superseded by v2: possible oversized head"
+    },
+    {
+     "character": "saif",
+     "expression": "wink",
+     "prompt": "Expression variant of the SAME character. Reference roles IN ORDER: image 1 is the APPROVED new Saif normal original: keep this exact person's face design, age, hair, skin tone, outfit, accessories, colors, head size and head-to-body ratio (about 7 heads tall), linework, figure height and standing position, so that image 1 and this sprite can switch in the game without the head changing size or the feet moving. Image 2 Nagumo is head-to-body proportion context only, never identity. Images 3 Minto and 4 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes. Change only the facial expression and the small matching pose change described below. Do not add props that are not in image 1.\n\nJapanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.\n\nOutput ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the top of the hair or headcloth to the soles. Entire hair or headcloth, both hands (five fingers each) and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.\n\nExpression: a playful teasing wink: one eye closed as a curved line, the other open, a lopsided grin; the tin hand is raised a little closer to the face, the other hand stays in the pocket.",
+     "file": "originals/saif-wink.png",
+     "status": "review candidate; not adopted"
+    },
+    {
+     "character": "rashid",
+     "expression": "smile",
+     "prompt": "Expression variant of the SAME character. Reference roles IN ORDER: image 1 is the APPROVED new Rashid normal original: keep this exact person's face design, age, hair, skin tone, outfit, accessories, colors, head size and head-to-body ratio (about 7 heads tall), linework, figure height and standing position, so that image 1 and this sprite can switch in the game without the head changing size or the feet moving. Image 2 Nagumo is head-to-body proportion context only, never identity. Images 3 Minto and 4 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes. Change only the facial expression and the small matching pose change described below. Do not add props that are not in image 1.\n\nJapanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.\n\nOutput ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the top of the hair or headcloth to the soles. Entire hair or headcloth, both hands (five fingers each) and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.\n\nExpression: a rare, restrained smile: only the corners of the mouth relax under the beard, the eyes soften slightly; still reserved and quiet, not a grin, no teeth. Pose, remote control and headcloth exactly as image 1.",
+     "file": "originals/rashid-smile.png",
+     "status": "review candidate; not adopted"
+    },
+    {
+     "character": "saif",
+     "expression": "excited",
+     "version": 2,
+     "prompt": "限定修正：画像1は合格済みサイフ通常原画（本人の顔・頭のサイズの正本）。画像2は修正対象のexcited表情。画像2の明るい目、上がった眉、話している開いた口、少し前傾した姿勢、缶をしまい両手を胸の前で向かい合わせにして小さな缶の大きさを示す動作は保持。変更は画像2の頭の大きさだけ。全身約1400pxに対し、主な髪の頭頂からあごまでを画像1と同じ約210px、目の平均線からあごまでを約92pxにする。頭・顔・髪・耳・髭を一緒に少し縮め、画像1と切り替えて頭が大きくならない。頭身は約7。24歳の同一人物・茶色い肌・金茶の瞳・黒い短髪・細い髭・黒ポロ・砂色チノ・革紐・白スニーカー・配色・描線・陰影はそのまま。体形・足元・身長・両手は変更しない。頭/髪/両手/両足の全てが切れず透明余白を確保。1人1表情の全身、人物高1300px以上、RGBA透明、床・影・文字・ロゴなし。",
+     "file": "originals/saif-excited-v2.png",
+     "status": "review candidate; not adopted"
+    }
+   ]
+  }
  }
 }
