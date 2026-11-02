@@ -648,8 +648,8 @@ try {
   assert(ui.note.includes("つむぎから") && ui.note.includes("ラベンダー") && ui.note.includes("売却不可"), ui.note);
   assert(ui.flavors.includes("ラベンダー"), ui.flavors);
   // 香りを持たない素焼き（サメちゃん）は undefined を出さず、素焼きであることを伝える。香りを持つ札は従来どおり
-  assert(ui.note.includes("染み付いた香り：ラベンダー") && !ui.note.includes("undefined"), ui.note);
-  assert(ui.plainNote.includes("サメちゃんから") && ui.plainNote.includes("まだ香りの染みていない素焼き") && ui.plainNote.includes("売却不可"), ui.plainNote);
+  assert(/染み付いた香り：.*ラベンダー（3g以上で香りが開く）/.test(ui.note) && !ui.note.includes("undefined"), ui.note);
+  assert(ui.plainNote.includes("から（一緒に店の居心地を確かめたお礼）") && ui.plainNote.includes("まだ香りの染みていない素焼き") && ui.plainNote.includes("売却不可"), ui.plainNote);
   assert(!/undefined|NaN|null/.test(ui.plainNote) && !ui.plainNote.includes("染み付いた香り") && !ui.plainNote.includes("g以上"), ui.plainNote);
   log("HF06 UI: gift selectable at setup, inventory shows giver / infused scent / unsellable, gifted leaf listed");
 
