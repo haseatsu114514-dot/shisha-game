@@ -319,13 +319,25 @@ const SHIFT_ORDERS = [
     reactions: ["shift_flavor_sweet_vanilla_coconut", "shift_flavor_sweet_peach_vanilla"] },
   { id: "double_apple", text: "ダブルアップルを。清涼感は少しだけ", mixes: [{ double_apple: 10, mint: 2 }, { double_apple: 12 }], labels: ["ダブルアップル＋ミント少量", "ダブルアップル単体"],
     reactions: ["shift_flavor_double_apple_mint", "shift_flavor_double_apple_solo"] },
+  // 第2章（優勝後の橙須）は、仕事帰りや柚ヶ谷帰りの客が増える。第1章の4種とは別の注文を出す。
+  { id: "ch2_after_work", chapter: 2, text: "仕事帰りで頭が重いんだ。苦くなくて、すっと抜けるのを", mixes: [{ grapefruit: 8, mint: 4 }, { kiwi: 8, lemon: 4 }], labels: ["グレープフルーツ＋ミント", "キウイ＋レモン"],
+    reactions: ["shift_flavor_ch2_after_work_grapefruit_mint", "shift_flavor_ch2_after_work_kiwi_lemon"] },
+  { id: "ch2_strawberry_light", chapter: 2, text: "苺がいいな。でも甘ったるいのは苦手で", mixes: [{ strawberry: 9, lemon: 3 }, { strawberry: 8, peach: 4 }], labels: ["苺＋レモン", "苺＋ピーチ"],
+    reactions: ["shift_flavor_ch2_strawberry_light_strawberry_lemon", "shift_flavor_ch2_strawberry_light_strawberry_peach"] },
+  { id: "ch2_night_deep", chapter: 2, text: "夜だし、少しどっしりしたのを。甘さは控えめで", mixes: [{ black_tea: 9, lemon: 3 }, { caramel: 6, black_tea: 6 }], labels: ["紅茶＋レモン", "キャラメル＋紅茶"],
+    reactions: ["shift_flavor_ch2_night_deep_black_tea_lemon", "shift_flavor_ch2_night_deep_caramel_black_tea"] },
+  { id: "ch2_tropical_compare", chapter: 2, text: "柚ヶ谷で濃いのを飲んできた。ここは、違う良さがほしい", mixes: [{ mango: 8, passion_fruit: 4 }, { watermelon: 9, mint: 3 }], labels: ["マンゴー＋パッションフルーツ", "スイカ＋ミント"],
+    reactions: ["shift_flavor_ch2_tropical_compare_mango_passion_fruit", "shift_flavor_ch2_tropical_compare_watermelon_mint"] },
 ];
 async function serveShiftOrder() {
   const owner = state;
   const key = `_shift_order_${state.chapter}:${state.day}`;
   if (state.flags[key]) return;
   const seed = (state.weatherSeed || 0) ^ Math.imul(state.day + state.chapter * 31, 0x45d9f3b);
-  const order = SHIFT_ORDERS[((seed ^ (seed >>> 16)) >>> 0) % SHIFT_ORDERS.length];
+  // 章付きの注文はその章だけ。章付きが無い章は、章指定なしの4種から出す。
+  const pool = SHIFT_ORDERS.filter((o) => o.chapter === state.chapter);
+  const orders = pool.length ? pool : SHIFT_ORDERS.filter((o) => !o.chapter);
+  const order = orders[((seed ^ (seed >>> 16)) >>> 0) % orders.length];
   const index = await modal({ title: "今日の注文", body: `前のお客さんを見送って、次の卓につく。<br>「${order.text}」 店の葉で一台を作る。`,
     options: order.labels.map((label, i) => ({ label, value: i, test: `shift-order-${i}` })) });
   if (state !== owner || !Number.isInteger(index) || !order.mixes[index]) return;
