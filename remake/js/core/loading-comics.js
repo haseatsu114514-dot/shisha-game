@@ -10,7 +10,7 @@ import { imgFileUrl } from "./img-file.js";
 //   panels[2]: { src, alt, region?, bubbles? }（region は原画シートの一部を切り出すとき。現在の登録は使っていない）
 // 新規の話は 1536x1024 の下敷きで描き、tools/loading_comic_cut.py で 1コマ=1ファイル（3:2・最大 1440x960 の WebP）に
 // 揃え、紙色の余白は fill で埋める。ネタバレになる話は minChapter で明かす章まで待たせる（シガーマンの2話は第4章から）。
-// 2026-11-02 オーナーの選別（102話から採用25話）。画風の統一は後日の作り直しで行い、今は元の絵で登録している。
+// 2026-11-02 オーナーの選別（102話から採用25話、全キャラ参戦34話から採用4話）。画風の統一は後日の作り直しで行い、今は元の絵で登録している。
 export const LOADING_COMICS = [
   {
     id: "sumi-cold-tea",
@@ -335,6 +335,58 @@ export const LOADING_COMICS = [
     panels: [
       { src: imgFileUrl("loading/restored-39-1.webp"), alt: "はじめがなるに「少しだけ教えて。」。なるがうれしそうにノートを開く。" },
       { src: imgFileUrl("loading/restored-39-2.webp"), alt: "大学の講義室で、角帽のなるが黒板の前に立つ「ノート、持った？」。学生席のはじめ「入学してる。」。" },
+    ],
+  },
+  {
+    id: "wang-lychee",
+    title: "ライチの皮",
+    cast: ["master_hookah"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2374:allcast-wang-lychee）",
+    caption: "王煙楼の得意な味は、ライチ。",
+    panels: [
+      { src: imgFileUrl("loading/wang-lychee-1.webp"), alt: "王煙楼がライチを一つはじめに差し出して「むいてごらん。」。はじめは「はい。」と受け取る。" },
+      { src: imgFileUrl("loading/wang-lychee-2.webp"), alt: "はじめが一つ目に苦戦している横で、王煙楼の前の器にはむき終えたライチが山盛り。はじめ「手元が速すぎる。」。" },
+    ],
+  },
+  {
+    id: "nagumo-stamp-card",
+    title: "会長の名刺",
+    cast: ["nagumo"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2374:allcast-nagumo-stamp-card）",
+    caption: "C.STATIONは、誰でも入りやすい店です。",
+    panels: [
+      { src: imgFileUrl("loading/nagumo-stamp-card-1.webp"), alt: "黒いスーツの南雲が、名刺のような紙を差し出して「南雲だ。」。はじめは緊張して受け取り「会長さん……」。" },
+      { src: imgFileUrl("loading/nagumo-stamp-card-2.webp"), alt: "はじめが受け取った紙は、マスが並んだスタンプカード。南雲は真顔のまま。はじめ「スタンプカードだ。」。" },
+    ],
+  },
+  {
+    id: "sheikh-traveler",
+    title: "旅の人",
+    cast: ["sheikh"],
+    contexts: ["craft"],
+    minChapter: 4,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2374:allcast-sheikh-traveler）",
+    caption: "ドバイで会った旅人は、実は。",
+    panels: [
+      { src: imgFileUrl("loading/sheikh-traveler-1.webp"), alt: "異国の路地で、茶色いフードの外套の男にはじめが「旅の人ですか？」。男は落ち着いて「ただの旅人だ。」。" },
+      { src: imgFileUrl("loading/sheikh-traveler-2.webp"), alt: "外套がめくれ、白と金の豪華な民族衣装が丸見えになる。はじめが指さして「隠しきれてない。」。" },
+    ],
+  },
+  {
+    id: "dasilva-festa-break",
+    title: "休憩もフェスタ",
+    cast: ["da_silva"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2374:allcast-dasilva-festa-break）",
+    caption: "太陽にとっては、何でもお祭り。",
+    panels: [
+      { src: imgFileUrl("loading/dasilva-festa-break-1.webp"), alt: "疲れたはじめがソファで「少し休憩を。」。花柄シャツのダ・シルヴァが両腕を広げて「休憩もフェスタだ！」。" },
+      { src: imgFileUrl("loading/dasilva-festa-break-2.webp"), alt: "マラカス・紙吹雪・果物の山で大騒ぎになり、ダ・シルヴァはマラカスを振る。はじめ「休めない。」。" },
     ],
   },
 ];
