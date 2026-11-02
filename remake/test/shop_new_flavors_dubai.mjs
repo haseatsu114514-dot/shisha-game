@@ -44,4 +44,16 @@ for (const id of Object.keys(RELEASE)) assert(DUBAI_FLAVORS.includes(id), `ド�
 for (const id of DUBAI_FLAVORS) assert(releasedFlavor(id, 4), `${id} は第4章で並ぶ`);
 assert(!DUBAI_FLAVORS.some(id => DB.flavorById[id].leaf !== 'blond'), 'はじめはブロンドリーフのみ');
 
-console.log('PASS new flavors release chapters, shop catalogs and Dubai shop catalog (map destination: ch4_progress.mjs)');
+// NF04: 7種の箱絵は各メーカーの箱に合わせた512角WebP。文字の箱へ落ちない。
+const { NEW_FLAVOR_ART } = await import('../js/daily/shop-art-new-flavors.js');
+assert.deepEqual(Object.keys(NEW_FLAVOR_ART).sort(), Object.keys(RELEASE).sort(), 'NF04 箱絵は新7種ちょうど');
+for (const [id, art] of Object.entries(NEW_FLAVOR_ART)) {
+  assert.deepEqual(art.size, [512, 512], `${id} は512角`);
+  assert(art.url.endsWith(`/img/shop/new-flavors/${id}.webp`), `${id} の配信先`);
+  const file = new URL(`../img/shop/new-flavors/${id}.webp`, import.meta.url);
+  assert(fs.existsSync(file), `${id}.webp がある`);
+  const [x, y, w, h] = art.box;
+  assert(x > 0 && y > 0 && x + w < 512 && y + h < 512 && w > 150 && h > 300, `${id} の表示範囲が箱を囲む`);
+}
+
+console.log('PASS new flavors release chapters, shop catalogs and Dubai shop catalog and NF04 cartons (map destination: ch4_progress.mjs)');
