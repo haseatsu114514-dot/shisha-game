@@ -69,7 +69,19 @@ function mount(scenario) {
   const roll = () => { q('trpg-roll').click(); timers.shift()(); };
   // A real table declares who acts before the dice: pick the first approach and read the declaration.
   const declare = kind => { const first = scenario.checks[kind].approaches?.[0]; if (first) { q('trpg-approach-' + first.id).click(); drain(); } };
-  return { api, root, q, drain, roll, declare, get completions() { return completions; } };
+  // New scenes: two questions for the story's character, then a twist with its own tactic and roll.
+  const interview = () => {
+    if (api.snapshot().phase !== 'interview') return;
+    for (const topic of scenario.interview.topics.slice(0, scenario.interview.picks || 2)) { q('trpg-topic-' + topic.id).click(); drain(); }
+    q('trpg-interview-done').click();
+  };
+  const twist = () => {
+    if (api.snapshot().phase !== 'twist') return;
+    const field = scenario.flow.twist[0];
+    q('trpg-plan-' + field + '-' + scenario.options[field][0].id).click();
+    q('trpg-twist-open').click(); declare('twist'); roll(); q('trpg-settle').click(); drain();
+  };
+  return { api, root, q, drain, roll, declare, interview, twist, get completions() { return completions; } };
 }
 for (const scenario of scenarios) {
   test(scenario.id + ': cast seats follow dialogue and idle GM; no invented participants', () => {
@@ -82,7 +94,7 @@ for (const scenario of scenarios) {
     api.destroy();
   });
   test(scenario.id + ': support cancellation does not spend; confirmed help and reroll share seat receipts', () => {
-    const mounted = mount(scenario); const { api, root, q, drain, roll, declare } = mounted; q('trpg-start').click(); drain(); declare('listen'); roll();
+    const mounted = mount(scenario); const { api, root, q, drain, roll, declare, interview, twist } = mounted; q('trpg-start').click(); drain(); declare('listen'); roll();
     const actor = scenario.cast.find(c => c.abilityType === 'reroll').id;
     q('trpg-reroll-1').click();
     assert(q('trpg-reroll-receipt').textContent.includes(actor));
@@ -93,9 +105,9 @@ for (const scenario of scenarios) {
       assert(Number(face.textContent) >= 1 && Number(face.textContent) <= 20);
       assert.equal(die.querySelectorAll('.trpg-pip').length, 0, 'No d6 pips remain');
     }
-    assert.equal(api.snapshot().used[actor], true); q('trpg-settle').click(); drain();
+    assert.equal(api.snapshot().used[actor], true); q('trpg-settle').click(); drain(); interview();
     for (const spot of scenario.spots.slice(0, 3)) { q('trpg-spot-' + spot.id).click(); drain(); }
-    q('trpg-interpret').click(); q('trpg-hypothesis-' + scenario.hypotheses[0].id).click(); drain();
+    q('trpg-interpret').click(); q('trpg-hypothesis-' + scenario.hypotheses[0].id).click(); drain(); twist();
     for (const field of Object.keys(api.snapshot().plan).filter(f => scenario.flow?.prepare?.includes(f) || !scenario.flow && ['aroma', 'seat'].includes(f))) {
       q('trpg-choice-tab-' + field).click(); q('trpg-plan-' + field + '-' + scenario.options[field][0].id).click();
     }
@@ -116,12 +128,13 @@ for (const scenario of scenarios) {
     assert.equal(api.snapshot().teamwork, 0); assert.equal(mounted.completions, 1); drain(); assert.equal(mounted.completions, 1, 'Fast advance cannot deliver completion twice'); api.destroy(); assert.equal(mounted.completions,1);
   });
   test(scenario.id + ': 0/1/3 clue cards open the existing notes without inspecting again', () => {
-    const { api, root, q, drain, roll, declare } = mount(scenario); q('trpg-start').click(); drain(); declare('listen'); roll(); q('trpg-settle').click(); drain();
+    const { api, root, q, drain, roll, declare, interview } = mount(scenario); q('trpg-start').click(); drain(); declare('listen'); roll(); q('trpg-settle').click(); drain(); interview();
     assert.equal(root.querySelectorAll('.trpg-table-clue').length, 0);
     for (const [i, spot] of scenario.spots.slice(0, 3).entries()) {
       q('trpg-spot-' + spot.id).click(); drain(); assert.equal(root.querySelectorAll('.trpg-table-clue').length, i + 1);
       const before = JSON.stringify(api.snapshot()); q('trpg-compare-notes').click();
-      assert.equal(root.querySelectorAll('.trpg-note-card').length, i + 1); q('trpg-notes-close').click(); assert.equal(JSON.stringify(api.snapshot()), before);
+      // The notebook keeps the interview answers above the room's clues.
+      assert.equal(root.querySelectorAll('.trpg-note-card').length, i + 1 + api.snapshot().asked.length); q('trpg-notes-close').click(); assert.equal(JSON.stringify(api.snapshot()), before);
     }
     assert.deepEqual(Array.from(root.querySelectorAll('.trpg-table-clue'), n => n.dataset.clue), Array.from(api.snapshot().clues).slice(0, 3)); api.destroy();
   });
@@ -129,7 +142,7 @@ for (const scenario of scenarios) {
 
 for (const scenario of scenarios) {
   test(scenario.id + ': the cover builds the player character; seats, lines and the result use it', () => {
-    const { api, root, q, drain, declare, roll } = mount(scenario);
+    const { api, root, q, drain, declare, roll, interview } = mount(scenario);
     const builder = scenario.builder, look = builder.looks[1], origin = builder.archetypes[1];
     assert.equal(q('trpg-cover-pc-name').textContent, builder.archetypes[0].name);
     q('trpg-build').click();
@@ -152,7 +165,7 @@ for (const scenario of scenarios) {
     q('trpg-start').click();
     assert(q('trpg-seat-pc-hajime').textContent.includes(origin.name), 'the seat shows the built character');
     assert(!root.textContent.includes('{pc}'), 'the name token never leaks to the screen');
-    drain(); declare('listen'); roll(); q('trpg-settle').click(); drain();
+    drain(); declare('listen'); roll(); q('trpg-settle').click(); drain(); interview();
     assert.equal(api.snapshot().checks[0].base, pc.stats[scenario.checks.listen.approaches[0].stat]);
     api.destroy();
   });
