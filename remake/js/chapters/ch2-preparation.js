@@ -4,7 +4,7 @@ import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 // 第2章の自由日。日常の消費・練習・保存・LIME・就寝は既存calendarを使う。
 import { DB, bgUrl } from "../core/data.js";
 import { state, save, markMet, timeOfDay } from "../core/state.js";
-import { addMoney, addStamina, earnStat, gainAffinity, affinityLevel, releaseAffinity } from "../core/stats.js";
+import { addMoney, addStamina, earnStat, gainAffinity, affinityLevel } from "../core/stats.js";
 import { imageReady, setBg, toast, withScenePreparation } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
@@ -110,7 +110,8 @@ export async function visitCityRegular(spot, { staminaGuard }) {
 
 /**
  * VOL13: 地元の店で読む第2章の本編（DAY7のアダム・DAY12の夜のみんと）。期限の夜の救済より前に、この来店の会話として読む。
- * 料金・体力・能力・好感度+5は通常の来店と同じで、最後の場面まで読んでから精算する（中断・LOADでは何も残さない）。
+ * 料金・体力・能力は通常の来店と同じで、最後の場面まで読んでから精算する（中断・LOADでは何も残さない）。
+ * 必ず読む場面なので好感度は付けない（オーナー方針。夜に読む場合と同じ）。
  * 本編の後に、隣町の客の一服やひよりの相席は重ねない（calendar の通常来店の後処理を通らない）。
  */
 async function visitStoryAtHome(spot, night, { staminaGuard }) {
@@ -127,7 +128,7 @@ async function visitStoryAtHome(spot, night, { staminaGuard }) {
   state.visits[id] = (state.visits[id] || 0) + 1;
   state.flags[`_spot_guide_${id}`] = true;
   markMet(id);
-  gainAffinity(id, 5); releaseAffinity(id); earnStat(CHAR_STAT[id], 4);
+  earnStat(CHAR_STAT[id], 4);
   if (state === owner) await consultLessons(id, { bg });
   return { used: true, exerted: true };
 }

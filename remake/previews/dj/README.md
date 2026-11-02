@@ -9,7 +9,7 @@ Entry: `remake/previews/dj/index.html?set=1〜3`（旧 `?stage=` も同じ）。
 - **重ね方**: `remake/js/minigames/dj.js` の `runDjSet` が、このページを `?embed=1` 付きで本編の `#stage` に iframe で重ねる。埋め込み時だけ「← 戻る」が出て、本編のミュートと BGM 音量（`?mute=1`・`?vol=`）に従う。セットを回しきるたびに `postMessage({type:'dj-result', set, rank, total, floor})`、戻ると `{type:'dj-exit'}` を親へ送る。親は送り元の iframe と同じ origin だけを受け付ける。
 - **自分のヘッドホン**（VOL07）: 本編でモニターヘッドホンを持っていると `?phones=1` が付き、▶を押す瞬間の判定（PERFECT 30・GOOD 60・OK 120ms と、つなぎの点の入り）が前後10ms広くなる。セット名の横に「ヘッドホン：▶の判定が10ms広い」と出る。
 - **記録**: `state.dj = { sets: {1: {plays, best: {rank, total, floor, chapter, day}}}, bestRank }`（ベストは点数で比較、bestRank は全セットで最高）。保存形式の移行は不要（読み込みは未知の項目を残す）。心得の盤の「遊びのご褒美」SBD39 が `state.dj.bestRank` を読み、A 以上で寝る前に感覚の火種を1つ渡す（1回だけ）。
-- **地図の入口**: `remake/js/chapters/ch3.js` の `freeTimeChoices`（`djNightChoices`）と `openTokyoMap`（`action.dj` → `visitDjClub`）。戻ると同じ自由時間のカードに戻り、自由時間は残る。地図の地点は `ch3-map-model.js` の `club`、ピンの店ロゴは `store-logos.js` の `ch3_club`（画像は Issue #2199）。立ち絵5表情（normal / smile / serious / surprise / sad）・顔アイコン・店内と入口の背景・店ロゴ・登場カットイン（旧絵柄とグラフィック絵柄）は組み込み済み（DJS16・DJS18）。
+- **地図の入口**: 東京の日常ループ（VOL03）では `remake/js/chapters/ch3-tokyo-daily.js` の地点 `ch3_tokyo_club`（夜だけ・ヨルに会うまでは「地下の店」、DJS19）。旧版の行程では `remake/js/chapters/ch3.js` の `freeTimeChoices`（`djNightChoices`）と `openTokyoMap`（`action.dj` → `visitDjClub`）。戻ると同じ自由時間のカードに戻り、自由時間は残る。地図の地点は `ch3-map-model.js` の `club`、ピンの店ロゴは `store-logos.js` の `ch3_club`（画像は Issue #2199）。立ち絵5表情（normal / smile / serious / surprise / sad）・顔アイコン・店内と入口の背景・店ロゴ・登場カットイン（旧絵柄とグラフィック絵柄）は組み込み済み（DJS16・DJS18）。
 
 ## 遊び方（操作は ▶ と横フェーダーと選曲だけ・DJS17）
 
