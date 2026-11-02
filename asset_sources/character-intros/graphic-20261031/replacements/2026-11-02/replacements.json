@@ -1,0 +1,92 @@
+[
+  {
+    "id": "master_hookah",
+    "kind": "portrait",
+    "source": "master_hookah-v2.png",
+    "applied": true,
+    "background_color": [
+      250,
+      4,
+      251
+    ],
+    "top": 62,
+    "left": 98,
+    "right": 100,
+    "warnings": []
+  },
+  {
+    "id": "emil",
+    "kind": "portrait",
+    "source": "emil-v1.png",
+    "applied": true,
+    "background_color": [
+      251,
+      3,
+      249
+    ],
+    "top": 33,
+    "left": 185,
+    "right": 240,
+    "warnings": []
+  },
+  {
+    "id": "yoru",
+    "kind": "portrait",
+    "source": "yoru-v6.png",
+    "applied": true,
+    "background_color": [
+      2,
+      249,
+      8
+    ],
+    "top": 178,
+    "left": 136,
+    "right": 151,
+    "warnings": []
+  },
+  {
+    "id": "sheikh",
+    "kind": "portrait",
+    "source": "sheikh-v2.png",
+    "applied": true,
+    "background_color": [
+      252,
+      6,
+      250
+    ],
+    "top": 146,
+    "left": 268,
+    "right": 275,
+    "warnings": []
+  },
+  {
+    "id": "mukai_master",
+    "kind": "portrait",
+    "source": "mukai_master-v2.png",
+    "applied": true,
+    "background_color": [
+      251,
+      4,
+      250
+    ],
+    "top": 142,
+    "left": 132,
+    "right": 132,
+    "warnings": []
+  },
+  {
+    "id": "da_silva",
+    "kind": "portrait",
+    "source": "da_silva-v3.png",
+    "applied": true,
+    "background_color": [
+      251,
+      5,
+      250
+    ],
+    "top": 133,
+    "left": 216,
+    "right": 139,
+    "warnings": []
+  }
+]

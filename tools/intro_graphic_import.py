@@ -46,11 +46,21 @@ def key_out(rgb):
         sys.exit("背景が黒に近いため抜けません。マゼンタなど人物に使わない単色の背景で描き直してください。")
     dist = np.sqrt(((a - bg) ** 2).sum(-1))
     alpha = np.clip((dist - 40) / 60, 0, 1)
+    # 生成画像のアンチエイリアスに残るキー色も抜く。WebP化すると
+    # 半透明のマゼンタ／緑が輪郭に再混入するため、色相で判定する。
+    if bg[0] > 160 and bg[2] > 160 and bg[1] < 100:
+        keyed = ((np.minimum(a[..., 0], a[..., 2]) - a[..., 1] > 18)
+                 & (np.abs(a[..., 0] - a[..., 2]) < 80))
+        alpha[keyed] = 0
+    elif bg[1] > 160 and bg[0] < 100 and bg[2] < 100:
+        keyed = a[..., 1] - np.maximum(a[..., 0], a[..., 2]) > 18
+        alpha[keyed] = 0
     out = a.copy()
     semi = alpha < 1
     # 半透明の縁: 背景色の成分を引き、混ざった色を人物側の色へ戻す
     for c in range(3):
         out[..., c] = np.where(semi, np.clip((a[..., c] - bg[c] * (1 - alpha)) / np.maximum(alpha, 1e-3), 0, 255), a[..., c])
+    out[alpha == 0] = 0
     return np.dstack([out, alpha * 255]).clip(0, 255).astype("uint8"), alpha, bg
 
 
