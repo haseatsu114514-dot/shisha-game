@@ -179,7 +179,7 @@ await suite("desert-ride", async check => {
     assert.equal(value.desert, undefined);
     await page.evaluate(() => { window.__desertRide.autoplay("perfect"); window.__desertRide.setSpeedUp(8); });
     await phase(page, "practiced");
-    assert.match(await page.locator(t("desert-practiced")).innerText(), /ヌール「いいね/);
+    assert.match(await page.locator(t("desert-practiced")).innerText(), /ヌール「上手！/);
     await page.locator(t("desert-start")).click();
     // 1本目は着地が遅い滑り: B。ヌールと同じ滑りなので競走は負け
     await autoplayToResult(page, "good");
@@ -194,7 +194,7 @@ await suite("desert-ride", async check => {
     // 同じ外出の中の再挑戦: 行動は増えず、記録だけ増える。自己ベストは点数で更新。回ってブーストすればヌールに勝つ（勝ちのひとこと）
     await page.locator(t("desert-retry")).click();
     await autoplayToResult(page, "expert");
-    await page.locator(".toast", { hasText: "ヌール「スゴイ！ 今日は、私の負け」" }).waitFor();
+    await page.locator(".toast", { hasText: "ヌール「スゴイ！ ……悔しいけど、今日は私の負け」" }).waitFor();
     value = await get(page);
     assert.equal(value.desert.runs, 2); assert.equal(value.desert.bestRank, "S"); assert.equal(value.flags._ch4_desert.outings, 1);
     assert.equal(value.desert.wins, 1);
