@@ -151,9 +151,10 @@ await suite("lesson-consult-coverage", async (check) => {
     for (const key of ["naru", "ageha", "minto"]) assert.deepEqual(result[key], { used: true, exerted: true }, key);
     assert.deepEqual([...result.learned].sort(), ["M-B1", "M-S4", "M-W3"]);
     const naru = result.naruLines.join("\n"), ageha = result.agehaLines.join("\n");
-    assert.match(naru, /なるって、どうやってそこまでうまくなったの？/);
+    assert.match(naru, /なるって、前より見てる所が増えたよね。どうやってるの？/);
     assert.doesNotMatch(naru, /なるさん/, "after chapter 3 Hajime drops the honorific");
-    assert.match(ageha, /あげはさん、ちょっと相談いい？/);
+    assert(result.agehaLines.includes("ちょっと相談いい？ 吸い出しのことで"), "Hajime opens the consult without a name");
+    assert.doesNotMatch(ageha, /あげはさん/, "after the tournament the lesson reads like the ch5 shop talk (lover route calls her あげは)");
     assert.doesNotMatch(ageha, /相談いいですか|ズボー……ですか|数えてみます/, "after the tournament Hajime speaks casually to Ageha");
   });
 });

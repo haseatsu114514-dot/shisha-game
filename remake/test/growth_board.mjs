@@ -392,7 +392,7 @@ core.state.affinity.adam = 0;
 }
 
 // 大会後に相談する授業は、その時の関係と時系列に合わせて分かれる（交流の時系列ルール・SPEC 2.6）。
-// なる（第3章の後はさん付けなし）・あげは（第4章からはため口）・スティーブ（大会後の東京ではその夜がピザの夜）。
+// なる（第3章の後はさん付けなし）・あげは（第4章からはため口。恋人ルートの呼び捨てとも食い違わないよう名前を呼ばない）・スティーブ（大会後の東京ではその夜がピザの夜）。
 {
   const vm = await import("node:vm");
   const { tournamentFinished } = await import("../js/core/story-context.js");
@@ -430,7 +430,11 @@ core.state.affinity.adam = 0;
     assert.match(naru, /なるって/, `第${chapter}章 ${phase}: 大会後はなる`);
     assert.doesNotMatch(naru, /なるさん/);
     for (const line of said("lesson_ageha_zuboo", chapter, phase)) assert.doesNotMatch(line, /です|ます/, `第${chapter}章のはじめはあげはさんにため口: ${line}`);
-    assert(said("lesson_ageha_zuboo", chapter, phase).some((t) => t.startsWith("あげはさん、")), "呼び名はあげはさんのまま");
+    // 恋人ルートでは「あげは」と呼び捨てになる（lover_ageha_lv1）ので、大会後の相談では名前を呼ばない。
+    for (const line of said("lesson_ageha_zuboo", chapter, phase)) assert.doesNotMatch(line, /あげはさん/, `第${chapter}章: 恋人でも読める呼び方: ${line}`);
+    assert(said("lesson_ageha_zuboo", chapter, phase).some((t) => t === "ちょっと相談いい？ 吸い出しのことで"));
+    const agehaNarration = rows("lesson_ageha_zuboo", chapter, phase).filter((l) => !l.speaker).map((l) => l.text).join("\n");
+    assert.doesNotMatch(agehaNarration, /あげはさん/, "大会後の地の文は第4・5章と同じ「あげは」");
     const steve = rows("lesson_steve_pizza", chapter, phase).map((l) => l.text || "");
     assert(steve.some((t) => t.includes("今夜")), "大会後の東京では、その夜がピザの夜");
     assert(!steve.some((t) => t.includes("大会が終わって")));

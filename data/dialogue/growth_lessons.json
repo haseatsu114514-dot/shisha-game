@@ -253,7 +253,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "……なるって、どうやってそこまでうまくなったの？"
+            "text": "……なるって、前より見てる所が増えたよね。どうやってるの？"
           },
           {
             "speaker": "naru",
@@ -632,11 +632,6 @@
       "dialogue_id": "lesson_ageha_zuboo",
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "客足の途切れたMELTY PUFF。あげはさんが豹柄のソファで、クマの並びを直している。"
-        },
-        {
           "type": "condition",
           "condition_type": "tournament_finished",
           "tournament_chapter": 3,
@@ -646,6 +641,11 @@
       ],
       "branches": {
         "consult_before": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "客足の途切れたMELTY PUFF。あげはさんが豹柄のソファで、クマの並びを直している。"
+          },
           {
             "speaker": "hajime",
             "face": "normal",
@@ -724,9 +724,14 @@
         ],
         "consult_after": [
           {
+            "speaker": "",
+            "face": "",
+            "text": "客足の途切れたMELTY PUFF。あげはが豹柄のソファで、クマの並びを直している。"
+          },
+          {
             "speaker": "hajime",
             "face": "normal",
-            "text": "あげはさん、ちょっと相談いい？ 吸い出しのことで"
+            "text": "ちょっと相談いい？ 吸い出しのことで"
           },
           {
             "speaker": "ageha",
@@ -756,7 +761,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "あげはさんが頬をへこませて、ズボー、と一息。煙を見てから、もう半分だけ足した。"
+            "text": "あげはが頬をへこませて、ズボー、と一息。煙を見てから、もう半分だけ足した。"
           },
           {
             "speaker": "hajime",
