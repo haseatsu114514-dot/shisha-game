@@ -4,9 +4,12 @@ import { CITY_BACKGROUNDS, CH2_SCENE_BACKGROUNDS } from "../core/city-locations.
 // あげは（#626）: 3日目（なるの祝福のあと）の偵察返し・9日目の試煙会・10日目のスランプ来店を強制の夜にする。
 // 9日目はC.STATION柚ヶ谷店の客席で開くアフサール新作の先行試煙会（#929）。旧IDと読了フラグは保存互換のため維持。
 // 2日目と8日目の夜は、TRPGなど自由に使える夜として空けておく（#639）。
-// #1652: 事故・決裂・試煙会・前夜など前後すると成立しない転機は固定。DAY6の残る匂い・DAY7のアダム・DAY12のみんとは
-// 訪問・会話なので preparation にし、休養や夜の約束で後送りできる。deadline（章内日）までに必ず読み、大会後へ持ち越さない。
+// #1652: 事故・決裂・試煙会・前夜など前後すると成立しない転機は固定。DAY6の残る匂いは閉店後のtonariの会話なので
+// preparation にし、休養や夜の約束で後送りできる。deadline（章内日）までに必ず読み、大会後へ持ち越さない。
 // 後送りした夜は CH2_FREE_NIGHTS（DAY2・8）に入れない（期限の救済を除く）。
+// VOL13: DAY7のアダム・DAY12のみんとは schedule "visit"。夜に自動では読まず、day（章内日）から地図の店（charId）を
+// 選んだ行動で読む（slots があればその時間帯だけ）。deadline の夜までに訪ねなかった時だけ、その夜に救済で読む。
+// これで必ず読む夜は8夜（DAY3・4・5・6・9・10・11・13）。
 export const CH2_FREE_NIGHTS = [2, 8];
 // room は会話の前に出す店内（.webp の店内画は metadata.bg で指定できないため）。bg は店内以外の場所の背景。met は読み終えたら面識にする相手。
 // 連絡先の交換は台本の set_flag _lime_contact_<id> に置く（交換の演出が出る・#2023）。
@@ -29,7 +32,8 @@ export const CH2_NIGHTS = [
   { day: 6, schedule: "preparation", deadline: 7, pin: "tonari", label: "残る匂い", beat: "夜。残る匂いのことが気になって、tonariへ──", prerequisites: ["_ch2_read_ch2_sofa_burn"], steps: [
     { id: "ch2_lingering_smell", file: "ch2_main" },
   ] },
-  { day: 7, schedule: "preparation", deadline: 12, pin: "adam", label: "アダムとの距離", beat: "夜。アダムの試作を味わいに、EDENへ──", steps: [
+  // EDENは章内DAY12が定休日（通算26日）。訪ねられるのはDAY7〜11で、DAY12の夜に救済する。
+  { day: 7, schedule: "visit", charId: "adam", deadline: 12, pin: "adam", label: "アダムとの距離", beat: "夜。アダムの試作を味わいに、EDENへ──", steps: [
     { id: "ch2_adam_distance", file: "ch2_isolation" },
   ] },
   { day: 9, pin: "ch2_c_station", label: "アフサール新作の試煙会", beat: "夜。C.STATIONの試煙会へ──", steps: [
@@ -45,7 +49,9 @@ export const CH2_NIGHTS = [
   { day: 11, pin: "naru", label: "なるの言葉", beat: "夜。試作の話をしに、KEMURIKUSAへ──", steps: [
     { id: "ch2_naru_confrontation", file: "ch2_isolation" },
   ] },
-  { day: 12, schedule: "preparation", deadline: 13, pin: "minto", label: "みんとの心配", beat: "夜。みんとの様子を見に、PEPPERMINTへ──", steps: [
+  // 正本どおり「DAY12の夜、ぺぱーみんとからの帰り」に閉じたケムリクサを見る。訪問は夜の行動だけ（昼はいつもの来店）。
+  // 夜にほかの所へ行った時は、その夜に救済で読む。前夜（DAY13）へは持ち越さない。
+  { day: 12, schedule: "visit", charId: "minto", slots: [1], deadline: 12, pin: "minto", label: "みんとの心配", beat: "夜。みんとの様子を見に、PEPPERMINTへ──", steps: [
     { id: "ch2_minto_warning", file: "ch2_isolation" },
     // #929: 帰り道のケムリクサ。DAY11の選択の記録がある時だけ、距離の違いを見せる
     { id: "ch2_naru_window", file: "ch2_isolation", bg: CH2_SCENE_BACKGROUNDS.naruWindow, when: ({ flags }) =>

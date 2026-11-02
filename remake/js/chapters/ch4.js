@@ -30,6 +30,7 @@ import { TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
 import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
 import { CH4_EVENING_DIALOGUE_FILES, CH4_EVENING_BG, selectChapterFourEvening, chapterFourEveningPartner,
   chapterFourEveningRecord } from "./ch4-story-wiring.js";
+import { CH4_CAMEL_SCENE_FILES, camelSceneBg, visitCamelRace } from "./ch4-camel-race.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -95,7 +96,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
 
 /** 必要な台本をすべて確認してから DB に公開する。欠けていれば状態を進めない。 */
 async function loadDialogues() {
-  const files = { ...CH4_SCENE_FILES, ...CH4_VISITOR_SCENE_FILES, ...CH4_EVENING_DIALOGUE_FILES };
+  const files = { ...CH4_SCENE_FILES, ...CH4_VISITOR_SCENE_FILES, ...CH4_EVENING_DIALOGUE_FILES, ...CH4_CAMEL_SCENE_FILES };
   const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => [ids, await readDialogues(file, ids)]));
   for (const [ids, dialogues] of groups) {
     Object.assign(DB.dialogues, Object.fromEntries(ids.map(id => [id, dialogues[id]])));
@@ -159,7 +160,7 @@ async function readScene(owner, id) {
   const dialogue = { ...actual, metadata: { ...source.metadata, bg: "" } };
   showScreen("none", null);
   hud();
-  await setBg(bgUrl(CH4_SCENE_BG[id] || CH4_EVENING_BG), { instant: true });
+  await setBg(bgUrl(CH4_SCENE_BG[id] || camelSceneBg(id) || CH4_EVENING_BG), { instant: true });
   if (!current(owner)) return false;
   playBgm(CH4_SCENE_BGM[id] || CH4_DEFAULT_BGM);
   // 読了のcheckpointまで保存を出さない。会話中のMENUは置かない。
@@ -326,6 +327,18 @@ async function visit(owner, id) {
   if (destination.kind === "reflect") {
     await reflectAt("dubai_mosque");
     if (current(owner)) await renderStage(owner);
+    return;
+  }
+  if (destination.kind === "camel") {
+    // ラクダレース（任意）。会話→レース→結果の会話と保存は ch4-camel-race.js が進める。レース中の中断は controller で止める。
+    const controller = new AbortController();
+    try {
+      await visitCamelRace({ read: id => readScene(owner, id), signal: controller.signal, isCurrent: () => current(owner),
+        beforeRace: () => { showScreen("none", null); hud(); owner.controller = controller; } });
+    } finally { if (owner.controller === controller) owner.controller = null; }
+    if (!current(owner)) return;
+    playBgm(CH4_DEFAULT_BGM);
+    await renderStage(owner);
     return;
   }
   if (destination.kind === "shop") {

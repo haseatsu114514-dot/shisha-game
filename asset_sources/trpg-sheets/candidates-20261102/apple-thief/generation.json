@@ -1,0 +1,190 @@
+{
+  "generator": "built-in image_gen",
+  "date": "2026-11-02",
+  "source": "main asset_sources/trpg-scenarios/README.md blob b6c51024d50634b9922bb18fd45e7d59871a20b2",
+  "reference_images": [],
+  "reference_roles": "No image references: original scenario fictional roles, not actual tabletop participants",
+  "adopted": false,
+  "outputs": [
+    {
+      "file": "portraits-apple-thief-a.png",
+      "sha256": "926580b18bc9aaf80340936baa47aacba59b4e5ccb25b5f128c806c21d106be5",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.4181125590865934,
+      "margins_ltrb": [
+        [
+          57,
+          8,
+          50,
+          20
+        ],
+        [
+          62,
+          28,
+          38,
+          0
+        ],
+        [
+          41,
+          17,
+          38,
+          13
+        ],
+        [
+          45,
+          11,
+          52,
+          0
+        ],
+        [
+          54,
+          5,
+          21,
+          15
+        ],
+        [
+          32,
+          0,
+          15,
+          11
+        ],
+        [
+          37,
+          4,
+          30,
+          10
+        ],
+        [
+          41,
+          0,
+          19,
+          17
+        ]
+      ]
+    },
+    {
+      "file": "portraits-apple-thief-b.png",
+      "sha256": "809dab3e307d1002bd949df815abcfa0ba0d42b16ddcc929c967cc931739c0ab",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.6512788378799876,
+      "margins_ltrb": [
+        [
+          113,
+          91,
+          78,
+          33
+        ],
+        [
+          106,
+          104,
+          76,
+          31
+        ],
+        [
+          95,
+          99,
+          71,
+          31
+        ],
+        [
+          101,
+          96,
+          61,
+          32
+        ],
+        [
+          113,
+          57,
+          53,
+          49
+        ],
+        [
+          97,
+          54,
+          53,
+          49
+        ],
+        [
+          78,
+          67,
+          61,
+          49
+        ],
+        [
+          78,
+          67,
+          59,
+          48
+        ]
+      ]
+    },
+    {
+      "file": "portraits-apple-thief-c.png",
+      "sha256": "13ab6e69999e0ed755a8400b6c3dfec04f51c3a172644343f3974b61bf66f6a6",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.5730080875072607,
+      "margins_ltrb": [
+        [
+          101,
+          68,
+          60,
+          22
+        ],
+        [
+          86,
+          97,
+          47,
+          10
+        ],
+        [
+          79,
+          88,
+          67,
+          14
+        ],
+        [
+          62,
+          82,
+          34,
+          13
+        ],
+        [
+          97,
+          54,
+          31,
+          41
+        ],
+        [
+          76,
+          52,
+          27,
+          39
+        ],
+        [
+          54,
+          60,
+          57,
+          36
+        ],
+        [
+          49,
+          50,
+          28,
+          37
+        ]
+      ]
+    }
+  ]
+}

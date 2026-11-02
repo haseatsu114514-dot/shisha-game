@@ -1,0 +1,12 @@
+Generate ONE sprite sheet image, 2048x1024, transparent background (PNG), containing 8 SMALL isolated character portrait busts in a 4x2 grid (4 columns, 2 rows), each compact bust maximum220x220px centered in its own512px square cell, minimum146px completely transparent margin on all four sides. Style: painterly storybook ink-and-watercolor bust portrait, soft lamplight, muted palette matching the story's world, consistent across all eight. Shoulders-up, facing slightly left, readable face. No text, no numbers, no logos, no frames (the game draws the round frame), no watermark, no shisha pipes, no real brands, no resemblance to any existing character. World: 月の丘 / 月光花城 (ゴシック幻想 / 音楽): 燭台の灯り。白い花の香り。鳴りやまない、アンコール。
+Row 1 = the player's character, four looks of the same role. Androgynous young adult (18-24) so the player can give any name; the look must not depend on background or name:
+--- a: look-moonflower-encore-apron --- 黒髪の裏方. 短い黒髪に、黒いエプロンと工具袋
+--- b: look-moonflower-encore-tailcoat --- 銀髪の燕尾服. 銀色の髪に、ワイン色の燕尾服
+--- c: look-moonflower-encore-glasses --- 眼鏡の譜めくり. 丸い眼鏡に、楽譜を抱えた黒いベスト
+--- d: look-moonflower-encore-cloak --- マントの新人. 長い黒マントに、月光花のブローチ
+Row 2 = characters the companions made for this story. Light comedy is welcome, keep faces readable:
+--- e: pc-kirara --- キララ, 追っかけのファン. ノクターンを追って、城まで来たファン。うちわもペンライトも自作 Likes: プリクラと、白と赤のグミベア
+--- f: pc-moka --- モカ, 物販担当のコウモリ娘. 城の物販を仕切るコウモリ娘。グッズの並べ方は、とにかく盛る Likes: トロピカルな香りと、プリ帳
+--- g: pc-leon --- レオン, 林檎の紋章のハンター. 吸血鬼を狩りに来た……が、実は平和主義。武器は林檎と名言 Likes: ダブルアップルと、舞台の仕掛け
+--- h: pc-ziek --- ジーク, 自称・伝説のギタリスト. 弦は一本しか張っていない。それも演出だと言い張る Likes: ダブルアップルと、大げさな決めポーズ
+Sparse contact sheet, more than70% canvas transparent blank. Exactly8 original fictional character faces NOT actual tabletop players. Tiny head-and-collar silhouettes, both rows same scale, minimal shoulders, no long torsos. Strict4x2 cell centers x12.5/37.5/62.5/87.5%, y25/75%. All leftward. No white paper fringe or detached pigment; shading contained inside clean character outlines. No background scenery, ghost audience, backdrop disks or frames. Top third sheet music must be BLANK paper with no notes or lettering. Bottom Kirara expressive enthusiastic fan with tiny folded fan edge, Moka human bat-girl merchant with small bat-ear styling and modest gothic clothing, Leon friendly peaceful apple-crested hunter, Ziek flamboyant guitarist with only guitar-neck edge. No extra animal faces, floating food or unrelated props. All adults.

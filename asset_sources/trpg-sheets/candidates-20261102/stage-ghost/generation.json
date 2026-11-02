@@ -1,0 +1,190 @@
+{
+  "generator": "built-in image_gen",
+  "date": "2026-11-02",
+  "source": "main asset_sources/trpg-scenarios/README.md blob b6c51024d50634b9922bb18fd45e7d59871a20b2",
+  "reference_images": [],
+  "reference_roles": "No image references: original scenario fictional roles, not actual tabletop participants",
+  "adopted": false,
+  "outputs": [
+    {
+      "file": "portraits-stage-ghost-a.png",
+      "sha256": "549e88b02dc5138968d297b958588efc41c8244c8a2ae13164ceb08471ae2b69",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.49293502921442,
+      "margins_ltrb": [
+        [
+          93,
+          53,
+          32,
+          31
+        ],
+        [
+          68,
+          52,
+          44,
+          39
+        ],
+        [
+          60,
+          52,
+          57,
+          35
+        ],
+        [
+          56,
+          56,
+          46,
+          40
+        ],
+        [
+          48,
+          36,
+          32,
+          48
+        ],
+        [
+          39,
+          16,
+          34,
+          41
+        ],
+        [
+          49,
+          24,
+          33,
+          40
+        ],
+        [
+          42,
+          29,
+          40,
+          45
+        ]
+      ]
+    },
+    {
+      "file": "portraits-stage-ghost-b.png",
+      "sha256": "efd09802a2b5c33b71506e4f4715b7a81ff8c00c38322b45a5b1187f89cc7d9a",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.6869233536145933,
+      "margins_ltrb": [
+        [
+          138,
+          123,
+          72,
+          38
+        ],
+        [
+          107,
+          125,
+          77,
+          38
+        ],
+        [
+          100,
+          119,
+          94,
+          33
+        ],
+        [
+          90,
+          125,
+          73,
+          32
+        ],
+        [
+          132,
+          73,
+          62,
+          87
+        ],
+        [
+          102,
+          75,
+          64,
+          87
+        ],
+        [
+          89,
+          66,
+          75,
+          87
+        ],
+        [
+          77,
+          58,
+          69,
+          74
+        ]
+      ]
+    },
+    {
+      "file": "portraits-stage-ghost-c.png",
+      "sha256": "7b09840344277ce8eadeb84a480a9f48c1a62f2318517c3ea59cb73634d7ee1c",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.5862813608568715,
+      "margins_ltrb": [
+        [
+          128,
+          86,
+          33,
+          27
+        ],
+        [
+          98,
+          87,
+          59,
+          26
+        ],
+        [
+          78,
+          83,
+          87,
+          30
+        ],
+        [
+          47,
+          87,
+          88,
+          28
+        ],
+        [
+          120,
+          50,
+          35,
+          62
+        ],
+        [
+          83,
+          38,
+          44,
+          62
+        ],
+        [
+          66,
+          44,
+          69,
+          64
+        ],
+        [
+          54,
+          11,
+          70,
+          62
+        ]
+      ]
+    }
+  ]
+}

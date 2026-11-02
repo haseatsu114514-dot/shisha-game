@@ -27,7 +27,7 @@ const mocks = {
   "../core/data.js": { DB, bgUrl: x => x },
   "../core/city-locations.js": { CH2_CITY_NAME: "柚ヶ谷", HOME_CITY_NAME: "橙須" },
   "../core/stats.js": {
-    affinityLevel: () => heartLevel,
+    affinityLevel: () => heartLevel, releaseAffinity: () => 0,
 
     addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; },
     earnStat: (id, n) => { state.growth.push([id, n]); }, gainAffinity: (id, n) => { state.affinity.push([id, n]); },
@@ -45,7 +45,8 @@ const mocks = {
     return { id, visited: [id] };
   } },
   "../daily/calendar.js": { runDaily: async def => { options = def; } },
-  "../daily/spots.js": { allSpots: () => [], VISIT_COST: 3000, isClosed: spot => spot.closedOn !== undefined && state.day % 7 === spot.closedOn },
+  "../daily/spots.js": { allSpots: () => [], VISIT_COST: 3000, isClosed: spot => spot.closedOn !== undefined && state.day % 7 === spot.closedOn,
+    CHAR_STAT: {}, VISIT_BG: {}, bgRef: x => x, setChapterVisitDue: () => {} },
   "../daily/hiyori.js": { setHiyoriExtraShops: () => {} },
   "../daily/trpg.js": { trpgSpot: () => null, maybeRecruitTrpgMember: async () => false },
   "../daily/shop.js": { openShop: async () => null },
@@ -63,7 +64,8 @@ const mocks = {
   "./ch2-outings.js": { CITY_OUTINGS: [], CITY_SHOP: { id: "ch2_shop" }, knownCityOutings: () => [], introduceCitySpot: () => false, outingDialogue: () => null, recordOutingVisit: () => {} },
   "./ch2-city-data.js": { MAP: { day: "map" }, STOPS: ids.map(id => ({ id, name: id })), ROOMS: Object.fromEntries(ids.map(id => [id, id])) },
   "./ch2-progress.js": { dayOneProgress: () => ({ startDay: 15 }), recordCityVisit: () => {}, scheduleChapterTwoTrpgNight },
-  "./ch2-story.js": { chapterTwoNights: () => ({}) },
+  // 地元の店で読む第2章の本編（VOL13）は ch2_story_visits.mjs で確認する
+  "./ch2-story.js": { chapterTwoNights: () => ({}), storyVisitDue: () => null, readStoryVisit: async () => false },
   // あげはの店に通う回は ch2_ageha_story.mjs で確認する。ここでは従来の chat/followup/repeat だけを見る
   "./ch2-story-data.js": { agehaStoryScene: () => agehaStory, syncAgehaVibes: () => 0 },
   // 心得の盤の授業の相談（SBD70）。盤が無効な時と同じく何もしない

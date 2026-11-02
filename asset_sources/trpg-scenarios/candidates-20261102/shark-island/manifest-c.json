@@ -1,0 +1,43 @@
+{
+  "variant": "c",
+  "path": "/workspace/shared/trpg-background-candidates/shark-island/background-c.png",
+  "size": [
+    1672,
+    941
+  ],
+  "mode": "RGB",
+  "sha256": "2d83b6455b8ee3e4d7a2bc8c93a07090e77389ed74326fd512c7a60611222cf0",
+  "tool": "built-in image_gen",
+  "prompt": "prompt-c.txt",
+  "adoption": "unselected candidate",
+  "visualQA": "Readable cove, no people/shisha/text. Map14/25 fits; crown-shaped pedestal81/22 fits78/20; graffiti40/26 target40/34 hits lowest fish; water56/62 valid; anchor90/64 target85/60 hits rock beside shaft; footprint25/76 target24/79 nearby. Best general composition but coordinate alignment still required, especially anchor.",
+  "scenario": "shark-island",
+  "generated_date_utc": "2026-11-02",
+  "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+  "reference_documents": [
+    {
+      "path": "/workspace/shared/trpg-art-prompts-2264.md",
+      "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+    },
+    {
+      "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+      "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+    },
+    {
+      "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+      "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+    }
+  ],
+  "input_image_references": [],
+  "prompt_sha256": "7bd857f379b9db5b55b09aebc5f791f1b34898cce7dfd2fb79c79ea7b1277139",
+  "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 05 shark-island\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 南の島の入り江。地図を広げた岩、王冠の台座、落書きの岩壁、青い水面、古い錨、砂浜の足跡。水の下に大きなサメの影。 Setting: トビウオ諸島 / サメ島の入り江. Mood: 青く澄んだ入り江。白い砂。水の下に、大きな影。. Fictional place from a tabletop story (海賊の冒険). Concrete click-investigation objects, each a distinct readable prop at its position: 宝の地図 clearly visible around x14% y24%; 王冠の台座 clearly visible around x78% y20%; 船乗りの落書き clearly visible around x40% y34%; 入り江の水面 clearly visible around x56% y62%; 古い錨 clearly visible around x85% y60%; 砂浜の足跡 clearly visible around x24% y79%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant C: cinematic hand-painted anime coastal adventure, clean blue water, creamy sandstone and warm afternoon light.\nProduction layout priority: show the entire scene as ONE coherent wide cove, camera from slightly elevated sandy shore, no montage. Upper-left rock shelf holds a fully readable open parchment treasure map centered at 14% across/24% down; the map has ONLY abstract illustrated coast/route markings, no letters or numbers. An old stone crown pedestal at upper-right shore centers 78%/20%. Sailor rock-wall graffiti centered40%/34% consists ONLY simple pictograms (fish, boat, sun) with no writing. Clear cove-water patch centers56%/62%, large shark shadow visible naturally underwater, not leaping. One old corroded iron anchor at85%/60%, resting in sand on right. Curving human footprints (no person visible) centered24%/79%. Make all six targets big enough to be clearly readable around their assigned centers and maintain believable geography/perspective. The pedestal is empty, no unnecessary treasure chest, no people, no boats obscuring targets. Keep upper center calm.",
+  "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+  "raw_original": true,
+  "target_size": [
+    1280,
+    720
+  ],
+  "production_size_verified": false,
+  "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+  "byte_size": 3332195
+}

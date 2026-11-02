@@ -213,6 +213,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_trial_steve", "progression"],
   ["_ch3_tokyo_call_night", "progression"],
   ["_ch4", "progression"],
+  ["_ch4_camel", "progression"], // ドバイのラクダレース（段階・自己ベスト）。周回では持ち越さない
   ["_ch4_cleared", "progression"],
   ["_ch4_evening", "progression"],
   ["_ch4_prep", "progression"],
@@ -357,6 +358,8 @@ export const FLAG_EXACT_RULES = [
   ["_met_rei", "person"],
   ["_met_rin", "person"],
   ["_met_samechan", "person"],
+  ["_met_rashid", "person"],
+  ["_met_saif", "person"],
   ["_met_sheikh", "person"],
   ["_met_steve", "person"],
   ["_met_tsumugi", "person"],

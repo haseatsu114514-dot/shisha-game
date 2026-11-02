@@ -398,6 +398,8 @@
         "node remake/test/ch3_map.mjs",
         "node --experimental-vm-modules remake/test/ch4_progress.mjs",
         "node --experimental-vm-modules remake/test/ch4_rewards.mjs",
+        "node remake/test/camel_race_model.mjs",
+        "node remake/test/ch4_camel_race.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
@@ -427,6 +429,12 @@
       "title": "Lover LIME and lover_events milestones after chapter 3 (#2024)",
       "kind": "quick",
       "run": ["node --experimental-vm-modules remake/test/ch3_lover_entry.mjs"]
+    },
+    {
+      "id": "ch2-story-visits",
+      "title": "Chapter 2 story visits: Adam at EDEN and Minto's night at PEPPERMINT read on the map, rescued on the deadline night (VOL13)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ch2_story_visits.mjs"]
     },
     {
       "id": "affinity-stages",
@@ -1103,6 +1111,26 @@
       "sparse": [
         "/asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json"
       ]
+    },
+    {
+      "id": "ch4-camel-race",
+      "title": "Chapter 4 camel race in the real UI: meet, invite, watch, race, record, save/load, replay",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 8,
+      "paths": [
+        "remake/js/minigames/camel-race.js",
+        "remake/js/minigames/camel-race-model.js",
+        "remake/js/chapters/ch4-camel-race.js",
+        "remake/js/chapters/ch4-camel-progress.js",
+        "remake/js/chapters/ch4-map-model.js",
+        "remake/css/camel-race.css",
+        "remake/camel-race.html",
+        "remake/js/camel-race-page.js",
+        "data/dialogue/ch4_camel_race.json",
+        "remake/test/browser/ch4_camel_race.mjs"
+      ],
+      "run": ["node remake/test/browser/ch4_camel_race.mjs"]
     },
     {
       "id": "ch4-tournament",
@@ -3176,6 +3204,24 @@
       ],
       "sparse": [
         "/asset_sources/backgrounds/osu-sakae-map-remaster-v1/"
+      ]
+    },
+    {
+      "id": "intro-transition",
+      "title": "Intro cut-in transformation transition (morph / card / slash)",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 5,
+      "paths": [
+        "remake/test/intro_transition.mjs",
+        "remake/js/vn/intro-transition.js",
+        "remake/js/vn/intro.js",
+        "remake/js/vn/intro-art.js",
+        "remake/css/intro.css",
+        "remake/intro-transition-preview.html"
+      ],
+      "run": [
+        "node remake/test/intro_transition.mjs"
       ]
     },
     {
