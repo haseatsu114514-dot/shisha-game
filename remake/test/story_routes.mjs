@@ -438,4 +438,23 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.equal(ch4.selectChapterFourEvening(routes, value, 'ageha').kind, 'rest');
 }
 
-console.log('OK: seven routes, 0–7 lovers, Tokyo near-conflict, post-ending conflict, location, old saves, chapter 3 optional/eve wiring, chapter 4 eve wiring');
+// #2089: 第1章の鉢合わせは保留（deferred）。大会後、その場にいた恋人だけが「朝の話」を一言返す。
+{
+  const ch1 = routes.ch1_near_conflict;
+  assert.equal(ch1.chapter, 1); assert.equal(ch1.deferred, true);
+  for (const id of ch1.scenes) assert(scenes.has(id), `ch1 near-conflict scene ${id}`);
+  for (const [who, sceneId] of Object.entries(ch1.recall)) {
+    const scene = sceneData.get(sceneId);
+    assert(scene, `ch1 recall scene ${sceneId}`);
+    const gates = [...scene.lines, ...Object.values(scene.branches || {}).flat()]
+      .filter(row => row.type === 'condition' && row.flag === ch1.flag);
+    const reached = gates.map(row => scene.branches?.[row.next_true]).filter(Boolean);
+    assert(reached.length, `${sceneId} reads ${ch1.flag}`);
+    if (who === 'defeat') continue;
+    // 恋人の分岐は、その人が鉢合わせに居合わせた（=恋人）ときだけ開く。
+    const lover = reached.flat().find(row => row.condition_type === 'lover' && row.char_id === who);
+    assert(lover && scene.branches[lover.next_true]?.some(row => row.speaker === who), `${who} answers in ${sceneId}`);
+  }
+}
+
+console.log('OK: seven routes, 0–7 lovers, Tokyo near-conflict, post-ending conflict, location, old saves, chapter 3 optional/eve wiring, chapter 4 eve wiring, chapter 1 shuraba recall');

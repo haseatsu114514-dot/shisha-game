@@ -893,6 +893,12 @@
           "text": "はは……それは間違いなく"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_shuraba_ch1",
+          "next_true": "ta_shuraba_minto"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "アダムは何も言わずにすれ違い、一度だけ振り返って、親指を立てて見せた。"
@@ -1199,6 +1205,12 @@
           "text": "え？"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_shuraba_ch1",
+          "next_true": "ta_shuraba_tsumugi"
+        },
+        {
           "speaker": "tsumugi",
           "face": "normal",
           "text": "……ううん。なんでもないです。おやすみなさい"
@@ -1496,7 +1508,52 @@
             "text": "それだけ言って、はじめはまた画面に目を落とした。約束は、口の端に残ったままだった。"
           }
         ],
-        "ta_tsumugi_no_draft": []
+        "ta_tsumugi_no_draft": [],
+        "ta_shuraba_minto": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "minto",
+            "next_true": "ta_shuraba_minto_lover"
+          }
+        ],
+        "ta_shuraba_minto_lover": [
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "……それとね。朝のお話、ちゃんと覚えてるからね♡"
+          },
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "今日は、おめでとうの日。だから、また今度。ゆっくりね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "（……忘れてなかった。そりゃそうだ）"
+          }
+        ],
+        "ta_shuraba_tsumugi": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "tsumugi",
+            "next_true": "ta_shuraba_tsumugi_lover"
+          }
+        ],
+        "ta_shuraba_tsumugi_lover": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……朝の、会場でのお話も。……まだ、終わってません、よね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "（……そうだった。あとで、のままだ）"
+          }
+        ]
       }
     },
     {
