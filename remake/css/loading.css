@@ -1,20 +1,28 @@
-/* A printed comic intermission laid out after the owner's mockup (style-ref-03, 1170x658):
-   top logo slightly overlapping an enlarged comic sheet, a short glowing gauge, and an upright
-   smoke-marked LOADING line, over a dim lounge backdrop.
-   All placeholder art (logo / bar colours / backdrop) is swappable through the CSS variables
-   declared on .loading-gate below, so the owner's final art drops in without touching the layout.
-   Sizes are in --loading-unit (1px on the 1280x720 stage, scaled to the gate otherwise), so the
-   whole stack fits any landscape host; see DESIGN.md for the height budget. */
+/* Loading screen: a printed two-panel comic intermission over a dim neon lounge (owner mockup
+   style-ref-03, 1170x658 → asset_sources/issue-loading-mockup/). Stack, top to bottom:
+   pearl logo (same art as the title screen, soft mist behind) → paper sheet (title + 2 panels +
+   optional one-line note) → short neon gauge with diamond end marks → small shisha mark (coal glow
+   breathing over the HMD) + upright LOADING… → "tap to continue" pill. Smoke is ambient haze only,
+   never drawn coming out of hardware (docs/shisha_reference.md §4.1).
+   Visual language follows the game's 紙×ラベンダー＋琥珀 UI (ui-paper.css): paper, lavender ink,
+   amber only as a small accent. Placeholder art (logo / bar colours / backdrop) is swappable
+   through the CSS variables declared on .loading-gate below.
+   Sizes use --loading-unit (1px on the 1280x720 stage, scaled to the gate), so the whole stack
+   fits any landscape host; the card width is also capped by height (see .loading-card). */
 .loading-gate {
   /* --- Swappable placeholders: replace these in one place when the final art arrives. --- */
-  --loading-logo: url("../img/ui/ui_title_logo.webp");         /* 上中央のロゴ（仮: 既存タイトルロゴ） */
+  --loading-logo: url("../img/ui/ui_title_logo_rich.webp");    /* 上中央のロゴ（タイトル画面と同じ光沢ロゴ。起動時に読込済み） */
   --loading-bar-gradient: linear-gradient(90deg, #ff5fa8 0%, #b45cf0 50%, #3fd0e8 100%); /* 進捗バーの色 */
   --loading-backdrop: #100b18;                                  /* 背景の下地色 */
   --loading-backdrop-art: url("../img/ui/loading/loading_bg.webp"); /* 背景イラスト（正式アート: 案B「霞と奥行き」、原画は asset_sources/ui/loading/） */
   --loading-backdrop-art-pos: center;                           /* イラストの寄せ位置 */
   --loading-backdrop-fx: 0;                                     /* CSS の窓・煙装飾の強さ（イラスト差し込み時は 0） */
-  /* --- Comic panel authoring size: 1 panel = 860x573 at a 1920x1080 master (3:2). --- */
+  /* --- Paper / ink palette shared with the comic spec (tools/loading_comic_cut.py PAPER / INK). --- */
+  --loading-paper: #eee3cf; --loading-paper-hi: #f6eedc; --loading-paper-lo: #e4d7bf;
+  --loading-ink: #2c1f2a; --loading-ink-soft: #4a2c44; --loading-lavender: #69497e; --loading-amber: #d8963f;
+  /* --- Comic panel frame: 1 panel = 3:2 (authoring 720x480 on the 1536x1024 template; delivery 1440x960). --- */
   --loading-panel-ratio: 3 / 2;
+  --loading-gutter: calc(22 * var(--loading-unit));
   /* Layout unit: 1280x720 reference scaled to the gate. Resolved on children (the gate is their size container). */
   --loading-unit: min(calc(100cqw / 1280), calc(100cqh / 720));
   position: absolute; inset: 0; z-index: 110; isolation: isolate; overflow: hidden;
@@ -22,9 +30,10 @@
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 0; padding: 0;
   /* Top layer darkens the card area (kept over the final illustration); the art layer, when set,
-     covers the CSS lounge approximation below it. */
+     covers the CSS lounge approximation below it. A faint vignette keeps the eye on the sheet. */
   background:
     radial-gradient(ellipse 52% 48% at 50% 52%, #0b0713d9 0%, #0b0713a6 58%, transparent 100%),
+    radial-gradient(ellipse 120% 90% at 50% 50%, transparent 55%, #05030a99 100%),
     var(--loading-backdrop-art) var(--loading-backdrop-art-pos) / cover no-repeat,
     linear-gradient(0deg, #05030ad9 0%, #05030a73 9%, transparent 21%),
     radial-gradient(ellipse 16% 44% at 1% 80%, #05030ae6 0%, transparent 72%),
@@ -34,10 +43,16 @@
   color: #ede2ce; pointer-events: auto;
   animation: loading-appear 160ms ease-out both;
 }
-/* Drifting smoke around the logo band. */
-.loading-gate::before { content: ""; position: absolute; inset: -8% -12% 38% -12%; z-index: -1; background: url("../img/ui/vn-lounge/smoke-purple.svg") 50% 35% / 115% auto no-repeat; opacity: calc(.22 * var(--loading-backdrop-fx, 1)); transform: rotate(-8deg); mix-blend-mode: screen; pointer-events: none; }
-/* Right-hand lounge window: night sky to a magenta horizon, a cyan tower glow, and dark mullions,
-   faded towards the centre so it never competes with the card. */
+/* Exhaled-smoke haze drifting slowly along the bottom, behind the gauge and LOADING (not attached to any
+   hardware). Soft blurred gradients only, transform/opacity animation; still under reduced motion. */
+.loading-gate::before { content: ""; position: absolute; left: -12%; right: -12%; bottom: -8%; height: 38%; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(ellipse 22% 38% at 24% 62%, #d9c6f02e 0%, transparent 70%),
+    radial-gradient(ellipse 26% 34% at 52% 70%, #c8d5eb24 0%, transparent 72%),
+    radial-gradient(ellipse 20% 40% at 78% 58%, #f0c6e026 0%, transparent 70%),
+    radial-gradient(ellipse 60% 30% at 50% 88%, #b45cf01f 0%, transparent 75%);
+  filter: blur(18px); animation: loading-haze 26s ease-in-out infinite alternate; }
+/* Right-hand lounge window (CSS approximation, used only when no backdrop art is set). */
 .loading-gate::after {
   content: ""; position: absolute; top: 4%; bottom: 20%; right: -1%; width: 31%; z-index: -1; pointer-events: none;
   background:
@@ -51,75 +66,108 @@
   opacity: calc(.5 * var(--loading-backdrop-fx, 1));
 }
 
-/* Logo: a box tall enough for title + smoke art; its foot overlaps the card top as in the mockup.
-   Purely decorative (title text lives in the art); contain keeps any logo art undistorted. */
-.loading-logo { position: relative; z-index: 1; flex: none; width: calc(430 * var(--loading-unit)); height: calc(112 * var(--loading-unit)); margin: calc(14 * var(--loading-unit)) 0 calc(-14 * var(--loading-unit)); background: var(--loading-logo) center / contain no-repeat; filter: drop-shadow(0 calc(4 * var(--loading-unit)) calc(12 * var(--loading-unit)) #000a) drop-shadow(0 0 calc(18 * var(--loading-unit)) #b45cf04d); }
+/* Logo: the same pearl logo as the title screen. The image lives on ::after so a soft mist (::before) can
+   sit behind it; a small gap keeps the EN:CODE line clear of the card top (budget: 102 + 8 + 6 = 116u). Purely decorative (title text lives in the art); contain keeps it undistorted. */
+.loading-logo { position: relative; z-index: 1; flex: none; width: calc(360 * var(--loading-unit)); height: calc(102 * var(--loading-unit)); margin: calc(8 * var(--loading-unit)) 0 calc(6 * var(--loading-unit)); }
+.loading-logo::after { content: ""; position: absolute; inset: 0; background: var(--loading-logo) center / contain no-repeat; filter: drop-shadow(0 calc(4 * var(--loading-unit)) calc(10 * var(--loading-unit)) #000000d9) drop-shadow(0 0 calc(20 * var(--loading-unit)) #b45cf059); animation: loading-logo-in 420ms ease-out both; }
+.loading-logo::before { content: ""; position: absolute; inset: -34% -14% -6%; pointer-events: none;
+  background:
+    radial-gradient(ellipse 26% 40% at 34% 56%, #e7e0ef40 0%, transparent 70%),
+    radial-gradient(ellipse 28% 38% at 64% 46%, #c8d5eb33 0%, transparent 70%),
+    radial-gradient(ellipse 46% 34% at 50% 74%, #b45cf02e 0%, transparent 74%);
+  filter: blur(calc(16 * var(--loading-unit))); animation: loading-logo-mist 14s ease-in-out infinite alternate; }
 .loading-gate:not(.has-logo) .loading-logo { display: none; }
 
-/* Card: 88.6% of the reference width, capped by the gate height so the full stack always fits
-   (2R * (H - fixed 338u) + 44u; see DESIGN.md). Thin symmetric padding lets the panels own the sheet. */
+/* Card: 88.6% of the reference width, capped by the gate height so the full stack always fits:
+   fixed parts (logo 116 + card chrome 114 + gauge 30 + status 40 + proceed 42 = 342u) leave
+   (100cqh - 342u) for the panel height; panel width = ratio × that; two panels + side padding 36u
+   + gutter 22u + border 2px. Paper with a printed grain, a hairline inner frame and a deep shadow. */
 .loading-card {
-  box-sizing: border-box; flex: none;
-  width: min(calc(1134 * var(--loading-unit)), calc(2 * (var(--loading-panel-ratio)) * (100cqh - 338 * var(--loading-unit)) + 44 * var(--loading-unit)));
-  padding: calc(14 * var(--loading-unit)); background: #eee3cf; border: 1px solid #fff6e299;
-  box-shadow: 0 0 0 1px #00000040, 0 calc(22 * var(--loading-unit)) calc(50 * var(--loading-unit)) #000000b3;
+  position: relative; isolation: isolate; box-sizing: border-box; flex: none;
+  width: min(calc(1134 * var(--loading-unit)), calc(2 * (var(--loading-panel-ratio)) * (100cqh - 342 * var(--loading-unit)) + 60 * var(--loading-unit)));
+  padding: calc(16 * var(--loading-unit)) calc(18 * var(--loading-unit)) calc(14 * var(--loading-unit));
+  border-radius: calc(3 * var(--loading-unit));
+  background: linear-gradient(170deg, var(--loading-paper-hi) 0%, var(--loading-paper) 45%, var(--loading-paper-lo) 100%);
+  border: 1px solid #fff8ea99;
+  box-shadow: 0 0 0 1px #00000066, inset 0 0 calc(42 * var(--loading-unit)) #6b4a3a1a,
+    0 calc(24 * var(--loading-unit)) calc(56 * var(--loading-unit)) #000000c4, 0 0 calc(48 * var(--loading-unit)) #b45cf024;
   animation: loading-sheet 260ms cubic-bezier(.2,.65,.3,1) both;
 }
+/* Printed-paper grain (tileable fractal noise, multiplied over the sheet). */
+.loading-card::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; opacity: .55; mix-blend-mode: multiply; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .26 0 0 0 0 .2 .28 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"); }
+/* Hairline inner frame, like a printed margin rule. */
+.loading-card::after { content: ""; position: absolute; inset: calc(7 * var(--loading-unit)); z-index: -1; border: 1px solid #3b1f3f2b; border-radius: calc(1.5 * var(--loading-unit)); pointer-events: none; }
 /* With no decoded comic, the intermission remains just the ink and its mark. */
 .loading-card:has(.loading-comic:empty) { visibility: hidden; }
-/* Title and caption are one line in landscape: the height budget counts them as one line each. */
-.loading-comic-title { margin: 0 0 calc(10 * var(--loading-unit)); padding: 0 calc(2 * var(--loading-unit)) calc(6 * var(--loading-unit)); border-bottom: 1px solid #4a2c4466; color: #3b1f3f; font-size: calc(30 * var(--loading-unit)); font-weight: 900; line-height: 1.2; letter-spacing: .06em; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.loading-panels { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: calc(14 * var(--loading-unit)); }
-.loading-panels figure { margin: 0; min-width: 0; }
-/* Fixed display frame = 3:2 for every panel, so each comic is drawn and shown to the same box.
-   The frame background matches the sheet, so a letterboxed region reads as sheet margin,
-   not as a differently coloured pillar inside the card. */
-.loading-panel-art { position: relative; overflow: hidden; width: 100%; aspect-ratio: var(--loading-panel-ratio); background: #eee3cf; container-type: size; }
+/* Title row: a lavender ink tab, the episode title, and a double rule (ink + faint echo). One line in landscape. */
+.loading-comic-title { display: flex; align-items: center; gap: calc(10 * var(--loading-unit)); margin: 0 0 calc(12 * var(--loading-unit)); padding: 0 calc(2 * var(--loading-unit)) calc(7 * var(--loading-unit)); color: #2e1a33; font-size: calc(28 * var(--loading-unit)); font-weight: 900; line-height: 1.2; letter-spacing: .06em; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  background: linear-gradient(var(--loading-ink-soft), var(--loading-ink-soft)) left bottom / 100% 2px no-repeat, linear-gradient(#4a2c4455, #4a2c4455) left calc(100% - 4px) / 100% 1px no-repeat; }
+.loading-comic-title::before { content: ""; flex: none; width: calc(9 * var(--loading-unit)); height: .95em; border-radius: calc(1.5 * var(--loading-unit)); background: linear-gradient(180deg, #8a63a8, var(--loading-lavender)); box-shadow: inset 0 0 0 1px #ffffff40; }
+/* Two panels, left → right, with a small ink arrow in the gutter as the reading-order cue. */
+.loading-panels { position: relative; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: var(--loading-gutter); }
+.loading-panels::after { content: ""; position: absolute; left: 50%; top: 50%; width: calc(14 * var(--loading-unit)); height: calc(14 * var(--loading-unit)); transform: translate(-50%, -50%); opacity: .5; pointer-events: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M4 1.5 9.5 7 4 12.5' fill='none' stroke='%232c1f2a' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; }
+.loading-panels figure { margin: 0; min-width: 0; animation: loading-panel-in 320ms ease-out both; }
+.loading-panels figure:nth-child(2) { animation-delay: 150ms; }
+/* Fixed display frame = 3:2 for every panel, drawn as an ink frame (box-shadow keeps the box 3:2),
+   so both panels always read as the same size. A panel authored at 3:2 fills the frame edge to edge;
+   a legacy region with another ratio sits centred on plain sheet inside the same frame (no distortion). */
+.loading-panel-art { position: relative; overflow: hidden; width: 100%; aspect-ratio: var(--loading-panel-ratio); background: var(--loading-paper); container-type: size; box-shadow: 0 0 0 calc(2 * var(--loading-unit)) var(--loading-ink), 0 calc(6 * var(--loading-unit)) calc(16 * var(--loading-unit)) calc(-4 * var(--loading-unit)) #2c1f2a73; }
 /* The cropped region keeps its own proportions and is letterboxed inside the 3:2 frame (no distortion).
    width = min(full width, ratio * full height) contains any ratio without stretching.
-   The dark ink frame hugs the art itself (inset outline), so letterbox bands stay plain sheet. */
-.loading-panel-crop { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); overflow: hidden; background: #eee3cf; outline: 1px solid #2c1f2a; outline-offset: -1px; }
+   A soft hairline hugs the art itself so a letterboxed picture still has an edge against the sheet. */
+.loading-panel-crop { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); overflow: hidden; background: var(--loading-paper); outline: 1px solid #2c1f2a80; outline-offset: -1px; }
 .loading-panel-crop img { display: block; width: 100%; height: 100%; object-fit: contain; }
 /* Optional text bubbles: bubble shape is in the art, the words are live DOM text (typo-fixable). */
 .loading-bubble { position: absolute; margin: 0; color: #20161f; font-weight: 800; line-height: 1.25; text-align: center; white-space: pre-line; transform: translate(-50%, -50%); pointer-events: none; }
-/* Beginner-friendly one-line note under the panels (per-comic data). */
-.loading-comic-caption { margin: calc(8 * var(--loading-unit)) calc(2 * var(--loading-unit)) 0; color: #4b3640; font-size: calc(15 * var(--loading-unit)); font-weight: 700; line-height: 1.4; letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Beginner-friendly one-line note under the panels (per-comic data), led by a small amber mark. */
+.loading-comic-caption { display: flex; align-items: center; gap: calc(8 * var(--loading-unit)); margin: calc(10 * var(--loading-unit)) calc(2 * var(--loading-unit)) 0; color: #4b3640; font-size: calc(15 * var(--loading-unit)); font-weight: 700; line-height: 1.4; letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.loading-comic-caption::before { content: ""; flex: none; width: calc(7 * var(--loading-unit)); height: calc(7 * var(--loading-unit)); transform: rotate(45deg); background: var(--loading-amber); box-shadow: 0 0 0 1px #ffffff66 inset; }
 
-/* Progress bar (placeholder colours). Until the first real report(done, total) arrives, the fill is
-   an indeterminate sliding segment: the bar never shows an invented percentage (a caller that never
-   reports, like the bench entry, stays indeterminate). The first report adds .is-determinate and the
-   width then follows the real counts; a shine sweep runs while work continues. At the reading hold
-   (.is-ready) the bar rests at 100% and the sweep stops. */
-/* Short neon gauge per the mockup: 55% of the reference width, with an outer glow in the bar's own hues. */
+/* Gauge: a short neon bar with smoke flourishes at both ends, as in the mockup. Until the first real
+   report(done, total) arrives, the fill is an indeterminate sliding segment: the bar never shows an
+   invented percentage. The first report adds .is-determinate and the width follows the real counts;
+   a shine sweep runs while work continues. At the reading hold (.is-ready) the bar rests at 100%. */
+.loading-gauge { position: relative; flex: none; display: flex; justify-content: center; margin-top: calc(16 * var(--loading-unit)); }
+/* End ornaments: a hairline fading outward with a small amber diamond beside the bar (same amber mark as the caption). */
+.loading-gauge::before, .loading-gauge::after { content: ""; position: absolute; top: 50%; width: calc(64 * var(--loading-unit)); height: calc(10 * var(--loading-unit)); pointer-events: none; opacity: .85;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 10'%3E%3Cdefs%3E%3ClinearGradient id='f'%3E%3Cstop offset='0' stop-color='%23d9c6f0' stop-opacity='0'/%3E%3Cstop offset='1' stop-color='%23d9c6f0' stop-opacity='.75'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect y='4.5' width='53' height='1' fill='url(%23f)'/%3E%3Cpath d='M59 1.6 62.4 5 59 8.4 55.6 5z' fill='%23e8c27a'/%3E%3C/svg%3E") center / 100% 100% no-repeat; }
+.loading-gauge::before { right: 100%; margin-right: calc(6 * var(--loading-unit)); transform: translateY(-50%); }
+.loading-gauge::after { left: 100%; margin-left: calc(6 * var(--loading-unit)); transform: translateY(-50%) scaleX(-1); }
 .loading-bar {
-  position: relative; flex: none; width: calc(704 * var(--loading-unit)); height: calc(20 * var(--loading-unit));
-  margin-top: calc(16 * var(--loading-unit)); border-radius: 999px; background: #1b1028; overflow: hidden;
-  box-shadow: inset 0 0 0 1px #ffffff1f, 0 0 calc(6 * var(--loading-unit)) #ff5fa899, 0 0 calc(18 * var(--loading-unit)) #b45cf066, 0 0 calc(34 * var(--loading-unit)) #3fd0e833;
+  position: relative; flex: none; width: calc(704 * var(--loading-unit)); height: calc(14 * var(--loading-unit));
+  border-radius: 999px; background: #1b1028; overflow: hidden;
+  box-shadow: inset 0 0 0 1px #ffffff24, inset 0 calc(2 * var(--loading-unit)) calc(4 * var(--loading-unit)) #00000080, 0 0 calc(6 * var(--loading-unit)) #ff5fa899, 0 0 calc(18 * var(--loading-unit)) #b45cf066, 0 0 calc(34 * var(--loading-unit)) #3fd0e833;
   transition: box-shadow .3s ease;
 }
-.loading-bar-fill { height: 100%; width: 36%; border-radius: inherit; background: linear-gradient(180deg, #ffffff47 0%, transparent 55%), var(--loading-bar-gradient); animation: loading-bar-indeterminate 1.3s ease-in-out infinite alternate; }
+.loading-bar-fill { position: relative; height: 100%; width: 36%; border-radius: inherit; background: linear-gradient(180deg, #ffffff52 0%, transparent 55%), var(--loading-bar-gradient); animation: loading-bar-indeterminate 1.3s ease-in-out infinite alternate; }
+/* A small spark at the head of the fill. */
+.loading-bar-fill::after { content: ""; position: absolute; right: calc(-3 * var(--loading-unit)); top: 50%; width: calc(16 * var(--loading-unit)); height: calc(16 * var(--loading-unit)); transform: translateY(-50%); border-radius: 50%; background: radial-gradient(circle, #ffffffee 0%, #ffffff66 35%, transparent 70%); }
 .loading-bar.is-determinate .loading-bar-fill { width: calc(var(--loading-progress, 0) * 100%); animation: none; transform: none; transition: width .3s ease; }
 .loading-gate.is-ready .loading-bar-fill { width: 100%; animation: none; transform: none; }
-.loading-gate.is-ready .loading-bar { box-shadow: inset 0 0 0 1px #ffffff26, 0 0 calc(8 * var(--loading-unit)) #ff5fa8b3, 0 0 calc(22 * var(--loading-unit)) #b45cf080, 0 0 calc(40 * var(--loading-unit)) #3fd0e84d; }
+.loading-gate.is-ready .loading-bar { box-shadow: inset 0 0 0 1px #ffffff30, 0 0 calc(8 * var(--loading-unit)) #ff5fa8b3, 0 0 calc(22 * var(--loading-unit)) #b45cf080, 0 0 calc(40 * var(--loading-unit)) #3fd0e84d; }
 .loading-bar::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, transparent, #ffffff55, transparent); transform: translateX(-100%); animation: loading-bar-sweep 1.6s ease-in-out infinite; }
 .loading-gate.is-ready .loading-bar::after { animation: none; opacity: 0; }
 
-/* Upright, wide-tracked LOADING between the smoke emblem (left) and a small smoke flourish (right). */
-.loading-status { position: static; flex: none; display: flex; align-items: center; gap: .55em; margin: calc(12 * var(--loading-unit)) 0 0; color: #efe3cc; font-size: calc(21 * var(--loading-unit)); font-weight: 800; font-style: normal; line-height: 1.2; letter-spacing: .22em; text-shadow: 0 0 .4em #ff5fa859; }
-.loading-status::after { content: ""; flex: none; width: 2.4em; height: 1.2em; background: url("../img/ui/vn-lounge/smoke-purple.svg") left center / contain no-repeat; opacity: .6; -webkit-mask-image: linear-gradient(90deg, #000 40%, transparent); mask-image: linear-gradient(90deg, #000 40%, transparent); }
-.loading-emblem { width: 1.6em; height: 1.4em; overflow: visible; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
-.loading-emblem path { stroke-dasharray: 34 66; animation: loading-smoke 2.8s ease-in-out infinite; }
-.loading-emblem path:nth-child(2) { animation-delay: -.9s; }
-.loading-emblem path:nth-child(3) { animation-delay: -1.8s; }
-
-/* "Tap/click/key to continue" prompt, revealed only once preparation is done and a comic is shown.
+/* Upright, wide-tracked LOADING led by the small shisha mark. The coal heat over the HMD breathes as a warm
+   glow (the only motion: smoke is never drawn coming out of hardware, docs/shisha_reference.md §4.1). */
+.loading-status { position: static; flex: none; display: flex; align-items: center; gap: .6em; margin: calc(8 * var(--loading-unit)) 0 0; color: #f3e8d2; font-size: calc(20 * var(--loading-unit)); font-weight: 800; font-style: normal; line-height: 1.2; letter-spacing: .3em; text-indent: .3em; text-shadow: 0 0 .5em #ff5fa866, 0 1px 0 #00000080; }
+.loading-emblem { width: 1.32em; height: 1.9em; margin: -.15em 0; overflow: visible; flex: none; filter: drop-shadow(0 1px 0 #00000099); }
+.loading-emblem .emblem-body { fill: currentColor; opacity: .92; }
+.loading-emblem .emblem-hose { fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; opacity: .92; }
+.loading-emblem .emblem-glow { fill: #ffa060; transform-box: fill-box; transform-origin: 50% 55%; filter: blur(1.2px) drop-shadow(0 0 2.5px #ff7a3d); animation: loading-coal 2.6s ease-in-out infinite; }
+.loading-gate.is-ready .emblem-glow { animation-duration: 4.2s; }
+/* "Tap/click/key to continue" pill, revealed only once preparation is done and a comic is shown.
    Its line is always reserved (and budgeted) so the stack never shifts when it appears. */
-.loading-proceed { flex: none; margin: calc(4 * var(--loading-unit)) 0 calc(12 * var(--loading-unit)); min-height: calc(20 * var(--loading-unit)); color: #f3e7cc; font-size: calc(15 * var(--loading-unit)); font-weight: 700; line-height: 1.3; letter-spacing: .06em; opacity: 0; transition: opacity .2s ease; }
+.loading-proceed { box-sizing: border-box; flex: none; margin: calc(6 * var(--loading-unit)) 0 calc(12 * var(--loading-unit)); min-height: calc(24 * var(--loading-unit)); padding: calc(3 * var(--loading-unit)) calc(16 * var(--loading-unit)); border-radius: 999px; border: 1px solid #ffffff2e; background: #0b071380; color: #f3e7cc; font-size: calc(14 * var(--loading-unit)); font-weight: 700; line-height: 1.3; letter-spacing: .08em; opacity: 0; transition: opacity .2s ease; }
 .loading-gate.is-ready .loading-proceed { opacity: .92; animation: loading-proceed-pulse 1.6s ease-in-out infinite; }
 
 @keyframes loading-appear { from { opacity: 0; } to { opacity: 1; } }
 @keyframes loading-sheet { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-@keyframes loading-smoke { 0% { stroke-dashoffset: 30; opacity: .15; } 45% { opacity: .9; } 100% { stroke-dashoffset: -66; opacity: .15; } }
+@keyframes loading-panel-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes loading-coal { 0%, 100% { opacity: .3; transform: scale(.94, .9); } 45% { opacity: 1; transform: scale(1.08, 1.04); } }
+@keyframes loading-haze { from { transform: translateX(-3%) scaleY(.92); opacity: .75; } to { transform: translateX(3%) scaleY(1.06); opacity: 1; } }
+@keyframes loading-logo-mist { from { transform: translate(-3%, 3%) scale(.96); opacity: .7; } to { transform: translate(3%, -4%) scale(1.06); opacity: 1; } }
+@keyframes loading-logo-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @keyframes loading-bar-sweep { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(100%); } }
 @keyframes loading-bar-indeterminate { from { transform: translateX(-110%); } to { transform: translateX(300%); } }
 @keyframes loading-proceed-pulse { 0%, 100% { opacity: .75; } 50% { opacity: .95; } }
@@ -131,21 +179,24 @@
 
 /* Phone/tablet portrait: stack the two panels nearly full-width so each is large and the text reads.
    cq units here are the gate (= visible viewport). The card width is capped by height:
-   R/2 * (78.8cqh - 160px) + 4.4cqw + 2px keeps logo + two panels + gauge + status + proceed on screen. */
+   R/2 * (77.8cqh - 160px) + 4.4cqw + 2px keeps logo + two panels + gauge + status + proceed on screen. */
 @media (orientation: portrait) {
-  .loading-gate { --loading-unit: calc(100cqw / 720); --loading-backdrop-art-pos: 70% 50%; }
-  .loading-logo { width: min(260px, 52cqw); height: 7cqh; margin: 2cqh 0 -.6cqh; }
-  .loading-card { width: min(94cqw, calc((var(--loading-panel-ratio)) / 2 * (78.8cqh - 160px) + 4.4cqw + 2px)); padding: 1.2cqh 2.2cqw; }
+  .loading-gate { --loading-unit: calc(100cqw / 720); --loading-backdrop-art-pos: 70% 50%; --loading-gutter: 1.2cqh; }
+  .loading-logo { width: min(260px, 52cqw); height: 6.6cqh; margin: 2cqh 0 .8cqh; }
+  .loading-card { width: min(94cqw, calc((var(--loading-panel-ratio)) / 2 * (77.8cqh - 160px) + 4.4cqw + 2px)); padding: 1.2cqh 2.2cqw; }
   .loading-comic-title { font-size: clamp(18px, 5.2cqw, 30px); margin-bottom: 1cqh; padding-bottom: .8cqh; }
-  .loading-panels { grid-template-columns: 1fr; gap: 1.2cqh; }
+  .loading-panels { grid-template-columns: 1fr; }
+  .loading-panels::after { transform: translate(-50%, -50%) rotate(90deg); }
   .loading-comic-caption { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; white-space: normal; font-size: clamp(12px, 3.6cqw, 18px); margin-top: 1cqh; line-height: 1.35; }
-  .loading-bar { width: 62cqw; height: clamp(10px, 1.4cqh, 16px); margin-top: 1.6cqh; }
+  .loading-comic-caption::before { display: none; }
+  .loading-gauge { margin-top: 1.6cqh; }
+  .loading-bar { width: 62cqw; height: clamp(8px, 1.1cqh, 14px); }
   .loading-status { margin-top: 1.2cqh; font-size: clamp(15px, 4.2cqw, 22px); }
   .loading-proceed { margin: .6cqh 0 2cqh; min-height: 1.3em; font-size: clamp(14px, 3.6cqw, 16px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .loading-gate, .loading-card, .loading-emblem path, .loading-bar::after, .loading-bar-fill, .loading-proceed { animation: none; }
-  .loading-emblem path { stroke-dasharray: none; opacity: .8; }
+  .loading-gate, .loading-gate::before, .loading-logo::before, .loading-logo::after, .loading-card, .loading-panels figure, .loading-emblem path, .loading-bar::after, .loading-bar-fill, .loading-proceed { animation: none; }
+  .loading-emblem .emblem-glow, .loading-gate.is-ready .emblem-glow { animation: none; opacity: .7; }
   .loading-gate.is-ready .loading-proceed { opacity: .92; }
 }
