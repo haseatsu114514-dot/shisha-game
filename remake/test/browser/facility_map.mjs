@@ -193,6 +193,8 @@ try {
       const saved = await page.evaluate(async id => {
         if (window.mapFlow) { F.map.interruptMap(null); await window.mapFlow; }
         Object.assign(F.core.state, { chapter: id === 'trpg_bar' ? 2 : 1, day: 3, slot: id === 'axe_bar' ? 1 : 0 });
+        // 占い師は現れた時間帯だけ地図に出る（台帳 URA01）。時刻を動かしたので、この時間帯に出し直す
+        if (id === 'fortune') (await import('./js/daily/fortune-schedule.js')).placeFortuneNow(F.core.state);
         const before = JSON.stringify(F.core.state);
         window.mapFlow = F.map.chooseSpot({ eventPin: id });
         return before;
