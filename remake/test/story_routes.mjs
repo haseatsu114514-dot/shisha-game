@@ -114,6 +114,7 @@ const tokyo = () => {
   // 出発前の準備3日（VOL02）を過ごした出発の朝。東京DAY1は従来どおり通算29日。
   value.day += 3;
   assert(progress.departChapterThree(value));
+  value.flags._ch3_intro.routeVersion = 2; // 場面カードの東京（作業中の旧セーブの行程）を確かめる
   return value;
 };
 const readUntil = (value, sceneId) => {

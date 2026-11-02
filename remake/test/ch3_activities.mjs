@@ -32,6 +32,7 @@ function departure({ member = true, legacy = false } = {}) {
   assert(advanceToChapterThree(value));
   value.day += 3; // 出発前の準備3日（VOL02）を過ごした出発の朝
   assert(departChapterThree(value));
+  value.flags._ch3_intro.routeVersion = 2; // 場面カードの東京（作業中の旧セーブの行程）を確かめる
   if (legacy) delete value.flags._ch3_intro.routeVersion;
   return value;
 }

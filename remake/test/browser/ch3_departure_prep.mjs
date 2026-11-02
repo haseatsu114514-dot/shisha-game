@@ -52,6 +52,8 @@ async function seed(page) {
     // 章頭の回想・調べもの・章題は ch2_tournament が見る。ここは準備1日目の朝のtonariから。
     value.flags._ch3_prep.step = 3;
     value.flags._ch3_intro.titleSeen = true;
+    // 出発の朝までを確かめる。東京の日常ループ（版3）の始まりは ch3_tokyo_daily が見るので、ここは東京DAY1の場面カードで止める。
+    value.flags._ch3_intro.routeVersion = 2;
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
     core.saveConfig();
     Object.assign(core.state, value);
