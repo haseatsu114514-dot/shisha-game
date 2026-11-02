@@ -1,5 +1,6 @@
 // 実画面で、連続回復/消耗/容量変更/ロード、通知経由LIME、実バイトのSKIP、登場時BGMと腹話術を確認。
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import { createRequire } from "node:module";
 const { chromium } = createRequire(import.meta.url)("playwright");
 const browser = await chromium.launch({ headless: true, args: ["--autoplay-policy=no-user-gesture-required"],
@@ -72,6 +73,79 @@ try {
   await page.evaluate(() => T.lime);
   assert.equal(await page.locator(".lime-coach, .lime-tip").count(), 0);
   console.log("[playtest UI] PASS: top notification opens LIME and removes the guide before and after closing");
+
+  // #2447: production reward cards and the first-LIME coach at desktop / touch widths.
+  for (const touch of [false, true]) {
+    const context = await browser.newContext({ viewport: touch ? { width: 844, height: 390 } : { width: 1280, height: 720 },
+      hasTouch: touch, isMobile: touch });
+    const probe = await context.newPage();
+    try {
+      await probe.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
+      await probe.locator('[data-test="title-new"]').waitFor();
+      await probe.locator("#boot").waitFor({ state: "detached" });
+      await probe.evaluate(async () => {
+        const core = await import("./js/core/state.js"), ui = await import("./js/core/ui.js"), phone = await import("./js/daily/phone.js");
+        const hud = await import("./js/daily/hud.js");
+        (await import("./js/core/ui-theme.js")).applyUiTheme("paper");
+        core.newGame(); Object.assign(core.state, { phase: "daily", day: 5, slot: 0 });
+        core.state.met.tsumugi = true; core.state.contacts = ["tsumugi"];
+        core.state.inbox = [{ id: "ui2447", day: 5, read: false, done: false, log: [],
+          msg: { id: "ui2447", sender: "tsumugi", type: "chat", messages: ["おはよう"] } }];
+        ui.showScreen("map", document.createElement("div"));
+        hud.initHud({}); hud.showHud();
+        window.P = { core, ui, phone, opens: 0, resources: JSON.stringify([core.state.day, core.state.slot, core.state.money, core.state.stamina]) };
+        phone.limeCoach(() => { P.opens++; P.closed = phone.openLime(); });
+        for (const bond of [false, true]) ui.gainCard({ kind: "affinity", bond, badge: "つ", top: bond ? "BOND" : "AFFINITY",
+          main: "つむぎ", sub: "心の距離が少し近づいた" });
+      });
+      await probe.locator(".gain-card.affinity").first().waitFor();
+      await probe.waitForTimeout(500); // production entrance animation
+      const cards = await probe.locator(".gain-card.affinity").evaluateAll(nodes => {
+        const luminance = css => {
+          const rgb = css.match(/[\d.]+/g).slice(0, 3).map(Number).map(n => { const s = n / 255; return s <= .04045 ? s / 12.92 : ((s + .055) / 1.055) ** 2.4; });
+          return rgb[0] * .2126 + rgb[1] * .7152 + rgb[2] * .0722;
+        };
+        return nodes.map(node => {
+          const bg = luminance(getComputedStyle(node).backgroundColor);
+          return [...node.querySelectorAll(".gc-main, .gc-top, .gc-sub")].map(text => {
+            const fg = luminance(getComputedStyle(text).color);
+            return { text: text.textContent, contrast: (Math.max(fg, bg) + .05) / (Math.min(fg, bg) + .05) };
+          });
+        });
+      });
+      assert.equal(cards.length, 2);
+      for (const row of cards.flat()) assert(row.contrast >= 4.5, `paper affinity contrast: ${JSON.stringify(row)}`);
+      const shots = process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser";
+      fs.mkdirSync(shots, { recursive: true });
+      await probe.screenshot({ path: `${shots}/2447-affinity-${touch ? "touch" : "desktop"}.png` });
+      await probe.evaluate(() => P.ui.bannersIdle());
+      await probe.screenshot({ path: `${shots}/2447-lime-coach-${touch ? "touch" : "desktop"}.png` });
+      const geometry = await probe.evaluate(() => {
+        const bubble = document.querySelector(".lc-bubble").getBoundingClientRect(), icon = document.querySelector(".hud-lime").getBoundingClientRect();
+        return { clear: bubble.top >= icon.bottom + 1, fits: bubble.left >= 0 && bubble.right <= innerWidth && bubble.bottom <= innerHeight };
+      });
+      assert(geometry.clear && geometry.fits, `coach covers icon or viewport: ${JSON.stringify(geometry)}`);
+      const bubble = probe.getByRole("button", { name: "案内からLIMEを開く" });
+      if (touch) await bubble.tap(); else { await bubble.focus(); await probe.keyboard.press("Enter"); }
+      await probe.locator('[data-test="phone-close"]').waitFor();
+      assert.equal(await probe.locator(".lime-coach").count(), 0);
+      await probe.locator('[data-test="phone-close"]').click();
+      await probe.evaluate(() => P.closed);
+      assert.equal(await probe.evaluate(() => P.opens), 1);
+      assert.equal(await probe.evaluate(() => JSON.stringify([P.core.state.day, P.core.state.slot, P.core.state.money, P.core.state.stamina]) === P.resources), true);
+      // Existing highlighted-icon route still opens; a retained old-owner handler cannot open another save.
+      await probe.evaluate(() => { delete P.core.state.flags._lime_tut; P.phone.limeCoach(() => P.opens++); });
+      await probe.getByRole("button", { name: "LIMEを開く", exact: true }).click();
+      assert.equal(await probe.evaluate(() => P.opens), 2);
+      assert.equal(await probe.locator(".lime-coach").count(), 0);
+      await probe.evaluate(() => {
+        delete P.core.state.flags._lime_tut; P.phone.limeCoach(() => P.opens++);
+        const old = document.querySelector(".lc-bubble"); P.core.newGame(); old.click(); old.click();
+      });
+      assert.equal(await probe.evaluate(() => P.opens), 2, "old owner's coach reopened LIME");
+      console.log(`[playtest UI] PASS: #2447 affinity contrast and coach keyboard/tap/close/reopen/owner (${touch ? "touch" : "desktop"})`);
+    } finally { await context.close(); }
+  }
 
   await page.evaluate(() => {
     T.core.newGame(); Object.assign(T.core.state, { phase: "daily", day: 4, stamina: 70 });

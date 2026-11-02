@@ -1200,7 +1200,7 @@ export async function openPhone(messages, { title = null, time = "朝" } = {}) {
 
 /**
  * はじめて LIME が届いたとき、マップの上でアイコンを照らして開かせる（オーナー指定）。
- * 照らした穴だけ押せる。押したら onOpen（＝ふつうに LIME を開く処理）へ
+ * 照らしたアイコンか案内を押すと onOpen（＝ふつうに LIME を開く処理）へ。
  */
 export function limeCoach(onOpen) {
   if (state.flags._lime_tut || !hasUnread()) return false;
@@ -1215,15 +1215,24 @@ export function limeCoach(onOpen) {
   const y = (ir.top - sr.top) / k;
   const w = ir.width / k;
   const h = ir.height / k;
+  const owner = state;
+  let opened = false;
+  const open = () => {
+    if (opened || state !== owner || !coach.isConnected) return;
+    opened = true;
+    SE.select(); coach.remove(); onOpen();
+  };
   const coach = el("div.lime-coach", [
     el("button.lc-hole", {
+      type: "button", "aria-label": "LIMEを開く",
       style: { left: `${x - 8}px`, top: `${y - 8}px`, width: `${w + 16}px`, height: `${h + 16}px` },
       dataset: { test: "coach-lime" },
-      onclick: () => { SE.select(); coach.remove(); onOpen(); },
+      onclick: open,
     }),
-    el("div.lc-bubble", { style: { right: `${stage.offsetWidth - x - w - 4}px`, top: `${y + h + 22}px` } }, [
+    el("button.lc-bubble", { type: "button", "aria-label": "案内からLIMEを開く", dataset: { test: "coach-lime-bubble" },
+      onclick: open, style: { right: `${Math.max(16, stage.offsetWidth - x - w - 4)}px`, top: `${y + h + 22}px` } }, [
       el("b", { text: "LIMEにメッセージが届いた！" }),
-      el("span", { text: "右上のLIMEをタップして開いてみよう。" }),
+      el("span", { text: "この案内か右上のLIMEをタップして開いてみよう。" }),
       el("span", { text: "まずは一度開いてみよう。次からは好きなときに読める。返事や誘いの受諾は、今決めなくて大丈夫。" }),
     ]),
   ]);

@@ -122,6 +122,14 @@ html:root[data-ui-theme="paper"] .mi-tags .tag.free { color: #2f6b45; border-col
 html:root[data-ui-theme="paper"] .mi-tags .tag.warn { color: #a83a3a; border-color: #e3a3a3; background: #fbe6e6; }
 html:root[data-ui-theme="paper"] .mi-tags .tag.new { color: #8a5413; border-color: #e4b57a; background: #fbe9cf; }
 html:root[data-ui-theme="paper"] .st-fx { color: color-mix(in srgb, var(--sc) 45%, var(--paper-ink)); }
+/* #2447: 好感度の紙札では名前・説明を墨色に。桃色／金色はハートと縁に残す。 */
+html:root[data-ui-theme="paper"] .gain-card.affinity {
+  --text: var(--paper-ink); --text-dim: var(--paper-muted);
+  color: var(--paper-ink); text-shadow: none;
+}
+html:root[data-ui-theme="paper"] .gain-card.affinity .gc-main { color: var(--paper-ink); text-shadow: none; }
+html:root[data-ui-theme="paper"] .gain-card.affinity .gc-top { color: var(--lavender); }
+html:root[data-ui-theme="paper"] .gain-card.affinity .gc-badge:not(.face) { color: var(--lavender); }
 html:root[data-ui-theme="paper"] .st-next { color: color-mix(in srgb, var(--sc) 55%, var(--paper-ink)); }
 html:root[data-ui-theme="paper"] .st-next-track { background: var(--paper-line); }
 html:root[data-ui-theme="paper"] :is(.radar-grid, .radar-axis) { stroke: #c9b8d2; }

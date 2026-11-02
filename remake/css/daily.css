@@ -910,16 +910,21 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
   flex-direction: column;
   gap: 4px;
   width: 330px;
+  max-width: calc(100% - 32px);
   padding: 14px 18px;
   font-size: 14px;
+  font-family: var(--font);
+  text-align: left;
   line-height: 1.6;
   color: #fff4d6;
   background: linear-gradient(160deg, rgba(40, 26, 8, 0.97), rgba(22, 14, 30, 0.97));
   border: 1px solid var(--gold);
   border-radius: 10px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
 }
+.lc-bubble:focus-visible, .lc-hole:focus-visible { outline: 3px solid #ffe9a8; outline-offset: 3px; }
 .lc-bubble::before { content: ""; position: absolute; right: 20px; top: -9px; border: 9px solid transparent; border-top: 0; border-bottom-color: var(--gold); }
 .lc-bubble b { font-size: 16px; color: #ffe9a8; }
 
