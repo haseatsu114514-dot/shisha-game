@@ -475,6 +475,7 @@
         "node remake/test/camel_race_model.mjs",
         "node remake/test/ch4_camel_race.mjs",
         "node remake/test/ch4_dubai_cafe.mjs",
+        "node remake/test/ch4_dubai_local.mjs",
         "node remake/test/ch4_longlong.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node remake/test/ch5_party.mjs",
@@ -1242,13 +1243,14 @@
     },
     {
       "id": "ch4-dubai-daily",
-      "title": "Chapter 4 Dubai days on the shared daily loop (VOL04), one shisha at the local cafes, the Longlong shop and the eve acquaintance branch (DBS)",
+      "title": "Chapter 4 Dubai days on the shared daily loop (VOL04), one shisha at the local cafes, the Longlong shop, the eve acquaintance branch, daytime heat, lively nights and the souq stall (DBS)",
       "kind": "browser",
       "weight": 0.8,
       "timeout": 6,
       "paths": [
         "remake/js/chapters/ch4-dubai-daily.js",
         "remake/js/chapters/ch4-dubai-cafe.js",
+        "remake/js/chapters/ch4-dubai-local.js",
         "remake/js/chapters/ch4-longlong.js",
         "remake/js/core/affinity-stages.js",
         "remake/js/chapters/ch4-progress.js",
