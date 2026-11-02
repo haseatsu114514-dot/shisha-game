@@ -2,9 +2,10 @@
 // オーナー「急にあの立ち絵からこれになるにはトランジションで自然な転移が要る」（CIG07）→
 // 「もっと滑らかでスタイリッシュで自然なアニメーションにしたい」。3案を同じ仕組みで切り替えて比べる。
 //
-//   none  : 今まで通り（既定）。つなぎ無しでカットインが出る
+//   none  : つなぎ無しでカットインが出る（設定で選べる）
 //   morph : 立ち絵がテーマ色の影になり、影がカメラへ迫って頭の位置を合わせ、影の形そのものが
-//           カットインのポーズへ変わって（intro-shape-morph.js）、白く光ってポスター調の本人にほどける
+//           カットインのポーズへ変わって（intro-shape-morph.js）、白く光ってポスター調の本人にほどける。
+//           終わりは逆再生せず、文字→本人と背景の順に溶けて、元の立ち絵と場面の色が戻る。2026-11-02 オーナー採用（既定）
 //   card  : 立ち絵の上半身を四角い札が切り取り、札が手前へ飛びながら裏返る。裏面がポスター調の本人
 //   slash : 本人が一瞬テーマ色に光り、斜めの一閃が画面を右から左へ走って、通った跡がカットインになる
 //
@@ -259,34 +260,18 @@ function morph(ctx) {
       return unmount; // ここから名前・二つ名・一言（animateIntro）
     },
     async exit() {
-      const sil = nodes[1]?.querySelector(".ci-tr-sil"), dim = nodes[0]?.querySelector(".ci-tr-dim");
-      const host = ctx.host;
-      if (!sil || !dim) return;
-      const ink = sil.firstElementChild;
-      const parts = host.querySelectorAll(".ci-ribbon,.ci-accent-line,.ci-quote-area,.ci-art-background");
-      // 文字と帯が消え、本人が光る影に戻り、影の形が立ち絵のポーズへ戻り、元の場所へ縮んで色が抜ける
-      parts.forEach((n) => keep(animate(n, [{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: EASE.in })));
-      if (shape) {
-        shape.draw(1, .9);
-        keep(animate(shape.canvas, [{ opacity: 0 }, { opacity: 1 }], { duration: 140 }));
-        keep(animate(host.querySelector(".ci-portrait"), [{ opacity: 1 }, { opacity: 0 }], { duration: 140, delay: 40 }));
-        await sleep(180);
-        await tween(380, (u) => shape.draw(1 - easeInOutCubic(u), Math.max(0, .9 - u * 2)));
-        keep(animate(sil, [{ opacity: 0 }, { opacity: 1 }], { duration: 60 }));
-        keep(animate(shape.canvas, [{ opacity: 1 }, { opacity: 0 }], { duration: 80, delay: 30 }));
-        await sleep(90);
-      } else {
-        keep(animate(sil, [{ opacity: 0 }, { opacity: 1 }], { duration: 160 }));
-        keep(animate(host.querySelector(".ci-portrait"), [{ opacity: 1 }, { opacity: 0 }], { duration: 160, delay: 40 }));
-        await sleep(180);
-      }
-      keep(animate(sil, [{ transform: t.to }, { transform: "none" }], { duration: 320, easing: EASE.inOut }));
-      await sleep(290);
-      // 影から色が抜け落ちて、元の立ち絵に戻る
-      if (rect.img?.isConnected) keep(animate(rect.img, [{ opacity: 0 }, { opacity: 1 }], { duration: 60 }));
-      keep(animate(ink, [{ transform: "translateY(0)" }, { transform: "translateY(101%)" }], { duration: 240, easing: EASE.in }));
-      keep(animate(dim, [{ opacity: .7 }, { opacity: 0 }], { duration: 320 }));
-      await sleep(340);
+      // 終わりは逆再生せず、すっと会話へ戻す（2026-11-02 オーナー「終わり際が少し気持ち悪い」）。
+      // 文字と帯が先に消え、ポスター調の本人と背景が溶けるように消えて、元の立ち絵と場面の色が戻る
+      const dim = nodes[0]?.querySelector(".ci-tr-dim"), host = ctx.host;
+      if (!dim) return;
+      host.querySelectorAll(".ci-ribbon,.ci-accent-line,.ci-quote-area").forEach((n) =>
+        keep(animate(n, [{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: EASE.in })));
+      const portrait = host.querySelector(".ci-portrait"), bg = host.querySelector(".ci-art-background");
+      if (portrait) keep(animate(portrait, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(10px) scale(.985)" }], { duration: 360, delay: 100, easing: EASE.in }));
+      if (bg) keep(animate(bg, [{ opacity: 1 }, { opacity: 0 }], { duration: 380, delay: 120, easing: "ease-in" }));
+      keep(animate(dim, [{ opacity: .7 }, { opacity: 0 }], { duration: 420, delay: 220, easing: "ease-out" }));
+      if (rect.img?.isConnected) keep(animate(rect.img, [{ opacity: 0 }, { opacity: 1 }], { duration: 320, delay: 260, easing: "ease-out" }));
+      await sleep(600);
       this.cancel();
     },
     cancel() {

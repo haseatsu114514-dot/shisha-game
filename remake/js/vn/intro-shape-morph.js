@@ -77,13 +77,34 @@ function upsample(sd, w, h, W, H, factor) {
 }
 
 /**
- * 距離を ±reach で頭打ちにする。そのままだと、遠くにある細い部分（新しいポーズの腕など）は
- * 変形の最後の一瞬にしか現れず、消える部分は最初に消えてしまう。頭打ちにすると、
- * 出る部分と消える部分が同じくらいの速さで、溶けるように入れ替わる。
+ * 距離をなめらかに頭打ちにする（reach × tanh(d / reach)）。そのままだと、遠くにある細い部分
+ * （新しいポーズの腕など）は変形の最後の一瞬にしか現れず、消える部分は最初に消えてしまう。
+ * 硬く頭打ちにすると、深い内側どうしが同じ瞬間に一斉に入れ替わって、塊が急に現れる。
+ * なめらかに縮めると、距離の順番は保ったまま、出る部分と消える部分が近い速さで溶けるように入れ替わる。
  */
-function clampField(sd, reach) {
-  for (let i = 0; i < sd.length; i++) sd[i] = sd[i] > reach ? reach : sd[i] < -reach ? -reach : sd[i];
+function softField(sd, reach) {
+  for (let i = 0; i < sd.length; i++) sd[i] = reach * Math.tanh(sd[i] / reach);
   return sd;
+}
+
+/** 絵の下端より下も、下端の行と同じ形が続いているものとして埋める（下端の水平な切れ目が変形に出ないように） */
+function extendDown(alpha, w, h, row) {
+  if (row < 0 || row >= h - 1) return alpha;
+  for (let x = 0; x < w; x++) {
+    const v = alpha[row * w + x];
+    if (!v) continue;
+    for (let y = row + 1; y < h; y++) alpha[y * w + x] = Math.max(alpha[y * w + x], v);
+  }
+  return alpha;
+}
+
+/** 距離場の傾き（中央差分）。混ぜた距離場の縁の太さを、本当の距離に直すのに使う */
+function gradient(sd, w, h) {
+  const gx = new Float32Array(w * h), gy = new Float32Array(w * h);
+  for (let y = 1; y < h - 1; y++) for (let x = 1, i = y * w + 1; x < w - 1; x++, i++) {
+    gx[i] = (sd[i + 1] - sd[i - 1]) * .5; gy[i] = (sd[i + w] - sd[i - w]) * .5;
+  }
+  return [gx, gy];
 }
 
 const hex = (c) => {
@@ -95,11 +116,11 @@ const hex = (c) => {
 /**
  * 変形の準備。座標はすべてカットインの 1280×720 の画面上の px。
  * @param from { img, left, top, width, height }  立ち絵を、頭がカットインの頭に重なる位置へ置いた矩形
- * @param to   { img, left, top, width, fade?, right? }  カットインの人物（正方形）と、intro-graphic の薄め方
+ * @param to   { img, left, top, width }  カットインの人物（正方形）
  * @param colors { color, secondary }
  * @returns { canvas, draw(t, glow) } t=0 で立ち絵の影、t=1 でカットインの人物の影
  */
-export function prepareShapeMorph(from, to, colors, { scale = 0.5, field = 2, reach = 12, region = { x: -360, y: -100, w: 1680, h: 1220 } } = {}) {
+export function prepareShapeMorph(from, to, colors, { scale = 0.5, field = 2, reach = 18, soften = 1, region = { x: -360, y: -100, w: 1680, h: 1220 } } = {}) {
   // 描く解像度（scale）の 1/field で距離場を作り、描く解像度へ補間で広げる
   const W = Math.round(region.w * scale), H = Math.round(region.h * scale);
   const fs = scale / field, w = Math.round(region.w * fs), h = Math.round(region.h * fs);
@@ -111,34 +132,24 @@ export function prepareShapeMorph(from, to, colors, { scale = 0.5, field = 2, re
     g.setTransform(1, 0, 0, 1, 0, 0);
     g.globalCompositeOperation = "source-over";
     g.clearRect(0, 0, w, h);
+    // 指先や髪の先のような細かい部分は、変形の途中でちらつく小さな粒になるので、少しだけ丸める
+    g.filter = soften ? `blur(${soften}px)` : "none";
     paint();
+    g.filter = "none";
     const px = g.getImageData(0, 0, w, h).data, a = new Uint8Array(w * h);
     for (let i = 0; i < w * h; i++) a[i] = px[i * 4 + 3];
     return a;
   };
-  const alphaA = alphaOf(() => {
-    const [x, y] = toCanvas(from.left, from.top);
-    g.drawImage(from.img, x, y, from.width * fs, from.height * fs);
-  });
-  const alphaB = alphaOf(() => {
-    const [x, y] = toCanvas(to.left, to.top), s = to.width * fs;
-    g.drawImage(to.img, x, y, s, s);
-    // カットインと同じく、下を薄め、名前の側へはみ出す分を消す
-    g.globalCompositeOperation = "destination-in";
-    if (to.fade) {
-      const grad = g.createLinearGradient(0, y, 0, y + s);
-      grad.addColorStop(0, "#000"); grad.addColorStop(1 - to.fade / 100, "#000"); grad.addColorStop(1, "rgba(0,0,0,0)");
-      g.fillStyle = grad; g.fillRect(0, 0, w, h);
-    }
-    if (to.right) {
-      const edge = x + s * to.right / 100;
-      const grad = g.createLinearGradient(edge - s * .04, 0, edge, 0);
-      grad.addColorStop(0, "#000"); grad.addColorStop(1, "rgba(0,0,0,0)");
-      g.fillStyle = grad; g.fillRect(0, 0, w, h);
-    }
-  });
-  const dA = clampField(upsample(signedDistance(alphaA, w, h), w, h, W, H, field), reach);
-  const dB = clampField(upsample(signedDistance(alphaB, w, h), w, h, W, H, field), reach);
+  const [ax, ay] = toCanvas(from.left, from.top);
+  const alphaA = extendDown(alphaOf(() => g.drawImage(from.img, ax, ay, from.width * fs, from.height * fs)),
+    w, h, Math.floor(ay + from.height * fs) - 3);
+  // カットインの人物の影は、下の薄めや名前側の消し込みを入れない（入れると水平・垂直の切れ目が動いて見える）。
+  // 絵の下端より下は体が続いているものとして伸ばす
+  const [bx, by] = toCanvas(to.left, to.top), bs = to.width * fs;
+  const alphaB = extendDown(alphaOf(() => g.drawImage(to.img, bx, by, bs, bs)), w, h, Math.floor(by + bs) - 3);
+  const dA = softField(upsample(signedDistance(alphaA, w, h), w, h, W, H, field), reach);
+  const dB = softField(upsample(signedDistance(alphaB, w, h), w, h, W, H, field), reach);
+  const [gxA, gyA] = gradient(dA, W, H), [gxB, gyB] = gradient(dB, W, H);
   // 毎フレーム全画素を回さないよう、どちらかの影がある範囲だけを描く
   let x0 = W, y0 = H, x1 = 0, y1 = 0;
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -164,8 +175,15 @@ export function prepareShapeMorph(from, to, colors, { scale = 0.5, field = 2, re
       for (let y = y0; y <= y1; y++) {
         let i = y * W + x0;
         for (let x = x0; x <= x1; x++, i++, o += 4) {
-          const d = dA[i] + (dB[i] - dA[i]) * t;
-          if (d < -1) { data[o + 3] = 0; continue; }
+          let d = dA[i] + (dB[i] - dA[i]) * t;
+          // 混ぜた距離場は、古い縁と新しい縁がすれ違う所で傾きが小さくなり、縁が太くぼやける。
+          // 縁の近くだけ傾きで割って本当の距離に直し、縁を常に細く保つ
+          if (d < -3) { data[o + 3] = 0; continue; }
+          if (d < 3) {
+            const gx = gxA[i] + (gxB[i] - gxA[i]) * t, gy = gyA[i] + (gyB[i] - gyA[i]) * t;
+            d /= Math.max(.25, Math.sqrt(gx * gx + gy * gy));
+            if (d < -1) { data[o + 3] = 0; continue; }
+          }
           const a = d > 0 ? 1 : d + 1;            // 縁の1画素だけ半透明にして、ぎざぎざを消す
           const e = d > 1.8 ? 0 : 1 - Math.max(0, d) / 1.8; // 縁の明るい線
           data[o] = fr + (lr - fr) * e; data[o + 1] = fg + (lg - fg) * e; data[o + 2] = fb + (lb - fb) * e;
