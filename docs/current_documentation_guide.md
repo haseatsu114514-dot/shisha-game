@@ -20,10 +20,9 @@
 
 ## 二次資料・履歴の扱い
 
-- [archive/setting_book/](archive/setting_book/README.md) は2026-10-31に退避した旧**二次資料**（根拠にしない）。数値・価格・機材説明は `data/*.json` が正。`archive/setting_reference.html` はそこからの生成物。
 - [archive/](archive/README.md) は日付付きの引き継ぎ・計画・記録の**履歴**。ブランチ名・SHA・CI結果・「未接続」「予約待ち」は当時の状態で、新しい台詞・設定・実装の根拠にしない。`docs/qa/` は検証記録（約0.7GB）。どちらも `.claudeignore` で自動参照から外してあり、必要なときだけ開く。
 - `docs/reports/` と `docs/design/` に残るのはオーナー未決定の提案・設計案。採用扱いにしない。決まったら正本へ反映し、ファイルは `archive/` へ移す。
-- 改稿前の台本は `data/dialogue/_legacy/`。旧 `web/`・Godot版は廃止済みで、`docs/master_spec.md` に残る `web/js/` 等のパスは履歴。
+- 改稿前の台本（旧 `data/dialogue/_legacy/`）・旧設定資料集は2026-11-02に削除した。旧 `web/`・Godot版は廃止済みで、`docs/master_spec.md` に残る `web/js/` 等のパスは履歴。
 - 旧資料の整理・削除は、参照先と失われる情報を確認したうえで行う。日付付きの新規MDは必要な場合だけ作り、`docs/` 直下に増やさず `archive/` か該当する正本へ。
 
 ## docs/ の構成（2026-11-02 整理）

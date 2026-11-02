@@ -2,7 +2,7 @@
 
 2026-10-18のストーリー・キャラ監査とオーナーの採用判断を反映。第1〜3章の必須本編は `remake/` でプレイ可能。第3章は東京到着、久世・スティーブ・ヴォルクとの交流、全国大会、帰郷後の再会まで接続。任意スポットと前夜デート、第4章以降は `data/dialogue/` の台本が先行している。
 
-台詞・呼称は `data/characters.json` と `brand/character_profiles.md`、ゲームの規則は `docs/gameplay_agent_reference.md`。正式ヒロイン名簿、後半台本の再生順、デート・修羅場・エピローグの対応は [`data/story_routes.json`](../data/story_routes.json) に一元化する。改稿前の台本は `data/dialogue/_legacy/` に隔離し、正史の根拠にしない。未採用の別PRの章題案や制作中の画像タイトルを混ぜない。
+台詞・呼称は `data/characters.json` と `brand/character_profiles.md`、ゲームの規則は `docs/gameplay_agent_reference.md`。正式ヒロイン名簿、後半台本の再生順、デート・修羅場・エピローグの対応は [`data/story_routes.json`](../data/story_routes.json) に一元化する。未採用の別PRの章題案や制作中の画像タイトルを混ぜない。
 
 ## 舞台となる街
 

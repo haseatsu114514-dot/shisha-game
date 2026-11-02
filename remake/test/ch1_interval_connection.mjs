@@ -30,9 +30,6 @@ function stringify(value) {
 }
 assert.equal(createHash('sha256').update(stringify(sortKeys(sumi))).digest('hex'),
   '186935cd6f1ee864150edb8d3d9d415a98ecd2871fcc2a67dbcd4e41f5616465');
-const legacy = JSON.parse(read('data/dialogue/_legacy/forced_events.json')).interval_1;
-assert(!legacy.some(entry => entry.id === 'interval_day1_morning'));
-assert(legacy.some(entry => entry.id === 'interval_day3_sumi_call'));
 
 const data = read('remake/js/core/data.js');
 const files = data.match(/const DIALOGUE_FILES = \[([\s\S]*?)\];/);
