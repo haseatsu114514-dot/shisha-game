@@ -91,7 +91,8 @@ export function pendingAffinityStage(s, id, db = {}) {
       required.add(e); (e.requires || []).forEach(f => include(byFlag.get(f)));
     };
     (route.storyEvents || []).forEach(id => include(events.find(e => e.id === id)));
-    for (const e of required) stages.push({ level: levelOf(e), scene: e.dialogue, done: !!flags[e.flag] });
+    // ♥4・♥5（untilFinale）は締めくくり前の段階。着地済みの関係では残件にしない。
+    for (const e of required) stages.push({ level: levelOf(e), scene: e.dialogue, done: !!flags[e.flag] || !!e.untilFinale && settled(s, id) });
     if (route.question?.flag) stages.push({ level: Math.max(3, levelOf(events.find(e => e.dialogue === route.question.host))), scene: route.question.dialogue, done: settled(s, id) || !!flags[route.question.flag] });
   }
   if (id === "mashiro") {

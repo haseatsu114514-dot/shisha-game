@@ -323,6 +323,8 @@ export const FLAG_EXACT_RULES = [
   ["_hiyori_meeting_done", "person"],
   ["_hiyori_meeting_shop", "person"],
   ["_hiyori_message_delivered", "person"],
+  ["_hiyori_peach_talk_done", "person"],
+  ["_hiyori_promise_done", "person"],
   ["_hiyori_real_self_known", "person"],
   ["_hiyori_repeat_count", "person"],
   ["_hiyori_sumi_message_done", "person"],
