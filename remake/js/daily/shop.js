@@ -150,10 +150,11 @@ export async function openShop(opts = {}) {
     return openCounter({ flavorIds: tokyoShopFlavors(state), stockChapter: 3, shopName: TOKYO_SHOP_NAME });
   }
   if (opts.branch === "dubai") {
-    // 第4章のドバイと、第5章にドバイへ来た時（#2033 E）。
+    // 第4章のドバイと、第5章にドバイへ来た時（#2033 E）。シーシャくじもほかの店と同じく引ける（2026-11-02 オーナー
+    // 「お金の使い道としてドクターフーカーくじを各地で」。箱は地元・柚ヶ谷・東京と共通）。
     if (![4, 5].includes(state.chapter)) return null;
     return openCounter({ flavorIds: DUBAI_FLAVORS, stockChapter: 4, shopName: DUBAI_SHOP_NAME,
-      subtitle: "日本で出た葉がそろう", branded: true, kuji: false });
+      subtitle: "日本で出た葉がそろう", branded: true });
   }
   if (opts.branch === "widehanga") {
     if (state.chapter < 2) return null;

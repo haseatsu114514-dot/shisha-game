@@ -40,6 +40,7 @@
 .kuji-rank { font-family: var(--font); font-size: 64px; font-weight: 800; line-height: 1.1; color: var(--gold-hi); text-shadow: 0 0 20px rgba(244, 210, 122, 0.6); }
 .kuji-name { margin-top: 8px; font-size: 22px; font-weight: 700; }
 .kuji-desc { margin-top: 8px; font-size: 14px; line-height: 1.6; color: var(--text-dim); }
+.kuji-dupe { margin-top: 8px; font-size: 14px; font-weight: 700; color: var(--gold-hi); }
 .kuji-tap { margin-top: 16px; font-size: 14px; letter-spacing: 0.04em; color: var(--text-dim); opacity: 0.9; }
 .kuji-card.rank-S, .kuji-card.rank-LAST { border-color: #ffe9a8; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(255, 210, 90, 0.55); }
 .kuji-card.rank-S .kuji-rank, .kuji-card.rank-LAST .kuji-rank {
@@ -59,6 +60,7 @@
 .kuji-card.kuji-short { width: auto; min-height: 94px; padding: 12px; }
 .kuji-short .kuji-rank { font-size: 28px; }
 .kuji-short .kuji-name { font-size: 14px; }
+.kuji-short .kuji-dupe { margin-top: 4px; font-size: 12px; }
 
 /* ---- ギャラリー ---- */
 .gal-overlay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(5, 4, 10, 0.78); backdrop-filter: blur(3px); }
