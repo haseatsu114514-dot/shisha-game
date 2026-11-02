@@ -138,7 +138,9 @@ python3 tools/loading_comic_cut.py check remake/img/loading/<id>-*.webp
 | 47 | 座り心地派 | [sumi-cushion-tower](47-sumi-cushion-tower/) |
 | 48 | 看板の向き | [sumi-sign-reverse](48-sumi-sign-reverse/) |
 
-## 9. 候補54話の選別と登録（2026-11-02）
+## 9. 候補54話の選別と登録（2026-11-02・§10 のオーナー選別で置き換え）
+
+> この節は Claude が内容と実画面を確認して仮に登録したときの記録。同日のオーナーの選別（§10）でゲームの登録は置き換わった。吹き出しの順の決まり（§2）はそのまま有効。
 
 オーナー依頼「候補の内容と実画面表示を確認し、採用できるものを整理して登録を進めて」。候補は #2246（記録番号49〜72・24話・merged）と #2258（記録番号61〜90・30話・Draft）。**61〜72は両PRで番号が重なる別作品**なので、以下はすべて **PR番号:安定ID** で書く。ゲームの登録 id は安定IDそのもの（`remake/js/core/loading-comics.js`）。
 
@@ -177,4 +179,22 @@ python3 tools/loading_comic_cut.py check remake/img/loading/<id>-*.webp
 | PR2258:naru-last-cookie | PR2258:naru-biscuit-measure | なるがお菓子を測るほど厳密に扱う |
 
 #2258 の原画・台本・プロンプトは同PRの各話フォルダ（`asset_sources/loading-comics/61-sumi-jacket-souvenir/` など。#2246 の `61-leave-it-to-you/` とは別フォルダ）にある。ゲームに要る配信用WebPだけを `remake/img/loading/` に複製して登録した。#2246 側の各話 `comics.json` には採否（`status`・`registered`・`selection_note`）を書き込んだ。
+
+## 10. オーナーの選別とキャラごとの解放（2026-11-02）
+
+オーナー「選別終わった。最終的には画風を統一したりするけど、とりあえず元のやつとして選別してる」「今キャラが限られてるから全キャラ参戦させたい。会ったキャラの漫画が開放される感じでロードで出る」。
+
+**選別**: 選別ページ（Claude Artifact「ロード漫画の選別」）で102話すべてを判定。**採用25話・不採用77話**。採用は話の中身で選んだもので、絵は元のまま登録した。画風の統一は後日の作り直しで行う。ゲームに入っていた不採用の話は外し、その配信用画像も `remake/img/loading/` から消した（候補の原画と配信用は各話フォルダに残る）。
+
+| 出どころ | 採用（ゲームの id） |
+| --- | --- |
+| 復刻 1〜48話（#2263） | restored-01・02・05・08・12・13・15・17・18・19・21・26・29・32・33・38・39、畳みの極意（restored-44 と同じ画像。id は既登録の sumi-cloth-fold） |
+| #2246 49〜72話 | cake-apology・mint-ranking・mint-service・sweet-unit |
+| #2258 61〜90話 | adam-key-ring・adam-photo-album・sumi-cold-tea |
+
+**キャラごとの解放**: 各話に `cast`（はじめ以外に出てくるキャラの id）を付け、**全員と会った後にだけ**ロード画面に出る。会ったかどうかは `core/title-art-unlock.js` の `hasMetCharacter`（`state.met` と、タイトル画面の絵の解放と同じ等価な既存記録）で判定する。新しく始めたゲームではスミさんの2話だけが出て、人に会うたびに増える。
+
+**ネタバレの話は章で待たせる**: 『噂の本人』『対策本部』は、ましろがシガーマンの正体だと分かる話。本編では第3章の全国大会の後に読者が気づく流れなので（`brand/story_and_structure.md`）、`minChapter: 4` にして第4章から出す。新しい話を足すときも、正体・恋人・大会結果などを明かす話は明かす章を `minChapter` にする。
+
+**これから**: 漫画のないキャラが多い（採用25話に出るのは13人）。全キャラが出られるよう、残りのキャラの台本と Codex 用プロンプトを用意する（§11、別PR）。
 

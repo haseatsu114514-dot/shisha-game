@@ -3,8 +3,8 @@
   "title": "苦手なもの",
   "cast": "りゅうじ・はじめ",
   "theme": "旧・暴走編（復刻）",
-  "status": "candidate-awaiting-owner-selection",
-  "registered": false,
+  "status": "adopted-registered-20261102",
+  "registered": true,
   "reading_order": "左①導入→右②オチ",
   "source_reference": {
     "file": "asset_sources/short-comics-unhinged-ltr-20261025/21-24-chaos-ltr.png",
@@ -95,5 +95,6 @@
         "qa-phone.png"
       ]
     }
-  }
+  },
+  "selection_note": "2026-11-02 オーナー採用。remake/js/core/loading-comics.js の id 'restored-21'（出てくるキャラと会った後に出る）。画風の統一は後日の作り直しで行う。"
 }
