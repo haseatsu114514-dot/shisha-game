@@ -621,7 +621,7 @@ try {
   const ui = await page.evaluate(async () => {
     const { fresh } = window.T;
     const state = fresh({ met: { tsumugi: true } });
-    state.owned.push("suyaki_tsumugi");
+    state.owned.push("suyaki_tsumugi", "suyaki_samechan");
     state.flavorStock.lavender = 50;
     const session = await import("./js/craft/session.js");
     const steps = await import("./js/craft/steps.js");
@@ -638,14 +638,19 @@ try {
     await window.T.waitFor('[data-tab="items"]');
     [...document.querySelectorAll(".st-tab")].find((b) => b.dataset.tab === "items").click();
     const note = document.querySelector('[data-test="gift-suyaki_tsumugi"]')?.textContent || "";
+    const plainNote = document.querySelector('[data-test="gift-suyaki_samechan"]')?.textContent || "";
     const flavors = [...document.querySelectorAll(".st-items .chip")].map((c) => c.textContent).join("|");
     document.querySelector('[data-test="status-close"]').click();
     await opened;
-    return { offered, equipped, note, flavors };
+    return { offered, equipped, note, plainNote, flavors };
   });
   assert(ui.offered); assert.equal(ui.equipped, "suyaki_tsumugi");
   assert(ui.note.includes("つむぎから") && ui.note.includes("ラベンダー") && ui.note.includes("売却不可"), ui.note);
   assert(ui.flavors.includes("ラベンダー"), ui.flavors);
+  // 香りを持たない素焼き（サメちゃん）は undefined を出さず、素焼きであることを伝える。香りを持つ札は従来どおり
+  assert(ui.note.includes("染み付いた香り：ラベンダー") && !ui.note.includes("undefined"), ui.note);
+  assert(ui.plainNote.includes("サメちゃんから") && ui.plainNote.includes("まだ香りの染みていない素焼き") && ui.plainNote.includes("売却不可"), ui.plainNote);
+  assert(!/undefined|NaN|null/.test(ui.plainNote) && !ui.plainNote.includes("染み付いた香り") && !ui.plainNote.includes("g以上"), ui.plainNote);
   log("HF06 UI: gift selectable at setup, inventory shows giver / infused scent / unsellable, gifted leaf listed");
 
   // ================================================================ HF09 友人になった後の、たまのLIME
