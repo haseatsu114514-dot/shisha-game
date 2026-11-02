@@ -20,16 +20,16 @@ body { background:#101820; color:#f8f6ee; }
 <div class="preview-tools">
  <label for="character">登場カットイン</label><select id="character" disabled></select>
  <button id="play" type="button" disabled>再生する</button>
- <button id="all" type="button" disabled>7人を続けて再生</button>
+ <button id="all" type="button" disabled>4人を続けて再生</button>
  <p id="status" role="status">読み込み中…</p>
 </div>
-<div id="viewport"><div id="stage"><div id="fx"></div></div></div>
+<div id="viewport"><div id="stage"><div class="vn-portraits" id="preview-portraits"></div><div id="fx"></div></div></div>
 <script type="module">
-import { DB, loadAll, realName } from './js/core/data.js';
-import { newGame, state } from './js/core/state.js';
+import { DB, loadAll, realName, portraitInfo } from './js/core/data.js';
+import { newGame, state, config } from './js/core/state.js';
 import { layers } from './js/core/ui.js';
 import { playIntro } from './js/vn/intro.js';
-const ids = ['kuze','steve','volk','mashiro','maki','sai','uranaishi'];
+const ids = ['naru','rin','nagumo','pakki'];
 const selector = document.getElementById('character'), play = document.getElementById('play'), all = document.getElementById('all'), status = document.getElementById('status');
 layers.fx = document.getElementById('fx');
 function fit() { document.getElementById('stage').style.setProperty('--k', Math.max(.05, Math.min(innerWidth / 1280, (innerHeight - 142) / 720))); }
@@ -40,6 +40,11 @@ async function run(selected) {
   try {
     for (const id of selected) {
       selector.value = id; status.textContent = `${realName(id)} — ${DB.characters[id].intro_cutin.title}`;
+      const p = portraitInfo(id, DB.characters[id].intro_cutin.face || "normal");
+      const portrait = new Image(); portrait.src = p.src; portrait.className = "portrait active"; portrait.dataset.speaker = id;
+      portrait.style.cssText = "height:680px;bottom:0;left:30%;--ax:-50%";
+      await portrait.decode();
+      document.getElementById("preview-portraits").replaceChildren(portrait);
       await playIntro(id);
     }
     status.textContent = '再生終了。ゲームの保存データは変更していません。';
@@ -49,11 +54,12 @@ async function run(selected) {
 play.addEventListener('click', () => run([selector.value]));
 all.addEventListener('click', () => run(ids));
 try {
-  await loadAll(); newGame();
+  await loadAll(); newGame(); config.introArtStyle = "graphic";
+  config.bgmVolume = config.seVolume = 0;
   for (const id of ids) { state.met[id] = true; selector.add(new Option(realName(id), id)); }
   const requested = new URLSearchParams(location.search).get('character');
   if (ids.includes(requested)) selector.value = requested;
-  status.textContent = '呼び名・二つ名・一言を約4秒で紹介します。ゲームの保存データは変更しません。';
+  status.textContent = '4人限定のモーション試作：なる＝刃／凛＝余韻／南雲＝静／パッキー＝跳。クリックでは短縮しません。';
   busy(false);
 } catch (error) { status.textContent = `読み込みエラー：${error.message}`; }
 </script>

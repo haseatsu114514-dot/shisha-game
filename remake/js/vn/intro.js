@@ -18,6 +18,7 @@ import { motifs } from "./intro-motifs.js";
 import { illustratedIntro, layoutIntro, animateIntro, exitIntro, flavorTag, plainLine, motionOf, MOTIONS } from "./intro-art.js";
 import { introFlavor } from "./intro-flavors.js";
 import { graphicIntro } from "./intro-graphic.js";
+import { graphicMotion, INTRO_MOTION_PILOT } from "./intro-transition.js";
 
 export const introSeenKey = (id, variant = "") => `_intro_${id}${variant ? `_${variant}` : ""}`;
 const introOf = (id, variant = "") => DB.characters[id]?.[variant ? `intro_cutin_${variant}` : "intro_cutin"] || null;
@@ -58,7 +59,8 @@ function framePortrait(img, p) {
  * 初登場は最後まで見せる。クリック・Enter・SKIPでも表示時間を短くしない。
  * @param opts.onAppear 画像が出た時の場面処理（本人の登場に合わせるBGMなど）
  */
-export async function playIntro(id, { onAppear = null, override = {}, variant = "" } = {}) {
+export async function playIntro(id, { onAppear = null, override = {}, variant = "", signal } = {}) {
+  const initialState = state, initialDialogue = document.querySelector("#vn.active");
   const intro = { ...introOf(id, variant), ...override };
   if (!introOf(id, variant)) return;
   if (variant !== "unknown") markMet(id);
@@ -79,18 +81,25 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
       document.fonts.load('900 150px "Intro Gothic"', main).catch(() => []),
       document.fonts.load('700 38px "Intro Gothic"', `${intro.title}${intro.line}`).catch(() => []),
     ]);
+    if (graphic && INTRO_MOTION_PILOT.has(id) && (signal?.aborted || state !== initialState || (initialDialogue && !initialDialogue.classList.contains("active")))) return;
     const host = illustratedIntro(id, variant, intro, main, p, art, background);
     host.dataset.art = graphic ? "graphic" : "classic"; // ひより専用の明るい配色は旧絵柄（白い背景）だけ
     const unmount = mountIntro(host, layers.fx);
     const animations = [];
     const motion = motionOf(intro);
+    let pilot = null;
     try {
+      pilot = graphic && INTRO_MOTION_PILOT.has(id) ? graphicMotion(host, layers.fx, id, art, motion, { signal }) : null;
+      if (pilot && !await pilot.enter()) return;
       const twoLines = layoutIntro(host, id, variant, intro);
-      animations.push(...animateIntro(host, id, motion, { sound: (cue) => introSound(motion, cue) }));
+      if (!pilot?.reduced) animations.push(...animateIntro(host, id, motion, { sound: (cue) => introSound(motion, cue), graphicMotion: !!pilot }));
+      pilot?.hold(introHoldMs(motion, twoLines));
       onAppear?.();
       introSound(motion, "appear");
-      await holdIntro(host, { motion, twoLines });
+      await holdIntro(host, { motion, twoLines, pilot });
+      if (pilot?.active) await pilot.exit();
     } finally {
+      pilot?.dispose();
       animations.forEach((animation) => animation.cancel());
       unmount();
     }
@@ -141,8 +150,10 @@ function introSound(motion, cue) {
 /** 一言が2行の時は400ms長く見せる */
 export const introHoldMs = (motion, twoLines = false) => (MOTIONS[motion] || MOTIONS.sharp).hold + (twoLines ? 400 : 0);
 
-async function holdIntro(host, { motion = "sharp", twoLines = false, legacy = false } = {}) {
-  await sleep(30);
+async function holdIntro(host, { motion = "sharp", twoLines = false, legacy = false, pilot = null } = {}) {
+  const wait = pilot ? pilot.wait : sleep;
+  if (pilot && !pilot.active) return;
+  await wait(30);
   host.classList.add("in");
   const onTap = (e) => { e.preventDefault(); e.stopPropagation(); };
   const onKey = (e) => {
@@ -152,11 +163,12 @@ async function holdIntro(host, { motion = "sharp", twoLines = false, legacy = fa
   host.addEventListener("pointerup", onTap);
   window.addEventListener("keydown", onKey, true);
   try {
-    await sleep(introHoldMs(motion, twoLines));
+    await wait(introHoldMs(motion, twoLines));
+    if (pilot) return;
     if (legacy) { host.classList.add("out"); await sleep(280); }
     else await sleep(exitIntro(host, motion));
   } finally {
     window.removeEventListener("keydown", onKey, true);
-    host.remove();
+    if (!pilot) host.remove();
   }
 }

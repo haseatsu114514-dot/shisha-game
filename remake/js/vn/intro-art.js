@@ -113,10 +113,11 @@ export function layoutIntro(host, id, variant, intro) {
 }
 
 /** 型ごとの登場。戻り値は止めるための Animation の配列 */
-export function animateIntro(host, id, motion = "sharp", { sound = () => {} } = {}) {
+export function animateIntro(host, id, motion = "sharp", { sound = () => {}, graphicMotion = false } = {}) {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) { sound("reduced"); return []; }
   const animations = [];
   const animate = (selector, frames, options) => {
+    if (graphicMotion && ([".ci-art-background", ".ci-portrait", ".ci-flash"].includes(selector) || frames.some(frame => "translate" in frame))) return;
     const node = host.querySelector(selector);
     if (node) animations.push(node.animate(frames, { duration: 600, easing: "cubic-bezier(.2,.8,.2,1)", fill: "both", ...options }));
   };
