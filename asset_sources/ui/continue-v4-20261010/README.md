@@ -143,7 +143,7 @@ python3 remake/tools/build_manifest.py
 `remake/img/ui/continue/`。顔の中心・倍率は既存 `make_face_icons.face_box` の測定から
 `manifest.continuePortraits` へ自動記録し、元の人物画像をCSSで拡大・配置する。
 
-検証の詳細と台詞の正本は [V4仕様](../../../docs/continue_button_reactions_sfx_20261010.md)。
+検証の詳細と台詞の正本は [V4仕様](../../../docs/spec/continue_button_reactions_sfx_20261010.md)。
 全18分岐、全45キューの字幕と正規画像、常時カウント、20秒→GAME OVER→タイトル、
 期限直前の再挑戦、連打防止、画面離脱、タブ復帰、横持ち、軽減、ミュートがPASS。
 実ChromiumのWebAudio出力を解析し、SEの音声サンプルがあり、離脱後は無音になることも確認した。

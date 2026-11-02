@@ -1,6 +1,6 @@
 # TRPGの卓の再構成（2026-11-01）実画面
 
-`remake/trpg-preview.html`（紙テーマ・seed 9）を headless Chromium で撮影。ルール・画面の説明は [docs/trpg_preview.md](../../trpg_preview.md#卓の再構成-キャラクターシート行動宣言gmの裁定2026-11-01)。
+`remake/trpg-preview.html`（紙テーマ・seed 9）を headless Chromium で撮影。ルール・画面の説明は [docs/spec/trpg_preview.md](../../spec/trpg_preview.md#卓の再構成-キャラクターシート行動宣言gmの裁定2026-11-01)。
 
 | 場面 | 画像 |
 | --- | --- |

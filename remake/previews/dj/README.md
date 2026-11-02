@@ -1,6 +1,14 @@
 # DJ ミニゲーム（セット形式・2026-11-01 再構成）
 
-Entry: `remake/previews/dj/index.html?set=1〜3`（旧 `?stage=` も同じ）。本編と同じ 1280×720 の固定ステージを画面に合わせて拡縮する（`controller-fx.mjs`）。本編の SAVE・所持金・時間は変えない。セット終了時に親フレームへ `postMessage({type:'dj-result', set, rank, total, floor})` を送るので、本編へ接続するときはこれを受けて `state.dj.bestRank` に残す（`core/growth-board-data.js` の SBD39 が読む）。
+Entry: `remake/previews/dj/index.html?set=1〜3`（旧 `?stage=` も同じ）。本編と同じ 1280×720 の固定ステージを画面に合わせて拡縮する（`controller-fx.mjs`）。このページ自体は本編の SAVE・所持金・時間を変えない。
+
+## 本編から開く（DJS10・2026-11-01）
+
+- **入口**: 東京（第3章）の夜の自由時間に、地図の路地の地下のクラブ「SEAM（シーム）」（`remake/js/daily/dj-club.js`）。初めて入るまでは店名を知らないので、地図では「地下の店」「地下から低い音がする店をのぞく」と出る。ミニゲームなので時間・お金・体力・好感度は変えない（#2113）。SET 1 はいつでも、SET 2・3 は前のセットを1回回しきると開く。
+- **店主とストーリー**: 店主は針間ヨル（`data/characters.json` の `yoru`、人物は `brand/character_profiles.md`）。初めて入る夜だけ、階段の上でmukaiの常連の彼女に声をかけられ、オープンデッキの夜へ誘われる場面（`ch3_club_first`）。初めて A 以上を出した夜だけ短く話す（`ch3_club_a_talk`）。メニューに店主の一言、セット後に結果への一言。台詞の正本は `data/dialogue/ch3_club.json`。
+- **重ね方**: `remake/js/minigames/dj.js` の `runDjSet` が、このページを `?embed=1` 付きで本編の `#stage` に iframe で重ねる。埋め込み時だけ「← 戻る」が出て、本編のミュートと BGM 音量（`?mute=1`・`?vol=`）に従う。セットを回しきるたびに `postMessage({type:'dj-result', set, rank, total, floor})`、戻ると `{type:'dj-exit'}` を親へ送る。親は送り元の iframe と同じ origin だけを受け付ける。
+- **記録**: `state.dj = { sets: {1: {plays, best: {rank, total, floor, chapter, day}}}, bestRank }`（ベストは点数で比較、bestRank は全セットで最高）。保存形式の移行は不要（読み込みは未知の項目を残す）。心得の盤の「遊びのご褒美」SBD39 が `state.dj.bestRank` を読み、A 以上で寝る前に感覚の火種を1つ渡す（1回だけ）。
+- **未接続**: 地図の行き先への追加（`remake/js/chapters/ch3.js`）は、同じファイルを変えている PR #2166 の完了後に2行足す。手順は `dj-club.js` の冒頭。地図の地点（`ch3-map-model.js` の `club`）と案内文は用意済みで、行き先が渡された時だけ出る。立ち絵・顔アイコン・登場カットイン・クラブの背景・店のロゴは Codex で制作する（Issue）。立ち絵が入るまで登場カットインは出ない（会話は名前だけ）。
 
 ## 遊び方（操作は ▶ と横フェーダーだけ）
 
@@ -51,6 +59,8 @@ Save as: remake/img/ui/dj/floor-crowd.webp (opaque, 1536x512). Keep the original
 ## 検証
 
 - `node remake/test/dj_preview.mjs`: 純関数（セット進行・クオンタイズ・採点・FLOOR）と注入 WebAudio の契約。
+- `node --experimental-vm-modules remake/test/dj_club.mjs`: 本編側の結果検査・記録・セット解放・東京の地図の行き先・SBD39 の火種・セーブ往復。
+- `node remake/test/browser/dj_club.mjs`: 第3章の夜の自由時間にクラブSEAMを開き、出会いの場面（名乗るまで「？？？」）、重ねた DJ で ▶ を押し、結果の記録・自動保存・「戻る」・初めての A の会話・二回目は出会いを繰り返さないこと・時間を使わないことを実ブラウザで確認（CI は `dj-club`）。
 - `node remake/test/browser/dj_preview.mjs`（プレビューサーバー起動後）: PC / タッチ / 動き低減で、操作部の数、▶ の大きさ、PITCH とジョグの実入力、入りのカウントとクオンタイズ、キーボード／タップでの8小節フェード、自動 EQ ランプ、つなぎ後の曲の載せ替え、やり直しを実ブラウザで確認。CI は `tools/ci/suites.json` の `dj-preview`。
 - 実機の発音・遅延・OS 中断は CI 外。
 

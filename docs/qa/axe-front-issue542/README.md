@@ -6,4 +6,4 @@
 
 純粋16・斧20・本編ひより11・旧セーブ6＝独立53ケースとLIME VMがPASS。斧20にはPC/タッチ縦横、説明中の飛行/落下停止、動き軽減、Abort/二重開始/撤去、旧友人/恋人/LIME不変、刃の投影接触、前後回転の5フレームを含む。本編11は実3投と正式前後VN、未読/取消/LOAD、新規ゲームへの切替、費用・好感度・関係の一度だけの処理を検証。自然なNew Game PC/タッチは最終headのCIで別途確認し、未取得の結果を推測しない。
 
-得点・力の判定・手ブレ・UI・シナリオ・セーブ形式は維持。画像PNG/WebPは編集せずGitHubに残す。3D形状/カメラの表示単位とAPIは docs/axe_throw.md。最終head全CI・公開確認・merge/releaseの証拠はIssue/PRの完了記録に追加する。
+得点・力の判定・手ブレ・UI・シナリオ・セーブ形式は維持。画像PNG/WebPは編集せずGitHubに残す。3D形状/カメラの表示単位とAPIは docs/spec/axe_throw.md。最終head全CI・公開確認・merge/releaseの証拠はIssue/PRの完了記録に追加する。

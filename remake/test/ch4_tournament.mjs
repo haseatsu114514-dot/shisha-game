@@ -187,9 +187,20 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   assert.equal(JSON.stringify({ value, cs }), saved);
   assert.notDeepEqual(chapterFourCustomerLines(cs, 1), chapterFourCustomerLines({ ...cs, pull: { temp: .1 } }, 1));
   const final = chapterFourFinalDialogue(finalScene, value, cs);
-  assert(final.lines.some(row => row.text === "……静かでも、いいフェスタだ"));
+  const finalText = final.lines.map(row => row.text).join("\n");
   assert(!final.lines.some(row => /普通のブロンドをほぐす|急がせず、炭を一つ離した|少し休んだら、また吸いたい/.test(row.text)));
-  assert.match(final.lines.map(row => row.text).join("\n"), /調整2回目：△/);
+  // 味の1行＋熱の1行だけを差し込み、配合%・調整マーク・太陽の講評（結果モーダルの役目）は繰り返さない。
+  assert.match(finalText, /桜の香りが、まっすぐ立つ/);
+  assert.match(finalText, /熱は落ち着いている/);
+  assert.doesNotMatch(finalText, /配合の\d+%|調整\d回目：|熱が暴れてる/);
+  const scripted = finalScene.lines.length - final.lines.length;
+  assert.equal(scripted, 10 - 2, "Only the ten fixed own-craft lines are replaced by two served lines");
+  // 操作に左右されない視線の一行と、対戦相手の場面・締めは台本のまま残る。
+  const glance = final.lines.findIndex(row => row.text.startsWith("ふと視線を感じた。"));
+  assert(glance > 0 && /熱は落ち着いている/.test(final.lines[glance - 1].text));
+  assert(final.lines.some(row => row.text.startsWith("シェイクも火を直す。")));
+  const failedPull = chapterFourFinalDialogue(finalScene, value, { ...cs, pull: { failed: "burnt" } });
+  assert(!failedPull.lines.some(row => /まっすぐ立つ|熱は落ち着いている/.test(row.text)), "No invented taste for a failed pull");
   const defeatScene = read("dialogue/ch4_main").dialogues.find(row => row.dialogue_id === "ch4_defeat");
   const burnt = { ...cs, failed: "burnt", pull: { failed: "burnt" }, careHistory: [] };
   const defeat = chapterFourDefeatDialogue(defeatScene, value, burnt);

@@ -14,7 +14,7 @@ description: shisha-gameの既存キャラの立ち絵・表情差分を、元�
 
 ## ひよりの選択済みデザイン（2026-10-11）
 
-オーナー「今のレースブラウス案」を表情差分の衣装に選択。現在はピンクブラウンのポニーテール、白〜アイボリーのフレンチスリーブ・レースブラウス、黒パンツ、名札なし。通常・物憂げ・微笑み・驚き・感動の涙と、ミディアムヘアで元気な学生時代の計6枚を本編用に保存。本人参照・生成指示は [ひより原画](../../../asset_sources/portraits/hiyori-office-v1/README.md)、接続は [本編仕様](../../../docs/hiyori_implementation.md)。画質の参照には初期のみんと／あげはも引き続き使う。長袖白シャツ案や以前の短髪・社員証へ戻さない。
+オーナー「今のレースブラウス案」を表情差分の衣装に選択。現在はピンクブラウンのポニーテール、白〜アイボリーのフレンチスリーブ・レースブラウス、黒パンツ、名札なし。通常・物憂げ・微笑み・驚き・感動の涙と、ミディアムヘアで元気な学生時代の計6枚を本編用に保存。本人参照・生成指示は [ひより原画](../../../asset_sources/portraits/hiyori-office-v1/README.md)、接続は [本編仕様](../../../docs/spec/hiyori_implementation.md)。画質の参照には初期のみんと／あげはも引き続き使う。長袖白シャツ案や以前の短髪・社員証へ戻さない。
 
 ## 本編採用の記録（2026-10-08）
 
@@ -229,7 +229,7 @@ node remake/test/rin_portraits.mjs
 
 過去の制作根拠は保持する。以下は現在の担当・未完を指定するものではない。
 
-- 凛v12: [5表情](references/rin-v12-five-review.png)、[姿勢比較](references/rin-v12-stance-comparison.png)、[実会話比較](references/rin-v12-game-before-after-591.png)、[生成元](references/rin-v12-generation.json)、[検証](references/rin-v12-integration.json)、[v11からの引き継ぎ履歴](../../../docs/rin_portrait_handoff.md)。
+- 凛v12: [5表情](references/rin-v12-five-review.png)、[姿勢比較](references/rin-v12-stance-comparison.png)、[実会話比較](references/rin-v12-game-before-after-591.png)、[生成元](references/rin-v12-generation.json)、[検証](references/rin-v12-integration.json)、[v11からの引き継ぎ履歴](../../../docs/archive/rin_portrait_handoff.md)。
 - 凛v11: [5表情](references/rin-v11-five-review.png)、[生成記録](references/rin-v11-expressions-generation.json)、[配置・検証](references/rin-v11-integration.json)。
 - すみさんv1: [5表情](references/sumi-five-review.png)、[生成・配置記録](references/sumi-generation.json)。
 - ましろv1: [6表情](references/mashiro-six-review.png)、[基本5枚](references/mashiro-generation.json)、[立ち寝](references/mashiro-sleep-generation.json)。`sad` は元の絵どおりのあくび。すみさん・ましろの採用記録は要望台帳PRT49を参照。

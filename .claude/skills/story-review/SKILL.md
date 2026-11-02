@@ -16,9 +16,9 @@ description: ストーリー・台詞の添削、シナリオの質のレビュ�
 - 過去レポート（`docs/story_review_report_*.md`）があれば先に読み、
   **指摘済み・対応済みの点を再指摘しない**。
 
-## Step 2 — 評価観点（正本: docs/story_review_prompt.md の B節）
+## Step 2 — 評価観点（正本: docs/prompts/story_review_prompt.md の B節）
 
-評価軸は `docs/story_review_prompt.md` の「B. ストーリー魅力向上の提案」を正とする。要点:
+評価軸は `docs/prompts/story_review_prompt.md` の「B. ストーリー魅力向上の提案」を正とする。要点:
 
 1. **キャラの深み**: 台詞が没個性になっていないか。その台詞、speaker名を隠しても
    誰が言ったか分かるか（分からなければ口調が死んでいる）。

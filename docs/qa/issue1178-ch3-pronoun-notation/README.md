@@ -153,7 +153,7 @@ print(dict(totals))
 
 ## 検証・残る判断・保存
 
-- 実施: 指定の `AGENTS.md` / `docs/pr_change_preflight.md` / 共通ログを読了。Git root・必要ディレクトリ・`project.godot` 不在・開始時の差分なしを確認。Git Safetyは成功、hooksは `.githooks`、canonicalRootはworktreeの親checkoutと一致。設定変更・追加clone/worktreeは行っていない。
+- 実施: 指定の `AGENTS.md` / `docs/tools/pr_change_preflight.md` / 共通ログを読了。Git root・必要ディレクトリ・`project.godot` 不在・開始時の差分なしを確認。Git Safetyは成功、hooksは `.githooks`、canonicalRootはworktreeの親checkoutと一致。設定変更・追加clone/worktreeは行っていない。
 - 実施: Issue本文と開いているPRの実変更ファイルを確認。編集先READMEに重複なし。第2章・編集禁止ファイルに変更なし。
 - 実施: 主要12JSON・補助JSONの構文読み取り、全主要表示文の前後・話者・条件・章内日程の照合、日英の小規模な出典確認、READMEの行参照と空白差分の確認。
 - 未実施: ゲームのnode回帰テスト、ブラウザ再生・スクリーンショット、CI。文書だけの調査のためサーバーは起動していない。全予約・全SAVE/LOAD分岐の動作保証はしない。
