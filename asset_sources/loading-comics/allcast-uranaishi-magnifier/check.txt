@@ -1,0 +1,2 @@
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-magnifier/panels/uranaishi-magnifier-1.webp: 748x499 比率 1.499 66 KiB
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-magnifier/panels/uranaishi-magnifier-2.webp: 748x499 比率 1.499 74 KiB

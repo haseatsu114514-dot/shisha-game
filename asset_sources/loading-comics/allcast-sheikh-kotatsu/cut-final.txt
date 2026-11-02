@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EEE2CE  枠の段 1: 2コマ@y=272
+  コマ1: 720x530 @(36,272) 比率 1.358 → ok
+  コマ2: 718x533 @(782,272) 比率 1.347 → warn
+コマ1: 720x530 (1.358) → 左右に各4.7%の紙帯 → 出力 795x530  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-kotatsu/panels/sheikh-kotatsu-1.webp (66 KiB)
+コマ2: 718x533 (1.347) → 左右に各5.1%の紙帯 → 出力 800x533  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-kotatsu/panels/sheikh-kotatsu-2.webp (70 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "sheikh-kotatsu",
+  "title": "こたつの王者",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "身長192cmのシェイクに、日本のこたつは小さい。",
+  "panels": [
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-kotatsu/panels/sheikh-kotatsu-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-kotatsu/panels/sheikh-kotatsu-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-kotatsu/source-v1.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 720,
+        "height": 530,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-kotatsu/source-v1.png",
+      "region": {
+        "x": 782,
+        "y": 272,
+        "width": 718,
+        "height": 533,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "sheikh-kotatsu-1.webp",
+      "width": 795,
+      "height": 530,
+      "sha256": "f7c143d4822acf5dacab1a63ad6578bcc03ff6c2bf046a0654807e6d4b8d4711"
+    },
+    {
+      "file": "sheikh-kotatsu-2.webp",
+      "width": 800,
+      "height": 533,
+      "sha256": "44c67cfe48e4681fccc667cd620e8732b6c6a56cbdc4797e4648094ed11d0676"
+    }
+  ]
+}
