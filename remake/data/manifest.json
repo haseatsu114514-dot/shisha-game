@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-02 14:34 UTC",
+ "generated": "2026-11-02 15:28 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -1949,6 +1949,29 @@
      "top": 29.305
     }
    }
+  },
+  "noor": {
+   "color": "#e39a48",
+   "secondary": "#f6d6a0",
+   "shadow": "#0d0332",
+   "background": "ui/character_intros/noor.png",
+   "frames": {
+    "normal": {
+     "width": 873.026,
+     "left": -111.964,
+     "top": 22.41
+    },
+    "smile": {
+     "width": 874.521,
+     "left": -114.145,
+     "top": 20.432
+    },
+    "surprise": {
+     "width": 873.026,
+     "left": -112.172,
+     "top": 22.41
+    }
+   }
   }
  },
  "titleArts": [
@@ -3009,7 +3032,8 @@
   "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
   "sprites/characters/noor/chr_noor_normal.png",
   "sprites/characters/noor/chr_noor_smile.png",
-  "sprites/characters/noor/chr_noor_surprise.png"
+  "sprites/characters/noor/chr_noor_surprise.png",
+  "ui/character_intros/noor.png"
  ],
  "limeMedia": {
   "st_adam_bless": {
