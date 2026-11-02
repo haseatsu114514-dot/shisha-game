@@ -217,6 +217,12 @@
       "run": ["node --experimental-vm-modules remake/test/warmup_defer.mjs"]
     },
     {
+      "id": "gain-notice-a10",
+      "title": "Gain notices shorten only on repeat with the shorten-seen setting (#1081 A10)",
+      "kind": "quick",
+      "run": ["node remake/test/gain_notice_a10.mjs"]
+    },
+    {
       "id": "stat-ui-progress",
       "title": "Ten-step UI boundaries and sense color width",
       "kind": "quick",
@@ -2490,7 +2496,7 @@
       "id": "continue-screen",
       "title": "Continue captions, readiness and typing",
       "kind": "browser",
-      "weight": 5.5,
+      "weight": 11,
       "timeout": 15,
       "paths": [
         "remake/js/scenes/continue*.js",
@@ -2502,12 +2508,7 @@
         "remake/test/continue_typing.mjs",
         "remake/test/continue_screen.mjs",
         "remake/test/continue_classic_count.mjs",
-        "remake/test/burnt_gameover.mjs",
-        "remake/test/browser/continue_closeup.mjs",
-        "remake/test/browser/continue_keyboard.mjs",
-        "remake/test/browser/continue_lifecycle.mjs",
-        "remake/test/browser/continue_output.mjs",
-        "remake/test/browser/gameover_title_center.mjs"
+        "remake/test/burnt_gameover.mjs"
       ],
       "run": [
         "node remake/test/continue_readiness.mjs",
@@ -2516,7 +2517,26 @@
         "SHOTS=.codex/artifacts/remake-browser/continue-typing node remake/test/continue_typing.mjs",
         "node remake/test/continue_screen.mjs",
         "node remake/test/continue_classic_count.mjs",
-        "node remake/test/burnt_gameover.mjs",
+        "node remake/test/burnt_gameover.mjs"
+      ]
+    },
+    {
+      "id": "continue-closeup",
+      "title": "Continue close-up, keyboard, lifecycle and output",
+      "kind": "browser",
+      "weight": 5.5,
+      "timeout": 12,
+      "paths": [
+        "remake/js/scenes/continue*.js",
+        "remake/css/continue*.css",
+        "remake/index.html",
+        "remake/test/browser/continue_closeup.mjs",
+        "remake/test/browser/continue_keyboard.mjs",
+        "remake/test/browser/continue_lifecycle.mjs",
+        "remake/test/browser/continue_output.mjs",
+        "remake/test/browser/gameover_title_center.mjs"
+      ],
+      "run": [
         "node remake/test/browser/continue_closeup.mjs",
         "node remake/test/browser/continue_keyboard.mjs",
         "node remake/test/browser/continue_lifecycle.mjs",

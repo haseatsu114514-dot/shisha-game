@@ -1,5 +1,0 @@
-# 夜CGと翌日場面の区別
-
-今回のnight台詞candidateは冒頭1textだけ。confession_mashiro_acceptの既存line20「……翌日の昼下がり。」は矛盾していない別場面なので変更しない。
-
-新MAS-A/Bはいずれも当夜の受諾直後を描く。現scriptのshow_cg先頭〜hide_cg末尾の区間には翌日場面も含まれるため、実採用/接続時は翌日の行へ入る前に夜CGを隠す等の表示cueを別途確認する。翌日の本文を夜へ一律置換したり、calendar/day/resourcesを勝手に進めたりしない。今回はcandidate画像/台詞差分のみで、この表示cueを本編へ適用していない。採用後の実VN/会話枠受入は未実施。

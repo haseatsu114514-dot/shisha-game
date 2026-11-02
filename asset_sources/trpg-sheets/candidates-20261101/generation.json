@@ -1,0 +1,206 @@
+[
+  {
+    "file": "look-a.png",
+    "size": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "alpha": [
+      0,
+      255
+    ],
+    "bytes": 2473959,
+    "sha256": "f30e0c4cb904cf1976a1e8a7fe3d33cf4e90837f3a80130358d2d4fe443541a2"
+  },
+  {
+    "file": "look-b.png",
+    "size": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "alpha": [
+      0,
+      255
+    ],
+    "bytes": 2250571,
+    "sha256": "46f01faaa1ee6bd7ed4ec20a736d59ac515f606163efc36b49bd4bcdd5052fd3"
+  },
+  {
+    "file": "look-c.png",
+    "size": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "alpha": [
+      0,
+      255
+    ],
+    "bytes": 2445540,
+    "sha256": "8c8b57391c78717ba5829d2d9b1d599ef01f5c948833a6ef5a08422e7c2b667c"
+  },
+  {
+    "file": "pc-a.png",
+    "size": [
+      1448,
+      1086
+    ],
+    "mode": "RGBA",
+    "alpha": [
+      0,
+      255
+    ],
+    "bytes": 2303157,
+    "sha256": "a90fda5d92878a358fa5a4bde616d7b1441a6a5f8f06f89769b5cdd772b98b7a",
+    "row3_empty_cells_alpha_bboxes": [
+      [
+        0,
+        0,
+        362,
+        362
+      ],
+      [
+        0,
+        0,
+        362,
+        362
+      ],
+      [
+        0,
+        0,
+        352,
+        362
+      ]
+    ],
+    "row3_empty_cells_stats": [
+      {
+        "max_alpha": 247,
+        "pixels_alpha_gt_8": 111,
+        "pixels_alpha_gt_32": 88,
+        "pixels_alpha_gt_128": 80
+      },
+      {
+        "max_alpha": 255,
+        "pixels_alpha_gt_8": 907,
+        "pixels_alpha_gt_32": 879,
+        "pixels_alpha_gt_128": 571
+      },
+      {
+        "max_alpha": 255,
+        "pixels_alpha_gt_8": 1083,
+        "pixels_alpha_gt_32": 1017,
+        "pixels_alpha_gt_128": 787
+      }
+    ]
+  },
+  {
+    "file": "pc-b.png",
+    "size": [
+      1448,
+      1086
+    ],
+    "mode": "RGBA",
+    "alpha": [
+      0,
+      255
+    ],
+    "bytes": 2083218,
+    "sha256": "11bcd3e45bb87436cd878dc933cb1fe29d77dadd389ef8282b709a3d2bdb6cf9",
+    "row3_empty_cells_alpha_bboxes": [
+      [
+        0,
+        8,
+        358,
+        340
+      ],
+      [
+        15,
+        2,
+        360,
+        362
+      ],
+      [
+        1,
+        31,
+        342,
+        279
+      ]
+    ],
+    "row3_empty_cells_stats": [
+      {
+        "max_alpha": 254,
+        "pixels_alpha_gt_8": 953,
+        "pixels_alpha_gt_32": 930,
+        "pixels_alpha_gt_128": 862
+      },
+      {
+        "max_alpha": 1,
+        "pixels_alpha_gt_8": 0,
+        "pixels_alpha_gt_32": 0,
+        "pixels_alpha_gt_128": 0
+      },
+      {
+        "max_alpha": 1,
+        "pixels_alpha_gt_8": 0,
+        "pixels_alpha_gt_32": 0,
+        "pixels_alpha_gt_128": 0
+      }
+    ]
+  },
+  {
+    "file": "pc-c.png",
+    "size": [
+      1448,
+      1086
+    ],
+    "mode": "RGBA",
+    "alpha": [
+      0,
+      255
+    ],
+    "bytes": 2008083,
+    "sha256": "7aa1916f7232791186f82f1d59e7685c66c7735b76513b71f5c78fe8c5c8ffb2",
+    "row3_empty_cells_alpha_bboxes": [
+      [
+        0,
+        4,
+        348,
+        332
+      ],
+      [
+        3,
+        0,
+        320,
+        271
+      ],
+      [
+        31,
+        0,
+        316,
+        305
+      ]
+    ],
+    "row3_empty_cells_stats": [
+      {
+        "max_alpha": 255,
+        "pixels_alpha_gt_8": 894,
+        "pixels_alpha_gt_32": 858,
+        "pixels_alpha_gt_128": 802
+      },
+      {
+        "max_alpha": 1,
+        "pixels_alpha_gt_8": 0,
+        "pixels_alpha_gt_32": 0,
+        "pixels_alpha_gt_128": 0
+      },
+      {
+        "max_alpha": 1,
+        "pixels_alpha_gt_8": 0,
+        "pixels_alpha_gt_32": 0,
+        "pixels_alpha_gt_128": 0
+      }
+    ]
+  }
+]

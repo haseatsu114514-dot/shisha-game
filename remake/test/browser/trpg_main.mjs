@@ -15,6 +15,37 @@ async function hit(page, id) {
   if (await page.evaluate(() => matchMedia("(pointer:coarse)").matches)) await target.tap(); else await target.click();
 }
 async function lines(page) { for (let i = 0; i < 35 && await button(page, "trpg-next").isVisible(); i++) await hit(page, "trpg-next"); }
+
+// New scenes: two questions for the story's character after the first roll, a twist after the guess.
+async function interviewStep(page) {
+  const snap = () => page.evaluate(() => window.__trpg?.snapshot?.() ?? null);
+  if ((await snap())?.phase !== "interview" && !(await page.locator('[data-test="trpg-interview-done"], [data-test^="trpg-topic-"]').count())) return;
+  for (let n = 0; n < 2; n++) {
+    const topic = page.locator('[data-test^="trpg-topic-"]:not([disabled]):not(.selected)').first();
+    if (!await topic.count()) break;
+    if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await topic.tap(); else await topic.click();
+    for (let i = 0; i < 40 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+  }
+  const done = page.locator('[data-test="trpg-interview-done"]');
+  if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await done.tap(); else await done.click();
+}
+async function twistStep(page) {
+  const option = page.locator('[data-test^="trpg-plan-tactic-"]').first();
+  if (!await option.count()) return;
+  const touch = await page.evaluate(() => navigator.maxTouchPoints > 0);
+  if (touch) await option.tap(); else await option.click();
+  const open = page.locator('[data-test="trpg-twist-open"]');
+  if (touch) await open.tap(); else await open.click();
+  const card = page.locator('[data-test^="trpg-approach-"]').first();
+  if (touch) await card.tap(); else await card.click();
+  for (let i = 0; i < 40 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+  const roll = page.locator('[data-test="trpg-roll"]');
+  if (touch) await roll.tap(); else await roll.click();
+  await page.locator('[data-test="trpg-settle"]').waitFor();
+  const settle = page.locator('[data-test="trpg-settle"]');
+  if (touch) await settle.tap(); else await settle.click();
+  for (let i = 0; i < 60 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+}
 async function declare(page) {
   const card = page.locator('[data-test^="trpg-approach-"]').first();
   if (await card.count() && await card.isVisible()) { await card.click(); await lines(page); }
@@ -52,8 +83,10 @@ async function play(page, id, { expectTutorial = false } = {}) {
   }
   await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
   const shark = id === "shark-last-order";
+  await interviewStep(page);
   for (const spot of shark ? ["radio", "leaves", "fan"] : ["menu", "window", "bag"]) { await hit(page, "trpg-spot-" + spot); await lines(page); }
   await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-" + (shark ? "scent" : "quiet")); await lines(page);
+  await twistStep(page);
   for (const [field, value] of shark ? [["tool", "citrus"], ["route", "pier"]] : [["aroma", "tea"], ["seat", "window"]]) await hit(page, "trpg-plan-" + field + "-" + value);
   await hit(page, "trpg-prepare-open"); await roll(page);
   await hit(page, "trpg-plan-" + (shark ? "finale-lure" : "approach-quiet")); await hit(page, "trpg-serve-open"); await roll(page);
@@ -210,7 +243,7 @@ await suite("trpg-main", async check => {
     await hit(page, "trpg-play-shark-last-order");
     assert(await page.locator('.trpg-table-person[data-speaker="adam"]').count());
     assert.equal(await page.locator('.trpg-table-person[data-speaker="hiyori"]').count(), 0);
-    await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
+    await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page); await interviewStep(page);
     await hit(page, "trpg-consult-adam"); assert((await page.locator(".trpg-speech p").textContent()).includes("狙いを定めよう"));
     await lines(page); await hit(page, "trpg-exit"); await hit(page, "trpg-exit-confirm");
     assert.deepEqual((await snapshot(page)).trpg.cleared, {});

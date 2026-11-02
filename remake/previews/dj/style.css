@@ -180,3 +180,46 @@ input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
 .result-actions{display:flex;gap:10px}.result-actions button{flex:1;font-size:15px;font-weight:700}
 #exit{background:#0b0812cc}#exit[hidden]{display:none}
 @media (prefers-reduced-motion:reduce){.platter:before{transform:none}button,.knob{transition:none}.deck-play.cue-soon{animation:none;border-color:var(--ok)}.judge.pop{animation:none}}
+/* ── gameplay (DJS17): approach ring, DROP, guide band + combo, 選曲 cards ─────────────── */
+.deck-play{position:relative;overflow:visible}
+.deck-play:after{content:"";position:absolute;inset:-6px;border-radius:14px;border:3px solid var(--ok);opacity:0;transform:scale(var(--ap,1));pointer-events:none;transition:opacity .15s}
+.deck-play.cue-soon:after{opacity:.9;box-shadow:0 0 16px #aee7d5aa}
+.deck-play.cue-open:after{opacity:1;transform:none;animation:ring-hit .35s ease-out infinite alternate}
+@keyframes ring-hit{to{box-shadow:0 0 26px #aee7d5}}
+.drop{position:absolute;z-index:4;inset:0;display:grid;place-items:center;font:900 54px/1 var(--mono);letter-spacing:.2em;color:#fff;pointer-events:none;opacity:0}
+.drop.big{animation:drop-big .9s ease-out;background:radial-gradient(circle at 50% 70%,#ffffffcc,#b45cf088 35%,transparent 70%);text-shadow:0 0 24px #b45cf0,0 0 6px #fff}
+.drop.small{animation:drop-small .6s ease-out;background:radial-gradient(circle at 50% 70%,#aee7d566,transparent 60%)}
+.drop.miss{animation:drop-miss .5s ease-out}
+@keyframes drop-big{0%{opacity:1;transform:scale(1.25)}60%{opacity:.9;transform:none}100%{opacity:0}}
+@keyframes drop-small{0%{opacity:1}100%{opacity:0}}
+@keyframes drop-miss{0%,100%{opacity:0;transform:none}20%{opacity:.6;transform:translateX(-6px);background:#ff5f8a33}40%{transform:translateX(6px)}60%{transform:translateX(-3px)}}
+.floor.hype:before{animation:hype .25s ease-out}
+@keyframes hype{0%{filter:brightness(1.6) saturate(1.6)}100%{filter:brightness(calc(.55 + var(--f,.5) * .6)) saturate(calc(.8 + var(--f,.5) * .5))}}
+.xtrack{position:relative}
+.guide{position:absolute;z-index:2;top:14px;height:42px;border-radius:8px;background:linear-gradient(90deg,transparent,#aee7d529 30%,#aee7d529 70%,transparent);box-shadow:inset 0 0 0 2px #aee7d588;pointer-events:none;transition:left .06s linear}
+.guide i{position:absolute;left:50%;top:-4px;bottom:-4px;width:2px;transform:translateX(-50%);background:#aee7d5;box-shadow:0 0 8px #aee7d5}
+.guide.in{background:linear-gradient(90deg,transparent,#aee7d544 30%,#aee7d544 70%,transparent);box-shadow:inset 0 0 0 2px #aee7d5,0 0 14px #aee7d588}
+.guide.hit{animation:guide-hit .3s ease-out}
+.guide.miss{animation:guide-miss .3s ease-out}
+@keyframes guide-hit{0%{box-shadow:inset 0 0 0 2px #fff,0 0 22px #aee7d5}}
+@keyframes guide-miss{0%{box-shadow:inset 0 0 0 2px #ff8fc4,0 0 18px #ff5f8a}}
+#crossfader{position:relative;z-index:1}
+.combo{font:800 12px/1 var(--mono);letter-spacing:.1em;color:#aee7d5;align-self:center;min-width:90px;text-align:center}
+.combo.hot{color:#ffe2a6;text-shadow:0 0 10px #f0a64a}
+.pick{position:absolute;z-index:7;top:372px;width:470px;padding:14px 16px 16px;border:1px solid #aee7d588;border-radius:14px;background:#0d0a18f2;box-shadow:0 10px 40px #000c,0 0 24px #aee7d522}
+.pick[data-side="a"]{left:34px}.pick[data-side="b"]{left:776px}
+.pick[hidden]{display:none}
+.pick-title{margin:0 0 4px;font-size:15px;font-weight:800;letter-spacing:.1em;color:#fff}
+.request{margin:0 0 10px;font-size:14px;font-weight:700;color:#ffe2a6}
+.pick-cards{display:grid;gap:10px}
+.pick-card{position:relative;display:grid;gap:4px;min-height:96px;padding:12px 14px 12px 104px;text-align:left;border-radius:10px;border:1px solid #5a4b78;background:linear-gradient(90deg,#1a1430,#120e20);overflow:hidden}
+.pick-card:before{content:"";position:absolute;left:10px;top:50%;width:80px;height:80px;transform:translateY(-50%);border-radius:8px;background:var(--art,none) center/cover no-repeat,#2a2240}
+.pick-card b{font-size:16px;color:#fff}
+.pick-meta{font:600 12px/1.3 var(--mono);color:#cfc4e2}
+.pick-meta em{font-style:normal;margin-left:6px;padding:1px 6px;border-radius:6px}
+.pick-meta em.ok{color:#07140e;background:var(--ok)}.pick-meta em.ng{color:#fff;background:#6b3a55}
+.energy{font:700 14px/1 var(--mono);letter-spacing:.06em;color:#ff8fc4}
+.energy small{font-size:13px;color:#ffe2a6;margin-left:4px}
+.pick-card:hover,.pick-card:focus-visible{border-color:var(--ok)}
+.rank.pick-great{color:#ffe2a6;text-shadow:0 0 20px #f0a64a}.rank.pick-good{color:#aee7d5}.rank.pick-bad{color:#ff8fc4}
+@media (prefers-reduced-motion:reduce){.drop.big,.drop.small,.drop.miss,.floor.hype:before,.guide.hit,.guide.miss,.deck-play.cue-open:after{animation:none}.guide{transition:none}}

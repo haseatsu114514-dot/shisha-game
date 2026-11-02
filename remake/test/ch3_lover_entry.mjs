@@ -133,7 +133,13 @@ await check('chapter runners call the shared entry (no duplicated lover logic)',
   assert.match(src('chapters/ch3-social.js'), /from "\.\/lover-entry\.js"/);
   assert.match(src('chapters/ch3.js'), /if \(kind === "date"\) await readLoverMilestoneAt\(owner, id\)/);
   assert.match(src('chapters/ch4.js'), /import\("\.\/lover-entry\.js"\)/);
-  assert.match(src('chapters/ch5.js'), /import\("\.\/lover-entry\.js"\)/);
+  // 第5章の自由行動は日常ループ（#2033）。恋人のLIMEは朝の端末（romance.js）で届き、デートの誘いと告白は出さない。
+  const ch5Daily = src('chapters/ch5-daily.js');
+  assert.match(ch5Daily, /runDaily\(/);
+  assert.match(ch5Daily, /dateInvitations:\s*false/);
+  assert.match(ch5Daily, /confessions:\s*false/);
+  assert.match(src('daily/calendar.js'), /deliverMorning\(\{ fixedNight, invitations: chapterDef\.dateInvitations !== false \}\)/);
+  assert.match(src('daily/calendar.js'), /chapterDef\.confessions === false \? false/);
   assert.doesNotMatch(src('chapters/lover-entry.js'), /lover_\$\{|limePhase|morning/, 'Text and timing stay in romance.js / lover.json');
 });
 
