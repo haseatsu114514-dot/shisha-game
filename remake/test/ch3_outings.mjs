@@ -47,20 +47,56 @@ const ids = (value, window) => chapterThreeOutings(value, window.id).map(item =>
   assert.deepEqual(chapterThreeOutingCandidates(value).filter(item => item.id === "enmaku_notes"), []);
 }
 
-// スティーブの来店（#1696）: 配達で面識があり、彼の店を訪ねる前だけ。一度きり。
+// スティーブの来店（#1696・AFB02）: 配達で面識があり、彼の店を訪ねる前まで何度でも。2回目からは合図の回と客の顔の回を交互。
 {
   const early = at("d8-night");
   assert(!ids(early.value, early.window).includes("mukai_steve"), "Steve visits before meeting him");
   early.value.met.steve = true;
   assert(ids(early.value, early.window).includes("mukai_steve"));
+  const first = chapterThreeOutings(early.value, early.window.id).find(item => item.id === "mukai_steve");
+  assert.equal(outingDialogueId(early.value, first, early.window), "ch3_outing_mukai_steve");
+  assert.equal(first.reasonText, "配達先のスティーブが、今日は客として来るらしい");
   const outing = claimChapterThreeOuting(early.value, early.window.id, "mukai_steve");
   assert.equal(outing.money, 3000);
-  assert.equal(outingDialogueId(early.value, outing, early.window), "ch3_outing_mukai_steve");
+  assert.deepEqual(outing.affinity, { steve: 24 });
   const next = nextWindow(early.value);
-  assert(!ids(early.value, next).includes("mukai_steve"), "Steve's visit repeated");
+  const again = chapterThreeOutings(early.value, next.id).find(item => item.id === "mukai_steve");
+  assert(again, "Steve comes again as a customer");
+  assert.equal(again.reasonText, "スティーブが、また客として来るらしい");
+  const talkAfter = n => outingDialogueId({ ...early.value, flags: { ...early.value.flags, [OUTINGS_FLAG]: { mukai_steve: n } } }, again, next);
+  assert.deepEqual([1, 2, 3, 4].map(talkAfter),
+    ["ch3_outing_mukai_steve_b", "ch3_outing_mukai_steve_c", "ch3_outing_mukai_steve_b", "ch3_outing_mukai_steve_c"]);
   const late = at("d12-noon");
   late.value.met.steve = true;
-  assert(!ids(late.value, late.window).includes("mukai_steve"), "Steve's first visit after his shop scene");
+  assert(!ids(late.value, late.window).includes("mukai_steve"), "Steve's customer visit after his shop scene");
+}
+
+// 煙幕に通う（AFB02）: 一度きりの話（ノート・答え）がある間はそちらだけ。読んだ後は何度でも寄れる。
+{
+  const { value, window } = at("d8-night");
+  assert(!ids(value, window).includes("enmaku_visit"), "Regular visit shown before the one-time talk");
+  assert(claimChapterThreeOuting(value, window.id, "enmaku_notes"));
+  let next = nextWindow(value);
+  assert(ids(value, next).includes("enmaku_visit"));
+  const visit = chapterThreeOutings(value, next.id).find(item => item.id === "enmaku_visit");
+  assert.equal(outingDialogueId(value, visit, next), "ch3_outing_enmaku_visit");
+  assert.deepEqual(visit.affinity, { kuze: 24 });
+  assert(claimChapterThreeOuting(value, next.id, "enmaku_visit"));
+  next = nextWindow(value);
+  const again = chapterThreeOutings(value, next.id).find(item => item.id === "enmaku_visit");
+  assert(again, "Kuze's shop can be visited again");
+  assert.equal(outingDialogueId(value, again, next), "ch3_outing_enmaku_visit_b");
+  // 助言の後は「答えを返しに行く」が先。読むまで通いは出さない。
+  const late = at("d12-noon");
+  assert(ids(late.value, late.window).includes("enmaku_answer") && !ids(late.value, late.window).includes("enmaku_visit"));
+}
+
+// つり合い（AFB02）: 6回の自由時間のうち5回で、久世とスティーブの2人が♥5に届く（魅力が低いままの計算）。
+{
+  const pace = 0.85, story = 2 * 6, outing = 24;
+  const kuze = 2 * outing * pace + 3 * story * pace;   // 煙幕2回＋本筋3場面（初対面・mukaiの客席・助言）
+  const steve = 3 * outing * pace + 1 * story * pace;  // 客の来店3回＋本筋1場面（低い熱）
+  assert(kuze >= AFFINITY_RANK_PTS[5] && steve >= AFFINITY_RANK_PTS[5], `${kuze} / ${steve}`);
 }
 
 // 旧ルートの非会員は従来どおり空き時間を増やさない。
@@ -173,11 +209,12 @@ function nextWindow(value) {
   assert.deepEqual(Object.keys(byId.ch3_outing_enmaku_answer.branches).sort(), ["tried", "untried"]);
   // スティーブの味の会話（#2028）。熟練度は台本の metadata、好感度は任意の外出の確定時だけ。
   assert.deepEqual(byId.ch3_outing_steve_timer.metadata.flavor_lesson, { mountain_mist: 1 });
-  assert.deepEqual(TOKYO_OUTINGS.find(item => item.id === "steve_timer").affinity, { steve: 10 });
-  assert(TOKYO_OUTINGS.filter(item => item.affinity).every(item => !item.repeat), "Affinity outings are read once");
-  // 久世（#2028）: 好感度は煙幕への再訪（任意の外出）だけ。台本には報酬行を置かない。
-  for (const id of ["enmaku_notes", "enmaku_answer"]) {
-    assert.deepEqual(TOKYO_OUTINGS.find(item => item.id === id).affinity, { kuze: 10 });
+  assert.deepEqual(TOKYO_OUTINGS.find(item => item.id === "steve_timer").affinity, { steve: 24 });
+  // 好感度の付く外出は、一度きりの話か、通うたびに台本が変わる行き先（AFB02）。
+  assert(TOKYO_OUTINGS.filter(item => item.affinity).every(item => !item.repeat || item.talks?.length >= 3), "Repeated affinity outings rotate talks");
+  // 久世（#2028・AFB02）: 好感度は煙幕への外出の確定時。外出の台本には報酬行を置かない。
+  for (const id of ["enmaku_notes", "enmaku_answer", "enmaku_visit"]) {
+    assert.deepEqual(TOKYO_OUTINGS.find(item => item.id === id).affinity, { kuze: 24 });
     assert(!JSON.stringify(byId[`ch3_outing_${id}`]).includes("affinity"));
   }
   // てつこの世話は撫でる／餌の2択。どちらの枝も次の行へ戻り、報酬行を持たない。
@@ -227,7 +264,9 @@ function nextWindow(value) {
   for (const id of ["ch3_kuze_first", "ch3_kuze_mukai_visit", "ch3_kuze_advice", "ch3_enmaku_cleanup"]) {
     const dialogue = scene(id);
     const lines = [...dialogue.lines, ...Object.values(dialogue.branches || {}).flat()];
-    assert(!dialogue.metadata?.add_affinity && !lines.some(line => line.affinity?.kuze), `${id}: mandatory scenes give no affinity`);
+    // 本筋で会う場面は少しだけ上がる（AFB02。台本の metadata だけで、行の報酬は置かない）。後日談の片付けは上げない。
+    assert(!lines.some(line => line.affinity?.kuze), `${id}: no affinity lines`);
+    assert.deepEqual(dialogue.metadata?.add_affinity, id === "ch3_enmaku_cleanup" ? undefined : { kuze: 2 }, `${id}: small story affinity`);
   }
   const cleanup = scene("ch3_enmaku_cleanup");
   const gate = cleanup.lines.find(line => line.type === "condition" && line.flag === "_lime_contact_kuze");

@@ -3,6 +3,9 @@
     {
       "dialogue_id": "ch3_kuze_first",
       "metadata": {
+        "add_affinity": {
+          "kuze": 2
+        },
         "flavor_lesson": {
           "chocolate": 1
         }
@@ -320,6 +323,11 @@
     },
     {
       "dialogue_id": "ch3_kuze_mukai_visit",
+      "metadata": {
+        "add_affinity": {
+          "kuze": 2
+        }
+      },
       "lines": [
         {
           "speaker": "",
@@ -401,6 +409,9 @@
     {
       "dialogue_id": "ch3_kuze_advice",
       "metadata": {
+        "add_affinity": {
+          "kuze": 2
+        },
         "flavor_lesson": {
           "orange": 1
         }
@@ -594,6 +605,11 @@
     },
     {
       "dialogue_id": "ch3_steve_low_heat",
+      "metadata": {
+        "add_affinity": {
+          "steve": 2
+        }
+      },
       "lines": [
         {
           "speaker": "",
@@ -767,7 +783,7 @@
     },
     {
       "dialogue_id": "ch3_kuze_lime",
-      "comment": "第3章の任意場面（#2028）。助言の後、煙幕への再訪で久世が♥1になってから。好感度は任意場面だけで付ける。後日談の ch3_enmaku_cleanup で、交換した時だけ「返事の欄」を回収する。大会の前後を前提にしない。",
+      "comment": "第3章の任意場面（#2028）。助言の後、煙幕への再訪で久世が♥1になってから。この場面の好感度は行の apply で付ける（本筋で会う場面の少しの上昇は metadata・AFB02）。後日談の ch3_enmaku_cleanup で、交換した時だけ「返事の欄」を回収する。大会の前後を前提にしない。",
       "lines": [
         {
           "speaker": "",

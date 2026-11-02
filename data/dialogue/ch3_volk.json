@@ -4,7 +4,10 @@
     {
       "dialogue_id": "ch3_volk_first",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_volk_shop.png"
+        "bg": "res://assets/backgrounds/bg_volk_shop.png",
+        "add_affinity": {
+          "volk": 2
+        }
       },
       "lines": [
         {

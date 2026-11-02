@@ -7,23 +7,37 @@ import { tokyoWindowReserved, tokyoGymWindowAllowed } from "../core/tokyo-clock.
 /**
  * after=この必須場面を読んでから、before=この場面を読む前まで。met=この人物と面識がある時だけ。repeat=自由時間ごとに選べる。
  * stamina は消耗（負）か回復（正）。stat は自分で選び体力を使った行動だけの成長候補。
- * affinity は任意の外出だけで付ける好感度（人物ID→pt）。台本には報酬行を置かず、確定時に付ける。
+ * affinity は任意の外出で付ける好感度（人物ID→pt）。台本には報酬行を置かず、確定時に付ける。
+ * talks は通うたびに読む台本（1回目は先頭、2回目からは残りを交互）。reasonAgain は2回目からの理由。
+ * regular は通いの行き先。同じ場所に一度きりの行き先がある間は出さない（そちらを先に読む）。
  * bg は場所の既定と違う背景（裏口＝街の道）。toast は読了後の一言（省略時は結果から決める）。
+ *
+ * 好感度のつり合い（2026-11-02 オーナー指定・台帳 AFB02）: 第3章の自由時間は6回しかないので、ライバルの店への
+ * 外出は1回 RIVAL_OUTING（0.85を掛けて約20）。本筋で会う場面でも少し上がる（台本の metadata.add_affinity）。
+ * 久世（煙幕に通う）とスティーブ（客としてmukaiへ来る）の2人なら、6回のうち5回で♥5に届く。
  */
+const RIVAL_OUTING = 24;
 export const TOKYO_OUTINGS = Object.freeze([
   { id: "mukai_help", place: "mukai", label: "mukaiを手伝う", repeat: true, stamina: -14, money: 6000, stat: "charm",
     reason: { lost: "味が戻るまでは、煙の量と客の顔で手伝える", back: "戻った舌で、客席の調整を任せてもらう" } },
-  // 久世の好感度は煙幕への再訪だけで付く（#2028）。♥1でLIME交換の任意場面が開く（ch3-story-wiring.js）。
+  // 久世の好感度は煙幕への外出と、本筋で会う場面で付く（#2028・AFB02）。♥1でLIME交換の任意場面が開く（ch3-story-wiring.js）。
   { id: "enmaku_notes", place: "enmaku", after: "ch3_kuze_first", before: "ch3_kuze_advice", label: "煙幕に顔を出す",
-    stamina: -10, stat: "insight", affinity: { kuze: 10 }, reason: "久世のノートに、何が書いてあるか聞きに行く" },
+    stamina: -10, stat: "insight", affinity: { kuze: RIVAL_OUTING }, reason: "久世のノートに、何が書いてあるか聞きに行く" },
   { id: "enmaku_answer", place: "enmaku", after: "ch3_kuze_advice", label: "煙幕に顔を出す",
-    stamina: -10, stat: "sense", affinity: { kuze: 10 }, reason: "どうしたいか、久世に答えを返しに行く" },
-  // スティーブがmukaiへ客として来る（#1696）。タイマー越しに香りの山を逃す癖と、全国へ来た理由。店を訪ねる前だけ。
-  { id: "mukai_steve", place: "mukai", before: "ch3_steve_low_heat", met: "steve", label: "mukaiで店番をする",
-    stamina: -8, money: 3000, stat: "insight", reason: "配達先のスティーブが、今日は客として来るらしい" },
+    stamina: -10, stat: "sense", affinity: { kuze: RIVAL_OUTING }, reason: "どうしたいか、久世に答えを返しに行く" },
+  // 煙幕に通う（AFB02）。一度きりの話を読んだ後、何度でも寄れる。
+  { id: "enmaku_visit", place: "enmaku", after: "ch3_kuze_first", label: "煙幕で一服する", repeat: true, regular: true,
+    talks: ["ch3_outing_enmaku_visit", "ch3_outing_enmaku_visit_b", "ch3_outing_enmaku_visit_c"],
+    stamina: -10, stat: "insight", affinity: { kuze: RIVAL_OUTING }, reason: "久世の店で、客の答えを一緒に読む" },
+  // スティーブがmukaiへ客として来る（#1696）。タイマー越しに香りの山を逃す癖と、全国へ来た理由。店を訪ねる前まで、
+  // 何度でも来る（AFB02。2回目からは合図を試す回と、客の顔の回を交互）。
+  { id: "mukai_steve", place: "mukai", before: "ch3_steve_low_heat", met: "steve", label: "mukaiで店番をする", repeat: true,
+    talks: ["ch3_outing_mukai_steve", "ch3_outing_mukai_steve_b", "ch3_outing_mukai_steve_c"],
+    stamina: -8, money: 3000, stat: "insight", affinity: { steve: RIVAL_OUTING },
+    reason: "配達先のスティーブが、今日は客として来るらしい", reasonAgain: "スティーブが、また客として来るらしい" },
   // 味の会話（#2028）。マウンテンミストを低い熱で待つ一台。
   { id: "steve_timer", place: "steve", after: "ch3_steve_low_heat", label: "Smoke & Glory に寄る",
-    stamina: -10, stat: "technique", affinity: { steve: 10 }, reason: "タイマーを置く場所を、もう一度見せてもらう" },
+    stamina: -10, stat: "technique", affinity: { steve: RIVAL_OUTING }, reason: "タイマーを置く場所を、もう一度見せてもらう" },
   { id: "park_walk", place: "park", label: "公園を歩く", repeat: true, stamina: 20,
     reason: "何も決めずに歩いて、少し体を休める" },
   // mukaiの看板猫てつこ（#1993）。撫でるか餌をあげるかを選び、体力だけ少し戻す。能力・好感度は増やさない。
@@ -33,15 +47,21 @@ export const TOKYO_OUTINGS = Object.freeze([
 export const OUTINGS_FLAG = "_ch3_outings";
 const RECOVERY_SCENE = "ch3_taste_return";
 
-/** 台本ID。手伝いは味が戻る前後、公園は昼夜で読み分ける。 */
+/** 台本ID。手伝いは味が戻る前後、公園は昼夜、通う行き先は回数で読み分ける。 */
 export function outingDialogueId(value, outing, window = null) {
+  if (outing.talks?.length) {
+    const count = outingCounts(value)[outing.id] || 0;
+    return count === 0 || outing.talks.length === 1 ? outing.talks[0] : outing.talks[1 + (count - 1) % (outing.talks.length - 1)];
+  }
   if (outing.id === "mukai_help") return tasteRecovered(value) ? "ch3_outing_mukai_help" : "ch3_outing_mukai_help_lost";
   if (outing.id === "park_walk") return (window?.slot ?? value.slot) ? "ch3_outing_park_walk_night" : "ch3_outing_park_walk_day";
   return `ch3_outing_${outing.id}`;
 }
 export const OUTING_DIALOGUE_IDS = Object.freeze(["ch3_outing_mukai_help_lost", "ch3_outing_mukai_help",
   "ch3_outing_enmaku_notes", "ch3_outing_enmaku_answer", "ch3_outing_mukai_steve", "ch3_outing_steve_timer",
-  "ch3_outing_park_walk_day", "ch3_outing_park_walk_night", "ch3_outing_tetsuko"]);
+  "ch3_outing_park_walk_day", "ch3_outing_park_walk_night", "ch3_outing_tetsuko",
+  "ch3_outing_enmaku_visit", "ch3_outing_enmaku_visit_b", "ch3_outing_enmaku_visit_c",
+  "ch3_outing_mukai_steve_b", "ch3_outing_mukai_steve_c"]);
 
 const readScene = (value, id) => {
   const index = chapterThreeScenes(value).findIndex(scene => scene.id === id);
@@ -54,17 +74,19 @@ export function outingCounts(value) {
   return record && typeof record === "object" && !Array.isArray(record) ? record : {};
 }
 
-export const outingReason = (value, outing) => typeof outing.reason === "string" ? outing.reason
-  : outing.reason[tasteRecovered(value) ? "back" : "lost"];
+export const outingReason = (value, outing) => outing.reasonAgain && outingCounts(value)[outing.id] ? outing.reasonAgain
+  : typeof outing.reason === "string" ? outing.reason : outing.reason[tasteRecovered(value) ? "back" : "lost"];
 
 /** 物語の時点で行ける行き先。自由時間かどうか・体力は見ない（案内の候補に使う）。 */
 export function chapterThreeOutingCandidates(value) {
   if (value?.chapter !== 3 || !value.flags?._ch3_intro) return [];
   const counts = outingCounts(value);
-  return TOKYO_OUTINGS.filter(outing => (!outing.after || readScene(value, outing.after))
+  const open = TOKYO_OUTINGS.filter(outing => (!outing.after || readScene(value, outing.after))
     && (!outing.before || !readScene(value, outing.before))
     && (!outing.met || !!value.met?.[outing.met])
     && (outing.repeat || !counts[outing.id]));
+  // 通いの行き先は、同じ場所の一度きりの話を読み終えてから（読める話がある間はそちらだけ）。
+  return open.filter(outing => !outing.regular || !open.some(other => other.place === outing.place && !other.repeat));
 }
 
 /** 今の自由時間で選べるか。読取のみで保存を変えない。 */
