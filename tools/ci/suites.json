@@ -10,6 +10,23 @@
   ],
   "suites": [
     {
+      "id": "hud-visibility-2190",
+      "title": "Hidden HUD accessibility, focus and LOAD recovery (#2190)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 3,
+      "paths": [
+        "remake/css/daily.css",
+        "remake/js/daily/hud.js",
+        "remake/js/scenes/title.js",
+        "remake/js/chapters/ch1.js",
+        "remake/js/chapters/ch2-tournament.js",
+        "remake/test/browser/hud_visibility_2190.mjs"
+      ],
+      "run": ["node remake/test/browser/hud_visibility_2190.mjs"],
+      "chrome": "playwright"
+    },
+    {
       "id": "chapter-actions",
       "title": "Chapter 3–5 action buttons, session invalidation and error recovery",
       "kind": "quick",
