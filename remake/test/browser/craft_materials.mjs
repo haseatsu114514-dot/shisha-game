@@ -281,7 +281,12 @@ await suite("craft-materials", async check => {
         const paint = await pack.evaluate(n => {
           const s = getComputedStyle(n); return { color: s.color, bg: s.backgroundColor, image: s.backgroundImage, clip: s.backgroundClip, border: s.borderTopWidth };
         });
-        assert.deepEqual(paint, { color: "rgb(34, 21, 52)", bg: "rgb(227, 189, 110)", image: "none", clip: "padding-box", border: "14px" });
+        // Existing art-skin hover uses amber ink (#3b2208); normal uses dark purple.
+        // Both must remain readable on the gold fallback, not merely match a palette token.
+        assert.deepEqual(paint, { color: hover ? "rgb(59, 34, 8)" : "rgb(34, 21, 52)", bg: "rgb(227, 189, 110)", image: "none", clip: "padding-box", border: "14px" });
+        const luma = rgb => rgb.match(/\d+/g).slice(0, 3).map(v => Number(v) / 255)
+          .reduce((sum, v, i) => sum + (v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4) * [.2126, .7152, .0722][i], 0);
+        assert((luma(paint.bg) + .05) / (luma(paint.color) + .05) >= 4.5, "gold button text contrast");
       }
       const before = await pack.boundingBox();
       // Simulate only the missing border artwork; retain production CSS and geometry.
