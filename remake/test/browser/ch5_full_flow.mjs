@@ -129,8 +129,9 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5.stage, 2);
     assert.equal(state.flags._ch5.matchDay, undefined);
     assert.match(await page.locator(".hud").innerText(), /勝負の日まで[\s\S]*未定/);
-    for (const hidden of ["minto", "shishark"])
-      assert.equal(await page.locator(dt(`pin-${hidden}`)).count(), 0, `${hidden} is not on the Chapter 5 map yet`);
+    // ヒロインの店は、会ったことがあれば第5章の通いの小会話で出る（#2033 F）。この保存では会っていない。
+    for (const unmet of ["minto", "shishark"])
+      assert.equal(await page.locator(dt(`pin-${unmet}`)).count(), 0, `${unmet} only after meeting her`);
     // KEMURIKUSA は第5章の通いの小会話で出る（第2章の決裂の臨時休業に掛からない・#2033 F）
     assert.equal(await page.locator(dt("pin-naru")).count(), 1, "KEMURIKUSA reopened for Chapter 5");
     // 昼の tonari: ましろの訪問 → 実セーブ → リロード → 再開しても読了と日付が保たれる。
@@ -287,7 +288,7 @@ await suite("ch5-full-flow", async check => {
     await travelToCity(page, "widehanga");
     for (const pin of ["ch2_kumicho", "ch2_rei", "ch2_shop"])
       assert.equal(await page.locator(dt(`pin-${pin}`)).count(), 1, `${pin} is on the Chapter 5 Yuzugaya map`);
-    assert.equal(await page.locator(dt("pin-ch2_ageha")).count(), 0, "The heroine's shop is not on the Chapter 5 map yet");
+    assert.equal(await page.locator(dt("pin-ch2_ageha")).count(), 1, "Ageha's shop is a Chapter 5 regular after meeting her");
     assert.match(await page.locator(".hud").innerText(), /柚ヶ谷|YUZUGAYA/i);
     const before = await get(page);
     await page.locator(dt("pin-ch2_kumicho")).click();
@@ -377,7 +378,7 @@ await suite("ch5-full-flow", async check => {
           read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
           finaleScenes: null, won: null, secondCup: null },
         _ch5_match_scheduled: false, _ch5_match_started: false };
-      Object.assign(value.met, { naru: true });
+      Object.assign(value.met, { naru: true, minto: true });
       value.affinity = { naru: 40 };
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
@@ -399,6 +400,11 @@ await suite("ch5-full-flow", async check => {
     state = await get(page);
     assert.equal(state.flags._ch5_shop_talks?.c_station, 1);
     assert.equal(state.money, 30000 - 3000 - 2500);
+    // 昼: PEPPERMINT（みんとに会っていれば。恋人でも友人でも同じ店での会話）。
+    await go(page, "minto");
+    await mapReady(page, { day: 52, slot: 1 });
+    state = await get(page);
+    assert.equal(state.flags._ch5_shop_talks?.minto, 1);
     assert.equal(state.flags._ch5.part, "free", "Regular talks do not move the Chapter 5 story");
   });
 
