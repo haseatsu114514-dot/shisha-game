@@ -5,9 +5,12 @@
 // ムカイさんの屋根裏に好きなだけ泊まれる。chapters/ch5-tokyo.js）とドバイ（飛行機。シェイクの屋敷の客間に泊まれる。
 // chapters/ch5-dubai.js）。
 // 勝負の日は博士と決めるまで無い（untilDay = Infinity）。決めると翌日が勝負の日になり、その朝でループが終わる。
+// 恋人とは第1・2章と同じく、LIMEの誘い→デート（絆が深まる）→節目（lover_events）の順に進む（帰郷後なので開ける・IR16・IR17）。
+// デートは地元の店なので、東京・ドバイにいる間は誘いが届かない（daily/romance.js の hometownDateOpen）。
 import { state, save, timeOfDay } from "../core/state.js";
-import { bgUrl } from "../core/data.js";
-import { modal } from "../core/ui.js";
+import { bgUrl, displayName } from "../core/data.js";
+import { modal, toast } from "../core/ui.js";
+import { rescheduleInvitation } from "../daily/phone.js";
 import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 import { runDaily } from "../daily/calendar.js";
 import { allSpots, fortuneSpot } from "../daily/spots.js";
@@ -75,7 +78,7 @@ export function chapterFiveDailyDefinition(io) {
     nightEvents: {},
     tournamentName: "博士との勝負",
     undatedNote: "博士との勝負の日は、まだ決まっていない",
-    dateInvitations: false,
+    // 告白は第1〜3章の物語なので、第5章では夜に告白の場面を始めない。恋人の誘いとデートは開いている（IR16）。
     confessions: false,
     mapOptions: () => ({
       regionId: currentRegion(),
@@ -90,8 +93,8 @@ export function chapterFiveDailyDefinition(io) {
     }),
     // 夜は地元へ帰ってから（柚ヶ谷にいれば帰りの電車。第2章と同じ）。東京にいれば屋根裏で寝る。
     beforeHomecoming: () => inTokyo() ? tokyoNight() : inDubai() ? dubaiNight() : returnCityHome(),
-    // 第5章は恋人・友人の誘いを出さない（dateInvitations: false・友人は雑談だけ）。東京にいる間に
-    // 別の約束が来ても、地元へ瞬間移動させない（false はループを止めるので返さない）。
+    // 東京・ドバイにいる間は恋人のデートの約束が成り立たない（daily/phone.js が予定を改める）。仕事の約束などで
+    // 東京にいる時も、地元へ瞬間移動させない（false はループを止めるので返さない）。
     beforeInvitation: destination => inTokyo() || inDubai() ? true
       : destination && (destination.region || "home") === "home" ? returnCityHome() : true,
     // 東京の屋根裏でも寝る前の家シーシャを選べる（台を持って行く・VOL12。FIN10 の「出さない」を更新）。
@@ -132,7 +135,34 @@ export function chapterFiveCitySpots() {
   return [...cityRegularSpots(), ...chapterFiveCityShops(), CH5_CITY_SHOP, trpgSpot()].filter(Boolean);
 }
 
+/** 今日の恋人のデートの約束（地元の店で会う）。無ければ null。 */
+const todaysDate = () => {
+  const invite = state.pendingInvite;
+  return invite && /^date_/.test(invite.event) && (invite.day ?? state.day) === state.day ? invite : null;
+};
+
+/**
+ * 東京・ドバイへ発つ前に、今日の恋人との約束を確かめる。行くなら約束を別の日に改める（地元のデートは遠くではできない）。
+ * true＝そのまま出発してよい。
+ */
+async function leaveDateBehind(spot) {
+  const invite = todaysDate();
+  if (!invite) return true;
+  const name = displayName(invite.sender, state, { context: "private" });
+  const city = spot.id === TO_DUBAI_SPOT.id ? "ドバイ" : "東京";
+  const go = await modal({ title: "今日の約束", body: `今日は${name}と会う約束がある。<br>${city}へ行くなら、約束は別の日に改めることになる。`,
+    options: [
+      { label: "やめておく", value: false, test: "ch5-date-stay", primary: true },
+      { label: `約束を改めて、${city}へ`, value: true, test: "ch5-date-leave" },
+    ] });
+  if (!go || state.pendingInvite !== invite) return false;
+  rescheduleInvitation(invite, `${city}へ出かけることになり、約束を別の日に改めることにした`);
+  save();
+  return true;
+}
+
 async function performChapterFiveSpot(spot, io, options = {}) {
+  if ([TO_TOKYO_SPOT.id, TO_DUBAI_SPOT.id].includes(spot.id) && !await leaveDateBehind(spot)) return { used: false, exerted: false };
   const tokyo = await performTokyoSpot(spot, options);
   if (tokyo) return tokyo;
   const dubai = await performDubaiSpot(spot, options);
@@ -178,7 +208,16 @@ async function contactDoctor(io) {
   if (!chapterFiveRead(state, "ch5_unrecorded_day") && !await io.readAndCommit("ch5_unrecorded_day")) return { used: false, exerted: false };
   if (!await io.readAndCommit("ch5_schedule_contact")) return { used: false, exerted: false };
   const progress = chapterFiveProgress(state);
-  if (progress.part === "scheduled") return { used: true, exerted: false, slotsUsed: Math.max(1, 2 - state.slot) };
+  if (progress.part === "scheduled") {
+    // 日を決めた日の残りは勝負の準備。今夜の恋人との約束は、別の日に改める。
+    const invite = todaysDate();
+    if (invite) {
+      rescheduleInvitation(invite, "博士との勝負の準備にあてるため、約束を別の日に改めることにした");
+      toast(`${displayName(invite.sender, state, { context: "private" })}との今夜の約束は、別の日に改めることにした`);
+      save();
+    }
+    return { used: true, exerted: false, slotsUsed: Math.max(1, 2 - state.slot) };
+  }
   if (chapterFiveTimeoutPending(state)) await io.readAndCommit("ch5_timeout");
   return { used: true, exerted: false };
 }

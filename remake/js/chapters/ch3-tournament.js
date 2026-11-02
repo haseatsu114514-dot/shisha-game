@@ -36,6 +36,9 @@ import { readDialogues } from "../core/chapter-data.js";
 import { adjustmentLines, resultLines, defeatLines } from "./ch3-verdict.js";
 import { awardTournamentExp } from "../core/growth.js";
 import { chapterThreeScenes, chapterThreeProgress } from "./ch3-progress.js";
+import { readTournamentCheers } from "./lover-entry.js";
+import { TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
+import { syncTokyoVisits, visitingTokyo } from "../core/tokyo-visits.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
   startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult, CH3_PRIZE } from "./ch3-tournament-state.js";
 
@@ -205,6 +208,19 @@ export async function runChapterThreeTournament() {
     await setBg(bgUrl("bg_tournament_stage", "day"), { instant: true });
     if (live(owner)) await drive(owner);
   });
+}
+
+/**
+ * 大会の朝、会場へ向かう前に届く恋人の応援（第1・2章の大会の朝と同じ形・IR19）。
+ * 地元にいる恋人は配信で見る側の文面。東京に住む恋人（ましろ）と、訪問で東京に来ている恋人はいつもの文面。
+ * 一度読めば既読になり、LOAD・再挑戦で重ねて届かない。
+ */
+async function morningCheers(owner) {
+  syncTokyoVisits(state);
+  const away = (state.lovers || []).filter(who => !TOKYO_RESIDENT_IDS.includes(who) && !visitingTokyo(state, who));
+  showScreen("none", null);
+  await readTournamentCheers({ away });
+  return live(owner);
 }
 
 function renderEntry(owner) {
@@ -393,7 +409,11 @@ function renderError(owner) {
 async function drive(owner) {
   while (live(owner)) {
     const p = progress();
-    if (p.stage === "entry") { renderEntry(owner); return; }
+    if (p.stage === "entry") {
+      if (!await morningCheers(owner)) return;
+      renderEntry(owner);
+      return;
+    }
     if (p.stage === "opening") {
       if (!await read(owner, "tournament_day")) return;
       await playEntrance(3);

@@ -18,10 +18,11 @@ export function visitContacts(value, definitions) {
   return Object.keys(definitions.characters).filter(id => (value.lovers || []).includes(id)
     && (value.contacts || []).includes(id));
 }
+/** 東京への訪問で、今その人が東京に来ているか（到着済み・滞在中で、帰る日より前）。 */
+export const visitingTokyo = (value, id) => !!value.tokyoVisits?.plans.some(plan => plan.characterId === id
+  && ["arrived", "staying"].includes(plan.status) && value.day >= plan.arrivalDay && value.day < plan.returnDay);
 export function characterRegion(value, definitions, id) {
-  const plan = value.tokyoVisits?.plans.find(plan => plan.characterId === id
-    && ["arrived", "staying"].includes(plan.status) && value.day >= plan.arrivalDay && value.day < plan.returnDay);
-  return plan ? "tokyo" : definitions.characters[id]?.home || "unknown";
+  return visitingTokyo(value, id) ? "tokyo" : definitions.characters[id]?.home || "unknown";
 }
 
 /** 時計・地域変更時に必ず呼ぶ。未合流でも帰郷し、未読通知を所在条件にしない。 */

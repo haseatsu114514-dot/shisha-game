@@ -1,6 +1,7 @@
 // 場面カード式の章（第3〜5章）から、第1・2章と同じ恋人の処理（daily/romance.js）を呼ぶ入口（#2024）。
 // 文面・条件・既読は romance.js の loverMessages / loverMilestoneDue / playLoverMilestone と phone.js の openPhone が持ち、
 // ここでは持たない。デートの誘いは第1・2章の約束（calendar.js）専用なので、場面カードの章では出さない。
+// 大会当日の朝の応援（gameday）も、第1・2章と同じ文面の表を使う（第3章の全国大会・IR19）。
 // 恋人の絆は、ここでは足さない（LIMEの返信で phone.js が足す分と、節目の読了で解放される分だけ）。
 import { state, save } from "../core/state.js";
 import { loverMessages, loverMilestoneDue, playLoverMilestone } from "../daily/romance.js";
@@ -22,6 +23,20 @@ export async function readLoverLime({ senders = null, exclude = [], title = "恋
   const due = pendingLoverLime({ senders, exclude });
   if (!due.length) return false;
   await openPhone(due, { title, time: time || (state.slot ? "夜" : "昼") });
+  save();
+  return true;
+}
+
+/**
+ * 大会当日の朝の応援（第1・2章の大会の朝と同じ lover.json の gameday。恋人1人につき1通・最大3通）。
+ * 届いたその場で読む（第1章の openPhone と同じ）。返信の絆・既読は phone.js が付けるので、読み直しても増えない。
+ * @param opts.away 会場の街にいない恋人（配信で見る側の文面 gameday_away。第3章の東京・IR19）
+ */
+export async function readTournamentCheers({ away = [], time = "AM 7:40" } = {}) {
+  const delivered = new Set((state.inbox || []).map(item => item.id));
+  const due = loverMessages({ tournamentDay: true, away }).filter(m => !delivered.has(m.id)).slice(0, 3);
+  if (!due.length) return false;
+  await openPhone(due, { title: "大会当日", time });
   save();
   return true;
 }

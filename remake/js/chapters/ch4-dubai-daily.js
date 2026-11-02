@@ -32,6 +32,7 @@ import { readDialogues } from "../core/chapter-data.js";
 import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_DAILY_EVE_DAY, CH4_FREE_SCENE_IDS, chapterFourProgress, syncChapterFourDay,
   chapterFourSecondAvailable } from "./ch4-progress.js";
 import { CAMEL_DAILY_SPOT_ID, camelDailySpot, camelSceneBg } from "./ch4-camel-progress.js";
+import { overseasCompanion } from "../core/overseas-companion.js";
 import { visitCamelRace } from "./ch4-camel-race.js";
 import { desertDailySpots, desertDailySpotById } from "./ch4-desert-progress.js";
 import { CAFE_MENU, CAFE_PLACES, CAFE_TASTE_IDS, OMAKASE, OMAKASE_LINE, SMOKED_IN_SCENE, TALKS_AFTER_ORDER,
@@ -191,7 +192,10 @@ export function chapterFourDubaiDefinition(io) {
     },
     beforeInvitation: () => true,
     wakeBackground: () => CH4_PLACE_BG.inn,
+    // ドバイでは恋人の誘い・デート・節目（lover_events）を出さず、遠くの恋人からのLIMEだけ続く（IR17）。
+    // 同行した恋人は一緒にいるのでLIMEを送ってこない（ch4.js の恋人の入口と同じ）。
     dateInvitations: false,
+    withLovers: () => [overseasCompanion(state).companion].filter(Boolean),
     confessions: false,
     spotById: id => id === CAMEL_DAILY_SPOT_ID ? camelSpot()
       : spotNow(CH4_DUBAI_SPOTS.find(entry => entry.id === id)) || desertDailySpotById(state, dubaiDay(), id),
