@@ -1,7 +1,6 @@
 // 日付固定の予定と、休養で見送った夜の予定を分ける。台本・報酬は章側が実行する。
 import { state, save } from "../core/state.js";
-import { TOURNAMENT_DAY } from "../core/rules.js";
-import { chapterDay } from "../core/chapter-clock.js";
+import { atChapterFinalDay } from "../core/chapter-clock.js";
 
 export const restingToday = () => state.restDay?.chapter === state.chapter
   && state.restDay.day === state.day && state.restDay.fullDay;
@@ -53,7 +52,7 @@ export function nightPlan(events, { resting = restingToday(), appointment = stat
   const urgent = pending.filter(({ ev }) => ev.schedule === "preparation" && ev.deadline <= state.day);
   // 旧セーブで複数の期限が過ぎていた場合も、先行準備の実読了後に後続を実行する。
   if (urgent.length) return urgent.map(({ ev }) => ev);
-  if (chapterDay(state) >= TOURNAMENT_DAY) return [];
+  if (atChapterFinalDay(state)) return [];
   const fixed = events[state.day];
   if (fixed && !postponeable(fixed)) return fixed.done?.() ? [] : [fixed];
   // 会話後〜翌朝の保存から再開しても、同じ夜の通常予定をもう1件実行しない。
@@ -69,7 +68,7 @@ export function nightPlan(events, { resting = restingToday(), appointment = stat
 
 /** 自由訪問だけの案内。runNightPlanと同じ実行順を読むが、キュー・既読・保存は更新しない。 */
 export function fixedNightVisitBlock(events, spot) {
-  if (spot?.id !== "tonari" || ![0, 1].includes(state.slot) || chapterDay(state) >= TOURNAMENT_DAY) return null;
+  if (spot?.id !== "tonari" || ![0, 1].includes(state.slot) || atChapterFinalDay(state)) return null;
   const plan = nightPlan(events).slice();
   const fixed = events[state.day];
   // 期限救済の準備が先でも、その後の固定回を見落とさない。

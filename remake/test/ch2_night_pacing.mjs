@@ -29,7 +29,7 @@ const ports = new Map([
   ['remake/js/core/affinity-stages.js', fixed({ AGEHA_AFFINITY_VISITS: [] })],
   ['remake/js/core/city-locations.js', fixed({ CITY_BACKGROUNDS: { c_station_night: 'c' }, CH2_SCENE_BACKGROUNDS: {} })],
   ['remake/js/core/rules.js', fixed({ TOURNAMENT_DAY: 14 })],
-  ['remake/js/core/chapter-clock.js', fixed({ chapterDay: s => local(s.day) })],
+  ['remake/js/core/chapter-clock.js', fixed({ chapterDay: s => local(s.day), atChapterFinalDay: s => local(s.day) >= 14 })],
 ]);
 async function moduleAt(p) {
   if (ports.has(p)) return ports.get(p);
