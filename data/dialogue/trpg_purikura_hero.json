@@ -59,7 +59,8 @@
           "nerve": 2
         },
         "trait": "伝説の勇者の子孫。魔王に撮られてから、何を撮っても盛れない",
-        "likes": "白と赤のグミベア。プリ帳をデコる夜"
+        "likes": "白と赤のグミベア。プリ帳をデコる夜",
+        "portrait": "../../img/ui/trpg/pc-lovely.webp"
       }
     },
     {
@@ -80,7 +81,8 @@
           "nerve": 4
         },
         "trait": "薔薇を一輪携えた、夜の歌い手。人前だと声が小さい",
-        "likes": "薔薇の香り。夜に開く花の歌"
+        "likes": "薔薇の香り。夜に開く花の歌",
+        "portrait": "../../img/ui/trpg/pc-nocturne.webp"
       }
     }
   ],
@@ -239,43 +241,43 @@
       "id": "plaza",
       "label": "王国の広場",
       "short": "広場",
-      "x": 22,
-      "y": 74
+      "x": 24,
+      "y": 60
     },
     {
       "id": "showcase",
       "label": "写真屋のショーケース",
       "short": "写真屋",
       "x": 12,
-      "y": 36
+      "y": 26
     },
     {
       "id": "sign",
       "label": "城門の看板",
       "short": "城門",
-      "x": 48,
-      "y": 56
+      "x": 57,
+      "y": 36
     },
     {
       "id": "mirror",
       "label": "撮影城の鏡の間",
       "short": "鏡の間",
-      "x": 80,
-      "y": 30
+      "x": 86,
+      "y": 26
     },
     {
       "id": "purikura",
       "label": "落とし物のプリ",
       "short": "落とし物",
-      "x": 38,
-      "y": 84
+      "x": 41,
+      "y": 86
     },
     {
       "id": "throne",
       "label": "魔王の玉座",
       "short": "玉座",
-      "x": 60,
-      "y": 20
+      "x": 62,
+      "y": 16
     }
   ],
   "consult": {
@@ -3155,7 +3157,7 @@
     "number": "12",
     "genre": "コメディ・ファンタジー",
     "tagline": "盛りを盗む魔王に、勇者たちが会いに行く。",
-    "backdrop": "radial-gradient(ellipse at 70% 18%, #b0599055, transparent 55%), linear-gradient(160deg, #3b1f4a 0%, #5a2c63 48%, #2b1c3e 100%)",
+    "image": "../../img/backgrounds/trpg_purikura-hero_room.webp",
     "sceneAlt": "きらめき王国。色あせた広場の噴水、写真屋のショーケース、サメの泳ぐ堀と城門、撮影城の鏡の間、落ちていたプリ、魔王の玉座。",
     "location": "きらめき王国 / 王国の広場と撮影城",
     "atmosphere": "盛りを吸われて、王国じゅうが少し地味。城から、今日もシャッターの音。",
@@ -3294,7 +3296,7 @@
         "detail": "跳ねた金髪に、青いマント",
         "color": "#3a4f8c",
         "accent": "#f4d36b",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-purikura-hero-gold.webp"
       },
       {
         "id": "night",
@@ -3302,7 +3304,7 @@
         "detail": "短い黒髪に、銀の胸当て",
         "color": "#2c2f45",
         "accent": "#c9d2e8",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-purikura-hero-night.webp"
       },
       {
         "id": "berry",
@@ -3310,7 +3312,7 @@
         "detail": "ふわっとした桃色の髪に、ハートの盾",
         "color": "#8a4a6e",
         "accent": "#ffb3d1",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-purikura-hero-berry.webp"
       },
       {
         "id": "chestnut",
@@ -3318,7 +3320,7 @@
         "detail": "栗色の髪に、旅の地図とカメラ",
         "color": "#6b4a32",
         "accent": "#e8c99a",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-purikura-hero-chestnut.webp"
       }
     ],
     "archetypes": [
@@ -3382,7 +3384,8 @@
             "talk": 3,
             "nerve": 2
           },
-          "making": "trpg_purikura_hero_make_ageha_ageha_lovely"
+          "making": "trpg_purikura_hero_make_ageha_ageha_lovely",
+          "portrait": "../../img/ui/trpg/pc-lovely.webp"
         },
         {
           "id": "beatrice",
@@ -3396,7 +3399,8 @@
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_purikura_hero_make_ageha_ageha_beatrice"
+          "making": "trpg_purikura_hero_make_ageha_ageha_beatrice",
+          "portrait": "../../img/ui/trpg/pc-beatrice.webp"
         }
       ]
     },
@@ -3414,7 +3418,8 @@
             "talk": 2,
             "nerve": 4
           },
-          "making": "trpg_purikura_hero_make_rei_rei_nocturne"
+          "making": "trpg_purikura_hero_make_rei_rei_nocturne",
+          "portrait": "../../img/ui/trpg/pc-nocturne.webp"
         },
         {
           "id": "shion",
@@ -3428,7 +3433,8 @@
             "talk": 1,
             "nerve": 3
           },
-          "making": "trpg_purikura_hero_make_rei_rei_shion"
+          "making": "trpg_purikura_hero_make_rei_rei_shion",
+          "portrait": "../../img/ui/trpg/pc-purikura-hero-shion.webp"
         }
       ]
     }

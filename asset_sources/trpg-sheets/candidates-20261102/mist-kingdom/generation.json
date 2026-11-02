@@ -1,0 +1,190 @@
+{
+  "generator": "built-in image_gen",
+  "date": "2026-11-02",
+  "source": "main asset_sources/trpg-scenarios/README.md blob b6c51024d50634b9922bb18fd45e7d59871a20b2",
+  "reference_images": [],
+  "reference_roles": "No image references: original scenario fictional roles, not actual tabletop participants",
+  "adopted": false,
+  "outputs": [
+    {
+      "file": "portraits-mist-kingdom-a.png",
+      "sha256": "3d0c0d758c03f0e3fe297a10fcb96d79f05b7bc2f7ebe7d2566a1a7ab568dde4",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.6017954444061726,
+      "margins_ltrb": [
+        [
+          97,
+          90,
+          56,
+          29
+        ],
+        [
+          91,
+          93,
+          43,
+          24
+        ],
+        [
+          78,
+          94,
+          60,
+          22
+        ],
+        [
+          60,
+          93,
+          67,
+          26
+        ],
+        [
+          79,
+          48,
+          10,
+          55
+        ],
+        [
+          60,
+          57,
+          26,
+          49
+        ],
+        [
+          37,
+          67,
+          16,
+          46
+        ],
+        [
+          59,
+          73,
+          48,
+          51
+        ]
+      ]
+    },
+    {
+      "file": "portraits-mist-kingdom-b.png",
+      "sha256": "9c0bb1008a70ee8663407e69e452d13f9ab874ecb8c32c866d6aad5e61d88fd8",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.5899279203934065,
+      "margins_ltrb": [
+        [
+          113,
+          106,
+          67,
+          39
+        ],
+        [
+          78,
+          108,
+          68,
+          36
+        ],
+        [
+          85,
+          101,
+          68,
+          35
+        ],
+        [
+          48,
+          95,
+          69,
+          34
+        ],
+        [
+          54,
+          69,
+          28,
+          48
+        ],
+        [
+          62,
+          66,
+          37,
+          48
+        ],
+        [
+          43,
+          83,
+          55,
+          49
+        ],
+        [
+          87,
+          83,
+          59,
+          49
+        ]
+      ]
+    },
+    {
+      "file": "portraits-mist-kingdom-c.png",
+      "sha256": "38c047fca03a581238c02554593bd0e9ee64df9a34c559f5cf44854f5d62eb43",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.7135620493435811,
+      "margins_ltrb": [
+        [
+          132,
+          107,
+          90,
+          52
+        ],
+        [
+          114,
+          105,
+          73,
+          49
+        ],
+        [
+          104,
+          106,
+          78,
+          50
+        ],
+        [
+          94,
+          104,
+          105,
+          49
+        ],
+        [
+          115,
+          62,
+          71,
+          83
+        ],
+        [
+          78,
+          67,
+          71,
+          78
+        ],
+        [
+          99,
+          73,
+          72,
+          69
+        ],
+        [
+          95,
+          73,
+          93,
+          79
+        ]
+      ]
+    }
+  ]
+}

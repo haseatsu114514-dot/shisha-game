@@ -1,0 +1,43 @@
+{
+  "variant": "b",
+  "path": "/workspace/shared/trpg-background-candidates/stage-ghost/background-b.png",
+  "size": [
+    1672,
+    941
+  ],
+  "mode": "RGB",
+  "sha256": "e33ddeb20909bc62da7bdeeecaa1c6c0340100f9765f63e1253d5e83b17868f2",
+  "tool": "built-in image_gen",
+  "prompt": "prompt-b.txt",
+  "adoption": "unselected candidate",
+  "visualQA": "Six targets readable, no figures/shisha. Curtain50/38 includes50/46; mirror7/25 target12/30 outside mirror right edge; lighting90/24 includes88/22; seats50/80 good; shelf10/58 target16/66 near right shelf edge; board86/56 target84/62 inside lower board. Pseudo-writing on papers and green exit sign. Needs text/mirror correction.",
+  "scenario": "stage-ghost",
+  "generated_date_utc": "2026-11-02",
+  "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+  "reference_documents": [
+    {
+      "path": "/workspace/shared/trpg-art-prompts-2264.md",
+      "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+    },
+    {
+      "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+      "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+    },
+    {
+      "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+      "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+    }
+  ],
+  "input_image_references": [],
+  "prompt_sha256": "08435b6e36b762f38c9913bc508e36669e09c607ad24a63a1a6de78209b6eb4b",
+  "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 10 stage-ghost\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 閉館した劇場。舞台の幕、楽屋の鏡、照明室、客席の最前列、台本の棚、劇場の掲示。空の舞台に淡い人影。 Setting: 港坂 / 閉館した劇場「月灯座」. Mood: 赤い幕。三百の空席。夜明けまで、あと少し。. Fictional place from a tabletop story (やさしい幽霊劇). Concrete click-investigation objects, each a distinct readable prop at its position: 舞台の幕 clearly visible around x50% y46%; 楽屋の鏡 clearly visible around x12% y30%; 照明室 clearly visible around x88% y22%; 客席の最前列 clearly visible around x50% y80%; 台本の棚 clearly visible around x16% y66%; 劇場の掲示 clearly visible around x84% y62%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant B: delicate ink-and-gouache abandoned theater, muted crimson curtains, warm amber worklights and cool dawn-blue shadows.\nONE coherent wide theater interior looking toward the stage from the auditorium, no montage. Frame opened side rooms as natural sightlines: dressing-room mirror at12%/30% on left wall/alcove, with warm bulbs and NO reflection of a person. Center-stage red curtain at50%/46%, use draped curtain material around a softly lit empty stage. Lighting-control room/window high on right at88%/22%, consoles blank, no operator. Front row of empty seats across foreground centered50%/80%. Script shelf on left at16%/66%, plain unlabeled script covers, no spine lettering. Theater noticeboard on right at84%/62%, entirely blank pinned paper rectangles. Six target positions production-critical, arrange architecture so each named object is clearly recognizable at these exact centers. Although the scene description mentions a pale figure, prioritize explicit NO people/NO silhouettes: use only a diffuse pale pool of stage light, no ghost, no humanoid shape or shadow. No text, logos, watermarks or UI, preserve readable well-lit interior. Calm upper center.",
+  "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+  "raw_original": true,
+  "target_size": [
+    1280,
+    720
+  ],
+  "production_size_verified": false,
+  "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+  "byte_size": 2363830
+}

@@ -1,0 +1,14 @@
+Generate ONE sprite sheet image, 2048x1024, transparent background (PNG), containing 8 SMALL isolated character portrait busts in a 4x2 grid (4 columns, 2 rows), each SMALL compact bust maximum 240x240px, centered in its own 512px cell with 136px completely transparent margins on all four sides. Style: painterly storybook ink-and-watercolor bust portrait, soft lamplight, muted palette matching the story's world, consistent across all eight. Shoulders-up, facing slightly left, readable face. No text, no numbers, no logos, no frames (the game draws the round frame), no watermark, no shisha pipes, no real brands, no resemblance to any existing character. World: トビウオ諸島 / サメ島の入り江 (海賊の冒険): 青く澄んだ入り江。白い砂。水の下に、大きな影。
+Row 1 = the player's character, four looks of the same role. Androgynous young adult (18-24) so the player can give any name; the look must not depend on background or name:
+--- a: look-shark-island-bandana --- バンダナの水夫. 赤いバンダナと、縞のシャツ
+--- b: look-shark-island-brim --- 日よけ帽の水夫. つばの広い帽子と、日焼けした腕
+--- c: look-shark-island-tricorn --- 三角帽の水夫. 古い三角帽と、継ぎはぎの上着
+--- d: look-shark-island-braid --- 三つ編みの水夫. 潮風に揺れる三つ編みと、青い腰布
+Row 2 = characters the companions made for this story. Light comedy is welcome, keep faces readable:
+--- e: pc-ruri --- ルリ, か弱い船医. 潮風に当たると倒れそう……な船医。薬箱は誰より重い Likes: 港の屋台の、背脂多めのラーメン
+--- f: pc-nerine --- ネリネ, 斧投げの見張り番. 風に飛ばされそうな見張り番。なのに、手斧は百発百中 Likes: 斧投げと、ゆるいカモメのぬいぐるみ
+--- g: pc-doran --- ドラン, 口上の副船長. 名言なら百は持っている。半分は、その場で作った Likes: 林檎の樽。宇宙はあの香りから始まった
+--- h: pc-jiruba --- ジルバ, 仕掛け好きの奇術水夫. 樽から現れ、樽へ消える。船は大きな舞台装置だ Likes: どんでん返しの扉と、林檎の香り
+Sparse contact sheet, huge transparent gutters. Exactly 8 HUMAN faces only, independent original fictional scenario characters, not the actual tabletop players. All face slightly left. No background disks, no frames, no paper texture outside the compact bust, no floating objects. Canon hats and braids must be fully inside their own cell. Bottom row: Ruri delicate ship doctor with compact medicine satchel strap; Nerine delicate lookout, tiny sleepy seagull charm; Doran expressive confident first mate; Jiruba mischievous theatrical sailor. Likes inform personality, never draw ramen bowls, apples, extra birds, extra faces or ship scenery. Transparent lower bust silhouettes taper smoothly, no white brush fringe. Shoulder-up silhouettes only; small glimpse of blue sailor sash high at lower edge for top-right to preserve its identity cue without long torso.
+
+Variant B: Make this a VERY SPARSE sheet with 70% completely transparent empty area overall. Eight small compact portrait islands in a vast transparent canvas, not large busts touching. Must see blank lanes and blank outside margins. Frame from neck/collar up, shoulders extremely compact, minimal costume area. White opaque brush-edge leftovers forbidden. All faces exactly one human head per cell. Top four lightly androgynous adults, no earrings unless specified. Bottom Nerine seagull PLUSH is tiny sewn charm not a real living bird.
