@@ -204,6 +204,10 @@ for (;;) {
       || (await click('[data-test="phone-close"]'));
     continue;
   }
+  // 寝る前のレベルアップ（心得の盤、11/02から通常プレイで有効）。初回はOKを押すまで待つ全画面の演出。
+  if (await click('[data-test="levelup-ok"]')) continue;
+  // 観音堂などで開く心得の盤（時間は進まない）。灯さずに閉じて予定を続ける。
+  if (await click('[data-test="board-close"]')) continue;
   // 体力の警告は素直に引き返す
   if (snap.modal) {
     // スロットの初回説明（タップ送り）・くじの開封（タップで閉じる）

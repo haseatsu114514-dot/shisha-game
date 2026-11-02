@@ -3,7 +3,9 @@
 //
 // 現実のドバイのラクダレースに倣う: ラクダの背には小型のロボット騎手。調教師はコース横の道を走る車から
 // リモコンで「声」（スピーカー越しの声かけ）と「合図」（騎手の腕）を送るだけで、進路は操縦しない。
-// ゲームでも、ラクダは自分で走る。プレイヤーが決めるのは「いつ声をかけるか」「いつ合図を出すか」だけ。
+// ゲームでも、ラクダは自分で走る。プレイヤーが決めるのは「いつ声をかけるか」「いつ合図（ムチ）を入れるか」だけ。
+// 2026-11-02 オーナー「ラクダ操ってる感とかスピード感」: 声が当たるとその場で一伸び（surge）し、
+// 合図は押している間だけ騎手の腕が回り続ける（押す＝加速・スタミナを使う、離す＝声で息を整える）。
 //
 // 時間は秒。距離はメートル。stepRace(state, dt) を小刻みに呼ぶと進む。乱数は seed で固定（テスト・再現用）。
 
@@ -16,14 +18,14 @@ export const RACE = Object.freeze({
 });
 
 export const PLAYER = Object.freeze({
-  base: 18.4,            // 基本速度 m/s（調子が最大で ×1.08、最低で ×0.88）
+  base: 18.3,            // 基本速度 m/s（調子が最大で ×(floor+span)、最低で ×floor）
+  rhythmFloor: 0.9, rhythmSpan: 0.14,
   rhythmStart: 0.6,
-  ease: 0.65,            // 速度が目標へ寄る時定数（秒）
-  staminaDrain: 0.9,     // 1秒あたりの消耗
-  staminaRecover: 0.7,   // 調子が良い（rhythm ≥ 0.75）ときの回復
+  ease: 0.6,             // 速度が目標へ寄る時定数（秒）
+  staminaDrain: 0.9,     // ムチを入れていない間の消耗（1秒あたり）
+  staminaRecover: 2.6,   // ムチを入れていない間の回復 ×調子（調子0.9なら +2.3/秒）
   rhythmDecay: 0.07,     // 1秒あたりの割合で調子が落ちる（PERFECT なら高いまま、GOOD だけなら中くらいで釣り合う）
   tired: 30,             // これを下回ると速度が落ち始める
-  spent: 15,             // これを下回る合図は空ぶかし
 });
 
 export const CUE = Object.freeze({
@@ -34,12 +36,17 @@ export const CUE = Object.freeze({
   firstAt: 1.6,
   perfectGain: 0.25, goodGain: 0.12, lostLoss: 0.26, missLoss: 0.08,
   missStamina: 3, spamStamina: 5, spamWindow: 1.5, spamCount: 3,
+  // 当たった声でその場で一伸びする量（m/s。0.8秒ほどで消える）。
+  perfectSurge: 1.0, goodSurge: 0.8, surgeMax: 4, surgeFade: 0.8,
 });
 
-export const SIGNAL = Object.freeze({
-  cost: 12, spurtCost: 10, cooldown: 3.5, duration: 2.4,
-  boost: 3.2, spurtBoost: 4.6, spentBoost: 1.0,
-  earlyUntil: 0.2,       // コースの最初の2割で使うと「早すぎ」（採点で減点）
+/** 合図（ムチ）: 押している間だけ騎手の腕が回る。スタミナを使い、終盤ほど効く。 */
+export const WHIP = Object.freeze({
+  boost: 3.0, spurtBoost: 5.0,   // 押している間の上乗せ m/s
+  drain: 13, spurtDrain: 11,     // 押している間のスタミナ消費（1秒あたり）
+  empty: 6,                      // これを下回ると腕が止まる（空ぶかし）
+  resume: 22,                    // 空になった後、ここまで戻るまで腕は回らない
+  ease: 0.4,                     // ムチの間は速度の寄りを速く
 });
 
 export const RANK_POINTS = Object.freeze([40, 30, 20, 10]);
@@ -47,13 +54,14 @@ export const GRADES = Object.freeze([["S", 85], ["A", 70], ["B", 50], ["C", 0]])
 export const gradeOf = score => GRADES.find(([, min]) => score >= min)[0];
 
 // ライバルの走り方（先行・追い込み・安定）。区間ごとの目安速度 m/s。seed で ±0.4 の個体差と細かな揺れ。
+// color はゼッケン・順位の札・名札・進み具合の点で共通（自分は金、AI は緑・青・紫で見分けやすく）。
 export const RIVAL_PROFILES = Object.freeze([
-  { id: "front", name: "ナジュム", color: "#d9b26a", speeds: [19.9, 18.4, 17.6], note: "先行型。前半で前に出る" },
-  { id: "closer", name: "リーフ", color: "#8fb7d9", speeds: [17.7, 18.3, 20.6], note: "追い込み型。最後に伸びる" },
-  { id: "steady", name: "サブール", color: "#b69bd1", speeds: [18.6, 18.6, 18.7], note: "安定型。一定の足で走る" },
+  { id: "front", name: "ナジュム", color: "#4fae6a", speeds: [19.9, 18.4, 17.6], note: "先行型。前半で前に出る" },
+  { id: "closer", name: "リーフ", color: "#4b8ee0", speeds: [17.7, 18.3, 20.6], note: "追い込み型。最後に伸びる" },
+  { id: "steady", name: "サブール", color: "#a46ad8", speeds: [18.6, 18.6, 18.7], note: "安定型。一定の足で走る" },
 ].map(profile => Object.freeze(profile)));
 
-export const PLAYER_CAMEL = Object.freeze({ id: "player", name: "ハビーバ", color: "#e8c27a", note: "はじめが声をかけるラクダ" });
+export const PLAYER_CAMEL = Object.freeze({ id: "player", name: "ハビーバ", color: "#ffb52e", note: "はじめが声をかけるラクダ" });
 
 /** mulberry32。seed から [0,1) の列を作る。 */
 export function rng(seed) {
@@ -90,11 +98,12 @@ export function createRace({ seed = 1, length = RACE.length } = {}) {
   return {
     seed, length, t: 0, finished: false, finishedAt: null, rank: null,
     player: { id: "player", name: PLAYER_CAMEL.name, color: PLAYER_CAMEL.color, index: 0, distance: 0, speed: PLAYER.base * 0.95,
-      rhythm: PLAYER.rhythmStart, stamina: 100, finishedAt: null,
-      boost: 0, boostUntil: -1, cooldownUntil: -1, lastVoice: -Infinity, exhausted: false },
+      rhythm: PLAYER.rhythmStart, stamina: 100, finishedAt: null, surge: 0,
+      whipHeld: false, whipping: false, whipLocked: false, lastVoice: -Infinity, exhausted: false },
     cues: scheduleCues(random),
     presses: [],                       // 直近の声かけ時刻（連打検出）
-    stats: { perfect: 0, good: 0, miss: 0, lost: 0, spam: 0, signals: 0, spurtSignals: 0, earlySignals: 0, spentSignals: 0 },
+    // whipTime: ムチが効いた秒数、spurtWhip: そのうちスパート区間、emptyWhip: 息が無いのに押していた秒数。
+    stats: { perfect: 0, good: 0, miss: 0, lost: 0, spam: 0, whips: 0, whipTime: 0, spurtWhip: 0, emptyWhip: 0 },
     events: [],                        // 画面が拾う出来事 {t, type, ...}（stepRace の後に空にしてよい）
     rivals,
   };
@@ -130,6 +139,10 @@ export function pressVoice(state) {
     cue.state = perfect ? "perfect" : "good";
     cue.presses = 1;
     player.rhythm = clamp(player.rhythm + (perfect ? CUE.perfectGain : CUE.goodGain), 0, 1);
+    // その場で一伸び: 速さに少し足し、残りは0.8秒ほどかけて消える上乗せに。
+    const kick = perfect ? CUE.perfectSurge : CUE.goodSurge;
+    player.surge = Math.min(CUE.surgeMax, player.surge + kick);
+    player.speed += kick * 0.4;
     state.stats[perfect ? "perfect" : "good"] += 1;
     result = { type: perfect ? "perfect" : "good", dt };
   } else {
@@ -150,35 +163,26 @@ export function pressVoice(state) {
   return result;
 }
 
-/** 補助の合図（X／右ボタン）: ロボット騎手の腕。スタミナを使って一時的に加速。終盤ほど効く。 */
-export function pressSignal(state) {
+/** ムチが今効くか（押していて、息が残っていて、空になった後の待ちでもない）。 */
+export const whipReady = state => !state.player.whipLocked && state.player.stamina > WHIP.empty;
+
+/**
+ * 合図（X／右ボタン）を押す・離す。押している間だけ騎手の腕が回り続け、stepRace がスタミナを使って加速させる。
+ * 戻り値: 押した時 { type: "spurt" | "boost" | "spent" }、離した時 { type: "release" }、変化なしは null。
+ */
+export function setWhip(state, on) {
   if (state.finished) return null;
   const { player, t } = state;
-  if (t < player.cooldownUntil) {
-    state.events.push({ t, kind: "signal", type: "cooldown" });
-    return { type: "cooldown" };
+  on = !!on;
+  if (player.whipHeld === on) return null;
+  player.whipHeld = on;
+  let result;
+  if (!on) result = { type: "release" };
+  else {
+    state.stats.whips += 1;
+    result = { type: !whipReady(state) ? "spent" : inSpurt(state) ? "spurt" : "boost" };
   }
-  const spurt = inSpurt(state);
-  const early = state.player.distance / state.length < SIGNAL.earlyUntil;
-  let type;
-  if (player.stamina < PLAYER.spent) {
-    // 空ぶかし: 息が残っていない。わずかしか伸びず、残りを使い切る。
-    player.boost = SIGNAL.spentBoost;
-    player.stamina = 0;
-    state.stats.spentSignals += 1;
-    type = "spent";
-  } else {
-    player.boost = spurt ? SIGNAL.spurtBoost : SIGNAL.boost;
-    player.stamina = clamp(player.stamina - (spurt ? SIGNAL.spurtCost : SIGNAL.cost), 0, 100);
-    type = spurt ? "spurt" : "boost";
-    if (spurt) state.stats.spurtSignals += 1;
-    if (early) state.stats.earlySignals += 1;
-  }
-  player.boostUntil = t + SIGNAL.duration;
-  player.cooldownUntil = t + SIGNAL.cooldown;
-  state.stats.signals += 1;
-  const result = { type, early };
-  state.events.push({ t, kind: "signal", ...result });
+  state.events.push({ t, kind: "whip", ...result });
   return result;
 }
 
@@ -209,16 +213,32 @@ export function stepRace(state, dt) {
   }
   // 調子は放っておくと少しずつ落ちる。
   player.rhythm = clamp(player.rhythm * (1 - PLAYER.rhythmDecay * dt), 0, 1);
-  // スタミナ: 走れば減る。調子が良ければ息が整って少し戻る。
-  const recovering = player.rhythm >= 0.75 && state.t > player.boostUntil;
-  player.stamina = clamp(player.stamina - PLAYER.staminaDrain * dt + (recovering ? PLAYER.staminaRecover * dt : 0), 0, 100);
+  // ムチ: 押していて息があれば腕が回る。空になったら、戻るまで止まる。
+  const spurt = inSpurt(state);
+  if (player.whipLocked && player.stamina >= WHIP.resume) { player.whipLocked = false; state.events.push({ t: state.t, kind: "whip", type: "ready" }); }
+  const whipping = player.whipHeld && whipReady(state);
+  if (whipping !== player.whipping) { player.whipping = whipping; }
+  if (whipping) {
+    player.stamina = clamp(player.stamina - (spurt ? WHIP.spurtDrain : WHIP.drain) * dt, 0, 100);
+    state.stats.whipTime += dt;
+    if (spurt) state.stats.spurtWhip += dt;
+    if (player.stamina <= WHIP.empty) {
+      player.whipLocked = true; player.whipping = false;
+      state.events.push({ t: state.t, kind: "whip", type: "empty" });
+    }
+  } else {
+    if (player.whipHeld) state.stats.emptyWhip += dt;
+    // 押していない間は、調子がよければ息が整う。
+    player.stamina = clamp(player.stamina + (PLAYER.staminaRecover * player.rhythm - PLAYER.staminaDrain) * dt, 0, 100);
+  }
   if (player.stamina <= 0 && !player.exhausted) { player.exhausted = true; state.events.push({ t: state.t, kind: "stamina", type: "exhausted" }); }
-  if (player.stamina > PLAYER.spent) player.exhausted = false;
-  // 速度: 調子×息×合図。
+  if (player.stamina > WHIP.resume) player.exhausted = false;
+  // 速度: 調子×息＋声の一伸び＋ムチ。
+  player.surge *= Math.exp(-dt / CUE.surgeFade);
   const staminaFactor = player.stamina >= PLAYER.tired ? 1 : 0.84 + 0.16 * (player.stamina / PLAYER.tired);
-  const boost = state.t < player.boostUntil ? player.boost * (1 - (state.t - (player.boostUntil - SIGNAL.duration)) / SIGNAL.duration) : 0;
-  const target = PLAYER.base * (0.88 + 0.2 * player.rhythm) * staminaFactor + boost;
-  player.speed += (target - player.speed) * Math.min(1, dt / PLAYER.ease);
+  const boost = player.whipping ? (spurt ? WHIP.spurtBoost : WHIP.boost) : 0;
+  const target = PLAYER.base * (PLAYER.rhythmFloor + PLAYER.rhythmSpan * player.rhythm) * staminaFactor + player.surge + boost;
+  player.speed += (target - player.speed) * Math.min(1, dt / (player.whipping ? WHIP.ease : PLAYER.ease));
   player.distance += player.speed * dt;
   // ライバル。
   for (const rival of state.rivals) {
@@ -259,7 +279,7 @@ export function standings(state) {
 }
 
 /**
- * 採点（0〜100）: 順位（40）＋声かけの正確さ（35）＋スタミナの使い方（25）。
+ * 採点（0〜100）: 順位（40）＋声かけの正確さ（35）＋ムチとスタミナの使い方（25）。
  * 完走していない状態には null。
  */
 export function scoreRace(state) {
@@ -269,22 +289,25 @@ export function scoreRace(state) {
   const judged = stats.perfect + stats.good + stats.lost;
   const timingRaw = judged ? 35 * (stats.perfect + stats.good * 0.6) / judged : 0;
   const timing = clamp(timingRaw - stats.miss * 2 - stats.spam, 0, 35);
-  // スタミナ: 終盤で合図を出せたか（8）、無駄な合図が無いか（9）、使い切りすぎず残しすぎない（8: 残り5〜35が満点）。
-  const spurt = stats.spurtSignals > 0 ? 8 : 0;
-  const waste = stats.earlySignals + stats.spentSignals;
-  const efficiency = stats.signals ? 9 * clamp(1 - waste / stats.signals, 0, 1) : 4;
+  // ムチとスタミナ: スパートでムチを入れたか（8: 3秒で満点）、息が無いのに押し続けていないか（9）、
+  // 息を残しすぎていないか（8: 残り0〜30で満点。使い切って勝つのがいちばん）。
+  const spurt = 8 * clamp(stats.spurtWhip / 3, 0, 1);
+  const pressed = stats.whipTime + stats.emptyWhip;
+  const efficiency = pressed > 0 ? 9 * clamp(1 - stats.emptyWhip / pressed, 0, 1) : 4;
   const remain = player.stamina;
-  const pacing = remain >= 5 && remain <= 35 ? 8 : remain < 5 ? 8 * (remain / 5) : clamp(8 - (remain - 35) / 8, 0, 8);
+  const pacing = remain <= 30 ? 8 : clamp(8 - (remain - 30) / 7, 0, 8);
   const stamina = clamp(Math.round(spurt + efficiency + pacing), 0, 25);
   const total = clamp(Math.round(rankPoints + timing + stamina), 0, 100);
   return { total, grade: gradeOf(total), rank, time: state.finishedAt,
     parts: { rank: rankPoints, timing: Math.round(timing), stamina },
-    stats: { ...stats, judged, staminaLeft: Math.round(remain) } };
+    stats: { ...stats, whipTime: Math.round(stats.whipTime * 10) / 10, spurtWhip: Math.round(stats.spurtWhip * 10) / 10,
+      emptyWhip: Math.round(stats.emptyWhip * 10) / 10, judged, staminaLeft: Math.round(remain) } };
 }
 
 /**
  * テスト・自動操作用: 方針どおりに最後まで走らせる。
- * policy: "perfect"（毎回ぴたり・終盤で合図）／"good"／"none"（何もしない）／"spam"（連打）／関数(state)→{voice,signal}
+ * policy: "perfect"（毎回ぴたり・中盤は息が満ちたら短くムチ・スパートで使い切る）／"good"／"cruise"（声はぴたり・ムチなし）
+ *         ／"hold"（声はぴたり・ムチを押しっぱなし）／"none"（何もしない）／"spam"（連打）／関数(state)→{voice, whip}
  */
 export function simulateRace({ seed = 1, policy = "perfect", dt = 1 / 60 } = {}) {
   const state = createRace({ seed });
@@ -294,26 +317,28 @@ export function simulateRace({ seed = 1, policy = "perfect", dt = 1 / 60 } = {})
   while (!state.finished && guard++ < 20000) {
     const action = decide(state) || {};
     if (action.voice) pressVoice(state);
-    if (action.signal) pressSignal(state);
+    setWhip(state, !!action.whip);
     stepRace(state, dt);
     state.events.length = 0;
   }
   return { state, score: scoreRace(state) };
 }
 
+/** 上手なムチ: スパートでは使い切る。中盤は息が満ちている時だけ短く入れ、スパートの前に貯め直す。 */
+const smartWhip = state => {
+  const { player } = state;
+  if (!whipReady(state)) return false;
+  if (inSpurt(state)) return true;
+  const progress = player.distance / state.length;
+  if (progress < 0.15 || progress > RACE.spurtFrom - 0.18) return false;
+  return player.whipping ? player.stamina > 70 : player.stamina > 96;
+};
+const voiceAt = (lo, hi) => state => { const cue = activeCue(state); return !!cue && cue.dt >= lo && cue.dt <= hi; };
 export const POLICIES = {
-  perfect: state => {
-    const cue = activeCue(state);
-    const voice = !!cue && cue.dt >= -0.02 && cue.dt <= 0.02;
-    const signal = inSpurt(state) && state.player.stamina >= 25 && state.t >= state.player.cooldownUntil;
-    return { voice, signal };
-  },
-  good: state => {
-    const cue = activeCue(state);
-    const voice = !!cue && cue.dt >= 0.2 && cue.dt <= 0.24;
-    const signal = inSpurt(state) && state.player.stamina >= 25 && state.t >= state.player.cooldownUntil;
-    return { voice, signal };
-  },
+  perfect: state => ({ voice: voiceAt(-0.02, 0.02)(state), whip: smartWhip(state) }),
+  good: state => ({ voice: voiceAt(0.2, 0.24)(state), whip: smartWhip(state) }),
+  cruise: state => ({ voice: voiceAt(-0.02, 0.02)(state), whip: false }),
+  hold: state => ({ voice: voiceAt(-0.02, 0.02)(state), whip: true }),
   none: () => ({}),
-  spam: state => ({ voice: Math.round(state.t * 60) % 6 === 0, signal: state.t >= state.player.cooldownUntil }),
+  spam: state => ({ voice: Math.round(state.t * 60) % 6 === 0, whip: true }),
 };

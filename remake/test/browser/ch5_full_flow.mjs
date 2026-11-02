@@ -361,14 +361,14 @@ await suite("ch5-full-flow", async check => {
     await tokyoMap(52, 0);
     state = await get(page);
     assert.equal(state.flags._ch2_region, "tokyo", "The night is spent in the attic");
-    assert.equal(state.money, 60000 - 11000 - 3000);
+    assert.equal(state.money, 60000 - 11000 - 4000, "A Tokyo shisha shop is 4,000 yen (TKP01)");
     assert.equal(state.flags._ch5_tokyo_talks?.ch5_tokyo_steve, 1);
     // 昼: 帰りの新幹線（取り置いた片道分）→ 夜は地元。
     await go(page, "ch5_tokyo_home");
     await mapReady(page, { day: 52, slot: 1 });
     state = await get(page);
     assert.equal(state.flags._ch2_region, "home");
-    assert.equal(state.money, 60000 - 11000 * 2 - 3000);
+    assert.equal(state.money, 60000 - 11000 * 2 - 4000);
     assert.equal(state.flags._ch5.part, "free", "The Tokyo stay does not move the Chapter 5 story");
   });
 

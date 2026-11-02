@@ -1,5 +1,5 @@
 {
-  "comment": "第4章ドバイの日常（昼・夜に1行動ずつ）で読む短い任意会話。本筋の強制場面は ch4_main.json。すべて前夜祭より前の自由行動で読む想定で、大会後には出さない。シェイク（旅装の男）は出さない・匂わせない。王煙楼は名前の噂まで。太陽は ch4_festa の「次は大会で会おう」を守り、はじめと会話はしない（遠くから見かける・身ぶりまで）。GRAND SMOKE の出場者は四人だけなので、練習会場の他国の作り手は出展ブースの人として書く。報酬の文・背景指定はコード側。",
+  "comment": "第4章ドバイの日常（昼・夜に1行動ずつ）で読む短い任意会話。本筋の強制場面は ch4_main.json。すべて前夜祭より前の自由行動で読む想定で、大会後には出さない。シェイク（旅装の男）は出さない・匂わせない。王煙楼は龍龍水煙所のドバイの店（ch4_longlong.json）で会える。ここの会話では名前の噂まで（店で先に会っていても矛盾しない書き方にする）。太陽は ch4_festa の「次は大会で会おう」を守り、はじめと会話はしない（遠くから見かける・身ぶりまで）。GRAND SMOKE の出場者は四人だけなので、練習会場の他国の作り手は出展ブースの人として書く。報酬の文・背景指定はコード側。中心地のカフェ・路地裏のカフェでは来店のたびに現地のメニューから一台頼んで味わう（ch4_dubai_taste_*。2026-11-02 オーナー「カフェで吸えたりとかにしよう」）。*_culture_* は吸いながら聞く現地のシーシャ文化の話で、注文の後に読む。文化の話は店の人・常連が自分の店・家の作法として話し、国や宗教の決まりとして断定しない。",
   "dialogues": [
     {
       "dialogue_id": "ch4_souq_talk_b",
@@ -126,9 +126,9 @@
     },
     {
       "dialogue_id": "ch4_alley_talk_c",
-      "comment": "路地裏のカフェ再訪。閉店前、客のいない店で店員と茶を一杯。休む時間も店の一部。",
+      "comment": "路地裏のカフェ再訪。一台を吸い終えた閉店前、客のいない店で店員と茶を一杯。休む時間も店の一部。注文と味わいの後に読む（ch4-dubai-cafe.js の TALKS_AFTER_ORDER）。",
       "lines": [
-        { "speaker": "", "face": "", "text": "閉店の少し前、路地裏のカフェに寄った。客は、もう誰もいない。" },
+        { "speaker": "", "face": "", "text": "吸い終えるころには、閉店の時間が近づいていた。客は、もう誰もいない。" },
         { "speaker": "", "face": "", "text": "店員が裏口を開けると、夜の風が細く通った。換気扇が止まり、店が静かになる。" },
         { "speaker": "shop_clerk", "face": "", "text": "座っていてください。片づけの音しか、しませんけど" },
         { "speaker": "", "face": "", "text": "甘いミントの茶が、小さなグラスで出てきた。店員も自分の分を注いで、向かいに座る。" },
@@ -228,6 +228,137 @@
         { "speaker": "", "face": "", "text": "宿の部屋に戻り、冷房を一段弱めて横になった。" },
         { "speaker": "hajime", "face": "normal", "text": "（今日は何も作らない。それも、準備のうちだ）" },
         { "speaker": "", "face": "", "text": "目を閉じると、廊下の足音が遠ざかっていった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_dubai_taste_double_apple",
+      "comment": "カフェで一台頼んで味わう（2026-11-02 オーナー「カフェで吸えたりとかにしよう」）。中心地のカフェ・路地裏のカフェの両方で使うので、店の内装・店員には触れない。ダブルアップルの正史（アニスとリコリスの二つのスパイスで林檎を描く。果汁の林檎味にしない）。",
+      "metadata": {"flavor_lesson": {"double_apple": 1}},
+      "lines": [
+        { "speaker": "", "face": "", "text": "ダブルアップルの一台が、卓に置かれた。ボトルの中で、水が静かに揺れている。" },
+        { "speaker": "", "face": "", "text": "一口目で、アニスの香りが鼻に抜けた。後から、リコリスの甘苦さが追いかけてくる。" },
+        { "speaker": "hajime", "face": "normal", "text": "（林檎の果汁じゃない。二つのスパイスで、林檎を描いてるんだ）" },
+        { "speaker": "", "face": "", "text": "tonariで出してきたものより、スパイスの輪郭がはっきりしている。" },
+        { "speaker": "hajime", "face": "smile", "text": "（この街の定番、か。この香りなら、一口でそれと分かる）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_dubai_taste_double_apple_again",
+      "comment": "同じ一台を二度目からは短く。熟練度は付けない（初めての一台だけ metadata の flavor_lesson）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "またダブルアップルを頼んだ。アニスの香りが、前より早く分かった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（吸い進めると、リコリスの甘苦さが前に出てくる。最後まで追ってみよう）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_dubai_taste_grape_mint",
+      "comment": "カフェで一台頼んで味わう（2026-11-02 オーナー「カフェで吸えたりとかにしよう」）。中心地のカフェ・路地裏のカフェの両方で使うので、店の内装・店員には触れない。グレープミント（ぶどうとミントの組み合わせ）。",
+      "metadata": {"flavor_lesson": {"grape": 1, "mint": 1}},
+      "lines": [
+        { "speaker": "", "face": "", "text": "グレープミントの一台が運ばれてきた。この街で見たメニューには、どれもこの組み合わせがあった。" },
+        { "speaker": "", "face": "", "text": "ぶどうの甘さの後ろから、ミントの冷たさがすっと抜けていく。" },
+        { "speaker": "hajime", "face": "normal", "text": "（甘さを、ミントが最後に洗ってくれる。暑い街だと、これが効くんだ）" },
+        { "speaker": "", "face": "", "text": "ホースを置くたびに、口の中が軽くなった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_dubai_taste_grape_mint_again",
+      "comment": "同じ一台を二度目からは短く。熟練度は付けない（初めての一台だけ metadata の flavor_lesson）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "またグレープミントを頼んだ。今日は、ミントが少し強めだった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（同じ名前でも、日によってミントの効きが違う。詰める人の手だ）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_dubai_taste_lemon_mint",
+      "comment": "カフェで一台頼んで味わう（2026-11-02 オーナー「カフェで吸えたりとかにしよう」）。中心地のカフェ・路地裏のカフェの両方で使うので、店の内装・店員には触れない。レモンミント（レモンとミントの組み合わせ）。",
+      "metadata": {"flavor_lesson": {"lemon": 1, "mint": 1}},
+      "lines": [
+        { "speaker": "", "face": "", "text": "レモンミントの一台が運ばれてきた。" },
+        { "speaker": "", "face": "", "text": "最初はレモンの酸味。吸い込むと、ミントが喉の奥まで冷やしていく。" },
+        { "speaker": "hajime", "face": "surprise", "text": "（酸っぱい。……けど、後味が全部すっきりする）" },
+        { "speaker": "hajime", "face": "normal", "text": "（汗をかいた後に、ちょうどいい一台だ）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_dubai_taste_lemon_mint_again",
+      "comment": "同じ一台を二度目からは短く。熟練度は付けない（初めての一台だけ metadata の flavor_lesson）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "またレモンミントを頼んだ。一口目の酸っぱさに、もう驚かなかった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（酸味が抜けた後の冷たさ。この長さを、覚えておこう）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_dubai_taste_mint",
+      "comment": "カフェで一台頼んで味わう（2026-11-02 オーナー「カフェで吸えたりとかにしよう」）。中心地のカフェ・路地裏のカフェの両方で使うので、店の内装・店員には触れない。ミント。苦手な客は自分から「ミント抜きで」と言う、の規範（gameplay_agent_reference）に沿う。",
+      "metadata": {"flavor_lesson": {"mint": 1}},
+      "lines": [
+        { "speaker": "", "face": "", "text": "ミントの一台が運ばれてきた。" },
+        { "speaker": "", "face": "", "text": "tonariで出すミントより、ずっと強い。一口で、鼻の奥まで冷たくなった。" },
+        { "speaker": "hajime", "face": "surprise", "text": "（っ……強い。でも、この暑さには、このくらいが合うのかも）" },
+        { "speaker": "", "face": "", "text": "隣の席の客は、平気な顔で長く吸っていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（ミント抜きで、って頼む人がいるのも分かるな）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_dubai_taste_mint_again",
+      "comment": "同じ一台を二度目からは短く。熟練度は付けない（初めての一台だけ metadata の flavor_lesson）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "またミントを頼んだ。二度目は、鼻の奥の冷たさを待ち構えて吸った。" },
+        { "speaker": "hajime", "face": "normal", "text": "（強さに慣れると、ミントの中の甘さが見えてくる）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_cafe_culture_hose",
+      "comment": "中心地のカフェの現地のシーシャ文化の話（2026-11-02 オーナー「現地のシーシャ文化の会話」）。一台を味わった後に読む。ホースの渡し方は、隣の席の常連（customer）が「うちではそう教わった」と自分の家の作法として話す（一般論・理由の断定にしない）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "隣の席の客が、連れにホースを渡していた。吸い口を、くるりと自分の方へ折り返してから。" },
+        { "speaker": "hajime", "face": "normal", "text": "今の渡し方、何か決まりがあるんですか" },
+        { "speaker": "customer", "face": "", "text": "吸い口を、相手に向けないんだ。うちでは、そう教わった" },
+        { "speaker": "customer", "face": "", "text": "折り返して渡すか、卓に置いて取ってもらう。理由は、人によって言うことが違うけどね" },
+        { "speaker": "", "face": "", "text": "客は、自分の吸い口を卓に置いた。連れは笑って、それを手に取った。" },
+        { "speaker": "hajime", "face": "normal", "text": "（渡すんじゃなくて、相手が取るのを待つのか）" },
+        { "speaker": "hajime", "face": "smile", "text": "（ホースの置き方なら、tonariでも真似できるな）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_cafe_culture_coffee",
+      "comment": "中心地のカフェの現地の文化の話。一台を吸い終えるころ、カルダモンのコーヒーとデーツでもてなされる。器を小さく揺らすと「もう結構です」の合図（湾岸のもてなしの作法）。理由の説明はしない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "吸い終わるころ、店員が小さな器を盆に載せてきた。皿には、つやのあるデーツが三つ。" },
+        { "speaker": "cafe_staff", "face": "", "text": "カルダモンのコーヒーです。この国では、お客様をこれでお迎えします" },
+        { "speaker": "", "face": "", "text": "薄い金色のコーヒーだった。カルダモンの香りが、口に残った煙の甘さをさらっていく。" },
+        { "speaker": "cafe_staff", "face": "", "text": "おかわりがご不要でしたら、器を小さく揺らしてください" },
+        { "speaker": "hajime", "face": "surprise", "text": "言葉じゃなくて、器で答えるんですね" },
+        { "speaker": "cafe_staff", "face": "", "text": "はい。昔からの合図です" },
+        { "speaker": "hajime", "face": "normal", "text": "（デーツと、コーヒーと、一台の煙。もてなしは、ここまでが一続きなんだ）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_alley_culture_clay",
+      "comment": "路地裏のカフェの現地のシーシャ文化の話。一台を味わいながら、店員（shop_clerk）が素焼きのボウルに汁気の多い葉を縁まで盛るのを見る（ch4_stranger_second の「この店の流儀」と同じ）。葉の呼び名は「蜜に漬けた」という意味（モアッセル）とだけ言う。ドバイ店に現地の定番の葉が並ぶことへつなぐ。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "吸いながら、店員が次の台を組むのを見ていた。素焼きのボウルに、葉を縁まで盛っていく。" },
+        { "speaker": "hajime", "face": "normal", "text": "そんなに盛って、焦げないんですか" },
+        { "speaker": "shop_clerk", "face": "", "text": "この葉は汁気が多いので。蜜に漬けた、という意味の名前で呼ばれる葉です" },
+        { "speaker": "shop_clerk", "face": "", "text": "アルミをかけて、炭を載せる。この店の台は、昔からずっとこれです" },
+        { "speaker": "hajime", "face": "normal", "text": "（盛る量も、ボウルの土も、葉の汁気に合わせてあるんだ）" },
+        { "speaker": "shop_clerk", "face": "", "text": "同じ缶なら、街のDr.fookahにも並んでいましたよ。この辺りの定番です" },
+        { "speaker": "hajime", "face": "smile", "text": "（帰りに、のぞいてみようかな）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_alley_culture_majlis",
+      "comment": "路地裏のカフェの現地の文化の話。奥の盤の席の年配の常連（old_man。ch4_alley_talk_b の盤の客）が、自分の家ではマジュリス（客を迎えて座って話す部屋）に人が集まると一台出す、と話す。本人の家の話として書き、湾岸全体の決まりとして断定しない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "奥の盤の席から、年配の客がこちらを手招きした。駒を並べ直している。" },
+        { "speaker": "old_man", "face": "", "text": "日本から来たのか。その台、ずいぶん丁寧に吸うね" },
+        { "speaker": "hajime", "face": "smile", "text": "作る仕事をしてるので、つい、熱の具合を見ちゃって" },
+        { "speaker": "old_man", "face": "", "text": "うちでは、マジュリスに人が集まると、まず一台出す" },
+        { "speaker": "hajime", "face": "normal", "text": "マジュリス……ですか" },
+        { "speaker": "old_man", "face": "", "text": "客を迎えて、座って話す部屋だ。話が長くなるほど、台が要る" },
+        { "speaker": "", "face": "", "text": "老人は笑って、駒を一つ進めた。どうやら、一局付き合えということらしい。" },
+        { "speaker": "hajime", "face": "normal", "text": "（座って話すための部屋に、一台。……tonariのカウンターと、同じだ）" }
       ]
     }
   ]

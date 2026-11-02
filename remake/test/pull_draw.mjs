@@ -105,8 +105,8 @@ try {
   assert(layout.optimal.bottom-layout.optimal.top > 14, 'rainbow target must be wider and conspicuous');
   assert.equal(await page.locator('.bench-condition').count(), 0, 'face badge is absent from the mockup');
   assert(!await page.locator('.pull-dial-labels').innerText().then(t=>/長く|強く|短く/.test(t)), 'side descriptions must only explain temperature');
-  // CUI01: 吸うボタンは生成した琥珀の面（九分割の border-image）。
-  assert(layout.buttonArt.includes('craft-paper/button-amber'), 'generated button art is not connected');
+  // CUI07: 吸うボタンは採用済みの夜紫UIの金の面（九分割の border-image）。
+  assert(layout.buttonArt.includes('craft-night/button-gold.webp'), 'generated button art is not connected');
   await page.evaluate(async () => {
     const art = getComputedStyle(document.querySelector('[data-test="pull-stop"]')).borderImageSource;
     const image = new Image(); image.src = /url\(["']?([^"')]+)/.exec(art)[1];

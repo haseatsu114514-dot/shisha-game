@@ -1,5 +1,6 @@
 // 第4章runnerから共通の実制作へ。工程ごとに保存し、LOADでは未確定工程だけ巻き戻す。
 import { state, save } from "../core/state.js";
+import { loadTournamentCraftDialogue } from "../core/data.js";
 import { awardTournamentExp } from "../core/growth.js";
 import { play } from "../vn/engine.js";
 import { modal, retireScreen } from "../core/ui.js";
@@ -14,9 +15,11 @@ import { runSteamDodge } from "../craft/steam.js";
 import { runPull, runCare } from "../craft/pull.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { block, clearComments } from "../craft/broadcast.js";
+import { playTournamentEvent } from "../craft/tournament-story.js";
+import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { showChapterFourStandings } from "./ch4-standings.js";
 import { chapterFourMatch, startChapterFourCraft, recoverChapterFourStep,
-  beginChapterFourStep, finishChapterFourStep } from "./ch4-tournament-state.js";
+  beginChapterFourStep, finishChapterFourStep, chapterFourStandings } from "./ch4-tournament-state.js";
 import { chapterFourCraftAdvice, chapterFourCustomerLines } from "./ch4-verdict.js";
 
 const setup = async cs => { await stepSetup(cs); await stepWater(cs); };
@@ -29,6 +32,9 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
   const live = () => state === owner && isCurrent();
   const requireCurrent = () => { if (!live()) throw new DOMException("World tournament owner changed", "AbortError"); };
   requireCurrent();
+  // 制作中の掛け合いの台本が揃うまで、保存と大会の開始地点に触れない（第3章と同じ順）。
+  await loadTournamentCraftDialogue();
+  requireCurrent();
   const p = recoverChapterFourStep(state);
   if (!p.craft && !p.result) {
     const cs = newSession("tournament");
@@ -38,6 +44,16 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
     save();
   }
   while (live() && !p.result) {
+    playBgm("bgm_tournament_craft");
+    // 制作中の掛け合い（#2031）。工程の前に一度だけ読み、既読は制作保存に残す（再挑戦では最初から）。
+    const event = p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : TOURNAMENT_STORY_STEPS.get(p.step);
+    if (event && !p.craft.tournamentStory?.seen?.includes(event)) {
+      const rank = chapterFourStandings(p).find(row => row.id === "hajime")?.rank ?? null;
+      const told = await playTournamentEvent(p.craft, event, { context: { rank } });
+      requireCurrent();
+      if (!told) return false;
+      save();
+    }
     // 助言の読了も工程前に保存し、再開で同じ問いを繰り返さない。
     const adviceKey = `step${p.step}`;
     if (!p.craft.ch4AdviceSeen?.[adviceKey]) {
@@ -70,7 +86,6 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
     }
     const cs = beginChapterFourStep(state);
     save();
-    playBgm("bgm_tournament_craft");
     openBench(cs, { steps: CRAFT_STEPS });
     await waitBenchReady(cs);
     requireCurrent();
