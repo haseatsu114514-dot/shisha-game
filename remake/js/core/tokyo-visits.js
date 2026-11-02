@@ -1,11 +1,13 @@
 // 訪問の正本。人物の常住地・恋愛・能力・旧pendingInviteは変更しない。
-import { TOKYO_FREE_TIMES, tokyoTime, timeNumber } from "./tokyo-clock.js";
+import { tokyoFreeTimes, tokyoTime, timeNumber } from "./tokyo-clock.js";
 
 import { emptyTokyoVisits } from "./state.js";
 export const tokyoVisitState = value => value.tokyoVisits ||= emptyTokyoVisits();
 
 export function playerRegion(value) {
   if (value.chapter !== 3) return value.chapter < 3 ? "home" : "unknown";
+  // 出発前の準備3日（VOL02）はまだ地元。東京へ着くのは出発の朝。
+  if (value.flags?._ch3_prep && !value.flags._ch3_prep.departed) return "home";
   // 後日談の帰郷の夜（版3は煙幕の片づけの次、版1・2は三場面目）からは地元。
   const aftermath = value.flags?._ch3_aftermath;
   const homeStage = aftermath?.version >= 3 ? 4 : 3;
@@ -50,7 +52,7 @@ export function proposeTokyoVisit(value, definitions, id) {
     || !character || value.chapter < character.dateMinChapter) return null;
   const visits = syncTokyoVisits(value);
   if (visits.plans.some(plan => plan.characterId === id && plan.status !== "returned")) return null;
-  const windows = TOKYO_FREE_TIMES.map(window => tokyoTime(value, window)).filter(window => windowAvailable(value, window));
+  const windows = tokyoFreeTimes(value).map(window => tokyoTime(value, window)).filter(window => windowAvailable(value, window));
   for (const meetup of windows) {
     if (meetup.day < value.day + definitions.leadDays) continue;
     const returnDay = meetup.day + definitions.stayDays;

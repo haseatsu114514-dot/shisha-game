@@ -18,5 +18,5 @@
    - 背景色は外周から自動で読み取って抜き、上の隙間が出ないよう切り出し、`remake/img/ui/character_intros/graphic/<id>.webp` を上書きする。
    - 原画・確認画像（緑の上に重ねたもの）・記録は `replacements/<日付>/` に保存される。「左／右の端で切れています」の警告が出たら、引いた構図で描き直す。
    - 先に見るだけなら `--dry-run`。
-3. 位置を変えたいポーズだけ、`remake/js/vn/intro-graphic.js` の `FRAME_OVERRIDES` に `id: { width, left, top }` を足す（既定は `GRAPHIC_FRAME`）。
+3. 人物を差し替えたら、`heads.json` のその人物の `[頭頂のy, 顎のy, 顔の中心のx]`（ゲーム用 webp 1024×1024 上の値。頭頂は髪の量・帽子・フードを除いた頭の上端）を測り直し、`python3 tools/intro_graphic_frames.py` を実行する。全員の頭がほぼ同じ大きさ（画面で約280px）になる配置が `intro-graphic.js` の `FRAME_OVERRIDES` に書き出される（2026-11-02 オーナー「みんな似たような拡大率で」）。手で直さない。パッキーは全身で見せるので対象外。
 4. 確認: `node remake/test/intro_cutin.mjs`（`SHOTS=<フォルダ>` で全員の画面を保存）。新しいキャラを足すときは `PORTRAITS` にIDを足してから。

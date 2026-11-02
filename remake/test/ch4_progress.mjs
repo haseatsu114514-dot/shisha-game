@@ -6,7 +6,8 @@ import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_SCENE_FILES, CH4_VISITOR_SCENE_FILES, C
   CH4_TOURNAMENT_DAY, CH4_EVE_DAY, canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress,
   completeChapterFourScene, endChapterFourDay, finishChapterFourEve, chapterFourMandatory,
   chapterFourSecondAvailable, chapterFourSheikhRevealed, revealChapterFourSheikh,
-  chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE } from "../js/chapters/ch4-progress.js";
+  chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE,
+  CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour } from "../js/chapters/ch4-progress.js";
 import { chapterFourMapModel, DUBAI_MAP_PLACES } from "../js/chapters/ch4-map-model.js";
 
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
@@ -94,7 +95,12 @@ assert.equal(value.phase, "opening");
 assert.deepEqual(value.statsAtChapterStart, value.stats);
 assert.notEqual(value.statsAtChapterStart, value.stats);
 assert.equal(value.flags._ch4.day, 1);
-assert.equal(value.flags._ch4.startDay, 46);
+// 出発前の3日を地元で過ごしてからドバイへ（VOL02）。ドバイDAY1（startDay）は出発の朝に確定し直す。
+assert.equal(value.flags._ch4.startDay, 49);
+assert.deepEqual(value.flags._ch4_prep, { startDay: 46, days: 3, step: 0, departed: false });
+assert.equal(value.flags._ch2_region, "home");
+assert(chapterFourPrepPending(value));
+assert.deepEqual(CH4_PREP_SCENES, ["ch4_sumi_training", "ch4_strategy"]);
 assert.equal(value.flags._ch4.firstDay, null);
 assert.equal(value.flags._ch4_sheikh_revealed, false);
 assert.equal(chapterFourSheikhRevealed(value), false);
@@ -123,6 +129,25 @@ for (const wrong of ["ch4_festa", "ch4_dubai_souq", "ch4_stranger_first", "ch4_t
   assert.deepEqual(value, prior);
 }
 for (const [index, scene] of CH4_PROLOGUE.entries()) {
+  if (index === CH4_PREP_SCENES.length) {
+    // 出発前の2場面（準備1日目の昼・夜）を読み終えた。準備3日の後の出発の朝でないと発てない。
+    const early = structuredClone(value);
+    assert.equal(departChapterFour(value), false, "Departure waits for the morning after the prep days");
+    assert.deepEqual(value, early);
+    value.day += 3; value.slot = 2; value.flags._ch2_region = "widehanga";
+    assert.equal(departChapterFour(value), true);
+    assert.deepEqual([value.flags._ch4_prep.departed, value.flags._ch4.startDay, value.slot, value.phase, value.flags._ch2_region],
+      [true, 49, 0, "opening", "home"]);
+    assert.equal(chapterFourPrepPending(value), false);
+    assert.equal(departChapterFour(value), false, "Departure happens once");
+    roundTrip();
+  }
+  if (index === 0) {
+    // 出発前の場面を読まずに出発の朝になっても発てない（ch4.js が出発前に読ませる）。
+    const unread = structuredClone(value);
+    unread.day += 3;
+    assert.equal(departChapterFour(unread), false, "The pre-departure scenes come first");
+  }
   assert.equal(value.flags._ch4.stage, index);
   assert.equal(value.flags._ch4.part, "prologue");
   assert.equal(completeChapterFourScene(value, scene.id), true, scene.id);
@@ -134,7 +159,7 @@ for (const [index, scene] of CH4_PROLOGUE.entries()) {
 assert.equal(value.flags._ch4.part, "free");
 assert.equal(value.phase, "daily");
 assert.equal(value.flags._ch4.day, 1);
-assert.equal(value.day, 46, "The prologue must not advance the calendar");
+assert.equal(value.day, 49, "The prologue in Dubai must not advance the calendar");
 
 // 方針の選択は保存だけ。
 assert.equal(recordChapterFourStrategy(value, "bogus"), false);
@@ -327,11 +352,14 @@ assert.equal(completeChapterFourScene(value, "ch4_two_tables"), false, "A cleare
   for (let step = 0; step < 3; step++) assert.equal(endChapterFourDay(forced), "next_day");
   assert.equal(endChapterFourDay(forced), "eve");
   assert.deepEqual(chapterFourMandatory(forced), [
+    { id: "ch4_festa", lead: null },
     { id: "ch4_stranger_first", lead: "ch4_stranger_first_forced_in" },
     { id: "ch4_stranger_second", lead: null },
     { id: "ch4_wang_reception", lead: "ch4_wang_reception_forced_in" },
     { id: "ch4_stranger_third", lead: null },
   ]);
+  assert.equal(completeChapterFourScene(forced, "ch4_stranger_first_forced_in"), false, "FESTA comes first on the eve");
+  assert.equal(completeChapterFourScene(forced, "ch4_festa"), true);
   assert.equal(completeChapterFourScene(forced, "ch4_stranger_first_forced_in"), true);
   assert.equal(completeChapterFourScene(forced, "ch4_stranger_first"), true);
   assert.equal(forced.flags._ch4.firstDay, CH4_EVE_DAY, "A forced first meeting records its own day");
