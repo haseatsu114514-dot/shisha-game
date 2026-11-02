@@ -353,7 +353,7 @@ async function lastNight() {
     }
     progress = owner.flags._ch1_eve;
     if (progress.choice !== "drill" || progress.practiceDone || progress.drill) break;
-    const drill = await chooseDrill();
+    const drill = await chooseDrill({ allowBack: true });
     requireCurrent();
     if (owner.flags._ch1_eve !== progress) throw new DOMException("Tournament eve selection changed", "AbortError");
     if (drill !== null) { progress.drill = drill; save(); break; }

@@ -267,7 +267,7 @@ async function afterShiftSumiTalk() {
   }
 }
 
-export function chooseDrill({ title = "自主練", lead = "苦手な工程を反復しよう。能力値は増えません。", recommended = null } = {}) {
+export function chooseDrill({ title = "自主練", lead = "苦手な工程を反復しよう。能力値は増えません。", recommended = null, allowBack = false } = {}) {
   return new Promise((resolve) => {
     let settled = false;
     const pick = value => {
@@ -285,7 +285,7 @@ export function chooseDrill({ title = "自主練", lead = "苦手な工程を反
           el("small", { text: `${d.desc}（自己ベスト ${"★".repeat(Math.max(0, state.best[id] ?? 0)) || "なし"}）` }),
         ])
       )),
-      el("button.btn.ghost.small.sub-back", { text: "← 戻る", dataset: { test: "drill-back" }, onclick: () => pick(null) }),
+      allowBack ? el("button.btn.ghost.small.sub-back", { text: "← 戻る", dataset: { test: "drill-back" }, onclick: () => pick(null) }) : null,
     ]));
   });
 }

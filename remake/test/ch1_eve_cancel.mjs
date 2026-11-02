@@ -72,6 +72,7 @@ async function harness(initial = fresh(), { cancelEnding = false, holdDrill = fa
   return {
     state: () => game, saves, entries, drillRuns, choices, sounds: () => ({ select, cancel }),
     button: test => nodes(menu).find(node => node.dataset.test === test),
+    chooseDrill: () => modules.get("remake/js/daily/tonari.js").namespace.chooseDrill(),
     run() { const task = chapter.namespace.NIGHT_EVENTS[13].run(); task.catch(() => {}); return task; },
     choose(branch) {
       const pending = choices.shift(); assert(pending, "Existing VN choice menu is open");
@@ -87,10 +88,18 @@ async function harness(initial = fresh(), { cancelEnding = false, holdDrill = fa
       assert.deepEqual(choices[0].dialogue.lines, scene.lines.slice(at - 1, at + 1));
       assert.equal(choices[0].dialogue.lines.at(-1).choices.length, 4);
     },
-    assertDrillMenu() { assert.equal(screen, "tonari"); assert.equal(nodes(menu).filter(node => node.tagName === "button").length, 5); },
+    assertDrillMenu(count = 5) { assert.equal(screen, "tonari"); assert.equal(nodes(menu).filter(node => node.tagName === "button").length, count); },
   };
 }
 
+{
+  const h = await harness(), task = h.chooseDrill();
+  h.assertDrillMenu(4);
+  assert.equal(h.button("drill-back"), undefined, "The default selector retains its original required-choice contract");
+  h.button("drill-heat").click();
+  assert.equal(await task, "heat", "Default callers receive a real drill id");
+  assert.deepEqual(h.sounds(), { select: 1, cancel: 0 });
+}
 {
   const h = await harness(), task = h.run(); await flush();
   assert.deepEqual(h.choices[0].dialogue.lines, scene.lines, "First entry retains the complete introduction");
