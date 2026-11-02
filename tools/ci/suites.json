@@ -172,6 +172,26 @@
       ]
     },
     {
+      "id": "roamers",
+      "title": "People who drop by other shops: plan, map faces, talk, once a day (roamers)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/roamers.js",
+        "remake/js/daily/spot-people.js",
+        "remake/js/daily/calendar.js",
+        "remake/js/chapters/ch2-preparation.js",
+        "data/dialogue/roaming_guests.json",
+        "data/dialogue/ch5_main.json",
+        "remake/test/browser/roamers.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/roamers.mjs"
+      ]
+    },
+    {
       "id": "board-tutorial",
       "title": "Growth board first-time tutorial and starter fire (board_tutorial)",
       "kind": "browser",
