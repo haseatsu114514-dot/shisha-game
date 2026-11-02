@@ -13,7 +13,7 @@ import { spotById } from "./spots.js";
 const colorName = (kind) => HIDANE_NAME[kind] || "火種";
 const PLACE_LABEL = {
   tonari_shift: "tonariのバイト", tonari_practice: "まかないで練習", tonari_seat: "tonariの客席", axe_bar: "斧投げBar", pakki_slot: "パッキースロット",
-  "tokyo:pizza_party": "ピザとシーシャの夜",
+  "tokyo:pizza_party": "ピザとシーシャの夜", "tokyo:mukai_help": "mukaiのバイト", "tokyo:gym": "CHOI-ZAP",
   "dubai:souq": "スーク", "dubai:festa": "FESTA", "dubai:center_cafe": "中心地のカフェ",
 };
 

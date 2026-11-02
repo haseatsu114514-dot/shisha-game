@@ -491,6 +491,7 @@
 | 恋人デート・一服（`remake/data/lover.json:889-1046`, `daily/bonds.js:387`） | 選択肢ごとに +2P | 同上（鍵＝相手ID） |
 | `chapters/ch2-preparation.js:56, 112` 第2章の外出・会話 | `earnStat(stat, 2〜4)` | no-op（外側の `paidAction` が X1） |
 | `chapters/ch3-activities.js:55` 東京のジム | `earnStat(TOKYO_GYM.stat, 4)` | no-op（外側の `paidAction`、鍵＝`tokyo:gym`、初回は X3） |
+| `chapters/ch3-tokyo-daily.js` 第3章 東京の日常ループ（版3）の行き先・恋人の訪問 | 行き先の鍵（`ch3_tokyo_*`）で X1 のみ。恋人の訪問は経験値なし | 行動ごとに `exp` を返す（2026-11-02）。人に会う行動は相手の鍵（久世・スティーブ・ヴォルク・ましろ。寄り道の相手は場所で決める。恋人の東京訪問も `paidAction` で包んで相手の鍵）、mukai のシフトは `tokyo:mukai_help`、ジムは `tokyo:gym`。体力を使う外出・寄り道・シフトとジムの導入・訪問の場面は初完読で X5（通いの小会話も話ごとに一度。第1・2章の店の会話と同じで、版2の旧行程より広い）。遠くからの電話は強制の夜の予定なので X5 なし |
 | `craft/steps.js:433` 新レシピ | `earnStat("sense", 1)` | `gainExp("recipe", 30)`（X6） |
 | `chapters/ch1.js:709, 729` 第1章優勝後 | `gainStat("guts"/"insight", 1)` | 削除（X8〜X10 に含める） |
 | `vn/engine.js:330, 332, 518, 701` 台本の報酬・地の文キュー | `applyStats` | no-op。完読フックで X5／X5s |
