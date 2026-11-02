@@ -8,6 +8,7 @@ import { clamp } from "../js/core/util.js";
 import { MAX_MONEY } from "../js/core/rules.js";
 import { STAT_JA } from "../js/core/state.js";
 import { chapterDay, chapterDaysLeft, relationshipElapsedDay } from "../js/core/chapter-clock.js";
+import { chapterFeatureEnabled } from "../js/core/chapter-features.js";
 const root = new URL("../", import.meta.url);
 const dataRoot = new URL("../../", import.meta.url);
 const db = { lime: JSON.parse(await fs.readFile(new URL("data/lime_messages.json", dataRoot), "utf8")).messages, lover: {}, dialogues: {} };
@@ -40,6 +41,7 @@ let friendQueue = [];
 const noop = () => {}, mods = new Map();
 const values = {
   "chapter-clock.js": { chapterDay, chapterDaysLeft, relationshipElapsedDay },
+  "chapter-features.js": { chapterFeatureEnabled },
   "hiyori-route.js": { hiyoriEventStatus: () => "disabled", hiyoriRoute: () => ({}), hiyoriFinaleReady: () => false },
   "util.js": { el, clamp, sleep: async () => {}, fitOneLine: () => {}, yen: (n) => `¥${n}` },
   "data.js": { DB: db, displayName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
