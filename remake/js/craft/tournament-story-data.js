@@ -13,6 +13,12 @@ function leafName(id) {
   return sp > 0 && MAKER_TOKENS.has(name.slice(0, sp)) ? name.slice(sp + 1) : name;
 }
 const NATIONAL_JUDGE_SCENES = new Set(["mix_single", "mix_blend", "crowd_2", "aroma_good", "aroma_work", "aroma_unknown"]);
+// 第4章（世界大会）の審査員は南雲・エミル・太陽。博士の行は太陽へ、上園の行は第3章と同じエミルの行へ切り替える。
+const WORLD_JUDGE_SCENES = new Set(["packed_intro", "pack_fluffy", "pack_normal", "pack_firm"]);
+function sceneIdFor(chapter, id) {
+  if (chapter === 4 && WORLD_JUDGE_SCENES.has(id)) return `${id}_4`;
+  return chapter >= 3 && NATIONAL_JUDGE_SCENES.has(id) ? `${id}_3` : id;
+}
 
 /**
  * 第2章・提供後の票（2回目の投票）を見たあとのあげはの区分（#1649）。
@@ -47,7 +53,9 @@ export function tournamentStoryLeadIn(cs, event) {
 }
 
 export function tournamentStoryDialogue(cs, event, random = Math.random, context = {}) {
-  const chapter = [1, 2, 3].includes(cs.chapter) ? cs.chapter : 1;
+  const chapter = [1, 2, 3, 4].includes(cs.chapter) ? cs.chapter : 1;
+  // 第4章は試飲の講評を持たない（結果の盤と ch4_final が担う）。上園・博士の行を世界大会へ出さない。
+  if (chapter === 4 && event === "tasting") throw new Error("第4章の大会演出に試飲の講評はありません");
   const ingredients = Object.entries(cs.mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0);
   const flavors = ingredients.map(([id, g]) => `${DB.flavorById[id]?.short_name || id} ${g}g`).join("、");
   // 試飲の感想（aroma_*）では配合カードを読み上げない。メーカー略称とg数を落とし、多い順の主役2種だけを言う。
@@ -57,6 +65,8 @@ export function tournamentStoryDialogue(cs, event, random = Math.random, context
   // 第2章の提供後の掛け合いは、画面の票と提供の実績に合わせて組み立てる（第1章の naruTastingLine と同じ考え方）。
   else if (event === "interlude1" && chapter === 2) ids.push(`interlude1_2_ageha_${agehaServedVotes(context.progress)}`,
     "interlude1_2_mid", `interlude1_2_hajime_${hajimeServedState(cs)}`);
+  // 第4章の提供後は、はじめの実際の順位（途中の持ち点）で先頭か追う側かを分ける。なるが先頭とは言わない。
+  else if (event === "interlude1" && chapter === 4) ids.push(`interlude1_4_${context?.rank === 1 ? "lead" : "chase"}`, "interlude1_4");
   else if (event.startsWith("interlude")) ids.push(`${event}_${chapter}`);
   else if (event === "packed") ids.push("packed_intro", `pack_${PACKING[cs.pack] ? cs.pack : "normal"}`,
     ingredients.length > 1 ? "mix_blend" : "mix_single", "packed_end");
@@ -75,7 +85,7 @@ export function tournamentStoryDialogue(cs, event, random = Math.random, context
   return {
     dialogue_id: `tournament_craft_${chapter}_${event}`,
     lines: ids.flatMap(id => {
-      const sceneId = chapter === 3 && NATIONAL_JUDGE_SCENES.has(id) ? `${id}_3` : id;
+      const sceneId = sceneIdFor(chapter, id);
       const scene = DB.dialogues[`tournament_craft_${sceneId}`];
       if (!scene) throw new Error(`大会演出の台本がありません: ${id}`);
       const named = id.startsWith("aroma_") ? aromaFlavors : flavors;

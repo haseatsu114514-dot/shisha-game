@@ -195,6 +195,26 @@
       ]
     },
     {
+      "id": "roamers",
+      "title": "People who drop by other shops: plan, map faces, talk, once a day (roamers)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/roamers.js",
+        "remake/js/daily/spot-people.js",
+        "remake/js/daily/calendar.js",
+        "remake/js/chapters/ch2-preparation.js",
+        "data/dialogue/roaming_guests.json",
+        "data/dialogue/ch5_main.json",
+        "remake/test/browser/roamers.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/roamers.mjs"
+      ]
+    },
+    {
       "id": "board-tutorial",
       "title": "Growth board first-time tutorial and starter fire (board_tutorial)",
       "kind": "browser",
@@ -481,6 +501,7 @@
         "node remake/test/camel_race_model.mjs",
         "node remake/test/ch4_camel_race.mjs",
         "node remake/test/ch4_dubai_cafe.mjs",
+        "node remake/test/ch4_dubai_local.mjs",
         "node remake/test/ch4_longlong.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node remake/test/ch5_party.mjs",
@@ -1213,7 +1234,7 @@
     },
     {
       "id": "ch4-camel-race",
-      "title": "Chapter 4 camel race in the real UI (legacy 5-day map and the 14-day daily map): meet, invite, watch, race, record, save/load, replay, one daytime slot",
+      "title": "Chapter 4 camel race in the real UI (legacy 5-day map and the 14-day daily map): meet, invite, watch, race, record, save/load, replay, one daytime slot; hold-to-whip controls on the standalone page",
       "kind": "browser",
       "weight": 2,
       "timeout": 8,
@@ -1232,6 +1253,7 @@
         "remake/img/ui/camel_race/**",
         "assets/sprites/characters/saif/**",
         "assets/sprites/characters/rashid/**",
+        "remake/img/sprites/characters/hajime/**",
         "assets/backgrounds/bg_dubai_camel_track_morning.png",
         "remake/test/browser/ch4_camel_race.mjs"
       ],
@@ -1247,22 +1269,49 @@
       ]
     },
     {
+      "id": "lesson-consult-coverage",
+      "title": "Growth-board lessons consulted in the chapter 3 aftermath, chapter 5 Tokyo and chapter 5 regular shops (#1801)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 4,
+      "paths": [
+        "remake/js/chapters/ch3-aftermath*.js",
+        "remake/js/chapters/ch5-tokyo.js",
+        "remake/js/chapters/ch5-shops.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
+        "remake/js/core/growth.js",
+        "data/dialogue/growth_lessons.json",
+        "remake/test/browser/lesson_consult_coverage.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/lesson_consult_coverage.mjs"
+      ]
+    },
+    {
       "id": "ch4-dubai-daily",
-      "title": "Chapter 4 Dubai days on the shared daily loop (VOL04), one shisha at the local cafes, the Longlong shop and the eve acquaintance branch (DBS)",
+      "title": "Chapter 4 Dubai days on the shared daily loop (VOL04), one shisha at the local cafes, the Longlong shop, the eve acquaintance branch, daytime heat, lively nights and the souq stall (DBS)",
       "kind": "browser",
       "weight": 0.8,
       "timeout": 6,
       "paths": [
         "remake/js/chapters/ch4-dubai-daily.js",
         "remake/js/chapters/ch4-dubai-cafe.js",
+        "remake/js/chapters/ch4-dubai-local.js",
         "remake/js/chapters/ch4-longlong.js",
         "remake/js/core/affinity-stages.js",
         "remake/js/chapters/ch4-progress.js",
         "remake/js/chapters/ch4.js",
+        "remake/js/chapters/ch4-story-wiring.js",
+        "remake/js/core/overseas-companion.js",
+        "remake/js/core/story-routes.js",
+        "data/story_routes.json",
         "data/dialogue/ch4_dubai_daily.json",
         "data/dialogue/ch4_spots.json",
         "data/dialogue/ch4_longlong.json",
         "data/dialogue/ch4_main.json",
+        "data/dialogue/ch4_visitors.json",
+        "data/dialogue/ch4_*_dubai.json",
+        "data/dialogue/tournament_dates.json",
         "remake/test/browser/ch4_dubai_daily.mjs"
       ],
       "run": ["node remake/test/browser/ch4_dubai_daily.mjs"]
@@ -1278,8 +1327,11 @@
         "remake/js/chapters/departure-prep.js",
         "remake/js/chapters/ch3-aftermath*.js",
         "remake/js/chapters/ch1.js",
+        "remake/js/core/overseas-companion.js",
         "data/dialogue/ch4_main.json",
         "data/dialogue/ch4_spots.json",
+        "data/dialogue/ch4_visitors.json",
+        "data/dialogue/ch4_*_dubai.json",
         "remake/test/browser/ch4_full_flow.mjs"
       ],
       "run": [

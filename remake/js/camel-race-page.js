@@ -22,7 +22,7 @@ function menu(result = null) {
   host.replaceChildren(el("div.camel-menu", [
     el("p", { text: "第4章ドバイ編・任意ミニゲーム（試遊ページ）" }),
     el("h1", { text: "CAMEL RACE" }),
-    el("p", { text: "ラクダは自分で走る。横を走る車から、ロボット騎手へ「声」と「合図」を送るだけ。輪が重なる瞬間に Space、終盤に X。" }),
+    el("p", { text: "ラクダは自分で走る。横を走る車から、ロボット騎手へ「声」と「ムチ」を送るだけ。輪が重なる瞬間に Space（当たるとぐっと伸びる）、X は押している間ムチ（スタミナを使う）。" }),
     el("p", { dataset: { test: "camel-menu-result" }, text: result?.last ? `前回：${result.last.rank}位 ／ スコア ${result.last.total}（${result.last.grade}）${best ? ` ／ 自己ベスト ${best.total}` : ""}` : "まだ記録はありません。" }),
     ...buttons,
   ]));

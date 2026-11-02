@@ -1,6 +1,6 @@
 // CAMEL RACE の競走モデル: 再現性・所要時間・採点・連打の罰・順位。
 import assert from "node:assert/strict";
-import { RACE, CUE, SIGNAL, PLAYER, createRace, stepRace, pressVoice, pressSignal, activeCue, scoreRace, simulateRace, standings,
+import { RACE, CUE, WHIP, createRace, stepRace, pressVoice, setWhip, whipReady, activeCue, scoreRace, simulateRace, standings,
   gradeOf, GRADES, RANK_POINTS, RIVAL_PROFILES, POLICIES } from "../js/minigames/camel-race-model.js";
 
 // 同じ seed なら同じレース。違う seed なら輪の間隔とライバルの個体差が変わる。
@@ -12,7 +12,8 @@ import { RACE, CUE, SIGNAL, PLAYER, createRace, stepRace, pressVoice, pressSigna
   assert.notDeepEqual(c.cues.map(cue => cue.at), createRace({ seed: 7 }).cues.map(cue => cue.at));
 }
 
-// 所要時間は 45〜60秒の設計: ぴたりの声かけと終盤の合図で約50秒・1位・S。何もしなければ60秒超・4位・C。
+// 所要時間は 45〜60秒の設計: ぴたりの声かけと上手なムチで約50秒・1位・S。何もしなければ60秒超・4位・C。
+let goodWins = 0;
 for (let seed = 1; seed <= 20; seed++) {
   const perfect = simulateRace({ seed, policy: "perfect" });
   assert(perfect.state.finished);
@@ -21,9 +22,17 @@ for (let seed = 1; seed <= 20; seed++) {
   assert.equal(perfect.score.grade, "S");
   assert(perfect.score.total <= 100 && perfect.score.total >= 85);
   const good = simulateRace({ seed, policy: "good" });
-  assert(good.score.time > perfect.score.time, "late GOOD presses are slower than PERFECT");
-  assert(good.score.rank >= 2 && good.score.rank <= 4, `seed ${seed}: GOOD-only places mid-field (${good.score.rank})`);
-  assert(["A", "B"].includes(good.score.grade), `seed ${seed}: GOOD-only grade ${good.score.grade}`);
+  assert(good.score.time > perfect.score.time + 1.5, "late GOOD presses are clearly slower than PERFECT");
+  assert(good.score.rank >= 1 && good.score.rank <= 3, `seed ${seed}: GOOD with a good whip is in the fight (${good.score.rank})`);
+  if (good.score.rank === 1) goodWins += 1;
+  // ムチを使わない（声だけぴたり）と勝ちきれず、押しっぱなしは息が切れてもっと悪い。
+  const cruise = simulateRace({ seed, policy: "cruise" });
+  assert(cruise.score.time > perfect.score.time + 1.5, `seed ${seed}: the whip is worth about two seconds`);
+  assert.equal(cruise.state.stats.whipTime, 0);
+  const hold = simulateRace({ seed, policy: "hold" });
+  assert(hold.score.time > cruise.score.time, `seed ${seed}: holding the whip all race is worse than never using it`);
+  assert(hold.score.rank >= 2, `seed ${seed}: holding the whip all race does not win`);
+  assert(hold.state.stats.emptyWhip > 5, "holding on an empty camel is counted");
   const none = simulateRace({ seed, policy: "none" });
   assert(none.score.time > 58 && none.score.time < RACE.maxTime, `none time ${none.score.time}`);
   assert.equal(none.score.rank, 4);
@@ -33,6 +42,7 @@ for (let seed = 1; seed <= 20; seed++) {
   const finishes = none.state.rivals.map(r => r.finishedAt);
   assert(finishes.every(t => t > 48 && t < 58), `rival finishes ${finishes}`);
 }
+assert(goodWins <= 4, `GOOD-only rarely wins (${goodWins}/20)`);
 // 連打は消耗して最下位。スコアは0〜100に収まる。
 {
   const spam = simulateRace({ seed: 3, policy: "spam" });
@@ -64,9 +74,11 @@ for (let seed = 1; seed <= 20; seed++) {
   while (race.t < first) stepRace(race, 1 / 60);
   const cue = activeCue(race);
   assert(cue && Math.abs(cue.dt) <= CUE.perfect);
-  const rhythm = race.player.rhythm;
+  const rhythm = race.player.rhythm, speed = race.player.speed;
   assert.equal(pressVoice(race).type, "perfect");
   assert(race.player.rhythm > rhythm);
+  // 当たった声はその場で一伸びする（速さに少し足し、残りは上乗せとして消えていく）。
+  assert(race.player.speed > speed && race.player.surge >= CUE.perfectSurge - 1e-9, "a hit kicks the camel forward at once");
   assert.equal(pressVoice(race).type, "miss", "second press on the same ring is wasted");
   assert.equal(race.stats.perfect, 1);
   // 2つ目の輪を GOOD のぎりぎりで。
@@ -85,23 +97,39 @@ for (let seed = 1; seed <= 20; seed++) {
   assert(race.stats.spam >= 1);
 }
 
-// 合図: スタミナを使って加速し、再使用待ち。終盤は強く、息が切れていると空ぶかし。
+// 合図（ムチ）: 押している間だけ加速してスタミナを使う。離すと声の調子で息が戻る。空になったら戻るまで止まる。
 {
   const race = createRace({ seed: 9 });
-  stepRace(race, 1 / 60);
+  for (let i = 0; i < 120; i++) stepRace(race, 1 / 60);
   const speed = race.player.speed, stamina = race.player.stamina;
-  assert.equal(pressSignal(race).type, "boost");
-  assert.equal(race.player.stamina, stamina - SIGNAL.cost);
-  assert.equal(pressSignal(race).type, "cooldown");
+  assert.equal(setWhip(race, true).type, "boost");
+  assert.equal(setWhip(race, true), null, "holding is not a second press");
   for (let i = 0; i < 60; i++) stepRace(race, 1 / 60);
-  assert(race.player.speed > speed + 1, "a signal accelerates the camel");
-  assert.equal(race.stats.earlySignals, 1, "a signal in the first 20% counts as early");
+  assert(race.player.speed > speed + 1.5, "the whip accelerates the camel while held");
+  assert(Math.abs(race.player.stamina - (stamina - WHIP.drain)) < 0.5, `one second of whip costs ${WHIP.drain}`);
+  assert(Math.abs(race.stats.whipTime - 1) < 0.02);
+  assert.equal(setWhip(race, false).type, "release");
+  race.player.rhythm = 0.9;
+  const rested = race.player.stamina;
+  for (let i = 0; i < 60; i++) stepRace(race, 1 / 60);
+  assert(race.player.stamina > rested, "releasing with a good rhythm lets the camel breathe");
+  // スパート区間では強く効き、消費は少し軽い。
   race.player.distance = race.length * RACE.spurtFrom + 1;
-  race.player.cooldownUntil = -1;
-  assert.equal(pressSignal(race).type, "spurt");
-  race.player.cooldownUntil = -1; race.player.stamina = PLAYER.spent - 1;
-  assert.equal(pressSignal(race).type, "spent");
-  assert.equal(race.player.stamina, 0);
+  assert.equal(setWhip(race, true).type, "spurt");
+  const before = race.player.stamina;
+  stepRace(race, 0.05);
+  assert(Math.abs(before - race.player.stamina - WHIP.spurtDrain * 0.05) < 1e-6);
+  // 空になるまで押し続けると腕が止まり、押していても空ぶかし（emptyWhip）。戻るまで使えない。
+  while (whipReady(race)) stepRace(race, 1 / 60);
+  assert(race.player.whipLocked && !race.player.whipping);
+  const empty = race.stats.emptyWhip;
+  for (let i = 0; i < 30; i++) stepRace(race, 1 / 60);
+  assert(race.stats.emptyWhip > empty, "pressing on an empty camel is wasted");
+  setWhip(race, false); setWhip(race, true);
+  assert.equal(race.events.at(-1).type, "spent");
+  setWhip(race, false);
+  race.player.stamina = WHIP.resume + 1; stepRace(race, 1 / 60);
+  assert(!race.player.whipLocked && whipReady(race), "the whip comes back once the camel has breathed");
 }
 
 // 採点の部品と評価の境目。
@@ -115,6 +143,6 @@ for (let seed = 1; seed <= 20; seed++) {
   assert.equal(score.total, Math.min(100, score.parts.rank + score.parts.timing + score.parts.stamina));
   assert(score.parts.timing <= 35 && score.parts.stamina <= 25);
   assert.equal(RIVAL_PROFILES.length, RACE.rivals);
-  assert.deepEqual(Object.keys(POLICIES), ["perfect", "good", "none", "spam"]);
+  assert.deepEqual(Object.keys(POLICIES), ["perfect", "good", "cruise", "hold", "none", "spam"]);
 }
 console.log("camel_race_model: ok");

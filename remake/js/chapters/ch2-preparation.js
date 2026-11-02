@@ -10,6 +10,7 @@ import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
 import { allSpots, isClosed, VISIT_COST, CHAR_STAT, VISIT_BG, bgRef, setChapterVisitDue, hasNewEvent } from "../daily/spots.js";
 import { setHiyoriExtraShops } from "../daily/hiyori.js";
+import { addRoamerSpots } from "../daily/roamers.js";
 import { trpgSpot, maybeRecruitTrpgMember } from "../daily/trpg.js";
 import { CITY_OUTINGS, CITY_SHOP, knownCityOutings, introduceCitySpot, outingDialogue, recordOutingVisit } from "./ch2-outings.js";
 import { offerAgehaPurikura } from "./ch2-purikura.js";
@@ -256,8 +257,12 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   return { used: true, exerted: true };
 }
 
+// よその店に居合わせる人（daily/roamers.js）も、第2章は柚ヶ谷の店にいることがある
+const ROAMER_CITY_SHOPS = () => state.chapter === 2 ? PREPARATION_SPOTS : [];
+
 export async function runChapterTwoPreparation() {
   setHiyoriExtraShops(() => state.chapter === 2 ? PREPARATION_SPOTS : []);
+  addRoamerSpots(ROAMER_CITY_SHOPS);
   // 地図の「！」: 地元の店で読める第2章の本編（VOL13）。tonariの大会準備は地図の tonari の hasNew で出す
   // （スミさんの固有会話の「！」には混ぜない。シフト上がりの会話が変わってしまうため）
   setChapterVisitDue(charId => !!storyVisitDue(state, charId));

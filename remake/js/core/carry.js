@@ -226,6 +226,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch4_cafe_orders", "progression"], // ドバイのカフェで頼んだ一台の回数（メニューごと・ch4-dubai-cafe.js）
   ["_ch4_cleared", "progression"],
   ["_ch4_dubai_talks", "progression"],
+  ["_ch4_dubai_nights", "progression"], // ドバイの夜がにぎわう店に夜に行った回数（店ごと・ch4-dubai-local.js）。周回では持ち越さない
   ["_ch4_longlong", "progression"], // 龍龍水煙所のドバイの店の段階の既読・通いの回数（ch4-longlong.js）
   ["_ch4_desert", "progression"],
   ["_ch4_evening", "progression"],
@@ -423,6 +424,8 @@ export const FLAG_EXACT_RULES = [
   ["_rest_after_tournament", "progression"],
   ["_rin_sample", "person"],
   ["_rin_sample_received", "person"],
+  ["_roam_day", "progression"],
+  ["_roam_seen_dr_kemuri", "person"], // 第5章の ch5_opening が読む（よその店で博士に居合わせた回数）
   ["_ryuji_melty_greeting", "person"],
   ["_ryuji_melty_visit", "person"],
   ["_salaryman_service_order", "progression"],
@@ -566,6 +569,7 @@ export const FLAG_FAMILY_RULES = [
   ["_ch3_trial_*", "progression"],
   ["_cafe_recall_*", "progression"],
   ["_city_guest_seen_*", "progression"],
+  ["_roam_seen_*", "person"],
   ["_date_inv_*", "person"],
   ["_delivery_*", "progression"],
   ["_fortune_*", "progression"],

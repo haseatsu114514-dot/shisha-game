@@ -34,6 +34,7 @@ import { syncSamechanKnowledge, maybeSamechanEncounter, visitSamechan } from "./
 import { invitationCost, invitationGrowth, storeInvitationSpot, storeInvitationDialogue, invitationVisitSpot, immediateInvitation } from "./invitations.js";
 import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocation } from "./hiyori.js";
 import { cityGuestAtShop, visitCityGuestAtShop } from "./city-guests.js";
+import { roamerAt, meetRoamer } from "./roamers.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
 import { presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
@@ -582,6 +583,10 @@ async function performSpotAction(spot) {
   const actionOwner = state;
   const scheduledGuestSpot = hiyoriShopLocation();
   const scheduledCityVisit = cityGuestAtShop(spot);
+  // よその店に居合わせる人は、入る前に地図で見た人（来店で「今日行った店」が変わっても変えない）
+  const scheduledRoamer = roamerAt(spot);
+  // 背景は店の絵（東京の店は preview、柚ヶ谷の店は previewUrl）
+  const roamerBg = () => spot.previewUrl || spot.bgUrl || bgRef(spot.bg || spot.preview || VISIT_BG[spot.charId] || "bg_tonari_inside");
   if (!openingStatus(spot, state).ok) return { used: false, exerted: false };
   if (spot.kind === "axe") {
     // 直接呼び出された入口にも、地図と同じ発見条件を適用する。
@@ -592,7 +597,10 @@ async function performSpotAction(spot) {
   }
   if (chapterDef.performSpot) {
     const result = await chapterDef.performSpot(spot, { staminaGuard });
-    if (result) return result;
+    if (result) {
+      if (result.used && state === actionOwner) await meetRoamer(spot, scheduledRoamer, { bg: roamerBg() });
+      return result;
+    }
   }
   if (spot.kind === "trpg") {
     const result = await openTrpgBar({ nightBusy: () => fixedNight(state.day) });
@@ -693,6 +701,7 @@ async function performSpotAction(spot) {
     if (await visitHiyoriAtShop(spot, { scheduledSpot: scheduledGuestSpot, bg: guestBg })) await consultLessons("hiyori", { bg: guestBg });
   }
   if (used) await visitCityGuestAtShop(spot, { scheduledVisit: scheduledCityVisit });
+  if (used && state === actionOwner) await meetRoamer(spot, scheduledRoamer, { bg: roamerBg() });
   return { used, exerted, slotsUsed, exp };
 }
 

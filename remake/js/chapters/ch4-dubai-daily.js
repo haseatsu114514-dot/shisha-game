@@ -12,6 +12,9 @@
 //     専門店（FESTA）6,000円・カフェ（中心地・路地裏）3,000円。調べた相場（1ディルハム≒43.5円）は
 //     専門のラウンジ 100〜150ディルハム、モール・中心地のカフェ 65〜75ディルハム、下町の小さなカフェ 30〜70ディルハム
 //   - ラクダレース（任意・ch4-camel-race.js）: 店先でサイフと知り合う→誘い→昼にレース場。行き先は段階で変わる
+//   - 街の手触り（ch4-dubai-local.js。2026-11-02 オーナー「2以外は採用」）: 昼の屋外（スーク・クリーク沿い）は暑さで体力を多めに
+//     使い、カフェ・専門店は夜がにぎわう（夜の一行。初めての夜は短い場面）。スークの後に屋台で軽く買える（体力が少し戻る）。
+//     ドバイの値段には約何ディルハムかを添える
 // 読了の確定は ch4-progress.js の completeChapterFourScene だけ（本筋の場面）。現在地は flags._ch2_region = "dubai"。
 import { state, save, timeOfDay } from "../core/state.js";
 import { DB, bgUrl } from "../core/data.js";
@@ -34,6 +37,8 @@ import { desertDailySpots, desertDailySpotById } from "./ch4-desert-progress.js"
 import { CAFE_MENU, CAFE_PLACES, CAFE_TASTE_IDS, OMAKASE, OMAKASE_LINE, SMOKED_IN_SCENE, TALKS_AFTER_ORDER,
   resolveCafeOrder, tasteScene, recordCafeOrder } from "./ch4-dubai-cafe.js";
 import { LONGLONG_BG, LONGLONG_CHAR, LONGLONG_IDS, nextLonglongVisit, longlongHasNew, recordLonglongVisit } from "./ch4-longlong.js";
+import { NIGHT_SCENE_IDS, STALL_NONE, STALL_PLACE, STALL_SCENE_IDS, dubaiSpotAt, nightVisit, recordNightVisit, priceText,
+  stallChoices, stallItem, stallLabel, stallSceneId } from "./ch4-dubai-local.js";
 
 export const DUBAI = "dubai";
 const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと）
@@ -58,7 +63,7 @@ const TALK_BG = Object.freeze({
 });
 export const DUBAI_DAILY_IDS = Object.freeze([
   ...["souq", "festa", "center_cafe", "alley_cafe", "naru", "practice"].flatMap(id => TALKS[id].filter(scene => /_(talk_[b-d]|dubai_\d|hall_\d|culture_[a-z]+)$/.test(scene))),
-  "ch4_creek_walk_day", "ch4_creek_walk_night", "ch4_inn_rest", ...CAFE_TASTE_IDS,
+  "ch4_creek_walk_day", "ch4_creek_walk_night", "ch4_inn_rest", ...CAFE_TASTE_IDS, ...NIGHT_SCENE_IDS, ...STALL_SCENE_IDS,
 ]);
 
 const read = id => chapterFourProgress(state).read[id] === true;
@@ -70,17 +75,17 @@ export const dubaiEveDay = (value = state) => chapterFourProgress(value).startDa
 const spot = fields => Object.freeze({ region: DUBAI, kind: "ch4_dubai", ...fields });
 export const CH4_DUBAI_SPOTS = Object.freeze([
   spot({ id: "ch4_dubai_souq", place: "souq", label: "スーク", area: "旧市街の市場", x: 22, y: 58, theme: "shop", glyph: "市",
-    preview: CH4_PLACE_BG.souq, stamina: -10, stat: "insight", desc: "スパイスの匂いが立つ市場。歩くたびに、違うものが目に入る。" }),
+    preview: CH4_PLACE_BG.souq, stamina: -10, stat: "insight", desc: "スパイスの匂いが立つ市場。歩くたびに、違うものが目に入る。屋台で軽いものも買える。" }),
   spot({ id: "ch4_dubai_festa", place: "festa", label: "FESTA", area: "大会会場の出張ブース", x: 56, y: 28, theme: "rival", glyph: "煙",
-    face: "da_silva", preview: CH4_PLACE_BG.festa, cost: 6000, stamina: -12, stat: "charm", desc: "手拍子と炭の匂いのする、太陽の店。一台6,000円。" }),
+    face: "da_silva", preview: CH4_PLACE_BG.festa, cost: 6000, stamina: -12, stat: "charm", desc: "手拍子と炭の匂いのする、太陽の店。一台6,000円（約140ディルハム）。夜がにぎわう。" }),
   spot({ id: "ch4_dubai_cafe", place: "center_cafe", label: "中心地のカフェ", area: "街の中心", x: 70, y: 52, theme: "store", glyph: "茶",
-    preview: CH4_PLACE_BG.center_cafe, cost: 3000, stamina: -10, stat: "sense", desc: "立派なカフェ。現地のメニューから一台頼んで吸う（3,000円）。給仕と客の作法も見る。" }),
+    preview: CH4_PLACE_BG.center_cafe, cost: 3000, stamina: -10, stat: "sense", desc: "立派なカフェ。現地のメニューから一台頼んで、給仕と客の作法も見る。一台3,000円（約70ディルハム）。夜がにぎわう。" }),
   spot({ id: "ch4_dubai_alley", place: "alley_cafe", label: "路地裏のカフェ", area: "路地の奥", x: 30, y: 78, theme: "store", glyph: "茶",
-    preview: CH4_PLACE_BG.alley_cafe, cost: 3000, stamina: -10, stat: "technique", desc: "古い台が並ぶ小さなカフェ。現地のメニューから一台頼んで吸う（3,000円）。" }),
+    preview: CH4_PLACE_BG.alley_cafe, cost: 3000, stamina: -10, stat: "technique", desc: "古い台が並ぶ小さなカフェ。現地のメニューから一台頼んで吸う。一台3,000円（約70ディルハム）。夜は常連が集まる。" }),
   // 龍龍水煙所（王煙楼の店）は最初から出す。王煙楼に会うまでは店主の顔は「？」（daily/spot-people.js）。背景は仮置き。
   spot({ id: "ch4_dubai_longlong", place: "longlong", label: "龍龍水煙所", area: "世界大会のあいだの店", x: 58, y: 50, theme: "rival", glyph: "龍",
     face: LONGLONG_CHAR, preview: LONGLONG_BG, cost: 6000, stamina: -12, stat: "insight",
-    desc: "中国の水煙の老舗が、世界大会に合わせて出した店。一台6,000円。" }),
+    desc: "中国の水煙の老舗が、世界大会に合わせて出した店。一台6,000円（約140ディルハム）。夜がにぎわう。" }),
   spot({ id: "ch4_dubai_naru", place: "naru", label: "なると会う", area: "宿のロビー", x: 20, y: 36, theme: "rival", glyph: "友",
     face: "naru", preview: CH4_PLACE_BG.inn, stamina: -8, stat: "guts", desc: "同じ街にいる日本の第二代表。少し話す。" }),
   spot({ id: "ch4_dubai_practice", place: "practice", label: "公式練習会場", area: "大会会場", x: 84, y: 30, theme: "stadium", glyph: "練",
@@ -109,6 +114,9 @@ function spotHasNew(entry) {
 /** ラクダレースの行き先（段階・日付・昼夜で中身が変わるので、地図を描くたびに作る）。 */
 const camelSpot = () => camelDailySpot(state, { region: DUBAI, kind: "ch4_dubai", stamina: 0 });
 
+/** 今の時間（昼の暑さ）に合わせた行き先（ch4-dubai-local.js）。 */
+const spotNow = entry => dubaiSpotAt(entry, state.slot);
+
 /** 今の時間・物語の時点で地図に出す行き先。 */
 export function chapterFourDubaiSpots() {
   const spots = CH4_DUBAI_SPOTS.filter(entry => {
@@ -116,7 +124,7 @@ export function chapterFourDubaiSpots() {
     if (entry.place === "naru") return nextTalk("naru", { once: true }) !== null;
     if (entry.place === "mosque") return canReflect(state);
     return true;
-  });
+  }).map(spotNow);
   const camel = camelSpot();
   if (camel) spots.splice(spots.findIndex(entry => entry.place === "inn"), 0, camel);
   spots.push(...desertDailySpots(state, dubaiDay())); // 砂漠ツアーのデスク／ヌールと砂丘へ（任意・ch4-desert.js）
@@ -147,14 +155,17 @@ async function keepDailyHud(task) {
   }
 }
 
-/** 本筋ではない短い会話。読み終えたら true。id の代わりに台本そのもの（前に一行足したもの）も渡せる。 */
-async function readPlain(id, bg, owner) {
+/**
+ * 本筋ではない短い会話。読み終えたら true。id の代わりに台本そのもの（前に一行足したもの）も渡せる。
+ * growthScene はスポット固有の場面として初めて読み終えた時に経験値（X5s）の候補にする（vn/engine.js）。
+ */
+async function readPlain(id, bg, owner, { growthScene = false } = {}) {
   const dialogue = typeof id === "string" ? DB.dialogues[id] : id;
   if (!dialogue?.lines?.length) return false;
   const url = bgUrl(bg);
   await setBg(url, { instant: true });
   if (state !== owner) return false;
-  const result = await play(dialogue, { bg: url });
+  const result = await play(dialogue, { bg: url, ...(growthScene ? { growthScene: true } : {}) });
   return state === owner && !!result && !result.cancelled;
 }
 
@@ -183,7 +194,7 @@ export function chapterFourDubaiDefinition(io) {
     dateInvitations: false,
     confessions: false,
     spotById: id => id === CAMEL_DAILY_SPOT_ID ? camelSpot()
-      : CH4_DUBAI_SPOTS.find(entry => entry.id === id) || desertDailySpotById(state, dubaiDay(), id),
+      : spotNow(CH4_DUBAI_SPOTS.find(entry => entry.id === id)) || desertDailySpotById(state, dubaiDay(), id),
     performSpot: (entry, options) => performDubaiSpot(entry, io, options),
   };
 }
@@ -247,8 +258,11 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
     return unused;
   }
   if (entry.place === "camel") return visitCamel(owner);
-  if ((entry.cost || 0) > spendableMoney(state)) { toast(`お金が足りない（${entry.cost.toLocaleString("ja-JP")}円）`); return unused; }
+  if ((entry.cost || 0) > spendableMoney(state)) { toast(`お金が足りない（${priceText(entry.cost)}）`); return unused; }
   if (entry.stamina < 0 && !(await staminaGuard(entry.stamina))) return unused;
+  // 夜がにぎわう店（ch4-dubai-local.js）: 先に店の夜を読む。初めての夜は短い場面、二度目からは最初の一行だけ。
+  const night = nightVisit(state, entry.place);
+  if (night && !await readNight(night, entry, owner)) return unused;
   let done = false, longlong = null;
   if (entry.place === "inn") done = await restAtInn(io, owner);
   else if (entry.place === "creek") done = await readPlain(state.slot ? "ch4_creek_walk_night" : "ch4_creek_walk_day", "bg_dubai_street_night", owner);
@@ -259,16 +273,21 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   }
   else done = await visitPlace(entry, io, owner);
   if (!done || state !== owner) return unused;
+  if (night) recordNightVisit(state, entry.place);
   if (longlong) recordLonglongVisit(state, longlong);
   if (entry.cost) addMoney(-entry.cost);
   addStamina(entry.stamina || 0);
+  if (entry.heat) toast(entry.heat); // 昼の屋外（暑さで多めに使った・夜ほど休まらない）
+  // スークの後は屋台で軽く買える（時間は使わない・体力が少し戻る）。体力を使った後に戻すので、上限で消えにくい。
+  if (entry.place === STALL_PLACE && state === owner) await visitStall(owner);
   if (entry.stat) earnStat(entry.stat, 4);
   if (entry.place === "festa") gainAffinity("da_silva", 5);
   if (entry.place === "naru") gainAffinity("naru", 5);
   // 龍龍水煙所: ほかの章のライバルの店と同じ値（段階の会話 +16・通いの小会話 +8。core/stats.js の visitAffinity）
   if (longlong) gainAffinity(LONGLONG_CHAR, visitAffinity(longlong.kind === "story" ? "story" : "talk"));
-  // 心得の盤の授業（SPEC 2.6・SBD50）: 会いに行った店で、灯した授業があれば相談して話を聞く（FESTA＝太陽、路地裏のカフェ＝シェイク）
-  const teacher = { festa: "da_silva", alley_cafe: "sheikh" }[entry.place];
+  // 心得の盤の授業（SPEC 2.6・SBD50）: 会いに行った店で、灯した授業があれば相談して話を聞く（FESTA＝太陽）。
+  // 路地裏のカフェの日常の会話で話すのは店員で、シェイクの授業は大会で名を明かすまで伏せる。シェイクへの相談は第5章の屋敷（ch5-dubai.js）。
+  const teacher = { festa: "da_silva" }[entry.place];
   if (teacher && state === owner) await keepDailyHud(() => consultLessons(teacher));
   return { used: true, exerted: (entry.stamina || 0) < 0 };
 }
@@ -333,6 +352,32 @@ async function orderAtCafe(entry, owner) {
   if (!await readPlain({ ...scene, lines }, entry.preview, owner)) return false;
   recordCafeOrder(state, id);
   return true;
+}
+
+/** 夜の店の場面。初めての夜は全部（スポット固有の場面の経験値の候補）、二度目からは最初の一行だけ。 */
+async function readNight(night, entry, owner) {
+  const scene = DB.dialogues[night.id];
+  if (!scene?.lines?.length) return true; // 台本が無い時も来店はできる
+  return readPlain(night.first ? scene : { ...scene, lines: scene.lines.slice(0, 1) }, entry.preview, owner, { growthScene: night.first });
+}
+
+/**
+ * スークの屋台: 買えるものだけ並べる（何も買わない、も選べる）。選んだ時に代金と体力を確定してから、味の場面を読む。
+ * 手持ちで何も買えなければ出さない。
+ */
+async function visitStall(owner) {
+  const choices = stallChoices(spendableMoney(state));
+  if (!choices.length) return;
+  const pick = await modal({ title: "スークの屋台", className: "ch4-souq-stall",
+    body: "屋台の店主が「マルハバ」と手を上げた。<br>カラクチャイは甘いミルクティー、シャワルマは肉の包み、ルカイマットは蜜がけの揚げ団子。"
+      + "<br>どれも体力が少し戻る（時間は使わない）。",
+    options: [...choices.map(item => ({ label: stallLabel(item), value: item.id, test: `stall-${item.id}` })),
+      { label: "何も買わない", value: STALL_NONE, test: `stall-${STALL_NONE}` }] });
+  const item = stallItem(pick);
+  if (state !== owner || !item || item.price > spendableMoney(state)) return;
+  addMoney(-item.price);
+  addStamina(item.stamina);
+  await readPlain(stallSceneId(item.id), CH4_PLACE_BG.souq, owner);
 }
 
 /** 行き先で最初に読む本筋の場面（未読のものだけ、順に）。 */

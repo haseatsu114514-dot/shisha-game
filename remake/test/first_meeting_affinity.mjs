@@ -167,6 +167,30 @@ await check('after-chapter revisit plays once on the first chapter-2 visit of a 
  const later=f.fresh();later.chapter=3;later.flags._ch1_regulars={adam:true};
  assert.equal(f.spots.afterChapterVisitDue('adam'),null,'only in chapter 2');
 });
+// #2035: 修行から戻ったなるの後日談は、第4章の出発前の準備期間に、休業中のKEMURIKUSAで一度だけ。
+await check('naru after-return visit opens the closed shop once during the chapter-4 departure prep',async f=>{
+ const s=f.fresh();s.chapter=4;s.phase='daily';s.met.naru=true;s.story.naru=3;s.flags._cafe_introduced=true;s.flags._ch2_read_ch2_naru_confrontation=true;
+ const shop=f.spots.SPOTS.find(spot=>spot.id==='naru');
+ assert.equal(f.spots.afterChapterVisitDue('naru'),null,'not outside the departure prep');
+ assert.equal(f.spots.isTemporaryClosed(shop),true,'rift keeps the shop closed');
+ s.flags._ch4_prep={startDay:s.day,days:3,step:0,departed:false};
+ assert.equal(f.spots.afterChapterVisitDue('naru'),'ch1_naru_after_return');
+ assert.equal(f.spots.isTemporaryClosed(shop),false,'open for the one return visit');
+ assert.equal(f.spots.hasNewStory('naru'),true);
+ assert.equal(f.spots.naruRiftActive(s),true,'LIME/invitation rift judgement is unchanged');
+ f.setPlay(async scene=>{const id=typeof scene==='string'?scene:scene.dialogue_id;if(id==='ch1_naru_after_return')s.flags.ch1_naru_after_return_done=true;return {id,visited:[]};});
+ const ids=from=>f.plays.slice(from).map(args=>typeof args[0]==='string'?args[0]:args[0].dialogue_id);
+ const mark=f.plays.length,story=s.story.naru;
+ assert.equal(await f.spots.visitChar('naru',{welcome:'venue_naru_day'}),true);
+ assert.deepEqual(ids(mark),['ch1_naru_after_return'],'no shop greeting or story stage on the return visit');
+ assert.equal(s.story.naru,story);
+ assert.equal(f.spots.isTemporaryClosed(shop),true,'closed again after reading once');
+ assert.equal(await f.spots.visitChar('naru'),false);
+ const departed=f.fresh();departed.chapter=4;departed.met.naru=true;departed.flags._ch4_prep={startDay:1,days:3,step:3,departed:true};
+ assert.equal(f.spots.afterChapterVisitDue('naru'),null,'not after leaving for Dubai');
+ const unmet=f.fresh();delete unmet.met.naru;unmet.chapter=4;unmet.flags._ch4_prep={startDay:1,days:3,step:0,departed:false};
+ assert.equal(f.spots.afterChapterVisitDue('naru'),null,'only when they have met');
+});
 console.log(JSON.stringify({groups,failures,scope:'actual modules with controlled VN/UI and isolated Map storage; not real browser/menu LOAD'}));
 if(failures)process.exitCode=1;
 
