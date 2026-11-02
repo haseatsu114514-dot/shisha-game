@@ -188,14 +188,30 @@ export async function meetHiyoriAtTonari() {
     try { if (await playHiyoriQuestion({ signal: lifetime.signal })) { await maybeRecruitTrpgMember("hiyori"); return true; } }
     finally { lifetime.close(); active = false; }
   }
-  // ♥3の質問の後、♥4のピーチの会話・♥5の約束を読んでから締めくくりへ。
-  if (hiyoriEventStatus("peach_talk") === "ready") return playHiyoriEvent("peach_talk");
-  if (hiyoriEventStatus("promise") === "ready") return playHiyoriEvent("promise");
-  if (!active && !isPlaying() && finaleAtVisit("hiyori")) {
-    const lifetime = ownedConversation(); active = true;
-    try { const played = await playFinale("hiyori", { signal: lifetime.signal });
-      if (played) await maybeRecruitTrpgMember("hiyori"); return played; }
-    finally { lifetime.close(); active = false; }
+  // ♥3の質問の後、♥4のピーチの会話（昼でも可）・♥5の約束を読んでから締めくくりへ。
+  // 第1章の大会前に届くよう、♥5の約束の夜はそのまま締めくくりへ進む。♥5に届いている夜は♥4から続けて読む（#2294）。
+  // 各場面は読了ごとに保存するので、途中で中断したら次の来店は続きの場面から。
+  if (hiyoriEventStatus("peach_talk") === "ready") {
+    const owner = state;
+    if (!await playHiyoriEvent("peach_talk")) return false;
+    if (state === owner && hiyoriEventStatus("promise") === "ready") await playHiyoriPromiseNight();
+    return true;
   }
-  return false;
+  if (hiyoriEventStatus("promise") === "ready") return playHiyoriPromiseNight();
+  return playHiyoriFinaleAtVisit();
+}
+
+async function playHiyoriPromiseNight() {
+  const owner = state;
+  if (!await playHiyoriEvent("promise")) return false;
+  if (state === owner) await playHiyoriFinaleAtVisit();
+  return true;
+}
+
+async function playHiyoriFinaleAtVisit() {
+  if (active || isPlaying() || !finaleAtVisit("hiyori")) return false;
+  const lifetime = ownedConversation(); active = true;
+  try { const played = await playFinale("hiyori", { signal: lifetime.signal });
+    if (played) await maybeRecruitTrpgMember("hiyori"); return played; }
+  finally { lifetime.close(); active = false; }
 }

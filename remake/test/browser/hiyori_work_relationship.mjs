@@ -87,15 +87,15 @@ await suite('hiyori-work-relationship',async run=>{
    out.push({id:'sumi_message',present:W.daily.hiyoriAtTonari(),played:await W.daily.meetHiyoriAtTonari(),done:!!report.flags._hiyori_sumi_message_done});
    const s=W.fresh();s.chapter=3;s.affinity.hiyori=66;s.flags._hiyori_work_talk_done=s.flags._hiyori_bond_question_done=true;
    s.romanceChoices.bond_q1_hiyori={char:'hiyori',value:0,day:s.day};W.data.DB.hiyori.route.finale.gift='suyaki_hiyori';
-   // 第3章で♥5に届いた場合も、♥4・♥5を読んでから締めくくりへ進める（#2025）。各場面の後に時間帯が進むので夜へ戻す。
-   const hearts=[];for(const id of ['peach_talk','promise']){s.slot=1;const present=W.daily.hiyoriAtTonari(),played=await W.daily.meetHiyoriAtTonari();hearts.push({id,present,played,done:!!s.flags[W.route.hiyoriRoute().events.find(e=>e.id===id).flag]});}
-   s.slot=0;const daytime=W.daily.hiyoriAtTonari();s.slot=1;
+   // 第3章で♥5に届いた場合も、♥4（昼でも可）→♥5の約束の夜にそのまま締めくくり（#2025・#2294）。
+   s.slot=0;const peach={present:W.daily.hiyoriAtTonari(),played:await W.daily.meetHiyoriAtTonari(),done:!!s.flags._hiyori_peach_talk_done,finale:!!s.flags._hiyori_bond_finale_done};
+   const daytime=W.daily.hiyoriAtTonari();s.slot=1;
    const present=W.daily.hiyoriAtTonari(),played=await W.daily.meetHiyoriAtTonari();
-   return {out,hearts,finale:{daytime,present,played,done:!!s.flags._hiyori_bond_finale_done,remaining:W.daily.hiyoriAtTonari(),gifts:s.owned.filter(id=>id==='suyaki_hiyori').length}};
+   return {out,peach,finale:{daytime,present,played,promise:!!s.flags._hiyori_promise_done,done:!!s.flags._hiyori_bond_finale_done,remaining:W.daily.hiyoriAtTonari(),gifts:s.owned.filter(id=>id==='suyaki_hiyori').length}};
   });
   for(const r of results.out)assert(r.played&&r.done&&r.present===(r.id!=='sumi_message'),JSON.stringify(r));
-  for(const r of results.hearts)assert(r.present&&r.played&&r.done,JSON.stringify(r));
-  const f=results.finale;assert(!f.daytime&&f.present&&f.played&&f.done&&!f.remaining,JSON.stringify(f));assert.equal(f.gifts,1);
+  const p=results.peach;assert(p.present&&p.played&&p.done&&!p.finale,JSON.stringify(p));
+  const f=results.finale;assert(!f.daytime&&f.present&&f.played&&f.promise&&f.done&&!f.remaining,JSON.stringify(f));assert.equal(f.gifts,1);
  });
  await check('only-real-self-read-unlocks-work-and-no-gift-unlocks-finale',async page=>{
   await setup(page);const r=await page.evaluate(async()=>{const s=W.core.state;s.affinity.hiyori=100;delete s.flags._hiyori_real_self_known;const before=JSON.stringify(s),early=await W.daily.playHiyoriEvent('work_talk');

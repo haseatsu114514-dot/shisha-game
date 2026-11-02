@@ -77,7 +77,9 @@ try {
         vn.vnTest.choose = id => id === 'remake_tutorial_offer' ? 1 : 0;
         window.__remake.craftTest.auto = 'good';
         vn.hooks.onLine = (id, line) => {
-          vn.vnTest.turbo = !id.startsWith('hiyori_') && !id.startsWith('axe_bar_');
+          // ♥4・♥5（#2294）は早送りで読む（実表示は hiyori_work_relationship.mjs で確認）。既存の場面と期限はそのまま。
+          const heartScene = id === 'hiyori_peach_talk' || id === 'hiyori_promise';
+          vn.vnTest.turbo = heartScene || !id.startsWith('hiyori_') && !id.startsWith('axe_bar_');
           Q.current = { id, speaker: line.speaker, face: line.face, text: line.text, inner: line.inner };
           if ((id.startsWith('hiyori_') || id.startsWith('axe_bar_')) && !Q.events.some(e => e.id === id)) {
             const s = core.state;
@@ -154,7 +156,8 @@ try {
           continue;
         }
         if (snap.vn) {
-          if (snap.current?.id?.startsWith('hiyori_') || snap.current?.id?.startsWith('axe_bar_')) {
+          if ((snap.current?.id?.startsWith('hiyori_') || snap.current?.id?.startsWith('axe_bar_'))
+            && !['hiyori_peach_talk', 'hiyori_promise'].includes(snap.current.id)) {
             const shot = `${snap.current.id}-${snap.current.speaker || 'narration'}-${snap.current.face || 'default'}`;
             if (!seen.has(shot) && await page.locator('.vn-next.show').isVisible()) {
               await page.waitForTimeout(350);
