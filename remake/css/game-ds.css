@@ -201,6 +201,7 @@ body.game-ds .map .spot-pin .sub-label {
   grid-column: 2; padding-right: 24px; color: var(--ds-text); text-shadow: none;
 }
 body.game-ds .map .spot-pin .pin-status { position: static; grid-column: 2; font-size: 14px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0; background: none; }
+body.game-ds .map .spot-pin .pin-cost { grid-column: 2; justify-self: start; margin: 0; font-size: 12px; }
 body.game-ds .map .spot-pin::before, body.game-ds .map .spot-pin::after { display: none; }
 body.game-ds .map-info {
   left: calc(var(--ds-cx) + 8px); top: calc(var(--ds-cy) + var(--ds-ch) - var(--ds-touchbar) - 120px); right: auto; bottom: auto;

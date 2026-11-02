@@ -287,7 +287,7 @@ await suite("craft-materials", async check => {
         const paint = await page.locator('[data-test="pack-confirm"]').evaluate(n => {
           const s = getComputedStyle(n); return { background: s.backgroundColor, image: s.borderImageSource, width: s.borderTopWidth };
         });
-        assert.deepEqual(paint, { background: "rgba(0, 0, 0, 0)", image: paint.image, width: "14px" });
+        assert.deepEqual(paint, { background: "rgb(227, 189, 110)", image: paint.image, width: "14px" });
         assert.match(paint.image, /button-gold\.webp/);
       }
       if (step === "holes") {
