@@ -1003,7 +1003,11 @@ function drawHistory(items, ui) {
  * @param opts.tutorial 初回の説明を一覧の上に出す
  * @param opts.sender   最初に開くトーク（アカウント。みんとの私用は "minto_private"）
  */
-export async function openLime({ tutorial = false, sender = null, fixedNight = () => false, beforeClose = null } = {}) {
+/**
+ * @param shortcuts 章が足す入口の行（トーク一覧の一番上）。[{ id, label, sub?, tag?, attention?, icon?, run }]。
+ *   押すとスマホを閉じてから run() を呼ぶ（例: 第3章の東京の「地元との連絡」）。
+ */
+export async function openLime({ tutorial = false, sender = null, fixedNight = () => false, beforeClose = null, shortcuts = [] } = {}) {
   // HUD・案内の穴・プッシュ通知のどこから開いても、地図の上の初回案内を片付ける。
   layers.fx.querySelectorAll(".lime-coach").forEach((coach) => coach.remove());
   state.flags._lime_tut = 1;
@@ -1014,6 +1018,7 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
   ui.inviteOptions = { fixedNight };
   let resolveClose;
   const closed = new Promise((r) => { resolveClose = r; });
+  let chosenShortcut = null;
 
   const showList = () => {
     ui.gen++;
@@ -1032,6 +1037,17 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
         el("span", { text: "誘いには、その日のうちなら返事ができる（店への誘いは営業日なら夜まで・昼限定のお出かけは昼まで）。" }),
       ]));
     }
+    for (const shortcut of shortcuts) ui.chat.append(el("button.lime-chat-row.lime-shortcut", {
+      dataset: { test: `lime-shortcut-${shortcut.id}` },
+      onclick: () => { SE.click(); chosenShortcut = shortcut; resolveClose(); },
+    }, [
+      el("div.lcr-face", [el("span.lime-shortcut-icon", { text: shortcut.icon || "☎", "aria-hidden": "true" }), shortcut.attention ? el("i.lcr-dot") : null]),
+      el("div.lcr-main", [
+        el("div.lcr-name", { text: shortcut.label }),
+        el("div.lcr-preview", { text: shortcut.sub || "" }),
+      ]),
+      el("div.lcr-side", [shortcut.tag ? el("span.lcr-tag", { text: shortcut.tag }) : null]),
+    ]));
     if (!senders.length) ui.chat.append(el("p.lime-empty", { text: "まだトークはない" }));
     for (const sender of senders) {
       const items = thread(sender);
@@ -1107,6 +1123,8 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
       await beforeClose?.();
     }
   } finally { await ui.close(); }
+  // 入口の行を選んだ: スマホを閉じてから、その画面へ。
+  if (chosenShortcut && state === owner) await chosenShortcut.run();
   return accepted;
 }
 

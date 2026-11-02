@@ -202,7 +202,11 @@ async function readLime(sender) {
   const before = state.pendingInvite;
   const wasWaiting = !!before?.awaitingLimeClose;
   let interrupted = false;
-  await openLime({ tutorial: first, sender, fixedNight, beforeClose: async () => {
+  let shortcutUsed = false;
+  // 章が足す入口の行（第3章の東京の「地元との連絡」など）。使ったら地図を描き直す。
+  const shortcuts = (chapterDef?.limeShortcuts?.() || []).map(shortcut => ({ ...shortcut,
+    run: async () => { shortcutUsed = true; await shortcut.run(); } }));
+  await openLime({ tutorial: first, sender, fixedNight, shortcuts, beforeClose: async () => {
     const invite = state.pendingInvite;
     if (!invite || invite === before && !wasWaiting || !immediateInvitation(invite, state)) return;
     const owner = state;
@@ -222,6 +226,7 @@ async function readLime(sender) {
   save();
   // 後の時間帯の約束もデータは維持する。常設バナーは出さない。
   if (!interrupted && state.pendingInvite && state.pendingInvite !== before) interruptMap("__lime__");
+  else if (!interrupted && shortcutUsed) interruptMap("__lime__");
 }
 
 async function confirmLimeReminder(destination, { spendsAction = true, slotsUsed = 1 } = {}) {
