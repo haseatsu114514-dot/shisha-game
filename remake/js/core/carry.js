@@ -221,6 +221,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_tokyo_call_night", "progression"],
   ["_ch4", "progression"],
   ["_ch4_camel", "progression"], // ドバイのラクダレース（段階・自己ベスト）。周回では持ち越さない
+  ["_ch4_cafe_orders", "progression"], // ドバイのカフェで頼んだ一台の回数（メニューごと・ch4-dubai-cafe.js）
   ["_ch4_cleared", "progression"],
   ["_ch4_dubai_talks", "progression"],
   ["_ch4_desert", "progression"],

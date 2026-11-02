@@ -71,15 +71,6 @@
           "speaker": "",
           "face": "",
           "text": "……【センス】と【魅力】が少し上がった。"
-        },
-        {
-          "type": "choice",
-          "choices": [
-            {
-              "text": "店をあとにする",
-              "next_id": "ch4_return"
-            }
-          ]
         }
       ]
     },

@@ -12,7 +12,7 @@ const flavors = JSON.parse(fs.readFileSync(new URL('../../data/flavors.json', im
 DB.flavorById = Object.fromEntries(flavors.map(f => [f.id, f]));
 DB.recipes = []; DB.ngMixes = [];
 const { SHOP_FLAVORS, DUBAI_FLAVORS, releasedFlavor } = await import('../js/daily/shop.js');
-const { WIDEHANGA_FLAVORS, TOKYO_FLAVORS, DUBAI_SHOP_NAME } = await import('../js/daily/shop-catalogs.js');
+const { WIDEHANGA_FLAVORS, TOKYO_FLAVORS, DUBAI_SHOP_NAME, DUBAI_LOCAL_FLAVORS } = await import('../js/daily/shop-catalogs.js');
 const { isTournamentFlavorLegal } = await import('../js/craft/steps.js');
 
 // 発売章: みんとの新作の材料は第1章、柚ヶ谷の新入荷は第2章、東京の新入荷は第3章。
@@ -35,11 +35,18 @@ for (const [list, chapter] of [[SHOP_FLAVORS.filter(id => !(id in RELEASE)), 1],
   for (const id of list) assert(releasedFlavor(id, chapter), `${id} は第${chapter}章の店頭に残る`);
 }
 
-// ドバイ店: 日本の各店で扱ってきた葉を全部、重複なしで。第4章では全品が発売済み。
+// ドバイ店: 日本の各店で扱ってきた葉を全部と、ドバイで定番の葉（2026-11-02 オーナー「現地の葉を買える」）を、重複なしで。
+// 第4章では全品が発売済み。
 assert.equal(DUBAI_SHOP_NAME, 'Dr.fookah ドバイ店');
 const everyShop = new Set([...SHOP_FLAVORS, ...WIDEHANGA_FLAVORS, ...TOKYO_FLAVORS]);
-assert.equal(DUBAI_FLAVORS.length, everyShop.size, 'ドバイ店は重複なし');
-for (const id of everyShop) assert(DUBAI_FLAVORS.includes(id), `ドバイ店に ${id}`);
+assert.deepEqual([...DUBAI_LOCAL_FLAVORS], ['absal_double_apple', 'dobaj_double_apple', 'absal_mint', 'dobaj_mint'], 'ドバイの定番: 中東スタイルのダブルアップルと強めのミント');
+for (const id of DUBAI_LOCAL_FLAVORS) {
+  assert(DB.flavorById[id], `${id} は既存の葉（新しい葉は足さない）`);
+  assert(!everyShop.has(id), `${id} は日本の店には並ばない（ドバイだけ）`);
+}
+assert(/伝統的な中東スタイル/.test(DB.flavorById.absal_double_apple.description), 'アフサールのダブルアップルは中東スタイル');
+assert.equal(DUBAI_FLAVORS.length, everyShop.size + DUBAI_LOCAL_FLAVORS.length, 'ドバイ店は重複なし');
+for (const id of [...everyShop, ...DUBAI_LOCAL_FLAVORS]) assert(DUBAI_FLAVORS.includes(id), `ドバイ店に ${id}`);
 for (const id of Object.keys(RELEASE)) assert(DUBAI_FLAVORS.includes(id), `ドバイ店に新フレーバー ${id}`);
 for (const id of DUBAI_FLAVORS) assert(releasedFlavor(id, 4), `${id} は第4章で並ぶ`);
 assert(!DUBAI_FLAVORS.some(id => DB.flavorById[id].leaf !== 'blond'), 'はじめはブロンドリーフのみ');

@@ -1,6 +1,7 @@
 // 第4章のドバイを日常ループで遊ぶ（VOL04・版2）。出発の朝（ドバイDAY1）の到着・宿の場面から、ドバイの地図へ。
-// スークの初訪問（市場→最初の出会い）→ FESTA（代金3,000円）→ 夜 → 翌朝、宿で休むと道具の手入れ、を実UIで通す。
+// スークの初訪問（市場→最初の出会い）→ FESTA（一台6,000円）→ 夜 → 翌朝、宿で休むと道具の手入れ、を実UIで通す。
 // もう一件は、DAY12の夜を越えると前夜祭の日（DAY13）の前夜の流れへ入り、必須の場面が並ぶこと。
+// カフェでは現地のメニューから一台頼んで味わい、吸いながら現地の文化の話を聞く（2026-11-02 オーナー「カフェで吸えたりとかにしよう」）。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
@@ -76,7 +77,7 @@ await suite("ch4-dubai-daily", async check => {
     for (const pin of ["ch4_dubai_souq", "ch4_dubai_festa", "ch4_dubai_cafe", "ch4_dubai_practice", "ch4_dubai_creek", "ch4_dubai_shop", "ch4_dubai_naru"])
       assert.equal(await page.locator(dt(`pin-${pin}`)).count(), 1, `${pin} is on the Dubai map`);
     assert.equal(await page.locator(dt("pin-ch4_dubai_alley")).count(), 0, "The alley appears after the market meeting");
-    // 昼: スーク（市場→最初の出会い）。夜: FESTA（3,000円）。
+    // 昼: スーク（市場→最初の出会い）。夜: FESTA（ドバイの相場の一台6,000円）。
     await go(page, "ch4_dubai_souq");
     await dubaiMap(page, { day: 49, slot: 1 });
     state = await get(page);
@@ -88,7 +89,7 @@ await suite("ch4-dubai-daily", async check => {
     await dubaiMap(page, { day: 50, slot: 0 });
     state = await get(page);
     assert.equal(state.flags._ch4.read.ch4_festa, true);
-    assert.equal(state.money, money - 3000, "FESTA charges for the cup");
+    assert.equal(state.money, money - 6000, "FESTA charges the Dubai price of one shisha");
     assert.equal(state.flags._ch4.day, 2, "The chapter day follows the calendar");
     assert.equal(state.flags._ch2_region, "dubai", "The night is spent at the inn in Dubai");
     // 2日目の昼: 宿で休むと、最初の一回は道具の手入れ（本筋）。
@@ -119,6 +120,55 @@ await suite("ch4-dubai-daily", async check => {
     state = await get(page);
     assert.equal(state.flags._ch4.read.ch4_festa, true, "FESTA is read on the deadline night");
     assert.notEqual(state.flags._ch4.read.ch4_stranger_first, true, "The market meeting waits for its own deadline");
+  });
+
+  // 中心地のカフェ: 最初の場面の後に現地のメニューから一台（グレープミント）。路地裏のカフェ: 吸いながら聞く文化の話は、
+  // 先に一台（ミント）頼んでから。翌日の中心地のカフェ: 再訪の会話の後におまかせ（まだ頼んでいないダブルアップル）。
+  // どれもドバイの相場の一台6,000円（同じ行き先は一日一度）。
+  await check("cafes-serve-a-local-shisha-and-talk-about-local-culture", async page => {
+    await seed(page, (value, progress) => {
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      for (const id of ["ch4_dubai_souq", "ch4_stranger_first", "ch4_festa", "ch4_inn_tool_care", "ch4_stranger_second", "ch4_alley_cafe_quiet"]) p.read[id] = true;
+      p.firstDay = 1;
+      value.day = p.startDay + 2; value.slot = 0; p.day = 3;
+      value.money = 50000;
+      value.flags._ch4_dubai_talks = { alley_cafe: 2 }; // 次の路地裏の再訪は、素焼きのボウルの話（吸いながら聞く）
+    });
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: 51, slot: 0 });
+    let state = await get(page);
+    const money = state.money;
+    // 昼: 中心地のカフェ（初めて）。最初の場面 → メニュー → グレープミント。
+    await go(page, "ch4_dubai_cafe");
+    await page.locator(dt("cafe-order-grape_mint")).click();
+    await dubaiMap(page, { day: 51, slot: 1 });
+    state = await get(page);
+    assert.equal(state.flags._ch4.read.ch4_dubai_cafe, true);
+    assert.deepEqual(state.flags._ch4_cafe_orders, { grape_mint: 1 });
+    assert(state.flavorLessons.includes("ch4_dubai_taste_grape_mint"), "The first grape mint teaches the leaves a little");
+    assert.equal(state.money, money - 6000, "One shisha at the central cafe is 6,000 yen");
+    // 夜: 路地裏のカフェ。文化の話（素焼きのボウル）は、先に一台頼んでから読む。
+    await go(page, "ch4_dubai_alley");
+    await page.locator(dt("cafe-order-mint")).click();
+    await dubaiMap(page, { day: 52, slot: 0 });
+    state = await get(page);
+    assert.deepEqual(state.flags._ch4_cafe_orders, { grape_mint: 1, mint: 1 });
+    assert.equal(state.flags._ch4_dubai_talks.alley_cafe, 3, "The clay bowl talk was read");
+    assert.equal(state.money, money - 12000, "The alley cafe is 6,000 yen too");
+    // 翌日の昼: もう一度中心地のカフェ。再訪の会話（窓際の席）の後に、おまかせ → まだ頼んでいないダブルアップル。
+    await go(page, "ch4_dubai_cafe");
+    await page.locator(dt("cafe-order-omakase")).click();
+    await dubaiMap(page, { day: 52, slot: 1 });
+    state = await get(page);
+    assert.deepEqual(state.flags._ch4_cafe_orders, { grape_mint: 1, mint: 1, double_apple: 1 }, "Omakase serves one not yet tried");
+    assert.equal(state.flags._ch4.read.ch4_dubai_cafe_revisit, true);
+    assert.equal(state.flags._ch4_dubai_talks.center_cafe, 1);
+    assert.equal(state.money, money - 18000);
+    // Dr.fookah ドバイ店: 日本の葉に加えて、ドバイで定番の葉が並ぶ（時間は使わない）。
+    await go(page, "ch4_dubai_shop");
+    await page.locator(".shop-paper").waitFor();
+    for (const id of ["absal_double_apple", "dobaj_mint"]) assert.equal(await page.locator(`[data-test="detail-${id}"]`).count(), 1, `${id} is on the shelf`);
   });
 
   await check("the-night-of-day-twelve-leads-to-the-eve-of-the-world-tournament", async page => {

@@ -24,3 +24,7 @@ export const tokyoShopFlavors = (value) => nightsideOnSale(value) ? TOKYO_FLAVOR
 
 // 第4章ドバイ。日本の各店で扱ってきた葉を全部そろえる（品目は shop.js の DUBAI_FLAVORS）。
 export const DUBAI_SHOP_NAME = "Dr.fookah ドバイ店";
+// ドバイで定番の葉（2026-11-02 オーナー「現地の葉を買える」）。日本の店には並ばない、伝統的な中東スタイルの
+// ダブルアップルと、強めのミント。どれも data/flavors.json に既にある葉で、新しい葉は足していない（グレープミント・
+// レモンミントはカフェのメニューの組み合わせで、葉はグレープ・レモン・ミントとして日本の店からそろっている）。
+export const DUBAI_LOCAL_FLAVORS = Object.freeze(["absal_double_apple", "dobaj_double_apple", "absal_mint", "dobaj_mint"]);
