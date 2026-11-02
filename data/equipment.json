@@ -321,7 +321,8 @@
       "not_for_sale": true,
       "value": "home_rig_set",
       "home_growth": 0.5,
-      "description": "スミさんにもらった、ミャアの小さな卓上台。店のお下がり。体力のある夜に自分の葉を試し、フレーバーの熟練度を育てられる。"
+      "description": "スミさんにもらった、ミャアの小さな卓上台。店のお下がり。体力のある夜に自分の葉を試し、フレーバーの熟練度を育てられる。",
+      "home_xp": 6
     },
     {
       "id": "home_rig_pro",
@@ -335,7 +336,8 @@
       "not_for_sale": true,
       "value": "home_rig_pro",
       "home_growth": 0.75,
-      "description": "大会の本番で使われるのと同じ台。家で試作したフレーバーの熟練度が、少し育ちやすくなる。くじの景品。"
+      "description": "大会の本番で使われるのと同じ台。家で試作したフレーバーの熟練度が、少し育ちやすくなる。くじの景品。",
+      "home_xp": 7.5
     },
     {
       "id": "suyaki_hiyori",
@@ -496,6 +498,79 @@
         "aroma": 4,
         "bonus": 1
       }
+    },
+    {
+      "id": "kumogama_phunnel",
+      "type": "bowl",
+      "name": "雲窯ファンネルハガル",
+      "chapter_min": 2,
+      "buy_price": 9800,
+      "sell_price": 4900,
+      "price": 9800,
+      "value": "kumogama_phunnel",
+      "art": "hagal_80beat",
+      "capacity": 16,
+      "description": "窯元が一つずつ挽いた釉薬のファンネル。中央の筒が高く、シロップが葉の下へ落ちにくい。容量16g。"
+    },
+    {
+      "id": "lotos_plus",
+      "type": "hms",
+      "name": "ロートスプラスHMD",
+      "chapter_min": 3,
+      "buy_price": 14000,
+      "sell_price": 7000,
+      "price": 14000,
+      "value": "lotos_plus",
+      "art": "lotos_hagal",
+      "description": "ロートスHMDの上位モデル。ボウルに直接のせて使い、アルミは張らない。厚い蓋で熱がぶれにくい。"
+    },
+    {
+      "id": "dense_flat_charcoal",
+      "type": "charcoal",
+      "name": "高密度フラット炭",
+      "chapter_min": 2,
+      "buy_price": 2400,
+      "sell_price": 1200,
+      "price": 2400,
+      "value": "dense_flat_charcoal",
+      "art": "flat_charcoal",
+      "description": "ココナッツ殻を固く詰めて焼いた上位のフラット炭。灰が少なく、熱の入り方が揺れにくい。"
+    },
+    {
+      "id": "stand_stainless",
+      "type": "homeware",
+      "name": "ステンレス削り出しの台",
+      "chapter_min": 2,
+      "buy_price": 30000,
+      "sell_price": 15000,
+      "price": 30000,
+      "value": "stand_stainless",
+      "home_xp": 7,
+      "description": "ステンレスを削り出した細いステムに、角型のガラスベース。引きが軽く、家で吸うと葉の違いをつかみやすい。"
+    },
+    {
+      "id": "stand_walnut",
+      "type": "homeware",
+      "name": "くるみ材と真鍮の台",
+      "chapter_min": 3,
+      "buy_price": 100000,
+      "sell_price": 50000,
+      "price": 100000,
+      "value": "stand_walnut",
+      "home_xp": 8,
+      "description": "真鍮のステムをくるみ材で包み、厚いガラスのベースに差した台。煙がなめらかに通り、香りの違いを確かめやすい。"
+    },
+    {
+      "id": "stand_custom",
+      "type": "homeware",
+      "name": "職人仕立ての特注台",
+      "chapter_min": 3,
+      "buy_price": 300000,
+      "sell_price": 150000,
+      "price": 300000,
+      "value": "stand_custom",
+      "home_xp": 9,
+      "description": "職人が一台ずつ仕立てる真鍮のステムと、手吹きガラスのベース。受け皿の高さやホースポートの向きまで手に合わせてある。"
     }
   ]
 }
