@@ -98,10 +98,37 @@ async function reload(page,slot=0,touch=false) {
   await page.evaluate(()=>{window.__remake.vnTest.turbo=true;window.__remake.vnTest.choose=()=>0;});
   await press(dt(`slot-${slot}`));
 }
+// 第2章から入った新しい保存は、章頭の回想・章題の後に出発前の準備3日（VOL02）の地図が出る。
+// 準備の3日は ch3_departure_prep スイートで遊ぶので、ここでは地図を確かめてから出発の朝の保存へ進め、東京DAY1まで読む。
+// 準備期間の無い旧行程の保存は、そのまま東京DAY1の場面まで進む。
 async function finishChapterThreePrologue(page) {
-  await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_opening"]').waitFor({timeout:60000});
-  const reached=await get(page);
-  assert.equal(reached.flags._ch3_intro.prologueStep,4);
+  await page.waitForFunction(()=>{
+    const s=window.__remake?.state,prep=s?.flags?._ch3_prep;
+    return !!document.querySelector('[data-test="ch3-intro-scene"][data-scene="ch3_opening"]')
+      || !!(prep&&!prep.departed&&prep.step===4&&document.querySelector('.map:not(.done)'));
+  },null,{timeout:60000});
+  let reached=await get(page);
+  if(reached.flags._ch3_prep&&!reached.flags._ch3_prep.departed){
+    assert.equal(reached.flags._ch3_intro.titleSeen,true);
+    assert.equal(reached.met.kuze,undefined,'The anonymous prologue must not reveal Kuze to Hajime');
+    assert.equal(reached.phase,'daily');
+    assert.match(await page.locator('.hud').innerText(),/出発まで/);
+    await page.evaluate(async()=>{
+      const core=await import('./js/core/state.js'),prep=core.state.flags._ch3_prep;
+      core.state.day=prep.startDay+prep.days;core.state.slot=0;prep.step=5;
+      core.state.flags._ch3_intro.routeVersion=2; // 東京の場面カード（旧行程）の案内を確かめる。東京の日常ループは ch3_tokyo_daily
+      core.save();
+    });
+    await reload(page);
+    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_opening"]').waitFor({timeout:60000});
+    reached=await get(page);
+    assert.equal(reached.flags._ch3_prep.departed,true);
+    assert.equal(reached.flags._ch3_intro.startDay,reached.day,'Tokyo DAY1 is the departure morning');
+  } else {
+    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_opening"]').waitFor({timeout:60000});
+    reached=await get(page);
+    assert.equal(reached.flags._ch3_intro.prologueStep,4);
+  }
   assert.equal(reached.flags._ch3_intro.titleSeen,true);
   assert.equal(reached.met.kuze,undefined,'The anonymous prologue must not reveal Kuze to Hajime');
 }
@@ -608,7 +635,7 @@ await suite('ch2-tournament',async check=>{
     const continueButton=dt('ch3-intro-continue');
     await page.locator(scene('ch3_opening')).waitFor();
     let s=await get(page);
-    assert.equal(s.chapter,3);assert.equal(s.day,29);assert.equal(s.flags._ch3_intro.stage,0);
+    assert.equal(s.chapter,3);assert.equal(s.day,32);assert.equal(s.flags._ch3_intro.stage,0); // 準備3日の後の東京DAY1
     for(const key of ['money','stamina','stats','flavorStock','lovers','loverSince','keepsakes','relationshipMemories','tournament'])
       assert.deepEqual(s[key],before[key],`Chapter 3 entry changed ${key}`);
     await page.locator(continueButton).click();
@@ -650,7 +677,7 @@ await suite('ch2-tournament',async check=>{
       }
       await page.locator(scene(id)).waitFor();
       s=await get(page);
-      assert.equal(s.day,28+day,`Wrong elapsed day before ${id}`);
+      assert.equal(s.day,31+day,`Wrong elapsed day before ${id}`);
       assert.equal(s.slot,slot,`Wrong time slot before ${id}`);
       await page.locator(continueButton).click();
       if(id==='ch3_double_apple_incident'){
@@ -692,7 +719,7 @@ await suite('ch2-tournament',async check=>{
     await page.locator(dt('ch3-intro-ready')).waitFor();
     s=await get(page);
     assert.equal(s.flags._ch3_intro.stage,ordered.length);
-    assert.equal(s.chapter,3);assert.equal(s.day,42);assert.equal(s.phase,'tournament');
+    assert.equal(s.chapter,3);assert.equal(s.day,45);assert.equal(s.phase,'tournament');
     assert.equal(s.flags._ch3_cleared,undefined);
     assert(s.met.kuze,'Kuze must be known after the first visit');
     assert(s.met.steve,'Steve must be known after the low-heat visit');
@@ -728,7 +755,7 @@ await suite('ch2-tournament',async check=>{
     await finishChapterThreePrologue(page);
     await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_opening"]').waitFor();
     const entered=await get(page);
-    assert.equal(entered.chapter,3);assert.equal(entered.day,29);assert.equal(entered.flags._ch3_intro.stage,0);
+    assert.equal(entered.chapter,3);assert.equal(entered.day,32);assert.equal(entered.flags._ch3_intro.stage,0);
   });
   await check('chapter-three-kuze-throw-error-menu-save-rolls-back-meeting',async page=>{
     await installChapterThreeMeetingFault(page);

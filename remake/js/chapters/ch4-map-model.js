@@ -2,6 +2,7 @@
 import { CH4_PLACE_BG, CH4_TOURNAMENT_DAY, CH4_EVE_DAY, chapterFourProgress,
   chapterFourSecondAvailable, chapterFourSheikhRevealed } from "./ch4-progress.js";
 import { openingStatus, MOSQUE_VISITING_HOURS } from "../daily/spot-hours.js";
+import { camelRaceDestination } from "./ch4-camel-progress.js";
 import { desertDestinations } from "./ch4-desert-progress.js";
 
 const place = (id, label, x, y) => Object.freeze({ id, label, x, y });
@@ -77,6 +78,9 @@ export function chapterFourMapModel(value, { canReflect = false } = {}) {
     kind: "shop", consumes: false, label: "Dr.fookah ドバイ店で葉を買う",
     purpose: "日本で出た葉が全部そろう。買い物は時間を使わない。",
   }));
+  // ラクダレース（任意・ch4-camel-race.js）: 店員と知り合う→誘われる→昼の行動を使って練習レース。段階と日付は同モジュールが読む。
+  const camel = camelRaceDestination(value);
+  if (camel) destinations.push(camel);
   // 宿は「その日を終える」唯一の行動。DAY2以降で未読なら道具の手入れを先に再生する。
   destinations.push(destination("inn", day >= 2 ? unread([SCENE.toolCare]) : [],
     day === CH4_EVE_DAY ? "部屋へ戻り、夜に備える。" : "部屋へ戻り、この日を終える。", false,

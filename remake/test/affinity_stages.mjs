@@ -165,7 +165,8 @@ await check('LIME .25/carry crosses unread hearts; old credit releases once with
   s.flags._naru_affinity_waiting_pts=1;s.fortune={char:'naru'};
   assert.equal(f.stats.releaseAffinity('naru'),1);assert(s.fortune);assert.equal(f.stats.releaseAffinity('naru'),0);
   f.stats.gainAffinity('naru',2,{source:'lime'});assert.equal(s.fortune,undefined);assert.equal(s.affinity.naru,10);
-  close(s.affinityCarry.naru,.7);assert.equal(s.story.naru,0);
+  // 占いの相手は ×2（2026-11-02 台帳 URA。旧 ×1.5 の .7 から）: round(2×2)×.25×.85 + .0625
+  close(s.affinityCarry.naru,.9125);assert.equal(s.story.naru,0);
 });
 await check('LIME reply feedback follows actual fractional progress without ordinary story caps, SAVE/LOAD and integer rollover', async f => {
   let s = f.core.state; s.story.naru = 1; s.affinity.naru = 9;
@@ -295,7 +296,10 @@ await check('ageha ♥5 gummy stage and MELTY PUFF finale (#2023): once, gift, r
     s.flags._ch2_read_remake_ch2_ageha_gummy=true;assert.equal(f.stages.pendingAffinityStage(s,'ageha'),null);
     s.affinity.ageha=65;assert.equal(f.bonds.finaleDue('ageha'),false,'needs ♥5');s.affinity.ageha=66;
     assert.equal(f.bonds.finaleDue('ageha'),true);assert.equal(f.bonds.finaleAtVisit('ageha'),true);
-    s.chapter=3;assert.equal(f.bonds.finaleDue('ageha'),false,'MELTY PUFF visits are chapter 2 only');s.chapter=2;
+    s.chapter=3;assert.equal(f.bonds.finaleDue('ageha'),false,'MELTY PUFF visits are chapter 2 only');
+    // VOL02: 第3章でも東京へ発つ前の準備3日は柚ヶ谷へ通える。出発後は地図に無い。
+    s.flags._ch3_prep={startDay:29,days:3,step:4,departed:false};assert.equal(f.bonds.finaleDue('ageha'),true,'MELTY PUFF before the Tokyo departure');
+    s.flags._ch3_prep.departed=true;assert.equal(f.bonds.finaleDue('ageha'),false,'not after the departure');delete s.flags._ch3_prep;s.chapter=2;
     f.setPlay(async()=>({cancelled:true}));
     assert.equal(await f.bonds.playFinale('ageha',{deferSave:true}),false);assert(!s.finales.ageha);assert(!s.owned.includes('suyaki_ageha'));
     f.setPlay(async()=>done);

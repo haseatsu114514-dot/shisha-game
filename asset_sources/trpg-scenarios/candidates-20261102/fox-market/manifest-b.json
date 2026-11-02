@@ -1,0 +1,43 @@
+{
+  "variant": "b",
+  "path": "/workspace/shared/trpg-background-candidates/fox-market/background-b.png",
+  "size": [
+    1672,
+    941
+  ],
+  "mode": "RGB",
+  "sha256": "7e4c5d96325783bba54fe1d4b851788a949b7cd8d3bebad11bdf8f82f8e2e4a9",
+  "tool": "built-in image_gen",
+  "prompt": "prompt-b.txt",
+  "adoption": "unselected candidate",
+  "visualQA": "Clear six targets, no people/shisha/legible lettering. Masks15/30 fits; tank25/74 target30/76 fits; torii79/23 fits; candy51/43 fits; bell63/86 target63/84 at bell edge; board90/46 target89/63 below board lower edge. Best target layout except board. A few incidental packaging marks need strict no-text review.",
+  "scenario": "fox-market",
+  "generated_date_utc": "2026-11-02",
+  "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+  "reference_documents": [
+    {
+      "path": "/workspace/shared/trpg-art-prompts-2264.md",
+      "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+    },
+    {
+      "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+      "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+    },
+    {
+      "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+      "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+    }
+  ],
+  "input_image_references": [],
+  "prompt_sha256": "aa02adf4348862efbeab8b21d604964cf0fb3b51b610b593f0589d251da28bbb",
+  "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 09 fox-market\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 夏祭りの夜市。お面屋の棚、金魚すくいの水槽、神社の鳥居、綿あめの屋台、落ちていた鈴、迷子案内の掲示板。 Setting: 灯籠通り / 夏の夜市. Mood: 提灯の列と、遠い太鼓。お面の子が、ひとり。. Fictional place from a tabletop story (和の不思議). Concrete click-investigation objects, each a distinct readable prop at its position: お面屋の棚 clearly visible around x15% y30%; 金魚すくいの水槽 clearly visible around x30% y76%; 神社の鳥居 clearly visible around x80% y22%; 綿あめの屋台 clearly visible around x50% y42%; 落ちていた鈴 clearly visible around x63% y84%; 迷子案内の掲示板 clearly visible around x89% y63%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant B: delicate ink-and-gouache Japanese night festival, soft gold light and deep indigo shadows, humid summer atmosphere.\nONE coherent wide Japanese shrine festival street, entirely empty of people, NO child or masked figure despite mood phrase. Readable mask stall shelf centered15%/30%, fox masks as inanimate objects only. Goldfish-scooping low tank at30%/76% with tiny red goldfish. Shrine torii at80%/22% in rear-right, NO writing on torii. Cotton-candy stall centered50%/42% in middle distance, show fluffy bagged cotton candy and simple machine, absolutely no sign lettering. One dropped small metal bell with red cord centered63%/84% on clear foreground ground, make bell large enough to recognize while keeping plausible scale. Lost-child noticeboard centered89%/63%, pinned papers entirely blank, no human pictures, symbols or writing. All six interactive props must be centered on their production coordinates, keep unobscured. No text on lanterns, signs, packaging or boards. Calm upper-center for title. No ghosts, silhouettes or faces except inanimate fox masks.",
+  "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+  "raw_original": true,
+  "target_size": [
+    1280,
+    720
+  ],
+  "production_size_verified": false,
+  "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+  "byte_size": 3025545
+}

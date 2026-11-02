@@ -258,6 +258,8 @@ export const PLAY_REWARDS = [
   { id: "trpg-star3", game: "trpg", stars: 3, label: "TRPGで★3の卓", gift: { wisdom: 1 } },
   // DJ はまだ本編に入っていない（remake/previews/dj）。入ったら最高ランクを state に残し、ここを読む
   { id: "dj-a", game: "dj", rank: "A", label: "DJで Aランク", gift: { sense: 1 } },
+  // ラクダレース（第4章ドバイ・chapters/ch4-camel-race.js）: 初めて練習レースを走り切ったら1つ（順位は問わない。再プレイでは増えない）
+  { id: "camel-finish", game: "camel", clears: 1, label: "ラクダレースを完走", gift: { sense: 1 } },
   // 第4章ドバイのサンドボード（chapters/ch4-desert.js が state.desert.bestRank を残す）
   { id: "desert-a", game: "desert", rank: "A", label: "サンドボードで Aランク", gift: { body: 1 } },
 ];
