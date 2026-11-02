@@ -619,13 +619,8 @@ async function performSpotAction(spot) {
     if (!(await staminaGuard(sub === "baito" ? -24 : -16))) return { used: false, exerted };
     exerted = true;
     state.visitedDay[makanai ? "tonari_practice" : `tonari_${sub}`] = state.day;
-    if (sub === "practice") {
-      const { runFullPractice } = await import("../craft/practice.js");
-      addStamina(-16);
-      await play("remake_staff_practice", { bg: TONARI_BG });
-      const cs = await runFullPractice({ kind: "self", staffPractice: true, isCurrent: () => state === actionOwner });
-      if (cs.masteryGained) toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
-    } else if (sub === "strawberry") {
+    // #2213 B04: 「まかないで練習」はシフト上がりのメニューで選ぶ（tonari.js）。独立の行動としては選べない。
+    if (sub === "strawberry") {
       const { runStrawberryTrial } = await import("../chapters/ch2-strawberry-trial.js");
       addStamina(-16);
       const { masteryGained } = await runStrawberryTrial({ bg: TONARI_BG, isCurrent: () => state === actionOwner });

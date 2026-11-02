@@ -49,10 +49,10 @@ export function tonariMenu() {
       el("div.sub-choices", [
         opt("お客さんとして一服", `${customerStory ? "【新しい話】" : ""}${!tsumugiPresent ? "客席でゆっくり一服する"
           : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる"}`, "customer", "tonari-customer"),
-        opt("まかないで練習", `体力を使う・1行動。今日の葉：${staffFlavors(state).map(id => `${DB.flavorById[id]?.short_name || id} ${staffStock(state, id)}g`).join("、")}。私物も使える`, "practice", "tonari-practice"),
+        // #2213 B04: 「まかないで練習」はシフト上がりのメニューへ移した（独立の行動にしない）
         // #1650: 第2章の試煙会のあと、一度だけ。試供品の苺で熱を確かめ、スミさんに吸ってもらう
         strawberryTrialOpen() ? opt("苺を試す（まかない）", "体力を使う・1行動。試煙会の苺で一台。確かめるのは熱だけ", "strawberry", "tonari-strawberry") : null,
-        opt("シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}接客で稼ぐ。上がったあとはスミさんと話せる`, "baito", "tonari-baito"),
+        opt("シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}接客で稼ぐ。上がったあとはスミさんと話せる。まかないで練習もできる`, "baito", "tonari-baito"),
         hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
           : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,
@@ -238,15 +238,31 @@ function afterShiftMenu() {
         canStudyCubeCoals() ? opt("キューブ炭の授業を受ける", "スミさんと火の違いを確かめる", "cube_coals", "after-cube-coals") : null,
         // 心得の盤で灯した授業: スミさんに相談して話を聞く（SBD50）
         ...readyLessons("sumi").map((l) => opt(`スミさんに相談する（${l.name}）`, "授業。話を聞いて習得する", `lesson:${l.id}`, `after-lesson-${l.id}`)),
+        makanaiOpen() ? opt("まかないで練習", `空いた台で一台作る。今日の葉：${staffFlavors(state).map(id => `${DB.flavorById?.[id]?.short_name || id} ${staffStock(state, id)}g`).join("、")}。私物も使える`, "makanai", "after-makanai") : null,
         opt("まっすぐ上がる", "今日はここまで", "none", "after-none"),
       ]),
     ]));
   });
 }
 
+// 旧セーブの苺専用記録も、同じ日のまかないとして扱う。
+const makanaiOpen = () => state.visitedDay?.tonari_practice !== state.day && state.visitedDay?.tonari_strawberry !== state.day;
+
+/** #2213 B04: まかないの練習はシフトの中で選んだ日だけ。熟練度は旧・独立コマンドと同じ runner で育つ。
+ * 行動枠・行動の体力・行動の学びはシフトの分だけで、旧・独立コマンドの分を重ねない。 */
+async function makanaiPractice() {
+  const owner = state;
+  state.visitedDay.tonari_practice = state.day;
+  await play("remake_staff_practice", { bg: TONARI_BG });
+  const { runFullPractice } = await import("../craft/practice.js");
+  const cs = await runFullPractice({ kind: "self", staffPractice: true, isCurrent: () => state === owner });
+  if (cs?.masteryGained) toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
+}
+
 async function afterShift() {
   await afterShiftSumiTalk();
   const pickAfter = await afterShiftMenu();
+  if (pickAfter === "makanai") await makanaiPractice();
   if (pickAfter === "attack") await studyAttack();
   if (pickAfter === "cube_coals") await studyCubeCoals();
   if (String(pickAfter).startsWith("lesson:")) await consultLessons("sumi", { only: pickAfter.slice(7), bg: TONARI_BG });
