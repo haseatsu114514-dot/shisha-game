@@ -333,6 +333,15 @@ function speakerBgm(id) {
 /** 仕事を離れた私的な場面か（metadata.private_scene）。名前欄の呼び名に使う */
 const sceneContext = (dlg) => (dlg?.metadata?.private_scene ? "private" : null);
 
+/** 連絡の種類は明示された現在の場面だけに表示し、公私の呼び名・声の区別は保つ。 */
+function lineDisplayName(line, r) {
+  const speaker = String(line.speaker || "");
+  const name = speaker === "samechan" && line.voice === "korochan" ? "コロちゃん"
+    : speaker ? displayName(speaker, state, { context: r.context }) : "";
+  const scene = r.currentId && r.currentId !== r.id ? DB.dialogues[r.currentId] : r.dlg;
+  return name && scene?.metadata?.contact_channel === "lime" ? `${name}（LIME）` : name;
+}
+
 /** 実際にこの行に出す立ち絵。無言の同席者と話者が別なら両方待つ。 */
 function linePortraits(line) {
   return [...new Set([
@@ -689,8 +698,7 @@ async function showLine(line) {
   const speaker = String(line.speaker || "");
   const face = String(line.face || "");
   r.speaker = speaker;
-  const name = speaker === "samechan" && line.voice === "korochan" ? "コロちゃん"
-    : speaker ? displayName(speaker, state, { context: r.context }) : "";
+  const name = lineDisplayName(line, r);
   // A line can retain its speaker/voice while using a dedicated cut instead of a portrait.
   const entrances = [updatePortraits(line.portrait === false ? "" : speaker, face)];
   // 無言の常連も会釈だけで場面に参加できる。名乗り・好感度の処理は発話と独立。

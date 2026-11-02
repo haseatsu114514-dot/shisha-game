@@ -10,6 +10,16 @@ const expected = [
   'interval_day2_adam_lime', 'interval_day3_sumi_call', 'interval_day5_eve',
 ];
 assert.deepEqual(scenes.map(scene => scene.dialogue_id).sort(), [...expected].sort());
+const contacts = { interval_day1_naru_lime: 'naru', interval_day2_adam_lime: 'adam' };
+for (const scene of scenes) {
+  const remote = contacts[scene.dialogue_id];
+  assert.equal(scene.metadata?.contact_channel, remote ? 'lime' : undefined, `${scene.dialogue_id}: explicit contact channel`);
+  if (!remote) continue;
+  assert.equal(scene.lines.filter(line => line.speaker === remote).length, 4);
+  for (const line of scene.lines) {
+    assert.equal(line.portrait, line.speaker === remote ? false : undefined, 'remote speaker only: leave Hajime and narration unchanged');
+  }
+}
 
 function sortKeys(value) {
   if (Array.isArray(value)) return value.map(sortKeys);
