@@ -7,6 +7,7 @@ import { clamp } from "../js/core/util.js";
 import { MAX_MONEY } from "../js/core/rules.js";
 import { STAT_JA } from "../js/core/state.js";
 import { chapterDay, chapterDaysLeft, relationshipElapsedDay } from "../js/core/chapter-clock.js";
+import { chapterFeatureEnabled } from "../js/core/chapter-features.js";
 const root = new URL("../", import.meta.url);
 const dataRoot = new URL("../../", import.meta.url);
 const limeData = JSON.parse(await fs.readFile(new URL("data/lime_messages.json", dataRoot), "utf8"));
@@ -65,6 +66,7 @@ let hiyoriSpots = null;
 const noop = () => {}, mods = new Map();
 const values = {
   "chapter-clock.js": { chapterDay, chapterDaysLeft, relationshipElapsedDay },
+  "chapter-features.js": { chapterFeatureEnabled },
   "hiyori-route.js": { hiyoriEventStatus: () => "disabled", hiyoriRoute: () => db.hiyori?.route || {}, hiyoriFinaleReady: () => false },
   "util.js": { el, clamp, sleep: async () => {}, fitOneLine: () => {}, yen: (n) => `¥${Number(n).toLocaleString("ja-JP")}` },
   "data.js": { DB: db, displayName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
@@ -438,7 +440,7 @@ reset({ slot: 2, flags: { _confession_due: "minto", _minto_identity_revealed: tr
 assert.equal(await romance.maybeConfession(async () => {}), true); assert.equal(plays.length, 1); assert(!state.flags._minto_name_known); assert.equal(state.flags._confession_due, "minto");
 
 // 外出後の話は後日読んでも時間が食い違わない。私的LIMEに店の呼び込み口調を持ち込まない。
-const afterOutings = allMessages.filter((m) => m.id.startsWith("lime_after_outing_")); assert.equal(afterOutings.length, 5);
+const afterOutings = allMessages.filter((m) => m.id.startsWith("lime_after_outing_")); assert.equal(afterOutings.length, 6);
 for (const message of afterOutings) { const text = JSON.stringify(message); assert(!/昨日|昨夜/.test(text)); assert(text.includes("この前")); }
 const privateMinto = allMessages.filter((m) => m.sender === "minto" && m.id !== "lime_minto_day4");
 for (const message of privateMinto) assert(!/♡|生きてる〜|おはよっ|チェキ/.test(JSON.stringify(message)), message.id);
@@ -455,10 +457,17 @@ const css = await fs.readFile(new URL("css/daily.css", root), "utf8"); assert(cs
 const invitationById = Object.fromEntries(allMessages.filter((m) => m.type === "invitation").map((m) => [m.id, m]));
 assert.equal(invitationById.lime_outing_naru_1.closed_on, 3); assert.equal(invitationById.lime_outing_naru_1.time_slot, "noon");
 assert.equal(invitationById.lime_outing_minto_1.closed_on, 6); assert.equal(invitationById.lime_outing_minto_1.time_slot, "noon");
-for (const id of ["lime_naru_day3", "lime_outing_adam_1", "lime_adam_arcade_after_close", "lime_outing_ageha_1"]) {
+for (const id of ["lime_naru_day3", "lime_outing_adam_1", "lime_adam_arcade_after_close", "lime_outing_ageha_1", "lime_outing_samechan_1"]) {
   assert.equal(invitationById[id].time_slot, "night"); assert(invitationById[id].after_close, id);
 }
 assert.equal(invitationById.lime_minto_day4.time_slot, "noon"); assert(!invitationById.lime_minto_day4.after_close); assert.equal(invitationById.lime_minto_day4.closed_on, undefined);
+// サメちゃんの♥3の外出（#2025）は、第2章以降で本人から路地裏シネマを紹介された後にだけ届く。
+const sharkOuting = () => phone.morningMessages().some((m) => m.id === "lime_outing_samechan_1");
+reset({ chapter: 2, day: 5, contacts: ["samechan"], affinity: { samechan: 33 } }); assert(!sharkOuting(), "紹介前の♥3では誘わない");
+reset({ chapter: 2, day: 5, contacts: ["samechan"], affinity: { samechan: 33 }, flags: { _samechan_cinema_introduced: true } }); assert(sharkOuting(), "紹介後の♥3で誘う");
+reset({ chapter: 1, day: 5, contacts: ["samechan"], affinity: { samechan: 33 }, flags: { _samechan_cinema_introduced: true } }); assert(!sharkOuting(), "第1章では誘わない");
+reset({ chapter: 2, day: 5, contacts: ["samechan"], affinity: { samechan: 33 }, flags: { _samechan_cinema_introduced: true, _invited_lime_outing_samechan_1: true, _outing_done_samechan: true } });
+assert(phone.morningMessages().some((m) => m.id === "lime_after_outing_samechan"), "外出の後日談は『この前』で届く");
 reset({ day: 3, contacts: ["naru"] }); const naruDayOff = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert(naruDayOff); assert(naruDayOff.messages.some((line) => /休み/.test(typeof line === "string" ? line : line.text)));
 state.day = 4; const naruTemporary = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert.equal(naruTemporary.time_slot, "noon"); assert(naruTemporary.temporary_closed);
 // 次の私服の約束を定休日だけに縛らない。配信した時点で本文と予約時刻を一緒に確定。

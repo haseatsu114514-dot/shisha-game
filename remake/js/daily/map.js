@@ -106,6 +106,8 @@ function cueMove(shield, spot) {
     label: known ? spot.label : spot.unknownLabel || spot.label,
     area: spot.area || "",
     glyph: known ? spot.glyph || "" : "？",
+    // 名前を伏せた行き先（会う前のクラブSEAM＝「地下の店」）では、到着時に店のロゴを見せない。
+    anonymous: !known && !!spot.unknownLabel,
   });
 }
 

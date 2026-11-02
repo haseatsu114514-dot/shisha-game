@@ -185,10 +185,10 @@ await suite('ch2-daily',async check=>{
     assert.match(await page.locator('#bg > .bg-img').last().getAttribute('style'), /bg_home/);
     assert.equal(await page.evaluate(async () => (await import('./js/core/audio.js')).currentBgm()), 'kansetsu_shomei_to_black_coffee');
     await begin(page);
-    await page.locator(t('hud-menu')).click(); await page.locator(t('menu-save')).click();
+    await page.locator(t('hud-menu')).click(); await page.locator(t('menu-tab-system')).click(); await page.locator(t('menu-save')).click();
     await page.locator(t('slot-1')).click(); await page.locator(t('confirm-overwrite')).click();
     await page.locator('#modal.show').waitFor({ state: 'hidden' });
-    await page.locator(t('hud-menu')).click(); await page.locator(t('menu-load')).click();
+    await page.locator(t('hud-menu')).click(); await page.locator(t('menu-tab-system')).click(); await page.locator(t('menu-load')).click();
     await page.locator(t('slot-1')).click(); await page.locator(t('confirm-load')).click();
     await page.locator(map).waitFor();
     const after = await value(page);
@@ -221,7 +221,7 @@ await suite('ch2-daily',async check=>{
     assert.match(preview.src,/bg_ch2_rei_entry.webp/);assert.equal(preview.width,1280);assert.equal(preview.height,720);
     await capture(page,'day2-widehanga.png');
     v=await value(page);assert.equal(v.money,36000-stationFares(page));assert.equal(v.slot,0);assert(Object.values(v.stats).every(n=>n===31));
-    await page.locator(t('hud-menu')).click();await page.locator(t('menu-save')).click();
+    await page.locator(t('hud-menu')).click();await page.locator(t('menu-tab-system')).click();await page.locator(t('menu-save')).click();
     await page.locator(t('slot-0')).waitFor();
     assert.match(await page.locator(t('slot-0')).textContent(),/第2章\s*DAY 2(?!\d)/);
     assert(!/初日終了/.test(await page.locator(t('slot-0')).textContent()),'DAY2 saves must not keep the DAY1-complete caption');
@@ -254,8 +254,9 @@ await suite('ch2-daily',async check=>{
     await travelToCity(page,'home');await act(page,'rest');
     await wide(page);await act(page,'ch2_ageha');v=await value(page);
     assert.equal(v.money,27000-stationFares(page));assert.equal(v.flags._ch2_talks.ageha,3);
-    // 続編のあとは、あげはの店に通う回を順に読む（#626）。全部読んだら従来の repeat に戻る
-    assert((await page.evaluate(()=>window.__dailyTrace)).includes('remake_ch2_ageha_repeat'));assert(!v.flags._ch2_read_remake_ch2_ageha_gyaru);
+    // 続編のあとは、あげはの店に通う回を順に読む（#626）。初対面+16・続編+8で♥2に届くので、3回目は最初の回（台帳 AFB01）。
+    // いつもの会話の巡回とあいさつ（VOL13）は、店に通う回を読み終えた後に出る
+    assert((await page.evaluate(()=>window.__dailyTrace)).includes('remake_ch2_ageha_gyaru'));assert(v.flags._ch2_read_remake_ch2_ageha_gyaru);
   });
   await check('installed-reel-preserves-draw-on-reload',async page=>{
     await setup(page,{reel:true});await begin(page);await wide(page);await act(page,'ch2_rei');

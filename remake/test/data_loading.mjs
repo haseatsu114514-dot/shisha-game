@@ -87,11 +87,12 @@ assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
 const limeMessages = realJSON("../data/lime_messages.json").messages;
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.lime)), limeMessages);
 assert.equal(new Set(all.DB.lime.map(m => m.id)).size, all.DB.lime.length);
-assert.deepEqual(Array.from(all.DB.lime.slice(-3), m => m.id), [
+assert.deepEqual(Array.from(all.DB.lime.slice(-5), m => m.id), [
   "lime_naru_samechan_nickname", "lime_samechan_preparing_thanks", "lime_samechan_opening",
+  "lime_outing_samechan_1", "lime_after_outing_samechan",
 ]);
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.limeTemplates)), realJSON("../data/lime_messages.json").templates);
-assert.equal(all.DB.lime.length, 72);
+assert.equal(all.DB.lime.length, 74);
 assert(!all.DB.lime.some(m => m.accept_event === "__hiyori_shop__"));
 assert.equal(all.DB.samechan.lime, undefined);
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
@@ -125,9 +126,9 @@ assert(all.DB.dialogues.ch1_tsumugi_bond_finale && all.DB.dialogues.ch1_rin_bond
 assert(all.DB.friends.friends.naru.chats.length > 0); // 友人のたまのLIME（remake/data/friends.json）
 assert(all.DB.manifest.backgrounds.includes("bg_tonari_inside_day.png"));
 assert(all.DB.flavors.every((f) => (f.leaf || "blond") === "blond"));
-// DB.flavors はローダがブロンドのみに絞るため、メーカー検証は生データ全77種を対象にする。
+// DB.flavors はローダがブロンドのみに絞るため、メーカー検証は生データ全84種を対象にする（2026-11-02 新フレーバー7種・NF01）。
 const rawFlavors = realJSON("../data/flavors.json").flavors;
-assert.equal(rawFlavors.length, 77);
+assert.equal(rawFlavors.length, 84);
 const makerProblems = flavorMakerProblems(rawFlavors);
 assert.equal(makerProblems.length, 0, `Invalid flavor makers: ${JSON.stringify(makerProblems)}`);
 assert.deepEqual(flavorMakerProblems([

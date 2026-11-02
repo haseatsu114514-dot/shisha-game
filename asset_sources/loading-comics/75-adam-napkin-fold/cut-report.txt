@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EEE3CE  枠の段 1: 2コマ@y=264
+  コマ1: 719x499 @(37,264) 比率 1.441 → ok
+  コマ2: 716x500 @(780,263) 比率 1.432 → ok
+コマ1: 719x499 (1.441) → 左右に各1.9%の紙帯 → 出力 748x499  asset_sources/loading-comics/75-adam-napkin-fold/panels/adam-napkin-fold-1.webp (62 KiB)
+コマ2: 716x500 (1.432) → 左右に各2.3%の紙帯 → 出力 750x500  asset_sources/loading-comics/75-adam-napkin-fold/panels/adam-napkin-fold-2.webp (58 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "adam-napkin-fold",
+  "title": "折り目の精度",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "asset_sources/loading-comics/75-adam-napkin-fold/panels/adam-napkin-fold-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "asset_sources/loading-comics/75-adam-napkin-fold/panels/adam-napkin-fold-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "asset_sources/loading-comics/75-adam-napkin-fold/75-adam-napkin-fold.png",
+      "region": {
+        "x": 37,
+        "y": 264,
+        "width": 719,
+        "height": 499,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "asset_sources/loading-comics/75-adam-napkin-fold/75-adam-napkin-fold.png",
+      "region": {
+        "x": 780,
+        "y": 263,
+        "width": 716,
+        "height": 500,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "adam-napkin-fold-1.webp",
+      "width": 748,
+      "height": 499,
+      "sha256": "80ae13e2ee6139747f4f6004aa7a6f000b7c026aa9ffe6228d18d109d0038b11"
+    },
+    {
+      "file": "adam-napkin-fold-2.webp",
+      "width": 750,
+      "height": 500,
+      "sha256": "d66f220e832589703df6e5a69bd1f83fa673d15cdd4f3125148029d8764e03f9"
+    }
+  ]
+}

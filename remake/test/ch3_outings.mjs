@@ -2,10 +2,10 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { newState } from "../js/core/state.js";
-import { advanceToChapterThree, chapterThreeScenes, completeChapterThreeScene,
+import { advanceToChapterThree, departChapterThree, chapterThreeScenes, completeChapterThreeScene,
   chapterThreeFreeTime, completeChapterThreeFreeTime } from "../js/chapters/ch3-progress.js";
 import { TOKYO_OUTINGS, OUTING_DIALOGUE_IDS, OUTINGS_FLAG, chapterThreeOutings, chapterThreeOutingCandidates,
-  claimChapterThreeOuting, outingDialogueId, tasteRecovered } from "../js/chapters/ch3-outing-progress.js";
+  claimChapterThreeOuting, outingDialogueId, outingAffinity, tasteRecovered } from "../js/chapters/ch3-outing-progress.js";
 import { chapterThreeMapModel } from "../js/chapters/ch3-map-model.js";
 import { classifyFlag } from "../js/core/carry.js";
 import { AFFINITY_RANK_PTS } from "../js/core/stats.js";
@@ -13,10 +13,13 @@ import { availableOptionalScenes, commitOptionalRead } from "../js/chapters/ch3-
 
 function departure({ member = false, legacy = false } = {}) {
   const value = newState();
-  Object.assign(value, { chapter: 2, day: 28, phase: "cleared", money: 1000, stamina: 80 });
+  Object.assign(value, { chapter: 2, day: 25, /* 準備3日の後の東京DAY1が従来どおり通算29日 */ phase: "cleared", money: 1000, stamina: 80 });
   value.flags = { _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true, _ch2_tournament: { stage: "complete" },
     ...(member ? { _gym_member: true } : {}) };
   assert(advanceToChapterThree(value));
+  value.day += 3; // 出発前の準備3日（VOL02）を過ごした出発の朝
+  assert(departChapterThree(value));
+  value.flags._ch3_intro.routeVersion = 2; // 場面カードの東京（作業中の旧セーブの行程）を確かめる
   if (legacy) delete value.flags._ch3_intro.routeVersion;
   return value;
 }
@@ -47,20 +50,48 @@ const ids = (value, window) => chapterThreeOutings(value, window.id).map(item =>
   assert.deepEqual(chapterThreeOutingCandidates(value).filter(item => item.id === "enmaku_notes"), []);
 }
 
-// スティーブの来店（#1696）: 配達で面識があり、彼の店を訪ねる前だけ。一度きり。
+// スティーブの来店（#1696・AFB02）: 配達で面識があり、彼の店を訪ねる前まで何度でも。2回目からは合図の回と客の顔の回を交互。
 {
   const early = at("d8-night");
   assert(!ids(early.value, early.window).includes("mukai_steve"), "Steve visits before meeting him");
   early.value.met.steve = true;
   assert(ids(early.value, early.window).includes("mukai_steve"));
+  const first = chapterThreeOutings(early.value, early.window.id).find(item => item.id === "mukai_steve");
+  assert.equal(outingDialogueId(early.value, first, early.window), "ch3_outing_mukai_steve");
+  assert.equal(first.reasonText, "配達先のスティーブが、今日は客として来るらしい");
+  assert.deepEqual(outingAffinity(early.value, first), { steve: 16 }, "The first visit gains like a stage talk");
   const outing = claimChapterThreeOuting(early.value, early.window.id, "mukai_steve");
   assert.equal(outing.money, 3000);
-  assert.equal(outingDialogueId(early.value, outing, early.window), "ch3_outing_mukai_steve");
   const next = nextWindow(early.value);
-  assert(!ids(early.value, next).includes("mukai_steve"), "Steve's visit repeated");
+  const again = chapterThreeOutings(early.value, next.id).find(item => item.id === "mukai_steve");
+  assert(again, "Steve comes again as a customer");
+  assert.equal(again.reasonText, "スティーブが、また客として来るらしい");
+  assert.deepEqual(outingAffinity(early.value, again), { steve: 8 }, "Later visits gain like a small talk");
+  const talkAfter = n => outingDialogueId({ ...early.value, flags: { ...early.value.flags, [OUTINGS_FLAG]: { mukai_steve: n } } }, again, next);
+  assert.deepEqual([1, 2, 3, 4].map(talkAfter),
+    ["ch3_outing_mukai_steve_b", "ch3_outing_mukai_steve_c", "ch3_outing_mukai_steve_b", "ch3_outing_mukai_steve_c"]);
   const late = at("d12-noon");
   late.value.met.steve = true;
-  assert(!ids(late.value, late.window).includes("mukai_steve"), "Steve's first visit after his shop scene");
+  assert(!ids(late.value, late.window).includes("mukai_steve"), "Steve's customer visit after his shop scene");
+}
+
+// 煙幕・Smoke & Glory に通う（AFB02）: 一度きりの話がある間はそちらだけ。読んだ後は何度でも寄れる。
+{
+  const { value, window } = at("d8-night");
+  assert(!ids(value, window).includes("enmaku_visit"), "Regular visit shown before the one-time talk");
+  assert(claimChapterThreeOuting(value, window.id, "enmaku_notes"));
+  let next = nextWindow(value);
+  const visit = chapterThreeOutings(value, next.id).find(item => item.id === "enmaku_visit");
+  assert(visit, "Kuze's shop becomes a regular after the notes");
+  assert.equal(outingDialogueId(value, visit, next), "ch3_outing_enmaku_visit");
+  assert(claimChapterThreeOuting(value, next.id, "enmaku_visit"));
+  next = nextWindow(value);
+  const again = chapterThreeOutings(value, next.id).find(item => item.id === "enmaku_visit");
+  assert.equal(outingDialogueId(value, again, next), "ch3_outing_enmaku_visit_b");
+  // 助言の後は「答えを返しに行く」・味の会話が先。読むまで通いは出さない。
+  const late = at("d12-noon");
+  for (const [once, regular] of [["enmaku_answer", "enmaku_visit"], ["steve_timer", "steve_visit"]])
+    assert(ids(late.value, late.window).includes(once) && !ids(late.value, late.window).includes(regular), `${regular} waits for ${once}`);
 }
 
 // 旧ルートの非会員は従来どおり空き時間を増やさない。
@@ -173,11 +204,12 @@ function nextWindow(value) {
   assert.deepEqual(Object.keys(byId.ch3_outing_enmaku_answer.branches).sort(), ["tried", "untried"]);
   // スティーブの味の会話（#2028）。熟練度は台本の metadata、好感度は任意の外出の確定時だけ。
   assert.deepEqual(byId.ch3_outing_steve_timer.metadata.flavor_lesson, { mountain_mist: 1 });
-  assert.deepEqual(TOKYO_OUTINGS.find(item => item.id === "steve_timer").affinity, { steve: 10 });
-  assert(TOKYO_OUTINGS.filter(item => item.affinity).every(item => !item.repeat), "Affinity outings are read once");
-  // 久世（#2028）: 好感度は煙幕への再訪（任意の外出）だけ。台本には報酬行を置かない。
+  assert.equal(TOKYO_OUTINGS.find(item => item.id === "steve_timer").affinityWith, "steve");
+  // 好感度の付く外出は、一度きりの話か、通うたびに台本が変わる行き先（AFB02）。
+  assert(TOKYO_OUTINGS.filter(item => item.affinityWith).every(item => !item.repeat || item.talks?.length >= 2), "Repeated affinity outings rotate talks");
+  // 久世（#2028・AFB02）: 好感度は煙幕への外出の確定時（一度きりの話は段階会話の +16）。台本には報酬行を置かない。
   for (const id of ["enmaku_notes", "enmaku_answer"]) {
-    assert.deepEqual(TOKYO_OUTINGS.find(item => item.id === id).affinity, { kuze: 10 });
+    assert.deepEqual(outingAffinity(newState(), TOKYO_OUTINGS.find(item => item.id === id)), { kuze: 16 });
     assert(!JSON.stringify(byId[`ch3_outing_${id}`]).includes("affinity"));
   }
   // てつこの世話は撫でる／餌の2択。どちらの枝も次の行へ戻り、報酬行を持たない。

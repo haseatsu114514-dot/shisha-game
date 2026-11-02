@@ -18,7 +18,10 @@ const { state, newGame } = await import("../js/core/state.js");
 newGame();
 
 // 1. usesFoil: ロートスは既定で飛ばし、レッスン・ドリル・任意トグル・他HMDでは行う
-assert.deepEqual(FOIL_FREE_HMS, ["lotos_hagal"]);
+// ロートスプラスHMD（VOL08・第3章〜）もロートス型なのでアルミを張らない。
+assert.deepEqual(FOIL_FREE_HMS, ["lotos_hagal", "lotos_plus"]);
+assert.equal(usesFoil({ mode: "tournament", equip: { hms: "lotos_plus" } }), false, "ロートスプラスも既定でアルミを飛ばす");
+assert.equal(usesFoil({ mode: "drill", equip: { hms: "lotos_plus" } }), true, "ドリルは必ず穴あけ");
 const lotos = (mode, extra = {}) => ({ mode, equip: { hms: "lotos_hagal" }, ...extra });
 assert.equal(usesFoil(lotos("tournament")), false, "ロートスの大会はアルミを飛ばす");
 assert.equal(usesFoil(lotos("rehearsal")), false, "ロートスの練習（リハ）も飛ばす");

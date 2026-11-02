@@ -21,10 +21,11 @@ try {
     await page.locator('[data-test="title-new"]').waitFor();
     await page.locator('#boot').waitFor({ state: 'detached' });
     await page.evaluate(async () => {
-      window.R = { core: await import('./js/core/state.js'), map: await import('./js/daily/map.js'), hud: await import('./js/daily/hud.js') };
+      window.R = { core: await import('./js/core/state.js'), map: await import('./js/daily/map.js'), hud: await import('./js/daily/hud.js'), schedule: await import('./js/daily/fortune-schedule.js') };
       R.core.config.bgmVolume = 0; R.hud.initHud({}); R.hud.showHud(true);
       Object.assign(R.core.newGame(), { phase: 'daily', day: 3, seed: 131, weatherSeed: 4 });
       R.core.state.flags._fortune_rumor_heard=true; // #780: 対面の噂を完読済みの表示fixture
+      R.schedule.placeFortuneNow(R.core.state); // 占い師は章で1〜2回・予定の無い時間帯に現れる（台帳 URA）。この時間帯に出す
       R.shown = 0;
       R.phaseObserver = new MutationObserver(records => {
         const map = records.find(r => r.target.dataset.revealPhase === 'pause')?.target;
@@ -98,7 +99,8 @@ try {
     await page.evaluate(async () => { R.core.state.day = 4; await reopen(); });
     await page.locator('.map:not(.done)').waitFor();
     assert.equal(await page.locator('[data-test="pin-fortune"]').count(), 0);
-    await page.evaluate(async () => { R.core.state.day = 6; await reopen(); });
+    // 次に現れた時間帯（予定はこの試験で出す）。施設の解禁の演出は繰り返さない
+    await page.evaluate(async () => { R.core.state.day = 6; delete R.core.state.flags._fortune_wander; R.schedule.placeFortuneNow(R.core.state); await reopen(); });
     await page.locator('[data-test="pin-fortune"]').waitFor();
     assert.equal(await page.locator('.newly-revealed').count(), 0, 'scheduled stall repeats unlock');
     await page.evaluate(async () => {

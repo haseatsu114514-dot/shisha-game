@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE4D0  枠の段 1: 2コマ@y=272
+  コマ1: 720x480 @(36,272) 比率 1.500 → ok
+  コマ2: 720x480 @(780,272) 比率 1.500 → ok
+コマ1: 720x480 (1.500) そのまま → 出力 720x480  asset_sources/loading-comics/81-naru-sweet-description/panels/naru-sweet-description-1.webp (57 KiB)
+コマ2: 720x480 (1.500) そのまま → 出力 720x480  asset_sources/loading-comics/81-naru-sweet-description/panels/naru-sweet-description-2.webp (61 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "naru-sweet-description",
+  "title": "甘さのたとえ",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "asset_sources/loading-comics/81-naru-sweet-description/panels/naru-sweet-description-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "asset_sources/loading-comics/81-naru-sweet-description/panels/naru-sweet-description-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "asset_sources/loading-comics/81-naru-sweet-description/81-naru-sweet-description.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 720,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "asset_sources/loading-comics/81-naru-sweet-description/81-naru-sweet-description.png",
+      "region": {
+        "x": 780,
+        "y": 272,
+        "width": 720,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "naru-sweet-description-1.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "f1b0edf24720d4d189af2134c1258b60aff480e1354d5b9666978f68bcb15173"
+    },
+    {
+      "file": "naru-sweet-description-2.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "c1d8de661db12de1e8b4cfc92472ce4c627415401f0a63e70d5922ba0456ac11"
+    }
+  ]
+}

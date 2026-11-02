@@ -1222,6 +1222,12 @@
       },
       "lines": [
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_shuraba_ch1",
+          "next_true": "df_shuraba"
+        },
+        {
           "speaker": "hajime",
           "face": "serious",
           "text": "（……今日は届かなかった。でも、帰ってこられた。もう１回、あの舞台で）"
@@ -1232,7 +1238,16 @@
             "guts": 2
           }
         }
-      ]
+      ],
+      "branches": {
+        "df_shuraba": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ポケットのスマホが震えた。朝、会場に残してきた「あとで」も、まだ終わっていない。"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "remake_sick_half",
@@ -2082,7 +2097,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "アーケードの外れ。折りたたみの机に、紫の布と使い込まれたタロットの束。"
+          "text": "人通りの少ない角。折りたたみの机に、紫の布と使い込まれたタロットの束。"
         },
         {
           "speaker": "",
@@ -2121,7 +2136,7 @@
         {
           "speaker": "uranaishi",
           "face": "smile",
-          "text": "……また来たね。今日は誰との縁が気になるんだい？"
+          "text": "……また会ったね。今日は誰との縁が気になるんだい？"
         }
       ]
     },

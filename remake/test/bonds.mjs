@@ -84,7 +84,7 @@ try {
         out.push({ charm, pts, times, got: state.affinity.naru, legacy: Math.round(pts * mult) * times, carry: state.affinityCarry.naru });
       }
     }
-    // 占い（一度だけ ×1.5）
+    // 占い（一度だけ ×2。台帳 URA03）
     let state = fresh();
     state.story.rin = spots.VISIT_SEQ.rin.length;
     state.fortune = { char: "rin" };
@@ -121,7 +121,7 @@ try {
     assert(Math.abs(r.got + r.carry - r.legacy * 0.85) < 1e-6, `not 85%: ${JSON.stringify(r)}`);
   }
   assert.deepEqual(pace.out.filter((r) => r.pts === 1).map((r) => r.got), [85, 85, 85, 85, 85]);
-  assert.equal(pace.fortune.got, 12); assert.equal(pace.fortune.left, undefined); assert.equal(pace.fortune.second, 12 + 9); // 0.75 の端数を持ち越す
+  assert.equal(pace.fortune.got, 17); assert.equal(pace.fortune.left, undefined); assert.equal(pace.fortune.second, 17 + 8); // 20×0.85=17、次は8.5の0.5を持ち越す
   assert.equal(pace.lover.shop, 9, "lover affinity must not grow outside private scenes");
   assert.equal(pace.lover.after, 9 + 5 + 1); assert.equal(pace.lover.carry, 0);
   assert.deepEqual(pace.waiting, { level: 5, answer: null, due: null });
@@ -621,7 +621,7 @@ try {
   const ui = await page.evaluate(async () => {
     const { fresh } = window.T;
     const state = fresh({ met: { tsumugi: true } });
-    state.owned.push("suyaki_tsumugi");
+    state.owned.push("suyaki_tsumugi", "suyaki_samechan");
     state.flavorStock.lavender = 50;
     const session = await import("./js/craft/session.js");
     const steps = await import("./js/craft/steps.js");
@@ -638,14 +638,19 @@ try {
     await window.T.waitFor('[data-tab="items"]');
     [...document.querySelectorAll(".st-tab")].find((b) => b.dataset.tab === "items").click();
     const note = document.querySelector('[data-test="gift-suyaki_tsumugi"]')?.textContent || "";
+    const plainNote = document.querySelector('[data-test="gift-suyaki_samechan"]')?.textContent || "";
     const flavors = [...document.querySelectorAll(".st-items .chip")].map((c) => c.textContent).join("|");
     document.querySelector('[data-test="status-close"]').click();
     await opened;
-    return { offered, equipped, note, flavors };
+    return { offered, equipped, note, plainNote, flavors };
   });
   assert(ui.offered); assert.equal(ui.equipped, "suyaki_tsumugi");
   assert(ui.note.includes("つむぎから") && ui.note.includes("ラベンダー") && ui.note.includes("売却不可"), ui.note);
   assert(ui.flavors.includes("ラベンダー"), ui.flavors);
+  // 香りを持たない素焼き（サメちゃん）は undefined を出さず、素焼きであることを伝える。香りを持つ札は従来どおり
+  assert(/染み付いた香り：.*ラベンダー（3g以上で香りが開く）/.test(ui.note) && !ui.note.includes("undefined"), ui.note);
+  assert(ui.plainNote.includes("から（一緒に店の居心地を確かめたお礼）") && ui.plainNote.includes("まだ香りの染みていない素焼き") && ui.plainNote.includes("売却不可"), ui.plainNote);
+  assert(!/undefined|NaN|null/.test(ui.plainNote) && !ui.plainNote.includes("染み付いた香り") && !ui.plainNote.includes("g以上"), ui.plainNote);
   log("HF06 UI: gift selectable at setup, inventory shows giver / infused scent / unsellable, gifted leaf listed");
 
   // ================================================================ HF09 友人になった後の、たまのLIME

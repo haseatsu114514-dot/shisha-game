@@ -318,6 +318,15 @@ export async function openConfig(opts = {}) {
     if (v === (config.introArtStyle === "classic" ? "classic" : "graphic")) o.selected = true;
     return o;
   }));
+  // 立ち絵から登場カットインへの「変身」（2026-11-02 オーナー採用。グラフィック絵柄のときだけ効く）
+  const introTransition = el("select", {
+    dataset: { test: "cfg-intro-transition" },
+    onchange: (e) => { config.introTransition = e.target.value; persist(); opts.onChange?.("introTransition", config.introTransition); },
+  }, [["morph", "変身する（新）"], ["none", "なし"]].map(([v, t]) => {
+    const o = el("option", { value: v, text: t });
+    if (v === (config.introTransition === "none" ? "none" : "morph")) o.selected = true;
+    return o;
+  }));
   const reduceShake = el("input", {
     type: "checkbox", dataset: { test: "cfg-reduce-shake" },
     onchange: (e) => { config.reduceShake = e.target.checked; persist(); opts.onChange?.("reduceShake", config.reduceShake); },
@@ -356,6 +365,7 @@ export async function openConfig(opts = {}) {
       row("AUTOの速さ", autoSpeed),
       row("SKIPの範囲", skipMode),
       row("登場カットインの絵柄", introArt),
+      row("登場カットインへの変身", introTransition),
       row("揺れ・閃光を減らす", reduceShake),
       row("文字送りの声", blip),
       row("見た演出を短く", shortSeen),

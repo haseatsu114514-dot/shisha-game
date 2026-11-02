@@ -25,21 +25,31 @@ export const STORE_LOGOS = Object.freeze({ ...BASE_LOGOS,
   ch3_steve: { name: "Smoke & Glory", file: "ch3-smoke-and-glory", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch3_volk: { name: "Железный Дым（鉄の煙）", file: "ch3-iron-smoke", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch3_mukai: { name: "mukai", file: "ch3-mukai", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
-  ch3_club: { name: "SEAM", file: "ch3-seam", ext: "webp", sheet: [768, 512], frame: [20, 191, 728, 130] }, // クラブSEAM（DJS15・#2199）。横長の文字ロゴなので外枠を文字の周りに詰める
+  ch3_club: { name: "SEAM", file: "ch3-seam", ext: "webp", sheet: [768, 512], frame: [20, 191, 728, 130], dark: true }, // クラブSEAM（DJS15・#2199）。横長の文字ロゴなので外枠を文字の周りに詰める。白い文字なので暗い札に載せる
 });
 
-export const hasStoreLogo = (id) => Object.hasOwn(STORE_LOGOS, id);
+// 日常の地図で章ごとに id を分けた行き先（第3章・第5章の東京、第4章のドバイ）を、同じ店の採用ロゴへつなぐ。
+// ロゴの絵は増やさない。地図のピンと到着時のロゴ表示が、元の店と同じ絵になる。
+const LOGO_ALIASES = Object.freeze({
+  ch3_tokyo_mukai: "ch3_mukai", ch3_tokyo_enmaku: "ch3_enmaku", ch3_tokyo_steve: "ch3_steve",
+  ch3_tokyo_volk: "ch3_volk", ch3_tokyo_club: "ch3_club", ch3_tokyo_shop: "shop",
+  ch5_tokyo_mukai: "ch3_mukai", ch5_tokyo_steve: "ch3_steve", ch5_tokyo_volk: "ch3_volk", ch5_tokyo_shop: "shop",
+  ch4_dubai_festa: "ch4_festa", ch4_dubai_shop: "shop",
+});
+const logoKey = (id) => Object.hasOwn(LOGO_ALIASES, id) ? LOGO_ALIASES[id] : id;
+
+export const hasStoreLogo = (id) => Object.hasOwn(STORE_LOGOS, logoKey(id));
 export const storeLogoUrl = (id) => hasStoreLogo(id)
-  ? new URL(`../../../assets/ui/store_logos/${STORE_LOGOS[id].file}.${STORE_LOGOS[id].ext || "png"}`, import.meta.url).href : null;
+  ? new URL(`../../../assets/ui/store_logos/${STORE_LOGOS[logoKey(id)].file}.${STORE_LOGOS[logoKey(id)].ext || "png"}`, import.meta.url).href : null;
 export const allStoreLogoUrls = () => Object.keys(STORE_LOGOS).map(storeLogoUrl);
 
 /** 店舗ごとに異なる縦横比を保ち、指定された枠へ収める。 */
 export function storeLogo(id, { width = 104, height = 60 } = {}) {
   if (!hasStoreLogo(id)) return null;
-  const logo = STORE_LOGOS[id];
+  const logo = STORE_LOGOS[logoKey(id)];
   const [x, y, w, h] = logo.frame;
   const scale = Math.min(width / w, height / h);
-  const node = el("span.store-logo", {
+  const node = el(logo.dark ? "span.store-logo.on-dark" : "span.store-logo", {
     role: "img", "aria-label": `${logo.name}のロゴ`, dataset: { storeLogo: id },
     style: { width: `${w * scale}px`, height: `${h * scale}px` },
   });

@@ -1,0 +1,107 @@
+{
+  "episode": 24,
+  "title": "延長料金",
+  "cast": "りゅうじ・はじめ",
+  "theme": "旧・暴走編（復刻）",
+  "status": "not-adopted-owner-20261102",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-unhinged-ltr-20261025/21-24-chaos-ltr.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "image_genによる再作画",
+  "image_manifest": [
+    {
+      "file": "24-restored.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1960061,
+      "sha256": "a40bb06e323c797044d6b8b6b7ba070cdca5ce77a7236660c0993640a1a90936"
+    }
+  ],
+  "tasks": [
+    {
+      "script": "LEFT ①: late at night in the black leather office sofa, relaxed Hajime asks 「もう少しいいですか。」 Ryuji nods hospitably. RIGHT ②: the same black leather sofa is now floating in a ridiculous COSMIC VOID of galaxies, calendar ages have passed; Ryuji STILL in white-check suit/purple tie/moustache/sunglasses gently offers a water glass on a little tray, saying 「お冷だ。」 A small receipt clearly says 「延長１億年」. Hajime looks around at planets, asking 「まだ営業中？」 No extra pipe, no disaster, deadpan infinity-hospitality.",
+      "dialogue_original": [
+        "もう少しいいですか。",
+        "お冷だ。",
+        "延長１億年",
+        "まだ営業中？"
+      ],
+      "prompt": "旧漫画のサイズと読む順を統一する編集です。添付1の原画シートから指定した話1本だけを、添付2の下敷きへ再構成する。元のネタ・衣装・顔・小物・台詞を保つ。別の話を混ぜず、新しいギャグは足さない。出力1536x1024、左x36 y272幅720高さ480、右x780 y272幅720高さ480、横長3:2。上下272pxの紙余白、枠はy752で終わる。枠を縦に広げない。絵は枠内だけ。セーフマージン29px。左コマを導入、右コマをオチに並べ替え、絵や文字の左右反転は禁止。元絵の台詞は横書きの読みやすい太い日本語ゴシック。題名・話数・シリーズ名・読む順の番号・署名は消す。2.5頭身の太線セル塗りと紙質、原画の本人性を維持。台詞が多くても枠を拡げず人物を胸上で構成する。文字・顔・重要な小物を欠かさない。元々3人の話は物語を勝手に改変せず3人を維持してよい（旧話の復刻である）。シーシャ器具は指定された話以外描かない。写真は構造参照で、製品ロゴや写真の実在人物は模写しない。最終配置について、次の台本のLEFTは完成版の左、RIGHTは完成版の右です。元シートの左右位置を真似しない。上の大きな余白を残す下敷き画像が寸法の正本。出力は必ず1536x1024（2:1や横長帯は禁止）。下敷きは添付1。添付2のシートの第24話「延長料金」だけ。完成版の台本: LEFT ①: late at night in the black leather office sofa, relaxed Hajime asks 「もう少しいいですか。」 Ryuji nods hospitably. RIGHT ②: the same black leather sofa is now floating in a ridiculous COSMIC VOID of galaxies, calendar ages have passed; Ryuji STILL in white-check suit/purple tie/moustache/sunglasses gently offers a water glass on a little tray, saying 「お冷だ。」 A small receipt clearly says 「延長１億年」. Hajime looks around at planets, asking 「まだ営業中？」 No extra pipe, no disaster, deadpan infinity-hospitality.。りゅうじは白大柄チェック・紫ネクタイ・色付き眼鏡・口ひげ53歳。シーシャ台・ホース・喫煙・武器は描かない。実際のシーシャ煙や炭は描かない。",
+      "reference_images": [
+        "/workspace/shisha-game/asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "/workspace/shisha-game/asset_sources/short-comics-unhinged-ltr-20261025/21-24-chaos-ltr.png",
+        "/workspace/shisha-game/assets/sprites/characters/kumicho/chr_kumicho_normal.png"
+      ],
+      "generator": "OpenAI image_gen"
+    }
+  ],
+  "source": [
+    {
+      "file": "24-restored.png",
+      "region": {
+        "x": 39,
+        "y": 275,
+        "width": 709,
+        "height": 475,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "24-restored.png",
+      "region": {
+        "x": 783,
+        "y": 275,
+        "width": 714,
+        "height": 475,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-24-1.webp",
+      "width": 712,
+      "height": 475,
+      "sha256": "7809bd2d9b516d7b27efa3d40bcc9a84a3880ff36761dd675e302f1ae45a94b4"
+    },
+    {
+      "file": "panels/restored-24-2.webp",
+      "width": 714,
+      "height": 475,
+      "sha256": "ecb58b81d363c011fe5ed463986bc73b048d6b2f92f8d1f112046bb1844cb720"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "ok（強制通過なし）",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "旧・暴走編の内容を維持。49話以降の少しシュールな作風とは異なる。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": []
+    }
+  },
+  "selection_note": "2026-11-02 オーナーの選別で不採用（ゲームに登録しない）。"
+}

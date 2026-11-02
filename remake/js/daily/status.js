@@ -10,6 +10,7 @@ import { nextStepProgress, stepOfValue } from "../core/stat-progress.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
 import { relationshipStatus, recentMemoryEcho } from "./relationship-status.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
+import { HOBBY_GEAR } from "../core/hobby-gear.js";
 import { triedLater, comboName } from "./cafe-ideas.js";
 import { growthEnabled, ensureGrowth } from "../core/growth.js";
 import { BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, STAT_SQUARES, statCount, statRatio, perkTotals } from "../core/growth-board.js";
@@ -220,11 +221,17 @@ function peopleTab() {
 
 /** 贈られた機材の札（贈り主・染み付いた香り・効き・売却不可）。1行に収める */
 function giftNote(e) {
-  const flavor = DB.flavorById[e.gift.flavor];
-  const leaf = flavor?.short_name || flavor?.name || e.gift.flavor;
+  const from = `${displayName(e.gift.from, state)}から（${e.gift.reason}）`;
+  // 香りの無い素焼き（サメちゃんの素焼きなど）は、まだ何も染みていないことを伝える
+  let scent = "まだ香りの染みていない素焼き";
+  if (e.gift.flavor) {
+    const flavor = DB.flavorById[e.gift.flavor];
+    const leaf = flavor?.short_name || flavor?.name || e.gift.flavor;
+    scent = `染み付いた香り：${leaf}（${e.gift.min_grams}g以上で香りが開く）`;
+  }
   return el("div.gift-note", { dataset: { test: `gift-${e.id}` } }, [
     el("b", { text: e.name }),
-    el("small", { text: `${displayName(e.gift.from, state)}から（${e.gift.reason}）・染み付いた香り：${leaf}（${e.gift.min_grams}g以上で香りが開く）・売却不可` }),
+    el("small", { text: `${from}・${scent}・売却不可` }),
   ]);
 }
 
@@ -264,6 +271,12 @@ function itemsTab(showRecipe) {
     el("h4", { text: "機材" }),
     el("div.chips", eq.map((e) => el(`span.chip${inUse.has(e.id) ? ".on" : ""}${e.gift ? ".gift" : ""}`, { text: e.name }))),
     gifts.length ? el("div.gift-notes", gifts.map(giftNote)) : null,
+    ...(() => {
+      // 遊びの道具（VOL07）。持っていれば各ミニゲームで自動的に使う。
+      const gear = [...new Set(state.owned)].map((id) => HOBBY_GEAR[id]).filter(Boolean);
+      return gear.length ? [el("h4", { text: "遊びの道具" }), el("div.chips", { dataset: { test: "status-hobby-gear" } },
+        gear.map((g) => el("span.chip", [g.short, el("small.chip-g", { text: g.effect })])))] : [];
+    })(),
     el("h4", { text: "フレーバー" }),
     el("div.chips", fl.length ? fl.map((f) => el("span.chip", [f.short_name || f.name, el("small.chip-g", { text: grams(f.id) })])) : [el("span.chip.dim", { text: "所持0" })]),
     el("p.st-note", { text: "1箱50g。自宅の試作・店への持ち込み・大会の課題以外の葉で消費。大会の課題フレーバーは支給され、本番中は好きなだけ使える（在庫は減らない）。熟練度はLv.5まで。" }),
@@ -283,3 +296,6 @@ function itemsTab(showRecipe) {
     })(),
   ]);
 }
+
+// 全画面MENU（daily/menu.js・DUI03）の人間関係・持ち物タブも、同じ並び順・贈り物の札・レシピの詳細を使う。
+export { PEOPLE as STATUS_PEOPLE, giftNote, recipeDetails };

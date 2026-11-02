@@ -1,0 +1,99 @@
+{
+  "episode": 40,
+  "title": "即戦力",
+  "cast": "つむぎ・はじめ",
+  "theme": "旧・暴走編（復刻）",
+  "status": "not-adopted-owner-20261102",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-unhinged-ltr-20261025/37-40-chaos-ltr.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [],
+  "tasks": [
+    {
+      "script": "LEFT ①: quiet Tsumugi (DARK BROWN bob/PURPLE HOODIE) shows her tablet drawing of a LEAF-EARED CAT with smoky curl tail, BLACK CAP and tiny BLACK HOODIE resembling Hajime. She says 「はじめさん描いた。」 Real adult Hajime leans over impressed. RIGHT ②: that exact CARTOON CAT drawing has stepped OFF the tablet into the cafe and is now efficiently serving THREE trays of tea and cash-register service simultaneously with an absurd array of little paper-illustration arms, tail tidying a menu. The real Hajime and Tsumugi watch, not transformed. Cat cheerfully says 「いらっしゃい。」 Hajime looks at his own empty hands and says 「俺より働く。」 Tablet shows a clear cat-shaped empty white space. No actual magic added to canon, this is the surreal spin-off cartoon.",
+      "dialogue_original": [
+        "はじめさん描いた。",
+        "いらっしゃい。",
+        "俺より働く。"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/short-comics-unhinged-ltr-20261025/37-40-chaos-ltr.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/37-40-chaos-ltr.png",
+      "region": {
+        "x": 22,
+        "y": 1125,
+        "width": 468,
+        "height": 302,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    },
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/37-40-chaos-ltr.png",
+      "region": {
+        "x": 513,
+        "y": 1088,
+        "width": 554,
+        "height": 339,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-40-1.webp",
+      "width": 468,
+      "height": 312,
+      "sha256": "44ed845a63a234d6d6c105892800e2e4112673498d690a4cc82304c5930df9d1"
+    },
+    {
+      "file": "panels/restored-40-2.webp",
+      "width": 554,
+      "height": 369,
+      "sha256": "0b2232b05675f828e6fa61bef42029cd1a38920dc2bd3bda533ecd88a031a3d2"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "ok（強制通過なし）",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "旧・暴走編の内容を維持。49話以降の少しシュールな作風とは異なる。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": [
+        "qa-pc.png",
+        "qa-phone.png"
+      ]
+    }
+  },
+  "selection_note": "2026-11-02 オーナーの選別で不採用（ゲームに登録しない）。"
+}

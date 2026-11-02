@@ -1,167 +1,352 @@
 import { imgFileUrl } from "./img-file.js";
 
-// Approved for loading screens by the owner's request to use existing repository comics.
-// The source sheet stays intact; regions display only episode 25, left -> right.
+// ロード画面（作業台に入るとき）に出る2コマ漫画の登録。仕様: docs/spec/loading_screen_and_comics.md、
+// 制作規格: asset_sources/loading-comics/README.md。
 //
-// Comic data format (see docs/spec/loading_screen_and_comics.md):
-//   id / title / minChapter (required), contexts? (default: any), note? (素材台帳メモ),
-//   caption?  : 初心者向けの一行解説（コマの下に表示。省略可）。
-//   panels[2] : { src, alt,
-//     region?  : { x, y, width, height, sourceWidth, sourceHeight } で原画の一部を切り出す。
-//     bubbles? : [{ text, x, y, width?, fontSize? }] ... 吹き出し画像の上にゲーム内テキストを重ねる
-//                （x/y/width は art 枠に対する % 、fontSize は cqw。誤字を直せる差し込み方式）。
-//   }
-// 制作規格の正本は asset_sources/loading-comics/README.md。新規の話は 1536x1024 の下敷きで描き、
-// tools/loading_comic_cut.py で 1コマ=1ファイル（3:2・最大 1440x960 の WebP）に揃えて、region なしで
-// 登録する（例: { src: imgFileUrl("loading/<id>-1.webp"), alt }）。下の2本は旧方式（シート＋region）の
-// 登録で、作り直し不要（2026-10-29 オーナー決定）。表示枠は 3:2 のままレターボックスで収める。
-const src = imgFileUrl("loading/adam-chaos.webp");
-const batch1Src = imgFileUrl("loading/loading-batch1.webp");
-export const LOADING_COMICS = [{
-  id: "adam-menu-25",
-  title: "メニュー改訂",
-  contexts: ["craft"],
-  minChapter: 1,
-  note: "番外編のギャグ漫画です。左から右へお読みください。",
-  caption: "番外編のギャグ漫画。アダムはリンゴ系の味に目がない。",
-  panels: [
-    { src, alt: "はじめ「他の味は？」。フルーツメニューを前にアダムが考え込む。",
-      region: { x: 14, y: 110, width: 486, height: 307, sourceWidth: 1086, sourceHeight: 1448 } },
-    { src, alt: "赤と緑のリンゴで埋まった宇宙。アダム「選び放題だ。」はじめ「どこが。」",
-      region: { x: 510, y: 110, width: 565, height: 307, sourceWidth: 1086, sourceHeight: 1448 } },
-  ],
-}, {
-  id: "sumi-charcoal-ear",
-  title: "炭の耳",
-  contexts: ["craft"],
-  minChapter: 1,
-  note: "番外編のギャグ漫画です。左から右へお読みください。",
-  caption: "番外編のギャグ漫画。スミさんは炭の熾き具合を、音と色で見分ける。",
-  panels: [
-    { src: batch1Src, alt: "はじめ「炭の温度って、何で測るんですか？」。作業台のボウルにスミさんが耳を寄せている。",
-      region: { x: 22, y: 135, width: 510, height: 399, sourceWidth: 1086, sourceHeight: 1448 } },
-    { src: batch1Src, alt: "炭箱の中で小さな炭たちが一斉にざわめき、スミさんが真剣にメモを取る。はじめ「議事録とってる！？」",
-      region: { x: 545, y: 135, width: 520, height: 399, sourceWidth: 1086, sourceHeight: 1448 } },
-  ],
-},
-{
-  "id": "sumi-reserved-seat",
-  "title": "予約の正体",
-  "contexts": [
-    "craft"
-  ],
-  "minChapter": 1,
-  "note": "番外編のギャグ漫画です。左から右へお読みください。",
-  "caption": "開店前の椅子を見ていたら、先客がいました。",
-  "panels": [
-    {
-      "src": imgFileUrl("loading/sumi-reserved-seat-1.webp"),
-      "alt": "左: はじめが空の椅子にある小さな膨らみを指して「予約ですか？」。右のスミさんは「先客だ。」。"
-    },
-    {
-      "src": imgFileUrl("loading/sumi-reserved-seat-2.webp"),
-      "alt": " 椅子の座布団の下で寝ていた丸い三毛猫がふんぞり返り目を開ける。はじめはびっくり、スミさんが「常連の顔だ。」。猫は1匹だけ。"
-    }
-  ]
-},
-{
-  "id": "sumi-cloth-fold",
-  "title": "畳みの極意",
-  "contexts": [
-    "craft"
-  ],
-  "minChapter": 1,
-  "note": "番外編のギャグ漫画です。左から右へお読みください。",
-  "caption": "掃除のあと、ふきんを畳む練習をしていたら。",
-  "panels": [
-    {
-      "src": imgFileUrl("loading/sumi-cloth-fold-1.webp"),
-      "alt": "左: はじめが清潔な白いふきんを持ち「畳み方は？」。スミさんが「角をそろえろ。」。"
-    },
-    {
-      "src": imgFileUrl("loading/sumi-cloth-fold-2.webp"),
-      "alt": " はじめが折り紙の鶴そっくりに畳んだ白ふきんを手にして困惑「鶴になった。」。スミさんは無言で眼鏡をずらし驚く。布の鶴は飛ばない。"
-    }
-  ]
-},
-{
-  "id": "sumi-recipe-scroll",
-  "title": "一行の秘訣",
-  "contexts": [
-    "craft"
-  ],
-  "minChapter": 1,
-  "note": "番外編のギャグ漫画です。左から右へお読みください。",
-  "caption": "聞いたことを丁寧にメモする、はじめの番外編。",
-  "panels": [
-    {
-      "src": imgFileUrl("loading/sumi-recipe-scroll-1.webp"),
-      "alt": "左: スミさんが指一本を立て「コツは一行だ。」。はじめが小さなメモ帳と鉛筆を取り「メモします。」。"
-    },
-    {
-      "src": imgFileUrl("loading/sumi-recipe-scroll-2.webp"),
-      "alt": " はじめが床まで長々と転がる巻物にメモをして困惑「巻物になった。」。スミさんが呆れて見守る。巻物は文字を描かず小さな線だけ。"
-    }
-  ]
-},
-{
-  "id": "sumi-rain-concert",
-  "title": "雨音の合奏",
-  "contexts": [
-    "craft"
-  ],
-  "minChapter": 1,
-  "note": "番外編のギャグ漫画です。左から右へお読みください。",
-  "caption": "雨の日の店内は、いつもと少し違う音がします。",
-  "panels": [
-    {
-      "src": imgFileUrl("loading/sumi-rain-concert-1.webp"),
-      "alt": "左: 窓の雨筋を見てはじめが「雨、強いですね。」スミさんが「いい音だ。」。"
-    },
-    {
-      "src": imgFileUrl("loading/sumi-rain-concert-2.webp"),
-      "alt": " はじめが椅子に座り目を丸くし「客席が最前列。」。スミさんが雨の窓を背景に鉛筆一本を指揮棒にして大げさに指揮、文字のない音符が2つ。雨漏りはなし。"
-    }
-  ]
-},
-{
-  "id": "sumi-cushion-tower",
-  "title": "座り心地派",
-  "contexts": [
-    "craft"
-  ],
-  "minChapter": 1,
-  "note": "番外編のギャグ漫画です。左から右へお読みください。",
-  "caption": "くつろげる席を作ろうと、張り切るはじめ。",
-  "panels": [
-    {
-      "src": imgFileUrl("loading/sumi-cushion-tower-1.webp"),
-      "alt": "左: はじめが椅子にクッションを二枚載せて「楽な席にします。」。スミさんが「ほどほどにな。」。"
-    },
-    {
-      "src": imgFileUrl("loading/sumi-cushion-tower-2.webp"),
-      "alt": " はじめがふわふわのクッションを五枚ほど積んだ低い山に座り頭が天井すれすれで「天井が近い。」。スミさんは右であきれて見上げる。安全な柔らかいデフォルメ誇張、脚立なし。"
-    }
-  ]
-},
-{
-  "id": "sumi-sign-reverse",
-  "title": "看板の向き",
-  "contexts": [
-    "craft"
-  ],
-  "minChapter": 1,
-  "note": "番外編のギャグ漫画です。左から右へお読みください。",
-  "caption": "開店の準備ができたら、入口の札も忘れずに。",
-  "panels": [
-    {
-      "src": imgFileUrl("loading/sumi-sign-reverse-1.webp"),
-      "alt": "左: はじめが両手を腰に得意げで「準備できました！」。スミさんがドアの札を指し「札も返せよ。」。"
-    },
-    {
-      "src": imgFileUrl("loading/sumi-sign-reverse-2.webp"),
-      "alt": " はじめは背中をこちらへ向けて逆向きに立ち、顔だけ振り向いて困惑「俺が裏返った。」。スミさんは無言で額に手を当てる。ドアの札は無地、文字なし。"
-    }
-  ]
-}
+// 形式:
+//   id / title / minChapter（必須）, contexts?（省略時はどこでも）, note?（素材台帳メモ）, caption?（コマの下の一行解説）
+//   cast     : 出てくるキャラの id（はじめ以外。data/characters.json の id）。全員と「会った」後にだけ出る。
+//              会ったかどうかは core/title-art-unlock.js の hasMetCharacter（state.met と等価の既存記録）で判定する。
+//   panels[2]: { src, alt, region?, bubbles? }（region は原画シートの一部を切り出すとき。現在の登録は使っていない）
+// 新規の話は 1536x1024 の下敷きで描き、tools/loading_comic_cut.py で 1コマ=1ファイル（3:2・最大 1440x960 の WebP）に
+// 揃え、紙色の余白は fill で埋める。ネタバレになる話は minChapter で明かす章まで待たせる（シガーマンの2話は第4章から）。
+// 2026-11-02 オーナーの選別（102話から採用25話）。画風の統一は後日の作り直しで行い、今は元の絵で登録している。
+export const LOADING_COMICS = [
+  {
+    id: "sumi-cold-tea",
+    title: "冷めた紅茶",
+    cast: ["sumi"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2258:sumi-cold-tea）",
+    caption: "シーシャの話になると、時間を忘れる二人。",
+    panels: [
+      { src: imgFileUrl("loading/sumi-cold-tea-1.webp"), alt: "左: はじめが冷めた紅茶を見て「お茶、冷めました。」。右のスミさんは頬杖で「話しすぎたな。」。" },
+      { src: imgFileUrl("loading/sumi-cold-tea-2.webp"), alt: "スミさんが指を立てて楽しそうに話を続け、はじめはノートを開く。はじめ「話はまだ熱い。」。" },
+    ],
+  },
+  {
+    id: "sumi-cloth-fold",
+    title: "畳みの極意",
+    cast: ["sumi"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2229:sumi-cloth-fold（復刻一覧の restored-44 と同じ画像））",
+    caption: "掃除のあと、ふきんを畳む練習をしていたら。",
+    panels: [
+      { src: imgFileUrl("loading/sumi-cloth-fold-1.webp"), alt: "左: はじめが清潔な白いふきんを持ち「畳み方は？」。スミさんが「角をそろえろ。」。" },
+      { src: imgFileUrl("loading/sumi-cloth-fold-2.webp"), alt: "はじめが折り紙の鶴そっくりに畳んだ白ふきんを手にして困惑「鶴になった。」。スミさんは無言で眼鏡をずらし驚く。布の鶴は飛ばない。" },
+    ],
+  },
+  {
+    id: "sweet-unit",
+    title: "甘さのものさし",
+    cast: ["naru"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2246:sweet-unit）",
+    caption: "なるは、甘さをお菓子で考える作り手です。",
+    panels: [
+      { src: imgFileUrl("loading/sweet-unit-1.webp"), alt: "左: はじめがメニューを持って「甘さ控えめで。」。右のなるが考えて「ケーキなら何口？」。" },
+      { src: imgFileUrl("loading/sweet-unit-2.webp"), alt: "なるがショートケーキの一切れとフォークを示して好みを確かめる。はじめは苦笑いで「単位が独特。」。" },
+    ],
+  },
+  {
+    id: "adam-key-ring",
+    title: "鍵より目印",
+    cast: ["adam"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2258:adam-key-ring）",
+    caption: "アダムは、よく鍵をなくします。",
+    panels: [
+      { src: imgFileUrl("loading/adam-key-ring-1.webp"), alt: "左: はじめが「鍵、見つかります？」。右のアダムが鞄から小さな鍵をつまんで「目印がある。」。" },
+      { src: imgFileUrl("loading/adam-key-ring-2.webp"), alt: "鍵には本物ほど大きなリンゴのキーホルダーが二つ。アダムの手が重さで下がり、はじめが驚いて「目印が重すぎる。」。" },
+    ],
+  },
+  {
+    id: "mint-ranking",
+    title: "人気の一位",
+    cast: ["minto"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2246:mint-ranking）",
+    caption: "ぺぱーみんとのキャストは、みんと一人です。",
+    panels: [
+      { src: imgFileUrl("loading/mint-ranking-1.webp"), alt: "左: はじめがメニューを見て「人気一位は？」。右のみんとが自分を指して「みんとです♡」。" },
+      { src: imgFileUrl("loading/mint-ranking-2.webp"), alt: "みんとはウインク。はじめがメニューのミントとチョコの絵を指して「味の方です。」。" },
+    ],
+  },
+  {
+    id: "mint-service",
+    title: "甘さの接客",
+    cast: ["minto"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2246:mint-service）",
+    caption: "みんとの店は、接客も楽しみのひとつ。",
+    panels: [
+      { src: imgFileUrl("loading/mint-service-1.webp"), alt: "右のみんとが味のメニューを見せて「甘さ、足します？」。左のはじめが少し照れて「味の話ですよね？」。" },
+      { src: imgFileUrl("loading/mint-service-2.webp"), alt: "みんとが頬に指を当てて営業スマイルで「接客も甘め♡」。はじめは照れ笑い。" },
+    ],
+  },
+  {
+    id: "cake-apology",
+    title: "反省の向き",
+    cast: ["naru"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2246:cake-apology）",
+    caption: "失敗したお菓子にも、なるは誠実です。",
+    panels: [
+      { src: imgFileUrl("loading/cake-apology-1.webp"), alt: "なるがしぼんだスポンジケーキを前に「失敗した。」。左のはじめが「次がありますよ。」と励ます。" },
+      { src: imgFileUrl("loading/cake-apology-2.webp"), alt: "なるがスポンジケーキに向かって深々と頭を下げている。はじめ「謝る先そっち？」。" },
+    ],
+  },
+  {
+    id: "adam-photo-album",
+    title: "写真の主役",
+    cast: ["adam"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2258:adam-photo-album）",
+    caption: "アダムの旅行の思い出は、いつも同じ主役。",
+    panels: [
+      { src: imgFileUrl("loading/adam-photo-album-1.webp"), alt: "左: はじめがアダムのアルバムをのぞいて「旅行の写真です？」。右のアダムが満足げに「いい記録だ。」。" },
+      { src: imgFileUrl("loading/adam-photo-album-2.webp"), alt: "開いたアルバムの写真は、山も海も赤リンゴと青リンゴが主役。はじめ「全部リンゴだ。」。" },
+    ],
+  },
+  {
+    id: "restored-01",
+    title: "店、間違えた？",
+    cast: ["kumicho"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-01）",
+    caption: "強面の店主・りゅうじの店は、ちゃんとシーシャ屋です。",
+    panels: [
+      { src: imgFileUrl("loading/restored-01-1.webp"), alt: "重い扉を開けたはじめ「店、間違えた……」。白いチェックのスーツにサングラスのりゅうじが「苦手なもんはあるか。」。はじめ「えっ。」。" },
+      { src: imgFileUrl("loading/restored-01-2.webp"), alt: "りゅうじが果物の絵のメニューを広げて「フレーバーの話だ。」。はじめはほっとして「シーシャ屋だ……」。りゅうじ「ゆっくりしてけ。」。" },
+    ],
+  },
+  {
+    id: "restored-02",
+    title: "兄弟でも別",
+    cast: ["kumicho"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-02）",
+    caption: "吸い口は、一人ひとつが決まりです。",
+    panels: [
+      { src: imgFileUrl("loading/restored-02-1.webp"), alt: "りゅうじが重々しく小箱を差し出して「兄弟の盃だ。」。はじめは驚いている。" },
+      { src: imgFileUrl("loading/restored-02-2.webp"), alt: "箱の中には個包装の吸い口が二本。りゅうじ「吸い口は別な。」。はじめが笑って「そこは徹底。」。" },
+    ],
+  },
+  {
+    id: "restored-05",
+    title: "噂の本人",
+    cast: ["kumicho", "mashiro"],
+    contexts: ["craft"],
+    minChapter: 4,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-05）",
+    caption: "噂の「シガーマン」の正体は、本人だけが知らない。",
+    panels: [
+      { src: imgFileUrl("loading/restored-05-1.webp"), alt: "りゅうじが黒い煙の化け物を思い浮かべながら「シガーマン……化け物だ。」。はじめは聞き入っている。" },
+      { src: imgFileUrl("loading/restored-05-2.webp"), alt: "明るい喫茶店で、ましろが紅茶を手に震えて「こわいねぇ……」。ましろに「本人」の札が向いている。はじめ「……」。" },
+    ],
+  },
+  {
+    id: "restored-08",
+    title: "人気ナンバーワン",
+    cast: ["minto"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-08）",
+    caption: "ぺぱーみんとの持ちネタ、「人気No.1」。",
+    panels: [
+      { src: imgFileUrl("loading/restored-08-1.webp"), alt: "みんとが「人気No.1」の自分のポスターの前で「人気No.1♡」。はじめは感心して「おぉ…！」。" },
+      { src: imgFileUrl("loading/restored-08-2.webp"), alt: "キャスト紹介の壁には、みんとの写真が一枚だけ。はじめ「ほかのキャストは？」。みんとがウインクして「みんと♡」。" },
+    ],
+  },
+  {
+    id: "restored-12",
+    title: "香りの感想",
+    cast: ["rin"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-12）",
+    caption: "香りの感想を言葉にするのは、意外とむずかしい。",
+    panels: [
+      { src: imgFileUrl("loading/restored-12-1.webp"), alt: "凛がクリップボードとペンを差し出して「正直に書いてね。」。はじめは真剣に考えている。" },
+      { src: imgFileUrl("loading/restored-12-2.webp"), alt: "はじめが見せた紙には大きく「いい匂い」の一言。凛が頬杖をついて「語彙も貸そうか。」。" },
+    ],
+  },
+  {
+    id: "restored-13",
+    title: "サメ映画",
+    cast: ["samechan"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-13）",
+    caption: "サメちゃんは、サメ映画の時だけ少し強がり。",
+    panels: [
+      { src: imgFileUrl("loading/restored-13-1.webp"), alt: "ソファでサメ映画を見ながら、サメちゃんが王冠のサメのぬいぐるみを抱いて「怖くないのじゃ。」。隣のはじめはポップコーンを持って笑顔。" },
+      { src: imgFileUrl("loading/restored-13-2.webp"), alt: "サメちゃんはぬいぐるみで目を隠して震えている。「側近よ、目を開けろ。」。はじめは目を閉じたまま笑っている。" },
+    ],
+  },
+  {
+    id: "restored-15",
+    title: "本日の一杯",
+    cast: ["mukai_master"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-15）",
+    caption: "ムカイさんは、渋い見た目で甘いもの好き。",
+    panels: [
+      { src: imgFileUrl("loading/restored-15-1.webp"), alt: "帽子を目深にかぶったムカイさんが渋く「いつものを。」。注文を取るはじめ「はい。」。" },
+      { src: imgFileUrl("loading/restored-15-2.webp"), alt: "出てきたのはクマの顔のラテアート。ムカイさん「耳、大きめで。」。はじめはにこにこしている。" },
+    ],
+  },
+  {
+    id: "restored-17",
+    title: "似顔絵",
+    cast: ["tsumugi"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-17）",
+    caption: "つむぎの絵には、いつも少し遊び心があります。",
+    panels: [
+      { src: imgFileUrl("loading/restored-17-1.webp"), alt: "タブレットで絵を描くつむぎに、はじめが身を乗り出して「俺も描いて。」。" },
+      { src: imgFileUrl("loading/restored-17-2.webp"), alt: "つむぎが見せた絵は、はじめの帽子とパーカーの猫。はじめ「猫になった。」。つむぎ「似てます。」。" },
+    ],
+  },
+  {
+    id: "restored-18",
+    title: "儚い仕事人",
+    cast: ["hiyori"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-18）",
+    caption: "ひよりは、弱音を吐きながらも仕事が速い。",
+    panels: [
+      { src: imgFileUrl("loading/restored-18-1.webp"), alt: "ノートパソコンの前で、ひよりが頬杖をついて「私、壊れてしまいそう……」。はじめは心配そう。" },
+      { src: imgFileUrl("loading/restored-18-2.webp"), alt: "画面には「議事録」「経費」「引継ぎ」がすべて済みの印。ひより「全部、送信しました。」。はじめ「仕事は速い。」。" },
+    ],
+  },
+  {
+    id: "restored-19",
+    title: "見学だけ",
+    cast: ["sai"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-19）",
+    caption: "ボードゲームカフェの部活は、気づけば始まっています。",
+    panels: [
+      { src: imgFileUrl("loading/restored-19-1.webp"), alt: "ボードゲームカフェで、サイが穏やかに「見学だけでも。」。はじめ「はい！」。" },
+      { src: imgFileUrl("loading/restored-19-2.webp"), alt: "はじめはいつの間にか「部長」の腕章をつけ、ゲームの箱を抱えている。サイ「では、部長。」。はじめ「いつの間に？」。" },
+    ],
+  },
+  {
+    id: "restored-21",
+    title: "苦手なもの",
+    cast: ["kumicho"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-21）",
+    caption: "りゅうじは、客の苦手を絶対に出しません。",
+    panels: [
+      { src: imgFileUrl("loading/restored-21-1.webp"), alt: "はじめがりゅうじに「ミント、苦手で。」。りゅうじは手帳に書き留めている。" },
+      { src: imgFileUrl("loading/restored-21-2.webp"), alt: "店に「ミント出禁」の札。りゅうじが判を押して「徹底する。」。はじめ「国家？」。" },
+    ],
+  },
+  {
+    id: "restored-26",
+    title: "永久指名",
+    cast: ["adam"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-26）",
+    caption: "アダムのダブルアップル愛は、一生ものです。",
+    panels: [
+      { src: imgFileUrl("loading/restored-26-1.webp"), alt: "アダムが改まって招待状を差し出し「大事な報告だ。」。はじめは身構えている。" },
+      { src: imgFileUrl("loading/restored-26-2.webp"), alt: "結婚式場で、タキシードのアダムが赤リンゴと青リンゴに「生涯、これだけ。」。はじめ「相手、味？」。" },
+    ],
+  },
+  {
+    id: "restored-29",
+    title: "総選挙",
+    cast: ["minto"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-29）",
+    caption: "ぺぱーみんとの総選挙は、毎回大接戦。",
+    panels: [
+      { src: imgFileUrl("loading/restored-29-1.webp"), alt: "みんとが投票用紙を差し出して「総選挙だよ♡」。はじめは用紙を見ている。" },
+      { src: imgFileUrl("loading/restored-29-2.webp"), alt: "会場のポスターも候補も全部みんと。壇上のみんと「接戦でした♡」。客席のはじめ「相手、誰？」。" },
+    ],
+  },
+  {
+    id: "restored-32",
+    title: "あと一匹",
+    cast: ["ageha"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-32）",
+    caption: "あげはのぬいぐるみ集めは、止まりません。",
+    panels: [
+      { src: imgFileUrl("loading/restored-32-1.webp"), alt: "ぬいぐるみに囲まれた店で、あげはがピンクのクマを抱いて「あと一匹だけ♡」。はじめは困り顔。" },
+      { src: imgFileUrl("loading/restored-32-2.webp"), alt: "店がクマのぬいぐるみで埋まっている。はじめ「店がクマ。」。" },
+    ],
+  },
+  {
+    id: "restored-33",
+    title: "対策本部",
+    cast: ["kumicho", "mashiro"],
+    contexts: ["craft"],
+    minChapter: 4,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-33）",
+    caption: "シガーマン対策会議に、思わぬ参加者。",
+    panels: [
+      { src: imgFileUrl("loading/restored-33-1.webp"), alt: "りゅうじが黒い影の絵を指して「対策会議だ。」。はじめは真剣に聞いている。" },
+      { src: imgFileUrl("loading/restored-33-2.webp"), alt: "「シガーマン対策本部」に、怖がるましろが「僕も怖いよ〜。」。りゅうじ「先生、お願いします。」。ましろに「本人」の札が向いている。" },
+    ],
+  },
+  {
+    id: "restored-38",
+    title: "月曜の香り",
+    cast: ["rin"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-38）",
+    caption: "凛の香りの問題は、ときどき意地悪です。",
+    panels: [
+      { src: imgFileUrl("loading/restored-38-1.webp"), alt: "凛が細い試香紙を差し出して「何の香り？」。はじめは香りを確かめている。" },
+      { src: imgFileUrl("loading/restored-38-2.webp"), alt: "香りから月曜の会社の景色が浮かぶ。はじめ「月曜。」。凛「正解。」。" },
+    ],
+  },
+  {
+    id: "restored-39",
+    title: "少しだけ",
+    cast: ["naru"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-39）",
+    caption: "なるは、聞かれたら全部教えてくれる人。",
+    panels: [
+      { src: imgFileUrl("loading/restored-39-1.webp"), alt: "はじめがなるに「少しだけ教えて。」。なるがうれしそうにノートを開く。" },
+      { src: imgFileUrl("loading/restored-39-2.webp"), alt: "大学の講義室で、角帽のなるが黒板の前に立つ「ノート、持った？」。学生席のはじめ「入学してる。」。" },
+    ],
+  },
 ];
+
+/**
+ * 純粋関数。いま出せる漫画（章・場面・2コマの形・出てくるキャラ全員と会っているか）を返す。
+ * isMet を渡さなければキャラの条件は見ない（プレビュー用）。
+ */
+export function eligibleLoadingComics(comics, { context = "default", chapter = 1, isMet = null } = {}) {
+  return comics.filter(comic => comic && comic.id && comic.title &&
+    Number.isInteger(comic.minChapter) && comic.minChapter <= chapter &&
+    (!comic.contexts || comic.contexts.includes(context)) &&
+    comic.panels?.length === 2 &&
+    (!isMet || !Array.isArray(comic.cast) || comic.cast.every(id => isMet(id))));
+}

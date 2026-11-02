@@ -1,6 +1,7 @@
 // 第5章・機械仕掛けの神。帰郷後のプロローグ→自由行動→日程→試合当日→後日談→フィナーレまでを、場面単位で保存する。
 // 状態遷移は ch5-progress.js。ここは表示と再生だけを持つ。
 import { DB, bgUrl } from "../core/data.js";
+import { consultLessons } from "../core/growth.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
@@ -32,7 +33,7 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_S
   canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress, chapterFiveRead,
   chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
   beginChapterFiveMatch, chapterFiveMatchOutcome, chapterFiveVoteTally, CH5_FIRST_CUP_VOTES, recordChapterFiveSecondCup,
-  beginChapterFiveFinale, completeChapterFiveScene, CH5_LIME_MILESTONES, chapterFiveLimeDue,
+  chapterFiveEndingContext, beginChapterFiveFinale, completeChapterFiveScene, CH5_LIME_MILESTONES, chapterFiveLimeDue,
   chapterFiveCreditsPending, recordChapterFiveCredits } from "./ch5-progress.js";
 
 let session = null;
@@ -287,12 +288,19 @@ async function renderStage(owner) {
   return renderComplete(owner);
 }
 
+/** 読んだ後にその場にいる人へ、心得の盤で灯した授業を相談できる場面（SBD91。灯していなければ何も起きない） */
+const LESSON_AFTER_SCENE = Object.freeze({ ch5_doctor_after_match: "dr_kemuri" });
+
 async function renderScene(owner, scene, dayLabel) {
   await setBg(bgUrl(CH5_SCENE_BG[scene.id]), { instant: true });
   if (!current(owner)) return;
   card(owner, "scene", `${dayLabel ? `${dayLabel}・` : ""}${scene.label}`, `${scene.location}で、次の話を読む。`, [
     button(owner, "続きを読む", "continue", async () => {
       if (!await readAndCommit(owner, scene.id)) return;
+      // 勝負のあと、一緒に一台作った博士に相談する
+      const teacher = LESSON_AFTER_SCENE[scene.id];
+      if (teacher) await consultLessons(teacher, { bg: bgUrl(CH5_SCENE_BG[scene.id]) });
+      if (!current(owner)) return;
       await renderStage(owner);
     }, true),
   ], "", scene.id);
@@ -497,12 +505,11 @@ async function playLines(owner, id, lines) {
 async function renderFinale(owner) {
   let progress = chapterFiveProgress(state);
   if (!progress.finaleScenes) {
-    // ※仮置き（#517）: 恋人の所在・約束の供給元が未整備のため、捏造せず present/accepted は空で渡す。
-    // 中間は ending_normal になり、供給元ができたらこの呼び出しだけ差し替える。
+    // 恋人がちょうど1人なら中間がその人の後日談（epilogue_*）、それ以外は ending_normal（#517）。
     // 読み終えたらスタッフロール（renderStaffRoll）。その後の本格的な修羅場（Q20後段）は接続しない。
     const routes = await loadEndingRoutes();
     if (!current(owner)) return;
-    const scenes = selectStoryEnding(routes, state, { present: [], accepted: [] });
+    const scenes = selectStoryEnding(routes, state, chapterFiveEndingContext(routes, state));
     if (!beginChapterFiveFinale(state, scenes)) throw new Error("フィナーレを開始できません");
     save();
     progress = chapterFiveProgress(state);

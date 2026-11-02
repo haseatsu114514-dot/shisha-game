@@ -51,3 +51,25 @@
 .intro-fit-surface { position:absolute; inset:0; overflow:hidden; pointer-events:auto; }
 .cutin.intro-fitted { inset:auto; left:50%; top:50%; width:1280px; height:720px;
   transform:translate(-50%,-50%) scale(var(--intro-fit-scale,1)); transform-origin:center; }
+
+/* 立ち絵からカットインへの変身のつなぎ（intro-transition.js・2026-11-02 試作）。under はカットインの下、over は上 */
+.ci-transition { position:absolute; left:50%; top:50%; width:1280px; height:720px; transform:translate(-50%,-50%) scale(var(--k,1)); transform-origin:center; pointer-events:none; }
+.ci-transition.under { z-index:49; }
+.cutin.intro-fitted { z-index:50; }
+.ci-transition.over { z-index:51; }
+.ci-tr-dim { position:absolute; inset:-4px; background:#05070a; opacity:0; }
+.ci-tr-dim.desat { -webkit-backdrop-filter:saturate(.25) brightness(.85); backdrop-filter:saturate(.25) brightness(.85); }
+.ci-tr-sil { position:absolute; will-change:transform,opacity; -webkit-mask-size:100% 100%; mask-size:100% 100%; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; }
+.ci-tr-ink { position:absolute; inset:0; background:var(--tr-color); will-change:transform; }
+.ci-tr-edge { position:absolute; left:0; top:-200px; width:22px; height:1120px; transform-origin:50% 0; opacity:0; will-change:transform,opacity;
+  background:linear-gradient(90deg, transparent, var(--tr-secondary) 35%, #fff 55%, transparent); filter:drop-shadow(0 0 16px var(--tr-color)); }
+.ci-tr-persp { position:absolute; inset:0; perspective:1600px; }
+.ci-tr-card { position:absolute; transform-style:preserve-3d; will-change:transform,opacity; }
+.ci-tr-card .face { position:absolute; inset:0; overflow:hidden; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  border:3px solid var(--tr-color); box-shadow:0 0 0 1px #0009, 0 20px 48px #000b; background:#0d1420; }
+.ci-tr-card .face.back { transform:rotateY(180deg); }
+.ci-tr-card .face img { position:absolute; max-width:none; -webkit-user-drag:none; }
+/* つなぎの間、名前・帯・一言は animateIntro が始まるまで隠す */
+.cutin.ci-staged :is(.ci-ribbon,.ci-accent-line,.ci-quote-area) { opacity:0; }
+/* morph の形の変化（intro-shape-morph.js）。低解像度で描いて拡大する。光の縁で拡大のぼけを馴染ませる */
+.ci-tr-morph { position:absolute; image-rendering:auto; will-change:opacity; filter:drop-shadow(0 0 10px var(--tr-color)); }

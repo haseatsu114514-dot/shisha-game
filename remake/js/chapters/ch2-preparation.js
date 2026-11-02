@@ -4,19 +4,20 @@ import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 // 第2章の自由日。日常の消費・練習・保存・LIME・就寝は既存calendarを使う。
 import { DB, bgUrl } from "../core/data.js";
 import { state, save, markMet, timeOfDay } from "../core/state.js";
-import { addMoney, addStamina, earnStat, gainAffinity, affinityLevel } from "../core/stats.js";
+import { addMoney, addStamina, earnStat, gainAffinity, visitAffinity, affinityLevel } from "../core/stats.js";
 import { imageReady, setBg, toast, withScenePreparation } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
-import { allSpots, isClosed, VISIT_COST } from "../daily/spots.js";
+import { allSpots, isClosed, VISIT_COST, CHAR_STAT, VISIT_BG, bgRef, setChapterVisitDue, hasNewEvent } from "../daily/spots.js";
 import { setHiyoriExtraShops } from "../daily/hiyori.js";
-import { trpgSpot } from "../daily/trpg.js";
+import { trpgSpot, maybeRecruitTrpgMember } from "../daily/trpg.js";
 import { CITY_OUTINGS, CITY_SHOP, knownCityOutings, introduceCitySpot, outingDialogue, recordOutingVisit } from "./ch2-outings.js";
 import { offerAgehaPurikura } from "./ch2-purikura.js";
 import { openShop } from "../daily/shop.js";
 import { MAP, STOPS, ROOMS } from "./ch2-city-data.js";
 import { dayOneProgress, recordCityVisit } from "./ch2-progress.js";
-import { chapterTwoNights } from "./ch2-story.js";
+import { chapterTwoNights, storyVisitDue, readStoryVisit } from "./ch2-story.js";
+import { craftPrepDue, offerCraftPrep } from "./ch2-craft-prep.js";
 import { agehaStoryScene, syncAgehaVibes } from "./ch2-story-data.js";
 import { CH2_VISIT_STORIES, ch2VisitDone } from "../core/affinity-stages.js";
 import { BOND_QUESTIONS, BOND_FINALES, playQuestionVisit, questionVisitDue, finaleAtVisit, playFinale } from "../daily/bonds.js";
@@ -28,7 +29,9 @@ const stat = { ageha: "sense", kumicho: "guts", rei: "charm" };
 // 定休日の私的な誘いは daily/romance.js の dateSchedule に同じ曜日を書いている。
 export const CH2_CLOSED_ON = Object.freeze({ kumicho: 0, rei: 1 });
 // 通い訪問の小会話。初回相談と続編だけを前提にし、来店数で巡回する（#2027）
+// あげはの b〜d は ch2_ageha_story.json（VOL13）。大会の前後どちらに読んでも成り立つ話だけにする（出発前の準備期間でも読む）。
 const REPEAT_POOL = {
+  ageha: ["remake_ch2_ageha_repeat", "remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d"],
   kumicho: ["remake_ch2_kumicho_repeat", "remake_ch2_kumicho_repeat_b", "remake_ch2_kumicho_repeat_c", "remake_ch2_kumicho_repeat_d"],
   rei: ["remake_ch2_rei_repeat", "remake_ch2_rei_repeat_b", "remake_ch2_rei_repeat_c", "remake_ch2_rei_repeat_d"],
 };
@@ -70,7 +73,7 @@ async function loadRegularScenes() {
   await regularScenes;
 }
 
-/** 第5章の柚ヶ谷の店への来店。代金・体力・好感度+5・能力+4は第2章の通い訪問と同じ。 */
+/** 第5章の柚ヶ谷の店への来店。代金・体力・能力+4は第2章の通い訪問と同じ。好感度は第5章の通いの値（+5）。 */
 export async function visitCityRegular(spot, { staminaGuard }) {
   const id = spot.charId;
   if (spot.region !== "widehanga" || !CITY_REGULARS.includes(id) || !state.met[id]) return null;
@@ -100,12 +103,46 @@ export async function visitCityRegular(spot, { staminaGuard }) {
   talks[id] = (talks[id] || 0) + 1;
   state.visits[id] = (state.visits[id] || 0) + 1;
   markMet(id);
-  gainAffinity(id, 5); earnStat(stat[id], 4);
+  gainAffinity(id, visitAffinity("talk")); earnStat(stat[id], 4);
   if (state === owner) await consultLessons(id, { bg: ROOMS[id] });
   return { used: true, exerted: true };
 }
 
-async function visitPreparationSpot(spot, { staminaGuard }) {
+/**
+ * VOL13: 地元の店で読む第2章の本編（DAY7のアダム・DAY12の夜のみんと）。期限の夜の救済より前に、この来店の会話として読む。
+ * 料金・体力・能力は通常の来店と同じで、最後の場面まで読んでから精算する（中断・LOADでは何も残さない）。
+ * 必ず読む場面なので好感度は付けない（オーナー方針。夜に読む場合と同じ）。
+ * 本編の後に、隣町の客の一服やひよりの相席は重ねない（calendar の通常来店の後処理を通らない）。
+ */
+async function visitStoryAtHome(spot, night, { staminaGuard }) {
+  const id = spot.charId;
+  if (isClosed(spot) || spendableMoney(state) < (spot.cost || 0)) return { used: false, exerted: false };
+  if (!(await staminaGuard(spot.stamina)) || isClosed(spot)) return { used: false, exerted: false };
+  const owner = state, bg = bgRef(VISIT_BG[id]);
+  const read = async (scene, opts) => {
+    const result = await play(scene, opts);
+    return state === owner && !!result && !result.cancelled;
+  };
+  if (!await readStoryVisit(night, { read, bg }) || state !== owner) return { used: false, exerted: false };
+  addMoney(-(spot.cost || 0)); addStamina(spot.stamina || -16);
+  state.visits[id] = (state.visits[id] || 0) + 1;
+  state.flags[`_spot_guide_${id}`] = true;
+  markMet(id);
+  earnStat(CHAR_STAT[id], 4);
+  if (state === owner) await consultLessons(id, { bg });
+  return { used: true, exerted: true };
+}
+
+/**
+ * 柚ヶ谷の店・支店・外出先への来店（第2章と、第3・4章の出発前の準備期間 chapters/departure-prep.js）。
+ * 第2章の地元の店で読む本編（VOL13）も、ここで先に受け持つ（第2章だけ）。
+ */
+export async function visitPreparationSpot(spot, { staminaGuard }) {
+  const storyVisit = spot.kind === "rival" && (spot.region || "home") === "home" ? storyVisitDue(state, spot.charId) : null;
+  if (storyVisit) return visitStoryAtHome(spot, storyVisit, { staminaGuard });
+  // 第2章の大会準備で一台作る（VOL13・ch2-craft-prep.js）。「いつものtonari」なら通常の tonari メニューへ（null）。
+  const craftPrep = spot.kind === "tonari" ? craftPrepDue(state) : null;
+  if (craftPrep) return offerCraftPrep(craftPrep, { staminaGuard, bg: bgRef("bg_tonari_inside") });
   if (spot.region !== "widehanga") return null;
   if (!(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
   const owner = state, id = spot.charId;
@@ -180,7 +217,9 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
     const result = await play(scene, stage && !stage.done ? { bg: ROOMS[id] } : undefined);
     if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
   }
-  const discovered = CITY_OUTINGS.find(item => item.introducedBy === id);
+  // 街の遊び場の紹介は、第2章でその店へ初めて通った回の最後に一度だけ（VOL13）。
+  // 第3・4章の出発前の準備期間では読まない（紹介の記録が付かず、毎回読み直しになるため）。
+  const discovered = state.chapter === 2 ? CITY_OUTINGS.find(item => item.introducedBy === id) : null;
   if (discovered && !state.flags[discovered.flag]) {
     const introduction = await play(discovered.introduction);
     if (state !== owner || !introduction || introduction.cancelled) return { used: false, exerted: false };
@@ -207,15 +246,21 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   if (state.flags[`_lime_contact_${id}`] && !state.contacts.includes(id)) state.contacts.push(id);
   // あげはの交換後LIME（lime_ch2_ageha_after_visit）と旧セーブ互換の到達フラグ
   if (id === "ageha" && state.flags._lime_contact_ageha) state.flags._ch2_ageha_contact = true;
-  // 神崎・REIの長い段階会話と締めくくりは、第1章の固有会話と同じ+10（#2027）。
-  gainAffinity(id, first || finale || stages && stage?.file ? 10 : 5); earnStat(stat[id], 4);
+  // 神崎・REIの長い段階会話・あげはの店に通う回（VOL06）・締めくくりは、第1章の固有会話と同じ（#2027）。
+  // 値は core/stats.js の visitAffinity（段階 +16・いつもの会話 +8。第5章は +10／+5。AFB01）。
+  gainAffinity(id, visitAffinity(first || finale || story || stages && stage?.file ? "story" : "talk")); earnStat(stat[id], 4);
   // 心得の盤で灯した授業があれば、その店で相談して習う（SBD61: 会った時だけ）
   if (state === owner) await consultLessons(id, { bg: ROOMS[id] });
+  // 部活の勧誘（REI・あげは）も地元の訪問と同じく、会えた後にだけ。入部は暦の精算と一緒に保存する。
+  if (state === owner) await maybeRecruitTrpgMember(id);
   return { used: true, exerted: true };
 }
 
 export async function runChapterTwoPreparation() {
   setHiyoriExtraShops(() => state.chapter === 2 ? PREPARATION_SPOTS : []);
+  // 地図の「！」: 地元の店で読める第2章の本編（VOL13）。tonariの大会準備は地図の tonari の hasNew で出す
+  // （スミさんの固有会話の「！」には混ぜない。シフト上がりの会話が変わってしまうため）
+  setChapterVisitDue(charId => !!storyVisitDue(state, charId));
   normalizeCommuteState(state);
   const startDay = dayOneProgress(state).startDay;
   // 現行の卓は通常シフト後に集まれる。準備開始だけで旧DAY8の空き予定を追加しない。
@@ -235,7 +280,8 @@ export async function runChapterTwoPreparation() {
     mapOptions: () => ({
       regionId: state.flags._ch2_region,
       regions: [
-        { id: "home", label: `地元・${HOME_CITY_NAME}`, background: () => bgUrl(`bg_osu_map_${timeOfDay()}`), spots: () => allSpots().filter(spot => spot.kind !== "trpg") },
+        { id: "home", label: `地元・${HOME_CITY_NAME}`, background: () => bgUrl(`bg_osu_map_${timeOfDay()}`), spots: () => allSpots().filter(spot => spot.kind !== "trpg")
+          .map(spot => spot.kind === "tonari" ? { ...spot, hasNew: () => !!craftPrepDue(state) || hasNewEvent(spot) } : spot) },
         { id: "widehanga", label: `隣町・${CH2_CITY_NAME}`, background: () => MAP[timeOfDay()], spots: () => [...PREPARATION_SPOTS, CITY_SHOP, ...knownCityOutings(state).filter(spot => spot.kind !== "trpg"), trpgSpot()].filter(Boolean) },
       ],
       onRegionChange: id => { state.flags._ch2_region = id; save(); },

@@ -2,6 +2,18 @@
 
 > 2026-11-02 に `remake/README.md` から移した。新しい節が上。実装は `remake/css/`・`remake/js/`、採用記録は `docs/owner_requests.md`（CUI・DUI・GUI）。
 
+## 2026-11-02 全画面MENU（4タブ）
+
+設計 [daily-ui-menu-design.md](../design/daily-ui-menu-design.md) §4 の段階P2。台帳は `docs/owner_requests.md` の MN01〜08（DUI03〜05）。
+
+- 入口は日常パート（`daily/calendar.js` の `runDaily`）の HUD の MENU。`daily/menu.js` の `openMenu({ tab, canSave, current, leave })` が4タブの全画面を開き、選んだシステムの操作（セーブ・ロード・設定・用語集・大会の規則・タイトルへ戻る・心得の盤）まで行う。日常は `canSave: isChoosingDestination`（手動セーブとタイトル前の保存は地図で行き先を選んでいる時だけ・#638）。
+- タブ: ステータス（盤を使う時は Lv・EXP・火種・3盤の横ゲージ、盤の公開前は旧5能力の段と呼称。グラフは出さない）／人間関係（1人1行、タップで思い出・次の進め方・贈り物）／持ち物（フレーバー・機材・遊びの道具・レシピ帳・試したい配合・記念品）／システム。人の並びと贈り物の札・レシピの詳細は `daily/status.js` と共有する。
+- 保存データは読むだけ。HUD の五角形のステータスボタンは廃止し、火種の印は MENU の右上（`hud.js`）。能力アップの通知の光（`core/ui.js` の `flyStatGain`）と寝る前の火種の粒（`levelup.js`）も MENU へ飛ぶ。旧STATUS画面 `openStatus` は第2章の配達地図のMENUが使うので残している。
+- 見た目は `css/daily-menu.css`。どのUIテーマでも紙×ラベンダー＋琥珀。紙は生成画像 `assets/ui/paper/menu-bg.png` を `remake/tools/build_ui_skin.py`（`build_menu_bg`）で 1536×838 の `img/ui/paper/menu-bg.webp` にしたもの（上の枠線と左下のシーシャ台の絵はそのまま、無地の中ほどだけ縦に詰める）。1280×720 の舞台に 1232×672 で置き、タブの帯と枠線の位置を絵に合わせる。絵が読めない時も同じ色の紙と帯で開く。
+- DS風は絵を引き伸ばさず、上下2画面ぶん（横持ちは左右2画面ぶん）の紙と線で描く。縦持ちはタブを下の帯に4つ、横持ちは左の帯。MENU を開いている間はヒンジの「表示」を隠す。
+- キー: 地図で行き先を選んでいる間は M で開く。MENU の中は M・Esc で閉じる（レシピの詳細・チェキの拡大を開いている時は Esc でそれだけ閉じる）、1〜4・Q/E・タブ上の矢印でタブを移る。
+- 検証: `node remake/test/browser/daily_menu.mjs`（4タブ・読むだけ・キー・レシピとチェキの戻り方・盤の入口・手動セーブの可否・1280×720／横持ちタッチ／DS縦 390×844・320×568）。MENUを経由する既存の回帰（`save_load`・`ds_overlay_layers`・`growth_levelup`・`lime_badge`・`game_layout` など）はシステムタブを選んでから押す。
+
 ## 第1〜2章の斧投げ・TRPG・くじ・ギャラリーも紙とラベンダーへ
 
 既定の `paper` テーマでは、斧投げの入口・得点・操作・レッスン・ルールと、TRPGの本棚・部活・会話・座席・相談・ダイスを日常の紙×ラベンダー＋琥珀へ揃える。斧投げは `css/axe-throw.css`、TRPGは `css/trpg-paper.css`（`trpg.css` から読込）で上書きし、他の6テーマには適用しない。単独の斧投げ・TRPG試遊ページも同じ紙テーマを使い、プレイヤーの設定は書き換えない。

@@ -1,0 +1,3476 @@
+{
+  "id": "purikura-hero",
+  "version": 1,
+  "title": "盛れない勇者と、プリ帳の魔王",
+  "subtitle": "きらめき王国と、盛りを盗む魔王",
+  "author": "春風もも",
+  "collection": "船灯文庫・小さな卓の冒険 12",
+  "duration": "約10分",
+  "premise": "撮影城の魔王プリズマが、撮った者の『盛り』を盗むようになった。きらめき王国は、すっかり盛れない国に。自称『盛れない勇者』と仲間たちは、魔王の本当の願いを探しに城へ向かう。",
+  "fiction": {
+    "kingdom": "きらめき王国",
+    "place": "王国の広場と撮影城",
+    "demonKing": "魔王プリズマ",
+    "photographer": "写真屋のおじいさん",
+    "guard": "無表情ゴーレム"
+  },
+  "cast": [
+    {
+      "id": "samechan",
+      "part": "GM",
+      "role": "案内と、写真屋のおじいさん",
+      "color": "#73b8df"
+    },
+    {
+      "id": "hajime",
+      "part": "PLAYER",
+      "role": "{pc}／見習い勇者",
+      "color": "#89bbc4",
+      "ability": "もう一枚だけ！",
+      "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
+      "abilityType": "reroll",
+      "sheet": {
+        "name": "ルクス",
+        "title": "見習い勇者",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 4,
+          "nerve": 2
+        },
+        "trait": "まじめで素直。写真を撮ると、なぜか毎回目をつぶる"
+      }
+    },
+    {
+      "id": "ageha",
+      "part": "PLAYER",
+      "role": "{pc:ageha}／盛れない勇者",
+      "color": "#ff8fc8",
+      "ability": "神デコの手",
+      "abilityText": "撮影の支度をするとき、判定に一度だけ＋7",
+      "abilityType": "prepare",
+      "sheet": {
+        "name": "ラブリ",
+        "title": "盛れない勇者",
+        "stats": {
+          "eye": 2,
+          "hand": 4,
+          "talk": 3,
+          "nerve": 2
+        },
+        "trait": "伝説の勇者の子孫。魔王に撮られてから、何を撮っても盛れない",
+        "likes": "白と赤のグミベア。プリ帳をデコる夜",
+        "portrait": "../../img/ui/trpg/pc-lovely.webp"
+      }
+    },
+    {
+      "id": "rei",
+      "part": "PLAYER",
+      "role": "{pc:rei}／黒衣の吟遊詩人",
+      "color": "#b0102a",
+      "ability": "黒薔薇のフィナーレ",
+      "abilityText": "魔王の前でポーズを決めるとき、判定に一度だけ＋7",
+      "abilityType": "serve",
+      "sheet": {
+        "name": "ノクターン",
+        "title": "黒衣の吟遊詩人",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 2,
+          "nerve": 4
+        },
+        "trait": "薔薇を一輪携えた、夜の歌い手。人前だと声が小さい",
+        "likes": "薔薇の香り。夜に開く花の歌",
+        "portrait": "../../img/ui/trpg/pc-nocturne.webp"
+      }
+    }
+  ],
+  "intro": "trpg_purikura_hero_intro",
+  "listen": "trpg_purikura_hero_listen",
+  "checks": {
+    "listen": {
+      "title": "おじいさんの話を聞く",
+      "hint": "宣言した勇者の能力で判定。結果にかかわらず、写真屋への質問へ進みます。",
+      "success": "trpg_purikura_hero_listen_success",
+      "mixed": "trpg_purikura_hero_listen_mixed",
+      "trouble": "trpg_purikura_hero_listen_trouble",
+      "approaches": [
+        {
+          "id": "listen_talk",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "おじいさんの隣で、話を聞く",
+          "detail": "{pc}がおじいさんの隣に座り、色あせた写真を一緒に眺める",
+          "declare": "trpg_purikura_hero_declare_listen_talk"
+        },
+        {
+          "id": "listen_gummy",
+          "actor": "ageha",
+          "sheet": "ageha",
+          "stat": "talk",
+          "label": "グミを配って、場を明るくする",
+          "detail": "{pc:ageha}が白と赤のグミを配り、気楽な話から入る",
+          "declare": "trpg_purikura_hero_declare_listen_gummy"
+        },
+        {
+          "id": "listen_watch",
+          "actor": "rei",
+          "sheet": "rei",
+          "stat": "eye",
+          "label": "広場の様子を、黙って見て回る",
+          "detail": "{pc:rei}が外套の陰から、広場と空をじっと見渡す",
+          "declare": "trpg_purikura_hero_declare_listen_watch"
+        }
+      ]
+    },
+    "prepare": {
+      "title": "撮影の支度をする",
+      "hint": "宣言した勇者の能力で判定。選んだデコ道具と照明で、撮影の間を整えます。",
+      "success": "trpg_purikura_hero_prepare_success",
+      "mixed": "trpg_purikura_hero_prepare_mixed",
+      "trouble": "trpg_purikura_hero_prepare_trouble",
+      "helper": "ageha",
+      "approaches": [
+        {
+          "id": "prepare_light",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "hand",
+          "label": "説明書どおりに、照明を組む",
+          "detail": "{pc}が説明書を見ながら、照明を撮影の間に運びこむ",
+          "declare": "trpg_purikura_hero_declare_prepare_light"
+        },
+        {
+          "id": "prepare_deco",
+          "actor": "ageha",
+          "sheet": "ageha",
+          "stat": "hand",
+          "label": "神業のデコで、撮影の間を飾る",
+          "detail": "{pc:ageha}がデコ道具を広げ、撮影の間をきらきらに飾りつける",
+          "declare": "trpg_purikura_hero_declare_prepare_deco"
+        },
+        {
+          "id": "prepare_angle",
+          "actor": "rei",
+          "sheet": "rei",
+          "stat": "eye",
+          "label": "いちばん映える光を探す",
+          "detail": "{pc:rei}が鏡の角度を変えながら、光の向きを確かめる",
+          "declare": "trpg_purikura_hero_declare_prepare_angle"
+        }
+      ]
+    },
+    "serve": {
+      "title": "魔王の前で、決めポーズ",
+      "hint": "宣言した勇者の能力で判定。どの出目でも結末へ進みます。",
+      "success": "trpg_purikura_hero_serve_success",
+      "mixed": "trpg_purikura_hero_serve_mixed",
+      "trouble": "trpg_purikura_hero_serve_trouble",
+      "helper": "rei",
+      "approaches": [
+        {
+          "id": "serve_call",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "魔王に、一緒に写ろうと声をかける",
+          "detail": "{pc}がカメラの前に立ち、選んだポーズで魔王を誘う",
+          "declare": "trpg_purikura_hero_declare_serve_call"
+        },
+        {
+          "id": "serve_hero",
+          "actor": "ageha",
+          "sheet": "ageha",
+          "stat": "talk",
+          "label": "勇者の名乗りで、撮影を盛り上げる",
+          "detail": "{pc:ageha}が剣を掲げ、撮影の間いっぱいに名乗りを上げる",
+          "declare": "trpg_purikura_hero_declare_serve_hero"
+        },
+        {
+          "id": "serve_rose",
+          "actor": "rei",
+          "sheet": "rei",
+          "stat": "nerve",
+          "label": "外套を翻し、全力の決めポーズ",
+          "detail": "{pc:rei}が薔薇を掲げ、誰より大きく決めポーズを取る",
+          "declare": "trpg_purikura_hero_declare_serve_rose"
+        }
+      ]
+    },
+    "twist": {
+      "title": "無表情ゴーレムを切り抜ける",
+      "hint": "宣言した勇者の能力で判定。どの出目でも物語は続きます。",
+      "success": "trpg_purikura_hero_twist_success",
+      "mixed": "trpg_purikura_hero_twist_mixed",
+      "trouble": "trpg_purikura_hero_twist_trouble",
+      "approaches": [
+        {
+          "id": "twist_face",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "門の前で、ゴーレムと向き合う",
+          "detail": "{pc}が両手を広げ、大きな門番の前へ一歩出る",
+          "declare": "trpg_purikura_hero_declare_twist_face"
+        },
+        {
+          "id": "twist_cheer",
+          "actor": "ageha",
+          "sheet": "ageha",
+          "stat": "talk",
+          "label": "名乗りを上げて、門番を盛り上げる",
+          "detail": "{pc:ageha}が勇者の名乗りを上げ、ゴーレムにも笑顔を向ける",
+          "declare": "trpg_purikura_hero_declare_twist_cheer"
+        },
+        {
+          "id": "twist_petal",
+          "actor": "rei",
+          "sheet": "rei",
+          "stat": "hand",
+          "label": "薔薇の花びらで、目をくらます",
+          "detail": "{pc:rei}が外套を翻し、薔薇の花びらを門の前に舞わせる",
+          "declare": "trpg_purikura_hero_declare_twist_petal"
+        }
+      ]
+    }
+  },
+  "spots": [
+    {
+      "id": "plaza",
+      "label": "王国の広場",
+      "short": "広場",
+      "x": 24,
+      "y": 60
+    },
+    {
+      "id": "showcase",
+      "label": "写真屋のショーケース",
+      "short": "写真屋",
+      "x": 12,
+      "y": 26
+    },
+    {
+      "id": "sign",
+      "label": "城門の看板",
+      "short": "城門",
+      "x": 57,
+      "y": 36
+    },
+    {
+      "id": "mirror",
+      "label": "撮影城の鏡の間",
+      "short": "鏡の間",
+      "x": 86,
+      "y": 26
+    },
+    {
+      "id": "purikura",
+      "label": "落とし物のプリ",
+      "short": "落とし物",
+      "x": 41,
+      "y": 86
+    },
+    {
+      "id": "throne",
+      "label": "魔王の玉座",
+      "short": "玉座",
+      "x": 62,
+      "y": 16
+    }
+  ],
+  "consult": {
+    "ageha": "trpg_purikura_hero_consult_ageha",
+    "rei": "trpg_purikura_hero_consult_rei"
+  },
+  "hypotheses": [
+    {
+      "id": "friend",
+      "label": "一緒に写る友達が、欲しかったのかも",
+      "description": "人を撮るのは、会いに行く口実。本当は、誰かと並んで写りたい。",
+      "discussion": "trpg_purikura_hero_discuss_friend"
+    },
+    {
+      "id": "pose",
+      "label": "自分の写りに、自信がないのかも",
+      "description": "みんなの盛りを借りて、自分を盛って写ろうとしている。",
+      "discussion": "trpg_purikura_hero_discuss_pose"
+    },
+    {
+      "id": "album",
+      "label": "なくしたプリ帳を、探しているのかも",
+      "description": "昔なくした思い出のプリ帳を、人を撮りながら探している。",
+      "discussion": "trpg_purikura_hero_discuss_album"
+    }
+  ],
+  "preparation": "trpg_purikura_hero_preparation",
+  "serving": "trpg_purikura_hero_serving",
+  "options": {
+    "deco": [
+      {
+        "id": "stamp",
+        "label": "スタンプ",
+        "description": "キラキラの型を、ぽんと押して飾る。",
+        "response": "trpg_purikura_hero_choice_deco_stamp"
+      },
+      {
+        "id": "pen",
+        "label": "ペン",
+        "description": "写真に、文字や絵を手書きで描きこむ。",
+        "response": "trpg_purikura_hero_choice_deco_pen"
+      },
+      {
+        "id": "sticker",
+        "label": "シール",
+        "description": "プリ帳に貼れる、交換用のシール。",
+        "response": "trpg_purikura_hero_choice_deco_sticker"
+      }
+    ],
+    "light": [
+      {
+        "id": "ring",
+        "label": "リングライト",
+        "description": "顔を明るく、きれいに照らす輪の灯り。",
+        "response": "trpg_purikura_hero_choice_light_ring"
+      },
+      {
+        "id": "moon",
+        "label": "月明かり",
+        "description": "窓を開けて、やわらかな月の光を入れる。",
+        "response": "trpg_purikura_hero_choice_light_moon"
+      },
+      {
+        "id": "fireworks",
+        "label": "花火",
+        "description": "城の空に、ぱっと大輪の花火を上げる。",
+        "response": "trpg_purikura_hero_choice_light_fireworks"
+      }
+    ],
+    "pose": [
+      {
+        "id": "heart",
+        "label": "ハートを作る",
+        "description": "二人で半分ずつ、手でハートを作る。",
+        "response": "trpg_purikura_hero_choice_pose_heart"
+      },
+      {
+        "id": "peace",
+        "label": "ピース",
+        "description": "誰でもできる、基本のピースサイン。",
+        "response": "trpg_purikura_hero_choice_pose_peace"
+      },
+      {
+        "id": "shark",
+        "label": "サメのポーズ",
+        "description": "両手を頭の上に立てて、ヒレを作る。",
+        "response": "trpg_purikura_hero_choice_pose_shark"
+      }
+    ],
+    "tactic": [
+      {
+        "id": "laugh",
+        "label": "笑わせる",
+        "description": "変顔とギャグで、無表情を崩す。",
+        "response": "trpg_purikura_hero_choice_tactic_laugh"
+      },
+      {
+        "id": "photo",
+        "label": "一緒に写真を撮る",
+        "description": "門番と並んで、記念の一枚を撮ろうと誘う。",
+        "response": "trpg_purikura_hero_choice_tactic_photo"
+      },
+      {
+        "id": "sneak",
+        "label": "こっそり隠れて進む",
+        "description": "堀のサメの背に隠れて、門をくぐる。",
+        "response": "trpg_purikura_hero_choice_tactic_sneak"
+      }
+    ]
+  },
+  "profiles": [
+    {
+      "id": "friend",
+      "ending": "one-shot",
+      "arrival": "魔王は毎日だれかを撮りに来る。撮り終えると、いつも寂しそうに帰っていくのじゃ",
+      "likes": {
+        "deco": [
+          "sticker"
+        ],
+        "light": [
+          "fireworks"
+        ],
+        "pose": [
+          "heart"
+        ]
+      },
+      "evidence": {
+        "plaza": {
+          "title": "一人分の隙間",
+          "text": "魔王の撮った写真は、どれも写る人の隣が一人分だけ空いている。",
+          "lines": "trpg_purikura_hero_friend_plaza"
+        },
+        "showcase": {
+          "title": "花火の夜の角",
+          "text": "撮影祭りの花火の夜の集合写真。屋根の上に、魔王の角の先だけが写りこんでいる。",
+          "lines": "trpg_purikura_hero_friend_showcase"
+        },
+        "sign": {
+          "title": "書き直した貼り紙",
+          "text": "城門に『撮影会、参加者募集』の貼り紙。『一名さまから大歓迎』だけ何度も書き直してある。",
+          "lines": "trpg_purikura_hero_friend_sign"
+        },
+        "mirror": {
+          "title": "鏡の練習",
+          "text": "鏡に指でなぞった字。『一緒に撮ろう』を何度も練習した跡がある。",
+          "lines": "trpg_purikura_hero_friend_mirror"
+        },
+        "purikura": {
+          "title": "半分のハート",
+          "text": "魔王が一人で写ったプリ。手で作ったハートが、半分だけ。",
+          "lines": "trpg_purikura_hero_friend_purikura"
+        },
+        "throne": {
+          "title": "交換ゼロのシール帳",
+          "text": "玉座の横に空っぽのシール帳。表紙に『プリ交換：0枚』とある。",
+          "lines": "trpg_purikura_hero_friend_throne"
+        }
+      },
+      "answers": {
+        "when": {
+          "title": "撮影祭りの夜",
+          "text": "盛りが消え始めたのは、ひと月前の撮影祭りの夜。魔王は屋根から一人で見ていた。",
+          "lines": "trpg_purikura_hero_ask_friend_when"
+        },
+        "prisma": {
+          "title": "『また来る』の魔王",
+          "text": "魔王は撮り終えると、必ず『また来る』と言って帰る。",
+          "lines": "trpg_purikura_hero_ask_friend_prisma"
+        },
+        "camera": {
+          "title": "隣を空けるカメラ",
+          "text": "撮ると盛りを吸う魔法のカメラ。魔王は撮るたび隣を空けて、しばらく待つ。",
+          "lines": "trpg_purikura_hero_ask_friend_camera"
+        },
+        "shop": {
+          "title": "二人用のプリ",
+          "text": "魔王は一度、二人用のプリを撮りに来た。連れがいないと気づき、黙って帰った。",
+          "lines": "trpg_purikura_hero_ask_friend_shop"
+        }
+      }
+    },
+    {
+      "id": "pose",
+      "ending": "own-sparkle",
+      "arrival": "魔王は人を撮るばかりで、自分は決して写らん。撮られそうになると、逃げるのじゃ",
+      "likes": {
+        "deco": [
+          "pen"
+        ],
+        "light": [
+          "ring"
+        ],
+        "pose": [
+          "peace"
+        ]
+      },
+      "evidence": {
+        "plaza": {
+          "title": "写らない魔王",
+          "text": "魔王の写真はどれも見事な構図。けれど魔王本人は、一枚も写っていない。",
+          "lines": "trpg_purikura_hero_pose_plaza"
+        },
+        "showcase": {
+          "title": "影だけの証明写真",
+          "text": "魔王の証明写真の失敗作。灯りが足りず、角の影しか写っていない。",
+          "lines": "trpg_purikura_hero_pose_showcase"
+        },
+        "sign": {
+          "title": "盛りすぎた似顔絵",
+          "text": "城門の看板の魔王の似顔絵は、盛りに盛って描き直され、原形がない。",
+          "lines": "trpg_purikura_hero_pose_sign"
+        },
+        "mirror": {
+          "title": "ポーズの練習帳",
+          "text": "鏡の前にポーズの練習帳。『ピース、指の角度が分からん』『笑顔、失敗』。",
+          "lines": "trpg_purikura_hero_pose_mirror"
+        },
+        "purikura": {
+          "title": "真っ白な落書き欄",
+          "text": "魔王のプリ。どのコマも手で顔を隠し、落書きの欄は真っ白。",
+          "lines": "trpg_purikura_hero_pose_purikura"
+        },
+        "throne": {
+          "title": "盛りの小瓶",
+          "text": "玉座の横に、盗んだ盛りの小瓶。『目の輝き』『笑顔』と書いてある。",
+          "lines": "trpg_purikura_hero_pose_throne"
+        }
+      },
+      "answers": {
+        "when": {
+          "title": "悲鳴の日",
+          "text": "魔王が初めて自分を撮った日、城から悲鳴が聞こえた。その日から盛りが消え始めた。",
+          "lines": "trpg_purikura_hero_ask_pose_when"
+        },
+        "prisma": {
+          "title": "背中しか写らない",
+          "text": "立派な角の魔王。なのに写真には、いつも背中しか写らない。",
+          "lines": "trpg_purikura_hero_ask_pose_prisma"
+        },
+        "camera": {
+          "title": "小瓶に詰めた盛り",
+          "text": "カメラで吸った盛りは小瓶に詰め、撮影の前に自分の顔に塗っているらしい。",
+          "lines": "trpg_purikura_hero_ask_pose_camera"
+        },
+        "shop": {
+          "title": "飛び出した客",
+          "text": "魔王は昔、証明写真を撮りに来て、出来上がりを見るなり店を飛び出した。",
+          "lines": "trpg_purikura_hero_ask_pose_shop"
+        }
+      }
+    },
+    {
+      "id": "album",
+      "ending": "album-home",
+      "arrival": "魔王は撮った写真を見比べては、『違う』とつぶやいて帰っていくのじゃ",
+      "likes": {
+        "deco": [
+          "stamp"
+        ],
+        "light": [
+          "moon"
+        ],
+        "pose": [
+          "shark"
+        ]
+      },
+      "evidence": {
+        "plaza": {
+          "title": "『違う』の書きこみ",
+          "text": "魔王の写真の端に『違う』『これも違う』の書きこみ。誰かの顔を探している。",
+          "lines": "trpg_purikura_hero_album_plaza"
+        },
+        "showcase": {
+          "title": "日に焼けた札",
+          "text": "棚の隅に、サメのスタンプの古いプリ帳。『落とし物・持ち主求む』の札が日に焼けている。",
+          "lines": "trpg_purikura_hero_album_showcase"
+        },
+        "sign": {
+          "title": "探し物の貼り紙",
+          "text": "城門に『探し物、あります。古いプリ帳』の貼り紙。",
+          "lines": "trpg_purikura_hero_album_sign"
+        },
+        "mirror": {
+          "title": "白紙の二冊目",
+          "text": "鏡の前に真新しいプリ帳『なかよし帳・二冊目』。白紙で、最後のページにだけ『月の夜に、またみんなで』。",
+          "lines": "trpg_purikura_hero_album_mirror"
+        },
+        "purikura": {
+          "title": "サメのポーズのプリ",
+          "text": "古いプリの切れ端。小さな角の子と仲間が、サメのポーズで笑っている。",
+          "lines": "trpg_purikura_hero_album_purikura"
+        },
+        "throne": {
+          "title": "肘かけのスタンプ",
+          "text": "玉座の肘かけに、かすれたサメのスタンプと『みんなで、また撮る』の文字。",
+          "lines": "trpg_purikura_hero_album_throne"
+        }
+      },
+      "answers": {
+        "when": {
+          "title": "大掃除の日",
+          "text": "ひと月前の城の大掃除の日から。魔王は何かを探して、城じゅうをひっくり返した。",
+          "lines": "trpg_purikura_hero_ask_album_when"
+        },
+        "prisma": {
+          "title": "『この顔ではない』",
+          "text": "魔王は撮った写真を並べ、『この顔ではない』とつぶやいている。",
+          "lines": "trpg_purikura_hero_ask_album_prisma"
+        },
+        "camera": {
+          "title": "白紙を埋める盛り",
+          "text": "カメラで吸った盛りで、魔王は白紙の帳面を埋めようとしている。",
+          "lines": "trpg_purikura_hero_ask_album_camera"
+        },
+        "shop": {
+          "title": "小さな角の子",
+          "text": "昔、小さな角の子が仲間と毎週プリを撮りに来ていた。よく笑う子だった。",
+          "lines": "trpg_purikura_hero_ask_album_shop"
+        }
+      }
+    }
+  ],
+  "endings": {
+    "one-shot": {
+      "title": "魔王と一枚",
+      "line": "魔王が欲しかったのは、盛りではなく隣で笑う誰か。並んで撮った一枚から、王国じゅうに盛りが戻った。",
+      "dialogue": "trpg_purikura_hero_ending_one-shot"
+    },
+    "own-sparkle": {
+      "title": "盛れた魔王",
+      "line": "借り物の盛りを返した魔王は、照れた自分の笑顔がいちばん盛れると知った。",
+      "dialogue": "trpg_purikura_hero_ending_own-sparkle"
+    },
+    "album-home": {
+      "title": "戻ってきたプリ帳",
+      "line": "写真屋の棚で待っていたプリ帳が、持ち主の元へ。魔王は盛りを返し、白紙の次のページに今日を貼った。",
+      "dialogue": "trpg_purikura_hero_ending_album-home"
+    },
+    "party": {
+      "title": "みんなで撮影会",
+      "line": "思い描いた形ではなかったけれど、撮影会は大盛り上がり。盛りは一枚ごとに、王国へ戻っていった。",
+      "dialogue": "trpg_purikura_hero_ending_party"
+    }
+  },
+  "epilogue": "trpg_purikura_hero_epilogue",
+  "dialogues": [
+    {
+      "dialogue_id": "trpg_purikura_hero_session_zero_open",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "冒険の前に、キャラ作りじゃ。勇者たちよ、役は決まったかの？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_session_zero_close",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "俺は{pc}。{pcTitle}でいく"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "勇者はそろったのじゃ。では、きらめき王国へ出発じゃ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_make_ageha_ageha_lovely",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "うちの役はラブリ！ 伝説の勇者の子孫で、自称『盛れない勇者』"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "魔王に撮られてから、何撮っても盛れないの。マジ許せなくない？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "動機が切実じゃのう。よい勇者じゃ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "あげはさん、もう役ができあがってますね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_make_ageha_ageha_beatrice",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "うちはベアトリス。グミの国のお姫様で、騎士もやってるの"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "騎士団は白いグミと赤いグミ。どっちも推しだから、選べないんだよね"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "甘い騎士団じゃ……！ 戦の途中で食べてはならぬぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_make_rei_rei_nocturne",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……俺の役は、ノクターン。黒衣の吟遊詩人"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "薔薇を一輪、持ってる。歌は……夜にしか歌わない"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "雰囲気たっぷりじゃのう。外套の裏地は何色じゃ？"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……赤。そこは、こだわった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_make_rei_rei_shion",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……シオン。人見知りの魔法使い"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "魔法は強い。でも、人と目が合うと、詠唱が止まる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "それは……役の話かの？"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "……役の話だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "今宵はきらきらのファンタジーじゃ。サメは……隠し味程度じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "わしがGM、お主たちは王国の勇者じゃ",
+          "castIntro": true,
+          "smallTableText": "わしがGM、お主が勇者じゃ。空いた役はわしが兼ねるぞ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "隠し味でも、サメは出るんだね"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "待って、魔王がプリ撮る話ってマジ？ うちの得意分野じゃん"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……魔王が出る話は、好きだ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ここはきらめき王国。誰もがいつも、きらきらに盛れておる国じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "……じゃった。撮影城の魔王プリズマが、撮った者の『盛り』を盗むまではな"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}は勇者募集の貼り紙を見て、王国の広場へやって来た"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:ageha}は噴水の前で手鏡を見つめ、深いため息をついておる"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "えっと……『はあ、今日も盛れない』。こんな感じ？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:rei}は広場の隅で、黒い外套をなびかせておる。誰とも目を合わせずにな"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……役でも、目は合わせない"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "盛りを盗む魔王とは生意気である。魔王は、余ひとりでよい"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "コロちゃんも魔王だったの？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "海の魔王じゃ。今日は非番じゃぞ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "そこへ、首からカメラを下げたおじいさんが、とぼとぼ歩いてきた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_listen",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "王国一の写真屋のおじいさんじゃ。自慢のひげも、すっかり色あせておる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "serious",
+          "text": "勇者さまがた、聞いてくだされ。この国から、盛りが消えてしもうたのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "おじいさんの口調、いつものサメちゃんと同じだ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "年寄りは『じゃ』と言うものなのじゃ。わしは若いがの！"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "smile",
+          "text": "その話、{pc:ageha}が聞いた！ ……って、こういうノリでいいの？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_listen_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "おじいさんの顔が、ほんの少しだけ明るくなった"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "今ちょっと笑った！ おじいさん、盛れてるじゃん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_listen_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "そのとき空からカシャリ。通りすがりの人が、また一人色あせた"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "……今のが、魔王のシャッターか"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "話は聞けた。急ごう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_listen_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "話しこむうち、空からカシャリ。{pc}たちもまとめて撮られてしもうた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "えっ、俺たちまで地味になった！？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "少し地味になっただけじゃ。冒険に支障はないぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_declare_listen_talk",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}はおじいさんの隣に座って、写真の話を聞きます"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定じゃ。年寄りの話は長いぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_declare_listen_gummy",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:ageha}はグミを配るよ。白と赤、好きな方どーぞって"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "話術で判定じゃ。わしは赤がよいのう。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_declare_listen_watch",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……{pc:rei}は、広場を黙って見て回る。空の様子も"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定じゃ。よく見るのじゃぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_declare_twist_face",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}が門の前に出ます。ゴーレムと、正面から向き合う！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "度胸で判定じゃ。相手は大きいぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_declare_twist_cheer",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:ageha}、参上！ 門番くんも、うちが盛ってあげる！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "ノリノリじゃな！？ 話術で判定じゃ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_declare_twist_petal",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "……{pc:rei}が外套を翻す。舞え、薔薇……門番の目を、奪え"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "手際で判定じゃ。……今の、かっこよいのう。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_declare_prepare_light",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}は説明書を見ながら、照明を組み立てます"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定じゃ。コードに足を引っかけるでないぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_declare_prepare_deco",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:ageha}の神デコ、いくよ。撮影の間ごと盛っちゃう"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "手際で判定じゃ。見立てが合えば追い風じゃぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_declare_prepare_angle",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……{pc:rei}は鏡の角度を変えて、いちばん映える光を探す"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定じゃ。光の向きを、よく見るのじゃ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_declare_serve_call",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}がカメラの前へ。プリズマ、一緒に写ろう！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定じゃ。魔王の心に届くかの？ 目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_declare_serve_hero",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:ageha}は剣を掲げる。『勇者の本気、ここで見せるから！』"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "話術で判定じゃ。勇者らしくなってきたのう！ 目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_declare_serve_rose",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "……{pc:rei}は薔薇を掲げる。今宵、最高の一枚を……！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "お、お主、急に熱いのう！？ 度胸で判定じゃ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_twist_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ゴーレムはふっと目を細め、道を空けた。重い門が、ぎぎぎと開く"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "今の顔、めっちゃ盛れてた！ 門番くん、才能あるよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_twist_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "門は開いた。じゃがゴーレムのくしゃみで、堀の水を全員がかぶった"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "……外套が、重い"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "びしょ濡れだけど、通れたな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_twist_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "ゴーレムが{pc}をひょいとつまみ上げ、門の内側にそっと置いた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "えっ、運んでくれた……？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "道は開いたぞ。門番にも、優しい心があるのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_prepare_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "撮影の間が、ひさしぶりにきらきらと輝いた"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "完璧。うちらの撮影ブース、王国一じゃん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_prepare_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "飾りつけの途中で、シールが一枚{pc}のおでこに貼りついた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "取れない……。でも、支度はできた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_prepare_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "照明が倒れかけた。そこへ堀のサメが窓から跳ねて、支えてくれた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "サメは照明係もこなすのである"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "支度は整ったぞ。サメに感謝するのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_serve_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "シャッターの光が弾け、撮影の間いっぱいにきらきらが舞った"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……いい画だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_serve_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "シャッターの瞬間、魔王がくしゃみをした。それでも、みんな笑っておる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ブレてても、楽しそうな一枚だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_serve_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "シャッターの瞬間、{pc}がマントの裾を踏んで転んだ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "慌てて支えたら、全員そろって変なポーズで写ってしもうた"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "やば、逆に盛れてる。これ一生残そ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_consult_ageha",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "撮られるのは読モで慣れてるから分かる。写真って、気持ちが出るの"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "落とし物のプリと、写真屋のショーケース。見比べたら何か分かりそ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "写真の目線で見るんですね。あげはさん、さすがです"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "でしょ。勇者で、プリ帳職人だから"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_consult_rei",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……魔王の部屋。人が見ていない所に、本音が出る"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "鏡の間と、玉座。一人の時間の跡が、残ってるはずだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "一人のときの跡、ですか。REIさん、目のつけどころが違いますね"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "鋭いのう。相談は何度でも無料じゃぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_discuss_friend",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "友達欲しくて撮ってたとか、不器用すぎ。……でも、ちょっと分かる"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……声をかけるのは、難しい。俺も、分かる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "ふむ、優しい読みじゃ。では、その見立てで行くのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_discuss_pose",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "自信ないから盛りを借りる、か。でも借り物じゃ、本人が映えないって"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……見た目を作るのは、悪くない。自分で作るなら"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "見た目の悩みは、魔王も同じか。よい読みじゃぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_discuss_album",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "プリ帳なくすの、マジで泣くやつ。うちなら三日寝込む"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……思い出は、取り戻せる。まだ、どこかにあるなら"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "探し物の魔王か。では、その線で行くのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_twist_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "調べ終えて城を出た夕暮れ。黒い翼の魔王が、空から城へ帰ってきた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "城門の石像が、ごごご……と起き上がった。門番の『無表情ゴーレム』じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "無表情ゴーレム／物語",
+          "face": "serious",
+          "text": "……ゴ。撮影ノ時間。誰モ、通サナイ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "無表情とは、余の宿敵である。サメは常に笑顔である"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "serious",
+          "text": "あの子も、全然盛れてないじゃん。……勇者の出番、だよね"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "さあ、勇者たち。どうする？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_preparation",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "城の中へ。撮影の間の扉の向こうから、シャッターの音がする"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "魔王に会う前に、撮影の支度じゃ。デコ道具と照明を、一つずつ選ぶのじゃ"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "デコならうちに任せて。勇者の本気、見せたげる"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……照明で、写りは変わる。大事だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_serving",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "城の奥、撮影の間。黒いマントの魔王が、カメラを手に振り返った"
+        },
+        {
+          "speaker": "samechan",
+          "role": "魔王プリズマ／物語",
+          "face": "excited",
+          "text": "フハハ！ よくぞ来た勇者ども。我こそは撮影城の魔王、プリズマ！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "魔王プリズマ／物語",
+          "face": "serious",
+          "text": "貴様らの盛りも、このカメラでいただこう……！"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "serious",
+          "text": "プリズマ！ {pc:ageha}が、あんたに会いに来た！"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "……ここが、見せ場だ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "最後の決めポーズ、みんなで決めよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_choice_deco_stamp",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちは、デコ箱からキラキラのスタンプを取り出した"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "スタンプは、ぽんって押すだけで一気に映えるやつ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_choice_deco_pen",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちは、デコ箱から色とりどりのペンを取り出した"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ペンなら、落書きで気持ちまで盛れるじゃん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_choice_deco_sticker",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちは、デコ箱から交換用のシールを取り出した"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "シールは交換してこそ。プリ帳に貼ったら、一生ものだよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_choice_light_ring",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "撮影の間に、まあるいリングライトがともった"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……目に光が入る。写りの基本だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_choice_light_moon",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "窓を開けると、やわらかな月明かりが差しこんだ"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……月明かり。影がやさしくなる。好きな光だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_choice_light_fireworks",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "城の空に、ぱっと大輪の花火が上がった"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……花火。一瞬で消えるから、きれいだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_choice_pose_heart",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちは、手で半分ずつのハートを作った"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ハートは二人で作るから、かわいいんじゃん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_choice_pose_peace",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちは、そろってピースサインを掲げた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "基本のピースだ。これなら誰でも、かっこよく写れる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_choice_pose_shark",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちは、両手を頭の上に立てて、ヒレを作った"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "サメのポーズじゃ！ わしの秘蔵のポーズじゃぞ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "サメちゃん、これを入れたかっただけだよね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_choice_tactic_laugh",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちは、門の前に渾身の変顔を並べた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "無表情ゴーレム／物語",
+          "face": "serious",
+          "text": "……ゴ、……ゴフッ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_choice_tactic_photo",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちはゴーレムの横に並び、カメラを高く掲げた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "無表情ゴーレム／物語",
+          "face": "serious",
+          "text": "……ゴ。撮影、初メテ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_choice_tactic_sneak",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちは堀へ下り、地味になったサメの背中に身を隠した"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "サメは勇者の味方である。地味でもな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_ending_one-shot",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちが隣に並ぶと、プリズマはカメラを持ったまま固まった"
+        },
+        {
+          "speaker": "samechan",
+          "role": "魔王プリズマ／物語",
+          "face": "surprise",
+          "text": "わ、我の隣に……並んでくれるのか？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "魔王の半分のハートに、{pc:ageha}がもう半分を重ねる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "シャッターが鳴る。カメラから盛りがあふれ、王国じゅうへ帰っていった"
+        },
+        {
+          "speaker": "samechan",
+          "role": "魔王プリズマ／物語",
+          "face": "excited",
+          "text": "フ、フハハ……。誰かと写る一枚は、こんなにも盛れるのか"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "smile",
+          "text": "交換用に一枚ちょうだい。うちのプリ帳に貼るから"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……俺も、一枚。その……欲しい"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "魔王の友達第一号だね、俺たち"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_ending_own-sparkle",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちに囲まれ、プリズマはおそるおそる顔を上げた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "魔王プリズマ／物語",
+          "face": "serious",
+          "text": "わ、我の顔など……盛りなしでは、とても見せられぬ"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "serious",
+          "text": "盛りは借りるもんじゃないよ。自分で作るもんなの"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ぎこちないピース。シャッターが鳴り、照れた魔王の笑顔が写った"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "小瓶のふたがぽんぽん開き、盛りが王国じゅうへ帰っていく"
+        },
+        {
+          "speaker": "samechan",
+          "role": "魔王プリズマ／物語",
+          "face": "excited",
+          "text": "フハハ！ 我、盛れている……！ 撮り直しは要らぬ！"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……自分で作った顔が、いちばん似合う"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "落書き欄、みんなで埋めよう。『かっこいい』って"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_ending_album-home",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "そこへ、写真屋のおじいさんが古いプリ帳を抱えて駆けこんできた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "normal",
+          "text": "これじゃろう、店の落とし物の棚にあった。あの角の子が、魔王さまじゃったとは"
+        },
+        {
+          "speaker": "samechan",
+          "role": "魔王プリズマ／物語",
+          "face": "surprise",
+          "text": "そ、それは……我のなかよし帳！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ページの中では、小さな角の子と仲間たちが、サメのポーズで笑っておった"
+        },
+        {
+          "speaker": "samechan",
+          "role": "魔王プリズマ／物語",
+          "face": "serious",
+          "text": "探しても見つからぬわけだ。……盛りは、皆に返そう"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "みんなでサメのポーズを決めると、白紙の次のページに今日の一枚が貼られた"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "続きのページ、今日のうちらで埋まったじゃん"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……思い出の続き。いい曲みたいだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_ending_party",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ポーズはばらばら。じゃが撮影の間は、笑い声でいっぱいになった"
+        },
+        {
+          "speaker": "samechan",
+          "role": "魔王プリズマ／物語",
+          "face": "excited",
+          "text": "な、なんだこの楽しさは……！ もう一枚だ！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "一枚撮るたび、盛りがひとつずつ王国へ帰っていく"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "smile",
+          "text": "次、変顔いこ！ 魔王も、門番くんも！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "その夜は、堀のサメまできらきらに盛れておったそうな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "魔王の本当の気持ちは分からなかったけど、みんな盛れたな"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余も写ったのである。盛れたのである"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_debrief_smooth",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "寄り道なしの、見事な勇者っぷりじゃったのう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "魔王の城、本当に冒険してきた気がする"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_debrief_with_detour",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "ハプニングだらけじゃったが、それも全部いい写真じゃ"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……失敗した一枚も、あとで見ると好きになる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_epilogue",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "おしまいじゃ。撮影のあと、城の広間で、魔王とトロピカルフルーツの一台を囲んだそうな"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "トロピカルとか、うちの好きなやつじゃん。魔王、分かってる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "撮った写真を見ながら、みんなで一台を囲むのか。いい時間だな"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……楽しかった。……今のは、忘れてくれ"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "てかTRPGやば。{pc:ageha}、途中からガチでうちだったもん"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "次もうち、勇者やりたい。GMさん、続きってある？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "続きも考えておくぞ。次は海の魔王の物語じゃ！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "ついに余の時代である。勇者ども、震えて待つがよい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_friend_plaza",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "王国の広場。いつもはきらきらの噴水も、今日は水道水みたいな色じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "広場の掲示板に、魔王の撮った写真が貼り出されておる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "どの写真も、写る人の隣が一人分だけ空いておる"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "噴水まで盛れてないとか、この国ガチでピンチじゃん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_friend_showcase",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "写真屋のショーケース。色あせる前の写真が、ずらりと並んでおる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "撮影祭りの夜の集合写真。花火の下で、みんなが肩を組んでおる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "後ろの屋根の上に、角の先だけがぽつんと写りこんでおる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "昔の写真、みんな本当にきらきらしてるな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_friend_sign",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "撮影城の城門じゃ。堀ではサメが泳ぎ、門番の石像は昼寝中じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "門の看板に、手書きの貼り紙。『撮影会、参加者募集』"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『一名さまから大歓迎』の行だけ、何度も書き直してある"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "堀にサメ……。隠し味って言ってたのに"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_friend_mirror",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "撮影城の鏡の間。壁一面の鏡に、{pc}たちが何人も映っておる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "鏡の一枚に、指でなぞった字が残っておる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『一緒に撮ろう』『い、一緒に……』。何度も練習した跡じゃ"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……いい部屋だ。撮影に、使いたい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_friend_purikura",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "広場の石畳に、プリが一枚落ちておる。踏まれぬよう、そっと拾う"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "魔王が一人で写ったプリじゃ。手でハートを作っておる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "じゃがハートは半分だけ。もう半分を作る相手が、おらんのじゃ"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "serious",
+          "text": "プリ落とすとか、うちなら泣く。持ち主、勇者が絶対見つけるから"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_friend_throne",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "魔王の玉座の間。主は撮影に出かけて、留守じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "玉座の横に、空っぽのシール帳が置いてある"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "表紙には『プリ交換：0枚』。数字が、なんとも寂しいのう"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "玉座とは、よい椅子である。余の椅子より少し小さいが"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_ask_friend_when",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "normal",
+          "text": "ひと月前の、撮影祭りの夜からじゃ。花火の下で、みんな仲間と写っておった"
+        },
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "serious",
+          "text": "魔王はそれを、城の屋根から一人で見ておったそうな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "祭りの夜に、一人で……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_ask_friend_prisma",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "normal",
+          "text": "怖い顔じゃが、撮り終えると必ず『また来る』と言う。律儀な魔王じゃよ"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "律儀な魔王、ウケる。でも、ちょっと分かるかも"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_ask_friend_camera",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "normal",
+          "text": "城の宝の、魔法のカメラじゃ。撮った者の盛りを、吸いこんでしまう"
+        },
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "serious",
+          "text": "魔王は撮るたび隣を空けて、しばらく待つのじゃ。誰も来んがの"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……誰かを、待ってる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_ask_friend_shop",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "serious",
+          "text": "一度、二人用のプリを撮りに来た。じゃが連れがおらんと気づいて、黙って帰った"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "一緒に写る相手が、欲しかったのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_pose_plaza",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "王国の広場。いつもはきらきらの噴水も、今日は水道水みたいな色じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "広場の掲示板に、魔王の撮った写真が貼り出されておる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "どれも構図は見事じゃ。なのに撮った魔王は、一枚も写っておらん"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "噴水まで盛れてないとか、この国ガチでピンチじゃん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_pose_showcase",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "写真屋のショーケース。色あせる前の写真が、ずらりと並んでおる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "隅に一枚、角の生えた誰かの証明写真がある。失敗作の札つきじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "灯りが足りず、角の影しか写っておらん。顔は真っ暗じゃ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "昔の写真、みんな本当にきらきらしてるな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_pose_sign",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "撮影城の城門じゃ。堀ではサメが泳ぎ、門番の石像は昼寝中じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "門の看板に、魔王の似顔絵が描いてある"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "じゃが上から盛りに盛って描き直され、もはや原形がない"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "堀にサメ……。隠し味って言ってたのに"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_pose_mirror",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "撮影城の鏡の間。壁一面の鏡に、{pc}たちが何人も映っておる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "鏡の前に、ポーズの練習帳が落ちておる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『ピース、指の角度が分からん』『笑顔、失敗』と書いてある"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……いい部屋だ。撮影に、使いたい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_pose_purikura",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "広場の石畳に、プリが一枚落ちておる。踏まれぬよう、そっと拾う"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "魔王が一人で写ったプリじゃ。全部のコマで、手で顔を隠しておる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "落書きの欄は真っ白。誰にも書いてもらえなかったようじゃ"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "serious",
+          "text": "プリ落とすとか、うちなら泣く。持ち主、勇者が絶対見つけるから"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_pose_throne",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "魔王の玉座の間。主は撮影に出かけて、留守じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "玉座の横に、小瓶がずらりと並んでおる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ラベルは『目の輝き』『笑顔』。中身は、盗んだ盛りじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "玉座とは、よい椅子である。余の椅子より少し小さいが"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_ask_pose_when",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "normal",
+          "text": "ひと月前じゃ。魔王が初めて、自分の写真を撮った日からと聞く"
+        },
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "surprise",
+          "text": "その日、城から『うわああ』と悲鳴が聞こえたそうな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "自分の写真を見て、悲鳴……？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_ask_pose_prisma",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "normal",
+          "text": "背が高く、立派な角の魔王じゃ。じゃが写真には、いつも背中しか写らん"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "背中だけ？ それ、写りに自信ないやつじゃん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_ask_pose_camera",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "normal",
+          "text": "盛りを吸う、魔法のカメラじゃ。吸った盛りは、小瓶に詰めておるらしい"
+        },
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "normal",
+          "text": "撮影の前に、それを自分の顔に塗るのだとか"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……盛りを、借りてるのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_ask_pose_shop",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "normal",
+          "text": "昔、証明写真を撮りに来たことがある。出来上がりを見て、店を飛び出していった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "写りが、気に入らなかったのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_album_plaza",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "王国の広場。いつもはきらきらの噴水も、今日は水道水みたいな色じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "広場の掲示板に、魔王の撮った写真が貼り出されておる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "写真の端に、小さな書きこみ。『違う』『違う』『これも違う』"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "噴水まで盛れてないとか、この国ガチでピンチじゃん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_album_showcase",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "写真屋のショーケース。色あせる前の写真が、ずらりと並んでおる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "棚の隅に、古いプリ帳が一冊。表紙に、かすれたサメのスタンプ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『落とし物・持ち主求む』の札が、すっかり日に焼けておる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "昔の写真、みんな本当にきらきらしてるな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_album_sign",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "撮影城の城門じゃ。堀ではサメが泳ぎ、門番の石像は昼寝中じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "門の看板に、大きな貼り紙。『探し物、あります』"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『古いプリ帳。見つけた者には、城の盛りを全部やる』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "堀にサメ……。隠し味って言ってたのに"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_album_mirror",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "撮影城の鏡の間。壁一面の鏡に、{pc}たちが何人も映っておる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "鏡の前に、真新しいプリ帳。表紙には『なかよし帳・二冊目』"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "中は白紙。最後のページにだけ『月の夜に、またみんなで』とある"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……いい部屋だ。撮影に、使いたい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_album_purikura",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "広場の石畳に、プリが一枚落ちておる。踏まれぬよう、そっと拾う"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "古いプリの切れ端じゃ。小さな角の子と仲間たちが写っておる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "みんな両手を頭に立てて、サメのポーズで笑っておる"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "serious",
+          "text": "プリ落とすとか、うちなら泣く。持ち主、勇者が絶対見つけるから"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_album_throne",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "魔王の玉座の間。主は撮影に出かけて、留守じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "玉座の肘かけに、かすれたサメのスタンプが押してある"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "そばに子どもの字で『みんなで、また撮る』と彫ってある"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "玉座とは、よい椅子である。余の椅子より少し小さいが"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_ask_album_when",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "normal",
+          "text": "ひと月前、城の大掃除の日からじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "normal",
+          "text": "魔王が何かを探して、城じゅうをひっくり返したそうな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "大掃除で、何かがなくなったのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_ask_album_prisma",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "normal",
+          "text": "撮った写真を並べては、『この顔ではない』とつぶやいておる"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "誰かの顔、探してるってこと？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_ask_album_camera",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "normal",
+          "text": "盛りを吸う、魔法のカメラじゃ。吸った盛りで、白紙の帳面を埋めておる"
+        },
+        {
+          "speaker": "rei",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……白紙の帳面。アルバムか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_purikura_hero_ask_album_shop",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "smile",
+          "text": "昔、小さな角の子が、仲間と毎週プリを撮りに来ておったよ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "写真屋のおじいさん／物語",
+          "face": "normal",
+          "text": "よく笑う子じゃった。……あの子は今、どうしておるかのう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "小さな角の子……。もしかして"
+        }
+      ]
+    }
+  ],
+  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。variantsは代役本人のために書いた台詞。",
+  "flow": {
+    "prepare": [
+      "deco",
+      "light"
+    ],
+    "serve": [
+      "pose"
+    ],
+    "twist": [
+      "tactic"
+    ]
+  },
+  "fitWeights": {
+    "deco": 1,
+    "light": 1,
+    "pose": 2,
+    "tactic": 0
+  },
+  "fallbackEnding": "party",
+  "rules": {
+    "exploreLimit": 6,
+    "pressureMax": 3,
+    "initialPressure": 0,
+    "inspectionPressure": 0,
+    "checkPressure": {
+      "success": 0,
+      "mixed": 1,
+      "trouble": 1
+    },
+    "detourThreshold": 1,
+    "hypothesisBonus": 0
+  },
+  "presentation": {
+    "theme": "sparkle",
+    "number": "12",
+    "genre": "コメディ・ファンタジー",
+    "tagline": "盛りを盗む魔王に、勇者たちが会いに行く。",
+    "image": "../../img/backgrounds/trpg_purikura-hero_room.webp",
+    "sceneAlt": "きらめき王国。色あせた広場の噴水、写真屋のショーケース、サメの泳ぐ堀と城門、撮影城の鏡の間、落ちていたプリ、魔王の玉座。",
+    "location": "きらめき王国 / 王国の広場と撮影城",
+    "atmosphere": "盛りを吸われて、王国じゅうが少し地味。城から、今日もシャッターの音。",
+    "coverHeading": "撮った者の盛りを盗む魔王が、撮影城にいる。",
+    "coverRule": "王国と城を調べ、魔王の本当の願いを見立て、最高の一枚を撮りに行く。",
+    "titleLines": [
+      "盛れない勇者と、",
+      "プリ帳の魔王"
+    ],
+    "fields": {
+      "deco": "デコ道具",
+      "light": "照明",
+      "pose": "決めポーズ",
+      "tactic": "ゴーレムへの手"
+    },
+    "prepareTitle": "どのデコ道具と照明で、撮影に挑む？",
+    "prepareDescription": "デコ道具を一つ、照明を一つ。手がかりから、魔王に会う支度をしよう。",
+    "serveTitle": "撮影の間で、魔王と向き合う。",
+    "serveDescription": "最後に、どんな決めポーズで写る？",
+    "hypothesisTitle": "魔王プリズマは、なぜ盛りを盗む？",
+    "arrivalRole": "写真屋のおじいさん／物語",
+    "exploreIdle": "気になる場所を調べるのじゃ。仲間への相談は、何度でも無料じゃぞ",
+    "listenIdle": "まずは、おじいさんの話を聞くのじゃ。サイコロは二つじゃぞ",
+    "prepareIdle": "準備を選ぼう。仲間がいれば、切り札も頼める",
+    "serveIdle": "ここが見せ場じゃ。決めポーズを選んで、魔王の前へ出るのじゃ",
+    "endingIdle": "この晩の話は、ここまで。次は、また別の本で会おう",
+    "phases": {
+      "listen": {
+        "kicker": "01 / 話を聞く",
+        "title": "王国から、盛りが消えた",
+        "description": "首からカメラを下げたおじいさんが、とぼとぼやって来た。まずは話を聞こう。",
+        "button": "おじいさんの話を聞く"
+      },
+      "interview": {
+        "kicker": "02 / 写真屋に聞く",
+        "title": "写真屋のおじいさんに、何を聞く？",
+        "description": "聞ける質問は二つ。答えは、魔王の事情しだいで変わる。",
+        "button": "話を聞き終えて、王国を調べる"
+      },
+      "explore": {
+        "kicker": "03 / 王国と城を調べる",
+        "title": "魔王の本音を探す",
+        "description": "魔王は撮影に出かけて留守。3つ以上の手がかりから、みんなで見立てを話そう。",
+        "button": "見立てを話す"
+      },
+      "twist": {
+        "kicker": "04 / 無表情ゴーレム",
+        "title": "門番が、目を覚ました",
+        "description": "夕暮れ、魔王が城へ帰ってきた。城門に立ちはだかる門番を切り抜けよう。",
+        "button": "この手で切り抜ける"
+      },
+      "prepare": {
+        "kicker": "05 / 撮影の支度",
+        "title": "デコ道具と、照明",
+        "description": "撮影の間の扉の前で、魔王に会う支度を。",
+        "button": "撮影の支度をする"
+      },
+      "serve": {
+        "kicker": "06 / 魔王と一枚",
+        "title": "最高の決めポーズ",
+        "description": "撮影の間で、魔王がカメラを構えている。ここがクライマックス。",
+        "button": "決めポーズで写る"
+      },
+      "ending": {
+        "kicker": "撮影のあとで",
+        "title": "おつかれさま、勇者たち",
+        "description": "撮影城の魔王は、どんな顔で写っただろう。"
+      }
+    },
+    "help": "写真屋のおじいさんに二つ質問し、王国と撮影城を調べて三つ以上の手がかりから見立てを立てます。途中で城門の無表情ゴーレムが立ちはだかり、切り抜け方を選びます。最後にデコ道具・照明・決めポーズを選びます。探索・相談・メモの再読に回数制限はありません。",
+    "exitText": "この卓はここで終わります。もう一度遊ぶと、魔王の事情が変わるかもしれません。",
+    "endingKicker": "撮影城の結末",
+    "stats": {
+      "eye": "観察",
+      "hand": "手際",
+      "talk": "話術",
+      "nerve": "度胸"
+    },
+    "declareTitle": "どうする？ 行動を宣言するのじゃ",
+    "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
+    "sheetTitle": "キャラクターシート",
+    "target": "GMの裁定 · 目標値30（19以上でひと手間）",
+    "twistTitle": "無表情ゴーレムが、城門をふさいだ。どうする？",
+    "interviewIdle": "おじいさんに聞けるのは二つまでじゃ。何を聞く？",
+    "twistIdle": "門番じゃ。手を選んで、誰が動くか決めるのじゃ",
+    "planTitle": "魔王と撮る、最高の一枚の作戦"
+  },
+  "debrief": {
+    "smooth": "trpg_purikura_hero_debrief_smooth",
+    "with-detour": "trpg_purikura_hero_debrief_with_detour"
+  },
+  "campaign": {
+    "seats": [
+      {
+        "actor": "samechan",
+        "candidates": [
+          "samechan"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hajime",
+        "candidates": [
+          "hajime"
+        ],
+        "required": true
+      },
+      {
+        "actor": "ageha",
+        "candidates": [
+          "ageha"
+        ],
+        "required": false
+      },
+      {
+        "actor": "rei",
+        "candidates": [
+          "rei"
+        ],
+        "required": false
+      }
+    ]
+  },
+  "builder": {
+    "seat": "hajime",
+    "points": 11,
+    "min": 1,
+    "max": 5,
+    "nameMax": 6,
+    "title": "あなたのキャラクターを作る",
+    "intro": "この物語で演じる勇者を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
+    "looks": [
+      {
+        "id": "gold",
+        "label": "金髪の勇者",
+        "detail": "跳ねた金髪に、青いマント",
+        "color": "#3a4f8c",
+        "accent": "#f4d36b",
+        "portrait": "../../img/ui/trpg/look-purikura-hero-gold.webp"
+      },
+      {
+        "id": "night",
+        "label": "黒髪の勇者",
+        "detail": "短い黒髪に、銀の胸当て",
+        "color": "#2c2f45",
+        "accent": "#c9d2e8",
+        "portrait": "../../img/ui/trpg/look-purikura-hero-night.webp"
+      },
+      {
+        "id": "berry",
+        "label": "桃色髪の勇者",
+        "detail": "ふわっとした桃色の髪に、ハートの盾",
+        "color": "#8a4a6e",
+        "accent": "#ffb3d1",
+        "portrait": "../../img/ui/trpg/look-purikura-hero-berry.webp"
+      },
+      {
+        "id": "chestnut",
+        "label": "栗毛の勇者",
+        "detail": "栗色の髪に、旅の地図とカメラ",
+        "color": "#6b4a32",
+        "accent": "#e8c99a",
+        "portrait": "../../img/ui/trpg/look-purikura-hero-chestnut.webp"
+      }
+    ],
+    "archetypes": [
+      {
+        "id": "squire",
+        "name": "ルクス",
+        "title": "見習い勇者",
+        "trait": "まじめで素直。写真を撮ると、なぜか毎回目をつぶる",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 4,
+          "nerve": 2
+        },
+        "recommended": true
+      },
+      {
+        "id": "photographer",
+        "name": "ミルト",
+        "title": "城下町の写真係",
+        "trait": "撮るのは得意、撮られるのは苦手。カメラを持つと口数が増える",
+        "stats": {
+          "eye": 4,
+          "hand": 3,
+          "talk": 2,
+          "nerve": 2
+        }
+      },
+      {
+        "id": "shield",
+        "name": "ガルド",
+        "title": "盾持ちの騎士見習い",
+        "trait": "ぴかぴかの盾が自慢。光を跳ね返して、たまに自分がまぶしい",
+        "stats": {
+          "eye": 2,
+          "hand": 2,
+          "talk": 3,
+          "nerve": 4
+        }
+      }
+    ],
+    "statHelp": {
+      "eye": "よく見て、気づく力。調べる・写真の違いを見るときに使う",
+      "hand": "手先の器用さ。照明を組む・デコをするときに使う",
+      "talk": "話す・聞く力。人や魔王と向き合うときに使う",
+      "nerve": "怖がらない力。大きな門番や、見せ場で前に出るときに使う"
+    }
+  },
+  "companionBuilds": {
+    "ageha": {
+      "ageha": [
+        {
+          "id": "lovely",
+          "name": "ラブリ",
+          "title": "盛れない勇者",
+          "trait": "伝説の勇者の子孫。魔王に撮られてから、何を撮っても盛れない",
+          "likes": "白と赤のグミベア。プリ帳をデコる夜",
+          "stats": {
+            "eye": 2,
+            "hand": 4,
+            "talk": 3,
+            "nerve": 2
+          },
+          "making": "trpg_purikura_hero_make_ageha_ageha_lovely",
+          "portrait": "../../img/ui/trpg/pc-lovely.webp"
+        },
+        {
+          "id": "beatrice",
+          "name": "ベアトリス",
+          "title": "グミの国の姫騎士",
+          "trait": "白と赤のグミベア騎士団を率いる姫。剣が少し甘い",
+          "likes": "白いグミと赤いグミ。どっちも推し",
+          "stats": {
+            "eye": 2,
+            "hand": 3,
+            "talk": 4,
+            "nerve": 2
+          },
+          "making": "trpg_purikura_hero_make_ageha_ageha_beatrice",
+          "portrait": "../../img/ui/trpg/pc-beatrice.webp"
+        }
+      ]
+    },
+    "rei": {
+      "rei": [
+        {
+          "id": "nocturne",
+          "name": "ノクターン",
+          "title": "黒衣の吟遊詩人",
+          "trait": "薔薇を一輪携えた、夜の歌い手。人前だと声が小さい",
+          "likes": "薔薇の香り。夜に開く花の歌",
+          "stats": {
+            "eye": 3,
+            "hand": 2,
+            "talk": 2,
+            "nerve": 4
+          },
+          "making": "trpg_purikura_hero_make_rei_rei_nocturne",
+          "portrait": "../../img/ui/trpg/pc-nocturne.webp"
+        },
+        {
+          "id": "shion",
+          "name": "シオン",
+          "title": "人見知りの魔法使い",
+          "trait": "大きな魔法が使える。人と目が合うと、詠唱が止まる",
+          "likes": "ジャスミンとラベンダー。黒薔薇の杖",
+          "stats": {
+            "eye": 4,
+            "hand": 3,
+            "talk": 1,
+            "nerve": 3
+          },
+          "making": "trpg_purikura_hero_make_rei_rei_shion",
+          "portrait": "../../img/ui/trpg/pc-purikura-hero-shion.webp"
+        }
+      ]
+    }
+  },
+  "sessionZero": {
+    "open": "trpg_purikura_hero_session_zero_open",
+    "close": "trpg_purikura_hero_session_zero_close"
+  },
+  "interview": {
+    "title": "写真屋のおじいさんに、何を聞く？",
+    "prompt": "聞けるのは二つまで。魔王の本音に近づけそうなことを聞こう",
+    "picks": 2,
+    "topics": [
+      {
+        "id": "when",
+        "label": "いつから盛れなくなったか",
+        "description": "盛りが消え始めた日のことを聞く"
+      },
+      {
+        "id": "prisma",
+        "label": "魔王プリズマはどんな人か",
+        "description": "魔王の様子や評判を聞く"
+      },
+      {
+        "id": "camera",
+        "label": "魔王のカメラのこと",
+        "description": "盛りを吸うカメラについて聞く"
+      },
+      {
+        "id": "shop",
+        "label": "魔王が店に来たことは",
+        "description": "写真屋と魔王の関わりを聞く"
+      }
+    ]
+  },
+  "twist": {
+    "intro": "trpg_purikura_hero_twist_intro"
+  }
+}

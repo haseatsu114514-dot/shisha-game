@@ -53,7 +53,7 @@ const values = {
   "phone.js": { deliverMorning: () => 0, pushNotice: noop, hasUnread: () => false, unreadCount: () => 0,
     actionInviteNeedingReply: () => null, openLime: async () => {}, limeCoach: noop, expireInvitations: noop,
     rescheduleInvitation: noop, completeInvitation: noop, invitationReadBeforeMeeting: () => null },
-  "status.js": { openStatus: async () => {} }, "reel.js": { onAction: noop, presentNow: async () => {}, installReel: noop, changeSetting: () => false },
+  "status.js": { openStatus: async () => {} }, "menu.js": { openMenu: async () => null }, "reel.js": { onAction: noop, presentNow: async () => {}, installReel: noop, changeSetting: () => false },
   "romance.js": { maybeConfession: async () => false, playDate: async () => {} },
   "samechan-date.js": { samechanDateReady: () => false, playSamechanDate: async () => ({ done: false, spent: 0 }) },
   "bonds.js": { afterStory: async () => {}, isFinaleEvent: () => false, playFinale: async () => {}, isFriendEvent: () => false, playFriendHangout: async () => {},

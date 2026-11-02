@@ -287,7 +287,8 @@ await suite("ui-themes-config",async check=>{
       await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.turbo = false; });
       const savedBefore = await page.evaluate(() => localStorage.getItem("suien_remake_save"));
       await press('[data-test="hud-menu"]');
-      await assertFits(page, '.menu-modal .modal-actions .btn');
+      await press('[data-test="menu-tab-system"]');
+      await assertFits(page, '.dmenu .dm-sys');
       await press('[data-test="menu-config"]');
       await page.locator("#modal.show .cfg").waitFor();
       await page.selectOption('[data-test="cfg-text-speed"]', "1");

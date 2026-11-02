@@ -1,5 +1,5 @@
 // 自由来店のソロ斧投げ。正式なひよりイベントの読了・関係には触れない。
-import { state } from "../core/state.js";
+import { state, save } from "../core/state.js";
 import { on } from "../core/bus.js";
 import { el, yen } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
@@ -13,6 +13,7 @@ import { DIVISIONS } from "../minigames/axe-model.js";
 import { axeBarDiscovered, axeBarSightingDue } from "../core/axe-bar-discovery.js";
 import { playAxeBarSighting } from "./axe-bar-discovery.js";
 import { playBgm, currentBgm } from "../core/audio.js";
+import { gearOffer, ownsGear, AXE_STEADY } from "../core/hobby-gear.js";
 
 const modes = { practice: "3投練習", league: "10投ゲーム（WATL式）" };
 let active = false, division = "am";
@@ -88,10 +89,15 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
           for (const button of divisionButtons) button.setAttribute("aria-pressed", String(button.dataset.test === "axe-bar-division-" + id));
           divisionNote.textContent = d.note;
         } }));
+      // マイ斧（VOL07）: カウンターで一度だけ買える。店の3投・10投で構えの揺れが1割小さくなる（レッスンは店の斧のまま）。
+      const gear = gearOffer(owner, "gear_hatchet", { isCurrent: () => current() && !picked && !lessonOpen, onBought: item => {
+        save(); toast(`「${item.name}」を買った。${item.effect}`, { kind: "good" });
+        for (const button of host.querySelectorAll(".sub-choices .big-choice")) button.disabled = !available();
+      } });
       const divisions = el("div.axe-bar-divisions", { role: "group", "aria-label": "10投ゲームの部門（閉じ方）" }, [el("span.axe-bar-division-label", { text: "10投の部門" }), ...divisionButtons, divisionNote]);
       host.append(el("h2.sub-title", { text: AXE_BAR.label }),
         venueHost("maki", DB.dialogues[welcome]?.lines?.[0]?.text || "", DB), el("p.sub-lead", { text: status }),
-        lesson,
+        el("div.axe-bar-tools", [lesson, gear]),
         el("div.sub-choices", Object.entries(modes).map(([id, label]) => el("button.big-choice", {
           disabled: !available(), dataset: { test: "axe-bar-" + id }, onclick: () => { if (available()) pick(id); },
         }, [el("b", { text: label }), el("small", { text: records[id] ? `自己ベスト ${records[id].best.total}点 · ${records[id].plays}回プレイ` : "まだ記録はありません" })]))),
@@ -111,7 +117,8 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       owner.flags._axe_lesson_done = true;
       if (!available()) return false;
     }
-    const result = await runAxeThrow({ host: document.getElementById("stage"), mode, opponent: null, allowRetry: false, signal: abort.signal, division: mode === "league" ? division : "rec" });
+    const result = await runAxeThrow({ host: document.getElementById("stage"), mode, opponent: null, allowRetry: false, signal: abort.signal, division: mode === "league" ? division : "rec",
+      steady: ownsGear(owner, "gear_hatchet") ? AXE_STEADY : 1 });
     if (!result.completed || !available()) return false;
     const records = owner.flags._axe_bar_records ||= {};
     const entry = { chapter, day, total: result.total, maximum: result.maximum, ruleset: result.ruleset, division: result.division, throws: result.throws };

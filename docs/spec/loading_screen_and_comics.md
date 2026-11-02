@@ -42,6 +42,10 @@ const image = await withLoading(async ({ report }) => {
 
 **読む時間の確保**: 漫画が実際に画面へ表示された場合に限り、準備完了後に「タップ・クリック・キー（Enter／Space）で進む」読む時間の保持を入れます。漫画が出ていない・取得失敗・短い処理のときは従来どおり待たせずに進みます。保持中も #1038 のゲート（背面操作の無効化・中断・フォーカス復元・低減モーション）はそのまま有効です。
 
+**コマの大きさの揃え方（2026-11-02）**: 生成した絵の縦横比のずれは、紙色の帯ではなく `tools/loading_comic_cut.py fill` で絵を拡大して埋める（1辺で切るのは4.5%まで、吹き出しを避ける）。登録中の全47話が1コマ1ファイルになり、表示側のレターボックス（`region` の比率差）は現在使っていない。手順と記録は [asset_sources/loading-comics/README.md](../../asset_sources/loading-comics/README.md) §4・§6.5。
+
+**登録数と解放（2026-11-02 オーナー選別）**: 登録は採用25話。各話の `cast`（出てくるキャラの id）全員と会った後にだけ、作業台のロードに出る（`craft/loading.js` が `isMet` を渡し、`core/loading-comics.js` の `eligibleLoadingComics` が絞る。会った判定は `core/title-art-unlock.js` の `hasMetCharacter`）。新しく始めたゲームではスミさんの話だけが出る。正体などを明かす話は `minChapter` で明かす章まで待たせる。選別と規則は [asset_sources/loading-comics/README.md](../../asset_sources/loading-comics/README.md) §10。
+
 **コマの制作規格（発注用・2026-11-02 統一）**: 正本は [asset_sources/loading-comics/README.md](../../asset_sources/loading-comics/README.md)。要点は、Codex には **1536×1024 の下敷き**（`asset_sources/loading-comics/template/2koma_template_1536x1024.png`。コマ枠 **720×480（3:2）×2**、左 x=36／右 x=780、y=272）を添付して枠の中だけ描かせる、題名・話数・署名は画像に入れない（ゲームが描く）、枠の縁から各辺 4% は吹き出しを置かない、受け取ったら `python3 tools/loading_comic_cut.py sheet 原画.png --id <id>` で **コマ枠を検出して 3:2 の WebP 2枚（最大 1440×960）** に揃え、`region` なしで登録する（1コマ＝1ファイル）。比率が 1.25〜1.80 を外れた原画はツールが「作り直し」と判定します。旧方式（シートの `region` 切り出し）も表示側は引き続き受け付けます。表示枠は 3:2 のまま（オーナーのモックのコマは約 16:9 だが、2026-11-02 に 3:2 維持で確定）。
 
 **表示枠とコマ規格の照合（2026-10-29 改訂・2026-11-02 更新）**: 表示枠は 43:25 から **3:2** へ変更されました（オーナー決定・案A）。採用済み第25話の切り出し（左 486×307・右 565×307）と Batch 1『炭の耳』（510×399・520×399）は旧規格の登録のままで、作り直しは不要です。表示は同じ墨枠の中に紙色の余白つきで収めます（切り取り・引き伸ばしはしません）。登録データが枠と食い違わないよう、`remake/test/loading_comics_spec.mjs`（CI quick）が `region` 登録は比率帯（1.2〜2.0）、`region` なしの登録は画像ヘッダから **3:2±1%・1440×960 以下** を検証します。
@@ -79,7 +83,7 @@ const image = await withLoading(async ({ report }) => {
 
 `/remake/craft-preview.html?loading=comic` は、本編と同じ `openBench` → `prepareBenchEntry` を通り、漫画付きロードから実際の制作画面へ進めます。確認用の追加素材待ちだけを約2.2秒挟み、本編には固定の待ち時間を加えません。通常の制作試遊は `?loading=comic` を付けずに開けます。ゲーム内のセーブ・設定は変更しません。
 
-既存の「けむりのとなり 暴走編」第25話「メニュー改訂」をロード用に採用しました。原画は `asset_sources/short-comics-unhinged-ltr-20261025/25-28-chaos-ltr.png`、配信用は `img/loading/adam-chaos.webp`（約489KiB）です。原画の文字・絵・左右は変更せず、CSSの表示領域で25話の２コマだけを左→右に表示します。シート内の他の３話は表示しません。番外編の位置づけは素材台帳で管理し、ギャラリー全体の作品採用には広げません。
+既存の「けむりのとなり 暴走編」第25話「メニュー改訂」をロード用に採用しました。原画は `asset_sources/short-comics-unhinged-ltr-20261025/25-28-chaos-ltr.png`、配信用は当初 `img/loading/adam-chaos.webp`（シート全体）をCSSの表示領域で切り出していましたが、2026-11-02 に同じ絵を1コマ1ファイル（`img/loading/adam-menu-25-1/2.webp`）へ切り直しました。原画の文字・絵・左右は変更していません。番外編の位置づけは素材台帳で管理し、ギャラリー全体の作品採用には広げません。
 
 ロードの見せ方は『あつまれ どうぶつの森』の右下に小さく出る島アイコンの配置を参考に、中央の漫画へ視線を集め、待機表示だけを画面の隅へ寄せています（[任天堂の案内](https://www.nintendo.com/en-gb/Support/Purchases-Subscriptions/Games/How-to-Back-Up-and-Restore-Island-Save-Data-Animal-Crossing-New-Horizons--1818137.html)でも右下の島表示を説明）。固有のアイコンは流用しません。現在は本編の紫・既存の煙モチーフ・一枚の紙面で構成し、待機表示は独自の煙の線と「LOADING…」だけです。低減モーション指定では登場アニメーションと煙の動きを止めます。
 

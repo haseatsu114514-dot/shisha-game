@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE4D0  枠の段 1: 2コマ@y=272
+  コマ1: 717x480 @(36,272) 比率 1.494 → ok
+  コマ2: 717x480 @(780,272) 比率 1.494 → ok
+コマ1: 717x480 (1.494) → 左右に各0.2%の紙帯 → 出力 720x480  asset_sources/loading-comics/62-sumi-cold-tea/panels/sumi-cold-tea-1.webp (58 KiB)
+コマ2: 717x480 (1.494) → 左右に各0.2%の紙帯 → 出力 720x480  asset_sources/loading-comics/62-sumi-cold-tea/panels/sumi-cold-tea-2.webp (56 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "sumi-cold-tea",
+  "title": "冷めた紅茶",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "asset_sources/loading-comics/62-sumi-cold-tea/panels/sumi-cold-tea-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "asset_sources/loading-comics/62-sumi-cold-tea/panels/sumi-cold-tea-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "asset_sources/loading-comics/62-sumi-cold-tea/62-sumi-cold-tea.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 717,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "asset_sources/loading-comics/62-sumi-cold-tea/62-sumi-cold-tea.png",
+      "region": {
+        "x": 780,
+        "y": 272,
+        "width": 717,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "sumi-cold-tea-1.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "e1023afcef0e80ca7c0d6120c51c538749f1025a58528116c9a53be6d86a3fcf"
+    },
+    {
+      "file": "sumi-cold-tea-2.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "b1c422a1e50aa8f5f1a8da654c66bfa922c023b69688b279ae485492f5276413"
+    }
+  ]
+}

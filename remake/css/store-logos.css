@@ -12,6 +12,11 @@
 /* 原画の形・透過は保ち、黒に近かった緑の文字を地図上で読み取りやすくする。 */
 .spot-pin.branded [data-store-logo="minto"] > img { filter: brightness(2) saturate(1.25); }
 .spot-pin.branded.sel .shield { border-color: #ffe9a8; }
+/* 白い文字のロゴ（クラブSEAM）は、地図の看板と来店の札を暗くして読めるようにする。 */
+.spot-pin.branded:has(.store-logo.on-dark) .shield,
+.spot-pin.branded:has(.store-logo.on-dark) .shield::before,
+.spot-pin.branded:has(.store-logo.on-dark) .shield::after { background-color: #1f1a29; }
+.store-arrival-card:has(.store-logo.on-dark) { background: #1f1a29; }
 .spot-pin .pin-owner-face { position: absolute; top: -16px; left: -16px; right: auto; width: 32px; height: 32px; }
 
 .store-arrival { position: absolute; inset: 0; z-index: 999; display: grid; place-items: center; pointer-events: none; }

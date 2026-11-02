@@ -29,7 +29,7 @@ try {
     assert.equal(flavorCases[id], null, `${id}: 未確定・正体を伏せる好みを表示しない`);
   }
   assert.deepEqual([flavorCases.kuze, flavorCases.steve, flavorCases.master_hookah, flavorCases.sheikh, flavorCases.maezono],
-    [{ main: "アールグレイ" }, { main: "マウンテンミスト" }, { main: "ライチ" }, { main: "グレープ" }, { main: "ミント／ダブルアップル" }],
+    [{ main: "アールグレイ" }, { main: "マウンテンミスト" }, { main: "ライチ" }, { main: "グレープ" }, { main: "レモン" }],
     "正本で決まっている好みを表示する");
   assert.deepEqual(flavorCases.samechan, { main: "スプリングウォーター" });
   const brandNames = await page.evaluate((ids) => ids.flatMap((id) => {
@@ -39,6 +39,12 @@ try {
   }), ids);
   assert.deepEqual(brandNames, [], "カットインの好きなフレーバーにメーカー名を付けない");
   assert.equal(await page.evaluate(() => T.introFlavor("__proto__")), null, "未登録の特殊IDを表示しない");
+  // 2026-11-02 オーナー指定: 人物絵の寄り・引きの違いを配置で吸収し、全員ほぼ同じ頭の大きさで出す（パッキーは全身）
+  const unscaled = await page.evaluate(async (ids) => {
+    const g = await import("./js/vn/intro-graphic.js");
+    return ids.filter((id) => id !== "pakki" && g.graphicIntro(id, "graphic") && !g.hasScaledFrame(id));
+  }, ids);
+  assert.deepEqual(unscaled, [], "頭の大きさをそろえる配置が無い（heads.json を測って tools/intro_graphic_frames.py を実行）");
   assert.deepEqual(flavorCases.ageha, { main: "ホワイトグミベア／レッドグミベア" });
   assert.equal(await page.evaluate(() => T.introFlavor("ageha", "unknown")), null, "正体不明版で好みを表示しない");
 

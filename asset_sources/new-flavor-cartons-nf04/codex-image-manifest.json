@@ -1,0 +1,275 @@
+[
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/biscuit-A.png",
+    "relative_path": "biscuit-A.png",
+    "bytes": 1043274,
+    "sha256": "45ac47ac96fbcadce623ded252b4f4ce26191d8a9e9eecc64736545b35eb8b9b",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/biscuit-A.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/biscuit-B.png",
+    "relative_path": "biscuit-B.png",
+    "bytes": 1002277,
+    "sha256": "21c2150254ee69ebced36de5608cbd94dcdcaa91617c0cfc87637f8c96252623",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/biscuit-B.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/biscuit-C.png",
+    "relative_path": "biscuit-C.png",
+    "bytes": 1018916,
+    "sha256": "0f54d5cda2158b27f330fb3d84b03975483cb004bb4b1e24ea56200b4f9a1a3f",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/biscuit-C.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/cherry-A.png",
+    "relative_path": "cherry-A.png",
+    "bytes": 1091189,
+    "sha256": "93ef9af29603a699b9a159e2aa83fb270183c2b127573cecd5add9c4fe81b5ca",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/cherry-A.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/cherry-B.png",
+    "relative_path": "cherry-B.png",
+    "bytes": 1066698,
+    "sha256": "b4366834cab6650be002fe4df977786e632b6ed86f6eaee8bc4b5977e8465ca1",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/cherry-B.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/cherry-C.png",
+    "relative_path": "cherry-C.png",
+    "bytes": 1063075,
+    "sha256": "aec93388b6052243d7943fa3a2b03112d790f68a7486320bf1124a355b696bd6",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/cherry-C.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/grapefruit-A.png",
+    "relative_path": "grapefruit-A.png",
+    "bytes": 1242909,
+    "sha256": "ce8827da98491634b4047e08a49e7b77d3ef3953e575e2f11e6541d4f6ba85f6",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/grapefruit-A.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/grapefruit-B.png",
+    "relative_path": "grapefruit-B.png",
+    "bytes": 1223802,
+    "sha256": "44806131193df8351d716407bcf44950b2cb6b435e0768b921fbd1fd2d6e60a2",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/grapefruit-B.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/grapefruit-C.png",
+    "relative_path": "grapefruit-C.png",
+    "bytes": 1242010,
+    "sha256": "6e98ac327eed5263c04a6407380a3e6eed39b23bd2ac1dbe7f73c214a1b45a75",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/grapefruit-C.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/honey-A.png",
+    "relative_path": "honey-A.png",
+    "bytes": 1075996,
+    "sha256": "b6f3ede1798b0d9dfdb82d3bc0f49e5cc1a183ca6938e5d7333fa057653c518c",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/honey-A.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/honey-B.png",
+    "relative_path": "honey-B.png",
+    "bytes": 1015729,
+    "sha256": "a4cb791d50813e8b3eb8cf51ad44b502933f35946c2ba1d01d3f922f0e505c61",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/honey-B.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/honey-C.png",
+    "relative_path": "honey-C.png",
+    "bytes": 1037535,
+    "sha256": "6339c8d523388156b0fed72b8a022b8d0ad4a9ff990e50a34c6fde4131c45656",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/honey-C.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/lime-A.png",
+    "relative_path": "lime-A.png",
+    "bytes": 1263496,
+    "sha256": "8ffe414e6c1fa6eeb05f7e92b7ac8684f6e2f02dd5fef55ff69a167f4c079814",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/lime-A.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/lime-B.png",
+    "relative_path": "lime-B.png",
+    "bytes": 1201777,
+    "sha256": "86adcedb8fc2cb555a38e32d80a1cbb5a0ca43131f3c20f156b00210b0606d00",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/lime-B.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/lime-C.png",
+    "relative_path": "lime-C.png",
+    "bytes": 1260507,
+    "sha256": "1fe56164b21d5f7b6acde3272b3c80f6070aa17917c210aa2ef5a4e1621e499d",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/lime-C.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/milk-A.png",
+    "relative_path": "milk-A.png",
+    "bytes": 962790,
+    "sha256": "69e3bd8a8eae3a7daee7391b5286727e71f33f71a3069d1c6d06a126c566acfd",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/milk-A.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/milk-B.png",
+    "relative_path": "milk-B.png",
+    "bytes": 956355,
+    "sha256": "9e985f0c12b926fd8375453320f29be494beecf39b2a54a2e1a93cb931dc8fc7",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/milk-B.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/milk-C.png",
+    "relative_path": "milk-C.png",
+    "bytes": 976167,
+    "sha256": "5efd0797282445256caeead856d3f5e2c79ecf6b6c70c5712dd33b0e49ab41af",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/milk-C.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/passion_fruit-A.png",
+    "relative_path": "passion_fruit-A.png",
+    "bytes": 1046459,
+    "sha256": "ffe4c70967d2bf84bd3efe4c9d771cfb0dc13a6eddd7cabc48b4f874d007ba60",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/passion_fruit-A.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/passion_fruit-B.png",
+    "relative_path": "passion_fruit-B.png",
+    "bytes": 1029638,
+    "sha256": "959d0d4c7326b9267b5ebd848073a1c1b778cb12452809c5545ed7b3f2bd766a",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/passion_fruit-B.png"
+  },
+  {
+    "group": "nf04-cartons",
+    "source_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/passion_fruit-C.png",
+    "relative_path": "passion_fruit-C.png",
+    "bytes": 1039648,
+    "sha256": "5cfb426c603fea87a27ee9c61708e0745b2fafe62020c8efb2b39930b7adf7e0",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "archive_path": "candidates/passion_fruit-C.png"
+  }
+]

@@ -42,12 +42,12 @@ export const LESSON_CONTEXTS = ["first", "event"];
 const LESSON_STEPS = ["welcome", "target", "horizontal", "vertical", "power", "result", "finish"];
 export function runAxeThrow({ host = document.getElementById("stage") || document.getElementById("axe-app"),
   signal, mode = "practice", tutorial = false, opponent = tutorial ? null : "hiyori", allowRetry = true, difficulty = "normal", seed,
-  division = "rec", bestOf = 1, lessonContext = null, reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches } = {}) {
+  division = "rec", bestOf = 1, lessonContext = null, steady = 1, reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   const versus = mode === "versus";
   if (typeof tutorial !== "boolean" || tutorial && (mode !== "practice" || opponent !== null) || (!versus && !Object.hasOwn(MODES, mode)) || versus && (opponent !== "hiyori" || !Object.hasOwn(DIFFICULTIES, difficulty)) || opponent !== null && !Object.hasOwn(COMPANIONS, opponent)
-    || !Object.hasOwn(DIVISIONS, division) || !SERIES.includes(bestOf)
+    || !Object.hasOwn(DIVISIONS, division) || !SERIES.includes(bestOf) || !Number.isFinite(steady) || steady < .5 || steady > 1
     || lessonContext !== null && (!tutorial || !LESSON_CONTEXTS.includes(lessonContext))) return Promise.reject(new RangeError("Unknown axe mode, division, lesson or companion"));
   const rules = tutorial ? { throws: 1, max: 8, half: 0 } : MODES[versus ? "league" : mode], companion = COMPANIONS[opponent];
   const baseSeed = (seed ?? crypto.getRandomValues(new Uint32Array(1))[0]) >>> 0;
@@ -431,7 +431,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     else if (phase === "vertical") { aim.y = axisAt(gaugeAt(elapsed, cycles.vertical)); SE.select(); setPhase("power"); }
     else if (phase === "power") {
       power = gaugeAt(elapsed, cycles.power);
-      const release = releaseAimAt(aim, held, power, shots.length, held < focusUntil);
+      const release = releaseAimAt(aim, held, power, shots.length, held < focusUntil, steady);
       pending = { ...preview({ x: release.x, y: release.y, power, called }), baseAim: { ...aim }, sway: release.sway };
       SE.whoosh(); setPhase("flight");
     }
@@ -476,7 +476,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const currentShots = versus ? match[actor] : shots;
     const shown = ["result", "summary"].includes(phase) ? (versus ? latest(actor) : shots.at(-1)) : null;
     const displayedShot = ["flight", "opponent-ready"].includes(phase) ? pending : shown;
-    const release = displayedShot?.aim || releaseAimAt(aim, moving ? held : 0, power, shots.length, moving && held < focusUntil);
+    const release = displayedShot?.aim || releaseAimAt(aim, moving ? held : 0, power, shots.length, moving && held < focusUntil, steady);
     const landing = displayedShot?.landing || (moving ? { x: release.x, y: release.y + (phase === "power" ? (POWER.ideal - power) * .28 : 0) } : aim);
     const throwIndex = Math.min(currentShots.length, rules.throws - 1);
     const currentHalf = halfOf(["result", "summary"].includes(phase) && !sd ? Math.max(0, currentShots.length - 1) : throwIndex, rules.throws);
@@ -683,7 +683,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const focusText = remaining > 0 ? "集中中" : focusUsed ? "集中は使用済み" : "息を整える · 1回";
     if (focusButton.textContent !== focusText) focusButton.textContent = focusText;
     const steadyText = remaining > 0 ? "集中 · あと" + (remaining / 1000).toFixed(1) + "秒"
-      : "腕の疲れ " + (fatigue < .3 ? "小" : fatigue < .7 ? "中" : "大") + " · 白い刃先を見よう";
+      : "腕の疲れ " + (fatigue < .3 ? "小" : fatigue < .7 ? "中" : "大") + (steady < 1 ? " · マイ斧で揺れ−" + Math.round((1 - steady) * 100) + "%" : " · 白い刃先を見よう");
     if (steadiness.textContent !== steadyText) steadiness.textContent = steadyText;
     keyhint.hidden = !moving;
     keyhint.textContent = phase === "power" ? "緑の帯でタップ / Space・Enter · Fで集中" : "的をタップ / Space・Enterで止める · Fで集中";

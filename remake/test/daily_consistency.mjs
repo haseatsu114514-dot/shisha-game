@@ -26,7 +26,7 @@ const values = {
   "transitions.js": { refreshPlaceCue() {} },
   "state.js": { state, config: { statEffectColors: true }, save() {}, timeOfDay: () => state.slot === 0 ? "day" : "night", markMet() {}, STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" } },
   "stats.js": { AFFINITY_RANK_PTS: [0,9,20,33,48,66], setStoryAffinityCap() {}, affinityGateWaiting: () => false, addMoney: (value) => money.push(value), addStamina: (value) => { state.stamina = Math.max(0, state.stamina + value); }, applyStats() {}, paidAction: async (run) => ({ value: await run() }), DRILL_GROWTH_BUDGET: 2, step: () => charmStep,
-    currentCondition: () => conditionForRatio(state.stamina / 100), gainAffinity() {}, releaseAffinity() {}, ensureAffinityLevel() {}, earnStat() {}, affinityLevel: id => [9,20,33,48,66].filter(n => (state.affinity?.[id] || 0) >= n).length },
+    currentCondition: () => conditionForRatio(state.stamina / 100), gainAffinity() {}, visitAffinity: kind => ({ story: 16, talk: 8 })[kind], releaseAffinity() {}, ensureAffinityLevel() {}, earnStat() {}, affinityLevel: id => [9,20,33,48,66].filter(n => (state.affinity?.[id] || 0) >= n).length },
 
   "audio.js": { SE: { select() {}, cancel() {} }, playBgm() {} },
   "engine.js": { isPlaying: () => false, play: async (scene) => { plays.push(scene); return {id: typeof scene === "string" ? scene : scene.dialogue_id, visited: []}; }, dialogueSequence: (run) => run() },
@@ -43,7 +43,7 @@ const values = {
 const context = vm.createContext({ Math, Set, Promise, console, AbortController }); const mods = new Map();
 async function load(name) { if (mods.has(name)) return mods.get(name); const mod = values[name]
   ? new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name })
-  : new vm.SourceTextModule(await fs.readFile(new URL(`js/${name === "train-passengers.js" ? "motions" : ["coals.js", "attack-training.js"].includes(name) ? "craft" : ["chapter-features.js", "stat-step-tables.js", "flavor-mastery.js", "cinema-discovery.js", "rules.js", "affinity-stages.js", "axe-bar-discovery.js", "city-locations.js", "trpg-discovery.js", "ryuji-visit.js", "travel-budget.js"].includes(name) ? "core" : "daily"}/${name}`, root), "utf8"), { context, identifier: name });
+  : new vm.SourceTextModule(await fs.readFile(new URL(`js/${name === "train-passengers.js" ? "motions" : ["coals.js", "attack-training.js"].includes(name) ? "craft" : ["chapter-features.js", "stat-step-tables.js", "flavor-mastery.js", "cinema-discovery.js", "rules.js", "affinity-stages.js", "axe-bar-discovery.js", "city-locations.js", "trpg-discovery.js", "ryuji-visit.js", "travel-budget.js", "chapter-clock.js"].includes(name) ? "core" : "daily"}/${name}`, root), "utf8"), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod; }
 const module = await load("tonari.js"); await module.evaluate(); const tonari = module.namespace;
 const byid = Object.fromEntries(events.map((e) => [e.id, e]));
