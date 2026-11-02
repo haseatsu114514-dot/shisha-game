@@ -91,7 +91,7 @@ await suite("shop-ui", async check => {
         }
         return rows;
       };
-      const flavors = await decodeRows(25);
+      const flavors = await decodeRows(27); // 25種＋第1章の新入荷（グレープフルーツ・ハニー、NF02）
       const generatedIds = new Set(flavors.filter(row => row.kind === 'generated').map(row => row.id));
       for (const id of [...ADOPTED, ...CHARACTER_CARTONS]) assert(generatedIds.has(id), `${id} has generated carton art`);
       assert.deepEqual(flavors.filter(row => row.kind === 'botanical').map(row => row.id), []);
@@ -257,7 +257,7 @@ await suite("shop-ui", async check => {
     }, options);
     await run(`${platform}-batch`, async page => {
       await setup(page); await open(page);
-      assert.equal(await page.locator('.shop-row.product').count(), 25);
+      assert.equal(await page.locator('.shop-row.product').count(), 27);
       assert.equal(await page.locator('[data-test="shop-upstairs"]').count(), 0);
       await tap(page, 'buy-mint'); await tap(page, 'buy-mint'); await tap(page, 'buy-blueberry');
       assert.match(await page.locator('.shop-summary').innerText(), /4,650/);
@@ -304,7 +304,7 @@ await suite("shop-ui", async check => {
     const allState = () => page.evaluate(() => JSON.stringify(S.core.state));
     await open(page, { errand: 'mint', expense: true });
     await page.evaluate(() => S.ui.setBg(S.data.bgUrl('bg_shop'), { fast: true }));
-    assert.equal(await page.locator('.shop-row.product').count(), 25, '他の商品を一覧から消さない');
+    assert.equal(await page.locator('.shop-row.product').count(), 27, '他の商品を一覧から消さない');
     assert.equal(await page.locator('.shop-errand').getAttribute('data-guide-step'), 'select');
     assert.equal(await page.locator('[data-test="buy-mint"]').getAttribute('data-errand-target'), 'true');
     await assertFits(page, '.shop-errand, [data-test="buy-mint"], .shop-foot');

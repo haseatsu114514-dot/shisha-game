@@ -13,6 +13,7 @@ export const DUBAI_MAP_PLACES = Object.freeze({
   alley_cafe: place("alley_cafe", "路地裏のカフェ", 30, 78),
   inn: place("inn", "宿", 12, 24),
   mosque: place("mosque", "風の回廊モスク", 58, 70),
+  shop: place("shop", "Dr.fookah ドバイ店", 40, 50),
   venue: place("venue", "大会会場", 86, 20),
 });
 
@@ -68,6 +69,11 @@ export function chapterFourMapModel(value, { canReflect = false } = {}) {
         : `${hours.why}。昼の案内付き見学枠（礼拝時間外・金曜午前を除く）に訪ねよう。`,
     }));
   }
+  // Dr.fookah ドバイ店: 日本の各店で扱ってきた葉が全部そろう。買い物は時間・体力を使わない。
+  destinations.push(destination("shop", [], "Dr.fookah が現地に出した店。", false, {
+    kind: "shop", consumes: false, label: "Dr.fookah ドバイ店で葉を買う",
+    purpose: "日本で出た葉が全部そろう。買い物は時間を使わない。",
+  }));
   // 宿は「その日を終える」唯一の行動。DAY2以降で未読なら道具の手入れを先に再生する。
   destinations.push(destination("inn", day >= 2 ? unread([SCENE.toolCare]) : [],
     day === CH4_EVE_DAY ? "部屋へ戻り、夜に備える。" : "部屋へ戻り、この日を終える。", false,
