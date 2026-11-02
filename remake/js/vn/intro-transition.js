@@ -223,6 +223,8 @@ function morph(ctx) {
 
       const mountCutin = () => {
         unmount = showCutin(ctx);
+        // 器の暗い地が一度に出ると場面が急に暗く沈むので、影の下で薄く重ねていく
+        keep(animate(ctx.host, [{ opacity: 0 }, { opacity: 1 }], { duration: 260, easing: "ease-out" }));
         ctx.host.classList.add("ci-staged");
         ctx.host.querySelector(".ci-portrait").style.opacity = "0";
         keep(animate(ctx.host.querySelector(".ci-art-background"), [{ opacity: 0, transform: "scale(1.06)" }, { opacity: 1, transform: "none" }], { duration: 720 }));
@@ -266,12 +268,16 @@ function morph(ctx) {
       if (!dim) return;
       host.querySelectorAll(".ci-ribbon,.ci-accent-line,.ci-quote-area").forEach((n) =>
         keep(animate(n, [{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: EASE.in })));
-      const portrait = host.querySelector(".ci-portrait"), bg = host.querySelector(".ci-art-background");
-      if (portrait) keep(animate(portrait, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(10px) scale(.985)" }], { duration: 360, delay: 100, easing: EASE.in }));
-      if (bg) keep(animate(bg, [{ opacity: 1 }, { opacity: 0 }], { duration: 380, delay: 120, easing: "ease-in" }));
-      keep(animate(dim, [{ opacity: .7 }, { opacity: 0 }], { duration: 420, delay: 220, easing: "ease-out" }));
-      if (rect.img?.isConnected) keep(animate(rect.img, [{ opacity: 0 }, { opacity: 1 }], { duration: 320, delay: 260, easing: "ease-out" }));
-      await sleep(600);
+      // カットインの器（暗い地・ベール）ごと薄くする。部品だけ消すと、器の地が一瞬平らな暗い画面として残る
+      const portrait = host.querySelector(".ci-portrait");
+      if (portrait) keep(animate(portrait, [{ transform: "none" }, { transform: "translateY(10px) scale(.985)" }], { duration: 420, delay: 100, easing: EASE.in }));
+      keep(animate(host, [{ opacity: 1 }, { opacity: 0 }], { duration: 380, delay: 120, easing: "ease-in-out" }));
+      // 縦長・横長の画面で余白を埋める面（intro-fit の surface）も同じく薄くする
+      const surface = host.previousElementSibling?.classList.contains("intro-fit-surface") ? host.previousElementSibling : null;
+      if (surface) keep(animate(surface, [{ opacity: 1 }, { opacity: 0 }], { duration: 380, delay: 120, easing: "ease-in-out" }));
+      if (rect.img?.isConnected) keep(animate(rect.img, [{ opacity: 0 }, { opacity: 1 }], { duration: 340, delay: 240, easing: "ease-out" }));
+      keep(animate(dim, [{ opacity: .7 }, { opacity: 0 }], { duration: 420, delay: 260, easing: "ease-out" }));
+      await sleep(700);
       this.cancel();
     },
     cancel() {
