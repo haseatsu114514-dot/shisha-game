@@ -24,6 +24,7 @@ export const STORE_LOGOS = Object.freeze({ ...BASE_LOGOS,
   ch3_steve: { name: "Smoke & Glory", file: "ch3-smoke-and-glory", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch3_volk: { name: "Железный Дым（鉄の煙）", file: "ch3-iron-smoke", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch3_mukai: { name: "mukai", file: "ch3-mukai", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
+  ch3_club: { name: "SEAM", file: "ch3-seam", ext: "webp", sheet: [768, 512], frame: [20, 191, 728, 130] }, // クラブSEAM（DJS15・#2199）。横長の文字ロゴなので外枠を文字の周りに詰める
 });
 
 export const hasStoreLogo = (id) => Object.hasOwn(STORE_LOGOS, id);

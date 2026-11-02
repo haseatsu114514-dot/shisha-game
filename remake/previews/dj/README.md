@@ -8,7 +8,7 @@ Entry: `remake/previews/dj/index.html?set=1〜3`（旧 `?stage=` も同じ）。
 - **店主とストーリー**: 店主は針間ヨル（`data/characters.json` の `yoru`、人物は `brand/character_profiles.md`）。初めて入る夜だけ、階段の上でmukaiの常連の彼女に声をかけられ、オープンデッキの夜へ誘われる場面（`ch3_club_first`）。初めて A 以上を出した夜だけ短く話す（`ch3_club_a_talk`）。メニューに店主の一言、セット後に結果への一言。台詞の正本は `data/dialogue/ch3_club.json`。
 - **重ね方**: `remake/js/minigames/dj.js` の `runDjSet` が、このページを `?embed=1` 付きで本編の `#stage` に iframe で重ねる。埋め込み時だけ「← 戻る」が出て、本編のミュートと BGM 音量（`?mute=1`・`?vol=`）に従う。セットを回しきるたびに `postMessage({type:'dj-result', set, rank, total, floor})`、戻ると `{type:'dj-exit'}` を親へ送る。親は送り元の iframe と同じ origin だけを受け付ける。
 - **記録**: `state.dj = { sets: {1: {plays, best: {rank, total, floor, chapter, day}}}, bestRank }`（ベストは点数で比較、bestRank は全セットで最高）。保存形式の移行は不要（読み込みは未知の項目を残す）。心得の盤の「遊びのご褒美」SBD39 が `state.dj.bestRank` を読み、A 以上で寝る前に感覚の火種を1つ渡す（1回だけ）。
-- **地図の入口**: `remake/js/chapters/ch3.js` の `freeTimeChoices`（`djNightChoices`）と `openTokyoMap`（`action.dj` → `visitDjClub`）。戻ると同じ自由時間のカードに戻り、自由時間は残る。地図の地点は `ch3-map-model.js` の `club`、ピンの店ロゴは `store-logos.js` の `ch3_club`（画像は Issue #2199）。立ち絵・顔アイコン・登場カットインの絵・クラブの背景も #2199 で Codex が制作中。立ち絵が入るまで会話は名前だけ、登場カットインは文字だけ。
+- **地図の入口**: `remake/js/chapters/ch3.js` の `freeTimeChoices`（`djNightChoices`）と `openTokyoMap`（`action.dj` → `visitDjClub`）。戻ると同じ自由時間のカードに戻り、自由時間は残る。地図の地点は `ch3-map-model.js` の `club`、ピンの店ロゴは `store-logos.js` の `ch3_club`（画像は Issue #2199）。立ち絵・顔アイコン・店内と入口の背景・店ロゴ・登場カットインの背景は組み込み済み（DJS16）。表情差分とグラフィック絵柄の人物絵は #2199 で未着。
 
 ## 遊び方（操作は ▶ と横フェーダーだけ）
 
@@ -45,16 +45,9 @@ Entry: `remake/previews/dj/index.html?set=1〜3`（旧 `?stage=` も同じ）。
 
 素材は `remake/img/ui/dj/`（#2071/#2073/#2095/#2107/#2114 の生成物をそのまま使用）。フロアの背景は `bg-purple.webp`（空のクラブ）の上に群衆をコードで描いている。
 
-### 任意の差し替え: フロアの群衆画像（Codex 用プロンプト）
+### フロアの観客（DJS09・DJS16）
 
-画像生成 API のクレジット切れ（2026-11-01）のため群衆はコード描画。より写実的にしたい場合は次を Codex に渡し、できた画像を `asset_sources/ui/dj-floor/` に原画、`remake/img/ui/dj/floor-crowd.webp`（1536×512・不透過）に組み込み、`style.css` の `.floor` の背景に差し替える（`#crowd` のドット群衆は FLOOR 連動の演出として残す）。
-
-```
-Painterly illustration, game theme palette deep purple-black (#0b0812, #151024) with violet (#b45cf0), neon pink (#ff5fa8) and cyan (#3fd0e8) stage light, faint hookah smoke wisps, moody shisha-bar club atmosphere.
-Scene: wide view from behind the DJ booth looking out over a packed club dancefloor at night. A dense crowd of dark back-lit silhouettes with raised hands fills the middle band; violet and cyan beams and haze above; the very bottom edge is the dark top surface of the DJ table. Horizontal 3:1 composition (1536x512), crowd heads roughly in the lower half so UI text can sit on the dark ceiling area.
-No text, no letters, no logos, no numbers, no watermark, no readable faces, no gauges or UI elements baked in.
-Save as: remake/img/ui/dj/floor-crowd.webp (opaque, 1536x512). Keep the original PNG in asset_sources/ui/dj-floor/.
-```
+フロアの帯は Codex が描いた観客 `remake/img/ui/dj/floor-crowd.webp`（3案から b を採用、記録は `asset_sources/ui/dj-floor-crowd-20261102/README.md`）。`style.css` の `.floor:before` に群衆の頭が帯に入る高さで敷き、FLOOR の値で明るさ・彩度を上げる。ドット絵の群衆は描かず、`app.mjs` の drawCrowd は拍に合わせて流れる光だけを描く。
 
 ## 検証
 
