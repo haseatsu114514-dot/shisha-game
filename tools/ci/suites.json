@@ -2999,6 +2999,14 @@
       ]
     },
     {
+      "id": "new-flavors-dubai-shop",
+      "title": "New flavors release chapters, shop catalogs and Dubai shop (NF01-NF03)",
+      "kind": "quick",
+      "run": [
+        "node --experimental-vm-modules remake/test/shop_new_flavors_dubai.mjs"
+      ]
+    },
+    {
       "id": "flavor-mastery",
       "title": "Flavor mastery, inventory and daily stamina budgets",
       "kind": "quick",
