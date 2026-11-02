@@ -702,17 +702,18 @@ function phoneShell({ time, title }) {
     const row = el(`div.lime-row.peer${animate ? "" : ".past"}`, [face, box]);
     chat.append(row);
     ui.lastSide = "peer";
-    ui.scroll();
     if (animate) SE.phoneReceive();
     const asset = content.asset;
     const fallback = () => {
       box.classList.add("lime-media-fallback");
       box.replaceChildren(el("span", { text: content.fallback }));
     };
-    if (!asset) { fallback(); return; }
+    if (!asset) { fallback(); ui.scroll(); return; }
     const image = el("img", { alt: asset.alt, width: asset.width, height: asset.height });
     box.style.aspectRatio = `${asset.width} / ${asset.height}`;
     box.append(image);
+    // 本文の終端は、添付の高さを確保してから合わせる。
+    ui.scroll();
     await new Promise((resolve) => {
       let settled = false;
       const finish = (ok) => {
@@ -739,14 +740,16 @@ function phoneShell({ time, title }) {
   ui.choose = (options, hint = null) => new Promise((resolve) => {
     ui.cancel = () => resolve(null);
     const buttons = options.map((o, i) =>
-      el(`button.lime-reply${o.disabled ? ".disabled" : ""}`, {
+      el(`button.lime-reply${o.disabled ? ".disabled" : ""}${o.wrap ? ".multiline" : ""}`, {
         text: o.label || o.text,
         disabled: o.disabled || null,
         dataset: { test: `reply-${i}` },
         onclick: () => { SE.select(); actions.replaceChildren(); ui.cancel = null; resolve(o); },
       }));
     actions.replaceChildren(...[hint ? el("div.lime-hint", { text: hint }) : null, ...buttons].filter(Boolean));
-    buttons.forEach((b) => fitOneLine(b, 14)); // 返信も1行（GUI22）
+    buttons.forEach((b, i) => { if (!options[i].wrap) fitOneLine(b, 14); }); // 通常返信は1行（GUI22）
+    // 返信欄が広がった後の表示範囲で、末尾の本文・添付まで読める位置へ。
+    ui.scroll();
   });
   ui.close = async () => {
     ui.open = false;
@@ -856,7 +859,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       [
         st === "busy"
           ? { label: "（今日はもう別の約束がある）", disabled: true }
-          : { label: `${go}（行動1回${cost ? `・${yen(cost)}必要${affordable ? "" : "・所持金不足"}` : ""}）`, text: go, go: true, disabled: !affordable },
+          : { label: `${go}（行動1回${cost ? `・${yen(cost)}必要${affordable ? "" : "・所持金不足"}` : ""}）`, text: go, go: true, disabled: !affordable, wrap: !!cost },
         { text: no, go: false },
         ...(!forced ? [{ text: "あとで返事する（トーク一覧へ）", later: true }] : []),
       ],
