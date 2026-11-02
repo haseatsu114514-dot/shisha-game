@@ -9,7 +9,7 @@ class CanonRegressionTests(unittest.TestCase):
         def baito(text):
             return {'events': [{'id': 'baito_jiro_call', 'choices': [{'text': text}]}]}
         self.assertEqual(len(confirmed_r5_baito_errors(baito(old_baito))), 1)
-        for text in ('店流に整えて出す（全マシだと吸い口が崩れるので）',
+        for text in ('店流に整えて出す（全マシだと味が崩れるので）',
                      '「マシマシは体に毒なので」は誤り',
                      'マシマシは体に毒なので、とは言えない'):
             with self.subTest(text=text):

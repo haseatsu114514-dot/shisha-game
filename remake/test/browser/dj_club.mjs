@@ -64,7 +64,7 @@ await suite("dj-club", async check => {
       const value = window.__remake.state;
       return dj.djNightChoices(value, p.chapterThreeFreeTime(value));
     });
-    assert.equal(choice.length, 1); assert.equal(choice[0].place, "club"); assert.equal(choice[0].consumes, false); assert.match(choice[0].label, /地下から低い音/);
+    assert.equal(choice.length, 1); assert.equal(choice[0].place, "club_unknown"); assert.equal(choice[0].consumes, false); assert.match(choice[0].label, /地下から低い音/);
     await page.evaluate(async () => {
       const club = await import("./js/daily/dj-club.js");
       window.__djVisit = club.visitDjClub().then(value => { window.__djVisitDone = value; });
@@ -146,9 +146,11 @@ await suite("dj-club", async check => {
     assert.match(await page.locator(t("ch3-intro-map")).innerText(), /行き先を選ぶ/);
     await page.locator(t("ch3-intro-map")).click();
     await page.locator(t("ch3-map")).waitFor();
-    const pin = page.locator(t("ch3-map-place-club"));
+    const pin = page.locator(t("ch3-map-place-club_unknown"));
     assert.match(await pin.innerText(), /地下の店/, "the club is unnamed before the first visit");
+    assert.equal(await page.locator(t("ch3-map-place-club")).count(), 0);
     await pin.click();
+    assert.equal(await page.locator('[data-store-logo="ch3_club"]').count(), 0, "no logo before the first visit (it would give the name away)");
     await page.locator(t("ch3-map-action-dj")).click();
     const names = await readUntil(page, t("dj-club-menu"));
     assert.ok(names.includes("？？？") && names.includes("針間ヨル"), JSON.stringify(names));
@@ -162,7 +164,9 @@ await suite("dj-club", async check => {
     // 二回目の地図ではクラブの名前で出る。
     await page.locator(t("ch3-intro-map")).click();
     await page.locator(t("ch3-map")).waitFor();
+    await page.locator(t("ch3-map-place-club")).click();
     assert.match(await page.locator(t("ch3-map-place-club")).innerText(), /クラブSEAM/);
+    assert.equal(await page.locator('[data-store-logo="ch3_club"]').count(), 1, "the SEAM logo shows once the club is known");
     await page.keyboard.press("Escape");
   });
 });

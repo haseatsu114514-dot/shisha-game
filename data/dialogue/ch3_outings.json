@@ -18,7 +18,7 @@
       "lines": [
         { "speaker": "", "text": "mukaiの仕込みを終えると、ましろちゃんが客席の一台を指した。" },
         { "speaker": "mashiro", "face": "normal", "text": "はじめくん、あの席の調整、お願いしていい？" },
-        { "speaker": "hajime", "face": "serious", "text": "うん。……甘さが少し引いてきた。炭を一つだけ外へずらす" },
+        { "speaker": "hajime", "face": "serious", "text": "うん。……甘さが引いて、少し辛い。炭を一つだけ外へずらす" },
         { "speaker": "customer", "text": "あ、戻ってきた。最初より好きかも" },
         { "speaker": "mashiro", "face": "smile", "text": "味、ちゃんと戻ってきたねぇ" },
         { "speaker": "hajime", "face": "smile", "text": "うん。今日は自分の舌で決められた" },
@@ -53,7 +53,7 @@
           "next_true": "tried",
           "next_false": "untried"
         },
-        { "speaker": "kuze", "face": "normal", "text": "大会の日は、僕の一口に引っぱられないでね" },
+        { "speaker": "kuze", "face": "normal", "text": "大会の日は、最初の一口だけで決めないでね" },
         { "speaker": "hajime", "face": "normal", "text": "……それ、忠告ですか？" },
         { "speaker": "kuze", "face": "smile", "text": "さあ。半分はね" }
       ],
@@ -154,7 +154,7 @@
           "id": "ch3_tetsuko_care",
           "choices": [
             { "text": "そっと撫でる", "next": "pet" },
-            { "text": "まかないの残りを分ける", "next": "feed" }
+            { "text": "味付け前のささみを分ける", "next": "feed" }
           ]
         },
         { "speaker": "", "text": "てつこを構っているうちに、肩の力が少し抜けていた。" }
@@ -170,7 +170,7 @@
           { "speaker": "mashiro", "face": "normal", "text": "ムカイさんにもそうだよぉ。飼い主なのに、ちょっとかわいそう" }
         ],
         "feed": [
-          { "speaker": "", "text": "まかないで残ったささみを、小皿に少しだけ置く。" },
+          { "speaker": "", "text": "まかない用に取っておいた、味付け前のささみを小皿に少しだけ置く。" },
           { "speaker": "", "text": "てつこはゆっくり近づいて、匂いを確かめてから食べ始めた。" },
           { "speaker": "hajime", "face": "normal", "text": "ゆっくりでいいぞ。誰も取らないから" },
           { "speaker": "", "text": "食べ終わると、てつこは一度だけこちらを見て、元のベンチへ戻った。" },

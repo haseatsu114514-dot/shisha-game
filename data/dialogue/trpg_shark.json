@@ -420,7 +420,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "わしがGM、お主たちが店番じゃ。全員、帰すぞ",
+          "text": "わしがGM、お主たちが店番じゃ",
           "castIntro": true,
           "smallTableText": "わしがGM、お主が店番じゃ。空いた役はわしが兼ねるぞ"
         },
@@ -654,7 +654,7 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……今。動くなら、今だと思った"
+          "text": "……今。動くなら、今だと思いました"
         }
       ]
     },
@@ -746,13 +746,13 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……目が向くものを、逃げ道から遠ざけたい"
+          "text": "……目が向くものを、逃げ道から遠ざけたいです"
         },
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "光ならランプ。渡れる場所なら、海図と救命具かな"
+          "text": "光ならランプ。渡れる場所なら、海図と救命具でしょうか"
         }
       ]
     },
@@ -792,7 +792,7 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……最後の合図。みんなに見えるようにするね"
+          "text": "……最後の合図。みんなに見えるようにしますね"
         }
       ]
     },
@@ -1237,7 +1237,7 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……短い移動。三人が渡る間だけ、目をそらしたい"
+          "text": "……短い移動。三人が渡る間だけ、目をそらしたいです"
         }
       ]
     },
@@ -1248,7 +1248,7 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……乾いた足場の方が、足音を揃えやすい"
+          "text": "……乾いた足場の方が、足音を揃えやすいです"
         }
       ]
     },
@@ -1259,7 +1259,7 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……壁の影。こっちを、光の反対側にしよう"
+          "text": "……壁の影。こっちを、光の反対側にしましょう"
         }
       ]
     },
@@ -1344,7 +1344,7 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……足音まで消したら、海の音が聞こえた"
+          "text": "……足音まで消したら、海の音が聞こえました"
         },
         {
           "speaker": "hiyori",
