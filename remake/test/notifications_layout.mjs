@@ -15,6 +15,8 @@ try {
     const errors = [];
     page.on("pageerror", e => errors.push(e.message));
     await page.goto(base);
+    // 旧しくみ（能力の通知カード STATUS UP）の検査。心得の盤（通常プレイの既定・SBD93）では能力を直接伸ばさないので、?growth=0 と同じ印で旧しくみにする（盤の経験値の通知は growth_levelup が確かめる）
+    await page.evaluate(() => localStorage.setItem("suien_growth_preview", "0"));
     await page.waitForSelector('[data-test="title-new"]');
     await page.evaluate(async () => {
       window.QA = { core: await import("./js/core/state.js"), ui: await import("./js/core/ui.js"),

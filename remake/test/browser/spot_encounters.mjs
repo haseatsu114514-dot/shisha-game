@@ -52,9 +52,11 @@ async function setup(page, { load = false } = {}) {
     };
     E.facility = id => {
       const spot = E.spots.spotById(id);
+      // 地図の行き先（daily/calendar.js）と同じく、施設の経験値の鍵も渡す
       return E.stats.paidAction(() => E.spots.visitSpot(spot), {
         ...E.spots.facilityGrowth(spot),
         consumed: () => true,
+        exp: { key: spot.id, place: spot.id },
       });
     };
     if (load) { E.core.load(); E.clear(); } else E.fresh();
@@ -71,12 +73,12 @@ await suite("spot-encounters", async check => {
     const r = await page.evaluate(async () => {
       const before = E.relationship(), rows = [];
       for (let n = 1; n <= 8; n++) {
-        E.clear(); const money = E.core.state.money, stats = { ...E.core.state.stats }; await E.facility("cafe");
+        E.clear(); const money = E.core.state.money, stats = { ...E.core.state.stats }, xp = E.core.state.growth?.xp || 0; await E.facility("cafe");
         const grown = Object.entries(E.core.state.stats).filter(([key, value]) => value > stats[key])
           .map(([key, value]) => [key, value - stats[key]]);
-        rows.push({ trace: E.trace, lines: E.lines(), cost: money - E.core.state.money, grown });
+        rows.push({ trace: E.trace, lines: E.lines(), cost: money - E.core.state.money, grown, xp: (E.core.state.growth?.xp || 0) - xp });
       }
-      return { rows, unchanged: before === E.relationship(), met: E.core.state.met.maezono,
+      return { rows, board: (await import("./js/core/growth-mode.js")).growthEnabled(), unchanged: before === E.relationship(), met: E.core.state.met.maezono,
         seen: E.core.state.flags._spot_seen_cafe_maezono_break };
     });
     assert(r.unchanged && r.met && r.seen);
@@ -87,8 +89,10 @@ await suite("spot-encounters", async check => {
     assert(r.rows[3].lines.some(t => t.includes("HOOKAH PRESSって雑誌")));
     for (const n of [2, 4, 6, 7]) assert(!/naru|maezono|master/.test(r.rows[n].trace[0]));
     assert(r.rows.every(row => row.cost === 800));
-    // #784: 好感度の上がらない施設は、主な能力（喫茶はセンス）1つに2P。
-    for (const row of r.rows) assert.deepEqual(row.grown, [["sense", 2]], JSON.stringify(row));
+    // #784: 好感度の上がらない施設は、旧しくみ（?growth=0）では主な能力（喫茶はセンス）1つに2P。
+    // 心得の盤（通常プレイの既定・SBD93）では経験値になり、能力は書き換えない
+    if (r.board) for (const row of r.rows) { assert.deepEqual(row.grown, [], JSON.stringify(row)); assert(row.xp > 0, JSON.stringify(row)); }
+    else for (const row of r.rows) assert.deepEqual(row.grown, [["sense", 2]], JSON.stringify(row));
   });
 
   await run("axe-bar-facility-growth-is-one-ability-two-points", async page => {
@@ -99,12 +103,13 @@ await suite("spot-encounters", async check => {
       await E.stats.paidAction(async () => { E.stats.earnStat("guts", 1); E.stats.addStamina(-10); }, E.spots.facilityGrowth(spot));
       return { growth: E.spots.facilityGrowth(spot), cafe: E.spots.facilityGrowth(E.spots.spotById("cafe")),
         tonari: E.spots.facilityGrowth(E.spots.spotById("tonari")),
-        grown: Object.entries(E.core.state.stats).filter(([key, value]) => value > before[key]).map(([key, value]) => [key, value - before[key]]) };
+        grown: Object.entries(E.core.state.stats).filter(([key, value]) => value > before[key]).map(([key, value]) => [key, value - before[key]]),
+        board: (await import("./js/core/growth-mode.js")).growthEnabled() };
     });
     assert.deepEqual(r.growth, { budget: 1, points: 2, primary: null });
     assert.deepEqual(r.cafe, { budget: 1, points: 2, primary: "sense" });
     assert.deepEqual(r.tonari, {});
-    assert.deepEqual(r.grown, [["guts", 2]]);
+    assert.deepEqual(r.grown, r.board ? [] : [["guts", 2]], "旧しくみは根性に2P、心得の盤は能力を書き換えない");
   });
 
   await run("kannon-rain-defers-and-legacy-visits-do-not-fake-seen", async page => {
@@ -276,7 +281,7 @@ await suite("spot-encounters", async check => {
         E.core.state.spotVisits = { [spot]: 1 };
         E.core.state.flags._minto_identity_revealed = E.core.state.flags._minto_name_known = true;
         E.before = { relationship: E.relationship(), money: E.core.state.money, stamina: E.core.state.stamina,
-          stats: { ...E.core.state.stats } };
+          stats: { ...E.core.state.stats }, xp: E.core.state.growth?.xp || 0 };
         E.vn.vnTest.turbo = false;
         E.calendar.runDaily({ nightEvents: {}, onQuit: () => {} }).catch(error => { E.error = error.stack; });
       }, ex.spot);
@@ -301,12 +306,16 @@ await suite("spot-encounters", async check => {
       const r = await page.evaluate(({ ex }) => ({ error: E.error, unchanged: E.before.relationship === E.relationship(),
         cost: E.before.money - E.core.state.money, stamina: E.core.state.stamina - E.before.stamina,
         gain: E.core.state.stats[E.spots.spotById(ex.spot).stat] - E.before.stats[E.spots.spotById(ex.spot).stat],
+        xp: (E.core.state.growth?.xp || 0) - E.before.xp,
         chosen: !!E.core.state.flags[ex.positive], seen: !!E.core.state.flags[`_spot_seen_${ex.source}`],
         visits: E.core.state.spotVisits[ex.spot], visitedToday: E.core.state.visitedDay[ex.spot] }), { ex });
       assert.equal(r.error, undefined); assert(r.unchanged && r.seen);
       assert.equal(r.cost, ex.spot === "cafe" ? 800 : 0);
       assert.equal(r.stamina, ex.spot === "choizap" ? -8 : -4);
-      assert.equal(r.gain, 2); // #784: 喫茶こはくも観音堂・ジムと同じく主な能力に2P
+      // #784: 旧しくみ（?growth=0）は喫茶こはくも観音堂・ジムと同じく主な能力に2P。心得の盤（通常プレイの既定・SBD93）は経験値
+      if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled())) {
+        assert.equal(r.gain, 0); assert(r.xp > 0, JSON.stringify(r));
+      } else assert.equal(r.gain, 2);
       assert.equal(r.chosen, platform === "pc"); assert.equal(r.visits, 2); assert.equal(r.visitedToday, 8);
     }, options);
   }

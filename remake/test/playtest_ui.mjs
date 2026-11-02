@@ -30,15 +30,23 @@ try {
   await page.evaluate(() => { T.stats.addStamina(-60); T.stats.addStamina(20); });
   value = await levels(); assert.equal(value.hud, "30%"); assert.equal(value.cards, 0);
   assert.equal(value.cards, 0); assert.equal(value.hudHealth, "yellow");
-  await page.evaluate(() => { T.core.state.stats.guts = 20; T.stats.gainStat("guts", 1); });
-  value = await levels(); assert.equal(value.hud, "27%"); assert.equal(value.cards, 0);
+  // 最大体力が伸びるとゲージの割合が下がる。旧しくみ（?growth=0）は根性の段、心得の盤（通常プレイの既定・SBD93）は体力のマス
+  const board = await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled());
+  await page.evaluate(async (board) => {
+    if (!board) { T.core.state.stats.guts = 20; T.stats.gainStat("guts", 1); return; }
+    const g = (await import("./js/core/growth.js")).ensureGrowth(); g.nodes.push("B1"); // 最大体力 ＋4（100→104）
+    (await import("./js/core/bus.js")).emit("hud");
+  }, board);
+  const grownHud = board ? "29%" : "27%";
+  value = await levels(); assert.equal(value.hud, grownHud); assert.equal(value.cards, 0);
   await page.evaluate(() => { T.core.save(); T.core.newGame(); });
   assert.equal((await levels()).cards, 0, "New game kept the old recovery notice");
   await page.evaluate(() => T.core.load());
-  assert.equal((await levels()).hud, "27%", "Loaded HUD did not match the loaded state");
+  assert.equal((await levels()).hud, grownHud, "Loaded HUD did not match the loaded state");
   await page.evaluate(() => T.ui.bannersIdle());
   await page.evaluate(() => {
     T.core.state.stats.guts = 10; T.core.state.stamina = 10;
+    if (T.core.state.growth) T.core.state.growth.nodes = []; // 盤の体力のマスも外して最大体力100に戻す
     for (let i = 0; i < 3; i++) T.ui.banner(`通知 ${i}`);
     T.stats.addStamina(50); T.stats.addStamina(-40);
   });

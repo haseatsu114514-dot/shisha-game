@@ -175,8 +175,11 @@ await suite("ds-overlay-layers", async check => {
       const radar = await rect(page, ".st-radar"), body = await rect(page, ".status-modal .modal-body");
       assert(radar.top < body.bottom, "STATUS radar begins below the visible body");
       await page.screenshot({ path: path.join(out, `ds-overlay-${label}-status.png`) });
-      await reachable(page.locator('[data-test="st-insight"]'));
-      await press('[data-test="st-insight"]');
+      // 心得の盤（通常プレイの既定・SBD93）のステータスは才能・感覚・理論の行、旧しくみ（?growth=0）は5能力の行
+      const lastRow = await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled())
+        ? '[data-test="st-board-wisdom"]' : '[data-test="st-insight"]';
+      await reachable(page.locator(lastRow));
+      await press(lastRow);
       for (const tab of ["people", "items", "me"]) {
         const button = page.locator(`[data-tab="${tab}"]`);
         await reachable(button);
