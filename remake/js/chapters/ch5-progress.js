@@ -495,6 +495,8 @@ export function completeChapterFiveScene(value, id) {
       if (progress.scheduleDecision === "decide") {
         progress.part = "scheduled";
         value.flags._ch5_match_scheduled = true;
+        // 勝負は翌日（店の休業日）。日常ループはこの日の朝で終わる（#2033・Q11/Q15）。
+        progress.matchDay = value.day + 1;
         // phase は state.js の列挙（opening|daily|tournament|aftermath|cleared）に収め、
         // 日程が決まっただけでは進めない。試合開始（beginChapterFiveMatch）で tournament になる。
       }
@@ -516,6 +518,7 @@ export function completeChapterFiveScene(value, id) {
     progress.part = "free";
     value.flags._ch5_match_scheduled = false;
     progress.scheduleDecision = null;
+    delete progress.matchDay; // 日程は白紙。日常ループはまた勝負の日なしで回る
     value.phase = "daily";
     return true;
   }
