@@ -432,7 +432,9 @@
   },
   "noor": {
    "faces": [
-    "normal"
+    "normal",
+    "smile",
+    "surprise"
    ],
    "h": 0.975,
    "b": 0.0117,
@@ -1949,6 +1951,29 @@
      "top": 29.305
     }
    }
+  },
+  "noor": {
+   "color": "#e39a48",
+   "secondary": "#f6d6a0",
+   "shadow": "#0d0332",
+   "background": "ui/character_intros/noor.png",
+   "frames": {
+    "normal": {
+     "width": 873.026,
+     "left": -111.964,
+     "top": 22.41
+    },
+    "smile": {
+     "width": 874.521,
+     "left": -114.145,
+     "top": 20.432
+    },
+    "surprise": {
+     "width": 873.026,
+     "left": -112.172,
+     "top": 22.41
+    }
+   }
   }
  },
  "titleArts": [
@@ -3007,7 +3032,10 @@
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
   "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
-  "sprites/characters/noor/chr_noor_normal.png"
+  "sprites/characters/noor/chr_noor_normal.png",
+  "sprites/characters/noor/chr_noor_smile.png",
+  "sprites/characters/noor/chr_noor_surprise.png",
+  "ui/character_intros/noor.png"
  ],
  "limeMedia": {
   "st_adam_bless": {

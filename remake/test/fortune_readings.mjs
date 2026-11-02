@@ -12,6 +12,7 @@ import {
   fortuneTargets,
 } from '../js/core/fortune-effects.js';
 import { openingStatus, spotTimeNote } from '../js/daily/spot-hours.js';
+import { paginate } from '../js/vn/text.js';
 import { fortunePlan, syncFortune, fortuneHere, fortuneRumorHeard, FORTUNE_RUMOR_ID } from '../js/daily/fortune-schedule.js';
 
 const triviaPath = new URL('../data/fortune-trivia.json', import.meta.url);
@@ -37,6 +38,9 @@ const expectedIds = {
   samechan: ['samechan_1', 'samechan_2', 'samechan_3', 'samechan_5', 'samechan_6', 'samechan_9'],
   ageha: ['ageha_1', 'ageha_2', 'ageha_3', 'ageha_4', 'ageha_5', 'ageha_6'],
 };
+// 2026-11-02: 第2〜5章で占い師が選べるのに読み物の無かった9人へ5本ずつ（第3・5章は東京にも出る）。
+const castIds = ['kumicho', 'rei', 'kuze', 'steve', 'volk', 'mashiro', 'mukai_master', 'da_silva', 'sheikh'];
+for (const char of castIds) expectedIds[char] = [1, 2, 3, 4, 5].map(n => `${char}_${n}`);
 const excludedIds = [
   'sumi_8', 'sumi_10', 'sumi_12', 'sumi_14', 'sumi_15',
   'naru_3', 'naru_6', 'naru_7', 'naru_8', 'naru_10', 'naru_11', 'naru_13', 'naru_14',
@@ -49,10 +53,19 @@ const excludedIds = [
 ];
 
 assert.equal(trivia.draft, true);
-assert.equal(Object.keys(trivia.characters).length, 9);
+assert.equal(Object.keys(trivia.characters).length, 18);
 const all = Object.values(trivia.characters).flat();
-assert.equal(all.length, 62);
-assert.equal(new Set(all.map(x => x.id)).size, 62);
+assert.equal(all.length, 107);
+assert.equal(new Set(all.map(x => x.id)).size, 107);
+// 追加分は吹き出し1枚に収め、本名や正体を先出ししない（REIの本名・ましろの噂の正体・組長の過去）。
+for (const char of castIds) for (const entry of trivia.characters[char]) {
+  for (const text of [entry.teller, entry.reaction]) {
+    assert.equal(paginate(text).length, 1, `${entry.id} spills onto a second page: ${text}`);
+    assert(!/。$/.test(text) && !/。）$/.test(text), `${entry.id} ends a spoken line with 。`);
+    assert(!/健太|田中|シガーマン|若い?衆|抗争|ファヴェーラ|スラム|軍で|15年前|レモンケーキ/.test(text), `${entry.id} reveals a secret: ${text}`);
+  }
+  assert(/^（.+）$/.test(entry.reaction), `${entry.id} reaction must be Hajime's inner voice`);
+}
 for (const ex of excludedIds) {
   assert(!all.some(x => x.id === ex), `excluded id ${ex} must not be present`);
   assert(!draftMd.includes(`\`${ex}\`:`), `excluded id ${ex} must not appear in trivia-draft.md`);
@@ -188,6 +201,15 @@ assert.equal(fortuneChoiceIndex(save, 'ch1_naru_first', line, hints), -1);
 const romance = { id: 'bond_q1_rin', choices: [{ next: 'personal' }, { next: 'work' }] };
 assert.equal(fortuneChoiceIndex(save, 'ch1_rin_bond_question', romance, { ...hints, includeRomance: false }), -1);
 assert.equal(fortuneChoiceIndex(save, 'ch1_rin_bond_question', romance, { ...hints, includeRomance: true }), 0);
+// ましろの♥3の質問も他のヒロインと同じ恋愛の注記。恋愛の表示が切られている間は示さない。
+{
+  const mashiroSave = { chapter: 3, day: 20, seed: 1, flags: {}, money: 90000 };
+  grantFortuneReading(mashiroSave, 'mashiro', trivia);
+  const q = { id: 'bond_q1_mashiro', choices: [{ next: 'personal' }, { next: 'work' }] };
+  assert.equal(fortuneChoiceIndex(mashiroSave, 'ch3_mashiro_bond_question', q, hints), -1);
+  assert.equal(fortuneChoiceIndex(mashiroSave, 'ch3_mashiro_bond_question', q, { ...hints, includeRomance: true }), 0);
+  assert.equal(fortuneChoiceIndex(save, 'ch3_mashiro_bond_question', q, { ...hints, includeRomance: true }), -1, 'another target must not light the Mashiro choice');
+}
 assert.equal(activeFortuneSight({ chapter: 1, day: 3, flags: { _fortune_choice_sight: { char: 'naru', chapter: 1, from: 3, until: 999 } } }), null);
 
 const base = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/remake_ch1.json', import.meta.url))).dialogues;
@@ -234,7 +256,7 @@ w=Image.open(root/'remake/img/sprites/characters/uranaishi/chr_uranaishi_normal.
 m=json.loads((root/'remake/data/manifest.json').read_text());assert m['portraits']['uranaishi']['faces']==['normal','sad','serious','smile','surprise']
 `, new URL('../../', import.meta.url).pathname], { encoding: 'utf8' });
 assert.equal(art.status, 0, art.stderr);
-console.log('PASS fortune: 62 approved readings, 2-cycle nonrepeat, legacy mask migration, Naru rift exclusion, save/RNG, inclusive three days, independent bonus, guarded choice hints, daylight hours and authored annotations');
+console.log('PASS fortune: 107 readings (62 approved + 45 for the Chapter 2-5 cast), 2-cycle nonrepeat, legacy mask migration, Naru rift exclusion, save/RNG, inclusive three days, independent bonus, guarded choice hints, daylight hours and authored annotations');
 
 // 第1章は噂を読むまで出ない（#780 の噂の門は第1章だけ残す）。出方は章で1〜2回・予定の無い昼か夜（2026-11-02 台帳 URA）。
 {

@@ -59,7 +59,7 @@ const { hasStoreLogo, storeLogoUrl } = logos.namespace;
 for (const [spot, store] of [['ch3_tokyo_mukai', 'ch3_mukai'], ['ch3_tokyo_enmaku', 'ch3_enmaku'], ['ch3_tokyo_steve', 'ch3_steve'],
   ['ch3_tokyo_volk', 'ch3_volk'], ['ch3_tokyo_club', 'ch3_club'], ['ch3_tokyo_shop', 'shop'], ['ch5_tokyo_mukai', 'ch3_mukai'],
   ['ch5_tokyo_steve', 'ch3_steve'], ['ch5_tokyo_volk', 'ch3_volk'], ['ch5_tokyo_shop', 'shop'], ['ch4_dubai_festa', 'ch4_festa'],
-  ['ch4_dubai_shop', 'shop']]) {
+  ['ch4_dubai_shop', 'shop'], ['ch5_dubai_shop', 'shop']]) {
   assert.ok(hasStoreLogo(spot), spot);
   assert.equal(Object.hasOwn(STORE_LOGOS, spot), false, `${spot}: an alias, not a second logo entry`);
   assert.equal(storeLogoUrl(spot), storeLogoUrl(store));
