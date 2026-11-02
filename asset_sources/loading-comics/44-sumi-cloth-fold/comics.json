@@ -1,0 +1,116 @@
+{
+  "game": "水煙前線 -EN:CODE-",
+  "episodes": 1,
+  "reading_order": "左①導入→右②オチ",
+  "canon_status": "番外編ギャグ。布の鶴・巻物・座布団などの誇張は本編能力を変更しない。猫は本編の常連設定への追加ではない。",
+  "image_manifest": [
+    {
+      "file": "44-sumi-cloth-fold.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "9cb459806b5880b50b90265f089ebbfbb1f9310ec44cf38dd70f78e3abbbb636",
+      "bytes": 1593597
+    }
+  ],
+  "pages": [
+    {
+      "file": "44-sumi-cloth-fold.png",
+      "ids": [
+        "hajime",
+        "sumi"
+      ],
+      "range": "44",
+      "rows": [
+        [
+          "44 畳みの極意",
+          "はじめ・スミさん",
+          "左: はじめが清潔な白いふきんを持ち「畳み方は？」。スミさんが「角をそろえろ。」。右: はじめが折り紙の鶴そっくりに畳んだ白ふきんを手にして困惑「鶴になった。」。スミさんは無言で眼鏡をずらし驚く。布の鶴は飛ばない。"
+        ]
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "episode": 44,
+      "dialogue": [
+        "畳み方は？",
+        "角をそろえろ。",
+        "鶴になった。"
+      ],
+      "generator": "OpenAI image_gen",
+      "prompt_summary": "添付1の下敷きを編集し1536x1024の2コマ漫画1話。枠は左x36..756、右780..1500、y272..752、各720x480厳守。枠線残す。枠外は全て紙色#EEE3CFの無地。題名・番号・署名・擬音文字なし。枠から4%内側に顔・吹き出しを収める。添付2ははじめ（黒い野球帽・黒パーカー・黒髪・青年）、添付3はスミさん（黒ハンチング・四角眼鏡・短い顎髭・炭色シャツ・茶腰エプロン）。2.5頭身の太線セル塗り、暖かな紙質、表情豊かなギャグ。両コマではじめは左、スミさんは右を厳守。白吹き出しに太いゴシックで台詞を大きく正確に。2人以外の人・シーシャ器具・炭・ホース・煙・武器は描かない。店の静かな木カウンター背景。左: はじめが清潔な白いふきんを持ち「畳み方は？」。スミさんが「角をそろえろ。」。右: はじめが折り紙の鶴そっくりに畳んだ白ふきんを手にして困惑「鶴になった。」。スミさんは無言で眼鏡をずらし驚く。布の鶴は飛ばない。",
+      "revision_prompt": "画像1の漫画の枠配置だけを画像2の下敷きへ合わせて描き直す。出力1536x1024。左枠x36 y272 w720 h480、右枠x780 y272 w720 h480。上下余白をそれぞれ必ず272px確保し枠はy752で終わる。今の縦に長いコマを横長3:2に再構成する。全ての顔・吹き出しは枠から29px離す。絵と衣装と位置とふきん鶴の話は維持。台詞は左「畳み方は？」「角をそろえろ。」右「鶴になった。」一字一句維持。枠外は均一#EEE3CF。背景棚の瓶は削除し不透明な扉収納に変更。他の文字なし。",
+      "reference_images": [
+        "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "assets/sprites/characters/sumi/chr_sumi_normal.png"
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "episode": 44,
+      "result": "採用。原画を目視、画像規格検査成功。PC・スマホ横のゲーム画面はQA参照。",
+      "checks": {
+        "dialogue_exact": "3台詞一致",
+        "identity": "野球帽/パーカーとハンチング/眼鏡/髭/腰エプロン、左右固定を目視確認",
+        "prohibited": "炭・機材・武器なし",
+        "frame": "比率判定ok。位置には生成由来の微差あり。"
+      },
+      "known_deviations": [
+        "枠位置・紙色は下敷きから微差あり。切り出し後に顔と台詞の欠けなし。",
+        "枠線除去後の数pxの寸法差は表示側の同一3:2枠で吸収する。"
+      ],
+      "browser": {
+        "sizes": [
+          "1280x720",
+          "844x390"
+        ],
+        "result": "各話を固定して全12画面で画像decode成功・撮影。スマホ横全話とPC第45話を目視確認、台詞の欠けなし。",
+        "screenshots": [
+          "qa-pc.png",
+          "qa-phone.png"
+        ],
+        "regression": "loading_craft: pc/mobile/portrait 全3ケース成功（既存画像LFS取得後）"
+      }
+    }
+  ],
+  "source": [
+    {
+      "file": "44-sumi-cloth-fold.png",
+      "region": {
+        "x": 45,
+        "y": 266,
+        "width": 707,
+        "height": 499,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "44-sumi-cloth-fold.png",
+      "region": {
+        "x": 784,
+        "y": 266,
+        "width": 707,
+        "height": 499,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "sumi-cloth-fold-1.webp",
+      "width": 748,
+      "height": 499,
+      "sha256": "f62d0696bf44bc3335d8fcf585a776f397c417702cf57108bba9eb15a87d62f3"
+    },
+    {
+      "file": "sumi-cloth-fold-2.webp",
+      "width": 748,
+      "height": 499,
+      "sha256": "0bfdf27e2aaf157da4a57089b81eec7c6f7e49a5ec9b49471f4cd82d42968799"
+    }
+  ]
+}

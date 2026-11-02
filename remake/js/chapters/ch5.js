@@ -30,7 +30,7 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_S
   chapterFivePrepScene, chapterFivePreparation, chapterFivePrepPending, chapterFivePrepEcho,
   recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
   canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress, chapterFiveRead,
-  chapterFiveFreeRemaining, chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
+  chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
   beginChapterFiveMatch, chapterFiveMatchOutcome, chapterFiveVoteTally, CH5_FIRST_CUP_VOTES, recordChapterFiveSecondCup,
   beginChapterFiveFinale, completeChapterFiveScene, CH5_LIME_MILESTONES, chapterFiveLimeDue,
   chapterFiveCreditsPending, recordChapterFiveCredits } from "./ch5-progress.js";
@@ -188,7 +188,7 @@ async function openChapter(advance) {
   });
 }
 
-async function readScene(owner, id) {
+async function readScene(owner, id, { keepHud = false } = {}) {
   if (!current(owner)) return false;
   const source = DB.dialogues[id];
   if (!source) throw new Error(`台本がありません: ${id}`);
@@ -202,7 +202,7 @@ async function readScene(owner, id) {
   });
   const dialogue = { ...source, lines: [...lines, ...echo.flat()], metadata: { ...source.metadata, bg: "" } };
   showScreen("none", null);
-  hud();
+  if (!keepHud) hud(); // 日常ループ（#2033）の途中では、日常のHUDを消さない
   await setBg(bgUrl(CH5_SCENE_BG[id]), { instant: true });
   if (!current(owner)) return false;
   // 節目だけ既存曲へ切り替える（#1668 2-7）。表に無い場面は tonari。
@@ -260,8 +260,8 @@ async function deliverLime(owner, milestone) {
 }
 
 /** 読了 → 確定 → 保存。確定できなければ（別partの場面など）保存せず false。 */
-async function readAndCommit(owner, id) {
-  if (!await readScene(owner, id)) return false;
+async function readAndCommit(owner, id, options = {}) {
+  if (!await readScene(owner, id, options)) return false;
   if (!completeChapterFiveScene(state, id)) return false;
   save();
   return true;
@@ -275,6 +275,8 @@ async function renderStage(owner) {
     if (chapterFiveTimeoutPending(state)) return renderTimeoutCard(owner);
     return chapterFivePrepPending(state) ? renderPrep(owner) : renderFree(owner);
   }
+  // 日を決めた夜の途中の保存は、日常ループで翌朝（勝負の日）まで進めてからカードへ。
+  if (progress.part === "scheduled" && Number.isInteger(progress.matchDay) && state.day < progress.matchDay) return renderFree(owner);
   if (progress.part === "scheduled") return renderScheduled(owner);
   if (progress.part === "match") return renderMatch(owner);
   if (progress.part === "aftermath") {
@@ -336,61 +338,21 @@ async function renderPrep(owner) {
   ], `試したこと: ${trial.label}`);
 }
 
+/**
+ * 自由行動（#2033）: 第1・2章と同じ日常ループ（daily/calendar.js）で、地図・日付・昼夜・体力・育成（上限100）。
+ * tonari の3場面・閉店後の試作・EDEN・博士への連絡は chapters/ch5-daily.js が行き先に差し込む。
+ * 博士と日を決めると翌朝が勝負の日になり、ループが終わってここへ戻る（日程のカードへ）。
+ */
 async function renderFree(owner) {
-  await setBg(bgUrl(CH5_SCENE_BG.ch5_free), { instant: true });
+  const { runChapterFiveDaily } = await import("./ch5-daily.js");
   if (!current(owner)) return;
+  showScreen("none", null);
   playBgm(CH5_DEFAULT_BGM);
-  const unread = chapterFiveFreeRemaining(state);
-  const remaining = unread.filter(scene => scene.location === "tonari");
-  const actions = [];
-  if (remaining.length) {
-    actions.push(button(owner, `tonari で過ごす（${remaining[0].label}）`, "spend-tonari", async () => {
-      const [next] = chapterFiveFreeRemaining(state).filter(scene => scene.location === "tonari");
-      if (!next || !await readAndCommit(owner, next.id)) return;
-      await renderStage(owner);
-    }));
-  }
-  // tonari の外の任意場面（#1588 EDEN）は、それぞれ別の入口から1回だけ。
-  for (const scene of unread.filter(entry => entry.location !== "tonari")) {
-    actions.push(button(owner, `${scene.location} に寄る（${scene.label}）`, `visit-${scene.location.toLowerCase()}`, async () => {
-      if (!chapterFiveFreeRemaining(state).some(entry => entry.id === scene.id)
-        || !await readAndCommit(owner, scene.id)) return;
-      await renderStage(owner);
-    }));
-  }
-  // 恋人からのLIME（#2024）。第1・2章と同じ処理（lover-entry.js → daily/romance.js）。
-  // 第5章は恋人と過ごす場面（節目）を描かないので、LIMEだけ。
-  const lover = await import("./lover-entry.js");
+  const io = { readAndCommit: id => readAndCommit(owner, id, { keepHud: true }), readScene: id => readScene(owner, id, { keepHud: true }) };
+  await runChapterFiveDaily(io);
   if (!current(owner)) return;
-  if (lover.pendingLoverLime().length) actions.push(button(owner, "恋人からのLIMEを読む", "lover-lime", async () => {
-    showScreen("none", null);
-    hud();
-    await lover.readLoverLime();
-    if (current(owner)) await renderStage(owner);
-  }));
-  // 友人からのたまのLIME（#2022）。
-  const friend = await import("./friend-entry.js");
-  if (!current(owner)) return;
-  if (friend.pendingFriendLime().length) actions.push(button(owner, "友人・知り合いのLIMEを読む", "friend-lime", async () => {
-    showScreen("none", null);
-    hud();
-    await friend.readFriendLime();
-    if (current(owner)) await renderStage(owner);
-  }));
-  actions.push(button(owner, "博士に連絡する", "contact", async () => {
-    // Q12: 「記録に残らない一日」が未読なら、先にそちらを読んでから連絡の場面へ。
-    if (!chapterFiveRead(state, "ch5_unrecorded_day")
-      && !await readAndCommit(owner, "ch5_unrecorded_day")) return;
-    if (!await readAndCommit(owner, "ch5_schedule_contact")) return;
-    await renderStage(owner);
-  }, true));
-  const description = remaining.length
-    ? "勝負の前に、tonari で済ませておきたいことが残っている。博士との日程は、まだ決まっていない。"
-    : "tonari での準備は済んだ。博士に連絡して、勝負の日を決める。";
-  const note = remaining.length
-    ? `次は「${remaining[0].label}」。残り${remaining.length}件は任意で、博士への連絡はいつでもできる。`
-    : "tonari の用事は済んだ。あとは日程だけ。";
-  card(owner, "free", "自由行動", description, actions, note);
+  hud();
+  await renderStage(owner);
 }
 
 async function renderScheduled(owner) {

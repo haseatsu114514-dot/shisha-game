@@ -36,8 +36,16 @@ export async function playHiyoriAxeSequence(event, { signal } = {}) {
     const opening = await play(event.dialogue, { signal: abort.signal });
     if (!current() || opening?.id !== event.dialogue) return false;
     const bgmBefore = currentBgm() || "tonari"; playBgm("bgm_axe"); // #788 実プレイ中だけ斧投げ曲。終了・中断でtonariの曲へ
+    const restoreBgm = () => { if (state === owner && currentBgm() === "bgm_axe") playBgm(bgmBefore); };
+    // 台本の「スタッフの説明を聞いて」の所で、店主マキの1投レッスン。面識がある時だけ（初対面の紹介はBarの来店が担う）。
+    if (!owner.flags._axe_lesson_done && owner.flags._intro_maki) {
+      await runAxeThrow({ host: document.getElementById("stage"), signal: abort.signal, tutorial: true, opponent: null,
+        lessonContext: "event", allowRetry: false }).catch(error => { restoreBgm(); throw error; });
+      if (!current()) { restoreBgm(); return false; }
+      owner.flags._axe_lesson_done = true;
+    }
     const game = await runAxeThrow({ host: document.getElementById("stage"), signal: abort.signal,
-      mode: "practice", opponent: "hiyori" }).finally(() => { if (state === owner && currentBgm() === "bgm_axe") playBgm(bgmBefore); });
+      mode: "practice", opponent: "hiyori" }).finally(restoreBgm);
     if (!current() || !game.completed) return false;
     const ending = await play(event.outro, { signal: abort.signal });
     return current() && ending?.id === event.outro;

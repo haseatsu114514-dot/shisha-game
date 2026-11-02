@@ -114,7 +114,7 @@ def text_errors(row):
         if re.search(r'(?:^|[。！？!?])\s*…*師匠(?=[、。！？!?]|$)', unquoted):
             errors.append('はじめはスミさんを師匠と呼びかけない（#1947）')
     if speaker == 'dr_kemuri' and '僕' in text:
-        errors.append('博士の一人称は私（公的）／俺（はじめ・年下とフランクに）')
+        errors.append('博士の一人称は私（機材自慢の持ちネタ「それ作ったの、俺だもん」だけ俺）')
     if speaker == 'ageha' and re.search(r'あたし|アタシ|ウチ|はじめくん', text):
         errors.append('あげははうち／ハジメっち')
     if speaker == 'tsumugi' and 'はじめくん' in text:

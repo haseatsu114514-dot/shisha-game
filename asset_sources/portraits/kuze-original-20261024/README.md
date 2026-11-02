@@ -1,6 +1,6 @@
 # 久世朔・通常立ち絵
 
-第3章の「余白」店主、久世朔の初回 normal 立ち絵。正本は `data/characters.json` と `brand/character_profiles.md`。現行採用のヴォルクや零の立ち絵に合わせ、成人向けの2Dノベル絵として制作した。旧ピクセルアート用の `docs/prompts/portrait_prompts_pending.md` の人物要件を踏まえつつ、採用済みの表示画風を優先した。
+第3章の「余白」店主、久世朔の初回 normal 立ち絵。正本は `data/characters.json` と `brand/character_profiles.md`。現行採用のヴォルクや零の立ち絵に合わせ、成人向けの2Dノベル絵として制作した。採用済みの表示画風を優先した。
 
 - `normal-first-pass.png`: image_gen.imagegen による初回原画。指示は `normal-prompt.txt`。
 - `normal-source.png`: 初回原画を参照して、同ツールで輪郭と透過を整えた原画。指示は `cleanup-prompt.txt`。

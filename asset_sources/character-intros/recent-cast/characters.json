@@ -135,5 +135,59 @@
       "source": "asset_sources/character-intros/yoru-20261102/background-B.png（3案から採用。1672×940 を高さ1024へ拡大し右寄せで1536×1024に切り出し）",
       "brief": "Issue #2199 #4. Graphic-poster background, no people or text; dark left third and lower area for the portrait and text."
     }
+  },
+  {
+    "id": "master_hookah",
+    "color": "#3fbf7f",
+    "secondary": "#e2b75f",
+    "shadow": "#151917",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/master_hookah/chr_master_hookah_normal.png",
+    "caption_source": "data/characters.json: master_hookah.intro_cutin"
+  },
+  {
+    "id": "sheikh",
+    "color": "#f5c542",
+    "secondary": "#f6e6b7",
+    "shadow": "#15182a",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/sheikh/chr_sheikh_normal.png",
+    "caption_source": "data/characters.json: sheikh.intro_cutin"
+  },
+  {
+    "id": "shisha_9000",
+    "color": "#9aa4b8",
+    "secondary": "#c1cad8",
+    "shadow": "#151926",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/shisha_9000/chr_shisha_9000_normal.png",
+    "caption_source": "data/characters.json: shisha_9000.intro_cutin"
+  },
+  {
+    "id": "da_silva",
+    "color": "#2fd27a",
+    "secondary": "#f5d96e",
+    "shadow": "#0e2519",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/da_silva/chr_da_silva_normal.png",
+    "caption_source": "data/characters.json: da_silva.intro_cutin"
+  },
+  {
+    "id": "emil",
+    "color": "#4a8be0",
+    "secondary": "#d7e7f5",
+    "shadow": "#111827",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/emil/chr_emil_normal.png",
+    "caption_source": "data/characters.json: emil.intro_cutin"
+  },
+  {
+    "id": "mukai_master",
+    "color": "#b08a5e",
+    "secondary": "#e5d1ac",
+    "shadow": "#231915",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/mukai_master/chr_mukai_master_normal.png",
+    "caption_source": "data/characters.json: mukai_master.intro_cutin"
   }
 ]

@@ -56,17 +56,20 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "お疲れ。今日の一台、いい煙だった"
+          "text": "お疲れ。今日の一台、いい煙だった",
+          "portrait": false
         },
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "正直、悔しさが先だけどな。……おかげでノートに書くことが増えた"
+          "text": "正直、悔しさが先だけどな。……おかげでノートに書くことが増えた",
+          "portrait": false
         },
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "でも、楽しかっただろ？ シーシャで戦うってのは"
+          "text": "でも、楽しかっただろ？ シーシャで戦うってのは",
+          "portrait": false
         },
         {
           "speaker": "hajime",
@@ -76,7 +79,8 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "なら上等。俺はもっと突き詰めたのを作る。お互い、次もな"
+          "text": "なら上等。俺はもっと突き詰めたのを作る。お互い、次もな",
+          "portrait": false
         },
         {
           "speaker": "",
@@ -88,7 +92,10 @@
           "face": "",
           "text": "……【根性】が少し上がった。"
         }
-      ]
+      ],
+      "metadata": {
+        "contact_channel": "lime"
+      }
     },
     {
       "dialogue_id": "interval_day2_adam_lime",
@@ -101,7 +108,8 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "はじめ。次の大会、どこで開催されるか知ってるか？"
+          "text": "はじめ。次の大会、どこで開催されるか知ってるか？",
+          "portrait": false
         },
         {
           "speaker": "hajime",
@@ -111,12 +119,14 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "……まだ正式発表前だから、詳しくは言えないが"
+          "text": "……まだ正式発表前だから、詳しくは言えないが",
+          "portrait": false
         },
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "隣の街のイベントホールだ。客の数も、舌の数も、今日の比ではない"
+          "text": "隣の街のイベントホールだ。客の数も、舌の数も、今日の比ではない",
+          "portrait": false
         },
         {
           "speaker": "hajime",
@@ -126,7 +136,8 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "……じきに分かる。それだけだ"
+          "text": "……じきに分かる。それだけだ",
+          "portrait": false
         },
         {
           "speaker": "",
@@ -138,7 +149,10 @@
           "face": "",
           "text": "……【洞察】が少し上がった。"
         }
-      ]
+      ],
+      "metadata": {
+        "contact_channel": "lime"
+      }
     },
     {
       "dialogue_id": "interval_day3_sumi_call",

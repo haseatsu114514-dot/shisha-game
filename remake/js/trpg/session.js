@@ -79,6 +79,11 @@ export const HEAT = { max: 8, tiers: [3, 6, 8], momentumMax: 2,
   names: ["静かな卓", "あたたまってきた", "沸いてきた", "最高潮"],
   nights: ["静かな夜", "和やかな夜", "盛り上がった夜", "大盛況の夜"] };
 export const heatTier = value => HEAT.tiers.filter(t => value >= t).length;
+/** The scenes a scenario plays, in order. Interview and twist are optional scenes a scenario can add. */
+export const phasesOf = scenario => ["listen", ...(scenario.interview ? ["interview"] : []), "explore",
+  ...(scenario.flow?.twist ? ["twist"] : []), "prepare", "serve", "ending"];
+/** Every roll a full session makes: listen, the optional twist, preparation and the finale. */
+export const checkKindsOf = scenario => ["listen", ...(scenario.flow?.twist ? ["twist"] : []), "prepare", "serve"];
 
 export class TrpgSession {
   constructor(scenario, { seed = Date.now(), profileId = null, pc = null, companions = {} } = {}) {
@@ -109,7 +114,7 @@ export class TrpgSession {
       plan: Object.fromEntries(Object.values(this.flow).flat().map(field => [field, null])),
       pressure: this.rules.initialPressure, teamwork: 2, heat: 0, momentum: 0, heatLog: [],
       used: Object.fromEntries(scenario.cast.filter(c => c.part !== "GM").map(c => [c.id, false])),
-      acted: {}, checks: [], pending: null,
+      acted: {}, checks: [], pending: null, asked: [],
       pc: this.pc ? { name: this.pc.name, title: this.pc.title, look: this.pc.look, archetype: this.pc.archetype, stats: { ...this.pc.stats } } : null,
       companions: Object.fromEntries(Object.entries(this.companions).map(([seat, o]) => [seat, o.id])),
     };
@@ -137,6 +142,27 @@ export class TrpgSession {
   }
   start() { this.require("cover"); this.state.phase = "listen"; }
 
+  /** Talking to the story's character: pick a few questions; each answer depends on the hidden profile. */
+  ask(id) {
+    this.require("interview");
+    const topic = this.scenario.interview.topics.find(t => t.id === id);
+    if (!topic) throw new Error("Unknown topic");
+    const answer = this.profile.answers?.[id];
+    if (!answer) throw new Error("Missing answer for topic: " + id);
+    const fresh = !this.state.asked.includes(id);
+    if (fresh && this.state.asked.length >= (this.scenario.interview.picks || 2)) throw new Error("No more questions");
+    if (fresh) {
+      this.state.asked.push(id);
+      if (this.state.asked.length === 1) this.cheer(1, "物語の人物と話した");
+    }
+    return { fresh, topic: copy(topic), answer: copy(answer) };
+  }
+  endInterview() {
+    this.require("interview");
+    if (!this.state.asked.length) throw new Error("Ask at least one question");
+    this.state.phase = "explore";
+  }
+
   inspect(id) {
     this.require("explore");
     const spot = this.scenario.spots.find(s => s.id === id);
@@ -162,7 +188,7 @@ export class TrpgSession {
     if (this.state.clues.length < 3) throw new Error("Collect three clues before discussing the plan");
     if (!this.scenario.hypotheses.some(h => h.id === id)) throw new Error("Unknown hypothesis");
     this.state.hypothesis = id;
-    this.state.phase = "prepare";
+    this.state.phase = this.flow.twist ? "twist" : "prepare";
     this.cheer(1, "みんなで見立てを話した");
   }
 
@@ -176,7 +202,7 @@ export class TrpgSession {
 
   /** Declare who acts and with which stat; the sheet's rating becomes the roll's base bonus. */
   beginCheck(kind, { support = false, approach = null } = {}) {
-    const phases = { listen: "listen", prepare: "prepare", serve: "serve" };
+    const phases = { listen: "listen", twist: "twist", prepare: "prepare", serve: "serve" };
     if (!phases[kind]) throw new Error("Unknown check");
     this.require(phases[kind]);
     if (this.flow[kind]?.some(field => !this.state.plan[field])) throw new Error("Complete the plan before rolling");
@@ -237,7 +263,7 @@ export class TrpgSession {
     else if (result.grade === "trouble") this.cheer(1, "思わぬ出来事に卓がざわつく");
     this.state.pressure = Math.min(this.rules.pressureMax, this.state.pressure + this.rules.checkPressure[result.grade]);
     this.state.pending = null;
-    this.state.phase = { listen: "explore", prepare: "serve", serve: "ending" }[result.kind];
+    this.state.phase = { listen: this.scenario.interview ? "interview" : "explore", twist: "prepare", prepare: "serve", serve: "ending" }[result.kind];
     return copy(result);
   }
 
@@ -255,15 +281,16 @@ export class TrpgSession {
   result() {
     if (this.state.phase !== "ending") throw new Error("The session is not complete");
     const plan = this.state.plan;
+    // A field counts toward the ending only when the profile names what it likes there (the twist tactic usually does not).
     const fit = Object.entries(plan).reduce((n, [field, value]) =>
-      n + (this.profile.likes[field].includes(value) ? (this.scenario.fitWeights?.[field] || 1) : 0), 0);
-    const ending = fit >= 3 ? this.profile.ending : (this.scenario.fallbackEnding || "discovery");
+      n + (this.profile.likes[field]?.includes(value) ? (this.scenario.fitWeights?.[field] ?? 1) : 0), 0);
+    const ending = fit >= (this.rules.fitThreshold || 3) ? this.profile.ending : (this.scenario.fallbackEnding || "discovery");
     return {
       scenarioId: this.state.scenarioId, version: this.state.version, ending, rating: this.rating(ending),
       heat: { value: this.state.heat, max: HEAT.max, night: HEAT.nights[heatTier(this.state.heat)] },
       variant: this.state.pressure >= this.rules.detourThreshold ? "with-detour" : "smooth",
       plan: copy(plan), hypothesis: this.state.hypothesis,
-      clues: copy(this.state.clues), checks: copy(this.state.checks), acted: copy(this.state.acted), pc: copy(this.state.pc),
+      clues: copy(this.state.clues), asked: copy(this.state.asked), checks: copy(this.state.checks), acted: copy(this.state.acted), pc: copy(this.state.pc),
       companions: copy(this.state.companions),
       pressure: this.state.pressure, profileId: this.profile.id,
     };

@@ -33,6 +33,17 @@ s.day += 5;
 assert.ok(bonds.friendMessages({ sceneChapter: true }).length >= 1);
 
 for (const chapter of [4, 5]) { s.chapter = chapter; assert.ok(bonds.friendMessages({ sceneChapter: true }).length >= 1, `第${chapter}章`); }
+// #2033: 第5章の自由行動は日常ループ（runDaily）。朝の端末に友人の雑談が届き、お誘いは出さない。
+{
+  const savedPhase = s.phase, savedInbox = s.inbox;
+  s.chapter = 5; s.phase = "daily";
+  // 雑談の後でもお誘いにしない（第1・2章なら雑談→お誘いの順）。
+  s.inbox = [{ id: "_prev_chat", originId: "_prev_chat", day: s.day - 10, read: true, msg: { id: "_prev_chat", sender: "naru", type: "chat", friend: true } }];
+  const daily = bonds.friendMessages();
+  assert.ok(daily.length >= 1, "第5章の日常ループの朝に友人の雑談が届く");
+  assert.ok(daily.every(m => m.type === "chat" && m.friend), "第5章はお誘いを出さない");
+  s.phase = savedPhase; s.inbox = savedInbox;
+}
 s.chapter = 2; s.phase = "chapter2";
 assert.deepEqual(bonds.friendMessages({ sceneChapter: true }), [], "第1・2章は従来の朝の端末だけ");
 
@@ -64,5 +75,7 @@ assert.deepEqual(bonds.friendMessages({ sceneChapter: true }), [], "第1・2章�
 }
 
 const src = file => fs.readFileSync(new URL(`../js/chapters/${file}`, import.meta.url), "utf8");
-for (const file of ["ch3.js", "ch4.js", "ch5.js"]) assert.match(src(file), /readFriendLime/, `${file} に入口が無い`);
+for (const file of ["ch3.js", "ch4.js"]) assert.match(src(file), /readFriendLime/, `${file} に入口が無い`);
+// 第5章は日常ループの朝の端末から届く（場面カードの入口は無い）。
+assert.match(src("ch5-daily.js"), /runDaily\(/, "ch5-daily.js が日常ループに乗っていない");
 console.log("friend_lime_scene_chapters: ok");

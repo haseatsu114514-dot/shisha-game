@@ -1,8 +1,8 @@
 import { el } from "../core/util.js";
-import { displayName, portraitUrl, portraitTop, sceneUrl } from "./presentation.js";
+import { displayName, portraitUrl, portraitTop, sceneArt } from "./presentation.js";
 
 export function mountTrpgLibrary(host, { scenarios, characters, manifest, audio, onChoose, onClose = null, closeLabel = "閉じる" }) {
-  const root = el("section.trpg-root.trpg-library", { tabindex: "-1", dataset: { phase: "library" } });
+  const root = el("section.trpg-root.trpg-library", { tabindex: "-1", dataset: { phase: "library", many: String(scenarios.length > 2) } });
   let disposed = false;
   const sound = el("button.trpg-button.small", { type: "button", dataset: { test: "trpg-audio" },
     onclick: async () => { sound.disabled = true; await audio.setEnabled(!audio.enabled); if (!disposed) syncSound(); } });
@@ -11,7 +11,7 @@ export function mountTrpgLibrary(host, { scenarios, characters, manifest, audio,
   root.append(el("header.trpg-library-header", [
     el("div", [el("span.trpg-kicker", { text: "水煙前線 -EN:CODE- / TABLETOP COLLECTION" }),
       el("h1", { text: "ひと息、物語の中へ。" })]),
-    el("div.trpg-library-meta", [el("span", { text: "02 STORIES" }), sound,
+    el("div.trpg-library-meta", [el("span", { text: String(scenarios.length).padStart(2, "0") + " STORIES" }), sound,
       ...(onClose ? [el("button.trpg-button.small", { type: "button", text: closeLabel,
         dataset: { test: "trpg-collection-close" }, onclick: () => { if (!disposed) onClose(); } })] : [])]),
   ]), el("p.trpg-library-intro", { text: "いつもの仲間と、小さな卓を囲む。今夜は、どの物語にする？" }));
@@ -25,7 +25,7 @@ export function mountTrpgLibrary(host, { scenarios, characters, manifest, audio,
       el("span", { text: displayName(characters, c.id) }),
     ])));
     books.append(el("article.trpg-library-book", { dataset: { theme: p.theme } }, [
-      el("div.trpg-library-art", [el("img", { src: sceneUrl(s), alt: p.sceneAlt }),
+      el("div.trpg-library-art", [sceneArt(el, s),
         el("span.trpg-library-number", { text: p.number }), el("span.trpg-library-genre", { text: p.genre })]),
       el("div.trpg-library-copy", [
         el("div.trpg-library-byline", { text: s.collection + " / 作 · " + s.author }),

@@ -28,3 +28,13 @@
 .trpg-trial-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 .trpg-trial-score { display: flex; align-items: center; gap: 20px; margin: 14px 0; font-size: 30px; color: #ffe6a3; }
 .trpg-trial-die { font-size: 48px; line-height: 1; }
+.axe-bar-menu .axe-bar-divisions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 8px; margin: 10px auto 0; max-width: 760px; font-size: 13px; line-height: 1.4; }
+.axe-bar-menu .axe-bar-divisions .btn { min-height: 32px; padding: 4px 12px; }
+.axe-bar-menu .axe-bar-divisions .btn[aria-pressed="true"] { border-color: #e8b772; background: rgba(204,150,77,.22); color: #ffe3b5; }
+.axe-bar-menu .axe-bar-division-label { color: #ffe1a7; font-size: 13px; font-weight: 700; }
+.axe-bar-menu .axe-bar-division-note { flex-basis: 100%; color: #d5cbb8; font-size: 12px; text-align: center; }
+.axe-bar-menu .axe-bar-records { margin-top: 8px; padding-top: 8px; }
+.axe-bar-menu .axe-bar-career { color: #ffe1a7; }
+html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-divisions .btn[aria-pressed="true"] { color: #fff; background: var(--lavender); border-color: var(--lavender); }
+html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-division-note { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-career { color: var(--lavender); }
