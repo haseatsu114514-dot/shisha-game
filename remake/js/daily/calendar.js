@@ -55,6 +55,8 @@ const fixedNight = (day) => nightOccupied(chapterDef.nightEvents, day);
  * @param def.undatedNote 最終日が決まっていないときの朝・夜明けのカードの一言
  * @param def.dateInvitations false で恋人のデートの誘いを出さない
  * @param def.confessions false で夜の告白の場面を出さない
+ * @param def.homeShisha () => false で寝る前の家シーシャを聞かない（家の台が無い泊まり先）
+ * @param def.wakeBackground () => 背景ID。朝に目を覚ます場所（無ければ家）
  */
 export async function runDaily(def) {
   chapterDef = def;
@@ -877,7 +879,8 @@ async function endDay({ returnedToTonari = false } = {}) {
   await showSumiRigAtHome();
   if (state !== homeOwner) return;
   // 夜の行動を終え、余力があるときだけ家シーシャを選べる。大会前夜は聞かない。
-  if (await runHomeShisha({ eve: finalEve() })) await bannersIdle();
+  // 家に台が無い泊まり先（第5章の東京の屋根裏）では聞かない。
+  if (chapterDef.homeShisha?.() !== false && await runHomeShisha({ eve: finalEve() })) await bannersIdle();
   delete state.flags._home_trial_plan; // 予約方式の旧セーブを読んだ場合も持ち越さない
   // 寝る直前（夜明けの幕の前）にその日の経験値を精算する。大会前夜もここで火種が届く（REPORT P2・R1）
   // 大会前夜は、火種が残っていれば精算のあとにひとりで内省しに行く（SPEC 2.8・#1690）。柚ヶ谷の夜は宿の窓辺
@@ -905,7 +908,8 @@ async function advanceDay() {
     state.restDay = exhausted ? { chapter: state.chapter, day: state.day, fullDay: false, illnessHealth } : null;
     refreshWeather();
     updateHud();
-    setBg(bgUrl("bg_home", "day"), { instant: true }); // 朝は家で目を覚ます（前の夜の場面の絵を持ち越さない）
+    // 朝は寝た場所で目を覚ます（ふだんは家。前の夜の場面の絵を持ち越さない）
+    setBg(bgUrl(chapterDef?.wakeBackground?.() || "bg_home", "day"), { instant: true });
   };
   if (!eveOfFinal) {
     // 夜の紫が降りて、DAYと残り日数がめくれ、地平線が昇って朝になる（大会当日は当日の演出に任せる）
