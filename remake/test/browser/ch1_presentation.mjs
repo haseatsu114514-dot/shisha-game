@@ -125,6 +125,7 @@ await suite("ch1-presentation", async check => {
       assert.match(await page.locator('[data-test="standings-recognition"]').textContent(), /コンロの上で、炭は角まで赤く焼けていた/);
       assert.equal(await page.locator('.sd-row[data-id="hajime"] .sd-points').textContent(), "1pt");
       await page.waitForTimeout(100); await page.screenshot({ path: `${shots}/${device}-recognition.png` });
+      await select(page, '[data-test="standings-next"]', touch);
       await page.evaluate(() => V.running);
       assert(await page.evaluate(() => V.table === JSON.stringify(V.result.pointTable(1))));
     }, options);

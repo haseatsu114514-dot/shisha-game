@@ -179,3 +179,8 @@ html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-tutorial-sheet 
 html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic :is(.trpg-builder-easy, .trpg-builder-stat-help) { color: var(--paper-muted); }
 html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic :is(.trpg-builder-recommend, .trpg-approach-meta .trpg-approach-best) { color: #fff; background: var(--amber); }
 html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-approach[data-best="true"] { border-color: var(--amber); box-shadow: 0 0 0 1px var(--amber), 0 8px 22px #110a2240; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-topic { color: var(--paper-ink); background: var(--paper-card); border-color: var(--paper-line); box-shadow: 0 8px 22px #110a2240; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-topic strong { color: var(--lavender); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-topic small { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-topic.selected { border-color: var(--amber); background: var(--lavender-soft); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-interview-prompt { color: #fff; }

@@ -214,6 +214,8 @@ assert.equal(completeChapterFiveScene(value, "ch5_schedule_contact"), true);
 assert.equal(value.flags._ch5.part, "scheduled");
 assert.equal(value.flags._ch5_match_scheduled, true);
 assert.equal(value.phase, "daily");
+// 勝負は翌日（日常ループはその朝で終わる・#2033）。
+assert.equal(value.flags._ch5.matchDay, value.day + 1);
 roundTrip(value);
 rejects(value, v => completeChapterFiveScene(v, "ch5_match_day_arrival"));
 
@@ -224,6 +226,7 @@ rejects(value, v => completeChapterFiveScene(v, "ch5_match_day_arrival"));
   assert.equal(cancelled.flags._ch5.part, "free");
   assert.equal(cancelled.flags._ch5_match_scheduled, false);
   assert.equal(cancelled.flags._ch5.scheduleDecision, null);
+  assert.equal(cancelled.flags._ch5.matchDay, undefined, "取り消した日程は勝負の日として残らない");
   roundTrip(cancelled);
   assert.equal(recordChapterFiveScheduleDecision(cancelled, "decide"), true);
   assert.equal(completeChapterFiveScene(cancelled, "ch5_schedule_contact"), true);

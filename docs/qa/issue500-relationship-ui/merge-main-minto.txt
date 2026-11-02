@@ -1,4 +1,0 @@
-[minto progression] PASS: first private outing waits for both ♥3 and the read identity reveal
-[minto progression] PASS: ♥3 store recognition, workday invitation, remembered identity/name, one question, DAY13 same-night dating
-[minto progression] PASS: friendship answer preserves friendship and the same gift
-[minto progression] PASS: read old-save LIME is remembered, unread LIME does not fabricate knowledge

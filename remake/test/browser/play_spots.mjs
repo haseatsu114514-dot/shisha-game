@@ -80,6 +80,37 @@ async function finishAxe(page, count, confirm = true, aimed = false) {
   }
 }
 async function lines(page) { for (let i = 0; i < 35 && await page.locator(t("trpg-next")).isVisible(); i++) await hit(page, "trpg-next"); }
+
+// New scenes: two questions for the story's character after the first roll, a twist after the guess.
+async function interviewStep(page) {
+  const snap = () => page.evaluate(() => window.__trpg?.snapshot?.() ?? null);
+  if ((await snap())?.phase !== "interview" && !(await page.locator('[data-test="trpg-interview-done"], [data-test^="trpg-topic-"]').count())) return;
+  for (let n = 0; n < 2; n++) {
+    const topic = page.locator('[data-test^="trpg-topic-"]:not([disabled]):not(.selected)').first();
+    if (!await topic.count()) break;
+    if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await topic.tap(); else await topic.click();
+    for (let i = 0; i < 40 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+  }
+  const done = page.locator('[data-test="trpg-interview-done"]');
+  if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await done.tap(); else await done.click();
+}
+async function twistStep(page) {
+  const option = page.locator('[data-test^="trpg-plan-tactic-"]').first();
+  if (!await option.count()) return;
+  const touch = await page.evaluate(() => navigator.maxTouchPoints > 0);
+  if (touch) await option.tap(); else await option.click();
+  const open = page.locator('[data-test="trpg-twist-open"]');
+  if (touch) await open.tap(); else await open.click();
+  const card = page.locator('[data-test^="trpg-approach-"]').first();
+  if (touch) await card.tap(); else await card.click();
+  for (let i = 0; i < 40 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+  const roll = page.locator('[data-test="trpg-roll"]');
+  if (touch) await roll.tap(); else await roll.click();
+  await page.locator('[data-test="trpg-settle"]').waitFor();
+  const settle = page.locator('[data-test="trpg-settle"]');
+  if (touch) await settle.tap(); else await settle.click();
+  for (let i = 0; i < 60 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+}
 async function declare(page) {
   const card = page.locator('[data-test^="trpg-approach-"]').first();
   if (await card.count() && await card.isVisible()) { await card.click(); await lines(page); }
@@ -243,8 +274,9 @@ await suite("play-spots", async runCheck => {
     assert.equal(await page.locator(t("trpg-buy-ordinary-cup")).count(), 0);
     assert(await page.locator(t("trpg-play-ordinary-cup")).isEnabled());
     await hit(page, "trpg-play-ordinary-cup"); await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
+    await interviewStep(page);
     for (const id of ["menu", "window", "bag"]) { await hit(page, "trpg-spot-" + id); await lines(page); }
-    await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-quiet"); await lines(page);
+    await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-quiet"); await lines(page); await twistStep(page);
     await hit(page, "trpg-plan-aroma-tea"); await hit(page, "trpg-plan-seat-window");
     await hit(page, "trpg-prepare-open"); await roll(page);
     await hit(page, "trpg-plan-approach-quiet"); await hit(page, "trpg-serve-open"); await roll(page);
@@ -286,8 +318,9 @@ await suite("play-spots", async runCheck => {
       assert.deepEqual(bought.trpg.owned, ["shark-last-order"]);
       await hit(page, "trpg-play-shark-last-order"); await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
       assert.deepEqual(await value(page), bought, "An unfinished table must not commit its ending or night action");
+      await interviewStep(page);
       for (const id of ["radio", "leaves", "fan"]) { await hit(page, "trpg-spot-" + id); await lines(page); }
-      await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-scent"); await lines(page);
+      await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-scent"); await lines(page); await twistStep(page);
       await hit(page, "trpg-plan-tool-citrus"); await hit(page, "trpg-plan-route-pier");
       await hit(page, "trpg-prepare-open"); await roll(page);
       await hit(page, "trpg-plan-finale-lure"); await hit(page, "trpg-serve-open"); await roll(page);

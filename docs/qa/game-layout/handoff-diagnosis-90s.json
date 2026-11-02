@@ -1,9 +1,0 @@
-{
-  "base": "http://127.0.0.1:8123/remake/",
-  "results": [
-    {
-      "name": "touch-ds-shared-practice-save-load",
-      "status": "passed"
-    }
-  ]
-}
