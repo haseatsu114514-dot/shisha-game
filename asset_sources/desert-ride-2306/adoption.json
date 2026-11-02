@@ -280,13 +280,37 @@
   "noor_normal": {
     "raw": "raw/phase4/noor-candidates/noor_normal_A-raw.png",
     "raw_sha256": "2e72bc62ee718aced3dbb59de3cb1bcd968eeaa85fd3e9c6f8f2211b3aad3b53",
-    "png": "assets/sprites/characters/noor/chr_noor_normal.png",
-    "png_sha256": "1374af232413652aaa6285982730e308ba47edf31305d89c3f3632b279b07266",
     "size": [
       896,
       1200
     ],
-    "scale": 0.77381
+    "scale": 0.77381,
+    "crop": [
+      271,
+      12,
+      881,
+      1524
+    ],
+    "offset": [
+      234,
+      16
+    ],
+    "png": "assets/sprites/characters/noor/chr_noor_normal.png",
+    "png_sha256": "1374af232413652aaa6285982730e308ba47edf31305d89c3f3632b279b07266",
+    "faces": {
+      "smile": {
+        "raw": "raw/phase5/noor_smile-raw.png",
+        "raw_sha256": "fe5d1001df15682fbb10ca218076c4b7ba569f985b7b550b20f72ca4e696c62a",
+        "png": "assets/sprites/characters/noor/chr_noor_smile.png",
+        "png_sha256": "278f80e8c0db4b50eca58e94229c068103d1532ddbc0b22d2d3218e10b3a4049"
+      },
+      "surprise": {
+        "raw": "raw/phase5/noor_surprise-raw.png",
+        "raw_sha256": "bc7c1da0dad87fce725c056a67a0a005214e86035739e0fbeef26b29f994d241",
+        "png": "assets/sprites/characters/noor/chr_noor_surprise.png",
+        "png_sha256": "3a9bf3af813791406f00784da864d439a7877e0bf811198c3093e55882ec4ec0"
+      }
+    }
   },
   "bg_dubai_dunes_day": {
     "png": "assets/backgrounds/bg_dubai_dunes_day.png",

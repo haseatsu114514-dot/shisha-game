@@ -1,0 +1,2 @@
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-crystal/panels/uranaishi-crystal-1.webp: 758x505 比率 1.501 74 KiB
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-crystal/panels/uranaishi-crystal-2.webp: 758x505 比率 1.501 67 KiB

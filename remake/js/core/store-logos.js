@@ -35,6 +35,7 @@ const LOGO_ALIASES = Object.freeze({
   ch3_tokyo_volk: "ch3_volk", ch3_tokyo_club: "ch3_club", ch3_tokyo_shop: "shop",
   ch5_tokyo_mukai: "ch3_mukai", ch5_tokyo_steve: "ch3_steve", ch5_tokyo_volk: "ch3_volk", ch5_tokyo_shop: "shop",
   ch4_dubai_festa: "ch4_festa", ch4_dubai_shop: "shop",
+  ch5_dubai_shop: "shop", // 第5章のドバイの Dr.fookah ドバイ店（SLG04）
 });
 const logoKey = (id) => Object.hasOwn(LOGO_ALIASES, id) ? LOGO_ALIASES[id] : id;
 

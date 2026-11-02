@@ -1,0 +1,2 @@
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-watermelon-bite/panels/samechan-watermelon-bite-1.webp: 720x480 比率 1.500 80 KiB
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-watermelon-bite/panels/samechan-watermelon-bite-2.webp: 721x480 比率 1.502 79 KiB

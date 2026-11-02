@@ -1,0 +1,14 @@
+{
+  "episodes": 25,
+  "originals": 29,
+  "original_bytes": 51843035,
+  "all_originals_1536x1024": true,
+  "all_hashes_match": true,
+  "no_duplicate_hashes": true,
+  "metadata_source_paths_resolve": true,
+  "panels": 50,
+  "panel_hashes_match": true,
+  "registered": false,
+  "adopted": false,
+  "reference_images_included": false
+}

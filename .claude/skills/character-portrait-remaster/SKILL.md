@@ -1,9 +1,11 @@
 ---
 name: character-portrait-remaster
-description: shisha-gameの既存キャラの立ち絵・表情差分を、元の見た目と高密度のドット絵調を保って1キャラずつ作り直す。営業姿／私服の同一人物性、表情に伴う小さなポーズ変化、確認用プレビュー、承認済み素材の組み込みを扱う。Use for remaking character portraits and expression variants in this repository.
+description: shisha-gameの既存キャラの立ち絵・表情差分を、元の見た目と規格（docs/portrait_standard.md）の画風・頭身を保って1キャラずつ作り直す。営業姿／私服の同一人物性、表情に伴う小さなポーズ変化、確認用プレビュー、承認済み素材の組み込みを扱う。Use for remaking character portraits and expression variants in this repository.
 ---
 
 # キャラクター立ち絵の再制作
+
+**画風・頭身・参照画像の正本は [立ち絵の規格](../../../docs/portrait_standard.md)**（2026-11-02 に1本化）。生成のプロンプトは規格3節の英文、参照は6節の4枚、受け取ったら2節で測り、7節の並び検査をする。本ファイルと `references/` にある「高密度のドット絵調」「fine pixel-art grain」の言葉は制作当時の記録で、新しい生成には使わない。
 
 このスキルは2026-10-03のオーナーとの制作・修正・採用確認を引き継ぐ。
 新チャットでも本ファイル、[制作記録](references/review-status.md)、[過去画像の参照手順](references/style-references.md)、

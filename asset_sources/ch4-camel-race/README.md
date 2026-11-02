@@ -24,6 +24,7 @@ Codex が2回に分けてギガファイル便で渡した候補から選んだ�
 
 - ゲーム用は Codex の候補（縮小と配置だけ・拡大なし）をそのまま使い、`tools/pixelize.py` は通していない（ヨルの立ち絵と同じ扱い）。WebP は `remake/tools/build_images.py` の `encode`、立ち絵と背景の目録は `build_manifest.py --portraits-only saif rashid` と `--backgrounds-only`。
 - 立ち絵の顔の位置は `data/portrait_metrics.json` に記録した。**サイフ 8.62 頭身、ラシード 9.75 頭身で、規格（標準 6.4〜7.7）より頭が小さい**。既存のシェイク 8.88・太陽 9.08 と同じ帯で、CI は警告だけ。表情差分を作る前に、規格どおり約7頭身で通常を作り直すかはオーナー判断（`docs/portrait_standard.md`）。ラシードの頭頂はグトラの下なので推定（目〜あごの長さから）。
+- **2026-11-02 オーナー「任せる」→ 作り直す。** 表情差分を作る前に、2人の通常を約7頭身で作り直す。依頼文は [standard-20261102/prompts.md の TS13](../portraits/standard-20261102/prompts.md)（頭の大きさを px で指定・画風は立ち絵の規格）。原画は `asset_sources/portraits/{saif,rashid}-remaster-v2/` に置く。下の CR-SP01・CR-SP02 は最初の依頼の記録で、画風の指定（「太い輪郭にしない」）が規格より前のもの。新しく作るときは TS13 を使う。
 - 顔アイコンは `python3 tools/make_face_icons.py saif rashid`。サイフは身長 183cm なので `spriteScale` 1.05（スミ 182cm と同じ）。
 - 表情差分は未制作。台本の smile／surprise／excited／wink は、無い表情として normal で表示される。
 - 不採用の候補は `review/` の比較図（contact-1〜3・saif/rashid-comparison・suv-wheel-sand）に残す。採用分の原画は `originals/`。生成指示と検証は `review/*.json`。
@@ -57,6 +58,8 @@ Codex が2回に分けてギガファイル便で渡した候補から選んだ�
 
 ### CR-SP01 サイフ（マスター1枚 → 表情を1枚ずつ）
 
+> 旧依頼（記録）。作り直し・表情差分は prompts.md の TS13 を使う。
+
 ```
 ゲームの立ち絵用キャラクターイラストを1枚。
 【キャラ】24歳のエミラティの青年。背が高く細身、浅黒い肌、短く刈った黒髪に細い整えた髭。大きな目でよく笑う。
@@ -76,6 +79,8 @@ Dr.fookah のスタッフの黒いポロシャツ（胸に小さなロゴの位�
 ```
 
 ### CR-SP02 ラシード（マスター1枚 → 笑顔）
+
+> 旧依頼（記録）。作り直し・表情差分は prompts.md の TS13 を使う。
 
 ```
 ゲームの立ち絵用キャラクターイラストを1枚。
