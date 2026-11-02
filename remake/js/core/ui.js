@@ -6,6 +6,7 @@ import { state, STAT_KEYS, config } from "./state.js";
 import { reducedMotion } from "./transition-kit.js";
 import { DB, displayName, faceIconUrl, allFaceIconUrls, assetUrl } from "./data.js";
 import { AFFINITY_RANK_PTS } from "./stats.js";
+import { gainSeenKey, bannerHold } from "./gain-notice.js";
 import { nextStepProgress } from "./stat-progress.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
@@ -405,7 +406,9 @@ function pumpBanners() {
       // 1拍おいてから今の値へ → ハートの中身が「ぐいーん」と伸びる
       if (hearts) setTimeout(() => hearts.querySelectorAll("i").forEach((h, i) => h.style.setProperty("--fill", `${o.hearts.to[i]}%`)), 260);
     });
-    const hold = o.evolution ? 4200 : o.fx ? 3200 : o.hearts && o.hearts.to.join() !== o.hearts.from.join() ? 2600 : 2200;
+    const seenKey = gainSeenKey(o);
+    const hold = bannerHold(o, !!(seenKey && owner.flags?.[seenKey]) && !!config.shortSeen);
+    if (seenKey && owner.flags) owner.flags[seenKey] = true; // 記録は設定と独立に付く（scene-motions.js の seenFlag と同じ方式）
     setTimeout(() => {
       b.classList.remove("show");
       b.classList.add("out");
