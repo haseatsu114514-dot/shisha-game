@@ -174,7 +174,7 @@ export function updateHud() {
   const region = travelsBetweenCities(state) || [3, 4].includes(state.chapter) ? state.flags._ch2_region : "home";
   const [areaId, areaEn, areaName] = region === "widehanga" ? ["widehanga", CH2_CITY_EN, CH2_CITY_NAME]
     : region === "tokyo" && [3, 5].includes(state.chapter) ? ["tokyo", "TOKYO", "東京"]
-    : region === "dubai" && state.chapter === 4 ? ["dubai", "DUBAI", "ドバイ"] : ["sakae", HOME_CITY_EN, HOME_CITY_NAME];
+    : region === "dubai" && [4, 5].includes(state.chapter) ? ["dubai", "DUBAI", "ドバイ"] : ["sakae", HOME_CITY_EN, HOME_CITY_NAME];
   dom.area.dataset.region = areaId;
   dom.area.setAttribute("aria-label", areaEn);
   dom.area.replaceChildren(

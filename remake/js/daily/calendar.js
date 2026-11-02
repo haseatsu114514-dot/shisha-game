@@ -491,7 +491,8 @@ async function takeAction() {
   const invite = state.pendingInvite;
   const fortuneBusy = (state.slot >= 1 && fixedNight(state.day)) || restingToday()
     || !!invite && (invite.day ?? state.day) === state.day && invite.slot === state.slot;
-  const fortuneWhere = state.flags._ch2_region === "tokyo" ? "tokyo" : state.flags._ch2_region === "widehanga" ? "widehanga" : "home";
+  // 柚ヶ谷・ドバイ（第4章）にいる間は現れない（地元か東京へ戻った時間帯へずれる）。
+  const fortuneWhere = ["tokyo", "widehanga", "dubai"].includes(state.flags._ch2_region) ? state.flags._ch2_region : "home";
   // ここでは保存しない（記録は次の行動の精算で保存される。読み直しても同じ時間帯に同じく現れる）。
   syncFortune(state, { busy: fortuneBusy, where: fortuneWhere });
   const visitBlock = spot => fixedNightVisitBlock(chapterDef.nightEvents, spot);

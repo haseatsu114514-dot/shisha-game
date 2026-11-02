@@ -16,8 +16,9 @@ import { radar } from "../daily/status.js";
 import { playChapterPreview } from "./chapter-preview.js";
 import { shinkansenRide } from "../core/scene-motions.js";
 import { syncTokyoVisits } from "../core/tokyo-visits.js";
-import { CH3_AFTERMATH_SCENES, canRunChapterThreeAftermath, beginChapterThreeAftermath,
-  chapterThreeAftermathProgress, completeChapterThreeAftermathScene } from "./ch3-aftermath-progress.js";
+import { CH3_AFTERMATH_SCENES, CH3_AFTERMATH_DETOURS, canRunChapterThreeAftermath, beginChapterThreeAftermath,
+  chapterThreeAftermathProgress, completeChapterThreeAftermathScene, availableAftermathDetours,
+  completeAftermathDetour } from "./ch3-aftermath-progress.js";
 
 const IDS = CH3_AFTERMATH_SCENES.map(scene => scene.id);
 const test = name => `ch3-aftermath-${name}`;
@@ -130,6 +131,8 @@ export async function runChapterThreeAftermath() {
       Object.assign(DB.dialogues, Object.fromEntries(AGEHA_CONFESSION_SCENES.map(id => [id, confession[id]])));
     }
     if (!live(owner)) return;
+    if (!state.flags._ch3_cleared) await loadDetours(owner);
+    if (!live(owner)) return;
     if (!state.flags._ch3_aftermath) {
       beginChapterThreeAftermath(state);
       save();
@@ -138,6 +141,43 @@ export async function runChapterThreeAftermath() {
     playBgm("bgm_aftermath");
     await renderStage(owner);
   });
+}
+
+/** 大会後の寄り道の台本（#2028 残件3）。ファイルごとに読み、欠けていれば後日談の再開を止める。 */
+async function loadDetours(owner) {
+  const files = [...new Set(CH3_AFTERMATH_DETOURS.map(scene => scene.file))];
+  for (const file of files) {
+    const ids = CH3_AFTERMATH_DETOURS.filter(scene => scene.file === file).map(scene => scene.id);
+    if (ids.every(id => DB.dialogues[id]?.lines?.length)) continue;
+    const dialogues = await readDialogues(file, ids);
+    if (!live(owner)) return;
+    Object.assign(DB.dialogues, Object.fromEntries(ids.map(id => [id, dialogues[id]])));
+  }
+}
+
+/** 東京にいる間の場面カードに、大会後の寄り道の入口を出す。読んでも日時は進まない。 */
+function detourActions(owner) {
+  const scenes = availableAftermathDetours(state);
+  return scenes.length ? [button(owner, `寄り道をする（${scenes.length}）`, "detour-open", () => renderDetours(owner))] : [];
+}
+
+async function renderDetours(owner) {
+  if (!live(owner)) return;
+  const scenes = availableAftermathDetours(state);
+  if (!scenes.length) { await renderStage(owner); return; }
+  card(owner, "detour", "寄り道", "帰る前に、立ち寄れる場所がある。読んでも、予定は進まない。", [
+    ...scenes.map(scene => button(owner, `${scene.label}（${scene.location}）`, `detour-${scene.id}`,
+      () => readDetour(owner, scene.id))),
+    button(owner, "戻る", "detour-back", () => renderStage(owner)),
+  ], "読んだ場面は、あとから読み返せません。");
+}
+
+async function readDetour(owner, id) {
+  // 押した時点で条件を引き直す。古い画面・二重クリックで再読しない。
+  const scene = availableAftermathDetours(state).find(item => item.id === id);
+  if (scene && !await readScene(owner, scene)) return;
+  if (scene && completeAftermathDetour(state, id)) save();
+  await renderStage(owner);
 }
 
 async function readScene(owner, scene) {
@@ -259,6 +299,7 @@ async function renderStage(owner) {
       save();
       await renderStage(owner);
     }, true),
+    ...detourActions(owner),
   ], scene.dayAfterWin === 0 ? "全国大会の夜" : scene.dayAfterWin === 1 ? "全国大会の翌日" : "帰郷してから", scene.id);
 }
 

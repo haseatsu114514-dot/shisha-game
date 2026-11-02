@@ -1,6 +1,6 @@
 // 路上占い師（旧版 F11 / J2-J3）。2026-11-02 オーナー指定（台帳 URA）で出方を作り替えた:
 // 章ごとに1〜2回、予定と重ならない昼か夜に、街のどこかへふらっと現れる（判定は fortune-schedule.js）。
-// 第1章だけ、つむぎの噂を聞いた後。第5章は東京にも現れる（理由は語らない）。ドバイには出ない。
+// 第1章だけ、つむぎの噂を聞いた後。第3・5章は東京にも現れる（理由は語らない）。ドバイには出ない。
 // 深いローブの老婆のタロット占い。相性占い3,000円・時間は使わない・現れた1回につき1度。
 // 指名した相手と「次に会ったとき」だけ好感度の伸びが2倍（一度きり。stats.js の gainAffinity で消費）
 import { DB, displayName } from "../core/data.js";
@@ -26,8 +26,9 @@ export async function doFortune() {
   const inTokyo = state.flags._fortune_wander?.shown?.[fortuneIndexHere(state)]?.where === "tokyo";
   state.flags._fortune_met = true;
   markMet("uranaishi");
-  // 東京で会ったときは、なぜいるのかを詳しく言わない（ch5_tokyo.json）。初めて会う場合は通常の初対面。
-  await play(first ? "remake_fortune_first" : inTokyo && DB.dialogues.ch5_tokyo_fortune ? "ch5_tokyo_fortune" : "remake_fortune_again", { bg });
+  // 東京で会ったときは、なぜいるのかを詳しく言わない（第3章は ch3_tokyo_daily.json・第5章は ch5_tokyo.json）。初めて会う場合は通常の初対面。
+  const tokyoScene = `ch${state.chapter}_tokyo_fortune`;
+  await play(first ? "remake_fortune_first" : inTokyo && DB.dialogues[tokyoScene] ? tokyoScene : "remake_fortune_again", { bg });
   if (state.money < FORTUNE_FEE) {
     await play("remake_fortune_broke", { bg });
     return false;

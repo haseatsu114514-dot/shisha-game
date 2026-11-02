@@ -52,6 +52,10 @@ async function seed(page) {
     value.tournament.lastRank = 1; value.tournament.lastTotal = 88;
     for (const who of ["ageha", "kumicho", "rei", "pakki", "maezono", "dr_kemuri", "nagumo", "hajime", "sumi", "naru"])
       value.flags[`_intro_${who}`] = true;
+    // 路上占い師（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、第4章（出発前の準備）の出現は済んだことにする。
+    const fortune = await import("./js/daily/fortune-schedule.js");
+    const fortunePlan = fortune.fortunePlan({ seed: value.seed, chapter: 4 });
+    value.flags._fortune_wander = { chapter: 4, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
     core.saveConfig(); core.save();
   });

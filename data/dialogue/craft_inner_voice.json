@@ -75,7 +75,7 @@
     },
     {
       "dialogue_id": "craft_inner_pull_watch",
-      "lines": [{ "speaker": "hajime", "face": "normal", "text": "口に来る熱と味を確かめながら、少しずつ整えよう" }]
+      "lines": [{ "speaker": "hajime", "face": "normal", "text": "熱と味を口で確かめて、少しずつ整えよう" }]
     },
     {
       "dialogue_id": "craft_inner_pull_good",
