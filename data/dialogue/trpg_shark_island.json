@@ -89,7 +89,8 @@
           "nerve": 2
         },
         "trait": "潮風に当たると倒れそう……な船医。薬箱は誰より重い",
-        "likes": "港の屋台の、背脂多めのラーメン"
+        "likes": "港の屋台の、背脂多めのラーメン",
+        "portrait": "../../img/ui/trpg/pc-ruri.webp"
       }
     },
     {
@@ -110,7 +111,8 @@
           "nerve": 3
         },
         "trait": "名言なら百は持っている。半分は、その場で作った",
-        "likes": "林檎の樽。宇宙はあの香りから始まった"
+        "likes": "林檎の樽。宇宙はあの香りから始まった",
+        "portrait": "../../img/ui/trpg/pc-doran.webp"
       }
     }
   ],
@@ -2933,7 +2935,7 @@
         "detail": "赤いバンダナと、縞のシャツ",
         "color": "#7b3f33",
         "accent": "#f0b27a",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-shark-island-bandana.webp"
       },
       {
         "id": "brim",
@@ -2941,7 +2943,7 @@
         "detail": "つばの広い帽子と、日焼けした腕",
         "color": "#5c6a70",
         "accent": "#efe2c0",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-shark-island-brim.webp"
       },
       {
         "id": "tricorn",
@@ -2949,7 +2951,7 @@
         "detail": "古い三角帽と、継ぎはぎの上着",
         "color": "#2f4350",
         "accent": "#89bbc4",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-shark-island-tricorn.webp"
       },
       {
         "id": "braid",
@@ -2957,7 +2959,7 @@
         "detail": "潮風に揺れる三つ編みと、青い腰布",
         "color": "#2d3a5e",
         "accent": "#7fd6d0",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-shark-island-braid.webp"
       }
     ],
     "archetypes": [
@@ -3021,7 +3023,8 @@
             "talk": 2,
             "nerve": 2
           },
-          "making": "trpg_shark_island_make_hiyori_hiyori_ruri"
+          "making": "trpg_shark_island_make_hiyori_hiyori_ruri",
+          "portrait": "../../img/ui/trpg/pc-ruri.webp"
         },
         {
           "id": "nerine",
@@ -3035,7 +3038,8 @@
             "talk": 1,
             "nerve": 2
           },
-          "making": "trpg_shark_island_make_hiyori_hiyori_nerine"
+          "making": "trpg_shark_island_make_hiyori_hiyori_nerine",
+          "portrait": "../../img/ui/trpg/pc-nerine.webp"
         }
       ]
     },
@@ -3053,7 +3057,8 @@
             "talk": 4,
             "nerve": 3
           },
-          "making": "trpg_shark_island_make_adam_adam_doran"
+          "making": "trpg_shark_island_make_adam_adam_doran",
+          "portrait": "../../img/ui/trpg/pc-doran.webp"
         },
         {
           "id": "jiruba",
@@ -3067,7 +3072,8 @@
             "talk": 2,
             "nerve": 3
           },
-          "making": "trpg_shark_island_make_adam_adam_jiruba"
+          "making": "trpg_shark_island_make_adam_adam_jiruba",
+          "portrait": "../../img/ui/trpg/pc-jiruba.webp"
         }
       ]
     }

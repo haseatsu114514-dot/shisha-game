@@ -89,7 +89,8 @@
           "nerve": 1
         },
         "trait": "香りの配合なら駅一番。名言の前に、少し間を取る",
-        "likes": "林檎の香り。宇宙の始まりの味"
+        "likes": "林檎の香り。宇宙の始まりの味",
+        "portrait": "../../img/ui/trpg/pc-nova.webp"
       }
     },
     {
@@ -110,7 +111,8 @@
           "nerve": 3
         },
         "trait": "よく見て、よく描く。宇宙でも口数は少ない",
-        "likes": "ラベンダー色の星雲と、描きかけのスケッチ"
+        "likes": "ラベンダー色の星雲と、描きかけのスケッチ",
+        "portrait": "../../img/ui/trpg/pc-luna.webp"
       }
     }
   ],
@@ -2916,7 +2918,7 @@
         "detail": "短い黒髪に、紺の作業着",
         "color": "#27304f",
         "accent": "#89bbc4",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-smoke-robot-ink.webp"
       },
       {
         "id": "silver",
@@ -2924,7 +2926,7 @@
         "detail": "ふわりと跳ねた銀髪と、反射板つきの上着",
         "color": "#5b6378",
         "accent": "#d8dcef",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-smoke-robot-silver.webp"
       },
       {
         "id": "rust",
@@ -2932,7 +2934,7 @@
         "detail": "赤毛をゴーグルで押さえる",
         "color": "#6e3a35",
         "accent": "#f0b27a",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-smoke-robot-rust.webp"
       },
       {
         "id": "helmet",
@@ -2940,7 +2942,7 @@
         "detail": "いつも外さない、丸いヘルメット",
         "color": "#3a3f66",
         "accent": "#b9b2f0",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-smoke-robot-helmet.webp"
       }
     ],
     "archetypes": [
@@ -3004,7 +3006,8 @@
             "talk": 3,
             "nerve": 1
           },
-          "making": "trpg_smoke_robot_make_adam_adam_nova"
+          "making": "trpg_smoke_robot_make_adam_adam_nova",
+          "portrait": "../../img/ui/trpg/pc-nova.webp"
         },
         {
           "id": "cosmo",
@@ -3018,7 +3021,8 @@
             "talk": 4,
             "nerve": 1
           },
-          "making": "trpg_smoke_robot_make_adam_adam_cosmo"
+          "making": "trpg_smoke_robot_make_adam_adam_cosmo",
+          "portrait": "../../img/ui/trpg/pc-cosmo.webp"
         }
       ]
     },
@@ -3036,7 +3040,8 @@
             "talk": 1,
             "nerve": 3
           },
-          "making": "trpg_smoke_robot_make_tsumugi_tsumugi_luna"
+          "making": "trpg_smoke_robot_make_tsumugi_tsumugi_luna",
+          "portrait": "../../img/ui/trpg/pc-luna.webp"
         },
         {
           "id": "konoha",
@@ -3050,7 +3055,8 @@
             "talk": 1,
             "nerve": 4
           },
-          "making": "trpg_smoke_robot_make_tsumugi_tsumugi_konoha"
+          "making": "trpg_smoke_robot_make_tsumugi_tsumugi_konoha",
+          "portrait": "../../img/ui/trpg/pc-konoha.webp"
         }
       ]
     }

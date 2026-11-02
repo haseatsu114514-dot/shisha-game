@@ -89,7 +89,8 @@
           "nerve": 2
         },
         "trait": "選手権の常連。毎回、林檎の香りで勝負する。腕は本物",
-        "likes": "林檎。この宇宙の最初の一個"
+        "likes": "林檎。この宇宙の最初の一個",
+        "portrait": "../../img/ui/trpg/pc-orchard.webp"
       }
     },
     {
@@ -110,7 +111,8 @@
           "nerve": 3
         },
         "trait": "選手権には興味がない。王宮の椅子と通路を見に来ただけ",
-        "likes": "座り心地のいい椅子と、サメの彫り物"
+        "likes": "座り心地のいい椅子と、サメの彫り物",
+        "portrait": "../../img/ui/trpg/pc-koban.webp"
       }
     }
   ],
@@ -3046,7 +3048,7 @@
         "detail": "短い黒髪に、借り物の礼服",
         "color": "#2f3446",
         "accent": "#c9c3e6",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-mist-kingdom-ink.webp"
       },
       {
         "id": "silver",
@@ -3054,7 +3056,7 @@
         "detail": "霧に溶けそうな銀髪と、灰色の外套",
         "color": "#5d5f72",
         "accent": "#e8e6f2",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-mist-kingdom-silver.webp"
       },
       {
         "id": "auburn",
@@ -3062,7 +3064,7 @@
         "detail": "赤毛を一つに結び、番号札を胸に",
         "color": "#7a4136",
         "accent": "#f0c09a",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-mist-kingdom-auburn.webp"
       },
       {
         "id": "dawn",
@@ -3070,7 +3072,7 @@
         "detail": "肩までの髪と、朝焼け色のスカーフ",
         "color": "#4a3d5e",
         "accent": "#f3b9a8",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-mist-kingdom-dawn.webp"
       }
     ],
     "archetypes": [
@@ -3134,7 +3136,8 @@
             "talk": 2,
             "nerve": 2
           },
-          "making": "trpg_mist_kingdom_make_adam_adam_orchard"
+          "making": "trpg_mist_kingdom_make_adam_adam_orchard",
+          "portrait": "../../img/ui/trpg/pc-orchard.webp"
         },
         {
           "id": "grants",
@@ -3148,7 +3151,8 @@
             "talk": 2,
             "nerve": 3
           },
-          "making": "trpg_mist_kingdom_make_adam_adam_grants"
+          "making": "trpg_mist_kingdom_make_adam_adam_grants",
+          "portrait": "../../img/ui/trpg/pc-grants.webp"
         }
       ]
     },
@@ -3166,7 +3170,8 @@
             "talk": 1,
             "nerve": 3
           },
-          "making": "trpg_mist_kingdom_make_samechan_samechan_koban"
+          "making": "trpg_mist_kingdom_make_samechan_samechan_koban",
+          "portrait": "../../img/ui/trpg/pc-koban.webp"
         },
         {
           "id": "sharuku",
@@ -3180,7 +3185,8 @@
             "talk": 2,
             "nerve": 3
           },
-          "making": "trpg_mist_kingdom_make_samechan_samechan_sharuku"
+          "making": "trpg_mist_kingdom_make_samechan_samechan_sharuku",
+          "portrait": "../../img/ui/trpg/pc-sharuku.webp"
         }
       ]
     }

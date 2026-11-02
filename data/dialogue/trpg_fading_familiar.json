@@ -59,7 +59,8 @@
           "nerve": 4
         },
         "trait": "どんな呪文を唱えても、サメが来る。陸ではちょっと困る",
-        "likes": "サメの出る映画。夜ふかしの上映会"
+        "likes": "サメの出る映画。夜ふかしの上映会",
+        "portrait": "../../img/ui/trpg/pc-hirena.webp"
       }
     },
     {
@@ -80,7 +81,8 @@
           "nerve": 2
         },
         "trait": "何を錬成しても林檎になる。腕は学年一",
-        "likes": "ダブルアップル。宇宙の始まりの香り"
+        "likes": "ダブルアップル。宇宙の始まりの香り",
+        "portrait": "../../img/ui/trpg/pc-mars.webp"
       }
     }
   ],
@@ -3230,7 +3232,7 @@
         "detail": "短い黒髪に、紺のローブ",
         "color": "#2f3552",
         "accent": "#89bbc4",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-fading-familiar-ink.webp"
       },
       {
         "id": "silver",
@@ -3238,7 +3240,7 @@
         "detail": "肩までの銀髪に、星の刺繍のマント",
         "color": "#5d5a78",
         "accent": "#d8d4ee",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-fading-familiar-silver.webp"
       },
       {
         "id": "ember",
@@ -3246,7 +3248,7 @@
         "detail": "跳ねた赤毛と、呪文で焦げた袖",
         "color": "#7a3f3a",
         "accent": "#f0b27a",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-fading-familiar-ember.webp"
       },
       {
         "id": "owl",
@@ -3254,7 +3256,7 @@
         "detail": "丸眼鏡と、ふくろう色のベスト",
         "color": "#4e4a3c",
         "accent": "#d9c79a",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-fading-familiar-owl.webp"
       }
     ],
     "archetypes": [
@@ -3318,7 +3320,8 @@
             "talk": 1,
             "nerve": 4
           },
-          "making": "trpg_fading_familiar_make_samechan_samechan_hirena"
+          "making": "trpg_fading_familiar_make_samechan_samechan_hirena",
+          "portrait": "../../img/ui/trpg/pc-hirena.webp"
         },
         {
           "id": "fukami",
@@ -3332,7 +3335,8 @@
             "talk": 1,
             "nerve": 4
           },
-          "making": "trpg_fading_familiar_make_samechan_samechan_fukami"
+          "making": "trpg_fading_familiar_make_samechan_samechan_fukami",
+          "portrait": "../../img/ui/trpg/pc-fukami.webp"
         }
       ]
     },
@@ -3350,7 +3354,8 @@
             "talk": 3,
             "nerve": 2
           },
-          "making": "trpg_fading_familiar_make_adam_adam_mars"
+          "making": "trpg_fading_familiar_make_adam_adam_mars",
+          "portrait": "../../img/ui/trpg/pc-mars.webp"
         },
         {
           "id": "nox",
@@ -3364,7 +3369,8 @@
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_fading_familiar_make_adam_adam_nox"
+          "making": "trpg_fading_familiar_make_adam_adam_nox",
+          "portrait": "../../img/ui/trpg/pc-nox.webp"
         }
       ]
     }
