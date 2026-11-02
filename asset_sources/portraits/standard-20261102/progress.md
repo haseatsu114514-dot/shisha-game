@@ -49,8 +49,14 @@
 
 | 順 | キャラ | 表情 | 状態 | メモ |
 |---|---|---|---|---|
-| 11 | サイフ（`saif`） | normal | 未着手（依頼文は prompts.md の TS13） | 8.62→目標7.0頭身。①は `asset_sources/ch4-camel-race/originals/saif-normal-A-v2.png` |
-| 12 | ラシード（`rashid`） | normal | 未着手（依頼文は prompts.md の TS13） | 9.75→目標約7頭身。グトラで頭頂が隠れるので目〜あごで測る。①は `asset_sources/ch4-camel-race/originals/rashid-normal-B.png` |
+| 11 | サイフ（`saif`） | normal | 生成済み（オーナー確認待ち）。Claude は合格と判断 | 8.62→目標7.0頭身。①は `asset_sources/ch4-camel-race/originals/saif-normal-A-v2.png` |
+| 12 | ラシード（`rashid`） | normal | 生成済み（オーナー確認待ち）。Claude は合格と判断 | 9.75→目標約7頭身。グトラで頭頂が隠れるので目〜あごで測る。①は `asset_sources/ch4-camel-race/originals/rashid-normal-B.png` |
+
+2026-11-02 TS13：Codex が2人の通常を作り直し、ZIP（SHA256 `843eba1d…`）で届いた。原画を `saif-remaster-v2/normal-source.png`・`rashid-remaster-v2/normal-source.png` に保存し、`fit_portrait.py` で確認用の画像（`normal-preview.png`・`normal-compare.png`）を作った。ゲームの素材は触っていない。
+
+- 顔・ひげ・目の色・服・持ち物・ポーズ・色は前の絵のまま。頭だけが大きくなった。身長と足元の位置も前と同じ。
+- 頭身は Codex の測定でサイフ 6.61・ラシード 6.85、Claude の測定で 7.24・7.68。頭頂とあごの読み方の差で、どちらも規格（6.4〜7.7）内。前は 8.62・9.75。
+- オーナーが OK なら、2人とも通常1枚だけなので、そのまま組み込める（新旧の表情が混ざらない）。そのあと prompts.md の TS13「表情差分」（サイフ4枚・ラシード1枚）へ進む。
 
 ## 段階3：表情差分（キャラ単位）
 
