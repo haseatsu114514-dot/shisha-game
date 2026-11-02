@@ -139,7 +139,10 @@ export async function runDaily(def) {
       save();
     }
     // #2213 B01: 配達はシフト後の帰り道。行動枠・体力は使わない。
-    for (let delivery = dueDelivery(); delivery; delivery = dueDelivery()) await deliver(delivery);
+    for (let delivery = dueDelivery(); delivery; delivery = dueDelivery()) {
+      await deliver(delivery);
+      if (state !== owner) return; // 配達中のLOADは読み込んだ日常が引き継ぐ。古い流れで次の届け先へ進まない
+    }
     // 2件の納品後、最終報告のため一度だけ職場へ戻る。
     const reported = state.chapter === 1 ? await reportDeliveryBatch() : null;
     if (reported === false) return;
