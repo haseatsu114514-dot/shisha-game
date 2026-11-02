@@ -27,7 +27,6 @@ import { openShop } from "../daily/shop.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
 import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionCandidates, overseasCompanion } from "../core/overseas-companion.js";
 import { playChapterPreview } from "./chapter-preview.js";
-import { consultLessons } from "../core/growth.js";
 import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview } from "./ch4-verdict.js";
 import { craftReviewLines } from "../craft/advice.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
