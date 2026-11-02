@@ -9,13 +9,14 @@ globalThis.document = { addEventListener() {} };
 const score = await import("../js/craft/score.js");
 const verdict = await import("../js/chapters/ch4-verdict.js");
 const growth = await import("../js/core/growth.js");
+const { TOURNAMENT_STORY_STEPS } = await import("../js/craft/tournament-story-data.js");
 delete globalThis.document;
 const data = file => JSON.parse(fs.readFileSync(new URL(`../../data/${file}.json`, import.meta.url)));
 DB.flavorById = Object.fromEntries(data("flavors").flavors.map(row => [row.id, row]));
 DB.equipById = Object.fromEntries(data("equipment").equipment.map(row => [row.id, row]));
 const source = fs.readFileSync(new URL("../js/chapters/ch4-tournament.js", import.meta.url), "utf8");
 
-async function run({ failure = null, abandon = false, invalidate = false, resume = null, ask = true } = {}) {
+async function run({ failure = null, abandon = false, invalidate = false, resume = null, ask = true, loadFails = false, storyCancel = null } = {}) {
   const value = resume || newState();
   if (!resume) {
     value.chapter = 4; value.phase = "tournament";
@@ -37,6 +38,18 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
     retireScreen: () => trace.push("retire"), playBgm() {}, clearComments() {}, block() {},
     play: async dialogue => { trace.push(dialogue.dialogue_id); return {}; },
     modal: async options => { trace.push(options.title); return ask; },
+    // 制作中の掛け合い（#2031）: 台本の読み込みと、既読を制作保存へ書く共通の再生（本物と同じく既読は読まない）。
+    TOURNAMENT_STORY_STEPS,
+    loadTournamentCraftDialogue: async () => { trace.push("craft-dialogue"); if (loadFails) throw new Error("offline"); },
+    playTournamentEvent: async (cs, event, options) => {
+      const story = cs.tournamentStory ||= { seen: [] };
+      story.seen ||= [];
+      if (story.seen.includes(event)) return true;
+      trace.push(`story:${event}:${options?.context?.rank ?? "-"}`);
+      if (storyCancel === event) return false;
+      story.seen.push(event);
+      return true;
+    },
     stepSetup: async () => trace.push("setup"), stepWater: async () => trace.push("water"),
     stepMix: async cs => { trace.push("mix"); cs.mix = { sakura: 12 }; cs.mixInfo = { total: 12, score: 96, intensity: 5 }; },
     stepPack: async cs => { trace.push("pack"); cs.pack = "normal"; },
@@ -116,6 +129,42 @@ assert.equal(resumed.result.win, true);
 assert(!resumed.trace.includes("mix"));
 assert(!resumed.trace.includes("heat"));
 assert.equal(resumed.value.flags._ch4.match.voted, 4);
+// #2031: 制作中の掛け合いは工程の前に一度ずつ。提供後・調整1の後は途中順位→掛け合い→助言→問いの順。
+{
+  const at = (trace, item) => trace.indexOf(item);
+  const story = (trace, event) => trace.findIndex(item => String(item).startsWith(`story:${event}:`));
+  const told = trace => trace.filter(item => String(item).startsWith("story:")).map(item => item.split(":")[1]);
+  const t = success.trace;
+  assert.equal(t[0], "craft-dialogue", "The craft banter loads before any save or step");
+  assert.deepEqual(told(t), ["opening", "packed", "waiting", "interlude1", "interlude2"]);
+  assert(story(t, "opening") < at(t, "setup"));
+  assert(at(t, "pack") < story(t, "packed") && story(t, "packed") < at(t, "holes"));
+  assert(at(t, "steam-time") < story(t, "waiting") && story(t, "waiting") < at(t, "steam"));
+  assert(at(t, "standings:2") < story(t, "interlude1") && story(t, "interlude1") < at(t, "ch4_craft_advice_9"));
+  assert(at(t, "ch4_craft_advice_9") < at(t, "ch4_customer_1"));
+  assert(at(t, "standings:3") < story(t, "interlude2") && story(t, "interlude2") < at(t, "ch4_customer_2"));
+  // 提供後の掛け合いには、はじめの実際の順位を渡す（高得点の一台は先頭）。
+  assert(t.includes("story:interlude1:1"));
+  assert.deepEqual(success.value.flags._ch4.match.craft.tournamentStory.seen, ["opening", "packed", "waiting", "interlude1", "interlude2"]);
+  // 保存から再開しても、読んだ掛け合いは繰り返さない。提供で失敗した一台に調整前の掛け合いは出ない。
+  assert.deepEqual(told(resumed.trace), ["interlude1", "interlude2"]);
+  const burnt = await run({ failure: "pull" });
+  assert(!told(burnt.trace).some(event => event.startsWith("interlude")));
+  assert.deepEqual(told((await run({ failure: "care1" })).trace), ["opening", "packed", "waiting", "interlude1"]);
+  // 台本が読めなければ、保存と大会の開始地点に触れない（第3章と同じ）。
+  const offline = await run({ loadFails: true });
+  assert.equal(offline.error?.message, "offline");
+  assert.equal(offline.snapshots.length, 0);
+  assert.equal(offline.value.flags._ch4.match?.craft ?? null, null);
+  // 掛け合いの途中で閉じたら制作を止め、次は読みかけの掛け合いから（読んだ分は保存に残る）。
+  const closed = await run({ storyCancel: "packed" });
+  assert.equal(closed.result, false);
+  assert.equal(closed.value.flags._ch4.match.step, 3);
+  assert(!closed.trace.includes("holes"));
+  const reopened = await run({ resume: structuredClone(closed.value) });
+  assert.equal(reopened.result.win, true);
+  assert.deepEqual(told(reopened.trace), ["packed", "waiting", "interlude1", "interlude2"]);
+}
 const noAsk = await run({ ask: false });
 assert.deepEqual(noAsk.value.flags._ch4.match.craft.customerChecks, [false, false]);
 assert(!noAsk.trace.includes("ch4_customer_1"));
@@ -133,6 +182,7 @@ assert.equal(grownLoss.value.growth.xp,245);assert.equal(grownLoss.value.growth.
 assert(match.resetChapterFourCraft(grownLoss.value));
 const grownRetry=await run({resume:structuredClone(grownLoss.value)});
 assert.equal(grownRetry.error,undefined);assert.equal(grownRetry.value.growth.xp,525);
+assert(grownRetry.trace.includes("story:opening:1"),"再挑戦は大会の最初からなので、開幕の掛け合いも読み直す");
 assert.equal(grownRetry.value.growth.earned,2,"再挑戦は順位の差分だけ。色の火種は完成後に一度");
 previewStorage.clear();
 console.log("PASS: real Chapter 4 runner awaits each craft step, handles failures/abandonment/owner changes and resumes serialized saves");

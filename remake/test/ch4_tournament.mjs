@@ -5,7 +5,7 @@ import { DB } from "../js/core/data.js";
 import { advanceToChapterFour, CH4_PROLOGUE, completeChapterFourScene, chapterFourTournamentOutcome,
   chapterFourAfterDefeat, CH4_PRIZE } from "../js/chapters/ch4-progress.js";
 import { chapterFourMatch, startChapterFourCraft, beginChapterFourStep, finishChapterFourStep,
-  recoverChapterFourStep, CH4_JUDGES, CH4_CONTESTANTS } from "../js/chapters/ch4-tournament-state.js";
+  recoverChapterFourStep, resetChapterFourCraft, CH4_JUDGES, CH4_CONTESTANTS } from "../js/chapters/ch4-tournament-state.js";
 // Shared score/served-eval imports browser audio; only its visibility observer runs at module load.
 globalThis.document = { addEventListener() {} };
 const { finalize, computeShisha } = await import("../js/craft/score.js");
@@ -208,5 +208,30 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   const defeatText = defeat.lines.map(row => row.text).join("\n");
   assert.doesNotMatch(defeatText, /最後まで吸いたくなる|最後の票|今日は、この香りで出す/);
   assert.match(defeatText, /葉が焦げた/);
+}
+// #2031: 制作中の掛け合いの既読は、工程ごとの複製と保存を通って残り、再挑戦で最初からに戻る。
+{
+  let value = entry();
+  startChapterFourCraft(value, craft());
+  chapterFourMatch(value).craft.tournamentStory = { seen: ["opening"] };
+  for (let i = 0; i < 3; i++) {
+    const cs = beginChapterFourStep(value);
+    assert.deepEqual(cs.tournamentStory.seen, ["opening"], "The step clone carries the banter already read");
+    finishChapterFourStep(value, cs);
+  }
+  chapterFourMatch(value).craft.tournamentStory.seen.push("packed");
+  value = JSON.parse(JSON.stringify(value));
+  recoverChapterFourStep(value);
+  assert.deepEqual(chapterFourMatch(value).craft.tournamentStory.seen, ["opening", "packed"], "SAVE/LOAD keeps the banter already read");
+  for (let step = chapterFourMatch(value).step; step < 11; step++) {
+    const cs = beginChapterFourStep(value);
+    if (step === 8) cs.failed = "burnt";
+    finishChapterFourStep(value, cs);
+    if (cs.failed) break;
+  }
+  assert.equal(chapterFourMatch(value).result.win, false);
+  assert.deepEqual(chapterFourMatch(value).craft.tournamentStory.seen, ["opening", "packed"]);
+  assert.equal(resetChapterFourCraft(value), true);
+  assert.equal(chapterFourMatch(value).craft, null, "A retry replays the banter from the opening");
 }
 console.log("PASS: Chapter 4 real scores, votes, failure/retry, resource rollback, plans and local-learning feedback");
