@@ -323,5 +323,23 @@
     "open": "ch3_shuraba_open",
     "close": "ch3_shuraba_steve",
     "overlap": "tournament_evening_overlap"
+  },
+  "ch1_near_conflict": {
+    "chapter": 1,
+    "flag": "_shuraba_ch1",
+    "scenes": [
+      "remake_shuraba_minto_tsumugi",
+      "remake_shuraba_rin_tsumugi",
+      "remake_shuraba_minto_rin",
+      "remake_shuraba_all"
+    ],
+    "deferred": true,
+    "recall": {
+      "minto": "ch1_tournament_after",
+      "tsumugi": "ch1_tournament_after",
+      "rin": "interval_day1_morning_win",
+      "defeat": "remake_defeat_follow"
+    },
+    "comment": "#2089: 第1章の大会当日、控室入場前の鉢合わせ。第3章の茶化しと同じく謝罪・破局・和解を確定せず保留する。大会後は居合わせた恋人が「朝の話」を一言だけ返す（優勝: ロビーのみんと・tonariのつむぎ・翌朝の凛のLIME／敗北: remake_defeat_follow）。"
   }
 }

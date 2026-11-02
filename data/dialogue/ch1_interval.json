@@ -29,6 +29,12 @@
           "text": "……スミさんらしい。"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_shuraba_ch1",
+          "next_true": "mw_shuraba_rin"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（嬉しいけど……みんなの顔が浮かぶ。なるさんの、悔しそうな顔）"
@@ -43,7 +49,39 @@
           "face": "normal",
           "text": "（次があるなら、もっと上を目指さないと。あの三人は、もっと強くなって戻ってくる）"
         }
-      ]
+      ],
+      "branches": {
+        "mw_shuraba_rin": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "rin",
+            "next_true": "mw_shuraba_rin_lover"
+          }
+        ],
+        "mw_shuraba_rin_lover": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "その下に、凛さんからも一件。夜のうちに届いていたらしい。"
+          },
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "優勝おめでとう、モルモットくん。データは、ちゃんと取らせてもらったよ"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "朝の件は、まだ保留。……結果は出たから、次は君の検証の番だね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "（……逃げ切れたわけじゃ、なかった）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "interval_day1_naru_lime",
