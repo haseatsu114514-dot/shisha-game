@@ -29,7 +29,8 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
     after: ["ch3_mukai_arrival"] },
   // 台本が「大会後」。大会後のmukaiは ch3-aftermath.js 側の面で、今のカードからは出ない（GAP 3-C）。
   ch3_cigarman_trace: { file: "ch3_mukai", label: "大会後の客席", location: "mukai", bg: "bg_mukai_shop" },
-  // エミルは大会当日に初めて名乗る審査員。面識ができる前に体験会を置かない。
+  // エミルは大会当日に初めて名乗る審査員。面識ができる前に体験会を置かない。大会後の入口は
+  // ch3-aftermath-progress.js の寄り道（#2028）。既読フラグは同じ _ch3_read_ch3_emil_workshop。
   ch3_emil_workshop: { file: "ch3_rivals", label: "エミルの体験会", location: "東京", bg: "bg_street_day", met: ["emil"] },
   ch3_mashiro_play_1: { file: "ch3_mashiro", label: "休みの日の配合メモ", location: "mukai", bg: "bg_mukai_shop" },
   ch3_mashiro_play_2: { file: "ch3_mashiro", label: "問屋のティーカップ", location: "東京の問屋", bg: "bg_street_day" },
