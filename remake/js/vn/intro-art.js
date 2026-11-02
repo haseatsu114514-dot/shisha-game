@@ -123,10 +123,13 @@ export function layoutIntro(host, id, variant, intro) {
 }
 
 /** 型ごとの登場。戻り値は止めるための Animation の配列 */
-export function animateIntro(host, id, motion = "sharp", { sound = () => {} } = {}) {
+export function animateIntro(host, id, motion = "sharp", { sound = () => {}, skip = new Set() } = {}) {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) { sound("reduced"); return []; }
   const animations = [];
+  // skip: つなぎ（intro-transition.js）が先に見せた部品は動かさない（"background" / "portrait"）
+  const skipped = { ".ci-art-background": "background", ".ci-portrait": "portrait" };
   const animate = (selector, frames, options) => {
+    if (skip.has(skipped[selector])) return;
     const node = host.querySelector(selector);
     if (node) animations.push(node.animate(frames, { duration: 600, easing: "cubic-bezier(.2,.8,.2,1)", fill: "both", ...options }));
   };

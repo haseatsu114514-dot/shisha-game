@@ -12,7 +12,7 @@ import {
   fortuneTargets,
 } from '../js/core/fortune-effects.js';
 import { openingStatus, spotTimeNote } from '../js/daily/spot-hours.js';
-import { fortuneOpenOn, fortuneScheduled, fortuneRumorHeard, FORTUNE_RUMOR_ID } from '../js/daily/fortune-schedule.js';
+import { fortunePlan, syncFortune, fortuneHere, fortuneRumorHeard, FORTUNE_RUMOR_ID } from '../js/daily/fortune-schedule.js';
 
 const triviaPath = new URL('../data/fortune-trivia.json', import.meta.url);
 const trivia = JSON.parse(fs.readFileSync(triviaPath, 'utf8'));
@@ -200,9 +200,9 @@ for (const entry of all) {
   assert(d.lines.some(l => l.type === 'motion' && l.id === 'tarot'));
 }
 assert(db.dialogues.remake_fortune_result, 'legacy result was removed');
-for (const slot of [1, 2]) assert.equal(openingStatus({ kind: 'fortune' }, { slot }).ok, false);
-assert.equal(openingStatus({ kind: 'fortune' }, { slot: 0 }).ok, true);
-assert.equal(spotTimeNote({ kind: 'fortune' }, { slot: 1 }), '昼のみ営業');
+// 占い師は昼にも夜にも現れる（2026-11-02 台帳 URA）。営業時間の門と「昼のみ営業」の札は無い。
+for (const slot of [0, 1]) assert.equal(openingStatus({ kind: 'fortune' }, { slot }).ok, true);
+assert.notEqual(spotTimeNote({ kind: 'fortune' }, { slot: 1 }), '昼のみ営業');
 
 // Verify annotations against the actual authored branches rather than implementation fixtures.
 const dialogues = {};
@@ -236,19 +236,31 @@ m=json.loads((root/'remake/data/manifest.json').read_text());assert m['portraits
 assert.equal(art.status, 0, art.stderr);
 console.log('PASS fortune: 62 approved readings, 2-cycle nonrepeat, legacy mask migration, Naru rift exclusion, save/RNG, inclusive three days, independent bonus, guarded choice hints, daylight hours and authored annotations');
 
-// #780: 噂を読むまで出ない。出店日が雨なら休み、晴れる日へ繰り越す（連続雨も保持、二重出店なし）。
+// 第1章は噂を読むまで出ない（#780 の噂の門は第1章だけ残す）。出方は章で1〜2回・予定の無い昼か夜（2026-11-02 台帳 URA）。
 {
   assert.equal(fortuneRumorHeard({ limeRead: [] }), false);
   assert.equal(fortuneRumorHeard({ flags: { _fortune_met: true }, limeRead: [] }), false, 'Meeting before does not fake the rumor');
   assert.equal(fortuneRumorHeard({ limeRead: [FORTUNE_RUMOR_ID] }), false, "Legacy morning LIME alone cannot unlock");
   assert.equal(fortuneRumorHeard({ flags: { _fortune_rumor_heard: true }, limeRead: [] }), true, "Completed face-to-face rumor unlocks");
-  const days = rain => Array.from({ length: 21 }, (_, i) => i + 1).filter(d => fortuneOpenOn(d, d => rain.includes(d)));
-  assert.deepEqual(days([]), [3, 6, 10, 13, 17, 20], 'Sunny weeks keep the weekly 3rd/6th days');
-  assert.deepEqual(days([3]), [4, 6, 10, 13, 17, 20], 'Rain on day 3 moves it to day 4');
-  assert.deepEqual(days([3, 4, 5]), [6, 10, 13, 17, 20], 'Carried opening lands on the next scheduled day only once');
-  assert.deepEqual(days([6, 7, 8]), [3, 9, 10, 13, 17, 20], 'Consecutive rain keeps the postponement until it clears');
-  assert.deepEqual(days([10]), [3, 6, 11, 13, 17, 20]);
-  assert.equal(fortuneOpenOn(5, d => d === 4), false, 'Rain on a normal day carries nothing');
-  for (let d = 1; d <= 28; d++) assert.equal(fortuneScheduled(d), d % 7 === 3 || d % 7 === 6);
+  for (const seed of [0, 1, 5, 42, 777]) {
+    const plan = fortunePlan({ chapter: 1, seed, flags: {} });
+    assert(plan.length >= 1 && plan.length <= 2, `1-2 appearances: ${seed}`);
+    const at = plan[0], save = { chapter: 1, seed, day: Math.floor(at / 2) + 1, slot: at % 2, flags: {} };
+    assert.equal(syncFortune(save), false, 'Chapter 1 waits for the rumor');
+    save.flags._fortune_rumor_heard = true;
+    assert.equal(syncFortune(save), true, 'Appears in the planned half-day once heard');
+    assert.equal(fortuneHere(save), true);
+  }
+  for (const chapter of [3, 4]) assert.deepEqual(fortunePlan({ chapter, seed: 1, flags: {} }), [], `Not in Chapter ${chapter}`);
+  // 第5章は東京にも現れる（地元と同じ予定。いる地域に出る）。第4章（ドバイ）には出ない。
+  {
+    const s = { chapter: 5, seed: 3, day: 1, slot: 0, flags: { _ch5: { startDay: 1 } } };
+    const at = fortunePlan(s)[0]; s.day = Math.floor(at / 2) + 1; s.slot = at % 2;
+    assert.equal(syncFortune(s, { where: 'tokyo' }), true);
+    assert.equal(fortuneHere(s, 'tokyo'), true); assert.equal(fortuneHere(s, 'home'), false);
+    const w = { chapter: 2, seed: 3, day: 1, slot: 0, flags: { _ch2_day1: { startDay: 1 } } };
+    const at2 = fortunePlan(w)[0]; w.day = Math.floor(at2 / 2) + 1; w.slot = at2 % 2;
+    assert.equal(syncFortune(w, { where: 'tokyo' }), false, 'Tokyo only in Chapter 5');
+  }
 }
-console.log('PASS: fortune rumor gate and rainy-day carryover');
+console.log('PASS: fortune rumor gate and wandering schedule');

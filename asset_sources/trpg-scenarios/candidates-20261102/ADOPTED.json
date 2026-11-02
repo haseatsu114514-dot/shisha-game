@@ -1,0 +1,19 @@
+{
+  "chosen": {
+    "leaf-mail": "c",
+    "apple-thief": "b",
+    "shark-island": "b",
+    "mist-kingdom": "b",
+    "smoke-robot": "b",
+    "fading-familiar": "b",
+    "fox-market": "b",
+    "stage-ghost": "a",
+    "moonflower-encore": "b",
+    "purikura-hero": "c",
+    "doll-requiem": "c"
+  },
+  "date": "2026-11-02",
+  "source": "asset_sources/trpg-scenarios/candidates-20261102/<id>/background-<案>.png",
+  "derived": "assets/backgrounds/trpg_<id>_room.png (1280x720) -> remake/img/backgrounds/trpg_<id>_room.webp",
+  "records": "asset_sources/trpg-scenarios/generation.json"
+}
