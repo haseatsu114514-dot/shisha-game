@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EEE0CD  枠の段 1: 2コマ@y=272
+  コマ1: 720x539 @(35,272) 比率 1.336 → warn
+  コマ2: 720x539 @(780,272) 比率 1.336 → warn
+コマ1: 720x539 (1.336) → 左右に各5.4%の紙帯 → 出力 808x539  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-cardboard-throne/panels/samechan-cardboard-throne-1.webp (86 KiB)
+コマ2: 720x539 (1.336) → 左右に各5.4%の紙帯 → 出力 808x539  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-cardboard-throne/panels/samechan-cardboard-throne-2.webp (84 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "samechan-cardboard-throne",
+  "title": "王の玉座",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "開店準備中のSHISHARKは、段ボールだらけ。",
+  "panels": [
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-cardboard-throne/panels/samechan-cardboard-throne-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-cardboard-throne/panels/samechan-cardboard-throne-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-cardboard-throne/source-v2.png",
+      "region": {
+        "x": 35,
+        "y": 272,
+        "width": 720,
+        "height": 539,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-cardboard-throne/source-v2.png",
+      "region": {
+        "x": 780,
+        "y": 272,
+        "width": 720,
+        "height": 539,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "samechan-cardboard-throne-1.webp",
+      "width": 808,
+      "height": 539,
+      "sha256": "3243b548aabbb33485ca67fb179676645c7be115504686552ca99bb876b53604"
+    },
+    {
+      "file": "samechan-cardboard-throne-2.webp",
+      "width": 808,
+      "height": 539,
+      "sha256": "c96c788c3486a4feea59d61fb061564c39a2f3d73bea0201a5831f91847c80db"
+    }
+  ]
+}

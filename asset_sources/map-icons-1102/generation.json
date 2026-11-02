@@ -209,6 +209,60 @@
         384,
         269
       ]
+    },
+    {
+      "name": "desert-tour-desk",
+      "candidate": "A",
+      "facility": "desert_tour_desk",
+      "file": "desert-tour-desk-source.png",
+      "prompt": "desert-tour-desk-adopted-prompt.txt",
+      "size": [
+        1349,
+        1166
+      ],
+      "sha256": "76ae64176e5fb749fc7fe58a818d658647850e844aab0d14433a1ea7eb71a8ac",
+      "webp": "assets/ui/map-facilities-desert-tour-desk.webp",
+      "webp_size": [
+        384,
+        333
+      ],
+      "batch": "MPI07（2026-11-02 オーナー「おまかせで」。候補パッケージ sha256 751a4b25db72336855d932c5d9869634ef214f8b86fe85e537bdecc5054ef3c4）"
+    },
+    {
+      "name": "desert-dunes",
+      "candidate": "A",
+      "facility": "desert_dunes",
+      "file": "desert-dunes-source.png",
+      "prompt": "desert-dunes-adopted-prompt.txt",
+      "size": [
+        1512,
+        1040
+      ],
+      "sha256": "c0eee6c0adbc758bb20963bd91facdcdf6cc2c2823726d451cc136ccb80140e5",
+      "webp": "assets/ui/map-facilities-desert-dunes.webp",
+      "webp_size": [
+        384,
+        259
+      ],
+      "batch": "MPI07（2026-11-02 オーナー「おまかせで」。候補パッケージ sha256 751a4b25db72336855d932c5d9869634ef214f8b86fe85e537bdecc5054ef3c4）"
+    },
+    {
+      "name": "camel-race-track",
+      "candidate": "A",
+      "facility": "camel_race_track",
+      "file": "camel-race-track-source.png",
+      "prompt": "camel-race-track-adopted-prompt.txt",
+      "size": [
+        1478,
+        1064
+      ],
+      "sha256": "a636d5824de63f043e1732cf242d5d2ad56b7cb8f21203fc1ed0e016bfbf76d8",
+      "webp": "assets/ui/map-facilities-camel-race-track.webp",
+      "webp_size": [
+        384,
+        276
+      ],
+      "batch": "MPI07（2026-11-02 オーナー「おまかせで」。候補パッケージ sha256 751a4b25db72336855d932c5d9869634ef214f8b86fe85e537bdecc5054ef3c4）"
     }
   ]
 }
