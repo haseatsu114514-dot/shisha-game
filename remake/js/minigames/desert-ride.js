@@ -1,9 +1,13 @@
 // DESERT RIDE（第4章ドバイ・サンドボード）の画面。後方視点の疑似3Dを Canvas に描き、入力・HUD・練習・リザルトを持つ。
 // 規則と採点は desert-ride-model.js。本編との接続（行動枠・報酬・保存）は chapters/ch4-desert.js で、ここは保存を読まない。
-// 画像素材が届くまで、人物・岩・砂煙は Canvas の図形で描く（素材の依頼は docs/spec/desert_ride.md）。
+// 絵（遠景・主人公の背面・岩・旗・ゴール・砂煙）は Codex 生成の採用画像（desert-ride-art.js）。読み込み前・失敗時は Canvas の図形で描く。
+// 起伏・路面・太陽・夕方の色は Canvas で描く。左右・ジャンプ・着地・転倒の姿勢は、背面の1枚を回転・伸縮して表す（差分画像は依頼中）。
 import { el } from "../core/util.js";
 import { SE, unlockAudio } from "../core/audio.js";
 import { COURSE, EDGE, SPEED, DEFAULT_SEED, generateCourse, practiceCourse, createGame, step, press, summary, curveAt, botControl } from "./desert-ride-model.js";
+import { DESERT_ART, loadDesertArt } from "./desert-ride-art.js";
+
+const BOT_STEP = 1 / 60; // 自動操縦の判断と物理の刻み（モデルの検査と同じ）
 
 const W = 1280, H = 720;
 const HORIZON = 262;             // 地平線の高さ
@@ -34,6 +38,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
   reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = null, speedUp = 1 } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
+  const art = loadDesertArt();
   const promise = new Promise(resolve => {
     const results = [];
     let practiced = false, done = false, frame = 0, currentBest = best;
@@ -51,7 +56,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     root.focus({ preventScroll: true });
 
     const input = { left: false, right: false };
-    let game = null, mode = null, bot = null, botMemo = {}, last = 0, world = null, particles = [], shakeT = 0, flashT = 0, popT = 0, popText = "", popKind = "";
+    let game = null, mode = null, bot = null, botMemo = {}, botLag = 0, last = 0, world = null, particles = [], shakeT = 0, flashT = 0, popT = 0, popText = "", popKind = "";
     let tut = null;
     const finish = () => {
       if (done) return;
@@ -133,7 +138,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const course = kind === "practice" ? practiceCourse() : generateCourse(seed);
       game = createGame(course);
       world = { sky: 0, yaw: 0, sunPulse: 0 };
-      particles = []; shakeT = 0; flashT = 0; popT = 0; bot = null; botMemo = {};
+      particles = []; shakeT = 0; flashT = 0; popT = 0; bot = null; botMemo = {}; botLag = 0;
       tut = kind === "practice" ? { step: "move", moved: false, bumpTries: 0, said: new Set() } : null;
       controls.hidden = false; quit.hidden = false;
       setPhase(kind);
@@ -207,9 +212,21 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const dt = Math.min(0.05, (now - last) / 1000) * speedUp;
       last = now;
       const before = game.events.length;
-      if (bot) { const { input: botInput, action } = botControl(game, bot, botMemo); Object.assign(input, botInput); if (action) { const kind = press(game); if (kind) onPress(kind); } }
-      const steps = Math.max(1, Math.ceil(dt / (1 / 60)));
-      for (let i = 0; i < steps && !game.finished; i++) step(game, input, dt / steps);
+      if (bot) {
+        // 自動操縦（検査の pilot）は 1/60 秒ごとに判断して進める。画面の更新間隔に左右されず、
+        // モデルの検査（remake/test/desert_ride.mjs）と同じ滑りになる。人の操作は従来どおり。
+        botLag += dt;
+        while (botLag >= BOT_STEP - 1e-9 && !game.finished) {
+          const { input: botInput, action } = botControl(game, bot, botMemo);
+          Object.assign(input, botInput);
+          if (action) { const kind = press(game); if (kind) onPress(kind); }
+          step(game, input, BOT_STEP);
+          botLag -= BOT_STEP;
+        }
+      } else {
+        const steps = Math.max(1, Math.ceil(dt / (1 / 60)));
+        for (let i = 0; i < steps && !game.finished; i++) step(game, input, dt / steps);
+      }
       const events = game.events.slice(before);
       react(events);
       updateTutorial(events);
@@ -313,14 +330,46 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       world.yaw += (curve - world.yaw) * Math.min(1, dt * 2.5);
       ctx.save();
       if (shakeT > 0) ctx.translate((Math.random() - 0.5) * 16 * shakeT, (Math.random() - 0.5) * 12 * shakeT);
-      drawSky(dusk, progress);
-      drawDunes(dusk);
-      drawGround(dusk);
+      const painted = drawBackdrop(dusk, progress);
+      if (!painted) { drawSky(dusk, progress); drawDunes(dusk); }
+      drawGround(dusk, painted);
       drawFeaturesAndPlayer(dusk);
       drawParticles();
+      if (painted && dusk > 0.02) {
+        // 夕方: 絵の砂・岩・人物に同じ暖色をかける（Canvas の図形は色の中で夕方にしている）
+        ctx.globalCompositeOperation = "multiply";
+        ctx.fillStyle = `rgba(255,168,118,${dusk * 0.42})`; ctx.fillRect(-20, -20, W + 40, H + 40);
+        ctx.globalCompositeOperation = "source-over";
+      }
       drawSpeedLines();
       ctx.restore();
       if (flashT > 0) { ctx.fillStyle = `rgba(255,240,220,${flashT * 1.6})`; ctx.fillRect(0, 0, W, H); }
+    }
+    /** 絵の遠景（空・太陽・陸）。絵がまだ無ければ false（図形の空と砂丘で描く）。 */
+    const BACKDROP_SCALE = 0.95;
+    function drawBackdrop(dusk, progress) {
+      const sky = art.get("sky"), land = art.get("land");
+      if (!sky || !land) return false;
+      const B = DESERT_ART.backdrop, k = BACKDROP_SCALE, dw = B.width * k, baseX = (W - dw) / 2;
+      // 空はゆっくり、陸は速く横へ流れる（カーブに合わせたパララックス）。絵の地平線の行を HORIZON に合わせる
+      ctx.drawImage(sky, baseX - world.yaw * 90, HORIZON - B.horizon * k, dw, sky.naturalHeight * k);
+      if (dusk > 0) {
+        const g = ctx.createLinearGradient(0, 0, 0, HORIZON + 10);
+        g.addColorStop(0, `rgba(120,72,110,${dusk * 0.85})`); g.addColorStop(0.62, `rgba(245,150,84,${dusk * 0.8})`); g.addColorStop(1, `rgba(255,208,140,${dusk * 0.7})`);
+        ctx.fillStyle = g; ctx.fillRect(0, 0, W, HORIZON + 10);
+      }
+      // 太陽: 進むほど大きく低く。ゴールの手前では砂丘の稜線の後ろへ沈みかける
+      const sunX = W * 0.5 - world.yaw * 120 + 180 * (1 - progress), sunY = lerp(70, HORIZON - 34, Math.min(1, progress * 1.05)), r = lerp(30, 72, progress);
+      const glow = ctx.createRadialGradient(sunX, sunY, r * 0.4, sunX, sunY, r * 3.2);
+      glow.addColorStop(0, `rgba(255,230,170,${0.55 + 0.3 * dusk})`); glow.addColorStop(1, "rgba(255,200,120,0)");
+      ctx.fillStyle = glow; ctx.fillRect(sunX - r * 3.2, sunY - r * 3.2, r * 6.4, r * 6.4);
+      ctx.fillStyle = mixColor([255, 248, 220], [255, 170, 90], dusk);
+      ctx.beginPath(); ctx.arc(sunX, sunY, r, 0, Math.PI * 2); ctx.fill();
+      // 陸: 稜線〜地平線は空と同じ倍率、地平線より下（平らな砂）は画面の下端まで伸ばす
+      const landX = baseX - world.yaw * 200, above = B.horizon - DESERT_ART.land.top, below = B.height - B.horizon;
+      ctx.drawImage(land, 0, 0, B.width, above, landX, HORIZON - above * k, dw, above * k);
+      ctx.drawImage(land, 0, above, B.width, below, landX, HORIZON, dw, H - HORIZON);
+      return true;
     }
     function drawSky(dusk, progress) {
       const top = mixColor([92, 158, 226], [120, 72, 110], dusk), mid = mixColor([176, 212, 240], [245, 150, 84], dusk), bottom = mixColor([236, 226, 206], [255, 208, 140], dusk);
@@ -356,11 +405,14 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     }
     // 路面: 手前から奥へ、カーブで横にずれながら区間を描く。描いた区間の位置を覚えて、岩と人物の配置に使う
     let segmentsDrawn = [];
-    function drawGround(dusk) {
+    function drawGround(dusk, painted = false) {
       const camZ = game.z - CAM.back;
       const camX = game.x * 0.6; // カメラは人物の横位置の6割だけ追う（端へ行くと画面も少し寄る）
-      ctx.fillStyle = mixColor([238, 210, 160], [238, 170, 112], dusk);
-      ctx.fillRect(0, HORIZON, W, H - HORIZON);
+      if (!painted) {
+        ctx.fillStyle = mixColor([238, 210, 160], [238, 170, 112], dusk);
+        ctx.fillRect(0, HORIZON, W, H - HORIZON);
+      }
+      const flagArt = art.get("flag");
       // 区間の境目を手前から並べる。最初の点は画面の下端のすぐ外（dz 0.5m）に置く
       const points = [];
       let x = 0, dx = 0;
@@ -377,10 +429,11 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         const far = points[i], near = points[i - 1];
         const t = Math.min(1, far.dz / DRAW_DIST);
         const stripe = Math.floor(far.z / (SEG * 3)) % 2 === 0;
-        // コース外の深い砂（少し濃く）
-        ctx.fillStyle = mixColor(stripe ? [222, 190, 136] : [228, 198, 146], [222, 146, 96], dusk);
+        // コース外の深い砂（少し濃く）。絵の砂の上では薄い影だけを重ね、絵の質感を残す
+        ctx.fillStyle = painted ? `rgba(150,92,36,${stripe ? 0.12 : 0.08})` : mixColor(stripe ? [222, 190, 136] : [228, 198, 146], [222, 146, 96], dusk);
         quad(near.p.x - near.p.w * 1.9, near.p.y, far.p.x - far.p.w * 1.9, far.p.y, far.p.x + far.p.w * 1.9, far.p.y, near.p.x + near.p.w * 1.9, near.p.y);
-        ctx.fillStyle = mixColor(stripe ? [240, 214, 166] : [236, 208, 158], stripe ? [240, 176, 118] : [234, 170, 112], dusk);
+        ctx.fillStyle = painted ? `rgba(255,240,200,${stripe ? 0.34 : 0.24})`
+          : mixColor(stripe ? [240, 214, 166] : [236, 208, 158], stripe ? [240, 176, 118] : [234, 170, 112], dusk);
         ctx.globalAlpha = lerp(1, 0.55, t);
         quad(near.p.x - near.p.w, near.p.y, far.p.x - far.p.w, far.p.y, far.p.x + far.p.w, far.p.y, near.p.x + near.p.w, near.p.y);
         ctx.globalAlpha = 1;
@@ -397,6 +450,13 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
           const poleH = far.p.scale * 1.2 * (H / 2);
           for (const side of [-1, 1]) {
             const px = far.p.x + side * far.p.w * 1.02;
+            if (flagArt) {
+              const fh = poleH * 1.1, fw = fh * flagArt.naturalWidth / flagArt.naturalHeight;
+              ctx.globalAlpha = 1 - t * 0.4;
+              ctx.drawImage(flagArt, px - DESERT_ART.flag.foot.x * fw, far.p.y - fh, fw, fh);
+              ctx.globalAlpha = 1;
+              continue;
+            }
             ctx.fillStyle = `rgba(90,70,60,${0.9 - t * 0.5})`; ctx.fillRect(px - 1.5, far.p.y - poleH, 3, poleH);
             ctx.fillStyle = "#e9532b"; ctx.fillRect(px - 1.5, far.p.y - poleH, Math.max(4, far.p.scale * 26), Math.max(3, far.p.scale * 14));
           }
@@ -471,6 +531,13 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       // 影
       ctx.fillStyle = "rgba(90,60,40,0.28)";
       ctx.beginPath(); ctx.ellipse(p.x + rw * 0.25, p.y + rh * 0.05, rw * 1.1, rh * 0.28, 0, 0, Math.PI * 2); ctx.fill();
+      const rockArt = art.get(f.size === "small" ? "rockSmall" : "rockLarge");
+      if (rockArt) {
+        // 絵の岩は当たり判定（f.w）より少しだけ広く描く（見た目より判定が大きくならないように）。下端の数%は砂に埋める
+        const dw = rw * 2.15, dh = dw * rockArt.naturalHeight / rockArt.naturalWidth;
+        ctx.drawImage(rockArt, p.x - dw / 2, p.y - dh * 0.93, dw, dh);
+        return;
+      }
       const body = ctx.createLinearGradient(p.x - rw, p.y - rh, p.x + rw, p.y);
       body.addColorStop(0, mixColor([150, 118, 96], [140, 96, 86], dusk)); body.addColorStop(1, mixColor([92, 70, 58], [86, 58, 54], dusk));
       ctx.fillStyle = body;
@@ -483,6 +550,14 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const p = placeAt(game.course.length, 0);
       if (!p) return;
       const poleH = p.scale * 2.6 * (H / 2);
+      const flagArt = art.get("flag"), goalArt = art.get("goal");
+      if (flagArt && goalArt) {
+        const fw = poleH * flagArt.naturalWidth / flagArt.naturalHeight;
+        for (const side of [-1, 1]) ctx.drawImage(flagArt, p.x + side * p.w * 1.02 - DESERT_ART.flag.foot.x * fw, p.y - poleH, fw, poleH);
+        const bw = p.w * 2.2, bh = bw * goalArt.naturalHeight / goalArt.naturalWidth;
+        ctx.drawImage(goalArt, p.x - bw / 2, p.y - poleH * 0.9, bw, bh);
+        return;
+      }
       for (const side of [-1, 1]) {
         const px = p.x + side * p.w * 1.02;
         ctx.fillStyle = "#4a3a30"; ctx.fillRect(px - 2, p.y - poleH, 4, poleH);
@@ -518,6 +593,16 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         if (game.air > 0) ctx.translate(0, -Math.sin(airT * Math.PI) * unit * 0.1);
       }
       const crouch = game.air > 0 && game.landingPress !== null ? 0.86 : game.air > 0 ? 0.94 : 1;
+      const riderArt = art.get("rider");
+      if (riderArt) {
+        // 背面の1枚を、板の重心を軸に傾け・縮めて、左右・空中・着地の構え・転倒を表す
+        if (game.fallT <= 0) ctx.rotate(-lean * 0.35); // 絵は回転を少なめに（図形の 0.9 と合わせて約 0.55）
+        ctx.scale(1, crouch);
+        const dh = unit * 2.45, dw = dh * riderArt.naturalWidth / riderArt.naturalHeight, { x: ax, y: ay } = DESERT_ART.rider.anchor;
+        ctx.drawImage(riderArt, -ax * dw, -ay * dh, dw, dh);
+        ctx.restore();
+        return;
+      }
       // 板
       ctx.fillStyle = mixColor([246, 120, 60], [226, 100, 60], dusk);
       ctx.beginPath(); ctx.ellipse(0, -unit * 0.05, unit * 0.62, unit * 0.11, lean * 0.4, 0, Math.PI * 2); ctx.fill();
@@ -542,6 +627,17 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     function drawParticles() {
       const p = placeAt(game.z, game.x);
       if (!p) return;
+      const puff = art.get("puff");
+      if (puff) {
+        const aspect = puff.naturalHeight / puff.naturalWidth;
+        for (const s of particles) {
+          const w = s.r * 2.8, h = w * aspect;
+          ctx.globalAlpha = Math.min(1, 0.75 * (1 - s.age / s.life));
+          ctx.drawImage(puff, p.x + s.x - w / 2, p.y + s.y - h / 2, w, h);
+        }
+        ctx.globalAlpha = 1;
+        return;
+      }
       for (const s of particles) {
         const a = 0.55 * (1 - s.age / s.life);
         ctx.fillStyle = `rgba(242,220,178,${a})`;
@@ -576,50 +672,4 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
   active.set(host, promise);
   promise.finally(() => active.delete(host));
   return promise;
-}
-
-const backdrops = new Map();
-/**
- * 会話の背景に使う砂丘の一枚（画像素材が届くまでの代替）。dusk 0=昼、1=夕方。同じ値は使い回す。
- * 戻り値は data URL（core/ui.js の setBg にそのまま渡せる）。Canvas が無い環境では "" を返す。
- */
-export function desertBackdrop({ dusk = 0 } = {}) {
-  const key = Math.round(dusk * 10) / 10;
-  if (backdrops.has(key)) return backdrops.get(key);
-  if (typeof document === "undefined") return "";
-  const canvas = document.createElement("canvas");
-  canvas.width = W; canvas.height = H;
-  const c = canvas.getContext("2d");
-  const lerp = (a, b, t) => a + (b - a) * t;
-  const mix = (a, b, t) => `rgb(${Math.round(lerp(a[0], b[0], t))},${Math.round(lerp(a[1], b[1], t))},${Math.round(lerp(a[2], b[2], t))})`;
-  const sky = c.createLinearGradient(0, 0, 0, HORIZON + 40);
-  sky.addColorStop(0, mix([92, 158, 226], [120, 72, 110], key)); sky.addColorStop(0.62, mix([176, 212, 240], [245, 150, 84], key)); sky.addColorStop(1, mix([236, 226, 206], [255, 208, 140], key));
-  c.fillStyle = sky; c.fillRect(0, 0, W, H);
-  const sunX = W * 0.62, sunY = lerp(96, HORIZON - 6, key), r = lerp(34, 70, key);
-  const glow = c.createRadialGradient(sunX, sunY, r * 0.4, sunX, sunY, r * 3.4);
-  glow.addColorStop(0, `rgba(255,230,170,${0.55 + 0.3 * key})`); glow.addColorStop(1, "rgba(255,200,120,0)");
-  c.fillStyle = glow; c.fillRect(0, 0, W, H);
-  c.fillStyle = mix([255, 248, 220], [255, 170, 90], key); c.beginPath(); c.arc(sunX, sunY, r, 0, Math.PI * 2); c.fill();
-  const layers = [
-    { amp: 30, freq: 0.0032, base: HORIZON - 30, color: mix([226, 196, 150], [214, 136, 104], key) },
-    { amp: 46, freq: 0.0046, base: HORIZON - 4, color: mix([232, 206, 158], [226, 150, 108], key) },
-    { amp: 60, freq: 0.0068, base: HORIZON + 30, color: mix([240, 216, 168], [236, 168, 118], key) },
-  ];
-  for (const [i, layer] of layers.entries()) {
-    c.fillStyle = layer.color; c.beginPath(); c.moveTo(0, H);
-    for (let x = 0; x <= W; x += 16) { const u = (x + 300 * i) * layer.freq; c.lineTo(x, layer.base - Math.abs(Math.sin(u) * layer.amp) - Math.sin(u * 2.7 + i) * layer.amp * 0.25); }
-    c.lineTo(W, H); c.closePath(); c.fill();
-  }
-  const ground = c.createLinearGradient(0, HORIZON + 40, 0, H);
-  ground.addColorStop(0, mix([240, 214, 166], [240, 176, 118], key)); ground.addColorStop(1, mix([232, 200, 150], [226, 150, 100], key));
-  c.fillStyle = ground; c.fillRect(0, HORIZON + 60, W, H);
-  c.strokeStyle = `rgba(190,150,100,0.28)`; c.lineWidth = 2;
-  for (let y = HORIZON + 90; y < H; y += 26 + (y - HORIZON) * 0.08) {
-    c.beginPath();
-    for (let x = -40; x < W + 40; x += 18) { const wave = Math.sin(x * 0.02 + y * 0.05) * 5; if (x < 0) c.moveTo(x, y + wave); else c.lineTo(x, y + wave); }
-    c.stroke();
-  }
-  const url = canvas.toDataURL("image/png");
-  backdrops.set(key, url);
-  return url;
 }

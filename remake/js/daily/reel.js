@@ -49,7 +49,7 @@ const CHERRY_OVERLAP = { chance: 0.0625, bigShare: 0.45 };
 // フリーズは第1章（約25〜30回転）でも出会えるかもしれない程度（2026-10-16 オーナー回答・#621）。
 // 総回転12からベース1/250、22回転を過ぎて未取得なら1/40。1セーブ1回まで。
 const FREEZE_CONTROL = { warmupSpins: 12, baseWeight: 4, pityAt: 22, pityWeight: 25, maxPerSave: 1 };
-// 設定1〜6（#621）。観音堂に行くと引き直す（副産物）。訪問回数とシードで決まる＝ロードしても変わらない。
+// 設定1〜6（#621）。週替わり・章替わりの抽選回数とシードで決まる＝ロードしても変わらない。
 // weight=引き直しの出やすさ（低設定が多めのホール配分）。reg/big=ボーナスの出やすさの倍率、bell=ベルのweight。
 // 配分の平均で今までの出方とほぼ同じになるようにしてある（裏確変・天井はそのまま効く）。
 const SETTINGS = {
@@ -69,7 +69,7 @@ function ensureSetting(reel) {
   reel.settingDraws ||= 0;
   return reel.setting;
 }
-// 設定の有効期間（オーナー指定 2026-10-16）: 観音堂で変えた設定も最初の設定も、7日たつか章が変わると自動で変わる（#1281 2026-10-30 で仕様書も同じに）。
+// 設定の有効期間: 7日たつか章が変わると自動で変わる。観音堂訪問では変えない（2026-10-31 オーナー指示）。
 // 知っている人だけがずっと有利にならないよう、良い設定も長くは続かない。
 const SETTING_DAYS = 7;
 const today = () => ({ chapter: state?.chapter || 1, day: state?.day || 1 });
@@ -79,7 +79,7 @@ function settingExpired(reel) {
   const now = today();
   return now.chapter !== since.chapter || now.day - since.day >= SETTING_DAYS;
 }
-/** 設定を引き直す。kind: "kannon"=観音堂／"weekly"=1週間たった自動の変更 */
+/** 設定を引き直す。kind: "weekly"=1週間・章替わりの自動変更 */
 function redrawSetting(reel, kind) {
   ensureSetting(reel);
   reel.settingDraws += 1;
@@ -300,7 +300,7 @@ function spinSeries(reel, ctx) {
     const rolled = rollAt(reel);
     const { rng, st } = rolled;
     let { role, overlap } = rolled;
-    // 前の回転で文字色予告を出した回転は、予告したときの抽選のまま（観音堂で設定が変わっても予告を裏切らない）
+    // 前の回転で文字色予告を出した回転は、予告したときの抽選のまま（設定が変わっても予告を裏切らない）
     const lock = reel.lock && reel.lock.count === reel.count ? reel.lock : null;
     reel.lock = null;
     if (lock) { role = lock.role; overlap = lock.overlap; }
@@ -318,7 +318,7 @@ function spinSeries(reel, ctx) {
       exp: (eff.exp || 0) + (overlap ? EFFECTS[overlap].exp : 0),
       quiet: !!eff.quiet && !overlap,
       zone: !!eff.zone || overlap === "big",
-      // 章の最初の1回転と、設定変更（観音堂）の直後の1回転でリールがガクッと揺れる（リセット判別の小ネタ）
+      // 章の最初の1回転と、設定変更の直後の1回転でリールがガクッと揺れる（リセット判別の小ネタ）
       gakkun: !!ctx && (!!ctx.chapterFirst || !!ctx.reset) && chain === 0,
       ceiling: st.bonusGap >= CEILING.mainRun ? "main" : (role !== "miss" && st.missRun >= CEILING.zoneRun ? "zone" : ""),
       afterReplay: chain > 0,
@@ -507,14 +507,6 @@ export function splitHints(reel) {
   return { current: all.filter(isCurrent), past: all.filter((h) => !isCurrent(h)).slice(0, 3) };
 }
 
-/** 観音堂に行ったあと: 設定を引き直す。演出は次に筐体が出たとき（光って「設定変更完了〜」） */
-export function changeSetting() {
-  const reel = state?.reel;
-  if (!reel?.installed) return false;
-  redrawSetting(reel, "kannon");
-  return true;
-}
-
 // ================================================================ ミニ筐体（マップ左下）
 
 const CELL = 26;
@@ -687,7 +679,7 @@ export async function presentNow({ label = "今夜のスロット" } = {}) {
   host.remove();
 }
 
-/** 観音堂のあと・1週間たったとき: 筐体が光り、パッキーが「設定変更完了〜」と示唆の一言（ガックンは次の1回転） */
+/** 自動変更の通知。旧セーブの観音堂由来の未表示通知も、確定済みの結果として一度だけ表示する */
 async function presentSettingChange() {
   const reel = state.reel;
   const weekly = reel.settingNotice === "weekly";
@@ -1160,7 +1152,7 @@ export function noteSummary(reel) {
 }
 
 // 遊び方カード（#639 オーナー「店にあるスロットのラミネートくらい文字を減らして」）。
-// 短い見出し＋ひとこと＋絵。確率の数字は出さず、設定が変わる特定のスポットの名前も出さない（#634）。
+// 短い見出し＋ひとこと＋絵。確率の数字は出さない（#634）。
 // art: "lamp"=光ったパッキー／図柄の配列=リールの図柄／"cue"=青緑赤の色見本
 const LEGACY_REWARD_GUIDE = { head: "ハズレでも", body: "能力は少し伸びる。天井で必ず当たる" };
 const EXP_REWARD_GUIDE = { head: "図柄が揃うと", body: "チェリー・ベル・ボーナスで経験値。ハズレ・リプレイはなし" };
@@ -1174,7 +1166,6 @@ export const GUIDE = [
   { head: "設定が変わる", body: "前回の抽選から7日／章が変わると選び直し。同じ設定や低い設定もある" },
   { head: "ガックン", body: "リールがガクッ＝章の始まり・設定変更後・ロード後の合図" },
   { head: "水色の吹き出し", body: "設定のヒント（確定ではない）" },
-  { head: "ひみつ", body: "特定のスポットでも設定が変わることがあるよ。街を歩いて見つけてみてね！" },
 ];
 /** 初回説明とノートで共有する、現在の成長モードの遊び方。旧モードの説明は残す。 */
 export function guideTiles() {

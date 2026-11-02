@@ -14,7 +14,7 @@ import { STAMINA_LOW } from "../core/stats.js";
 import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent, spotDetailLabel } from "./spots.js";
 import { updateHud } from "./hud.js";
 import { mountReel } from "./reel.js";
-import { isRainy } from "./weather.js";
+import { isRainy, tomorrowForecast } from "./weather.js";
 import { fortuneToday } from "./fortune.js";
 import { spotVisible, spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
 import { spotPeople } from "./spot-people.js";
@@ -106,6 +106,8 @@ function cueMove(shield, spot) {
     label: known ? spot.label : spot.unknownLabel || spot.label,
     area: spot.area || "",
     glyph: known ? spot.glyph || "" : "？",
+    // 名前を伏せた行き先（会う前のクラブSEAM＝「地下の店」）では、到着時に店のロゴを見せない。
+    anonymous: !known && !!spot.unknownLabel,
   });
 }
 
@@ -140,7 +142,8 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     const freeGuide = (s) => isFreeGuide(s, guide);
     const availability = (s) => spotAvailability(s, { guide, visitBlock });
 
-    const movesLeft = () => (state.slot >= 1 ? "夜 ── 今日はあと1回動ける" : "昼 ── 今日はあと2回動ける");
+    const movesLeft = () => (state.slot >= 1 ? "夜 ── 今日はあと1回動ける" : "昼 ── 今日はあと2回動ける")
+      + (tomorrowForecast() ? ` ／ 明日は${tomorrowForecast()}` : "");
     const idleInfo = () => {
       if (guide) {
         info.replaceChildren(

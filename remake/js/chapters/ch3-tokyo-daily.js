@@ -18,12 +18,13 @@ import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
 import { openShop } from "../daily/shop.js";
 import { fortuneSpot } from "../daily/spots.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
+import { consultLessons } from "../core/growth.js";
 import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { tokyoTime, TOKYO_FREE_TIMES_V3, timeNumber } from "../core/tokyo-clock.js";
 import { dueTokyoVisit, completeTokyoVisitAction, visitContacts, syncTokyoVisits } from "../core/tokyo-visits.js";
 import { CH3_DAILY_PLAN, chapterThreeScenes, chapterThreeProgress, completeChapterThreeScene } from "./ch3-progress.js";
-import { OUTINGS_FLAG, outingCounts, outingDialogueId, chapterThreeOutingCandidates } from "./ch3-outing-progress.js";
+import { OUTINGS_FLAG, OUTING_DIALOGUE_IDS, outingCounts, outingDialogueId, outingAffinity, outingReason, chapterThreeOutingCandidates } from "./ch3-outing-progress.js";
 import { availableChapterThreeTrials } from "./ch3-trial-progress.js";
 import { runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { availableOptionalScenes, commitOptionalRead, selectChapterThreeEvening,
@@ -98,12 +99,12 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
   spot({ id: "ch3_tokyo_shrine", place: "shrine", label: "路地裏の神社", area: "路地の奥", x: 54, y: 70, theme: "rest", glyph: "社",
     preview: "bg_street", desc: "学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
   // 店名は入口で知る（DJS12）。店主の針間ヨルに会うまでは「地下の店」と出す（daily/map.js の charId・unknownLabel）。
-  spot({ id: "ch3_tokyo_club", place: "club", label: "クラブSEAM", area: "路地の地下", x: 71.5, y: 51, theme: "stadium", glyph: "♪",
+  spot({ id: "ch3_tokyo_club", place: "club", label: "クラブSEAM", area: "路地の地下", x: 86, y: 50, theme: "stadium", glyph: "♪",
     charId: "yoru", unknownLabel: "地下の店", unknownDesc: "地下から低い音がする。のぞいてみる（時間は使わない）。",
     preview: "bg_club_seam_entrance", desc: "セットを選んで曲をつなぐ（時間は使わない）。" }),
   spot({ id: "ch3_tokyo_room", place: "room", label: "mukaiの奥の部屋", area: "店の奥", x: 45, y: 63, theme: "rest", glyph: "休",
     preview: "bg_mukai_shop", stamina: 55, desc: "寝泊まりしている部屋で休む。体力が大きく戻る。" }),
-  spot({ id: "ch3_tokyo_lime", place: "lime", label: "地元と連絡", area: "スマホ", x: 6, y: 11, theme: "rest", glyph: "☎",
+  spot({ id: "ch3_tokyo_lime", place: "lime", label: "地元と連絡", area: "スマホ", x: 8, y: 84, theme: "rest", glyph: "☎",
     preview: "bg_street", desc: "地元の恋人・知り合いとLIMEで話す。東京へ来る約束もここで（時間は使わない）。" }),
 ].map(entry => Object.freeze({ ...entry, hasNew: () => spotHasNew(entry) })));
 
@@ -204,8 +205,7 @@ export async function runChapterThreeTokyo(io) {
   await runDaily(chapterThreeTokyoDefinition(io));
 }
 
-const OUTING_IDS = ["ch3_outing_mukai_help_lost", "ch3_outing_mukai_help", "ch3_outing_enmaku_notes", "ch3_outing_enmaku_answer",
-  "ch3_outing_mukai_steve", "ch3_outing_steve_timer", "ch3_outing_park_walk_day", "ch3_outing_park_walk_night", "ch3_outing_tetsuko"];
+const OUTING_IDS = OUTING_DIALOGUE_IDS; // 通いの小会話（AFB02）も含む外出の台本
 export const TOKYO_DAILY_IDS = Object.freeze(["ch3_tokyo_room_rest", "ch3_tokyo_fortune"]);
 
 // ---- 昼の行動を使う場面・約束 ----------------------------------------------------------
@@ -381,8 +381,18 @@ async function performTokyoSpot(entry, io, { staminaGuard }) {
   }
   if (entry.place === "park") return goOuting(outingById("park_walk"), staminaGuard, owner);
   if (entry.place === "gym") return goGym(entry, staminaGuard, owner);
-  if (entry.place === "mukai") return visitMukai(io, staminaGuard, owner);
-  return visitRivalShop(entry, io, staminaGuard, owner);
+  if (entry.place === "mukai") return withLesson(await visitMukai(io, staminaGuard, owner), "mashiro", owner);
+  return withLesson(await visitRivalShop(entry, io, staminaGuard, owner), TOKYO_TEACHERS[entry.place], owner);
+}
+
+/**
+ * 心得の盤の授業（SPEC 2.6・SBD50）: 会いに行った店で、灯した授業があればその人に相談して話を聞く。
+ * 日常ループ（版3）でも旧行程と同じ相手に相談できるようにする（2026-11-02）。訪問を終えた時だけ。
+ */
+const TOKYO_TEACHERS = Object.freeze({ enmaku: "kuze", steve: "steve", volk: "volk" });
+async function withLesson(result, who, owner) {
+  if (who && result?.used && state === owner) await keepDailyHud(() => consultLessons(who));
+  return result;
 }
 
 const outingById = id => chapterThreeOutingCandidates(state).find(outing => outing.id === id) || null;
@@ -392,11 +402,12 @@ async function goOuting(outing, staminaGuard, owner) {
   if (!outing) return unused;
   if (outing.stamina < 0 && !(await staminaGuard(outing.stamina))) return unused;
   const bg = outing.bg || visitBg[outing.place] || "bg_street";
+  const gains = outingAffinity(state, outing); // 回数を数える前に（通いの1回目か2回目以降か）
   if (!await readPlain(outingDialogueId(state, outing), bg, owner)) return unused;
   addStamina(outing.stamina);
   if (outing.money) addMoney(outing.money);
   if (outing.stat) earnStat(outing.stat, 4);
-  for (const [who, pts] of Object.entries(outing.affinity || {})) gainAffinity(who, pts);
+  for (const [who, pts] of Object.entries(gains)) gainAffinity(who, pts);
   state.flags[OUTINGS_FLAG] = { ...outingCounts(state), [outing.id]: (outingCounts(state)[outing.id] || 0) + 1 };
   if (outing.money) toast(`+${outing.money.toLocaleString("ja-JP")}円`, { kind: "good" });
   return { used: true, exerted: outing.stamina < 0 };
@@ -424,7 +435,7 @@ async function readOptionalHere(io, scene, staminaGuard, owner, stamina = -10) {
 async function visitRivalShop(entry, io, staminaGuard, owner) {
   const choices = [
     ...optionalAt(entry.place).map(scene => ({ label: scene.label, value: `scene:${scene.id}` })),
-    ...outingsAt(entry.place).map(outing => ({ label: `${outing.label.replace(/\s*に(顔を出す|寄る)$/, "")}：${typeof outing.reason === "string" ? outing.reason : outing.label}`, value: `outing:${outing.id}` })),
+    ...outingsAt(entry.place).map(outing => ({ label: `${outing.label.replace(/\s*に(顔を出す|寄る)$/, "")}：${outingReason(state, outing)}`, value: `outing:${outing.id}` })),
   ];
   if (!choices.length) { toast("今日は、話すことが思いつかない"); return unused; }
   const pick = choices.length === 1 ? choices[0].value : await modal({ title: entry.label, className: "tokyo-visit-choice",

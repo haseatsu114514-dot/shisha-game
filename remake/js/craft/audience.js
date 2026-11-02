@@ -4,7 +4,8 @@ import { displayName, portraitInfo, faceIconUrl } from "../core/data.js";
 import { state } from "../core/state.js";
 import { evaluationOf, feedbackLine, commentaryLine, tutorialGuide, innerVoiceLine, watchLine } from "./feedback.js";
 import { autoWrap } from "../vn/text.js";
-import { imageReady } from "../core/ui.js";
+import { growthSkill } from "../core/growth-effects.js";
+import { imageReady, modal } from "../core/ui.js";
 
 /**
  * 吹き出しと同じ文節単位の改行で、枠の幅に合わせて折る（TH91: 「見なが／ら」のような語の途中の改行を防ぐ）。
@@ -41,10 +42,13 @@ const STEP_JUDGE_CH4 = { ...STEP_JUDGE_CH3, setup: "da_silva", pack: "da_silva",
 const MOODS = { watch: "手元を見守る", nod: "小さくうなずく", concern: "手元を気にかける", think: "静かに考える" };
 // 採用済みの顔アイコンと同じ頭部の切り取り（tools/make_face_icons.py の face_box）。
 // 通常絵の x / y / 辺を画像幅で正規化。胴体の中心へ寄せず、表情差分の原画をこの枠へ表示する。
+// 2026-11-02 立ち絵の規格（docs/portrait_standard.md）で顔の大きさを測った枠にそろえ、エミルも加えた。
+// 太陽は通常だけ腕を上げていて表情ごとに頭の位置が違うので、ここには入れず本体から枠を決める。
 const FACE_CROPS = {
-  hajime: [.48661, .17746, .21205], sumi: [.37835, .09933, .21763],
-  nagumo: [.35379, .06362, .20871], maezono: [.32589, .02679, .26674],
-  dr_kemuri: [.33259, .07589, .21094], pakki: [.23549, .40848, .62388],
+  hajime: [.47879, .17299, .22768], sumi: [.38393, .10938, .21429],
+  nagumo: [.34933, .05022, .23103], maezono: [.3404, .03906, .26786],
+  dr_kemuri: [.35379, .0904, .21429], emil: [.40067, .00893, .2221],
+  pakki: [.23549, .40848, .62388],
 };
 const faceFor = (id, mood, kind) => id === "nagumo" ? mood === "think" ? "thinking" : "serious"
   : mood === "nod" ? id === "maezono" && ["perfect", "just"].includes(kind) ? "excited" : id === "dr_kemuri" ? "normal" : "smile"
@@ -69,12 +73,17 @@ export function buildAudience(cs) {
   const person = el("figure.audience-person", { role: "img" }, [el("div.audience-face", [image, fallbackName]), name]);
   const mark = el("b.audience-rating", { hidden: true, dataset: { test: "craft-rating" } });
   const caption = el("span.audience-caption", { text: ids[0] === "hajime" ? "心の声" : "" });
+  const reception = cs.mode === "tournament" && growthSkill(state,"K10") ? el("button.btn.ghost.small", { text:"手応え", title:"ここまでの審査員の受け止め", style:{fontSize:"10px",padding:"1px 4px",minHeight:"0",minWidth:"0",flexShrink:"0"}, disabled:true, dataset:{test:"judge-reception"}, onclick: () => {
+    const names = {mix:"配合",holes:"穴あけ",heat:"炭焼き",steam:"蒸らし",pull:"吸い出し",care:"熱管理",care1:"調整1",care2:"調整2"};
+    const rows = Object.entries(cs.judgeReception || {}).map(([key,r]) => el("p", {text:`${names[key]||key}：${displayName(r.judge,state)} ${evaluationOf(r.score).mark}　${r.text}`}));
+    modal({title:"ここまでの審査員の手応え",body:el("div",rows)});
+  } }) : null;
   const note = el("p.audience-note", { dataset: { test: "craft-feedback" } });
   const setNote = (text) => { note.dataset.raw = text; delete note.dataset.wrapped; note.textContent = text; wrapNote(note); };
   setNote(ids[0] === "hajime" ? innerVoiceLine("default", "watch") : watchLine(ids[0], "default"));
   if (typeof ResizeObserver === "function") new ResizeObserver(() => wrapNote(note)).observe(note);
   const root = el("aside.bench-audience.audience-single", { "aria-label": cs.mode === "drill" ? "はじめの心の声" : cs.mode === "tournament" ? "審査員と大会実況" : "見守る人", dataset: { test: "craft-audience" } }, [
-    el("div.audience-people", [person]), el("div.audience-speech", { "aria-live": "polite" }, [el("div.audience-heading", [mark, speaker, caption]), note]),
+    el("div.audience-people", [person]), el("div.audience-speech", { "aria-live": "polite" }, [el("div.audience-heading", [mark, speaker, caption, reception]), note]),
   ]);
   let primary = ids[0], active = primary, step = "", current = "", changedAt = -Infinity;
   const showPerson = (id, mood, kind = "") => {
@@ -135,6 +144,12 @@ export function buildAudience(cs) {
         mark.setAttribute("aria-label", evaluation.label); root.dataset.tone = evaluation.tone;
         caption.textContent = [id === "hajime" ? "心の声" : "", title.replace(/\s*結果$/, "")].filter(Boolean).join("・");
         setNote(text || feedbackLine(id, step, evaluation));
+        if (reception && Number.isFinite(score)) {
+          const key = step === "care" && cs.careRound ? `care${cs.careRound}` : step;
+          cs.judgeReception ??= {};
+          cs.judgeReception[key] = { judge:id, score, text:text || feedbackLine(id,step,evaluation) };
+          reception.disabled = false;
+        }
       }
     },
   };

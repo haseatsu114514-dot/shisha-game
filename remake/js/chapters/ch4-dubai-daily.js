@@ -17,6 +17,7 @@ import { showHud } from "../daily/hud.js";
 import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
 import { openShop } from "../daily/shop.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
+import { consultLessons } from "../core/growth.js";
 import { openingStatus, MOSQUE_VISITING_HOURS } from "../daily/spot-hours.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { readDialogues } from "../core/chapter-data.js";
@@ -24,6 +25,7 @@ import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_DAILY_EVE_DAY, CH4_FREE_SCENE_IDS, chap
   chapterFourSecondAvailable } from "./ch4-progress.js";
 import { CAMEL_DAILY_SPOT_ID, camelDailySpot, camelSceneBg } from "./ch4-camel-progress.js";
 import { visitCamelRace } from "./ch4-camel-race.js";
+import { desertDailySpots, desertDailySpotById } from "./ch4-desert-progress.js";
 
 export const DUBAI = "dubai";
 const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと）
@@ -60,23 +62,23 @@ const spot = fields => Object.freeze({ region: DUBAI, kind: "ch4_dubai", ...fiel
 export const CH4_DUBAI_SPOTS = Object.freeze([
   spot({ id: "ch4_dubai_souq", place: "souq", label: "スーク", area: "旧市街の市場", x: 22, y: 58, theme: "shop", glyph: "市",
     preview: CH4_PLACE_BG.souq, stamina: -10, stat: "insight", desc: "スパイスの匂いが立つ市場。歩くたびに、違うものが目に入る。" }),
-  spot({ id: "ch4_dubai_festa", place: "festa", label: "FESTA", area: "大会会場の出張ブース", x: 48, y: 34, theme: "rival", glyph: "煙",
+  spot({ id: "ch4_dubai_festa", place: "festa", label: "FESTA", area: "大会会場の出張ブース", x: 56, y: 28, theme: "rival", glyph: "煙",
     face: "da_silva", preview: CH4_PLACE_BG.festa, cost: 3000, stamina: -12, stat: "charm", desc: "手拍子と炭の匂いのする、太陽の店。" }),
   spot({ id: "ch4_dubai_cafe", place: "center_cafe", label: "中心地のカフェ", area: "街の中心", x: 70, y: 52, theme: "store", glyph: "茶",
     preview: CH4_PLACE_BG.center_cafe, cost: 6000, stamina: -10, stat: "sense", desc: "一台6,000円の立派なカフェ。給仕と客の作法を見る。" }),
   spot({ id: "ch4_dubai_alley", place: "alley_cafe", label: "路地裏のカフェ", area: "路地の奥", x: 30, y: 78, theme: "store", glyph: "茶",
     preview: CH4_PLACE_BG.alley_cafe, cost: 3000, stamina: -10, stat: "technique", desc: "路地の奥の小さなカフェ。古い台が並ぶ。" }),
-  spot({ id: "ch4_dubai_naru", place: "naru", label: "なると会う", area: "宿のロビー", x: 18, y: 32, theme: "rival", glyph: "友",
+  spot({ id: "ch4_dubai_naru", place: "naru", label: "なると会う", area: "宿のロビー", x: 20, y: 36, theme: "rival", glyph: "友",
     face: "naru", preview: CH4_PLACE_BG.inn, stamina: -8, stat: "guts", desc: "同じ街にいる日本の第二代表。少し話す。" }),
-  spot({ id: "ch4_dubai_practice", place: "practice", label: "公式練習会場", area: "大会会場", x: 86, y: 20, theme: "stadium", glyph: "練",
+  spot({ id: "ch4_dubai_practice", place: "practice", label: "公式練習会場", area: "大会会場", x: 84, y: 30, theme: "stadium", glyph: "練",
     preview: CH4_PLACE_BG.venue, stamina: -14, stat: "technique", desc: "大会の会場で、本番と同じ台を試せる。空調と炭の減りを確かめる。" }),
   spot({ id: "ch4_dubai_creek", place: "creek", label: "クリーク沿い", area: "水辺の遊歩道", x: 58, y: 86, theme: "park", glyph: "水",
     preview: "bg_dubai_street_night", stamina: 20, desc: "水辺を歩いて、少し体を休める。" }),
-  spot({ id: "ch4_dubai_shop", place: "shop", label: "Dr.fookah ドバイ店", area: "街の中心", x: 40, y: 50, theme: "shop", glyph: "卸",
+  spot({ id: "ch4_dubai_shop", place: "shop", label: "Dr.fookah ドバイ店", area: "街の中心", x: 35, y: 57, theme: "shop", glyph: "卸",
     preview: CH4_PLACE_BG.shop, desc: "日本で出た葉が全部そろう（時間は使わない）。" }),
   spot({ id: "ch4_dubai_mosque", place: "mosque", label: "風の回廊モスク", area: "見学の回廊", x: 58, y: 70, theme: "rest", glyph: "回",
     preview: "bg_dubai_map", desc: "案内付きで見学し、中庭の回廊で振り返る（時間は使わない）。" }),
-  spot({ id: "ch4_dubai_inn", place: "inn", label: "宿", area: "旧市街の宿", x: 12, y: 24, theme: "rest", glyph: "休",
+  spot({ id: "ch4_dubai_inn", place: "inn", label: "宿", area: "旧市街の宿", x: 8, y: 46, theme: "rest", glyph: "休",
     preview: CH4_PLACE_BG.inn, stamina: 55, desc: "部屋で休む。体力が大きく戻る。" }),
 ].map(entry => Object.freeze({ ...entry, hasNew: () => spotHasNew(entry) })));
 
@@ -103,6 +105,7 @@ export function chapterFourDubaiSpots() {
   });
   const camel = camelSpot();
   if (camel) spots.splice(spots.findIndex(entry => entry.place === "inn"), 0, camel);
+  spots.push(...desertDailySpots(state, dubaiDay())); // 砂漠ツアーのデスク／ヌールと砂丘へ（任意・ch4-desert.js）
   return spots;
 }
 
@@ -164,7 +167,8 @@ export function chapterFourDubaiDefinition(io) {
     wakeBackground: () => CH4_PLACE_BG.inn,
     dateInvitations: false,
     confessions: false,
-    spotById: id => id === CAMEL_DAILY_SPOT_ID ? camelSpot() : CH4_DUBAI_SPOTS.find(entry => entry.id === id) || null,
+    spotById: id => id === CAMEL_DAILY_SPOT_ID ? camelSpot()
+      : CH4_DUBAI_SPOTS.find(entry => entry.id === id) || desertDailySpotById(state, dubaiDay(), id),
     performSpot: (entry, options) => performDubaiSpot(entry, io, options),
   };
 }
@@ -216,6 +220,10 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   if (entry.region !== DUBAI) return null;
   const owner = state;
   syncChapterFourDay(state);
+  if (entry.kind === "ch4_desert") {
+    const { performDesertSpot } = await import("./ch4-desert.js");
+    return performDesertSpot(entry, { day: chapterFourProgress(state).day, showHud });
+  }
   if (entry.place === "shop") { await openShop({ branch: "dubai" }); return unused; }
   if (entry.place === "mosque") {
     const hours = openingStatus(MOSQUE_VISITING_HOURS, state);
@@ -236,6 +244,9 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   if (entry.stat) earnStat(entry.stat, 4);
   if (entry.place === "festa") gainAffinity("da_silva", 5);
   if (entry.place === "naru") gainAffinity("naru", 5);
+  // 心得の盤の授業（SPEC 2.6・SBD50）: 会いに行った店で、灯した授業があれば相談して話を聞く（FESTA＝太陽、路地裏のカフェ＝シェイク）
+  const teacher = { festa: "da_silva", alley_cafe: "sheikh" }[entry.place];
+  if (teacher && state === owner) await keepDailyHud(() => consultLessons(teacher));
   return { used: true, exerted: (entry.stamina || 0) < 0 };
 }
 

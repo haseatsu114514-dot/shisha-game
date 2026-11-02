@@ -186,3 +186,31 @@ test("summary and readResult keep only well-formed finished records", () => {
   assert.equal(unfinished.finished, false); assert.equal(unfinished.rank, null);
   assert.equal(summary(play(practiceCourse(), "perfect")).score, 0, "practice has no score");
 });
+
+test("the adopted Codex art (PR #2306) matches its adoption record: sizes, anchors and runtime files", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { execFileSync } = await import("node:child_process");
+  // CI の quick は画像を checkout しない（sparse）。存在は git の索引で確かめる
+  const tracked = path => execFileSync("git", ["ls-files", "--", path], { cwd: new URL("../../", import.meta.url) }).toString().trim() === path;
+  const { DESERT_ART, DESERT_BG, loadDesertArt } = await import("../js/minigames/desert-ride-art.js");
+  const root = new URL("../../", import.meta.url);
+  const record = JSON.parse(readFileSync(new URL("asset_sources/desert-ride-2306/adoption.json", root), "utf8"));
+  const pairs = { sky: record.backdrop.sky, land: record.backdrop.land, rider: record.rider_ride, rockLarge: record.rock_large, rockSmall: record.rock_small,
+    flag: record.flag_pole, goal: record.goal_banner, puff: record.sand_puff };
+  for (const [name, entry] of Object.entries(pairs)) {
+    assert.equal(`remake/img/${DESERT_ART[name].file}`, entry.webp, `${name} file`);
+    assert.deepEqual([...DESERT_ART[name].size], entry.size, `${name} size`);
+    assert(tracked(entry.webp) && tracked(entry.png), `${name} files are committed`);
+  }
+  const { width, height, horizon, duneTop, landTop } = record.backdrop;
+  assert.deepEqual({ ...DESERT_ART.backdrop }, { width, height, horizon, duneTop });
+  assert.equal(DESERT_ART.land.top, landTop);
+  assert.deepEqual({ ...DESERT_ART.rider.anchor }, { x: record.rider_ride.anchor.x, y: record.rider_ride.anchor.y });
+  assert.deepEqual({ ...DESERT_ART.flag.foot }, record.flag_pole.foot);
+  // 会話の背景は manifest の背景一覧と WebP 一覧に入っている
+  const manifest = JSON.parse(readFileSync(new URL("remake/data/manifest.json", root), "utf8"));
+  assert(manifest.backgrounds.includes(`${DESERT_BG}.png`) && manifest.webp.includes(`backgrounds/${DESERT_BG}.png`));
+  assert(tracked(`remake/img/backgrounds/${DESERT_BG}.webp`) && tracked(`assets/backgrounds/${DESERT_BG}.png`));
+  // Node（Image の無い環境）では何も読まず、図形で描く側へ落ちる
+  assert.equal(loadDesertArt().get("rider"), null);
+});

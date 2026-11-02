@@ -2968,6 +2968,7 @@
     "genre": "和の不思議",
     "tagline": "お面の下の、帰り道を探す。",
     "image": "../../img/backgrounds/trpg_fox-market_room.webp",
+    "choiceArt": {"src": "../../img/ui/trpg/choices-fox-market.webp", "rowCount": 5, "rows": {"light": 0, "stall": 1, "farewell": 2, "tactic": 3, "hypotheses": 4}},
     "sceneAlt": "夏祭りの夜市。お面屋の棚、金魚すくいの水槽、神社の鳥居、綿あめの屋台、落ちていた鈴、迷子案内の掲示板。",
     "location": "灯籠通り / 夏の夜市",
     "atmosphere": "提灯の列と、遠い太鼓。お面の子が、ひとり。",

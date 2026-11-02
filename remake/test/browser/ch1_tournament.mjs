@@ -278,6 +278,8 @@ await suite("ch1-tournament", async check => {
       T.core.state.flavors.push("lemon");
       window.preparing = T.preparation.prepareFlavorStock();
     });
+    // #2213 B08: レモンの立て替えは無くなった。練習用の香りとして自分で選んで仕入れる。
+    await page.locator('[data-test="prep-flavor-lemon"]').click();
     await page.locator('[data-test="shop-leave"]').click();
     assert.equal(await page.locator('.shop').count(), 1, "Insufficient stock could leave preparation");
     await page.locator('.shop-row.errand [data-test="buy-lemon"]').click();

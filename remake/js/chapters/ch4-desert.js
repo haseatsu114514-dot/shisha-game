@@ -1,6 +1,6 @@
 // 第4章ドバイ・砂丘のサンドボード（DESERT RIDE）の本編接続。
 // 宿の隣の砂漠ツアーのデスクで現地ガイドのヌール（characters.json の noor）と3回話すと、昼の外出「ヌールと砂丘へ」が地図に出る。
-// 外出は昼の行動枠を1つ使う（この章の今の形では「同じ日に二度は行けない」。日常ループ化（#2273）後は呼び出し側が slot を進める）。
+// 外出は昼の行動枠を1つ使う（value.slot を 1 にする。ラクダレースと同じで、同じ日の昼にもう一方へは行けない）。
 // 同じ外出の中の再挑戦は追加の行動を使わない。記録は state.desert、進み具合は flags._ch4_desert。
 // 報酬は初回完走の経験値（core/growth.js の awardActionExp。心得の盤が有効な時だけ入る）と、
 // Aランク以上で寝る前の「遊びのご褒美」（growth-board-data.js の PLAY_REWARDS "desert-a"）。能力値の直接加算はしない。
@@ -14,7 +14,7 @@ import { awardActionExp } from "../core/growth.js";
 
 export * from "./ch4-desert-progress.js";
 import { DESERT_TALKS, DESERT_SCENES, DESERT_DIALOGUE_IDS, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
-  desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult } from "./ch4-desert-progress.js";
+  desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertProgress } from "./ch4-desert-progress.js";
 
 let dialogueTask = null;
 export function loadDesertDialogues() {
@@ -38,10 +38,10 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
   active = true;
   const owner = state;
   const current = () => !signal?.aborted && state === owner && isCurrent();
-  const read = async (id, bg) => {
+  const read = async (id, bg, tint = null) => {
     showScreen("none", null);
     layers.hud.replaceChildren(); layers.hud.classList.remove("show");
-    if (bg) await setBg(bg, { fast: true });
+    if (bg) await setBg(bg, { fast: true, tint });
     if (!current()) return false;
     const result = await play(DB.dialogues[id], { signal });
     return current() && !!result && !result.cancelled;
@@ -67,9 +67,11 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     if (destination.kind !== "desert") return false;
     const status = desertOutingStatus(owner, day);
     if (!status.ok) return false;
-    const { desertBackdrop, runDesertRide } = await import("../minigames/desert-ride.js");
+    const [{ runDesertRide }, { DESERT_BG, DESERT_DUSK_TINT, loadDesertArt }] = await Promise.all([
+      import("../minigames/desert-ride.js"), import("../minigames/desert-ride-art.js")]);
     if (!current()) return false;
-    if (!await read(status.first ? DESERT_SCENES.arrive : DESERT_SCENES.again, desertBackdrop({ dusk: 0 }))) return false;
+    loadDesertArt(); // 到着の会話の間にゲームの絵を読み始める
+    if (!await read(status.first ? DESERT_SCENES.arrive : DESERT_SCENES.again, bgUrl(DESERT_BG))) return false;
     // ここで昼の行動枠を使う。以降の滑り直しは何度でも、追加の消費なし。
     if (!beginDesertOuting(owner, day)) return false;
     save(); changed = true;
@@ -94,7 +96,26 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     if (!current()) return changed;
     // 夕日の砂丘で話す（完走の有無にかかわらず、下りてきたら）。中断しても外出の記録は残っている。
     void results;
-    await read(status.first ? DESERT_SCENES.sunsetFirst : DESERT_SCENES.sunsetAgain, desertBackdrop({ dusk: 1 }));
+    await read(status.first ? DESERT_SCENES.sunsetFirst : DESERT_SCENES.sunsetAgain, bgUrl(DESERT_BG), DESERT_DUSK_TINT);
     return changed;
   } finally { active = false; }
+}
+
+/**
+ * 日常ループ（版2）の行き先の処理。戻り値は calendar の performSpot の形 { used, exerted, slotsUsed }。
+ * デスクの会話は時間を使わない（used: false）。砂丘は visitDesert の中で昼の行動（slot）を使い済みなので slotsUsed: 0。
+ * 体力は使わない（砂丘は気分転換。日常ループが外出のたびに経験値を足さないようにし、育成は初回完走の分だけにする）。
+ */
+export async function performDesertSpot(entry, { day, showHud = null } = {}) {
+  const owner = state;
+  const before = desertProgress(owner).outings;
+  const hudRoot = layers.hud.firstElementChild;
+  try {
+    await visitDesert({ kind: entry.place === "tour_desk" ? "desert_talk" : "desert", ok: true }, { day });
+  } finally {
+    if (hudRoot && !hudRoot.isConnected) layers.hud.replaceChildren(hudRoot);
+    showHud?.(true);
+  }
+  const went = state === owner && desertProgress(owner).outings > before;
+  return { used: went, exerted: false, slotsUsed: 0 };
 }

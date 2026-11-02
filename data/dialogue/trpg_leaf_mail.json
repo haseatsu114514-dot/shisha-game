@@ -2928,6 +2928,7 @@
     "genre": "絵本ファンタジー",
     "tagline": "宛名のにじんだ手紙を、月の下で届ける。",
     "image": "../../img/backgrounds/trpg_leaf-mail_room.webp",
+    "choiceArt": {"src": "../../img/ui/trpg/choices-leaf-mail.webp", "rowCount": 5, "rows": {"route": 0, "wrap": 1, "handover": 2, "tactic": 3, "hypotheses": 4}},
     "sceneAlt": "大きな月の下の坂の町。郵便鞄、時計塔、屋根の上、川の橋、パン屋の窓、掲示板。",
     "location": "時計坂の町 / 月夜の大通り",
     "atmosphere": "大きな月。石畳に、猫の足音がひとつ。",

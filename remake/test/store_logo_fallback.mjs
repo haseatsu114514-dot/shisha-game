@@ -54,3 +54,21 @@ for (const [id, width, height] of [['c_station', 82, 46], ['ch2_c_station', 68, 
   console.log(`PASS store-logo fallback: ${id}, full text in ${width}x${height} frame`);
 }
 assert.equal(storeLogo('unknown'), null);
+// 章ごとに id を分けた地図の行き先（東京・ドバイ）は、元の店の採用ロゴをそのまま使う（2026-11-02 MAP02）。
+const { hasStoreLogo, storeLogoUrl } = logos.namespace;
+for (const [spot, store] of [['ch3_tokyo_mukai', 'ch3_mukai'], ['ch3_tokyo_enmaku', 'ch3_enmaku'], ['ch3_tokyo_steve', 'ch3_steve'],
+  ['ch3_tokyo_volk', 'ch3_volk'], ['ch3_tokyo_club', 'ch3_club'], ['ch3_tokyo_shop', 'shop'], ['ch5_tokyo_mukai', 'ch3_mukai'],
+  ['ch5_tokyo_steve', 'ch3_steve'], ['ch5_tokyo_volk', 'ch3_volk'], ['ch5_tokyo_shop', 'shop'], ['ch4_dubai_festa', 'ch4_festa'],
+  ['ch4_dubai_shop', 'shop']]) {
+  assert.ok(hasStoreLogo(spot), spot);
+  assert.equal(Object.hasOwn(STORE_LOGOS, spot), false, `${spot}: an alias, not a second logo entry`);
+  assert.equal(storeLogoUrl(spot), storeLogoUrl(store));
+  const node = storeLogo(spot, { width: 82, height: 46 });
+  assert.equal(node.attrs['aria-label'], `${STORE_LOGOS[store].name}のロゴ`);
+  assert.equal(node.dataset.storeLogo, spot);
+}
+for (const id of ['ch3_tokyo_park', 'ch3_tokyo_room', 'ch4_dubai_souq', 'ch5_tokyo_attic', 'ch5_call']) assert.equal(hasStoreLogo(id), false, id);
+// 白い文字のSEAMだけ暗い札に載せる。
+assert.ok(storeLogo('ch3_tokyo_club').classList.contains('on-dark'));
+assert.equal(storeLogo('ch3_mukai').classList.contains('on-dark'), false);
+console.log('PASS store-logo aliases: Tokyo and Dubai destinations reuse the adopted logos');

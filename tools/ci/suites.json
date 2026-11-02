@@ -91,7 +91,7 @@
       "id": "growth-levelup",
       "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
       "kind": "quick",
-      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs"]
+      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs"]
     },
     {
       "id": "vent-lid",
@@ -143,6 +143,10 @@
       "timeout": 5,
       "paths": [
         "remake/js/core/growth.js",
+        "remake/js/core/growth-mode.js",
+        "remake/js/core/growth-respec.js",
+        "remake/js/core/growth-effects.js",
+        "remake/js/core/growth-board-layout.js",
         "remake/js/daily/levelup.js",
         "remake/js/core/growth-board.js",
         "remake/js/core/growth-board-data.js",
@@ -156,10 +160,33 @@
         "remake/js/daily/tonari.js",
         "remake/js/daily/hud.js",
         "remake/css/daily.css",
+        "remake/js/chapters/ch3-tokyo-daily.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
+        "remake/js/chapters/ch5-tokyo.js",
+        "remake/js/chapters/ch5-dubai.js",
+        "remake/js/chapters/ch5-daily.js",
         "remake/test/browser/growth_levelup.mjs"
       ],
       "run": [
         "node remake/test/browser/growth_levelup.mjs"
+      ]
+    },
+    {
+      "id": "board-tutorial",
+      "title": "Growth board first-time tutorial and starter fire (board_tutorial)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/growth-board-tutorial.js",
+        "remake/js/daily/growth-board-screen.js",
+        "remake/js/daily/reflection.js",
+        "remake/js/core/growth.js",
+        "remake/test/browser/board_tutorial.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/board_tutorial.mjs"
       ]
     },
     {
@@ -234,10 +261,13 @@
       "paths": [
         "remake/js/minigames/desert-ride.js",
         "remake/js/minigames/desert-ride-model.js",
+        "remake/js/minigames/desert-ride-art.js",
+        "remake/img/ui/desert_ride/**",
         "remake/js/chapters/ch4-desert.js",
         "remake/js/chapters/ch4-desert-progress.js",
         "remake/js/chapters/ch4.js",
         "remake/js/chapters/ch4-map-model.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
         "remake/js/desert-ride-page.js",
         "remake/desert-ride.html",
         "remake/css/desert-ride.css",
@@ -428,6 +458,7 @@
         "node remake/test/camel_race_model.mjs",
         "node remake/test/ch4_camel_race.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
+        "node remake/test/ch5_party.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
         "node remake/test/ch3_outings.mjs",
@@ -459,7 +490,7 @@
     },
     {
       "id": "ch2-craft-prep",
-      "title": "Chapter 2 tournament prep at tonari: basics check and last rehearsal with a real board or drill (VOL13)",
+      "title": "Chapter 2 tournament prep at tonari: basics check, midpoint check with two adjustments and last rehearsal with a real board or drill (VOL13, #2032)",
       "kind": "quick",
       "run": ["node --experimental-vm-modules remake/test/ch2_craft_prep.mjs"]
     },
@@ -605,6 +636,7 @@
       "run": [
         "node --test tools/ci/test_ci.mjs",
         "python3 tools/check_face_icons_fresh.py",
+        "python3 tools/portrait_metrics.py check",
         "node --test tools/sequential_merge/test.mjs",
         "python3 -B -m unittest discover -s tools -p 'test*job_checkpoint*.py'",
         "node remake/test/dev_inspector.mjs"
@@ -727,6 +759,7 @@
         "remake/test/facility_icons.mjs",
         "assets/ui/map-facilities-579.png",
         "assets/ui/map-facilities-extra-579.webp",
+        "assets/ui/map-facilities-*.webp",
         "asset_sources/store-logos/ch1-issue470/ingame-qa/pin-cutout-546/**",
         "asset_sources/map-facilities-579/**"
       ],
@@ -2681,7 +2714,8 @@
         "remake/test/browser/facility_icons.mjs",
         "remake/js/daily/facility-icons.js",
         "remake/css/facility-icons.css",
-        "remake/facility-icons-preview.html"
+        "remake/facility-icons-preview.html",
+        "assets/ui/map-facilities-*.webp"
       ],
       "run": [
         "node remake/test/store_logos.mjs",
@@ -2713,6 +2747,23 @@
         "remake/test/browser/hud_visibility_2190.mjs"
       ],
       "run": ["node remake/test/browser/hud_visibility_2190.mjs"],
+      "chrome": "playwright"
+    },
+    {
+      "id": "daily-menu",
+      "title": "Full-screen daily MENU: four read-only tabs, keys, save guard and DS layout (#2097)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/menu.js",
+        "remake/js/daily/hud.js",
+        "remake/js/daily/status.js",
+        "remake/css/daily-menu.css",
+        "remake/img/ui/paper/menu-bg.webp",
+        "remake/test/browser/daily_menu.mjs"
+      ],
+      "run": ["node remake/test/browser/daily_menu.mjs"],
       "chrome": "playwright"
     },
     {

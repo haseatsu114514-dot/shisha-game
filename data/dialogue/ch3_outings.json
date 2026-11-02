@@ -181,6 +181,108 @@
           { "speaker": "mukai_master", "face": "normal", "text": "……買ってきたのは俺なんだけどな" }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch3_outing_mukai_steve_b",
+      "comment": "スティーブがまた客として来る（AFB02）。前回ましろちゃんが言った「合図」を試すが、まだタイマーから目を離せない（成長は大会で）。好感度は任意の外出の確定時に付ける（ch3-outing-progress.js の affinity）。",
+      "lines": [
+        { "speaker": "", "text": "mukaiの客席。ドアベルが鳴って、スティーブがピザの箱を抱えて入ってきた。" },
+        { "speaker": "steve", "face": "smile", "text": "ヘイ、ハジメ。差し入れだ。ムカイさんの分もある" },
+        { "speaker": "mashiro", "face": "smile", "text": "わぁ、ピザだぁ。スティーブさん、今日もレモン系？" },
+        { "speaker": "steve", "face": "normal", "text": "イエス。今日は、合図を頼みたい" },
+        { "speaker": "", "text": "炭がなじむ頃、ましろちゃんが小さく手を挙げた。スティーブの手が、ホースの手前で止まる。" },
+        { "speaker": "", "text": "目はタイマーへ戻った。鳴ってから、ようやく一口。" },
+        { "speaker": "steve", "face": "sad", "text": "……ノー、ノー。分かってたのに、待った" },
+        { "speaker": "mashiro", "face": "smile", "text": "惜しかったねぇ。でも、手は動きかけてたよ" },
+        { "speaker": "steve", "face": "normal", "text": "動きかけた。それだけでも、前の俺よりはましだ" },
+        { "speaker": "hajime", "face": "normal", "text": "（数字から目を離すのは、それだけ怖いんだ）" },
+        { "speaker": "", "text": "閉店まで店番を続け、ムカイさんから半日分の日当を受け取った。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_mukai_steve_c",
+      "comment": "スティーブの来店の3回目以降（_b と交互）。はじめが読む客の顔に、スティーブが気づく。味の言葉は使わない（味覚が戻る前でも読める）。",
+      "lines": [
+        { "speaker": "", "text": "mukaiの客席。スティーブが、タイマーを手のひらで転がしていた。" },
+        { "speaker": "steve", "face": "normal", "text": "ハジメ。あの窓際の客、今どんな顔してる？" },
+        { "speaker": "hajime", "face": "normal", "text": "……二口目で、少し眉が上がりました。軽かったんだと思います" },
+        { "speaker": "steve", "face": "surprise", "text": "顔だけで、そこまで分かるのか" },
+        { "speaker": "hajime", "face": "normal", "text": "煙の量と、顔くらいしか見てないので" },
+        { "speaker": "steve", "face": "serious", "text": "俺はタイマーに夢中で、そこを見てなかった" },
+        { "speaker": "", "text": "スティーブはレシピカードの余白に、「窓際　二口目　眉」と書き足した。" },
+        { "speaker": "steve", "face": "smile", "text": "次は、俺も顔を見てみる。……タイマーも見るけどな" },
+        { "speaker": "hajime", "face": "smile", "text": "（数字と顔。両方見るのは、きっと難しい）" },
+        { "speaker": "", "text": "閉店まで店番を続け、ムカイさんから半日分の日当を受け取った。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_enmaku_visit",
+      "comment": "煙幕に通う（AFB02）。久世のノートの話の後に、繰り返し寄れる。1回目はこれ、2回目からは _b と _c を交互。味の言葉ははじめに言わせない（味覚が戻る前でも読める）。好感度は任意の外出の確定時に付ける。",
+      "lines": [
+        { "speaker": "", "text": "路地の「煙幕」。久世はカウンターで、ノートに二本の線を引いていた。" },
+        { "speaker": "kuze", "face": "smile", "text": "いらっしゃい。ちょうどいい所に来た。これ見て" },
+        { "speaker": "", "text": "ノートの左には久世の予想、右には客の答えが並んでいる。" },
+        { "speaker": "hajime", "face": "normal", "text": "「雨の日の縁側」……これ、味の名前ですか？" },
+        { "speaker": "kuze", "face": "smile", "text": "さっきの客の答え。僕の予想は「白桃」だった" },
+        { "speaker": "kuze", "face": "smug", "text": "外れたね。でも、こういう答えが一番うれしい" },
+        { "speaker": "hajime", "face": "surprise", "text": "外れたのに、ですか" },
+        { "speaker": "kuze", "face": "serious", "text": "当たったら、僕の頭の中と同じだっただけ。外れたら、その人の一口がある" },
+        { "speaker": "hajime", "face": "normal", "text": "（正解を当ててもらうための店じゃないんだ）" },
+        { "speaker": "kuze", "face": "smile", "text": "今日は吸わなくていいよ。座って、答えを一緒に読んでって" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_enmaku_visit_b",
+      "comment": "煙幕に通う（_c と交互）。大げさな噂は自分で流し、片付けは自分でする（characters.json）。",
+      "lines": [
+        { "speaker": "", "text": "客の引いた煙幕。久世は一人で、ホースを一本ずつ洗っていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "手伝います" },
+        { "speaker": "kuze", "face": "surprise", "text": "え、いいの？　……じゃあ、そっちのボウルをお願い" },
+        { "speaker": "kuze", "face": "smug", "text": "そうだ。今日も噂、流しといたよ" },
+        { "speaker": "hajime", "face": "normal", "text": "今度は、どんな噂ですか" },
+        { "speaker": "kuze", "face": "smile", "text": "「煙幕の店主は、客の思い出の味を出す」ってね" },
+        { "speaker": "hajime", "face": "normal", "text": "……大げさですね" },
+        { "speaker": "kuze", "face": "normal", "text": "大げさな方が、人は路地に入ってくる。入った後は、一台でちゃんと返す" },
+        { "speaker": "hajime", "face": "smile", "text": "（噂は大きく、片付けは自分の手で。それがこの人のやり方なんだ）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_enmaku_visit_c",
+      "comment": "煙幕に通う（_b と交互）。はじめの手帳。「書記」は久世のノートの話（ch3_outing_enmaku_notes）と同じ冗談。",
+      "lines": [
+        { "speaker": "", "text": "煙幕のカウンター。久世が、こちらの手帳をのぞき込んだ。" },
+        { "speaker": "kuze", "face": "smile", "text": "それ、手帳？　何を書いてるの" },
+        { "speaker": "hajime", "face": "normal", "text": "客の顔と、煙の量です" },
+        { "speaker": "kuze", "face": "normal", "text": "見せて。……「二口目で黙る」って書いてある" },
+        { "speaker": "hajime", "face": "normal", "text": "うまい時か、困った時か、まだ分からなくて" },
+        { "speaker": "kuze", "face": "serious", "text": "分からないって書けるの、いいね。僕はすぐ、分かったことにしちゃう" },
+        { "speaker": "kuze", "face": "smug", "text": "僕の組織、書記の席が空いてるよ" },
+        { "speaker": "hajime", "face": "smile", "text": "入りません" },
+        { "speaker": "kuze", "face": "smile", "text": "……即答だ" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_steve_visit",
+      "comment": "Smoke & Glory に通う（AFB02）。味の会話（steve_timer）の後に、何度でも寄れる。_b と交互。好感度は任意の外出の確定時に付ける。",
+      "lines": [
+        { "speaker": "", "text": "Smoke & Glory。カウンターの端で、スティーブがキッチンタイマーを三つ並べていた。" },
+        { "speaker": "steve", "face": "smile", "text": "ヘイ、ハジメ。今日は三つで試してる" },
+        { "speaker": "hajime", "face": "surprise", "text": "三つも、ですか" },
+        { "speaker": "steve", "face": "normal", "text": "一つは炭、一つは客の二口目、一つは……俺がしゃべりすぎない用" },
+        { "speaker": "hajime", "face": "smile", "text": "最後のが、一番むずかしそうですね" },
+        { "speaker": "steve", "face": "smile", "text": "イエス。いつも、最初に鳴るのがそれだ" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_steve_visit_b",
+      "comment": "Smoke & Glory に通う（_a と交互）。",
+      "lines": [
+        { "speaker": "", "text": "昼のSmoke & Glory。スティーブが、ピザを一切れこちらへ押した。" },
+        { "speaker": "steve", "face": "smile", "text": "食ってけ。腹が減ってると、客の顔より自分の腹が気になる" },
+        { "speaker": "hajime", "face": "normal", "text": "食べながらでも、見ていていいですか" },
+        { "speaker": "steve", "face": "normal", "text": "オーケー。見るなら、手より客の方な" },
+        { "speaker": "", "text": "ピザを食べ終える頃、スティーブは客の顔を見てから、炭を数ミリだけ縁へ寄せた。" }
+      ]
     }
   ]
 }

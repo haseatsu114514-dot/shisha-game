@@ -1,4 +1,6 @@
 // 味の系統ごとの熟練度。同じ味のメーカー違いは経験を共有する。
+// growth.jsが有効な時の倍率を登録する。状態のロードから盤やUIへ依存を逆流させない。
+export const masteryHooks = { multiplier: () => 1 };
 export const MASTERY_THRESHOLDS = [0, 6, 18, 36, 60];
 const MASTERY_MAX_XP = MASTERY_THRESHOLDS.at(-1);
 export const flavorFamily = (id, flavors = {}) => flavors[id]?.family || id;
@@ -8,10 +10,11 @@ export function masteryLabel(s, id, flavors = {}) {
   const level = masteryLevel(s, id, flavors);
   return `熟練度 ${"★".repeat(level)}${"☆".repeat(5 - level)}${level === 5 ? " MAX" : ""}`;
 }
-export function gainFlavorExperience(s, mix, budget, flavors = {}) {
+export function gainFlavorExperience(s, mix, budget, flavors = {}, { growth = true } = {}) {
   const valid = Object.entries(mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0);
   const total = valid.reduce((sum, [, g]) => sum + g, 0);
   if (!total || !Number.isFinite(budget) || budget <= 0) return [];
+  if (growth) budget *= masteryHooks.multiplier(s);
   const families = {};
   for (const [id, g] of valid) { const f = flavorFamily(id, flavors); families[f] = (families[f] || 0) + g; }
   s.flavorMastery ||= {};
@@ -36,7 +39,7 @@ export const FOURTH_FLAVOR_LESSONS = {
   ch2_rei_fourth: [["ch2_rei_first", { rose: 1 }]],
 };
 // 会話の最後まで読んだ回だけ。好感度や過去の訪問回数から補完しない。
-export function learnFlavorStory(s, dialogue, flavors = {}) {
+export function learnFlavorStory(s, dialogue, flavors = {}, options = {}) {
   const lesson = dialogue?.metadata?.flavor_lesson;
   const key = dialogue?.dialogue_id;
   if (!key || !lesson || s.flavorLessons?.includes(key)) return [];
@@ -44,12 +47,12 @@ export function learnFlavorStory(s, dialogue, flavors = {}) {
   if (former) {
     const received = s.flavorLessons || [];
     const gains = former.filter(([id]) => !received.includes(id))
-      .flatMap(([, mix]) => gainFlavorExperience(s, mix, 12, flavors));
+      .flatMap(([, mix]) => gainFlavorExperience(s, mix, 12, flavors, options));
     (s.flavorLessons ||= []).push(key);
     return gains;
   }
   (s.flavorLessons ||= []).push(key);
-  return gainFlavorExperience(s, lesson, 12, flavors);
+  return gainFlavorExperience(s, lesson, 12, flavors, options);
 }
 // ゲーム内の調整値。基本情報はLv.1から開示し、使い慣れた葉ほど予測と仕上げが安定する。
 // 配合の重さで平均するため、熟練した葉を少量足しても一杯全体の効果にはならない。

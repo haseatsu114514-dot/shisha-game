@@ -32,6 +32,9 @@ MIN_BOTTOM = 680  # 寄りの絵を縮めすぎない（絵の下端をこの高
 FADE = 14       # 絵の下端が画面の下に届かないとき、下から何%を薄くするか
 RIGHT_EDGE = 640  # 人物はこの線より右に出さない（名前・一言の側）
 SKIP = {"pakki"}  # マスコットは全身で見せるので、共通の配置のまま
+SAFE_TOP_IDS = {"master_hookah", "emil", "da_silva", "yoru", "sheikh", "mukai_master"}
+MAX_FRAME_WIDTH = {"emil": 1024, "mukai_master": 1024}
+SAFE_HAND_LEFT = {"emil": -170, "mukai_master": -200}
 
 
 def touches(alpha, box):
@@ -41,6 +44,7 @@ def touches(alpha, box):
 def frame_for(pid, head_top, chin, face_x):
     alpha = Image.open(ART / f"{pid}.webp").convert("RGBA").getchannel("A")
     size = alpha.size[0]
+    bounds = alpha.point(lambda v: 255 if v > 40 else 0).getbbox()
     top_cut = touches(alpha, (0, 0, size, 3))
     left_cut = touches(alpha, (0, 0, 3, size))
     scale = HEAD / (chin - head_top)
@@ -54,7 +58,16 @@ def frame_for(pid, head_top, chin, face_x):
             top = 0
         if top + size * scale < MIN_BOTTOM:
             scale = (MIN_BOTTOM - top) / size
+    if pid in MAX_FRAME_WIDTH and size * scale > MAX_FRAME_WIDTH[pid]:
+        # 両手が左半分に収まる範囲で数%だけ引く。
+        scale = MAX_FRAME_WIDTH[pid] / size
+        top = HEAD_TOP + HEAD - chin * scale
+    if pid in SAFE_TOP_IDS and bounds:
+        # 帽子・頭布・高い指が頭頂位置の正規化で画面外へ出ないようにする。
+        top = max(top, 8 - bounds[1] * scale)
     left = FACE_X - face_x * scale
+    if pid in SAFE_HAND_LEFT:
+        left = max(left, SAFE_HAND_LEFT[pid])
     if left_cut and left > 0:
         left = 0
     width = size * scale

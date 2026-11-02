@@ -1,0 +1,214 @@
+{
+  "issue": "MPI01・MPI03 (#2331)",
+  "tool": "image_gen (Codex built-in; model id not disclosed)",
+  "created": "2026-11-02",
+  "adopted": "2026-11-02 オーナー「おすすめで」",
+  "candidates_package_sha256": "4704916a02d3781aac7c2d1ee94b7f9345c862ab6a0dceb38a9bfb2ccb739dc7",
+  "shrine": "路地裏の神社3案は #2166 の内省スポットの場所が未決のため保留（採用なし）",
+  "images": [
+    {
+      "name": "fortune-stall",
+      "candidate": "A",
+      "facility": "fortune",
+      "file": "fortune-stall-source.png",
+      "prompt": "fortune-stall-adopted-prompt.txt",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "7b69188b564214b4a8f20ddd47a2330c4f3ffd6812b569075dcad7ef1c33400d",
+      "webp": "assets/ui/map-facilities-fortune-stall.webp",
+      "webp_size": [
+        384,
+        383
+      ]
+    },
+    {
+      "name": "tokyo-park",
+      "candidate": "B",
+      "facility": "tokyo_park",
+      "file": "tokyo-park-source.png",
+      "prompt": "tokyo-park-adopted-prompt.txt",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "6db48b11ee726d4d77ed601529c35a79098552d5cdeb4c8f95d42bb788feb977",
+      "webp": "assets/ui/map-facilities-tokyo-park.webp",
+      "webp_size": [
+        384,
+        347
+      ]
+    },
+    {
+      "name": "mukai-back-room",
+      "candidate": "A",
+      "facility": "mukai_back_room",
+      "file": "mukai-back-room-source.png",
+      "prompt": "mukai-back-room-adopted-prompt.txt",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "56b3a9488bf86a822b7e825a72352b4d83a8a22007d08c5fe7aa8028ec6579c8",
+      "webp": "assets/ui/map-facilities-mukai-back-room.webp",
+      "webp_size": [
+        384,
+        327
+      ]
+    },
+    {
+      "name": "mukai-attic",
+      "candidate": "A",
+      "facility": "mukai_attic",
+      "file": "mukai-attic-source.png",
+      "prompt": "mukai-attic-adopted-prompt.txt",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "dbaa9b1418f072c9bbdb19860f2229ced360f27b916582402c5e2ffc9c1bd662",
+      "webp": "assets/ui/map-facilities-mukai-attic.webp",
+      "webp_size": [
+        384,
+        377
+      ]
+    },
+    {
+      "name": "smartphone",
+      "candidate": "B",
+      "facility": "smartphone",
+      "file": "smartphone-source.png",
+      "prompt": "smartphone-adopted-prompt.txt",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "39b59ac3baa1fd44611a23327b05b3e19989541c3fa081fc17552463935c695a",
+      "webp": "assets/ui/map-facilities-smartphone.webp",
+      "webp_size": [
+        353,
+        384
+      ]
+    },
+    {
+      "name": "shinkansen-station",
+      "candidate": "C",
+      "facility": "shinkansen_station",
+      "file": "shinkansen-station-source.png",
+      "prompt": "shinkansen-station-adopted-prompt.txt",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "c93abb0fae6166b46221586cee0f945f0241dee87485c05760a4374b415b3fab",
+      "webp": "assets/ui/map-facilities-shinkansen-station.webp",
+      "webp_size": [
+        384,
+        354
+      ]
+    },
+    {
+      "name": "dubai-souq",
+      "candidate": "A",
+      "facility": "dubai_souq",
+      "file": "dubai-souq-source.png",
+      "prompt": "dubai-souq-adopted-prompt.txt",
+      "size": [
+        1374,
+        1145
+      ],
+      "sha256": "9cef63df492eb70e2f7e5876bccd281c895c405761216fcf3f1c5f9d84841a15",
+      "webp": "assets/ui/map-facilities-dubai-souq.webp",
+      "webp_size": [
+        384,
+        324
+      ]
+    },
+    {
+      "name": "dubai-creek",
+      "candidate": "B",
+      "facility": "dubai_creek",
+      "file": "dubai-creek-source.png",
+      "prompt": "dubai-creek-adopted-prompt.txt",
+      "size": [
+        1426,
+        1103
+      ],
+      "sha256": "2621a6e206c1b7b3c79da7f8c2b4ba57b68ee55694e6cc85c5d11276fa526aa2",
+      "webp": "assets/ui/map-facilities-dubai-creek.webp",
+      "webp_size": [
+        384,
+        298
+      ]
+    },
+    {
+      "name": "dubai-mosque",
+      "candidate": "A",
+      "facility": "dubai_mosque",
+      "file": "dubai-mosque-source.png",
+      "prompt": "dubai-mosque-adopted-prompt.txt",
+      "size": [
+        1370,
+        1148
+      ],
+      "sha256": "78cf6875356439a3767e81537018e571e88d0019839a25c6ecdbf20a67f709f9",
+      "webp": "assets/ui/map-facilities-dubai-mosque.webp",
+      "webp_size": [
+        384,
+        327
+      ]
+    },
+    {
+      "name": "dubai-inn",
+      "candidate": "A",
+      "facility": "dubai_inn",
+      "file": "dubai-inn-source.png",
+      "prompt": "dubai-inn-adopted-prompt.txt",
+      "size": [
+        1313,
+        1198
+      ],
+      "sha256": "c93fee09e138e3f7a69f3ec8b40f0d7af7b80014475f17ae299d69395690b7fe",
+      "webp": "assets/ui/map-facilities-dubai-inn.webp",
+      "webp_size": [
+        384,
+        347
+      ]
+    },
+    {
+      "name": "dubai-inn-lobby",
+      "candidate": "A",
+      "facility": "dubai_inn_lobby",
+      "file": "dubai-inn-lobby-source.png",
+      "prompt": "dubai-inn-lobby-adopted-prompt.txt",
+      "size": [
+        1374,
+        1145
+      ],
+      "sha256": "7336225eb5d5ce96d438c24f1e601a3e1514117eabcc2059240a8c18c34e2dbb",
+      "webp": "assets/ui/map-facilities-dubai-inn-lobby.webp",
+      "webp_size": [
+        384,
+        311
+      ]
+    },
+    {
+      "name": "dubai-practice-hall",
+      "candidate": "B",
+      "facility": "dubai_practice_hall",
+      "file": "dubai-practice-hall-source.png",
+      "prompt": "dubai-practice-hall-adopted-prompt.txt",
+      "size": [
+        1512,
+        1040
+      ],
+      "sha256": "0962b0d12e65996ff06c52ce23c42a32021c9772d44110143ef70890df4ec6f4",
+      "webp": "assets/ui/map-facilities-dubai-practice-hall.webp",
+      "webp_size": [
+        384,
+        269
+      ]
+    }
+  ]
+}

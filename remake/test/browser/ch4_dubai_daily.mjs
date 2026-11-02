@@ -13,7 +13,9 @@ const arm = page => page.evaluate(async () => {
 const dubaiMap = (page, { day, slot } = {}) => page.waitForFunction(([day, slot]) => {
   const s = window.__remake?.state;
   return s && (day === undefined || s.day === day) && (slot === undefined || s.slot === slot)
-    && document.querySelector('.map:not(.done) [data-test="pin-ch4_dubai_inn"]') && !document.querySelector("#modal.show");
+    && document.querySelector('.map:not(.done) [data-test="pin-ch4_dubai_inn"]') && !document.querySelector("#modal.show")
+    // 新しく出た行き先（心得の盤の火種があるとモスク）のお披露目の間はピンを押せないので、終わるのを待つ
+    && !document.querySelector(".map[data-revealing]");
 }, [day, slot], { timeout: 60000 });
 async function go(page, pin) {
   await page.locator(dt(`pin-${pin}`)).click();

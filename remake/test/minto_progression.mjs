@@ -56,9 +56,9 @@ try {
     const afterSecond = !!state.flags._minto_identity_revealed;
     await T.spots.visitChar("minto");
     const afterThird = !!state.flags._minto_identity_revealed;
-    await T.spots.visitChar("minto");
-    // #814: 次の会話は次のハートまで開かないので、♥1を待つ通常訪問が1回入る。
-    if (T.spots.hearts("minto") < 3) await T.spots.visitChar("minto");
+    // #814: 次の会話は次のハートまで開かないので、♥3に届くまでは♥を待つ通常訪問が入る。
+    // 通いの好感度を上げた #2279 からは3回の訪問で♥3に届くので、待つ訪問は入らない。
+    for (let n = 0; T.spots.hearts("minto") < 3 && n < 3; n++) await T.spots.visitChar("minto");
     const heart3Waiting = {
       hearts: T.spots.hearts("minto"),
       known: !!state.flags._minto_identity_revealed,

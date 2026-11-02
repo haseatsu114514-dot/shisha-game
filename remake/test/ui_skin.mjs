@@ -42,7 +42,7 @@ try {
     await page.setViewportSize(viewport);
     const geometry = await page.evaluate(() => {
       document.querySelector(".hud-bar").style.transition = "none";
-      const snapshot = () => [".hud-card", ".hud-stamina", ".hud-level", ".hud-lime", ".hud-menu"].map((selector) => {
+      const snapshot = () => [".hud-card", ".hud-stamina", ".hud-lime", ".hud-menu"].map((selector) => {
         const rect = document.querySelector(selector).getBoundingClientRect();
         return [rect.x, rect.y, rect.width, rect.height];
       });

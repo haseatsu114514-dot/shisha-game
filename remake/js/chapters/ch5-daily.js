@@ -12,6 +12,7 @@ import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 import { runDaily } from "../daily/calendar.js";
 import { allSpots, fortuneSpot } from "../daily/spots.js";
 import { openShop } from "../daily/shop.js";
+import { canReflect } from "../daily/reflection.js";
 import { trpgSpot } from "../daily/trpg.js";
 import { MAP } from "./ch2-city-data.js";
 import { CITY_SHOP } from "./ch2-outings.js";
@@ -19,6 +20,7 @@ import { returnCityHome } from "./ch2-commute.js";
 import { cityRegularSpots, visitCityRegular } from "./ch2-preparation.js";
 import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNight, tokyoWakeBackground, chapterFiveMukaiShift } from "./ch5-tokyo.js";
 import { DUBAI, DUBAI_SPOTS, TO_DUBAI_SPOT, performDubaiSpot, inDubai, dubaiNight, dubaiWakeBackground } from "./ch5-dubai.js";
+import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop } from "./ch5-shops.js";
 import {
   chapterFiveProgress, chapterFiveFreeRemaining, chapterFiveRead, chapterFiveTimeoutPending,
   chapterFivePreparation, chapterFivePrepPending, recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
@@ -41,17 +43,16 @@ export const CH5_CALL_SPOT = Object.freeze({
   desc: "勝負の日を決める。決めたら、その日の残りは準備にあてて、翌日が勝負になる。",
 });
 
-// 第5章ではまだ地図に出さない行き先。第1・2章の物語の続きが流れる店と、第1章の大会の話題の施設。
-// 第5章向けの会話ができたら外す（#2033 の残り）。
-//   naru: 第2章の決裂の印が残ると「臨時休業」のまま（第3章の仲直り後の扱いが未整備）
-//   minto（PEPPERMINT）/ shishark（SHISHARK）: ヒロインの店（第5章は恋人と過ごす場面を描かない）
-//   c_station: 第1章の大会の受付・噂 / trpg_bar: 柚ヶ谷の店（隣町の地域で出す）
+// 第1章の店そのものは地図に出さない行き先。第1・2章の物語の続きが流れるため。
+//   naru（KEMURIKUSA）・c_station: 第5章の通いの小会話だけで出す（chapters/ch5-shops.js。#2033 F）
+//   minto（PEPPERMINT）/ shishark（SHISHARK）: ヒロインの店も同じく通いの小会話で出す（恋人でも友人でも自然な会話）
+//   trpg_bar: 柚ヶ谷の店（隣町の地域で出す）
 // 占い師は第5章にも現れる（章で1〜2回・予定の無い昼か夜。daily/fortune-schedule.js）。
 const HIDDEN_SPOTS = Object.freeze(["naru", "minto", "shishark", "c_station", "trpg_bar"]);
 
 /** 第5章の地元の行き先。 */
 export function chapterFiveHomeSpots() {
-  return [...allSpots().filter(spot => !HIDDEN_SPOTS.includes(spot.id)), CH5_CALL_SPOT, TO_TOKYO_SPOT, TO_DUBAI_SPOT];
+  return [...allSpots().filter(spot => !HIDDEN_SPOTS.includes(spot.id)), ...chapterFiveShops(), CH5_CALL_SPOT, TO_TOKYO_SPOT, TO_DUBAI_SPOT];
 }
 
 /** 次に tonari で読む場面（並びの順・時間帯が合うときだけ）。無ければ null＝いつもの tonari。 */
@@ -83,7 +84,7 @@ export function chapterFiveDailyDefinition(io) {
         { id: "widehanga", label: `隣町・${CH2_CITY_NAME}`, background: () => MAP[timeOfDay()], spots: chapterFiveCitySpots },
         { id: TOKYO, label: "東京", background: () => bgUrl(`bg_tokyo_map_${timeOfDay()}`), spots: chapterFiveTokyoSpots },
         // ドバイの地図は第4章と同じ（昼は真昼、夜は夕景）。占い師はドバイには現れない（台帳 URA）。
-        { id: DUBAI, label: "ドバイ", background: () => bgUrl(timeOfDay() === "night" ? "bg_dubai_map_dusk" : "bg_dubai_map"), spots: () => DUBAI_SPOTS },
+        { id: DUBAI, label: "ドバイ", background: () => bgUrl(timeOfDay() === "night" ? "bg_dubai_map_dusk" : "bg_dubai_map"), spots: chapterFiveDubaiSpots },
       ],
       onRegionChange: id => { state.flags._ch2_region = id; save(); },
     }),
@@ -95,7 +96,7 @@ export function chapterFiveDailyDefinition(io) {
       : destination && (destination.region || "home") === "home" ? returnCityHome() : true,
     // 東京の屋根裏でも寝る前の家シーシャを選べる（台を持って行く・VOL12。FIN10 の「出さない」を更新）。
     wakeBackground: () => inTokyo() ? tokyoWakeBackground() : inDubai() ? dubaiWakeBackground() : null,
-    spotById: id => [CH5_CALL_SPOT, CH5_CITY_SHOP, TO_TOKYO_SPOT, ...TOKYO_SPOTS, TO_DUBAI_SPOT, ...DUBAI_SPOTS, ...cityRegularSpots()].find(spot => spot.id === id) || null,
+    spotById: id => [CH5_CALL_SPOT, CH5_CITY_SHOP, TO_TOKYO_SPOT, ...TOKYO_SPOTS, TO_DUBAI_SPOT, ...DUBAI_SPOTS, ...cityRegularSpots()].find(spot => spot.id === id) || chapterFiveShopById(id),
     performSpot: (spot, options) => performChapterFiveSpot(spot, io, options),
     // ムカイさんの LIME で呼ばれたシフト（VOL10）
     mukaiShift: ({ called = false } = {}) => chapterFiveMukaiShift(state, { called }),
@@ -117,14 +118,18 @@ const currentRegion = () => ["widehanga", TOKYO, DUBAI].includes(state.flags._ch
 
 /** 東京の行き先（スティーブ・ヴォルクの店は会ったことがあれば）。 */
 // 占い師は東京にも現れる（理由は語らない・台帳 URA）。
-export const chapterFiveTokyoSpots = () => [...TOKYO_SPOTS.filter(spot => !spot.charId || state.met?.[spot.charId]), fortuneSpot(TOKYO)].filter(Boolean);
+export const chapterFiveTokyoSpots = () => [...TOKYO_SPOTS.filter(spot => (!spot.charId || state.met?.[spot.charId]) && reflectable(spot)), fortuneSpot(TOKYO)].filter(Boolean);
+/** ドバイの行き先（モスクは灯せる火種がある時だけ）。 */
+export const chapterFiveDubaiSpots = () => DUBAI_SPOTS.filter(reflectable);
+// 内省の場所（東京の神社・ドバイのモスク）は、心得の盤で灯せる火種がある時だけ地図に出す（第3・4章と同じ）。
+const reflectable = spot => !spot.reflect || canReflect(state);
 
 /** 柚ヶ谷の支店（第2章の「県大会向け」の説明は使わない）。 */
 const CH5_CITY_SHOP = Object.freeze({ ...CITY_SHOP, desc: "隣町の支店。仕入れはここでも。" });
 
-/** 第5章の柚ヶ谷の行き先: 神崎・REIの店（会ったことがあれば）・支店・ボドゲカフェ（知っていれば）。 */
+/** 第5章の柚ヶ谷の行き先: 神崎・REI・あげはの店（会ったことがあれば）・支店・ボドゲカフェ（知っていれば）。 */
 export function chapterFiveCitySpots() {
-  return [...cityRegularSpots(), CH5_CITY_SHOP, trpgSpot()].filter(Boolean);
+  return [...cityRegularSpots(), ...chapterFiveCityShops(), CH5_CITY_SHOP, trpgSpot()].filter(Boolean);
 }
 
 async function performChapterFiveSpot(spot, io, options = {}) {
@@ -132,6 +137,8 @@ async function performChapterFiveSpot(spot, io, options = {}) {
   if (tokyo) return tokyo;
   const dubai = await performDubaiSpot(spot, options);
   if (dubai) return dubai;
+  const regular = await performChapterFiveShop(spot, options);
+  if (regular) return regular;
   if (spot.region === "widehanga") {
     if (spot.id === CH5_CITY_SHOP.id) {
       await openShop({ branch: "widehanga" }); // 時間は使わない

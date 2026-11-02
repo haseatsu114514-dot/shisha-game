@@ -475,5 +475,194 @@
       "visualQA": "6地点とも対象物がある。人形は小さな無生物として描写。",
       "hotspotQA": "小さな舞台を見出しと重ならない舞台の前縁へ、柱時計を文字盤へ移動。1280×720の実画面で輪と対象物・見出し文字の重なりを確認（2026-11-02）"
     }
+  ],
+  "choices": [
+    {
+      "scenario": "leaf-mail",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_leaf-mail_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-leaf-mail.png",
+      "pngSizeBytes": 1418249,
+      "png_sha256": "d492d1b6b21a07f4d15aea0ef1c6129a360bb1cc55324fdd8c2576c6e8f6bf24",
+      "webp": "remake/img/ui/trpg/choices-leaf-mail.webp",
+      "webpSizeBytes": 1072592,
+      "webp_sha256": "fa059d2dc413c4f9cabf9527288eca08934c950e7c573052e2255dee9ca8a67c",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "apple-thief",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_apple-thief_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-apple-thief.png",
+      "pngSizeBytes": 1331225,
+      "png_sha256": "4547c68affc433a745900aaee7e9e2722beac9ae5c46eae944c612639bffede9",
+      "webp": "remake/img/ui/trpg/choices-apple-thief.webp",
+      "webpSizeBytes": 1003080,
+      "webp_sha256": "c5bfcc6d2f246af0d69ec51971e6b0838f9d68bce8dc1624b6bf9b5737d7a310",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "shark-island",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_shark-island_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-shark-island.png",
+      "pngSizeBytes": 1785937,
+      "png_sha256": "9ec66eaae1c1bad863db9f77ed684f2f168895c36fdf48263394d263daad6ad9",
+      "webp": "remake/img/ui/trpg/choices-shark-island.webp",
+      "webpSizeBytes": 1360110,
+      "webp_sha256": "3f83ebc3a2f5615ba0e38ce31f410fe773db6eb325ceb7e8876ddead393ae6a5",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "mist-kingdom",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_mist-kingdom_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-mist-kingdom.png",
+      "pngSizeBytes": 1742052,
+      "png_sha256": "eb9d260eae7ba625ea220518cd19b19eaef2361a67bfb13853406135c0ad9a9a",
+      "webp": "remake/img/ui/trpg/choices-mist-kingdom.webp",
+      "webpSizeBytes": 1316288,
+      "webp_sha256": "c5686d3750b5673fe00e2f31a818b93cb7427ff06010a72a0f852abad691f7f2",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "smoke-robot",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_smoke-robot_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-smoke-robot.png",
+      "pngSizeBytes": 1386513,
+      "png_sha256": "7a85591e76da6e784e2bbdb535ae126463aed7f8b1aac3ee8b57ca629525a2da",
+      "webp": "remake/img/ui/trpg/choices-smoke-robot.webp",
+      "webpSizeBytes": 1048208,
+      "webp_sha256": "6ae506a46fafd1d641dd7dd49d8564d1a74a6c54ae014bd7465ca51bea8fe481",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "fading-familiar",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_fading-familiar_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-fading-familiar.png",
+      "pngSizeBytes": 1429004,
+      "png_sha256": "1258a55f8e84950b817eb507cf4761bd3690d25c3740854c629000217a9cfc87",
+      "webp": "remake/img/ui/trpg/choices-fading-familiar.webp",
+      "webpSizeBytes": 1089920,
+      "webp_sha256": "f5299a4771ee4b97172d7b66eab6920baa5c9e556b6612a9c5309423dde5b0f0",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "fox-market",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_fox-market_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-fox-market.png",
+      "pngSizeBytes": 1438692,
+      "png_sha256": "25239487a141a2c8450b297953dc79aa4c334d181e220bde7b82363e2f2adbd5",
+      "webp": "remake/img/ui/trpg/choices-fox-market.webp",
+      "webpSizeBytes": 1142446,
+      "webp_sha256": "b73f606333cfef033404505368940625c88a76200fbfdc53b47f177ac347a2f8",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "stage-ghost",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_stage-ghost_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-stage-ghost.png",
+      "pngSizeBytes": 1352074,
+      "png_sha256": "61847c6945a68582e680bd738e6985f84b583d89c321928f07e8887831c27e02",
+      "webp": "remake/img/ui/trpg/choices-stage-ghost.webp",
+      "webpSizeBytes": 1005436,
+      "webp_sha256": "bca17744a2ee5b517c7945cdd6545a4563e16c29cd313b487aa3f5ebe5744e62",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "moonflower-encore",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_moonflower-encore_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-moonflower-encore.png",
+      "pngSizeBytes": 1345134,
+      "png_sha256": "5bb280953271f2fb1fefb36c9b37251686c82f62de61eacbe3e6bd32e6ba3413",
+      "webp": "remake/img/ui/trpg/choices-moonflower-encore.webp",
+      "webpSizeBytes": 1045140,
+      "webp_sha256": "4a93de05969336cd8a86b3f3898fceb11fa67001b1dffc6313199e068e5db874",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "purikura-hero",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_purikura-hero_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-purikura-hero.png",
+      "pngSizeBytes": 1854200,
+      "png_sha256": "9fe365c7885be7bf37c881087456e6dbfb3188dee5fc7772536b22a478bc7e19",
+      "webp": "remake/img/ui/trpg/choices-purikura-hero.webp",
+      "webpSizeBytes": 1469628,
+      "webp_sha256": "9c1f94ab56ecec3630e892d67f35f4b247722bc0cac2fada21d0836b3b80c56e",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "doll-requiem",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_doll-requiem_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-doll-requiem.png",
+      "pngSizeBytes": 1589735,
+      "png_sha256": "46c72bc5c637b7033191eaa8515b20d20f130b10c2d620d1cac25adcfd7c838b",
+      "webp": "remake/img/ui/trpg/choices-doll-requiem.webp",
+      "webpSizeBytes": 1173712,
+      "webp_sha256": "20eadd1c2f09d8fc4699d6909acc94b37cffdcb85f433380e9bbf6fc01633ed4",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    }
   ]
 }

@@ -36,6 +36,16 @@ export function hajimeServedState(cs) {
   return Number.isFinite(aroma) && aroma >= 65 ? "good" : "work";
 }
 
+// 第2章の工程の区切り（提供・調整1・調整2）に、合間の掛け合いの前に置くパッキーと審査員の実況（#2213 DR-08）。
+// 第1章の r2_end／r3_end／remake_round4_end に当たる。結果や点数は言わない。
+const CH2_ROUND_ENDS = { interlude1: "served", interlude2: "care1", interlude3: "care2" };
+export function tournamentStoryLeadIn(cs, event) {
+  const part = cs?.chapter === 2 ? CH2_ROUND_ENDS[event] : null;
+  const scene = part && DB.dialogues[`tournament_craft_roundend_2_${part}`];
+  if (part && !scene) throw new Error(`大会演出の台本がありません: roundend_2_${part}`);
+  return scene ? { dialogue_id: `tournament_craft_2_${event}_roundend`, lines: scene.lines.map(line => ({ ...line })) } : null;
+}
+
 export function tournamentStoryDialogue(cs, event, random = Math.random, context = {}) {
   const chapter = [1, 2, 3].includes(cs.chapter) ? cs.chapter : 1;
   const ingredients = Object.entries(cs.mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0);

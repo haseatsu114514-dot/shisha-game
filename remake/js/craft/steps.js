@@ -4,7 +4,10 @@ import { el, sleep, clamp } from "../core/util.js";
 import { DB } from "../core/data.js";
 import { toast, modal } from "../core/ui.js";
 import { state } from "../core/state.js";
-import { step, earnStat } from "../core/stats.js";
+import { step, earnStat, earnRecipeDiscovery } from "../core/stats.js";
+import { growthFeature, growthLesson, densePackAvailable, settleGrowthPhase, LESSON_TUNING } from "../core/growth-effects.js";
+import { growthEnabled } from "../core/growth-mode.js";
+import { rememberGrowthMix, growthRecallOptions } from "../core/growth-memory.js";
 import { effectVisible, effectBadge } from "./effect-visual.js";
 import { canSeeMixHint, canSeeGoldenShort } from "../core/stat-step-tables.js";
 import { SE } from "../core/audio.js";
@@ -192,6 +195,8 @@ export function evaluateMix(cs) {
   const key = [...new Set(ids.map(familyKeyOf))].sort().join("+");
   const recipe = DB.recipes.find((r) => r.flavors.slice().sort().join("+") === key) || null;
   if (recipe) { score += 14; notes.push(`レシピ「${recipe.name}」の組み合わせ`); }
+  const cardamom = flavorFamilyGrams(mix, "cardamom");
+  const bridge = growthLesson(state, "M-W6") && cardamom > 0 && cardamom / total <= .2;
   for (const ng of DB.ngMixes) {
     const [a, b] = ng.flavors;
     const aGrams = flavorFamilyGrams(mix, a), bGrams = flavorFamilyGrams(mix, b);
@@ -201,10 +206,26 @@ export function evaluateMix(cs) {
       (ng.condition === "both_over_4g" && aGrams > 4 && bGrams > 4) ||
       (ng.condition === "combined_over_10g" && aGrams + bGrams > 10) ||
       (ng.condition === "ratio_close" && Math.abs(aGrams - bGrams) <= 1);
-    if (hit) { score += ng.penalty * 3; notes.push(ng.text); ngReasons.push(ng.text); }
+    if (hit) {
+      score += ng.penalty * 3 * (bridge ? LESSON_TUNING.cardamomPenalty : 1);
+      notes.push(ng.text); ngReasons.push(ng.text);
+      if (bridge && !notes.includes("カルダモンの一つまみで、ぶつかりがやわらいだ")) notes.push("カルダモンの一つまみで、ぶつかりがやわらいだ");
+    }
   }
   const main = Math.max(...ids.map((id) => mix[id]), 0) / (total || 1);
   if (ids.length >= 2 && main >= 0.45 && main <= 0.8) { score += 4; notes.push("主役と脇役の比率がいい"); }
+  if (total > 0 && growthLesson(state, "M-S6") && flavorFamilyGrams(mix, "blueberry") / total >= .2) {
+    score += LESSON_TUNING.mix; notes.push("ブルーベリーに帰る。香りがまとまった");
+  }
+  const tea = flavorFamilyGrams(mix, "black_tea") / total;
+  if (total > 0 && growthLesson(state, "M-B5") && tea >= .1 && tea <= .2) {
+    score += LESSON_TUNING.mix; notes.push("ブラックティーを一割。香りに奥行きが出た");
+  }
+  if (ids.length === 1 && cs.singleStyle === true && growthLesson(state,"M-S2")) {
+    const mastery = mixMasteryProfile(cs.masteryAtStart ? {flavorMastery:cs.masteryAtStart} : state,mix,DB.flavorById);
+    score += mastery.progress * LESSON_TUNING.single;
+    notes.push("単体の美学。使い慣れた葉の深みで勝負する");
+  }
   const reg = regulationFor(cs);
   const competitionLegal = cs.mode !== "tournament" || ids.every(id => isTournamentFlavorLegal(id));
   const regOk = competitionLegal && (!reg || (reg.exact != null
@@ -311,6 +332,10 @@ export async function stepMix(cs) {
     el("div.mix-temperature-legend", { "aria-live": "polite" }, [idealLine, optimalLine]),
     temperatureHint,
   ]);
+  const singleStyle = cs.mode !== "tutorial" && growthLesson(state,"M-S2") ? el("button.btn.ghost.small", {
+    text:"単体で勝負", dataset:{test:"mix-single-style"}, "aria-pressed":String(!!cs.singleStyle),
+    onclick:()=>{cs.singleStyle=!cs.singleStyle;SE.select();redraw();},
+  }) : null;
   const okBtn = el("button.btn.primary", { disabled: true, dataset: { test: "mix-ok" } }, [el("span.btn-label", { text: "このフレーバーで詰める" })]);
   const totalOf = () => Object.values(cs.mix).reduce((s, g) => s + g, 0);
 
@@ -347,7 +372,8 @@ export async function stepMix(cs) {
     regLine.textContent = reg ? `${info.regOk ? "✓" : "✗"} ${reg.label}` : "";
     regLine.classList.toggle("ok", info.regOk);
     recipeLine.textContent = info.recipe ? `📖 ${info.recipe.name}` : "";
-    okBtn.disabled = !(total >= 12 && total <= cap && info.regOk);
+    okBtn.disabled = !(total >= 12 && total <= cap && info.regOk && (!singleStyle || !cs.singleStyle || Object.values(cs.mix).filter(g=>g>0).length===1));
+    if(singleStyle)singleStyle.setAttribute("aria-pressed",String(!!cs.singleStyle));
     // フレーバーの持ち（#1081 E02）: 配合で決まる傷みにくさ（flavorMixLife）を一言で。基準1.0との比較だけで、新しい閾値は作らない。
     if (lifePreview) {
       const life = flavorMixLife(cs);
@@ -400,17 +426,26 @@ export async function stepMix(cs) {
   });
 
   // 洞察の段: 相性のいい組み合わせのヒント（レシピ帳・聞いた話から）。喫茶こはくで思いついた配合は洞察に関係なく出す
-  const insightful = canSeeMixHint(step("insight"));
+  const insightful = canSeeMixHint(step("insight")) || growthFeature(state, "pairing");
   const hint = cs.mode !== "tutorial"
     ? DB.recipes.find((r) => r.flavors.every((f) => ids.includes(f)) && !state.recipes?.[r.id] && cafeNoted(state, r))
       || (insightful ? DB.recipes.find((r) => r.flavors.every((f) => ids.includes(f)) && (state.flags[`_note_${r.hint_note}`] || r.id === "sumi_basic")) : null)
     : null;
+  const recall = cs.mode !== "tutorial" ? growthRecallOptions(state, DB.recipes, DB.flavorById, ids) : [];
 
   panel.append(el("div.mix", [
     el("div.mix-side", [vessel, taste, lifePreview, recipeLine]),
     // ひらめきは葉の組み合わせの助言なので葉の一覧の頭に置き、決定欄に隠れないようにする（#907）。
     // 見出しとまとめて1要素にし、一覧の子の数（行数に応じた配置の切り替え）を変えない。
-    el("div.mix-list", [el("div.mix-list-head", [
+    el("div.mix-list", [el("div.mix-list-head", [singleStyle,
+      recall.length ? el("details.mix-recall", [el("summary", { text: "香りの記憶" }),
+        el("div.chips", recall.map(option => el("button.btn.ghost.small", {
+          text: option.name, dataset: { test: `mix-recall-${option.id}` }, onclick: () => {
+            cs.mix = fitMixToStock(option.mix, ids, limit, cap);
+            redraw();
+          },
+        }))),
+      ]) : null,
       el("p.mix-list-caption", { text: cs.orderFlavorIds ? "店の支給葉。サッパリ系から、1gずつ器へ。" : "葉を1gずつ、器へ。" }),
       compactTaste,
       hint ? el("div.mix-hint", { dataset: { test: "mix-hint" } }, [
@@ -452,18 +487,24 @@ export async function stepMix(cs) {
   if (consumes) for (const [id, g] of Object.entries(cs.mix)) if (!supplied(id)) addFlavorStock(id, -g);
   if (cs.staffPractice) { cs.practiceSpent = spendPracticeMix(state, cs.mix); if (!cs.practiceSpent) throw new Error("練習用の葉が不足しています"); }
   cs.mixInfo = evaluateMix(cs);
+  settleGrowthPhase(state, cs, "mix", cs.mixInfo, cs.mixInfo.golden === "hit");
+  if (cs.mode !== "tutorial") rememberGrowthMix(state, cs.mix);
   reactAudience(cs, cs.mixInfo.score >= 65 ? "good" : "bad", { force: true });
   // レシピ帳への登録（新発見のときだけ）
   const r = cs.mixInfo.recipe;
-  if (r && !state.recipes[r.id]) {
+  const discovered = r && !state.recipes[r.id];
+  if (discovered) {
     state.recipes[r.id] = { day: state.day };
     toast(`📖 レシピ帳に書き加えた「${r.name}」`, { kind: "good" });
     if (cs.mode !== "tournament") earnStat("sense", 1);
   }
+  if (r && !["tutorial", "tournament", "home"].includes(cs.mode)) {
+    earnRecipeDiscovery(r.id, { discovered, golden: cs.mixInfo.golden === "hit" });
+  }
   // 黄金比（#627）: 配合中は出さず、確定したあとだけ知らせる（＋−を押すだけで答えが探せないように）
   if (cs.mixInfo.golden === "hit") toast(`✨ 黄金比！ ${r.name}は ${goldenLabel(r)}`, { kind: "good" });
   else if (cs.mixInfo.golden === "near") {
-    const short = canSeeGoldenShort(step("insight")) && cs.mixInfo.goldenShort;
+    const short = (canSeeGoldenShort(step("insight")) || growthFeature(state, "golden")) && cs.mixInfo.goldenShort;
     toast(short ? `黄金比まで、あと少し。もう少し${leafName(short)}を` : "黄金比まで、あと少し",
       { kind: short && effectVisible("insight") ? "insight-hint" : "" });
   }
@@ -475,21 +516,28 @@ export async function stepMix(cs) {
 // ---------------------------------------------------------------- 詰め・配置・蒸らし時間
 
 export async function stepPack(cs) {
+  const owner = state;
   await waitBenchReady(cs, "pack");
+  if (state !== owner) throw new DOMException("Packing owner changed", "AbortError");
+  // 通常公開前の旧モードで見た選択肢も、後日の盤公開で奪わない。
+  if (!growthEnabled()) state.flags._dense_pack_legacy = true;
+  const dense = densePackAvailable(state);
   const panel = stepPanel("pack", "パッキング", lessonHint(cs, "pack", "空気の通り道を作る。詰め方で抜けと熱の入り方が変わる"));
   const options = [
     { value: "fluffy", label: "ふんわり", surface: "空気を残す・軽い吸い心地", desc: "熱が早く入る。軽い一台を狙う時に。温めすぎに注意" },
     { value: "normal", label: "ノーマル", surface: "均等にならす・基本", desc: "熱の入り方と抜けが標準。初めての葉や器具を試す時に" },
-    { value: "firm", label: "デンスパック", surface: "密に詰める・厚い味へ", desc: "蒸らしを長めにして厚みを出す。吸い心地は重くなる" },
+    { value: "firm", label: "デンスパック", surface: dense ? "密に詰める・厚い味へ" : "心得の盤で習得", locked: !dense,
+      desc: "蒸らしを長めにして厚みを出す。吸い心地は重くなる" },
   ];
-  let selected = options.find(o => o.value === cs.pack) || options[1];
+  let selected = options.find(o => o.value === cs.pack && !o.locked) || options[1];
   const vessel = el("div.pack-vessel", { role: "img", dataset: { test: "pack-vessel" } });
   const caption = el("div.pack-caption", { "aria-live": "polite" });
   const confirm = el("button.btn.primary.pack-confirm", { dataset: { test: "pack-confirm" } }, [
     el("span.btn-label", { text: "この詰め方で決める" }),
   ]);
   const choices = options.map(option => el("button.pack-choice", {
-    type: "button", dataset: { test: `opt-${option.value}` }, onclick: () => { selected = option; SE.select(); draw(); },
+    type: "button", disabled: !!option.locked, dataset: { test: `opt-${option.value}` },
+    onclick: () => { if (option.locked) return; selected = option; SE.select(); draw(); },
   }, [el("b", { text: option.label }), el("small", { text: option.surface })]));
   function draw() {
     vessel.dataset.pack = selected.value;

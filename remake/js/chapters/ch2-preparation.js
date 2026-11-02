@@ -60,7 +60,7 @@ export const PREPARATION_SPOTS = STOPS.filter(stop => ROOMS[stop.id]).map(stop =
 // ---- 第2章の後の柚ヶ谷（第5章の日常ループ・#2033） ----------------------------------
 // 第5章は、神崎・REIの店に「昼夜のあいさつ＋通い訪問の小会話」だけで通える。
 // 第2章の段階会話・続編・締めくくり・あげはの通う回・プリクラ・質問は出さない（第2章の物語のため）。
-// あげはの店（ヒロイン）は第5章ではまだ出さない。
+// あげはの店（ヒロイン）は、第5章の通いの小会話として chapters/ch5-shops.js が出す。
 export const CITY_REGULARS = Object.freeze(["kumicho", "rei"]);
 /** 第5章の柚ヶ谷に出す店（会ったことのある神崎・REIだけ）。 */
 export const cityRegularSpots = (value = state) => PREPARATION_SPOTS.filter(spot => CITY_REGULARS.includes(spot.charId) && value.met?.[spot.charId]);
@@ -154,7 +154,7 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   if (outing) {
     if (spendableMoney(state) < outing.cost) return { used: false, exerted: false };
     const dialogueId = outingDialogue(outing, state.flags);
-    const result = await play(dialogueId, { bg: outing.previewUrl || MAP[timeOfDay()] });
+    const result = await play(dialogueId, { bg: outing.previewUrl || MAP[timeOfDay()], growthScene: true }); // 自分で選んだ外出の固有場面（X5）
     if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
     addMoney(-outing.cost); addStamina(outing.stamina);
     if (outing.stat) earnStat(outing.stat, 2);
@@ -214,7 +214,7 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
     if (!await playFinale(id, { bg: ROOMS[id], deferSave: true }) || state !== owner) return { used: false, exerted: false };
   } else {
     // 長い段階会話の旧背景指定（metadata.bg）より、いま居る店の室内を優先する。
-    const result = await play(scene, stage && !stage.done ? { bg: ROOMS[id] } : undefined);
+    const result = await play(scene, { growthScene: true, ...(stage && !stage.done ? { bg: ROOMS[id] } : {}) }); // 段階会話・再訪の固有場面（X5）
     if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
   }
   // 街の遊び場の紹介は、第2章でその店へ初めて通った回の最後に一度だけ（VOL13）。

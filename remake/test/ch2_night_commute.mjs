@@ -65,6 +65,8 @@ console.log(JSON.stringify({groups:6,scope:'actual commute/station/night-plan mo
 const runDailySource = calendar.slice(calendar.indexOf('export async function runDaily('), calendar.indexOf('\nasync function morning()')).replace('export ', '');
 const morningSource = calendar.slice(calendar.indexOf('async function morning()'), calendar.indexOf('\n/** HUD'));
 const nightSource = calendar.slice(calendar.indexOf('async function endDay('));
+// #2213 B01: 配達はその日の行動枠の後（帰り道）に確認する。実 dueDelivery で、第2章・配達期間外は割り込まないことを通す。
+const dueDeliverySource = calendar.slice(calendar.indexOf('function dueDelivery()'), calendar.indexOf('\nasync function deliver('));
 for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
   const trace = [], snapshots = [];
   const fixture = { chapter, day: 15, slot: 2, stamina: 60, money: 1000, flags: { _morning_15: true }, visitedDay: {} };
@@ -90,13 +92,13 @@ for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
     refreshWeather: () => trace.push('weather:' + fixture.day),
     bgUrl: (id, time) => `${id}:${time}`, setBg: bg => trace.push(bg),
     dayTurn: async wake => { trace.push('dawn'); const data = await wake(); assert.equal(data.weather, weather); },
-    fadeBlack: async wake => wake(), isRainy: () => weather === 'rain', weatherOf: () => weather,
+    fadeBlack: async wake => wake(), isRainy: () => weather === 'rain', weatherOf: () => weather, tomorrowForecast: () => null,
     presentSleepRecovery: async ({ before, after }) => { assert.equal(before, 60); assert.equal(after, 74); trace.push('recovery-ui'); },
     playBgm: bgm => trace.push(bgm), dayCard: async () => { throw Error('Duplicate morning DAY card'); },
     deliverMorning: () => { trace.push('lime'); return 1; }, pushNotice: () => trace.push('notice'),
   };
   const ctx = vm.createContext(env);
-  vm.runInContext('let chapterDef, onQuit, queuedLimeSender, dawnShownDay; const fixedNight = () => false;\n' + runDailySource + morningSource + nightSource, ctx);
+  vm.runInContext('let chapterDef, onQuit, queuedLimeSender, dawnShownDay; const fixedNight = () => false;\n' + runDailySource + dueDeliverySource + morningSource + nightSource, ctx);
   await assert.rejects(ctx.runDaily({ startNextDay: chapter === 2, untilDay: 28, nightEvents: {},
     beforeHomecoming: async () => trace.push('return-home'),
     morningDeparture: async () => { if (fixture.day === 16) throw stop; },

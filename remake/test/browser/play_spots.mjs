@@ -118,7 +118,7 @@ async function declare(page) {
 }
 async function roll(page) { await declare(page); await hit(page, "trpg-roll"); await page.locator(t("trpg-settle")).waitFor(); await hit(page, "trpg-settle"); await lines(page); }
 async function manualSave(page) {
-  await hit(page, "hud-menu"); await hit(page, "menu-save"); await hit(page, "slot-1");
+  await hit(page, "hud-menu"); await hit(page, "menu-tab-system"); await hit(page, "menu-save"); await hit(page, "slot-1");
   await page.waitForFunction(() => localStorage.getItem("suien_remake_slot1") !== null);
 }
 

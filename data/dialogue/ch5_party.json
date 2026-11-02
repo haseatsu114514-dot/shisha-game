@@ -1,0 +1,72 @@
+{
+  "comment": "帰国後のtonariの打ち上げ（オーナー指定 2026-11-02「帰ってきてTonariで打ち上げ」）。第5章の自由行動の始めに一度だけ。誰の隣に座るかを選び、その場にいる恋人が2人以上なら浮気がばれて修羅場（恋人ごとの反応は relationship_conflicts.json の shuraba_*、謝罪は shuraba_accountability を使う）。恋人が1人ならその人の隣で穏やかに、別の人の隣なら視線だけ。席の選択と振り分けは chapters/ch5-party.js。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch5_party_open",
+      "lines": [
+        { "speaker": "", "face": "", "text": "週末、tonariは早めに看板を下ろした。店の中に、知った顔が集まっていた。" },
+        { "speaker": "sumi", "face": "normal", "text": "主役が来たぞ。……世界一、おめでとう" },
+        { "speaker": "", "face": "", "text": "グラスが鳴って、拍手が起きた。誰かが、世界大会の動画をまた流そうとして止められた。" },
+        { "speaker": "naru", "face": "smile", "text": "今日だけは、お前の一台の話を聞いてやる" },
+        { "speaker": "hajime", "face": "smile", "text": "今日だけなんだ" },
+        { "speaker": "", "face": "", "text": "空いている席は、いくつかあった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……誰の隣に座ろう）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_party_seat_sumi",
+      "lines": [
+        { "speaker": "sumi", "face": "normal", "text": "主役が、こっちに座ってどうする" },
+        { "speaker": "hajime", "face": "smile", "text": "ここが一番、落ち着くので" },
+        { "speaker": "sumi", "face": "smile", "text": "……好きにしろ" },
+        { "speaker": "", "face": "", "text": "スミさんは黙って、俺のグラスに水を足した。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_party_seat_friend",
+      "lines": [
+        { "speaker": "", "face": "", "text": "隣の席で、世界大会の話を少しだけした。" },
+        { "speaker": "", "face": "", "text": "話の続きは、また今度。グラスの氷が、小さく鳴った。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_party_seat_lover",
+      "lines": [
+        { "speaker": "", "face": "", "text": "隣に座ると、グラスが小さく触れ合った。" },
+        { "speaker": "", "face": "", "text": "何も言わなくても、今日はそれで十分だった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_party_seat_away",
+      "lines": [
+        { "speaker": "", "face": "", "text": "少し離れた席から、視線を感じた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……あとで、ちゃんと話そう）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_party_shuraba_open",
+      "lines": [
+        { "speaker": "", "face": "", "text": "隣に座った、その時だった。グラスを置く音が、いくつも重なった。" },
+        { "speaker": "", "face": "", "text": "笑い声が止んで、誰からともなく、俺との関係を尋ねた。" },
+        { "speaker": "hajime", "face": "normal", "text": "……付き合ってます。一人だけじゃ、ありません" },
+        { "speaker": "hajime", "face": "normal", "text": "黙ってたのは、俺です" },
+        { "speaker": "", "face": "", "text": "打ち上げの席が、静かになった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_party_shuraba_close",
+      "lines": [
+        { "speaker": "", "face": "", "text": "スミさんが、黙って炭を替えた。" },
+        { "speaker": "sumi", "face": "serious", "text": "……今日は、ここまでだ。片付けは、明日でいい" },
+        { "speaker": "", "face": "", "text": "打ち上げは、そこでお開きになった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_party_close",
+      "lines": [
+        { "speaker": "", "face": "", "text": "夜更けまで、tonariの明かりは消えなかった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……帰ってきたんだな）" }
+      ]
+    }
+  ]
+}
