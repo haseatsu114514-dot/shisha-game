@@ -12,6 +12,36 @@ assert.match(goodPointOf(coldFinish), /提供できた/);
 assert.match(improvementOf(coldFinish), /調整2回目.*熱を戻して/);
 const overpull = { ...steady, pull: { ...served, pulls: 5 } };
 assert.match(improvementOf(overpull), /提供.*吸う回数を減らし/);
+
+// #2190 P23: 実測した温度の失敗・ずれは、吸う回数より先に直す。
+const roundCases = [["提供", "pull", 3], ["調整1回目", 0, 2], ["調整2回目", 1, 2]];
+const withRound = (key, result, base = steady) => key === "pull"
+  ? { ...base, pull: result }
+  : { ...base, careHistory: base.careHistory.map((round, i) => i === key ? result : round) };
+for (const [label, key, safe] of roundCases) {
+  for (const [temp, text] of [[bands.ideal[0] - .01, "少し熱を戻して"], [bands.ideal[1] + .01, "少し下げて"]]) {
+    assert.match(improvementOf(withRound(key, { temp, pulls: safe + 1 })), new RegExp(`${label}.*${text}`), `${label}: temperature mismatch must precede excessive pulls`);
+  }
+  for (const [failed, text] of [["cold", "冷え切る前に炭を交換"], ["burst", "熱が上がり切る前に熱を逃がす吸い"]]) {
+    assert.match(improvementOf(withRound(key, { failed, pulls: safe + 1 })), new RegExp(`${label}.*${text}`), `${label}: recorded failure must precede excessive pulls`);
+  }
+  assert.match(improvementOf(withRound(key, { ...served, pulls: safe + 1 })), new RegExp(`${label}.*吸う回数を減らし`), `${label}: ideal temperature still allows excessive-pull advice`);
+  assert.equal(improvementOf(withRound(key, { ...served, pulls: safe })), "", `${label}: safe-pull threshold is inclusive`);
+  const dobaj = { ...steady, mix: { dobaj_test: 12 } };
+  assert.equal(improvementOf(withRound(key, { ...served, pulls: safe + 1 }, dobaj)), "", `${label}: maker safe-pull bonus is preserved`);
+  assert.match(improvementOf(withRound(key, { ...served, pulls: safe + 2 }, dobaj)), /吸う回数を減らし/);
+}
+for (const temp of [undefined, null, NaN, Infinity, -Infinity, "0.1"]) {
+  assert.match(improvementOf({ pull: { temp, pulls: 4 } }), /提供.*吸う回数を減らし/, `No temperature cause without a finite measurement: ${temp}`);
+}
+const multipleMisses = { pull: { temp: .1, pulls: 4 }, careHistory: [{ temp: .8, pulls: 3 }, { temp: .1, pulls: 3 }] };
+assert.match(improvementOf(multipleMisses), /調整2回目.*熱を戻して/, "Latest missed temperature retains priority");
+assert.match(improvementOf({ ...multipleMisses, pull: { ...multipleMisses.pull, failed: "burst" } }), /提供.*熱が上がり切る前/, "Recorded failure precedes a later missed temperature");
+assert.match(improvementOf({ pull: { failed: "cold", pulls: 4 }, careHistory: [{ failed: "burst", pulls: 3 }] }), /提供.*冷え切る前/, "First recorded failure retains priority");
+assert.match(improvementOf({ pull: { ...served, pulls: 4 }, careHistory: [{ ...served, pulls: 3 }, { ...served, pulls: 3 }] }), /提供.*吸う回数を減らし/, "First excessive round retains priority");
+assert.match(improvementOf({ ...steady, parts: { holes: 80, heat: 70, shisha: 90 } }), /炭の全面が赤くなる頃合い/, "Weakest-part fallback retains priority when all temperatures and pull counts are safe");
+console.log("PASS temperature advice precedes excessive pulls with recorded evidence and preserves existing priorities");
+
 assert.equal(goodPointOf({}), "", "Do not invent successes for an unfinished session");
 assert.equal(improvementOf({ parts: { invented: -99 } }), "");
 assert.match(improvementOf({ careHistory: [{ failed: "cold", temp: .04, pulls: 1 }] }), /冷え切る前に炭を交換/);
