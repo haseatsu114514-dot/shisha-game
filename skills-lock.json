@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "ai-design-check": {
+      "source": "enmerasoftware/ai-design-check",
+      "sourceType": "github",
+      "skillPath": "skills/design/SKILL.md",
+      "computedHash": "42011b9c618b3163cc7b10348ba5e95d01aca871ddeefb7d1178a49392941c6d"
+    },
+    "ai-design-fix": {
+      "source": "enmerasoftware/ai-design-check",
+      "sourceType": "github",
+      "skillPath": "skills/design-fix/SKILL.md",
+      "computedHash": "98b6627aea843fa390ec761f634d6fb20970792351e4fff0bd654cbe0f1d7fd4"
+    }
+  }
+}
