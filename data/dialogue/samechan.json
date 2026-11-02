@@ -1866,6 +1866,205 @@
           "text": "呼び方を選べることが、少し特別だった。手をつなぎ直すと、彼女が肩を寄せてきた。"
         }
       ]
+    },
+    {
+      "dialogue_id": "outing_samechan_1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_rojiura_cinema.png",
+        "min_chapter": 2,
+        "add_affinity": {
+          "samechan": 1
+        },
+        "add_stat": {
+          "insight": 2
+        },
+        "topic": "サメ映画の特集上映",
+        "private_scene": true,
+        "setting": "♥3の外出（lime_outing_samechan_1 の承諾）。閉店後、路地裏シネマのサメ映画特集。路地裏シネマの紹介を読んだ後にだけ誘いが届く。",
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後。路地裏シネマの電球の看板の下で、サメちゃんが手を振っていた。右手のコロちゃんも、いっしょに揺れている。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "はじめ！ よう来た！ 逃げずに来たのう！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "呼び出しの絵文字が、サメ五匹だったので……"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "五本立てじゃからの。一本につき一匹じゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "五本！？"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "年に一度の、サメ映画だけの特集なのじゃ。館の人に頼んで、いちばん観やすい席を押さえてある"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "途中退席は、敵前逃亡とみなす",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "映画を観るのって、戦いでしたっけ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "木戸銭は余が持つ。王の招待である",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……払うのは、わしじゃがの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "小さな上映室の、まんなかの列に並んで座った。明かりが落ちると、サメちゃんは一言もしゃべらなくなった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一本目は、作り物のサメが沖を回る映画。二本目は、なぜか雪山にサメが出た。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（休憩のたびに、サメちゃんが小声で撮影の裏話をしてくれる。……本編より長い）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "三本目の途中。サメが獲物にかぶりつく場面で、隣の気配がぴたりと止まった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "横を見ると、サメちゃんがコロちゃんを顔の前に掲げていた。"
+        },
+        {
+          "type": "choice",
+          "id": "samechan_outing_cover",
+          "choices": [
+            {
+              "text": "（見なかったことにする）",
+              "next": "quiet"
+            },
+            {
+              "text": "「大丈夫ですか」と小声で聞く",
+              "next": "ask"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の一本は、この館の定番の、港の上をサメが飛ぶ映画だった。灯台の光がサメを沖へ帰すころ、客席に残っていたのは俺たちを入れて数人だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "明かりが戻る。外に出ると、商店街の灯りはもうほとんど消えていた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……どうじゃった。五本は、さすがに長かったかの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "長かったです。でも、休憩の裏話がいちばん面白かったです"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "そ、そうか。……あれは、誰かに話したくて、ずっと溜めておった話じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……まあ、お主と観るのは、思うたより楽しかったのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は昨日から、今日の席順を三回書き直していた",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "コロちゃん！ それは言わん約束じゃ！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "看板の電球が、ひとつずつ消えていく。並んで歩く帰り道、サメちゃんは次の特集の話を、別れる角まで続けた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【洞察】が少し上がった。"
+        }
+      ],
+      "branches": {
+        "quiet": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "俺は前を向いたまま、肘掛けの上で少しだけ席を寄せた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "場面が変わると、コロちゃんがそろそろと下りていった。サメちゃんは何も言わなかったけれど、肩の力が抜けたのが分かった。"
+          }
+        ],
+        "ask": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（小声で）……大丈夫ですか"
+          },
+          {
+            "speaker": "samechan",
+            "face": "serious",
+            "text": "（小声で）……平気じゃ。画面の外の演出を、確かめておるだけじゃ"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "（小声で）側近は、この場面を三回観て、三回とも伏せている",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "samechan",
+            "face": "surprise",
+            "text": "（小声で）コロちゃん、上映中じゃぞ……！"
+          }
+        ]
+      }
     }
   ],
   "implementation_notes": {
@@ -1874,6 +2073,7 @@
     "future_private": "既存の泳ぎの原稿はlover_samechan_lv3、本名の原稿はlover_samechan_lv4から正式接続。読了と知識は実際に読んだものだけを記録し、既知の本名は問い直さない。恋人絆Lv1〜5はsamechan-bonds.jsで未読の前段から一つずつ読む。",
     "assets": "通常・笑顔・びっくり・真剣の4表情。第1章の工事中は bg_shishark_preparing_night、第2章の開店後は bg_shishark。",
     "entry_route": "初来店と既存交流2本の後、静かな席→夜の片付けを実読了で記録。♥3の問いかけは既存romanceChoicesへ回答を保存。この前半分岐だけで告白・恋人化は確定しない。 ♥3の問いかけの後、♥4・♥5の来店会話（samechan_shop_heart4／heart5、#2025）を一本ずつ読み、締めくくりの前提にする。♥3の答えで恋愛／友人の分岐を読み、新しい隠し恋愛値の問いは置かない。締めくくり・友人・恋人へ着地済みの旧セーブには出さない。",
-    "max_relationship": "第2〜3章の交流A/Bと♥3の実回答の読了後、夜の♥MAXで締めくくり。実回答が恋愛寄りなら夜の告白で恋人/友人を選ぶ。既存関係を維持。恋人絆・本名/泳ぎ・専用LIME/デート/記念日は接続済み。第2章本体の通し到達は別工程。"
+    "max_relationship": "第2〜3章の交流A/Bと♥3の実回答の読了後、夜の♥MAXで締めくくり。実回答が恋愛寄りなら夜の告白で恋人/友人を選ぶ。既存関係を維持。恋人絆・本名/泳ぎ・専用LIME/デート/記念日は接続済み。第2章本体の通し到達は別工程。",
+    "outing": "♥3の外出（#2025）は lime_outing_samechan_1 → outing_samechan_1。本人から路地裏シネマを紹介された後（第2章以降）に、閉店後のレイトショー（年に一度のサメ映画特集）へ誘う。完了は共通の _outing_done_samechan。"
   }
 }

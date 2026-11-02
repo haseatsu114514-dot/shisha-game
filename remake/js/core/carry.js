@@ -369,6 +369,7 @@ export const FLAG_EXACT_RULES = [
   ["_outing_done_ageha", "person"],
   ["_outing_done_minto", "person"],
   ["_outing_done_naru", "person"],
+  ["_outing_done_samechan", "person"],
   ["_outing_done_tsumugi", "person"],
   ["_overwork", "progression"],
   ["_pakki_first_spin_pending", "pending"],

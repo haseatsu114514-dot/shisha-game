@@ -2388,6 +2388,71 @@
           "affinity": 1
         }
       ]
+    },
+    {
+      "id": "lime_outing_samechan_1",
+      "important": true,
+      "sender": "samechan",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "night",
+      "after_close": true,
+      "messages": [
+        {
+          "sender": "samechan",
+          "text": "はじめ！ 今夜は空いておるか！"
+        },
+        {
+          "sender": "samechan",
+          "text": "店を閉めたら、路地裏シネマのレイトショーじゃ！ サメ仲間としての初任務じゃぞ！"
+        },
+        {
+          "sender": "samechan",
+          "text": "🦈🦈🦈🦈🦈"
+        }
+      ],
+      "accept_event": "outing_samechan_1",
+      "accept_text": "仕事のあとに行きます",
+      "decline_response": {
+        "sender": "samechan",
+        "text": "む、そうか……。席はまた取るのじゃ。コロちゃんも、次は逃がさんと申しておる"
+      },
+      "reminder_text": "この前の任務、まだ間に合うのじゃ。お主の席は最初から確保しておる！"
+    },
+    {
+      "id": "lime_after_outing_samechan",
+      "sender": "samechan",
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_samechan",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "samechan",
+          "text": "この前はつき合うてくれて、ありがとうなのじゃ。五本は、さすがに目がしょぼしょぼする"
+        },
+        {
+          "sender": "samechan",
+          "text": "「勇者は最後まで敵前逃亡しなかった。褒めてつかわす」……と、コロちゃんが申しておる"
+        }
+      ],
+      "replies": [
+        {
+          "text": "次の特集も行きます",
+          "response": "うむ！ 館の人に、もう日取りを聞いてあるのじゃ。……気が早いかの",
+          "affinity": 2
+        },
+        {
+          "text": "三本目、大丈夫でしたか",
+          "response": "な、何のことじゃ。……画面の外の演出を確かめておっただけじゃぞ",
+          "affinity": 2
+        },
+        {
+          "text": "店、無理しないでくださいね",
+          "response": "お主こそじゃ。今日は二人とも、ちゃんと寝るのじゃぞ",
+          "affinity": 1
+        }
+      ]
     }
   ]
 }
