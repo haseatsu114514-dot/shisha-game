@@ -81,7 +81,7 @@ NAME_TO_ID = {
     "パッキー": "pakki",
     "エミル": "emil",
     "王 煙楼": "master_hookah",
-    "王 煙楼（通称：煙楼先生）": "master_hookah",
+    "王 煙楼（称号：マスターフーカー）": "master_hookah",
     "マスターフーカー": "master_hookah",
     "シェイク・アル=ガリヤーン": "sheikh",
     "SHISHA-9000": "shisha_9000",

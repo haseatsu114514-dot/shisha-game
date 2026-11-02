@@ -61,7 +61,7 @@
 - **LIMEアイコン**には共通スタイル指針の正本が無い。採用済み3案の書き方と表示寸法（28〜136pxの丸）から条件を書いた。
 - **第3章予告カット5**「工房」は、本編ではなるがKEMURIKUSAを休業中で、地方大会の控室にいるため「控室の作業台」として描く指定にした。
 - **第4章予告カット6** は本編では夜の宿で道具の手入れをする場面。元画像が未点火なら炭・HMDを描かない条件分岐を入れた。
-- **王煙楼（煙楼先生）**（称号マスターフーカー）。#1177 で一度立ち絵が組み込まれたが、今回の選別で全没のため新しい方向（老武人）で作る。特定作品の衣装は写さない。
+- **王煙楼**（称号マスターフーカー）。#1177 で一度立ち絵が組み込まれたが、今回の選別で全没のため新しい方向（老武人）で作る。特定作品の衣装は写さない。
 - 第3〜5章予告スチルの生成指示（work/trailer-expansion/DESIGN.md・Opusプロンプト版）はリポジトリに無いので、画風は第1章予告の採用カットの指示文（trailer-90s-anime-concept）と採用画像を正本にした。
 
 ## 1. `t-title-sumi` — スミ（新規補充）
@@ -719,7 +719,7 @@ Add one very thin, faint grey smoke line drifting along the silver rule line; le
 ## 11. `t-nv-master` — 王煙楼（新規補充）
 
 ```text
-【対象】t-nv-master ／ ビジュアルなしキャラ6件 ／ 王煙楼（煙楼先生・master_hookah。称号マスターフーカー）（新規補充・全没） ／ 新規補充（全没）
+【対象】t-nv-master ／ ビジュアルなしキャラ6件 ／ 王煙楼（master_hookah。称号マスターフーカー）（新規補充・全没） ／ 新規補充（全没）
 【使い方】このブロックだけで完結しています。5枚は1回に1枚ずつ別々に生成してください（まとめて1枚のシートにしない）。
 【保存先】work/picker-refill-1030/t-nv-master/ に refill1030-t-nv-master-01.png 〜 refill1030-t-nv-master-05.png
 【サイズ】縦長1枚・人物1人・1表情（normal）。人物の高さが1300px以上になる縦長キャンバス（例 1024x1536 以上）。背景は完全な単色マゼンタ（#FF00FF）。透過はこちらのスクリプトで行う（tools/pixelize.py → 896x1200）
@@ -727,7 +727,7 @@ Add one very thin, faint grey smoke line drifting along the silver rule line; le
 1. 画質・質感の参照（顔や衣装は移さない）: assets/sprites/characters/minto/chr_minto_normal.png と assets/sprites/characters/ageha/chr_ageha_normal.png（立ち絵の画風の基準。.claude/skills/character-portrait-remaster/SKILL.md）
 2. 年配男性の描き方の参照（顔・衣装は移さない）: assets/sprites/characters/sumi/chr_sumi_normal.png
 【方針】オーナー指示「東方不敗マスターアジアみたいにしたい」は方向性として解釈する：老武人の威厳、長い白髪（三つ編み風）、堂々とした立ち姿。特定作品のキャラクターのデザイン・衣装・配色・紋章・名前は模写しない。
-【正本】名前は王煙楼（ワン・イェンロウ）、通称は煙楼先生（data/characters.json の master_hookah、brand/character_profiles.md）。称号は「マスターフーカー」（第4章の初登場カットインの二つ名。2026-11-02 CL17）。58歳・身長165cmの中国の現役職人。龍龍水煙所の当主。白い長髭を先端で束ねる、長い白髪。設定案は麻の武術衣・素朴な土色の長衣（visual_concepts）、前夜祭では金色の装束（本編台詞）。静かで短い言葉、急がない。威圧や説教で強さを見せない。
+【正本】名前は王煙楼（ワン・イェンロウ。「煙楼先生」とは呼ばない）（data/characters.json の master_hookah、brand/character_profiles.md）。称号は「マスターフーカー」（第4章の初登場カットインの二つ名。2026-11-02 CL17）。58歳・身長165cmの中国の現役職人。龍龍水煙所の当主。白い長髭を先端で束ねる、長い白髪。設定案は麻の武術衣・素朴な土色の長衣（visual_concepts）、前夜祭では金色の装束（本編台詞）。静かで短い言葉、急がない。威圧や説教で強さを見せない。
 【前回の没】金色の装束で両手を前に組んだ案（Draft PR #1384 の normal-prompt.txt）。今回は武人らしい姿勢と衣装の方向へ振る。
 
 【共通スタイル指針（正本: docs/prompts/image_generation_guide.md「① マスター1枚を作る」から転記・改変なし）】
