@@ -242,8 +242,9 @@ export const LESSONS = [
   { id: "M-B6", cell: "0,-7", board: "body", who: "da_silva", need: 5, ring: 4, sig: true, reward: "skill", name: "フェスタの煙",
     hint: "太陽と仲良くなると、場をひっくり返す煙の出し方を教えてもらえそう",
     text: "1台に1回、蒸らしのリフレッシュが画面全体に広がり、すべての雑念を消す", scene: "lesson_da_silva_festa" },
-  // 第4章以降の人（2026-11-02 オーナーが推奨案を採用。SBD91）。好感度の無い人なので♥の条件はなく、会っていて章が来れば分かる。
-  // 王煙楼は前夜祭で会い、大会の結果発表の後に会場で相談する。博士は第5章で分かり、勝負のあとの会場で相談する。SHISHA-9000 は授業なし（ボスのまま）
+  // 第4章以降の人（2026-11-02 オーナーが推奨案を採用。SBD91）。♥の条件はなく、会っていて章が来れば分かる。
+  // 王煙楼は前夜祭（またはドバイの日常の龍龍水煙所の店。DBS05）で会い、大会の結果発表の後に会場で相談する（授業の台詞が
+  // 大会後の会場の場面なので、店では相談しない）。博士は第5章で分かり、勝負のあとの会場で相談する。SHISHA-9000 は授業なし（ボスのまま）
   { id: "M-S7", cell: "3,-7", board: "sense", who: "master_hookah", need: 0, ring: 4, reward: "skill", name: "龍の煙",
     hint: "盤の道が届いたら、王煙楼が龍の煙の出し方を教えてくれそう",
     text: "吸い出しをジャストで3回続けると、煙の輪が龍になって昇る。見ている人が静まり、その一台の残りの工程はメンタルが減らない（スモークリングが要る）", scene: "lesson_master_hookah_dragon" },
@@ -257,6 +258,7 @@ export const REWARD_JA = { skill: "スキル", special: "特殊な技", stat: "�
 export const CHAR_TYPE = {
   minto: "body", adam: "sense", naru: "wisdom",
   rin: "sense", hiyori: "body", samechan: "wisdom", mashiro: "body", sheikh: "wisdom", da_silva: "body",
+  master_hookah: "sense", // 龍龍水煙所のドバイの店で♥5（DBS05）。授業 M-S7 と同じ感覚盤
   rei: "body", ageha: "sense", kumicho: "wisdom",
   kuze: "body", steve: "sense", volk: "wisdom",
 };

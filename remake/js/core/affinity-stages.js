@@ -45,6 +45,17 @@ export const ch2VisitDone = (flags, id, entry) => entry.done ? !!flags?.[entry.d
 // 既読は ch3-story-wiring.js の optionalReadFlag（`_ch3_read_<scene>`）。♥3の質問は練習の後、締めくくりは全段階の後。
 export const MASHIRO_AFFINITY_SCENES = ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_practice", "ch3_mashiro_play_3", "ch3_mashiro_black_tea"];
 export const mashiroScenesRead = flags => MASHIRO_AFFINITY_SCENES.every(scene => !!flags?.[`_ch3_read_${scene}`]);
+// 第4章の王煙楼（2026-11-02 オーナー「マスターフーカーの店に行けたり」「普通に他の章のライバルと同じ扱い」）。
+// 龍龍水煙所のドバイの店（DAY1〜12）。必要ハートに届いた最古の未読を一訪問一本読み、5本で♥5に届く。
+// 既読は flags._ch4_longlong.read（chapters/ch4-longlong.js）。
+export const LONGLONG_VISIT_STORIES = Object.freeze([
+  { scene: "ch4_longlong_first", heart: 0 },
+  { scene: "ch4_longlong_second", heart: 1 },
+  { scene: "ch4_longlong_third", heart: 2 },
+  { scene: "ch4_longlong_fourth", heart: 3 },
+  { scene: "ch4_longlong_fifth", heart: 4 },
+].map(entry => Object.freeze(entry)));
+export const longlongStoryRead = (flags, scene) => flags?._ch4_longlong?.read?.[scene] === true;
 export const questionDoneKey = id => `_${id}_affinity_question_done`;
 const settled = (s, id) => !!s.finales?.[id] || !!s.flags?.[`_friend_${id}`] || (s.lovers || []).includes(id);
 // サメちゃんの♥4・♥5の来店会話（#2025）。♥3の問いかけの後、締めくくりの前に一本ずつ読む。
@@ -95,6 +106,7 @@ export function pendingAffinityStage(s, id, db = {}) {
     for (const e of required) stages.push({ level: levelOf(e), scene: e.dialogue, done: !!flags[e.flag] || !!e.untilFinale && settled(s, id) });
     if (route.question?.flag) stages.push({ level: Math.max(3, levelOf(events.find(e => e.dialogue === route.question.host))), scene: route.question.dialogue, done: settled(s, id) || !!flags[route.question.flag] });
   }
+  if (id === "master_hookah") LONGLONG_VISIT_STORIES.forEach(entry => stages.push({ level: entry.heart, scene: entry.scene, done: longlongStoryRead(flags, entry.scene) }));
   if (id === "mashiro") {
     MASHIRO_AFFINITY_SCENES.forEach((scene, level) => stages.push({ level, scene, done: !!flags[`_ch3_read_${scene}`] }));
     stages.push({ level: 3, scene: "ch3_mashiro_bond_question", done: questionComplete(s, id) });
