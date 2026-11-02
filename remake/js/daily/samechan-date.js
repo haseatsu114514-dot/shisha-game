@@ -3,7 +3,7 @@ import { DB } from "../core/data.js";
 import { state, save, STAT_KEYS } from "../core/state.js";
 import { addMoney, addStamina, gainStat, gainAffinity, bond } from "../core/stats.js";
 import { play, isPlaying } from "../vn/engine.js";
-import { dateVenue, dateScene, relationshipDayTotal } from "./date-scene.js";
+import { dateVenue, dateScene, relationshipDayTotal, relationshipDayOf } from "./date-scene.js";
 import { playSamechanMilestone } from "./samechan-bonds.js";
 import { growthEnabled, awardActionExp } from "../core/growth.js";
 
@@ -16,13 +16,14 @@ export function samechanDateReady() {
     && ["optA", "optB"].every(key => !!sc[key]?.text && !!sc[key]?.line && STAT_KEYS.includes(sc[key].stat));
 }
 
-/** 実デートで記録した章を使う。章情報のない旧日は最新の可能な過去日として扱い、永久停止を防ぐ。 */
+/** 実デートで記録した章を使う。章情報のない旧日は最新の可能な過去日として扱い、永久停止を防ぐ。
+ * 通算日の保存（第2章から。_elapsed_calendar）は lastDate も通算日なので、章の14日を足さずにそのまま引く。 */
 export function samechanDateGap() {
   const day = state.lastDate.samechan;
   if (!Number.isInteger(day) || day < 1) return Infinity;
   const chapter = Number.isInteger(state.flags._samechan_last_date_chapter)
     ? state.flags._samechan_last_date_chapter : Math.max(1, (state.chapter || 1) - (day > state.day ? 1 : 0));
-  return relationshipDayTotal() - ((chapter - 1) * 14 + day);
+  return relationshipDayTotal() - relationshipDayOf(day, chapter);
 }
 
 /** inviteなしは共通playDateの実モジュール検証口。通常ゲームはcalendarからinvite/costを渡す。 */

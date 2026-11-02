@@ -551,7 +551,7 @@ await check('Minto finale invitations keep prerequisites, tournament and non-dai
     assert.equal(f.bonds.bondInvites({ tournamentDay: blocked === 'tournament' }).length, 0, blocked);
   }
 });
-await check('Minto later-chapter finale grants gift and romance reservation once, friendship remains available', async f => {
+await check('Minto later-chapter finale grants gift and romance reservation once (none for a chapter 5 finale, owner default B), friendship remains available', async f => {
   for (const chapter of [1, 2, 3, 4, 5]) for (const value of [0, 1]) {
     let s = readyMinto(f, chapter, 13 + (chapter - 1) * 14);
     f.db.equipById.suyaki_minto = { name: 'gift' };
@@ -563,8 +563,10 @@ await check('Minto later-chapter finale grants gift and romance reservation once
     s = f.roundTrip();
     assert.equal(s.finales.minto.chapter, chapter);
     assert.equal(s.finales.minto.route, value ? 'romance' : 'friend');
-    assert.equal(s.flags._confession_due, value ? 'minto' : undefined);
-    assert.equal(f.romance.romanceRouteOpen('minto'), !!value);
+    // 第5章で初めて届いた締めくくりでは告白しない（オーナー既定 B・2026-11-02）。恋愛の答えと贈り物は記録する
+    const confession = !!value && chapter < 5;
+    assert.equal(s.flags._confession_due, confession ? 'minto' : undefined);
+    assert.equal(f.romance.romanceRouteOpen('minto'), confession);
     assert.equal(s.owned.filter(id => id === 'suyaki_minto').length, 1);
     assert.equal(await f.bonds.playFinale('minto'), false);
     assert.equal(f.bonds.bondInvites().length, 0);

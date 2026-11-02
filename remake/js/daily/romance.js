@@ -25,6 +25,9 @@ export const isLover = (id) => (state.lovers || []).includes(id);
 // 告白・デート・恋人の節目は仕事を離れた私的な場面（みんとは本名を聞いた後なら「栞さん」と呼ぶ）
 const privateCall = (id) => callName(id, state, { context: "private" });
 
+/** この章から先に初めて届いた締めくくりでは告白しない（下の romanceRouteOpen）。 */
+export const NO_CONFESSION_FINALE_CHAPTER = 5;
+
 /**
  * 告白できる相手か。交友の締めくくり（daily/bonds.js）で恋愛ルートに入り（答えた質問がすべて恋愛寄り）、
  * まだ恋人でも「友達のまま」でもない。予約（締めくくりの直後）と再生（夜の帰り道）の両方でこれを確かめる
@@ -32,6 +35,10 @@ const privateCall = (id) => callName(id, state, { context: "private" });
 export function romanceRouteOpen(id) {
   // あげはの告白は日常の帰り道ではなく、第3章の帰郷後（chapters/ch3-romance-entry.js）だけ。
   if (id === "ageha") return false;
+  // 第5章で初めて届いた締めくくりでは告白しない（オーナー既定 B・2026-11-02。正本は「恋愛ルートは第3章までに着地」）。
+  // 第5章は夜の告白を出さない（ch5-daily.js の confessions: false）ので、予約（bonds.js の _confession_due）を入れず、
+  // 関係の表示も「告白を選べる」にしない。
+  if ((state.finales?.[id]?.chapter || 0) >= NO_CONFESSION_FINALE_CHAPTER) return false;
   if (id === "hiyori") {
     const route = hiyoriRoute();
     if (!hiyoriFinaleReady() || !state.flags[route.finale?.flag]
@@ -296,7 +303,10 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false,
   const invites = [];
   const mornings = [];
   // 恋人全員で分け合う誘いの間隔。届いた日で数えるので、断っても見送っても連日には来ない
-  const inviteOpen = invitations && state.day - lastInboxDay((i) => i.msg?.lover && i.msg.type === "invitation") >= LOVER_INVITE_GAP;
+  // 修羅場が未解決のあいだ（第5章の打ち上げ・PTY02 の謝罪 shuraba_accountability が立てる印）は誰からも誘われない
+  // （story-routes.js の selectStoryEvening・tokyo-visits.js と同じ。個別の話し合いが済むまで解除しない）
+  const inviteOpen = invitations && !state.flags?._story_shuraba_unresolved
+    && state.day - lastInboxDay((i) => i.msg?.lover && i.msg.type === "invitation") >= LOVER_INVITE_GAP;
   for (const id of state.lovers || []) {
     if (id === "samechan" && (state.chapter || 1) < 2) continue;
     if (exclude.includes(id)) continue;

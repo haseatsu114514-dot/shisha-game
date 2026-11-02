@@ -1,5 +1,7 @@
 // 第3章以降の恋人の入口（#2024）: 実物の state/stats/romance と chapters/lover-entry.js を読み、
 // 恋人LIME（lover.json）と節目（lover_events.json）が第3章でも進むことを確かめる。VN・端末は記録だけの port。
+// 修羅場が未解決のあいだは誘いが無い・サメちゃんのデート間隔（通算日の保存）・第5章で初めて届いた締めくくりでは
+// 告白しない（オーナー既定 B）も同じ実物で確かめる。
 // node --experimental-vm-modules remake/test/ch3_lover_entry.mjs
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -7,7 +9,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../js/', import.meta.url));
-const realPaths = ['core/state.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','core/chapter-clock.js','daily/date-scene.js','daily/romance.js','daily/samechan-bonds.js','chapters/lover-entry.js'];
+const realPaths = ['core/state.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','core/chapter-clock.js','daily/date-scene.js','daily/romance.js','daily/samechan-bonds.js','daily/samechan-date.js','chapters/lover-entry.js'];
 const read = rel => JSON.parse(fs.readFileSync(new URL(rel, import.meta.url)));
 const loverEvents = read('../../data/dialogue/lover_events.json');
 const lover = read('../data/lover.json');
@@ -22,6 +24,8 @@ async function fixture() {
     clamp: (v,a,b) => Math.max(a,Math.min(b,v)), hiyoriFirstMeetingReady: () => true,
     play: async scene => { plays.push(typeof scene === 'string' ? scene : scene.dialogue_id); return { visited: [] }; },
     isPlaying: () => false,
+    // サメちゃんのデート（samechan-date.js）が読む心得の盤。誘いの検査なので旧しくみ（盤は無効）の代役にする
+    growthEnabled: () => false, awardActionExp: () => 0,
     // phone.js の openPhone（runItem）と同じく、読んだ通は既読と受信箱の履歴に残る。
     openPhone: async messages => {
       phones.push(messages.map(m => m.id));
@@ -60,7 +64,20 @@ async function fixture() {
     for (const id of lovers) { s.loveLevel[id] = 1; s.lovePts[id] = 9; s.loverSince[id] = day; }
     return s;
   };
-  return { core, stats: ns('core/stats.js'), romance: ns('daily/romance.js'), entry: ns('chapters/lover-entry.js'), plays, phones, chapterThree };
+  // 任意の章の通算日の保存（第2章から）。私用LIMEの最初のひとことは読み終えていて、付き合って7日目（10日ごとの
+  // 記念日に当たらない）。誘いの判定だけを見る。
+  const chapterAt = (chapter, lovers, { day = 70, flags = {} } = {}) => {
+    const s = core.newGame();
+    Object.assign(s, { chapter, phase: 'daily', day, slot: 0, lovers: [...lovers], contacts: ['sumi', ...lovers] });
+    Object.assign(s.flags, { _elapsed_calendar: chapter >= 2 }, flags);
+    for (const id of lovers) {
+      s.loveLevel[id] = 1; s.lovePts[id] = 9; s.loverSince[id] = day - 7;
+      s.limeRead.push(`_lover_private_account_${id}`);
+    }
+    return s;
+  };
+  return { core, db, stats: ns('core/stats.js'), romance: ns('daily/romance.js'), entry: ns('chapters/lover-entry.js'),
+    samechanDate: ns('daily/samechan-date.js'), plays, phones, chapterThree, chapterAt };
 }
 // vm の別 realm で作られた配列は prototype が違い deepStrictEqual が通らないため、JSON 化して中身だけ比べる。
 const same = (actual, expected, message) => assert.deepEqual(JSON.parse(JSON.stringify(actual)), expected, message);
@@ -86,6 +103,47 @@ await check('chapter 3 lover LIME comes from lover.json without date invitations
   same(f.entry.pendingLoverLime(), []);
   assert.equal(await f.entry.readLoverLime(), false, 'A read message must not reopen the phone');
   assert.equal(f.phones.length, 1);
+});
+
+await check('an unresolved shuraba stops every date invitation; a single lover after the party still gets them', async f => {
+  const invites = () => f.romance.loverMessages().filter(m => m.type === 'invitation').map(m => m.sender);
+  // 第5章の地元の自由行動 DAY5。打ち上げで恋人2人の浮気がばれた後（PTY02・shuraba_accountability が
+  // _story_shuraba_unresolved を立てる）。
+  f.chapterAt(5, ['tsumugi', 'minto'], { day: 55, flags: { _ch5: { startDay: 51, part: 'free' }, _ch5_after_party: true,
+    _minto_name_known: true, _minto_identity_revealed: true } });
+  same(invites(), ['tsumugi'], 'Control: before the affair comes out, one of the two is invited');
+  f.core.state.flags._story_shuraba_unresolved = true;
+  same(invites(), [], 'While the shuraba is unresolved nobody sends a date invitation');
+  f.chapterAt(5, ['tsumugi'], { day: 55, flags: { _ch5: { startDay: 51, part: 'free' }, _ch5_after_party: true, _ch5_party_seat: 'tsumugi' } });
+  same(invites(), ['tsumugi'], 'One lover at the party: no shuraba, dates go on');
+});
+
+await check('samechan date gap counts elapsed days on _elapsed_calendar saves; legacy chapter-local saves keep the 14-day offset', async f => {
+  // 通算日の保存: 第2章の通算40日にデート → 第3章の通算45日。間は5日（旧式は 45-(14+40) = -9 で誘いが止まっていた）
+  const s = f.chapterAt(3, ['samechan'], { day: 45, flags: { _ch3_intro: { startDay: 44 } } });
+  s.lastDate.samechan = 40; s.flags._samechan_last_date_chapter = 2;
+  assert.equal(f.samechanDate.samechanDateGap(), 5);
+  assert.equal(f.romance.loverMessages().find(m => m.type === 'invitation')?.id, '_date_inv_samechan_c3_d45');
+  s.day = 42; // 2日後はまだ早い（恋人のデートの間は3日から）
+  assert.equal(f.samechanDate.samechanDateGap(), 2);
+  assert.equal(f.romance.loverMessages().some(m => m.type === 'invitation'), false);
+  // 章内日の旧保存（_elapsed_calendar なし）: 第2章DAY14 → 第3章DAY3 は3日（samechan_dates.mjs の旧保存と同じ）
+  const legacy = f.chapterAt(3, ['samechan'], { day: 3, flags: { _elapsed_calendar: false } });
+  legacy.lastDate.samechan = 14; legacy.flags._samechan_last_date_chapter = 2;
+  assert.equal(f.samechanDate.samechanDateGap(), 3);
+  delete legacy.flags._samechan_last_date_chapter; legacy.day = 5; // 章の記録が無い旧日は前の章とみなす
+  assert.equal(f.samechanDate.samechanDateGap(), 5);
+});
+
+await check('a bond finale first reached in chapter 5 opens no confession (owner default B)', async f => {
+  const s = f.chapterAt(5, [], { day: 70, flags: { _ch5: { startDay: 51, part: 'free' } } });
+  f.db.dialogues.confession_tsumugi = { dialogue_id: 'confession_tsumugi', lines: [{ speaker: '', text: '…' }] };
+  s.romanceChoices = { bond_q_tsumugi: { char: 'tsumugi', value: 1 } };
+  s.finales = { tsumugi: { day: 40, chapter: 3, route: 'romance' } };
+  assert.equal(f.romance.romanceRouteOpen('tsumugi'), true, 'Control: a chapter 3 finale keeps its confession');
+  s.finales.tsumugi = { day: 70, chapter: 5, route: 'romance' };
+  assert.equal(f.romance.NO_CONFESSION_FINALE_CHAPTER, 5);
+  assert.equal(f.romance.romanceRouteOpen('tsumugi'), false, 'A chapter 5 finale does not open the confession');
 });
 
 await check('chapter 3 lover milestones advance lv1 -> lv2 through the shared romance.js ladder', async f => {
