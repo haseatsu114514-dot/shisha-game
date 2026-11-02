@@ -21,6 +21,8 @@ import { spotPeople } from "./spot-people.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 import { newlyRevealedSpots, startSpotReveal, spotRevealNotice } from "./map-reveals.js";
 import { createMapFacilityIcon, hasFacilityIcon, FACILITY_SHEET } from "./facility-icons.js";
+/** LIME で話す行き先。地図のピンに LIME のマーク（緑の角丸＋白い吹き出し）を出す。 */
+const LIME_MARK_SPOTS = new Set(["ch3_tokyo_lime"]);
 import { STATION_FARE, WALK_HOME_STAMINA, stationDestinations, prepareStationTrip, stationArrival } from "./station-travel.js";
 
 /** 未面識の相手は共通の人影。画像URL・名前・DOM属性にも正体を出さない。 */
@@ -322,6 +324,9 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       const people = locked ? [] : spotPeople(s, { visitBlock });
       const facility = !(s.id === "trpg_bar" && hasStoreLogo(s.id)) && !locked && !(!known && s.unknownLabel) ? createMapFacilityIcon(s.id) : null;
       const logo = !facility && !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 82, height: 46 }) : null;
+      // LIME で話す行き先（第3章の「地元と連絡」）は、右上の LIME ボタンと同じマーク（オーナー決定 2026-11-02）
+      const limeMark = !facility && !logo && LIME_MARK_SPOTS.has(s.id)
+        ? el("span.map-lime-mark", { "aria-hidden": "true", dataset: { test: "map-lime-mark" } }, [el("span", { text: "LIME" })]) : null;
       const hidane = s.id === "kannon" && growthEnabled() ? hidaneTotal() : 0;
       const badge = locked ? null
         : hidane > 0 ? el("i.evt-badge.hidane-badge", { text: String(Math.min(99, hidane)), "aria-label": `火種 ${hidane}・内省で灯せる`, dataset: { test: "kannon-hidane" } })
@@ -339,7 +344,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         el("div.pin-visual", [
           el("div.shield", [
             badge,
-            el("div.ico", [facility || logo || (locked || !known && s.unknownLabel
+            el("div.ico", [facility || logo || limeMark || (locked || !known && s.unknownLabel
               ? el("span", { text: "？" }) : pinSymbol(s))]),
           ]),
           peopleRow(people),

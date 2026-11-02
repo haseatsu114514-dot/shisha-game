@@ -242,6 +242,11 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
   clip-path: polygon(0 0, 100% 0, 0 100%);
 }
 .hud-lime:hover { transform: translateY(-2px); }
+/* 地図のピンの LIME のマーク（第3章の「地元と連絡」）。右上の LIME ボタンと同じ見た目を少し大きく。 */
+.map-lime-mark { position: relative; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 12px; background: #00c300; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35); }
+.map-lime-mark span { position: relative; display: grid; place-items: center; width: 37px; height: 30px; padding: 2px 0 0; margin: 0 0 3px; font-family: var(--font); font-size: 13px; font-weight: 900; line-height: 1; letter-spacing: 0; color: #00a900; background: #fff; border-radius: 50%; }
+.map-lime-mark span::after { content: ""; position: absolute; left: 12px; bottom: -4px; width: 9px; height: 8px; background: #fff; clip-path: polygon(0 0, 100% 0, 0 100%); }
+body.game-ds .map .spot-pin .ico > .map-lime-mark { zoom: .7; flex: none; }
 /* 数字を円の中央へ固定し、100件以上だけ小さい上付き+を添える。 */
 .hud-lime .badge {
   position: absolute;
