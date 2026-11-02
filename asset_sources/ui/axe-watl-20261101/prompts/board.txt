@@ -1,0 +1,12 @@
+Create one game-ready transparent PNG sprite of an axe-throwing target BACKBOARD for a hatchet lane, perfectly front-facing orthographic view, centered with a small transparent margin (about 2% on each side).
+
+Board shape: FIVE straight vertical 2x10 pine planks standing side by side, the whole board slightly taller than wide (width:height = 46.25:48, about 0.96:1). Thin dark seams between the planks. Straight rectangular outer edges.
+
+Wood: LIGHT warm honey-coloured pine, evenly lit, calm low-contrast grain. Keep the central 60% of the board clean and uniform in tone, because black painted rings and a grey steel hatchet will be drawn on top by the game and must read clearly: no dark knots, no deep black gouges, no strong stains, no high-contrast grain lines in the centre area. A few small knots and light, shallow, short vertical axe cuts may appear only near the outer edges. Soft lamp light from the top; no strong vignette.
+
+Style: high quality warmly lit illustrated anime adventure game prop with painterly realistic materials, consistent with a Japanese visual novel recreation lounge with amber lamps, burgundy upholstery and black steel lanes. Discreet dark recessed screws may sit near the four corners.
+
+No perspective, no tilt, no surrounding wall, no floor, no frame, no external cast shadow.
+NEVER bake in: painted target rings, circles, bullseyes, red or blue dots, numbers, letters, logos, watermark, any axe, people or decorations. The scoring rings, killshots, cuts and the thrown axe are drawn by game code.
+
+Output: 1024x1024 PNG with a true transparent background (alpha). The board itself about 965x1000 px, centred.
