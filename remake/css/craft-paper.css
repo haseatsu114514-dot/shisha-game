@@ -539,3 +539,13 @@ html .bench[data-mode] .bench-phase:not(.now) .bench-phase-copy b { display: non
 html .bench[data-mode] .bench-phase.now .bench-phase-copy small { display: none; }
 html .bench[data-mode] .bench-phase.seen .bench-phase-copy small { font-size: 0; }
 html .bench[data-mode] .bench-phase.seen .bench-phase-copy small::after { content: "✓"; font-size: 15px; color: #c9a7e6; }
+html .bench[data-mode] .bench-worker-stage::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 3;
+  border: 1px solid transparent;
+  border-image: url("../img/ui/craft-night/frame.webp") 40 / 14px / 0 stretch;
+}
+html .bench[data-mode] .bench-worker-name {
+  background: #2e1d45 url("../img/ui/craft-night/window.webp") center / 100% 100% no-repeat;
+  color: #f6f1fa;
+}
+html .bench[data-mode] .bench-hint { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; min-width: 0; }

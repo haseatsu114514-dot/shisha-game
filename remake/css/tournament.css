@@ -186,3 +186,43 @@
   .nico { animation: none; left: 25%; transform: none; font-size: 19px; opacity: .6; }
 }
 
+
+/* #2359 CUI08: 大会の中継面を制作と同じ夜紫へ。配置・得点表示は維持。 */
+.tournament-heading { color: #f6f1fa; }
+.tournament-eyebrow, .tournament-heading p, .judge-legend, .judge-left { color: #c9a7e6; }
+.tournament-face { background: #2e1d45; border-color: #5a4475; }
+.standings.tournament-board, .result-table, .count-screen, .nagumo-cut {
+  background: #150d22 url('../img/ui/craft-night/backdrop.webp') center / cover no-repeat;
+  color: #f6f1fa;
+}
+.standings.tournament-board { border-color: #5a4475; box-shadow: 0 24px 80px #090512b8, inset 0 1px 0 #c9a7e633; }
+.standings.tournament-board::before { height: 2px; background: #e3bd6e; }
+.standings .sd-board, .result-table .rt-ranking, .result-table .rt-detail {
+  background: #221534 url('../img/ui/craft-night/board.webp') center / 100% 100% no-repeat;
+  border: 1px solid #5a4475;
+  color: #f6f1fa;
+}
+.judge-chip, .judge-chip.held { background: #2e1d45; border-color: color-mix(in srgb, var(--c) 55%, #5a4475); }
+.judge-name { color: #f6f1fa; }
+.vote-stack { background: #221534; box-shadow: inset 0 0 0 1px #5a4475, inset 0 2px 4px #09051299; }
+.standings .sd-row, .result-table .rt-row {
+  clip-path: none; border: 1px solid #5a4475;
+  background: #2e1d45 url('../img/ui/craft-night/rank-strip.webp') center / 100% 100% no-repeat;
+}
+.standings .sd-row.me, .result-table .rt-row.me {
+  border-color: #e3bd6e; background: #2e1d45 url('../img/ui/craft-night/rank-strip.webp') center / 100% 100% no-repeat;
+  box-shadow: inset 4px 0 0 #e3bd6e;
+}
+.rank-medal { clip-path: none; background: url('../img/ui/craft-night/medal-plain.webp') center / contain no-repeat; color: #f6f1fa; }
+[data-rank="1"] > .rank-medal, .rank-medal.gold { background-image: url('../img/ui/craft-night/medal-gold.webp'); color: #221534; }
+[data-rank="2"] > .rank-medal { background-image: url('../img/ui/craft-night/medal-silver.webp'); color: #221534; }
+[data-rank="3"] > .rank-medal { background-image: url('../img/ui/craft-night/medal-bronze.webp'); color: #221534; }
+.nc-rays, .rt-rays { background: repeating-conic-gradient(from 0deg at 72% 60%, #c9a7e60e 0 4deg, transparent 4deg 16deg); }
+.nc-cut-art { clip-path: none; background: url('../img/ui/craft-night/cutin-band.webp') center / 100% 100% no-repeat; }
+.nc-cut-art::after { display: none; }
+.result-table .rt-part { background: #2e1d45; border-color: #5a4475; }
+.result-table .rt-part.total, .count-screen .rc-card.me { border-color: #e3bd6e; background: #2e1d45; }
+.count-screen .rc-card, .count-screen .rc-cut, .standings .sd-feed { background: #2e1d45; border-color: #5a4475; color: #f6f1fa; }
+.count-screen .rc-num, .result-table .tournament-heading h1 { color: #f6f1fa; text-shadow: 0 2px 0 #221534; }
+.standings .sd-feed-lines > div + div, .result-table .rt-judge-comment, .result-table .rt-good-point { color: #e3bd6e !important; }
+.result-table > .btn { border-color: #e3bd6e; background: #e3bd6e; color: #221534; }
