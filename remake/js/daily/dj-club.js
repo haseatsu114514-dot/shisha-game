@@ -17,7 +17,8 @@ export { DJ_NIGHT, DJ_NIGHT_FIRST, djNightChoices, clubKnown } from "../minigame
 export const CLUB_A_TALK_FLAG = "_club_yoru_a_talk";
 const DIALOGUE_IDS = ["ch3_club_first", "ch3_club_first_after", "ch3_club_a_talk", "venue_yoru_greet", "venue_yoru_return",
   "venue_yoru_set_S", "venue_yoru_set_A", "venue_yoru_set_B", "venue_yoru_set_C"];
-const BACKGROUND = new URL("../../img/ui/dj/bg-purple.webp", import.meta.url).href;
+const BACKGROUND = new URL("../../../assets/backgrounds/bg_club_seam.png", import.meta.url).href;
+const ENTRANCE_BACKGROUND = new URL("../../../assets/backgrounds/bg_club_seam_entrance.png", import.meta.url).href;
 let active = false;
 let dialogueTask = null;
 
@@ -59,13 +60,14 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
   const meet = async () => {
     if (!await read("ch3_club_first")) return false;
     await playIntro("yoru");
+    if (current()) await setBg(BACKGROUND, { fast: true });
     if (!current() || !await read("ch3_club_first_after")) return false;
     return done(CLUB_MET_FLAG);
   };
   try {
     dialogues = await loadClubDialogues();
     if (!current()) return false;
-    await setBg(BACKGROUND, { fast: true });
+    await setBg(owner.flags[CLUB_MET_FLAG] === true ? BACKGROUND : ENTRANCE_BACKGROUND, { fast: true });
     if (!current()) return false;
     if (owner.flags[CLUB_MET_FLAG] !== true && !await meet()) return false;
     while (current()) {
