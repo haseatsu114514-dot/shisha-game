@@ -1,6 +1,7 @@
 // 第5章・機械仕掛けの神。帰郷後のプロローグ→自由行動→日程→試合当日→後日談→フィナーレまでを、場面単位で保存する。
 // 状態遷移は ch5-progress.js。ここは表示と再生だけを持つ。
 import { DB, bgUrl } from "../core/data.js";
+import { consultLessons } from "../core/growth.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
@@ -287,12 +288,19 @@ async function renderStage(owner) {
   return renderComplete(owner);
 }
 
+/** 読んだ後にその場にいる人へ、心得の盤で灯した授業を相談できる場面（SBD91。灯していなければ何も起きない） */
+const LESSON_AFTER_SCENE = Object.freeze({ ch5_doctor_after_match: "dr_kemuri" });
+
 async function renderScene(owner, scene, dayLabel) {
   await setBg(bgUrl(CH5_SCENE_BG[scene.id]), { instant: true });
   if (!current(owner)) return;
   card(owner, "scene", `${dayLabel ? `${dayLabel}・` : ""}${scene.label}`, `${scene.location}で、次の話を読む。`, [
     button(owner, "続きを読む", "continue", async () => {
       if (!await readAndCommit(owner, scene.id)) return;
+      // 勝負のあと、一緒に一台作った博士に相談する
+      const teacher = LESSON_AFTER_SCENE[scene.id];
+      if (teacher) await consultLessons(teacher, { bg: bgUrl(CH5_SCENE_BG[scene.id]) });
+      if (!current(owner)) return;
       await renderStage(owner);
     }, true),
   ], "", scene.id);
