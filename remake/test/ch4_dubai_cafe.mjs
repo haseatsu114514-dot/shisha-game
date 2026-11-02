@@ -1,5 +1,5 @@
 // 第4章ドバイのカフェで一台頼んで吸う（2026-11-02 オーナー「カフェで吸えたりとかにしよう」「一台注文して味わう」
-// 「現地のシーシャ文化の会話」「シーシャ専門店ならリアルな相場にしたい カフェとかはもう少し安く」）。DOM を持たない判定・記録と、台本・値段のつながり。
+// 「現地のシーシャ文化の会話」「シーシャは6000 カフェは3000 できりよくいく」）。DOM を持たない判定・記録と、台本・値段のつながり。
 // 実際の画面の流れは remake/test/browser/ch4_dubai_daily.mjs。
 // node remake/test/ch4_dubai_cafe.mjs
 import assert from "node:assert/strict";
@@ -92,12 +92,12 @@ assert(!firstCafe.lines.some(line => line.type === "choice"), "ch4_dubai_cafe �
 assert.match(dailySource, /culture_\[a-z\]\+/);
 assert.match(dailySource, /\.\.\.CAFE_TASTE_IDS/);
 
-// ---- ドバイの現地の相場（2026-11-02 オーナー）: 専門店 5,500円・中心地のカフェ 3,500円・路地裏のカフェ 2,000円 ----
-for (const [id, cost] of [["ch4_dubai_festa", 5500], ["ch4_dubai_cafe", 3500], ["ch4_dubai_alley", 2000]]) {
+// ---- ドバイの相場（2026-11-02 オーナー）: 専門店 6,000円・カフェ（中心地・路地裏）3,000円 ----
+for (const [id, cost] of [["ch4_dubai_festa", 6000], ["ch4_dubai_cafe", 3000], ["ch4_dubai_alley", 3000]]) {
   assert.match(dailySource, new RegExp(`id: "${id}"[^}]*cost: ${cost},`), `${id} は一台 ${cost}円`);
   assert.match(dailySource, new RegExp(`id: "${id}"[^}]*desc: "[^"]*${cost.toLocaleString("en-US")}円`), `${id} の説明も ${cost}円`);
 }
 const ch5Dubai = read("../js/chapters/ch5-dubai.js");
-assert.match(ch5Dubai, /id: "ch5_dubai_alley"[^}]*cost: 2000,/, "第5章のドバイの路地裏のカフェも 2,000円");
+assert.match(ch5Dubai, /id: "ch5_dubai_alley"[^}]*cost: 3000,/, "第5章のドバイの路地裏のカフェも 3,000円");
 
 console.log("PASS ch4 Dubai cafe: local menu, omakase, tasting scenes, culture talks, local Dubai prices");
