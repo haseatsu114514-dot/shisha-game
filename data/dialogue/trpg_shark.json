@@ -95,7 +95,8 @@
           "nerve": 1
         },
         "trait": "香りと道具に詳しい。サメは、見たくない",
-        "likes": "研究室で飲む紅茶"
+        "likes": "研究室で飲む紅茶",
+        "portrait": "../../img/ui/trpg/pc-otto.webp"
       }
     },
     {
@@ -116,7 +117,8 @@
           "nerve": 5
         },
         "trait": "暗い場所も高い場所も平気。照明なら任せて",
-        "likes": "暗い部屋と、ラベンダー色のライト"
+        "likes": "暗い部屋と、ラベンダー色のライト",
+        "portrait": "../../img/ui/trpg/pc-sera.webp"
       }
     }
   ],
@@ -3093,7 +3095,7 @@
         "detail": "短い黒髪に、救命胴衣",
         "color": "#2f4350",
         "accent": "#89bbc4",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-shark-ink.webp"
       },
       {
         "id": "salt",
@@ -3101,7 +3103,7 @@
         "detail": "白っぽく焼けた髪と、日焼けの肌",
         "color": "#5c6a70",
         "accent": "#efe2c0",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-shark-salt.webp"
       },
       {
         "id": "rust",
@@ -3109,7 +3111,7 @@
         "detail": "赤毛をバンダナで押さえる",
         "color": "#7b3f33",
         "accent": "#f0b27a",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-shark-rust.webp"
       },
       {
         "id": "deep",
@@ -3117,7 +3119,7 @@
         "detail": "濡れた長い髪と、暗い色のレインコート",
         "color": "#2d3a5e",
         "accent": "#a9b8e8",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-shark-deep.webp"
       }
     ],
     "archetypes": [
@@ -3181,7 +3183,8 @@
             "talk": 2,
             "nerve": 1
           },
-          "making": "trpg_shark_make_hiyori_hiyori_otto"
+          "making": "trpg_shark_make_hiyori_hiyori_otto",
+          "portrait": "../../img/ui/trpg/pc-otto.webp"
         },
         {
           "id": "midori",
@@ -3195,7 +3198,8 @@
             "talk": 1,
             "nerve": 2
           },
-          "making": "trpg_shark_make_hiyori_hiyori_midori"
+          "making": "trpg_shark_make_hiyori_hiyori_midori",
+          "portrait": "../../img/ui/trpg/pc-midori.webp"
         }
       ],
       "adam": [
@@ -3211,7 +3215,8 @@
             "talk": 2,
             "nerve": 1
           },
-          "making": "trpg_shark_make_hiyori_adam_otto"
+          "making": "trpg_shark_make_hiyori_adam_otto",
+          "portrait": "../../img/ui/trpg/pc-otto.webp"
         },
         {
           "id": "mackin",
@@ -3225,7 +3230,8 @@
             "talk": 2,
             "nerve": 2
           },
-          "making": "trpg_shark_make_hiyori_adam_mackin"
+          "making": "trpg_shark_make_hiyori_adam_mackin",
+          "portrait": "../../img/ui/trpg/pc-mackin.webp"
         }
       ]
     },
@@ -3243,7 +3249,8 @@
             "talk": 1,
             "nerve": 5
           },
-          "making": "trpg_shark_make_tsumugi_tsumugi_sera"
+          "making": "trpg_shark_make_tsumugi_tsumugi_sera",
+          "portrait": "../../img/ui/trpg/pc-sera.webp"
         },
         {
           "id": "noa",
@@ -3257,7 +3264,8 @@
             "talk": 1,
             "nerve": 5
           },
-          "making": "trpg_shark_make_tsumugi_tsumugi_noa"
+          "making": "trpg_shark_make_tsumugi_tsumugi_noa",
+          "portrait": "../../img/ui/trpg/pc-noa.webp"
         }
       ]
     }
