@@ -1231,6 +1231,8 @@
         "remake/js/chapters/ch4.js",
         "remake/js/chapters/ch4-story-wiring.js",
         "remake/js/core/overseas-companion.js",
+        "remake/js/core/story-routes.js",
+        "data/story_routes.json",
         "data/dialogue/ch4_dubai_daily.json",
         "data/dialogue/ch4_visitors.json",
         "data/dialogue/ch4_*_dubai.json",

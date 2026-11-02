@@ -19,7 +19,8 @@ import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_
   endChapterFourDay, finishChapterFourEve, chapterFourMandatory, revealChapterFourSheikh,
   chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE,
   CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour, chapterFourRead,
-  chapterFourDaily, enterChapterFourEve, chapterFourEveDay, chapterFourTournamentDay, chapterFourArrivalsDue } from "./ch4-progress.js";
+  chapterFourDaily, enterChapterFourEve, chapterFourEveDay, chapterFourTournamentDay, chapterFourArrivalsDue,
+  CH4_ARRIVAL_SCENES, CH4_FRIEND_ARRIVAL_SCENES } from "./ch4-progress.js";
 
 const CH4_SPOT_SCENES = CH4_SCENE_FILES.ch4_spots;
 import { chapterFourMapModel } from "./ch4-map-model.js";
@@ -446,11 +447,17 @@ async function renderEve(owner) {
   ], "", next.id);
 }
 
-/** 前夜祭の日、別便の応援の到着（台本の冒頭が出迎え）。名前はカードに出さない（ましろちゃん等の呼び方は台本に任せる）。 */
+/**
+ * 前夜祭の日、別便の応援の到着（台本の冒頭が出迎え）。名前はカードに出さない（ましろちゃん等の呼び方は台本に任せる）。
+ * 2人目からは「もう一人」の文にして、同じカードが繰り返されたように見せない。
+ */
 async function renderArrival(owner, arrival) {
   await setBg(bgUrl(CH4_SCENE_BG[arrival.scene]), { instant: true });
   if (!current(owner)) return;
-  card(owner, "arrival", `DAY ${chapterFourEveDay(state)}・前夜祭の日`, "別の便で応援に来てくれる人が、ドバイに着いたらしい。", [
+  const another = [...Object.values(CH4_ARRIVAL_SCENES), ...Object.values(CH4_FRIEND_ARRIVAL_SCENES)]
+    .some(id => chapterFourRead(state, id));
+  const text = another ? "別の便で応援に来てくれる人が、もう一人着いたらしい。" : "別の便で応援に来てくれる人が、ドバイに着いたらしい。";
+  card(owner, "arrival", `DAY ${chapterFourEveDay(state)}・前夜祭の日`, text, [
     button(owner, "続きを読む", "continue", async () => {
       // 最後まで読んだ時だけ確定・保存する。中断・LOADでは同じ到着からやり直す。
       if (!await readAndCommit(owner, arrival.scene)) return;

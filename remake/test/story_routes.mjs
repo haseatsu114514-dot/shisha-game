@@ -434,9 +434,10 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, ['minto']);
   assert.equal(ch4.chapterFourEveningPartner(routes, value), 'minto');
   assert.deepEqual(ch4.selectChapterFourEvening(routes, value, 'minto').scenes, [routes.romance.minto.date]);
-  // 友人として来るましろは恋人ではないので誘えず、恋人の数にも入らない。
-  value = dubaiEve(['rin'], 'rin', {arrived: ['mashiro']});
-  assert(ch4.chapterFourEveningContext(routes, value).present.includes('mashiro'));
+  // 友人として来るましろ（友人版の到着を読了）は恋人ではないので誘えず、その場の人数にも入らない。
+  value = dubaiEve(['rin'], 'rin');
+  value.flags._ch4.read.ch4_mashiro_dubai_friend = true;
+  assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, ['rin']);
   assert.equal(ch4.chapterFourEveningPartner(routes, value), 'rin');
   // 同じ場所の恋人が二人以上: 第4章ではスティーブの茶化しを出さず、重なった予定を保留する。誘いの選択は出さない。
   value = dubaiEve(['tsumugi', 'ageha'], 'tsumugi', {arrived: ['ageha']});
