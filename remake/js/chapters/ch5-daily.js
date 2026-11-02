@@ -16,7 +16,7 @@ import { MAP } from "./ch2-city-data.js";
 import { CITY_SHOP } from "./ch2-outings.js";
 import { returnCityHome } from "./ch2-commute.js";
 import { cityRegularSpots, visitCityRegular } from "./ch2-preparation.js";
-import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNight, tokyoWakeBackground } from "./ch5-tokyo.js";
+import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNight, tokyoWakeBackground, chapterFiveMukaiShift } from "./ch5-tokyo.js";
 import {
   chapterFiveProgress, chapterFiveFreeRemaining, chapterFiveRead, chapterFiveTimeoutPending,
   chapterFivePreparation, chapterFivePrepPending, recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
@@ -89,10 +89,12 @@ export function chapterFiveDailyDefinition(io) {
     // 別の約束が来ても、地元へ瞬間移動させない（false はループを止めるので返さない）。
     beforeInvitation: destination => inTokyo() ? true
       : destination && (destination.region || "home") === "home" ? returnCityHome() : true,
-    homeShisha: () => !inTokyo(), // 屋根裏に家の台は無い
+    // 東京の屋根裏でも寝る前の家シーシャを選べる（台を持って行く・VOL12。FIN10 の「出さない」を更新）。
     wakeBackground: () => inTokyo() ? tokyoWakeBackground() : null,
     spotById: id => [CH5_CALL_SPOT, CH5_CITY_SHOP, TO_TOKYO_SPOT, ...TOKYO_SPOTS, ...cityRegularSpots()].find(spot => spot.id === id) || null,
     performSpot: (spot, options) => performChapterFiveSpot(spot, io, options),
+    // ムカイさんの LIME で呼ばれたシフト（VOL10）
+    mukaiShift: ({ called = false } = {}) => chapterFiveMukaiShift(state, { called }),
   };
 }
 

@@ -7,7 +7,7 @@ export function invitationCost(event) {
   if (/^friend_/.test(event) && !["friend_sumi", "friend_rin"].includes(event)) return STORE_INVITE_COST;
   return 0;
 }
-export const invitationGrowth = (event) => event === "__sumi_baito__" ? { points: 1 } : { budget: 1, points: 2 };
+export const invitationGrowth = (event) => event === "__sumi_baito__" || event === "__mukai_baito__" ? { points: 1 } : { budget: 1, points: 2 };
 
 // 店内の試飲だけは当日の夜にも向かえる。昼限定の外出・定休日の私的な約束は延長しない。
 export const storeInvitationSpot = (message) => message?.accept_event === "interaction_minto_noon_01"
@@ -28,13 +28,13 @@ export function storeInvitationDialogue(dialogue, slot) {
 export function visitReminderSpot(message) {
   if (!message || message.type !== "invitation" || message.private_schedule || message.after_close) return null;
   if (message.accept_event === "__sumi_baito__" || message.accept_event === "hiyori_tonari_return") return "tonari";
-  if (message.accept_event === "__hiyori_shop__") return message.visit_spot || null;
+  if (message.accept_event === "__hiyori_shop__" || message.accept_event === "__mukai_baito__") return message.visit_spot || null;
   return storeInvitationSpot(message) || message.reminder_spot || null;
 }
 
 /** 本文や話者から推測せず、既存の店/リマインダー指定で会場を決める。 */
 export function invitationVisitSpot(invite, source) {
-  if (invite.event === "__hiyori_shop__") return invite.visitSpot || null;
+  if (invite.event === "__hiyori_shop__" || invite.event === "__mukai_baito__") return invite.visitSpot || null;
   if (invite.event === "__sumi_baito__" || invite.event === "hiyori_tonari_return") return "tonari";
   return visitReminderSpot(source || { type: "invitation", accept_event: invite.event });
 }

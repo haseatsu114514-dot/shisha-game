@@ -15,9 +15,9 @@ Draft PR #432に実装。オーナー追加指示の容器数・表情・入力�
 
 ## 実写参照
 
-- オーナー提供のタッパー原本: [資料](../shisha-hardware-reference/flavor-storage-tubs-issue396/README.md)。薄い不揃いの湿った葉、角丸矩形、別置きの蓋、整然とした保管。
-- 手持ちボウルの縮尺・アルミ/針: [既存出典](../shisha-hardware-reference/installed-and-handheld-scale-20261009.md)。Mozeのボウル準備解説 https://mozeshisha.de/en/knowledge/hookah-bowl-smokebox-knowledge/tobacco-bowl-preparation/ の `...bauen4.jpg`（右側のアルミ穴あけ）、`...bauen5.jpg`（指とファンネルの縮尺）。外部写真は参照だけに使い、ゲームや本リポジトリへ転載しない。
-- [構造・工程](../shisha-hardware-reference/drawing-sheet/README.md)、[ホース/チップ](../shisha-hardware-reference/hose-and-mouthpieces-20261009.md)、[必須QA](../shisha-hardware-reference/visual-qa-necklace-hose-20261009.md)に従う。図解は生成ツールに添付しない。
+- オーナー提供のタッパー原本: [資料](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/flavor-storage-tubs-issue396/README.md)。薄い不揃いの湿った葉、角丸矩形、別置きの蓋、整然とした保管。
+- 手持ちボウルの縮尺・アルミ/針: [既存出典](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/installed-and-handheld-scale-20261009.md)。Mozeのボウル準備解説 https://mozeshisha.de/en/knowledge/hookah-bowl-smokebox-knowledge/tobacco-bowl-preparation/ の `...bauen4.jpg`（右側のアルミ穴あけ）、`...bauen5.jpg`（指とファンネルの縮尺）。外部写真は参照だけに使い、ゲームや本リポジトリへ転載しない。
+- [構造・工程](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/drawing-sheet/README.md)、[ホース/チップ](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/hose-and-mouthpieces-20261009.md)、[必須QA](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/visual-qa-necklace-hose-20261009.md)に従う。図解は生成ツールに添付しない。
 - 2026-10-12の追加タッパー写真をmix-v2生成に会話画像として実際に添付した。その後の「長い側面までシールがあるのが違和感」というオーナー訂正を優先し、v3では短い端面の1枚だけへ修正。角をまたがず、長い側面/蓋は無ラベル。元写真のローカルパスは提供されていないため、写真原本を保存した扱いにはしない。商品名/ブランド/汚れを模写しない。
 
 ## 検証

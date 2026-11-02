@@ -4,4 +4,4 @@
 
 現在は日常案5点を保存済み。シーシャ案は装着時／手持ちの縮尺とホース経路を実写で確認しながら修正している。修正前の画像は[不採用履歴](rejected-scale-v1/README.md)に退避。候補を完成扱いにしない。
 
-[今後の生成ルール](../shisha-hardware-reference/heroine-title-cg-rules-20261009.md)、[ホース分岐NG原画](../shisha-hardware-reference/ng-examples/README.md)。候補のタイトル画面への本採用はオーナーの選定後。
+[今後の生成ルール](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/heroine-title-cg-rules-20261009.md)、[ホース分岐NG原画](../shisha-hardware-reference/ng-examples/README.md)。候補のタイトル画面への本採用はオーナーの選定後。

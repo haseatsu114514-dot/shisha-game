@@ -297,7 +297,10 @@ await check('ageha ♥5 gummy stage and MELTY PUFF finale (#2023): once, gift, r
     s.flags._ch2_read_remake_ch2_ageha_gummy=true;assert.equal(f.stages.pendingAffinityStage(s,'ageha'),null);
     s.affinity.ageha=65;assert.equal(f.bonds.finaleDue('ageha'),false,'needs ♥5');s.affinity.ageha=66;
     assert.equal(f.bonds.finaleDue('ageha'),true);assert.equal(f.bonds.finaleAtVisit('ageha'),true);
-    s.chapter=3;assert.equal(f.bonds.finaleDue('ageha'),false,'MELTY PUFF visits are chapter 2 only');s.chapter=2;
+    s.chapter=3;assert.equal(f.bonds.finaleDue('ageha'),false,'MELTY PUFF visits are chapter 2 only');
+    // VOL02: 第3章でも東京へ発つ前の準備3日は柚ヶ谷へ通える。出発後は地図に無い。
+    s.flags._ch3_prep={startDay:29,days:3,step:4,departed:false};assert.equal(f.bonds.finaleDue('ageha'),true,'MELTY PUFF before the Tokyo departure');
+    s.flags._ch3_prep.departed=true;assert.equal(f.bonds.finaleDue('ageha'),false,'not after the departure');delete s.flags._ch3_prep;s.chapter=2;
     f.setPlay(async()=>({cancelled:true}));
     assert.equal(await f.bonds.playFinale('ageha',{deferSave:true}),false);assert(!s.finales.ageha);assert(!s.owned.includes('suyaki_ageha'));
     f.setPlay(async()=>done);
@@ -566,6 +569,41 @@ await check('Mashiro (#2022): chapter 3 optional reads are the ladder, ♥3 ques
   assert.equal(after.flags._confession_due, undefined, 'the chapter 3 detour owns the confession');
   assert.equal(after.owned.filter(id => id === 'suyaki_mashiro').length, 1);
   assert.equal(await f.bonds.playFinale('mashiro'), false);
+});
+await check('Kuze (#2028): chapter 3 finale after the LIME detour and the answer outing, friendship only, hagal once, then friend LIME', async f => {
+  const rivals = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_rivals.json', import.meta.url))).dialogues;
+  for (const d of rivals) f.db.dialogues[d.dialogue_id] = d;
+  const gear = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json', import.meta.url))).equipment.find(e => e.id === 'suyaki_kuze');
+  assert.equal(gear.gift.from, 'kuze');
+  f.db.equipById.suyaki_kuze = gear;
+  f.db.flavorById.absal_earlgrey = { id: 'absal_earlgrey' };
+  f.db.friends = JSON.parse(fs.readFileSync(new URL('../data/friends.json', import.meta.url)));
+  assert.equal(f.bonds.BOND_FINALES.kuze.gift, 'suyaki_kuze');
+  assert.equal(f.bonds.finaleHeart('kuze'), 1, 'provisional heart gate');
+  const s = f.core.state; s.chapter = 3; s.met.kuze = true; s.affinity.kuze = 66;
+  assert.equal(f.bonds.finaleDue('kuze'), false, 'affinity alone does not open the finale');
+  s.flags._lime_contact_kuze = true; s.flags._ch3_read_ch3_kuze_lime = true;
+  assert.equal(f.bonds.finaleDue('kuze'), false, 'the answer outing comes first');
+  s.flags._ch3_outings = { enmaku_answer: 1 };
+  s.affinity.kuze = 8; assert.equal(f.bonds.finaleDue('kuze'), false, 'needs ♥1');
+  s.affinity.kuze = 9; assert.equal(f.bonds.finaleAtVisit('kuze'), true);
+  s.chapter = 4; assert.equal(f.bonds.finaleDue('kuze'), false, 'only on the chapter 3 cards');
+  assert.equal(await f.bonds.playFinale('kuze'), false); s.chapter = 3;
+  f.setPlay(async () => ({ cancelled: true }));
+  assert.equal(await f.bonds.playFinale('kuze'), false, 'cancel records nothing');
+  assert(!s.finales?.kuze); assert(!s.owned.includes('suyaki_kuze'));
+  f.setPlay(async () => done);
+  assert.equal(await f.bonds.playFinale('kuze'), true);
+  const after = f.roundTrip();
+  assert.equal(after.finales.kuze.route, 'friend');
+  assert.equal(after.flags._confession_due, undefined);
+  assert.equal(after.owned.filter(id => id === 'suyaki_kuze').length, 1);
+  assert.equal(after.flavorStock.absal_earlgrey, 50);
+  assert.equal(await f.bonds.playFinale('kuze'), false, 'once');
+  assert.equal(f.bonds.settledFriend('kuze'), true);
+  after.day += 10;
+  const lime = f.bonds.friendMessages({ sceneChapter: true });
+  assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['kuze', 'chat']], 'chat only on the scene-card chapters');
 });
 
 console.log(`affinity stages: ${count} PASS; browser/real LOAD not executed`);

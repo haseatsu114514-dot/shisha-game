@@ -10,6 +10,9 @@
 .axe-bar-menu .venue-host { margin: 10px auto; max-width: 660px; }
 .axe-bar-menu .sub-lead { margin: 8px 0 14px; }
 .axe-bar-menu .axe-bar-lesson { margin: 0 auto 12px; border-color: #b99b69; color: #ffe1a7; }
+/* レッスンとマイ斧（VOL07）を1行に並べ、メニューの高さを増やさない。 */
+.axe-bar-menu .axe-bar-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 0 0 12px; }
+.axe-bar-menu .axe-bar-tools > * { margin: 0; }
 .axe-bar-menu .sub-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .axe-bar-menu .big-choice { padding: 14px 18px; }
 .axe-bar-menu .axe-bar-records { margin-top: 12px; padding-top: 10px; border-top: 1px solid #99816166; font-size: 14px; line-height: 1.6; }

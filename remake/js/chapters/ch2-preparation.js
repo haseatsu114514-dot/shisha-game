@@ -105,7 +105,8 @@ export async function visitCityRegular(spot, { staminaGuard }) {
   return { used: true, exerted: true };
 }
 
-async function visitPreparationSpot(spot, { staminaGuard }) {
+/** 柚ヶ谷の店・支店・外出先への来店（第2章と、第3・4章の出発前の準備期間 chapters/departure-prep.js）。 */
+export async function visitPreparationSpot(spot, { staminaGuard }) {
   if (spot.region !== "widehanga") return null;
   if (!(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
   const owner = state, id = spot.charId;
@@ -207,7 +208,8 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   if (state.flags[`_lime_contact_${id}`] && !state.contacts.includes(id)) state.contacts.push(id);
   // あげはの交換後LIME（lime_ch2_ageha_after_visit）と旧セーブ互換の到達フラグ
   if (id === "ageha" && state.flags._lime_contact_ageha) state.flags._ch2_ageha_contact = true;
-  // 神崎・REIの長い段階会話・あげはの店に通う回・締めくくりは、第1章の固有会話と同じ（#2027。値は core/stats.js の visitAffinity・AFB01）。
+  // 神崎・REIの長い段階会話・あげはの店に通う回（VOL06）・締めくくりは、第1章の固有会話と同じ（#2027）。
+  // 値は core/stats.js の visitAffinity（段階 +16・いつもの会話 +8。第5章は +10／+5。AFB01）。
   gainAffinity(id, visitAffinity(first || finale || story || stages && stage?.file ? "story" : "talk")); earnStat(stat[id], 4);
   // 心得の盤で灯した授業があれば、その店で相談して習う（SBD61: 会った時だけ）
   if (state === owner) await consultLessons(id, { bg: ROOMS[id] });

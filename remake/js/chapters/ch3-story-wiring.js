@@ -66,7 +66,8 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
 export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_double_apple: ["ch3_minto_small_lies"],
   ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_trace"],
-  ch3_rivals: ["ch3_emil_workshop", "ch3_kuze_lime"],
+  // 久世の締めくくり（#2028）は寄り道ではなく、場面カードの「久世に呼ばれる」から（daily/bonds.js の条件）。
+  ch3_rivals: ["ch3_emil_workshop", "ch3_kuze_lime", "ch3_kuze_bond_finale"],
   // ♥3の質問と締めくくりは寄り道ではなく、場面カードの「ましろちゃんと話す」から（daily/bonds.js の条件）。
   ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice",
     "ch3_mashiro_black_tea", "ch3_mashiro_bond_question", "ch3_mashiro_bond_finale"],
