@@ -356,7 +356,10 @@ export async function runHoles(cs) {
     lines: [
       `テンプレート：${template.label}`,
       res.evenness > 0.8 ? "穴の間隔が揃い、熱が回りやすそうだ" : "穴の間隔にばらつきがある。次は目印をよく見よう",
-      `外周 ${res.outer}・中周 ${res.middle}・内周 ${res.inner}（計 ${res.total} 穴）`,
+      `目印の達成：${res.tally.perfect + res.tally.good}/${Object.values(template.counts).reduce((sum, count) => sum + count, 0)}か所（EXCELLENT ${res.tally.perfect}・GOOD ${res.tally.good}）`,
+      `穴あけ入力：${res.total}回 ／ MISS：${res.tally.miss + res.tally.tooClose}回（TOO CLOSEを含む）`,
+      `実際に開いた穴：外周 ${res.outer}・中周 ${res.middle}・内周 ${res.inner}（計 ${res.total} 穴）`,
+      "MISSでも穴は開き、熱の回り方に影響する",
       res.innerExcess ? "内周を開けすぎた。焦げやすくなるかもしれない" : res.outerEven > 0.8 ? "外周がきれいに揃った。熱が全体に回りそうだ" : "",
       res.total < 24 ? "穴を控えめに仕上げた。吸い出しでは温度の動きをよく見よう" : "",
     ],

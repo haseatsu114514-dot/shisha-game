@@ -479,8 +479,8 @@ async function deliver({ charId, scene, text }) {
 async function staminaGuard(cost, { mandatory = false } = {}) {
   if (!(cost < 0) || !coldRisk(staminaAfter(cost) / maxStamina({ forCondition: true }))) return true;
   const go = await modal({
-    title: "体が重い……",
-    body: "体力が赤い状態での行動だ。残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。"
+    title: "行動後の体力に注意",
+    body: "この行動の後は、体力が赤い範囲になる。行動後の残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。"
       + (mandatory ? "<br>今日のシフトは外せない。" : "<br>無事に済むこともあるけど、今は「家に帰る」で休める。")
       + (fitActive(state) ? "<br>（チョコザップで体を整えたので、今は風邪をひきにくい）" : ""),
     options: mandatory ? [{ label: "わかった", value: true, test: "stamina-go" }]

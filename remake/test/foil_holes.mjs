@@ -140,6 +140,29 @@ await frame(now + 60000); assert.equal(panel.querySelector("b").style.width, mix
 assert.equal(active.cs.holes, null); fire("hole-done"); await active.running;
 assert.equal(active.cs.holes.templateId, "outer12-middle12"); assert.equal(active.cs.holes.outer, 12);
 assert.equal(active.cs.holes.middle, 12); assert.equal(active.cs.holes.inner, 0); assert.equal(active.cs.holes.grade, "S");
+// #2446: 成功24か所と、MISS込みの実穴49個を混同しない。入力・描画・結果で同じ穴を保持。
+active = await start(null, "outer12-middle12");
+await frame(1000 + 6.4 / 24 * 1000); // 目印と目印の間でMISS、その後の連打はTOO CLOSE
+for (let n = 0; n < 23; n++) fire("hole-punch", "pointerdown");
+await punchCircle(6.4, 12, 6.4);
+fire("hole-next");
+await frame(1000 + (15.6 + 5.2 / 24) * 1000);
+for (let n = 0; n < 2; n++) fire("hole-punch", "pointerdown");
+await punchCircle(5.2, 12, 20.8);
+assert.equal(visualHoles.length, 49);
+assert.equal(visualHoles.at(-1).dots.length, 49);
+fire("hole-done"); await active.running;
+const missResult = active.cs.holes;
+assert.equal(missResult.tally.perfect + missResult.tally.good, 24);
+assert.equal(missResult.tally.miss + missResult.tally.tooClose, 25);
+assert.equal(missResult.outer, 35); assert.equal(missResult.middle, 14); assert.equal(missResult.inner, 0);
+assert.equal(missResult.total, 49); assert.equal(missResult.dots.length, 49);
+assert.equal(missResult.densityProfile.count, 49);
+const detail = results.at(-1).lines.join("\n");
+assert.match(detail, /目印の達成：24\/24か所/);
+assert.match(detail, /穴あけ入力：49回 ／ MISS：25回/);
+assert.match(detail, /実際に開いた穴：外周 35・中周 14・内周 0（計 49 穴）/);
+assert.match(detail, /MISSでも穴は開き/);
 // 時間0の12+12: 案内は、その時点で有効な次操作に一致する。
 active = await start(null, "outer12-middle12"); await frame(35000);
 assert(find("hole-plan").textContent.includes("穴あけは続けられます"));

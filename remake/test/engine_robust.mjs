@@ -186,4 +186,40 @@ check("scoreStep: 負数と undefined は従来どおり 0", () => {
   assert.equal(cs.arcade.parts.pull, 0);
 });
 
+
+// #2446: 本名は身分証ではなく本人の名乗りで知る。正体既知/未知・旧セーブの全経路を読む。
+check("みんとの名乗りは正体の既読に依存せず、名前欄は本人が名乗った後だけ", () => {
+  const scenes = JSON.parse(readFileSync(new URL("../../data/dialogue/ch1_minto.json", import.meta.url), "utf8")).dialogues;
+  const all = Array.isArray(scenes) ? scenes : Object.values(scenes);
+  function readScene(id, flags) {
+    vnState.flags = { ...flags };
+    const dlg = all.find(d => d.dialogue_id === id);
+    assert(dlg, id);
+    const r = { ...fakeRunning(), dlg, context: dlg.metadata?.private_scene ? "private" : null, branches: dlg.branches || {}, queue: [...dlg.lines] };
+    const seen = [];
+    port.setRunning(r);
+    while (r.queue.length) {
+      const line = r.queue.shift();
+      if (line.type === "condition") port.handleCondition(line);
+      else if (line.type === "set_flag") vnState.flags[line.flag] = true;
+      else if (line.text) seen.push({ text: line.text, name: port.lineDisplayName(line, r) });
+    }
+    return seen;
+  }
+  for (const known of [false, true]) for (const checked of [false, true]) {
+    const seen = readScene("ch1_minto_fifth", { _minto_identity_revealed: known, _oneesan_id_checked: checked });
+    const intro = seen.findIndex(line => line.text.includes("名前は、緑川栞"));
+    assert(intro >= 0);
+    assert(seen.slice(0, intro + 1).every(line => !line.name?.includes("栞")));
+    assert(!seen.some(line => /身分証で|名前は、あの時見てた/.test(line.text)));
+    assert.equal(vnState.flags._minto_name_known, true);
+    assert(seen.slice(intro + 1).some(line => line.name === "栞"));
+  }
+  for (const known of [false, true]) {
+    const seen = readScene("ch1_minto_private_1", { _minto_name_known: known });
+    assert.equal(seen.some(line => line.text.includes("私、緑川栞")), !known);
+    assert.equal(vnState.flags._minto_name_known, true);
+  }
+});
+
 process.exitCode = failures ? 1 : 0;

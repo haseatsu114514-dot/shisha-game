@@ -20,7 +20,7 @@ const fitSave = (day, chapter = 1) => ({ chapter, day, flags: { _fit_since: { ch
 assert(fitActive(fitSave(3)) && fitActive(fitSave(3 + FIT_DAYS - 1)));
 assert(!fitActive(fitSave(3 + FIT_DAYS)) && !fitActive(fitSave(2)) && !fitActive(fitSave(4, 2)) && !fitActive({ chapter: 1, day: 3, flags: {} }));
 
-const state = {}, played = [], saves = [], guards = [], homecomingChecks = [];
+const state = {}, played = [], saves = [], guards = [], guardBodies = [], dawns = [], homecomingChecks = [];
 let rng = .99, route = [], decisions = [], shifts = 0;
 const math = Object.create(Math); math.random = () => rng;
 const context = vm.createContext({ Math: math, Set, Map, Promise, console, setTimeout: () => 0, clearTimeout() {}, document: { querySelector: () => null } });
@@ -40,13 +40,13 @@ const values = {
     queue: JSON.parse(JSON.stringify(state.deferredNightEvents || [])), appointment: state.pendingInvite ? { ...state.pendingInvite } : null }),
     STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"], STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" },
     markMet: (id) => state.met[id] = true, loadFromSlot: () => false, requestResumeOnBoot: noop },
-  "ui.js": { withScenePreparation: task => task, imageReady: async () => false, layers: { fx: { append: noop }, modal: elem() }, dropRetired: noop, dayCard: async () => {}, modal: async () => { guards.push(state.stamina); return decisions.length ? decisions.shift() : true; },
-    toast: noop, fadeBlack: async (mid) => mid?.(), dayTurn: async (mid) => { await mid?.(); }, bannersIdle: async () => {}, setBg: noop, refreshWeather: noop },
+  "ui.js": { withScenePreparation: task => task, imageReady: async () => false, layers: { fx: { append: noop }, modal: elem() }, dropRetired: noop, dayCard: async () => {}, modal: async (opts) => { guards.push(state.stamina); guardBodies.push(opts.body); return decisions.length ? decisions.shift() : true; },
+    toast: noop, fadeBlack: async (mid) => mid?.(), dayTurn: async (mid) => { const info = await mid?.(); dawns.push({ ...info, absoluteDay: state.day, hudLeft: values["hud.js"].daysLeft() }); }, bannersIdle: async () => {}, setBg: noop, refreshWeather: noop },
   "transitions.js": { refreshPlaceCue: noop },
   "data.js": { sceneBg: () => ({}), DB: db, loadCinemaDialogue: async () => db, bgUrl: (ref) => ref, displayName: id => id }, "saves.js": { saveFlow: async () => {}, loadFlow: async () => {} },
   "audio.js": { SE: { select: noop, cancel: noop }, playBgm: noop },
   "engine.js": { isPlaying: () => false, play: async (id) => played.push(id) }, "glossary.js": { glossaryPanel: () => "" },
-  "hud.js": { initHud: noop, showHud: noop, updateHud: noop, daysLeft: () => 14 - state.day, setPhoneBadge: noop, presentSleepRecovery: async () => {} },
+  "hud.js": { initHud: noop, showHud: noop, updateHud: noop, daysLeft: () => modules.get("chapter-clock.js").namespace.chapterDaysLeft(state), setPhoneBadge: noop, presentSleepRecovery: async () => {} },
   "map.js": { chooseSpot: async () => route.shift() || "rest", interruptMap: noop, isChoosingDestination: () => false },
   "weather.js": { isRainy: () => false, weatherOf: () => "sun", tomorrowForecast: () => null, RAIN_SPOT_TEXTS: {} },
   "tonari.js": { tonariMenu: async () => "baito", tonariCustomer: async () => {}, tonariPractice: async () => {}, doBaito: async () => { shifts++; stats.addStamina(-24); } },
@@ -83,14 +83,14 @@ const calendarModule = await load("calendar.js");
 await calendarModule.link((s) => load(s.split("/").at(-1)));
 await calendarModule.evaluate();
 const stats = modules.get("stats.js").namespace;
-async function run({ stamina = 0, guts = 10, day = 13, slot = 1, roll = .99, sick = false, paths = ["tonari"], answers = [], events = {}, flags = {}, appointment = null, queue = [] } = {}) {
+async function run({ stamina = 0, guts = 10, day = 13, slot = 1, roll = .99, sick = false, paths = ["tonari"], answers = [], events = {}, flags = {}, appointment = null, queue = [], chapter = 1, untilDay = 14 } = {}) {
   Object.keys(state).forEach((key) => delete state[key]);
-  Object.assign(state, { chapter: 1, phase: "daily", day, slot, stamina, money: 10000, pendingInvite: appointment, deferredNightEvents: JSON.parse(JSON.stringify(queue)),
+  Object.assign(state, { chapter, phase: "daily", day, slot, stamina, money: 10000, pendingInvite: appointment, deferredNightEvents: JSON.parse(JSON.stringify(queue)),
     stats: { technique: 10, sense: 10, guts, charm: 10, insight: 10 }, statXp: {}, story: {}, visitedDay: {}, met: {}, contacts: [], inbox: [], limeRead: [],
     flags: { [`_morning_${day}`]: true, _sick_once: sick, _overwork: 9, ...flags } });
-  played.length = 0; saves.length = 0; guards.length = 0; homecomingChecks.length = 0; shifts = 0;
+  played.length = 0; saves.length = 0; guards.length = 0; guardBodies.length = 0; dawns.length = 0; homecomingChecks.length = 0; shifts = 0;
   rng = roll; route = paths.slice(); decisions = answers.slice();
-  await calendarModule.namespace.runDaily({ nightEvents: events });
+  await calendarModule.namespace.runDaily({ nightEvents: events, untilDay });
   return { played: [...played], saves: [...saves], guards: [...guards], stamina: state.stamina, day: state.day, shifts };
 }
 let result = await run(); assert.equal(result.shifts, 1); assert(!result.played.some((id) => id.includes("sick")), "0体力でも運が良ければ進める");
@@ -207,3 +207,22 @@ await run({ stamina: 60, day: 4, slot: 2, flags: { _night_event_day: "1:4" }, ev
 assert(homecomingChecks.find(check => check.day === 4)?.hasNightEvent,
   "読了直後のロードでも夜の予定が無かったことにして追加遭遇を発火しない");
 console.log("[full-day rest] PASS: remaining slots/recovery, half/cancel/healthy, automatic illness deferral, fixed sick attendance, accepted appointment, preparation deadlines, post-tournament order, no duplicates, other chapters and interrupted scenes");
+
+// #2446: 黄色の現在値でも行動後に赤くなると警告する。文言は行動後の予測を示す。
+await run({ stamina: 40, answers: [false], paths: ["tonari", "rest"] });
+assert.match(guardBodies[0], /この行動の後は/);
+assert.match(guardBodies[0], /行動後の残り/);
+for (const scenario of [
+  { day: 6, chapter: 1, untilDay: 14, flags: {} },
+  { day: 20, chapter: 2, untilDay: 28, flags: { _ch2_day1: { startDay: 15 } } },
+]) {
+  await run({ ...scenario, stamina: 100, slot: 2, paths: ["rest"] });
+  assert.equal(dawns[0].day, 7);
+  assert.equal(dawns[0].left, 7);
+  assert.equal(dawns[0].absoluteDay, scenario.day + 1);
+  assert(dawns.every(info => info.left === info.hudLeft));
+  assert(dawns.every(info => info.day < 14), "大会当日は通常の夜明けカードを出さない");
+  assert.equal(state.day, scenario.untilDay);
+}
+
+await import("./dawn_numbers.mjs");
