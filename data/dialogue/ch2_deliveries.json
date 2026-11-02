@@ -5,6 +5,11 @@
       "dialogue_id": "remake_ch2_delivery_offer",
       "lines": [
         {
+          "speaker": "",
+          "face": "",
+          "text": "出発の前、カウンターの奥からスミさんに呼び止められた。"
+        },
+        {
           "speaker": "sumi",
           "face": "normal",
           "text": "そうだ。隣町の三軒に、荷物を届けてくれ"
@@ -65,6 +70,11 @@
       "dialogue_id": "remake_ch2_delivery_ageha",
       "lines": [
         {
+          "speaker": "",
+          "face": "",
+          "text": "預かってきた包みを、両手で持ち直した。"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "そうだ、スミさんから荷物を預かってきました。あげはさん宛てです"
@@ -95,6 +105,11 @@
       "dialogue_id": "remake_ch2_delivery_kumicho",
       "lines": [
         {
+          "speaker": "",
+          "face": "",
+          "text": "預かってきた包みを、両手で持ち直した。"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "スミさんから、こちらを預かってきました"
@@ -124,6 +139,11 @@
     {
       "dialogue_id": "remake_ch2_delivery_rei",
       "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "預かってきた包みを、両手で持ち直した。"
+        },
         {
           "speaker": "hajime",
           "face": "normal",
