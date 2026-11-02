@@ -20,7 +20,7 @@ body { background:#101820; color:#f8f6ee; }
 <div class="preview-tools">
  <label for="character">登場カットイン</label><select id="character" disabled></select>
  <button id="play" type="button" disabled>再生する</button>
- <button id="all" type="button" disabled>7人を続けて再生</button>
+ <button id="all" type="button" disabled>13人を続けて再生</button>
  <p id="status" role="status">読み込み中…</p>
 </div>
 <div id="viewport"><div id="stage"><div id="fx"></div></div></div>
@@ -29,7 +29,8 @@ import { DB, loadAll, realName } from './js/core/data.js';
 import { newGame, state } from './js/core/state.js';
 import { layers } from './js/core/ui.js';
 import { playIntro } from './js/vn/intro.js';
-const ids = ['kuze','steve','volk','mashiro','maki','sai','uranaishi'];
+const ids = ['kuze','steve','volk','mashiro','maki','sai','uranaishi',
+  'master_hookah','sheikh','shisha_9000','da_silva','emil','mukai_master'];
 const selector = document.getElementById('character'), play = document.getElementById('play'), all = document.getElementById('all'), status = document.getElementById('status');
 layers.fx = document.getElementById('fx');
 function fit() { document.getElementById('stage').style.setProperty('--k', Math.max(.05, Math.min(innerWidth / 1280, (innerHeight - 142) / 720))); }
