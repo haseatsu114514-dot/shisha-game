@@ -150,6 +150,7 @@
 | SHR06 | ✅ 本PR | **実写リファレンスの追加収集**: オーナー「検索から取得をもっとやって。物足りなければ追加するから」→ Commons を多言語（英・独・露・西・葡・日・ポーランド・チェコ）の検索語、国別・人物・店のカテゴリ、機材を撮る投稿者の投稿一覧、ファイル名検索まで広げ、約1,000枚の候補から35枚を追加（計76枚）。増えたのは吸い口をくわえた近接・金属や木のハンドルの握り・炭を焼くコンロと炭を置く手元・アルミとHMDを載せたボウルを運ぶ手・現代的なラウンジや日本のシーシャバー・店頭の棚。炭の近接1枚は撮影者の透かしを消して記録。Openverse・Pixabay・Pexels・Unsplash・Flickr はこの環境では使えず（接続不可またはボット判定）。日本の店特有の機材の実写は引き続き Commons に無く、オーナー撮影待ち |
 | SHR07 | ✅ 本PR | **日本のシーシャバーを基準にする**: オーナー「シーシャの画像とかは日本のシーシャバーとかのものを参照して。海外はあまり参照しない」→ `docs/shisha_reference.md` §4.0.5 を「日本のシーシャバーを基準にする」に書き換え。日本の店の定番機材（ロシア製ステンレスの台、ロータス型・ターキッシュリッド・アマボーストのHMD、シリコン・ソラリス・80feet のボウル）と内装の傾向を、名古屋の EGG SHISHA などの記事から出典付きでまとめた（画像は保存せずリンクのみ）。`photos/` の76枚は1枚を除き海外なので、構造・縮尺の確認だけに使うと明記し、`sources.json` に地域を記録。貼る文（日英）・8行テンプレ・AGENTS.md・スキル・素材規約の入口も同じ方針に。SHR05 で「要確認」だった「アマボースト」は実在するHMD名と確認し、ソラリスの形の誤り（縦長の素焼き→厚く背が低く上面が平ら）を直した |
 | SHR08 | ✅ 本PR | **日本の店・機材の写真（無料ライセンスでないもの）**: オーナー「無料ライセンスのやつじゃなくても参考にするだけならやって欲しい」「リポジトリは非公開にしてもいい」「資料を別の非公開リポジトリにしてゲームは公開もできる？」→ 日本のシーシャ店・通販・情報サイト・店の紹介記事の33ページから候補552枚を集め、116枚を選んだ（内装29・ボウル28・HMD22・台19・炭8・手元7・ホース3）。リポジトリは公開なので写真は入れず、一覧 `asset_sources/shisha-hardware-reference/web-refs/refs.json` と取得スクリプト `tools/fetch_shisha_web_refs.py` を commit。取得先 `web-refs/images/` は `.gitignore`。robots.txt に従い、拒否されたページは飛ばした。非公開の別リポジトリはオーナーが作成したら、取得した写真をそこへ入れる |
+| SHR09 | ✅ 本PR | **参考資料を非公開リポジトリ siryou へ移す**: オーナー「（https://github.com/haseatsu114514-dot/siryou）できた。ゲームの方からはなくしてこのリポを使う」→ `asset_sources/shisha-hardware-reference/` の参考資料230ファイル（日本の店・機材の写真116枚・Commons の写真76枚・オーナー提供写真の縮小一覧と説明・早見表と構造図・タッパーの写真4枚）を siryou の `shisha-hardware-reference/` へ移し（siryou #1）、ゲームのリポジトリから削除。取得スクリプトも siryou へ。ゲームが読むスキン候補（`skin-candidates-issue374/`）とタイトル候補の確認ツールが読むNG例・タッパーのCG候補は残した。画像生成のルール（`docs/shisha_reference.md` §4）はゲームのリポジトリに残し、§4.0 に siryou の場所と clone 方法（ゲームのリポジトリと同じ階層に `../siryou`）を書いた。移した資料へのリンク54か所を siryou の URL に付け替えた。過去の commit には資料が残る（履歴の書き換えはしない） |
 
 ## 2026-11-01 DJミニゲームの再構成とクラブSEAM（DJS）
 
@@ -1714,7 +1715,7 @@ CI62／63はマージ済みのPR #232で使用済み。並行作業の資料CI64
 |---|---|---|
 | CI71 | ✅ 画像生成ルール・検品 | 生成例の首掛けマイマウスピースがただのチェーン／飾りになる、ホースがシーシャ台とハンドルをつないでいない、といったミスを防ぐ。生成前の設計＋生成後の目視検品＋NG時再生成を明文化し、正規ヒロインの外見を優先する。 |
 
-[画像生成での失敗例と合否条件](../asset_sources/shisha-hardware-reference/visual-qa-necklace-hose-20261009.md)。**本変更は生成ルール・検品ドキュメントのみ**。ゲーム本体や既存CGの修正／差し替えは含まない。
+[画像生成での失敗例と合否条件](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/visual-qa-necklace-hose-20261009.md)。**本変更は生成ルール・検品ドキュメントのみ**。ゲーム本体や既存CGの修正／差し替えは含まない。
 
 ---
 
@@ -1724,7 +1725,7 @@ CI62／63はマージ済みのPR #232で使用済み。並行作業の資料CI64
 |---|---|---|
 | CI70 | 📚 参考画像とルール追加 | 使い捨てチップ・個人用首掛けマウスピースの追加3点とホースハンドルの追加4点を保存し、AI生成の形状・接続ルールと素材の自由度を整理。ハンドルや後続のシーシャ用トングをスキン変更で個性を出せる要素として検討。トングの実物写真は次の提供を待つ。 |
 
-[追加7点の軽量画像一覧と描画・スキンルール](../asset_sources/shisha-hardware-reference/mouthpiece-handle-skins-20261009.md)。既存のゲーム実装・UIは変更していない。
+[追加7点の軽量画像一覧と描画・スキンルール](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/mouthpiece-handle-skins-20261009.md)。既存のゲーム実装・UIは変更していない。
 
 ---
 
@@ -1734,7 +1735,7 @@ CI62／63はマージ済みのPR #232で使用済み。並行作業の資料CI64
 |---|---|---|
 | CI69 | 📚 参考資料・調査 | 追加した写真6枚から使い捨てマウスピース、首掛けマイマウスピース、ハンドルとホース、持ち方と煙の描き分けを整理する。外部資料も調査して、AIが間違えがちな部品接続を防ぐ。ハガル内部の調査がmainに保存済みか確認する。 |
 
-[新しい6枚の縮小一覧と使用・接続ルール](../asset_sources/shisha-hardware-reference/hose-and-mouthpieces-20261009.md)、[ホースの自作構造模式図](../asset_sources/shisha-hardware-reference/hose-mouthpiece-connections-20261009.svg)。ハガル内部・穴あけ・炭配置の[既存調査](../asset_sources/shisha-hardware-reference/bowl-interiors-foil-coal-placement-20261009.md)はmainに反映済み。外部画像は転載せずリンクと要点だけ記載。ゲームコードは変更しない。
+[新しい6枚の縮小一覧と使用・接続ルール](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/hose-and-mouthpieces-20261009.md)、[ホースの自作構造模式図](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/hose-mouthpiece-connections-20261009.svg)。ハガル内部・穴あけ・炭配置の[既存調査](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/bowl-interiors-foil-coal-placement-20261009.md)はmainに反映済み。外部画像は転載せずリンクと要点だけ記載。ゲームコードは変更しない。
 
 ---
 
@@ -1744,7 +1745,7 @@ CI62／63はマージ済みのPR #232で使用済み。並行作業の資料CI64
 |---|---|---|
 | CI68 | 📚 資料・リサーチ | シーシャの構造図3点を追加し、未充足のハガル内部、部品/空気の通路、アルミ穴と炭の置き方、HMD/チムニーのバリエーションについて信頼できる参照先を調査・保存。モデルごとの多様性を尊重し、Claude/Codexに正しい構造を描かせる。 |
 
-[ユーザー提供3構造図の整理](../asset_sources/shisha-hardware-reference/anatomy-diagrams-20261009.md)、[ボウル内部・アルミ・炭配置の文献付き調査](../asset_sources/shisha-hardware-reference/bowl-interiors-foil-coal-placement-20261009.md)、[新規の説明用模式図](../asset_sources/shisha-hardware-reference/bowl-interiors-types-20261009.svg)を保存。外部写真・文章は複製せず参照URLを記録。既存の制作工程・穴あけテンプレ・採点・ゲーム実装は変更しない。
+[ユーザー提供3構造図の整理](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/anatomy-diagrams-20261009.md)、[ボウル内部・アルミ・炭配置の文献付き調査](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/bowl-interiors-foil-coal-placement-20261009.md)、[新規の説明用模式図](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/bowl-interiors-types-20261009.svg)を保存。外部写真・文章は複製せず参照URLを記録。既存の制作工程・穴あけテンプレ・採点・ゲーム実装は変更しない。
 
 ---
 
@@ -1754,7 +1755,7 @@ CI62／63はマージ済みのPR #232で使用済み。並行作業の資料CI64
 |---|---|---|
 | CI67 | 📚 実物参考資料と生成ルール | 新たな実物写真9点のアルミ・チムニー・HMD・全体構図を追加。以前からの写真も横断し、生成AIが誤りがちなハガル内部の穴の型式、アルミ穴、受け皿、ホース接続、炭、写真の構図を言語化して今後の画像生成に活かす。必要なら外部資料で確認する。 |
 
-[追加実物写真9点](../asset_sources/shisha-hardware-reference/usage-and-installation-20261009.md)と[全37点横断の誤描写防止ガイド](../asset_sources/shisha-hardware-reference/ai-generation-structural-pitfalls.md)に記録。写真は完全模写しない。ハガルの一般分類（伝統型・ファンネル・ボルテックス）を外部の機材解説とも照合。既存コード・仕様は変更しない。
+[追加実物写真9点](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/usage-and-installation-20261009.md)と[全37点横断の誤描写防止ガイド](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/ai-generation-structural-pitfalls.md)に記録。写真は完全模写しない。ハガルの一般分類（伝統型・ファンネル・ボルテックス）を外部の機材解説とも照合。既存コード・仕様は変更しない。
 
 ---
 
@@ -1764,7 +1765,7 @@ CI62／63はマージ済みのPR #232で使用済み。並行作業の資料CI64
 |---|---|---|
 | CI66 | 📚 追加資料 | アルミに炭を直接載せる方式、蓋付き・金属製ヒートマネジメント、陶器ボウルの構造、灰をまとった炭の赤熱状態を写真9点から学び、シーシャ画像生成に反映する。写真の製品や文字は完全コピーしない。 |
 
-[9点の縮小画像一覧と構造・見た目の解説](../asset_sources/shisha-hardware-reference/heat-management-closeups-20261009.md)。既存工程・ゲームコード・採点は変更しない。
+[9点の縮小画像一覧と構造・見た目の解説](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/heat-management-closeups-20261009.md)。既存工程・ゲームコード・採点は変更しない。
 
 ---
 
@@ -1774,7 +1775,7 @@ CI62／63はマージ済みのPR #232で使用済み。並行作業の資料CI64
 |---|---|---|
 | CI65 | 📚 追加参考資料 | 喫煙している人と実物のシーシャ台が一緒に写る7写真、ヒートマネジメント・炭の扱いに関する3写真を今後の画像生成・構造理解の参考にする。人物や実機の完全な模写は不要。 |
 
-[追加参考・生成ルール](../asset_sources/shisha-hardware-reference/smoking-and-heat-management-20261009.md)に10枚の縮小一覧、ホース・マウスピース・煙・使用時の大きさ、HMDとボウルの上下関係を整理。既存の制作画面やスコアは変更しない。
+[追加参考・生成ルール](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/smoking-and-heat-management-20261009.md)に10枚の縮小一覧、ホース・マウスピース・煙・使用時の大きさ、HMDとボウルの上下関係を整理。既存の制作画面やスコアは変更しない。
 
 ---
 
@@ -1784,7 +1785,7 @@ CI62／63はマージ済みのPR #232で使用済み。並行作業の資料CI64
 |---|---|---|
 | CI64 | 📚 参考資料・制作ルール | オーナー提供のシーシャ台9写真を保存し、Claude/Codex等のシーシャ画像生成時に必ず参照。ただしどれか1台の完全コピーではなく、色・形・装飾などは自由に創作できるようにする。 |
 
-参考画像の縮小一覧・9種の特徴・使用時の注意は [asset_sources/shisha-hardware-reference/README.md](../asset_sources/shisha-hardware-reference/README.md) に集約。人物だけのカットイン等で台を描かない場面へは適用しない。既存実装・採点・ゲーム素材は変更しない。
+参考画像の縮小一覧・9種の特徴・使用時の注意は [asset_sources/shisha-hardware-reference/README.md](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/README.md) に集約。人物だけのカットイン等で台を描かない場面へは適用しない。既存実装・採点・ゲーム素材は変更しない。
 
 ---
 
