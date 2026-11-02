@@ -51,7 +51,7 @@ async function fixture() {
   const core=ns('core/state.js'), stats=ns('core/stats.js');
   const fresh=() => { const s=core.newGame(); Object.assign(s,{phase:'daily',day:8,slot:1}); return s; };
   fresh();
-  return { core, stats, fresh, db, plays, events, memory, stages: ns('core/affinity-stages.js'), spots: ns('daily/spots.js'), bonds: ns('daily/bonds.js'), phone: ns('daily/phone.js'), samechan: ns('daily/samechan.js'), romance: ns('daily/romance.js'), sharkBond: ns('daily/samechan-bonds.js'), setPlay: fn => playImpl=fn,
+  return { core, stats, fresh, db, plays, events, memory, stages: ns('core/affinity-stages.js'), hiyoriRoute: ns('core/hiyori-route.js'), spots: ns('daily/spots.js'), bonds: ns('daily/bonds.js'), phone: ns('daily/phone.js'), samechan: ns('daily/samechan.js'), romance: ns('daily/romance.js'), sharkBond: ns('daily/samechan-bonds.js'), setPlay: fn => playImpl=fn,
     tick: () => { for (const [id,fn] of [...timers]) { timers.delete(id); fn(); } },
     roundTrip: () => { core.save(); core.newGame(); assert(core.load()); return core.state; },
   };
@@ -211,6 +211,43 @@ await check('hiyori numeric growth is independent while connected route/question
   s.flags._hiyori_tonari_return_done=true;s.flags._hiyori_real_self_known=true;s.flags._hiyori_work_talk_done=true;
   assert.equal(f.stats.affinityPointCap('hiyori'),Infinity);
   s.flags._hiyori_bond_question_done=true;assert.equal(f.stats.affinityPointCap('hiyori'),Infinity);
+});
+await check('hiyori ♥4 peach talk and ♥5 promise (#2025) follow the ♥3 question and gate the finale; settled saves are not blocked', async f => {
+  const s=f.fresh();const route=f.db.hiyori.route,R=f.hiyoriRoute,pts=f.stats.AFFINITY_RANK_PTS;
+  const hearts=['peach_talk','promise'];
+  assert.deepEqual(route.storyEvents.slice(-2),hearts);
+  for(const id of hearts){const e=route.events.find(x=>x.id===id);assert(e.untilFinale,id);assert(f.db.dialogues[e.dialogue]?.lines?.length,id);}
+  assert.deepEqual(f.db.dialogues.hiyori_peach_talk.metadata.flavor_lesson,{peach:1});
+  s.chapter=1;s.slot=1;s.met.hiyori=true;s.contacts.push('hiyori');
+  for(const e of route.events) if(!hearts.includes(e.id)&&!e.relationship&&!e.contact)s.flags[e.flag]=true;
+  s.affinity.hiyori=pts[3];
+  assert.equal(R.hiyoriEventStatus('peach_talk'),'prerequisites','question first');
+  s.flags._hiyori_bond_question_done=true;
+  assert.equal(R.hiyoriEventStatus('peach_talk'),'prerequisites','♥4 first');
+  assert.deepEqual({...f.stages.pendingAffinityStage(s,'hiyori',f.db)},{level:4,scene:'hiyori_peach_talk',done:false});
+  s.affinity.hiyori=pts[4];
+  assert.equal(R.hiyoriEventStatus('peach_talk'),'ready');assert.equal(R.hiyoriEventStatus('promise'),'prerequisites');
+  assert.equal(R.hiyoriStoriesDone(),false);assert.equal(R.hiyoriFinaleReady(),false);
+  s.flags._hiyori_peach_talk_done=true;
+  assert.deepEqual({...f.stages.pendingAffinityStage(s,'hiyori',f.db)},{level:5,scene:'hiyori_promise',done:false});
+  assert.equal(R.hiyoriEventStatus('promise'),'prerequisites','♥5 first');
+  s.affinity.hiyori=pts[5];assert.equal(R.hiyoriEventStatus('promise'),'ready');
+  s.slot=0;assert.equal(R.hiyoriEventStatus('promise'),'time','night scene');s.slot=1;
+  // 締めくくりは第3章まで。♥4・♥5も同じ範囲で読めないと、第3章で♥5に届いた保存が詰む。
+  s.chapter=3;assert.equal(R.hiyoriEventStatus('promise'),'ready','chapter 3 finale window');s.chapter=4;assert.equal(R.hiyoriEventStatus('promise'),'chapter');s.chapter=1;
+  assert.equal(R.hiyoriStoriesDone(),false);
+  s.flags._hiyori_promise_done=true;assert.equal(R.hiyoriStoriesDone(),true);
+  assert.equal(f.stages.pendingAffinityStage(s,'hiyori',f.db),null);
+  // 追加前に締めくくりまで済んだ保存: 未読の♥4・♥5は出さず、締めくくり後の判定も止めない。既読は補完しない。
+  for(const settle of [x=>{x.finales.hiyori={route:'friend'};},x=>{x.flags._friend_hiyori=true;},x=>{x.lovers.push('hiyori');}]){
+    const old=f.fresh();old.chapter=1;old.slot=1;old.met.hiyori=true;old.contacts.push('hiyori');old.affinity.hiyori=pts[5];
+    for(const e of route.events) if(!hearts.includes(e.id)&&!e.relationship&&!e.contact)old.flags[e.flag]=true;
+    old.flags._hiyori_bond_question_done=true;settle(old);
+    for(const id of hearts)assert.equal(R.hiyoriEventStatus(id),'relationship',id);
+    assert.equal(R.hiyoriStoriesDone(),true);
+    assert.equal(f.stages.pendingAffinityStage(old,'hiyori',f.db),null);
+    assert(!old.flags._hiyori_peach_talk_done&&!old.flags._hiyori_promise_done,'no backfilled reads');
+  }
 });
 await check('chapter2 actual flags: chat/followup/ageha three visits are independent completion evidence', async f => {
   for(const id of ['ageha','kumicho','rei']) {

@@ -8,9 +8,302 @@
    "zip_sha256": "919a8ee9997cecaead2022224dbdadac059e20d2337176eedbc79017d4b9fca5",
    "zip_bytes": 51139567,
    "record": "deliveries/2026-11-02-a/"
+  },
+  {
+   "id": "2026-11-02-b",
+   "episodes": 20,
+   "originals": 33,
+   "zip_sha256": "af28607ec7bad59c30d1bcd37e386fb678402d4c21518962b1f707235bbe7bce",
+   "zip_bytes": 54925955,
+   "record": "deliveries/2026-11-02-b/"
   }
  ],
  "episodes": [
+  {
+   "id": "kuze-plush-board",
+   "num": 11,
+   "title": "幹部会議",
+   "cast": [
+    "kuze"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "幹部を集めたよ。",
+    "何の幹部…？",
+    "全員ぬいぐるみ。"
+   ],
+   "caption": "久世は、自分の店の噂を大げさに盛るのが好きな店主。",
+   "current": "allcast-kuze-plush-board-c.png",
+   "files": [
+    {
+     "file": "allcast-kuze-plush-board-a.png",
+     "status": "superseded",
+     "sha256": "38200c9ddccf28c174be7fd51682c4d0f6d0420b265407ded050c3f2ac6434fc"
+    },
+    {
+     "file": "allcast-kuze-plush-board-b.png",
+     "status": "superseded",
+     "sha256": "66353f90bc0afeb562b17d13e6a07c2bb342fb852bf9c899ea001b7b4458c6f9"
+    },
+    {
+     "file": "allcast-kuze-plush-board-c.png",
+     "status": "candidate",
+     "sha256": "6546cc1db8e25c1cc0a676d58e290f010c67d26956d9edcf9aae659511cfe1dd"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "kuze-every-order",
+   "num": 12,
+   "title": "注文当て",
+   "cast": [
+    "kuze"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "注文、当ててみせる。",
+    "じゃあ、どうぞ。",
+    "全部出てきた。"
+   ],
+   "caption": "久世は客の好みを予想するのが好き。ときどき、ずるい。",
+   "current": "allcast-kuze-every-order-b.png",
+   "files": [
+    {
+     "file": "allcast-kuze-every-order-a.png",
+     "status": "superseded",
+     "sha256": "a15bf6d0ba61c3295ada4074fd1b07c30cb9d57942498764718d6ed0770a9a78"
+    },
+    {
+     "file": "allcast-kuze-every-order-b.png",
+     "status": "candidate",
+     "sha256": "a0ba07da0e479c426a3cfacbf038d905d83526cb03f90f4b2b471041e800612e"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "adopt",
+   "gameRegistration": "remake/js/core/loading-comics.js の kuze-every-order"
+  },
+  {
+   "id": "kuze-pouch",
+   "num": 13,
+   "title": "腰のポーチ",
+   "cast": [
+    "kuze"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ペン、ありますか？",
+    "あるよ、待って。",
+    "どこに入ってた？"
+   ],
+   "caption": "腰のポーチは久世の目印。中身はノートのはず。",
+   "current": "allcast-kuze-pouch.png",
+   "files": [
+    {
+     "file": "allcast-kuze-pouch.png",
+     "status": "candidate",
+     "sha256": "a5c582d2210677b80c76b1f0f82070de43c3a15fffcd9dc2f5868763bbb156b9"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "kuze-mirror-room",
+   "num": 14,
+   "title": "鏡の多い店",
+   "cast": [
+    "kuze"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "奥に誰かいます？",
+    "さあ、どうかな。",
+    "全部久世さんだ。"
+   ],
+   "caption": "久世の店は、仕切りと鏡で奥が見えない作り。",
+   "current": "allcast-kuze-mirror-room.png",
+   "files": [
+    {
+     "file": "allcast-kuze-mirror-room.png",
+     "status": "candidate",
+     "sha256": "72e00a0054b48aee3c528b0b095d53230c8af1b92c6a41a648abbf25cf0c2e43"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "kuze-praise-shrink",
+   "num": 15,
+   "title": "ほめられ弱い",
+   "cast": [
+    "kuze"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "久世さん、すごい！",
+    "え、僕？",
+    "小さくなった。"
+   ],
+   "caption": "軽口の多い久世だけど、ほめられるのは苦手。",
+   "current": "allcast-kuze-praise-shrink.png",
+   "files": [
+    {
+     "file": "allcast-kuze-praise-shrink.png",
+     "status": "candidate",
+     "sha256": "d03da4e65a7dcfb0566709c9a823755554d0d2ce836f42fe0c900ec13ade6d50"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "kuze-plain-tea",
+   "num": 16,
+   "title": "ただのお茶",
+   "cast": [
+    "kuze"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "これ、飲んでみて。",
+    "何か仕掛けが…？",
+    "普通の麦茶だ。"
+   ],
+   "caption": "久世の笑顔は意味ありげ。でも親切は本物です。",
+   "current": "allcast-kuze-plain-tea.png",
+   "files": [
+    {
+     "file": "allcast-kuze-plain-tea.png",
+     "status": "candidate",
+     "sha256": "72bf7e2eec435cfb2df92dc1f8013323cc694b1e708a7f466c4cb4b5d4ff4673"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "adopt",
+   "gameRegistration": "保留（1キャラ2話を超えた採用分。最後にオーナーが入れ替えを判断）"
+  },
+  {
+   "id": "kuze-cushion-forecast",
+   "num": 17,
+   "title": "転ぶ予言",
+   "cast": [
+    "kuze"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "次、転ぶよ。",
+    "転びませんよ。",
+    "クッションがある。"
+   ],
+   "caption": "久世は、相手の次の動きを読むのがとても得意。",
+   "current": "allcast-kuze-cushion-forecast-b.png",
+   "files": [
+    {
+     "file": "allcast-kuze-cushion-forecast-a.png",
+     "status": "superseded",
+     "sha256": "68b5909e9937d7c57b771d9994a6c0f5cfabe35e348cf9696f153b7a9fe74f74"
+    },
+    {
+     "file": "allcast-kuze-cushion-forecast-b.png",
+     "status": "candidate",
+     "sha256": "44bfcb045387100d91d036ac06ffdc3d13fee827ed0d7b42313023e223073d70"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "",
+   "gameRegistration": ""
+  },
+  {
+   "id": "kuze-photo-face",
+   "num": 18,
+   "title": "記念写真",
+   "cast": [
+    "kuze"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "一枚撮りますね。",
+    "かわいく頼むよ。",
+    "悪役の顔だ。"
+   ],
+   "caption": "片側だけ上がる久世の笑顔は、写真だと少し怪しい。",
+   "current": "allcast-kuze-photo-face-b.png",
+   "files": [
+    {
+     "file": "allcast-kuze-photo-face-a.png",
+     "status": "superseded",
+     "sha256": "f0f6daa1c8764e59a41e487bb31c7855c56a7b76579518a557f1d10db4df406c"
+    },
+    {
+     "file": "allcast-kuze-photo-face-b.png",
+     "status": "candidate",
+     "sha256": "2a1021fa60edaded5c0f2d30fa8bb3741b2ecd7d87819129f1cc965ee77c2d0d"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "adopt",
+   "gameRegistration": "remake/js/core/loading-comics.js の kuze-photo-face"
+  },
+  {
+   "id": "kuze-wrong-guess",
+   "num": 19,
+   "title": "外れて上機嫌",
+   "cast": [
+    "kuze"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "どっちの手に飴？",
+    "うーん、右！",
+    "外れたのに優勝？"
+   ],
+   "caption": "久世は、予想が外れたときの答えが一番うれしい。",
+   "current": "allcast-kuze-wrong-guess.png",
+   "files": [
+    {
+     "file": "allcast-kuze-wrong-guess.png",
+     "status": "candidate",
+     "sha256": "21852bd10bc8d43bd7fcc1d1894f9042eb0374da8c086251880d559509f4480b"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "kuze-brave-face",
+   "num": 20,
+   "title": "平気なふり",
+   "cast": [
+    "kuze"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "緊張してます？",
+    "全然。平気だよ。",
+    "ノート逆さです。"
+   ],
+   "caption": "久世は、大会の始まりだけは少し緊張しやすい。",
+   "current": "allcast-kuze-brave-face.png",
+   "files": [
+    {
+     "file": "allcast-kuze-brave-face.png",
+     "status": "candidate",
+     "sha256": "af422ae3bddf04b3bc09e00c999ff45983e8a5e36efe6b5de45afe79aaf9f674"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
   {
    "id": "nagumo-long-review",
    "num": 66,
@@ -273,6 +566,146 @@
     }
    ],
    "delivery": "2026-11-02-a",
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "wang-long-spout",
+   "num": 101,
+   "title": "長い注ぎ口",
+   "cast": [
+    "master_hookah"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "お茶、いれますね。",
+    "私がいれよう。",
+    "注ぎ方が武術。"
+   ],
+   "caption": "王煙楼は、派手な技で客の目を引く職人でもある。",
+   "current": "allcast-wang-long-spout.png",
+   "files": [
+    {
+     "file": "allcast-wang-long-spout.png",
+     "status": "candidate",
+     "sha256": "d821dd2039f2397e60ff473ecbb2a0910087d04df3f29e1a66bca6f756f2004e"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "wang-futon-ready",
+   "num": 102,
+   "title": "先回りの布団",
+   "cast": [
+    "master_hookah"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "眠いね。",
+    "いえ、全然！",
+    "布団が出てる。"
+   ],
+   "caption": "王煙楼は、相手の息づかいを見て先に動く。",
+   "current": "allcast-wang-futon-ready-c.png",
+   "files": [
+    {
+     "file": "allcast-wang-futon-ready-a.png",
+     "status": "superseded",
+     "sha256": "c76bf7f2b94dc5558667b2779852d70b278f7dd03390d01a7b5143880c91b0f5"
+    },
+    {
+     "file": "allcast-wang-futon-ready-b.png",
+     "status": "superseded",
+     "sha256": "520c15eb16bb6a9e5bd086572bdbf3fd72681cd36e8adfee66ef212dcd42725c"
+    },
+    {
+     "file": "allcast-wang-futon-ready-c.png",
+     "status": "candidate",
+     "sha256": "fc5548c61b24d697da74bfe845e418046e591697d79080e017a38c1fc7f43af3"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "wang-dragon-dance",
+   "num": 103,
+   "title": "龍の胴体",
+   "cast": [
+    "master_hookah"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "龍、また見たいです！",
+    "見せよう。",
+    "俺が胴体。"
+   ],
+   "caption": "王煙楼は、龍の技で名を知られる水煙の職人。",
+   "current": "allcast-wang-dragon-dance.png",
+   "files": [
+    {
+     "file": "allcast-wang-dragon-dance.png",
+     "status": "candidate",
+     "sha256": "d778656e2e1b9814ef396c79d02e90201e7e4916efc65bed2597c979ae42d847"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "wang-selfie",
+   "num": 104,
+   "title": "記念写真",
+   "cast": [
+    "master_hookah"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "写真、撮りませんか？",
+    "任せなさい。",
+    "眉しか写ってない。"
+   ],
+   "caption": "龍の技は見事な王煙楼も、スマホはまだ修行中。",
+   "current": "allcast-wang-selfie.png",
+   "files": [
+    {
+     "file": "allcast-wang-selfie.png",
+     "status": "candidate",
+     "sha256": "9bf967f90bea2047c31179d9b74e549c97171b4093fa803398e6aade89390b4b"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "wang-bird-nest",
+   "num": 105,
+   "title": "待つ達人",
+   "cast": [
+    "master_hookah"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "少し待っててください。",
+    "待つのは得意だ。",
+    "鳥が住んでる。"
+   ],
+   "caption": "王煙楼は、客の一口をいつまでも静かに待てる人。",
+   "current": "allcast-wang-bird-nest.png",
+   "files": [
+    {
+     "file": "allcast-wang-bird-nest.png",
+     "status": "candidate",
+     "sha256": "be7564081ee08758ac87f7488ecc6c50de79df599656aac78d29f05700895a9e"
+    }
+   ],
+   "delivery": "2026-11-02-b",
    "ownerVerdict": "reject",
    "gameRegistration": ""
   },
@@ -680,6 +1113,166 @@
    "delivery": "2026-11-02-a",
    "ownerVerdict": "adopt",
    "gameRegistration": "保留（1キャラ2話を超えた採用分。最後にオーナーが入れ替えを判断）"
+  },
+  {
+   "id": "ageha-full-coord",
+   "num": 181,
+   "title": "全身コーデ",
+   "cast": [
+    "ageha"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "コーデしたげる！",
+    "お手柔らかに。",
+    "全身ヒョウ柄。"
+   ],
+   "caption": "あげはは「カワイイは最強」が信条のギャル店長。",
+   "current": "allcast-ageha-full-coord-d.png",
+   "files": [
+    {
+     "file": "allcast-ageha-full-coord-a.png",
+     "status": "superseded",
+     "sha256": "74d5caf28b0f5201649647be4985733f50ef7ca288d2b873208b6793eb7f9e7c"
+    },
+    {
+     "file": "allcast-ageha-full-coord-b.png",
+     "status": "superseded",
+     "sha256": "101bb70f94d9eeb8148873f4e83a9b9fc82daffaa6232896b98b38190ecf2049"
+    },
+    {
+     "file": "allcast-ageha-full-coord-c.png",
+     "status": "superseded",
+     "sha256": "0ceed0e3547348577a0c90a388f151e0d425249e17892b32161c7ebab1f69e7a"
+    },
+    {
+     "file": "allcast-ageha-full-coord-d.png",
+     "status": "candidate",
+     "sha256": "6b4ecbb169d477cebaf9bffc4927fd0c8eb46e2a7a41f8a229ca31ef75236d6d"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "adopt",
+   "gameRegistration": "remake/js/core/loading-comics.js の ageha-full-coord"
+  },
+  {
+   "id": "ageha-backroom-avalanche",
+   "num": 182,
+   "title": "生活感ゼロ",
+   "cast": [
+    "ageha"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "生活感ゼロっしょ！",
+    "おしゃれです。",
+    "生活感が雪崩。"
+   ],
+   "caption": "MELTY PUFFは、客席の世界観を大事にする店。",
+   "current": "allcast-ageha-backroom-avalanche-b.png",
+   "files": [
+    {
+     "file": "allcast-ageha-backroom-avalanche-a.png",
+     "status": "superseded",
+     "sha256": "1384381a3ca615206b65fa35768ab53abd4a88c0378d9f9fdc37b41f17e09996"
+    },
+    {
+     "file": "allcast-ageha-backroom-avalanche-b.png",
+     "status": "candidate",
+     "sha256": "17b7b1ad64e5639ae057cfbb8d8d7277f3f66c93d524d79951c4d6bc2674da3c"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "adopt",
+   "gameRegistration": "保留（1キャラ2話を超えた採用分。最後にオーナーが入れ替えを判断）"
+  },
+  {
+   "id": "ageha-photo-filter",
+   "num": 183,
+   "title": "盛れる写真",
+   "cast": [
+    "ageha"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "写真撮ろ！",
+    "いいですよ。",
+    "誰これ。"
+   ],
+   "caption": "あげはの写真は、いつも全力で盛れる。",
+   "current": "allcast-ageha-photo-filter-b.png",
+   "files": [
+    {
+     "file": "allcast-ageha-photo-filter-a.png",
+     "status": "superseded",
+     "sha256": "90e76c937990bb1b73e5b37d615a889d70678a8c826d197bde1d6c4180124638"
+    },
+    {
+     "file": "allcast-ageha-photo-filter-b.png",
+     "status": "candidate",
+     "sha256": "a7b05e518d9b676531459112603b2687a32e500871acfdbcb740463a2ee210b8"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "adopt",
+   "gameRegistration": "保留（1キャラ2話を超えた採用分。最後にオーナーが入れ替えを判断）"
+  },
+  {
+   "id": "ageha-shortcut",
+   "num": 184,
+   "title": "近道の勘",
+   "cast": [
+    "ageha"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "近道、知ってる！",
+    "助かります。",
+    "山を越えた。"
+   ],
+   "caption": "あげはは、理屈より直感とバイブスで動く人。",
+   "current": "allcast-ageha-shortcut-b.png",
+   "files": [
+    {
+     "file": "allcast-ageha-shortcut-a.png",
+     "status": "superseded",
+     "sha256": "75648047769445c27d5094d8851f63d045368c842e29f9afd40a6a4fd68ad488"
+    },
+    {
+     "file": "allcast-ageha-shortcut-b.png",
+     "status": "candidate",
+     "sha256": "3a381ead8b30e7b10fe791543bf1ebd3550fdc908f7f2e4d9daaee173d482fc7"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "ageha-manager-office",
+   "num": 185,
+   "title": "店長の部屋",
+   "cast": [
+    "ageha"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "店長室、見る？",
+    "あるんですね。",
+    "プリクラの中だ。"
+   ],
+   "caption": "MELTY PUFFの入口には、プリクラ機があります。",
+   "current": "allcast-ageha-manager-office.png",
+   "files": [
+    {
+     "file": "allcast-ageha-manager-office.png",
+     "status": "candidate",
+     "sha256": "5951a578e9265e85b9944a36d596b6828b007f1aebea79e91b5a239b4ea064e2"
+    }
+   ],
+   "delivery": "2026-11-02-b",
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   }
  ]
 }

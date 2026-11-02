@@ -1,24 +1,27 @@
 // スタッフロールの検証（#517）。第5章の完了カード（章末レーダー）→スタッフロール→タイトル、
 // 初回は飛ばせない・一度見た端末では2回目から飛ばせる、動きを減らす設定でも最後まで進む、
 // PC・スマホ横で文字が画面の外へはみ出さない、を実UIと実saveで確かめる。
+// 初回を流し終えたら真エンドとして周回（NEXT CYCLE）が開く（#1228）。勝敗は問わず、流す前は開かない。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
 const dt = name => `[data-test="${name}"]`;
 const get = page => page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save") || "null"));
+const cycleMeta = page => page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_cycle") || "null"));
 const arm = (page, turbo = true) => page.evaluate(async turbo => {
   const vn = await import("./js/vn/engine.js");
   vn.vnTest.turbo = turbo; vn.vnTest.choose = () => 0;
 }, turbo);
 
-/** フィナーレを読み終えた（cleared）第5章の保存を作る。seen は端末で一度最後まで見たか。 */
-async function seed(page, { seen = false, done = false } = {}) {
-  await page.evaluate(async ({ seen, done }) => {
+/** フィナーレを読み終えた（cleared）第5章の保存を作る。seen は端末で一度最後まで見たか。won は9000との勝敗。 */
+async function seed(page, { seen = false, done = false, won = true } = {}) {
+  await page.evaluate(async ({ seen, done, won }) => {
     const core = await import("./js/core/state.js");
     const value = core.newGame();
+    const match = won ? ["ch5_second_cup_result", "ch5_second_cup_result_afterglow"] : ["ch5_second_cup_defeat"];
     const read = Object.fromEntries(["ch5_bridge_after_return", "ch5_opening", "ch5_unrecorded_day", "ch5_schedule_contact",
-      "ch5_match_day_arrival", "ch5_copy_first_cup", "ch5_relationship_before_second_cup", "ch5_second_cup_result",
-      "ch5_second_cup_result_afterglow", "ch5_doctor_after_match", "ch5_return_to_tonari",
+      "ch5_match_day_arrival", "ch5_copy_first_cup", "ch5_relationship_before_second_cup", ...match,
+      "ch5_doctor_after_match", "ch5_return_to_tonari",
       "ending_start", "ending_normal", "ending_daily_smoke"].map(id => [id, true]));
     Object.assign(value, { chapter: 5, day: 60, slot: 1, phase: "cleared", money: 50000, stamina: 100,
       weatherSeed: 5, lovers: [], contacts: ["sumi"] });
@@ -28,11 +31,11 @@ async function seed(page, { seen = false, done = false } = {}) {
       _ch4_preview_seen: true, _ch4_cleared: true, _ch5_match_scheduled: true, _ch5_match_started: true, _ch5_cleared: true,
       ...(done ? { _ch5_staff_roll_done: true } : {}),
       _ch5: { startDay: 52, stage: 2, part: "cleared", titleSeen: true, read, scheduleDecision: "decide",
-        aftermath: 2, finale: 3, finaleScenes: ["ending_start", "ending_normal", "ending_daily_smoke"], won: true,
+        aftermath: 2, finale: 3, finaleScenes: ["ending_start", "ending_normal", "ending_daily_smoke"], won,
         secondCup: null } };
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false, staffRollSeen: seen });
     core.saveConfig(); core.save();
-  }, { seen, done });
+  }, { seen, done, won });
 }
 
 async function loadSlot(page, turbo = true) {
@@ -50,6 +53,7 @@ await suite("staff-roll", async check => {
     // 第五章・完: 章の伸びのレーダー。初回はスタッフロールへ進む前にタイトルへ抜けられない。
     await page.locator(`${dt("ch5-growth")} svg.radar`).waitFor();
     assert.equal(await page.locator(dt("ch5-complete-title")).count(), 0, "No way to skip the first roll via the title");
+    assert.equal(await cycleMeta(page), null, "The next cycle stays locked until the first roll ends");
     await page.locator(dt("ch5-complete-credits")).click();
     await page.locator(dt("staff-roll")).waitFor();
     const shown = await page.evaluate(() => ({
@@ -57,19 +61,65 @@ await suite("staff-roll", async check => {
       skip: document.querySelectorAll('[data-test="staff-roll-skip"]').length,
     }));
     assert.deepEqual(shown, { skippable: "no", skip: 0 });
-    // 流し終えたらタイトルへ戻る。保存と端末の両方に「見た」が残る。
+    // 流し終えたらタイトルへ戻る。保存と端末の両方に「見た」が残り、真エンドとして次の周回が開く。
     await page.locator(dt("title-new")).waitFor({ timeout: 30000 });
+    await page.locator(dt("title-next-cycle")).waitFor();
     const saved = await get(page);
     assert.equal(saved.flags._ch5_staff_roll_done, true);
     assert.equal(saved.flags._ch5.part, "cleared");
     const config = await page.evaluate(async () => (await import("./js/core/state.js")).config);
     assert.equal(config.staffRollSeen, true);
+    const cycle = await cycleMeta(page);
+    assert.equal(cycle.unlocked, true);
+    assert.deepEqual(cycle.trueEnds.map(end => end.cycleId), [saved.cycleId]);
+    assert.equal(cycle.carryPackage.fromCycleId, saved.cycleId);
+    assert.equal(cycle.carryPackage.fromCycle, 1);
     // 見終えた保存を開くと、完了カードから見直せる（いつでも飛ばせて、カードへ戻る）。
     await loadSlot(page, false);
     await page.locator(dt("ch5-complete-title")).waitFor();
+    const note = await page.locator(`${dt("ch5-complete")} .ch2-contest-note`).textContent();
+    assert(note.includes("タイトルの NEXT CYCLE から、2周目をはじめられます。"), note);
+    assert.equal((await cycleMeta(page)).trueEnds.length, 1, "Reopening the same run does not add a true end");
     await page.locator(dt("ch5-complete-credits")).click();
     await page.locator(dt("staff-roll-skip")).click();
     await page.locator(dt("ch5-complete")).waitFor({ timeout: 10000 });
+  });
+
+  await check("a-lost-match-also-opens-the-next-cycle-after-the-first-roll", async page => {
+    await seed(page, { won: false });
+    await loadSlot(page);
+    const note = await page.locator(`${dt("ch5-complete")} .ch2-contest-note`).textContent();
+    assert(!note.includes("NEXT CYCLE"), note);
+    assert.equal(await cycleMeta(page), null);
+    await page.locator(dt("ch5-complete-credits")).click();
+    await page.locator(dt("title-next-cycle")).waitFor({ timeout: 30000 });
+    const saved = await get(page);
+    assert.equal(saved.flags._ch5.won, false);
+    assert.deepEqual((await cycleMeta(page)).trueEnds.map(end => end.cycleId), [saved.cycleId]);
+  });
+
+  await check("a-save-that-finished-the-roll-earlier-opens-the-next-cycle-from-the-end-card", async page => {
+    // スタッフロールまで見終えた後に、この接続より前の版で止まっていた保存（メタ層が無い）。
+    await seed(page, { done: true, seen: true });
+    assert.equal(await cycleMeta(page), null);
+    await loadSlot(page, false);
+    const note = await page.locator(`${dt("ch5-complete")} .ch2-contest-note`).textContent();
+    assert(note.includes("タイトルの NEXT CYCLE から、2周目をはじめられます。"), note);
+    const saved = await get(page);
+    const cycle = await cycleMeta(page);
+    assert.equal(cycle.unlocked, true);
+    assert.deepEqual(cycle.trueEnds.map(end => end.cycleId), [saved.cycleId]);
+    // タイトルから2周目を始めると、オートセーブが新しい周回の第1章になる（恋人は引き継がない）。
+    await page.locator(dt("ch5-complete-title")).click();
+    await page.locator(dt("title-next-cycle")).click();
+    await page.locator(dt("cycle-start")).click();
+    await page.locator(dt("cycle-overwrite")).click();
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem("suien_remake_save") || "null")?.cycle === 2);
+    const next = await get(page);
+    assert.equal(next.chapter, 1);
+    assert.deepEqual(next.lovers, []);
+    assert.notEqual(next.cycleId, saved.cycleId);
+    assert.equal((await cycleMeta(page)).highestCycleStarted, 2);
   });
 
   await check("first-roll-ignores-keys-and-clicks-until-it-ends", async page => {

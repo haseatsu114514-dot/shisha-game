@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EEE2CE  枠の段 1: 2コマ@y=271
+  コマ1: 719x511 @(38,271) 比率 1.407 → ok
+  コマ2: 719x508 @(779,274) 比率 1.415 → ok
+コマ1: 719x511 (1.407) → 左右に各3.1%の紙帯 → 出力 766x511
+コマ2: 719x508 (1.415) → 左右に各2.8%の紙帯 → 出力 762x508
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "kuze-mirror-room",
+  "title": "（題名）",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "loading/kuze-mirror-room-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "loading/kuze-mirror-room-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "output/allcast-refill-2383-20261102/candidates/kuze-mirror-room/source-v1.png",
+      "region": {
+        "x": 38,
+        "y": 271,
+        "width": 719,
+        "height": 511,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "output/allcast-refill-2383-20261102/candidates/kuze-mirror-room/source-v1.png",
+      "region": {
+        "x": 779,
+        "y": 274,
+        "width": 719,
+        "height": 508,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "kuze-mirror-room-1.webp",
+      "width": 766,
+      "height": 511,
+      "sha256": null
+    },
+    {
+      "file": "kuze-mirror-room-2.webp",
+      "width": 762,
+      "height": 508,
+      "sha256": null
+    }
+  ]
+}

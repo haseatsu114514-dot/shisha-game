@@ -33,7 +33,12 @@ async function setup(page, answer = 0) {
     };
   }, answer);
 }
-const work = page => page.evaluate(() => H.daily.playHiyoriEvent('work_talk'));
+// ♥4・♥5（#2025）は読了済みとして贈り物だけを見る。段階の順序は affinity_stages.mjs と hiyori_work_relationship.mjs で検証する。
+const work = page => page.evaluate(async () => {
+  const done = await H.daily.playHiyoriEvent('work_talk');
+  if (done) Object.assign(H.core.state.flags, { _hiyori_peach_talk_done: true, _hiyori_promise_done: true });
+  return done;
+});
 await suite('hiyori-hagal', async allCheck => {
   // Focused reruns are optional; CI executes every assertion by default.
   const check = (label, body, options) => !process.env.CASE_FILTER || label.includes(process.env.CASE_FILTER)
@@ -49,6 +54,7 @@ await suite('hiyori-hagal', async allCheck => {
         if (kind === 'only-owned') s.owned.push(gear.id);
         if (kind === 'unanswered' || kind === 'missing-gear') {
           s.flags._hiyori_work_talk_done = true; s.flags._hiyori_bond_question_done = true;
+          s.flags._hiyori_peach_talk_done = true; s.flags._hiyori_promise_done = true;
         }
         if (kind === 'missing-gear') {
           s.romanceChoices.bond_q1_hiyori = { char: 'hiyori', value: 0, day: s.day };
@@ -146,6 +152,40 @@ await suite('hiyori-hagal', async allCheck => {
         answer: H.core.state.romanceChoices.bond_q2_hiyori.value, route: H.core.state.finales.hiyori.route };
     });
     assert(after.done); assert.equal(after.count, 1); assert.equal(after.answer, 0); assert.equal(after.route, 'friend');
+  });
+  // #2294: ♥4は昼にも読め、♥5の約束の夜にそのまま締めくくりへ進む（第1章の大会前に届くように）。
+  await check('promise-night-continues-into-finale-and-saves', async page => {
+    await setup(page, 0);
+    assert(await page.evaluate(() => H.daily.playHiyoriEvent('work_talk')));
+    const r = await page.evaluate(async () => {
+      const s = H.core.state; s.slot = 0;
+      const day = await H.daily.meetHiyoriAtTonari();
+      const afterDay = { peach: !!s.flags._hiyori_peach_talk_done, promise: !!s.flags._hiyori_promise_done,
+        finale: !!s.finales.hiyori, present: H.daily.hiyoriAtTonari() };
+      s.slot = 1; const night = await H.daily.meetHiyoriAtTonari();
+      H.core.saveToSlot('suien_remake_slot1'); H.core.newGame(); H.core.loadFromSlot('suien_remake_slot1');
+      const t = H.core.state;
+      return { day, afterDay, night, promise: !!t.flags._hiyori_promise_done, flag: !!t.flags._hiyori_bond_finale_done,
+        route: t.finales.hiyori?.route, gifts: t.owned.filter(id => id === 'suyaki_hiyori').length,
+        again: await H.daily.meetHiyoriAtTonari() };
+    });
+    assert(r.day && r.afterDay.peach && !r.afterDay.promise && !r.afterDay.finale && !r.afterDay.present, JSON.stringify(r));
+    assert(r.night && r.promise && r.flag && !r.again, JSON.stringify(r));
+    assert.equal(r.route, 'friend'); assert.equal(r.gifts, 1);
+  });
+  // #2294: ♥5に届いている夜は、♥4→♥5の約束→締めくくりを一度の来店で続けて読む。
+  await check('heart5-night-reads-peach-promise-and-finale-together', async page => {
+    await setup(page, 0);
+    assert(await page.evaluate(() => H.daily.playHiyoriEvent('work_talk')));
+    const r = await page.evaluate(async () => {
+      const s = H.core.state; s.slot = 1;
+      const present = H.daily.hiyoriAtTonari(), played = await H.daily.meetHiyoriAtTonari();
+      return { present, played, peach: !!s.flags._hiyori_peach_talk_done, promise: !!s.flags._hiyori_promise_done,
+        flag: !!s.flags._hiyori_bond_finale_done, route: s.finales.hiyori?.route,
+        gifts: s.owned.filter(id => id === 'suyaki_hiyori').length, remaining: H.daily.hiyoriAtTonari() };
+    });
+    assert(r.present && r.played && r.peach && r.promise && r.flag && !r.remaining, JSON.stringify(r));
+    assert.equal(r.route, 'friend'); assert.equal(r.gifts, 1);
   });
   for (const [device, touch, options] of [['pc', false, {}], ['touch', true,
     { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {

@@ -205,6 +205,10 @@
           "text": "笑いながら、営業日と仕入れの話になった。太陽は閉店の札も見せてくれた。"
         },
         {
+          "type": "remember",
+          "memory_id": "da_silva_shop"
+        },
+        {
           "speaker": "da_silva",
           "face": "normal",
           "text": "明日は俺も休み。次は大会で会おう。審査席から見てるぞ"
@@ -356,6 +360,10 @@
           "text": "答えを待つ間、男はゆっくりと笑った。"
         },
         {
+          "type": "remember",
+          "memory_id": "sheikh_asked"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "帰り際、男が自分のトングを差し出した。断る間もなく、それは俺の手の中にあった。"
@@ -475,6 +483,11 @@
           "speaker": "",
           "face": "",
           "text": "男は店員に礼を言って去った。カップは、洗いやすいように重ねてあった。"
+        },
+        {
+          "type": "reflection",
+          "text": "重ねられたカップを見ていると、誰かと過ごした時間がふとよみがえった。",
+          "comment": "大会前夜の交流の振り返り（前夜の必須場面の最後）。トングは返した直後なので、導入を場面に合わせる"
         }
       ]
     },
@@ -561,6 +574,10 @@
           "speaker": "master_hookah",
           "face": "normal",
           "text": "こちらの都合で待たせるのと、相手を待つのは違う。君はどちらかな"
+        },
+        {
+          "type": "remember",
+          "memory_id": "master_hookah_wait"
         },
         {
           "speaker": "hajime",
