@@ -759,6 +759,7 @@
         "remake/test/facility_icons.mjs",
         "assets/ui/map-facilities-579.png",
         "assets/ui/map-facilities-extra-579.webp",
+        "assets/ui/map-facilities-*.webp",
         "asset_sources/store-logos/ch1-issue470/ingame-qa/pin-cutout-546/**",
         "asset_sources/map-facilities-579/**"
       ],
@@ -2713,7 +2714,8 @@
         "remake/test/browser/facility_icons.mjs",
         "remake/js/daily/facility-icons.js",
         "remake/css/facility-icons.css",
-        "remake/facility-icons-preview.html"
+        "remake/facility-icons-preview.html",
+        "assets/ui/map-facilities-*.webp"
       ],
       "run": [
         "node remake/test/store_logos.mjs",
