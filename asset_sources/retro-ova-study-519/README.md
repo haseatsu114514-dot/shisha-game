@@ -31,7 +31,7 @@ Issue [#519](https://github.com/haseatsu114514-dot/shisha-game/issues/519) / 202
 - [入口の影・PC](gameplay/shadow-desktop.png) / [スマホ横画面](gameplay/shadow-touch.png)
 - [録画QA](gameplay/capture.json) / [本編接続9ケース](gameplay/ch1-preview-results.json) / [比較案4ケース](gameplay/chapter-preview-samples-results.json) / [匿名のスマホ表示](gameplay/shadow-touch.json)
 
-第1章クリアの初回・クリア画面の再視聴・確認ページで同じ2枚を使う。予告の入口では話者名を表示せず、元の「……ごめん。理由は、聞かないで」だけを置く。章頭の人物画は予告に入れない。正式なWebPとPNG原画の照合は[採用記録](../ch2-preview/adoption.json)、進行と保存の仕様は[章末と次回予告](../../docs/chapter_previews.md)。
+第1章クリアの初回・クリア画面の再視聴・確認ページで同じ2枚を使う。予告の入口では話者名を表示せず、元の「……ごめん。理由は、聞かないで」だけを置く。章頭の人物画は予告に入れない。正式なWebPとPNG原画の照合は[採用記録](../ch2-preview/adoption.json)、進行と保存の仕様は[章末と次回予告](../../docs/spec/chapter_previews.md)。
 
 ## 制作記録と初稿
 

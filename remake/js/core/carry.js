@@ -430,6 +430,7 @@ export const FLAG_EXACT_RULES = [
   ["_tsumugi_contest_research", "person"],
   ["_tsumugi_contest_submitted", "person"],
   ["_tsumugi_story_day", "person"],
+  ["_trpg_tutorial_seen", "ui"],          // 店長のTRPGの遊び方説明を既読（表紙の「はじめての人へ」でいつでも見直せる）
   ["_tutorial_done", "progression"],
   ["_tutorial_requested", "progression"],
   ["_tutorial_skipped", "progression"],
@@ -493,7 +494,6 @@ export const FLAG_EXACT_RULES = [
   ["romance_minto", "person"],
   ["seenDemo", "ui"],
   ["_kannon_growth_intro_done", "ui"],
-  ["_ch5_growth_travel", "progression"],
   ["spot_cafe_naru_done", "person"],
   ["spot_choizap_minto_done", "person"],
   ["spot_kannon_adam_done", "person"],

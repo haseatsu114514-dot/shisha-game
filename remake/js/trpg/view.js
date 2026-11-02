@@ -1,5 +1,5 @@
 import { el } from "../core/util.js";
-import { TrpgSession, HEAT, heatTier, DICE } from "./session.js";
+import { TrpgSession, HEAT, heatTier, DICE, STATS, PLAYER_SEAT, approachesOf, approachBase, buildPc, randomPc } from "./session.js";
 import { displayName, portraitUrl, portraitTop as topFor, sceneUrl } from "./presentation.js";
 import { createTrpgAudio } from "./audio.js";
 import { checkForecast, rerollOdds } from "./feedback.js";
@@ -14,14 +14,42 @@ const ICONS = {
   help: '<circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 0 1 6 0c0 2-3 2-3 4m0 3v.2"/>',
   exit: '<path d="m10 5-7 7 7 7m-7-7h18"/>',
   notes: '<path d="M6 3h13v18H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm2 0v18m3-13h5m-5 4h5"/>',
+  sheet: '<path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5"/><circle cx="16.5" cy="16.5" r="1.5"/>',
 };
+/** Placeholder bust for a built character until its portrait exists: tinted silhouette with the name's first letter. */
+const BUST = '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="38" r="20" fill="currentColor"/><path d="M14 98c3-24 17-36 36-36s33 12 36 36z" fill="currentColor"/></svg>';
+const STAT_SHORT = { eye: "観", hand: "手", talk: "話", nerve: "度" };
 
 /** Mounts one isolated session; finished resolves only after the player leaves the table. */
-export function mountTrpg(host, { scenario, characters, manifest, tableTalk = null, seed, profileId = null, closeLabel = "卓を片付ける", audio: providedAudio = null, allowReplay = true, onComplete = () => {} }) {
-  const session = new TrpgSession(scenario, { seed, profileId });
+export function mountTrpg(host, { scenario, characters, manifest, tableTalk = null, tutorialLines = null, tutorial = false, onTutorialDone = () => {},
+  seed, profileId = null, pc = null, companions = {}, closeLabel = "卓を片付ける", audio: providedAudio = null, allowReplay = true, onComplete = () => {} }) {
+  // The player's character can be rebuilt on the cover; the session restarts from the same seed until the story begins.
+  let build = pc, session = new TrpgSession(scenario, { seed, profileId, pc: build, companions });
   const cast = Object.fromEntries(scenario.cast.map(c => [c.id, c]));
   const gm = scenario.cast.find(c => c.part === "GM").id;
   const presentation = scenario.presentation;
+  // Character sheets are keyed by the authored seat; a substitute player keeps the same PC.
+  let sheets = session.sheets;
+  const seatOf = id => cast[id]?.seat || id;
+  const pcOf = id => sheets[seatOf(id)] || null;
+  const statLabel = key => presentation.stats?.[key] || key;
+  // Seats nobody filled tonight: the GM voices those PCs.
+  const npcSeats = Object.keys(sheets).filter(seat => !scenario.cast.some(c => seatOf(c.id) === seat));
+  // The PC's own likeness when the sheet has one; otherwise the player's portrait stands in.
+  function pcFace(seat, playerId) {
+    const sheet = sheets[seat];
+    if (sheet?.portrait) return el("img.trpg-pc-art", { src: new URL(sheet.portrait, import.meta.url).href, alt: "" });
+    if (sheet?.color) return bust(sheet);
+    return el("img", { src: portrait(playerId), alt: "", style: { top: portraitTop(playerId, 150, 6) } });
+  }
+  function bust({ color, accent, name }) {
+    return el("span.trpg-pc-bust", { style: { "--bust": color, "--bust-accent": accent || "#e9d9b5" }, html: BUST, title: name || "" });
+  }
+  /** Authored text names the player's character with {pc}; the built name fills it in. */
+  // {pc} is the player's character, {pc:seat} a companion's, {pcTitle} the player's origin and {gm} tonight's GM.
+  const pcText = text => String(text ?? "").replace(/\{pc:([a-z]+)\}/g, (_, seat) => sheets[seat]?.name || "")
+    .replace(/\{pc\}/g, sheets[PLAYER_SEAT]?.name || "").replace(/\{pcTitle\}/g, sheets[PLAYER_SEAT]?.title || "")
+    .replace(/\{gm\}/g, name(gm));
   // Warm the first illustrated decision while the cover and opening conversation play.
   const choiceArt = new Image();
   choiceArt.src = new URL("../../img/ui/trpg/choices-" + (presentation.theme === "shark" ? "shark" : "harbor") + ".webp", import.meta.url).href;
@@ -58,6 +86,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   decorateTool(sound, "sound");
   const tools = el("div.trpg-tools", [sound,
     toolButton("会話ログ", "trpg-log", openLog, "log"),
+    ...(Object.keys(sheets).length ? [toolButton("キャラクターシート", "trpg-sheets", openSheets, "sheet")] : []),
     toolButton("遊び方", "trpg-help", openHelp, "help"),
     toolButton("本棚へ戻る", "trpg-exit", exit, "exit"),
   ]);
@@ -120,16 +149,23 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("span", { text: phase === "ending" ? "結末" : presentation.phases[phase].kicker.split(" / ").pop() })]))));
     teamwork.replaceChildren(el("span", { text: "連携札 " + state.teamwork + "/2" }),
       ...[1, 2].map(n => el("i", { class: n > state.teamwork ? "spent" : "", "aria-hidden": "true" })));
-    table.replaceChildren(...scenario.cast.map(c => el("span.trpg-table-person", {
-      dataset: { speaker: c.id },
-    }, [seatMark(c.id), el("span.trpg-seat-name", { text: (c.part === "GM" ? "GM " : "PL ") + name(c.id) }),
-      el("small.trpg-seat-speaking"),
-      ...(c.part === "GM" ? [] : [el("small.trpg-seat-ability", { text: state.used[c.id] ? "札 使用済" : "札 未使用",
-        dataset: { spent: String(!!state.used[c.id]) } })]),
-    ])));
+    table.replaceChildren(...scenario.cast.map(c => {
+      const pc = c.part === "GM" ? null : pcOf(c.id);
+      return el("span.trpg-table-person", { dataset: { speaker: c.id, part: c.part === "GM" ? "gm" : "pl" } }, [
+        el("span.trpg-seat-head", [seatMark(c.id), el("span.trpg-seat-name", { text: (c.part === "GM" ? "GM " : "PL ") + name(c.id) }),
+          el("small.trpg-seat-speaking")]),
+        pc ? el("span.trpg-seat-pc", { dataset: { test: "trpg-seat-pc-" + c.id } }, [el("strong", { text: pc.name }),
+          el("span.trpg-seat-stats", { "aria-label": STATS.map(k => statLabel(k) + pc.stats[k]).join("、") },
+            STATS.map(k => el("i", { text: STAT_SHORT[k] + pc.stats[k], dataset: { stat: k, peak: String(pc.stats[k] >= 5) } })))]) : null,
+        c.part === "GM" && npcSeats.length ? el("span.trpg-seat-pc", { dataset: { test: "trpg-seat-npc" } },
+          [el("strong", { text: "兼任 " + npcSeats.map(seat => sheets[seat].name).join("・") })]) : null,
+        ...(c.part === "GM" ? [] : [el("small.trpg-seat-ability", { text: state.used[c.id] ? "札 使用済" : "札 未使用",
+          dataset: { spent: String(!!state.used[c.id]) } })]),
+      ].filter(Boolean));
+    }));
     syncSpeaker(busy ? frames[cursor]?.speaker : gm);
     const covering = state.phase === "cover";
-    dock.hidden = covering;
+    dock.hidden = covering && !busy;
     table.hidden = covering;
     progress.hidden = covering;
     teamwork.hidden = covering;
@@ -190,7 +226,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function talk(lines, callback, focusTest = null) {
     syncHeat();
     frames = sequence(lines, heatChatter); heatChatter = []; cursor = 0; afterTalk = callback; afterFocus = focusTest; busy = true;
-    root.classList.remove("trpg-idle"); next.hidden = false; next.disabled = false;
+    root.classList.remove("trpg-idle"); root.classList.add("trpg-talking"); next.hidden = false; next.disabled = false;
     renderBody();
     showFrame();
     next.focus({ preventScroll: true });
@@ -203,12 +239,13 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       style: { top: portraitTop(frame.speaker, 410, 16) } }));
     art.style.backgroundColor = person?.color || "#566053";
     speaker.textContent = name(frame.speaker);
-    role.textContent = frame.role || (person?.part === "GM" ? "GM／卓の会話" : "PL／卓の会話");
+    role.textContent = pcText(frame.role) || (person?.part === "GM" ? "GM／卓の会話" : "PL／卓の会話");
     dock.dataset.layer = /場面|物語/.test(role.textContent) ? "fiction" : "table";
-    speech.textContent = frame.text;
+    speech.textContent = pcText(frame.text);
+    showPanel(frame.panel || null);
     next.textContent = cursor + 1 < frames.length ? "次へ" : "続ける";
     syncSpeaker(frame.speaker);
-    log.push({ speaker: frame.speaker, role: role.textContent, text: frame.text });
+    log.push({ speaker: frame.speaker, role: role.textContent, text: pcText(frame.text) });
   }
   function advanceDialogue() {
     if (!busy || overlay || disposed) return;
@@ -217,6 +254,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   function finishTalk() {
     busy = false; frames = [];
+    root.classList.remove("trpg-talking");
+    showPanel(null);
     const callback = afterTalk, focusTest = afterFocus; afterTalk = null; afterFocus = null;
     next.hidden = true; root.classList.add("trpg-idle");
     if (callback) callback(); else renderBody();
@@ -233,11 +272,13 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     root.classList.add("trpg-idle"); next.hidden = true;
   }
   function start() {
-    if (session.snapshot().phase !== "cover") return;
+    if (busy || overlay || session.snapshot().phase !== "cover") return;
     session.start(); syncChrome();
     audio.play("open");
-    talk(sequence(scenario.intro, scenario.listen, [{ speaker: gm, role: presentation.arrivalRole, text: session.profile.arrival }]),
-      () => { renderBody(); openCheck("listen"); });
+    // Session zero: everyone at the table says who they will play before the story begins.
+    const zero = scenario.sessionZero ? [scenario.sessionZero.open, ...Object.values(session.companions).map(o => o.making), scenario.sessionZero.close] : [];
+    talk(sequence(...zero, scenario.intro, scenario.listen, [{ speaker: gm, role: presentation.arrivalRole, text: session.profile.arrival }]),
+      () => { renderBody(); openDeclaration("listen"); });
   }
   function room(interactive = false) {
     const node = el("div.trpg-room", { class: interactive ? "interactive" : "" }, [
@@ -318,7 +359,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       dataset: { test: "trpg-risk" }, "aria-label": "危機 " + state.pressure + "、最大" + session.rules.pressureMax,
     }));
     if (state.phase === "listen") {
-      if (!busy) actions.append(button("判定へ", "trpg-listen-open", () => openCheck("listen"), { class: "primary" }));
+      if (!busy) actions.append(button("判定へ", "trpg-listen-open", () => openDeclaration("listen"), { class: "primary" }));
       idle(presentation.listenIdle);
     } else if (state.phase === "explore") {
       cue.append(investigation());
@@ -335,12 +376,12 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       idle(presentation.exploreIdle);
     } else if (state.phase === "prepare") {
       scene.append(preparationChoices());
-      actions.append(button(copy.button, "trpg-prepare-open", () => openCheck("prepare"),
+      actions.append(button(copy.button, "trpg-prepare-open", () => openDeclaration("prepare"),
         { class: "primary", disabled: busy || session.flow.prepare.some(f => !state.plan[f]) }));
       idle(presentation.prepareIdle);
     } else if (state.phase === "serve") {
       scene.append(servingChoices());
-      actions.append(button(copy.button, "trpg-serve-open", () => openCheck("serve"),
+      actions.append(button(copy.button, "trpg-serve-open", () => openDeclaration("serve"),
         { class: "primary", disabled: busy || session.flow.serve.some(f => !state.plan[f]) }));
       idle(presentation.serveIdle);
     } else {
@@ -374,12 +415,14 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         el("h1", presentation.titleLines.map(text => el("span", { text }))),
         el("p", { text: scenario.premise }),
         el("div.trpg-cover-actions", [button("物語をはじめる", "trpg-start", start, { class: "primary" }),
-          button("遊び方", "trpg-cover-help", openHelp)]),
+          tutorialLines?.length ? button("はじめての人へ", "trpg-tutorial", playTutorial) : null,
+          button("遊び方", "trpg-cover-help", openHelp)].filter(Boolean)),
+        scenario.builder ? pcCard() : null,
         el("small.trpg-cover-author", { text: "作 · " + scenario.author }),
-      ]),
+      ].filter(Boolean)),
       el("div.trpg-cover-party", scenario.cast.map(c => el("div.trpg-cover-person", [
         el("span.trpg-cover-person-art", el("img", { src: portrait(c.id), alt: "", style: { top: portraitTop(c.id, 150, 6) } })),
-        el("strong", { text: name(c.id) }), el("small", { text: c.part === "GM" ? "GM" : c.role.split("／")[0] }),
+        el("strong", { text: name(c.id) }), el("small", { text: c.part === "GM" ? "GM" : (pcOf(c.id) ? "PC " + pcOf(c.id).name : pcText(c.role).split("／")[0]) }),
       ]))),
     ]));
   }
@@ -471,17 +514,74 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       html: '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><polygon points="50,2 95,26 95,74 50,98 5,74 5,26"/><path d="M50 2 25 68 75 68 50 2M5 26 25 68 5 74M95 26 75 68 95 74M50 98 25 68M50 98 75 68M5 26 50 2 95 26"/></svg>' },
       el("span.trpg-d20-value", { text: String(value), "aria-hidden": "true" }));
   }
-  function openCheck(kind) {
+  /** The declared PC and stat, shown wherever a roll is explained. */
+  function actorPanel(approach, { compact = false } = {}) {
+    if (!approach) return null;
+    const pc = sheets[approach.sheet || approach.actor], actor = approach.actor;
+    const rating = pc?.stats?.[approach.stat];
+    return el("div.trpg-roll-actor", { dataset: { test: "trpg-roll-actor", actor, npc: String(!!approach.npc) } }, [
+      el("span.trpg-roll-actor-face", { "aria-hidden": "true" }, pcFace(approach.sheet || approach.actor, actor)),
+      el("span.trpg-roll-actor-copy", [
+        el("small", { text: (approach.npc ? "GM " + name(actor) + " が演じる " : "PL " + name(actor) + " の ") + (pc?.name || "") }),
+        el("strong", { text: pcText(approach.label) }),
+        compact ? null : el("span.trpg-roll-actor-stat", { text: statLabel(approach.stat) + " ＋" + (Number.isInteger(rating) ? rating : DICE.base) }),
+      ].filter(Boolean)),
+    ]);
+  }
+  /** A real table asks who acts and how before any die is touched. */
+  function openDeclaration(kind) {
+    if (busy || overlay || session.snapshot().pending) return;
+    const approaches = approachesOf(scenario, kind);
+    if (!approaches.length) { openCheck(kind); return; }
+    const check = scenario.checks[kind], state = session.snapshot();
+    let pop;
+    // Beginners can follow the "おすすめ" mark: the approach with the best odds (the first one on a tie).
+    const oddsOf = approach => checkForecast(scenario, state, kind, { approach: approach.id, sheets }).odds.success;
+    const bestId = approaches.reduce((best, a) => oddsOf(a) > oddsOf(best) ? a : best, approaches[0]).id;
+    const cards = approaches.map(approach => {
+      const pc = sheets[approach.sheet || approach.actor];
+      const { base } = approachBase(scenario, kind, approach.id, sheets);
+      const odds = checkForecast(scenario, state, kind, { approach: approach.id, sheets }).odds;
+      const first = !state.acted[approach.actor] && !approach.npc && approach.actor !== PLAYER_SEAT;
+      return el("button.trpg-button.trpg-approach", { type: "button", dataset: { test: "trpg-approach-" + approach.id, actor: approach.actor, best: String(approach.id === bestId) },
+        "aria-label": pcText(approach.label) + "。" + (approach.npc ? "GMが演じる" : name(approach.actor) + "の") + (pc?.name || "") + "、" + statLabel(approach.stat) + "＋" + base + "。成功 約" + odds.success + "%",
+        onclick: () => {
+          if (!pop || busy) return;
+          pop.close();
+          talk(sequence(approach.declare), () => { renderBody(); openCheck(kind, approach.id); });
+        },
+      }, [
+        el("span.trpg-approach-face", { "aria-hidden": "true" }, pcFace(approach.sheet || approach.actor, approach.actor)),
+        el("span.trpg-approach-copy", [
+          el("small", { text: (approach.npc ? "GM " + name(approach.actor) + " が演じる" : "PL " + name(approach.actor)) + " · " + (pc?.name || "") }),
+          el("strong", { text: pcText(approach.label) }), el("span", { text: pcText(approach.detail) }),
+        ]),
+        el("span.trpg-approach-meta", [
+          el("b", { text: statLabel(approach.stat) + " ＋" + base, dataset: { stat: approach.stat } }),
+          el("small", { text: "成功 約" + odds.success + "%" }),
+          approach.id === bestId ? el("i.trpg-approach-best", { text: "おすすめ · いちばん成功しやすい", dataset: { test: "trpg-approach-best" } }) : null,
+          first ? el("i", { text: "初めての見せ場 · 盛り上がり＋1" }) : null,
+        ].filter(Boolean)),
+      ]);
+    });
+    pop = modal(presentation.declareTitle || "どうする？", el("div.trpg-declare-board", [
+      el("p.trpg-declare-prompt", [el("strong", { text: check.title }), el("span", { text: presentation.declareHint || "" })]),
+      el("div.trpg-approach-list", cards),
+      el("p.trpg-declare-rule", { text: presentation.target || ("目標値" + DICE.success) }),
+    ]), [button("卓に戻る", "trpg-declare-back", () => pop.close())], { wide: true, skin: "trpg-declare-stage" });
+  }
+  function openCheck(kind, approachId = null) {
     if (busy || overlay || session.snapshot().pending) return;
     const check = scenario.checks[kind], helper = check.helper || null;
-    const body = el("div", [el("p.trpg-roll-instruction", { text: "20面ダイス2個 ＋ 補正 · 30以上で成功" }), el("div.trpg-roll-scene",
-      el("div.trpg-dice-row", [die(1), die(1), el("span.trpg-dice-bonus", { text: "＋" + DICE.base, dataset: { test: "trpg-bonus" } })]))]);
+    const declared = approachBase(scenario, kind, approachId, sheets).approach;
+    const body = el("div", [el("p.trpg-roll-instruction", { text: "20面ダイス2個 ＋ 補正 · 30以上で成功" }), actorPanel(declared), el("div.trpg-roll-scene",
+      el("div.trpg-dice-row", [die(1), die(1), el("span.trpg-dice-bonus", { text: "＋" + DICE.base, dataset: { test: "trpg-bonus" } })]))].filter(Boolean));
     const forecast = el("div.trpg-forecast", { dataset: { test: "trpg-forecast" }, "aria-live": "polite" });
     function updateForecast() {
-      const predicted = checkForecast(scenario, session.snapshot(), kind, { support: !!support?.checked });
+      const predicted = checkForecast(scenario, session.snapshot(), kind, { support: !!support?.checked, approach: declared?.id || null, sheets });
       body.querySelector(".trpg-dice-bonus").textContent = "＋" + predicted.baseBonus;
       forecast.replaceChildren(el("div.trpg-forecast-head", [
-        el("strong", { text: "この判定の見通し" }), el("small", { text: "2d20 ＋ 基本" + DICE.base + (support?.checked ? " ＋ 助力" + DICE.support : "") + (predicted.momentum ? " ＋ 勢い" + predicted.momentum * DICE.momentum : "") }),
+        el("strong", { text: "この判定の見通し" }), el("small", { text: "2d20 ＋ " + (declared ? statLabel(declared.stat) : "基本") + predicted.base + (support?.checked ? " ＋ 助力" + DICE.support : "") + (predicted.momentum ? " ＋ 勢い" + predicted.momentum * DICE.momentum : "") }),
       ]), el("div.trpg-odds", [
         ["success", "30以上", "うまくいく"], ["mixed", "19〜29", "ひと手間"], ["trouble", "18以下", "思わぬ出来事"],
       ].map(([grade, threshold, label]) => el("div", { dataset: { grade } }, [
@@ -509,7 +609,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     let pop;
     const roll = button("サイコロを振る", "trpg-roll", () => {
       if (session.snapshot().pending) return;
-      const result = session.beginCheck(kind, { support: !!support?.checked });
+      const result = session.beginCheck(kind, { support: !!support?.checked, approach: declared?.id || null });
       syncResources();
       pop.box.dataset.rollState = "rolling";
       roll.disabled = true;
@@ -552,6 +652,11 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("span", { text: result.special === "critical" ? session.snapshot().teamwork < 2 ? "物語を続けると、連携札が1枚戻る" : "連携札は満タン。卓が沸いた"
         : result.special === "fumble" ? "それでも物語は続く。卓は笑いに包まれた" : "揃った出目に、卓が少しざわめく" }),
     ]));
+    if (result.approach) {
+      const pc = sheets[result.sheet], actorText = (result.actor && cast[result.actor] ? name(result.actor) : "GM") + (pc ? "の" + pc.name : "");
+      body.append(el("p.trpg-ability-receipt.trpg-actor-receipt", { dataset: { test: "trpg-actor-receipt" } },
+        [actorText + " · " + statLabel(result.stat) + " ＋" + result.base]));
+    }
     if (result.momentum) body.append(el("p.trpg-ability-receipt.trpg-momentum-receipt", { text: "卓の勢い ＋" + result.momentum * DICE.momentum + " · 盛り上がりが後押し" }));
     if (result.helper) body.append(el("p.trpg-ability-receipt", { dataset: { test: "trpg-helper-receipt" } },
       [seatMark(result.helper), name(result.helper) + "の助力 ＋7 · 札 使用済"]));
@@ -668,6 +773,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         el("section", [el("h3", { text: "サイコロが作った展開" }),
           ...result.checks.map(check => el("article.trpg-recap-check", { dataset: { grade: check.grade } }, [
             el("strong", { text: scenario.checks[check.kind].title }),
+            check.approach ? el("em", { text: (sheets[check.sheet]?.name || "") + (check.actor && cast[check.actor] ? "（" + name(check.actor) + "）" : "") + " · " + pcText(approachesOf(scenario, check.kind).find(a => a.id === check.approach)?.label || "") + " · " + statLabel(check.stat) + "＋" + check.base }) : null,
             el("span", { text: check.dice.join(" ＋ ") + " ＋ 補正" + check.bonus + " ＝ " + check.total + " · " + LABELS[check.grade] }),
             el("small", { text: [check.helper ? name(check.helper) + "の助力" : "",
               check.rerolled ? name(session.rerollActor) + "の振り直し" : "", check.hypothesisBonus ? "見立て＋" + check.hypothesisBonus : "",
@@ -678,6 +784,179 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("p.trpg-recap-rule", { text: "選んだ提案が結末を、サイコロがそこまでの出来事を作りました。" }),
       el("h3", { text: "物語の途中で見つけたもの" }), el("div.trpg-notes-grid", noteCards()),
     ], [button("結末に戻る", "trpg-recap-close", () => pop.close(), { class: "primary" })], { wide: true });
+  }
+  /** The shopkeeper explains the table to first-timers, with a small diagram for each idea. */
+  function playTutorial() {
+    if (busy || overlay || !tutorialLines?.length || session.snapshot().phase !== "cover") return;
+    talk(tutorialLines, () => {
+      renderBody(); onTutorialDone();
+    }, scenario.builder ? "trpg-build" : "trpg-start");
+  }
+  let panelNode = null, panelKind = null;
+  function showPanel(kind) {
+    if (kind === panelKind) return;
+    panelNode?.remove(); panelNode = null; panelKind = kind;
+    const build = kind && PANELS[kind];
+    if (!build) return;
+    panelNode = el("figure.trpg-tutorial-panel", { dataset: { panel: kind, test: "trpg-tutorial-panel" }, "aria-hidden": "true" }, build());
+    root.append(panelNode);
+  }
+  const PANELS = {
+    welcome: () => [el("strong.trpg-tutorial-big", { text: "TRPG" }), el("span", { text: "＝ みんなで物語を作る、ルールのあるごっこ遊び" }),
+      el("div.trpg-tutorial-row", [el("i", { text: "話す" }), el("i", { text: "選ぶ" }), el("i", { text: "サイコロ" }), el("i", { text: "物語が進む" })])],
+    table: () => [el("div.trpg-tutorial-seats", scenario.cast.map(c => el("div", { dataset: { part: c.part === "GM" ? "gm" : "pl" } }, [
+      el("span.trpg-tutorial-face", el("img", { src: portrait(c.id), alt: "", style: { top: portraitTop(c.id, 150, 6) } })),
+      el("b", { text: c.part === "GM" ? "GM" : "PL" }), el("small", { text: name(c.id) })]))),
+      el("p", { text: "GM＝お話を進める語り手 · PL＝役を演じて遊ぶ人" })],
+    sheet: () => {
+      const me = sheets[PLAYER_SEAT];
+      return me ? [el("div.trpg-tutorial-sheet", [el("strong", { text: "PC ＝ " + me.name }), el("small", { text: me.title || "" }),
+        el("dl", STATS.flatMap(k => [el("dt", { text: statLabel(k) }), el("dd", [el("i", Array.from({ length: 5 }, (_, i) => el("b", { class: i < me.stats[k] ? "lit" : "" }))),
+          el("small", { text: (scenario.builder?.statHelp?.[k] || "").split("。")[0] })])]))])] : [];
+    },
+    declare: () => [el("strong", { text: "どうする？" }), el("div.trpg-tutorial-row.trpg-tutorial-cards", [
+      el("i", { text: "話しかける · 話術" }), el("i", { class: "best", text: "様子を見る · 観察  おすすめ" }), el("i", { text: "準備する · 手際" })]),
+      el("p", { text: "誰が、何をするかを選ぶだけ。数字が大きい能力ほど成功しやすい" })],
+    roll: () => [el("div.trpg-tutorial-row.trpg-tutorial-dice", [el("b", { text: "14" }), el("span", { text: "＋" }), el("b", { text: "12" }),
+      el("span", { text: "＋ 能力 4 ＝" }), el("strong", { text: "30" })]), el("p", { text: "30以上で成功 · 19〜29でひと手間 · 18以下は思わぬ出来事" })],
+    fail: () => [el("div.trpg-tutorial-row", [el("i", { text: "うまくいった" }), el("i", { text: "ひと手間かかる" }), el("i", { text: "思わぬ出来事" })]),
+      el("p", { text: "どれでも物語は続く。失敗も、卓の楽しみ" })],
+    build: () => [el("strong", { text: "あなたの役を作ろう" }), el("p", { text: "表紙の「キャラクターを作る」で、見た目・役どころ・名前を選ぶ。迷ったら、おすすめのままでOK" })],
+  };
+  /** The player's character on the cover: who you will play tonight, and the door to remake them. */
+  function pcCard() {
+    const me = session.pc;
+    return el("div.trpg-cover-pc", { dataset: { test: "trpg-cover-pc" } }, [
+      el("span.trpg-cover-pc-face", { "aria-hidden": "true" }, pcFace(me.seat, PLAYER_SEAT)),
+      el("div.trpg-cover-pc-copy", [
+        el("small", { text: "PL " + name(PLAYER_SEAT) + " が演じる" }),
+        el("strong", { text: me.name, dataset: { test: "trpg-cover-pc-name" } }), el("span", { text: me.title }),
+        el("span.trpg-seat-stats", { "aria-label": STATS.map(k => statLabel(k) + me.stats[k]).join("、") },
+          STATS.map(k => el("i", { text: STAT_SHORT[k] + me.stats[k], dataset: { stat: k, peak: String(me.stats[k] >= 5) } }))),
+      ]),
+      button("キャラクターを作る", "trpg-build", openBuilder, { class: "small" }),
+    ]);
+  }
+  /** Character creation: a look, an origin preset, a name and a point-buy of the four stats. */
+  function openBuilder() {
+    if (busy || overlay || session.snapshot().phase !== "cover") return;
+    const builder = scenario.builder;
+    if (!builder) return;
+    const me = session.pc;
+    const draft = { look: me.look, archetype: me.archetype, name: me.name, stats: { ...me.stats } };
+    // Beginners pick a look, a role and a name; free point-buy waits behind "自分で振る".
+    let advanced = false;
+    const usedIn = key => [...new Set(Object.values(scenario.checks).filter(check => (check.approaches || [])
+      .some(a => (a.sheet || a.actor) === PLAYER_SEAT && a.stat === key)).map(check => check.title))];
+    const strengths = stats => STATS.slice().sort((a, b) => stats[b] - stats[a]).slice(0, 2).map(statLabel).join("・");
+    const board = el("div.trpg-builder", { dataset: { test: "trpg-builder" } });
+    let pop, nameInput;
+    const preset = () => builder.archetypes.find(a => a.id === draft.archetype);
+    const spent = () => STATS.reduce((n, key) => n + draft.stats[key], 0);
+    const refocus = test => { const node = pop?.box.querySelector('[data-test="' + test + '"]'); if (node && !node.disabled) node.focus({ preventScroll: true }); };
+    function render(focusTest = null) {
+      const left = builder.points - spent();
+      board.replaceChildren(
+        el("section.trpg-builder-looks", [el("h3", { text: "見た目" }),
+          el("div.trpg-builder-look-grid", builder.looks.map(look => el("button.trpg-button.trpg-builder-look", { type: "button",
+            class: draft.look === look.id ? "selected" : "", "aria-pressed": String(draft.look === look.id),
+            "aria-label": look.label + "。" + (look.detail || ""), dataset: { test: "trpg-look-" + look.id },
+            onclick: () => { draft.look = look.id; audio.play("tap"); render("trpg-look-" + look.id); },
+          }, [el("span.trpg-builder-look-face", { "aria-hidden": "true" }, look.portrait
+              ? el("img.trpg-pc-art", { src: new URL(look.portrait, import.meta.url).href, alt: "" })
+              : bust({ color: look.color, accent: look.accent, name: draft.name })),
+            el("strong", { text: look.label }), el("small", { text: look.detail || "" })])))]),
+        el("section.trpg-builder-origins", [el("h3", { text: "出自" }),
+          el("div.trpg-builder-origin-list", builder.archetypes.map(a => el("button.trpg-button.trpg-builder-origin", { type: "button",
+            class: draft.archetype === a.id ? "selected" : "", "aria-pressed": String(draft.archetype === a.id),
+            "aria-label": a.title + "、" + a.name + "。" + a.trait, dataset: { test: "trpg-archetype-" + a.id },
+            onclick: () => {
+              const previous = preset();
+              draft.archetype = a.id; draft.stats = { ...a.stats };
+              if (!draft.name || draft.name === previous?.name) draft.name = a.name;
+              audio.play("tap"); render("trpg-archetype-" + a.id);
+            },
+          }, [el("strong", { text: a.title }), a.recommended ? el("em.trpg-builder-recommend", { text: "はじめてならこれ" }) : null,
+            el("span", { text: "得意 " + strengths(a.stats) + " · 例の名前 " + a.name }),
+            el("small", { text: a.trait })].filter(Boolean))))]),
+        el("section.trpg-builder-stats", [
+          el("h3", { text: "名前と能力" }),
+          el("label.trpg-builder-name", [el("span", { text: "名前（" + (builder.nameMax || 6) + "文字まで）" }),
+            nameInput = el("input", { type: "text", value: draft.name, maxlength: String(builder.nameMax || 6), dataset: { test: "trpg-pc-name" },
+              oninput: event => { draft.name = event.currentTarget.value; syncConfirm(); } })]),
+          advanced ? el("p.trpg-builder-points", { dataset: { test: "trpg-stat-points", left: String(left) }, "aria-live": "polite" },
+            [el("strong", { text: "残り " + left + " 点" }), el("span", { text: " · 合計 " + builder.points + " 点、各 " + builder.min + "〜" + builder.max })])
+            : el("p.trpg-builder-easy", { text: "能力は、選んだ役どころで決まります。数字が大きいほど得意" }),
+          button(advanced ? "役どころのおすすめに戻す" : "能力を自分で振る（慣れてきたら）", "trpg-builder-advanced", () => {
+            advanced = !advanced;
+            if (!advanced) draft.stats = { ...preset().stats };
+            render("trpg-builder-advanced");
+          }, { class: "small trpg-builder-mode", "aria-pressed": String(advanced) }),
+          el("dl.trpg-builder-stat-rows", { dataset: { mode: advanced ? "advanced" : "easy" } }, STATS.flatMap(key => [el("dt", { text: statLabel(key) }), el("dd", [
+            advanced ? button("−", "trpg-stat-" + key + "-down", () => { draft.stats[key]--; render("trpg-stat-" + key + "-down"); },
+              { class: "small", disabled: draft.stats[key] <= builder.min, "aria-label": statLabel(key) + "を下げる" }) : null,
+            el("i", { "aria-hidden": "true" }, Array.from({ length: builder.max }, (_, i) => el("b", { class: i < draft.stats[key] ? "lit" : "" }))),
+            el("span", { text: "＋" + draft.stats[key], dataset: { test: "trpg-stat-" + key } }),
+            advanced ? button("＋", "trpg-stat-" + key + "-up", () => { draft.stats[key]++; render("trpg-stat-" + key + "-up"); },
+              { class: "small", disabled: draft.stats[key] >= builder.max || left <= 0, "aria-label": statLabel(key) + "を上げる" }) : null,
+            el("small.trpg-builder-stat-help", { text: (builder.statHelp?.[key] || "") + (usedIn(key).length ? " · この物語では「" + usedIn(key).join("」「") + "」" : "") }),
+          ].filter(Boolean))])),
+          el("p.trpg-builder-hint", { text: advanced ? (left > 0 ? "残りの点を振り分けよう。余らせても構わない" : "判定は 2d20 ＋ その場面で使う能力値")
+            : "判定は 2d20 ＋ その場面で使う能力値。計算は画面がします" }),
+        ]),
+      );
+      syncConfirm();
+      if (focusTest) refocus(focusTest);
+    }
+    const confirm = button("この役で卓につく", "trpg-build-confirm", () => {
+      let built;
+      try { built = buildPc(scenario, draft); } catch { syncConfirm(); return; }
+      build = { look: built.look, archetype: built.archetype, name: built.name, stats: built.stats };
+      session = new TrpgSession(scenario, { seed, profileId, pc: build, companions });
+      sheets = session.sheets;
+      pop.close(); renderBody();
+      root.querySelector('[data-test="trpg-build"]')?.focus({ preventScroll: true });
+    }, { class: "primary" });
+    function syncConfirm() {
+      let ok = true;
+      try { buildPc(scenario, draft); } catch { ok = false; }
+      confirm.disabled = !ok;
+    }
+    pop = modal(builder.title || "キャラクターを作る", [el("p.trpg-modal-intro", { text: builder.intro || "" }), board], [
+      button("おまかせ", "trpg-build-random", () => {
+        const rolled = randomPc(scenario, (seed ^ Date.now()) >>> 0);
+        Object.assign(draft, { look: rolled.look, archetype: rolled.archetype, name: rolled.name, stats: { ...rolled.stats } });
+        audio.play("clue"); render("trpg-build-random");
+      }),
+      button("やめる", "trpg-build-back", () => pop.close()), confirm,
+    ], { wide: true, skin: "trpg-builder-stage" });
+    render();
+  }
+  function sheetCard(seat) {
+    const pc = sheets[seat], player = scenario.cast.find(c => seatOf(c.id) === seat), state = session.snapshot();
+    const portraitId = player ? player.id : gm;
+    return el("article.trpg-sheet", { dataset: { test: "trpg-sheet-" + seat, npc: String(!player) } }, [
+      el("div.trpg-sheet-head", [
+        el("span.trpg-sheet-face", { "aria-hidden": "true" }, pcFace(seat, portraitId)),
+        el("div", [el("small", { text: player ? "PL " + name(player.id) : "GM " + name(gm) + " が兼任" }),
+          el("h3", { text: pc.name }), el("span", { text: pc.title || "" })]),
+      ]),
+      el("dl.trpg-sheet-stats", STATS.flatMap(k => [el("dt", { text: statLabel(k) }), el("dd", { dataset: { value: String(pc.stats[k]) } }, [
+        el("i", { "aria-hidden": "true" }, Array.from({ length: 5 }, (_, i) => el("b", { class: i < pc.stats[k] ? "lit" : "" }))),
+        el("span", { text: "＋" + pc.stats[k] })])])),
+      pc.trait ? el("p.trpg-sheet-trait", { text: pc.trait }) : null,
+      pc.likes ? el("p.trpg-sheet-likes", { dataset: { test: "trpg-sheet-likes-" + seat } }, [el("strong", { text: "好きなもの " }), pc.likes]) : null,
+      player?.ability ? el("p.trpg-sheet-ability", { dataset: { spent: String(!!state.used[player.id]) } },
+        [el("strong", { text: "切り札「" + player.ability + "」" }), el("span", { text: player.abilityText + (state.used[player.id] ? " · 使用済" : "") })]) : null,
+      el("small.trpg-sheet-acted", { text: player && state.acted[player.id] ? "この卓で " + state.acted[player.id] + " 回、前に出た" : "まだ前に出ていない" }),
+    ].filter(Boolean));
+  }
+  function openSheets() {
+    let pop;
+    pop = modal(presentation.sheetTitle || "キャラクターシート", [
+      el("p.trpg-modal-intro", { text: "判定は 2d20 ＋ 能力値。宣言した行動の能力で振ります。切り札は一人一度、連携札1枚を使います。" }),
+      el("div.trpg-sheet-grid", Object.keys(sheets).map(sheetCard)),
+    ], [button("卓に戻る", "trpg-sheets-close", () => pop.close(), { class: "primary" })], { wide: true, skin: "trpg-sheet-stage" });
   }
   function openLog() {
     const rows = log.length ? log.map(line => el("p.trpg-log-line", [
@@ -690,8 +969,18 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function openHelp() {
     let pop;
     pop = modal("この卓の遊び方", [
+      el("dl.trpg-help-glossary", [
+        el("dt", { text: "GM" }), el("dd", { text: "お話を進める語り手。場面を説明し、登場人物を演じる" }),
+        el("dt", { text: "PL" }), el("dd", { text: "遊ぶ人。物語の中の役を一人ずつ演じる" }),
+        el("dt", { text: "PC" }), el("dd", { text: "PLが演じる役。得意・不得意はキャラクターシートの能力値" }),
+        el("dt", { text: "判定" }), el("dd", { text: "サイコロ二つ＋能力値。30以上で成功。失敗しても物語は続く" }),
+      ]),
       el("p", { text: presentation.help }),
-      el("p", { text: "判定は20面ダイス二つの合計に＋3。30以上は成功、19〜29はひと手間、18以下は思わぬ出来事。どの結果でも物語は続きます。" }),
+      el("p", { text: Object.keys(sheets).length
+        ? "場面ごとに、誰が・どの能力で動くかを宣言します。判定は20面ダイス二つの合計に、そのキャラクターの能力値を足します。30以上は成功、19〜29はひと手間、18以下は思わぬ出来事。どの結果でも物語は続きます。"
+        : "判定は20面ダイス二つの合計に＋3。30以上は成功、19〜29はひと手間、18以下は思わぬ出来事。どの結果でも物語は続きます。" }),
+      ...(Object.keys(sheets).length ? [el("p", { text: "仲間のキャラクターが初めて前に出ると、卓の盛り上がりが1上がります。能力値はキャラクターシートで確認できます。" })] : []),
+      ...(scenario.builder ? [el("p", { text: "表紙の「キャラクターを作る」で、自分が演じる役の見た目・出自・名前と能力値（合計" + scenario.builder.points + "点）を決められます。" })] : []),
       el("p", { text: "共有する連携札は2枚。切り札を使うたび1枚使います。20のゾロ目（クリティカル）が出ると、1枚戻ります。" }),
       el("p", { text: "卓の盛り上がりは、うまくいった判定・思わぬ出来事・ゾロ目・仲間の見せ場・初めての相談・見立ての話し合いで上がります。3・6・8に届くたび、次の判定に勢い1つ（補正＋4、最大2つ）。" }),
       el("p", { text: "結末では卓を星3つで評価します。見立てが真相に合う、提案が本来の結末に届く、判定で2回以上うまくいく。" }),
@@ -754,6 +1043,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   document.addEventListener("visibilitychange", visibility);
   visibility();
   renderBody(); root.focus({ preventScroll: true });
+  if (tutorial) playTutorial();
   return { finished, snapshot: () => session.snapshot(),
     destroy: () => finish(completed || { cancelled: true, scenarioId: scenario.id }), get disposed() { return disposed; } };
 }

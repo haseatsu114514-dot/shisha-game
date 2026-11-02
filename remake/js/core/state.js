@@ -528,6 +528,7 @@ export const config = {
   shortSeen: false,
   statEffectColors: true, // 作り画面の能力補正を色と漢字で示す
   introArtStyle: "graphic", // 登場カットインの絵柄。"classic" で旧（立ち絵）に戻す（2026-10-31）
+  staffRollSeen: false, // スタッフロールを一度最後まで見たか。見た端末では2回目から飛ばせる（#517）
 };
 
 export function loadConfig() {

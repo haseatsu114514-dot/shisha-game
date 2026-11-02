@@ -38,6 +38,9 @@ html:root[data-ui-theme="paper"] :is(.st-row, .shop-item, .dc-row, .hud-level, .
   border-image: none; border-radius: 4px; box-shadow: none; filter: none;
 }
 html:root[data-ui-theme="paper"] :is(.hud-level, .hud-menu) { background: var(--paper); border-color: var(--ui-edge); box-shadow: 0 4px 10px #110a2240; }
+html:root[data-ui-theme="paper"] .keepsake-card {
+  color: var(--paper-ink); background: var(--paper-card); border-color: var(--paper-line);
+}
 
 /* ボタン: 通常＝紫の枠、主・選択中＝ラベンダー塗り */
 html:root[data-ui-theme="paper"] :is(.btn, .vn-choice, .mi-go, .mi-banner, .st-tab, .shop-tab, .gl-tab, .big-choice, .spot-pin .sub-label) {

@@ -76,10 +76,120 @@
           "text": "接客の落ち着いた時間。スミさんが新しいボトルを洗いながら、はじめに口を開いた。"
         },
         {
-          "type": "condition",
-          "condition_type": "craft_basics_experienced",
-          "next_true": "review",
-          "next_false": "first_explanation"
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめ。お前、そもそもなんでシーシャから煙が出るか分かって作ってるか？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "えっ？ ……えっと、上の炭でフレーバーを温めて、出た煙を水に通して吸う……からですよね？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "まあ80点だ。正解には違いねえが、もう少し解像度を上げろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが洗ったばかりのガラスボトル（水入れ）を置き、ステム（金属の管）を挿し込んだ。",
+          "diagram": "show"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "シーシャってのは『燃やす』んじゃねえ。『蒸らす』んだ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "一番上のボウルに詰めたフレーバー、タバコの葉っぱは、直接火に当てない"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "上に置いた炭の『熱』でじわじわと温める",
+          "diagram": "heat"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "だから焦がしちゃダメなんですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "そうだ。温められた葉っぱから出た煙は、ステムを通って下のボトルに行き、水の中をくぐる",
+          "diagram": "smoke"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "水をくぐると煙が冷えて、吸いやすくなる。害のほうにどこまで効くかは……諸説あるな",
+          "diagram": "bubble"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "冷えた煙はボトルの上に溜まる。それがホースを通って、お前の口に届く",
+          "diagram": "hose"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ちなみにあのモクモクの爆煙はな、水じゃなくてグリセリンと熱の仕事だ",
+          "diagram": "hide"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（なるほど……なんとなく作ってたけど、ちゃんと理屈があるんだ）"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "熱が高すぎれば焦げてイガイガする。低すぎれば煙が出ねえ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "炭の調整と吸い方、全部が噛み合って初めて『美味い煙』になる"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "葉っぱだけじゃ煙にならねえ。炭も、水も、吸うやつもいる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "同じ配合でも、それだけじゃ決まらないんですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ああ。まず、今ここにある一台を見ろ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ただ煙を出すだけなら誰でもできる"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "だが、客が『ずっと吸っていたい』と思う煙を作るには、その仕組みを頭と体で理解しろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "はい……！ ありがとうございます、スミさん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "構造を理解したことで、ほんの少しだけシーシャの奥深さに触れた気がした。"
         },
         {
           "type": "remember",
@@ -90,156 +200,7 @@
           "face": "",
           "text": "……【技術】が少し上がった。"
         }
-      ],
-      "branches": {
-        "review": [
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "今日は復習だ。作った一台を思い出しながら、図をたどってみろ",
-            "diagram": "hose"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（手順を思い出すと、図の流れとつながって見える）"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "まず、今ここにある一台を見ろ"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "分からなくなったら、また聞け。一度で全部覚えなくていい",
-            "diagram": "hide"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "はい。ありがとうございます、スミさん"
-          }
-        ],
-        "first_explanation": [
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "はじめ。お前、そもそもなんでシーシャから煙が出るか分かって作ってるか？"
-          },
-          {
-            "speaker": "hajime",
-            "face": "surprise",
-            "text": "えっ？ ……えっと、上の炭でフレーバーを温めて、出た煙を水に通して吸う……からですよね？"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "まあ80点だ。正解には違いねえが、もう少し解像度を上げろ"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "スミさんが洗ったばかりのガラスボトル（水入れ）を置き、ステム（金属の管）を挿し込んだ。",
-            "diagram": "show"
-          },
-          {
-            "speaker": "sumi",
-            "face": "serious",
-            "text": "シーシャってのは『燃やす』んじゃねえ。『蒸らす』んだ"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "一番上のボウルに入れたフレーバー（タバコの葉っぱ）は、直接火に当てない"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "上に置いた炭の『熱』でじわじわと温める",
-            "diagram": "heat"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "だから焦がしちゃダメなんですね"
-          },
-          {
-            "speaker": "sumi",
-            "face": "serious",
-            "text": "そうだ。温められた葉っぱから出た煙は、ステムを通って下のボトルに行き、水の中をくぐる",
-            "diagram": "smoke"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "水をくぐると煙が冷えて、吸いやすくなる。害のほうにどこまで効くかは……諸説あるな",
-            "diagram": "bubble"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "冷えた煙はボトルの上に溜まる。それがホースを通って、お前の口に届く",
-            "diagram": "hose"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "ちなみにあのモクモクの爆煙はな、水じゃなくてグリセリンと熱の仕事だ",
-            "diagram": "hide"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（なるほど……なんとなく作ってたけど、ちゃんと理屈があるんだ）"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "熱が高すぎれば焦げてイガイガする。低すぎれば煙が出ねえ。炭の調整と、吸い方"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "全てが噛み合って初めて『美味い煙』になる"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "葉っぱだけじゃ煙にならねえ。炭も、水も、吸うやつもいる"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "同じ配合でも、それだけじゃ決まらないんですね"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "ああ。まず、今ここにある一台を見ろ"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "ただ煙を出すだけなら誰でもできる"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "だが、客が『ずっと吸っていたい』と思う煙を作るには、その仕組みを頭と体で理解しろ"
-          },
-          {
-            "speaker": "hajime",
-            "face": "serious",
-            "text": "はい……！ ありがとうございます、スミさん"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "構造を理解したことで、ほんの少しだけシーシャの奥深さに触れた気がした。"
-          }
-        ]
-      }
+      ]
     },
     {
       "dialogue_id": "ch1_sumi_training",

@@ -83,6 +83,8 @@ DOC_FILES = {
     "story_review_prompt.md",
     "story_and_structure.md",
     "owner_requests.md",
+    # 2026-11-02 に owner_requests.md から archive/ へ移した 2026-09 以前の節（同じ禁止語の説明を含む）
+    "owner_requests_2026-06_09.md",
 }
 
 EXTENSIONS = {".json", ".js", ".md", ".py", ".gd", ".txt", ".csv", ".sh"}

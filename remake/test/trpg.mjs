@@ -91,7 +91,9 @@ test("rerolls are shared across checks and take the new die; aids are spent once
   const preparation = session.beginCheck("prepare", { support: true });
   // Reroll, the listen result and the hypothesis talk lift the table to the first tier: momentum +1.
   assert.equal(preparation.momentum, 1);
-  assert.equal(preparation.bonus, 10 + preparation.momentum * 4);
+  // The default approach is the player's own character: the sheet stat replaces the old flat +3.
+  assert.equal(preparation.base, scenario.cast.find(c => c.id === "hajime").sheet.stats.hand);
+  assert.equal(preparation.bonus, preparation.base + 7 + preparation.momentum * 4);
   assert(session.snapshot().used.adam);
   assert.throws(() => session.reroll(0));
 });
@@ -261,7 +263,7 @@ test("table excitement rises with shared moments, tiers give the next roll one m
   session.interpret("quiet"); session.plan("aroma", "tea"); session.plan("seat", "window");
   const before = session.snapshot().momentum;
   const check = session.beginCheck("prepare");
-  assert.equal(check.momentum, before); assert.equal(check.bonus, 3 + before * 4);
+  assert.equal(check.momentum, before); assert.equal(check.bonus, check.base + before * 4);
   assert.equal(session.snapshot().momentum, 0, "momentum is spent on the roll");
   session.state.heat = HEAT.max - 1; session.cheer(5, "test");
   assert.equal(session.snapshot().heat, HEAT.max);
@@ -271,3 +273,146 @@ test("table excitement rises with shared moments, tiers give the next roll one m
   assert.equal(done.result().heat.night, HEAT.nights[heatTier(done.snapshot().heat)]);
 });
 
+
+test("declared approaches roll with the PC's sheet stat; a companion's first turn is a table moment", () => {
+  for (const s of catalogScenarios) {
+    const gm = s.cast.find(c => c.part === "GM").id;
+    const sheets = Object.fromEntries(s.cast.filter(c => c.sheet).map(c => [c.id, c.sheet]));
+    assert.equal(Object.keys(sheets).length, 3);
+    for (const sheet of Object.values(sheets)) {
+      assert(sheet.name && sheet.title);
+      for (const stat of ["eye", "hand", "talk", "nerve"]) assert(Number.isInteger(sheet.stats[stat]) && sheet.stats[stat] >= 1 && sheet.stats[stat] <= 5);
+    }
+    for (const kind of ["listen", "prepare", "serve"]) {
+      const approaches = s.checks[kind].approaches;
+      assert.equal(approaches.length, 3);
+      assert.equal(approaches[0].actor, "hajime", "the player's own character leads the list");
+      assert.equal(new Set(approaches.map(a => a.actor)).size, 3, "every PC can act in each scene");
+      for (const a of approaches) {
+        assert(Number.isInteger(sheets[a.sheet || a.actor].stats[a.stat]), a.id);
+        const block = s.dialogues.find(d => d.dialogue_id === a.declare);
+        assert(block, a.declare);
+        assert(block.lines.some(l => l.speaker === gm), "the GM calls the roll");
+        assert(block.lines.some(l => l.speaker === a.actor), "the acting player declares");
+      }
+    }
+  }
+  const session = new TrpgSession(scenario, { profileId: "quiet", seed: 7 });
+  session.start();
+  assert.throws(() => session.beginCheck("listen", { approach: "nope" }));
+  const first = session.beginCheck("listen", { approach: "listen_watch" });
+  assert.equal(first.actor, "tsumugi"); assert.equal(first.stat, "eye"); assert.equal(first.base, 5); assert.equal(first.bonus, 5);
+  assert.equal(session.snapshot().heat, 1, "a companion stepping forward lifts the table once");
+  assert.deepEqual(session.snapshot().acted, { tsumugi: 1 });
+  session.settleCheck();
+  for (const id of ["menu", "window", "bag"]) session.inspect(id);
+  session.interpret("quiet"); session.plan("aroma", "tea"); session.plan("seat", "window");
+  const heatBefore = session.snapshot().heat;
+  const second = session.beginCheck("prepare", { approach: "prepare_light" });
+  assert.equal(second.base, 5); assert.equal(session.snapshot().heat, heatBefore, "the same companion earns no second spotlight");
+  session.settleCheck(); session.plan("approach", "quiet");
+  const own = session.beginCheck("serve");
+  assert.equal(own.actor, "hajime"); assert.equal(own.base, 4, "the default approach is the player's own character");
+  assert.equal(session.snapshot().heat, heatBefore, "the player's own turn is not a spotlight");
+  session.settleCheck();
+  assert.deepEqual(session.result().checks.map(c => c.approach), ["listen_watch", "prepare_light", "serve_word"]);
+  assert.deepEqual(session.result().acted, { tsumugi: 2, hajime: 1 });
+});
+
+test("character creation: looks, origin presets, a point-buy and a name replace the player's seat; dialogue names the built character", async () => {
+  const { buildPc, randomPc } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
+  for (const s of catalogScenarios) {
+    const b = s.builder;
+    assert(b && b.looks.length >= 4 && b.archetypes.length >= 3);
+    for (const a of b.archetypes) assert.equal(Object.values(a.stats).reduce((n, v) => n + v, 0), b.points, a.id + " presets spend every point");
+    // The authored default on the player's seat equals the first origin, so the untouched table plays as before.
+    const seat = s.cast.find(c => c.id === b.seat);
+    assert.deepEqual(seat.sheet.stats, b.archetypes[0].stats); assert.equal(seat.sheet.name, b.archetypes[0].name);
+    // The player's name never appears hard-coded: every line uses the {pc} token instead.
+    assert(!s.dialogues.some(d => d.lines.some(l => l.text.includes(b.archetypes[0].name))), "no raw default name in dialogue");
+    assert(s.dialogues.some(d => d.lines.some(l => l.text.includes("{pc}"))));
+    for (const check of Object.values(s.checks)) assert(check.approaches.some(a => a.detail.includes("{pc}")));
+    const pc = buildPc(s, { look: b.looks[2].id, archetype: b.archetypes[1].id, name: "ソラ" });
+    assert.equal(pc.name, "ソラ"); assert.equal(pc.title, b.archetypes[1].title); assert.equal(pc.look, b.looks[2].id);
+    assert.deepEqual(pc.stats, b.archetypes[1].stats);
+    assert.throws(() => buildPc(s, { look: "nope" })); assert.throws(() => buildPc(s, { archetype: "nope" }));
+    assert.throws(() => buildPc(s, { name: "" })); assert.throws(() => buildPc(s, { name: "あいうえおかき" }));
+    assert.throws(() => buildPc(s, { stats: { ...b.archetypes[0].stats, eye: b.max + 1 } }));
+    assert.throws(() => buildPc(s, { stats: { ...b.archetypes[0].stats, nerve: b.min - 1 } }));
+    const full = b.archetypes[0].stats, over = { ...full, [Object.keys(full).find(k => full[k] < b.max)]: full[Object.keys(full).find(k => full[k] < b.max)] + 1 };
+    assert.throws(() => buildPc(s, { stats: over }), /points/);
+    const spare = { ...full, [Object.keys(full).find(k => full[k] > b.min)]: full[Object.keys(full).find(k => full[k] > b.min)] - 1 };
+    assert.equal(buildPc(s, { stats: spare }).points, b.points - 1, "leaving a point unspent is allowed");
+    const a = randomPc(s, 42), c = randomPc(s, 42);
+    assert.deepEqual(a, c, "a seeded random character is reproducible");
+    assert(a.points <= b.points);
+  }
+  const moved = { eye: 2, hand: 3, talk: 3, nerve: 3 };
+  const session = new TrpgSession(scenario, { profileId: "quiet", seed: 7, pc: { look: "rust", archetype: "sailor", name: "ソラ", stats: moved } });
+  assert.equal(session.sheets.hajime.name, "ソラ"); assert.deepEqual(session.sheets.hajime.stats, moved);
+  assert(scenario.companionBuilds.adam.adam.some(o => o.name === session.sheets.adam.name), "companions bring a character they made");
+  assert.deepEqual(session.snapshot().pc, { name: "ソラ", title: "船乗り帰りの手伝い", look: "rust", archetype: "sailor", stats: moved });
+  session.start();
+  const roll = session.beginCheck("listen", { approach: "listen_talk" });
+  assert.equal(roll.base, 3, "the player's own stat drives the roll");
+  session.settleCheck();
+  for (const id of ["menu", "window", "bag"]) session.inspect(id);
+  session.interpret("quiet"); session.plan("aroma", "tea"); session.plan("seat", "window");
+  session.beginCheck("prepare"); session.settleCheck(); session.plan("approach", "quiet");
+  session.beginCheck("serve"); session.settleCheck();
+  assert.equal(session.result().pc.name, "ソラ");
+  assert.throws(() => new TrpgSession(scenario, { seed: 1, pc: { name: "" } }));
+});
+
+test("companions make their own characters: seeded variety, likes, own-voice making talk, and tokens for every name", async () => {
+  const { pickCompanions } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
+  const ids = new Set(characters.map(c => c.id));
+  for (const s of catalogScenarios) {
+    const gm = s.cast.find(c => c.part === "GM").id;
+    for (const [seat, byPlayer] of Object.entries(s.companionBuilds)) {
+      const authored = s.cast.find(c => c.id === seat);
+      assert(authored?.sheet, seat);
+      assert.equal(byPlayer[seat][0].name, authored.sheet.name, "the first option is the authored default");
+      for (const [player, options] of Object.entries(byPlayer)) {
+        assert(ids.has(player)); assert(options.length >= 2, "more than one way to build " + seat);
+        for (const o of options) {
+          assert(o.name && o.title && o.trait && o.likes, o.id);
+          assert(Object.values(o.stats).every(v => Number.isInteger(v) && v >= 1 && v <= 5));
+          assert(Object.values(o.stats).reduce((n, v) => n + v, 0) <= 11);
+          const talk = s.dialogues.find(d => d.dialogue_id === o.making);
+          assert(talk?.metadata?.making, o.making);
+          assert(talk.lines.some(l => l.speaker === player), "the player announces their own character");
+          assert(talk.lines.every(l => [player, gm, "hajime"].includes(l.speaker)));
+        }
+      }
+    }
+    // No companion or player character name is hard-coded outside the build options: everything goes through {pc}.
+    const names = Object.values(s.companionBuilds).flatMap(p => Object.values(p).flat()).map(o => o.name);
+    for (const d of s.dialogues.filter(d => !d.metadata?.making)) for (const l of d.lines) {
+      for (const name of names) assert(!l.text.includes(name) && !(l.role || "").includes(name), d.dialogue_id + ": " + l.text);
+    }
+    for (const check of Object.values(s.checks)) for (const a of check.approaches) for (const name of names) assert(!a.detail.includes(name) && !a.label.includes(name));
+    assert(s.sessionZero && s.dialogues.some(d => d.dialogue_id === s.sessionZero.open) && s.dialogues.some(d => d.dialogue_id === s.sessionZero.close));
+    // Variety comes from the seed through a separate hash: the dice are unchanged by companion choice.
+    const seen = new Set();
+    for (let seed = 1; seed <= 40; seed++) seen.add(JSON.stringify(pickCompanions(s, seed)));
+    assert(seen.size >= 3, "different nights bring different companion characters");
+    const plain = new TrpgSession(s, { seed: 11 }), forced = new TrpgSession(s, { seed: 11, companions: Object.fromEntries(Object.keys(s.companionBuilds).map(seat => [seat, s.companionBuilds[seat][seat][1].id])) });
+    plain.start(); forced.start();
+    assert.deepEqual(plain.beginCheck("listen").dice, forced.beginCheck("listen").dice);
+    for (const seat of Object.keys(s.companionBuilds)) {
+      assert.equal(forced.sheets[seat].name, s.companionBuilds[seat][seat][1].name);
+      assert.equal(forced.snapshot().companions[seat], s.companionBuilds[seat][seat][1].id);
+    }
+  }
+});
+
+test("the shopkeeper's first-table tutorial explains GM, PL, PC, the sheet, declaring, rolling and failure in short lines", async () => {
+  const tutorial = JSON.parse(await readFile(new URL("../../data/" + catalog.tutorial, import.meta.url), "utf8"));
+  const panels = new Set(tutorial.lines.map(l => l.panel));
+  for (const panel of ["welcome", "table", "sheet", "declare", "roll", "fail", "build"]) assert(panels.has(panel), panel);
+  assert(tutorial.lines.every(l => ["sai", "hajime"].includes(l.speaker)));
+  const text = tutorial.lines.map(l => l.text).join("");
+  for (const word of ["GM", "PL", "PC", "キャラクターシート", "30以上", "おすすめ"]) assert(text.includes(word), word);
+  for (const l of tutorial.lines) assert(Array.from(l.text.replace("{gm}", "サメちゃん")).reduce((n, c) => n + (c.codePointAt(0) <= 255 ? 0.5 : 1), 0) <= 48, l.text);
+});

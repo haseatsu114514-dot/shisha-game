@@ -12,11 +12,12 @@
 //                → 観客の挙手の合計で勝敗 →（勝ち）余韻／（負け・同数）そのまま後日談へ
 //   aftermath  : 博士の後日談 → tonari へ戻る
 //   finale     : ending の3場面（開始 → 中間 → 日常）→ cleared
+//   cleared    : スタッフロール（#517）を最後まで流したら _ch5_staff_roll_done → タイトルへ。以後の再開は完了カード
 //
 // 触らないもの（オーナー判断待ち）:
 //   Q13 会場の固有名・Q14 客席の台詞は台本側が空白のまま。表示名は「会場」で固定する。
 //   Q17 reflection は既存エンジンが処理するので、ここでは場面の順序だけを持つ。
-//   Q20 スタッフロール後段（selectPostEndingConflict）は接続しない。
+//   Q20 スタッフロールの後の本格的な修羅場（selectPostEndingConflict）は接続しない。
 //   ch5_dream_in / ch5_dream_out は挿入位置が未決のため接続しない（対象外）。
 //   ch5_reflection_placeholder はテスト専用なので接続しない。
 
@@ -445,6 +446,23 @@ export function beginChapterFiveFinale(value, scenes) {
 }
 
 // ---- 読了の確定 ---------------------------------------------------------------------
+// ---- スタッフロール（#517）--------------------------------------------------------------
+// フィナーレを読み終えた（cleared）あと、スタッフロールを最後まで流したかだけを保存に持つ。
+// 途中で閉じたら次の再開でもう一度流す。流し終えたら以後の再開は完了カード（第五章・完）。
+export const CH5_CREDITS_FLAG = "_ch5_staff_roll_done";
+
+/** スタッフロールをまだ流し終えていないか（cleared のときだけ true になりうる） */
+export function chapterFiveCreditsPending(value) {
+  return chapterFiveProgress(value).part === "cleared" && value.flags[CH5_CREDITS_FLAG] !== true;
+}
+
+/** スタッフロールを流し終えたことを確定する。cleared 以外・確定済みなら何もしない。 */
+export function recordChapterFiveCredits(value) {
+  if (!chapterFiveCreditsPending(value)) return false;
+  value.flags[CH5_CREDITS_FLAG] = true;
+  return true;
+}
+
 /** 読了を確定する唯一の入口。今のpartで再生してよい場面だけ受け付ける。 */
 export function completeChapterFiveScene(value, id) {
   const progress = chapterFiveProgress(value);

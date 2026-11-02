@@ -12,7 +12,7 @@
 ### Issue #1081 K01 原文
 > - [ ] K01 「基本的には左リールはBARが揃うみたいなリアルなスロットにしたい」という希望を記録。左リールの停止位置/図柄配列/目押し/停止制御のどれを指すか現仕様と具体例を照合する。自動的にBAR揃いの役成立や当選率変更と解釈しない。
 
-本レポートでは、上記オーナー希望について、現行のパッキースロット（日常リール）の実装コード（`remake/js/daily/reel.js`）および仕様書（`docs/pakki_slot_spec.md`）と照合し、以下の4つの観点から具体的に整理・分析した結果を報告する。
+本レポートでは、上記オーナー希望について、現行のパッキースロット（日常リール）の実装コード（`remake/js/daily/reel.js`）および仕様書（`docs/spec/pakki_slot_spec.md`）と照合し、以下の4つの観点から具体的に整理・分析した結果を報告する。
 1. 現仕様の左リール図柄配列、停止制御、役成立判定と抽選の関係（ファイル:行付き）
 2. オーナー希望が指しうる要素（(a)図柄配列、(b)停止位置、(c)目押し、(d)停止制御）と現仕様での具体例
 3. 実機パチスロ（一般的なノーマルAタイプ機）の仕組みとの比較（※確信のない点は「要確認」と明記）
@@ -22,7 +22,7 @@
 
 ## 2. 現仕様の調査結果（ファイル:行付き整理）
 
-現行のリール実装は [remake/js/daily/reel.js](file:///home/box/repos/worktrees/slot-h1/remake/js/daily/reel.js) および仕様書 [docs/pakki_slot_spec.md](file:///home/box/repos/worktrees/slot-h1/docs/pakki_slot_spec.md) に集約されている。
+現行のリール実装は [remake/js/daily/reel.js](file:///home/box/repos/worktrees/slot-h1/remake/js/daily/reel.js) および仕様書 [docs/spec/pakki_slot_spec.md](file:///home/box/repos/worktrees/slot-h1/docs/spec/pakki_slot_spec.md) に集約されている。
 
 ### 2.1 左リールの図柄配列（コマ順）
 - **ファイル:行**: [`remake/js/daily/reel.js:193-197`](file:///home/box/repos/worktrees/slot-h1/remake/js/daily/reel.js#L193-L197)

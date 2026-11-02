@@ -169,6 +169,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
           Number.isInteger(memory.stars) ? el("span.trpg-campaign-stars", { text: "★".repeat(memory.stars) + "☆".repeat(3 - memory.stars),
             "aria-label": "卓の評価 星" + memory.stars + "つ", dataset: { test: "trpg-memory-stars" } }) : null,
           memory.night ? el("small.trpg-campaign-night", { text: memory.night + "（盛り上がり " + memory.heat + "）" }) : null,
+          memory.pc?.name ? el("small.trpg-campaign-pc", { dataset: { test: "trpg-memory-pc" }, text: "演じた役 " + memory.pc.name + (memory.pc.title ? "（" + memory.pc.title + "）" : "") }) : null,
           el("small", { text: "この夜の結末を、みんなとの思い出に。" }),
         ]));
       } else if (!stocked && !owned) {
@@ -200,8 +201,12 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       const table = materializeTrpgCast(scenario, cast.assignments);
       await runTrpg(host, { resources: { ...resources, scenario: table }, signal: abort.signal,
         seed: ((state.seed || 1) ^ state.day * 7919 ^ state.chapter * 104729 ^ scenario.title.length * 997) >>> 0,
-        allowReplay: false, closeLabel: "思い出を本棚へ", onComplete: result => {
+        allowReplay: false, closeLabel: "思い出を本棚へ",
+        // The shopkeeper explains the table until the first story is finished; the cover button replays it any time.
+        tutorial: !state.flags?._trpg_tutorial_seen,
+        onComplete: result => {
           if (!disposed && getState() === state && completeTrpgTable(state, resources.catalog, scenario, ticket, result, { nightBusy: nightBusy() })) {
+            state.flags ||= {}; state.flags._trpg_tutorial_seen = true;
             completed = true; save();
           }
         } });

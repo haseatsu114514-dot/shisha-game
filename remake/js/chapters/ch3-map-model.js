@@ -13,6 +13,7 @@ export const TOKYO_MAP_PLACES = Object.freeze({
   gym: place("gym", "CHOI-ZAP", 34.9, 75.9),
   park: place("park", "公園", 69, 62),
   shrine: place("shrine", "路地裏の神社", 54, 70), // 心得の盤の内省（SPEC 2.8・#1788）。火種がある時だけ出る
+  club: place("club", "クラブSEAM", 71.5, 51), // 路地の地下のクラブ（DJS12）。夜の行き先が渡された時だけ地点になる。初回は行き先の placeLabel（地下の店）で出す
 });
 
 export const TOKYO_MAP_LANDMARKS = Object.freeze([
@@ -60,7 +61,7 @@ export function chapterThreeMapModel(value, scenes, { sceneId, allowGym = false,
   const choices = Array.isArray(actions) ? actions.filter(action => TOKYO_MAP_PLACES[action?.place]) : [];
   for (const action of choices) {
     if (!reached.has(action.place) && action.place !== "gym") {
-      reached.set(action.place, { ...TOKYO_MAP_PLACES[action.place], visited: false, current: false });
+      reached.set(action.place, { ...TOKYO_MAP_PLACES[action.place], ...(action.placeLabel ? { label: action.placeLabel } : {}), visited: false, current: false });
     }
   }
   const actionsAt = id => choices.filter(action => action.place === id).map(action => ({ ...action }));
@@ -72,7 +73,7 @@ export function chapterThreeMapModel(value, scenes, { sceneId, allowGym = false,
       .map(pin => ({ ...pin, actions: actionsAt(pin.id) })),
     landmarks: TOKYO_MAP_LANDMARKS.filter(item => !reached.has(item.id)).map(item => ({ ...item })),
     member, canTrain: allowGym === true && member, freeTime: freeTime === true,
-    note: freeTime ? choices.length ? "自由時間です。内省と作業台の試作は予定を進めません。それ以外の行き先は一回の自由時間を使います。"
+    note: freeTime ? choices.length ? `自由時間です。内省と作業台の試作${choices.some(action => action.dj) ? "、地下の店のDJ" : ""}は予定を進めません。それ以外の行き先は一回の自由時間を使います。`
       : "自由時間です。これまでに訪ねた場所を地図で確かめられます。"
       : target?.id === "ch3_naru_work"
       ? "別会場の場面です。地図では東京で訪ねた場所を確かめられます。"

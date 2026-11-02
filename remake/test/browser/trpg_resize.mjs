@@ -15,6 +15,8 @@ try{for(const scenario of ['ordinary-cup','shark-last-order']){
   }return add.call(this,type,cb,options);};});
  const p=await c.newPage();await p.goto((process.env.BASE_URL||'http://127.0.0.1:8123/remake/')+`trpg-preview.html?scenario=${scenario}&seed=9`);
  await p.locator('[data-test=trpg-start]').click();for(let i=0;i<60&&await p.locator('[data-test=trpg-next]').isVisible();i++)await p.locator('[data-test=trpg-next]').click();
+ // Declare the first approach (the player's own character) and read the GM's call before the roll stage.
+ await p.locator('[data-test^="trpg-approach-"]').first().click();for(let i=0;i<60&&await p.locator('[data-test=trpg-next]').isVisible();i++)await p.locator('[data-test=trpg-next]').click();
  await p.locator('[data-test=trpg-roll]').waitFor();
  for(const details of [false,true]){
   if(details)await p.locator('[data-test=trpg-details-toggle]').press('Enter');

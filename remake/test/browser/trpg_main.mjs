@@ -15,7 +15,11 @@ async function hit(page, id) {
   if (await page.evaluate(() => matchMedia("(pointer:coarse)").matches)) await target.tap(); else await target.click();
 }
 async function lines(page) { for (let i = 0; i < 35 && await button(page, "trpg-next").isVisible(); i++) await hit(page, "trpg-next"); }
-async function roll(page) { await hit(page, "trpg-roll"); await button(page, "trpg-settle").waitFor(); await hit(page, "trpg-settle"); await lines(page); }
+async function declare(page) {
+  const card = page.locator('[data-test^="trpg-approach-"]').first();
+  if (await card.count() && await card.isVisible()) { await card.click(); await lines(page); }
+}
+async function roll(page) { await declare(page); await hit(page, "trpg-roll"); await button(page, "trpg-settle").waitFor(); await hit(page, "trpg-settle"); await lines(page); }
 async function prepare(page, options = {}) {
   await page.evaluate(async options => {
     const core = await import("./js/core/state.js"), s = core.newGame();
@@ -38,8 +42,15 @@ async function open(page, { nightBusy = false } = {}) {
   await button(page, "trpg-campaign-notice").waitFor();
 }
 async function snapshot(page) { return page.evaluate(() => structuredClone(__remake.state)); }
-async function play(page, id) {
-  await hit(page, "trpg-play-" + id); await hit(page, "trpg-start"); await lines(page); await roll(page);
+async function play(page, id, { expectTutorial = false } = {}) {
+  await hit(page, "trpg-play-" + id);
+  if (expectTutorial) {
+    // The shopkeeper explains the first table on the cover, with a diagram for each idea.
+    await button(page, "trpg-tutorial-panel").waitFor();
+    assert.match(await page.locator(".trpg-speaker-label strong").textContent(), /六角サイ/);
+    assert(!await button(page, "trpg-start").isVisible(), "the cover waits until the shopkeeper finishes");
+  }
+  await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
   const shark = id === "shark-last-order";
   for (const spot of shark ? ["radio", "leaves", "fan"] : ["menu", "window", "bag"]) { await hit(page, "trpg-spot-" + spot); await lines(page); }
   await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-" + (shark ? "scent" : "quiet")); await lines(page);
@@ -153,9 +164,12 @@ await suite("trpg-main", async check => {
     await hit(page, "trpg-buy-ordinary-cup"); await hit(page, "trpg-buy-shark-last-order");
     const bought = await snapshot(page); assert.equal(bought.money, 1700); assert.equal(bought.slot, 1);
     assert.equal(bought.stamina, 52); assert.equal(bought.reel.count, 3); assert.equal(bought.flavorStock.double_apple, 37);
-    await play(page, id);
+    assert(!bought.flags._trpg_tutorial_seen);
+    await play(page, id, { expectTutorial: true });
     const ending = await snapshot(page);
     assert.equal(ending.slot, 2); assert(ending.trpg.cleared[id]);
+    assert.equal(ending.flags._trpg_tutorial_seen, true, "finishing the first story retires the automatic tutorial");
+    assert.equal(ending.trpg.cleared[id].pc.name, id === "ordinary-cup" ? "フィン" : "レン", "the default character is kept in the memory");
     assert(!ending.trpg.cleared[id].participants.some(id => ["naru", "sumi"].includes(id)));
     assert.equal(await button(page, "trpg-replay").count(), 0);
     const storage = await storageSnapshot(page);
@@ -167,6 +181,7 @@ await suite("trpg-main", async check => {
     await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.load(); core.state.day = 5; core.state.slot = 1; });
     await open(page); assert.equal(await button(page, "trpg-play-" + id).count(), 0);
     assert((await button(page, "trpg-memory-" + id).textContent()).length > 0);
+    assert.match(await button(page, "trpg-memory-pc").textContent(), /演じた役/);
     await assertShelfControls(page);
     await page.screenshot({ path: (process.env.ARTIFACT_DIR || ".codex/artifacts/trpg") + "/trpg-campaign-memory-" + label + ".png" });
     await hit(page, "trpg-campaign-close");
@@ -181,7 +196,7 @@ await suite("trpg-main", async check => {
     const before = await snapshot(page);
     await hit(page, "trpg-play-ordinary-cup");
     assert.equal(await page.locator(".trpg-table-person").count(), 2);
-    await hit(page, "trpg-start"); await lines(page); await roll(page);
+    await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
     assert.equal(await page.locator('[data-test^="trpg-consult-"]').count(), 0);
     await hit(page, "trpg-exit"); await hit(page, "trpg-exit-confirm"); await button(page, "trpg-play-ordinary-cup").waitFor();
     assert.deepEqual(await snapshot(page), before);
@@ -195,7 +210,7 @@ await suite("trpg-main", async check => {
     await hit(page, "trpg-play-shark-last-order");
     assert(await page.locator('.trpg-table-person[data-speaker="adam"]').count());
     assert.equal(await page.locator('.trpg-table-person[data-speaker="hiyori"]').count(), 0);
-    await hit(page, "trpg-start"); await lines(page); await roll(page);
+    await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
     await hit(page, "trpg-consult-adam"); assert((await page.locator(".trpg-speech p").textContent()).includes("狙いを定めよう"));
     await lines(page); await hit(page, "trpg-exit"); await hit(page, "trpg-exit-confirm");
     assert.deepEqual((await snapshot(page)).trpg.cleared, {});
