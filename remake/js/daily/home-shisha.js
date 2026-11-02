@@ -6,6 +6,7 @@ import { gainFlavorExperience, masteryLabel } from "../core/flavor-mastery.js";
 // 育つのは配合したフレーバーの熟練度だけ。ステータスは増えず、体力24を使う。
 import { DB } from "../core/data.js";
 import { state, save } from "../core/state.js";
+import { growthLesson } from "../core/growth-effects.js";
 import { addStamina, staminaAfter, maxStamina } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
 import { coldRisk } from "../core/illness.js";
@@ -61,8 +62,8 @@ export function homeShishaOffer(s = state, { eve = false } = {}) {
   if (!rig || eve || s.flags?._home_shisha_day === dayKey(s)) return null;
   const stock = ownedFlavorIds().reduce((sum, id) => sum + flavorStock(id), 0);
   if (stock < HOME_GRAMS) return null;
-  if (conditionForRatio(s.stamina / maxStamina()).health !== "green") return null;
-  if (coldRisk(staminaAfter(HOME_STAMINA) / maxStamina())) return null;
+  if (conditionForRatio(s.stamina / maxStamina({ forCondition: true })).health !== "green") return null;
+  if (coldRisk(staminaAfter(HOME_STAMINA) / maxStamina({ forCondition: true }))) return null;
   return rig;
 }
 
@@ -76,6 +77,9 @@ export function applyHomeShisha(mix, rig, s = state) {
   // 台ごとの経験値（卓上台6・大会公式モデル7.5・店の台7〜9）。能力・センスは増やさない。
   const masteryGains = gainFlavorExperience(s, mix, rig.xp || homeRigXp(rig.id) || 6, DB.flavorById);
   s.flags._home_shisha_day = dayKey(s);
+  if (s.slot >= 1 && growthLesson(s, "M-S3") && entries.some(([id]) => familyOf(id) === "lavender")) {
+    s.flags._home_lavender_sleep = dayKey(s);
+  }
   const info = evaluateMix({ mode: "home", mix, equip: { bowl: s.equip?.bowl || "silicone_bowl" } });
   const taste = tasteOf(info);
   // 自分で組んで当てたレシピはレシピ帳へ。発見によるセンス加算も行わない。

@@ -4,7 +4,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { createServer } from 'node:http';
 import { chromium } from 'playwright';
-import { FACILITY_ICONS } from '../../js/daily/facility-icons.js';
+import { FACILITY_ICONS, FACILITY_ICON_SIZES } from '../../js/daily/facility-icons.js';
 
 const out = process.env.ARTIFACT_DIR ? new URL(path.resolve(process.env.ARTIFACT_DIR) + '/', 'file:')
   : new URL('../../../asset_sources/store-logos/ch1-issue470/ingame-qa/facility-icons-579/', import.meta.url);
@@ -20,6 +20,9 @@ const files = new Map([
   ['assets/ui/map-facilities-579.webp', 'image/webp'],
   ['assets/ui/map-facilities-extra-579.webp', 'image/webp'],
   ['assets/ui/map-rojiura-cinema.webp', 'image/webp'],
+  // MPI（2026-11-02）: 1枚ずつの透過 WebP
+  ...Object.values(FACILITY_ICONS).filter(e => e.src && !e.src.endsWith('/map-rojiura-cinema.webp'))
+    .map(e => [`assets/ui/${path.basename(new URL(e.src).pathname)}`, 'image/webp']),
 ]);
 for (const file of files.keys()) {
   const target = path.join(stage, file);
@@ -59,7 +62,7 @@ try {
     await page.addInitScript(() => localStorage.setItem('suien_remake_save', '{"facilityPreviewSentinel":579}'));
     await page.goto(previewURL);
     await page.locator('.facility-icon img').evaluateAll(images => Promise.all(images.map(image => image.decode())));
-    assert.equal(await page.locator('button').count(), 96);
+    assert.equal(await page.locator('button').count(), Object.keys(FACILITY_ICONS).length * FACILITY_ICON_SIZES.length * 2);
     const geometry = await page.locator('.facility-icon').evaluateAll(icons => icons.map(icon => {
       const crop = icon.firstElementChild, image = crop.firstElementChild;
       const c = crop.getBoundingClientRect(), i = image.getBoundingClientRect(), b = icon.parentElement.getBoundingClientRect();
@@ -75,7 +78,7 @@ try {
       const entry = FACILITY_ICONS[g.id];
       const extra = entry.extra;
       assert.deepEqual(g.source, entry.sheetSize || (extra ? [1536,1024] : [2172,724])); assert.equal(g.overflow, 'hidden');
-      assert.equal(g.imagePath, `${mount}assets/ui/${entry.src ? 'map-rojiura-cinema.webp' : `map-facilities-${extra ? 'extra-579.webp' : '579.webp'}`}`);
+      assert.equal(g.imagePath, `${mount}assets/ui/${entry.src ? path.basename(new URL(entry.src).pathname) : `map-facilities-${extra ? 'extra-579.webp' : '579.webp'}`}`);
       assert(g.crop.every(value => value > 0 && value <= g.size + .1));
       g.sourceOrigin.forEach((value,index) => assert(Math.abs(value-origins[g.id][index]) < 1, JSON.stringify(g)));
       assert(g.button.every(value => value >= 48)); assert(g.fits); assert.equal(g.decoration, 'none');
@@ -98,7 +101,7 @@ try {
     await page.waitForTimeout(400);
     await page.screenshot({ path: new URL(`${label}.jpg`, out).pathname, fullPage: true, type: 'jpeg', quality: 80 });
     results.push({ label, passed: true, geometry, errors, failed, saveUnchanged: true });
-    console.log(`PASS: ${label} — delivery stage without asset_sources, assets URL, 84 selections, crop geometry, save unchanged, no resource/page errors`);
+    console.log(`PASS: ${label} — delivery stage without asset_sources, assets URL, every icon selected, crop geometry, save unchanged, no resource/page errors`);
     await context.close();
   }
   assert.deepEqual([...new Set(requests)].sort(), [...files.keys()].map(file => mount + file).sort());

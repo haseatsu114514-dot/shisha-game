@@ -4,6 +4,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { installLoadingComicReader } from "./loading_reader.mjs";
+import { installGrowthAcknowledger } from "./growth_ack.mjs";
 
 const { chromium } = createRequire(import.meta.url)("playwright");
 const root = fileURLToPath(new URL("../../../", import.meta.url));
@@ -16,6 +17,9 @@ export async function suite(name, run, {
   readySelector = process.env.READY_SELECTOR || '[data-test="title-new"]',
   initScript = null,
   readLoadingComics = true,
+  acknowledgeGrowth = true,
+  // 心得の盤のはじめての案内と最初の火種（growth-board-tutorial.js）。他の検査の火種の数を変えないよう既定は出さない
+  boardTutorial = false,
 } = {}) {
   fs.mkdirSync(artifacts, { recursive: true });
   const timeoutMs = Number(process.env.BROWSER_TIMEOUT_MS || 10000);
@@ -29,6 +33,8 @@ export async function suite(name, run, {
     const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, ...options });
     const page = await context.newPage();
     if (readLoadingComics) await installLoadingComicReader(page);
+    if (acknowledgeGrowth) await installGrowthAcknowledger(page);
+    if (!boardTutorial) await page.addInitScript(() => { try { localStorage.setItem("suien_board_tutorial", "off"); } catch {} });
     if (initScript) await page.addInitScript(initScript);
     const errors = [];
     const failedResources = [];

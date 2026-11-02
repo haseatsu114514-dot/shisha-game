@@ -27,6 +27,10 @@ const context = vm.createContext({ Math: math, Set, Map, Promise, console, setTi
 const noop = () => {}, elem = () => ({ classList: { add: noop, remove: noop, contains: () => false }, remove: noop });
 const db = { dialogues: {}, statusTexts: {}, lime: [] };
 const values = {
+  "growth-respec.js": { syncRespecOpportunity() {}, closeRespecOpportunity() {} },
+  "growth-mode.js": { growthEnabled: () => false, GROWTH_BOARD: false, PREVIEW_KEY: "suien_growth_preview" },
+  "growth-effects.js": { useGrowthInsurance: () => false, growthCritical: () => false, settleGrowthPhase: (_s,_cs,_key,result) => result?.score, growthPerks: () => null, growthSkill: () => false, growthFeature: () => false, growthLesson: () => false, LESSON_TUNING: {}, growthCraftCondition: (_s,_m,c) => c, SKILL_TUNING: {} },
+  "flavor-mastery.js": { masteryHooks: { multiplier: () => 1 } },
   "city-guests.js": { cityGuestAtShop: () => null, visitCityGuestAtShop: async () => false },
   "hiyori.js": { hiyoriShopEncounterDue: () => false, visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
   "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
@@ -43,7 +47,7 @@ const values = {
   "engine.js": { isPlaying: () => false, play: async (id) => played.push(id) }, "glossary.js": { glossaryPanel: () => "" },
   "hud.js": { initHud: noop, showHud: noop, updateHud: noop, daysLeft: () => 14 - state.day, setPhoneBadge: noop, presentSleepRecovery: async () => {} },
   "map.js": { chooseSpot: async () => route.shift() || "rest", interruptMap: noop, isChoosingDestination: () => false },
-  "weather.js": { isRainy: () => false, weatherOf: () => "sun", RAIN_SPOT_TEXTS: {} },
+  "weather.js": { isRainy: () => false, weatherOf: () => "sun", tomorrowForecast: () => null, RAIN_SPOT_TEXTS: {} },
   "tonari.js": { tonariMenu: async () => "baito", tonariCustomer: async () => {}, tonariPractice: async () => {}, doBaito: async () => { shifts++; stats.addStamina(-24); } },
   // 家シーシャ（#638）: 寝る前の一服はこのテストの対象外（home_shisha.mjs で確かめる）
   "home-shisha.js": { runHomeShisha: async () => false },

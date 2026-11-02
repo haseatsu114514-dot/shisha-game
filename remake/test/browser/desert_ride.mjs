@@ -35,7 +35,8 @@ await suite("desert-ride", async check => {
     assert(await page.locator(t("desert-left")).isVisible() && await page.locator(t("desert-jump")).isVisible(), "touch buttons are shown on PC too");
     // Codex の採用画像（遠景の空・陸、主人公の背面、岩、旗、ゴール、砂煙）を読み込んで描いている
     const loaded = await page.evaluate(() => performance.getEntriesByType("resource").map(entry => entry.name).filter(name => name.includes("/img/ui/desert_ride/")).map(name => name.split("/").pop()).sort());
-    assert.deepEqual(loaded, ["backdrop_day_land.webp", "backdrop_day_sky.webp", "flag_pole.webp", "goal_banner.webp", "rider_ride.webp", "rock_large.webp", "rock_small.webp", "sand_puff.webp"]);
+    assert.deepEqual(loaded, ["backdrop_day_land.webp", "backdrop_day_sky.webp", "backdrop_dusk_land.webp", "backdrop_dusk_sky.webp", "flag_pole.webp", "goal_banner.webp",
+      "rider_brace.webp", "rider_fall.webp", "rider_jump.webp", "rider_lean_left.webp", "rider_lean_right.webp", "rider_ride.webp", "rock_large.webp", "rock_small.webp", "sand_puff.webp"]);
     await autoplayToResult(page, "perfect");
     const text = await resultText(page);
     assert.match(text, /RESULT/); assert.match(text, /転倒 0 回/); assert.match(text, /大ジャンプ 7 回/); assert.match(text, /自己ベスト更新/);
@@ -126,13 +127,12 @@ await suite("desert-ride", async check => {
     // DAY1: デスクをのぞく → 名乗り → 登場カットイン。同じ日は二度話せない。
     assert.match(await page.locator(t("ch4-go-tour_desk")).innerText(), /ツアーデスク/);
     assert.equal(await page.locator(t("ch4-go-dunes")).count(), 0, "the dunes wait for the invitation");
-    await page.evaluate(() => { window.__cutins = []; new MutationObserver(records => { for (const r of records) for (const n of r.addedNodes) if (n.dataset?.char) window.__cutins.push(n.dataset.char); }).observe(document.body, { childList: true, subtree: true }); });
     await page.locator(t("ch4-go-tour_desk")).click();
     await talksDone(1);
     await freeDay(1);
     let value = await get(page);
-    assert.equal(value.met.noor, true); assert.equal(value.flags._intro_noor, true);
-    assert.ok((await page.evaluate(() => window.__cutins)).includes("noor"), "the guide gets her intro cut-in once");
+    // 立ち絵があるので、登場カットインは会話エンジンが名乗りの直後に出す（このテストは早送りなので既読の印だけが付く）
+    assert.equal(value.met.noor, true); assert.equal(value.flags._intro_noor, true, "the guide's intro cut-in is marked as seen");
     assert(await page.locator(t("ch4-go-tour_desk")).isDisabled(), "one talk per day");
     assert.equal(value.flags._ch4.day, 1, "talking does not advance the day");
     // DAY2・DAY3: 続きの会話 → 誘い → 砂丘が地図に出る
@@ -271,6 +271,11 @@ await suite("desert-ride", async check => {
     await phase(page, "practiced");
     await page.locator(t("desert-start")).click();
     await autoplayToResult(page, "perfect");
+    await page.evaluate(() => {
+      window.__bgs = [];
+      new MutationObserver(() => { for (const node of document.querySelectorAll("#bg .bg-img")) if (!window.__bgs.includes(node.style.backgroundImage)) window.__bgs.push(node.style.backgroundImage); })
+        .observe(document.getElementById("bg"), { childList: true, subtree: true, attributes: true });
+    });
     await page.locator(t("desert-leave")).click();
     // 夕日の会話のあと、夜の地図へ（日常ループが追加で行動を進めない）
     await dubaiMap(1);
@@ -281,6 +286,7 @@ await suite("desert-ride", async check => {
     assert.deepEqual(value.stats, before.stats, "no direct stat gain");
     assert.match(await page.locator(t("pin-ch4_dubai_dunes")).getAttribute("class"), /\boff\b/, "no second trip tonight (the pin stays, disabled)");
     assert(await page.locator(".hud").isVisible(), "the daily HUD comes back");
+    assert((await page.evaluate(() => window.__bgs)).some(url => /bg_dubai_dunes_dusk/.test(url)), "the sunset talk uses the adopted dusk background");
   });
 });
 

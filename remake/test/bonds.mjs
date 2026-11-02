@@ -742,18 +742,19 @@ try {
       // お誘いに乗った一服: 私的な場面・得意なステ・言い回しは回ごとに入れ替わる
       s = fresh({ met: { minto: true }, slot: 0, finales: { minto: { day: 1, chapter: 1, route: "friend" } }, flags: { _minto_identity_revealed: true, _minto_name_known: true } });
       const charm = s.stats.charm;
+      const board = (await import("./js/core/growth-mode.js")).growthEnabled(), xp = () => s.growth?.xp || 0;
       vn.backlog().length = 0;
       await bonds.playFriendHangout("minto");
       const first = vn.backlog().map((l) => `${l.name}:${l.text}`);
       vn.backlog().length = 0;
-      const freeCharmUnchanged = s.stats.charm === charm;
+      const freeCharmUnchanged = s.stats.charm === charm, freeXp = xp();
       await T.stats.paidAction(async () => {
         await bonds.playFriendHangout("minto");
         T.stats.addStamina(-10); // 実際の誘いも、会話の後で体力を支払う
       });
       const second = vn.backlog().map((l) => l.text);
       return { freeCharmUnchanged, timeline, inviteText, rotation, withBaito, withStory, calm, fixedNight, oneMorning,
-        ch2Chat, ch2Invites, ch2FixedNight, ch2Tournament, riftNaru, riftExpired, quiet, first, second, charmUp: s.stats.charm > charm, count: s.friendHangouts.minto };
+        ch2Chat, ch2Invites, ch2FixedNight, ch2Tournament, riftNaru, riftExpired, quiet, first, second, charmUp: s.stats.charm > charm, board, xpUp: xp() > freeXp, charmSame: s.stats.charm === charm, count: s.friendHangouts.minto };
     } finally {
       DB.lime = original;
     }
@@ -784,7 +785,10 @@ try {
   assert(friendsLime.first.some((l) => l.startsWith("栞:")), friendsLime.first.join("|"));
   assert(friendsLime.first.some((l) => l.includes("栞さんと一服した")), friendsLime.first.join("|"));
   assert(friendsLime.second.some((l) => l.includes("仕事の話はなし")) && !friendsLime.first.some((l) => l.includes("仕事の話はなし")));
-  assert(friendsLime.freeCharmUnchanged); assert(friendsLime.charmUp); assert.equal(friendsLime.count, 2);
+  assert(friendsLime.freeCharmUnchanged); assert.equal(friendsLime.count, 2);
+  // 体力を払った一服: 旧しくみ（?growth=0）は魅力が伸びる。心得の盤（通常プレイの既定・#2166）では能力は直接伸びず経験値になる
+  if (friendsLime.board) { assert(friendsLime.xpUp, "a paid hangout earns EXP"); assert(friendsLime.charmSame); }
+  else assert(friendsLime.charmUp);
   log("HF09 friends: shared cadence (1 friend LIME per 2 days, oldest contact first, 4+ days per person), invites 6+ days apart after a chat, never with a story/lover invitation (Sumi's shift call may overlap), holiday/after-close, none for lovers/pending romance/tournament");
 
   assert.deepEqual(errors, []);

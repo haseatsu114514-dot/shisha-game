@@ -87,6 +87,8 @@ async function harness({ step = 0, paid = true, revealed = true, snapshot = null
   };
   const ports = {
     CRAFT_STEPS: [], hooks: {}, emit() {}, recordGalleryProgress() {},
+    // 心得の盤の章クリアの経験値（#2166）。この検査は背景と報酬の順番だけを見るので、経験値は記録だけ。
+    awardChapterClearExp: () => observe("chapter-clear-exp"),
     play, setBg: setBackground,
     clearScreen: () => { titlePresent = false; observe("clear-screen"); },
     showScreen: name => { titlePresent = false; observe("screen", { name }); },
@@ -108,6 +110,7 @@ async function harness({ step = 0, paid = true, revealed = true, snapshot = null
     },
     el: () => ({ isConnected: true, addEventListener() {}, focus() {} }),
     radar: () => ({}),
+    chapterGrowthChart: () => ({}), // 章末の伸びのグラフ（心得の盤なら三角。#2166）
   };
   function module(id) {
     if (modules.has(id)) return modules.get(id);

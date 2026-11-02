@@ -5,6 +5,7 @@ import { addMoney, addStamina, gainStat, gainAffinity, bond } from "../core/stat
 import { play, isPlaying } from "../vn/engine.js";
 import { dateVenue, dateScene, relationshipDayTotal } from "./date-scene.js";
 import { playSamechanMilestone } from "./samechan-bonds.js";
+import { growthEnabled, awardActionExp } from "../core/growth.js";
 
 let playing = false;
 export function samechanDateReady() {
@@ -45,13 +46,18 @@ export async function playSamechanDate({ invite = null, cost = 0, advanceSlot = 
     if (invite) state.pendingInvite = invite; // 中断保存は予約あり・未払い。calendarは同じ場面へ戻れる。
     state.flags._samechan_date = { stamp, venue: venue.id, complete: false };
     save();
-    await play(dateScene("samechan", venue, { choice, choiceFlags, growth: false }));
+    await play(dateScene("samechan", venue, { choice, choiceFlags, growth: false }), { growthScene: true });
     if (state !== owner) return no;
     const selected = state.flags[choiceFlags.a] ? "optA" : state.flags[choiceFlags.b] ? "optB" : null;
     if (!selected) return no; // 未回答を選んだことにはしない。
     addMoney(-cost);
     const before = state.stamina; addStamina(-10); const spent = before - state.stamina;
-    if (spent > 0) gainStat(DB.lover.dates.samechan[selected].stat, 2);
+    // 旧しくみ（?growth=0）は選んだ答えの能力に2P。心得の盤（通常プレイの既定・SBD97）はほかのデートと同じ自由行動の経験値
+    // （SPEC 4.1。鍵はサメちゃん、新鮮さ・はじめての相手も同じ）。デートは自由行動の精算を通らないので、ここで入れる
+    if (spent > 0) {
+      if (growthEnabled()) awardActionExp({ key: "samechan", person: "samechan" });
+      else gainStat(DB.lover.dates.samechan[selected].stat, 2);
+    }
     gainAffinity("samechan", 10);
     state.lastDate.samechan = state.day;
     state.flags._samechan_last_date_chapter = state.chapter;

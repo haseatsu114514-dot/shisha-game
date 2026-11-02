@@ -116,6 +116,10 @@ try {
         // アルミを使うHMDで作り、穴あけ工程の盤面スケーリングを検査する（ロートスは穴あけを飛ばす/#1107）。
         s.owned = s.owned.filter(id => id !== "lotos_hagal"); s.owned.push("tanukish_lid"); s.equip.hms = "tanukish_lid";
         s.flavorStock = {double_apple:20,mint:10};
+        // 心得の盤（通常プレイの既定・#2166）ではデンスパックはスキル K18 で覚える。3種類の詰め方を全部押すため覚えた状態にする
+        // （覚える前に押せないことは growth_levelup.mjs の dense-pack-new-and-legacy が確かめる）
+        const growth = await import("./js/core/growth.js");
+        if (growth.growthEnabled()) { s.growth = growth.newGrowth(); s.growth.nodes.push("K18"); }
         localStorage.setItem(core.SAVE_KEY,JSON.stringify(s)); localStorage.setItem("suien_remake_slot1",JSON.stringify(s));
         return s;
       });

@@ -1,4 +1,7 @@
 // 選択画面の基本情報は熟練度に関係なく開示。強さと品質、素材と仕上がりを分ける。
+import { state } from "../core/state.js";
+import { DB } from "../core/data.js";
+import { floralLayers } from "../core/growth-effects.js";
 import { el, clamp } from "../core/util.js";
 import { flavorFeatures, forecastExpression, mixExpression } from "./flavor-profile.js";
 import { compareEquipment, equipSpecOf, flavorThermalGuide } from "./temperature-model.js";
@@ -33,8 +36,10 @@ export function flavorTags(flavor) {
 /** 予想の区間と区別し、実際に提供した温度から読む一本の棒。品質点にはしない。 */
 export function actualExpressionCard(cs, temp) {
   const expression = mixExpression(cs, temp);
+  const layers=floralLayers(state,cs,DB.flavorById),round=Math.min(2,Math.max(0,cs.careRound||0));
   return el("section.flavor-actual", { dataset: { test: "actual-flavor", zone: expression.zone } }, [
     el("b", { text: `今回の仕上がり · ${expression.label}` }),
+    layers.length?el("p.flavor-guide-caption",{dataset:{test:"floral-layer"},text:round===2?"重なった花の余韻が立つ":`${layers[round%layers.length].name}の層が立つ`}):null,
     flavorAxes([["sweetness", "甘い印象"], ["cooling", "清涼感"], ["body", "煙の厚み"]].map(([key, label]) =>
       ({ key, label, value: expression.values[key] }))),
     el("small.flavor-guide-caption", { text: "提供時の味の傾向。強さと品質は別です。" }),

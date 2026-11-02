@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE6D2  枠の段 1: 2コマ@y=275
+  コマ1: 716x477 @(38,275) 比率 1.501 → ok
+  コマ2: 715x474 @(782,275) 比率 1.508 → ok
+コマ1: 716x477 (1.501) そのまま → 出力 716x477  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/late/allcast-maki-butter-knife/panels/maki-butter-knife-1.webp (72 KiB)
+コマ2: 715x474 (1.508) → 上下に各0.3%の紙帯 → 出力 715x477  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/late/allcast-maki-butter-knife/panels/maki-butter-knife-2.webp (65 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "maki-butter-knife",
+  "title": "構えが本気",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/late/allcast-maki-butter-knife/panels/maki-butter-knife-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/late/allcast-maki-butter-knife/panels/maki-butter-knife-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/late/allcast-maki-butter-knife/source-A-v2.png",
+      "region": {
+        "x": 38,
+        "y": 275,
+        "width": 716,
+        "height": 477,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/late/allcast-maki-butter-knife/source-A-v2.png",
+      "region": {
+        "x": 782,
+        "y": 275,
+        "width": 715,
+        "height": 474,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "maki-butter-knife-1.webp",
+      "width": 716,
+      "height": 477,
+      "sha256": "4b60e9a165b7730a96d8b762437eb054bae863d81a3f857f1586229814f40217"
+    },
+    {
+      "file": "maki-butter-knife-2.webp",
+      "width": 715,
+      "height": 477,
+      "sha256": "805685b3eed86069b4a31f07a4a70ce1361b0a473a0aafdb94a69847e081e9a6"
+    }
+  ]
+}

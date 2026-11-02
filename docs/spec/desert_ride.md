@@ -65,15 +65,15 @@
 | # | 状態 | 採用 |
 |---|---|---|
 | 1 遠景・昼 | ✅ 採用（B） | 空と陸の2枚に分け、空→太陽→陸の順に重ねる。夕方はゲーム中に色をかける |
-| 2 遠景・夕 | 依頼中 | 遠景B と同じ構図で（太陽は描かない） |
-| 3 会話の背景 | ✅ 昼を採用（C → `bg_dubai_dunes_day`）。夕は依頼中 | 夕日の場面は `data-tint="dusk"`（`css/desert-ride.css`）で代用 |
-| 4 背面 | ✅ 基準 `rider_ride` を採用（B）。差分5枚は依頼中 | 差分が届くまでは、1枚を傾け・縮めて左右・空中・着地の構え・転倒を表す |
+| 2 遠景・夕 | ✅ 採用（第4弾・2026-11-02） | 遠景Bと同じ構図（1画素以内）。ゴールへ近づくほど昼の上に重ねる。陸の透明度は昼と同じ |
+| 3 会話の背景 | ✅ 昼（C → `bg_dubai_dunes_day`）・夕（第4弾 → `bg_dubai_dunes_dusk`）を採用 | 夕日の場面は `bg_dubai_dunes_dusk`（右に夕日） |
+| 4 背面 | ✅ 基準 `rider_ride`（B）と差分5枚（第4弾: 画面の左・右・ジャンプ・着地の構え・転倒）を採用 | 背面Bと同じ縮尺。姿勢は `desert-ride-art.js` の `riderPose`（横の速さで左右、空中はジャンプ、押した後と着地直後0.18秒は構え、転倒中は転倒）。基準点は姿勢ごとの板の重心（転倒は体の中心と下端） |
 | 5 岩 | ✅ 採用（大A・小A） | 当たり判定より少しだけ広く描く |
 | 6 砂煙 | ✅ 採用（C） | |
 | 7 旗竿・ゴール | ✅ 採用（旗A・幕A） | |
-| 8 ヌールの立ち絵 | 依頼中 | 届くまで会話は立ち絵なし、登場カットインは文字だけ |
+| 8 ヌールの立ち絵 | ✅ normal を採用（2026-11-02 オーナーが A を選定）。smile・surprise・登場カットインの一枚絵は依頼中 | `assets/sprites/characters/noor/chr_noor_normal.png`（896×1200）。台詞の smile・surprise は届くまで normal で表示し、登場カットインは立ち絵を使う型で出る。頭身は 7.96（標準の 6.4〜7.7 より頭が少し小さい。portrait_metrics の WARN）。B・C は採用しない |
 
-次の依頼（優先順）: ①背面の差分5枚（**採用した B を添付して** lean_left・lean_right・jump・brace・fall を1枚ずつ）、②遠景と会話背景の夕方版（**遠景B・会話C を添付して**同じ構図で）、③ヌールの normal 3案→選定→smile・surprise。寸法・透過・画風の条件は下の表のとおり。
+次の依頼: ヌールの smile・surprise を1枚ずつ（**採用した normal A の原画** `raw/phase4/noor-candidates/noor_normal_A-raw.png` を添付し、同じ服・同じ足元で表情と小さな首の傾きだけ変える）、そのあと登場カットインの一枚絵。寸法・透過・画風の条件は下の表のとおり。
 
 以下は最初の依頼（2026-11-02）。絵が読み込めない間・失敗した時は Canvas の図形で描く（`desert-ride.js` の `drawPlayer`・`drawRock`・`drawDunes`・`drawParticles`。絵の寸法と基準点は `desert-ride-art.js`）。既存の画風に合わせるため、背景は `tools/bg_prompts.txt` の共通指針（painterly・`bg_eden_shop.png` の筆致）、人物は `docs/prompts/image_generation_guide.md` と `character-portrait-remaster` の書式に従う。シーシャ機材は写らないので `docs/shisha_reference.md` §4 の手順は不要。
 

@@ -7,6 +7,8 @@ globalThis.document ||= { addEventListener() {} };
 globalThis.window ||= {};
 const storage = new Map();
 globalThis.localStorage = { setItem: (k, v) => storage.set(k, v), getItem: k => storage.get(k) ?? null };
+// スミさんの♥2の炭の授業は旧しくみ（?growth=0）の口。心得の盤（通常プレイの既定）ではキューブ炭は盤の授業 M-W1 で習う（#2166）。
+storage.set("suien_growth_preview", "0");
 const core = await import("../js/core/state.js");
 const { DB } = await import("../js/core/data.js");
 const coal = await import("../js/craft/coals.js");
@@ -21,6 +23,10 @@ DB.equipById = Object.fromEntries(DB.equipment.map(e => [e.id, e]));
 DB.flavors = JSON.parse(fs.readFileSync(new URL("../../data/flavors.json", import.meta.url))).flavors;
 DB.flavorById = Object.fromEntries(DB.flavors.map(f => [f.id, f]));
 
+storage.set("suien_growth_preview", "1");
+core.newGame(); core.state.affinity.sumi = 66; core.state.flags.ch1_sumi_training = true;
+assert.equal(lesson.canStudyCubeCoals(), false, "心得の盤ではスミさんの♥の炭の授業を出さない（盤の授業 M-W1 で習う）");
+storage.set("suien_growth_preview", "0");
 for (const hearts of [0, 9, 19, 20, 33, 66]) {
   core.newGame(); core.state.affinity.sumi = hearts;
   core.state.flags.ch1_sumi_training = true;

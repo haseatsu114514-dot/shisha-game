@@ -1,0 +1,94 @@
+{
+  "id": "maki-butter-knife",
+  "title": "構えが本気",
+  "cast": [
+    "maki"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "パン、切ろうか？",
+    "お願いします。",
+    "構えが本気だ。"
+  ],
+  "first_speaker": "maki",
+  "panel1": "斧投げBarの裏の小さなキッチン。右のマキがパンを前に「パン、切ろうか？」（左上に高く）。左のはじめ「お願いします。」（右下）。",
+  "panel2": "マキがバターナイフ一本で、斧投げと同じ真剣な足の構えと集中した目でパンにバターを塗っている。はじめ「構えが本気だ。」。刃は人に向けない。",
+  "caption": "マキさんは、道具の扱いがいつも丁寧。",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "102a9c9b46891c577ef9910b5be36ead66d2204e",
+  "generator": "built-in image_gen",
+  "source": "source-A-v2.png",
+  "source_sha256": "8f223864566398f34c9f02d08036d98d2b2bbbf1191d807d9946d8624eabc139",
+  "references": [
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "role": "dimension template"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "role": "character normal identity"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/maki.png",
+      "sha256": "d762ff2e09e14c6747ebc91379c7b9032380a1834a48d185f56a7f95832190a8",
+      "role": "character normal identity"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+      "role": "initial adopted game comic style only"
+    }
+  ],
+  "prompts": [
+    {
+      "path": "prompt-A-v1.txt",
+      "sha256": "1199c5ec046bbf2561763d0e792e898d8fdf1ab4aaa5c752b3909230300b8839"
+    },
+    {
+      "path": "prompt-A-v2.txt",
+      "sha256": "aed725b03d0a9061a5291064171ad61575414c2927c534057e2dd0abc3889a11"
+    }
+  ],
+  "versions": [
+    {
+      "path": "source-A-v1.png",
+      "sha256": "a3fa06f14049a4aa4b0751ec187add9de2fb8bee6ad5ad21d6fee0710e554407",
+      "status": "superseded for documented QA issue"
+    },
+    {
+      "path": "source-A-v2.png",
+      "sha256": "8f223864566398f34c9f02d08036d98d2b2bbbf1191d807d9946d8624eabc139",
+      "status": "review candidate"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "all three canonical lines visually read; punctuation matched",
+    "reading_order": "left panel then right; first speaker top/left before response; tails to correct speaker",
+    "identity": "official normal images viewed before generation; both panels preserve Hajime left and partner right",
+    "style": "initial adopted comic screenshot used as fourth reference every generation; cute chibi 2.5-head proportions, thick clean outlines, warm cel colors visually consistent",
+    "hardware": "none: no shisha stand/bowl/HMD/coal/hose/smoking",
+    "prohibited_text": "no title, UI, watermark, or extra text in review candidate",
+    "cut": "16/16 panel check OK; fill changed 0; <400KiB each; minor 1-3px size/rounding differences recorded, no forced ratio or upscaling",
+    "notes": "v1 feet were outside frame; v2 right panel zoomed out to show strong wide-footed full-body stance. Both boots and knees visible; butter knife only touches bread; dialogue, identity and left panel preserved.",
+    "in_game_pc_phone": "not run; candidates remain unregistered"
+  },
+  "delivery": [
+    {
+      "file": "panels/maki-butter-knife-1.webp",
+      "width": 716,
+      "height": 477,
+      "bytes": 74686,
+      "sha256": "4b60e9a165b7730a96d8b762437eb054bae863d81a3f857f1586229814f40217"
+    },
+    {
+      "file": "panels/maki-butter-knife-2.webp",
+      "width": 715,
+      "height": 477,
+      "bytes": 67104,
+      "sha256": "805685b3eed86069b4a31f07a4a70ce1361b0a473a0aafdb94a69847e081e9a6"
+    }
+  ]
+}

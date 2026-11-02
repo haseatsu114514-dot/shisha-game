@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #F0E5D0  枠の段 1: 2コマ@y=272
+  コマ1: 720x479 @(36,272) 比率 1.503 → ok
+  コマ2: 721x479 @(779,272) 比率 1.505 → ok
+コマ1: 720x479 (1.503) そのまま → 出力 720x479  /workspace/shared/allcast-comics-20261102/middle/allcast-emil-murmur/panels/emil-murmur-1.webp (65 KiB)
+コマ2: 721x479 (1.505) → 上下に各0.2%の紙帯 → 出力 721x481  /workspace/shared/allcast-comics-20261102/middle/allcast-emil-murmur/panels/emil-murmur-2.webp (63 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "emil-murmur",
+  "title": "ひとこと",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "エミルは、心が動くと母国語でつぶやく。",
+  "panels": [
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/middle/allcast-emil-murmur/panels/emil-murmur-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/middle/allcast-emil-murmur/panels/emil-murmur-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/middle/allcast-emil-murmur/source-A-v1.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 720,
+        "height": 479,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/middle/allcast-emil-murmur/source-A-v1.png",
+      "region": {
+        "x": 779,
+        "y": 272,
+        "width": 721,
+        "height": 479,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "emil-murmur-1.webp",
+      "width": 720,
+      "height": 479,
+      "sha256": "2d777e2bda85e083ffb6f3370a90fcf576900cc1c26149449529574134b3ecb5"
+    },
+    {
+      "file": "emil-murmur-2.webp",
+      "width": 721,
+      "height": 481,
+      "sha256": "cd9eb87b35af0fddf4ad2c6c5d4259dd33d93255a2d67a08a50a0fe2125139fb"
+    }
+  ]
+}

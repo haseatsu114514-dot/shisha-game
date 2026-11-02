@@ -91,7 +91,7 @@
       "id": "growth-levelup",
       "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
       "kind": "quick",
-      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs"]
+      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs"]
     },
     {
       "id": "vent-lid",
@@ -143,6 +143,10 @@
       "timeout": 5,
       "paths": [
         "remake/js/core/growth.js",
+        "remake/js/core/growth-mode.js",
+        "remake/js/core/growth-respec.js",
+        "remake/js/core/growth-effects.js",
+        "remake/js/core/growth-board-layout.js",
         "remake/js/daily/levelup.js",
         "remake/js/core/growth-board.js",
         "remake/js/core/growth-board-data.js",
@@ -156,10 +160,33 @@
         "remake/js/daily/tonari.js",
         "remake/js/daily/hud.js",
         "remake/css/daily.css",
+        "remake/js/chapters/ch3-tokyo-daily.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
+        "remake/js/chapters/ch5-tokyo.js",
+        "remake/js/chapters/ch5-dubai.js",
+        "remake/js/chapters/ch5-daily.js",
         "remake/test/browser/growth_levelup.mjs"
       ],
       "run": [
         "node remake/test/browser/growth_levelup.mjs"
+      ]
+    },
+    {
+      "id": "board-tutorial",
+      "title": "Growth board first-time tutorial and starter fire (board_tutorial)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/growth-board-tutorial.js",
+        "remake/js/daily/growth-board-screen.js",
+        "remake/js/daily/reflection.js",
+        "remake/js/core/growth.js",
+        "remake/test/browser/board_tutorial.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/board_tutorial.mjs"
       ]
     },
     {
@@ -732,6 +759,7 @@
         "remake/test/facility_icons.mjs",
         "assets/ui/map-facilities-579.png",
         "assets/ui/map-facilities-extra-579.webp",
+        "assets/ui/map-facilities-*.webp",
         "asset_sources/store-logos/ch1-issue470/ingame-qa/pin-cutout-546/**",
         "asset_sources/map-facilities-579/**"
       ],
@@ -2686,7 +2714,8 @@
         "remake/test/browser/facility_icons.mjs",
         "remake/js/daily/facility-icons.js",
         "remake/css/facility-icons.css",
-        "remake/facility-icons-preview.html"
+        "remake/facility-icons-preview.html",
+        "assets/ui/map-facilities-*.webp"
       ],
       "run": [
         "node remake/test/store_logos.mjs",

@@ -71,6 +71,10 @@
   "sprite": "assets/sprites/characters/naru/chr_naru_normal.png",
   "blob": "63e6c74e86544b8a1eb4e3a6d2a0946c830cf787"
  },
+ "face_noor.png": {
+  "sprite": "assets/sprites/characters/noor/chr_noor_normal.png",
+  "blob": "7b3b57f00a130a434b4c698360ca820440acd56f"
+ },
  "face_pakki.png": {
   "sprite": "assets/sprites/characters/pakki/chr_pakki_normal.png",
   "blob": "416a8717cc7ca68f30cfe615c24a42a3906b0800"
