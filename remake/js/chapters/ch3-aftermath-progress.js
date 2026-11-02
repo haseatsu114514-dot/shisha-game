@@ -35,6 +35,35 @@ export function availableAftermathDetours(value) {
     && (scene.met || []).every(who => value.met?.[who]));
 }
 
+/**
+ * 大会後の東京で、心得の盤で灯した授業を相談できる人と場所（SPEC 2.6・SBD61「灯したら、会える所で相談できる」）。
+ * from〜to は CH3_AFTERMATH_SCENES の場面id（その場面を読む前の間だけ開く）。寄り道と同じく stage・日時は進めない。
+ * 久世は煙幕の片づけ（店を畳む朝）の前まで、ましろは閉店後の mukai（翌日の夜）だけ。
+ * スティーブの授業（ピザとシーシャの夜）はこの夜に開くので、なるへの報告を読んで開催の夜になったら出さない。
+ */
+export const CH3_AFTERMATH_LESSONS = Object.freeze([
+  { who: "kuze", place: "煙幕", bg: "bg_yohaku_shop", from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },
+  { who: "steve", place: "Smoke & Glory", bg: "bg_steve_shop", from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },
+  { who: "volk", place: "鉄の煙", bg: "bg_volk_shop", from: "ch3_mashiro_recovery", to: "ch3_enmaku_cleanup" },
+  { who: "mashiro", place: "mukai", bg: "bg_mukai_shop", from: "ch3_naru_reconcile", to: "ch3_naru_reconcile" },
+]);
+const sceneIndex = id => CH3_AFTERMATH_SCENES.findIndex(scene => scene.id === id);
+
+/**
+ * いま相談できる大会後の授業。ready(who) はその人の相談できる授業（core/growth.js の readyLessons）。
+ * 灯した授業は面識があってこそなので、面識の判定は ready に任せる。保存は変更しない。
+ */
+export function availableAftermathLessons(value, ready) {
+  if (!canRunChapterThreeAftermath(value) || value.flags._ch3_cleared) return [];
+  const stage = value.flags._ch3_aftermath?.stage;
+  if (!Number.isInteger(stage)) return [];
+  return CH3_AFTERMATH_LESSONS
+    .filter(entry => stage >= sceneIndex(entry.from) && stage <= sceneIndex(entry.to))
+    .filter(entry => !(entry.who === "steve" && value.flags._ch3_naru_party_ready))
+    .map(entry => ({ ...entry, lessons: ready(entry.who) || [] }))
+    .filter(entry => entry.lessons.length > 0);
+}
+
 /** 寄り道を最後まで読んだ時だけ既読にする。本筋の進行には触れない。 */
 export function completeAftermathDetour(value, id) {
   if (!availableAftermathDetours(value).some(scene => scene.id === id)) return false;

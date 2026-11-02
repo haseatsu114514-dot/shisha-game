@@ -1220,6 +1220,25 @@
       ]
     },
     {
+      "id": "lesson-consult-coverage",
+      "title": "Growth-board lessons consulted in the chapter 3 aftermath, chapter 5 Tokyo and chapter 5 regular shops (#1801)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 4,
+      "paths": [
+        "remake/js/chapters/ch3-aftermath*.js",
+        "remake/js/chapters/ch5-tokyo.js",
+        "remake/js/chapters/ch5-shops.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
+        "remake/js/core/growth.js",
+        "data/dialogue/growth_lessons.json",
+        "remake/test/browser/lesson_consult_coverage.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/lesson_consult_coverage.mjs"
+      ]
+    },
+    {
       "id": "ch4-dubai-daily",
       "title": "Chapter 4 Dubai days on the shared daily loop (VOL04)",
       "kind": "browser",
