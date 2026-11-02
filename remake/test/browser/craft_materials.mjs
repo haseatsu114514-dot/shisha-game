@@ -273,4 +273,36 @@ await suite("craft-materials", async check => {
     await page.evaluate(async () => { F.session.craftTest.auto = "good"; await F.steps.stepPack(F.cs); F.session.craftTest.auto = null; });
     assert.equal(await page.evaluate(() => F.cs.pack), "normal");
   });
+  // #2359: 実際の制作処理と素材で3サイズを撮影。縦長はデスクトップ窓で確認し、回転案内は改変しない。
+  for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }, { width: 390, height: 844 }]) {
+    for (const step of ["pack", "holes", "heat"]) await check(`night-${step}-${viewport.width}x${viewport.height}`, async page => {
+      await setup(page);
+      await page.evaluate(async step => {
+        F.cs.mode = "drill";
+        const heat = await import("./js/craft/heat.js");
+        F.running = step === "pack" ? F.steps.stepPack(F.cs) : step === "holes" ? F.holes.runHoles(F.cs) : heat.runHeat(F.cs);
+      }, step);
+      await page.locator(step === "pack" ? '[data-test="pack-confirm"]' : step === "holes" ? '[data-test="hole-start"]' : '.heat[aria-busy="false"]').waitFor();
+      if (step === "pack") {
+        const paint = await page.locator('[data-test="pack-confirm"]').evaluate(n => {
+          const s = getComputedStyle(n); return { background: s.backgroundColor, image: s.borderImageSource, width: s.borderTopWidth };
+        });
+        assert.deepEqual(paint, { background: "rgba(0, 0, 0, 0)", image: paint.image, width: "14px" });
+        assert.match(paint.image, /button-gold\.webp/);
+      }
+      if (step === "holes") {
+        assert.equal(await page.locator('.ht-option[aria-pressed="true"]').evaluate(n => getComputedStyle(n).color), "rgb(46, 29, 69)");
+      }
+      assert.equal(await page.locator('.bench-worker-name').evaluate(n => getComputedStyle(n).backgroundImage), "none");
+      // 外部画像が全て実画像としてデコード済みであることを確認する（placeholderは不可）。
+      await page.waitForFunction(step => {
+        const worker = document.querySelector('.bench-worker');
+        const image = worker.querySelector('.worker-action:not([hidden])');
+        return worker.dataset.scene === step && image?.complete && image.naturalWidth > 0
+          && image.checkVisibility({ visibilityProperty: true });
+      }, step);
+      await capture(page, `night-${step}-${viewport.width}x${viewport.height}`);
+    }, { viewport, reducedMotion: "reduce" });
+  }
+
 });

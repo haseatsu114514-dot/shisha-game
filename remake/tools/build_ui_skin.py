@@ -127,6 +127,40 @@ CRAFT_PARTS = {
     "stage-workbench": {"source_size": (1536, 1024), "width": 1280, "alpha": False, "quality": 82},
 }
 
+# 夜紫の制作UI（CUI06〜09）。採用PNGの切り出し後サイズを固定する。
+CRAFT_NIGHT_SOURCES = ROOT / "assets/ui/craft-night"
+CRAFT_NIGHT_OUT = ROOT / "remake/img/ui/craft-night"
+CRAFT_NIGHT_PARTS = {
+    "board": {"source_size": (1536, 1024), "width": 768, "alpha": False},
+    "backdrop": {"source_size": (1536, 1024), "width": 1280, "alpha": False},
+    "stage-kitchen": {"source_size": (1536, 1024), "width": 1280, "alpha": False},
+    "stage-workbench": {"source_size": (1536, 1024), "width": 1280, "alpha": False},
+    "window": {"source_size": (1536, 1024), "width": 768, "alpha": False},
+    "frame": {"source_size": (1637, 906), "width": 768, "alpha": True},
+    "button-glass": {"source_size": (1911, 581), "width": 512, "alpha": True},
+    "button-white": {"source_size": (1877, 559), "width": 512, "alpha": True},
+    "button-gold": {"source_size": (1945, 685), "width": 512, "alpha": True},
+    "thermo-frame": {"source_size": (396, 1478), "width": 160, "alpha": True},
+    "step-done": {"source_size": (1081, 1084), "width": 128, "alpha": True},
+    "step-now": {"source_size": (1119, 1121), "width": 128, "alpha": True},
+    "step-next": {"source_size": (1007, 1013), "width": 128, "alpha": True},
+}
+
+
+def build_craft_night():
+    CRAFT_NIGHT_OUT.mkdir(parents=True, exist_ok=True)
+    for name, spec in CRAFT_NIGHT_PARTS.items():
+        with Image.open(CRAFT_NIGHT_SOURCES / f"{name}.png") as source:
+            if source.size != spec["source_size"]:
+                raise ValueError(f"craft-night {name}: expected {spec['source_size']}, got {source.size}")
+            width = spec["width"]
+            size = (width, round(width * source.height / source.width))
+            image = source.convert("RGBA" if spec["alpha"] else "RGB").resize(size, Image.Resampling.LANCZOS)
+            path = CRAFT_NIGHT_OUT / f"{name}.webp"
+            image.save(path, "WEBP", quality=90 if spec["alpha"] else 84,
+                       alpha_quality=100, method=6, exact=spec["alpha"])
+            print(f"{path.relative_to(ROOT)}: {image.width}×{image.height}, {path.stat().st_size:,} bytes")
+
 
 def build_craft_paper():
     CRAFT_OUT.mkdir(parents=True, exist_ok=True)
@@ -149,6 +183,7 @@ def build_craft_paper():
 def main():
     build_paper()
     build_craft_paper()
+    build_craft_night()
     OUT.mkdir(parents=True, exist_ok=True)
     for name, spec in SPRITES.items():
         with Image.open(SOURCES / f"{spec.get('source', name)}.png") as source:
