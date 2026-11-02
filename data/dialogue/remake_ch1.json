@@ -2089,6 +2089,294 @@
       ]
     },
     {
+      "dialogue_id": "shift_flavor_ch2_after_work_grapefruit_mint",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "グレープフルーツの葉にミントを重ねて量る。火は低めに整え、苦みの抜けた一台を客へ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "苦みが軽い。仕事の疲れが、すっと抜けていくね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客はスーツの肩を下ろして、ゆっくり煙を吐いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch2_after_work_kiwi_lemon",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "キウイにレモンを合わせて葉を量る。酸味が立ちすぎない火に整え、客へ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "キウイの酸っぱさが、ちょうどいい。頭が冴えてくる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客はネクタイを緩めて、もう一口吸った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch2_after_work_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（仕事帰りの人に、頭が冴える軽いやつ。前にも聞いた。あのときと同じ配合でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch2_after_work_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（仕事帰りの人に、頭が冴える軽いやつ。前にも聞いた。今日は違う方で出してみる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch2_strawberry_light_strawberry_lemon",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "苺にレモンを少し足して葉を量る。甘さの後ろに酸味が残る火に整え、客へ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あ、苺なのに甘ったるくない。これなら最後まで飲める"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は嬉しそうに、ホースを持ち直した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch2_strawberry_light_strawberry_peach",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "苺にピーチを重ねて葉を量る。やわらかい熱で、果物の甘さを引き出して客へ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "果物をそのまま食べてるみたい。優しい味だね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は頬をゆるめて、ゆっくり煙を吐いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch2_strawberry_light_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（苺で、甘ったるくないやつ。前にも作った。今日も同じでいく）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch2_strawberry_light_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（苺で、甘ったるくないやつ。前にも作った。今日は前と変えてみる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch2_night_deep_black_tea_lemon",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紅茶の葉にレモンを少し添えて量る。熱を落ち着けて、香りの底を残して客へ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "紅茶の渋みがちゃんとある。夜はこういうのがいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は背もたれに身を預けて、目を閉じて煙を味わった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch2_night_deep_caramel_black_tea",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "キャラメルに紅茶を重ねて葉を量る。甘さを抑える火に整え、客へ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "甘いのに、重すぎない。ちょうど夜向きだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は小さく頷いて、ゆっくりホースを回した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch2_night_deep_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（夜に、どっしりして甘さ控えめ。前にも聞いた注文だ。あのときと同じ配合でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch2_night_deep_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（夜に、どっしりして甘さ控えめ。前にも聞いた注文だ。今日は、あのときと違う方で出してみる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch2_tropical_compare_mango_passion_fruit",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マンゴーにパッションフルーツを重ねて葉を量る。熱を上げすぎずに香りを立たせ、客へ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "南国っぽい香りがはっきり立つね。柚ヶ谷のとは、また違う"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は煙の行方を目で追いながら、もう一口吸った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch2_tropical_compare_watermelon_mint",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スイカにミントを足して葉を量る。火を整え、軽さを残して客へ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "軽い。氷みたいに涼しくて、飲み疲れしないな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は笑って、ホースを持ち直した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch2_tropical_compare_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（柚ヶ谷で濃いのを飲んだ人に、違う良さを出す注文。前にも聞いた。あのときと同じ配合でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch2_tropical_compare_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（柚ヶ谷で濃いのを飲んだ人に、違う良さを出す注文。前にも聞いた。今日は前と違う方で試してみる）"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_fortune_first",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_day.png"
