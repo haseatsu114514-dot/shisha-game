@@ -38,10 +38,10 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
   active = true;
   const owner = state;
   const current = () => !signal?.aborted && state === owner && isCurrent();
-  const read = async (id, bg, tint = null) => {
+  const read = async (id, bg) => {
     showScreen("none", null);
     layers.hud.replaceChildren(); layers.hud.classList.remove("show");
-    if (bg) await setBg(bg, { fast: true, tint });
+    if (bg) await setBg(bg, { fast: true });
     if (!current()) return false;
     const result = await play(DB.dialogues[id], { signal });
     return current() && !!result && !result.cancelled;
@@ -67,7 +67,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     if (destination.kind !== "desert") return false;
     const status = desertOutingStatus(owner, day);
     if (!status.ok) return false;
-    const [{ runDesertRide }, { DESERT_BG, DESERT_DUSK_TINT, loadDesertArt }] = await Promise.all([
+    const [{ runDesertRide }, { DESERT_BG, DESERT_DUSK_BG, loadDesertArt }] = await Promise.all([
       import("../minigames/desert-ride.js"), import("../minigames/desert-ride-art.js")]);
     if (!current()) return false;
     loadDesertArt(); // 到着の会話の間にゲームの絵を読み始める
@@ -96,7 +96,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     if (!current()) return changed;
     // 夕日の砂丘で話す（完走の有無にかかわらず、下りてきたら）。中断しても外出の記録は残っている。
     void results;
-    await read(status.first ? DESERT_SCENES.sunsetFirst : DESERT_SCENES.sunsetAgain, bgUrl(DESERT_BG), DESERT_DUSK_TINT);
+    await read(status.first ? DESERT_SCENES.sunsetFirst : DESERT_SCENES.sunsetAgain, bgUrl(DESERT_DUSK_BG));
     return changed;
   } finally { active = false; }
 }
