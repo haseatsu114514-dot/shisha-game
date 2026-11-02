@@ -1,0 +1,97 @@
+{
+  "episode": 33,
+  "title": "対策本部",
+  "cast": "りゅうじ・ましろ・はじめ",
+  "theme": "旧・暴走編（復刻）",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-unhinged-ltr-20261025/33-36-chaos-ltr.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [],
+  "tasks": [
+    {
+      "script": "LEFT ①: stern Ryuji in WHITE CHECK suit/purple tie/moustache/tinted sunglasses tells Hajime 「対策会議だ。」 He points to a vague gigantic frightening silhouette of the rumored 'Cigarman' on a board. RIGHT ②: grand emergency command center with huge banner 「シガーマン対策本部」. Sweet ADULT pale-blonde two-braided Mashiro in beige cardigan and long green skirt has innocently been made the MEETING CHAIR, sitting in an absurdly tall executive chair, everyone earnestly trusts her. Mashiro holding a clipboard nervously says 「僕も怖いよ〜。」 Ryuji bows respectfully saying 「先生、お願いします。」 A tiny narrator arrow to MASHIRO labelled 「本人」 makes clear they appointed Cigarman to defeat Cigarman. No actual monster, smoking, hookah or weapons.",
+      "dialogue_original": [
+        "対策会議だ。",
+        "シガーマン対策本部",
+        "僕も怖いよ〜。",
+        "先生、お願いします。",
+        "本人"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/short-comics-unhinged-ltr-20261025/33-36-chaos-ltr.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/33-36-chaos-ltr.png",
+      "region": {
+        "x": 23,
+        "y": 125,
+        "width": 515,
+        "height": 309,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    },
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/33-36-chaos-ltr.png",
+      "region": {
+        "x": 558,
+        "y": 82,
+        "width": 509,
+        "height": 352,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-33-1.webp",
+      "width": 515,
+      "height": 343,
+      "sha256": "3a953d1cf98a6c48d8003cc6ab4e5586ab37e4ea37459ce04f4e5cf28d7eea4a"
+    },
+    {
+      "file": "panels/restored-33-2.webp",
+      "width": 528,
+      "height": 352,
+      "sha256": "8dcd71ea43d2851af7bb3f456148154cc886eced574359fa81ed35e0c0cc71d8"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "warnを記録し紙色補正を採用。強制通過なし。",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "旧・暴走編の内容を維持。49話以降の少しシュールな作風とは異なる。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": []
+    }
+  }
+}

@@ -1,0 +1,1449 @@
+{
+  "schemaVersion": 1,
+  "repository": "haseatsu114514-dot/shisha-game",
+  "branch": "codex/loading-comics-01-48-restored",
+  "readingOrder": "left-to-right",
+  "selectionBy": "owner",
+  "episodes": [
+    {
+      "id": "restored-01",
+      "number": 1,
+      "title": "店、間違えた？",
+      "cast": "りゅうじ・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/01-restored/panels/restored-01-1.webp",
+          "alt": "導入。店、間違えた？"
+        },
+        {
+          "src": "asset_sources/loading-comics/01-restored/panels/restored-01-2.webp",
+          "alt": "オチ。店、間違えた？"
+        }
+      ],
+      "record": "asset_sources/loading-comics/01-restored/comics.json"
+    },
+    {
+      "id": "restored-02",
+      "number": 2,
+      "title": "兄弟でも別",
+      "cast": "りゅうじ・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/02-restored/panels/restored-02-1.webp",
+          "alt": "導入。兄弟でも別"
+        },
+        {
+          "src": "asset_sources/loading-comics/02-restored/panels/restored-02-2.webp",
+          "alt": "オチ。兄弟でも別"
+        }
+      ],
+      "record": "asset_sources/loading-comics/02-restored/comics.json"
+    },
+    {
+      "id": "restored-03",
+      "number": 3,
+      "title": "若衆の男泣き",
+      "cast": "りゅうじ・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/03-restored/panels/restored-03-1.webp",
+          "alt": "導入。若衆の男泣き"
+        },
+        {
+          "src": "asset_sources/loading-comics/03-restored/panels/restored-03-2.webp",
+          "alt": "オチ。若衆の男泣き"
+        }
+      ],
+      "record": "asset_sources/loading-comics/03-restored/comics.json"
+    },
+    {
+      "id": "restored-04",
+      "number": 4,
+      "title": "消すのは匂い",
+      "cast": "りゅうじ・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/04-restored/panels/restored-04-1.webp",
+          "alt": "導入。消すのは匂い"
+        },
+        {
+          "src": "asset_sources/loading-comics/04-restored/panels/restored-04-2.webp",
+          "alt": "オチ。消すのは匂い"
+        }
+      ],
+      "record": "asset_sources/loading-comics/04-restored/comics.json"
+    },
+    {
+      "id": "restored-05",
+      "number": 5,
+      "title": "噂の本人",
+      "cast": "りゅうじ・はじめ・ましろ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/05-restored/panels/restored-05-1.webp",
+          "alt": "導入。噂の本人"
+        },
+        {
+          "src": "asset_sources/loading-comics/05-restored/panels/restored-05-2.webp",
+          "alt": "オチ。噂の本人"
+        }
+      ],
+      "record": "asset_sources/loading-comics/05-restored/comics.json"
+    },
+    {
+      "id": "restored-06",
+      "number": 6,
+      "title": "選べるおすすめ",
+      "cast": "アダム・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/06-restored/panels/restored-06-1.webp",
+          "alt": "導入。選べるおすすめ"
+        },
+        {
+          "src": "asset_sources/loading-comics/06-restored/panels/restored-06-2.webp",
+          "alt": "オチ。選べるおすすめ"
+        }
+      ],
+      "record": "asset_sources/loading-comics/06-restored/comics.json"
+    },
+    {
+      "id": "restored-07",
+      "number": 7,
+      "title": "専門外",
+      "cast": "アダム・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/07-restored/panels/restored-07-1.webp",
+          "alt": "導入。専門外"
+        },
+        {
+          "src": "asset_sources/loading-comics/07-restored/panels/restored-07-2.webp",
+          "alt": "オチ。専門外"
+        }
+      ],
+      "record": "asset_sources/loading-comics/07-restored/comics.json"
+    },
+    {
+      "id": "restored-08",
+      "number": 8,
+      "title": "人気ナンバーワン",
+      "cast": "みんと・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/08-restored/panels/restored-08-1.webp",
+          "alt": "導入。人気ナンバーワン"
+        },
+        {
+          "src": "asset_sources/loading-comics/08-restored/panels/restored-08-2.webp",
+          "alt": "オチ。人気ナンバーワン"
+        }
+      ],
+      "record": "asset_sources/loading-comics/08-restored/comics.json"
+    },
+    {
+      "id": "restored-09",
+      "number": 9,
+      "title": "営業終了",
+      "cast": "みんと・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/09-restored/panels/restored-09-1.webp",
+          "alt": "導入。営業終了"
+        },
+        {
+          "src": "asset_sources/loading-comics/09-restored/panels/restored-09-2.webp",
+          "alt": "オチ。営業終了"
+        }
+      ],
+      "record": "asset_sources/loading-comics/09-restored/comics.json"
+    },
+    {
+      "id": "restored-10",
+      "number": 10,
+      "title": "バイブスのメモ",
+      "cast": "あげは・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/10-restored/panels/restored-10-1.webp",
+          "alt": "導入。バイブスのメモ"
+        },
+        {
+          "src": "asset_sources/loading-comics/10-restored/panels/restored-10-2.webp",
+          "alt": "オチ。バイブスのメモ"
+        }
+      ],
+      "record": "asset_sources/loading-comics/10-restored/comics.json"
+    },
+    {
+      "id": "restored-11",
+      "number": 11,
+      "title": "全部見てけ",
+      "cast": "なる・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/11-restored/panels/restored-11-1.webp",
+          "alt": "導入。全部見てけ"
+        },
+        {
+          "src": "asset_sources/loading-comics/11-restored/panels/restored-11-2.webp",
+          "alt": "オチ。全部見てけ"
+        }
+      ],
+      "record": "asset_sources/loading-comics/11-restored/comics.json"
+    },
+    {
+      "id": "restored-12",
+      "number": 12,
+      "title": "香りの感想",
+      "cast": "凛・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/12-restored/panels/restored-12-1.webp",
+          "alt": "導入。香りの感想"
+        },
+        {
+          "src": "asset_sources/loading-comics/12-restored/panels/restored-12-2.webp",
+          "alt": "オチ。香りの感想"
+        }
+      ],
+      "record": "asset_sources/loading-comics/12-restored/comics.json"
+    },
+    {
+      "id": "restored-13",
+      "number": 13,
+      "title": "サメ映画",
+      "cast": "サメちゃん・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/13-restored/panels/restored-13-1.webp",
+          "alt": "導入。サメ映画"
+        },
+        {
+          "src": "asset_sources/loading-comics/13-restored/panels/restored-13-2.webp",
+          "alt": "オチ。サメ映画"
+        }
+      ],
+      "record": "asset_sources/loading-comics/13-restored/comics.json"
+    },
+    {
+      "id": "restored-14",
+      "number": 14,
+      "title": "見た目と重さ",
+      "cast": "ましろ・りゅうじ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/14-restored/panels/restored-14-1.webp",
+          "alt": "導入。見た目と重さ"
+        },
+        {
+          "src": "asset_sources/loading-comics/14-restored/panels/restored-14-2.webp",
+          "alt": "オチ。見た目と重さ"
+        }
+      ],
+      "record": "asset_sources/loading-comics/14-restored/comics.json"
+    },
+    {
+      "id": "restored-15",
+      "number": 15,
+      "title": "本日の一杯",
+      "cast": "ムカイさん・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/15-restored/panels/restored-15-1.webp",
+          "alt": "導入。本日の一杯"
+        },
+        {
+          "src": "asset_sources/loading-comics/15-restored/panels/restored-15-2.webp",
+          "alt": "オチ。本日の一杯"
+        }
+      ],
+      "record": "asset_sources/loading-comics/15-restored/comics.json"
+    },
+    {
+      "id": "restored-16",
+      "number": 16,
+      "title": "覚えていたこと",
+      "cast": "みんと・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/16-restored/panels/restored-16-1.webp",
+          "alt": "導入。覚えていたこと"
+        },
+        {
+          "src": "asset_sources/loading-comics/16-restored/panels/restored-16-2.webp",
+          "alt": "オチ。覚えていたこと"
+        }
+      ],
+      "record": "asset_sources/loading-comics/16-restored/comics.json"
+    },
+    {
+      "id": "restored-17",
+      "number": 17,
+      "title": "似顔絵",
+      "cast": "つむぎ・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/17-restored/panels/restored-17-1.webp",
+          "alt": "導入。似顔絵"
+        },
+        {
+          "src": "asset_sources/loading-comics/17-restored/panels/restored-17-2.webp",
+          "alt": "オチ。似顔絵"
+        }
+      ],
+      "record": "asset_sources/loading-comics/17-restored/comics.json"
+    },
+    {
+      "id": "restored-18",
+      "number": 18,
+      "title": "儚い仕事人",
+      "cast": "ひより・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/18-restored/panels/restored-18-1.webp",
+          "alt": "導入。儚い仕事人"
+        },
+        {
+          "src": "asset_sources/loading-comics/18-restored/panels/restored-18-2.webp",
+          "alt": "オチ。儚い仕事人"
+        }
+      ],
+      "record": "asset_sources/loading-comics/18-restored/comics.json"
+    },
+    {
+      "id": "restored-19",
+      "number": 19,
+      "title": "見学だけ",
+      "cast": "サイ・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/19-restored/panels/restored-19-1.webp",
+          "alt": "導入。見学だけ"
+        },
+        {
+          "src": "asset_sources/loading-comics/19-restored/panels/restored-19-2.webp",
+          "alt": "オチ。見学だけ"
+        }
+      ],
+      "record": "asset_sources/loading-comics/19-restored/comics.json"
+    },
+    {
+      "id": "restored-20",
+      "number": 20,
+      "title": "師匠の教え",
+      "cast": "スミさん・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/20-restored/panels/restored-20-1.webp",
+          "alt": "導入。師匠の教え"
+        },
+        {
+          "src": "asset_sources/loading-comics/20-restored/panels/restored-20-2.webp",
+          "alt": "オチ。師匠の教え"
+        }
+      ],
+      "record": "asset_sources/loading-comics/20-restored/comics.json"
+    },
+    {
+      "id": "restored-21",
+      "number": 21,
+      "title": "苦手なもの",
+      "cast": "りゅうじ・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/21-restored/panels/restored-21-1.webp",
+          "alt": "導入。苦手なもの"
+        },
+        {
+          "src": "asset_sources/loading-comics/21-restored/panels/restored-21-2.webp",
+          "alt": "オチ。苦手なもの"
+        }
+      ],
+      "record": "asset_sources/loading-comics/21-restored/comics.json"
+    },
+    {
+      "id": "restored-22",
+      "number": 22,
+      "title": "炭の引退式",
+      "cast": "りゅうじ・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/22-restored/panels/restored-22-1.webp",
+          "alt": "導入。炭の引退式"
+        },
+        {
+          "src": "asset_sources/loading-comics/22-restored/panels/restored-22-2.webp",
+          "alt": "オチ。炭の引退式"
+        }
+      ],
+      "record": "asset_sources/loading-comics/22-restored/comics.json"
+    },
+    {
+      "id": "restored-23",
+      "number": 23,
+      "title": "一口の重さ",
+      "cast": "りゅうじ・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/23-restored/panels/restored-23-1.webp",
+          "alt": "導入。一口の重さ"
+        },
+        {
+          "src": "asset_sources/loading-comics/23-restored/panels/restored-23-2.webp",
+          "alt": "オチ。一口の重さ"
+        }
+      ],
+      "record": "asset_sources/loading-comics/23-restored/comics.json"
+    },
+    {
+      "id": "restored-24",
+      "number": 24,
+      "title": "延長料金",
+      "cast": "りゅうじ・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/24-restored/panels/restored-24-1.webp",
+          "alt": "導入。延長料金"
+        },
+        {
+          "src": "asset_sources/loading-comics/24-restored/panels/restored-24-2.webp",
+          "alt": "オチ。延長料金"
+        }
+      ],
+      "record": "asset_sources/loading-comics/24-restored/comics.json"
+    },
+    {
+      "id": "restored-25",
+      "number": 25,
+      "title": "メニュー改訂",
+      "cast": "アダム・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/25-restored/panels/restored-25-1.webp",
+          "alt": "導入。メニュー改訂"
+        },
+        {
+          "src": "asset_sources/loading-comics/25-restored/panels/restored-25-2.webp",
+          "alt": "オチ。メニュー改訂"
+        }
+      ],
+      "record": "asset_sources/loading-comics/25-restored/comics.json"
+    },
+    {
+      "id": "restored-26",
+      "number": 26,
+      "title": "永久指名",
+      "cast": "アダム・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/26-restored/panels/restored-26-1.webp",
+          "alt": "導入。永久指名"
+        },
+        {
+          "src": "asset_sources/loading-comics/26-restored/panels/restored-26-2.webp",
+          "alt": "オチ。永久指名"
+        }
+      ],
+      "record": "asset_sources/loading-comics/26-restored/comics.json"
+    },
+    {
+      "id": "restored-27",
+      "number": 27,
+      "title": "専門外・再び",
+      "cast": "アダム・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/27-restored/panels/restored-27-1.webp",
+          "alt": "導入。専門外・再び"
+        },
+        {
+          "src": "asset_sources/loading-comics/27-restored/panels/restored-27-2.webp",
+          "alt": "オチ。専門外・再び"
+        }
+      ],
+      "record": "asset_sources/loading-comics/27-restored/comics.json"
+    },
+    {
+      "id": "restored-28",
+      "number": 28,
+      "title": "生活もダブル",
+      "cast": "アダム・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/28-restored/panels/restored-28-1.webp",
+          "alt": "導入。生活もダブル"
+        },
+        {
+          "src": "asset_sources/loading-comics/28-restored/panels/restored-28-2.webp",
+          "alt": "オチ。生活もダブル"
+        }
+      ],
+      "record": "asset_sources/loading-comics/28-restored/comics.json"
+    },
+    {
+      "id": "restored-29",
+      "number": 29,
+      "title": "総選挙",
+      "cast": "みんと・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/29-restored/panels/restored-29-1.webp",
+          "alt": "導入。総選挙"
+        },
+        {
+          "src": "asset_sources/loading-comics/29-restored/panels/restored-29-2.webp",
+          "alt": "オチ。総選挙"
+        }
+      ],
+      "record": "asset_sources/loading-comics/29-restored/comics.json"
+    },
+    {
+      "id": "restored-30",
+      "number": 30,
+      "title": "営業外",
+      "cast": "みんと・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/30-restored/panels/restored-30-1.webp",
+          "alt": "導入。営業外"
+        },
+        {
+          "src": "asset_sources/loading-comics/30-restored/panels/restored-30-2.webp",
+          "alt": "オチ。営業外"
+        }
+      ],
+      "record": "asset_sources/loading-comics/30-restored/comics.json"
+    },
+    {
+      "id": "restored-31",
+      "number": 31,
+      "title": "単位・きゅん",
+      "cast": "あげは・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/31-restored/panels/restored-31-1.webp",
+          "alt": "導入。単位・きゅん"
+        },
+        {
+          "src": "asset_sources/loading-comics/31-restored/panels/restored-31-2.webp",
+          "alt": "オチ。単位・きゅん"
+        }
+      ],
+      "record": "asset_sources/loading-comics/31-restored/comics.json"
+    },
+    {
+      "id": "restored-32",
+      "number": 32,
+      "title": "あと一匹",
+      "cast": "あげは・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/32-restored/panels/restored-32-1.webp",
+          "alt": "導入。あと一匹"
+        },
+        {
+          "src": "asset_sources/loading-comics/32-restored/panels/restored-32-2.webp",
+          "alt": "オチ。あと一匹"
+        }
+      ],
+      "record": "asset_sources/loading-comics/32-restored/comics.json"
+    },
+    {
+      "id": "restored-33",
+      "number": 33,
+      "title": "対策本部",
+      "cast": "りゅうじ・ましろ・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/33-restored/panels/restored-33-1.webp",
+          "alt": "導入。対策本部"
+        },
+        {
+          "src": "asset_sources/loading-comics/33-restored/panels/restored-33-2.webp",
+          "alt": "オチ。対策本部"
+        }
+      ],
+      "record": "asset_sources/loading-comics/33-restored/comics.json"
+    },
+    {
+      "id": "restored-34",
+      "number": 34,
+      "title": "持ち帰り",
+      "cast": "ましろ・りゅうじ・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/34-restored/panels/restored-34-1.webp",
+          "alt": "導入。持ち帰り"
+        },
+        {
+          "src": "asset_sources/loading-comics/34-restored/panels/restored-34-2.webp",
+          "alt": "オチ。持ち帰り"
+        }
+      ],
+      "record": "asset_sources/loading-comics/34-restored/comics.json"
+    },
+    {
+      "id": "restored-35",
+      "number": 35,
+      "title": "ラテアート",
+      "cast": "ムカイさん・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/35-restored/panels/restored-35-1.webp",
+          "alt": "導入。ラテアート"
+        },
+        {
+          "src": "asset_sources/loading-comics/35-restored/panels/restored-35-2.webp",
+          "alt": "オチ。ラテアート"
+        }
+      ],
+      "record": "asset_sources/loading-comics/35-restored/comics.json"
+    },
+    {
+      "id": "restored-36",
+      "number": 36,
+      "title": "極秘会談",
+      "cast": "りゅうじ・ムカイさん・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/36-restored/panels/restored-36-1.webp",
+          "alt": "導入。極秘会談"
+        },
+        {
+          "src": "asset_sources/loading-comics/36-restored/panels/restored-36-2.webp",
+          "alt": "オチ。極秘会談"
+        }
+      ],
+      "record": "asset_sources/loading-comics/36-restored/comics.json"
+    },
+    {
+      "id": "restored-37",
+      "number": 37,
+      "title": "新しい役職",
+      "cast": "サメちゃん・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/37-restored/panels/restored-37-1.webp",
+          "alt": "導入。新しい役職"
+        },
+        {
+          "src": "asset_sources/loading-comics/37-restored/panels/restored-37-2.webp",
+          "alt": "オチ。新しい役職"
+        }
+      ],
+      "record": "asset_sources/loading-comics/37-restored/comics.json"
+    },
+    {
+      "id": "restored-38",
+      "number": 38,
+      "title": "月曜の香り",
+      "cast": "凛・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/38-restored/panels/restored-38-1.webp",
+          "alt": "導入。月曜の香り"
+        },
+        {
+          "src": "asset_sources/loading-comics/38-restored/panels/restored-38-2.webp",
+          "alt": "オチ。月曜の香り"
+        }
+      ],
+      "record": "asset_sources/loading-comics/38-restored/comics.json"
+    },
+    {
+      "id": "restored-39",
+      "number": 39,
+      "title": "少しだけ",
+      "cast": "なる・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/39-restored/panels/restored-39-1.webp",
+          "alt": "導入。少しだけ"
+        },
+        {
+          "src": "asset_sources/loading-comics/39-restored/panels/restored-39-2.webp",
+          "alt": "オチ。少しだけ"
+        }
+      ],
+      "record": "asset_sources/loading-comics/39-restored/comics.json"
+    },
+    {
+      "id": "restored-40",
+      "number": 40,
+      "title": "即戦力",
+      "cast": "つむぎ・はじめ",
+      "theme": "旧・暴走編（復刻）",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/40-restored/panels/restored-40-1.webp",
+          "alt": "導入。即戦力"
+        },
+        {
+          "src": "asset_sources/loading-comics/40-restored/panels/restored-40-2.webp",
+          "alt": "オチ。即戦力"
+        }
+      ],
+      "record": "asset_sources/loading-comics/40-restored/comics.json"
+    },
+    {
+      "id": "restored-41",
+      "number": 41,
+      "title": "炭の耳",
+      "cast": "スミさん・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/41-restored/panels/restored-41-1.webp",
+          "alt": "導入。炭の耳"
+        },
+        {
+          "src": "asset_sources/loading-comics/41-restored/panels/restored-41-2.webp",
+          "alt": "オチ。炭の耳"
+        }
+      ],
+      "record": "asset_sources/loading-comics/41-restored/comics.json"
+    },
+    {
+      "id": "restored-42",
+      "number": 42,
+      "title": "体内時計",
+      "cast": "ましろ・はじめ",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/42-restored/panels/restored-42-1.webp",
+          "alt": "導入。体内時計"
+        },
+        {
+          "src": "asset_sources/loading-comics/42-restored/panels/restored-42-2.webp",
+          "alt": "オチ。体内時計"
+        }
+      ],
+      "record": "asset_sources/loading-comics/42-restored/comics.json"
+    },
+    {
+      "id": "restored-43",
+      "number": 43,
+      "title": "予約の正体",
+      "cast": "はじめ・スミさん",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/43-restored/panels/restored-43-1.webp",
+          "alt": "導入。予約の正体"
+        },
+        {
+          "src": "asset_sources/loading-comics/43-restored/panels/restored-43-2.webp",
+          "alt": "オチ。予約の正体"
+        }
+      ],
+      "record": "asset_sources/loading-comics/43-restored/comics.json"
+    },
+    {
+      "id": "restored-44",
+      "number": 44,
+      "title": "畳みの極意",
+      "cast": "はじめ・スミさん",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/44-restored/panels/restored-44-1.webp",
+          "alt": "導入。畳みの極意"
+        },
+        {
+          "src": "asset_sources/loading-comics/44-restored/panels/restored-44-2.webp",
+          "alt": "オチ。畳みの極意"
+        }
+      ],
+      "record": "asset_sources/loading-comics/44-restored/comics.json"
+    },
+    {
+      "id": "restored-45",
+      "number": 45,
+      "title": "一行の秘訣",
+      "cast": "はじめ・スミさん",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/45-restored/panels/restored-45-1.webp",
+          "alt": "導入。一行の秘訣"
+        },
+        {
+          "src": "asset_sources/loading-comics/45-restored/panels/restored-45-2.webp",
+          "alt": "オチ。一行の秘訣"
+        }
+      ],
+      "record": "asset_sources/loading-comics/45-restored/comics.json"
+    },
+    {
+      "id": "restored-46",
+      "number": 46,
+      "title": "雨音の合奏",
+      "cast": "はじめ・スミさん",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/46-restored/panels/restored-46-1.webp",
+          "alt": "導入。雨音の合奏"
+        },
+        {
+          "src": "asset_sources/loading-comics/46-restored/panels/restored-46-2.webp",
+          "alt": "オチ。雨音の合奏"
+        }
+      ],
+      "record": "asset_sources/loading-comics/46-restored/comics.json"
+    },
+    {
+      "id": "restored-47",
+      "number": 47,
+      "title": "座り心地派",
+      "cast": "はじめ・スミさん",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/47-restored/panels/restored-47-1.webp",
+          "alt": "導入。座り心地派"
+        },
+        {
+          "src": "asset_sources/loading-comics/47-restored/panels/restored-47-2.webp",
+          "alt": "オチ。座り心地派"
+        }
+      ],
+      "record": "asset_sources/loading-comics/47-restored/comics.json"
+    },
+    {
+      "id": "restored-48",
+      "number": 48,
+      "title": "看板の向き",
+      "cast": "はじめ・スミさん",
+      "theme": "旧話の復刻",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/48-restored/panels/restored-48-1.webp",
+          "alt": "導入。看板の向き"
+        },
+        {
+          "src": "asset_sources/loading-comics/48-restored/panels/restored-48-2.webp",
+          "alt": "オチ。看板の向き"
+        }
+      ],
+      "record": "asset_sources/loading-comics/48-restored/comics.json"
+    },
+    {
+      "id": "steeping-clock",
+      "number": 49,
+      "title": "蒸らしの時計",
+      "cast": "はじめ・スミさん",
+      "theme": "シーシャあるある",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/49-steeping-clock/panels/steeping-clock-1.webp",
+          "alt": "導入。蒸らしの時計"
+        },
+        {
+          "src": "asset_sources/loading-comics/49-steeping-clock/panels/steeping-clock-2.webp",
+          "alt": "オチ。蒸らしの時計"
+        }
+      ],
+      "record": "asset_sources/loading-comics/49-steeping-clock/comics.json"
+    },
+    {
+      "id": "mint-question",
+      "number": 50,
+      "title": "強めの確認",
+      "cast": "はじめ・スミさん",
+      "theme": "シーシャあるある",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/50-mint-question/panels/mint-question-1.webp",
+          "alt": "導入。強めの確認"
+        },
+        {
+          "src": "asset_sources/loading-comics/50-mint-question/panels/mint-question-2.webp",
+          "alt": "オチ。強めの確認"
+        }
+      ],
+      "record": "asset_sources/loading-comics/50-mint-question/comics.json"
+    },
+    {
+      "id": "scent-overtime",
+      "number": 51,
+      "title": "香りの残業",
+      "cast": "はじめ・スミさん",
+      "theme": "シーシャあるある",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/51-scent-overtime/panels/scent-overtime-1.webp",
+          "alt": "導入。香りの残業"
+        },
+        {
+          "src": "asset_sources/loading-comics/51-scent-overtime/panels/scent-overtime-2.webp",
+          "alt": "オチ。香りの残業"
+        }
+      ],
+      "record": "asset_sources/loading-comics/51-scent-overtime/comics.json"
+    },
+    {
+      "id": "flavor-address",
+      "number": 52,
+      "title": "味の説明書",
+      "cast": "はじめ・スミさん",
+      "theme": "シーシャあるある",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/52-flavor-address/panels/flavor-address-1.webp",
+          "alt": "導入。味の説明書"
+        },
+        {
+          "src": "asset_sources/loading-comics/52-flavor-address/panels/flavor-address-2.webp",
+          "alt": "オチ。味の説明書"
+        }
+      ],
+      "record": "asset_sources/loading-comics/52-flavor-address/comics.json"
+    },
+    {
+      "id": "apple-interview",
+      "number": 53,
+      "title": "個性派面接",
+      "cast": "はじめ・アダム",
+      "theme": "キャラのこだわり",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/53-apple-interview/panels/apple-interview-1.webp",
+          "alt": "導入。個性派面接"
+        },
+        {
+          "src": "asset_sources/loading-comics/53-apple-interview/panels/apple-interview-2.webp",
+          "alt": "オチ。個性派面接"
+        }
+      ],
+      "record": "asset_sources/loading-comics/53-apple-interview/comics.json"
+    },
+    {
+      "id": "apple-light",
+      "number": 54,
+      "title": "味変の限界",
+      "cast": "はじめ・アダム",
+      "theme": "シーシャあるある",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/54-apple-light/panels/apple-light-1.webp",
+          "alt": "導入。味変の限界"
+        },
+        {
+          "src": "asset_sources/loading-comics/54-apple-light/panels/apple-light-2.webp",
+          "alt": "オチ。味変の限界"
+        }
+      ],
+      "record": "asset_sources/loading-comics/54-apple-light/comics.json"
+    },
+    {
+      "id": "apple-ratio",
+      "number": 55,
+      "title": "比率の大改革",
+      "cast": "はじめ・アダム",
+      "theme": "シーシャあるある",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/55-apple-ratio/panels/apple-ratio-1.webp",
+          "alt": "導入。比率の大改革"
+        },
+        {
+          "src": "asset_sources/loading-comics/55-apple-ratio/panels/apple-ratio-2.webp",
+          "alt": "オチ。比率の大改革"
+        }
+      ],
+      "record": "asset_sources/loading-comics/55-apple-ratio/comics.json"
+    },
+    {
+      "id": "apple-judge",
+      "number": 56,
+      "title": "試食の圧力",
+      "cast": "はじめ・アダム",
+      "theme": "キャラのこだわり",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/56-apple-judge/panels/apple-judge-1.webp",
+          "alt": "導入。試食の圧力"
+        },
+        {
+          "src": "asset_sources/loading-comics/56-apple-judge/panels/apple-judge-2.webp",
+          "alt": "オチ。試食の圧力"
+        }
+      ],
+      "record": "asset_sources/loading-comics/56-apple-judge/comics.json"
+    },
+    {
+      "id": "sweet-unit",
+      "number": 57,
+      "title": "甘さのものさし",
+      "cast": "はじめ・なる",
+      "theme": "シーシャあるある",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/57-sweet-unit/panels/sweet-unit-1.webp",
+          "alt": "導入。甘さのものさし"
+        },
+        {
+          "src": "asset_sources/loading-comics/57-sweet-unit/panels/sweet-unit-2.webp",
+          "alt": "オチ。甘さのものさし"
+        }
+      ],
+      "record": "asset_sources/loading-comics/57-sweet-unit/comics.json"
+    },
+    {
+      "id": "cake-praise",
+      "number": 58,
+      "title": "褒める技術",
+      "cast": "はじめ・なる",
+      "theme": "キャラのこだわり",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/58-cake-praise/panels/cake-praise-1.webp",
+          "alt": "導入。褒める技術"
+        },
+        {
+          "src": "asset_sources/loading-comics/58-cake-praise/panels/cake-praise-2.webp",
+          "alt": "オチ。褒める技術"
+        }
+      ],
+      "record": "asset_sources/loading-comics/58-cake-praise/comics.json"
+    },
+    {
+      "id": "cake-apology",
+      "number": 59,
+      "title": "反省の向き",
+      "cast": "はじめ・なる",
+      "theme": "キャラのこだわり",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/59-cake-apology/panels/cake-apology-1.webp",
+          "alt": "導入。反省の向き"
+        },
+        {
+          "src": "asset_sources/loading-comics/59-cake-apology/panels/cake-apology-2.webp",
+          "alt": "オチ。反省の向き"
+        }
+      ],
+      "record": "asset_sources/loading-comics/59-cake-apology/comics.json"
+    },
+    {
+      "id": "dessert-stomach",
+      "number": 60,
+      "title": "別腹の確認",
+      "cast": "はじめ・なる",
+      "theme": "シーシャあるある",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/60-dessert-stomach/panels/dessert-stomach-1.webp",
+          "alt": "導入。別腹の確認"
+        },
+        {
+          "src": "asset_sources/loading-comics/60-dessert-stomach/panels/dessert-stomach-2.webp",
+          "alt": "オチ。別腹の確認"
+        }
+      ],
+      "record": "asset_sources/loading-comics/60-dessert-stomach/comics.json"
+    },
+    {
+      "id": "leave-it-to-you",
+      "number": 61,
+      "title": "おまかせの罠",
+      "cast": "はじめ・スミさん",
+      "theme": "シーシャあるある",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/61-leave-it-to-you/panels/leave-it-to-you-1.webp",
+          "alt": "導入。おまかせの罠"
+        },
+        {
+          "src": "asset_sources/loading-comics/61-leave-it-to-you/panels/leave-it-to-you-2.webp",
+          "alt": "オチ。おまかせの罠"
+        }
+      ],
+      "record": "asset_sources/loading-comics/61-leave-it-to-you/comics.json"
+    },
+    {
+      "id": "all-favorites",
+      "number": 62,
+      "title": "感想の落とし穴",
+      "cast": "はじめ・スミさん",
+      "theme": "シーシャあるある",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/62-all-favorites/panels/all-favorites-1.webp",
+          "alt": "導入。感想の落とし穴"
+        },
+        {
+          "src": "asset_sources/loading-comics/62-all-favorites/panels/all-favorites-2.webp",
+          "alt": "オチ。感想の落とし穴"
+        }
+      ],
+      "record": "asset_sources/loading-comics/62-all-favorites/comics.json"
+    },
+    {
+      "id": "short-visit",
+      "number": 63,
+      "title": "少しだけの幅",
+      "cast": "はじめ・スミさん",
+      "theme": "シーシャあるある",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/63-short-visit/panels/short-visit-1.webp",
+          "alt": "導入。少しだけの幅"
+        },
+        {
+          "src": "asset_sources/loading-comics/63-short-visit/panels/short-visit-2.webp",
+          "alt": "オチ。少しだけの幅"
+        }
+      ],
+      "record": "asset_sources/loading-comics/63-short-visit/comics.json"
+    },
+    {
+      "id": "apple-study",
+      "number": 64,
+      "title": "他店の勉強",
+      "cast": "はじめ・アダム",
+      "theme": "キャラのこだわり",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/64-apple-study/panels/apple-study-1.webp",
+          "alt": "導入。他店の勉強"
+        },
+        {
+          "src": "asset_sources/loading-comics/64-apple-study/panels/apple-study-2.webp",
+          "alt": "オチ。他店の勉強"
+        }
+      ],
+      "record": "asset_sources/loading-comics/64-apple-study/comics.json"
+    },
+    {
+      "id": "apple-season",
+      "number": 65,
+      "title": "一年中の旬",
+      "cast": "はじめ・アダム",
+      "theme": "キャラのこだわり",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/65-apple-season/panels/apple-season-1.webp",
+          "alt": "導入。一年中の旬"
+        },
+        {
+          "src": "asset_sources/loading-comics/65-apple-season/panels/apple-season-2.webp",
+          "alt": "オチ。一年中の旬"
+        }
+      ],
+      "record": "asset_sources/loading-comics/65-apple-season/comics.json"
+    },
+    {
+      "id": "apple-break",
+      "number": 66,
+      "title": "休憩も一筋",
+      "cast": "はじめ・アダム",
+      "theme": "キャラのこだわり",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/66-apple-break/panels/apple-break-1.webp",
+          "alt": "導入。休憩も一筋"
+        },
+        {
+          "src": "asset_sources/loading-comics/66-apple-break/panels/apple-break-2.webp",
+          "alt": "オチ。休憩も一筋"
+        }
+      ],
+      "record": "asset_sources/loading-comics/66-apple-break/comics.json"
+    },
+    {
+      "id": "sweet-name",
+      "number": 67,
+      "title": "名前で休憩",
+      "cast": "はじめ・なる",
+      "theme": "シーシャあるある",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/67-sweet-name/panels/sweet-name-1.webp",
+          "alt": "導入。名前で休憩"
+        },
+        {
+          "src": "asset_sources/loading-comics/67-sweet-name/panels/sweet-name-2.webp",
+          "alt": "オチ。名前で休憩"
+        }
+      ],
+      "record": "asset_sources/loading-comics/67-sweet-name/comics.json"
+    },
+    {
+      "id": "not-sweet",
+      "number": 68,
+      "title": "甘くない注文",
+      "cast": "はじめ・なる",
+      "theme": "シーシャあるある",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/68-not-sweet/panels/not-sweet-1.webp",
+          "alt": "導入。甘くない注文"
+        },
+        {
+          "src": "asset_sources/loading-comics/68-not-sweet/panels/not-sweet-2.webp",
+          "alt": "オチ。甘くない注文"
+        }
+      ],
+      "record": "asset_sources/loading-comics/68-not-sweet/comics.json"
+    },
+    {
+      "id": "cake-lunch",
+      "number": 69,
+      "title": "研究の昼ご飯",
+      "cast": "はじめ・なる",
+      "theme": "シーシャあるある",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/69-cake-lunch/panels/cake-lunch-1.webp",
+          "alt": "導入。研究の昼ご飯"
+        },
+        {
+          "src": "asset_sources/loading-comics/69-cake-lunch/panels/cake-lunch-2.webp",
+          "alt": "オチ。研究の昼ご飯"
+        }
+      ],
+      "record": "asset_sources/loading-comics/69-cake-lunch/comics.json"
+    },
+    {
+      "id": "mint-ranking",
+      "number": 70,
+      "title": "人気の一位",
+      "cast": "はじめ・みんと",
+      "theme": "シーシャあるある",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/70-mint-ranking/panels/mint-ranking-1.webp",
+          "alt": "導入。人気の一位"
+        },
+        {
+          "src": "asset_sources/loading-comics/70-mint-ranking/panels/mint-ranking-2.webp",
+          "alt": "オチ。人気の一位"
+        }
+      ],
+      "record": "asset_sources/loading-comics/70-mint-ranking/comics.json"
+    },
+    {
+      "id": "mint-service",
+      "number": 71,
+      "title": "甘さの接客",
+      "cast": "はじめ・みんと",
+      "theme": "シーシャあるある",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/71-mint-service/panels/mint-service-1.webp",
+          "alt": "導入。甘さの接客"
+        },
+        {
+          "src": "asset_sources/loading-comics/71-mint-service/panels/mint-service-2.webp",
+          "alt": "オチ。甘さの接客"
+        }
+      ],
+      "record": "asset_sources/loading-comics/71-mint-service/comics.json"
+    },
+    {
+      "id": "mint-photo",
+      "number": 72,
+      "title": "写真の主役",
+      "cast": "はじめ・みんと",
+      "theme": "シーシャあるある",
+      "selection": "unreviewed",
+      "aspectRatio": "3:2",
+      "panels": [
+        {
+          "src": "asset_sources/loading-comics/72-mint-photo/panels/mint-photo-1.webp",
+          "alt": "導入。写真の主役"
+        },
+        {
+          "src": "asset_sources/loading-comics/72-mint-photo/panels/mint-photo-2.webp",
+          "alt": "オチ。写真の主役"
+        }
+      ],
+      "record": "asset_sources/loading-comics/72-mint-photo/comics.json"
+    }
+  ]
+}

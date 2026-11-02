@@ -1,0 +1,104 @@
+{
+  "episode": 12,
+  "title": "香りの感想",
+  "cast": "凛・はじめ",
+  "theme": "旧話の復刻",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-20261024/10-13-friends.png",
+    "original_order": "right-to-left",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "image_genによる再作画",
+  "image_manifest": [
+    {
+      "file": "12-restored.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2157455,
+      "sha256": "92833af37ff767cf7e30a882b837add96b382659d2f816408791509bf2e83cb7"
+    }
+  ],
+  "tasks": [
+    {
+      "script": "RIGHT: dark-blue-black-wolf-cut Rin in white shirt/black slacks offers Hajime a clipboard and a pen with a teasing half-smile, saying 「正直に書いてね。」 Workplace samples stay safely unopened in neat small packs on counter; no smoking or experiments. Hajime focuses very seriously. LEFT: reveal clipboard: Hajime's entire big handwritten answer is simply 「いい匂い」, taking most of the space, and he is proudly earnest. Rin, amused and affectionate rather than contemptuous, says 「語彙も貸そうか。」 No extra dialogue.",
+      "dialogue_original": [
+        "正直に書いてね。",
+        "いい匂い",
+        "語彙も貸そうか。"
+      ],
+      "prompt": "旧漫画のサイズと読む順を統一する編集です。添付1の原画シートから指定した話1本だけを、添付2の下敷きへ再構成する。元のネタ・衣装・顔・小物・台詞を保つ。別の話を混ぜず、新しいギャグは足さない。出力1536x1024、左x36 y272幅720高さ480、右x780 y272幅720高さ480、横長3:2。上下272pxの紙余白、枠はy752で終わる。枠を縦に広げない。絵は枠内だけ。セーフマージン29px。左コマを導入、右コマをオチに並べ替え、絵や文字の左右反転は禁止。元絵の台詞は横書きの読みやすい太い日本語ゴシック。題名・話数・シリーズ名・読む順の番号・署名は消す。2.5頭身の太線セル塗りと紙質、原画の本人性を維持。台詞が多くても枠を拡げず人物を胸上で構成する。文字・顔・重要な小物を欠かさない。元々3人の話は物語を勝手に改変せず3人を維持してよい（旧話の復刻である）。シーシャ器具は指定された話以外描かない。写真は構造参照で、製品ロゴや写真の実在人物は模写しない。最終配置について、次の台本のLEFTは完成版の左、RIGHTは完成版の右です。元シートの左右位置を真似しない。上の大きな余白を残す下敷き画像が寸法の正本。出力は必ず1536x1024（2:1や横長帯は禁止）。下敷きは添付1。添付2のシートの第12話「香りの感想」だけ。完成版の台本: LEFT: dark-blue-black-wolf-cut Rin in white shirt/black slacks offers Hajime a clipboard and a pen with a teasing half-smile, saying 「正直に書いてね。」 Workplace samples stay safely unopened in neat small packs on counter; no smoking or experiments. Hajime focuses very seriously. RIGHT: reveal clipboard: Hajime's entire big handwritten answer is simply 「いい匂い」, taking most of the space, and he is proudly earnest. Rin, amused and affectionate rather than contemptuous, says 「語彙も貸そうか。」 No extra dialogue.。左に導入、右にオチ。シーシャ台・ホース・炭・喫煙・煙・武器は描かない。",
+      "reference_images": [
+        "/workspace/shisha-game/asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "/workspace/shisha-game/asset_sources/short-comics-20261024/10-13-friends.png",
+        "/workspace/shisha-game/assets/sprites/characters/rin/chr_rin_normal.png"
+      ],
+      "generator": "OpenAI image_gen"
+    }
+  ],
+  "source": [
+    {
+      "file": "12-restored.png",
+      "region": {
+        "x": 38,
+        "y": 267,
+        "width": 719,
+        "height": 490,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "12-restored.png",
+      "region": {
+        "x": 784,
+        "y": 267,
+        "width": 719,
+        "height": 490,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-12-1.webp",
+      "width": 735,
+      "height": 490,
+      "sha256": "338c0e0a14e4afce44d5f83ab3b3de2efcc3f2677d9a713a81011486d0a6f2b1"
+    },
+    {
+      "file": "panels/restored-12-2.webp",
+      "width": 735,
+      "height": 490,
+      "sha256": "3d2406b4260f3093234ba3fcd94fd4f212896a24e0f4fdf0f9ecd4cb52f74df1"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "ok（強制通過なし）",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": []
+    }
+  }
+}
