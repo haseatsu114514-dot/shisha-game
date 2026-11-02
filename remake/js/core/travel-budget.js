@@ -11,6 +11,8 @@ const inDeparturePrep = value => {
 export const travelsBetweenCities = value => CITY_TRAVEL_CHAPTERS.includes(value?.chapter) || inDeparturePrep(value);
 /** 第5章の東京への新幹線（片道）。橙須（名古屋の大須が元）から東京の実際の運賃に合わせる（#2033・2026-11-02）。 */
 export const TOKYO_TRAIN_FARE = 11000;
+/** 第5章のドバイへの飛行機（往復・出発の時に払う。1回目はシェイクが切符をくれる。宿はシェイクの屋敷の客間で無料。#2033 E・2026-11-02 オーナー指定）。 */
+export const DUBAI_ROUND_TRIP_FARE = 100000;
 export const returnFareReserve = value => {
   if (!travelsBetweenCities(value)) return 0;
   const region = value.flags?._ch2_region;
