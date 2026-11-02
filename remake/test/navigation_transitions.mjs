@@ -51,6 +51,43 @@ async function verify(page, selector, expected = null) {
 }
 
 await suite("navigation-transitions", async (check) => {
+  for (const mode of ["normal", "reduced", "cancel-flip"]) {
+    await check(`dawn-current-numbers-${mode}`, async (page) => {
+      const result = await page.evaluate(async mode => {
+        const transitions = await import("./js/core/transitions.js");
+        const samples = [];
+        let frame;
+        const sample = () => {
+          const card = document.querySelector('[data-test="dawn-card"]');
+          if (card && Number(getComputedStyle(card).opacity) > .1) {
+            samples.push([...card.querySelectorAll(".tr-flip")].map(span =>
+              [...span.children].filter(node => Number(getComputedStyle(node).opacity) > .1).map(node => node.textContent)));
+          }
+          frame = requestAnimationFrame(sample);
+        };
+        const animate = Element.prototype.animate;
+        if (mode === "cancel-flip") Element.prototype.animate = function (...args) {
+          const animation = animate.apply(this, args);
+          if (this.matches(".tr-flip > i")) queueMicrotask(() => animation.cancel());
+          return animation;
+        };
+        sample();
+        try {
+          await transitions.nightToMorning(document.getElementById("fx"), async () =>
+            ({ fromDay: 6, day: 7, fromLeft: 8, left: 7 }));
+        } finally {
+          cancelAnimationFrame(frame);
+          Element.prototype.animate = animate;
+        }
+        return { samples, covering: transitions.isCovering(), leftovers: document.querySelectorAll(".tr-dawn").length };
+      }, mode);
+      assert(result.samples.length > 0, "朝のカードが一度も表示されなかった");
+      assert(result.samples.some(([day, left]) => day.includes("7") && left.includes("7")));
+      assert(result.samples.every(numbers => numbers.flat().every(value => value === "7")), "前日のDAY6／あと8日が表示された");
+      assert.equal(result.covering, false); assert.equal(result.leftovers, 0);
+    }, { reducedMotion: mode === "reduced" ? "reduce" : "no-preference" });
+  }
+
   for (const [label, spot, viewport] of [
     ["home-pc", "rest", desktop], ["home-mobile", "rest", mobile],
     ["tonari-pc", "tonari", desktop], ["shop-mobile", "shop", mobile],

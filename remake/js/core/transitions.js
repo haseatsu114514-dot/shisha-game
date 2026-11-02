@@ -82,8 +82,9 @@ export function createSceneCurtain(host, { fast = false, sceneArrival = takeScen
 
 // ---------------------------------------------------------------- 波＋めくり: 就寝 → 翌朝
 
-function flipNumber(from, to) {
-  const span = el("span.tr-flip", [el("i", { text: String(from) }), el("i", { text: String(to) })]);
+function flipNumber(value) {
+  // 日付はすでに更新済み。めくりの両面を朝の値にし、前日の数字を朝の案内に混ぜない。
+  const span = el("span.tr-flip", [el("i", { text: String(value) }), el("i", { text: String(value) })]);
   span.lastChild.style.transform = "rotateX(-90deg)";
   span.lastChild.style.opacity = "0";
   return span;
@@ -92,6 +93,10 @@ async function flip(span) {
   const [before, after] = span.children;
   await move(before, [{ transform: "rotateX(0)", opacity: 1 }, { transform: "rotateX(90deg)", opacity: 0 }], 170, { easing: EASE.in });
   await move(after, [{ transform: "rotateX(-90deg)", opacity: 0 }, { transform: "rotateX(0)", opacity: 1 }], 230, { easing: EASE.out });
+  // WAAPIの中断後も朝の数字が残るよう、最終状態をDOMにも確定する。
+  before.remove();
+  after.style.transform = "rotateX(0)";
+  after.style.opacity = "1";
 }
 
 /** 下の縁が丸く波打つ夜の面（上から降りてくる） */
@@ -106,8 +111,8 @@ function nightPath() {
 }
 
 /**
- * 夜の紫が上から降りて眠りにつき、DAYと残り日数が1つめくれ、ラベンダーの地平線が下から昇って朝が出る。
- * mid() は覆っている間に日付を進め、{ fromDay, day, fromLeft, left, rain, weather, sick } を返す。
+ * 夜の紫が上から降りて眠りにつき、朝のDAYと残り日数のカードがめくれ、ラベンダーの地平線が下から昇って朝が出る。
+ * mid() は覆っている間に日付を進め、{ day, left, rain, weather, sick } を返す。
  */
 export async function nightToMorning(host, mid) {
   const reduced = reducedMotion();
@@ -131,9 +136,9 @@ export async function nightToMorning(host, mid) {
     }
     const info = await mid();
     if (!info) return;
-    const dayFlip = flipNumber(info.fromDay, info.day);
+    const dayFlip = flipNumber(info.day);
     // 最終日が決まっていない章（第5章の日程未定）は残り日数をめくらず、章の一言だけ出す。
-    const leftFlip = info.left === null || info.left === undefined ? null : flipNumber(info.fromLeft ?? info.left, info.left);
+    const leftFlip = info.left === null || info.left === undefined ? null : flipNumber(info.left);
     const sub = info.sick
       ? el("div.tr-dawn-sub", [el("span", { text: "……熱っぽい" })])
       : !leftFlip ? el("div.tr-dawn-sub", [el("span", { text: info.undatedNote || "" })])
