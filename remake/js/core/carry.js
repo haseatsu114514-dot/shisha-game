@@ -211,6 +211,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_tournament_won", "achievement"],
   ["_ch3_trial_kuze", "progression"],
   ["_ch3_trial_steve", "progression"],
+  ["_ch3_tokyo_call_night", "progression"],
   ["_ch4", "progression"],
   ["_ch4_cleared", "progression"],
   ["_ch4_evening", "progression"],

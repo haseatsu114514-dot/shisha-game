@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { newState } from "../js/core/state.js";
 import { chapterDay, chapterDaysLeft, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 import { advanceToChapterTwo } from "../js/chapters/ch2-progress.js";
-import { CH3_INTRO_SCENES, chapterThreeScenes, advanceToChapterThree, chapterThreeProgress, chapterThreePrepPending, departChapterThree,
+import { CH3_INTRO_SCENES, chapterThreeScenes, advanceToChapterThree, chapterThreeProgress, chapterThreePrepPending, departChapterThree, chapterThreeDaily, CH3_DAILY_PLAN,
   completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime } from "../js/chapters/ch3-progress.js";
 
 const value = newState();
@@ -84,7 +84,7 @@ assert.deepEqual(tokyo.statsAtChapterStart, saved.stats);
 // 出発前の3日を地元で過ごしてから東京へ（VOL02）。東京DAY1（startDay）は出発の朝に確定し直す。
 assert.deepEqual(tokyo.flags._ch3_prep, { startDay: 29, days: 3, step: 0, departed: false });
 assert.equal(tokyo.flags._ch2_region, "home");
-assert.deepEqual(chapterThreeProgress(tokyo), { startDay: 32, stage: 0, titleSeen: false, routeVersion: 2 });
+assert.deepEqual(chapterThreeProgress(tokyo), { startDay: 32, stage: 0, titleSeen: false, routeVersion: 3 });
 assert(chapterThreePrepPending(tokyo));
 assert.equal(chapterDay(tokyo), 1, "The first prep day");
 const preDeparture = structuredClone(tokyo);
@@ -98,7 +98,7 @@ assert.equal(departChapterThree(tokyo), true);
 assert.equal(tokyo.flags._ch3_prep.departed, true);
 assert.equal(chapterThreePrepPending(tokyo), false);
 assert.deepEqual([tokyo.slot, tokyo.phase, tokyo.flags._ch2_region], [0, "opening", "home"]);
-assert.deepEqual(chapterThreeProgress(tokyo), { startDay: 32, stage: 0, titleSeen: false, routeVersion: 2 });
+assert.deepEqual(chapterThreeProgress(tokyo), { startDay: 32, stage: 0, titleSeen: false, routeVersion: 3 });
 assert.equal(chapterDay(tokyo), 1, "Tokyo DAY1 after departure");
 assert.equal(departChapterThree(tokyo), false, "Departure happens once");
 const entered = structuredClone(tokyo);
@@ -129,6 +129,28 @@ assert(ids.every(id => availableScenes.has(id)), "A Chapter 3 scene is absent fr
 assert.equal(CH3_INTRO_SCENES.find(scene => scene.id === "ch3_kuze_first").day, 8);
 assert.equal(CH3_INTRO_SCENES.find(scene => scene.id === "ch3_kuze_advice").day, 11,
   "Kuze must have several days between first meeting and return visit");
+// 東京も日常ループの行程（版3・VOL03）: 場面の並びは同じで、全場面に日付（昼の行動を使う場面か夜の予定か）がある。
+// 場面の読了で時計を動かさない（日付と時間帯は日常ループが進める）。
+{
+  const daily = structuredClone(tokyo);
+  assert(chapterThreeDaily(daily));
+  assert.deepEqual(Object.keys(CH3_DAILY_PLAN), ids, "Every Tokyo scene has a day in the daily plan, in order");
+  let last = 0;
+  for (const scene of CH3_INTRO_SCENES) {
+    const plan = CH3_DAILY_PLAN[scene.id];
+    assert(["slot", "night"].includes(plan.kind), scene.id);
+    assert.equal(plan.day, scene.day, `${scene.id} keeps the canonical Tokyo day`);
+    const order = plan.day * 3 + (plan.kind === "night" ? 2 : plan.slot);
+    assert(order >= last, `${scene.id} keeps the order`);
+    last = order;
+    const clock = [daily.day, daily.slot, daily.phase];
+    assert.equal(completeChapterThreeScene(daily, scene.id), true, scene.id);
+    assert.deepEqual([daily.day, daily.slot, daily.phase], clock, `${scene.id} must not move the clock in the daily route`);
+  }
+  assert.equal(chapterThreeFreeTime(daily), null, "The daily route has no scene-card free time");
+}
+// 以下は場面カードの東京（作業中の旧セーブの行程・版2）。
+tokyo.flags._ch3_intro.routeVersion = 2;
 for (let i = 0; i < ids.length; i++) {
   const scene = CH3_INTRO_SCENES[i];
   // 東京の空き時間（#1655）は休んで閉じる。場面の日付はその後に確かめる。

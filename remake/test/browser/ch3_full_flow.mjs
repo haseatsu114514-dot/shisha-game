@@ -49,6 +49,7 @@ async function seed(page) {
     // 出発前の準備3日（VOL02）を過ごした出発の朝から始める（準備の3日は ch3_departure_prep で遊ぶ）。
     value.day += 3;
     if (!progress.departChapterThree(value)) throw new Error("Departure failed");
+    value.flags._ch3_intro.routeVersion = 2; // 場面カードの東京（作業中の旧セーブの行程）を確かめる
     value.flags._ch3_intro.prologueStep = 0; // このスイートは旧行程の章頭（列車→回想→調べもの→章題→到着）から東京へ
     core.save();
     const vn = await import("./js/vn/engine.js");

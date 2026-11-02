@@ -1268,6 +1268,23 @@
       "run": ["node remake/test/browser/ch3_departure_prep.mjs"]
     },
     {
+      "id": "ch3-tokyo-daily",
+      "title": "Chapter 3 Tokyo days on the shared daily loop (VOL03)",
+      "kind": "browser",
+      "weight": 0.8,
+      "timeout": 6,
+      "paths": [
+        "remake/js/chapters/ch3-tokyo-daily.js",
+        "remake/js/core/tokyo-clock.js",
+        "remake/js/core/tokyo-visits.js",
+        "remake/js/daily/calendar.js",
+        "remake/js/daily/hud.js",
+        "data/dialogue/ch3_tokyo_daily.json",
+        "remake/test/browser/ch3_tokyo_daily.mjs"
+      ],
+      "run": ["node remake/test/browser/ch3_tokyo_daily.mjs"]
+    },
+    {
       "id": "ch3-full-flow",
       "title": "Chapter 3 full playthrough on one save",
       "kind": "browser",
