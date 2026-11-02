@@ -208,6 +208,12 @@
       "run": ["node --experimental-vm-modules remake/test/warmup_defer.mjs"]
     },
     {
+      "id": "gain-notice-a10",
+      "title": "Gain notices shorten only on repeat with the shorten-seen setting (#1081 A10)",
+      "kind": "quick",
+      "run": ["node remake/test/gain_notice_a10.mjs"]
+    },
+    {
       "id": "stat-ui-progress",
       "title": "Ten-step UI boundaries and sense color width",
       "kind": "quick",

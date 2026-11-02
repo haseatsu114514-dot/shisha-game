@@ -72,6 +72,7 @@ async function loadUi() {
     "transition-kit.js": { reducedMotion: () => false },
     "data.js": { DB: {}, displayName: () => "", faceIconUrl: () => "", allFaceIconUrls: () => FACE_URLS, assetUrl: (u) => u },
     "stats.js": { AFFINITY_RANK_PTS: [], step: () => 1 },
+    "gain-notice.js": { gainSeenKey: () => null, bannerHold: () => 2200 },
     "stat-progress.js": { nextStepProgress: () => ({}), stepOfValue: () => 1 },
     "scene-art.js": { renderSceneArt: () => {}, sceneArtUrls: () => [] },
     "weather.js": { rainScene: () => {}, weatherSkyTone: () => "", weatherViewKind: () => "", renderWeatherLayer: () => {} },
