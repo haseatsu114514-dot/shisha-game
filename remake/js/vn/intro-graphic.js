@@ -6,7 +6,7 @@ const ROOT = "img/ui/character_intros/graphic/";
 const PORTRAITS = new Set([
   "adam", "ageha", "dr_kemuri", "hajime", "hiyori", "kumicho", "kuze", "maezono", "maki", "mashiro", "minto", "nagumo",
   "naru", "oneesan", "pakki", "rei", "rin", "sai", "samechan", "steve", "sumi", "tsumugi", "uranaishi", "volk", "yoru",
-  "master_hookah", "sheikh", "shisha_9000", "da_silva", "emil", "mukai_master",
+  "master_hookah", "sheikh", "shisha_9000", "da_silva", "emil", "mukai_master", "noor",
 ]);
 // 背景も新しい絵柄に合わせて描き直した（2026-10-31 全24人）。無い人物は旧背景を使う
 const BACKGROUNDS = new Set([...PORTRAITS]);
@@ -34,6 +34,7 @@ const FRAME_OVERRIDES = {
   mukai_master: {width: 1024, left: -200, top: -108, right: 82.0},
   nagumo: {width: 972, left: -157, top: -12, right: 82.0},
   naru: {width: 831, left: -109, top: 0, right: 90.1},
+  noor: {width: 688, left: -48, top: -5, fade: 14},
   oneesan: {width: 843, left: -127, top: 4, right: 91.0},
   rei: {width: 1024, left: -228, top: 6, right: 84.8},
   rin: {width: 808, left: -136, top: -4, right: 96.1},

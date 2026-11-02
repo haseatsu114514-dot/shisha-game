@@ -6,11 +6,30 @@ import { growthSkill } from "../core/growth-effects.js";
 
 setBackgroundWeatherSource(weatherOf);
 
+const rollsRain = (seed, day) => (Math.imul(seed + day * 7919, 2654435761) >>> 0) % 100 < 30;
+const rollsCloud = (seed, day) => (Math.imul(seed + day * 104729, 2246822519) >>> 0) % 100 < 30;
+/**
+ * 第4章で日本を発った後か。出発の朝の到着・宿の場面は、街の札がまだ "home" のまま読むので、出発の日付で見る。
+ * 準備期間の無い旧保存は、出発前のtonari2場面（プロローグの先頭2つ）を読んだ後をドバイとする。
+ */
+const ch4Abroad = (s, day) => {
+  if (s?.chapter !== 4) return false;
+  const prep = s.flags?._ch4_prep, progress = s.flags?._ch4;
+  if (prep) return prep.departed === true
+    || (Number.isInteger(prep.startDay) && Number.isInteger(prep.days) && day >= prep.startDay + prep.days);
+  return !!progress && (progress.part !== "prologue" || progress.stage >= 2);
+};
+/**
+ * ドバイには雨を降らせない。雨の抽選が出た日は晴れにする。ドバイにいるのは、第4章・第5章で flags._ch2_region が
+ * "dubai"（HUD の街の札と同じ判定）の時と、第4章で日本を発った後。
+ */
+const inDryRegion = (s, day = s?.day) => (s?.flags?._ch2_region === "dubai" && (s.chapter === 4 || s.chapter === 5))
+  || ch4Abroad(s, day);
+
 export function isRainy(day = state?.day) {
   if (!state || !day || day < 2 || state.phase === "tournament") return false;
   if (state.weatherSeed == null) state.weatherSeed = Math.floor(Math.random() * 100000);
-  const h = Math.imul(state.weatherSeed + day * 7919, 2654435761) >>> 0;
-  return h % 100 < 30;
+  return !inDryRegion(state, day) && rollsRain(state.weatherSeed, day);
 }
 
 /**
@@ -20,19 +39,17 @@ export function isRainy(day = state?.day) {
 export function weatherOf(day = state?.day) {
   if (!state || !day || state.phase === "tournament") return null;
   if (isRainy(day)) return "rain";
-  if (day < 2) return "sun";
-  const h = Math.imul(state.weatherSeed + day * 104729, 2246822519) >>> 0;
-  return h % 100 < 30 ? "cloud" : "sun";
+  if (day < 2 || rollsRain(state.weatherSeed, day)) return "sun"; // ドバイで雨の抽選が出た日
+  return rollsCloud(state.weatherSeed, day) ? "cloud" : "sun";
 }
 export const WEATHER_LABEL = { sun: "晴れ", cloud: "くもり", rain: "雨" };
 
-/** 空模様は同じ保存済みの種を読むだけ。表示のために天気を抽選し直さない。 */
+/** 空模様は同じ保存済みの種を読むだけ。表示のために天気を抽選し直さない。第4章の出発前日は、明日（ドバイDAY1）をドバイの天気で出す。 */
 export function tomorrowForecast(s = state) {
   if (!growthSkill(s, "K05") || !Number.isFinite(s?.weatherSeed) || s.phase === "tournament") return null;
   const day = (s.day || 1) + 1;
-  const rain = (Math.imul(s.weatherSeed + day * 7919, 2654435761) >>> 0) % 100 < 30;
-  const cloud = (Math.imul(s.weatherSeed + day * 104729, 2246822519) >>> 0) % 100 < 30;
-  return WEATHER_LABEL[rain ? "rain" : cloud ? "cloud" : "sun"];
+  const rain = rollsRain(s.weatherSeed, day);
+  return WEATHER_LABEL[rain ? (inDryRegion(s, day) ? "sun" : "rain") : rollsCloud(s.weatherSeed, day) ? "cloud" : "sun"];
 }
 
 /** 雨の日だけ出す回（晴れの日はローテーションに出さない＝天気と文が食い違わない） */
@@ -74,7 +91,8 @@ export function rainScene(background, screen) {
   if (["title", "end", "result", "count"].includes(screen)) return null;
   const file = String(background || "").split(/[?#]/)[0].split("/").pop().replace(/\.webp$/, ".png")
     .replace(/_overcast_(day|night)\.png$/, "_$1.png");
-  if (!file || /(?:title|tournament)/.test(file) || !isRainy()) return null;
+  // ドバイの背景にも雨を重ねない（第5章でドバイへ発つ機内の場面は、街の札が変わる前に読む）
+  if (!file || /(?:title|tournament)/.test(file) || /^bg_dubai_/.test(file) || !isRainy()) return null;
   if (OUTDOOR_BG_RE.test(file)) {
     return { mode: "outdoor", windows: [] };
   }

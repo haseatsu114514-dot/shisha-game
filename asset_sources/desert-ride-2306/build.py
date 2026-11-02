@@ -51,6 +51,8 @@ ADOPT = {
 # ヌールの立ち絵 normal（raw/phase4/noor-candidates/）: 2026-11-02 オーナーが A を選定（B・C は採用しない）。
 NOOR_NORMAL = "phase4/noor-candidates/noor_normal_A-raw.png"
 NOOR_SPRITE = ROOT / "assets" / "sprites" / "characters" / "noor" / "chr_noor_normal.png"
+# 表情差分（第5弾・2026-11-02・DSR10）: 採用した normal A を基準に Codex が顔だけ描き変えたもの。normal と同じ切り抜き・倍率・位置で置く
+NOOR_FACES = {"smile": "phase5/noor_smile-raw.png", "surprise": "phase5/noor_surprise-raw.png"}
 RIDER_POSES = ("rider_lean_left", "rider_lean_right", "rider_jump", "rider_brace", "rider_fall")
 
 # 遠景（Codex B 1983×793）の行: 空が終わる稜線のいちばん上と、平らな砂が始まる地平線（原画の画素）
@@ -189,21 +191,36 @@ def anchor_foot(im):
 
 def noor_portrait():
     """ヌールの立ち絵（docs/portrait_standard.md の 896×1200 透過PNG）。縮小と配置だけで、透過は原画のまま（髪・布の薄い縁を切らない）。
-    人物の高さはキャンバスの 0.975、足元の余白 14px、横は不透明部分の重心を中央（ほかの立ち絵と同じ置き方。身長は spriteScale が決める）。"""
+    人物の高さはキャンバスの 0.975、足元の余白 14px、横は不透明部分の重心を中央（ほかの立ち絵と同じ置き方。身長は spriteScale が決める）。
+    表情差分は normal と同じ切り抜き・倍率・位置をそのまま掛ける（原画どうしが数画素以内でそろっているので、表情を変えても体が跳ねない）。"""
     W, H, height, foot = 896, 1200, 1170, 14
     raw = Image.open(RAW / NOOR_NORMAL).convert("RGBA")
     box = raw.getchannel("A").point(lambda v: 255 if v >= 16 else 0).getbbox()
-    body = raw.crop(box)
-    k = height / body.height
-    body = body.convert("RGBa").resize((round(body.width * k), height), Image.LANCZOS).convert("RGBA")
+    k = height / (box[3] - box[1])
+    size = (round((box[2] - box[0]) * k), height)
+
+    def place(source):
+        body = source.crop(box).convert("RGBa").resize(size, Image.LANCZOS).convert("RGBA")
+        return body
+
+    body = place(raw)
     alpha = np.asarray(body.getchannel("A")).astype(float)
     cx = float((alpha * np.arange(body.width)[None, :]).sum() / alpha.sum())
-    canvas = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    canvas.alpha_composite(body, (round(W / 2 - cx), H - foot - height))
-    NOOR_SPRITE.parent.mkdir(parents=True, exist_ok=True)
-    canvas.save(NOOR_SPRITE, optimize=True)
-    return {"raw": f"raw/{NOOR_NORMAL}", "raw_sha256": sha(RAW / NOOR_NORMAL), "png": str(NOOR_SPRITE.relative_to(ROOT)),
-            "png_sha256": sha(NOOR_SPRITE), "size": [W, H], "scale": round(k, 6)}
+    offset = (round(W / 2 - cx), H - foot - height)
+    out = {"raw": f"raw/{NOOR_NORMAL}", "raw_sha256": sha(RAW / NOOR_NORMAL), "size": [W, H], "scale": round(k, 6), "crop": list(box), "offset": list(offset)}
+    for face, path in [("normal", RAW / NOOR_NORMAL), *[(face, RAW / rel) for face, rel in NOOR_FACES.items()]]:
+        source = Image.open(path).convert("RGBA")
+        assert source.size == raw.size, f"{face} は normal と同じ寸法の原画であること"
+        canvas = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        canvas.alpha_composite(place(source), offset)
+        target = NOOR_SPRITE.with_name(f"chr_noor_{face}.png")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        canvas.save(target, optimize=True)
+        if face == "normal":
+            out.update({"png": str(target.relative_to(ROOT)), "png_sha256": sha(target)})
+        else:
+            out.setdefault("faces", {})[face] = {"raw": f"raw/{NOOR_FACES[face]}", "raw_sha256": sha(path), "png": str(target.relative_to(ROOT)), "png_sha256": sha(target)}
+    return out
 
 
 def main():

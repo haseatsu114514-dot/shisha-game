@@ -1,0 +1,2 @@
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-kotatsu/panels/sheikh-kotatsu-1.webp: 795x530 比率 1.500 66 KiB
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-kotatsu/panels/sheikh-kotatsu-2.webp: 800x533 比率 1.501 70 KiB

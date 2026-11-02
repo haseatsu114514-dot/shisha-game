@@ -300,7 +300,8 @@
         "practice_consumes_flavor": false
       },
       "customers": [],
-      "time_slot": "night"
+      "time_slot": "night",
+      "self_taste": true
     },
     {
       "id": "baito_smoke_ring",
@@ -1261,6 +1262,40 @@
         "baito_ch2_quiet_solo"
       ],
       "time_slot": "night"
+    },
+    {
+      "id": "baito_ch2_staff_meal",
+      "category": "atmosphere",
+      "chapter": 2,
+      "text": "客が途切れたすきに、スミさんがカウンターの端に皿を置いた。\n握り飯が二つと、湯気の立つ味噌汁。\n「食ってけ」\nそれだけ言って、スミさんは炭の火を見に戻った。",
+      "choices": [
+        {
+          "text": "「いただきます」と、手を止めて食べる",
+          "result": "手を拭いて、カウンターの端に腰を下ろす。味噌汁をひと口すする。\n塩気は、まだ少し遠い。でも、湯気の温かさは喉の奥まで届いた。\n握り飯を二つ、ゆっくり食べきる。\n持ち場に戻ってトングを握ると、さっきより手が少し軽かった。\n（味は遠い。でも、今日の分はちゃんと食べた）",
+          "stats": {
+            "guts": 2,
+            "insight": 1
+          },
+          "money_bonus": 0
+        },
+        {
+          "text": "「お客さんが来るので、後で」と先に動く",
+          "result": "皿に布巾をかけて、先に客席を回る。注文を受け、グラスを下げ、炭を替える。\n気づけば、味噌汁から湯気が消えていた。\nスミさんが黙って椀を下げ、温め直して、また俺の前に置いた。\n「冷めるぞ」\n（……結局、最後には食べさせてもらった）",
+          "stats": {
+            "technique": 1,
+            "guts": 1
+          },
+          "money_bonus": 0
+        }
+      ],
+      "base_pay": 8000,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      },
+      "customers": [],
+      "trigger_flag": "_ch2_read_ch2_lingering_smell",
+      "priority": true
     }
   ],
   "baito_settings": {
