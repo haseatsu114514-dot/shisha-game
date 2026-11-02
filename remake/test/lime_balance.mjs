@@ -54,6 +54,8 @@ const values = {
   "bus.js": { emit: noop },
   "bonds.js": { bondInvites: () => [], friendMessages: () => friendQueue },
   "story-knowledge.js": { syncMintoKnowledge: noop },
+  // サメちゃんのデート（samechan-date.js）が読む心得の盤。LIMEの検査なので旧しくみ（盤は無効）の代役にする
+  "growth.js": { growthEnabled: () => false, awardActionExp: () => 0 },
 };
 const coreFiles = { "stat-step-tables.js": "stat-step-tables.js", "production-stats.js": "stats.js", "condition.js": "condition.js", "affinity-stages.js": "affinity-stages.js", "travel-budget.js": "travel-budget.js" };
 async function load(name) {

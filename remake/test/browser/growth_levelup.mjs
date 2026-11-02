@@ -1137,6 +1137,20 @@ await suite("growth-levelup", async (runCheck) => {
     assert.equal(result.chapter, 1); assert.equal(result.board, "board-radar");
     assert(result.base && result.now && result.base !== result.now, "灯した分だけ明るい面が広がる");
     assert.match(result.before, /"nodes":\[\]/, "章のはじめは盤が空");
+    // 旧しくみ（?growth=0）は5能力のレーダー。章のはじめの記録が無い旧セーブは差分を作らず、同じ能力を比べる
+    const legacy = await page.evaluate(async () => {
+      (await import("./js/core/growth.js")).setGrowthPreview(false);
+      const s = __remake.state; s.stats.sense = 30; s.statsAtChapterStart = { ...s.stats, sense: 10 };
+      const { chapterGrowthChart } = await import("./js/daily/status.js");
+      const grown = chapterGrowthChart(s, 300);
+      delete s.statsAtChapterStart;
+      const old = chapterGrowthChart(s, 300);
+      const pts = (svg, cls) => svg.querySelector(cls)?.getAttribute("points");
+      (await import("./js/core/growth.js")).setGrowthPreview(true);
+      return { board: grown.dataset.test || null, grew: pts(grown, ".radar-base") !== pts(grown, ".radar-now"),
+        oldSame: pts(old, ".radar-base") === pts(old, ".radar-now") };
+    });
+    assert.deepEqual(legacy, { board: null, grew: true, oldSame: true });
   });
   // ドバイのモスク（SPEC 2.8・SBD93）: 第4章の行き先から見学して振り返ると、灯せる盤が開く。時間・体力は使わない
   await check("dubai-mosque-lights-board", async (page) => {

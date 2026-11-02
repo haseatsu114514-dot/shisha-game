@@ -19,7 +19,8 @@ const values = {
   playBgm() {}, toast: text => notices.push(text), hooks: {},
   awardChapterClearExp() {},
   play: async () => ({ cancelled: cancel }),
-  radar: (current, baseline, size) => { comparisons.push({ current, baseline, size }); return node("svg"); },
+  // 章末のグラフ（daily/status.js の chapterGrowthChart）。盤モード／旧しくみの描き分けと基準の扱いは growth_levelup.mjs の chapter-end-board-chart
+  chapterGrowthChart: (value, size) => { comparisons.push({ value, size }); return node("svg"); },
 };
 let source = fs.readFileSync(new URL("../js/chapters/ch4.js", import.meta.url), "utf8");
 source += '\nexport function testOwner(value) { session = value; }\nexport { readAndCommit, renderComplete };';
@@ -91,12 +92,12 @@ assert(dialogues.find(d => d.dialogue_id === "ch4_result").lines.some(l => l.spe
 for (const scene of progress.CH4_RESOLUTION.slice(1)) progress.completeChapterFourScene(state, scene.id);
 state.flags._ch4_preview_seen = true;
 runner.renderComplete(owner);
-assert.equal(comparisons.at(-1).current, state.stats);
-assert.equal(comparisons.at(-1).baseline, state.statsAtChapterStart);
+assert.equal(comparisons.at(-1).value, state, "The chapter end draws the current save");
+assert.equal(comparisons.at(-1).size, 300);
 const walk = n => !n ? [] : [n, ...(n.children || []).flatMap(walk)];
 assert(walk(screen).some(n => n.dataset?.test === "ch4-growth"));
-// 章開始能力を持たない旧セーブは差分を捏造せず、同じ能力を比較する。
+// 章開始能力を持たない旧セーブでも描ける（同じ能力を比べる扱いは chapterGrowthChart 側）
 delete state.statsAtChapterStart;
 runner.renderComplete(owner);
-assert.equal(comparisons.at(-1).baseline, state.stats);
+assert.equal(comparisons.at(-1).value, state);
 console.log("PASS: Chapter 4 rewards separate learning, revisit unlock, recognition and actual growth comparison (VM)");
