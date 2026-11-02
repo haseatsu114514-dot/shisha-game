@@ -52,13 +52,13 @@
 - **育成報酬は初回完走だけ**: `paidAction` の `consumed`（経験値 = `core/growth.js` の自由行動1回分・はじめての場所・相手）と、心得の盤の「遊びのご褒美」`PLAY_REWARDS` `camel-finish`（感覚の火種1つ・寝る前の精算で一度だけ）。能力値を直接足す旧方式は使わない。再プレイは自己ベストの更新だけ。
 - SAVE/LOAD・中断: 会話の段階は読了ごとに保存。本番の見学は `watched` で一度だけ。レースを途中でやめれば何も消費しない。記録と消費はリザルトの「終える」の前に保存するので、結果の会話を読み切れなくても二重にならない。
 - 大会: `_ch4.part`・シェイクの秘匿フラグ・大会の結果には触れない。失敗しても進行に影響しない。
-- 14日化（#2273）との整合: `camelRaceDestination(value)` は `chapter === 4 && phase === "daily"`（`_ch4.part` が無くなっても可）で開き、`visitCamelRace()` は `performSpot` と同じ `{ used, exerted }` を返す。runDaily に乗せるときは、地図の行き先にこの1件を足し、`kind: "camel"` を `visitCamelRace({ read, beforeRace })` へ渡せばよい。`slot` の進め方は calendar 側に合わせる。
+- 14日化（#2297・2026-11-02 接続済み）: 新しいセーブ（`_ch4.routeVersion === 2`）は `ch4-dubai-daily.js` の日常ループの地図に `ch4_dubai_camel` を1件出す（`camelDailySpot()`。誘われるまでは「Dr.fookah の店先」、誘われたら「ラクダレース場」）。押せない理由は `unavailable`／`unavailableTag`（また明日・レースは明日の朝・レースは昼だけ・今日はもう走った）。昼の枠は `visitCamelRace()` が記録と一緒に進めて保存し、日常ループには `slotsUsed: 0` を返す（二重に進めない）。体力・能力は使わない。旧セーブ（版1の5日）は従来どおり `ch4-map-model.js` の行き先。
 
 ## 5. 検証
 
 - `node remake/test/camel_race_model.mjs`（再現性・所要時間・採点・連打・順位の入れ替わり）
 - `node remake/test/ch4_camel_race.mjs`（段階と日付・昼の行動・自己ベスト・一度限りの火種・台本の存在と時系列語の禁止）
-- `node remake/test/browser/ch4_camel_race.mjs`（実UI: 知り合う→誘い→見学→途中でやめる→自動操作で完走→結果の会話→保存/ロード→再挑戦→前夜へ。プレビューサーバーが必要）
+- `node remake/test/browser/ch4_camel_race.mjs`（実UI: 知り合う→誘い→見学→途中でやめる→自動操作で完走→結果の会話→保存/ロード→再挑戦→前夜へ。加えてドバイ14日の日常ループの地図から、店先の会話が時間を使わないこと・レースが昼の枠を一度だけ使うこと。プレビューサーバーが必要）
 - CI: `tools/ci/suites.json` の quick に2本、browser `ch4-camel-race`。
 
 ## 6. Codex への画像素材依頼（Claude は画像を生成しない）
@@ -76,6 +76,5 @@
 
 ## 7. 未完・次の一手
 
-- 14日化（#2273）で ch4 が runDaily に乗ったら、§4 の手順で行き先を移す（本モジュールは変更不要の想定）。
 - Codex の素材が届いたら `camel-race.js` の描写を差し替え、`CAMEL_TRACK_BG` を実背景にする。
 - サンドボードは別チャットで並行制作中。共通の第4章ファイルへの変更は `ch4-map-model.js` 4行・`ch4.js` 17行に留めた。

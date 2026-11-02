@@ -27,7 +27,8 @@ const mocks = {
     CH2_SCENE_BACKGROUNDS: { naruWindow: "res://assets/backgrounds/bg_kemurikusa_outside_night.png", venueBench: "bench" } },
   "remake/js/core/stats.js": { affinityLevel: () => 1, releaseAffinity: () => 0,
     addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; },
-    earnStat: (id, n) => { state.growth.push([id, n]); }, gainAffinity: (id, n) => { state.affinity.push([id, n]); } },
+    earnStat: (id, n) => { state.growth.push([id, n]); }, gainAffinity: (id, n) => { state.affinity.push([id, n]); },
+    visitAffinity: kind => ({ story: 16, talk: 8 })[kind] }, // 来店の好感度（AFB01）
   "remake/js/core/ui.js": { withScenePreparation: task => task, imageReady: async () => true, setBg: async () => {}, toast: () => {} },
   "remake/js/vn/engine.js": { play: async (id, opts) => {
     played.push([id, opts?.bg || null]);

@@ -221,11 +221,17 @@ function peopleTab() {
 
 /** 贈られた機材の札（贈り主・染み付いた香り・効き・売却不可）。1行に収める */
 function giftNote(e) {
-  const flavor = DB.flavorById[e.gift.flavor];
-  const leaf = flavor?.short_name || flavor?.name || e.gift.flavor;
+  const from = `${displayName(e.gift.from, state)}から（${e.gift.reason}）`;
+  // 香りの無い素焼き（サメちゃんの素焼きなど）は、まだ何も染みていないことを伝える
+  let scent = "まだ香りの染みていない素焼き";
+  if (e.gift.flavor) {
+    const flavor = DB.flavorById[e.gift.flavor];
+    const leaf = flavor?.short_name || flavor?.name || e.gift.flavor;
+    scent = `染み付いた香り：${leaf}（${e.gift.min_grams}g以上で香りが開く）`;
+  }
   return el("div.gift-note", { dataset: { test: `gift-${e.id}` } }, [
     el("b", { text: e.name }),
-    el("small", { text: `${displayName(e.gift.from, state)}から（${e.gift.reason}）・染み付いた香り：${leaf}（${e.gift.min_grams}g以上で香りが開く）・売却不可` }),
+    el("small", { text: `${from}・${scent}・売却不可` }),
   ]);
 }
 

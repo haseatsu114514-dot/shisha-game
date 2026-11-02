@@ -217,6 +217,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch4_camel", "progression"], // ドバイのラクダレース（段階・自己ベスト）。周回では持ち越さない
   ["_ch4_cleared", "progression"],
   ["_ch4_dubai_talks", "progression"],
+  ["_ch4_desert", "progression"],
   ["_ch4_evening", "progression"],
   ["_ch4_prep", "progression"],
   ["_ch4_preview_seen", "progression"],
@@ -320,6 +321,7 @@ export const FLAG_EXACT_RULES = [
   ["_home_trial_plan", "progression"],
   ["_intro_", "progression"],
   ["_intro_maki", "person"],
+  ["_intro_noor", "person"],
   ["_intro_sai", "person"],
   ["_kuji_seen", "ui"],
   ["_kumicho_sento_introduced", "person"],
@@ -356,6 +358,7 @@ export const FLAG_EXACT_RULES = [
   ["_met_minto", "person"],
   ["_met_mukai_master", "person"],
   ["_met_nagumo", "person"],
+  ["_met_noor", "person"],
   ["_met_naru", "person"],
   ["_met_rei", "person"],
   ["_met_rin", "person"],

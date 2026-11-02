@@ -31,6 +31,8 @@ const mocks = {
 
     addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; },
     earnStat: (id, n) => { state.growth.push([id, n]); }, gainAffinity: (id, n) => { state.affinity.push([id, n]); },
+    // 来店の好感度（台帳 AFB01）: 第2章は段階会話・初対面・締めくくり 16、通い 8
+    visitAffinity: kind => ({ story: 16, talk: 8 })[kind],
   },
   "../core/ui.js": { withScenePreparation: task => task, imageReady: async () => mode !== "bad-image", setBg: async () => {}, toast: () => {} },
   "../vn/engine.js": { play: async id => {
@@ -106,7 +108,7 @@ for (const id of ids) {
     assert.equal(state.money, before.money - 3000); assert.equal(state.stamina, 84);
     assert.equal(state.flags._ch2_talks[id], (count || 0) + 1);
     assert.equal(!!state.flags._ch2_followup_done?.[id], !first);
-    assert.deepEqual(state.affinity, [[id, first ? 10 : 5]]);
+    assert.deepEqual(state.affinity, [[id, first ? 16 : 8]]);
     assert.deepEqual(state.relationshipMemories, before.relationshipMemories); assert.deepEqual(state.lovers, before.lovers);
     assert.equal(saves, 1, "Visit must not insert an early save before calendar settlement");
     if (first) { await visit(id); assert.equal(played.at(-1), `remake_ch2_${id}_followup`); }
@@ -179,25 +181,25 @@ for (const id of ids) {
   assert.equal((await visit(id)).used, true);
   assert(isRepeat(id, played.at(-1)));
   assert.equal(state.flags._ch2_followup_done?.[id], undefined);
-  assert.deepEqual(state.affinity, [[id,5]]);
+  assert.deepEqual(state.affinity, [[id,8]]);
   heartLevel = 1; await visit(id);
   assert.equal(played.at(-1), `remake_ch2_${id}_followup`);
   assert.equal(state.flags._ch2_followup_done[id], true);
 }
 
-// あげはの店に通う回は、神崎・REIの段階会話と同じ+10。いつもの会話だけ+5（VOL06）。
+// あげはの店に通う回は、神崎・REIの段階会話と同じ+16。いつもの会話だけ+8（VOL06・AFB01）。
 {
   await setup(1); state.flags._ch2_followup_done = { ageha: true };
   agehaStory = "remake_ch2_ageha_gyaru";
   DB.dialogues.remake_ch2_ageha_gyaru = { dialogue_id: agehaStory, lines: [{ speaker: "ageha", face: "smile", text: "a" }] };
   assert.equal((await visit("ageha")).used, true);
   assert.equal(played.at(-1), agehaStory);
-  assert.deepEqual(state.affinity, [["ageha", 10]], "An Ageha story visit gains like the Kanzaki/REI stages");
+  assert.deepEqual(state.affinity, [["ageha", 16]], "An Ageha story visit gains like the Kanzaki/REI stages");
   assert.equal(state.flags._ch2_read_remake_ch2_ageha_gyaru, true);
   agehaStory = null;
   await visit("ageha");
   assert(isRepeat("ageha", played.at(-1)));
-  assert.deepEqual(state.affinity, [["ageha", 10], ["ageha", 5]], "The usual chat stays +5");
+  assert.deepEqual(state.affinity, [["ageha", 16], ["ageha", 8]], "The usual chat stays +8");
 }
 
 // The actual required-ID loader is atomic on missing/malformed new scenes.
@@ -262,8 +264,8 @@ for (const id of ["kumicho", "rei"]) {
   }
   assert.equal(state.flags._ch2_revisit_done[id], true);
   assert.equal(state.flags._ch2_talks[id], before.flags._ch2_talks[id] + sequence.length);
-  // 長い段階会話は第1章の固有会話と同じ+10、続編・再訪・小会話は+5（#2027）
-  const gained = [...CH2_VISIT_STORIES[id].map(entry => [id, entry.file ? 10 : 5]), [id, 5], [id, 5]];
+  // 長い段階会話は第1章の固有会話と同じ+16、続編・再訪・小会話は+8（#2027・AFB01）
+  const gained = [...CH2_VISIT_STORIES[id].map(entry => [id, entry.file ? 16 : 8]), [id, 8], [id, 8]];
   assert.deepEqual(state.affinity, gained);
   assert.deepEqual(state.relationshipMemories, before.relationshipMemories); assert.deepEqual(state.lovers, before.lovers);
 }
@@ -284,7 +286,7 @@ for (const id of ["kumicho", "rei"]) {
     assert(isRepeat(id, scenes[1])); repeats.push(scenes[1]);
   }
   assert.equal(new Set(repeats).size, 4, `${id}: four distinct small talks rotate`);
-  // 締めくくり: 室内の背景で再生し、完読で+10。中断では請求・交流回数・好感度を残さない。
+  // 締めくくり: 室内の背景で再生し、完読で+16。中断では請求・交流回数・好感度を残さない。
   finaleOpen.add(id); mode = "cancel";
   const before = structuredClone(state);
   assert.equal((await visit(id)).used, false);
@@ -294,7 +296,7 @@ for (const id of ["kumicho", "rei"]) {
   assert.equal((await visit(id)).used, true);
   assert.equal(played.at(-1), `${id}:finale`, "no greeting before the finale");
   assert.deepEqual(finaleCalls.map(([who, opts]) => [who, opts.bg, opts.deferSave]), [[id, id, true]]);
-  assert.equal(state.money, money - 3000); assert.deepEqual(state.affinity.at(-1), [id, 10]);
+  assert.equal(state.money, money - 3000); assert.deepEqual(state.affinity.at(-1), [id, 16]);
   // 訪問列が残っていれば、♥5でも締めくくりより段階会話が先
   await setup(); heartLevel = 5; finaleOpen.add(id);
   state.flags._ch2_followup_done = { [id]: true };
