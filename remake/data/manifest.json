@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-02 05:37 UTC",
+ "generated": "2026-11-02 06:11 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -516,7 +516,18 @@
   "bg_yuzugaya_trpg.webp",
   "eden.png",
   "kemurikusa.png",
-  "peppermint.png"
+  "peppermint.png",
+  "trpg_apple_thief_room.png",
+  "trpg_doll_requiem_room.png",
+  "trpg_fading_familiar_room.png",
+  "trpg_fox_market_room.png",
+  "trpg_leaf_mail_room.png",
+  "trpg_mist_kingdom_room.png",
+  "trpg_moonflower_encore_room.png",
+  "trpg_purikura_hero_room.png",
+  "trpg_shark_island_room.png",
+  "trpg_smoke_robot_room.png",
+  "trpg_stage_ghost_room.png"
  ],
  "cgs": [
   "cg_ageha_confession.png",
@@ -2569,8 +2580,19 @@
   "backgrounds/eden.png",
   "backgrounds/kemurikusa.png",
   "backgrounds/peppermint.png",
+  "backgrounds/trpg_apple_thief_room.png",
+  "backgrounds/trpg_doll_requiem_room.png",
+  "backgrounds/trpg_fading_familiar_room.png",
+  "backgrounds/trpg_fox_market_room.png",
+  "backgrounds/trpg_leaf_mail_room.png",
+  "backgrounds/trpg_mist_kingdom_room.png",
+  "backgrounds/trpg_moonflower_encore_room.png",
   "backgrounds/trpg_ordinary_room.png",
+  "backgrounds/trpg_purikura_hero_room.png",
+  "backgrounds/trpg_shark_island_room.png",
   "backgrounds/trpg_shark_room.png",
+  "backgrounds/trpg_smoke_robot_room.png",
+  "backgrounds/trpg_stage_ghost_room.png",
   "cgs/cg_ageha_confession.png",
   "cgs/cg_ageha_first_purikura.png",
   "cgs/cg_ch1_dr_kemuri_hook.png",

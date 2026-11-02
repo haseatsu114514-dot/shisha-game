@@ -89,7 +89,8 @@
           "nerve": 1
         },
         "trait": "月の光でも溶けそうな客室係。シーツ替えは、館で一番速い",
-        "likes": "夜食のラーメンと、ゆるい熊のぬいぐるみ"
+        "likes": "夜食のラーメンと、ゆるい熊のぬいぐるみ",
+        "portrait": "../../img/ui/trpg/pc-rosa.webp"
       }
     },
     {
@@ -110,7 +111,8 @@
           "nerve": 4
         },
         "trait": "一度見た顔は忘れない。話すより、描く方が早い",
-        "likes": "葉っぱの耳の猫と、ラベンダーの香り"
+        "likes": "葉っぱの耳の猫と、ラベンダーの香り",
+        "portrait": "../../img/ui/trpg/pc-shion.webp"
       }
     }
   ],
@@ -119,8 +121,8 @@
       "id": "notebook",
       "label": "書斎の配合帳",
       "short": "配合帳",
-      "x": 14,
-      "y": 26
+      "x": 12,
+      "y": 18
     },
     {
       "id": "tree",
@@ -133,22 +135,22 @@
       "id": "portrait",
       "label": "大広間の肖像画",
       "short": "肖像画",
-      "x": 47,
-      "y": 18
+      "x": 56,
+      "y": 24
     },
     {
       "id": "shelf",
       "label": "厨房の香りの棚",
       "short": "香りの棚",
-      "x": 18,
-      "y": 70
+      "x": 14,
+      "y": 62
     },
     {
       "id": "notice",
       "label": "玄関の予告状",
       "short": "予告状",
-      "x": 50,
-      "y": 82
+      "x": 62,
+      "y": 86
     },
     {
       "id": "chair",
@@ -2654,7 +2656,8 @@
     "interviewIdle": "執事に聞けるのは二つまでだ。何を聞く？",
     "twistIdle": "夜会は大騒ぎだ。手を選んで、誰が動くか決めろ",
     "planTitle": "怪盗を迎える作戦",
-    "riskLabel": "警戒"
+    "riskLabel": "警戒",
+    "image": "../../img/backgrounds/trpg_apple_thief_room.webp"
   },
   "intro": "trpg_apple_thief_intro",
   "listen": "trpg_apple_thief_listen",
@@ -2864,7 +2867,7 @@
         "detail": "短い黒髪に、赤い制帽",
         "color": "#2f2a2a",
         "accent": "#c9463a",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-apple-thief-cap.webp"
       },
       {
         "id": "glove",
@@ -2872,7 +2875,7 @@
         "detail": "栗色の髪を後ろでまとめ、白い手袋",
         "color": "#6b4a35",
         "accent": "#f2e3c6",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-apple-thief-glove.webp"
       },
       {
         "id": "bowtie",
@@ -2880,7 +2883,7 @@
         "detail": "丸い眼鏡に、林檎色の蝶ネクタイ",
         "color": "#3d3550",
         "accent": "#d8c3a5",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-apple-thief-bowtie.webp"
       },
       {
         "id": "tail",
@@ -2888,7 +2891,7 @@
         "detail": "長い髪を一つに結び、黒い燕尾服",
         "color": "#2a2f45",
         "accent": "#b9a7d6",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-apple-thief-tail.webp"
       }
     ],
     "archetypes": [
@@ -2952,7 +2955,8 @@
             "talk": 3,
             "nerve": 1
           },
-          "making": "trpg_apple_thief_make_hiyori_hiyori_rosa"
+          "making": "trpg_apple_thief_make_hiyori_hiyori_rosa",
+          "portrait": "../../img/ui/trpg/pc-rosa.webp"
         },
         {
           "id": "marta",
@@ -2966,7 +2970,8 @@
             "talk": 2,
             "nerve": 2
           },
-          "making": "trpg_apple_thief_make_hiyori_hiyori_marta"
+          "making": "trpg_apple_thief_make_hiyori_hiyori_marta",
+          "portrait": "../../img/ui/trpg/pc-marta.webp"
         }
       ]
     },
@@ -2984,7 +2989,8 @@
             "talk": 1,
             "nerve": 4
           },
-          "making": "trpg_apple_thief_make_tsumugi_tsumugi_shion"
+          "making": "trpg_apple_thief_make_tsumugi_tsumugi_shion",
+          "portrait": "../../img/ui/trpg/pc-shion.webp"
         },
         {
           "id": "nocto",
@@ -2998,7 +3004,8 @@
             "talk": 1,
             "nerve": 3
           },
-          "making": "trpg_apple_thief_make_tsumugi_tsumugi_nocto"
+          "making": "trpg_apple_thief_make_tsumugi_tsumugi_nocto",
+          "portrait": "../../img/ui/trpg/pc-nocto.webp"
         }
       ]
     }

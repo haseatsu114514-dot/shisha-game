@@ -239,43 +239,43 @@
       "id": "plaza",
       "label": "王国の広場",
       "short": "広場",
-      "x": 22,
-      "y": 74
+      "x": 24,
+      "y": 70
     },
     {
       "id": "showcase",
       "label": "写真屋のショーケース",
       "short": "写真屋",
       "x": 12,
-      "y": 36
+      "y": 26
     },
     {
       "id": "sign",
       "label": "城門の看板",
       "short": "城門",
-      "x": 48,
-      "y": 56
+      "x": 57,
+      "y": 35
     },
     {
       "id": "mirror",
       "label": "撮影城の鏡の間",
       "short": "鏡の間",
-      "x": 80,
-      "y": 30
+      "x": 93,
+      "y": 28
     },
     {
       "id": "purikura",
       "label": "落とし物のプリ",
       "short": "落とし物",
-      "x": 38,
-      "y": 84
+      "x": 41,
+      "y": 86
     },
     {
       "id": "throne",
       "label": "魔王の玉座",
       "short": "玉座",
-      "x": 60,
-      "y": 20
+      "x": 62,
+      "y": 15
     }
   ],
   "consult": {
@@ -3241,7 +3241,8 @@
     "twistTitle": "無表情ゴーレムが、城門をふさいだ。どうする？",
     "interviewIdle": "おじいさんに聞けるのは二つまでじゃ。何を聞く？",
     "twistIdle": "門番じゃ。手を選んで、誰が動くか決めるのじゃ",
-    "planTitle": "魔王と撮る、最高の一枚の作戦"
+    "planTitle": "魔王と撮る、最高の一枚の作戦",
+    "image": "../../img/backgrounds/trpg_purikura_hero_room.webp"
   },
   "debrief": {
     "smooth": "trpg_purikura_hero_debrief_smooth",

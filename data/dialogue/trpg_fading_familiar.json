@@ -240,7 +240,7 @@
       "label": "空っぽの寝床",
       "short": "寝床",
       "x": 15,
-      "y": 30
+      "y": 24
     },
     {
       "id": "library",
@@ -260,15 +260,15 @@
       "id": "stairs",
       "label": "天文台の階段",
       "short": "階段",
-      "x": 52,
-      "y": 20
+      "x": 51,
+      "y": 36
     },
     {
       "id": "board",
       "label": "掲示板の試験表",
       "short": "掲示板",
-      "x": 20,
-      "y": 72
+      "x": 18,
+      "y": 60
     },
     {
       "id": "trail",
@@ -3177,7 +3177,8 @@
     "twistTitle": "本が飛び回っている。どうする？",
     "interviewIdle": "先生に聞けるのは二つまで。何を聞こうかしら",
     "twistIdle": "どう切り抜ける？ 手を選んで、誰が動くか決めよう",
-    "planTitle": "モヤを迎える作戦"
+    "planTitle": "モヤを迎える作戦",
+    "image": "../../img/backgrounds/trpg_fading_familiar_room.webp"
   },
   "debrief": {
     "smooth": "trpg_fading_familiar_debrief_smooth",

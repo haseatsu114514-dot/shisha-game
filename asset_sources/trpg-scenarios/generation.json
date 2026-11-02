@@ -1,0 +1,307 @@
+{
+  "note": "TRPG 03〜13 の背景と人物シート。外部の画像生成AI（built-in image_gen）の候補から採用分だけをここに残す。原画は 1672×941 RGB（厳密な16:9ではない）。中央を1671×940に切り、LANCZOSで1280×720へ縮小しただけで、ほかの加工はしていない。輪の位置はブラウザ（trpg-preview.html）で1280×720の画面を撮って目視確認した。",
+  "date": "2026-11-02",
+  "tool": "built-in image_gen（品質パラメータなし）",
+  "backgrounds": [
+    {
+      "scenario": "leaf-mail",
+      "variant": "C",
+      "source": "asset_sources/trpg-scenarios/backgrounds/leaf-mail-c.png",
+      "prompt": "asset_sources/trpg-scenarios/backgrounds/leaf-mail-c-prompt.txt",
+      "sourceSha256": "1286c5a68e0a1064c25bdd423c5032d2bf94d7a7e7ddf9c211d5b92def944e00",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "game": "assets/backgrounds/trpg_leaf_mail_room.png",
+      "gameSha256": "303f3b9ad623f7240946ddcd320de55cf66a8b379574a954b1833bb54e21633f",
+      "resize": "center crop 1671x940 -> LANCZOS 1280x720",
+      "why": "掲示板の紙が無地（A/Bより疑似文字なし）。時計塔・屋根・橋・パン屋の窓・鞄がそろう。",
+      "hotspots": "時計塔・屋根・橋・パン屋の窓の輪を描かれた位置へ移動。",
+      "generatorQA": "Best candidate: no cat/people/shisha or visible lettering; blank board. Mailbag ~53/81, board ~39/49, bridge ~86/59, bakery ~12/49, clock ~27/16, rooftop spans ~50-69/17-36. Target bridge 86/66 hits bridge arch and target roof66/18 hits railing/roof boundary. Tower20/24 misses main tower and bakery14/64 is below glass. Needs hotspot-overlay review/correction before adoption."
+    },
+    {
+      "scenario": "apple-thief",
+      "variant": "C",
+      "source": "asset_sources/trpg-scenarios/backgrounds/apple-thief-c.png",
+      "prompt": "asset_sources/trpg-scenarios/backgrounds/apple-thief-c-prompt.txt",
+      "sourceSha256": "b45ce539011437ceca335495e5d86c81af31633c111f3aff3ff05f115eed0299",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "game": "assets/backgrounds/trpg_apple_thief_room.png",
+      "gameSha256": "30b29f61a96fe5d2f02fdd092c00c427c9409587268775307f18a2406c743319",
+      "resize": "center crop 1671x940 -> LANCZOS 1280x720",
+      "why": "瓶にラベルがなく疑似文字なし（Aは瓶ラベルに細かい印）。配合帳・林檎の木・肖像画・香りの棚・予告状・椅子がそろう。",
+      "hotspots": "配合帳・肖像画・香りの棚・予告状を移動。肖像画は画面上中央にあり、輪が見出し（場所名・目標・手がかり行）の右端と少し重なる。",
+      "generatorQA": "Six objects readable, empty hall no shisha. Framed painted family only. Mostly blank jars/book/envelope. Ledger12/19, shelf14/63, portrait52/14, tree88/22, chair74/58, card61/86. Supplied card50/82 misses envelope; book14/26 lower stand; other points within or near props. Needs alignment before production adoption."
+    },
+    {
+      "scenario": "shark-island",
+      "variant": "C",
+      "source": "asset_sources/trpg-scenarios/backgrounds/shark-island-c.png",
+      "prompt": "asset_sources/trpg-scenarios/backgrounds/shark-island-c-prompt.txt",
+      "sourceSha256": "2d83b6455b8ee3e4d7a2bc8c93a07090e77389ed74326fd512c7a60611222cf0",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "game": "assets/backgrounds/trpg_shark_island_room.png",
+      "gameSha256": "25e3fb54ef3452e50c46afaa1b026aa66a8441cb045efd2a805567bafb273778",
+      "resize": "center crop 1671x940 -> LANCZOS 1280x720",
+      "why": "地図・王冠の台座・落書き・入り江・錨・足跡がそろい、構図が最も素直。",
+      "hotspots": "台座・落書き・水面（サメの影の上）・錨・足跡を移動。落書きの輪は見出しと重ならない左下寄りに置いた。",
+      "generatorQA": "Readable cove, no people/shisha/text. Map14/25 fits; crown-shaped pedestal81/22 fits78/20; graffiti40/26 target40/34 hits lowest fish; water56/62 valid; anchor90/64 target85/60 hits rock beside shaft; footprint25/76 target24/79 nearby. Best general composition but coordinate alignment still required, especially anchor."
+    },
+    {
+      "scenario": "mist-kingdom",
+      "variant": "B",
+      "source": "asset_sources/trpg-scenarios/backgrounds/mist-kingdom-b.png",
+      "prompt": "asset_sources/trpg-scenarios/backgrounds/mist-kingdom-b-prompt.txt",
+      "sourceSha256": "9cba677531c3cf94940f816440e899c096ef005c9f6ec96ce910d015702f828e",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "game": "assets/backgrounds/trpg_mist_kingdom_room.png",
+      "gameSha256": "c2a854c35e895a2b87977fae93500b19b1e3fcb3054f900926120c3f5dfd737f",
+      "resize": "center crop 1671x940 -> LANCZOS 1280x720",
+      "why": "霧の回廊が左に明確。玉座・王妃の肖像・霧の窓・審査員席・香り棚がそろう。",
+      "hotspots": "玉座・肖像・審査員席・香り棚・回廊を移動。",
+      "generatorQA": "Best alignment: throne51/32 near50/28; portrait22/21 includes20/24; window84/22 valid; judges34/63 valid30/60; shelf76/60 includes70/58; corridor7/68 target14/82 at misty foreground rather than corridor entrance. Six target environment; no living people/shisha/lettering. Architecture softly fading, may need corridor point adjustment."
+    },
+    {
+      "scenario": "smoke-robot",
+      "variant": "B",
+      "source": "asset_sources/trpg-scenarios/backgrounds/smoke-robot-b.png",
+      "prompt": "asset_sources/trpg-scenarios/backgrounds/smoke-robot-b-prompt.txt",
+      "sourceSha256": "f381ef294feb52ec2d8a04152842c5e79da4cb0f58a9ec5e7408ec84fec34095",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "game": "assets/backgrounds/trpg_smoke_robot_room.png",
+      "gameSha256": "569b0529be81e048c5ec6423da303e6602f09e3ae9ff6e753e8b57257bfceb19",
+      "resize": "center crop 1671x940 -> LANCZOS 1280x720",
+      "why": "端末の画面は無地で、文字や図面UIは目立たない（A/Cは端末の面板が細かい）。メモは図だけ。",
+      "hotspots": "作業台・倉庫の扉・通信室の端末・メモを移動。",
+      "generatorQA": "Best target coverage: workbench50/61 target50/64 near front edge; window76/22 good; door91/55 target89/66 inside lower door; records14/22 good; memo17/80 target20/72 on upper-right paper edge; pile40/33 target44/34 within pile. Generic prototypes and no smoking devices. No people, legible text or logos. Screen/paper details resemble engineering UI; review strict no-UI rule."
+    },
+    {
+      "scenario": "fading-familiar",
+      "variant": "B",
+      "source": "asset_sources/trpg-scenarios/backgrounds/fading-familiar-b.png",
+      "prompt": "asset_sources/trpg-scenarios/backgrounds/fading-familiar-b-prompt.txt",
+      "sourceSha256": "00e47bef852729ade3c3b970b419db84dbb6acf46ff3297b02223ec35c60e33d",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "game": "assets/backgrounds/trpg_fading_familiar_room.png",
+      "gameSha256": "7cb14fdec1ab8803e7cdf8adaa6de895d9cba22aa005cd0a7be8a1373edc03b7",
+      "resize": "center crop 1671x940 -> LANCZOS 1280x720",
+      "why": "掲示板の紙が無地（Aは疑似文字の表）。寝床・図書館の窓・薬草園・天文台の階段・煙の跡がそろう。",
+      "hotspots": "寝床・階段・掲示板を移動。",
+      "generatorQA": "Best clean paper: noticeboard entirely blank. No people/shisha/legible lettering. Basket15/25 target15/30 within lower basket, stairs53/35 target52/20 above stairs; library85/22 good; garden87/75 target86/70 within garden; noticeboard17/60 target20/72 within lower edge; smoke52/82 good. Stair target remains unaligned."
+    },
+    {
+      "scenario": "fox-market",
+      "variant": "B",
+      "source": "asset_sources/trpg-scenarios/backgrounds/fox-market-b.png",
+      "prompt": "asset_sources/trpg-scenarios/backgrounds/fox-market-b-prompt.txt",
+      "sourceSha256": "7e4c5d96325783bba54fe1d4b851788a949b7cd8d3bebad11bdf8f82f8e2e4a9",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "game": "assets/backgrounds/trpg_fox_market_room.png",
+      "gameSha256": "6a47e6dbc25adf27111fd043ecc0cfd5ed5ce7b5250876529eed0df44d34c5d1",
+      "resize": "center crop 1671x940 -> LANCZOS 1280x720",
+      "why": "迷子案内の掲示板が無地（Cは紙に疑似文字）。お面・金魚・鳥居・綿あめ・鈴がそろう。",
+      "hotspots": "金魚の水槽・鳥居・綿あめ・掲示板を移動。",
+      "generatorQA": "Clear six targets, no people/shisha/legible lettering. Masks15/30 fits; tank25/74 target30/76 fits; torii79/23 fits; candy51/43 fits; bell63/86 target63/84 at bell edge; board90/46 target89/63 below board lower edge. Best target layout except board. A few incidental packaging marks need strict no-text review."
+    },
+    {
+      "scenario": "stage-ghost",
+      "variant": "A",
+      "source": "asset_sources/trpg-scenarios/backgrounds/stage-ghost-a.png",
+      "prompt": "asset_sources/trpg-scenarios/backgrounds/stage-ghost-a-prompt.txt",
+      "sourceSha256": "a2bb7ce184f91ced371cd47fa33fc42b3eb0cbe71419a4e5224673eecea54e8e",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "game": "assets/backgrounds/trpg_stage_ghost_room.png",
+      "gameSha256": "7bcf78b8c48965ecb6abd01ee24cf4546d195e72496ca6249c0e535d85474469",
+      "resize": "center crop 1671x940 -> LANCZOS 1280x720",
+      "why": "劇場の掲示が無地（B/Cは紙に疑似文字）。人影はなく、淡い照明で演出。",
+      "hotspots": "楽屋の鏡・照明室・台本の棚・掲示を移動。",
+      "generatorQA": "Six targets readable, no figures/shisha. Curtain50/43 target50/46 good; mirror9/24 target12/30 near lower-right edge; lighting88/17 target88/22 inside console; seats50/80 good; scripts14/62 target16/66 good; board90/60 target84/62 at left board edge. Paper contains faint pseudo-writing; strict no-text cleanup needed. Curtain closed rather than opening; stage still empty."
+    },
+    {
+      "scenario": "moonflower-encore",
+      "variant": "B",
+      "source": "asset_sources/trpg-scenarios/backgrounds/moonflower-encore-b.png",
+      "prompt": "asset_sources/trpg-scenarios/backgrounds/moonflower-encore-b-prompt.txt",
+      "sourceSha256": "890d48d9315eec3dd339fe16c091c3b622247659cf9a2bb6ea92221615160c1e",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "game": "assets/backgrounds/trpg_moonflower_encore_room.png",
+      "gameSha256": "cc15d57d5e445e00a7e4a15fce37443f11d4d2eb7c9815133abc1ef44f78c622",
+      "resize": "center crop 1671x940 -> LANCZOS 1280x720",
+      "why": "Cは断面コラージュ風で不採用。Bは舞台・名札・譜面台・月光花・肖像画・鍵束がそろう。名札の紙は無地。",
+      "hotspots": "舞台・名札・譜面台・月光花・肖像画を移動（肖像画は右の壁）。",
+      "generatorQA": "No living figures/ghosts/shisha/lettering, framed portrait only. Stage46/29 target48/20 at piano lid/window, namecard23/59 target22/66 below card; stand13/22 target14/28 at shaft; flowers77/33 target84/26 at arch column; portrait92/27 target78/64 floor; keys47/84 target50/82 fits. Best coherent room but several coordinates unaligned."
+    },
+    {
+      "scenario": "purikura-hero",
+      "variant": "C",
+      "source": "asset_sources/trpg-scenarios/backgrounds/purikura-hero-c.png",
+      "prompt": "asset_sources/trpg-scenarios/backgrounds/purikura-hero-c-prompt.txt",
+      "sourceSha256": "1a9aa892e041dbdac8ecf53524d3d7307dc6d65c9487d23e752f57f56f8d96b4",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "game": "assets/backgrounds/trpg_purikura_hero_room.png",
+      "gameSha256": "0d9a2ca49f4330655126204a7a36c74eb0bdc3894b9558671271b85ba51776c4",
+      "resize": "center crop 1671x940 -> LANCZOS 1280x720",
+      "why": "城門の看板（無地の飾り板）・玉座・鏡の間・ショーケース・プリが読みやすい。看板は全案で指示位置から大きくずれていたが、輪を看板へ移動して解決。",
+      "hotspots": "広場・ショーケース・城門の看板・鏡の間・プリ・玉座を移動。",
+      "generatorQA": "Cleanest slightly muted fantasy scene, no people/shisha/legible text. Plaza22/74 clear paving in front of fountain; showcase12/30 target12/36 includes case; sign58/36 target48/56 near bridge post (major miss); mirrors86/27 target80/30 on arcade column; sticker42/87 target38/84 within sheet; throne62/15 target60/20 lower seat/dais. Shark shadows visible. Upper throne balcony opening plausible but review; sign needs repositioning."
+    },
+    {
+      "scenario": "doll-requiem",
+      "variant": "C",
+      "source": "asset_sources/trpg-scenarios/backgrounds/doll-requiem-c.png",
+      "prompt": "asset_sources/trpg-scenarios/backgrounds/doll-requiem-c-prompt.txt",
+      "sourceSha256": "58f860a06ad10d4201b2a778bd1fbb037feb13a40920b0c438b55a51b0d653ff",
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "game": "assets/backgrounds/trpg_doll_requiem_room.png",
+      "gameSha256": "44506fd3f7e91b813e8b3217f1eea7b5126d6f350702b0b628b8d26f01941035",
+      "resize": "center crop 1671x940 -> LANCZOS 1280x720",
+      "why": "人形の飾り棚・小さな舞台・日記・雪の窓・柱時計・オルゴールがそろう。",
+      "hotspots": "日記・窓辺・柱時計（文字盤へ）・オルゴール・舞台（見出しを避けて舞台右側）を移動。",
+      "generatorQA": "Readable mansion/no live figures/shisha/legible text, small inanimate dolls only. Cabinet13/30 fits14/34; stage51/21 includes50/26; diary82/33 target86/32 inside book lower edge (best); snow seat84/72 target84/68 within seat/cushion; clock52/58 target50/72 inside lower body; music box19/71 target16/70 within left lid edge. Closest coordinate fit of three. Window/raised study architecture should be reviewed in game; clock face has small tick marks but no legible numbers."
+    }
+  ],
+  "portraits": [
+    {
+      "scenario": "leaf-mail",
+      "variant": "C",
+      "source": "asset_sources/trpg-sheets/leaf-mail/portraits-leaf-mail-c.png",
+      "sourceSha256": "ef2541f5d608af002c93ae06089a1e23582bf41f7a3c1422f1acd8a27271cebd",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "adopted": true,
+      "qa": "1774×887（指示の2048×1024より小さい）。trpg_crop_portraits.py は比率で切るので寸法はそのまま使った。8人とも顔が丸窓に収まり、隣のセルのはみ出し・透過の欠けなし（目視）。仲間の役は物語の架空人物で、本人の立ち絵ではない。"
+    },
+    {
+      "scenario": "apple-thief",
+      "variant": "B",
+      "source": "asset_sources/trpg-sheets/apple-thief/portraits-apple-thief-b.png",
+      "sourceSha256": "809dab3e307d1002bd949df815abcfa0ba0d42b16ddcc929c967cc931739c0ab",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "adopted": true,
+      "qa": "1774×887（指示の2048×1024より小さい）。trpg_crop_portraits.py は比率で切るので寸法はそのまま使った。8人とも顔が丸窓に収まり、隣のセルのはみ出し・透過の欠けなし（目視）。仲間の役は物語の架空人物で、本人の立ち絵ではない。"
+    },
+    {
+      "scenario": "shark-island",
+      "variant": "B",
+      "source": "asset_sources/trpg-sheets/shark-island/portraits-shark-island-b.png",
+      "sourceSha256": "033cf4e40f8144232348c45cdd13213210696d6a25de22a550b6f07514f9fc54",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "adopted": true,
+      "qa": "1774×887（指示の2048×1024より小さい）。trpg_crop_portraits.py は比率で切るので寸法はそのまま使った。8人とも顔が丸窓に収まり、隣のセルのはみ出し・透過の欠けなし（目視）。仲間の役は物語の架空人物で、本人の立ち絵ではない。"
+    },
+    {
+      "scenario": "mist-kingdom",
+      "variant": "C",
+      "source": "asset_sources/trpg-sheets/mist-kingdom/portraits-mist-kingdom-c.png",
+      "sourceSha256": "38c047fca03a581238c02554593bd0e9ee64df9a34c559f5cf44854f5d62eb43",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "adopted": true,
+      "qa": "1774×887（指示の2048×1024より小さい）。trpg_crop_portraits.py は比率で切るので寸法はそのまま使った。8人とも顔が丸窓に収まり、隣のセルのはみ出し・透過の欠けなし（目視）。仲間の役は物語の架空人物で、本人の立ち絵ではない。"
+    },
+    {
+      "scenario": "smoke-robot",
+      "adopted": false,
+      "reason": "Cが最良だが上段の下余白7px。Bはセル中心がずれている。 作り直しを待つ。"
+    },
+    {
+      "scenario": "fading-familiar",
+      "adopted": false,
+      "reason": "Aしか生成されず、セルの余白が0pxで切り出せない（Bは生成拒否、Cは未生成）。 作り直しを待つ。"
+    },
+    {
+      "scenario": "fox-market",
+      "variant": "B",
+      "source": "asset_sources/trpg-sheets/fox-market/portraits-fox-market-b.png",
+      "sourceSha256": "6bb994be6d4db43472181cbcade2114ac781dcbfeae3340a9c18cc64061fdf4b",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "adopted": true,
+      "qa": "1774×887（指示の2048×1024より小さい）。trpg_crop_portraits.py は比率で切るので寸法はそのまま使った。8人とも顔が丸窓に収まり、隣のセルのはみ出し・透過の欠けなし（目視）。仲間の役は物語の架空人物で、本人の立ち絵ではない。"
+    },
+    {
+      "scenario": "stage-ghost",
+      "variant": "B",
+      "source": "asset_sources/trpg-sheets/stage-ghost/portraits-stage-ghost-b.png",
+      "sourceSha256": "efd09802a2b5c33b71506e4f4715b7a81ff8c00c38322b45a5b1187f89cc7d9a",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "adopted": true,
+      "qa": "1774×887（指示の2048×1024より小さい）。trpg_crop_portraits.py は比率で切るので寸法はそのまま使った。8人とも顔が丸窓に収まり、隣のセルのはみ出し・透過の欠けなし（目視）。仲間の役は物語の架空人物で、本人の立ち絵ではない。"
+    },
+    {
+      "scenario": "moonflower-encore",
+      "variant": "C",
+      "source": "asset_sources/trpg-sheets/moonflower-encore/portraits-moonflower-encore-c.png",
+      "sourceSha256": "191c7205ef57371824120511ff55dcf5592352d87550a423d7449135cac2bfc2",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "adopted": true,
+      "qa": "1774×887（指示の2048×1024より小さい）。trpg_crop_portraits.py は比率で切るので寸法はそのまま使った。8人とも顔が丸窓に収まり、隣のセルのはみ出し・透過の欠けなし（目視）。仲間の役は物語の架空人物で、本人の立ち絵ではない。"
+    },
+    {
+      "scenario": "purikura-hero",
+      "adopted": false,
+      "reason": "Bは人物がセルをまたぐ。Cは上段の余白が6pxしかない。 作り直しを待つ。"
+    },
+    {
+      "scenario": "doll-requiem",
+      "variant": "C",
+      "source": "asset_sources/trpg-sheets/doll-requiem/portraits-doll-requiem-c.png",
+      "sourceSha256": "b41388be4ae1aa1cc0a1b8f57e4849636d82d2e4fc757b47bbe489056af2c5e4",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "adopted": true,
+      "qa": "1774×887（指示の2048×1024より小さい）。trpg_crop_portraits.py は比率で切るので寸法はそのまま使った。8人とも顔が丸窓に収まり、隣のセルのはみ出し・透過の欠けなし（目視）。仲間の役は物語の架空人物で、本人の立ち絵ではない。"
+    }
+  ]
+}

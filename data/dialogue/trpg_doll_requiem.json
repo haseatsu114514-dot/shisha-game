@@ -89,7 +89,8 @@
           "nerve": 1
         },
         "trait": "かわいい服なら一晩で縫う。人形は、怖いより先にかわいい",
-        "likes": "フリルとリボンと、白と赤のグミ"
+        "likes": "フリルとリボンと、白と赤のグミ",
+        "portrait": "../../img/ui/trpg/pc-kirara.webp"
       }
     },
     {
@@ -110,7 +111,8 @@
           "nerve": 2
         },
         "trait": "指先ひとつで人形を直す、儚い人形師。なぜか斧を一本、背負っている",
-        "likes": "ゆるい顔のぬいぐるみと、斧投げ"
+        "likes": "ゆるい顔のぬいぐるみと、斧投げ",
+        "portrait": "../../img/ui/trpg/pc-cecilia.webp"
       }
     }
   ],
@@ -126,14 +128,14 @@
       "id": "stage",
       "label": "子ども部屋の小さな舞台",
       "short": "小さな舞台",
-      "x": 50,
-      "y": 26
+      "x": 59,
+      "y": 33
     },
     {
       "id": "diary",
       "label": "書斎の日記",
       "short": "日記",
-      "x": 86,
+      "x": 82,
       "y": 32
     },
     {
@@ -141,20 +143,20 @@
       "label": "雪の窓辺",
       "short": "窓辺",
       "x": 84,
-      "y": 68
+      "y": 57
     },
     {
       "id": "clock",
       "label": "柱時計",
       "short": "柱時計",
-      "x": 50,
-      "y": 72
+      "x": 52,
+      "y": 46
     },
     {
       "id": "musicbox",
       "label": "オルゴールの箱",
       "short": "オルゴール",
-      "x": 16,
+      "x": 18,
       "y": 70
     }
   ],
@@ -2624,7 +2626,8 @@
     "sheetTitle": "キャラクターシート",
     "target": "GMの裁定 · 目標値30（19以上でひと手間）",
     "twistTitle": "停電。オルゴールが鳴りやまない。どうする？",
-    "planTitle": "人形たちを迎える支度"
+    "planTitle": "人形たちを迎える支度",
+    "image": "../../img/backgrounds/trpg_doll_requiem_room.webp"
   },
   "intro": "trpg_doll_requiem_intro",
   "listen": "trpg_doll_requiem_listen",
@@ -2834,7 +2837,7 @@
         "detail": "短い黒髪に、厚手の黒い外套",
         "color": "#2b2733",
         "accent": "#c9a7e0",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-doll-requiem-ink.webp"
       },
       {
         "id": "snow",
@@ -2842,7 +2845,7 @@
         "detail": "雪のような銀の髪と、紺のマフラー",
         "color": "#4a4f63",
         "accent": "#dfe4f0",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-doll-requiem-snow.webp"
       },
       {
         "id": "wine",
@@ -2850,7 +2853,7 @@
         "detail": "赤茶の髪に、ワインレッドの手袋",
         "color": "#5e2a33",
         "accent": "#e29aa8",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-doll-requiem-wine.webp"
       },
       {
         "id": "braid",
@@ -2858,7 +2861,7 @@
         "detail": "長い髪を一つに編み、ラベンダー色の上着",
         "color": "#3a2f4f",
         "accent": "#b9a3d9",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-doll-requiem-braid.webp"
       }
     ],
     "archetypes": [
@@ -2922,7 +2925,8 @@
             "talk": 3,
             "nerve": 1
           },
-          "making": "trpg_doll_requiem_make_ageha_ageha_kirara"
+          "making": "trpg_doll_requiem_make_ageha_ageha_kirara",
+          "portrait": "../../img/ui/trpg/pc-kirara.webp"
         },
         {
           "id": "marie",
@@ -2936,7 +2940,8 @@
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_doll_requiem_make_ageha_ageha_marie"
+          "making": "trpg_doll_requiem_make_ageha_ageha_marie",
+          "portrait": "../../img/ui/trpg/pc-marie.webp"
         }
       ]
     },
@@ -2954,7 +2959,8 @@
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_doll_requiem_make_hiyori_hiyori_cecilia"
+          "making": "trpg_doll_requiem_make_hiyori_hiyori_cecilia",
+          "portrait": "../../img/ui/trpg/pc-cecilia.webp"
         },
         {
           "id": "chloe",
@@ -2968,7 +2974,8 @@
             "talk": 3,
             "nerve": 3
           },
-          "making": "trpg_doll_requiem_make_hiyori_hiyori_chloe"
+          "making": "trpg_doll_requiem_make_hiyori_hiyori_chloe",
+          "portrait": "../../img/ui/trpg/pc-chloe.webp"
         }
       ]
     }

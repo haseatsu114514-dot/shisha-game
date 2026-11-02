@@ -57,7 +57,8 @@
           "nerve": 2
         },
         "trait": "か細い声の灯りともし。梯子をのぼるのは町一番速い",
-        "likes": "屋台の夜鳴きラーメン"
+        "likes": "屋台の夜鳴きラーメン",
+        "portrait": "../../img/ui/trpg/pc-yura.webp"
       }
     },
     {
@@ -78,7 +79,8 @@
           "nerve": 3
         },
         "trait": "時計塔の鐘をつく。鐘の音と同じくらい、言葉も大きい",
-        "likes": "林檎の砂糖煮。甘さの原点"
+        "likes": "林檎の砂糖煮。甘さの原点",
+        "portrait": "../../img/ui/trpg/pc-leon.webp"
       }
     }
   ],
@@ -244,29 +246,29 @@
       "id": "clock",
       "label": "時計塔",
       "short": "時計塔",
-      "x": 20,
-      "y": 24
+      "x": 27,
+      "y": 16
     },
     {
       "id": "roof",
       "label": "屋根の上",
       "short": "屋根",
       "x": 66,
-      "y": 18
+      "y": 29
     },
     {
       "id": "bridge",
       "label": "川の橋",
       "short": "橋",
       "x": 86,
-      "y": 66
+      "y": 58
     },
     {
       "id": "bakery",
       "label": "パン屋の窓",
       "short": "パン屋",
-      "x": 14,
-      "y": 64
+      "x": 13,
+      "y": 46
     },
     {
       "id": "board",
@@ -3011,7 +3013,8 @@
     "twistTitle": "手紙が風に飛ばされた。どうする？",
     "interviewIdle": "……ミトンに聞けるのは、二つまでです",
     "twistIdle": "……手紙が飛んでいきます。手を選んで、誰が動くか決めてください",
-    "planTitle": "みんなの配達プラン"
+    "planTitle": "みんなの配達プラン",
+    "image": "../../img/backgrounds/trpg_leaf_mail_room.webp"
   },
   "debrief": {
     "smooth": "trpg_leaf_mail_debrief_smooth",
@@ -3064,7 +3067,7 @@
         "detail": "短い黒髪に、紺の外套とランタン",
         "color": "#2c3a5a",
         "accent": "#e8c56a",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-leaf-mail-lantern.webp"
       },
       {
         "id": "scarf",
@@ -3072,7 +3075,7 @@
         "detail": "長いマフラーと、星柄の手袋",
         "color": "#5a3c4a",
         "accent": "#d9a7b8",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-leaf-mail-scarf.webp"
       },
       {
         "id": "cap",
@@ -3080,7 +3083,7 @@
         "detail": "つばの広い帽子に、月の徽章",
         "color": "#3e4b3a",
         "accent": "#c9d6a3",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-leaf-mail-cap.webp"
       },
       {
         "id": "glasses",
@@ -3088,7 +3091,7 @@
         "detail": "丸眼鏡と、地図の入った肩かけ鞄",
         "color": "#4a4038",
         "accent": "#e3c9a0",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-leaf-mail-glasses.webp"
       }
     ],
     "archetypes": [
@@ -3152,7 +3155,8 @@
             "talk": 2,
             "nerve": 2
           },
-          "making": "trpg_leaf_mail_make_hiyori_hiyori_yura"
+          "making": "trpg_leaf_mail_make_hiyori_hiyori_yura",
+          "portrait": "../../img/ui/trpg/pc-yura.webp"
         },
         {
           "id": "neri",
@@ -3166,7 +3170,8 @@
             "talk": 1,
             "nerve": 4
           },
-          "making": "trpg_leaf_mail_make_hiyori_hiyori_neri"
+          "making": "trpg_leaf_mail_make_hiyori_hiyori_neri",
+          "portrait": "../../img/ui/trpg/pc-neri.webp"
         }
       ]
     },
@@ -3184,7 +3189,8 @@
             "talk": 4,
             "nerve": 3
           },
-          "making": "trpg_leaf_mail_make_adam_adam_leon"
+          "making": "trpg_leaf_mail_make_adam_adam_leon",
+          "portrait": "../../img/ui/trpg/pc-leon.webp"
         },
         {
           "id": "gran",
@@ -3198,7 +3204,8 @@
             "talk": 3,
             "nerve": 2
           },
-          "making": "trpg_leaf_mail_make_adam_adam_gran"
+          "making": "trpg_leaf_mail_make_adam_adam_gran",
+          "portrait": "../../img/ui/trpg/pc-gran.webp"
         }
       ]
     }

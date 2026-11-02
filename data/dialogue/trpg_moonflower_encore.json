@@ -89,7 +89,8 @@
           "nerve": 2
         },
         "trait": "ノクターンを追って、城まで来たファン。うちわもペンライトも自作",
-        "likes": "プリクラと、白と赤のグミベア"
+        "likes": "プリクラと、白と赤のグミベア",
+        "portrait": "../../img/ui/trpg/pc-kirara-fan.webp"
       }
     },
     {
@@ -110,7 +111,8 @@
           "nerve": 2
         },
         "trait": "吸血鬼を狩りに来た……が、実は平和主義。武器は林檎と名言",
-        "likes": "ダブルアップルと、舞台の仕掛け"
+        "likes": "ダブルアップルと、舞台の仕掛け",
+        "portrait": "../../img/ui/trpg/pc-leon-hunter.webp"
       }
     }
   ],
@@ -119,36 +121,36 @@
       "id": "stage",
       "label": "大広間の舞台",
       "short": "舞台",
-      "x": 48,
-      "y": 20
+      "x": 44,
+      "y": 36
     },
     {
       "id": "nameplates",
       "label": "客席の名札",
       "short": "名札",
-      "x": 22,
-      "y": 66
+      "x": 23,
+      "y": 58
     },
     {
       "id": "score",
       "label": "楽屋の譜面台",
       "short": "譜面台",
       "x": 14,
-      "y": 28
+      "y": 21
     },
     {
       "id": "garden",
       "label": "庭の月光花",
       "short": "月光花",
-      "x": 84,
-      "y": 26
+      "x": 74,
+      "y": 33
     },
     {
       "id": "portrait",
       "label": "回廊の肖像画",
       "short": "肖像画",
-      "x": 78,
-      "y": 64
+      "x": 92,
+      "y": 26
     },
     {
       "id": "keys",
@@ -2720,7 +2722,8 @@
     "twistTitle": "コウモリの群れ。どうする？",
     "interviewIdle": "……家令に聞けるのは、二つまで。何を聞く",
     "twistIdle": "……燭台が消えた。手を選んで、誰が動くか決めてくれ",
-    "planTitle": "最後の一曲のセットリスト"
+    "planTitle": "最後の一曲のセットリスト",
+    "image": "../../img/backgrounds/trpg_moonflower_encore_room.webp"
   },
   "intro": "trpg_moonflower_encore_intro",
   "listen": "trpg_moonflower_encore_listen",
@@ -2930,7 +2933,7 @@
         "detail": "短い黒髪に、黒いエプロンと工具袋",
         "color": "#2a2430",
         "accent": "#9b1b3f",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-moonflower-encore-apron.webp"
       },
       {
         "id": "tailcoat",
@@ -2938,7 +2941,7 @@
         "detail": "銀色の髪に、ワイン色の燕尾服",
         "color": "#c9c4d6",
         "accent": "#6e1a3c",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-moonflower-encore-tailcoat.webp"
       },
       {
         "id": "glasses",
@@ -2946,7 +2949,7 @@
         "detail": "丸い眼鏡に、楽譜を抱えた黒いベスト",
         "color": "#3a3045",
         "accent": "#e6d7b8",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-moonflower-encore-glasses.webp"
       },
       {
         "id": "cloak",
@@ -2954,7 +2957,7 @@
         "detail": "長い黒マントに、月光花のブローチ",
         "color": "#1f1a2e",
         "accent": "#e9e4f5",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-moonflower-encore-cloak.webp"
       }
     ],
     "archetypes": [
@@ -3007,7 +3010,7 @@
     "ageha": {
       "ageha": [
         {
-          "id": "kirara",
+          "id": "kirara-fan",
           "name": "キララ",
           "title": "追っかけのファン",
           "trait": "ノクターンを追って、城まで来たファン。うちわもペンライトも自作",
@@ -3018,7 +3021,8 @@
             "talk": 3,
             "nerve": 2
           },
-          "making": "trpg_moonflower_encore_make_ageha_ageha_kirara"
+          "making": "trpg_moonflower_encore_make_ageha_ageha_kirara",
+          "portrait": "../../img/ui/trpg/pc-kirara-fan.webp"
         },
         {
           "id": "moka",
@@ -3032,14 +3036,15 @@
             "talk": 3,
             "nerve": 1
           },
-          "making": "trpg_moonflower_encore_make_ageha_ageha_moka"
+          "making": "trpg_moonflower_encore_make_ageha_ageha_moka",
+          "portrait": "../../img/ui/trpg/pc-moka.webp"
         }
       ]
     },
     "adam": {
       "adam": [
         {
-          "id": "leon",
+          "id": "leon-hunter",
           "name": "レオン",
           "title": "林檎の紋章のハンター",
           "trait": "吸血鬼を狩りに来た……が、実は平和主義。武器は林檎と名言",
@@ -3050,7 +3055,8 @@
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_moonflower_encore_make_adam_adam_leon"
+          "making": "trpg_moonflower_encore_make_adam_adam_leon",
+          "portrait": "../../img/ui/trpg/pc-leon-hunter.webp"
         },
         {
           "id": "ziek",
@@ -3064,7 +3070,8 @@
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_moonflower_encore_make_adam_adam_ziek"
+          "making": "trpg_moonflower_encore_make_adam_adam_ziek",
+          "portrait": "../../img/ui/trpg/pc-ziek.webp"
         }
       ]
     }

@@ -120,7 +120,7 @@
       "label": "ピコの作業台",
       "short": "作業台",
       "x": 50,
-      "y": 64
+      "y": 60
     },
     {
       "id": "window",
@@ -133,22 +133,22 @@
       "id": "storage",
       "label": "倉庫の扉",
       "short": "倉庫",
-      "x": 89,
-      "y": 66
+      "x": 91,
+      "y": 54
     },
     {
       "id": "comms",
       "label": "通信室の記録",
       "short": "通信室",
-      "x": 14,
-      "y": 24
+      "x": 13,
+      "y": 21
     },
     {
       "id": "memo",
       "label": "整備士のメモ",
       "short": "メモ",
-      "x": 20,
-      "y": 72
+      "x": 17,
+      "y": 80
     },
     {
       "id": "pile",
@@ -2706,7 +2706,8 @@
     "twistTitle": "流星群と警報。どうする？",
     "interviewIdle": "ナビに聞けるのは二つまでじゃ。何を聞く？",
     "twistIdle": "流星群じゃ。手を選んで、誰が動くか決めるのじゃ",
-    "planTitle": "ピコと作る一台の作戦"
+    "planTitle": "ピコと作る一台の作戦",
+    "image": "../../img/backgrounds/trpg_smoke_robot_room.webp"
   },
   "intro": "trpg_smoke_robot_intro",
   "listen": "trpg_smoke_robot_listen",
