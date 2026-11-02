@@ -20,8 +20,8 @@ export function loadChapterThreeOutings() {
   return outingTask;
 }
 
-// 地図の行き先ごとの背景。公園とmukaiの裏口（てつこ）は専用の絵ができるまで街の道で代用する（仮）。
-const OUTING_BG = { mukai: "bg_mukai_shop", enmaku: "bg_yohaku_shop", steve: "bg_steve_shop", park: "bg_street" };
+// 地図の行き先ごとの背景。mukaiの裏口（てつこ）は専用の絵ができるまで店の背景を使う。
+const OUTING_BG = { mukai: "bg_mukai_shop", enmaku: "bg_yohaku_shop", steve: "bg_steve_shop", park: "bg_tokyo_park" };
 /** その店で会える授業の先生（心得の盤 SBD70: 授業は会って相談した時だけ習う） */
 const OUTING_TEACHER = { mukai: "mashiro", enmaku: "kuze", steve: "steve" };
 
