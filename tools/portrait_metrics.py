@@ -19,7 +19,8 @@
     eyes   : 両目の黒目の中心（画面の左の目が先）。閉じた目は線の中央
     chin   : あごの先（いちばん下）
     crown  : 頭頂の髪の上端。帽子・フード・角・髪飾り・アホ毛は含めず、隠れているときは推定する
-    cheeks : 目の少し下の高さでの、顔の左右の輪郭（耳は含めない）と、その高さ y
+    cheeks : 目の少し下の高さでの、顔の左右の輪郭（耳・横の髪は含めない）と、その高さ y。ロボは耳の部品の内側まで
+    accepted: 規格外でもオーナー判断で今のままにするときの理由（例 "2026-11-02 オーナー判断"）。check の警告を出さない
 """
 import json
 import math
@@ -134,6 +135,8 @@ def status(entry: dict, m: dict | None, spec: dict) -> tuple[str, str]:
     if m is None:
         return "warn", "測定値なし"
     lo, hi = rule["head_body"]
+    if entry.get("accepted") and not lo <= m["head_body"] <= hi:
+        return "ok", f"規格外だが今のまま（{entry['accepted']}）"
     if m["head_body"] < lo:
         return "warn", f"頭が大きい（{m['head_body']:.2f}頭身 < {lo}）"
     if m["head_body"] > hi:
@@ -227,7 +230,7 @@ def cmd_report() -> int:
         if not m:
             print(f"| {r['name']}（`{r['id']}`） | {label} | — | — | — | 対象外 |")
             continue
-        verdict = {"ok": "規格内", "warn": r["why"], "exempt": "対象外"}[r["status"]]
+        verdict = {"ok": r["why"] or "規格内", "warn": r["why"], "exempt": "対象外"}[r["status"]]
         print(f"| {r['name']}（`{r['id']}`） | {label} | {m['head_body']:.2f} | {m['head_game']:.0f}px | {m['cheek_game']:.0f}px | {verdict} |")
     return 0
 

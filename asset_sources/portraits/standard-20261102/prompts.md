@@ -77,6 +77,22 @@ STYLE STANDARD (shisha-game cast): draw this character in the same artist's hand
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the top of the head (including any hat) to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Preserve image 1's original local color palette, perceived saturation and light-dark range; do not lighten, desaturate or pastelize anything.
 ```
 
+## みんと営業姿（頭を私服に合わせる）
+
+参照：① 対象の表情の現行PNG `assets/sprites/characters/minto/chr_minto_<face>.png` ／ ② みんと私服 `assets/sprites/characters/minto/chr_minto_ura_normal.png`（同じ人物の頭の大きさの目標）／ ③ あげは `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の確認だけ）。表情は normal・smile・sad・surprise・wink の5つ。営業姿はみんと自身が画風の基準なので、画風は変えない。
+
+```
+Redraw the attached CURRENT game sprite of Minto (image 1) as ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same face design, eyes, expression, pose, hands, outfit, accessories, colors and rendering style as image 1. Change ONLY the head size.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for everything except head size. (2) the SAME woman in her casual outfit: the TARGET head size relative to her body ONLY (not her clothes or pose). (3) approved Ageha sprite: rendering-quality check only; never copy her face, hair or outfit.
+
+Character: Minto, adult Japanese woman with a youthful idol-like face, long straight black hair with blunt bangs, mint-green eyes, small black devil horns and bat-wing hair accessories, black and neon-green off-shoulder concept-cafe dress with a large green ribbon and heart choker, black thigh-high stockings and platform shoes.
+
+HEAD SIZE: in image 1 her head is smaller relative to her body than in image 2 (about 7.0 heads tall versus about 6.4). Make her whole head (face, hair, horns) about 10% LARGER relative to her body so that she matches image 2, about 6.4 heads tall. Keep the same total height from the top of the hair to the shoe soles, the same stance and the same slim build; the neck and shoulders stay natural.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure at least 1300 px tall. Include all hair tips, horns, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background. No floor, cast shadow, glow, border, text or watermark. Preserve image 1's original colors, saturation and light-dark range.
+```
+
 ## 試作1回目でわかったこと（2026-11-02）
 
 Codex が上の3つの英文で各3案（計9案）を生成した。頭身は次のとおりで、指定した拡大率どおりにはならなかった。

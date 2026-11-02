@@ -1,0 +1,36 @@
+{
+ "phase": "立ち絵そろえ 第2期（規格そろえ）TS06",
+ "face": "normal",
+ "chosen": "B",
+ "chosen_by": "2026-11-02 オーナー「1は任せる」により Claude が選定（規格6.4〜7.7頭身の中央に近く、足元の余白がある案）",
+ "candidates": {
+  "a": {
+   "head_body_claude": 6.8,
+   "head_body_codex": 6.89,
+   "sha256": "d1b0f34422c0546ce09a503d3c3ddf2992d715168abaa9b92ee9495dff0f9d81"
+  },
+  "b": {
+   "head_body_claude": 6.98,
+   "head_body_codex": 6.99,
+   "sha256": "d5c387f69a6eaca57ef7c2ae1d69a970ba39b6512c5dd450571315e80e2010ec"
+  },
+  "c": {
+   "head_body_claude": 6.74,
+   "head_body_codex": 6.88,
+   "sha256": "13f45b96305fe1d52d041ba5aeee95f7e136dbd1b660b4129ca460ca8eb31247"
+  }
+ },
+ "source": {
+  "generated_by": "Codex built-in image_gen",
+  "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2330#issuecomment-6573094756",
+  "zip_sha256": "f4c68242905c3d83a9998c463354046dc5ac20a887b9162f1753b2c0ee435fa2",
+  "original_sha256": "d5c387f69a6eaca57ef7c2ae1d69a970ba39b6512c5dd450571315e80e2010ec"
+ },
+ "references": [
+  "/workspace/shared/portrait-standard-2330-trials/refs/steve.png",
+  "/workspace/shared/portrait-standard-2330-trials/refs/nagumo.png",
+  "/workspace/shared/portrait-standard-2330-trials/refs/minto.png",
+  "/workspace/shared/portrait-standard-2330-trials/refs/ageha.png"
+ ],
+ "game_integration": "未実施。表情差分を同じ頭の大きさで作ってから、キャラ単位で組み込む（通常だけ先に入れると表情を切り替えたときに頭の大きさが変わるため）"
+}
