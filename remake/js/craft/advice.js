@@ -13,16 +13,19 @@ export function weakestPart(parts = {}, completed = ADVICE_PARTS) {
 export function improvementOf(cs) {
   const bands = temperatureBands(cs);
   const rounds = [["提供", cs.pull, 3], ["調整1回目", cs.careHistory?.[0], 2], ["調整2回目", cs.careHistory?.[1], 2]];
-  // 失敗・実測温度のずれがあるときは、その原因を吸う回数より先に直す。
-  const failed = rounds.find(([, result]) => result?.failed);
-  if (failed) return failed[1].failed === "cold"
+  // 熱の失敗・実測温度のずれを先に直す。未知の失敗種別から原因を推測しない。
+  const failed = rounds.find(([, result]) => ["cold", "burnt", "leaf"].includes(result?.failed));
+  if (failed && failed[1].failed !== "leaf") return failed[1].failed === "cold"
     ? `次に変える一つ：${failed[0]}は冷え切る前に炭を交換しよう。`
     : `次に変える一つ：${failed[0]}は熱が上がり切る前に熱を逃がす吸いを試そう。`;
+  // 葉切れは別の終端原因。消耗で狭まった適温帯のずれを、熱の失敗と取り違えない。
+  const exhausted = failed?.[1].failed === "leaf";
   const missed = [...rounds].reverse().find(([, result]) => Number.isFinite(result?.temp) && !isIdealTemperature(result.temp, bands));
-  if (missed) return `次に変える一つ：${missed[0]}は${missed[1].temp > bands.ideal[1] ? "少し下げて" : "少し熱を戻して"}から仕上げよう。`;
+  if (missed && !exhausted) return `次に変える一つ：${missed[0]}は${missed[1].temp > bands.ideal[1] ? "少し下げて" : "少し熱を戻して"}から仕上げよう。`;
   const safeBonus = makerMixProfile(cs).safePullsBonus || 0;
   const excessive = rounds.find(([, result, safe]) => result && result.pulls > safe + safeBonus);
   if (excessive) return `次に変える一つ：${excessive[0]}は吸う回数を減らし、後半の葉を残そう。`;
+  if (exhausted) return `次に変える一つ：${failed[0]}で葉が尽きた。一台を通して吸う回数を見直そう。`;
   return {
     holes: "次の練習：目印に合わせて、穴を均等に開けよう。",
     heat: "次の練習：炭の全面が赤くなる頃合いを確かめよう。",

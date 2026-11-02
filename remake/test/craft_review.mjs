@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { goodPointOf, improvementOf, craftReviewLines } from "../js/craft/advice.js";
 import { temperatureBands } from "../js/craft/temperature-model.js";
+import { LEAF_MAX, LEAF_FAIL_STEPS } from "../js/craft/flavor-life.js";
 
 const bands = temperatureBands();
 const served = { temp: bands.ideal[0] + .01, pulls: 2, score: 100 };
@@ -22,8 +23,10 @@ for (const [label, key, safe] of roundCases) {
   for (const [temp, text] of [[bands.ideal[0] - .01, "少し熱を戻して"], [bands.ideal[1] + .01, "少し下げて"]]) {
     assert.match(improvementOf(withRound(key, { temp, pulls: safe + 1 })), new RegExp(`${label}.*${text}`), `${label}: temperature mismatch must precede excessive pulls`);
   }
-  for (const [failed, text] of [["cold", "冷え切る前に炭を交換"], ["burst", "熱が上がり切る前に熱を逃がす吸い"]]) {
-    assert.match(improvementOf(withRound(key, { failed, pulls: safe + 1 })), new RegExp(`${label}.*${text}`), `${label}: recorded failure must precede excessive pulls`);
+  for (const [failed, failedTemp, text] of [["cold", .04, "冷え切る前に炭を交換"], ["burnt", 1, "熱が上がり切る前に熱を逃がす吸い"]]) {
+    for (const temp of [failedTemp, undefined]) {
+      assert.match(improvementOf(withRound(key, { failed, temp, pulls: safe + 1 })), new RegExp(`${label}.*${text}`), `${label}: recorded ${failed} failure must precede excessive pulls`);
+    }
   }
   assert.match(improvementOf(withRound(key, { ...served, pulls: safe + 1 })), new RegExp(`${label}.*吸う回数を減らし`), `${label}: ideal temperature still allows excessive-pull advice`);
   assert.equal(improvementOf(withRound(key, { ...served, pulls: safe })), "", `${label}: safe-pull threshold is inclusive`);
@@ -31,13 +34,37 @@ for (const [label, key, safe] of roundCases) {
   assert.equal(improvementOf(withRound(key, { ...served, pulls: safe + 1 }, dobaj)), "", `${label}: maker safe-pull bonus is preserved`);
   assert.match(improvementOf(withRound(key, { ...served, pulls: safe + 2 }, dobaj)), /吸う回数を減らし/);
 }
+
+// 実際の保存種別は burnt/cold/leaf。葉切れは過熱と分け、累積消耗も扱う。
+const depleted = { pull: { ...served, temp: bands.center }, careHistory: [{ ...warm, temp: bands.center }, { ...served, temp: bands.center }],
+  leaf: { hp: 0, max: LEAF_MAX, burn: 1, dmg: LEAF_FAIL_STEPS, steps: LEAF_FAIL_STEPS } };
+for (const [label, key, safe] of roundCases) {
+  const leafResult = { failed: "leaf", score: 0, temp: bands.center, pulls: safe + 1 };
+  assert.match(improvementOf(withRound(key, leafResult, depleted)), new RegExp(`${label}.*吸う回数を減らし`), `${label}: ideal-temperature leaf exhaustion keeps excessive-pull advice`);
+  // 現runnerの葉切れは過多吸引時。少回数記録は保存済み・不完全な履歴への防御ケース。
+  for (const pulls of [0, 1, safe]) {
+    const line = improvementOf(withRound(key, { ...leafResult, pulls }, depleted));
+    assert.match(line, new RegExp(`${label}.*葉が尽きた.*一台を通して吸う回数を見直そう`), `${label}: leaf exhaustion with no local overpull must use the cumulative leaf cause`);
+  }
+  for (const temp of [undefined, bands.ideal[0] - .01, bands.ideal[1] + .01]) {
+    assert.match(improvementOf(withRound(key, { ...leafResult, temp, pulls: 1 }, depleted)), /葉が尽きた/, `${label}: recorded leaf failure must not become a temperature diagnosis`);
+  }
+  for (const failed of ["burst", "unknown", true, 1]) {
+    assert.match(improvementOf(withRound(key, { temp: bands.center, pulls: safe + 1, failed })), new RegExp(`${label}.*吸う回数を減らし`), `${label}: unknown failure must use actual pull-count evidence`);
+    assert.match(improvementOf(withRound(key, { temp: .1, pulls: 1, failed })), new RegExp(`${label}.*熱を戻して`), `${label}: unknown failure may use a finite temperature measurement`);
+    assert.match(improvementOf(withRound(key, { pulls: 1, failed }, { ...steady, parts: { heat: 70 } })), /炭の全面が赤くなる頃合い/, `${label}: unknown failure without a measurement uses the generic fallback`);
+  }
+}
+assert.match(improvementOf(withRound(1, { failed: "leaf", temp: bands.center, pulls: 1 }, { ...depleted, pull: { ...depleted.pull, pulls: 4 } })), /提供.*吸う回数を減らし/, "Earlier excessive pulls explain later cumulative leaf exhaustion");
+console.log("PASS actual thermal/leaf failure kinds and unknown-failure evidence fallbacks");
+
 for (const temp of [undefined, null, NaN, Infinity, -Infinity, "0.1"]) {
   assert.match(improvementOf({ pull: { temp, pulls: 4 } }), /提供.*吸う回数を減らし/, `No temperature cause without a finite measurement: ${temp}`);
 }
 const multipleMisses = { pull: { temp: .1, pulls: 4 }, careHistory: [{ temp: .8, pulls: 3 }, { temp: .1, pulls: 3 }] };
 assert.match(improvementOf(multipleMisses), /調整2回目.*熱を戻して/, "Latest missed temperature retains priority");
-assert.match(improvementOf({ ...multipleMisses, pull: { ...multipleMisses.pull, failed: "burst" } }), /提供.*熱が上がり切る前/, "Recorded failure precedes a later missed temperature");
-assert.match(improvementOf({ pull: { failed: "cold", pulls: 4 }, careHistory: [{ failed: "burst", pulls: 3 }] }), /提供.*冷え切る前/, "First recorded failure retains priority");
+assert.match(improvementOf({ ...multipleMisses, pull: { ...multipleMisses.pull, failed: "burnt" } }), /提供.*熱が上がり切る前/, "Recorded thermal failure precedes a later missed temperature");
+assert.match(improvementOf({ pull: { failed: "cold", pulls: 4 }, careHistory: [{ failed: "burnt", pulls: 3 }] }), /提供.*冷え切る前/, "First recorded thermal failure retains priority");
 assert.match(improvementOf({ pull: { ...served, pulls: 4 }, careHistory: [{ ...served, pulls: 3 }, { ...served, pulls: 3 }] }), /提供.*吸う回数を減らし/, "First excessive round retains priority");
 assert.match(improvementOf({ ...steady, parts: { holes: 80, heat: 70, shisha: 90 } }), /炭の全面が赤くなる頃合い/, "Weakest-part fallback retains priority when all temperatures and pull counts are safe");
 console.log("PASS temperature advice precedes excessive pulls with recorded evidence and preserves existing priorities");
