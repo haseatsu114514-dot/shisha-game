@@ -7,12 +7,15 @@ import { artImg } from "./art.js";
 import { buildDigitalClock } from "./digital-clock.js";
 import { MAX_STEAM_SECONDS, normalizeSteamSeconds, steamPlaySeconds, SHORT_DODGE_SECONDS } from "./steam-time.js";
 import { buildSteamTemperature, buildSteamForecast } from "./steam-forecast.js";
+import { state } from "../core/state.js";
+import { growthLesson } from "../core/growth-effects.js";
 import { basicsExperienced } from "./practice-history.js";
 
 export function runSteamTimer(cs) {
   const panel = stepPanel("steam", "蒸らし", "分・秒ボタンで蒸らし時間を設定し、スタートで開始する", { brief: "", lessonStep: "timer" });
   let seconds = normalizeSteamSeconds(cs.steamSeconds ?? 0);
-  const minimumSeconds = cs.mode === "tutorial" ? 180 : 10;
+  const canZero = cs.mode !== "tutorial" && growthLesson(state,"M-W4");
+  const minimumSeconds = cs.mode === "tutorial" ? 180 : canZero ? 0 : 10;
   // B08: 制作と提供を一度終えた既習プレイヤーだけ、繰り返す雑念回避を任意で短くできる。初回・チュートリアルは従来どおり。
   const canShorten = cs.mode !== "tutorial" && basicsExperienced();
   const clock = buildDigitalClock("timer-display", { live: true, test: "timer-display" });
@@ -53,7 +56,7 @@ export function runSteamTimer(cs) {
     });
     start = button("", "timer-start", 3, () => {
       if (seconds < minimumSeconds) return;
-      SE.select(); cs.steamSeconds = seconds; cs.steamMin = seconds / 60;
+      SE.select(); if(canZero&&seconds===0)cs.zeroSteam=true;else delete cs.zeroSteam; cs.steamSeconds = seconds; cs.steamMin = seconds / 60;
       resolve();
     });
     start.classList.add("timer-start");

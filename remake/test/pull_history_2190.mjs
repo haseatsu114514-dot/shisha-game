@@ -5,6 +5,7 @@ import vm from "node:vm";
 
 globalThis.document = { addEventListener() {} };
 globalThis.window = {};
+const { craftContext } = await import("../js/craft/context.js");
 const [{ DB }, conditions, life, coals, model, water, waterText, { judgeComment }, { improvementOf }, { gradeOf }] = await Promise.all([
   import("../js/core/data.js"), import("../js/craft/conditions.js"), import("../js/craft/flavor-life.js"),
   import("../js/craft/coals.js"), import("../js/craft/temperature-model.js"), import("../js/craft/water.js"),
@@ -80,6 +81,12 @@ async function harness() {
     "./clock.js": { createCraftClock: () => ({ now: () => now, paused: false, dispose: noop }) },
     "./effect-visual.js": { effectVisible: () => false, effectBadge: noop, effectLine: noop, senseExtra: () => 0, effectTier: () => 0 },
     "./water.js": water, "./pull-water.js": waterText,
+    // 制作の表示名と、心得の盤の効き目（盤を灯していない状態。#2166）
+    "./context.js": { craftContext },
+    "../core/state.js": { state: {} },
+    "../core/growth-effects.js": { growthPerks: () => null, growthFeature: () => false, useGrowthInsurance: () => false,
+      growthSkill: () => false, growthLesson: () => false, growthCritical: () => false,
+      settleGrowthPhase: (s, cs, key, result) => result?.score, LESSON_TUNING: {}, SKILL_TUNING: {} },
   };
   const source = fs.readFileSync(new URL("../js/craft/pull.js", import.meta.url), "utf8");
   const mod = new vm.SourceTextModule(source, { context });

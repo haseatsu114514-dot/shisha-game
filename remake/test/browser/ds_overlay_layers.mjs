@@ -159,8 +159,11 @@ await suite("ds-overlay-layers", async check => {
         assert(size.scrollWidth <= size.width + 1, `MENU status row overflows: ${JSON.stringify(size)}`);
       }
       await page.screenshot({ path: path.join(out, `ds-overlay-${label}-status.png`) });
-      await reachable(page.locator('[data-test="menu-stat-insight"]'));
-      await press('[data-test="menu-stat-insight"]');
+      // 心得の盤（通常プレイの既定・#2166）の MENU は才能・感覚・理論の行、旧しくみ（?growth=0）は5能力の行
+      const lastRow = await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled())
+        ? '[data-test="menu-board-wisdom"]' : '[data-test="menu-stat-insight"]';
+      await reachable(page.locator(lastRow));
+      await press(lastRow);
       for (const tab of ["people", "items", "system", "status"]) {
         const button = page.locator(`[data-test="menu-tab-${tab}"]`);
         await reachable(button);

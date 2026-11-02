@@ -71,10 +71,13 @@ await suite("shisha-diagram", async check => {
       await window.__sumiReviewAction;
       const { state } = await import("./js/core/state.js");
       const { backlog } = await import("./js/vn/engine.js");
-      return { technique: state.stats.technique, memories: state.relationshipMemories,
+      const { growthEnabled } = await import("./js/core/growth-mode.js");
+      return { technique: state.stats.technique, memories: state.relationshipMemories, board: growthEnabled(),
         text: backlog().map(row => row.text).join("\n") };
     });
-    assert.equal(result.technique - before, 1, "technique cue settles once as the normal action's 1P reward");
+    // 旧しくみ（?growth=0）は台詞のキューが行動の1Pになる。心得の盤（通常プレイの既定・SBD97）は台詞のキューで能力を伸ばさない（SPEC 4.1）
+    if (result.board) assert.equal(result.technique - before, 0, "the board does not grow stats from text cues");
+    else assert.equal(result.technique - before, 1, "technique cue settles once as the normal action's 1P reward");
     assert.equal(result.memories.filter(id => id === "sumi_heat").length, 1, "same memory, once");
     assert.match(result.text, /蒸らす/);
     assert.match(result.text, /グリセリン/);

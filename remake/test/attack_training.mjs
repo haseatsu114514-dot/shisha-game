@@ -3,6 +3,8 @@ globalThis.document ||= { addEventListener() {} };
 globalThis.window ||= {};
 const storage = new Map();
 globalThis.localStorage = { setItem: (k,v) => storage.set(k,v), getItem: k => storage.get(k) ?? null };
+// 旧しくみ（スミさん♥3の特訓）の検査。通常プレイは心得の盤の授業 M-S1 で習う（growth_board.mjs）。?growth=0 と同じ印で旧モードに固定する
+storage.set('suien_growth_preview', '0');
 const core = await import('../js/core/state.js');
 const { ATTACK_UNLOCK, hasAttackTraining } = await import('../js/craft/attack-training.js');
 const lesson = await import('../js/daily/attack-lesson.js');

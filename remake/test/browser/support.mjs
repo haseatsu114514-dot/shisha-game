@@ -4,6 +4,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { installLoadingComicReader } from "./loading_reader.mjs";
+import { installGrowthAcknowledger } from "./growth_ack.mjs";
 
 const { chromium } = createRequire(import.meta.url)("playwright");
 const root = fileURLToPath(new URL("../../../", import.meta.url));
@@ -16,6 +17,7 @@ export async function suite(name, run, {
   readySelector = process.env.READY_SELECTOR || '[data-test="title-new"]',
   initScript = null,
   readLoadingComics = true,
+  acknowledgeGrowth = true,
 } = {}) {
   fs.mkdirSync(artifacts, { recursive: true });
   const timeoutMs = Number(process.env.BROWSER_TIMEOUT_MS || 10000);
@@ -29,6 +31,7 @@ export async function suite(name, run, {
     const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, ...options });
     const page = await context.newPage();
     if (readLoadingComics) await installLoadingComicReader(page);
+    if (acknowledgeGrowth) await installGrowthAcknowledger(page);
     if (initScript) await page.addInitScript(initScript);
     const errors = [];
     const failedResources = [];

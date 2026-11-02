@@ -7,6 +7,7 @@ import { createCraftClock } from "./clock.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { tier01, step } from "../core/stats.js";
+import { growthPerks, growthSkill, growthFeature, growthLesson, settleGrowthPhase, LESSON_TUNING, SKILL_TUNING } from "../core/growth-effects.js";
 import { REFRESH_RADII, REFRESH_LABELS, refreshRestoresMental } from "../core/stat-step-tables.js";
 import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep, waitBenchReady, explainTutorialStep, benchRoot } from "./session.js";
 import { steamSecondsOf, steamPlaySeconds, steamTimeLabel, SHORT_DODGE_SECONDS } from "./steam-time.js";
@@ -19,7 +20,7 @@ import { buildSteamWorld, HEART_ART, BULLET_ART } from "./steam-art.js";
 import { makingUrl } from "../core/data.js";
 import { buildMentalTrace } from "./mental.js";
 import { craftCondition } from "../core/condition.js";
-import { SLASH_ART, SLASH_RECHARGE_SECONDS, slashProfile, slashAngle, slashTouchesBullet, buildSlashFx, buildWordCutFx } from "./steam-slash.js";
+import { SLASH_ART, SLASH_RECHARGE_SECONDS, slashProfile, slashAngle, slashTouchesBullet, buildSlashFx, buildWordCutFx, buildSharkFx, sharkPulseTouchesBullet } from "./steam-slash.js";
 import { HEART_SIZE, heartHitRadius, heartTouchesBullet } from "./steam-heart.js";
 import { effectVisible, effectBadge, effectLine } from "./effect-visual.js";
 
@@ -36,11 +37,18 @@ const OBJECTS = ["coal", "orb", "orb", "smoke"];
 // SF63: 一度に1回分を持ち、使用後8秒でリチャージ。根性は範囲と回復に効く。
 export const REFRESH_RECHARGE_SECONDS = 8;
 // dodge枠は784×414px。根性1段の半径90pxから10段の画面全体まで広がる。
-export function refreshStock() { return 1; }
-export function refreshEffect() {
+export function refreshStock() { return growthSkill(state, "K06") ? 2 : 1; }
+export function refreshEffect(cs = null) {
   const level = step("guts");
-  return { radius: REFRESH_RADII[level - 1], mentalRecovery: refreshRestoresMental(level),
+  return { radius: REFRESH_RADII[level - 1] + (growthPerks(state)?.breath || 0),
+    mentalRecovery: refreshRestoresMental(level) || growthFeature(state, "mental") || cs?.mode === "tournament" && growthSkill(state, "K13"),
     label: REFRESH_LABELS[level - 1] };
+}
+
+/** 旧根性の縮小分に、盤の「かわし」の縮小分を足す。保存値への書き戻しはしない。 */
+export function steamHeartRadius(focus = 1) {
+  return heartHitRadius(tier01("guts"), focus)
+    - heartHitRadius(0, focus) * (growthPerks(state)?.dodge || 0) / 100;
 }
 
 export async function runSteamDodge(cs) {
@@ -50,11 +58,21 @@ export async function runSteamDodge(cs) {
   if (state !== owner || !root) return;
   SE.coalPlace();
   const stock = refreshStock();
-  const effect = refreshEffect();
+  const effect = refreshEffect(cs);
   const tutorial = cs.mode === "tutorial";
   const eased = tutorial || cs.retryAssist;
   const seconds = steamSecondsOf(cs), min = seconds / 60;
   const rainy = craftConditions(cs).rainy;
+  if (seconds === 0 && cs.zeroSteam === true && !tutorial && growthLesson(state,"M-W4")) {
+    const panel = stepPanel("steam", "0分蒸らし", "蒸らさず、低温から吸って立ち上げる");
+    const temp = temperatureAfterSteam(cs,0,cs.steamVariation ?? 0);
+    cs.steam = { min:0, seconds:0, temp, hits:0, score:100, refreshesUsed:0, slashesUsed:0, wordsCut:0, combo:0, maxCombo:0, zeroSteam:true };
+    // 回避をしていないので、次の工程のジャストボーナスは作らない。
+    settleGrowthPhase(state,cs,"steam",cs.steam,false);
+    scoreStep(cs,"steam",cs.steam.score); setBenchTemperature(cs,temp); refreshBench();
+    await resultCard(panel,{title:"0分蒸らし",lines:["待たずに立ち上げる。吸い出しで低温から熱を運ぼう"]});
+    return;
+  }
   const panel = stepPanel("steam", "蒸らし", "アタックはZ／ボタンで上側の前方を斬る。移動中も向きは変わらない。コンボが3・6になると刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。被弾するとコンボは途切れる。空振り・リフレッシュでは維持し、次の蒸らしでは0から始まる。", { brief: "" });
   const isCurrent = () => state === owner && benchRoot(cs) === root && panel.dataset.step === "steam";
   const W = 784, H = 414;
@@ -66,8 +84,9 @@ export async function runSteamDodge(cs) {
   const pad = el("div.dodge-pad", { tabindex: 0, role: "group", "aria-label": "移動スティック。ドラッグまたは矢印キーで移動", dataset: { test: "dodge-pad" } }, [el("span", { "aria-hidden": "true" }, [controlArt("steam_stick_simple_base.png")]), knob]);
   const refreshBtn = el("button.btn.primary.dodge-action.dodge-refresh", { disabled: true, dataset: { test: "dodge-refresh" } });
   const refreshCharge = el("span.action-recharge");
+  const refreshCopy = el("span.refresh-copy", { text: "リフレッシュ" });
   refreshBtn.append(el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_refresh_simple.png"), el("i.recharge-ring"), refreshCharge]),
-    el("span.refresh-copy", { text: "リフレッシュ" }));
+    refreshCopy);
   const slashCharge = el("span.action-recharge");
   const slashCount = el("span.slash-count", { text: "×0" });
   const slashGrowth = el("span.slash-growth", [slashCount]);
@@ -101,13 +120,15 @@ export async function runSteamDodge(cs) {
   let dur = steamPlaySeconds(seconds) * (tutorial ? 0.7 : 1);
   if (cs.steamShorten && !tutorial) dur = Math.min(dur, SHORT_DODGE_SECONDS);
   const focus = craftCondition(cs).focus;
-  const hitR = heartHitRadius(tier01("guts"), focus);
+  const hitR = steamHeartRadius(focus);
   heart.style.setProperty("--heart-size", `${HEART_SIZE}px`);
   heart.style.setProperty("--hit-diameter", `${hitR * 2}px`);
   const spawnEvery = (eased ? 0.85 : 0.46) * (1 + 0.25 * tier01("insight")) * focus;
   let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock;
   let refreshesUsed = 0, refreshReadyAt = 0, slashesUsed = 0, slashReadyAt = 0;
   let wordsCut = 0, totalWordsCut = 0, maxCombo = 0, slashCooldown = SLASH_RECHARGE_SECONDS;
+  let afterglowUntil = 0, afterglows = 0, sharkPulses = 0;
+  const shark = hasAttackTraining(state.flags) && growthLesson(state,"M-W7");
   let running = false, precise = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : 2.8;
   let warning = null, spawnCount = 0, raf = 0;
   const bullets = [], keysDown = new Set();
@@ -178,7 +199,9 @@ export async function runSteamDodge(cs) {
   };
   const refreshLabel = () => {
     refreshBtn.dataset.remaining = String(refreshes);
-    rechargeLabel(refreshBtn, refreshCharge, Math.max(0, refreshReadyAt - time), REFRESH_RECHARGE_SECONDS, `リフレッシュ。${effect.label}の雑念を消す`);
+    refreshCopy.textContent = stock > 1 ? `リフレッシュ ×${refreshes}` : "リフレッシュ";
+    rechargeLabel(refreshBtn, refreshCharge, refreshes > 0 ? 0 : Math.max(0, refreshReadyAt - time), REFRESH_RECHARGE_SECONDS,
+      `リフレッシュ。${effect.label}の雑念を消す${stock > 1 && refreshes === 1 ? "。2回目は半分の範囲" : ""}`);
   };
   const slashLabel = () => {
     const profile = slashProfile(wordsCut), remaining = Math.max(0, slashReadyAt - time);
@@ -204,10 +227,14 @@ export async function runSteamDodge(cs) {
   const refresh = () => {
     if (!running || refreshes === 0) return;
     refreshes--; refreshesUsed++; refreshReadyAt = time + REFRESH_RECHARGE_SECONDS;
-    world.dissolve(time, clearBullets(effect.radius));
+    const festa = growthLesson(state, "M-B6") && !cs.festaRefreshUsed;
+    if (festa) cs.festaRefreshUsed = true;
+    const radius = festa ? Infinity : stock > 1 && refreshes === 0
+      ? (Number.isFinite(effect.radius) ? effect.radius : Math.hypot(W, H)) / 2 : effect.radius;
+    world.dissolve(time, clearBullets(radius));
     if (effect.mentalRecovery) setPlayerMental(cs, mental.recoverStep(time, hits));
     reactAudience(cs, "good");
-    const reach = Number.isFinite(effect.radius) ? effect.radius : Math.hypot(W, H);
+    const reach = Number.isFinite(radius) ? radius : Math.hypot(W, H);
     const fx = el(`div.dodge-refresh-fx${effectVisible("guts") ? ".guts-visible" : ""}`, { "aria-hidden": "true", style: { "--x": `${hx}px`, "--y": `${hy}px`, "--reach": `${reach}px` } }, [
       el("i.dr-flash"), el("i.dr-ring"), el("i.dr-ring.second"),
       ...Array.from({ length: 8 }, (_, i) => el("i.dr-ray", { style: { "--angle": `${i * 45}deg` } })),
@@ -227,18 +254,27 @@ export async function runSteamDodge(cs) {
     if (!running || !hasAttackTraining(state.flags) || time < slashReadyAt) return;
     const direction = "u", angle = slashAngle(direction);
     const before = slashProfile(wordsCut);
-    const cleared = removeBullets(b => slashTouchesBullet(b, hx, hy, angle, before.reach));
-    const cutWords = cleared.filter(b => b.word).length;
+    const cleared = removeBullets(b => slashTouchesBullet(b,hx,hy,angle,before.reach,shark?Math.PI/2:undefined));
+    let cutWords=cleared.filter(b=>b.word).length;
+    const pulse=shark&&Math.floor((wordsCut+cutWords)/3)>Math.floor(wordsCut/3);
+    if(pulse){
+      const extra=removeBullets(b=>sharkPulseTouchesBullet(b,hx,hy,before.reach*LESSON_TUNING.sharkRadius));
+      cleared.push(...extra);cutWords+=extra.filter(b=>b.word).length;sharkPulses++;
+    }
+    const beforeCuts = wordsCut;
     wordsCut += cutWords; totalWordsCut += cutWords; maxCombo = Math.max(maxCombo, wordsCut);
+    if (growthSkill(state,"K22") && Math.floor(wordsCut/3) > Math.floor(beforeCuts/3)) {
+      afterglowUntil = time + SKILL_TUNING.afterglowSeconds; afterglows++;
+    }
     const after = slashProfile(wordsCut);
     slashCooldown = after.recharge;
     slashesUsed++; slashReadyAt = time + slashCooldown;
     slashBtn.dataset.uses = String(slashesUsed); slashBtn.dataset.direction = direction;
     slashBtn.dataset.lastCut = String(cleared.length);
     slashFeedback.dataset.hit = String(cleared.length > 0);
-    slashFeedback.textContent = cleared.length ? `${cleared.length}個斬った${after.tier > before.tier ? "・強化！" : ""}` : "空振り";
+    slashFeedback.textContent = cleared.length ? `${cleared.length}個${shark?"噛んだ":"斬った"}${pulse?"・大きく噛みついた！":after.tier > before.tier ? "・強化！" : ""}` : "空振り";
     world.dissolve(time, cleared, { echoWords: false });
-    const fx = buildSlashFx(hx, hy, angle, before.reach, cleared.length > 0, after.tier);
+    const fx = shark?buildSharkFx(hx,hy,angle,before.reach*(pulse?LESSON_TUNING.sharkRadius:1),pulse):buildSlashFx(hx, hy, angle, before.reach, cleared.length > 0, after.tier);
     box.append(fx); transients.push({ node: fx, until: time + .32 });
     for (const b of cleared) {
       if (b.word) {
@@ -346,8 +382,13 @@ export async function runSteamDodge(cs) {
         }
         if (warning && time >= warning.due) { launchWave(warning); warning = null; }
         inv = Math.max(0, inv - dt); heart.classList.toggle("shield", inv > 0);
+        const afterglow = time < afterglowUntil;
+        box.dataset.afterglow = String(afterglow);
+        box.classList.toggle("afterglow",afterglow);
+        box.dataset.bulletSpeed = String(afterglow ? SKILL_TUNING.afterglowSpeed : 1);
+        const bulletDt = dt * (afterglow ? SKILL_TUNING.afterglowSpeed : 1);
         for (let i = bullets.length - 1; i >= 0; i--) {
-          const b = bullets[i]; b.x += b.vx * dt; b.y += b.vy * dt;
+          const b = bullets[i]; b.x += b.vx * bulletDt; b.y += b.vy * bulletDt;
           b.node.style.transform = `translate(${b.x}px, ${b.y}px)`;
           if (!inv && heartTouchesBullet(b, hx, hy, hitR)) {
             hits++; inv = 0.9;
@@ -390,8 +431,9 @@ export async function runSteamDodge(cs) {
   clock.update(0);
   const temp = temperatureAfterSteam(cs, seconds, heatJitter);
   renderTemperature(temp);
-  cs.steam = { min, seconds, temp, hits, score, refreshesUsed, slashesUsed, wordsCut: totalWordsCut, combo: wordsCut, maxCombo, warmingFactor: steamClimate(cs.environment).transfer };
-  scoreStep(cs, "steam", score, "蒸らし");
+  cs.steam = { min, seconds, temp, hits, score, refreshesUsed, slashesUsed, wordsCut: totalWordsCut, combo: wordsCut, maxCombo, afterglows, sharkPulses, warmingFactor: steamClimate(cs.environment).transfer };
+  settleGrowthPhase(state, cs, "steam", cs.steam, hits === 0);
+  scoreStep(cs, "steam", cs.steam.score, "蒸らし");
   refreshBench();
   popStamp(panel, hits === 0 ? "無心" : hits <= 2 ? "持ちこたえた" : "雑念まみれ", hits === 0 ? "just" : hits <= 2 ? "good" : "bad", "50%", "40%");
   await sleep(400);

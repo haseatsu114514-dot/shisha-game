@@ -89,7 +89,11 @@ await suite("ch3-map-activities", async check => {
     const after = await get(page);
     assert.equal(after.money, freeBefore.money, "A member was charged again");
     assert.equal(after.stamina, freeBefore.stamina - 8);
-    assert.equal(after.stats.charm, freeBefore.stats.charm + 2);
+    // 心得の盤（通常プレイの既定・#2166）ではジムは経験値になる。旧しくみ（?growth=0）では魅力が伸びる
+    if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled())) {
+      assert((after.growth?.xp || 0) > (freeBefore.growth?.xp || 0), "The gym should earn EXP");
+      assert.deepEqual(after.stats, freeBefore.stats, "The board does not write the old stats");
+    } else assert.equal(after.stats.charm, freeBefore.stats.charm + 2);
     assert.equal(after.flags._ch3_intro.stage, freeBefore.flags._ch3_intro.stage, "Gym skipped a story scene");
     assert.deepEqual(after.flags._fit_since, { chapter: 3, day: freeBefore.day });
     assert.equal(after.visitedDay.choizap, freeBefore.day);

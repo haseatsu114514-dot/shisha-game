@@ -12,6 +12,7 @@ import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 import { runDaily } from "../daily/calendar.js";
 import { allSpots, fortuneSpot } from "../daily/spots.js";
 import { openShop } from "../daily/shop.js";
+import { canReflect } from "../daily/reflection.js";
 import { trpgSpot } from "../daily/trpg.js";
 import { MAP } from "./ch2-city-data.js";
 import { CITY_SHOP } from "./ch2-outings.js";
@@ -83,7 +84,7 @@ export function chapterFiveDailyDefinition(io) {
         { id: "widehanga", label: `隣町・${CH2_CITY_NAME}`, background: () => MAP[timeOfDay()], spots: chapterFiveCitySpots },
         { id: TOKYO, label: "東京", background: () => bgUrl(`bg_tokyo_map_${timeOfDay()}`), spots: chapterFiveTokyoSpots },
         // ドバイの地図は第4章と同じ（昼は真昼、夜は夕景）。占い師はドバイには現れない（台帳 URA）。
-        { id: DUBAI, label: "ドバイ", background: () => bgUrl(timeOfDay() === "night" ? "bg_dubai_map_dusk" : "bg_dubai_map"), spots: () => DUBAI_SPOTS },
+        { id: DUBAI, label: "ドバイ", background: () => bgUrl(timeOfDay() === "night" ? "bg_dubai_map_dusk" : "bg_dubai_map"), spots: chapterFiveDubaiSpots },
       ],
       onRegionChange: id => { state.flags._ch2_region = id; save(); },
     }),
@@ -117,7 +118,11 @@ const currentRegion = () => ["widehanga", TOKYO, DUBAI].includes(state.flags._ch
 
 /** 東京の行き先（スティーブ・ヴォルクの店は会ったことがあれば）。 */
 // 占い師は東京にも現れる（理由は語らない・台帳 URA）。
-export const chapterFiveTokyoSpots = () => [...TOKYO_SPOTS.filter(spot => !spot.charId || state.met?.[spot.charId]), fortuneSpot(TOKYO)].filter(Boolean);
+export const chapterFiveTokyoSpots = () => [...TOKYO_SPOTS.filter(spot => (!spot.charId || state.met?.[spot.charId]) && reflectable(spot)), fortuneSpot(TOKYO)].filter(Boolean);
+/** ドバイの行き先（モスクは灯せる火種がある時だけ）。 */
+export const chapterFiveDubaiSpots = () => DUBAI_SPOTS.filter(reflectable);
+// 内省の場所（東京の神社・ドバイのモスク）は、心得の盤で灯せる火種がある時だけ地図に出す（第3・4章と同じ）。
+const reflectable = spot => !spot.reflect || canReflect(state);
 
 /** 柚ヶ谷の支店（第2章の「県大会向け」の説明は使わない）。 */
 const CH5_CITY_SHOP = Object.freeze({ ...CITY_SHOP, desc: "隣町の支店。仕入れはここでも。" });

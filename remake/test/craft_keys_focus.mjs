@@ -66,6 +66,8 @@ function synth(id, names, values) {
 }
 const noop = () => {};
 const stubMods = {
+  "../core/state.js": synth("state", ["state"], { state: {} }),
+  "../core/growth-effects.js": synth("growth-effects", ["useGrowthInsurance", "growthCritical", "settleGrowthPhase", "growthPerks", "growthSkill", "growthFeature", "growthLesson", "LESSON_TUNING", "growthCraftCondition", "SKILL_TUNING"], { useGrowthInsurance: () => false, growthCritical: () => false, settleGrowthPhase: (_s,_cs,_key,result) => result?.score, growthPerks: () => null, growthSkill: () => false, growthFeature: () => false, growthLesson: () => false, LESSON_TUNING: {}, growthCraftCondition: (_s,_m,c) => c, SKILL_TUNING: {} }),
   "../core/util.js": synth("util", ["el", "sleep", "clamp"], { el: noop, sleep: noop, clamp: (v) => v }),
   "../core/audio.js": synth("audio", ["SE"], { SE: {} }),
   "../core/stats.js": synth("stats", ["tier01"], { tier01: noop }),

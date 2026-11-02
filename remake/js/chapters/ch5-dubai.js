@@ -15,6 +15,8 @@ import { readDialogues } from "../core/chapter-data.js";
 import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
 import { DUBAI_ROUND_TRIP_FARE } from "../core/travel-budget.js";
 import { openShop } from "../daily/shop.js";
+import { reflectAt } from "../daily/reflection.js";
+import { openingStatus, MOSQUE_VISITING_HOURS } from "../daily/spot-hours.js";
 import { consultLessons } from "../core/growth.js";
 
 export const DUBAI = "dubai";
@@ -48,6 +50,9 @@ export const DUBAI_SPOTS = Object.freeze([
     preview: "bg_shop", desc: "日本で出た葉が全部そろう（時間は使わない）。" }),
   spot({ id: "ch5_dubai_guest", label: "客間", area: "シェイクの屋敷の二階", x: 8, y: 60, theme: "rest", glyph: "休", preview: RESIDENCE_BG,
     stamina: 55, desc: "屋敷の客間で休む。体力が大きく戻る。" }),
+  // 心得の盤の内省（SPEC 2.8）: 第4章と同じ風の回廊モスク。灯せる火種がある時だけ地図に出す（ch5-daily.js）。時間は使わない。
+  spot({ id: "ch5_dubai_mosque", reflect: "dubai_mosque", label: "風の回廊モスク", area: "見学の回廊", x: 58, y: 70, theme: "rest", glyph: "回",
+    preview: "bg_dubai_map", desc: "案内付きで見学し、中庭の回廊で振り返る（昼だけ・時間は使わない）。" }),
   spot({ id: "ch5_dubai_home", label: "地元へ帰る", area: "ドバイ国際空港", x: 88, y: 42, theme: "rest", glyph: "空", preview: "bg_dubai_airport_day",
     desc: "迎えの車で空港へ。帰りの便は往復の切符に入っている・1行動。" }),
 ]);
@@ -96,6 +101,12 @@ export async function performDubaiSpot(spot, { staminaGuard } = {}) {
   if (state !== owner) return unused;
   if (spot.id === TO_DUBAI_SPOT.id) return goToDubai(owner);
   if (spot.id === "ch5_dubai_home") return goHome(owner);
+  if (spot.reflect) {
+    const hours = openingStatus(MOSQUE_VISITING_HOURS, state);
+    if (!hours.ok) { toast(hours.why || "今は見学の時間ではない"); return unused; }
+    await reflectAt(spot.reflect);
+    return unused;
+  }
   if (spot.id === "ch5_dubai_shop") {
     await openShop({ branch: "dubai" }); // 時間は使わない
     return unused;
