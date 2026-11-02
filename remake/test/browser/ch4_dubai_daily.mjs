@@ -2,6 +2,7 @@
 // スークの初訪問（市場→最初の出会い）→ FESTA（一台6,000円）→ 夜 → 翌朝、宿で休むと道具の手入れ、を実UIで通す。
 // もう一件は、DAY12の夜を越えると前夜祭の日（DAY13）の前夜の流れへ入り、必須の場面が並ぶこと。
 // 別便の応援（恋人・ましろ）がいれば、前夜祭より先に到着の場面を読み、到着した恋人を前夜に誘えること。
+// 到着したサメちゃん・ひよりとは、前夜祭の前に夕方を任意で一度過ごせること（IR18）。
 // カフェでは現地のメニューから一台頼んで味わい、吸いながら現地の文化の話を聞く（2026-11-02 オーナー「カフェで吸えたりとかにしよう」）。
 // 龍龍水煙所（王煙楼の店）は最初から地図にあり、通うと段階の会話が進む。先に店で会っていれば前夜祭は顔見知りの分岐。
 // 街の手触り（2026-11-02 オーナー「2以外は採用」）: 昼の屋外は暑さで体力を多めに使い、カフェ・専門店は夜がにぎわう（夜の一行・
@@ -387,5 +388,48 @@ await suite("ch4-dubai-daily", async check => {
     const state = await get(page);
     assert.deepEqual(state.flags._ch4_evening, { kind: "date", participants: ["rin"] });
     assert.equal(state.flags._ch4.read.ch4_mashiro_dubai_friend, true);
+  });
+
+  // IR18: 別便で着いたサメちゃん（恋人）とは、到着の後、前夜祭の前に夕方を任意で一度過ごせる。読むと同じカードに戻り、
+  // 前夜祭へ進める。読んだ後は出ない。前夜は到着した恋人として誘える。
+  await check("an-arrived-lover-can-spend-the-festival-day-evening-once", async page => {
+    await seed(page, (value, progress) => {
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      for (const id of ["ch4_dubai_souq", "ch4_stranger_first", "ch4_festa", "ch4_inn_tool_care", "ch4_stranger_second"]) p.read[id] = true;
+      p.firstDay = 1;
+      value.day = p.startDay + 11; value.slot = 1; p.day = 12;
+      value.lovers = ["samechan"]; value.met.samechan = true; value.contacts.push("samechan");
+      value.flags._overseas_companion = { decided: true, companion: null, supports: ["samechan"] };
+    });
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: 60, slot: 1 });
+    await go(page, "ch4_dubai_inn");
+    await page.locator(`${dt("ch4-arrival")}[data-scene="ch4_samechan_dubai_girlfriend"]`).waitFor({ timeout: 60000 });
+    const evening = dt("ch4-arrival-evening-samechan");
+    assert.equal(await page.locator(evening).count(), 0, "The arrival comes first");
+    await page.locator(dt("ch4-continue")).click();
+    const eveCard = `${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`;
+    await page.locator(eveCard).waitFor({ timeout: 60000 });
+    assert.match(await page.locator(dt("ch4-eve")).innerText(), /前夜祭の日/);
+    assert.match(await page.locator(dt("ch4-eve")).innerText(), /夕方になった/);
+    await page.locator(evening).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch4.read.ch4_samechan_dubai_evening === true, null, { timeout: 60000 });
+    await page.locator(eveCard).waitFor({ timeout: 60000 });
+    assert.equal(await page.locator(evening).count(), 0, "The evening is read once");
+    assert.match(await page.locator(dt("ch4-eve")).innerText(), /夜になった/);
+    assert((await backlog(page)).some(text => text.includes("印をつけておいたのじゃ")), "The evening scene was played");
+    let state = await get(page);
+    assert.equal(state.flags._ch4.read.ch4_wang_reception, undefined, "The evening does not move the eve");
+    assert.equal(state.flags._ch4.part, "eve");
+    for (const id of ["ch4_wang_reception", "ch4_stranger_third"]) {
+      await page.locator(`${dt("ch4-eve")}[data-scene="${id}"]`).waitFor();
+      await page.locator(dt("ch4-continue")).click();
+    }
+    await page.locator(dt("ch4-evening")).waitFor();
+    await page.locator(dt("ch4-evening-date")).click();
+    await page.waitForFunction(() => !!window.__remake.state.flags._ch4_evening, null, { timeout: 60000 });
+    state = await get(page);
+    assert.deepEqual(state.flags._ch4_evening, { kind: "date", participants: ["samechan"] });
   });
 });

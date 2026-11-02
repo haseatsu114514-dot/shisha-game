@@ -2129,7 +2129,7 @@
           "text": "（……こっちに来てから、いちばんちゃんとした予定かもしれない）"
         }
       ],
-      "comment": "ドラフト追加（未接続）。出典: 第4章新規ドラフト NEW-TEXT.md §5。ch4_samechan_dubai_girlfriend の後に任意で読む想定。休みの札と渡航を済ませ、実際に到着した恋人のときだけという到着場面と同じ条件を想定するが、条件フィールドは追加しない。ch4_visitors.json が未接続の台本のため挿入位置・場面全体が仮置き。話者IDは同ファイルの samechan に合わせた。大会と結果には触れていない。"
+      "comment": "接続済み（IR18）。前夜祭の日、ch4_samechan_dubai_girlfriend（別便の到着）を読んだ後、前夜祭が始まる前に任意で一度読める（remake/js/chapters/ch4-progress.js の chapterFourArrivalEveningsDue、ch4.js の renderEve）。同行者には到着場面が無いので出ない。出典: 第4章新規ドラフト NEW-TEXT.md §5。話者IDは ch4_visitors.json の samechan に合わせた。到着は前夜祭の日なので「明日」は大会の日。結果には触れていない。"
     },
     {
       "dialogue_id": "ch4_hiyori_dubai_evening",
@@ -2177,7 +2177,7 @@
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "じゃあ、そこで。……明日、朝の散歩に付き合ってくれる？"
+          "text": "じゃあ、そこで。……明日、会場に行く前に、少しだけ散歩しない？"
         },
         {
           "speaker": "hajime",
@@ -2195,7 +2195,7 @@
           "text": "並んで歩き出す。ひよりの歩幅に合わせて、少しだけ足をゆるめた。"
         }
       ],
-      "comment": "ドラフト追加（未接続）。出典: 第4章新規ドラフト NEW-TEXT.md §6。ch4_hiyori_dubai_girlfriend の後に任意で読む想定。休暇・渡航を済ませ、実際に到着した恋人のときだけという到着場面と同じ条件を想定するが、条件フィールドは追加しない。ch4_visitors.json が未接続の台本のため挿入位置・場面全体が仮置き。話者IDは同ファイルの hiyori に合わせた。はじめからひよりへの呼び方を素材で確かめられなかったため、呼びかけは使っていない（素材の仮置き事項）。大会と結果には触れていない。"
+      "comment": "接続済み（IR18）。前夜祭の日、ch4_hiyori_dubai_girlfriend（別便の到着）を読んだ後、前夜祭が始まる前に任意で一度読める（remake/js/chapters/ch4-progress.js の chapterFourArrivalEveningsDue、ch4.js の renderEve）。同行者には到着場面が無いので出ない。出典: 第4章新規ドラフト NEW-TEXT.md §6。話者IDは ch4_visitors.json の hiyori に合わせた。到着は前夜祭の日なので、散歩の約束は「会場に行く前」にした。結果には触れていない。はじめからひよりへの呼び方を素材で確かめられなかったため、呼びかけは使っていない（素材の仮置き事項）。"
     },
     {
       "dialogue_id": "ch4_inn_tool_care",

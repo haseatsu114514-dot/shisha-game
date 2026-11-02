@@ -20,7 +20,7 @@ import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_
   chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE,
   CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour, chapterFourRead,
   chapterFourDaily, enterChapterFourEve, chapterFourEveDay, chapterFourTournamentDay, chapterFourArrivalsDue,
-  CH4_ARRIVAL_SCENES, CH4_FRIEND_ARRIVAL_SCENES } from "./ch4-progress.js";
+  CH4_ARRIVAL_SCENES, CH4_FRIEND_ARRIVAL_SCENES, chapterFourArrivalEveningsDue } from "./ch4-progress.js";
 
 const CH4_SPOT_SCENES = CH4_SCENE_FILES.ch4_spots;
 import { chapterFourMapModel } from "./ch4-map-model.js";
@@ -287,7 +287,7 @@ async function renderScene(owner, scene, dayLabel) {
 /**
  * 恋人の入口（#2024）。第1・2章と同じ処理（lover-entry.js → daily/romance.js）を使う。
  * 日本にいる間（出発前・帰国後のtonari）は恋人LIMEと節目。ドバイ滞在中は遠くの恋人からのLIMEだけで、
- * 恋人と過ごす場面（節目・dubai_evening 系）はつながない（ch4-progress.js の FREE_SCENES の方針）。
+ * 節目は進めない（IR17）。到着した恋人と過ごす夕方（dubai_evening 系）は、前夜祭の日の renderEve で読む（IR18）。
  * 同行した恋人は一緒にいるのでLIMEを送ってこない。東京在住のましろとは地元では会えない。
  */
 async function loverActions(owner, { home = false } = {}) {
@@ -435,16 +435,25 @@ async function renderEve(owner) {
     await renderStage(owner);
     return;
   }
+  // 到着した恋人と過ごす夕方（任意で一度・IR18）。前夜祭が始まると、もう出ない。
+  const evenings = chapterFourArrivalEveningsDue(state);
   await setBg(bgUrl(CH4_SCENE_BG[next.lead || next.id]), { instant: true });
   if (!current(owner)) return;
-  card(owner, "eve", `DAY ${chapterFourEveDay(state)}・前夜`, "夜になった。大会の前に、済ませておくことが残っている。", [
-    button(owner, "続きを読む", "continue", async () => {
-      for (const id of [next.lead, next.id].filter(Boolean)) {
-        if (!await readAndCommit(owner, id)) return;
-      }
-      await renderStage(owner);
-    }, true),
-  ], "", next.id);
+  card(owner, "eve", `DAY ${chapterFourEveDay(state)}・${evenings.length ? "前夜祭の日" : "前夜"}`,
+    evenings.length ? "夕方になった。前夜祭の前に、少し時間がある。" : "夜になった。大会の前に、済ませておくことが残っている。", [
+      button(owner, "続きを読む", "continue", async () => {
+        for (const id of [next.lead, next.id].filter(Boolean)) {
+          if (!await readAndCommit(owner, id)) return;
+        }
+        await renderStage(owner);
+      }, true),
+      ...evenings.map(evening => button(owner, `${displayName(evening.id, state, { context: "private" })}と夕方を過ごす`,
+        `arrival-evening-${evening.id}`, async () => {
+          // 最後まで読んだ時だけ確定・保存する。読んだ後は同じカードに戻り、前夜祭へ進む。
+          if (!await readAndCommit(owner, evening.scene)) return;
+          await renderStage(owner);
+        })),
+    ], evenings.length ? "夕方を過ごしても、明日の大会には影響しません。前夜祭が始まると、夕方の時間は終わります。" : "", next.id);
 }
 
 /**
