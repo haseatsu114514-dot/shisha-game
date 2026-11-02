@@ -34,7 +34,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "adopt",
+   "gameRegistration": "remake/js/core/loading-comics.js の nagumo-long-review"
   },
   {
    "id": "nagumo-hidden-prize",
@@ -59,7 +60,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "nagumo-teacup",
@@ -84,7 +86,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "adopt",
+   "gameRegistration": "保留（1キャラ2話を超えた採用分。最後にオーナーが入れ替えを判断）"
   },
   {
    "id": "nagumo-photo-pose",
@@ -109,7 +112,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "nagumo-mini-nagumo",
@@ -134,7 +138,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "sheikh-camel-gift",
@@ -159,7 +164,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "adopt",
+   "gameRegistration": "remake/js/core/loading-comics.js の sheikh-camel-gift"
   },
   {
    "id": "sheikh-kotatsu",
@@ -184,7 +190,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "sheikh-coaster",
@@ -209,7 +216,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "sheikh-frog-purse",
@@ -239,7 +247,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "sheikh-dish-bubbles",
@@ -264,7 +273,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "uranaishi-kotatsu",
@@ -289,7 +299,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "adopt",
+   "gameRegistration": "remake/js/core/loading-comics.js の uranaishi-kotatsu"
   },
   {
    "id": "uranaishi-beach",
@@ -319,7 +330,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "adopt",
+   "gameRegistration": "remake/js/core/loading-comics.js の uranaishi-beach"
   },
   {
    "id": "uranaishi-crystal",
@@ -344,7 +356,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "uranaishi-shuffle",
@@ -374,7 +387,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "uranaishi-lunch",
@@ -399,7 +413,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "uranaishi-red-thread",
@@ -424,7 +439,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "uranaishi-sleeve",
@@ -449,7 +465,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "uranaishi-magnifier",
@@ -474,7 +491,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "uranaishi-sweet-potato",
@@ -499,7 +517,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "adopt",
+   "gameRegistration": "保留（1キャラ2話を超えた採用分。最後にオーナーが入れ替えを判断）"
   },
   {
    "id": "uranaishi-tanuki",
@@ -524,7 +543,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "samechan-watermelon-bite",
@@ -549,7 +569,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "adopt",
+   "gameRegistration": "remake/js/core/loading-comics.js の samechan-watermelon-bite"
   },
   {
    "id": "samechan-korochan-sleeve",
@@ -574,7 +595,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "adopt",
+   "gameRegistration": "保留（1キャラ2話を超えた採用分。最後にオーナーが入れ替えを判断）"
   },
   {
    "id": "samechan-cardboard-throne",
@@ -604,7 +626,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "samechan-comfy-seat",
@@ -629,7 +652,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "adopt",
+   "gameRegistration": "保留（1キャラ2話を超えた採用分。最後にオーナーが入れ替えを判断）"
   },
   {
    "id": "samechan-wide-entrance",
@@ -654,7 +678,8 @@
     }
    ],
    "delivery": "2026-11-02-a",
-   "ownerVerdict": ""
+   "ownerVerdict": "adopt",
+   "gameRegistration": "保留（1キャラ2話を超えた採用分。最後にオーナーが入れ替えを判断）"
   }
  ]
 }
