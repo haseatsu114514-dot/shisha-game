@@ -67,8 +67,8 @@ const chapters = [1, 2, 3, 4, 5, '1', undefined];
 let cases = 0;
 for (const chapter of chapters) {
   for (const feature of ['earlyHomeRig', 'baitoCameos']) assert.equal(features.chapterFeatureEnabled(chapter, feature), chapter === 1);
-  // 占い師は第1・2・5章（2026-11-02 台帳 URA。現れる時間帯は daily/fortune-schedule.js）
-  assert.equal(features.chapterFeatureEnabled(chapter, 'fortune'), chapter === 1 || chapter === 2 || chapter === 5);
+  // 占い師は第1〜5章（2026-11-02 台帳 URA・VOL15。現れる時間帯は daily/fortune-schedule.js）
+  assert.equal(features.chapterFeatureEnabled(chapter, 'fortune'), [1, 2, 3, 4, 5].includes(chapter));
 }
 assert.equal(features.chapterFeatureEnabled(1, 'unknown'), false);
 // DAY1/2/13/14, partial/full rest, old ownership including pro-only: exact old gift window.
