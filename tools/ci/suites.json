@@ -2509,7 +2509,7 @@
       "id": "continue-closeup",
       "title": "Continue close-up, keyboard, lifecycle and output",
       "kind": "browser",
-      "weight": 5,
+      "weight": 5.5,
       "timeout": 12,
       "paths": [
         "remake/js/scenes/continue*.js",
