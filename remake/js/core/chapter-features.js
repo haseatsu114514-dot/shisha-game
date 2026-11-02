@@ -3,7 +3,8 @@
 const CHAPTER_FEATURES = new Map([
   [1, { fortune: true, earlyHomeRig: true, baitoCameos: true, hiyoriDaily: true, lineMedia: true }],
   [2, { fortune: true, hiyoriDaily: true, lineMedia: true, agehaVisit: true, samechanRomance: true }],
-  [3, { lineMedia: true, mashiroBond: true, samechanRomance: true }],
+  // 第3章も出発前の準備期間（3日）は柚ヶ谷のMELTY PUFFへ通える（VOL02。東京にいる間は店が地図に無い）。
+  [3, { lineMedia: true, mashiroBond: true, samechanRomance: true, agehaVisit: true }],
 ]);
 
 export const chapterFeatureEnabled = (chapter, feature) => CHAPTER_FEATURES.get(chapter)?.[feature] === true;

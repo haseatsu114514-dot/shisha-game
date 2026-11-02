@@ -6,6 +6,8 @@ export const tokyoVisitState = value => value.tokyoVisits ||= emptyTokyoVisits()
 
 export function playerRegion(value) {
   if (value.chapter !== 3) return value.chapter < 3 ? "home" : "unknown";
+  // 出発前の準備3日（VOL02）はまだ地元。東京へ着くのは出発の朝。
+  if (value.flags?._ch3_prep && !value.flags._ch3_prep.departed) return "home";
   // 後日談の帰郷の夜（版3は煙幕の片づけの次、版1・2は三場面目）からは地元。
   const aftermath = value.flags?._ch3_aftermath;
   const homeStage = aftermath?.version >= 3 ? 4 : 3;

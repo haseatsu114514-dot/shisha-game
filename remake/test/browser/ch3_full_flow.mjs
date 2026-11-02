@@ -30,7 +30,7 @@ async function seed(page) {
     const core = await import("./js/core/state.js");
     const progress = await import("./js/chapters/ch3-progress.js");
     const value = core.newGame();
-    Object.assign(value, { chapter: 2, day: 28, slot: 0, phase: "cleared", money: 35000, stamina: 100,
+    Object.assign(value, { chapter: 2, day: 25, /* 準備3日の後の東京DAY1が従来どおり通算29日 */ slot: 0, phase: "cleared", money: 35000, stamina: 100,
       flavorStock: { double_apple: 100, mint: 100, chocolate: 100 }, weatherSeed: 5,
       lovers: ["minto"], contacts: ["sumi", "minto", "ageha"] });
     // #1988: あげはは第2章の♥3の分岐で恋愛寄りに答え、♥5に達した保存だけ帰郷後に告白へ。
@@ -46,6 +46,10 @@ async function seed(page) {
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
     core.saveConfig(); core.save();
     if (!progress.advanceToChapterThree(value)) throw new Error("Chapter boundary failed");
+    // 出発前の準備3日（VOL02）を過ごした出発の朝から始める（準備の3日は ch3_departure_prep で遊ぶ）。
+    value.day += 3;
+    if (!progress.departChapterThree(value)) throw new Error("Departure failed");
+    value.flags._ch3_intro.prologueStep = 0; // このスイートは旧行程の章頭（列車→回想→調べもの→章題→到着）から東京へ
     core.save();
     const vn = await import("./js/vn/engine.js");
     vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
