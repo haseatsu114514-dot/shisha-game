@@ -210,7 +210,9 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
     const result = await play(scene, stage && !stage.done ? { bg: ROOMS[id] } : undefined);
     if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
   }
-  const discovered = CITY_OUTINGS.find(item => item.introducedBy === id);
+  // 街の遊び場の紹介は、第2章でその店へ初めて通った回の最後に一度だけ（VOL13）。
+  // 第3・4章の出発前の準備期間では読まない（紹介の記録が付かず、毎回読み直しになるため）。
+  const discovered = state.chapter === 2 ? CITY_OUTINGS.find(item => item.introducedBy === id) : null;
   if (discovered && !state.flags[discovered.flag]) {
     const introduction = await play(discovered.introduction);
     if (state !== owner || !introduction || introduction.cancelled) return { used: false, exerted: false };

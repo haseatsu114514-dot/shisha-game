@@ -164,6 +164,10 @@ for (const [charId, intro, flag] of [["rei", "remake_ch2_rei_trpg", "_rei_trpg_i
   assert.equal((await go(shop)).used, false);
   assert.deepEqual(plain(state), before, `${charId}: cancelled introduction keeps nothing`);
 }
+// 第3・4章の出発前の準備期間（同じ visitPreparationSpot）では、未紹介でも紹介を読まない（毎回の読み直しを防ぐ）
+await setup({ chapter: 3, met: { rei: true } });
+await go({ id: "ch2_rei", kind: "rival", charId: "rei", region: "widehanga", cost: 3000, stamina: -16 });
+assert(!played.some(([id]) => id === "remake_ch2_rei_trpg"), "no city introduction outside chapter 2");
 const intro = dialogues.remake_ch2_ageha_aquarium.lines.map(line => line.text).join("\n");
 assert(!/初めて|配達|会場はあっち|大会/.test(intro), "the aquarium introduction no longer assumes DAY1 or the tournament");
 
