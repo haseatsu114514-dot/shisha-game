@@ -165,7 +165,7 @@ try {
     const relationships = await import("./js/core/relationships.js");
     const vn = await import("./js/vn/engine.js");
     const { DB } = window.__remake;
-    for (const file of ["ch3_main", "ch4_main"]) {
+    for (const file of ["ch3_main", "ch4_main", "ch5_main"]) {
       const data = await (await fetch(`../data/dialogue/${file}.json`, { cache: "no-cache" })).json();
       for (const d of data.dialogues) DB.dialogues[d.dialogue_id] = d;
     }
@@ -183,6 +183,7 @@ try {
     core.newGame();
     Object.assign(core.state, { chapter: 4, phase: "daily" });
     relationships.rememberRelationship("volk_measure"); // 前の章の記憶は、第4章の三人より古い
+    relationships.rememberRelationship("mashiro_pace"); // 人物タブの相手（第5章の回想で使う）
     for (const id of ["ch4_festa", "ch4_stranger_first", "ch4_stranger_second", "ch4_wang_reception"]) await read(id);
     const memories = core.state.relationshipMemories.slice();
     await read("ch4_festa");
@@ -190,21 +191,26 @@ try {
     const before = JSON.stringify(core.state);
     const ch4 = await read("ch4_stranger_third");
     const unchanged = before === JSON.stringify(core.state);
+    // 第5章の二台目の前は、第4章の前夜の三人を繰り返さず、交流した相手（ここでは前の章のましろ）を思い出す。
+    Object.assign(core.state, { chapter: 5 });
+    const ch5 = await read("ch5_relationship_before_second_cup");
     // 導入の差し替えがない reflection 行は、これまでどおりトングの導入から始まる。
     const plain = relationships.relationshipReflectionLines().map((l) => l.text);
-    return { ch3, ch4, memories, reread, unchanged, plain };
+    return { ch3, ch4, ch5, memories, reread, unchanged, plain };
   });
   const after = (lines, text) => lines.slice(lines.indexOf(text) + 1);
   const ch3Eve = after(eves.ch3, "店に並べてきた道具を思い出す。炭の置き方も、待つ間も、誰かの手から来たものだ。");
-  assert.deepEqual(ch3Eve.slice(0, 5), [
+  assert.deepEqual(ch3Eve.slice(0, 6), [
     "（久世さんは「決めるのは君」と言った。炭を外すかは、俺が決める）",
     "（スティーブのタイマーと、二口目の前の客の顔。待ち方を借りている）",
     "（ヴォルクさんに言われて、昨日のままの炭を疑うようになった）",
-    "（誰かにもらったものまで、消さなくていい）",
     "……俺の作り方、誰かに教わったことばっかりです。どこからが俺のなのか、ずっと分からなかった",
-  ], "ch3 eve reflection: latest three rivals, then Hajime speaks");
+    "僕もだよぉ。教わったことと、失敗したことばっかり",
+    "……明日は、それ全部で作ります",
+  ], "ch3 eve reflection: latest three rivals, then Hajime's doubt and his own answer (no closing thought first)");
+  assert(!eves.ch3.includes("（誰かにもらったものまで、消さなくていい）"), "ch3 eve answered the doubt before Hajime said it");
   assert(!eves.ch3.some((t) => t.startsWith("トングを持つ")), "ch3 eve is outdoors; no tongs lead");
-  assert.deepEqual(eves.memories, ["volk_measure", "da_silva_shop", "sheikh_asked", "master_hookah_wait"]);
+  assert.deepEqual(eves.memories, ["volk_measure", "mashiro_pace", "da_silva_shop", "sheikh_asked", "master_hookah_wait"]);
   assert.deepEqual(eves.reread, eves.memories, "Re-reading FESTA duplicated a memory");
   const ch4Eve = after(eves.ch4, "男は店員に礼を言って去った。カップは、洗いやすいように重ねてあった。");
   assert.deepEqual(ch4Eve, [
@@ -214,11 +220,19 @@ try {
     "（王煙楼さんは、こちらの都合で待たせるのと、相手を待つのは違うと言った）",
     "（誰かにもらったものまで、消さなくていい）",
   ], "ch4 eve reflection closes the last required eve scene");
-  assert(!eves.ch4.some((t) => /シェイク|ヴォルク/.test(t)), "ch4 eve revealed the traveler or reached past the newest three");
+  assert(!eves.ch4.some((t) => /シェイク|ヴォルク|ましろ/.test(t)), "ch4 eve revealed the traveler or reached past the newest three");
   assert(eves.unchanged, "ch4 eve reflection changed state");
+  const ch5Eve = after(eves.ch5, "……はい");
+  assert.deepEqual(ch5Eve.slice(0, 4), [
+    "トングを持つ。誰かと過ごした時間が、ふとよみがえった。",
+    "（ましろちゃんの隣では、答えを急がずに座っていられた）",
+    "（誰かにもらったものまで、消さなくていい）",
+    "帰郷した夜、水を先に出した客がいた。今日はホースを膝に置いて、待っている。",
+  ], "ch5 reflection recalls the People tab cast, not the ch4 eve trio");
+  assert(ch4Eve.slice(1, 4).every((t) => !eves.ch5.includes(t)), "ch5 reflection repeated the ch4 eve");
   assert.equal(eves.plain[0], "トングを持つ。誰かと過ごした時間が、ふとよみがえった。");
   assert.deepEqual(errors, []);
-  console.log("[remake relationships] 6 solo routes, branches, re-read, invalid IDs, latest 3 people, SNS, save/old slots, ch3/ch4 eve reflections: PASS");
+  console.log("[remake relationships] 6 solo routes, branches, re-read, invalid IDs, latest 3 people, SNS, save/old slots, ch3/ch4/ch5 reflections: PASS");
 } finally {
   await browser.close();
 }

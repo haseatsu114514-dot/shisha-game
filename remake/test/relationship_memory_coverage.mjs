@@ -31,7 +31,7 @@ for (const [sceneId, scene] of scenes) {
   for (const id of rememberIds(scene)) assert(ids.has(id), `${sceneId}: unknown memory ${id}`);
 }
 
-// サメちゃん・ひより（恋人候補）と久世・スティーブ（第4章正本の調整の記憶）も第5章の回想に浮かぶ。
+// サメちゃん・ひより（恋人候補）は第5章の回想に、久世・スティーブ（第4章正本の調整の記憶）は第3章の前夜の回想に浮かぶ。
 const byChar = {};
 for (const m of memories) (byChar[m.char_id] ||= []).push(m);
 const expected = {
@@ -56,12 +56,28 @@ for (const [chapter, id] of Object.entries(eveScenes)) {
   assert.equal(reflections(scenes.get(id)).length, 1, `chapter ${chapter}: ${id} needs one reflection line`);
 }
 const width = (s) => [...s].reduce((n, ch) => n + (ch.codePointAt(0) <= 0xff ? 0.5 : 1), 0);
+const memoryChars = new Set(memories.map((m) => m.char_id));
 for (const [, scene] of scenes) {
   for (const row of reflections(scene)) {
-    // text は導入の地の文の差し替え（空文字は導入なし）。表示される1行なので48字以内。
+    // text は導入の地の文、close は締めの内心の差し替え（空文字は出さない）。表示される1行なので48字以内。
     if ('text' in row) assert(typeof row.text === 'string' && width(row.text) <= 48, `${scene.dialogue_id}: reflection text`);
+    if ('close' in row) {
+      assert(typeof row.close === 'string' && width(row.close) <= 48, `${scene.dialogue_id}: reflection close`);
+      assert(row.close === '' || /^（.+）$/.test(row.close), `${scene.dialogue_id}: reflection close must be an inner thought`);
+    }
+    // chars は振り返る相手の絞り込み。記憶のある相手だけを書く。
+    if ('chars' in row) {
+      assert(Array.isArray(row.chars) && row.chars.length, `${scene.dialogue_id}: reflection chars`);
+      for (const id of row.chars) assert(memoryChars.has(id), `${scene.dialogue_id}: reflection chars has no memory for ${id}`);
+    }
   }
 }
+// 第5章の回想は、交流した相手（人物タブの顔ぶれ）だけ。未交流でもスミさんで成立する（正本: 第5章「回想は本当にプレイした交流だけ」）。
+const statusSource = fs.readFileSync(new URL('remake/js/daily/status.js', root), 'utf8');
+const people = JSON.parse(statusSource.match(/^const PEOPLE = (\[[^\]]*\]);/m)[1]);
+const ch5Reflection = reflections(scenes.get(eveScenes[5]))[0];
+assert.deepEqual(ch5Reflection.chars, people, 'ch5 reflection must recall the People tab cast (status.js PEOPLE)');
+assert(people.includes('sumi'), 'ch5 reflection falls back to Sumi');
 const routes = readJson('data/story_routes.json').chapters;
 const chapterCast = {
   3: ['kuze', 'steve', 'volk', 'mashiro', 'mukai_master'],
@@ -86,6 +102,48 @@ for (const [charId, name] of Object.entries(ch4Names)) {
 }
 assert(byChar.sheikh.every((m) => !/シェイク|王族|王者/.test(m.echo)), 'sheikh memory reveals his identity');
 
+// 振り返りの組み立てを本物の relationships.js で確かめる（ブラウザ不要。PRのCIで毎回動く）。
+// 第3章→第4章→第5章と必須場面の記憶が積み重なっても、前夜ごとに違う顔ぶれが浮かぶ。
+const stub = (code) => `data:text/javascript,${encodeURIComponent(code)}`;
+const relationshipSource = fs.readFileSync(new URL('remake/js/core/relationships.js', root), 'utf8')
+  .replace('from "./data.js"', `from "${stub('export const DB = globalThis.__relationshipTest.DB;')}"`)
+  .replace('from "./state.js"', `from "${stub('export const state = globalThis.__relationshipTest.state;')}"`);
+assert(!/from "\.\//.test(relationshipSource), 'relationships.js gained an import; stub it here');
+const reflectionState = { chapter: 1, relationshipMemories: [] };
+globalThis.__relationshipTest = {
+  DB: { relationshipMemories: Object.fromEntries(memories.map((m) => [m.id, m])) },
+  state: reflectionState,
+};
+const { relationshipReflectionLines } = await import(`data:text/javascript;base64,${Buffer.from(relationshipSource).toString('base64')}`);
+const texts = (line) => relationshipReflectionLines(line).map((l) => l.text);
+const echoOf = Object.fromEntries(memories.map((m) => [m.id, m.echo]));
+const lineOf = (chapter) => reflections(scenes.get(eveScenes[chapter]))[0];
+const sceneMemories = (id) => rows(scenes.get(id).lines).filter((row) => row.type === 'remember').map((row) => row.memory_id);
+const rememberAll = (ids) => { for (const id of ids) if (!reflectionState.relationshipMemories.includes(id)) reflectionState.relationshipMemories.push(id); };
+// 未交流のプレイ: 第1章のスミさん、第2章の交流なし。
+rememberAll(['sumi_heat', 'sumi_quiet', 'sumi_return']);
+assert.deepEqual(texts({}), ['トングを持つ。誰かと過ごした時間が、ふとよみがえった。', ...['sumi_return'].map((id) => echoOf[id]),
+  '（一緒に過ごした時間も、今の俺に残っている）'], 'default lead and the chapter 1 close');
+Object.assign(reflectionState, { chapter: 3 });
+for (const id of routes[3].before_eve) rememberAll(sceneMemories(id));
+const ch3Eve = texts(lineOf(3));
+assert.deepEqual(ch3Eve, ['kuze_decide', 'steve_wait', 'volk_measure'].map((id) => echoOf[id]),
+  'ch3 eve: only the three newest echoes (the narration leads in, Hajime\'s spoken doubt follows)');
+Object.assign(reflectionState, { chapter: 4 });
+for (const id of routes[4].before_eve) rememberAll(sceneMemories(id));
+const ch4Eve = texts(lineOf(4));
+assert.deepEqual(ch4Eve.slice(1, 4), ['da_silva_shop', 'sheikh_asked', 'master_hookah_wait'].map((id) => echoOf[id]), 'ch4 eve');
+assert.equal(ch4Eve.at(-1), '（誰かにもらったものまで、消さなくていい）');
+Object.assign(reflectionState, { chapter: 5 });
+const ch5 = texts(lineOf(5));
+const echoes = (lines) => lines.filter((t) => Object.values(echoOf).includes(t));
+assert.deepEqual(echoes(ch5), ['sumi_return', 'mashiro_pace'].map((id) => echoOf[id]), 'ch5 recalls the People tab cast, not the rivals');
+for (const earlier of [ch3Eve, ch4Eve]) {
+  assert(echoes(ch5).every((t) => !earlier.includes(t)), 'ch5 reflection repeats an earlier eve');
+}
+assert.deepEqual(texts({ text: '', close: '', chars: ['nobody'] }), ['（まず、今の一台を確かめよう。急がなくていい）'],
+  'no matching memory falls back to the plain line');
+
 // 後日談は1本だけ読むので、前の後日談を前提にした「また」「さらに」で始めない。
 for (const scene of readJson('data/dialogue/ending.json').dialogues) {
   for (const row of rows(scene.lines)) {
@@ -99,4 +157,4 @@ for (const scene of readJson('data/dialogue/ending.json').dialogues) {
 const defeat = rows(scenes.get('ch5_second_cup_defeat').lines).map((row) => String(row.text || '')).join('\n');
 assert(!/もう一度|試しますか|再挑戦/.test(defeat), 'ch5_second_cup_defeat promises a retry');
 
-console.log(`OK: ${memories.length} memories across ${Object.keys(byChar).length} people, remember wiring, eve reflections ch1-5 (ch3/ch4 cast before the eve), epilogue openers, ch5 defeat`);
+console.log(`OK: ${memories.length} memories across ${Object.keys(byChar).length} people, remember wiring, eve reflections ch1-5 (ch3/ch4 cast before the eve, ch3→ch4→ch5 recall different people), epilogue openers, ch5 defeat`);
