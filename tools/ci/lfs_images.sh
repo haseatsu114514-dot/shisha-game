@@ -17,7 +17,7 @@ dirs=(assets remake/img)
 if [ -f remake/js/daily/shop-art-new-flavors.js ] \
   && [ ! -f remake/img/shop/new-flavors/grapefruit.webp ] \
   && [ "$(git config --bool core.sparseCheckout || true)" = true ]; then
-  GIT_LFS_SKIP_SMUDGE=1 git sparse-checkout add --no-cone '/remake/img/shop/new-flavors/'
+  GIT_LFS_SKIP_SMUDGE=1 git sparse-checkout add '/remake/img/shop/new-flavors/'
 fi
 
 pointers() {
