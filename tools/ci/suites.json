@@ -1273,10 +1273,17 @@
         "remake/js/core/affinity-stages.js",
         "remake/js/chapters/ch4-progress.js",
         "remake/js/chapters/ch4.js",
+        "remake/js/chapters/ch4-story-wiring.js",
+        "remake/js/core/overseas-companion.js",
+        "remake/js/core/story-routes.js",
+        "data/story_routes.json",
         "data/dialogue/ch4_dubai_daily.json",
         "data/dialogue/ch4_spots.json",
         "data/dialogue/ch4_longlong.json",
         "data/dialogue/ch4_main.json",
+        "data/dialogue/ch4_visitors.json",
+        "data/dialogue/ch4_*_dubai.json",
+        "data/dialogue/tournament_dates.json",
         "remake/test/browser/ch4_dubai_daily.mjs"
       ],
       "run": ["node remake/test/browser/ch4_dubai_daily.mjs"]
@@ -1292,8 +1299,11 @@
         "remake/js/chapters/departure-prep.js",
         "remake/js/chapters/ch3-aftermath*.js",
         "remake/js/chapters/ch1.js",
+        "remake/js/core/overseas-companion.js",
         "data/dialogue/ch4_main.json",
         "data/dialogue/ch4_spots.json",
+        "data/dialogue/ch4_visitors.json",
+        "data/dialogue/ch4_*_dubai.json",
         "remake/test/browser/ch4_full_flow.mjs"
       ],
       "run": [
