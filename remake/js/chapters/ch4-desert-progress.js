@@ -8,9 +8,14 @@ import { spendableMoney } from "../core/travel-budget.js";
 
 export const DESERT_FLAG = "_ch4_desert";
 export const DESERT_GUIDE = "noor";
-export const DESERT_TALKS = Object.freeze(["ch4_noor_meet", "ch4_noor_talk2", "ch4_noor_cafe_3", "ch4_noor_invite"]);
+// DSR20（ヒロイン化）の一段目: 誘いの後に♥3の問い（恋愛／友情。bond_q1_noor）と♥4の会話。♥5の締めくくり・告白は次の段で足す。
+export const DESERT_TALKS = Object.freeze(["ch4_noor_meet", "ch4_noor_talk2", "ch4_noor_cafe_3", "ch4_noor_invite", "ch4_noor_bond_question", "ch4_noor_cafe_4"]);
 /** 段階の会話を読むのに要る♥（DESERT_TALKS と同じ順）。前の段階を読み、この♥に届いていれば読める。 */
-export const DESERT_TALK_HEARTS = Object.freeze([0, 1, 2, 3]);
+export const DESERT_TALK_HEARTS = Object.freeze([0, 1, 2, 3, 3, 4]);
+/** 砂丘への誘いまで読んだ段階の数（誘いの後も店の段階の会話は続く）。 */
+export const DESERT_INVITE_STAGE = DESERT_TALKS.indexOf("ch4_noor_invite") + 1;
+/** ♥3の問い（恋愛／友情）の選択肢 id。答えは bonds.js の recordRomanceChoice が state.romanceChoices に一度だけ記録する。 */
+export const NOOR_QUESTION_CHOICE = "bond_q1_noor";
 /** 段階の会話が無い日の、店での雑談（順に巡回）。 */
 export const DESERT_CAFE_CHATS = Object.freeze(["ch4_noor_cafe_chat_a", "ch4_noor_cafe_chat_b", "ch4_noor_cafe_chat_c"]);
 export const DESERT_CAFE_PRICE = 3000; // ドバイのカフェの一台（ch4-dubai-daily.js の中心地・路地裏のカフェと同じ）
@@ -49,7 +54,7 @@ export function desertProgress(value) {
   const record = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
   let talks = integer(record.talks) ?? 0;
   // 以前の保存（デスクの会話3つ: 名乗り・地図・誘い）で誘いまで読んだ人は、誘われたまま（店の3つ目は飛ばす）
-  if (record.v !== 2 && talks >= 3) talks = DESERT_TALKS.length;
+  if (record.v !== 2 && talks >= 3) talks = DESERT_INVITE_STAGE;
   return {
     talks: Math.min(DESERT_TALKS.length, talks),
     chats: integer(record.chats) ?? 0,
@@ -60,7 +65,7 @@ export function desertProgress(value) {
 }
 const write = (value, progress) => { value.flags[DESERT_FLAG] = { v: 2, ...progress }; return progress; };
 
-export const desertInvited = value => desertProgress(value).talks >= DESERT_TALKS.length;
+export const desertInvited = value => desertProgress(value).talks >= DESERT_INVITE_STAGE;
 
 // 旧カードの地図（版2より前の5日の保存）は日数が少ないので、以前と同じ3つ（名乗り・地図・誘い）で誘う。店の3つ目は飛ばす
 const LEGACY_SKIP = "ch4_noor_cafe_3";
@@ -118,7 +123,7 @@ export const desertDaytime = value => (value?.slot ?? 0) === 0;
 export function desertOutingStatus(value, day) {
   const progress = desertProgress(value);
   const first = progress.outings === 0, price = first ? 0 : DESERT_RIDE_PRICE;
-  if (progress.talks < DESERT_TALKS.length) return { ok: false, why: "まだ誘われていない", first, price };
+  if (progress.talks < DESERT_INVITE_STAGE) return { ok: false, why: "まだ誘われていない", first, price };
   if (progress.lastOutingDay !== null && progress.lastOutingDay >= day) return { ok: false, why: "今日はもう砂丘へ行った", first: false, price };
   if (!desertDaytime(value)) return { ok: false, why: "今日の昼はもう別の予定に使った", first, price };
   if (price > spendableMoney(value)) return { ok: false, why: `お金が足りない（${price.toLocaleString("ja-JP")}円）`, first, price };
@@ -192,7 +197,7 @@ export const desertRankAtLeast = (value, need) => { const rank = desertRecords(v
  */
 export function desertDestinations(value, day) {
   const progress = desertProgress(value);
-  if (progress.talks < DESERT_TALKS.length) {
+  if (progress.talks < DESERT_INVITE_STAGE) {
     const visit = desertCafeVisit(value, day, { legacy: true });
     const first = progress.talks === 0;
     return [{ ...DESERT_PLACES.tour_desk, kind: "desert_talk", legacy: true, scenes: visit ? [visit.id] : [], consumes: false, ok: !!visit,
@@ -237,7 +242,7 @@ export function desertDailySpots(value, day) {
       : "ヌールの父の店。一台頼んで、ヌールと話す。一台3,000円（約70ディルハム）。",
     unavailable: cafeWhy, unavailableTag: !visit ? "また明日" : poor ? "お金が足りない" : "",
     hasNew: () => visit?.kind === "story" && !poor })];
-  if (progress.talks < DESERT_TALKS.length) return spots;
+  if (progress.talks < DESERT_INVITE_STAGE) return spots;
   const status = desertOutingStatus(value, day);
   const best = desertRecords(value).best;
   const tag = status.ok ? "" : status.why === "今日はもう砂丘へ行った" ? "今日はもう行った" : status.why.startsWith("お金") ? "お金が足りない" : "砂丘は昼だけ";

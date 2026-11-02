@@ -15,7 +15,8 @@ import { awardActionExp } from "../core/growth.js";
 export * from "./ch4-desert-progress.js";
 import { addMoney, gainAffinity, visitAffinity } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
-import { DESERT_TALKS, DESERT_SCENES, DESERT_CAFE_PRICE, desertCafeVisit, completeDesertCafeVisit, DESERT_RACE_WIN_LINE, DESERT_NARU_LINES, DESERT_DIALOGUE_IDS, desertRivals, markNaruMet, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
+import { questionDoneKey } from "../core/affinity-stages.js";
+import { DESERT_TALKS, DESERT_INVITE_STAGE, NOOR_QUESTION_CHOICE, DESERT_SCENES, DESERT_CAFE_PRICE, desertCafeVisit, completeDesertCafeVisit, DESERT_RACE_WIN_LINE, DESERT_NARU_LINES, DESERT_DIALOGUE_IDS, desertRivals, markNaruMet, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
   desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertProgress } from "./ch4-desert-progress.js";
 
 let dialogueTask = null;
@@ -63,6 +64,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
       if (!await read(id, bgUrl("bg_dubai_inn_day"))) return false;
       if (!completeDesertCafeVisit(owner, visit, day, { legacy })) return false;
       if (paid) addMoney(-DESERT_CAFE_PRICE);
+      // ♥3の問いに答えた（選択は engine の onChoice → bonds.js の recordRomanceChoice が記録済み）
+      if (id === "ch4_noor_bond_question" && owner.romanceChoices?.[NOOR_QUESTION_CHOICE]) owner.flags[questionDoneKey(DESERT_GUIDE)] = true;
       gainAffinity(DESERT_GUIDE, visitAffinity(visit.kind));
       save(); changed = true;
       // 初対面の登場カットイン（名乗った後に一度だけ。立ち絵が無い間も名前と一言は出す）
@@ -70,7 +73,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
         const { playIntro } = await import("../vn/intro.js");
         if (current()) await playIntro(DESERT_GUIDE, { override: { display_name: DB.characters[DESERT_GUIDE]?.display_name } });
       }
-      if (id === DESERT_TALKS[DESERT_TALKS.length - 1] && current()) toast("昼の行き先に「ヌールと砂丘へ」が加わった", { kind: "good" });
+      if (id === DESERT_TALKS[DESERT_INVITE_STAGE - 1] && current()) toast("昼の行き先に「ヌールと砂丘へ」が加わった", { kind: "good" });
       return changed;
     }
     if (destination.kind !== "desert") return false;
@@ -84,6 +87,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     // ここで昼の行動枠を使う（2回目からはツアー代も）。以降の滑り直しは何度でも、追加の消費なし。
     if (!beginDesertOuting(owner, day)) return false;
     if (status.price) addMoney(-status.price);
+    // ヌールと一緒に過ごす外出なので、好感度も少し上がる（雑談と同じ +8）
+    gainAffinity(DESERT_GUIDE, visitAffinity("talk"));
     save(); changed = true;
     showScreen("none", null);
     const before = desertRecords(owner);
