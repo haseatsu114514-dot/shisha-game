@@ -55,26 +55,26 @@ def main():
     args = ap.parse_args()
 
     cur_path = SPRITES / args.id / f"chr_{args.id}_{args.face}.png"
-    if not cur_path.exists():
-        sys.exit(f"いまの立ち絵が無い: {cur_path}")
-    cur = Image.open(cur_path).convert("RGBA")
+    cur = Image.open(cur_path).convert("RGBA") if cur_path.exists() else None
     src = Image.open(args.source).convert("RGBA")
     if src.getchannel("A").getextrema()[0] == 255:
         sys.exit("原画に透過が無い（背景つき）。透過PNGで受け取り直す")
 
-    cb, sb = bbox(cur), bbox(src)
+    cb, sb = bbox(cur) if cur else None, bbox(src)
+    if sb is None:
+        sys.exit("原画に人物が見つからない")
     fig = src.crop(sb)
-    target_h = cb[3] - cb[1]
+    target_h = cb[3] - cb[1] if cb else 1160
     if fig.height < target_h:
         print(f"WARN: 原画の人物 {fig.height}px がゲーム用 {target_h}px より小さい（引き伸ばしになる）。1300px以上で作り直すのが望ましい")
     s = target_h / fig.height
     fig = fig.resize((max(1, round(fig.width * s)), target_h), Image.LANCZOS)
 
     # 足元の下端と、不透明部分の重心の横位置をいまの立ち絵に合わせる
-    cur_cx = mass_x(cur)
+    cur_cx = mass_x(cur) if cur else W / 2
     fig_cx = mass_x(fig)
     x = round(cur_cx - fig_cx)
-    y = cb[3] - fig.height
+    y = cb[3] - fig.height if cb else H - 20 - fig.height
     out = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     out.alpha_composite(fig, (x, y))
     ob = bbox(out)
@@ -90,6 +90,8 @@ def main():
     pad = 20
     comp = Image.new("RGB", (W * 2 + pad * 3, H + 70), (32, 36, 44))
     for i, im in enumerate([cur, out]):
+        if im is None:
+            continue
         tile = Image.new("RGBA", (W, H), (44, 48, 58, 255))
         tile.alpha_composite(im)
         comp.paste(tile.convert("RGB"), (pad + i * (W + pad), 50))
@@ -100,12 +102,14 @@ def main():
     print(f"preview: {preview.relative_to(ROOT)}  人物 {target_h}px（原画 {sb[3]-sb[1]}px から {s:.2f}倍）")
     print(f"compare: {(dest_dir / f'{args.face}-compare.png').relative_to(ROOT)}")
     if args.apply:
-        prev_dir = dest_dir / "previous-runtime"
-        prev_dir.mkdir(exist_ok=True)
-        if not (prev_dir / cur_path.name).exists():
-            shutil.copy2(cur_path, prev_dir / cur_path.name)
+        cur_path.parent.mkdir(parents=True, exist_ok=True)
+        if cur_path.exists():
+            prev_dir = dest_dir / "previous-runtime"
+            prev_dir.mkdir(exist_ok=True)
+            if not (prev_dir / cur_path.name).exists():
+                shutil.copy2(cur_path, prev_dir / cur_path.name)
         shutil.copy2(preview, cur_path)
-        print(f"applied: {cur_path.relative_to(ROOT)}  sha256 {sha(cur_path)}  （以前の版は previous-runtime/ に保存）")
+        print(f"applied: {cur_path.relative_to(ROOT)}  sha256 {sha(cur_path)}")
         print("次に: python3 remake/tools/build_manifest.py / python3 tools/make_face_icons.py "
               f"{args.id} / python3 tools/make_reference_sheet.py {args.id} facesize lineup")
 
