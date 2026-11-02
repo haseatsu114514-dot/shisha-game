@@ -1,8 +1,0 @@
-{
-  "_comment": "廃止版の強制イベント表は data/dialogue/_legacy/forced_events.json に隔離。現在の進行表として読み込まない。",
-  "runtime_sources": [
-    "remake/js/chapters/ch1.js",
-    "remake/js/chapters/ch2.js"
-  ],
-  "script_source": "data/story_routes.json"
-}

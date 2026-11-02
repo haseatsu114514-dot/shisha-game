@@ -1,5 +1,0 @@
-[mix temperature] PASS: every real flavor, including vanilla / AF apple / AF mint examples
-[mix temperature] PASS: mixtures, ratio changes, supplied mint; same ratio keeps bands while total g changes warm-up
-[mix temperature] PASS: empty/legacy saves, unknown or invalid heat_tolerance, ignored invalid g, extreme finite weights
-[mix temperature] PASS: 768 inclusive green/rainbow edge cases; scoring and continuous effects agree
-[mix temperature] PASS: immutable per-shisha models, no cross-session leak; danger/burst/cold absolute thresholds unchanged

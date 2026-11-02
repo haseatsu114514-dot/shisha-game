@@ -353,7 +353,7 @@ export function beginChapterFiveMatch(value) {
 }
 
 // ---- 試合 ---------------------------------------------------------------------------
-// 正本（docs/archive/setting_book/05_tournament.md）: 同じ観客が一本目・二本目の両方を吸い、それぞれ良かった方へ
+// 正本（brand/story_and_structure.md「同じ葉で二本」）: 同じ観客が一本目・二本目の両方を吸い、それぞれ良かった方へ
 // 挙手する。二本の合計票で勝敗を決める。審査員の採点や恋愛人数の加点は持ち込まない。
 // 一本目は台本どおり 9000 が僅かに先取（固定）。二本目は、はじめが実際に作った一台の出来で挙手が動く。
 export const CH5_AUDIENCE = 40;
@@ -495,6 +495,8 @@ export function completeChapterFiveScene(value, id) {
       if (progress.scheduleDecision === "decide") {
         progress.part = "scheduled";
         value.flags._ch5_match_scheduled = true;
+        // 勝負は翌日（店の休業日）。日常ループはこの日の朝で終わる（#2033・Q11/Q15）。
+        progress.matchDay = value.day + 1;
         // phase は state.js の列挙（opening|daily|tournament|aftermath|cleared）に収め、
         // 日程が決まっただけでは進めない。試合開始（beginChapterFiveMatch）で tournament になる。
       }
@@ -516,6 +518,7 @@ export function completeChapterFiveScene(value, id) {
     progress.part = "free";
     value.flags._ch5_match_scheduled = false;
     progress.scheduleDecision = null;
+    delete progress.matchDay; // 日程は白紙。日常ループはまた勝負の日なしで回る
     value.phase = "daily";
     return true;
   }

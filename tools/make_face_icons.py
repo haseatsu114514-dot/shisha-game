@@ -111,7 +111,7 @@ def face_box(char_id: str, im: Image.Image) -> tuple[int, int, int] | None:
     # 枠の左右の範囲で、いちばん上に絵がある行より HEAD_ROOM だけ上から始める。顔の大きさ（side）は変えず、下へずらすだけ
     alpha = im.getchannel("A")
     span = alpha.crop((max(0, x0 + side // 6), 0, min(im.width, x0 + side * 5 // 6), max(1, y0 + side // 2)))
-    rows = [y for y in range(span.height) if sum(1 for v in span.crop((0, y, span.width, y + 1)).get_flattened_data() if v > 60) >= 3]
+    rows = [y for y in range(span.height) if sum(1 for v in span.crop((0, y, span.width, y + 1)).getdata() if v > 60) >= 3]
     if rows and not p.get("allow_cut"):
         head = rows[0]
         need = y0 - (head - side * HEAD_ROOM)          # 頭を入れるのに上へ広げたい量

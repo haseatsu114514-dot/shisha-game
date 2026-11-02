@@ -14,7 +14,7 @@ description: 画像（立ち絵・背景・CG・UIパーツ）の新規生成や
 | 種類 | 正本（書式・スタイル指針をここから写す） |
 |---|---|
 | 背景 | `tools/bg_prompts.txt` — 英語プロンプト・1280x720・no people・painterly。画風基準は `bg_eden_shop.png` |
-| 立ち絵・表情差分 | `docs/prompts/image_generation_guide.md` — マゼンタ(#FF00FF)背景・表情は1枚のシートで一括生成・pixelize前提 |
+| 立ち絵・表情差分 | `.claude/skills/character-portrait-remaster/SKILL.md` — 1回の生成で1人・1表情・人物1300px以上、マゼンタ(#FF00FF)背景。基本の書式は `docs/prompts/image_generation_guide.md` |
 | 作りパートUI・小物 | `docs/prompts/asset_gen_prompts.md` — 共通スタイル指針＋分業表＋現行の作業台素材表（ファイル名→使う場所） |
 | CG（一枚絵） | `docs/prompts/cg_production_plan.md` ＋ 背景の書式を流用 |
 | ロード画面の2コマ漫画 | `asset_sources/loading-comics/README.md` — 1536x1024 の下敷き `template/` を添付・コマ 720x480×2（3:2）・題名や話数は描かない・受領後は `tools/loading_comic_cut.py` で 3:2 の WebP 2枚に揃えて登録 |
@@ -47,13 +47,13 @@ description: 画像（立ち絵・背景・CG・UIパーツ）の新規生成や
 
 - コピペ可能な**1つのコードブロック**で出す（前置き・後書きを混ぜない）。
 - 複数枚頼むときは `tools/bg_prompts.txt` 式に「--- n/N: ファイル名 ---」で区切る。
-- 立ち絵の表情差分は**必ず同一生成内のグリッドシート**で頼む（別々に生成すると顔が変わる）。
+- 立ち絵の表情差分は**1回の生成で1表情**。採用済みの立ち絵を添付して同一人物性を保つ（横並びのシートは人物が縮むので使わない）。
 
 ## Step 4 — 画像を受け取った後の組み込み（こちら側の仕事）
 
 ```bash
 # 立ち絵: 変換→正規化→ビルド（詳細は portrait-fix スキル E節）
-python3 tools/pixelize.py sheet.png --char <id> --slice 3x2 --names normal,smile,sad,serious,surprise
+# （配置・正規化は character-portrait-remaster / portrait-fix スキルの手順）
 # 背景: そのまま保存 or pixelize --key none --grid 360 --out assets/backgrounds/<name>.png
 python3 remake/tools/build_manifest.py
 ```

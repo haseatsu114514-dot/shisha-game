@@ -10,6 +10,16 @@ const expected = [
   'interval_day2_adam_lime', 'interval_day3_sumi_call', 'interval_day5_eve',
 ];
 assert.deepEqual(scenes.map(scene => scene.dialogue_id).sort(), [...expected].sort());
+const contacts = { interval_day1_naru_lime: 'naru', interval_day2_adam_lime: 'adam' };
+for (const scene of scenes) {
+  const remote = contacts[scene.dialogue_id];
+  assert.equal(scene.metadata?.contact_channel, remote ? 'lime' : undefined, `${scene.dialogue_id}: explicit contact channel`);
+  if (!remote) continue;
+  assert.equal(scene.lines.filter(line => line.speaker === remote).length, 4);
+  for (const line of scene.lines) {
+    assert.equal(line.portrait, line.speaker === remote ? false : undefined, 'remote speaker only: leave Hajime and narration unchanged');
+  }
+}
 
 function sortKeys(value) {
   if (Array.isArray(value)) return value.map(sortKeys);
@@ -30,9 +40,6 @@ function stringify(value) {
 }
 assert.equal(createHash('sha256').update(stringify(sortKeys(sumi))).digest('hex'),
   '186935cd6f1ee864150edb8d3d9d415a98ecd2871fcc2a67dbcd4e41f5616465');
-const legacy = JSON.parse(read('data/dialogue/_legacy/forced_events.json')).interval_1;
-assert(!legacy.some(entry => entry.id === 'interval_day1_morning'));
-assert(legacy.some(entry => entry.id === 'interval_day3_sumi_call'));
 
 const data = read('remake/js/core/data.js');
 const files = data.match(/const DIALOGUE_FILES = \[([\s\S]*?)\];/);

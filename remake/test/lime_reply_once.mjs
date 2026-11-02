@@ -36,7 +36,7 @@ async function fixture({ lover = false, reply = response, invitation = false, co
     'travel-budget.js': { spendableMoney: () => 30000 },
     'stats.js': { gainAffinity: (id, pts, opts) => { current.gains.push({ id, pts, private: bond.private }); if (pts > 0) opts?.onGain?.(.2125); },
       affinityLevel: () => 1, applyStats: noop, bond },
-    'audio.js': { SE: { phoneReceive: noop } }, 'engine.js': { hooks: {} }, 'text.js': { formatHtml: String },
+    'audio.js': { SE: { phoneReceive: noop, click: noop } }, 'engine.js': { hooks: {} }, 'text.js': { formatHtml: String },
     'spots.js': { hasContact: noop, spotById: noop, isClosed: noop },
     'romance.js': { loverMessages: noop, isLover: id => current.lovers.includes(id), dateSchedule: noop },
     'bonds.js': { bondInvites: noop, friendMessages: noop },
@@ -398,4 +398,27 @@ test('only a priced invitation opts into wrapping without changing the acceptanc
     assert.equal(f.item.done, false);
     assert.equal(f.original.pendingInvite, undefined);
   }
+});
+
+test('forced story LIME wraps custom closing replies and preserves ordinary close controls', async () => {
+  for (const label of [null, '……誰？', '……はい。ありがとうございます、スミさん']) {
+    const f = await fixture();
+    const pending = f.api.openPhone([{ id: 'story-close', sender: 'sumi', messages: [], close_label: label }]);
+    const chat = f.nodes.findLast(node => node.spec === 'div.lime-chat');
+    const actions = f.nodes.findLast(node => node.spec === 'div.lime-actions');
+    Object.defineProperty(chat, 'scrollHeight', { get: () => actions.children.some(node => node.spec?.includes('.multiline')) ? 900 : 500 });
+    await flush();
+    const button = f.nodes.findLast(node => node.dataset?.test === 'phone-next');
+    assert(button, 'openPhone reaches its actual closing control');
+    assert.equal(button.text, label || 'スマホを閉じる');
+    assert.equal(button.spec.includes('.multiline'), !!label);
+    assert.match(button.spec, /\.lime-reply\.ghost/);
+    assert.equal(chat.scrollTop, label ? 900 : 500, 'scroll after closing reply changes available chat height');
+    assert.equal(f.original.inbox.at(-1).done, true);
+    assert.equal(f.original.gains.length, 0);
+    button.onclick(); await flush(); await pending;
+    assert.equal(f.original.inbox.at(-1).log.length, 0, 'closing label does not become a new reply or reward');
+  }
+  const css = await fs.readFile(new URL('../css/daily.css', import.meta.url), 'utf8');
+  assert.match(css, /\.lime-reply\.multiline\s*\{[^}]*white-space:\s*normal;[^}]*text-overflow:\s*clip;/);
 });

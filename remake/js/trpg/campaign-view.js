@@ -5,7 +5,7 @@ import { chapterDay } from "../core/chapter-clock.js";
 import { venueHost } from "../core/venue-host.js";
 import { newDayTrial, rollDayTrial, stopDayTrial } from "./day-trial.js";
 import { loadTrpgLibrary, preloadTrpgAssets, runTrpg } from "./index.js";
-import { displayName, portraitUrl, portraitTop, sceneUrl } from "./presentation.js";
+import { displayName, portraitUrl, portraitTop, sceneArt } from "./presentation.js";
 import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable } from "./campaign.js";
 
 /** Owns a shop/table screen. Only the supplied state and save callback may change. */
@@ -146,7 +146,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
           })),
       ]));
     }
-    const books = el("div.trpg-campaign-books");
+    const books = el("div.trpg-campaign-books", { dataset: { many: String(scenarios.length > 2) } });
     for (const scenario of scenarios) {
       const book = catalog.scenarios.find(b => b.id === scenario.id);
       const memory = state?.trpg?.cleared?.[book.id];
@@ -154,7 +154,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       const stocked = state?.trpg?.stock?.includes(book.id);
       const cast = state ? castTrpgTable(state, catalog, scenario, options) : { ok: false };
       const card = el("article.trpg-campaign-book", { dataset: { theme: scenario.presentation.theme, test: "trpg-book-" + book.id } });
-      card.append(el("div.trpg-campaign-book-art", [el("img", { src: sceneUrl(scenario), alt: scenario.presentation.sceneAlt }),
+      card.append(el("div.trpg-campaign-book-art", [sceneArt(el, scenario),
         el("span.trpg-campaign-book-badge", { text: memory ? "遊び終えた物語" : owned ? "あなたの本棚" : stocked ? "入荷しました" : "これからの一冊" })]));
       const copy = el("div.trpg-campaign-book-copy", [
         el("small", { text: scenario.collection + " / 作 · " + scenario.author }),
