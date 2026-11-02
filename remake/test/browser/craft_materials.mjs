@@ -278,6 +278,9 @@ await suite("craft-materials", async check => {
       await pack.waitFor();
       for (const hover of [false, true]) {
         if (hover) await pack.hover();
+        // hover starts the existing 0.14s translateY transition after Playwright's
+        // pre-hover stability check. Compare geometry only once it has finished.
+        await pack.evaluate(async n => { await Promise.all(n.getAnimations().map(a => a.finished)); });
         const paint = await pack.evaluate(n => {
           const s = getComputedStyle(n); return { color: s.color, bg: s.backgroundColor, image: s.backgroundImage, clip: s.backgroundClip, border: s.borderTopWidth };
         });
@@ -302,6 +305,7 @@ await suite("craft-materials", async check => {
       await next.waitFor();
       for (const hover of [false, true]) {
         if (hover) await next.hover();
+        await next.evaluate(async n => { await Promise.all(n.getAnimations().map(a => a.finished)); });
         const paint = await next.evaluate(n => {
           const s = getComputedStyle(n); return { color: s.color, bg: s.backgroundColor, image: s.backgroundImage, border: s.borderTopWidth };
         });
