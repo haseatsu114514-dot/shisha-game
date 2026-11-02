@@ -6,11 +6,14 @@ import { LOADING_COMICS } from '../../js/core/loading-comics.js';
 // The bench preview picks one eligible comic at random (see selectLoadingComic
 // in js/core/loading.js), so expectations are derived from whichever registered
 // comic actually appears instead of pinning one episode.
+// The preview starts a fresh game, which has met only sumi (LIME contact from the start), and comics
+// unlock per character (cast), so only comics whose whole cast is sumi may appear here.
 const eligibleComics = LOADING_COMICS.filter(comic =>
   comic.panels?.length === 2 &&
   Number.isInteger(comic.minChapter) && comic.minChapter <= 1 &&
-  (!comic.contexts || comic.contexts.includes('craft')));
-assert(eligibleComics.length > 0, 'At least one registered comic must be eligible for craft at chapter 1');
+  (!comic.contexts || comic.contexts.includes('craft')) &&
+  Array.isArray(comic.cast) && comic.cast.every(id => id === 'sumi'));
+assert(eligibleComics.length > 0, 'At least one registered comic must be eligible for craft at chapter 1 in a fresh game');
 
 const escapeRegExp = text => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -23,7 +26,7 @@ await suite('loading-craft', async check => {
       assert.equal(await page.locator('.loading-panels img').count(), 2);
       const shownTitle = await page.locator('.loading-comic-title').innerText();
       const comic = eligibleComics.find(entry => entry.title === shownTitle);
-      assert(comic, `Shown comic "${shownTitle}" must be a registered comic eligible for craft`);
+      assert(comic, `Shown comic "${shownTitle}" must be a registered comic eligible for craft in a fresh game (met: sumi only)`);
       assert.match(await page.locator('.loading-comic').getAttribute('aria-label'), new RegExp(escapeRegExp(comic.title)));
       assert.equal(await page.locator('.loading-status').innerText(), 'LOADING…');
       assert.equal(await page.locator('.loading-gate button, .loading-gate progress, .loading-gate figcaption').count(), 0);

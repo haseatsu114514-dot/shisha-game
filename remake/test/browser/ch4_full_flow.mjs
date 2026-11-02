@@ -57,6 +57,17 @@ async function seed(page) {
   });
 }
 
+// 出発前の準備期間（日常ループ）の地図が開いて、指定の日・時間帯で行き先を選べる状態か。
+const prepMap = (page, { day, slot } = {}) => page.waitForFunction(([day, slot]) => {
+  const s = window.__remake?.state;
+  return s && (day === undefined || s.day === day) && (slot === undefined || s.slot === slot)
+    && document.querySelector(".map:not(.done) [data-test=pin-rest]") && !document.querySelector("#modal.show");
+}, [day, slot], { timeout: 60000 });
+async function goMap(page, pin) {
+  await page.locator(dt(`pin-${pin}`)).click();
+  await page.locator(dt("map-go")).click();
+}
+
 async function loadSlot(page, slot) {
   await page.reload();
   await page.locator(dt("title-load")).click();
@@ -81,21 +92,39 @@ await suite("ch4-full-flow", async check => {
     assert.deepEqual((await get(page)).flags._overseas_companion,
       { decided: true, companion: null, supports: ["mashiro"] });
 
-    // 2. プロローグ4場面（章タイトル→出発前2場面→到着→宿）
-    const prologue = ["ch4_sumi_training", "ch4_strategy", "ch4_opening", "ch4_arrival_inn"];
-    await page.locator(scene(prologue[0])).waitFor({ timeout: 60000 });
+    // 2. 出発前の準備3日（VOL02）: 1日目の昼にスミさんとの特訓、夜に持っていく配合 → 2・3日目は自由 → 出発の朝にドバイ。
+    await prepMap(page, { day: 46, slot: 1 });
     state = await get(page);
     assert.equal(state.chapter, 4);
-    assert.equal(state.day, 46);
     assert.equal(state.flags._ch4.day, 1);
     assert.equal(state.flags._ch4.titleSeen, true);
     assert.equal(state.flags._ch4_sheikh_revealed, false);
     assert.equal(state.flags._ch3_cleared, true, "The Chapter 3 clear record must stay");
+    assert.equal(state.flags._ch4.read.ch4_sumi_training, true, "The training uses the first prep day's noon");
+    assert.deepEqual([state.flags._ch4_prep.step, state.flags._ch4_prep.departed, state.phase], [0, false, "daily"]);
+    assert.match(await page.locator(".hud").innerText(), /出発まで/);
+    await goMap(page, "rest");
+    await prepMap(page, { day: 47, slot: 0 });
+    state = await get(page);
+    assert.equal(state.flags._ch4.read.ch4_strategy, true, "The blend is decided on the first prep night");
+    assert.equal(state.flags._ch4_strategy, "sakura", "The chosen strategy must be saved from ch4_strategy");
+    for (const [day, slot] of [[47, 1], [48, 0], [48, 1]]) {
+      await goMap(page, "rest");
+      await prepMap(page, { day, slot });
+    }
+    await goMap(page, "rest");
+
+    // 3. ドバイ到着と宿（プロローグの残り2場面）。ドバイDAY1は出発の朝。
+    const prologue = ["ch4_opening", "ch4_arrival_inn"];
+    await page.locator(scene(prologue[0])).waitFor({ timeout: 60000 });
+    state = await get(page);
+    assert.equal(state.flags._ch4_prep.departed, true);
     const startDay = state.flags._ch4.startDay;
-    assert.equal(startDay, 46);
+    assert.equal(startDay, 49);
+    assert.equal(state.day, 49);
     for (const [index, id] of prologue.entries()) {
       await page.locator(scene(id)).waitFor();
-      assert.equal((await get(page)).flags._ch4.stage, index);
+      assert.equal((await get(page)).flags._ch4.stage, index + 2);
       await page.locator(dt("ch4-continue")).click();
     }
     await page.locator(dt("ch4-free")).waitFor();
@@ -133,7 +162,7 @@ await suite("ch4-full-flow", async check => {
     assert.equal(resumed.flags._ch4.firstDay, 1);
     assert.equal(resumed.flags._ch4.read.ch4_stranger_first, true);
     assert.equal(resumed.day, startDay);
-    assert.equal(resumed.flags._ch4.stage, prologue.length, "Reload must not replay the prologue");
+    assert.equal(resumed.flags._ch4.stage, 4, "Reload must not replay the prologue (two prep scenes + arrival + inn)");
     assert.equal(resumed.flags._ch4_strategy, "sakura", "The chosen strategy survives SAVE/LOAD");
 
     // 4. 宿で日を進める。DAY2の宿は道具の手入れを先に読む。stranger_second は first の2日後（DAY3）に解放。

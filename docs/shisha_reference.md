@@ -43,11 +43,25 @@
 
 シーシャ台・ハガル・HMD・炭・ホースが写る画像を**生成・修正するときは、この節だけ読めば足りる**ようにしてある。Codexアプリで自分が直接生成するときも、人に渡すプロンプトを書くときも同じ手順。根拠・写真の出典は 4.6 の一覧。
 
-### 4.0 実写の参照画像（現状と置き場）
+### 4.0 参考写真と資料の置き場（非公開リポジトリ siryou）
 
-- `asset_sources/shisha-hardware-reference/` の `*.webp` は、提供写真を**1枚あたり150px前後に縮めた一覧**で、生成の参照には使えない（元の写真は2026-10-09当時に保存されなかった）。2026-11-02 に Wikimedia Commons の自由ライセンス写真 **76枚**を `photos/` に入れた（台の全体と店内24・付け根と接続部7・ハガル8・HMD3・炭8・ホースとハンドルと吸い口9・手元と吸う姿勢17）。**日本の店で主流の機材（Lotus型HMD・ターキッシュリッド・蓋付き高火力HMD・シリコンボウル・80Feet系陶器）の実写はまだ無く、オーナーの撮影待ち。**
-- 実写の置き場は `asset_sources/shisha-hardware-reference/photos/`（一覧・見るポイント・出典・入れ方・命名は同フォルダの README）。写真がある部位は生成前に**実際に開いて見る**。生成ツールに参照画像を渡せるなら、早見表・構造図ではなく**この実写**を渡す（図解を渡すと平板な図の見た目が絵に移る）。
-- 写真が無い部位は 4.1 の「正解」と 4.2 の文で描き、生成後チェックを厳しくする。足りない写真はオーナーに部位名を挙げて頼む。
+参考写真と機材の資料は、**非公開リポジトリ [`haseatsu114514-dot/siryou`](https://github.com/haseatsu114514-dot/siryou) の `shisha-hardware-reference/`** に置いている（2026-11-02 にゲームのリポジトリから移した。各サイトの著作物の写真を、公開のゲームのリポジトリに入れないため）。PCでは、ゲームのリポジトリと同じ階層に clone する。
+
+```bash
+git clone https://github.com/haseatsu114514-dot/siryou ../siryou   # ゲームのリポジトリの中で実行
+```
+
+| 置き場（`../siryou/shisha-hardware-reference/` から） | 中身 | 使い方 |
+|---|---|---|
+| `web-refs/images/`（一覧は `web-refs/README.md`・`refs.json`） | **日本の店・機材の写真116枚**（内装29・ボウル28・HMD22・台19・炭8・手元7・ホース3）。日本のシーシャ店・通販・紹介記事から | 機材と内装の**見た目の基準**（§4.0.5） |
+| `photos/`（一覧は `photos/README.md`） | Wikimedia Commons の自由ライセンス写真76枚。1枚を除き海外 | 部品の**構造・接続・縮尺・持ち方の確認だけ** |
+| `*.webp`・`*.md`・`drawing-sheet/` | オーナーが 2026-10-09 に渡した写真50点・構造図3点の縮小一覧（1枚150px前後）と説明、早見表と構造図 | 縮小一覧は参照に使えない。説明と早見表は理解・検品用 |
+| `flavor-storage-tubs-issue396/photos/` | オーナー提供で原本が残るタッパーの写真4枚 | フレーバー保管の描写 |
+
+- 写真がある部位は、生成前に**実際に開いて見る**。生成ツールに参照画像を渡せるなら、早見表・構造図ではなく**写真**を渡す（図解を渡すと平板な図の見た目が絵に移る）。
+- 日本の店で主流の機材を**オーナーが撮った写真**が入ったら、それを最優先にする（入れる場所は siryou）。
+- 写真が無い部位は 4.1 の「正解」と 4.2 の文で描き、生成後チェックを厳しくする。
+- ゲームのリポジトリの `asset_sources/shisha-hardware-reference/` に残っているのは、ゲームが使う**作業台の見た目のスキン候補**（`skin-candidates-issue374/`）と、タイトル候補の確認ツールが使う **NG例**（`ng-examples/`）と**タッパーのCG候補**（`flavor-storage-tubs-issue396/candidate/`）だけ。
 
 ### 4.0.5 日本のシーシャバーを基準にする（2026-11-02 オーナー方針）
 
@@ -55,14 +69,14 @@
 
 - **機材も内装も、今の日本のシーシャバーを基準にする。** 中東風の彫金の台、民族調の内装、路上の喫煙風景は、指定があるときの背景の飾りや「古い店」の演出に限る。
 - **`photos/` の写真はほぼ海外**（日本で撮られたのは `stand-lounge-japan-01.jpg` の1枚だけ）。海外の写真は**部品の構造・接続・縮尺・持ち方・炭の大きさを確かめるときだけ**に使い、内装・服装・小物・台の装飾・街並みは写さない。生成ツールに渡すときもその目的に限る。
-- 機材と内装の見た目は、下の表と「参照した日本の情報源」で決める。オーナーが日本の店で撮った写真が `photos/` に入ったら、それを最優先にする。
+- 機材と内装の見た目は、下の表と **日本の店・機材の写真116枚**（siryou の [`web-refs/`](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/web-refs/README.md)）で決める。オーナーが日本の店で撮った写真が入ったら、それを最優先にする。
 
 #### 日本の店の定番機材
 
 | 部位 | 日本の店の定番（見た目） | 出典 |
 |---|---|---|
 | 台（ステム・ベース） | ロシア製ブランドが中心。**ステンレスの細いステム＋幅の広いガラスベース**、小さめの金属の受け皿。飾りは少ない。木のパーツを使う台もある | [Shisha Amigo](https://amigollc.co.jp/procurement/russian-shisha-pipe-brands/)、[CLOUD](https://cloud-jp.net/russia-pipe/) |
-| HMD: ロータス型 | 日本の店で「ほぼ必ず見る」王道。正規の Kaloud Lotus と、似た形のノーブランドの両方が使われる。**シリコンボウルにぴったり載る**。蓋と取手のある低い金属の器で、炭は中に置き、蓋を閉めると炭は見えにくい | [EGG SHISHA（名古屋）](https://www.official-eggshisha.com/posts/best-shisha-hmd-devices-japan)、[ヒロインCGルール](../asset_sources/shisha-hardware-reference/heroine-title-cg-rules-20261009.md) |
+| HMD: ロータス型 | 日本の店で「ほぼ必ず見る」王道。正規の Kaloud Lotus と、似た形のノーブランドの両方が使われる。**シリコンボウルにぴったり載る**。蓋と取手のある低い金属の器で、炭は中に置き、蓋を閉めると炭は見えにくい | [EGG SHISHA（名古屋）](https://www.official-eggshisha.com/posts/best-shisha-hmd-devices-japan)、[ヒロインCGルール](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/heroine-title-cg-rules-20261009.md) |
 | HMD: ターキッシュリッド | ロータスと並ぶ定番。**ボウルの口にかぶせて側面を囲う蓋のような形**。内径は通常約6.5cm、ジャンボ約7.9cm。80feet やアルパカ系の**浅い陶器ボウル**と組む | [EGG SHISHA](https://www.official-eggshisha.com/posts/best-shisha-hmd-devices-japan) |
 | HMD: アマボースト（アマボ） | 近年よく名前が挙がる。**底も全体も薄い金属**で、直置きに近い高火力。アルミを敷いた上に載せて色々なボウルに合わせる。「**ソラリス×アマボ**」は日本の店の定番セット | [EGG SHISHA](https://www.official-eggshisha.com/posts/best-shisha-hmd-devices-japan) |
 | ボウル: シリコン | 黒・赤・青などの丸いシリコンの器。ロータス型と組むのが定番 | [EGG SHISHA](https://www.official-eggshisha.com/posts/best-shisha-hmd-devices-japan)、[Dr.Shisha](https://drshisha.jp/products/silicone-bowl) |
@@ -144,7 +158,7 @@ HMD       : 完成・喫煙なら必須。具体的な1モデル（ロータス�
 構図      : カメラ距離・人物と台の奥行き（手持ちなら同じ奥行き）・場所と時間帯。店内なら §4.0.5 の日本の内装から1つ
 ```
 
-渡す画像の役割を分けて書く: **本人**＝正規立ち絵、**質感**＝`assets/ui/title_arts/title_art_keyvisual_01.png`、**機材の構造**＝`photos/` の実写（HMDは装着状態、手持ちなら掌が写るもの）。`photos/` の海外写真を渡すときは「構造と縮尺だけ参考にし、内装・服装・台の装飾は写さない」と書き添える。早見表・構造図・この表は渡さない。
+渡す画像の役割を分けて書く: **本人**＝正規立ち絵、**質感**＝`assets/ui/title_arts/title_art_keyvisual_01.png`、**機材の見た目**＝siryou の `web-refs/images/` の日本の店・機材の写真、**機材の構造**＝siryou の `photos/` の実写（HMDは装着状態、手持ちなら掌が写るもの）。`photos/` の海外写真を渡すときは「構造と縮尺だけ参考にし、内装・服装・台の装飾は写さない」と書き添える。早見表・構造図・この表は渡さない。
 
 ### 4.4 生成後チェック（原寸で見る。1つでもNGなら直すか再生成）
 
@@ -170,7 +184,7 @@ HMD       : 完成・喫煙なら必須。具体的な1モデル（ロータス�
 
 ### 4.6 詳しい資料（根拠・出典。必要なときだけ開く）
 
-すべて `asset_sources/shisha-hardware-reference/` 配下。
+すべて非公開リポジトリ siryou の `shisha-hardware-reference/` 配下（下のリンクは siryou を見られるアカウントでだけ開ける）。NG例 `ng-examples/` だけはゲームのリポジトリの `asset_sources/shisha-hardware-reference/` に残っている。
 
 | 知りたいこと | ファイル |
 |---|---|

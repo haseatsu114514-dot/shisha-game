@@ -1,6 +1,7 @@
 import { nextTokyoFreeTime } from "../core/tokyo-clock.js";
 import { syncTokyoVisits, tokyoVisitState } from "../core/tokyo-visits.js";
 import { recordChapterThreeStoryLime } from "./ch3-story-lime.js";
+import { DEPARTURE_PREP_DAYS } from "../core/chapter-clock.js";
 // 第3章の東京到着から全国大会前夜。読了した場面だけを確定する。
 // day は章内の日付。通算の value.day は startDay から換算する。
 const LEGACY_SCENES = Object.freeze([
@@ -51,7 +52,34 @@ export function advanceToChapterThree(value) {
   value.slot = 0;
   value.phase = "opening";
   value.statsAtChapterStart = { ...value.stats };
-  value.flags._ch3_intro = { startDay: value.day, stage: 0, titleSeen: false, prologueStep: 0, routeVersion: 2 };
+  // 出発前の3日を地元で過ごしてから東京へ（VOL02）。章頭の回想・章題・準備・出発は chapters/ch3.js の renderPrep。
+  // 東京DAY1は出発の朝（準備の最後の日の翌朝）。出発時に実際の日付で確定し直す。
+  value.flags._ch3_prep = { startDay: value.day, days: DEPARTURE_PREP_DAYS, step: 0, departed: false };
+  value.flags._ch2_region = "home";
+  value.flags._ch3_intro = { startDay: value.day + DEPARTURE_PREP_DAYS, stage: 0, titleSeen: false, routeVersion: 2 };
+  return true;
+}
+
+/** 出発前の準備期間（VOL02）が終わって出発の朝に着いたか。準備期間の無い旧保存は false。 */
+export const chapterThreePrepPending = value => {
+  const prep = value?.flags?._ch3_prep;
+  return value?.chapter === 3 && !!prep && !prep.departed;
+};
+
+/**
+ * 出発の朝（準備の最後の日の翌朝）に東京DAY1を確定する。以後は東京の行程（場面の順と自由時間）のまま。
+ * 準備期間の無い保存・まだ出発の朝でない保存・出発済みは false（何も変えない）。
+ */
+export function departChapterThree(value) {
+  const prep = value?.flags?._ch3_prep;
+  if (!chapterThreePrepPending(value) || !Number.isInteger(prep.startDay) || !Number.isInteger(prep.days)
+    || value.day < prep.startDay + prep.days) return false;
+  const progress = chapterThreeProgress(value);
+  prep.departed = true;
+  progress.startDay = value.day;
+  value.slot = 0;
+  value.phase = "opening";
+  value.flags._ch2_region = "home";
   return true;
 }
 

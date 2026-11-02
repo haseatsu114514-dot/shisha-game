@@ -15,7 +15,8 @@ import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_BGM, CH4_SCENE_FILES, CH4_TOURNAMENT_SCENES,
   CH4_VISITOR_SCENE_FILES, canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
   endChapterFourDay, finishChapterFourEve, chapterFourMandatory, revealChapterFourSheikh,
-  chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE } from "./ch4-progress.js";
+  chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE,
+  CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour, chapterFourRead } from "./ch4-progress.js";
 
 const CH4_SPOT_SCENES = CH4_SCENE_FILES.ch4_spots;
 import { chapterFourMapModel } from "./ch4-map-model.js";
@@ -200,12 +201,42 @@ async function renderStage(owner) {
   if (!current(owner)) return;
   const progress = chapterFourProgress(state);
   if (canChooseOverseasCompanion(state)) return renderCompanionChoice(owner);
+  if (chapterFourPrepPending(state)) return renderPrep(owner);
   if (progress.part === "prologue") return renderScene(owner, CH4_PROLOGUE[progress.stage], `DAY ${progress.day}`);
   if (progress.part === "free") return renderFree(owner);
   if (progress.part === "eve") return renderEve(owner);
   if (progress.part === "tournament") return renderTournament(owner);
   if (progress.part === "resolution") return renderScene(owner, CH4_RESOLUTION[progress.resolution], "");
   return renderComplete(owner);
+}
+
+/**
+ * 出発前の準備3日（VOL02）: 地元・柚ヶ谷の日常ループ（1日目の昼に特訓、夜に持っていく配合）→ 出発の朝にドバイDAY1。
+ * 進み具合は flags._ch4_prep.step（0＝準備中、1＝出発の朝）。中断・LOADは同じ段から。
+ */
+async function renderPrep(owner) {
+  if (!current(owner)) return;
+  const prep = state.flags._ch4_prep;
+  if (prep.step === 0) {
+    const [{ runDeparturePrep, departureMorningReached }, { chapterFourPrepEvents }] = await Promise.all([
+      import("./departure-prep.js"), import("./ch4-prep.js")]);
+    if (!current(owner)) return;
+    showScreen("none", null);
+    await runDeparturePrep({ destination: "ドバイ", ...chapterFourPrepEvents(prep) });
+    // 出発の朝まで来た時だけ先へ。LOAD・タイトルへ戻った場合はここで止める。
+    if (!current(owner) || !departureMorningReached(state)) return;
+    hud();
+    prep.step = 1;
+    save();
+  }
+  // 出発前のtonari2場面が残っていれば（寝込んだ日など）、出発の朝に読んでから発つ。
+  for (const id of CH4_PREP_SCENES) {
+    if (chapterFourRead(state, id)) continue;
+    if (!await readAndCommit(owner, id)) return;
+  }
+  if (!departChapterFour(state)) throw new Error("ドバイへ出発できません");
+  save();
+  await renderStage(owner);
 }
 
 /** 出発前の同行選択。恋人1名か「同行なし」。選ぶと保存し、他の恋人は別便の応援として扱う（好感度は変えない）。 */

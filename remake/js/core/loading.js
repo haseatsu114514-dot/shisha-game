@@ -1,6 +1,6 @@
 import { el } from "./util.js";
 import { prepareImage } from "./loading-prefetch.js";
-import { LOADING_COMICS } from "./loading-comics.js";
+import { LOADING_COMICS, eligibleLoadingComics } from "./loading-comics.js";
 
 let active = false, previousComic = null;
 let stylesheet;
@@ -22,11 +22,10 @@ function validPanel(panel) {
     r.x + r.width <= r.sourceWidth && r.y + r.height <= r.sourceHeight;
 }
 
-export function selectLoadingComic(comics, { context = "default", chapter = 1 } = {}) {
-  const eligible = comics.filter(comic => comic.id && comic.title &&
-    Number.isInteger(comic.minChapter) && comic.minChapter <= chapter &&
-    (!comic.contexts || comic.contexts.includes(context)) &&
-    comic.panels?.length === 2 && comic.panels.every(validPanel));
+export function selectLoadingComic(comics, { context = "default", chapter = 1, isMet = null } = {}) {
+  // isMet(id): the player has met that character. Comics list their cast; one is shown only after
+  // meeting everyone in it (loading-comics.js). Without isMet (previews) the cast is not checked.
+  const eligible = eligibleLoadingComics(comics, { context, chapter, isMet }).filter(comic => comic.panels.every(validPanel));
   const fresh = eligible.filter(comic => comic.id !== previousComic);
   const pool = fresh.length ? fresh : eligible;
   // Presentation uses its own entropy; do not consume gameplay Math.random().
@@ -42,7 +41,7 @@ export function selectLoadingComic(comics, { context = "default", chapter = 1 } 
  */
 export async function withLoading(prepare, {
   host = document.querySelector("#stage"), label = "場面を準備しています…",
-  delayMs = 220, context = "default", chapter = 1, comics = LOADING_COMICS,
+  delayMs = 220, context = "default", chapter = 1, comics = LOADING_COMICS, isMet = null,
   signal,
 } = {}) {
   if (!host) throw new Error("Loading host is missing");
@@ -102,7 +101,7 @@ export async function withLoading(prepare, {
       if (awaitingProceed && type === "pointerdown") resolveProceed();
     });
   }
-  const comic = selectLoadingComic(comics, { context, chapter });
+  const comic = selectLoadingComic(comics, { context, chapter, isMet });
   const comicReady = comic ? Promise.all(comic.panels.map(panel => prepareImage(panel.src, {
     timeoutMs: 4000, signal: controller.signal,
   }))).then(images => {
