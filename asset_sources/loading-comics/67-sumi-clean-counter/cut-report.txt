@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EEE2CE  枠の段 1: 2コマ@y=218
+  コマ1: 715x569 @(37,218) 比率 1.257 → warn
+  コマ2: 714x569 @(782,218) 比率 1.255 → warn
+コマ1: 715x569 (1.257) → 左右に各8.1%の紙帯 → 出力 854x569  asset_sources/loading-comics/67-sumi-clean-counter/panels/sumi-clean-counter-1.webp (66 KiB)
+コマ2: 714x569 (1.255) → 左右に各8.2%の紙帯 → 出力 854x569  asset_sources/loading-comics/67-sumi-clean-counter/panels/sumi-clean-counter-2.webp (63 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "sumi-clean-counter",
+  "title": "磨きすぎ注意",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "asset_sources/loading-comics/67-sumi-clean-counter/panels/sumi-clean-counter-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "asset_sources/loading-comics/67-sumi-clean-counter/panels/sumi-clean-counter-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "asset_sources/loading-comics/67-sumi-clean-counter/67-sumi-clean-counter.png",
+      "region": {
+        "x": 37,
+        "y": 218,
+        "width": 715,
+        "height": 569,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "asset_sources/loading-comics/67-sumi-clean-counter/67-sumi-clean-counter.png",
+      "region": {
+        "x": 782,
+        "y": 218,
+        "width": 714,
+        "height": 569,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "sumi-clean-counter-1.webp",
+      "width": 854,
+      "height": 569,
+      "sha256": "957486c45382817fad6b5b7efc7c3723ccdd991638af51a548a7609d6cb60948"
+    },
+    {
+      "file": "sumi-clean-counter-2.webp",
+      "width": 854,
+      "height": 569,
+      "sha256": "5127fae6a7146e44c857bc5ab29713b01de42ddc6db0e9d97767b890ec95a1f2"
+    }
+  ]
+}

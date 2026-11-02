@@ -1,0 +1,109 @@
+{
+  "game": "水煙前線 -EN:CODE-",
+  "episodes": 1,
+  "candidate": true,
+  "registration_status": "選別待ち・ゲーム未登録",
+  "reading_order": "左①導入→右②オチ",
+  "canon_status": "番外編ギャグ。誇張・夢・想像は本編能力や人物設定を変更しない。",
+  "image_manifest": [
+    {
+      "file": "62-sumi-cold-tea.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "9aad1ea935c33276d7f85335818a810d46c2a3e5c4b417b2e8c6ec0d645d4bf3",
+      "bytes": 1705993
+    }
+  ],
+  "pages": [
+    {
+      "file": "62-sumi-cold-tea.png",
+      "ids": [
+        "hajime",
+        "sumi"
+      ],
+      "range": "62",
+      "rows": [
+        [
+          "62 冷めた紅茶",
+          "はじめ・sumi",
+          "二人が紅茶のカップを前にミックスの話に夢中。はじめが冷めた茶を見て気づく。 / スミさんが楽しそうに指を立てて話を続け、はじめが笑ってノートを開く。冷たいカップはそのまま。"
+        ]
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "episode": 62,
+      "title": "冷めた紅茶",
+      "dialogue": [
+        "お茶、冷めました。",
+        "話しすぎたな。",
+        "話はまだ熱い。"
+      ],
+      "speakers": [
+        "はじめ",
+        "sumi",
+        "はじめ"
+      ],
+      "generator": "OpenAI image_gen",
+      "prompt_summary": "添付1の下敷き（1536×1024）を編集し、横長の2コマ漫画を1話だけ描いてください。出力1536×1024。枠の位置・寸法を厳守：左x36〜756、右x780〜1500、y272〜752、各720×480の3:2。縦長コマに変形せず、枠外・上下・24pxのコマ間は#EEE3CFの無地で残す。枠線3pxは残す。枠の内側4%には顔・台詞・重要物を置かない。題名・話数・番号・ロゴ・署名・透かし・英語・擬音文字は一切描かない。吹き出しの台詞のみ日本語の太いゴシック体で大きく、横書きで最大2行。添付2のはじめ（黒いキャップ、黒髪、黒パーカー、首の銀アクセサリー）と添付3のスミさん（黒ハンチング、四角眼鏡、短い顎髭、炭色シャツ、茶の腰エプロン）を、同じ外見・服装の2.5頭身にする。太いきれいな線、セル塗り、少しの紙の質感、暖色の明るいギャグ漫画。両コマともはじめは画面左、相手は画面右に固定。背景は台本の場面に合わせ、机・窓・壁だけの簡素な構成。店内の収納は閉じた不透明の扉。観葉植物を追加しない。必要な小物のみ描き、シーシャ本体・ボウル・炭・HMD・ホース・煙・武器・他の人物・実在ロゴは描かない。題名（描かない参考）『冷めた紅茶』。左①導入：二人が紅茶のカップを前にミックスの話に夢中。はじめが冷めた茶を見て気づく。 吹き出しははじめの「お茶、冷めました。」とスミさんの「話しすぎたな。」の2個だけ。右②オチ：スミさんが楽しそうに指を立てて話を続け、はじめが笑ってノートを開く。冷たいカップはそのまま。 吹き出しははじめの「話はまだ熱い。」の1個だけ。台詞は句読点も一字一句一致させる。2コマ合計3吹き出し、台詞を省略・追加・繰り返ししない。",
+      "reference_images": [
+        "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "assets/sprites/characters/sumi/chr_sumi_normal.png"
+      ],
+      "source": [
+        {
+          "file": "asset_sources/loading-comics/62-sumi-cold-tea/62-sumi-cold-tea.png",
+          "region": {
+            "x": 36,
+            "y": 272,
+            "width": 717,
+            "height": 480,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        },
+        {
+          "file": "asset_sources/loading-comics/62-sumi-cold-tea/62-sumi-cold-tea.png",
+          "region": {
+            "x": 780,
+            "y": 272,
+            "width": 717,
+            "height": 480,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        }
+      ],
+      "delivery": [
+        {
+          "file": "sumi-cold-tea-1.webp",
+          "width": 720,
+          "height": 480,
+          "sha256": "e1023afcef0e80ca7c0d6120c51c538749f1025a58528116c9a53be6d86a3fcf",
+          "bytes": 59546
+        },
+        {
+          "file": "sumi-cold-tea-2.webp",
+          "width": 720,
+          "height": 480,
+          "sha256": "b1c422a1e50aa8f5f1a8da654c66bfa922c023b69688b279ae485492f5276413",
+          "bytes": 58338
+        }
+      ],
+      "ratio_status": "ok",
+      "raw_ratios": [
+        1.49375,
+        1.49375
+      ],
+      "qa": {
+        "source_visual": "生成時に人物・台詞3つ・左右固定・禁止描写なしを目視確認",
+        "delivery": "cut tool passed; 3:2, <=1440x960, <400KiB",
+        "browser": "未実施: sandbox有効ChromiumがSUID helper設定エラーで起動不可。sandbox設定の解除・変更は行っていない。",
+        "warnings": [],
+        "rejected_trials": []
+      }
+    }
+  ]
+}
