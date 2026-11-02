@@ -187,16 +187,17 @@ test("summary and readResult keep only well-formed finished records", () => {
   assert.equal(summary(play(practiceCourse(), "perfect")).score, 0, "practice has no score");
 });
 
-test("the adopted Codex art (PR #2306) matches its adoption record: sizes, anchors and runtime files", async () => {
+test("the adopted Codex art (PR #2306, #2333) matches its adoption record: sizes, anchors and runtime files", async () => {
   const { readFileSync } = await import("node:fs");
   const { execFileSync } = await import("node:child_process");
   // CI の quick は画像を checkout しない（sparse）。存在は git の索引で確かめる
   const tracked = path => execFileSync("git", ["ls-files", "--", path], { cwd: new URL("../../", import.meta.url) }).toString().trim() === path;
-  const { DESERT_ART, DESERT_BG, loadDesertArt } = await import("../js/minigames/desert-ride-art.js");
+  const { DESERT_ART, DESERT_BG, DESERT_DUSK_BG, loadDesertArt } = await import("../js/minigames/desert-ride-art.js");
   const root = new URL("../../", import.meta.url);
   const record = JSON.parse(readFileSync(new URL("asset_sources/desert-ride-2306/adoption.json", root), "utf8"));
   const pairs = { sky: record.backdrop.sky, land: record.backdrop.land, rider: record.rider_ride, rockLarge: record.rock_large, rockSmall: record.rock_small,
-    flag: record.flag_pole, goal: record.goal_banner, puff: record.sand_puff };
+    flag: record.flag_pole, goal: record.goal_banner, puff: record.sand_puff, duskSky: record.backdrop_dusk.sky, duskLand: record.backdrop_dusk.land,
+    riderLeft: record.rider_lean_left, riderRight: record.rider_lean_right, riderJump: record.rider_jump, riderBrace: record.rider_brace, riderFall: record.rider_fall };
   for (const [name, entry] of Object.entries(pairs)) {
     assert.equal(`remake/img/${DESERT_ART[name].file}`, entry.webp, `${name} file`);
     assert.deepEqual([...DESERT_ART[name].size], entry.size, `${name} size`);
@@ -206,11 +207,47 @@ test("the adopted Codex art (PR #2306) matches its adoption record: sizes, ancho
   assert.deepEqual({ ...DESERT_ART.backdrop }, { width, height, horizon, duneTop });
   assert.equal(DESERT_ART.land.top, landTop);
   assert.deepEqual({ ...DESERT_ART.rider.anchor }, { x: record.rider_ride.anchor.x, y: record.rider_ride.anchor.y });
+  // 背面の差分は背面Bと同じ縮尺で、姿勢ごとの基準点を持つ
+  for (const [name, key] of [["riderLeft", "rider_lean_left"], ["riderRight", "rider_lean_right"], ["riderJump", "rider_jump"], ["riderBrace", "rider_brace"], ["riderFall", "rider_fall"]]) {
+    assert.deepEqual({ ...DESERT_ART[name].anchor }, record[key].anchor, `${name} anchor`);
+    assert(record[key].scale > 0.5 && record[key].scale < 0.6 && DESERT_ART[name].size[1] < 800, `${name} keeps the rider scale`);
+  }
+  assert.deepEqual([...DESERT_ART.duskSky.size], [...DESERT_ART.sky.size], "the dusk backdrop has the day geometry");
+  assert.equal(DESERT_ART.duskLand.top, landTop);
   assert.deepEqual({ ...DESERT_ART.flag.foot }, record.flag_pole.foot);
   // 会話の背景は manifest の背景一覧と WebP 一覧に入っている
   const manifest = JSON.parse(readFileSync(new URL("remake/data/manifest.json", root), "utf8"));
   assert(manifest.backgrounds.includes(`${DESERT_BG}.png`) && manifest.webp.includes(`backgrounds/${DESERT_BG}.png`));
-  assert(tracked(`remake/img/backgrounds/${DESERT_BG}.webp`) && tracked(`assets/backgrounds/${DESERT_BG}.png`));
+  for (const bg of [DESERT_BG, DESERT_DUSK_BG]) {
+    assert(manifest.backgrounds.includes(`${bg}.png`) && manifest.webp.includes(`backgrounds/${bg}.png`), bg);
+    assert(tracked(`remake/img/backgrounds/${bg}.webp`) && tracked(`assets/backgrounds/${bg}.png`), bg);
+  }
   // Node（Image の無い環境）では何も読まず、図形で描く側へ落ちる
   assert.equal(loadDesertArt().get("rider"), null);
+});
+
+test("the rider pose follows the run: lean with hysteresis, jump, brace before and just after landing, fall", async () => {
+  const { riderPose } = await import("../js/minigames/desert-ride-art.js");
+  const course = generateCourse(DEFAULT_SEED);
+  const game = createGame(course);
+  assert.equal(riderPose(game), "rider");
+  game.vx = 0.4; assert.equal(riderPose(game), "riderRight", "screen right");
+  game.vx = 0.25; assert.equal(riderPose(game, "riderRight"), "riderRight", "keeps the lean until it eases");
+  assert.equal(riderPose(game, "rider"), "rider", "does not start a lean on a small drift");
+  game.vx = -0.4; assert.equal(riderPose(game), "riderLeft", "screen left");
+  game.vx = 0;
+  while (nextBumpDistance(game) > game.speed * JUMP.bumpWindow * 0.5) step(game, {}, DT);
+  press(game);
+  assert.equal(riderPose(game), "riderJump");
+  while (game.air > JUMP.landingWindow * 0.5) step(game, {}, DT);
+  press(game);
+  assert.equal(riderPose(game), "riderBrace", "bracing for the landing");
+  while (game.air > 0) step(game, {}, DT);
+  assert.equal(riderPose(game), "riderBrace", "holds the brace just after landing");
+  for (let i = 0; i < 15; i++) step(game, {}, DT);
+  assert.equal(riderPose(game), "rider");
+  game.fallT = 1; assert.equal(riderPose(game), "riderFall");
+  game.fallT = 0.2; assert.notEqual(riderPose(game), "riderFall", "getting up");
+  game.fallT = 0; game.air = 0.2; game.airTotal = 0.26; game.airKind = "bounce";
+  assert.equal(riderPose(game), "rider", "a small bounce over a bump keeps the riding pose");
 });
