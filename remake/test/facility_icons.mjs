@@ -29,7 +29,7 @@ for (const id of ['kannon', 'rest', 'cafe', 'rojiura_cinema', 'axe_bar', 'choiza
   'ch4_dubai_souq', 'ch4_dubai_creek', 'ch4_dubai_mosque', 'ch4_dubai_inn', 'ch4_dubai_naru', 'ch4_dubai_practice', 'ch4_dubai_tour_desk', 'ch4_dubai_dunes', 'ch4_dubai_camel',
   'ch5_dubai_souq', 'ch5_dubai_creek', 'ch5_dubai_mosque']) assert(hasFacilityIcon(id), id);
 for (const id of ['tonari', 'naru', 'adam', 'minto', 'shop', 'c_station', '__proto__']) assert(!hasFacilityIcon(id), 'Store logos must keep their own role');
-// 路地裏の神社は場所の決定待ち（#2166）。シーシャの店（ドバイのカフェ）はロゴの担当。
+// 池の弁天堂（IR26。id は ch3_tokyo_shrine のまま）のアイコンはまだ無い。シーシャの店（ドバイのカフェ）はロゴの担当。
 for (const id of ['ch3_tokyo_shrine', 'ch4_dubai_cafe', 'ch4_dubai_alley', 'ch4_dubai_festa']) assert(!hasFacilityIcon(id), id);
 // Inspect source alpha independently of layout math; a mistaken equal-third crop fails here.
 const analysis = spawnSync('python3', ['-c', `
