@@ -36,6 +36,15 @@ export const ENTRANCE_CARDS = Object.freeze({
 
 const NAME = { master_hookah: "王 煙楼" };
 
+// 第1章: 前夜の過ごし方（ch1_day7_last_night の4択）を、はじめの入場カードのスミの一言で受ける（#2091）。
+// 旧セーブや未選択は ENTRANCE_CARDS の一言のまま。
+export const CH1_EVE_NOTES = Object.freeze({
+  practice: "昨日の最後の一台どおりにやれ。手はもう覚えてる",
+  talk_sumi: "決められるのは、どういう煙を出すかだけだ。行ってこい",
+  sleep_early: "いい顔だ。よく眠れたみたいだな。行ってこい",
+  drill: "昨夜さらった工程、焦るなよ。あとは目の前の一人だ",
+});
+
 function faceOf(card) {
   if (card.id === "hajime") return el("span.ent-face.ph", { text: "YOU" });
   const id = card.face || card.id;
@@ -43,8 +52,8 @@ function faceOf(card) {
   return src ? el("img.ent-face", { src, alt: "" }) : el("span.ent-face.ph", { text: (NAME[card.id] || realName(id)).slice(0, 1) });
 }
 
-/** cards を順に1枚ずつ出す。chapter を渡すと ENTRANCE_CARDS の章のカードを使う。 */
-export async function playEntrance(chapterOrCards, { auto = Boolean(window.__remake?.craftTest?.auto || vnTest.turbo) } = {}) {
+/** cards を順に1枚ずつ出す。chapter を渡すと ENTRANCE_CARDS の章のカードを使う。heroNote ははじめのカードの一言を差し替える。 */
+export async function playEntrance(chapterOrCards, { auto = Boolean(window.__remake?.craftTest?.auto || vnTest.turbo), heroNote = null } = {}) {
   const cards = Array.isArray(chapterOrCards) ? chapterOrCards : ENTRANCE_CARDS[chapterOrCards];
   if (!cards?.length || !layers?.fx) return;
   const host = el("div.entrance");
@@ -57,7 +66,7 @@ export async function playEntrance(chapterOrCards, { auto = Boolean(window.__rem
         el("div.ent-meta", [
           el("div.ent-ring", { text: c.ring }),
           el("div.ent-name", { text: me ? "はじめ" : (NAME[c.id] || realName(c.face || c.id)) }),
-          el("div.ent-note", { text: `スミ「${c.note}」` }),
+          el("div.ent-note", { text: `スミ「${me && heroNote ? heroNote : c.note}」` }),
         ]),
       ]);
       host.replaceChildren(card);

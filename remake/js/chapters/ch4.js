@@ -27,6 +27,8 @@ import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionC
 import { playChapterPreview } from "./chapter-preview.js";
 import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview } from "./ch4-verdict.js";
 import { craftReviewLines } from "../craft/advice.js";
+import { buildGameOver, warmGameOver } from "./gameover.js";
+import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 import { TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
 import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
 import { CH4_EVENING_DIALOGUE_FILES, CH4_EVENING_BG, selectChapterFourEvening, chapterFourEveningPartner,
@@ -438,6 +440,8 @@ async function renderEvening(owner) {
 
 async function renderTournament(owner) {
   const progress = chapterFourProgress(state);
+  // 敗北の場面を読み終え、まだ再挑戦を選んでいない保存はCONTINUE画面から再開する（第2・3章と同じ）。
+  if (chapterFourTournamentOutcome(state) === "loss" && progress.read[CH4_TOURNAMENT_SCENES.loss]) return renderDefeat(owner);
   await setBg(bgUrl(CH4_SCENE_BG[CH4_TOURNAMENT_SCENES.start]), { instant: true });
   if (!current(owner)) return;
   card(owner, "tournament", `DAY ${chapterFourTournamentDay(state)}・大会当日`, "会場へ向かう。",
@@ -475,15 +479,48 @@ async function runTournament(owner) {
     options: [{ label: "講評へ", primary: true, test: "ch4-verdict-continue" }] });
   if (!current(owner)) return;
   if (chapterFourTournamentOutcome(state) === "win") {
+    clearContinueHistory(state);
     if (!await readAndCommit(owner, win)) return;
     toast(`大会の賞金 ${CH4_PRIZE.toLocaleString("ja-JP")}円を受け取った`, { kind: "good" });
   } else {
     if (!await readAndCommit(owner, loss)) return;
-    // ※仮置き（Q5・Q7 未決）: 大会の最初へ戻す暫定形。
-    if (!chapterFourAfterDefeat(state)) return;
-    save();
+    // 2026-11-02 オーナー決定: 第1〜3章と同じ20秒のCONTINUE画面を出す（#1909）。再挑戦は大会の最初から（Q5）。
+    await renderDefeat(owner);
+    return;
   }
   await renderStage(owner);
+}
+
+/** 世界大会の敗北後のCONTINUE画面。「もう一度」で大会の最初へ戻し、タイトルへは保存してから戻る。 */
+async function renderDefeat(owner, variant = null) {
+  if (!current(owner)) return;
+  const progress = chapterFourProgress(state);
+  const result = progress.match?.result;
+  owner.continueRoot?.cleanupContinue();
+  const context = recordContinueContext(state, progress, progress.attempts,
+    craftContinueContext(progress.match?.craft, { chapter: 4, reason: result?.failure || "rank", rank: result?.rank }));
+  await warmGameOver();
+  if (!current(owner)) return;
+  hud();
+  const root = buildGameOver({ context, variant,
+    onRetry: () => perform(owner, async () => {
+      if (!root.isConnected || chapterFourTournamentOutcome(state) !== "loss") return;
+      if (!chapterFourAfterDefeat(state)) return;
+      save();
+      await renderStage(owner);
+    }),
+    onTitle: () => {
+      if (!current(owner)) return;
+      save();
+      owner.active = false;
+      owner.controller?.abort();
+      location.reload();
+    },
+  });
+  owner.continueRoot = root;
+  root.dataset.test = test("defeat");
+  root.querySelector(".go-retry").dataset.test = test("continue-retry");
+  showScreen("end", root);
 }
 
 const RECAP_STRATEGY = Object.freeze({

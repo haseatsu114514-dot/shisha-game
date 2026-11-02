@@ -15,7 +15,7 @@
 import { DB, callName } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { affinityLevel, AFFINITY_GATE_CHOICES, releaseAffinity } from "../core/stats.js";
-import { AGEHA_AFFINITY_VISITS, questionComplete, questionDoneKey, CH2_VISIT_STORIES, ch2VisitStoriesDone, mashiroScenesRead } from "../core/affinity-stages.js";
+import { AGEHA_AFFINITY_VISITS, questionComplete, questionDoneKey, CH2_VISIT_STORIES, ch2VisitStoriesDone, mashiroScenesRead, samechanHeartEventsDone } from "../core/affinity-stages.js";
 import { emit } from "../core/bus.js";
 import { chapterFeatureEnabled } from "../core/chapter-features.js";
 import { play } from "../vn/engine.js";
@@ -231,6 +231,7 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
   ? storyCount(id) >= 3 && !!state.flags._samechan_quiet_seat_done && !!state.flags._samechan_closing_check_done
     && (isLover(id) || !!state.flags._friend_samechan || !!state.flags._samechan_bond_question_done
       && state.romanceChoices?.bond_q1_samechan?.char === id)
+    && samechanHeartEventsDone(state) // ♥4・♥5の来店会話（#2025）
   // 久世: LIME交換の寄り道と、助言の後の「答えを返しに行く」外出の両方（ch3-story-wiring.js / ch3-outing-progress.js の保存キーの写し）
   : id === "kuze" ? !!state.flags._ch3_read_ch3_kuze_lime && !!state.flags._lime_contact_kuze
     && (state.flags._ch3_outings?.enmaku_answer || 0) > 0

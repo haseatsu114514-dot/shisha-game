@@ -110,7 +110,8 @@ export function fortuneSpot(where = "home") {
     unknownDesc: "路地の隅に、見慣れない出店がある。" };
 }
 export const allSpots = () => [...SPOTS, ...[samechanSpot(), trpgSpot(), cinemaSpot(), fortuneSpot("home")].filter(Boolean)];
-export const spotById = (id) => allSpots().find((s) => s.id === id);
+// 占い師は東京（第3・5章）に現れていることもある。その時も行き先として引けるようにする（地図の一覧は地域ごと）。
+export const spotById = (id) => allSpots().find((s) => s.id === id) || (id === "fortune" ? fortuneSpot(null) || undefined : undefined);
 
 // ---------------------------------------------------------------- 状態の読み取り
 

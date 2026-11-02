@@ -2,7 +2,8 @@
 // - 章ごとに1〜2回。予定（夜の固定の予定・約束・休養の日）と重ならない昼か夜に、街のどこかへふらっと現れる（神出鬼没）。
 //   その時間帯に寄らなければ、いなくなる。予定の時間帯がふさがっていたら、次に空いた時間帯へずれる。
 // - 第1章だけ、つむぎから噂を聞いた後。第2章以降は条件なし。
-// - 第5章は地元と東京（理由は語らない）に現れる。第4章のドバイには出ない。第3章の東京は ch3 側（未接続）。
+// - 第3章は出発前の準備（地元）と東京、第5章は地元と東京（理由は語らない）に現れる。第4章は出発前の準備（地元）だけで、ドバイには出ない。
+// - 遠出する章（第3・4章）の日は、出発前の準備の1日目から通しで数える（準備3日＋滞在。VOL15）。
 // 記録は flags._fortune_wander = { chapter, shown: [{ key, where } | null], used: [bool] }（現れた時間帯と、占ってもらったか）。
 // 旧版の「週2日・昼だけ・アーケード脇・雨は休み」（#780）は廃止した。
 import { chapterDay } from "../core/chapter-clock.js";
@@ -13,10 +14,19 @@ export const FORTUNE_RUMOR = "_fortune_rumor_heard";
 export const fortuneRumorHeard = (s) => !!s?.flags?.[FORTUNE_RUMOR];
 
 /** 日常ループで現れる章。 */
-export const FORTUNE_CHAPTERS = Object.freeze([1, 2, 5]);
+export const FORTUNE_CHAPTERS = Object.freeze([1, 2, 3, 4, 5]);
 const KEY = "_fortune_wander";
 // 現れうる章内日（第1・2章は DAY14 の大会より前。第5章は期限が無いので最初の12日）
-const RANGE = Object.freeze({ 1: [2, 13], 2: [2, 13], 5: [1, 12] });
+// 第3章は準備3日＋東京 DAY1〜13（通しの1〜16日目）。第4章は準備の3日だけ（ドバイでは現れない）。
+const RANGE = Object.freeze({ 1: [2, 13], 2: [2, 13], 3: [1, 16], 4: [1, 3], 5: [1, 12] });
+// 出発前の準備の記録（chapters/departure-prep.js）。あれば、その1日目から通しで数える。
+const PREP_KEYS = Object.freeze({ 3: "_ch3_prep", 4: "_ch4_prep" });
+const fortuneDay = (save) => {
+  const prep = save?.flags?.[PREP_KEYS[save?.chapter]];
+  return Number.isInteger(prep?.startDay) ? save.day - prep.startDay + 1 : chapterDay(save);
+};
+/** 東京にも現れる章。 */
+const TOKYO_CHAPTERS = Object.freeze([3, 5]);
 
 // 現れる場所（地図に対する百分率）。ほかの店のピンと重ならない所を選んだ。area は地図の説明に出す。
 const POSITIONS = Object.freeze({
@@ -59,7 +69,7 @@ export function fortunePlan(save) {
   return Array.from({ length: count }, (_, i) => (lo - 1) * 2 + i * part + (mix(seed + (i + 1) * 7919) % part));
 }
 
-const halfDay = (save) => (chapterDay(save) - 1) * 2 + (save.slot >= 1 ? 1 : 0);
+const halfDay = (save) => (fortuneDay(save) - 1) * 2 + (save.slot >= 1 ? 1 : 0);
 const stampOf = (save) => `${save.chapter}:${save.day}:${save.slot >= 1 ? 1 : 0}`;
 
 function record(save) {
@@ -77,12 +87,12 @@ function record(save) {
  * 戻り値＝この時間帯に現れているか。記録は書き換えるが、ここで保存しなくてよい（次の行動の精算で保存される。
  * 保存前に読み直しても、同じ時間帯に同じく現れる）。
  * @param busy 今の時間帯に予定があるか（夜の固定の予定・約束・休養）。あれば次の空いた時間帯へずれる
- * @param where 今いる地域（"home" | "tokyo"）。それ以外（柚ヶ谷など）にいる間は現れず、ずれる
+ * @param where 今いる地域（"home" | "tokyo"）。それ以外（柚ヶ谷・ドバイ）にいる間は現れず、ずれる
  */
 export function syncFortune(save, { busy = false, where = "home" } = {}) {
   if (!save?.flags || !FORTUNE_CHAPTERS.includes(save.chapter)) return false;
   if (save.chapter === 1 && !fortuneRumorHeard(save)) return false;
-  if (where === "tokyo" && save.chapter !== 5) return false;
+  if (where === "tokyo" && !TOKYO_CHAPTERS.includes(save.chapter)) return false;
   const plan = fortunePlan(save);
   const r = record(save);
   const now = halfDay(save), key = stampOf(save);

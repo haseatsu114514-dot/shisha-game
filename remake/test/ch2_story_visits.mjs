@@ -100,7 +100,7 @@ let result = await go(EDEN);
 assert.deepEqual(plain(result), { used: true, exerted: true });
 assert.deepEqual(played, [["ch2_adam_distance", "res://assets/backgrounds/bg_eden_shop.png"]]);
 assert.equal(state.money, 17000); assert.equal(state.stamina, 84);
-assert.deepEqual(plain(state.affinity), [["adam", 8]]); assert.deepEqual(plain(state.growth), [["guts", 4]]);
+assert.deepEqual(plain(state.affinity), [], "Mandatory scenes give no affinity"); assert.deepEqual(plain(state.growth), [["guts", 4]]);
 assert(state.flags._ch2_read_ch2_adam_distance && state.flags._ch2_night_7_done && state.flags._spot_guide_adam);
 assert.equal(state.visits.adam, 1); assert.equal(state.met.adam, true); assert.deepEqual(lessons, ["adam"]);
 assert.equal(saves, 1, "精算と保存は calendar に任せる（準備開始の保存だけ）");
@@ -132,7 +132,7 @@ assert.equal(result.used, true);
 assert.deepEqual(played, [["ch2_minto_warning", null], ["ch2_naru_window", "res://assets/backgrounds/bg_kemurikusa_outside_night.png"]],
   "台本の背景（PEPPERMINT）と、帰り道のケムリクサ");
 assert(state.flags._ch2_read_ch2_minto_warning && state.flags._ch2_read_ch2_naru_window && state.flags._ch2_night_12_done);
-assert.deepEqual(plain(state.affinity), [["minto", 8]]);
+assert.deepEqual(plain(state.affinity), [], "Mandatory scenes give no affinity");
 
 // 途中で中断・LOADしたら、既読も料金も残さない（期限の夜に読み直せる）
 await setup({ day: abs(12), slot: 1 }); state.flags._ch2_naru_listened = true; mode = "cancel";

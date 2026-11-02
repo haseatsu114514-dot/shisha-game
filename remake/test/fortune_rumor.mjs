@@ -140,10 +140,48 @@ await check("wandering schedule: 1-2 times a chapter, on/after the planned half-
   assert.equal(discovery.syncFortune(s), true); assert.equal(fortune.fortuneToday(), true); assert.equal(JSON.stringify(s), before, "same slot is idempotent");
   if (s.slot === 0) s.slot = 1; else { s.day += 1; s.slot = 0; }
   assert.equal(fortune.fortuneToday(), false, "missed: she is gone");
-  // 柚ヶ谷にいる間は現れず、地元に戻った時間帯へずれる。東京は第5章だけ。
+  // 柚ヶ谷にいる間は現れず、地元に戻った時間帯へずれる。東京は第3・5章だけ。
   const t = fresh(); t.flags[key] = true; t.seed = 5; toPlan(t);
   assert.equal(discovery.syncFortune(t, { where: "widehanga" }), false);
-  assert.equal(discovery.syncFortune(t, { where: "tokyo" }), false, "Tokyo only in Chapter 5");
+  assert.equal(discovery.syncFortune(t, { where: "tokyo" }), false, "Tokyo only in Chapters 3 and 5");
+});
+// 遠出する章（VOL15）: 第3章は出発前の準備と東京、第4章は出発前の準備だけ。日は準備の1日目から通しで数える。
+await check("Chapters 3 and 4 count from the departure prep; Chapter 3 also in Tokyo, Chapter 4 never in Dubai", () => {
+  const prepSave = (chapter, seed, departed = false) => {
+    const s = fresh(); s.chapter = chapter; s.seed = seed; s.day = 40; s.slot = 0;
+    s.flags[`_ch${chapter}_prep`] = { startDay: 40, days: 3, step: departed ? 6 : 0, departed };
+    return s;
+  };
+  for (const seed of [1, 2, 3, 7, 12, 99, 1234]) for (const [chapter, hi] of [[3, 16], [4, 3]]) {
+    const plan = discovery.fortunePlan(prepSave(chapter, seed)), label = JSON.stringify({ seed, chapter, plan });
+    assert(plan.length === 1 || plan.length === 2, label);
+    for (const at of plan) assert(at >= 0 && at <= hi * 2 - 1, label);
+  }
+  // 第3章: 準備の3日を過ぎた東京でも、通しで数えた時間帯が来ていれば現れる。地図の一覧（地元）には出ず、行き先としては引ける。
+  for (const seed of [1, 2, 3, 7, 12]) {
+    const s = prepSave(3, seed, true), label = `seed ${seed}`;
+    s.day = 40 + 15; s.slot = 1; // 通しの16日目（東京DAY13）の夜
+    assert.equal(discovery.syncFortune(s, { where: "widehanga" }), false, label);
+    assert.equal(discovery.syncFortune(s, { where: "tokyo" }), true, label);
+    assert.equal(discovery.fortuneHere(s, "tokyo"), true, label);
+    assert.equal(fortune.fortuneToday(), true, label);
+    assert.equal(spots.allSpots().some(spot => spot.id === "fortune"), false, `the home map does not list her: ${label}`);
+    assert.equal(spots.spotById("fortune")?.kind, "fortune", `she can still be visited in Tokyo: ${label}`);
+    assert.match(discovery.fortunePosition(s).area, /高架|池/, label);
+  }
+  // 第4章: 準備の間は地元に現れる。ドバイでは、予定の時間帯を過ぎていても現れない。
+  for (const seed of [1, 2, 3, 7, 12]) {
+    const s = prepSave(4, seed), label = `seed ${seed}`;
+    const at = discovery.fortunePlan(s)[0];
+    s.day = 40 + Math.floor(at / 2); s.slot = at % 2;
+    assert.equal(discovery.syncFortune(s, { where: "home" }), true, label);
+    const d = prepSave(4, seed, true);
+    for (const day of [43, 46, 52]) for (const slot of [0, 1]) {
+      d.day = day; d.slot = slot;
+      assert.equal(discovery.syncFortune(d, { where: "dubai" }), false, `${label} day ${day}`);
+      assert.equal(fortune.fortuneToday(), false, `${label} day ${day}`);
+    }
+  }
 });
 await check("actual state SAVE/LOAD preserves face completion, legacy LIME history, old fortune and pure-rain result", () => {
   const s = fresh(3, 0); s.flags[key] = true; s.flags._fortune_met = true; s.fortuneDay = 1; s.fortune = { char: "naru", mult: 1.5 };
@@ -152,18 +190,19 @@ await check("actual state SAVE/LOAD preserves face completion, legacy LIME histo
   assert.equal(core.state.flags[key],true);assert.equal(core.state.fortuneDay,1);assert.equal(core.state.fortune.char,"naru");
   assert.equal(JSON.stringify(core.state.limeRead),prior);
 });
-await check("chapters, rumor gate and entry: Chapter 1 after the rumor, Chapters 2 and 5 always, never in 3 and 4", async () => {
+await check("chapters, rumor gate and entry: Chapter 1 after the rumor, Chapters 2 to 5 always", async () => {
   const features = await load("core/chapter-features.js");
   for (const chapter of [1, 2, 3, 4, 5, undefined, "1", "2", "5"]) {
-    assert.equal(features.chapterFeatureEnabled(chapter, "fortune"), [1, 2, 5].includes(chapter));
+    assert.equal(features.chapterFeatureEnabled(chapter, "fortune"), [1, 2, 3, 4, 5].includes(chapter));
     assert.equal(features.chapterFeatureEnabled(chapter, "unknown"), false);
     for (const heard of [false, true]) for (const seed of [2, 4, 12, 29]) {
       const s = fresh(); if (chapter === undefined) delete s.chapter; else s.chapter = chapter;
       if (s.chapter === 2) s.flags._ch2_day1 = { startDay: 1 }; if (s.chapter === 5) s.flags._ch5 = { startDay: 1 };
+      if (s.chapter === 3 || s.chapter === 4) s.flags[`_ch${s.chapter}_prep`] = { startDay: 1, days: 3, step: 0, departed: false };
       s.seed = seed; s.flags[key] = heard; s.money = 10000; s.met.naru = true; s.affinity.naru = 5;
       const plan = discovery.fortunePlan(s);
       if (plan.length) toPlan(s);
-      const expected = [1, 2, 5].includes(chapter) && (chapter !== 1 || heard);
+      const expected = [1, 2, 3, 4, 5].includes(chapter) && (chapter !== 1 || heard);
       const label = JSON.stringify({ chapter, heard, seed });
       assert.equal(discovery.syncFortune(s), expected, label);
       assert.equal(fortune.fortuneToday(), expected, label);

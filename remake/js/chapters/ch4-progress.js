@@ -402,11 +402,9 @@ export function chapterFourTournamentOutcome(value) {
 }
 
 /**
- * 敗北（ch4_defeat を読んだ後）に必ず通る1関数。
- * ※仮置き（Q5・Q7 未決）: data/story_routes.json の progression_contract.loss
- * 「第3・4章の敗北はその競技から再挑戦」に沿う暫定形で、大会の最初に戻すだけ。
- * 再開位置と理屈は Q7 で差し替える。Q5 の B案・C案は実装しない。
- * シェイクの秘匿フラグは戻さない（Q8: 再挑戦時の演出短縮の差し替え点）。
+ * 敗北（ch4_defeat を読んだ後）、CONTINUE画面で「もう一度」を選んだときに通る1関数。
+ * Q5・Q7 決定（2026-11-02、docs/spec/open_questions_ch4_ch5.md）: 勝つまで大会の最初から再挑戦。
+ * シェイクの秘匿フラグは戻さない（Q8: 2回目以降は正体の演出を繰り返さない）。
  */
 export function chapterFourAfterDefeat(value) {
   const progress = chapterFourProgress(value);
