@@ -76,6 +76,7 @@ export function createContinueView({ script, speaker, character, premium, layout
     ...(neon ? createNeonAtmosphere() : []),
     ...(echoLayer ? [echoLayer] : []),
     el("header.go-heading", [title, clock, ...(topActions ? [actions] : [])]),
+    el("p.go-limit-note", { text: "初回は時間制限なし（カウントは演出です）", "aria-hidden": "true" }),
     el("div.go-left", [el("div.go-portrait", [image])]),
     el("div.go-right", [
       ...(!topActions ? [actions] : []),
