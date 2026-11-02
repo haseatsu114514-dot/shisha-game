@@ -145,7 +145,10 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
 背景は `assets/ui/character_intros/`、配色・現行人物PNGの配置は自動生成の `manifest.introArt`。背景・帯・人物・文字は独立して動かす。
 動きを減らす設定では静止表示。Noto Sans JPは紹介に必要な文字だけを同梱し、実行時の外部ダウンロードは不要。
 久世・スティーブ・ヴォルク・ましろ・マキ・サイ・路上占い師も専用背景へ接続済み。
-`character-intros-preview.html` で7人を再生確認できる。マキとサイは案内画面の初回入店に表示する。
+`character-intros-preview.html` で13人と、つなぎの動きつき4人を再生確認できる。マキとサイは案内画面の初回入店に表示する。
+グラフィック絵柄のなる・凛・南雲・パッキーは、会話の立ち絵がテーマ色の影になり、色面が抜けてカットインが現れ、退場は色面→影→元の立ち絵（`vn/intro-silhouette.js`、CIG07）。
+つなぎの設定 `config.introTransition`（`vn/intro-transition.js` の3案、CIG11）が none 以外のときは、4人もそちらを使う。
+入場480ms（凛のsoftは600ms）・退場300msを表示時間に足し、操作では短縮しない。動きを減らす設定では200msのフェードのみ。確認用コマは `tools/capture_intro_motion.mjs`。
 既読はセーブの `flags._intro_<id>`。DAY4のアゲハ初遭遇は台本の `type: "intro", variant: "unknown"` で明示的に出し、
 `intro_cutin_unknown` と別既読 `_intro_ageha_unknown` を使う。第2章用のnormal・名乗り版は通常の `intro_cutin` を使う。
 はじめは冒頭の指定箇所だけで紹介し、通常会話に立ち絵は出さない。テストは `intro_cutin.mjs` と `intro_art.mjs`。

@@ -3209,6 +3209,7 @@
       "paths": [
         "remake/test/intro_transition.mjs",
         "remake/js/vn/intro-transition.js",
+        "remake/js/vn/intro-silhouette.js",
         "remake/js/vn/intro.js",
         "remake/js/vn/intro-art.js",
         "remake/css/intro.css",

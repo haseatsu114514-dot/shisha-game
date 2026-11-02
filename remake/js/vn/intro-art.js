@@ -126,10 +126,11 @@ export function layoutIntro(host, id, variant, intro) {
 export function animateIntro(host, id, motion = "sharp", { sound = () => {}, skip = new Set() } = {}) {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) { sound("reduced"); return []; }
   const animations = [];
-  // skip: つなぎ（intro-transition.js）が先に見せた部品は動かさない（"background" / "portrait"）
-  const skipped = { ".ci-art-background": "background", ".ci-portrait": "portrait" };
+  // skip: つなぎ（intro-transition.js / intro-silhouette.js）が先に見せた部品は動かさない（"background" / "portrait" / "flash"）。
+  // "shake" は着地の小さな揺れ（translate）を止める
+  const skipped = { ".ci-art-background": "background", ".ci-portrait": "portrait", ".ci-flash": "flash" };
   const animate = (selector, frames, options) => {
-    if (skip.has(skipped[selector])) return;
+    if (skip.has(skipped[selector]) || (skip.has("shake") && frames.some(frame => "translate" in frame))) return;
     const node = host.querySelector(selector);
     if (node) animations.push(node.animate(frames, { duration: 600, easing: "cubic-bezier(.2,.8,.2,1)", fill: "both", ...options }));
   };

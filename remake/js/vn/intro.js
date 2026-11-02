@@ -19,6 +19,7 @@ import { illustratedIntro, layoutIntro, animateIntro, exitIntro, flavorTag, plai
 import { introFlavor } from "./intro-flavors.js";
 import { graphicIntro } from "./intro-graphic.js";
 import { createTransition, measureStanding } from "./intro-transition.js";
+import { silhouetteMotion, SILHOUETTE_IDS, SILHOUETTE_SKIP } from "./intro-silhouette.js";
 
 export const introSeenKey = (id, variant = "") => `_intro_${id}${variant ? `_${variant}` : ""}`;
 const introOf = (id, variant = "") => DB.characters[id]?.[variant ? `intro_cutin_${variant}` : "intro_cutin"] || null;
@@ -59,7 +60,8 @@ function framePortrait(img, p) {
  * 初登場は最後まで見せる。クリック・Enter・SKIPでも表示時間を短くしない。
  * @param opts.onAppear 画像が出た時の場面処理（本人の登場に合わせるBGMなど）
  */
-export async function playIntro(id, { onAppear = null, override = {}, variant = "" } = {}) {
+export async function playIntro(id, { onAppear = null, override = {}, variant = "", signal } = {}) {
+  const initialState = state, initialDialogue = document.querySelector("#vn.active");
   const intro = { ...introOf(id, variant), ...override };
   if (!introOf(id, variant)) return;
   if (variant !== "unknown") markMet(id);
@@ -81,30 +83,43 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
       document.fonts.load('900 150px "Intro Gothic"', main).catch(() => []),
       document.fonts.load('700 38px "Intro Gothic"', `${intro.title}${intro.line}`).catch(() => []),
     ]);
+    // 立ち絵からの「変身」のつなぎ（グラフィック絵柄のときだけ。既定 none は今まで通り）
+    const choice = graphic ? (override.transition ?? config.introTransition ?? "none") : "none";
+    // CIG07: なる・凛・南雲・パッキーは none のとき影→色面のつなぎ（intro-silhouette.js）。3案（CIG11）を選んだらそちらを使う
+    const silhouette = graphic && choice === "none" && SILHOUETTE_IDS.has(id);
+    // 読み込みを待つ間に会話の破棄・ロード・中断があったら出さない
+    if (silhouette && (signal?.aborted || state !== initialState || (initialDialogue && !initialDialogue.classList.contains("active")))) return;
     const host = illustratedIntro(id, variant, intro, main, p, art, background);
     host.dataset.art = graphic ? "graphic" : "classic"; // ひより専用の明るい配色は旧絵柄（白い背景）だけ
     const motion = motionOf(intro);
-    // 立ち絵からの「変身」のつなぎ（グラフィック絵柄のときだけ。既定 none は今まで通り）
-    const standingRect = graphic ? measureStanding(id, layers.fx) : null;
-    const transition = createTransition(graphic ? (override.transition ?? config.introTransition ?? "none") : "none", {
+    const standingRect = graphic && !silhouette ? measureStanding(id, layers.fx) : null;
+    const transition = silhouette ? null : createTransition(choice, {
       id, fx: layers.fx, host, frame: graphic?.frame, config,
       standing: standingRect && standingInfo ? { rect: standingRect, p: standingInfo } : null,
       colors: { color: art.color, secondary: art.secondary, shadow: art.shadow },
       mount: () => mountIntro(host, layers.fx),
     });
     const animations = [];
-    let unmount = null;
+    let unmount = null, shadow = null;
     try {
-      unmount = await transition.enter();
+      if (silhouette) {
+        unmount = mountIntro(host, layers.fx);
+        shadow = silhouetteMotion(host, layers.fx, id, art, motion, { signal });
+        if (!await shadow.enter()) return;
+      } else unmount = await transition.enter();
       const twoLines = layoutIntro(host, id, variant, intro);
-      animations.push(...animateIntro(host, id, motion, { sound: (cue) => introSound(motion, cue), skip: transition.skip }));
+      // 動きを減らす設定のシルエット化はフェードだけ（文字の登場も動かさない）
+      if (!shadow?.reduced) animations.push(...animateIntro(host, id, motion, { sound: (cue) => introSound(motion, cue), skip: shadow ? SILHOUETTE_SKIP : transition.skip }));
       host.classList.remove("ci-staged");
+      shadow?.hold(introHoldMs(motion, twoLines));
       onAppear?.();
       introSound(motion, "appear");
-      await holdIntro(host, { motion, twoLines, exit: transition.exit ? () => transition.exit() : null });
+      await holdIntro(host, { motion, twoLines, shadow, exit: transition?.exit ? () => transition.exit() : null });
+      if (shadow?.active) await shadow.exit();
     } finally {
+      shadow?.dispose();
       animations.forEach((animation) => animation.cancel());
-      transition.cancel();
+      transition?.cancel();
       unmount?.();
     }
     return;
@@ -154,8 +169,11 @@ function introSound(motion, cue) {
 /** 一言が2行の時は400ms長く見せる */
 export const introHoldMs = (motion, twoLines = false) => (MOTIONS[motion] || MOTIONS.sharp).hold + (twoLines ? 400 : 0);
 
-async function holdIntro(host, { motion = "sharp", twoLines = false, legacy = false, exit = null } = {}) {
-  await sleep(30);
+async function holdIntro(host, { motion = "sharp", twoLines = false, legacy = false, exit = null, shadow = null } = {}) {
+  // シルエット化の間は、その片づけ（中断・ロード）で待ちを終える。退場は呼び出し側の shadow.exit()
+  const wait = shadow ? shadow.wait : sleep;
+  if (shadow && !shadow.active) return;
+  await wait(30);
   host.classList.add("in");
   const onTap = (e) => { e.preventDefault(); e.stopPropagation(); };
   const onKey = (e) => {
@@ -165,12 +183,13 @@ async function holdIntro(host, { motion = "sharp", twoLines = false, legacy = fa
   host.addEventListener("pointerup", onTap);
   window.addEventListener("keydown", onKey, true);
   try {
-    await sleep(introHoldMs(motion, twoLines));
+    await wait(introHoldMs(motion, twoLines));
+    if (shadow) return;
     if (legacy) { host.classList.add("out"); await sleep(280); }
     else if (exit) await exit();
     else await sleep(exitIntro(host, motion));
   } finally {
     window.removeEventListener("keydown", onKey, true);
-    host.remove();
+    if (!shadow) host.remove();
   }
 }
