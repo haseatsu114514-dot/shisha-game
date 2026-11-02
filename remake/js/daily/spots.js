@@ -225,6 +225,8 @@ export function shortNormalVisit(spot) {
 /** 店主の固有イベントと、初めて訪れる施設のイベントを同じ印で案内する。 */
 export function hasNewEvent(spot) {
   if (isClosed(spot)) return false;
+  // 章の側の行き先（第3章の東京など）は、自分で新しい話があるかを返せる。
+  if (typeof spot.hasNew === "function") return !!spot.hasNew();
   if (spot.kind === "tonari") return state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi")
     || state.visitedDay.tonari_customer !== state.day && tsumugiAtTonari(state) && hasNewStory("tsumugi");
   if (spot.kind === "shop") return !rinUnavailable(state) && hasNewStory("rin");

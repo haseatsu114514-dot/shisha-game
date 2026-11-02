@@ -80,7 +80,7 @@ export const STATE_KEY_RULES = {
 // data/equipment.json の gift フィールドが付いた装備 = キャラから贈られた専用ハガル。
 // 分類網羅テストが data 側と一致するか照合する。
 export const GIFT_EQUIPMENT_IDS = [
-  "suyaki_adam", "suyaki_ageha", "suyaki_hiyori", "suyaki_kumicho", "suyaki_mashiro", "suyaki_minto", "suyaki_naru",
+  "suyaki_adam", "suyaki_ageha", "suyaki_hiyori", "suyaki_kumicho", "suyaki_kuze", "suyaki_mashiro", "suyaki_minto", "suyaki_naru",
   "suyaki_rei", "suyaki_rin", "suyaki_samechan", "suyaki_sumi", "suyaki_tsumugi",
 ];
 
@@ -196,7 +196,11 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_mukai_work_intro_read", "person"],
   ["_ch3_opening_read", "progression"],
   ["_ch3_outings", "progression"],
+  ["_ch3_prep", "progression"],
+  ["_ch3_prep_clinic", "progression"],
+  ["_ch3_prep_farewell", "progression"],
   ["_ch3_preview_seen", "progression"],
+  ["_ch3_read_ch3_kuze_lime", "progression"],
   ["_ch3_read_ch3_minto_small_lies", "progression"],
   ["_ch3_read_hiyori_tokyo_contact", "progression"],
   ["_ch3_registration_read", "progression"],
@@ -207,9 +211,11 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_tournament_won", "achievement"],
   ["_ch3_trial_kuze", "progression"],
   ["_ch3_trial_steve", "progression"],
+  ["_ch3_tokyo_call_night", "progression"],
   ["_ch4", "progression"],
   ["_ch4_cleared", "progression"],
   ["_ch4_evening", "progression"],
+  ["_ch4_prep", "progression"],
   ["_ch4_preview_seen", "progression"],
   ["_ch4_sheikh_revealed", "progression"],
   ["_overseas_companion", "progression"],
@@ -220,6 +226,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_match_started", "progression"],
   ["_ch5_region_started", "progression"],
   ["_ch5_tokyo_attic", "progression"],
+  ["_mukai_shift_day", "progression"],
   ["_ch5_tokyo_talks", "progression"],
   ["_cheat_go", "progression"],
   ["_cinema_visit", "progression"],
@@ -318,6 +325,7 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_adam", "person"],
   ["_lime_contact_ageha", "person"],
   ["_lime_contact_hiyori", "person"],
+  ["_lime_contact_mukai_master", "person"],
   ["_lime_contact_kumicho", "person"],
   ["_lime_contact_kuze", "person"],
   ["_lime_contact_mashiro", "person"],
@@ -538,6 +546,7 @@ export const FLAG_FAMILY_RULES = [
   ["_shift_order_*", "progression"],
   ["_spot_*", "progression"],
   ["_sumi_baito_inv_*", "pending"],
+  ["_mukai_baito_inv_*", "pending"],
   ["_temporary_closed_*", "progression"],
 ];
 

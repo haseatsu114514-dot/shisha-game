@@ -10,7 +10,7 @@ export class DJAudio {
       const buffer = await context.decodeAudioData(await response.arrayBuffer());
       return { ...buildTrackData(buffer.getChannelData(0), buffer.sampleRate, cfg), buffer, trimDb: cfg.trimDb };
     });
-    this.Context = Context; this.mix = createSet(this.set, this.detune, options.rng || Math.random); this.context = null; this.voices = [null, null];
+    this.Context = Context; this.mix = createSet(this.set, this.detune, options.rng || Math.random, { allowance: options.allowance || 0 }); this.context = null; this.voices = [null, null];
     this.cache = new Map(); this.tracks = [null, null]; // decoded track data per deck
     this.retiring = new Set(); this.volume = .18; this.muted = false; this.busy = false; this.disposed = false; this.revision = 0;
   }

@@ -516,6 +516,126 @@
           "text": "この空気なら、次もいける気がする"
         }
       ]
+    },
+    {
+      "dialogue_id": "trpg_talk_rei_critical",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……20のゾロ目。クリティカルだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "REIさん、今ちょっと声が上ずりました？"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……ご褒美。連携札を1枚、返す"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_rei_critical_full",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……20のゾロ目。クリティカルだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "REIさん、今ちょっと声が上ずりました？"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……札は満タンか。なら、拍手だけ贈る"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_rei_fumble",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "……1ゾロ。ファンブルだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "うわ、ここで……"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……大丈夫。崩れたあとの一曲が、いちばん響く"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_rei_double",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……ゾロ目。いい音で揃った"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "サイコロまで、拍が合ってるみたいですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_rei_heat_up",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……卓が温まってきた。語るの、楽しくなってきた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "REIさん、GMだと別人みたいに喋りますね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_rei_heat_max",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "……最高潮だ。このまま、最後の曲まで行く"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "この空気なら、次のサイコロも味方してくれそうです"
+        }
+      ]
     }
   ]
 }

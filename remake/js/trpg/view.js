@@ -21,9 +21,10 @@ const STAT_SHORT = { eye: "観", hand: "手", talk: "話", nerve: "度" };
 
 /** Mounts one isolated session; finished resolves only after the player leaves the table. */
 export function mountTrpg(host, { scenario, characters, manifest, tableTalk = null, tutorialLines = null, tutorial = false, onTutorialDone = () => {},
-  seed, profileId = null, pc = null, companions = {}, closeLabel = "卓を片付ける", audio: providedAudio = null, allowReplay = true, onComplete = () => {} }) {
+  seed, profileId = null, pc = null, companions = {}, closeLabel = "卓を片付ける", audio: providedAudio = null, allowReplay = true, onComplete = () => {},
+  warmStart = false }) {
   // The player's character can be rebuilt on the cover; the session restarts from the same seed until the story begins.
-  let build = pc, session = new TrpgSession(scenario, { seed, profileId, pc: build, companions });
+  let build = pc, session = new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart });
   const cast = Object.fromEntries(scenario.cast.map(c => [c.id, c]));
   const gm = scenario.cast.find(c => c.part === "GM").id;
   const presentation = scenario.presentation;
@@ -976,7 +977,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       let built;
       try { built = buildPc(scenario, draft); } catch { syncConfirm(); return; }
       build = { look: built.look, archetype: built.archetype, name: built.name, stats: built.stats };
-      session = new TrpgSession(scenario, { seed, profileId, pc: build, companions });
+      session = new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart });
       sheets = session.sheets;
       pop.close(); renderBody();
       root.querySelector('[data-test="trpg-build"]')?.focus({ preventScroll: true });

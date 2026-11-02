@@ -17,7 +17,9 @@ import { CH3_CONFESSION_IDS, confessionAnswer } from "./ch3-romance-entry.js";
 import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
 import { MUKAI_DELIVERY_STEPS, runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, chapterThreeProgress,
-  completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime } from "./ch3-progress.js";
+  completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime,
+  chapterThreePrepPending, departChapterThree, chapterThreeDaily } from "./ch3-progress.js";
+import { CH3_PREP_SCENES, chapterThreePrepEvents } from "./ch3-prep.js";
 import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts } from "../core/tokyo-visits.js";
 
 import { createChapterThreeWayfinding } from "./ch3-wayfinding.js";
@@ -41,6 +43,8 @@ const FILES = {
   ch3_deliveries: MUKAI_DELIVERY_STEPS.filter(step => step.id !== "ch3_mukai_intro").map(step => step.id),
   ch3_rivals: ["ch3_kuze_first", "ch3_kuze_mukai_visit", "ch3_kuze_advice", "ch3_steve_low_heat"],
   ch3_volk: ["ch3_volk_first"],
+  // 出発前の準備3日と出発の朝（VOL02）。旧行程の保存も、章頭の回想の前に列車の4行（ch3_train_departure）を読む。
+  ch3_departure: CH3_PREP_SCENES,
 };
 // 任意8場面・前夜デート・前夜の修羅場未遂（#1176 GAP 3-B）。既存ファイルの配列へ足し、新しいファイルはそのまま加える。
 for (const [file, ids] of Object.entries(CH3_STORY_DIALOGUE_FILES)) FILES[file] = [...(FILES[file] || []), ...ids];
@@ -206,6 +210,11 @@ async function openChapter(advance) {
     }
     if (!current(owner)) return;
     const progress = chapterThreeProgress(state);
+    // 出発前の準備期間がある保存（新規に第3章へ入った保存。VOL02）は、章頭から出発までを renderPrep で。
+    if (chapterThreePrepPending(state)) {
+      await renderPrep(owner);
+      return;
+    }
     if (progress.prologueStep !== undefined && progress.prologueStep < 4) {
       await renderPrologue(owner);
       return;
@@ -243,6 +252,8 @@ async function renderPrologue(owner) {
   if (!current(owner)) return;
   const progress = chapterThreeProgress(state);
   if (progress.prologueStep === 0) {
+    // 旧行程は東京へ向かう列車の中から始まる（列車の4行は ch3_departure.json へ移した）。
+    if (!await readPrologue(owner, "ch3_train_departure", null)) return;
     if (!await readPrologue(owner, "ch3_childhood_opening", null)) return;
     progress.prologueStep = 1;
     save();
@@ -267,6 +278,69 @@ async function renderPrologue(owner) {
       { from: "home", to: "tokyo" });
     if (!await readPrologue(owner, "ch3_train_arrival", "bg_ch3_train_arrival", ride)) return;
     progress.prologueStep = 4;
+    save();
+  }
+  await renderStage(owner);
+}
+
+/**
+ * 出発前の準備3日（VOL02）: 章頭の回想 → 久世の調べもの → 章題 → 準備1日目の朝のtonari →
+ * 地元・柚ヶ谷の日常ループ3日（最後の日の昼に耳鼻科、夜に出発前夜）→ 出発の朝の新幹線 → 東京DAY1。
+ * 進み具合は flags._ch3_prep.step（0〜6）。各段は読み終えた時だけ進め、中断・LOADは同じ段から。
+ */
+async function renderPrep(owner) {
+  if (!current(owner)) return;
+  const prep = state.flags._ch3_prep;
+  const progress = chapterThreeProgress(state);
+  if (prep.step === 0) {
+    if (!await readPrologue(owner, "ch3_childhood_opening", null)) return;
+    prep.step = 1;
+    save();
+  }
+  if (prep.step === 1) {
+    if (!await readPrologue(owner, "ch3_kuze_research", "bg_ch3_kuze_video")) return;
+    prep.step = 2;
+    save();
+  }
+  if (prep.step === 2) {
+    await chapterTitle({ no: "第三章", name: "嘘つきたちの夜", read: "SMOKE AND MIRRORS",
+      sub: "HAZE: NATIONAL TOKYO 編" });
+    if (!current(owner)) return;
+    progress.titleSeen = true;
+    prep.step = 3;
+    save();
+  }
+  if (prep.step === 3) {
+    playBgm("tonari");
+    if (!await readPrologue(owner, "ch3_prep_opening", "bg_tonari_inside_day")) return;
+    prep.step = 4;
+    save();
+  }
+  if (prep.step === 4) {
+    const { runDeparturePrep, departureMorningReached } = await withLoadingNotice(import("./departure-prep.js"),
+      loadingNotice("地元の地図を準備しています…"));
+    if (!current(owner)) return;
+    showScreen("none", null);
+    await runDeparturePrep({ destination: "東京", ...chapterThreePrepEvents(prep) });
+    // 出発の朝まで来た時だけ先へ。LOAD・タイトルへ戻った場合はここで止める。
+    if (!current(owner) || !departureMorningReached(state)) return;
+    hud(owner);
+    prep.step = 5;
+    save();
+  }
+  if (prep.step === 5) {
+    stopBgm();
+    if (!await readPrologue(owner, "ch3_train_departure", "bg_ch3_train_arrival")) return;
+    prep.step = 6;
+    save();
+  }
+  if (prep.step === 6) {
+    playBgm("tonari");
+    // 地元→東京の往路。車窓が覆っている間に新幹線到着時の背景へ替える（#1059）。
+    const ride = () => shinkansenRide(async () => { await setBg(bgUrl("bg_ch3_train_arrival"), { instant: true }); },
+      { from: "home", to: "tokyo" });
+    if (!await readPrologue(owner, "ch3_train_arrival", "bg_ch3_train_arrival", ride)) return;
+    if (!departChapterThree(state)) throw new Error("東京へ出発できません");
     save();
   }
   await renderStage(owner);
@@ -326,6 +400,8 @@ async function renderStage(owner) {
   if (!current(owner)) return;
   syncTokyoVisits(state);
   const progress = chapterThreeProgress(state);
+  // 東京も日常ループで遊ぶ行程（版3・VOL03）は、大会の朝（DAY14）まで日常ループ。以後は今までの大会の朝のカード。
+  if (chapterThreeDaily(state) && state.day < progress.startDay + 13) { await renderTokyoDaily(owner); return; }
   const scene = chapterThreeScenes(state)[progress.stage];
   const free = chapterThreeFreeTime(state);
   if (free) { await renderFreeTime(owner, free); return; }
@@ -395,6 +471,20 @@ async function renderStage(owner) {
   ], scene.id === "ch3_kuze_advice" ? "煙幕を初めて訪ねた日から、数日が過ぎた。" : "", scene.id);
 }
 
+/** 東京の14日（版3）。日常ループの地図・本筋・寄り道は chapters/ch3-tokyo-daily.js。大会の朝に戻る。 */
+async function renderTokyoDaily(owner) {
+  const tokyo = await withLoadingNotice(import("./ch3-tokyo-daily.js"), loadingNotice("東京の地図を準備しています…"));
+  if (!current(owner)) return;
+  showScreen("none", null);
+  await tokyo.runChapterThreeTokyo({
+    readScene: scene => readScene(owner, scene),
+    openRuleSheet: async () => (await import("../scenes/rule-sheet.js")).openRuleSheet(),
+  });
+  if (!current(owner) || state.day < tokyo.tokyoTournamentDay(state)) return;
+  hud(owner);
+  await renderStage(owner);
+}
+
 /**
  * 任意場面の入口は、毎日必ず出る場面カードに置く。自由時間のカードは約束かジム会員の時だけ開く
  * ため、そこに置くと任意場面の多くに届かない。読んでも自由時間ウィンドウは消費しない（仮置き。
@@ -439,13 +529,18 @@ function bondActions(owner) {
     if (current(owner)) await renderStage(owner);
   })];
   const kind = questionVisitDue("mashiro") ? "question" : finaleAtVisit("mashiro") ? "finale" : null;
-  return kind ? [button(owner, kind === "question" ? "ましろちゃんと話す（mukai）" : "ましろちゃんに呼ばれる（mukai）",
-    `bond-${kind}`, () => readBond(owner, kind))] : [];
+  return [
+    ...kind ? [button(owner, kind === "question" ? "ましろちゃんと話す（mukai）" : "ましろちゃんに呼ばれる（mukai）",
+      `bond-${kind}`, () => readBond(owner, kind))] : [],
+    // 久世の締めくくり（#2028）。条件は daily/bonds.js（LIME交換の寄り道と答えを返す外出の後）。友情の着地だけ。
+    ...finaleAtVisit("kuze") ? [button(owner, "久世に呼ばれる（煙幕）", "bond-kuze-finale",
+      () => readBond(owner, "finale", "kuze"))] : [],
+  ];
 }
 
-async function readBond(owner, kind) {
+async function readBond(owner, kind, id = "mashiro") {
   if (!current(owner)) return;
-  const background = bgUrl("bg_mukai_shop");
+  const background = bgUrl(id === "kuze" ? "bg_yohaku_shop" : "bg_mukai_shop");
   showScreen("none", null);
   hud(owner);
   await withScenePreparation(setBg(background, { instant: true }));
@@ -460,7 +555,7 @@ async function readBond(owner, kind) {
   try {
     const options = { bg: background, signal: controller.signal };
     if (kind === "question") await playQuestionVisit("mashiro", options);
-    else if (finaleAtVisit("mashiro")) await playFinale("mashiro", options);
+    else if (finaleAtVisit(id)) await playFinale(id, options);
   } finally {
     if (hooks.onChoice === choiceHook) hooks.onChoice = previousChoice;
     if (hooks.evalCondition === conditionHook) hooks.evalCondition = previousCondition;

@@ -38,6 +38,16 @@ export const MOTIONS = {
 };
 export const motionOf = (intro) => (Object.hasOwn(MOTIONS, intro?.motion) ? intro.motion : "sharp");
 
+/** 頭の大きさをそろえた配置で、絵の下端が画面に届かないときは下を薄く、右へはみ出す分は名前の手前で薄く消す */
+function portraitMask(frame) {
+  const masks = [];
+  if (frame.fade) masks.push(`linear-gradient(to bottom,#000 ${100 - frame.fade}%,transparent)`);
+  if (frame.right) masks.push(`linear-gradient(to right,#000 ${Math.max(0, frame.right - 4)}%,transparent ${frame.right}%)`);
+  if (!masks.length) return "";
+  const image = masks.join(",");
+  return `-webkit-mask-image:${image};mask-image:${image};-webkit-mask-composite:source-in;mask-composite:intersect;`;
+}
+
 export function illustratedIntro(id, variant, intro, main, portrait, art, background) {
   const frame = art.frames[portrait.face] || art.frames[intro.face] || art.frames.normal;
   const flavor = introFlavor(id, variant);
@@ -60,7 +70,7 @@ export function illustratedIntro(id, variant, intro, main, portrait, art, backgr
     ]),
     el("img.ci-portrait", {
       src: portrait.src, alt: "", draggable: "false",
-      style: `width:${frame.width}px;left:${frame.left}px;top:${frame.top}px`,
+      style: `width:${frame.width}px;left:${frame.left}px;top:${frame.top}px;${portraitMask(frame)}`,
     }),
     // 読む順番: 名前→二つ名→一言→好きなフレーバー（2026-10-31）
     el(`div.ci-quote-area${flavor ? ".has-flavor" : ""}`, [

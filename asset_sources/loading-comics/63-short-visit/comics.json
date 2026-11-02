@@ -2,8 +2,8 @@
   "episode": 63,
   "title": "少しだけの幅",
   "theme": "シーシャあるある",
-  "status": "adopted-registered-20261102",
-  "registered": true,
+  "status": "not-adopted-owner-20261102",
+  "registered": false,
   "canon_status": "シーシャの注文・店の日常とキャラのこだわりに根拠を置いた番外編ギャグ。本編の能力・人物設定・採点・レシピは変更しない。",
   "reading_order": "左①導入→右②オチ",
   "image_manifest": [
@@ -92,5 +92,5 @@
       "visual": "スマホ横の全12話とPC第71話を目視確認、台詞と顔の欠けなし。"
     }
   },
-  "selection_note": "2026-11-02 採用。remake/js/core/loading-comics.js の id 'short-visit'、配信用は remake/img/loading/short-visit-1.webp / -2.webp。"
+  "selection_note": "2026-11-02 オーナーの選別で不採用（ゲームに登録しない）。"
 }
