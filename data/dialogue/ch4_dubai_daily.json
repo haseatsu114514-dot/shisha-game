@@ -343,8 +343,8 @@
         { "speaker": "shop_clerk", "face": "", "text": "この葉は汁気が多いので。蜜に漬けた、という意味の名前で呼ばれる葉です" },
         { "speaker": "shop_clerk", "face": "", "text": "アルミをかけて、炭を載せる。この店の台は、昔からずっとこれです" },
         { "speaker": "hajime", "face": "normal", "text": "（盛る量も、ボウルの土も、葉の汁気に合わせてあるんだ）" },
-        { "speaker": "shop_clerk", "face": "", "text": "同じ缶なら、街のDr.fookahにも並んでいましたよ。この辺りの定番です" },
-        { "speaker": "hajime", "face": "smile", "text": "（帰りに、のぞいてみようかな）" }
+        { "speaker": "shop_clerk", "face": "", "text": "日本の店では、こうは盛らないでしょう" },
+        { "speaker": "hajime", "face": "smile", "text": "（帰ったら、盛り方から試してみよう）" }
       ]
     },
     {
