@@ -398,6 +398,166 @@
       "comment": "♥3で読む誘い（DSR21）。ガイドの仕事のサンドボードへ。初回は無料、2回目からツアー代 6,000円（オーナー指定）。読了で地図に「ヌールと砂丘へ」。"
     },
     {
+      "dialogue_id": "ch4_noor_bond_question",
+      "comment": "DSR20（ヒロイン化）の♥3の問い。サンドボードに誘われた後の来店で一度だけ（♥3）。選択肢 bond_q1_noor が実回答（romance 1=恋愛寄り／0=友情）。関係名の札は付けず、ヌールの反応で違いを伝える。大会に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客の少ない時間のカフェ・サーリム。ヌールさんが、片付けの手を止めて向かいに座った。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ねえハジメ。前から聞きたかったこと、聞いてもいい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "なんですか、改まって"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "手帳の宝物、ハジメにもらった言葉がいちばん多いの。先生だから、当たり前だけど"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……ハジメにとって、私って何？ ガイド？ 店の人？ それとも……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんは手帳を閉じて、いつもより少しだけ真面目な顔で、返事を待っている。"
+        },
+        {
+          "type": "choice",
+          "id": "bond_q1_noor",
+          "romance_char": "noor",
+          "choices": [
+            {
+              "text": "「……気になる人、です」",
+              "next": "personal",
+              "romance": 1
+            },
+            {
+              "text": "「大事な友だちです」",
+              "next": "friend",
+              "romance": 0
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "personal": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……気になる人、です"
+          },
+          {
+            "speaker": "noor",
+            "face": "surprise",
+            "text": "……ファッ！？ ……あ、ちが、今のは本当にびっくりした時のやつ"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "そっか。……気になる人。宝物の、いちばん上に書いとく"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ヌールさんは手帳の最初のページを開いて、何かを大きく書き足した。耳が、少し赤い。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（……言ってしまった）"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "大事な友だちです。ここに来るのが、毎日の楽しみなので"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "友だち！ いいね。友だちは、一生モノの宝物"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "じゃあ、友だち価格はずっと続くね、……あはは、冗談"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "（……笑ってくれて、よかった）"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_noor_cafe_4",
+      "comment": "DSR20（ヒロイン化）の♥4。♥3の問いの後。アニメの舞台の町（聖地巡礼）と、日本へ行ったらはじめがガイドをする約束。大会に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カフェ・サーリムの奥の席。ヌールさんが、スマホの写真を見せてくれた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "見て。日本のアニメの、舞台になった町。いつか行きたい場所リスト"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "聖地巡礼ですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "それ！ 「セイチジュンレイ」、……宝物、ひとつ追加"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……ハジメは、いつか日本に帰っちゃうんだよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そうですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "じゃあ、私が日本に行ったら、今度はハジメがガイドね"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "砂の代わりに、ハジメの好きな場所を見せて。ヤクソク"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出された小指は、前より少しだけ長く、はじめの指に絡んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……心臓に悪い。本当に）"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch4_noor_cafe_chat_a",
       "comment": "カフェ・サーリムの雑談（段階の会話が無い日に順に読む）。大会の話はしない。",
       "lines": [

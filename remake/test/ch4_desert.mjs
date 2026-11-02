@@ -3,7 +3,7 @@
 // 初回は無料・2回目から 6,000円、同じ日に二度は行けない、記録と初回だけの報酬、遊びのご褒美の判定。
 import assert from "node:assert/strict";
 import test from "node:test";
-import { DESERT_FLAG, DESERT_TALKS, DESERT_TALK_HEARTS, DESERT_CAFE_CHATS, DESERT_CAFE_PRICE, DESERT_RIDE_PRICE, DESERT_SCENES, DESERT_DIALOGUE_IDS,
+import { DESERT_FLAG, DESERT_TALKS, DESERT_TALK_HEARTS, DESERT_INVITE_STAGE, NOOR_QUESTION_CHOICE, DESERT_CAFE_CHATS, DESERT_CAFE_PRICE, DESERT_RIDE_PRICE, DESERT_SCENES, DESERT_DIALOGUE_IDS,
   desertRivals, markNaruMet, desertProgress, desertInvited, desertTalkScene, completeDesertTalk, desertCafeVisit, completeDesertCafeVisit, noorHeart,
   desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertRankAtLeast, desertDestinations,
   DESERT_SPOT_IDS, desertDailySpots, desertDailySpotById } from "../js/chapters/ch4-desert-progress.js";
@@ -13,10 +13,10 @@ import { readFileSync } from "node:fs";
 const fresh = () => ({ chapter: 4, day: 46, flags: {}, money: 50000, affinity: {} });
 const result = (score, rank, extra = {}) => ({ finished: true, score, rank, time: 55.2, maxCombo: 9, falls: 1, bigJumps: 5, perfect: 2, good: 2, nearMiss: 3, ...extra });
 const HEART = [0, 9, 20, 33, 48, 66];
-/** 段階の会話を全部読んで誘われた状態にする（♥は足りる分だけ足す）。 */
+/** 誘いまでの段階の会話を読んで誘われた状態にする（♥は足りる分だけ足す）。 */
 function invite(value) {
   let day = (desertProgress(value).lastTalkDay ?? 0) + 1;
-  for (let index = desertProgress(value).talks; index < DESERT_TALKS.length; index++, day++) {
+  for (let index = desertProgress(value).talks; index < DESERT_INVITE_STAGE; index++, day++) {
     value.affinity.noor = HEART[DESERT_TALK_HEARTS[index]];
     assert.equal(completeDesertTalk(value, DESERT_TALKS[index], day, noorHeart(value)), true, DESERT_TALKS[index]);
   }
@@ -27,7 +27,8 @@ function invite(value) {
 test("café visits: one a day, the next stage when Noor's heart allows it, a chat otherwise; the ♥3 invitation opens the dunes", () => {
   const value = fresh();
   assert.deepEqual(desertProgress(value), { talks: 0, chats: 0, lastTalkDay: null, outings: 0, lastOutingDay: null });
-  assert.deepEqual(DESERT_TALK_HEARTS, [0, 1, 2, 3]);
+  assert.deepEqual(DESERT_TALK_HEARTS, [0, 1, 2, 3, 3, 4]);
+  assert.equal(DESERT_INVITE_STAGE, 4);
   assert.deepEqual(desertCafeVisit(value, 1), { id: DESERT_TALKS[0], kind: "story" }, "the first visit is the meeting (♥0)");
   assert.equal(completeDesertCafeVisit(value, { id: DESERT_TALKS[1], kind: "story" }, 1), false, "only the expected scene counts");
   assert.equal(completeDesertCafeVisit(value, desertCafeVisit(value, 1), 1), true);
@@ -49,8 +50,16 @@ test("café visits: one a day, the next stage when Noor's heart allows it, a cha
   assert.deepEqual(desertCafeVisit(value, 5), { id: DESERT_TALKS[3], kind: "story" });
   completeDesertCafeVisit(value, desertCafeVisit(value, 5), 5);
   assert.equal(desertInvited(value), true);
-  assert.deepEqual(desertCafeVisit(value, 6), { id: DESERT_CAFE_CHATS[1], kind: "talk" }, "after the invitation the café keeps its chats");
   assert.deepEqual(value.flags[DESERT_FLAG], { v: 2, talks: 4, chats: 1, lastTalkDay: 5, outings: 0, lastOutingDay: null });
+  // 誘いの後も店の段階は続く: ♥3の問い（恋愛／友情）→ ♥4の会話。♥4までは雑談
+  assert.deepEqual(desertCafeVisit(value, 6), { id: "ch4_noor_bond_question", kind: "story" }, "the ♥3 question follows the invitation");
+  completeDesertCafeVisit(value, desertCafeVisit(value, 6), 6);
+  assert.deepEqual(desertCafeVisit(value, 7), { id: DESERT_CAFE_CHATS[1], kind: "talk" }, "the ♥4 talk waits for ♥4");
+  value.affinity.noor = 48;
+  assert.deepEqual(desertCafeVisit(value, 7), { id: "ch4_noor_cafe_4", kind: "story" });
+  completeDesertCafeVisit(value, desertCafeVisit(value, 7), 7);
+  assert.equal(desertProgress(value).talks, DESERT_TALKS.length);
+  assert.deepEqual(desertCafeVisit(value, 8), { id: DESERT_CAFE_CHATS[1], kind: "talk" }, "after every stage the café keeps its chats");
   // 恋人なら♥5扱い。旧カードの地図は♥を問わない（heart を省く）
   assert.equal(noorHeart({ lovers: ["noor"] }), 5);
   const old = fresh();
@@ -62,7 +71,7 @@ test("café visits: one a day, the next stage when Noor's heart allows it, a cha
 test("old saves: the three desk talks (meeting, map, invitation) keep the invitation; partial progress keeps its place", () => {
   const invited = { ...fresh(), flags: { [DESERT_FLAG]: { talks: 3, lastTalkDay: 3, outings: 1, lastOutingDay: 3 } } };
   assert.equal(desertInvited(invited), true);
-  assert.equal(desertProgress(invited).talks, DESERT_TALKS.length);
+  assert.equal(desertProgress(invited).talks, DESERT_INVITE_STAGE, "an old invited save is at the invitation, before the ♥3 question");
   const halfway = { ...fresh(), flags: { [DESERT_FLAG]: { talks: 2, lastTalkDay: 2 } } };
   assert.equal(desertProgress(halfway).talks, 2);
   halfway.affinity.noor = 20;
@@ -178,6 +187,12 @@ test("every dialogue the connection needs exists in data/dialogue/ch4_desert.jso
   const ids = new Set(data.dialogues.map(d => d.dialogue_id));
   for (const id of DESERT_DIALOGUE_IDS) assert(ids.has(id), `missing dialogue ${id}`);
   assert.deepEqual(Object.values(DESERT_SCENES).filter(id => !ids.has(id)), []);
+  // ♥3の問い: 恋愛寄り（1）と友情（0）の実回答。分岐はどちらも読み終えられる
+  const question = data.dialogues.find(d => d.dialogue_id === "ch4_noor_bond_question");
+  const choice = question.lines.find(line => line.type === "choice");
+  assert.deepEqual([choice.id, choice.romance_char, choice.choices.map(c => c.romance)], [NOOR_QUESTION_CHOICE, "noor", [1, 0]]);
+  for (const c of choice.choices) assert(question.branches[c.next]?.length, c.next);
+  assert.match(readFileSync(new URL("../js/chapters/ch4-desert.js", import.meta.url), "utf8"), /questionDoneKey\(DESERT_GUIDE\)/);
   const meet = data.dialogues.find(d => d.dialogue_id === DESERT_TALKS[0]);
   assert(meet.lines.some(line => line.type === "set_flag" && line.flag === "_met_noor"), "the first talk introduces the guide by name");
   // 大会前を前提にした会話は大会後の分岐を持つ（交流の時系列ルール）
