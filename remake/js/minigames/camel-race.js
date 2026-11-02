@@ -60,7 +60,7 @@ const ICONS = Object.freeze({
   camel: '<svg viewBox="0 0 48 32" aria-hidden="true"><path d="M5 30l3-9c-2-1-3-3-3-6 0-4 3-7 7-7 2-4 6-6 10-3 3 2 5 2 7 0l4-6c2-1 5 0 6 2l2 4-4 1-4 7c-1 4-4 7-8 8l1 9h-3l-2-8h-6l-3 8H9l2-8-3-1-1 9z" fill="currentColor"/></svg>',
 });
 const TUTORIAL = [
-  { icon: "camel", title: "ラクダは、自分で走る", body: "自分のラクダは、車のすぐ横（いちばん手前）を走る金のゼッケン（★）のハビーバ。進路は操縦しない。背中の小さなロボット騎手に、リモコンで合図を送るだけ。" },
+  { icon: "camel", title: "ラクダは、自分で走る", body: "自分のラクダは、車のすぐ横（いちばん手前）を走る金のゼッケン（★）のハビーバ。進路は操縦しない。背中の小さなロボット騎手に、リモコンで「声」と「ムチ」を送るだけ。" },
   { icon: "voice", title: "声をかける ── Space／左のボタン", body: "ハビーバの背のロボット騎手のまわりに金色の輪が出て、縮んでいく。内側の輪と重なった瞬間に押すと PERFECT で、その場でぐっと伸びる。外せば無駄な声でスタミナが減り、連打はもっと減る。" },
   { icon: "signal", title: "ムチ ── X／右のボタンを押し続ける", body: "押している間だけ騎手の腕が回り、ラクダが伸びる。そのぶんスタミナが減り、空になると戻るまで使えない。離して声を当てれば息が整う。残り250mの LAST SPURT でいちばん効く。" },
 ];
@@ -235,7 +235,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     el("i.camel-progress-flag"), ...dots.values(),
   ])]);
   // 画面いっぱいにコースを出し、見出し・時計・順位・ボタンはコースの上に重ねる（上下の帯でコースを狭めない）。
-  // 左上: 題名と時計、上の中央: 進み具合、右上: やめる と順位（縦）、左下: 声（調子の棒つき）、右下: 合図（スタミナつき）。
+  // 左上: 題名と時計、上の中央: 進み具合、右上: やめる と順位（縦）、左下: 声（調子の棒つき）、右下: ムチ（スタミナつき）。
   const clockTime = el("b.camel-clock-time", { text: "0:00.00" });
   // 速度計（km/h）: 車の速度計の読み。声で一伸び・ムチで伸びるのが数字でも見える。
   const speedValue = el("b.camel-speed-value", { text: "0" });
@@ -357,7 +357,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       if (combo === 5 && !marks.has("combo")) { marks.add("combo"); say(CALLS.combo); }
     } else { combo = 0; sfx("miss"); showFeedback(result.spam ? "連打はダメ" : "無駄な声", "miss"); burst("miss"); hajime("あっ", "surprise"); }
   };
-  /** ムチ（合図）を押す・離す。押している間だけ騎手の腕が回り続け、ラクダが伸びる（スタミナを使う）。 */
+  /** ムチを押す・離す。押している間だけ騎手の腕が回り続け、ラクダが伸びる（スタミナを使う）。 */
   const onWhip = on => {
     if (!race || (phase !== "race" && on)) return;
     const result = setWhip(race, on);
@@ -923,7 +923,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     ctx.fillStyle = "#c9d2da"; ctx.beginPath(); ctx.arc(-21, -42, 5, Math.PI, 0); ctx.fill(); // 丸い頭
     ctx.strokeStyle = "#34404a"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-17, -42); ctx.lineTo(-15, -58); ctx.stroke();
     ctx.fillStyle = Math.sin(t * 8 + x) > 0 ? "#ff5a5a" : "#5a1a1a"; ctx.beginPath(); ctx.arc(-15, -59, 2.4, 0, Math.PI * 2); ctx.fill();
-    // 腕（合図で振る）。自分のラクダだけ whip が動く。
+    // 腕（ムチで振る）。自分のラクダだけ whip が動く。
     const swing = camel.id === "player" ? (race?.player.whipping ? Math.sin(t * 22) : Math.sin(whip * Math.PI * 3) * whip) : Math.sin(t * 3 + x) * 0.1;
     ctx.save(); ctx.translate(-30, -32); ctx.rotate(-0.6 - swing * 1.4);
     ctx.strokeStyle = "#34404a"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-18, 0); ctx.stroke();

@@ -6,7 +6,7 @@
 ## 1. 現実のラクダレース（描写の根拠）
 
 - ラクダの背には**小型のロボット騎手**。2000年代に子どもの騎手が禁じられ（UAE は2005年に18歳未満を禁止）、代わりに普及した。初期は重い試作機だったが、今は**数キロ**の軽い箱型で、スピーカー（無線）と小さなムチの腕を持つ。
-- **調教師はコース横の道を走る車（SUV）から**、小さなリモコンで操作する。送れるのは**声**（スピーカー越しの声かけ）と**合図**（腕を回してムチを振る）だけ。**進行方向は操縦しない**。ラクダは自分で走る。
+- **調教師はコース横の道を走る車（SUV）から**、小さなリモコンで操作する。送れるのは**声**（スピーカー越しの声かけ）と**ムチ**（腕を回してムチを振る。ゲームではボタンを押している間だけ）だけ。画面・台詞では「合図」と呼ばない（2026-11-02 オーナー「合図って言葉がわかりずらい」）。**進行方向は操縦しない**。ラクダは自分で走る。
 - 本番は4〜10kmの長距離。主人公が参加するのは**調教師が監督する、若いラクダの練習レース（1,000m・4頭）**。
 - 出典: [What's On: Meet the tiny robot jockeys riding Dubai's racing camels](https://whatson.ae/2021/08/meet-the-tiny-robot-jockeys-riding-dubais-racing-camels/)、[The National: UAE camel trainers prefer robot jockeys](https://www.thenationalnews.com/uae/uae-camel-trainers-prefer-robot-jockeys-1.96956)、[PRI: Ancient tradition, modern twist — robot jockeys](https://www.pri.org/stories/2014/12/29/ancient-tradition-camel-racing-arab-peninsula-modern-twist-robot-jockeys)、[Al Jazeera: Robots ride camels in race (2005)](https://www.aljazeera.com/news/2005/07/18/robots-ride-camels-in-race/)、[CultureMap: Robot jockeys and sprinting SUVs](https://houston.culturemap.com/03-04-15-robot-jockeys-and-sprinting-suvs-bring-camel-racing-the-sport-of-sheikhs-into-the-21st-century/)。
 

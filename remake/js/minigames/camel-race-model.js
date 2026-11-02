@@ -2,17 +2,17 @@
 // 画面は camel-race.js、本編との接続は chapters/ch4-camel-race.js。
 //
 // 現実のドバイのラクダレースに倣う: ラクダの背には小型のロボット騎手。調教師はコース横の道を走る車から
-// リモコンで「声」（スピーカー越しの声かけ）と「合図」（騎手の腕）を送るだけで、進路は操縦しない。
-// ゲームでも、ラクダは自分で走る。プレイヤーが決めるのは「いつ声をかけるか」「いつ合図（ムチ）を入れるか」だけ。
+// リモコンで「声」（スピーカー越しの声かけ）と「ムチ」（騎手の腕）を送るだけで、進路は操縦しない。
+// ゲームでも、ラクダは自分で走る。プレイヤーが決めるのは「いつ声をかけるか」「いつムチを入れるか」だけ。
 // 2026-11-02 オーナー「ラクダ操ってる感とかスピード感」: 声が当たるとその場で一伸び（surge）し、
-// 合図は押している間だけ騎手の腕が回り続ける（押す＝加速・スタミナを使う、離す＝声で息を整える）。
+// ムチは押している間だけ騎手の腕が回り続ける（押す＝加速・スタミナを使う、離す＝声で息を整える）。
 //
 // 時間は秒。距離はメートル。stepRace(state, dt) を小刻みに呼ぶと進む。乱数は seed で固定（テスト・再現用）。
 
 export const RACE = Object.freeze({
   length: 1000,          // 練習レースのコース長（本番は4〜10km。練習用に短い）
   rivals: 3,
-  spurtFrom: 0.75,       // ここから「ラストスパート」区間（合図の効きが強い）
+  spurtFrom: 0.75,       // ここから「ラストスパート」区間（ムチの効きが強い）
   maxTime: 95,           // ここまでに着かなければ強制的にゴール扱い（画面の保険）
   countdown: 3,
 });
@@ -40,7 +40,7 @@ export const CUE = Object.freeze({
   perfectSurge: 1.0, goodSurge: 0.8, surgeMax: 4, surgeFade: 0.8,
 });
 
-/** 合図（ムチ）: 押している間だけ騎手の腕が回る。スタミナを使い、終盤ほど効く。 */
+/** ムチ: 押している間だけ騎手の腕が回る。スタミナを使い、終盤ほど効く。 */
 export const WHIP = Object.freeze({
   boost: 3.0, spurtBoost: 5.0,   // 押している間の上乗せ m/s
   drain: 13, spurtDrain: 11,     // 押している間のスタミナ消費（1秒あたり）
@@ -167,7 +167,7 @@ export function pressVoice(state) {
 export const whipReady = state => !state.player.whipLocked && state.player.stamina > WHIP.empty;
 
 /**
- * 合図（X／右ボタン）を押す・離す。押している間だけ騎手の腕が回り続け、stepRace がスタミナを使って加速させる。
+ * ムチ（X／右ボタン）を押す・離す。押している間だけ騎手の腕が回り続け、stepRace がスタミナを使って加速させる。
  * 戻り値: 押した時 { type: "spurt" | "boost" | "spent" }、離した時 { type: "release" }、変化なしは null。
  */
 export function setWhip(state, on) {
