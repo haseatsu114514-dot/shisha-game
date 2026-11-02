@@ -18,7 +18,8 @@ export const FACILITY_ICONS = Object.freeze({
 export const FACILITY_ICON_SIZES = Object.freeze([32, 48, 64, 80, 96, 128]);
 const SPOT_ICONS = Object.freeze({ kannon: 'kannondo', rest: 'home', cafe: 'kohaku',
   rojiura_cinema: 'rojiura_cinema',
-  axe_bar: 'axe_bar', choizap: 'choizap', fortune: 'fortune', trpg_bar: 'trpg_bar' });
+  axe_bar: 'axe_bar', choizap: 'choizap', fortune: 'fortune', trpg_bar: 'trpg_bar',
+  ch3_tokyo_gym: 'choizap' }); // 第3章の東京のCHOI-ZAP（同じチェーンの高架下の店）
 export const hasFacilityIcon = id => Object.hasOwn(SPOT_ICONS, id);
 
 // Morphology follows the alpha silhouette, rather than adding a rectangular backing.
