@@ -2633,6 +2633,23 @@
       "chrome": "playwright"
     },
     {
+      "id": "daily-menu",
+      "title": "Full-screen daily MENU: four read-only tabs, keys, save guard and DS layout (#2097)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/menu.js",
+        "remake/js/daily/hud.js",
+        "remake/js/daily/status.js",
+        "remake/css/daily-menu.css",
+        "remake/img/ui/paper/menu-bg.webp",
+        "remake/test/browser/daily_menu.mjs"
+      ],
+      "run": ["node remake/test/browser/daily_menu.mjs"],
+      "chrome": "playwright"
+    },
+    {
       "id": "hud-fortune",
       "title": "Unified HUD and fortune readings",
       "kind": "browser",

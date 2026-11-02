@@ -104,8 +104,8 @@ export function imageReady(url, ms = 1500, { keep = false } = {}) {
 // スロットのランプ・通知）も同じ（GUI20・21）。起動時に並行して読み、手放さずに置いておく。
 const LOUNGE_ART = ["panel", "button", "map-pin", "heart", "reward-clean", "gauge-frame", "gauge-fill"].map((n) => `img/ui/lounge/${n}.webp`);
 const SLOT_ART = ["symbols", "symbols-premium", "bezel"].map((n) => `img/ui/pakki-slot/${n}.webp`);
-// 紙とラベンダー（既定のUI・DUI08）の板と札。会話枠は uiThemeFrame で別に読む。
-const PAPER_ART = ["panel", "lavender"].map((n) => `img/ui/paper/${n}.webp`);
+// 紙とラベンダー（既定のUI・DUI08）の板と札、全画面MENUの紙（DUI03）。会話枠は uiThemeFrame で別に読む。
+const PAPER_ART = ["panel", "lavender", "menu-bg"].map((n) => `img/ui/paper/${n}.webp`);
 /** 設定・ギャラリーの窓と最初の会話の枠・ボタン（タイトルの絵と一緒に、幕を開ける前に待つ） */
 export const FRAME_ART = LOUNGE_ART.slice(0, 2);
 let uiArt = null;
