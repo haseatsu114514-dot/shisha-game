@@ -82,7 +82,7 @@ export const CH4_DUBAI_SPOTS = Object.freeze([
   spot({ id: "ch4_dubai_creek", place: "creek", label: "クリーク沿い", area: "水辺の遊歩道", x: 58, y: 86, theme: "park", glyph: "水",
     preview: "bg_dubai_street_night", stamina: 20, desc: "水辺を歩いて、少し体を休める。" }),
   spot({ id: "ch4_dubai_shop", place: "shop", label: "Dr.fookah ドバイ店", area: "街の中心", x: 35, y: 57, theme: "shop", glyph: "卸",
-    preview: CH4_PLACE_BG.shop, desc: "日本で出た葉と、ドバイで定番の葉がそろう（時間は使わない）。" }),
+    preview: CH4_PLACE_BG.shop, desc: "日本で出た葉が全部そろう（時間は使わない）。" }),
   spot({ id: "ch4_dubai_mosque", place: "mosque", label: "風の回廊モスク", area: "見学の回廊", x: 58, y: 70, theme: "rest", glyph: "回",
     preview: "bg_dubai_map", desc: "案内付きで見学し、中庭の回廊で振り返る（時間は使わない）。" }),
   spot({ id: "ch4_dubai_inn", place: "inn", label: "宿", area: "旧市街の宿", x: 8, y: 46, theme: "rest", glyph: "休",

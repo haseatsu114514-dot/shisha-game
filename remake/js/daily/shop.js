@@ -3,7 +3,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 // Dr.fookah（問屋街の卸直営店）。フレーバー・機材の売り買いは時間を使わない。
 // 2階のショールーム（凛）へ上がると1行動使う。
 import { CITY_BACKGROUNDS } from "../core/city-locations.js";
-import { WIDEHANGA_FLAVORS, WIDEHANGA_SHOP_NAME, TOKYO_FLAVORS, TOKYO_SHOP_NAME, DUBAI_SHOP_NAME, DUBAI_LOCAL_FLAVORS, tokyoShopFlavors } from "./shop-catalogs.js";
+import { WIDEHANGA_FLAVORS, WIDEHANGA_SHOP_NAME, TOKYO_FLAVORS, TOKYO_SHOP_NAME, DUBAI_SHOP_NAME, tokyoShopFlavors } from "./shop-catalogs.js";
 import { el, yen } from "../core/util.js";
 import { shopText, shopProductName, groupShopFlavors } from "./shop-display.js";
 import { DB, bgUrl } from "../core/data.js";
@@ -37,8 +37,8 @@ export const SHOP_FLAVORS = [
   // みんとの新作「ミント×グレープフルーツ、仕上げに蜂蜜」を自分でも組める
   "grapefruit", "honey",
 ];
-/** 第4章ドバイ店: 地元・柚ヶ谷・東京の各店で扱ってきた葉を全部と、ドバイで定番の葉（発売章の絞り込みは店頭で行う） */
-export const DUBAI_FLAVORS = [...new Set([...SHOP_FLAVORS, ...WIDEHANGA_FLAVORS, ...TOKYO_FLAVORS, ...DUBAI_LOCAL_FLAVORS])];
+/** 第4章ドバイ店: 地元・柚ヶ谷・東京の各店で扱ってきた葉を全部（発売章の絞り込みは店頭で行う） */
+export const DUBAI_FLAVORS = [...new Set([...SHOP_FLAVORS, ...WIDEHANGA_FLAVORS, ...TOKYO_FLAVORS])];
 /** 発売章（chapter_min）を過ぎた葉だけ店頭に並べる。持ち越しの在庫・もらった葉はそのまま使える */
 export const releasedFlavor = (id, chapter = state?.chapter) => !!DB.flavorById[id] && (DB.flavorById[id].chapter_min || 1) <= (chapter || 1);
 const SHOP_EQUIP_TYPES = ["bowl", "hms", "charcoal"];
@@ -153,7 +153,7 @@ export async function openShop(opts = {}) {
     // 第4章のドバイと、第5章にドバイへ来た時（#2033 E）。
     if (![4, 5].includes(state.chapter)) return null;
     return openCounter({ flavorIds: DUBAI_FLAVORS, stockChapter: 4, shopName: DUBAI_SHOP_NAME,
-      subtitle: "日本で出た葉と、ドバイの定番がそろう", branded: true, kuji: false });
+      subtitle: "日本で出た葉がそろう", branded: true, kuji: false });
   }
   if (opts.branch === "widehanga") {
     if (state.chapter < 2) return null;

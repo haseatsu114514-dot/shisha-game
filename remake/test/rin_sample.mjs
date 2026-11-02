@@ -19,7 +19,7 @@ const real = ['core/state.js', 'daily/shop.js', 'daily/spots.js', 'vn/engine.js'
 const modules = new Map(), required = new Map();
 const known = { DB: db, MAX_MONEY: 999999, TOURNAMENT_DAY: 14, MASTERY_THRESHOLDS: [0,6,18,36,60],
   VISIT_SEQ: { rin: ['ch1_rin_first','ch1_rin_second','ch1_rin_third'] }, AFFINITY_RANK_PTS: [0,9,18,27],
-  RAIN_SPOT_TEXTS: {}, AXE_BAR: {}, WIDEHANGA_FLAVORS: [], TOKYO_FLAVORS: [], DUBAI_LOCAL_FLAVORS: [], el: node, layers: { vn: node(), fx: node() },
+  RAIN_SPOT_TEXTS: {}, AXE_BAR: {}, WIDEHANGA_FLAVORS: [], TOKYO_FLAVORS: [], el: node, layers: { vn: node(), fx: node() },
   createNameFit: () => ({ fit() {} }), sceneBg: () => ({}), imageReady: async () => true,
   loadVnFonts: async () => [],
   setBg: () => Promise.resolve(), portraitInfo: () => null, tournamentFinished: () => finished,

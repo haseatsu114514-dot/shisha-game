@@ -47,7 +47,7 @@ export const DUBAI_SPOTS = Object.freeze([
   spot({ id: "ch5_dubai_creek", label: "クリーク沿い", area: "水辺の遊歩道", x: 58, y: 86, theme: "park", glyph: "水",
     preview: "bg_dubai_street_night", stamina: 20, desc: "水辺を歩いて、少し体を休める。" }),
   spot({ id: "ch5_dubai_shop", kind: "shop", label: "Dr.fookah ドバイ店", area: "街の中心", x: 40, y: 50, theme: "shop", glyph: "卸",
-    preview: "bg_shop", desc: "日本で出た葉と、ドバイで定番の葉がそろう（時間は使わない）。" }),
+    preview: "bg_shop", desc: "日本で出た葉が全部そろう（時間は使わない）。" }),
   spot({ id: "ch5_dubai_guest", label: "客間", area: "シェイクの屋敷の二階", x: 8, y: 60, theme: "rest", glyph: "休", preview: RESIDENCE_BG,
     stamina: 55, desc: "屋敷の客間で休む。体力が大きく戻る。" }),
   // 心得の盤の内省（SPEC 2.8）: 第4章と同じ風の回廊モスク。灯せる火種がある時だけ地図に出す（ch5-daily.js）。時間は使わない。

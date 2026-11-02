@@ -73,10 +73,10 @@ export function chapterFourMapModel(value, { canReflect = false } = {}) {
         : `${hours.why}。昼の案内付き見学枠（礼拝時間外・金曜午前を除く）に訪ねよう。`,
     }));
   }
-  // Dr.fookah ドバイ店: 日本の各店で扱ってきた葉と、ドバイで定番の葉がそろう。買い物は時間・体力を使わない。
+  // Dr.fookah ドバイ店: 日本の各店で扱ってきた葉が全部そろう。買い物は時間・体力を使わない。
   destinations.push(destination("shop", [], "Dr.fookah が現地に出した店。", false, {
     kind: "shop", consumes: false, label: "Dr.fookah ドバイ店で葉を買う",
-    purpose: "日本で出た葉と、ドバイで定番の葉がそろう。買い物は時間を使わない。",
+    purpose: "日本で出た葉が全部そろう。買い物は時間を使わない。",
   }));
   // ラクダレース（任意・ch4-camel-race.js）: 店員と知り合う→誘われる→昼の行動を使って練習レース。段階と日付は同モジュールが読む。
   const camel = camelRaceDestination(value);
