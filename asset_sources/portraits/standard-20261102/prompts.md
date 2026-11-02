@@ -11,7 +11,7 @@
 
 ## 生成後チェック（1枚ごと）
 
-- [ ] `fit_portrait.py` で896×1200へ合わせた後、`portrait_metrics.py grid` で測り、頭身が目標±0.3に入っている
+- [ ] `portrait_metrics.py grid --image` で原画を測り（頭身は縮小しても変わらない）、頭身が区分の規格内（標準6.4〜7.7）。各キャラの「目標」は書き方の目安で、合否は規格の範囲で決める
 - [ ] 現行と並べて、顔・表情・手と肩の位置・衣装・小物・体格・色が変わっていない
 - [ ] 線・影・ハイライト・描き込みの量が、みんと・あげはと原寸で並べて同じ作品に見える（規格3節）
 - [ ] 原画の人物の高さが1300px以上。透過がきれい（手足の間も）。床・影・文字が無い
@@ -77,9 +77,23 @@ STYLE STANDARD (shisha-game cast): draw this character in the same artist's hand
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the top of the head (including any hat) to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Preserve image 1's original local color palette, perceived saturation and light-dark range; do not lighten, desaturate or pastelize anything.
 ```
 
+## 試作1回目でわかったこと（2026-11-02）
+
+Codex が上の3つの英文で各3案（計9案）を生成した。頭身は次のとおりで、指定した拡大率どおりにはならなかった。
+
+| キャラ | 指定 | 結果（Codex の計測／Claude の計測） |
+|---|---|---|
+| 組長 | 6.29→6.7（頭を6%小さく） | A 7.17／7.41、B 7.45／7.17、C 7.10／6.75 |
+| スティーブ | 8.04→7.4（頭を9%大きく） | A 6.89／6.80、B 6.99／6.98、C 6.88／6.74 |
+| ヴォルク | 9.04→7.4（頭を22%大きく） | A 7.70／7.53、B 7.70／7.64、C 7.92／7.72 |
+
+- 拡大率の指定は効かず、元の頭身にかかわらず約6.8〜7.7頭身に寄った。参照②（南雲・6.93頭身）に引っ張られたとみられる。残りの人は拡大率を書かず、「image 2 と同じ約7頭身」と書くほうが確実。
+- 頭頂・あごの読み取りには1枚あたり±4px（約±0.2頭身）の差が出る。境目の案は2人で測る。
+- 頭身のほかに、余白の不足（スティーブA・ヴォルクAは足底が画像の端に接する）、透明度の低いノイズ、髪・靴の艶の残りがあった。
+
 ## 残りの人（試作の結果を見てから書く）
 
-試作で決まった書き方（各キャラの頭の大きさの指定は、下の表の拡大率で書く。規格3節の頭身の行は入れない）に、各キャラの人物の行（`Character:`）と表情の行を入れて作る。人物の行は下の既存プロンプトから写す。目標は7.4頭身（標準枠の上の方。写実寄りの絵から寄せすぎないため）。
+試作の書き方に、各キャラの人物の行（`Character:`）と表情の行を入れて作る。人物の行は下の既存プロンプトから写す。頭の大きさは「約○%大きく」ではなく「image 2 と同じ約7頭身に」と書く（下の「試作1回目でわかったこと」）。
 
 | キャラ | 現在 | 頭の拡大 | 表情 | 人物の行の出典 |
 |---|---:|---:|---|---|
