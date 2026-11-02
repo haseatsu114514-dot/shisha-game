@@ -358,6 +358,73 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5.part, "free", "The Tokyo stay does not move the Chapter 5 story");
   });
 
+  // #2033 E: シェイクの招待でドバイへ。最初に手紙を読み、1回目は同封の切符で無料、2回目からは往復100,000円。
+  // 屋敷の客間に泊まれて、帰りの便は払わない。
+  await check("chapter-five-dubai-letter-guest-room-and-flight-home", async page => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 5, day: 51, slot: 0, phase: "daily", money: 150000, stamina: 100,
+        weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
+        _ch4_sheikh_revealed: true, _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
+        _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
+          read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
+          finaleScenes: null, won: null, secondCup: null },
+        _ch5_match_scheduled: false, _ch5_match_started: false };
+      Object.assign(value.met, { sheikh: true });
+      value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      core.saveConfig(); core.save();
+    });
+    await loadSlot(page, 0);
+    await mapReady(page, { day: 51, slot: 0 });
+    // 昼: ドバイへ → 最初はシェイクの手紙 → 往復の確認 → 着いたら屋敷の客間へ。
+    await go(page, "ch5_to_dubai");
+    await page.locator(dt("ch5-dubai-go")).click({ timeout: 60000 });
+    const dubaiMap = (day, slot) => page.waitForFunction(([day, slot]) => {
+      const s = window.__remake?.state;
+      return s && s.day === day && s.slot === slot && document.querySelector('.map:not(.done)[data-region="dubai"] [data-test=pin-ch5_dubai_sheikh]')
+        && !document.querySelector("#modal.show");
+    }, [day, slot], { timeout: 60000 });
+    await dubaiMap(51, 1);
+    let state = await get(page);
+    assert.equal(state.flags._ch2_region, "dubai");
+    assert.equal(state.flags._ch5_dubai_letter, true, "The Sheikh's letter is read before the first flight");
+    assert.equal(state.flags._ch5_dubai_guest, true, "The Sheikh prepares the guest room on the first arrival");
+    assert.equal(state.money, 150000, "The Sheikh's ticket makes the first flight free");
+    assert.equal(state.flags._ch5_dubai_flights, 1);
+    for (const pin of ["ch5_dubai_souq", "ch5_dubai_alley", "ch5_dubai_creek", "ch5_dubai_shop", "ch5_dubai_guest", "ch5_dubai_home"])
+      assert.equal(await page.locator(dt(`pin-${pin}`)).count(), 1, `${pin} is on the Chapter 5 Dubai map`);
+    assert.equal(await page.locator(dt("pin-ch5_call")).count(), 0, "The doctor is called from home");
+    assert.equal(await page.locator(dt("pin-fortune")).count(), 0, "The fortune teller never appears in Dubai");
+    assert.match(await page.locator(".hud").innerText(), /DUBAI|ドバイ/);
+    const before = state.affinity?.sheikh || 0;
+    // 夜: シェイクと話す → 客間で寝て、翌朝もドバイ。
+    await go(page, "ch5_dubai_sheikh");
+    await dubaiMap(52, 0);
+    state = await get(page);
+    assert.equal(state.flags._ch2_region, "dubai", "The night is spent in the guest room");
+    assert.equal(state.flags._ch5_dubai_talks?.ch5_dubai_sheikh, 1);
+    assert((state.affinity?.sheikh || 0) > before, "Talking with the Sheikh raises affinity a little");
+    assert.equal(state.money, 150000, "The guest room is free");
+    // 昼: 空港から帰る（帰りの便は往復に入っている）→ 夜は地元。
+    await go(page, "ch5_dubai_home");
+    await mapReady(page, { day: 52, slot: 1 });
+    state = await get(page);
+    assert.equal(state.flags._ch2_region, "home");
+    assert.equal(state.money, 150000, "The flight home is already in the round trip");
+    assert.equal(state.flags._ch5.part, "free", "The Dubai stay does not move the Chapter 5 story");
+    // 夜: 2回目は自分で往復100,000円（手紙は読み直さない）→ 客間で寝て、翌朝もドバイ。
+    await go(page, "ch5_to_dubai");
+    await page.locator(dt("ch5-dubai-go")).click({ timeout: 60000 });
+    await dubaiMap(53, 0);
+    state = await get(page);
+    assert.equal(state.money, 150000 - 100000, "From the second flight, the round trip costs 100,000 yen");
+    assert.equal(state.flags._ch5_dubai_flights, 2);
+  });
+
   await check("chapter-five-weak-second-cup-loses-on-votes-and-continues", async page => {
     page.setDefaultTimeout(30000);
     await page.evaluate(async () => {
