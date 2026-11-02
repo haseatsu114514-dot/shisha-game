@@ -3,75 +3,99 @@
 .camel-game {
   --cr-gold: #ffd77a; --cr-gold-deep: #e0a43c; --cr-amber: #ffb347; --cr-ink: #1a110a; --cr-sand: #fff3dc; --cr-dim: #d9c6a3;
   --cr-glass: rgba(18, 11, 6, .74); --cr-line: rgba(255, 215, 122, .38);
-  position: absolute; inset: 0; z-index: 70; display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
-  gap: 8px; padding: 10px 14px 12px; color: var(--cr-sand); font-size: 15px; pointer-events: auto; outline: none;
-  background: radial-gradient(ellipse at 50% 120%, rgba(224,164,60,.28), transparent 60%), linear-gradient(180deg, #17213a, #2b2030 55%, #1d140d);
+  position: absolute; inset: 0; z-index: 70; display: grid; place-items: center; container-type: size;
+  color: var(--cr-sand); font-size: 15px; pointer-events: auto; outline: none; background: #0d0906;
 }
-.camel-game > * { position: relative; min-width: 0; }
 
-/* ---- 見出しと順位表（放送の順位の札。入れ替わると滑る） ---- */
-.camel-header { display: flex; align-items: center; gap: 14px; min-height: 52px; }
-.camel-header h1 { margin: 0; font-size: 22px; font-weight: 900; letter-spacing: .16em; line-height: 1.1;
-  background: linear-gradient(180deg, #fff1c4, var(--cr-gold) 55%, var(--cr-gold-deep)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.camel-header p { margin: 2px 0 0; font-size: 12px; font-weight: 700; color: var(--cr-dim); }
-.camel-standings { --chip-w: clamp(92px, 10vw, 132px); --chip-gap: 6px; position: relative; width: calc(var(--chip-w) * 4 + var(--chip-gap) * 3); height: 44px; margin: 0 0 0 auto; padding: 0; list-style: none; }
-.camel-standings li { position: absolute; top: 0; left: calc(var(--pos, 0) * (var(--chip-w) + var(--chip-gap))); width: var(--chip-w); height: 100%;
-  display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: 1fr 1fr; column-gap: 7px; align-items: center; padding: 0 8px 0 6px; box-sizing: border-box;
-  border-radius: 10px; background: linear-gradient(180deg, rgba(40,26,14,.92), rgba(18,11,6,.92)); border: 1px solid rgba(255,255,255,.08);
-  box-shadow: inset 3px 0 0 var(--camel-color, #fff), 0 4px 10px rgba(0,0,0,.25); transition: left .38s cubic-bezier(.2,.8,.2,1), background-color .2s; }
-.camel-rank-badge { grid-row: 1 / span 2; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font-size: 15px; font-weight: 900; color: var(--cr-ink);
+/* ---- コースを画面いっぱいに（16:9 を保ち、余りは黒）。見出し・順位・ボタンはこの上に重ねる ---- */
+.camel-stage { position: relative; container-type: size; width: min(100cqw, 177.78cqh); aspect-ratio: 16 / 9; overflow: hidden; background: #e2c48c; }
+.camel-canvas { display: block; width: 100%; height: 100%; background: #e2c48c; }
+
+/* ---- 重ねる HUD（文字は cqw で縮む） ---- */
+.camel-hud { position: absolute; inset: 0; pointer-events: none; font-size: clamp(12px, 1.25cqw, 16px); }
+.camel-hud[hidden] { display: none; }
+.camel-clock { position: absolute; left: 1.6cqw; top: 1.6cqw; display: grid; gap: .1em; padding: .45em .9em .5em; border-radius: .9em; background: var(--cr-glass); border: 1px solid rgba(255,255,255,.08); }
+.camel-title { margin: 0; font-size: .85em; font-weight: 900; letter-spacing: .18em; line-height: 1.2; color: var(--cr-gold); }
+.camel-clock-time { font-size: 1.7em; font-weight: 900; letter-spacing: .04em; font-variant-numeric: tabular-nums; line-height: 1.1; color: #fff; }
+.camel-clock-sub { font-size: .8em; font-weight: 800; color: var(--cr-dim); }
+.camel-progress { position: absolute; left: 20cqw; right: 20cqw; top: 2.2cqw; height: 2.4em; border-radius: 99px; background: var(--cr-glass); border: 1px solid rgba(255,255,255,.08); }
+.camel-progress-track { position: absolute; left: 1.2em; right: 1.8em; top: 50%; height: .36em; transform: translateY(-50%); border-radius: 99px; background: rgba(255,243,220,.18); }
+.camel-progress-spurt { position: absolute; top: -.25em; bottom: -.25em; left: calc(var(--x) * 100%); right: 0; border-radius: 99px; background: linear-gradient(90deg, rgba(255,179,71,.15), rgba(255,179,71,.55)); }
+.camel-progress-spurt span { position: absolute; left: .2em; bottom: 100%; margin-bottom: .1em; font-size: .7em; font-weight: 900; letter-spacing: .12em; color: var(--cr-amber); line-height: 1; }
+.camel-progress-tick { position: absolute; left: calc(var(--x) * 100%); top: -.3em; width: 1px; height: 1em; background: rgba(255,243,220,.35); }
+.camel-progress-flag { position: absolute; right: -1.3em; top: 50%; width: 1em; height: .8em; transform: translateY(-50%); border-radius: 2px;
+  background: conic-gradient(#1a110a 25%, #fff 0 50%, #1a110a 0 75%, #fff 0) 0 0 / .4em .4em; box-shadow: 0 0 0 1px rgba(255,255,255,.6); }
+.camel-dot { position: absolute; left: calc(var(--x, 0) * 100%); top: 50%; width: .8em; height: .8em; transform: translate(-50%, -50%); border-radius: 50%; background: var(--camel-color); box-shadow: 0 0 0 2px rgba(18,11,6,.9); }
+.camel-dot[data-who="player"] { z-index: 1; width: 1.25em; height: 1.25em; background: radial-gradient(circle at 35% 35%, #fff6d6, var(--cr-gold) 55%, var(--cr-gold-deep)); box-shadow: 0 0 0 2px #fff, 0 0 10px rgba(255,215,122,.8); }
+
+/* 順位: 右上に縦に4枚。入れ替わると上下へ滑る */
+.camel-standings { --row-h: 2.6em; --row-gap: .35em; position: absolute; right: 1.6cqw; top: calc(1.6cqw + 46px); width: 13.5em; height: calc(var(--row-h) * 4 + var(--row-gap) * 3); margin: 0; padding: 0; list-style: none; }
+.camel-standings li { position: absolute; left: 0; right: 0; top: calc(var(--pos, 0) * (var(--row-h) + var(--row-gap))); height: var(--row-h);
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; column-gap: .55em; align-items: center; padding: 0 .7em 0 .45em; box-sizing: border-box;
+  border-radius: .7em; background: linear-gradient(180deg, rgba(40,26,14,.9), rgba(18,11,6,.9)); border: 1px solid rgba(255,255,255,.08);
+  box-shadow: inset 3px 0 0 var(--camel-color, #fff), 0 4px 10px rgba(0,0,0,.25); transition: top .38s cubic-bezier(.2,.8,.2,1); }
+.camel-rank-badge { display: grid; place-items: center; width: 1.75em; height: 1.75em; border-radius: 50%; font-size: 1em; font-weight: 900; color: var(--cr-ink);
   background: linear-gradient(180deg, #e9e2d4, #a89f8e); box-shadow: inset 0 -2px 0 rgba(0,0,0,.2); }
 .camel-standings li[data-pos="1"] .camel-rank-badge { background: linear-gradient(180deg, #fff1b8, #e0a43c); }
 .camel-standings li[data-pos="2"] .camel-rank-badge { background: linear-gradient(180deg, #ffffff, #b9c3cc); }
 .camel-standings li[data-pos="3"] .camel-rank-badge { background: linear-gradient(180deg, #ffd9b0, #b9763d); }
-.camel-chip-name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 13px; font-weight: 800; align-self: end; line-height: 1.1; }
-.camel-chip-gap { font-size: 12px; font-weight: 700; color: var(--cr-dim); align-self: start; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.camel-chip-name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 1em; font-weight: 800; }
+.camel-chip-gap { font-size: .85em; font-weight: 800; color: var(--cr-dim); font-variant-numeric: tabular-nums; }
 .camel-standings li[data-who="player"] { background: linear-gradient(180deg, rgba(120,82,24,.95), rgba(52,33,12,.95)); border-color: rgba(255,215,122,.7); box-shadow: inset 3px 0 0 var(--cr-gold), 0 0 0 1px rgba(255,215,122,.25), 0 6px 16px rgba(224,164,60,.25); }
 .camel-standings li[data-who="player"] .camel-chip-name { color: #ffe9b8; }
 .camel-standings li[data-move="up"] { animation: camel-chip-up .9s ease-out; }
 .camel-standings li[data-move="down"] { animation: camel-chip-down .9s ease-out; }
 @keyframes camel-chip-up { 0% { box-shadow: inset 3px 0 0 var(--camel-color), 0 0 0 2px #8ee6a8, 0 0 18px rgba(142,230,168,.6); } 100% { } }
 @keyframes camel-chip-down { 0% { box-shadow: inset 3px 0 0 var(--camel-color), 0 0 0 2px #ff8e8e, 0 0 18px rgba(255,142,142,.5); } 100% { } }
-.camel-close { min-height: 40px; padding: 6px 14px; border: 1px solid rgba(255,243,220,.3); border-radius: 10px; background: rgba(0,0,0,.3); color: var(--cr-sand); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
-.camel-close:hover, .camel-close:focus-visible { border-color: var(--cr-gold); background: rgba(255,215,122,.12); }
+.camel-close { position: absolute; right: 1.6cqw; top: 1.6cqw; z-index: 3; min-height: 36px; padding: 4px 14px; border: 1px solid rgba(255,243,220,.3); border-radius: 10px; background: var(--cr-glass); color: var(--cr-sand); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.camel-close:hover, .camel-close:focus-visible { border-color: var(--cr-gold); background: rgba(40,26,14,.9); }
 
-/* ---- コース ---- */
-.camel-stage { position: relative; container-type: size; min-height: 0; height: 100%; max-width: 100%; aspect-ratio: 16 / 9; justify-self: center; border-radius: 16px; overflow: hidden;
-  border: 1px solid var(--cr-line); background: #e2c48c; box-shadow: 0 0 0 4px rgba(10,6,3,.55), 0 18px 44px rgba(0,0,0,.45); }
-.camel-canvas { display: block; width: 100%; height: 100%; object-fit: contain; background: #e2c48c; }
-
-/* ---- HUD（コースに重ねる。文字は cqw で縮む） ---- */
-.camel-hud { position: absolute; inset: 0; pointer-events: none; font-size: clamp(12px, 1.25cqw, 16px); }
-.camel-hud[hidden] { display: none; }
-.camel-progress { position: absolute; left: 6%; right: 6%; top: 3.2%; height: 2.4em; padding: 0 1.2em; border-radius: 99px; background: var(--cr-glass); border: 1px solid rgba(255,255,255,.08); box-shadow: 0 4px 14px rgba(0,0,0,.25); }
-.camel-progress-track { position: absolute; left: 1.2em; right: 1.6em; top: 50%; height: .36em; transform: translateY(-50%); border-radius: 99px; background: rgba(255,243,220,.18); }
-.camel-progress-spurt { position: absolute; top: -.25em; bottom: -.25em; left: calc(var(--x) * 100%); right: 0; border-radius: 99px; background: linear-gradient(90deg, rgba(255,179,71,.15), rgba(255,179,71,.55)); }
-.camel-progress-spurt span { position: absolute; left: .2em; bottom: 100%; margin-bottom: .1em; font-size: .7em; font-weight: 900; letter-spacing: .12em; color: var(--cr-amber); line-height: 1; }
-.camel-progress-tick { position: absolute; left: calc(var(--x) * 100%); top: -.3em; width: 1px; height: 1em; background: rgba(255,243,220,.35); }
-.camel-progress-flag { position: absolute; right: -1.2em; top: 50%; width: 1em; height: .8em; transform: translateY(-50%); border-radius: 2px;
-  background: conic-gradient(#1a110a 25%, #fff 0 50%, #1a110a 0 75%, #fff 0) 0 0 / .4em .4em; box-shadow: 0 0 0 1px rgba(255,255,255,.6); }
-.camel-dot { position: absolute; left: calc(var(--x, 0) * 100%); top: 50%; width: .8em; height: .8em; transform: translate(-50%, -50%); border-radius: 50%; background: var(--camel-color); box-shadow: 0 0 0 2px rgba(18,11,6,.9); }
-.camel-dot[data-who="player"] { z-index: 1; width: 1.25em; height: 1.25em; background: radial-gradient(circle at 35% 35%, #fff6d6, var(--cr-gold) 55%, var(--cr-gold-deep)); box-shadow: 0 0 0 2px #fff, 0 0 10px rgba(255,215,122,.8); }
-.camel-clock { position: absolute; left: 2.6%; bottom: 3.6%; padding: .5em .9em .55em; border-radius: .9em; background: var(--cr-glass); border: 1px solid rgba(255,255,255,.08); }
-.camel-clock-time { display: block; font-size: 1.55em; font-weight: 900; letter-spacing: .04em; font-variant-numeric: tabular-nums; line-height: 1.1; color: #fff; }
-.camel-rhythm { display: flex; align-items: center; gap: .5em; margin-top: .2em; }
-.camel-rhythm small { font-size: .8em; font-weight: 800; color: var(--cr-dim); }
-.camel-rhythm-bars { display: flex; align-items: flex-end; gap: .2em; height: .95em; }
-.camel-rhythm-bars i { width: .38em; border-radius: 2px; background: rgba(255,243,220,.18); transition: background-color .2s; }
+/* ---- 操作ボタン（調教師のリモコン）。左下と右下の角に重ね、真ん中の道と SUV は見せる ---- */
+.camel-controls { position: absolute; left: 1.6cqw; right: 1.6cqw; bottom: 1.6cqw; z-index: 2; display: flex; justify-content: space-between; gap: 2cqw; pointer-events: none; }
+.camel-controls[hidden] { display: none; }
+.camel-control { --tone: var(--cr-gold); position: relative; overflow: hidden; pointer-events: auto; width: 31cqw; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1cqw;
+  min-height: max(52px, 9.5cqh); padding: .6cqw 1.3cqw .6cqw .9cqw; border: 1px solid rgba(255,255,255,.16); border-radius: 1.4cqw; color: var(--cr-sand); font: inherit; text-align: left; cursor: pointer;
+  background: linear-gradient(180deg, rgba(48,32,18,.9), rgba(20,13,7,.92)); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 -3px 0 rgba(0,0,0,.35), 0 6px 16px rgba(0,0,0,.4);
+  touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; transition: transform .08s, box-shadow .15s, border-color .15s; }
+.camel-signal { --tone: var(--cr-amber); }
+.camel-control-icon { display: grid; place-items: center; width: max(34px, 3.6cqw); height: max(34px, 3.6cqw); border-radius: 50%; color: var(--cr-ink);
+  background: radial-gradient(circle at 35% 30%, #fff6d6, var(--tone) 60%, color-mix(in srgb, var(--tone) 70%, #000)); box-shadow: 0 0 0 3px rgba(0,0,0,.35), inset 0 -2px 0 rgba(0,0,0,.2); }
+.camel-control-icon svg { width: 58%; height: 58%; }
+.camel-control-text { display: grid; gap: .3em; min-width: 0; font-size: clamp(12px, 1.2cqw, 16px); }
+.camel-control-text strong { font-size: 1.3em; font-weight: 900; letter-spacing: .06em; line-height: 1.15; }
+.camel-control kbd { padding: 2px 7px; border-radius: 6px; border: 1px solid rgba(255,255,255,.25); border-bottom-width: 3px; background: rgba(0,0,0,.35); color: var(--cr-sand); font: inherit; font-size: 12px; font-weight: 800; }
+.camel-rhythm { display: flex; align-items: center; gap: .5em; }
+.camel-rhythm small, .camel-signal-note { font-size: .85em; font-weight: 800; color: var(--cr-dim); white-space: nowrap; }
+.camel-rhythm-bars { display: flex; align-items: flex-end; gap: .22em; height: .95em; }
+.camel-rhythm-bars i { width: .42em; border-radius: 2px; background: rgba(255,243,220,.18); transition: background-color .2s; }
 .camel-rhythm-bars i:nth-child(1) { height: 40%; } .camel-rhythm-bars i:nth-child(2) { height: 55%; } .camel-rhythm-bars i:nth-child(3) { height: 70%; } .camel-rhythm-bars i:nth-child(4) { height: 85%; } .camel-rhythm-bars i:nth-child(5) { height: 100%; }
 .camel-rhythm-bars i.on { background: linear-gradient(180deg, #fff1b8, var(--cr-gold)); box-shadow: 0 0 6px rgba(255,215,122,.6); }
-.camel-stamina { position: absolute; right: 2.6%; bottom: 3.6%; width: 26%; padding: .5em .9em .55em; border-radius: .9em; background: var(--cr-glass); border: 1px solid rgba(255,255,255,.08); }
-.camel-stamina-head { display: flex; align-items: baseline; justify-content: space-between; }
-.camel-stamina-head small { font-size: .8em; font-weight: 800; color: var(--cr-dim); }
-.camel-stamina-head b { font-size: 1.3em; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1.1; }
-.camel-stamina-bar { position: relative; height: .7em; margin-top: .25em; border-radius: 99px; overflow: hidden; background: rgba(255,243,220,.14); }
+.camel-signal-head { display: flex; align-items: baseline; gap: .6em; }
+.camel-stamina { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .5em; }
+.camel-stamina b { font-size: 1em; font-weight: 900; font-variant-numeric: tabular-nums; min-width: 2em; text-align: right; }
+.camel-stamina-bar { position: relative; height: .6em; border-radius: 99px; overflow: hidden; background: rgba(255,243,220,.14); }
 .camel-stamina-bar i { position: absolute; inset: 0 auto 0 0; width: calc(var(--v, 1) * 100%); border-radius: 99px; background: linear-gradient(90deg, #4fc58a, #b8f07a); transition: width .15s linear, background .3s; }
 .camel-stamina[data-state="tired"] .camel-stamina-bar i { background: linear-gradient(90deg, #e08a2c, #ffcf5c); }
 .camel-stamina[data-state="spent"] .camel-stamina-bar i { background: linear-gradient(90deg, #c8433b, #ff8e7a); }
-.camel-stamina[data-state="spent"] { animation: camel-blink 1s steps(2) infinite; }
 .camel-stamina-mark { position: absolute; left: calc(var(--x) * 100%); top: 0; bottom: 0; width: 1px; background: rgba(0,0,0,.45); }
-.camel-signal-state { margin: .3em 0 0; font-size: .8em; font-weight: 800; color: var(--cr-gold); white-space: nowrap; }
-@keyframes camel-blink { 50% { border-color: rgba(255,142,122,.8); } }
+.camel-signal[data-stamina="spent"] { animation: camel-blink 1s steps(2) infinite; }
+@keyframes camel-blink { 50% { border-color: rgba(255,142,122,.85); } }
+.camel-control:active { transform: translateY(2px) scale(.985); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), inset 0 -1px 0 rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.35); }
+.camel-control:focus-visible { outline: 2px solid var(--cr-gold); outline-offset: 2px; }
+.camel-voice[data-cue="on"] { border-color: rgba(255,215,122,.75); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(255,215,122,.35), 0 0 22px rgba(255,215,122,.35); }
+.camel-voice[data-cue="on"] .camel-control-icon { animation: camel-ring 1.25s ease-in-out infinite; }
+@keyframes camel-ring { 0%, 100% { box-shadow: 0 0 0 3px rgba(0,0,0,.35); } 50% { box-shadow: 0 0 0 3px rgba(0,0,0,.35), 0 0 0 7px rgba(255,215,122,.25); } }
+.camel-control-cool { position: absolute; inset: 0; transform-origin: left; transform: scaleX(var(--cool, 0)); background: rgba(0,0,0,.42); pointer-events: none; transition: transform .1s linear; }
+.camel-signal[data-state="cooling"] .camel-control-icon { filter: grayscale(.7) brightness(.8); }
+.camel-signal[data-state="spurt"] { border-color: rgba(255,179,71,.8); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(255,179,71,.35), 0 0 24px rgba(255,179,71,.45); }
+.camel-signal[data-state="spurt"] .camel-signal-note { color: var(--cr-amber); }
+.camel-signal[data-state="spent"] { opacity: .75; }
+.camel-control.hit::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; animation: camel-hit .35s ease-out both; }
+.camel-control.hit[data-hit="perfect"]::after { background: radial-gradient(circle at 12% 50%, rgba(255,226,122,.75), transparent 70%); }
+.camel-control.hit[data-hit="good"]::after { background: radial-gradient(circle at 12% 50%, rgba(184,240,255,.6), transparent 70%); }
+.camel-control.hit[data-hit="miss"]::after { background: radial-gradient(circle at 12% 50%, rgba(255,120,110,.55), transparent 70%); }
+.camel-control.hit[data-hit="boost"]::after { background: radial-gradient(circle at 12% 50%, rgba(255,179,71,.7), transparent 70%); }
+@keyframes camel-hit { from { opacity: 1; } to { opacity: 0; } }
 
 /* ---- 判定・バナー・カウントダウン ---- */
 .camel-feedback { position: absolute; left: 32%; top: 40%; transform: translate(-50%, -50%) scale(.7); opacity: 0; font-size: clamp(18px, 3.4cqw, 34px); font-weight: 900; letter-spacing: .08em; text-shadow: 0 2px 0 rgba(0,0,0,.45), 0 0 18px rgba(0,0,0,.35); pointer-events: none; }
@@ -92,38 +116,6 @@
 .camel-countdown.show { opacity: 1; animation: camel-count .9s ease-out both; }
 @keyframes camel-count { from { transform: translate(-50%, -50%) scale(1.4); opacity: 0; } 30% { opacity: 1; } to { transform: translate(-50%, -50%) scale(1); } }
 .camel-live { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-
-/* ---- 操作ボタン（調教師のリモコン） ---- */
-.camel-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.camel-controls[hidden] { display: none; }
-.camel-control { --tone: var(--cr-gold); position: relative; overflow: hidden; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px;
-  min-height: 72px; padding: 8px 16px 8px 12px; border: 1px solid rgba(255,255,255,.14); border-radius: 18px; color: var(--cr-sand); font: inherit; text-align: left; cursor: pointer;
-  background: linear-gradient(180deg, rgba(58,40,22,.95), rgba(26,17,9,.95)); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 -3px 0 rgba(0,0,0,.35), 0 6px 16px rgba(0,0,0,.35);
-  touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; transition: transform .08s, box-shadow .15s, border-color .15s; }
-.camel-signal { --tone: var(--cr-amber); }
-.camel-control-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; color: var(--cr-ink);
-  background: radial-gradient(circle at 35% 30%, #fff6d6, var(--tone) 60%, color-mix(in srgb, var(--tone) 70%, #000)); box-shadow: 0 0 0 3px rgba(0,0,0,.35), inset 0 -2px 0 rgba(0,0,0,.2); }
-.camel-control-icon svg { width: 26px; height: 26px; }
-.camel-control-text { display: grid; gap: 2px; min-width: 0; }
-.camel-control-text strong { font-size: 19px; font-weight: 900; letter-spacing: .06em; line-height: 1.2; }
-.camel-control-text small { font-size: 12px; font-weight: 700; color: var(--cr-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.camel-control kbd { padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,.25); border-bottom-width: 3px; background: rgba(0,0,0,.35); color: var(--cr-sand); font: inherit; font-size: 12px; font-weight: 800; }
-.camel-control:active { transform: translateY(2px) scale(.985); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), inset 0 -1px 0 rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.35); }
-.camel-control:focus-visible { outline: 2px solid var(--cr-gold); outline-offset: 2px; }
-.camel-voice[data-cue="on"] { border-color: rgba(255,215,122,.75); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(255,215,122,.35), 0 0 22px rgba(255,215,122,.35); }
-.camel-voice[data-cue="on"] .camel-control-icon { animation: camel-ring 1.25s ease-in-out infinite; }
-@keyframes camel-ring { 0%, 100% { box-shadow: 0 0 0 3px rgba(0,0,0,.35); } 50% { box-shadow: 0 0 0 3px rgba(0,0,0,.35), 0 0 0 7px rgba(255,215,122,.25); } }
-.camel-control-cool { position: absolute; inset: 0; transform-origin: left; transform: scaleX(var(--cool, 0)); background: rgba(0,0,0,.42); pointer-events: none; transition: transform .1s linear; }
-.camel-signal[data-state="cooling"] .camel-control-icon { filter: grayscale(.7) brightness(.8); }
-.camel-signal[data-state="spurt"] { border-color: rgba(255,179,71,.8); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(255,179,71,.35), 0 0 24px rgba(255,179,71,.45); }
-.camel-signal[data-state="spurt"] .camel-control-text small { color: var(--cr-amber); }
-.camel-signal[data-state="spent"] { opacity: .65; }
-.camel-control.hit::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; animation: camel-hit .35s ease-out both; }
-.camel-control.hit[data-hit="perfect"]::after { background: radial-gradient(circle at 30px 50%, rgba(255,226,122,.75), transparent 70%); }
-.camel-control.hit[data-hit="good"]::after { background: radial-gradient(circle at 30px 50%, rgba(184,240,255,.6), transparent 70%); }
-.camel-control.hit[data-hit="miss"]::after { background: radial-gradient(circle at 30px 50%, rgba(255,120,110,.55), transparent 70%); }
-.camel-control.hit[data-hit="boost"]::after { background: radial-gradient(circle at 30px 50%, rgba(255,179,71,.7), transparent 70%); }
-@keyframes camel-hit { from { opacity: 1; } to { opacity: 0; } }
 
 /* ---- 遊び方とリザルトのカード（ボタンは本編の紙のテーマより強い指定で、砂漠の金にそろえる） ---- */
 .camel-sheet { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; padding: 24px; background: radial-gradient(ellipse at center, rgba(20,12,6,.55), rgba(8,5,12,.82)); backdrop-filter: blur(2px); }
@@ -181,21 +173,8 @@
   .camel-standings li { transition: none; }
 }
 
-/* 低い画面（スマホ横持ちの独立ページ）: 見出しと操作を詰めてコースを大きく */
+/* 低い画面（スマホ横持ち）: カードを詰める。コースの上の部品は cqw で縮むので、ここでは最小の大きさだけ */
 @media (max-height: 480px) {
-  .camel-game { padding: 6px 10px 8px; gap: 6px; }
-  .camel-header { min-height: 36px; }
-  .camel-header h1 { font-size: 16px; } .camel-header p { display: none; }
-  .camel-standings { --chip-w: 112px; --chip-gap: 4px; height: 34px; }
-  .camel-standings li { padding: 0 6px 0 4px; column-gap: 5px; }
-  .camel-rank-badge { width: 22px; height: 22px; font-size: 13px; }
-  .camel-chip-name { font-size: 12px; }
-  .camel-chip-gap { display: none; }
-  .camel-standings li { grid-template-rows: 1fr; }
-  .camel-close { min-height: 32px; padding: 4px 10px; font-size: 12px; }
-  .camel-control { min-height: 54px; padding: 4px 12px 4px 8px; gap: 8px; border-radius: 14px; }
-  .camel-control-icon { width: 36px; height: 36px; } .camel-control-icon svg { width: 20px; height: 20px; }
-  .camel-control-text strong { font-size: 16px; } .camel-control-text small, .camel-control kbd { display: none; }
   .camel-card { padding: 12px 16px; } .camel-card h2 { font-size: 18px; } .camel-card p { font-size: 13px; font-weight: 700; line-height: 1.5; }
   .camel-tutorial { gap: 12px; } .camel-tutorial-icon { width: 56px; height: 56px; border-radius: 16px; }
   .camel-result-head { gap: 12px; margin-bottom: 8px; }
@@ -203,15 +182,12 @@
   .camel-total strong { font-size: 32px; } .camel-grade-letter { width: 60px; height: 60px; } .camel-grade-letter strong { font-size: 30px; }
   .camel-score-row { margin: 4px 0; } .camel-stats { margin-top: 8px; }
 }
-
-/* コースが小さいとき（スマホ）: HUD を詰める */
-@container (max-width: 640px) {
-  .camel-progress { top: 2.5%; height: 2em; }
-  .camel-clock, .camel-stamina { padding: .3em .6em .35em; border-radius: .7em; bottom: 2.5%; }
-  .camel-clock-time { font-size: 1.2em; }
-  .camel-stamina { width: 30%; }
-  .camel-stamina-head b { font-size: 1.1em; }
-  .camel-signal-state { display: none; }
+/* コースが小さいとき（スマホ）: 説明の字とキーを隠し、順位は名前と順位だけ */
+@container (max-width: 760px) {
+  .camel-clock-sub, .camel-control kbd, .camel-chip-gap { display: none; }
+  .camel-standings { width: 9.5em; --row-h: 2.2em; }
+  .camel-standings li { grid-template-columns: auto minmax(0, 1fr); }
+  .camel-progress { left: 17cqw; right: 15cqw; }
 }
 
 /* 独立ページ（camel-race.html） */

@@ -159,37 +159,35 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     ...[0.25, 0.5].map(x => el("i.camel-progress-tick", { style: { "--x": x } })),
     el("i.camel-progress-flag"), ...dots.values(),
   ])]);
+  // 画面いっぱいにコースを出し、見出し・時計・順位・ボタンはコースの上に重ねる（上下の帯でコースを狭めない）。
+  // 左上: 題名と時計、上の中央: 進み具合、右上: やめる と順位（縦）、左下: 声（調子の棒つき）、右下: 合図（スタミナつき）。
   const clockTime = el("b.camel-clock-time", { text: "0:00.00" });
+  const clockNode = el("div.camel-clock", { "aria-hidden": "true" }, [
+    el("h1.camel-title", { text: CAMEL_RACE_TITLE }), clockTime,
+    el("small.camel-clock-sub", { text: `練習 ${RACE.length.toLocaleString("ja-JP")}m・${RIVAL_PROFILES.length + 1}頭` })]);
   const rhythmBars = Array.from({ length: 5 }, () => el("i"));
-  const clockNode = el("div.camel-clock", { "aria-hidden": "true" }, [clockTime,
-    el("div.camel-rhythm", [el("small", { text: "調子" }), el("span.camel-rhythm-bars", rhythmBars)])]);
   const staminaValue = el("b", { text: "100" });
   const staminaFill = el("i");
-  const signalState = el("p.camel-signal-state", { text: "合図 OK" });
-  const staminaNode = el("div.camel-stamina", { "aria-hidden": "true", dataset: { state: "ok" } }, [
-    el("div.camel-stamina-head", [el("small", { text: "スタミナ" }), staminaValue]),
-    el("div.camel-stamina-bar", [staminaFill, el("span.camel-stamina-mark", { style: { "--x": PLAYER.tired / 100 } })]), signalState]);
-  const hudNode = el("div.camel-hud", { hidden: true }, [progressNode, clockNode, staminaNode]);
-  const stageNode = el("div.camel-stage", [canvas, hudNode, feedback, banner, countdownNode]);
-  const signalCost = el("small", { text: `スタミナ −${SIGNAL.cost}` });
+  const staminaNode = el("span.camel-stamina", { "aria-hidden": "true", dataset: { state: "ok" } }, [
+    el("span.camel-stamina-bar", [staminaFill, el("span.camel-stamina-mark", { style: { "--x": PLAYER.tired / 100 } })]), staminaValue]);
+  const hudNode = el("div.camel-hud", { hidden: true }, [progressNode, clockNode, standingsNode]);
+  const signalCost = el("small.camel-signal-note", { text: `−${SIGNAL.cost}` });
   const voiceButton = el("button.camel-control.camel-voice", { type: "button", dataset: { test: "camel-voice", cue: "off" } }, [
     el("span.camel-control-icon", { html: ICONS.voice }),
-    el("span.camel-control-text", [el("strong", { text: "声をかける" }), el("small", { text: "輪が重なる瞬間に" })]),
+    el("span.camel-control-text", [el("strong", { text: "声をかける" }),
+      el("span.camel-rhythm", { "aria-hidden": "true" }, [el("small", { text: "調子" }), el("span.camel-rhythm-bars", rhythmBars)])]),
     el("kbd", { text: "Space" })]);
   const signalButton = el("button.camel-control.camel-signal", { type: "button", dataset: { test: "camel-signal", state: "ready" } }, [
     el("i.camel-control-cool", { "aria-hidden": "true" }),
     el("span.camel-control-icon", { html: ICONS.signal }),
-    el("span.camel-control-text", [el("strong", { text: "合図" }), signalCost]),
+    el("span.camel-control-text", [el("span.camel-signal-head", [el("strong", { text: "合図" }), signalCost]), staminaNode]),
     el("kbd", { text: "X" })]);
   const controls = el("div.camel-controls", [voiceButton, signalButton]);
   const closeButton = el("button.camel-close", { type: "button", text: "やめる", dataset: { test: "camel-close" } });
-  const header = el("header.camel-header", [
-    el("div", [el("h1", { text: CAMEL_RACE_TITLE }), el("p", { text: `練習レース ${RACE.length.toLocaleString("ja-JP")}m ── ${RIVAL_PROFILES.length + 1}頭` })]),
-    standingsNode, closeButton,
-  ]);
+  const stageNode = el("div.camel-stage", [canvas, hudNode, feedback, banner, countdownNode, controls, closeButton]);
   const sheet = el("div.camel-sheet", { hidden: true });
   const root = el("section.camel-game", { role: "dialog", "aria-modal": "true", "aria-label": CAMEL_RACE_TITLE, tabindex: "-1",
-    dataset: { test: "camel-game", phase: "loading", reducedMotion: String(reducedMotion) } }, [header, stageNode, controls, live, sheet]);
+    dataset: { test: "camel-game", phase: "loading", reducedMotion: String(reducedMotion) } }, [stageNode, live, sheet]);
   host.append(root);
 
   let art = null;
@@ -387,7 +385,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     }
   }
   const laneOf = id => LANES.find(lane => lane.id === id);
-  const suvPosition = () => ({ x: PLAYER_SCREEN_X - 150 + Math.sin((race?.t || 0) * 1.3) * 6, y: 640 + Math.sin((race?.t || 0) * 9) * 1.5 });
+  // SUV は自分のラクダの少し前を並走する（左下・右下のボタンに隠れない画面の中央寄り）。
+  const suvPosition = () => ({ x: PLAYER_SCREEN_X + 210 + Math.sin((race?.t || 0) * 1.3) * 6, y: 640 + Math.sin((race?.t || 0) * 9) * 1.5 });
 
   // ---- 描写 -----------------------------------------------------------------------------------------
   function draw() {
@@ -745,15 +744,15 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     setOnce("rhythm", lit, n => rhythmBars.forEach((bar, i) => bar.classList.toggle("on", i < n)));
     const stamina = Math.round(race.player.stamina);
     setOnce("stamina", stamina, v => { staminaValue.textContent = String(v); staminaFill.style.setProperty("--v", String(v / 100)); });
-    setOnce("staminaState", stamina < PLAYER.spent ? "spent" : stamina < PLAYER.tired ? "tired" : "ok", state => { staminaNode.dataset.state = state; });
+    setOnce("staminaState", stamina < PLAYER.spent ? "spent" : stamina < PLAYER.tired ? "tired" : "ok", state => { staminaNode.dataset.state = state; signalButton.dataset.stamina = state; });
     const cooldown = Math.max(0, race.player.cooldownUntil - race.t);
     const spurt = inSpurt(race);
     const state = stamina < PLAYER.spent ? "spent" : cooldown > 0 ? "cooling" : spurt ? "spurt" : "ready";
     setOnce("signal", state, value => { signalButton.dataset.state = value; });
     setOnce("cool", Math.round((cooldown / SIGNAL.cooldown) * 50) / 50, v => signalButton.style.setProperty("--cool", String(v)));
-    setOnce("cost", spurt, v => { signalCost.textContent = `スタミナ −${v ? SIGNAL.spurtCost : SIGNAL.cost}`; });
-    setOnce("signalText", state === "cooling" ? `合図 あと${Math.ceil(cooldown)}秒` : state === "spent" ? "息切れ 合図は空ぶかし" : spurt ? "合図 OK ── スパート区間" : "合図 OK",
-      text => { signalState.textContent = text; });
+    // 合図の横の小さな字: 使える時は消費（スパート区間は明記）、待ち時間、息切れ。
+    setOnce("signalNote", state === "cooling" ? `あと${Math.ceil(cooldown)}秒` : state === "spent" ? "息切れ"
+      : spurt ? `スパート −${SIGNAL.spurtCost}` : `−${SIGNAL.cost}`, text => { signalCost.textContent = text; });
     setOnce("cue", phase === "race" && activeCue(race) ? "on" : "off", v => { voiceButton.dataset.cue = v; });
   }
   function openResult() {
