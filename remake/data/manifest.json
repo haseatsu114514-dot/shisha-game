@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-02 13:20 UTC",
+ "generated": "2026-11-02 15:42 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -456,6 +456,15 @@
    "b": 0.0167,
    "ax": 0.5457,
    "aspect": 0.7467
+  },
+  "tetsuko": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.2908,
+   "b": 0.0433,
+   "ax": 0.5054,
+   "aspect": 0.7467
   }
  },
  "backgrounds": [
@@ -625,7 +634,8 @@
   "face_kuze.png",
   "face_maki.png",
   "face_salaryman.png",
-  "face_noor.png"
+  "face_noor.png",
+  "face_tetsuko.png"
  ],
  "making": [
   "bench_base.png",
@@ -3005,7 +3015,9 @@
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
   "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
-  "sprites/characters/noor/chr_noor_normal.png"
+  "sprites/characters/noor/chr_noor_normal.png",
+  "ui/face_icons/face_tetsuko.png",
+  "sprites/characters/tetsuko/chr_tetsuko_normal.png"
  ],
  "limeMedia": {
   "st_adam_bless": {

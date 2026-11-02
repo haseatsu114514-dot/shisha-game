@@ -31,7 +31,8 @@ import { reducedMotion } from "../core/transition-kit.js";
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man", "traveler"]);
 // 立ち絵の枠（ステージ高さに対する本体の高さ・足元の沈み込み）
-const FRAMING = { target: 1.36, sink: 0.4, pakkiTarget: 0.94, pakkiSink: 0.08 };
+// てつこ（猫）は人と同じ高さに引き伸ばさず、会話の枠の上に座っている大きさで出す（catLift＝下から持ち上げる割合）
+const FRAMING = { target: 1.36, sink: 0.4, pakkiTarget: 0.94, pakkiSink: 0.08, catTarget: 0.34, catLift: 0.3 };
 
 /** 章の台本側が差し込むフック（特定の会話の選択肢で状態を変える等） */
 export const hooks = {
@@ -907,9 +908,9 @@ function updatePortraits(speaker, face) {
 
 /** 透過余白の差を補正し、本体の高さ・足元位置をキャラ間でそろえる */
 function frame(img, p) {
-  const pakki = p.folder === "pakki";
-  const target = (pakki ? FRAMING.pakkiTarget : FRAMING.target) * p.scale;
-  const sink = pakki ? FRAMING.pakkiSink : FRAMING.sink;
+  const pakki = p.folder === "pakki", cat = p.folder === "tetsuko";
+  const target = (cat ? FRAMING.catTarget : pakki ? FRAMING.pakkiTarget : FRAMING.target) * p.scale;
+  const sink = cat ? -FRAMING.catLift : pakki ? FRAMING.pakkiSink : FRAMING.sink;
   const hPct = Math.min(target / p.h, 2.4) * 100;             // 画像の高さ（ステージ高さ比 %）
   const contentTop = p.h * hPct - sink * 100;                // 本体上端（下からの %）
   const extra = Math.max(0, contentTop - 97);                // 頭が見切れないように沈める
