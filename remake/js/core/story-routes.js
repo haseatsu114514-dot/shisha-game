@@ -1,5 +1,6 @@
 // 第3章以降の台本を接続するための純粋な選択関数。canReadOptionalStory と selectStoryEvening は第3章（ch3-story-wiring.js）
-// から、selectStoryEvening は第4章の前夜（ch4-story-wiring.js）からも接続済み。selectStoryEnding は第5章のフィナーレ（ch5.js）から接続済み。selectPostEndingConflict は未接続。
+// から、selectStoryEvening は第4章の前夜（ch4-story-wiring.js）からも接続済み。selectStoryEnding は第5章のフィナーレ（ch5.js）から、
+// selectPostEndingConflict は第5章の打ち上げ（ch5-party-plan.js）とスタッフロールの後（ch5.js・IR32）から接続済み。
 // 正式名簿・場面IDは data/story_routes.json。所在と約束は章runnerが明示して渡す。
 // 既存セーブの lovers を使い、好感度や不明な所在から恋人・到着を推測しない。
 export function canReadOptionalStory(routes, state, sceneId, context = {}) {
@@ -52,20 +53,25 @@ export function selectStoryEnding(routes, state, context = {}) {
 }
 
 // ending_daily_smoke とスタッフロールの後に呼ぶ。前夜の茶化しとは別の場面。
+// unresolved は修羅場で傷ついた恋人（location_contract.unresolved）。context.unresolved は先に修羅場を済ませた恋人。
+// talks はその一人ずつの話し直し（romance[id].talk）を unresolved と同じ順に並べたもの。読み終えた人から解除する（runner 側）。
 export function selectPostEndingConflict(routes, state, context = {}) {
   const lovers = [...new Set(state.lovers || [])].filter(id => routes.heroine_ids.includes(id));
   const local = lovers.filter(id => (context.present || []).includes(id));
+  const talks = ids => ids.map(id => routes.romance[id]?.talk).filter(Boolean);
   if (local.length >= routes.conflict.minimum_present_lovers) {
+    const unresolved = [...new Set([...(context.unresolved || []), ...local])];
     return {
       kind: "conflict", participants: local,
       scenes: [routes.conflict.open, ...local.map(id => routes.romance[id].conflict),
         routes.conflict.close, routes.conflict.pending_ending],
-      unresolved: [...new Set([...(context.unresolved || []), ...local])],
+      unresolved, talks: talks(unresolved),
     };
   }
-  const pending = lovers.length > 1 || (context.unresolved || []).length > 0
+  const unresolved = [...new Set(context.unresolved || [])];
+  const pending = lovers.length > 1 || unresolved.length > 0
     || !!state.flags?._story_shuraba_unresolved;
   return pending
-    ? {kind: "pending", participants: [], scenes: [routes.conflict.pending_ending]}
-    : {kind: "none", participants: [], scenes: []};
+    ? {kind: "pending", participants: [], scenes: [routes.conflict.pending_ending], unresolved, talks: talks(unresolved)}
+    : {kind: "none", participants: [], scenes: [], unresolved: [], talks: []};
 }

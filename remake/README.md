@@ -347,7 +347,7 @@ node --experimental-vm-modules remake/test/data_loading.mjs # 接続数・通信
 
 - 第3章の任意スポット・恋人との大会前夜デートは実装済み（`remake/js/chapters/ch3-story-wiring.js`、#1176）。第4章・第5章も接続済みで、細部の調整は `docs/stat-design/` と `docs/owner_requests.md` の最新節を見る
 - コード中の未決番号（Q1〜Q20）の判断待ち一覧は `docs/spec/open_questions_ch4_ch5.md`
-- 恋人になってからの章をまたぐ要素（ch4 ドバイに来る／来ない・エンディングの修羅場）は第2章以降と一緒に
+- 恋人になってからの章をまたぐ要素（ch4 ドバイに来る／来ない）は第2章以降と一緒に。エンディングの修羅場は接続済み（恋人が2人以上なら、第5章のスタッフロールの後に修羅場→一人ずつの話し直し→タイトル。`chapters/ch5.js`・IR32。検証は `remake/test/browser/staff_roll.mjs`）
 - BGMの細かい出し分け（現状は場面ごとの基本曲のみ）
 - 本編の街歩き（第1章ピンマップの「商店街を歩く」、#456・#471）は2026-10-31のオーナー指示で完全に廃止した。行き先はピンマップのピンと「ここへ行く」だけで選ぶ。旧試作は `experiments/proto/` に残る（本編からは使わない）。
 
