@@ -255,7 +255,9 @@ await suite('ch2-daily',async check=>{
     await wide(page);await act(page,'ch2_ageha');v=await value(page);
     assert.equal(v.money,27000-stationFares(page));assert.equal(v.flags._ch2_talks.ageha,3);
     // 続編のあとは、あげはの店に通う回を順に読む（#626）。全部読んだら従来の repeat に戻る
-    assert((await page.evaluate(()=>window.__dailyTrace)).includes('remake_ch2_ageha_repeat'));assert(!v.flags._ch2_read_remake_ch2_ageha_gyaru);
+    // VOL13: いつもの会話は小会話4種を巡回し、その前に昼夜の店のあいさつ
+    const agehaTrace=await page.evaluate(()=>window.__dailyTrace);
+    assert(agehaTrace.some(id=>/^remake_ch2_ageha_repeat(_[bcd])?$/.test(id)));assert(agehaTrace.some(id=>/^venue_ageha_(day|night)$/.test(id)));assert(!v.flags._ch2_read_remake_ch2_ageha_gyaru);
   });
   await check('installed-reel-preserves-draw-on-reload',async page=>{
     await setup(page,{reel:true});await begin(page);await wide(page);await act(page,'ch2_rei');

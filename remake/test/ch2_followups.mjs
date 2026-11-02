@@ -226,7 +226,10 @@ for (const id of validatedIds) {
 }
 fixture = preparation; await loader.namespace.loadPreparationDialogues();
 // 31 本 + あげはの♥3の質問（#1988）＋あげは♥5の締めくくり（#2023）+ 神崎・REIの小会話6本と締めくくり2本（#2027）
-assert.equal(Object.keys(loaderDB.dialogues).length, 41 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+// + あげはの小会話3本と地元の第2章の会話7本（VOL13）
+assert.equal(Object.keys(loaderDB.dialogues).length, 51 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+for (const suffix of ["b", "c", "d"]) assert(loaderDB.dialogues[`remake_ch2_ageha_repeat_${suffix}`], `ageha small talk ${suffix}`);
+for (const id of ["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze", "ch2_rin_taste", "ch2_rin_strawberry"]) assert(loaderDB.dialogues[id], id);
 for (const id of ["kumicho", "rei"]) {
   assert(loaderDB.dialogues[`ch2_${id}_bond_finale`], `${id} finale is published`);
   for (const suffix of ["b", "c", "d"]) assert(loaderDB.dialogues[`remake_ch2_${id}_repeat_${suffix}`]);
