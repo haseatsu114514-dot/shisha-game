@@ -164,8 +164,15 @@ export function afterChapterVisitDue(charId, s = state) {
   return entry && (s.chapter || 1) === entry.chapter && !s.flags?.[entry.done] && !!s.flags?.[entry.regulars]?.[charId]
     && DB.dialogues[entry.scene]?.lines?.length ? entry.scene : null;
 }
+/**
+ * 章が店で読ませる本編・会話（第2章の期限つき訪問など・VOL13）。章のモジュールが判定を登録し、地図の「！」に使う。
+ * 訪問の中身は章の performSpot が受け持つ。登録が無ければ何も出さない。
+ */
+let chapterVisitDue = () => false;
+export function setChapterVisitDue(fn) { chapterVisitDue = typeof fn === "function" ? fn : () => false; }
 /** 次に会うと新しいイベントがあるか（固有会話・途中の質問・好感度MAXの締めくくり）。 */
 export function hasNewStory(charId) {
+  if (chapterVisitDue(charId)) return true;
   if (afterChapterVisitDue(charId)) return true;
   if (charId === "minto" && mintoIdentityRevealDue()) return true;
   if (questionVisitDue(charId)) return true;
