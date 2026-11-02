@@ -23,7 +23,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "懐かしいけど……勝負になると、人の迷いを見つけて無理をする。会うなら、気をつけて"
+          "text": "懐かしいけど……会うなら、気をつけて"
         },
         {
           "speaker": "hajime",
@@ -390,7 +390,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……俺も、楽しみです。少し怖いですけど"
+          "text": "……俺も、楽しみだよ。少し怖いけど"
         },
         {
           "speaker": "",
@@ -435,11 +435,6 @@
           "speaker": "kuze",
           "face": "surprise",
           "text": "え、覚えてるの？　……じゃあ僕の大きな組織、初日で解散だね"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "二人とも、昔から知ってるみたいですね"
         },
         {
           "speaker": "mashiro",
@@ -505,6 +500,11 @@
           "speaker": "mashiro",
           "face": "normal",
           "text": "珍しい。朔、素直だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言う前に、久世は小さく笑った。ましろが、その口元を見ている。"
         },
         {
           "speaker": "kuze",
@@ -642,7 +642,7 @@
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "隣の一口に歓声が上がると、俺も熱を足したくなる。前はそれで、ライムまで飛ばした"
+          "text": "前に一度、急いで熱を足して、ライムまで飛ばした"
         },
         {
           "speaker": "steve",
