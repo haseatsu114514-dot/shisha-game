@@ -90,5 +90,6 @@
 ## 7. 未完・次の一手
 
 - サイフ（smile・surprise・excited・wink）とラシード（smile）の表情差分。通常を約7頭身で作り直してから（`asset_sources/portraits/standard-20261102/prompts.md` の TS13）。
-- 車の窓から身を乗り出すはじめの専用の絵（CR-GM04。今は立ち絵の切り抜き）。
+- 車の絵: ラシードは運転だけ・後ろの窓は空ける SUV（CR-GM02-v3）と、窓から身を乗り出すはじめ（CR-GM04。今は立ち絵の切り抜き）。リモコンを持つのは、練習レースで借りたはじめ。
+- 画面の UI を手描きの素材と手描きの字に置き換える（CR08／CR18。`asset_sources/ch4-camel-race/ui-request.md`）。
 - サンドボードは別チャットで並行制作中。共通の第4章ファイルへの変更は `ch4-map-model.js` 4行・`ch4.js` 17行に留めた。
