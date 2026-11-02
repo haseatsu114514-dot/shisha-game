@@ -287,6 +287,24 @@
       "char_id": "steve",
       "dialogue_id": "ch3_steve_low_heat",
       "echo": "（スティーブのタイマーと、二口目の前の客の顔。待ち方を借りている）"
+    },
+    {
+      "id": "da_silva_shop",
+      "char_id": "da_silva",
+      "dialogue_id": "ch4_festa",
+      "echo": "（太陽さんに「誰に来てほしい？」と聞かれて、俺の店の形が少し見えた）"
+    },
+    {
+      "id": "sheikh_asked",
+      "char_id": "sheikh",
+      "dialogue_id": "ch4_stranger_second",
+      "echo": "（吸いづらくないかと聞いたら、路地裏のあの人は、久しぶりだと笑った）"
+    },
+    {
+      "id": "master_hookah_wait",
+      "char_id": "master_hookah",
+      "dialogue_id": "ch4_wang_reception",
+      "echo": "（王煙楼さんは、こちらの都合で待たせるのと、相手を待つのは違うと言った）"
     }
   ]
 }

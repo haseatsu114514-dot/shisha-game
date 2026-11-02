@@ -11,8 +11,13 @@ export function rememberRelationship(id) {
   return true;
 }
 
-/** 最新の交流から相手ごとに一つ、最大三人分を短い内心へ返す。 */
-export function relationshipReflectionLines() {
+const REFLECTION_LEAD = "トングを持つ。誰かと過ごした時間が、ふとよみがえった。";
+
+/**
+ * 最新の交流から相手ごとに一つ、最大三人分を短い内心へ返す。
+ * reflection 行に text があれば、導入の地の文をその場面に合わせて差し替える（空文字なら導入を出さず、直前の地の文に任せる）。
+ */
+export function relationshipReflectionLines(line = {}) {
   const ids = Array.isArray(state?.relationshipMemories) ? state.relationshipMemories : [];
   const characters = new Set();
   const selected = [];
@@ -27,8 +32,9 @@ export function relationshipReflectionLines() {
   if (!selected.length) return [
     { speaker: "hajime", face: "normal", text: "（まず、今の一台を確かめよう。急がなくていい）" },
   ];
+  const lead = typeof line?.text === "string" ? line.text : REFLECTION_LEAD;
   return [
-    { speaker: "", face: "", text: "トングを持つ。誰かと過ごした時間が、ふとよみがえった。" },
+    ...(lead ? [{ speaker: "", face: "", text: lead }] : []),
     ...selected.map((memory) => ({ speaker: "hajime", face: "normal", text: memory.echo })),
     { speaker: "hajime", face: "normal", text: state.chapter === 1
       ? "（一緒に過ごした時間も、今の俺に残っている）"
