@@ -172,6 +172,24 @@
       ]
     },
     {
+      "id": "board-tutorial",
+      "title": "Growth board first-time tutorial and starter fire (board_tutorial)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/growth-board-tutorial.js",
+        "remake/js/daily/growth-board-screen.js",
+        "remake/js/daily/reflection.js",
+        "remake/js/core/growth.js",
+        "remake/test/browser/board_tutorial.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/board_tutorial.mjs"
+      ]
+    },
+    {
       "id": "station-j01",
       "title": "Station availability, layout and save/load",
       "kind": "browser",

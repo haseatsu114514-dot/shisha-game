@@ -118,6 +118,8 @@ export const FLAG_EXACT_RULES = [
   ["_axe_bar_sighting_done", "progression"],
   ["_axe_lesson_done", "ui"],
   ["_axe_throw_unlocked", "person"],
+  ["_board_starter_given", "ui"],
+  ["_board_tutorial_done", "ui"],
   ["_c_station_registered", "unlock"],
   ["_cafe_idea_wait", "pending"],
   ["_cafe_introduced", "progression"],
