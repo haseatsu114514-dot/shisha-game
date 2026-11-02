@@ -1,0 +1,52 @@
+{
+ "phase": "立ち絵そろえ 第2期（規格そろえ）TS10",
+ "face": "normal",
+ "chosen": "rei-normal-c-v2",
+ "status": "推奨（オーナー確認待ち）。ゲームの素材は未変更",
+ "chosen_by": "2026-11-02 Claude。頭身が規格内で 7.0 に近く、顔・ポーズ・衣装が今の通常と同じ案",
+ "source": {
+  "generated_by": "Codex built-in image_gen",
+  "shared_by": "オーナーがギガファイル便（期限 2026-11-09）で共有",
+  "zip_sha256": "dac280234dbbf36391b14b95d07ff3c8ec480de249309cbc85c63856d326aa15",
+  "original_sha256": "b3cfaefd06252c6ae7df2feaef6b1ee364e6b8004eb05a29ef6649bdafe88728"
+ },
+ "candidates": {
+  "rei-normal-a": {
+   "head_body_codex": 7.91,
+   "head_body_claude": 7.69,
+   "disposition_codex": "HOLD above/borderline upper7.7",
+   "sha256": "a45752c6d12bc161cc3940018e3f03ee2cf6b06772db95861de040015eb80905"
+  },
+  "rei-normal-b": {
+   "head_body_codex": 7.92,
+   "head_body_claude": 7.56,
+   "disposition_codex": "HOLD above/borderline upper7.7",
+   "sha256": "d9fc54edc287e5ac2eb3af41821a51cf89418c9971e6e60d2c93a0214a924db1"
+  },
+  "rei-normal-c": {
+   "head_body_codex": 8.05,
+   "head_body_claude": 7.71,
+   "disposition_codex": "HOLD above/borderline upper7.7",
+   "sha256": "e301cf08efbc01531e44175fb2e222a42ed0d8323b80dfda8b1fac92e3a614d8"
+  },
+  "rei-normal-a-v2": {
+   "head_body_codex": 7.76,
+   "head_body_claude": 7.58,
+   "disposition_codex": "HOLD above/borderline upper7.7",
+   "sha256": "93bbeab68aa59b4885e4beadc4806dfb4ec93d45f082c8cab2894e6a73d6b762"
+  },
+  "rei-normal-b-v2": {
+   "head_body_codex": 7.68,
+   "head_body_claude": 7.61,
+   "disposition_codex": "COMPARISON near upper7.7; second measurement needed; NOT ADOPTED",
+   "sha256": "00bc0e38b32558e399b68d5f0785d3e74bc3a25d5ebb584a7f33c78e5561096b"
+  },
+  "rei-normal-c-v2": {
+   "head_body_codex": 7.33,
+   "head_body_claude": 7.36,
+   "disposition_codex": "COMPARISON provisional in-range; NOT ADOPTED",
+   "sha256": "b3cfaefd06252c6ae7df2feaef6b1ee364e6b8004eb05a29ef6649bdafe88728"
+  }
+ },
+ "game_integration": "未実施。表情差分を同じ頭の大きさで作ってから、キャラ単位で組み込む"
+}

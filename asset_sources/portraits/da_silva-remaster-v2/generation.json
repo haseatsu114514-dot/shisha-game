@@ -1,0 +1,34 @@
+{
+ "phase": "立ち絵そろえ 第2期（規格そろえ）TS10",
+ "face": "normal",
+ "chosen": "da_silva-normal-b",
+ "status": "推奨（オーナー確認待ち）。ゲームの素材は未変更",
+ "chosen_by": "2026-11-02 Claude。頭身が規格内で 7.0 に近く、顔・ポーズ・衣装が今の通常と同じ案",
+ "source": {
+  "generated_by": "Codex built-in image_gen",
+  "shared_by": "オーナーがギガファイル便（期限 2026-11-09）で共有",
+  "zip_sha256": "dac280234dbbf36391b14b95d07ff3c8ec480de249309cbc85c63856d326aa15",
+  "original_sha256": "598f31ea7e6a12692c25eee42df1c774ecbc186f896c0380e2cdeea5ef8da58b"
+ },
+ "candidates": {
+  "da_silva-normal-a": {
+   "head_body_codex": 7.53,
+   "head_body_claude": 7.2,
+   "disposition_codex": "COMPARISON provisional in range; NOT ADOPTED",
+   "sha256": "a01d28e30490ec444441cd9b396d948c62d3c091815efc06f0f09ed13d75b7ae"
+  },
+  "da_silva-normal-b": {
+   "head_body_codex": 7.27,
+   "head_body_claude": 6.95,
+   "disposition_codex": "COMPARISON provisional in range; NOT ADOPTED",
+   "sha256": "598f31ea7e6a12692c25eee42df1c774ecbc186f896c0380e2cdeea5ef8da58b"
+  },
+  "da_silva-normal-c": {
+   "head_body_codex": 7.9,
+   "head_body_claude": 7.53,
+   "disposition_codex": "HOLD above/borderline upper7.7",
+   "sha256": "91e558f3959434d731f08cf83d5c28bab0656cc517cea1290e36dc8e0cd3e921"
+  }
+ },
+ "game_integration": "未実施。表情差分を同じ頭の大きさで作ってから、キャラ単位で組み込む"
+}
