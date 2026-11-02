@@ -6,10 +6,12 @@ import { createChapterActions } from "../core/chapter-actions.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
-import { play, hooks } from "../vn/engine.js";
+import { play, hooks, vnTest } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { selectStoryEnding } from "../core/story-routes.js";
+import { playStaffRoll } from "../scenes/staff-roll.js";
+import { radar } from "../daily/status.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { newSession, openBench, waitBenchReady } from "../craft/session.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
@@ -30,7 +32,8 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_S
   canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress, chapterFiveRead,
   chapterFiveFreeRemaining, chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
   beginChapterFiveMatch, chapterFiveMatchOutcome, chapterFiveVoteTally, CH5_FIRST_CUP_VOTES, recordChapterFiveSecondCup,
-  beginChapterFiveFinale, completeChapterFiveScene, CH5_LIME_MILESTONES, chapterFiveLimeDue } from "./ch5-progress.js";
+  beginChapterFiveFinale, completeChapterFiveScene, CH5_LIME_MILESTONES, chapterFiveLimeDue,
+  chapterFiveCreditsPending, recordChapterFiveCredits } from "./ch5-progress.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -534,7 +537,7 @@ async function renderFinale(owner) {
   if (!progress.finaleScenes) {
     // ※仮置き（#517）: 恋人の所在・約束の供給元が未整備のため、捏造せず present/accepted は空で渡す。
     // 中間は ending_normal になり、供給元ができたらこの呼び出しだけ差し替える。
-    // スタッフロール後段（Q20）は接続しない。
+    // 読み終えたらスタッフロール（renderStaffRoll）。その後の本格的な修羅場（Q20後段）は接続しない。
     const routes = await loadEndingRoutes();
     if (!current(owner)) return;
     const scenes = selectStoryEnding(routes, state, { present: [], accepted: [] });
@@ -553,11 +556,48 @@ async function renderFinale(owner) {
   ], "", scene.id);
 }
 
+/** タイトル画面へ戻る（起動し直してタイトルを出す）。 */
+function backToTitle() {
+  save();
+  location.reload();
+}
+
+/**
+ * フィナーレの後のスタッフロール（#517）。初めて流し終えたら記録してタイトルへ戻る。
+ * 途中で閉じたら、次に再開したとき完了カードから流し直す（一度も最後まで見ていない端末では飛ばせない）。
+ * 見終えた保存からの見直しはいつでも飛ばせて、終わったら完了カードへ戻る。
+ */
+async function renderStaffRoll(owner) {
+  const first = chapterFiveCreditsPending(state);
+  hud();
+  await playStaffRoll({ ...(first ? {} : { skippable: true }), ...(vnTest.turbo ? { durationMs: 1500 } : {}) });
+  if (!current(owner)) return;
+  if (!first) return renderComplete(owner);
+  if (!recordChapterFiveCredits(state)) throw new Error("スタッフロールの記録を確定できません");
+  backToTitle();
+}
+
+/**
+ * 第五章・完。フィナーレの直後に一度出し、章の伸びをレーダーで見せてからスタッフロールへ進む（Refs #2033）。
+ * スタッフロールを流し終えるまではタイトルへ抜ける操作を出さない（初回は飛ばせない）。
+ */
 function renderComplete(owner) {
-  card(owner, "complete", "第五章・完", "SHISHA-9000 の勝負は終わった。店の明かりが、いつもの夜に戻っていく。", [
+  const pending = chapterFiveCreditsPending(state);
+  const actions = pending ? [
+    button(owner, "スタッフロールへ", "complete-credits", () => renderStaffRoll(owner), true),
+    button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
+  ] : [
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
-    button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
-  ], "ここまでが、この物語の終わりです。");
+    button(owner, "スタッフロールを見る", "complete-credits", () => renderStaffRoll(owner)),
+    button(owner, "タイトルへ", "complete-title", () => backToTitle()),
+  ];
+  card(owner, "complete", "第五章・完", "SHISHA-9000 の勝負は終わった。店の明かりが、いつもの夜に戻っていく。", actions,
+    "ここまでが、この物語の終わりです。", "",
+    // 他の章と同じ比較。淡い面が第5章のはじめ、明るい面がいま。
+    [el("div.end-radar", { dataset: { test: test("growth") } }, [
+      radar(state.stats, state.statsAtChapterStart || state.stats, 300),
+      el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
+    ])]);
 }
 
 function renderError(owner) {

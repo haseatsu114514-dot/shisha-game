@@ -48,6 +48,9 @@ registered_derivatives = {(ROOT / d["file"]).resolve() for r in props for d in r
 for record in props:
     display_dir = (ROOT / record["webp"]).parent
     for display in display_dir.glob("*_display.webp"):
+        # WATL board belongs to asset_sources/ui/axe-watl-20261101, not these legacy props.
+        if display.name == "target_board_watl_display.webp":
+            continue
         assert display.resolve() in registered_derivatives, ("unregistered derivative", display.name)
 for record in props:
     for derivative in record.get("derivatives", []):

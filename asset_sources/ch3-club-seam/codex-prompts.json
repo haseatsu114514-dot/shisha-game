@@ -1,0 +1,29 @@
+[
+  {
+    "kind": "interior",
+    "base": "Anime visual novel background, detailed digital painting, dramatic lighting, no people, 1280x720, painterly brushwork. Interior of a small intimate basement nightclub in a Tokyo back alley, seen from the middle of the dance floor. Low ceiling with exposed pipes and a simple truss of stage lights, rough concrete walls, a slightly raised DJ booth against the far wall with two decks and a mixer on a dark counter (no brand names, no readable screens), small speaker stacks on both sides, a short bar counter with a few stools along the right wall. Deep violet and cyan beams cut through a light haze; the floor reflects the colored light. Calm and welcoming rather than wild, an open-deck night before the crowd arrives. No people, no text, no letters, no logos, no posters with writing, no watermark.",
+    "variants": [
+      "Balanced centered view, booth centered at rear.",
+      "Subtle camera offset left, booth slightly left of center, right bar clearly visible.",
+      "Subtle camera offset right, booth slightly right of center, right-side short bar remains visible."
+    ]
+  },
+  {
+    "kind": "entrance",
+    "base": "Anime visual novel background, detailed digital painting, night, no people, 1280x720, painterly brushwork. A narrow Tokyo back alley at night between old low-rise buildings, wet pavement reflecting neon. On the right, a steep narrow concrete staircase leads down to a basement door; violet light spills up the stairs from below, as if music is rising from underground. A small lit wall sign by the stairs shows only a thin stitched seam-line symbol (two circles joined by a stitched line), no letters. A few bicycles, an air-conditioner unit, utility poles and wires, a distant warm street light. Quiet, slightly mysterious, inviting. No people, no readable text, no letters, no brand logos, no watermark.",
+    "variants": [
+      "View level from the alley center, stairwell in right foreground.",
+      "View from slightly farther back, stairwell at right midground and alley recedes left.",
+      "View slightly nearer the stairs, stairwell on right, alley still visible on left."
+    ]
+  },
+  {
+    "kind": "logo",
+    "base": "Shop logo for a small Tokyo basement nightclub named \"SEAM\" (it means the stitched join between two pieces of cloth; at the club it means the join between two songs). Clean modern wordmark reading exactly \"SEAM\" (S E A M, four uppercase Latin letters, spelled exactly) in bold geometric uppercase letters, with a thin stitched seam line (short dashes) running horizontally through the letters and joining two small circles on either side that suggest two DJ platters. Palette: silver-white letters, violet (#8f6cf0) stitched line, a touch of cyan (#3fd0e8) on one circle. Flat vector-like rendering, crisp edges, readable when shrunk to a small map pin. Centered on a 1536x1024 canvas with generous margins, TRUE TRANSPARENT background. No other words, no tagline, no watermark, no 3D bevel, no gradients, no glow halo that fills the background.",
+    "variants": [
+      "Balanced rectangular geometric letters, circles small and aligned horizontally with word center.",
+      "Slightly wider geometric lettering and very small circles, aligned horizontally through center.",
+      "Slightly condensed geometric lettering and small outlined circles, aligned horizontally through center."
+    ]
+  }
+]

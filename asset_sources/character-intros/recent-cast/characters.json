@@ -113,5 +113,27 @@
       "brief": "Background only, no people or text. Dark left 43% for approved portrait, illustrated objects upper right, blank middle right for white name ribbon, dark lower right for quotation. Gouache editorial illustration. Palette #aa83c7, motifs: タロット・紫布・月. No hookah or hose."
     },
     "portrait_sha256": "38ef4fa13f7e082db74108c52719ab8127071d98db391cea9895a6b4fdfc3f8d"
+  },
+  {
+    "id": "yoru",
+    "color": "#8f6cf0",
+    "secondary": "#3fd0e8",
+    "shadow": "#120d1f",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/yoru/chr_yoru_normal.png",
+    "motif_label": "DJの皿・縫い目・イコライザー",
+    "caption_source": "data/characters.json: yoru.intro_cutin",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/recent-cast/backgrounds/yoru.png",
+        "sha256": "066f483e1a2f56d23b5fc443409077e64a54a8e103eb3ecef1f06e56de6bb40c"
+      }
+    },
+    "generation": {
+      "tool": "Codex image_gen",
+      "date": "2026-11-01",
+      "source": "asset_sources/character-intros/yoru-20261102/background-B.png（3案から採用。1672×940 を高さ1024へ拡大し右寄せで1536×1024に切り出し）",
+      "brief": "Issue #2199 #4. Graphic-poster background, no people or text; dark left third and lower area for the portrait and text."
+    }
   }
 ]

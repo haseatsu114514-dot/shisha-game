@@ -1,0 +1,32 @@
+[
+  {
+    "file": "yoru-normal-v1.png",
+    "bytes": 779032,
+    "sha256": "4f5f69dd8d5ca13240c192e9463c501deba99af5032a4620f549efa64706e5fd",
+    "size": [
+      1086,
+      1448
+    ],
+    "mode": "RGBA"
+  },
+  {
+    "file": "yoru-normal-v2.png",
+    "bytes": 762770,
+    "sha256": "99f57ebb4a119ffd8d6423d5cdec317df57e315c33e805c8646c4163c7ce5a6b",
+    "size": [
+      1086,
+      1448
+    ],
+    "mode": "RGBA"
+  },
+  {
+    "file": "yoru-normal-v3.png",
+    "bytes": 775652,
+    "sha256": "0b799e5fe433a09f9d9ed8013da783fa6406f2602c191ea7f9e8c1c62adb3181",
+    "size": [
+      1086,
+      1448
+    ],
+    "mode": "RGBA"
+  }
+]

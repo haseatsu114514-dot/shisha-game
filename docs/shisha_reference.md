@@ -45,9 +45,27 @@
 
 ### 4.0 実写の参照画像（現状と置き場）
 
-- `asset_sources/shisha-hardware-reference/` の `*.webp` は、提供写真を**1枚あたり150px前後に縮めた一覧**で、生成の参照には使えない。元の写真は2026-10-09当時に保存されず、リポジトリには**実写が1枚も無い**（2026-11-02 に履歴まで確認）。
-- 実写の置き場は `asset_sources/shisha-hardware-reference/photos/`（入れ方・命名は同フォルダの README）。写真がある部位は生成前に**実際に開いて見る**。生成ツールに参照画像を渡せるなら、早見表・構造図ではなく**この実写**を渡す（図解を渡すと平板な図の見た目が絵に移る）。
+- `asset_sources/shisha-hardware-reference/` の `*.webp` は、提供写真を**1枚あたり150px前後に縮めた一覧**で、生成の参照には使えない（元の写真は2026-10-09当時に保存されなかった）。2026-11-02 に Wikimedia Commons の自由ライセンス写真 **41枚**を `photos/` に入れた（台の全体と店内12・付け根と接続部5・ハガル7・HMD3・炭3・ホースとハンドルと吸い口6・手元5）。**日本の店で主流の機材（Lotus型HMD・ターキッシュリッド・蓋付き高火力HMD・シリコンボウル・80Feet系陶器）の実写はまだ無く、オーナーの撮影待ち。**
+- 実写の置き場は `asset_sources/shisha-hardware-reference/photos/`（一覧・見るポイント・出典・入れ方・命名は同フォルダの README）。写真がある部位は生成前に**実際に開いて見る**。生成ツールに参照画像を渡せるなら、早見表・構造図ではなく**この実写**を渡す（図解を渡すと平板な図の見た目が絵に移る）。
 - 写真が無い部位は 4.1 の「正解」と 4.2 の文で描き、生成後チェックを厳しくする。足りない写真はオーナーに部位名を挙げて頼む。
+
+### 4.0.5 店で実際に使われる機材を主役にする（2026-11-02 オーナー方針）
+
+- 絵にする機材は、**今の日本のシーシャ店で普通に使われているもの**を基本にする。彫金の入った伝統的なエジプト型の台や骨董品めいた台は、背景の飾りや「古い店」の演出に限る。
+- **台（ステム・ベース）の既定**: 細い金属ステム（ステンレス・アルミ・黒や金の塗装）＋シンプルな円柱か角型のガラスベース。受け皿は小さめの金属皿。飾りは少なく、業務用に見える形。
+- **ゲーム内の機材との対応**（`data/equipment.json` の名前は実物のもじり。描くときは右の見た目に寄せる）:
+
+| ゲーム内の機材 | 実物で近いもの（名前はオーナー提示。形は写真で確認） | 見た目の要点 |
+|---|---|---|
+| シリコンボウル＋ロートスHMD（初期装備） | シリコン製ボウル＋Kaloud Lotus 型の HMD（店で最も多い「シリコンロータス」の組み合わせ） | 丸いシリコンの器（黒・赤・青など）に、取手付きの低い金属の皿型HMDが直接載る。アルミは無し。炭は中に2〜3個 |
+| 80beatハガル＋タヌキッシュリッド | HookahJohn 80Feet 系のターキッシュ型陶器ボウル＋ターキッシュリッド型の HMD（「80ターキッシュ」） | 口が広く背の低い素焼き〜釉薬の陶器。内側に数個の穴。アルミを張った上に、縁の立った浅い金属の蓋型HMDを載せる |
+| 素焼きハガル＋アマバースト | エジプシャン型の素焼き（Solaris 系の伝統型など）＋高火力の蓋付きHMD（オーナー提示「アマボースト」。実物名は要確認） | 赤茶の素焼きで縦に長め、口径は広い。アルミ直炭の店も多い。HMDを使う場合は蓋付きで炭が隠れる |
+| ハリーザムーン（真鍮パイプ） | 真鍮の伝統寄りステム | 金色の金属ステム。ただし装飾は控えめにし、ベースは透明ガラス |
+| 家シーシャの卓上台 | 小型の卓上モデル（高さ30〜40cm） | 短いステムと小さなベース。ホースも短め |
+
+- **HMDは必ずどれか1モデル**を選び、形を混ぜない。蓋の有無で炭の見え方が変わる（Lotus 型は蓋を閉めると炭が見えない、ターキッシュリッド型は上から炭が見える）。
+- **セッティングの幅**を出すときは、台の色・ベースの形・ボウルの種類・HMDの型・ホースの色を組み合わせて変える。全部を同じ「黒いステム＋シリコン＋Lotus」にしない。
+- 上の実物名は**見た目の手がかり**で、ロゴ・刻印・商品名は描かない。写真が `photos/` に入ったら、この表の「見た目の要点」を写真の番号で裏付ける。
 
 ### 4.1 部位ごとの正解と、よく出る間違い
 
@@ -60,7 +78,8 @@
 | HMD（ヒートマネジメント） | ハガルの口の上に載る**別部品の低い金属の器**。径はハガルの口と同じくらい、高さは指2本分。蓋・取手・通気口は**1つのモデルで統一** | 台の最上部に浮く／蓋だけ別モデル／煙突・網・取手の寄せ集め／ハガルと融合／受け皿並みに大きい |
 | 炭 | **指先ほどの小さな角炭**。表面は灰色の灰、割れ目に少し赤。炎は出ない。完成・喫煙状態は**HMDの中に2〜3個**、制作工程は**アルミの上に三角3個** | 燃える炎／赤い岩／5個以上／HMDの外に転がる／炭から煙が出る |
 | ホース | **1本だけ**。ステム側面のポートから出て、重力でたわみ、**硬いハンドル**の根元につながる。ハンドルの先に吸い口 | Y字分岐・3つ目の端／途中で消える・浮く／ボウル・皿・ベースの底から生える／人物を囲む大きな輪／ハンドル無しでホースが直接口に入る |
-| 吸い口・マイチップ | 首掛けなら**チェーン＋小さな吸い口本体**。使用中はハンドルの先端に装着 | チェーンだけ／棒飾りだけ／チップをハンドルの大きさに巨大化 |
+| ハンドル（ホースの持ち手） | ホースの先に付く**硬い筒**。長さは手のひら1.5〜2個分、ホース側が太く吸い口側がやや細い。木・金属・樹脂。ホースとの境目に金具（ホースアダプター）。指で握って口元へ運ぶ | ハンドルが無くホースを直接くわえる／ホースと同じ太さの柔らかい筒／煙管やタバコのフィルターのような形／ホースとの境目が溶けて一体 |
+| 吸い口・マイチップ | **使い捨てチップ**はハンドル先端に差す短い樹脂の筒（指2本分の長さ、色付き半透明が多い）。**首掛けマイチップ**は小さな吸い口本体（指1〜2本分）＋チェーンで、使用中はハンドルの先端に装着 | チェーンだけ／棒飾りだけ／チップをハンドルの大きさに巨大化／チップが指より長い／首のチェーンが煙の通る管につながる |
 | 煙 | **人物の口元**から出て広がる | HMD・ホースの根元・チェーンから常時噴出 |
 | 縮尺 | ハガルの口 ≒ HMD ≒ 掌の幅、受け皿はHMDの約2.5倍、炭は指先。手持ちの物は手と同じ奥行き | カメラへ突き出した巨大ボウル／小さな受け皿に大きなHMD／ハガルの脚が潰れている |
 
@@ -68,9 +87,9 @@
 
 場面の指定のあとに、日本語か英語のどちらかを**そのまま**貼る（要約しない）。
 
-> シーシャ（水たばこ）の構造を守って描く。上から順に「小さな角炭 → 炭を収めるHMD（熱管理器具。ボウルの口に載る別部品） → フレーバーを詰めたハガル（器と細い脚） → 灰の受け皿 → 縦のステム → 水の入ったガラスのベース」。ステムはベースの口に真っ直ぐ差さり、ベースの水面は下の方で、ステムを水槽にしない。ホースは1本だけで、本体側面のホースポートから出て、重力でたわみ、手で持つ硬いハンドルの根元につながる。ホースを分岐・途切れ・浮遊させず、パージ弁・ボウル・受け皿・ベースの底から生やさない。人物を囲む大きな輪にしない。完成・喫煙状態ではアルミに炭を直接置かず、HMDの中に炭を置く。HMDは1つのモデルとして成立させ、別の型の蓋・煙突・取手を混ぜない。ハガルの口とHMDは大人の掌の幅くらい、炭は指先ほどの大きさ。受け皿はHMDの2.5倍前後。煙は人物の口元から出し、HMD・ホース根元からは出さない。首掛けのマイマウスピースを描く場合はチェーンだけでなく小さな吸い口本体を付ける。台の形・色・装飾は自由にデザインし、実在製品・ロゴ・文字は描かない。
+> シーシャ（水たばこ）の構造を守って描く。上から順に「小さな角炭 → 炭を収めるHMD（熱管理器具。ボウルの口に載る別部品） → フレーバーを詰めたハガル（器と細い脚） → 灰の受け皿 → 縦のステム → 水の入ったガラスのベース」。ステムはベースの口に真っ直ぐ差さり、ベースの水面は下の方で、ステムを水槽にしない。ホースは1本だけで、本体側面のホースポートから出て、重力でたわみ、手で持つ硬いハンドルの根元につながる。ホースを分岐・途切れ・浮遊させず、パージ弁・ボウル・受け皿・ベースの底から生やさない。人物を囲む大きな輪にしない。完成・喫煙状態ではアルミに炭を直接置かず、HMDの中に炭を置く。HMDは1つのモデルとして成立させ、別の型の蓋・煙突・取手を混ぜない。ハガルの口とHMDは大人の掌の幅くらい、炭は指先ほどの大きさ。受け皿はHMDの2.5倍前後。煙は人物の口元から出し、HMD・ホース根元からは出さない。首掛けのマイマウスピースを描く場合はチェーンだけでなく小さな吸い口本体を付ける。台は今のシーシャ店で使われる業務用の形（細い金属ステム＋シンプルなガラスベース、小さめの受け皿）を基本にし、彫金の伝統型は指定があるときだけ。色・仕上げは自由にデザインし、実在製品・ロゴ・文字は描かない。
 
-> Draw the hookah with correct structure. From top to bottom: a few small cube charcoals (about fingertip size, grey ash with a little red glow, no flames) → a heat management device (HMD), a separate low metal cup sitting on the bowl's rim, holding the coals → the ceramic tobacco bowl (a cup on a slim neck) → a wide ash tray → a vertical stem → a glass base with water only in its lower part. The stem goes straight down into the mouth of the base through a rubber grommet; the base is not an aquarium. Exactly one hose: it starts at the hose port on the side of the stem above the base, sags naturally with gravity, and connects to the base of a rigid handle held in the hand. The hose never forks, breaks, floats, loops around the character, or comes out of the purge valve, bowl, tray or base bottom. In a finished/smoking setup, coals sit inside the HMD, never directly on foil. Use one coherent HMD model; do not mix lids, chimneys or handles from different models. The bowl mouth and HMD are about the width of an adult palm; the tray is about 2.5× the HMD width. Smoke comes from the character's mouth, not from the HMD or hose. If a neck-worn personal mouthpiece is shown, draw a real small mouthpiece body on the chain, not just a chain. Hookah shape, colors and ornaments are free; no real brands, logos or text.
+> Draw the hookah with correct structure. From top to bottom: a few small cube charcoals (about fingertip size, grey ash with a little red glow, no flames) → a heat management device (HMD), a separate low metal cup sitting on the bowl's rim, holding the coals → the ceramic tobacco bowl (a cup on a slim neck) → a wide ash tray → a vertical stem → a glass base with water only in its lower part. The stem goes straight down into the mouth of the base through a rubber grommet; the base is not an aquarium. Exactly one hose: it starts at the hose port on the side of the stem above the base, sags naturally with gravity, and connects to the base of a rigid handle held in the hand. The hose never forks, breaks, floats, loops around the character, or comes out of the purge valve, bowl, tray or base bottom. In a finished/smoking setup, coals sit inside the HMD, never directly on foil. Use one coherent HMD model; do not mix lids, chimneys or handles from different models. The bowl mouth and HMD are about the width of an adult palm; the tray is about 2.5× the HMD width. Smoke comes from the character's mouth, not from the HMD or hose. If a neck-worn personal mouthpiece is shown, draw a real small mouthpiece body on the chain, not just a chain. Default to the kind of hookah used in today's shisha lounges: a slim metal stem with a simple cylindrical or square glass base and a small tray, not an ornate engraved antique unless asked. Colors and finishes are free; no real brands, logos or text.
 
 場面別に足す一文:
 
@@ -85,8 +104,8 @@
 ```
 人物      : （キャラID。正規立ち絵 assets/sprites/characters/<id>/chr_<id>_normal.png を見る・渡す）
 場面      : 準備中（ボウル未装着）／詰める・アルミ／炭を置く／完成・喫煙／携帯 のどれか1つ
-台の型    : 伝統の金属／木製ステム／角型モダン／透明・低重心 など。色・装飾は自由
-HMD       : 完成・喫煙なら必須。具体的な1モデル（例: 蓋なしの低い容器）。蓋の有無も
+台の型    : 既定は店の業務用（細い金属ステム＋円柱か角型のガラスベース）。伝統の彫金／木製／低重心 は指定があるときだけ
+HMD       : 完成・喫煙なら必須。具体的な1モデル（Lotus型／ターキッシュリッド型／蓋付き高火力型／蓋なし低容器）。蓋の有無も
 炭        : 小さな角炭○個（HMD内、または制作工程ならアルミ上に三角3個）
 ホース    : 本体の側面ポート → ホース → 硬いハンドル →（チップ）→ 口。画面のどこを通すか
 吸い口    : なし／使い捨てチップ／首掛けマイチップ（携帯中）／マイチップをハンドルに装着
