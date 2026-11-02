@@ -42,21 +42,21 @@
 
 > 2026-10-09 CI72〜82: [漫画カットインの全画面／主人公エリア中央・動く比較](../../asset_sources/craft-success-cutins/placements-v2-20261008/README.md)。[漫画コマ](../../asset_sources/craft-success-cutins/placements-v2-20261008/pair-prompt.txt)・[中央突起の除去](../../asset_sources/craft-success-cutins/placements-v2-20261008/stove-fix-prompt.txt)・[コンロの短い目印を真下へ](../../asset_sources/craft-success-cutins/placements-v2-20261008/dial-fix-prompt.txt)の指示を保存。目印を斜め・長い中央線にした案は不採用。カットインは比較用で、本編の成功条件へは未接続。コンロPNG／WebPの描画修正は本編素材にも反映。
 
-> 2026-10-09 CI71: [首掛けマイマウスピースがチェーンだけ／ホースが実機につながらない生成ミスの出力後QA](../../asset_sources/shisha-hardware-reference/visual-qa-necklace-hose-20261009.md)。キャラは正規立ち絵優先。**チェーン＋立体吸い口本体**と**ホースポートからハンドルまでの連続性**を検品し、NGなら再生成（構図上の遮蔽・見切れは自然なら可）。
+> 2026-10-09 CI71: [首掛けマイマウスピースがチェーンだけ／ホースが実機につながらない生成ミスの出力後QA](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/visual-qa-necklace-hose-20261009.md)。キャラは正規立ち絵優先。**チェーン＋立体吸い口本体**と**ホースポートからハンドルまでの連続性**を検品し、NGなら再生成（構図上の遮蔽・見切れは自然なら可）。
 
-> 2026-10-09 CI70: [追加マウスピース3点＋ハンドル4点の実物写真とルール](../../asset_sources/shisha-hardware-reference/mouthpiece-handle-skins-20261009.md)。先端チップ（消耗品/マイチップ）・硬いハンドル・柔らかいホースを分ける。色・素材・装飾は自由、首のチェーンはホースではない。スキンは構想のみ、実装変更なし。トングは実物資料待ち。
+> 2026-10-09 CI70: [追加マウスピース3点＋ハンドル4点の実物写真とルール](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/mouthpiece-handle-skins-20261009.md)。先端チップ（消耗品/マイチップ）・硬いハンドル・柔らかいホースを分ける。色・素材・装飾は自由、首のチェーンはホースではない。スキンは構想のみ、実装変更なし。トングは実物資料待ち。
 
-> 2026-10-09 CI69: [ホースとマウスピースの実物6写真・外部調査・誤描写防止](../../asset_sources/shisha-hardware-reference/hose-and-mouthpieces-20261009.md)。[自作のホース接続図](../../asset_sources/shisha-hardware-reference/hose-mouthpiece-connections-20261009.svg)も見る。横のポート→1本のホース→硬い持ち手→着脱式衛生チップ→人物の口元。使い捨てチップ／首掛けマイチップは別の選択肢で、首の紐をホースにしない。
+> 2026-10-09 CI69: [ホースとマウスピースの実物6写真・外部調査・誤描写防止](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/hose-and-mouthpieces-20261009.md)。[自作のホース接続図](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/hose-mouthpiece-connections-20261009.svg)も見る。横のポート→1本のホース→硬い持ち手→着脱式衛生チップ→人物の口元。使い捨てチップ／首掛けマイチップは別の選択肢で、首の紐をホースにしない。
 
-> 2026-10-09 CI68: [構造図3点と部品/空気の通り道](../../asset_sources/shisha-hardware-reference/anatomy-diagrams-20261009.md)、[ハガルの伝統型・ファンネル型・ボルテックス型、アルミ穴、炭配置、HMD比較調査](../../asset_sources/shisha-hardware-reference/bowl-interiors-foil-coal-placement-20261009.md)。[自作の内部模式図](../../asset_sources/shisha-hardware-reference/bowl-interiors-types-20261009.svg)も参照。実際のパーツ配置と既存ゲーム工程を優先し、唯一の炭/穴の正解と決めない。
+> 2026-10-09 CI68: [構造図3点と部品/空気の通り道](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/anatomy-diagrams-20261009.md)、[ハガルの伝統型・ファンネル型・ボルテックス型、アルミ穴、炭配置、HMD比較調査](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/bowl-interiors-foil-coal-placement-20261009.md)。[自作の内部模式図](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/bowl-interiors-types-20261009.svg)も参照。実際のパーツ配置と既存ゲーム工程を優先し、唯一の炭/穴の正解と決めない。
 
-> 2026-10-09 CI67: [アルミ・煙突・シーシャの構図9写真](../../asset_sources/shisha-hardware-reference/usage-and-installation-20261009.md)と[これまでの37写真を横断したAI誤描写防止ガイド](../../asset_sources/shisha-hardware-reference/ai-generation-structural-pitfalls.md)。ボウル内部の穴の型式、アルミ小穴、HMD・チムニー・トレー、人物・ホース・複数台の接続を区別。既存ゲーム工程・設定は維持。
+> 2026-10-09 CI67: [アルミ・煙突・シーシャの構図9写真](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/usage-and-installation-20261009.md)と[これまでの37写真を横断したAI誤描写防止ガイド](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/ai-generation-structural-pitfalls.md)。ボウル内部の穴の型式、アルミ小穴、HMD・チムニー・トレー、人物・ホース・複数台の接続を区別。既存ゲーム工程・設定は維持。
 
-> 2026-10-09 CI66: [アルミ・HMD・炭の近接写真9点](../../asset_sources/shisha-hardware-reference/heat-management-closeups-20261009.md)。アルミに炭を置く方式と別体HMDを区別し、炭の灰と赤熱の描写、器具のスリットと取っ手、陶器の大きさと接続を参考にする。既存の穴あけ・機材を変更しない。
+> 2026-10-09 CI66: [アルミ・HMD・炭の近接写真9点](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/heat-management-closeups-20261009.md)。アルミに炭を置く方式と別体HMDを区別し、炭の灰と赤熱の描写、器具のスリットと取っ手、陶器の大きさと接続を参考にする。既存の穴あけ・機材を変更しない。
 
-> 2026-10-09 CI65: [実際の喫煙シーンとヒートマネジメントの参考10点](../../asset_sources/shisha-hardware-reference/smoking-and-heat-management-20261009.md)。人物の使い方・比率・ホース・煙の描写、ボウルとHMDの違い、炭をトングで扱う位置関係を参考にする。写真の人物・製品は完コピしない。
+> 2026-10-09 CI65: [実際の喫煙シーンとヒートマネジメントの参考10点](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/smoking-and-heat-management-20261009.md)。人物の使い方・比率・ホース・煙の描写、ボウルとHMDの違い、炭をトングで扱う位置関係を参考にする。写真の人物・製品は完コピしない。
 
-> 2026-10-09 CI64: シーシャ台を描く際は[実物写真9種の縮小一覧と生成ルール](../../asset_sources/shisha-hardware-reference/README.md)を必ず参照。形と材質の理解が目的で、メーカー商品の模写は禁止。色・装飾・比率の創作は自由。描かない指定は優先。
+> 2026-10-09 CI64: シーシャ台を描く際は[実物写真9種の縮小一覧と生成ルール](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/README.md)を必ず参照。形と材質の理解が目的で、メーカー商品の模写は禁止。色・装飾・比率の創作は自由。描かない指定は優先。
 
 > 2026-10-08 CI62／63: 制作成功カットインの[目元／漫画コマの2案](../../asset_sources/craft-success-cutins/concepts-v1-20261008/README.md)。同じ炭焼き画面とはじめを参照した比較モックアップ。[目元の生成指示](../../asset_sources/craft-success-cutins/concepts-v1-20261008/eyes-prompt.txt)は工程共通の斜め帯、[漫画コマの生成指示](../../asset_sources/craft-success-cutins/concepts-v1-20261008/comic-prompt.txt)は成功した手元と笑顔。本編接続・演出頻度・採用案は未決定。
 

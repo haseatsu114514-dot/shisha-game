@@ -14,7 +14,7 @@
 - **検品**：ポートから手元へ追跡し、次に手元からポートへ逆向きにも追跡する。交差点・折り返し・画面端を一つずつ確認する。接続点だけが正しくても、途中の経路がNGなら不採用。
 - **状態**：初版は不採用。候補一覧から外し、修正版を別途生成する。ルールを追記しただけで初版を合格にしない。
 
-参照：[ホース・マイチップ検品ガイド](../visual-qa-necklace-hose-20261009.md)、[ヒロインCGの追加ルール](../heroine-title-cg-rules-20261009.md)。
+参照：[ホース・マイチップ検品ガイド](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/visual-qa-necklace-hose-20261009.md)、[ヒロインCGの追加ルール](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/heroine-title-cg-rules-20261009.md)。
 
 ## NG-BOWL-01：凛の修正版でハガルが短すぎる
 

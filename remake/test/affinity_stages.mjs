@@ -295,7 +295,10 @@ await check('ageha ♥5 gummy stage and MELTY PUFF finale (#2023): once, gift, r
     s.flags._ch2_read_remake_ch2_ageha_gummy=true;assert.equal(f.stages.pendingAffinityStage(s,'ageha'),null);
     s.affinity.ageha=65;assert.equal(f.bonds.finaleDue('ageha'),false,'needs ♥5');s.affinity.ageha=66;
     assert.equal(f.bonds.finaleDue('ageha'),true);assert.equal(f.bonds.finaleAtVisit('ageha'),true);
-    s.chapter=3;assert.equal(f.bonds.finaleDue('ageha'),false,'MELTY PUFF visits are chapter 2 only');s.chapter=2;
+    s.chapter=3;assert.equal(f.bonds.finaleDue('ageha'),false,'MELTY PUFF visits are chapter 2 only');
+    // VOL02: 第3章でも東京へ発つ前の準備3日は柚ヶ谷へ通える。出発後は地図に無い。
+    s.flags._ch3_prep={startDay:29,days:3,step:4,departed:false};assert.equal(f.bonds.finaleDue('ageha'),true,'MELTY PUFF before the Tokyo departure');
+    s.flags._ch3_prep.departed=true;assert.equal(f.bonds.finaleDue('ageha'),false,'not after the departure');delete s.flags._ch3_prep;s.chapter=2;
     f.setPlay(async()=>({cancelled:true}));
     assert.equal(await f.bonds.playFinale('ageha',{deferSave:true}),false);assert(!s.finales.ageha);assert(!s.owned.includes('suyaki_ageha'));
     f.setPlay(async()=>done);
