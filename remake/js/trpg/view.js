@@ -79,6 +79,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   const finished = new Promise(resolve => { resolveFinished = resolve; });
   const progress = el("nav.trpg-journey", { "aria-label": "物語の進行" });
   const teamwork = el("div.trpg-teamwork", { dataset: { test: "trpg-teamwork" } });
+  let shownTeamwork = null;
   const heatMeter = el("div.trpg-heat", { dataset: { test: "trpg-heat" }, role: "meter", "aria-valuemin": "0", "aria-valuemax": String(HEAT.max) });
   let heatSeen = 0, heatChatter = [];
   const tableStatus = el("div.trpg-table-status", { dataset: { test: "trpg-table-status" }, "aria-label": "卓の進行と残りの札" });
@@ -152,8 +153,11 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       class: i < current ? "done" : "", "aria-current": phase === state.phase ? "step" : null,
     }, [el("i", { text: i < current ? "✓" : String(i + 1), "aria-hidden": "true" }),
       el("span", { text: phase === "ending" ? "結末" : presentation.phases[phase].kicker.split(" / ").pop() })]))));
+    const before = shownTeamwork ?? state.teamwork;
     teamwork.replaceChildren(el("span", { text: "連携札 " + state.teamwork + "/2" }),
-      ...[1, 2].map(n => el("i", { class: n > state.teamwork ? "spent" : "", "aria-hidden": "true" })));
+      ...[1, 2].map(n => el("i", { "aria-hidden": "true", class: [n > state.teamwork ? "spent" : "",
+        n > state.teamwork && n <= before ? "just-spent" : "", n <= state.teamwork && n > before ? "just-gained" : ""].filter(Boolean).join(" ") })));
+    shownTeamwork = state.teamwork;
     table.replaceChildren(...scenario.cast.map(c => {
       const pc = c.part === "GM" ? null : pcOf(c.id);
       return el("span.trpg-table-person", { dataset: { speaker: c.id, part: c.part === "GM" ? "gm" : "pl" } }, [
@@ -316,9 +320,9 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
           style: { left: spot.x + "%", top: spot.y + "%" }, dataset: { test: "trpg-spot-" + spot.id, labelSide: spot.y >= 65 ? "above" : "below" },
           onclick: () => {
             if (busy || overlay) return;
-            const clue = session.inspect(spot.id);
+            const clue = session.inspect(spot.id), from = clue.fresh ? root.querySelector('[data-test="trpg-spot-' + spot.id + '"]')?.getBoundingClientRect?.() : null;
             audio.play(clue.fresh ? "clue" : "tap");
-            talk(clue.evidence.lines, () => { renderBody(); idle(presentation.exploreIdle); }, "trpg-spot-" + spot.id);
+            talk(clue.evidence.lines, () => { renderBody(); idle(presentation.exploreIdle); if (from) flySlip(spot.id, from); }, "trpg-spot-" + spot.id);
           },
         }, [el("i", { text: checked ? "✓" : String(i + 1) }), el("span.trpg-stage-hotspot-label", {
           text: spot.short + (!checked && session.rules.inspectionPressure ? " · " + RISK + "＋" + session.rules.inspectionPressure : ""),
@@ -326,6 +330,18 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       });
     }
     return node;
+  }
+  function flySlip(id, from) {
+    const slip = root.querySelector('.trpg-table-clue[data-clue="' + id + '"]');
+    if (!slip?.animate || !slip.getBoundingClientRect || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const to = slip.getBoundingClientRect(), scale = (root.getBoundingClientRect().width / root.offsetWidth) || 1;
+    const dx = (from.left + from.width / 2 - to.left - to.width / 2) / scale, dy = (from.top + from.height / 2 - to.top - to.height / 2) / scale;
+    audio.play("slip");
+    slip.animate([
+      { transform: "translate(" + dx + "px," + dy + "px) rotate(-14deg) scale(1.5)", opacity: 0 },
+      { transform: "translate(" + dx * .55 + "px," + (dy * .55 - 60) + "px) rotate(8deg) scale(1.25)", opacity: 1, offset: .45 },
+      { transform: "none", opacity: 1 },
+    ], { duration: 620, easing: "cubic-bezier(.3,.7,.3,1)" });
   }
   function investigation() {
     const state = session.snapshot(), remaining = session.rules.exploreLimit - state.clues.length;
@@ -363,7 +379,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     // One existing memo button owns the cards: no second memo or new state.
     if (state.clues.length) pockets.querySelector("button").prepend(el("span.trpg-table-clues", { "aria-hidden": "true" },
       state.clues.slice(0, 3).map((id, i) => el("span.trpg-table-clue", {
-        text: (i + 1) + " · " + session.profile.evidence[id].title, dataset: { clue: id },
+        text: String(i + 1), title: session.profile.evidence[id].title, dataset: { clue: id },
       }))));
     if (session.rules.inspectionPressure) cue.append(el("small.trpg-stage-risk", {
       text: RISK + " " + state.pressure + "/" + session.rules.pressureMax,
@@ -566,10 +582,16 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("details.trpg-evidence-fold", [el("summary", { text: "手がかりを見る (" + session.snapshot().clues.length + ")" }), el("div.trpg-notes-grid", noteCards())]),
     ]), [button("もう少し調べる", "trpg-hypothesis-back", () => pop.close())], { wide: true, skin: "trpg-hypothesis-stage" });
   }
+  // The die travels and casts its shadow; the body inside spins, so the shadow stays on the felt.
   function die(value, rolling = false) {
-    return el("div.trpg-die.trpg-d20", { class: rolling ? "rolling" : "", role: "img", "aria-label": "20面ダイス " + value,
-      html: '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><polygon points="50,2 95,26 95,74 50,98 5,74 5,26"/><path d="M50 2 25 68 75 68 50 2M5 26 25 68 5 74M95 26 75 68 95 74M50 98 25 68M50 98 75 68M5 26 50 2 95 26"/></svg>' },
-      el("span.trpg-d20-value", { text: String(value), "aria-hidden": "true" }));
+    return el("div.trpg-die.trpg-d20", { class: rolling ? "rolling" : "", role: "img", "aria-label": "20面ダイス " + value },
+      el("span.trpg-die-body", { "aria-hidden": "true",
+        html: '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><polygon points="50,2 95,26 95,74 50,98 5,74 5,26"/><path d="M50 2 25 68 75 68 50 2M5 26 25 68 5 74M95 26 75 68 95 74M50 98 25 68M50 98 75 68M5 26 50 2 95 26"/></svg>' },
+        el("span.trpg-d20-value", { text: String(value), "aria-hidden": "true" })));
+  }
+  function showFace(node, value) {
+    node.setAttribute("aria-label", "20面ダイス " + value);
+    node.querySelector(".trpg-d20-value").textContent = String(value);
   }
   /** The declared PC and stat, shown wherever a roll is explained. */
   function actorPanel(approach, { compact = false } = {}) {
@@ -657,7 +679,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("strong", { text: name(helper) + "の「" + cast[helper].ability + "」を借りる" }),
       el("small", { text: "判定＋7 · 連携札1枚を使う · この切り札は一度だけ" }),
     ])]));
-    if (support) support.addEventListener("change", updateForecast);
+    if (support) support.addEventListener("change", () => { if (support.checked) audio.play("card"); updateForecast(); });
     if (helper && !support) body.append(el("p", { text: "この判定では連携札を使えません。手元の作戦で進めましょう。" }));
     body.append(el("details.trpg-roll-details", { dataset: { test: "trpg-roll-details" } }, [
       el("summary", { text: "判定の詳細", dataset: { test: "trpg-details-toggle" } }),
@@ -673,19 +695,24 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       modalCloser = null;
       pop.box.querySelectorAll("input,button").forEach(n => { n.disabled = true; });
       pop.box.focus({ preventScroll: true });
-      body.querySelector(".trpg-dice-row").replaceChildren(die(1, true), die(1, true),
-        el("span.trpg-dice-bonus", { text: "＋" + result.bonus }));
+      const thrown = [die(1, true), die(1, true)];
+      thrown.forEach((node, i) => { node.dataset.throw = "ab"[i]; });
+      body.querySelector(".trpg-dice-row").replaceChildren(...thrown, el("span.trpg-dice-bonus", { text: "＋" + result.bonus }));
       settleGuard = false;
       audio.play("roll");
       const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (!reduced) rollTicker = setInterval(() => {
-        body.querySelector(".trpg-dice-row")?.replaceChildren(die(Math.floor(Math.random()*DICE.sides)+1, true), die(Math.floor(Math.random()*DICE.sides)+1, true),
-          el("span.trpg-dice-bonus", { text: "＋" + result.bonus }));
-      }, 90);
+      if (!reduced) {
+        // Faces tumble while the dice are in the air, then each stops on its real value as it lands.
+        const started = Date.now(), landing = [780, 850];
+        rollTicker = setInterval(() => {
+          const t = Date.now() - started;
+          thrown.forEach((node, i) => showFace(node, t >= landing[i] ? result.dice[i] : Math.floor(Math.random() * DICE.sides) + 1));
+        }, 70);
+      }
       timer = setTimeout(() => {
         timer = null; clearInterval(rollTicker); rollTicker = null;
         if (!disposed) showRollResult(pop, body);
-      }, reduced ? 40 : 650);
+      }, reduced ? 40 : 1050);
     }, { class: "primary" });
     pop = modal(check.title, body, [button("卓に戻る", "trpg-check-back", () => pop.close()), roll], { skin: "trpg-roll-stage" });
     pop.box.append(el("div.trpg-spare-kit", { "aria-hidden": "true", role: "presentation" }));
@@ -697,7 +724,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     pop.box.dataset.grade = result.grade;
     body.replaceChildren(
       el("p.trpg-roll-instruction", { text: scenario.checks[result.kind].hint }),
-      el("div.trpg-dice-row", [die(result.dice[0]), die(result.dice[1]), el("span.trpg-dice-bonus", { text: "＋" + result.bonus })]),
+      el("div.trpg-roll-scene", el("div.trpg-dice-row", [die(result.dice[0]), die(result.dice[1]), el("span.trpg-dice-bonus", { text: "＋" + result.bonus })])),
       el("div.trpg-dice-total", { role: "status", dataset: { test: "trpg-roll-total", grade: result.grade } }, [
         el("small.trpg-roll-equation", { text: result.dice[0] + " ＋ " + result.dice[1] + " ＋ 補正" + result.bonus + " ＝" }),
         el("strong", { text: "合計 " + result.total }), el("span.trpg-dice-grade", { text: LABELS[result.grade] }),
@@ -722,6 +749,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         [seatMark(session.rerollActor), name(session.rerollActor) + "の振り直し · 札 使用済"]));
       if (rerolledDie !== null) {
         const target = body.querySelectorAll(".trpg-die")[rerolledDie];
+        target.classList.add("rethrown");
         const marked = el("div.trpg-rerolled-die");
         target.replaceWith(marked);
         marked.append(target, el("span.trpg-reroll-stamp", [seatMark(session.rerollActor), "振り直し"]));
@@ -743,7 +771,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       body.append(el("div.trpg-rerolls", [0, 1].map(i =>
       button("", "trpg-reroll-" + i, () => {
         if (settleGuard || session.snapshot().used[session.rerollActor] || session.snapshot().teamwork < 1) return;
-        audio.play("roll");
+        audio.play("rethrow");
         session.reroll(i); showRollResult(pop, body, i);
       }, { class: "trpg-reroll-choice" }))));
       body.querySelectorAll(".trpg-reroll-choice").forEach((node, i) => node.append(
