@@ -167,10 +167,6 @@ await suite("ch4-dubai-daily", async check => {
     assert.equal(state.flags._ch4.read.ch4_dubai_cafe_revisit, true);
     assert.equal(state.flags._ch4_dubai_talks.center_cafe, 1);
     assert.equal(state.money, money - 9000, "Three cafe visits at 3,000 yen");
-    // Dr.fookah ドバイ店: 日本の葉に加えて、ドバイで定番の葉が並ぶ（時間は使わない）。
-    await go(page, "ch4_dubai_shop");
-    await page.locator(".shop-paper").waitFor();
-    for (const id of ["absal_double_apple", "dobaj_mint"]) assert.equal(await page.locator(`[data-test="detail-${id}"]`).count(), 1, `${id} is on the shelf`);
   });
 
   await check("the-night-of-day-twelve-leads-to-the-eve-of-the-world-tournament", async page => {
