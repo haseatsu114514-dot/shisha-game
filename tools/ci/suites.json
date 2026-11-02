@@ -1281,6 +1281,7 @@
         "remake/js/scenes/staff-roll.js",
         "remake/css/staff-roll.css",
         "remake/js/chapters/ch5*.js",
+        "remake/js/core/cycle-meta.js",
         "remake/test/browser/staff_roll.mjs"
       ],
       "run": [

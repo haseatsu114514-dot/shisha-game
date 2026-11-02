@@ -36,7 +36,8 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_S
   chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
   beginChapterFiveMatch, chapterFiveMatchOutcome, chapterFiveVoteTally, CH5_FIRST_CUP_VOTES, recordChapterFiveSecondCup,
   chapterFiveEndingContext, beginChapterFiveFinale, completeChapterFiveScene, CH5_LIME_MILESTONES, chapterFiveLimeDue,
-  chapterFiveCreditsPending, recordChapterFiveCredits, chapterFiveFreeRemaining } from "./ch5-progress.js";
+  chapterFiveCreditsPending, recordChapterFiveCredits, chapterFiveTrueEndReached, chapterFiveFreeRemaining } from "./ch5-progress.js";
+import { readCycleMeta, recordTrueEndForRun } from "../core/cycle-meta.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -561,7 +562,24 @@ async function renderStaffRoll(owner) {
   if (!current(owner)) return;
   if (!first) return renderComplete(owner);
   if (!recordChapterFiveCredits(state)) throw new Error("スタッフロールの記録を確定できません");
+  noteTrueEnd(); // 戻った先のタイトルに NEXT CYCLE が出る
   backToTitle();
+}
+
+/**
+ * スタッフロールまで見終えていれば、真エンドとして周回を解放する（#1228。条件は chapterFiveTrueEndReached）。
+ * 同じ周回の再通知はパッケージの最新化だけ。記録できなくても締めの表示は止めない（次の完了カードで再通知）。
+ * 解放済みなら、タイトルで始められる周回数を返す（それ以外は 0）。
+ */
+function noteTrueEnd() {
+  try {
+    if (!chapterFiveTrueEndReached(state)) return 0;
+    recordTrueEndForRun(state);
+    const meta = readCycleMeta();
+    return meta.unlocked && meta.carryPackage ? meta.carryPackage.fromCycle + 1 : 0;
+  } catch {
+    return 0; // 締めの表示を止めない
+  }
 }
 
 /**
@@ -569,6 +587,8 @@ async function renderStaffRoll(owner) {
  * スタッフロールを流し終えるまではタイトルへ抜ける操作を出さない（初回は飛ばせない）。
  */
 function renderComplete(owner) {
+  // 見終えた保存を開いたとき・盤を使って戻ったときも通知する（接続前に見終えた保存の解放と、パッケージの最新化）。
+  const nextCycle = noteTrueEnd();
   const pending = chapterFiveCreditsPending(state);
   const actions = pending ? [
     button(owner, "スタッフロールへ", "complete-credits", () => renderStaffRoll(owner), true),
@@ -581,7 +601,7 @@ function renderComplete(owner) {
     ...reflectionActions(owner),
   ];
   card(owner, "complete", "第五章・完", "SHISHA-9000 の勝負は終わった。店の明かりが、いつもの夜に戻っていく。", actions,
-    "ここまでが、この物語の終わりです。", "",
+    `ここまでが、この物語の終わりです。${nextCycle ? `タイトルの NEXT CYCLE から、${nextCycle}周目をはじめられます。` : ""}`, "",
     // 他の章と同じ比較。淡い面が第5章のはじめ、明るい面がいま。
     [el("div.end-radar", { dataset: { test: test("growth") } }, [
       chapterGrowthChart(state, 300),
