@@ -94,6 +94,15 @@
       ]
     },
     {
+      "id": "purikura-hero",
+      "file": "dialogue/trpg_purikura_hero.json",
+      "price": 700,
+      "stockRequires": [
+        "samechan",
+        "ageha"
+      ]
+    },
+    {
       "id": "doll-requiem",
       "file": "dialogue/trpg_doll_requiem.json",
       "price": 700,

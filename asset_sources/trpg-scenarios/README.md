@@ -270,3 +270,93 @@ Row 2 = characters the companions made for this story. Light comedy is welcome, 
 --- h: pc-hiremaru --- ヒレマル, サメ着ぐるみの芸人. どんな芝居にもサメ役で出る。台本にサメがいなくても出る Likes: サメ映画の、二作目から先
 ```
 
+## 11 月光花の古城と、終わらないアンコール（`moonflower-encore`）
+
+- 背景: 未生成（いまは backdrop の色で代用） / 選択肢の絵: 未生成（いまは文字のカードで代用）
+- 行番号: `stage`=0, `scent`=1, `finale`=2, `tactic`=3, `hypotheses`=4
+
+```
+--- background: trpg_moonflower-encore_room.png ---
+Finely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 月夜の古城の大広間。大広間の舞台、客席の名札、楽屋の譜面台、庭の月光花、回廊の肖像画、家令の鍵束。客席には青白い幽霊たち。 Setting: 月の丘 / 月光花城. Mood: 燭台の灯り。白い花の香り。鳴りやまない、アンコール。. Fictional place from a tabletop story (ゴシック幻想 / 音楽). Concrete click-investigation objects, each a distinct readable prop at its position: 大広間の舞台 clearly visible around x48% y20%; 客席の名札 clearly visible around x22% y66%; 楽屋の譜面台 clearly visible around x14% y28%; 庭の月光花 clearly visible around x84% y26%; 回廊の肖像画 clearly visible around x78% y64%; 家令の鍵束 clearly visible around x50% y82%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.
+```
+
+```
+--- choices atlas: choices-moonflower-encore.png ---
+Create a production videogame sprite atlas on a TRANSPARENT background, EXACTLY 3 equal columns by 5 equal rows (15 equal cells), no grid lines, no frame, no paper panels, no lettering or numbers. Each cell has ONE centered independent detailed hand-painted storybook object vignette with a 15% clear margin inside its own cell, never crossing a cell boundary. Cohesive premium illustrated adventure style matching the scenario's background palette: tactile brushwork, crisp silhouettes, a little magical realism. Not flat UI icons, not photorealistic, no people's faces, no text. Paint each item as an evocative object or tiny diorama (no people's faces). Row 1 (演出), left to right: (1) 薔薇の花びら — 終演の舞台から、客席へ花びらを降らせる。; (2) 蝋燭の灯り — 大広間の明かりを落とし、蝋燭の火だけで照らす。; (3) 霧のスモーク — 床いっぱいに霧を流し、月明かりを浮かび上がらせる。 Row 2 (香り), left to right: (4) 月光花の香り — 夜に開く白い花の、細く甘い香り。; (5) 薔薇と紅茶 — 薔薇の華やかさに、紅茶の渋みを重ねた香り。; (6) 夜の森 — 湿った土と木の葉の、深く落ち着いた香り。 Row 3 (最後の一曲の届け方), left to right: (7) 客席の名前を呼ぶ — 決め台詞の代わりに、客席の一人一人の名前を呼ぶ。; (8) 約束の譜面を渡す — 引き出しの古い譜面を、伯爵の譜面台に置く。; (9) みんなを庭へ連れ出す — 大扉を開けて、客席も楽団も月明かりの庭へ。 Row 4 (コウモリ騒ぎへの手), left to right: (10) 手拍子で落ち着かせる — 暗闇の中、三人で拍子を刻んで客席をまとめる。; (11) 蝋燭を灯し直す — 燭台を一つずつ回り、消えた火を灯していく。; (12) コウモリにも歌を聞かせる — 子守唄を口ずさみ、コウモリたちを眠らせる。 Row 5 (guesses), left to right: (13) 約束の最後の一曲を、まだ弾いていない — 伯爵は昔、誰かと約束した一曲を残しているのかも。; (14) 幽霊たちは、名前を呼んでほしい — 客席のみんなは、ファンとして覚えていてほしいのかも。; (15) 月光花が咲く瞬間を、みんなで見たい — 夜明け前に一度だけ咲く花を、待っているのかも。
+```
+
+```
+--- portraits: portraits-moonflower-encore.png ---
+Generate ONE sprite sheet image, 2048x1024, transparent background (PNG), containing 8 circular character portrait medallions in a 4x2 grid (4 columns, 2 rows), each medallion 460x460 px with even spacing and a transparent margin inside every cell. Style: painterly storybook ink-and-watercolor bust portrait, soft lamplight, muted palette matching the story's world, consistent across all eight. Shoulders-up, facing slightly left, readable face. No text, no numbers, no logos, no frames (the game draws the round frame), no watermark, no shisha pipes, no real brands, no resemblance to any existing character. World: 月の丘 / 月光花城 (ゴシック幻想 / 音楽): 燭台の灯り。白い花の香り。鳴りやまない、アンコール。
+Row 1 = the player's character, four looks of the same role. Androgynous young adult (18-24) so the player can give any name; the look must not depend on background or name:
+--- a: look-moonflower-encore-apron --- 黒髪の裏方. 短い黒髪に、黒いエプロンと工具袋
+--- b: look-moonflower-encore-tailcoat --- 銀髪の燕尾服. 銀色の髪に、ワイン色の燕尾服
+--- c: look-moonflower-encore-glasses --- 眼鏡の譜めくり. 丸い眼鏡に、楽譜を抱えた黒いベスト
+--- d: look-moonflower-encore-cloak --- マントの新人. 長い黒マントに、月光花のブローチ
+Row 2 = characters the companions made for this story. Light comedy is welcome, keep faces readable:
+--- e: pc-kirara --- キララ, 追っかけのファン. ノクターンを追って、城まで来たファン。うちわもペンライトも自作 Likes: プリクラと、白と赤のグミベア
+--- f: pc-moka --- モカ, 物販担当のコウモリ娘. 城の物販を仕切るコウモリ娘。グッズの並べ方は、とにかく盛る Likes: トロピカルな香りと、プリ帳
+--- g: pc-leon --- レオン, 林檎の紋章のハンター. 吸血鬼を狩りに来た……が、実は平和主義。武器は林檎と名言 Likes: ダブルアップルと、舞台の仕掛け
+--- h: pc-ziek --- ジーク, 自称・伝説のギタリスト. 弦は一本しか張っていない。それも演出だと言い張る Likes: ダブルアップルと、大げさな決めポーズ
+```
+
+## 12 盛れない勇者と、プリ帳の魔王（`purikura-hero`）
+
+- 背景: 未生成（いまは backdrop の色で代用） / 選択肢の絵: 未生成（いまは文字のカードで代用）
+- 行番号: `deco`=0, `light`=1, `pose`=2, `tactic`=3, `hypotheses`=4
+
+```
+--- background: trpg_purikura-hero_room.png ---
+Finely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: きらめき王国。色あせた広場の噴水、写真屋のショーケース、サメの泳ぐ堀と城門、撮影城の鏡の間、落ちていたプリ、魔王の玉座。 Setting: きらめき王国 / 王国の広場と撮影城. Mood: 盛りを吸われて、王国じゅうが少し地味。城から、今日もシャッターの音。. Fictional place from a tabletop story (コメディ・ファンタジー). Concrete click-investigation objects, each a distinct readable prop at its position: 王国の広場 clearly visible around x22% y74%; 写真屋のショーケース clearly visible around x12% y36%; 城門の看板 clearly visible around x48% y56%; 撮影城の鏡の間 clearly visible around x80% y30%; 落とし物のプリ clearly visible around x38% y84%; 魔王の玉座 clearly visible around x60% y20%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.
+```
+
+```
+--- choices atlas: choices-purikura-hero.png ---
+Create a production videogame sprite atlas on a TRANSPARENT background, EXACTLY 3 equal columns by 5 equal rows (15 equal cells), no grid lines, no frame, no paper panels, no lettering or numbers. Each cell has ONE centered independent detailed hand-painted storybook object vignette with a 15% clear margin inside its own cell, never crossing a cell boundary. Cohesive premium illustrated adventure style matching the scenario's background palette: tactile brushwork, crisp silhouettes, a little magical realism. Not flat UI icons, not photorealistic, no people's faces, no text. Paint each item as an evocative object or tiny diorama (no people's faces). Row 1 (デコ道具), left to right: (1) スタンプ — キラキラの型を、ぽんと押して飾る。; (2) ペン — 写真に、文字や絵を手書きで描きこむ。; (3) シール — プリ帳に貼れる、交換用のシール。 Row 2 (照明), left to right: (4) リングライト — 顔を明るく、きれいに照らす輪の灯り。; (5) 月明かり — 窓を開けて、やわらかな月の光を入れる。; (6) 花火 — 城の空に、ぱっと大輪の花火を上げる。 Row 3 (決めポーズ), left to right: (7) ハートを作る — 二人で半分ずつ、手でハートを作る。; (8) ピース — 誰でもできる、基本のピースサイン。; (9) サメのポーズ — 両手を頭の上に立てて、ヒレを作る。 Row 4 (ゴーレムへの手), left to right: (10) 笑わせる — 変顔とギャグで、無表情を崩す。; (11) 一緒に写真を撮る — 門番と並んで、記念の一枚を撮ろうと誘う。; (12) こっそり隠れて進む — 堀のサメの背に隠れて、門をくぐる。 Row 5 (guesses), left to right: (13) 一緒に写る友達が、欲しかったのかも — 人を撮るのは、会いに行く口実。本当は、誰かと並んで写りたい。; (14) 自分の写りに、自信がないのかも — みんなの盛りを借りて、自分を盛って写ろうとしている。; (15) なくしたプリ帳を、探しているのかも — 昔なくした思い出のプリ帳を、人を撮りながら探している。
+```
+
+```
+--- portraits: portraits-purikura-hero.png ---
+Generate ONE sprite sheet image, 2048x1024, transparent background (PNG), containing 8 circular character portrait medallions in a 4x2 grid (4 columns, 2 rows), each medallion 460x460 px with even spacing and a transparent margin inside every cell. Style: painterly storybook ink-and-watercolor bust portrait, soft lamplight, muted palette matching the story's world, consistent across all eight. Shoulders-up, facing slightly left, readable face. No text, no numbers, no logos, no frames (the game draws the round frame), no watermark, no shisha pipes, no real brands, no resemblance to any existing character. World: きらめき王国 / 王国の広場と撮影城 (コメディ・ファンタジー): 盛りを吸われて、王国じゅうが少し地味。城から、今日もシャッターの音。
+Row 1 = the player's character, four looks of the same role. Androgynous young adult (18-24) so the player can give any name; the look must not depend on background or name:
+--- a: look-purikura-hero-gold --- 金髪の勇者. 跳ねた金髪に、青いマント
+--- b: look-purikura-hero-night --- 黒髪の勇者. 短い黒髪に、銀の胸当て
+--- c: look-purikura-hero-berry --- 桃色髪の勇者. ふわっとした桃色の髪に、ハートの盾
+--- d: look-purikura-hero-chestnut --- 栗毛の勇者. 栗色の髪に、旅の地図とカメラ
+Row 2 = characters the companions made for this story. Light comedy is welcome, keep faces readable:
+--- e: pc-lovely --- ラブリ, 盛れない勇者. 伝説の勇者の子孫。魔王に撮られてから、何を撮っても盛れない Likes: 白と赤のグミベア。プリ帳をデコる夜
+--- f: pc-beatrice --- ベアトリス, グミの国の姫騎士. 白と赤のグミベア騎士団を率いる姫。剣が少し甘い Likes: 白いグミと赤いグミ。どっちも推し
+--- g: pc-nocturne --- ノクターン, 黒衣の吟遊詩人. 薔薇を一輪携えた、夜の歌い手。人前だと声が小さい Likes: 薔薇の香り。夜に開く花の歌
+--- h: pc-shion --- シオン, 人見知りの魔法使い. 大きな魔法が使える。人と目が合うと、詠唱が止まる Likes: ジャスミンとラベンダー。黒薔薇の杖
+```
+
+## 13 人形館のレクイエム（`doll-requiem`）
+
+- 背景: 未生成（いまは backdrop の色で代用） / 選択肢の絵: 未生成（いまは文字のカードで代用）
+- 行番号: `mend`=0, `tea`=1, `call`=2, `tactic`=3, `hypotheses`=4
+
+```
+--- background: trpg_doll-requiem_room.png ---
+Finely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 雪の夜の洋館の広間。人形の飾り棚、子ども部屋の小さな舞台、書斎の日記、雪の窓辺、柱時計、オルゴールの箱。棚に硝子の瞳の人形たち。 Setting: 霧氷の丘 / 洋館「ラベンダー館」. Mood: 降りやまない雪。ラベンダーの香り。硝子の瞳が、灯を映す。. Fictional place from a tabletop story (怖すぎない洋館ミステリー). Concrete click-investigation objects, each a distinct readable prop at its position: 人形の飾り棚 clearly visible around x14% y34%; 子ども部屋の小さな舞台 clearly visible around x50% y26%; 書斎の日記 clearly visible around x86% y32%; 雪の窓辺 clearly visible around x84% y68%; 柱時計 clearly visible around x50% y72%; オルゴールの箱 clearly visible around x16% y70%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.
+```
+
+```
+--- choices atlas: choices-doll-requiem.png ---
+Create a production videogame sprite atlas on a TRANSPARENT background, EXACTLY 3 equal columns by 5 equal rows (15 equal cells), no grid lines, no frame, no paper panels, no lettering or numbers. Each cell has ONE centered independent detailed hand-painted storybook object vignette with a 15% clear margin inside its own cell, never crossing a cell boundary. Cohesive premium illustrated adventure style matching the scenario's background palette: tactile brushwork, crisp silhouettes, a little magical realism. Not flat UI icons, not photorealistic, no people's faces, no text. Paint each item as an evocative object or tiny diorama (no people's faces). Row 1 (繕い道具), left to right: (1) 糸と針 — ほつれた人形の衣装を、一針ずつ繕う。; (2) 新しいリボン — 人形たちに、おそろいの新しいリボンを結ぶ。; (3) 磨き布 — くもった硝子の瞳を、一体ずつ磨く。 Row 2 (お茶), left to right: (4) ラベンダーと蜂蜜の茶 — 館に伝わる、甘い香りのお茶。; (5) 白い茶 — 雪のように淡い色の、白いお茶。; (6) 温かいミルク — 小さなマグで、温かいミルクを。 Row 3 (人形への呼びかけ), left to right: (7) 人形劇の台本を読む — 残された人形劇の台本を、声に出して読む。; (8) リラを紹介する — リラを人形たちの前に立たせ、新しい主だと伝える。; (9) カーテンを開ける — 館じゅうのカーテンを開け、窓の外を見せる。 Row 4 (停電への手), left to right: (10) オルゴールを一つずつ止める — 廊下を回って、蓋を一つずつ閉じる。; (11) 蝋燭を灯して回る — 燭台に火を移しながら、館を照らして歩く。; (12) 音に合わせて歌う — オルゴールの旋律に、みんなで歌を重ねる。 Row 5 (guesses), left to right: (13) 人形劇の続きを、演じたい — 亡き館主が残した人形劇。その続きを演じれば、落ち着きそう。; (14) 新しい主に、気づいてほしい — 新しい主のリラに気づいてほしい。一緒に遊びたいのかも。; (15) 雪の夜の景色を、見に行きたい — 雪の夜にだけ見える、窓の外の景色を見に行っているのかも。
+```
+
+```
+--- portraits: portraits-doll-requiem.png ---
+Generate ONE sprite sheet image, 2048x1024, transparent background (PNG), containing 8 circular character portrait medallions in a 4x2 grid (4 columns, 2 rows), each medallion 460x460 px with even spacing and a transparent margin inside every cell. Style: painterly storybook ink-and-watercolor bust portrait, soft lamplight, muted palette matching the story's world, consistent across all eight. Shoulders-up, facing slightly left, readable face. No text, no numbers, no logos, no frames (the game draws the round frame), no watermark, no shisha pipes, no real brands, no resemblance to any existing character. World: 霧氷の丘 / 洋館「ラベンダー館」 (怖すぎない洋館ミステリー): 降りやまない雪。ラベンダーの香り。硝子の瞳が、灯を映す。
+Row 1 = the player's character, four looks of the same role. Androgynous young adult (18-24) so the player can give any name; the look must not depend on background or name:
+--- a: look-doll-requiem-ink --- 黒髪の客人. 短い黒髪に、厚手の黒い外套
+--- b: look-doll-requiem-snow --- 銀髪の客人. 雪のような銀の髪と、紺のマフラー
+--- c: look-doll-requiem-wine --- 赤茶の髪の客人. 赤茶の髪に、ワインレッドの手袋
+--- d: look-doll-requiem-braid --- 長髪の客人. 長い髪を一つに編み、ラベンダー色の上着
+Row 2 = characters the companions made for this story. Light comedy is welcome, keep faces readable:
+--- e: pc-kirara --- キララ, 人形服のデザイナー. かわいい服なら一晩で縫う。人形は、怖いより先にかわいい Likes: フリルとリボンと、白と赤のグミ
+--- f: pc-marie --- マリー, ゴス好きの家庭教師. 黒いフリルが正装。授業より、人形のお茶会の作法にくわしい Likes: 黒いレースと、プリクラ帳
+--- g: pc-cecilia --- セシリア, か弱い人形師. 指先ひとつで人形を直す、儚い人形師。なぜか斧を一本、背負っている Likes: ゆるい顔のぬいぐるみと、斧投げ
+--- h: pc-chloe --- クロエ, ラーメン好きの執事. 館の夜を静かに支える執事。夜食は必ず、湯気の立つ一杯 Likes: 真夜中のラーメンと、ゆるいキャラのしおり
+```
+

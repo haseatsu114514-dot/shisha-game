@@ -559,8 +559,8 @@
           "lines": "trpg_purikura_hero_album_sign"
         },
         "mirror": {
-          "title": "白紙のなかよし帳",
-          "text": "鏡の前に白紙のプリ帳。最後のページにだけ『月の夜に、またみんなで』。",
+          "title": "白紙の二冊目",
+          "text": "鏡の前に真新しいプリ帳『なかよし帳・二冊目』。白紙で、最後のページにだけ『月の夜に、またみんなで』。",
           "lines": "trpg_purikura_hero_album_mirror"
         },
         "purikura": {
@@ -1452,7 +1452,7 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "うち的に、気になるのはプリ。写真って、撮った人の気持ちが出るから"
+          "text": "撮られるのは読モで慣れてるから分かる。写真って、気持ちが出るの"
         },
         {
           "speaker": "ageha",
@@ -2078,7 +2078,7 @@
           "speaker": "samechan",
           "role": "写真屋のおじいさん／物語",
           "face": "normal",
-          "text": "店の落とし物の棚にあったのじゃ。あの角の子が、魔王さまじゃったとは"
+          "text": "これじゃろう、店の落とし物の棚にあった。あの角の子が、魔王さまじゃったとは"
         },
         {
           "speaker": "samechan",
@@ -2218,13 +2218,13 @@
           "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "おしまいじゃ。撮影のあと、魔王も一緒に、広間でトロピカルフルーツの一台を囲んだそうな"
+          "text": "おしまいじゃ。撮影のあと、城の広間で、魔王とトロピカルフルーツの一台を囲んだそうな"
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "トロピカル選ぶとか、魔王分かってる。うちも一緒に囲みたかった"
+          "text": "トロピカルとか、うちの好きなやつじゃん。魔王、分かってる"
         },
         {
           "speaker": "hajime",
@@ -2944,13 +2944,13 @@
           "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
-          "text": "鏡の前に、白紙のプリ帳。表紙に子どもの字で『なかよし』"
+          "text": "鏡の前に、真新しいプリ帳。表紙には『なかよし帳・二冊目』"
         },
         {
           "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
-          "text": "最後のページにだけ、『月の夜に、またみんなで』とある"
+          "text": "中は白紙。最後のページにだけ『月の夜に、またみんなで』とある"
         },
         {
           "speaker": "rei",
@@ -3155,7 +3155,7 @@
     "number": "12",
     "genre": "コメディ・ファンタジー",
     "tagline": "盛りを盗む魔王に、勇者たちが会いに行く。",
-    "backdrop": "radial-gradient(circle at 80% 16%, rgba(255, 255, 255, .5), transparent 12%), radial-gradient(circle at 20% 28%, rgba(255, 214, 236, .55), transparent 30%), radial-gradient(circle at 62% 74%, rgba(226, 208, 255, .45), transparent 36%), linear-gradient(165deg, #eeb2d4 0%, #c3a2e6 52%, #8a72c2 100%)",
+    "backdrop": "radial-gradient(ellipse at 70% 18%, #b0599055, transparent 55%), linear-gradient(160deg, #3b1f4a 0%, #5a2c63 48%, #2b1c3e 100%)",
     "sceneAlt": "きらめき王国。色あせた広場の噴水、写真屋のショーケース、サメの泳ぐ堀と城門、撮影城の鏡の間、落ちていたプリ、魔王の玉座。",
     "location": "きらめき王国 / 王国の広場と撮影城",
     "atmosphere": "盛りを吸われて、王国じゅうが少し地味。城から、今日もシャッターの音。",

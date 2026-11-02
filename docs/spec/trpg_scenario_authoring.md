@@ -31,7 +31,7 @@ python3 tools/lint_dialogue.py trpg_<名前>                             # 台�
 
 ## 卓の人と席
 
-- GMは部員（ひより・サメちゃん・アダム・つむぎ）から1人。REI・あげはも部員に誘える（2026-11-02）が、2人の声で書かれた本ができるまでは卓に座らない（席の `candidates` に入れた本だけで遊ぶ）。はじめは必ずPL（切り札は振り直し `abilityType: "reroll"`）。
+- GMは部員（ひより・サメちゃん・アダム・つむぎ）から1人。REI・あげはも部員に誘える（2026-11-02）。2人は自分の声で書かれた本（11〜13。席の `candidates` に入れた本）だけで卓に座る。はじめは必ずPL（切り札は振り直し `abilityType: "reroll"`）。
 - 仲間のPL席は2つ。切り札は1人が `prepare`（準備に＋7）、もう1人が `serve`（クライマックスに＋7）。
 - `campaign.seats` はGMとはじめを `required: true`、仲間は `false`（来られなければGMが兼任）。スミさん・なるは入れない。
 - 仲間の役は `companionBuilds.<席>.<プレイヤー>` に2案。1案目は `cast[].sheet` と同じ内容。各案に `making`（本人が役を紹介する2〜4行、`metadata.making: true`）。好きなもの（`likes`）とパロディを入れて、本人らしく。
@@ -100,4 +100,4 @@ python3 tools/lint_dialogue.py trpg_<名前>                             # 台�
 | 12 | purikura-hero / trpg_purikura_hero.json | 盛れない勇者と、プリ帳の魔王 | サメちゃん | あげは・REI | あげはのプリクラ | 自由 |
 | 13 | doll-requiem / trpg_doll_requiem.json | 人形館のレクイエム | REI | あげは・ひより | REIの一台「DOLLS REQUIEM」 | 4箇所・真夜中 |
 
-11〜13は2026-11-02 オーナー了承（REI・あげはが出る物語）。
+11〜13は2026-11-02 オーナー了承（REI・あげはが出る物語）・執筆済み・catalog 登録済み。入荷は 11・13 がREIの入部（800円・700円）、12 がサメちゃんとあげはの入部（700円）。
