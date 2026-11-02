@@ -1431,6 +1431,8 @@ await suite("growth-levelup", async (runCheck) => {
         if ((await growth.consultLessons("hiyori")).length) throw new Error("hearts required");
         void growth.openGrowthBoard({ place: "kannon" });
       });
+      // 盤の絵が届くと盤を描き直すので、描き直しが済んでからマスに触る（CI では絵が届く）
+      await page.locator(`${t("growth-board")}[data-art]`).waitFor();
       await page.locator(t("board-node-M-B4")).scrollIntoViewIfNeeded();
       await page.locator(t("board-node-M-B4")).click();
       assert.match(await page.locator(".gb-p-state").innerText(), /今の周.*♥5/);
@@ -1443,6 +1445,7 @@ await suite("growth-levelup", async (runCheck) => {
         pendingCore.save(); pendingCore.load();
         void (await import("./js/core/growth.js")).openGrowthBoard({ place: "kannon" });
       });
+      await page.locator(`${t("growth-board")}[data-art]`).waitFor();
       await page.locator(t("board-node-M-B4")).scrollIntoViewIfNeeded();
       await page.locator(t("board-node-M-B4")).click();
       assert.match(await page.locator(".gb-p-state").innerText(), /相談できる。次に/);

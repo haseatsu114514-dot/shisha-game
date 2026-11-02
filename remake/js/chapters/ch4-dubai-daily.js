@@ -77,7 +77,7 @@ export const CH4_DUBAI_SPOTS = Object.freeze([
     preview: CH4_PLACE_BG.shop, desc: "日本で出た葉が全部そろう（時間は使わない）。" }),
   spot({ id: "ch4_dubai_mosque", place: "mosque", label: "風の回廊モスク", area: "見学の回廊", x: 58, y: 70, theme: "rest", glyph: "回",
     preview: "bg_dubai_map", desc: "案内付きで見学し、中庭の回廊で振り返る（時間は使わない）。" }),
-  spot({ id: "ch4_dubai_inn", place: "inn", label: "宿", area: "旧市街の宿", x: 12, y: 24, theme: "rest", glyph: "休",
+  spot({ id: "ch4_dubai_inn", place: "inn", label: "宿", area: "旧市街の宿", x: 8, y: 46, theme: "rest", glyph: "休",
     preview: CH4_PLACE_BG.inn, stamina: 55, desc: "部屋で休む。体力が大きく戻る。" }),
 ].map(entry => Object.freeze({ ...entry, hasNew: () => spotHasNew(entry) })));
 

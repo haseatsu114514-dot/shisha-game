@@ -685,7 +685,12 @@ export function openBoard({ place = null } = {}) {
   render();
   setZoom(ZOOM_START); centerOnHub();
   requestAnimationFrame(() => root.classList.add("show"));
-  loadBoardArt().then((ok) => { if (ok && root.isConnected) { root.classList.add("has-art"); render(); } });
+  // 盤の絵が届いたら描き直す。読み終えた印（data-art）は、描き直しの後に触る検査が待つのに使う。
+  loadBoardArt().then((ok) => {
+    if (!root.isConnected) return;
+    if (ok) { root.classList.add("has-art"); render(); }
+    root.dataset.art = ok ? "ready" : "none";
+  });
   return done;
 }
 

@@ -154,7 +154,9 @@ await suite("ch4-camel-race", async check => {
     assert.equal(state.flags._ch4_camel.best.total, Number(result.total), "a worse run keeps the best");
     assert.equal(state.slot, 1);
     assert.deepEqual(state.stats, before.stats); assert.equal(state.money, before.money);
-    assert.equal(state.growth, undefined, "no growth ledger is created while the board is hidden");
+    // 盤が隠れている旧しくみ（?growth=0）では成長の記録を作らない。心得の盤（通常プレイの既定・#2166）では能力は直接伸びず、経験値の記録だけが残る。
+    if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled())) assert.equal(typeof state.growth, "object");
+    else assert.equal(state.growth, undefined, "no growth ledger is created while the board is hidden");
     // 大会の進行は変わらない: 宿へ戻ると前夜へ。
     await page.locator(dt("ch4-go-inn")).click();
     await page.locator(dt("ch4-eve")).waitFor({ timeout: 60000 });
