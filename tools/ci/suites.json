@@ -234,6 +234,8 @@
       "paths": [
         "remake/js/minigames/desert-ride.js",
         "remake/js/minigames/desert-ride-model.js",
+        "remake/js/minigames/desert-ride-art.js",
+        "remake/img/ui/desert_ride/**",
         "remake/js/chapters/ch4-desert.js",
         "remake/js/chapters/ch4-desert-progress.js",
         "remake/js/chapters/ch4.js",

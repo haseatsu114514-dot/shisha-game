@@ -33,6 +33,9 @@ await suite("desert-ride", async check => {
     g = await game(page);
     assert(g.hops === 1 || g.bigJumps === 1, "Space jumps");
     assert(await page.locator(t("desert-left")).isVisible() && await page.locator(t("desert-jump")).isVisible(), "touch buttons are shown on PC too");
+    // Codex の採用画像（遠景の空・陸、主人公の背面、岩、旗、ゴール、砂煙）を読み込んで描いている
+    const loaded = await page.evaluate(() => performance.getEntriesByType("resource").map(entry => entry.name).filter(name => name.includes("/img/ui/desert_ride/")).map(name => name.split("/").pop()).sort());
+    assert.deepEqual(loaded, ["backdrop_day_land.webp", "backdrop_day_sky.webp", "flag_pole.webp", "goal_banner.webp", "rider_ride.webp", "rock_large.webp", "rock_small.webp", "sand_puff.webp"]);
     await autoplayToResult(page, "perfect");
     const text = await resultText(page);
     assert.match(text, /RESULT/); assert.match(text, /転倒 0 回/); assert.match(text, /大ジャンプ 7 回/); assert.match(text, /自己ベスト更新/);
@@ -145,7 +148,9 @@ await suite("desert-ride", async check => {
     // 砂丘へ: 到着の場面 → 外出を確定 → 練習 → 本番 → 記録
     await page.locator(t("ch4-go-dunes")).click();
     await phase(page, "practice");
+    assert.match(await page.locator("#bg .bg-img").last().evaluate(node => node.style.backgroundImage), /bg_dubai_dunes_day/, "the arrival scene uses the adopted dunes background");
     value = await get(page);
+    assert.equal(value.slot, 1, "the trip spends the daytime action (shared with the camel race)");
     assert.deepEqual(value.flags._ch4_desert, { talks: 3, lastTalkDay: 3, outings: 1, lastOutingDay: 3 }, "the outing is spent when the trip starts");
     assert.equal(value.desert, undefined);
     await page.evaluate(() => { window.__desertRide.autoplay("perfect"); window.__desertRide.setSpeedUp(8); });
