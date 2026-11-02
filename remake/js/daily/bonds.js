@@ -47,10 +47,10 @@ export const BOND_FINALES = {
   ageha: { dialogue: "ch2_ageha_bond_finale", gift: "suyaki_ageha", laterConfession: true },
   // ましろ（#2022）: 第3章の場面カードから（chapters/ch3.js）。告白は仮置きの寄り道 confession_mashiro（#1930）が担うので予約しない。
   mashiro: { dialogue: "ch3_mashiro_bond_finale", gift: "suyaki_mashiro", question: "bond_q2_mashiro", ownConfession: true },
-  // 久世（#2028）: 第3章の場面カードから（chapters/ch3.js）。恋愛対象外なので友情の着地だけ。
-  // 好感度は煙幕への外出とLIME交換でしか付かず最大でも♥2前後のため、♥5ではなく heart（仮判断・♥1）と
-  // 久世の場面を読み終えたこと（storiesDone）で開く。数値はオーナー判断待ち（#2028 の PR 本文）。
-  kuze: { dialogue: "ch3_kuze_bond_finale", gift: "suyaki_kuze", heart: 1 },
+  // 久世（#2028）: 第3章の煙幕への来店（ch3-tokyo-daily.js）・旧行程の場面カード（chapters/ch3.js）・
+  // 大会後の寄り道（ch3-aftermath.js）から。恋愛対象外なので友情の着地だけ。条件はほかの人物と同じ♥5（IR22）。
+  // 煙幕には何度でも通えて♥5に届く（AFB02・#2347）ので、仮の♥1（#2281）は外した。
+  kuze: { dialogue: "ch3_kuze_bond_finale", gift: "suyaki_kuze" },
   hiyori: {
     get dialogue() { return hiyoriRoute().finale?.dialogue || ""; },
     get gift() { return hiyoriRoute().finale?.gift || null; },

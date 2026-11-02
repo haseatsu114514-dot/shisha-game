@@ -21,6 +21,9 @@ async function openAftermath(page, { stage, lit, extra = "" }) {
     p.beginChapterThreeAftermath(s);
     for (const scene of p.CH3_AFTERMATH_SCENES.slice(0, stage)) if (!p.completeChapterThreeAftermathScene(s, scene.id)) throw new Error(scene.id);
     if (extra === "all-detours-read") for (const scene of p.CH3_AFTERMATH_DETOURS) s.flags[`_ch3_read_${scene.id}`] = true;
+    // 久世の締めくくりの前提（LIME交換の寄り道・答えを返しに行く外出）を大会前に済ませた保存（IR22）
+    if (extra === "kuze-finale") Object.assign(s.flags, { _lime_contact_kuze: true, _ch3_read_ch3_kuze_lime: true, _ch3_outings: { enmaku_answer: 1 } });
+    if (extra === "volk-low") s.affinity.volk = 0;
     growth.setGrowthPreview(true);
     Object.assign(growth.ensureGrowth(), { nodes: [...lit], learned: [] });
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
@@ -156,5 +159,83 @@ await suite("lesson-consult-coverage", async (check) => {
     assert(result.agehaLines.includes("ちょっと相談いい？ 吸い出しのことで"), "Hajime opens the consult without a name");
     assert.doesNotMatch(ageha, /あげはさん/, "after the tournament the lesson reads like the ch5 shop talk (lover route calls her あげは)");
     assert.doesNotMatch(ageha, /相談いいですか|ズボー……ですか|数えてみます/, "after the tournament Hajime speaks casually to Ageha");
+  });
+
+  // (d) IR22: 大会前の来店で読めなかった久世の締めくくり（♥5）を、大会後の寄り道から一度だけ。日時・stage・お金は進めない
+  await check("ch3-aftermath-kuze-heart5-finale-once-before-the-cleanup", async (page) => {
+    await openAftermath(page, { stage: 1, lit: [], extra: "kuze-finale" });
+    const before = await unchanged(page);
+    await page.locator(t("ch3-aftermath-detour-open")).click();
+    await page.locator(t("ch3-aftermath-detour")).waitFor();
+    assert.match(await page.locator(t("ch3-aftermath-finale-kuze")).innerText(), /久世に呼ばれる（煙幕）/);
+    await page.locator(t("ch3-aftermath-finale-kuze")).click();
+    await page.waitForFunction(() => !!window.__remake.state.finales?.kuze, null, { timeout: 30000 });
+    await page.locator(t("ch3-aftermath-scene")).waitFor({ timeout: 30000 });
+    assert.deepEqual(await unchanged(page), before, "the finale does not spend time or money, nor advance the aftermath");
+    const s = await page.evaluate(() => structuredClone(window.__remake.state));
+    assert.equal(s.finales.kuze.route, "friend");
+    assert.equal(s.owned.filter((id) => id === "suyaki_kuze").length, 1);
+    const backlog = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map((row) => row.text).join("\n"));
+    assert.match(backlog, /今夜の議題は、勝ち負けとは別の話/, "read after the tournament: the after-tournament branch");
+    assert.doesNotMatch(backlog, /勝負の話は、今夜はなし/);
+    await page.locator(t("ch3-aftermath-detour-open")).click();
+    await page.locator(t("ch3-aftermath-detour")).waitFor();
+    assert.equal(await page.locator(t("ch3-aftermath-finale-kuze")).count(), 0, "the finale is read once");
+  }, { viewport: { width: 1331, height: 760 } });
+
+  // (e) IR23: 大会前に読めなかった鉄の煙の再訪を、大会後に順に読める。任意の場面なので台本の報酬で好感度が上がる
+  await check("ch3-aftermath-volk-visits-in-order-raise-affinity", async (page) => {
+    await openAftermath(page, { stage: 1, lit: [], extra: "volk-low" });
+    await page.locator(t("ch3-aftermath-detour-open")).click();
+    await page.locator(t("ch3-aftermath-detour")).waitFor();
+    assert.equal(await page.locator(t("ch3-aftermath-detour-ch3_volk_third")).count(), 0, "the visits keep their order");
+    await page.locator(t("ch3-aftermath-detour-ch3_volk_second")).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch3_read_ch3_volk_second === true, null, { timeout: 30000 });
+    await page.locator(t("ch3-aftermath-scene")).waitFor({ timeout: 30000 });
+    const volk = await page.evaluate(() => window.__remake.state.affinity.volk);
+    assert(volk >= 10, `an optional visit raises Volk's affinity (${volk})`);
+    await page.locator(t("ch3-aftermath-detour-open")).click();
+    await page.locator(t("ch3-aftermath-detour-ch3_volk_third")).waitFor();
+  }, { viewport: { width: 1331, height: 760 } });
+
+  // (f) IR23: 第5章のドバイの屋敷で会うたびにシェイク・太陽の好感度が上がり（1回目は段階会話、2回目から小会話の値）、
+  // ♥5で授業の錠が開く。灯した後に会うと相談して習う（授業の♥5は下げない）
+  await check("ch5-dubai-visits-raise-sheikh-and-taiyo-to-heart5-and-teach", async (page) => {
+    // 太陽は第4章の FESTA に5回（+8ずつ）通った分を持って来る
+    await chapterFive(page, { region: "dubai", met: { sheikh: true, da_silva: true }, affinity: { da_silva: 34 }, lit: [] });
+    const result = await page.evaluate(async () => {
+      const dubai = await import("./js/chapters/ch5-dubai.js"), stats = await import("./js/core/stats.js");
+      const board = await import("./js/core/growth-board.js"), growth = await import("./js/core/growth.js"), s = window.__remake.state;
+      const spot = (id) => dubai.DUBAI_SPOTS.find((entry) => entry.id === id);
+      const locked = (id) => !!board.lessonLock(board.NODE_BY_ID[id], new Set(), s)?.heart;
+      const out = { gains: {}, visits: {}, lockedBefore: [locked("M-W8"), locked("M-B6")] };
+      for (const [id, who] of [["ch5_dubai_sheikh", "sheikh"], ["ch5_dubai_taiyo", "da_silva"]]) {
+        out.gains[who] = [];
+        let n = 0;
+        while (stats.affinityLevel(who) < 5 && n < 30) {
+          const before = s.affinity[who] || 0;
+          const visit = await dubai.performDubaiSpot(spot(id));
+          if (!visit?.used) throw new Error(`${who}: visit ${n} was not used`);
+          s.stamina = 100; n++;
+          if (out.gains[who].length < 2) out.gains[who].push(s.affinity[who] - before);
+        }
+        out.visits[who] = n;
+      }
+      out.lockedAfter = [locked("M-W8"), locked("M-B6")];
+      growth.ensureGrowth().nodes.push("M-W8", "M-B6");
+      await dubai.performDubaiSpot(spot("ch5_dubai_sheikh")); s.stamina = 100;
+      await dubai.performDubaiSpot(spot("ch5_dubai_taiyo"));
+      out.learned = [...s.growth.learned];
+      return out;
+    });
+    assert.deepEqual(result.lockedBefore, [true, true], "the ♥5 lessons are locked below ♥5");
+    for (const who of ["sheikh", "da_silva"]) {
+      const [first, second] = result.gains[who];
+      assert(first > second && second > 0, `${who}: the first visit is a stage talk, then small talks (${result.gains[who]})`);
+    }
+    assert(result.visits.sheikh <= 15, `the Sheikh reaches ♥5 from zero in ${result.visits.sheikh} visits`);
+    assert(result.visits.da_silva <= 7, `Taiyo reaches ♥5 in ${result.visits.da_silva} visits after chapter 4`);
+    assert.deepEqual(result.lockedAfter, [false, false], "♥5 opens both lessons");
+    assert.deepEqual([...result.learned].sort(), ["M-B6", "M-W8"], "both teach at the residence once lit");
   });
 });

@@ -109,6 +109,7 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
 
 function spotHasNew(entry) {
   if (["mukai", "enmaku", "volk"].includes(entry.place) && optionalAt(entry.place).length) return true;
+  if (entry.place === "enmaku" && finaleAtVisit("kuze")) return true; // 久世の締めくくり（IR22）
   if (entry.place === "mukai") return mukaiBondDue() || outingsAt("mukai").some(outing => !outing.repeat);
   return outingsAt(entry.place).some(outing => !outing.repeat);
 }
@@ -474,9 +475,12 @@ async function readOptionalHere(io, scene, staminaGuard, owner, stamina = -10) {
 /**
  * 煙幕・Smoke & Glory・鉄の煙: 寄り道があればそれ、無ければその店の外出（#1655）。
  * 東京のシーシャ屋は一台4,000円（TOKYO_VISIT_COST）。読み終えた時だけ払う。本筋の場面（日程の枠で読む）は払わない。
+ * 煙幕では、久世の締めくくり（♥5・IR22）が来ていれば「久世に呼ばれる」を先頭に出す（閉店後に呼ばれるので払わない）。
  */
 async function visitRivalShop(entry, io, staminaGuard, owner) {
+  const finale = entry.place === "enmaku" && finaleAtVisit("kuze");
   const choices = [
+    ...finale ? [{ label: "久世に呼ばれる", value: "finale:kuze" }] : [],
     ...optionalAt(entry.place).map(scene => ({ label: scene.label, value: `scene:${scene.id}` })),
     ...outingsAt(entry.place).map(outing => ({ label: `${outing.label.replace(/\s*に(顔を出す|寄る)$/, "")}：${outingReason(state, outing)}`, value: `outing:${outing.id}` })),
   ];
@@ -488,10 +492,21 @@ async function visitRivalShop(entry, io, staminaGuard, owner) {
       { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
   if (!pick || state !== owner) return unused;
   const [kind, id] = pick.split(":");
+  if (kind === "finale") return readKuzeFinale(staminaGuard, owner);
   const result = kind === "scene" ? await readOptionalHere(io, optional.find(scene => scene.id === id), staminaGuard, owner)
     : await goOuting(outingById(id), staminaGuard, owner);
   if (result?.used && state === owner && cost) addMoney(-cost);
   return result;
+}
+
+/** 久世の締めくくり（daily/bonds.js の条件・一度だけ）。ましろちゃんの節目と同じく行動を一つ使う。 */
+async function readKuzeFinale(staminaGuard, owner) {
+  if (!(await staminaGuard(-10))) return unused;
+  const bg = BG(visitBg.enmaku);
+  await setBg(bg, { instant: true });
+  if (!await playFinale("kuze", { bg }) || state !== owner) return unused;
+  addStamina(-10);
+  return { used: true, exerted: true, exp: personExp("kuze") };
 }
 
 /**

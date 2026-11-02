@@ -616,14 +616,20 @@ await check('Kuze (#2028): chapter 3 finale after the LIME detour and the answer
   f.db.flavorById.absal_earlgrey = { id: 'absal_earlgrey' };
   f.db.friends = JSON.parse(fs.readFileSync(new URL('../data/friends.json', import.meta.url)));
   assert.equal(f.bonds.BOND_FINALES.kuze.gift, 'suyaki_kuze');
-  assert.equal(f.bonds.finaleHeart('kuze'), 1, 'provisional heart gate');
+  // IR22: 煙幕に何度でも通えて♥5に届く（AFB02）ので、仮の♥1をやめてほかの人物と同じ♥5
+  assert.equal(f.bonds.finaleHeart('kuze'), 5, 'the same ♥5 gate as everyone else');
+  assert.equal(f.bonds.BOND_FINALES.kuze.heart, undefined);
   const s = f.core.state; s.chapter = 3; s.met.kuze = true; s.affinity.kuze = 66;
   assert.equal(f.bonds.finaleDue('kuze'), false, 'affinity alone does not open the finale');
   s.flags._lime_contact_kuze = true; s.flags._ch3_read_ch3_kuze_lime = true;
   assert.equal(f.bonds.finaleDue('kuze'), false, 'the answer outing comes first');
   s.flags._ch3_outings = { enmaku_answer: 1 };
-  s.affinity.kuze = 8; assert.equal(f.bonds.finaleDue('kuze'), false, 'needs ♥1');
-  s.affinity.kuze = 9; assert.equal(f.bonds.finaleAtVisit('kuze'), true);
+  for (const pts of [9, 33, 48, 65]) {
+    s.affinity.kuze = pts;
+    assert.equal(f.bonds.finaleDue('kuze'), false, `${pts}pt (below ♥5) keeps the finale closed`);
+    assert.equal(f.bonds.finaleAtVisit('kuze'), false);
+  }
+  s.affinity.kuze = 66; assert.equal(f.bonds.finaleAtVisit('kuze'), true, '♥5 opens it on the next visit');
   s.chapter = 4; assert.equal(f.bonds.finaleDue('kuze'), false, 'only on the chapter 3 cards');
   assert.equal(await f.bonds.playFinale('kuze'), false); s.chapter = 3;
   f.setPlay(async () => ({ cancelled: true }));
@@ -641,6 +647,26 @@ await check('Kuze (#2028): chapter 3 finale after the LIME detour and the answer
   after.day += 10;
   const lime = f.bonds.friendMessages({ sceneChapter: true });
   assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['kuze', 'chat']], 'chat only on the scene-card chapters');
+});
+
+// IR23: ヴォルク・シェイク・太陽も通って♥5に届く（授業 M-W5・M-W8・M-B6 の♥5は下げない）。値は各行き先と同じ
+// visitAffinity（第4章 +8、第5章は1回目 +10・2回目から +5）と、第3章の鉄の煙の任意の場面の台本の報酬（2×6）。魅力は最低で数える。
+await check('IR23: Volk, the Sheikh and Taiyo reach ♥5 by visiting, with the shared visit values', async f => {
+  const s = f.core.state, { gainAffinity, visitAffinity, affinityLevel } = f.stats;
+  s.stats.charm = 0;
+  const visitsTo5 = id => { let n = 0; while (affinityLevel(id) < 5 && n < 99) gainAffinity(id, visitAffinity(n++ ? 'talk' : 'story')); return n; };
+  assert.deepEqual([3, 4, 5].map(chapter => (s.chapter = chapter, [visitAffinity('story'), visitAffinity('talk')])), [[16, 8], [16, 8], [10, 5]]);
+  // シェイク: 第4章は名を伏せていて好感度が付かない。第5章のドバイの屋敷だけで（客間は無料・好きなだけ泊まれる）
+  s.chapter = 5;
+  assert.equal(visitsTo5('sheikh'), 15, 'the Sheikh: 15 visits to the residence from zero');
+  // 太陽: 第4章の FESTA に5回（来店ごとに +8）通ってから、第5章の屋敷の中庭
+  s.chapter = 4; for (let i = 0; i < 5; i++) gainAffinity('da_silva', visitAffinity('talk'));
+  assert.equal(affinityLevel('da_silva'), 3, 'five FESTA visits in chapter 4 reach ♥3');
+  s.chapter = 5; assert.equal(visitsTo5('da_silva'), 7, 'then 7 visits in the courtyard');
+  // ヴォルク: 第3章の鉄の煙の任意の場面4本（二度目・七年分・頷く順番・大会のあとの記録）を読んでから、第5章の鉄の煙
+  s.chapter = 3; for (let i = 0; i < 4; i++) gainAffinity('volk', 2 * 6);
+  assert.equal(affinityLevel('volk'), 3, "Volk's four optional scenes in chapter 3 reach ♥3");
+  s.chapter = 5; assert.equal(visitsTo5('volk'), 5, 'then 5 visits to Iron Smoke in chapter 5');
 });
 
 // #2025: 凛の♥4・♥5。既存4本の後ろに足し、♥3の質問の後・締めくくりの前に一本ずつ読む。
