@@ -10,21 +10,24 @@
   ],
   "suites": [
     {
-      "id": "hud-visibility-2190",
-      "title": "Hidden HUD accessibility, focus and LOAD recovery (#2190)",
+      "id": "ch1-victory-resume-2190",
+      "title": "Chapter 1 victory SAVE/LOAD backgrounds, resources and sentence boundaries",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ch1_victory_resume_2190.mjs"]
+    },
+    {
+      "id": "ch1-victory-resume-2190-browser",
+      "title": "Chapter 1 victory LOAD scenes, title removal and readable sentence pages",
       "kind": "browser",
       "weight": 1,
-      "timeout": 3,
+      "timeout": 5,
       "paths": [
-        "remake/css/daily.css",
-        "remake/js/daily/hud.js",
-        "remake/js/scenes/title.js",
         "remake/js/chapters/ch1.js",
-        "remake/js/chapters/ch2-tournament.js",
-        "remake/test/browser/hud_visibility_2190.mjs"
+        "data/dialogue/ch1_tournament.json",
+        "data/dialogue/ch1_interval.json",
+        "remake/test/browser/ch1_victory_resume_2190.mjs"
       ],
-      "run": ["node remake/test/browser/hud_visibility_2190.mjs"],
-      "chrome": "playwright"
+      "run": ["node remake/test/browser/ch1_victory_resume_2190.mjs"]
     },
     {
       "id": "vn-speaker-atomic-2190",
@@ -2514,6 +2517,23 @@
       "env": {
         "SHOTS": ".codex/artifacts/remake-browser/store-logos"
       },
+      "chrome": "playwright"
+    },
+    {
+      "id": "hud-visibility-2190",
+      "title": "Hidden HUD accessibility, focus and LOAD recovery (#2190)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 3,
+      "paths": [
+        "remake/css/daily.css",
+        "remake/js/daily/hud.js",
+        "remake/js/scenes/title.js",
+        "remake/js/chapters/ch1.js",
+        "remake/js/chapters/ch2-tournament.js",
+        "remake/test/browser/hud_visibility_2190.mjs"
+      ],
+      "run": ["node remake/test/browser/hud_visibility_2190.mjs"],
       "chrome": "playwright"
     },
     {
