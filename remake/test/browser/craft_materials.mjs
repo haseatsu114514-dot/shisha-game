@@ -282,7 +282,7 @@ await suite("craft-materials", async check => {
         const heat = await import("./js/craft/heat.js");
         F.running = step === "pack" ? F.steps.stepPack(F.cs) : step === "holes" ? F.holes.runHoles(F.cs) : heat.runHeat(F.cs);
       }, step);
-      await page.locator(step === "pack" ? '[data-test="pack-confirm"]' : step === "holes" ? '[data-test="hole-start"]' : '.heat').waitFor();
+      await page.locator(step === "pack" ? '[data-test="pack-confirm"]' : step === "holes" ? '[data-test="hole-start"]' : '.heat[aria-busy="false"]').waitFor();
       if (step === "pack") {
         const paint = await page.locator('[data-test="pack-confirm"]').evaluate(n => {
           const s = getComputedStyle(n); return { background: s.backgroundColor, image: s.borderImageSource, width: s.borderTopWidth };
