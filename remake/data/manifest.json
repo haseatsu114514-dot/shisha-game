@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-01 23:56 UTC",
+ "generated": "2026-11-02 00:30 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -240,6 +240,7 @@
   "rei": {
    "faces": [
     "normal",
+    "sad",
     "serious",
     "smile",
     "surprise"
@@ -252,6 +253,7 @@
   "volk": {
    "faces": [
     "normal",
+    "sad",
     "serious",
     "smile",
     "surprise"
@@ -318,6 +320,7 @@
   "steve": {
    "faces": [
     "normal",
+    "sad",
     "serious",
     "smile",
     "surprise"
@@ -331,6 +334,7 @@
    "faces": [
     "excited",
     "normal",
+    "serious",
     "smile",
     "surprise"
    ],
@@ -381,7 +385,8 @@
     "normal",
     "serious",
     "smile",
-    "smug"
+    "smug",
+    "surprise"
    ],
    "h": 0.9725,
    "b": 0.0133,
@@ -2686,6 +2691,46 @@
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
   "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
+  "sprites/characters/da_silva/chr_da_silva_excited.png",
+  "sprites/characters/da_silva/chr_da_silva_smile.png",
+  "sprites/characters/da_silva/chr_da_silva_surprise.png",
+  "sprites/characters/kuze/chr_kuze_serious.png",
+  "sprites/characters/kuze/chr_kuze_smile.png",
+  "sprites/characters/sheikh/chr_sheikh_serious.png",
+  "sprites/characters/sheikh/chr_sheikh_smile.png",
+  "sprites/characters/sheikh/chr_sheikh_smug.png",
+  "sprites/characters/steve/chr_steve_serious.png",
+  "sprites/characters/steve/chr_steve_smile.png",
+  "sprites/characters/steve/chr_steve_surprise.png",
+  "sprites/characters/volk/chr_volk_serious.png",
+  "sprites/characters/volk/chr_volk_smile.png",
+  "sprites/characters/volk/chr_volk_surprise.png",
+  "sprites/characters/kuze/chr_kuze_sad.png",
+  "sprites/characters/kuze/chr_kuze_surprise.png",
+  "sprites/characters/hajime/chr_hajime_excited.png",
+  "sprites/characters/hajime/chr_hajime_smug.png",
+  "sprites/characters/kumicho/chr_kumicho_smug.png",
+  "sprites/characters/mashiro/chr_mashiro_sad.png",
+  "sprites/characters/mashiro/chr_mashiro_yawn.png",
+  "sprites/characters/naru/chr_naru_excited.png",
+  "sprites/characters/pakki/chr_pakki_excited.png",
+  "sprites/characters/rei/chr_rei_serious.png",
+  "sprites/characters/rei/chr_rei_smile.png",
+  "sprites/characters/rei/chr_rei_surprise.png",
+  "sprites/characters/rin/chr_rin_serious.png",
+  "sprites/characters/rin/chr_rin_shock.png",
+  "sprites/characters/rin/chr_rin_smug.png",
+  "sprites/characters/master_hookah/chr_master_hookah_angry.png",
+  "sprites/characters/master_hookah/chr_master_hookah_laugh.png",
+  "sprites/characters/master_hookah/chr_master_hookah_sad.png",
+  "sprites/characters/master_hookah/chr_master_hookah_serious.png",
+  "sprites/characters/master_hookah/chr_master_hookah_smile.png",
+  "sprites/characters/master_hookah/chr_master_hookah_surprise.png",
+  "sprites/characters/da_silva/chr_da_silva_serious.png",
+  "sprites/characters/rei/chr_rei_sad.png",
+  "sprites/characters/sheikh/chr_sheikh_surprise.png",
+  "sprites/characters/steve/chr_steve_sad.png",
+  "sprites/characters/volk/chr_volk_sad.png",
   "sprites/characters/yoru/chr_yoru_normal.png",
   "ui/character_intros/yoru.png"
  ],
