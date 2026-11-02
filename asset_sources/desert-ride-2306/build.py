@@ -48,7 +48,9 @@ ADOPT = {
     "rider_brace": "phase4/rider_brace-raw.png",            # 着地の構え（低くしゃがむ）
     "rider_fall": "phase4/rider_fall-raw.png",              # 転倒（板が離れる）
 }
-# ヌールの立ち絵 normal A/B/C（raw/phase4/noor-candidates/）は別々のデザイン案。オーナーの選択待ちで、ここでは使わない。
+# ヌールの立ち絵 normal（raw/phase4/noor-candidates/）: 2026-11-02 オーナーが A を選定（B・C は採用しない）。
+NOOR_NORMAL = "phase4/noor-candidates/noor_normal_A-raw.png"
+NOOR_SPRITE = ROOT / "assets" / "sprites" / "characters" / "noor" / "chr_noor_normal.png"
 RIDER_POSES = ("rider_lean_left", "rider_lean_right", "rider_jump", "rider_brace", "rider_fall")
 
 # 遠景（Codex B 1983×793）の行: 空が終わる稜線のいちばん上と、平らな砂が始まる地平線（原画の画素）
@@ -185,6 +187,25 @@ def anchor_foot(im):
     return {"x": round(float(xs[sel].mean()) / alpha.shape[1], 4), "y": round(float(bottom + 1) / alpha.shape[0], 4)}
 
 
+def noor_portrait():
+    """ヌールの立ち絵（docs/portrait_standard.md の 896×1200 透過PNG）。縮小と配置だけで、透過は原画のまま（髪・布の薄い縁を切らない）。
+    人物の高さはキャンバスの 0.975、足元の余白 14px、横は不透明部分の重心を中央（ほかの立ち絵と同じ置き方。身長は spriteScale が決める）。"""
+    W, H, height, foot = 896, 1200, 1170, 14
+    raw = Image.open(RAW / NOOR_NORMAL).convert("RGBA")
+    box = raw.getchannel("A").point(lambda v: 255 if v >= 16 else 0).getbbox()
+    body = raw.crop(box)
+    k = height / body.height
+    body = body.convert("RGBa").resize((round(body.width * k), height), Image.LANCZOS).convert("RGBA")
+    alpha = np.asarray(body.getchannel("A")).astype(float)
+    cx = float((alpha * np.arange(body.width)[None, :]).sum() / alpha.sum())
+    canvas = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    canvas.alpha_composite(body, (round(W / 2 - cx), H - foot - height))
+    NOOR_SPRITE.parent.mkdir(parents=True, exist_ok=True)
+    canvas.save(NOOR_SPRITE, optimize=True)
+    return {"raw": f"raw/{NOOR_NORMAL}", "raw_sha256": sha(RAW / NOOR_NORMAL), "png": str(NOOR_SPRITE.relative_to(ROOT)),
+            "png_sha256": sha(NOOR_SPRITE), "size": [W, H], "scale": round(k, 6)}
+
+
 def main():
     sky, land, dusk_sky, dusk_land, geo = backdrop()
     report = {"source": "Codex image_gen candidates delivered on PR #2306 and #2333 (gigafile ZIPs, SHA-256 checked against the handoff comments)",
@@ -208,6 +229,7 @@ def main():
         report[key] = {**save(key, im), "stray_alpha_cleared": removed, "scale": round(base_scale, 6),
                        "anchor": anchor_body(im) if key == "rider_fall" else {k: v for k, v in anchor_board(im).items() if k in ("x", "y")}}
     # 会話の背景: 1672×941 → 1280×720（縦横比はほぼ16:9。はみ出す分だけ中央で切る）
+    report["noor_normal"] = noor_portrait()
     # 夕方は昼と同じ寸法・同じ切り方（夕日の場面。第4弾）
     for key, path, name in (("vn", BG, "bg_dubai_dunes_day"), ("vn_dusk", BG_DUSK, "bg_dubai_dunes_dusk")):
         vn = Image.open(RAW / ADOPT[key]).convert("RGB")

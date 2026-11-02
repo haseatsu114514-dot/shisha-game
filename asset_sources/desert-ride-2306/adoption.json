@@ -277,6 +277,17 @@
       "y": 0.9569
     }
   },
+  "noor_normal": {
+    "raw": "raw/phase4/noor-candidates/noor_normal_A-raw.png",
+    "raw_sha256": "2e72bc62ee718aced3dbb59de3cb1bcd968eeaa85fd3e9c6f8f2211b3aad3b53",
+    "png": "assets/sprites/characters/noor/chr_noor_normal.png",
+    "png_sha256": "1374af232413652aaa6285982730e308ba47edf31305d89c3f3632b279b07266",
+    "size": [
+      896,
+      1200
+    ],
+    "scale": 0.77381
+  },
   "bg_dubai_dunes_day": {
     "png": "assets/backgrounds/bg_dubai_dunes_day.png",
     "png_sha256": "8533039c13d3f5c8a41e33f07c811d5c5fa450f3244bc8bb79656fc6fbcf082d",

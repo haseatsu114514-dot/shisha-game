@@ -222,6 +222,13 @@ test("the adopted Codex art (PR #2306, #2333) matches its adoption record: sizes
     assert(manifest.backgrounds.includes(`${bg}.png`) && manifest.webp.includes(`backgrounds/${bg}.png`), bg);
     assert(tracked(`remake/img/backgrounds/${bg}.webp`) && tracked(`assets/backgrounds/${bg}.png`), bg);
   }
+  // ヌールの立ち絵は normal A（2026-11-02 オーナー選定）。立ち絵の一覧と顔アイコンに入っている
+  assert.equal(record.noor_normal.raw, "raw/phase4/noor-candidates/noor_normal_A-raw.png");
+  assert.deepEqual(record.noor_normal.size, [896, 1200]);
+  assert.deepEqual(manifest.portraits.noor.faces, ["normal"]);
+  assert(manifest.faceIcons.includes("face_noor.png") && tracked("assets/sprites/characters/noor/chr_noor_normal.png") && tracked("assets/ui/face_icons/face_noor.png"));
+  const noor = JSON.parse(readFileSync(new URL("data/characters.json", root), "utf8")).find(c => c.id === "noor");
+  assert.equal(noor.spriteScale, 0.977, "168cm / 172cm");
   // Node（Image の無い環境）では何も読まず、図形で描く側へ落ちる
   assert.equal(loadDesertArt().get("rider"), null);
 });

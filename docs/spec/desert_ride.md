@@ -71,9 +71,9 @@
 | 5 岩 | ✅ 採用（大A・小A） | 当たり判定より少しだけ広く描く |
 | 6 砂煙 | ✅ 採用（C） | |
 | 7 旗竿・ゴール | ✅ 採用（旗A・幕A） | |
-| 8 ヌールの立ち絵 | **オーナーの選択待ち**（normal A・B・C の3案が第4弾で到着） | 3案は別々のデザイン（`asset_sources/desert-ride-2306/raw/phase4/noor-candidates/`）。選んだ normal から smile・surprise・登場カットインを作る。それまで会話は立ち絵なし、登場カットインは文字だけ |
+| 8 ヌールの立ち絵 | ✅ normal を採用（2026-11-02 オーナーが A を選定）。smile・surprise・登場カットインの一枚絵は依頼中 | `assets/sprites/characters/noor/chr_noor_normal.png`（896×1200）。台詞の smile・surprise は届くまで normal で表示し、登場カットインは立ち絵を使う型で出る。頭身は 7.96（標準の 6.4〜7.7 より頭が少し小さい。portrait_metrics の WARN）。B・C は採用しない |
 
-次の依頼: ヌールの normal をオーナーが A・B・C から選んだら、その原画を添付して smile・surprise を1枚ずつ、そのあと登場カットインの一枚絵。寸法・透過・画風の条件は下の表のとおり。
+次の依頼: ヌールの smile・surprise を1枚ずつ（**採用した normal A の原画** `raw/phase4/noor-candidates/noor_normal_A-raw.png` を添付し、同じ服・同じ足元で表情と小さな首の傾きだけ変える）、そのあと登場カットインの一枚絵。寸法・透過・画風の条件は下の表のとおり。
 
 以下は最初の依頼（2026-11-02）。絵が読み込めない間・失敗した時は Canvas の図形で描く（`desert-ride.js` の `drawPlayer`・`drawRock`・`drawDunes`・`drawParticles`。絵の寸法と基準点は `desert-ride-art.js`）。既存の画風に合わせるため、背景は `tools/bg_prompts.txt` の共通指針（painterly・`bg_eden_shop.png` の筆致）、人物は `docs/prompts/image_generation_guide.md` と `character-portrait-remaster` の書式に従う。シーシャ機材は写らないので `docs/shisha_reference.md` §4 の手順は不要。
 
