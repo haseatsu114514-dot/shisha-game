@@ -32,6 +32,7 @@ for (let n = 2; n <= all.length; n++) {
   assert.deepEqual(result.participants, lovers);
   assert.equal(result.scenes.length, n + 3);
   assert.deepEqual(result.unresolved, lovers);
+  assert.deepEqual(result.talks, lovers.map(id => routes.romance[id].talk), 'one talk per hurt lover, in order');
   result.scenes.forEach(id => assert.ok(scenes.has(id), id));
   assert.equal(selectStoryEvening(routes, state, {present: [lovers[0]]}).kind, 'rest');
   assert.equal(selectStoryEnding(routes, state, context)[1], routes.ending.normal);
@@ -67,6 +68,18 @@ for (const id of all) {
 assert(!sceneData.get(routes.romance.hiyori.conflict).lines.some(row => row.text?.includes('付き合おう')), 'hiyori quotes her real confession');
 assert.equal(selectPostEndingConflict(routes, {lovers: [], flags: {_story_shuraba_unresolved: true}}).kind, 'pending');
 assert.equal(selectPostEndingConflict(routes, {}, context).kind, 'none');
+assert.deepEqual(selectPostEndingConflict(routes, {}, context).talks, []);
+// IR32: 先に修羅場を済ませた恋人（context.unresolved）は反応を繰り返さず、話し直しの決意と一人ずつの話し直しだけ。
+{
+  const done = selectPostEndingConflict(routes, {lovers: ['minto', 'rin'], flags: {_story_shuraba_unresolved: true}},
+    {present: [], unresolved: ['minto', 'rin']});
+  assert.deepEqual([done.kind, done.scenes, done.unresolved, done.talks],
+    ['pending', [routes.conflict.pending_ending], ['minto', 'rin'], [routes.romance.minto.talk, routes.romance.rin.talk]]);
+  const more = selectPostEndingConflict(routes, {lovers: ['minto', 'rin', 'ageha']}, {present: ['rin', 'ageha'], unresolved: ['minto']});
+  assert.deepEqual(more.participants, ['rin', 'ageha']);
+  assert.deepEqual(more.unresolved, ['minto', 'rin', 'ageha'], 'earlier hurt lovers stay unresolved first');
+  assert.deepEqual(more.talks, ['minto', 'rin', 'ageha'].map(id => routes.romance[id].talk));
+}
 assert.equal(selectStoryEvening(routes, {chapter: 4, lovers: ['rin', 'rin', 'unknown']}, {present: ['rin']}).kind, 'rest');
 assert.equal(selectStoryEvening(routes, {}).kind, 'rest');
 const mintoCall = 'ch3_minto_small_lies';

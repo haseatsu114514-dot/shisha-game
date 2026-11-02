@@ -2,6 +2,7 @@
 // 初回は飛ばせない・一度見た端末では2回目から飛ばせる、動きを減らす設定でも最後まで進む、
 // PC・スマホ横で文字が画面の外へはみ出さない、を実UIと実saveで確かめる。
 // 初回を流し終えたら真エンドとして周回（NEXT CYCLE）が開く（#1228）。勝敗は問わず、流す前は開かない。
+// 恋人が2人以上なら、スタッフロールの後に修羅場→一人ずつの話し直しを読んでからタイトルへ（IR32）。途中のLOAD・旧保存も確かめる。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
@@ -13,9 +14,12 @@ const arm = (page, turbo = true) => page.evaluate(async turbo => {
   vn.vnTest.turbo = turbo; vn.vnTest.choose = () => 0;
 }, turbo);
 
-/** フィナーレを読み終えた（cleared）第5章の保存を作る。seen は端末で一度最後まで見たか。won は9000との勝敗。 */
-async function seed(page, { seen = false, done = false, won = true } = {}) {
-  await page.evaluate(async ({ seen, done, won }) => {
+/**
+ * フィナーレを読み終えた（cleared）第5章の保存を作る。seen は端末で一度最後まで見たか。won は9000との勝敗。
+ * lovers は恋人（会っていて連絡先もある）、flags は足す保存フラグ、post はスタッフロールの後の並び（postEnding）。
+ */
+async function seed(page, { seen = false, done = false, won = true, lovers = [], flags = {}, post } = {}) {
+  await page.evaluate(async ({ seen, done, won, lovers, flags, post }) => {
     const core = await import("./js/core/state.js");
     const value = core.newGame();
     const match = won ? ["ch5_second_cup_result", "ch5_second_cup_result_afterglow"] : ["ch5_second_cup_defeat"];
@@ -24,7 +28,8 @@ async function seed(page, { seen = false, done = false, won = true } = {}) {
       "ch5_doctor_after_match", "ch5_return_to_tonari",
       "ending_start", "ending_normal", "ending_daily_smoke"].map(id => [id, true]));
     Object.assign(value, { chapter: 5, day: 60, slot: 1, phase: "cleared", money: 50000, stamina: 100,
-      weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+      weatherSeed: 5, lovers: [...lovers], contacts: ["sumi", ...lovers] });
+    for (const id of lovers) value.met[id] = true;
     value.stats = { technique: 72, sense: 66, guts: 61, charm: 70, insight: 64 };
     value.statsAtChapterStart = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true,
@@ -32,18 +37,30 @@ async function seed(page, { seen = false, done = false, won = true } = {}) {
       ...(done ? { _ch5_staff_roll_done: true } : {}),
       _ch5: { startDay: 52, stage: 2, part: "cleared", titleSeen: true, read, scheduleDecision: "decide",
         aftermath: 2, finale: 3, finaleScenes: ["ending_start", "ending_normal", "ending_daily_smoke"], won,
-        secondCup: null } };
+        secondCup: null, ...(post ? { postEnding: post } : {}) }, ...flags };
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false, staffRollSeen: seen });
     core.saveConfig(); core.save();
-  }, { seen, done, won });
+  }, { seen, done, won, lovers, flags, post });
 }
 
-async function loadSlot(page, turbo = true) {
+async function openSlot(page, turbo = true) {
   await page.reload();
   await page.locator(dt("title-load")).click();
   await arm(page, turbo);
   await page.locator(dt("slot-0")).click();
+}
+async function loadSlot(page, turbo = true) {
+  await openSlot(page, turbo);
   await page.locator(dt("ch5-complete")).waitFor({ timeout: 60000 });
+}
+const scene = id => `${dt("ch5-scene")}[data-scene="${id}"]`;
+const talk = id => `shuraba_talk_${id}`;
+// 会話を開いたところ（自動送りを止めて）でロードし、読みかけの場面を確定しないことを確かめる。
+async function loadMidRead(page) {
+  await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.turbo = false; });
+  await page.locator(dt("ch5-continue")).click();
+  await page.locator("#vn.active").waitFor();
+  await openSlot(page);
 }
 
 await suite("staff-roll", async check => {
@@ -120,6 +137,85 @@ await suite("staff-roll", async check => {
     assert.deepEqual(next.lovers, []);
     assert.notEqual(next.cycleId, saved.cycleId);
     assert.equal((await cycleMeta(page)).highestCycleStarted, 2);
+  });
+
+  // IR32: 恋人が2人。初回のスタッフロールの後はタイトルでなく修羅場（開始→二人の反応→謝罪→話し直しの決意）を続けて読み、
+  // 話し直しは一人ずつカードから。読みかけでLOADしても同じ場面から。全員と話し直したらタイトルへ。以後は完了カード。
+  await check("two-lovers-read-the-shuraba-and-talks-after-the-first-roll-then-title", async page => {
+    const lovers = ["minto", "tsumugi"];
+    await seed(page, { lovers });
+    await loadSlot(page);
+    const start = await get(page);
+    await page.locator(dt("ch5-complete-credits")).click();
+    await page.locator(dt("staff-roll")).waitFor();
+    await page.locator(scene("shuraba_open")).waitFor({ timeout: 30000 });
+    let saved = await get(page);
+    assert.equal(saved.flags._ch5_staff_roll_done, true);
+    assert.deepEqual(saved.flags._ch5.postEnding, { step: 0, unresolved: lovers, scenes: ["shuraba_open", "shuraba_minto",
+      "shuraba_tsumugi", "shuraba_accountability", "ending_relationship_pending", talk("minto"), talk("tsumugi")] });
+    assert.equal((await cycleMeta(page)).unlocked, true, "The true end is the roll; the talks come after it");
+    assert.match(await page.locator(dt("ch5-scene")).innerText(), /後日のtonari/);
+    await loadMidRead(page);
+    await page.locator(scene("shuraba_open")).waitFor({ timeout: 60000 });
+    assert.equal((await get(page)).flags._ch5.postEnding.step, 0, "A read cut off by LOAD commits nothing");
+    // 修羅場は続けて読み、1人目の話し直しのカードで止まる。
+    await page.locator(dt("ch5-continue")).click();
+    await page.locator(scene(talk("minto"))).waitFor({ timeout: 60000 });
+    saved = await get(page);
+    assert.equal(saved.flags._ch5.postEnding.step, 5);
+    assert.equal(saved.flags._story_shuraba_unresolved, true, "The apology leaves it unresolved");
+    assert.deepEqual(saved.flags._ch5.postEnding.unresolved, lovers);
+    const card = await page.locator(dt("ch5-scene")).innerText();
+    assert(card.includes("話し直し") && card.includes("1人目／2人"), card);
+    // 話し直しの途中でLOAD → 同じ人から。
+    await loadMidRead(page);
+    await page.locator(scene(talk("minto"))).waitFor({ timeout: 60000 });
+    assert.deepEqual((await get(page)).flags._ch5.postEnding.unresolved, lovers, "A cut-off talk resolves nobody");
+    await page.locator(dt("ch5-continue")).click();
+    await page.locator(scene(talk("tsumugi"))).waitFor({ timeout: 60000 });
+    assert.match(await page.locator(dt("ch5-scene")).innerText(), /2人目／2人/);
+    assert.deepEqual((await get(page)).flags._ch5.postEnding.unresolved, ["tsumugi"]);
+    await page.locator(dt("ch5-continue")).click();
+    await page.locator(dt("title-new")).waitFor({ timeout: 30000 });
+    saved = await get(page);
+    assert.equal(saved.flags._ch5.postEnding.step, 7);
+    assert.deepEqual(saved.flags._ch5.postEnding.unresolved, []);
+    assert.equal(saved.flags._story_shuraba_unresolved, undefined, "Released after both talks");
+    assert.deepEqual(saved.lovers, lovers, "Nobody is dumped or forgiven by the talk");
+    for (const key of ["money", "stats", "day", "slot", "stamina", "phase"]) assert.deepEqual(saved[key], start[key], key);
+    assert.deepEqual(saved.flags._ch5.finaleScenes, start.flags._ch5.finaleScenes, "The finale is not rewritten");
+    await page.locator(dt("title-next-cycle")).waitFor();
+    // 読み終えた保存は完了カードから。修羅場は繰り返さない。
+    await loadSlot(page);
+    await page.locator(dt("ch5-complete-title")).waitFor();
+  });
+
+  // この接続より前にスタッフロールまで見終えた3人の恋人の保存は、開くと修羅場から。修羅場の途中の保存は続きから。
+  // 打ち上げで修羅場が済んでいれば、二度起こさず話し直しの決意から。
+  await check("old-and-mid-conflict-saves-resume-the-post-ending-at-the-right-scene", async page => {
+    const lovers = ["rin", "ageha", "hiyori"];
+    await seed(page, { done: true, seen: true, lovers });
+    await openSlot(page);
+    await page.locator(scene("shuraba_open")).waitFor({ timeout: 60000 });
+    assert.equal((await get(page)).flags._ch5.postEnding.scenes.length, 9);
+    const scenes = ["shuraba_open", "shuraba_rin", "shuraba_ageha", "shuraba_hiyori", "shuraba_accountability",
+      "ending_relationship_pending", ...lovers.map(talk)];
+    await seed(page, { done: true, seen: true, lovers, post: { scenes, step: 2, unresolved: lovers } });
+    await openSlot(page);
+    await page.locator(scene("shuraba_ageha")).waitFor({ timeout: 60000 });
+    await page.locator(dt("ch5-continue")).click();
+    await page.locator(scene(talk("rin"))).waitFor({ timeout: 60000 });
+    assert.match(await page.locator(dt("ch5-scene")).innerText(), /1人目／3人/);
+    const read = (await get(page)).flags._ch5.read;
+    for (const id of scenes.slice(2, 6)) assert.equal(read[id], true, id);
+    assert.equal(read.shuraba_rin, undefined, "Scenes read before the save are not replayed");
+    await seed(page, { done: true, seen: true, lovers: ["tsumugi", "mashiro"],
+      flags: { _ch5_after_party: true, _story_shuraba_unresolved: true } });
+    await openSlot(page);
+    await page.locator(scene("ending_relationship_pending")).waitFor({ timeout: 60000 });
+    await page.locator(dt("ch5-continue")).click();
+    await page.locator(scene(talk("tsumugi"))).waitFor({ timeout: 60000 });
+    assert.equal((await get(page)).flags._ch5.read.shuraba_open, undefined, "The party already had the conflict");
   });
 
   await check("first-roll-ignores-keys-and-clicks-until-it-ends", async page => {

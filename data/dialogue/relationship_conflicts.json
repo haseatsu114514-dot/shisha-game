@@ -1,5 +1,5 @@
 {
-  "comment": "第3章はスティーブの茶化しで曖昧に終わる未遂。shuraba_*の本格的な話し合いはエンディング後のみ。実際の交際と所在を確認し、出席者の反応だけを読む。ch3_shuraba_*とtournament_evening_overlapは第3章前夜（ch3.js）に接続済み。shuraba_*（エンディング後）は未接続。shuraba_talk_*（個別の話し直し）も未接続で、再生時期・解決条件はまだ決めていない。",
+  "comment": "第3章はスティーブの茶化しで曖昧に終わる未遂。shuraba_*の本格的な話し合いはエンディング後のみ。実際の交際と所在を確認し、出席者の反応だけを読む。ch3_shuraba_*とtournament_evening_overlapは第3章前夜（ch3.js）に接続済み。shuraba_*の反応とshuraba_accountabilityは第5章の打ち上げ（ch5-party.js）で接続済み。打ち上げで起きていなければ、第5章のスタッフロールの後にshuraba_openから読む（ch5.js・IR32）。shuraba_talk_*はその後、未解決の恋人ごとに一人ずつ読む。",
   "dialogues": [
     {
       "dialogue_id": "ch3_shuraba_open",
@@ -491,7 +491,7 @@
           "text": "栞さんは、最後まで袖をつままなかった。続きを決めるのは、彼女だった。"
         }
       ],
-      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"
     },
     {
       "dialogue_id": "shuraba_talk_tsumugi",
@@ -562,7 +562,7 @@
           "text": "つむぎは、スケッチブックを開かずに立ち上がった。俺は、隣の席に座らなかった。"
         }
       ],
-      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"
     },
     {
       "dialogue_id": "shuraba_talk_rin",
@@ -628,7 +628,7 @@
           "text": "試香紙は、最後まで鞄から出てこなかった。返事を決めるのは、凛さんだった。"
         }
       ],
-      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"
     },
     {
       "dialogue_id": "shuraba_talk_ageha",
@@ -689,7 +689,7 @@
           "text": "手をつなぐかどうかは、聞かれなかった。俺からも、聞かなかった。"
         }
       ],
-      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"
     },
     {
       "dialogue_id": "shuraba_talk_mashiro",
@@ -755,7 +755,7 @@
           "text": "ましろちゃんは、自分の分のお茶を最後まで飲んでから席を立った。"
         }
       ],
-      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"
     },
     {
       "dialogue_id": "shuraba_talk_samechan",
@@ -822,7 +822,7 @@
           "text": "コロちゃんは、最後まで膝の上にいた。"
         }
       ],
-      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"
     },
     {
       "dialogue_id": "shuraba_talk_hiyori",
@@ -884,7 +884,7 @@
           "text": "ひよりは、一度も儚い顔をしないまま帰っていった。"
         }
       ],
-      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"
     }
   ]
 }
