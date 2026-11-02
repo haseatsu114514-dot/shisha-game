@@ -15,6 +15,7 @@ import { play } from "../vn/engine.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { MAP, STATION, STOPS, ROOMS, loadChapterTwoDialogues, loadPreparationDialogues } from "./ch2-city-data.js";
 import { trainRide } from "../core/scene-motions.js";
+import { cueTransition } from "../core/transitions.js";
 import { playBgm } from "../core/audio.js";
 import { TRAIN_ICON_SVG } from "../core/train-icon.js";
 import { advanceToChapterTwo, dayOneProgress, cityVisits, recordCityVisit } from "./ch2-progress.js";
@@ -101,13 +102,15 @@ async function checkpoint(stage) {
   save();
 }
 
-async function scene(id, background, dialogue = id) {
+// place を渡すと、背景の切り替えを入店の幕（行き先の名前つき）で開く（第1章の店に入るときと同じ型）。
+async function scene(id, background, dialogue = id, place = null) {
   const owner = session;
   showHud(false);
   if (!DB.dialogues[id]) throw new Error(`台本がありません: ${id}`);
   owner.scene = id;
   if (background) {
-    await withScenePreparation(setBg(background, { instant: true }));
+    if (place) cueTransition("place", { spotId: place.id, label: place.name, area: CH2_CITY_NAME });
+    await withScenePreparation(setBg(background, { instant: !place }));
   }
   if (!current(owner)) return false;
   playBgm(background?.includes("bg_tonari_inside") ? "tonari" : CITY_BGM);
@@ -226,7 +229,7 @@ async function visit(stop) {
     const ready = await withScenePreparation(imageReady(ROOMS[stop.id], 15000));
     if (!current(owner)) return;
     if (ready) {
-      if (!await scene(`ch2_city_${stop.id}_inside`, ROOMS[stop.id])) return;
+      if (!await scene(`ch2_city_${stop.id}_inside`, ROOMS[stop.id], undefined, stop)) return;
       state.flags[`_ch2_city_inside_${stop.id}`] = true; save();
       // あげはのプリクラは入口の機械なので、店内に入ってから撮る。
       if (stop.id === "ageha" && !await offerAgehaPurikura(ROOMS.ageha)) return;
@@ -254,7 +257,7 @@ function renderStop(stop, failed = false) {
         const ready = await withScenePreparation(imageReady(ROOMS[stop.id], 15000));
         if (!current(owner)) return;
         if (!ready) { renderStop(stop, true); return; }
-        if (!await scene(`ch2_city_${stop.id}_inside`, ROOMS[stop.id])) return;
+        if (!await scene(`ch2_city_${stop.id}_inside`, ROOMS[stop.id], undefined, stop)) return;
         state.flags[`_ch2_city_inside_${stop.id}`] = true;
         save();
         if (!await mapBackground()) return;
