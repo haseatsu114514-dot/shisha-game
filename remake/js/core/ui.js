@@ -408,8 +408,9 @@ function pumpBanners() {
     });
     const seenKey = gainSeenKey(o);
     const hold = bannerHold(o, !!(seenKey && owner.flags?.[seenKey]) && !!config.shortSeen);
-    if (seenKey && owner.flags) owner.flags[seenKey] = true; // 記録は設定と独立に付く（scene-motions.js の seenFlag と同じ方式）
     setTimeout(() => {
+      // 見せ終えた通知だけ既読にする。途中のSAVE/LOADや画面除去で未完の通知を短縮しない。
+      if (seenKey && owner === state && b.isConnected && owner.flags) owner.flags[seenKey] = true;
       b.classList.remove("show");
       b.classList.add("out");
       setTimeout(() => { b.remove(); bannerBusy--; pumpBanners(); }, 420);
@@ -645,3 +646,4 @@ export async function roundCut(text, sub = "") {
 export function dayTurn(mid) {
   return nightToMorning(layers.fx, mid);
 }
+
