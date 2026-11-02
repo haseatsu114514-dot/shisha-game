@@ -7,31 +7,32 @@
    文字・数値・針・ゲージはこれまでどおり DOM で動かす。新しいレイアウトや素材は追加しない。
    ============================================================ */
 html .bench[data-mode] {
-  --paper: #30203f; --paper-card: #3d2a50; --paper-line: #76588d; --paper-ink: #fcf8f2; --paper-muted: #d2c2df;
-  --lavender: #dfc6f4; --lavender-soft: #503465; --lavender-line: #aa85c4; --lavender-deep: #382247;
-  --lavender-fill: #69497e; --button-ink: #563768; --button-muted: #76667e;
-  --amber: #e2b86d; --amber-ink: #f3ce89; --amber-soft: #57412e;
+  --cp-ground: #150d22;
+  --paper: #221534; --paper-card: #2e1d45; --paper-line: #5a4475; --paper-ink: #f6f1fa; --paper-muted: #c9a7e6;
+  --lavender: #c9a7e6; --lavender-soft: #2e1d45; --lavender-line: #5a4475; --lavender-deep: #150d22;
+  --lavender-fill: #5a4475; --button-ink: #221534; --button-muted: #5a4475;
+  --amber: #e3bd6e; --amber-ink: #e3bd6e; --amber-deep: #b98c3a; --amber-soft: #2e1d45;
   --cool-ink: #91cef4; --warm-ink: #ffb58a; --good-ink: #94deb2; --bad-ink: #ffa3ac;
   --accent: var(--lavender); --accent-2: var(--amber);
   --text: var(--paper-ink); --text-dim: var(--paper-muted); --gold: var(--lavender); --gold-hi: var(--lavender);
   --good: var(--good-ink);
-  --cp-board: linear-gradient(135deg, #8c669e, #49305f 14%, #30203f 50%, #382348 84%, #a080b0);
-  --cp-backdrop: linear-gradient(135deg, #4c2865e6, #281733ed), url("../img/ui/craft-paper/backdrop.webp");
+  --cp-board: linear-gradient(135deg, #e3bd6e, #2e1d45 14%, #221534 50%, #221534 84%, #5a4475);
+  --cp-backdrop: linear-gradient(135deg, #221534e6, #150d22ed), url("../img/ui/craft-paper/backdrop.webp");
   --cp-thermo: url("../img/ui/craft-paper/thermo-frame.webp");
   --cp-button: url("../img/ui/craft-paper/button-paper.webp");
   --cp-button-primary: url("../img/ui/craft-paper/button-lavender.webp");
   --cp-button-amber: url("../img/ui/craft-paper/button-amber.webp");
-  --cp-shadow: 0 10px 24px #160b244d;
-  --bench-bg: var(--cp-backdrop) center / cover no-repeat, #30203f;
+  --cp-shadow: 0 10px 24px #150d224d;
+  --bench-bg: var(--cp-backdrop) center / cover no-repeat, var(--cp-ground);
   background: var(--bench-bg);
   color: var(--paper-ink);
 }
-html .bench[data-mode="tournament"] { --accent: var(--lavender); --accent-2: var(--amber); --bench-bg: var(--cp-backdrop) center / cover no-repeat, #30203f; }
+html .bench[data-mode="tournament"] { --accent: var(--lavender); --accent-2: var(--amber); --bench-bg: var(--cp-backdrop) center / cover no-repeat, var(--cp-ground); }
 html .bench[data-mode].thermal-active { --accent: var(--lavender); }
 
 /* ---------------------------------------------------------------- 上の帯（モード・工程） */
 html .bench[data-mode] .bench-top, html .bench[data-mode][data-art-skin] .bench-top, html .bench[data-mode].thermal-active .bench-top {
-  background: linear-gradient(180deg, #513269f5, #352044f5); border-bottom: 1px solid #c4a164; box-shadow: 0 2px 10px #160b2440;
+  background: linear-gradient(180deg, #2e1d45f5, #221534f5); border-bottom: 1px solid #e3bd6e; box-shadow: 0 2px 10px #160b2440;
 }
 html .bench[data-mode] .bench-mode { color: var(--amber-ink); letter-spacing: .14em; }
 html .bench[data-mode] .bench-top .bench-mode small { color: var(--paper-muted); border-left-color: var(--paper-line); }
@@ -94,12 +95,12 @@ html .bench[data-mode] .bench-demo-sheet button { background: var(--paper-card);
 html .bench[data-mode] .bench-demo-caption { color: var(--paper-ink); }
 html .bench[data-mode] .bench-demo-link:focus-visible, html .bench[data-mode] .bench-demo-sheet button:focus-visible { outline-color: var(--amber); }
 html .bench[data-mode] .bench-appearance-dialog { background: var(--paper); border: 1px solid var(--lavender-line); color: var(--paper-ink); box-shadow: var(--cp-shadow); }
-html .bench[data-mode] .craft-loading { background: #30203fee; color: var(--paper-ink); }
+html .bench[data-mode] .craft-loading { background: #150d22ee; color: var(--paper-ink); }
 html .bench[data-mode] .craft-loading::before { border-color: var(--paper-line); border-top-color: var(--lavender); }
 
 /* ---------------------------------------------------------------- 左の作業風景・はじめの欄・観客 */
 html .bench[data-mode] .bench-worker, html .bench[data-mode][data-art-skin] .bench-worker {
-  border: 1px solid var(--lavender-line); border-image: none; border-radius: 6px; background: #0c0a0e; box-shadow: 0 3px 10px #2a1a3a2e;
+  border: 1px solid var(--lavender-line); border-image: none; border-radius: 6px; background: #150d22; box-shadow: 0 3px 10px #2a1a3a2e;
 }
 html .bench[data-mode].thermal-active .bench-worker { box-shadow: 0 3px 10px #2a1a3a2e; }
 html .bench[data-mode] .worker-scene-tag { color: #fff; text-shadow: 0 1px 3px #000c; }
@@ -362,9 +363,9 @@ html .bench[data-mode] .dial-label.l-down { fill: var(--cool-ink); }
 html .bench[data-mode] .dial-desc { fill: var(--paper-muted); stroke: var(--paper-card); }
 html .bench[data-mode] .dial-desc.l-down { fill: var(--cool-ink); }
 html .bench[data-mode] .dial-desc.l-up { fill: var(--warm-ink); }
-html .bench[data-mode] .needle-body { fill: var(--amber); stroke: #8a4f14; filter: drop-shadow(0 2px 3px #2a1a3a40); }
+html .bench[data-mode] .needle-body { fill: var(--amber); stroke: var(--amber-deep); filter: drop-shadow(0 2px 3px #2a1a3a40); }
 html .bench[data-mode] .needle-light { stroke: #fff1d6; }
-html .bench[data-mode] .needle-cap { fill: #f3c77a; stroke: #8a4f14; filter: none; }
+html .bench[data-mode] .needle-cap { fill: #f3c77a; stroke: var(--amber-deep); filter: none; }
 html .bench[data-mode] .dial-pivot-rim { fill: #fffcf8; stroke: var(--lavender-line); }
 html .bench[data-mode] .dial-pivot { fill: var(--lavender); stroke: var(--lavender-deep); filter: none; }
 html .bench[data-mode] .pull-zone-label { color: var(--paper-ink); }
@@ -414,16 +415,16 @@ html .bench[data-mode] .craft-water-status[data-band="none"] { color: var(--bad-
 html .bench[data-mode] .craft-water-actions button:focus-visible { outline-color: var(--amber); }
 
 /* カウントダウンは作業台の外（fx 層）。変数の継承に頼らず紫の上で読める白と金にする。 */
-html:has(.bench[data-mode]:not(.done)) .countdown { color: #fcf8f2; text-shadow: 0 0 18px #24152f, 0 0 40px #24152f, 0 2px 2px #160b2480; }
-html:has(.bench[data-mode]:not(.done)) .countdown.go { color: #f3ce89; }
+html:has(.bench[data-mode]:not(.done)) .countdown { color: #f6f1fa; text-shadow: 0 0 18px #24152f, 0 0 40px #24152f, 0 2px 2px #160b2480; }
+html:has(.bench[data-mode]:not(.done)) .countdown.go { color: #e3bd6e; }
 
 /* ================================================================ 工程ごとの舞台（CUI05）
    小道具（コンロ・炭壺・アルミ・タイマー・ボウル）を紙の上に浮かせず、生成した天板に置く。
    台所の石の天板＝炭焼き・調整、ラベンダーの縁のリネンマット＝穴あけ・蒸らし時間・配合と詰め方のボウル。
    文字は天板の上に直接置かず、紙のカードや札に載せる。DS（2画面）は今回の対象外なので通常表示だけ。 */
 html body:not(.game-ds) .bench[data-mode] {
-  --cp-stage-kitchen: linear-gradient(135deg, #553965cc, #30203fe0), url("../img/ui/craft-paper/stage-kitchen.webp");
-  --cp-stage-workbench: linear-gradient(135deg, #5a3971cc, #352044de), url("../img/ui/craft-paper/stage-workbench.webp");
+  --cp-stage-kitchen: linear-gradient(135deg, #221534cc, #150d22e0), url("../img/ui/craft-paper/stage-kitchen.webp");
+  --cp-stage-workbench: linear-gradient(135deg, #2e1d45cc, #221534de), url("../img/ui/craft-paper/stage-workbench.webp");
   --cp-stage-edge: inset 0 0 0 1px var(--lavender-line), inset 0 0 0 4px #dbc5ed1f, inset 0 14px 28px #2a1a3a24;
 }
 html body:not(.game-ds) .bench[data-mode]:is([data-step="heat"], [data-step="care"], [data-step="holes"]) .bench-panel,
