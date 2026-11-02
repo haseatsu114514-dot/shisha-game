@@ -30,7 +30,9 @@
      "sha256": "0917b434f8e4d34ce8579fef29a8ec2144ae0a4d1cea6530cefa19d3b71925f6"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "kemuri-made-it",
@@ -60,7 +62,9 @@
      "sha256": "7ea0d58e8ae6b9a0e5a6f230344640493245ef0a0e240689095b2b8082f698ab"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "kuze-blank-card",
@@ -90,7 +94,9 @@
      "sha256": "c51fcdf68ef16aacfd469af3b320e5de539c6c5244c5da87f8ca5063471b346a"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "kuze-rumor-source",
@@ -120,7 +126,9 @@
      "sha256": "e46cafabb816ffa73f7e380082cc1798a06edd8d5c183a39140af585b1f32b50"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "rei-mix-names",
@@ -144,7 +152,9 @@
      "sha256": "0ecef6512709af6fb524c3e5a55190445acd50ed73f9eb4caa3f69fa615d73ad"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "rei-one-song",
@@ -180,7 +190,9 @@
      "sha256": "52710c9463a608dd7f5ded00fec0bf1c9bf999b5cb88d916e3caeccb0fcfcb69"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "salaryman-necktie",
@@ -204,7 +216,9 @@
      "sha256": "dc22a4ff5167da0d3b8c4dd62a519e089b0951bc9dec00fb70d767baa7e2310e"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "salaryman-ok-sign",
@@ -228,7 +242,9 @@
      "sha256": "24466b5979723bf47cf9ba5a8572f8aae025356c20216b3d675f3f9d7676242c"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "steve-recipe-cards",
@@ -252,7 +268,9 @@
      "sha256": "8cf3b8d61ff79f70f772fda40568a5aaef0c0870c9ce7198bffecd21c500b2d0"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "steve-wait-pizza",
@@ -276,7 +294,9 @@
      "sha256": "a243868420e3cc9a3adbd83da8bc2ff794c5bf24d796a08fbe15b2f355a85a25"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "volk-jam",
@@ -300,7 +320,9 @@
      "sha256": "0ddd1fd733514dd13e9d8fd662fb6e58e6f1bbdac264ade791927b0f32f2ee87"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "hold",
+   "gameRegistration": ""
   },
   {
    "id": "volk-rest",
@@ -324,7 +346,9 @@
      "sha256": "f90271134a483bbbc11231760f5ebd712dc395da4cc095fffe5917e0c51eebc0"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "hold",
+   "gameRegistration": ""
   },
   {
    "id": "wang-beard",
@@ -360,7 +384,9 @@
      "sha256": "f6c7a2368c6e526b8354efcb9a94f236b88f2aadce1b3804613b672ac4c906f7"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "wang-lychee",
@@ -384,7 +410,9 @@
      "sha256": "6da773b50a0b6e78cf379044343bfff4c3769cef3ba7ef0e054f395651ba28ed"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "adopt",
+   "gameRegistration": "remake/js/core/loading-comics.js の wang-lychee"
   },
   {
    "id": "maezono-interview",
@@ -408,7 +436,9 @@
      "sha256": "60c0b236bbfdf4d839a7b6b16880611f4305decdac610c9ce7b52480f314b4df"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "maezono-onigiri",
@@ -432,7 +462,9 @@
      "sha256": "f613554f9e7f3d2697758abe1a5d241a1996fcd779d61732ac92ea05c10e6dd2"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "maki-butter-knife",
@@ -462,7 +494,9 @@
      "sha256": "8f223864566398f34c9f02d08036d98d2b2bbbf1191d807d9946d8624eabc139"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "maki-let-the-axe",
@@ -486,7 +520,9 @@
      "sha256": "9dab74e77ef180de5cecec3f92686a33a7ba72e601735a8fda6fd481c49375b6"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "nine-thousand-random",
@@ -510,7 +546,9 @@
      "sha256": "84d310d6f8e8f332de2a1aef9b735d740f30ce695a5ec9ded51e6082db1894e3"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "nine-thousand-scan",
@@ -540,7 +578,9 @@
      "sha256": "9eebe7cf4802ff67995a0f8f1868765699541842018102524d1ec3a046c49722"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "yoru-backdoor-boss",
@@ -570,7 +610,9 @@
      "sha256": "cd8485227ad99099571f816f036987b71e4e97cb60038e649d5096669c04238c"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "yoru-next-head",
@@ -594,7 +636,9 @@
      "sha256": "0acbb1d11d3371243756e429161c25001d6a82b5bef6d1610bd51c52fd370f27"
     }
    ],
-   "warnings": []
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "dasilva-acai",
@@ -628,7 +672,9 @@
     "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
     "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。",
     "左右の切出し出力高さに1〜3px差が残る。厳密な同高化は未実施。"
-   ]
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "dasilva-festa-break",
@@ -655,7 +701,9 @@
    "warnings": [
     "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
     "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
-   ]
+   ],
+   "ownerVerdict": "adopt",
+   "gameRegistration": "remake/js/core/loading-comics.js の dasilva-festa-break"
   },
   {
    "id": "emil-murmur",
@@ -683,7 +731,9 @@
     "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
     "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。",
     "左右の切出し出力高さに1〜3px差が残る。厳密な同高化は未実施。"
-   ]
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "emil-repair",
@@ -723,7 +773,9 @@
     "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
     "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。",
     "左右の切出し出力高さに1〜3px差が残る。厳密な同高化は未実施。"
-   ]
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "nagumo-drink-bar",
@@ -756,7 +808,9 @@
    "warnings": [
     "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
     "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
-   ]
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "nagumo-stamp-card",
@@ -783,7 +837,9 @@
    "warnings": [
     "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
     "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
-   ]
+   ],
+   "ownerVerdict": "adopt",
+   "gameRegistration": "remake/js/core/loading-comics.js の nagumo-stamp-card"
   },
   {
    "id": "pakki-live-lunch",
@@ -810,7 +866,9 @@
    "warnings": [
     "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
     "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
-   ]
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "pakki-quiet",
@@ -837,7 +895,9 @@
    "warnings": [
     "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
     "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
-   ]
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "sheikh-receive-all",
@@ -865,7 +925,9 @@
     "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
     "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。",
     "左右の切出し出力高さに1〜3px差が残る。厳密な同高化は未実施。"
-   ]
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "sheikh-traveler",
@@ -898,7 +960,9 @@
    "warnings": [
     "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
     "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
-   ]
+   ],
+   "ownerVerdict": "adopt",
+   "gameRegistration": "remake/js/core/loading-comics.js の sheikh-traveler"
   },
   {
    "id": "uranaishi-fate",
@@ -931,7 +995,9 @@
    "warnings": [
     "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
     "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
-   ]
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   },
   {
    "id": "uranaishi-hood",
@@ -977,7 +1043,16 @@
     "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
     "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。",
     "左右の切出し出力高さに1〜3px差が残る。厳密な同高化は未実施。"
-   ]
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
   }
- ]
+ ],
+ "ownerSelection": {
+  "date": "2026-11-02",
+  "adopt": 4,
+  "hold": 2,
+  "reject": 28,
+  "page": "https://claude.ai/artifact/NniXASgEjSy16wNcBGS9Dr"
+ }
 }
