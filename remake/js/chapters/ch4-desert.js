@@ -14,7 +14,7 @@ import { awardActionExp } from "../core/growth.js";
 
 export * from "./ch4-desert-progress.js";
 import { DESERT_TALKS, DESERT_SCENES, DESERT_DIALOGUE_IDS, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
-  desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult } from "./ch4-desert-progress.js";
+  desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertProgress } from "./ch4-desert-progress.js";
 
 let dialogueTask = null;
 export function loadDesertDialogues() {
@@ -99,4 +99,23 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     await read(status.first ? DESERT_SCENES.sunsetFirst : DESERT_SCENES.sunsetAgain, bgUrl(DESERT_BG), DESERT_DUSK_TINT);
     return changed;
   } finally { active = false; }
+}
+
+/**
+ * 日常ループ（版2）の行き先の処理。戻り値は calendar の performSpot の形 { used, exerted, slotsUsed }。
+ * デスクの会話は時間を使わない（used: false）。砂丘は visitDesert の中で昼の行動（slot）を使い済みなので slotsUsed: 0。
+ * 体力は使わない（砂丘は気分転換。日常ループが外出のたびに経験値を足さないようにし、育成は初回完走の分だけにする）。
+ */
+export async function performDesertSpot(entry, { day, showHud = null } = {}) {
+  const owner = state;
+  const before = desertProgress(owner).outings;
+  const hudRoot = layers.hud.firstElementChild;
+  try {
+    await visitDesert({ kind: entry.place === "tour_desk" ? "desert_talk" : "desert", ok: true }, { day });
+  } finally {
+    if (hudRoot && !hudRoot.isConnected) layers.hud.replaceChildren(hudRoot);
+    showHud?.(true);
+  }
+  const went = state === owner && desertProgress(owner).outings > before;
+  return { used: went, exerted: false, slotsUsed: 0 };
 }
