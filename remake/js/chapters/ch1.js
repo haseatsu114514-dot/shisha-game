@@ -543,10 +543,7 @@ async function tournamentDay() {
   });
   await playTsumugiStory(TOURNAMENT_DAY - 1, { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N) });
   // 旧セーブでDAY14の日常から再開しても、前夜の会話を落とさず大会へ進める。
-  if (state.phase !== "tournament") {
-    await prepareFlavorStock();
-    await lastNight();
-  }
+  if (state.phase !== "tournament") await lastNight();
   // SKIPで会場の会話がすぐ終わっても、操作は素材の準備完了まで始めない。
   const assetsReady = warmCraftAssets("tournament");
   clearScreen();

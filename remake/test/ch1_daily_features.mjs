@@ -32,6 +32,8 @@ const ports = {
   readyLessons: () => [],
   on: () => () => {},
   callingSalesBonus: () => 0,
+  // #2213 B04: シフト上がりのメニューにまかない練習（今日の葉の表示）が並ぶ
+  staffFlavors: () => [], staffStock: () => 0,
 };
 const ctx = vm.createContext({ console, queueMicrotask, AbortController });
 const actual = new Set(['core/chapter-features.js', 'core/stat-step-tables.js', 'daily/home-rig.js', 'daily/tonari.js']);

@@ -2510,6 +2510,7 @@
     "genre": "やさしい幽霊劇",
     "tagline": "夜明けまでに、幕をきちんと下ろす。",
     "image": "../../img/backgrounds/trpg_stage-ghost_room.webp",
+    "choiceArt": {"src": "../../img/ui/trpg/choices-stage-ghost.webp", "rowCount": 5, "rows": {"staging": 0, "prop": 1, "curtain": 2, "tactic": 3, "hypotheses": 4}},
     "sceneAlt": "閉館した劇場。舞台の幕、楽屋の鏡、照明室、客席の最前列、台本の棚、劇場の掲示。空の舞台に淡い人影。",
     "location": "港坂 / 閉館した劇場「月灯座」",
     "atmosphere": "赤い幕。三百の空席。夜明けまで、あと少し。",

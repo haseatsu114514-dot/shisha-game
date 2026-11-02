@@ -138,7 +138,7 @@ console.log("[782] 昼夜/固定日/延期/旧セーブ/一度きり/既存文�
     assert.equal(desc("tonari-customer").includes("新しい話"), tsumugi);
     assert.equal(desc("tonari-baito").includes("夜のシフト後"), night);
     assert.equal(desc("tonari-customer").includes("つむぎ"), known);
-    assert(!desc("tonari-practice").includes("新しい話"));
+    assert.equal(button("tonari-practice"), undefined, "#2213 B04: まかない練習はシフト上がりで選ぶ（独立の行動にしない）");
     button(choose ? `tonari-${choose}` : "sub-back").attrs.onclick();
     assert.equal(await pending, choose);
     assert.equal(JSON.stringify(menuState), before, "メニュー表示・選択で進行や報酬を変更しない");
