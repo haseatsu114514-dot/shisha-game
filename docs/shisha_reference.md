@@ -5,7 +5,7 @@
 ## 0. 書く前の原則
 
 - 固有名詞・数値は創作せず、下の正本から写す。迷ったら `docs/gameplay_agent_reference.md`「シーシャ屋の文化・共通ルール」が最上位。
-- 実在ブランド名（Al Fakher、Fumari 等）は出さない。作中のメーカーは **アルファーヘブン・ドバジ・アフサール・フォースフェクタ・フワリ・ナイトサイド** の6社（`data/flavors.json`・全77銘柄）。
+- 実在ブランド名（Al Fakher、Fumari 等）は出さない。作中のメーカーは **アルファーヘブン・ドバジ・アフサール・フォースフェクタ・フワリ・ナイトサイド** の6社（`data/flavors.json`・全84銘柄）。
 - 用語は **HMD**（HMSと書かない）、**タヌキッシュリッド**（ターキッシュと書かない）、**ハガル（ボウル）**、地の文・台詞では「煙」。旧名・旧ステータス名・禁止表現（「DA」略記など）は `tools/check_legacy_terms.py`・`tools/lint_dialogue.py` が検査する。
 - 旧設定（プレゼン／FLAVOR TRIAL、5能力以外の旧ステータス名、旧キャラ名）を混ぜない。
 
@@ -49,23 +49,55 @@
 - 実写の置き場は `asset_sources/shisha-hardware-reference/photos/`（一覧・見るポイント・出典・入れ方・命名は同フォルダの README）。写真がある部位は生成前に**実際に開いて見る**。生成ツールに参照画像を渡せるなら、早見表・構造図ではなく**この実写**を渡す（図解を渡すと平板な図の見た目が絵に移る）。
 - 写真が無い部位は 4.1 の「正解」と 4.2 の文で描き、生成後チェックを厳しくする。足りない写真はオーナーに部位名を挙げて頼む。
 
-### 4.0.5 店で実際に使われる機材を主役にする（2026-11-02 オーナー方針）
+### 4.0.5 日本のシーシャバーを基準にする（2026-11-02 オーナー方針）
 
-- 絵にする機材は、**今の日本のシーシャ店で普通に使われているもの**を基本にする。彫金の入った伝統的なエジプト型の台や骨董品めいた台は、背景の飾りや「古い店」の演出に限る。
-- **台（ステム・ベース）の既定**: 細い金属ステム（ステンレス・アルミ・黒や金の塗装）＋シンプルな円柱か角型のガラスベース。受け皿は小さめの金属皿。飾りは少なく、業務用に見える形。
-- **ゲーム内の機材との対応**（`data/equipment.json` の名前は実物のもじり。描くときは右の見た目に寄せる）:
+オーナー「シーシャの画像は日本のシーシャバーのものを参照して。海外はあまり参照しない」「実際に店で使われているような機材がメイン」。
 
-| ゲーム内の機材 | 実物で近いもの（名前はオーナー提示。形は写真で確認） | 見た目の要点 |
+- **機材も内装も、今の日本のシーシャバーを基準にする。** 中東風の彫金の台、民族調の内装、路上の喫煙風景は、指定があるときの背景の飾りや「古い店」の演出に限る。
+- **`photos/` の写真はほぼ海外**（日本で撮られたのは `stand-lounge-japan-01.jpg` の1枚だけ）。海外の写真は**部品の構造・接続・縮尺・持ち方・炭の大きさを確かめるときだけ**に使い、内装・服装・小物・台の装飾・街並みは写さない。生成ツールに渡すときもその目的に限る。
+- 機材と内装の見た目は、下の表と「参照した日本の情報源」で決める。オーナーが日本の店で撮った写真が `photos/` に入ったら、それを最優先にする。
+
+#### 日本の店の定番機材
+
+| 部位 | 日本の店の定番（見た目） | 出典 |
 |---|---|---|
-| シリコンボウル＋ロートスHMD（初期装備） | シリコン製ボウル＋Kaloud Lotus 型の HMD（店で最も多い「シリコンロータス」の組み合わせ） | 丸いシリコンの器（黒・赤・青など）に、取手付きの低い金属の皿型HMDが直接載る。アルミは無し。炭は中に2〜3個 |
-| 80beatハガル＋タヌキッシュリッド | HookahJohn 80Feet 系のターキッシュ型陶器ボウル＋ターキッシュリッド型の HMD（「80ターキッシュ」） | 口が広く背の低い素焼き〜釉薬の陶器。内側に数個の穴。アルミを張った上に、縁の立った浅い金属の蓋型HMDを載せる |
-| 素焼きハガル＋アマバースト | エジプシャン型の素焼き（Solaris 系の伝統型など）＋高火力の蓋付きHMD（オーナー提示「アマボースト」。実物名は要確認） | 赤茶の素焼きで縦に長め、口径は広い。アルミ直炭の店も多い。HMDを使う場合は蓋付きで炭が隠れる |
-| ハリーザムーン（真鍮パイプ） | 真鍮の伝統寄りステム | 金色の金属ステム。ただし装飾は控えめにし、ベースは透明ガラス |
+| 台（ステム・ベース） | ロシア製ブランドが中心。**ステンレスの細いステム＋幅の広いガラスベース**、小さめの金属の受け皿。飾りは少ない。木のパーツを使う台もある | [Shisha Amigo](https://amigollc.co.jp/procurement/russian-shisha-pipe-brands/)、[CLOUD](https://cloud-jp.net/russia-pipe/) |
+| HMD: ロータス型 | 日本の店で「ほぼ必ず見る」王道。正規の Kaloud Lotus と、似た形のノーブランドの両方が使われる。**シリコンボウルにぴったり載る**。蓋と取手のある低い金属の器で、炭は中に置き、蓋を閉めると炭は見えにくい | [EGG SHISHA（名古屋）](https://www.official-eggshisha.com/posts/best-shisha-hmd-devices-japan)、[ヒロインCGルール](../asset_sources/shisha-hardware-reference/heroine-title-cg-rules-20261009.md) |
+| HMD: ターキッシュリッド | ロータスと並ぶ定番。**ボウルの口にかぶせて側面を囲う蓋のような形**。内径は通常約6.5cm、ジャンボ約7.9cm。80feet やアルパカ系の**浅い陶器ボウル**と組む | [EGG SHISHA](https://www.official-eggshisha.com/posts/best-shisha-hmd-devices-japan) |
+| HMD: アマボースト（アマボ） | 近年よく名前が挙がる。**底も全体も薄い金属**で、直置きに近い高火力。アルミを敷いた上に載せて色々なボウルに合わせる。「**ソラリス×アマボ**」は日本の店の定番セット | [EGG SHISHA](https://www.official-eggshisha.com/posts/best-shisha-hmd-devices-japan) |
+| ボウル: シリコン | 黒・赤・青などの丸いシリコンの器。ロータス型と組むのが定番 | [EGG SHISHA](https://www.official-eggshisha.com/posts/best-shisha-hmd-devices-japan)、[Dr.Shisha](https://drshisha.jp/products/silicone-bowl) |
+| ボウル: ソラリス | ウクライナ製の手作り陶器。**厚みがあり少し大きく、背が低く、葉を盛る上面が平ら**。素焼き（赤茶）と釉薬（色付き）がある | [ASLAJ](https://www.aslaj.com/blog/2022/03/05/solaris/) |
+| ボウル: 80feet 系 | 口が広く背の低い陶器。ターキッシュリッドと組む | [EGG SHISHA](https://www.official-eggshisha.com/posts/best-shisha-hmd-devices-japan) |
+
+上の形の説明は記事の文章によるもの。記事の写真や商品写真は**リポジトリに保存せず**、生成の前にリンク先で見る（ロゴ・刻印・商品名は描かない）。
+
+#### 日本のシーシャバーの内装（店ごとに1つ選ぶ）
+
+- ソファ席・大きな窓・高い天井のブルックリン風
+- 日本画や和柄を使った和風、追加料金の個室
+- 白を基調にした明るいカフェ風（昼はカフェ、夜はバーの店が多い）
+- ピンク基調などの写真映えする内装
+- 木目とレンガの落ち着いた店
+- ハンモック席・ゲーム席・半個室のある遊び心のある店
+- 客は若い人・女性同士・友人同士が多く、スイーツ系のフレーバーが人気
+
+出典: [Time Out 東京](https://www.timeout.jp/tokyo/ja/things-to-do/tokyo-shisha)、[RETRIP](https://rtrp.jp/articles/41958/)、[OKWAVE](https://media.okwave.jp/c212/p412/)。店ごとの決め方は `docs/asset_ai_guidance.md`「店ごとの個性と照明」に従い、同じ型を全店に繰り返さない。
+
+#### ゲーム内の機材と、描くときの見た目
+
+`data/equipment.json` の名前は実物のもじり。描くときは右の見た目に寄せる。
+実物名（ロータス・ターキッシュリッド・アマボースト・ソラリスなど）は描写の資料にだけ使う。台詞・ゲーム内の文ではゲーム内の名前（ロートス・タヌキッシュリッド・アマバースト）を使う（§0）。
+
+| ゲーム内の機材 | 日本の店での実物 | 見た目の要点 |
+|---|---|---|
+| シリコンボウル＋ロートスHMD（初期装備） | シリコンボウル＋ロータス型HMD（「シリコンロータス」） | 丸いシリコンの器に、取手付きの低い金属の蓋付きHMDが直接載る。アルミは無し。炭は中に2〜3個 |
+| 80beatハガル＋タヌキッシュリッド | 80feet 系の陶器＋ターキッシュリッド（「80ターキッシュ」） | 口が広く背の低い陶器。その口にかぶせる蓋のような金属のHMD |
+| 素焼きハガル＋アマバースト | ソラリス（素焼き）＋アマボースト（「ソラリス×アマボ」） | 厚みがあり背の低い赤茶の素焼き、上面は平ら。底の薄い金属のHMDをアルミの上に載せる |
+| ハリーザムーン（真鍮パイプ） | 真鍮の伝統寄りのステム | 金色の金属ステム。装飾は控えめにし、ベースは透明ガラス |
 | 家シーシャの卓上台 | 小型の卓上モデル（高さ30〜40cm） | 短いステムと小さなベース。ホースも短め |
 
-- **HMDは必ずどれか1モデル**を選び、形を混ぜない。蓋の有無で炭の見え方が変わる（Lotus 型は蓋を閉めると炭が見えない、ターキッシュリッド型は上から炭が見える）。
-- **セッティングの幅**を出すときは、台の色・ベースの形・ボウルの種類・HMDの型・ホースの色を組み合わせて変える。全部を同じ「黒いステム＋シリコン＋Lotus」にしない。
-- 上の実物名は**見た目の手がかり**で、ロゴ・刻印・商品名は描かない。写真が `photos/` に入ったら、この表の「見た目の要点」を写真の番号で裏付ける。
+- **HMDは必ずどれか1モデル**を選び、形を混ぜない。
+- **セッティングの幅**を出すときは、台の色・ベースの形・ボウルの種類・HMDの型・ホースの色を組み合わせて変える。全部を同じ「黒いステム＋シリコン＋ロータス」にしない。
 
 ### 4.1 部位ごとの正解と、よく出る間違い
 
@@ -87,9 +119,9 @@
 
 場面の指定のあとに、日本語か英語のどちらかを**そのまま**貼る（要約しない）。
 
-> シーシャ（水たばこ）の構造を守って描く。上から順に「小さな角炭 → 炭を収めるHMD（熱管理器具。ボウルの口に載る別部品） → フレーバーを詰めたハガル（器と細い脚） → 灰の受け皿 → 縦のステム → 水の入ったガラスのベース」。ステムはベースの口に真っ直ぐ差さり、ベースの水面は下の方で、ステムを水槽にしない。ホースは1本だけで、本体側面のホースポートから出て、重力でたわみ、手で持つ硬いハンドルの根元につながる。ホースを分岐・途切れ・浮遊させず、パージ弁・ボウル・受け皿・ベースの底から生やさない。人物を囲む大きな輪にしない。完成・喫煙状態ではアルミに炭を直接置かず、HMDの中に炭を置く。HMDは1つのモデルとして成立させ、別の型の蓋・煙突・取手を混ぜない。ハガルの口とHMDは大人の掌の幅くらい、炭は指先ほどの大きさ。受け皿はHMDの2.5倍前後。煙は人物の口元から出し、HMD・ホース根元からは出さない。首掛けのマイマウスピースを描く場合はチェーンだけでなく小さな吸い口本体を付ける。台は今のシーシャ店で使われる業務用の形（細い金属ステム＋シンプルなガラスベース、小さめの受け皿）を基本にし、彫金の伝統型は指定があるときだけ。色・仕上げは自由にデザインし、実在製品・ロゴ・文字は描かない。
+> シーシャ（水たばこ）の構造を守って描く。上から順に「小さな角炭 → 炭を収めるHMD（熱管理器具。ボウルの口に載る別部品） → フレーバーを詰めたハガル（器と細い脚） → 灰の受け皿 → 縦のステム → 水の入ったガラスのベース」。ステムはベースの口に真っ直ぐ差さり、ベースの水面は下の方で、ステムを水槽にしない。ホースは1本だけで、本体側面のホースポートから出て、重力でたわみ、手で持つ硬いハンドルの根元につながる。ホースを分岐・途切れ・浮遊させず、パージ弁・ボウル・受け皿・ベースの底から生やさない。人物を囲む大きな輪にしない。完成・喫煙状態ではアルミに炭を直接置かず、HMDの中に炭を置く。HMDは1つのモデルとして成立させ、別の型の蓋・煙突・取手を混ぜない。ハガルの口とHMDは大人の掌の幅くらい、炭は指先ほどの大きさ。受け皿はHMDの2.5倍前後。煙は人物の口元から出し、HMD・ホース根元からは出さない。首掛けのマイマウスピースを描く場合はチェーンだけでなく小さな吸い口本体を付ける。台・ボウル・HMDは今の日本のシーシャバーで使われている形（ステンレスの細いステムと幅の広いガラスベース、小さめの受け皿、シリコンボウルとロータス型HMDなど）を基本にし、中東風の彫金の台は指定があるときだけ。店内も日本のシーシャバー（ソファ席、カフェ風の明るい店や間接照明の店）にする。色・仕上げは自由にデザインし、実在製品・ロゴ・文字は描かない。
 
-> Draw the hookah with correct structure. From top to bottom: a few small cube charcoals (about fingertip size, grey ash with a little red glow, no flames) → a heat management device (HMD), a separate low metal cup sitting on the bowl's rim, holding the coals → the ceramic tobacco bowl (a cup on a slim neck) → a wide ash tray → a vertical stem → a glass base with water only in its lower part. The stem goes straight down into the mouth of the base through a rubber grommet; the base is not an aquarium. Exactly one hose: it starts at the hose port on the side of the stem above the base, sags naturally with gravity, and connects to the base of a rigid handle held in the hand. The hose never forks, breaks, floats, loops around the character, or comes out of the purge valve, bowl, tray or base bottom. In a finished/smoking setup, coals sit inside the HMD, never directly on foil. Use one coherent HMD model; do not mix lids, chimneys or handles from different models. The bowl mouth and HMD are about the width of an adult palm; the tray is about 2.5× the HMD width. Smoke comes from the character's mouth, not from the HMD or hose. If a neck-worn personal mouthpiece is shown, draw a real small mouthpiece body on the chain, not just a chain. Default to the kind of hookah used in today's shisha lounges: a slim metal stem with a simple cylindrical or square glass base and a small tray, not an ornate engraved antique unless asked. Colors and finishes are free; no real brands, logos or text.
+> Draw the hookah with correct structure. From top to bottom: a few small cube charcoals (about fingertip size, grey ash with a little red glow, no flames) → a heat management device (HMD), a separate low metal cup sitting on the bowl's rim, holding the coals → the ceramic tobacco bowl (a cup on a slim neck) → a wide ash tray → a vertical stem → a glass base with water only in its lower part. The stem goes straight down into the mouth of the base through a rubber grommet; the base is not an aquarium. Exactly one hose: it starts at the hose port on the side of the stem above the base, sags naturally with gravity, and connects to the base of a rigid handle held in the hand. The hose never forks, breaks, floats, loops around the character, or comes out of the purge valve, bowl, tray or base bottom. In a finished/smoking setup, coals sit inside the HMD, never directly on foil. Use one coherent HMD model; do not mix lids, chimneys or handles from different models. The bowl mouth and HMD are about the width of an adult palm; the tray is about 2.5× the HMD width. Smoke comes from the character's mouth, not from the HMD or hose. If a neck-worn personal mouthpiece is shown, draw a real small mouthpiece body on the chain, not just a chain. Base the hookah and the room on present-day Japanese shisha bars: a slim stainless-steel stem with a wide glass base and a small tray, a silicone bowl with a lotus-type HMD (or another HMD named in the scene), in a Japanese shisha café or bar interior (sofa seating, bright café style or dim indirect lighting). No ornate Middle-Eastern engraved hookah unless asked. Colors and finishes are free; no real brands, logos or text.
 
 場面別に足す一文:
 
@@ -104,15 +136,15 @@
 ```
 人物      : （キャラID。正規立ち絵 assets/sprites/characters/<id>/chr_<id>_normal.png を見る・渡す）
 場面      : 準備中（ボウル未装着）／詰める・アルミ／炭を置く／完成・喫煙／携帯 のどれか1つ
-台の型    : 既定は店の業務用（細い金属ステム＋円柱か角型のガラスベース）。伝統の彫金／木製／低重心 は指定があるときだけ
-HMD       : 完成・喫煙なら必須。具体的な1モデル（Lotus型／ターキッシュリッド型／蓋付き高火力型／蓋なし低容器）。蓋の有無も
+台の型    : 既定は日本のシーシャバーの業務用（ステンレスの細いステム＋幅の広いガラスベース）。彫金の伝統型は指定があるときだけ
+HMD       : 完成・喫煙なら必須。具体的な1モデル（ロータス型／ターキッシュリッド／アマボースト など §4.0.5 の表から）。ボウルとの組み合わせも
 炭        : 小さな角炭○個（HMD内、または制作工程ならアルミ上に三角3個）
 ホース    : 本体の側面ポート → ホース → 硬いハンドル →（チップ）→ 口。画面のどこを通すか
 吸い口    : なし／使い捨てチップ／首掛けマイチップ（携帯中）／マイチップをハンドルに装着
-構図      : カメラ距離・人物と台の奥行き（手持ちなら同じ奥行き）・場所と時間帯
+構図      : カメラ距離・人物と台の奥行き（手持ちなら同じ奥行き）・場所と時間帯。店内なら §4.0.5 の日本の内装から1つ
 ```
 
-渡す画像の役割を分けて書く: **本人**＝正規立ち絵、**質感**＝`assets/ui/title_arts/title_art_keyvisual_01.png`、**機材**＝`photos/` の実写（HMDは装着状態、手持ちなら掌が写るもの）。早見表・構造図・この表は渡さない。
+渡す画像の役割を分けて書く: **本人**＝正規立ち絵、**質感**＝`assets/ui/title_arts/title_art_keyvisual_01.png`、**機材の構造**＝`photos/` の実写（HMDは装着状態、手持ちなら掌が写るもの）。`photos/` の海外写真を渡すときは「構造と縮尺だけ参考にし、内装・服装・台の装飾は写さない」と書き添える。早見表・構造図・この表は渡さない。
 
 ### 4.4 生成後チェック（原寸で見る。1つでもNGなら直すか再生成）
 
