@@ -11,11 +11,12 @@ async function hit(page, id) {
   const button = page.locator(t(id));
   if (await page.evaluate(() => matchMedia("(pointer:coarse)").matches)) await button.tap(); else await button.click();
 }
-async function setup(page, { chapter = 1, day = chapter === 1 ? 5 : 16, slot = chapter === 1 ? 1 : 0, money = 12000, club = false, clubIds = ["hiyori"], run = true } = {}) {
+async function setup(page, { chapter = 1, day = chapter === 1 ? 5 : 16, slot = chapter === 1 ? 1 : 0, money = 12000, club = false, clubIds = ["hiyori"], run = true, lessonDone = true } = {}) {
   page.setDefaultTimeout(20000);
-  await page.evaluate(async ({ chapter, day, slot, money, club, clubIds, run }) => {
+  await page.evaluate(async ({ chapter, day, slot, money, club, clubIds, run, lessonDone }) => {
     const core = await import("./js/core/state.js"), s = core.newGame();
     s.flags._rei_trpg_introduced = true; s.flags._axe_bar_legacy_access = true; // #577: 既存店舗の精算・取消回帰は互換保存として維持
+    if (lessonDone) s.flags._axe_lesson_done = true; // AXR08: 初回の店主レッスンは first-play の検査で扱う
     Object.assign(s.flags, { _axe_bar_sighting_done: true, _axe_bar_sighting_day: day - 1, _axe_bar_sighting_chapter: chapter }); // 目撃後の既存店舗回帰
     Object.assign(s, { chapter, day, slot, money, phase: "daily", stamina: 80 });
     Object.assign(s.flags, { ["_morning_" + s.day]: true, _errand_scout_done: true, _delivery_adam_done: true,
@@ -37,7 +38,7 @@ async function setup(page, { chapter = 1, day = chapter === 1 ? 5 : 16, slot = c
       await (await import("./js/chapters/ch2-city-data.js")).loadPreparationDialogues();
       void (await import("./js/chapters/ch2-preparation.js")).runChapterTwoPreparation();
     } else void (await import("./js/daily/calendar.js")).runDaily({ nightEvents: {}, onQuit() {} });
-  }, { chapter, day, slot, money, club, clubIds, run });
+  }, { chapter, day, slot, money, club, clubIds, run, lessonDone });
   if (run) await page.locator(map).waitFor();
 }
 // 店の案内役（マキ・サイ）は初回の登場カットインで面識が付く（8100c4f6・recent_intros.mjs で検証）。
@@ -167,6 +168,29 @@ await suite("play-spots", async runCheck => {
     assert.deepEqual(await value(page), nextNight);
     await go(page, "axe_bar"); await assertFits(page, ".axe-bar-menu button");
   }, options);
+
+  await check("first-play-owner-lesson-then-paid-game", async page => {
+    await setup(page, { lessonDone: false }); const before = await value(page);
+    await go(page, "axe_bar"); await hit(page, "axe-bar-practice");
+    // AXR08: the first paid play starts with Maki's free lesson, before anything is charged.
+    const coach = page.locator('[data-test="axe-coach"][data-kind="welcome"]'); await coach.waitFor();
+    assert.match(await coach.innerText(), /斧は初めて/);
+    assert.equal(await page.locator('[data-test="axe-game"]').getAttribute("data-tutorial"), "true");
+    assert.deepEqual(await value(page), before, "The lesson itself charges nothing");
+    await capture(page, "first-play-owner-lesson");
+    await hit(page, "axe-coach-skip");
+    await page.locator('[data-test="axe-game"][data-tutorial="false"][data-phase="choice"]').waitFor();
+    assert.equal(await page.evaluate(() => spotCore.state.flags._axe_lesson_done), true, "Skipping still counts as having been offered the lesson");
+    await finishAxe(page, 3); await page.locator(map).waitFor();
+    const after = await value(page);
+    assert.equal(after.money, before.money - 3000); assert.equal(after.records.practice.plays, 1);
+    // Next night the paid game opens directly.
+    await page.evaluate(() => { spotCore.state.slot = 1; });
+    await go(page, "axe_bar"); await hit(page, "axe-bar-practice");
+    await page.locator('[data-test="axe-game"][data-tutorial="false"][data-phase="choice"]').waitFor();
+    assert.equal(await page.locator('[data-test="axe-coach"]').count(), 0, "The owner's lesson runs only once");
+    await hit(page, "axe-cancel"); await page.locator(map).waitFor();
+  });
 
   await check("cancel-poor-and-zero-stamina", async page => {
     await setup(page); const before = await value(page);

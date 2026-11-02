@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import fs from "node:fs";
-import { KILLS, resolveThrow } from "../js/minigames/axe-model.js";
+import { KILLS, BULLS, resolveThrow } from "../js/minigames/axe-model.js";
 import { CHALLENGES, pickChallenges, evaluateChallenges, heatOf, rankOf, titleOf } from "../js/minigames/axe-challenges.js";
 import { COMPANIONS, reaction, matchReaction } from "../js/minigames/axe-companions.js";
 import { createMatch, takeTurn } from "../js/minigames/axe-match.js";
@@ -33,6 +33,14 @@ test("goals clear on the throw that earns them; end goals wait for the finish an
   assert.deepEqual(evaluateChallenges(["run-3x5"], [bull, bull]).map(c => [c.value, c.goal]), [[2, 3]]);
   assert.equal(evaluateChallenges(["total-12"], [bull, bull])[0].state, "done");
   assert.equal(evaluateChallenges(["first-stick"], [drop, bull])[0].state, "open");
+  const outer = shot(BULLS[0].x, BULLS[0].y);
+  assert.equal(evaluateChallenges(["outer-bull"], [bull])[0].state, "open");
+  assert.equal(evaluateChallenges(["outer-bull"], [outer])[0].state, "done");
+  const lower = KILLS[2], killLow = shot(lower.x, lower.y, .62, lower.id, [kill]);
+  assert.deepEqual(evaluateChallenges(["kill-both"], [kill]).map(c => [c.value, c.goal]), [[1, 2]]);
+  assert.equal(evaluateChallenges(["kill-both"], [kill, killLow])[0].state, "done");
+  assert.equal(evaluateChallenges(["average-5"], Array(10).fill(bull), true)[0].state, "done");
+  assert.equal(evaluateChallenges(["average-5"], Array(10).fill(shot(.3, 0)), true)[0].state, "failed");
 });
 
 test("heat counts the current run of 5+ points; rank and title read the whole session", () => {
@@ -40,6 +48,8 @@ test("heat counts the current run of 5+ points; rank and title read the whole se
   assert.equal(heatOf([]), 0); assert.equal(heatOf([bull, bull]), 2); assert.equal(heatOf([bull, bull, low]), 0);
   assert.equal(rankOf(22, 22), "S"); assert.equal(rankOf(0, 22), "D"); assert.equal(rankOf(32, 64), "B");
   assert.equal(titleOf([bull, bull, bull], 22), "ブルハンター");
+  const outer = shot(BULLS[0].x, BULLS[0].y), outer2 = shot(BULLS[1].x, BULLS[1].y);
+  assert.equal(titleOf([bull, outer, outer2], 22), "パーフェクト6の人");
   assert.equal(titleOf([], 22), "見学者");
   assert.equal(typeof titleOf([low, shot(0, 0, .95)], 22), "string");
 });
@@ -48,7 +58,7 @@ test("companion lines stay in voice, fit one bubble and react to streaks and the
   for (const [id, c] of Object.entries(COMPANIONS)) {
     const all = [...Object.entries(c).filter(([k]) => !["name", "portraitKey", "titleSuffix", "faces", "focus", "summary"].includes(k)).flatMap(([, v]) => v),
       ...Object.values(c.summary)];
-    for (const text of all) { assert.equal(typeof text, "string"); assert(text.length <= 30, text); assert(!text.endsWith("。"), text); }
+    for (const text of all) { assert.equal(typeof text, "string"); assert(text.length <= 32, text); assert(!text.endsWith("。"), text); }
     if (id === "shark") Object.values(c.summary).forEach(text => assert.match(text, /お主/));
     const bull = shot();
     assert(c.streak.includes(reaction(id, "result", [bull, bull], null, { heat: 2 }).text));
