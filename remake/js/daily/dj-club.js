@@ -1,9 +1,7 @@
 // 東京の路地の地下のクラブ「SEAM」（第3章の夜の自由時間・DJS10/DJS12）。店主は針間ヨル（characters.json の yoru）。
 // 初めて入る夜だけ出会いの場面（ch3_club_first → 登場カットイン → ch3_club_first_after）、初めてAランク以上を出した夜だけヨルとの会話（ch3_club_a_talk）を流す。
 // ミニゲームなので時間・お金・体力・好感度は変えない（#2113）。記録（state.dj）と既読フラグだけを保存する。
-// 地図への接続（chapters/ch3.js の freeTimeChoices と openTokyoMap）は、同じファイルを変えている PR #2166 の完了後に足す:
-//   freeTimeChoices:  ...djNightChoices(value, window),
-//   openTokyoMap:     if (action?.dj) { await visitDjClub({ isCurrent: () => current(owner) }); if (current(owner)) await renderStage(owner); return; }
+// 入口は chapters/ch3.js の freeTimeChoices（djNightChoices）と openTokyoMap（action.dj → visitDjClub）。
 import { state, save, config } from "../core/state.js";
 import { el } from "../core/util.js";
 import { DB } from "../core/data.js";
