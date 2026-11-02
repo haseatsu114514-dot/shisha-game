@@ -23,7 +23,10 @@
           "alt": "オチ。店、間違えた？"
         }
       ],
-      "record": "asset_sources/loading-comics/01-restored/comics.json"
+      "record": "asset_sources/loading-comics/01-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-02",
@@ -43,7 +46,10 @@
           "alt": "オチ。兄弟でも別"
         }
       ],
-      "record": "asset_sources/loading-comics/02-restored/comics.json"
+      "record": "asset_sources/loading-comics/02-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-03",
@@ -63,7 +69,10 @@
           "alt": "オチ。若衆の男泣き"
         }
       ],
-      "record": "asset_sources/loading-comics/03-restored/comics.json"
+      "record": "asset_sources/loading-comics/03-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-04",
@@ -83,7 +92,10 @@
           "alt": "オチ。消すのは匂い"
         }
       ],
-      "record": "asset_sources/loading-comics/04-restored/comics.json"
+      "record": "asset_sources/loading-comics/04-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-05",
@@ -103,7 +115,10 @@
           "alt": "オチ。噂の本人"
         }
       ],
-      "record": "asset_sources/loading-comics/05-restored/comics.json"
+      "record": "asset_sources/loading-comics/05-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-06",
@@ -123,7 +138,10 @@
           "alt": "オチ。選べるおすすめ"
         }
       ],
-      "record": "asset_sources/loading-comics/06-restored/comics.json"
+      "record": "asset_sources/loading-comics/06-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-07",
@@ -143,7 +161,10 @@
           "alt": "オチ。専門外"
         }
       ],
-      "record": "asset_sources/loading-comics/07-restored/comics.json"
+      "record": "asset_sources/loading-comics/07-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-08",
@@ -163,7 +184,10 @@
           "alt": "オチ。人気ナンバーワン"
         }
       ],
-      "record": "asset_sources/loading-comics/08-restored/comics.json"
+      "record": "asset_sources/loading-comics/08-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-09",
@@ -183,7 +207,10 @@
           "alt": "オチ。営業終了"
         }
       ],
-      "record": "asset_sources/loading-comics/09-restored/comics.json"
+      "record": "asset_sources/loading-comics/09-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-10",
@@ -203,7 +230,10 @@
           "alt": "オチ。バイブスのメモ"
         }
       ],
-      "record": "asset_sources/loading-comics/10-restored/comics.json"
+      "record": "asset_sources/loading-comics/10-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-11",
@@ -223,7 +253,10 @@
           "alt": "オチ。全部見てけ"
         }
       ],
-      "record": "asset_sources/loading-comics/11-restored/comics.json"
+      "record": "asset_sources/loading-comics/11-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-12",
@@ -243,7 +276,10 @@
           "alt": "オチ。香りの感想"
         }
       ],
-      "record": "asset_sources/loading-comics/12-restored/comics.json"
+      "record": "asset_sources/loading-comics/12-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-13",
@@ -263,7 +299,10 @@
           "alt": "オチ。サメ映画"
         }
       ],
-      "record": "asset_sources/loading-comics/13-restored/comics.json"
+      "record": "asset_sources/loading-comics/13-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-14",
@@ -283,7 +322,10 @@
           "alt": "オチ。見た目と重さ"
         }
       ],
-      "record": "asset_sources/loading-comics/14-restored/comics.json"
+      "record": "asset_sources/loading-comics/14-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-15",
@@ -303,7 +345,10 @@
           "alt": "オチ。本日の一杯"
         }
       ],
-      "record": "asset_sources/loading-comics/15-restored/comics.json"
+      "record": "asset_sources/loading-comics/15-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-16",
@@ -323,7 +368,10 @@
           "alt": "オチ。覚えていたこと"
         }
       ],
-      "record": "asset_sources/loading-comics/16-restored/comics.json"
+      "record": "asset_sources/loading-comics/16-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-17",
@@ -343,7 +391,10 @@
           "alt": "オチ。似顔絵"
         }
       ],
-      "record": "asset_sources/loading-comics/17-restored/comics.json"
+      "record": "asset_sources/loading-comics/17-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-18",
@@ -363,7 +414,10 @@
           "alt": "オチ。儚い仕事人"
         }
       ],
-      "record": "asset_sources/loading-comics/18-restored/comics.json"
+      "record": "asset_sources/loading-comics/18-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-19",
@@ -383,7 +437,10 @@
           "alt": "オチ。見学だけ"
         }
       ],
-      "record": "asset_sources/loading-comics/19-restored/comics.json"
+      "record": "asset_sources/loading-comics/19-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-20",
@@ -403,7 +460,10 @@
           "alt": "オチ。師匠の教え"
         }
       ],
-      "record": "asset_sources/loading-comics/20-restored/comics.json"
+      "record": "asset_sources/loading-comics/20-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-21",
@@ -423,7 +483,10 @@
           "alt": "オチ。苦手なもの"
         }
       ],
-      "record": "asset_sources/loading-comics/21-restored/comics.json"
+      "record": "asset_sources/loading-comics/21-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-22",
@@ -443,7 +506,10 @@
           "alt": "オチ。炭の引退式"
         }
       ],
-      "record": "asset_sources/loading-comics/22-restored/comics.json"
+      "record": "asset_sources/loading-comics/22-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-23",
@@ -463,7 +529,10 @@
           "alt": "オチ。一口の重さ"
         }
       ],
-      "record": "asset_sources/loading-comics/23-restored/comics.json"
+      "record": "asset_sources/loading-comics/23-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-24",
@@ -483,7 +552,10 @@
           "alt": "オチ。延長料金"
         }
       ],
-      "record": "asset_sources/loading-comics/24-restored/comics.json"
+      "record": "asset_sources/loading-comics/24-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-25",
@@ -503,7 +575,13 @@
           "alt": "オチ。メニュー改訂"
         }
       ],
-      "record": "asset_sources/loading-comics/25-restored/comics.json"
+      "record": "asset_sources/loading-comics/25-restored/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "adam-menu-25",
+        "sameImages": false,
+        "note": "旧方式（原画シートの切り出し）で登録済み。この復刻版の2枚はまだゲームで使っていない"
+      }
     },
     {
       "id": "restored-26",
@@ -523,7 +601,10 @@
           "alt": "オチ。永久指名"
         }
       ],
-      "record": "asset_sources/loading-comics/26-restored/comics.json"
+      "record": "asset_sources/loading-comics/26-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-27",
@@ -543,7 +624,10 @@
           "alt": "オチ。専門外・再び"
         }
       ],
-      "record": "asset_sources/loading-comics/27-restored/comics.json"
+      "record": "asset_sources/loading-comics/27-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-28",
@@ -563,7 +647,10 @@
           "alt": "オチ。生活もダブル"
         }
       ],
-      "record": "asset_sources/loading-comics/28-restored/comics.json"
+      "record": "asset_sources/loading-comics/28-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-29",
@@ -583,7 +670,10 @@
           "alt": "オチ。総選挙"
         }
       ],
-      "record": "asset_sources/loading-comics/29-restored/comics.json"
+      "record": "asset_sources/loading-comics/29-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-30",
@@ -603,7 +693,10 @@
           "alt": "オチ。営業外"
         }
       ],
-      "record": "asset_sources/loading-comics/30-restored/comics.json"
+      "record": "asset_sources/loading-comics/30-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-31",
@@ -623,7 +716,10 @@
           "alt": "オチ。単位・きゅん"
         }
       ],
-      "record": "asset_sources/loading-comics/31-restored/comics.json"
+      "record": "asset_sources/loading-comics/31-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-32",
@@ -643,7 +739,10 @@
           "alt": "オチ。あと一匹"
         }
       ],
-      "record": "asset_sources/loading-comics/32-restored/comics.json"
+      "record": "asset_sources/loading-comics/32-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-33",
@@ -663,7 +762,10 @@
           "alt": "オチ。対策本部"
         }
       ],
-      "record": "asset_sources/loading-comics/33-restored/comics.json"
+      "record": "asset_sources/loading-comics/33-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-34",
@@ -683,7 +785,10 @@
           "alt": "オチ。持ち帰り"
         }
       ],
-      "record": "asset_sources/loading-comics/34-restored/comics.json"
+      "record": "asset_sources/loading-comics/34-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-35",
@@ -703,7 +808,10 @@
           "alt": "オチ。ラテアート"
         }
       ],
-      "record": "asset_sources/loading-comics/35-restored/comics.json"
+      "record": "asset_sources/loading-comics/35-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-36",
@@ -723,7 +831,10 @@
           "alt": "オチ。極秘会談"
         }
       ],
-      "record": "asset_sources/loading-comics/36-restored/comics.json"
+      "record": "asset_sources/loading-comics/36-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-37",
@@ -743,7 +854,10 @@
           "alt": "オチ。新しい役職"
         }
       ],
-      "record": "asset_sources/loading-comics/37-restored/comics.json"
+      "record": "asset_sources/loading-comics/37-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-38",
@@ -763,7 +877,10 @@
           "alt": "オチ。月曜の香り"
         }
       ],
-      "record": "asset_sources/loading-comics/38-restored/comics.json"
+      "record": "asset_sources/loading-comics/38-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-39",
@@ -783,7 +900,10 @@
           "alt": "オチ。少しだけ"
         }
       ],
-      "record": "asset_sources/loading-comics/39-restored/comics.json"
+      "record": "asset_sources/loading-comics/39-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-40",
@@ -803,7 +923,10 @@
           "alt": "オチ。即戦力"
         }
       ],
-      "record": "asset_sources/loading-comics/40-restored/comics.json"
+      "record": "asset_sources/loading-comics/40-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-41",
@@ -823,7 +946,13 @@
           "alt": "オチ。炭の耳"
         }
       ],
-      "record": "asset_sources/loading-comics/41-restored/comics.json"
+      "record": "asset_sources/loading-comics/41-restored/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "sumi-charcoal-ear",
+        "sameImages": false,
+        "note": "旧方式（原画シートの切り出し）で登録済み。この復刻版の2枚はまだゲームで使っていない"
+      }
     },
     {
       "id": "restored-42",
@@ -843,7 +972,10 @@
           "alt": "オチ。体内時計"
         }
       ],
-      "record": "asset_sources/loading-comics/42-restored/comics.json"
+      "record": "asset_sources/loading-comics/42-restored/comics.json",
+      "gameRegistration": {
+        "registered": false
+      }
     },
     {
       "id": "restored-43",
@@ -863,7 +995,13 @@
           "alt": "オチ。予約の正体"
         }
       ],
-      "record": "asset_sources/loading-comics/43-restored/comics.json"
+      "record": "asset_sources/loading-comics/43-restored/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "sumi-reserved-seat",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "restored-44",
@@ -883,7 +1021,13 @@
           "alt": "オチ。畳みの極意"
         }
       ],
-      "record": "asset_sources/loading-comics/44-restored/comics.json"
+      "record": "asset_sources/loading-comics/44-restored/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "sumi-cloth-fold",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "restored-45",
@@ -903,7 +1047,13 @@
           "alt": "オチ。一行の秘訣"
         }
       ],
-      "record": "asset_sources/loading-comics/45-restored/comics.json"
+      "record": "asset_sources/loading-comics/45-restored/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "sumi-recipe-scroll",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "restored-46",
@@ -923,7 +1073,13 @@
           "alt": "オチ。雨音の合奏"
         }
       ],
-      "record": "asset_sources/loading-comics/46-restored/comics.json"
+      "record": "asset_sources/loading-comics/46-restored/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "sumi-rain-concert",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "restored-47",
@@ -943,7 +1099,13 @@
           "alt": "オチ。座り心地派"
         }
       ],
-      "record": "asset_sources/loading-comics/47-restored/comics.json"
+      "record": "asset_sources/loading-comics/47-restored/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "sumi-cushion-tower",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "restored-48",
@@ -963,7 +1125,13 @@
           "alt": "オチ。看板の向き"
         }
       ],
-      "record": "asset_sources/loading-comics/48-restored/comics.json"
+      "record": "asset_sources/loading-comics/48-restored/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "sumi-sign-reverse",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "steeping-clock",
@@ -983,7 +1151,13 @@
           "alt": "オチ。蒸らしの時計"
         }
       ],
-      "record": "asset_sources/loading-comics/49-steeping-clock/comics.json"
+      "record": "asset_sources/loading-comics/49-steeping-clock/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "steeping-clock",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "mint-question",
@@ -1003,7 +1177,13 @@
           "alt": "オチ。強めの確認"
         }
       ],
-      "record": "asset_sources/loading-comics/50-mint-question/comics.json"
+      "record": "asset_sources/loading-comics/50-mint-question/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "mint-question",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "scent-overtime",
@@ -1023,7 +1203,13 @@
           "alt": "オチ。香りの残業"
         }
       ],
-      "record": "asset_sources/loading-comics/51-scent-overtime/comics.json"
+      "record": "asset_sources/loading-comics/51-scent-overtime/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "scent-overtime",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "flavor-address",
@@ -1043,7 +1229,11 @@
           "alt": "オチ。味の説明書"
         }
       ],
-      "record": "asset_sources/loading-comics/52-flavor-address/comics.json"
+      "record": "asset_sources/loading-comics/52-flavor-address/comics.json",
+      "gameRegistration": {
+        "registered": false,
+        "note": "2026-11-02 不採用: 1コマ目の吹き出しの順（右の人物が先に話すのに左右同じ高さ）。描き直せば再候補。../README.md §9"
+      }
     },
     {
       "id": "apple-interview",
@@ -1063,7 +1253,13 @@
           "alt": "オチ。個性派面接"
         }
       ],
-      "record": "asset_sources/loading-comics/53-apple-interview/comics.json"
+      "record": "asset_sources/loading-comics/53-apple-interview/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "apple-interview",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "apple-light",
@@ -1083,7 +1279,13 @@
           "alt": "オチ。味変の限界"
         }
       ],
-      "record": "asset_sources/loading-comics/54-apple-light/comics.json"
+      "record": "asset_sources/loading-comics/54-apple-light/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "apple-light",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "apple-ratio",
@@ -1103,7 +1305,13 @@
           "alt": "オチ。比率の大改革"
         }
       ],
-      "record": "asset_sources/loading-comics/55-apple-ratio/comics.json"
+      "record": "asset_sources/loading-comics/55-apple-ratio/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "apple-ratio",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "apple-judge",
@@ -1123,7 +1331,11 @@
           "alt": "オチ。試食の圧力"
         }
       ],
-      "record": "asset_sources/loading-comics/56-apple-judge/comics.json"
+      "record": "asset_sources/loading-comics/56-apple-judge/comics.json",
+      "gameRegistration": {
+        "registered": false,
+        "note": "2026-11-02 不採用: 1コマ目の吹き出しの順（右の人物が先に話すのに左右同じ高さ）。描き直せば再候補。../README.md §9"
+      }
     },
     {
       "id": "sweet-unit",
@@ -1143,7 +1355,13 @@
           "alt": "オチ。甘さのものさし"
         }
       ],
-      "record": "asset_sources/loading-comics/57-sweet-unit/comics.json"
+      "record": "asset_sources/loading-comics/57-sweet-unit/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "sweet-unit",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "cake-praise",
@@ -1163,7 +1381,11 @@
           "alt": "オチ。褒める技術"
         }
       ],
-      "record": "asset_sources/loading-comics/58-cake-praise/comics.json"
+      "record": "asset_sources/loading-comics/58-cake-praise/comics.json",
+      "gameRegistration": {
+        "registered": false,
+        "note": "2026-11-02 不採用: 1コマ目の吹き出しの順（右の人物が先に話すのに左右同じ高さ）。描き直せば再候補。../README.md §9"
+      }
     },
     {
       "id": "cake-apology",
@@ -1183,7 +1405,11 @@
           "alt": "オチ。反省の向き"
         }
       ],
-      "record": "asset_sources/loading-comics/59-cake-apology/comics.json"
+      "record": "asset_sources/loading-comics/59-cake-apology/comics.json",
+      "gameRegistration": {
+        "registered": false,
+        "note": "2026-11-02 不採用: 1コマ目の吹き出しの順（右の人物が先に話すのに左右同じ高さ）。描き直せば再候補。../README.md §9"
+      }
     },
     {
       "id": "dessert-stomach",
@@ -1203,7 +1429,13 @@
           "alt": "オチ。別腹の確認"
         }
       ],
-      "record": "asset_sources/loading-comics/60-dessert-stomach/comics.json"
+      "record": "asset_sources/loading-comics/60-dessert-stomach/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "dessert-stomach",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "leave-it-to-you",
@@ -1223,7 +1455,13 @@
           "alt": "オチ。おまかせの罠"
         }
       ],
-      "record": "asset_sources/loading-comics/61-leave-it-to-you/comics.json"
+      "record": "asset_sources/loading-comics/61-leave-it-to-you/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "leave-it-to-you",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "all-favorites",
@@ -1243,7 +1481,13 @@
           "alt": "オチ。感想の落とし穴"
         }
       ],
-      "record": "asset_sources/loading-comics/62-all-favorites/comics.json"
+      "record": "asset_sources/loading-comics/62-all-favorites/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "all-favorites",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "short-visit",
@@ -1263,7 +1507,13 @@
           "alt": "オチ。少しだけの幅"
         }
       ],
-      "record": "asset_sources/loading-comics/63-short-visit/comics.json"
+      "record": "asset_sources/loading-comics/63-short-visit/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "short-visit",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "apple-study",
@@ -1283,7 +1533,13 @@
           "alt": "オチ。他店の勉強"
         }
       ],
-      "record": "asset_sources/loading-comics/64-apple-study/comics.json"
+      "record": "asset_sources/loading-comics/64-apple-study/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "apple-study",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "apple-season",
@@ -1303,7 +1559,13 @@
           "alt": "オチ。一年中の旬"
         }
       ],
-      "record": "asset_sources/loading-comics/65-apple-season/comics.json"
+      "record": "asset_sources/loading-comics/65-apple-season/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "apple-season",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "apple-break",
@@ -1323,7 +1585,13 @@
           "alt": "オチ。休憩も一筋"
         }
       ],
-      "record": "asset_sources/loading-comics/66-apple-break/comics.json"
+      "record": "asset_sources/loading-comics/66-apple-break/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "apple-break",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "sweet-name",
@@ -1343,7 +1611,13 @@
           "alt": "オチ。名前で休憩"
         }
       ],
-      "record": "asset_sources/loading-comics/67-sweet-name/comics.json"
+      "record": "asset_sources/loading-comics/67-sweet-name/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "sweet-name",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "not-sweet",
@@ -1363,7 +1637,13 @@
           "alt": "オチ。甘くない注文"
         }
       ],
-      "record": "asset_sources/loading-comics/68-not-sweet/comics.json"
+      "record": "asset_sources/loading-comics/68-not-sweet/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "not-sweet",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "cake-lunch",
@@ -1383,7 +1663,13 @@
           "alt": "オチ。研究の昼ご飯"
         }
       ],
-      "record": "asset_sources/loading-comics/69-cake-lunch/comics.json"
+      "record": "asset_sources/loading-comics/69-cake-lunch/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "cake-lunch",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "mint-ranking",
@@ -1403,7 +1689,13 @@
           "alt": "オチ。人気の一位"
         }
       ],
-      "record": "asset_sources/loading-comics/70-mint-ranking/comics.json"
+      "record": "asset_sources/loading-comics/70-mint-ranking/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "mint-ranking",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "mint-service",
@@ -1423,7 +1715,13 @@
           "alt": "オチ。甘さの接客"
         }
       ],
-      "record": "asset_sources/loading-comics/71-mint-service/comics.json"
+      "record": "asset_sources/loading-comics/71-mint-service/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "mint-service",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     },
     {
       "id": "mint-photo",
@@ -1443,7 +1741,13 @@
           "alt": "オチ。写真の主役"
         }
       ],
-      "record": "asset_sources/loading-comics/72-mint-photo/comics.json"
+      "record": "asset_sources/loading-comics/72-mint-photo/comics.json",
+      "gameRegistration": {
+        "registered": true,
+        "id": "mint-photo",
+        "sameImages": true,
+        "note": "この2枚と同じ画像がゲームに登録済み（remake/js/core/loading-comics.js）"
+      }
     }
   ]
 }

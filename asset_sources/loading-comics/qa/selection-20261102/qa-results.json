@@ -1,0 +1,3775 @@
+{
+"method": "remake/craft-preview.html の #stage に、ゲームと同じ withLoading と css/loading.css で1話ずつ差し込み、ready まで待って検査。PC 1280x720（DPR1）とスマホ横 844x390（DPR2）。",
+"candidates_54": [
+{
+"view": "pc",
+"id": "PR2246:steeping-clock",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:mint-question",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:scent-overtime",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:flavor-address",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:apple-interview",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:apple-light",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:apple-ratio",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:apple-judge",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:sweet-unit",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:cake-praise",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:cake-apology",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:dessert-stomach",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:leave-it-to-you",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:all-favorites",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:short-visit",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:apple-study",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:apple-season",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:apple-break",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:sweet-name",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:not-sweet",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:cake-lunch",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:mint-ranking",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:mint-service",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2246:mint-photo",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:sumi-jacket-souvenir",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:sumi-cold-tea",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:sumi-seat-choice",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:sumi-tasting-sketch",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:sumi-memory-kitchen",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:sumi-slow-clock",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:sumi-clean-counter",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:sumi-order-practice",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:sumi-two-umbrellas",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:sumi-coin-hunt",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:adam-holiday-choice",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:adam-lunch-dessert",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:adam-shopping-bag",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:adam-alarm-clock",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:adam-napkin-fold",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:adam-photo-album",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:adam-weather-forecast",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:adam-key-ring",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:adam-gift-wrap",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:adam-cup-noodles",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:naru-sweet-description",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:naru-vanilla-break",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:naru-recipe-notes",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:naru-biscuit-measure",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:naru-cake-compass",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:naru-freezer-space",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:naru-spoon-choice",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:naru-flavor-dream",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:naru-tiny-sample",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PR2258:naru-last-cookie",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:steeping-clock",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:mint-question",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:scent-overtime",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:flavor-address",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:apple-interview",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:apple-light",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:apple-ratio",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:apple-judge",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:sweet-unit",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:cake-praise",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:cake-apology",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:dessert-stomach",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:leave-it-to-you",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:all-favorites",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:short-visit",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:apple-study",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:apple-season",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:apple-break",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:sweet-name",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:not-sweet",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:cake-lunch",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:mint-ranking",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:mint-service",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2246:mint-photo",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:sumi-jacket-souvenir",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:sumi-cold-tea",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:sumi-seat-choice",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:sumi-tasting-sketch",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:sumi-memory-kitchen",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:sumi-slow-clock",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:sumi-clean-counter",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:sumi-order-practice",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:sumi-two-umbrellas",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:sumi-coin-hunt",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:adam-holiday-choice",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:adam-lunch-dessert",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:adam-shopping-bag",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:adam-alarm-clock",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:adam-napkin-fold",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:adam-photo-album",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:adam-weather-forecast",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:adam-key-ring",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:adam-gift-wrap",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:adam-cup-noodles",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:naru-sweet-description",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:naru-vanilla-break",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:naru-recipe-notes",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:naru-biscuit-measure",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:naru-cake-compass",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:naru-freezer-space",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:naru-spoon-choice",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:naru-flavor-dream",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:naru-tiny-sample",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PR2258:naru-last-cookie",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+}
+],
+"registered_whole_image_45": [
+{
+"view": "pc",
+"id": "PRreg:sumi-reserved-seat",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:sumi-cloth-fold",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:sumi-recipe-scroll",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:sumi-rain-concert",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:sumi-cushion-tower",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:sumi-sign-reverse",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:steeping-clock",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:mint-question",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:scent-overtime",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:apple-interview",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:apple-light",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:apple-ratio",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:sweet-unit",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:dessert-stomach",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:leave-it-to-you",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:all-favorites",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:short-visit",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:apple-study",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:apple-season",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:apple-break",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:sweet-name",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:not-sweet",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:cake-lunch",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:mint-ranking",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:mint-service",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:mint-photo",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:sumi-cold-tea",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:sumi-memory-kitchen",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:sumi-clean-counter",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:sumi-coin-hunt",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:adam-holiday-choice",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:adam-lunch-dessert",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:adam-shopping-bag",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:adam-alarm-clock",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:adam-napkin-fold",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:adam-weather-forecast",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:adam-key-ring",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:naru-vanilla-break",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:naru-recipe-notes",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:naru-biscuit-measure",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:naru-cake-compass",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:naru-freezer-space",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:naru-spoon-choice",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:naru-flavor-dream",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "pc",
+"id": "PRreg:naru-tiny-sample",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+498,
+498
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:sumi-reserved-seat",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:sumi-cloth-fold",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:sumi-recipe-scroll",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:sumi-rain-concert",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:sumi-cushion-tower",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:sumi-sign-reverse",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:steeping-clock",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:mint-question",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:scent-overtime",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:apple-interview",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:apple-light",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:apple-ratio",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:sweet-unit",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:dessert-stomach",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:leave-it-to-you",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:all-favorites",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:short-visit",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:apple-study",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:apple-season",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:apple-break",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:sweet-name",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:not-sweet",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:cake-lunch",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:mint-ranking",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:mint-service",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:mint-photo",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:sumi-cold-tea",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:sumi-memory-kitchen",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:sumi-clean-counter",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:sumi-coin-hunt",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:adam-holiday-choice",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:adam-lunch-dessert",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:adam-shopping-bag",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:adam-alarm-clock",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:adam-napkin-fold",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:adam-weather-forecast",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:adam-key-ring",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:naru-vanilla-break",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:naru-recipe-notes",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:naru-biscuit-measure",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:naru-cake-compass",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:naru-freezer-space",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:naru-spoon-choice",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:naru-flavor-dream",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+},
+{
+"view": "phone",
+"id": "PRreg:naru-tiny-sample",
+"decoded": true,
+"frameRatio": [
+1.5,
+1.5
+],
+"fill": [
+1,
+1
+],
+"panelW": [
+252,
+252
+],
+"inside": true,
+"leftToRight": true
+}
+],
+"page_errors": [
+[],
+[],
+[],
+[]
+]
+}
