@@ -92,6 +92,7 @@
 | CR05 | ✅ 本PR | 試遊ページ `remake/camel-race.html`。テスト: `camel_race_model.mjs`・`ch4_camel_race.mjs`・`browser/ch4_camel_race.mjs`。CI suites 登録 |
 | CR06 | ✅ 一部（表情差分は未） | 画像素材: Codex の候補から背景A・ラクダA・騎手B・SUV修正版と回転用の車輪・サイフ通常A・ラシード通常Bを採用し組み込み（オーナー「確認して選定して」）。記録は [asset_sources/ch4-camel-race/README.md](../asset_sources/ch4-camel-race/README.md)。サイフ・ラシードの表情差分と砂煙等の小物は未制作。2人の通常は規格より頭が小さい（8.62・9.75頭身）ので、表情の前に作り直すかはオーナー判断 |
 | CR07 | ✅ 本PR | 14日化（#2297）の日常ループの地図にラクダレースを接続。店先の会話は時間を使わず、レースは完走時に昼の枠を一度だけ使う（日常ループと二重に進めない）。旧5日のセーブは従来の地図のまま |
+| CR08 | 📥 Codex待ち | オーナー「UIとかがクロード臭いから生成したい」。レース画面のUI（順位の札・メダル・計器板・ゲージ・進み具合の横木・リモコンのボタン・出走表のカード・カードのボタン・評価の判子・遊び方の絵）を手で描いた素材に置き換える。依頼文は [asset_sources/ch4-camel-race/ui-request.md](../asset_sources/ch4-camel-race/ui-request.md)。数字・名前・ゲージの量はコードが描く |
 
 
 ## 2026-11-02 補充したキャラの登場カットイン（グラフィック絵柄）と上園の好み
