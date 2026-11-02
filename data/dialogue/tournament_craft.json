@@ -989,6 +989,186 @@
           "text": "同じ一台を、三度吸わせてもらうんだねえ。最後の煙まで、ちゃんと味わうよ"
         }
       ]
+    },
+    {
+      "dialogue_id": "tournament_craft_opening_4",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "それでは、GRAND SMOKE……制作、開始ッ！"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "serious",
+          "text": "背負うものが違う四人だ。誰のための一台か、最後まで見せてもらう"
+        },
+        {
+          "speaker": "emil",
+          "face": "normal",
+          "text": "どの手順にも、教えた誰かがいる。四台とも、そこまで見たい"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "シーシャはフェスタだ！ 作ってる本人が楽しんでるかも、ちゃんと見てるぜ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_packed_intro_4",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "はじめ選手、パッキング完了！ 審査員の皆さん、手元のどこに注目ですか？"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "ボウルの顔はきれいだな。けど、勝負は煙が立ってからだぜ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_pack_fluffy_4",
+      "lines": [
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "ふわっと詰めたな。火が回ったとき、どう立ち上がるか楽しみだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_pack_normal_4",
+      "lines": [
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "均等にならしたか。その落ち着きに、どう熱を合わせるんだ？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_pack_firm_4",
+      "lines": [
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "しっかり詰めたな。奥まで熱をどう届けるか、見ものだぜ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_waiting_4",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "蒸らしの時間！ さあ、ほかの三人はこの間に何をしているのかーッ！？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは台から半歩下がり、立ちのぼる匂いの変わり目を待っていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "借りた台で、何度も待った。……甘さは、急かすと重くなるんだよ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "私は時計より、待っている客の肩を見るよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シェイクはトングの柄を布で拭き、元の位置へ寸分違わず戻した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（路地裏でも、ああして柄を拭いてた。……服が変わっても、同じ手だ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_4_lead",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "提供後の票で、はじめ選手が先頭ッ！ でも、調整はまだ二回ありますよーッ！"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smile",
+          "text": "先頭か、ハジメ。いい。……追いかけるのは、久しぶりだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_4_chase",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "提供後の票が出ましたッ！ はじめ選手、ここから追いかける展開ですッ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_4",
+      "lines": [
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "俺の甘さは、吸い進めてから伸びる。……今の順位で、手は変えない"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "票は、吸い終えた煙の数だ。客の呼吸は、まだ続いている"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（客の呼吸……。次の手は、今の一台を確かめてから決めよう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude2_4",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "空調の風が変わり、四台の煙がそろって横へ流れた。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "客の顔、だいぶほどけてきたな！ 最後の一回、派手に頼むぜ！"
+        },
+        {
+          "speaker": "emil",
+          "face": "thinking",
+          "text": "直した跡が、煙に出ている。次は、何を変える？"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smile",
+          "text": "全部、出してくるといい──そう言ったはずだ。まだ、残っているだろう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（久世さんの問い、スティーブさんの待ち方、ヴォルクさんの数字。全部、この手にある）"
+        }
+      ]
     }
   ]
 }
