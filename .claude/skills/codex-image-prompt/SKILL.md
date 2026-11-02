@@ -17,6 +17,7 @@ description: 画像（立ち絵・背景・CG・UIパーツ）の新規生成や
 | 立ち絵・表情差分 | `docs/prompts/image_generation_guide.md` — マゼンタ(#FF00FF)背景・表情は1枚のシートで一括生成・pixelize前提 |
 | 作りパートUI・小物 | `docs/prompts/asset_gen_prompts.md` — 共通スタイル指針＋分業表＋現行の作業台素材表（ファイル名→使う場所） |
 | CG（一枚絵） | `docs/prompts/cg_production_plan.md` ＋ 背景の書式を流用 |
+| ロード画面の2コマ漫画 | `asset_sources/loading-comics/README.md` — 1536x1024 の下敷き `template/` を添付・コマ 720x480×2（3:2）・題名や話数は描かない・受領後は `tools/loading_comic_cut.py` で 3:2 の WebP 2枚に揃えて登録 |
 
 - キャラの容姿・雰囲気は `brand/character_profiles.md` と `data/characters.json` から写す。
   ⚠️ ガイド内の旧サンプルに「自信なさげ」等の**旧人格の雰囲気語**が残っていることがある。

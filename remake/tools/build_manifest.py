@@ -166,7 +166,7 @@ def continue_portraits():
     sys.path.insert(0, str(ROOT / "tools"))
     from make_face_icons import face_box
     out = {}
-    for character in ("sumi", "tsumugi", "minto", "rin", "ageha", "mashiro", "samechan"):
+    for character in ("sumi", "tsumugi", "minto", "rin", "ageha", "mashiro", "samechan", "hiyori"):
         faces = {}
         for path in sorted((ASSETS / "sprites/characters" / character).glob(f"chr_{character}_*.png")):
             image = Image.open(path).convert("RGBA")

@@ -1,12 +1,10 @@
 // 東京の路地の地下のクラブ「SEAM」（第3章の夜の自由時間・DJS10/DJS12）。店主は針間ヨル（characters.json の yoru）。
 // 初めて入る夜だけ出会いの場面（ch3_club_first → 登場カットイン → ch3_club_first_after）、初めてAランク以上を出した夜だけヨルとの会話（ch3_club_a_talk）を流す。
 // ミニゲームなので時間・お金・体力・好感度は変えない（#2113）。記録（state.dj）と既読フラグだけを保存する。
-// 地図への接続（chapters/ch3.js の freeTimeChoices と openTokyoMap）は、同じファイルを変えている PR #2166 の完了後に足す:
-//   freeTimeChoices:  ...djNightChoices(value, window),
-//   openTokyoMap:     if (action?.dj) { await visitDjClub({ isCurrent: () => current(owner) }); if (current(owner)) await renderStage(owner); return; }
+// 入口は chapters/ch3.js の freeTimeChoices（djNightChoices）と openTokyoMap（action.dj → visitDjClub）。
 import { state, save, config } from "../core/state.js";
 import { el } from "../core/util.js";
-import { DB } from "../core/data.js";
+import { DB, bgUrl } from "../core/data.js";
 import { layers, showScreen, setBg, toast } from "../core/ui.js";
 import { playBgm, stopBgm, currentBgm } from "../core/audio.js";
 import { venueHost } from "../core/venue-host.js";
@@ -19,7 +17,9 @@ export { DJ_NIGHT, DJ_NIGHT_FIRST, djNightChoices, clubKnown } from "../minigame
 export const CLUB_A_TALK_FLAG = "_club_yoru_a_talk";
 const DIALOGUE_IDS = ["ch3_club_first", "ch3_club_first_after", "ch3_club_a_talk", "venue_yoru_greet", "venue_yoru_return",
   "venue_yoru_set_S", "venue_yoru_set_A", "venue_yoru_set_B", "venue_yoru_set_C"];
-const BACKGROUND = new URL("../../img/ui/dj/bg-purple.webp", import.meta.url).href;
+// 背景（Issue #2199）: 初回の階段の上は入口、名乗った後に階段を下りると店内（台詞の bg 行）、メニューとAの会話は店内。
+const ENTRANCE = () => bgUrl("bg_club_seam_entrance", "night");
+const INSIDE = () => bgUrl("bg_club_seam", "night");
 let active = false;
 let dialogueTask = null;
 
@@ -67,9 +67,10 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
   try {
     dialogues = await loadClubDialogues();
     if (!current()) return false;
-    await setBg(BACKGROUND, { fast: true });
+    const first = owner.flags[CLUB_MET_FLAG] !== true;
+    await setBg(first ? ENTRANCE() : INSIDE(), { fast: true });
     if (!current()) return false;
-    if (owner.flags[CLUB_MET_FLAG] !== true && !await meet()) return false;
+    if (first && !await meet()) return false;
     while (current()) {
       const records = djRecords(owner), played = Object.values(records.sets).some(item => item.plays > 0);
       const host = el("div.sub-menu.dj-club-menu", { dataset: { test: "dj-club-menu" } });
@@ -102,7 +103,7 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
       const last = results.at(-1);
       if (last) toast(`針間ヨル「${firstLine(dialogues, `venue_yoru_set_${last.rank}`)}」`);
       if (results.some(item => item.rank === "A" || item.rank === "S") && owner.flags[CLUB_A_TALK_FLAG] !== true) {
-        await setBg(BACKGROUND, { fast: true });
+        await setBg(INSIDE(), { fast: true });
         if (!current() || !await read("ch3_club_a_talk")) break;
         done(CLUB_A_TALK_FLAG);
       }
