@@ -29,7 +29,7 @@ try {
     assert.equal(flavorCases[id], null, `${id}: 未確定・正体を伏せる好みを表示しない`);
   }
   assert.deepEqual([flavorCases.kuze, flavorCases.steve, flavorCases.master_hookah, flavorCases.sheikh, flavorCases.maezono],
-    [{ main: "アールグレイ" }, { main: "マウンテンミスト" }, { main: "ライチ" }, { main: "グレープ" }, { main: "ミント／ダブルアップル" }],
+    [{ main: "アールグレイ" }, { main: "マウンテンミスト" }, { main: "ライチ" }, { main: "グレープ" }, { main: "レモン" }],
     "正本で決まっている好みを表示する");
   assert.deepEqual(flavorCases.samechan, { main: "スプリングウォーター" });
   const brandNames = await page.evaluate((ids) => ids.flatMap((id) => {
