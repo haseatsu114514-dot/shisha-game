@@ -127,7 +127,7 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5.stage, 2);
     assert.equal(state.flags._ch5.matchDay, undefined);
     assert.match(await page.locator(".hud").innerText(), /勝負の日まで[\s\S]*未定/);
-    for (const hidden of ["naru", "minto", "samechan", "c_station"])
+    for (const hidden of ["naru", "minto", "shishark", "c_station"])
       assert.equal(await page.locator(dt(`pin-${hidden}`)).count(), 0, `${hidden} is not on the Chapter 5 map yet`);
     // 昼の tonari: ましろの訪問 → 実セーブ → リロード → 再開しても読了と日付が保たれる。
     await go(page, "tonari");

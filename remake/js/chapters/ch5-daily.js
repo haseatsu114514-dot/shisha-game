@@ -26,7 +26,7 @@ const PRACTICE = "ch5_free_tonari_practice";
 
 /** 博士に連絡する（勝負の日を決める）。家の電話から。 */
 export const CH5_CALL_SPOT = Object.freeze({
-  id: "ch5_call", kind: "ch5_call", label: "博士に連絡する", area: "自宅の電話", x: 82, y: 56,
+  id: "ch5_call", kind: "ch5_call", label: "博士に連絡する", area: "自宅の電話", x: 64, y: 66,
   theme: "rest", glyph: "☎", preview: "bg_home",
   desc: "勝負の日を決める。決めたら、その日の残りは準備にあてて、翌日が勝負になる。",
 });
@@ -34,9 +34,9 @@ export const CH5_CALL_SPOT = Object.freeze({
 // 第5章ではまだ地図に出さない行き先。第1・2章の物語の続きが流れる店と、第1章の大会の話題の施設。
 // 第5章向けの会話ができたら外す（#2033 の残り）。
 //   naru: 第2章の決裂の印が残ると「臨時休業」のまま（第3章の仲直り後の扱いが未整備）
-//   minto / samechan: ヒロインの店（第5章は恋人と過ごす場面を描かない）
+//   minto（PEPPERMINT）/ shishark（SHISHARK）: ヒロインの店（第5章は恋人と過ごす場面を描かない）
 //   c_station: 第1章の大会の受付・噂 / fortune: 占いは第1・2章だけ / trpg_bar: 柚ヶ谷の店（隣町の地域で出す）
-const HIDDEN_SPOTS = Object.freeze(["naru", "minto", "samechan", "c_station", "fortune", "trpg_bar"]);
+const HIDDEN_SPOTS = Object.freeze(["naru", "minto", "shishark", "c_station", "fortune", "trpg_bar"]);
 
 /** 第5章の地元の行き先。 */
 export function chapterFiveHomeSpots() {
