@@ -391,6 +391,8 @@ export const FLAG_EXACT_RULES = [
   ["_samechan_closing_check_done", "person"],
   ["_samechan_date", "person"],
   ["_samechan_first_encounter", "person"],
+  ["_samechan_heart4_done", "person"],
+  ["_samechan_heart5_done", "person"],
   ["_samechan_last_date_chapter", "person"],
   ["_samechan_name_known", "person"],
   ["_samechan_nickname_known", "person"],

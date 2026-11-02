@@ -967,6 +967,409 @@
       }
     },
     {
+      "dialogue_id": "samechan_shop_heart4",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan",
+        "setting": "♥3の問いかけを読んだ後、♥4での来店で一度だけ。恋愛寄りの答えなら空回りの挿話、友人寄りならサメ仲間の試験。"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの端に、柚ヶ谷の水族館のパンフレットが開いたまま置いてあった。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "はじめ、よいところに来た！ 聞いてほしい話があるのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "水族館ですか？ 前に、電車の向こうだって言ってましたね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "うむ。店の休みに、ひとりで観に行ったのじゃ。サメの水槽の前で、閉館の音楽まで粘ってしもうた"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "知っておるか。サメには、求愛のときに相手を噛む種類もおるのじゃ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "噛むんですか。求愛で"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "甘噛みじゃ。……たぶん。離れんように、ひれのあたりをこう、くわえるのじゃ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は右手のコロちゃんで、空中をはむっとくわえてみせた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は、その解説板の前で三十分立っていた",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "コ、コロちゃん！ 二十分じゃ！"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "そして帰りの電車で、勇者はじめに話す順番を考えていた",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "それは言わんでよい！"
+        },
+        {
+          "type": "condition",
+          "condition_type": "romance_open",
+          "char_id": "samechan",
+          "next_true": "romance",
+          "next_false": "friend"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "解説はそのあと、ジンベエザメの口の大きさにまで広がった。俺の一服が終わるまで、パンフレットは閉じられなかった。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……長うなった。じゃが、お主に話したかったのじゃ"
+        }
+      ],
+      "branches": {
+        "romance": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "パンフレットの下から、薄い本の背表紙がのぞいている。『恋の駆け引き　入門』。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……見なかったことにしよう）"
+          },
+          {
+            "speaker": "samechan",
+            "face": "serious",
+            "text": "……ところで、はじめ。今日のわしは、少し忙しいのじゃ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "そう言って、彼女はぷいと横を向いた。メモを並べるでもなく、壁のサメのポスターを見ている。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "そうでしたか。じゃあ今日は、一服したら早めに帰りますね"
+          },
+          {
+            "speaker": "samechan",
+            "face": "surprise",
+            "text": "ま、待つのじゃああ！ 帰れとは言うておらん！"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "本の『押して引く』は、引きすぎると勇者が帰る。側近はひとつ学んだ",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "samechan",
+            "face": "surprise",
+            "text": "読んでおらん！ ……少ししか読んでおらん"
+          },
+          {
+            "speaker": "samechan",
+            "face": "serious",
+            "text": "……次は、褒めるのじゃ。本にそう書いて……いや、わしがそうしたいのじゃ"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "お主の頭は、実に左右対称じゃな！"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "……ありがとうございます？"
+          },
+          {
+            "speaker": "samechan",
+            "face": "surprise",
+            "text": "ち、違う、今のはサメの話の続きで……頭の形のよいサメは、水槽でもいちばん目を引くのじゃ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "サメちゃんに褒められるなら、何でもうれしいです"
+          },
+          {
+            "speaker": "samechan",
+            "face": "surprise",
+            "text": "……っ。その返しは、本に載っておらんかった"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "勇者はじめよ。今の講義、覚えたか。これより試験を行う",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "samechan",
+            "face": "surprise",
+            "text": "コロちゃん、試験があるとは聞いておらんぞ"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "問う。噛む種類のサメは、求愛のとき相手のどこをくわえる",
+            "voice": "korochan"
+          },
+          {
+            "type": "choice",
+            "id": "samechan_heart4_quiz",
+            "choices": [
+              {
+                "text": "ひれのあたり",
+                "next": "quiz_right"
+              },
+              {
+                "text": "しっぽの先",
+                "next": "quiz_wrong"
+              }
+            ]
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "サメの話なら、いつでも聞きに来ます"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "うむ。次は、もっと大きな水槽の話をしてやるのじゃ"
+          }
+        ],
+        "quiz_right": [
+          {
+            "speaker": "samechan",
+            "face": "excited",
+            "text": "正解じゃ！ お主、ちゃんと聞いておったのう！"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "合格である。勇者はじめを、サメ仲間の見習いに任ずる",
+            "voice": "korochan"
+          }
+        ],
+        "quiz_wrong": [
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "惜しいのう。しっぽは、泳ぐのに大事なところじゃからの。……でも、聞こうとしてくれたのは嬉しいのじゃ"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "追試である。次の来店までに覚えてこい",
+            "voice": "korochan"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "samechan_shop_heart5",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan",
+        "setting": "♥4の来店会話の後、♥5での来店で一度だけ。締めくくり（samechan_bond_finale）の前段。恋愛寄りならコロちゃんの暴露を本人が止め、友人寄りなら最上位のサメ仲間に任命。新しいフラグや称号の状態は持たない。"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "席に着くと、テーブルに紙の冠が置いてあった。コロちゃんの王冠を、そのまま大きくしたような形だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "これ、何ですか？"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……コロちゃんが、どうしても作れと言うての。昨日の閉店後、ずっと切っておったのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "静まれ。これより、王より褒美を授ける",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "い、いきなり始めるでない！"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者はじめは、開店前の箱を壁際へ寄せた。余の海に幾度も通い、側近の長話を最後まで聞いた",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "その働き、王は見ていた",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……わしからも、言うておきたいのじゃ。お主が来る日は、店が少しだけ、いつもより明るい気がする"
+        },
+        {
+          "type": "condition",
+          "condition_type": "romance_open",
+          "char_id": "samechan",
+          "next_true": "romance",
+          "next_false": "friend"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙の冠は、帰り際に「持って帰るのじゃ」と押しつけられた。鞄に入れると、角が少しだけ折れた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "また来るのじゃぞ。……次は、ちゃんと渡したいものがあるのじゃ"
+        }
+      ],
+      "branches": {
+        "romance": [
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "では褒美を言い渡す。勇者はじめに、側近の、こい——",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "サメちゃんが左手で、コロちゃんの口をぱくんと閉じた。"
+          },
+          {
+            "speaker": "samechan",
+            "face": "surprise",
+            "text": "こ、国家機密じゃ！ 王でも、勝手にばらしてよいものではない！"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "むぐ",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "今、何て言いかけてました？"
+          },
+          {
+            "speaker": "samechan",
+            "face": "serious",
+            "text": "……言わぬ。コロちゃんからは、言わせぬのじゃ"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "いつか、わし自身の口で言う。じゃから、それまで待っておれ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "待ちます。サメちゃんの声で聞きたいので"
+          },
+          {
+            "speaker": "samechan",
+            "face": "surprise",
+            "text": "……っ。そういうところじゃぞ、お主は"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "では褒美を言い渡す。勇者はじめを、王国最高のサメ仲間に任命する",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "samechan",
+            "face": "excited",
+            "text": "おお！ 最高位じゃぞ、はじめ！ 王国で、まだ誰も就いておらん位じゃ"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "特典として、側近の映画鑑賞への優先参加権を与える",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……拒否権は？"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "無い",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "もちろん無いのじゃ！"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "じゃあ、謹んでお受けします"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "うむ。……友として、これからも隣の席におってくれ"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "samechan_shop_unwell",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_shishark.png",
@@ -1470,7 +1873,7 @@
     "chapter2_boundary": "現行リメイクは第1章まで。章2用の店訪問とminChapter条件は準備するだけで、章2を遊べる状態にはしない。",
     "future_private": "既存の泳ぎの原稿はlover_samechan_lv3、本名の原稿はlover_samechan_lv4から正式接続。読了と知識は実際に読んだものだけを記録し、既知の本名は問い直さない。恋人絆Lv1〜5はsamechan-bonds.jsで未読の前段から一つずつ読む。",
     "assets": "通常・笑顔・びっくり・真剣の4表情。第1章の工事中は bg_shishark_preparing_night、第2章の開店後は bg_shishark。",
-    "entry_route": "初来店と既存交流2本の後、静かな席→夜の片付けを実読了で記録。♥3の問いかけは既存romanceChoicesへ回答を保存。この前半分岐だけで告白・恋人化は確定しない。",
+    "entry_route": "初来店と既存交流2本の後、静かな席→夜の片付けを実読了で記録。♥3の問いかけは既存romanceChoicesへ回答を保存。この前半分岐だけで告白・恋人化は確定しない。 ♥3の問いかけの後、♥4・♥5の来店会話（samechan_shop_heart4／heart5、#2025）を一本ずつ読み、締めくくりの前提にする。♥3の答えで恋愛／友人の分岐を読み、新しい隠し恋愛値の問いは置かない。締めくくり・友人・恋人へ着地済みの旧セーブには出さない。",
     "max_relationship": "第2〜3章の交流A/Bと♥3の実回答の読了後、夜の♥MAXで締めくくり。実回答が恋愛寄りなら夜の告白で恋人/友人を選ぶ。既存関係を維持。恋人絆・本名/泳ぎ・専用LIME/デート/記念日は接続済み。第2章本体の通し到達は別工程。"
   }
 }
