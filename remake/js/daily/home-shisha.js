@@ -16,7 +16,7 @@ import { play, vnTest } from "../vn/engine.js";
 import { flavorStock, addFlavorStock, ownedFlavorIds } from "./shop.js";
 import { evaluateMix, goldenLabel } from "../craft/steps.js";
 import { mixPercents } from "../craft/mix-ratio.js";
-import { homeRig } from "./home-rig.js";
+import { homeRig, homeRigXp } from "./home-rig.js";
 
 export const HOME_GRAMS = 12;
 export const HOME_STAMINA = -24;
@@ -73,7 +73,8 @@ export function applyHomeShisha(mix, rig, s = state) {
       || entries.reduce((sum, [, g]) => sum + g, 0) !== HOME_GRAMS) return null;
   for (const [id, g] of entries) addFlavorStock(id, -g);
   addStamina(HOME_STAMINA);
-  const masteryGains = gainFlavorExperience(s, mix, rig.id === "home_rig_pro" ? 7.5 : 6, DB.flavorById);
+  // 台ごとの経験値（卓上台6・大会公式モデル7.5・店の台7〜9）。能力・センスは増やさない。
+  const masteryGains = gainFlavorExperience(s, mix, rig.xp || homeRigXp(rig.id) || 6, DB.flavorById);
   s.flags._home_shisha_day = dayKey(s);
   const info = evaluateMix({ mode: "home", mix, equip: { bowl: s.equip?.bowl || "silicone_bowl" } });
   const taste = tasteOf(info);
@@ -88,6 +89,9 @@ export function applyHomeShisha(mix, rig, s = state) {
 const INTROS = {
   home_rig_set: ["部屋の明かりを落とし、卓上台に今日の葉を詰める。", "一日の終わり。小さな台に今日の葉を詰める。", "寝る前の家シーシャを組む。"],
   home_rig_pro: ["本番と同じ台に今日の葉を詰める。手の感覚が、そのまま残る。", "一日の終わり。大会と同じ台で家シーシャを組む。"],
+  stand_stainless: ["ステンレスの台に今日の葉を詰める。引きが軽く、味の輪郭がよく分かる。", "一日の終わり。自分で選んだ台で家シーシャを組む。"],
+  stand_walnut: ["くるみ材の台に今日の葉を詰める。煙がなめらかに通っていく。", "一日の終わり。手になじむ木の台で家シーシャを組む。"],
+  stand_custom: ["特注の台に今日の葉を詰める。煙の通り道まで、手に合わせてある。", "一日の終わり。一番いい台で、今日の葉と向き合う。"],
 };
 // data/flavors.json の説明に沿った一口の気づき。技法・温度・分量の講評はしない。
 // 銘柄固有の味はfamilyでまとめず、同系統でも別の感想にする。

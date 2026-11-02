@@ -25,6 +25,7 @@ import { CHARACTER_FLAVOR_ART } from "./shop-art-character-flavors.js";
 import { SHOP_EQUIPMENT_ART } from "./shop-equipment-art.js";
 import { flavorThermalGuide } from "../craft/temperature-model.js";
 import { flavorFeatureCard, flavorTags, equipmentUse, equipmentGuide } from "../craft/flavor-guide.js";
+import { homeRig } from "./home-rig.js";
 
 // 店頭に並ぶフレーバー（ch1）。定番＋レシピ帳のヒントで出てくる組み合わせの材料
 export const SHOP_FLAVORS = [
@@ -34,7 +35,7 @@ export const SHOP_FLAVORS = [
 ];
 const SHOP_EQUIP_TYPES = ["bowl", "hms", "charcoal"];
 const CAT_LABEL = { cooling: "清涼", sweet: "スイート", fruit: "フルーツ", spice: "スパイス", floral: "フローラル" };
-const TYPE_LABEL = { bowl: "ボウル", hms: "HMD", charcoal: "炭" };
+const TYPE_LABEL = { bowl: "ボウル", hms: "HMD", charcoal: "炭", homeware: "シーシャ台" };
 export { RIN_AWAY_DAY };
 
 // フレーバーは1箱50g（旧版 N3）。買う＝在庫+50g。自宅の試作・店への持ち込み・大会の課題以外の葉で減る（課題フレーバーは大会が支給＝減らない）
@@ -52,8 +53,8 @@ export function ownedFlavorIds() {
     .filter((id) => ownsFlavor(id) && DB.flavorById[id] && (DB.flavorById[id].leaf || "blond") === "blond");
 }
 
-/** 店に並べる機材か（第1章の品揃え。贈り物などの非売品は並べない） */
-export const forSale = (e, chapter = 1) => !!e && SHOP_EQUIP_TYPES.includes(e.type) && (e.chapter_min || 1) <= chapter && !e.not_for_sale;
+/** 店に並べる機材か（chapter はその店の品揃えの章。贈り物などの非売品は並べない）。家シーシャの台は第2章の店から（VOL08） */
+export const forSale = (e, chapter = 1) => !!e && (SHOP_EQUIP_TYPES.includes(e.type) || e.type === "homeware") && (e.chapter_min || 1) <= chapter && !e.not_for_sale;
 /** 売れる機材か（贈り物は売れない・装備中も売れない） */
 export const sellable = (e) => !!e && !e.unsellable && !Object.values(state.equip || {}).includes(e.id);
 
@@ -105,7 +106,7 @@ export function flavorPackageArt(id, size = 54) {
 }
 function productArt(item, flavor, size = 66) {
   const textArt = () => el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: item.id } }, [
-    el("span.shop-type-mark", { style: flavor ? { fontSize: "11px", letterSpacing: "0", whiteSpace: "nowrap" } : {}, text: flavor ? "フレーバー" : item.type === "hms" ? "HMD" : TYPE_LABEL[item.type] || "機材" }),
+    el("span.shop-type-mark", { style: flavor ? { fontSize: "11px", letterSpacing: "0", whiteSpace: "nowrap" } : {}, text: flavor ? "フレーバー" : item.type === "hms" ? "HMD" : item.type === "homeware" ? "台" : TYPE_LABEL[item.type] || "機材" }),
   ]);
   const botanical = () => FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)] ? windowArt(item, FLAVOR_ART, FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)],
     [1774, 887], size, "botanical", textArt) : textArt();
@@ -237,12 +238,13 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     };
     const detail = (item, flavor) => {
       if (!live()) return;
-      const current = !flavor && DB.equipById[state.equip[item.type]];
+      // 台は装備欄ではなく、家シーシャで実際に使う台と比べる。
+      const current = !flavor && DB.equipById[item.type === "homeware" ? homeRig()?.id : state.equip[item.type]];
       const fGuide = flavor ? flavorThermalGuide(item) : null;
       modal({ title: shopProductName(item), className: "shop-dialog", body: el("div.shop-detail", [
         productArt(item, flavor, 112), el("span.shop-detail-category", { text: flavor ? CAT_LABEL[item.category] : TYPE_LABEL[item.type] }),
         el("p", { text: flavor ? `所持 ${flavorStock(item.id)}g ／ 1箱 ${FLAVOR_BOX_GRAMS}g・${yen(item.price)}` : `${yen(item.buy_price)}${item.capacity ? ` ／ 容量 ${item.capacity}g` : ""}` }),
-        current ? el("p.shop-current", { text: `装備中：${current.name}${current.capacity ? `（${current.capacity}g）` : ""}` }) : null,
+        current ? el("p.shop-current", { text: `${item.type === "homeware" ? "家で使用中" : "装備中"}：${current.name}${current.capacity ? `（${current.capacity}g）` : ""}` }) : null,
         flavor ? flavorFeatureCard(item, { description: shopText(item.description), makerLabel: shopText(fGuide?.makerLabel || "") })
           : equipmentGuide(item, current?.id),
       ]), options: [{ label: "一覧に戻る", value: null, primary: true, test: "shop-detail-close" }] });

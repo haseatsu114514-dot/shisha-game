@@ -1721,6 +1721,31 @@
       ]
     },
     {
+      "id": "premium-equipment-vol08",
+      "title": "Premium equipment and home stands from chapter 2 (VOL08)",
+      "kind": "quick",
+      "run": [
+        "node remake/test/premium_equipment.mjs"
+      ]
+    },
+    {
+      "id": "premium-shop-browser-vol08",
+      "title": "Premium equipment and home stands in the branch shops (VOL08)",
+      "kind": "browser",
+      "weight": 0.6,
+      "timeout": 4,
+      "paths": [
+        "data/equipment.json",
+        "remake/js/daily/shop.js",
+        "remake/js/daily/home-rig.js",
+        "remake/js/craft/flavor-guide.js",
+        "remake/test/browser/premium_shop.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/premium_shop.mjs"
+      ]
+    },
+    {
       "id": "title-candidates-375",
       "title": "Heroine title candidates (#375)",
       "kind": "browser",

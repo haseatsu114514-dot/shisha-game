@@ -55,7 +55,7 @@ export function computeShisha(cs) {
   const grams = m.total || 12;
   const packDraw = { fluffy: 12, normal: 0, firm: -12 }[cs.pack] || 0;
   const four = cs.place === "four";
-  const hms = { lotos_hagal: 2, tanukish_lid: 5, winkwink_hagal: 4, amaburst_hms: 0 }[cs.equip?.hms] || 0;
+  const hms = { lotos_hagal: 2, tanukish_lid: 5, winkwink_hagal: 4, amaburst_hms: 0, lotos_plus: 4 }[cs.equip?.hms] || 0;
   const steamSeconds = steamSecondsOf(cs);
   const opening = steamOpening(steamSeconds);
 
