@@ -294,6 +294,16 @@ export function privateBondScope() {
 export const AFFINITY_PACE = 0.85;
 export const BOND_PACE = 0.5;
 
+/**
+ * 店に通ったときの好感度（2026-11-02 オーナー指定・台帳 AFB01）。
+ * 「1章のライバル3人のうち2人を、多少寄り道しても♥5にできる」ように、段階会話・節目・締めくくりは16、
+ * 通いの小会話・続き・質問の回は8（どちらも上の0.85を掛ける前の値）。♥5まで1人5〜6回の来店。
+ * 第5章は「ゆっくり上げられる」程度にするため、従来の10・5のまま。
+ */
+export const VISIT_AFFINITY = Object.freeze({ story: 16, talk: 8 });
+export const SLOW_VISIT_AFFINITY = Object.freeze({ story: 10, talk: 5 });
+export const visitAffinity = (kind, s = state) => (s?.chapter >= 5 ? SLOW_VISIT_AFFINITY : VISIT_AFFINITY)[kind];
+
 // 会話のmetadata報酬と訪問終了の報酬は別々に加算される。同じ相手の通知だけを
 // ステ通知と同じ時間窓で合算し、最初のハートから最後のハートまで一枚で見せる。
 const affinityBatch = new Map();

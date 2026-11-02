@@ -251,7 +251,11 @@ console.log('PASS fortune: 62 approved readings, 2-cycle nonrepeat, legacy mask 
     assert.equal(syncFortune(save), true, 'Appears in the planned half-day once heard');
     assert.equal(fortuneHere(save), true);
   }
-  for (const chapter of [3, 4]) assert.deepEqual(fortunePlan({ chapter, seed: 1, flags: {} }), [], `Not in Chapter ${chapter}`);
+  for (const [chapter, maxDay] of [[3, 16], [4, 3]]) {
+    const plan = fortunePlan({ chapter, seed: 1, flags: {} });
+    assert(plan.length >= 1 && plan.length <= 2, `1-2 appearances in Chapter ${chapter}`);
+    assert(plan.every(at => at >= 0 && at < maxDay * 2), `Chapter ${chapter} schedule stays within its available days`);
+  }
   // 第5章は東京にも現れる（地元と同じ予定。いる地域に出る）。第4章（ドバイ）には出ない。
   {
     const s = { chapter: 5, seed: 3, day: 1, slot: 0, flags: { _ch5: { startDay: 1 } } };
@@ -260,7 +264,7 @@ console.log('PASS fortune: 62 approved readings, 2-cycle nonrepeat, legacy mask 
     assert.equal(fortuneHere(s, 'tokyo'), true); assert.equal(fortuneHere(s, 'home'), false);
     const w = { chapter: 2, seed: 3, day: 1, slot: 0, flags: { _ch2_day1: { startDay: 1 } } };
     const at2 = fortunePlan(w)[0]; w.day = Math.floor(at2 / 2) + 1; w.slot = at2 % 2;
-    assert.equal(syncFortune(w, { where: 'tokyo' }), false, 'Tokyo only in Chapter 5');
+    assert.equal(syncFortune(w, { where: 'tokyo' }), false, 'Tokyo only in Chapters 3 and 5');
   }
 }
 console.log('PASS: fortune rumor gate and wandering schedule');

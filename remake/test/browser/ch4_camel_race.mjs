@@ -1,5 +1,6 @@
 // 第4章ドバイ・ラクダレースの実UI検証: 自由行動の地図から店員と知り合う→誘い→本番見学→練習レース（自動操作）→結果の会話、
 // 昼の行動の消費と1日1回、途中でやめた場合の非消費、実セーブ→ロード後の継続、再挑戦で報酬が増えないこと。
+// もう一件は、ドバイ14日の日常ループの地図（ch4-dubai-daily.js・#2297）から同じ流れに入り、昼の枠を一度だけ使うこと。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
@@ -158,6 +159,94 @@ await suite("ch4-camel-race", async check => {
     await page.locator(dt("ch4-go-inn")).click();
     await page.locator(dt("ch4-eve")).waitFor({ timeout: 60000 });
     assert.equal((await get(page)).flags._ch4.part, "eve");
+  });
+});
+
+// ---- ドバイ14日の日常ループ（版2）------------------------------------------------------------------------
+const dubaiMap = (page, { day, slot } = {}) => page.waitForFunction(([day, slot]) => {
+  const s = window.__remake?.state;
+  return s && (day === undefined || s.day === day) && (slot === undefined || s.slot === slot)
+    && document.querySelector('.map:not(.done) [data-test="pin-ch4_dubai_inn"]') && !document.querySelector("#modal.show");
+}, [day, slot], { timeout: 60000 });
+async function go(page, pin) {
+  await page.locator(dt(`pin-${pin}`)).click();
+  await page.locator(dt("map-go")).click();
+}
+/** 出発の朝にドバイへ着き、到着・宿の場面を読み終えた日常ループの保存。camel はラクダレースの記録（任意）。 */
+async function seedDaily(page, camel = null) {
+  page.setDefaultTimeout(30000);
+  await page.evaluate(async camel => {
+    const core = await import("./js/core/state.js");
+    const progress = await import("./js/chapters/ch4-progress.js");
+    const value = core.newGame();
+    Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+    value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
+      _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
+    value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "nagumo", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+    Object.assign(value.met, { naru: true });
+    if (!progress.advanceToChapterFour(value)) throw new Error("Chapter boundary failed");
+    value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
+    value.flags._ch4.titleSeen = true;
+    for (const id of progress.CH4_PREP_SCENES) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);
+    value.day += 3;
+    if (!progress.departChapterFour(value)) throw new Error("Departure failed");
+    for (const id of ["ch4_opening", "ch4_arrival_inn"]) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);
+    if (camel) value.flags._ch4_camel = { ...camel, inviteDay: value.day - 1, meetDay: value.day - 2 };
+    Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+    core.saveConfig();
+    Object.assign(core.state, value);
+    core.save();
+  }, camel);
+}
+
+await suite("ch4-camel-race-daily", async check => {
+  await check("daily-map-meet-is-free-and-race-spends-the-day-slot-once", async page => {
+    await seedDaily(page);
+    await loadSlot(page, 0);
+    await dubaiMap(page, { slot: 0 });
+    let state = await get(page);
+    const day = state.day;
+    assert.equal(state.flags._ch4.routeVersion, 2);
+    // 店先で知り合う: 時間・体力・お金を使わず、同じ昼の地図へ戻る。
+    assert.equal(await page.locator(dt("pin-ch4_dubai_camel")).count(), 1, "the shop front is on the Dubai map");
+    const before = { stamina: state.stamina, money: state.money, slot: state.slot };
+    await go(page, "ch4_dubai_camel");
+    await page.waitForFunction(() => window.__remake.state.flags._ch4_camel?.stage === 1);
+    await dubaiMap(page, { day, slot: 0 });
+    state = await get(page);
+    assert.deepEqual({ stamina: state.stamina, money: state.money, slot: state.slot }, before);
+    assert.equal(state.met.saif, true);
+    assert.equal(state.visitedDay.ch4_dubai_camel, undefined, "a conversation is not a visit");
+  });
+
+  await check("daily-map-race-records-best-and-uses-one-daytime-slot", async page => {
+    await seedDaily(page, { stage: 2, watched: false, plays: 0, lastPlayDay: null, best: null });
+    await loadSlot(page, 0);
+    await dubaiMap(page, { slot: 0 });
+    let state = await get(page);
+    const day = state.day;
+    await camelTest(page, { pilot: "perfect", timeScale: 8 });
+    await go(page, "ch4_dubai_camel");
+    await page.locator(dt("camel-tutorial")).waitFor({ timeout: 60000 });
+    for (let i = 0; i < 3; i++) await page.locator(dt("camel-tutorial-next")).click();
+    await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
+    await page.locator(dt("camel-finish")).click();
+    // 昼の枠は一度だけ使い、同じ日の夜の地図へ（日常ループと二重に進めない）。
+    await dubaiMap(page, { day, slot: 1 });
+    state = await get(page);
+    assert.equal(state.flags._ch4_camel.stage, 3);
+    assert.equal(state.flags._ch4_camel.watched, true);
+    assert.equal(state.flags._ch4_camel.plays, 1);
+    assert.equal(state.flags._ch4_camel.best.rank, 1);
+    assert.equal(state.flags._ch4_camel.lastPlayDay, day);
+    assert.equal(state.visitedDay.ch4_dubai_camel, day);
+    assert.equal(state.stats.technique, 60, "no direct stat reward");
+    assert.equal(state.met.rashid, true);
+    // 夜はレースへ行けない（案内に理由を出し、「ここへ行く」は出さない）。
+    await page.locator(dt("pin-ch4_dubai_camel")).click();
+    await page.locator(".mi-no").filter({ hasText: /今日はもう走った|レースは昼だけ|今日はもう行った/ }).waitFor();
+    assert.equal(await page.locator(dt("map-go")).count(), 0, "no race at night");
   });
 });
 

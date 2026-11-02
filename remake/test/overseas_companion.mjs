@@ -15,6 +15,7 @@ function atDeparture(lovers) {
   Object.assign(value, { chapter: 3, day: 40, phase: "cleared", lovers, contacts: ["sumi", ...lovers] });
   value.flags = { _ch3_cleared: true };
   assert(advanceToChapterFour(value));
+  delete value.flags._ch4.routeVersion; // 旧行程（ドバイ5日）
   return value;
 }
 const keptKeys = ["lovers", "contacts", "loverSince", "loveLevel", "lovePts", "affinity", "guilt", "money", "stamina"];

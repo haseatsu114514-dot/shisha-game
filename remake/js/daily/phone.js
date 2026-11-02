@@ -212,6 +212,8 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (m.exclude_flag && state.flags[m.exclude_flag]) return false;
   // みんとの最初の私的な買い出しは、♥3到達だけで正体判明より先行させない。
   if (m.id === "lime_outing_minto_1" && !state.flags._minto_identity_revealed) return false;
+  // サメちゃんの♥3の外出（#2025）は、本人から路地裏シネマを紹介された後（cinemaDiscovered と同じ条件）にだけ届く。
+  if (m.id === "lime_outing_samechan_1" && !(state.chapter >= 2 && state.flags._samechan_cinema_introduced === true)) return false;
   if (cond === "hiyori_tonari") return hiyoriEventStatus("tonari_return") === "ready";
   if (cond === "story_count") return (state.story[m.sender] || 0) >= (m.trigger_value || 1);
   if (cond === "lime_exchanged") {

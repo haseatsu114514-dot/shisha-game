@@ -1,0 +1,512 @@
+{
+  "comment": "第4章ドバイ・サンドボード（DESERT RIDE）。現地ガイドのヌールとの交流と砂丘への外出。接続は remake/js/chapters/ch4-desert.js。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_noor_meet",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿の隣に、砂漠ツアーのデスクがあった。壁の写真では、四輪駆動の車が砂丘を斜めに駆け上がっている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "写真に見入っていると、デスクの女の人が手を振った。ゆっくりした英語に、日本語の単語が混じる。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "こんにちは！　日本の人？　宿の人から聞いた。隣に、日本から来た子がいるって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あ、はい。はじめです。……日本語、上手ですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "単語だけね。お客さんから、ひとつずつ覚えた。「アツイ」「スゴイ」「コワイ」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "全部、砂漠で言いそうな言葉だ"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "でしょ。私はヌール。ここで砂漠のツアーをやってる"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "写真の車も、私が運転してるの"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_noor"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、この坂を？"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "砂は待ってくれるから、慌てなければ平気。ハジメは観光？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いえ、大会に。シーシャの、世界大会があって"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "知ってる！　うちの父も毎晩吸ってる。競技があるのは、初めて聞いたけど"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "じゃあ、忙しいね。暇な日があったら、またおしゃべりしに来て。日本語を増やしたい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（……話していると、肩の力が抜ける人だ）"
+        }
+      ],
+      "comment": "第4章ドバイ・サンドボード（DESERT RIDE）の導入1回目。宿の隣のツアーデスクで現地ガイドのヌールと知り合う。好感度・恋愛・LIMEの対象にしない現地の遊び相手（街の遊び場の店主と同じ扱い）。"
+    },
+    {
+      "dialogue_id": "ch4_noor_talk2",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ツアーデスクをのぞくと、ヌールさんが地図に印をつけていた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ハジメ、おかえり。今日も暑いね。「アツイ」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "アツイです。……それ、どこの地図ですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "街の外。砂丘のツアーで走る道。道って言っても、風で毎日変わるけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "変わるんですか、道が"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "砂だからね。前の日と同じ走り方はしない。砂を見て、その日の線を決める"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（スミさんの炭の話に、少し似てる）"
+        },
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 4,
+          "next_true": "after_tournament",
+          "next_false": "before_tournament"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "今度、時間ができたら教えて。見せたいものがあるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "見せたいもの？"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "内緒。「スゴイ」の方だから、安心して"
+        }
+      ],
+      "branches": {
+        "before_tournament": [
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "大会の準備は順調？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "準備は、しています。……正直、少し緊張してます"
+          },
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "知らない場所で、知らない人に出すんだもの。当たり前。でも、ここのお客さんは正直よ"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "おいしければ笑う。それだけ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "分かりやすくて、いいですね"
+          }
+        ],
+        "after_tournament": [
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "大会、終わったんでしょ。お疲れさま。父が「日本の子がすごかった」って"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "見てたんですか"
+          },
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "父は、この街のシーシャの話なら何でも知ってる。煙より早く噂が回るの"
+          }
+        ]
+      },
+      "comment": "導入2回目。大会前後で会話を分ける（交流の時系列ルール）。"
+    },
+    {
+      "dialogue_id": "ch4_noor_invite",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "デスクの前に、見慣れない大きな板が立てかけてあった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ヌールさん、これ……スノーボード？"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "近いけど、違う。サンドボード。砂丘を滑る板"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "砂の上を、滑る？"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "そう。雪と同じで、斜面があれば滑れる。砂の方が、転んでも痛くない"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "せっかくドバイに来たなら、砂漠へ行こう。昼なら、ツアーの車に乗せてあげる"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "お金はいらない。代わりに、練習台になって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "練習台？"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "日本語の練習。板の練習はハジメの方。ね、「ヤクソク」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……約束です。ちょっと、気分転換もしたかったので"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "大事。頭ばかり使ってると、砂に負ける"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の暇な日に、宿の隣から砂漠へ出かけられるようになった。"
+        }
+      ],
+      "comment": "導入3回目。砂丘への誘い。読了後、昼の行動として「ヌールと砂丘へ」が地図に出る。"
+    },
+    {
+      "dialogue_id": "ch4_desert_arrive",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんの運転する四輪駆動の車が、舗装の切れたところで止まり、タイヤの空気を少し抜いた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "タイヤを柔らかくするの。砂に沈まないように"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "街が遠くなり、窓の外は砂の色だけになった。車は、砂丘の肩へ斜めに上がっていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……飛行機の着陸より、揺れる）"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "着いた。ここが私の職場"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "車を降りると、砂丘が風紋を光らせながら、見渡す限り続いていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……広い"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "でしょ。板を履く前に、約束がひとつ"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "転んだら、無理に立たない。砂が止めてくれる"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "足は肩幅。目は足元じゃなく、先の砂を見る。岩は黒く見えるから、早めに避ける"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "起伏の手前で膝を伸ばすと跳べる。着地の直前に、もう一度膝を曲げる。それだけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それだけ、って……"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "あとは砂が教えてくれる。まず低いところで、ゆっくり"
+        }
+      ],
+      "comment": "初めての砂丘。この後に DESERT RIDE の練習→本番が始まる。"
+    },
+    {
+      "dialogue_id": "ch4_desert_again",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "またヌールさんの車で、砂丘へ出た。今日の砂は、前とは違う線を描いていた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "今日の砂は速いよ。風紋を見て"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい、……行ってきます"
+        }
+      ],
+      "comment": "2回目以降の砂丘。短く本番へ。"
+    },
+    {
+      "dialogue_id": "ch4_desert_sunset_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "板を抱えて砂丘を登り切ると、太陽が低くなっていた。砂の影が、長く伸びている。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "お疲れさま。座って。この時間のために来てるようなものだから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で砂の上に座る。昼の熱が残った砂が、背中に温かい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……砂の上を滑るなんて、思いつきもしなかった"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "日本には雪があるものね。こっちには砂しかない。だから滑る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "単純で、いいな"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "単純なのが一番長く続くの。ツアーも、父の煙も"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……大会のこと、今日は一度も考えなかった）"
+        },
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 4,
+          "next_true": "after_tournament",
+          "next_false": "before_tournament"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "太陽が砂丘の向こうへ沈みきるまで、くだらない話をした。砂は、まだ温かかった。"
+        }
+      ],
+      "branches": {
+        "before_tournament": [
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "顔が変わった。来た日より、ずっといい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "そうですか？"
+          },
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "砂のおかげ。あとは、ハジメのシーシャの番。……でも今日は、もう砂の話だけ"
+          }
+        ],
+        "after_tournament": [
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "大会が終わっても来てくれて、嬉しい。「アリガトウ」"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "こちらこそ、……「アリガトウ」"
+          }
+        ]
+      },
+      "comment": "初めての砂丘のあと。夕日の砂丘で話す。教訓を押しつけず、楽しかったで終える。"
+    },
+    {
+      "dialogue_id": "ch4_desert_sunset_again",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "滑り終えて、いつもの場所に座る。夕日が、砂丘の稜線を赤くしていた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "今日の滑り、良かった。砂を読んでる顔になってきた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ヌールさんの教え方がいいんですよ"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "「ジョウズ」。それ、新しい日本語ね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "日が沈むまで、二人でただ砂を見ていた。"
+        }
+      ],
+      "comment": "2回目以降の砂丘のあと。"
+    },
+    {
+      "dialogue_id": "venue_noor_result_S",
+      "lines": [
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "完璧。砂が、ハジメの味方をした"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_noor_result_A",
+      "lines": [
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "いい滑り！　最後まで砂を見てたね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_noor_result_B",
+      "lines": [
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "転んでも立てた。それが一番大事"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_noor_result_C",
+      "lines": [
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "砂に負けた日。でも、砂は明日も待ってる"
+        }
+      ]
+    }
+  ]
+}

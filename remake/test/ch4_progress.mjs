@@ -7,7 +7,8 @@ import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_SCENE_FILES, CH4_VISITOR_SCENE_FILES, C
   completeChapterFourScene, endChapterFourDay, finishChapterFourEve, chapterFourMandatory,
   chapterFourSecondAvailable, chapterFourSheikhRevealed, revealChapterFourSheikh,
   chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE,
-  CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour } from "../js/chapters/ch4-progress.js";
+  CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour, chapterFourDaily, syncChapterFourDay, enterChapterFourEve,
+  chapterFourEveDay, chapterFourTournamentDay, CH4_DAILY_EVE_DAY, CH4_DAILY_TOURNAMENT_DAY } from "../js/chapters/ch4-progress.js";
 import { chapterFourMapModel, DUBAI_MAP_PLACES } from "../js/chapters/ch4-map-model.js";
 
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
@@ -88,6 +89,8 @@ assert.throws(() => chapterFourProgress(clearedSave()));
 const value = clearedSave();
 assert.equal(canAdvanceToChapterFour(value), true);
 assert.equal(advanceToChapterFour(value), true);
+assert.equal(value.flags._ch4.routeVersion, 2, "New saves play Dubai on the daily loop (VOL04)");
+delete value.flags._ch4.routeVersion; // 以下は旧行程（ドバイ5日・場面カード）を確かめる
 assert.equal(value.chapter, 4);
 assert.equal(value.day, 46);
 assert.equal(value.slot, 0);
@@ -171,7 +174,8 @@ assert.equal(value.flags._ch4_strategy, "peach");
 let model = chapterFourMapModel(value);
 assert.equal(model.mode, "day");
 assert.equal(model.background, "bg_dubai_map");
-assert.deepEqual(model.destinations.map(item => item.id), ["souq", "festa", "center_cafe", "shop", "camel", "inn"]);
+// 砂漠ツアーのデスク（ch4-desert-progress.js）は昼の寄り道。誘われるまではデスク、誘われたら砂丘に替わる。
+assert.deepEqual(model.destinations.map(item => item.id), ["souq", "festa", "center_cafe", "tour_desk", "shop", "camel", "inn"]);
 // Dr.fookah ドバイ店（NF03）: 場面を持たず、時間・体力を使わない買い物の行き先。
 assert.equal(DUBAI_MAP_PLACES.shop.label, "Dr.fookah ドバイ店");
 assert.deepEqual((({ kind, consumes, scenes, unreadCount }) => ({ kind, consumes, scenes, unreadCount }))(model.destinations.find(item => item.id === "shop")),
@@ -207,7 +211,7 @@ assert.equal(completeChapterFourScene(value, "ch4_dubai_cafe_revisit"), true);
 assert.equal(completeChapterFourScene(value, "ch4_dubai_souq_revisit"), true);
 assert.equal(value.day, day, "Visiting places must not advance the calendar");
 assert.equal(value.flags._ch4.day, chapterDay);
-assert.deepEqual(chapterFourMapModel(value).destinations.map(item => item.id), ["souq", "festa", "center_cafe", "shop", "camel", "inn"]);
+assert.deepEqual(chapterFourMapModel(value).destinations.map(item => item.id), ["souq", "festa", "center_cafe", "tour_desk", "shop", "camel", "inn"]);
 secrecy();
 roundTrip();
 
@@ -231,7 +235,7 @@ assert.equal(chapterFourSecondAvailable(value), true);
 model = chapterFourMapModel(value);
 assert.equal(model.mode, "day", "DAY 3 still shows the midday map");
 assert.equal(model.background, "bg_dubai_map");
-assert.deepEqual(model.destinations.map(item => item.id), ["souq", "festa", "center_cafe", "alley_cafe", "shop", "camel", "inn"]);
+assert.deepEqual(model.destinations.map(item => item.id), ["souq", "festa", "center_cafe", "alley_cafe", "tour_desk", "shop", "camel", "inn"]);
 assert.deepEqual(model.destinations.find(item => item.id === "alley_cafe").scenes, ["ch4_stranger_second"]);
 assert.equal(model.daysLeft, 2);
 secrecy();
@@ -348,6 +352,7 @@ assert.equal(completeChapterFourScene(value, "ch4_two_tables"), false, "A cleare
 {
   const forced = clearedSave();
   advanceToChapterFour(forced);
+  delete forced.flags._ch4.routeVersion; // 旧行程
   for (const scene of CH4_PROLOGUE) completeChapterFourScene(forced, scene.id);
   for (let step = 0; step < 3; step++) assert.equal(endChapterFourDay(forced), "next_day");
   assert.equal(endChapterFourDay(forced), "eve");
@@ -372,6 +377,7 @@ assert.equal(completeChapterFourScene(value, "ch4_two_tables"), false, "A cleare
 {
   const eveDaySave = clearedSave();
   advanceToChapterFour(eveDaySave);
+  delete eveDaySave.flags._ch4.routeVersion; // 旧行程
   for (const scene of CH4_PROLOGUE) completeChapterFourScene(eveDaySave, scene.id);
   for (let step = 0; step < 3; step++) assert.equal(endChapterFourDay(eveDaySave), "next_day");
   assert.equal(eveDaySave.flags._ch4.day, CH4_EVE_DAY);
@@ -412,6 +418,7 @@ for (const dialogue of files.ch4_spots.filter(row => ["ch4_dubai_souq", "ch4_dub
   assert.equal(CH4_PRIZE, 200000, "decided chapter 4 prize");
   const prizeSave = clearedSave();
   advanceToChapterFour(prizeSave);
+  delete prizeSave.flags._ch4.routeVersion; // 旧行程
   const progress = chapterFourProgress(prizeSave);
   Object.assign(progress, { part: "tournament", day: CH4_TOURNAMENT_DAY, stage: CH4_PROLOGUE.length });
   prizeSave.phase = "tournament";
@@ -446,3 +453,37 @@ for (const change of [
 }
 
 console.log("PASS: Chapter 4 runner state keeps the Dubai days, mandatory scenes, tournament outcome and secrecy in order");
+
+// ドバイも日常ループの行程（版2・VOL04）: DAY1〜12は日常、DAY13は前夜、DAY14が大会。章内日は暦に合わせる。
+{
+  const daily = clearedSave();
+  assert(advanceToChapterFour(daily));
+  assert(chapterFourDaily(daily));
+  assert.deepEqual([chapterFourEveDay(daily), chapterFourTournamentDay(daily)], [CH4_DAILY_EVE_DAY, CH4_DAILY_TOURNAMENT_DAY]);
+  for (const id of CH4_PREP_SCENES) assert(completeChapterFourScene(daily, id));
+  daily.day += 3;
+  assert(departChapterFour(daily));
+  for (const scene of CH4_PROLOGUE.slice(CH4_PREP_SCENES.length)) assert(completeChapterFourScene(daily, scene.id));
+  const p = daily.flags._ch4;
+  assert.equal(p.part, "free");
+  assert.equal(enterChapterFourEve(daily), false, "Not before the eve day");
+  daily.day = p.startDay + 6;
+  assert(syncChapterFourDay(daily));
+  assert.equal(p.day, 7, "The chapter day follows the calendar");
+  assert.equal(completeChapterFourScene(daily, "ch4_stranger_first_forced_in"), true, "The deadline lead can be read in free time");
+  assert.equal(completeChapterFourScene(daily, "ch4_stranger_first_forced_in"), false, "Only once");
+  assert.equal(completeChapterFourScene(daily, "ch4_stranger_first"), true);
+  assert.equal(p.firstDay, 7);
+  daily.day = p.startDay + 11; syncChapterFourDay(daily);
+  assert.equal(p.day, 12);
+  assert.equal(enterChapterFourEve(daily), false, "DAY12 is still a free day");
+  daily.day = p.startDay + 12;
+  assert.equal(enterChapterFourEve(daily), true);
+  assert.deepEqual([p.part, p.day, daily.slot], ["eve", 13, 1]);
+  assert.deepEqual(chapterFourProgress(JSON.parse(JSON.stringify(daily))), p, "The DAY13 eve is a valid save in the daily route");
+  for (const entry of CH4_MANDATORY) for (const id of [entry.lead, entry.id].filter(Boolean)) completeChapterFourScene(daily, id);
+  assert.deepEqual(chapterFourMandatory(daily), []);
+  assert.equal(finishChapterFourEve(daily), true);
+  assert.deepEqual([p.part, p.day, daily.day], ["tournament", 14, p.startDay + 13], "The world tournament is Dubai DAY14");
+  console.log("PASS: Chapter 4 daily route keeps Dubai DAY1-12 free, the DAY13 eve and the DAY14 tournament");
+}

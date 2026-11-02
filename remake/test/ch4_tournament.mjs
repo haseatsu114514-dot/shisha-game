@@ -21,6 +21,7 @@ function entry() {
   Object.assign(value, { chapter: 3, phase: "cleared", day: 45 });
   value.flags._ch3_cleared = true;
   advanceToChapterFour(value);
+  delete value.flags._ch4.routeVersion; // 旧行程（ドバイ5日）
   Object.assign(value.flags._ch4, { part: "tournament", day: 5, stage: CH4_PROLOGUE.length });
   value.phase = "tournament";
   value.flags._ch4_strategy = "sakura";
