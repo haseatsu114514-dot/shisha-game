@@ -1,6 +1,8 @@
-// 第5章の東京（#2033 D）。勝負の日を決める前の自由行動で、新幹線で東京へ行ける。
+// 第5章の東京（#2033 D）。勝負の日を決める前の自由行動で、Dr.fookah の配送便に乗せてもらって東京へ行ける。
 // オーナー指定（2026-11-02）: 東京はムカイさんの屋根裏に好きなだけ泊まれて、好きな時に帰れる。
-// 運賃は片道 TOKYO_TRAIN_FARE（往復分が無いと出発できず、東京では帰りの分を使えない）。移動は1行動。
+// 交通（FIN13・オーナー「東京は配送便で」）: 問屋街から東京店へ葉を運ぶ車に乗せてもらうので運賃はかからない。
+// 便は昼に出て夜に着く（その日の昼と夜の2行動）。帰りも同じ。決まりは chapters/ch5-travel.js。
+// 最初に乗る日は、Dr.fookah の裏口で店員に乗せてもらう話になる（ch5_tokyo_van_first）。
 // 行き先: mukai（手伝い）・Smoke & Glory（スティーブ）・鉄の煙（ヴォルク）・公園・裏口のてつこ・東京の店・屋根裏・地元へ帰る。
 // ましろ（ヒロイン）は第5章の会話に出さない。久世は第3章の後に福岡へ戻ったので煙幕は出さない。
 // 台詞は data/dialogue/ch5_tokyo.json（てつこと夜の公園は第3章の場面を使う）。現在地は flags._ch2_region = "tokyo"。
@@ -10,7 +12,8 @@ import { setBg, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { addMoney, addStamina, earnStat, gainAffinity, visitAffinity } from "../core/stats.js";
-import { spendableMoney, TOKYO_TRAIN_FARE } from "../core/travel-budget.js";
+import { spendableMoney } from "../core/travel-budget.js";
+import { tokyoVanBlock, TOKYO_VAN_SLOTS } from "./ch5-travel.js";
 import { openShop } from "../daily/shop.js";
 import { TOKYO_VISIT_COST } from "../daily/spots.js";
 import { modal } from "../core/ui.js";
@@ -21,6 +24,8 @@ import { consultLessons } from "../core/growth.js";
 
 export const TOKYO = "tokyo";
 const ATTIC_FLAG = "_ch5_tokyo_attic"; // ムカイさんに屋根裏を貸してもらった（最初の到着の場面を読んだ）
+const VAN_FLAG = "_ch5_tokyo_van"; // Dr.fookah の配送便に乗せてもらう話を読んだ（最初に「東京へ」を選んだ日）
+const HOME_ID = "ch5_tokyo_home";
 const TALKS_FLAG = "_ch5_tokyo_talks"; // 小会話の巡回の回数（人ごと）
 const ATTIC_BG = "bg_mukai_attic"; // ムカイさんの店の上の屋根裏（2026-11-02 採用）。夜は既存の夜の暗転を共用する
 
@@ -46,21 +51,33 @@ export const TOKYO_SPOTS = Object.freeze([
   // 心得の盤の内省（SPEC 2.8）: 第3章と同じ池の弁天堂（IR26）。灯せる火種がある時だけ地図に出す（ch5-daily.js）。時間は使わない。
   spot({ id: "ch5_tokyo_shrine", reflect: "tokyo_shrine", label: "池の弁天堂", area: "公園の池", x: 91, y: 73, theme: "rest", glyph: "弁",
     preview: "bg_tokyo_park", desc: "池に浮かぶ小さなお堂。学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
-  spot({ id: "ch5_tokyo_home", label: "地元へ帰る", area: "東京駅", x: 40, y: 20, theme: "rest", glyph: "駅", preview: "bg_ch3_train_arrival",
-    desc: `新幹線で橙須へ帰る。片道${TOKYO_TRAIN_FARE.toLocaleString("ja-JP")}円・1行動。` }),
+  // 帰りも東京店から出る配送便（地図の絵は文字の盾。新幹線の駅の絵は使わない）。
+  // 文字の盾は札を印の上に描くので、駅の絵だった頃（y: 20）と同じ所に見えるよう少し下げた。
+  spot({ id: HOME_ID, label: "地元へ帰る（配送便）", area: "Dr.fookah 東京店の帰りの便", x: 40, y: 28, theme: "rest", glyph: "便", preview: "bg_street",
+    desc: "配送便で橙須へ帰る（運賃はかからない）。昼に出て夜に着くので、今日の昼と夜の2行動を使う。" }),
 ]);
 
-/** 地元の地図に出す「東京へ（新幹線）」。往復の運賃が無いと出発できない。 */
-// 位置: 新幹線の駅のアイコン（#2371）は文字の盾より大きく、(27,44) では名札が下の PEPPERMINT（28,62）を覆って押せなかった。
-// CHOI-ZAP・観音堂・路上占いの出る場所とも重ならない左端へ。
+/** 地元の地図に出す「東京へ（配送便）」。昼だけ出る。 */
+// 位置: CHOI-ZAP・観音堂・路上占いの出る場所と重ならない左端（新幹線の駅のアイコンだった頃に #2371 で決めた場所）。
+// 文字の盾は札を印の上に描くので、駅の絵の頃（y: 40）と同じ所に見え、電車の「駅」（15,36）に重ならないよう少し下げた。
 export const TO_TOKYO_SPOT = Object.freeze({
-  id: "ch5_to_tokyo", kind: "ch5_tokyo", label: "東京へ（新幹線）", area: "橙須駅", x: 8, y: 40, theme: "stadium", glyph: "新",
-  preview: "bg_ch3_train_arrival",
-  desc: `片道${TOKYO_TRAIN_FARE.toLocaleString("ja-JP")}円・1行動。ムカイさんの屋根裏に好きなだけ泊まれて、好きな時に帰れる。`,
+  id: "ch5_to_tokyo", kind: "ch5_tokyo", label: "東京へ（配送便）", area: "Dr.fookah の搬入口", x: 8, y: 48, theme: "stadium", glyph: "便",
+  preview: "bg_shop",
+  desc: "Dr.fookah の配送便に乗せてもらう（運賃はかからない）。昼に出て夜に着くので、今日の昼と夜の2行動を使う。ムカイさんの屋根裏に好きなだけ泊まれて、帰りも配送便。",
 });
 
+// 配送便は昼だけ。乗れない時もピンは残し、理由を出す（ドバイの砂丘と同じ見せ方）。
+const vanPin = (entry, value) => {
+  const blocked = tokyoVanBlock(value);
+  return blocked ? Object.freeze({ ...entry, unavailable: blocked.why, unavailableTag: blocked.tag }) : entry;
+};
+/** 地元の地図に出す今の「東京へ（配送便）」。 */
+export const chapterFiveTokyoPin = (value = state) => vanPin(TO_TOKYO_SPOT, value);
+/** 東京の地図に出す今の行き先（帰りの配送便は昼だけ）。 */
+export const tokyoSpotsNow = (value = state) => TOKYO_SPOTS.map(entry => entry.id === HOME_ID ? vanPin(entry, value) : entry);
+
 export const inTokyo = (value = state) => value?.flags?._ch2_region === TOKYO;
-const SCENES = TOKYO_SPOTS.flatMap(entry => entry.talks || []).concat(["ch5_tokyo_go", "ch5_tokyo_back", "ch5_tokyo_arrival", "ch5_tokyo_park_day", "ch5_tokyo_attic_rest", "ch5_tokyo_fortune"]);
+const SCENES = TOKYO_SPOTS.flatMap(entry => entry.talks || []).concat(["ch5_tokyo_van_first", "ch5_tokyo_go", "ch5_tokyo_back", "ch5_tokyo_arrival", "ch5_tokyo_park_day", "ch5_tokyo_attic_rest", "ch5_tokyo_fortune"]);
 // てつこのお世話は第3章の続き（通うほど懐いていく。回数も第3章と同じ記録。ch3-outing-progress.js の stages・loop）
 const TETSUKO = TOKYO_OUTINGS.find(outing => outing.id === "tetsuko");
 const CH3_SCENES = ["ch3_outing_park_walk_night", ...TETSUKO.stages, ...TETSUKO.loop];
@@ -82,9 +99,9 @@ async function loadTokyoScenes() {
 // 夜は外光のある場所に既存の夜の暗転（tint）を掛ける。屋根裏の絵は昼の光なので、tint を落とさない。
 const showBg = (ref, tod) => { const { url, tint } = sceneBg(ref, tod); return setBg(url, { instant: true, tint }); };
 
-/** 読み終えたら true。中断・LOADは false（代金・体力・既読を残さない）。 */
-async function read(id, bg, owner) {
-  if (bg) await showBg(bg, timeOfDay());
+/** 読み終えたら true。中断・LOADは false（代金・体力・既読を残さない）。tod は背景の時間帯（配送便で着く夜など）。 */
+async function read(id, bg, owner, tod = timeOfDay()) {
+  if (bg) await showBg(bg, tod);
   if (state !== owner) return false;
   const result = await play(id);
   return state === owner && !!result && !result.cancelled;
@@ -105,8 +122,11 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
     return { used: false, exerted: false };
   }
   if (state !== owner) return { used: false, exerted: false };
-  if (spot.id === TO_TOKYO_SPOT.id) return goToTokyo(owner);
-  if (spot.id === "ch5_tokyo_home") return goHome(owner);
+  if (spot.id === TO_TOKYO_SPOT.id || spot.id === HOME_ID) {
+    const blocked = tokyoVanBlock(state);
+    if (blocked) { toast(blocked.why); return { used: false, exerted: false }; }
+    return spot.id === HOME_ID ? goHome(owner) : goToTokyo(owner);
+  }
   if (spot.reflect) { await reflectAt(spot.reflect); return { used: false, exerted: false }; }
   if (spot.id === "ch5_tokyo_shop") {
     await openShop({ branch: "tokyo" }); // 時間は使わない
@@ -137,7 +157,7 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   }
   // スティーブ・ヴォルク: 小会話を巡回して読む。
   if ((spot.cost || 0) > spendableMoney(state)) {
-    toast("お金が足りない（帰りの新幹線の分は使えない）");
+    toast("お金が足りない");
     return { used: false, exerted: false };
   }
   if (staminaGuard && !(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
@@ -158,29 +178,30 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   return { used: true, exerted: true };
 }
 
+/** 配送便で東京へ（昼に出て夜に着く。今日の昼と夜の2行動）。着いた夜は屋根裏で寝る。 */
 async function goToTokyo(owner) {
-  if (state.money < TOKYO_TRAIN_FARE * 2) {
-    toast(`往復の運賃（${(TOKYO_TRAIN_FARE * 2).toLocaleString("ja-JP")}円）が足りない`);
-    return { used: false, exerted: false };
+  // 最初に選んだ日は、Dr.fookah の裏口で配送便に乗せてもらう話になる（読むだけでは行動を使わない）。
+  if (!state.flags[VAN_FLAG]) {
+    if (!await read("ch5_tokyo_van_first", "bg_shop", owner)) return { used: false, exerted: false };
+    state.flags[VAN_FLAG] = true;
+    save();
   }
-  if (!await read("ch5_tokyo_go", "bg_ch3_train_arrival", owner)) return { used: false, exerted: false };
-  addMoney(-TOKYO_TRAIN_FARE);
+  if (!await read("ch5_tokyo_go", "bg_street", owner)) return { used: false, exerted: false };
   state.flags._ch2_region = TOKYO;
   save();
-  // 第5章で初めて着いた日は、ムカイさんに屋根裏を貸してもらう。
+  // 第5章で初めて着いた夜は、ムカイさんに屋根裏を貸してもらう。
   if (!state.flags[ATTIC_FLAG]) {
-    if (await read("ch5_tokyo_arrival", "bg_mukai_shop", owner)) { state.flags[ATTIC_FLAG] = true; markMet("mukai_master"); save(); }
+    if (await read("ch5_tokyo_arrival", "bg_mukai_shop", owner, "night")) { state.flags[ATTIC_FLAG] = true; markMet("mukai_master"); save(); }
   }
-  return { used: true, exerted: false };
+  return { used: true, exerted: false, slotsUsed: TOKYO_VAN_SLOTS };
 }
 
+/** 帰りの配送便（昼に出て夜に地元へ着く。今日の昼と夜の2行動）。 */
 async function goHome(owner) {
-  if (!await read("ch5_tokyo_back", "bg_ch3_train_arrival", owner)) return { used: false, exerted: false };
-  // 帰りの分は取り置いてある。旧保存などで足りない時も、東京に閉じ込めない（残りの所持金まで）。
-  addMoney(-Math.min(TOKYO_TRAIN_FARE, Math.max(0, state.money)));
+  if (!await read("ch5_tokyo_back", "bg_street", owner)) return { used: false, exerted: false };
   state.flags._ch2_region = "home";
   save();
-  return { used: true, exerted: false };
+  return { used: true, exerted: false, slotsUsed: TOKYO_VAN_SLOTS };
 }
 
 /**

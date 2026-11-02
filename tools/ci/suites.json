@@ -507,6 +507,7 @@
         "node remake/test/ch4_longlong.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node remake/test/ch5_party.mjs",
+        "node remake/test/ch5_travel.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
         "node remake/test/ch3_outings.mjs",
@@ -1352,6 +1353,8 @@
         "remake/js/chapters/ch4.js",
         "remake/js/chapters/ch1.js",
         "data/dialogue/ch5_main.json",
+        "data/dialogue/ch5_tokyo.json",
+        "data/dialogue/ch5_dubai.json",
         "data/dialogue/ending.json",
         "remake/js/daily/romance.js",
         "remake/test/browser/ch5_full_flow.mjs"

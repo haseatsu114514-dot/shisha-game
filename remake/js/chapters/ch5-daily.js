@@ -1,9 +1,9 @@
 // 第5章の自由行動を、第1・2章と同じ日常ループ（daily/calendar.js の runDaily）で遊ぶ（#2033）。
 // 日付・昼夜・体力・睡眠・天気・LIMEの受信箱・地図・育成（能力の上限は100）は日常ループが持つ。
 // ここでは第5章の行き先と、tonari の3場面・閉店後の試作・EDEN・博士への連絡だけを差し込む。
-// 地域は地元・橙須と隣町・柚ヶ谷（駅で行き来。夜は地元へ帰る。第2章と同じ電車の仕組み）と東京（新幹線。
-// ムカイさんの屋根裏に好きなだけ泊まれる。chapters/ch5-tokyo.js）とドバイ（飛行機。シェイクの屋敷の客間に泊まれる。
-// chapters/ch5-dubai.js）。
+// 地域は地元・橙須と隣町・柚ヶ谷（駅で行き来。夜は地元へ帰る。第2章と同じ電車の仕組み）と東京（Dr.fookah の配送便。
+// 昼に出て夜に着く。ムカイさんの屋根裏に好きなだけ泊まれる。chapters/ch5-tokyo.js）とドバイ（シェイクの手紙に同封の
+// 往復の切符で飛行機。シェイクの屋敷の客間に泊まれる。chapters/ch5-dubai.js）。交通の決まりは chapters/ch5-travel.js。
 // 勝負の日は博士と決めるまで無い（untilDay = Infinity）。決めると翌日が勝負の日になり、その朝でループが終わる。
 // 恋人とは第1・2章と同じく、LIMEの誘い→デート（絆が深まる）→節目（lover_events）の順に進む（帰郷後なので開ける・IR16・IR17）。
 // デートは地元の店なので、東京・ドバイにいる間は誘いが届かない（daily/romance.js の hometownDateOpen）。
@@ -21,8 +21,9 @@ import { MAP } from "./ch2-city-data.js";
 import { CITY_SHOP } from "./ch2-outings.js";
 import { returnCityHome } from "./ch2-commute.js";
 import { cityRegularSpots, visitCityRegular } from "./ch2-preparation.js";
-import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNight, tokyoWakeBackground, chapterFiveMukaiShift } from "./ch5-tokyo.js";
-import { DUBAI, DUBAI_SPOTS, TO_DUBAI_SPOT, performDubaiSpot, inDubai, dubaiNight, dubaiWakeBackground } from "./ch5-dubai.js";
+import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNight, tokyoWakeBackground, chapterFiveMukaiShift,
+  chapterFiveTokyoPin, tokyoSpotsNow } from "./ch5-tokyo.js";
+import { DUBAI, DUBAI_SPOTS, TO_DUBAI_SPOT, performDubaiSpot, inDubai, dubaiNight, dubaiWakeBackground, chapterFiveDubaiPin } from "./ch5-dubai.js";
 import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop } from "./ch5-shops.js";
 import {
   chapterFiveProgress, chapterFiveFreeRemaining, chapterFiveRead, chapterFiveTimeoutPending,
@@ -53,9 +54,9 @@ export const CH5_CALL_SPOT = Object.freeze({
 // 占い師は第5章にも現れる（章で1〜2回・予定の無い昼か夜。daily/fortune-schedule.js）。
 const HIDDEN_SPOTS = Object.freeze(["naru", "minto", "shishark", "c_station", "trpg_bar"]);
 
-/** 第5章の地元の行き先。 */
+/** 第5章の地元の行き先（東京の配送便は昼だけ・ドバイは切符入りの手紙が届いている時だけ押せる）。 */
 export function chapterFiveHomeSpots() {
-  return [...allSpots().filter(spot => !HIDDEN_SPOTS.includes(spot.id)), ...chapterFiveShops(), CH5_CALL_SPOT, TO_TOKYO_SPOT, TO_DUBAI_SPOT];
+  return [...allSpots().filter(spot => !HIDDEN_SPOTS.includes(spot.id)), ...chapterFiveShops(), CH5_CALL_SPOT, chapterFiveTokyoPin(), chapterFiveDubaiPin()];
 }
 
 /** 次に tonari で読む場面（並びの順・時間帯が合うときだけ）。無ければ null＝いつもの tonari。 */
@@ -119,9 +120,9 @@ export async function runChapterFiveDaily(io) {
 
 const currentRegion = () => ["widehanga", TOKYO, DUBAI].includes(state.flags._ch2_region) ? state.flags._ch2_region : "home";
 
-/** 東京の行き先（スティーブ・ヴォルクの店は会ったことがあれば）。 */
+/** 東京の行き先（スティーブ・ヴォルクの店は会ったことがあれば。帰りの配送便は昼だけ）。 */
 // 占い師は東京にも現れる（理由は語らない・台帳 URA）。
-export const chapterFiveTokyoSpots = () => [...TOKYO_SPOTS.filter(spot => (!spot.charId || state.met?.[spot.charId]) && reflectable(spot)), fortuneSpot(TOKYO)].filter(Boolean);
+export const chapterFiveTokyoSpots = () => [...tokyoSpotsNow().filter(spot => (!spot.charId || state.met?.[spot.charId]) && reflectable(spot)), fortuneSpot(TOKYO)].filter(Boolean);
 /** ドバイの行き先（モスクは灯せる火種がある時だけ）。 */
 export const chapterFiveDubaiSpots = () => DUBAI_SPOTS.filter(reflectable);
 // 内省の場所（東京の池の弁天堂・ドバイのモスク）は、心得の盤で灯せる火種がある時だけ地図に出す（第3・4章と同じ）。
