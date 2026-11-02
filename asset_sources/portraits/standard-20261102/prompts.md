@@ -93,6 +93,278 @@ HEAD SIZE: in image 1 her head is smaller relative to her body than in image 2 (
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure at least 1300 px tall. Include all hair tips, horns, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background. No floor, cast shadow, glow, border, text or watermark. Preserve image 1's original colors, saturation and light-dark range.
 ```
 
+## 表情差分：サイ・零・マキ・太陽（TS11）
+
+2026-11-02 オーナー「推奨のをお願い」で、通常はサイB・零C-v2・マキB・太陽Bに決まった。残りの表情を、この新しい通常と同じ頭の大きさで作る。全表情が合格したら、キャラ単位で組み込む。
+
+参照画像（エージェントが自分で読み込んで渡す）：① 対象の表情の現行PNG `assets/sprites/characters/<id>/chr_<id>_<face>.png` ／ ② 合格した通常の原画 `asset_sources/portraits/<id>-remaster-v2/normal-source.png` ／ ③ 頭身の文脈（男性は南雲、マキは凛）／ ④ みんと ／ ⑤ あげは（画風だけ）。
+
+合格の条件：②と同じ頭の大きさ（会話画面で±5%以内。`tools/portrait_metrics.py grid --image` で測る）、①の表情・手・ポーズのまま、髪・手・靴が切れていない。
+
+### 六角サイ（`sai`）　②＝`sai-remaster-v2/normal-source.png（推奨B）`
+
+#### smile
+
+```
+Identity-preserving redraw of a full-body visual-novel sprite: 六角サイ (sai) SMILE expression. Reference roles IN ORDER: image 1 is the current smile sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new sai normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Nagumo is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+
+Character: Rokukaku Sai, 28-year-old Japanese male board-game cafe owner, slim tall adult, tidy black hair with a loose swept side part and a small curled lock, dark green waistcoat over an ivory shirt with rolled sleeves, long charcoal cafe apron with small brass fastenings, small hexagonal brass pin, short pencil in the apron pocket, dark trousers, brown leather shoes. No glasses. Kind, calmly unreadable; never a villain.
+Expression and pose to keep from image 1 (smile): narrow closed smiling eyes (curved lines, no irises), a slightly wider gentle closed-mouth smile, both empty hands loosely clasped in front of the apron, listening head tilt. Match image 2's head size, NOT image 1's smaller head.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+#### serious
+
+```
+Identity-preserving redraw of a full-body visual-novel sprite: 六角サイ (sai) SERIOUS expression. Reference roles IN ORDER: image 1 is the current serious sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new sai normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Nagumo is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+
+Character: Rokukaku Sai, 28-year-old Japanese male board-game cafe owner, slim tall adult, tidy black hair with a loose swept side part and a small curled lock, dark green waistcoat over an ivory shirt with rolled sleeves, long charcoal cafe apron with small brass fastenings, small hexagonal brass pin, short pencil in the apron pocket, dark trousers, brown leather shoes. No glasses. Kind, calmly unreadable; never a villain.
+Expression and pose to keep from image 1 (serious): eyes narrowly open with calm grey irises, composed small closed mouth, one hand raised palm-up at chest height as if explaining, the other hand resting at the apron. Match image 2's head size, NOT image 1's smaller head.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+#### surprise
+
+```
+Identity-preserving redraw of a full-body visual-novel sprite: 六角サイ (sai) SURPRISE expression. Reference roles IN ORDER: image 1 is the current surprise sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new sai normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Nagumo is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+
+Character: Rokukaku Sai, 28-year-old Japanese male board-game cafe owner, slim tall adult, tidy black hair with a loose swept side part and a small curled lock, dark green waistcoat over an ivory shirt with rolled sleeves, long charcoal cafe apron with small brass fastenings, small hexagonal brass pin, short pencil in the apron pocket, dark trousers, brown leather shoes. No glasses. Kind, calmly unreadable; never a villain.
+Expression and pose to keep from image 1 (surprise): eyes open showing grey irises, small open mouth, one hand touching his chin, the other forearm across his waist. Match image 2's head size, NOT image 1's smaller head.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+#### thinking
+
+```
+Identity-preserving redraw of a full-body visual-novel sprite: 六角サイ (sai) THINKING expression. Reference roles IN ORDER: image 1 is the current thinking sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new sai normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Nagumo is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+
+Character: Rokukaku Sai, 28-year-old Japanese male board-game cafe owner, slim tall adult, tidy black hair with a loose swept side part and a small curled lock, dark green waistcoat over an ivory shirt with rolled sleeves, long charcoal cafe apron with small brass fastenings, small hexagonal brass pin, short pencil in the apron pocket, dark trousers, brown leather shoes. No glasses. Kind, calmly unreadable; never a villain.
+Expression and pose to keep from image 1 (thinking): half-open eyes glancing aside, index finger resting on his lips, the other arm across his waist supporting that elbow. Match image 2's head size, NOT image 1's smaller head.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+### 零-REI-（`rei`）　②＝`rei-remaster-v2/normal-source.png（推奨C-v2）`
+
+#### sad
+
+```
+Identity-preserving redraw of a full-body visual-novel sprite: 零-REI- (rei) SAD expression. Reference roles IN ORDER: image 1 is the current sad sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new rei normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Nagumo is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+
+Character: REI, 25-year-old Japanese visual-kei cafe manager, lean androgynous adult man, asymmetric layered hair deep blood-red on one side and jet black on the other, pale skin, dark eyeliner, burgundy eyes, rose and floral tattoos on neck and hands, black nails, fitted black velvet long coat with red lining, red/silver floral trim, silver buttons and waist chains, black shirt and waistcoat, narrow black trousers, black leather boots. Shy and serious behind the bold look; never sneering.
+Expression and pose to keep from image 1 (sad): eyes lowered or closed, head tilted down, small downturned mouth, one hand gripping the coat front at his chest. Match image 2's head size, NOT image 1's smaller head.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+#### serious
+
+```
+Identity-preserving redraw of a full-body visual-novel sprite: 零-REI- (rei) SERIOUS expression. Reference roles IN ORDER: image 1 is the current serious sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new rei normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Nagumo is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+
+Character: REI, 25-year-old Japanese visual-kei cafe manager, lean androgynous adult man, asymmetric layered hair deep blood-red on one side and jet black on the other, pale skin, dark eyeliner, burgundy eyes, rose and floral tattoos on neck and hands, black nails, fitted black velvet long coat with red lining, red/silver floral trim, silver buttons and waist chains, black shirt and waistcoat, narrow black trousers, black leather boots. Shy and serious behind the bold look; never sneering.
+Expression and pose to keep from image 1 (serious): level focused gaze, closed mouth, the same cuff-adjusting pose as the normal. Match image 2's head size, NOT image 1's smaller head.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+#### smile
+
+```
+Identity-preserving redraw of a full-body visual-novel sprite: 零-REI- (rei) SMILE expression. Reference roles IN ORDER: image 1 is the current smile sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new rei normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Nagumo is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+
+Character: REI, 25-year-old Japanese visual-kei cafe manager, lean androgynous adult man, asymmetric layered hair deep blood-red on one side and jet black on the other, pale skin, dark eyeliner, burgundy eyes, rose and floral tattoos on neck and hands, black nails, fitted black velvet long coat with red lining, red/silver floral trim, silver buttons and waist chains, black shirt and waistcoat, narrow black trousers, black leather boots. Shy and serious behind the bold look; never sneering.
+Expression and pose to keep from image 1 (smile): soft small closed-mouth smile with slightly narrowed eyes, the same cuff-adjusting pose. Match image 2's head size, NOT image 1's smaller head.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+#### surprise
+
+```
+Identity-preserving redraw of a full-body visual-novel sprite: 零-REI- (rei) SURPRISE expression. Reference roles IN ORDER: image 1 is the current surprise sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new rei normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Nagumo is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+
+Character: REI, 25-year-old Japanese visual-kei cafe manager, lean androgynous adult man, asymmetric layered hair deep blood-red on one side and jet black on the other, pale skin, dark eyeliner, burgundy eyes, rose and floral tattoos on neck and hands, black nails, fitted black velvet long coat with red lining, red/silver floral trim, silver buttons and waist chains, black shirt and waistcoat, narrow black trousers, black leather boots. Shy and serious behind the bold look; never sneering.
+Expression and pose to keep from image 1 (surprise): eyes wide, lips slightly parted, hands near the chest and cuff as in image 1. Match image 2's head size, NOT image 1's smaller head.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+### 斧崎マキ（`maki`）　②＝`maki-remaster-v2/normal-source.png（推奨B）`
+
+#### excited
+
+```
+Identity-preserving redraw of a full-body visual-novel sprite: 斧崎マキ (maki) EXCITED expression. Reference roles IN ORDER: image 1 is the current excited sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new maki normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Rin is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+
+Character: Onozaki Maki, 34-year-old Japanese woman who runs an axe-throwing bar, tall athletic adult with broad shoulders and strong forearms, short swept-back dark auburn hair with a copper streak, amber eyes, freckles, rust-red rolled-sleeve work shirt over a charcoal undershirt, worn dark-brown leather work apron with brass rivets and a small axe-shaped pin, dark work trousers, sturdy lace-up boots. No axe or handheld weapon.
+Expression and pose to keep from image 1 (excited): big open-mouth laugh, eyes open and bright, one fist raised beside her shoulder, the other fist lowered at her side, energetic lean. Match image 2's head size, NOT image 1's smaller head.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+#### serious
+
+```
+Identity-preserving redraw of a full-body visual-novel sprite: 斧崎マキ (maki) SERIOUS expression. Reference roles IN ORDER: image 1 is the current serious sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new maki normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Rin is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+
+Character: Onozaki Maki, 34-year-old Japanese woman who runs an axe-throwing bar, tall athletic adult with broad shoulders and strong forearms, short swept-back dark auburn hair with a copper streak, amber eyes, freckles, rust-red rolled-sleeve work shirt over a charcoal undershirt, worn dark-brown leather work apron with brass rivets and a small axe-shaped pin, dark work trousers, sturdy lace-up boots. No axe or handheld weapon.
+Expression and pose to keep from image 1 (serious): focused level look, closed mouth, one index finger raised as if making a point, the other hand on her hip. Match image 2's head size, NOT image 1's smaller head.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+#### smile
+
+```
+Identity-preserving redraw of a full-body visual-novel sprite: 斧崎マキ (maki) SMILE expression. Reference roles IN ORDER: image 1 is the current smile sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new maki normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Rin is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+
+Character: Onozaki Maki, 34-year-old Japanese woman who runs an axe-throwing bar, tall athletic adult with broad shoulders and strong forearms, short swept-back dark auburn hair with a copper streak, amber eyes, freckles, rust-red rolled-sleeve work shirt over a charcoal undershirt, worn dark-brown leather work apron with brass rivets and a small axe-shaped pin, dark work trousers, sturdy lace-up boots. No axe or handheld weapon.
+Expression and pose to keep from image 1 (smile): one eye closed in a laughing wink, teeth-showing grin, a thumbs-up with one hand, the other hand on her hip. Match image 2's head size, NOT image 1's smaller head.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+#### surprise
+
+```
+Identity-preserving redraw of a full-body visual-novel sprite: 斧崎マキ (maki) SURPRISE expression. Reference roles IN ORDER: image 1 is the current surprise sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new maki normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Rin is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+
+Character: Onozaki Maki, 34-year-old Japanese woman who runs an axe-throwing bar, tall athletic adult with broad shoulders and strong forearms, short swept-back dark auburn hair with a copper streak, amber eyes, freckles, rust-red rolled-sleeve work shirt over a charcoal undershirt, worn dark-brown leather work apron with brass rivets and a small axe-shaped pin, dark work trousers, sturdy lace-up boots. No axe or handheld weapon.
+Expression and pose to keep from image 1 (surprise): wide eyes, open mouth, both hands raised palms out at shoulder height. Match image 2's head size, NOT image 1's smaller head.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+### ダ・シルヴァ太陽（`da_silva`）　②＝`da_silva-remaster-v2/normal-source.png（推奨B）`
+
+#### excited
+
+```
+Identity-preserving redraw of a full-body visual-novel sprite: ダ・シルヴァ太陽 (da_silva) EXCITED expression. Reference roles IN ORDER: image 1 is the current excited sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new da_silva normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Nagumo is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+
+Character: Da Silva Taiyo, 28-year-old Brazilian man, tanned athletic adult, dark curly mid-short hair, warm brown eyes, red/yellow tropical floral dark-green short-sleeve shirt open over a white tank top, ivory wide trousers, brown crossed-strap leather sandals, green/yellow wristband. No props.
+Expression and pose to keep from image 1 (excited): big open-mouth laugh with a wink, one arm raised high reaching outward with an open five-finger hand, the other fist pumped near his shoulder. Match image 2's head size, NOT image 1's smaller head.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+#### serious
+
+```
+Identity-preserving redraw of a full-body visual-novel sprite: ダ・シルヴァ太陽 (da_silva) SERIOUS expression. Reference roles IN ORDER: image 1 is the current serious sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new da_silva normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Nagumo is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+
+Character: Da Silva Taiyo, 28-year-old Brazilian man, tanned athletic adult, dark curly mid-short hair, warm brown eyes, red/yellow tropical floral dark-green short-sleeve shirt open over a white tank top, ivory wide trousers, brown crossed-strap leather sandals, green/yellow wristband. No props.
+Expression and pose to keep from image 1 (serious): calm level gaze, closed mouth, arms folded across his chest. Match image 2's head size, NOT image 1's smaller head.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+#### smile
+
+```
+Identity-preserving redraw of a full-body visual-novel sprite: ダ・シルヴァ太陽 (da_silva) SMILE expression. Reference roles IN ORDER: image 1 is the current smile sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new da_silva normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Nagumo is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+
+Character: Da Silva Taiyo, 28-year-old Brazilian man, tanned athletic adult, dark curly mid-short hair, warm brown eyes, red/yellow tropical floral dark-green short-sleeve shirt open over a white tank top, ivory wide trousers, brown crossed-strap leather sandals, green/yellow wristband. No props.
+Expression and pose to keep from image 1 (smile): confident teeth-showing smile, one arm reaching forward and down with an open hand, the other hand in his trouser pocket. Match image 2's head size, NOT image 1's smaller head.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+#### surprise
+
+```
+Identity-preserving redraw of a full-body visual-novel sprite: ダ・シルヴァ太陽 (da_silva) SURPRISE expression. Reference roles IN ORDER: image 1 is the current surprise sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new da_silva normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Nagumo is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+
+Character: Da Silva Taiyo, 28-year-old Brazilian man, tanned athletic adult, dark curly mid-short hair, warm brown eyes, red/yellow tropical floral dark-green short-sleeve shirt open over a white tank top, ivory wide trousers, brown crossed-strap leather sandals, green/yellow wristband. No props.
+Expression and pose to keep from image 1 (surprise): wide eyes, small open mouth, one arm reaching outward with a spread hand, the other hand in his trouser pocket. Match image 2's head size, NOT image 1's smaller head.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+## 作り直し：路上占い師・シェイク・王煙楼（TS12）
+
+1回目（TS10）は「頭を約○%大きく」の指示で、頭が2〜9%しか大きくならず、規格（6.4〜7.7頭身）に届かなかった。フード・頭巾・長いひげで頭頂やあごが隠れているのが原因とみられる。今回は**画像の中の大きさをpxで**指定する。参照画像は①現行の通常、②南雲（頭身の文脈だけ）、③みんと・④あげは（画風だけ）。
+
+合格の条件：目の高さからあごまでの長さが、全身の高さ（頭・フードの上端〜靴底）の目安の値以上。全身1400pxなら、路上占い師 約85px・シェイク 約100px・王煙楼 約85px。顔・年齢・衣装・ポーズは①のまま。
+
+### 路上占い師（`uranaishi`）・normal
+
+```
+Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Nagumo is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
+
+Character: the street fortune teller, an elderly woman with a warm knowing smile, silver hair with small braids, wrinkles, a deep purple layered hooded robe with burgundy sash and lining, gold ornaments and tassels, three tarot cards fanned in one hand, the other palm open and extended toward the viewer, brown shoes.
+
+HEAD SIZE (the previous attempt failed because a percentage instruction barely changed the head): Under the hood the skull is hidden, so size the FACE: in a figure about 1400 px tall (hood top to soles), the distance from the eye line to the chin must be about 85 px (now it is about 67 px), and the face from the eyebrows to the chin about 125 px. Enlarge the whole face, hair, ears and hood opening together, not only the hood. Keep the total figure height, the robe silhouette, both hands, the cards and the stance. The character must still look like the same person of the same age.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+### シェイク（`sheikh`）・normal
+
+```
+Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Nagumo is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
+
+Character: Sheikh Al-Ghariyan, a 52-year-old Emirati man with a calm composed face, tan skin, dark beard with grey, white ghutra headcloth with a black agal, white kandura with a gold-trimmed outer robe, ring and wristwatch, black and gold shoes, one hand lowered and the other near his abdomen.
+
+HEAD SIZE (the previous attempt failed because a percentage instruction barely changed the head): The skull is hidden by the headcloth, so size the FACE: in a figure about 1400 px tall (headcloth top to soles), the distance from the eye line to the chin (under the beard) must be about 100 px (now it is about 79 px). Enlarge the whole face, beard, headcloth and agal together. Keep the total figure height, the robe silhouette, both hands and the stance. The character must still look like the same person of the same age.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+### 王煙楼（`master_hookah`）・normal
+
+```
+Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Nagumo is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
+
+Character: Wang Yanlou, a stern 58-year-old Chinese shisha master, white hair tied in a long braid, long white beard tied at the end, wrinkles, arms folded, crimson frog-button jacket with a half cape and gold cuffs, black trousers and shoes, one coiled hose with a rigid brass handle stored at the waist.
+
+HEAD SIZE (the previous attempt failed because a percentage instruction barely changed the head): The chin is hidden by the long beard, so size the FACE: in a figure about 1400 px tall (hair top to soles), the distance from the eye line to the lower lip must be about 70 px, and to the estimated chin under the beard about 85 px (now about 65 px). Enlarge the whole head, hair, ears and beard together. Keep the total figure height, the folded arms, the cape and the stance. The stored hose is ONE continuous coiled hose with exactly two ends: a small metal connector at one end and a rigid brass handle with a mouthpiece at the other. It never forks, breaks, floats or shows a third end. It is stored, not connected to any hookah; draw no hookah, bowl, coal or smoke. Follow docs/shisha_reference.md section 4 and pass one hose-and-handle photograph from siryou web-refs as a structure-only reference. The character must still look like the same person of the same age.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
 ## 試作1回目でわかったこと（2026-11-02）
 
 Codex が上の3つの英文で各3案（計9案）を生成した。頭身は次のとおりで、指定した拡大率どおりにはならなかった。

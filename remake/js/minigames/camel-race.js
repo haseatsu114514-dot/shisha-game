@@ -8,7 +8,7 @@
 import { el } from "../core/util.js";
 import { SE } from "../core/audio.js";
 import { imgFileUrl } from "../core/img-file.js";
-import { RACE, CUE, PLAYER, createRace, stepRace, pressVoice, pressSignal, activeCue, inSpurt, standings, scoreRace,
+import { RACE, CUE, PLAYER, SIGNAL, rng, createRace, stepRace, pressVoice, pressSignal, activeCue, inSpurt, standings, scoreRace,
   POLICIES, PLAYER_CAMEL, RIVAL_PROFILES } from "./camel-race-model.js";
 
 export const CAMEL_RACE_TITLE = "CAMEL RACE";
@@ -17,16 +17,22 @@ const PX_PER_M = 18;              // 1m＝18px（画面に約70mが入る）
 const PLAYER_SCREEN_X = 420;      // 自分のラクダはこの位置に固定し、世界が流れる
 const HORIZON = 330;
 // 奥から手前へ: ライバル3（先行）・ライバル2（追い込み）・自分・ライバル1（安定）。奥ほど小さく高い位置。
+// 奥から手前の4列。足元（y + 31×scale）はすべて手前の柵（y=604）より上。手前の柵はラクダの後に描いて、脚の前を通す。
 const LANES = [
-  { id: "front", y: 440, scale: 0.78 },
-  { id: "closer", y: 482, scale: 0.86 },
-  { id: "player", y: 528, scale: 0.95 },
-  { id: "steady", y: 578, scale: 1.04 },
+  { id: "front", y: 430, scale: 0.78 },
+  { id: "closer", y: 470, scale: 0.86 },
+  { id: "player", y: 512, scale: 0.95 },
+  { id: "steady", y: 554, scale: 1.02 },
 ];
+const ICONS = Object.freeze({
+  voice: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.2v5.6h3.8l5 4.2V5l-5 4.2z" fill="currentColor"/><path d="M15.6 8.6a4.8 4.8 0 0 1 0 6.8M18.2 6a8.4 8.4 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  signal: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.2 2 4.5 13.6h6.3L9.9 22l8.8-11.8h-6.4z" fill="currentColor"/></svg>',
+  camel: '<svg viewBox="0 0 48 32" aria-hidden="true"><path d="M5 30l3-9c-2-1-3-3-3-6 0-4 3-7 7-7 2-4 6-6 10-3 3 2 5 2 7 0l4-6c2-1 5 0 6 2l2 4-4 1-4 7c-1 4-4 7-8 8l1 9h-3l-2-8h-6l-3 8H9l2-8-3-1-1 9z" fill="currentColor"/></svg>',
+});
 const TUTORIAL = [
-  { title: "ラクダは、自分で走る", body: "進路は操縦しない。背中の小さなロボット騎手に、横を走る車からリモコンで合図を送るだけ。あとはラクダの足にまかせる。" },
-  { title: "声をかける ── Space／左のボタン", body: "ラクダの頭の上に金色の輪が出て、縮んでいく。内側の輪と重なった瞬間に押すと PERFECT。外せば無駄な声でスタミナが減り、連打はもっと減る。" },
-  { title: "合図 ── X／右のボタン", body: "ロボット騎手の腕を振る。スタミナを使って一気に加速し、残り250mの LAST SPURT でいちばん伸びる。息が切れていると空ぶかし。終盤に残しておこう。" },
+  { icon: "camel", title: "ラクダは、自分で走る", body: "進路は操縦しない。背中の小さなロボット騎手に、横を走る車からリモコンで合図を送るだけ。あとはラクダの足にまかせる。" },
+  { icon: "voice", title: "声をかける ── Space／左のボタン", body: "ラクダの頭の上に金色の輪が出て、縮んでいく。内側の輪と重なった瞬間に押すと PERFECT。外せば無駄な声でスタミナが減り、連打はもっと減る。" },
+  { icon: "signal", title: "合図 ── X／右のボタン", body: "ロボット騎手の腕を振る。スタミナを使って一気に加速し、残り250mの LAST SPURT でいちばん伸びる。息が切れていると空ぶかし。終盤に残しておこう。" },
 ];
 const sfx = name => { try { SE[name]?.(); } catch { /* 音は無くても遊べる */ } };
 
@@ -37,7 +43,12 @@ const sfx = name => { try { SE[name]?.(); } catch { /* 音は無くても遊べ�
 const ART_FILES = Object.freeze({
   camel: [1, 2, 3, 4].map(i => `ui/camel_race/camel_${i}.webp`),
   jockey: "ui/camel_race/jockey.webp", suv: "ui/camel_race/suv.webp", wheel: "ui/camel_race/wheel.webp",
+  track: "backgrounds/bg_dubai_camel_track_morning.webp",
 });
+// 奥の景色（レース場の朝の絵・1280×720）。1.25倍にして、絵の y=395（奥の柵の根元）を走路の奥の柵（y=398）にそろえ、
+// レースの進み具合で 0→320px だけ横へ流す（遠景のゆっくりした流れ）。走路から手前はコードで描く砂地。
+const BACKDROP = Object.freeze({ scale: 1.25, sourceGround: 395, ground: 398 });
+const TRACK_TOP = 386, TRACK_BOTTOM = 612, ROAD_BOTTOM = 688, TILE_W = 640;
 const CAMEL_ART = Object.freeze({ scale: 0.3, centerX: 256, ground: 342, seatX: 215, seatY: 131, stride: 4.5 });
 const JOCKEY_ART = Object.freeze({ cx: 94, bottom: 133, scale: 0.9 });
 const SUV_ART = Object.freeze({ scale: 0.3, centerX: 360, ground: 331, wheels: [[167, 259], [581, 259]], wheel: 137 / 160, radius: 60 });
@@ -48,12 +59,64 @@ let artTask = null;
 export function loadCamelArt() {
   if (typeof Image === "undefined") return Promise.resolve(null);
   const load = rel => { const image = new Image(); image.decoding = "async"; image.src = imgFileUrl(rel); return image.decode().then(() => image); };
-  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel)])
-    .then(([camel, jockey, suv, wheel]) => ({ camel, jockey, suv, wheel }))
+  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track)])
+    .then(([camel, jockey, suv, wheel, track]) => ({ camel, jockey, suv, wheel, track, ground: groundTiles() }))
     .catch(() => null);
   return artTask;
 }
 if (typeof Image !== "undefined" && typeof document !== "undefined") void loadCamelArt();
+
+/** 走路の砂地と、SUV が走る道のタイル（横幅 TILE_W で左右がつながる）。蹄の跡・まだらの砂・轍を描き込む。 */
+function groundTiles() {
+  const random = rng(20261102);
+  const tile = (height, top, bottom, paint) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = TILE_W; canvas.height = height;
+    const g = canvas.getContext("2d");
+    const base = g.createLinearGradient(0, 0, 0, height);
+    base.addColorStop(0, top); base.addColorStop(1, bottom);
+    g.fillStyle = base; g.fillRect(0, 0, TILE_W, height);
+    // 横にまたぐ描き込みは左右に2回描いて、つなぎ目を消す。
+    const wrap = draw => { draw(0); draw(TILE_W); draw(-TILE_W); };
+    paint(g, height, wrap);
+    return canvas;
+  };
+  const sand = tile(TRACK_BOTTOM - TRACK_TOP, "#d9b47c", "#c2894f", (g, h, wrap) => {
+    // ならした砂の筋（横）。
+    for (let i = 0; i < 70; i++) {
+      const y = random() * h, x = random() * TILE_W, w = 60 + random() * 220, light = random() < 0.5;
+      g.fillStyle = light ? "rgba(255,236,200,0.10)" : "rgba(120,72,30,0.08)";
+      wrap(o => g.fillRect(x + o, y, w, 1 + random() * 2));
+    }
+    // まだらの砂粒。手前ほど大きい。
+    for (let i = 0; i < 2600; i++) {
+      const y = random() * h, x = random() * TILE_W, r = 0.4 + (y / h) * 1.4 * random();
+      g.fillStyle = random() < 0.5 ? `rgba(255,240,210,${0.18 + random() * 0.2})` : `rgba(110,64,26,${0.12 + random() * 0.18})`;
+      wrap(o => { g.beginPath(); g.arc(x + o, y, r, 0, Math.PI * 2); g.fill(); });
+    }
+    // 蹄の跡（小さな三日月の影と縁の明るさ）。
+    for (let i = 0; i < 130; i++) {
+      const y = 8 + random() * (h - 12), x = random() * TILE_W, r = 1.6 + (y / h) * 3;
+      wrap(o => {
+        g.fillStyle = "rgba(96,54,20,0.20)"; g.beginPath(); g.ellipse(x + o, y, r * 1.5, r * 0.6, 0, 0, Math.PI * 2); g.fill();
+        g.fillStyle = "rgba(255,232,190,0.18)"; g.beginPath(); g.ellipse(x + o + r * 0.6, y + r * 0.3, r * 1.2, r * 0.3, 0, 0, Math.PI * 2); g.fill();
+      });
+    }
+  });
+  const road = tile(ROAD_BOTTOM - TRACK_BOTTOM, "#a98457", "#8f6b43", (g, h, wrap) => {
+    for (let i = 0; i < 1400; i++) {
+      const y = random() * h, x = random() * TILE_W;
+      g.fillStyle = random() < 0.5 ? "rgba(255,230,190,0.16)" : "rgba(60,36,16,0.16)";
+      wrap(o => g.fillRect(x + o, y, 1 + random() * 2, 1));
+    }
+    // 2本の轍（タイヤの跡）。
+    for (const y of [h * 0.42, h * 0.78]) {
+      g.fillStyle = "rgba(70,44,20,0.22)"; g.fillRect(0, y - 5, TILE_W, 10);
+      for (let x = 0; x < TILE_W; x += 7) { g.fillStyle = "rgba(50,30,12,0.25)"; g.fillRect(x, y - 4, 3, 8); }
+    }
+  });
+  return { sand, road };
+}
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 const fmtTime = seconds => `${Math.floor(seconds / 60)}:${(seconds % 60).toFixed(2).padStart(5, "0")}`;
 const active = new WeakMap();
@@ -88,24 +151,52 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   const countdownNode = el("div.camel-countdown", { "aria-hidden": "true" });
   const live = el("p.camel-live", { role: "status", "aria-live": "polite" });
   const standingsNode = el("ol.camel-standings", { "aria-label": "順位" });
-  const stageNode = el("div.camel-stage", [canvas, feedback, banner, countdownNode]);
-  const voiceButton = el("button.camel-control.camel-voice", { type: "button", dataset: { test: "camel-voice" } }, [
-    el("strong", { text: "声をかける" }), el("span", { text: "Space" })]);
-  const signalButton = el("button.camel-control.camel-signal", { type: "button", dataset: { test: "camel-signal" } }, [
-    el("strong", { text: "合図" }), el("span", { text: "X" })]);
+  // コースの上に重ねる HUD（文字がにじまないよう HTML）。進み具合・時計と調子・スタミナと合図。
+  const allCamels = [PLAYER_CAMEL, ...RIVAL_PROFILES];
+  const dots = new Map(allCamels.map(camel => [camel.id, el("i.camel-dot", { dataset: { who: camel.id }, style: { "--camel-color": camel.color } })]));
+  const progressNode = el("div.camel-progress", { "aria-hidden": "true" }, [el("div.camel-progress-track", [
+    el("div.camel-progress-spurt", { style: { "--x": RACE.spurtFrom } }, [el("span", { text: "SPURT" })]),
+    ...[0.25, 0.5].map(x => el("i.camel-progress-tick", { style: { "--x": x } })),
+    el("i.camel-progress-flag"), ...dots.values(),
+  ])]);
+  // 画面いっぱいにコースを出し、見出し・時計・順位・ボタンはコースの上に重ねる（上下の帯でコースを狭めない）。
+  // 左上: 題名と時計、上の中央: 進み具合、右上: やめる と順位（縦）、左下: 声（調子の棒つき）、右下: 合図（スタミナつき）。
+  const clockTime = el("b.camel-clock-time", { text: "0:00.00" });
+  const clockNode = el("div.camel-clock", { "aria-hidden": "true" }, [
+    el("h1.camel-title", { text: CAMEL_RACE_TITLE }), clockTime,
+    el("small.camel-clock-sub", { text: `練習 ${RACE.length.toLocaleString("ja-JP")}m・${RIVAL_PROFILES.length + 1}頭` })]);
+  const rhythmBars = Array.from({ length: 5 }, () => el("i"));
+  const staminaValue = el("b", { text: "100" });
+  const staminaFill = el("i");
+  const staminaNode = el("span.camel-stamina", { "aria-hidden": "true", dataset: { state: "ok" } }, [
+    el("span.camel-stamina-bar", [staminaFill, el("span.camel-stamina-mark", { style: { "--x": PLAYER.tired / 100 } })]), staminaValue]);
+  const hudNode = el("div.camel-hud", { hidden: true }, [progressNode, clockNode, standingsNode]);
+  const signalCost = el("small.camel-signal-note", { text: `−${SIGNAL.cost}` });
+  const voiceButton = el("button.camel-control.camel-voice", { type: "button", dataset: { test: "camel-voice", cue: "off" } }, [
+    el("span.camel-control-icon", { html: ICONS.voice }),
+    el("span.camel-control-text", [el("strong", { text: "声をかける" }),
+      el("span.camel-rhythm", { "aria-hidden": "true" }, [el("small", { text: "調子" }), el("span.camel-rhythm-bars", rhythmBars)])]),
+    el("kbd", { text: "Space" })]);
+  const signalButton = el("button.camel-control.camel-signal", { type: "button", dataset: { test: "camel-signal", state: "ready" } }, [
+    el("i.camel-control-cool", { "aria-hidden": "true" }),
+    el("span.camel-control-icon", { html: ICONS.signal }),
+    el("span.camel-control-text", [el("span.camel-signal-head", [el("strong", { text: "合図" }), signalCost]), staminaNode]),
+    el("kbd", { text: "X" })]);
   const controls = el("div.camel-controls", [voiceButton, signalButton]);
   const closeButton = el("button.camel-close", { type: "button", text: "やめる", dataset: { test: "camel-close" } });
-  const header = el("header.camel-header", [
-    el("div", [el("h1", { text: CAMEL_RACE_TITLE }), el("p", { text: `練習レース ${RACE.length.toLocaleString("ja-JP")}m ── ${RIVAL_PROFILES.length + 1}頭` })]),
-    standingsNode, closeButton,
-  ]);
+  const stageNode = el("div.camel-stage", [canvas, hudNode, feedback, banner, countdownNode, controls, closeButton]);
   const sheet = el("div.camel-sheet", { hidden: true });
   const root = el("section.camel-game", { role: "dialog", "aria-modal": "true", "aria-label": CAMEL_RACE_TITLE, tabindex: "-1",
-    dataset: { test: "camel-game", phase: "loading", reducedMotion: String(reducedMotion) } }, [header, stageNode, controls, live, sheet]);
+    dataset: { test: "camel-game", phase: "loading", reducedMotion: String(reducedMotion) } }, [stageNode, live, sheet]);
   host.append(root);
 
   let art = null;
-  void loadCamelArt().then(value => { art = value; if (!done) root.dataset.art = value ? "sprites" : "canvas"; });
+  void loadCamelArt().then(value => {
+    art = value;
+    if (done) return;
+    root.dataset.art = value ? "sprites" : "canvas";
+    if (phase === "tutorial" || phase === "loading") draw();
+  });
   let race = null, phase = "loading", raf = 0, last = null, goalAt = 0, feedbackTimer = 0, bannerTimer = 0, countdownLeft = 0, countdownShown = -1;
   let standingsStamp = 0, whip = 0, done = false, spurtShown = false, settleTimer = 0;
   const dust = [], confetti = [];
@@ -113,7 +204,11 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   const pilotPolicy = typeof pilot === "function" ? pilot : pilot ? POLICIES[pilot] : null;
   if (pilot && !pilotPolicy) { active.delete(host); root.remove(); return Promise.reject(new RangeError(`Unknown pilot: ${pilot}`)); }
 
-  const setPhase = next => { phase = next; root.dataset.phase = next; controls.hidden = next !== "race" && next !== "countdown"; };
+  const setPhase = next => {
+    phase = next; root.dataset.phase = next;
+    controls.hidden = next !== "race" && next !== "countdown";
+    hudNode.hidden = !["countdown", "race", "goal"].includes(next);
+  };
   const announce = text => { live.textContent = text; };
   const showFeedback = (text, kind) => {
     feedback.textContent = text; feedback.dataset.kind = kind; feedback.classList.remove("show");
@@ -126,6 +221,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     if (phase !== "race" || !race) return;
     const result = pressVoice(race);
     if (!result) return;
+    flashButton(voiceButton, result.type);
     if (result.type === "perfect") { sfx("perfect"); showFeedback("PERFECT", "perfect"); }
     else if (result.type === "good") { sfx("good"); showFeedback(result.dt > 0 ? "GOOD（遅め）" : "GOOD（早め）", "good"); }
     else { sfx("miss"); showFeedback(result.spam ? "連打はダメ" : "無駄な声", "miss"); }
@@ -135,11 +231,15 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     const result = pressSignal(race);
     if (!result || result.type === "cooldown") return;
     whip = 1;
+    flashButton(signalButton, result.type === "spent" ? "miss" : "boost");
     sfx("whoosh");
     if (result.type === "spent") showFeedback("空ぶかし……", "miss");
     else if (result.type === "spurt") showFeedback("スパート！", "spurt");
     else if (result.early) showFeedback("早すぎ？", "early");
     else showFeedback("加速", "boost");
+  };
+  const flashButton = (button, kind) => {
+    button.dataset.hit = kind; button.classList.remove("hit"); void button.offsetWidth; button.classList.add("hit");
   };
   const press = (button, handler) => {
     button.addEventListener("pointerdown", event => { event.preventDefault(); handler(); });
@@ -179,10 +279,14 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     const next = el("button.btn.primary", { type: "button", text: page === TUTORIAL.length - 1 ? "スタート" : "次へ", dataset: { test: "camel-tutorial-next" },
       onclick: () => page === TUTORIAL.length - 1 ? startRace() : openTutorial(page + 1) });
     const skip = el("button.btn.ghost", { type: "button", text: "とばしてスタート", dataset: { test: "camel-tutorial-skip" }, onclick: () => startRace() });
-    sheet.replaceChildren(el("div.camel-card", { dataset: { test: "camel-tutorial", page: String(page) } }, [
-      el("p.camel-eyebrow", { text: `遊び方 ${page + 1}／${TUTORIAL.length}` }),
-      el("h2", { text: step.title }), el("p", { text: step.body }),
-      el("div.camel-card-actions", page === TUTORIAL.length - 1 ? [next] : [next, skip]),
+    sheet.replaceChildren(el("div.camel-card.camel-tutorial", { dataset: { test: "camel-tutorial", page: String(page) } }, [
+      el("div.camel-tutorial-icon", { dataset: { kind: step.icon }, html: ICONS[step.icon] }),
+      el("div.camel-tutorial-body", [
+        el("p.camel-eyebrow", { text: `HOW TO PLAY  ${page + 1} / ${TUTORIAL.length}` }),
+        el("h2", { text: step.title }), el("p", { text: step.body }),
+        el("div.camel-steps", { "aria-hidden": "true" }, TUTORIAL.map((_, i) => el("i", { class: i === page ? "on" : null }))),
+        el("div.camel-card-actions", page === TUTORIAL.length - 1 ? [next] : [next, skip]),
+      ]),
     ]));
     sheet.hidden = false;
     next.focus();
@@ -195,7 +299,9 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     setPhase("countdown");
     announce("スタートまで3秒。");
     root.focus({ preventScroll: true });
-    renderStandings(true);
+    buildStandings();
+    renderStandings();
+    updateHud(true);
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(frame);
   }
@@ -254,6 +360,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     if (race && (phase === "race" || phase === "goal")) {
       standingsStamp += dt;
       if (standingsStamp > 0.25) { standingsStamp = 0; renderStandings(); }
+      updateHud();
       if (!reducedMotion) {
         for (const camel of [race.player, ...race.rivals]) {
           if (camel.finishedAt !== null && camel.id !== "player") continue;
@@ -278,35 +385,21 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     }
   }
   const laneOf = id => LANES.find(lane => lane.id === id);
-  const suvPosition = () => ({ x: PLAYER_SCREEN_X - 150 + Math.sin((race?.t || 0) * 1.3) * 6, y: 640 + Math.sin((race?.t || 0) * 9) * 1.5 });
+  // SUV は自分のラクダの少し前を並走する（左下・右下のボタンに隠れない画面の中央寄り）。
+  const suvPosition = () => ({ x: PLAYER_SCREEN_X + 210 + Math.sin((race?.t || 0) * 1.3) * 6, y: 640 + Math.sin((race?.t || 0) * 9) * 1.5 });
 
   // ---- 描写 -----------------------------------------------------------------------------------------
   function draw() {
     const t = race?.t || 0;
     const camX = race ? race.player.distance : 0;
     ctx.clearRect(0, 0, W, H);
-    // 空と太陽（朝のレース）。
-    const sky = ctx.createLinearGradient(0, 0, 0, HORIZON);
-    sky.addColorStop(0, "#1f3a66"); sky.addColorStop(0.55, "#6f9ad0"); sky.addColorStop(1, "#f3d9a7");
-    ctx.fillStyle = sky; ctx.fillRect(0, 0, W, HORIZON + 2);
-    ctx.fillStyle = "rgba(255, 236, 190, 0.95)"; ctx.beginPath(); ctx.arc(1040, 150, 46, 0, Math.PI * 2); ctx.fill();
-    // 遠い砂丘（2層。流れる速さが違う）。
-    drawDunes(camX * 0.08, HORIZON - 40, 90, "#c9a56a", 0.9);
-    drawDunes(camX * 0.22 + 400, HORIZON - 6, 60, "#dbb77c", 1);
-    // 砂漠の地面〜コース。
-    const ground = ctx.createLinearGradient(0, HORIZON, 0, H);
-    ground.addColorStop(0, "#e2c48c"); ground.addColorStop(0.45, "#d9b67a"); ground.addColorStop(1, "#c79d5f");
-    ctx.fillStyle = ground; ctx.fillRect(0, HORIZON, W, H - HORIZON);
-    // コース帯（走路）とレーンの帯。
-    ctx.fillStyle = "#cfa86a"; ctx.fillRect(0, 400, W, 200);
-    for (const lane of LANES) { ctx.fillStyle = "rgba(255,255,255,0.08)"; ctx.fillRect(0, lane.y - 2, W, 3); }
+    if (art) drawPaintedGround(camX);
+    else drawPlainGround(camX);
+    for (const lane of LANES) { ctx.fillStyle = "rgba(255,240,210,0.07)"; ctx.fillRect(0, lane.y - 2, W, 3); }
     // 柵（奥と手前）と100mごとの表示板。
-    drawFence(camX, 396, 0.7); drawFence(camX, 604, 1);
+    drawFence(camX, 396, 0.7);
     drawMarkers(camX);
     drawGates(camX);
-    // SUV が走る道（手前）。
-    ctx.fillStyle = "#a88a5c"; ctx.fillRect(0, 612, W, 76);
-    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(0, 648, W, 2);
     // 砂煙（奥）。
     drawDust(0.6);
     // ラクダ（奥から手前）。
@@ -317,13 +410,69 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         const sx = PLAYER_SCREEN_X + (camel.distance - race.player.distance) * PX_PER_M;
         drawCamel(sx, lane.y, lane.scale, camel, t);
       }
+      drawFence(camX, 604, 1);
       drawOffscreen();
       drawSuv();
+      for (const camel of order) {
+        const lane = laneOf(camel.id);
+        drawNameTag(PLAYER_SCREEN_X + (camel.distance - race.player.distance) * PX_PER_M, lane.y, lane.scale, camel);
+      }
       drawDust(1);
+      drawLight();
       drawCue();
-      drawHud();
       drawConfetti();
-    } else { drawSuv(); }
+    } else { drawFence(camX, 604, 1); drawSuv(); drawLight(); }
+  }
+  /** 絵の背景: 奥の景色をゆっくり流し、走路・道・手前の砂地をタイルで速く流す。 */
+  function drawPaintedGround(camX) {
+    const progress = race ? clamp(camX / race.length, 0, 1) : 0;
+    const width = W * BACKDROP.scale, height = H * BACKDROP.scale;
+    const pan = -(width - W) * progress;
+    const top = BACKDROP.ground - BACKDROP.sourceGround * BACKDROP.scale;
+    ctx.drawImage(art.track, pan, top, width, height);
+    const scroll = ((camX * PX_PER_M) % TILE_W + TILE_W) % TILE_W;
+    const strip = (tile, y) => { for (let x = -scroll; x < W; x += TILE_W) ctx.drawImage(tile, x, y); };
+    // 奥の柵の根元へ、走路の砂をぼかしてつなぐ。
+    ctx.save();
+    const fade = ctx.createLinearGradient(0, TRACK_TOP - 14, 0, TRACK_TOP + 12);
+    fade.addColorStop(0, "rgba(217,180,124,0)"); fade.addColorStop(1, "rgba(217,180,124,1)");
+    ctx.fillStyle = fade; ctx.fillRect(0, TRACK_TOP - 14, W, 26);
+    ctx.restore();
+    strip(art.ground.sand, TRACK_TOP);
+    strip(art.ground.road, TRACK_BOTTOM);
+    // 道より手前の砂（少し暗く、ぼかし気味）。
+    strip(art.ground.sand, ROAD_BOTTOM);
+    ctx.fillStyle = "rgba(90,52,22,0.28)"; ctx.fillRect(0, ROAD_BOTTOM, W, H - ROAD_BOTTOM);
+    // 遠くの走路ほど薄い霞。
+    const haze = ctx.createLinearGradient(0, TRACK_TOP, 0, TRACK_TOP + 90);
+    haze.addColorStop(0, "rgba(255,226,170,0.35)"); haze.addColorStop(1, "rgba(255,226,170,0)");
+    ctx.fillStyle = haze; ctx.fillRect(0, TRACK_TOP, W, 90);
+  }
+  /** 絵が読めないときの背景（空・砂丘・平らな地面）。 */
+  function drawPlainGround(camX) {
+    const sky = ctx.createLinearGradient(0, 0, 0, HORIZON);
+    sky.addColorStop(0, "#1f3a66"); sky.addColorStop(0.55, "#6f9ad0"); sky.addColorStop(1, "#f3d9a7");
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, W, HORIZON + 2);
+    ctx.fillStyle = "rgba(255, 236, 190, 0.95)"; ctx.beginPath(); ctx.arc(1040, 150, 46, 0, Math.PI * 2); ctx.fill();
+    drawDunes(camX * 0.08, HORIZON - 40, 90, "#c9a56a", 0.9);
+    drawDunes(camX * 0.22 + 400, HORIZON - 6, 60, "#dbb77c", 1);
+    const ground = ctx.createLinearGradient(0, HORIZON, 0, H);
+    ground.addColorStop(0, "#e2c48c"); ground.addColorStop(0.45, "#d9b67a"); ground.addColorStop(1, "#c79d5f");
+    ctx.fillStyle = ground; ctx.fillRect(0, HORIZON, W, H - HORIZON);
+    ctx.fillStyle = "#cfa86a"; ctx.fillRect(0, 400, W, 200);
+    ctx.fillStyle = "#a88a5c"; ctx.fillRect(0, TRACK_BOTTOM, W, ROAD_BOTTOM - TRACK_BOTTOM);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(0, 648, W, 2);
+  }
+  /** 朝の光: 左（太陽の側）から暖かい光、四隅を少し落とす。 */
+  function drawLight() {
+    ctx.save();
+    const warm = ctx.createLinearGradient(0, 0, W, 0);
+    warm.addColorStop(0, "rgba(255,170,80,0.16)"); warm.addColorStop(0.45, "rgba(255,190,110,0.04)"); warm.addColorStop(1, "rgba(80,60,120,0.06)");
+    ctx.fillStyle = warm; ctx.fillRect(0, 0, W, H);
+    const vignette = ctx.createRadialGradient(W / 2, H * 0.55, H * 0.45, W / 2, H * 0.55, H * 0.95);
+    vignette.addColorStop(0, "rgba(0,0,0,0)"); vignette.addColorStop(1, "rgba(30,14,4,0.32)");
+    ctx.fillStyle = vignette; ctx.fillRect(0, 0, W, H);
+    ctx.restore();
   }
   function drawDunes(offset, baseY, amp, color, alpha) {
     ctx.save(); ctx.globalAlpha = alpha; ctx.fillStyle = color; ctx.beginPath(); ctx.moveTo(0, HORIZON + 4);
@@ -334,33 +483,60 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     }
     ctx.lineTo(W, HORIZON + 4); ctx.closePath(); ctx.fill(); ctx.restore();
   }
+  /** 白い管の柵。支柱は砂に右下へ影を落とし、手すりは上が明るく下が陰る。 */
   function drawFence(camX, y, scale) {
     const spacing = 5 * PX_PER_M;
     const start = -((camX * PX_PER_M - PLAYER_SCREEN_X) % spacing) - spacing;
-    ctx.strokeStyle = "rgba(255,255,255,0.75)"; ctx.lineWidth = 2 * scale;
-    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-    ctx.fillStyle = "#f2efe6";
-    for (let x = start; x < W + spacing; x += spacing) ctx.fillRect(x, y - 16 * scale, 3 * scale, 18 * scale);
+    const postH = 22 * scale, postW = 4 * scale, top = y - postH;
+    ctx.save();
+    ctx.fillStyle = "rgba(70,40,15,0.22)";
+    for (let x = start; x < W + spacing; x += spacing) {
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + postW, y); ctx.lineTo(x + postW + 16 * scale, y + 5 * scale); ctx.lineTo(x + 16 * scale, y + 5 * scale); ctx.closePath(); ctx.fill();
+    }
+    ctx.fillStyle = "rgba(70,40,15,0.18)"; ctx.fillRect(0, y + 2, W, 3 * scale);
+    for (let x = start; x < W + spacing; x += spacing) {
+      const post = ctx.createLinearGradient(x, 0, x + postW, 0);
+      post.addColorStop(0, "#fffaf0"); post.addColorStop(1, "#c9c0ae");
+      ctx.fillStyle = post; ctx.fillRect(x, top, postW, postH);
+    }
+    const rail = ctx.createLinearGradient(0, top - 3 * scale, 0, top + 4 * scale);
+    rail.addColorStop(0, "#fffdf6"); rail.addColorStop(0.55, "#efe8da"); rail.addColorStop(1, "#b9ae98");
+    ctx.fillStyle = rail; ctx.fillRect(0, top - 3 * scale, W, 7 * scale);
+    ctx.fillStyle = "rgba(255,190,110,0.35)"; ctx.fillRect(0, top - 3 * scale, W, 1);
+    ctx.restore();
   }
   function drawMarkers(camX) {
     ctx.font = "bold 14px sans-serif"; ctx.textAlign = "center";
     for (let m = 100; m < race?.length || 0; m += 100) {
       const sx = PLAYER_SCREEN_X + (m - camX) * PX_PER_M;
       if (sx < -40 || sx > W + 40) continue;
-      ctx.fillStyle = "#3b2e22"; ctx.fillRect(sx - 1, 352, 3, 44);
-      ctx.fillStyle = "#fff7e6"; ctx.fillRect(sx - 20, 344, 40, 20);
-      ctx.fillStyle = "#3b2e22"; ctx.fillText(String(m), sx, 359);
+      ctx.fillStyle = "rgba(70,40,15,0.22)"; ctx.fillRect(sx + 1, 394, 14, 3);
+      ctx.fillStyle = "#e9e3d6"; ctx.fillRect(sx - 1, 352, 3, 44);
+      ctx.fillStyle = "#b8322c"; ctx.fillRect(sx - 22, 342, 44, 24);
+      ctx.fillStyle = "#fffaf0"; ctx.fillRect(sx - 19, 345, 38, 18);
+      ctx.fillStyle = "#2a1d14"; ctx.fillText(String(m), sx, 359);
     }
   }
   function drawGates(camX) {
     for (const [m, label, color] of [[0, "START", "#8ee6a8"], [race?.length || RACE.length, "FINISH", "#ffb347"]]) {
       const sx = PLAYER_SCREEN_X + (m - camX) * PX_PER_M;
       if (sx < -120 || sx > W + 120) continue;
-      ctx.fillStyle = "#3b2e22"; ctx.fillRect(sx - 4, 280, 8, 330); ctx.fillRect(sx - 4, 280, 8, 10);
-      ctx.fillStyle = color; ctx.fillRect(sx - 78, 262, 156, 34);
-      ctx.fillStyle = "#1a120c"; ctx.font = "900 20px sans-serif"; ctx.textAlign = "center"; ctx.fillText(label, sx, 287);
-      // 観客席のテント（ゴール側）。
-      if (m > 0) { ctx.fillStyle = "rgba(255,255,255,0.85)"; for (let i = 0; i < 3; i++) { const tx = sx + 90 + i * 70; ctx.beginPath(); ctx.moveTo(tx, 300); ctx.lineTo(tx + 60, 300); ctx.lineTo(tx + 30, 262); ctx.closePath(); ctx.fill(); } }
+      ctx.save();
+      // 柱（奥と手前の2本）と影。
+      ctx.fillStyle = "rgba(70,40,15,0.25)"; ctx.fillRect(sx - 4, 606, 34, 6);
+      for (const [px, top, bottom] of [[sx - 10, 270, 398], [sx - 4, 270, 610]]) {
+        const post = ctx.createLinearGradient(px, 0, px + 9, 0);
+        post.addColorStop(0, "#fffaf0"); post.addColorStop(1, "#bdb3a0");
+        ctx.fillStyle = post; ctx.fillRect(px, top, 9, bottom - top);
+      }
+      // 横断幕。ゴールは上下に市松の帯。
+      ctx.fillStyle = "rgba(0,0,0,0.25)"; ctx.fillRect(sx - 80, 260, 164, 42);
+      ctx.fillStyle = color; ctx.fillRect(sx - 84, 254, 168, 40);
+      if (m > 0) for (let i = 0; i < 21; i++) for (const row of [0, 1]) {
+        ctx.fillStyle = (i + row) % 2 ? "#1a120c" : "#fffaf0"; ctx.fillRect(sx - 84 + i * 8, row ? 290 : 254, 8, 4);
+      }
+      ctx.fillStyle = "#1a120c"; ctx.font = "900 22px sans-serif"; ctx.textAlign = "center"; ctx.fillText(label, sx, 282);
+      ctx.restore();
     }
   }
   /** 絵のラクダ（4コマ）とロボット騎手。足元を ground の線に、騎手をコブの後ろにそろえる。 */
@@ -370,7 +546,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     const image = art.camel[(frame + 4) % 4];
     const dx = x - CAMEL_ART.centerX * k, dy = y + 30 * s - CAMEL_ART.ground * k;
     ctx.save();
-    ctx.fillStyle = "rgba(60,40,20,0.22)"; ctx.beginPath(); ctx.ellipse(x, y + 30 * s, 52 * s, 7 * s, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "rgba(70,38,12,0.28)"; ctx.beginPath(); ctx.ellipse(x + 22 * s, y + 31 * s, 66 * s, 7 * s, 0, 0, Math.PI * 2); ctx.fill();
     if (camel.id !== "player" && RIVAL_TINT[camel.id]) ctx.filter = RIVAL_TINT[camel.id];
     ctx.drawImage(image, dx, dy, image.width * k, image.height * k);
     ctx.filter = "none";
@@ -381,12 +557,19 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     ctx.translate(sx, sy); ctx.rotate(-swing);
     ctx.drawImage(art.jockey, -JOCKEY_ART.cx * jk, -JOCKEY_ART.bottom * jk, art.jockey.width * jk, art.jockey.height * jk);
     ctx.restore();
-    // 名札（AI は毛色に加えて名札の色で見分ける）。
-    ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
-    ctx.fillStyle = "rgba(20,14,10,0.62)"; ctx.fillRect(-34, 34, 68, 16);
-    ctx.fillStyle = camel.color; ctx.fillRect(-34, 34, 4, 16);
-    ctx.fillStyle = "#fff6e5"; ctx.font = "bold 11px sans-serif"; ctx.textAlign = "center";
-    ctx.fillText(camel.id === "player" ? `★ ${camel.name}` : camel.name, 2, 46);
+  }
+  /** 名札（丸い札。AI は毛色に加えて札の色で見分け、自分は金の縁）。手前の柵より上に描く。 */
+  function drawNameTag(x, y, s, camel) {
+    if (x < -80 || x > W + 80) return;
+    const me = camel.id === "player";
+    const label = me ? `★ ${camel.name}` : camel.name;
+    ctx.save(); ctx.translate(x, y + 36 * s);
+    ctx.font = "bold 12px sans-serif";
+    const w = ctx.measureText(label).width + 22, h = 18;
+    ctx.fillStyle = "rgba(20,12,6,0.72)"; ctx.beginPath(); ctx.roundRect(-w / 2, 0, w, h, 9); ctx.fill();
+    ctx.fillStyle = camel.color; ctx.beginPath(); ctx.arc(-w / 2 + 9, h / 2, 4, 0, Math.PI * 2); ctx.fill();
+    if (me) { ctx.strokeStyle = "#ffd77a"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.roundRect(-w / 2, 0, w, h, 9); ctx.stroke(); }
+    ctx.fillStyle = me ? "#ffe9b8" : "#fff6e5"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(label, 5, h / 2 + 0.5);
     ctx.restore();
   }
   function drawCamel(x, y, s, camel, t) {
@@ -433,10 +616,6 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     ctx.strokeStyle = "#34404a"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-18, 0); ctx.stroke();
     ctx.strokeStyle = "#f0c060"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-18, 0); ctx.lineTo(-30, 2); ctx.stroke();
     ctx.restore();
-    // 名前札。
-    ctx.fillStyle = "rgba(20,14,10,0.6)"; ctx.fillRect(-32, 34, 64, 16);
-    ctx.fillStyle = "#fff6e5"; ctx.font = "bold 11px sans-serif"; ctx.textAlign = "center";
-    ctx.fillText(camel.id === "player" ? `★ ${camel.name}` : camel.name, 0, 46);
     ctx.restore();
   }
   function drawOffscreen() {
@@ -493,7 +672,10 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   function drawDust(layer) {
     for (const puff of dust) {
       if ((layer < 1) !== (puff.s < 0.9)) continue;
-      ctx.fillStyle = `rgba(226, 203, 160, ${Math.max(0, puff.a)})`; ctx.beginPath(); ctx.arc(puff.x, puff.y, puff.r * puff.s, 0, Math.PI * 2); ctx.fill();
+      const r = puff.r * puff.s, a = Math.max(0, puff.a);
+      const glow = ctx.createRadialGradient(puff.x, puff.y, 0, puff.x, puff.y, r);
+      glow.addColorStop(0, `rgba(238, 210, 160, ${a})`); glow.addColorStop(0.6, `rgba(222, 186, 132, ${a * 0.55})`); glow.addColorStop(1, "rgba(222, 186, 132, 0)");
+      ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(puff.x, puff.y, r, 0, Math.PI * 2); ctx.fill();
     }
   }
   function drawCue() {
@@ -513,46 +695,65 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     if (Math.abs(cue.dt) <= CUE.perfect) { ctx.fillStyle = "rgba(255,230,160,0.35)"; ctx.beginPath(); ctx.arc(cx, cy, 20, 0, Math.PI * 2); ctx.fill(); }
     ctx.fillStyle = "#fff6e5"; ctx.font = "bold 12px sans-serif"; ctx.textAlign = "center"; ctx.fillText("声", cx, cy + 4);
   }
-  function drawHud() {
-    // 距離ゲージ（4頭の位置）とスタミナ。
-    const left = 80, right = W - 80, y = 32;
-    ctx.fillStyle = "rgba(20,14,10,0.55)"; roundRect(left - 14, y - 16, right - left + 28, 34, 10);
-    ctx.strokeStyle = "rgba(255,246,229,0.6)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(left, y); ctx.lineTo(right, y); ctx.stroke();
-    const spurtX = left + (right - left) * RACE.spurtFrom;
-    ctx.strokeStyle = "rgba(255,179,71,0.9)"; ctx.beginPath(); ctx.moveTo(spurtX, y - 9); ctx.lineTo(spurtX, y + 9); ctx.stroke();
-    ctx.fillStyle = "#ffb347"; ctx.font = "bold 10px sans-serif"; ctx.textAlign = "center"; ctx.fillText("SPURT", spurtX, y - 12);
-    for (const camel of [...race.rivals, race.player]) {
-      const px = left + (right - left) * clamp(camel.distance / race.length, 0, 1);
-      ctx.fillStyle = camel.color; ctx.beginPath(); ctx.arc(px, y, camel.id === "player" ? 8 : 5, 0, Math.PI * 2); ctx.fill();
-      if (camel.id === "player") { ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.stroke(); }
-    }
-    // スタミナ（画面右下。合図の間は点滅）。
-    const sw = 300, sx = W - sw - 40, sy = H - 46;
-    const st = race.player.stamina;
-    ctx.fillStyle = "rgba(20,14,10,0.6)"; roundRect(sx - 12, sy - 26, sw + 24, 48, 10);
-    ctx.fillStyle = "#fff6e5"; ctx.font = "bold 12px sans-serif"; ctx.textAlign = "left"; ctx.fillText(`スタミナ ${Math.round(st)}`, sx, sy - 10);
-    ctx.fillStyle = "rgba(255,255,255,0.15)"; roundRect(sx, sy, sw, 12, 6);
-    ctx.fillStyle = st < PLAYER.spent ? "#ff6b6b" : st < PLAYER.tired ? "#f0a64a" : "#8ee6a8"; roundRect(sx, sy, sw * (st / 100), 12, 6);
-    const cooling = race.t < race.player.cooldownUntil;
-    ctx.textAlign = "right"; ctx.fillStyle = cooling ? "rgba(255,246,229,0.5)" : "#ffe2a6";
-    ctx.fillText(cooling ? `合図 あと${Math.ceil(race.player.cooldownUntil - race.t)}秒` : inSpurt(race) ? "合図OK ── スパート区間" : "合図OK", sx + sw, sy - 10);
-    // 時計と調子。
-    ctx.textAlign = "left"; ctx.fillStyle = "#fff6e5"; ctx.font = "bold 16px sans-serif";
-    ctx.fillText(fmtTime(race.t), 40, H - 30);
-    ctx.font = "bold 12px sans-serif"; ctx.fillStyle = "rgba(255,246,229,0.8)";
-    ctx.fillText(`調子 ${"●".repeat(Math.round(race.player.rhythm * 5))}${"○".repeat(5 - Math.round(race.player.rhythm * 5))}`, 40, H - 52);
-  }
   function drawConfetti() {
     for (const piece of confetti) {
       ctx.save(); ctx.translate(piece.x, piece.y); ctx.rotate(piece.rot); ctx.fillStyle = `hsl(${piece.hue} 85% 65%)`; ctx.fillRect(-5, -3, 10, 6); ctx.restore();
     }
   }
-  function renderStandings(reset = false) {
+  const chips = new Map();
+  /** 順位表の4枚の札を作る（以後は並び順だけ変えて、入れ替わりを滑らせる）。 */
+  function buildStandings() {
+    chips.clear();
+    standingsNode.replaceChildren(...[race.player, ...race.rivals].map(camel => {
+      const chip = el("li", { dataset: { who: camel.id, test: camel.id === "player" ? "camel-standing-player" : null }, style: { "--camel-color": camel.color } }, [
+        el("b.camel-rank-badge"), el("span.camel-chip-name", { text: camel.id === "player" ? `★ ${camel.name}` : camel.name }), el("small.camel-chip-gap")]);
+      chips.set(camel.id, chip);
+      return chip;
+    }));
+  }
+  function renderStandings() {
     const rows = standings(race);
-    standingsNode.replaceChildren(...rows.map(row => el("li", { dataset: { who: row.id, test: row.id === "player" ? "camel-standing-player" : null }, style: { "--camel-color": row.color } }, [
-      el("b", { text: `${row.position}` }), el("span", { text: row.name }),
-      el("small", { text: row.finishedAt !== null ? "GOAL" : reset ? "" : `${Math.round(row.distance)}m` }),
-    ])));
+    const leader = rows[0];
+    for (const row of rows) {
+      const chip = chips.get(row.id);
+      if (!chip) continue;
+      const before = Number(chip.dataset.pos || 0);
+      chip.style.setProperty("--pos", String(row.position - 1));
+      chip.dataset.pos = String(row.position);
+      chip.querySelector(".camel-rank-badge").textContent = String(row.position);
+      chip.querySelector(".camel-chip-gap").textContent = row.finishedAt !== null ? "GOAL"
+        : row.position === 1 ? "TOP" : `−${Math.max(0, Math.round(leader.distance - row.distance))}m`;
+      if (before && before !== row.position) {
+        chip.dataset.move = row.position < before ? "up" : "down";
+        clearTimeout(chip.moveTimer);
+        chip.moveTimer = setTimeout(() => { delete chip.dataset.move; }, 900);
+      }
+    }
+  }
+  const hudCache = {};
+  const setOnce = (key, value, apply) => { if (hudCache[key] !== value) { hudCache[key] = value; apply(value); } };
+  /** HUD を今のレースに合わせる（変わった所だけ書き換える）。 */
+  function updateHud(force = false) {
+    if (!race) return;
+    if (force) for (const key of Object.keys(hudCache)) delete hudCache[key];
+    for (const camel of [race.player, ...race.rivals]) {
+      setOnce(`dot-${camel.id}`, Math.round(clamp(camel.distance / race.length, 0, 1) * 1000) / 1000, x => dots.get(camel.id)?.style.setProperty("--x", String(x)));
+    }
+    setOnce("time", fmtTime(race.t), text => { clockTime.textContent = text; });
+    const lit = Math.round(race.player.rhythm * 5);
+    setOnce("rhythm", lit, n => rhythmBars.forEach((bar, i) => bar.classList.toggle("on", i < n)));
+    const stamina = Math.round(race.player.stamina);
+    setOnce("stamina", stamina, v => { staminaValue.textContent = String(v); staminaFill.style.setProperty("--v", String(v / 100)); });
+    setOnce("staminaState", stamina < PLAYER.spent ? "spent" : stamina < PLAYER.tired ? "tired" : "ok", state => { staminaNode.dataset.state = state; signalButton.dataset.stamina = state; });
+    const cooldown = Math.max(0, race.player.cooldownUntil - race.t);
+    const spurt = inSpurt(race);
+    const state = stamina < PLAYER.spent ? "spent" : cooldown > 0 ? "cooling" : spurt ? "spurt" : "ready";
+    setOnce("signal", state, value => { signalButton.dataset.state = value; });
+    setOnce("cool", Math.round((cooldown / SIGNAL.cooldown) * 50) / 50, v => signalButton.style.setProperty("--cool", String(v)));
+    // 合図の横の小さな字: 使える時は消費（スパート区間は明記）、待ち時間、息切れ。
+    setOnce("signalNote", state === "cooling" ? `あと${Math.ceil(cooldown)}秒` : state === "spent" ? "息切れ"
+      : spurt ? `スパート −${SIGNAL.spurtCost}` : `−${SIGNAL.cost}`, text => { signalCost.textContent = text; });
+    setOnce("cue", phase === "race" && activeCue(race) ? "on" : "off", v => { voiceButton.dataset.cue = v; });
   }
   function openResult() {
     const score = scoreRace(race);
@@ -570,12 +771,17 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     sheet.replaceChildren(el("div.camel-card.camel-result", { dataset: { test: "camel-result", rank: String(score.rank), grade: score.grade, total: String(score.total) } }, [
       el("p.camel-eyebrow", { text: "RESULT" }),
       el("div.camel-result-head", [
-        el("div.camel-rank", [el("strong", { text: String(score.rank) }), el("span", { text: "位" })]),
-        el("div", [el("p.camel-time", { text: `タイム ${fmtTime(score.time)}` }),
-          el("p.camel-grade", [el("span", { text: "SCORE " }), el("strong", { text: String(score.total) }), el("span", { text: "  評価 " }), el("strong.camel-grade-letter", { text: score.grade, dataset: { grade: score.grade } })])]),
+        el("div.camel-medal", { dataset: { rank: String(score.rank) } }, [el("strong", { text: String(score.rank) }), el("span", { text: "位" })]),
+        el("div.camel-result-score", [
+          el("p.camel-time", { text: `TIME ${fmtTime(score.time)}` }),
+          el("p.camel-total", [el("small", { text: "SCORE" }), el("strong", { text: String(score.total) }), el("small", { text: "/ 100" })]),
+        ]),
+        el("div.camel-grade-letter", { dataset: { grade: score.grade } }, [el("small", { text: "評価" }), el("strong", { text: score.grade })]),
       ]),
       bar("順位", score.parts.rank, 40), bar("声かけ", score.parts.timing, 35), bar("スタミナ", score.parts.stamina, 25),
-      el("p.camel-stats", { text: `PERFECT ${score.stats.perfect} ／ GOOD ${score.stats.good} ／ 見送り ${score.stats.lost} ／ 無駄な声 ${score.stats.miss} ／ 連打 ${score.stats.spam} ／ 合図 ${score.stats.signals}（スパート ${score.stats.spurtSignals}）` }),
+      el("ul.camel-stats", [["PERFECT", score.stats.perfect], ["GOOD", score.stats.good], ["見送り", score.stats.lost],
+        ["無駄な声", score.stats.miss], ["連打", score.stats.spam], ["合図", `${score.stats.signals}（スパート${score.stats.spurtSignals}）`]]
+        .map(([label, value]) => el("li", [el("small", { text: label }), el("b", { text: String(value) })]))),
       isBest && (best !== null || runs.length > 1) ? el("p.camel-best", { text: "自己ベスト更新！", dataset: { test: "camel-new-best" } }) : null,
       el("div.camel-card-actions", allowRetry ? [again, leave] : [leave]),
     ]));

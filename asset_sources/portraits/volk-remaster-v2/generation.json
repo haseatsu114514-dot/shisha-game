@@ -32,5 +32,122 @@
   "/workspace/shared/portrait-standard-2330-trials/refs/minto.png",
   "/workspace/shared/portrait-standard-2330-trials/refs/ageha.png"
  ],
- "game_integration": "未実施。表情差分を同じ頭の大きさで作ってから、キャラ単位で組み込む（通常だけ先に入れると表情を切り替えたときに頭の大きさが変わるため）"
+ "game_integration": "未実施。表情差分を同じ頭の大きさで作ってから、キャラ単位で組み込む（通常だけ先に入れると表情を切り替えたときに頭の大きさが変わるため）",
+ "expressions": {
+  "smile": {
+   "chosen": "volk-smile-c-v2",
+   "original_sha256": "fd8f6f4d84c5ee2aec0bab16adfc40dee03d635740c066a01d3d598ae9deb227",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6576946583",
+   "zip_sha256": "96c37e5c62a8c1c343ff94b20741f3c65ab4786b08f0c41aa82ac360899e24e3",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "volk-smile-a": {
+     "head_body_codex": 8.02,
+     "disposition": "REJECTED/superseded: tiny head or boundary, see v2",
+     "sha256": "5ac1e2d34d40d5089cc13819eae86a297c3711baf07a31837b5b4a8629cd3d3a"
+    },
+    "volk-smile-b": {
+     "head_body_codex": 7.99,
+     "disposition": "REJECTED/superseded: tiny head or boundary, see v2",
+     "sha256": "a0a89f1bed18bbf20c45794f48d2c727b5a8b4a470120cc2ee95bed81ed07659"
+    },
+    "volk-smile-c": {
+     "head_body_codex": 7.79,
+     "disposition": "REJECTED/superseded: tiny head or boundary, see v2",
+     "sha256": "f3ecd697ec96fe5163cde3a2062ace1ed5a9fe335f419ffe21bdc10b55919772"
+    },
+    "volk-smile-a-v2": {
+     "head_body_codex": 7.75,
+     "disposition": "HOLD: upper boundary or outside standard",
+     "sha256": "f5113a96e3d9e9a2bf4169b2fb7074047b6518321facdd698d23873532586379"
+    },
+    "volk-smile-b-v2": {
+     "head_body_codex": 7.35,
+     "disposition": "NOT ADOPTED; comparison candidate",
+     "sha256": "6b862099b40da75ce00c8adf852f67b24f3cf7bb9f2fa182a03681fb3e862bea"
+    },
+    "volk-smile-c-v2": {
+     "head_body_codex": 7.67,
+     "disposition": "HOLD: upper boundary or outside standard",
+     "sha256": "fd8f6f4d84c5ee2aec0bab16adfc40dee03d635740c066a01d3d598ae9deb227"
+    }
+   }
+  },
+  "serious": {
+   "chosen": "volk-serious-a",
+   "original_sha256": "36e233ff372e19dc4c2f232824089b8b3ef6af3a60397a199bfc7c9128a14e97",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6576946583",
+   "zip_sha256": "96c37e5c62a8c1c343ff94b20741f3c65ab4786b08f0c41aa82ac360899e24e3",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "volk-serious-a": {
+     "head_body_codex": 7.6,
+     "disposition": "NOT ADOPTED; comparison candidate",
+     "sha256": "36e233ff372e19dc4c2f232824089b8b3ef6af3a60397a199bfc7c9128a14e97"
+    },
+    "volk-serious-b": {
+     "head_body_codex": 7.72,
+     "disposition": "HOLD: upper boundary or outside standard",
+     "sha256": "ab35e0d3d516e9a8d07fe315b86767ac0f114eb1830d7289da4de44405ee539d"
+    },
+    "volk-serious-c": {
+     "head_body_codex": 7.34,
+     "disposition": "NOT ADOPTED; comparison candidate",
+     "sha256": "86905e5ae2176431e87c55f0bd8720af77c69d3f45d4e3fa97001f24a274a490"
+    }
+   }
+  },
+  "surprise": {
+   "chosen": "volk-surprise-c",
+   "original_sha256": "0fd7517b29bdf5ef4c5d2e42e94482fed158d48d1bbbf75adb0ea6bd69950527",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6576946583",
+   "zip_sha256": "96c37e5c62a8c1c343ff94b20741f3c65ab4786b08f0c41aa82ac360899e24e3",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "volk-surprise-a": {
+     "head_body_codex": 7.42,
+     "disposition": "NOT ADOPTED; comparison candidate",
+     "sha256": "8a886e5715aa939ba650281db1756d1700f8835bcfbca5c37c9b53ecef08f303"
+    },
+    "volk-surprise-b": {
+     "head_body_codex": 7.81,
+     "disposition": "HOLD: upper boundary or outside standard",
+     "sha256": "ad21d7c9d495066a61f237a0c1361886e4c5a438d55fb35ed52910ebebb697bd"
+    },
+    "volk-surprise-c": {
+     "head_body_codex": 7.54,
+     "disposition": "NOT ADOPTED; comparison candidate",
+     "sha256": "0fd7517b29bdf5ef4c5d2e42e94482fed158d48d1bbbf75adb0ea6bd69950527"
+    }
+   }
+  },
+  "sad": {
+   "chosen": "volk-sad-a",
+   "original_sha256": "b2353a96a209813fa2ed891d1663ee67fe3922794e870b7c4ea6278a82e081a0",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6576946583",
+   "zip_sha256": "96c37e5c62a8c1c343ff94b20741f3c65ab4786b08f0c41aa82ac360899e24e3",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "volk-sad-a": {
+     "head_body_codex": 7.59,
+     "disposition": "NOT ADOPTED; comparison candidate",
+     "sha256": "b2353a96a209813fa2ed891d1663ee67fe3922794e870b7c4ea6278a82e081a0"
+    },
+    "volk-sad-b": {
+     "head_body_codex": 7.38,
+     "disposition": "NOT ADOPTED; comparison candidate",
+     "sha256": "1bf1898826d7e8dc72e8f5ed9ca7832e4512527d9e199bc7cca62b4e11514677"
+    },
+    "volk-sad-c": {
+     "head_body_codex": 7.47,
+     "disposition": "NOT ADOPTED; comparison candidate",
+     "sha256": "94327425b5b89aace0b638b1d6d49dcd05ff20f165b5506b8a2c7532a40d1198"
+    }
+   }
+  }
+ }
 }

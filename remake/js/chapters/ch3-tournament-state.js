@@ -1,3 +1,4 @@
+import { finishTournamentStep } from "./tournament-finish-step.js";
 import { tournamentResources, restoreTournamentResources } from "./tournament-resource-snapshot.js";
 import { tournamentStandings } from "./tournament-standings.js";
 import { MAX_MONEY } from "../core/rules.js";
@@ -112,11 +113,7 @@ export function beginStep(value) {
 export function finishStep(value, craft) {
   const p = tournamentProgress(value);
   if (p.stage !== "craft" || p.step >= 11) throw new Error("制作工程の保存地点を確認できません");
-  p.craft = copy(craft);
-  p.rollback = null;
-  if (craft.failed) { p.stage = "defeat"; p.failure = craft.failed; }
-  else p.step++;
-  return p;
+  return finishTournamentStep(p, craft);
 }
 
 /** 久世の直後の一口だけが、無給水なら比較される。相手と符号は審査員ごとに違う。 */
