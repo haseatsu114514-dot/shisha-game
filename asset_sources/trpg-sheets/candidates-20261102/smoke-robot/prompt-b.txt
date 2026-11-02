@@ -1,0 +1,14 @@
+Generate ONE sprite sheet image, 2048x1024, transparent background (PNG), containing 8 SMALL isolated character portrait busts in a 4x2 grid (4 columns, 2 rows), each compact bust maximum240x240px centered in its own512px square cell, minimum136px completely transparent margin on all four sides. Style: painterly storybook ink-and-watercolor bust portrait, soft lamplight, muted palette matching the story's world, consistent across all eight. Shoulders-up, facing slightly left, readable face. No text, no numbers, no logos, no frames (the game draws the round frame), no watermark, no shisha pipes, no real brands, no resemblance to any existing character. World: 地球周回軌道 / 星の駅ポラリス (SF / ロボと一台): 夜間モードの灯り。通路の奥で、小さなビープ音。
+Row 1 = the player's character, four looks of the same role. Androgynous young adult (18-24) so the player can give any name; the look must not depend on background or name:
+--- a: look-smoke-robot-ink --- 黒髪の夜番. 短い黒髪に、紺の作業着
+--- b: look-smoke-robot-silver --- 銀髪の夜番. ふわりと跳ねた銀髪と、反射板つきの上着
+--- c: look-smoke-robot-rust --- 赤毛の夜番. 赤毛をゴーグルで押さえる
+--- d: look-smoke-robot-helmet --- ヘルメットの夜番. いつも外さない、丸いヘルメット
+Row 2 = characters the companions made for this story. Light comedy is welcome, keep faces readable:
+--- e: pc-nova --- ノヴァ, 香りの航海士. 香りの配合なら駅一番。名言の前に、少し間を取る Likes: 林檎の香り。宇宙の始まりの味
+--- f: pc-cosmo --- コスモ, 原点を探す宇宙飛行士. 宇宙は一つの林檎から始まったと、本気で信じている。腕は確か Likes: ダブルアップル。宇宙の原点
+--- g: pc-luna --- ルナ, 展望デッキの記録係. よく見て、よく描く。宇宙でも口数は少ない Likes: ラベンダー色の星雲と、描きかけのスケッチ
+--- h: pc-konoha --- コノハ, 猫連れの密航者. 貨物の箱から出てきて、そのまま夜番に雇われた。猫も一緒 Likes: 葉っぱの耳の猫と、ラベンダーの匂いの毛布
+Sparse contact sheet with more than70% blank transparent canvas. Exact8 human faces only, original fictional scenario roles NOT real tabletop players. Each compact head-and-collar silhouette small, bottom row no wider than top row. All slightly left. No scenery, no background disks or frames. Crisp alpha silhouette, watercolor shading only inside character, no detached pigment, white fringe or smoky effects. No robots, no equipment backgrounds, no extra cats or animal faces. Likes inform personality only; do not draw apples, food, extra instruments or floating accessories. Top helmet must have OPEN visible face. Bottom cat-lover can have tiny leaf-ear cat-shaped embroidery without a separate animal. No text or numbers even on suit badges.
+
+Variant B. Critical: extremely SMALL head-and-collar contact-sheet sprites surrounded by vast TRANSPARENT area, 75% canvas blank. Each bust width ONLY HALF OF ITS CELL (50%), same scale both rows. Round helmet also small and fully inside cell. No long torsos. Render dark clean edge silhouette with zero paper/white scraps outside; do not paint beyond the exact character outline. Eight separate head islands, broad uninterrupted clear row gap. Preserve muted warm storybook watercolor, slightly simplified fine ink lines and faces for 256px readability. No extra portrait frames.

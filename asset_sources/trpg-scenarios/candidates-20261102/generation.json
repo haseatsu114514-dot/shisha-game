@@ -1,0 +1,1461 @@
+{
+  "status": "UNSELECTED_CANDIDATES_NOT_PRODUCTION_APPROVED",
+  "count": 33,
+  "variants": [
+    {
+      "variant": "a",
+      "path": "/workspace/shared/trpg-background-candidates/apple-thief/background-a.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "4acd1b40347ea41eceb374ce0694ce26c77a89b8ba1b903dd790fb9338d12e51",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-a.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Six objects present, empty hall no live figures/shisha. Framed portrait intentionally includes painted people as required prop. Blank envelope/book, tiny jar label marks. Ledger ~12/20 (target14/26 falls near lower lectern); jars~17/56 (target18/70 below shelf); tree82/23 good; portrait47/14 good; chair72/53 (target76/62 at chair lower side); card48/87 (target50/82 near upper edge). Scene dark but legible. Needs hotspot alignment and label cleanup.",
+      "scenario": "apple-thief",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "04275cc0887e315a6e64c454ef72c422bdf53d1937cfd256926a2f124c032b1a",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 04 apple-thief\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 湖畔の館の夜会。書斎の配合帳、温室の林檎の木、大広間の肖像画、厨房の香りの棚、玄関の予告状、主人の椅子。 Setting: ミルト湖畔 / 白林檎館. Mood: 燭台の灯り。林檎の香り。どこかに、怪盗。. Fictional place from a tabletop story (館の怪盗もの / 謎解き). Concrete click-investigation objects, each a distinct readable prop at its position: 書斎の配合帳 clearly visible around x14% y26%; 温室の林檎の木 clearly visible around x82% y24%; 大広間の肖像画 clearly visible around x47% y18%; 厨房の香りの棚 clearly visible around x18% y70%; 玄関の予告状 clearly visible around x50% y82%; 主人の椅子 clearly visible around x76% y62%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant A: restrained candlelit gouache mystery-mansion interior; ivory plaster, dark walnut and muted apple green.\nComposition: ONE continuous believable mansion hall with open adjoining study nook at upper left and conservatory at upper right, not a montage, no frames dividing the image. The oversized closed recipe ledger on a raised study lectern must be centered at 14% across/26% down, clearly recognizable as a book, blank cover. In the upper-right conservatory an apple tree with small pale apples must center at 82%/24%. The framed family portrait object at 47%/18% should be an indistinct old painted portrait only, no person physically present. Fragrance shelf of small blank-label jars at lower left centers at 18%/70%, household spice jars not smoking equipment. The sealed calling card rests alone on the entrance floor/table in the lower foreground at 50%/82%, totally blank. A single empty upholstered master's armchair centers at 76%/62%. Treat these object centers as production-critical, keep each object fully readable and do not relocate them for aesthetics. No party guests, no thieves, no living people, no smoking devices, no writing even on card/book/jars. 1280x720 target aspect ratio.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 2610425
+    },
+    {
+      "variant": "b",
+      "path": "/workspace/shared/trpg-background-candidates/apple-thief/background-b.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "d9ad2f65af0036833a0dbee2b5d134b3ec0cf874cf9ebeba70f584577408cbe1",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-b.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Six objects readable, empty hall and no shisha. Framed painted family as required prop. Book14/20, shelf16/58, portrait48/14, tree86/21, chair78/58, card57/90. Several supplied target points hit margins/not actual objects; needs alignment. Tiny jar label marks conflict strict no-text specification.",
+      "scenario": "apple-thief",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "d951425b9a83d255073822c5fd2469500951455149b554117fa9cbab078fb000",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 04 apple-thief\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 湖畔の館の夜会。書斎の配合帳、温室の林檎の木、大広間の肖像画、厨房の香りの棚、玄関の予告状、主人の椅子。 Setting: ミルト湖畔 / 白林檎館. Mood: 燭台の灯り。林檎の香り。どこかに、怪盗。. Fictional place from a tabletop story (館の怪盗もの / 謎解き). Concrete click-investigation objects, each a distinct readable prop at its position: 書斎の配合帳 clearly visible around x14% y26%; 温室の林檎の木 clearly visible around x82% y24%; 大広間の肖像画 clearly visible around x47% y18%; 厨房の香りの棚 clearly visible around x18% y70%; 玄関の予告状 clearly visible around x50% y82%; 主人の椅子 clearly visible around x76% y62%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant B: softly painted anime mystery-mansion interior; pale stone, blue lake reflections and warm amber candlelight.\nComposition: ONE continuous believable mansion hall with open adjoining study nook at upper left and conservatory at upper right, not a montage, no frames dividing the image. The oversized closed recipe ledger on a raised study lectern must be centered at 14% across/26% down, clearly recognizable as a book, blank cover. In the upper-right conservatory an apple tree with small pale apples must center at 82%/24%. The framed family portrait object at 47%/18% should be an indistinct old painted portrait only, no person physically present. Fragrance shelf of small blank-label jars at lower left centers at 18%/70%, household spice jars not smoking equipment. The sealed calling card rests alone on the entrance floor/table in the lower foreground at 50%/82%, totally blank. A single empty upholstered master's armchair centers at 76%/62%. Treat these object centers as production-critical, keep each object fully readable and do not relocate them for aesthetics. No party guests, no thieves, no living people, no smoking devices, no writing even on card/book/jars. 1280x720 target aspect ratio.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 2874263
+    },
+    {
+      "variant": "c",
+      "path": "/workspace/shared/trpg-background-candidates/apple-thief/background-c.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "b45ce539011437ceca335495e5d86c81af31633c111f3aff3ff05f115eed0299",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-c.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Six objects readable, empty hall no shisha. Framed painted family only. Mostly blank jars/book/envelope. Ledger12/19, shelf14/63, portrait52/14, tree88/22, chair74/58, card61/86. Supplied card50/82 misses envelope; book14/26 lower stand; other points within or near props. Needs alignment before production adoption.",
+      "scenario": "apple-thief",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "744a218d2199babda190f91fedb9fca3732ec48d7b4559367796dfd903ede9f1",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 04 apple-thief\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 湖畔の館の夜会。書斎の配合帳、温室の林檎の木、大広間の肖像画、厨房の香りの棚、玄関の予告状、主人の椅子。 Setting: ミルト湖畔 / 白林檎館. Mood: 燭台の灯り。林檎の香り。どこかに、怪盗。. Fictional place from a tabletop story (館の怪盗もの / 謎解き). Concrete click-investigation objects, each a distinct readable prop at its position: 書斎の配合帳 clearly visible around x14% y26%; 温室の林檎の木 clearly visible around x82% y24%; 大広間の肖像画 clearly visible around x47% y18%; 厨房の香りの棚 clearly visible around x18% y70%; 玄関の予告状 clearly visible around x50% y82%; 主人の椅子 clearly visible around x76% y62%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant C: hand-painted storybook mansion mystery; slightly weathered cream woodwork, plum shadows and gold candlelight.\nComposition: ONE continuous believable mansion hall with open adjoining study nook at upper left and conservatory at upper right, not a montage, no frames dividing the image. The oversized closed recipe ledger on a raised study lectern must be centered at 14% across/26% down, clearly recognizable as a book, blank cover. In the upper-right conservatory an apple tree with small pale apples must center at 82%/24%. The framed family portrait object at 47%/18% should be an indistinct old painted portrait only, no person physically present. Fragrance shelf of small blank-label jars at lower left centers at 18%/70%, household spice jars not smoking equipment. The sealed calling card rests alone on the entrance floor/table in the lower foreground at 50%/82%, totally blank. A single empty upholstered master's armchair centers at 76%/62%. Treat these object centers as production-critical, keep each object fully readable and do not relocate them for aesthetics. No party guests, no thieves, no living people, no smoking devices, no writing even on card/book/jars. 1280x720 target aspect ratio.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 2995441
+    },
+    {
+      "variant": "a",
+      "path": "/workspace/shared/trpg-background-candidates/doll-requiem/background-a.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "f688f18266c6a0e2933f86e9c6f01fe1a197031dea0276ccb9b9a1708c9a4b58",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-a.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Gentle doll mansion; inanimate dolls only, no people/shisha/text. Six objects readable. Cabinet13/30 includes14/34; puppet stage43/21 target50/26 at right curtain edge; diary87/25 target86/32 at desk lower edge, not book; snow seat84/70 matches; clock50/59 target50/72 within lower clock body; musicbox17/71 fits. Architecture upper study/window stacking needs plausibility review; diary target needs correction.",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "input_image_references": [],
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "scenario": "doll-requiem",
+      "prompt_sha256": "a11680c1b472761525ead7f443788cf28f2140241fc7a2a3ffc1268c23b246a3",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 13 doll-requiem\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 雪の夜の洋館の広間。人形の飾り棚、子ども部屋の小さな舞台、書斎の日記、雪の窓辺、柱時計、オルゴールの箱。棚に硝子の瞳の人形たち。 Setting: 霧氷の丘 / 洋館「ラベンダー館」. Mood: 降りやまない雪。ラベンダーの香り。硝子の瞳が、灯を映す。. Fictional place from a tabletop story (怖すぎない洋館ミステリー). Concrete click-investigation objects, each a distinct readable prop at its position: 人形の飾り棚 clearly visible around x14% y34%; 子ども部屋の小さな舞台 clearly visible around x50% y26%; 書斎の日記 clearly visible around x86% y32%; 雪の窓辺 clearly visible around x84% y68%; 柱時計 clearly visible around x50% y72%; オルゴールの箱 clearly visible around x16% y70%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant A: finely hand-painted gentle gothic mansion mystery, lavender velvet, warm walnut, soft lamplight against blue snowy night, melancholy not terrifying.\nONE coherent believable mansion hall with open nursery/study alcoves, not a montage. Doll display cabinet centered14%/34%, containing clearly SMALL inanimate porcelain dolls with glass eyes, no life-size humans, no creepy gore. Children's miniature puppet theater centered50%/26% on raised back platform, empty stage with lavender curtains. Study diary at86%/32% on a raised right-side lectern/desk visible through alcove, closed book with completely blank cover. Snowy window seat at84%/68%, clearly falling snow outside and empty cushion. Grandfather clock centered50%/72%, full tall wooden clock readable at this location in middle-foreground, blank dial with hands but no numerals. Small ornate music box centered16%/70% on left foreground side table, open with simple mechanical cylinder visible, NO miniature ballerina/human figure. Ensure all six objects separately readable at these exact production centers, do not move targets for composition. No live people, silhouettes or ghosts. No shisha, no text even on books/clock/box. Well-lit legible cozy mystery, not horror.",
+      "byte_size": 2957843,
+      "reference_documents": [
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/f600fcf9db0b21c148f553ad1f239bc4646c3d3b/asset_sources/trpg-scenarios/README.md",
+          "blob_sha": "057937ca0f39d2b188fa8e088c585b0d890a18fb"
+        },
+        {
+          "path": "/workspace/shared/trpg-background-candidates/latest-main-background-prompts.json",
+          "sha256": "639cd542bdc72e5ff109c5bf32628e10680766ccd4c6e279d56c851eb8927547"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ]
+    },
+    {
+      "variant": "b",
+      "path": "/workspace/shared/trpg-background-candidates/doll-requiem/background-b.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "db133d874dd5d10b8a2dab3935062299d14acecbc6d84e0568683586b8b7f7ba",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-b.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Readable gentle interior/inanimate dolls only, no people/shisha. Six objects. Cabinet12/29 includes14/34; stage50/25 fits; diary88/22 target86/32 hits desk underside (major miss); window84/66 target84/68 matches; clock49/63 target50/72 within pendulum/body; box17/71 fits. Diary cover has small pseudo-writing, needs cleanup. Upper study/window split-level plausible but review.",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "input_image_references": [],
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "scenario": "doll-requiem",
+      "prompt_sha256": "69317e09a9a43c53b61b30a6b4b203fcb3054c703709eb887224d78a3bfee8cb",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 13 doll-requiem\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 雪の夜の洋館の広間。人形の飾り棚、子ども部屋の小さな舞台、書斎の日記、雪の窓辺、柱時計、オルゴールの箱。棚に硝子の瞳の人形たち。 Setting: 霧氷の丘 / 洋館「ラベンダー館」. Mood: 降りやまない雪。ラベンダーの香り。硝子の瞳が、灯を映す。. Fictional place from a tabletop story (怖すぎない洋館ミステリー). Concrete click-investigation objects, each a distinct readable prop at its position: 人形の飾り棚 clearly visible around x14% y34%; 子ども部屋の小さな舞台 clearly visible around x50% y26%; 書斎の日記 clearly visible around x86% y32%; 雪の窓辺 clearly visible around x84% y68%; 柱時計 clearly visible around x50% y72%; オルゴールの箱 clearly visible around x16% y70%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant B: delicate ink-and-gouache snowy doll mansion hall, muted mauve and old cream, warm gold lights and soft blue snow, inviting quiet mystery.\nONE coherent believable mansion hall with open nursery/study alcoves, not a montage. Doll display cabinet centered14%/34%, containing clearly SMALL inanimate porcelain dolls with glass eyes, no life-size humans, no creepy gore. Children's miniature puppet theater centered50%/26% on raised back platform, empty stage with lavender curtains. Study diary at86%/32% on a raised right-side lectern/desk visible through alcove, closed book with completely blank cover. Snowy window seat at84%/68%, clearly falling snow outside and empty cushion. Grandfather clock centered50%/72%, full tall wooden clock readable at this location in middle-foreground, blank dial with hands but no numerals. Small ornate music box centered16%/70% on left foreground side table, open with simple mechanical cylinder visible, NO miniature ballerina/human figure. Ensure all six objects separately readable at these exact production centers, do not move targets for composition. No live people, silhouettes or ghosts. No shisha, no text even on books/clock/box. Well-lit legible cozy mystery, not horror.",
+      "byte_size": 2849736,
+      "reference_documents": [
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/f600fcf9db0b21c148f553ad1f239bc4646c3d3b/asset_sources/trpg-scenarios/README.md",
+          "blob_sha": "057937ca0f39d2b188fa8e088c585b0d890a18fb"
+        },
+        {
+          "path": "/workspace/shared/trpg-background-candidates/latest-main-background-prompts.json",
+          "sha256": "639cd542bdc72e5ff109c5bf32628e10680766ccd4c6e279d56c851eb8927547"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ]
+    },
+    {
+      "variant": "c",
+      "path": "/workspace/shared/trpg-background-candidates/doll-requiem/background-c.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "58f860a06ad10d4201b2a778bd1fbb037feb13a40920b0c438b55a51b0d653ff",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-c.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Readable mansion/no live figures/shisha/legible text, small inanimate dolls only. Cabinet13/30 fits14/34; stage51/21 includes50/26; diary82/33 target86/32 inside book lower edge (best); snow seat84/72 target84/68 within seat/cushion; clock52/58 target50/72 inside lower body; music box19/71 target16/70 within left lid edge. Closest coordinate fit of three. Window/raised study architecture should be reviewed in game; clock face has small tick marks but no legible numbers.",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "input_image_references": [],
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "scenario": "doll-requiem",
+      "prompt_sha256": "7319fbb3941f219c5b3fa8808e2a1ae46a631579bbf734fbb72d7d460fdbb781",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 13 doll-requiem\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 雪の夜の洋館の広間。人形の飾り棚、子ども部屋の小さな舞台、書斎の日記、雪の窓辺、柱時計、オルゴールの箱。棚に硝子の瞳の人形たち。 Setting: 霧氷の丘 / 洋館「ラベンダー館」. Mood: 降りやまない雪。ラベンダーの香り。硝子の瞳が、灯を映す。. Fictional place from a tabletop story (怖すぎない洋館ミステリー). Concrete click-investigation objects, each a distinct readable prop at its position: 人形の飾り棚 clearly visible around x14% y34%; 子ども部屋の小さな舞台 clearly visible around x50% y26%; 書斎の日記 clearly visible around x86% y32%; 雪の窓辺 clearly visible around x84% y68%; 柱時計 clearly visible around x50% y72%; オルゴールの箱 clearly visible around x16% y70%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant C: cinematic painted anime old mansion hall in snowfall, faded lavender fabric, dark polished timber and pearl winter moonlight, tender uncanny atmosphere.\nONE coherent believable mansion hall with open nursery/study alcoves, not a montage. Doll display cabinet centered14%/34%, containing clearly SMALL inanimate porcelain dolls with glass eyes, no life-size humans, no creepy gore. Children's miniature puppet theater centered50%/26% on raised back platform, empty stage with lavender curtains. Study diary at86%/32% on a raised right-side lectern/desk visible through alcove, closed book with completely blank cover. Snowy window seat at84%/68%, clearly falling snow outside and empty cushion. Grandfather clock centered50%/72%, full tall wooden clock readable at this location in middle-foreground, blank dial with hands but no numerals. Small ornate music box centered16%/70% on left foreground side table, open with simple mechanical cylinder visible, NO miniature ballerina/human figure. Ensure all six objects separately readable at these exact production centers, do not move targets for composition. No live people, silhouettes or ghosts. No shisha, no text even on books/clock/box. Well-lit legible cozy mystery, not horror.",
+      "byte_size": 2963429,
+      "reference_documents": [
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/f600fcf9db0b21c148f553ad1f239bc4646c3d3b/asset_sources/trpg-scenarios/README.md",
+          "blob_sha": "057937ca0f39d2b188fa8e088c585b0d890a18fb"
+        },
+        {
+          "path": "/workspace/shared/trpg-background-candidates/latest-main-background-prompts.json",
+          "sha256": "639cd542bdc72e5ff109c5bf32628e10680766ccd4c6e279d56c851eb8927547"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ]
+    },
+    {
+      "variant": "a",
+      "path": "/workspace/shared/trpg-background-candidates/fading-familiar/background-a.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "7baeb4a4c2695595c7703ea833223c77c30ecec77ab1ec72ab0db4fd4ef4e705",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-a.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Six targets/readable nighttime school/no figures/shisha. Noticeboard has pseudo-writing, violates strict no-text. Basket13/26 target15/30 near edge; stairs55/36 target52/20 hits observatory wall, not stairs; library85/21 good; garden86/73 good; board19/57 target20/72 below lower edge; smoke52/82 valid. Needs timetable cleanup and stair/board coordinate correction.",
+      "scenario": "fading-familiar",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "2378c3a8ae585371d5629b0f712124db76a0e39f439c69d714f9c9a36d921bbd",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 08 fading-familiar\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 夜の魔法学校。空っぽの寝床、図書館の窓、薬草園、天文台の階段、掲示板の試験表、廊下の煙の跡。 Setting: 星見ヶ丘魔法学校 / 夜の寮と校舎. Mood: 試験前夜の静かな校舎。夜明けまで、あと少し。. Fictional place from a tabletop story (学園ファンタジー・儚さ). Concrete click-investigation objects, each a distinct readable prop at its position: 空っぽの寝床 clearly visible around x15% y30%; 図書館の窓 clearly visible around x80% y24%; 薬草園 clearly visible around x86% y70%; 天文台の階段 clearly visible around x52% y20%; 掲示板の試験表 clearly visible around x20% y72%; 廊下に残る煙の跡 clearly visible around x52% y82%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant A: tender moonlit hand-painted storybook magic-school corridor, blue-gray stone and warm muted lamplight, fragile quiet atmosphere.\nONE coherent interior dormitory corridor overlooking school wings, no montage or collage. An empty SMALL familiar's sleeping basket/nest in an upper-left dorm alcove centered15%/30%, clearly empty, NOT a human bed. Broad library window at80%/24%, with unlabelled bookshelves behind glass. Herb garden in sheltered lower-right courtyard visible through open arch at86%/70%. Stairs leading up to observatory at52%/20%, upper-middle architecture. Exam timetable noticeboard at20%/72%, papers completely blank except geometric ruled boxes, no numbers or imitation writing. Wispy fading smoke trace along floor at52%/82%, NOT a person-shaped ghost and no smoking device. Six target centers production-critical; arrange real architecture around these positions, separate targets clearly. No students, humans, familiars or creatures in scene. No writing on spines or papers. Background well lit and readable despite night.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 2851021
+    },
+    {
+      "variant": "b",
+      "path": "/workspace/shared/trpg-background-candidates/fading-familiar/background-b.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "00e47bef852729ade3c3b970b419db84dbb6acf46ff3297b02223ec35c60e33d",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-b.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Best clean paper: noticeboard entirely blank. No people/shisha/legible lettering. Basket15/25 target15/30 within lower basket, stairs53/35 target52/20 above stairs; library85/22 good; garden87/75 target86/70 within garden; noticeboard17/60 target20/72 within lower edge; smoke52/82 good. Stair target remains unaligned.",
+      "scenario": "fading-familiar",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "95bb02d6f11aee6eab71e2484f4f45c9500c44924febe3c5ebcabc63cd6e51c1",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 08 fading-familiar\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 夜の魔法学校。空っぽの寝床、図書館の窓、薬草園、天文台の階段、掲示板の試験表、廊下の煙の跡。 Setting: 星見ヶ丘魔法学校 / 夜の寮と校舎. Mood: 試験前夜の静かな校舎。夜明けまで、あと少し。. Fictional place from a tabletop story (学園ファンタジー・儚さ). Concrete click-investigation objects, each a distinct readable prop at its position: 空っぽの寝床 clearly visible around x15% y30%; 図書館の窓 clearly visible around x80% y24%; 薬草園 clearly visible around x86% y70%; 天文台の階段 clearly visible around x52% y20%; 掲示板の試験表 clearly visible around x20% y72%; 廊下に残る煙の跡 clearly visible around x52% y82%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant B: refined ink-and-gouache magic boarding school, dusty indigo shadows and soft amber glow, restrained wistful fantasy.\nONE coherent interior dormitory corridor overlooking school wings, no montage or collage. An empty SMALL familiar's sleeping basket/nest in an upper-left dorm alcove centered15%/30%, clearly empty, NOT a human bed. Broad library window at80%/24%, with unlabelled bookshelves behind glass. Herb garden in sheltered lower-right courtyard visible through open arch at86%/70%. Stairs leading up to observatory at52%/20%, upper-middle architecture. Exam timetable noticeboard at20%/72%, papers completely blank except geometric ruled boxes, no numbers or imitation writing. Wispy fading smoke trace along floor at52%/82%, NOT a person-shaped ghost and no smoking device. Six target centers production-critical; arrange real architecture around these positions, separate targets clearly. No students, humans, familiars or creatures in scene. No writing on spines or papers. Background well lit and readable despite night.\nSTRICT: the exam noticeboard holds completely blank unmarked paper rectangles, no table headers, no symbols and no handwriting. Book spines completely plain.\n",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 2813681
+    },
+    {
+      "variant": "c",
+      "path": "/workspace/shared/trpg-background-candidates/fading-familiar/background-c.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "bb1c430b9206ed6156b2d4b8060a3e8445632f6cf41be283259c688860ee30fb",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-c.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "No people/shisha/legible text; noticeboard ruled blank pages. Basket19/26 target15/30 inside basket side; stairs50/39 target52/20 at upper tower wall/landing, not steps; library85/22 good; garden87/74 good; board19/62 target20/72 within lower papers; smoke52/82 good. Upper stair coordinate correction required.",
+      "scenario": "fading-familiar",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "d125f1caa33c73c73e26053e1bc64b095c9657ccf2b0886a6a5570f8b3a3f964",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 08 fading-familiar\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 夜の魔法学校。空っぽの寝床、図書館の窓、薬草園、天文台の階段、掲示板の試験表、廊下の煙の跡。 Setting: 星見ヶ丘魔法学校 / 夜の寮と校舎. Mood: 試験前夜の静かな校舎。夜明けまで、あと少し。. Fictional place from a tabletop story (学園ファンタジー・儚さ). Concrete click-investigation objects, each a distinct readable prop at its position: 空っぽの寝床 clearly visible around x15% y30%; 図書館の窓 clearly visible around x80% y24%; 薬草園 clearly visible around x86% y70%; 天文台の階段 clearly visible around x52% y20%; 掲示板の試験表 clearly visible around x20% y72%; 廊下に残る煙の跡 clearly visible around x52% y82%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant C: cinematic painted anime magical academy at night, pale aged stone, slate blue, cream linen and gentle lavender haze.\nONE coherent interior dormitory corridor overlooking school wings, no montage or collage. An empty SMALL familiar's sleeping basket/nest in an upper-left dorm alcove centered15%/30%, clearly empty, NOT a human bed. Broad library window at80%/24%, with unlabelled bookshelves behind glass. Herb garden in sheltered lower-right courtyard visible through open arch at86%/70%. Stairs leading up to observatory at52%/20%, upper-middle architecture. Exam timetable noticeboard at20%/72%, papers completely blank except geometric ruled boxes, no numbers or imitation writing. Wispy fading smoke trace along floor at52%/82%, NOT a person-shaped ghost and no smoking device. Six target centers production-critical; arrange real architecture around these positions, separate targets clearly. No students, humans, familiars or creatures in scene. No writing on spines or papers. Background well lit and readable despite night.\nSTRICT: the exam noticeboard holds completely blank unmarked paper rectangles, no table headers, no symbols and no handwriting. Book spines completely plain.\n",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 2794638
+    },
+    {
+      "variant": "a",
+      "path": "/workspace/shared/trpg-background-candidates/fox-market/background-a.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "935c6ef24ed1a159b67320f06c525405a940adb3905ccf44cd39e91c8ade6e4a",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-a.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Six objects clearly readable, no people/shisha; plain lanterns/board. Fox masks only objects. Masks15/30 good; fish tank26/71 target30/76 near lower edge; torii76/24 target80/22 within crossbar; candy47/47 target50/42 near machine upper dome; bell65/84 target63/84 within bell edge; board90/41 target89/63 at support below board (needs correction). Bell slightly oversized.",
+      "scenario": "fox-market",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "9978ddb2b10442de1fdbbd3198f35418ebfb4108a348596d8994c83045180b11",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 09 fox-market\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 夏祭りの夜市。お面屋の棚、金魚すくいの水槽、神社の鳥居、綿あめの屋台、落ちていた鈴、迷子案内の掲示板。 Setting: 灯籠通り / 夏の夜市. Mood: 提灯の列と、遠い太鼓。お面の子が、ひとり。. Fictional place from a tabletop story (和の不思議). Concrete click-investigation objects, each a distinct readable prop at its position: お面屋の棚 clearly visible around x15% y30%; 金魚すくいの水槽 clearly visible around x30% y76%; 神社の鳥居 clearly visible around x80% y22%; 綿あめの屋台 clearly visible around x50% y42%; 落ちていた鈴 clearly visible around x63% y84%; 迷子案内の掲示板 clearly visible around x89% y63%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant A: warmly hand-painted Japanese summer festival lane, amber lanterns, muted vermilion and indigo, quiet mysterious storybook feeling.\nONE coherent wide Japanese shrine festival street, entirely empty of people, NO child or masked figure despite mood phrase. Readable mask stall shelf centered15%/30%, fox masks as inanimate objects only. Goldfish-scooping low tank at30%/76% with tiny red goldfish. Shrine torii at80%/22% in rear-right, NO writing on torii. Cotton-candy stall centered50%/42% in middle distance, show fluffy bagged cotton candy and simple machine, absolutely no sign lettering. One dropped small metal bell with red cord centered63%/84% on clear foreground ground, make bell large enough to recognize while keeping plausible scale. Lost-child noticeboard centered89%/63%, pinned papers entirely blank, no human pictures, symbols or writing. All six interactive props must be centered on their production coordinates, keep unobscured. No text on lanterns, signs, packaging or boards. Calm upper-center for title. No ghosts, silhouettes or faces except inanimate fox masks.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 2812790
+    },
+    {
+      "variant": "b",
+      "path": "/workspace/shared/trpg-background-candidates/fox-market/background-b.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "7e4c5d96325783bba54fe1d4b851788a949b7cd8d3bebad11bdf8f82f8e2e4a9",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-b.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Clear six targets, no people/shisha/legible lettering. Masks15/30 fits; tank25/74 target30/76 fits; torii79/23 fits; candy51/43 fits; bell63/86 target63/84 at bell edge; board90/46 target89/63 below board lower edge. Best target layout except board. A few incidental packaging marks need strict no-text review.",
+      "scenario": "fox-market",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "aa02adf4348862efbeab8b21d604964cf0fb3b51b610b593f0589d251da28bbb",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 09 fox-market\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 夏祭りの夜市。お面屋の棚、金魚すくいの水槽、神社の鳥居、綿あめの屋台、落ちていた鈴、迷子案内の掲示板。 Setting: 灯籠通り / 夏の夜市. Mood: 提灯の列と、遠い太鼓。お面の子が、ひとり。. Fictional place from a tabletop story (和の不思議). Concrete click-investigation objects, each a distinct readable prop at its position: お面屋の棚 clearly visible around x15% y30%; 金魚すくいの水槽 clearly visible around x30% y76%; 神社の鳥居 clearly visible around x80% y22%; 綿あめの屋台 clearly visible around x50% y42%; 落ちていた鈴 clearly visible around x63% y84%; 迷子案内の掲示板 clearly visible around x89% y63%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant B: delicate ink-and-gouache Japanese night festival, soft gold light and deep indigo shadows, humid summer atmosphere.\nONE coherent wide Japanese shrine festival street, entirely empty of people, NO child or masked figure despite mood phrase. Readable mask stall shelf centered15%/30%, fox masks as inanimate objects only. Goldfish-scooping low tank at30%/76% with tiny red goldfish. Shrine torii at80%/22% in rear-right, NO writing on torii. Cotton-candy stall centered50%/42% in middle distance, show fluffy bagged cotton candy and simple machine, absolutely no sign lettering. One dropped small metal bell with red cord centered63%/84% on clear foreground ground, make bell large enough to recognize while keeping plausible scale. Lost-child noticeboard centered89%/63%, pinned papers entirely blank, no human pictures, symbols or writing. All six interactive props must be centered on their production coordinates, keep unobscured. No text on lanterns, signs, packaging or boards. Calm upper-center for title. No ghosts, silhouettes or faces except inanimate fox masks.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 3025545
+    },
+    {
+      "variant": "c",
+      "path": "/workspace/shared/trpg-background-candidates/fox-market/background-c.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "fd8b3dcad2bb8b5639aacbc9be6a70d1330873947adc55b15e87a47a3789296a",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-c.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Six targets/readable festival/no people/shisha. Masks15/30 fits; tank25/75 target30/76 fits; torii79/23 fits; candy50/45 target50/42 fits; bell64/85 target63/84 fits; board92/49 target89/63 near lower edge of pinned papers/board. Some faint pseudo-writing on board/packaging; cleanup required. Best coordinate coverage but strict text review necessary.",
+      "scenario": "fox-market",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "bb559888a07eaa494b38359d1858c26095650fa059ded05d35293b01f334f12c",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 09 fox-market\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 夏祭りの夜市。お面屋の棚、金魚すくいの水槽、神社の鳥居、綿あめの屋台、落ちていた鈴、迷子案内の掲示板。 Setting: 灯籠通り / 夏の夜市. Mood: 提灯の列と、遠い太鼓。お面の子が、ひとり。. Fictional place from a tabletop story (和の不思議). Concrete click-investigation objects, each a distinct readable prop at its position: お面屋の棚 clearly visible around x15% y30%; 金魚すくいの水槽 clearly visible around x30% y76%; 神社の鳥居 clearly visible around x80% y22%; 綿あめの屋台 clearly visible around x50% y42%; 落ちていた鈴 clearly visible around x63% y84%; 迷子案内の掲示板 clearly visible around x89% y63%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant C: cinematic painted anime festival environment, warm paper lantern glow, weathered timber and a clear muted midnight-blue sky.\nONE coherent wide Japanese shrine festival street, entirely empty of people, NO child or masked figure despite mood phrase. Readable mask stall shelf centered15%/30%, fox masks as inanimate objects only. Goldfish-scooping low tank at30%/76% with tiny red goldfish. Shrine torii at80%/22% in rear-right, NO writing on torii. Cotton-candy stall centered50%/42% in middle distance, show fluffy bagged cotton candy and simple machine, absolutely no sign lettering. One dropped small metal bell with red cord centered63%/84% on clear foreground ground, make bell large enough to recognize while keeping plausible scale. Lost-child noticeboard centered89%/63%, pinned papers entirely blank, no human pictures, symbols or writing. All six interactive props must be centered on their production coordinates, keep unobscured. No text on lanterns, signs, packaging or boards. Calm upper-center for title. No ghosts, silhouettes or faces except inanimate fox masks.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 2803323
+    },
+    {
+      "variant": "a",
+      "path": "/workspace/shared/trpg-background-candidates/leaf-mail/background-a.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "6cb7591d6b5b108d3484f82eb3479ebe946b997852e2137cb5760b09b0dc8ec5",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-a.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Moonlit storybook town, readable bakery/mailbag/board/bridge; no people/shisha/text. Cat appears on right rooftop. Landmark positions are approximate: mailbag ~52/80, board ~40/49, bakery ~12/51, tower ~28/14, bridge ~75/64, rooftop ~90/24. Need overlay QA and target-coordinate correction before game adoption.",
+      "scenario": "leaf-mail",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "0e021a700b750ad91d771e2669d7fd1ef443b90b6a2ba6e31bda6d160690f428",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 03 leaf-mail\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 大きな月の下の坂の町。郵便鞄、時計塔、屋根の上、川の橋、パン屋の窓、掲示板。 Setting: 時計坂の町 / 月夜の大通り. Mood: 大きな月。石畳に、猫の足音がひとつ。. Fictional place from a tabletop story (絵本ファンタジー). Concrete click-investigation objects, each a distinct readable prop at its position: 郵便鞄 clearly visible around x52% y80%; 時計塔 clearly visible around x20% y24%; 屋根の上 clearly visible around x66% y18%; 川の橋 clearly visible around x86% y66%; パン屋の窓 clearly visible around x14% y64%; 掲示板 clearly visible around x38% y50%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant A: intimate hand-painted moonlit storybook town, warm bakery glow against soft midnight blue. Preserve every specified landmark coordinate and keep all six inspection props unambiguous. The postal satchel is alone on the cobblestones, not worn by a character. The clock has no numerals; noticeboard papers have no writing. Deliver one complete wide background, not a montage.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 3037780
+    },
+    {
+      "variant": "b",
+      "path": "/workspace/shared/trpg-background-candidates/leaf-mail/background-b.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "64748928e7c1b43f89677295c71f784407adc6a164ad1da322c79a385142dd15",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-b.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Readable scene; cat present at street right; board has imitation small writing; tower clock ~30/14, rooftop ~92/22, bridge ~75/59, bakery ~12/49. Mailbag ~51/81 and board ~39/49 are close. Not production-approved.",
+      "scenario": "leaf-mail",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "7dcd93abd4554bfe923bf33cf7f2dad40435b825493a53865dbe31b52fd2356d",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 03 leaf-mail\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 大きな月の下の坂の町。郵便鞄、時計塔、屋根の上、川の橋、パン屋の窓、掲示板。 Setting: 時計坂の町 / 月夜の大通り. Mood: 大きな月。石畳に、猫の足音がひとつ。. Fictional place from a tabletop story (絵本ファンタジー). Concrete click-investigation objects, each a distinct readable prop at its position: 郵便鞄 clearly visible around x52% y80%; 時計塔 clearly visible around x20% y24%; 屋根の上 clearly visible around x66% y18%; 川の橋 clearly visible around x86% y66%; パン屋の窓 clearly visible around x14% y64%; 掲示板 clearly visible around x38% y50%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant B: delicate ink-and-gouache fantasy setting, moon-silver slate roofs and honey-colored windows. Preserve every specified landmark coordinate and keep all six inspection props unambiguous. The postal satchel is alone on the cobblestones, not worn by a character. The clock has no numerals; noticeboard papers have no writing. Deliver one complete wide background, not a montage.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 3046337
+    },
+    {
+      "variant": "c",
+      "path": "/workspace/shared/trpg-background-candidates/leaf-mail/background-c.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "1286c5a68e0a1064c25bdd423c5032d2bf94d7a7e7ddf9c211d5b92def944e00",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-c.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Best candidate: no cat/people/shisha or visible lettering; blank board. Mailbag ~53/81, board ~39/49, bridge ~86/59, bakery ~12/49, clock ~27/16, rooftop spans ~50-69/17-36. Target bridge 86/66 hits bridge arch and target roof66/18 hits railing/roof boundary. Tower20/24 misses main tower and bakery14/64 is below glass. Needs hotspot-overlay review/correction before adoption.",
+      "scenario": "leaf-mail",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "23d8940f6c66dc406c7594ad200c3a182fdad2a4f4a13b73cec50010d3d3c7fd",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 03 leaf-mail\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 大きな月の下の坂の町。郵便鞄、時計塔、屋根の上、川の橋、パン屋の窓、掲示板。 Setting: 時計坂の町 / 月夜の大通り. Mood: 大きな月。石畳に、猫の足音がひとつ。. Fictional place from a tabletop story (絵本ファンタジー). Concrete click-investigation objects, each a distinct readable prop at its position: 郵便鞄 clearly visible around x52% y80%; 時計塔 clearly visible around x20% y24%; 屋根の上 clearly visible around x66% y18%; 川の橋 clearly visible around x86% y66%; パン屋の窓 clearly visible around x14% y64%; 掲示板 clearly visible around x38% y50%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant C: cinematic painted anime storybook fantasy, clear atmospheric depth with soft moonlight on a gently climbing stone avenue. Preserve every specified landmark coordinate and keep all six inspection props unambiguous. The postal satchel is alone on the cobblestones, not worn by a character. The clock has no numerals; noticeboard papers have no writing. Deliver one complete wide background, not a montage.\nComposition priority: postal satchel centered at 52% across, 80% down. Clock-tower clock face centered at 20% across, 24% down (not at top edge). Reachable broad rooftop inspection area centered at 66% across, 18% down, against sky. Bridge deck/arch clearly centered at 86% across, 66% down. Bakery glass display centered 14% across, 64% down. Wooden noticeboard centered 38% across, 50% down. Each clickable target must fill a readable local patch around its center. Keep the noticeboard papers entirely blank; no imitation lettering or small scribbles. No cats or other characters in this environment-only asset. These coordinates are production-critical.\n",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 3173900
+    },
+    {
+      "variant": "a",
+      "path": "/workspace/shared/trpg-background-candidates/mist-kingdom/background-a.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "398c962e1358556f3954e6f4d429d3bb51d90e2214b019c6a61a4552c155a959",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-a.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Bright ethereal palace; all six targets, no living people/shisha/lettering. Queen exists only in framed painting. Throne52/29 near50/28, portrait23/19 near20/24, window84/19 matches82/22; judges33/55 target30/60 fits table; fragrance shelf85/55 target70/58 misses shelf (plant instead); corridor9/71 target14/82 hits mist/rail. Needs shelf/corridor alignment.",
+      "scenario": "mist-kingdom",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "bc71424481c53f4940eeeac8081128a0a5498969baf9a361e958b429e2b0d15b",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 06 mist-kingdom\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 霧に包まれた王宮の広間。玉座、王妃の肖像、霧の窓、審査員席、香り棚と、薄れかけた回廊。 Setting: 朝霧の王国 / 霧の王宮. Mood: 白い霧。薄れていく回廊。小さな王女の、透けそうな笑顔。. Fictional place from a tabletop story (剣と魔法 / 霧の選手権). Concrete click-investigation objects, each a distinct readable prop at its position: 玉座 clearly visible around x50% y28%; 王妃の肖像 clearly visible around x20% y24%; 霧の窓 clearly visible around x82% y22%; 審査員席 clearly visible around x30% y60%; 王宮の香り棚 clearly visible around x70% y58%; 消えかけの回廊 clearly visible around x14% y82%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant A: wistful finely painted fantasy palace at dawn, pale pearl stone, faded cornflower-blue textiles and very gentle gold details.\nONE coherent wide palace interior, not a montage. Bright readable pale mist, not dark horror. Center throne at 50% across/28% down on a modest dais. Queen portrait object on upper-left wall at20%/24%, painted indistinct adult queen only, no living figure anywhere. Large tall foggy window on upper-right at82%/22%. Clearly empty judges table and chairs grouped at30%/60%. Palace fragrance shelf containing blank-label jars and herb sachets at70%/58%, no smoking apparatus. Foreground left floor/pillared corridor recedes from14%/82% and gently dissolves into luminous mist, convey architecture fading away without ruining perspective. Keep all six interactive targets large and readable at assigned coordinate centers; these coordinates are production-critical. No princess present; her fragile smile is mood only, do not paint any living people, ghost silhouettes or human mist shapes. No writing on jars or wall. Calm upper-center around throne.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 2892301
+    },
+    {
+      "variant": "b",
+      "path": "/workspace/shared/trpg-background-candidates/mist-kingdom/background-b.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "9cba677531c3cf94940f816440e899c096ef005c9f6ec96ce910d015702f828e",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-b.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Best alignment: throne51/32 near50/28; portrait22/21 includes20/24; window84/22 valid; judges34/63 valid30/60; shelf76/60 includes70/58; corridor7/68 target14/82 at misty foreground rather than corridor entrance. Six target environment; no living people/shisha/lettering. Architecture softly fading, may need corridor point adjustment.",
+      "scenario": "mist-kingdom",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "69900bb21563e64bd6c5eeb5331e27300d8b490ffe984a5da18d2b7549f08197",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 06 mist-kingdom\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 霧に包まれた王宮の広間。玉座、王妃の肖像、霧の窓、審査員席、香り棚と、薄れかけた回廊。 Setting: 朝霧の王国 / 霧の王宮. Mood: 白い霧。薄れていく回廊。小さな王女の、透けそうな笑顔。. Fictional place from a tabletop story (剣と魔法 / 霧の選手権). Concrete click-investigation objects, each a distinct readable prop at its position: 玉座 clearly visible around x50% y28%; 王妃の肖像 clearly visible around x20% y24%; 霧の窓 clearly visible around x82% y22%; 審査員席 clearly visible around x30% y60%; 王宮の香り棚 clearly visible around x70% y58%; 消えかけの回廊 clearly visible around x14% y82%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant B: ink-and-watercolor fantasy palace environment, opal mist, soft sage and dove-blue with luminous ivory stone.\nONE coherent wide palace interior, not a montage. Bright readable pale mist, not dark horror. Center throne at 50% across/28% down on a modest dais. Queen portrait object on upper-left wall at20%/24%, painted indistinct adult queen only, no living figure anywhere. Large tall foggy window on upper-right at82%/22%. Clearly empty judges table and chairs grouped at30%/60%. Palace fragrance shelf containing blank-label jars and herb sachets at70%/58%, no smoking apparatus. Foreground left floor/pillared corridor recedes from14%/82% and gently dissolves into luminous mist, convey architecture fading away without ruining perspective. Keep all six interactive targets large and readable at assigned coordinate centers; these coordinates are production-critical. No princess present; her fragile smile is mood only, do not paint any living people, ghost silhouettes or human mist shapes. No writing on jars or wall. Calm upper-center around throne.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 2888759
+    },
+    {
+      "variant": "c",
+      "path": "/workspace/shared/trpg-background-candidates/mist-kingdom/background-c.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "61da363d11cb7ddedda3de96b7aefe2f94896114e142a1f2c5f1ff81ccc406b4",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-c.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Readable luminous palace, all six objects/no live people/shisha/text. Throne51/29 matches50/28; portrait20/18 includes20/24; window82/21 good; judges33/55 target30/60 table near lower edge; shelf89/50 target70/58 misses; corridor12/66 target14/82 on misty floor. Shelf/corridor need correction before adoption.",
+      "scenario": "mist-kingdom",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "6c1f866af1f9786f584da32c0fe2e01c62f0ccb207766b56674ed6e58e6aabe1",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 06 mist-kingdom\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 霧に包まれた王宮の広間。玉座、王妃の肖像、霧の窓、審査員席、香り棚と、薄れかけた回廊。 Setting: 朝霧の王国 / 霧の王宮. Mood: 白い霧。薄れていく回廊。小さな王女の、透けそうな笑顔。. Fictional place from a tabletop story (剣と魔法 / 霧の選手権). Concrete click-investigation objects, each a distinct readable prop at its position: 玉座 clearly visible around x50% y28%; 王妃の肖像 clearly visible around x20% y24%; 霧の窓 clearly visible around x82% y22%; 審査員席 clearly visible around x30% y60%; 王宮の香り棚 clearly visible around x70% y58%; 消えかけの回廊 clearly visible around x14% y82%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant C: cinematic anime-painted fantasy palace, slightly weathered white marble, muted lavender-gray shadows and warm cream highlights.\nONE coherent wide palace interior, not a montage. Bright readable pale mist, not dark horror. Center throne at 50% across/28% down on a modest dais. Queen portrait object on upper-left wall at20%/24%, painted indistinct adult queen only, no living figure anywhere. Large tall foggy window on upper-right at82%/22%. Clearly empty judges table and chairs grouped at30%/60%. Palace fragrance shelf containing blank-label jars and herb sachets at70%/58%, no smoking apparatus. Foreground left floor/pillared corridor recedes from14%/82% and gently dissolves into luminous mist, convey architecture fading away without ruining perspective. Keep all six interactive targets large and readable at assigned coordinate centers; these coordinates are production-critical. No princess present; her fragile smile is mood only, do not paint any living people, ghost silhouettes or human mist shapes. No writing on jars or wall. Calm upper-center around throne.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 2777908
+    },
+    {
+      "variant": "a",
+      "path": "/workspace/shared/trpg-background-candidates/moonflower-encore/background-a.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "b7df4c4eff1b182598d9b407fa58335cb0069b83910e74f31d6411fc1e644b89",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-a.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "No live figures/ghosts/shisha/text; painted portrait only. Six targets present. Stage40/28 target48/20 near curtain/window rather than stage surface; namecard19/68 target22/66 fits; stand16/23 target14/28 on stand shaft; flowers81/30 target84/26 fits; portrait91/23 target78/64 misses completely; keys61/82 target50/82 near tray edge. Keys appear oversized. Needs portrait/key/stage alignment.",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "input_image_references": [],
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "scenario": "moonflower-encore",
+      "prompt_sha256": "d6ada2db4984b0e46904e8892400cfd01b9bef0c98d57d83fb66239e8b8e56e0",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 11 moonflower-encore\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 月夜の古城の大広間。大広間の舞台、客席の名札、楽屋の譜面台、庭の月光花、回廊の肖像画、家令の鍵束。客席には青白い幽霊たち。 Setting: 月の丘 / 月光花城. Mood: 燭台の灯り。白い花の香り。鳴りやまない、アンコール。. Fictional place from a tabletop story (ゴシック幻想 / 音楽). Concrete click-investigation objects, each a distinct readable prop at its position: 大広間の舞台 clearly visible around x48% y20%; 客席の名札 clearly visible around x22% y66%; 楽屋の譜面台 clearly visible around x14% y28%; 庭の月光花 clearly visible around x84% y26%; 回廊の肖像画 clearly visible around x78% y64%; 家令の鍵束 clearly visible around x50% y82%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant A: finely painted moonlit gothic castle recital hall, muted blue velvet and ivory moonflowers, warm candelabras and silver stone.\nONE coherent wide castle great hall/recital space, not montage. Slightly elevated empty stage in upper-middle centered48%/20%. Foreground-left audience seat with blank name-card centered22%/66%; name-card large enough to read as plain card, NO letters. Dressing-room music stand at14%/28% in visible left raised alcove, sheet entirely blank, no musical notation. Moonflower garden through right open arch centered84%/26%, white trumpet-shaped night-blooming flowers in moonlight. Framed portrait on right corridor wall centered78%/64%, painted indistinct historic figure only, no living person. Butler's small old iron key ring resting on foreground table/floor centered50%/82%, recognizable several keys. Production-critical exact object centers, ensure each target readable. Despite scene's ghost audience, explicit NO people/NO silhouettes takes precedence: all chairs empty, no ghosts/humanoid shapes anywhere; use only faint cool reflected seat-light to suggest atmosphere. No shisha, no text or logos; clear believable perspective. Upper center quiet around stage.",
+      "byte_size": 2754619,
+      "reference_documents": [
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/f600fcf9db0b21c148f553ad1f239bc4646c3d3b/asset_sources/trpg-scenarios/README.md",
+          "blob_sha": "057937ca0f39d2b188fa8e088c585b0d890a18fb"
+        },
+        {
+          "path": "/workspace/shared/trpg-background-candidates/latest-main-background-prompts.json",
+          "sha256": "639cd542bdc72e5ff109c5bf32628e10680766ccd4c6e279d56c851eb8927547"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ]
+    },
+    {
+      "variant": "b",
+      "path": "/workspace/shared/trpg-background-candidates/moonflower-encore/background-b.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "890d48d9315eec3dd339fe16c091c3b622247659cf9a2bb6ea92221615160c1e",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-b.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "No living figures/ghosts/shisha/lettering, framed portrait only. Stage46/29 target48/20 at piano lid/window, namecard23/59 target22/66 below card; stand13/22 target14/28 at shaft; flowers77/33 target84/26 at arch column; portrait92/27 target78/64 floor; keys47/84 target50/82 fits. Best coherent room but several coordinates unaligned.",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "input_image_references": [],
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "scenario": "moonflower-encore",
+      "prompt_sha256": "df34070122f1311d3dc5eb35413de2f36ccb085b1d72a7e2e9bec636d6339c7f",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 11 moonflower-encore\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 月夜の古城の大広間。大広間の舞台、客席の名札、楽屋の譜面台、庭の月光花、回廊の肖像画、家令の鍵束。客席には青白い幽霊たち。 Setting: 月の丘 / 月光花城. Mood: 燭台の灯り。白い花の香り。鳴りやまない、アンコール。. Fictional place from a tabletop story (ゴシック幻想 / 音楽). Concrete click-investigation objects, each a distinct readable prop at its position: 大広間の舞台 clearly visible around x48% y20%; 客席の名札 clearly visible around x22% y66%; 楽屋の譜面台 clearly visible around x14% y28%; 庭の月光花 clearly visible around x84% y26%; 回廊の肖像画 clearly visible around x78% y64%; 家令の鍵束 clearly visible around x50% y82%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant B: delicate ink-and-gouache gothic musical castle, lavender-blue shadows, old burgundy upholstery and softly luminous white flowers.\nONE coherent wide castle great hall/recital space, not montage. Slightly elevated empty stage in upper-middle centered48%/20%. Foreground-left audience seat with blank name-card centered22%/66%; name-card large enough to read as plain card, NO letters. Dressing-room music stand at14%/28% in visible left raised alcove, sheet entirely blank, no musical notation. Moonflower garden through right open arch centered84%/26%, white trumpet-shaped night-blooming flowers in moonlight. Framed portrait on right corridor wall centered78%/64%, painted indistinct historic figure only, no living person. Butler's small old iron key ring resting on foreground table/floor centered50%/82%, recognizable several keys. Production-critical exact object centers, ensure each target readable. Despite scene's ghost audience, explicit NO people/NO silhouettes takes precedence: all chairs empty, no ghosts/humanoid shapes anywhere; use only faint cool reflected seat-light to suggest atmosphere. No shisha, no text or logos; clear believable perspective. Upper center quiet around stage.",
+      "byte_size": 2690019,
+      "reference_documents": [
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/f600fcf9db0b21c148f553ad1f239bc4646c3d3b/asset_sources/trpg-scenarios/README.md",
+          "blob_sha": "057937ca0f39d2b188fa8e088c585b0d890a18fb"
+        },
+        {
+          "path": "/workspace/shared/trpg-background-candidates/latest-main-background-prompts.json",
+          "sha256": "639cd542bdc72e5ff109c5bf32628e10680766ccd4c6e279d56c851eb8927547"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ]
+    },
+    {
+      "variant": "c",
+      "path": "/workspace/shared/trpg-background-candidates/moonflower-encore/background-c.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "a3c7f6971dbf63de225a4555cdac7db7c26798cc6b4f6183d27266857ac44d66",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-c.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Targets near supplied coordinates except stage/stand: namecard18/64 vs22/66 within edge, flowers84/28 fit, portrait79/65 fit, keys46/86 target50/82 within cluster edge. Stage48/30 vs48/20 at window/piano lid; stand11/23 vs14/28 side. Lower-right corridor/upper-right garden levels produce montage-like sectional architecture despite requested single perspective; do not production-approve without architectural review. No ghost/live people/shisha/text.",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "input_image_references": [],
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "scenario": "moonflower-encore",
+      "prompt_sha256": "73fc5651eee5cc39e81533f8e426545ac87e99528020511ec4afbc422f10fe7f",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 11 moonflower-encore\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 月夜の古城の大広間。大広間の舞台、客席の名札、楽屋の譜面台、庭の月光花、回廊の肖像画、家令の鍵束。客席には青白い幽霊たち。 Setting: 月の丘 / 月光花城. Mood: 燭台の灯り。白い花の香り。鳴りやまない、アンコール。. Fictional place from a tabletop story (ゴシック幻想 / 音楽). Concrete click-investigation objects, each a distinct readable prop at its position: 大広間の舞台 clearly visible around x48% y20%; 客席の名札 clearly visible around x22% y66%; 楽屋の譜面台 clearly visible around x14% y28%; 庭の月光花 clearly visible around x84% y26%; 回廊の肖像画 clearly visible around x78% y64%; 家令の鍵束 clearly visible around x50% y82%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant C: cinematic painted anime gothic castle hall, midnight-indigo and faded gold, quiet pale moonlight and tender candlelit atmosphere.\nONE coherent wide castle great hall/recital space, not montage. Slightly elevated empty stage in upper-middle centered48%/20%. Foreground-left audience seat with blank name-card centered22%/66%; name-card large enough to read as plain card, NO letters. Dressing-room music stand at14%/28% in visible left raised alcove, sheet entirely blank, no musical notation. Moonflower garden through right open arch centered84%/26%, white trumpet-shaped night-blooming flowers in moonlight. Framed portrait on right corridor wall centered78%/64%, painted indistinct historic figure only, no living person. Butler's small old iron key ring resting on foreground table/floor centered50%/82%, recognizable several keys. Production-critical exact object centers, ensure each target readable. Despite scene's ghost audience, explicit NO people/NO silhouettes takes precedence: all chairs empty, no ghosts/humanoid shapes anywhere; use only faint cool reflected seat-light to suggest atmosphere. No shisha, no text or logos; clear believable perspective. Upper center quiet around stage.",
+      "byte_size": 2905441,
+      "reference_documents": [
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/f600fcf9db0b21c148f553ad1f239bc4646c3d3b/asset_sources/trpg-scenarios/README.md",
+          "blob_sha": "057937ca0f39d2b188fa8e088c585b0d890a18fb"
+        },
+        {
+          "path": "/workspace/shared/trpg-background-candidates/latest-main-background-prompts.json",
+          "sha256": "639cd542bdc72e5ff109c5bf32628e10680766ccd4c6e279d56c851eb8927547"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ]
+    },
+    {
+      "variant": "a",
+      "path": "/workspace/shared/trpg-background-candidates/purikura-hero/background-a.png",
+      "size": [
+        1672,
+        940
+      ],
+      "mode": "RGB",
+      "sha256": "96d560b9301359228d6fa2132912e4a2277315b3353217651b484d0819adfa48",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-a.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Bright readable plaza/all six props/no people/shisha/text. Blank photo sticker cells. Plaza22/74 on fountain plinth valid; showcase12/36 valid; sign53/36 vs target48/56 gate opening (major miss); mirrors86/27 target80/30 within gallery; sticker38/88 target38/84 fits; throne59/14 target60/20 at lower throne edge. Shark shadow present. Upper throne interior architectural cutaway feel, needs plausibility QA.",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "input_image_references": [],
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "scenario": "purikura-hero",
+      "prompt_sha256": "2a3f5994081f86f2b8dedeef11897a4e6ce8714e1330c83fc36bad74daadeefe",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 12 purikura-hero\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: きらめき王国。色あせた広場の噴水、写真屋のショーケース、サメの泳ぐ堀と城門、撮影城の鏡の間、落ちていたプリ、魔王の玉座。 Setting: きらめき王国 / 王国の広場と撮影城. Mood: 盛りを吸われて、王国じゅうが少し地味。城から、今日もシャッターの音。. Fictional place from a tabletop story (コメディ・ファンタジー). Concrete click-investigation objects, each a distinct readable prop at its position: 王国の広場 clearly visible around x22% y74%; 写真屋のショーケース clearly visible around x12% y36%; 城門の看板 clearly visible around x48% y56%; 撮影城の鏡の間 clearly visible around x80% y30%; 落とし物のプリ clearly visible around x38% y84%; 魔王の玉座 clearly visible around x60% y20%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant A: finely hand-painted playful fantasy castle town, slightly faded pastel rose, pale turquoise and cream, sunny but wistfully under-decorated.\nONE coherent wide town plaza looking into open castle courtyard/galleries, no montage. Faded plaza fountain and pavement at22%/74%. Photograph-shop display case at12%/36%, show empty decorative photo frames/camera objects, NO human photographs or logos. Castle gate sign at48%/56%, completely BLANK plaque, no writing. Tall mirror gallery visible through open right arcade at80%/30%, only architecture reflected, no people/reflections. Dropped purikura photo sticker sheet on foreground paving at38%/84%, large enough to recognize several tiny BLANK photo cells framed with simple hearts/stars, no faces, lettering or branding. Demon king's EMPTY ornate throne visible through central upper gate/gallery at60%/20%, distinguishable throne with small playful crown/heart carving, no seated character. Moat in the midground with subtle large shark shadow underwater, not attacking. Ensure all six named investigation targets at the exact production coordinates. No humans/creatures on land, no silhouettes, no shisha, no writing on any object. Keep clear believable architecture, calm upper-center.",
+      "byte_size": 3192790,
+      "reference_documents": [
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/f600fcf9db0b21c148f553ad1f239bc4646c3d3b/asset_sources/trpg-scenarios/README.md",
+          "blob_sha": "057937ca0f39d2b188fa8e088c585b0d890a18fb"
+        },
+        {
+          "path": "/workspace/shared/trpg-background-candidates/latest-main-background-prompts.json",
+          "sha256": "639cd542bdc72e5ff109c5bf32628e10680766ccd4c6e279d56c851eb8927547"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ]
+    },
+    {
+      "variant": "b",
+      "path": "/workspace/shared/trpg-background-candidates/purikura-hero/background-b.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "3212ad063be7b5a1a6d74d1c850ac9d34f4a1e8372a1ae1791981ef7a97ad98d",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-b.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "All six props/no people/shisha/legible text. Showcase12/32 includes12/36; fountain24/63 plaza target22/74 near basin base; gate sign56/30 target48/56 bridge/water (major miss); mirror84/25 target80/30 within gallery; sticker41/88 target38/84 within sheet; throne62/14 target60/20 at lower seat/dais. Shark shadow clear. Sign coordinate correction required; architectural cutaway upper throne review.",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "input_image_references": [],
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "scenario": "purikura-hero",
+      "prompt_sha256": "5748b14fb994541a1736cdea9bf739fb79621173572e11b9b34be27591ca4286",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 12 purikura-hero\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: きらめき王国。色あせた広場の噴水、写真屋のショーケース、サメの泳ぐ堀と城門、撮影城の鏡の間、落ちていたプリ、魔王の玉座。 Setting: きらめき王国 / 王国の広場と撮影城. Mood: 盛りを吸われて、王国じゅうが少し地味。城から、今日もシャッターの音。. Fictional place from a tabletop story (コメディ・ファンタジー). Concrete click-investigation objects, each a distinct readable prop at its position: 王国の広場 clearly visible around x22% y74%; 写真屋のショーケース clearly visible around x12% y36%; 城門の看板 clearly visible around x48% y56%; 撮影城の鏡の間 clearly visible around x80% y30%; 落とし物のプリ clearly visible around x38% y84%; 魔王の玉座 clearly visible around x60% y20%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant B: delicate ink-and-gouache comedic fantasy plaza and photo castle, muted lavender, peach and cool limestone; bright readable daylight.\nONE coherent wide town plaza looking into open castle courtyard/galleries, no montage. Faded plaza fountain and pavement at22%/74%. Photograph-shop display case at12%/36%, show empty decorative photo frames/camera objects, NO human photographs or logos. Castle gate sign at48%/56%, completely BLANK plaque, no writing. Tall mirror gallery visible through open right arcade at80%/30%, only architecture reflected, no people/reflections. Dropped purikura photo sticker sheet on foreground paving at38%/84%, large enough to recognize several tiny BLANK photo cells framed with simple hearts/stars, no faces, lettering or branding. Demon king's EMPTY ornate throne visible through central upper gate/gallery at60%/20%, distinguishable throne with small playful crown/heart carving, no seated character. Moat in the midground with subtle large shark shadow underwater, not attacking. Ensure all six named investigation targets at the exact production coordinates. No humans/creatures on land, no silhouettes, no shisha, no writing on any object. Keep clear believable architecture, calm upper-center.",
+      "byte_size": 3044751,
+      "reference_documents": [
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/f600fcf9db0b21c148f553ad1f239bc4646c3d3b/asset_sources/trpg-scenarios/README.md",
+          "blob_sha": "057937ca0f39d2b188fa8e088c585b0d890a18fb"
+        },
+        {
+          "path": "/workspace/shared/trpg-background-candidates/latest-main-background-prompts.json",
+          "sha256": "639cd542bdc72e5ff109c5bf32628e10680766ccd4c6e279d56c851eb8927547"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ]
+    },
+    {
+      "variant": "c",
+      "path": "/workspace/shared/trpg-background-candidates/purikura-hero/background-c.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "1a9aa892e041dbdac8ecf53524d3d7307dc6d65c9487d23e752f57f56f8d96b4",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-c.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Cleanest slightly muted fantasy scene, no people/shisha/legible text. Plaza22/74 clear paving in front of fountain; showcase12/30 target12/36 includes case; sign58/36 target48/56 near bridge post (major miss); mirrors86/27 target80/30 on arcade column; sticker42/87 target38/84 within sheet; throne62/15 target60/20 lower seat/dais. Shark shadows visible. Upper throne balcony opening plausible but review; sign needs repositioning.",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "input_image_references": [],
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "scenario": "purikura-hero",
+      "prompt_sha256": "8c5382870d4b4e5f5e9e04e8820f36c96c0100b2c197fa301eae52cd3a85ef47",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 12 purikura-hero\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: きらめき王国。色あせた広場の噴水、写真屋のショーケース、サメの泳ぐ堀と城門、撮影城の鏡の間、落ちていたプリ、魔王の玉座。 Setting: きらめき王国 / 王国の広場と撮影城. Mood: 盛りを吸われて、王国じゅうが少し地味。城から、今日もシャッターの音。. Fictional place from a tabletop story (コメディ・ファンタジー). Concrete click-investigation objects, each a distinct readable prop at its position: 王国の広場 clearly visible around x22% y74%; 写真屋のショーケース clearly visible around x12% y36%; 城門の看板 clearly visible around x48% y56%; 撮影城の鏡の間 clearly visible around x80% y30%; 落とし物のプリ clearly visible around x38% y84%; 魔王の玉座 clearly visible around x60% y20%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant C: cinematic painted anime whimsical castle town, subdued candy pastels and soft gold, once-glamorous decorations now gently faded.\nONE coherent wide town plaza looking into open castle courtyard/galleries, no montage. Faded plaza fountain and pavement at22%/74%. Photograph-shop display case at12%/36%, show empty decorative photo frames/camera objects, NO human photographs or logos. Castle gate sign at48%/56%, completely BLANK plaque, no writing. Tall mirror gallery visible through open right arcade at80%/30%, only architecture reflected, no people/reflections. Dropped purikura photo sticker sheet on foreground paving at38%/84%, large enough to recognize several tiny BLANK photo cells framed with simple hearts/stars, no faces, lettering or branding. Demon king's EMPTY ornate throne visible through central upper gate/gallery at60%/20%, distinguishable throne with small playful crown/heart carving, no seated character. Moat in the midground with subtle large shark shadow underwater, not attacking. Ensure all six named investigation targets at the exact production coordinates. No humans/creatures on land, no silhouettes, no shisha, no writing on any object. Keep clear believable architecture, calm upper-center.",
+      "byte_size": 3016424,
+      "reference_documents": [
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/f600fcf9db0b21c148f553ad1f239bc4646c3d3b/asset_sources/trpg-scenarios/README.md",
+          "blob_sha": "057937ca0f39d2b188fa8e088c585b0d890a18fb"
+        },
+        {
+          "path": "/workspace/shared/trpg-background-candidates/latest-main-background-prompts.json",
+          "sha256": "639cd542bdc72e5ff109c5bf32628e10680766ccd4c6e279d56c851eb8927547"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ]
+    },
+    {
+      "variant": "a",
+      "path": "/workspace/shared/trpg-background-candidates/shark-island/background-a.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "ba5fbcf9f123d174cabff5532bf56a926ce81820622df7953fafe66984e4b1a5",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-a.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Six targets and shark shadow readable, no people/shisha/lettering. Map14/26 fits target14/24, pedestal81/18 fits78/20, pictograms40/24 (target40/34 lower rock, needs adjustment), water56/62 valid, anchor89/64 (85/60 near edge), footprints24/69-76 (target24/79 below trail). Pedestal includes crown relief ornament, not separate crown.",
+      "scenario": "shark-island",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "8150ce79a73090ccad0e8fb7495f688906ddca769b481724382a65f899259174",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 05 shark-island\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 南の島の入り江。地図を広げた岩、王冠の台座、落書きの岩壁、青い水面、古い錨、砂浜の足跡。水の下に大きなサメの影。 Setting: トビウオ諸島 / サメ島の入り江. Mood: 青く澄んだ入り江。白い砂。水の下に、大きな影。. Fictional place from a tabletop story (海賊の冒険). Concrete click-investigation objects, each a distinct readable prop at its position: 宝の地図 clearly visible around x14% y24%; 王冠の台座 clearly visible around x78% y20%; 船乗りの落書き clearly visible around x40% y34%; 入り江の水面 clearly visible around x56% y62%; 古い錨 clearly visible around x85% y60%; 砂浜の足跡 clearly visible around x24% y79%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant A: sunlit painterly pirate-adventure cove, bleached limestone and restrained turquoise, warm sand, softly painted clouds.\nProduction layout priority: show the entire scene as ONE coherent wide cove, camera from slightly elevated sandy shore, no montage. Upper-left rock shelf holds a fully readable open parchment treasure map centered at 14% across/24% down; the map has ONLY abstract illustrated coast/route markings, no letters or numbers. An old stone crown pedestal at upper-right shore centers 78%/20%. Sailor rock-wall graffiti centered40%/34% consists ONLY simple pictograms (fish, boat, sun) with no writing. Clear cove-water patch centers56%/62%, large shark shadow visible naturally underwater, not leaping. One old corroded iron anchor at85%/60%, resting in sand on right. Curving human footprints (no person visible) centered24%/79%. Make all six targets big enough to be clearly readable around their assigned centers and maintain believable geography/perspective. The pedestal is empty, no unnecessary treasure chest, no people, no boats obscuring targets. Keep upper center calm.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 3444704
+    },
+    {
+      "variant": "b",
+      "path": "/workspace/shared/trpg-background-candidates/shark-island/background-b.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "afb3b132a480b22e09f4c7417c77e8523f0cc7ef2ffc88545861fd7735b987f2",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-b.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Readable cove and all targets, no people/shisha/text. Map13/25 fits14/24; pedestal79/23 fits78/20; graffiti40/26 vs target40/34 near lower wave pictogram; water56/62 valid; anchor90/64 vs85/60 misses anchor shaft; footprints26/78 fits24/79 near edge. Anchor target needs correction.",
+      "scenario": "shark-island",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "49c44b1447468eeefb0d81628be88cc2a851142d869c7ebe2339e91167ded3a8",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 05 shark-island\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 南の島の入り江。地図を広げた岩、王冠の台座、落書きの岩壁、青い水面、古い錨、砂浜の足跡。水の下に大きなサメの影。 Setting: トビウオ諸島 / サメ島の入り江. Mood: 青く澄んだ入り江。白い砂。水の下に、大きな影。. Fictional place from a tabletop story (海賊の冒険). Concrete click-investigation objects, each a distinct readable prop at its position: 宝の地図 clearly visible around x14% y24%; 王冠の台座 clearly visible around x78% y20%; 船乗りの落書き clearly visible around x40% y34%; 入り江の水面 clearly visible around x56% y62%; 古い錨 clearly visible around x85% y60%; 砂浜の足跡 clearly visible around x24% y79%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant B: rich ink-and-gouache island adventure, pale coral rock, clear jade-turquoise water and softly weathered wood.\nProduction layout priority: show the entire scene as ONE coherent wide cove, camera from slightly elevated sandy shore, no montage. Upper-left rock shelf holds a fully readable open parchment treasure map centered at 14% across/24% down; the map has ONLY abstract illustrated coast/route markings, no letters or numbers. An old stone crown pedestal at upper-right shore centers 78%/20%. Sailor rock-wall graffiti centered40%/34% consists ONLY simple pictograms (fish, boat, sun) with no writing. Clear cove-water patch centers56%/62%, large shark shadow visible naturally underwater, not leaping. One old corroded iron anchor at85%/60%, resting in sand on right. Curving human footprints (no person visible) centered24%/79%. Make all six targets big enough to be clearly readable around their assigned centers and maintain believable geography/perspective. The pedestal is empty, no unnecessary treasure chest, no people, no boats obscuring targets. Keep upper center calm.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 3589056
+    },
+    {
+      "variant": "c",
+      "path": "/workspace/shared/trpg-background-candidates/shark-island/background-c.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "2d83b6455b8ee3e4d7a2bc8c93a07090e77389ed74326fd512c7a60611222cf0",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-c.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Readable cove, no people/shisha/text. Map14/25 fits; crown-shaped pedestal81/22 fits78/20; graffiti40/26 target40/34 hits lowest fish; water56/62 valid; anchor90/64 target85/60 hits rock beside shaft; footprint25/76 target24/79 nearby. Best general composition but coordinate alignment still required, especially anchor.",
+      "scenario": "shark-island",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "7bd857f379b9db5b55b09aebc5f791f1b34898cce7dfd2fb79c79ea7b1277139",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 05 shark-island\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 南の島の入り江。地図を広げた岩、王冠の台座、落書きの岩壁、青い水面、古い錨、砂浜の足跡。水の下に大きなサメの影。 Setting: トビウオ諸島 / サメ島の入り江. Mood: 青く澄んだ入り江。白い砂。水の下に、大きな影。. Fictional place from a tabletop story (海賊の冒険). Concrete click-investigation objects, each a distinct readable prop at its position: 宝の地図 clearly visible around x14% y24%; 王冠の台座 clearly visible around x78% y20%; 船乗りの落書き clearly visible around x40% y34%; 入り江の水面 clearly visible around x56% y62%; 古い錨 clearly visible around x85% y60%; 砂浜の足跡 clearly visible around x24% y79%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant C: cinematic hand-painted anime coastal adventure, clean blue water, creamy sandstone and warm afternoon light.\nProduction layout priority: show the entire scene as ONE coherent wide cove, camera from slightly elevated sandy shore, no montage. Upper-left rock shelf holds a fully readable open parchment treasure map centered at 14% across/24% down; the map has ONLY abstract illustrated coast/route markings, no letters or numbers. An old stone crown pedestal at upper-right shore centers 78%/20%. Sailor rock-wall graffiti centered40%/34% consists ONLY simple pictograms (fish, boat, sun) with no writing. Clear cove-water patch centers56%/62%, large shark shadow visible naturally underwater, not leaping. One old corroded iron anchor at85%/60%, resting in sand on right. Curving human footprints (no person visible) centered24%/79%. Make all six targets big enough to be clearly readable around their assigned centers and maintain believable geography/perspective. The pedestal is empty, no unnecessary treasure chest, no people, no boats obscuring targets. Keep upper center calm.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 3332195
+    },
+    {
+      "variant": "a",
+      "path": "/workspace/shared/trpg-background-candidates/smoke-robot/background-a.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "1076a30bada2be84a33a48f3aa006877e8367d4c703acd9770db329cb7de706d",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-a.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Readable orbital workshop/Earth; all six objects and no people/shisha. Failure pile interpreted as generic spare-metal prototypes, NOT smoking equipment, per explicit NO shisha prompt. Workbench50/63 and window76/22 good; storage92/48 target89/66 at lower door edge; records14/24 good; memo17/80 target20/72 at upper-right edge; pile41/31 target44/34 good. Tiny pseudo-detail on screens/paper, no legible text. Needs door/memo alignment QA.",
+      "scenario": "smoke-robot",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "b0bfdee1619e341305d2c663fff10c8bad3f3f8e7ce2f0fd847af0dd360952c5",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 07 smoke-robot\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 軌道の休憩所。作業台、展望デッキの窓、倉庫の扉、通信室、整備士のメモと失敗作の山。窓の外に青い地球。 Setting: 地球周回軌道 / 星の駅ポラリス. Mood: 夜間モードの灯り。通路の奥で、小さなビープ音。. Fictional place from a tabletop story (SF / ロボと一台). Concrete click-investigation objects, each a distinct readable prop at its position: ピコの作業台 clearly visible around x50% y64%; 展望デッキの窓 clearly visible around x76% y22%; 倉庫の扉 clearly visible around x89% y66%; 通信室の記録 clearly visible around x14% y24%; 整備士のメモ clearly visible around x20% y72%; 失敗した一台の山 clearly visible around x44% y34%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant A: cinematic painted anime orbital station, muted navy panels and warm cream task lighting, blue Earth through glass.\nONE coherent wide space-station workshop/rest stop, no montage. Empty central workbench centered50%/64%. Large observation window centered76%/22% with a blue Earth visible beyond. Closed storage-bay door centered89%/66%. Communication-room records at14%/24% represented by a mounted data recorder with blank display and geometric status lights, NOT readable text. Mechanic's memo at20%/72% represented by a blank paper with simple abstract non-letter engineering shapes, on a small foreground clipboard. A pile of failed small fabrication prototypes at44%/34%, on a raised shelf behind the bench: generic compact metal housings, spare gears and non-smoking science-fiction parts, NO hookahs, NO waterpipes, NO hoses, NO bowls or smoking devices. Keep all six interaction targets centered exactly at the listed percentages and readable as separate objects. No robots or people physically present. Calm upper-center, no lettering, logos or numbers anywhere.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 2540806
+    },
+    {
+      "variant": "b",
+      "path": "/workspace/shared/trpg-background-candidates/smoke-robot/background-b.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "f381ef294feb52ec2d8a04152842c5e79da4cb0f58a9ec5e7408ec84fec34095",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-b.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Best target coverage: workbench50/61 target50/64 near front edge; window76/22 good; door91/55 target89/66 inside lower door; records14/22 good; memo17/80 target20/72 on upper-right paper edge; pile40/33 target44/34 within pile. Generic prototypes and no smoking devices. No people, legible text or logos. Screen/paper details resemble engineering UI; review strict no-UI rule.",
+      "scenario": "smoke-robot",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "c81f30b5dded74339e29bb3eeb28bafc06b2ec7846abb7b31e2ef395099e07ef",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 07 smoke-robot\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 軌道の休憩所。作業台、展望デッキの窓、倉庫の扉、通信室、整備士のメモと失敗作の山。窓の外に青い地球。 Setting: 地球周回軌道 / 星の駅ポラリス. Mood: 夜間モードの灯り。通路の奥で、小さなビープ音。. Fictional place from a tabletop story (SF / ロボと一台). Concrete click-investigation objects, each a distinct readable prop at its position: ピコの作業台 clearly visible around x50% y64%; 展望デッキの窓 clearly visible around x76% y22%; 倉庫の扉 clearly visible around x89% y66%; 通信室の記録 clearly visible around x14% y24%; 整備士のメモ clearly visible around x20% y72%; 失敗した一台の山 clearly visible around x44% y34%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant B: tactile hand-painted retro-future station, sea-gray metal and muted teal with soft amber lamps, friendly but quiet science fiction.\nONE coherent wide space-station workshop/rest stop, no montage. Empty central workbench centered50%/64%. Large observation window centered76%/22% with a blue Earth visible beyond. Closed storage-bay door centered89%/66%. Communication-room records at14%/24% represented by a mounted data recorder with blank display and geometric status lights, NOT readable text. Mechanic's memo at20%/72% represented by a blank paper with simple abstract non-letter engineering shapes, on a small foreground clipboard. A pile of failed small fabrication prototypes at44%/34%, on a raised shelf behind the bench: generic compact metal housings, spare gears and non-smoking science-fiction parts, NO hookahs, NO waterpipes, NO hoses, NO bowls or smoking devices. Keep all six interaction targets centered exactly at the listed percentages and readable as separate objects. No robots or people physically present. Calm upper-center, no lettering, logos or numbers anywhere.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 2480973
+    },
+    {
+      "variant": "c",
+      "path": "/workspace/shared/trpg-background-candidates/smoke-robot/background-c.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "67f08859cea67556a3b8d1c8bba288fc03c08b2ff69ad0e914ffcc85b432fc39",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-c.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Earth workshop no people/shisha. Six objects readable. Workbench50/63 good; window75/22 good; storage92/49 target89/66 near door edge; records15/22 good; memo15/83 target20/72 misses sheet at top edge; pile40/32 target44/34 good. Generic failed prototypes replacing prohibited smoking hardware. Technical screen designs/paper marks require strict no-UI/no-text QA.",
+      "scenario": "smoke-robot",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "037e84353d1843328882f35956b25922b2920688d262733e62dc7eae4977e2fc",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 07 smoke-robot\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 軌道の休憩所。作業台、展望デッキの窓、倉庫の扉、通信室、整備士のメモと失敗作の山。窓の外に青い地球。 Setting: 地球周回軌道 / 星の駅ポラリス. Mood: 夜間モードの灯り。通路の奥で、小さなビープ音。. Fictional place from a tabletop story (SF / ロボと一台). Concrete click-investigation objects, each a distinct readable prop at its position: ピコの作業台 clearly visible around x50% y64%; 展望デッキの窓 clearly visible around x76% y22%; 倉庫の扉 clearly visible around x89% y66%; 通信室の記録 clearly visible around x14% y24%; 整備士のメモ clearly visible around x20% y72%; 失敗した一台の山 clearly visible around x44% y34%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant C: finely painted storybook science-fiction orbital workshop, desaturated cobalt and off-white, clear readable night-mode light.\nONE coherent wide space-station workshop/rest stop, no montage. Empty central workbench centered50%/64%. Large observation window centered76%/22% with a blue Earth visible beyond. Closed storage-bay door centered89%/66%. Communication-room records at14%/24% represented by a mounted data recorder with blank display and geometric status lights, NOT readable text. Mechanic's memo at20%/72% represented by a blank paper with simple abstract non-letter engineering shapes, on a small foreground clipboard. A pile of failed small fabrication prototypes at44%/34%, on a raised shelf behind the bench: generic compact metal housings, spare gears and non-smoking science-fiction parts, NO hookahs, NO waterpipes, NO hoses, NO bowls or smoking devices. Keep all six interaction targets centered exactly at the listed percentages and readable as separate objects. No robots or people physically present. Calm upper-center, no lettering, logos or numbers anywhere.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 2503617
+    },
+    {
+      "variant": "a",
+      "path": "/workspace/shared/trpg-background-candidates/stage-ghost/background-a.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "a2bb7ce184f91ced371cd47fa33fc42b3eb0cbe71419a4e5224673eecea54e8e",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-a.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Six targets readable, no figures/shisha. Curtain50/43 target50/46 good; mirror9/24 target12/30 near lower-right edge; lighting88/17 target88/22 inside console; seats50/80 good; scripts14/62 target16/66 good; board90/60 target84/62 at left board edge. Paper contains faint pseudo-writing; strict no-text cleanup needed. Curtain closed rather than opening; stage still empty.",
+      "scenario": "stage-ghost",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "cc54e80f33c9b8ef221e42eaea8a80d955212e9681ed5edda140d623083510e3",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 10 stage-ghost\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 閉館した劇場。舞台の幕、楽屋の鏡、照明室、客席の最前列、台本の棚、劇場の掲示。空の舞台に淡い人影。 Setting: 港坂 / 閉館した劇場「月灯座」. Mood: 赤い幕。三百の空席。夜明けまで、あと少し。. Fictional place from a tabletop story (やさしい幽霊劇). Concrete click-investigation objects, each a distinct readable prop at its position: 舞台の幕 clearly visible around x50% y46%; 楽屋の鏡 clearly visible around x12% y30%; 照明室 clearly visible around x88% y22%; 客席の最前列 clearly visible around x50% y80%; 台本の棚 clearly visible around x16% y66%; 劇場の掲示 clearly visible around x84% y62%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant A: finely hand-painted old harbor-town theater, faded burgundy velvet, walnut and soft dusty gold, tender gentle-ghost-story mood.\nONE coherent wide theater interior looking toward the stage from the auditorium, no montage. Frame opened side rooms as natural sightlines: dressing-room mirror at12%/30% on left wall/alcove, with warm bulbs and NO reflection of a person. Center-stage red curtain at50%/46%, use draped curtain material around a softly lit empty stage. Lighting-control room/window high on right at88%/22%, consoles blank, no operator. Front row of empty seats across foreground centered50%/80%. Script shelf on left at16%/66%, plain unlabeled script covers, no spine lettering. Theater noticeboard on right at84%/62%, entirely blank pinned paper rectangles. Six target positions production-critical, arrange architecture so each named object is clearly recognizable at these exact centers. Although the scene description mentions a pale figure, prioritize explicit NO people/NO silhouettes: use only a diffuse pale pool of stage light, no ghost, no humanoid shape or shadow. No text, logos, watermarks or UI, preserve readable well-lit interior. Calm upper center.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 2252204
+    },
+    {
+      "variant": "b",
+      "path": "/workspace/shared/trpg-background-candidates/stage-ghost/background-b.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "e33ddeb20909bc62da7bdeeecaa1c6c0340100f9765f63e1253d5e83b17868f2",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-b.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Six targets readable, no figures/shisha. Curtain50/38 includes50/46; mirror7/25 target12/30 outside mirror right edge; lighting90/24 includes88/22; seats50/80 good; shelf10/58 target16/66 near right shelf edge; board86/56 target84/62 inside lower board. Pseudo-writing on papers and green exit sign. Needs text/mirror correction.",
+      "scenario": "stage-ghost",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "08435b6e36b762f38c9913bc508e36669e09c607ad24a63a1a6de78209b6eb4b",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 10 stage-ghost\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 閉館した劇場。舞台の幕、楽屋の鏡、照明室、客席の最前列、台本の棚、劇場の掲示。空の舞台に淡い人影。 Setting: 港坂 / 閉館した劇場「月灯座」. Mood: 赤い幕。三百の空席。夜明けまで、あと少し。. Fictional place from a tabletop story (やさしい幽霊劇). Concrete click-investigation objects, each a distinct readable prop at its position: 舞台の幕 clearly visible around x50% y46%; 楽屋の鏡 clearly visible around x12% y30%; 照明室 clearly visible around x88% y22%; 客席の最前列 clearly visible around x50% y80%; 台本の棚 clearly visible around x16% y66%; 劇場の掲示 clearly visible around x84% y62%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant B: delicate ink-and-gouache abandoned theater, muted crimson curtains, warm amber worklights and cool dawn-blue shadows.\nONE coherent wide theater interior looking toward the stage from the auditorium, no montage. Frame opened side rooms as natural sightlines: dressing-room mirror at12%/30% on left wall/alcove, with warm bulbs and NO reflection of a person. Center-stage red curtain at50%/46%, use draped curtain material around a softly lit empty stage. Lighting-control room/window high on right at88%/22%, consoles blank, no operator. Front row of empty seats across foreground centered50%/80%. Script shelf on left at16%/66%, plain unlabeled script covers, no spine lettering. Theater noticeboard on right at84%/62%, entirely blank pinned paper rectangles. Six target positions production-critical, arrange architecture so each named object is clearly recognizable at these exact centers. Although the scene description mentions a pale figure, prioritize explicit NO people/NO silhouettes: use only a diffuse pale pool of stage light, no ghost, no humanoid shape or shadow. No text, logos, watermarks or UI, preserve readable well-lit interior. Calm upper center.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 2363830
+    },
+    {
+      "variant": "c",
+      "path": "/workspace/shared/trpg-background-candidates/stage-ghost/background-c.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "c015237437f8e4d9a9382663b77cfd69c13dc52edf3a7e43ad0c1103bd242b15",
+      "tool": "built-in image_gen",
+      "prompt": "prompt-c.txt",
+      "adoption": "unselected candidate",
+      "visualQA": "Six targets readable/no people/shisha. Curtain50/40 includes50/46; mirror6/26 target12/30 misses mirror to right; lighting89/20 includes88/22; seats50/80 good; script shelf13/61 includes16/66; board88/54 target84/62 near lower-left paper. Pseudo-writing on papers; needs cleanup/mirror alignment. Closed curtain.",
+      "scenario": "stage-ghost",
+      "generated_date_utc": "2026-11-02",
+      "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+      "reference_documents": [
+        {
+          "path": "/workspace/shared/trpg-art-prompts-2264.md",
+          "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+          "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+        },
+        {
+          "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+          "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+        }
+      ],
+      "input_image_references": [],
+      "prompt_sha256": "01617f0094cc270f799c2f316370bb3431efa621f59702dfeb77ed0532df253d",
+      "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 10 stage-ghost\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 閉館した劇場。舞台の幕、楽屋の鏡、照明室、客席の最前列、台本の棚、劇場の掲示。空の舞台に淡い人影。 Setting: 港坂 / 閉館した劇場「月灯座」. Mood: 赤い幕。三百の空席。夜明けまで、あと少し。. Fictional place from a tabletop story (やさしい幽霊劇). Concrete click-investigation objects, each a distinct readable prop at its position: 舞台の幕 clearly visible around x50% y46%; 楽屋の鏡 clearly visible around x12% y30%; 照明室 clearly visible around x88% y22%; 客席の最前列 clearly visible around x50% y80%; 台本の棚 clearly visible around x16% y66%; 劇場の掲示 clearly visible around x84% y62%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant C: cinematic painted anime empty historic theater, weathered red velvet and cream plaster, soft atmospheric dust, restrained theatrical lighting.\nONE coherent wide theater interior looking toward the stage from the auditorium, no montage. Frame opened side rooms as natural sightlines: dressing-room mirror at12%/30% on left wall/alcove, with warm bulbs and NO reflection of a person. Center-stage red curtain at50%/46%, use draped curtain material around a softly lit empty stage. Lighting-control room/window high on right at88%/22%, consoles blank, no operator. Front row of empty seats across foreground centered50%/80%. Script shelf on left at16%/66%, plain unlabeled script covers, no spine lettering. Theater noticeboard on right at84%/62%, entirely blank pinned paper rectangles. Six target positions production-critical, arrange architecture so each named object is clearly recognizable at these exact centers. Although the scene description mentions a pale figure, prioritize explicit NO people/NO silhouettes: use only a diffuse pale pool of stage light, no ghost, no humanoid shape or shadow. No text, logos, watermarks or UI, preserve readable well-lit interior. Calm upper center.",
+      "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+      "raw_original": true,
+      "target_size": [
+        1280,
+        720
+      ],
+      "production_size_verified": false,
+      "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+      "byte_size": 2302782
+    }
+  ]
+}

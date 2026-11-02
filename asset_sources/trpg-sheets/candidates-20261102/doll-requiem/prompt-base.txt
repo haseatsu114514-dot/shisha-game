@@ -1,0 +1,12 @@
+Generate ONE sprite sheet image, 2048x1024, transparent background (PNG), containing 8 SMALL isolated character portrait busts in a 4x2 grid (4 columns, 2 rows), each compact bust maximum220x220px centered in its own512px square cell, minimum146px completely transparent margin on all four sides. Style: painterly storybook ink-and-watercolor bust portrait, soft lamplight, muted palette matching the story's world, consistent across all eight. Shoulders-up, facing slightly left, readable face. No text, no numbers, no logos, no frames (the game draws the round frame), no watermark, no shisha pipes, no real brands, no resemblance to any existing character. World: 霧氷の丘 / 洋館「ラベンダー館」 (怖すぎない洋館ミステリー): 降りやまない雪。ラベンダーの香り。硝子の瞳が、灯を映す。
+Row 1 = the player's character, four looks of the same role. Androgynous young adult (18-24) so the player can give any name; the look must not depend on background or name:
+--- a: look-doll-requiem-ink --- 黒髪の客人. 短い黒髪に、厚手の黒い外套
+--- b: look-doll-requiem-snow --- 銀髪の客人. 雪のような銀の髪と、紺のマフラー
+--- c: look-doll-requiem-wine --- 赤茶の髪の客人. 赤茶の髪に、ワインレッドの手袋
+--- d: look-doll-requiem-braid --- 長髪の客人. 長い髪を一つに編み、ラベンダー色の上着
+Row 2 = characters the companions made for this story. Light comedy is welcome, keep faces readable:
+--- e: pc-kirara --- キララ, 人形服のデザイナー. かわいい服なら一晩で縫う。人形は、怖いより先にかわいい Likes: フリルとリボンと、白と赤のグミ
+--- f: pc-marie --- マリー, ゴス好きの家庭教師. 黒いフリルが正装。授業より、人形のお茶会の作法にくわしい Likes: 黒いレースと、プリクラ帳
+--- g: pc-cecilia --- セシリア, か弱い人形師. 指先ひとつで人形を直す、儚い人形師。なぜか斧を一本、背負っている Likes: ゆるい顔のぬいぐるみと、斧投げ
+--- h: pc-chloe --- クロエ, ラーメン好きの執事. 館の夜を静かに支える執事。夜食は必ず、湯気の立つ一杯 Likes: 真夜中のラーメンと、ゆるいキャラのしおり
+Sparse contact sheet,75% canvas entirely transparent blank. Tiny head-and-collar cutouts, minimal shoulders, no hands or long torsos. Exactly8 original fictional adult HUMAN characters NOT actual players. Strict evenly spaced4x2 grid centers x12.5/37.5/62.5/87.5%, y25/75%. Entire sprites only50%cell width and60%height; all leftward. TOP ROW ends before total canvas y43%; clear row gutter43–57%; bottom57–93%. No dolls or doll faces, no extra eyes/faces/animals, no scene/snow/frames/background disks. Lower Kirara doll-clothes designer with compact ribbons/frills, Marie gothic governess black lace, Cecilia delicate doll-maker with tiny axe HANDLE at shoulder (no weapon action), Chloe calm ramen-loving butler in neat formal collar. Likes inform personality only, do not add ramen bowls or food, gummies or plush faces. Clean alpha silhouette without paper-white fringes or detached pigment; watercolor shading only INSIDE outline. No text/number/logo/watermark/shisha.

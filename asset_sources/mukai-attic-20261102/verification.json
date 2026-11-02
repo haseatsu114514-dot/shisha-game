@@ -1,0 +1,40 @@
+{
+  "source_issue": 2222,
+  "source_comment": 6568398616,
+  "outputs": [
+    {
+      "filename": "bg_mukai_attic-A-raw.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "bytes": 2484715,
+      "sha256": "3324dd104214b8bb467d47ce7c00da7b244e9d8a36793da67ae8dc389035f784"
+    },
+    {
+      "filename": "bg_mukai_attic-B-raw.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "bytes": 2273294,
+      "sha256": "5549fb88fe3712944b3ae432627e413204905f5a08247bd9871420f47e6db7cd"
+    },
+    {
+      "filename": "bg_mukai_attic-C-raw.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "bytes": 2139470,
+      "sha256": "471fbe00ef7468ea9104e6eb9e651ab39c616129df19e80e73ac04d25341e72a"
+    }
+  ],
+  "exact_size_pass": false,
+  "visual_qa_pass": true,
+  "production_connected": false,
+  "recommended": "C"
+}

@@ -19,6 +19,8 @@ async function fixture() {
   const db = { dialogues: Object.fromEntries(data.flatMap(d => d.dialogues || []).map(d => [d.dialogue_id,d])), hiyori: data[8], samechan: data[7], equipById: {}, flavorById: {}, characters: {} };
   const context = vm.createContext({ console, AbortController, setTimeout: fn => { timers.set(++serial,fn); return serial; }, clearTimeout: id => timers.delete(id), localStorage: { getItem: k => memory.get(k) ?? null, setItem: (k,v) => memory.set(k,v), removeItem: k => memory.delete(k) } });
   const known = {
+    // 占い師（daily/fortune-schedule.js）: この試験では現れない
+    fortuneHere: () => false, fortunePosition: () => ({ x: 0, y: 0, area: '' }),
     on: () => () => {}, hiyoriAxeAffordable: () => false, playHiyoriAxeSequence: async () => false, playAxeBarRumor: async () => false, MAX_MONEY: 999999, TOURNAMENT_DAY: 14, DB: db, callName: String,
     emit: (type,payload) => events.push({type,payload}),
     

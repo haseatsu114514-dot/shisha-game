@@ -1,0 +1,14 @@
+Generate ONE sprite sheet image, 2048x1024, transparent background (PNG), containing 8 SMALL isolated character portrait busts in a 4x2 grid (4 columns, 2 rows), each compact bust maximum240x240px centered in its own512px square cell, minimum136px completely transparent margin on all four sides. Style: painterly storybook ink-and-watercolor bust portrait, soft lamplight, muted palette matching the story's world, consistent across all eight. Shoulders-up, facing slightly left, readable face. No text, no numbers, no logos, no frames (the game draws the round frame), no watermark, no shisha pipes, no real brands, no resemblance to any existing character. World: 灯籠通り / 夏の夜市 (和の不思議): 提灯の列と、遠い太鼓。お面の子が、ひとり。
+Row 1 = the player's character, four looks of the same role. Androgynous young adult (18-24) so the player can give any name; the look must not depend on background or name:
+--- a: look-fox-market-indigo --- 紺の法被の灯り番. 短い黒髪に、紺の法被
+--- b: look-fox-market-ash --- 灰色の髪の灯り番. 伸びた灰色の髪を、手ぬぐいでまとめる
+--- c: look-fox-market-rust --- 赤茶の髪の灯り番. 日に焼けた肌と、赤茶の癖毛に鉢巻き
+--- d: look-fox-market-moss --- 眼鏡の灯り番. 丸眼鏡と、苔色の浴衣
+Row 2 = characters the companions made for this story. Light comedy is welcome, keep faces readable:
+--- e: pc-kasumi --- カスミ, 霞の灯り番. 夜風にも消えそうな灯り番……のはず。ラーメンの匂いには負けない Likes: 屋台のラーメン。湯気の向こうの提灯
+--- f: pc-shizuku --- シズク, 茶屋の看板娘. 体の弱い看板娘……のはず。的当てでは百発百中 Likes: 斧投げと、ゆるい狐のお面。締めのラーメン
+--- g: pc-namimaru --- ナミマル, 夜店の用心棒. 腕っぷしと度胸は一人前。暗いところは、ちと苦手 Likes: サメ柄の手ぬぐい。夜の海のサメ映画
+--- h: pc-fukajiro --- フカジロウ, サメ待ちの釣り人. 金魚すくいの水槽で、本気でサメを待っている。腕は確か Likes: サメ映画と、いちばん大きなポイ
+Sparse contact sheet, 70% of canvas transparent blank. Original fictional roles NOT actual tabletop participants. Exactly8 human faces, no extra fox/shark/animal faces, no festival scene. Small head-and-collar cutouts, minimal shoulders. Strict4x2 cell centers x12.5/37.5/62.5/87.5%, y25/75%. All leftward. No background discs, paper, frames, text or digits. No white fringe or detached pigments. Top4 youthful androgynous adults18–24. Bottom Kasumi delicate light-keeper, Shizuku gentle tea-shop woman with quietly confident bearing, Namimaru sturdy festival guard with tiny shark-pattern cloth, Fukajiro earnest fisherman with tiny scoop edge. Likes inform personality only, no bowls, food, real sharks or animal masks hiding faces.
+
+Variant B: crop compositions closer to heads and collar, NO hands or long chest. Each whole portrait only50% cell width, avoid filling cell. Blank transparent breathing room more than75% overall. Use simpler gently rounded storybook facial designs; clean hard silhouette with shading INSIDE ONLY. No detached brush fragments or white border below collar. Keep y25/75% strict cell center; both rows centered rather than bottom aligned. Bottom4 no larger than top4. All8 slightly left, no extra props outside collar.
