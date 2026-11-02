@@ -1,0 +1,368 @@
+{
+  "items": [
+    {
+      "id": "grapefruit",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          261,
+          129,
+          998,
+          1120
+        ],
+        "box": [
+          259,
+          127,
+          741,
+          995
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "ce8827da98491634b4047e08a49e7b77d3ef3953e575e2f11e6541d4f6ba85f6"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          106,
+          52,
+          408,
+          457
+        ],
+        "box": [
+          104,
+          50,
+          306,
+          409
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "65705354568f1de3d91cb6562bfcd2b0aecfa0c2ee71476e8cce721a630024ca"
+      },
+      "bytes": 34368
+    },
+    {
+      "id": "lime",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          261,
+          131,
+          1000,
+          1120
+        ],
+        "box": [
+          259,
+          129,
+          743,
+          993
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "86adcedb8fc2cb555a38e32d80a1cbb5a0ca43131f3c20f156b00210b0606d00"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          106,
+          53,
+          408,
+          457
+        ],
+        "box": [
+          104,
+          51,
+          306,
+          408
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "26220f187b9d0a9fd0241dc6227ddc8b267079d281758248e82a9136684140fb"
+      },
+      "bytes": 32608
+    },
+    {
+      "id": "honey",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          264,
+          79,
+          1020,
+          1205
+        ],
+        "box": [
+          262,
+          77,
+          760,
+          1130
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "b6f3ede1798b0d9dfdb82d3bc0f49e5cc1a183ca6938e5d7333fa057653c518c"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          107,
+          32,
+          417,
+          492
+        ],
+        "box": [
+          105,
+          30,
+          314,
+          464
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "55149d38b963c4657cb0c794078c14cf0b7db62188613415776d717fc9dbb20f"
+      },
+      "bytes": 29066
+    },
+    {
+      "id": "cherry",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          265,
+          81,
+          1019,
+          1205
+        ],
+        "box": [
+          263,
+          79,
+          758,
+          1128
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "b4366834cab6650be002fe4df977786e632b6ed86f6eaee8bc4b5977e8465ca1"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          108,
+          33,
+          416,
+          492
+        ],
+        "box": [
+          106,
+          31,
+          312,
+          463
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "c51023fa3557f3f9a77525392bd996b3d8d713c83d2aa0737f340ac815ea9851"
+      },
+      "bytes": 24520
+    },
+    {
+      "id": "milk",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          270,
+          108,
+          993,
+          1162
+        ],
+        "box": [
+          268,
+          106,
+          727,
+          1058
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "69e3bd8a8eae3a7daee7391b5286727e71f33f71a3069d1c6d06a126c566acfd"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          110,
+          44,
+          406,
+          475
+        ],
+        "box": [
+          108,
+          42,
+          300,
+          435
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "f5cb0029b96171a359e499827f10054424c8f0c962a6a4ddc395164378acac82"
+      },
+      "bytes": 21596
+    },
+    {
+      "id": "passion_fruit",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          266,
+          109,
+          992,
+          1163
+        ],
+        "box": [
+          264,
+          107,
+          730,
+          1058
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "959d0d4c7326b9267b5ebd848073a1c1b778cb12452809c5545ed7b3f2bd766a"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          108,
+          44,
+          405,
+          475
+        ],
+        "box": [
+          106,
+          42,
+          301,
+          435
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "ca9a9d500ccfac853b97042553f2fa18f42effe77835f569b03e5ce5114e8802"
+      },
+      "bytes": 25030
+    },
+    {
+      "id": "biscuit",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          266,
+          107,
+          993,
+          1163
+        ],
+        "box": [
+          264,
+          105,
+          731,
+          1060
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "21c2150254ee69ebced36de5608cbd94dcdcaa91617c0cfc87637f8c96252623"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          108,
+          44,
+          406,
+          475
+        ],
+        "box": [
+          106,
+          42,
+          302,
+          435
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "2b2d613c6015f3078a1f9663dcd9923fa8a67c2f1d50fb9948c0dd55beda182c"
+      },
+      "bytes": 21994
+    }
+  ]
+}

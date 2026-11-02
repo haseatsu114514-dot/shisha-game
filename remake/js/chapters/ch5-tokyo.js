@@ -17,7 +17,7 @@ import { VISIT_COST } from "../daily/spots.js";
 export const TOKYO = "tokyo";
 const ATTIC_FLAG = "_ch5_tokyo_attic"; // ムカイさんに屋根裏を貸してもらった（最初の到着の場面を読んだ）
 const TALKS_FLAG = "_ch5_tokyo_talks"; // 小会話の巡回の回数（人ごと）
-const ATTIC_BG = "bg_mukai_shop"; // 屋根裏の背景は未制作（画像の Issue）。店の絵で代用する
+const ATTIC_BG = "bg_mukai_attic"; // mukai の上の屋根裏（昼夜で同じ絵。夜は既存の暗転）
 
 // 座標は東京の地図（bg_tokyo_map_*）に対する百分率。第3章の TOKYO_MAP_PLACES と同じ位置。
 const spot = fields => Object.freeze({ region: TOKYO, kind: "ch5_tokyo", ...fields });
