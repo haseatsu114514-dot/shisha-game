@@ -40,7 +40,9 @@ const SPOT_ICONS = Object.freeze({ kannon: 'kannondo', rest: 'home', cafe: 'koha
   ch3_tokyo_park: 'tokyo_park', ch5_tokyo_park: 'tokyo_park', ch3_tokyo_room: 'mukai_back_room', ch5_tokyo_attic: 'mukai_attic',
   ch3_tokyo_lime: 'smartphone', ch5_call: 'smartphone', ch5_to_tokyo: 'shinkansen_station', ch5_tokyo_home: 'shinkansen_station',
   ch4_dubai_souq: 'dubai_souq', ch4_dubai_creek: 'dubai_creek', ch4_dubai_mosque: 'dubai_mosque', ch4_dubai_inn: 'dubai_inn',
-  ch4_dubai_naru: 'dubai_inn_lobby', ch4_dubai_practice: 'dubai_practice_hall' });
+  ch4_dubai_naru: 'dubai_inn_lobby', ch4_dubai_practice: 'dubai_practice_hall',
+  // 第5章のドバイも同じ場所の絵（SLG05）
+  ch5_dubai_souq: 'dubai_souq', ch5_dubai_creek: 'dubai_creek', ch5_dubai_mosque: 'dubai_mosque' });
 export const hasFacilityIcon = id => Object.hasOwn(SPOT_ICONS, id);
 
 // Morphology follows the alpha silhouette, rather than adding a rectangular backing.
