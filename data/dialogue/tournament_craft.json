@@ -924,6 +924,71 @@
           "text": "（橙須から、ここまで来たんだ。最後も、俺の温度でやる）"
         }
       ]
+    },
+    {
+      "dialogue_id": "tournament_craft_roundend_2_served",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "提供、全台完了ッ！ 審査員の持ち点が、また動きましたッ！"
+        },
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "ここからは客席の調整！ 熱がズレたら、残りの持ち点はお隣へ行っちゃいますよ〜♪ ぷぷぷっ！"
+        },
+        {
+          "speaker": "maezono",
+          "face": "normal",
+          "text": "一口目は、四台とも違う顔だったねえ。二口目でどう変わるか、楽しみだよ"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "吸われた分だけ、炭と葉の状態は変わります。提供のときと同じ手では、合いませんよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_roundend_2_care1",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "一度目の調整、完了ッ！ 審査員が持ち点を投じるのは、あと一回ですッ！"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "熱を合わせ直すのは当然だ。見ているのは、一度目の調整から何をつかんだかだ"
+        },
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "葉も炭も、もう新品じゃありません！ 最後の調整、同じ一台を守り切るのは誰だッ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_roundend_2_care2",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "二度目の調整、そこまでッ！ 四人とも、台から手を離してくださいッ！"
+        },
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "炭も葉も、もう触れません！ ここから先は、審査員の舌だけが頼りですッ！"
+        },
+        {
+          "speaker": "maezono",
+          "face": "normal",
+          "text": "同じ一台を、三度吸わせてもらうんだねえ。最後の煙まで、ちゃんと味わうよ"
+        }
+      ]
     }
   ]
 }

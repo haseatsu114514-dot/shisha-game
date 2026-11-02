@@ -119,4 +119,26 @@ assert(!/なる選手|アダム|みんと|久世|スティーブ|ヴォルク|�
 const nationalInterludeSpeakers=[1,2].flatMap(n=>tournamentStoryDialogue({...cs,chapter:3},`interlude${n}`,()=>0).lines.map(l=>l.speaker));
 assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageha','kumicho','rei'].includes(s)),
  'Chapter 3 interludes used an earlier rival or judge');
+// #2213 DR-08: 第2章は提供・調整1・調整2の区切りに、合間の掛け合いの前でパッキーと審査員の実況を読む（第1章の r2_end〜round4_end に当たる）。
+{
+ const {tournamentStoryLeadIn}=await import('../js/craft/tournament-story-data.js');
+ const c2={...base,chapter:2},before=JSON.stringify(c2);
+ const expected={interlude1:/提供、全台完了/,interlude2:/一度目の調整、完了/,interlude3:/二度目の調整、そこまで/};
+ for (const [event,opening] of Object.entries(expected)) {
+  const lead=tournamentStoryLeadIn(c2,event);
+  assert(lead,`chapter2 ${event} has a round-end call`);
+  assert(lead.lines.length>=3&&lead.lines.length<=4,`chapter2 ${event} round-end line count`);
+  assert.equal(lead.lines[0].speaker,'pakki');assert.match(lead.lines[0].text,opening);
+  assert(lead.lines.some(l=>['nagumo','maezono','dr_kemuri'].includes(l.speaker)),`chapter2 ${event} round-end has a judge`);
+  assert(lead.lines.every(l=>['pakki','nagumo','maezono','dr_kemuri'].includes(l.speaker)),`chapter2 ${event} round-end cast`);
+  // 結果・点数・秘密は言わない（票の画面と講評に任せる）。
+  assert.doesNotMatch(lead.lines.map(l=>l.text).join('\n'),/優勝|県代表に|\d+点|一位|1位|味がしない/,`chapter2 ${event} round-end must not reveal results`);
+  // 合間の掛け合い本体の長さ（4〜7行）は変えない。
+  const body=tournamentStoryDialogue(c2,event,()=>0);assert(body.lines.length>=4&&body.lines.length<=7);
+ }
+ for (const event of ['opening','packed','waiting','interlude_pull','tasting']) assert.equal(tournamentStoryLeadIn(c2,event),null,`chapter2 ${event} has no round-end call`);
+ for (const chapter of [1,3]) for (const event of ['interlude1','interlude2','interlude3'])
+  assert.equal(tournamentStoryLeadIn({...base,chapter},event),null,`chapter${chapter} keeps its own round-end scenes`);
+ assert.equal(JSON.stringify(c2),before,'Round-end call must not alter craft/results');
+}
 console.log('PASS: three tournaments, judges, packings, mix, crowds, temperature/care callbacks, legacy saves and no score mutation');
