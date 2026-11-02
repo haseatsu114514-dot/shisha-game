@@ -57,7 +57,7 @@ test("records keep the best by score, count runs, and reward the first finish on
   const value = fresh();
   const calls = [];
   const awardExp = target => { calls.push(target); return 70; };
-  assert.deepEqual(desertRecords(value), { runs: 0, best: null, bestRank: null, firstClear: null, rewarded: false });
+  assert.deepEqual(desertRecords(value), { runs: 0, best: null, bestRank: null, firstClear: null, rewarded: false, wins: 0 });
   assert.equal(recordDesertResult(value, { finished: false, score: 10, rank: "C" }, { awardExp }), null, "unfinished runs are not recorded");
   assert.equal(recordDesertResult(value, null, { awardExp }), null);
   const first = recordDesertResult(value, result(4000, "B"), { awardExp });
@@ -71,8 +71,17 @@ test("records keep the best by score, count runs, and reward the first finish on
   const higher = recordDesertResult(value, result(7000, "A"), { awardExp });
   assert.deepEqual({ newBest: higher.newBest, exp: higher.exp }, { newBest: true, exp: 0 });
   assert.equal(calls.length, 1, "EXP only for the very first finish, however many replays");
-  assert.deepEqual(desertRecords(value), { runs: 3, best: { finished: true, score: 7000, rank: "A", time: 55.2, maxCombo: 9, falls: 1, bigJumps: 5, perfect: 2, good: 2, nearMiss: 3 },
-    bestRank: "A", firstClear: { chapter: 4, day: 46 }, rewarded: true });
+  assert.deepEqual(desertRecords(value), { runs: 3, best: { finished: true, score: 7000, rank: "A", time: 55.2, maxCombo: 9, falls: 1, bigJumps: 5, perfect: 2, good: 2, nearMiss: 3,
+    tricks: 0, bestTrick: 0, boosts: 0, race: null }, bestRank: "A", firstClear: { chapter: 4, day: 46 }, rewarded: true, wins: 0 });
+  // ヌールとの競走: 勝った回数を数え、初めて勝った時だけ firstWin（夕日の前の短い会話）
+  const lost = recordDesertResult(value, { ...result(5000, "B"), race: { won: false, gap: 0.4 } }, { awardExp });
+  assert.deepEqual({ won: lost.won, firstWin: lost.firstWin }, { won: false, firstWin: false });
+  const won = recordDesertResult(value, { ...result(9000, "A"), race: { won: true, gap: 1.2 } }, { awardExp });
+  assert.deepEqual({ won: won.won, firstWin: won.firstWin }, { won: true, firstWin: true });
+  const again = recordDesertResult(value, { ...result(9100, "A"), race: { won: true, gap: 2 } }, { awardExp });
+  assert.deepEqual({ won: again.won, firstWin: again.firstWin }, { won: true, firstWin: false });
+  assert.equal(desertRecords(value).wins, 2);
+  assert.deepEqual(desertRecords(value).best.race, { won: true, gap: 2 });
   // 遊びのご褒美（心得の盤）の判定と、growth-board-data の登録
   assert.equal(desertRankAtLeast(value, "A"), true); assert.equal(desertRankAtLeast(value, "S"), false);
   assert.equal(desertRankAtLeast(fresh(), "C"), false);
