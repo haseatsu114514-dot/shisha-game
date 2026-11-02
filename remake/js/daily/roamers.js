@@ -11,7 +11,7 @@
 import { state, save } from "../core/state.js";
 import { DB } from "../core/data.js";
 import { seeded } from "../core/util.js";
-import { gainAffinity } from "../core/stats.js";
+import { gainAffinity, visitAffinity } from "../core/stats.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { play, isPlaying } from "../vn/engine.js";
 import { on } from "../core/bus.js";
@@ -33,19 +33,27 @@ export const ROAM_RATE = 0.25;
 const shishaShop = spot => spot.kind === "rival" || spot.kind === "samechan" || spot.id === "c_station";
 const ownShop = id => spot => spot.charId === id || spot.face === id;
 const metStory = id => value => id === "tsumugi" ? !!(value.flags._met_tsumugi || value.story?.tsumugi > 0) : !!value.met?.[id];
+// 東京（第3章の日常ループ）の、一服できる店（mukai・煙幕・Smoke & Glory・鉄の煙）。買い物・部屋・公園などは除く
+const tokyoShop = spot => spot.region === "tokyo" && ["mukai", "enmaku", "steve", "volk"].includes(spot.place);
 
 /**
- * 居合わせる人。chapters＝出る章、at＝居合わせる店、ready＝出はじめる条件、affinity＝読み終えた時の好感度。
+ * 居合わせる人。chapters＝出る章、at＝居合わせる店、ready＝出はじめる条件、
+ * bond＝読み終えた時に好感度が上がる（その章の通いの小会話と同じ量。core/stats.js の visitAffinity("talk")）。
  * 審査員は会う前でも出る（名前は伏せる。台詞は met で分岐）。友人・ライバルは会ったことがある時だけ。
  */
 export const ROAMERS = Object.freeze([
-  { id: "maezono", chapters: [1, 2], at: spot => shishaShop(spot) || spot.id === "cafe", ready: () => true, affinity: 0 },
-  { id: "dr_kemuri", chapters: [1, 2], at: shishaShop, ready: () => true, affinity: 0 },
+  { id: "maezono", chapters: [1, 2], at: spot => shishaShop(spot) || spot.id === "cafe", ready: () => true },
+  { id: "dr_kemuri", chapters: [1, 2], at: shishaShop, ready: () => true },
   // 自分のチェーン（C.STATION）ではなく、地元の小さな店をお忍びで見る
-  { id: "nagumo", chapters: [1, 2], at: spot => shishaShop(spot) && spot.id !== "c_station", ready: () => true, affinity: 0 },
-  { id: "adam", chapters: [1, 2], at: spot => shishaShop(spot) && !ownShop("adam")(spot), ready: metStory("adam"), affinity: 8 },
-  { id: "rin", chapters: [1, 2], at: shishaShop, ready: metStory("rin"), affinity: 8 },
-  { id: "tsumugi", chapters: [1, 2], at: spot => shishaShop(spot) || spot.id === "cafe", ready: metStory("tsumugi"), affinity: 8 },
+  { id: "nagumo", chapters: [1, 2], at: spot => shishaShop(spot) && spot.id !== "c_station", ready: () => true },
+  { id: "adam", chapters: [1, 2], at: spot => shishaShop(spot) && !ownShop("adam")(spot), ready: metStory("adam"), bond: true },
+  { id: "rin", chapters: [1, 2], at: shishaShop, ready: metStory("rin"), bond: true },
+  { id: "tsumugi", chapters: [1, 2], at: spot => shishaShop(spot) || spot.id === "cafe", ready: metStory("tsumugi"), bond: true },
+  // 第3章の東京。ヴォルクは市場調査（自分の店「鉄の煙」には出ない）、ましろちゃんは休日（働いている mukai には出ない）、
+  // エミルは全国大会で名前を知るまで伏せる（台詞は met で分岐）
+  { id: "volk", chapters: [3], at: spot => tokyoShop(spot) && spot.place !== "volk", ready: metStory("volk"), bond: true },
+  { id: "mashiro", chapters: [3], at: spot => tokyoShop(spot) && spot.place !== "mukai", ready: metStory("mashiro"), bond: true },
+  { id: "emil", chapters: [3], at: tokyoShop, ready: () => true },
 ].map(Object.freeze));
 const BY_ID = Object.fromEntries(ROAMERS.map(entry => [entry.id, entry]));
 
@@ -151,7 +159,7 @@ export async function meetRoamer(spot, scheduled, { bg } = {}) {
     if (state !== owner || controller.signal.aborted || !result || result.cancelled) return false;
     owner.flags[roamSeenFlag(entry.id)] = roamerCount(entry.id, owner) + 1;
     owner.flags[ROAM_DAY_FLAG] = { ...(owner.flags[ROAM_DAY_FLAG] || {}), [entry.id]: dayStamp(owner) };
-    if (entry.affinity) gainAffinity(entry.id, entry.affinity);
+    if (entry.bond) gainAffinity(entry.id, visitAffinity("talk", owner));
     save();
     return true;
   } finally {

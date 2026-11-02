@@ -1,5 +1,5 @@
 {
-  "comment": "よその店にふらっと居合わせる人（2026-11-02 オーナー「ひよりみたいに別スポットに現れるキャラを他にも」「女性ももう少し。店を持っていない人」）。daily/roamers.js が、時間帯の4回に1回ほど、一人をどこかの店に置く。来店の一服の後に roam_<id>_first → _a → _b → _c → _a … の順で読む。どの店でも成り立つよう店名を出さない（上園・つむぎは喫茶こはくにもいるので、ホース・炭を前提にしない）。審査員は第1章の大会で名前を知るまで met で分岐し、名前を出さない。好感度（アダム・凛・つむぎ）と回数はコードが付ける。",
+  "comment": "よその店にふらっと居合わせる人（2026-11-02 オーナー「ひよりみたいに別スポットに現れるキャラを他にも」「女性ももう少し。店を持っていない人」）。daily/roamers.js が、時間帯の4回に1回ほど、一人をどこかの店に置く。来店の一服の後に roam_<id>_first → _a → _b → _c → _a … の順で読む。どの店でも成り立つよう店名を出さない（上園・つむぎは喫茶こはくにもいるので、ホース・炭を前提にしない）。審査員は大会で名前を知るまで met で分岐し、名前を出さない（上園・博士・南雲は第1章、エミルは第3章の全国大会）。第3章の東京ではヴォルク・ましろちゃん・エミルが東京の店にいる。好感度（アダム・凛・つむぎ）と回数はコードが付ける。",
   "dialogues": [
     {
       "dialogue_id": "roam_maezono_first",
@@ -1966,6 +1966,838 @@
           "text": "……今日ここで会ったのも、たぶん入ります"
         }
       ]
+    },
+    {
+      "dialogue_id": "roam_volk_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えると、奥の席に見覚えのある大きな背中があった。ヴォルクさんだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "テーブルにはノートと小さな温度計。ホースには、ほとんど手をつけていない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ヴォルクさん？ ほかの店で会うなんて"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "市場調査だ。店の許しは取ってある"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "同じ葉でも、部屋と器具で届き方が変わる。客の吸う間隔もだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "自分の店にいるだけじゃ、分からないんですね"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "自分の店で測れるのは、自分の店の客だけだ"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……お前は、さっき何口目で休んだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え？ 数えてなかったです"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "数えなくていい。休みたい時に休め。数えるのは俺だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "roam_volk_a",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えると、窓際の席で、ヴォルクさんが温度計を見ていた。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "座れ。……さっきの席は、扉に近かったな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。それが、何か"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "扉が開くたびに、空気が入れ替わる。奥の席とは、炭の減り方が違う"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "この店は、扉に近い台だけ、炭を替えるのが早い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "店の人、そこまで見てるんだ……"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "店の人は、測らずに分かっている。俺は、測らないと分からない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（やり方は違っても、見ている先は同じなんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクさんはノートに、席の並びを小さく描き足した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "roam_volk_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服の終わりごろ、隣の席にヴォルクさんが座った。ノートは、もう開いている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめがホースを置くと、ヴォルクさんのペンが止まった。"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "……熱いか。それとも、休みか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "休みです。……ほかの店の台でも、聞くんですね"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "台には口を出さない。ここは、この店の台だ"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "だが、お前の時間は、聞かないと書けない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートの時刻の隣に、「休憩」とだけ書き足された。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺、ヴォルクさんのノートに、けっこう載ってそうですね"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "載っている。店ごとに、別のページだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（東京じゅうの店に、俺のページがあるのか……）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "roam_volk_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えると、ヴォルクさんが紅茶を前に、ノートの最後のページを開いていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "数字の並ぶページの中で、「紅茶」と書いた欄だけが空いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "その欄だけ、何も書いてないんですね"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "紅茶の量は書かない。祖母に、これだけは測るなと言われた"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "いつもは、祖母のジャムを舐めながら飲む。その量もだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ヴォルクさんにも、測らないものがあるんですね"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "一つだけだ。……足りない日は、二杯目を頼む"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクさんは計器を鞄にしまい、店の紅茶をゆっくり飲んだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "roam_mashiro_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えると、奥の席で、見覚えのある三つ編みが揺れていた。ましろちゃんだ。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "あ、はじめくんだぁ。今日ね、僕お休みなの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "休みの日まで、シーシャなんだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。人に作ってもらう重いの、好きなの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の席の二人組が、声をひそめて話している。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "シガーマンって、よその店にもふらっと出るらしいよ"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ハットを深くかぶった大男でさ。一口で、店じゅう煙で埋めるんだって"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "……ここにも、来るの？　こわいねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ハットの大男……いや、まさかな）"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん。もし来たら、僕の前に座っててねぇ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "roam_mashiro_a",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えると、窓際の席で、ましろちゃんが目を閉じていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "寝ているのかと思ったら、ゆっくりホースを口へ運んだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、起きてた"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "yawn",
+          "text": "起きてるよぉ、……半分くらい"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "重いのはね、急いで吸うと、もったいないの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "一口ずつ、待つ時間ごと吸うんだぁ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "待つ時間ごと、か"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "はじめくんも、たまには急がないでねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……うん。今日は、ゆっくりしてく"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "roam_mashiro_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えると、ましろちゃんが隣の席へ移ってきた。声が、いつもより小さい。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "serious",
+          "text": "はじめくん、聞いた？ シガーマン、背が二メートルあるんだって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "二メートル？ 噂、どんどん大きくなってない？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "さっきの席の人が言ってたの。吸った人は、しばらくほかのが物足りなくなるって"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "僕、そんなの吸ったら困っちゃう。重いの、好きだから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（怖がってるのか、気になってるのか、どっちなんだろう）"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん。帰り道、暗いとこは一人で通らないでねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。ましろちゃんもね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "roam_mashiro_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えると、ましろちゃんが小さな紙袋を膝にのせて、ぼんやり煙を眺めていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "買い物の帰り？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。お茶っ葉、買ってきたの。いい香りのだよぉ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "帰ったら、ゆっくりいれるんだぁ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんの休みって、お茶とシーシャでできてるね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "あと、うたた寝。それが大事なの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくんも、何もしない時間、ちゃんと作ってねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "何もしない時間か。うん、やってみるよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんは紙袋を抱え直して、残りの煙をのんびり吸った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "roam_emil_first",
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "emil",
+          "next_true": "met",
+          "next_false": "not_met"
+        }
+      ],
+      "branches": {
+        "met": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一服を終えると、窓際の席に、エミルさんが一人で座っていた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "審査席で見た時より、肩の力が抜けている。ゆっくり吸っては、煙の行方を目で追う。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（審査員のエミルさんだ。声をかけて、いいのかな）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "店の人が炭を替えていくと、エミルさんは一口吸って、目を閉じた。"
+          },
+          {
+            "speaker": "emil",
+            "face": "normal",
+            "text": "……Nefis（ネフィス）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（トルコの言葉、かな）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "目が合うと、エミルさんは小さくうなずいた。"
+          },
+          {
+            "speaker": "emil",
+            "face": "normal",
+            "text": "蒸野くんか、……いい店だ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。俺も、そう思います"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "エミルさんはそれきり何も言わず、残りの煙をゆっくり吸った。"
+          }
+        ],
+        "not_met": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一服を終えると、窓際の席に、口ひげの異国の人が一人で座っていた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "日に焼けた手で、ゆっくりホースを口へ運ぶ。煙の行方を、ずっと目で追っている。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "店の人が炭を替えていくと、その人は一口吸って、目を閉じた。"
+          },
+          {
+            "speaker": "emil",
+            "face": "normal",
+            "text": "……Nefis（ネフィス）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（外国の言葉だ。何て言ったんだろう）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "目が合うと、その人は小さくうなずいた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あ……いい煙ですね"
+          },
+          {
+            "speaker": "emil",
+            "face": "normal",
+            "text": "……ああ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "無口な客は、それきり何も言わず、残りの煙をゆっくり吸った。名乗りもしなかった。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_emil_a",
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "emil",
+          "next_true": "met",
+          "next_false": "not_met"
+        }
+      ],
+      "branches": {
+        "met": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一服を終えると、エミルさんが、布で古い吸い口を磨いていた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "割れた跡に、細い金属の輪がはめてある。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "エミルさん。それ、直した跡ですか"
+          },
+          {
+            "speaker": "emil",
+            "face": "normal",
+            "text": "家の店で使っていた。割れたのを、修理の職人が継いだ"
+          },
+          {
+            "speaker": "emil",
+            "face": "normal",
+            "text": "継ぎ目は隠さない。誰が直したか、分かるように"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "直した人の仕事も、一緒に残ってるんですね"
+          },
+          {
+            "speaker": "emil",
+            "face": "smile",
+            "text": "……そうだ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "エミルさんは吸い口をハンドルの先に付けて、ゆっくり一口吸った。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（一本の吸い口に、何人もの手が入ってるんだ）"
+          }
+        ],
+        "not_met": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一服を終えると、またあの異国の人がいた。布で、古い吸い口を磨いている。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "割れた跡に、細い金属の輪がはめてある。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの……それ、直した跡ですか"
+          },
+          {
+            "speaker": "emil",
+            "face": "normal",
+            "text": "家の店で使っていた。割れたのを、修理の職人が継いだ"
+          },
+          {
+            "speaker": "emil",
+            "face": "normal",
+            "text": "継ぎ目は隠さない。誰が直したか、分かるように"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "直した人の仕事も、一緒に残ってるんですね"
+          },
+          {
+            "speaker": "emil",
+            "face": "smile",
+            "text": "……そうだ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "その人は吸い口をハンドルの先に付けて、ゆっくり一口吸った。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（無口な人だけど、道具の話になると、ちゃんと答えてくれる）"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_emil_b",
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "emil",
+          "next_true": "met",
+          "next_false": "not_met"
+        }
+      ],
+      "branches": {
+        "met": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一服を終えると、エミルさんが、自分の台の上をじっと見ていた。"
+          },
+          {
+            "speaker": "emil",
+            "face": "thinking",
+            "text": "蒸野くん。日本の店は、どこもこの蓋を使うな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "HMDですね。俺の地元の店でも使ってます"
+          },
+          {
+            "speaker": "emil",
+            "face": "normal",
+            "text": "家の店では、使っていなかった。炭の熱が、葉に急がない"
+          },
+          {
+            "speaker": "emil",
+            "face": "normal",
+            "text": "新しいだけでは、本物ではない。だが、これには理由がある"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "店の人が炭の位置を直していくと、エミルさんはもう一度吸った。"
+          },
+          {
+            "speaker": "emil",
+            "face": "normal",
+            "text": "……Harika（ハリカ）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（また、あの言葉だ。前のとは、違う響きだ）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "エミルさんは台を見つめたまま、しばらく動かなかった。"
+          }
+        ],
+        "not_met": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一服を終えると、あの異国の人が、自分の台の上をじっと見ていた。"
+          },
+          {
+            "speaker": "emil",
+            "face": "thinking",
+            "text": "……日本の店は、どこもこの蓋を使うな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "HMDですね。俺の地元の店でも使ってます"
+          },
+          {
+            "speaker": "emil",
+            "face": "normal",
+            "text": "家の店では、使っていなかった。炭の熱が、葉に急がない"
+          },
+          {
+            "speaker": "emil",
+            "face": "normal",
+            "text": "新しいだけでは、本物ではない。だが、これには理由がある"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "店の人が炭の位置を直していくと、その人はもう一度吸った。"
+          },
+          {
+            "speaker": "emil",
+            "face": "normal",
+            "text": "……Harika（ハリカ）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（まただ。前に聞いたのとは、違う言葉みたいだ）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "無口な客は台を見つめたまま、しばらく動かなかった。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_emil_c",
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "emil",
+          "next_true": "met",
+          "next_false": "not_met"
+        }
+      ],
+      "branches": {
+        "met": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一服を終えると、エミルさんが、満足そうに煙を吐いていた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "エミルさん。それ、何の葉ですか"
+          },
+          {
+            "speaker": "emil",
+            "face": "smile",
+            "text": "ピスタチオだ。好きな葉だ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの……前に、外国の言葉で何か言ってましたよね"
+          },
+          {
+            "speaker": "emil",
+            "face": "surprise",
+            "text": "……口に出ていたか"
+          },
+          {
+            "speaker": "emil",
+            "face": "normal",
+            "text": "気にしなくていい。たまに、出る"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（好きな葉でも、出ない時は出ないんだ）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "エミルさんはそれ以上何も言わず、ピスタチオの煙をゆっくり吐いた。"
+          }
+        ],
+        "not_met": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一服を終えると、またあの異国の人が、満足そうに煙を吐いていた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの……それ、何の葉ですか"
+          },
+          {
+            "speaker": "emil",
+            "face": "smile",
+            "text": "ピスタチオだ。好きな葉だ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "前に、外国の言葉で何か言ってましたよね"
+          },
+          {
+            "speaker": "emil",
+            "face": "surprise",
+            "text": "……口に出ていたか"
+          },
+          {
+            "speaker": "emil",
+            "face": "normal",
+            "text": "気にしなくていい。たまに、出る"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（好きな葉でも、出ない時は出ないんだ）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "無口な客はそれ以上何も言わず、ピスタチオの煙をゆっくり吐いた。"
+          }
+        ]
+      }
     }
   ]
 }
