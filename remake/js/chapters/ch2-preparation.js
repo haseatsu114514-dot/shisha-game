@@ -21,6 +21,7 @@ import { agehaStoryScene, syncAgehaVibes } from "./ch2-story-data.js";
 import { CH2_VISIT_STORIES, ch2VisitDone } from "../core/affinity-stages.js";
 import { BOND_QUESTIONS, BOND_FINALES, playQuestionVisit, questionVisitDue, finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { consultLessons } from "../core/growth.js";
+import { readDialogues } from "../core/chapter-data.js";
 
 const stat = { ageha: "sense", kumicho: "guts", rei: "charm" };
 // day % 7（1=月曜）。第2章の準備期間（通算16〜27日）では各店とも1日だけ休む（#2027）。
@@ -52,6 +53,57 @@ export const PREPARATION_SPOTS = STOPS.filter(stop => ROOMS[stop.id]).map(stop =
   unknownDesc: unknownDescriptions[stop.id],
   previewUrl: ROOMS[stop.id], face: stop.id,
 }));
+
+// ---- 第2章の後の柚ヶ谷（第5章の日常ループ・#2033） ----------------------------------
+// 第5章は、神崎・REIの店に「昼夜のあいさつ＋通い訪問の小会話」だけで通える。
+// 第2章の段階会話・続編・締めくくり・あげはの通う回・プリクラ・質問は出さない（第2章の物語のため）。
+// あげはの店（ヒロイン）は第5章ではまだ出さない。
+export const CITY_REGULARS = Object.freeze(["kumicho", "rei"]);
+/** 第5章の柚ヶ谷に出す店（会ったことのある神崎・REIだけ）。 */
+export const cityRegularSpots = (value = state) => PREPARATION_SPOTS.filter(spot => CITY_REGULARS.includes(spot.charId) && value.met?.[spot.charId]);
+let regularScenes = null;
+async function loadRegularScenes() {
+  const ids = CITY_REGULARS.flatMap(id => REPEAT_POOL[id]);
+  if (ids.every(id => DB.dialogues[id]?.lines?.length)) return;
+  regularScenes ||= readDialogues("ch2_preparation", ids).then(scenes => { Object.assign(DB.dialogues, scenes); })
+    .catch(error => { regularScenes = null; throw error; });
+  await regularScenes;
+}
+
+/** 第5章の柚ヶ谷の店への来店。代金・体力・好感度+5・能力+4は第2章の通い訪問と同じ。 */
+export async function visitCityRegular(spot, { staminaGuard }) {
+  const id = spot.charId;
+  if (spot.region !== "widehanga" || !CITY_REGULARS.includes(id) || !state.met[id]) return null;
+  if (isClosed(spot) || spendableMoney(state) < (spot.cost || 0)) return { used: false, exerted: false };
+  if (!(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
+  const owner = state;
+  try { await loadRegularScenes(); } catch {
+    toast("会話を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます");
+    return { used: false, exerted: false };
+  }
+  if (state !== owner) return { used: false, exerted: false };
+  if (!await withScenePreparation(imageReady(ROOMS[id], 15000))) {
+    toast("室内を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます");
+    return { used: false, exerted: false };
+  }
+  await withScenePreparation(setBg(ROOMS[id], { instant: true }));
+  if (state !== owner) return { used: false, exerted: false };
+  const welcome = `venue_${id}_${timeOfDay()}`;
+  if (DB.dialogues[welcome]?.lines?.length) {
+    const greeted = await play(welcome);
+    if (state !== owner || !greeted || greeted.cancelled) return { used: false, exerted: false };
+  }
+  const result = await play(repeatScene(id));
+  if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
+  addMoney(-spot.cost); addStamina(spot.stamina);
+  const talks = state.flags._ch2_talks ||= {};
+  talks[id] = (talks[id] || 0) + 1;
+  state.visits[id] = (state.visits[id] || 0) + 1;
+  markMet(id);
+  gainAffinity(id, 5); earnStat(stat[id], 4);
+  if (state === owner) await consultLessons(id, { bg: ROOMS[id] });
+  return { used: true, exerted: true };
+}
 
 async function visitPreparationSpot(spot, { staminaGuard }) {
   if (spot.region !== "widehanga") return null;
