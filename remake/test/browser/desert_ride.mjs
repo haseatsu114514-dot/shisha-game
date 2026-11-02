@@ -41,8 +41,16 @@ await suite("desert-ride", async check => {
     const loaded = await page.evaluate(() => performance.getEntriesByType("resource").map(entry => entry.name).filter(name => name.includes("/img/ui/desert_ride/")).map(name => name.split("/").pop()).sort());
     assert.deepEqual(loaded, ["backdrop_day_land.webp", "backdrop_day_sky.webp", "backdrop_dusk_land.webp", "backdrop_dusk_sky.webp", "flag_pole.webp", "goal_banner.webp",
       "rider_brace.webp", "rider_fall.webp", "rider_jump.webp", "rider_lean_left.webp", "rider_lean_right.webp", "rider_ride.webp", "rock_large.webp", "rock_small.webp", "sand_puff.webp"]);
-    // 空中トリックとブーストを使う理想の滑り: S、ヌールに勝つ
+    // 空中トリックとブーストを使う理想の滑り: S、ヌールに勝つ。360 以上を決めるとカットインが走る
+    await page.evaluate(() => {
+      window.__cutins = [];
+      const node = document.querySelector('[data-test="desert-cutin"]');
+      new MutationObserver(() => { if (node.classList.contains("show")) window.__cutins.push(node.dataset.degrees); }).observe(node, { attributes: true, attributeFilter: ["class"] });
+    });
     await autoplayToResult(page, "expert");
+    const cutins = await page.evaluate(() => window.__cutins);
+    assert(cutins.length >= 5 && cutins.includes("720"), `a cut-in for each big trick (${cutins.join(", ")})`);
+    assert.equal(await page.locator(".dr-cutin-rider").count() <= 1, true);
     const text = await resultText(page);
     assert.match(text, /RESULT/); assert.match(text, /転倒 0 回/); assert.match(text, /大ジャンプ 7 回/); assert.match(text, /自己ベスト更新/);
     assert.match(text, /トリック 7 回（最高 720）/); assert.match(text, /ブースト [2-9] 回/);
