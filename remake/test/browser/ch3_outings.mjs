@@ -72,7 +72,7 @@ await suite("ch3-outings", async check => {
     assert.deepEqual(after.flags._ch3_outings, { enmaku_notes: 1 });
     assert(after.tokyoVisits.closedSlots.includes("d8-night"));
     assert.equal(after.flags._ch3_intro.stage, before.flags._ch3_intro.stage);
-    // 心得の盤（通常プレイの既定・SBD93）では、自分で選んだ疲れる訪問は経験値になる。旧しくみ（?growth=0）では能力が伸びる
+    // 心得の盤（通常プレイの既定・SBD97）では、自分で選んだ疲れる訪問は経験値になる。旧しくみ（?growth=0）では能力が伸びる
     const board = await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled());
     if (board) {
       assert((after.growth?.xp || 0) > (before.growth?.xp || 0), "A chosen, tiring visit should earn EXP");

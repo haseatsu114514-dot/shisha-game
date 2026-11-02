@@ -3,8 +3,9 @@ import { readFileSync } from "node:fs";
 import { newState } from "../js/core/state.js";
 import { chapterDay } from "../js/core/chapter-clock.js";
 import { playerRegion } from "../js/core/tokyo-visits.js";
-import { CH3_AFTERMATH_SCENES, canRunChapterThreeAftermath, beginChapterThreeAftermath,
-  chapterThreeAftermathProgress, completeChapterThreeAftermathScene } from "../js/chapters/ch3-aftermath-progress.js";
+import { CH3_AFTERMATH_SCENES, CH3_AFTERMATH_DETOURS, canRunChapterThreeAftermath, beginChapterThreeAftermath,
+  chapterThreeAftermathProgress, completeChapterThreeAftermathScene, availableAftermathDetours,
+  completeAftermathDetour } from "../js/chapters/ch3-aftermath-progress.js";
 import { agehaConfessionDue, beginAgehaConfessionDay, AGEHA_CONFESSION_DAY_AFTER_WIN, AGEHA_HEART_MAX_PTS } from "../js/chapters/ch3-romance-entry.js";
 import { AFFINITY_RANK_PTS } from "../js/core/stats.js";
 assert.equal(AGEHA_HEART_MAX_PTS, AFFINITY_RANK_PTS[5], "ageha's ♥5 threshold must follow the shared affinity table");
@@ -110,6 +111,54 @@ for (let index = 0; index < ids.length; index++) {
   assert.deepEqual(reloaded, value, "Reopening the aftermath reset its checkpoint");
 }
 assert.equal(value.flags._ch3_aftermath.stage, ids.length);
+assert.deepEqual(availableAftermathDetours(value), [], "no detours once chapter 3 is cleared");
+
+// #2028 残件3: 大会後の寄り道（ムカイさん・エミルの体験会・ヴォルクの後日談）。東京にいる間だけ、一度ずつ。
+const detourIds = ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_after_ch3"];
+assert.deepEqual(CH3_AFTERMATH_DETOURS.map(scene => scene.id), detourIds);
+for (const scene of CH3_AFTERMATH_DETOURS) {
+  const row = readData(`dialogue/${scene.file}`).dialogues.find(dialogue => dialogue.dialogue_id === scene.id);
+  assert(row?.lines?.length, `missing detour script ${scene.id}`);
+}
+const mukaiAfter = readData("dialogue/ch3_mukai").dialogues.find(dialogue => dialogue.dialogue_id === "ch3_mukai_after_tournament");
+assert(mukaiAfter.lines.some(line => line.speaker === "mukai_master"));
+assert(!mukaiAfter.lines.some(line => /屋根裏|鍵/.test(line.text || "")), "the attic/key offer belongs to chapter 5");
+{
+  const detour = winningSave();
+  detour.met = { ...detour.met, emil: true, volk: true };
+  beginChapterThreeAftermath(detour);
+  assert.deepEqual(availableAftermathDetours(detour), [], "the victory night has no detours");
+  assert.equal(completeAftermathDetour(detour, "ch3_mukai_after_tournament"), false);
+  assert.equal(completeChapterThreeAftermathScene(detour, "ch3_abyss_hotel"), true);
+  assert.deepEqual(availableAftermathDetours(detour).map(scene => scene.id), detourIds, "the day after the win opens all three");
+  const progress = structuredClone(detour.flags._ch3_aftermath), date = [detour.day, detour.slot];
+  assert.equal(completeAftermathDetour(detour, "ch3_volk_after_ch3"), true);
+  assert.equal(completeAftermathDetour(detour, "ch3_volk_after_ch3"), false, "a detour is read once");
+  assert.deepEqual(detour.flags._ch3_aftermath, progress, "a detour does not advance the aftermath");
+  assert.deepEqual([detour.day, detour.slot], date, "a detour does not spend time");
+  const reloaded = JSON.parse(JSON.stringify(detour));
+  assert.deepEqual(availableAftermathDetours(reloaded).map(scene => scene.id), ["ch3_mukai_after_tournament", "ch3_emil_workshop"]);
+  // 帰郷の日の朝（煙幕の片づけ）まで東京で読める。帰郷の夜からは出さない。
+  for (const id of ["ch3_mashiro_recovery", "ch3_naru_reconcile"]) assert.equal(completeChapterThreeAftermathScene(detour, id), true);
+  assert.equal(availableAftermathDetours(detour).length, 2, "still open on the morning of the cleanup");
+  assert.equal(completeChapterThreeAftermathScene(detour, "ch3_enmaku_cleanup"), true);
+  assert.equal(playerRegion(detour), "home");
+  assert.deepEqual(availableAftermathDetours(detour), [], "no Tokyo detours after going home");
+  // 面識が無い人物の寄り道は出さない（エミルは大会当日、ヴォルクは配達で会う）。
+  const stranger = winningSave();
+  stranger.met = {};
+  beginChapterThreeAftermath(stranger);
+  completeChapterThreeAftermathScene(stranger, "ch3_abyss_hotel");
+  assert.deepEqual(availableAftermathDetours(stranger).map(scene => scene.id), ["ch3_mukai_after_tournament"]);
+  assert.equal(completeAftermathDetour(stranger, "ch3_emil_workshop"), false);
+  // 大会前に体験会を読んだ保存（同じ既読フラグ）は、大会後にもう一度出さない。
+  const readBefore = winningSave();
+  readBefore.met = { emil: true, volk: true };
+  readBefore.flags._ch3_read_ch3_emil_workshop = true;
+  beginChapterThreeAftermath(readBefore);
+  completeChapterThreeAftermathScene(readBefore, "ch3_abyss_hotel");
+  assert(!availableAftermathDetours(readBefore).some(scene => scene.id === "ch3_emil_workshop"));
+}
 assert.equal(value.flags._ch3_cleared, true);
 assert.equal(value.phase, "cleared");
 assert.equal(value.chapter, 3);

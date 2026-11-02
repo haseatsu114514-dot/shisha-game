@@ -1126,7 +1126,7 @@ await suite("growth-levelup", async (runCheck) => {
     assert.equal(r.after, 0);
     await page.locator(".gain-card", { hasText: "四つ置き" }).waitFor();
   }, { viewport: { width: 1331, height: 760 } });
-  // 章末の「この章で伸びたもの」（SBD93）: 盤モードは才能・感覚・理論の三角。章のはじめの盤が淡い面、灯した分だけ明るい面が広がる
+  // 章末の「この章で伸びたもの」（SBD97）: 盤モードは才能・感覚・理論の三角。章のはじめの盤が淡い面、灯した分だけ明るい面が広がる
   await check("chapter-end-board-chart", async (page) => {
     await setupDaily(page);
     const result = await page.evaluate(async () => {
@@ -1165,7 +1165,7 @@ await suite("growth-levelup", async (runCheck) => {
     });
     assert.deepEqual(places, ["kannon", "tokyo_shrine", "inn_window", "dubai_waterside", "kannon"]);
   });
-  // ドバイのモスク（SPEC 2.8・SBD93）: 第4章のドバイの地図（日常ループ・版2）の「風の回廊モスク」から見学して振り返ると、
+  // ドバイのモスク（SPEC 2.8・SBD97）: 第4章のドバイの地図（日常ループ・版2）の「風の回廊モスク」から見学して振り返ると、
   // 灯せる盤が開く。時間・体力・お金は使わない
   await check("dubai-mosque-lights-board", async (page) => {
     page.setDefaultTimeout(30000);
@@ -1215,6 +1215,55 @@ await suite("growth-levelup", async (runCheck) => {
     assert.deepEqual(after.nodes, ["B1"]); assert.equal(after.fire, 2);
     const saved = await page.evaluate(async () => JSON.parse(localStorage.getItem((await import("./js/core/state.js")).SAVE_KEY)).growth.nodes);
     assert.deepEqual(saved, ["B1"], "灯した盤は保存される");
+  }, { viewport: { width: 1331, height: 760 } });
+  // 第5章で東京・ドバイに泊まっている間も、路地裏の神社・風の回廊モスクで盤を開ける（SBD97。2026-11-02）。
+  // 灯せる火種がある時だけ地図に出て、灯しても時間・体力・お金は変わらない。火種を使い切ると地図から消える。
+  await check("chapter-five-tokyo-shrine-and-dubai-mosque", async (page) => {
+    page.setDefaultTimeout(30000);
+    const seed = (region) => page.evaluate(async (region) => {
+      const core = await import("./js/core/state.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 5, day: 51, slot: 0, phase: "daily", money: 60000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
+        _ch4_sheikh_revealed: true, _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1, _ch2_region: region, _ch5_region_started: true,
+        _ch5_tokyo_attic: true, _ch5_dubai_letter: true, _ch5_dubai_guest: true, _ch5_dubai_flights: 1,
+        _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true, read: { ch5_bridge_after_return: true, ch5_opening: true },
+          scheduleDecision: null, aftermath: 0, finale: 0, finaleScenes: null, won: null, secondCup: null },
+        _ch5_match_scheduled: false, _ch5_match_started: false };
+      Object.assign(value.met, { steve: true, volk: true, mukai_master: true, sheikh: true });
+      const fortune = await import("./js/daily/fortune-schedule.js");
+      const plan = fortune.fortunePlan({ seed: value.seed, chapter: 5 });
+      value.flags._fortune_wander = { chapter: 5, shown: plan.map(() => null), used: plan.map(() => true) };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
+      Object.assign(core.state, value);
+      (await import("./js/core/growth.js")).ensureGrowth().hidane.any = 1;
+      core.save();
+    }, region);
+    const open = async (region, pin, place) => {
+      await seed(region);
+      await page.reload(); await page.locator(t("title-load")).click();
+      await page.evaluate(async () => { const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0; });
+      await page.locator(t("slot-0")).click();
+      await page.locator(`.map:not(.done)[data-region="${region}"] ${t(`pin-${pin}`)}`).waitFor({ timeout: 60000 });
+      const before = await page.evaluate(() => ({ day: __remake.state.day, slot: __remake.state.slot, stamina: __remake.state.stamina, money: __remake.state.money }));
+      await page.locator(t(`pin-${pin}`)).click(); await page.locator(t("map-go")).click();
+      for (let i = 0; i < 80 && !(await page.locator(t("growth-board")).count()); i++) {
+        if (await page.locator(".vn-box").isVisible().catch(() => false)) await page.locator(".vn-box").click().catch(() => {});
+        await page.waitForTimeout(150);
+      }
+      await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
+      assert.match(await page.locator(t("board-place")).innerText(), place);
+      await page.locator(t("board-node-B1")).click(); await page.locator(t("board-light")).click(); await page.locator(t("board-decide")).click();
+      await page.locator(t("growth-board")).waitFor({ state: "detached" });
+      await page.locator(`.map:not(.done)[data-region="${region}"]`).waitFor();
+      const after = await page.evaluate(() => ({ day: __remake.state.day, slot: __remake.state.slot, stamina: __remake.state.stamina, money: __remake.state.money,
+        nodes: __remake.state.growth.nodes, region: __remake.state.flags._ch2_region }));
+      assert.deepEqual({ day: after.day, slot: after.slot, stamina: after.stamina, money: after.money }, before, `${pin}: 時間・体力・お金は変わらない`);
+      assert.deepEqual(after.nodes, ["B1"]); assert.equal(after.region, region);
+      assert.equal(await page.locator(t(`pin-${pin}`)).count(), 0, `${pin}: 火種を使い切ると地図から消える`);
+    };
+    await open("tokyo", "ch5_tokyo_shrine", /神社/);
+    await open("dubai", "ch5_dubai_mosque", /モスク/);
   }, { viewport: { width: 1331, height: 760 } });
   // 日常ループ（第3章の版3）でも、会いに行った店で灯した授業を相談できる: mukai のシフトの帰りに、ましろちゃんの「ブラックティーを一割」（2026-11-02）
   await check("tokyo-daily-mukai-lesson", async (page) => {

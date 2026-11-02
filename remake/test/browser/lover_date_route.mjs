@@ -98,7 +98,7 @@ await suite("lover-date-route", async check => {
         // The date choice supplies the candidate when the character has no primary.
         const stat = await page.evaluate(async ({ id, choice }) => (await import("./js/daily/spots.js")).CHAR_STAT[id]
           || window.__remake.DB.lover.dates[id][choice ? "optB" : "optA"].stat, { id, choice });
-        // 心得の盤（通常プレイの既定・SBD93）では、誘いのデートは自由行動の経験値になり、能力は書き換えない
+        // 心得の盤（通常プレイの既定・SBD97）では、誘いのデートは自由行動の経験値になり、能力は書き換えない
         if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled())) {
           assert(result.xp > result.beforeXp, "Paid date EXP missing"); assert.deepEqual(result.stats, result.beforeStats);
         } else assert(result.stats[stat] >= result.beforeStats[stat] + 2, "Paid date reward missing");

@@ -75,7 +75,7 @@ await suite("issue439", async (check) => {
       await page.locator('[data-test="pin-kannon"]').click();
       await page.locator('[data-test="map-go"]').click();
       await page.waitForFunction(() => I.core.state.slot === 1 && !!document.querySelector('#screen .map:not(.done)'));
-      // 施設の行動の成長: 旧しくみ（?growth=0）は主な能力に2P、心得の盤（通常プレイの既定・SBD93）は経験値で、能力は書き換えない
+      // 施設の行動の成長: 旧しくみ（?growth=0）は主な能力に2P、心得の盤（通常プレイの既定・SBD97）は経験値で、能力は書き換えない
       const board = await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled());
       const first = await page.evaluate(() => ({ guts: I.core.state.stats.guts, xp: I.core.state.growth?.xp || 0, slot: I.core.state.slot, count: I.core.state.reel.count, affinity: { ...I.core.state.affinity } }));
       if (board) { assert.equal(first.guts, 10); assert(first.xp > 0, "観音堂の行動で経験値"); }

@@ -114,7 +114,7 @@ async function mintoNext(page, touch) {
   }
   assert.fail('LOAD did not reach Minto as the next delivery within 20 seconds');
 }
-/** 初回の当たりの支払い。旧しくみは能力Pの合計、心得の盤（通常プレイの既定・SBD93）は経験値（SPEC 1.8） */
+/** 初回の当たりの支払い。旧しくみは能力Pの合計、心得の盤（通常プレイの既定・SBD97）は経験値（SPEC 1.8） */
 const statSum = (stats) => Object.values(stats).reduce((a, b) => a + b, 0);
 const payoutOf = (snap, board) => board ? (snap.growthXp ?? snap.growth?.xp ?? 0) : statSum(snap.stats);
 async function snapshot(page) {

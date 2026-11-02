@@ -75,7 +75,7 @@ await suite("samechan-dates", async check => {
       assert.equal(r.s.money, before.s.money - 3000); assert.equal(r.s.pendingInvite, null);
       assert.equal(r.s.lastDate.samechan, 4); assert.equal(r.s.flags._samechan_last_date_chapter, 2);
       assert(r.s.flags._samechan_date.complete); assert.equal(r.saved.lastDate.samechan, 4);
-      // 旧しくみ（?growth=0）は選んだ答えの能力に2P、心得の盤（通常プレイの既定・SBD93）は自由行動の経験値
+      // 旧しくみ（?growth=0）は選んだ答えの能力に2P、心得の盤（通常プレイの既定・SBD97）は自由行動の経験値
       if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled())) {
         assert.deepEqual(r.s.stats, before.s.stats); assert((r.s.growth?.xp || 0) > (before.s.growth?.xp || 0), "The date earns EXP");
       } else assert.equal(r.s.stats[choice ? "sense" : "insight"], before.s.stats[choice ? "sense" : "insight"] + 2);

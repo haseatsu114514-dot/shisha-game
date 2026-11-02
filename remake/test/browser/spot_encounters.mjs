@@ -90,7 +90,7 @@ await suite("spot-encounters", async check => {
     for (const n of [2, 4, 6, 7]) assert(!/naru|maezono|master/.test(r.rows[n].trace[0]));
     assert(r.rows.every(row => row.cost === 800));
     // #784: 好感度の上がらない施設は、旧しくみ（?growth=0）では主な能力（喫茶はセンス）1つに2P。
-    // 心得の盤（通常プレイの既定・SBD93）では経験値になり、能力は書き換えない
+    // 心得の盤（通常プレイの既定・SBD97）では経験値になり、能力は書き換えない
     if (r.board) for (const row of r.rows) { assert.deepEqual(row.grown, [], JSON.stringify(row)); assert(row.xp > 0, JSON.stringify(row)); }
     else for (const row of r.rows) assert.deepEqual(row.grown, [["sense", 2]], JSON.stringify(row));
   });
@@ -312,7 +312,7 @@ await suite("spot-encounters", async check => {
       assert.equal(r.error, undefined); assert(r.unchanged && r.seen);
       assert.equal(r.cost, ex.spot === "cafe" ? 800 : 0);
       assert.equal(r.stamina, ex.spot === "choizap" ? -8 : -4);
-      // #784: 旧しくみ（?growth=0）は喫茶こはくも観音堂・ジムと同じく主な能力に2P。心得の盤（通常プレイの既定・SBD93）は経験値
+      // #784: 旧しくみ（?growth=0）は喫茶こはくも観音堂・ジムと同じく主な能力に2P。心得の盤（通常プレイの既定・SBD97）は経験値
       if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled())) {
         assert.equal(r.gain, 0); assert(r.xp > 0, JSON.stringify(r));
       } else assert.equal(r.gain, 2);

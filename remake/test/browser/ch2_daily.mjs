@@ -235,7 +235,7 @@ await suite('ch2-daily',async check=>{
     await setup(page);await begin(page);await wide(page);await act(page,'ch2_ageha');
     let v=await value(page);assert.equal(v.money,33000-stationFares(page));assert.equal(v.slot,1);assert.equal(v.stamina,99); // 根性31＝4段の体力から
     assert.equal(v.flags._ch2_talks.ageha,1);assert.equal(v.visits.ageha,1);assert(v.contacts.includes('ageha'));
-    // 旧しくみ（?growth=0）は通常の2P（旧4P報酬ではない）。心得の盤（通常プレイの既定・SBD93）は経験値で、能力は書き換えない
+    // 旧しくみ（?growth=0）は通常の2P（旧4P報酬ではない）。心得の盤（通常プレイの既定・SBD97）は経験値で、能力は書き換えない
     const board=await page.evaluate(async()=>(await import('./js/core/growth-mode.js')).growthEnabled());
     if(board){assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),155);assert((v.growth?.xp||0)>0,'The paid talk earns EXP');}
     else assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),157); // 2 normal points, not old 4-point amounts

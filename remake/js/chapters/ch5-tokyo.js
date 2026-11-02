@@ -15,6 +15,7 @@ import { openShop } from "../daily/shop.js";
 import { VISIT_COST } from "../daily/spots.js";
 import { modal } from "../core/ui.js";
 import { runMukaiShift, loadMukaiShift, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
+import { reflectAt } from "../daily/reflection.js";
 
 export const TOKYO = "tokyo";
 const ATTIC_FLAG = "_ch5_tokyo_attic"; // ムカイさんに屋根裏を貸してもらった（最初の到着の場面を読んだ）
@@ -40,6 +41,9 @@ export const TOKYO_SPOTS = Object.freeze([
     preview: "bg_fookah_showroom", desc: "東京の店。第3章と同じ品ぞろえ。" }),
   spot({ id: "ch5_tokyo_attic", label: "屋根裏", area: "mukaiの上", x: 45, y: 63, theme: "rest", glyph: "休", preview: ATTIC_BG,
     stamina: 55, desc: "ムカイさんの屋根裏で休む。体力が大きく戻る。" }),
+  // 心得の盤の内省（SPEC 2.8）: 第3章と同じ路地裏の神社。灯せる火種がある時だけ地図に出す（ch5-daily.js）。時間は使わない。
+  spot({ id: "ch5_tokyo_shrine", reflect: "tokyo_shrine", label: "路地裏の神社", area: "路地の奥", x: 54, y: 70, theme: "rest", glyph: "社",
+    preview: "bg_street", desc: "学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
   spot({ id: "ch5_tokyo_home", label: "地元へ帰る", area: "東京駅", x: 40, y: 20, theme: "rest", glyph: "駅", preview: "bg_ch3_train_arrival",
     desc: `新幹線で橙須へ帰る。片道${TOKYO_TRAIN_FARE.toLocaleString("ja-JP")}円・1行動。` }),
 ]);
@@ -86,6 +90,7 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   if (state !== owner) return { used: false, exerted: false };
   if (spot.id === TO_TOKYO_SPOT.id) return goToTokyo(owner);
   if (spot.id === "ch5_tokyo_home") return goHome(owner);
+  if (spot.reflect) { await reflectAt(spot.reflect); return { used: false, exerted: false }; }
   if (spot.id === "ch5_tokyo_shop") {
     await openShop({ branch: "tokyo" }); // 時間は使わない
     return { used: false, exerted: false };

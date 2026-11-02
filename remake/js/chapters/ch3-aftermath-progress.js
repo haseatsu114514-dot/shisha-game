@@ -11,6 +11,37 @@ export const CH3_AFTERMATH_SCENES = Object.freeze([
   { id: "ch3_ageha_reunion", dayAfterWin: 3, slot: 0, label: "続いていた約束", location: "MELTY PUFF", bg: "bg_ageha_shop" },
 ]);
 
+/**
+ * 大会後の寄り道（#2028 残件3・#1658 ⑥）。優勝の翌日から煙幕の片づけまで、東京にいる間の場面カードから一度ずつ読める。
+ * 読んでも stage・日時は進めない。既読は大会前の寄り道と同じ _ch3_read_<id>（ch3-story-wiring.js の optionalReadFlag）。
+ * file=台詞ファイル、met=面識がある人物だけ。
+ */
+export const CH3_AFTERMATH_DETOURS = Object.freeze([
+  { id: "ch3_mukai_after_tournament", file: "ch3_mukai", label: "閉店前のカウンター", location: "mukai", bg: "bg_mukai_shop" },
+  // エミルは大会当日に名乗る審査員。体験会の台本は大会前の寄り道にもあるが、面識の条件で大会後にしか開かない。
+  { id: "ch3_emil_workshop", file: "ch3_rivals", label: "エミルの体験会", location: "東京", bg: "bg_street_day", met: ["emil"] },
+  { id: "ch3_volk_after_ch3", file: "ch3_volk", label: "大会のあとの記録", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
+]);
+const DETOUR_FIRST = CH3_AFTERMATH_SCENES.findIndex(scene => scene.id === "ch3_mashiro_recovery");
+const DETOUR_LAST = CH3_AFTERMATH_SCENES.findIndex(scene => scene.id === "ch3_enmaku_cleanup");
+const detourReadFlag = id => `_ch3_read_${id}`;
+
+/** いま読める大会後の寄り道。東京にいる間（翌日の昼〜帰郷の日の朝）だけ。 */
+export function availableAftermathDetours(value) {
+  if (!canRunChapterThreeAftermath(value) || value.flags._ch3_cleared) return [];
+  const stage = value.flags._ch3_aftermath?.stage;
+  if (!Number.isInteger(stage) || stage < DETOUR_FIRST || stage > DETOUR_LAST) return [];
+  return CH3_AFTERMATH_DETOURS.filter(scene => !value.flags[detourReadFlag(scene.id)]
+    && (scene.met || []).every(who => value.met?.[who]));
+}
+
+/** 寄り道を最後まで読んだ時だけ既読にする。本筋の進行には触れない。 */
+export function completeAftermathDetour(value, id) {
+  if (!availableAftermathDetours(value).some(scene => scene.id === id)) return false;
+  value.flags[detourReadFlag(id)] = true;
+  return true;
+}
+
 export const canRunChapterThreeAftermath = value => !!value && value.chapter === 3
   && value.flags?._ch3_tournament_won === true
   && value.flags?._ch3_tournament?.stage === "complete"

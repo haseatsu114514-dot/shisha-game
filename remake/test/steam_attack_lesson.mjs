@@ -6,7 +6,7 @@ fs.mkdirSync(shots, {recursive:true});
 await suite('attack-lesson', async check => {
   await check('shift-menu', async page => {
     await page.evaluate(async()=>{
-      // 旧しくみ（スミさん♥3でシフト後に特訓）の検査。心得の盤（通常プレイの既定・SBD93）では授業 M-S1 として盤から相談する
+      // 旧しくみ（スミさん♥3でシフト後に特訓）の検査。心得の盤（通常プレイの既定・SBD97）では授業 M-S1 として盤から相談する
       // （growth_board.mjs・growth_levelup.mjs）。?growth=0 と同じ印でこの端末を旧しくみにする
       localStorage.setItem('suien_growth_preview','0');
       window.M={core:await import('./js/core/state.js'),tonari:await import('./js/daily/tonari.js'),vn:await import('./js/vn/engine.js'),

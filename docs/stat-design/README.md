@@ -1,6 +1,6 @@
 # 成長（経験値・レベル・心得の盤）の資料
 
-> このフォルダの決定は [ADDENDUM-BOARD-LAYOUT.md](ADDENDUM-BOARD-LAYOUT.md)、実装仕様は [SPEC.md](SPEC.md)（第2版）。**2026-11-02 から通常プレイで有効**（`GROWTH_BOARD=true`。オーナー「観音やモスクで割り振れるように実装して」SBD93）。開発・検査で旧しくみを見る時だけ `?growth=0`。下は 2026-11-02 に `remake/README.md` から移した実装メモ。
+> このフォルダの決定は [ADDENDUM-BOARD-LAYOUT.md](ADDENDUM-BOARD-LAYOUT.md)、実装仕様は [SPEC.md](SPEC.md)（第2版）。**2026-11-02 から通常プレイで有効**（`GROWTH_BOARD=true`。オーナー「観音やモスクで割り振れるように実装して」SBD97）。開発・検査で旧しくみを見る時だけ `?growth=0`。下は 2026-11-02 に `remake/README.md` から移した実装メモ。
 
 ## 2026-10-30 経験値・レベル・火種（心得の盤 第二弾の芯・未公開）
 

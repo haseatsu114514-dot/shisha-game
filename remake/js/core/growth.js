@@ -100,7 +100,7 @@ export function newGrowth() {
     seenRing: 1,           // 盤で「新しい道が開いた」を見せた章の範囲（章が進んで初めて開いた時の演出）
     boardVersion: BOARD_VERSION, // 盤の型の版（v2→v3 で灯し方を返す）
     respec: null,            // 実際の章／周回の変更後、最初の日常だけの組み直し機会
-    chapterStart: null,      // その章で最初に読んだ時の盤（章末の「この章で伸びたもの」の淡い面。SBD93）
+    chapterStart: null,      // その章で最初に読んだ時の盤（章末の「この章で伸びたもの」の淡い面。SBD97）
   };
 }
 
@@ -202,7 +202,7 @@ const lessonHeartReady = (lesson, s) => !(s.cycle > 1) || !lesson.need
 
 /**
  * 表示だけの読み口（ステータス・HUD・メニュー）。成長データがまだ無ければ作らず、切り離した空のものを返す。
- * 画面を開いただけでセーブの中身を変えないため（盤を通常プレイで有効にした時に見つかった。SBD93）。
+ * 画面を開いただけでセーブの中身を変えないため（盤を通常プレイで有効にした時に見つかった。SBD97）。
  */
 export const growthView = (s = state) => s?.growth && typeof s.growth === "object" && !Array.isArray(s.growth) ? ensureGrowth(s) : newGrowth();
 
@@ -509,6 +509,7 @@ function playRewardMet(reward, s) {
   }
   if (reward.game === "dj") { const rank = s.dj?.bestRank; return typeof rank === "string" && atLeast(rank, reward.rank); }
   if (reward.game === "camel") { const plays = s.flags?._ch4_camel?.plays; return Number.isInteger(plays) && plays >= (reward.clears || 1); }
+  if (reward.game === "desert") { const rank = s.desert?.bestRank; return typeof rank === "string" && atLeast(rank, reward.rank); }
   return false;
 }
 

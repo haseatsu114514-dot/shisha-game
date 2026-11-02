@@ -3,6 +3,7 @@ import { CH4_PLACE_BG, CH4_TOURNAMENT_DAY, CH4_EVE_DAY, chapterFourProgress,
   chapterFourSecondAvailable, chapterFourSheikhRevealed } from "./ch4-progress.js";
 import { openingStatus, MOSQUE_VISITING_HOURS } from "../daily/spot-hours.js";
 import { camelRaceDestination } from "./ch4-camel-progress.js";
+import { desertDestinations } from "./ch4-desert-progress.js";
 
 const place = (id, label, x, y) => Object.freeze({ id, label, x, y });
 
@@ -61,6 +62,8 @@ export function chapterFourMapModel(value, { canReflect = false } = {}) {
     destinations.push(destination("alley_cafe", [SCENE.second], "路地の奥の小さなカフェ。", false,
       { purpose: "約束した店。初めて訪ねる。" }));
   }
+  // 砂漠ツアーのデスク／ヌールと砂丘へ（サンドボード・ch4-desert.js）。昼の寄り道。誘われるまではデスク、誘われたら砂丘。
+  destinations.push(...desertDestinations(value, day));
   if (canReflect) {
     const hours = openingStatus(MOSQUE_VISITING_HOURS, value);
     destinations.push(destination("mosque", [], "案内付きで見学できるモスク。", false, {

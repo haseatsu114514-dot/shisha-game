@@ -69,7 +69,7 @@ await suite("ch2-followups", async check => {
       assert.equal(after.money, before.money - 3000); assert.equal(after.flags._ch2_talks[id], 10);
       assert.equal(after.visits[id], 98); assert.equal(after.flags._ch2_followup_done[id], true);
       assert.equal(after.visitedDay[`ch2_${id}`], 16); assert(after.stamina < before.stamina);
-      // 旧しくみ（?growth=0）は通常の成長候補1つ（1P）、心得の盤（通常プレイの既定・SBD93）は経験値で、能力は書き換えない
+      // 旧しくみ（?growth=0）は通常の成長候補1つ（1P）、心得の盤（通常プレイの既定・SBD97）は経験値で、能力は書き換えない
       const board = await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled());
       if (board) { assert.deepEqual(after.stats, before.stats); assert((after.growth?.xp || 0) > (before.growth?.xp || 0), "The visit earns EXP"); }
       else assert.equal(Object.values(after.stats).reduce((a,b) => a+b,0),156, "One normal growth candidate, no dialogue bonus");

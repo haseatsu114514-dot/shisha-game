@@ -32,7 +32,7 @@ const { on } = await import("../js/core/bus.js");
 const tick = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // 曲線（1.5 の表）
-assert.equal(growth.GROWTH_BOARD, true, "心得の盤は通常プレイで有効（2026-11-02 SBD93）");
+assert.equal(growth.GROWTH_BOARD, true, "心得の盤は通常プレイで有効（2026-11-02 SBD97）");
 assert.equal(growth.growthEnabled(), true, "印が無ければ既定どおり有効");
 for (const [lv, total] of [[1, 0], [2, 205], [5, 850], [10, 2025], [20, 4750], [40, 11700], [80, 31600]]) assert.equal(growth.totalExpFor(lv), total, `Lv.${lv}`);
 assert.equal(growth.expToNext(79), 595);

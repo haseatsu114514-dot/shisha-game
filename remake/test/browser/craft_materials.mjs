@@ -141,7 +141,7 @@ await suite("craft-materials", async check => {
     }, { ...options, reducedMotion: "reduce" });
     await check(`${device}-packing`, async page => {
       await setup(page);
-      // 心得の盤（通常プレイの既定・SBD93）ではデンスパックはスキル K18 で覚える。3種類の詰め方を比べるため覚えた状態にする
+      // 心得の盤（通常プレイの既定・SBD97）ではデンスパックはスキル K18 で覚える。3種類の詰め方を比べるため覚えた状態にする
       // （覚える前に押せないことは growth_levelup.mjs の dense-pack-new-and-legacy が確かめる）
       await page.evaluate(async () => {
         const g = await import("./js/core/growth.js");

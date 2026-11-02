@@ -30,7 +30,7 @@ try {
   await page.evaluate(() => { T.stats.addStamina(-60); T.stats.addStamina(20); });
   value = await levels(); assert.equal(value.hud, "30%"); assert.equal(value.cards, 0);
   assert.equal(value.cards, 0); assert.equal(value.hudHealth, "yellow");
-  // 最大体力が伸びるとゲージの割合が下がる。旧しくみ（?growth=0）は根性の段、心得の盤（通常プレイの既定・SBD93）は体力のマス
+  // 最大体力が伸びるとゲージの割合が下がる。旧しくみ（?growth=0）は根性の段、心得の盤（通常プレイの既定・SBD97）は体力のマス
   const board = await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled());
   await page.evaluate(async (board) => {
     if (!board) { T.core.state.stats.guts = 20; T.stats.gainStat("guts", 1); return; }

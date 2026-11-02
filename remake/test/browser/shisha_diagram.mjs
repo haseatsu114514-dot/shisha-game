@@ -75,7 +75,7 @@ await suite("shisha-diagram", async check => {
       return { technique: state.stats.technique, memories: state.relationshipMemories, board: growthEnabled(),
         text: backlog().map(row => row.text).join("\n") };
     });
-    // 旧しくみ（?growth=0）は台詞のキューが行動の1Pになる。心得の盤（通常プレイの既定・SBD93）は台詞のキューで能力を伸ばさない（SPEC 4.1）
+    // 旧しくみ（?growth=0）は台詞のキューが行動の1Pになる。心得の盤（通常プレイの既定・SBD97）は台詞のキューで能力を伸ばさない（SPEC 4.1）
     if (result.board) assert.equal(result.technique - before, 0, "the board does not grow stats from text cues");
     else assert.equal(result.technique - before, 1, "technique cue settles once as the normal action's 1P reward");
     assert.equal(result.memories.filter(id => id === "sumi_heat").length, 1, "same memory, once");

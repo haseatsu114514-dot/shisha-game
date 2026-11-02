@@ -47,7 +47,7 @@ function rolls(n) {
   return { roles: core.state.reel.pending.map((r) => `${r.role}:${r.overlap || ""}:${r.stops.join(",")}`), note: plain(core.state.reel.note) };
 }
 
-// 1) ?growth=0 で旧しくみに戻した時: 今までどおり能力P、経験値は作らない（通常プレイの既定は盤が有効。SBD93）
+// 1) ?growth=0 で旧しくみに戻した時: 今までどおり能力P、経験値は作らない（通常プレイの既定は盤が有効。SBD97）
 assert.equal(growth.growthEnabled(), true, "既定は有効");
 growth.setGrowthPreview(false);
 assert.equal(growth.growthEnabled(), false);

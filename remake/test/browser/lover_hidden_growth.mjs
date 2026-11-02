@@ -146,7 +146,7 @@ await suite("lover-hidden-growth", async check => {
       assert(result.s.lovePts.minto > 19); assert(result.s.loveLevel.minto >= 2);
       assert.equal(result.played.filter(id => id === "lover_minto_lv2").length, 1);
       assert.equal(result.s.loverEventsSeen.filter(id => id === "lover_minto_lv2").length, 1);
-      // デートの成長: 旧しくみ（?growth=0）は魅力に2P、心得の盤（通常プレイの既定・SBD93）は経験値（能力は書き換えない）
+      // デートの成長: 旧しくみ（?growth=0）は魅力に2P、心得の盤（通常プレイの既定・SBD97）は経験値（能力は書き換えない）
       if (result.board) { assert.equal(result.s.stats.charm, result.before); assert((result.s.growth?.xp || 0) > result.xpBefore, "date earns EXP"); }
       else assert(result.s.stats.charm >= result.before + 2);
       assert.equal(result.s.lastDate.minto, 8);
