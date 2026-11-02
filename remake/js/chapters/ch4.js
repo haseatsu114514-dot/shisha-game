@@ -2,6 +2,7 @@
 // 状態遷移は ch4-progress.js、行き先の計算は ch4-map-model.js。ここは表示と再生だけを持つ。
 import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
+import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal, toast } from "../core/ui.js";
@@ -277,6 +278,7 @@ async function renderFree(owner) {
   if (!current(owner)) return;
   card(owner, "free", `DAY ${model.day}・自由行動`, `ドバイの街を歩く。大会まであと${model.daysLeft}日。`,
     [...model.destinations.map(destination => el("div.ch4-destination", [
+      ...(hasStoreLogo(`ch4_${destination.id}`) ? [storeLogo(`ch4_${destination.id}`, { width: 180, height: 104 })] : []),
       destination.ok === false
         ? el("button.btn", { type: "button", text: destination.label, disabled: true, dataset: { test: test(`go-${destination.id}`) } })
         : button(owner, destination.label, `go-${destination.id}`, () => visit(owner, destination.id), destination.kind === "end_day"),

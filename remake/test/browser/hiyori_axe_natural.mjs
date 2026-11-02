@@ -118,6 +118,8 @@ try {
           if(!seen.has('actual-axe') && await page.locator('[data-test="axe-action"]:not([disabled])').isVisible()) {
             await page.screenshot({path:path.join(out,`${label}-actual-axe.png`)});seen.add('actual-axe');
           }
+          // AXR08: when Maki is already known, her one-throw lesson comes first. Read it through like a player.
+          if(await click('[data-test="axe-coach-next"]')) continue;
           const button=page.locator('[data-test="axe-action"]:not([disabled])');
           if(await button.isVisible()) { await click('[data-test="axe-action"]:not([disabled])'); }
           continue;

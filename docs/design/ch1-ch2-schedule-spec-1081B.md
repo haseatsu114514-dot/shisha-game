@@ -35,7 +35,7 @@
 | 3 | DAYカード・LIME | 自由行動 | 自由行動 | 基礎の確認（`_ev_first_practice`、`earlyPractice`、deadline6） | つむぎの途中の絵→通し練習（調整なし、`runFullPractice{adjustments:false}`、`ch1.js:364`） |
 | 4 | 〃 | 自由行動 | 自由行動 | なし | バイト上がりに `ch1_ageha_encounter`（`tonari.js:132-138`）。アゲハ初遭遇は day≥4 |
 | 5 | 〃 | 自由行動 | 自由行動 | スミさんの話（`ch1_day5_sumi_story`、regular） | — |
-| 6 | 〃 | 自由行動 | 自由行動 | なし | 覆面客（前園）cameo はバイト n≥4・day≥6（`tonari.js:103-107`） |
+| 6 | 〃 | 自由行動 | 自由行動 | なし | 覆面客（上園）cameo はバイト n≥4・day≥6（`tonari.js:103-107`） |
 | 7 | 〃 | 自由行動 | 自由行動 | 中間準備（`_ev_midcheck`、`midPreparation`、deadline12） | intro→**レモン仕入れ**（`prepareFlavorStock` `ch1.js:392`）→調整練習→講評→**スミさんが卓上台を譲る**（未受領セーブのフォールバック `giveSumiRig` `ch1.js:411`） |
 | 8 | 〃 | 自由行動 | 自由行動 | なし | — |
 | 9 | 〃 | 自由行動 | 自由行動 | 出場者説明会（`_ev_meet_rivals`、C.STATION） | `ch1_meet_rivals`。ライバル全員の**正式紹介**（面識の確定点） |

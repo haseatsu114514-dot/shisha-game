@@ -91,7 +91,7 @@
 .status-modal .modal-actions { margin-top: 12px; }
 .st-tabs { gap: 8px; margin-bottom: 12px; }
 .st-me { display: grid; grid-template-columns: 320px minmax(0, 1fr); column-gap: 24px; row-gap: 6px; }
-.st-radar { grid-column: 1; grid-row: 1 / span 5; align-self: center; }
+.st-radar { grid-column: 1; grid-row: 2 / span 5; align-self: center; }
 .status-modal .radar { display: block; width: 320px; height: 320px; }
 /* DOMの親子関係は維持し、項目選択と説明の更新は今までのまま動かす。 */
 .st-side { display: contents; }
@@ -102,6 +102,8 @@
 .st-misc, .st-note { grid-column: 1 / -1; }
 .st-misc { flex-wrap: wrap; gap: 4px 24px; margin-top: 6px; line-height: 1.5; }
 .st-note { margin: 0; line-height: 1.5; }
+/* 選んだ説明を先頭に置き、項目をスクロールしても本文内で読み続けられる。 */
+.st-me .st-note { grid-row: 1; position: sticky; top: 0; z-index: 1; padding: 8px 0; background: var(--panel); }
 
 /* MENUの4項目を2列で揃え、「閉じる」も窓の中央に置く。 */
 .menu-modal { width: 620px; padding: 24px 28px; }
