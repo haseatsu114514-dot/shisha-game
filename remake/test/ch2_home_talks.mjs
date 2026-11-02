@@ -80,7 +80,7 @@ const context = vm.createContext({ console, AbortController, setTimeout, clearTi
 const spotsModule = await loadWithStubs("remake/js/daily/spots.js", {
   "../core/state.js": { markMet: id => { state.met[id] = true; } },
   "../core/data.js": { DB },
-  "../core/stats.js": { gainAffinity: (id, n) => affinity.push([id, n]), affinityLevel: () => 5, releaseAffinity: () => 0,
+  "../core/stats.js": { gainAffinity: (id, n) => affinity.push([id, n]), visitAffinity: kind => ({ story: 16, talk: 8 })[kind], affinityLevel: () => 5, releaseAffinity: () => 0,
     AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], earnStat: () => {}, addStamina: () => {}, addMoney: () => {} },
   "../vn/engine.js": { play: async (id) => { played.push(id); return playMode === "cancel" ? { cancelled: true } : { id }; } },
   "../core/affinity-stages.js": { VISIT_SEQ: { rin: ["ch1_rin_first", "ch1_rin_second", "ch1_rin_third", "ch1_rin_fourth"] } },
@@ -107,7 +107,7 @@ assert.equal(spots.chapterTalkDue("rin"), "ch2_rin_strawberry", "Before the tast
 assert.equal(spots.hasNewStory("rin"), true, "地図の Dr.fookah に「！」");
 assert.equal(await visitRin(), true);
 assert.deepEqual(played, ["ch2_rin_strawberry"]);
-assert.deepEqual(plain(affinity), [["rin", 5]]);
+assert.deepEqual(plain(affinity), [["rin", 8]]); // 来店の通いの値（AFB01）
 assert.equal(state.flags._talk_seen_ch2_rin_strawberry, true);
 await visitRin();
 assert(!played.includes("ch2_rin_strawberry"), "read once");
