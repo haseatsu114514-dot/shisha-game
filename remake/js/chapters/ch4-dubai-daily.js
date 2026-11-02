@@ -17,6 +17,7 @@ import { showHud } from "../daily/hud.js";
 import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
 import { openShop } from "../daily/shop.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
+import { consultLessons } from "../core/growth.js";
 import { openingStatus, MOSQUE_VISITING_HOURS } from "../daily/spot-hours.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { readDialogues } from "../core/chapter-data.js";
@@ -236,6 +237,9 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   if (entry.stat) earnStat(entry.stat, 4);
   if (entry.place === "festa") gainAffinity("da_silva", 5);
   if (entry.place === "naru") gainAffinity("naru", 5);
+  // 心得の盤の授業（SPEC 2.6・SBD50）: 会いに行った店で、灯した授業があれば相談して話を聞く（FESTA＝太陽、路地裏のカフェ＝シェイク）
+  const teacher = { festa: "da_silva", alley_cafe: "sheikh" }[entry.place];
+  if (teacher && state === owner) await keepDailyHud(() => consultLessons(teacher));
   return { used: true, exerted: (entry.stamina || 0) < 0 };
 }
 

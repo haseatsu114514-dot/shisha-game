@@ -89,6 +89,8 @@ await suite("growth-levelup", async (runCheck) => {
       const p=await import("./js/chapters/ch3-progress.js"),s=teacherCore.state;
       Object.assign(s,{chapter:2,day:28,phase:"cleared"});s.flags={_ch2_cleared:true,_ch2_read_ch2_tournament_ageha_heart:true,_ch2_tournament:{stage:"complete"}};
       if(!p.advanceToChapterThree(s))throw new Error("Tokyo boundary");
+      // 旧行程（版2・カードの自由時間）の既存セーブで、旧画面の授業の相談を確かめる（新規は版3の日常ループ。そちらは tokyo-daily-mukai-lesson）
+      s.flags._ch3_intro={startDay:s.day,stage:0,titleSeen:false,routeVersion:2};delete s.flags._ch3_prep;
       for(let i=0;i<80;i++){
         const next=p.chapterThreeScenes(s)[s.flags._ch3_intro.stage];if(next?.id==="ch3_strategy")break;
         const w=p.chapterThreeFreeTime(s);if(w)p.completeChapterThreeFreeTime(s,w.id);
@@ -124,6 +126,7 @@ await suite("growth-levelup", async (runCheck) => {
       const p=await import("./js/chapters/ch4-progress.js"),s=teacherCore.newGame();
       Object.assign(s,{chapter:3,phase:"cleared",day:45});s.flags._ch3_cleared=true;
       if(!p.advanceToChapterFour(s))throw new Error("Dubai boundary");
+      delete s.flags._ch4.routeVersion;delete s.flags._ch4_prep;s.flags._ch4.startDay=s.day; // 旧行程（版1・カード、出発前の準備なし）の既存セーブ。新規は版2の日常ループ（dubai-daily-festa-lesson）
       for(const scene of p.CH4_PROLOGUE)p.completeChapterFourScene(s,scene.id);
       s.flags._ch4.titleSeen=true;s.met.da_silva=true;s.affinity.da_silva=66;
       Object.assign(teacherGrowth.ensureGrowth(),{nodes:["M-B6"],learned:[]});
@@ -148,6 +151,7 @@ await suite("growth-levelup", async (runCheck) => {
       const s=nightCore.state;Object.assign(s,{chapter:2,day:28,phase:"cleared",stamina:80});
       s.flags={_ch2_cleared:true,_ch2_read_ch2_tournament_ageha_heart:true,_ch2_tournament:{stage:"complete"}};
       if(!p.advanceToChapterThree(s))throw new Error("chapter 3 boundary");
+      s.flags._ch3_intro={startDay:s.day,stage:0,titleSeen:false,routeVersion:2};delete s.flags._ch3_prep; // 旧行程（版2）の既存セーブ
       while(p.chapterThreeScenes(s)[s.flags._ch3_intro.stage].id!=="ch3_daily_cup_1"){
         const w=p.chapterThreeFreeTime(s);if(w)p.completeChapterThreeFreeTime(s,w.id);
         else p.completeChapterThreeScene(s,p.chapterThreeScenes(s)[s.flags._ch3_intro.stage].id);
@@ -1212,6 +1216,85 @@ await suite("growth-levelup", async (runCheck) => {
     const saved = await page.evaluate(async () => JSON.parse(localStorage.getItem((await import("./js/core/state.js")).SAVE_KEY)).growth.nodes);
     assert.deepEqual(saved, ["B1"], "灯した盤は保存される");
   }, { viewport: { width: 1331, height: 760 } });
+  // 日常ループ（第3章の版3）でも、会いに行った店で灯した授業を相談できる: mukai のシフトの帰りに、ましろちゃんの「ブラックティーを一割」（2026-11-02）
+  await check("tokyo-daily-mukai-lesson", async (page) => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"), progress = await import("./js/chapters/ch3-progress.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 2, day: 28, slot: 0, phase: "cleared", money: 30000, stamina: 100, weatherSeed: 5, contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
+        _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
+        _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
+      for (const who of ["hajime", "sumi", "pakki", "maezono", "dr_kemuri", "nagumo"]) value.flags[`_intro_${who}`] = true;
+      if (!progress.advanceToChapterThree(value)) throw new Error("chapter three");
+      value.day += 3; if (!progress.departChapterThree(value)) throw new Error("departure");
+      value.flags._ch3_intro.titleSeen = true;
+      const fortune = await import("./js/daily/fortune-schedule.js");
+      const plan = fortune.fortunePlan({ seed: value.seed, chapter: 3 });
+      value.flags._fortune_wander = { chapter: 3, shown: plan.map(() => null), used: plan.map(() => true) };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
+      Object.assign(core.state, value); core.save();
+    });
+    await page.reload(); await page.locator(t("title-load")).click();
+    await page.evaluate(async () => { const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0; });
+    await page.locator(t("slot-0")).click();
+    await page.locator(t("rule-sheet")).waitFor({ timeout: 60000 }); await page.locator(t("rule-sheet-close")).click();
+    await page.waitForFunction(() => __remake.state.day === 33 && __remake.state.slot === 1
+      && document.querySelector('.map:not(.done) [data-test="pin-ch3_tokyo_mukai"]') && !document.querySelector("#modal.show"), null, { timeout: 60000 });
+    await page.evaluate(async () => {
+      const g = (await import("./js/core/growth.js")).ensureGrowth();
+      g.nodes = [...new Set([...g.nodes, "M-B5"])]; g.learned = g.learned.filter((id) => id !== "M-B5");
+    });
+    await page.locator(t("pin-ch3_tokyo_mukai")).click(); await page.locator(t("map-go")).click();
+    await page.locator("#modal.show button", { hasText: "シフトに入る" }).click();
+    await page.locator(t("mukai-order-0")).click({ timeout: 60000 });
+    await page.locator(t("tokyo-tetsuko-yes")).click({ timeout: 60000 });
+    for (let i = 0; i < 200 && !(await page.evaluate(() => __remake.state.growth.learned.includes("M-B5"))); i++) {
+      if (await page.locator(".vn-box").isVisible().catch(() => false)) await page.locator(".vn-box").click().catch(() => {});
+      await page.waitForTimeout(200);
+    }
+    assert.equal(await page.evaluate(() => __remake.state.growth.learned.includes("M-B5")), true, "mukai のシフトのあと、ましろちゃんに相談して習う");
+  }, { viewport: { width: 1331, height: 760 } });
+  // 日常ループ（第4章の版2）でも、会いに行った店で灯した授業を相談できる: FESTA で太陽の「フェスタの煙」（2026-11-02）
+  await check("dubai-daily-festa-lesson", async (page) => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"), progress = await import("./js/chapters/ch4-progress.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
+        _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
+      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "nagumo", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+      if (!progress.advanceToChapterFour(value)) throw new Error("chapter four");
+      value.flags._overseas_companion = { decided: true, companion: null, supports: [] }; value.flags._ch4.titleSeen = true;
+      for (const id of progress.CH4_PREP_SCENES) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);
+      value.day += 3; if (!progress.departChapterFour(value)) throw new Error("departure");
+      value.met.da_silva = true; value.affinity.da_silva = 66;
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
+      Object.assign(core.state, value);
+      Object.assign((await import("./js/core/growth.js")).ensureGrowth(), { nodes: ["M-B6"], learned: [] });
+      core.save();
+    });
+    await page.reload(); await page.locator(t("title-load")).click();
+    await page.evaluate(async () => { const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0; });
+    await page.locator(t("slot-0")).click();
+    for (let i = 0; i < 300; i++) {
+      if (await page.evaluate(() => !!document.querySelector('.map:not(.done) [data-test="pin-ch4_dubai_inn"]') && !document.querySelector("#modal.show"))) break;
+      for (const sel of [t("levelup-ok"), ".vn-box", '[data-test^="ch4-continue"]']) {
+        const node = page.locator(sel).first();
+        if (await node.isVisible().catch(() => false)) await node.click().catch(() => {});
+      }
+      await page.waitForTimeout(300);
+    }
+    assert.equal(await page.evaluate(() => __remake.state.growth.learned.includes("M-B6")), false);
+    await page.locator(t("pin-ch4_dubai_festa")).click(); await page.locator(t("map-go")).click();
+    for (let i = 0; i < 200 && !(await page.evaluate(() => __remake.state.growth.learned.includes("M-B6"))); i++) {
+      if (await page.locator(".vn-box").isVisible().catch(() => false)) await page.locator(".vn-box").click().catch(() => {});
+      await page.waitForTimeout(200);
+    }
+    assert.equal(await page.evaluate(() => __remake.state.growth.learned.includes("M-B6")), true, "FESTA の訪問のあと、太陽に相談して習う");
+  }, { viewport: { width: 1331, height: 760 } });
   // 灯した効果が分かる（REPORT P1）: マスの説明に「合計 いま→灯すと」、決定のカードに増えた恩恵、HUDに目標までの火種
   await check("perk-totals-and-target", async (page) => {
     await setupDaily(page);
@@ -1400,7 +1483,11 @@ await suite("growth-levelup", async (runCheck) => {
       const s = festaCore.newGame(); Object.assign(s, { chapter: 3, phase: "cleared", day: 45, slot: 1 });
       s.flags._ch3_cleared = true;
       const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
-      void (await import("./js/chapters/ch4.js")).beginChapterFour();
+      // 旧行程（版1・カードの自由行動）の既存セーブで確かめる。新規は版2の日常ループ
+      const p = await import("./js/chapters/ch4-progress.js");
+      if (!p.advanceToChapterFour(s)) throw new Error("chapter four");
+      delete s.flags._ch4.routeVersion; delete s.flags._ch4_prep; s.flags._ch4.startDay = s.day; festaCore.save(); // 出発前の準備のない旧保存
+      void (await import("./js/chapters/ch4.js")).resumeChapterFour();
     });
     await page.locator(t("ch4-companion-none")).click();
     for (const id of ["ch4_sumi_training", "ch4_strategy", "ch4_opening", "ch4_arrival_inn"]) {
