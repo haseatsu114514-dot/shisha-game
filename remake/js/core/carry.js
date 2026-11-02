@@ -234,6 +234,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_dubai_guest", "progression"],
   ["_ch5_dubai_talks", "progression"],
   ["_ch5_dubai_flights", "progression"],
+  ["_ch5_shop_talks", "progression"],
   ["_mukai_shift_day", "progression"],
   ["_ch5_tokyo_talks", "progression"],
   ["_cheat_go", "progression"],

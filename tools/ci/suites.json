@@ -234,10 +234,13 @@
       "paths": [
         "remake/js/minigames/desert-ride.js",
         "remake/js/minigames/desert-ride-model.js",
+        "remake/js/minigames/desert-ride-art.js",
+        "remake/img/ui/desert_ride/**",
         "remake/js/chapters/ch4-desert.js",
         "remake/js/chapters/ch4-desert-progress.js",
         "remake/js/chapters/ch4.js",
         "remake/js/chapters/ch4-map-model.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
         "remake/js/desert-ride-page.js",
         "remake/desert-ride.html",
         "remake/css/desert-ride.css",
@@ -605,6 +608,7 @@
       "run": [
         "node --test tools/ci/test_ci.mjs",
         "python3 tools/check_face_icons_fresh.py",
+        "python3 tools/portrait_metrics.py check",
         "node --test tools/sequential_merge/test.mjs",
         "python3 -B -m unittest discover -s tools -p 'test*job_checkpoint*.py'",
         "node remake/test/dev_inspector.mjs"
