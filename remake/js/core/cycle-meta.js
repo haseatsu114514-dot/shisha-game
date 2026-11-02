@@ -1,8 +1,12 @@
 // 周回メタ層（Issue #1228、NGPLUS-DESIGN.md §3.2・§7・§8.2、SPEC U2）。
 // セーブ枠（suien_remake_save）とは別キーに、周回を跨ぐ解放・真エンド到達履歴・
 // 最新の引き継ぎパッケージ・通算値だけを置く。真エンドの到達判定そのものはしない
-// （#517 / 判断 D7）。ここへの書き込みは recordTrueEnd / recordCycleStarted の
-// 明示的な通知だけで起き、load・移行・章クリア記録からは決して書かない。
+// （#517 / 判断 D7。判定は ch5-progress.js の chapterFiveTrueEndReached）。ここへの書き込みは
+// recordTrueEnd（recordTrueEndForRun 経由を含む）/ recordCycleStarted の明示的な通知だけで起き、
+// load・移行・章クリア記録からは決して書かない。真エンドの通知は締めの流れ（ch5.js）だけが送る:
+// 初回のスタッフロールを流し終えたときと、スタッフロール済みの保存で出す完了カード（第五章・完）。
+// 後者は、この接続より前に見終えた保存の取りこぼしを拾い、スタッフロール後に盤を使った分を
+// その周回のパッケージへ反映する。
 import { buildCarryPackage } from "./carry.js";
 import { recordRouteTrueEnd } from "./gallery-progress.js";
 
@@ -109,7 +113,7 @@ function tournamentTotalsForCycle(s) {
  * 同一 cycleId の再通知では到達履歴と通算値を増やさず、パッケージだけを最新化する。
  * 戻り値はメタ層の保存成否。ギャラリー進行層（別キー）へのルート記録も冪等に行う。
  */
-export function recordTrueEnd(state) {
+export function recordTrueEnd(state, { keepPackage = false } = {}) {
   try {
     if (!state || typeof state !== "object") return false;
     if (!cycleIdValid(state.cycleId) || !cycleValid(state.cycle)) return false;
@@ -117,10 +121,11 @@ export function recordTrueEnd(state) {
     const loversAtEnd = unique(list(state.lovers).filter(charIdValid));
     const meta = readCycleMeta();
     const isNewCycle = !meta.trueEnds.some(e => e.cycleId === state.cycleId);
+    // keepPackage: 到達・通算・ギャラリーだけ記録し、既にあるパッケージ（別の周回のもの）は残す。
     const next = {
       ...meta,
       unlocked: true,
-      carryPackage: {
+      carryPackage: keepPackage && meta.carryPackage ? meta.carryPackage : {
         fromCycleId: state.cycleId,
         fromCycle: state.cycle,
         at,
@@ -139,6 +144,32 @@ export function recordTrueEnd(state) {
     // 進行層は別キーで集合型の記録のため、片方だけ成功した後の再通知でも重複しない。
     try { recordRouteTrueEnd(loversAtEnd); } catch { /* 進行層の失敗はメタ記録を妨げない */ }
     return ok;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * 締めの流れ（ch5.js）からの真エンド通知。例外を投げない。
+ * - justFinished（初回のスタッフロールを流し終えた直後）: いちばん新しい真エンドなので recordTrueEnd で
+ *   解放・到達を記録し、パッケージもこの周回にする。
+ * - それ以外（完了カード＝保存を開いたとき・盤を使って戻ったとき）:
+ *   - パッケージが無い（未解放・検証で落ちた）か、この周回のもの → recordTrueEnd（作り直し・最新化）。
+ *     同じ周回の再通知は到達履歴と通算値を増やさない。
+ *   - 別の周回がパッケージを持つ → パッケージは巻き戻さない。この周回が未記録（接続前に見終えた保存など）
+ *     なら到達・通算・ギャラリーだけ記録し、記録済みなら何も書かない。
+ * 戻り値は保存成否（書く必要がなければ true、不備な state は false）。
+ */
+export function recordTrueEndForRun(state, { justFinished = false } = {}) {
+  try {
+    if (!state || typeof state !== "object") return false;
+    if (!cycleIdValid(state.cycleId) || !cycleValid(state.cycle)) return false;
+    if (justFinished) return recordTrueEnd(state);
+    const meta = readCycleMeta();
+    const owner = meta.carryPackage?.fromCycleId;
+    if (owner == null || owner === state.cycleId) return recordTrueEnd(state);
+    if (!meta.trueEnds.some(e => e.cycleId === state.cycleId)) return recordTrueEnd(state, { keepPackage: true });
+    return true;
   } catch {
     return false;
   }

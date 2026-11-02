@@ -81,6 +81,7 @@ await suite('hiyori-gate', async check => {
       await setup(page);
       const eligibility = await page.evaluate(() => {
         const s = H.core.state, find = opts => H.phone.morningMessages(opts).find(m => m.accept_event === '__hiyori_shop__');
+        s.flags._invited_lime_outing_hiyori_1 = true; // Shop visit scenario follows the separate story outing.
         const before = !!find(); s.flags._hiyori_tonari_return_done = true;
         const m = find();
         const tournament = !!find({ tournamentDay: true }), fixed = !!find({ fixedNight: () => true });

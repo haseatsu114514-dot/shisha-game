@@ -11,7 +11,8 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_FREE_SC
   CH5_AUDIENCE, CH5_FIRST_CUP_VOTES, CH5_PREP_TRIALS, chapterFivePrepScene, chapterFivePreparation,
   chapterFivePrepPending, chapterFivePrepEcho, recordChapterFivePrepTrial,
   recordChapterFivePrepAdjustment, CH5_LIME_CONDITION, CH5_LIME_MILESTONES,
-  chapterFiveLimeDue, CH5_CREDITS_FLAG, chapterFiveCreditsPending, recordChapterFiveCredits } from "../js/chapters/ch5-progress.js";
+  chapterFiveLimeDue, CH5_CREDITS_FLAG, chapterFiveCreditsPending, recordChapterFiveCredits,
+  chapterFiveTrueEndReached } from "../js/chapters/ch5-progress.js";
 
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
 const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url)));
@@ -393,6 +394,29 @@ rejects(value, v => completeChapterFiveScene(v, "ending_start"));
   assert.equal(recordChapterFiveCredits(value), false, "Recorded only once");
   assert.equal(value.flags._ch5.part, "cleared", "The roll does not change the chapter state");
   roundTrip(value);
+}
+
+// 真エンド（#1228 の周回解放条件）: 決着→フィナーレ→スタッフロールを流し終えたら到達。勝敗は問わない。
+for (const won of [true, false]) {
+  const ended = toBeforeSecond();
+  assert.equal(recordChapterFiveSecondCup(ended, won ? { total: 90, category: "steady" } : { total: 55, category: "offband" }), true);
+  for (const id of won ? [CH5_MATCH_SCENES.win, CH5_MATCH_SCENES.afterglow] : [CH5_MATCH_SCENES.loss])
+    assert.equal(completeChapterFiveScene(ended, id), true, id);
+  for (const scene of CH5_AFTERMATH) assert.equal(completeChapterFiveScene(ended, scene.id), true, scene.id);
+  assert.equal(ended.flags._ch5.won, won);
+  assert.equal(chapterFiveTrueEndReached(ended), false, `Not before the finale (won: ${won})`);
+  assert.equal(beginChapterFiveFinale(ended, FINALE), true);
+  for (const id of FINALE.slice(0, -1)) assert.equal(completeChapterFiveScene(ended, id), true, id);
+  assert.equal(ended.flags._ch5.part, "finale");
+  ended.flags[CH5_CREDITS_FLAG] = true; // 旗だけ先に立っていても、フィナーレの途中では到達しない
+  assert.equal(chapterFiveTrueEndReached(ended), false, `Not during the finale (won: ${won})`);
+  delete ended.flags[CH5_CREDITS_FLAG];
+  assert.equal(completeChapterFiveScene(ended, FINALE.at(-1)), true);
+  assert.equal(ended.flags._ch5.part, "cleared");
+  assert.equal(chapterFiveTrueEndReached(ended), false, `Not while the first roll is pending (won: ${won})`);
+  assert.equal(recordChapterFiveCredits(ended), true);
+  assert.equal(chapterFiveTrueEndReached(ended), true, `Reached after the roll (won: ${won})`);
+  assert.equal(chapterFiveTrueEndReached(structuredClone(ended)), true, "Read back from the save");
 }
 
 // フィナーレ（恋人の epilogue が中間に来る分岐）も完走できる。
