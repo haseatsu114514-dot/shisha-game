@@ -2,7 +2,7 @@
 // 昼の行動の消費と1日1回、途中でやめた場合の非消費、実セーブ→ロード後の継続、再挑戦で報酬が増えないこと。
 // もう一件は、ドバイ14日の日常ループの地図（ch4-dubai-daily.js・#2297）から同じ流れに入り、昼の枠を一度だけ使うこと。
 import assert from "node:assert/strict";
-import { suite } from "./support.mjs";
+import { suite, baseURL } from "./support.mjs";
 
 const dt = name => `[data-test="${name}"]`;
 const get = page => page.evaluate(() => structuredClone(window.__remake.state));
@@ -256,3 +256,42 @@ async function expectLabel(locator, pattern) {
   await locator.waitFor();
   assert.match(await locator.textContent(), pattern);
 }
+
+// 独立ページで操作の手ごたえを確かめる（2026-11-02 オーナー「ラクダ操ってる感」）: ムチは X／右のボタンを押している間だけ効き、
+// 離すと止まる。押している間は速度計が赤く、スタミナが減る。窓のはじめ・幕の絵が読めている。
+await suite("ch4-camel-race-controls", async check => {
+  await check("whip-works-only-while-held-by-key-and-by-pointer", async page => {
+    await page.locator(dt("camel-menu-quick")).click();
+    const game = page.locator(dt("camel-game"));
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-game"]')?.dataset.phase === "race", null, { timeout: 15000 });
+    assert.equal(await game.getAttribute("data-art"), "sprites");
+    const whip = page.locator(dt("camel-signal"));
+    const stamina = async () => Number(await page.locator(".camel-stamina b").textContent());
+    const full = await stamina();
+    // キーボード: 押している間だけムチ。
+    await page.keyboard.down("x");
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"]').dataset.state === "whipping");
+    await page.waitForTimeout(700);
+    assert.equal(await page.locator(".camel-speed").getAttribute("data-state"), "whip");
+    const pressed = await stamina();
+    assert(pressed < full - 5, `holding X spends stamina (${full} → ${pressed})`);
+    await page.keyboard.up("x");
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"]').dataset.state !== "whipping");
+    const released = await stamina();
+    await page.waitForTimeout(500);
+    assert(await stamina() >= released - 1, "releasing stops the drain");
+    // 右のボタン: 指を置いている間だけ。
+    const box = await whip.boundingBox();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"]').dataset.state === "whipping");
+    await page.mouse.up();
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"]').dataset.state !== "whipping");
+    // Space の声も、本編の会話エンジンに取られずレースに届く（判定の文字が出る）。
+    await page.keyboard.press("Space");
+    await page.locator(".camel-feedback.show").waitFor();
+    assert.match(await page.locator(".camel-feedback").textContent(), /PERFECT|GOOD|無駄な声|連打/);
+    await page.locator(dt("camel-close")).click();
+    await page.locator(dt("camel-menu-quick")).waitFor();
+  });
+}, { entry: new URL("camel-race.html", baseURL).href, readySelector: '[data-test="camel-menu-quick"]' });
