@@ -183,6 +183,106 @@
       }
     },
     {
+      "dialogue_id": "ch3_outing_tetsuko_brush",
+      "comment": "てつこのお世話の2回目（ROAM06）。ムカイさんのブラシを借りる。まだ素っ気ないが、続けろとしっぽで言う。",
+      "lines": [
+        { "speaker": "", "text": "mukaiの裏口。ベンチの上で、てつこが丸くなっていた。" },
+        { "speaker": "", "text": "ムカイさんから、猫用のブラシを借りてきた。" },
+        { "speaker": "hajime", "face": "normal", "text": "てつこ、少しだけな。嫌だったら逃げていいから" },
+        { "speaker": "", "text": "背中にそっとブラシを当てる。てつこは片目だけ開けて、また閉じた。" },
+        { "speaker": "", "text": "茶色の毛が、ブラシにふわりと絡む。" },
+        { "speaker": "tetsuko", "face": "normal", "text": "……ん、にゃ" },
+        { "speaker": "hajime", "face": "smile", "text": "（今の、返事……だよな）" },
+        { "speaker": "", "text": "ブラシを止めると、しっぽの先が一度だけ動いた。続けろ、ということらしい。" },
+        { "speaker": "", "text": "言われたとおり、しばらくブラシをかけ続けた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_tetsuko_wait",
+      "comment": "てつこのお世話の3回目（ROAM06）。裏口の戸を開けると、もうこちらを見ている。",
+      "lines": [
+        { "speaker": "", "text": "裏口の戸を開けると、ベンチの上のてつこが、もうこちらを見ていた。" },
+        { "speaker": "hajime", "face": "surprise", "text": "……待ってた、わけじゃないよな" },
+        {
+          "type": "choice",
+          "id": "ch3_tetsuko_wait",
+          "choices": [
+            { "text": "猫じゃらしを振る", "next": "play" },
+            { "text": "隣に座ってみる", "next": "sit" }
+          ]
+        },
+        { "speaker": "", "text": "しばらく、てつこと裏口の風に当たっていた。" }
+      ],
+      "branches": {
+        "play": [
+          { "speaker": "", "text": "店の奥で見つけた猫じゃらしを、ベンチの端で小さく振る。" },
+          { "speaker": "", "text": "てつこは目で追うだけで、動かない。……と思ったら、前足が一度だけ伸びた。" },
+          { "speaker": "tetsuko", "face": "normal", "text": "にゃっ" },
+          { "speaker": "hajime", "face": "smile", "text": "今、取ろうとしただろ" },
+          { "speaker": "", "text": "てつこは何もなかった顔で、前足をなめはじめた。" }
+        ],
+        "sit": [
+          { "speaker": "", "text": "ベンチの端に、少し間を空けて腰を下ろす。" },
+          { "speaker": "", "text": "てつこは逃げなかった。しばらくすると、空いていた間が少しだけ縮んでいた。" },
+          { "speaker": "hajime", "face": "normal", "text": "（近づいたの、俺じゃないぞ）" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch3_outing_tetsuko_trust",
+      "comment": "てつこのお世話の4回目（ROAM06）。自分から寄ってきて喉を鳴らす。懐くのはましろちゃんだけ、だった。",
+      "lines": [
+        { "speaker": "", "text": "裏口の戸を開けると、てつこがベンチから降りてきた。" },
+        { "speaker": "", "text": "そのまま足元まで来て、すねに頭をこすりつける。" },
+        { "speaker": "tetsuko", "face": "normal", "text": "……にゃあ" },
+        { "speaker": "hajime", "face": "surprise", "text": "てつこ……？" },
+        { "speaker": "", "text": "低い喉の音が、足元から聞こえる。ましろちゃんにしか聞かせない音だと思っていた。" },
+        { "speaker": "", "text": "戸の向こうで、ましろちゃんが目を丸くしていた。" },
+        { "speaker": "mashiro", "face": "surprise", "text": "わぁ……てつこちゃん、はじめくんにもすりすりしてる" },
+        { "speaker": "mashiro", "face": "smile", "text": "よかったねぇ。何回も来てたもんねぇ" },
+        { "speaker": "", "text": "店の奥から、ムカイさんの低い声がした。" },
+        { "speaker": "mukai_master", "face": "normal", "text": "……俺より先かよ" },
+        { "speaker": "hajime", "face": "smile", "text": "（ムカイさん、ちょっと悔しそうだ）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_tetsuko_lap",
+      "comment": "てつこが懐いた後のお世話（ROAM06）。膝に乗ってくる。",
+      "lines": [
+        { "speaker": "", "text": "ベンチに座ると、てつこが膝に前足をかけた。" },
+        { "speaker": "", "text": "そのまま、当たり前のように乗ってくる。" },
+        { "speaker": "hajime", "face": "normal", "text": "……重いな、お前" },
+        { "speaker": "tetsuko", "face": "normal", "text": "……にゃ" },
+        { "speaker": "", "text": "膝の上で丸くなると、てつこはすぐに目を閉じた。" },
+        { "speaker": "hajime", "face": "smile", "text": "（これじゃ、立てない）" },
+        { "speaker": "", "text": "しばらく、このままでいることにした。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_tetsuko_belly",
+      "comment": "てつこが懐いた後のお世話（ROAM06）。お腹を見せて寝ている。",
+      "lines": [
+        { "speaker": "", "text": "ベンチの上で、てつこがお腹を見せて寝ていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "無防備すぎるだろ" },
+        { "speaker": "", "text": "そっと撫でると、前足で手を抱え込まれた。" },
+        { "speaker": "tetsuko", "face": "normal", "text": "……ん" },
+        { "speaker": "hajime", "face": "smile", "text": "（離してくれない）" },
+        { "speaker": "", "text": "手が自由になるまで、少し時間がかかった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_tetsuko_door",
+      "comment": "てつこが懐いた後のお世話（ROAM06）。帰りに戸の前まで見送る。",
+      "lines": [
+        { "speaker": "", "text": "てつこの耳の後ろを、指先でかいてやる。" },
+        { "speaker": "", "text": "帰ろうと立ち上がると、てつこが戸の前までついてきた。" },
+        { "speaker": "hajime", "face": "normal", "text": "見送ってくれるのか？" },
+        { "speaker": "tetsuko", "face": "normal", "text": "にゃ" },
+        { "speaker": "", "text": "一度だけ鳴いて、てつこはベンチへ戻っていった。" },
+        { "speaker": "hajime", "face": "smile", "text": "（また来いってことかな）" }
+      ]
+    },
+    {
       "dialogue_id": "ch3_outing_mukai_steve_b",
       "comment": "スティーブがまた客として来る（AFB02）。前回ましろちゃんが言った「合図」を試すが、まだタイマーから目を離せない（成長は大会で）。好感度は任意の外出の確定時に付ける（ch3-outing-progress.js の affinity）。",
       "lines": [

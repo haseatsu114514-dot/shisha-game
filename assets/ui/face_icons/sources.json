@@ -123,6 +123,10 @@
   "sprite": "assets/sprites/characters/sumi/chr_sumi_normal.png",
   "blob": "b16b085ff96c47fbef9d8561ebd26cbbc87b4d49"
  },
+ "face_tetsuko.png": {
+  "sprite": "assets/sprites/characters/tetsuko/chr_tetsuko_normal.png",
+  "blob": "6f8d6f539b2524af6f08aa17073e5f02cd95952e"
+ },
  "face_tsumugi.png": {
   "sprite": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
   "blob": "67fff31bea79471dab2b63f89fcd8ea5c94165e0"

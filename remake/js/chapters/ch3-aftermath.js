@@ -242,15 +242,16 @@ async function playScene(owner, scene) {
 }
 
 /**
- * あげはの告白（#1930 仮置き・#1988。条件は ch3-romance-entry.js: ♥3の分岐で恋愛寄り・♥5の保存だけ）。
+ * あげはの告白（#1930・#1988・台本は IR20 の正式原稿。条件は ch3-romance-entry.js: ♥3の分岐で恋愛寄り・♥5の保存だけ）。
  * 再会の翌日、もう一度店を訪ねた帰り際に、あげはから言葉にする（台本の「練習の続き」が再会の「言う練習中」を受ける）。
  * 返事（付き合う／友達のまま）を読み終えた時だけ関係を確定し、中断したらこの場面からやり直す。着地するまで第4章へは進めない。
+ * 昼に寄って暗くなるまでいた帰り際なので、時計は昼のまま、背景は店の裏の夜の通り（台本の地の文と一枚絵 cg_ageha_confession に合わせる）。
  */
 function renderAgehaConfession(owner) {
   if (beginAgehaConfessionDay(state)) { syncTokyoVisits(state); save(); }
   card(owner, "ageha-confession", `DAY ${chapterDay(state)}・昼 ／ 帰り際`, "翌日、もう一度MELTY PUFFに寄った。帰り際、あげはに呼び止められた。", [
     button(owner, "続きを読む", "ageha-confession-continue", async () => {
-      const result = await playScene(owner, { id: "confession_ageha", bg: "bg_street_day" });
+      const result = await playScene(owner, { id: "confession_ageha", bg: "bg_street_night" });
       if (!live(owner) || !result || result.cancelled) return;
       const answer = confessionAnswer(result.visited, "ageha");
       if (!answer) return;

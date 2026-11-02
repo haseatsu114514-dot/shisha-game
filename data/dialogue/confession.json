@@ -465,37 +465,82 @@
         {
           "speaker": "",
           "face": "",
-          "text": "帰り際、あげはに呼び止められた。店の灯りから少し離れた、角の自販機の前だった。"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "ハジメっち、ちょい待って。……練習の続き、していい？"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "言いたいこと、ちゃんと言葉にするやつ。ノリでごまかすと、また手ぇ震えそうだから"
+          "text": "昼過ぎに寄ったはずが、客の波が引くのを待つうちに、外はすっかり暗くなっていた。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "あげはは一度だけ息を吸って、胸の前で指を組んだ。"
+          "text": "裏口から路地へ出たところで、あげはが追いかけてきた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ハジメっち、ちょい待って。……ここ、店じゃないとこだよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "店の裏ですけど……外ではありますね"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "静かな日も、うるさい日も、隣にいてほしい。……言えた"
+          "text": "じゃ、セーフ。前に言ったじゃん。店じゃないとこで、うちの話聞いて、って"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "答え合わせ、なしね。うちがしゃべって、ハジメっちが聞くだけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは煉瓦の壁にもたれて、深く息を吸った。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "昨日の続き。してほしいこと、言う練習"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うち、ノリで言うのは得意なの。好き〜とか、最高〜とか、毎日言ってる"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "でも今から言うのは、ノリじゃないやつ。だから、手がちょい震えてる"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "あ、県大会の日のとは違うやつね。今日のは、緊張のほう"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "店長のうちも、撮影のうちも、静かな日のうちも。隣で見ててほしい"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……ハジメっちが好き。うちの彼氏になって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ノリでごまかさない声だった。……ちゃんと、言葉で返したい）"
         },
         {
           "type": "choice",
           "choices": [
             {
-              "text": "「俺も、あげはさんの隣にいたいです」と応える",
+              "text": "「俺も好きです。付き合ってください」と返す",
               "next_id": "confession_ageha_accept"
             },
             {
-              "text": "「これからも友達として、隣で聞きます」と返す",
+              "text": "「友達として、これからも聞かせてください」",
               "next_id": "confession_ageha_reject"
             }
           ]
@@ -509,83 +554,103 @@
       },
       "lines": [
         {
-          "type": "show_cg",
-          "cg_id": "cg_ageha_confession"
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、あげはさんが好きです。付き合ってください"
         },
         {
           "speaker": "ageha",
           "face": "surprise",
-          "text": "……マジ？　今の、ちゃんと届いた？"
+          "text": "……マジ？ 今の、聞き間違いじゃない？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "届きました。俺も、あげはさんの隣にいたいです。付き合ってください"
+          "text": "聞き間違いじゃないです。何回でも言います"
         },
         {
           "speaker": "ageha",
-          "face": "smile",
-          "text": "……っ、やば。言えたのより、返ってきた方が効くんだけど"
+          "face": "surprise",
+          "text": "何回もはいい！ ……いや、やっぱ、たまに言って"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "あげはは笑って、目元を指の背で一度だけ押さえた。"
+          "text": "あげはは笑いかけて、途中で手の甲を口元に当てた。"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "うちさ、こういうの、いつもならテンションで流しちゃうの"
+          "text": "やば。言えたのより、返ってきた方が効くんだけど"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "でも今日は、流したくなかった。ハジメっちには、ちゃんと言いたかった"
+          "text": "……ね、もいっこ練習していい？ してほしいことじゃなくて、したいこと"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "聞けてよかったです。練習、うまくいきましたね"
+          "text": "どうぞ"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "でしょ。……次は、してほしいことも言う練習"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "とりま、手。……つないでいい？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "はい"
+          "text": "ちょい屈んで。……ハジメっちの頭、なでたい"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "差し出された手を取る。指先が少し冷たくて、握ると、あげはが小さく息を吐いた。"
+          "text": "言われるまま、少しだけ身を屈めた。"
         },
         {
-          "speaker": "ageha",
-          "face": "smile",
-          "text": "……ん。これ、けっこう落ち着く"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "震える日があったら、また言ってください"
-        },
-        {
-          "speaker": "ageha",
-          "face": "smile",
-          "text": "うん。静かにしてたい日も、言う。……既読スルーしたら怒るけど"
+          "type": "show_cg",
+          "cg_id": "cg_ageha_confession"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "自販機の灯りが遠くなるまで、あげはは一言も喋らなかった。手だけが、時々握り返してきた。"
+          "text": "伸びてきた手が、遠慮なく髪をかき混ぜる。あげはが、声を上げて笑った。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "あはは！ ハジメっちの髪、思ってたよりふわふわじゃん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ、練習になってます？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "なってるなってる。言ったら、ちゃんとできた。……こういうのでいいんだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "髪から離れた手が、今度はそっと俺の袖をつまんだ。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "次に会う日さ。店じゃないとこ、うちが決めていい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。楽しみにしてます"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "よし、決まり。……既読スルーしたら、怒るからね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "駅までの道、あげはは珍しく口数が少なかった。つまんだ袖だけは、改札まで離れなかった。"
         },
         {
           "type": "hide_cg"
@@ -596,14 +661,34 @@
       "dialogue_id": "confession_ageha_reject",
       "lines": [
         {
-          "speaker": "ageha",
+          "speaker": "hajime",
           "face": "normal",
-          "text": "……そっか。うん、ちゃんと言ってくれたの、えらい"
+          "text": "……これからも、友達として話を聞かせてください"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "うちも言えたし、引き分けね。……ダチとしても、ワンチャン好（ハオ）まであるわ"
+          "text": "……そっか。うん、ちゃんと返してくれたの、えらい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは壁から背中を離して、大きく伸びをした。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "言えたし、聞いてもらえた。練習としては、満点じゃん"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "答え合わせ係は、クビにしないから。また店、来てね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "裏口へ戻る途中で、あげはは一度だけ振り返って、大きく手を振った。"
         }
       ]
     },
@@ -613,57 +698,92 @@
         {
           "speaker": "",
           "face": "",
-          "text": "休日の昼下がり。ましろちゃんに誘われて、彼女の部屋でお茶を飲んでいた。"
+          "text": "休みの日の午後。ましろちゃんに呼ばれて、彼女の部屋へお茶を飲みに来た。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ましろちゃんはいつものようにクッションを抱えて、ローテーブルの向こうでぼんやりしている。"
+          "text": "窓から、やわらかい日が差している。棚の鉢植えが、床に細い影を落としていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "いらっしゃい。……カップ、持ってきてくれた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。問屋で選んだやつ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "でも、いつもと違って、何も喋らない。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……ましろちゃん、今日なんか静かだね"
+          "text": "ローテーブルに、形の違うカップが二つ並ぶ。ましろちゃんが、ゆっくり紅茶を注いだ。"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "……んー"
+          "text": "前に、仕事じゃない日もmukaiに座る？って聞いたでしょ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "座るよって言ってくれたから。今日は、もう一歩だけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "もう一歩？"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "ちょっとだけ、考え事してた。……はじめくんって、僕のことどう思ってるのかなーって"
+          "text": "うん。mukaiの席じゃなくて、僕の部屋"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……それとね。最初の日、はじめくんの煙、お水みたいって言ったでしょ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "今は、違うの。一緒に作ったり、話したりしてたら、近くなったの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "はじめくんの煙だって、分かるくらい。……それって、そういうことだよねぇ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんはカップを両手で包んだまま、それ以上は言わなかった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……返事、急がなくていいよぉ。言いたくなったら、で"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……珍しく、直球に聞いてきた）"
+          "text": "（最初の日、重いケースを半分持ってくれた人だ）"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（この人といる時間が、気づいたらずっと大切になっていた）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（友達、なのかな。それとも……）"
+          "text": "（急がなくていいと言われて、今、言いたくなった）"
         },
         {
           "type": "choice",
           "choices": [
             {
-              "text": "「好きだよ、ましろちゃん。そういう意味で」と伝える",
+              "text": "「ましろちゃんが好きだよ」と伝える",
               "next_id": "confession_mashiro_accept"
             },
             {
-              "text": "「大切な友達だよ」と答える",
+              "text": "「大事な友達だよ」と答える",
               "next_id": "confession_mashiro_reject"
             }
           ]
@@ -677,13 +797,9 @@
       },
       "lines": [
         {
-          "type": "show_cg",
-          "cg_id": "cg_mashiro_confession"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "しばらく沈黙があった。ましろちゃんがゆっくりとこちらを見る。"
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんが好きだよ。俺と、付き合ってほしい"
         },
         {
           "speaker": "mashiro",
@@ -691,84 +807,93 @@
           "text": "……え"
         },
         {
-          "speaker": "mashiro",
-          "face": "smile",
-          "text": "……ふふ……うれしいなぁ……はじめくんが、そんなこと言ってくれるなんて……"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "……僕もね、はじめくんのこと好きだよ。……たぶん、けっこう前から"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "たぶん、なんだ"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "smile",
-          "text": "うん。一緒にいて眠くなるくらい安心する人って、あんまりいないからさぁ"
-        },
-        {
           "speaker": "",
           "face": "",
-          "text": "ましろちゃんはクッションを抱え直して、少しだけ照れたように笑った。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "部屋には、シガーリーフの重い香りがかすかに残っていた。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "俺と、付き合ってくれる？"
+          "text": "ましろちゃんの手の中で、紅茶が小さく揺れた。"
         },
         {
           "speaker": "mashiro",
-          "face": "smile",
-          "text": "……うん。よろしくねぇ、はじめくん"
-        },
-        {
-          "speaker": "hajime",
           "face": "surprise",
-          "text": "（……心臓、うるさいな）"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "……はじめくん、顔、まっかだねぇ……ふふ、かわいい……"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "そ、それは……言うの、けっこう勇気がいったから……っ"
+          "text": "……急がなくていいって、言ったのに"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……ましろちゃん。手、つないでもいい？"
+          "text": "うん。でも、言いたくなったから"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "……ん。いいよぉ"
+          "text": "……ふふ。うれしいなぁ。僕も、はじめくんが好き"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "テーブル越しに伸ばした手を、ましろちゃんがゆっくり握り返した。"
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "よろしくねぇ、はじめくん"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "……このまま、ちょっと寝ちゃいそう"
+          "text": "……ねぇ。そっち、行ってもいい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どうぞ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "結局その日は手をつないだまま、冷めたお茶を最後まで飲んだ。"
+          "text": "ましろちゃんがテーブルを回ってきて、隣に座った。"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_mashiro_confession"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "肩に、ことんと頭が乗る。両腕が、俺の腕をゆっくり抱え込んだ。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……重い？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "重くないよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "重くてもね、二人で持つと、半分になるんだよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "最初の日の、ケースみたいに"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。……覚えててくれたんだぁ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "作れない日も、元気な日も。これからは、二人で持とうねぇ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "yawn",
+          "text": "……ふぁ。安心したら、ちょっと眠くなってきちゃった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "冷めていく紅茶をそのままに、窓の光が傾くまで、二人でそうしていた。"
         },
         {
           "type": "hide_cg"
@@ -779,6 +904,11 @@
       "dialogue_id": "confession_mashiro_reject",
       "lines": [
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんは、大事な友達だよ。これからも、お茶しよう"
+        },
+        {
           "speaker": "mashiro",
           "face": "normal",
           "text": "……そっかぁ。うん、分かったよ"
@@ -786,17 +916,22 @@
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "正直に言ってくれてありがとね。……今まで通り、よろしくねぇ"
+          "text": "ちゃんと言ってくれて、ありがとねぇ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ましろちゃんはすぐに穏やかな笑顔に戻って、湯呑みを両手で包んだ。"
+          "text": "ましろちゃんは少しだけ目を伏せて、それから、いつもの眠たげな顔に戻った。"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "……あ、お茶、冷めちゃった。次のお休みも、ここで淹れ直そっかぁ"
+          "text": "カップは、二つのままね。次のお休みも、ここでお茶しよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "形の違うカップで、冷めた紅茶を最後まで飲んだ。"
         }
       ]
     },

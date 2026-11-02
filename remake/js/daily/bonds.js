@@ -45,7 +45,7 @@ export const BOND_FINALES = {
   // あげは（#2023）: 第2章のMELTY PUFFで。方向は♥3の答え（bond_q1_ageha）だけで決まり、最後の質問は置かない。
   // 告白は日常の予約ではなく、第3章の帰郷後に ch3-romance-entry.js が出す（laterConfession）。
   ageha: { dialogue: "ch2_ageha_bond_finale", gift: "suyaki_ageha", laterConfession: true },
-  // ましろ（#2022）: 第3章の場面カードから（chapters/ch3.js）。告白は仮置きの寄り道 confession_mashiro（#1930）が担うので予約しない。
+  // ましろ（#2022）: 第3章の場面カードから（chapters/ch3.js）。告白は寄り道 confession_mashiro（#1930・IR20）が担うので予約しない。
   mashiro: { dialogue: "ch3_mashiro_bond_finale", gift: "suyaki_mashiro", question: "bond_q2_mashiro", ownConfession: true },
   // 久世（#2028）: 第3章の場面カードから（chapters/ch3.js）。恋愛対象外なので友情の着地だけ。
   // 好感度は煙幕への外出とLIME交換でしか付かず最大でも♥2前後のため、♥5ではなく heart（仮判断・♥1）と

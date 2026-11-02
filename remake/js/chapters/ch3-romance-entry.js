@@ -1,12 +1,13 @@
 // 第3章で恋愛ルートを着地させる、あげは・ましろの告白の入口（#1930）。DOMを持たない純粋ロジック。
 // あげはの締めくくりと専用ハガルは第2章のMELTY PUFF（daily/bonds.js・#2023）。日常の告白予約は使わず、告白はここだけ。
 // ましろの♥3の質問・締めくくり・専用ハガルは daily/bonds.js（#2022）にあるが、告白はここの寄り道のまま（締めくくりからは予約しない）。
-// 仮置き（#1930）: 既存の告白台本の中の返事（付き合う／友達のまま）を実回答にする。好感度・訪問回数だけからは開かない。
+// #1930: 告白台本（data/dialogue/confession.json・IR20 の正式原稿）の中の返事（付き合う／友達のまま）を実回答にする。
+// 好感度・訪問回数だけからは開かない。
 // - ましろ: 第3章の任意4場面（ch3_mashiro_*）の後の寄り道 confession_mashiro（ch3-story-wiring.js）。
 // - あげは（#1988・master_spec §24）: 他のヒロインと同じく、第2章の♥3の分岐（ch2_ageha_bond_question）で恋愛寄りに答え、
 //   ♥5に達した場合だけ。帰郷後の再会 ch3_ageha_reunion の翌日、帰り際の confession_ageha（ch3-aftermath.js）。
 //   満たさなければ告白は起きず、再会の後そのまま第3章完へ進む。
-// ましろの締めくくりの正式原稿が入ったら、ましろの入口を BOND_FINALES の流れへ差し替える。
+// ましろの告白は締めくくりから予約せず、この寄り道だけ。日常の夜の帰り道（daily/romance.js の maybeConfession）でも拾わない。
 // このモジュールは import を持たない（ch3_menu_bgm.mjs の harness が実物を直接読む）。
 
 export const CH3_CONFESSION_IDS = Object.freeze(["ageha", "mashiro"]);
