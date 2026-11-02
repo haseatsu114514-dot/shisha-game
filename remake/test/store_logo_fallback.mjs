@@ -67,7 +67,8 @@ for (const [spot, store] of [['ch3_tokyo_mukai', 'ch3_mukai'], ['ch3_tokyo_enmak
   assert.equal(node.attrs['aria-label'], `${STORE_LOGOS[store].name}のロゴ`);
   assert.equal(node.dataset.storeLogo, spot);
 }
-for (const id of ['ch3_tokyo_park', 'ch3_tokyo_room', 'ch4_dubai_souq', 'ch5_tokyo_attic', 'ch5_call']) assert.equal(hasStoreLogo(id), false, id);
+// 配送便の行き来（FIN13）は Dr.fookah の店と見分けるため、店のロゴを付けない。
+for (const id of ['ch3_tokyo_park', 'ch3_tokyo_room', 'ch4_dubai_souq', 'ch5_tokyo_attic', 'ch5_call', 'ch5_to_tokyo', 'ch5_tokyo_home']) assert.equal(hasStoreLogo(id), false, id);
 // 白い文字のSEAMだけ暗い札に載せる。
 assert.ok(storeLogo('ch3_tokyo_club').classList.contains('on-dark'));
 assert.equal(storeLogo('ch3_mukai').classList.contains('on-dark'), false);

@@ -25,12 +25,14 @@ assert.deepEqual(Object.entries(FACILITY_ICONS).map(([id, { label }]) => [id, la
     // MPI07: 後から入ったドバイの行き先
     ['desert_tour_desk', '砂漠ツアーのデスク'], ['desert_dunes', '砂丘'], ['camel_race_track', 'ラクダレース場']]);
 for (const id of ['kannon', 'rest', 'cafe', 'rojiura_cinema', 'axe_bar', 'choizap', 'fortune', 'trpg_bar', 'ch3_tokyo_gym',
-  'ch3_tokyo_park', 'ch5_tokyo_park', 'ch3_tokyo_room', 'ch5_tokyo_attic', 'ch5_call', 'ch5_to_tokyo', 'ch5_tokyo_home',
+  'ch3_tokyo_park', 'ch5_tokyo_park', 'ch3_tokyo_room', 'ch5_tokyo_attic', 'ch5_call',
   'ch4_dubai_souq', 'ch4_dubai_creek', 'ch4_dubai_mosque', 'ch4_dubai_inn', 'ch4_dubai_naru', 'ch4_dubai_practice', 'ch4_dubai_tour_desk', 'ch4_dubai_dunes', 'ch4_dubai_camel',
   'ch5_dubai_souq', 'ch5_dubai_creek', 'ch5_dubai_mosque']) assert(hasFacilityIcon(id), id);
 for (const id of ['tonari', 'naru', 'adam', 'minto', 'shop', 'c_station', '__proto__']) assert(!hasFacilityIcon(id), 'Store logos must keep their own role');
 // 路地裏の神社は場所の決定待ち（#2166）。シーシャの店（ドバイのカフェ）はロゴの担当。
 for (const id of ['ch3_tokyo_shrine', 'ch4_dubai_cafe', 'ch4_dubai_alley', 'ch4_dubai_festa']) assert(!hasFacilityIcon(id), id);
+// 第5章の東京の行き来は Dr.fookah の配送便（FIN13）。新幹線の駅の絵は使わず、文字の盾にする。
+for (const id of ['ch5_to_tokyo', 'ch5_tokyo_home']) assert(!hasFacilityIcon(id), id);
 // Inspect source alpha independently of layout math; a mistaken equal-third crop fails here.
 const analysis = spawnSync('python3', ['-c', `
 from PIL import Image
