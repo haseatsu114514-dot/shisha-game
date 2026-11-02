@@ -150,6 +150,8 @@ try {
           continue;
         }
         if (await click('[data-test="coach-lime"]')) continue;
+        // 寝る前のレベルアップ（心得の盤）。初回はOKを押すまで待つ全画面の演出。
+        if (await click('[data-test="levelup-ok"]')) continue;
         if (snap.modal) {
           if (await click('[data-test="reel-intro"]') || await click('[data-test="drill-finish"]') || await click('[data-test="status-close"]')) continue;
           await click('#modal .modal-actions button');
