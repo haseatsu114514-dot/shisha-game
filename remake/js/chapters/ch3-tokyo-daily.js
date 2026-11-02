@@ -32,6 +32,7 @@ import { availableOptionalScenes, commitOptionalRead, selectChapterThreeEvening,
 import { loverMilestonesDue, readLoverMilestone, pendingLoverLime } from "./lover-entry.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { runMukaiShift, loadMukaiShift, MUKAI_PAY, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
+import { addRoamerSpots } from "../daily/roamers.js";
 
 export const TOKYO = "tokyo";
 const BG = name => bgUrl(name, timeOfDay());
@@ -115,6 +116,8 @@ function spotHasNew(entry) {
 const outingsAt = place => chapterThreeOutingCandidates(state).filter(outing => outing.place === place && outing.id !== "tetsuko");
 const mukaiBondDue = () => loverMilestonesDue(["mashiro"]).length > 0 || questionVisitDue("mashiro") || finaleAtVisit("mashiro");
 
+const ROAMER_TOKYO_SPOTS = () => state.chapter === 3 ? chapterThreeTokyoSpots() : [];
+
 /** 今の時間・物語の時点で地図に出す行き先。 */
 export function chapterThreeTokyoSpots() {
   const night = state.slot >= 1;
@@ -156,6 +159,8 @@ async function readPlain(id, bg, owner) {
  * @param io.openRuleSheet () => Promise 受付の規則
  */
 export function chapterThreeTokyoDefinition(io) {
+  // よその店に居合わせる人（daily/roamers.js）。東京の日常ループでは、東京の店にいる
+  addRoamerSpots(ROAMER_TOKYO_SPOTS);
   return {
     get untilDay() { return tokyoTournamentDay(state); },
     tournamentName: "HAZE: NATIONAL TOKYO",

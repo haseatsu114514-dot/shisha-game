@@ -585,7 +585,8 @@ async function performSpotAction(spot) {
   const scheduledCityVisit = cityGuestAtShop(spot);
   // よその店に居合わせる人は、入る前に地図で見た人（来店で「今日行った店」が変わっても変えない）
   const scheduledRoamer = roamerAt(spot);
-  const roamerBg = () => spot.previewUrl || spot.bgUrl || bgRef(spot.bg || VISIT_BG[spot.charId] || "bg_tonari_inside");
+  // 背景は店の絵（東京の店は preview、柚ヶ谷の店は previewUrl）
+  const roamerBg = () => spot.previewUrl || spot.bgUrl || bgRef(spot.bg || spot.preview || VISIT_BG[spot.charId] || "bg_tonari_inside");
   if (!openingStatus(spot, state).ok) return { used: false, exerted: false };
   if (spot.kind === "axe") {
     // 直接呼び出された入口にも、地図と同じ発見条件を適用する。

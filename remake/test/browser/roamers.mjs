@@ -180,6 +180,53 @@ await suite("roamers", async check => {
       playing: R.engine.isPlaying() })), { old: undefined, now: undefined, playing: false });
   });
 
+  await check("tokyo-trio-only-at-tokyo-shops", async page => {
+    const result = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"), roamers = await import("./js/daily/roamers.js");
+      const tokyo = await import("./js/chapters/ch3-tokyo-daily.js");
+      // 東京の店を全部登録する（実際の地図は物語の進みで店が増える。ここでは人ごとの居場所の決まりを見る）
+      roamers.addRoamerSpots(() => tokyo.CH3_TOKYO_SPOTS);
+      const value = core.newGame();
+      Object.assign(value, { chapter: 3, phase: "daily", day: 3 });
+      for (const who of ["kuze", "steve", "volk", "mashiro", "mukai_master"]) value.met[who] = true;
+      const places = Object.fromEntries(tokyo.CH3_TOKYO_SPOTS.map(entry => [entry.id, entry.place]));
+      const counts = {}, bad = [];
+      for (let day = 3; day < 16; day++) for (let slot = 0; slot <= 1; slot++) for (let seed = 1; seed < 40; seed++) {
+        Object.assign(value, { day, slot, seed });
+        const plan = roamers.roamerPlan();
+        if (!plan) continue;
+        counts[plan.id] = (counts[plan.id] || 0) + 1;
+        const place = places[plan.spotId];
+        if (!["mukai", "enmaku", "steve", "volk"].includes(place)) bad.push(["not-a-tokyo-shop", plan]);
+        if (plan.id === "volk" && place === "volk") bad.push(["own-shop", plan]);
+        if (plan.id === "mashiro" && place === "mukai") bad.push(["workplace", plan]);
+        if (!["volk", "mashiro", "emil"].includes(plan.id)) bad.push(["home-person-in-tokyo", plan]);
+      }
+      return { counts, bad };
+    });
+    assert.deepEqual(result.bad, []);
+    for (const id of ["volk", "mashiro", "emil"]) assert(result.counts[id] > 0, `${id} が東京で一度も出ない`);
+  });
+
+  await check("emil-is-a-stranger-until-the-national-tournament", async page => {
+    const result = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"), roamers = await import("./js/daily/roamers.js");
+      const engine = await import("./js/vn/engine.js"), tokyo = await import("./js/chapters/ch3-tokyo-daily.js");
+      roamers.addRoamerSpots(() => tokyo.CH3_TOKYO_SPOTS);
+      const value = core.newGame();
+      Object.assign(value, { chapter: 3, phase: "daily", day: 4, slot: 0 });
+      let plan = null;
+      for (let seed = 1; seed < 20000 && !plan; seed++) { value.seed = seed; const found = roamers.roamerPlan(); if (found?.id === "emil") plan = found; }
+      const spot = tokyo.CH3_TOKYO_SPOTS.find(entry => entry.id === plan.spotId);
+      const lines = [];
+      engine.vnTest.turbo = true;
+      engine.hooks.onLine = (scene, line) => lines.push(line.text || "");
+      const ok = await roamers.meetRoamer(spot, plan);
+      return { ok, named: lines.some(text => /エミル/.test(text)), murmur: lines.some(text => /Nefis/.test(text)) };
+    });
+    assert.deepEqual(result, { ok: true, named: false, murmur: true });
+  });
+
   await check("doctor-remembers-the-shop-records-in-chapter-five", async page => {
     const result = await page.evaluate(async () => {
       const core = await import("./js/core/state.js"), engine = await import("./js/vn/engine.js");
