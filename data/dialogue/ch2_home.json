@@ -1,5 +1,5 @@
 {
-  "comment": "第2章の地元（橙須）で読む短い会話（VOL13）。施設の寄り道（daily/spot-encounters.js の chapter: 2）と、Dr.fookah 2階の凛の会話（daily/spots.js の CHAPTER_TALKS）。第2章の準備期間に ch2-city-data.js の loadPreparationDialogues で読み込む。施設の能力の伸びは来店の処理が付けるので、台本に報酬の文は書かない。",
+  "comment": "第2章の地元（橙須）で読む短い会話（VOL13）。施設の寄り道（daily/spot-encounters.js の chapter: 2）と、Dr.fookah 2階の凛の会話（daily/spots.js の CHAPTER_TALKS）、tonariの大会準備で一台作る場面（chapters/ch2-craft-prep.js・ch2_prep_*）。第2章の準備期間に ch2-city-data.js の loadPreparationDialogues で読み込む。施設の能力の伸びは来店の処理が付けるので、台本に報酬の文は書かない。",
   "dialogues": [
     {
       "dialogue_id": "cafe_ch2_commute",
@@ -500,6 +500,311 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch2_prep_basics_intro",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "おう、はじめ。県大会の前に、いまの手を一台見せてみろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "苺じゃなくて、いいんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "課題の苺は、当日に主催が出す。今から苺ばかり詰めても、手が固くなるだけだ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店の葉で、いつもの一台。調整はなしでいい。見たいのは、炭を置くまでの手だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい、お願いします"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_basics_end",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出来上がった一台を、スミさんが吸う。煙を吐くまで、何も言わなかった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "手順は入ってる。地元の大会の時より、迷いが減ったな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "ただ、炭を置くのが早い。次の手を考えてて、今の炭を見てねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……急いでましたか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "急げるのは、手が増えた証拠だ。でも、炭は待ってくれねえ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "隣町に通うと、思ってるより疲れる。飯と睡眠は削るなよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（今の炭を見る。……それと、ちゃんと食べて寝る）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_basics_failed",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙が、途中で荒れた。スミさんは吸い口を置いて、灰皿の縁を指で叩いた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "崩れたな。それでいい。どこで崩れたか、自分で言えるか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……温度を見ないで、次の工程のことを考えてました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "そこまで分かってりゃ十分だ。本番の前に一回、崩しておけてよかった"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "隣町に通うと、思ってるより疲れる。飯と睡眠は削るなよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（今の炭を見る。……それと、ちゃんと食べて寝る）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_rehearsal_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariの作業台を借りて、本番と同じ一台を作ることにした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさん。最後に一回だけ、通しでやらせてください"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……台は空いてる。好きに使え"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんはそれ以上何も言わず、カウンターの奥で伝票をめくっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（本番と同じ順番で。苺は4g以上）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（炭は急がない。調整は二回まで）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_rehearsal_great",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出来上がった一台の吸い口を、スミさんに渡した。自分で吸っても、甘さの輪郭はまだつかめない。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……通ってる。最初の一口から最後まで、熱が暴れてねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "順番どおりに、できてましたか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ああ。手は、もう本番の手だ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "だから今日は、これ以上触るな。食って、寝ろ。それも準備のうちだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（手は本番の手。……あとは、当日の自分の体だ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_rehearsal_good",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出来上がった一台の吸い口を、スミさんに渡した。自分で吸っても、甘さの輪郭はまだつかめない。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "悪くねえ。二回目の調整で、ちゃんと戻した"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一回目で、少し上げすぎました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "上げすぎたのに気づいて戻せたなら、それは失敗じゃねえ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "本番も同じだ。崩れた時に、どこへ戻るかだけ覚えとけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（崩れても、戻る場所がある）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_rehearsal_rough",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出来上がった一台の吸い口を、スミさんに渡した。自分で吸っても、甘さの輪郭はまだつかめない。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……途中で、手が急いだな。熱が追いついてねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "分かってるのに、点のことを考えると、手が先に動いて"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……そうか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは少し黙って、水の入ったグラスを置いた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "今日はもう作るな。手が急ぐ日は、体が先に疲れてる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_rehearsal_burnt",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸い出しの途中で、焦げた匂いが立った。一台は、そこで終わった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……すみません。本番の前に、こんな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "前に焦がせたなら、儲けもんだ。本番で焦がすより、ずっといい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "どこで目を離した。それだけ覚えて、今日は帰れ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（温度から、目を離した。……次の工程を、先に考えてた）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_rehearsal_drill",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "気になっていた工程だけを、何度か繰り返した。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……一個に絞ったか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。全部を直すのは、本番までに間に合わないので"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "それでいい。直した一個だけ、本番で思い出せ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "道具を片づけると、肩の力が少しだけ抜けていた。"
+        }
+      ]
     }
   ]
 }

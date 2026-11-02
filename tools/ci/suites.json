@@ -431,6 +431,12 @@
       "run": ["node --experimental-vm-modules remake/test/ch3_lover_entry.mjs"]
     },
     {
+      "id": "ch2-craft-prep",
+      "title": "Chapter 2 tournament prep at tonari: basics check and last rehearsal with a real board or drill (VOL13)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ch2_craft_prep.mjs"]
+    },
+    {
       "id": "ch2-home-talks",
       "title": "Chapter 2 home talks: facility encounters, Rin's chapter talks, Ageha's four small talks and greetings, aquarium revisits (VOL13)",
       "kind": "quick",
