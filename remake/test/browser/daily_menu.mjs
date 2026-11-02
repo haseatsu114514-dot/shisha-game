@@ -163,7 +163,7 @@ await suite("daily-menu", async (check) => {
     await page.screenshot({ path: path.join(out, "daily-menu-pc-growth-status.png") });
     const before = await progress(page);
     await page.locator(t("menu-board")).click();
-    await page.locator(`${t("growth-board")}[data-mode="view"]`).waitFor();
+    await page.locator(`${t("growth-board")}[data-mode="view"][data-art]`).waitFor();
     await page.locator(t("board-close")).click();
     await page.locator(t("growth-board")).waitFor({ state: "detached" });
     assert.equal(await page.locator(".dmenu").count(), 0);

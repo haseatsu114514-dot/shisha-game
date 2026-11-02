@@ -1,0 +1,85 @@
+{
+  "id": "maezono-onigiri",
+  "title": "おにぎり特集",
+  "cast": [
+    "maezono"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "どうぞ。",
+    "おいしいねえ。",
+    "特集が始まった。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "左のはじめがおにぎりを皿で差し出して「どうぞ。」。右の上園が一口かじって幸せそうに「おいしいねえ。」。",
+  "panel2": "上園が夢中でメモを取り、机にはメモ帳が三冊目まで積み上がっている。はじめ「特集が始まった。」。",
+  "caption": "上園さんは、何でも本当においしそうに食べる。",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "102a9c9b46891c577ef9910b5be36ead66d2204e",
+  "generator": "built-in image_gen",
+  "source": "source-A-v1.png",
+  "source_sha256": "f613554f9e7f3d2697758abe1a5d241a1996fcd779d61732ac92ea05c10e6dd2",
+  "references": [
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "role": "dimension template"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "role": "character normal identity"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/maezono.png",
+      "sha256": "a8bce133e3a390519149237cc1c934ee02e9822f549b33aecbac4c8ae776c21b",
+      "role": "character normal identity"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+      "role": "initial adopted game comic style only"
+    }
+  ],
+  "prompts": [
+    {
+      "path": "prompt-A-v1.txt",
+      "sha256": "ba069cc7f975fa987266373d56d1444bbd4f3ad7034c81f0deb6c489a8f06cbd"
+    }
+  ],
+  "versions": [
+    {
+      "path": "source-A-v1.png",
+      "sha256": "f613554f9e7f3d2697758abe1a5d241a1996fcd779d61732ac92ea05c10e6dd2",
+      "status": "review candidate"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "all three canonical lines visually read; punctuation matched",
+    "reading_order": "left panel then right; first speaker top/left before response; tails to correct speaker",
+    "identity": "official normal images viewed before generation; both panels preserve Hajime left and partner right",
+    "style": "initial adopted comic screenshot used as fourth reference every generation; cute chibi 2.5-head proportions, thick clean outlines, warm cel colors visually consistent",
+    "hardware": "none: no shisha stand/bowl/HMD/coal/hose/smoking",
+    "prohibited_text": "no title, UI, watermark, or extra text in review candidate",
+    "cut": "16/16 panel check OK; fill changed 0; <400KiB each; minor 1-3px size/rounding differences recorded, no forced ratio or upscaling",
+    "notes": "Notebook count is an exaggerated pile rather than exactly three; story gag preserved. Both expressions warm, round glasses/blazer/light-blue shirt match normal.",
+    "in_game_pc_phone": "not run; candidates remain unregistered"
+  },
+  "delivery": [
+    {
+      "file": "panels/maezono-onigiri-1.webp",
+      "width": 715,
+      "height": 477,
+      "bytes": 66190,
+      "sha256": "54dcb2bed9c65a404ab2dc49eb8daad3d521aa14890a0bcf614a602c92e17b15"
+    },
+    {
+      "file": "panels/maezono-onigiri-2.webp",
+      "width": 720,
+      "height": 480,
+      "bytes": 73404,
+      "sha256": "40437ffe8378da6483ff6648768ab4d8d01a79de3c022171d74031b1661e0870"
+    }
+  ]
+}

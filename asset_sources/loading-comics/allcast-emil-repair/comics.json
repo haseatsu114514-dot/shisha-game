@@ -1,0 +1,116 @@
+{
+  "episode": {
+    "id": "emil-repair",
+    "title": "直す人",
+    "cast": [
+      "emil"
+    ],
+    "minChapter": 1,
+    "dialogue": [
+      "直りますか？",
+      "見せて。",
+      "店ごと直った。"
+    ],
+    "first_speaker": "hajime",
+    "panel1": "脚がぐらつく木の椅子を前に、左のはじめが困って「直りますか？」。右のエミルが袖をまくって「見せて。」。",
+    "panel2": "椅子はしっかり直り、ついでに傾いた額縁と止まっていた時計も直っている。エミルは黙って工具を片付ける。はじめ「店ごと直った。」。",
+    "caption": "エミルは、受け継いだ仕事を手で伝える人です。"
+  },
+  "status": "review_candidate_not_adopted",
+  "generator": "built-in image_gen",
+  "selected_for_review": "source-A-v3.png",
+  "prompt": "prompt-A-v3.txt",
+  "references": [
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/emil.png",
+      "sha256": "61e85caac8c7a35a4a5d753b0204fde5f85390898280e1759a157a8bd87ea1ab"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2"
+    }
+  ],
+  "edit_reference": "source-A-v2.png",
+  "variants": [
+    {
+      "file": "source-A-v1.png",
+      "sha256": "1e890fa4bfc9516cc829245e580abec99d82a7bfd57f7efe62b8db3fff1d0e73",
+      "size": [
+        1536,
+        1024
+      ],
+      "qa": "右コマの額縁が傾いたまま。前後差不足"
+    },
+    {
+      "file": "source-A-v2.png",
+      "sha256": "dd1325b3dd69f9d4849d5536723f0f9e2094fb0542ec46365828888359ba4b3d",
+      "size": [
+        1536,
+        1024
+      ],
+      "qa": "左の傾いた額/壊れた時計から右の水平額/稼働時計への変化を確認"
+    },
+    {
+      "file": "source-A-v3.png",
+      "sha256": "6e81000e1978387e3031fce6da2054964faebb8d63cb53cb9b8e3fb26116f42a",
+      "size": [
+        1536,
+        1024
+      ],
+      "qa": "v3最小編集で「見せて。」吹き出しを上へ移動。下辺の安全余白不足を解消、台詞/話者/絵/右コマ不変を目視。"
+    }
+  ],
+  "panels": [
+    {
+      "file": "panels/emil-repair-1.webp",
+      "sha256": "c7a62b982b45d10bd418382a91d3bf6201805778ef59141a25c3304751446cc7",
+      "size": [
+        714,
+        476
+      ],
+      "bytes": 75678
+    },
+    {
+      "file": "panels/emil-repair-2.webp",
+      "sha256": "189442f6180876d803d76c0a9c18a342fb797e349f9684b6e2e338d4c9203fdc",
+      "size": [
+        715,
+        477
+      ],
+      "bytes": 75540
+    }
+  ],
+  "qa": {
+    "source_dimensions": "1536x1024",
+    "dialogue": "台本と一字一句一致を目視（句読点/！？含む）",
+    "speakers_order": "左右配置固定・先話を上/左、応答を下/右、尻尾の話者所属を確認",
+    "identity": "正式立ち絵に準拠。パッキーは白い雲状/赤蝶ネクタイ/通常マイクへ。占い師は台本優先で目/鼻を陰に隠す。",
+    "style": "初期採用pc.pngを実見し、少し可愛いデフォルメ/暖かいセル塗り/太い主線を確認。先行3話は同系統のrei-mix-namesを作風参照。",
+    "count": "はじめ＋相手の2人のみ。背景に人なし",
+    "prohibited": "シーシャ台/HMD/ハガル/炭/ホース/吸い口/喫煙/武器なし。カードのラーメンの湯気は料理の絵で喫煙ではない。",
+    "cut_visual": "qa-contact-1〜3を目視、文字/顔/オチが切れていない",
+    "warnings": [
+      "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+      "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。",
+      "左右の切出し出力高さに1〜3px差が残る。厳密な同高化は未実施。"
+    ],
+    "final_edit": "v3最小編集で「見せて。」吹き出しを上へ移動。下辺の安全余白不足を解消、台詞/話者/絵/右コマ不変を目視。"
+  },
+  "file_hashes": {
+    "prompt-A-v2.txt": "58b4b44b715b34e4eb2fd919c6b0f1b0a5f2fa1b9988339de7a9a556700dda46",
+    "source-A-v2.png": "dd1325b3dd69f9d4849d5536723f0f9e2094fb0542ec46365828888359ba4b3d",
+    "prompt-A-v3.txt": "a838de4bd373adae2b91eb784ec1a6a5514c25c15474298c0176957f920de11f",
+    "source-A-v1.png": "1e890fa4bfc9516cc829245e580abec99d82a7bfd57f7efe62b8db3fff1d0e73",
+    "source-A-v3.png": "6e81000e1978387e3031fce6da2054964faebb8d63cb53cb9b8e3fb26116f42a",
+    "cut-QA.txt": "20bd997bd7ae78d6e4ae54fe78c0716598b16fcc5ae05e40efc5cfb08b904efc",
+    "prompt-A-v1.txt": "7b16dfb7cafda3e009a963fc2d97cb3a4e4b6983d26bf0c7f214e1bd213be9ae"
+  }
+}

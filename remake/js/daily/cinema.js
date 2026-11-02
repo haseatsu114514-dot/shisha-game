@@ -54,7 +54,7 @@ export async function visitCinema({ signal = null } = {}) {
       return false;
     }
     if (!current()) return false;
-    const result = await play(id, { bg: film.bg, signal });
+    const result = await play(id, { bg: film.bg, signal, growthScene: true });
     if (!current() || !result || result.cancelled || !cinemaDiscovered(state)
       || spendableMoney(state) < CINEMA.cost) return false;
     addMoney(-CINEMA.cost);

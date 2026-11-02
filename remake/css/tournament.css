@@ -214,9 +214,9 @@
   box-shadow: inset 4px 0 0 #e3bd6e;
 }
 .rank-medal { clip-path: none; background: url('../img/ui/craft-night/medal-plain.webp') center / contain no-repeat; color: #f6f1fa; }
-[data-rank="1"] > .rank-medal, .rank-medal.gold { background-image: url('../img/ui/craft-night/medal-gold.webp'); color: #221534; }
-[data-rank="2"] > .rank-medal { background-image: url('../img/ui/craft-night/medal-silver.webp'); color: #221534; }
-[data-rank="3"] > .rank-medal { background-image: url('../img/ui/craft-night/medal-bronze.webp'); color: #221534; }
+[data-rank="1"] > .rank-medal, .rank-medal.gold { background: url('../img/ui/craft-night/medal-gold.webp') center / contain no-repeat; color: #221534; }
+[data-rank="2"] > .rank-medal { background: url('../img/ui/craft-night/medal-silver.webp') center / contain no-repeat; color: #221534; }
+[data-rank="3"] > .rank-medal { background: url('../img/ui/craft-night/medal-bronze.webp') center / contain no-repeat; color: #221534; }
 .nc-rays, .rt-rays { background: repeating-conic-gradient(from 0deg at 72% 60%, #c9a7e60e 0 4deg, transparent 4deg 16deg); }
 .nc-cut-art { clip-path: none; background: url('../img/ui/craft-night/cutin-band.webp') center / 100% 100% no-repeat; }
 .nc-cut-art::after { display: none; }
@@ -226,3 +226,13 @@
 .count-screen .rc-num, .result-table .tournament-heading h1 { color: #f6f1fa; text-shadow: 0 2px 0 #221534; }
 .standings .sd-feed-lines > div + div, .result-table .rt-judge-comment, .result-table .rt-good-point { color: #e3bd6e !important; }
 .result-table > .btn { border-color: #e3bd6e; background: #e3bd6e; color: #221534; }
+
+/* 順位帯自身の罫・内影を使う。旧CSSの枠・影を重ねず、凡例は板枠の上に置かない。 */
+.standings .sd-board { background: none; border-color: transparent; box-shadow: none; }
+.standings .sd-row, .standings .sd-row.me,
+.result-table .rt-row, .result-table .rt-row.me {
+  border-color: transparent; box-shadow: none; background-color: transparent;
+}
+.rank-medal, [data-rank] > .rank-medal, .rank-medal.gold {
+  clip-path: none; background-position: center; background-size: contain; background-repeat: no-repeat;
+}

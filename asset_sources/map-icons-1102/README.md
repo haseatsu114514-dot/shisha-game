@@ -4,6 +4,27 @@
 
 **オーナー決定（2026-11-02）**: 画像は Codex で生成する（依頼書 [codex-request.md](codex-request.md)）。スマホ（地元と連絡／博士に連絡する）と新幹線の駅（橙須駅／東京駅）はそれぞれ1枚を共用してよい。路上占いは建物を描かない持ち運びの出店で、今の配色（紫×金の月と星・赤い椅子・暖色のランタン）を残す。
 
+**採用（2026-11-02 オーナー「おすすめで」）**: Codex の候補39枚（13種×3案、受け渡しは #2331 のコメント）から12枚を採用し、地図に組み込んだ。原画は `<名前>-source.png`（無加工）、採用案のプロンプトは `<名前>-adopted-prompt.txt`、来歴は `generation.json`。候補一覧は [qa/candidates-japan.jpg](qa/candidates-japan.jpg)・[qa/candidates-dubai.jpg](qa/candidates-dubai.jpg)、組み込み後の地図は [qa/adopted-map-tokyo.jpg](qa/adopted-map-tokyo.jpg)・[qa/adopted-map-dubai.jpg](qa/adopted-map-dubai.jpg)。
+
+| アイコン | 採用案 |
+|---|---|
+| 路上占い | A |
+| 東京の公園 | B |
+| mukaiの奥の部屋 | A |
+| 屋根裏 | A |
+| スマホ（共用） | B |
+| 新幹線の駅（共用） | C |
+| スーク | A（v1） |
+| クリーク沿い | B（v2） |
+| 風の回廊モスク | A（v1） |
+| 旧市街の宿 | A（v1） |
+| 宿のロビー | A（v1） |
+| 公式練習会場 | B（v2） |
+
+- **路地裏の神社は保留**: #2166 の内省スポットの場所（池の弁天堂／高架下の稲荷／給水塔の屋上）が決まるまで、3案とも採用しない。
+- ゲーム用は外周の極薄の alpha（1〜7）を消し、主体を長辺380pxに縮めて四辺に2pxの透明な余白を足した透過 WebP（長辺384px）。
+- **追加の3枚（MPI06）**: 後から入ったドバイの行き先「砂漠ツアーのデスク」「砂丘（サンドボード）」「ラクダレース場」にも絵が無い。プロンプトは `desert-tour-desk-prompt.txt`・`desert-dunes-prompt.txt`・`camel-race-track-prompt.txt`（依頼書の「追加分」）。
+
 オーナー依頼（2026-11-02）: 「シーシャ屋以外のスポットは今アイコンで作ってるけどあれ足りないのも生成したい　既存のテイストを守りつつ　あと占いのアイコンなんかイメージと違うから何処に現れても違和感ないものにしたい」。台帳 `docs/owner_requests.md` の MPI01〜04。
 
 同じPRで、章ごとに id を分けたせいで絵が出ていなかった東京・ドバイの店（mukai・煙幕・Smoke & Glory・鉄の煙・クラブSEAM・Dr.fookah 東京店／ドバイ店・FESTA・東京のCHOI-ZAP）は既存のロゴ・アイコンへ対応づけた。実画面の前後比較は [qa/logo-aliases-before-after.jpg](qa/logo-aliases-before-after.jpg)（上から第3章の東京の夜・第5章の東京・第4章のドバイ。左が main、右が対応づけ後）。

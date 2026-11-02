@@ -51,3 +51,12 @@
 | 32 | `yoru-backdoor-boss` | 裏口の主 | 針間ヨル | 第3章（クラブSEAM） | 「裏口の主に挨拶。」「主？」「猫だった。」 |
 | 33 | `nine-thousand-scan` | 取得完了 | SHISHA-9000 | 第5章・第5章から | 「環境データ、取得完了。」「何がわかった？」「優しい分析。」 |
 | 34 | `nine-thousand-random` | 好きな味 | SHISHA-9000 | 第5章・第5章から | 「好きな味は？」「ランダムです。」「楽しそう。」 |
+
+## 届いた原画（2026-11-02）
+
+Codex が描いた34話・原画54枚を、[#2288 のコメント](https://github.com/haseatsu114514-dot/shisha-game/pull/2288#issuecomment-6573196435)の受け渡し（ZIP、SHA-256 `80836f27…fed253` 一致・中の全255ファイルもハッシュ一致）から受け取った。未生成の話はない。まだ選別前で、ゲームには登録していない。
+
+- 置き場所: `../allcast-<id>/`。版が1つの話は `allcast-<id>.png`、直した話は古い順に `-a` `-b` `-c` `-d`（**最後の文字が今の候補**。前の版は比較用で、選別の対象にしない）。どの文字がどの版かは [art-index.json](art-index.json) の `files`（`status: candidate / superseded`）。
+- 同じフォルダに、Codex の各話台帳 `comics.json`・実際に使ったプロンプト `prompt-A-v*.txt`・切り出しの検品 `cut-QA.txt` を残した。参考写真・立ち絵の画像は入っていない。
+- 切り出し: 今の候補34枚を `tools/loading_comic_cut.py sheet` → `fill` で切り直し、Codex が付けた68コマとバイト単位で一致した（`check` も68枚合格。fill で拡大したのは王煙楼『長さ比べ』の2コマだけ）。コマは採用した話だけ `remake/img/loading/` に入れる。
+- Codex 側の留保: 上園『おにぎり特集』のノートは三冊ぴったりでなく山盛り、『取材の範囲』の寝ぐせは帽子で見えないので靴ひもと弁当で表現。ほかは各話の `comics.json` の `warnings`。PC・スマホの実画面確認は、採用して登録するときに行う。

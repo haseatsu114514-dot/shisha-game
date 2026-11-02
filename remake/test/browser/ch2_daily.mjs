@@ -235,7 +235,10 @@ await suite('ch2-daily',async check=>{
     await setup(page);await begin(page);await wide(page);await act(page,'ch2_ageha');
     let v=await value(page);assert.equal(v.money,33000-stationFares(page));assert.equal(v.slot,1);assert.equal(v.stamina,99); // 根性31＝4段の体力から
     assert.equal(v.flags._ch2_talks.ageha,1);assert.equal(v.visits.ageha,1);assert(v.contacts.includes('ageha'));
-    assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),157); // 2 normal points, not old 4-point amounts
+    // 旧しくみ（?growth=0）は通常の2P（旧4P報酬ではない）。心得の盤（通常プレイの既定・SBD97）は経験値で、能力は書き換えない
+    const board=await page.evaluate(async()=>(await import('./js/core/growth-mode.js')).growthEnabled());
+    if(board){assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),155);assert((v.growth?.xp||0)>0,'The paid talk earns EXP');}
+    else assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),157); // 2 normal points, not old 4-point amounts
     await settled(page);await page.locator(t('pin-ch2_ageha')).click();assert.match(await page.locator('.mi-no').textContent(),/今日はもう行った/);
     assert.equal(await page.locator(t('map-go')).count(),0);
     await travelToCity(page,'home');await act(page,'rest');
@@ -276,7 +279,10 @@ await suite('ch2-daily',async check=>{
     let v=await value(page);assert.equal(v.day,18);assert.equal(v.slot,0);assert.equal(v.money,27000-stationFares(page));
     assert(v.flags._ch2_naru_warm_done);for(const id of ['ageha','kumicho','rei'])assert.equal(v.flags._ch2_talks[id],1);
     const trace=await page.evaluate(()=>window.__dailyTrace);assert.equal(trace.filter(id=>id==='ch2_naru_warm').length,1);
-    assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),161,'Fixed Naru night must not award growth');
+    // 旧しくみは店主3人の訪問の分（6P）だけで、固定のなるの夜は伸ばさない。心得の盤は能力を書き換えず、訪問の経験値だけ
+    if(await page.evaluate(async()=>(await import('./js/core/growth-mode.js')).growthEnabled())){
+      assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),155,'The board does not write the old stats');assert((v.growth?.xp||0)>0,'The owner visits earn EXP');
+    } else assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),161,'Fixed Naru night must not award growth');
     await capture(page,'touch-day4-home.png');await reloadSave(page);v=await value(page);assert.equal(v.day,18);assert.equal(v.money,27000-stationFares(page));
     assert.equal(await page.locator(t('ch2-main-next-day')).count(),0);
   },{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'});

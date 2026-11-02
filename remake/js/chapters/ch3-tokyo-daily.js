@@ -18,6 +18,7 @@ import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
 import { openShop } from "../daily/shop.js";
 import { fortuneSpot } from "../daily/spots.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
+import { consultLessons } from "../core/growth.js";
 import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { tokyoTime, TOKYO_FREE_TIMES_V3, timeNumber } from "../core/tokyo-clock.js";
@@ -380,8 +381,18 @@ async function performTokyoSpot(entry, io, { staminaGuard }) {
   }
   if (entry.place === "park") return goOuting(outingById("park_walk"), staminaGuard, owner);
   if (entry.place === "gym") return goGym(entry, staminaGuard, owner);
-  if (entry.place === "mukai") return visitMukai(io, staminaGuard, owner);
-  return visitRivalShop(entry, io, staminaGuard, owner);
+  if (entry.place === "mukai") return withLesson(await visitMukai(io, staminaGuard, owner), "mashiro", owner);
+  return withLesson(await visitRivalShop(entry, io, staminaGuard, owner), TOKYO_TEACHERS[entry.place], owner);
+}
+
+/**
+ * 心得の盤の授業（SPEC 2.6・SBD50）: 会いに行った店で、灯した授業があればその人に相談して話を聞く。
+ * 日常ループ（版3）でも旧行程と同じ相手に相談できるようにする（2026-11-02）。訪問を終えた時だけ。
+ */
+const TOKYO_TEACHERS = Object.freeze({ enmaku: "kuze", steve: "steve", volk: "volk" });
+async function withLesson(result, who, owner) {
+  if (who && result?.used && state === owner) await keepDailyHud(() => consultLessons(who));
+  return result;
 }
 
 const outingById = id => chapterThreeOutingCandidates(state).find(outing => outing.id === id) || null;

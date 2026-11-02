@@ -14,6 +14,8 @@
 .ch3-map-dialog { width:min(1160px,96vw); max-width:96vw; max-height:94dvh; margin:auto; padding:16px; border:1px solid #c0a972; border-radius:14px; color:#f3ebdc; background:#171b29; font-family:var(--font); }
 .ch3-map-dialog[open] { display:flex; flex-direction:column; gap:12px; }
 .ch3-map-dialog::backdrop { background:#080a13c9; backdrop-filter:blur(3px); }
+/* 縮小stageのChromiumで背景が鏡像反復しないよう、招待窓は暗幕だけを使う。 */
+#modal:has(.ch3-party-dialog) .modal-backdrop { backdrop-filter: none; }
 .ch3-map-header { display:flex; align-items:center; justify-content:space-between; gap:16px; flex:none; }
 .ch3-map-header h2 { margin:0; font-size:24px; color:#f4dfaf; }
 .ch3-map-header p { margin:2px 0 0; font-size:13px; color:#bdcbdc; }

@@ -1,0 +1,67 @@
+{
+  "id": "volk-rest",
+  "title": "休憩の準備",
+  "cast": [
+    "volk"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "疲れたか？",
+    "少し。",
+    "休憩も精密。"
+  ],
+  "first_speaker": "volk",
+  "panel1": "あくびをしかけたはじめを、右のヴォルクが手帳から顔を上げて見る「疲れたか？」（左上に高く）。左のはじめ「少し。」（右下）。",
+  "panel2": "ヴォルクが温度計・タイマー・きっちり畳んだブランケット・紅茶を一直線に並べ、腕を組んで待つ。はじめ「休憩も精密。」。",
+  "caption": "ヴォルクは、数字より先に本人に聞く人です。",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "102a9c9b46891c577ef9910b5be36ead66d2204e",
+  "generator": "built-in image_gen",
+  "source": "source-A-v1.png",
+  "source_sha256": "f90271134a483bbbc11231760f5ebd712dc395da4cc095fffe5917e0c51eebc0",
+  "references": [
+    {
+      "path": "references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "references/volk.png",
+      "sha256": "d27c36f36b074daadb9a860255c4a6cc04c11059d336f198867736630a681533"
+    },
+    {
+      "path": "references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked",
+    "reading_order": "left-to-right; first speaker upper-left; tails checked",
+    "identity": "official sprites inspected; same positions/faces both panels",
+    "prohibited_hardware": "none",
+    "notes": "candidate visual check complete",
+    "in_game_pc_phone": "not run; unregistered",
+    "style_alignment": "Compared with early adopted Menu Revision reference: large expressive faces, 2.5-head chibi proportions, warm cel colors and bold clean lines; consistent across both panels.",
+    "selection": "Owner decision pending; not adopted",
+    "fill": "Official fill applied; filled panels re-inspected, faces/dialogue/gag preserved."
+  },
+  "delivery": [
+    {
+      "file": "panels/volk-rest-1.webp",
+      "sha256": "e62d84a8053f5c0002ab077787914d0354978d6845bec9eb6b9fcd6db7996d72",
+      "width": 714,
+      "height": 477
+    },
+    {
+      "file": "panels/volk-rest-2.webp",
+      "sha256": "f6437a0c31ecd9dbef5b9635d3a45a0df1784527cc8eb1d6d54630580ff6df29",
+      "width": 715,
+      "height": 477
+    }
+  ],
+  "style_reference": {
+    "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+    "role": "early adopted Menu Revision comic, style only",
+    "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2"
+  }
+}

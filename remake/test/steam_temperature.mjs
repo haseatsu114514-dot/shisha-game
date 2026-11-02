@@ -62,6 +62,11 @@ assert(experienced.high - experienced.low < novice.high - novice.low, 'Insight f
 assert(Math.abs((experienced.high + experienced.low) / 2 - actual) < Math.abs((novice.high + novice.low) / 2 - actual), 'Insight narrowed the band without improving the estimate');
 assert(experienced.high - experienced.low >= .05, 'Maximum insight revealed an exact temperature');
 assert.notEqual(steamForecastProfile(1, actualVariation).offset, actualVariation.offset, 'Maximum insight read all hidden variation');
+const skilledProfile=steamForecastProfile(1,actualVariation,{readBonus:.15});
+const skilled=steamTemperatureRange({...base,steamPrediction:skilledProfile,steamVariation:actualVariation},390);
+assert(skilled.high-skilled.low<experienced.high-experienced.low,'炭の声は旧洞察最大でも予測の幅をさらに狭める');
+assert.notEqual(skilledProfile.offset,actualVariation.offset,'炭の声でも隠れた揺らぎを全部は明かさない');
+assert.equal(finish({...base,steamSeconds:390},actualVariation),actual,'予測スキルで実際の温度を変えない');
 const widths = [0, .25, .5, .75, 1].map(insight => {
   const bounds = steamTemperatureRange({ ...base, steamPrediction: steamForecastProfile(insight, actualVariation) }, 390);
   return bounds.high - bounds.low;

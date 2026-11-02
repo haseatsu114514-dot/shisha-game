@@ -39,7 +39,7 @@ assert.equal(strawberryTrialReady(tasted, {}), false, "台本が読めない時�
 // 試作の流れ（制作と会話は差し替え）
 const state = { chapter: 2, flags: {} };
 let stock, played, practice, simulateMastery = false, practiceRuns = 0;
-const context = vm.createContext({});
+const context = vm.createContext({ AbortController }); // バイトのシフトは別のセーブに替わったら AbortController で止める（#2166）
 const mocks = {
   "../core/state.js": { state, save: () => {} },
   "../vn/engine.js": { play: async id => { played.push(id); return {}; } },
@@ -134,6 +134,7 @@ const tonariPorts = {
   SE: { select() {}, cancel() {} }, CHARM_BONUS: [0], step: () => 1,
   currentCondition: () => ({ bonusRate: 1, shiftBonus: 0, health: "green" }),
   play: async () => ({}), dialogueSequence: run => run(), readyLessons: () => [],
+  on: () => () => {}, // シフト中のセーブの入れ替わりを見張る購読（解除の関数を返す。#2166）
   staffFlavors: () => [], staffStock: () => 0,
   showScreen: (_, node) => {
     const found = buttons(node);

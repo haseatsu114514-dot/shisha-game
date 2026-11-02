@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE4CF  枠の段 1: 2コマ@y=275
+  コマ1: 714x474 @(39,275) 比率 1.506 → ok
+  コマ2: 715x473 @(782,276) 比率 1.512 → ok
+コマ1: 714x474 (1.506) → 上下に各0.2%の紙帯 → 出力 714x476  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/middle/allcast-emil-repair/panels/emil-repair-1.webp (73 KiB)
+コマ2: 715x473 (1.512) → 上下に各0.4%の紙帯 → 出力 715x477  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/middle/allcast-emil-repair/panels/emil-repair-2.webp (73 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "emil-repair",
+  "title": "直す人",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "エミルは、受け継いだ仕事を手で伝える人です。",
+  "panels": [
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/middle/allcast-emil-repair/panels/emil-repair-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/middle/allcast-emil-repair/panels/emil-repair-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/middle/allcast-emil-repair/source-A-v3.png",
+      "region": {
+        "x": 39,
+        "y": 275,
+        "width": 714,
+        "height": 474,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/middle/allcast-emil-repair/source-A-v3.png",
+      "region": {
+        "x": 782,
+        "y": 276,
+        "width": 715,
+        "height": 473,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "emil-repair-1.webp",
+      "width": 714,
+      "height": 476,
+      "sha256": "c7a62b982b45d10bd418382a91d3bf6201805778ef59141a25c3304751446cc7"
+    },
+    {
+      "file": "emil-repair-2.webp",
+      "width": 715,
+      "height": 477,
+      "sha256": "189442f6180876d803d76c0a9c18a342fb797e349f9684b6e2e338d4c9203fdc"
+    }
+  ]
+}

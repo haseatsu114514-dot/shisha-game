@@ -613,9 +613,10 @@ export async function chapterTitle({ no, name, read, sub }) {
 }
 
 /** DAYカード（日付の区切り）。クリックを吸い込み、読み終わるまで待つ。weather は小見出しの後ろに出す天気（sun／cloud／rain） */
-export async function dayCard(title, sub, { ms = 1900, weather = null } = {}) {
+export async function dayCard(title, sub, { ms = 1900, weather = null, forecast = null } = {}) {
   const wx = weather ? (await import("../motions/dawn-weather.js").catch(() => null))?.weatherBadge(weather, "dc-weather", "currentColor") : null;
   const card = el("div.day-card", [el("div.dc-title", { text: title }), sub ? el("div.dc-sub", [sub, wx?.badge]) : null]);
+  if (forecast) card.append(el("small.dc-sub", { text: `明日は${forecast}`, dataset: { test: "day-forecast" } }));
   layers.fx.append(card);
   await nextFrame();
   card.classList.add("show");
