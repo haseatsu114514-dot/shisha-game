@@ -691,9 +691,15 @@ async function victory(cs) {
   // スミさんの祝福LIMEは、閉店後のtonariで祝杯を交わす前に届く。tonariへ戻る背景切替の手前で場面を区切る。
   const after = DB.dialogues.ch1_tournament_after;
   const tonariAt = after.lines.findIndex(line => line.type === "bg" && line.bg?.includes("bg_tonari_inside"));
+  const lobby = BG("bg_c_station_lobby");
+  // 大会後の数日は日常のslotを進めず描く。LOADでも各段の場所・時間を背景から確立する。
+  const inScene = (bg, run) => async () => {
+    await setBg(bgUrl(bg));
+    return run();
+  };
   const steps = [
-    () => play({ ...after, lines: after.lines.slice(0, tonariAt) }, { bg: STAGE }),
-    () => openPhone([
+    inScene(lobby, () => play({ ...after, lines: after.lines.slice(0, tonariAt) }, { bg: lobby })),
+    inScene(lobby, () => openPhone([
       {
         id: "_sys_sumi_scoresheet", sender: "sumi", messages: [
           "おう。優勝、見事だった",
@@ -702,23 +708,23 @@ async function victory(cs) {
           "今日は喜べ。帰ったら、一緒に一服しよう",
         ], close_label: "……はい。ありがとうございます、スミさん",
       },
-    ], { time: "PM 6:52", title: "表彰式のあと" }),
-    () => play({ ...after, lines: after.lines.slice(tonariAt) }), // 先頭の bg 行で tonari に切り替わる
-    () => play("interval_day1_naru_lime"),
-    () => gainStat("guts", 1),
+    ], { time: "PM 6:52", title: "表彰式のあと" })),
+    inScene(TONARI_N, () => play({ ...after, lines: after.lines.slice(tonariAt) })),
+    inScene(TONARI_N, () => play("interval_day1_naru_lime")),
+    inScene(TONARI_N, () => gainStat("guts", 1)),
     // 優勝の夜。記録を続ける博士の伏線へ。
-    () => openPhone([
+    inScene(TONARI_N, () => openPhone([
       {
         id: "_sys_unknown_recorded", sender: "???", messages: [
           "本日のあなたの試合データは、すべて記録させていただきました。",
         ], close_label: "……誰？",
       },
-    ], { time: "PM 11:47", title: "優勝の夜" }),
-    () => play("interval_day1_morning_win"),
-    () => play("ch1_naru_promise"),
-    () => play("interval_day2_adam_lime"),
-    () => gainStat("insight", 1),
-    () => play("interval_day5_eve"),
+    ], { time: "PM 11:47", title: "優勝の夜" })),
+    inScene(BG("bg_home_day"), () => play("interval_day1_morning_win")),
+    inScene(BG("kemurikusa"), () => play("ch1_naru_promise")),
+    inScene(BG("kemurikusa"), () => play("interval_day2_adam_lime")),
+    inScene(BG("kemurikusa"), () => gainStat("insight", 1)),
+    inScene(TONARI_N, () => play("interval_day5_eve")),
   ];
   while (v.step < steps.length) {
     await steps[v.step]();
@@ -733,6 +739,7 @@ async function victory(cs) {
 
 /** #2088: 優勝確定後に閉じたセーブは、大会を作り直さず余韻の続きから */
 async function resumeVictory() {
+  clearScreen(); // LOADを選んだタイトルを、続きのLIMEの背後にも残さない。
   showHud(false);
   playBgm("bgm_aftermath");
   const v = state.tournament.victory;
