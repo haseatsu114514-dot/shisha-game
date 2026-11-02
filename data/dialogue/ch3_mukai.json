@@ -68,6 +68,20 @@
           "text": "うん。俺も、遅れそうな日は送るよ"
         },
         {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "俺のも入れておいてくれ。手が足りない日は、こっちから声をかける"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_mukai_master"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。呼んでもらえたら、すぐ来ます"
+        },
+        {
           "type": "remember",
           "memory_id": "mukai_master_seat"
         }

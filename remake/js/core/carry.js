@@ -226,6 +226,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_match_started", "progression"],
   ["_ch5_region_started", "progression"],
   ["_ch5_tokyo_attic", "progression"],
+  ["_mukai_shift_day", "progression"],
   ["_ch5_tokyo_talks", "progression"],
   ["_cheat_go", "progression"],
   ["_cinema_visit", "progression"],
@@ -324,6 +325,7 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_adam", "person"],
   ["_lime_contact_ageha", "person"],
   ["_lime_contact_hiyori", "person"],
+  ["_lime_contact_mukai_master", "person"],
   ["_lime_contact_kumicho", "person"],
   ["_lime_contact_kuze", "person"],
   ["_lime_contact_mashiro", "person"],
@@ -544,6 +546,7 @@ export const FLAG_FAMILY_RULES = [
   ["_shift_order_*", "progression"],
   ["_spot_*", "progression"],
   ["_sumi_baito_inv_*", "pending"],
+  ["_mukai_baito_inv_*", "pending"],
   ["_temporary_closed_*", "progression"],
 ];
 

@@ -1,0 +1,157 @@
+{
+  "comment": "東京の mukai のシフトの客の反応（VOL09）。chapters/tokyo-mukai.js の今日の注文（二択）に対応。第3章・第5章の東京で共通。報酬は台詞に書かない（日当・体力・能力はコードが付ける）。はじめの味覚が戻る前でも読めるよう、自分の舌の感想ではなく組み立てと客の言葉で書く。",
+  "dialogues": [
+    {
+      "dialogue_id": "mukai_shift_after_coffee_0",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "できた一台を、客席へ運んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "コーヒーの続きみたいだ。香ばしいのに、口が重くならない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ナッツで丸くして、コーヒーは後ろに置いた）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mukai_shift_after_coffee_1",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "できた一台を、客席へ運んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "紅茶か。……うん、口の中がさっぱりした"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（コーヒーの苦さを、柑橘で流す。こういう選び方もある）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mukai_shift_light_break_0",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "できた一台を、客席へ運んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "ミントが強すぎなくていい。これなら午後も持つ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（レモンティーの甘さに、ミントは少しだけ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mukai_shift_light_break_1",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "できた一台を、客席へ運んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "花の香りって、こんなに軽いんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ジャスミンは立ち上がりが早い。休憩の短い人に向いてる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mukai_shift_sweet_latte_0",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "できた一台を、客席へ運んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "ほんとにラテみたい。甘いのに、しつこくない"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "うちのラテより甘いかもな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mukai_shift_sweet_latte_1",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "できた一台を、客席へ運んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "泡の感じが、ちょっとある。カプチーノだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（チョコで底を作って、カプチーノを上に乗せた）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mukai_shift_slow_heavy_0",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "できた一台を、客席へ運んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ちゃんと重い。シナモンが後から来るのがいいな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（重さは煙の量じゃなく、味の厚みで出す）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mukai_shift_slow_heavy_1",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "できた一台を、客席へ運んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "ダブルアップルか。アニスが少し強めで、ゆっくり吸える"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（アニスを足して、甘さを後ろへ下げた）"
+        }
+      ]
+    }
+  ]
+}

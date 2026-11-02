@@ -29,6 +29,7 @@ import { availableOptionalScenes, commitOptionalRead, selectChapterThreeEvening,
   eveningRecord, EVENING_WINDOW } from "./ch3-story-wiring.js";
 import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "../daily/bonds.js";
+import { runMukaiShift, loadMukaiShift, MUKAI_PAY, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
 
 export const TOKYO = "tokyo";
 const BG = name => bgUrl(name, timeOfDay());
@@ -176,6 +177,8 @@ export function chapterThreeTokyoDefinition(io) {
     dateInvitations: false,
     spotById: id => CH3_TOKYO_SPOTS.find(entry => entry.id === id) || null,
     performSpot: (entry, options) => performTokyoSpot(entry, io, options),
+    // ムカイさんの LIME で呼ばれたシフト（VOL10。daily/calendar.js の約束から）
+    mukaiShift: ({ called = false } = {}) => mukaiShift(state, { called }),
   };
 }
 
@@ -186,6 +189,7 @@ export async function runChapterThreeTokyo(io) {
     readDialogues("ch3_outings", OUTING_IDS).then(found => Object.assign(DB.dialogues, found)),
     readDialogues("ch3_activities", ["ch3_choizap_day", "ch3_choizap_night"]).then(found => Object.assign(DB.dialogues, found)),
     readDialogues("ch3_tokyo_daily", TOKYO_DAILY_IDS).then(found => Object.assign(DB.dialogues, found)),
+    loadMukaiShift(),
     import("./ch3-social.js").then(social => social.loadTokyoSocial()),
     refreshOptional(),
   ]);
@@ -441,7 +445,7 @@ async function visitMukai(io, staminaGuard, owner) {
   const options = [
     ...(bond ? [{ label: bond === "lover" ? "ましろちゃんと過ごす（恋人）" : bond === "question" ? "ましろちゃんと話す" : "ましろちゃんに呼ばれる", value: `bond:${bond}` }] : []),
     ...scenes.map(scene => ({ label: scene.label, value: `scene:${scene.id}` })),
-    ...outings.map(outing => ({ label: outing.id === "mukai_help" ? `店を手伝う（日当 ${outing.money.toLocaleString("ja-JP")}円）` : outing.label, value: `outing:${outing.id}` })),
+    ...outings.map(outing => ({ label: outing.id === "mukai_help" ? `シフトに入る（バイト・日当 ${MUKAI_PAY.toLocaleString("ja-JP")}円）` : outing.label, value: `outing:${outing.id}` })),
     ...trials.map(trial => ({ label: `作業台で${trial.label}（時間は進まない）`, value: `trial:${trial.id}` })),
   ];
   const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。",
@@ -456,9 +460,21 @@ async function visitMukai(io, staminaGuard, owner) {
   }
   if (kind === "bond") result = await readMashiroBond(id, staminaGuard, owner);
   else if (kind === "scene") result = await readOptionalHere(io, optional.find(scene => scene.id === id), staminaGuard, owner);
+  else if (id === "mukai_help") result = await (await staminaGuard(MUKAI_SHIFT_STAMINA) ? mukaiShift(owner) : false)
+    ? { used: true, exerted: true } : unused;
   else result = await goOuting(outingById(id), staminaGuard, owner);
   if (result.used && state === owner) await offerTetsuko(owner);
   return result;
+}
+
+/** mukai のシフト（VOL09）。導入は手伝いの場面（味が戻る前後で読み分け）。回数は手伝いの記録に数える。 */
+async function mukaiShift(owner, { called = false } = {}) {
+  const help = outingById("mukai_help");
+  if (!help || state !== owner) return false;
+  const done = await runMukaiShift({ called, intro: () => readPlain(outingDialogueId(state, help), "bg_mukai_shop", owner) });
+  if (!done || state !== owner) return false;
+  state.flags[OUTINGS_FLAG] = { ...outingCounts(state), mukai_help: (outingCounts(state).mukai_help || 0) + 1 };
+  return true;
 }
 
 async function readMashiroBond(kind, staminaGuard, owner) {
