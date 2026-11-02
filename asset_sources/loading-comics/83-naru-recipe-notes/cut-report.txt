@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE4D0  枠の段 1: 2コマ@y=272
+  コマ1: 717x480 @(36,272) 比率 1.494 → ok
+  コマ2: 718x480 @(779,272) 比率 1.496 → ok
+コマ1: 717x480 (1.494) → 左右に各0.2%の紙帯 → 出力 720x480  asset_sources/loading-comics/83-naru-recipe-notes/panels/naru-recipe-notes-1.webp (58 KiB)
+コマ2: 718x480 (1.496) → 左右に各0.1%の紙帯 → 出力 720x480  asset_sources/loading-comics/83-naru-recipe-notes/panels/naru-recipe-notes-2.webp (68 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "naru-recipe-notes",
+  "title": "レシピの余白",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "asset_sources/loading-comics/83-naru-recipe-notes/panels/naru-recipe-notes-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "asset_sources/loading-comics/83-naru-recipe-notes/panels/naru-recipe-notes-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "asset_sources/loading-comics/83-naru-recipe-notes/83-naru-recipe-notes.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 717,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "asset_sources/loading-comics/83-naru-recipe-notes/83-naru-recipe-notes.png",
+      "region": {
+        "x": 779,
+        "y": 272,
+        "width": 718,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "naru-recipe-notes-1.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "62fc2dedbe48b51a63707da1726a887dae44f80c7f80967b5ad79d5b61e89bf7"
+    },
+    {
+      "file": "naru-recipe-notes-2.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "e22b293dea34465e0009177615f00a8b36ec21921bd302d0e5eaf83d7d278340"
+    }
+  ]
+}

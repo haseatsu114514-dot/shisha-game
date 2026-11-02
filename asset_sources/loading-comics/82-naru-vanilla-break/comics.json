@@ -1,0 +1,109 @@
+{
+  "game": "水煙前線 -EN:CODE-",
+  "episodes": 1,
+  "candidate": true,
+  "registration_status": "選別待ち・ゲーム未登録",
+  "reading_order": "左①導入→右②オチ",
+  "canon_status": "番外編ギャグ。誇張・夢・想像は本編能力や人物設定を変更しない。",
+  "image_manifest": [
+    {
+      "file": "82-naru-vanilla-break.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "fee6eb166b41c4e77f8a6f76c0f53ac8243e7e4fbe81af30733d1795ba707da5",
+      "bytes": 1723527
+    }
+  ],
+  "pages": [
+    {
+      "file": "82-naru-vanilla-break.png",
+      "ids": [
+        "hajime",
+        "naru"
+      ],
+      "range": "82",
+      "rows": [
+        [
+          "82 休憩の香り",
+          "はじめ・naru",
+          "はじめが二つの飲み物の無地カップを見せ、なるが紅茶側を指す。 / なるは紅茶の横にバニラアイスを小さな器で用意して満足げ。はじめが呆れ笑い。"
+        ]
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "episode": 82,
+      "title": "休憩の香り",
+      "dialogue": [
+        "休憩はコーヒー？",
+        "今日は紅茶だ。",
+        "バニラは譲らない。"
+      ],
+      "speakers": [
+        "はじめ",
+        "naru",
+        "はじめ"
+      ],
+      "generator": "OpenAI image_gen",
+      "prompt_summary": "添付1の下敷き（1536×1024）を編集し、横長の2コマ漫画を1話だけ描いてください。出力1536×1024。枠の位置・寸法を厳守：左x36〜756、右x780〜1500、y272〜752、各720×480の3:2。縦長コマに変形せず、枠外・上下・24pxのコマ間は#EEE3CFの無地で残す。枠線3pxは残す。枠の内側4%には顔・台詞・重要物を置かない。題名・話数・番号・ロゴ・署名・透かし・英語・擬音文字は一切描かない。吹き出しの台詞のみ日本語の太いゴシック体で大きく、横書きで最大2行。添付2のはじめ（黒いキャップ、黒髪、黒パーカー、首の銀アクセサリー）と添付3のなる（銀色の短髪、金色の目、黒白のストリートジャケット、首のシルバーアクセサリー）を、同じ外見・服装の2.5頭身にする。太いきれいな線、セル塗り、少しの紙の質感、暖色の明るいギャグ漫画。両コマともはじめは画面左、相手は画面右に固定。背景は台本の場面に合わせ、机・窓・壁だけの簡素な構成。店内の収納は閉じた不透明の扉。観葉植物を追加しない。必要な小物のみ描き、シーシャ本体・ボウル・炭・HMD・ホース・煙・武器・他の人物・実在ロゴは描かない。題名（描かない参考）『休憩の香り』。左①導入：はじめが二つの飲み物の無地カップを見せ、なるが紅茶側を指す。 吹き出しははじめの「休憩はコーヒー？」となるの「今日は紅茶だ。」の2個だけ。右②オチ：なるは紅茶の横にバニラアイスを小さな器で用意して満足げ。はじめが呆れ笑い。 吹き出しははじめの「バニラは譲らない。」の1個だけ。台詞は句読点も一字一句一致させる。2コマ合計3吹き出し、台詞を省略・追加・繰り返ししない。 最優先：枠を縦方向へ広げない。上下それぞれ272pxの紙の余白を残し、720×480の横長コマに小さな人物と小道具を収める。",
+      "reference_images": [
+        "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "assets/sprites/characters/naru/chr_naru_normal.png"
+      ],
+      "source": [
+        {
+          "file": "asset_sources/loading-comics/82-naru-vanilla-break/82-naru-vanilla-break.png",
+          "region": {
+            "x": 36,
+            "y": 272,
+            "width": 720,
+            "height": 480,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        },
+        {
+          "file": "asset_sources/loading-comics/82-naru-vanilla-break/82-naru-vanilla-break.png",
+          "region": {
+            "x": 780,
+            "y": 272,
+            "width": 719,
+            "height": 480,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        }
+      ],
+      "delivery": [
+        {
+          "file": "naru-vanilla-break-1.webp",
+          "width": 720,
+          "height": 480,
+          "sha256": "db5aca407655f192d33520b17b289b2c3ee8be33e3dea7e068b990db6e003f98",
+          "bytes": 60142
+        },
+        {
+          "file": "naru-vanilla-break-2.webp",
+          "width": 719,
+          "height": 480,
+          "sha256": "25981d94e97e26893473e331aa0d9a33ecd7b29283768e6f065b7c05788ce2b6",
+          "bytes": 57418
+        }
+      ],
+      "ratio_status": "ok",
+      "raw_ratios": [
+        1.5,
+        1.4979166666666666
+      ],
+      "qa": {
+        "source_visual": "生成時に人物・台詞3つ・左右固定・禁止描写なしを目視確認",
+        "delivery": "cut tool passed; 3:2, <=1440x960, <400KiB",
+        "browser": "未実施: sandbox有効ChromiumがSUID helper設定エラーで起動不可。sandbox設定の解除・変更は行っていない。",
+        "warnings": [],
+        "rejected_trials": []
+      }
+    }
+  ]
+}

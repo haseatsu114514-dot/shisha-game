@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE3CF  枠の段 1: 2コマ@y=273
+  コマ1: 717x502 @(36,273) 比率 1.428 → ok
+  コマ2: 717x504 @(780,273) 比率 1.423 → ok
+コマ1: 717x502 (1.428) → 左右に各2.4%の紙帯 → 出力 753x502  asset_sources/loading-comics/66-sumi-slow-clock/panels/sumi-slow-clock-1.webp (54 KiB)
+コマ2: 717x504 (1.423) → 左右に各2.6%の紙帯 → 出力 756x504  asset_sources/loading-comics/66-sumi-slow-clock/panels/sumi-slow-clock-2.webp (54 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "sumi-slow-clock",
+  "title": "時計の一分",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "asset_sources/loading-comics/66-sumi-slow-clock/panels/sumi-slow-clock-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "asset_sources/loading-comics/66-sumi-slow-clock/panels/sumi-slow-clock-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "asset_sources/loading-comics/66-sumi-slow-clock/66-sumi-slow-clock.png",
+      "region": {
+        "x": 36,
+        "y": 273,
+        "width": 717,
+        "height": 502,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "asset_sources/loading-comics/66-sumi-slow-clock/66-sumi-slow-clock.png",
+      "region": {
+        "x": 780,
+        "y": 273,
+        "width": 717,
+        "height": 504,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "sumi-slow-clock-1.webp",
+      "width": 753,
+      "height": 502,
+      "sha256": "2ab864423e5e3825eceed5da53c33a42260d8a83464024a02d64219fb155124d"
+    },
+    {
+      "file": "sumi-slow-clock-2.webp",
+      "width": 756,
+      "height": 504,
+      "sha256": "a3111154ff1c5b48abeafa11816e324156ab3aae727c9a4d320cf93ec92dbd7d"
+    }
+  ]
+}

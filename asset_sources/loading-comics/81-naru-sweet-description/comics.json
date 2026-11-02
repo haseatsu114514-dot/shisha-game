@@ -1,0 +1,109 @@
+{
+  "game": "水煙前線 -EN:CODE-",
+  "episodes": 1,
+  "candidate": true,
+  "registration_status": "選別待ち・ゲーム未登録",
+  "reading_order": "左①導入→右②オチ",
+  "canon_status": "番外編ギャグ。誇張・夢・想像は本編能力や人物設定を変更しない。",
+  "image_manifest": [
+    {
+      "file": "81-naru-sweet-description.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "6af59a3b486651c8cf16a6f36f34eb11a5b2e14b034552ef327d55c8991d5268",
+      "bytes": 1736573
+    }
+  ],
+  "pages": [
+    {
+      "file": "81-naru-sweet-description.png",
+      "ids": [
+        "hajime",
+        "naru"
+      ],
+      "range": "81",
+      "rows": [
+        [
+          "81 甘さのたとえ",
+          "はじめ・naru",
+          "はじめがノートを構え、なるが真面目に味を説明。 / なるの小さな想像雲に三種類の小さなケーキが並ぶ。はじめが自分の空腹のお腹を押さえる。"
+        ]
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "episode": 81,
+      "title": "甘さのたとえ",
+      "dialogue": [
+        "甘さはどのくらい？",
+        "ケーキで言うとな。",
+        "説明で腹が減る。"
+      ],
+      "speakers": [
+        "はじめ",
+        "naru",
+        "はじめ"
+      ],
+      "generator": "OpenAI image_gen",
+      "prompt_summary": "添付1の下敷き（1536×1024）を編集し、横長の2コマ漫画を1話だけ描いてください。出力1536×1024。枠の位置・寸法を厳守：左x36〜756、右x780〜1500、y272〜752、各720×480の3:2。縦長コマに変形せず、枠外・上下・24pxのコマ間は#EEE3CFの無地で残す。枠線3pxは残す。枠の内側4%には顔・台詞・重要物を置かない。題名・話数・番号・ロゴ・署名・透かし・英語・擬音文字は一切描かない。吹き出しの台詞のみ日本語の太いゴシック体で大きく、横書きで最大2行。添付2のはじめ（黒いキャップ、黒髪、黒パーカー、首の銀アクセサリー）と添付3のなる（銀色の短髪、金色の目、黒白のストリートジャケット、首のシルバーアクセサリー）を、同じ外見・服装の2.5頭身にする。太いきれいな線、セル塗り、少しの紙の質感、暖色の明るいギャグ漫画。両コマともはじめは画面左、相手は画面右に固定。背景は台本の場面に合わせ、机・窓・壁だけの簡素な構成。店内の収納は閉じた不透明の扉。観葉植物を追加しない。必要な小物のみ描き、シーシャ本体・ボウル・炭・HMD・ホース・煙・武器・他の人物・実在ロゴは描かない。題名（描かない参考）『甘さのたとえ』。左①導入：はじめがノートを構え、なるが真面目に味を説明。 吹き出しははじめの「甘さはどのくらい？」となるの「ケーキで言うとな。」の2個だけ。右②オチ：なるの小さな想像雲に三種類の小さなケーキが並ぶ。はじめが自分の空腹のお腹を押さえる。 吹き出しははじめの「説明で腹が減る。」の1個だけ。台詞は句読点も一字一句一致させる。2コマ合計3吹き出し、台詞を省略・追加・繰り返ししない。 最優先：枠を縦方向へ広げない。上下それぞれ272pxの紙の余白を残し、720×480の横長コマに小さな人物と小道具を収める。",
+      "reference_images": [
+        "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "assets/sprites/characters/naru/chr_naru_normal.png"
+      ],
+      "source": [
+        {
+          "file": "asset_sources/loading-comics/81-naru-sweet-description/81-naru-sweet-description.png",
+          "region": {
+            "x": 36,
+            "y": 272,
+            "width": 720,
+            "height": 480,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        },
+        {
+          "file": "asset_sources/loading-comics/81-naru-sweet-description/81-naru-sweet-description.png",
+          "region": {
+            "x": 780,
+            "y": 272,
+            "width": 720,
+            "height": 480,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        }
+      ],
+      "delivery": [
+        {
+          "file": "naru-sweet-description-1.webp",
+          "width": 720,
+          "height": 480,
+          "sha256": "f1b0edf24720d4d189af2134c1258b60aff480e1354d5b9666978f68bcb15173",
+          "bytes": 58538
+        },
+        {
+          "file": "naru-sweet-description-2.webp",
+          "width": 720,
+          "height": 480,
+          "sha256": "c1d8de661db12de1e8b4cfc92472ce4c627415401f0a63e70d5922ba0456ac11",
+          "bytes": 63180
+        }
+      ],
+      "ratio_status": "ok",
+      "raw_ratios": [
+        1.5,
+        1.5
+      ],
+      "qa": {
+        "source_visual": "生成時に人物・台詞3つ・左右固定・禁止描写なしを目視確認",
+        "delivery": "cut tool passed; 3:2, <=1440x960, <400KiB",
+        "browser": "未実施: sandbox有効ChromiumがSUID helper設定エラーで起動不可。sandbox設定の解除・変更は行っていない。",
+        "warnings": [],
+        "rejected_trials": []
+      }
+    }
+  ]
+}

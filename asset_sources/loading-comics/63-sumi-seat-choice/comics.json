@@ -1,0 +1,112 @@
+{
+  "game": "水煙前線 -EN:CODE-",
+  "episodes": 1,
+  "candidate": true,
+  "registration_status": "選別待ち・ゲーム未登録",
+  "reading_order": "左①導入→右②オチ",
+  "canon_status": "番外編ギャグ。誇張・夢・想像は本編能力や人物設定を変更しない。",
+  "image_manifest": [
+    {
+      "file": "63-sumi-seat-choice.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "8699ce81742dac93db04107485f10a5ae05348145847ff90af02211060fbda3b",
+      "bytes": 1573162
+    }
+  ],
+  "pages": [
+    {
+      "file": "63-sumi-seat-choice.png",
+      "ids": [
+        "hajime",
+        "sumi"
+      ],
+      "range": "63",
+      "rows": [
+        [
+          "63 席選びの旅",
+          "はじめ・sumi",
+          "空いた客席の前で、スミさんが手を広げ、はじめが二脚の椅子を見比べる。 / はじめが小さなメジャーで二脚の椅子の窓からの距離まで比べ、スミさんが呆れ笑い。"
+        ]
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "episode": 63,
+      "title": "席選びの旅",
+      "dialogue": [
+        "好きな席でいいぞ。",
+        "迷いますね。",
+        "味より迷ってる。"
+      ],
+      "speakers": [
+        "sumi",
+        "はじめ",
+        "sumi"
+      ],
+      "generator": "OpenAI image_gen",
+      "prompt_summary": "添付1の下敷き（1536×1024）を編集し、横長の2コマ漫画を1話だけ描いてください。出力1536×1024。枠の位置・寸法を厳守：左x36〜756、右x780〜1500、y272〜752、各720×480の3:2。縦長コマに変形せず、枠外・上下・24pxのコマ間は#EEE3CFの無地で残す。枠線3pxは残す。枠の内側4%には顔・台詞・重要物を置かない。題名・話数・番号・ロゴ・署名・透かし・英語・擬音文字は一切描かない。吹き出しの台詞のみ日本語の太いゴシック体で大きく、横書きで最大2行。添付2のはじめ（黒いキャップ、黒髪、黒パーカー、首の銀アクセサリー）と添付3のスミさん（黒ハンチング、四角眼鏡、短い顎髭、炭色シャツ、茶の腰エプロン）を、同じ外見・服装の2.5頭身にする。太いきれいな線、セル塗り、少しの紙の質感、暖色の明るいギャグ漫画。両コマともはじめは画面左、相手は画面右に固定。背景は台本の場面に合わせ、机・窓・壁だけの簡素な構成。店内の収納は閉じた不透明の扉。観葉植物を追加しない。必要な小物のみ描き、シーシャ本体・ボウル・炭・HMD・ホース・煙・武器・他の人物・実在ロゴは描かない。題名（描かない参考）『席選びの旅』。左①導入：空いた客席の前で、スミさんが手を広げ、はじめが二脚の椅子を見比べる。 吹き出しはスミさんの「好きな席でいいぞ。」とはじめの「迷いますね。」の2個だけ。右②オチ：はじめが小さなメジャーで二脚の椅子の窓からの距離まで比べ、スミさんが呆れ笑い。 吹き出しはスミさんの「味より迷ってる。」の1個だけ。台詞は句読点も一字一句一致させる。2コマ合計3吹き出し、台詞を省略・追加・繰り返ししない。 添付4は前回版。前回の右コマでスミさんの脇にあった「キ」のように見える白い擬音文字は完全に消し、漫画の装飾文字や記号は追加しない。表情だけで面白さを出す。正確な3つの台詞とメジャーで席を測る場面を保ち、下敷きの枠位置720×480へ描き直す。\n",
+      "reference_images": [
+        "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "assets/sprites/characters/sumi/chr_sumi_normal.png",
+        "asset_sources/loading-comics/63-sumi-seat-choice/rejected-decoration-01.png"
+      ],
+      "source": [
+        {
+          "file": "asset_sources/loading-comics/63-sumi-seat-choice/63-sumi-seat-choice.png",
+          "region": {
+            "x": 37,
+            "y": 272,
+            "width": 716,
+            "height": 480,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        },
+        {
+          "file": "asset_sources/loading-comics/63-sumi-seat-choice/63-sumi-seat-choice.png",
+          "region": {
+            "x": 780,
+            "y": 272,
+            "width": 717,
+            "height": 480,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        }
+      ],
+      "delivery": [
+        {
+          "file": "sumi-seat-choice-1.webp",
+          "width": 720,
+          "height": 480,
+          "sha256": "ee117067031bc23eac56af5823396f2a07fbdbce1402a74ab3a3732486b7b0e7",
+          "bytes": 58274
+        },
+        {
+          "file": "sumi-seat-choice-2.webp",
+          "width": 720,
+          "height": 480,
+          "sha256": "f2b3ff4ee9baaef818e0f4af2d2357412de165c6042870b9a835ea9cd6a38176",
+          "bytes": 51552
+        }
+      ],
+      "ratio_status": "ok",
+      "raw_ratios": [
+        1.4916666666666667,
+        1.49375
+      ],
+      "qa": {
+        "source_visual": "生成時に人物・台詞3つ・左右固定・禁止描写なしを目視確認",
+        "delivery": "cut tool passed; 3:2, <=1440x960, <400KiB",
+        "browser": "未実施: sandbox有効ChromiumがSUID helper設定エラーで起動不可。sandbox設定の解除・変更は行っていない。",
+        "warnings": [],
+        "rejected_trials": [
+          "rejected-decoration-01.png"
+        ]
+      }
+    }
+  ]
+}
