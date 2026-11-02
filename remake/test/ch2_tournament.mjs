@@ -68,3 +68,5 @@ console.log('PASS: chapter2 irrevocable 3×10 votes, good/bad ranks, JSON checkp
 // 登録済みの大会ロジック入口から、独立した全国大会stateの回帰も走らせる。
 await import('./ch3_tournament_state.mjs');
 await import('./ngplus_difficulty.mjs');
+
+import "./tournament_finish_step.mjs";
