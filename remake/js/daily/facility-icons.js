@@ -47,7 +47,9 @@ const SPOT_ICONS = Object.freeze({ kannon: 'kannondo', rest: 'home', cafe: 'koha
   // MPI07: 砂漠ツアーのデスク・砂丘・ラクダレース場（ラクダは誘われた後のレース場だけ。店先の段階は facilityIcon: false）
   ch4_dubai_tour_desk: 'desert_tour_desk', ch4_dubai_dunes: 'desert_dunes', ch4_dubai_camel: 'camel_race_track',
   ch4_dubai_souq: 'dubai_souq', ch4_dubai_creek: 'dubai_creek', ch4_dubai_mosque: 'dubai_mosque', ch4_dubai_inn: 'dubai_inn',
-  ch4_dubai_naru: 'dubai_inn_lobby', ch4_dubai_practice: 'dubai_practice_hall' });
+  ch4_dubai_naru: 'dubai_inn_lobby', ch4_dubai_practice: 'dubai_practice_hall',
+  // 第5章のドバイも同じ場所の絵（SLG05）
+  ch5_dubai_souq: 'dubai_souq', ch5_dubai_creek: 'dubai_creek', ch5_dubai_mosque: 'dubai_mosque' });
 export const hasFacilityIcon = id => Object.hasOwn(SPOT_ICONS, id);
 
 // Morphology follows the alpha silhouette, rather than adding a rectangular backing.
