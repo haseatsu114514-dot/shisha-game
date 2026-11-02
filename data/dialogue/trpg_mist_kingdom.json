@@ -2752,6 +2752,7 @@
     "genre": "剣と魔法 / 霧の選手権",
     "tagline": "霧が晴れるまでに、王女に最後の一台を。",
     "image": "../../img/backgrounds/trpg_mist-kingdom_room.webp",
+    "choiceArt": {"src": "../../img/ui/trpg/choices-mist-kingdom.webp", "rowCount": 5, "rows": {"flavor": 0, "place": 1, "words": 2, "tactic": 3, "hypotheses": 4}},
     "sceneAlt": "霧に包まれた王宮の広間。玉座、王妃の肖像、霧の窓、審査員席、香り棚と、薄れかけた回廊。",
     "location": "朝霧の王国 / 霧の王宮",
     "atmosphere": "白い霧。薄れていく回廊。小さな王女の、透けそうな笑顔。",

@@ -356,6 +356,11 @@ async function renderFree(owner) {
   if (!current(owner)) return;
   showScreen("none", null);
   playBgm(CH5_DEFAULT_BGM);
+  // 帰国後の tonari の打ち上げ（一度だけ。誰の隣に座るか・恋人が2人以上なら修羅場）。中断なら次の入場でやり直す。
+  const { runAfterParty } = await import("./ch5-party.js");
+  if (!current(owner)) return;
+  await runAfterParty();
+  if (!current(owner)) return;
   const io = { readAndCommit: id => readAndCommit(owner, id, { keepHud: true }), readScene: id => readScene(owner, id, { keepHud: true }) };
   await runChapterFiveDaily(io);
   if (!current(owner)) return;
