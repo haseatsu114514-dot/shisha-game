@@ -110,7 +110,8 @@ export function fortuneSpot(where = "home") {
     unknownDesc: "路地の隅に、見慣れない出店がある。" };
 }
 export const allSpots = () => [...SPOTS, ...[samechanSpot(), trpgSpot(), cinemaSpot(), fortuneSpot("home")].filter(Boolean)];
-export const spotById = (id) => allSpots().find((s) => s.id === id);
+// 占い師は東京（第3・5章）に現れていることもある。その時も行き先として引けるようにする（地図の一覧は地域ごと）。
+export const spotById = (id) => allSpots().find((s) => s.id === id) || (id === "fortune" ? fortuneSpot(null) || undefined : undefined);
 
 // ---------------------------------------------------------------- 状態の読み取り
 
@@ -171,6 +172,25 @@ export function afterChapterVisitDue(charId, s = state) {
     && DB.dialogues[entry.scene]?.lines?.length ? entry.scene : null;
 }
 /**
+ * その章の間だけ店で読める短い会話（第2章の凛・VOL13）。段階会話より先に、一来店に一本ずつ・一度だけ。
+ * flag は読める時期（味の不調の後など）。台本は章の準備期間に読み込む（data/dialogue/ch2_home.json）ので、未読込なら出さない。
+ * 初対面の固有会話（VISIT_SEQ の1本目）を読んだ相手だけ（呼び名・面識を前提にするため）。
+ * 既読は `_talk_seen_<scene>`。好感度は通い訪問と同じ+5。
+ */
+export const CHAPTER_TALKS = Object.freeze({
+  rin: Object.freeze([
+    // 「……君、今日は煙の褒め方が嘘だね」（characters.json の凛）。味の不調に誰より早く気づく
+    { chapter: 2, scene: "ch2_rin_taste", flag: "_ch2_taste_distant" },
+    { chapter: 2, scene: "ch2_rin_strawberry" },
+  ]),
+});
+export function chapterTalkDue(charId, s = state) {
+  if (!((s?.story?.[charId] || 0) >= 1)) return null;
+  return (CHAPTER_TALKS[charId] || []).find(talk => (s?.chapter || 1) === talk.chapter && s.phase === "daily"
+    && !s.flags?.[`_talk_seen_${talk.scene}`] && (!talk.flag || s.flags?.[talk.flag])
+    && DB.dialogues[talk.scene]?.lines?.length)?.scene || null;
+}
+/**
  * 章が店で読ませる本編・会話（第2章の期限つき訪問など・VOL13）。章のモジュールが判定を登録し、地図の「！」に使う。
  * 訪問の中身は章の performSpot が受け持つ。登録が無ければ何も出さない。
  */
@@ -178,7 +198,7 @@ let chapterVisitDue = () => false;
 export function setChapterVisitDue(fn) { chapterVisitDue = typeof fn === "function" ? fn : () => false; }
 /** 次に会うと新しいイベントがあるか（固有会話・途中の質問・好感度MAXの締めくくり）。 */
 export function hasNewStory(charId) {
-  if (chapterVisitDue(charId)) return true;
+  if (chapterVisitDue(charId) || chapterTalkDue(charId)) return true;
   if (afterChapterVisitDue(charId)) return true;
   if (charId === "minto" && mintoIdentityRevealDue()) return true;
   if (questionVisitDue(charId)) return true;
@@ -337,6 +357,7 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     const followup = spotFollowupDue(charId, state, DB.dialogues);
     if (followup && !await read(followup, { bg })) return false;
     const afterChapter = afterChapterVisitDue(charId);
+    const chapterTalk = afterChapter ? null : chapterTalkDue(charId);
     // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。章明けの再訪は自前の来店描写があるので挨拶を挟まない。
     if (welcome && state === owner && idx > 0 && !afterChapter && DB.dialogues[welcome]) {
       if (!await read(welcome, { bg })) return false;
@@ -352,6 +373,11 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     } else if (questionVisitDue(charId)) {
       // 節目を先に読んだ旧セーブ・♥3未満で外出した場合も、次の実対面で分岐を受け取る。
       if (!await playQuestionVisit(charId, { bg, signal, deferSave: true }) || !live()) return false;
+      gainAffinity(charId, 5);
+    } else if (chapterTalk) {
+      // 章の間だけの会話（VOL13）。完読してから既読にする。中断なら次の来店で読み直せる。
+      if (!await read(chapterTalk, DB.dialogues[chapterTalk].metadata?.bg ? {} : { bg })) return false;
+      state.flags[`_talk_seen_${chapterTalk}`] = true;
       gainAffinity(charId, 5);
     } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
       const opts = DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg };

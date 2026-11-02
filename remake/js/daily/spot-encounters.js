@@ -1,22 +1,31 @@
 // 施設の寄り道会話。会った事実と小さな選択だけを保存し、好感度や店の進行は扱わない。
+// chapter はその章の間だけ読む回（第2章の地元・VOL13。台本は data/dialogue/ch2_home.json を第2章の準備期間に読み込む）。
+// 章の回を先に並べ、その章の間は前の章の残りより先に読む。
 const ENCOUNTERS = {
   cafe: [
+    { id: "cafe_ch2_commute", chapter: 2 },
+    // 味の不調（第2章DAY5の夜から）を知っている時だけ
+    { id: "cafe_ch2_taste", chapter: 2, flag: "_ch2_taste_distant" },
     { id: "cafe_naru_break", met: "naru" },
     { id: "cafe_maezono_break" },
     { id: "cafe_master_quiz" },
   ],
   kannon: [
+    { id: "kannon_ch2_wish", chapter: 2, slot: 0 },
     { id: "kannon_adam", met: "adam", slot: 0 },
     { id: "kannon_oldman", slot: 0 },
     // パッキーのアプリ導入後: 観音堂で設定が変わることをアダムが匂わせる（#621）
     { id: "kannon_adam_pakki", met: "adam", flag: "pakki_app_installed", slot: 0 },
   ],
   choizap: [
+    { id: "choizap_ch2_numbers", chapter: 2 },
     { id: "choizap_minto", met: "minto", flag: "_minto_identity_revealed" },
     { id: "choizap_naru", met: "naru" },
     { id: "choizap_oldman" },
   ],
   c_station: [
+    // 県大会のポスターと課題の苺の噂（第2章）
+    { id: "cs_ch2_haze", chapter: 2 },
     // 博士の二面性をそれとなく見せる一度きりの回（#1696）。面識は登録時の顔合わせか大会でできる。
     { id: "cs_kemuri_sample", met: "dr_kemuri" },
   ],
@@ -35,7 +44,8 @@ export function spotEncounterDue(spotId, visit, save, dialogues) {
   if (visit < 2 || spotId === "choizap" && !save.flags._gym_member) return null;
   const last = Number(save.flags[`_spot_last_${spotId}`]) || 0;
   if (last && visit - last < 2) return null;
-  return ENCOUNTERS[spotId]?.find(({ id, met, flag, slot }) => dialogues[id] && (slot === undefined || (save.slot ?? 0) === slot)
+  return ENCOUNTERS[spotId]?.find(({ id, met, flag, slot, chapter }) => dialogues[id] && (slot === undefined || (save.slot ?? 0) === slot)
+    && (chapter === undefined || (save.chapter || 1) === chapter)
     && !save.flags[seenKey(id)] && (!met || save.met[met]) && (!flag || save.flags[flag]))?.id || null;
 }
 

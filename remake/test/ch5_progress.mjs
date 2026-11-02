@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { newState } from "../js/core/state.js";
+import { selectStoryEnding } from "../js/core/story-routes.js";
 import { chapterDay, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_FREE_SCENES, CH5_MATCH_SCENES, CH5_AFTERMATH,
   CH5_ENDING_IDS, CH5_SCENE_FILES, canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress,
   chapterFiveFreeRemaining, chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
-  beginChapterFiveMatch, chapterFiveMatchOutcome, beginChapterFiveFinale,
+  beginChapterFiveMatch, chapterFiveMatchOutcome, chapterFiveEndingContext, beginChapterFiveFinale,
   completeChapterFiveScene, recordChapterFiveSecondCup, chapterFiveSecondCupVotes, chapterFiveVoteTally,
   CH5_AUDIENCE, CH5_FIRST_CUP_VOTES, CH5_PREP_TRIALS, chapterFivePrepScene, chapterFivePreparation,
   chapterFivePrepPending, chapterFivePrepEcho, recordChapterFivePrepTrial,
@@ -402,6 +403,33 @@ rejects(value, v => completeChapterFiveScene(v, "ending_start"));
   for (const id of scenes) assert.equal(completeChapterFiveScene(withEpilogue, id), true, id);
   assert.equal(withEpilogue.flags._ch5.part, "cleared");
   assert.equal(withEpilogue.flags._ch5_cleared, true);
+}
+
+// 恋人の後日談の接続（#517）: 保存の lovers から中間の場面が決まる。恋人なし・複数・未解決は ending_normal。
+{
+  const routes = readData("story_routes");
+  const ending = value => selectStoryEnding(routes, value, chapterFiveEndingContext(routes, value));
+  const single = toFinale();
+  assert.deepEqual(chapterFiveEndingContext(routes, single), { present: [], accepted: [], unresolved: [] });
+  assert.deepEqual(ending(single), ["ending_start", "ending_normal", "ending_daily_smoke"], "No lover, no epilogue");
+  for (const id of routes.heroine_ids) {
+    const loved = toFinale();
+    loved.lovers = [id];
+    const scenes = ending(loved);
+    assert.deepEqual(scenes, ["ending_start", routes.romance[id].epilogue, "ending_daily_smoke"], id);
+    assert(CH5_ENDING_IDS.includes(scenes[1]), `${scenes[1]} is loaded by ch5`);
+    assert.equal(beginChapterFiveFinale(loved, scenes), true, id);
+  }
+  const duplicated = toFinale();
+  duplicated.lovers = ["rin", "rin", "steve"];
+  assert.equal(ending(duplicated)[1], "epilogue_rin", "Duplicates and non-heroines are ignored");
+  const two = toFinale();
+  two.lovers = ["minto", "tsumugi"];
+  assert.equal(ending(two)[1], "ending_normal", "Two lovers wait for the post-ending talk");
+  const unresolved = toFinale();
+  unresolved.lovers = ["minto"];
+  unresolved.flags._story_shuraba_unresolved = true;
+  assert.equal(ending(unresolved)[1], "ending_normal", "An unresolved conflict keeps the normal ending");
 }
 
 // 閉店後の試作（#1666）: 練習を読んでから、試作→再調整の順に1回だけ記録する。能力・日・所持金・体力は動かない。
