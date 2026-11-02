@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE3D0  枠の段 1: 2コマ@y=272
+  コマ1: 720x512 @(36,272) 比率 1.406 → ok
+  コマ2: 721x512 @(779,272) 比率 1.408 → ok
+コマ1: 720x512 (1.406) → 左右に各3.1%の紙帯 → 出力 768x512
+コマ2: 721x512 (1.408) → 左右に各3.1%の紙帯 → 出力 768x512
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "wang-dragon-dance",
+  "title": "（題名）",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "loading/wang-dragon-dance-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "loading/wang-dragon-dance-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "output/allcast-refill-2383-20261102/candidates/wang-dragon-dance/source-v1.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 720,
+        "height": 512,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "output/allcast-refill-2383-20261102/candidates/wang-dragon-dance/source-v1.png",
+      "region": {
+        "x": 779,
+        "y": 272,
+        "width": 721,
+        "height": 512,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "wang-dragon-dance-1.webp",
+      "width": 768,
+      "height": 512,
+      "sha256": null
+    },
+    {
+      "file": "wang-dragon-dance-2.webp",
+      "width": 768,
+      "height": 512,
+      "sha256": null
+    }
+  ]
+}

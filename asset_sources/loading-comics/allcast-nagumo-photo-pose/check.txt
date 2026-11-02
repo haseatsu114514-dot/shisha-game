@@ -1,0 +1,2 @@
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-photo-pose/panels/nagumo-photo-pose-1.webp: 720x480 比率 1.500 59 KiB
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-photo-pose/panels/nagumo-photo-pose-2.webp: 718x478 比率 1.502 54 KiB

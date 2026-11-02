@@ -391,7 +391,22 @@
           "text": "……はい"
         },
         {
-          "type": "reflection"
+          "type": "reflection",
+          "chars": [
+            "sumi",
+            "tsumugi",
+            "naru",
+            "adam",
+            "minto",
+            "rin",
+            "hiyori",
+            "samechan",
+            "ageha",
+            "kumicho",
+            "rei",
+            "mashiro"
+          ],
+          "comment": "勝負の前の振り返り。第5章は交流した相手（人物タブの顔ぶれ）だけを思い出す。第3・4章の前夜に浮かんだ大会の相手を繰り返さない。未交流でもスミさんの記憶は第1章の必須場面で残る（正本: story_and_structure 第5章「回想は本当にプレイした交流だけ」）"
         },
         {
           "speaker": "",
