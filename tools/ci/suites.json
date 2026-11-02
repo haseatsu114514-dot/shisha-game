@@ -1345,6 +1345,24 @@
       ]
     },
     {
+      "id": "craft-cues-2190",
+      "title": "Craft action limits and practice labels",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 3,
+      "paths": [
+        "remake/js/craft/context.js",
+        "remake/js/craft/session.js",
+        "remake/js/craft/practice.js",
+        "remake/js/craft/pull.js",
+        "remake/test/browser/craft_cues_2190.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/craft_cues_2190.mjs"
+      ],
+      "chrome": "playwright"
+    },
+    {
       "id": "heat-feedback",
       "title": "Heat feedback and craft progress",
       "kind": "browser",
