@@ -23,7 +23,7 @@ import { chapterDay } from "../core/chapter-clock.js";
 import { tokyoTime, TOKYO_FREE_TIMES_V3, timeNumber } from "../core/tokyo-clock.js";
 import { dueTokyoVisit, completeTokyoVisitAction, visitContacts, syncTokyoVisits } from "../core/tokyo-visits.js";
 import { CH3_DAILY_PLAN, chapterThreeScenes, chapterThreeProgress, completeChapterThreeScene } from "./ch3-progress.js";
-import { OUTINGS_FLAG, outingCounts, outingDialogueId, chapterThreeOutingCandidates } from "./ch3-outing-progress.js";
+import { OUTINGS_FLAG, OUTING_DIALOGUE_IDS, outingCounts, outingDialogueId, outingAffinity, outingReason, chapterThreeOutingCandidates } from "./ch3-outing-progress.js";
 import { availableChapterThreeTrials } from "./ch3-trial-progress.js";
 import { runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { availableOptionalScenes, commitOptionalRead, selectChapterThreeEvening,
@@ -204,8 +204,7 @@ export async function runChapterThreeTokyo(io) {
   await runDaily(chapterThreeTokyoDefinition(io));
 }
 
-const OUTING_IDS = ["ch3_outing_mukai_help_lost", "ch3_outing_mukai_help", "ch3_outing_enmaku_notes", "ch3_outing_enmaku_answer",
-  "ch3_outing_mukai_steve", "ch3_outing_steve_timer", "ch3_outing_park_walk_day", "ch3_outing_park_walk_night", "ch3_outing_tetsuko"];
+const OUTING_IDS = OUTING_DIALOGUE_IDS; // 通いの小会話（AFB02）も含む外出の台本
 export const TOKYO_DAILY_IDS = Object.freeze(["ch3_tokyo_room_rest", "ch3_tokyo_fortune"]);
 
 // ---- 昼の行動を使う場面・約束 ----------------------------------------------------------
@@ -392,11 +391,12 @@ async function goOuting(outing, staminaGuard, owner) {
   if (!outing) return unused;
   if (outing.stamina < 0 && !(await staminaGuard(outing.stamina))) return unused;
   const bg = outing.bg || visitBg[outing.place] || "bg_street";
+  const gains = outingAffinity(state, outing); // 回数を数える前に（通いの1回目か2回目以降か）
   if (!await readPlain(outingDialogueId(state, outing), bg, owner)) return unused;
   addStamina(outing.stamina);
   if (outing.money) addMoney(outing.money);
   if (outing.stat) earnStat(outing.stat, 4);
-  for (const [who, pts] of Object.entries(outing.affinity || {})) gainAffinity(who, pts);
+  for (const [who, pts] of Object.entries(gains)) gainAffinity(who, pts);
   state.flags[OUTINGS_FLAG] = { ...outingCounts(state), [outing.id]: (outingCounts(state)[outing.id] || 0) + 1 };
   if (outing.money) toast(`+${outing.money.toLocaleString("ja-JP")}円`, { kind: "good" });
   return { used: true, exerted: outing.stamina < 0 };
@@ -424,7 +424,7 @@ async function readOptionalHere(io, scene, staminaGuard, owner, stamina = -10) {
 async function visitRivalShop(entry, io, staminaGuard, owner) {
   const choices = [
     ...optionalAt(entry.place).map(scene => ({ label: scene.label, value: `scene:${scene.id}` })),
-    ...outingsAt(entry.place).map(outing => ({ label: `${outing.label.replace(/\s*に(顔を出す|寄る)$/, "")}：${typeof outing.reason === "string" ? outing.reason : outing.label}`, value: `outing:${outing.id}` })),
+    ...outingsAt(entry.place).map(outing => ({ label: `${outing.label.replace(/\s*に(顔を出す|寄る)$/, "")}：${outingReason(state, outing)}`, value: `outing:${outing.id}` })),
   ];
   if (!choices.length) { toast("今日は、話すことが思いつかない"); return unused; }
   const pick = choices.length === 1 ? choices[0].value : await modal({ title: entry.label, className: "tokyo-visit-choice",
