@@ -69,13 +69,14 @@ export function djNightChoices(value, window) {
   return [{ ...(clubKnown(value) ? DJ_NIGHT : DJ_NIGHT_FIRST), ok: true, consumes: false, dj: true }];
 }
 
-/** 本編の音量設定を DJ へ渡す URL。 */
-export function djUrl(set, { muted = false, volume = 0.5 } = {}) {
+/** 本編の音量設定と、自分のモニターヘッドホン（VOL07・▶の判定が10ms広い）を DJ へ渡す URL。 */
+export function djUrl(set, { muted = false, volume = 0.5, phones = false } = {}) {
   const url = new URL("../../previews/dj/index.html", import.meta.url);
   url.searchParams.set("set", String(set));
   url.searchParams.set("embed", "1");
   if (muted) url.searchParams.set("mute", "1");
   if (Number.isFinite(volume)) url.searchParams.set("vol", String(Math.max(0, Math.min(1, volume))));
+  if (phones === true) url.searchParams.set("phones", "1");
   return url.href;
 }
 
@@ -84,7 +85,7 @@ export function djUrl(set, { muted = false, volume = 0.5 } = {}) {
  * セットを回しきるたびに onResult(result) を呼ぶ（もう一度遊べば何度でも）。
  * 戻り値: { results: [...] }。閉じたら iframe は片付ける。
  */
-export function runDjSet({ host, set = 1, signal = null, muted = false, volume = 0.5, onResult = null } = {}) {
+export function runDjSet({ host, set = 1, signal = null, muted = false, volume = 0.5, phones = false, onResult = null } = {}) {
   if (!host || !DJ_SETS.some(item => item.id === set)) return Promise.reject(new Error("DJ set unavailable"));
   return new Promise(resolve => {
     const results = [];
@@ -116,7 +117,7 @@ export function runDjSet({ host, set = 1, signal = null, muted = false, volume =
     window.addEventListener("message", listen);
     signal?.addEventListener("abort", finish, { once: true });
     frame.addEventListener("load", () => { try { frame.contentWindow?.focus(); } catch { /* same origin only */ } }, { once: true });
-    frame.src = djUrl(set, { muted, volume });
+    frame.src = djUrl(set, { muted, volume, phones });
     host.append(frame);
   });
 }

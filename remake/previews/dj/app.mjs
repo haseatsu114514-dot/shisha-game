@@ -9,16 +9,18 @@ const setIndex = SETS[setParam] ? setParam : 0;
 // ?embed=1: opened by the main game (remake/js/minigames/dj.js). Shows ← 戻る and follows the game's mute / BGM volume (?mute=1, ?vol=0..1).
 const embedded = params.get('embed') === '1' && window.parent !== window;
 const gameVolume = Number(params.get('vol')), gameMuted = params.get('mute') === '1';
+// ?phones=1: the player's own monitor headphones (main game VOL07). Every ▶ timing window is 10 ms wider; shown in the set info.
+const phones = params.get('phones') === '1', ALLOWANCE_MS = phones ? 10 : 0;
 const tell = message => { try { if (embedded) window.parent.postMessage(message, location.origin); } catch { /* host optional */ } };
 const reduced = matchMedia('(prefers-reduced-motion: reduce)'), coarse = matchMedia('(pointer: coarse)');
 let audio, disposed = false, frame = 0, view = { mode: 'idle' }, message = '', toastUntil = 0, judgeUntil = 0, shownPlay = null, lastCount = '', crowd = null, shownTracks = [null, null], shownSelect = null;
 const status = text => { $('status').textContent = text; };
 function create() {
-  audio = new DJAudio(undefined, { setIndex });
+  audio = new DJAudio(undefined, { setIndex, allowance: ALLOWANCE_MS });
   if (embedded) { audio.muted = gameMuted; if (Number.isFinite(gameVolume)) audio.volume = Math.max(0, Math.min(.36, .18 * gameVolume / .5)); }
   audio.onInterrupted = () => status('音声が中断されました。▶で再開します。');
   shownTracks = [undefined, undefined]; shownSelect = null; $('pick').hidden = true;
-  $('set-name').textContent = SETS[setIndex].name; $('score-result').innerHTML = ''; $('judge').textContent = ''; $('toast').textContent = '';
+  $('set-name').textContent = SETS[setIndex].name; $('set-gear').textContent = phones ? `ヘッドホン：▶の判定が${ALLOWANCE_MS}ms広い` : ''; $('score-result').innerHTML = ''; $('judge').textContent = ''; $('toast').textContent = '';
   crowd = makeCrowd(); view = { mode: 'idle' }; shownPlay = null; judgeUntil = 0; toastUntil = 0;
   showDecks();
 }
@@ -42,7 +44,7 @@ export function snapshot() {
     mix: m.mix, master: m.master, cue: m.cue ? { ...m.cue } : null, lastPlay: m.lastPlay, floor: m.floor, fader: m.fader ? { reached: m.fader.reached, checks: m.fader.checks, hits: m.fader.hits, combo: m.fader.combo } : null,
     select: m.select ? { ...m.select, options: [...m.select.options] } : null, played: [...m.played], count: m.count, guide: view.guide, follow: view.follow,
     transitions: m.transitions.map(t => ({ to: t.to, grade: t.grade, parts: t.parts, total: t.total, rank: t.rank, pick: t.pick, combo: t.combo, follow: t.follow })), result: m.result,
-    voices: audio.voices.filter(Boolean).length, rms: audio.level(), reduced: reduced.matches, embedded, muted: audio.muted, volume: audio.volume, remaining: view.remaining, progress: view.progress };
+    allowance: m.allowance, voices: audio.voices.filter(Boolean).length, rms: audio.level(), reduced: reduced.matches, embedded, muted: audio.muted, volume: audio.volume, remaining: view.remaining, progress: view.progress };
 }
 async function pause() { try { await audio.pause(); status('停止中。▶で再開します。'); } catch (e) { status(`停止処理: ${e.message}`); } }
 for (const id of [0, 1]) {

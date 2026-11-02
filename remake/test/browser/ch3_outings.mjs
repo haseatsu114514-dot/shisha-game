@@ -18,6 +18,7 @@ async function seed(page, windowId) {
     // 出発前の準備3日（VOL02）を過ごした出発の朝から始める（準備の3日は ch3_departure_prep で遊ぶ）。
     value.day += 3;
     if (!p.departChapterThree(value)) throw new Error("Departure failed");
+    value.flags._ch3_intro.routeVersion = 2; // 場面カードの東京（作業中の旧セーブの行程）を確かめる
     Object.assign(value.flags._ch3_intro, { titleSeen: true, prologueStep: 4 });
     for (let guard = 0; guard < 60; guard++) {
       const window = p.chapterThreeFreeTime(value);
