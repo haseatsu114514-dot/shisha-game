@@ -19,6 +19,7 @@ import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_
 
 const CH4_SPOT_SCENES = CH4_SCENE_FILES.ch4_spots;
 import { chapterFourMapModel } from "./ch4-map-model.js";
+import { openShop } from "../daily/shop.js";
 import { canReflect, reflectAt, eveReflection } from "../daily/reflection.js";
 import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionCandidates, overseasCompanion } from "../core/overseas-companion.js";
 import { playChapterPreview } from "./chapter-preview.js";
@@ -296,6 +297,13 @@ async function visit(owner, id) {
   if (destination.kind === "reflect") {
     await reflectAt("dubai_mosque");
     if (current(owner)) await renderStage(owner);
+    return;
+  }
+  if (destination.kind === "shop") {
+    await openShop({ branch: "dubai" });
+    if (!current(owner)) return;
+    playBgm(CH4_DEFAULT_BGM); // 店のBGMを街の曲へ戻す
+    await renderStage(owner);
     return;
   }
   for (const sceneId of destination.scenes) {
