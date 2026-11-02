@@ -42,10 +42,13 @@ const STEP_JUDGE_CH4 = { ...STEP_JUDGE_CH3, setup: "da_silva", pack: "da_silva",
 const MOODS = { watch: "手元を見守る", nod: "小さくうなずく", concern: "手元を気にかける", think: "静かに考える" };
 // 採用済みの顔アイコンと同じ頭部の切り取り（tools/make_face_icons.py の face_box）。
 // 通常絵の x / y / 辺を画像幅で正規化。胴体の中心へ寄せず、表情差分の原画をこの枠へ表示する。
+// 2026-11-02 立ち絵の規格（docs/portrait_standard.md）で顔の大きさを測った枠にそろえ、エミルも加えた。
+// 太陽は通常だけ腕を上げていて表情ごとに頭の位置が違うので、ここには入れず本体から枠を決める。
 const FACE_CROPS = {
-  hajime: [.48661, .17746, .21205], sumi: [.37835, .09933, .21763],
-  nagumo: [.35379, .06362, .20871], maezono: [.32589, .02679, .26674],
-  dr_kemuri: [.33259, .07589, .21094], pakki: [.23549, .40848, .62388],
+  hajime: [.47879, .17299, .22768], sumi: [.38393, .10938, .21429],
+  nagumo: [.34933, .05022, .23103], maezono: [.3404, .03906, .26786],
+  dr_kemuri: [.35379, .0904, .21429], emil: [.40067, .00893, .2221],
+  pakki: [.23549, .40848, .62388],
 };
 const faceFor = (id, mood, kind) => id === "nagumo" ? mood === "think" ? "thinking" : "serious"
   : mood === "nod" ? id === "maezono" && ["perfect", "just"].includes(kind) ? "excited" : id === "dr_kemuri" ? "normal" : "smile"

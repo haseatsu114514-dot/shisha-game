@@ -27,6 +27,8 @@ export function startSpotReveal({ pop, settle = () => {}, done, delay = 650, dur
 
 export function spotRevealNotice(spot, game) {
   if (spot.id === "kannon" && game && !game.flags?._spot_guide_adam) return "観音堂に行けるようになった。静かに振り返れる場所";
+  // 占い師は章で1〜2回、出たり消えたりする（台帳 URA01）。つむぎの噂で知るのは第1章だけ。
+  if (spot.id === "fortune" && (game?.chapter || 1) !== 1) return "路上占いの机が出ている";
   const guide = { cafe: "なる", kannon: "アダム", choizap: "みんと", c_station: "なる", axe_bar: "スミ", fortune: "つむぎ", rojiura_cinema: "サメちゃん" }[spot.id];
   return guide ? `${guide}から聞いた${spot.label}に行けるようになった` : `${spot.label}に行けるようになった`;
 }

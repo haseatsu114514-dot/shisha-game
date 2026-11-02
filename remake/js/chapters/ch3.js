@@ -31,6 +31,7 @@ import { canReflect, reflectAt } from "../daily/reflection.js";
 import { chapterThreeGymAvailability, visitChapterThreeGym, restChapterThreeFreeTime } from "./ch3-activities.js";
 import { djNightChoices } from "../minigames/dj.js";
 import { chapterThreeOutings, visitChapterThreeOuting } from "./ch3-outings.js";
+import { outingCounts } from "./ch3-outing-progress.js";
 import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
 import { CH3_STORY_DIALOGUE_FILES, EVENING_WINDOW, availableOptionalScenes, commitOptionalRead,
   selectChapterThreeEvening, eveningRecord } from "./ch3-story-wiring.js";
@@ -731,7 +732,8 @@ async function renderFreeTime(owner, window) {
 
 /** 「今日は誰に何を聞きに行くか」「大会までに何を試すか」を、行ける行き先の理由から短く示す。 */
 function freeTimeHint(window) {
-  const outings = chapterThreeOutings(state, window.id).filter(item => !item.repeat);
+  // 通いの行き先（久世の煙幕・客のスティーブ）は、初めての時だけ候補に挙げる。
+  const outings = chapterThreeOutings(state, window.id).filter(item => !item.repeat || item.talks && !outingCounts(state)[item.id]);
   const trials = availableChapterThreeTrials(state);
   const parts = [
     ...outings.map(item => `${item.label.replace(/\s*に(顔を出す|寄る)$/, "")}：${item.reasonText}`),

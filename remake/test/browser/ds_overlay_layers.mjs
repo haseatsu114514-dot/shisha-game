@@ -1,4 +1,4 @@
-// DS overlays: real daily HUD, MENU, STATUS, and a three-reply LIME thread.
+// DS overlays: real daily HUD, the full-screen MENU (status/people/items/system tabs), and a three-reply LIME thread.
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -99,7 +99,7 @@ await suite("ds-overlay-layers", async check => {
         assert.equal(hiddenHud.pointer, "none", "Hidden HUD should not receive input");
         assert(!hiddenHud.intercepted, "Hidden MENU covers the dialogue");
         await page.touchscreen.tap(hiddenHud.x, hiddenHud.y);
-        assert.equal(await page.locator(".menu-modal").count(), 0);
+        assert.equal(await page.locator(".dmenu").count(), 0);
         // 会話中のタッチバーは会話の操作（AUTO/SKIP/LOG/用語/設定）が使う。そこが開いたら閉じて続ける。
         if (await page.locator(".glossary-modal").count()) {
           await page.locator(".glossary-modal .modal-actions button").first().tap();
@@ -141,56 +141,49 @@ await suite("ds-overlay-layers", async check => {
       await press('[data-test="phone-close"]');
       await page.locator(".phone-overlay").waitFor({ state: "detached" });
 
+      // 全画面MENU（DUI03）: 4タブ。旧STATUSの画面はタブへ移り、HUDのステータスボタンは無い。
+      assert.equal(await page.locator('[data-test="hud-status"]').count(), 0, "HUD status button was retired");
       await press('[data-test="hud-menu"]');
-      await page.locator(".menu-modal").waitFor();
-      await page.locator(".menu-modal").evaluate(node => Promise.all(
+      await page.locator(".dmenu").waitFor();
+      await page.locator(".dmenu .dm-sheet").evaluate(node => Promise.all(
         node.getAnimations().map(animation => animation.finished.catch(() => {}))));
-      const menu = await rect(page, ".menu-modal");
-      inside(menu, await rect(page, "#stage"), "MENU box");
-      const menuBodyHeight = await page.locator(".menu-modal .modal-body")
-        .evaluate(node => node.clientHeight);
-      assert(menuBodyHeight > 0, "MENU description has no space");
-      for (const action of await page.locator(".menu-modal .modal-actions button").all())
-        inside(await action.evaluate(bounds), menu, "MENU action");
-      const menuClose = page.getByRole("button", { name: "閉じる", exact: true });
-      await reachable(menuClose);
-      await page.screenshot({ path: path.join(out, `ds-overlay-${label}-menu.png`) });
-      await menuClose.tap();
-
-      await press('[data-test="hud-status"]');
-      await page.locator(".status-modal").waitFor();
-      await page.locator(".status-modal").evaluate(node => Promise.all(
-        node.getAnimations().map(animation => animation.finished.catch(() => {}))));
-      const status = await rect(page, ".status-modal");
-      inside(status, await rect(page, "#stage"), "STATUS box");
-      const statusBodyHeight = await page.locator(".status-modal .modal-body")
-        .evaluate(node => node.clientHeight);
-      assert(statusBodyHeight > 0, "STATUS body has no space");
-      await noHorizontalOverflow(page, ".status-modal .modal-body");
-      await noHorizontalOverflow(page, ".st-me");
-      for (const row of await page.locator(".st-row").all()) {
+      const menu = await rect(page, ".dmenu .dm-sheet");
+      inside(menu, await rect(page, "#stage"), "MENU sheet");
+      const panelHeight = await page.locator(".dmenu .dm-panel").evaluate(node => node.clientHeight);
+      assert(panelHeight > 0, "MENU panel has no space");
+      assert.equal(await page.locator(".dmenu").getAttribute("data-tab"), "status");
+      assert.equal(await page.locator(".dmenu :is(.radar, svg)").count(), 0, "MENU status has no radar/triangle");
+      await noHorizontalOverflow(page, ".dmenu .dm-panel");
+      for (const row of await page.locator(".dmenu .dm-row").all()) {
         const size = await row.evaluate(node => ({ width: node.clientWidth, scrollWidth: node.scrollWidth }));
-        assert(size.scrollWidth <= size.width + 1, `STATUS row overflows: ${JSON.stringify(size)}`);
+        assert(size.scrollWidth <= size.width + 1, `MENU status row overflows: ${JSON.stringify(size)}`);
       }
-      const radar = await rect(page, ".st-radar"), body = await rect(page, ".status-modal .modal-body");
-      assert(radar.top < body.bottom, "STATUS radar begins below the visible body");
       await page.screenshot({ path: path.join(out, `ds-overlay-${label}-status.png`) });
-      // 心得の盤（通常プレイの既定・SBD97）のステータスは才能・感覚・理論の行、旧しくみ（?growth=0）は5能力の行
+      // 心得の盤（通常プレイの既定・#2166）の MENU は才能・感覚・理論の行、旧しくみ（?growth=0）は5能力の行
       const lastRow = await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled())
-        ? '[data-test="st-board-wisdom"]' : '[data-test="st-insight"]';
+        ? '[data-test="menu-board-wisdom"]' : '[data-test="menu-stat-insight"]';
       await reachable(page.locator(lastRow));
       await press(lastRow);
-      for (const tab of ["people", "items", "me"]) {
-        const button = page.locator(`[data-tab="${tab}"]`);
+      for (const tab of ["people", "items", "system", "status"]) {
+        const button = page.locator(`[data-test="menu-tab-${tab}"]`);
         await reachable(button);
+        inside(await button.evaluate(bounds), menu, `MENU tab ${tab}`);
         await button.tap();
-        await noHorizontalOverflow(page, ".status-modal .modal-body");
+        assert.equal(await page.locator(".dmenu").getAttribute("data-tab"), tab);
+        await noHorizontalOverflow(page, ".dmenu .dm-panel");
+        if (tab === "system") {
+          for (const action of await page.locator(".dmenu .dm-sys").all()) {
+            inside(await action.evaluate(bounds), menu, "MENU action");
+            await reachable(action);
+          }
+          await page.screenshot({ path: path.join(out, `ds-overlay-${label}-menu.png`) });
+        }
       }
-      const statusClose = page.locator('[data-test="status-close"]');
-      inside(await statusClose.evaluate(bounds), status, "STATUS close");
-      await reachable(statusClose);
-      await statusClose.tap();
-      await page.locator(".status-modal").waitFor({ state: "detached" });
+      const menuClose = page.getByRole("button", { name: "閉じる", exact: true });
+      inside(await menuClose.evaluate(bounds), menu, "MENU close");
+      await reachable(menuClose);
+      await menuClose.tap();
+      await page.locator(".dmenu").waitFor({ state: "detached" });
       assert.equal(await page.evaluate(() => window.dsOverlayError || null), null);
 
       if (label === "landscape") {

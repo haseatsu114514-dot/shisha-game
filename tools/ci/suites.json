@@ -243,10 +243,13 @@
       "paths": [
         "remake/js/minigames/desert-ride.js",
         "remake/js/minigames/desert-ride-model.js",
+        "remake/js/minigames/desert-ride-art.js",
+        "remake/img/ui/desert_ride/**",
         "remake/js/chapters/ch4-desert.js",
         "remake/js/chapters/ch4-desert-progress.js",
         "remake/js/chapters/ch4.js",
         "remake/js/chapters/ch4-map-model.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
         "remake/js/desert-ride-page.js",
         "remake/desert-ride.html",
         "remake/css/desert-ride.css",
@@ -437,6 +440,7 @@
         "node remake/test/camel_race_model.mjs",
         "node remake/test/ch4_camel_race.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
+        "node remake/test/ch5_party.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
         "node remake/test/ch3_outings.mjs",
@@ -468,7 +472,7 @@
     },
     {
       "id": "ch2-craft-prep",
-      "title": "Chapter 2 tournament prep at tonari: basics check and last rehearsal with a real board or drill (VOL13)",
+      "title": "Chapter 2 tournament prep at tonari: basics check, midpoint check with two adjustments and last rehearsal with a real board or drill (VOL13, #2032)",
       "kind": "quick",
       "run": ["node --experimental-vm-modules remake/test/ch2_craft_prep.mjs"]
     },
@@ -614,6 +618,7 @@
       "run": [
         "node --test tools/ci/test_ci.mjs",
         "python3 tools/check_face_icons_fresh.py",
+        "python3 tools/portrait_metrics.py check",
         "node --test tools/sequential_merge/test.mjs",
         "python3 -B -m unittest discover -s tools -p 'test*job_checkpoint*.py'",
         "node remake/test/dev_inspector.mjs"
@@ -2722,6 +2727,23 @@
         "remake/test/browser/hud_visibility_2190.mjs"
       ],
       "run": ["node remake/test/browser/hud_visibility_2190.mjs"],
+      "chrome": "playwright"
+    },
+    {
+      "id": "daily-menu",
+      "title": "Full-screen daily MENU: four read-only tabs, keys, save guard and DS layout (#2097)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/menu.js",
+        "remake/js/daily/hud.js",
+        "remake/js/daily/status.js",
+        "remake/css/daily-menu.css",
+        "remake/img/ui/paper/menu-bg.webp",
+        "remake/test/browser/daily_menu.mjs"
+      ],
+      "run": ["node remake/test/browser/daily_menu.mjs"],
       "chrome": "playwright"
     },
     {

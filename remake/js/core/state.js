@@ -528,7 +528,7 @@ export const config = {
   shortSeen: false,
   statEffectColors: true, // 作り画面の能力補正を色と漢字で示す
   introArtStyle: "graphic", // 登場カットインの絵柄。"classic" で旧（立ち絵）に戻す（2026-10-31）
-  introTransition: "none", // 立ち絵からカットインへの変身のつなぎ: none / morph / card / slash（2026-11-02 試作。採用まで none）
+  introTransition: "morph", // 立ち絵からカットインへの変身のつなぎ: morph（2026-11-02 オーナー採用）/ none。card / slash は比較用に残す
   staffRollSeen: false, // スタッフロールを一度最後まで見たか。見た端末では2回目から飛ばせる（#517）
 };
 

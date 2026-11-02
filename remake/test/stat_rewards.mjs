@@ -29,7 +29,8 @@ try {
     new MutationObserver(records => {
       for (const record of records) for (const node of record.addedNodes) {
         if (node.classList?.contains("stat-flight")) T.flights.push(node.dataset.stat);
-        if (node.classList?.contains("hr-gain")) T.impacts++;
+        // 光は HUD の MENU（ステータスの入口・DUI05）に当たって弾ける
+        if (node.classList?.contains("hud-gain") && node.closest(".hud-menu")) T.impacts++;
       }
     }).observe(document.querySelector("#stage"), { childList: true, subtree: true });
     T.stats.gainStat("technique", 2); T.stats.gainStat("technique", 1);

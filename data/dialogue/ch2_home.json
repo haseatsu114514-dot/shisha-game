@@ -607,6 +607,166 @@
       ]
     },
     {
+      "dialogue_id": "ch2_prep_midcheck_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariの作業台に、スミさんがトングと炭台を並べていた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "大会まで、折り返しだ。今日は一台作って、吸われた後の調整を二回やる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……炭替え、ですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "トングを持った指先に、ソファの焦げ跡がよぎる。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "炭を落としたのは、手じゃなくて体の方だ。ゆうべは寝たか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。ご飯も、ちゃんと食べました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ならいい。味は俺が見る。お前は熱と手元だけ見てろ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "葉は店のを使え。課題の苺は、当日に主催が出す"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（炭は急がない。替えた後の炭まで、ちゃんと見る）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_midcheck_good",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二回目の調整を終えた一台を、スミさんが吸う。俺は吸わずに、煙の形だけを見ていた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……炭替えで、手が止まらなかったな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一回目は、正直、トングを持つのが怖かったです"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "怖いまま、置く場所を先に決めてた。それでいい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "ここからは一つに絞れ。引きか、熱か、詰めか。自分で分かってるだろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（折り返し。残りの日で、一つだけ確かにする）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_midcheck_rough",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二回目の調整を終えた一台を、スミさんが吸う。俺は吸わずに、煙の形だけを見ていた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……悪くはねえ。けど、調整のたびに熱が揺れてる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "炭を替える時、手元ばっかり見てました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "手元を見るのは間違いじゃねえ。ただ、置いた後の炭も見ろ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "焦るな。基礎の反復が一番効く時期だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（置いた後の炭を見る、……次は、そこまで）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_midcheck_failed",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "調整の途中で、煙が荒れた。スミさんが黙ってトングを受け取り、炭を台に戻した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……すみません"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "謝るな。崩れたのが炭台の上なら、誰もやけどしねえ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "どこで目を離したか、言えるか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭を替えた後、すぐ次の調整のことを考えてました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "分かってりゃいい。今日はもう作るな。飯食ってけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（置いた後の炭を見る。……それと、ちゃんと食べる）"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch2_prep_rehearsal_intro",
       "lines": [
         {

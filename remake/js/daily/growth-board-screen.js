@@ -57,6 +57,7 @@ const PORTRAIT_EYES = {
   sumi: [442, 198, 99], minto: [492, 375, 99], adam: [436, 218, 102], tsumugi: [423, 433, 95], naru: [454, 239, 90], rei: [440, 97, 99],
   ageha: [472, 341, 99], kumicho: [479, 136, 122], kuze: [409, 145, 95], steve: [481, 100, 122], volk: [459, 109, 88], rin: [397, 290, 99],
   hiyori: [426, 299, 104], samechan: [448, 397, 104], mashiro: [439, 404, 104], sheikh: [447, 89, 98], da_silva: [453, 80, 99], hajime: [528, 263, 90],
+  master_hookah: [415, 100, 95], dr_kemuri: [400, 196, 94],
 };
 const BOARD_FACES = new Set(Object.keys(PORTRAIT_EYES));
 /** 右のパネルの立ち絵: 顔の幅をこの px に、目をパネルの上からこの px に */
@@ -65,7 +66,7 @@ const PANEL_FACE_W = 82, PANEL_EYE_Y = 64;
 const PANEL_FACE = {
   "M-B1": "smile", "M-S1": "serious", "M-S2": "intense", "M-S3": "smile", "M-W1": "normal", "M-W2": "thinking", "M-W3": "excited",
   "M-W6": "smile", "M-B2": "smile", "M-S4": "smile", "M-W4": "smug", "M-B3": "smug", "M-S5": "smile", "M-W5": "serious",
-  "M-S6": "smile", "M-B4": "axe_throw", "M-W7": "excited", "M-B5": "smile", "M-W8": "smug", "M-B6": "excited",
+  "M-S6": "smile", "M-B4": "axe_throw", "M-W7": "excited", "M-B5": "smile", "M-W8": "smug", "M-B6": "excited", "M-S7": "smile", "M-W9": "smile",
   K03: "smile", K04: "smile", K07: "serious", K08: "excited", K12: "serious", K13: "excited", K15: "smug", K06: "serious",
   K10: "serious", K16: "smug", K11: "serious", K14: "surprise", K01: "serious", K02: "smile", K05: "surprise", K17: "normal",
   K09: "smile", K18: "serious", K19: "smile", K21: "smug", K22: "normal", K23: "smug", K24: "serious",

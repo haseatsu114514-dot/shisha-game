@@ -322,3 +322,6 @@ function itemsTab(showRecipe) {
     })(),
   ]);
 }
+
+// 全画面MENU（daily/menu.js・DUI03）の人間関係・持ち物タブも、同じ並び順・贈り物の札・レシピの詳細を使う。
+export { PEOPLE as STATUS_PEOPLE, giftNote, recipeDetails };

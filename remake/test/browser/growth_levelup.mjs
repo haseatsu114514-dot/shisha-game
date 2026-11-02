@@ -767,8 +767,10 @@ await suite("growth-levelup", async (runCheck) => {
         const core = await import("./js/core/state.js");
         core.config.textSpeed = 4;
         Object.assign(core.state, { day: 6, slot: 0 });
-        window.entryStatus = 0;
-        (await import("./js/daily/hud.js")).initHud({ status: () => { window.entryStatus++; } });
+        window.entryMenu = 0;
+        // 五角形のステータスボタンは廃止（DUI05）。盤は全画面MENUのステータスタブから見る。
+        const { openMenu } = await import("./js/daily/menu.js");
+        (await import("./js/daily/hud.js")).initHud({ menu: () => { window.entryMenu++; return openMenu(); } });
         (await import("./js/daily/hud.js")).showHud(true);
         window.entryMap = async () => {
           const map = await import("./js/daily/map.js");
@@ -801,7 +803,10 @@ await suite("growth-levelup", async (runCheck) => {
       await page.locator(t("kannon-hidane")).waitFor();
       assert.equal(await page.evaluate(() => !!__remake.state.flags._spot_guide_adam || !!__remake.state.met.adam), false);
       await assertFits(page, t("kannon-hidane"));
-      await tap(t("hud-status"));
+      assert.equal(await page.locator(t("hud-status")).count(), 0);
+      await tap(t("hud-menu"));
+      assert.match(await page.locator(t("menu-board")).innerText(), /火種 2/);
+      await tap(t("menu-board"));
       await page.locator(`${t("growth-board")}[data-mode="view"]`).waitFor();
       assert.equal(await page.locator(t("board-light")).count(), 0);
       await tap('.gb-node[data-status="available"]');
@@ -809,7 +814,7 @@ await suite("growth-levelup", async (runCheck) => {
       await tap(t("board-close"));
       await page.locator(t("growth-board")).waitFor({ state: "detached" });
       assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 2); // レベル1つで火種2つ（SBD60）
-      assert.equal(await page.evaluate(() => window.entryStatus), 0);
+      assert.equal(await page.evaluate(() => window.entryMenu), 1);
       await tap(t("pin-kannon")); await tap(t("map-go"));
       await tap(t("kannon-reflect"));
       for (let i = 0; i < 60 && !(await page.locator(t("growth-board")).count()); i++) {
@@ -850,8 +855,11 @@ await suite("growth-levelup", async (runCheck) => {
       assert.equal(saved.intro, true);
       assert.equal(saved.reel, await page.evaluate(() => window.entryReel));
       assert.equal(await page.evaluate(async () => (await import("./js/core/stats.js")).maxStamina()), maximum);
-      await tap(t("hud-status"));
-      assert.equal(await page.evaluate(() => window.entryStatus), 1);
+      await tap(t("hud-menu"));
+      assert.equal(await page.locator(t("menu-board")).innerText(), "心得の盤を見る");
+      await tap(t("menu-close"));
+      await page.locator(".dmenu").waitFor({ state: "detached" });
+      assert.equal(await page.evaluate(() => window.entryMenu), 2);
     }, options);
   }
 

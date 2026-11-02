@@ -11,11 +11,13 @@ STYLE = ("Finely finished premium visual-novel game background, single landscape
          "carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. "
          "NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. "
          "Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art.")
-ATLAS = ("Create a production videogame sprite atlas on a TRANSPARENT background, EXACTLY 3 equal columns by 5 equal rows (15 equal cells), "
+ATLAS = ("Create a production videogame sprite atlas on a TRANSPARENT background, EXACTLY 3 equal columns by 5 equal rows (15 equal SQUARE cells, "
+         "so the whole canvas is a 3:5 portrait, e.g. 1536x2560), "
          "no grid lines, no frame, no paper panels, no lettering or numbers. Each cell has ONE centered independent detailed hand-painted "
          "storybook object vignette with a 15% clear margin inside its own cell, never crossing a cell boundary. Cohesive premium illustrated "
          "adventure style matching the scenario's background palette: tactile brushwork, crisp silhouettes, a little magical realism. "
-         "Not flat UI icons, not photorealistic, no people's faces, no text.")
+         "Not flat UI icons, not photorealistic, no people's faces, no text. NO hookah/shisha/waterpipe hardware (no bowls, stems, hoses, charcoal): "
+         "when an item mentions a shisha ('一台'), show its scent instead, such as a wisp of fragrant smoke, fruit, flowers or a teacup.")
 SHEET = ("Generate ONE sprite sheet image, 2048x1024, transparent background (PNG), containing 8 circular character portrait medallions "
          "in a 4x2 grid (4 columns, 2 rows), each medallion 460x460 px with even spacing and a transparent margin inside every cell. "
          "Style: painterly storybook ink-and-watercolor bust portrait, soft lamplight, muted palette matching the story's world, consistent across all eight. "
@@ -32,7 +34,7 @@ out = ["# TRPG シナリオの背景と選択肢の絵（Codexへの指示書）
        "`python3 tools/trpg_art_prompts.py` が各シナリオのJSONから自動で書き出す。調査地点の位置（x%, y%）を背景の指示に焼き込むので、画面の光る輪が絵の物の上に来る。",
        "", "## 受け取ったあと", "",
        "1. 背景: 原画 `assets/backgrounds/trpg_<id>_room.png`（1280×720）→ 配信 `remake/img/backgrounds/trpg_<id>_room.webp`（品質90）。JSONの `presentation.image` に `\"../../img/backgrounds/trpg_<id>_room.webp\"`。",
-       "2. 選択肢: 原画 `assets/ui/trpg/choices-<id>.png`（透過・3列×5行）→ 配信 `remake/img/ui/trpg/choices-<id>.webp`（lossless）。JSONの `presentation.choiceArt` に `{\"src\": \"../../img/ui/trpg/choices-<id>.webp\", \"rowCount\": 5, \"rows\": {...}}`（下の行番号のとおり）。",
+       "2. 選択肢: 原画 `assets/ui/trpg/choices-<id>.png`（透過・3列×5行・**1マスは正方形＝全体ぴったり3:5**。ゲームは1マスを正方形で切り出すので、2:3などで作ると絵が伸びる。3:5で作れない生成ツールでは、1〜3行目を正方形1枚・4〜5行目を3:2の1枚で作り、同じ幅にそろえて縦に重ねる）→ 配信 `remake/img/ui/trpg/choices-<id>.webp`（lossless）。JSONの `presentation.choiceArt` に `{\"src\": \"../../img/ui/trpg/choices-<id>.webp\", \"rowCount\": 5, \"rows\": {...}}`（下の行番号のとおり）。",
        "3. 新規画像は Git LFS（`git lfs ls-files` で確認）。`node tools/validate_trpg_scenario.mjs` で画像の存在を検査し、`remake/trpg-preview.html?scenario=<id>` で輪と物の位置を目視する。",
        "4. 生成日・SHA-256・目視QAを `asset_sources/trpg-scenarios/generation.json` に残す。",
        "5. 人物シート（上段=はじめの見た目4種、下段=仲間の役4人）: 原画を `asset_sources/trpg-sheets/<id>/` に置き、`python3 tools/trpg_crop_portraits.py scenario <sheet.png> <id>` で切り出す。512px原寸は `assets/ui/trpg/`、256px WebP は `remake/img/ui/trpg/` に書かれ、JSONの `portrait` も埋まる。丸窓で目視してから commit。", ""]

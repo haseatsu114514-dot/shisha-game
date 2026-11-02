@@ -2,15 +2,14 @@ import { spendableMoney } from "../core/travel-budget.js";
 // 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep, yen } from "../core/util.js";
 import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg, refreshWeather, dropRetired } from "../core/ui.js";
-import { state, save, loadFromSlot, requestResumeOnBoot, markMet } from "../core/state.js";
-import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { state, save, markMet } from "../core/state.js";
+import { openMenu as openFullMenu } from "./menu.js";
 import { addMoney, addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina, currentCondition } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
 import { coldRisk, catchesCold, fitActive, FIT_DAYS } from "../core/illness.js";
 import { DB, bgUrl, displayName } from "../core/data.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
-import { glossaryPanel } from "../vn/glossary.js";
 import { initHud, showHud, updateHud, daysLeft, setPhoneBadge, presentSleepRecovery } from "./hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { runHomeShisha } from "./home-shisha.js";
@@ -26,7 +25,6 @@ import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
 import { openingStatus } from "./spot-hours.js";
 import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation, invitationReadBeforeMeeting } from "./phone.js";
-import { openStatus } from "./status.js";
 import { onAction as spinReel, presentNow as showReelNow, installReel } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
 import { samechanDateReady, playSamechanDate } from "./samechan-date.js";
@@ -38,7 +36,7 @@ import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocati
 import { cityGuestAtShop, visitCityGuestAtShop } from "./city-guests.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
-import { presentNight, growthMenuItems, openGrowthBoard, reflectAtSpot, consultLessons } from "../core/growth.js";
+import { presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -81,7 +79,7 @@ export async function runDaily(def) {
   syncSamechanKnowledge();
   syncNightQueue(chapterDef.nightEvents);
   expireInvitations({ fixedNight });
-  initHud({ phone: phoneButton, status: openStatus, menu: openMenu });
+  initHud({ phone: phoneButton, menu: openMenu });
   showHud(true);
   setPhoneBadge(unreadCount()); // つづきから再開したときも未読の赤丸を出す
   // 承諾後・閉じる前のSAVEはLIMEへ戻す。LOADだけで出発したことにしない。
@@ -257,39 +255,10 @@ async function confirmLimeReminder(destination, { spendsAction = true, slotsUsed
   return true;
 }
 
-async function openMenu() {
-  SE.select();
-  const v = await modal({
-    title: "MENU",
-    className: "menu-modal",
-    body: `DAY ${chapterDay(state)}・${state.slot >= 1 ? "夜" : "昼"}　／　行動のたびに自動でセーブされています。`,
-    options: [
-      ...growthMenuItems(),
-      { label: "セーブ", value: "save", test: "menu-save" },
-      { label: "ロード", value: "load", test: "menu-load" },
-      { label: "設定", value: "config", test: "menu-config" },
-      { label: "用語集", value: "glossary", test: "menu-glossary" },
-      { label: "大会の規則", value: "rules", test: "menu-rules" },
-      { label: "タイトルへ戻る", value: "title", test: "menu-title" },
-      { label: "閉じる", value: null, primary: true, test: "menu-close" },
-    ],
-  });
-  if (v === "save") {
-    // 手動セーブは行き先を選んでいるときだけ。会話や作業の途中の状態は残さない
-    if (!isChoosingDestination()) { toast("セーブは行き先を選んでいるときにできる"); return; }
-    await saveFlow();
-  }
-  if (v === "load") {
-    const key = await loadFlow({ inGame: true });
-    if (key && loadFromSlot(key)) { requestResumeOnBoot(); location.reload(); }
-  }
-  if (v === "board") await openGrowthBoard();
-  if (v === "config") await (await import("../scenes/title.js")).openConfig();
-  if (v === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
-  if (v === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
-  // タイトルへ戻るときも、手動セーブと同じく行き先を選んでいるときだけ保存する。
-  // 会話や作業の途中（行動の体力だけ引かれた状態など）は残さず、行動前のオートセーブへ戻す（#638）
-  if (v === "title") { if (isChoosingDestination()) save(); location.reload(); }
+// 全画面MENU（daily/menu.js・DUI03）。手動セーブとタイトルへ戻る前の保存は、行き先を選んでいるときだけ。
+// 会話や作業の途中（行動の体力だけ引かれた状態など）は残さず、行動前のオートセーブへ戻す（#638）。
+function openMenu() {
+  return openFullMenu({ canSave: isChoosingDestination });
 }
 
 // ---------------------------------------------------------------- 1日目の案内

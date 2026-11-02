@@ -256,6 +256,9 @@ for (;;) {
     const before = { day: snap.day, slot: snap.slot, money: snap.money };
     // 手動セーブ: MENU → セーブ → スロット1
     await click('[data-test="hud-menu"]');
+    // 全画面MENU（DUI03）: セーブはシステムタブ
+    await page.waitForSelector('[data-test="menu-tab-system"]', { timeout: 5000 });
+    await click('[data-test="menu-tab-system"]');
     await page.waitForSelector('[data-test="menu-save"]', { timeout: 5000 });
     await click('[data-test="menu-save"]');
     await page.waitForSelector('[data-test="slot-1"]', { timeout: 5000 });

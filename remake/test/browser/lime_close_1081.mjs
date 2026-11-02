@@ -76,7 +76,7 @@ await suite('lime-close-1081', async check => {
     assert.equal(result.result, 'accepted'); assert.equal(result.count, 1);
     assert(result.canonical.startsWith('昼下がり')); assert.deepEqual(result.afterLoad, { money: 27000, result: 'accepted', pending: null });
     // Load the pre-close appointment through the real MENU (document reload).
-    await act('hud-menu'); await act('menu-load'); await act('slot-1');
+    await act('hud-menu'); await act('menu-tab-system'); await act('menu-load'); await act('slot-1');
     await Promise.all([page.waitForEvent('load'), act('confirm-load')]);
     await page.locator('[data-test="phone-close"]').waitFor({ timeout: 30000 });
     const restored = await page.evaluate(async () => {

@@ -21,7 +21,8 @@ const committed = (page, id) => page.waitForFunction(sceneId => window.__remake.
 const mapReady = (page, { day, slot } = {}) => page.waitForFunction(([day, slot]) => {
   const s = window.__remake?.state;
   return s && (day === undefined || s.day === day) && (slot === undefined || s.slot === slot)
-    && document.querySelector(".map:not(.done) [data-test=pin-tonari]") && !document.querySelector("#modal.show");
+    // 新しく出た行き先（占い師など）の演出中は選べないので、終わるまで待つ
+    && document.querySelector('.map:not(.done):not([data-revealing="true"]) [data-test=pin-tonari]') && !document.querySelector("#modal.show");
 }, [day, slot], { timeout: 60000 });
 async function go(page, pin) {
   await page.locator(dt(`pin-${pin}`)).click();
@@ -39,7 +40,7 @@ async function seed(page) {
     // 予告3の自動再生は chapter_preview.mjs が専任で検証する。ここでは既読にして第5章本体に集中する。
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true,
       _ch4_preview_seen: true, _lime_opened: true, _lime_tut: 1,
-      _ch4_cleared: true, _ch4_sheikh_revealed: true,
+      _ch4_cleared: true, _ch4_sheikh_revealed: true, _ch5_after_party: true, // 打ち上げは ch5-after-party の検査で見る
       _ch4: { startDay: 46, day: 5, stage: 4, part: "cleared", titleSeen: true, read: {},
         firstDay: 1, resolution: 5, attempts: 1 } };
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
@@ -131,13 +132,17 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5.stage, 2);
     assert.equal(state.flags._ch5.matchDay, undefined);
     assert.match(await page.locator(".hud").innerText(), /勝負の日まで[\s\S]*未定/);
-    for (const hidden of ["naru", "minto", "shishark", "c_station"])
-      assert.equal(await page.locator(dt(`pin-${hidden}`)).count(), 0, `${hidden} is not on the Chapter 5 map yet`);
+    // ヒロインの店は、会ったことがあれば第5章の通いの小会話で出る（#2033 F）。この保存では会っていない。
+    for (const unmet of ["minto", "shishark"])
+      assert.equal(await page.locator(dt(`pin-${unmet}`)).count(), 0, `${unmet} only after meeting her`);
+    // KEMURIKUSA は第5章の通いの小会話で出る（第2章の決裂の臨時休業に掛からない・#2033 F）
+    assert.equal(await page.locator(dt("pin-naru")).count(), 1, "KEMURIKUSA reopened for Chapter 5");
     // 昼の tonari: ましろの訪問 → 実セーブ → リロード → 再開しても読了と日付が保たれる。
     await go(page, "tonari");
     await committed(page, "ch5_free_mashiro_visit");
     await mapReady(page, { day: 51, slot: 1 });
     await page.locator(dt("hud-menu")).click();
+    await page.locator(dt("menu-tab-system")).click();
     await page.locator(dt("menu-save")).click();
     await page.locator(dt("slot-1")).click();
     await loadSlot(page, 1);
@@ -272,7 +277,7 @@ await suite("ch5-full-flow", async check => {
         _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
           read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
           finaleScenes: null, won: null, secondCup: null },
-        _ch5_match_scheduled: false, _ch5_match_started: false };
+        _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true };
       Object.assign(value.met, { kumicho: true, rei: true, ageha: true });
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
@@ -289,7 +294,7 @@ await suite("ch5-full-flow", async check => {
     await travelToCity(page, "widehanga");
     for (const pin of ["ch2_kumicho", "ch2_rei", "ch2_shop"])
       assert.equal(await page.locator(dt(`pin-${pin}`)).count(), 1, `${pin} is on the Chapter 5 Yuzugaya map`);
-    assert.equal(await page.locator(dt("pin-ch2_ageha")).count(), 0, "The heroine's shop is not on the Chapter 5 map yet");
+    assert.equal(await page.locator(dt("pin-ch2_ageha")).count(), 1, "Ageha's shop is a Chapter 5 regular after meeting her");
     assert.match(await page.locator(".hud").innerText(), /柚ヶ谷|YUZUGAYA/i);
     const before = await get(page);
     await page.locator(dt("pin-ch2_kumicho")).click();
@@ -324,7 +329,7 @@ await suite("ch5-full-flow", async check => {
         _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
           read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
           finaleScenes: null, won: null, secondCup: null },
-        _ch5_match_scheduled: false, _ch5_match_started: false };
+        _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true };
       Object.assign(value.met, { steve: true, volk: true, mukai_master: true });
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
@@ -339,7 +344,7 @@ await suite("ch5-full-flow", async check => {
     await go(page, "ch5_to_tokyo");
     const tokyoMap = (day, slot) => page.waitForFunction(([day, slot]) => {
       const s = window.__remake?.state;
-      return s && s.day === day && s.slot === slot && document.querySelector('.map:not(.done)[data-region="tokyo"] [data-test=pin-ch5_tokyo_mukai]')
+      return s && s.day === day && s.slot === slot && document.querySelector('.map:not(.done):not([data-revealing="true"])[data-region="tokyo"] [data-test=pin-ch5_tokyo_mukai]')
         && !document.querySelector("#modal.show");
     }, [day, slot], { timeout: 60000 });
     await tokyoMap(51, 1);
@@ -367,6 +372,88 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5.part, "free", "The Tokyo stay does not move the Chapter 5 story");
   });
 
+  // 帰国後の tonari の打ち上げ（オーナー指定 2026-11-02）: 自由行動の始めに一度だけ、誰の隣に座るかを選ぶ。
+  // その場にいる恋人が2人以上なら、どの席でも浮気がばれて修羅場（恋人ごとの反応→謝罪＝未解決の印）。
+  await check("chapter-five-after-party-seat-and-two-lovers-shuraba", async page => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 5, day: 51, slot: 0, phase: "daily", money: 30000, stamina: 100,
+        weatherSeed: 5, lovers: ["tsumugi", "minto"], loveLevel: { tsumugi: 1, minto: 1 }, contacts: ["sumi", "tsumugi", "minto"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
+        _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
+        _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
+          read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
+          finaleScenes: null, won: null, secondCup: null },
+        _ch5_match_scheduled: false, _ch5_match_started: false };
+      Object.assign(value.met, { tsumugi: true, minto: true, naru: true });
+      value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      core.saveConfig(); core.save();
+    });
+    await loadSlot(page, 0);
+    // 打ち上げの始まり → 席の選択（会ったことのあるヒロイン2人とスミさん）。
+    await page.locator(dt("party-seat-minto")).waitFor({ timeout: 60000 });
+    assert.equal(await page.locator('[data-test^="party-seat-"]').count(), 3, "Two met heroines and Sumi");
+    await page.locator(dt("party-seat-minto")).click();
+    await mapReady(page, { day: 51, slot: 0 });
+    const state = await get(page);
+    assert.equal(state.flags._ch5_after_party, true);
+    assert.equal(state.flags._ch5_party_seat, "minto");
+    assert.equal(state.flags._story_shuraba_unresolved, true, "Two lovers at the party: the affair comes out and stays unresolved");
+    assert.equal(state.slot, 0, "The party does not use a free action");
+    // もう一度入っても打ち上げは繰り返さない。
+    await loadSlot(page, 0);
+    await mapReady(page, { day: 51, slot: 0 });
+    assert.equal(await page.locator('[data-test^="party-seat-"]').count(), 0, "The party happens once");
+  });
+
+  // #2033 F: KEMURIKUSA（なる）と C.STATION は第5章の通いの小会話。代金・体力・好感度（なるだけ +5）が付き、会話は巡回する。
+  await check("chapter-five-kemurikusa-and-c-station-regular-talks", async page => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 5, day: 51, slot: 0, phase: "daily", money: 30000, stamina: 100,
+        weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
+        _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1, _ch2_read_ch2_naru_confrontation: true,
+        _spot_guide_naru: true, // 第1章でなるに案内された（C.STATION の解放条件）
+        _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
+          read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
+          finaleScenes: null, won: null, secondCup: null },
+        _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true };
+      Object.assign(value.met, { naru: true, minto: true });
+      value.affinity = { naru: 40 };
+      value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      core.saveConfig(); core.save();
+    });
+    await loadSlot(page, 0);
+    await mapReady(page, { day: 51, slot: 0 });
+    assert.equal(await page.locator(dt("pin-c_station")).count(), 1, "C.STATION after meeting Naru");
+    // 昼: KEMURIKUSA（第2章で決裂していても、第5章は再開した店）。
+    await go(page, "naru");
+    await mapReady(page, { day: 51, slot: 1 });
+    let state = await get(page);
+    assert.equal(state.flags._ch5_shop_talks?.naru, 1);
+    assert.equal(state.money, 30000 - 3000);
+    assert(state.affinity.naru > 40, "A Chapter 5 talk with Naru raises affinity a little");
+    // 夜: C.STATION → 寝て翌朝。
+    await go(page, "c_station");
+    await mapReady(page, { day: 52, slot: 0 });
+    state = await get(page);
+    assert.equal(state.flags._ch5_shop_talks?.c_station, 1);
+    assert.equal(state.money, 30000 - 3000 - 2500);
+    // 昼: PEPPERMINT（みんとに会っていれば。恋人でも友人でも同じ店での会話）。
+    await go(page, "minto");
+    await mapReady(page, { day: 52, slot: 1 });
+    state = await get(page);
+    assert.equal(state.flags._ch5_shop_talks?.minto, 1);
+    assert.equal(state.flags._ch5.part, "free", "Regular talks do not move the Chapter 5 story");
+  });
+
   // #2033 E: シェイクの招待でドバイへ。最初に手紙を読み、1回目は同封の切符で無料、2回目からは往復100,000円。
   // 屋敷の客間に泊まれて、帰りの便は払わない。
   await check("chapter-five-dubai-letter-guest-room-and-flight-home", async page => {
@@ -381,7 +468,7 @@ await suite("ch5-full-flow", async check => {
         _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
           read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
           finaleScenes: null, won: null, secondCup: null },
-        _ch5_match_scheduled: false, _ch5_match_started: false };
+        _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true };
       Object.assign(value.met, { sheikh: true });
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
@@ -397,7 +484,7 @@ await suite("ch5-full-flow", async check => {
     await page.locator(dt("ch5-dubai-go")).click({ timeout: 60000 });
     const dubaiMap = (day, slot) => page.waitForFunction(([day, slot]) => {
       const s = window.__remake?.state;
-      return s && s.day === day && s.slot === slot && document.querySelector('.map:not(.done)[data-region="dubai"] [data-test=pin-ch5_dubai_sheikh]')
+      return s && s.day === day && s.slot === slot && document.querySelector('.map:not(.done):not([data-revealing="true"])[data-region="dubai"] [data-test=pin-ch5_dubai_sheikh]')
         && !document.querySelector("#modal.show");
     }, [day, slot], { timeout: 60000 });
     await dubaiMap(51, 1);

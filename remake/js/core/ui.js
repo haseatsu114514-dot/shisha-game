@@ -104,8 +104,8 @@ export function imageReady(url, ms = 1500, { keep = false } = {}) {
 // スロットのランプ・通知）も同じ（GUI20・21）。起動時に並行して読み、手放さずに置いておく。
 const LOUNGE_ART = ["panel", "button", "map-pin", "heart", "reward-clean", "gauge-frame", "gauge-fill"].map((n) => `img/ui/lounge/${n}.webp`);
 const SLOT_ART = ["symbols", "symbols-premium", "bezel"].map((n) => `img/ui/pakki-slot/${n}.webp`);
-// 紙とラベンダー（既定のUI・DUI08）の板と札。会話枠は uiThemeFrame で別に読む。
-const PAPER_ART = ["panel", "lavender"].map((n) => `img/ui/paper/${n}.webp`);
+// 紙とラベンダー（既定のUI・DUI08）の板と札、全画面MENUの紙（DUI03）。会話枠は uiThemeFrame で別に読む。
+const PAPER_ART = ["panel", "lavender", "menu-bg"].map((n) => `img/ui/paper/${n}.webp`);
 /** 設定・ギャラリーの窓と最初の会話の枠・ボタン（タイトルの絵と一緒に、幕を開ける前に待つ） */
 export const FRAME_ART = LOUNGE_ART.slice(0, 2);
 let uiArt = null;
@@ -418,30 +418,26 @@ function pumpBanners() {
   }
 }
 
-/** 通知の光を、増えた能力に対応するHUDグラフの頂点へ運ぶ。拡縮後もステージ座標で計算する。 */
+/** 通知の光を、ステータスの入口（HUD の MENU）へ運ぶ。拡縮後もステージ座標で計算する。 */
+// 五角形のステータスボタンは廃止し、ステータスは全画面MENUのタブへ移した（DUI05・#2097）。
 function flyStatGain(card, { stat, points }) {
-  const index = STAT_KEYS.indexOf(stat);
-  const radar = document.querySelector(".hud-radar");
-  const hud = radar?.closest("#hud");
-  if (index < 0 || !hud || Number(getComputedStyle(hud).opacity) < 0.1) return;
+  const menu = document.querySelector("#hud .hud-menu");
+  const hud = menu?.closest("#hud");
+  if (!STAT_KEYS.includes(stat) || !hud || Number(getComputedStyle(hud).opacity) < 0.1) return;
   const stage = document.querySelector("#stage").getBoundingClientRect();
-  const target = radar.getBoundingClientRect();
+  const target = menu.getBoundingClientRect();
   const source = card.querySelector(".gc-badge").getBoundingClientRect();
   if (!stage.width || !target.width) return;
-  const vertices = radar.querySelector(".hr-fill")?.points;
-  if (!vertices || vertices.numberOfItems <= index) return;
-  const { x: tx, y: ty } = vertices.getItem(index);
   const scaleX = stage.width / 1280, scaleY = stage.height / 720;
   const from = [(source.x + source.width / 2 - stage.x) / scaleX, (source.y + source.height / 2 - stage.y) / scaleY];
-  const to = [(target.x + target.width * tx / 48 - stage.x) / scaleX, (target.y + target.height * ty / 48 - stage.y) / scaleY];
+  const to = [(target.x + target.width / 2 - stage.x) / scaleX, (target.y + target.height / 2 - stage.y) / scaleY];
   const color = getComputedStyle(card).getPropertyValue("--gc").trim();
   const pulse = () => {
-    if (!radar.isConnected) return;
-    const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    for (const [key, value] of Object.entries({ class: "hr-gain", cx: tx, cy: ty, r: 3, fill: color })) dot.setAttribute(key, value);
-    radar.append(dot);
-    dot.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 650 }).finished.finally(() => dot.remove());
-    radar.animate([{ filter: "brightness(1)" }, { filter: `brightness(1.8) drop-shadow(0 0 4px ${color})`, offset: 0.3 }, { filter: "brightness(1)" }], { duration: 650 });
+    if (!menu.isConnected) return;
+    const dot = el("i.hud-gain", { "aria-hidden": "true", style: { "--gain-color": color } });
+    menu.append(dot);
+    dot.animate([{ opacity: 1, transform: "scale(.6)" }, { opacity: 0, transform: "scale(1.8)" }], { duration: 650 }).finished.finally(() => dot.remove());
+    menu.animate([{ filter: "brightness(1)" }, { filter: `brightness(1.25) drop-shadow(0 0 6px ${color})`, offset: 0.3 }, { filter: "brightness(1)" }], { duration: 650 });
   };
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { pulse(); return; }
   const control = [(from[0] + to[0]) / 2 + 46, Math.max(8, Math.min(from[1], to[1]) - 28)];
