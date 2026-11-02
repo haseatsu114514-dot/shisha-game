@@ -180,6 +180,13 @@ test("all eligible small/full tables remain finishable, without absent helpers o
     const table = rules.materializeTrpgCast(scenario, cast.assignments);
     assert(table.cast.length >= 2);
     assert(table.dialogues.flatMap(b => b.lines).every(l => cast.participants.includes(l.speaker)));
+    // Every authored PC keeps its sheet; an empty seat's approaches are voiced by the GM and never credited to an absent player.
+    assert.deepEqual(Object.keys(table.sheets).sort(), scenario.cast.filter(c => c.sheet).map(c => c.id).sort());
+    for (const check of Object.values(table.checks)) for (const approach of check.approaches) {
+      assert(cast.participants.includes(approach.actor), approach.id);
+      assert(table.sheets[approach.sheet], approach.id);
+      assert.equal(approach.npc, approach.actor === cast.gm && approach.sheet !== cast.gm);
+    }
     assert(scenario.endings[finish(table).ending]);
   }
 });
@@ -187,11 +194,13 @@ test("reading an ending records its cast and advances exactly one action; cancel
   const s = own(friends(state()), ordinary.id);
   const cast = rules.castTrpgTable(s, catalog, ordinary), ticket = { ...cast, chapter: 2, day: 3, slot: 1 };
   const result = finish(rules.materializeTrpgCast(ordinary, cast.assignments));
+  assert.equal(result.pc?.name, ordinary.builder.archetypes[0].name, "an untouched table plays the default character");
   const before = structuredClone(s);
   assert(!rules.completeTrpgTable(s, catalog, ordinary, ticket, { cancelled: true })); assert.deepEqual(s, before);
   assert(!rules.completeTrpgTable(s, catalog, ordinary, { ...ticket, day: 2 }, result)); assert.deepEqual(s, before);
   assert(rules.completeTrpgTable(s, catalog, ordinary, ticket, result));
   assert.equal(s.slot, 2); assert.deepEqual(s.trpg.cleared[ordinary.id].participants, cast.participants);
+  assert.deepEqual(s.trpg.cleared[ordinary.id].pc, result.pc, "the memory keeps the character the player built");
   assert(!rules.completeTrpgTable(s, catalog, ordinary, ticket, result)); assert.equal(s.slot, 2);
   s.day = 5; s.slot = 1; assert(!rules.castTrpgTable(s, catalog, ordinary).ok);
 });

@@ -23,7 +23,15 @@ async function nextLines(page, keyboard = false) {
   }
   throw new Error("Dialogue did not terminate");
 }
+// The declaration stage: a real table says who acts before any die is touched.
+async function declare(page) {
+  const card = page.locator('[data-test^="trpg-approach-"]').first();
+  if (!await card.count() || !await card.isVisible()) return;
+  if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await card.tap(); else await card.click();
+  await nextLines(page);
+}
 async function checkRoll(page, { support = null, reroll = false } = {}) {
+  await declare(page);
   if (support) await hit(page, '[data-test="trpg-support-' + support + '"]');
   await hit(page, '[data-test="trpg-roll"]');
   await page.locator('[data-test="trpg-settle"]').waitFor();
@@ -198,6 +206,50 @@ try {
       await page.locator('[data-test="trpg-select-ordinary-cup"]').waitFor();
       assert.equal((await page.evaluate(() => __trpg.snapshot())).phase, "library");
     });
+  await run("character-builder-pc", { seed: "9", traveler: "quiet" }, {}, async page => {
+    assert.equal(await page.locator('[data-test="trpg-cover-pc-name"]').textContent(), "フィン");
+    await hit(page, '[data-test="trpg-build"]');
+    await page.locator('[data-test="trpg-builder"]').waitFor();
+    await fits(page);
+    await hit(page, '[data-test="trpg-look-rust"]'); await hit(page, '[data-test="trpg-archetype-sailor"]');
+    assert.equal(await page.locator('[data-test="trpg-stat-nerve-down"]').count(), 0, "easy mode hides the point-buy");
+    await hit(page, '[data-test="trpg-builder-advanced"]');
+    await hit(page, '[data-test="trpg-stat-nerve-down"]'); await hit(page, '[data-test="trpg-stat-talk-up"]');
+    assert.equal(await page.locator('[data-test="trpg-stat-points"]').getAttribute("data-left"), "0");
+    assert(await page.locator('[data-test="trpg-stat-talk-up"]').isDisabled(), "spent points disable raising");
+    await page.locator('[data-test="trpg-pc-name"]').fill("ソラ");
+    await hit(page, '[data-test="trpg-build-confirm"]');
+    assert.equal(await page.locator('[data-test="trpg-cover-pc-name"]').textContent(), "ソラ");
+    const pc = (await page.evaluate(() => __trpg.snapshot())).pc;
+    assert.deepEqual(pc, { name: "ソラ", title: "船乗り帰りの手伝い", look: "rust", archetype: "sailor", stats: { eye: 2, hand: 3, talk: 3, nerve: 3 } });
+    // "Leave it to the dice" is reproducible from the model, and cancelling keeps the confirmed character.
+    await hit(page, '[data-test="trpg-build"]'); await hit(page, '[data-test="trpg-build-random"]'); await hit(page, '[data-test="trpg-build-back"]');
+    assert.deepEqual((await page.evaluate(() => __trpg.snapshot())).pc, pc);
+    await hit(page, '[data-test="trpg-start"]'); await nextLines(page);
+    assert.match(await page.locator('[data-test="trpg-seat-pc-hajime"]').textContent(), /ソラ/);
+    await hit(page, '[data-test="trpg-approach-listen_talk"]');
+    assert.match(await page.locator(".trpg-speech p").textContent(), /^ソラは/);
+    assert.equal(await page.locator(".trpg-root").evaluate(n => n.textContent.includes("{pc}")), false);
+    await nextLines(page);
+    assert.equal(await page.locator('[data-test="trpg-bonus"]').textContent(), "＋3", "the built talk stat is the roll's base");
+    await fits(page);
+  });
+  await run("shopkeeper-tutorial-and-session-zero", { seed: "6", traveler: "quiet", tutorial: "1" }, {}, async page => {
+    await page.locator('[data-test="trpg-tutorial-panel"]').waitFor();
+    assert(!await page.locator('[data-test="trpg-start"]').isVisible(), "the cover waits for the shopkeeper");
+    await fits(page);
+    await nextLines(page);
+    assert.equal(await page.locator('[data-test="trpg-tutorial-panel"]').count(), 0);
+    await hit(page, '[data-test="trpg-start"]');
+    const first = await page.locator(".trpg-speech p").textContent();
+    assert.match(first, /キャラ作り/, "the GM opens session zero");
+    await nextLines(page);
+    assert.equal(await page.locator('[data-test="trpg-approach-best"]').count(), 1, "one approach carries the beginner's recommendation");
+    await fits(page);
+    await hit(page, '[data-test="trpg-approach-listen_talk"]');
+    await nextLines(page);
+    assert.equal(await page.locator(".trpg-root").evaluate(n => n.textContent.includes("{pc")), false);
+  });
   await run("portrait-touch-hint", { seed: "1" },
     { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }, async page => {
       assert(await page.locator("#trpg-rotate").isVisible());
@@ -206,7 +258,7 @@ try {
       await fits(page);
     });
   await run("double-input-and-integration-abort", { seed: "13", traveler: "quiet" }, {}, async page => {
-    await hit(page, '[data-test="trpg-start"]'); await nextLines(page);
+    await hit(page, '[data-test="trpg-start"]'); await nextLines(page); await declare(page);
     await page.locator('[data-test="trpg-roll"]').evaluate(node => { node.click(); node.click(); });
     await page.locator('[data-test="trpg-settle"]').waitFor();
     await page.locator('[data-test="trpg-settle"]').evaluate(node => { node.click(); node.click(); });
@@ -281,7 +333,7 @@ try {
     await hit(page, '[data-test="trpg-audio"]');
     await page.waitForFunction(() => __trpg.audio().enabled && __trpg.audio().state === "running");
     await hit(page, '[data-test="trpg-start"]'); await nextLines(page);
-    await hit(page, '[data-test="trpg-check-back"]');
+    await hit(page, '[data-test="trpg-declare-back"]');
     assert.equal((await page.evaluate(() => __trpg.snapshot())).pending, null);
     assert.equal((await page.evaluate(() => __trpg.snapshot())).checks.length, 0);
     await hit(page, '[data-test="trpg-listen-open"]'); await checkRoll(page);

@@ -3,7 +3,7 @@ import { imgFileUrl } from "./img-file.js";
 // Approved for loading screens by the owner's request to use existing repository comics.
 // The source sheet stays intact; regions display only episode 25, left -> right.
 //
-// Comic data format (see remake/README.md ＞ ロード画面):
+// Comic data format (see docs/spec/loading_screen_and_comics.md):
 //   id / title / minChapter (required), contexts? (default: any), note? (素材台帳メモ),
 //   caption?  : 初心者向けの一行解説（コマの下に表示。省略可）。
 //   panels[2] : { src, alt,
@@ -11,8 +11,10 @@ import { imgFileUrl } from "./img-file.js";
 //     bubbles? : [{ text, x, y, width?, fontSize? }] ... 吹き出し画像の上にゲーム内テキストを重ねる
 //                （x/y/width は art 枠に対する % 、fontSize は cqw。誤字を直せる差し込み方式）。
 //   }
-// 1コマの作画サイズは 1920x1080 基準で 860x573（3:2）固定。原画が 3:2 以外でも、
-// 表示枠は 3:2 のままレターボックスで収めるので、作画は 3:2 を推奨する。
+// 制作規格の正本は asset_sources/loading-comics/README.md。新規の話は 1536x1024 の下敷きで描き、
+// tools/loading_comic_cut.py で 1コマ=1ファイル（3:2・最大 1440x960 の WebP）に揃えて、region なしで
+// 登録する（例: { src: imgFileUrl("loading/<id>-1.webp"), alt }）。下の2本は旧方式（シート＋region）の
+// 登録で、作り直し不要（2026-10-29 オーナー決定）。表示枠は 3:2 のままレターボックスで収める。
 const src = imgFileUrl("loading/adam-chaos.webp");
 const batch1Src = imgFileUrl("loading/loading-batch1.webp");
 export const LOADING_COMICS = [{

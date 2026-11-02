@@ -1,0 +1,113 @@
+{
+  "dialogue_id": "trpg_tutorial_first_table",
+  "metadata": {
+    "preview_only": true
+  },
+  "lines": [
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "ようこそ、煙とサイコロ部へ。今夜は、はじめての卓ですね",
+      "panel": "welcome"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "TRPGは、みんなで物語を作る遊び。ルールのある、ごっこ遊びです",
+      "panel": "welcome"
+    },
+    {
+      "speaker": "hajime",
+      "role": "PL／卓の会話",
+      "face": "surprise",
+      "text": "ごっこ遊び……って、俺もやるんですか",
+      "panel": "welcome"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "ええ、もちろん。……ほら、もう椅子に座っていらっしゃる",
+      "panel": "welcome"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "お話を進める語り手がGM。今夜は、{gm}が務めます",
+      "panel": "table"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "遊ぶ人はPL。PLは、物語の中の役を一人ずつ演じます",
+      "panel": "table"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "演じる役がPC。役の得意・不得意は、キャラクターシートに書きます",
+      "panel": "sheet"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "観察・手際・話術・度胸。数字が大きいほど、その役の得意なことです",
+      "panel": "sheet"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "困った場面では『どうする？』と聞かれます。誰が何をするか、選ぶだけ",
+      "panel": "declare"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "迷ったら『おすすめ』の印を。いちばん成功しやすい行動です",
+      "panel": "declare"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "選んだら、サイコロを二つ。出た目に能力値を足して、30以上なら成功",
+      "panel": "roll"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "計算は画面がします。数字が苦手でも、大丈夫ですよ",
+      "panel": "roll"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "失敗しても、物語は止まりません。思わぬ出来事も、卓の楽しみです",
+      "panel": "fail"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "まずは、あなたの役を作りましょう。迷ったら、おすすめのままで",
+      "panel": "build"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "では、その選択で。……続きも、気になりますね",
+      "panel": "build"
+    }
+  ]
+}

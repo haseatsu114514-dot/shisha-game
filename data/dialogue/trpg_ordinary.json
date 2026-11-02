@@ -1,6 +1,6 @@
 {
   "id": "ordinary-cup",
-  "version": 3,
+  "version": 4,
   "title": "世界一普通の一台",
   "subtitle": "港町の茶房と、ひとりの旅人",
   "author": "汐見しお",
@@ -22,29 +22,64 @@
     {
       "id": "hajime",
       "part": "PLAYER",
-      "role": "フィン／見習い店番",
+      "role": "{pc}／見習い店番",
       "color": "#89bbc4",
       "ability": "ひらめき",
       "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
-      "abilityType": "reroll"
+      "abilityType": "reroll",
+      "sheet": {
+        "name": "フィン",
+        "title": "見習い店番",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 4,
+          "nerve": 2
+        },
+        "trait": "人の話を聞くのが上手い。手は、まだ少し慌てる"
+      }
     },
     {
       "id": "adam",
       "part": "PLAYER",
-      "role": "ニコ／香りの案内役",
+      "role": "{pc:adam}／香りの案内役",
       "color": "#c8a375",
       "ability": "舞台の支度",
       "abilityText": "一台を準備するとき、判定に一度だけ＋7",
-      "abilityType": "prepare"
+      "abilityType": "prepare",
+      "sheet": {
+        "name": "ニコ",
+        "title": "香りの案内役",
+        "stats": {
+          "eye": 2,
+          "hand": 5,
+          "talk": 3,
+          "nerve": 1
+        },
+        "trait": "香りと炭の支度なら店一番。怖い話は苦手",
+        "likes": "林檎の香り。原点の味"
+      }
     },
     {
       "id": "tsumugi",
       "part": "PLAYER",
-      "role": "ルカ／窓辺の絵描き",
+      "role": "{pc:tsumugi}／窓辺の絵描き",
       "color": "#b8a3cc",
       "ability": "席の気配",
       "abilityText": "提供するとき、判定に一度だけ＋7",
-      "abilityType": "serve"
+      "abilityType": "serve",
+      "sheet": {
+        "name": "ルカ",
+        "title": "窓辺の絵描き",
+        "stats": {
+          "eye": 5,
+          "hand": 2,
+          "talk": 1,
+          "nerve": 3
+        },
+        "trait": "よく見て、よく描く。口数は少ない",
+        "likes": "雨の日の窓。描きかけのスケッチ"
+      }
     }
   ],
   "intro": "trpg_ordinary_intro",
@@ -52,26 +87,113 @@
   "checks": {
     "listen": {
       "title": "旅人の言葉を待つ",
-      "hint": "聞き役の気配り ＋3。結果にかかわらず、店内の探索へ進みます。",
+      "hint": "宣言した店番の能力で判定。結果にかかわらず、店内の探索へ進みます。",
       "success": "trpg_ordinary_listen_success",
       "mixed": "trpg_ordinary_listen_mixed",
-      "trouble": "trpg_ordinary_listen_trouble"
+      "trouble": "trpg_ordinary_listen_trouble",
+      "approaches": [
+        {
+          "id": "listen_talk",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "向かいに座って、話しかける",
+          "detail": "{pc}が旅人の正面へ。ひと言ずつ、ゆっくり聞く",
+          "declare": "trpg_ordinary_declare_listen_talk"
+        },
+        {
+          "id": "listen_watch",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "eye",
+          "label": "少し離れて、様子を見る",
+          "detail": "{pc:tsumugi}が窓辺から、旅人の手元と視線を追う",
+          "declare": "trpg_ordinary_declare_listen_watch"
+        },
+        {
+          "id": "listen_serve",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "お冷やを出しながら、世間話",
+          "detail": "{pc:adam}がカウンター越しに、気楽な話題から",
+          "declare": "trpg_ordinary_declare_listen_serve"
+        }
+      ]
     },
     "prepare": {
       "title": "選んだ香りを、一台にする",
-      "hint": "店番の手際 ＋3。香りと席の準備を、判定します。",
+      "hint": "宣言した店番の能力で判定。香りと席の準備を、一台にします。",
       "success": "trpg_ordinary_prepare_success",
       "mixed": "trpg_ordinary_prepare_mixed",
       "trouble": "trpg_ordinary_prepare_trouble",
-      "helper": "adam"
+      "helper": "adam",
+      "approaches": [
+        {
+          "id": "prepare_self",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "hand",
+          "label": "教わった通りに、自分で作る",
+          "detail": "{pc}が自分の手で一台を。少し慌てるかも",
+          "declare": "trpg_ordinary_declare_prepare_self"
+        },
+        {
+          "id": "prepare_craft",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "hand",
+          "label": "{pc:adam}が香りを量って整える",
+          "detail": "店一番の手際で、一台を仕上げる",
+          "declare": "trpg_ordinary_declare_prepare_craft"
+        },
+        {
+          "id": "prepare_light",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "eye",
+          "label": "席の光と風を見て整える",
+          "detail": "{pc:tsumugi}が席の雰囲気を読み、一台を合わせる",
+          "declare": "trpg_ordinary_declare_prepare_light"
+        }
+      ]
     },
     "serve": {
       "title": "席へ案内して、声をかける",
-      "hint": "相手への気配り ＋3。どの出目でも結末へ進みます。",
+      "hint": "宣言した店番の能力で判定。どの出目でも結末へ進みます。",
       "success": "trpg_ordinary_serve_success",
       "mixed": "trpg_ordinary_serve_mixed",
       "trouble": "trpg_ordinary_serve_trouble",
-      "helper": "tsumugi"
+      "helper": "tsumugi",
+      "approaches": [
+        {
+          "id": "serve_word",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "席へ案内して、声をかける",
+          "detail": "{pc}が選んだ言葉を、自分の声で添える",
+          "declare": "trpg_ordinary_declare_serve_word"
+        },
+        {
+          "id": "serve_sketch",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "nerve",
+          "label": "黙って、絵を一枚添える",
+          "detail": "{pc:tsumugi}が言葉の代わりに、港の小さなスケッチを",
+          "declare": "trpg_ordinary_declare_serve_sketch"
+        },
+        {
+          "id": "serve_host",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "一台の説明をして、下がる",
+          "detail": "{pc:adam}が香りの話を少しだけ。あとは任せる",
+          "declare": "trpg_ordinary_declare_serve_host"
+        }
+      ]
     }
   },
   "spots": [
@@ -403,24 +525,6 @@
           "smallTableText": "私はGM、はじめくんは店番。空いた役は私が兼ねるね"
         },
         {
-          "speaker": "adam",
-          "role": "",
-          "face": "normal",
-          "text": "ニコという名で、香りを導く。今夜の俺には似合う役だ"
-        },
-        {
-          "speaker": "tsumugi",
-          "role": "",
-          "face": "normal",
-          "text": "……私はルカ。窓辺で絵を描いてる人です。席の様子、見ておきます"
-        },
-        {
-          "speaker": "hajime",
-          "role": "",
-          "face": "normal",
-          "text": "じゃあ俺は、見習いのフィン。店番なのに、ちょっと緊張するな"
-        },
-        {
           "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
@@ -465,7 +569,7 @@
         },
         {
           "speaker": "hajime",
-          "role": "フィン",
+          "role": "{pc}",
           "text": "急がなくて大丈夫です。よければ、少しだけお話を",
           "face": "normal"
         }
@@ -598,7 +702,7 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "フィンは思わず『一番人気なら』と言う。旅人は、少しだけ首を振った",
+          "text": "{pc}は思わず『一番人気なら』と言う。旅人は、少しだけ首を振った",
           "face": "normal"
         },
         {
@@ -622,7 +726,7 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "ニコが棚を整え、フィンが一台を用意する。選んだ香りが、静かに開いた",
+          "text": "{pc:adam}が棚を整え、{pc}が一台を用意する。選んだ香りが、静かに開いた",
           "face": "normal"
         },
         {
@@ -684,7 +788,7 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "ルカが椅子を引き、フィンが旅人を案内する。落ち着いたところで、一台を置いた",
+          "text": "{pc:tsumugi}が椅子を引き、{pc}が旅人を案内する。落ち着いたところで、一台を置いた",
           "face": "normal"
         }
       ]
@@ -712,7 +816,7 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "フィンが声をかけると、椅子がこつんと鳴った。気まずい間のあと、旅人が先に口を開く",
+          "text": "{pc}が声をかけると、椅子がこつんと鳴った。気まずい間のあと、旅人が先に口を開く",
           "face": "normal"
         },
         {
@@ -733,7 +837,7 @@
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "ニコは言う。香りの名だけで、客の望みを決めてはいけない"
+          "text": "{pc:adam}は言う。香りの名だけで、客の望みを決めてはいけない"
         },
         {
           "speaker": "adam",
@@ -1318,7 +1422,7 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "フィンたちは呼べる距離に戻る。閉店の札は、もう少しだけ、そのままにした",
+          "text": "{pc}たちは呼べる距離に戻る。閉店の札は、もう少しだけ、そのままにした",
           "face": "normal"
         }
       ]
@@ -1390,7 +1494,7 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "旅人の話を聞き、フィンたちは席や言葉を少し変える。一台は、その相談の入口になった",
+          "text": "旅人の話を聞き、{pc}たちは席や言葉を少し変える。一台は、その相談の入口になった",
           "face": "normal"
         },
         {
@@ -1513,6 +1617,340 @@
           "text": "聞き直した時間も、この一台に入ってる……。そういうの、好きだな"
         }
       ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_listen_talk",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}は旅人の向かいに座る。『長い旅でした？』って聞いてみる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "じゃあ話術で判定ね。目標は30。サイコロ二つ、どうぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_listen_watch",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……{pc:tsumugi}は窓辺から、旅人の手元と視線を見ています"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "観察で判定。{pc:tsumugi}の得意分野ね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_listen_serve",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:adam}はお冷やを出しながら、天気の話から入るよ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定。気楽な入り方、いいね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_prepare_self",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}は教わった通りに、自分の手で一台を作ります"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定ね。慌てないで。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_prepare_craft",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ここは{pc:adam}の出番だな。香りを量って、炭を整える"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "手際で判定。店一番の腕前、見せてもらおうかな。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_prepare_light",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:tsumugi}は席の光と風を見て、一台の置き場所を決めます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定。席の雰囲気も一台の一部ね。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_serve_word",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}が席へ案内して、選んだ言葉を添えます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定。最後の一言、大事にね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_serve_sketch",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……{pc:tsumugi}は何も言わず、港のスケッチを一枚添えます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "度胸で判定。言葉なしは勇気がいるね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_serve_host",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:adam}は香りの説明を少しだけして、静かに下がるよ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定。引き際が肝心ね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_make_adam_adam_nico",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "俺の役はニコ。客を香りへ導く、茶房の案内役だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "弱点も決めた。腕は店一番だが、怖い話が苦手だ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "弱点まで用意してくるの、えらいね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_make_adam_adam_pippin",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "俺の役はピピン。港を渡り歩く、流しの香り師だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "口ぐせは『すべての香りは、一つの林檎から始まった』"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……それ、いつものアダムさんじゃない？"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "役と俺が重なる。それを人は、天職と呼ぶ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_make_tsumugi_tsumugi_luca",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私はルカ。窓辺で絵を描いてる人です"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "好きなものは、雨の日の窓。猫も、描きます"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "猫は描くんだな。つむぎらしい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_make_tsumugi_tsumugi_leaf",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私の役は、リーフ。茶房の看板猫です"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "猫！？ ……い、いいよ。GMが許します"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "猫が、店番を……？"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "絵も描けます、……肉球で"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_session_zero_open",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "物語の前に、キャラ作りの時間。役はもう決まった？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_session_zero_close",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "俺は{pc}。{pcTitle}でいく"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "いい卓になりそう。じゃあ、はじめよう"
+        }
+      ]
     }
   ],
   "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。variantsは代役本人のために書いた台詞。",
@@ -1608,7 +2046,17 @@
     },
     "help": "三つ以上の手がかりから仮説を立て、香り・席・声のかけ方を選びます。探索・相談・メモの再読に回数制限はありません。",
     "exitText": "この卓はここで終わります。もう一度遊ぶと、別の旅人が訪れるかもしれません。",
-    "endingKicker": "この晩の結末"
+    "endingKicker": "この晩の結末",
+    "stats": {
+      "eye": "観察",
+      "hand": "手際",
+      "talk": "話術",
+      "nerve": "度胸"
+    },
+    "declareTitle": "どうする？ 行動を宣言しよう",
+    "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
+    "sheetTitle": "キャラクターシート",
+    "target": "GMの裁定 · 目標値30（19以上でひと手間）"
   },
   "debrief": {
     "smooth": "trpg_ordinary_debrief_smooth",
@@ -1645,6 +2093,163 @@
         "required": false
       }
     ]
+  },
+  "builder": {
+    "seat": "hajime",
+    "points": 11,
+    "min": 1,
+    "max": 5,
+    "nameMax": 6,
+    "title": "あなたのキャラクターを作る",
+    "intro": "この物語で演じる店番を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
+    "looks": [
+      {
+        "id": "ink",
+        "label": "黒髪の店番",
+        "detail": "短い黒髪に、店のエプロン",
+        "color": "#3b4a5a",
+        "accent": "#89bbc4",
+        "portrait": null
+      },
+      {
+        "id": "ash",
+        "label": "灰色の髪の店番",
+        "detail": "伸びた灰色の髪を後ろで束ねる",
+        "color": "#6b6a72",
+        "accent": "#d9cdb6",
+        "portrait": null
+      },
+      {
+        "id": "rust",
+        "label": "赤茶の髪の店番",
+        "detail": "日に焼けた肌と、赤茶の癖毛",
+        "color": "#7a4a37",
+        "accent": "#e3b27a",
+        "portrait": null
+      },
+      {
+        "id": "moss",
+        "label": "眼鏡の店番",
+        "detail": "丸眼鏡と、苔色のベスト",
+        "color": "#4c5f49",
+        "accent": "#bcd3a8",
+        "portrait": null
+      }
+    ],
+    "archetypes": [
+      {
+        "id": "apprentice",
+        "name": "フィン",
+        "title": "見習い店番",
+        "trait": "人の話を聞くのが上手い。手は、まだ少し慌てる",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 4,
+          "nerve": 2
+        },
+        "recommended": true
+      },
+      {
+        "id": "sailor",
+        "name": "マル",
+        "title": "船乗り帰りの手伝い",
+        "trait": "港の仕事で鍛えた度胸。茶房の作法は覚えたて",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 2,
+          "nerve": 4
+        }
+      },
+      {
+        "id": "regular",
+        "name": "テオ",
+        "title": "本好きの常連",
+        "trait": "店のことは本で読んで知っている。手を動かすのは苦手",
+        "stats": {
+          "eye": 4,
+          "hand": 1,
+          "talk": 3,
+          "nerve": 3
+        }
+      }
+    ],
+    "statHelp": {
+      "eye": "よく見て、気づく力。調べる・様子を見るときに使う",
+      "hand": "手先の器用さ。道具を使う・準備するときに使う",
+      "talk": "話す・聞く力。人と向き合うときに使う",
+      "nerve": "怖がらない力。危ない場面や、勇気が要るときに使う"
+    }
+  },
+  "companionBuilds": {
+    "adam": {
+      "adam": [
+        {
+          "id": "nico",
+          "name": "ニコ",
+          "title": "香りの案内役",
+          "trait": "香りと炭の支度なら店一番。怖い話は苦手",
+          "likes": "林檎の香り。原点の味",
+          "stats": {
+            "eye": 2,
+            "hand": 5,
+            "talk": 3,
+            "nerve": 1
+          },
+          "making": "trpg_ordinary_make_adam_adam_nico"
+        },
+        {
+          "id": "pippin",
+          "name": "ピピン",
+          "title": "流しの香り師",
+          "trait": "どんな注文にも、まず林檎の話から入る。腕は確か",
+          "likes": "林檎。すべての香りの始まり",
+          "stats": {
+            "eye": 2,
+            "hand": 5,
+            "talk": 2,
+            "nerve": 2
+          },
+          "making": "trpg_ordinary_make_adam_adam_pippin"
+        }
+      ]
+    },
+    "tsumugi": {
+      "tsumugi": [
+        {
+          "id": "luca",
+          "name": "ルカ",
+          "title": "窓辺の絵描き",
+          "trait": "よく見て、よく描く。口数は少ない",
+          "likes": "雨の日の窓。描きかけのスケッチ",
+          "stats": {
+            "eye": 5,
+            "hand": 2,
+            "talk": 1,
+            "nerve": 3
+          },
+          "making": "trpg_ordinary_make_tsumugi_tsumugi_luca"
+        },
+        {
+          "id": "leaf",
+          "name": "リーフ",
+          "title": "絵を描く看板猫",
+          "trait": "人の言葉は話せない。よく見て、絵で伝える",
+          "likes": "窓辺の日だまり。煮干し",
+          "stats": {
+            "eye": 5,
+            "hand": 1,
+            "talk": 1,
+            "nerve": 4
+          },
+          "making": "trpg_ordinary_make_tsumugi_tsumugi_leaf"
+        }
+      ]
+    }
+  },
+  "sessionZero": {
+    "open": "trpg_ordinary_session_zero_open",
+    "close": "trpg_ordinary_session_zero_close"
   }
 }
-

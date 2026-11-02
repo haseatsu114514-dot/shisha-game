@@ -1,6 +1,6 @@
 {
   "id": "shark-last-order",
-  "version": 3,
+  "version": 4,
   "title": "サメは閉店を待たない",
   "subtitle": "海上ラウンジ、最後の夜",
   "author": "青瀬マコ",
@@ -50,16 +50,27 @@
     {
       "id": "hajime",
       "part": "PLAYER",
-      "role": "レン／新人甲板員",
+      "role": "{pc}／新人甲板員",
       "color": "#89bbc4",
       "ability": "土壇場のひらめき",
       "abilityType": "reroll",
-      "abilityText": "判定後、サイコロ1個を一度だけ振り直す"
+      "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
+      "sheet": {
+        "name": "レン",
+        "title": "新人甲板員",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 2,
+          "nerve": 4
+        },
+        "trait": "走るのと飛び込むのは速い。考えるのは、あと"
+      }
     },
     {
       "id": "hiyori",
       "part": "PLAYER",
-      "role": "オット／香りの研究員",
+      "role": "{pc:hiyori}／香りの研究員",
       "color": "#c8a375",
       "ability": "段取りの確認",
       "abilityType": "prepare",
@@ -69,16 +80,40 @@
           "ability": "舞台の支度",
           "color": "#c9463a"
         }
+      },
+      "sheet": {
+        "name": "オット",
+        "title": "香りの研究員",
+        "stats": {
+          "eye": 4,
+          "hand": 4,
+          "talk": 2,
+          "nerve": 1
+        },
+        "trait": "香りと道具に詳しい。サメは、見たくない",
+        "likes": "研究室で飲む紅茶"
       }
     },
     {
       "id": "tsumugi",
       "part": "PLAYER",
-      "role": "セラ／照明係",
+      "role": "{pc:tsumugi}／照明係",
       "color": "#b8a3cc",
       "ability": "見せ場の構図",
       "abilityType": "serve",
-      "abilityText": "脱出するとき、判定に一度だけ＋7"
+      "abilityText": "脱出するとき、判定に一度だけ＋7",
+      "sheet": {
+        "name": "セラ",
+        "title": "照明係",
+        "stats": {
+          "eye": 2,
+          "hand": 2,
+          "talk": 1,
+          "nerve": 5
+        },
+        "trait": "暗い場所も高い場所も平気。照明なら任せて",
+        "likes": "暗い部屋と、ラベンダー色のライト"
+      }
     }
   ],
   "spots": [
@@ -427,7 +462,7 @@
         },
         {
           "speaker": "hajime",
-          "role": "レン／物語",
+          "role": "{pc}／物語",
           "face": "normal",
           "text": "……閉店してから来てくれない？"
         },
@@ -1420,6 +1455,412 @@
           "text": "危ない場面も、三人で越えた。最後まで、一緒じゃ"
         }
       ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_listen_window",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}は窓際に寄って、自分の目で確かめる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "度胸で判定じゃな。窓の向こうは海じゃぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_listen_scan",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:hiyori}は双眼鏡を構えて、背びれの動きを追うわ",
+          "variants": {
+            "adam": {
+              "text": "{pc:hiyori}は双眼鏡を構える。背びれの癖を見抜いてやる",
+              "face": "normal"
+            }
+          }
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定じゃ。目標は30。よく見るのじゃぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_listen_lamp",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……{pc:tsumugi}は救難灯を海へ向けて、照らします"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "度胸で判定じゃ。照らした先に何がいても知らんぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_prepare_rig",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}はロープと板で、手早く組み上げます"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定じゃ。急いでも結び目は確かめるのじゃぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_prepare_kit",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:hiyori}が道具を組むわ。研究室で慣れてるから",
+          "variants": {
+            "adam": {
+              "text": "{pc:hiyori}が道具を組む。舞台の仕掛けと同じさ",
+              "face": "smile"
+            }
+          }
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "手際で判定じゃ。見立てが合っておれば追い風じゃぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_prepare_wire",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:tsumugi}は照明の配線をつないで、仕掛けを動かします"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定じゃ。感電には気をつけるのじゃ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_serve_dash",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "{pc}が合図を出して、全員いっせいに走る！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "度胸で判定じゃな。合図は一度きりじゃぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_serve_lead",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:tsumugi}が先頭で走ります。暗い桟橋は、慣れてるので"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "度胸で判定じゃ。ラストシーンじゃぞ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_serve_read",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:hiyori}は波の間を読んで、走る合図を出すわ",
+          "variants": {
+            "adam": {
+              "text": "{pc:hiyori}が波を読む。合図は俺が出そう",
+              "face": "serious"
+            }
+          }
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定じゃ。波の間を外すなよ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_make_hiyori_hiyori_otto",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私の役はオット。香りの研究員よ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "サメは見たくないの、……そういう役だから"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "怖がる役は大事じゃぞ。映画が締まるのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_make_hiyori_hiyori_midori",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "……私はミドリ。か弱い研究員で、サメは苦手で……"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "あ、でも斧は持ってく。背中に一本"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "出たのじゃ！ サメ映画のヒロインは、だいたい武器を持っておる！"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "か弱い設定、もう崩れてない？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_make_hiyori_adam_otto",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "オットの役は俺が引き受けた。香りの研究員だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "サメは見たくない設定か。……俺にも弱点くらいある"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "頼もしいのか頼りないのか、分からんのう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_make_hiyori_adam_mackin",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "俺の役はマッキン。サメを撮りに来た撮影監督だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "このサメで、最高の一本を撮る。主演は、俺だ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "主演はサメじゃぞ！ そこは譲らんのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_make_tsumugi_tsumugi_sera",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私はセラ。照明係です"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "暗いところも、高いところも平気です"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "頼もしいのう！ 暗い海で灯りは命じゃぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_make_tsumugi_tsumugi_noa",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私はノア。照明係で、こういう映画のお約束に詳しいです"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "evil",
+          "text": "『ちょっと様子を見てくる』って言った人から、いなくなります"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "お主、分かっておるのう……！"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "つむぎ、意外とノリノリだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_session_zero_open",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "映画の前に、キャラ作りじゃ。役は決まったかの？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_session_zero_close",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "俺は{pc}。{pcTitle}でいく"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "役者はそろったのじゃ。では、開演じゃ！"
+        }
+      ]
     }
   ],
   "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。variantsは代役本人のために書いた台詞。",
@@ -1487,33 +1928,130 @@
     },
     "help": "調査は最大四箇所。新しい場所を調べるたび、危機が一つ進みます。三つ以上で見立てを選び、道具・経路・最後の作戦を決めます。相談とメモの再読は無料。見立てが合うと仕掛け判定に＋4。",
     "exitText": "映画をここで中断して、本棚へ戻ります。次に遊ぶと、違う習性のサメが現れるかもしれません。",
-    "endingKicker": "TONIGHT’S FEATURE / この映画の結末"
+    "endingKicker": "TONIGHT’S FEATURE / この映画の結末",
+    "stats": {
+      "eye": "観察",
+      "hand": "手際",
+      "talk": "話術",
+      "nerve": "度胸"
+    },
+    "declareTitle": "どうする？ 行動を宣言せよ",
+    "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
+    "sheetTitle": "キャラクターシート",
+    "target": "GMの裁定 · 目標値30（19以上でひと手間）"
   },
   "intro": "trpg_shark_intro",
   "listen": "trpg_shark_listen",
   "checks": {
     "listen": {
       "title": "背びれと波を見分ける",
-      "hint": "落ち着いて観察 ＋3。どの出目でも探索へ進みます。",
+      "hint": "宣言した甲板員の能力で判定。どの出目でも探索へ進みます。",
       "success": "trpg_shark_listen_success",
       "mixed": "trpg_shark_listen_mixed",
-      "trouble": "trpg_shark_listen_trouble"
+      "trouble": "trpg_shark_listen_trouble",
+      "approaches": [
+        {
+          "id": "listen_window",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "窓際に寄って、直接確かめる",
+          "detail": "{pc}が自分の目で、背びれの動きを見る",
+          "declare": "trpg_shark_declare_listen_window"
+        },
+        {
+          "id": "listen_scan",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "eye",
+          "label": "双眼鏡で、背びれを追う",
+          "detail": "{pc:hiyori}が距離を取り、動きの癖を読む",
+          "declare": "trpg_shark_declare_listen_scan"
+        },
+        {
+          "id": "listen_lamp",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "nerve",
+          "label": "救難灯を海へ向ける",
+          "detail": "{pc:tsumugi}が光で照らし、波の下を確かめる",
+          "declare": "trpg_shark_declare_listen_lamp"
+        }
+      ]
     },
     "prepare": {
       "title": "即席の仕掛けを組み立てる",
-      "hint": "手際 ＋3。見立てが合えば、さらに＋4。",
+      "hint": "宣言した甲板員の能力で判定。見立てが合えば、さらに＋4。",
       "success": "trpg_shark_prepare_success",
       "mixed": "trpg_shark_prepare_mixed",
       "trouble": "trpg_shark_prepare_trouble",
-      "helper": "hiyori"
+      "helper": "hiyori",
+      "approaches": [
+        {
+          "id": "prepare_rig",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "hand",
+          "label": "ロープと板で、手早く組む",
+          "detail": "{pc}が力まかせに。結び目は、たぶん大丈夫",
+          "declare": "trpg_shark_declare_prepare_rig"
+        },
+        {
+          "id": "prepare_kit",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "hand",
+          "label": "道具を組んで、仕掛けを作る",
+          "detail": "{pc:hiyori}が研究室の手順どおり、確実に",
+          "declare": "trpg_shark_declare_prepare_kit"
+        },
+        {
+          "id": "prepare_wire",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "hand",
+          "label": "照明の配線で、仕掛けを動かす",
+          "detail": "{pc:tsumugi}が電源を引き回し、遠くから動かす",
+          "declare": "trpg_shark_declare_prepare_wire"
+        }
+      ]
     },
     "serve": {
       "title": "三人そろって岸へ帰る",
-      "hint": "連携 ＋3。どの出目でも全員で結末へ進みます。",
+      "hint": "宣言した甲板員の能力で判定。どの出目でも全員で結末へ進みます。",
       "success": "trpg_shark_serve_success",
       "mixed": "trpg_shark_serve_mixed",
       "trouble": "trpg_shark_serve_trouble",
-      "helper": "tsumugi"
+      "helper": "tsumugi",
+      "approaches": [
+        {
+          "id": "serve_dash",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "合図で、全員いっせいに走る",
+          "detail": "{pc}が先頭で声を上げ、三人まとめて岸へ",
+          "declare": "trpg_shark_declare_serve_dash"
+        },
+        {
+          "id": "serve_lead",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "nerve",
+          "label": "暗い桟橋を、先頭で走る",
+          "detail": "{pc:tsumugi}が足場を知っている。灯りを消して進む",
+          "declare": "trpg_shark_declare_serve_lead"
+        },
+        {
+          "id": "serve_read",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "eye",
+          "label": "波の間を読んで、合図を出す",
+          "detail": "{pc:hiyori}が背びれの動きを見て、走る瞬間を決める",
+          "declare": "trpg_shark_declare_serve_read"
+        }
+      ]
     }
   },
   "consult": {
@@ -1559,6 +2097,193 @@
         "required": false
       }
     ]
+  },
+  "builder": {
+    "seat": "hajime",
+    "points": 11,
+    "min": 1,
+    "max": 5,
+    "nameMax": 6,
+    "title": "あなたのキャラクターを作る",
+    "intro": "この映画で演じる甲板員を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
+    "looks": [
+      {
+        "id": "ink",
+        "label": "黒髪の甲板員",
+        "detail": "短い黒髪に、救命胴衣",
+        "color": "#2f4350",
+        "accent": "#89bbc4",
+        "portrait": null
+      },
+      {
+        "id": "salt",
+        "label": "潮やけの甲板員",
+        "detail": "白っぽく焼けた髪と、日焼けの肌",
+        "color": "#5c6a70",
+        "accent": "#efe2c0",
+        "portrait": null
+      },
+      {
+        "id": "rust",
+        "label": "赤毛の甲板員",
+        "detail": "赤毛をバンダナで押さえる",
+        "color": "#7b3f33",
+        "accent": "#f0b27a",
+        "portrait": null
+      },
+      {
+        "id": "deep",
+        "label": "長髪の甲板員",
+        "detail": "濡れた長い髪と、暗い色のレインコート",
+        "color": "#2d3a5e",
+        "accent": "#a9b8e8",
+        "portrait": null
+      }
+    ],
+    "archetypes": [
+      {
+        "id": "rookie",
+        "name": "レン",
+        "title": "新人甲板員",
+        "trait": "走るのと飛び込むのは速い。考えるのは、あと",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 2,
+          "nerve": 4
+        },
+        "recommended": true
+      },
+      {
+        "id": "lifeguard",
+        "name": "ナギ",
+        "title": "元ライフセーバー",
+        "trait": "海は怖くない。機械と細かい作業は人任せ",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 1,
+          "nerve": 5
+        }
+      },
+      {
+        "id": "radio",
+        "name": "ハル",
+        "title": "無線係の見習い",
+        "trait": "よく見て、よく聞く。走るのは最後の手段",
+        "stats": {
+          "eye": 4,
+          "hand": 2,
+          "talk": 3,
+          "nerve": 2
+        }
+      }
+    ],
+    "statHelp": {
+      "eye": "よく見て、気づく力。調べる・様子を見るときに使う",
+      "hand": "手先の器用さ。道具を使う・準備するときに使う",
+      "talk": "話す・聞く力。人と向き合うときに使う",
+      "nerve": "怖がらない力。危ない場面や、勇気が要るときに使う"
+    }
+  },
+  "companionBuilds": {
+    "hiyori": {
+      "hiyori": [
+        {
+          "id": "otto",
+          "name": "オット",
+          "title": "香りの研究員",
+          "trait": "香りと道具に詳しい。サメは、見たくない",
+          "likes": "研究室で飲む紅茶",
+          "stats": {
+            "eye": 4,
+            "hand": 4,
+            "talk": 2,
+            "nerve": 1
+          },
+          "making": "trpg_shark_make_hiyori_hiyori_otto"
+        },
+        {
+          "id": "midori",
+          "name": "ミドリ",
+          "title": "斧を背負った研究員",
+          "trait": "か弱い研究員……のはず。なぜか斧を一本、背負っている",
+          "likes": "斧投げと、夜のラーメン",
+          "stats": {
+            "eye": 3,
+            "hand": 5,
+            "talk": 1,
+            "nerve": 2
+          },
+          "making": "trpg_shark_make_hiyori_hiyori_midori"
+        }
+      ],
+      "adam": [
+        {
+          "id": "otto",
+          "name": "オット",
+          "title": "香りの研究員",
+          "trait": "香りと道具に詳しい。サメは、見たくない",
+          "likes": "研究室で飲む紅茶",
+          "stats": {
+            "eye": 4,
+            "hand": 4,
+            "talk": 2,
+            "nerve": 1
+          },
+          "making": "trpg_shark_make_hiyori_adam_otto"
+        },
+        {
+          "id": "mackin",
+          "name": "マッキン",
+          "title": "林檎印の撮影監督",
+          "trait": "サメを撮りに来た監督。危ない場面ほど見せ場だと言い張る",
+          "likes": "林檎と、最高の一枚",
+          "stats": {
+            "eye": 4,
+            "hand": 3,
+            "talk": 2,
+            "nerve": 2
+          },
+          "making": "trpg_shark_make_hiyori_adam_mackin"
+        }
+      ]
+    },
+    "tsumugi": {
+      "tsumugi": [
+        {
+          "id": "sera",
+          "name": "セラ",
+          "title": "照明係",
+          "trait": "暗い場所も高い場所も平気。照明なら任せて",
+          "likes": "暗い部屋と、ラベンダー色のライト",
+          "stats": {
+            "eye": 2,
+            "hand": 2,
+            "talk": 1,
+            "nerve": 5
+          },
+          "making": "trpg_shark_make_tsumugi_tsumugi_sera"
+        },
+        {
+          "id": "noa",
+          "name": "ノア",
+          "title": "お約束に詳しい照明係",
+          "trait": "こういう映画のお約束を、全部知っている。だから生き残る",
+          "likes": "お約束どおりの展開",
+          "stats": {
+            "eye": 3,
+            "hand": 2,
+            "talk": 1,
+            "nerve": 5
+          },
+          "making": "trpg_shark_make_tsumugi_tsumugi_noa"
+        }
+      ]
+    }
+  },
+  "sessionZero": {
+    "open": "trpg_shark_session_zero_open",
+    "close": "trpg_shark_session_zero_close"
   }
 }
-

@@ -138,7 +138,7 @@
       "kind": "browser",
       "weight": 0.5,
       "timeout": 3,
-      "paths": ["remake/js/minigames/dj.js", "remake/js/daily/dj-club.js", "remake/js/chapters/ch3-map-model.js", "remake/previews/dj/**", "data/dialogue/ch3_club.json", "remake/test/browser/dj_club.mjs"],
+      "paths": ["remake/js/minigames/dj.js", "remake/js/daily/dj-club.js", "remake/js/chapters/ch3.js", "remake/js/chapters/ch3-map-model.js", "remake/previews/dj/**", "data/dialogue/ch3_club.json", "remake/test/browser/dj_club.mjs"],
       "run": ["node remake/test/browser/dj_club.mjs"]
     },
     {
@@ -155,7 +155,7 @@
     },
     {
       "id": "loading-comics-spec",
-      "title": "Loading comic registrations fit the fixed 43:25 display frame",
+      "title": "Loading comic registrations fit the fixed 3:2 display frame (region band / whole-image 3:2)",
       "kind": "quick",
       "run": ["node remake/test/loading_comics_spec.mjs"]
     },

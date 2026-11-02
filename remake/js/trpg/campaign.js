@@ -116,14 +116,26 @@ export function materializeTrpgCast(scenario, assignments) {
   const gm = scenario.cast.find(c => c.part === "GM").id;
   if (!assignments[gm] || assignments.hajime !== "hajime") throw new Error("Missing required TRPG participant");
   if (Object.values(assignments).some(id => excluded.has(id))) throw new Error("Excluded TRPG participant");
+  // PC sheets stay keyed by the authored seat: the character exists even when the GM plays an empty seat.
+  table.sheets = Object.fromEntries(scenario.cast.filter(c => c.sheet).map(c => [c.id, c.sheet]));
   table.cast = table.cast.filter(c => assignments[c.id]).map(c => {
     const id = assignments[c.id];
-    return { ...c, ...(c.alternatives?.[id] || {}), id };
+    return { ...c, ...(c.alternatives?.[id] || {}), id, seat: c.id };
   });
   table.consult = Object.fromEntries(Object.entries(table.consult).filter(([id]) => assignments[id])
     .map(([id, value]) => [assignments[id], value]));
-  for (const check of Object.values(table.checks)) check.helper = assignments[check.helper] || null;
+  for (const check of Object.values(table.checks)) {
+    check.helper = assignments[check.helper] || null;
+    // A declared approach follows its player; an empty seat's PC is voiced by the GM (npc).
+    check.approaches = (check.approaches || []).map(approach => {
+      const seat = approach.sheet || approach.actor;
+      return { ...approach, sheet: seat, actor: assignments[approach.actor] || assignments[gm], npc: !assignments[approach.actor] };
+    });
+  }
+  const present = new Set(Object.values(assignments).filter(Boolean));
   for (const block of table.dialogues) {
+    // A companion's character-making talk is written in that player's own voice: keep it only when they are at the table.
+    if (block.metadata?.making) { block.lines = block.lines.filter(line => present.has(line.speaker)); continue; }
     block.lines = block.lines.flatMap(line => {
       const id = assignments[line.speaker];
       if (!id) return [];
@@ -155,6 +167,8 @@ export function completeTrpgTable(state, catalog, scenario, ticket, result, opti
     variant: result.variant, plan: clone(result.plan), version: scenario.version,
     ...(Number.isInteger(result.rating?.stars) ? { stars: result.rating.stars } : {}),
     ...(Number.isInteger(result.heat?.value) ? { heat: result.heat.value, night: result.heat.night } : {}),
+    // The player's own character, as built for this table: name, origin, look and stats.
+    ...(result.pc && typeof result.pc.name === "string" ? { pc: clone(result.pc) } : {}),
   };
   state.slot++;
   return true;
