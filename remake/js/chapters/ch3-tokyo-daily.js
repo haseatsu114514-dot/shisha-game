@@ -4,7 +4,7 @@
 //   - 本筋の場面: 昼の行動を使う場面（slotEvent）と夜の予定（nightEvents）。並びと日付は ch3-progress.js の CH3_DAILY_PLAN
 //   - 恋人の東京訪問: 約束した時間帯に、合流・散歩が一つの行動として入る（core/tokyo-visits.js）
 //   - 行き先: mukai（手伝い・ましろちゃんとの時間・店番・作業台・裏口のてつこ）・煙幕・Smoke & Glory・鉄の煙・公園・
-//     東京の店・CHOI-ZAP・路地裏の神社・クラブSEAM・mukaiの奥の部屋・地元との連絡
+//     東京の店・CHOI-ZAP・路地裏の神社・クラブSEAM・mukaiの奥の部屋（地元との連絡は右上の LIME の一番上の行）
 //   - 寄り道（任意の場面）は、その場所を訪ねた時に一つずつ読む（行動を使うので選んで読む。台本の能力報酬も効く）。
 //     遠くからの電話（みんと・つむぎ・ひより）は、本筋の予定が無い夜に一つ届く
 // 現在地は flags._ch2_region = "tokyo"（HUD の街の札）。台詞の正本は data/dialogue/ch3_*.json と ch3_tokyo_daily.json。
@@ -29,7 +29,7 @@ import { availableChapterThreeTrials } from "./ch3-trial-progress.js";
 import { runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { availableOptionalScenes, commitOptionalRead, selectChapterThreeEvening,
   eveningRecord, EVENING_WINDOW } from "./ch3-story-wiring.js";
-import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
+import { loverMilestonesDue, readLoverMilestone, pendingLoverLime } from "./lover-entry.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { runMukaiShift, loadMukaiShift, MUKAI_PAY, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
 
@@ -104,8 +104,6 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
     preview: "bg_club_seam_entrance", desc: "セットを選んで曲をつなぐ（時間は使わない）。" }),
   spot({ id: "ch3_tokyo_room", place: "room", label: "mukaiの奥の部屋", area: "店の奥", x: 45, y: 63, theme: "rest", glyph: "休",
     preview: "bg_mukai_shop", stamina: 55, desc: "寝泊まりしている部屋で休む。体力が大きく戻る。" }),
-  spot({ id: "ch3_tokyo_lime", place: "lime", label: "地元と連絡", area: "スマホ", x: 8, y: 84, theme: "rest", glyph: "☎",
-    preview: "bg_street", desc: "地元の恋人・知り合いとLIMEで話す。東京へ来る約束もここで（時間は使わない）。" }),
 ].map(entry => Object.freeze({ ...entry, hasNew: () => spotHasNew(entry) })));
 
 function spotHasNew(entry) {
@@ -176,13 +174,36 @@ export function chapterThreeTokyoDefinition(io) {
       return true;
     },
     beforeInvitation: () => true,
+    // 地元の恋人・知り合いとの連絡（デートの相談・訪問の約束）は、右上の LIME のトーク一覧の一番上から開く
+    // （地図の「地元と連絡」は廃止。オーナー決定 2026-11-02）。
+    limeShortcuts: () => [tokyoContactsShortcut()],
+    // 地元の恋人のほうから「東京へ行ってもいい？」が朝の LIME で届く（返事で約束が決まる・MPI09）
+    morningLime: () => tokyoSocial?.deliverTokyoVisitProposals() || 0,
     wakeBackground: () => "bg_mukai_shop",
-    // 地元の恋人のデートの誘いは東京では受けられない（東京へ来る約束は「地元と連絡」から）。
+    // 地元の恋人のデートの誘いは東京では受けられない（東京へ来る約束は右上の LIME の「地元との連絡」から）。
     dateInvitations: false,
     spotById: id => CH3_TOKYO_SPOTS.find(entry => entry.id === id) || null,
     performSpot: (entry, options) => performTokyoSpot(entry, io, options),
     // ムカイさんの LIME で呼ばれたシフト（VOL10。daily/calendar.js の約束から）
     mukaiShift: ({ called = false } = {}) => mukaiShift(state, { called }),
+  };
+}
+
+// 東京の連絡（ch3-social.js）。日常ループの前に読み込む（朝の LIME の相談に使う）。
+let tokyoSocial = null;
+
+/** 右上の LIME の「地元との連絡」の行。訪問の相談・恋人からの未読があれば印を付ける。 */
+function tokyoContactsShortcut() {
+  const offers = Object.values(state.tokyoVisits?.offers || {}).filter(offer => !offer.held).length;
+  const unread = pendingLoverLime({ senders: state.lovers || [] }).length;
+  return {
+    id: "tokyo_contacts", label: "地元との連絡", icon: "☎",
+    sub: offers ? "東京へ来る相談が届いている" : unread ? "恋人から新しいLIME" : "デートの相談・地元の知り合いと話す",
+    tag: offers ? "相談" : null, attention: offers > 0 || unread > 0,
+    run: async () => {
+      const social = await import("./ch3-social.js");
+      await keepDailyHud(() => social.openTokyoLime({}));
+    },
   };
 }
 
@@ -194,7 +215,7 @@ export async function runChapterThreeTokyo(io) {
     readDialogues("ch3_activities", ["ch3_choizap_day", "ch3_choizap_night"]).then(found => Object.assign(DB.dialogues, found)),
     readDialogues("ch3_tokyo_daily", TOKYO_DAILY_IDS).then(found => Object.assign(DB.dialogues, found)),
     loadMukaiShift(),
-    import("./ch3-social.js").then(social => social.loadTokyoSocial()),
+    import("./ch3-social.js").then(social => { tokyoSocial = social; return social.loadTokyoSocial(); }),
     refreshOptional(),
   ]);
   if (state !== owner) return;
@@ -363,11 +384,6 @@ async function performTokyoSpot(entry, io, { staminaGuard }) {
   const owner = state;
   await refreshOptional();
   if (entry.place === "shop") { await openShop({ branch: "tokyo" }); return unused; }
-  if (entry.place === "lime") {
-    const social = await import("./ch3-social.js");
-    await keepDailyHud(() => social.openTokyoLime({}));
-    return unused;
-  }
   if (entry.place === "shrine") { await keepDailyHud(() => reflectAt("tokyo_shrine")); return unused; }
   if (entry.place === "club") {
     const club = await import("../daily/dj-club.js");

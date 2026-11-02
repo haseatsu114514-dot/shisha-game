@@ -1,10 +1,42 @@
 # 第4章ドバイ・ラクダレース（CAMEL RACE）の画像素材 ── Codex への依頼（2026-11-02）
 
-Claude（Fable）は画像を生成しない。ここにある依頼文を Codex にコピペして生成し、届いた画像をこのフォルダに原画として保存してから組み込む。
-仕様と用途は [docs/spec/camel_race.md](../../docs/spec/camel_race.md)。届くまでゲームは `remake/js/minigames/camel-race.js` の Canvas 描写（砂漠・ラクダ・ロボット騎手・SUV・砂煙）で動く。
+Claude は画像を生成しない。ここにある依頼文を Codex にコピペして生成し、届いた画像をこのフォルダに原画として保存してから組み込む。
+仕様と用途は [docs/spec/camel_race.md](../../docs/spec/camel_race.md)。採用済みの絵が読めない環境では、`remake/js/minigames/camel-race.js` が Canvas の描画（ラクダ・ロボット騎手・SUV）に戻る。
 
 共通の画風: `tools/bg_prompts.txt` の先頭の指針（`bg_eden_shop.png` を基準にした温かい2Dドット絵〜ピクセルペインター調。写真調・滑らかな3D調にしない）。立ち絵は `.claude/skills/character-portrait-remaster/SKILL.md`（1回の生成で1人・1表情・人物の高さ1300px以上・マゼンタ #FF00FF 背景）と `docs/prompts/image_generation_guide.md`。
 焼き込み禁止（全素材共通）: 文字・ロゴ・数字・ゲージ・watermark。レース画面の順位・距離・スタミナ・合図の輪・PERFECT 等の表示はコードが描く。シーシャ台は写さない（この題材では機材の描写は不要）。実在の競走場・人物・車種のロゴを模写しない。
+
+> 2026-11-02 CR08: レース画面のUI素材（順位の札・メダル・計器板・ゲージ・リモコンのボタン・出走表のカード・判子・遊び方の絵）の依頼は [ui-request.md](ui-request.md)。
+
+## 採用の記録（2026-11-02）
+
+Codex が2回に分けてギガファイル便で渡した候補から選んだ。1回目は PR #2304 のコメント（背景3・ラクダ3・騎手3・SUV3。ZIP SHA-256 `569ea24f…`）、2回目はオーナー経由（SUV の修正版・回転用の車輪・サイフとラシードの通常各3案。ZIP SHA-256 `ced7ee26…`）。どちらも同梱の SHA256SUMS と全ファイルが一致した。オーナー「確認して選定して」で Claude が選んだ。
+
+| 素材 | 採用 | 理由 | ゲーム用 |
+|---|---|---|---|
+| CR-BG01 背景 | **A** | 文字・ロゴ・人影なし。手前の柵は立ち絵の後ろに隠れる。C のテント下の影は停めた車の影程度で、A が最も明るく見通しがよい | `assets/backgrounds/bg_dubai_camel_track_morning.png`（候補 1280×720 をそのまま） |
+| CR-GM01 ラクダ | **A** | 4コマとも背の線（x=240）が 100〜101px で、ずれ 1px 以内。B は 27px、C は 15px 上下する。3コマ目の胴が詰まって見えるのは脚を引き寄せる瞬間で、実際のギャロップに近い | `assets/ui/camel_race/camel_{1..4}.png`（512×384） |
+| CR-GM01 騎手 | **B** | いちばん簡潔な箱型。コブの頂点（x=260）の 45px 後ろ・背の線に鞍の底を合わせ、ラクダの 0.9 倍で自然に座ることを確認（`review/jockey-B-on-camel-A-fit.png`） | `assets/ui/camel_race/jockey.png`（160×160） |
+| CR-GM02 SUV | **C の修正版（generic-v2）** | 1回目の3案は前の顔と背面のスペアタイヤが実在の車種にそっくりだったので、前の顔を四角い灯と平らなグリルにした修正版を採用。背面のスペアなし | `assets/ui/camel_race/suv.png`（720×360） |
+| 回転用の車輪 | 採用 | 車体の車輪（後 167,259・前 581,259）の上に 137/160 倍で重ね、地面を流れる速さで回す | `assets/ui/camel_race/wheel.png`（160×160） |
+| サイフ 通常 | **A** | 正本の「短く刈った黒髪・細い整えた髭・よく笑う」に最も近い（B は髪が長め、C は茶色がかった髪） | `assets/sprites/characters/saif/chr_saif_normal.png`（896×1200） |
+| ラシード 通常 | **B** | 日焼けと深いしわ、口数の少ない調教師らしい硬い表情。小さなリモコンが見える | `assets/sprites/characters/rashid/chr_rashid_normal.png`（896×1200） |
+
+- ゲーム用は Codex の候補（縮小と配置だけ・拡大なし）をそのまま使い、`tools/pixelize.py` は通していない（ヨルの立ち絵と同じ扱い）。WebP は `remake/tools/build_images.py` の `encode`、立ち絵と背景の目録は `build_manifest.py --portraits-only saif rashid` と `--backgrounds-only`。
+- 立ち絵の顔の位置は `data/portrait_metrics.json` に記録した。**サイフ 8.62 頭身、ラシード 9.75 頭身で、規格（標準 6.4〜7.7）より頭が小さい**。既存のシェイク 8.88・太陽 9.08 と同じ帯で、CI は警告だけ。表情差分を作る前に、規格どおり約7頭身で通常を作り直すかはオーナー判断（`docs/portrait_standard.md`）。ラシードの頭頂はグトラの下なので推定（目〜あごの長さから）。
+- 顔アイコンは `python3 tools/make_face_icons.py saif rashid`。サイフは身長 183cm なので `spriteScale` 1.05（スミ 182cm と同じ）。
+- 表情差分は未制作。台本の smile／surprise／excited／wink は、無い表情として normal で表示される。
+- 不採用の候補は `review/` の比較図（contact-1〜3・saif/rashid-comparison・suv-wheel-sand）に残す。採用分の原画は `originals/`。生成指示と検証は `review/*.json`。
+
+| 原画（`originals/`） | 寸法 | SHA-256 |
+|---|---|---|
+| `CR-BG01-A.png` | 1672×941 | `d0addb7a80fd271c1b26c663dfb020f5f2caaa06314bccb49ea753759e87deb2` |
+| `CR-GM01-camel-A.png` | 1448×1086（2×2） | `cc4324d90bd3c7fe22346cd6842a4e1c3a326528421f4579d18afe8604a4213a` |
+| `CR-GM01-jockey-B.png` | 1254×1254 | `cdfd2055067174fa41475a9a97948c5c0e9b05f1aa97bd48ad4b496aab2f7804` |
+| `CR-GM02-C-generic-v2.png` | 1774×887 | `24d918323aa19c5af57b077b63b505fde86b511d013a6b1d127f52d282a806ad` |
+| `CR-GM02-wheel.png` | 1254×1254 | `43d888db865649b8e3fd1ef9b736fd05f30b377392dbcb5be2bd723a2f058dd5` |
+| `saif-normal-A-v2.png` | 887×1774 | `0308bfb8af01fc40a2a0b8a5af5bfe375740fd0b5ab30152e75095b016f676d5` |
+| `rashid-normal-B.png` | 887×1774 | `d2c02f934120075cec198a64e96e87a80146e4f0882e8538dd29a1f9faafa33b` |
 
 ## 一覧
 

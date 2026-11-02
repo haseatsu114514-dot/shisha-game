@@ -175,7 +175,9 @@ async function morning() {
   else await dayCard(dayTitle(), countdownText(), { weather: weatherOf(), forecast: tomorrowForecast() });
   // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
   // 恋人のデートの誘いを出さない章（第5章）は、恋人の朝のLIMEだけ届く（lover-entry.js と同じ扱い）。
-  const n = deliverMorning({ fixedNight, invitations: chapterDef.dateInvitations !== false });
+  // 章の側から届く朝のLIME（第3章の東京の恋人からの訪問の相談など）
+  const extra = chapterDef.morningLime?.() || 0;
+  const n = deliverMorning({ fixedNight, invitations: chapterDef.dateInvitations !== false }) + extra;
   if (n) pushNotice(n, { onOpen: (sender) => {
     if (isChoosingDestination() && !layers.modal.classList.contains("show")) phoneButton({ sender });
     else queuedLimeSender = sender;
@@ -202,7 +204,11 @@ async function readLime(sender) {
   const before = state.pendingInvite;
   const wasWaiting = !!before?.awaitingLimeClose;
   let interrupted = false;
-  await openLime({ tutorial: first, sender, fixedNight, beforeClose: async () => {
+  let shortcutUsed = false;
+  // 章が足す入口の行（第3章の東京の「地元との連絡」など）。使ったら地図を描き直す。
+  const shortcuts = (chapterDef?.limeShortcuts?.() || []).map(shortcut => ({ ...shortcut,
+    run: async () => { shortcutUsed = true; await shortcut.run(); } }));
+  await openLime({ tutorial: first, sender, fixedNight, shortcuts, beforeClose: async () => {
     const invite = state.pendingInvite;
     if (!invite || invite === before && !wasWaiting || !immediateInvitation(invite, state)) return;
     const owner = state;
@@ -222,6 +228,7 @@ async function readLime(sender) {
   save();
   // 後の時間帯の約束もデータは維持する。常設バナーは出さない。
   if (!interrupted && state.pendingInvite && state.pendingInvite !== before) interruptMap("__lime__");
+  else if (!interrupted && shortcutUsed) interruptMap("__lime__");
 }
 
 async function confirmLimeReminder(destination, { spendsAction = true, slotsUsed = 1 } = {}) {
