@@ -19,7 +19,7 @@ import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_
   endChapterFourDay, finishChapterFourEve, chapterFourMandatory, revealChapterFourSheikh,
   chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE,
   CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour, chapterFourRead,
-  chapterFourDaily, enterChapterFourEve, chapterFourEveDay, chapterFourTournamentDay } from "./ch4-progress.js";
+  chapterFourDaily, enterChapterFourEve, chapterFourEveDay, chapterFourTournamentDay, chapterFourArrivalsDue } from "./ch4-progress.js";
 
 const CH4_SPOT_SCENES = CH4_SCENE_FILES.ch4_spots;
 import { chapterFourMapModel } from "./ch4-map-model.js";
@@ -414,8 +414,13 @@ async function visit(owner, id) {
   await renderStage(owner);
 }
 
-/** 前夜: 未読の必須場面を story_routes の順に強制消化する。繋ぎ場面があれば先に再生。 */
+/**
+ * 前夜: 別便で来た応援の到着を1人ずつ読んでから、未読の必須場面を story_routes の順に強制消化する。
+ * 繋ぎ場面があれば先に再生。到着を読み終えた恋人だけが、前夜の過ごし方で「その場にいる」人になる。
+ */
 async function renderEve(owner) {
+  const [arrival] = chapterFourArrivalsDue(state);
+  if (arrival) { await renderArrival(owner, arrival); return; }
   const [next] = chapterFourMandatory(state);
   if (!next) {
     // 必須場面の後、大会日へ進む前に、前夜の過ごし方を一度だけ確定する（#1895）。
@@ -439,6 +444,19 @@ async function renderEve(owner) {
       await renderStage(owner);
     }, true),
   ], "", next.id);
+}
+
+/** 前夜祭の日、別便の応援の到着（台本の冒頭が出迎え）。名前はカードに出さない（ましろちゃん等の呼び方は台本に任せる）。 */
+async function renderArrival(owner, arrival) {
+  await setBg(bgUrl(CH4_SCENE_BG[arrival.scene]), { instant: true });
+  if (!current(owner)) return;
+  card(owner, "arrival", `DAY ${chapterFourEveDay(state)}・前夜祭の日`, "別の便で応援に来てくれる人が、ドバイに着いたらしい。", [
+    button(owner, "続きを読む", "continue", async () => {
+      // 最後まで読んだ時だけ確定・保存する。中断・LOADでは同じ到着からやり直す。
+      if (!await readAndCommit(owner, arrival.scene)) return;
+      await renderStage(owner);
+    }, true),
+  ], "", arrival.scene);
 }
 
 /**

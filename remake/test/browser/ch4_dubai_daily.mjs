@@ -1,6 +1,7 @@
 // 第4章のドバイを日常ループで遊ぶ（VOL04・版2）。出発の朝（ドバイDAY1）の到着・宿の場面から、ドバイの地図へ。
 // スークの初訪問（市場→最初の出会い）→ FESTA（代金3,000円）→ 夜 → 翌朝、宿で休むと道具の手入れ、を実UIで通す。
 // もう一件は、DAY12の夜を越えると前夜祭の日（DAY13）の前夜の流れへ入り、必須の場面が並ぶこと。
+// 別便の応援（恋人・ましろ）がいれば、前夜祭より先に到着の場面を読み、到着した恋人を前夜に誘えること。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
@@ -141,5 +142,44 @@ await suite("ch4-dubai-daily", async check => {
     assert.equal(state.flags._ch4.day, 13);
     assert.equal(state.day, 61);
     assert.match(await page.locator(dt("ch4-eve")).innerText(), /DAY 13・前夜/);
+  });
+
+  // 同行なしで、凛（恋人）とましろ（第3章クリア）が別便で応援に来る。前夜祭の日に凛→ましろちゃんの到着を読み、
+  // 前夜祭の後、到着した凛を前夜に誘える。到着の途中でリロードしても、同じ到着から読み直し二重に確定しない。
+  await check("a-separate-flight-lover-arrives-on-the-festival-day-and-can-be-invited", async page => {
+    await seed(page, (value, progress) => {
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      for (const id of ["ch4_dubai_souq", "ch4_stranger_first", "ch4_festa", "ch4_inn_tool_care", "ch4_stranger_second"]) p.read[id] = true;
+      p.firstDay = 1;
+      value.day = p.startDay + 11; value.slot = 1; p.day = 12;
+      value.lovers = ["rin"]; value.met.rin = true; value.contacts.push("rin");
+      value.flags._overseas_companion = { decided: true, companion: null, supports: ["rin", "mashiro"] };
+    });
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: 60, slot: 1 });
+    await go(page, "ch4_dubai_inn");
+    const arrival = id => `${dt("ch4-arrival")}[data-scene="${id}"]`;
+    await page.locator(arrival("ch4_rin_dubai_girlfriend")).waitFor({ timeout: 60000 });
+    assert.match(await page.locator(dt("ch4-arrival")).innerText(), /DAY 13・前夜祭の日/);
+    assert.equal((await get(page)).flags._ch4.part, "eve");
+    await loadSlot(page, 0);
+    await page.locator(arrival("ch4_rin_dubai_girlfriend")).waitFor({ timeout: 60000 });
+    assert.equal((await get(page)).flags._ch4.read.ch4_rin_dubai_girlfriend, undefined, "Nothing is committed before the read");
+    await page.locator(dt("ch4-continue")).click();
+    await page.locator(arrival("ch4_mashiro_dubai_friend")).waitFor();
+    assert.equal((await get(page)).flags._ch4.read.ch4_rin_dubai_girlfriend, true);
+    await page.locator(dt("ch4-continue")).click();
+    for (const id of ["ch4_wang_reception", "ch4_stranger_third"]) {
+      await page.locator(`${dt("ch4-eve")}[data-scene="${id}"]`).waitFor();
+      await page.locator(dt("ch4-continue")).click();
+    }
+    await page.locator(dt("ch4-evening")).waitFor();
+    assert.match(await page.locator(dt("ch4-evening")).innerText(), /と過ごす時間がある/);
+    await page.locator(dt("ch4-evening-date")).click();
+    await page.waitForFunction(() => !!window.__remake.state.flags._ch4_evening, null, { timeout: 60000 });
+    const state = await get(page);
+    assert.deepEqual(state.flags._ch4_evening, { kind: "date", participants: ["rin"] });
+    assert.equal(state.flags._ch4.read.ch4_mashiro_dubai_friend, true);
   });
 });

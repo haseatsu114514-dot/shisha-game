@@ -422,6 +422,18 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.equal(ch4.selectChapterFourEvening(routes, value, 'minto').kind, 'rest');
   value = dubaiEve(['minto'], null, {arrived: ['minto']});
   assert.equal(ch4.chapterFourEveningPartner(routes, value), 'minto');
+  // 前夜祭の日の到着（ch4-progress.js）: 前夜祭より前に到着を確定した別便の恋人が、前夜に誘える相手になる。
+  // 友人版で来たましろ（視察の別行動）はその場に数えない。
+  value = dubaiEve(['minto'], null);
+  for (const entry of ch4Progress.CH4_MANDATORY) delete value.flags._ch4.read[entry.id]; // 前夜祭の前の前夜
+  assert.deepEqual(ch4Progress.chapterFourArrivalsDue(value).map(entry => entry.scene),
+    [routes.romance.minto.arrival, 'ch4_mashiro_dubai_friend']);
+  assert(ch4Progress.completeChapterFourScene(value, routes.romance.minto.arrival));
+  assert(ch4Progress.completeChapterFourScene(value, 'ch4_mashiro_dubai_friend'));
+  for (const entry of ch4Progress.CH4_MANDATORY) value.flags._ch4.read[entry.id] = true;
+  assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, ['minto']);
+  assert.equal(ch4.chapterFourEveningPartner(routes, value), 'minto');
+  assert.deepEqual(ch4.selectChapterFourEvening(routes, value, 'minto').scenes, [routes.romance.minto.date]);
   // 友人として来るましろは恋人ではないので誘えず、恋人の数にも入らない。
   value = dubaiEve(['rin'], 'rin', {arrived: ['mashiro']});
   assert(ch4.chapterFourEveningContext(routes, value).present.includes('mashiro'));
