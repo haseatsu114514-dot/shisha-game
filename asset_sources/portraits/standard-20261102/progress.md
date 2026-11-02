@@ -24,19 +24,19 @@
 
 | キャラ | 表情 | 状態 |
 |---|---|---|
-| みんと（`minto`） | normal・smile・sad・surprise・wink | 組み込み済み（Draft PR・オーナー確認待ち） |
+| みんと（`minto`） | normal・smile・sad・surprise・wink | 組み込み済み |
 
 ## 段階2：残りの通常（7枚）
 
 | 順 | キャラ | 表情 | 状態 | メモ |
 |---|---|---|---|---|
-| 4 | 六角サイ（`sai`） | normal | 推奨B（オーナー確認待ち） | 8.39→約7.6頭身。規格の上限に近い。原画は `sai-remaster-v2/normal-source.png` |
-| 5 | 零-REI-（`rei`） | normal | 推奨C-v2（オーナー確認待ち） | 8.67→約7.35頭身。原画は `rei-remaster-v2/normal-source.png` |
-| 6 | 斧崎マキ（`maki`） | normal | 推奨B（オーナー確認待ち） | 8.74→約7.1頭身。3案とも規格内。原画は `maki-remaster-v2/normal-source.png` |
-| 7 | 路上占い師（`uranaishi`） | normal | 作り直し（6案とも規格外） | 8.78→最良のC-v2でも約7.9〜8.1頭身。フードで頭頂が隠れ、頭がほとんど大きくならない |
-| 8 | シェイク（`sheikh`） | normal | 作り直し（3案とも規格外） | 8.88→約7.9〜8.5頭身。頭巾で頭頂が隠れる |
-| 9 | 王煙楼（`master_hookah`） | normal | 作り直し（A案が境目） | 8.98→A案で約7.7〜7.8頭身。長いひげであごが隠れる。腰のホースの機材検品（shisha_reference §4）も保留 |
-| 10 | ダ・シルヴァ太陽（`da_silva`） | normal | 推奨B（オーナー確認待ち） | 9.08→約7.0〜7.3頭身。原画は `da_silva-remaster-v2/normal-source.png` |
+| 4 | 六角サイ（`sai`） | normal | 合格（B案） | 8.39→約7.6頭身。規格の上限に近い。原画は `sai-remaster-v2/normal-source.png` |
+| 5 | 零-REI-（`rei`） | normal | 合格（C-v2案） | 8.67→約7.35頭身。原画は `rei-remaster-v2/normal-source.png` |
+| 6 | 斧崎マキ（`maki`） | normal | 合格（B案） | 8.74→約7.1頭身。3案とも規格内。原画は `maki-remaster-v2/normal-source.png` |
+| 7 | 路上占い師（`uranaishi`） | normal | 作り直し（依頼文は prompts.md の TS12） | 8.78→最良のC-v2でも約7.9〜8.1頭身。フードで頭頂が隠れ、頭がほとんど大きくならない |
+| 8 | シェイク（`sheikh`） | normal | 作り直し（依頼文は prompts.md の TS12） | 8.88→約7.9〜8.5頭身。頭巾で頭頂が隠れる |
+| 9 | 王煙楼（`master_hookah`） | normal | 作り直し（依頼文は prompts.md の TS12） | 8.98→A案で約7.7〜7.8頭身。長いひげであごが隠れる。腰のホースの機材検品（shisha_reference §4）も保留 |
+| 10 | ダ・シルヴァ太陽（`da_silva`） | normal | 合格（B案） | 9.08→約7.0〜7.3頭身。原画は `da_silva-remaster-v2/normal-source.png` |
 
 2026-11-02 TS10：Codex が7人の通常を各3案（零・路上占い師は初稿3案も）生成し、オーナーがギガファイル便（期限 2026-11-09、SHA256 `dac280234dbbf36391b14b95d07ff3c8ec480de249309cbc85c63856d326aa15`）で共有した。Claude が頭頂・あごを測り直した値と Codex の値は、各フォルダの `generation.json` の `candidates` にある（推奨案を選んだ4人だけ保存。残り3人の候補はZIPのみ）。
 
@@ -49,16 +49,16 @@
 
 | キャラ | 表情 | 状態 |
 |---|---|---|
-| 組長（神崎竜二）（`kumicho`） | smile・serious・surprise・sad・smug | 組み込み済み（Draft PR・オーナー確認待ち） |
-| スティーブ（`steve`） | smile・serious・surprise・sad | 組み込み済み（Draft PR・オーナー確認待ち） |
-| ヴォルク（`volk`） | smile・serious・surprise・sad | 組み込み済み（Draft PR・オーナー確認待ち） |
-| 六角サイ（`sai`） | smile・serious・surprise・thinking | 未着手 |
-| 零-REI-（`rei`） | smile・serious・surprise・sad | 未着手 |
-| 斧崎マキ（`maki`） | smile・serious・surprise・excited | 未着手 |
+| 組長（神崎竜二）（`kumicho`） | smile・serious・surprise・sad・smug | 組み込み済み |
+| スティーブ（`steve`） | smile・serious・surprise・sad | 組み込み済み |
+| ヴォルク（`volk`） | smile・serious・surprise・sad | 組み込み済み |
+| 六角サイ（`sai`） | smile・serious・surprise・thinking | 依頼文あり（prompts.md の TS11）・未生成 |
+| 零-REI-（`rei`） | smile・serious・surprise・sad | 依頼文あり（prompts.md の TS11）・未生成 |
+| 斧崎マキ（`maki`） | smile・serious・surprise・excited | 依頼文あり（prompts.md の TS11）・未生成 |
 | 路上占い師（`uranaishi`） | smile・serious・surprise・sad | 未着手 |
 | シェイク（`sheikh`） | smile・serious・surprise・smug | 未着手 |
 | 王煙楼（`master_hookah`） | smile・serious・surprise・sad・angry・laugh | 未着手 |
-| ダ・シルヴァ太陽（`da_silva`） | smile・serious・surprise・excited | 未着手 |
+| ダ・シルヴァ太陽（`da_silva`） | smile・serious・surprise・excited | 依頼文あり（prompts.md の TS11）・未生成 |
 
 2026-11-02 TS09：Codex の候補（組長15・スティーブ12・ヴォルク12・みんと15＋旧案）から、新しい通常と会話画面での頭の大きさが最も近い案を選んで組み込んだ。選んだ案と全候補の値は各 `<id>-remaster-v2/generation.json`。
 
@@ -73,6 +73,8 @@
 - みんとは厚底靴のぶん頭身が大きく出るので、頭身ではなく会話画面での頭の大きさ（頭頂〜あご）で私服と比べた。
 - 会話画面で21表情×PC／スマホを切り替え、読み込み・見切れ・配置の枠の動きが無いことを確認した。
 
+2026-11-02 オーナー「推奨のをお願い」：TS09 の21枚をゲームに組み込み（PR #2369）、サイB・零C-v2・マキB・太陽Bの通常を合格にした。路上占い師・シェイク・王煙楼は作り直す。次は Codex で「立ち絵そろえ 続けて」と送り、prompts.md の TS11（4人の表情差分16枚）と TS12（3人の通常の作り直し）を作る。
+
 ## オーナー判断（2026-11-02 回答済み）
 
 | 件 | 回答 |
@@ -80,4 +82,5 @@
 | 試作の選定 | 任せる → 組長C・スティーブB・ヴォルクB |
 | みんとの私服 | 可愛い方 → 頭が大きい私服に営業姿を合わせる（段階1.5） |
 | 上園 | そのまま（`accepted`） |
+| 7人の通常（TS10） | 推奨のまま → サイB・零C-v2・マキB・太陽Bを合格、路上占い師・シェイク・王煙楼は作り直し |
 | あげは・サメちゃんの区分 | 可愛い方 → 小柄枠のまま |
