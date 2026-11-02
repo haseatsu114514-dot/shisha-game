@@ -216,6 +216,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch4", "progression"],
   ["_ch4_camel", "progression"], // ドバイのラクダレース（段階・自己ベスト）。周回では持ち越さない
   ["_ch4_cleared", "progression"],
+  ["_ch4_dubai_talks", "progression"],
   ["_ch4_evening", "progression"],
   ["_ch4_prep", "progression"],
   ["_ch4_preview_seen", "progression"],
