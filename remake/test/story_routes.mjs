@@ -460,6 +460,17 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
     const lover = reached.flat().find(row => row.condition_type === 'lover' && row.char_id === who);
     assert(lover && scene.branches[lover.next_true]?.some(row => row.speaker === who), `${who} answers in ${sceneId}`);
   }
+  // #2025: ひよりを含む3人以上の台本は、ひより以外の恋人の台詞を本人の恋人条件の分岐だけに置く。
+  const allHiyori = sceneData.get('remake_shuraba_all_hiyori');
+  assert(ch1.scenes.includes('remake_shuraba_all_hiyori') && allHiyori, 'chapter 1 shuraba with Hiyori and 2+ others');
+  assert(allHiyori.lines.some(row => row.speaker === 'hiyori'), 'Hiyori always speaks');
+  for (const who of ['minto', 'rin', 'tsumugi']) {
+    assert(!allHiyori.lines.some(row => row.speaker === who), `${who} is not in the unconditional lines`);
+    const gated = allHiyori.lines.filter(row => row.type === 'condition' && row.condition_type === 'lover' && row.char_id === who);
+    const own = new Set(gated.map(row => row.next_true));
+    assert(gated.length && [...own].every(key => allHiyori.branches[key]?.every(row => row.speaker === who)), `${who} speaks only in own lover branches`);
+    for (const [key, rows] of Object.entries(allHiyori.branches)) if (rows.some(row => row.speaker === who)) assert(own.has(key), `${key} is gated by ${who}`);
+  }
 }
 
 console.log('OK: seven routes, 0–7 lovers, Tokyo near-conflict, post-ending conflict, location, old saves, chapter 3 optional/eve wiring, chapter 4 eve wiring, chapter 1 shuraba recall');

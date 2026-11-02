@@ -11,14 +11,17 @@ async function setup(page) {
     };
     A.chapter.setupHooks(); A.vn.vnTest.turbo = true;
     A.trace = [];
-    A.vn.hooks.onLine = (id, line) => A.trace.push({ id, text: line.text, key: line._seenKey });
+    A.vn.hooks.onLine = (id, line) => A.trace.push({ id, text: line.text, key: line._seenKey, speaker: line.speaker });
     A.room = A.data.DB.dialogues.ch1_tournament_arrival.lines.find(l => l.text?.startsWith("出場者控室に入る。" )).text;
   });
 }
 
 await suite("ch1-arrival", async check => {
-  const combinations = [[], ["minto"], ["rin"], ["tsumugi"],
-    ["minto", "rin"], ["minto", "tsumugi"], ["rin", "tsumugi"], ["minto", "rin", "tsumugi"]];
+  // #2025: 第1章で恋人になれる4人（ひよりを含む）の全組み合わせ。
+  const heroines = ["hiyori", "minto", "rin", "tsumugi"];
+  const combinations = Array.from({ length: 1 << heroines.length }, (_, bits) => heroines.filter((_, i) => bits & (1 << i)));
+  const sceneFor = lovers => lovers.length < 2 ? null
+    : `remake_shuraba_${lovers.length >= 3 ? (lovers.includes("hiyori") ? "all_hiyori" : "all") : lovers.slice().sort().join("_")}`;
   for (const lovers of combinations) await check(lovers.join("-") || "no-lover", async page => {
     await setup(page);
     const result = await page.evaluate(async lovers => {
@@ -35,9 +38,11 @@ await suite("ch1-arrival", async check => {
         after: JSON.stringify({ lovers: loaded.lovers, stats: loaded.stats, money: loaded.money, affinity: loaded.affinity }),
         guilt: loaded.guilt, flag: !!loaded.flags._shuraba_ch1 };
     }, lovers);
-    const expected = lovers.length >= 2 ? `remake_shuraba_${lovers.length === 3 ? "all" : lovers.slice().sort().join("_")}` : null;
+    const expected = sceneFor(lovers);
     const shuraba = result.first.filter(l => l.id.startsWith("remake_shuraba_"));
     assert.deepEqual([...new Set(shuraba.map(l => l.id))], expected ? [expected] : []);
+    // 鉢合わせで話すヒロインは、恋人として居合わせた全員だけ（恋人でない人は出てこない）。
+    assert.deepEqual([...new Set(shuraba.map(l => l.speaker).filter(id => heroines.includes(id)))].sort(), expected ? lovers.slice().sort() : []);
     const roomAt = result.first.findIndex(l => l.text === result.room);
     assert(roomAt > 0);
     if (expected) {
