@@ -1,0 +1,47 @@
+{
+  "variant": "b",
+  "path": "/workspace/shared/trpg-background-candidates/purikura-hero/background-b.png",
+  "size": [
+    1672,
+    941
+  ],
+  "mode": "RGB",
+  "sha256": "3212ad063be7b5a1a6d74d1c850ac9d34f4a1e8372a1ae1791981ef7a97ad98d",
+  "tool": "built-in image_gen",
+  "prompt": "prompt-b.txt",
+  "adoption": "unselected candidate",
+  "visualQA": "All six props/no people/shisha/legible text. Showcase12/32 includes12/36; fountain24/63 plaza target22/74 near basin base; gate sign56/30 target48/56 bridge/water (major miss); mirror84/25 target80/30 within gallery; sticker41/88 target38/84 within sheet; throne62/14 target60/20 at lower seat/dais. Shark shadow clear. Sign coordinate correction required; architectural cutaway upper throne review.",
+  "generated_date_utc": "2026-11-02",
+  "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+  "input_image_references": [],
+  "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+  "raw_original": true,
+  "target_size": [
+    1280,
+    720
+  ],
+  "production_size_verified": false,
+  "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+  "scenario": "purikura-hero",
+  "prompt_sha256": "5748b14fb994541a1736cdea9bf739fb79621173572e11b9b34be27591ca4286",
+  "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 12 purikura-hero\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: きらめき王国。色あせた広場の噴水、写真屋のショーケース、サメの泳ぐ堀と城門、撮影城の鏡の間、落ちていたプリ、魔王の玉座。 Setting: きらめき王国 / 王国の広場と撮影城. Mood: 盛りを吸われて、王国じゅうが少し地味。城から、今日もシャッターの音。. Fictional place from a tabletop story (コメディ・ファンタジー). Concrete click-investigation objects, each a distinct readable prop at its position: 王国の広場 clearly visible around x22% y74%; 写真屋のショーケース clearly visible around x12% y36%; 城門の看板 clearly visible around x48% y56%; 撮影城の鏡の間 clearly visible around x80% y30%; 落とし物のプリ clearly visible around x38% y84%; 魔王の玉座 clearly visible around x60% y20%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant B: delicate ink-and-gouache comedic fantasy plaza and photo castle, muted lavender, peach and cool limestone; bright readable daylight.\nONE coherent wide town plaza looking into open castle courtyard/galleries, no montage. Faded plaza fountain and pavement at22%/74%. Photograph-shop display case at12%/36%, show empty decorative photo frames/camera objects, NO human photographs or logos. Castle gate sign at48%/56%, completely BLANK plaque, no writing. Tall mirror gallery visible through open right arcade at80%/30%, only architecture reflected, no people/reflections. Dropped purikura photo sticker sheet on foreground paving at38%/84%, large enough to recognize several tiny BLANK photo cells framed with simple hearts/stars, no faces, lettering or branding. Demon king's EMPTY ornate throne visible through central upper gate/gallery at60%/20%, distinguishable throne with small playful crown/heart carving, no seated character. Moat in the midground with subtle large shark shadow underwater, not attacking. Ensure all six named investigation targets at the exact production coordinates. No humans/creatures on land, no silhouettes, no shisha, no writing on any object. Keep clear believable architecture, calm upper-center.",
+  "byte_size": 3044751,
+  "reference_documents": [
+    {
+      "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/f600fcf9db0b21c148f553ad1f239bc4646c3d3b/asset_sources/trpg-scenarios/README.md",
+      "blob_sha": "057937ca0f39d2b188fa8e088c585b0d890a18fb"
+    },
+    {
+      "path": "/workspace/shared/trpg-background-candidates/latest-main-background-prompts.json",
+      "sha256": "639cd542bdc72e5ff109c5bf32628e10680766ccd4c6e279d56c851eb8927547"
+    },
+    {
+      "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+      "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+    },
+    {
+      "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+      "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+    }
+  ]
+}

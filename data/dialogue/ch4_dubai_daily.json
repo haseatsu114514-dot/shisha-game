@@ -1,0 +1,234 @@
+{
+  "comment": "第4章ドバイの日常（昼・夜に1行動ずつ）で読む短い任意会話。本筋の強制場面は ch4_main.json。すべて前夜祭より前の自由行動で読む想定で、大会後には出さない。シェイク（旅装の男）は出さない・匂わせない。王煙楼は名前の噂まで。太陽は ch4_festa の「次は大会で会おう」を守り、はじめと会話はしない（遠くから見かける・身ぶりまで）。GRAND SMOKE の出場者は四人だけなので、練習会場の他国の作り手は出展ブースの人として書く。報酬の文・背景指定はコード側。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_souq_talk_b",
+      "comment": "スーク再訪（ch4_dubai_souq_revisit の後の想定）。茶の屋台の甘い紅茶。屋台の人は shop_clerk（店員）の単発話者。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "スークの奥、茶の屋台の前で足が止まった。小さなグラスが、盆に並んでいる。" },
+        { "speaker": "shop_clerk", "face": "", "text": "暑い日は、甘いのを少し。どうぞ" },
+        { "speaker": "", "face": "", "text": "熱い紅茶に、砂糖がたっぷり溶けていた。グラスは、三口で空になる大きさだ。" },
+        { "speaker": "hajime", "face": "surprise", "text": "甘っ……でも、もう一口いけるな" },
+        { "speaker": "shop_clerk", "face": "", "text": "大きいグラスだと、甘すぎて残すでしょう" },
+        { "speaker": "hajime", "face": "normal", "text": "（甘さは、量と一緒に決めるのか）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_souq_talk_c",
+      "comment": "スーク再訪。スパイス屋の乾燥レモン。割り方で香りの出る速さが変わる話を、葉のほぐし方に重ねる。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "スパイス屋の籠に、黒く乾いた丸い実が積まれていた。" },
+        { "speaker": "spice_merchant", "face": "", "text": "乾かしたレモンだよ。煮込みに入れる" },
+        { "speaker": "", "face": "", "text": "一つ割ってもらうと、酸っぱさの奥から、焦がしたような香りが立った。" },
+        { "speaker": "spice_merchant", "face": "", "text": "丸ごとだと、ゆっくり出る。割ると、すぐ出る。どっちも同じ実だよ" },
+        { "speaker": "hajime", "face": "normal", "text": "（ほぐし方ひとつで、香りの出る速さが変わる。葉と同じだ）" },
+        { "speaker": "", "face": "", "text": "割った半分を、紙に包んで渡された。ポケットの中で、しばらく香っていた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_souq_talk_d",
+      "comment": "スーク再訪。日が傾いてからの人の流れ。座れる場所の前で人が止まる。祈りの呼びかけは説明せず、聞こえたことだけ書く。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "日が傾いてから、スークへ来た。昼に閉まっていた店が、シャッターを上げはじめている。" },
+        { "speaker": "", "face": "", "text": "暑さが引くのを待っていたように、通りが人で埋まっていく。" },
+        { "speaker": "hajime", "face": "surprise", "text": "（昼の倍はいる。……みんな、この時間を待ってたのか）" },
+        { "speaker": "", "face": "", "text": "遠くから、祈りの呼びかけが聞こえてきた。通りの声が、少しだけ低くなる。" },
+        { "speaker": "", "face": "", "text": "人の流れは、角の茶の屋台で必ずゆるむ。店の前に、古い長椅子がひとつ置いてあった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（座れる場所があると、人は止まる。……店を持ったら、椅子から考えよう）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_festa_talk_b",
+      "comment": "FESTAの出張ブース再訪（ch4_festa の後）。踊り疲れた人の席と、頼まれる前に注ぐ水。店員は shop_clerk。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "FESTAのブースを、もう一度のぞいた。前の方では、今日も手拍子が続いている。" },
+        { "speaker": "", "face": "", "text": "裏手の通路に、舞台へ背を向けた椅子が並んでいた。座った客は、みんな目を閉じている。" },
+        { "speaker": "shop_clerk", "face": "", "text": "踊り疲れた人の席です。こっちは、音を少し落としてるんですよ" },
+        { "speaker": "", "face": "", "text": "店員は、空いたグラスに黙って水を足していった。頼んだ客は、一人もいない。" },
+        { "speaker": "hajime", "face": "normal", "text": "頼まれる前に、注ぐんですね" },
+        { "speaker": "shop_clerk", "face": "", "text": "頼む元気が残ってない人が、ここに座るので" },
+        { "speaker": "hajime", "face": "normal", "text": "（前で盛り上げる人と、後ろで水を注ぐ人。両方で、一つの店なんだ）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_festa_talk_c",
+      "comment": "FESTA再訪。炭を回す店員と、閉店後に最後まで残る太陽の話。太陽は舞台に遠く見えるだけで、はじめとは話さない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "店員が炭の籠を提げて、客席と裏を何度も往復していた。" },
+        { "speaker": "hajime", "face": "normal", "text": "炭、ひとりで回してるんですか" },
+        { "speaker": "shop_clerk", "face": "", "text": "三人で順番です。太陽さんは、前に出る係なんで" },
+        { "speaker": "shop_clerk", "face": "", "text": "でも閉めたあと、最後まで残って床を拭くのは、あの人です" },
+        { "speaker": "", "face": "", "text": "舞台の方で、ひときわ大きな歓声が上がった。太陽の煙の輪が、天井の近くでほどけていく。" },
+        { "speaker": "hajime", "face": "normal", "text": "（派手な輪の下で、炭はずっと誰かが運んでる）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_festa_talk_d",
+      "comment": "FESTA再訪。幕の陰で休む太陽を見かける。目が合っても身ぶりだけで、最後の台詞は客席への呼びかけ（はじめとの会話ではない）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ブースの脇の幕の陰で、太陽が一人で腰を下ろしていた。" },
+        { "speaker": "", "face": "", "text": "汗を拭いて、水をゆっくり飲んでいる。舞台の上の顔とは、少し違って見えた。" },
+        { "speaker": "", "face": "", "text": "目が合うと、太陽は口の前に指を立てて、片目をつぶった。" },
+        { "speaker": "da_silva", "face": "excited", "text": "よし、休憩終わり！　次の曲いくぞ！" },
+        { "speaker": "", "face": "", "text": "太陽が幕の外へ出ると、手拍子がいっせいに戻った。" },
+        { "speaker": "hajime", "face": "normal", "text": "（あの人でも、休んでから笑いに行くんだ）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_cafe_talk_b",
+      "comment": "中心地の高級カフェ再訪（ch4_dubai_cafe_revisit の後の想定）。強い冷房と、頼まれる前の肩掛け。店員は cafe_staff。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "中心地のカフェ。扉をくぐると、冷えた空気が汗ばんだ肌に張りついた。" },
+        { "speaker": "", "face": "", "text": "奥の席で、店員が客に薄い肩掛けを差し出していた。客は、まだ何も頼んでいない。" },
+        { "speaker": "hajime", "face": "surprise", "text": "（寒いって、言ってなかったのに）" },
+        { "speaker": "", "face": "", "text": "同じ店員が、こちらの席にも肩掛けを持ってきた。" },
+        { "speaker": "cafe_staff", "face": "", "text": "外から来られた方は、汗が引くころにいちばん冷えますので" },
+        { "speaker": "hajime", "face": "normal", "text": "（暑さだけじゃない。冷えすぎにも、先に気づいてる）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_cafe_talk_c",
+      "comment": "高級カフェ再訪。炭籠を提げた係が、吸う間を見て炭を替える。値段の数字は書かない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "今日はほとんどの席が埋まっていた。炭籠を提げた係が、席の間を回っている。" },
+        { "speaker": "", "face": "", "text": "係は、煙が薄くなる少し前に炭を替えていく。気づいている客は、たぶん一人もいない。" },
+        { "speaker": "hajime", "face": "normal", "text": "どうして、替えどきが分かるんですか" },
+        { "speaker": "cafe_staff", "face": "", "text": "灰の色と、お客様が吸う間です。お話が弾むと、間が空きますので" },
+        { "speaker": "hajime", "face": "normal", "text": "（吸う間が空けば、炭はゆっくり減る。……見てるのは、炭だけじゃない）" },
+        { "speaker": "hajime", "face": "normal", "text": "（一台の値段には、この人が回り続ける時間も入ってるんだ）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_cafe_talk_d",
+      "comment": "高級カフェ再訪。電話を終えるまで下げに来ない給仕。急かされない時間の値段。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "隅の席で、年配の客が一人、ホースを手にしたまま電話で話し込んでいた。" },
+        { "speaker": "", "face": "", "text": "炭はとうに小さくなっている。それでも店員は、下げに来ない。" },
+        { "speaker": "", "face": "", "text": "客が電話を終えてホースを置くと、そこで初めて、店員が近づいた。" },
+        { "speaker": "cafe_staff", "face": "", "text": "新しい炭をお持ちしましょうか。それとも、お水だけにいたしますか" },
+        { "speaker": "", "face": "", "text": "客は笑って水を頼み、また窓の外を眺めはじめた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（吸い終わっても、席はその人のものなんだ）" },
+        { "speaker": "hajime", "face": "normal", "text": "（高い一台で買ってるのは、急かされない時間なのかもしれない）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_alley_talk_b",
+      "comment": "路地裏のカフェ再訪（ch4_stranger_second で店を知った後の想定）。旅装の男がいない静かな夜。使わない日の古い台の手入れ。店員は shop_clerk。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "夜の路地裏のカフェ。換気扇の低い音のほかは、静かだった。" },
+        { "speaker": "", "face": "", "text": "客は奥に二人だけ。盤の上の駒を、黙って動かしている。" },
+        { "speaker": "", "face": "", "text": "店員はカップを洗い終えると、古びた台のボトルにも新しい水を入れた。" },
+        { "speaker": "hajime", "face": "normal", "text": "その台、今日は使わないんですか" },
+        { "speaker": "shop_clerk", "face": "", "text": "使わない日も、水は替えます。古い台ほど、乾くと機嫌が悪いので" },
+        { "speaker": "hajime", "face": "smile", "text": "（使わない日の手入れか。……スミさんも、きっとそう言う）" },
+        { "speaker": "", "face": "", "text": "盤の二人が、同時に小さく笑った。勝負がついたらしい。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_alley_talk_c",
+      "comment": "路地裏のカフェ再訪。閉店前、客のいない店で店員と茶を一杯。休む時間も店の一部。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "閉店の少し前、路地裏のカフェに寄った。客は、もう誰もいない。" },
+        { "speaker": "", "face": "", "text": "店員が裏口を開けると、夜の風が細く通った。換気扇が止まり、店が静かになる。" },
+        { "speaker": "shop_clerk", "face": "", "text": "座っていてください。片づけの音しか、しませんけど" },
+        { "speaker": "", "face": "", "text": "甘いミントの茶が、小さなグラスで出てきた。店員も自分の分を注いで、向かいに座る。" },
+        { "speaker": "shop_clerk", "face": "", "text": "一日の終わりに、これを一杯。台たちと、私の休憩です" },
+        { "speaker": "hajime", "face": "normal", "text": "（休む時間まで、店の一部なんだな）" },
+        { "speaker": "", "face": "", "text": "飲み終えたグラスを流しへ運ぶと、店員は黙ってうなずいた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_naru_dubai_1",
+      "comment": "なると会う1回目（宿のロビー。昼・夜どちらでも読める）。ch4_opening の「吸いながら話す。まずはお前に勝ってからな」を受け、旅の話はまだしない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "宿のロビー。なるが窓際で、紙コップのコーヒーを手にしていた。" },
+        { "speaker": "naru", "face": "normal", "text": "時差、抜けたか？" },
+        { "speaker": "hajime", "face": "normal", "text": "まだ少し。変な時間に眠くなる。なるは？" },
+        { "speaker": "naru", "face": "smile", "text": "走ってきた。昼に外を歩くと、頭が煮える" },
+        { "speaker": "hajime", "face": "normal", "text": "旅先でも、走ってたの？" },
+        { "speaker": "naru", "face": "smile", "text": "それは、勝ってから話す約束だろ" },
+        { "speaker": "naru", "face": "normal", "text": "それより、飯は食えよ。台より先に、自分の腹な" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_naru_dubai_2",
+      "comment": "なると会う2回目（公式練習会場）。葉と配合は互いに見せない。冷房の風向きのような環境の話だけ、なるが惜しまず言う。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "公式練習会場。隣の台のなるが、葉のケースの蓋をこちら向きに立てた。" },
+        { "speaker": "hajime", "face": "smile", "text": "見ないって" },
+        { "speaker": "naru", "face": "smile", "text": "うまくなりたいなら全部見てけ、って言いたいとこだけどな。本番までは無しだ" },
+        { "speaker": "", "face": "", "text": "二人で同時に炭を置いた。天井の吹き出し口から、冷たい風が斜めに下りてくる。" },
+        { "speaker": "naru", "face": "normal", "text": "風、そっちの台に当たってる。向き、少し変えとけ" },
+        { "speaker": "hajime", "face": "normal", "text": "……ありがとう。配合は聞かないから" },
+        { "speaker": "naru", "face": "smile", "text": "聞かれても言わねえよ" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_naru_dubai_3",
+      "comment": "なると会う3回目（クリーク沿い。昼・夜どちらでも読める）。再開した店の話を短く。旅の話は一つだけで、続きは大会の後。なるはここでも負けを認めない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "クリーク沿い。手すりにもたれたなるが、渡し舟を目で追っていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "店、再開した日はどうだった？" },
+        { "speaker": "naru", "face": "normal", "text": "前からの客が、いつもの注文をした。休んでた理由も聞かずにな" },
+        { "speaker": "naru", "face": "smile", "text": "きつかったけど、一番うれしかった" },
+        { "speaker": "naru", "face": "normal", "text": "……旅の話も、一個だけな。客が吸う速さを、ずっと数えてた" },
+        { "speaker": "hajime", "face": "surprise", "text": "……俺も、ノートに同じこと書いてる" },
+        { "speaker": "naru", "face": "smile", "text": "そっか。じゃあ、なおさら負けられねえな" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_practice_hall_1",
+      "comment": "公式練習会場で一台を試す前。冷房と乾いた空気。出場者は四人だけなので、他国の作り手は出展ブースの人。王煙楼は練習枠の表の名前と噂だけ（ch4_wang_reception の「名前だけは、聞いたことがあった」と両立）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "大会の公式練習会場。本番と同じ型の台が、間を空けて並んでいる。" },
+        { "speaker": "", "face": "", "text": "扉をくぐると、外の熱気がぴたりと切れた。冷房が強く、空気が乾いている。" },
+        { "speaker": "hajime", "face": "normal", "text": "（開けた葉の袋は、すぐ口を閉じよう。ここだと、縁から乾く）" },
+        { "speaker": "", "face": "", "text": "天井の吹き出し口の真下を避けて、壁際の台を選んだ。" },
+        { "speaker": "", "face": "", "text": "向かいでは、出展ブースの作り手がボウルにアルミを張っていた。指先だけで、皺ひとつ残さない。" },
+        { "speaker": "", "face": "", "text": "練習枠の表に、王煙楼の名前があった。来るのはいつも、まだ誰もいない朝だという。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……まず、この部屋の熱を覚える）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_practice_hall_2",
+      "comment": "公式練習会場で一台を試した後。炭の減り方と、ノートに書く部屋の温度（ch4_final の「開場後の温度を書く」の前振り）。配合の中身は書かない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "一台を吸い終えて、炭を下ろした。" },
+        { "speaker": "hajime", "face": "serious", "text": "（tonariより、炭が早く白くなる。壁際でも、冷房の風が片側だけ削ってた）" },
+        { "speaker": "", "face": "", "text": "ノートの、吸っていた時間の欄の隣に、この部屋の温度を書き足した。" },
+        { "speaker": "", "face": "", "text": "向かいの作り手が、こちらの煙を見て親指を立てた。言葉は分からないまま、笑い返した。" },
+        { "speaker": "hajime", "face": "normal", "text": "（本番は客が座る。人の熱で、また変わるはずだ）" },
+        { "speaker": "hajime", "face": "normal", "text": "（もう一度、来よう）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_creek_walk_day",
+      "comment": "クリーク沿いを歩いて休む（昼）。体力が少し戻る行き先。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "クリーク沿いを歩いた。水面の照り返しがまぶしくて、目を細める。" },
+        { "speaker": "", "face": "", "text": "渡し舟が、ゆっくり向こう岸へ離れていく。急いでいる人は、見当たらなかった。" },
+        { "speaker": "", "face": "", "text": "木陰のベンチに座って、水を飲んだ。シャツの背中が、少しずつ乾いていく。" },
+        { "speaker": "hajime", "face": "normal", "text": "（作らない時間も、たまには要るな）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_creek_walk_night",
+      "comment": "クリーク沿いを歩いて休む（夜）。体力が少し戻る行き先。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "夜のクリーク沿い。向こう岸の明かりが、水の上で長く揺れている。" },
+        { "speaker": "", "face": "", "text": "昼の熱が抜けて、川風が少しだけ涼しい。家族連れが、敷物の上で夕食を広げていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（日本は、もう夜中か）" },
+        { "speaker": "", "face": "", "text": "深く息を吸って、ゆっくり吐いた。煙のない夜も、悪くない。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_inn_rest",
+      "comment": "宿で休む（昼・夜どちらでも読める）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "宿の部屋に戻り、冷房を一段弱めて横になった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（今日は何も作らない。それも、準備のうちだ）" },
+        { "speaker": "", "face": "", "text": "目を閉じると、廊下の足音が遠ざかっていった。" }
+      ]
+    }
+  ]
+}

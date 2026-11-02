@@ -24,7 +24,10 @@ const mocks = {
   addStamina: n => { core.state.stamina += n; }, addMoney: n => { core.state.money += n; },
   gainAffinity: noop, releaseAffinity: () => 0, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], setStoryAffinityCap: noop, releaseStoryAffinity: () => 0, affinityGateWaiting: () => false, earnStat: noop, ensureAffinityLevel: (id,level) => { core.state.affinity[id] = Math.max(core.state.affinity[id] || 0, [0,9,20,33,48,66][level]); }, syncMintoKnowledge: noop, meetHiyoriAtTonari: async () => false, afterStory: async () => true, playBgm: noop, syncSamechanKnowledge: noop, syncNightQueue: noop, expireInvitations: noop, initHud: noop, showHud: noop, setPhoneBadge: noop, presentNow: async ({label}={}) => { if(mode==="calendar"&&label==="今回のスロット")throw Error("after-action boundary"); }, spendableMoney: s => s.money, returnFareReserve: () => 0, affinityLevel: () => 0, currentCondition: () => ({ bonusRate: 1, shiftBonus: 0 }),
   questionVisitDue: () => false, finaleAtVisit: () => false, spotFollowupDue: () => null, maybeRecruitTrpgMember: async () => {},
-  openingStatus: (s, value) => s.kind === "fortune" && value.slot !== 0 ? { ok: false, tag: "昼のみ営業" } : { ok: true },
+  // 占い師は昼にも夜にも現れる（台帳 URA）。営業時間の門は無い
+  openingStatus: () => ({ ok: true }),
+  // 日常ループが占い師の時間帯を決めるとき、夜の固定の予定を見る（この試験では予定なし）
+  nightOccupied: () => false,
   trpgSpot: () => null, samechanSpot: () => null, cityGuestAtShop: () => null, hiyoriFirstMeetingReady: () => false,
   fixedNightVisitBlock: () => null, nightPlan: empty, restingToday: () => false, unreadCount: () => 0,
   chooseSpot: async () => { if(mode==="calendar")return "tonari";throw new Error("map boundary"); },
@@ -68,7 +71,10 @@ const reveal = await load("daily/map-reveals.js"), fixed = await load("chapters/
 const key = discovery.FORTUNE_RUMOR, results = [];
 const fresh = (day = 2, slot = 1) => { trace.length = 0; mode = "normal"; release = null; core.newGame(); Object.assign(core.state, { phase: "daily", day, slot, weatherSeed: 4 }); core.state.flags._tsumugi_contest_research = true; return core.state; };
 async function check(name, fn) { await fn(); results.push(name); console.log(`PASS ${name}`); }
-const offer = () => spots.spotById("fortune");
+// 占い師は現れている時間帯だけ行き先になる（台帳 URA）。いない時は同じ形の行き先で門を確かめる。
+const offer = () => spots.spotById("fortune") || { id: "fortune", kind: "fortune", charId: "uranaishi", label: "路上占い", area: "", x: 0, y: 0 };
+// 予定の最初の時間帯へ移す（第1章は章内日＝通算日）
+const toPlan = (s, n = 0) => { const at = discovery.fortunePlan(s)[n]; s.day = Math.floor(at / 2) + 1; s.slot = at % 2; return at; };
 
 await check("forced research does not grant rumor; first autonomous visit does", async () => {
   fresh(1, 0); delete core.state.flags._tsumugi_contest_research;
@@ -109,70 +115,83 @@ await check("unheard hides pin/people/availability and blocks direct entry witho
   assert.equal(access.spotAvailability(offer()).ok, false); assert.equal(people.spotPeople(offer()).length, 0);
   assert.equal(fortune.fortuneToday(), false); assert.equal(await fortune.doFortune(), false); assert.equal(JSON.stringify(s), before);
 });
-await check("current pure schedule keeps consecutive-rain carry, regular overlap, skipped days and read-only redraw", () => {
-  const s = fresh(3, 0); s.flags[key] = true;
-  const rain = d => [3, 4, 5].includes(d), before = JSON.stringify(s);
-  assert.equal(discovery.fortuneOpenOn(3, rain), false);
-  assert.equal(discovery.fortuneOpenOn(4, rain), false);
-  assert.equal(discovery.fortuneOpenOn(5, rain), false);
-  assert.equal(discovery.fortuneOpenOn(6, rain), true);
-  assert.equal(discovery.fortuneOpenOn(7, rain), false);
-  for(let day=1;day<=28;day++) assert.equal(discovery.fortuneOpenOn(day,()=>false),[3,6].includes(day%7));
-  for(let i=0;i<5;i++) discovery.fortuneOpenOn(6,rain);
-  assert.equal(JSON.stringify(s),before);assert.equal(s.flags._fortune_schedule,undefined);
+await check("wandering schedule: 1-2 times a chapter, on/after the planned half-day, postponed by plans, gone if missed", () => {
+  for (const seed of [1, 2, 3, 7, 12, 99, 1234]) for (const chapter of [1, 2, 5]) {
+    const s = fresh(); s.chapter = chapter; s.seed = seed; s.flags[key] = true;
+    if (chapter === 2) s.flags._ch2_day1 = { startDay: 1 }; if (chapter === 5) s.flags._ch5 = { startDay: 1 };
+    const plan = discovery.fortunePlan(s), label = JSON.stringify({ seed, chapter, plan });
+    assert(plan.length === 1 || plan.length === 2, label);
+    assert.deepEqual(discovery.fortunePlan(s), plan, `deterministic: ${label}`);
+    const [lo, hi] = chapter === 5 ? [1, 12] : [2, 13];
+    for (const at of plan) assert(at >= (lo - 1) * 2 && at <= hi * 2 - 1, label);
+    if (plan.length === 2) assert(plan[0] < plan[1], label);
+  }
+  // 予定の時間帯の前は出ない。予定と重なればずれて、空いた時間帯に出る。寄らずに過ぎれば、いなくなる。
+  const s = fresh(); s.flags[key] = true; s.seed = 5;
+  const at = toPlan(s);
+  if (at > 2) { const keep = [s.day, s.slot]; s.day = Math.floor((at - 1) / 2) + 1; s.slot = (at - 1) % 2;
+    assert.equal(discovery.syncFortune(s), false); assert.equal(fortune.fortuneToday(), false); [s.day, s.slot] = keep; }
+  assert.equal(discovery.syncFortune(s, { busy: true }), false, "a planned slot with plans postpones");
+  assert.equal(fortune.fortuneToday(), false);
+  if (s.slot === 0) s.slot = 1; else { s.day += 1; s.slot = 0; }
+  assert.equal(discovery.syncFortune(s), true, "the next free slot");
+  assert.equal(fortune.fortuneToday(), true); assert.equal(spots.isUnlocked(offer()), true);
+  const before = JSON.stringify(s);
+  assert.equal(discovery.syncFortune(s), true); assert.equal(fortune.fortuneToday(), true); assert.equal(JSON.stringify(s), before, "same slot is idempotent");
+  if (s.slot === 0) s.slot = 1; else { s.day += 1; s.slot = 0; }
+  assert.equal(fortune.fortuneToday(), false, "missed: she is gone");
+  // 柚ヶ谷にいる間は現れず、地元に戻った時間帯へずれる。東京は第5章だけ。
+  const t = fresh(); t.flags[key] = true; t.seed = 5; toPlan(t);
+  assert.equal(discovery.syncFortune(t, { where: "widehanga" }), false);
+  assert.equal(discovery.syncFortune(t, { where: "tokyo" }), false, "Tokyo only in Chapter 5");
 });
 await check("actual state SAVE/LOAD preserves face completion, legacy LIME history, old fortune and pure-rain result", () => {
   const s = fresh(3, 0); s.flags[key] = true; s.flags._fortune_met = true; s.fortuneDay = 1; s.fortune = { char: "naru", mult: 1.5 };
   s.limeRead.push(discovery.FORTUNE_RUMOR_ID); const prior=JSON.stringify(s.limeRead);
   core.saveToSlot("suien_remake_slot1"); core.newGame(); core.loadFromSlot("suien_remake_slot1");
   assert.equal(core.state.flags[key],true);assert.equal(core.state.fortuneDay,1);assert.equal(core.state.fortune.char,"naru");
-  assert.equal(JSON.stringify(core.state.limeRead),prior);assert.equal(discovery.fortuneOpenOn(5,d=>[3,4].includes(d)),true);
+  assert.equal(JSON.stringify(core.state.limeRead),prior);
 });
-await check("chapter feature preserves legacy map and entry gates across schedule boundaries", async () => {
+await check("chapters, rumor gate and entry: Chapter 1 after the rumor, Chapters 2 and 5 always, never in 3 and 4", async () => {
   const features = await load("core/chapter-features.js");
-  for (const chapter of [1, 2, 3, 4, 5, undefined, "1", "2", "3", "4", "5"]) {
-    const enabled = [1, 2].includes(chapter);
-    assert.equal(features.chapterFeatureEnabled(chapter, "fortune"), enabled);
+  for (const chapter of [1, 2, 3, 4, 5, undefined, "1", "2", "5"]) {
+    assert.equal(features.chapterFeatureEnabled(chapter, "fortune"), [1, 2, 5].includes(chapter));
     assert.equal(features.chapterFeatureEnabled(chapter, "unknown"), false);
-    for (let day = 1; day <= 14; day++) for (const seed of [2, 4, 12, 29])
-      for (const heard of [false, true]) for (const slot of [0, 1]) for (const done of [false, true]) {
-        const s = fresh(day, slot);
-        if (chapter === undefined) delete s.chapter; else s.chapter = chapter;
-        s.weatherSeed = seed; s.flags[key] = heard;
-        s.fortuneDay = done ? day : 0; s.money = 10000; s.met.naru = true; s.affinity.naru = 5;
-        const expectedToday = enabled && heard && discovery.fortuneOpenOn(day, weather.isRainy);
-        const expectedEntry = expectedToday && slot === 0 && !done;
-        const before = JSON.stringify(s), label = JSON.stringify({ chapter, day, seed, heard, slot, done });
-        assert.equal(fortune.fortuneToday(), expectedToday, label);
-        assert.equal(spots.isUnlocked(offer()), expectedToday, label);
-        assert.equal(access.spotVisible(offer()), expectedToday, label);
-        assert.equal(access.spotAvailability(offer()).ok, expectedEntry, label);
-        assert.equal(JSON.stringify(s), before, `read-only gates: ${label}`);
-        assert.equal(await fortune.doFortune(), expectedEntry, label);
-        if (!expectedEntry) assert.equal(JSON.stringify(s), before, `blocked entry: ${label}`);
-        else {
-          assert.equal(s.money, 7000, label); assert.equal(s.fortuneDay, day, label);
-          assert.equal(s.fortune.char, "naru", label); assert.equal(Object.keys(s.fortune).join(","), "char", label);
-          assert.equal(s.affinity.naru, 5, label); assert.equal(s.slot, slot, label);
-          assert.equal(s.day, day, label); assert.equal(s.chapter, chapter, label);
-          const paid = JSON.stringify(s);
-          assert.equal(await fortune.doFortune(), false, label);
-          assert.equal(JSON.stringify(s), paid, `once per day: ${label}`);
-        }
+    for (const heard of [false, true]) for (const seed of [2, 4, 12, 29]) {
+      const s = fresh(); if (chapter === undefined) delete s.chapter; else s.chapter = chapter;
+      if (s.chapter === 2) s.flags._ch2_day1 = { startDay: 1 }; if (s.chapter === 5) s.flags._ch5 = { startDay: 1 };
+      s.seed = seed; s.flags[key] = heard; s.money = 10000; s.met.naru = true; s.affinity.naru = 5;
+      const plan = discovery.fortunePlan(s);
+      if (plan.length) toPlan(s);
+      const expected = [1, 2, 5].includes(chapter) && (chapter !== 1 || heard);
+      const label = JSON.stringify({ chapter, heard, seed });
+      assert.equal(discovery.syncFortune(s), expected, label);
+      assert.equal(fortune.fortuneToday(), expected, label);
+      assert.equal(spots.isUnlocked(offer()), expected, label);
+      assert.equal(access.spotVisible(offer()), expected, label);
+      assert.equal(access.spotAvailability(offer()).ok, expected, label);
+      assert.equal(await fortune.doFortune(), expected, label);
+      if (expected) {
+        assert.equal(s.money, 7000, label); assert.equal(s.fortune.char, "naru", label);
+        assert.equal(s.affinity.naru, 5, label); assert.equal(fortune.fortuneToday(), false, `once per appearance: ${label}`);
+        assert.equal(await fortune.doFortune(), false, label); assert.equal(s.money, 7000, label);
       }
+    }
   }
 });
-await check("daylight, fee, once/day and live result application retained", async () => {
-  const s = fresh(3, 0); s.flags[key] = true; while (weather.isRainy()) s.weatherSeed++;
-  s.met.naru = true; s.affinity.naru = 5;
-  s.slot = 1; assert.equal(access.spotAvailability(offer()).tag, "昼のみ営業"); assert.equal(await fortune.doFortune(), false);
-  s.slot = 0; s.money = 2999; assert.equal(await fortune.doFortune(), false); assert.equal(s.money, 2999);
-  s.money = 10000; assert.equal(await fortune.doFortune(), true); assert.equal(s.money, 7000); assert.equal(s.fortuneDay, 3);
-  assert.equal(await fortune.doFortune(), false); assert.equal(s.money, 7000); assert.equal(s.fortune.char, "naru");
+await check("day or night, fee, once per appearance and live result application retained", async () => {
+  for (const slot of [0, 1]) {
+    const s = fresh(); s.flags[key] = true; s.seed = 8; s.met.naru = true; s.affinity.naru = 5;
+    s.slot = slot; assert.equal(discovery.placeFortuneNow(s), true);
+    assert.equal(access.spotAvailability(offer()).ok, true, `slot ${slot}`);
+    s.money = 2999; assert.equal(await fortune.doFortune(), false); assert.equal(s.money, 2999);
+    s.money = 10000; assert.equal(await fortune.doFortune(), true); assert.equal(s.money, 7000); assert.equal(s.slot, slot, "no time used");
+    assert.equal(await fortune.doFortune(), false); assert.equal(s.money, 7000); assert.equal(s.fortune.char, "naru");
+  }
 });
 await check("calendar resume uses current schedule; repeated display notice is not duplicated", async () => {
-  const s = fresh(3, 0); s.flags[key] = true; s.flags._morning_3 = true; while (weather.isRainy()) s.weatherSeed++;
-  await assert.rejects(calendar.runDaily({ nightEvents: {}, untilDay: 4 }), /map boundary/); assert.equal(fortune.fortuneToday(), true);
+  const s = fresh(); s.flags[key] = true; s.seed = 3; toPlan(s); s.flags[`_morning_${s.day}`] = true;
+  await assert.rejects(calendar.runDaily({ nightEvents: {}, untilDay: s.day + 1 }), /map boundary/); assert.equal(fortune.fortuneToday(), true);
   const spot = { id: "fortune", label: "タロット占い", revealed: false }; assert.equal(reveal.newlyRevealedSpots(s, "home", [spot]).length, 0);
   spot.revealed = true; assert.equal(reveal.newlyRevealedSpots(s, "home", [spot]).length, 1); assert.equal(reveal.newlyRevealedSpots(s, "home", [spot]).length, 0);
   assert.match(reveal.spotRevealNotice(spot), /^つむぎから聞いた/);

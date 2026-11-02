@@ -1,0 +1,47 @@
+{
+  "variant": "a",
+  "path": "/workspace/shared/trpg-background-candidates/doll-requiem/background-a.png",
+  "size": [
+    1672,
+    941
+  ],
+  "mode": "RGB",
+  "sha256": "f688f18266c6a0e2933f86e9c6f01fe1a197031dea0276ccb9b9a1708c9a4b58",
+  "tool": "built-in image_gen",
+  "prompt": "prompt-a.txt",
+  "adoption": "unselected candidate",
+  "visualQA": "Gentle doll mansion; inanimate dolls only, no people/shisha/text. Six objects readable. Cabinet13/30 includes14/34; puppet stage43/21 target50/26 at right curtain edge; diary87/25 target86/32 at desk lower edge, not book; snow seat84/70 matches; clock50/59 target50/72 within lower clock body; musicbox17/71 fits. Architecture upper study/window stacking needs plausibility review; diary target needs correction.",
+  "generated_date_utc": "2026-11-02",
+  "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+  "input_image_references": [],
+  "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+  "raw_original": true,
+  "target_size": [
+    1280,
+    720
+  ],
+  "production_size_verified": false,
+  "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+  "scenario": "doll-requiem",
+  "prompt_sha256": "a11680c1b472761525ead7f443788cf28f2140241fc7a2a3ffc1268c23b246a3",
+  "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 13 doll-requiem\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 雪の夜の洋館の広間。人形の飾り棚、子ども部屋の小さな舞台、書斎の日記、雪の窓辺、柱時計、オルゴールの箱。棚に硝子の瞳の人形たち。 Setting: 霧氷の丘 / 洋館「ラベンダー館」. Mood: 降りやまない雪。ラベンダーの香り。硝子の瞳が、灯を映す。. Fictional place from a tabletop story (怖すぎない洋館ミステリー). Concrete click-investigation objects, each a distinct readable prop at its position: 人形の飾り棚 clearly visible around x14% y34%; 子ども部屋の小さな舞台 clearly visible around x50% y26%; 書斎の日記 clearly visible around x86% y32%; 雪の窓辺 clearly visible around x84% y68%; 柱時計 clearly visible around x50% y72%; オルゴールの箱 clearly visible around x16% y70%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant A: finely hand-painted gentle gothic mansion mystery, lavender velvet, warm walnut, soft lamplight against blue snowy night, melancholy not terrifying.\nONE coherent believable mansion hall with open nursery/study alcoves, not a montage. Doll display cabinet centered14%/34%, containing clearly SMALL inanimate porcelain dolls with glass eyes, no life-size humans, no creepy gore. Children's miniature puppet theater centered50%/26% on raised back platform, empty stage with lavender curtains. Study diary at86%/32% on a raised right-side lectern/desk visible through alcove, closed book with completely blank cover. Snowy window seat at84%/68%, clearly falling snow outside and empty cushion. Grandfather clock centered50%/72%, full tall wooden clock readable at this location in middle-foreground, blank dial with hands but no numerals. Small ornate music box centered16%/70% on left foreground side table, open with simple mechanical cylinder visible, NO miniature ballerina/human figure. Ensure all six objects separately readable at these exact production centers, do not move targets for composition. No live people, silhouettes or ghosts. No shisha, no text even on books/clock/box. Well-lit legible cozy mystery, not horror.",
+  "byte_size": 2957843,
+  "reference_documents": [
+    {
+      "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/f600fcf9db0b21c148f553ad1f239bc4646c3d3b/asset_sources/trpg-scenarios/README.md",
+      "blob_sha": "057937ca0f39d2b188fa8e088c585b0d890a18fb"
+    },
+    {
+      "path": "/workspace/shared/trpg-background-candidates/latest-main-background-prompts.json",
+      "sha256": "639cd542bdc72e5ff109c5bf32628e10680766ccd4c6e279d56c851eb8927547"
+    },
+    {
+      "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+      "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+    },
+    {
+      "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+      "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+    }
+  ]
+}

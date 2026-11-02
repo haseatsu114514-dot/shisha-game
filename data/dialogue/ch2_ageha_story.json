@@ -1997,6 +1997,126 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_repeat_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "入口のプリクラ機の前で、あげはがスタンプの新作を確かめていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、見て。新しいフレーム、クマが煙ふいてんの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "かわいいですね。……煙、ちょっとリアルすぎませんか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "そこ！ 業者さんに三回直してもらったんだよね。煙はふわっとがいいじゃん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "細かいところまで、決めてるんですね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "決めてるっていうか、なんか違うってなるまで直すだけ。うち、しつこいの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_repeat_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席で、買い物袋を足元に置いたお客さんが、うとうとしていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "しーっ。あの子、毎週ここで十分だけ寝てくの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "寝に来てるんですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "吸いに来て、寝ちゃうの。起きたら、すっきりした顔で帰ってく"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "だから、あの席の台だけ炭を少なめにしてる。起きるまで、ちょうどいい熱"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……お客さんの十分まで、台に入れてるんですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "寝息に合わせるみたいに、細い煙がゆっくり上っていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_repeat_d",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ソファのクマたちが、昨日と違う席に座っていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "あ、気づいた？ 今日は席替えの日"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "クマの、ですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "そ。予約の子の顔を思い出して、隣に座ってほしい子を置くの"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "初めての子には、いちばんゆるい顔のクマ。緊張ほどけるっしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……じゃあ、俺の席の白いクマは"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっちが最初に座った日から、ずっとその子。肩ガチガチだったから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（覚えられてたのか。……少し、肩の力が抜けた）"
+        }
+      ]
     }
   ]
 }

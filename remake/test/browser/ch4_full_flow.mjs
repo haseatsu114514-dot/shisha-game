@@ -94,6 +94,8 @@ await suite("ch4-full-flow", async check => {
 
     // 2. 出発前の準備3日（VOL02）: 1日目の昼にスミさんとの特訓、夜に持っていく配合 → 2・3日目は自由 → 出発の朝にドバイ。
     await prepMap(page, { day: 46, slot: 1 });
+    // このスイートは旧行程（ドバイ5日・場面カード）を確かめる。ドバイの日常（版2）は ch4_dubai_daily。
+    await page.evaluate(() => { delete window.__remake.state.flags._ch4.routeVersion; });
     state = await get(page);
     assert.equal(state.chapter, 4);
     assert.equal(state.flags._ch4.day, 1);
@@ -319,6 +321,17 @@ await suite("ch4-full-flow", async check => {
       "The retry route must keep the Tea broadcast plan");
     assert.equal(value.money, before.money);
     await page.locator(dt("ch4-verdict-continue")).click();
+    // 敗北の場面の後は第1〜3章と同じCONTINUE画面（2026-11-02 オーナー決定）。選ぶまで結果は残る。
+    await page.locator(dt("ch4-defeat")).waitFor({ timeout: 60000 });
+    value = await get(page);
+    assert.equal(value.flags._ch4.attempts, 0);
+    assert.equal(value.flags._ch4.read.ch4_defeat, true);
+    assert.equal(value.flags._ch4.match.result.win, false);
+    // 再挑戦を選ぶ前の保存から再開しても、同じCONTINUE画面に戻る（敗北の場面は読み直さない）。
+    await page.evaluate(async () => { await (await import("./js/chapters/ch4.js")).resumeChapterFour(); });
+    await page.locator(dt("ch4-defeat")).waitFor({ timeout: 60000 });
+    assert.equal((await get(page)).flags._ch4.attempts, 0);
+    await page.locator(dt("ch4-continue-retry")).click();
     await page.waitForFunction(() => window.__remake.state.flags._ch4.attempts === 1);
     await page.locator(dt("ch4-tournament")).waitFor();
     value = await get(page);
