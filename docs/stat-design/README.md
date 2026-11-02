@@ -9,3 +9,9 @@
 - 仕様の正本は `docs/stat-design/SPEC.md`（案A、ブランチ `muse/stat-design-docs-1030`）とレベルアップ使用感評価 `docs/stat-design/levelup-ux/REPORT.md`（ブランチ `claude/levelup-ux-evaluation-fo4d7g`）の推奨 R1・R4〜R7。盤の画面・セーブ schema 23 への移行・スロットの追い風・X5以降の経験値源は後続。
 - 心得の盤の画面（試作・画像なし）: MENU の「心得の盤」、フルのレベルアップの「心得の盤を開く」、`__remake.dev.board()` で開く（`__remake.dev.addHidane(5)` で火種を足せる）。盤の形と規則は `core/growth-board.js`（能力45＋スキル14＝火種86、輪は章で開く、払いは限定の火種が先）、画面は `daily/growth-board-screen.js`。輪・扇・線は SVG、ノードは HTML ボタン。仮置き→決定で確定し、STEP UP／SKILL のカードを出す。**試作の間は盤の解放を能力（state.stats）に書き戻さず、スキルの効果も未実装**。組み直し・チュートリアル・スマホでの拡大は後続。
 - 検証: `node remake/test/growth_levelup.mjs`、`node remake/test/growth_board.mjs`、`node remake/test/browser/growth_levelup.mjs`。
+
+## 2026-11-02 恩恵の単位の補正と「灯した結果」の表示（#2166 の続き）
+
+- 1マスの恩恵の単位を SPEC 3.2〜3.4 の上限（ジャスト帯 ×1.35・ゲージ ×1.30・最大体力 ＋60）に合わせて直した（SPEC 3.7「単位の補正」）。第1章の大会での勝率は `node remake/tools/balance/measure.mjs --board` で測る（基準74.2%: 感覚盤に寄せると＋2.5pt、理論盤＋1.6pt、才能盤は日常の体力で得をし大会は第2章以降の「華」から）。
+- 盤の右のパネルに「恩恵の合計：いま → 灯すと」、決定後のカードに増えた恩恵（「最大体力 ＋8・寝た時の回復 ＋4%」）、HUDの経験値の行に「◎目標まで 火種N」。検査は `remake/test/browser/growth_levelup.mjs` の perk-totals-and-target。
+- 注意: `tools/ci/run.mjs` は実行中に変わった追跡ファイルを実行後に元へ戻す。検査の実行中にファイルを編集しない。

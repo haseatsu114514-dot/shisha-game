@@ -78,7 +78,7 @@ await suite("growth-levelup", async (runCheck) => {
         fire:finalCore.state.growth.hidane.any,node:finalCore.state.growth.nodes.includes("B1"),xp:finalCore.state.growth.xp,
         maximum:(await import("./js/core/stats.js")).maxStamina()-finalBefore.maximum,intro:finalCore.state.flags._kannon_growth_intro_done};
     });
-    assert(result.same&&result.node&&result.intro);assert.equal(result.fire,3);assert.equal(result.xp,460);assert.equal(result.maximum,2);
+    assert(result.same&&result.node&&result.intro);assert.equal(result.fire,3);assert.equal(result.xp,460);assert.equal(result.maximum,4,"B1 の最大体力 +4（2026-11-02 の単位補正）");
     await page.evaluate(async()=>{void (await import("./js/chapters/ch5.js")).resumeChapterFive();});
     await page.locator(t("ch5-complete")).waitFor();assert.equal(await page.locator(t("levelup")).count(),0);
   });
@@ -1113,6 +1113,36 @@ await suite("growth-levelup", async (runCheck) => {
     assert.equal(r.mix, true, "混ぜ置きが開く");
     assert.equal(r.after, 0);
     await page.locator(".gain-card", { hasText: "四つ置き" }).waitFor();
+  }, { viewport: { width: 1331, height: 760 } });
+  // 灯した効果が分かる（REPORT P1）: マスの説明に「合計 いま→灯すと」、決定のカードに増えた恩恵、HUDに目標までの火種
+  await check("perk-totals-and-target", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async () => {
+      const g = (await import("./js/core/growth.js")).ensureGrowth();
+      g.hidane.any = 3; g.target = "K03";
+      (await import("./js/core/bus.js")).emit("hud"); // 盤の「目標にする」と同じく HUD を更新する
+      void (await import("./js/core/growth.js")).openGrowthBoard({ place: "kannon" });
+    });
+    await page.locator(t("board-tab-body")).waitFor({ timeout: 30000 });
+    assert.match(await page.locator(t("hud-target")).innerText(), /早寝早起きまで 火種\d+/, "HUD に目標までの火種");
+    const hudBefore = await page.locator(t("hud-target")).innerText();
+    // 目標への道の最初のマスを灯す（HUD の残りが減ることを見る）
+    const first = await page.evaluate(async () => (await import("./js/core/growth-board.js")).pathTo("K03", new Set()).path[0]);
+    await page.locator(t(`board-node-${first}`)).click();
+    const perk = await page.locator(t("board-perk")).innerText();
+    const total = await page.locator(t("board-perk-total")).innerText();
+    assert.match(total, /の合計：.*＋0%?）? → .*[1-9]/, `いま→灯すと: ${total}`);
+    await page.locator(t("board-light")).click();
+    await page.locator(t(`board-node-${first}`)).click(); // 仮置きで隣へ選択が進むので戻す
+    assert.match(await page.locator(t("board-perk-total")).innerText(), /仮置き中/);
+    await page.locator(t("board-decide")).click();
+    await page.waitForSelector(t("growth-board"), { state: "detached" });
+    await page.locator(".gain-card").first().waitFor({ timeout: 10000 });
+    const card = await page.locator(".gain-card").first().innerText();
+    const unit = /＋([\d.]+)/.exec(perk)?.[1];
+    assert(unit && card.includes(`＋${unit}`), `決定のカードに増えた恩恵（${unit}）: ${card}`);
+    const hudAfter = await page.locator(t("hud-target")).innerText();
+    assert.notEqual(hudAfter, hudBefore, "目標までの火種が減る");
   }, { viewport: { width: 1331, height: 760 } });
   // 段はなくした（SBD63）: 盤の札は「n/26」、右のパネルは恩恵の横棒、ステータス画面は三角のグラフ
   await check("no-steps-graph", async (page) => {

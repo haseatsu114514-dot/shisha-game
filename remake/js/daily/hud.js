@@ -11,6 +11,7 @@ import { isRainy } from "./weather.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
 import { growthEnabled, ensureGrowth, gaugeInfo, hidaneTotal, openGrowthBoard } from "../core/growth.js";
+import { NODE_BY_ID, pathTo } from "../core/growth-board.js";
 
 // 体力バーの長さ（最大体力100のとき）。根性で最大体力が伸びるとバーも同じ割合で伸びる（GUI26）。
 const STAMINA_BAR_BASE = 92;
@@ -97,6 +98,8 @@ export function initHud(h) {
     // 経験値と次のレベルまで（SPEC 6.1a）。置き場所は情報カードの体力の下（REPORT P4・R5）
     exp: el("div.hud-exp", { hidden: true, dataset: { test: "hud-exp" } }, [
       el("span.hx-lv"), el("i.hud-bar.hx-bar", [el("b.hx-settled"), el("b.hx-today")]), el("small.hx-left"),
+      // 盤の目標までの火種（SPEC 6.1「火の番まで 火種6」）。目標が無い間は出さない
+      el("small.hx-target", { hidden: true, dataset: { test: "hud-target" } }),
     ]),
     // 未使用の火種の印。火の色・個数入りで、LIME の未読の赤丸と区別する（REPORT P5・R6）
     hidane: el("em.hidane-badge", { hidden: true, dataset: { test: "hud-hidane" } }),
@@ -157,9 +160,22 @@ function updateGrowth() {
   left.textContent = g.max ? "MAX" : g.pending > 0 ? `今夜 Lv UP${g.pending > 1 ? ` ×${g.pending}` : ""}` : `あと${g.left}`;
   dom.exp.classList.toggle("ready", g.pending > 0);
   dom.exp.dataset.milestone = g.nextMilestone && !g.max ? "true" : "false";
+  renderTarget();
   dom.exp.title = g.max ? `Lv.${g.level} MAX` : g.pending > 0
     ? `今夜レベルアップ（あふれた分 +${g.overflow}）` : `次のレベルまで EXP ${g.left}${g.nextMilestone ? "（次は火種が2つ）" : ""}`;
   dom.exp.setAttribute("aria-label", dom.exp.title);
+}
+
+/** 盤で目標にしたマスまでの残りの火種。届いたら目標は盤の決定で外れる（SPEC 2.4） */
+function renderTarget() {
+  const target = dom.exp.querySelector(".hx-target");
+  const g = ensureGrowth(), node = g.target ? NODE_BY_ID[g.target] : null;
+  if (!node) { target.hidden = true; target.textContent = ""; return; }
+  const name = node.kind === "stat" ? (node.peak ? "極み" : node.notable ? "要のマス" : "マス") : node.kind === "gate" ? "台座" : node.name;
+  const { cost } = pathTo(node.id, new Set(g.nodes));
+  target.hidden = false;
+  target.textContent = `◎${name}まで 火種${cost}`;
+  target.title = `心得の盤の目標。${name}まで、あと火種${cost}`;
 }
 
 export function showHud(v = true) {

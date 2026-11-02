@@ -37,6 +37,8 @@ const svg = (tag, attrs = {}, children = []) => {
   for (const c of children) n.append(c);
   return n;
 };
+/** 恩恵の文の数字だけ（「最大体力 ＋12」）。text は perkTotals の合計入りの文、sum は上書きする合計 */
+const fmtPerk = (text, sum) => text.replace(/[\d.]+/, String(Math.round(sum * 10) / 10));
 const payText = (pay) => Object.entries(pay).map(([k, n]) => `${HIDANE_NAME[k]}${n}`).join("＋") || "火種いらず";
 /**
  * 生成画像（GB03 5.2。remake/img/ui/growth_board/*.webp）。全部読めた時だけ盤に `has-art` を付けて画像の見た目にする。
@@ -426,6 +428,14 @@ export function openBoard({ place = null } = {}) {
       const perk = perkOf(node);
       if (perk.notable) lines.push(el("p.gb-p-quality", { dataset: { test: "board-notable" }, text: `要のマス「${perk.notable.name}」：${perk.notable.text}` }));
       lines.push(el("p", { dataset: { test: "board-perk" }, text: `このマスで：${perk.text}（${perk.tierName}${perk.notable ? "・要" : ""}）` }));
+      // 灯す前後の合計（REPORT P1「初めて振った効果が体感できない」）: この盤で同じ恩恵がいま幾つで、灯すと幾つになるか
+      if (!node.peak && node.perk && !g.nodes.includes(node.id)) {
+        // 仮置き中のマスは、そのマスを除いた合計を「いま」にする（仮置き → 決定で幾つになるかが見える）
+        const base = new Set([...v.unlocked].filter((id) => id !== node.id));
+        const now = perkTotals(node.board, base).find((p) => p.key === node.perk);
+        const next = perkTotals(node.board, new Set([...base, node.id])).find((p) => p.key === node.perk);
+        if (now && next) lines.push(el("p.gb-p-total", { dataset: { test: "board-perk-total" }, text: `${now.name}の合計：${fmtPerk(now.text, now.sum)} → ${fmtPerk(next.text, next.sum)}${st === "pending" ? "（仮置き中）" : ""}` }));
+      }
       if (node.feature) lines.push(el("p.gb-p-quality", { dataset: { test: "board-feature" }, text: `✦ 灯すと「${FEATURES[node.feature].text}」` }));
       if (node.peak) lines.push(el("p.gb-p-next", { text: statsFilled(node.board, v.unlocked) ? "盤の能力のマスを全部灯した。極みを灯せる" : "この盤の能力のマスを全部灯すと灯せる（盤を埋めたご褒美）" }));
       lines.push(el("p.gb-p-sub", { text: `効く場面：${BOARD_WHERE[node.board]}` }));
@@ -624,6 +634,7 @@ export function openBoard({ place = null } = {}) {
     }
     const reset = commit && rebuilding ? commitRespec(original, rebuilding, owner) : false;
     if (rebuilding && !reset) commit = false;
+    const before = new Set(original.nodes);
     const committed = commit ? commitPending(pending, owner) : [];
     if (owner === state && (reset || committed.length)) save();
     document.removeEventListener("keydown", onKey, true);
@@ -634,7 +645,7 @@ export function openBoard({ place = null } = {}) {
     if (owner === state && committed.length) {
       emit("hud");
       const squares = committed.filter((n) => n.kind === "stat").length;
-      if (squares) gainCard({ kind: "info", badge: "火", top: "LIGHT", main: `能力の火を${squares}つ灯した` });
+      if (squares) gainCard({ kind: "info", badge: "火", top: "LIGHT", main: `能力の火を${squares}つ灯した`, sub: perkDeltaText(committed, before) });
       const gates = committed.filter((n) => n.kind === "gate").length;
       if (gates) gainCard({ kind: "info", badge: "関", top: "BREAK", main: `色の台座に${gates}つはめた`, sub: "この先の道が開き、台座の能力が手に入った" });
       for (const node of committed) if (node.feature) gainCard({ kind: "info", badge: "✦", top: "NEW", main: FEATURES[node.feature].name, sub: FEATURES[node.feature].text });
@@ -675,6 +686,24 @@ export function openBoard({ place = null } = {}) {
   requestAnimationFrame(() => root.classList.add("show"));
   loadBoardArt().then((ok) => { if (ok && root.isConnected) { root.classList.add("has-art"); render(); } });
   return done;
+}
+
+/**
+ * 灯した結果の一文（SPEC 6.3「盤で決定」・REPORT P1）: 盤ごとに、増えた恩恵を「最大体力 ＋8・寝た時の回復 ＋2%」の形で並べる。
+ * 色の台座の能力も含む。変わらなかった恩恵は出さない。
+ */
+function perkDeltaText(committed, before) {
+  const after = new Set([...before, ...committed.map((n) => n.id)]);
+  const parts = [];
+  for (const board of BOARD_KEYS) {
+    if (!committed.some((n) => n.board === board && (n.kind === "stat" || n.kind === "gate"))) continue;
+    const was = perkTotals(board, before), now = perkTotals(board, after);
+    for (const p of now) {
+      const delta = p.sum - (was.find((x) => x.key === p.key)?.sum || 0);
+      if (delta > 0.001) parts.push(fmtPerk(p.text, delta));
+    }
+  }
+  return parts.join("・");
 }
 
 /** 授業を灯した時の場面（2.6）。場面のある授業（スミさんの今の特訓・授業）はそれを流す */

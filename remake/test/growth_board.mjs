@@ -171,7 +171,7 @@ for (const k of board.BOARD_KEYS) {
   assert.equal(board.perkOf(board.boardNodes("body").find((n) => n.peak)).name, "基礎", "極みは基礎");
   const notable = board.boardNodes("body").find((n) => n.notable === "ironsleep");
   assert.equal(board.perkOf(notable).notable.name, "不眠の体");
-  assert.equal(board.perkOf(notable).text, "寝た時の体力の回復 ＋4.5%", "要のマスは帯の倍率×1.5（SBD73）");
+  assert.equal(board.perkOf(notable).text, "寝た時の体力の回復 ＋9%", "要のマスは帯の倍率×1.5（SBD73）。眠りの単位は2%（2026-11-02 補正）");
   for (const n of board.NODES.filter((x) => x.kind === "stat" && !x.peak)) assert(board.SQUARE_PERKS[n.board].perks[n.perk], `${n.id}: 恩恵が決まっている`);
 }
 assert.deepEqual(board.HIDANE_NAME, { any: "白火", body: "紅火", sense: "蒼火", wisdom: "翠火" }, "火種の名前（SBD62）");

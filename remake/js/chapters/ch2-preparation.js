@@ -65,7 +65,7 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   if (outing) {
     if (spendableMoney(state) < outing.cost) return { used: false, exerted: false };
     const dialogueId = outingDialogue(outing, state.flags);
-    const result = await play(dialogueId, { bg: outing.previewUrl || MAP[timeOfDay()] });
+    const result = await play(dialogueId, { bg: outing.previewUrl || MAP[timeOfDay()], growthScene: true }); // 自分で選んだ外出の固有場面（X5）
     if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
     addMoney(-outing.cost); addStamina(outing.stamina);
     if (outing.stat) earnStat(outing.stat, 2);
@@ -125,7 +125,7 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
     if (!await playFinale(id, { bg: ROOMS[id], deferSave: true }) || state !== owner) return { used: false, exerted: false };
   } else {
     // 長い段階会話の旧背景指定（metadata.bg）より、いま居る店の室内を優先する。
-    const result = await play(scene, stage && !stage.done ? { bg: ROOMS[id] } : undefined);
+    const result = await play(scene, { growthScene: true, ...(stage && !stage.done ? { bg: ROOMS[id] } : {}) }); // 段階会話・再訪の固有場面（X5）
     if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
   }
   const discovered = CITY_OUTINGS.find(item => item.introducedBy === id);

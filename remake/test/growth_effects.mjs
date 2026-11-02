@@ -16,10 +16,10 @@ const g = growth.ensureGrowth(); g.hidane.any=3;
 const before = { day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,stats:{...core.state.stats} };
 assert.equal(stats.maxStamina(),100);
 assert.equal(board.commitPending(["B1"]).length,1);
-assert.equal(stats.maxStamina(),102,"B1の表示どおり最大体力+2");
+assert.equal(stats.maxStamina(),104,"B1の表示どおり最大体力+4");
 assert.equal(board.commitPending(["B1"]).length,0);
 core.save(); core.load();
-assert.equal(stats.maxStamina(),102); assert.equal(core.state.growth.hidane.any,2);
+assert.equal(stats.maxStamina(),104); assert.equal(core.state.growth.hidane.any,2);
 assert.deepEqual({ day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,stats:core.state.stats },before);
 growth.setGrowthPreview(false); assert.equal(stats.maxStamina(),100);
 growth.setGrowthPreview(true);
@@ -27,23 +27,23 @@ for (const raw of [10,21,48,80,100]) {
   for (const key of core.STAT_KEYS) core.state.stats[key]=raw;
   growth.setGrowthPreview(false); const legacy={ maximum:stats.maxStamina(),slow:skill.slow({}),window:skill.window({}) };
   growth.setGrowthPreview(true);
-  assert.equal(stats.maxStamina(),legacy.maximum+2,"旧能力が高くてもB1の+2を加算する");
+  assert.equal(stats.maxStamina(),legacy.maximum+4,"旧能力が高くてもB1の+4を加算する");
   assert.equal(skill.slow({}),legacy.slow); assert.equal(skill.window({}),legacy.window);
 }
 const legacyStats = JSON.stringify(core.state.stats);
 core.state.stamina=81;
-assert.equal(stats.maxStamina(),162);
+assert.equal(stats.maxStamina(),164);
 assert.equal(stats.currentCondition().health,"green","容量を増やしただけで旧体調を悪化させない");
 assert.equal(stats.maxStamina({forCondition:true}),160);
 for (let i=0;i<3;i++) {
   core.save(); core.load();
-  assert.equal(stats.maxStamina(),162,"LOADのたびに効果を積み増さない");
+  assert.equal(stats.maxStamina(),164,"LOADのたびに効果を積み増さない");
   assert.equal(JSON.stringify(core.state.stats),legacyStats); assert.equal(core.state.stamina,81);
 }
 core.state.growth.nodes=board.NODES.filter(n=>["stat","gate"].includes(n.kind)).map(n=>n.id);
-assert.equal(stats.maxStamina(),189,"旧最大体力160に盤の29を加算できる");
-core.state.stamina=189; core.save(); core.load();
-assert.equal(core.state.stamina,189); assert.equal(stats.maxStamina(),189);
+assert.equal(stats.maxStamina(),215,"旧最大体力160に盤の55を加算できる（SPEC 3.2 の上限 +60 に近づけた補正）");
+core.state.stamina=215; core.save(); core.load();
+assert.equal(core.state.stamina,215); assert.equal(stats.maxStamina(),215);
 for (const schema of [8,21,23,core.SCHEMA]) {
   const old=core.newState(); old.schema=schema;
   for (const key of core.STAT_KEYS) old.stats[key]=100;
@@ -53,7 +53,7 @@ for (const schema of [8,21,23,core.SCHEMA]) {
   growth.ensureGrowth().hidane.any=1; board.commitPending(["B1"]);
   for (let i=0;i<2;i++) {
     core.save(); core.load();
-    assert.equal(stats.maxStamina(),162); assert.equal(core.state.stamina,81);
+    assert.equal(stats.maxStamina(),164); assert.equal(core.state.stamina,81);
     assert.equal(core.state.growth.hidane.any,0);
     assert.equal(core.state.growth.nodes.filter(id=>id==="B1").length,1);
     for (const key of core.STAT_KEYS) assert.equal(core.state.stats[key],100);
@@ -334,7 +334,7 @@ assert.equal(bonusOf({...blindCs,blindVariance:-3}).bonus,-3);assert.equal(bonus
 assert.equal(bonusOf({...blindCs,pullDone:false}).bonus,0);assert.equal(bonusOf({...blindCs,failed:true}).bonus,0);
 assert.equal(bonusOf(JSON.parse(JSON.stringify(blindCs))).bonus,2.4,"セッション保存の振れ幅を再抽選しない");
 growth.setGrowthPreview(false);assert.equal(bonusOf(blindCs).bonus,0);assert.deepEqual(effects.floralLayers(core.state,flowerCs,DB.flavorById),[]);
-console.log("[growth effects] PASS: additive legacy growth, 160+29=189, no resource use or repeated LOAD gain, condition boundaries, fractional affinity/fortune, UI totals, leaf/mastery/gauge/heat/pull/stage and mode off");
+console.log("[growth effects] PASS: additive legacy growth, 160+55=215, no resource use or repeated LOAD gain, condition boundaries, fractional affinity/fortune, UI totals, leaf/mastery/gauge/heat/pull/stage and mode off");
 // 集団交流は一行動。各人の初回・交流の幅だけを重複なく数える（SPEC X1/X2/X3/X11）。
 growth.setGrowthPreview(true);core.newGame();
 const group = growth.ensureGrowth();

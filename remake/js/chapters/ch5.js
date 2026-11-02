@@ -601,6 +601,7 @@ function renderComplete(owner) {
   const actions = pending ? [
     button(owner, "スタッフロールへ", "complete-credits", () => renderStaffRoll(owner), true),
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
+    ...reflectionActions(owner), // 時間を使わない盤の入口はスタッフロールの前後どちらでも出す
   ] : [
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
     button(owner, "スタッフロールを見る", "complete-credits", () => renderStaffRoll(owner)),

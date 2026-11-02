@@ -102,25 +102,25 @@ export const SQUARE_PERKS = {
   body: {
     base: { glyph: "基", name: "基礎", text: "最大体力 ＋{1}・寝た時の回復 ＋{1}%" },
     perks: {
-      stamina: { glyph: "体", name: "体力", text: "最大体力 ＋{2}" },
-      sleep: { glyph: "眠", name: "眠り", text: "寝た時の体力の回復 ＋{1}%" },
+      stamina: { glyph: "体", name: "体力", text: "最大体力 ＋{4}" },
+      sleep: { glyph: "眠", name: "眠り", text: "寝た時の体力の回復 ＋{2}%" },
       charm: { glyph: "人", name: "人柄", text: "好感度が上がりやすく（＋{1}%）" },
-      stage: { glyph: "華", name: "華", text: "大会の審査員の第一印象 ＋{1}" },
+      stage: { glyph: "華", name: "華", text: "大会の審査員の第一印象 ＋{0.3}" },
     },
   },
   sense: {
     base: { glyph: "基", name: "基礎", text: "蒸らしの当たり判定 −{1}%・ジャスト帯 ＋{0.5}%" },
     perks: {
-      heat: { glyph: "火", name: "火加減", text: "炭焼き・熱管理のジャスト帯 ＋{0.5}%" },
-      pull: { glyph: "吸", name: "吸い", text: "吸い出しのジャスト帯 ＋{0.5}%" },
+      heat: { glyph: "火", name: "火加減", text: "炭焼き・熱管理のジャスト帯 ＋{2}%" },
+      pull: { glyph: "吸", name: "吸い", text: "吸い出しのジャスト帯 ＋{3}%" },
       dodge: { glyph: "避", name: "かわし", text: "蒸らしの当たり判定が小さく（−{1}%）" },
-      breath: { glyph: "息", name: "呼吸", text: "リフレッシュの範囲が広く（＋{2}）" },
+      breath: { glyph: "息", name: "呼吸", text: "リフレッシュの範囲が広く（＋{6}）" },
     },
   },
   wisdom: {
     base: { glyph: "基", name: "基礎", text: "ゲージ ＋{0.5}% ゆっくり・葉のダメージ −{1}%" },
     perks: {
-      gauge: { glyph: "段", name: "段取り", text: "作りのゲージが ＋{0.5}% ゆっくり" },
+      gauge: { glyph: "段", name: "段取り", text: "作りのゲージが ＋{2}% ゆっくり" },
       leaf: { glyph: "葉", name: "葉", text: "吸いすぎの葉のダメージ −{1}%" },
       tongue: { glyph: "舌", name: "舌", text: "フレーバーの熟練度の伸び ＋{1}%" },
       coal: { glyph: "炭", name: "炭の持ち", text: "炭の熱が下がりにくく（＋{1}%）" },
