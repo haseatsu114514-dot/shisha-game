@@ -9,7 +9,7 @@
  },
  "face_da_silva.png": {
   "sprite": "assets/sprites/characters/da_silva/chr_da_silva_normal.png",
-  "blob": "4954f11cbc0f7cf6eff4e69f811f9971b41a4d9f"
+  "blob": "c2eb40f661332c37e7ac27c4ff1279c9da4c9674"
  },
  "face_dr_kemuri.png": {
   "sprite": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png",
@@ -41,7 +41,7 @@
  },
  "face_maki.png": {
   "sprite": "assets/sprites/characters/maki/chr_maki_normal.png",
-  "blob": "98821db463c3befa092330989d08e2440466b83f"
+  "blob": "0e8ba2816b49322ef54492fea16f4059aa6b1355"
  },
  "face_mashiro.png": {
   "sprite": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
@@ -85,7 +85,7 @@
  },
  "face_rei.png": {
   "sprite": "assets/sprites/characters/rei/chr_rei_normal.png",
-  "blob": "4433a3fa184741f7695f0d886c1e787fce1d6dc7"
+  "blob": "bfa4805f8e5ebc7fa730b3fed2ea64fce25291b2"
  },
  "face_rin.png": {
   "sprite": "assets/sprites/characters/rin/chr_rin_normal.png",
@@ -93,7 +93,7 @@
  },
  "face_sai.png": {
   "sprite": "assets/sprites/characters/sai/chr_sai_normal.png",
-  "blob": "f69ba7b09ede20649635fcba8b73863e0a0869b5"
+  "blob": "18de5eb6068be272bc779eb220c1a03f102fe672"
  },
  "face_saif.png": {
   "sprite": "assets/sprites/characters/saif/chr_saif_normal.png",

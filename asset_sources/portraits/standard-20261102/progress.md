@@ -60,6 +60,8 @@
 - 会話画面で PC（1280×720）とスマホ（591×1280）に表示し、読み込み・頭の見切れ・画像端の欠けが無いことを確かめた。
 - **次は prompts.md の TS13「表情差分」**（サイフ：smile・surprise・excited・wink、ラシード：smile の5枚）。①は合格した `asset_sources/portraits/<id>-remaster-v2/normal-source.png`。台詞はこの5種類を指定していて、今は全部通常の顔で代用されている。
 
+ヌール（`noor`、7.96頭身）は上限7.7をわずかに超えるだけなので、今のまま残す案を推奨（オーナー未回答）。
+
 ## 段階3：表情差分（キャラ単位）
 
 通常が合格したキャラから、残りの表情をまとめて作る。組み込みはキャラ単位（新旧の表情を混ぜない）。
@@ -69,13 +71,13 @@
 | 組長（神崎竜二）（`kumicho`） | smile・serious・surprise・sad・smug | 組み込み済み |
 | スティーブ（`steve`） | smile・serious・surprise・sad | 組み込み済み |
 | ヴォルク（`volk`） | smile・serious・surprise・sad | 組み込み済み |
-| 六角サイ（`sai`） | smile・serious・surprise・thinking | 依頼文あり（prompts.md の TS11）・未生成 |
-| 零-REI-（`rei`） | smile・serious・surprise・sad | 依頼文あり（prompts.md の TS11）・未生成 |
-| 斧崎マキ（`maki`） | smile・serious・surprise・excited | 依頼文あり（prompts.md の TS11）・未生成 |
+| 六角サイ（`sai`） | smile・serious・surprise・thinking | 組み込み済み |
+| 零-REI-（`rei`） | smile・serious・surprise・sad | 組み込み済み |
+| 斧崎マキ（`maki`） | smile・serious・surprise・excited | 組み込み済み |
 | 路上占い師（`uranaishi`） | smile・serious・surprise・sad | 未着手 |
 | シェイク（`sheikh`） | smile・serious・surprise・smug | 未着手 |
 | 王煙楼（`master_hookah`） | smile・serious・surprise・sad・angry・laugh | 未着手 |
-| ダ・シルヴァ太陽（`da_silva`） | smile・serious・surprise・excited | 依頼文あり（prompts.md の TS11）・未生成 |
+| ダ・シルヴァ太陽（`da_silva`） | smile・serious・surprise・excited | 組み込み済み |
 | サイフ（`saif`） | smile・surprise・excited・wink（新規。今は通常だけ） | 依頼文あり（prompts.md の TS13）・通常の合格待ち |
 | ラシード（`rashid`） | smile（新規。今は通常だけ） | 依頼文あり（prompts.md の TS13）・通常の合格待ち |
 
@@ -94,6 +96,8 @@
 
 2026-11-02 オーナー「推奨のをお願い」：TS09 の21枚をゲームに組み込み（PR #2369）、サイB・零C-v2・マキB・太陽Bの通常を合格にした。路上占い師・シェイク・王煙楼は作り直す。次は Codex で「立ち絵そろえ 続けて」と送り、prompts.md の TS11（4人の表情差分16枚）と TS12（3人の通常の作り直し）を作る。
 
+2026-11-02 TS11：Codex がサイ・零・マキ・太陽の表情を各4枚（計16枚）作り、オーナーがギガファイル便（期限 2026-11-09、ZIP の SHA256 `8a43a3ab1c22773b45176a1a22f2a5cc1a19167578be22f411b91e471bdc8399`）で共有した。中の4つのZIPは一覧の SHA256 と一致。Claude が会話画面の大きさで新しい通常と頭頂・あごを並べ、16枚とも頭の大きさがそろうことを確認した。透明度16以上の散った画素は無い。通常＋表情の20枚を組み込み、頭が通常より8px以上横にずれる9枚は絵全体を横へ動かして頭をそろえた（rei/serious +8px, rei/surprise +14px, maki/excited +10px, maki/serious +10px, maki/smile +9px, maki/surprise +8px, da_silva/serious +30px, da_silva/smile -8px, da_silva/surprise +11px）。顔の位置の記録・顔アイコンも作り直し、20表情×PC／スマホの会話画面で確認した。オーナー「OK。ただレイだけ顔でかく拡大されてるような」→ 零の顔アイコンだけ寄りすぎていた（右の頬が髪に隠れていて、頬の幅を狭く測っていた）。頬の幅を髪の下の輪郭まで測り直してアイコンを作り直した。会話画面の立ち絵の顔の大きさは標準のキャラの中央値どおりで、変えていない。
+
 ## オーナー判断（2026-11-02 回答済み）
 
 | 件 | 回答 |
@@ -103,4 +107,5 @@
 | 上園 | そのまま（`accepted`） |
 | 7人の通常（TS10） | 推奨のまま → サイB・零C-v2・マキB・太陽Bを合格、路上占い師・シェイク・王煙楼は作り直し |
 | あげは・サメちゃんの区分 | 可愛い方 → 小柄枠のまま |
+| 作り直しの範囲と変えてよいもの | 「全キャラ作り直しは勘弁、一部ならいい」「作り直して良い　見た目は今のがいいけど」「頭身とかはいじってもいい」→ 作り直すのは規格外の一部だけ。頭身・頭の大きさは変えてよく、顔・衣装・色・ポーズは今の絵のまま |
 | サイフ・ラシード（ラクダレース） | 任せる → 表情差分の前に通常を約7頭身で作り直す（段階2.5・TS13） |

@@ -1,0 +1,2 @@
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-coaster/panels/sheikh-coaster-1.webp: 771x514 比率 1.500 76 KiB
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-coaster/panels/sheikh-coaster-2.webp: 771x514 比率 1.500 73 KiB
