@@ -552,8 +552,7 @@ async function tournamentDay() {
   const challenge = regulation?.flavor === "mint" ? "ミント" : "レモン";
   const source = regulation?.supply ? "葉は主催者が支給します！" : "葉は自分で持ち込むこと！";
   await play({ dialogue_id: "ch1_tournament_rule_recap", lines: [
-    { speaker: "pakki", face: "excited", text: `シーシャ勝負・第壱条ッ！ 課題の${challenge}を2g以上！ ${source}` },
-    { speaker: "pakki", face: "excited", text: "第弐条ッ！ 一台を作って提供、二度の調整まで同じ一台で勝負です！ ぷぷぷっ！" },
+    { speaker: "pakki", face: "excited", text: `本日の課題はッ！ ${challenge}を2g以上！ ${source}` },
   ] }, { bg: STAGE });
   await withLoadingNotice(assetsReady, loadingNotice("大会の準備をしています…"));
   await entrance();

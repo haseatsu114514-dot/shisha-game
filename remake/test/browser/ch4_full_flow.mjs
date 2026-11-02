@@ -25,7 +25,7 @@ const observeTournament = page => page.evaluate(() => {
   window.__ch4Observed = { text: new Set(), comments: new Set() };
   window.__ch4Observer = new MutationObserver(() => {
     const text = [...document.querySelectorAll(".vn-text, .audience-note")].map(node => node.dataset.raw || node.textContent).join("\n");
-    for (const phrase of ["出発前の方針：桜", "出発前の方針：茶", "出発前に選んだ桜の方針", "出発前に選んだ茶の方針", "出発前に選んだ桜は", "葉が焦げた"])
+    for (const phrase of ["出発前の方針：桜", "出発前の方針：茶", "出発前に選んだ桜の方針", "出発前に選んだ茶の方針", "桜の香りが、まっすぐ立つ", "葉が焦げた"])
       if (text.includes(phrase)) window.__ch4Observed.text.add(phrase);
     document.querySelectorAll(".nico").forEach(node => window.__ch4Observed.comments.add(node.textContent));
   });
@@ -213,7 +213,7 @@ await suite("ch4-full-flow", async check => {
       chapter4: structuredClone((await import("./js/core/data.js")).DB.broadcast.chapter4) }));
     assert(observed.text.includes("出発前の方針：桜"), "ch4_craft_advice_1 must reflect the strategy");
     assert(observed.text.includes("出発前に選んだ桜の方針"), "The live broadcast must reflect the strategy");
-    assert(observed.text.includes("出発前に選んだ桜は"), "ch4_final must review the actual blend");
+    assert(observed.text.includes("桜の香りが、まっすぐ立つ"), "ch4_final must state the actual blend's taste");
     const localComments = Object.values(observed.chapter4.completion).flatMap(step => Object.values(step).flat());
     assert(observed.comments.some(comment => localComments.includes(comment)), "The broadcast must use chapter4 audience comments");
     await page.evaluate(() => window.__ch4Observer.disconnect());

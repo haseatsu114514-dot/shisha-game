@@ -155,7 +155,7 @@
     },
     {
       "id": "loading-comics-spec",
-      "title": "Loading comic registrations fit the fixed 43:25 display frame",
+      "title": "Loading comic registrations fit the fixed 3:2 display frame (region band / whole-image 3:2)",
       "kind": "quick",
       "run": ["node remake/test/loading_comics_spec.mjs"]
     },

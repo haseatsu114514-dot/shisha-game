@@ -32,3 +32,6 @@
 | `remake_fast_checks.md` | ブラウザ不要の検査workflowの説明 | 2026-10 | `.github/workflows/ci.yml`（quick）と `tools/ci/suites.json` |
 | `rin_portrait_handoff.md` | 凛 v12 立ち絵の修正と引き継ぎ | 2026-10 | 反映済み（`assets/sprites/characters/rin/`）。手順は `.claude/skills/portrait-fix` |
 | `samechan_romcom_route_plan_20261011.md` | サメちゃん恋愛ルート企画（保存のみ・未実装） | 2026-10-11 | 着手時に `brand/` と `docs/spec/post_relationship_gameplay_plan_20261011.md` と合わせて読む |
+| `master_spec_2026-06_parts1-4.md` | 開発マスター仕様書の第1部〜第4部（修正26項目・大会パート案・BGM案・モデル別優先順位） | 2026-06 | `docs/master_spec.md`（最新仕様）、`docs/spec/`、`remake/README.md` |
+| `owner_requests_2026-06_09.md` | 要望台帳の 2026-09-28 以前の節（旧 `web/` 時代） | 2026-06〜09 | `docs/owner_requests.md` |
+| `remake_history_2026-10.md` | リメイク版の作り直し方針・2026-10-01 改稿取り込み・2026-10-17 実プレイ修正 | 2026-10 | `remake/README.md`、`docs/spec/` |
