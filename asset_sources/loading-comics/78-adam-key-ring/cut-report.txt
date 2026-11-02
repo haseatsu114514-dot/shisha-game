@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE4D0  枠の段 1: 2コマ@y=225
+  コマ1: 719x543 @(37,225) 比率 1.324 → warn
+  コマ2: 718x544 @(781,224) 比率 1.320 → warn
+コマ1: 719x543 (1.324) → 左右に各5.8%の紙帯 → 出力 814x543  asset_sources/loading-comics/78-adam-key-ring/panels/adam-key-ring-1.webp (65 KiB)
+コマ2: 718x544 (1.320) → 左右に各6.0%の紙帯 → 出力 816x544  asset_sources/loading-comics/78-adam-key-ring/panels/adam-key-ring-2.webp (67 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "adam-key-ring",
+  "title": "鍵より目印",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "asset_sources/loading-comics/78-adam-key-ring/panels/adam-key-ring-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "asset_sources/loading-comics/78-adam-key-ring/panels/adam-key-ring-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "asset_sources/loading-comics/78-adam-key-ring/78-adam-key-ring.png",
+      "region": {
+        "x": 37,
+        "y": 225,
+        "width": 719,
+        "height": 543,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "asset_sources/loading-comics/78-adam-key-ring/78-adam-key-ring.png",
+      "region": {
+        "x": 781,
+        "y": 224,
+        "width": 718,
+        "height": 544,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "adam-key-ring-1.webp",
+      "width": 814,
+      "height": 543,
+      "sha256": "2082df204a09ce07fdfe8ed091b9abefc3c1b18589b8eb6102d3bc1a9eb7e484"
+    },
+    {
+      "file": "adam-key-ring-2.webp",
+      "width": 816,
+      "height": 544,
+      "sha256": "9d38782b0de1ef93db4bacadadf94c2aa987510d1c6237fdd037103151b01f9b"
+    }
+  ]
+}

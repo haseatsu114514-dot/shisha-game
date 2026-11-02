@@ -1,0 +1,109 @@
+{
+  "game": "水煙前線 -EN:CODE-",
+  "episodes": 1,
+  "candidate": true,
+  "registration_status": "選別待ち・ゲーム未登録",
+  "reading_order": "左①導入→右②オチ",
+  "canon_status": "番外編ギャグ。誇張・夢・想像は本編能力や人物設定を変更しない。",
+  "image_manifest": [
+    {
+      "file": "83-naru-recipe-notes.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "533a969f09373da740ce3d696196dd62fbaf815d05458faf91b30fb7526a4cd0",
+      "bytes": 1819495
+    }
+  ],
+  "pages": [
+    {
+      "file": "83-naru-recipe-notes.png",
+      "ids": [
+        "hajime",
+        "naru"
+      ],
+      "range": "83",
+      "rows": [
+        [
+          "83 レシピの余白",
+          "はじめ・naru",
+          "なるが小さなノートを気軽にはじめへ見せる。 / ノートには文字ではなく小さな味の色丸が整列し、余白いっぱいにケーキとクッキーの可愛い落書き。はじめが笑顔。"
+        ]
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "episode": 83,
+      "title": "レシピの余白",
+      "dialogue": [
+        "メモ、見てもいい？",
+        "全部見てけ。",
+        "余白までお菓子。"
+      ],
+      "speakers": [
+        "はじめ",
+        "naru",
+        "はじめ"
+      ],
+      "generator": "OpenAI image_gen",
+      "prompt_summary": "添付1の下敷き（1536×1024）を編集し、横長の2コマ漫画を1話だけ描いてください。出力1536×1024。枠の位置・寸法を厳守：左x36〜756、右x780〜1500、y272〜752、各720×480の3:2。縦長コマに変形せず、枠外・上下・24pxのコマ間は#EEE3CFの無地で残す。枠線3pxは残す。枠の内側4%には顔・台詞・重要物を置かない。題名・話数・番号・ロゴ・署名・透かし・英語・擬音文字は一切描かない。吹き出しの台詞のみ日本語の太いゴシック体で大きく、横書きで最大2行。添付2のはじめ（黒いキャップ、黒髪、黒パーカー、首の銀アクセサリー）と添付3のなる（銀色の短髪、金色の目、黒白のストリートジャケット、首のシルバーアクセサリー）を、同じ外見・服装の2.5頭身にする。太いきれいな線、セル塗り、少しの紙の質感、暖色の明るいギャグ漫画。両コマともはじめは画面左、相手は画面右に固定。背景は台本の場面に合わせ、机・窓・壁だけの簡素な構成。店内の収納は閉じた不透明の扉。観葉植物を追加しない。必要な小物のみ描き、シーシャ本体・ボウル・炭・HMD・ホース・煙・武器・他の人物・実在ロゴは描かない。題名（描かない参考）『レシピの余白』。左①導入：なるが小さなノートを気軽にはじめへ見せる。 吹き出しははじめの「メモ、見てもいい？」となるの「全部見てけ。」の2個だけ。右②オチ：ノートには文字ではなく小さな味の色丸が整列し、余白いっぱいにケーキとクッキーの可愛い落書き。はじめが笑顔。 吹き出しははじめの「余白までお菓子。」の1個だけ。台詞は句読点も一字一句一致させる。2コマ合計3吹き出し、台詞を省略・追加・繰り返ししない。 最優先：枠を縦方向へ広げない。上下それぞれ272pxの紙の余白を残し、720×480の横長コマに小さな人物と小道具を収める。",
+      "reference_images": [
+        "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "assets/sprites/characters/naru/chr_naru_normal.png"
+      ],
+      "source": [
+        {
+          "file": "asset_sources/loading-comics/83-naru-recipe-notes/83-naru-recipe-notes.png",
+          "region": {
+            "x": 36,
+            "y": 272,
+            "width": 717,
+            "height": 480,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        },
+        {
+          "file": "asset_sources/loading-comics/83-naru-recipe-notes/83-naru-recipe-notes.png",
+          "region": {
+            "x": 779,
+            "y": 272,
+            "width": 718,
+            "height": 480,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        }
+      ],
+      "delivery": [
+        {
+          "file": "naru-recipe-notes-1.webp",
+          "width": 720,
+          "height": 480,
+          "sha256": "62fc2dedbe48b51a63707da1726a887dae44f80c7f80967b5ad79d5b61e89bf7",
+          "bytes": 60036
+        },
+        {
+          "file": "naru-recipe-notes-2.webp",
+          "width": 720,
+          "height": 480,
+          "sha256": "e22b293dea34465e0009177615f00a8b36ec21921bd302d0e5eaf83d7d278340",
+          "bytes": 69714
+        }
+      ],
+      "ratio_status": "ok",
+      "raw_ratios": [
+        1.49375,
+        1.4958333333333333
+      ],
+      "qa": {
+        "source_visual": "生成時に人物・台詞3つ・左右固定・禁止描写なしを目視確認",
+        "delivery": "cut tool passed; 3:2, <=1440x960, <400KiB",
+        "browser": "未実施: sandbox有効ChromiumがSUID helper設定エラーで起動不可。sandbox設定の解除・変更は行っていない。",
+        "warnings": [],
+        "rejected_trials": []
+      }
+    }
+  ]
+}

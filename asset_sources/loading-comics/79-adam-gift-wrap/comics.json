@@ -1,0 +1,111 @@
+{
+  "game": "水煙前線 -EN:CODE-",
+  "episodes": 1,
+  "candidate": true,
+  "registration_status": "選別待ち・ゲーム未登録",
+  "reading_order": "左①導入→右②オチ",
+  "canon_status": "番外編ギャグ。誇張・夢・想像は本編能力や人物設定を変更しない。",
+  "image_manifest": [
+    {
+      "file": "79-adam-gift-wrap.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "ecafc9b5b781a90842a97110093750baf4129c55e81a6086d4a19f2c3b9f66cb",
+      "bytes": 1744543
+    }
+  ],
+  "pages": [
+    {
+      "file": "79-adam-gift-wrap.png",
+      "ids": [
+        "hajime",
+        "adam"
+      ],
+      "range": "79",
+      "rows": [
+        [
+          "79 包みの中身",
+          "はじめ・adam",
+          "アダムが小さな包みを差し出し、はじめが考える。 / 赤い薄紙と緑の薄紙にぴったり包まれたリンゴ二つの輪郭と軸が丸見え。アダムは期待の真顔、はじめは笑いをこらえる。"
+        ]
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "episode": 79,
+      "title": "包みの中身",
+      "dialogue": [
+        "中身、当ててみて。",
+        "難しいですね。",
+        "形が全部言ってる。"
+      ],
+      "speakers": [
+        "adam",
+        "はじめ",
+        "はじめ"
+      ],
+      "generator": "OpenAI image_gen",
+      "prompt_summary": "添付1の下敷き（1536×1024）を編集し、横長の2コマ漫画を1話だけ描いてください。出力1536×1024。枠の位置・寸法を厳守：左x36〜756、右x780〜1500、y272〜752、各720×480の3:2。縦長コマに変形せず、枠外・上下・24pxのコマ間は#EEE3CFの無地で残す。枠線3pxは残す。枠の内側4%には顔・台詞・重要物を置かない。題名・話数・番号・ロゴ・署名・透かし・英語・擬音文字は一切描かない。吹き出しの台詞のみ日本語の太いゴシック体で大きく、横書きで最大2行。添付2のはじめ（黒いキャップ、黒髪、黒パーカー、首の銀アクセサリー）と添付3のアダム（黒シャツと黒エプロン、髪は本人左が緑・本人右が赤。正面像の画面左が赤、右が緑。緑を青にしない）を、同じ外見・服装の2.5頭身にする。太いきれいな線、セル塗り、少しの紙の質感、暖色の明るいギャグ漫画。両コマともはじめは画面左、相手は画面右に固定。背景は台本の場面に合わせ、机・窓・壁だけの簡素な構成。店内の収納は閉じた不透明の扉。観葉植物を追加しない。必要な小物のみ描き、シーシャ本体・ボウル・炭・HMD・ホース・煙・武器・他の人物・実在ロゴは描かない。題名（描かない参考）『包みの中身』。左①導入：アダムが小さな包みを差し出し、はじめが考える。 吹き出しはアダムの「中身、当ててみて。」とはじめの「難しいですね。」の2個だけ。右②オチ：赤い薄紙と緑の薄紙にぴったり包まれたリンゴ二つの輪郭と軸が丸見え。アダムは期待の真顔、はじめは笑いをこらえる。 吹き出しははじめの「形が全部言ってる。」の1個だけ。台詞は句読点も一字一句一致させる。2コマ合計3吹き出し、台詞を省略・追加・繰り返ししない。",
+      "reference_images": [
+        "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "assets/sprites/characters/adam/chr_adam_normal.png"
+      ],
+      "source": [
+        {
+          "file": "asset_sources/loading-comics/79-adam-gift-wrap/79-adam-gift-wrap.png",
+          "region": {
+            "x": 36,
+            "y": 272,
+            "width": 717,
+            "height": 544,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        },
+        {
+          "file": "asset_sources/loading-comics/79-adam-gift-wrap/79-adam-gift-wrap.png",
+          "region": {
+            "x": 780,
+            "y": 272,
+            "width": 720,
+            "height": 544,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        }
+      ],
+      "delivery": [
+        {
+          "file": "adam-gift-wrap-1.webp",
+          "width": 816,
+          "height": 544,
+          "sha256": "f609406c8a8cca6b3bfb96d9c9b918b275fb16c40023be574e932e6bb0a645dc",
+          "bytes": 61594
+        },
+        {
+          "file": "adam-gift-wrap-2.webp",
+          "width": 816,
+          "height": 544,
+          "sha256": "1c31665c20f6ec884d0ba79d759540cd2d146aa789cc43bd87b853b265a0ad73",
+          "bytes": 66878
+        }
+      ],
+      "ratio_status": "warn",
+      "raw_ratios": [
+        1.318014705882353,
+        1.3235294117647058
+      ],
+      "qa": {
+        "source_visual": "生成時に人物・台詞3つ・左右固定・禁止描写なしを目視確認",
+        "delivery": "cut tool passed; 3:2, <=1440x960, <400KiB",
+        "browser": "未実施: sandbox有効ChromiumがSUID helper設定エラーで起動不可。sandbox設定の解除・変更は行っていない。",
+        "warnings": [
+          "原画比率warn。内容を切らず紙帯で3:2へ補正。"
+        ],
+        "rejected_trials": []
+      }
+    }
+  ]
+}

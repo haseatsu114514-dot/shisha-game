@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EEE2CE  枠の段 1: 2コマ@y=223
+  コマ1: 717x566 @(37,223) 比率 1.267 → warn
+  コマ2: 718x566 @(781,223) 比率 1.269 → warn
+コマ1: 717x566 (1.267) → 左右に各7.8%の紙帯 → 出力 849x566  asset_sources/loading-comics/80-adam-cup-noodles/panels/adam-cup-noodles-1.webp (69 KiB)
+コマ2: 718x566 (1.269) → 左右に各7.7%の紙帯 → 出力 849x566  asset_sources/loading-comics/80-adam-cup-noodles/panels/adam-cup-noodles-2.webp (66 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "adam-cup-noodles",
+  "title": "三分の難問",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "asset_sources/loading-comics/80-adam-cup-noodles/panels/adam-cup-noodles-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "asset_sources/loading-comics/80-adam-cup-noodles/panels/adam-cup-noodles-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "asset_sources/loading-comics/80-adam-cup-noodles/80-adam-cup-noodles.png",
+      "region": {
+        "x": 37,
+        "y": 223,
+        "width": 717,
+        "height": 566,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "asset_sources/loading-comics/80-adam-cup-noodles/80-adam-cup-noodles.png",
+      "region": {
+        "x": 781,
+        "y": 223,
+        "width": 718,
+        "height": 566,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "adam-cup-noodles-1.webp",
+      "width": 849,
+      "height": 566,
+      "sha256": "33a5126b6e073f2e32cf083b71bfe9d5f25d1a0b39ba12ebef33d2031151bbcc"
+    },
+    {
+      "file": "adam-cup-noodles-2.webp",
+      "width": 849,
+      "height": 566,
+      "sha256": "3a5e46748ee6aa9b0a04beb2790d0939c7270faae356c8b03b08af1576a2c5ed"
+    }
+  ]
+}

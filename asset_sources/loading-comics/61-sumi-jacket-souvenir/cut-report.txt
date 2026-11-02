@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EDE2CD  枠の段 1: 2コマ@y=271
+  コマ1: 718x479 @(38,271) 比率 1.499 → ok
+  コマ2: 718x479 @(781,271) 比率 1.499 → ok
+コマ1: 718x479 (1.499) そのまま → 出力 718x479  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  asset_sources/loading-comics/61-sumi-jacket-souvenir/panels/sumi-jacket-souvenir-1.webp (63 KiB)
+コマ2: 718x479 (1.499) そのまま → 出力 718x479  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  asset_sources/loading-comics/61-sumi-jacket-souvenir/panels/sumi-jacket-souvenir-2.webp (65 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "sumi-jacket-souvenir",
+  "title": "香りのお土産",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "asset_sources/loading-comics/61-sumi-jacket-souvenir/panels/sumi-jacket-souvenir-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "asset_sources/loading-comics/61-sumi-jacket-souvenir/panels/sumi-jacket-souvenir-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "asset_sources/loading-comics/61-sumi-jacket-souvenir/61-sumi-jacket-souvenir.png",
+      "region": {
+        "x": 38,
+        "y": 271,
+        "width": 718,
+        "height": 479,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "asset_sources/loading-comics/61-sumi-jacket-souvenir/61-sumi-jacket-souvenir.png",
+      "region": {
+        "x": 781,
+        "y": 271,
+        "width": 718,
+        "height": 479,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "sumi-jacket-souvenir-1.webp",
+      "width": 718,
+      "height": 479,
+      "sha256": "56b11c9200a0d0633ebd7110bbe82a19d80b9857a7978022c65761492353aa90"
+    },
+    {
+      "file": "sumi-jacket-souvenir-2.webp",
+      "width": 718,
+      "height": 479,
+      "sha256": "d684d837d16ee7553caec4d7c3bfb1693791800f94c3d69490e730731d74702a"
+    }
+  ]
+}
