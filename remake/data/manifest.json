@@ -1710,6 +1710,164 @@
      "top": 20.462
     }
    }
+  },
+  "master_hookah": {
+   "color": "#3fbf7f",
+   "secondary": "#e2b75f",
+   "shadow": "#151917",
+   "background": "ui/character_intros/master_hookah.png",
+   "frames": {
+    "normal": {
+     "width": 880.552,
+     "left": -148.683,
+     "top": 14.414
+    },
+    "angry": {
+     "width": 880.552,
+     "left": -142.373,
+     "top": 14.414
+    },
+    "laugh": {
+     "width": 880.552,
+     "left": -143.719,
+     "top": 15.397
+    },
+    "sad": {
+     "width": 879.793,
+     "left": -139.541,
+     "top": 15.416
+    },
+    "serious": {
+     "width": 880.552,
+     "left": -146.434,
+     "top": 14.414
+    },
+    "smile": {
+     "width": 879.793,
+     "left": -144.548,
+     "top": 15.416
+    },
+    "surprise": {
+     "width": 880.552,
+     "left": -146.242,
+     "top": 14.414
+    }
+   }
+  },
+  "sheikh": {
+   "color": "#f5c542",
+   "secondary": "#f6e6b7",
+   "shadow": "#15182a",
+   "background": "ui/character_intros/sheikh.png",
+   "frames": {
+    "normal": {
+     "width": 878.28,
+     "left": -146.141,
+     "top": 21.336
+    },
+    "serious": {
+     "width": 879.793,
+     "left": -155.186,
+     "top": 19.344
+    },
+    "smile": {
+     "width": 876.021,
+     "left": -189.614,
+     "top": 20.401
+    },
+    "smug": {
+     "width": 877.526,
+     "left": -161.464,
+     "top": 21.351
+    }
+   }
+  },
+  "shisha_9000": {
+   "color": "#9aa4b8",
+   "secondary": "#c1cad8",
+   "shadow": "#151926",
+   "background": "ui/character_intros/shisha_9000.png",
+   "frames": {
+    "normal": {
+     "width": 881.311,
+     "left": -114.705,
+     "top": 17.344
+    }
+   }
+  },
+  "da_silva": {
+   "color": "#2fd27a",
+   "secondary": "#f5d96e",
+   "shadow": "#0e2519",
+   "background": "ui/character_intros/da_silva.png",
+   "frames": {
+    "normal": {
+     "width": 877.526,
+     "left": -79.985,
+     "top": 23.309
+    },
+    "excited": {
+     "width": 874.521,
+     "left": -114.899,
+     "top": 23.36
+    },
+    "smile": {
+     "width": 878.28,
+     "left": -129.909,
+     "top": 17.415
+    },
+    "surprise": {
+     "width": 876.773,
+     "left": -106.002,
+     "top": 23.322
+    }
+   }
+  },
+  "emil": {
+   "color": "#4a8be0",
+   "secondary": "#d7e7f5",
+   "shadow": "#111827",
+   "background": "ui/character_intros/emil.png",
+   "frames": {
+    "normal": {
+     "width": 884.364,
+     "left": -126.34,
+     "top": 16.286
+    }
+   }
+  },
+  "mukai_master": {
+   "color": "#b08a5e",
+   "secondary": "#e5d1ac",
+   "shadow": "#231915",
+   "background": "ui/character_intros/mukai_master.png",
+   "frames": {
+    "normal": {
+     "width": 864.162,
+     "left": -128.541,
+     "top": 30.284
+    },
+    "sad": {
+     "width": 866.361,
+     "left": -129.879,
+     "top": 29.298
+    },
+    "serious": {
+     "width": 864.894,
+     "left": -129.351,
+     "top": 29.312
+    },
+    "smile": {
+     "width": 864.894,
+     "left": -128.747,
+     "top": 29.312
+    },
+    "surprise": {
+     "width": 865.627,
+     "left": -129.984,
+     "top": 29.305
+    }
+   }
   }
  },
  "titleArts": [
@@ -2713,6 +2871,12 @@
   "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
   "sprites/characters/yoru/chr_yoru_normal.png",
   "ui/character_intros/yoru.png",
+  "ui/character_intros/master_hookah.png",
+  "ui/character_intros/sheikh.png",
+  "ui/character_intros/shisha_9000.png",
+  "ui/character_intros/da_silva.png",
+  "ui/character_intros/emil.png",
+  "ui/character_intros/mukai_master.png",
   "sprites/characters/emil/chr_emil_serious.png",
   "sprites/characters/emil/chr_emil_smile.png",
   "sprites/characters/emil/chr_emil_surprise.png",
