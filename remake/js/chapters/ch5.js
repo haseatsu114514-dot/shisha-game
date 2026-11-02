@@ -1,11 +1,10 @@
 // 第5章・機械仕掛けの神。帰郷後のプロローグ→自由行動→日程→試合当日→後日談→フィナーレまでを、場面単位で保存する。
 // 状態遷移は ch5-progress.js。ここは表示と再生だけを持つ。
 import { DB, bgUrl } from "../core/data.js";
-import { consultLessons } from "../core/growth.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
-import { awardChapterClearExp, awardTournamentExp, awardSceneExp, presentNight, reflectAtSpot } from "../core/growth.js";
+import { awardChapterClearExp, awardTournamentExp, awardSceneExp, presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
 import { canReflect } from "../daily/reflection.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
