@@ -9,3 +9,6 @@ __pycache__/
 asset_sources/portrait_sync_backup_*/
 remake/test/shots/
 # 1ファイル配布版（約65MB）は生成物。Pagesのデプロイでビルドする（コミットしない・2026-10-04）
+# 日本のシーシャ店・機材の参考写真（各サイトの著作物）。リポジトリが公開の間はコミットしない。
+# 取得: python3 tools/fetch_shisha_web_refs.py（一覧は asset_sources/shisha-hardware-reference/web-refs/refs.json）
+asset_sources/shisha-hardware-reference/web-refs/images/

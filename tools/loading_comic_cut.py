@@ -16,7 +16,10 @@
   # 3. コマごとに1枚ずつ生成した場合（1536x1024 の全面がコマ）
   python3 tools/loading_comic_cut.py panel 左.png 右.png --id mashiro-body-clock
 
-  # 4. 出来上がった WebP が規格どおりか（3:2・寸法・容量）
+  # 4. 配信用 WebP に紙色の余白が残ったら、絵を拡大して埋める（吹き出しを避けて切る位置を選ぶ）
+  python3 tools/loading_comic_cut.py fill remake/img/loading/mashiro-body-clock-*.webp [--max-fill 名前=0.5]
+
+  # 5. 出来上がった WebP が規格どおりか（3:2・寸法・容量）
   python3 tools/loading_comic_cut.py check remake/img/loading/mashiro-body-clock-*.webp
 
 --dry-run で書き込まずに検出結果だけ見られる。Pillow と numpy だけで動く（scipy 不要）。
@@ -49,6 +52,11 @@ WEBP_QUALITY = 85
 PAD_BAND = (1.35, 1.65)        # この範囲は紙色で足して 3:2 に整える（片側 ≤ 5% の帯）
 WARN_BAND = (1.25, 1.80)       # ここまでは警告つきで通す。外れたら作り直し
 RANK = {"ok": 0, "warn": 1, "reject": 2}
+FILL_MIN_BAND = 0.02         # fill: 片側2%未満の紙の余白はそのまま
+FILL_WHITE = 236             # fill: 吹き出しの地（ほぼ白）とみなす明るさ
+FILL_BUBBLE = 0.03           # fill: 切り落とす行／列にこれ以上の白があれば吹き出しにかかるとみなす
+FILL_AIR = 0.02              # fill: 吹き出しと新しい縁の間に残す余裕（コマの高さ／幅に対する割合）
+FILL_EDGE_MAX = 0.045        # fill: 1辺で切ってよい量の上限。規格の「縁から4%は大事なものを置かない」に合わせ、オチの小物を守る
 
 
 @dataclass
@@ -277,6 +285,73 @@ def judge_ratio(ratio: float) -> str:
     return "reject"
 
 
+def art_box(img: np.ndarray, paper: np.ndarray) -> Box:
+    """紙色の余白を除いた絵の範囲（紙色との差が大きい画素が4%以上ある行・列）。"""
+    h, w = img.shape[:2]
+    diff = np.abs(img.astype(np.int16) - paper.astype(np.int16)).max(axis=2) > 28
+    cols = np.flatnonzero(diff.mean(axis=0) > 0.04); rows = np.flatnonzero(diff.mean(axis=1) > 0.04)
+    if not len(cols) or not len(rows):
+        return Box(0, 0, w, h)
+    return Box(int(cols[0]), int(rows[0]), int(cols[-1] - cols[0] + 1), int(rows[-1] - rows[0] + 1))
+
+
+def fill_panel(src: Image.Image, max_fill: float = 1.0) -> tuple[Image.Image, dict]:
+    """3:2 のコマに入った紙色の余白を、絵を拡大して埋める。
+
+    はみ出す方向（縦長の絵なら上下、横長なら左右）を切る。切る位置は中央を基本に、
+    吹き出し（ほぼ白の帯）にかからない範囲でずらす。全部埋めると吹き出しにかかるときは、
+    かからない所まで拡大を控えて、残りは紙色の余白のままにする。1辺で切る量は FILL_EDGE_MAX まで
+    （規格のセーフマージン。縁の小物やオチを切らない）。出力は入力と同じ寸法。
+    """
+    a = np.asarray(src.convert("RGB"))
+    h, w = a.shape[:2]
+    corners = np.concatenate([a[:4, :4].reshape(-1, 3), a[:4, -4:].reshape(-1, 3), a[-4:, :4].reshape(-1, 3), a[-4:, -4:].reshape(-1, 3)])
+    paper = np.median(corners, axis=0)
+    b = art_box(a, paper)
+    bands = {"left": b.x / w, "right": (w - b.x - b.w) / w, "top": b.y / h, "bottom": (h - b.y - b.h) / h}
+    info = {"bands_before": {k: round(v, 3) for k, v in bands.items()}, "fill": 0.0, "cut": {}}
+    if max(bands.values()) < FILL_MIN_BAND or max_fill <= 0:
+        return src.convert("RGB"), info
+    art = a[b.y:b.y + b.h, b.x:b.x + b.w]
+    ah, aw = art.shape[:2]
+    white = (art.min(axis=2) >= FILL_WHITE)
+    if aw / ah < TARGET_RATIO:          # 縦長: 上下を切る
+        need = ah - aw / TARGET_RATIO; prof = white.mean(axis=1); n = ah; axis = "rows"
+    else:                               # 横長: 左右を切る
+        need = aw - ah * TARGET_RATIO; prof = white.mean(axis=0); n = aw; axis = "cols"
+    air = int(round(n * FILL_AIR))
+    edge = int(n * FILL_EDGE_MAX)
+    best = None
+    steps = [max_fill - i * 0.05 for i in range(int(max_fill / 0.05) + 1)]
+    for f in steps:
+        cut = int(round(need * f))
+        if cut <= 0:
+            break
+        cands = []
+        for t in range(max(0, cut - edge), min(cut, edge) + 1):
+            head = prof[:min(n, t + air)] if t else prof[:0]
+            tail = prof[max(0, n - (cut - t) - air):] if cut - t else prof[:0]
+            if (head.max(initial=0) <= FILL_BUBBLE) and (tail.max(initial=0) <= FILL_BUBBLE):
+                cands.append(t)
+        if cands:
+            t = min(cands, key=lambda x: abs(x - cut / 2))
+            best = (f, cut, t)
+            break
+    if best is None:
+        return src.convert("RGB"), info
+    f, cut, t = best
+    img = Image.fromarray(art)
+    if axis == "rows":
+        img = img.crop((0, t, aw, ah - (cut - t)))
+        info["cut"] = {"top": round(t / ah, 3), "bottom": round((cut - t) / ah, 3)}
+    else:
+        img = img.crop((t, 0, aw - (cut - t), ah))
+        info["cut"] = {"left": round(t / aw, 3), "right": round((cut - t) / aw, 3)}
+    padded, _ = fit_panel(img, "pad", tuple(int(c) for c in paper))
+    info["fill"] = round(f, 2)
+    return padded.resize((w, h), Image.LANCZOS), info
+
+
 # ---- サブコマンド ------------------------------------------------------------------
 def cmd_template(args: argparse.Namespace) -> int:
     out_dir = Path(args.out_dir); out_dir.mkdir(parents=True, exist_ok=True)
@@ -394,6 +469,34 @@ def cmd_panel(args: argparse.Namespace) -> int:
     return emit(args, panels, sources)
 
 
+def cmd_fill(args: argparse.Namespace) -> int:
+    """配信用 WebP の紙色の余白を、絵を拡大して埋め直す（同じ寸法・同じファイル名で書き出す）。"""
+    out_dir = Path(args.out_dir) if args.out_dir else None
+    overrides = {}
+    for spec in args.max_fill or []:
+        name, _, val = spec.partition("=")
+        overrides[name] = float(val)
+    changed = 0
+    for p in args.images:
+        path = Path(p)
+        lim = overrides.get(path.name, overrides.get(path.stem, 1.0))
+        im, info = fill_panel(Image.open(path), lim)
+        b = info["bands_before"]
+        line = f"{path.name}: 余白 左{b['left']:.0%} 右{b['right']:.0%} 上{b['top']:.0%} 下{b['bottom']:.0%}"
+        if info["fill"]:
+            changed += 1
+            line += f" → 拡大 {info['fill']:.0%}（切った所 " + "・".join(f"{k}{v:.0%}" for k, v in info["cut"].items()) + "）"
+            if not args.dry_run:
+                dest = (out_dir / path.name) if out_dir else path
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                im.save(dest, "WEBP", quality=WEBP_QUALITY, method=6)
+        else:
+            line += " → そのまま"
+        print(line)
+    print(f"拡大して埋めた: {changed} / {len(args.images)} 枚" + ("（書き込みなし）" if args.dry_run else ""))
+    return 0
+
+
 def cmd_check(args: argparse.Namespace) -> int:
     bad = 0
     for p in args.images:
@@ -431,6 +534,12 @@ def main(argv: list[str] | None = None) -> int:
     common(s); s.set_defaults(fn=cmd_sheet)
     pn = sub.add_parser("panel", help="コマごとの画像2枚（左・右）を揃える")
     pn.add_argument("images", nargs="+"); common(pn); pn.set_defaults(fn=cmd_panel)
+    fl = sub.add_parser("fill", help="配信用 WebP の紙色の余白を、絵を拡大して埋める（吹き出しを避けて切る位置を選ぶ）")
+    fl.add_argument("images", nargs="+")
+    fl.add_argument("--out-dir", default="", help="書き出し先（省略時は上書き）")
+    fl.add_argument("--max-fill", action="append", help="ファイル名=0〜1 で拡大の上限を個別に指定（オチが縁にある絵など）")
+    fl.add_argument("--dry-run", action="store_true")
+    fl.set_defaults(fn=cmd_fill)
     c = sub.add_parser("check", help="配信用 WebP の規格確認")
     c.add_argument("images", nargs="+"); c.set_defaults(fn=cmd_check)
     args = ap.parse_args(argv)

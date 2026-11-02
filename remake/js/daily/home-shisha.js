@@ -173,6 +173,13 @@ const FLAVOR_IMPRESSIONS = {
   absal_mint: "清涼感の奥にハーブの苦みもあるんだな",
   afsahr_strawberry: "華やかな苺の香りが立つんだな",
   spring_water: "香水みたいな香りに、爽やかな後味もある",
+  grapefruit: "皮のほろ苦さが、酸味のあとに残るんだな",
+  honey: "とろりとした蜂蜜の甘さが広がるんだな",
+  milk: "まろやかな甘さが、煙をやわらかくするんだな",
+  cherry: "濃い赤い実の甘酸っぱさなんだな",
+  passion_fruit: "華やかな酸味と南国の香りが強いんだな",
+  lime: "レモンより青くて、後味が短いんだな",
+  biscuit: "焼いた小麦の香ばしさに、バターの甘さがある",
 };
 /** 物語の味覚不調（DAY5で始まり、第2章の間は戻らない）。第3章以降の扱いはその章の物語に任せる */
 export const tasteDistant = (s = state) => s.chapter === 2 && !!s.flags?._ch2_taste_distant;
