@@ -504,7 +504,7 @@
         {
           "speaker": "samechan",
           "face": "serious",
-          "text": "うむ。今日はここから見ておるそうじゃ"
+          "text": "うむ。炭を扱う間は、ここが王の席じゃ。布に火が移っては大ごとじゃからのう"
         },
         {
           "speaker": "samechan",
@@ -534,7 +534,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "名前から想像していたのと違いました。ひとつの葉だけでも、こんなに香るんですね"
+          "text": "これ、どこの葉ですか？ 問屋街の店では見ない気がして"
         },
         {
           "speaker": "samechan",
@@ -1132,12 +1132,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "包みには、素焼きのハガルが入っていた。"
+          "text": "包みには、素焼きのボウルが入っていた。"
         },
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "店を開く前、試すために用意しておったものじゃ"
+          "text": "開店の日、最初の客に出すつもりで用意したものじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "……結局、緊張して、いつもの方を使うてしもうた"
         },
         {
           "speaker": "samechan",

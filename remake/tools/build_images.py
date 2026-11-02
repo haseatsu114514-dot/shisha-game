@@ -10,6 +10,7 @@
 """
 import io
 import json
+import re
 from pathlib import Path
 
 from PIL import Image
@@ -67,6 +68,10 @@ def encode(src: Path, rel: str) -> bytes:
             or rel.startswith("sprites/characters/rei/")
             or rel.startswith("sprites/characters/volk/")
             or rel.startswith("sprites/characters/salaryman/")
+            or re.fullmatch(r"sprites/characters/emil/chr_emil_(smile|serious|surprise|thinking)\.png", rel)
+            or re.fullmatch(r"sprites/characters/maki/chr_maki_(smile|serious|surprise|excited)\.png", rel)
+            or re.fullmatch(r"sprites/characters/sai/chr_sai_(smile|serious|surprise|thinking)\.png", rel)
+            or re.fullmatch(r"sprites/characters/uranaishi/chr_uranaishi_(serious|surprise|sad)\.png", rel)
             or rel in ("backgrounds/bg_osu_map_day.png", "backgrounds/bg_osu_map_night.png")
             or rel == "cgs/cg_minto_first_cheki.png"
             or rel.startswith("ui/axe_throw/")):

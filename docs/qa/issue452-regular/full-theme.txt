@@ -1,7 +1,0 @@
-Compared 19 current/baseline scene paths: full state equal
-[issue508-theme] PASS: six-scenes-branches-old-save-and-state-effects
-[issue508-theme] PASS: pc-opening-keeps-faceless-cuts
-[issue508-theme] PASS: pc-four-portrait-scenes-and-skip
-[issue508-theme] PASS: touch-opening-keeps-faceless-cuts
-[issue508-theme] PASS: touch-four-portrait-scenes-and-skip
-[issue508-theme] PASS: interrupted-night-save-reload-once

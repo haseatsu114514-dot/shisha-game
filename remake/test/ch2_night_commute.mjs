@@ -27,7 +27,7 @@ ports.set('remake/js/core/data.js', fixed(['bgUrl'],{bgUrl:id=>id}));
 ports.set('remake/js/core/util.js', fixed(['el'],{el:()=>{throw Error('Unexpected el');}}));
 ports.set('remake/js/core/city-locations.js',fixed(['CH2_CITY_NAME','HOME_CITY_NAME','HOME_CITY_READING'],{CH2_CITY_NAME:'柚ヶ谷',HOME_CITY_NAME:'地元',HOME_CITY_READING:'じもと'}));
 ports.set('remake/js/core/rules.js',fixed(['TOURNAMENT_DAY'],{TOURNAMENT_DAY:99}));
-ports.set('remake/js/core/chapter-clock.js',fixed(['chapterDay'],{chapterDay:s=>s.day}));
+ports.set('remake/js/core/chapter-clock.js',fixed(['chapterDay','atChapterFinalDay'],{chapterDay:s=>s.day,atChapterFinalDay:s=>s.day>=99}));
 async function moduleAt(p) {
   if(ports.has(p)) return ports.get(p);
   assert(['remake/js/chapters/ch2-commute.js','remake/js/daily/station-travel.js','remake/js/core/travel-budget.js','remake/js/daily/night-events.js'].includes(p),p);

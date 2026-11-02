@@ -1,0 +1,31 @@
+Use case: stylized-concept. Asset type: game portrait sprite sheet.
+Generate ONE landscape sprite sheet 2048x1024, actual transparent PNG background, exactly 8 independent shoulders-up bust portraits arranged in a precise evenly spaced 4-column 2-row grid. Every portrait centered within its own 512x512 cell with generous transparent margins. These are separate floating bust cutouts, NOT a scene or card layout. No background patches. No circular discs or frames: game draws the circular frame, so keep the head and shoulders comfortably inside an implied 460px circle.
+Style: painterly storybook ink-and-watercolor, delicate ink lines, soft warm lamplight, muted teal, walnut brown, parchment and brass. All eight consistent style, calm neutral-to-gentle expression, facing slightly left, distinct original androgynous young adults 18–24. Independent original fictional PCs, never resemble established game protagonists.
+Exact order left-to-right:
+TOP ROW all port-town tea house shop hands, linen shirt plus shop apron:
+1 short messy black hair and dark eyes;
+2 pale, long ash-grey hair tied low behind the neck;
+3 sun-tanned skin and curly rust-brown hair;
+4 neat brown hair, round glasses, moss-green vest over linen shirt with apron.
+BOTTOM ROW all sea-lounge deckhands, orange life vest over tee, visibly damp hair and night-sea cool accent lighting but NO background:
+5 short black hair, determined look;
+6 sun-bleached pale blond hair, tan skin and freckles;
+7 red hair held by dark bandana;
+8 long wet dark-blue hair, dark raincoat with hood down plus visible orange life vest.
+No lettering, numbers, labels, logos, watermark, border, frames, shisha, real brands, additional characters, scenery, props outside cells. Exactly 8 busts, 4x2 grid, nothing else. Genuine transparent alpha, not checkerboard rendered into the image.
+
+Use case: stylized-concept. Asset type: game portrait sprite sheet.
+Generate ONE 2048x1536 landscape sprite sheet with genuine transparent alpha PNG background, exactly NINE independent original character bust portraits in a precise regular 4-column 3-row grid. Row1 has 4 portraits, row2 has 4 portraits, row3 ONLY column1 has a portrait; row3 columns2,3,4 must be completely empty transparent. Each portrait centered within its own 512x512 grid cell, at most 430x430 with transparent margin and even gutters. No borders or frames or circular background discs (game draws the frame). No scene or card layout. Clear faces readable at tiny game UI size, chest up.
+Style: painterly storybook ink-and-watercolor busts, muted teal/walnut/parchment/brass, soft warm lamplight, delicate handmade ink, same cohesive style throughout. Original fictional characters, not existing game protagonists. Light comedy is fine, no resemblance to existing characters.
+Exact order:
+Row1 col1 Nico, late-twenties aroma guide, warm brown skin, tidy curly hair, rolled sleeves, confident smile, holding small brass scoop.
+Row1 col2 Pippin, late-twenties wandering aroma master, dramatic pose, long coat with RED AND GREEN APPLE pins on lapel, holding one apple like treasure.
+Row1 col3 Luca, early-twenties window-seat painter, pale, long straight hair tucked behind one ear, quiet gaze, pencil behind ear.
+Row1 col4 Leaf, small mascot CAT who paints, distinctly leaf-shaped ears, wispy smoke-like tail visible, tiny brush in paw, calm half-closed eyes. A cat, not a human.
+Row2 col1 Otto, thirties aroma researcher, round glasses, neat side-parted hair, white lab coat over sweater, nervous but kind.
+Row2 col2 Midori, delicate sad-looking researcher, SHORT TEAL HAIR, white lab coat, a WOOD-HANDLED THROWING AXE strapped on her BACK visible behind one shoulder. Absolutely no pink-brown hair or high ponytail.
+Row2 col3 Mackin, thirties shark-movie camera director, beret, old FILM CAMERA ON SHOULDER, cap has red-and-green apple badge, grinning at danger.
+Row2 col4 Sera, twenties sea-lounge lighting operator, cropped short hair with HEADLAMP pushed up on forehead, dark work jacket, calm and fearless.
+Row3 col1 Noa, early-twenties horror-savvy lighting tech, oversized LAVENDER HOODIE, holding flashlight UNDER CHIN shining upward like ghost story, deadpan knowing look.
+Row3 col2, col3, col4: NOTHING; genuine transparency.
+No text, lettering, labels, numbers, logos, watermark, backgrounds, frames, shisha, real brands, additional people or extra portraits. Do not duplicate characters. Exactly 9 separate cutouts.

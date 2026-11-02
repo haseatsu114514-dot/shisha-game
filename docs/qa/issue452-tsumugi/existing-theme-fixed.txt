@@ -1,2 +1,0 @@
-Compared 18 current/baseline scene paths: full state equal
-[issue508-theme] PASS: six-scenes-branches-old-save-and-state-effects

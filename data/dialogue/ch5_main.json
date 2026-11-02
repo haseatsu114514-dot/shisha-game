@@ -186,8 +186,18 @@
           "text": "9000の白い指が動く。大会で覚えた待ち方まで、よく似ている。"
         },
         {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "一口目からアニスが立つように、高めの熱で仕上げてあります"
+        },
+        {
           "type": "sfx",
           "id": "bubbling"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "9000の一台を、一口もらう。"
         },
         {
           "speaker": "hajime",
@@ -197,7 +207,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "客席で小さな咳。9000はすぐに熱を弱めた。"
+          "text": "客席で小さな咳。9000の指が、すぐに炭を一つ縁へずらした。"
         },
         {
           "speaker": "dr_kemuri",
@@ -250,7 +260,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "客席に、tonariへ来た酸っぱい顔の人がいた。今日はホースを膝に置いて、待っている。"
+          "text": "帰郷した夜、水を先に出した客がいた。今日はホースを膝に置いて、待っている。"
         },
         {
           "speaker": "hajime",
@@ -260,7 +270,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "言いかけて、口を閉じる。帰郷した夜、注文が出るまで待った時間を思い出した。"
+          "text": "言いかけて、口を閉じる。あの夜、注文が出るまで待った時間を思い出した。"
         },
         {
           "speaker": "hajime",
@@ -418,12 +428,12 @@
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "この手は職人に何度も直してもらった。葉の記録も、店の人たちに"
+          "text": "9000の手は、職人に何度も直してもらった。葉の記録も、店の人たちに"
         },
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "鉄の煙の記録も借りました。君の待ち時間まで、測ってあった"
+          "text": "鉄の煙の、ヴォルクさんの計器の記録も借りました。君の待ち時間まで、測ってあった"
         },
         {
           "speaker": "",
@@ -439,6 +449,11 @@
           "speaker": "dr_kemuri",
           "face": "serious",
           "text": "符号の中身は、どれも人の仕事でした。……私は、その人たちに会ったこともない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……会ってなくても、その人たちの手は、今日の9000の煙にいました"
         },
         {
           "speaker": "dr_kemuri",
@@ -1067,37 +1082,12 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "条件、もう一回だけ確かめさせてください"
-          },
-          {
-            "speaker": "dr_kemuri",
-            "face": "normal",
-            "text": "どうぞ"
+            "text": "ダブルアップル12グラム、同じ機材。同じお客さんに、二台とも吸ってもらう"
           },
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "葉はダブルアップルだけ。お互い12グラム"
-          },
-          {
-            "speaker": "dr_kemuri",
-            "face": "normal",
-            "text": "はい"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "機材の条件も揃える。同じお客さんに、二台とも吸ってもらう"
-          },
-          {
-            "speaker": "dr_kemuri",
-            "face": "normal",
-            "text": "はい"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "もう一度吸いたいほうに、一回ごとに一票。二本の合計で決めて、同じ数なら引き分け"
+            "text": "もう一度吸いたい方に一票ずつ。二本の合計で、同じ数なら引き分け"
           },
           {
             "speaker": "dr_kemuri",
@@ -1227,7 +1217,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "SHISHA-9000。博士がそう呼んでいたロボットだ。"
+          "text": "SHISHA-9000。博士の言う「装置」は、人の形をしていた。"
         },
         {
           "speaker": "shisha_9000",
@@ -1293,6 +1283,16 @@
           "text": "ええ、もちろん"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "HMDも、同じ型ですか"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "smile",
+          "text": "ええ。そいつの開発者、俺だもん。……失礼、私の設計です"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "9000が、ゆっくり両手を開いた。"
@@ -1312,6 +1312,11 @@
           "face": "",
           "text": "客席に、人が座りはじめた。",
           "comment": "※仮置き（Q14）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席に、使い捨ての吸い口が一人ずつ配られた。"
         },
         {
           "speaker": "hajime",

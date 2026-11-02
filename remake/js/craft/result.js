@@ -6,6 +6,7 @@ import { el, sleep, rand } from "../core/util.js";
 import { DB, faceIconUrl, displayName, portraitInfo } from "../core/data.js";
 import { layers, showScreen, flash, shake, retireScreen } from "../core/ui.js";
 import { state } from "../core/state.js";
+import { on } from "../core/bus.js";
 import { SE, stopBgm } from "../core/audio.js";
 import { autoSkill } from "./common.js";
 import { mixColor } from "./art.js";
@@ -86,6 +87,7 @@ const judgeLegend = () => legendOf(JUDGE_IDS);
  * @param mine  ここまでのはじめの出来（0〜100）
  */
 export async function showStandings(round, mine, cs = null) {
+  const owner = state;
   // 実際に投入された持ち点だけを順位にする。制作の出来と投票を混ぜない。
   const table = interimPointTable(round);
   const values = totals(table);
@@ -96,6 +98,10 @@ export async function showStandings(round, mine, cs = null) {
       : [`${displayName("maezono", state)}・チャコール博士は、残りの配点を見極めている`, "南雲審査員長、依然10点を温存"];
   const review = evaluationOf(mine);
   const recognition = craftRecognition(cs, { careRounds: Math.max(0, round - 2) });
+  const next = el("button.btn.primary", { type: "button", dataset: { test: "standings-next" },
+    style: { pointerEvents: "auto", marginLeft: "auto", minWidth: "96px", flexShrink: "0", alignItems: "center", justifyContent: "center" },
+  }, [el("span.btn-label", { text: "次へ" })]);
+  next.disabled = true;
   const board = el("div.standings.tournament-board", { dataset: { test: "standings", round }, role: "status" }, [
     header(`SMOKE CROWN CUP ／ ROUND ${round}`, "中間投票", "審査員3人の持ち点（各10点）。南雲審査員長は、まだ1点も入れていない。", true),
     el("div.sd-main", [
@@ -113,20 +119,56 @@ export async function showStandings(round, mine, cs = null) {
     ]),
     el("div.sd-status", [el("span", { text: "ここまでの制作" }), el(`b.craft-evaluation.${review.tone}`, { text: review.mark }), el("span", { text: round === 3 ? "次は2回目の調整" : round === 2 ? "次は1回目の調整" : "次は吸い出し・提供" })]),
     recognition?.summary ? el("p.sd-recognition", { text: recognition.summary, dataset: { test: "standings-recognition" } }) : null,
-    el("div.sd-feed", [el("b.sd-feed-tag", { text: "速報" }), el("div.sd-feed-lines", feed.map((t) => el("div", { text: t })))]),
+    el("div.sd-feed", [el("b.sd-feed-tag", { text: "速報" }), el("div.sd-feed-lines", feed.map((t) => el("div", { text: t }))), next]),
   ]);
   const dim = el("div.fx-dim");
   layers.fx.append(dim, board);
   SE.crowd(1.6);
-  await sleep(40);
-  dim.classList.add("show");
-  board.classList.add("show");
-  await sleep(autoSkill() ? 300 : 3600);
-  board.classList.add("out");
-  dim.classList.remove("show");
-  await sleep(400);
-  board.remove();
-  dim.remove();
+  // 速報は読了操作を待つ。会話のAUTO/SKIPとは独立し、自動送りは開発用の自動操作だけ。
+  await new Promise((resolve, reject) => {
+    const previousFocus = document.activeElement;
+    let settled = false, closing = false, returnFocus = false, autoTimer, exitTimer;
+    const current = () => state === owner && board.isConnected && dim.isConnected;
+    const finish = (cancelled) => {
+      if (settled) return;
+      settled = true;
+      const hadFocus = document.activeElement === next;
+      next.disabled = true;
+      clearTimeout(entranceTimer); clearTimeout(autoTimer); clearTimeout(exitTimer);
+      next.removeEventListener("click", advance);
+      observer.disconnect(); removeState();
+      window.removeEventListener("pagehide", cancel);
+      const restoreFocus = state === owner && previousFocus?.isConnected
+        && (hadFocus || (returnFocus && document.activeElement === document.body));
+      board.remove(); dim.remove();
+      if (restoreFocus) previousFocus.focus({ preventScroll: true });
+      if (cancelled) reject(new DOMException("Standings interrupted", "AbortError"));
+      else resolve();
+    };
+    const cancel = () => finish(true);
+    const advance = () => {
+      if (next.disabled || closing) return;
+      if (!current()) { cancel(); return; }
+      closing = true;
+      returnFocus = document.activeElement === next;
+      next.disabled = true;
+      SE.select();
+      board.classList.add("out"); dim.classList.remove("show");
+      exitTimer = setTimeout(() => finish(!current()), 400);
+    };
+    const observer = new MutationObserver(() => { if (!current()) cancel(); });
+    observer.observe(document.body, { childList: true, subtree: true });
+    const removeState = on("hud", () => { if (state !== owner) cancel(); });
+    window.addEventListener("pagehide", cancel);
+    next.addEventListener("click", advance);
+    const entranceTimer = setTimeout(() => {
+      if (!current()) { cancel(); return; }
+      dim.classList.add("show"); board.classList.add("show");
+      next.disabled = false;
+      next.focus({ preventScroll: true });
+      if (autoSkill()) autoTimer = setTimeout(() => next.click(), 300);
+    }, 40);
+  });
 }
 
 // ---------------------------------------------------------------- RESULT 10 COUNT

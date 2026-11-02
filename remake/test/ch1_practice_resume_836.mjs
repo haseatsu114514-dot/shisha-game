@@ -20,7 +20,7 @@ async function harness({route='first',holdAt=null,breakAt=null,broken='cancel',c
  const owners=new WeakMap();
  const ports={
   MAX_MONEY:100000000,TOURNAMENT_DAY:14,emit:()=>{},recordGalleryProgress:()=>{},
-  DB:{dialogues,characters:{}},hooks:{},chapterDay:s=>s.day,recordRomanceChoice:()=>{},
+  DB:{dialogues,characters:{}},hooks:{},chapterDay:s=>s.day,atChapterFinalDay:s=>s.day>=14,recordRomanceChoice:()=>{},
   playTsumugiStory:async()=>{await boundary('tsumugi')},
   play:async input=>{const d=typeof input==='string'?dialogues[input]:input;assert(d,'actual dialogue must exist');entries.push(d.dialogue_id);
    const question=d.lines.find(x=>x.type==='choice');if(question){choiceScenes.push(d.dialogue_id);const choice=question.choices.find(x=>x.next==='full');assert(choice);ports.hooks.onChoice?.(d.dialogue_id,'',choice.next,'',choice,question)}

@@ -22,6 +22,15 @@ export function portraitTop(manifest, id, width, headY) {
   return (headY - (1 - p.h - p.b) * width / p.aspect) + "px";
 }
 
+/** A painted room or, until the art exists, a tinted backdrop with the place name. */
+export function sceneArt(el, scenario, cls = "") {
+  const p = scenario.presentation, url = sceneUrl(scenario);
+  return url ? el("img" + cls, { src: url, alt: p.sceneAlt || "" })
+    : el("div" + cls + ".trpg-scene-fallback", { role: "img", "aria-label": p.sceneAlt || p.location || "",
+      style: { background: p.backdrop || "linear-gradient(160deg, #1d3a44, #0c1b22 70%)" } }, el("span.trpg-scene-fallback-title", { text: p.location || "" }));
+}
+
+/** The painted room, or null while a scenario waits for its art (callers draw presentation.backdrop instead). */
 export function sceneUrl(scenario) {
-  return new URL(scenario.presentation.image, import.meta.url).href;
+  return scenario.presentation.image ? new URL(scenario.presentation.image, import.meta.url).href : null;
 }

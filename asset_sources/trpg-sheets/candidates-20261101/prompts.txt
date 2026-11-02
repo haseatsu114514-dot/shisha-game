@@ -1,0 +1,13 @@
+Built-in image_gen, transparent_background=true for all six calls.
+Source spec: https://github.com/haseatsu114514-dot/shisha-game/blob/claude/trpg-session-rebuild/asset_sources/trpg-sheets/README.md
+Source blob SHA: 0dc463fa1ce611d6a6baf0ad91e82f139a7675c8
+
+Look base prompt: ONE 2048×1024 transparent sprite sheet, 8 separate shoulders-up androgynous 18–24 portrait cutouts, exact 4×2 grid with transparent gutters, no frames or circular discs, no text. Painterly storybook ink/watercolor, muted teal/walnut/parchment/brass, warm lamplight. Exact README top row ink/ash/rust/moss shopkeepers in linen+apron, bottom row ink/salt/rust/deep deckhands in orange vests and damp hair. No shisha, existing characters, brands, scenery.
+Look A variation: soft luminous watercolor, restrained contours, memorable faces.
+Look B variation: expressive ink, hand-painted warmth, stronger facial-shape variation, 80%-cell-size busts and 40px margins.
+Look C variation: airy picture-book treatment, handmade ink, rounder less detailed faces, 80%-cell-size and no clipping.
+
+PC base prompt: ONE 2048×1536 transparent sprite sheet, exactly nine independent bust cutouts, precise 4×3 grid with final three cells empty. At most 430×430 per 512 cell. Same ink/watercolor palette. Exact order and all README attributes: Nico/Pippin/Luca/Leaf, Otto/Midori/Mackin/Sera, Noa alone. Emphasize short teal Midori with wood-handled axe on back (no ponytail), leaf-ear cat with brush and wispy tail, brass scoop, red-green apple pins, shoulder film camera, headlamp, lavender hoodie with under-chin flashlight. No text/frames/discs/scenery/additional people/shisha/brands.
+PC A variation: refined warm watercolor, lively acting, clear prop silhouettes.
+PC B variation: softer rounded faces, visible ink, 75%-cell-size with broad transparent margins; Nico's scoop must not look like teacup.
+PC C variation: friendly distinct faces, simpler watercolor planes, balanced props and broad gutters; emphasize back axe and under-chin flashlight.

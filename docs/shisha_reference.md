@@ -1,6 +1,6 @@
 # シーシャ描写の参考資料（台詞・地の文・画像の共通入口）
 
-シーシャの工程・機材・葉・温度・用語を書く／描くときに、どこを見ればよいかの一覧。**数値と機材の説明は `data/*.json` と `remake/js` が正**で、`docs/archive/setting_book/` は二次資料（2026-10-30 に主な誤りは直したが、食い違えば `data/` を優先）。`docs/archive/` は履歴で根拠にしない。
+シーシャの工程・機材・葉・温度・用語を書く／描くときに、どこを見ればよいかの一覧。**数値と機材の説明は `data/*.json` と `remake/js` が正**。`docs/archive/` は履歴で根拠にしない。
 
 ## 0. 書く前の原則
 
@@ -22,7 +22,7 @@
 
 - `docs/gameplay_agent_reference.md`: **シーシャ屋の文化・共通ルール**（ミントの好み、蒸らし時間、炭の三角配置、お任せ注文、吸い出し、詰める量、ダブルアップルの正史）、**接客・金銭の規範**（チップなし等）、**リーフ（葉）の規範**、**シガー用語の注意**、**ストーリー監査後の固定事項（2026-10-18）**。
 - 年齢確認・来店の流れ・店ごとの個性は `brand/story_and_structure.md`「はじめと店の人たち」、`brand/character_profiles.md`、`docs/asset_ai_guidance.md`「店ごとの個性と照明」。
-- 各キャラの味の話（温度帯でどう味が変わるか、#1108）は `data/dialogue/ch1_naru.json`・`ch1_minto.json`・`ch1_adam.json`・`ch2_kumicho.json`・`ch2_rei.json`・`ch3_rivals.json`・`ch3_mashiro.json`。まとめ読みは `docs/archive/setting_book/06_flavors_recipes.md`（二次資料）。
+- 各キャラの味の話（温度帯でどう味が変わるか、#1108）は `data/dialogue/ch1_naru.json`・`ch1_minto.json`・`ch1_adam.json`・`ch2_kumicho.json`・`ch2_rei.json`・`ch3_rivals.json`・`ch3_mashiro.json`。
 - 好きなフレーバーは `data/characters.json` の `favorite_flavor`（サメちゃんは `data/dialogue/samechan.json` の `profile`）。
 
 ## 3. 制作工程と数値（ゲームの実装）
@@ -36,7 +36,7 @@
 | 炭（フラット／キューブ、三角3個が基本、4個・混合は解放フラグ） | `data/equipment.json`、`docs/gameplay_agent_reference.md`「炭の配置」 |
 | 温度帯の表情・熟練度・適温の見せ方（陽炎・虹背景は過熱側の演出） | `docs/master_spec.md` 2026-10-26 の節、`remake/js/craft/thermal.js`、`remake/js/craft/temperature-model.js` |
 | 機材の容量・価格・一言説明（シリコン12g／80beat 15g／素焼き20g、HMD、炭、パイプ、専用ハガル） | `data/equipment.json` |
-| フレーバー・レシピ・裏レシピ・NGミックス | `data/flavors.json`、`data/recipes.json`、`data/secret_recipes.json`、`data/ng_mixes.json` |
+| フレーバー・レシピ・裏レシピ・NGミックス | `data/flavors.json`、`data/recipes.json`、`data/ng_mixes.json` |
 | 家シーシャ・まかない練習・熟練度 | `docs/master_spec.md` 2026-10-26 の節、`remake/README.md` 同節 |
 
 ## 4. 画像生成の必須手順（機材の形と構造）
@@ -159,4 +159,3 @@ HMD       : 完成・喫煙なら必須。具体的な1モデル（Lotus型／�
 
 - ダークリーフ（ナイトサイド等）のパッキング・アルミ工程は接続中（#1126）。確定するまで台詞で手順を断定しない。
 - 実測めいた数値の扱い（`docs/reports/issue1107-*`・`issue1081-e06`）はオーナー未決定。
-- `docs/archive/setting_book/` の人物の一人称・呼称表、店舗説明は全件照合が未了（同README参照）。

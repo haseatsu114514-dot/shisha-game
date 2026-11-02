@@ -75,7 +75,9 @@ jobs:
     timeout-minutes: 20
     steps:
       # Text files of the whole repo (for the docs and legacy-term scans), plus
-      # audio and fonts. No images and no full 4.4GB checkout.
+      # audio, fonts, loading comics, and LIME media checked by data-smoke when
+      # images are present.
+      # Keep the other images and the full 4.4GB checkout excluded.
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
@@ -102,6 +104,18 @@ jobs:
             /.agents/
             /assets/audio/
             /remake/fonts/
+            /remake/img/loading/
+            /remake/img/ui/lime/
+      - name: List quick-check assets stored in Git LFS
+        id: lfs-list
+        run: echo "hash=$(tools/ci/lfs_images.sh hash)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: .git/lfs/objects
+          key: lfs-game-${{ steps.lfs-list.outputs.hash }}
+          restore-keys: lfs-game-
+      - name: Fetch quick-check assets stored in Git LFS
+        run: tools/ci/lfs_images.sh fetch
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"

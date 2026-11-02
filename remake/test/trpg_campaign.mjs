@@ -2,6 +2,19 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
+// The scenes a full session adds between the old ones: two questions after the first roll, a twist after the guess.
+function interviewDone(s) {
+  if (s.snapshot().phase !== "interview") return;
+  for (const topic of s.scenario.interview.topics.slice(0, s.scenario.interview.picks || 2)) s.ask(topic.id);
+  s.endInterview();
+}
+function twistDone(s) {
+  if (s.snapshot().phase !== "twist") return;
+  for (const field of s.flow.twist) s.plan(field, s.scenario.options[field][0].id);
+  s.beginCheck("twist"); s.settleCheck();
+}
+
+
 const json = async path => JSON.parse(await readFile(new URL(path, import.meta.url), "utf8"));
 const module = async path => import(new URL(path, import.meta.url).href);
 const rules = await module("../js/trpg/campaign.js");
@@ -24,9 +37,9 @@ function friends(s, ids = catalog.participants.map(p => p.id)) {
 function own(s, id) { rules.syncTrpgStock(s, catalog); assert(rules.buyTrpgBook(s, catalog, id)); return s; }
 function finish(scenario) {
   const session = new TrpgSession(scenario, { seed: 2 });
-  session.start(); session.beginCheck("listen"); session.settleCheck();
+  session.start(); session.beginCheck("listen"); session.settleCheck(); interviewDone(session);
   for (const spot of scenario.spots.slice(0, 3)) session.inspect(spot.id);
-  session.interpret(scenario.hypotheses[0].id);
+  session.interpret(scenario.hypotheses[0].id); twistDone(session);
   for (const phase of ["prepare", "serve"]) {
     for (const field of session.flow[phase]) session.plan(field, scenario.options[field][0].id);
     session.beginCheck(phase); session.settleCheck();

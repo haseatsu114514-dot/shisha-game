@@ -150,7 +150,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   const leaf = buildLeafIcon();
   worker.footer.append(leaf.root);
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
-    el("div.bench-top", [el("span.bench-mode", [craftMode(cs,MODE_LABEL), el("small", { text: cs.retryAssist ? "今回のみ操作補助" : craftModeNote(cs,MODE_NOTE) })]), progress]),
+    el("div.bench-top", [el("span.bench-mode", [craftMode(cs, MODE_LABEL), el("small", { text: cs.retryAssist ? "今回のみ操作補助" : craftModeNote(cs, MODE_NOTE) })]), progress]),
     el("div.bench-left", [
       worker.root,
       audience?.root,

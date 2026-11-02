@@ -1,9 +1,0 @@
-{
-  "afterCurrentCheckpointPriority": {
-    "policy": "dots-dispatch/MERGE-FINISH-PRIORITY-LATEST.json",
-    "task": "existing PR blockers and finishing before new scope",
-    "Cfirst": 1047,
-    "parentTriage": "await incoming current results, no duplicate broad scan",
-    "state": "saved-no-live-steer"
-  }
-}

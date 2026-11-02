@@ -4,7 +4,7 @@
 import { SETS } from "../../previews/dj/tracks.mjs";
 
 export const DJ_RANKS = Object.freeze(["C", "B", "A", "S"]);
-export const DJ_SETS = Object.freeze(SETS.map((set, index) => Object.freeze({ id: index + 1, name: set.name, label: set.label, tracks: set.tracks.length })));
+export const DJ_SETS = Object.freeze(SETS.map((set, index) => Object.freeze({ id: index + 1, name: set.name, label: set.label, tracks: set.count })));
 const rankIndex = rank => DJ_RANKS.indexOf(rank);
 const record = value => value && typeof value === "object" && !Array.isArray(value) ? value : null;
 const percent = value => Number.isFinite(value) && value >= 0 && value <= 100 ? Math.round(value) : null;
@@ -61,8 +61,8 @@ export function recordDjResult(s, data) {
 export const CLUB_MET_FLAG = "_club_yoru_first_done";
 export const DJ_NIGHT = Object.freeze({ id: "dj", place: "club", label: "クラブSEAMで回す",
   reasonText: "時間は進まない。セットを選んで曲をつなぐ" });
-export const DJ_NIGHT_FIRST = Object.freeze({ id: "dj", place: "club", label: "地下から低い音がする店をのぞく",
-  reasonText: "路地の下から、音が上がってくる", placeLabel: "地下の店" });
+export const DJ_NIGHT_FIRST = Object.freeze({ id: "dj", place: "club_unknown", label: "地下から低い音がする店をのぞく",
+  reasonText: "路地の下から、音が上がってくる" });
 export const clubKnown = value => value?.flags?.[CLUB_MET_FLAG] === true;
 export function djNightChoices(value, window) {
   if (value?.chapter !== 3 || !window || window.slot !== 1) return [];

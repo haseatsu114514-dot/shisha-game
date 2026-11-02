@@ -1,5 +1,5 @@
 // マップ画面。ピンを選んで「行く」を押すと、その行き先で解決する Promise を返す。
-// 見た目は旧版を踏襲: 栄・大須の街マップ／看板型のピン（面識のある相手は顔ドット絵）／右下の墨×金パネル。
+// 見た目は旧版を踏襲: 橙須の街マップ／看板型のピン（面識のある相手は顔ドット絵）／右下の墨×金パネル。
 import { el, yen } from "../core/util.js";
 import { bgUrl, sceneBg, faceIconUrl, displayName } from "../core/data.js";
 import { showScreen, setBg, retire, uiArtReady, storeLogosReady, imageReady, layers, toast } from "../core/ui.js";

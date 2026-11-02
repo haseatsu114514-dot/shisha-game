@@ -1,4 +1,4 @@
-Remaster the provided game character HAJIME (蒸野 始), making ONE clean wide landscape RGBA expression sheet containing EXACTLY FIVE complete full-body sprites of the SAME man in ONE horizontal row, left to right normal / smile / serious / surprise / sad.
+Remaster the provided game character HAJIME (蒸野 はじめ), making ONE clean wide landscape RGBA expression sheet containing EXACTLY FIVE complete full-body sprites of the SAME man in ONE horizontal row, left to right normal / smile / serious / surprise / sad.
 
 REFERENCE ROLES:
 1. chr_hajime_normal.png is the authoritative identity, face, outfit, proportions and complete full-body design.

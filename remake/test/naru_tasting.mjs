@@ -41,7 +41,7 @@ assert.notEqual(recognitionId(offbandHot), "recovered");
 assert.match(tastingText(steady), /最後まで届けた/);
 assert.match(tastingText(recovered), /最後の調整で戻した/);
 assert.match(tastingText(offbandHot), /最後の調整は熱が強い/);
-assert.match(tastingText(offbandCold), /最後の調整では熱が足りなかった/);
+assert.match(tastingText(offbandCold), /最後の調整は熱が足りない/);
 assert.match(tastingText(legacy), /提供後の変化/);
 
 // 区分ごとに別の台詞が出る。中立文は品質を捏造しない。

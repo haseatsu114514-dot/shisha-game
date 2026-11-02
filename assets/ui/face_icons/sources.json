@@ -122,5 +122,9 @@
  "face_volk.png": {
   "sprite": "assets/sprites/characters/volk/chr_volk_normal.png",
   "blob": "ced92cef37b67d592716f86f5abd5075363a2b0d"
+ },
+ "face_yoru.png": {
+  "sprite": "assets/sprites/characters/yoru/chr_yoru_normal.png",
+  "blob": "5f8fbc791f3e302a9f55935c9f8f182f5fcf1f00"
  }
 }

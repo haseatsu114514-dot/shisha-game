@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { suite } from './support.mjs';
+import { suite, assertFits } from './support.mjs';
 
 const id = 'lime_minto_day5';
 const replyText = 'お店では余裕なんですね';
@@ -56,6 +56,36 @@ function assertOnce(value) {
 
 try {
   await suite('lime-reply-once', async check => {
+    for (const [kind, label] of [['default', null], ['short', '……誰？'], ['long', '……はい。ありがとうございます、スミさん']]) {
+      await check(`story-close-${kind}-1180`, async page => {
+        await page.evaluate(async label => {
+          const core = await import('./js/core/state.js');
+          core.newGame(); core.config.bgmVolume = 0; core.config.seVolume = 0;
+          (await import('./js/core/ui.js')).showScreen('home', document.createElement('div'));
+          window.storyPhoneClosed = false;
+          void (await import('./js/daily/phone.js')).openPhone([
+            { id: 'story-close-layout', sender: 'sumi', messages: ['お疲れさま'], close_label: label },
+          ], { title: '表彰式のあと', time: 'PM 10:18' }).then(() => { storyPhoneClosed = true; });
+        }, label);
+        const button = control(page, 'phone-next');
+        await button.waitFor();
+        assert.equal(await button.textContent(), label || 'スマホを閉じる');
+        const fit = await button.evaluate(node => {
+          const range = document.createRange(); range.selectNodeContents(node);
+          const box = node.getBoundingClientRect(), style = getComputedStyle(node), lines = [...range.getClientRects()];
+          return { whiteSpace: style.whiteSpace, ellipsis: style.textOverflow === 'ellipsis', lines: lines.length,
+            inside: lines.every(r => r.left >= box.left && r.right <= box.right + 1 && r.top >= box.top && r.bottom <= box.bottom + 1),
+            overflow: node.scrollWidth > node.clientWidth + 1 || node.scrollHeight > node.clientHeight + 1 };
+        });
+        assert.equal(fit.whiteSpace, label ? 'normal' : 'nowrap');
+        if (label) assert.equal(fit.ellipsis, false);
+        assert.equal(fit.overflow, false); assert(fit.inside);
+        assert.equal(fit.lines > 1, kind === 'long', 'long closing reply wraps while short controls stay one line');
+        await assertFits(page, '[data-test="phone-next"]');
+        await button.click(); await page.waitForFunction(() => storyPhoneClosed);
+        assert.equal(await page.locator('.phone-overlay').count(), 0);
+      }, { viewport: { width: 1180, height: 740 }, reducedMotion: 'reduce' });
+    }
     const cases = [
       ['pc-single', 'single', {}],
       ['pc-send-reenter', 'send', {}],

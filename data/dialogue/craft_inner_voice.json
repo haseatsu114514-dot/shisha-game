@@ -3,7 +3,7 @@
   "dialogues": [
     {
       "dialogue_id": "craft_inner_holes_watch",
-      "lines": [{ "speaker": "hajime", "face": "normal", "text": "間隔をそろえて、熱が回る道を作ろう" }]
+      "lines": [{ "speaker": "hajime", "face": "normal", "text": "アルミを破らないように、間隔をそろえて開けよう" }]
     },
     {
       "dialogue_id": "craft_inner_holes_good",
@@ -27,11 +27,11 @@
     },
     {
       "dialogue_id": "craft_inner_heat_watch",
-      "lines": [{ "speaker": "hajime", "face": "normal", "text": "芯まで熱が入るのを、もう少し見ていよう" }]
+      "lines": [{ "speaker": "hajime", "face": "normal", "text": "黒いところが消えるまで。角まで赤くなるのを待とう" }]
     },
     {
       "dialogue_id": "craft_inner_heat_good",
-      "lines": [{ "speaker": "hajime", "face": "smile", "text": "取れた。この赤さを覚えておこう" }]
+      "lines": [{ "speaker": "hajime", "face": "smile", "text": "取れた。角まで赤い。この色を覚えておこう" }]
     },
     {
       "dialogue_id": "craft_inner_heat_bad",
@@ -75,15 +75,15 @@
     },
     {
       "dialogue_id": "craft_inner_pull_watch",
-      "lines": [{ "speaker": "hajime", "face": "normal", "text": "煙の温度を見ながら、少しずつ整えよう" }]
+      "lines": [{ "speaker": "hajime", "face": "normal", "text": "口に来る熱と味を確かめながら、少しずつ整えよう" }]
     },
     {
       "dialogue_id": "craft_inner_pull_good",
-      "lines": [{ "speaker": "hajime", "face": "smile", "text": "うん、煙がまとまってきた感じがする" }]
+      "lines": [{ "speaker": "hajime", "face": "smile", "text": "煙が太くなって、香りが乗ってきた" }]
     },
     {
       "dialogue_id": "craft_inner_pull_bad",
-      "lines": [{ "speaker": "hajime", "face": "serious", "text": "熱の入り方を、もう一度確かめよう" }]
+      "lines": [{ "speaker": "hajime", "face": "serious", "text": "口に来る熱が合ってない。吸い方を変えてみよう" }]
     },
     {
       "dialogue_id": "craft_inner_pull_excellent",

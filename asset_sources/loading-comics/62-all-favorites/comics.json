@@ -1,0 +1,94 @@
+{
+  "episode": 62,
+  "title": "感想の落とし穴",
+  "theme": "シーシャあるある",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "canon_status": "シーシャの注文・店の日常とキャラのこだわりに根拠を置いた番外編ギャグ。本編の能力・人物設定・採点・レシピは変更しない。",
+  "reading_order": "左①導入→右②オチ",
+  "image_manifest": [
+    {
+      "file": "62-all-favorites.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "04fd522dabd66b0af77261346527c2e667be6811ea669996ca2a7e1450d40f96",
+      "bytes": 1671709
+    }
+  ],
+  "tasks": [
+    {
+      "dialogue": [
+        "感想、書いたか？",
+        "全部、好きです。",
+        "比較ができない。"
+      ],
+      "script": "シーシャの味の感想をメモする練習。左: スミさんが『感想、書いたか？』。はじめが明るくメモ帳を示して『全部、好きです。』。右: はじめのメモには三つのフルーツ絵と全部同じ大きな星マーク。スミさんは困り笑いで『比較ができない。』。メモには文字を描かず記号のみ。",
+      "prompt": "添付1の下敷きを編集して2コマ漫画1話を描く。出力1536x1024。最優先は枠寸法: 左x36 y272 w720 h480、右x780 y272 w720 h480、横長3:2。上下それぞれ272pxの無地余白、枠はy752で終わる。高さを拡げない。枠外は紙色#EEE3CF、何も描かない。添付2ははじめ、添付3は相手の正式立ち絵。2.5頭身の胸上のデフォルメ、清潔な太線と明るい暖色セル塗り。両コマではじめ（黒い野球帽・黒髪・黒パーカー）は左、相手は右のまま。顔と吹き出しは枠線から29px離す。白吹き出し・太い日本語ゴシック、下の3台詞だけ一字一句正確に。題名・話数・英語・擬音文字・署名・ロゴ・余計な文章なし。物に顔や手足を付けない。人は2人だけ。シーシャの注文・店の日常に根拠がある軽いシュールさで、状況をわかりやすく。宇宙・魔法・変身・巨大化なし。シーシャ台・ハガル・HMD・炭・ホース・煙・喫煙・武器は画面に一切描かない。味は絵カードやメニューで示す。扉つき不透明収納の背景、フレーバー瓶を並べない。画面上の台詞の配置は、同コマでは最初の話者を上・次の話者を下にして読み順を分かりやすく。相手のスミさんは黒ハンチング・四角眼鏡・短い顎髭・炭色シャツ・茶腰エプロン。優しく飄々とした店長。シーシャの味の感想をメモする練習。左: スミさんが『感想、書いたか？』。はじめが明るくメモ帳を示して『全部、好きです。』。右: はじめのメモには三つのフルーツ絵と全部同じ大きな星マーク。スミさんは困り笑いで『比較ができない。』。メモには文字を描かず記号のみ。",
+      "revision_prompt": null,
+      "reference_images": [
+        "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "assets/sprites/characters/sumi/chr_sumi_normal.png"
+      ],
+      "generator": "OpenAI image_gen"
+    }
+  ],
+  "source": [
+    {
+      "file": "62-all-favorites.png",
+      "region": {
+        "x": 39,
+        "y": 272,
+        "width": 714,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "62-all-favorites.png",
+      "region": {
+        "x": 783,
+        "y": 272,
+        "width": 714,
+        "height": 477,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/all-favorites-1.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "eaa73c53f25e674739262199166d078959a7a75665b6bcf8e6c59cb7f337b557"
+    },
+    {
+      "file": "panels/all-favorites-2.webp",
+      "width": 714,
+      "height": 477,
+      "sha256": "9c5a6031f67a62a1008ff193ef87804a9905f65a2c005f3f525ef3f61f7acde8"
+    }
+  ],
+  "qa": {
+    "source_visual": "原画を目視。台詞3つ一致、人物と左右位置固定、機材/炭/煙/武器なし。",
+    "ratio": "原画比率ok（強制通過なし）",
+    "known_deviations": [
+      "紙色と枠位置、枠除去後の寸法には生成由来の微差がある。表示は固定3:2で揃える。"
+    ],
+    "selection": "未選別。ゲームへの登録なし。",
+    "browser": {
+      "result": "追加12話×PC/スマホ横の24画面を実際のロード画面へブラウザ側で一時差し込み、画像decode・題名・表示比率・画面内配置を検証成功。",
+      "screenshots": [
+        "qa-pc.png",
+        "qa-phone.png"
+      ],
+      "sizes": [
+        "1280x720",
+        "844x390"
+      ],
+      "visual": "スマホ横の全12話とPC第71話を目視確認、台詞と顔の欠けなし。"
+    }
+  }
+}

@@ -137,7 +137,7 @@ await suite("issue508-theme", async checkAll => {
       }
       if (opts.id === "ch1_tsumugi_work_in_progress") {
         assert(ls.includes("……こっちの方が、描いていられます"));
-        assert.equal(ls.filter(t => t.includes("大会の一台は、ちゃんと手を止めて吸います")).length, 1);
+        assert.equal(ls.filter(t => t.includes("大会の日は、ちゃんと手を止めて見てます")).length, 1);
       }
       if (opts.id === "ch1_tournament_after") {
         assert(ls.includes("（次も、これくらいのを出さないとな）"));

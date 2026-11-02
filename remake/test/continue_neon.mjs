@@ -80,6 +80,34 @@ try {
     assert(safe.hudOutsideFace && safe.imagesLoaded);
   }
   console.log("PASS: generated brush title / frames, dynamic labels, face protection and 1080p / 720p / phone");
+  // #2190 P24: the first count is an animation, so show that before it reaches infinity.
+  const limitNote = page.locator(".go-limit-note");
+  for (const { width, height, minFont } of [{ width: 1180, height: 740, minFont: 16 }, { width: 844, height: 390, minFont: 12 }]) {
+    await page.setViewportSize({ width, height });
+    await mount({ variant: 0, context: { lossOrdinal: 1 } });
+    assert(await limitNote.isVisible(), "the initial unlimited-time explanation must be visible");
+    assert.equal(await limitNote.textContent(), "初回は時間制限なし（カウントは演出です）");
+    assert.equal((await reading()).count, "20", "keep the initial countdown animation");
+    assert.match(await page.locator(".go-time-announcement").textContent(), /初回は時間制限がありません/);
+    const noteLayout = await limitNote.evaluate(note => {
+      const box = note.getBoundingClientRect(), stage = document.querySelector("#stage").getBoundingClientRect();
+      const separate = other => { const r = other.getBoundingClientRect(); return box.right <= r.left || box.left >= r.right || box.bottom <= r.top || box.top >= r.bottom; };
+      return { inside: box.left >= stage.left && box.right <= stage.right && box.top >= stage.top && box.bottom <= stage.bottom,
+        insideViewport: box.left >= 0 && box.right <= innerWidth && box.top >= 0 && box.bottom <= innerHeight,
+        separate: [...document.querySelectorAll(".go-clock,.go-dialogue,.end-actions")].every(separate),
+        renderedFont: parseFloat(getComputedStyle(note).fontSize) * stage.width / 1280 };
+    });
+    assert(noteLayout.inside && noteLayout.insideViewport && noteLayout.separate && noteLayout.renderedFont >= minFont,
+      `${width}×${height}: ${JSON.stringify(noteLayout)}`);
+  }
+  await page.clock.runFor(21000);
+  assert.equal((await reading()).count, "∞");
+  assert(await limitNote.isVisible(), "the explanation remains visible after the animated count");
+  assert.deepEqual(await page.evaluate(() => __decisions), [], "the first count must not choose automatically");
+  await mount({ variant: 0, context: { lossOrdinal: 2 } });
+  assert(await limitNote.isHidden(), "repeat losses must not show the unlimited-time explanation");
+  assert.match(await page.locator(".go-time-announcement").textContent(), /20秒以内に選択/);
+  console.log("PASS: first-loss unlimited-time note readable and within viewport at 1180×740 / 844×390; animation and repeat-loss deadline announcement preserved");
   // #590: measure the actual scaled target, feedback handoff, guard and both callbacks.
   const saved = await page.evaluate(async () => JSON.stringify({ state: (await import("./js/core/state.js")).state, storage: { ...localStorage } }));
   for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }, { width: 667, height: 375 }, { width: 390, height: 844 }]) {

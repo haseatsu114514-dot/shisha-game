@@ -7,7 +7,8 @@ globalThis.localStorage = { setItem: (k, v) => storage.set(k, String(v)), getIte
 const dj = await import("../js/minigames/dj.js");
 const core = await import("../js/core/state.js");
 const growth = await import("../js/core/growth.js");
-const { chapterThreeMapModel } = await import("../js/chapters/ch3-map-model.js");
+const { chapterThreeMapModel, TOKYO_MAP_PLACES } = await import("../js/chapters/ch3-map-model.js");
+const { hasStoreLogo } = await import("../js/core/store-logos.js");
 let groups = 0; const check = (name, fn) => { fn(); groups++; console.log("PASS " + name); };
 const msg = (set, rank, total, floor = 80) => ({ type: "dj-result", set, rank, total, floor });
 
@@ -58,7 +59,7 @@ check("SET 1 is always open; SET 2 / 3 open after the previous set is played thr
 check("the club appears on the Tokyo map only in chapter 3 night free time, unnamed until the first visit, without using the free time", () => {
   const first = dj.djNightChoices({ chapter: 3, flags: {} }, { id: "d5-1", slot: 1 });
   assert.deepEqual(first, [{ ...dj.DJ_NIGHT_FIRST, ok: true, consumes: false, dj: true }]);
-  assert.equal(first[0].place, "club"); assert.equal(first[0].placeLabel, "地下の店"); assert.doesNotMatch(first[0].label, /SEAM|クラブ/, "the name is learned at the door");
+  assert.equal(first[0].place, "club_unknown"); assert.doesNotMatch(first[0].label, /SEAM|クラブ/, "the name is learned at the door");
   const known = dj.djNightChoices({ chapter: 3, flags: { [dj.CLUB_MET_FLAG]: true } }, { id: "d6-1", slot: 1 });
   assert.deepEqual(known, [{ ...dj.DJ_NIGHT, ok: true, consumes: false, dj: true }]); assert.match(known[0].label, /クラブSEAM/);
   assert.deepEqual(dj.djNightChoices({ chapter: 3 }, { id: "d5-0", slot: 0 }), []);
@@ -66,13 +67,16 @@ check("the club appears on the Tokyo map only in chapter 3 night free time, unna
   for (const chapter of [1, 2, 4, 5]) assert.deepEqual(dj.djNightChoices({ chapter }, { slot: 1 }), []);
   const value = { chapter: 3, slot: 1, flags: { _ch3_intro: { stage: 1 } } }, scenes = [{ id: "ch3_opening" }, { id: "ch3_kuze_first" }];
   const plain = chapterThreeMapModel(value, scenes, { freeTime: true, actions: [] });
-  assert.ok(!plain.pins.some(pin => pin.id === "club")); assert.ok(plain.landmarks.some(item => item.id === "livehouse"), "the drawn live house stays a landmark"); assert.doesNotMatch(plain.note, /DJ/);
+  assert.ok(!plain.pins.some(pin => /^club/.test(pin.id))); assert.ok(plain.landmarks.some(item => item.id === "livehouse"), "the drawn live house stays a landmark"); assert.doesNotMatch(plain.note, /DJ/);
   const model = chapterThreeMapModel(value, scenes, { freeTime: true, actions: dj.djNightChoices(value, { slot: 1 }) });
-  const pin = model.pins.find(item => item.id === "club");
-  assert.ok(pin && pin.actions[0].dj && pin.actions[0].consumes === false); assert.equal(pin.label, "地下の店");
+  const pin = model.pins.find(item => item.id === "club_unknown");
+  assert.ok(pin && pin.actions[0].dj && pin.actions[0].consumes === false); assert.equal(pin.label, "地下の店"); assert.ok(!model.pins.some(item => item.id === "club"));
   assert.ok(model.landmarks.some(item => item.id === "livehouse")); assert.match(model.note, /地下の店のDJは予定を進めません/);
   value.flags[dj.CLUB_MET_FLAG] = true;
-  assert.equal(chapterThreeMapModel(value, scenes, { freeTime: true, actions: dj.djNightChoices(value, { slot: 1 }) }).pins.find(item => item.id === "club").label, "クラブSEAM");
+  const known2 = chapterThreeMapModel(value, scenes, { freeTime: true, actions: dj.djNightChoices(value, { slot: 1 }) });
+  assert.equal(known2.pins.find(item => item.id === "club").label, "クラブSEAM"); assert.ok(!known2.pins.some(item => item.id === "club_unknown"));
+  assert.deepEqual([TOKYO_MAP_PLACES.club.x, TOKYO_MAP_PLACES.club.y], [TOKYO_MAP_PLACES.club_unknown.x, TOKYO_MAP_PLACES.club_unknown.y], "same spot before and after");
+  assert.ok(hasStoreLogo("ch3_club") && !hasStoreLogo("ch3_club_unknown"), "the logo only after the first visit");
 });
 check("the club owner is a venue host with an intro cut-in; the club script names her before her cut-in and has a line per rank", () => {
   const fs = globalThis.process.getBuiltinModule("node:fs");

@@ -15,6 +15,7 @@ async function entrance(page) {
 }
 async function reachableControls(page) {
   const menu = page.locator(".axe-menu");
+  // The entrance keeps eleven controls; the division and match length live on the setup sheet of the competitive modes.
   assert.equal(await menu.locator("button, a").count(), 11);
   assert.deepEqual(await menu.locator(".axe-menu-mode").evaluateAll(nodes => nodes.map(n => n.dataset.kind)), ["practice", "league", "versus"]);
   assert.equal(await menu.locator("h1").textContent(), "AXE THROW");
@@ -79,12 +80,19 @@ await suite("axe-menu-decor", async check => {
     const before = await storageSnapshot(page);
     await page.keyboard.press("Tab");
     assert.equal(await page.locator('[data-test="axe-start"]').evaluate(n => n === document.activeElement), true);
-    for (const [selector, key, text] of [
-      ['[data-test="axe-start"]', "Enter", /3投の練習/],
-      ['[data-test="axe-league"]', "Space", /10投の競技練習/],
-      ['[data-test="axe-versus"]', "Enter", /ひよりと10投対戦/],
+    for (const [selector, key, text, sheet] of [
+      ['[data-test="axe-start"]', "Enter", /3投の練習/, false],
+      ['[data-test="axe-league"]', "Space", /10投ゲーム/, true],
+      ['[data-test="axe-versus"]', "Enter", /ひよりと10投対戦/, true],
     ]) {
       await page.locator(selector).focus(); await page.keyboard.press(key);
+      if (sheet) {
+        // The competitive modes open a setup sheet; its start button has focus, so Enter begins the game.
+        await page.locator('[data-test="axe-setup"]').waitFor();
+        assert.equal(await page.locator('[data-test="axe-setup-start"]').evaluate(n => n === document.activeElement), true);
+        assert.equal(await page.locator(".axe-menu").getAttribute("inert"), "");
+        await page.keyboard.press("Enter");
+      }
       const game = page.locator('[data-test="axe-game"]'); await game.waitFor();
       await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === "choice");
       assert.match(await game.innerText(), text);
@@ -92,6 +100,23 @@ await suite("axe-menu-decor", async check => {
       assert.equal(await page.locator('[data-test="axe-start"]').evaluate(n => n === document.activeElement), true);
       assert.deepEqual(await storageSnapshot(page), before);
     }
+    // The sheet's choice reaches the game, and Escape or 戻る leaves without starting.
+    await page.locator('[data-test="axe-league"]').click(); await page.locator('[data-test="axe-setup"]').waitFor();
+    assert.equal(await page.locator('[data-test="axe-setup"] [data-best-of]').count(), 0, "match length is only for the versus");
+    await page.keyboard.press("Escape"); assert.equal(await page.locator('[data-test="axe-setup"]').count(), 0);
+    assert.equal(await page.locator('[data-test="axe-league"]').evaluate(n => n === document.activeElement), true);
+    await page.locator('[data-test="axe-versus"]').click(); await page.locator('[data-test="axe-setup"]').waitFor();
+    await page.locator('[data-test="axe-setup"] [data-division="pro"]').click();
+    assert.match(await page.locator('[data-test="axe-setup-note"]').textContent(), /0点/);
+    await page.locator('[data-test="axe-setup"] [data-best-of="3"]').click();
+    await page.locator('[data-test="axe-setup-back"]').click(); assert.equal(await page.locator('[data-test="axe-setup"]').count(), 0);
+    await page.locator('[data-test="axe-versus"]').click(); await page.locator('[data-test="axe-setup"]').waitFor();
+    assert.equal(await page.locator('[data-test="axe-setup"] [data-division="pro"]').getAttribute("aria-pressed"), "true", "the last choice is kept");
+    await page.locator('[data-test="axe-setup-start"]').click();
+    const chosen = page.locator('[data-test="axe-game"]'); await chosen.waitFor();
+    assert.equal(await chosen.getAttribute("data-division"), "pro"); assert.match(await chosen.innerText(), /3本マッチ/);
+    await chosen.focus(); await page.keyboard.press("Escape"); await page.locator(".axe-menu").waitFor();
+    assert.deepEqual(await storageSnapshot(page), before);
     await page.locator('[data-test="axe-menu-lesson"]').click();
     await page.locator('[data-test="axe-coach"][data-kind="welcome"]').waitFor();
     await page.locator('[data-test="axe-coach-skip"]').click();

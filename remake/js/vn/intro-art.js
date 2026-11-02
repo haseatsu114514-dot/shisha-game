@@ -91,7 +91,7 @@ export function layoutIntro(host, id, variant, intro) {
   // グラフィック絵柄は人物が大きいので、名前の欄を右へ寄せたぶん幅を詰める（intro.css と同じ値）
   const shift = host.dataset.art === "graphic" ? GRAPHIC_META_SHIFT : 0;
   const name = host.querySelector(".ci-name");
-  fitWidth(name, .86, 150, 60, 596 - shift);
+  fitWidth(name, .86, 150, 40, 596 - shift);
   const title = host.querySelector(".ci-title");
   title.style.fontSize = "28px";
   if (title.scrollWidth > 580 - shift) fitWidth(title, 1, 27, 20, 580 - shift);

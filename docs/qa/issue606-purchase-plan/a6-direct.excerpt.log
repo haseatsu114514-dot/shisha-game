@@ -1,7 +1,0 @@
-2026-10-16T06:07:42.9873422Z [remake] DAY 11 (daily) money=77950 stamina=44
-2026-10-16T06:08:18.5066404Z [remake] DAY 12 (daily) money=85950 stamina=38
-2026-10-16T06:08:27.7049860Z [remake] DAY 13 (daily) money=85950 stamina=100
-2026-10-16T06:09:18.9554330Z [remake] DAY 14 (daily) money=78950 stamina=90
-2026-10-16T06:11:31.3715999Z   throw new Error(`Missing practice/shopping: prepared=${prepared} runs=${JSON.stringify(practiceRuns)} flavors=${JSON.stringify(s.flavors)}`);
-2026-10-16T06:11:31.3718525Z Error: Missing practice/shopping: prepared=blueberry runs=[{"day":1,"kind":"tutorial","scope":"full","success":true,"served":true,"mix":{"double_apple":9,"mint":3},"adjustments":0,"scores":{"holes":99,"heat":100,"steam":100,"pull":100},"careScores":[]},{"day":7,"kind":"midcheck","scope":"care","success":true,"served":false,"mix":{"blueberry":10,"mint":2},"adjustments":2,"scores":{},"careScores":[100,100]},{"day":13,"kind":"rehearsal","scope":"full","success":true,"served":true,"mix":{"blueberry":9,"mint":3},"adjustments":2,"scores":{"holes":99,"heat":100,"steam":100,"pull":100},"careScores":[100,100]}] flavors=["double_apple","mint","blueberry"]
-2026-10-16T06:11:31.3840538Z ##[error]Process completed with exit code 1.

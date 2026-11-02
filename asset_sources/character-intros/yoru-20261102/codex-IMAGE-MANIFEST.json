@@ -1,0 +1,32 @@
+[
+  {
+    "file": "yoru-cutin-background-A.png",
+    "bytes": 1491080,
+    "sha256": "417c89d0eed16d72b371d79eeaa7d84225f3072b8b6de111d0701d83029050f1",
+    "size": [
+      1672,
+      941
+    ],
+    "mode": "RGB"
+  },
+  {
+    "file": "yoru-cutin-background-B.png",
+    "bytes": 1447982,
+    "sha256": "607292a1cc5801fdfade0be5767497c09f76a6bd7cb891093cbcd5d4da3adc50",
+    "size": [
+      1672,
+      940
+    ],
+    "mode": "RGB"
+  },
+  {
+    "file": "yoru-cutin-background-C.png",
+    "bytes": 1484083,
+    "sha256": "7c4392e5ae1bb91b6bb455926f822a9c8b37bfd38a76a056b005648955840c7e",
+    "size": [
+      1672,
+      941
+    ],
+    "mode": "RGB"
+  }
+]

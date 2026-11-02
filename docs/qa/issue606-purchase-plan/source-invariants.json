@@ -1,8 +1,0 @@
-{
-  "base": "4834e9eccb54d7aff466cac03bf784b5227e5735",
-  "original_final_assertions_byte_for_byte": true,
-  "ordinary_plan_actions_unchanged": true,
-  "existing_purchase_verifier_unchanged": true,
-  "required_purchase_removed_from_ordinal_plan": true,
-  "new_runtime_state_writes": false
-}

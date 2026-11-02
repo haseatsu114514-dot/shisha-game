@@ -935,7 +935,12 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "負けた日の記録が、一番役に立つ、……今日の体温は"
+          "text": "負けた日の記録が、一番役に立つ"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……今日の体温は"
         },
         {
           "speaker": "hajime",

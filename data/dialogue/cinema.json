@@ -10,7 +10,7 @@
       },
       "lines": [
         { "speaker": "samechan", "face": "smile", "text": "お主、また顔を出してくれたのう。今日は少し、地元の案内でもしようか" },
-        { "speaker": "hajime", "face": "normal", "text": "俺もこの辺の生まれなのに、案内されるの初めてです" },
+        { "speaker": "hajime", "face": "normal", "text": "地元の案内、ですか？ 俺、この辺の生まれですよ" },
         { "speaker": "samechan", "face": "normal", "text": "地元同士でも、知らぬ路地はあるものじゃ。遊びに行くなら、柚ヶ谷の水族館も良いが……" },
         { "speaker": "samechan", "face": "serious", "text": "……いや、あれは電車の向こうじゃ。地元なら、お主にとっておきを教えよう" },
         { "speaker": "samechan", "face": "smile", "text": "路地裏シネマじゃ。小さな映画館なのじゃが、サメ映画を、必ず一本はかけてくれる館でのう！" },
@@ -31,7 +31,7 @@
         { "speaker": "hajime", "face": "normal", "text": "（たくさんはないんだな。今日はサメの映画か）" },
         { "speaker": "", "face": "", "text": "漁船を追っていたサメが、突然、港の上を飛び始めた。" },
         { "speaker": "", "face": "", "text": "最初の一匹は、どう見ても吊り糸で飛んでいる。客席から笑いがこぼれた。" },
-        { "speaker": "hajime", "face": "surprise", "text": "（あの人、まだ後ろにいるのに気づいてない……！）" },
+        { "speaker": "hajime", "face": "surprise", "text": "（港の見張りの人、真後ろのサメに気づいてない……！）" },
         { "speaker": "", "face": "", "text": "気がつくと、俺も肘掛けを握っていた。" },
         { "speaker": "", "face": "", "text": "主人公は灯台の光でサメを海へ誘い、港を守りきった。" },
         { "speaker": "", "face": "", "text": "明かりが戻る。隣の客が、小さく笑って息をついた。" },
@@ -58,7 +58,8 @@
         { "speaker": "", "face": "", "text": "大きな影が漁船を追い越した。隣の席で誰かが息をのむ。" },
         { "speaker": "", "face": "", "text": "騒ぎが港へ広がるなか、主人公は灯台へ走った。" },
         { "speaker": "", "face": "", "text": "回り始めた灯りを追って、最後の影が沖へ遠ざかっていく。" },
-        { "speaker": "hajime", "face": "smile", "text": "（姿が見える前の方が怖かった。あの静けさ、ずるいな）" }
+        { "speaker": "hajime", "face": "smile", "text": "（姿が見える前の方が怖かった。あの静けさ、ずるいな）" },
+        { "speaker": "hajime", "face": "smile", "text": "（……サメちゃんが語りたくなるわけだ）" }
       ]
     },
     {

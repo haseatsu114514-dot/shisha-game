@@ -13,6 +13,7 @@
       <button id="exit" type="button" class="small" hidden aria-label="DJをやめて戻る">← 戻る</button>
     </div>
     <p id="judge" class="judge" aria-live="polite"></p>
+    <div id="drop" class="drop" aria-hidden="true"></div>
     <div id="count" class="count" aria-hidden="true"></div>
   </section>
   <section class="waves" aria-label="上段A下段Bの実PCM横波形。共通の秒スケール">
@@ -41,7 +42,7 @@
         <div class="ch b" aria-hidden="true"><div class="eqs"><div class="eq"><i class="knob" id="eq-hi-b"></i><small>HI</small></div><div class="eq"><i class="knob" id="eq-mid-b"></i><small>MID</small></div><div class="eq low"><i class="knob" id="eq-low-b"></i><small>LOW</small></div></div><div class="meter" id="meter-b"><i></i></div></div>
       </div>
       <p class="sr" id="auto-low"></p>
-      <div class="xfade"><div class="mix-label"><b class="a">A</b><output id="mix-value" class="sr" aria-live="off"></output><b class="b">B</b></div><label class="sr" for="crossfader">横クロスフェーダー、左A・右B</label><input id="crossfader" type="range" min="0" max="1" step=".005" value="0"></div>
+      <div class="xfade"><div class="mix-label"><b class="a">A</b><output id="combo" class="combo" aria-live="off"></output><output id="mix-value" class="sr" aria-live="off"></output><b class="b">B</b></div><label class="sr" for="crossfader">横クロスフェーダー、左A・右B</label><div class="xtrack"><div id="guide" class="guide" hidden aria-hidden="true"><i></i></div><input id="crossfader" type="range" min="0" max="1" step=".005" value="0"></div></div>
     </article>
     <article class="deck b" id="deck-b" data-playing="false" data-role="next">
       <div class="deck-head"><small>DECK B</small><span class="deck-indicator" id="indicator-b">STANDBY</span></div>
@@ -51,6 +52,7 @@
       <div class="deck-controls"><button id="play-b" class="deck-play" aria-pressed="false" aria-label="Bを再生">▶</button></div>
     </article>
   </section>
+  <section id="pick" class="pick" hidden aria-label="次の曲を選ぶ"><p class="pick-title">次の曲を選ぶ</p><p class="request" id="request"></p><div class="pick-cards" id="pick-cards"></div></section>
   <div id="toast" class="toast" aria-live="polite"></div>
   <section id="score-result" aria-live="polite"></section>
   <p id="status" class="sr" role="status" aria-live="polite">最初の▶で音声を準備して再生します。</p>

@@ -13,7 +13,8 @@ export const TOKYO_MAP_PLACES = Object.freeze({
   gym: place("gym", "CHOI-ZAP", 34.9, 75.9),
   park: place("park", "公園", 69, 62),
   shrine: place("shrine", "路地裏の神社", 54, 70), // 心得の盤の内省（SPEC 2.8・#1788）。火種がある時だけ出る
-  club: place("club", "クラブSEAM", 71.5, 51), // 路地の地下のクラブ（DJS12）。夜の行き先が渡された時だけ地点になる。初回は行き先の placeLabel（地下の店）で出す
+  club: place("club", "クラブSEAM", 71.5, 51), // 路地の地下のクラブ（DJS12）。夜の行き先が渡された時だけ地点になる。店ロゴは ch3_club
+  club_unknown: place("club_unknown", "地下の店", 71.5, 51), // 初めて入るまでの同じ場所。店名もロゴも出さない（ch3_club_unknown のロゴは無い）
 });
 
 export const TOKYO_MAP_LANDMARKS = Object.freeze([
@@ -61,7 +62,7 @@ export function chapterThreeMapModel(value, scenes, { sceneId, allowGym = false,
   const choices = Array.isArray(actions) ? actions.filter(action => TOKYO_MAP_PLACES[action?.place]) : [];
   for (const action of choices) {
     if (!reached.has(action.place) && action.place !== "gym") {
-      reached.set(action.place, { ...TOKYO_MAP_PLACES[action.place], ...(action.placeLabel ? { label: action.placeLabel } : {}), visited: false, current: false });
+      reached.set(action.place, { ...TOKYO_MAP_PLACES[action.place], visited: false, current: false });
     }
   }
   const actionsAt = id => choices.filter(action => action.place === id).map(action => ({ ...action }));

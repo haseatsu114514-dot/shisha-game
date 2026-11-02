@@ -1,4 +1,4 @@
-import { createSet, detuneFactorFor, resumeMix, playDeck, pauseMix, beatAt, gains, lowCutDb, mod, setTempo, setPitch, syncIncoming, updateSet, anchor } from './model.mjs';
+import { createSet, detuneFactorFor, resumeMix, playDeck, pauseMix, beatAt, gains, lowCutDb, mod, setTempo, setPitch, syncIncoming, updateSet, anchor, chooseTrack } from './model.mjs';
 import { TRACKS, SETS, buildTrackData } from './tracks.mjs';
 export class DJAudio {
   constructor(Context = globalThis.AudioContext, options = {}) {
@@ -10,7 +10,7 @@ export class DJAudio {
       const buffer = await context.decodeAudioData(await response.arrayBuffer());
       return { ...buildTrackData(buffer.getChannelData(0), buffer.sampleRate, cfg), buffer, trimDb: cfg.trimDb };
     });
-    this.Context = Context; this.mix = createSet(this.set, this.detune); this.context = null; this.voices = [null, null];
+    this.Context = Context; this.mix = createSet(this.set, this.detune, options.rng || Math.random); this.context = null; this.voices = [null, null];
     this.cache = new Map(); this.tracks = [null, null]; // decoded track data per deck
     this.retiring = new Set(); this.volume = .18; this.muted = false; this.busy = false; this.disposed = false; this.revision = 0;
   }
@@ -140,13 +140,19 @@ export class DJAudio {
   pitch(id, pct) { setPitch(this.mix.decks[id], pct, this.now); this.applyRate(id); }
   sync() { if (!syncIncoming(this.mix, this.now)) return false; this.applyRate(this.mix.cue.to); return true; }
   async play(id) { return this.start(id); }
+  /** 選曲: load the picked candidate on the empty deck (see model chooseTrack). */
+  choose(index) {
+    const picked = chooseTrack(this.mix, index, this.now);
+    if (picked && this.context) { this.tracks[picked.id] = null; this.ensure(picked.id).catch(() => {}); }
+    return picked;
+  }
   /** Advance the set and apply what changed to the audio graph. Call every frame. */
   update() {
     const view = updateSet(this.mix, this.now);
     if (view.snapped != null) this.spawn(view.snapped);
     if (view.stopped != null) this.killVoice(view.stopped);
-    if (view.loaded) { this.tracks[view.loaded.id] = null; this.ensure(view.loaded.id).catch(() => {}); }
-    if (this.context && this.mix.phase === 'mix') { const next = this.mix.queue[this.mix.position]; if (next) this.track(next).catch(() => {}); }
+    // 選曲: fetch both candidates while the player decides, so the pick is ready by the next cue.
+    if (view.select && this.context) for (const key of view.select.options) this.track(key).catch(() => {});
     if (view.stopped != null || view.finished) this.setVolume(this.volume);
     return view;
   }
