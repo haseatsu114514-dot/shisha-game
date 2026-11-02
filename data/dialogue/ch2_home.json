@@ -1,0 +1,810 @@
+{
+  "comment": "第2章の地元（橙須）で読む短い会話（VOL13）。施設の寄り道（daily/spot-encounters.js の chapter: 2）と、Dr.fookah 2階の凛の会話（daily/spots.js の CHAPTER_TALKS）、tonariの大会準備で一台作る場面（chapters/ch2-craft-prep.js・ch2_prep_*）。第2章の準備期間に ch2-city-data.js の loadPreparationDialogues で読み込む。施設の能力の伸びは来店の処理が付けるので、台本に報酬の文は書かない。",
+  "dialogues": [
+    {
+      "dialogue_id": "cafe_ch2_commute",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の喫茶こはく。カウンターに座ると、マスターが先にカップを温め始めた。"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "最近、朝早くに駅へ向かうところをお見かけしますね。隣町まで通われているんですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。柚ヶ谷に、お世話になってる店が何軒かあって"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "向こうは、駅を出るとビルばかりでしょう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……はい。ここのラテの匂いで、帰ってきたなって思います"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マスターは小さく笑って、いつもより少しだけぬるめのラテを置いた。"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "今日は、すぐ飲める温度にしておきました。時計を何度も見ていらしたので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（顔に出てたのか……）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "時計は見ないで、最後の一口まで飲んだ。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cafe_ch2_commute"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cafe_ch2_taste",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マスターが、豆を挽く手を止めた。"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "新しい豆が入ったんです。よかったら、ひと口どうですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いただきます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "香りは分かる気がした。けれどその先の味が、薄い膜の向こうにある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……おいしいです。たぶん"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "たぶん、で十分ですよ。豆は逃げませんから"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "今日はいつものにしましょうか。知っている味のほうが、落ち着く日もあります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。いつもので、お願いします"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつものラテは、いつもの温度だった。それだけで、少し肩が下りた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cafe_ch2_taste"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kannon_ch2_wish",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の観音堂。手を合わせて顔を上げると、隣で箒の音が止まっていた。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "今日は、ずいぶん長く拝んでたね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お願いごとが、うまくまとまらなくて"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "まとまらないなら、ひとつずつでいいさ。観音さんは急かさないよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "賽銭箱の横で、猫が大きくあくびをした。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "わしなんか毎朝、腰が痛くならないようにしか頼んでない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "それ、叶ってるんですか"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "半分くらいだね。……それでも、来るのはやめないよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "老人はまた箒を動かし始めた。もう一度だけ手を合わせて、短く頼んだ。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_kannon_ch2_wish"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "choizap_ch2_numbers",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "CHOI-ZAPのランニングマシン。画面の距離の数字が、少しずつ増えていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（数字が増えると、安心する。……息が上がってるのに、気づいてなかった）"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "にいちゃん、さっきから画面ばっかり見てるね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、……はい"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "わしも昔はそうだった。今は窓の外を見て歩く。そのほうが、長く歩けるんだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "速度を一つ落として、窓の外の看板を眺めた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "呼吸が、少しずつ自分の速さに戻っていく。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_choizap_ch2_numbers"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cs_ch2_haze",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "C.STATIONの入口に、新しいポスターが貼られていた。『HAZE: OPEN CLOUD』。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 2,
+          "next_true": "haze_after",
+          "next_false": "haze_before"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "チェーン店のシーシャを一服。広い店内で、色んな煙が混ざり合っている。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cs_ch2_haze"
+        }
+      ],
+      "branches": {
+        "haze_before": [
+          {
+            "speaker": "staff_choizap",
+            "face": "",
+            "text": "あ、地元大会の優勝者さん！ 県大会、柚ヶ谷のホールですよね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。こっちのお店にも、ポスターがあるんですね"
+          },
+          {
+            "speaker": "staff_choizap",
+            "face": "",
+            "text": "同じチェーンですから。課題はストロベリーで、葉は主催の支給なんですよね"
+          },
+          {
+            "speaker": "staff_choizap",
+            "face": "",
+            "text": "常連さんたち、苺は熱で香りが飛びやすいって、今から心配してました"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（苺は熱に弱い、か。覚えておこう）"
+          }
+        ],
+        "haze_after": [
+          {
+            "speaker": "staff_choizap",
+            "face": "",
+            "text": "あ、県大会の優勝者さん！ ポスター、記念に一枚どうですか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "……自分が写ってないポスターを、ですか"
+          },
+          {
+            "speaker": "staff_choizap",
+            "face": "",
+            "text": "次のポスターには、きっと名前が載りますよ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_rin_taste",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の2階。凛さんが、銀色の袋の口を開けて待っていた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "ちょうどいい、モルモットくん。新しいロット。先に私が吸うから、待って"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんが一口吸って、うなずく。渡されたホースを、ゆっくり吸った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……甘くて、華やかで。すごく、いいと思います"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんは返事をしなかった。ホースを受け取って、もう一度だけ吸う。"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "……君、今日は煙の褒め方が嘘だね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え……"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "これ、最初の一口が苦いの。甘いのは、そのあと"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "君、いつもは感じた順番どおりに言う人でしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……最近、味が少し遠いんです。香りは分かる気がするのに"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "そう。じゃあ、今日のサンプルはなし"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "鼻と舌はね、調子を崩すと平気で嘘をつく。原因は、私には分からない"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "だから、吸って確かめ続けるのはやめな。うちの商材でも、無理はさせない"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "戻ったら、また一番に吸わせてあげる。……それまで、モルモットはお休み"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんは袋の口を閉じて、代わりに温かいお茶を一杯置いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（気づかれた。……でも、責められなかった）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_rin_strawberry",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の2階。凛さんの机に、赤い付箋だらけの入荷表が広がっていた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 2,
+          "next_true": "after",
+          "next_false": "before"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、凛さんは入荷表の「苺」の行に、小さく丸を付けていた。"
+        }
+      ],
+      "branches": {
+        "before": [
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "あ、モルモットくん。県大会の課題、苺なんだって？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。葉は、主催の支給だそうです"
+          },
+          {
+            "speaker": "rin",
+            "face": "smug",
+            "text": "知ってる。アフサールの新作でしょ。卸の私にも、一袋も回ってこない"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "主催がまとめて押さえたの。……商売としては、ちょっと悔しい"
+          },
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_read_remake_ch2_ageha_tasting",
+            "next_true": "tasted",
+            "next_false": "untasted"
+          }
+        ],
+        "tasted": [
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "試煙会で吸ったんでしょ。どうだった？ 君の言葉で"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……みんなの感想は覚えてるんです。お菓子みたいとか、音の間とか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "自分のは、うまく出てこなくて"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "ふうん。じゃあ宿題。本番までに、あの苺を君の一言で言えるようにしといて"
+          },
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "正解はいらない。その日の君の鼻と肺が拾ったことで、いいから"
+          }
+        ],
+        "untasted": [
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "苺はね、香りが先に立って、先に消える葉が多い"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "新作がどうかは、吸ってみないと分からない。吸えたら、教えて"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "はい。吸えたら、凛さんに話しに来ます"
+          }
+        ],
+        "after": [
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "あ、モルモットくん。苺の大会、配信で見てた"
+          },
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "あの新作、卸の私には一袋も回ってこなかったのに。君は本番で使ったんだ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "主催の支給でしたから"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "……商売としては、ちょっと悔しい。次は、うちの葉で勝ってよ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_prep_basics_intro",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "おう、はじめ。県大会の前に、いまの手を一台見せてみろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "苺じゃなくて、いいんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "課題の苺は、当日に主催が出す。今から苺ばかり詰めても、手が固くなるだけだ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店の葉で、いつもの一台。調整はなしでいい。見たいのは、炭を置くまでの手だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい、お願いします"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_basics_end",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出来上がった一台を、スミさんが吸う。煙を吐くまで、何も言わなかった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "手順は入ってる。地元の大会の時より、迷いが減ったな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "ただ、炭を置くのが早い。次の手を考えてて、今の炭を見てねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……急いでましたか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "急げるのは、手が増えた証拠だ。でも、炭は待ってくれねえ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "隣町に通うと、思ってるより疲れる。飯と睡眠は削るなよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（今の炭を見る。……それと、ちゃんと食べて寝る）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_basics_failed",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙が、途中で荒れた。スミさんは吸い口を置いて、灰皿の縁を指で叩いた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "崩れたな。それでいい。どこで崩れたか、自分で言えるか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……温度を見ないで、次の工程のことを考えてました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "そこまで分かってりゃ十分だ。本番の前に一回、崩しておけてよかった"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "隣町に通うと、思ってるより疲れる。飯と睡眠は削るなよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（今の炭を見る。……それと、ちゃんと食べて寝る）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_rehearsal_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariの作業台を借りて、本番と同じ一台を作ることにした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさん。最後に一回だけ、通しでやらせてください"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……台は空いてる。好きに使え"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんはそれ以上何も言わず、カウンターの奥で伝票をめくっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（本番と同じ順番で。苺は4g以上）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（炭は急がない。調整は二回まで）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_rehearsal_great",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出来上がった一台の吸い口を、スミさんに渡した。自分で吸っても、甘さの輪郭はまだつかめない。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……通ってる。最初の一口から最後まで、熱が暴れてねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "順番どおりに、できてましたか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ああ。手は、もう本番の手だ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "だから今日は、これ以上触るな。食って、寝ろ。それも準備のうちだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（手は本番の手。……あとは、当日の自分の体だ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_rehearsal_good",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出来上がった一台の吸い口を、スミさんに渡した。自分で吸っても、甘さの輪郭はまだつかめない。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "悪くねえ。二回目の調整で、ちゃんと戻した"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一回目で、少し上げすぎました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "上げすぎたのに気づいて戻せたなら、それは失敗じゃねえ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "本番も同じだ。崩れた時に、どこへ戻るかだけ覚えとけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（崩れても、戻る場所がある）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_rehearsal_rough",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出来上がった一台の吸い口を、スミさんに渡した。自分で吸っても、甘さの輪郭はまだつかめない。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……途中で、手が急いだな。熱が追いついてねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "分かってるのに、点のことを考えると、手が先に動いて"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……そうか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは少し黙って、水の入ったグラスを置いた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "今日はもう作るな。手が急ぐ日は、体が先に疲れてる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_rehearsal_burnt",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸い出しの途中で、焦げた匂いが立った。一台は、そこで終わった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……すみません。本番の前に、こんな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "前に焦がせたなら、儲けもんだ。本番で焦がすより、ずっといい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "どこで目を離した。それだけ覚えて、今日は帰れ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（温度から、目を離した。……次の工程を、先に考えてた）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_prep_rehearsal_drill",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "気になっていた工程だけを、何度か繰り返した。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……一個に絞ったか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。全部を直すのは、本番までに間に合わないので"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "それでいい。直した一個だけ、本番で思い出せ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "道具を片づけると、肩の力が少しだけ抜けていた。"
+        }
+      ]
+    }
+  ]
+}

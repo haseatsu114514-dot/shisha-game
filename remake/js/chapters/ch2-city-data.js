@@ -23,6 +23,11 @@ export const STOPS = [
 export const ROOMS = Object.fromEntries(["ageha", "kumicho", "rei"].map((id) => [id, `../assets/backgrounds/bg_ch2_${id}_entry.webp`]));
 const PURIKURA_IDS = ["remake_ch2_ryuji_melty_greeting", "remake_ch2_purikura_ryuji", "remake_ch2_ageha_purikura", ...["invite", "solo", "pair", "guest"].map(id => `remake_ch2_purikura_${id}`)];
 const DISCOVERY_IDS = ["remake_ch2_rei_trpg", "remake_ch2_ageha_aquarium", "remake_ch2_kumicho_sento"];
+export const CH2_HOME_IDS = Object.freeze(["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze",
+  "ch2_rin_taste", "ch2_rin_strawberry",
+  // tonariの大会準備で一台作る場面（ch2-craft-prep.js の CH2_CRAFT_PREP_IDS と同じ。読み込みを軽くするため名前を並べる）
+  "ch2_prep_basics_intro", "ch2_prep_basics_end", "ch2_prep_basics_failed", "ch2_prep_rehearsal_intro",
+  ...["great", "good", "rough", "burnt", "drill"].map(result => `ch2_prep_rehearsal_${result}`)]);
 const OUTING_IDS = ["aquarium", "sento", "chain"].flatMap(id => ["look", "visit", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
 const CITY_IDS = ["arrival", ...STOPS.map((stop) => stop.id), ...Object.keys(ROOMS).flatMap((id) => [`${id}_inside`, `${id}_farewell`]), "return"].map((id) => `ch2_city_${id}`);
 
@@ -52,10 +57,13 @@ export async function loadPreparationDialogues() {
   for (const step of CH2_NIGHTS.flatMap(night => night.steps)) (files[step.file] ||= []).push(step.id);
   // 神崎・REIの長い段階会話（味の学習を含む）も通常訪問列として公開する（#1648）。
   for (const entry of Object.values(CH2_VISIT_STORIES).flat()) if (entry.file) (files[entry.file] ||= []).push(entry.scene);
-  // 店に通う回（#626）と♥3の質問（#1988）、♥5の締めくくり（#2023）
-  const agehaVisits = [...(AGEHA_VISITS || []), AGEHA_BADDAY?.id, "ch2_ageha_bond_question", "ch2_ageha_bond_finale"].filter(Boolean);
+  // 店に通う回（#626）と♥3の質問（#1988）、♥5の締めくくり（#2023）、通い訪問の小会話 b〜d（VOL13）
+  const agehaVisits = [...(AGEHA_VISITS || []), AGEHA_BADDAY?.id, "ch2_ageha_bond_question", "ch2_ageha_bond_finale",
+    ...["b", "c", "d"].map(suffix => `remake_ch2_ageha_repeat_${suffix}`)].filter(Boolean);
   if (agehaVisits.length) (files.ch2_ageha_story ||= []).push(...agehaVisits);
   if (STRAWBERRY_TRIAL_IDS.length) (files.ch2_main ||= []).push(...STRAWBERRY_TRIAL_IDS); // まかないの苺の試作（#1650）
+  // 地元の施設の第2章の寄り道（daily/spot-encounters.js）と凛の会話（daily/spots.js の CHAPTER_TALKS）（VOL13）
+  files.ch2_home = [...CH2_HOME_IDS];
   // 全台本を検証してから、接続するIDだけ公開。旧導入・大会結果は日常へ混ぜない。
   const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => {
     const dialogues = await readDialogues(file, ids);
