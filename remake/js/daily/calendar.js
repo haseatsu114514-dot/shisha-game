@@ -704,7 +704,7 @@ function postponeUnaffordableInvitation(inv) {
 }
 
 async function guardInvitation(inv) {
-  if (await staminaGuard(inv.event === "__sumi_baito__" ? -24 : -10)) return true;
+  if (await staminaGuard(inv.event === "__sumi_baito__" ? -24 : inv.event === "__mukai_baito__" ? -14 : -10)) return true;
   rescheduleInvitation(inv, "体調を考え、約束を別の日に改めることにした");
   save();
   return false;
@@ -739,6 +739,10 @@ async function meetInvitation(inv) {
     state.visitedDay.tonari_baito = state.day;
     state.visitedDay.tonari = state.day;
     await doBaito({ called: true });
+  } else if (inv.event === "__mukai_baito__") {
+    // ムカイさんのLIMEで呼ばれた東京の mukai のシフト（VOL10）。シフトの中身は章の側（chapters/tokyo-mukai.js）
+    if (!await chapterDef.mukaiShift?.({ called: true })) return false;
+    if (inv.visitSpot) state.visitedDay[inv.visitSpot] = state.day;
   } else if (inv.event === "hiyori_tonari_return") {
     await playHiyoriEvent("tonari_return");
     state.visitedDay.tonari = state.day;
@@ -779,7 +783,7 @@ async function meetInvitation(inv) {
     state.visitedDay[destination] = state.day;
     state.flags[`_invitation_visit_${destination}`] = `${state.chapter}:${state.day}`;
   }
-  if (inv.event !== "__sumi_baito__" && CHAR_STAT[inv.sender]) {
+  if (!["__sumi_baito__", "__mukai_baito__"].includes(inv.event) && CHAR_STAT[inv.sender]) {
     const { earnStat } = await import("../core/stats.js");
     earnStat(CHAR_STAT[inv.sender], 1);
   }

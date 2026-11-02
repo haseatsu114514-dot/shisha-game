@@ -81,19 +81,55 @@ await suite("ch3-tokyo-daily", async check => {
     // 夜: mukai で手伝う（日当）→ 帰りに裏口のてつこ（行動を使わない）。
     const before = await get(page);
     await go(page, "ch3_tokyo_mukai");
-    const help = page.locator(`#modal.show button`, { hasText: "店を手伝う" });
+    const help = page.locator(`#modal.show button`, { hasText: "シフトに入る" });
     await help.waitFor();
     await help.click();
+    // mukai のシフト（VOL09）: 今日の注文に合う配合を二つから選ぶ → 客の反応 → 日当。
+    await page.locator(dt("mukai-order-0")).waitFor({ timeout: 60000 });
+    await page.locator(dt("mukai-order-0")).click();
     await page.locator(dt("tokyo-tetsuko-yes")).waitFor({ timeout: 60000 });
     await page.locator(dt("tokyo-tetsuko-yes")).click();
     // 夜の本筋（肩に残る勝利）→ 奥の部屋で寝る → DAY3 の朝は店の違いの場面（昼の行動を使う）→ 夜の地図。
     await tokyoMap(page, { day: 34, slot: 1 });
     state = await get(page);
-    assert.equal(state.money, before.money + 6000, "The day's pay from helping at mukai");
+    assert.equal(state.money, before.money + 6000, "The day's pay from the mukai shift");
+    assert.equal(state.flags._mukai_shift_day, 33, "The shift day is kept for Mukai's invitations");
+    assert(state.contacts.includes("mukai_master") || state.flags._lime_contact_mukai_master, "Mukai's LIME was exchanged on the first work day");
     assert.equal(state.flags._ch3_outings.mukai_help, 1);
     assert.equal(state.flags._ch3_outings.tetsuko, 1, "Tetsuko is met on the way out of mukai");
     assert(state.flags._ch3_intro.stage >= 5, "The night scene and the DAY3 noon scene are read");
     assert.equal(state.flags._ch2_region, "tokyo", "The night is spent in Tokyo");
+  });
+
+  // VOL10: 東京にいる間、LIMEを交換したムカイさんから、最後のシフトから3日あいた日にシフトの誘いが届く。
+  await check("mukai-invites-a-shift-by-lime-in-tokyo", async page => {
+    await seed(page);
+    const result = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const { DB } = await import("./js/core/data.js");
+      if (!DB.limeTemplates?.mukai_baito) throw new Error("LIME templates are not loaded");
+      const phone = await import("./js/daily/phone.js");
+      const inv = await import("./js/daily/invitations.js");
+      const value = core.state;
+      value.flags._ch2_region = "tokyo";
+      value.flags._lime_contact_mukai_master = true;
+      const pick = () => phone.morningMessages({}).find(m => m.accept_event === "__mukai_baito__") || null;
+      const out = {};
+      value.day = 37; value.weatherSeed = 5; value.flags._mukai_shift_day = 33;
+      const m = pick();
+      out.invite = m && { sender: m.sender, spot: m.visit_spot, slot: m.time_slot, reasons: m.messages.length };
+      out.visit = m && inv.invitationVisitSpot({ event: m.accept_event, visitSpot: m.visit_spot }, m);
+      value.flags._mukai_shift_day = 35; out.tooSoon = !!pick();
+      value.flags._mukai_shift_day = 33; value.flags._ch2_region = "home"; out.atHome = !!pick();
+      value.flags._ch2_region = "tokyo"; delete value.flags._lime_contact_mukai_master;
+      value.contacts = value.contacts.filter(id => id !== "mukai_master"); out.noContact = !!pick();
+      return out;
+    });
+    assert.deepEqual(result.invite, { sender: "mukai_master", spot: "ch3_tokyo_mukai", slot: "noon", reasons: 3 });
+    assert.equal(result.visit, "ch3_tokyo_mukai");
+    assert.equal(result.tooSoon, false, "Not within three days of the last shift");
+    assert.equal(result.atHome, false, "Only while in Tokyo");
+    assert.equal(result.noContact, false, "Only after exchanging LIME with Mukai");
   });
 
   await check("tournament-eve-then-the-national-morning-card", async page => {

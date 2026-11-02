@@ -1244,6 +1244,8 @@
       "timeout": 6,
       "paths": [
         "remake/js/chapters/ch3-tokyo-daily.js",
+        "remake/js/chapters/tokyo-mukai.js",
+        "data/dialogue/mukai_shift.json",
         "remake/js/core/tokyo-clock.js",
         "remake/js/core/tokyo-visits.js",
         "remake/js/daily/calendar.js",
