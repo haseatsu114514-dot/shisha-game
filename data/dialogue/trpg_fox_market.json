@@ -1,0 +1,3280 @@
+{
+  "id": "fox-market",
+  "version": 1,
+  "title": "夜市と狐のお面",
+  "subtitle": "灯籠通りの夏祭りと、お面の子",
+  "author": "宵宮ほたる",
+  "collection": "船灯文庫・小さな卓の冒険 09",
+  "duration": "約10分",
+  "premise": "夏の夜市、灯籠通り。人波の真ん中に、狐のお面の子がひとり立っている。名前はコン。灯り番たちは、この子をどこへ送ればいいのだろう。",
+  "fiction": {
+    "town": "灯籠通り",
+    "market": "夏の夜市",
+    "child": "コン",
+    "stall": "おきくの金魚すくい"
+  },
+  "cast": [
+    {
+      "id": "tsumugi",
+      "part": "GM",
+      "role": "案内と、夜市の人びと",
+      "color": "#b8a3cc"
+    },
+    {
+      "id": "hajime",
+      "part": "PLAYER",
+      "role": "{pc}／見習いの灯り番",
+      "color": "#89bbc4",
+      "ability": "とっさの機転",
+      "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
+      "abilityType": "reroll",
+      "sheet": {
+        "name": "ハヤト",
+        "title": "見習いの灯り番",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 4,
+          "nerve": 2
+        },
+        "trait": "人の話を聞くのが上手い。火の扱いは、まだ少し慌てる"
+      }
+    },
+    {
+      "id": "hiyori",
+      "part": "PLAYER",
+      "role": "{pc:hiyori}／霞の灯り番",
+      "color": "#dab978",
+      "ability": "屋台の段取り",
+      "abilityText": "道すじを準備するとき、判定に一度だけ＋7",
+      "abilityType": "prepare",
+      "sheet": {
+        "name": "カスミ",
+        "title": "霞の灯り番",
+        "stats": {
+          "eye": 3,
+          "hand": 4,
+          "talk": 2,
+          "nerve": 2
+        },
+        "trait": "夜風にも消えそうな灯り番……のはず。ラーメンの匂いには負けない",
+        "likes": "屋台のラーメン。湯気の向こうの提灯"
+      }
+    },
+    {
+      "id": "samechan",
+      "part": "PLAYER",
+      "role": "{pc:samechan}／夜店の用心棒",
+      "color": "#73b8df",
+      "ability": "用心棒の背中",
+      "abilityText": "コンを送り出すとき、判定に一度だけ＋7",
+      "abilityType": "serve",
+      "sheet": {
+        "name": "ナミマル",
+        "title": "夜店の用心棒",
+        "stats": {
+          "eye": 2,
+          "hand": 2,
+          "talk": 3,
+          "nerve": 4
+        },
+        "trait": "腕っぷしと度胸は一人前。暗いところは、ちと苦手",
+        "likes": "サメ柄の手ぬぐい。夜の海のサメ映画"
+      }
+    }
+  ],
+  "intro": "trpg_fox_market_intro",
+  "listen": "trpg_fox_market_listen",
+  "checks": {
+    "listen": {
+      "title": "お面の子に、声をかける",
+      "hint": "宣言した灯り番の能力で判定。結果にかかわらず、話を聞く場面へ進みます。",
+      "success": "trpg_fox_market_listen_success",
+      "mixed": "trpg_fox_market_listen_mixed",
+      "trouble": "trpg_fox_market_listen_trouble",
+      "approaches": [
+        {
+          "id": "listen_kneel",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "しゃがんで、目の高さで話す",
+          "detail": "{pc}がコンの前にしゃがむ。名前から、ゆっくり聞く",
+          "declare": "trpg_fox_market_declare_listen_kneel"
+        },
+        {
+          "id": "listen_lantern",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "hand",
+          "label": "小さな提灯を、そっと持たせる",
+          "detail": "{pc:hiyori}が手持ちの提灯に火を入れ、コンに渡す",
+          "declare": "trpg_fox_market_declare_listen_lantern"
+        },
+        {
+          "id": "listen_shadow",
+          "actor": "samechan",
+          "sheet": "samechan",
+          "stat": "talk",
+          "label": "影絵のサメで、笑わせる",
+          "detail": "{pc:samechan}が提灯の前で手を組み、影絵を見せる",
+          "declare": "trpg_fox_market_declare_listen_shadow"
+        }
+      ]
+    },
+    "prepare": {
+      "title": "灯りと寄り道を、道すじにする",
+      "hint": "宣言した灯り番の能力で判定。灯りと寄る屋台を、一つの道すじにします。",
+      "success": "trpg_fox_market_prepare_success",
+      "mixed": "trpg_fox_market_prepare_mixed",
+      "trouble": "trpg_fox_market_prepare_trouble",
+      "helper": "hiyori",
+      "approaches": [
+        {
+          "id": "prepare_self",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "hand",
+          "label": "自分の手で、道すじを整える",
+          "detail": "{pc}が灯りを用意し、寄る屋台にも声をかけておく",
+          "declare": "trpg_fox_market_declare_prepare_self"
+        },
+        {
+          "id": "prepare_craft",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "hand",
+          "label": "{pc:hiyori}が手早く段取りする",
+          "detail": "灯り番の手際で、道案内の灯りと寄り道を整える",
+          "declare": "trpg_fox_market_declare_prepare_craft"
+        },
+        {
+          "id": "prepare_route",
+          "actor": "samechan",
+          "sheet": "samechan",
+          "stat": "eye",
+          "label": "通りを見渡して、順路を決める",
+          "detail": "{pc:samechan}が人の流れを見て、寄り道の順番を決める",
+          "declare": "trpg_fox_market_declare_prepare_route"
+        }
+      ]
+    },
+    "serve": {
+      "title": "コンを、送り出す",
+      "hint": "宣言した灯り番の能力で判定。どの出目でも結末へ進みます。",
+      "success": "trpg_fox_market_serve_success",
+      "mixed": "trpg_fox_market_serve_mixed",
+      "trouble": "trpg_fox_market_serve_trouble",
+      "helper": "samechan",
+      "approaches": [
+        {
+          "id": "serve_word",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "目を見て、別れの言葉を言う",
+          "detail": "{pc}が選んだ別れ方に、自分の言葉を添える",
+          "declare": "trpg_fox_market_declare_serve_word"
+        },
+        {
+          "id": "serve_guard",
+          "actor": "samechan",
+          "sheet": "samechan",
+          "stat": "nerve",
+          "label": "鳥居の先まで、一緒に歩く",
+          "detail": "{pc:samechan}が暗い石段の先まで、そばを離れずに送る",
+          "declare": "trpg_fox_market_declare_serve_guard"
+        },
+        {
+          "id": "serve_wave",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "talk",
+          "label": "笑って、また来てねと言う",
+          "detail": "{pc:hiyori}が儚げに……いや、元気に手を振る",
+          "declare": "trpg_fox_market_declare_serve_wave"
+        }
+      ]
+    },
+    "twist": {
+      "title": "消えた灯りの中で",
+      "hint": "宣言した灯り番の能力で判定。どの出目でも物語は続きます。",
+      "success": "trpg_fox_market_twist_success",
+      "mixed": "trpg_fox_market_twist_mixed",
+      "trouble": "trpg_fox_market_twist_trouble",
+      "approaches": [
+        {
+          "id": "twist_call",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "大きな声で、みんなに呼びかける",
+          "detail": "{pc}が通りの真ん中で、足元に気をつけてと声を張る",
+          "declare": "trpg_fox_market_declare_twist_call"
+        },
+        {
+          "id": "twist_flint",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "hand",
+          "label": "手早く、火打ち道具を使う",
+          "detail": "{pc:hiyori}が袖から火打ち道具を出し、手近な提灯から",
+          "declare": "trpg_fox_market_declare_twist_flint"
+        },
+        {
+          "id": "twist_shoulder",
+          "actor": "samechan",
+          "sheet": "samechan",
+          "stat": "nerve",
+          "label": "コンを肩車して、人波を進む",
+          "detail": "{pc:samechan}がコンを担ぎ上げ、暗い通りを堂々と進む",
+          "declare": "trpg_fox_market_declare_twist_shoulder"
+        }
+      ]
+    }
+  },
+  "spots": [
+    {
+      "id": "mask",
+      "label": "お面屋の棚",
+      "short": "お面屋",
+      "x": 15,
+      "y": 30
+    },
+    {
+      "id": "goldfish",
+      "label": "金魚すくいの水槽",
+      "short": "金魚",
+      "x": 30,
+      "y": 76
+    },
+    {
+      "id": "torii",
+      "label": "神社の鳥居",
+      "short": "鳥居",
+      "x": 80,
+      "y": 22
+    },
+    {
+      "id": "cotton",
+      "label": "綿あめの屋台",
+      "short": "綿あめ",
+      "x": 50,
+      "y": 42
+    },
+    {
+      "id": "bell",
+      "label": "落ちていた鈴",
+      "short": "鈴",
+      "x": 63,
+      "y": 84
+    },
+    {
+      "id": "board",
+      "label": "迷子案内の掲示板",
+      "short": "掲示板",
+      "x": 89,
+      "y": 63
+    }
+  ],
+  "consult": {
+    "hiyori": "trpg_fox_market_consult_hiyori",
+    "samechan": "trpg_fox_market_consult_samechan"
+  },
+  "hypotheses": [
+    {
+      "id": "lost",
+      "label": "家に帰りたい、迷子の子かも",
+      "description": "家族とはぐれた町の子ども。帰り道を探している。",
+      "discussion": "trpg_fox_market_discuss_lost"
+    },
+    {
+      "id": "taste",
+      "label": "屋台を味わいに来た子狐かも",
+      "description": "山から下りてきた子狐。夜市の味を、一度だけ知りたい。",
+      "discussion": "trpg_fox_market_discuss_taste"
+    },
+    {
+      "id": "return",
+      "label": "何かを返しに来た使いかも",
+      "description": "ずっと昔に借りたものを、返しに来た狐の使い。",
+      "discussion": "trpg_fox_market_discuss_return"
+    }
+  ],
+  "preparation": "trpg_fox_market_preparation",
+  "serving": "trpg_fox_market_serving",
+  "options": {
+    "light": [
+      {
+        "id": "lantern",
+        "label": "赤い提灯",
+        "description": "町の家々の軒先にもさがる、いつもの灯り。",
+        "response": "trpg_fox_market_choice_light_lantern"
+      },
+      {
+        "id": "firefly",
+        "label": "蛍のかご",
+        "description": "火を使わない、山の小川の小さな灯り。",
+        "response": "trpg_fox_market_choice_light_firefly"
+      },
+      {
+        "id": "chime",
+        "label": "風鈴の音",
+        "description": "灯りの代わりに、ちりんと鳴る音で道を示す。",
+        "response": "trpg_fox_market_choice_light_chime"
+      }
+    ],
+    "stall": [
+      {
+        "id": "cotton",
+        "label": "綿あめ",
+        "description": "くるくる回る機械と、甘い匂いの屋台。",
+        "response": "trpg_fox_market_choice_stall_cotton"
+      },
+      {
+        "id": "goldfish",
+        "label": "金魚すくい",
+        "description": "おきくの屋台。赤い金魚と、古い軒先。",
+        "response": "trpg_fox_market_choice_stall_goldfish"
+      },
+      {
+        "id": "mask",
+        "label": "お面屋",
+        "description": "狐やひょっとこが並ぶ、お面の棚。",
+        "response": "trpg_fox_market_choice_stall_mask"
+      }
+    ],
+    "farewell": [
+      {
+        "id": "hand",
+        "label": "手をつないで送る",
+        "description": "最後まで、手を離さずに歩く。",
+        "response": "trpg_fox_market_choice_farewell_hand"
+      },
+      {
+        "id": "gift",
+        "label": "お土産を渡す",
+        "description": "夜市の思い出を、小さな包みにして持たせる。",
+        "response": "trpg_fox_market_choice_farewell_gift"
+      },
+      {
+        "id": "bell",
+        "label": "鈴を鳴らす",
+        "description": "ちりんと一つ。それを、別れの合図にする。",
+        "response": "trpg_fox_market_choice_farewell_bell"
+      }
+    ],
+    "tactic": [
+      {
+        "id": "relight",
+        "label": "提灯に火を入れ直す",
+        "description": "灯り番の仕事。一つずつ、通りに灯りを戻す。",
+        "response": "trpg_fox_market_choice_tactic_relight"
+      },
+      {
+        "id": "fireworks",
+        "label": "花火の明かりを頼りに進む",
+        "description": "花火が開くたび、少しずつ前へ。",
+        "response": "trpg_fox_market_choice_tactic_fireworks"
+      },
+      {
+        "id": "guide",
+        "label": "人混みを誘導する",
+        "description": "声をかけ合い、人の流れを落ち着かせる。",
+        "response": "trpg_fox_market_choice_tactic_guide"
+      }
+    ]
+  },
+  "profiles": [
+    {
+      "id": "lost",
+      "ending": "lantern",
+      "arrival": "……灯り、どっちだったかな。さっきまで、手、つないでたの",
+      "likes": {
+        "light": [
+          "lantern"
+        ],
+        "stall": [
+          "mask"
+        ],
+        "farewell": [
+          "hand"
+        ]
+      },
+      "evidence": {
+        "mask": {
+          "title": "戻ると言った場所",
+          "text": "お面屋の店主いわく、狐の面を買った親子連れが『はぐれたら、ここに戻る』と話していた。",
+          "lines": "trpg_fox_market_lost_mask"
+        },
+        "goldfish": {
+          "title": "つないでいた手",
+          "text": "コンは手をつないで並ぶ親子を見つめ、空いた手を握ったり開いたりしている。",
+          "lines": "trpg_fox_market_lost_goldfish"
+        },
+        "torii": {
+          "title": "赤い提灯の家",
+          "text": "コンは町の家並みを見下ろし『うちの軒には、赤い提灯がさがってるの』と言った。",
+          "lines": "trpg_fox_market_lost_torii"
+        },
+        "cotton": {
+          "title": "娘の分の綿あめ",
+          "text": "綿あめ屋いわく、子どもを探す女の人が『娘の分』と言って二本買っていった。",
+          "lines": "trpg_fox_market_lost_cotton"
+        },
+        "bell": {
+          "title": "片方だけの鈴",
+          "text": "子どもの下駄に付ける鈴。コンの下駄には、片方にだけ同じ鈴が残っている。",
+          "lines": "trpg_fox_market_lost_bell"
+        },
+        "board": {
+          "title": "赤い提灯の下で",
+          "text": "掲示板に『迷子は、赤い提灯の下でお待ちください』と書いてある。",
+          "lines": "trpg_fox_market_lost_board"
+        }
+      },
+      "answers": {
+        "when": {
+          "title": "人波で離れた手",
+          "text": "いちばん混んだ頃、誰かとつないでいた手が、人波で離れたらしい。",
+          "lines": "trpg_fox_market_ask_lost_when"
+        },
+        "mask": {
+          "title": "買ったばかりのお面",
+          "text": "お面は通りのお面屋の品で、紐が新しい。さっき親子連れが買っていった。",
+          "lines": "trpg_fox_market_ask_lost_mask"
+        },
+        "gaze": {
+          "title": "赤い提灯を見上げる",
+          "text": "コンは通りの赤い提灯ばかり見上げて、何かを探している。",
+          "lines": "trpg_fox_market_ask_lost_gaze"
+        },
+        "lore": {
+          "title": "赤い提灯の下で待つ",
+          "text": "灯籠通りでは昔から、迷子は赤い提灯の下で待つよう教えられている。",
+          "lines": "trpg_fox_market_ask_lost_lore"
+        }
+      }
+    },
+    {
+      "id": "taste",
+      "ending": "cotton",
+      "arrival": "……いいにおい。ここの灯り、山からずっと見えてたの",
+      "likes": {
+        "light": [
+          "firefly"
+        ],
+        "stall": [
+          "cotton"
+        ],
+        "farewell": [
+          "gift"
+        ]
+      },
+      "evidence": {
+        "mask": {
+          "title": "値札のないお面",
+          "text": "棚の狐面には、どれも値札と紐がある。コンのお面には、どちらもない。",
+          "lines": "trpg_fox_market_taste_mask"
+        },
+        "goldfish": {
+          "title": "言いかけたひと言",
+          "text": "コンは金魚を見て『おいし……』と言いかけ、慌てて口を押さえた。",
+          "lines": "trpg_fox_market_taste_goldfish"
+        },
+        "torii": {
+          "title": "山から続く足跡",
+          "text": "石段に、人より細い小さな足跡。山の方から続き、まわりを蛍が飛んでいる。",
+          "lines": "trpg_fox_market_taste_torii"
+        },
+        "cotton": {
+          "title": "くるくる回る機械",
+          "text": "綿あめの機械が回るたび、コンのお面の耳がぴくりと動く。",
+          "lines": "trpg_fox_market_taste_cotton"
+        },
+        "bell": {
+          "title": "木の葉の小銭",
+          "text": "鈴のそばに木の葉が三枚。コンは『これで、山のみんなにも何か買える？』と聞いた。",
+          "lines": "trpg_fox_market_taste_bell"
+        },
+        "board": {
+          "title": "火の注意書き",
+          "text": "『提灯の火に、小さな子と動物は近づかないで』の貼り紙に、コンは何度も頷いた。",
+          "lines": "trpg_fox_market_taste_board"
+        }
+      },
+      "answers": {
+        "when": {
+          "title": "山の道から来た",
+          "text": "日暮れに山の方の道から現れた。提灯の火に近づくと、さっと下がる。",
+          "lines": "trpg_fox_market_ask_taste_when"
+        },
+        "mask": {
+          "title": "ときどき動く耳",
+          "text": "お面の耳が、ときどき動く。おきくは『お面なら、だけどね』と笑う。",
+          "lines": "trpg_fox_market_ask_taste_mask"
+        },
+        "gaze": {
+          "title": "綿あめの屋台",
+          "text": "コンは綿あめの機械が回るたび、鼻をくんくんさせている。",
+          "lines": "trpg_fox_market_ask_taste_gaze"
+        },
+        "lore": {
+          "title": "山の狐の言い伝え",
+          "text": "夜市の晩、山の狐は甘い匂いにつられて下り、少し持ち帰って家族と分けるという。",
+          "lines": "trpg_fox_market_ask_taste_lore"
+        }
+      }
+    },
+    {
+      "id": "return",
+      "ending": "bell",
+      "arrival": "……ここ、前と少し違う。あの鈴の音、どこだろう",
+      "likes": {
+        "light": [
+          "chime"
+        ],
+        "stall": [
+          "goldfish"
+        ],
+        "farewell": [
+          "bell"
+        ]
+      },
+      "evidence": {
+        "mask": {
+          "title": "何十年も前の型",
+          "text": "お面屋の店主いわく、コンのお面は、もう何十年も作られていない古い型だ。",
+          "lines": "trpg_fox_market_return_mask"
+        },
+        "goldfish": {
+          "title": "軒先の古い釘",
+          "text": "金魚すくいの軒先に、古い釘が一本。昔はそこに金魚の鈴が下がっていた。",
+          "lines": "trpg_fox_market_return_goldfish"
+        },
+        "torii": {
+          "title": "鳥居の立て札",
+          "text": "立て札に『狐の使いは、風鈴の音をたどって、借りたものを返しに来る』とある。",
+          "lines": "trpg_fox_market_return_torii"
+        },
+        "cotton": {
+          "title": "昔の屋台の並び",
+          "text": "コンは綿あめ屋を見て『前は、もっと鳥居の近くだった』とつぶやいた。",
+          "lines": "trpg_fox_market_return_cotton"
+        },
+        "bell": {
+          "title": "金魚の模様の鈴",
+          "text": "金魚の模様が彫られた古い鈴。コンが『あった』と手を伸ばした。おきくの暖簾と同じ柄だ。",
+          "lines": "trpg_fox_market_return_bell"
+        },
+        "board": {
+          "title": "風鈴の音に振り向く",
+          "text": "『今夜、風鈴の市あり』の貼り紙。ちりんと鳴るたび、コンはそちらを振り向く。",
+          "lines": "trpg_fox_market_return_board"
+        }
+      },
+      "answers": {
+        "when": {
+          "title": "六十年前と同じ姿",
+          "text": "おきくが子どもの頃に見た子と、背丈もお面もそっくりだという。",
+          "lines": "trpg_fox_market_ask_return_when"
+        },
+        "mask": {
+          "title": "古い型のお面",
+          "text": "お面は今は作られていない古い型で、色も褪せている。",
+          "lines": "trpg_fox_market_ask_return_mask"
+        },
+        "gaze": {
+          "title": "金魚すくいの軒先",
+          "text": "コンはおきくの金魚すくいの軒先を見上げている。昔そこに鈴が下がっていた。",
+          "lines": "trpg_fox_market_ask_return_gaze"
+        },
+        "lore": {
+          "title": "鈴を貸した夜",
+          "text": "おきくは子どもの頃、狐のお面の子に屋台の鈴を貸した。『鳴らしたら、返しに来た合図』と言っていた。",
+          "lines": "trpg_fox_market_ask_return_lore"
+        }
+      }
+    }
+  ],
+  "endings": {
+    "lantern": {
+      "title": "提灯の帰り道",
+      "line": "赤い提灯の下で、コンはもう一度、家族の手をつかんだ。",
+      "dialogue": "trpg_fox_market_ending_lantern"
+    },
+    "cotton": {
+      "title": "はじめての綿あめ",
+      "line": "はじめての綿あめは、ふわりと甘く、口の中で消えた。",
+      "dialogue": "trpg_fox_market_ending_cotton"
+    },
+    "bell": {
+      "title": "鈴の音の約束",
+      "line": "六十年ぶりに、金魚の鈴が軒先で鳴った。",
+      "dialogue": "trpg_fox_market_ending_bell"
+    },
+    "festival": {
+      "title": "お面のままの夜市",
+      "line": "正体はわからないまま、一緒に夜市を回った。それで、よかった。",
+      "dialogue": "trpg_fox_market_ending_festival"
+    }
+  },
+  "epilogue": "trpg_fox_market_epilogue",
+  "dialogues": [
+    {
+      "dialogue_id": "trpg_fox_market_session_zero_open",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……物語の前に、役を作る時間です。みなさん、決まりましたか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_session_zero_close",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "俺は{pc}。{pcTitle}でいく"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……そろいました。では、夜市を開きます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_make_hiyori_hiyori_kasumi",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私はカスミ。夜風ひとつで消えてしまいそうな、灯り番よ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "好きなものは、屋台のラーメン。湯気の向こうなら、消えずにいられるの"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……儚いのに、ラーメンには強いんですね"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "替え玉までが一杯よ！ ……あ、いえ、儚いの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_make_hiyori_hiyori_shizuku",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私はシズク。茶屋の看板娘で、少し体が弱いの"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "特技は的当て。斧なら、百発百中よ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……夜市に、斧投げの屋台は、ないです"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "ないの！？ ……じゃあ、ゆるい狐のお面を集める係で"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_make_samechan_samechan_namimaru",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "わしの役はナミマル。夜店を見回る、用心棒じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "腕っぷしと度胸は一人前。……暗いところは、ちと苦手じゃがの"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余は、用心棒の手ぬぐいの柄として出演するのである"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……手ぬぐいのサメも、頼もしいです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_make_samechan_samechan_fukajiro",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "わしはフカジロウ！ 金魚すくいの水槽で、サメを待つ釣り人じゃ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "evil",
+          "text": "……金魚すくいに、サメは、いません"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "待つのじゃ。いつか来る。サメ映画とは、そういうものじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余が水槽に入れば、話は早いのである"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……今夜のGMは、私です。夏の夜の短いお話を、一本"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "『夜市と狐のお面』……お祭りの話か"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……架空の夜市が舞台です。私はGM、みなさんは夜市の灯り番です",
+          "castIntro": true,
+          "smallTableText": "……私はGM、はじめさんは灯り番。空いた役は、私が兼ねます"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "夏祭りの夜じゃな。怖い話でないなら、わしは大歓迎じゃぞ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……夜市。屋台の湯気って、すぐ消えちゃうところが好きなの"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "灯籠通りの夏の夜市。提灯の列が、神社の鳥居まで続いている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}は脚立の上で、ちょうど最後の提灯に火を入れたところ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:hiyori}は灯りの見回り……のはずが、ラーメンの屋台の前にいる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:samechan}は人波を見回りながら、焼きいかの匂いに負けかけている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ふと見ると、通りの真ん中に、狐のお面の子がひとり立っている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "normal",
+          "text": "ちょいと、灯り番さん。あの子、さっきからずっとああなんだよ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "迷子かな。……まずは、声をかけてみよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_listen",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "お面の子は、浴衣の袖をぎゅっと握っている。背丈は、{pc}の腰ほど"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "{pc:hiyori}",
+          "face": "normal",
+          "text": "……小さな子ね。驚かせないように、そっといきましょう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}",
+          "face": "normal",
+          "text": "こんばんは。俺たち、この通りの灯り番なんだ。名前、聞いてもいい？"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "狐面のコン／物語",
+          "face": "normal",
+          "text": "……コン。お面の名前じゃなくて、ほんとの名前"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_declare_listen_kneel",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}はしゃがんで、コンと目の高さを合わせる。ゆっくり話を聞くよ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……話術で判定です。目標は30。サイコロ二つ、どうぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_declare_listen_lantern",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:hiyori}は小さな提灯に火を入れて、そっと持たせてあげるわ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……手際で判定です。火の扱いに、気をつけて。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_declare_listen_shadow",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "{pc:samechan}は提灯の前で手を組んで、影絵のサメを泳がせるのじゃ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……話術で判定です。サメで、泣かせないでくださいね。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_declare_twist_call",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "{pc}が通りの真ん中で叫ぶ。『灯り番です！ 足元、気をつけて！』"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……話術で判定です。声、遠くまで届くでしょうか。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_declare_twist_flint",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:hiyori}は袖から火打ち道具を出すわ。手は、意外と速いの"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……手際で判定です。暗いので、慌てずに。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_declare_twist_shoulder",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "{pc:samechan}がコンを肩車じゃ！ 暗くても、わしは怖くないぞ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "evil",
+          "text": "……度胸で判定です。声、少し震えてますね。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_declare_prepare_self",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}は灯りを用意して、寄る屋台にも話を通しておきます"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……手際で判定です。はじめさん、落ち着いて。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_declare_prepare_craft",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ここは{pc:hiyori}の出番ね。灯りも寄り道も、段取りは得意なの"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "evil",
+          "text": "……手際で判定です。寄り道は、ラーメン以外で。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_declare_prepare_route",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:samechan}は高いところから、通りの流れを見て順路を決めるのじゃ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……観察で判定です。人の流れ、見えますか。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_declare_serve_word",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}はコンの前にしゃがんで、選んだ別れ方で送り出します"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……話術で判定です。最後のひと言、大事に。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_declare_serve_guard",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:samechan}は鳥居の先まで付き添う。暗くても、平気じゃ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "evil",
+          "text": "……度胸で判定です。石段、暗いですよ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_declare_serve_wave",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:hiyori}は笑って手を振るわ。儚く……じゃなくて、元気に！"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……話術で判定です。素が出てますね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_listen_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "コンはこくりと頷き、袖を握る手を少しゆるめた。話してくれそうだ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "よしよし。怖くないぞ、わしらはこの通りの灯り番じゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_listen_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "コンはお面の奥でもじもじしている。答えは、短いひと言だけ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……急がなくていいわ。周りの人にも、聞いてみましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_listen_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "人波に押され、{pc}は危うく綿あめの列に並ばされかける"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "わ、すみません、並んでないです！"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……コンは、ちゃんと待っていました。話の続きは、おきくさんに"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_twist_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "通りに灯りが戻り、人波もすぐに落ち着いた。誰も転んでいない"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "smile",
+          "text": "いい灯り番だねえ。祭りは、まだまだ続くよ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "よし。コン、もう大丈夫だよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_twist_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "少し手間取ったが、灯りは半分ほど戻った。足元は、ちゃんと見える"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "半分あれば十分じゃ。残りは、歩きながら点けるぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_twist_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "慌てて火を入れた結果、なぜかラーメンの屋台のまわりだけが明るくなった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "わ、私じゃないわ！ ……たぶん"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "evil",
+          "text": "……屋台の主人は、大喜びです。残りの灯りも、ちゃんと戻ります"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_prepare_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "灯りが道すじを照らし、寄る屋台では店主が手を振って待っている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……完璧ね。消えそうな私にしては、上出来よ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_prepare_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "灯りの用意に少し手間取った。コンは、その間も黙って待っていた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "待たせてごめん。でも、これで歩ける"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_prepare_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "用意した灯りが、風でふっと消える。手で囲って、もう一度"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "ひゃっ……い、今のは風じゃ。わしは驚いておらん"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……灯りは、ちゃんと点きました。出発できます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_serve_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "コンはお面の奥で、にこっと笑った気がした"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "狐面のコン／物語",
+          "face": "smile",
+          "text": "……ありがとう、灯り番さん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_serve_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "別れの言葉が少し長くなる。コンが、くすくすと笑い出した"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "（言いすぎたかな……でも、笑ってくれた）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_serve_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "{pc}がしゃがんだ拍子に、提灯がくるりと回ってみんなの顔を照らす"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "狐面のコン／物語",
+          "face": "smile",
+          "text": "……ふふ。みんな、お面みたいな顔"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……笑顔のまま、お別れです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_consult_hiyori",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……お面屋に、綿あめ。屋台を見ていけば、あの子のことが分かりそう"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "念のため、ラーメンの屋台も調べておいた方が……"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "evil",
+          "text": "……ラーメンの屋台は、調べる場所に入っていません"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "入ってないの！？ ……い、いいの。儚く諦めるわ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_consult_samechan",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "落ちていた鈴に、貼り紙。映画なら、こういうのが伏線じゃぞ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余は鳥居があやしいと見る。暗い石段には、だいたい何かある"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "な、何かとは何じゃ！ ……こ、怖くはないぞ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……怖いことは、起きません。安心してください"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_discuss_lost",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……迷子なら、早くおうちの人に会わせてあげたいわ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "赤い提灯と、つないでいた手。帰り道の手がかりは揃っておるぞ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……いい読みです。その線で、進めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_discuss_taste",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "山の子狐……。屋台の味、全部教えてあげたくなるわね"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "狐の子か！ ならば甘いものじゃ。わしも付き合うぞ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……屋台の夜を、一度だけ。いいと思います"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_discuss_return",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……何十年も前の約束。ちゃんと届けてあげたいわね"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "鈴と、おきく。この二つが、物語の芯じゃな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……古い約束の、続き。その線で、行きましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_ask_lost_when",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "normal",
+          "text": "日が暮れて、人がいちばん混んだ頃さ。その前は、誰かと手をつないでたよ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "normal",
+          "text": "人波にのまれて、ぱっと手が離れたように見えたねえ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "（はぐれちゃったのか……）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_ask_lost_mask",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "normal",
+          "text": "あのお面は、そこのお面屋のだよ。紐がまだ新しいだろう"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "smile",
+          "text": "ついさっき、親子連れが買っていくのを見たよ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "買ったばかりのお面か。町の子かもしれんのう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_ask_lost_gaze",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "normal",
+          "text": "あの子、赤い提灯ばかり見上げてるんだよ。きょろきょろしてね"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……赤い提灯。何かの目印なのかしら"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_ask_lost_lore",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "normal",
+          "text": "この通りじゃ昔から、迷子は赤い提灯の下で待てって教えるのさ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "smile",
+          "text": "親も子も、それを知ってるからね。ちゃんと会えるもんだよ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "赤い提灯の下が、待ち合わせの場所なんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_ask_taste_when",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "normal",
+          "text": "日暮れどきに、山の方の道から、ふいに出てきたんだよ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "normal",
+          "text": "提灯の火に近づくと、ぴゃっと下がってね。火が怖いのかねえ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……火が苦手な子。灯りは、別のものがいいのかも"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_ask_taste_mask",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "normal",
+          "text": "あのお面ねえ、耳のところが、ときどき動くんだよ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "smile",
+          "text": "よくできたお面さ。……お面なら、だけどね"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "う、動くお面じゃと！？ い、いや、驚いてはおらんぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_ask_taste_gaze",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "smile",
+          "text": "綿あめの屋台さ。機械が回るたび、鼻をくんくんさせてるよ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "綿あめ、食べてみたいのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_ask_taste_lore",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "normal",
+          "text": "夜市の晩には、山の狐が甘い匂いにつられて下りてくるって話さ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "smile",
+          "text": "少しだけ持って帰って、山の家族と分けるんだとさ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……おみやげ。やさしい言い伝えね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_ask_return_when",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "surprise",
+          "text": "それがね……あたしが子どもの頃に見た子と、そっくりなんだよ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "normal",
+          "text": "六十年も前の話さ。同じ背丈で、同じお面でね"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "六十年前と、同じ……？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_ask_return_mask",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "normal",
+          "text": "ずいぶん古い型だよ。今のお面屋じゃ、もう作ってないねえ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "normal",
+          "text": "色も褪せて、何十年も夜市を見てきたみたいさ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "古いお面……。伏線の匂いがするのう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_ask_return_gaze",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "normal",
+          "text": "あたしの金魚すくいさ。軒先ばかり、じっと見上げてるよ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "normal",
+          "text": "昔はあそこに、金魚の鈴を下げてたんだけどねえ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……昔の、鈴。何か、つながっていそうね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_ask_return_lore",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "smile",
+          "text": "子どもの頃、狐のお面の子に、屋台の鈴を貸したことがあってね"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "normal",
+          "text": "『鳴らしたら、返しに来た合図』って言ってたよ。それきりさ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "その鈴を、ずっと持ってたのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_lost_mask",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "お面屋の棚に、狐やひょっとこのお面がずらりと並ぶ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "店主が言う。『狐の面なら、さっき親子連れが買っていったよ』"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『はぐれたら、この店の前に戻るって話してたっけ』"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……戻る場所は、お面屋さん。覚えておきましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_lost_goldfish",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "おきくの金魚すくい。赤い金魚が、提灯の灯りを映して泳ぐ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "コンは金魚より、手をつないで並ぶ親子をじっと見ていた"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "そして、自分の空いた手を、そっと握ったり開いたりする"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……さっきまで、ああして手をつないでおったんじゃな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_lost_torii",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "通りの奥に、神社の鳥居。その先は、暗い石段が山へ続く"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "鳥居の前からは、町の家並みが見下ろせる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "コンがつま先立ちをする。『うちの軒には、赤い提灯がさがってるの』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "赤い提灯の家か。町のほうの子なんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_lost_cotton",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "綿あめの屋台。機械がくるくる回り、甘い匂いが通りに流れる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "店主が言う。『さっき女の人が、子どもを探しながら二本買っていったよ』"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『一本は、娘の分だってさ』"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……探してる人が、いるのね。きっと、近くに"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_lost_bell",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "石畳の隅に、小さな鈴がひとつ落ちている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "子どもの下駄に付ける鈴だ。コンの下駄の片方にだけ、同じ鈴がある"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "人波で落としたんじゃな。ちゃんと拾っておくぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_lost_board",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "迷子案内の掲示板。貼り紙と、落とし物の知らせが並ぶ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "一番上に、太い字の注意書き。『迷子は、赤い提灯の下でお待ちください』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "赤い提灯の下で、待ち合わせか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_taste_mask",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "お面屋の棚に、狐やひょっとこのお面がずらりと並ぶ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "棚の狐面には、どれも値札と、紐の結び目がある"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "コンのお面には、そのどちらもない。顔にぴたりと馴染んでいる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……売り物じゃない、お面。不思議ね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_taste_goldfish",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "おきくの金魚すくい。赤い金魚が、提灯の灯りを映して泳ぐ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "コンは水槽をのぞきこみ、『おいし……』と言いかけて口を押さえた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "金魚をおいしそうと見るとは……。サメの素質があるのう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_taste_torii",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "通りの奥に、神社の鳥居。その先は、暗い石段が山へ続く"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "石段に、小さな足跡がある。人の足より細く、山の方から続いている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "足跡のまわりを、蛍がいくつも飛んでいる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "蛍の飛ぶ山道から、来たのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_taste_cotton",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "綿あめの屋台。機械がくるくる回り、甘い匂いが通りに流れる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "機械が回るたび、コンのお面の耳が、ぴくりと動いた気がした"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……綿あめ、気になるのね。わかるわ。私もラーメンの前だとそうなるもの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_taste_bell",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "石畳の隅に、小さな鈴がひとつ落ちている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "鈴のそばに、木の葉が三枚。コンが拾って、大事そうに抱えた"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "狐面のコン／物語",
+          "face": "normal",
+          "text": "……これで、山のみんなにも、何か買える？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "木の葉のお代か。……お土産を探しておるのじゃな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_taste_board",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "迷子案内の掲示板。貼り紙と、落とし物の知らせが並ぶ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『提灯の火に、小さな子と動物は近づかないで』の貼り紙がある"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "コンは貼り紙を見上げて、こくこくと何度も頷いた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "火は苦手、なのかも。別の灯りがいいかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_return_mask",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "お面屋の棚に、狐やひょっとこのお面がずらりと並ぶ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "店主はコンのお面を見て、首をかしげた"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『あの型は、もう何十年も作ってないはずだがねえ』"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……何十年も前のお面。古い夜市から、来たのかしら"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_return_goldfish",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "おきくの金魚すくい。赤い金魚が、提灯の灯りを映して泳ぐ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "軒先に、古い釘が一本だけ残っている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "おきくが言う。『昔は、あそこに金魚の鈴を下げてたんだよ』"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "空いた釘か。何かが、帰ってくる場所じゃな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_return_torii",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "通りの奥に、神社の鳥居。その先は、暗い石段が山へ続く"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "鳥居の脇に、古い立て札。祭りの夜の言い伝えが書いてある"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『狐の使いは、風鈴の音をたどって、借りたものを返しに来る』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "風鈴の音をたどって……。コンも、そうなのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_return_cotton",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "綿あめの屋台。機械がくるくる回り、甘い匂いが通りに流れる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "コンは屋台の古い看板を見上げ、小さくつぶやいた"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "狐面のコン／物語",
+          "face": "normal",
+          "text": "……前は、ここじゃなかった。もっと、鳥居の近くだった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……昔の夜市を、知ってるみたいな口ぶりね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_return_bell",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "石畳の隅に、小さな鈴がひとつ落ちている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "真鍮の古い鈴。金魚の模様が彫られている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "コンがはっとして、鈴に手を伸ばした。『……あった』"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "金魚の柄……。おきくの屋台の暖簾と、同じ柄じゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_return_board",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "迷子案内の掲示板。貼り紙と、落とし物の知らせが並ぶ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『今夜、風鈴の市あり』の貼り紙。遠くで、ちりんと音がする"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "その音がするたび、コンはそちらを振り向く"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "風鈴の音を、たどってるみたいだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_twist_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "……そのとき。通りじゅうの提灯が、ふっと一斉に消えた"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "暗い空の向こうで、ひゅるる、と遠い花火が上がる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "人波がざわりと揺れる。コンが、{pc}の袖をきゅっとつかんだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "灯りが全部……！ 灯り番の出番だ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "evil",
+          "text": "……さて、灯り番さんたち。どうしますか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_preparation",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……灯りが戻りました。コンを送る道すじを、決めましょう"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "灯りを一つと、寄る屋台を一つ……。ラーメンは、寄る屋台に入るかしら"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "入らんじゃろ。それは、食べたいだけじゃ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "evil",
+          "text": "……入りません"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_serving",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "道すじの先に、神社の鳥居。夜市のざわめきが、少し遠くなる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ここでお別れか。最後に、どうやって送ろう"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "別れの場面じゃ。……泣いてはおらんぞ、まだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_choice_light_lantern",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……赤い提灯。町の子なら、見慣れた灯りのはずよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_choice_light_firefly",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "蛍のかご……。火じゃないから、怖くないわね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_choice_light_chime",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "風鈴の音で、道案内。……耳で歩く夜、すてきね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_choice_stall_cotton",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "綿あめに寄るのね。……ついでにラーメンも、だめ？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_choice_stall_goldfish",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "金魚すくい……。ラーメンの屋台の隣だから、ちょうどいいわ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_choice_stall_mask",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "お面屋さん……。ゆるい狐のお面、あとで私も買うわ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_choice_farewell_hand",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "手をつなぐのか。……うむ、それが一番あったかいのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_choice_farewell_gift",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "お土産か。わしなら、サメの形の飴を選ぶがのう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_choice_farewell_bell",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "鈴を一つ鳴らす。……映画なら、ここで音楽が流れるのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_choice_tactic_relight",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちは手分けして、提灯に一つずつ火を入れ直していく"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "smile",
+          "text": "おや、手が早いねえ。さすが灯り番だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_choice_tactic_fireworks",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "花火がぱっと開くたび、通りが明るくなる。その間に、少しずつ進む"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "狐面のコン／物語",
+          "face": "smile",
+          "text": "……きれい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_choice_tactic_guide",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちは声をかけ合い、人の流れを鳥居の方へゆっくりまとめる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "smile",
+          "text": "押さない、走らない。いい声だよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_ending_lantern",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "お面屋の前、赤い提灯の下に、浴衣の女の人が立っていた。手には綿あめが二本"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "狐面のコン／物語",
+          "face": "smile",
+          "text": "……おかあさん！"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "つないでいた手をそっと離すと、コンは駆けていき、一度だけ振り向いた"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "smile",
+          "text": "よかったねえ。迷子は、赤い提灯の下で会えるもんさ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "お面の下は、ふつうの女の子じゃったな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "（ちゃんと帰れてよかった。灯り番の仕事、できたかな）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_ending_cotton",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "お土産の綿あめを受け取ると、コンはお面を少しずらして、ひと口"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "狐面のコン／物語",
+          "face": "surprise",
+          "text": "……消えた！ 甘いのに、口の中で消えちゃった！"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "鳥居の奥で、ふさふさの尻尾が一度だけ揺れた。石段を、蛍が上っていく"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……はじめての味、だったのね。消えるところまで、全部"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "山のみんなの分も、ちゃんと持たせたぞ。抜かりはないのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "また来年、食べに来てくれるといいな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_ending_bell",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "コンは金魚の鈴を、ちりんと一つ鳴らした"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "surprise",
+          "text": "……その音。ああ、あの夜の子だね"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "狐面のコン／物語",
+          "face": "smile",
+          "text": "……おそくなって、ごめんね。ちゃんと、返しに来たよ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "鈴が軒先の釘に戻る。振り向くと、もうお面の子はいなかった"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋台のおきく／物語",
+          "face": "smile",
+          "text": "律儀な子だよ。六十年、待った甲斐があったねえ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "……な、泣いておらんぞ。焼きいかの煙が、目に入っただけじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_ending_festival",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "狐面のコン／物語",
+          "face": "normal",
+          "text": "……もう少しだけ、みんなと見て回りたい"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "お面屋、金魚すくい、綿あめ。{pc}たちは、コンと夜市をひと回りした"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "最後の花火のあと、人波の向こうで、誰かがコンを呼んだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "コンは一度だけ振り向いて手を振り、灯りの向こうへ駆けていった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……誰だったのかしら。でも、楽しそうだったわね"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "わからないままでも、一緒に回れてよかった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_debrief_smooth",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……静かで、いい夜市でした。コンも、きっと楽しかったと思います"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "うまくいくと、お祭りの音までよく聞こえるな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_debrief_with_detour",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……寄り道も、夜市の楽しみです。ラーメン以外も"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "寄り道の分だけ、屋台を見られたものね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_epilogue",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……これで、今夜の夜市はおしまいです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "お面の下、結局どんな顔だったんだろう"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "evil",
+          "text": "……それは、GMだけの秘密です"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私の役、ほとんどラーメンの屋台の前にいた気がするわ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "わしの役も、なかなか格好よかったじゃろ。次はサメの屋台も頼むぞ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余は、金魚すくいの続編を要求する"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "つむぎのGM、静かで、絵本を読んでもらってるみたいだった"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "bow",
+          "text": "……ありがとうございます。今夜の夜市、あとで描いてみます"
+        }
+      ]
+    }
+  ],
+  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。variantsは代役本人のために書いた台詞。",
+  "flow": {
+    "prepare": [
+      "light",
+      "stall"
+    ],
+    "serve": [
+      "farewell"
+    ],
+    "twist": [
+      "tactic"
+    ]
+  },
+  "fitWeights": {
+    "light": 1,
+    "stall": 1,
+    "farewell": 2,
+    "tactic": 0
+  },
+  "fallbackEnding": "festival",
+  "rules": {
+    "exploreLimit": 6,
+    "pressureMax": 3,
+    "initialPressure": 0,
+    "inspectionPressure": 0,
+    "checkPressure": {
+      "success": 0,
+      "mixed": 1,
+      "trouble": 1
+    },
+    "detourThreshold": 1,
+    "hypothesisBonus": 0
+  },
+  "presentation": {
+    "theme": "fox",
+    "number": "09",
+    "genre": "和の不思議",
+    "tagline": "お面の下の、帰り道を探す。",
+    "backdrop": "radial-gradient(ellipse at 50% 112%, rgba(235, 138, 52, 0.55), rgba(235, 138, 52, 0) 58%), linear-gradient(172deg, #171b4d, #0e1133 62%, #2a1838)",
+    "sceneAlt": "夏祭りの夜市。お面屋の棚、金魚すくいの水槽、神社の鳥居、綿あめの屋台、落ちていた鈴、迷子案内の掲示板。",
+    "location": "灯籠通り / 夏の夜市",
+    "atmosphere": "提灯の列と、遠い太鼓。お面の子が、ひとり。",
+    "coverHeading": "夜市の真ん中に、狐のお面の子がひとり。",
+    "coverRule": "夜市を調べ、仲間と相談し、コンを送る道すじを決める。",
+    "titleLines": [
+      "夜市と",
+      "狐のお面"
+    ],
+    "fields": {
+      "light": "道案内の灯り",
+      "stall": "立ち寄る屋台",
+      "farewell": "別れ方",
+      "tactic": "消えた灯りへの手"
+    },
+    "prepareTitle": "どの灯りで歩き、どこへ寄る？",
+    "prepareDescription": "灯りを一つ、寄り道を一つ。手がかりから、コンの道すじを決めよう。",
+    "serveTitle": "鳥居の前で、お別れ。",
+    "serveDescription": "コンを、どんなふうに送り出す？",
+    "hypothesisTitle": "コンは、どこから来た子？",
+    "arrivalRole": "狐面のコン／物語",
+    "exploreIdle": "……気になる場所を、調べてください。相談も、どうぞ",
+    "listenIdle": "……まずは、コンに声をかけてみましょう。サイコロは二つです",
+    "prepareIdle": "準備を選ぼう。仲間がいれば、切り札も頼める",
+    "serveIdle": "……別れ方を選んだら、コンを送り出しましょう",
+    "endingIdle": "この晩の話は、ここまで。次は、また別の本で会おう",
+    "phases": {
+      "listen": {
+        "kicker": "01 / 声をかける",
+        "title": "お面の子が、ひとり",
+        "description": "灯籠通りの真ん中に、狐のお面の子。まずは、そっと声をかけてみる。",
+        "button": "声をかける"
+      },
+      "interview": {
+        "kicker": "02 / おきくに聞く",
+        "title": "おきくさんに、何を聞く？",
+        "description": "聞けるのは二つ。答えは、コンの事情しだいで変わる。",
+        "button": "話を聞き終えて、夜市を調べる"
+      },
+      "explore": {
+        "kicker": "03 / 夜市を調べる",
+        "title": "コンの事情を探す",
+        "description": "気になる場所を調査。3つ以上の手がかりから、みんなで見立てを話そう。",
+        "button": "見立てを話す"
+      },
+      "twist": {
+        "kicker": "04 / 灯りが消えて",
+        "title": "消えた提灯と、遠い花火",
+        "description": "通りが真っ暗に。コンの手を離さずに、切り抜けよう。",
+        "button": "この手で切り抜ける"
+      },
+      "prepare": {
+        "kicker": "05 / 道すじを決める",
+        "title": "灯りと、寄り道",
+        "description": "どの灯りで歩き、どこへ寄るか。それも見送りの一部。",
+        "button": "道すじを整える"
+      },
+      "serve": {
+        "kicker": "06 / 鳥居の前で",
+        "title": "どうやって、送り出す？",
+        "description": "手をつなぐことも、何かを渡すこともできる。",
+        "button": "コンを送り出す"
+      },
+      "ending": {
+        "kicker": "卓を囲んで",
+        "title": "おつかれさま",
+        "description": "お面の下は、どんな顔だっただろう。みんなで送った、夜市の帰り道。"
+      }
+    },
+    "help": "おきくに二つ質問し、夜市を調べて三つ以上の手がかりから見立てを立てます。途中で提灯が消え、切り抜け方を選びます。最後に灯り・寄る屋台・別れ方を選びます。探索・相談・メモの再読に回数制限はありません。",
+    "exitText": "この卓はここで終わります。もう一度遊ぶと、別のコンに会えるかもしれません。",
+    "endingKicker": "この夜の結末",
+    "stats": {
+      "eye": "観察",
+      "hand": "手際",
+      "talk": "話術",
+      "nerve": "度胸"
+    },
+    "declareTitle": "どうする？ 行動を宣言しよう",
+    "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
+    "sheetTitle": "キャラクターシート",
+    "target": "GMの裁定 · 目標値30（19以上でひと手間）",
+    "twistTitle": "提灯が、一斉に消えた。どうする？",
+    "interviewIdle": "……おきくさんに聞けるのは、二つまでです",
+    "twistIdle": "……どう切り抜けますか。手を選んで、誰が動くか決めてください",
+    "planTitle": "コンを送る道すじ"
+  },
+  "debrief": {
+    "smooth": "trpg_fox_market_debrief_smooth",
+    "with-detour": "trpg_fox_market_debrief_with_detour"
+  },
+  "campaign": {
+    "seats": [
+      {
+        "actor": "tsumugi",
+        "candidates": [
+          "tsumugi"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hajime",
+        "candidates": [
+          "hajime"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hiyori",
+        "candidates": [
+          "hiyori"
+        ],
+        "required": false
+      },
+      {
+        "actor": "samechan",
+        "candidates": [
+          "samechan"
+        ],
+        "required": false
+      }
+    ]
+  },
+  "builder": {
+    "seat": "hajime",
+    "points": 11,
+    "min": 1,
+    "max": 5,
+    "nameMax": 6,
+    "title": "あなたのキャラクターを作る",
+    "intro": "この物語で演じる灯り番を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
+    "looks": [
+      {
+        "id": "indigo",
+        "label": "紺の法被の灯り番",
+        "detail": "短い黒髪に、紺の法被",
+        "color": "#2c3566",
+        "accent": "#e0913a",
+        "portrait": null
+      },
+      {
+        "id": "ash",
+        "label": "灰色の髪の灯り番",
+        "detail": "伸びた灰色の髪を、手ぬぐいでまとめる",
+        "color": "#6b6a72",
+        "accent": "#d9cdb6",
+        "portrait": null
+      },
+      {
+        "id": "rust",
+        "label": "赤茶の髪の灯り番",
+        "detail": "日に焼けた肌と、赤茶の癖毛に鉢巻き",
+        "color": "#7a4a37",
+        "accent": "#e3b27a",
+        "portrait": null
+      },
+      {
+        "id": "moss",
+        "label": "眼鏡の灯り番",
+        "detail": "丸眼鏡と、苔色の浴衣",
+        "color": "#4c5f49",
+        "accent": "#bcd3a8",
+        "portrait": null
+      }
+    ],
+    "archetypes": [
+      {
+        "id": "apprentice",
+        "name": "ハヤト",
+        "title": "見習いの灯り番",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 4,
+          "nerve": 2
+        },
+        "trait": "人の話を聞くのが上手い。火の扱いは、まだ少し慌てる",
+        "recommended": true
+      },
+      {
+        "id": "firewatch",
+        "name": "ゴロウ",
+        "title": "火消し帰りの手伝い",
+        "trait": "火と人混みには慣れている。夜市の作法は覚えたて",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 2,
+          "nerve": 4
+        }
+      },
+      {
+        "id": "scholar",
+        "name": "ヨシノ",
+        "title": "言い伝え好きの書生",
+        "trait": "町の昔話なら何でも知っている。手を動かすのは苦手",
+        "stats": {
+          "eye": 4,
+          "hand": 1,
+          "talk": 3,
+          "nerve": 3
+        }
+      }
+    ],
+    "statHelp": {
+      "eye": "よく見て、気づく力。調べる・様子を見るときに使う",
+      "hand": "手先の器用さ。道具を使う・準備するときに使う",
+      "talk": "話す・聞く力。人と向き合うときに使う",
+      "nerve": "怖がらない力。暗い場所や、勇気が要るときに使う"
+    }
+  },
+  "companionBuilds": {
+    "hiyori": {
+      "hiyori": [
+        {
+          "id": "kasumi",
+          "name": "カスミ",
+          "title": "霞の灯り番",
+          "trait": "夜風にも消えそうな灯り番……のはず。ラーメンの匂いには負けない",
+          "likes": "屋台のラーメン。湯気の向こうの提灯",
+          "stats": {
+            "eye": 3,
+            "hand": 4,
+            "talk": 2,
+            "nerve": 2
+          },
+          "making": "trpg_fox_market_make_hiyori_hiyori_kasumi"
+        },
+        {
+          "id": "shizuku",
+          "name": "シズク",
+          "title": "茶屋の看板娘",
+          "trait": "体の弱い看板娘……のはず。的当てでは百発百中",
+          "likes": "斧投げと、ゆるい狐のお面。締めのラーメン",
+          "stats": {
+            "eye": 3,
+            "hand": 5,
+            "talk": 1,
+            "nerve": 2
+          },
+          "making": "trpg_fox_market_make_hiyori_hiyori_shizuku"
+        }
+      ]
+    },
+    "samechan": {
+      "samechan": [
+        {
+          "id": "namimaru",
+          "name": "ナミマル",
+          "title": "夜店の用心棒",
+          "trait": "腕っぷしと度胸は一人前。暗いところは、ちと苦手",
+          "likes": "サメ柄の手ぬぐい。夜の海のサメ映画",
+          "stats": {
+            "eye": 2,
+            "hand": 2,
+            "talk": 3,
+            "nerve": 4
+          },
+          "making": "trpg_fox_market_make_samechan_samechan_namimaru"
+        },
+        {
+          "id": "fukajiro",
+          "name": "フカジロウ",
+          "title": "サメ待ちの釣り人",
+          "trait": "金魚すくいの水槽で、本気でサメを待っている。腕は確か",
+          "likes": "サメ映画と、いちばん大きなポイ",
+          "stats": {
+            "eye": 3,
+            "hand": 3,
+            "talk": 2,
+            "nerve": 3
+          },
+          "making": "trpg_fox_market_make_samechan_samechan_fukajiro"
+        }
+      ]
+    }
+  },
+  "sessionZero": {
+    "open": "trpg_fox_market_session_zero_open",
+    "close": "trpg_fox_market_session_zero_close"
+  },
+  "interview": {
+    "title": "おきくさんに、何を聞く？",
+    "prompt": "聞けるのは二つまで。コンの事情に近づく質問を選ぼう",
+    "picks": 2,
+    "topics": [
+      {
+        "id": "when",
+        "label": "いつから、あそこにいるのか",
+        "description": "コンを見かけた頃のことを聞く"
+      },
+      {
+        "id": "mask",
+        "label": "あのお面のこと",
+        "description": "狐のお面について聞く"
+      },
+      {
+        "id": "gaze",
+        "label": "コンがずっと見ているもの",
+        "description": "どこを見ていたか聞く"
+      },
+      {
+        "id": "lore",
+        "label": "昔の夜市の話",
+        "description": "この通りの言い伝えを聞く"
+      }
+    ]
+  },
+  "twist": {
+    "intro": "trpg_fox_market_twist_intro"
+  }
+}

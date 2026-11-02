@@ -57,7 +57,8 @@
           "nerve": 1
         },
         "trait": "香りと炭の支度なら店一番。怖い話は苦手",
-        "likes": "林檎の香り。原点の味"
+        "likes": "林檎の香り。原点の味",
+        "portrait": "../../img/ui/trpg/pc-nico.webp"
       }
     },
     {
@@ -78,7 +79,8 @@
           "nerve": 3
         },
         "trait": "よく見て、よく描く。口数は少ない",
-        "likes": "雨の日の窓。描きかけのスケッチ"
+        "likes": "雨の日の窓。描きかけのスケッチ",
+        "portrait": "../../img/ui/trpg/pc-luca.webp"
       }
     }
   ],
@@ -2945,7 +2947,7 @@
         "detail": "短い黒髪に、店のエプロン",
         "color": "#3b4a5a",
         "accent": "#89bbc4",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-ordinary-ink.webp"
       },
       {
         "id": "ash",
@@ -2953,7 +2955,7 @@
         "detail": "伸びた灰色の髪を後ろで束ねる",
         "color": "#6b6a72",
         "accent": "#d9cdb6",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-ordinary-ash.webp"
       },
       {
         "id": "rust",
@@ -2961,7 +2963,7 @@
         "detail": "日に焼けた肌と、赤茶の癖毛",
         "color": "#7a4a37",
         "accent": "#e3b27a",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-ordinary-rust.webp"
       },
       {
         "id": "moss",
@@ -2969,7 +2971,7 @@
         "detail": "丸眼鏡と、苔色のベスト",
         "color": "#4c5f49",
         "accent": "#bcd3a8",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-ordinary-moss.webp"
       }
     ],
     "archetypes": [
@@ -3033,7 +3035,8 @@
             "talk": 3,
             "nerve": 1
           },
-          "making": "trpg_ordinary_make_adam_adam_nico"
+          "making": "trpg_ordinary_make_adam_adam_nico",
+          "portrait": "../../img/ui/trpg/pc-nico.webp"
         },
         {
           "id": "pippin",
@@ -3047,7 +3050,8 @@
             "talk": 2,
             "nerve": 2
           },
-          "making": "trpg_ordinary_make_adam_adam_pippin"
+          "making": "trpg_ordinary_make_adam_adam_pippin",
+          "portrait": "../../img/ui/trpg/pc-pippin.webp"
         }
       ]
     },
@@ -3065,7 +3069,8 @@
             "talk": 1,
             "nerve": 3
           },
-          "making": "trpg_ordinary_make_tsumugi_tsumugi_luca"
+          "making": "trpg_ordinary_make_tsumugi_tsumugi_luca",
+          "portrait": "../../img/ui/trpg/pc-luca.webp"
         },
         {
           "id": "leaf",
@@ -3079,7 +3084,8 @@
             "talk": 1,
             "nerve": 4
           },
-          "making": "trpg_ordinary_make_tsumugi_tsumugi_leaf"
+          "making": "trpg_ordinary_make_tsumugi_tsumugi_leaf",
+          "portrait": "../../img/ui/trpg/pc-leaf.webp"
         }
       ]
     }

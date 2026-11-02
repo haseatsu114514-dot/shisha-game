@@ -1,0 +1,3040 @@
+{
+  "id": "apple-thief",
+  "version": 1,
+  "title": "怪盗と原点の林檎",
+  "subtitle": "白林檎館、予告状の夜",
+  "author": "茜原トキ",
+  "collection": "船灯文庫・小さな卓の冒険 04",
+  "duration": "約10分",
+  "premise": "湖畔の白林檎館の夜会に、怪盗ミルフィーユの予告状。『今宵、原点の香りをいただく』。三人の給仕は、怪盗の本当の狙いを見抜けるか。",
+  "fiction": {
+    "town": "ミルト湖畔",
+    "shop": "白林檎館",
+    "traveler": "執事ベルナール"
+  },
+  "flow": {
+    "prepare": [
+      "trap",
+      "post"
+    ],
+    "serve": [
+      "confront"
+    ],
+    "twist": [
+      "tactic"
+    ]
+  },
+  "fitWeights": {
+    "trap": 1,
+    "post": 1,
+    "confront": 2,
+    "tactic": 0
+  },
+  "fallbackEnding": "encore",
+  "rules": {
+    "exploreLimit": 4,
+    "pressureMax": 6,
+    "initialPressure": 0,
+    "inspectionPressure": 1,
+    "checkPressure": {
+      "success": 0,
+      "mixed": 1,
+      "trouble": 2
+    },
+    "detourThreshold": 5,
+    "hypothesisBonus": 1
+  },
+  "cast": [
+    {
+      "id": "adam",
+      "part": "GM",
+      "role": "語り手と、執事ベルナール",
+      "color": "#c9463a"
+    },
+    {
+      "id": "hajime",
+      "part": "PLAYER",
+      "role": "{pc}／新人ベルボーイ",
+      "color": "#c98f6a",
+      "ability": "土壇場のひらめき",
+      "abilityType": "reroll",
+      "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
+      "sheet": {
+        "name": "ルイ",
+        "title": "新人ベルボーイ",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 3,
+          "nerve": 3
+        },
+        "trait": "荷物運びと笑顔は得意。怪盗の顔は、まだ知らない"
+      }
+    },
+    {
+      "id": "hiyori",
+      "part": "PLAYER",
+      "role": "{pc:hiyori}／儚げな客室係",
+      "color": "#e3a1ae",
+      "ability": "三秒の支度",
+      "abilityType": "prepare",
+      "abilityText": "仕掛けを組むとき、判定に一度だけ＋7",
+      "sheet": {
+        "name": "ローザ",
+        "title": "儚げな客室係",
+        "stats": {
+          "eye": 3,
+          "hand": 4,
+          "talk": 3,
+          "nerve": 1
+        },
+        "trait": "月の光でも溶けそうな客室係。シーツ替えは、館で一番速い",
+        "likes": "夜食のラーメンと、ゆるい熊のぬいぐるみ"
+      }
+    },
+    {
+      "id": "tsumugi",
+      "part": "PLAYER",
+      "role": "{pc:tsumugi}／似顔絵係",
+      "color": "#b8a3cc",
+      "ability": "最後の一筆",
+      "abilityType": "serve",
+      "abilityText": "怪盗と向き合うとき、判定に一度だけ＋7",
+      "sheet": {
+        "name": "シオン",
+        "title": "似顔絵係",
+        "stats": {
+          "eye": 4,
+          "hand": 2,
+          "talk": 1,
+          "nerve": 4
+        },
+        "trait": "一度見た顔は忘れない。話すより、描く方が早い",
+        "likes": "葉っぱの耳の猫と、ラベンダーの香り"
+      }
+    }
+  ],
+  "spots": [
+    {
+      "id": "notebook",
+      "label": "書斎の配合帳",
+      "short": "配合帳",
+      "x": 14,
+      "y": 26
+    },
+    {
+      "id": "tree",
+      "label": "温室の林檎の木",
+      "short": "林檎の木",
+      "x": 82,
+      "y": 24
+    },
+    {
+      "id": "portrait",
+      "label": "大広間の肖像画",
+      "short": "肖像画",
+      "x": 47,
+      "y": 18
+    },
+    {
+      "id": "shelf",
+      "label": "厨房の香りの棚",
+      "short": "香りの棚",
+      "x": 18,
+      "y": 70
+    },
+    {
+      "id": "notice",
+      "label": "玄関の予告状",
+      "short": "予告状",
+      "x": 50,
+      "y": 82
+    },
+    {
+      "id": "chair",
+      "label": "主人の椅子",
+      "short": "椅子",
+      "x": 76,
+      "y": 62
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "recipe",
+      "label": "配合帳を、弟子に返したい",
+      "description": "狙いは配合帳。本来の持ち主に届けるつもりかも。",
+      "discussion": "trpg_apple_thief_discuss_recipe"
+    },
+    {
+      "id": "smoke",
+      "label": "もう一度、主人と一台を囲みたい",
+      "description": "原点の香りを、誰かと分け合いたいのかも。",
+      "discussion": "trpg_apple_thief_discuss_smoke"
+    },
+    {
+      "id": "letter",
+      "label": "謝りの手紙を届けたい",
+      "description": "盗むかわりに、何かを置いていくつもりかも。",
+      "discussion": "trpg_apple_thief_discuss_letter"
+    }
+  ],
+  "options": {
+    "trap": [
+      {
+        "id": "bell",
+        "label": "鈴の糸",
+        "description": "通り道に糸を張り、怪盗が来たら鈴が鳴る。",
+        "response": "trpg_apple_thief_choice_trap_bell"
+      },
+      {
+        "id": "fake",
+        "label": "偽の配合帳",
+        "description": "よく似た帳面を置き、怪盗を書斎へ誘う。",
+        "response": "trpg_apple_thief_choice_trap_fake"
+      },
+      {
+        "id": "trail",
+        "label": "林檎の香りの道しるべ",
+        "description": "原点の香りを少しずつ置き、温室まで導く。",
+        "response": "trpg_apple_thief_choice_trap_trail"
+      }
+    ],
+    "post": [
+      {
+        "id": "study",
+        "label": "書斎",
+        "description": "配合帳のある部屋で、静かに待つ。",
+        "response": "trpg_apple_thief_choice_post_study"
+      },
+      {
+        "id": "greenhouse",
+        "label": "温室",
+        "description": "林檎の木の下で、二つの椅子と待つ。",
+        "response": "trpg_apple_thief_choice_post_greenhouse"
+      },
+      {
+        "id": "hall",
+        "label": "大広間",
+        "description": "主人の椅子が見える場所で、客に紛れて待つ。",
+        "response": "trpg_apple_thief_choice_post_hall"
+      }
+    ],
+    "confront": [
+      {
+        "id": "catch",
+        "label": "捕まえる",
+        "description": "逃げ道をふさぎ、正面からそっと手を取る。",
+        "response": "trpg_apple_thief_choice_confront_catch"
+      },
+      {
+        "id": "listen",
+        "label": "話を聞く",
+        "description": "仮面のままの怪盗の言い分に、耳を傾ける。",
+        "response": "trpg_apple_thief_choice_confront_listen"
+      },
+      {
+        "id": "offer",
+        "label": "一台を勧める",
+        "description": "原点の香りの一台を用意して、席に招く。",
+        "response": "trpg_apple_thief_choice_confront_offer"
+      }
+    ],
+    "tactic": [
+      {
+        "id": "calm",
+        "label": "客を落ち着かせる",
+        "description": "飲み物を配り、夜会を元の空気に戻す。",
+        "response": "trpg_apple_thief_choice_tactic_calm"
+      },
+      {
+        "id": "use",
+        "label": "騒ぎを利用する",
+        "description": "人の流れに紛れて、館の裏を見張る。",
+        "response": "trpg_apple_thief_choice_tactic_use"
+      },
+      {
+        "id": "inspect",
+        "label": "予告状を調べる",
+        "description": "二通目のカードから、怪盗の手がかりを探す。",
+        "response": "trpg_apple_thief_choice_tactic_inspect"
+      }
+    ]
+  },
+  "profiles": [
+    {
+      "id": "recipe",
+      "arrival": "主人は配合帳を抱えて、書斎にこもってしまわれました",
+      "likes": {
+        "trap": [
+          "fake"
+        ],
+        "post": [
+          "study"
+        ],
+        "confront": [
+          "listen"
+        ]
+      },
+      "ending": "notebook-home",
+      "evidence": {
+        "notebook": {
+          "title": "二つの筆跡",
+          "text": "配合帳には二つの筆跡がある。後半は若い字で、最後の頁だけ白紙のまま。",
+          "lines": "trpg_apple_thief_clue_recipe_notebook"
+        },
+        "tree": {
+          "title": "素通りした足跡",
+          "text": "林檎の木の札に『弟子と植えた』。怪盗の足跡は、木を素通りして書斎へ向かう。",
+          "lines": "trpg_apple_thief_clue_recipe_tree"
+        },
+        "portrait": {
+          "title": "外された額",
+          "text": "肖像画の隣に、外された額の跡。主人と若い弟子が並ぶ絵があったらしい。",
+          "lines": "trpg_apple_thief_clue_recipe_portrait"
+        },
+        "shelf": {
+          "title": "弟子の名の瓶",
+          "text": "香りの棚に、弟子の名を書いた瓶が一つ。ラベルの字は配合帳の後半と同じ。",
+          "lines": "trpg_apple_thief_clue_recipe_shelf"
+        },
+        "notice": {
+          "title": "持ち主のもとへ",
+          "text": "予告状の裏に『持ち主のもとへ』と書いた跡。封蝋は書斎の机にあるものと同じ。",
+          "lines": "trpg_apple_thief_clue_recipe_notice"
+        },
+        "chair": {
+          "title": "出しそびれた招待状",
+          "text": "主人の椅子に、弟子宛ての招待状。『配合帳を、取りに来なさい』とだけある。",
+          "lines": "trpg_apple_thief_clue_recipe_chair"
+        }
+      },
+      "answers": {
+        "rumor": {
+          "title": "持ち主に届ける怪盗",
+          "text": "怪盗が盗んだ品は、いつも本来の持ち主に届くという。",
+          "lines": "trpg_apple_thief_ask_recipe_rumor"
+        },
+        "master": {
+          "title": "開いては閉じる配合帳",
+          "text": "近ごろ主人は配合帳を開いては閉じ、最後の頁に何か書きたそうにしている。",
+          "lines": "trpg_apple_thief_ask_recipe_master"
+        },
+        "origin": {
+          "title": "弟子と仕上げた香り",
+          "text": "原点の香りは、三年前に館を出た弟子と主人が二人で仕上げたもの。",
+          "lines": "trpg_apple_thief_ask_recipe_origin"
+        },
+        "guests": {
+          "title": "空けてある一席",
+          "text": "今夜の夜会には、弟子の名で一席だけ空けてある。",
+          "lines": "trpg_apple_thief_ask_recipe_guests"
+        }
+      }
+    },
+    {
+      "id": "smoke",
+      "arrival": "主人は温室へ行かれ、林檎の木を見上げておられます",
+      "likes": {
+        "trap": [
+          "trail"
+        ],
+        "post": [
+          "greenhouse"
+        ],
+        "confront": [
+          "offer"
+        ]
+      },
+      "ending": "one-more",
+      "evidence": {
+        "notebook": {
+          "title": "最初の頁の約束",
+          "text": "配合帳の最初の頁に、若い字で二人の名。『あの木の下で、もう一度』とある。",
+          "lines": "trpg_apple_thief_clue_smoke_notebook"
+        },
+        "tree": {
+          "title": "拭かれた椅子",
+          "text": "林檎の木の下に古い椅子が二つ。片方だけ、今朝拭いた跡がある。",
+          "lines": "trpg_apple_thief_clue_smoke_tree"
+        },
+        "portrait": {
+          "title": "隅の二人",
+          "text": "肖像画の隅に、林檎の木の下で笑う若者が二人。一人は帽子をかぶっている。",
+          "lines": "trpg_apple_thief_clue_smoke_portrait"
+        },
+        "shelf": {
+          "title": "一台分の香り",
+          "text": "棚の奥に、原点の香りが一台分だけ取ってある。杯は二人分並んでいる。",
+          "lines": "trpg_apple_thief_clue_smoke_shelf"
+        },
+        "notice": {
+          "title": "温室の土",
+          "text": "予告状の端に温室の土。差出人は、温室を通って館へ来たらしい。",
+          "lines": "trpg_apple_thief_clue_smoke_notice"
+        },
+        "chair": {
+          "title": "空けてある隣",
+          "text": "主人の椅子の隣に、もう一脚。毎年この夜だけ、主人は隣を空けて待つ。",
+          "lines": "trpg_apple_thief_clue_smoke_chair"
+        }
+      },
+      "answers": {
+        "rumor": {
+          "title": "香りを分け合う怪盗",
+          "text": "怪盗は盗みのあと、必ず誰かと香りを分け合って帰るという。",
+          "lines": "trpg_apple_thief_ask_smoke_rumor"
+        },
+        "master": {
+          "title": "温室の椅子二つ",
+          "text": "夕暮れになると、主人は温室に椅子を二つ並べる。片方は空いたまま。",
+          "lines": "trpg_apple_thief_ask_smoke_master"
+        },
+        "origin": {
+          "title": "林檎の木の下で",
+          "text": "原点の香りは、若い頃の主人が幼なじみと林檎の木の下で作ったもの。",
+          "lines": "trpg_apple_thief_ask_smoke_origin"
+        },
+        "guests": {
+          "title": "帽子の客",
+          "text": "主人と同じ年ごろの客が、帽子を深くかぶって来ている。",
+          "lines": "trpg_apple_thief_ask_smoke_guests"
+        }
+      }
+    },
+    {
+      "id": "letter",
+      "arrival": "主人は大広間の椅子で予告状を読み、なぜか笑っておられます",
+      "likes": {
+        "trap": [
+          "bell"
+        ],
+        "post": [
+          "hall"
+        ],
+        "confront": [
+          "catch"
+        ]
+      },
+      "ending": "apple-letter",
+      "evidence": {
+        "notebook": {
+          "title": "一つ足りない年",
+          "text": "配合帳のある年に『林檎が一つ足りない。あの子は元気か』と書いてある。",
+          "lines": "trpg_apple_thief_clue_letter_notebook"
+        },
+        "tree": {
+          "title": "継いだ枝と鈴",
+          "text": "林檎の木に、折れた枝を継いだ跡。札には『折った子が、いつか来るまで』。温室の鈴は今も鳴る。",
+          "lines": "trpg_apple_thief_clue_letter_tree"
+        },
+        "portrait": {
+          "title": "額縁の便箋",
+          "text": "肖像画の額縁に、林檎の香りがする便箋の切れ端が挟まっていた。",
+          "lines": "trpg_apple_thief_clue_letter_portrait"
+        },
+        "shelf": {
+          "title": "少しだけ減った瓶",
+          "text": "原点の香りの瓶がほんの少し減り、横に便箋の紙くず。香りを便箋に移したらしい。",
+          "lines": "trpg_apple_thief_clue_letter_shelf"
+        },
+        "notice": {
+          "title": "今度は、逃げません",
+          "text": "予告状の隅に『今度は、逃げません』。習いたてのような、丁寧すぎる字。",
+          "lines": "trpg_apple_thief_clue_letter_notice"
+        },
+        "chair": {
+          "title": "お返しします",
+          "text": "大広間の主人の椅子に、赤い林檎が一つ。札には『お返しします』。",
+          "lines": "trpg_apple_thief_clue_letter_chair"
+        }
+      },
+      "answers": {
+        "rumor": {
+          "title": "何かを置いていく怪盗",
+          "text": "怪盗は盗むかわりに、必ず何かを置いていくという。",
+          "lines": "trpg_apple_thief_ask_letter_rumor"
+        },
+        "master": {
+          "title": "逃げた林檎泥棒",
+          "text": "主人は昔、林檎を盗んだ子を追いかけた。温室の鈴が鳴ると、その子は逃げてしまった。",
+          "lines": "trpg_apple_thief_ask_letter_master"
+        },
+        "origin": {
+          "title": "一つ足りない年",
+          "text": "原点の香りは、林檎が一つ盗まれた年に、残りの実で作られた。",
+          "lines": "trpg_apple_thief_ask_letter_origin"
+        },
+        "guests": {
+          "title": "封筒を抱えた奇術師",
+          "text": "大広間に、封筒を大事そうに抱えた奇術師がいる。",
+          "lines": "trpg_apple_thief_ask_letter_guests"
+        }
+      }
+    }
+  ],
+  "endings": {
+    "notebook-home": {
+      "title": "弟子に戻った配合帳",
+      "line": "配合帳は怪盗の手から、弟子のもとへ。白紙だった最後の頁に、主人がひと言だけ書き足した。",
+      "dialogue": "trpg_apple_thief_ending_notebook-home"
+    },
+    "one-more": {
+      "title": "もう一度の一台",
+      "line": "怪盗は主人の幼なじみだった。温室の林檎の木の下、二つの椅子がようやく埋まった。",
+      "dialogue": "trpg_apple_thief_ending_one-more"
+    },
+    "apple-letter": {
+      "title": "林檎の香りと手紙",
+      "line": "怪盗は、昔林檎を盗んだ子どもだった。林檎の香りの手紙が、ようやく主人に届いた。",
+      "dialogue": "trpg_apple_thief_ending_apple-letter"
+    },
+    "encore": {
+      "title": "怪盗は、次の予告状を残して",
+      "line": "作戦は少し外れた。怪盗は何も盗まず、次の予告状だけを残して消えた。",
+      "dialogue": "trpg_apple_thief_ending_encore"
+    }
+  },
+  "dialogues": [
+    {
+      "dialogue_id": "trpg_apple_thief_intro",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "さあ、幕を上げよう。今夜の舞台は、湖のほとりの館だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "俺がGM、お前たちは夜会の給仕だ。主役は、林檎だがな",
+          "castIntro": true,
+          "smallTableText": "俺がGM、お前は夜会の給仕だ。空いた役は、俺が兼ねよう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "林檎が主役って、アダムさんらしいな"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "林檎は宇宙の原点だ。今夜の物語も、そこから始まる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……月明かりの館で怪盗の夜。私に似合いすぎて、怖いわ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……怪盗の衣装、あとで描きたいです"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ミルト湖のほとり、白林檎館。今宵は館の夜会だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "館の主アルマンは、引退した伝説の配合師。その林檎の香りは原点と呼ばれた"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}は、玄関で客の外套を受け取っている"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:hiyori}は、客室の花を最後に整えている"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:tsumugi}は、玄関の脇で客の顔をそっと描き留めている"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "serious",
+          "text": "そのとき、扉の隙間から一枚のカードが滑り込んだ"
+        },
+        {
+          "speaker": "adam",
+          "role": "予告状／物語",
+          "face": "intense",
+          "text": "『今宵、原点の香りをいただく。怪盗ミルフィーユ』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "surprise",
+          "text": "予告状……！ 夜会の真っ最中に？"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "怪盗とは、一番いい時間に来るものだ。原点の香りを狙うなら、なおさらな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_listen",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "客がざわめく中、白手袋の老執事が三人のもとへ来る"
+        },
+        {
+          "speaker": "adam",
+          "role": "執事ベルナール／物語",
+          "face": "serious",
+          "text": "執事のベルナールと申します。給仕の皆さまに、お願いがございます"
+        },
+        {
+          "speaker": "adam",
+          "role": "執事ベルナール／物語",
+          "face": "normal",
+          "text": "原点の香りは、主人の生涯そのもの。どうか、お守りください"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "分かりました。ご主人は、今どちらに？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_listen_success",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "怪盗の気配は、まだ館の中だ。客たちも落ち着いている"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "よし、騒ぎになる前に調べられそうだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_listen_mixed",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "客の一人が予告状を読み上げた。警戒が一つ上がる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "……ざわめきは、儚い私には毒なの。早く調べましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_listen_trouble",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "楽団が勘違いして、怪盗の登場曲を弾き始めた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "なんで登場曲があるの！？"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "館の楽団は芝居好きなんだ。警戒は二つ上がるが、調べはできるぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_prepare_success",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "仕掛けは館に溶け込んだ。誰が見ても、いつもの夜会だ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "完璧……。儚いくらい、完璧ね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_prepare_mixed",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "仕掛けを一つ直す間に、廊下を足音が通り過ぎる。警戒が一つ上がる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "直せたなら大丈夫。きっと、たぶん、おそらく"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_prepare_trouble",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "館の猫が仕掛けにじゃれつき、ちりんちりんと走り去る"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "猫！？ かわいい……じゃなくて、待ちなさい！"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "予備はある。作戦は、まだ生きているぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_serve_success",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "怪盗は足を止め、ゆっくりと帽子を取った"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……描けました。優しい顔です"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "館の灯りが戻る。誰も、走り出さなかった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_serve_mixed",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "怪盗はマントを翻しかけて、裾を扉に挟んだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……大丈夫ですか？ 手、貸しますよ"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "格好はつかないが、話はできる。それもまた、いい幕だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_serve_trouble",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "怪盗はひらりと窓から……と思いきや、窓が開かない"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "えっ、そこ閉まってるの！？"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "館の窓は、主人の几帳面さで全部施錠済みだ。さあ、話をしよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_consult_hiyori",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "全部は調べられないのね……。怪盗の狙いを、先に絞りましょう"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "配合帳か、林檎の木か、主人の椅子か。本命はどれかしら"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "相談とメモは、調べる回数を使わない。存分に悩め"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_consult_tsumugi",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……怪盗さんが、何を持っていって、何を置いていくか。気になります"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……予告状と香りの棚、比べると分かるかもしれません"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "鋭いな。名推理は、何度目かの相談で生まれるものだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_preparation",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "鐘が十二を打つまでに、怪盗を迎える支度をしろ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "見立ては決まった。仕掛けと、張り込む場所を選ぼう"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "仕掛けなら任せて。か弱い手つきで、確実に組むわ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……館の見取り図、描いておきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_serving",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "serious",
+          "text": "鐘が十二を打つ。館の灯りが、ふっと揺れた"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "月明かりの廊下に、シルクハットの影が浮かぶ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……来ます。足音、一つだけ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "みんな、打ち合わせどおりに"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_epilogue",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "これにて閉幕だ。原点の香りは、誰にも盗まれなかったな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "怪盗ものなのに、悪い人が一人も出てこなかった"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "当然だ。林檎の香りの前では、誰もが素直になる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "アダムさんのGM、芝居はちょっと長いけど……楽しかったわ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……怪盗さんの仮面、葉っぱの耳をつけて描きます"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "怪盗に、葉っぱの耳……！ それは、新しい原点かもしれん"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "アダムさん、なんでも原点にしちゃうな"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "すべての始まりを愛せる者だけが、物語を語れるのさ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_recipe_notebook",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "前半は主人の字。後半は、若い別の字で書かれている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "最後の頁だけ白紙……書けなかった言葉があるのね"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "怪盗が欲しいのは、この配合帳かもしれないな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_recipe_tree",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "札には『弟子と植えた』。怪盗の足跡は、木を素通りしている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……足跡、書斎の方へ続いてます"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "林檎の木より、書斎に用があるのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_recipe_portrait",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "肖像画の隣の壁に、額を外した四角い跡が残っている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……ここ、二人並んだ絵があった形です"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "外しても、壁は覚えてるのね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_recipe_shelf",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "棚の奥に、弟子の名を書いた瓶。ラベルの字に見覚えがある"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "配合帳の後半と、同じ字だ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "瓶まで残してあるなんて……主人、待ってるのね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_recipe_notice",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "裏に『持ち主のもとへ』と書いた跡。封蝋は書斎の机と同じだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……怪盗さん、書斎に入ったことがあるみたいです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "持ち主って、主人のことじゃないのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_recipe_chair",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "椅子の上に、出しそびれた招待状。宛名は弟子だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "招待状／物語",
+          "face": "serious",
+          "text": "『配合帳を、取りに来なさい』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "主人も、配合帳を渡したかったんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_smoke_notebook",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "最初の頁に、若い字で二人の名。『あの木の下で、もう一度』"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "もう一度……。叶ってないから、書いてあるのね"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "二人って、主人と誰なんだろう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_smoke_tree",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "林檎の木の下に、古い椅子が二つ。片方だけ、今朝拭いてある"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……誰かを、待ってる椅子です"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "怪盗の狙い、この温室にありそうだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_smoke_portrait",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "肖像画の隅に、林檎の木の下で笑う若者が二人いる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……隣の人、帽子をかぶってます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "主役の主人より、隅の二人の方が楽しそう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_smoke_shelf",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "棚の奥に、原点の香りが一台分。杯は二つ並んでいる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "一台を、二人で……。誰かと分けるつもりなんだ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "香りって、誰かと分けると長く残るのよね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_smoke_notice",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "予告状の端に、湿った土。温室の土の匂いがする"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……怪盗さん、温室を通って来たみたいです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "玄関じゃなくて、温室から入ったのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_smoke_chair",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "主人の椅子の隣に、もう一脚。毎年この夜だけ置くそうだ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "隣を空けて待つ夜……儚いわ。私の次くらいに"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "待ってる相手が、怪盗だったりして"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_letter_notebook",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ある年の欄に『林檎が一つ足りない。あの子は元気か』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "あの子……林檎を盗んだ子のことかな"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "怒ってるっていうより、心配してる字ね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_letter_tree",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "折れた枝を継いだ跡。札には『折った子が、いつか来るまで』"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……温室の扉の鈴、古いのに、ちゃんと鳴ります"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "鈴が鳴ったら、出迎えるってことかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_letter_portrait",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "額縁に、便箋の切れ端が挟まっている。林檎の香りがする"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "便箋に香り……。手紙を書いた人がいるのね"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "怪盗が、手紙を？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_letter_shelf",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "原点の香りの瓶が、ほんの少しだけ減っている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……瓶の横に、便箋の紙くず。香りを移したみたいです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "盗むっていうより、ちょっと借りただけみたいだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_letter_notice",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "予告状の隅に、小さな字で『今度は、逃げません』"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……丁寧すぎる字。習いたての字みたいです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今度は……前に一度、逃げたってことか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_clue_letter_chair",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "大広間の主人の椅子に、赤い林檎が一つ。札に『お返しします』"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "林檎を、返しに来たの……？"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "盗むんじゃなくて、返しに来てるのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_choice_trap_bell",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "鈴が鳴ったら、出迎えの合図ね。推しのキーホルダーと同じ音"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_choice_trap_fake",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "偽物の帳面は私が書くわ。字を似せるのは得意なの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_choice_trap_trail",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "香りで道を作るのね。迷子の怪盗さんも、これで安心"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_choice_post_study",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……書斎の本棚の陰、二人くらいなら隠れられます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_choice_post_greenhouse",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……温室は、月がよく見えます。待つのにいい場所"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_choice_post_hall",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……大広間なら、主人の椅子がよく見えます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_choice_confront_catch",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "逃げられないように、でも優しく。手を取って話そう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_choice_confront_listen",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "捕まえる前に、まず話を聞こう。理由があるはずだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_choice_confront_offer",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "怪盗さんにも一台どうですか。そういう夜にしよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_ending_notebook-home",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "怪盗は仮面を外した。弟子の古い友人だという"
+        },
+        {
+          "speaker": "adam",
+          "role": "怪盗ミルフィーユ／物語",
+          "face": "serious",
+          "text": "配合帳の後半は、あの子の字です。持ち主に返したかった"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "主人は白紙の頁に一行だけ書き、配合帳を怪盗に託した"
+        },
+        {
+          "speaker": "adam",
+          "role": "主人アルマン／物語",
+          "face": "smile",
+          "text": "二人の原点だ。続きはお前が書け、と伝えておくれ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "盗まれたんじゃなくて、届けてもらったんだな"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "最後の頁が埋まったのね……泣かないわよ。儚いけど"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "翌月、弟子の小さな店に、原点の香りが並んだそうだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_ending_one-more",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "帽子の下から現れたのは、主人と同じ年ごろの笑顔だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "怪盗ミルフィーユ／物語",
+          "face": "smile",
+          "text": "盗みたかったのは香りじゃない。あの日の一台だよ"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "温室の林檎の木の下。二つの椅子に、二人が並んで座る"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "原点の香りがゆっくり立ちのぼり、昔話はいつまでも続いた"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……二つの椅子、やっと両方埋まりました"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "怪盗が欲しかったのは、この時間だったんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_ending_apple-letter",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "怪盗は逃げなかった。その場で、自分から仮面を外す"
+        },
+        {
+          "speaker": "adam",
+          "role": "怪盗ミルフィーユ／物語",
+          "face": "serious",
+          "text": "昔、この館の林檎を盗んだ子どもです。あの日は、逃げてしまった"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "差し出された手紙から、ほのかに原点の香りがする"
+        },
+        {
+          "speaker": "adam",
+          "role": "主人アルマン／物語",
+          "face": "smile",
+          "text": "盗んだ香りで書いた手紙か。おかえり、林檎泥棒"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "謝るために怪盗になるなんて……不器用で、素敵"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "『いただく』って、香りを少し借りるって意味だったのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_ending_encore",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "怪盗は一礼すると、白い花びらを散らして姿を消した"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "あれ、消えた！？ 何も盗まずに？"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "主人の椅子の上に、新しい予告状が一枚"
+        },
+        {
+          "speaker": "adam",
+          "role": "予告状／物語",
+          "face": "intense",
+          "text": "『今宵は下見。次こそ、原点の香りをいただく』"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "evil",
+          "text": "……続編、ありますね"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "名作には続編がつきものだ。林檎の物語は、終わらない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_debrief_smooth",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "見事な幕引きだ。三人の息が、林檎の二色のように揃っていた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "アダムさんの語り、最後まで乗せられたな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_debrief_with_detour",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "警戒の鐘は鳴りっぱなしだったが、誰も舞台を降りなかった"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……騒がしい夜も、いい絵になりました"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_declare_listen_door",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}は庭へ出て、怪盗の影を探します"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "度胸で判定だ。夜の庭は、怪盗の舞台だぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_declare_listen_guests",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:hiyori}が儚げに微笑んで、お客さまの噂を集めるわ"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "話術で判定だ。その微笑み、客席に届くか。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_declare_listen_sketch",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……{pc:tsumugi}は、扉の向こうに見えた影を描きます"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定だ。一瞬を描き留めろ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_declare_twist_voice",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}が大広間の真ん中で、落ち着いてと呼びかけます"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "話術で判定だ。客席を味方につけろ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_declare_twist_tray",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:hiyori}が銀の盆で一杯ずつ配るわ。儚く、でも速く"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定だ。盆の上は満員だぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_declare_twist_watch",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……{pc:tsumugi}は、騒ぎの中で動かない人を探します"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定だ。怪盗は、静かな場所にいる。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_declare_prepare_carry",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}が館じゅうを走って、道具を集めて組みます"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定だ。鐘は待ってくれないぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_declare_prepare_set",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:hiyori}が組むわ。シーツ替えと同じ、三秒で終わるの"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "手際で判定だ。見立てが合えば追い風だ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_declare_prepare_map",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……{pc:tsumugi}が見取り図を描いて、置く場所を決めます"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定だ。図面は、舞台の脚本だ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_declare_serve_front",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "{pc}が怪盗の前に出ます！ 逃げずに、まっすぐ"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "度胸で判定だ。最後の幕、主役の立ち位置だ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_declare_serve_sketch",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "……{pc:tsumugi}が、仮面の奥の顔を描きます"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定だ。その一筆が、仮面を外す。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_declare_serve_words",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:hiyori}が語りかけるわ。今夜は誰も追わない、って"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "話術で判定だ。月明かりは、お前の味方だ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_make_hiyori_hiyori_rosa",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "……私はローザ。儚げな客室係よ。月の光でも溶けそうなの"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "でもシーツ替えは館で一番速いわ。夜食はラーメン派"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "儚さと速さの両立か。舞台映えする、いい役だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_make_hiyori_hiyori_marta",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "……私はマルタ。か弱いメイド長で、重いものは持てなくて……"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "あ、薪割りの斧は別よ。投げても当たるわ、的になら"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "メイド長が斧を……！ 怪盗ものに、新しい風が吹いたな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ひよりさん、か弱さが二行しかもたなかった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_make_tsumugi_tsumugi_shion",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私はシオン。玄関で、お客さんの似顔絵を描く係です"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "一度見た顔は忘れません、……猫の顔も"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "怪盗ものに似顔絵係とは、心憎い配役だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_make_tsumugi_tsumugi_nocto",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私はノクト。館の案内係です。怪しくないです"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "evil",
+          "text": "……秘密の通路を三つ知ってます。地下の鍵も、なぜか私が"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "待て、それは黒幕の台詞だ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "つむぎ、その顔で言うと本当に黒幕っぽい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_session_zero_open",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "開演の前に、役作りの時間だ。今夜は館で働く給仕を演じてもらう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "怪盗ものなのに、こっちは館を守る側なんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_session_zero_close",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "俺は{pc}。{pcTitle}でいく"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "役者はそろった。開演だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_ask_recipe_rumor",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "執事ベルナール／物語",
+          "face": "normal",
+          "text": "怪盗が盗んだ品は、いつも本来の持ち主に届くそうです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "盗むっていうより、届けてるみたいだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_ask_recipe_master",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "執事ベルナール／物語",
+          "face": "serious",
+          "text": "近ごろ主人は、配合帳を開いては、また閉じておられます"
+        },
+        {
+          "speaker": "adam",
+          "role": "執事ベルナール／物語",
+          "face": "normal",
+          "text": "最後の頁に、何か書きたいことがおありのようで"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_ask_recipe_origin",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "執事ベルナール／物語",
+          "face": "normal",
+          "text": "主人と、三年前に館を出た弟子が二人で仕上げた香りです"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……二人で作ったのに、今は一人なのね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_ask_recipe_guests",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "執事ベルナール／物語",
+          "face": "normal",
+          "text": "弟子の名で、一席だけ空けてございます。来るかは分かりませんが"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……空いた椅子、描いておきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_ask_smoke_rumor",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "執事ベルナール／物語",
+          "face": "normal",
+          "text": "盗みのあとは必ず、誰かと香りを分け合ってから帰るとか"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "律儀な怪盗だな。一人では楽しまないのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_ask_smoke_master",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "執事ベルナール／物語",
+          "face": "serious",
+          "text": "夕暮れになると主人は、温室に椅子を二つ並べておられます"
+        },
+        {
+          "speaker": "adam",
+          "role": "執事ベルナール／物語",
+          "face": "normal",
+          "text": "片方には、どなたも座らないのですが"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_ask_smoke_origin",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "執事ベルナール／物語",
+          "face": "normal",
+          "text": "若い頃、幼なじみの方と林檎の木の下で作った香りだとか"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "若い日の一台……。そういう話、弱いのよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_ask_smoke_guests",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "執事ベルナール／物語",
+          "face": "normal",
+          "text": "主人と同じ年ごろの方が、帽子を深くかぶっておいででした"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……その帽子、描いておきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_ask_letter_rumor",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "執事ベルナール／物語",
+          "face": "normal",
+          "text": "盗むかわりに、必ず何かを置いていく怪盗だとか"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "置いていく……盗みの逆じゃないか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_ask_letter_master",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "執事ベルナール／物語",
+          "face": "serious",
+          "text": "主人は昔、林檎を盗んだ子を追いかけた話を、今もなさいます"
+        },
+        {
+          "speaker": "adam",
+          "role": "執事ベルナール／物語",
+          "face": "normal",
+          "text": "温室の鈴が鳴ったとたん、その子は逃げてしまったそうで"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_ask_letter_origin",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "執事ベルナール／物語",
+          "face": "normal",
+          "text": "林檎が一つ盗まれた年に、残りの実で作られた香りです"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "盗まれた年に、原点が生まれたのね……不思議"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_ask_letter_guests",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "執事ベルナール／物語",
+          "face": "normal",
+          "text": "大広間に、封筒を大事そうに抱えた奇術師の方がおられます"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……封筒、林檎の色でした"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_discuss_recipe",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "配合帳が、本当の持ち主のところへ帰りたがってるのね"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……白紙の頁、二人で埋めるためかもしれません"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "いい読みだ。原点は、一人では作れないものだからな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_discuss_smoke",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "一台を二人で囲む夜……。儚くて、いちばん贅沢な夜ね"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……温室の椅子、二つとも座られたいはずです"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "そうだ。林檎の香りは、分け合ってこそ宇宙になる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_discuss_letter",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "盗むんじゃなくて、渡しに来たのね……泣かせる怪盗"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……今度は逃げない、って書いてました"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "謝るにも勇気が要る。仮面は、そのためかもしれんな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_twist_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "serious",
+          "text": "そのとき、客の一人が叫んだ。『もう一枚、予告状が！』"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "大広間の燭台の下に、二通目のカード。夜会は大騒ぎだ"
+        },
+        {
+          "speaker": "adam",
+          "role": "予告状／物語",
+          "face": "intense",
+          "text": "『追伸。鐘が十二を打つころ、参上する』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "追伸つきの予告状って、初めて見た"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "怪盗は筆まめなんだ。さあ、どうする？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_choice_tactic_calm",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "温かい林檎の飲み物が配られ、ざわめきが笑い声に変わっていく"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……騒ぎのあとの静けさ。私の得意分野よ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_choice_tactic_use",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "客の波に紛れて、三人は館の裏手へ回り込む"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "evil",
+          "text": "……人混みは、いい隠れ場所です"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_choice_tactic_inspect",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "二通目のカードも、一通目と同じ林檎の香りがする"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "同じ香り……。同じ人が書いたんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_twist_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "騒ぎは収まり、楽団が軽い曲を奏で始める"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……みんな、また笑ってます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_twist_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "騒ぎは収まったが、客の目が怪盗を探し始めた。警戒が一つ上がる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "……視線が刺さるわ。私、見られると溶けちゃうの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_twist_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "慌てた客が菓子の台にぶつかり、積まれたミルフィーユが崩れる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "怪盗より先に、お菓子の方が崩れた！"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "怪盗の名を冠した菓子の悲劇だ。警戒は進むが、全員無事だ"
+        }
+      ]
+    }
+  ],
+  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。GMのアダムが執事・怪盗・主人の声も兼ねる。",
+  "presentation": {
+    "theme": "heist",
+    "number": "04",
+    "genre": "館の怪盗もの / 謎解き",
+    "tagline": "予告状は一枚。狙いは、原点の香り。",
+    "backdrop": "radial-gradient(ellipse at 50% 16%, rgba(246, 234, 212, 0.55), rgba(246, 234, 212, 0) 55%), linear-gradient(160deg, #8a2433, #4a1019 55%, #24070d)",
+    "sceneAlt": "湖畔の館の夜会。書斎の配合帳、温室の林檎の木、大広間の肖像画、厨房の香りの棚、玄関の予告状、主人の椅子。",
+    "location": "ミルト湖畔 / 白林檎館",
+    "atmosphere": "燭台の灯り。林檎の香り。どこかに、怪盗。",
+    "coverHeading": "夜会に、予告状が届いた。",
+    "coverRule": "四箇所を調べ、怪盗の本当の狙いを見立てる。",
+    "titleLines": [
+      "怪盗と",
+      "原点の林檎"
+    ],
+    "fields": {
+      "trap": "仕掛け",
+      "post": "張り込む場所",
+      "confront": "怪盗への向き合い方",
+      "tactic": "騒ぎへの手"
+    },
+    "prepareTitle": "何を仕掛け、どこで待つ？",
+    "prepareDescription": "仕掛け一つ、張り込む場所一つ。見立てた狙いを作戦にしよう。",
+    "serveTitle": "鐘が十二を打つ。",
+    "serveDescription": "怪盗ミルフィーユと、どう向き合う？",
+    "hypothesisTitle": "怪盗の本当の狙いは？",
+    "arrivalRole": "執事ベルナール／物語",
+    "exploreIdle": "調べられるのは四箇所までだ。メモの再読と相談は、何度でもいいぞ",
+    "listenIdle": "予告状が届いた。まずは、夜会の様子をつかもう",
+    "prepareIdle": "仕掛けを選べ。仲間がいれば、切り札も頼める",
+    "serveIdle": "ここが見せ場だ。仮面の奥を、よく見ろ",
+    "endingIdle": "今宵の幕は、ここまで。次は、また別の本で会おう",
+    "phases": {
+      "listen": {
+        "kicker": "01 / 予告状",
+        "title": "今宵、原点の香りをいただく",
+        "description": "夜会の最中に予告状。まずは、館の様子をつかもう。",
+        "button": "状況をつかむ"
+      },
+      "interview": {
+        "kicker": "02 / 執事に聞く",
+        "title": "執事ベルナールに、何を聞く？",
+        "description": "聞けるのは二つまで。答えは、怪盗の狙いしだいで変わる。",
+        "button": "話を切り上げて、館を調べる"
+      },
+      "explore": {
+        "kicker": "03 / 館を調べる",
+        "title": "怪盗の狙いを見抜く",
+        "description": "調べられるのは四箇所まで。三つ以上の手がかりから、怪盗の本当の狙いを考えよう。",
+        "button": "見立てを話す"
+      },
+      "twist": {
+        "kicker": "04 / 二通目の予告状",
+        "title": "夜会が、ざわめく",
+        "description": "二通目の予告状に、客が大騒ぎ。どう切り抜ける？",
+        "button": "この手で切り抜ける"
+      },
+      "prepare": {
+        "kicker": "05 / 怪盗を迎える",
+        "title": "仕掛けと、張り込み",
+        "description": "鐘が十二を打つまでに、支度を整えよう。",
+        "button": "仕掛けを組む"
+      },
+      "serve": {
+        "kicker": "06 / 怪盗と向き合う",
+        "title": "仮面の奥へ",
+        "description": "怪盗ミルフィーユが現れた。ここがクライマックス。",
+        "button": "怪盗と向き合う"
+      },
+      "ending": {
+        "kicker": "閉幕のあと",
+        "title": "今宵の幕が下りる",
+        "description": "怪盗の夜は終わった。さて、この物語の感想は？"
+      }
+    },
+    "help": "執事に二つ質問し、館を最大四箇所調べます。新しい場所を調べるたび警戒が一つ上がります。三つ以上の手がかりで怪盗の狙いを見立てたあと、二通目の予告状の騒ぎを切り抜け、仕掛け・張り込む場所・怪盗への向き合い方を決めます。相談とメモの再読は無料。見立てが合うと仕掛け判定に＋4。",
+    "exitText": "物語をここで中断して、本棚へ戻ります。次に遊ぶと、怪盗の狙いが変わっているかもしれません。",
+    "endingKicker": "TONIGHT’S CURTAIN / この夜の結末",
+    "stats": {
+      "eye": "観察",
+      "hand": "手際",
+      "talk": "話術",
+      "nerve": "度胸"
+    },
+    "declareTitle": "どうする？ 行動を宣言せよ",
+    "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
+    "sheetTitle": "キャラクターシート",
+    "target": "GMの裁定 · 目標値30（19以上でひと手間）",
+    "twistTitle": "二通目の予告状。どうする？",
+    "interviewIdle": "執事に聞けるのは二つまでだ。何を聞く？",
+    "twistIdle": "夜会は大騒ぎだ。手を選んで、誰が動くか決めろ",
+    "planTitle": "怪盗を迎える作戦",
+    "riskLabel": "警戒"
+  },
+  "intro": "trpg_apple_thief_intro",
+  "listen": "trpg_apple_thief_listen",
+  "checks": {
+    "listen": {
+      "title": "夜会の騒ぎの中で、状況をつかむ",
+      "hint": "宣言した給仕の能力で判定。どの出目でも調査へ進みます。",
+      "success": "trpg_apple_thief_listen_success",
+      "mixed": "trpg_apple_thief_listen_mixed",
+      "trouble": "trpg_apple_thief_listen_trouble",
+      "approaches": [
+        {
+          "id": "listen_door",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "夜の庭へ、怪盗の影を探しに出る",
+          "detail": "{pc}が玄関から庭へ出て、カードを置いた影を追う",
+          "declare": "trpg_apple_thief_declare_listen_door"
+        },
+        {
+          "id": "listen_guests",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "talk",
+          "label": "客に聞き込みをする",
+          "detail": "{pc:hiyori}が儚げに微笑み、客の噂を集める",
+          "declare": "trpg_apple_thief_declare_listen_guests"
+        },
+        {
+          "id": "listen_sketch",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "eye",
+          "label": "扉の向こうの影を描く",
+          "detail": "{pc:tsumugi}が一瞬見えた人影を、思い出して描く",
+          "declare": "trpg_apple_thief_declare_listen_sketch"
+        }
+      ]
+    },
+    "prepare": {
+      "title": "怪盗を迎える仕掛けを組む",
+      "hint": "宣言した給仕の能力で判定。見立てが合えば、さらに＋4。",
+      "success": "trpg_apple_thief_prepare_success",
+      "mixed": "trpg_apple_thief_prepare_mixed",
+      "trouble": "trpg_apple_thief_prepare_trouble",
+      "helper": "hiyori",
+      "approaches": [
+        {
+          "id": "prepare_carry",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "hand",
+          "label": "館じゅうを走って、手早く組む",
+          "detail": "{pc}が必要なものを集めて回り、その場で組み上げる",
+          "declare": "trpg_apple_thief_declare_prepare_carry"
+        },
+        {
+          "id": "prepare_set",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "hand",
+          "label": "客室係の手順で、仕掛けを整える",
+          "detail": "{pc:hiyori}がシーツを替える速さで、確実に組む",
+          "declare": "trpg_apple_thief_declare_prepare_set"
+        },
+        {
+          "id": "prepare_map",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "eye",
+          "label": "見取り図で、置き場所を決める",
+          "detail": "{pc:tsumugi}が館の図を描き、仕掛けの位置を割り出す",
+          "declare": "trpg_apple_thief_declare_prepare_map"
+        }
+      ]
+    },
+    "serve": {
+      "title": "怪盗ミルフィーユと向き合う",
+      "hint": "宣言した給仕の能力で判定。どの出目でも結末へ進みます。",
+      "success": "trpg_apple_thief_serve_success",
+      "mixed": "trpg_apple_thief_serve_mixed",
+      "trouble": "trpg_apple_thief_serve_trouble",
+      "helper": "tsumugi",
+      "approaches": [
+        {
+          "id": "serve_front",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "怪盗の前に、まっすぐ立つ",
+          "detail": "{pc}が逃げずに前へ出て、仮面の目を見る",
+          "declare": "trpg_apple_thief_declare_serve_front"
+        },
+        {
+          "id": "serve_sketch",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "eye",
+          "label": "仮面の奥の顔を描く",
+          "detail": "{pc:tsumugi}が一筆で、怪盗の素顔を描き当てる",
+          "declare": "trpg_apple_thief_declare_serve_sketch"
+        },
+        {
+          "id": "serve_words",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "talk",
+          "label": "月明かりの下で語りかける",
+          "detail": "{pc:hiyori}が儚げに、怪盗へそっと声をかける",
+          "declare": "trpg_apple_thief_declare_serve_words"
+        }
+      ]
+    },
+    "twist": {
+      "title": "二通目の予告状の騒ぎを鎮める",
+      "hint": "宣言した給仕の能力で判定。どの出目でも物語は続きます。",
+      "success": "trpg_apple_thief_twist_success",
+      "mixed": "trpg_apple_thief_twist_mixed",
+      "trouble": "trpg_apple_thief_twist_trouble",
+      "approaches": [
+        {
+          "id": "twist_voice",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "よく通る声で、客に呼びかける",
+          "detail": "{pc}が大広間の真ん中に立ち、場を落ち着かせる",
+          "declare": "trpg_apple_thief_declare_twist_voice"
+        },
+        {
+          "id": "twist_tray",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "hand",
+          "label": "飲み物を素早く配って回る",
+          "detail": "{pc:hiyori}が銀の盆で、客の手に一杯ずつ届ける",
+          "declare": "trpg_apple_thief_declare_twist_tray"
+        },
+        {
+          "id": "twist_watch",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "eye",
+          "label": "騒ぎの中の、動かない人を探す",
+          "detail": "{pc:tsumugi}が人の流れを見て、怪しい影を探す",
+          "declare": "trpg_apple_thief_declare_twist_watch"
+        }
+      ]
+    }
+  },
+  "consult": {
+    "hiyori": "trpg_apple_thief_consult_hiyori",
+    "tsumugi": "trpg_apple_thief_consult_tsumugi"
+  },
+  "preparation": "trpg_apple_thief_preparation",
+  "serving": "trpg_apple_thief_serving",
+  "epilogue": "trpg_apple_thief_epilogue",
+  "debrief": {
+    "smooth": "trpg_apple_thief_debrief_smooth",
+    "with-detour": "trpg_apple_thief_debrief_with_detour"
+  },
+  "campaign": {
+    "seats": [
+      {
+        "actor": "adam",
+        "candidates": [
+          "adam"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hajime",
+        "candidates": [
+          "hajime"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hiyori",
+        "candidates": [
+          "hiyori"
+        ],
+        "required": false
+      },
+      {
+        "actor": "tsumugi",
+        "candidates": [
+          "tsumugi"
+        ],
+        "required": false
+      }
+    ]
+  },
+  "builder": {
+    "seat": "hajime",
+    "points": 11,
+    "min": 1,
+    "max": 5,
+    "nameMax": 6,
+    "title": "あなたのキャラクターを作る",
+    "intro": "今夜の夜会で働く給仕を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
+    "looks": [
+      {
+        "id": "cap",
+        "label": "黒髪のベルボーイ",
+        "detail": "短い黒髪に、赤い制帽",
+        "color": "#2f2a2a",
+        "accent": "#c9463a",
+        "portrait": null
+      },
+      {
+        "id": "glove",
+        "label": "栗毛の給仕",
+        "detail": "栗色の髪を後ろでまとめ、白い手袋",
+        "color": "#6b4a35",
+        "accent": "#f2e3c6",
+        "portrait": null
+      },
+      {
+        "id": "bowtie",
+        "label": "眼鏡の給仕",
+        "detail": "丸い眼鏡に、林檎色の蝶ネクタイ",
+        "color": "#3d3550",
+        "accent": "#d8c3a5",
+        "portrait": null
+      },
+      {
+        "id": "tail",
+        "label": "長髪の給仕",
+        "detail": "長い髪を一つに結び、黒い燕尾服",
+        "color": "#2a2f45",
+        "accent": "#b9a7d6",
+        "portrait": null
+      }
+    ],
+    "archetypes": [
+      {
+        "id": "bellboy",
+        "name": "ルイ",
+        "title": "新人ベルボーイ",
+        "trait": "荷物運びと笑顔は得意。怪盗の顔は、まだ知らない",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 3,
+          "nerve": 3
+        },
+        "recommended": true
+      },
+      {
+        "id": "doorman",
+        "name": "ガロ",
+        "title": "元気なドアマン",
+        "trait": "扉と人の顔なら任せて。細かい作業は人任せ",
+        "stats": {
+          "eye": 3,
+          "hand": 1,
+          "talk": 3,
+          "nerve": 4
+        }
+      },
+      {
+        "id": "steward",
+        "name": "テオ",
+        "title": "香り係の見習い",
+        "trait": "香りと食器に詳しい。大きな声は苦手",
+        "stats": {
+          "eye": 4,
+          "hand": 3,
+          "talk": 2,
+          "nerve": 2
+        }
+      }
+    ],
+    "statHelp": {
+      "eye": "よく見て、気づく力。調べる・様子を見るときに使う",
+      "hand": "手先の器用さ。道具を使う・準備するときに使う",
+      "talk": "話す・聞く力。人と向き合うときに使う",
+      "nerve": "怖がらない力。危ない場面や、勇気が要るときに使う"
+    }
+  },
+  "companionBuilds": {
+    "hiyori": {
+      "hiyori": [
+        {
+          "id": "rosa",
+          "name": "ローザ",
+          "title": "儚げな客室係",
+          "trait": "月の光でも溶けそうな客室係。シーツ替えは、館で一番速い",
+          "likes": "夜食のラーメンと、ゆるい熊のぬいぐるみ",
+          "stats": {
+            "eye": 3,
+            "hand": 4,
+            "talk": 3,
+            "nerve": 1
+          },
+          "making": "trpg_apple_thief_make_hiyori_hiyori_rosa"
+        },
+        {
+          "id": "marta",
+          "name": "マルタ",
+          "title": "か弱いメイド長",
+          "trait": "か弱いメイド長……のはず。薪割りの斧さばきは、館の誰より正確",
+          "likes": "斧投げと、夜食のラーメン",
+          "stats": {
+            "eye": 2,
+            "hand": 5,
+            "talk": 2,
+            "nerve": 2
+          },
+          "making": "trpg_apple_thief_make_hiyori_hiyori_marta"
+        }
+      ]
+    },
+    "tsumugi": {
+      "tsumugi": [
+        {
+          "id": "shion",
+          "name": "シオン",
+          "title": "似顔絵係",
+          "trait": "一度見た顔は忘れない。話すより、描く方が早い",
+          "likes": "葉っぱの耳の猫と、ラベンダーの香り",
+          "stats": {
+            "eye": 4,
+            "hand": 2,
+            "talk": 1,
+            "nerve": 4
+          },
+          "making": "trpg_apple_thief_make_tsumugi_tsumugi_shion"
+        },
+        {
+          "id": "nocto",
+          "name": "ノクト",
+          "title": "黒幕っぽい案内係",
+          "trait": "怪しくない。たぶん。地下室の鍵だけ、なぜか持っている",
+          "likes": "推理小説の最後の頁と、ラベンダー",
+          "stats": {
+            "eye": 4,
+            "hand": 3,
+            "talk": 1,
+            "nerve": 3
+          },
+          "making": "trpg_apple_thief_make_tsumugi_tsumugi_nocto"
+        }
+      ]
+    }
+  },
+  "sessionZero": {
+    "open": "trpg_apple_thief_session_zero_open",
+    "close": "trpg_apple_thief_session_zero_close"
+  },
+  "interview": {
+    "title": "執事ベルナールに、何を聞く？",
+    "prompt": "執事は夜会の支度で忙しい。怪盗の狙いに近づけそうなことを、二つだけ聞こう",
+    "picks": 2,
+    "topics": [
+      {
+        "id": "rumor",
+        "label": "怪盗のうわさ",
+        "description": "怪盗ミルフィーユの評判を聞く"
+      },
+      {
+        "id": "master",
+        "label": "主人の近ごろ",
+        "description": "アルマンの最近の様子を聞く"
+      },
+      {
+        "id": "origin",
+        "label": "原点の香りの由来",
+        "description": "あの林檎の香りが生まれた話を聞く"
+      },
+      {
+        "id": "guests",
+        "label": "今夜の客",
+        "description": "気になる客がいないか聞く"
+      }
+    ]
+  },
+  "twist": {
+    "intro": "trpg_apple_thief_twist_intro"
+  }
+}

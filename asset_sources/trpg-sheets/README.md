@@ -1,4 +1,6 @@
-# TRPG キャラクターシート用の画像（Codexへの指示書・未生成）
+# TRPG キャラクターシート用の画像（Codexへの指示書）
+
+> 2026-11-02: 01・02の見た目8種・仲間9人は採用・組み込み済み（`candidates-20261101/ADOPTED.json`）。新規8本の人物シートは `asset_sources/trpg-scenarios/README.md` の `portraits-<id>.png` を使い、`python3 tools/trpg_crop_portraits.py scenario <sheet.png> <id>` で切り出す。
 
 2026-11-01 の卓の再構成で、各PL席とキャラクターシートに**作中のPC**を表示し、表紙の「キャラクターを作る」で**はじめが演じるPCの見た目**を4種から選べるようになった。
 画像が揃うまでは、見た目は色つきのシルエット（頭文字入り）、仲間のPCはプレイヤー本人の立ち絵で代用している。
