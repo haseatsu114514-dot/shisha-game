@@ -208,6 +208,12 @@
       "run": ["node --experimental-vm-modules remake/test/warmup_defer.mjs"]
     },
     {
+      "id": "store-logo-fallback",
+      "title": "Failed store logos retain full names in the available frame",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/store_logo_fallback.mjs"]
+    },
+    {
       "id": "gain-notice-a10",
       "title": "Gain notices shorten only on repeat with the shorten-seen setting (#1081 A10)",
       "kind": "quick",
@@ -2413,6 +2419,8 @@
       "weight": 4,
       "timeout": 20,
       "paths": [
+        "remake/js/core/store-logos.js",
+        "remake/css/store-logos.css",
         "remake/js/daily/map.js",
         "remake/js/daily/shop.js",
         "remake/css/shop*.css",

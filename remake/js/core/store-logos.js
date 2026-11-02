@@ -45,7 +45,11 @@ export function storeLogo(id, { width = 104, height = 60 } = {}) {
   const img = el("img", {
     src: storeLogoUrl(id), alt: "", decoding: "async", draggable: false,
     style: { width: `${logo.sheet[0] / w * 100}%`, height: `${logo.sheet[1] / h * 100}%`, left: `${-x / w * 100}%`, top: `${-y / h * 100}%` },
-    onerror: () => { node.classList.add("missing"); node.replaceChildren(el("span", { text: logo.name })); },
+    onerror: () => {
+      // 店名は画像の切り抜き比率ではなく、呼び出し元が用意した枠へ収める。
+      node.style.width = `${width}px`; node.style.height = `${height}px`;
+      node.classList.add("missing"); node.replaceChildren(el("span", { text: logo.name }));
+    },
   });
   node.append(img);
   return node;

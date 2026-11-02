@@ -111,4 +111,65 @@ await suite('store-logo-layout', async check => {
       }
     }, { viewport, isMobile: touch, hasTouch: touch });
   }
+
+  await check('c-station-fallback-pc', async page => {
+    // A successful response with corrupt image bytes exercises the real error handler.
+    await page.route('**/assets/ui/store_logos/c-station.webp', route => route.fulfill({
+      status: 200, contentType: 'image/webp', body: 'invalid image',
+    }));
+    await page.reload();
+    await page.locator('[data-test="title-new"]').waitFor();
+    await page.locator('#boot').waitFor({ state: 'detached' });
+    await page.evaluate(async () => {
+      const core = await import('./js/core/state.js'), map = await import('./js/daily/map.js');
+      const hud = await import('./js/daily/hud.js');
+      core.newGame(); Object.assign(core.state, { phase: 'daily', day: 4, slot: 0, money: 30000 });
+      core.state.met.naru = true; core.state.flags._spot_guide_naru = true;
+      hud.initHud({}); hud.showHud();
+      window.F = { core, moves: 0, pending: map.chooseSpot({ onBeforeGo: () => { F.moves++; return false; } }) };
+      await document.fonts.ready;
+    });
+    const pin = page.locator('[data-test="pin-c_station"]');
+    const fallback = pin.locator('.store-logo.missing');
+    await fallback.waitFor();
+    const assertReadable = async (name, width, multiline) => {
+      const layout = await fallback.evaluate(node => {
+        const box = node.getBoundingClientRect(), shield = node.closest('.shield').getBoundingClientRect();
+        const range = document.createRange(); range.selectNodeContents(node.firstElementChild);
+        const lines = [...range.getClientRects()];
+        const inside = (r, outer) => r.left >= outer.left - 1 && r.right <= outer.right + 1
+          && r.top >= outer.top - 1 && r.bottom <= outer.bottom + 1;
+        return { text: node.textContent, width: parseFloat(node.style.width), font: parseFloat(getComputedStyle(node).fontSize),
+          lines: lines.length, visible: lines.length > 0 && lines.every(r => r.width > 0 && r.height > 0),
+          contained: inside(box, shield) && lines.every(r => inside(r, box)),
+          unclipped: node.scrollWidth <= node.clientWidth && node.scrollHeight <= node.clientHeight,
+          images: node.querySelectorAll('img').length };
+      });
+      assert.equal(layout.text, name);
+      assert.equal(layout.width, width);
+      assert.equal(layout.font, 12, 'Fallback text keeps its normal readable size');
+      assert(multiline ? layout.lines > 1 : layout.lines === 1, JSON.stringify(layout));
+      assert(layout.visible && layout.contained && layout.unclipped && layout.images === 0, JSON.stringify(layout));
+    };
+    await assertReadable('C.STATION', 82, false);
+    assert.equal(await fallback.getAttribute('aria-label'), 'C.STATIONのロゴ');
+    assert.equal(await pin.locator('.sub-label').textContent(), 'C.STATION');
+    const loaded = page.locator('[data-store-logo="naru"]');
+    await loaded.locator('img').evaluate(image => image.decode());
+    assert.equal(await loaded.evaluate(node => !node.classList.contains('missing') && node.textContent === ''), true);
+    const storage = await storageSnapshot(page), state = await page.evaluate(() => JSON.stringify(F.core.state));
+    await pin.click();
+    await page.locator('[data-test="map-go"]').click();
+    assert.equal(await page.evaluate(() => F.moves), 1);
+    assert.equal(await page.evaluate(() => JSON.stringify(F.core.state)), state);
+    assert.deepEqual(await storageSnapshot(page), storage);
+    // The same component also has a longer Japanese branch name in a smaller frame.
+    await page.evaluate(async () => {
+      const { storeLogo } = await import('./js/core/store-logos.js');
+      document.querySelector('[data-test="pin-c_station"] .store-logo').replaceWith(storeLogo('ch2_c_station', { width: 68, height: 42 }));
+    });
+    await fallback.waitFor();
+    await assertReadable('C.STATION 柚ヶ谷店', 68, true);
+    assert.equal(await fallback.getAttribute('aria-label'), 'C.STATION 柚ヶ谷店のロゴ');
+  });
 });
