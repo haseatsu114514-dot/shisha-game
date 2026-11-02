@@ -1,18 +1,19 @@
 // DESERT RIDE（第4章ドバイ・サンドボード）の規則: コースの決定性と公平さ、ジャンプ・着地・転倒、採点と評価の境目。
 import assert from "node:assert/strict";
 import test from "node:test";
-import { COURSE, SPEED, JUMP, FALL, SCORE, RANKS, DEFAULT_SEED, generateCourse, practiceCourse, curveAt, createGame, step, press,
-  summary, rankOf, readResult, botControl, nextBumpDistance, comboMultiplier } from "../js/minigames/desert-ride-model.js";
+import { COURSE, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, RANKS, DEFAULT_SEED, generateCourse, practiceCourse, curveAt, createGame, step, press, boost, chargeBoost,
+  summary, rankOf, readResult, botControl, botStep, nextBumpDistance, comboMultiplier, rivalRun, rivalAt, smashing } from "../js/minigames/desert-ride-model.js";
 
 const DT = 1 / 60;
-function play(course, skill, { maxTime = 200 } = {}) {
-  const game = createGame(course), memo = {};
-  while (!game.finished && game.t < maxTime) {
-    const { input, action } = botControl(game, skill, memo);
-    if (action) press(game);
-    step(game, input, DT);
-  }
+function play(course, skill, { maxTime = 200, race = false } = {}) {
+  const game = createGame(course, { rival: race ? rivalRun(course) : null }), memo = {};
+  while (!game.finished && game.t < maxTime) botStep(game, skill, memo, DT);
   return game;
+}
+/** 次の起伏の手前まで滑って大ジャンプする。 */
+function jumpAtNextBump(game) {
+  while (nextBumpDistance(game) > game.speed * JUMP.bumpWindow * 0.5) step(game, {}, DT);
+  assert.equal(press(game), "big");
 }
 
 test("the course is deterministic per seed, sorted, fair: rocks leave a gap and never sit in a landing zone", () => {
@@ -40,11 +41,12 @@ test("the course is deterministic per seed, sorted, fair: rocks leave a gap and 
   for (let z = 0; z < a.length; z += 7) assert(Math.abs(curveAt(a, z)) <= 1);
 });
 
-test("the practice course is short, fixed and in the lesson order (rock, bump, rock, bump)", () => {
+test("the practice course is short, fixed and in the lesson order (rock, bump, rock, bump for a spin, rocks to smash)", () => {
   const course = practiceCourse();
   assert.equal(course.practice, true);
   assert.equal(course.length, COURSE.practiceLength);
-  assert.deepEqual(course.features.map(f => f.kind), ["rock", "bump", "rock", "bump"]);
+  assert.deepEqual(course.features.map(f => f.kind), ["rock", "bump", "rock", "bump", "rock", "rock"]);
+  assert.equal(rivalRun(course).samples.length > 0, true, "the rival can run any course (the screen only races in the main run)");
 });
 
 test("steering has inertia and sand drag; the edge slows the board; dt is capped", () => {
@@ -144,40 +146,55 @@ test("passing close to a rock scores a near miss and extends the combo", () => {
   assert(game.score >= SCORE.nearMiss);
 });
 
-test("the single course rates S / A / B / C by skill: perfect = S, late landings = A, no jumps = C, slow and clumsy = C", () => {
+test("the single course rates S / A / B / C by skill: spins = S, clean landings without spins = A, late landings = B, no jumps = C, clumsy = C", () => {
   const course = generateCourse(DEFAULT_SEED);
-  const perfect = summary(play(course, "perfect")), good = summary(play(course, "good")), none = summary(play(course, "none")), lazy = summary(play(course, "lazy"));
-  for (const result of [perfect, good, none, lazy]) {
+  const run = skill => summary(play(course, skill, { race: true }));
+  const expert = run("expert"), perfect = run("perfect"), good = run("good"), none = run("none"), lazy = run("lazy");
+  for (const result of [expert, perfect, good, none, lazy]) {
     assert.equal(result.finished, true);
     assert(result.time >= 45 && result.time <= 75, `a run takes about a minute (${result.time}s)`);
   }
-  assert.equal(perfect.falls, 0, "the course can be finished without any fall");
-  assert.equal(perfect.rank, "S");
-  assert.equal(good.rank, "A");
+  assert.equal(expert.falls, 0, "the course can be finished without any fall, spinning on every jump");
+  assert.equal(perfect.falls, 0);
+  assert(expert.tricks >= 5 && expert.bestTrick >= 720 && expert.boosts >= 2, "the expert spins and boosts");
+  assert.equal(perfect.tricks, 0, "the perfect rider never spins");
+  assert.equal(expert.rank, "S");
+  assert.equal(perfect.rank, "A", "S needs spins");
+  assert.equal(good.rank, "B");
   assert.equal(none.rank, "C");
   assert.equal(lazy.rank, "C");
-  assert(perfect.score > good.score && good.score > none.score && none.score > lazy.score);
+  assert(expert.score > perfect.score && perfect.score > good.score && good.score > none.score && none.score > lazy.score);
+  // ヌールとの競走: 着地を決めてブーストを使えば勝てる。ヌールと同じ滑り（着地が遅い）では届かない。跳ばないと負ける
+  assert.equal(expert.race.won, true); assert.equal(perfect.race.won, true);
+  assert.equal(good.race.won, false); assert.equal(none.race.won, false);
+  // 同じ seed・同じ操作なら同じ結果
+  assert.deepEqual(run("expert"), expert);
   assert(lazy.falls >= 1, "the clumsy rider falls but still finishes");
   assert.deepEqual(RANKS.map(([rank]) => rank), ["S", "A", "B", "C"]);
   assert.equal(rankOf(RANKS[0][1]), "S"); assert.equal(rankOf(RANKS[0][1] - 1), "A"); assert.equal(rankOf(0), "C");
   assert.equal(comboMultiplier(0), 1); assert.equal(comboMultiplier(100), SCORE.comboMax);
-  // 同じ seed・同じ操作なら同じ結果
-  assert.deepEqual(summary(play(course, "perfect")), perfect);
 });
 
 test("every generated course up to seed 30 can be finished by the ideal rider without a fall (no unfair layouts)", () => {
   for (let seed = 1; seed <= 30; seed++) {
-    const result = summary(play(generateCourse(seed), "perfect"));
-    assert.equal(result.finished, true, `seed ${seed} finishes`);
-    assert.equal(result.falls, 0, `seed ${seed} has no unavoidable rock`);
+    for (const skill of ["expert", "perfect"]) {
+      const result = summary(play(generateCourse(seed), skill));
+      assert.equal(result.finished, true, `seed ${seed} finishes`);
+      assert.equal(result.falls, 0, `seed ${seed} has no unavoidable rock (${skill})`);
+    }
+    assert.equal(rivalRun(generateCourse(seed)).falls, 0, `Noor never falls on seed ${seed}`);
   }
 });
 
 test("summary and readResult keep only well-formed finished records", () => {
-  const game = play(generateCourse(DEFAULT_SEED), "good");
+  const game = play(generateCourse(DEFAULT_SEED), "expert", { race: true });
   const result = summary(game);
   assert.deepEqual(readResult(result), { finished: true, score: result.score, rank: result.rank, time: result.time, maxCombo: result.maxCombo,
-    falls: result.falls, bigJumps: result.bigJumps, perfect: result.perfect, good: result.good, nearMiss: result.nearMiss });
+    falls: result.falls, bigJumps: result.bigJumps, perfect: result.perfect, good: result.good, nearMiss: result.nearMiss,
+    tricks: result.tricks, bestTrick: result.bestTrick, boosts: result.boosts, race: { won: true, gap: result.race.gap } });
+  // 以前の形の記録（トリック・ブースト・競走が無い）も読める
+  assert.deepEqual(readResult({ finished: true, score: 9000, rank: "A", time: 55, maxCombo: 3, falls: 0 }),
+    { finished: true, score: 9000, rank: "A", time: 55, maxCombo: 3, falls: 0, bigJumps: 0, perfect: 0, good: 0, nearMiss: 0, tricks: 0, bestTrick: 0, boosts: 0, race: null });
   assert.equal(readResult({ ...result, finished: false }), null);
   assert.equal(readResult({ ...result, rank: "Z" }), null);
   assert.equal(readResult({ ...result, score: -1 }), null);
@@ -185,6 +202,104 @@ test("summary and readResult keep only well-formed finished records", () => {
   const unfinished = summary(createGame(generateCourse(DEFAULT_SEED)));
   assert.equal(unfinished.finished, false); assert.equal(unfinished.rank, null);
   assert.equal(summary(play(practiceCourse(), "perfect")).score, 0, "practice has no score");
+});
+
+test("air spins: hold ← or → in a big jump to rotate, letting go finishes the half turn, landing mid-spin is a fall", () => {
+  const course = generateCourse(DEFAULT_SEED);
+  // 跳んだ瞬間から押していた向きでは回らない（よけながら跳んだだけで回らない）。一度離して押すと回る
+  let game = createGame(course);
+  jumpAtNextBump(game);
+  for (let i = 0; i < 10; i++) step(game, { right: true }, DT);
+  assert.equal(game.spinDir, 0, "the key held at take-off does not spin");
+  step(game, {}, DT);
+  const twin = structuredClone(game); // 同じ状態で何も押さない方と比べる
+  for (let i = 0; i < 20; i++) { step(game, { right: true }, DT); step(twin, {}, DT); }
+  assert.equal(game.spinDir, 1);
+  assert(game.rot > 0.4 && game.rot < 0.7, `about ${SPIN.rate * 20 / 60} turns (${game.rot})`);
+  assert(Math.abs(game.x - twin.x) < 1e-9, "the spin key does not steer");
+  while (game.air > 0) step(game, {}, DT); // 離すと 360 まで回り切って着地
+  const trick = game.events.find(e => e.kind === "trick");
+  assert.deepEqual({ degrees: trick.degrees, half: trick.half }, { degrees: 360, half: 2 });
+  assert.equal(game.stats.tricks, 1); assert.equal(game.stats.bestTrick, 360);
+  assert.equal(game.falls, 0);
+  assert(trick.points >= SPIN.points[2], "a 360 scores");
+  assert.equal(game.rot, 0, "the board faces forward again");
+  // 着地の直前に回り始めると回り切れずに転倒（ゲージも減る）
+  game = createGame(course);
+  game.gauge = 0.5;
+  jumpAtNextBump(game);
+  step(game, {}, DT);
+  while (game.air > 0.2) step(game, {}, DT);
+  while (game.air > 0) step(game, { left: true }, DT); // 約 1/3 回転のところで着地
+  assert.equal(game.falls, 1);
+  assert.equal(game.events.at(-1).kind, "fall"); assert.equal(game.events.at(-1).reason, "spin");
+  assert.equal(game.stats.spinFalls, 1);
+  assert(Math.abs(game.gauge - (0.5 + BOOST.jump - BOOST.fallLoss)) < 1e-9, "a fall drains the gauge");
+  // 小さなホップでは回らない
+  game = createGame(course);
+  step(game, {}, DT); press(game); step(game, {}, DT);
+  for (let i = 0; i < 10; i++) step(game, { right: true }, DT);
+  assert.equal(game.spinDir, 0);
+});
+
+test("boost: the gauge fills from near misses, jumps, landings and spins; when full it lifts the top speed and smashes rocks", () => {
+  const course = generateCourse(DEFAULT_SEED);
+  const game = createGame(course);
+  assert.equal(boost(game), null, "an empty gauge cannot boost");
+  chargeBoost(game, 0.6); chargeBoost(game, 0.6);
+  assert.equal(game.gauge, 1);
+  assert.equal(game.events.filter(e => e.kind === "gaugeFull").length, 1, "full is announced once");
+  assert.equal(boost(game), "boost");
+  assert.equal(game.gauge, 0); assert.equal(game.stats.boosts, 1);
+  assert.equal(boost(game), null, "no double boost");
+  for (let i = 0; i < 120; i++) step(game, {}, DT);
+  assert(game.speed > SPEED.max + 5, `boost goes past the normal top speed (${game.speed})`);
+  assert(game.speed <= SPEED.boost);
+  assert(smashing(game));
+  // ブースト中は岩に当たっても転ばず砕く
+  const rock = course.features.find(f => f.kind === "rock" && f.z > game.z + 10);
+  game.boostT = 5;
+  while (!game.passed.has(rock)) { game.x = rock.x; step(game, {}, DT); }
+  assert.equal(game.falls, 0);
+  assert.equal(game.stats.smashed, 1);
+  assert(game.smashedRocks.has(rock));
+  assert(game.events.some(e => e.kind === "smash" && e.points === SCORE.smash));
+  // 終わると少しずつ最高速へ戻る
+  game.boostT = 0.01; step(game, {}, DT);
+  assert(game.events.some(e => e.kind === "boostEnd"));
+  for (let i = 0; i < 180; i++) step(game, {}, DT);
+  assert(game.speed <= SPEED.max + 1e-9);
+  // かすめ・大ジャンプ・完璧な着地で貯まる
+  const fill = createGame(course);
+  jumpAtNextBump(fill);
+  assert(Math.abs(fill.gauge - BOOST.jump) < 1e-9);
+  while (fill.air > JUMP.landingWindow * 0.5) step(fill, {}, DT);
+  press(fill);
+  while (fill.air > 0) step(fill, {}, DT);
+  assert(Math.abs(fill.gauge - BOOST.jump - BOOST.perfect) < 1e-9);
+});
+
+test("race: Noor runs the same course deterministically; finishing first wins a bonus; the result keeps the gap", () => {
+  const course = generateCourse(DEFAULT_SEED);
+  const a = rivalRun(course), b = rivalRun(course);
+  assert.equal(a.finishTime, b.finishTime);
+  assert.equal(a.falls, 0);
+  assert(a.finishTime > 45 && a.finishTime < 60, `Noor takes about a minute (${a.finishTime})`);
+  const start = rivalAt(a, 0), mid = rivalAt(a, 20), end = rivalAt(a, a.finishTime + 3);
+  assert.equal(start.z, 0); assert(start.x < -0.3, "Noor starts on the left");
+  assert(mid.z > 300 && mid.z < course.length);
+  assert(end.finished && end.z >= course.length, "after the goal she coasts past the flags");
+  assert(rivalAt(a, 10).z < rivalAt(a, 10.5).z, "she keeps moving");
+  // 速くゴールすれば勝ち。加点と差が残る
+  const win = createGame(course, { rival: { ...a, finishTime: 999 } });
+  win.z = course.length - 0.1; step(win, {}, DT);
+  assert.equal(win.race.won, true);
+  assert(win.events.some(e => e.kind === "race" && e.won && e.points === SCORE.raceWin));
+  const lose = createGame(course, { rival: { ...a, finishTime: 0.01 } });
+  lose.z = course.length - 0.1; lose.t = 0.4; step(lose, {}, DT);
+  assert.equal(lose.race.won, false);
+  assert(Math.abs(win.score - lose.score - SCORE.raceWin) <= SCORE.timeBonusPerSec, "the winner gets the race bonus");
+  assert.equal(summary(createGame(course)).race, null, "no rival, no race");
 });
 
 test("the adopted Codex art (PR #2306, #2333) matches its adoption record: sizes, anchors and runtime files", async () => {

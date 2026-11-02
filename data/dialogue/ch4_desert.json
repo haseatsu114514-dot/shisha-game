@@ -469,6 +469,42 @@
       "comment": "2回目以降の砂丘のあと。"
     },
     {
+      "dialogue_id": "ch4_desert_race_first_win",
+      "comment": "初めて競走でヌールに勝った外出で1回だけ。滑り終えて砂丘を下りたあと、夕日の会話の前（DSR15）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ゴールの旗を越えて振り返ると、少し遅れてヌールが滑り込んできた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "……スゴイ。今の、私、本気だったよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "砂を見てただけです"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "それ、私の言葉。……負けは負け。帰りにカラク・チャイをおごる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "そんな決まり、ありました？"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "今決めた。ドバイの決まりは、だいたい今決まるの"
+        }
+      ]
+    },
+    {
       "dialogue_id": "venue_noor_result_S",
       "lines": [
         {
@@ -505,6 +541,17 @@
           "speaker": "noor",
           "face": "smile",
           "text": "砂に負けた日。でも、砂は明日も待ってる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_noor_race_win",
+      "comment": "競走でヌールに勝った完走のあとのひとこと（ランクのひとことの代わり）。",
+      "lines": [
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "スゴイ！ 今日は、私の負け"
         }
       ]
     }
