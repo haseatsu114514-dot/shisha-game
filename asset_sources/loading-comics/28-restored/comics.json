@@ -1,0 +1,108 @@
+{
+  "episode": 28,
+  "title": "生活もダブル",
+  "cast": "アダム・はじめ",
+  "theme": "旧・暴走編（復刻）",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-unhinged-ltr-20261025/25-28-chaos-ltr.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "image_genによる再作画",
+  "image_manifest": [
+    {
+      "file": "28-restored.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1800542,
+      "sha256": "907d10e36d5bf6ffd7dee0c0c883bcf2ceccd501d39e00a37194e2a3b925a56e"
+    }
+  ],
+  "tasks": [
+    {
+      "script": "LEFT ①: Adam at the door proudly tells Hajime 「部屋、整えた。」 Hajime cautiously opens his own apartment door. RIGHT ②: EVERY object in Hajime's whole ordinary apartment—sofa, fridge, walls, curtains, lamps, rug—is meticulously split exactly HALF RED / HALF GREEN, one straight central laser line. No apples forced onto heads. Adam with precision gauge proudly announces 「１：１だ。」 Hajime stands astonished in his BLACK CAP/BLACK HOODIE, shouting 「俺の家！」 His clothes stay black, he is not painted red/green.",
+      "dialogue_original": [
+        "部屋、整えた。",
+        "１：１だ。",
+        "俺の家！"
+      ],
+      "prompt": "旧漫画のサイズと読む順を統一する編集です。添付1の原画シートから指定した話1本だけを、添付2の下敷きへ再構成する。元のネタ・衣装・顔・小物・台詞を保つ。別の話を混ぜず、新しいギャグは足さない。出力1536x1024、左x36 y272幅720高さ480、右x780 y272幅720高さ480、横長3:2。上下272pxの紙余白、枠はy752で終わる。枠を縦に広げない。絵は枠内だけ。セーフマージン29px。左コマを導入、右コマをオチに並べ替え、絵や文字の左右反転は禁止。元絵の台詞は横書きの読みやすい太い日本語ゴシック。題名・話数・シリーズ名・読む順の番号・署名は消す。2.5頭身の太線セル塗りと紙質、原画の本人性を維持。台詞が多くても枠を拡げず人物を胸上で構成する。文字・顔・重要な小物を欠かさない。元々3人の話は物語を勝手に改変せず3人を維持してよい（旧話の復刻である）。シーシャ器具は指定された話以外描かない。写真は構造参照で、製品ロゴや写真の実在人物は模写しない。最終配置について、次の台本のLEFTは完成版の左、RIGHTは完成版の右です。元シートの左右位置を真似しない。上の大きな余白を残す下敷き画像が寸法の正本。出力は必ず1536x1024（2:1や横長帯は禁止）。下敷きは添付1。添付2のシートの第28話「生活もダブル」だけ。完成版の台本: LEFT ①: Adam at the door proudly tells Hajime 「部屋、整えた。」 Hajime cautiously opens his own apartment door. RIGHT ②: EVERY object in Hajime's whole ordinary apartment—sofa, fridge, walls, curtains, lamps, rug—is meticulously split exactly HALF RED / HALF GREEN, one straight central laser line. No apples forced onto heads. Adam with precision gauge proudly announces 「１：１だ。」 Hajime stands astonished in his BLACK CAP/BLACK HOODIE, shouting 「俺の家！」 His clothes stay black, he is not painted red/green.。アダム髪は正面画面左が赤、右が緑。眼鏡・髭なし。元の非現実的なオチも復刻として保つ。左に導入、右にオチ。シーシャ台・ホース・炭・喫煙・煙・武器は描かない。",
+      "reference_images": [
+        "/workspace/shisha-game/asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "/workspace/shisha-game/asset_sources/short-comics-unhinged-ltr-20261025/25-28-chaos-ltr.png",
+        "/workspace/shisha-game/assets/sprites/characters/adam/chr_adam_normal.png"
+      ],
+      "generator": "OpenAI image_gen"
+    }
+  ],
+  "source": [
+    {
+      "file": "28-restored.png",
+      "region": {
+        "x": 38,
+        "y": 273,
+        "width": 639,
+        "height": 457,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "28-restored.png",
+      "region": {
+        "x": 705,
+        "y": 271,
+        "width": 788,
+        "height": 459,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-28-1.webp",
+      "width": 686,
+      "height": 457,
+      "sha256": "eea5df32ea50371bd662fcb5e00608a838bcae628e8b80c8bd8c43ba7bcc72e4"
+    },
+    {
+      "file": "panels/restored-28-2.webp",
+      "width": 788,
+      "height": 525,
+      "sha256": "088f2aef9de506599b8335dc7137208890cd05242adfe9f735d3b45c56d10955"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "warnを記録し紙色補正を採用。強制通過なし。",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "旧・暴走編の内容を維持。49話以降の少しシュールな作風とは異なる。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": [
+        "qa-pc.png",
+        "qa-phone.png"
+      ]
+    }
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "episode": 30,
+  "title": "営業外",
+  "cast": "みんと・はじめ",
+  "theme": "旧・暴走編（復刻）",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-unhinged-ltr-20261025/29-32-chaos-ltr.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [],
+  "tasks": [
+    {
+      "script": "LEFT ①: professionally confident WORKING Minto, black long hair/green eyes, devil horns and black/NEON GREEN costume, teasingly winks and says 「好きになっちゃうよ♡」 Hajime smiles. RIGHT ②: AFTER WORK same woman in BEIGE CARDIGAN/white blouse/DARK LONG SKIRT, NO horns, SAME black long hair and green eyes. Hajime sincerely tells her 「俺は、好きです。」 Her brain humorously freezes: she is blushing enormously with wide eyes, tiny pink cartoon computer error rectangles orbit her head, one big readable caption 「応答なし」. Not a medical emergency, not a robot body; simple romantic overload visual.",
+      "dialogue_original": [
+        "好きになっちゃうよ♡",
+        "俺は、好きです。",
+        "応答なし"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/short-comics-unhinged-ltr-20261025/29-32-chaos-ltr.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/29-32-chaos-ltr.png",
+      "region": {
+        "x": 22,
+        "y": 425,
+        "width": 510,
+        "height": 293,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    },
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/29-32-chaos-ltr.png",
+      "region": {
+        "x": 557,
+        "y": 425,
+        "width": 505,
+        "height": 293,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-30-1.webp",
+      "width": 510,
+      "height": 340,
+      "sha256": "c90eeec6a2f03597e7e6a722f3fd728993332867fe8509d03fba860943dd409c"
+    },
+    {
+      "file": "panels/restored-30-2.webp",
+      "width": 505,
+      "height": 337,
+      "sha256": "928b6b6fc05f4e20db20395aae876757c6853ad3bbe125753d64647f475fdf10"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "warnを記録し紙色補正を採用。強制通過なし。",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "旧・暴走編の内容を維持。49話以降の少しシュールな作風とは異なる。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": []
+    }
+  }
+}

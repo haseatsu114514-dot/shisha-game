@@ -1,0 +1,98 @@
+{
+  "episode": 9,
+  "title": "営業終了",
+  "cast": "みんと・はじめ",
+  "theme": "旧話の復刻",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-20261024/06-09-adam-minto.png",
+    "original_order": "right-to-left",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [],
+  "tasks": [
+    {
+      "script": "RIGHT: in PEPPERMINT shop, professionally playful Minto in green/black devil outfit waves at departing Hajime, saying 「また会いに来てね♡」 LEFT: AFTER WORK outside on a quiet street, same woman now in light beige CARDIGAN, white blouse and DARK LONG SKIRT, NO horns, SAME long BLACK hair and GREEN eyes. Hajime gently says to her 「また会いたいです。」 Her professional confidence vanishes into a shy blush, small response 「……うん。」 Tiny caption 「営業終了」 at corner emphasizes the gag; do not make this a different woman.",
+      "dialogue_original": [
+        "また会いに来てね♡",
+        "また会いたいです。",
+        "……うん。",
+        "営業終了"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/short-comics-20261024/06-09-adam-minto.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "asset_sources/short-comics-20261024/06-09-adam-minto.png",
+      "region": {
+        "x": 555,
+        "y": 1128,
+        "width": 500,
+        "height": 287,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    },
+    {
+      "file": "asset_sources/short-comics-20261024/06-09-adam-minto.png",
+      "region": {
+        "x": 28,
+        "y": 1128,
+        "width": 497,
+        "height": 287,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-09-1.webp",
+      "width": 500,
+      "height": 333,
+      "sha256": "4a9a6dae6bd6b0c96479901a7e1db2447fd64b1f5f62c47bee7def0ab41d3c10"
+    },
+    {
+      "file": "panels/restored-09-2.webp",
+      "width": 497,
+      "height": 331,
+      "sha256": "70c4a1924b790526a9166250e8b1fc48b78fbd7eb92efe47a403886e608f899c"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "warnを記録し紙色補正を採用。強制通過なし。",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": [
+        "qa-pc.png",
+        "qa-phone.png"
+      ]
+    }
+  }
+}

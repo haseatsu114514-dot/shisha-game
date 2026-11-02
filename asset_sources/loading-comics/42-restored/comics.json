@@ -1,0 +1,106 @@
+{
+  "episode": 42,
+  "title": "体内時計",
+  "cast": "ましろ・はじめ",
+  "theme": "旧話の復刻",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/loading-comics-batch2-20261029/42-mashiro-body-clock.png",
+    "original_order": "left-to-right",
+    "branch": "muse/loading-comic-batch2",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [
+    {
+      "file": "42-restored.png",
+      "width": 1086,
+      "height": 1448,
+      "bytes": 736824,
+      "sha256": "0fd63dc18b66afbdbcaab284345deb52d36c8515f2186a3db6f27e2c5a091a3a"
+    }
+  ],
+  "tasks": [
+    {
+      "script": "LEFT ①: 店内の作業台。砂時計と未点火の角炭の入った陶器のボウルが置かれている。はじめが「蒸らしって、何分待てばいいの？」と尋ねると、頬杖をついて眠そうなましろが「砂時計ひとつ分。……僕は寝て待つ。」と答える。 RIGHT ②: 砂時計の砂が落ちきった瞬間、うたた寝していたましろが目を開けて「……落ちた。」と告げる。はじめが「目覚ましより正確！？」と驚く。炭は全コマ赤熱・発煙なし。シーシャ台・ホース・HMD は描かない。",
+      "dialogue_original": [
+        "蒸らしって、何分待てばいいの？",
+        "砂時計ひとつ分。……僕は寝て待つ。",
+        "……落ちた。",
+        "目覚ましより正確！？"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/loading-comics-batch2-20261029/42-mashiro-body-clock.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "42-restored.png",
+      "region": {
+        "x": 84,
+        "y": 113,
+        "width": 448,
+        "height": 301,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    },
+    {
+      "file": "42-restored.png",
+      "region": {
+        "x": 554,
+        "y": 116,
+        "width": 448,
+        "height": 298,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-42-1.webp",
+      "width": 452,
+      "height": 301,
+      "sha256": "6bfa311bb05c48edacd556242425d0b6308bf0fdc864c2d97bc11cad6f975f0e"
+    },
+    {
+      "file": "panels/restored-42-2.webp",
+      "width": 448,
+      "height": 298,
+      "sha256": "10c9a13aa20399f63809e5dc26e85c4cb8493bc7f68e64ad5f2eefb48f035195"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "ok（強制通過なし）",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": [
+        "qa-pc.png",
+        "qa-phone.png"
+      ]
+    }
+  }
+}

@@ -1,0 +1,3109 @@
+{
+  "id": "shark-island",
+  "version": 1,
+  "title": "サメ島の宝の地図",
+  "subtitle": "眼帯の老婆と、入り江の王",
+  "author": "潮田ハルカ",
+  "collection": "船灯文庫・小さな卓の冒険 05",
+  "duration": "約10分",
+  "premise": "港の酒場で、眼帯の老婆が宝の地図を広げた。サメ島の入り江、宝の上には島の主・サメの王。三人の水夫は、誰も傷つけずに宝へたどり着けるか？",
+  "fiction": {
+    "town": "トビウオ諸島",
+    "shop": "酒場「錆びた錨亭」",
+    "traveler": "海賊ばあさんマルタ"
+  },
+  "flow": {
+    "prepare": [
+      "gear",
+      "landing"
+    ],
+    "serve": [
+      "offer"
+    ],
+    "twist": [
+      "tactic"
+    ]
+  },
+  "fitWeights": {
+    "gear": 1,
+    "landing": 1,
+    "offer": 2,
+    "tactic": 0
+  },
+  "fallbackEnding": "voyage",
+  "rules": {
+    "exploreLimit": 4,
+    "pressureMax": 6,
+    "initialPressure": 0,
+    "inspectionPressure": 1,
+    "checkPressure": {
+      "success": 0,
+      "mixed": 1,
+      "trouble": 2
+    },
+    "detourThreshold": 5,
+    "hypothesisBonus": 1
+  },
+  "cast": [
+    {
+      "id": "samechan",
+      "part": "GM",
+      "role": "案内と、サメの王",
+      "color": "#73b8df"
+    },
+    {
+      "id": "hajime",
+      "part": "PLAYER",
+      "role": "{pc}／見習い水夫",
+      "color": "#89bbc4",
+      "ability": "潮目のひらめき",
+      "abilityType": "reroll",
+      "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
+      "sheet": {
+        "name": "ロッコ",
+        "title": "見習い水夫",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 2,
+          "nerve": 4
+        },
+        "trait": "マストに登るのは速い。地図は、よく逆さに持つ"
+      }
+    },
+    {
+      "id": "hiyori",
+      "part": "PLAYER",
+      "role": "{pc:hiyori}／か弱い船医",
+      "color": "#c8a375",
+      "ability": "積み荷の段取り",
+      "abilityType": "prepare",
+      "abilityText": "上陸の支度をするとき、判定に一度だけ＋7",
+      "sheet": {
+        "name": "ルリ",
+        "title": "か弱い船医",
+        "stats": {
+          "eye": 3,
+          "hand": 4,
+          "talk": 2,
+          "nerve": 2
+        },
+        "trait": "潮風に当たると倒れそう……な船医。薬箱は誰より重い",
+        "likes": "港の屋台の、背脂多めのラーメン"
+      }
+    },
+    {
+      "id": "adam",
+      "part": "PLAYER",
+      "role": "{pc:adam}／口上の副船長",
+      "color": "#c9463a",
+      "ability": "大見得の口上",
+      "abilityType": "serve",
+      "abilityText": "王の前に出るとき、判定に一度だけ＋7",
+      "sheet": {
+        "name": "ドラン",
+        "title": "口上の副船長",
+        "stats": {
+          "eye": 2,
+          "hand": 2,
+          "talk": 4,
+          "nerve": 3
+        },
+        "trait": "名言なら百は持っている。半分は、その場で作った",
+        "likes": "林檎の樽。宇宙はあの香りから始まった"
+      }
+    }
+  ],
+  "spots": [
+    {
+      "id": "map",
+      "label": "宝の地図",
+      "short": "地図",
+      "x": 14,
+      "y": 24
+    },
+    {
+      "id": "pedestal",
+      "label": "王冠の台座",
+      "short": "台座",
+      "x": 78,
+      "y": 20
+    },
+    {
+      "id": "graffiti",
+      "label": "船乗りの落書き",
+      "short": "落書き",
+      "x": 40,
+      "y": 34
+    },
+    {
+      "id": "water",
+      "label": "入り江の水面",
+      "short": "水面",
+      "x": 56,
+      "y": 62
+    },
+    {
+      "id": "anchor",
+      "label": "古い錨",
+      "short": "錨",
+      "x": 85,
+      "y": 60
+    },
+    {
+      "id": "footprints",
+      "label": "砂浜の足跡",
+      "short": "足跡",
+      "x": 24,
+      "y": 79
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "crown",
+      "label": "なくした王冠を取り戻したい",
+      "description": "冠を台座に返せば、王の機嫌が直りそう。",
+      "discussion": "trpg_shark_island_discuss_crown"
+    },
+    {
+      "id": "song",
+      "label": "昔の舟歌を、もう一度聞きたい",
+      "description": "あの夜の歌を聞かせれば、喜んでくれそう。",
+      "discussion": "trpg_shark_island_discuss_song"
+    },
+    {
+      "id": "nap",
+      "label": "宝の上で、静かに昼寝したい",
+      "description": "起こさずに済ませるのが、いちばんかも。",
+      "discussion": "trpg_shark_island_discuss_nap"
+    }
+  ],
+  "options": {
+    "gear": [
+      {
+        "id": "anchor_net",
+        "label": "錨と網",
+        "description": "沈んだ宝箱を、網ごと引き上げる。",
+        "response": "trpg_shark_island_choice_gear_anchor_net"
+      },
+      {
+        "id": "drum_flute",
+        "label": "太鼓と笛",
+        "description": "船の楽器で、昔の歌を奏でる。",
+        "response": "trpg_shark_island_choice_gear_drum_flute"
+      },
+      {
+        "id": "canvas",
+        "label": "帆布の日よけ",
+        "description": "入り江に影を作り、静かに過ごせるようにする。",
+        "response": "trpg_shark_island_choice_gear_canvas"
+      }
+    ],
+    "landing": [
+      {
+        "id": "north_rocks",
+        "label": "北の岩場",
+        "description": "台座のすぐそば。足場は滑りやすい。",
+        "response": "trpg_shark_island_choice_landing_north_rocks"
+      },
+      {
+        "id": "beach",
+        "label": "砂浜",
+        "description": "柔らかい砂で、足音が立たない。",
+        "response": "trpg_shark_island_choice_landing_beach"
+      },
+      {
+        "id": "cave",
+        "label": "洞窟の入口",
+        "description": "声がよく響き、入り江の奥まで届く。",
+        "response": "trpg_shark_island_choice_landing_cave"
+      }
+    ],
+    "offer": [
+      {
+        "id": "return",
+        "label": "宝を返す",
+        "description": "宝箱を開け、王のものを王に返す。",
+        "response": "trpg_shark_island_choice_offer_return"
+      },
+      {
+        "id": "sing",
+        "label": "歌って聞かせる",
+        "description": "あの夜の舟歌を、入り江に響かせる。",
+        "response": "trpg_shark_island_choice_offer_sing"
+      },
+      {
+        "id": "leave",
+        "label": "そっと立ち去る",
+        "description": "何も起こさず、静かに入り江を離れる。",
+        "response": "trpg_shark_island_choice_offer_leave"
+      }
+    ],
+    "tactic": [
+      {
+        "id": "furl",
+        "label": "帆をたたむ",
+        "description": "風を受けすぎないよう、帆を下ろす。",
+        "response": "trpg_shark_island_choice_tactic_furl"
+      },
+      {
+        "id": "shelter",
+        "label": "岩陰に逃げ込む",
+        "description": "大きな岩の陰で、雨風をやり過ごす。",
+        "response": "trpg_shark_island_choice_tactic_shelter"
+      },
+      {
+        "id": "moor",
+        "label": "ロープで舟をつなぐ",
+        "description": "岸の岩に舟をつなぎ、流されないようにする。",
+        "response": "trpg_shark_island_choice_tactic_moor"
+      }
+    ]
+  },
+  "profiles": [
+    {
+      "id": "crown",
+      "arrival": "あいつはね、空っぽの台座を見上げては、ため息みたいな泡を吐くのさ",
+      "likes": {
+        "gear": [
+          "anchor_net"
+        ],
+        "landing": [
+          "north_rocks"
+        ],
+        "offer": [
+          "return"
+        ]
+      },
+      "ending": "crown-breeze",
+      "evidence": {
+        "map": {
+          "title": "冠の印と走り書き",
+          "text": "北の岩場に小さな冠の絵。横に『借りた。いつか返す』と書いてある。",
+          "lines": "trpg_shark_island_clue_crown_map"
+        },
+        "pedestal": {
+          "title": "冠の形のくぼみ",
+          "text": "岩場の台座は、小さな冠の形にくぼんでいる。今は空っぽだ。",
+          "lines": "trpg_shark_island_clue_crown_pedestal"
+        },
+        "graffiti": {
+          "title": "冠をかぶった王",
+          "text": "岩壁に、冠をかぶって胸を張るサメの絵。今の王に、冠はない。",
+          "lines": "trpg_shark_island_clue_crown_graffiti"
+        },
+        "water": {
+          "title": "台座を見上げる影",
+          "text": "水の下の大きな影が、北の岩場の台座ばかり見上げている。",
+          "lines": "trpg_shark_island_clue_crown_water"
+        },
+        "anchor": {
+          "title": "網の絡んだ錨",
+          "text": "マルタの船の錨に、丈夫な網が絡んでいる。沈んだ箱を引き上げられそうだ。",
+          "lines": "trpg_shark_island_clue_crown_anchor"
+        },
+        "footprints": {
+          "title": "岩場へ通うヒレの跡",
+          "text": "砂に残るヒレの跡が、毎晩のように北の岩場の台座へ向かっている。",
+          "lines": "trpg_shark_island_clue_crown_footprints"
+        }
+      },
+      "answers": {
+        "voyage": {
+          "title": "借りた光る冠",
+          "text": "嵐の夜、岩場の台座で光る冠を灯り代わりに借り、返しそびれた。",
+          "lines": "trpg_shark_island_ask_crown_voyage"
+        },
+        "king": {
+          "title": "頭をなでる王",
+          "text": "ノコギリ丸は、ときどきヒレで頭のてっぺんを寂しそうになでる。",
+          "lines": "trpg_shark_island_ask_crown_king"
+        },
+        "chest": {
+          "title": "金貨と、小さな冠",
+          "text": "金貨の袋がいくつかと、潮で曇った小さな冠が一つ。",
+          "lines": "trpg_shark_island_ask_crown_chest"
+        },
+        "landing": {
+          "title": "北の岩場から",
+          "text": "北の岩場なら、台座のすぐそばに舟を寄せられる。",
+          "lines": "trpg_shark_island_ask_crown_landing"
+        }
+      }
+    },
+    {
+      "id": "song",
+      "arrival": "夕暮れになると、あいつは入り江の口で、何かを待つように止まるんだ",
+      "likes": {
+        "gear": [
+          "drum_flute"
+        ],
+        "landing": [
+          "cave"
+        ],
+        "offer": [
+          "sing"
+        ]
+      },
+      "ending": "cove-song",
+      "evidence": {
+        "map": {
+          "title": "裏に書かれた舟歌",
+          "text": "地図の裏に舟歌の歌詞。『この歌が、入り江の鍵』と走り書きがある。",
+          "lines": "trpg_shark_island_clue_song_map"
+        },
+        "pedestal": {
+          "title": "苔むした台座",
+          "text": "台座は苔だらけ。王はここに寄りつかず、冠にも興味がなさそうだ。",
+          "lines": "trpg_shark_island_clue_song_pedestal"
+        },
+        "graffiti": {
+          "title": "歌う船乗りたち",
+          "text": "洞窟の壁に、太鼓と笛で歌う船乗りと、目を細めて聞くサメの絵。",
+          "lines": "trpg_shark_island_clue_song_graffiti"
+        },
+        "water": {
+          "title": "波の拍子で揺れる背びれ",
+          "text": "打ち寄せる波の拍子に合わせて、ノコギリ丸の背びれがゆらゆら揺れる。",
+          "lines": "trpg_shark_island_clue_song_water"
+        },
+        "anchor": {
+          "title": "錨に刻んだ拍子",
+          "text": "錨の柄に、仲間が刻んだ拍子の印。叩いて歌のリズムを取っていたらしい。",
+          "lines": "trpg_shark_island_clue_song_anchor"
+        },
+        "footprints": {
+          "title": "洞窟の前で回る跡",
+          "text": "ヒレの跡は洞窟の入口の前で止まり、何度も向きを変えている。",
+          "lines": "trpg_shark_island_clue_song_footprints"
+        }
+      },
+      "answers": {
+        "voyage": {
+          "title": "夜通しの舟歌",
+          "text": "宝を隠した夜は仲間と舟歌を歌い、ノコギリ丸がじっと聞いていた。",
+          "lines": "trpg_shark_island_ask_song_voyage"
+        },
+        "king": {
+          "title": "夕方に待つ王",
+          "text": "夕方になると、ノコギリ丸は入り江の口でぴたりと止まって何かを待つ。",
+          "lines": "trpg_shark_island_ask_song_king"
+        },
+        "chest": {
+          "title": "金貨と、古い太鼓",
+          "text": "金貨の袋と、仲間が叩いていた小さな太鼓が入っている。",
+          "lines": "trpg_shark_island_ask_song_chest"
+        },
+        "landing": {
+          "title": "洞窟の入口から",
+          "text": "洞窟の入口は声がよく響き、入り江の奥まで届く。",
+          "lines": "trpg_shark_island_ask_song_landing"
+        }
+      }
+    },
+    {
+      "id": "nap",
+      "arrival": "あいつは一日じゅう、宝の上でまぶたを半分閉じてるのさ",
+      "likes": {
+        "gear": [
+          "canvas"
+        ],
+        "landing": [
+          "beach"
+        ],
+        "offer": [
+          "leave"
+        ]
+      },
+      "ending": "quiet-cove",
+      "evidence": {
+        "map": {
+          "title": "静かにの印",
+          "text": "地図の入り江に、眠るサメの絵と『静かに』の文字がある。",
+          "lines": "trpg_shark_island_clue_nap_map"
+        },
+        "pedestal": {
+          "title": "日に焼けた台座",
+          "text": "台座のあたりはかんかん照り。王は日の当たる場所を避けているようだ。",
+          "lines": "trpg_shark_island_clue_nap_pedestal"
+        },
+        "graffiti": {
+          "title": "いびきの絵",
+          "text": "岩壁に、宝箱の上で『ぐう』と眠るサメの絵。昔から昼寝の名所らしい。",
+          "lines": "trpg_shark_island_clue_nap_graffiti"
+        },
+        "water": {
+          "title": "半分閉じたまぶた",
+          "text": "水の下で、王はまぶたを半分閉じている。大きな波が来るたび、顔をしかめる。",
+          "lines": "trpg_shark_island_clue_nap_water"
+        },
+        "anchor": {
+          "title": "鳴る鎖",
+          "text": "錨の鎖が風でがちゃがちゃ鳴るたび、入り江の背びれがぴくりと動く。",
+          "lines": "trpg_shark_island_clue_nap_anchor"
+        },
+        "footprints": {
+          "title": "忍び足の跡",
+          "text": "砂浜に古い忍び足の跡。柔らかい砂の上なら、足音は立たない。",
+          "lines": "trpg_shark_island_clue_nap_footprints"
+        }
+      },
+      "answers": {
+        "voyage": {
+          "title": "しんとした入り江",
+          "text": "宝を隠した日、入り江は静かで、ノコギリ丸は浅瀬で昼寝をしていた。",
+          "lines": "trpg_shark_island_ask_nap_voyage"
+        },
+        "king": {
+          "title": "寝起きが悪い王",
+          "text": "物音で起こされると、ノコギリ丸は尾で水面を叩いて怒る。",
+          "lines": "trpg_shark_island_ask_nap_king"
+        },
+        "chest": {
+          "title": "金貨の寝床",
+          "text": "金貨の袋の上に砂が積もり、ちょうどいい寝床になっている。",
+          "lines": "trpg_shark_island_ask_nap_chest"
+        },
+        "landing": {
+          "title": "砂浜から",
+          "text": "柔らかい砂浜なら足音が立たず、入り江に静かに近づける。",
+          "lines": "trpg_shark_island_ask_nap_landing"
+        }
+      }
+    }
+  ],
+  "endings": {
+    "crown-breeze": {
+      "title": "王冠と潮風",
+      "line": "台座に冠が戻り、王は胸を張った。三人は礼の金貨を一袋、港へ持ち帰った。",
+      "dialogue": "trpg_shark_island_ending_crown-breeze"
+    },
+    "cove-song": {
+      "title": "入り江の舟歌",
+      "line": "あの夜の舟歌が、もう一度入り江に響いた。王は最後まで聞き、宝箱をそっと押し出した。",
+      "dialogue": "trpg_shark_island_ending_cove-song"
+    },
+    "quiet-cove": {
+      "title": "静かな入り江",
+      "line": "静かな入り江で、王はぐっすり。三人は宝の端の小箱だけを持ち、忍び足で帰った。",
+      "dialogue": "trpg_shark_island_ending_quiet-cove"
+    },
+    "voyage": {
+      "title": "次の航海の約束",
+      "line": "宝は持ち帰れなかった。それでも港には、次の航海の約束が残った。",
+      "dialogue": "trpg_shark_island_ending_voyage"
+    }
+  },
+  "dialogues": [
+    {
+      "dialogue_id": "trpg_shark_island_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "今夜は海賊の冒険じゃ。宝の地図と、サメの島じゃぞ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "わしがGM、お主たちが海賊船の水夫じゃ。全員、無事に帰すぞ",
+          "castIntro": true,
+          "smallTableText": "わしがGM、お主が海賊船の水夫じゃ。空いた役はわしが兼ねるぞ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "島の主・ノコギリ丸は、余の親戚である。丁重に挨拶せよ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "コロちゃん、親戚いたの！？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……わしも初耳じゃ。たった今、生えた親戚じゃな"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "親戚のおうちから宝を持ち帰るの……？ 少し気まずいわね"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "親戚の集まりは、人生で最も緊張する舞台だ。燃えてきた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "港町トビウオ。酒場『錆びた錨亭』の窓に、夕焼けの海が映る"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}は、酒場の隅でロープの結び方を練習している"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:hiyori}は、明日の積み荷の一覧を書いている"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:adam}は、誰も頼んでいない乾杯の音頭をとっている"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "杖の音が近づく。眼帯の老婆が、卓に古い地図を広げた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "smile",
+          "text": "あたしはマルタ。昔は、これでも海賊船の船長だったのさ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "これ……宝の地図ですか？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_listen",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "normal",
+          "text": "五十年前、仲間とサメ島の入り江に宝を隠したんだよ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "serious",
+          "text": "ところが今は、島の主ノコギリ丸が宝の上から動かない"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ノコギリって名前、歯が痛そうだな……"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "い、痛い話は無しじゃ！ この島では誰もけがをせぬ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "わしが怖いからではないぞ。そういう物語なのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_listen_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "地図の隅に、小さな字で『潮が引くのは昼すぎ』とある"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "上陸の時間まで分かった。これは助かるな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_listen_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ろうそくのしずくが落ちて、地図の印が一つにじんだ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……大丈夫、まだ読めるわ。私の目が霞む前に、急ぎましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_listen_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "酒場の猫が地図に飛び乗り、隅をくわえて駆けていく"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "待って、それ宝の地図！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "猫は戻ってきたぞ。潮は二つ満ちるが、地図は無事じゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_twist_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "serious",
+          "text": "島が見えてきたその時、空が急に暗くなった"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "大粒の雨と横風。突然のスコールが、舟を揺らす"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "ふはは。余の親戚が、歓迎の雨を降らせたのである"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "歓迎が激しすぎる！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "さあ、どうする？ 手を選ぶのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_twist_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "雨雲が抜けていく。舟は一度も傾かなかった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "見て、虹！ ……こほん。きれいね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_twist_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "荷物の樽が一つ転がって、三人とも水をかぶった"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "濡れた衣装も、また一興。航海の幕は開いたばかりだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_twist_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "大波が一つ。舟が大きく傾き、荷物が甲板を転がる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "みんな、荷物より自分を押さえて！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "潮は二つ満ちる。じゃが、全員まだ舟の上じゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_prepare_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "道具がぴたりと収まった。入り江は静かに三人を待っている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……完璧。あとは、王さまに会うだけね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_prepare_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "結び目を一つ直すあいだに、潮が少し満ちてきた"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "手直しも演出のうちだ。幕はまだ下りていない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_prepare_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "荷が岩にぶつかり、がらんと大きな音が鳴る"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "今の音、入り江まで聞こえてないよな……？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "予備の綱がある。支度は、まだ間に合うぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_serve_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "王の目が、ふっとやわらいだ。入り江の波が穏やかになる"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "見事な一幕だ。観客は、海の王ただ一人"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "伝わった……気がする"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_serve_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "足元が滑る。二人が腕をつかんで、一人を支えた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ありがとう。王さまの前で転ぶところだった"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "全員無事じゃ。王も、少し笑ったように見えたぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_serve_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "王が大きなくしゃみをした。しぶきが三人を頭から濡らす"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "冷たっ！ ……こほん。冷たいわね"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "しぶきだけじゃ。誰も、けがはしておらんぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_consult_hiyori",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "調べられるのは四箇所……。王さまの気持ちになって考えましょう"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "台座と水面を見れば、何が欲しいのか分かりそうね"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "相談とメモは、潮を進めぬぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_consult_adam",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "主役の心を知りたければ、楽屋をのぞくことだ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "落書きと足跡。王がどこへ通っているかが鍵だな"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "鋭いのう。相談は何度でも無料じゃぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_preparation",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "雨は上がったぞ。使えるのは、舟に積んだものだけじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "見立ては決まった。持っていく装備と、上がる場所を選ぼう"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……積み荷の一覧なら、ここに。全部、頭に入ってるわ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "どこから現れるかで、舞台の印象は変わる。登場は大事だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_serving",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "入り江の水面が、静かに盛り上がる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "serious",
+          "text": "サメの王・ノコギリ丸が、ゆっくりと顔を出した"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "おお、親戚よ！ 余である！ ……返事がないのである"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "サメ映画なら、ここが一番の見せ場じゃぞ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "王さまの前だ。差し出し方を決めよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_epilogue",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "おしまいじゃ。ノコギリ丸は、今日も入り江におるぞ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "コロちゃんの親戚、最後まで返事しなかったな"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "照れ屋なのである。一族の血である"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……海の冒険、楽しかった。帰りにラーメン、食べに行かない？"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "宝の島に林檎の香りがあれば完璧だった。宇宙の原点だからな"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "GMの語りも見事だった。王の登場は、特に良かった"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "そ、そうかの！？ 次は、もっと大きいサメの王を出すのじゃ！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余より大きな王は、認めぬのである"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_debrief_smooth",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "三人の息がそろったのう。良い航海じゃった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "宝の地図って、広げるだけでわくわくするな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_debrief_with_detour",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "潮に流されても、三人は戻ってきた。それで十分じゃ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "回り道も、航海日誌の名場面になる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_declare_listen_lamp",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}は地図をランプにかざして、印を一つずつ確かめます"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定じゃ。逆さに持つでないぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_declare_listen_back",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……{pc:hiyori}は地図を裏返すわ。にじんだ字があるの"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定じゃ。古い墨は読みにくいぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_declare_listen_toast",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:adam}が杯を掲げる。若き日の船長に、乾杯だ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定じゃ。ばあさんは手強いぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_declare_twist_helm",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}が舵を握ります。みんな、どこかにつかまって！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "度胸で判定じゃ。波は待ってくれんぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_declare_twist_knot",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:hiyori}が綱を結び直すわ。指先だけは、か弱くないの"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定じゃ。濡れた綱は滑るぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_declare_twist_call",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "{pc:adam}が号令をかける。嵐の中でこそ、声は届く"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定じゃ。雨音に負けるでないぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_declare_prepare_haul",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}はロープを担いで、道具を岸まで運びます"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定じゃ。荷を海に落とすでないぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_declare_prepare_pack",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:hiyori}が組むわ。……重い荷物は、得意なの"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "手際で判定じゃ。見立てが合っておれば追い風じゃぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_declare_prepare_pulley",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "{pc:adam}は滑車を組む。舞台の仕掛けと、理屈は同じだ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定じゃ。凝りすぎるでないぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_declare_serve_step",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "{pc}が前に出ます。王さま、話を聞いてください！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "度胸で判定じゃな。王は大きいぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_declare_serve_speech",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "{pc:adam}が口上を述べる。海の王よ、今宵の幕を開けよう"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "話術で判定じゃ。王を退屈させるでないぞ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_declare_serve_watch",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:hiyori}は王の目を見るわ。まばたきの合図を逃さない"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定じゃ。王の目は小さいぞ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_make_hiyori_hiyori_ruri",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私はルリ。潮風に当たると倒れちゃう、か弱い船医よ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "上陸したら、港の屋台でラーメンを食べるの。背脂は多めで"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "か弱いのに、背脂は多めなのじゃな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "その船医さん、たぶん誰より元気だな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_make_hiyori_hiyori_nerine",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私はネリネ。風が吹いたら飛ばされそうな、見張り番よ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "見張り台には、ゆるいカモメのぬいぐるみ。それと手斧を三本"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "最後の一つだけ、急に物騒じゃぞ！"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "的があると、つい投げちゃうの。か弱いのにね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_make_adam_adam_doran",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "俺の役はドラン。口上ひとつで船をまとめる副船長だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "宝とは、探す者の胸に最初から眠っているものだ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "出航前に名言で締めるでない！ 航海はこれからじゃぞ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "なお、船倉には林檎の樽を積んだ。宇宙は、あの香りから始まった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_make_adam_adam_jiruba",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "俺の役はジルバ。樽から現れ、樽へ消える奇術水夫だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "船とは、海に浮かぶ巨大な舞台装置。仕掛けは甲板の下にある"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "船底に穴だけは開けるでないぞ。沈むのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "アダムさん、役になっても舞台の話してる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_session_zero_open",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "出航の前に、キャラ作りじゃ。役は決まったかの？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余の親戚に会いに行く者たちである。心して役を作るがよい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_session_zero_close",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "俺は{pc}。{pcTitle}でいく"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "乗組員はそろったのじゃ。では、出航じゃ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_crown_map",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "地図の北の岩場に、小さな冠の絵。横に『借りた、いつか返す』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "借りっぱなしなのか。五十年は長いな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_crown_pedestal",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "台座のくぼみは、ちょうど小さな冠の形をしている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ここに冠が載っていたのね……。今は、空っぽ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "玉座に冠なし。これは一族の一大事である"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_crown_graffiti",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "岩壁に、冠をかぶって胸を張るサメの落書きがある"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "冠は王の衣装だ。衣装のない主役は、舞台に立てない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_crown_water",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "水の下の大きな影が、北の岩場の台座ばかり見上げている"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "宝より、あっちが気になるのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_crown_anchor",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "古い錨に、まだ丈夫な網が絡まっている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "錨で引っかけて網ですくえば……沈んだ箱も上げられそう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_crown_footprints",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ヒレの跡が、北の岩場へ何度も往復している"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "毎夜の通い路か。未練というものは、足跡に出る"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_ask_crown_voyage",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "serious",
+          "text": "嵐の夜でね。岩場の台座で光る冠を、灯り代わりに借りたのさ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "normal",
+          "text": "返しそびれて、宝箱に入れたまま。悪いことをしたよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_ask_crown_king",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "normal",
+          "text": "あいつ、ときどきヒレで頭のてっぺんをなでるのさ。寂しそうにね"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "王の頭には冠がいるのである。余も、欲しい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_ask_crown_chest",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "normal",
+          "text": "金貨の袋がいくつか。それと、潮で曇った小さな冠が一つ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "冠だけ、ほかの宝と毛色が違うな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_ask_crown_landing",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "normal",
+          "text": "北の岩場から上がりな。あの台座のすぐそばに舟を寄せられる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "岩場……滑りそう。でも、台座が近いのね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_song_map",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "地図の裏に、舟歌の歌詞と『この歌が入り江の鍵』の走り書き"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "宝の地図に、歌詞……？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_song_pedestal",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "台座は苔だらけ。王が来た跡はない"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "冠には、あまり興味がないのね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_song_graffiti",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "洞窟の壁に、太鼓と笛で歌う船乗りたちの絵がある"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "その真ん中で、サメが目を細めて聞いている"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "客席に王がいた舞台か。いい絵だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_song_water",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "波の拍子に合わせて、背びれがゆらゆら揺れている"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "我が一族は、拍子にうるさいのである"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_song_anchor",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "錨の柄に、とん、とん、ととんと拍子の印が刻んである"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "これで拍子を取っていたのね……。素敵"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_song_footprints",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ヒレの跡が、洞窟の入口の前でくるくる回っている"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "洞窟から何か聞こえてくるのを、待ってるのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_ask_song_voyage",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "smile",
+          "text": "宝を隠した夜は、仲間と夜通し舟歌を歌ったもんさ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "normal",
+          "text": "入り江の真ん中で、あいつがじっと聞いていたっけね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_ask_song_king",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "normal",
+          "text": "夕方になると、入り江の口でぴたりと止まる。何か待ってるのさ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "待つ者には、待つだけの理由がある。我ながら名言だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_ask_song_chest",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "normal",
+          "text": "金貨の袋と、仲間が叩いてた小さな太鼓さ。もう誰も叩かない"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "宝箱に太鼓……思い出の品なんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_ask_song_landing",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "normal",
+          "text": "洞窟の入口から上がるといい。声がよく響いて、奥まで届く"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "声が届く場所……覚えておくわ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_nap_map",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "地図の入り江に、眠るサメの絵と『静かに』の文字"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "注意書きまである。親切な地図だな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_nap_pedestal",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "台座はかんかん照り。王が来た跡はない"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "こんなに暑いと、私なら溶けちゃう……。王さまも日陰派ね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_nap_graffiti",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "岩壁に、宝箱の上で『ぐう』と眠るサメの落書き"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "昼寝こそ、王に許された最高の贅沢だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_nap_water",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "水の下で、王はまぶたを半分閉じている"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "大きな波が来るたび、少しだけ顔をしかめた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "眠いところを邪魔されてる顔だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_nap_anchor",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "錨の鎖が風で鳴るたび、入り江の背びれがぴくりと動く"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "音を立てたら、起こしちゃうのね……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_clue_nap_footprints",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "砂浜に、古い忍び足の跡。柔らかい砂は、足音を消す"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "先人も、ここで息をひそめたか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_ask_nap_voyage",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "normal",
+          "text": "隠した日、入り江はしんとしてた。あいつは浅瀬で昼寝さ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "smile",
+          "text": "起こさないように、みんな忍び足で歩いたもんだよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_ask_nap_king",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "serious",
+          "text": "物音で起こされると、尾で水面をばしゃんと叩くのさ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "寝起きが悪いタイプか……気持ちは分かる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_ask_nap_chest",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "normal",
+          "text": "金貨の袋さ。上に砂が積もって、いい寝床になっちまった"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "金貨の寝床。王族にふさわしい昼寝である"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_ask_nap_landing",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "normal",
+          "text": "砂浜から上がりな。柔らかい砂なら、足音が立たないよ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "足音のない登場か。役者として、いちばん難しい芸だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_choice_gear_anchor_net",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "錨で引っかけて、網ですくう……。力仕事は任せて。か弱いけど"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_choice_gear_drum_flute",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "太鼓と笛、ちゃんと鳴るかしら。少し、試し吹きしたいわ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_choice_gear_canvas",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "帆布で日よけを張るのね。影があれば、私も溶けずに済むわ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_choice_landing_north_rocks",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "岩場から登場か。主役は、高いところから現れるものだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_choice_landing_beach",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "砂浜を忍び足で。足音のない登場は、観客の息を止める"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_choice_landing_cave",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "洞窟の入口は、天然の音響舞台だ。声がよく響く"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_choice_offer_return",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "宝箱を開けよう。王のものは、王に返すんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_choice_offer_sing",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "歌おう。あの夜の舟歌を、もう一度"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_choice_offer_leave",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "起こさないように、そっと行こう。合図は手で"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_choice_tactic_furl",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "三人がかりで、ばたつく帆を巻き取っていく"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "よし、これで舟が傾かない！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_choice_tactic_shelter",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "舟を大岩の陰へ滑り込ませる。雨音が少し遠くなった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……ここなら安心。雨に溶けずに済みそう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_choice_tactic_moor",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "岸の岩にロープを回し、舟をしっかりとつなぐ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "つながっている限り、舟は帰る場所を忘れない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_discuss_crown",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "冠がないから、ずっと宝の上で待っているのね……。返してあげたい"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "主役に衣装を返す。それが今夜の俺らの役目だ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "ほう、王冠の読みか。では、その見立てで行くのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_discuss_song",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "あの夜の歌を、ずっと待っているのね……。少し切ない"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "歌を待つ観客がいる。ならば、幕を上げるしかない"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "歌の読みか。サメ映画にも、歌う場面はあるのじゃぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_discuss_nap",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "眠いだけなら、そっとしておいてあげたいわ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "眠る王を起こさない。それもまた、名演というものだ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "昼寝の読みか。静かな海賊も、渋いのう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_ending_crown-breeze",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "宝箱を開けると、潮で曇った小さな冠が出てきた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "台座に冠を戻すと、ノコギリ丸が岩場にそっと頭をのせた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "冠をかぶった王は胸を張り、金貨の袋を一つ舟へ押しやった"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "見よ、あの冠の似合いぶり。さすが余の一族である"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "潮風に、冠がきらきらして……。よく似合ってるわ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "五十年越しの『返す』が、やっとできたな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_ending_cove-song",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "三人の舟歌が、入り江いっぱいに響きわたる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ノコギリ丸は、歌に合わせて入り江をくるりと回る"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "王の尾が、拍手のように水面を叩いている。アンコールだ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "歌い終えると、王は宝箱を鼻先で、そっと舟へ押した"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余の一族は、音楽を愛するのである。しかと記憶せよ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "マルタさんにも、聞かせてあげたかったな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_ending_quiet-cove",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "三人が息をひそめると、入り江に静けさが戻った"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ノコギリ丸は宝の上で、満足そうに大きなあくびをした"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "三人は宝の端の小箱だけを持ち、忍び足で入り江を離れる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……ぐっすり。起こさなくて、よかった"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "親戚の昼寝を守った者たちよ。余から勲章をやろう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "小箱の中、マルタさんの船の旗だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_ending_voyage",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "王は首をかしげ、宝の上でくるりと丸くなった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "あれ、思ってた反応と違う……！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "三人は手ぶらで港へ戻る。マルタは、大声で笑った"
+        },
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "smile",
+          "text": "上出来さ。全員帰ってきた。それが一番の宝だよ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "海賊ばあさんマルタ／物語",
+          "face": "normal",
+          "text": "次はあたしも乗せておくれ。もう一度、あの島へ行こう"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "親戚の家は、二度目の訪問が肝心である"
+        }
+      ]
+    }
+  ],
+  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。空いた席の役はGMが兼任する。",
+  "presentation": {
+    "theme": "island",
+    "number": "05",
+    "genre": "海賊の冒険",
+    "tagline": "宝の上で、サメの王が待っている。",
+    "backdrop": "linear-gradient(170deg, #5fd3c8 0%, #1f9aa6 38%, #12606f 62%, #e9d6a8 63%, #d8bd85 100%)",
+    "sceneAlt": "南の島の入り江。地図を広げた岩、王冠の台座、落書きの岩壁、青い水面、古い錨、砂浜の足跡。水の下に大きなサメの影。",
+    "location": "トビウオ諸島 / サメ島の入り江",
+    "atmosphere": "青く澄んだ入り江。白い砂。水の下に、大きな影。",
+    "coverHeading": "宝の地図が、サメの島を指していた。",
+    "coverRule": "四箇所を調べ、王の望みを見立て、全員で港へ帰る。",
+    "titleLines": [
+      "サメ島の",
+      "宝の地図"
+    ],
+    "riskLabel": "潮",
+    "fields": {
+      "gear": "船の装備",
+      "landing": "上陸地点",
+      "offer": "王への差し出し方",
+      "tactic": "スコールへの手"
+    },
+    "prepareTitle": "何を持って、どこから上がる？",
+    "prepareDescription": "装備を一つ、上陸地点を一つ。見つけた手がかりを作戦にしよう。",
+    "serveTitle": "いよいよ、王の御前。",
+    "serveDescription": "サメの王に、何を差し出す？",
+    "hypothesisTitle": "サメの王は、何を待っている？",
+    "arrivalRole": "海賊ばあさんマルタ／物語",
+    "exploreIdle": "調べられるのは四箇所までじゃ。メモの再読と相談は、何度でもよいぞ",
+    "listenIdle": "ばあさんの話と地図じゃ。まずは、よく聞くのじゃ",
+    "prepareIdle": "準備を選ぼう。仲間がいれば、切り札も頼める",
+    "serveIdle": "王の御前じゃ。慌てず、全員で港へ帰るのじゃぞ",
+    "endingIdle": "この晩の話は、ここまで。次は、また別の本で会おう",
+    "phases": {
+      "listen": {
+        "kicker": "01 / 話を聞く",
+        "title": "宝の上に、サメの王",
+        "description": "酒場で、眼帯の老婆が地図を広げた。まずは話を聞こう。",
+        "button": "地図を読む"
+      },
+      "interview": {
+        "kicker": "02 / マルタに聞く",
+        "title": "マルタに、何を聞く？",
+        "description": "聞けるのは二つ。答えは、王の望みしだいで変わる。",
+        "button": "話を聞き終えて、島へ渡る"
+      },
+      "explore": {
+        "kicker": "03 / 島を調べる",
+        "title": "サメの王の望みを見抜く",
+        "description": "調べられるのは四箇所まで。三つ以上の手がかりから、王の望みを考えよう。",
+        "button": "見立てを話す"
+      },
+      "twist": {
+        "kicker": "04 / 突然のスコール",
+        "title": "空が、急に暗くなった",
+        "description": "大粒の雨と横風。全員で舟を守ろう。",
+        "button": "この手で切り抜ける"
+      },
+      "prepare": {
+        "kicker": "05 / 上陸の支度",
+        "title": "装備と、上陸地点",
+        "description": "使えるのは、舟に積んだものだけ。",
+        "button": "支度を整える"
+      },
+      "serve": {
+        "kicker": "06 / 王の御前",
+        "title": "サメの王に、差し出すもの",
+        "description": "王の望みに応えて、全員で港へ帰ろう。ここがクライマックス。",
+        "button": "王の前に出る"
+      },
+      "ending": {
+        "kicker": "航海日誌の最後に",
+        "title": "全員、帰港！",
+        "description": "誰もけがをせず、港へ帰れた。さて、この航海の感想は？"
+      }
+    },
+    "help": "マルタに二つ質問し、島を最大四箇所調べます。新しい場所を調べるたび潮が一つ満ちます。三つ以上の手がかりで王の望みを見立てたあと、スコールを切り抜け、装備・上陸地点・王への差し出し方を決めます。相談とメモの再読は無料。見立てが合うと支度の判定に＋4。",
+    "exitText": "航海をここで中断して、本棚へ戻ります。次に遊ぶと、王の望みが違うかもしれません。",
+    "endingKicker": "SHIP’S LOG / この航海の結末",
+    "stats": {
+      "eye": "観察",
+      "hand": "手際",
+      "talk": "話術",
+      "nerve": "度胸"
+    },
+    "declareTitle": "どうする？ 行動を宣言せよ",
+    "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
+    "sheetTitle": "キャラクターシート",
+    "target": "GMの裁定 · 目標値30（19以上でひと手間）",
+    "twistTitle": "突然のスコール。どうする？",
+    "interviewIdle": "マルタに聞けるのは二つまでじゃ。何を聞く？",
+    "twistIdle": "スコールじゃ。手を選んで、誰が動くか決めるのじゃ",
+    "planTitle": "上陸作戦"
+  },
+  "intro": "trpg_shark_island_intro",
+  "listen": "trpg_shark_island_listen",
+  "checks": {
+    "listen": {
+      "title": "ばあさんの話と地図を読み解く",
+      "hint": "宣言した水夫の能力で判定。どの出目でも聞き込みへ進みます。",
+      "success": "trpg_shark_island_listen_success",
+      "mixed": "trpg_shark_island_listen_mixed",
+      "trouble": "trpg_shark_island_listen_trouble",
+      "approaches": [
+        {
+          "id": "listen_lamp",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "eye",
+          "label": "地図をランプにかざして読む",
+          "detail": "{pc}が地図の印と書き込みを、一つずつ確かめる",
+          "declare": "trpg_shark_island_declare_listen_lamp"
+        },
+        {
+          "id": "listen_back",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "eye",
+          "label": "地図の裏の、にじんだ字を読む",
+          "detail": "{pc:hiyori}が地図を裏返し、薄れた書き込みを読む",
+          "declare": "trpg_shark_island_declare_listen_back"
+        },
+        {
+          "id": "listen_toast",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "乾杯して、昔話を引き出す",
+          "detail": "{pc:adam}が杯を掲げ、マルタの思い出話を促す",
+          "declare": "trpg_shark_island_declare_listen_toast"
+        }
+      ]
+    },
+    "twist": {
+      "title": "スコールを切り抜ける",
+      "hint": "宣言した水夫の能力で判定。どの出目でも物語は続きます。",
+      "success": "trpg_shark_island_twist_success",
+      "mixed": "trpg_shark_island_twist_mixed",
+      "trouble": "trpg_shark_island_twist_trouble",
+      "approaches": [
+        {
+          "id": "twist_helm",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "舵を握って、舟を立て直す",
+          "detail": "{pc}が雨の中で舵にしがみつき、舟の向きを保つ",
+          "declare": "trpg_shark_island_declare_twist_helm"
+        },
+        {
+          "id": "twist_knot",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "hand",
+          "label": "濡れた綱を、手早く結び直す",
+          "detail": "{pc:hiyori}がずぶ濡れの綱を、手早く締め直す",
+          "declare": "trpg_shark_island_declare_twist_knot"
+        },
+        {
+          "id": "twist_call",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "声を張って、皆の動きをそろえる",
+          "detail": "{pc:adam}が雨音に負けない声で、号令をかける",
+          "declare": "trpg_shark_island_declare_twist_call"
+        }
+      ]
+    },
+    "prepare": {
+      "title": "上陸の支度を整える",
+      "hint": "宣言した水夫の能力で判定。見立てが合えば、さらに＋4。",
+      "success": "trpg_shark_island_prepare_success",
+      "mixed": "trpg_shark_island_prepare_mixed",
+      "trouble": "trpg_shark_island_prepare_trouble",
+      "helper": "hiyori",
+      "approaches": [
+        {
+          "id": "prepare_haul",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "hand",
+          "label": "ロープを担いで、荷を運ぶ",
+          "detail": "{pc}が力まかせに、道具を舟から運び出す",
+          "declare": "trpg_shark_island_declare_prepare_haul"
+        },
+        {
+          "id": "prepare_pack",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "hand",
+          "label": "段取りどおりに、道具を組む",
+          "detail": "{pc:hiyori}が手順を確かめ、ひとつずつ組み上げる",
+          "declare": "trpg_shark_island_declare_prepare_pack"
+        },
+        {
+          "id": "prepare_pulley",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "hand",
+          "label": "滑車を組んで、仕掛けにする",
+          "detail": "{pc:adam}が舞台の要領で、滑車と綱を組む",
+          "declare": "trpg_shark_island_declare_prepare_pulley"
+        }
+      ]
+    },
+    "serve": {
+      "title": "サメの王の前に出る",
+      "hint": "宣言した水夫の能力で判定。どの出目でも全員で結末へ進みます。",
+      "success": "trpg_shark_island_serve_success",
+      "mixed": "trpg_shark_island_serve_mixed",
+      "trouble": "trpg_shark_island_serve_trouble",
+      "helper": "adam",
+      "approaches": [
+        {
+          "id": "serve_step",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "先頭に立って、王の前へ進む",
+          "detail": "{pc}が胸を張り、ノコギリ丸の正面へ進み出る",
+          "declare": "trpg_shark_island_declare_serve_step"
+        },
+        {
+          "id": "serve_speech",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "王に向けて、口上を述べる",
+          "detail": "{pc:adam}が大げさな身ぶりで、王に語りかける",
+          "declare": "trpg_shark_island_declare_serve_speech"
+        },
+        {
+          "id": "serve_watch",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "eye",
+          "label": "王の目を見て、合図を出す",
+          "detail": "{pc:hiyori}が王の表情を読み、動く瞬間を決める",
+          "declare": "trpg_shark_island_declare_serve_watch"
+        }
+      ]
+    }
+  },
+  "consult": {
+    "hiyori": "trpg_shark_island_consult_hiyori",
+    "adam": "trpg_shark_island_consult_adam"
+  },
+  "preparation": "trpg_shark_island_preparation",
+  "serving": "trpg_shark_island_serving",
+  "epilogue": "trpg_shark_island_epilogue",
+  "debrief": {
+    "smooth": "trpg_shark_island_debrief_smooth",
+    "with-detour": "trpg_shark_island_debrief_with_detour"
+  },
+  "campaign": {
+    "seats": [
+      {
+        "actor": "samechan",
+        "candidates": [
+          "samechan"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hajime",
+        "candidates": [
+          "hajime"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hiyori",
+        "candidates": [
+          "hiyori"
+        ],
+        "required": false
+      },
+      {
+        "actor": "adam",
+        "candidates": [
+          "adam"
+        ],
+        "required": false
+      }
+    ]
+  },
+  "builder": {
+    "seat": "hajime",
+    "points": 11,
+    "min": 1,
+    "max": 5,
+    "nameMax": 6,
+    "title": "あなたのキャラクターを作る",
+    "intro": "この航海で演じる水夫を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
+    "looks": [
+      {
+        "id": "bandana",
+        "label": "バンダナの水夫",
+        "detail": "赤いバンダナと、縞のシャツ",
+        "color": "#7b3f33",
+        "accent": "#f0b27a",
+        "portrait": null
+      },
+      {
+        "id": "brim",
+        "label": "日よけ帽の水夫",
+        "detail": "つばの広い帽子と、日焼けした腕",
+        "color": "#5c6a70",
+        "accent": "#efe2c0",
+        "portrait": null
+      },
+      {
+        "id": "tricorn",
+        "label": "三角帽の水夫",
+        "detail": "古い三角帽と、継ぎはぎの上着",
+        "color": "#2f4350",
+        "accent": "#89bbc4",
+        "portrait": null
+      },
+      {
+        "id": "braid",
+        "label": "三つ編みの水夫",
+        "detail": "潮風に揺れる三つ編みと、青い腰布",
+        "color": "#2d3a5e",
+        "accent": "#7fd6d0",
+        "portrait": null
+      }
+    ],
+    "archetypes": [
+      {
+        "id": "deckhand",
+        "name": "ロッコ",
+        "title": "見習い水夫",
+        "trait": "マストに登るのは速い。地図は、よく逆さに持つ",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 2,
+          "nerve": 4
+        },
+        "recommended": true
+      },
+      {
+        "id": "navigator",
+        "name": "ミナト",
+        "title": "星読みの航海士",
+        "trait": "星と潮を読むのが得意。泳ぐのは、少し苦手",
+        "stats": {
+          "eye": 4,
+          "hand": 2,
+          "talk": 3,
+          "nerve": 2
+        }
+      },
+      {
+        "id": "cook",
+        "name": "ペッパ",
+        "title": "船のコック",
+        "trait": "鍋と包丁なら任せて。味見は、一日に三回まで",
+        "stats": {
+          "eye": 2,
+          "hand": 4,
+          "talk": 3,
+          "nerve": 2
+        }
+      }
+    ],
+    "statHelp": {
+      "eye": "よく見て、気づく力。調べる・様子を見るときに使う",
+      "hand": "手先の器用さ。道具を使う・準備するときに使う",
+      "talk": "話す・聞く力。人と向き合うときに使う",
+      "nerve": "怖がらない力。危ない場面や、勇気が要るときに使う"
+    }
+  },
+  "companionBuilds": {
+    "hiyori": {
+      "hiyori": [
+        {
+          "id": "ruri",
+          "name": "ルリ",
+          "title": "か弱い船医",
+          "trait": "潮風に当たると倒れそう……な船医。薬箱は誰より重い",
+          "likes": "港の屋台の、背脂多めのラーメン",
+          "stats": {
+            "eye": 3,
+            "hand": 4,
+            "talk": 2,
+            "nerve": 2
+          },
+          "making": "trpg_shark_island_make_hiyori_hiyori_ruri"
+        },
+        {
+          "id": "nerine",
+          "name": "ネリネ",
+          "title": "斧投げの見張り番",
+          "trait": "風に飛ばされそうな見張り番。なのに、手斧は百発百中",
+          "likes": "斧投げと、ゆるいカモメのぬいぐるみ",
+          "stats": {
+            "eye": 4,
+            "hand": 4,
+            "talk": 1,
+            "nerve": 2
+          },
+          "making": "trpg_shark_island_make_hiyori_hiyori_nerine"
+        }
+      ]
+    },
+    "adam": {
+      "adam": [
+        {
+          "id": "doran",
+          "name": "ドラン",
+          "title": "口上の副船長",
+          "trait": "名言なら百は持っている。半分は、その場で作った",
+          "likes": "林檎の樽。宇宙はあの香りから始まった",
+          "stats": {
+            "eye": 2,
+            "hand": 2,
+            "talk": 4,
+            "nerve": 3
+          },
+          "making": "trpg_shark_island_make_adam_adam_doran"
+        },
+        {
+          "id": "jiruba",
+          "name": "ジルバ",
+          "title": "仕掛け好きの奇術水夫",
+          "trait": "樽から現れ、樽へ消える。船は大きな舞台装置だ",
+          "likes": "どんでん返しの扉と、林檎の香り",
+          "stats": {
+            "eye": 3,
+            "hand": 3,
+            "talk": 2,
+            "nerve": 3
+          },
+          "making": "trpg_shark_island_make_adam_adam_jiruba"
+        }
+      ]
+    }
+  },
+  "sessionZero": {
+    "open": "trpg_shark_island_session_zero_open",
+    "close": "trpg_shark_island_session_zero_close"
+  },
+  "interview": {
+    "title": "マルタに、何を聞く？",
+    "prompt": "聞けるのは二つまで。王の望みに近づく質問を選ぼう",
+    "picks": 2,
+    "topics": [
+      {
+        "id": "voyage",
+        "label": "五十年前の航海",
+        "description": "宝を隠した日のことを聞く"
+      },
+      {
+        "id": "king",
+        "label": "ノコギリ丸の様子",
+        "description": "島の主のことを聞く"
+      },
+      {
+        "id": "chest",
+        "label": "宝箱の中身",
+        "description": "何を隠したのか聞く"
+      },
+      {
+        "id": "landing",
+        "label": "島への上がり方",
+        "description": "どこから上陸するか聞く"
+      }
+    ]
+  },
+  "twist": {
+    "intro": "trpg_shark_island_twist_intro"
+  }
+}

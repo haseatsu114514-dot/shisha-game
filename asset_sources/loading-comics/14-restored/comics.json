@@ -1,0 +1,120 @@
+{
+  "episode": 14,
+  "title": "見た目と重さ",
+  "cast": "ましろ・りゅうじ",
+  "theme": "旧話の復刻",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-20261024/14-17-everyday.png",
+    "original_order": "right-to-left",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "image_genによる再作画",
+  "image_manifest": [
+    {
+      "file": "14-restored.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1906859,
+      "sha256": "a9ab90bf3aaa84146949253c99b9f5b9f4699aafa6e0e88e8fc367f8414a06dc"
+    }
+  ],
+  "tasks": [
+    {
+      "script": "RIGHT: Ryuji in WHITE CHECK suit, tinted glasses, moustache and purple tie, meets gentle adult two-braided Mashiro at a cafe and asks kindly 「軽めか？」 Mashiro sweetly nods with a sleepy smile. She is beside her completed compact shisha with ONE connected dark hose resting in her hand, correct separate low open silver HMD with TWO tiny coals above ceramic bowl, thin tray, stem, clear glass base. LEFT: Mashiro has just EXHALED one enormous thick cloud from her MOUTH, comfortable and totally unbothered, and says 「僕は、いつもの〜。」 Ryuji at a distance is surprised, his moustache visible under glasses. He says 「それでか……」 Her rigid hand-held handle is away from mouth after exhale, ONE flexible dark hose clearly connected from stem side-port to handle base. No extra hoses, no smoke from bowl, no smoke magic. Match hardware photos structurally. Ryuji isn't inhaling her cloud; cloud goes away from him.",
+      "dialogue_original": [
+        "軽めか？",
+        "僕は、いつもの〜。",
+        "それでか……"
+      ],
+      "prompt": "旧漫画のサイズと読む順を統一する編集です。添付1の原画シートから指定した話1本だけを、添付2の下敷きへ再構成する。元のネタ・衣装・顔・小物・台詞を保つ。別の話を混ぜず、新しいギャグは足さない。出力1536x1024、左x36 y272幅720高さ480、右x780 y272幅720高さ480、横長3:2。上下272pxの紙余白、枠はy752で終わる。枠を縦に広げない。絵は枠内だけ。セーフマージン29px。左コマを導入、右コマをオチに並べ替え、絵や文字の左右反転は禁止。元絵の台詞は横書きの読みやすい太い日本語ゴシック。題名・話数・シリーズ名・読む順の番号・署名は消す。2.5頭身の太線セル塗りと紙質、原画の本人性を維持。台詞が多くても枠を拡げず人物を胸上で構成する。文字・顔・重要な小物を欠かさない。元々3人の話は物語を勝手に改変せず3人を維持してよい（旧話の復刻である）。シーシャ器具は指定された話以外描かない。写真は構造参照で、製品ロゴや写真の実在人物は模写しない。最終配置について、次の台本のLEFTは完成版の左、RIGHTは完成版の右です。元シートの左右位置を真似しない。上の大きな余白を残す下敷き画像が寸法の正本。出力は必ず1536x1024（2:1や横長帯は禁止）。添付1下敷き、添付2シートの第14話「見た目と重さ」だけを描き直す。完成版の左は導入: 小柄で成人のましろが左、りゅうじが右、りゅうじ『軽めか？』。右はオチ: ましろが快適そうに口から大きな煙を吐いて『僕は、いつもの〜。』。りゅうじが少し離れて驚いて『それでか……』。この3台詞だけ。煙はりゅうじへ吹きかけない。2人の左右は固定。写真4の青い現代型の細いステム・シンプルなベースと同じ構造、上部も写真4の同じ蓋付き低いHMD一機種にそろえ、閉じた蓋で炭は見えない。写真5は吸っていない時の口とハンドルの距離と口からの煙の出方のみ参照。ホース１本が台側面から自然にたわみ、ましろの手にある硬い黒ハンドル根元までつながる。人物の顔や手足は実写人物に似せない。機材は人物と同じ奥行きで小さく。シーシャ（水たばこ）の構造を守って描く。上から順に「小さな角炭 → 炭を収めるHMD（熱管理器具。ボウルの口に載る別部品） → フレーバーを詰めたハガル（器と細い脚） → 灰の受け皿 → 縦のステム → 水の入ったガラスのベース」。ステムはベースの口に真っ直ぐ差さり、ベースの水面は下の方で、ステムを水槽にしない。ホースは1本だけで、本体側面のホースポートから出て、重力でたわみ、手で持つ硬いハンドルの根元につながる。ホースを分岐・途切れ・浮遊させず、パージ弁・ボウル・受け皿・ベースの底から生やさない。人物を囲む大きな輪にしない。完成・喫煙状態ではアルミに炭を直接置かず、HMDの中に炭を置く。HMDは1つのモデルとして成立させ、別の型の蓋・煙突・取手を混ぜない。ハガルの口とHMDは大人の掌の幅くらい、炭は指先ほどの大きさ。受け皿はHMDの2.5倍前後。煙は人物の口元から出し、HMD・ホース根元からは出さない。首掛けのマイマウスピースを描く場合はチェーンだけでなく小さな吸い口本体を付ける。台は今のシーシャ店で使われる業務用の形（細い金属ステム＋シンプルなガラスベース、小さめの受け皿）を基本にし、彫金の伝統型は指定があるときだけ。色・仕上げは自由にデザインし、実在製品・ロゴ・文字は描かない。",
+      "reference_images": [
+        "/workspace/shisha-game/asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "/workspace/shisha-game/asset_sources/short-comics-20261024/14-17-everyday.png",
+        "/workspace/shisha-game/assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+        "/workspace/shisha-game/asset_sources/shisha-hardware-reference/photos/stand-modern-blue-01.jpg",
+        "/workspace/shisha-game/asset_sources/shisha-hardware-reference/photos/hand-smoking-exhale-01.jpg"
+      ],
+      "generator": "OpenAI image_gen",
+      "hardware_plan": [
+        "人物: mashiro/kumicho",
+        "場面: 完成・喫煙（右は吐き終わり）",
+        "台: 実写stand-modern-blue-01と同構造の細い金属＋シンプルガラス",
+        "HMD: 写真と同じ蓋付き低容器・蓋閉",
+        "炭: HMD内に2個、蓋で非表示",
+        "ホース: 側面ポート→自然なたわみ→硬い黒ハンドル",
+        "吸い口: 使い捨て短チップ",
+        "構図: 2人と台は同じ奥行き、煙は口から相手を避ける"
+      ]
+    }
+  ],
+  "source": [
+    {
+      "file": "14-restored.png",
+      "region": {
+        "x": 39,
+        "y": 270,
+        "width": 717,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "14-restored.png",
+      "region": {
+        "x": 781,
+        "y": 270,
+        "width": 716,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-14-1.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "5829904fa720cb18789c1b24859485a503d077791dbb4a50f95cd1eb3de9947a"
+    },
+    {
+      "file": "panels/restored-14-2.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "56198f6fdd25bb1da036a9c0010239cc99158b975ff4788a3f0b8c28ac7d442d"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "ok（強制通過なし）",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "台は実写の青い現代型へ合わせた。蓋付きHMD、側面ポートから硬いハンドルへつながる一本のホース、口からの吐煙を原画で目視確認。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": [
+        "qa-pc.png",
+        "qa-phone.png"
+      ]
+    }
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "episode": 41,
+  "title": "炭の耳",
+  "cast": "スミさん・はじめ",
+  "theme": "旧話の復刻",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/loading-comics-batch1-20261029/41-sumi-charcoal-ear.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [
+    {
+      "file": "41-restored.png",
+      "width": 1086,
+      "height": 1448,
+      "bytes": 2337876,
+      "sha256": "ff2a16df5c957cb06192812ecda97490d0385db18acf2e06a5c7d92095c59c1a"
+    }
+  ],
+  "tasks": [
+    {
+      "script": "LEFT ①: 店内の作業台。はじめが「炭の温度って、何で測るんですか？」と尋ねると、スミさんは火の付いていない黒い角炭の入った陶器のボウルに耳を寄せ（触れていない）、「耳だ。」と答える。 RIGHT ②: 木の炭箱の中で小さな角炭たちが点の目と小さな口で一斉にざわめき（文字のない音符記号のみ）、スミさんは箱に耳を寄せたまま真剣に手帳へメモを取る。はじめが半歩引いて「議事録とってる！？」とツッコむ。炭は全コマ赤熱・発煙なし。シーシャ台・ホース・HMD は描かない。",
+      "dialogue_original": [
+        "炭の温度って、何で測るんですか？",
+        "耳だ。",
+        "議事録とってる！？"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/loading-comics-batch1-20261029/41-sumi-charcoal-ear.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "41-restored.png",
+      "region": {
+        "x": 24,
+        "y": 136,
+        "width": 508,
+        "height": 398,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    },
+    {
+      "file": "41-restored.png",
+      "region": {
+        "x": 547,
+        "y": 135,
+        "width": 516,
+        "height": 397,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-41-1.webp",
+      "width": 597,
+      "height": 398,
+      "sha256": "a5e6c84480d2db2e22b81e6ea464ce73056e4ef516b7c592785e9b5d8ad5773c"
+    },
+    {
+      "file": "panels/restored-41-2.webp",
+      "width": 596,
+      "height": 397,
+      "sha256": "73ba26af7e9b45c2054519dae50b6b70b19f91422c41cc56fa8cf19bf0e42e4d"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "warnを記録し紙色補正を採用。強制通過なし。",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": []
+    }
+  }
+}

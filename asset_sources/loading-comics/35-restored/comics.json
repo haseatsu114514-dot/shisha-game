@@ -1,0 +1,95 @@
+{
+  "episode": 35,
+  "title": "ラテアート",
+  "cast": "ムカイさん・はじめ",
+  "theme": "旧・暴走編（復刻）",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-unhinged-ltr-20261025/33-36-chaos-ltr.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [],
+  "tasks": [
+    {
+      "script": "LEFT ①: MUKAI, a separate mature hard-boiled gentleman with black FEDORA, dark beard and DARK SUIT, no glasses, calmly orders from Hajime 「ラテ、クマで。」 RIGHT ②: the latte's CUTE MILK FOAM BEAR has become GIANT AND ALIVE, emerging from pastel mug and gently hugging Mukai with fluffy foam paws, much bigger than him. Mukai completely unflappable, fedora still on, corrects it 「耳、大きめ。」 Hajime holding a pitcher says 「動いた。」 Bear is clearly white coffee foam, no real dangerous bear or smoking.",
+      "dialogue_original": [
+        "ラテ、クマで。",
+        "耳、大きめ。",
+        "動いた。"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/short-comics-unhinged-ltr-20261025/33-36-chaos-ltr.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/33-36-chaos-ltr.png",
+      "region": {
+        "x": 27,
+        "y": 838,
+        "width": 475,
+        "height": 272,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    },
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/33-36-chaos-ltr.png",
+      "region": {
+        "x": 526,
+        "y": 799,
+        "width": 539,
+        "height": 310,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-35-1.webp",
+      "width": 254,
+      "height": 169,
+      "sha256": "8a6965b2aed8dcc9c6d0bfd9ca6772da487900c04b31f8c2ea2afab5e9683f00"
+    },
+    {
+      "file": "panels/restored-35-2.webp",
+      "width": 539,
+      "height": 359,
+      "sha256": "61264dac25956d53b20feeb1292369d895348d38b0075e80aa15f797f0871242"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "warnを記録し紙色補正を採用。強制通過なし。",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "旧・暴走編の内容を維持。49話以降の少しシュールな作風とは異なる。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": []
+    }
+  }
+}
