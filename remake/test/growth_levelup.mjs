@@ -30,7 +30,8 @@ const { on } = await import("../js/core/bus.js");
 const tick = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // 曲線（1.5 の表）
-assert.equal(growth.GROWTH_BOARD, false, "盤の画面ができるまで既定で無効");
+assert.equal(growth.GROWTH_BOARD, true, "心得の盤は通常プレイで有効（2026-11-02 SBD93）");
+assert.equal(growth.growthEnabled(), true, "印が無ければ既定どおり有効");
 for (const [lv, total] of [[1, 0], [2, 205], [5, 850], [10, 2025], [20, 4750], [40, 11700], [80, 31600]]) assert.equal(growth.totalExpFor(lv), total, `Lv.${lv}`);
 assert.equal(growth.expToNext(79), 595);
 assert.equal(growth.levelForExp(204), 1);
@@ -38,7 +39,9 @@ assert.equal(growth.levelForExp(205), 2);
 assert.equal(growth.levelForExp(1e9), 99);
 assert.deepEqual([1, 2, 3, 4, 5, 9].map(growth.freshness), [1, 1, 0.8, 0.6, 0.4, 0.4]);
 
-// 無効のときは状態も通知も増やさない（旧しくみのまま）
+// ?growth=0 で旧しくみに戻した端末は、状態も通知も増やさない（開発・検査用の切り替え）
+growth.setGrowthPreview(false);
+assert.equal(globalThis.localStorage.getItem("suien_growth_preview"), "0", "既定と違う時だけ印を残す");
 core.newGame();
 core.state.phase = "daily";
 const chips = [];
@@ -56,6 +59,7 @@ assert.equal(core.state.stats.sense, legacyRaw + 1, "無効時の行動による
 // 有効: 自由行動 X1〜X3、新鮮さ、1行動1枚のチップ
 growth.setGrowthPreview(true);
 assert.equal(growth.growthEnabled(), true);
+assert.equal(globalThis.localStorage.getItem("suien_growth_preview"), null, "既定に戻したら印を消す");
 core.newGame();
 core.state.phase = "daily";
 const statsBefore = { ...core.state.stats };

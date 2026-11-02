@@ -257,7 +257,7 @@ for (let cycle = 1; cycle <= 3; cycle++) {
   assert.equal(core.state.cycle, cycle);
   assert.deepEqual(core.state.stats, rawStats, "周回のたびに盤の恩恵を旧能力へ書き込まない");
   assert.deepEqual(boardSnapshot(), retainedBoard);
-  assert.equal(maxStamina(), 182, "旧最大160＋B1の2＋習得済みひよりの20");
+  assert.equal(maxStamina(), 184, "旧最大160＋B1の4＋習得済みひよりの20");
   assert.equal(effects.growthPerks(core.state).charm, 2, "旧K20の開放・支払を人柄へ引き継ぐ");
   assert.equal(effects.densePackAvailable(core.state), true);
   assert.equal(effects.growthLesson(core.state, "M-W1"), true, "交流をやり直しても習得済み授業は有効");

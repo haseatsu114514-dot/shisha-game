@@ -10,7 +10,7 @@ import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
 import { chapterDay, chapterDaysLeft, chapterFinalDay, chapterGoalLabel } from "../core/chapter-clock.js";
 import { travelsBetweenCities } from "../core/travel-budget.js";
-import { growthEnabled, ensureGrowth, gaugeInfo, hidaneTotal, openGrowthBoard } from "../core/growth.js";
+import { growthEnabled, growthView, gaugeInfo, hidaneTotal, openGrowthBoard } from "../core/growth.js";
 import { NODE_BY_ID, pathTo } from "../core/growth-board.js";
 
 // 体力バーの長さ（最大体力100のとき）。根性で最大体力が伸びるとバーも同じ割合で伸びる（GUI26）。
@@ -147,13 +147,14 @@ function showExpChip({ total, tags = [], publicReward = false }) {
 function updateGrowth() {
   const on = growthEnabled();
   dom.exp.hidden = !on;
-  const total = on ? hidaneTotal(ensureGrowth()) : 0;
+  const view = on ? growthView() : null; // HUD は見るだけ。成長データが無くても作らない
+  const total = view ? hidaneTotal(view) : 0;
   dom.hidane.hidden = !(total > 0);
   dom.hidane.textContent = total > 99 ? "99" : String(total || "");
   dom.status.title = total > 0 ? `心得の盤を見る（未使用の火種 ${total}）` : "ステータス";
   dom.status.setAttribute("aria-label", dom.status.title);
   if (!on) return;
-  const g = gaugeInfo();
+  const g = gaugeInfo(view);
   dom.exp.querySelector(".hx-lv").textContent = `Lv.${g.level}`;
   dom.exp.querySelector(".hx-settled").style.width = `${Math.round(g.settled * 100)}%`;
   dom.exp.querySelector(".hx-today").style.width = `${Math.round(g.now * 100)}%`;
@@ -161,16 +162,16 @@ function updateGrowth() {
   left.textContent = g.max ? "MAX" : g.pending > 0 ? `今夜 Lv UP${g.pending > 1 ? ` ×${g.pending}` : ""}` : `あと${g.left}`;
   dom.exp.classList.toggle("ready", g.pending > 0);
   dom.exp.dataset.milestone = g.nextMilestone && !g.max ? "true" : "false";
-  renderTarget();
+  renderTarget(view);
   dom.exp.title = g.max ? `Lv.${g.level} MAX` : g.pending > 0
     ? `今夜レベルアップ（あふれた分 +${g.overflow}）` : `次のレベルまで EXP ${g.left}${g.nextMilestone ? "（次は火種が2つ）" : ""}`;
   dom.exp.setAttribute("aria-label", dom.exp.title);
 }
 
 /** 盤で目標にしたマスまでの残りの火種。届いたら目標は盤の決定で外れる（SPEC 2.4） */
-function renderTarget() {
+function renderTarget(g) {
   const target = dom.exp.querySelector(".hx-target");
-  const g = ensureGrowth(), node = g.target ? NODE_BY_ID[g.target] : null;
+  const node = g.target ? NODE_BY_ID[g.target] : null;
   if (!node) { target.hidden = true; target.textContent = ""; return; }
   const name = node.kind === "stat" ? (node.peak ? "極み" : node.notable ? "要のマス" : "マス") : node.kind === "gate" ? "台座" : node.name;
   const { cost } = pathTo(node.id, new Set(g.nodes));

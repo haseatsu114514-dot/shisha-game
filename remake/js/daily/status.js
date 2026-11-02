@@ -11,7 +11,7 @@ import { flavorStock, ownedFlavorIds } from "./shop.js";
 import { relationshipStatus, recentMemoryEcho } from "./relationship-status.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
 import { triedLater, comboName } from "./cafe-ideas.js";
-import { growthEnabled, ensureGrowth } from "../core/growth.js";
+import { growthEnabled, growthView } from "../core/growth.js";
 import { growthCraftMemo } from "../core/growth-memory.js";
 import { BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, statTotal, statCount, statRatio, perkTotals } from "../core/growth-board.js";
 
@@ -77,7 +77,7 @@ export function boardTriangle(ratios, size = 340) {
 
 /** 盤を使う時のステータス（段なし）: 三角のグラフと、盤ごとの灯した数・恩恵の合計 */
 function boardMeTab() {
-  const lit = new Set(ensureGrowth().nodes);
+  const lit = new Set(growthView().nodes); // 見るだけ。成長データが無くても作らない
   const note = el("p.st-note", { text: "心得の盤で灯した分だけ三角が広がる。項目をタップすると、何に効くかが分かる。" });
   const rows = BOARD_KEYS.map((k) => {
     const count = statCount(k, lit), sums = perkTotals(k, lit).filter((p) => p.sum);

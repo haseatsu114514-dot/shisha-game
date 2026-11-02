@@ -1114,6 +1114,45 @@ await suite("growth-levelup", async (runCheck) => {
     assert.equal(r.after, 0);
     await page.locator(".gain-card", { hasText: "四つ置き" }).waitFor();
   }, { viewport: { width: 1331, height: 760 } });
+  // ドバイのモスク（SPEC 2.8・SBD93）: 第4章の行き先から見学して振り返ると、灯せる盤が開く。時間・体力は使わない
+  await check("dubai-mosque-lights-board", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"), p = await import("./js/chapters/ch4-progress.js");
+      const s = core.newGame();
+      Object.assign(s, { chapter: 3, day: 45, slot: 0, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5 });
+      Object.assign(s.flags, { _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
+        _overseas_companion: { decided: true, companion: null, supports: [] } });
+      if (!p.advanceToChapterFour(s)) throw new Error("chapter four");
+      for (const id of ["ch4_sumi_training", "ch4_strategy", "ch4_opening", "ch4_arrival_inn"]) p.completeChapterFourScene(s, id);
+      s.flags._ch4.titleSeen = true;
+      while (s.day % 7 === 5) s.day++; // 金曜午前は見学なし
+      (await import("./js/core/growth.js")).ensureGrowth().hidane.any = 3;
+      core.config.textSpeed = 4; core.save();
+      window.mosqueBefore = { day: s.day, slot: s.slot, stamina: s.stamina, money: s.money };
+      void (await import("./js/chapters/ch4.js")).resumeChapterFour();
+    });
+    await page.locator(t("ch4-free")).waitFor({ timeout: 30000 });
+    await page.locator(t("ch4-go-mosque")).click();
+    for (let i = 0; i < 80 && !(await page.locator(t("growth-board")).count()); i++) {
+      if (await page.locator(".vn-box").isVisible().catch(() => false)) await page.locator(".vn-box").click();
+      await page.waitForTimeout(150);
+    }
+    await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
+    assert.match(await page.locator(t("board-place")).innerText(), /モスクの回廊で内省/);
+    await page.locator(t("board-node-B1")).click();
+    await page.locator(t("board-light")).click();
+    await page.locator(t("board-decide")).click();
+    await page.locator(t("growth-board")).waitFor({ state: "detached" });
+    await page.locator(t("ch4-free")).waitFor();
+    const after = await page.evaluate(() => ({ day: __remake.state.day, slot: __remake.state.slot, stamina: __remake.state.stamina,
+      money: __remake.state.money, nodes: __remake.state.growth.nodes, fire: __remake.state.growth.hidane.any }));
+    const before = await page.evaluate(() => window.mosqueBefore);
+    assert.deepEqual({ day: after.day, slot: after.slot, stamina: after.stamina, money: after.money }, before, "モスクで灯しても時間・体力・お金は変わらない");
+    assert.deepEqual(after.nodes, ["B1"]); assert.equal(after.fire, 2);
+    const saved = await page.evaluate(async () => JSON.parse(localStorage.getItem((await import("./js/core/state.js")).SAVE_KEY)).growth.nodes);
+    assert.deepEqual(saved, ["B1"], "灯した盤は保存される");
+  }, { viewport: { width: 1331, height: 760 } });
   // 灯した効果が分かる（REPORT P1）: マスの説明に「合計 いま→灯すと」、決定のカードに増えた恩恵、HUDに目標までの火種
   await check("perk-totals-and-target", async (page) => {
     await setupDaily(page);

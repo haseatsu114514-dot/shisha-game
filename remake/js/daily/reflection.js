@@ -2,7 +2,7 @@
 // 時間を使わない（行動の回数も体力も減らない）。大会前夜に火種が残っていれば、強制の場面で盤を開く。
 import { state, save } from "../core/state.js";
 import { play } from "../vn/engine.js";
-import { growthEnabled, ensureGrowth, openGrowthBoard } from "../core/growth.js";
+import { growthEnabled, growthView, openGrowthBoard } from "../core/growth.js";
 import { hasUsableHidane } from "../core/growth-board.js";
 import { openingStatus, MOSQUE_VISITING_HOURS } from "./spot-hours.js";
 
@@ -16,7 +16,7 @@ export const REFLECT_PLACES = {
 };
 
 /** 灯せる火種があるか（盤が有効な時だけ） */
-export const canReflect = (s = state) => !!s && growthEnabled() && hasUsableHidane(ensureGrowth(s), s);
+export const canReflect = (s = state) => !!s && growthEnabled() && hasUsableHidane(growthView(s), s); // 地図を描くだけで成長データを作らない
 
 /** 内省の場面 → 盤（灯せる）。戻り値=灯したマス（やめたら空） */
 export async function reflectAt(place, { eve = false } = {}) {

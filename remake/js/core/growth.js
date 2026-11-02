@@ -7,7 +7,7 @@ import { state, save } from "./state.js";
 import { emit } from "./bus.js";
 import { setExpHooks, affinityLevel, AFFINITY_RANK_PTS } from "./stats.js";
 import { BOARD_KEYS, BOARD_PREFIX, BOARD_SHAPES, STAT_SQUARES, SKILLS, STAT_UPGRADES, LESSONS, CHAR_TYPE, PLAY_REWARDS, KUJI_LAST_ONE_GIFT } from "./growth-board-data.js";
-import { growthEnabled, PREVIEW_KEY } from "./growth-mode.js";
+import { GROWTH_BOARD, growthEnabled, PREVIEW_KEY } from "./growth-mode.js";
 import { growthPerks, growthSkill, growthLesson, SKILL_TUNING, LESSON_TUNING } from "./growth-effects.js";
 import { masteryHooks } from "./flavor-mastery.js";
 import { syncRespecOpportunity, closeRespecOpportunity } from "./growth-respec.js";
@@ -15,8 +15,9 @@ export { GROWTH_BOARD, growthEnabled } from "./growth-mode.js";
 
 export function setGrowthPreview(on) {
   try {
-    if (on) globalThis.localStorage?.setItem(PREVIEW_KEY, "1");
-    else globalThis.localStorage?.removeItem?.(PREVIEW_KEY);
+    // 既定（GROWTH_BOARD）と違う時だけ印を残す。既定に戻す時は印を消す
+    if (!!on === GROWTH_BOARD) globalThis.localStorage?.removeItem?.(PREVIEW_KEY);
+    else globalThis.localStorage?.setItem(PREVIEW_KEY, on ? "1" : "0");
   } catch { /* 保存できない環境では今回の起動だけ無効のまま */ }
   emit("hud");
 }
@@ -193,9 +194,15 @@ const lessonHeartReady = (lesson, s) => !(s.cycle > 1) || !lesson.need
   || (s.lovers || []).includes(lesson.who)
   || (s.affinity?.[lesson.who] || 0) >= AFFINITY_RANK_PTS[lesson.need];
 
+/**
+ * 表示だけの読み口（ステータス・HUD・メニュー）。成長データがまだ無ければ作らず、切り離した空のものを返す。
+ * 画面を開いただけでセーブの中身を変えないため（盤を通常プレイで有効にした時に見つかった。SBD93）。
+ */
+export const growthView = (s = state) => s?.growth && typeof s.growth === "object" && !Array.isArray(s.growth) ? ensureGrowth(s) : newGrowth();
+
 /** 灯していて、今の周でも相談できる未習得の授業（その人の分）。場面のある授業だけ */
 export function readyLessons(who, s = state) {
-  if (!growthEnabled() || !s) return [];
+  if (!growthEnabled() || !s || !s.growth) return []; // 成長データが無ければ灯した授業も無い（読むだけで作らない）
   const g = ensureGrowth(s);
   return LESSONS.filter((l) => l.who === who && l.scene && g.nodes.includes(l.id) && !g.learned.includes(l.id)
     && lessonHeartReady(l, s));
@@ -631,7 +638,7 @@ export async function reflectAtSpot(spotId, { boardOnly = false } = {}) {
 
 /** メニューの「心得の盤」。無効なら出さない。メニューからは見るだけ（灯すのは参拝の場所。2.8） */
 export const growthMenuItems = () => growthEnabled()
-  ? [{ label: hidaneTotal(ensureGrowth()) ? `心得の盤（火種 ${hidaneTotal(state.growth)}）` : "心得の盤", value: "board", test: "menu-board" }] : [];
+  ? [{ label: hidaneTotal(growthView()) ? `心得の盤（火種 ${hidaneTotal(growthView())}）` : "心得の盤", value: "board", test: "menu-board" }] : [];
 
 /**
  * 盤の画面を開き、閉じるまで待つ。大会の当日は開かない。
