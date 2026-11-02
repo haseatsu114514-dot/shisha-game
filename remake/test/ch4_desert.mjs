@@ -3,7 +3,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { DESERT_FLAG, DESERT_TALKS, DESERT_SCENES, DESERT_DIALOGUE_IDS, desertProgress, desertInvited, desertTalkScene, completeDesertTalk,
-  desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertRankAtLeast, desertDestinations } from "../js/chapters/ch4-desert-progress.js";
+  desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertRankAtLeast, desertDestinations,
+  DESERT_SPOT_IDS, desertDailySpots, desertDailySpotById } from "../js/chapters/ch4-desert-progress.js";
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
 import { readFileSync } from "node:fs";
 
@@ -34,14 +35,22 @@ test("the outing uses the day once: a second trip waits for the next day, retrie
   for (const [index, id] of DESERT_TALKS.entries()) completeDesertTalk(value, id, index + 1);
   assert.deepEqual(desertOutingStatus(value, 3), { ok: true, why: "", first: true });
   assert.equal(beginDesertOuting(value, 3), true);
+  assert.equal(value.slot, 1, "the outing spends the daytime action (the same slot as the camel race)");
   assert.deepEqual(desertOutingStatus(value, 3), { ok: false, why: "今日はもう砂丘へ行った", first: false });
   assert.equal(beginDesertOuting(value, 3), false, "no second outing on the same day");
+  value.slot = 0; // 宿で日を終えると昼に戻る（endChapterFourDay）
   // 同じ外出の中の滑り直し: 記録だけが増え、外出の回数は増えない
   recordDesertResult(value, result(3000, "C")); recordDesertResult(value, result(5000, "B"));
   assert.equal(desertProgress(value).outings, 1);
   assert.deepEqual(desertOutingStatus(value, 4), { ok: true, why: "", first: false });
   assert.equal(beginDesertOuting(value, 4), true);
   assert.equal(desertProgress(value).outings, 2);
+  // ほかの昼の行動（ラクダレース）で昼を使った日は行けない
+  value.slot = 1;
+  assert.deepEqual(desertOutingStatus(value, 5), { ok: false, why: "今日の昼はもう別の予定に使った", first: false });
+  assert.equal(beginDesertOuting(value, 5), false);
+  value.slot = 0;
+  assert.equal(desertOutingStatus(value, 5).ok, true);
 });
 
 test("records keep the best by score, count runs, and reward the first finish only once", () => {
@@ -93,6 +102,7 @@ test("map destinations: the desk before the invitation, the dunes after, with th
   recordDesertResult(value, result(6400, "B"));
   [dunes] = desertDestinations(value, 3);
   assert.equal(dunes.ok, false); assert.match(dunes.purpose, /今日はもう砂丘へ行った/);
+  value.slot = 0;
   [dunes] = desertDestinations(value, 4);
   assert.equal(dunes.ok, true); assert.match(dunes.purpose, /自己ベスト 6,400点／B/);
   assert.equal(dunes.visited, true);
@@ -115,4 +125,42 @@ test("every dialogue the connection needs exists in data/dialogue/ch4_desert.jso
   const characters = JSON.parse(readFileSync(new URL("../../data/characters.json", import.meta.url), "utf8"));
   const noor = characters.find(c => c.id === "noor");
   assert.equal(noor.display_name, "ヌール"); assert.equal(noor.role, "venue_host"); assert(noor.intro_cutin?.title);
+});
+
+test("the 14-day daily map (route 2) keeps the desk, then the dunes, on the map and disables them with a reason when not available", () => {
+  const value = fresh();
+  value.slot = 0;
+  const only = spots => { assert.equal(spots.length, 1); return spots[0]; };
+  let spot = only(desertDailySpots(value, 1));
+  assert.deepEqual([spot.id, spot.region, spot.kind, spot.place, spot.unavailable], [DESERT_SPOT_IDS.desk, "dubai", "ch4_desert", "tour_desk", ""]);
+  assert.equal(spot.hasNew(), true);
+  assert.match(spot.desc, /時間は使わない/);
+  completeDesertTalk(value, DESERT_TALKS[0], 1);
+  spot = only(desertDailySpots(value, 1));
+  assert.deepEqual([spot.unavailable, spot.unavailableTag, spot.hasNew()], ["今日はもう話した。また明日", "また明日", false], "one talk a day");
+  assert.equal(desertDailySpotById(value, 1, DESERT_SPOT_IDS.desk), null, "a disabled spot is not performed");
+  assert.equal(only(desertDailySpots(value, 2)).label, "ヌールと話す");
+  completeDesertTalk(value, DESERT_TALKS[1], 2); completeDesertTalk(value, DESERT_TALKS[2], 3);
+  spot = only(desertDailySpots(value, 3));
+  assert.deepEqual([spot.id, spot.place, spot.unavailable], [DESERT_SPOT_IDS.dunes, "dunes", ""]);
+  assert.match(spot.desc, /昼の行動を使う/);
+  assert.equal(desertDailySpotById(value, 3, DESERT_SPOT_IDS.dunes).id, DESERT_SPOT_IDS.dunes);
+  value.slot = 1;
+  spot = only(desertDailySpots(value, 3));
+  assert.deepEqual([spot.unavailable, spot.unavailableTag], ["砂丘へは昼に出かける", "砂丘は昼だけ"], "the dunes are a daytime trip");
+  assert.equal(desertDailySpotById(value, 3, DESERT_SPOT_IDS.dunes), null);
+  value.slot = 0;
+  assert(beginDesertOuting(value, 3));
+  assert.equal(value.slot, 1);
+  value.slot = 0;
+  spot = only(desertDailySpots(value, 3));
+  assert.deepEqual([spot.unavailable, spot.unavailableTag], ["今日はもう砂丘へ行った。また明日", "今日はもう行った"], "once a day");
+  recordDesertResult(value, result(9100, "S"));
+  assert.match(only(desertDailySpots(value, 4)).desc, /自己ベスト 9,100点／S/);
+  assert.equal(only(desertDailySpots(value, 4)).hasNew(), false);
+  // ドバイの日常ループに組み込まれている（地図・行き先の解決・処理）
+  const daily = readFileSync(new URL("../js/chapters/ch4-dubai-daily.js", import.meta.url), "utf8");
+  assert.match(daily, /spots\.push\(\.\.\.desertDailySpots\(state, dubaiDay\(\)\)\)/);
+  assert.match(daily, /desertDailySpotById\(state, dubaiDay\(\), id\)/);
+  assert.match(daily, /entry\.kind === "ch4_desert"[\s\S]*performDesertSpot/);
 });

@@ -24,6 +24,7 @@ import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_DAILY_EVE_DAY, CH4_FREE_SCENE_IDS, chap
   chapterFourSecondAvailable } from "./ch4-progress.js";
 import { CAMEL_DAILY_SPOT_ID, camelDailySpot, camelSceneBg } from "./ch4-camel-progress.js";
 import { visitCamelRace } from "./ch4-camel-race.js";
+import { desertDailySpots, desertDailySpotById } from "./ch4-desert-progress.js";
 
 export const DUBAI = "dubai";
 const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと）
@@ -103,6 +104,7 @@ export function chapterFourDubaiSpots() {
   });
   const camel = camelSpot();
   if (camel) spots.splice(spots.findIndex(entry => entry.place === "inn"), 0, camel);
+  spots.push(...desertDailySpots(state, dubaiDay())); // 砂漠ツアーのデスク／ヌールと砂丘へ（任意・ch4-desert.js）
   return spots;
 }
 
@@ -164,7 +166,8 @@ export function chapterFourDubaiDefinition(io) {
     wakeBackground: () => CH4_PLACE_BG.inn,
     dateInvitations: false,
     confessions: false,
-    spotById: id => id === CAMEL_DAILY_SPOT_ID ? camelSpot() : CH4_DUBAI_SPOTS.find(entry => entry.id === id) || null,
+    spotById: id => id === CAMEL_DAILY_SPOT_ID ? camelSpot()
+      : CH4_DUBAI_SPOTS.find(entry => entry.id === id) || desertDailySpotById(state, dubaiDay(), id),
     performSpot: (entry, options) => performDubaiSpot(entry, io, options),
   };
 }
@@ -216,6 +219,10 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   if (entry.region !== DUBAI) return null;
   const owner = state;
   syncChapterFourDay(state);
+  if (entry.kind === "ch4_desert") {
+    const { performDesertSpot } = await import("./ch4-desert.js");
+    return performDesertSpot(entry, { day: chapterFourProgress(state).day, showHud });
+  }
   if (entry.place === "shop") { await openShop({ branch: "dubai" }); return unused; }
   if (entry.place === "mosque") {
     const hours = openingStatus(MOSQUE_VISITING_HOURS, state);

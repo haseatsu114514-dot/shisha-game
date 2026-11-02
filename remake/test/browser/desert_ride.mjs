@@ -33,6 +33,9 @@ await suite("desert-ride", async check => {
     g = await game(page);
     assert(g.hops === 1 || g.bigJumps === 1, "Space jumps");
     assert(await page.locator(t("desert-left")).isVisible() && await page.locator(t("desert-jump")).isVisible(), "touch buttons are shown on PC too");
+    // Codex の採用画像（遠景の空・陸、主人公の背面、岩、旗、ゴール、砂煙）を読み込んで描いている
+    const loaded = await page.evaluate(() => performance.getEntriesByType("resource").map(entry => entry.name).filter(name => name.includes("/img/ui/desert_ride/")).map(name => name.split("/").pop()).sort());
+    assert.deepEqual(loaded, ["backdrop_day_land.webp", "backdrop_day_sky.webp", "flag_pole.webp", "goal_banner.webp", "rider_ride.webp", "rock_large.webp", "rock_small.webp", "sand_puff.webp"]);
     await autoplayToResult(page, "perfect");
     const text = await resultText(page);
     assert.match(text, /RESULT/); assert.match(text, /転倒 0 回/); assert.match(text, /大ジャンプ 7 回/); assert.match(text, /自己ベスト更新/);
@@ -145,7 +148,9 @@ await suite("desert-ride", async check => {
     // 砂丘へ: 到着の場面 → 外出を確定 → 練習 → 本番 → 記録
     await page.locator(t("ch4-go-dunes")).click();
     await phase(page, "practice");
+    assert.match(await page.locator("#bg .bg-img").last().evaluate(node => node.style.backgroundImage), /bg_dubai_dunes_day/, "the arrival scene uses the adopted dunes background");
     value = await get(page);
+    assert.equal(value.slot, 1, "the trip spends the daytime action (shared with the camel race)");
     assert.deepEqual(value.flags._ch4_desert, { talks: 3, lastTalkDay: 3, outings: 1, lastOutingDay: 3 }, "the outing is spent when the trip starts");
     assert.equal(value.desert, undefined);
     await page.evaluate(() => { window.__desertRide.autoplay("perfect"); window.__desertRide.setSpeedUp(8); });
@@ -204,4 +209,78 @@ await suite("desert-ride", async check => {
     assert(await page.locator(t("ch4-go-dunes")).isDisabled(), "the interrupted trip still used the day");
     assert.equal(await page.locator(t("desert-ride")).count(), 0);
   });
+
+  // 14日のドバイ（版2・日常ループ）でも同じ寄り道: 地図のデスク→誘い→砂丘（昼の行動を使う・体力と能力は変えない）→夜の地図。
+  await check("chapter-four-daily-route-desk-and-dunes-on-the-dubai-map", async page => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const progress = await import("./js/chapters/ch4-progress.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
+        _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
+      value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "nagumo", "dr_kemuri", "noor"]) value.flags[`_intro_${who}`] = true;
+      Object.assign(value.met, { naru: true, noor: true });
+      if (!progress.advanceToChapterFour(value)) throw new Error("Chapter boundary failed");
+      value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
+      value.flags._ch4.titleSeen = true;
+      for (const id of progress.CH4_PREP_SCENES) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);
+      value.day += 3;
+      if (!progress.departChapterFour(value)) throw new Error("Departure failed");
+      value.flags._ch4_desert = { talks: 2, lastTalkDay: null, outings: 0, lastOutingDay: null }; // デスクで2回話した後
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      core.saveConfig(); Object.assign(core.state, value); core.save(); core.requestResumeOnBoot();
+    });
+    const arm = () => page.evaluate(async () => { const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0; });
+    await page.reload();
+    await arm();
+    for (const id of ["ch4_opening", "ch4_arrival_inn"]) {
+      await page.locator(`[data-test="ch4-scene"][data-scene="${id}"]`).waitFor({ timeout: 60000 });
+      await page.locator(t("ch4-continue")).click();
+    }
+    const dubaiMap = slot => page.waitForFunction(slot => window.__remake.state.slot === slot
+      && document.querySelector('.map:not(.done) [data-test="pin-ch4_dubai_inn"]') && !document.querySelector("#modal.show"), slot, { timeout: 60000 });
+    // 新しく現れた行き先は地図の登場演出の間は選べないので、ここへ行くボタンが出るまで選び直す
+    const go = async pin => {
+      for (let i = 0; i < 40 && !(await page.locator(t("map-go")).isVisible().catch(() => false)); i++) {
+        await page.locator(t(`pin-${pin}`)).click();
+        await page.waitForTimeout(250);
+      }
+      await page.locator(t("map-go")).click();
+    };
+    await dubaiMap(0);
+    let value = await get(page);
+    assert.equal(value.flags._ch4.routeVersion, 2);
+    assert.equal(await page.locator(t("pin-ch4_dubai_tour_desk")).count(), 1, "the tour desk is on the Dubai map");
+    assert.equal(await page.locator(t("pin-ch4_dubai_dunes")).count(), 0, "the dunes appear after the invitation");
+    // デスクの3回目（誘い）は時間を使わない。読み終えると同じ昼の地図に砂丘が出る
+    await go("ch4_dubai_tour_desk");
+    await page.waitForFunction(() => window.__remake.state.flags._ch4_desert.talks === 3);
+    await dubaiMap(0);
+    await page.locator(t("pin-ch4_dubai_dunes")).waitFor();
+    assert.equal(await page.locator(t("pin-ch4_dubai_tour_desk")).count(), 0);
+    const before = await get(page);
+    await go("ch4_dubai_dunes");
+    await phase(page, "practice");
+    value = await get(page);
+    assert.equal(value.slot, 1, "the trip spends the daytime action once");
+    assert.equal(value.flags._ch4_desert.outings, 1);
+    await page.evaluate(() => { window.__desertRide.autoplay("perfect"); window.__desertRide.setSpeedUp(8); });
+    await phase(page, "practiced");
+    await page.locator(t("desert-start")).click();
+    await autoplayToResult(page, "perfect");
+    await page.locator(t("desert-leave")).click();
+    // 夕日の会話のあと、夜の地図へ（日常ループが追加で行動を進めない）
+    await dubaiMap(1);
+    value = await get(page);
+    assert.equal(value.day, before.day); assert.equal(value.slot, 1);
+    assert.equal(value.desert.bestRank, "S"); assert.equal(value.desert.rewarded, true);
+    assert.equal(value.stamina, before.stamina, "the trip uses no stamina");
+    assert.deepEqual(value.stats, before.stats, "no direct stat gain");
+    assert.match(await page.locator(t("pin-ch4_dubai_dunes")).getAttribute("class"), /\boff\b/, "no second trip tonight (the pin stays, disabled)");
+    assert(await page.locator(".hud").isVisible(), "the daily HUD comes back");
+  });
 });
+
