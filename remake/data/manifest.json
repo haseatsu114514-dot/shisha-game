@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-02 16:00 UTC",
+ "generated": "2026-11-02 19:23 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -461,7 +461,11 @@
   },
   "tetsuko": {
    "faces": [
-    "normal"
+    "normal",
+    "serious",
+    "sleep",
+    "smile",
+    "surprise"
    ],
    "h": 0.2908,
    "b": 0.0433,
@@ -3047,7 +3051,11 @@
   "sprites/characters/noor/chr_noor_surprise.png",
   "ui/character_intros/noor.png",
   "ui/face_icons/face_tetsuko.png",
-  "sprites/characters/tetsuko/chr_tetsuko_normal.png"
+  "sprites/characters/tetsuko/chr_tetsuko_normal.png",
+  "sprites/characters/tetsuko/chr_tetsuko_serious.png",
+  "sprites/characters/tetsuko/chr_tetsuko_sleep.png",
+  "sprites/characters/tetsuko/chr_tetsuko_smile.png",
+  "sprites/characters/tetsuko/chr_tetsuko_surprise.png"
  ],
  "limeMedia": {
   "st_adam_bless": {
