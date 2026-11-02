@@ -482,7 +482,7 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5_dubai_guest, true, "The Sheikh prepares the guest room on the first arrival");
     assert.equal(state.money, 150000, "The Sheikh's ticket makes the first flight free");
     assert.equal(state.flags._ch5_dubai_flights, 1);
-    for (const pin of ["ch5_dubai_souq", "ch5_dubai_alley", "ch5_dubai_creek", "ch5_dubai_shop", "ch5_dubai_guest", "ch5_dubai_home"])
+    for (const pin of ["ch5_dubai_taiyo", "ch5_dubai_souq", "ch5_dubai_alley", "ch5_dubai_creek", "ch5_dubai_shop", "ch5_dubai_guest", "ch5_dubai_home"])
       assert.equal(await page.locator(dt(`pin-${pin}`)).count(), 1, `${pin} is on the Chapter 5 Dubai map`);
     assert.equal(await page.locator(dt("pin-ch5_call")).count(), 0, "The doctor is called from home");
     assert.equal(await page.locator(dt("pin-fortune")).count(), 0, "The fortune teller never appears in Dubai");
