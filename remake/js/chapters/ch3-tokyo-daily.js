@@ -96,8 +96,10 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
     preview: "bg_choizap", stamina: -8, stat: "charm", desc: "全国の店で使える会員証で、体を動かす。" }),
   spot({ id: "ch3_tokyo_shrine", place: "shrine", label: "路地裏の神社", area: "路地の奥", x: 54, y: 70, theme: "rest", glyph: "社",
     preview: "bg_street", desc: "学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
+  // 店名は入口で知る（DJS12）。店主の針間ヨルに会うまでは「地下の店」と出す（daily/map.js の charId・unknownLabel）。
   spot({ id: "ch3_tokyo_club", place: "club", label: "クラブSEAM", area: "路地の地下", x: 71.5, y: 51, theme: "stadium", glyph: "♪",
-    preview: "bg_street", desc: "セットを選んで曲をつなぐ（時間は使わない）。" }),
+    charId: "yoru", unknownLabel: "地下の店", unknownDesc: "地下から低い音がする。のぞいてみる（時間は使わない）。",
+    preview: "bg_club_seam_entrance", desc: "セットを選んで曲をつなぐ（時間は使わない）。" }),
   spot({ id: "ch3_tokyo_room", place: "room", label: "mukaiの奥の部屋", area: "店の奥", x: 45, y: 63, theme: "rest", glyph: "休",
     preview: "bg_mukai_shop", stamina: 55, desc: "寝泊まりしている部屋で休む。体力が大きく戻る。" }),
   spot({ id: "ch3_tokyo_lime", place: "lime", label: "地元と連絡", area: "スマホ", x: 6, y: 11, theme: "rest", glyph: "☎",
