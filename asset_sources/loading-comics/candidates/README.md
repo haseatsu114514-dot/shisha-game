@@ -1,8 +1,10 @@
-# 選別待ちの2コマ漫画候補（49〜60話）
+# 選別待ちの2コマ漫画候補（49〜72話・24話）
 
-オーナーの追加指定に合わせ、**シーシャあるある＋キャラにちなんだ少しのシュールさ**で12話を制作。シーシャあるある8話（49〜52・54・55・57・60）とキャラのこだわり4話（53・56・58・59）。超常現象中心の初案は取り下げ、8話を描き直した。**全話選別待ち・ゲーム抽選未登録**。番号で採用候補を選べます。前回43〜48話はPR #2229。
+**シーシャあるある＋キャラにちなんだ少しのシュールさ**で制作。49〜60話の12話に、61〜72話の12話を追加して候補数を倍にしました。**全話選別待ち・ゲーム抽選未登録**。番号で採用候補を選べます。登録済み43〜48話はPR #2229。
 
-正式立ち絵と下敷きを参照。全話左→右、はじめが左・相手が右、2人以内、3台詞・各12字以内。狙いは『状況は分かる、最後の一言だけ少しズレる』。機材・炭・喫煙を描かない番外編ギャグ。本編の人物設定や営業設定は変更しません。各話フォルダに原画、3:2のWebP2枚、台本・プロンプト・ハッシュ・切り出し領域を保存。正式採用後はpanelsのWebPを`remake/img/loading/`へ移し、既存登録形式に沿って組み込みます。
+正式立ち絵と下敷きを参照。左→右、はじめが左・相手が右、2人以内、台詞3つ・各12字以内。狙いは「状況は分かる、最後の一言だけ少しズレる」。宇宙・魔法・巨大化を避け、シーシャの注文・待ち時間・味の言い方・店の日常・キャラのこだわりを土台にする。機材・炭・喫煙の実物は描かず、本編の人物設定やレシピは変更しません。
+
+各話に原画、3:2のWebP2枚、台本・プロンプト・参照画像・SHA-256・切り出し領域を保存。正式採用後は選ばれた話のpanelsだけをremake/img/loadingへ移して登録します。
 
 | 番号 | 題名 | 相手 / 軸 | オチの一言 |
 | --- | --- | --- | --- |
@@ -18,6 +20,18 @@
 | 58 | [褒める技術](../58-cake-praise/58-cake-praise.png) | なる / キャラのこだわり | ケーキに報告。 |
 | 59 | [反省の向き](../59-cake-apology/59-cake-apology.png) | なる / キャラのこだわり | 謝る先そっち？ |
 | 60 | [別腹の確認](../60-dessert-stomach/60-dessert-stomach.png) | なる / シーシャあるある | 吸う方ですよ。 |
+| 61 | [おまかせの罠](../61-leave-it-to-you/61-leave-it-to-you.png) | スミさん / シーシャあるある | 急に自分の番。 |
+| 62 | [感想の落とし穴](../62-all-favorites/62-all-favorites.png) | スミさん / シーシャあるある | 比較ができない。 |
+| 63 | [少しだけの幅](../63-short-visit/63-short-visit.png) | スミさん / シーシャあるある | 少しの幅が広い。 |
+| 64 | [他店の勉強](../64-apple-study/64-apple-study.png) | アダム / キャラのこだわり | またダブルアップル。 |
+| 65 | [一年中の旬](../65-apple-season/65-apple-season.png) | アダム / キャラのこだわり | 便利な季節。 |
+| 66 | [休憩も一筋](../66-apple-break/66-apple-break.png) | アダム / キャラのこだわり | 休憩も一筋。 |
+| 67 | [名前で休憩](../67-sweet-name/67-sweet-name.png) | なる / シーシャあるある | もう休憩したい。 |
+| 68 | [甘くない注文](../68-not-sweet/68-not-sweet.png) | なる / シーシャあるある | 顔が少し寂しい。 |
+| 69 | [研究の昼ご飯](../69-cake-lunch/69-cake-lunch.png) | なる / シーシャあるある | 研究が日常。 |
+| 70 | [人気の一位](../70-mint-ranking/70-mint-ranking.png) | みんと / シーシャあるある | 味の方です。 |
+| 71 | [甘さの接客](../71-mint-service/71-mint-service.png) | みんと / シーシャあるある | 接客も甘め♡ |
+| 72 | [写真の主役](../72-mint-photo/72-mint-photo.png) | みんと / シーシャあるある | メニューの方です。 |
 
 ## 49　蒸らしの時計
 
@@ -115,6 +129,104 @@
 
 [台本・生成・検品記録](../60-dessert-stomach/comics.json)
 
+## 61　おまかせの罠
+
+| ①導入 | ②オチ |
+| --- | --- |
+| ![導入](../61-leave-it-to-you/panels/leave-it-to-you-1.webp) | ![オチ](../61-leave-it-to-you/panels/leave-it-to-you-2.webp) |
+
+[台本・生成・検品記録](../61-leave-it-to-you/comics.json)
+
+## 62　感想の落とし穴
+
+| ①導入 | ②オチ |
+| --- | --- |
+| ![導入](../62-all-favorites/panels/all-favorites-1.webp) | ![オチ](../62-all-favorites/panels/all-favorites-2.webp) |
+
+[台本・生成・検品記録](../62-all-favorites/comics.json)
+
+## 63　少しだけの幅
+
+| ①導入 | ②オチ |
+| --- | --- |
+| ![導入](../63-short-visit/panels/short-visit-1.webp) | ![オチ](../63-short-visit/panels/short-visit-2.webp) |
+
+[台本・生成・検品記録](../63-short-visit/comics.json)
+
+## 64　他店の勉強
+
+| ①導入 | ②オチ |
+| --- | --- |
+| ![導入](../64-apple-study/panels/apple-study-1.webp) | ![オチ](../64-apple-study/panels/apple-study-2.webp) |
+
+[台本・生成・検品記録](../64-apple-study/comics.json)
+
+## 65　一年中の旬
+
+| ①導入 | ②オチ |
+| --- | --- |
+| ![導入](../65-apple-season/panels/apple-season-1.webp) | ![オチ](../65-apple-season/panels/apple-season-2.webp) |
+
+[台本・生成・検品記録](../65-apple-season/comics.json)
+
+## 66　休憩も一筋
+
+| ①導入 | ②オチ |
+| --- | --- |
+| ![導入](../66-apple-break/panels/apple-break-1.webp) | ![オチ](../66-apple-break/panels/apple-break-2.webp) |
+
+[台本・生成・検品記録](../66-apple-break/comics.json)
+
+## 67　名前で休憩
+
+| ①導入 | ②オチ |
+| --- | --- |
+| ![導入](../67-sweet-name/panels/sweet-name-1.webp) | ![オチ](../67-sweet-name/panels/sweet-name-2.webp) |
+
+[台本・生成・検品記録](../67-sweet-name/comics.json)
+
+## 68　甘くない注文
+
+| ①導入 | ②オチ |
+| --- | --- |
+| ![導入](../68-not-sweet/panels/not-sweet-1.webp) | ![オチ](../68-not-sweet/panels/not-sweet-2.webp) |
+
+[台本・生成・検品記録](../68-not-sweet/comics.json)
+
+## 69　研究の昼ご飯
+
+| ①導入 | ②オチ |
+| --- | --- |
+| ![導入](../69-cake-lunch/panels/cake-lunch-1.webp) | ![オチ](../69-cake-lunch/panels/cake-lunch-2.webp) |
+
+[台本・生成・検品記録](../69-cake-lunch/comics.json)
+
+## 70　人気の一位
+
+| ①導入 | ②オチ |
+| --- | --- |
+| ![導入](../70-mint-ranking/panels/mint-ranking-1.webp) | ![オチ](../70-mint-ranking/panels/mint-ranking-2.webp) |
+
+[台本・生成・検品記録](../70-mint-ranking/comics.json)
+
+## 71　甘さの接客
+
+| ①導入 | ②オチ |
+| --- | --- |
+| ![導入](../71-mint-service/panels/mint-service-1.webp) | ![オチ](../71-mint-service/panels/mint-service-2.webp) |
+
+[台本・生成・検品記録](../71-mint-service/comics.json)
+
+## 72　写真の主役
+
+| ①導入 | ②オチ |
+| --- | --- |
+| ![導入](../72-mint-photo/panels/mint-photo-1.webp) | ![オチ](../72-mint-photo/panels/mint-photo-2.webp) |
+
+[台本・生成・検品記録](../72-mint-photo/comics.json)
+
 ## 検品
 
-配信用24枚は切り出しツールのcheckで全件成功（3:2許容内・1440×960以下・1枚400KiB未満）。原画49話と55話のみ比率warnを記録し、内容を欠かさない約6〜7%の紙帯補正を採用。その他は原画比率ok。PC1280×720・スマホ横844×390の24画面を本物のロード画面に一時差し込み、画像decode・題名・枠比率・画面内配置の検証成功。各話にqa-pc.png / qa-phone.pngを保存。ゲーム内の登録・抽選は変更していません。
+配信用画像は切り出しツールcheckで検査（3:2許容内・1440×960以下・1枚400KiB未満）。原画49・55・64話のみ比率warnを台帳へ記録し、台詞や小物を欠かさない紙帯補正を採用。強制通過や検査の緩和なし。PC1280×720・スマホ横844×390の実ロード画面にブラウザ側で一時差し込み、画像decode・題名・枠比率・画面内配置を検証。各話のqa-pc.png / qa-phone.pngを参照。ゲームの登録・抽選は変更していません。
+
+61〜72話の追加分も24枚の画像checkとPC/スマホ横の24画面検証に成功。スマホ横全12話・PC第71話を目視確認済み。全24候補について台詞上限・未登録状態・原画と配信用画像のSHA-256も照合済み。
