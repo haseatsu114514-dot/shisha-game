@@ -144,6 +144,17 @@ try {
     assert.equal(await page.locator('.store-arrival,.scene-curtain').count(),0); checks++;
   }
   await page.emulateMedia({reducedMotion:"no-preference"});
+  // 東京の地図の行き先 id も元の店のロゴで迎える。名前を伏せた「地下の店」（会う前のクラブSEAM）ではロゴを出さない（2026-11-02 MPI02）。
+  for(const [spotId,anonymous] of [["ch3_tokyo_club",true],["ch3_tokyo_club",false],["ch3_tokyo_mukai",false]]){
+    const shown=await page.evaluate(async([spotId,anonymous])=>{
+      T.transitions.cueTransition("place",{spotId,area:"東京",anonymous});
+      const c=T.transitions.createSceneCurtain(T.ui.layers.fx,{fast:true});
+      await c.covered;const card=document.querySelector('[data-test="store-arrival"]');
+      const shown=card ? card.dataset.store : null;await c.release();return shown;
+    },[spotId,anonymous]);
+    assert.equal(shown,anonymous?null:spotId,`${spotId} anonymous=${anonymous}`);
+    assert.equal(await page.locator('.store-arrival,.scene-curtain').count(),0); checks++;
+  }
   await page.evaluate(async()=>{const c=T.transitions.createSceneCurtain(T.ui.layers.fx,{fast:true});await c.covered;await c.release();});
   assert.equal(await page.locator('.store-arrival').count(),0);checks++;
   // WebPが取得できなくても看板名と操作は残る。
