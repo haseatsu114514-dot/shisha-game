@@ -115,7 +115,9 @@ async function finishChapterThreePrologue(page) {
     assert.match(await page.locator('.hud').innerText(),/出発まで/);
     await page.evaluate(async()=>{
       const core=await import('./js/core/state.js'),prep=core.state.flags._ch3_prep;
-      core.state.day=prep.startDay+prep.days;core.state.slot=0;prep.step=5;core.save();
+      core.state.day=prep.startDay+prep.days;core.state.slot=0;prep.step=5;
+      core.state.flags._ch3_intro.routeVersion=2; // 東京の場面カード（旧行程）の案内を確かめる。東京の日常ループは ch3_tokyo_daily
+      core.save();
     });
     await reload(page);
     await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_opening"]').waitFor({timeout:60000});

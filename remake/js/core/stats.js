@@ -325,12 +325,13 @@ function flushAffinityBatch() {
   for (const { owner, payload } of pending) if (owner === state) emit("affinity-gain", payload);
 }
 
-/** 占い師に見てもらった相手と次に会ったときだけ ×1.5（一度きり） */
+/** 占い師に見てもらった相手と次に会ったときだけ ×2（一度きり。2026-11-02 オーナー指定で1.5倍から・台帳 URA） */
+export const FORTUNE_AFFINITY_MULT = 2;
 function fortuneMult(id) {
   if (state.fortune?.char !== id) return 1;
   delete state.fortune;
   setTimeout(() => emit("notice", { text: "（占いの効果もあってか、いつもより仲良くなれた気がする）" }), 1400);
-  return 1.5;
+  return FORTUNE_AFFINITY_MULT;
 }
 
 /**

@@ -1,0 +1,43 @@
+{
+  "variant": "b",
+  "path": "/workspace/shared/trpg-background-candidates/smoke-robot/background-b.png",
+  "size": [
+    1672,
+    941
+  ],
+  "mode": "RGB",
+  "sha256": "f381ef294feb52ec2d8a04152842c5e79da4cb0f58a9ec5e7408ec84fec34095",
+  "tool": "built-in image_gen",
+  "prompt": "prompt-b.txt",
+  "adoption": "unselected candidate",
+  "visualQA": "Best target coverage: workbench50/61 target50/64 near front edge; window76/22 good; door91/55 target89/66 inside lower door; records14/22 good; memo17/80 target20/72 on upper-right paper edge; pile40/33 target44/34 within pile. Generic prototypes and no smoking devices. No people, legible text or logos. Screen/paper details resemble engineering UI; review strict no-UI rule.",
+  "scenario": "smoke-robot",
+  "generated_date_utc": "2026-11-02",
+  "quality_parameter": "not exposed by built-in tool; no unverified high-quality setting claimed",
+  "reference_documents": [
+    {
+      "path": "/workspace/shared/trpg-art-prompts-2264.md",
+      "sha256": "d7ab874603307f0842379fcb3c0cc2c00dab951b975371991e16ca6c33982086"
+    },
+    {
+      "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/AGENTS.md",
+      "blob_sha": "20bb185eb71dbb99677f2fe1a4a68d7f084c2657"
+    },
+    {
+      "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/docs/asset_ai_guidance.md",
+      "blob_sha": "d58ecc213b8c5a7fa5ff3d2a26da2960c98485a3"
+    }
+  ],
+  "input_image_references": [],
+  "prompt_sha256": "c81f30b5dded74339e29bb3eeb28bafc06b2ec7846abb7b31e2ef395099e07ef",
+  "prompt_text": "Use case: illustration-story\nAsset type: TRPG investigation background candidate, scenario 07 smoke-robot\nFinely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 軌道の休憩所。作業台、展望デッキの窓、倉庫の扉、通信室、整備士のメモと失敗作の山。窓の外に青い地球。 Setting: 地球周回軌道 / 星の駅ポラリス. Mood: 夜間モードの灯り。通路の奥で、小さなビープ音。. Fictional place from a tabletop story (SF / ロボと一台). Concrete click-investigation objects, each a distinct readable prop at its position: ピコの作業台 clearly visible around x50% y64%; 展望デッキの窓 clearly visible around x76% y22%; 倉庫の扉 clearly visible around x89% y66%; 通信室の記録 clearly visible around x14% y24%; 整備士のメモ clearly visible around x20% y72%; 失敗した一台の山 clearly visible around x44% y34%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.\nVariant B: tactile hand-painted retro-future station, sea-gray metal and muted teal with soft amber lamps, friendly but quiet science fiction.\nONE coherent wide space-station workshop/rest stop, no montage. Empty central workbench centered50%/64%. Large observation window centered76%/22% with a blue Earth visible beyond. Closed storage-bay door centered89%/66%. Communication-room records at14%/24% represented by a mounted data recorder with blank display and geometric status lights, NOT readable text. Mechanic's memo at20%/72% represented by a blank paper with simple abstract non-letter engineering shapes, on a small foreground clipboard. A pile of failed small fabrication prototypes at44%/34%, on a raised shelf behind the bench: generic compact metal housings, spare gears and non-smoking science-fiction parts, NO hookahs, NO waterpipes, NO hoses, NO bowls or smoking devices. Keep all six interaction targets centered exactly at the listed percentages and readable as separate objects. No robots or people physically present. Calm upper-center, no lettering, logos or numbers anywhere.",
+  "implementation": "not modified; no scenario JSON or adopted 01/02 assets changed",
+  "raw_original": true,
+  "target_size": [
+    1280,
+    720
+  ],
+  "production_size_verified": false,
+  "hotspot_overlay_qa": "not run; coordinate estimates from visual inspection only",
+  "byte_size": 2480973
+}

@@ -1,0 +1,23 @@
+{
+  "comment": "第3章の東京14日を日常ループで遊ぶ時の短い場面（VOL03）。chapters/ch3-tokyo-daily.js が読む。報酬は台詞に書かない（体力の回復はコードが付ける）。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_tokyo_room_rest",
+      "comment": "mukaiの奥の部屋で休む（体力が大きく戻る）。寝泊まりしている部屋（ch3_main の「mukaiの奥の部屋」）。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "mukaiの奥の部屋で、少し横になった。"
+        },
+        {
+          "speaker": "",
+          "text": "壁の向こうから、グラスを拭く音が小さく聞こえる。"
+        },
+        {
+          "speaker": "",
+          "text": "目を閉じているうちに、体が軽くなった。"
+        }
+      ]
+    }
+  ]
+}

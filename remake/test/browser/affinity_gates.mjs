@@ -125,7 +125,7 @@ await suite("affinity-gates", async check => {
         return out;
       });
       for (const r of rows) {
-        assert.equal(r.locked.points, 204); assert.equal(r.locked.level, 5); assert(r.locked.waiting);
+        assert.equal(r.locked.points, 208); // 占いは最初の1回だけ×2（URA03）: 30＋17＋19×8.5 assert.equal(r.locked.level, 5); assert(r.locked.waiting);
         assert.equal(r.locked.held, 0); assert.equal(r.locked.early, 0); assert.equal(r.locked.fortune, null);
         // Numeric hearts are independent; completion/finale prerequisites are still separate.
         assert.equal(r.opened.level, 5); assert(!r.opened.waiting);

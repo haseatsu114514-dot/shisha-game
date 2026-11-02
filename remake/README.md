@@ -10,6 +10,7 @@
 - タイトルのメディアギャラリー: [docs/spec/title_media_gallery.md](../docs/spec/title_media_gallery.md)
 - 共通ロード画面と２コマ漫画: [docs/spec/loading_screen_and_comics.md](../docs/spec/loading_screen_and_comics.md)
 - 章タイトルコール・章末と次回予告: [docs/spec/chapter_previews.md](../docs/spec/chapter_previews.md)
+- 第4章ドバイのラクダレース（CAMEL RACE・任意ミニゲーム）: [docs/spec/camel_race.md](../docs/spec/camel_race.md)
 - CONTINUE演出とプレビュー: [docs/spec/continue_button_reactions_sfx_20261010.md](../docs/spec/continue_button_reactions_sfx_20261010.md)
 - 作り直しの経緯・2026-10-01 改稿取り込み・2026-10-17 実プレイ修正（履歴）: [docs/archive/remake_history_2026-10.md](../docs/archive/remake_history_2026-10.md)
 
@@ -50,6 +51,9 @@ mukaiの看板猫てつこ（#1993）は、到着の場面で裏口に登場し�
 `?step=holes` で穴あけから開始できる。二重のひし形が次の目標、水色の輪が動く光、黒い小さな凹みが開いた穴。
 タップ／Spaceで穴を開け、完成後に次のリング・仕上げを選ぶ。本番と同じ工程を呼び、本編セーブは読み書きしない。
 回帰テストは `node remake/test/browser/craft_materials.mjs`（PC／横持ちタッチ）と `node --experimental-vm-modules remake/test/foil_holes.mjs`。
+
+ラクダレース（第4章ドバイの任意ミニゲーム）の試遊は `http://127.0.0.1:8123/remake/camel-race.html`。
+ラクダは自分で走り、車のリモコンから「声」（Space／左ボタン。頭上の輪が重なる瞬間）と「合図」（X／右ボタン。終盤ほど効く）を送るだけ。4頭・1,000m・約50〜60秒、順位＋声かけ＋スタミナで0〜100点とS/A/B/C。`?pilot=perfect&speed=6` で自動操作のデモ。本編ではドバイの自由行動の地図から、Dr.fookah ドバイ店のサイフと知り合い→誘い→朝の見学の順に解放し、レースは昼の行動を使う。本編セーブは読み書きしない。[仕様・接続・素材依頼](../docs/spec/camel_race.md)。
 
 斧投げの練習は `http://127.0.0.1:8123/remake/axe-throw.html`。
 生成素材とキャラクターの反応を表示し、横・縦・回転のゲージを順に止める。WATL 2026式の的（刃の幅で採点・宣言制の青7／8点・落下で追加宣言・5投で的を交代・レク／アマ／プロの閉じ方）、3投練習／10投ゲーム、ひよりとの対戦（同点はサドンデス、2本先取のマッチ）がある。PC・スマホ縦横で遊べる。

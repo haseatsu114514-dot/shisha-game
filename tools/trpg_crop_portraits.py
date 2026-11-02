@@ -83,7 +83,12 @@ def scenario(sheet, sid):
     s = json.loads(path.read_text(encoding="utf-8"))
     looks = s["builder"]["looks"]
     builds = [o for seat in s["companionBuilds"].values() for opts in seat.values() for o in opts]
-    names = [f"look-{sid}-{l['id']}" for l in looks] + [f"pc-{o['id']}" for o in builds]
+    # A build id another story also uses (a different character with the same name) gets the story's id in its file name.
+    elsewhere = {o["id"] for e in catalog["scenarios"] if e["id"] != sid
+                 for seat in json.loads((ROOT / "data" / e["file"]).read_text(encoding="utf-8")).get("companionBuilds", {}).values()
+                 for opts in seat.values() for o in opts}
+    pc = lambda o: f"pc-{sid}-{o['id']}" if o["id"] in elsewhere else f"pc-{o['id']}"
+    names = [f"look-{sid}-{l['id']}" for l in looks] + [pc(o) for o in builds]
     if len(names) != 8: raise SystemExit(f"{sid}: expected 4 looks and 4 companion builds, got {len(names)}")
     # Companion ids share one folder with every other story: never overwrite another story's face.
     for name in names[4:]:
@@ -96,8 +101,8 @@ def scenario(sheet, sid):
         Image.open(ROOT / "assets/ui/trpg" / (name + ".png")).resize((256, 256), Image.LANCZOS).save(
             ROOT / "remake/img/ui/trpg" / (name + ".webp"), quality=90, method=6)
     for look, name in zip(looks, names): look["portrait"] = url(name)
-    faces = {o["name"]: url(f"pc-{o['id']}") for o in builds}
-    for o in builds: o["portrait"] = url(f"pc-{o['id']}")
+    faces = {o["name"]: url(pc(o)) for o in builds}
+    for o in builds: o["portrait"] = url(pc(o))
     for c in s["cast"]:
         if c.get("sheet") and c["sheet"].get("name") in faces: c["sheet"]["portrait"] = faces[c["sheet"]["name"]]
     path.write_text(json.dumps(s, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

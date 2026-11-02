@@ -9,14 +9,14 @@ import { bgUrl } from "../core/data.js";
 import { modal } from "../core/ui.js";
 import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 import { runDaily } from "../daily/calendar.js";
-import { allSpots } from "../daily/spots.js";
+import { allSpots, fortuneSpot } from "../daily/spots.js";
 import { openShop } from "../daily/shop.js";
 import { trpgSpot } from "../daily/trpg.js";
 import { MAP } from "./ch2-city-data.js";
 import { CITY_SHOP } from "./ch2-outings.js";
 import { returnCityHome } from "./ch2-commute.js";
 import { cityRegularSpots, visitCityRegular } from "./ch2-preparation.js";
-import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNight, tokyoWakeBackground } from "./ch5-tokyo.js";
+import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNight, tokyoWakeBackground, chapterFiveMukaiShift } from "./ch5-tokyo.js";
 import {
   chapterFiveProgress, chapterFiveFreeRemaining, chapterFiveRead, chapterFiveTimeoutPending,
   chapterFivePreparation, chapterFivePrepPending, recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
@@ -43,8 +43,9 @@ export const CH5_CALL_SPOT = Object.freeze({
 // 第5章向けの会話ができたら外す（#2033 の残り）。
 //   naru: 第2章の決裂の印が残ると「臨時休業」のまま（第3章の仲直り後の扱いが未整備）
 //   minto（PEPPERMINT）/ shishark（SHISHARK）: ヒロインの店（第5章は恋人と過ごす場面を描かない）
-//   c_station: 第1章の大会の受付・噂 / fortune: 占いは第1・2章だけ / trpg_bar: 柚ヶ谷の店（隣町の地域で出す）
-const HIDDEN_SPOTS = Object.freeze(["naru", "minto", "shishark", "c_station", "fortune", "trpg_bar"]);
+//   c_station: 第1章の大会の受付・噂 / trpg_bar: 柚ヶ谷の店（隣町の地域で出す）
+// 占い師は第5章にも現れる（章で1〜2回・予定の無い昼か夜。daily/fortune-schedule.js）。
+const HIDDEN_SPOTS = Object.freeze(["naru", "minto", "shishark", "c_station", "trpg_bar"]);
 
 /** 第5章の地元の行き先。 */
 export function chapterFiveHomeSpots() {
@@ -88,10 +89,12 @@ export function chapterFiveDailyDefinition(io) {
     // 別の約束が来ても、地元へ瞬間移動させない（false はループを止めるので返さない）。
     beforeInvitation: destination => inTokyo() ? true
       : destination && (destination.region || "home") === "home" ? returnCityHome() : true,
-    homeShisha: () => !inTokyo(), // 屋根裏に家の台は無い
+    // 東京の屋根裏でも寝る前の家シーシャを選べる（台を持って行く・VOL12。FIN10 の「出さない」を更新）。
     wakeBackground: () => inTokyo() ? tokyoWakeBackground() : null,
     spotById: id => [CH5_CALL_SPOT, CH5_CITY_SHOP, TO_TOKYO_SPOT, ...TOKYO_SPOTS, ...cityRegularSpots()].find(spot => spot.id === id) || null,
     performSpot: (spot, options) => performChapterFiveSpot(spot, io, options),
+    // ムカイさんの LIME で呼ばれたシフト（VOL10）
+    mukaiShift: ({ called = false } = {}) => chapterFiveMukaiShift(state, { called }),
   };
 }
 
@@ -109,7 +112,8 @@ export async function runChapterFiveDaily(io) {
 const currentRegion = () => ["widehanga", TOKYO].includes(state.flags._ch2_region) ? state.flags._ch2_region : "home";
 
 /** 東京の行き先（スティーブ・ヴォルクの店は会ったことがあれば）。 */
-export const chapterFiveTokyoSpots = () => TOKYO_SPOTS.filter(spot => !spot.charId || state.met?.[spot.charId]);
+// 占い師は東京にも現れる（理由は語らない・台帳 URA）。
+export const chapterFiveTokyoSpots = () => [...TOKYO_SPOTS.filter(spot => !spot.charId || state.met?.[spot.charId]), fortuneSpot(TOKYO)].filter(Boolean);
 
 /** 柚ヶ谷の支店（第2章の「県大会向け」の説明は使わない）。 */
 const CH5_CITY_SHOP = Object.freeze({ ...CITY_SHOP, desc: "隣町の支店。仕入れはここでも。" });
