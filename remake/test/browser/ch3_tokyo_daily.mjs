@@ -44,6 +44,10 @@ async function seed(page) {
     value.day += 3;
     if (!progress.departChapterThree(value)) throw new Error("Departure failed");
     value.flags._ch3_intro.titleSeen = true;
+    // 路上占い師（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、この章の出現は済んだことにする。
+    const fortune = await import("./js/daily/fortune-schedule.js");
+    const fortunePlan = fortune.fortunePlan({ seed: value.seed, chapter: 3 });
+    value.flags._fortune_wander = { chapter: 3, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
     core.saveConfig();
     Object.assign(core.state, value);
@@ -159,5 +163,40 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(state.flags._ch3_intro.stage, 20, "Every Tokyo scene is read before the national match");
     assert.equal(state.flags._ch3_evening?.kind, "rest");
     assert.equal(await page.locator('[data-test="ch3-intro-tournament"]').count(), 1);
+  });
+
+  // VOL15: 路上占い師は東京にも現れる（理由は語らない）。地図の行き先になり、時間を使わずに3,000円で占う。
+  await check("the-street-fortune-teller-appears-in-tokyo-too", async page => {
+    await seed(page);
+    const day = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const progress = await import("./js/chapters/ch3-progress.js");
+      const fortune = await import("./js/daily/fortune-schedule.js");
+      const value = core.state, intro = value.flags._ch3_intro;
+      // 東京DAY6の昼（本筋の予定が無い時間帯）。占い師とは地元で会ったことがある。
+      intro.stage = progress.CH3_INTRO_SCENES.findIndex(scene => scene.id === "ch3_naru_contact_before_tournament");
+      value.day = intro.startDay + 5; value.slot = 0; value.phase = "daily";
+      Object.assign(value.met, { mashiro: true, mukai_master: true, naru: true, uranaishi: true });
+      value.affinity.naru = 20; value.flags._fortune_met = true;
+      value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
+      delete value.flags._fortune_wander;
+      if (!fortune.placeFortuneNow(value, "tokyo")) throw new Error("Fortune teller placement failed");
+      core.save();
+      return value.day;
+    });
+    await loadSlot(page, 0);
+    await tokyoMap(page, { day, slot: 0 });
+    assert.equal(await page.locator(dt("pin-fortune")).count(), 1, "The fortune teller is on the Tokyo map");
+    const before = await get(page);
+    await go(page, "fortune");
+    await page.waitForFunction(() => !!window.__remake?.state?.fortune, null, { timeout: 60000 });
+    await tokyoMap(page, { day, slot: 0 });
+    const state = await get(page);
+    assert.equal(state.money, before.money - 3000, "The reading costs 3,000 yen");
+    assert.equal(state.fortune.char, "naru");
+    assert.equal(state.slot, 0, "No time is used");
+    assert.equal(await page.locator(dt("pin-fortune")).count(), 0, "She is gone after the reading");
+    const lines = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map(entry => entry.text));
+    assert(lines.includes("……ヒヒ。ずいぶん遠くまで来たね"), "The Tokyo greeting is read");
   });
 });

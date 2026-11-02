@@ -22,7 +22,7 @@ import { advanceToChapterTwo, dayOneProgress, cityVisits, recordCityVisit } from
 import { acceptChapterTwoDeliveries, deliveryPending, finishChapterTwoDelivery, chapterTwoDeliveriesDone, DELIVERY_STOPS, snapshotDeliveryIdentity, confirmDeliveryIdentity, reconcileDeliveryIdentity } from "./ch2-deliveries.js";
 import { openShop } from "../daily/shop.js";
 import { openTrpgBar } from "../daily/trpg.js";
-import { CITY_OUTINGS, CITY_SHOP, knownCityOutings, introduceCitySpot } from "./ch2-outings.js";
+import { CITY_SHOP, knownCityOutings } from "./ch2-outings.js";
 
 import { offerAgehaPurikura } from "./ch2-purikura.js";
 
@@ -197,15 +197,6 @@ function greetingWithoutFarewell(id) {
   return { ...dialogue, branches: { ...dialogue.branches, first: first.filter(line => !(line.type === "jump" && line.next_id === farewell)) } };
 }
 
-async function introduceStop(id, background) {
-  const outing = CITY_OUTINGS.find(item => item.introducedBy === id);
-  if (!outing || state.flags[outing.flag]) return true;
-  // 旧版ですでにTRPGを遊んだ人にも紹介台詞を読める。進捗を消さない。
-  if (!await scene(outing.introduction, "街のおすすめ", background)) return false;
-  introduceCitySpot(state, id); save();
-  return true;
-}
-
 async function visit(stop) {
   const owner = session;
   const delivering = deliveryPending(state, stop.id);
@@ -223,12 +214,12 @@ async function visit(stop) {
     if (!current(owner)) return;
     state.flags._ch2_rules_read = true; save();
   }
-  // 配達と街の紹介は挨拶と同じ店頭（背景を替えない）で読む。室内の絵は店内の場面で初めて出す（#1706）。
+  // 配達は挨拶と同じ店頭（背景を替えない）で読む。室内の絵は店内の場面で初めて出す（#1706）。
+  // 街の遊び場の紹介（ボドゲカフェ・水族館・銭湯）は初日に続けて読まず、DAY2以降にその店へ初めて通った時に読む（VOL13・ch2-preparation.js）。
   if (delivering) {
     if (!await scene(`remake_ch2_delivery_${stop.id}`, "配達とご挨拶")) return;
     finishChapterTwoDelivery(state, stop.id); save();
   }
-  if (!await introduceStop(stop.id)) return;
   // J05: 配達で来たら、そのまま店内へ入って店主と話す（「店内をのぞく」は出さない）。
   // 室内の絵が間に合わないときだけ、通常訪問と同じ店頭カード（再読み込みできる）に落とす。
   if (delivering && ROOMS[stop.id]) {

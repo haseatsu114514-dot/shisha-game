@@ -144,8 +144,9 @@ await suite('ch2-story', async check => {
     assert(s.flags._ch2_taste_distant); assert(s.flags._ch2_eve_done); assert(!s.flags.ch2_taste_recovered);
     assert(s.met.ageha); assert(!s.contacts.includes('ageha')); assert(!s.visits.ageha); assert(!s.met.volk);
     const trace = await page.evaluate(() => window.__storyTrace);
-    const expected = ['ch2_sofa_burn','ch2_abyss_baito','ch2_kumicho_greeting','ch2_slump_taste','ch2_lingering_smell','ch2_adam_distance',
-      'remake_ch2_ageha_tasting','ch2_sumi_silence','ch2_naru_confrontation','ch2_minto_warning','ch2_naru_window','ch2_tsumugi_color',
+    // VOL13: アダム（DAY7〜）とみんと（DAY12の夜）は店で読む本編。一度も行かなければDAY12の夜に救済で読む
+    const expected = ['ch2_sofa_burn','ch2_abyss_baito','ch2_kumicho_greeting','ch2_slump_taste','ch2_lingering_smell',
+      'remake_ch2_ageha_tasting','ch2_sumi_silence','ch2_naru_confrontation','ch2_adam_distance','ch2_minto_warning','ch2_naru_window','ch2_tsumugi_color',
       'remake_ch2_eve_arrival','remake_ch2_eve_rei','ch2_pre_tournament_realisation'];
     assert.deepEqual(trace.filter(id => expected.includes(id)), expected);
     const texts = await page.evaluate(() => window.__storyTexts.join('\n'));

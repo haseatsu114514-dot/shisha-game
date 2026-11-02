@@ -18,6 +18,36 @@
           "text": "目を閉じているうちに、体が軽くなった。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch3_tokyo_fortune",
+      "comment": "東京で路上占い師に再会する（VOL15・台帳 URA の「東京にも理由は詳しく教えてくれないけど現れる」）。daily/fortune.js が東京で2回目以降に会ったとき読む。続きは remake_fortune_offer。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "路地の角に、紫の布をかけた小さな机が出ていた。"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "……ヒヒ。ずいぶん遠くまで来たね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "地元の、占いの……？　東京にもいるんですか？"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "smile",
+          "text": "縁が呼ぶ所なら、どこへでも。……どうやって来たかは、聞かない方がいい"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "さて。こっちでも、気になる縁はあるかい？"
+        }
+      ]
     }
   ]
 }
