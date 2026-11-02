@@ -232,7 +232,7 @@ export async function playDate(id) {
   const venue = dateVenue(id);
   state.lastDate[id] = state.day;
   bond.private = true;
-  await play(dateScene(id, venue));
+  await play(dateScene(id, venue), { growthScene: true });
   gainAffinity(id, 10);
   bond.private = false;
   addStamina(-10);
@@ -347,10 +347,11 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false,
 
 /** 大会当日、恋人が2人以上いたら会場のロビーで鉢合わせる（1回だけ） */
 export async function maybeShuraba() {
-  const lv = (state.lovers || []).filter((id) => ["tsumugi", "minto", "rin"].includes(id)).sort();
+  const lv = (state.lovers || []).filter((id) => ["tsumugi", "minto", "rin", "hiyori"].includes(id)).sort();
   if (lv.length < 2 || state.flags._shuraba_ch1) return false;
   state.flags._shuraba_ch1 = true;
-  const key = lv.length >= 3 ? "all" : lv.join("_");
+  // 3人以上: 既存の all は3人固定の台本。ひよりを含む場合は、居合わせた恋人の行だけを出す all_hiyori
+  const key = lv.length >= 3 ? (lv.includes("hiyori") ? "all_hiyori" : "all") : lv.join("_");
   await play(`remake_shuraba_${key}`);
   state.guilt = (state.guilt || 0) + 1;
   save();

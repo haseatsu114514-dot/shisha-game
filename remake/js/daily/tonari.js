@@ -1,5 +1,7 @@
 import { CHARM_BONUS } from "../core/stat-step-tables.js";
 import { chapterFeatureEnabled } from "../core/chapter-features.js";
+import { callingSalesBonus } from "../core/growth-effects.js";
+import { on } from "../core/bus.js";
 import { staffFlavors, staffStock } from "../core/flavor-mastery.js";
 // tonari（バイト先）: 客として一服／シフトに入る（接客→シフト後にスミさん）。
 // シーシャ作りの練習は店の練習イベントで行う（#783）。chooseDrill は第1章の準備イベントで使う。
@@ -49,10 +51,10 @@ export function tonariMenu() {
       el("div.sub-choices", [
         opt("お客さんとして一服", `${customerStory ? "【新しい話】" : ""}${!tsumugiPresent ? "客席でゆっくり一服する"
           : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる"}`, "customer", "tonari-customer"),
-        opt("まかないで練習", `体力を使う・1行動。今日の葉：${staffFlavors(state).map(id => `${DB.flavorById[id]?.short_name || id} ${staffStock(state, id)}g`).join("、")}。私物も使える`, "practice", "tonari-practice"),
+        // #2213 B04: 「まかないで練習」はシフト上がりのメニューへ移した（独立の行動にしない）
         // #1650: 第2章の試煙会のあと、一度だけ。試供品の苺で熱を確かめ、スミさんに吸ってもらう
         strawberryTrialOpen() ? opt("苺を試す（まかない）", "体力を使う・1行動。試煙会の苺で一台。確かめるのは熱だけ", "strawberry", "tonari-strawberry") : null,
-        opt("シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}接客で稼ぐ。上がったあとはスミさんと話せる`, "baito", "tonari-baito"),
+        opt("シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}接客で稼ぐ。上がったあとはスミさんと話せる。まかないで練習もできる`, "baito", "tonari-baito"),
         hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
           : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,
@@ -88,48 +90,73 @@ export async function tonariCustomer({ signal = null } = {}) {
 
 // 魅力の段で指名・リピートが増える
 const CALLED_BONUS = 5000; // スミさんに急に呼ばれた日の上乗せ（店からの給料。チップではない）
+const activeShifts = new WeakSet();
 
-/** @param opts.called スミさんのLIMEで急に呼ばれたシフト（給料に上乗せ） */
-export async function doBaito({ called = false } = {}) {
-  return dialogueSequence(() => baitoShift({ called }));
+/** @param opts.called スミさんのLIMEで急に呼ばれたシフト（給料に上乗せ）
+ *  @param opts.story その日の接客として流す本編の場面。流したらその場面IDを返す（通常の接客は重ねない） */
+export async function doBaito({ called = false, story = null } = {}) {
+  const owner = state;
+  if (activeShifts.has(owner)) return false;
+  activeShifts.add(owner);
+  const controller = new AbortController();
+  const off = on("hud", () => { if (state !== owner) controller.abort(); });
+  try { return await dialogueSequence(() => baitoShift({ called, story, owner, signal: controller.signal })); }
+  finally { off(); controller.abort(); activeShifts.delete(owner); }
 }
 
-async function baitoShift({ called }) {
+async function baitoShift({ called, story, owner, signal }) {
+  const current = () => state === owner && !signal.aborted;
+  const read = async (scene, opts) => {
+    const result = await play(scene, { ...opts, signal });
+    return current() && !result?.cancelled;
+  };
   addStamina(-24);
   const condition = currentCondition(); // 消耗を反映した制作時の体力で、そのシフト中は固定
+  const shiftKey = `${owner.chapter}:${owner.day}:${owner.slot}`;
+  const callingBonus = owner.flags._minto_calling_paid === shiftKey ? 0 : callingSalesBonus(owner, condition);
   playBgm("tonari");
   state.baitoCount = (state.baitoCount || 0) + 1;
   state.lastBaitoDay = state.day;
-  await play("remake_baito_start", { bg: TONARI_BG });
+  if (!await read("remake_baito_start", { bg: TONARI_BG })) return false;
   await meetHiyoriAtTonari();
+  if (!current()) return false;
   const rainy = isRainy();
-  if (rainy) await play("remake_baito_rain", { bg: TONARI_BG });
+  if (rainy && !await read("remake_baito_rain", { bg: TONARI_BG })) return false;
   const n = state.baitoCount;
+  // #2213 B02: 本編の常連の話を接客として読んだ日は、カメオ・通常の接客を重ねない
+  const storyId = story ? await story() : null;
+  if (!current()) return false; // 本編の場面の途中で LOAD した時は、ここで止める
+  if (storyId) rememberBaito(storyId, [storyId]);
   // 正体を伏せた客が一度だけ混ざる（後の章・大会当日で回収される伏線）
-  if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n === 2 && !state.flags._ev_rei_cameo) {
+  else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n === 2 && !state.flags._ev_rei_cameo) {
     state.flags._ev_rei_cameo = true;
-    await play("ch1_rei_cameo", { bg: TONARI_BG });
+    if (!await read("ch1_rei_cameo", { bg: TONARI_BG })) return false;
     rememberBaito("ch1_rei_cameo", ["rei"]);
   } else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n >= 3 && state.day >= 4 && !state.flags._ev_reviewer_cameo) {
     state.flags._ev_reviewer_cameo = true;
-    await play("ch1_reviewer_cameo", { bg: TONARI_BG });
+    if (!await read("ch1_reviewer_cameo", { bg: TONARI_BG })) return false;
     rememberBaito("ch1_reviewer_cameo", ["reviewer"]);
   } else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n >= 4 && state.day >= 6 && !state.flags._ev_maezono_cameo) {
     state.flags._ev_maezono_cameo = true;
-    await play("ch1_maezono_cameo", { bg: TONARI_BG });
+    if (!await read("ch1_maezono_cameo", { bg: TONARI_BG })) return false;
     rememberBaito("ch1_maezono_cameo", ["maezono"]);
   } else {
-    await customerEvent(condition);
+    if (await customerEvent(condition, signal) === false) return false;
   }
+  if (!current()) return false;
   await serveShiftOrder();
+  if (!current()) return false;
+  if (callingBonus && !await read("baito_minto_calling", { bg: TONARI_BG })) return false;
   const bonus = Math.round(CHARM_BONUS[step("charm") - 1] * condition.bonusRate);
   const extra = called ? CALLED_BONUS : 0;
   const rainPay = rainy ? RAIN_BAITO_BONUS : 0; // 雨の日は長居客の追加注文ぶん
-  const pay = 8000 + bonus + extra + rainPay + condition.shiftBonus;
+  const pay = 8000 + bonus + extra + rainPay + condition.shiftBonus + callingBonus;
   await shiftClose();
-  await play("remake_baito_end", { bg: TONARI_BG });
-  if (called) await play("remake_sumi_call_thanks", { bg: TONARI_BG });
+  if (!current() || !await read("remake_baito_end", { bg: TONARI_BG })) return false;
+  if (called && !await read("remake_sumi_call_thanks", { bg: TONARI_BG })) return false;
   addMoney(pay);
+  if (callingBonus) owner.flags._minto_calling_paid = shiftKey; // 同じ行動枠の再開・再入力で上乗せを重ねない。
+  if (callingBonus) toast(`呼び込みの追加注文。店からの売上ボーナス +${callingBonus.toLocaleString()}円`, { kind: "good" });
   if (bonus) toast(`指名ボーナス（魅力）＋${bonus.toLocaleString()}円`, { kind: config.statEffectColors !== false ? "charm-bonus" : "good" });
   if (extra) toast(`急なシフトの上乗せ +${extra.toLocaleString()}円`, { kind: "good" });
   if (rainPay) toast(`雨の日の追加注文 +${rainPay.toLocaleString()}円`, { kind: "good" });
@@ -138,7 +165,9 @@ async function baitoShift({ called }) {
   // 基礎成長は訪問と同じ4。接客・片付けの両方を経験する。
   applyStats({ technique: 2, charm: 2 });
   await afterShiftErrand();
+  if (!current()) return false;
   await afterShift();
+  return current();
 }
 
 /** 店の受け取りは実際のシフト後だけ。旧DAY4の既読記録もそのまま使う。 */
@@ -192,15 +221,16 @@ function chooseCustomerEvent(rainy) {
 }
 
 /** baito_events.json の接客イベントを会話に変換して再生 */
-async function customerEvent(condition) {
+async function customerEvent(condition, signal) {
+  const owner = state;
   const used = (state.usedBaito = state.usedBaito || []);
   const ev = chooseCustomerEvent(isRainy());
   if (!ev) {
     // 条件を満たす客がいないときも、未対面の名前や一度限りの出来事は再生しない。
-    await play({ dialogue_id: "remake_baito_routine", lines: [
+    const result = await play({ dialogue_id: "remake_baito_routine", lines: [
       { speaker: "", face: "", text: "注文を聞いて、炭を替え、グラスを下げる。今日のシフトも、一つずつ対応を重ねた。" },
-    ] }, { bg: TONARI_BG });
-    return;
+    ] }, { bg: TONARI_BG, signal });
+    return state === owner && !result?.cancelled;
   }
   const narr = (t) => String(t || "").split("\n").filter(Boolean).map((text) => ({ speaker: "", face: "", text }));
   const branches = {};
@@ -214,7 +244,8 @@ async function customerEvent(condition) {
     lines: [...narr(ev.text), ...(choices.length ? [{ type: "choice", id: "baito", choices }] : [])],
     branches,
   };
-  await play(dlg, { bg: TONARI_BG });
+  const result = await play(dlg, { bg: TONARI_BG, signal });
+  if (state !== owner || result?.cancelled) return false;
   if (!used.includes(ev.id)) used.push(ev.id);
   if (ev.set_flag) state.flags[ev.set_flag] = true;
   if (ev.mark_flag) state.flags[ev.mark_flag] = (Number(state.flags[ev.mark_flag]) || 0) + 1; // 繰り返し来る常連の接客回数（大会の回想分岐用。set_flag と違い一度きり化しない）
@@ -234,15 +265,31 @@ function afterShiftMenu() {
         canStudyCubeCoals() ? opt("キューブ炭の授業を受ける", "スミさんと火の違いを確かめる", "cube_coals", "after-cube-coals") : null,
         // 心得の盤で灯した授業: スミさんに相談して話を聞く（SBD50）
         ...readyLessons("sumi").map((l) => opt(`スミさんに相談する（${l.name}）`, "授業。話を聞いて習得する", `lesson:${l.id}`, `after-lesson-${l.id}`)),
+        makanaiOpen() ? opt("まかないで練習", `空いた台で一台作る。今日の葉：${staffFlavors(state).map(id => `${DB.flavorById?.[id]?.short_name || id} ${staffStock(state, id)}g`).join("、")}。私物も使える`, "makanai", "after-makanai") : null,
         opt("まっすぐ上がる", "今日はここまで", "none", "after-none"),
       ]),
     ]));
   });
 }
 
+// 旧セーブの苺専用記録も、同じ日のまかないとして扱う。
+const makanaiOpen = () => state.visitedDay?.tonari_practice !== state.day && state.visitedDay?.tonari_strawberry !== state.day;
+
+/** #2213 B04: まかないの練習はシフトの中で選んだ日だけ。熟練度は旧・独立コマンドと同じ runner で育つ。
+ * 行動枠・行動の体力・行動の学びはシフトの分だけで、旧・独立コマンドの分を重ねない。 */
+async function makanaiPractice() {
+  const owner = state;
+  state.visitedDay.tonari_practice = state.day;
+  await play("remake_staff_practice", { bg: TONARI_BG });
+  const { runFullPractice } = await import("../craft/practice.js");
+  const cs = await runFullPractice({ kind: "self", staffPractice: true, isCurrent: () => state === owner });
+  if (cs?.masteryGained) toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
+}
+
 async function afterShift() {
   await afterShiftSumiTalk();
   const pickAfter = await afterShiftMenu();
+  if (pickAfter === "makanai") await makanaiPractice();
   if (pickAfter === "attack") await studyAttack();
   if (pickAfter === "cube_coals") await studyCubeCoals();
   if (String(pickAfter).startsWith("lesson:")) await consultLessons("sumi", { only: pickAfter.slice(7), bg: TONARI_BG });
@@ -299,13 +346,25 @@ const SHIFT_ORDERS = [
     reactions: ["shift_flavor_sweet_vanilla_coconut", "shift_flavor_sweet_peach_vanilla"] },
   { id: "double_apple", text: "ダブルアップルを。清涼感は少しだけ", mixes: [{ double_apple: 10, mint: 2 }, { double_apple: 12 }], labels: ["ダブルアップル＋ミント少量", "ダブルアップル単体"],
     reactions: ["shift_flavor_double_apple_mint", "shift_flavor_double_apple_solo"] },
+  // 第2章（優勝後の橙須）は、仕事帰りや柚ヶ谷帰りの客が増える。第1章の4種とは別の注文を出す。
+  { id: "ch2_after_work", chapter: 2, text: "仕事帰りで頭が重いんだ。苦くなくて、すっと抜けるのを", mixes: [{ grapefruit: 8, mint: 4 }, { kiwi: 8, lemon: 4 }], labels: ["グレープフルーツ＋ミント", "キウイ＋レモン"],
+    reactions: ["shift_flavor_ch2_after_work_grapefruit_mint", "shift_flavor_ch2_after_work_kiwi_lemon"] },
+  { id: "ch2_strawberry_light", chapter: 2, text: "苺がいいな。でも甘ったるいのは苦手で", mixes: [{ strawberry: 9, lemon: 3 }, { strawberry: 8, peach: 4 }], labels: ["苺＋レモン", "苺＋ピーチ"],
+    reactions: ["shift_flavor_ch2_strawberry_light_strawberry_lemon", "shift_flavor_ch2_strawberry_light_strawberry_peach"] },
+  { id: "ch2_night_deep", chapter: 2, text: "夜だし、少しどっしりしたのを。甘さは控えめで", mixes: [{ black_tea: 9, lemon: 3 }, { caramel: 6, black_tea: 6 }], labels: ["紅茶＋レモン", "キャラメル＋紅茶"],
+    reactions: ["shift_flavor_ch2_night_deep_black_tea_lemon", "shift_flavor_ch2_night_deep_caramel_black_tea"] },
+  { id: "ch2_tropical_compare", chapter: 2, text: "柚ヶ谷で濃いのを飲んできた。ここは、違う良さがほしい", mixes: [{ mango: 8, passion_fruit: 4 }, { watermelon: 9, mint: 3 }], labels: ["マンゴー＋パッションフルーツ", "スイカ＋ミント"],
+    reactions: ["shift_flavor_ch2_tropical_compare_mango_passion_fruit", "shift_flavor_ch2_tropical_compare_watermelon_mint"] },
 ];
 async function serveShiftOrder() {
   const owner = state;
   const key = `_shift_order_${state.chapter}:${state.day}`;
   if (state.flags[key]) return;
   const seed = (state.weatherSeed || 0) ^ Math.imul(state.day + state.chapter * 31, 0x45d9f3b);
-  const order = SHIFT_ORDERS[((seed ^ (seed >>> 16)) >>> 0) % SHIFT_ORDERS.length];
+  // 章付きの注文はその章だけ。章付きが無い章は、章指定なしの4種から出す。
+  const pool = SHIFT_ORDERS.filter((o) => o.chapter === state.chapter);
+  const orders = pool.length ? pool : SHIFT_ORDERS.filter((o) => !o.chapter);
+  const order = orders[((seed ^ (seed >>> 16)) >>> 0) % orders.length];
   const index = await modal({ title: "今日の注文", body: `前のお客さんを見送って、次の卓につく。<br>「${order.text}」 店の葉で一台を作る。`,
     options: order.labels.map((label, i) => ({ label, value: i, test: `shift-order-${i}` })) });
   if (state !== owner || !Number.isInteger(index) || !order.mixes[index]) return;

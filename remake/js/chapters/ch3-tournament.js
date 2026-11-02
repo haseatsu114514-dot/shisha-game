@@ -34,6 +34,7 @@ import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { adjustmentLines, resultLines, defeatLines } from "./ch3-verdict.js";
+import { awardTournamentExp } from "../core/growth.js";
 import { chapterThreeScenes, chapterThreeProgress } from "./ch3-progress.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
   startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult, CH3_PRIZE } from "./ch3-tournament-state.js";
@@ -432,7 +433,7 @@ async function drive(owner) {
         cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
       }
       finishStep(state, cs);
-      if (cs.failed) { save(); continue; }
+      if (cs.failed) { awardTournamentExp(4, cs); save(); continue; }
       if (MILESTONES.has(p.step)) {
         broadcast.clearComments();
         p.craft = clone(cs);
@@ -442,7 +443,7 @@ async function drive(owner) {
           const round = MILESTONES.get(p.step), quality = partialQuality(cs, round);
           if (!castVotes(p, round, quality, null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error("全国大会の投票地点を確認できません");
           p.stage = p.step === STEPS.length ? "tasting" : "votes";
-          if (p.stage === "tasting") recordResult(state, cs.total);
+          if (p.stage === "tasting") { const result = recordResult(state, cs.total); awardTournamentExp(result.rank, cs); }
         }
       }
       save();

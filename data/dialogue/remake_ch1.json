@@ -1552,7 +1552,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "配達の前に、C.STATIONの受付で大会の参加登録を済ませてこい"
+          "text": "その前に、C.STATIONの受付で大会の参加登録を済ませてこい"
         },
         {
           "speaker": "hajime",
@@ -1562,12 +1562,12 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "ああ。登録が済んだらPEPPERMINT、それからEDENだ"
+          "text": "ああ。今夜はシフトに入ってくれ。届け物は上がった帰りに、PEPPERMINT、それからEDENだ"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "先に大会の登録、そのあと二軒ですね。行ってきます"
+          "text": "登録して、夜はシフト、帰りに二軒ですね。行ってきます"
         }
       ],
       "branches": {
@@ -2085,6 +2085,294 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（ダブルアップルに、清涼感を少し。前にも作った。今日は前と変えてみる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch2_after_work_grapefruit_mint",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "グレープフルーツの葉にミントを重ねて量る。火は低めに整え、苦みの抜けた一台を客へ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "苦みが軽い。仕事の疲れが、すっと抜けていくね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客はスーツの肩を下ろして、ゆっくり煙を吐いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch2_after_work_kiwi_lemon",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "キウイにレモンを合わせて葉を量る。酸味が立ちすぎない火に整え、客へ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "キウイの酸っぱさが、ちょうどいい。頭が冴えてくる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客はネクタイを緩めて、もう一口吸った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch2_after_work_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（仕事帰りの人に、頭が冴える軽いやつ。前にも聞いた。あのときと同じ配合でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch2_after_work_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（仕事帰りの人に、頭が冴える軽いやつ。前にも聞いた。今日は違う方で出してみる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch2_strawberry_light_strawberry_lemon",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "苺にレモンを少し足して葉を量る。甘さの後ろに酸味が残る火に整え、客へ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あ、苺なのに甘ったるくない。これなら最後まで飲める"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は嬉しそうに、ホースを持ち直した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch2_strawberry_light_strawberry_peach",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "苺にピーチを重ねて葉を量る。やわらかい熱で、果物の甘さを引き出して客へ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "果物をそのまま食べてるみたい。優しい味だね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は頬をゆるめて、ゆっくり煙を吐いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch2_strawberry_light_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（苺で、甘ったるくないやつ。前にも作った。今日も同じでいく）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch2_strawberry_light_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（苺で、甘ったるくないやつ。前にも作った。今日は前と変えてみる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch2_night_deep_black_tea_lemon",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紅茶の葉にレモンを少し添えて量る。熱を落ち着けて、香りの底を残して客へ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "紅茶の渋みがちゃんとある。夜はこういうのがいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は背もたれに身を預けて、目を閉じて煙を味わった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch2_night_deep_caramel_black_tea",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "キャラメルに紅茶を重ねて葉を量る。甘さを抑える火に整え、客へ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "甘いのに、重すぎない。ちょうど夜向きだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は小さく頷いて、ゆっくりホースを回した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch2_night_deep_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（夜に、どっしりして甘さ控えめ。前にも聞いた注文だ。あのときと同じ配合でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch2_night_deep_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（夜に、どっしりして甘さ控えめ。前にも聞いた注文だ。今日は、あのときと違う方で出してみる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch2_tropical_compare_mango_passion_fruit",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マンゴーにパッションフルーツを重ねて葉を量る。熱を上げすぎずに香りを立たせ、客へ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "南国っぽい香りがはっきり立つね。柚ヶ谷のとは、また違う"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は煙の行方を目で追いながら、もう一口吸った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch2_tropical_compare_watermelon_mint",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スイカにミントを足して葉を量る。火を整え、軽さを残して客へ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "軽い。氷みたいに涼しくて、飲み疲れしないな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は笑って、ホースを持ち直した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch2_tropical_compare_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（柚ヶ谷で濃いのを飲んだ人に、違う良さを出す注文。前にも聞いた。あのときと同じ配合でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch2_tropical_compare_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（柚ヶ谷で濃いのを飲んだ人に、違う良さを出す注文。前にも聞いた。今日は前と違う方で試してみる）"
         }
       ]
     },
@@ -2646,6 +2934,510 @@
           }
         }
       ]
+    },
+    {
+      "dialogue_id": "remake_shuraba_hiyori_minto",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付を済ませてロビーに戻ると、柱の陰に、見知った顔がふたつ並んで立っていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……はじめくん。来ちゃった。有休、ひっそり取って",
+          "inner": "申請は三日前に出した。用意周到な儚さ"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくーん！ やっと来た♡ みんと、エントリー済ませて待ってたんだよ？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ふたりの視線が、俺を通り越して、ゆっくりと互いに向いた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……えっと。はじめくんのお知り合いさん？ みんと、初めましてだよね？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……朝霧ひより。はじめくんとは、煙の中で出会ったの",
+          "inner": "誰！？ 距離近くない！？ 出場者の子！？"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "煙の中♡ ロマンチック〜。……それで、はじめくんの、なに？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……私は、はじめくんの、その……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（その「その」の続きは、今だけは聞きたくない！）"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "「その」？ ……奇遇だね♡ みんとも、はじめくんとは「その」なんだ"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……え。……私、今、儚く消えるところ？",
+          "inner": "消えてたまるか。こっちは有休使ってるんだぞ"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "ぷぷぷっ！ 出場者のみなさーん、控室に集合だよ〜！ 遅れたら失格〜♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "い、行ってきます！"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はーい♡ じゃ、みんとも行こっと。……ひよりさん、お話は終わってからゆっくりね♡"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……がんばってね、はじめくん。終わったら、ラーメンでも食べながら聞くから",
+          "inner": "味玉は、はじめくんのおごり"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（炭より先に、俺が焼かれそうだ。……集中しろ、今は一台に）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_shuraba_hiyori_rin",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付を済ませてロビーに戻ると、窓際のベンチに、見知った顔がふたつ並んでいた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "おはよう、モルモットくん。最重要サンプルの品質管理に来たよ"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……おはよう、はじめくん。朝の光って、私には少し眩しすぎるね",
+          "inner": "有休取った。朝ごはんもしっかり食べた"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……隣、お知り合い？ さっきから、ずっと入口の方を見てたよ"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……朝霧ひより。はじめくんとは、ただの、煙の縁……"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "煙の縁。……いい言い回しだね。それで、実際のところは？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……あなたこそ。モルモットって、はじめくんのこと？",
+          "inner": "呼び方の距離が近すぎる。何者！？"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "うん。私の、いちばん大事なサンプル"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……大事。……私も、はじめくんの、その……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（その先は言わないでください。ここ、ロビーです！）"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "……そう。同じ値が２つ。偶然にしては、きれいすぎるね"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "ぷぷぷっ！ 出場者のみなさーん、控室に集合だよ〜！ 遅れたら失格〜♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "は、はい！ 今行きます！"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……逃げたね。いいよ、検証は結果が出てからにしてあげる"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……いってらっしゃい。儚く、待ってるね",
+          "inner": "待つ。待つけど、終わったら全部聞く"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（炭より先に、俺が焼かれそうだ。……集中しろ、今は一台に）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_shuraba_hiyori_tsumugi",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付を済ませて控室の前まで来ると、見知った顔がふたつ、扉から少し離れて立っていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん。応援、来ました"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……はじめくん。私も、来ちゃった。煙に誘われて",
+          "inner": "有休、三日前に申請済み"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ふたりの視線が、俺を通り越して、ゆっくりと互いに向いた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……tonariで、スミさんと話してた方、ですよね、……カウンターの"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……あ。奥の席で、絵を描いてる子？",
+          "inner": "見られてた。儚くしてた時、だよね？ たぶん"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。……はじめさんの、なんですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……私？ 私は、はじめくんの……その……"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "evil",
+          "text": "……その、……私も、です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（ふたりとも声が小さい。小さいのに、ロビーじゅうに響いてる）"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "evil",
+          "text": "……はじめさんの顔。いま、塗り直したくなる色、です"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……分かる。今いちばん消えそうなの、私じゃなくて、はじめくんだね",
+          "inner": "儚さのお株を奪われた"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "ぷぷぷっ！ 出場者のみなさーん、控室に集合だよ〜！ 遅れたら失格〜♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "い、行ってきます！"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……がんばって、ください。……それから、あとで、お話を"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……いってらっしゃい。終わったら、三人で話そうね",
+          "inner": "三人で、って言っちゃった。どういう会になるの、それ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（炭より先に、俺が焼かれそうだ。……集中しろ、今は一台に）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_shuraba_all_hiyori",
+      "comment": "#2025: ひよりを含む恋人3人以上。居合わせた恋人の行だけを lover 条件で出す（3〜4人のどの組でも同じ台本）。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付を済ませて控室の前まで来ると、見知った顔がいくつも、扉の前で鉢合わせていた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "minto",
+          "next_true": "ah_minto_hello"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "tsumugi",
+          "next_true": "ah_tsumugi_hello"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "rin",
+          "next_true": "ah_rin_hello"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……はじめくん。有休、取ってきたよ。大勢の中に、儚く紛れて",
+          "inner": "紛れるどころか、全員こっち見てる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんなの視線が、俺を通り越して、ゆっくりと互いに向いた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……ねえ。もしかして、ここにいるみんな、はじめくんの……"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "minto",
+          "next_true": "ah_minto_sono"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "tsumugi",
+          "next_true": "ah_tsumugi_sono"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "rin",
+          "next_true": "ah_rin_sono"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……私、このまま換気扇に吸われて、消えようかな",
+          "inner": "消えるか。最前列で見て、終わったら全員で話す"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（大会より先に、俺の審査が始まってる。しかも全員が審査員だ）"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "ぷぷぷっ！ 出場者のみなさーん、控室に集合だよ〜！ 遅れたら失格〜♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "い、行ってきます！！"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "minto",
+          "next_true": "ah_minto_bye"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "rin",
+          "next_true": "ah_rin_bye"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "tsumugi",
+          "next_true": "ah_tsumugi_bye"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……がんばってね。これは、儚くない方の私から"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（炭より先に、俺が焼かれそうだ。……集中しろ、今は一台に）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ],
+      "branches": {
+        "ah_minto_hello": [
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "はじめくーん！ 控室、一緒に入ろ♡ ……って、あれ？"
+          }
+        ],
+        "ah_tsumugi_hello": [
+          {
+            "speaker": "tsumugi",
+            "face": "evil",
+            "text": "……はじめさん。……応援、来ました、……みなさんも？"
+          }
+        ],
+        "ah_rin_hello": [
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "おはよう、モルモットくん。……ずいぶん賑やかな応援団ね"
+          }
+        ],
+        "ah_minto_sono": [
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "……みんとは応援団じゃなくて出場者だけど。……うん、みんとも「その」だよ♡"
+          }
+        ],
+        "ah_tsumugi_sono": [
+          {
+            "speaker": "tsumugi",
+            "face": "sad",
+            "text": "……その、です"
+          }
+        ],
+        "ah_rin_sono": [
+          {
+            "speaker": "rin",
+            "face": "serious",
+            "text": "……その、ね。……データが、きれいに衝突してる"
+          }
+        ],
+        "ah_minto_bye": [
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "……うん。じゃ、みんとも控室いこっと♡ お話は、あとで。みんなで、ゆっくりね"
+          }
+        ],
+        "ah_rin_bye": [
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "結果を出してきなさい。……言い訳は、そのあとで聞く"
+          }
+        ],
+        "ah_tsumugi_bye": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……がんばって、ください。……それは、本当、です"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "remake_sick_tournament",

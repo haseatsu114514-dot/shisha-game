@@ -197,6 +197,7 @@ for (const schema of [14, SCHEMA]) for (const [label, patch, grant] of [
   expected.schema = SCHEMA;
   if (schema < 19) expected.flags._sumi_double_apple_received = true;
   if (schema < 16) expected.flags._axe_bar_legacy_access = true; // #577の旧保存互換だけを追加。資源の厳密比較は維持
+  if (schema < 25) expected.flags._dense_pack_legacy = true;
   if (grant && !expected.owned.includes(rig.SUMI_RIG)) expected.owned.push(rig.SUMI_RIG);
   const loaded = key === SAVE_KEY ? loadGame() : loadFromSlot(key);
   // 手動LOADのみ自動保存日時を更新する。元の手動枠は変更しない。
@@ -461,5 +462,19 @@ for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, ri
     await advance("home-recipe-confirm-ok", true); assert.equal(await interrupted, false);
     assert.equal(JSON.stringify(state), before); assert.equal(saves, 0);
   }
+}
+// つむぎの授業は相談済み・その夜に使ったラベンダーだけ。無料の一服をEXPへ換算しない。
+{
+  const growth=await import("../js/core/growth.js"),stats=await import("../js/core/stats.js");
+  growth.setGrowthPreview(true);state=newGame();Object.assign(state,{day:4,slot:2,stamina:80});
+  state.owned.push(rig.SUMI_RIG);state.flavors.push("lavender");state.flavorStock={lavender:24};
+  growth.ensureGrowth().nodes=["M-S3"];assert(growth.learnLesson("M-S3"));
+  const raw={...state.stats};assert(home.applyHomeShisha({lavender:12},rig.homeRig()));
+  assert.equal(state.flags._home_lavender_sleep,"1:4");assert.equal(state.slot,2);assert.equal(state.day,4);
+  assert.deepEqual(state.stats,raw);assert.equal(state.growth.xp,0);
+  saveGame();state=loadGame();state.stamina=20;stats.addStamina(20,{sleep:true});assert.equal(state.stamina,44);
+  state.stamina=20;stats.addStamina(20);assert.equal(state.stamina,40);
+  state.day++;state.stamina=20;stats.addStamina(20,{sleep:true});assert.equal(state.stamina,40,"翌晩へ効き目を持ち越さない");
+  growth.setGrowthPreview(false);
 }
 console.log("[home shisha] PASS: rigs, offer rules, recipe confirmation, stock/stamina/LOAD boundaries, 12g/24 stamina/no slot, mastery only, safety lines");

@@ -1,5 +1,5 @@
 {
-  "comment": "第5章のドバイ（#2033 E）。オーナー指定（2026-11-02）: シェイクがはじめを気に入り「また遊びに来い」と言い、宿（屋敷の客間）は用意してくれる。飛行機は1回目はシェイクが往復の切符をくれて、2回目からは往復100,000円。招待は手紙で届く（シェイクはLIMEの相手ではない）。第4章の大会の後、はじめは新しい王者。FESTAは大会の出張ブースだったので第5章には出さない。報酬は台詞に書かず、chapters/ch5-dubai.js が付ける。",
+  "comment": "第5章のドバイ（#2033 E）。オーナー指定（2026-11-02）: シェイクがはじめを気に入り「また遊びに来い」と言い、宿（屋敷の客間）は用意してくれる。飛行機は1回目はシェイクが往復の切符をくれて、2回目からは往復100,000円。招待は手紙で届く（シェイクはLIMEの相手ではない）。第4章の大会の後、はじめは新しい王者。FESTAは大会の出張ブースだったので第5章には出さず、太陽は休暇でシェイクの屋敷に遊びに来ている（2026-11-02 オーナー「任せる」）。報酬は台詞に書かず、chapters/ch5-dubai.js が付ける。",
   "dialogues": [
     {
       "dialogue_id": "ch5_dubai_letter",
@@ -115,6 +115,36 @@
       "lines": [
         { "speaker": "", "face": "", "text": "客間の寝台に横になった。窓の外で、噴水の音がしている。" },
         { "speaker": "", "face": "", "text": "少し眠ると、体が軽くなった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_taiyo",
+      "lines": [
+        { "speaker": "", "face": "", "text": "屋敷の中庭に、手拍子が響いていた。噴水の前で、太陽が使用人たちに踊りを教えている。" },
+        { "speaker": "da_silva", "face": "excited", "text": "来たな、世界一！　見てたぞ、審査席からな" },
+        { "speaker": "hajime", "face": "surprise", "text": "太陽さん。どうして、ここに？" },
+        { "speaker": "da_silva", "face": "smile", "text": "休暇だ。シェイクの家は、氷が切れねえからな" },
+        { "speaker": "da_silva", "face": "normal", "text": "座れよ。今日は審査じゃねえ。ただのフェスタだ" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_taiyo_b",
+      "lines": [
+        { "speaker": "", "face": "", "text": "中庭の木陰。太陽が、アサイーの一台を詰めていた。" },
+        { "speaker": "da_silva", "face": "smile", "text": "大会の時のお前の一台、手拍子ひとつ無しで見入っちまった" },
+        { "speaker": "hajime", "face": "normal", "text": "静かすぎましたか" },
+        { "speaker": "da_silva", "face": "normal", "text": "いいや。静かでも、あれはフェスタだった。客が楽しんでりゃ、それでいい" },
+        { "speaker": "da_silva", "face": "excited", "text": "でも次は、手拍子も入れてみろよ！" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_taiyo_c",
+      "lines": [
+        { "speaker": "", "face": "", "text": "中庭の噴水の縁に、太陽とシェイクが並んで座っていた。" },
+        { "speaker": "da_silva", "face": "smile", "text": "この王様、俺の店に来ると一番静かに笑うんだ" },
+        { "speaker": "sheikh", "face": "smile", "text": "君の店では、王族の顔をしなくていいからな" },
+        { "speaker": "da_silva", "face": "normal", "text": "ハジメ、お前の店もそういう店にしろよ。誰が来ても、ただの客でいられる店" },
+        { "speaker": "hajime", "face": "normal", "text": "（ただの客で、いられる店）" }
       ]
     }
   ]

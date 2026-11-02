@@ -9,11 +9,8 @@ import { autoSkill } from "../craft/common.js";
 
 export const preparationFlavors = () => ownedFlavorIds().filter(id => !["mint", "double_apple"].includes(id) && flavorStock(id) >= 12);
 
+// #2213 B08: 課題のレモンは大会支給。前夜のレモン立て替えは置かない。
 export async function prepareFlavorStock() {
-  if ((state.chapter || 1) === 1 && flavorStock("lemon") < 12) {
-    const price = DB.flavorById.lemon?.price || 0;
-    await openShop({ errand: "lemon", minStock: 12, expense: state.money < price, expenseFlag: "_prep_lemon_expensed" });
-  }
   const stocked = preparationFlavors();
   if (stocked.length) {
     if (!stocked.includes(state.flags._prep_flavor)) state.flags._prep_flavor = stocked[0];

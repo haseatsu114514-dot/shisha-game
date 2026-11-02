@@ -1,5 +1,6 @@
 // 第4章runnerから共通の実制作へ。工程ごとに保存し、LOADでは未確定工程だけ巻き戻す。
 import { state, save } from "../core/state.js";
+import { awardTournamentExp } from "../core/growth.js";
 import { play } from "../vn/engine.js";
 import { modal, retireScreen } from "../core/ui.js";
 import { playBgm } from "../core/audio.js";
@@ -82,6 +83,7 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
     if (p.step === 10 && !cs.failed) { cs.stats = computeShisha(cs); finalize(cs); }
     const votedBefore = p.voted;
     finishChapterFourStep(state, cs);
+    if (p.result) awardTournamentExp(p.result.rank, cs);
     save();
     // 投票が動いた工程の後は、第2・3章と同じく途中順位を見せる（最後の票は結果画面が見せる）。
     if (p.voted > votedBefore && !p.result) { await showChapterFourStandings(p); requireCurrent(); }

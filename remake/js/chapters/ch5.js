@@ -1,9 +1,11 @@
 // 第5章・機械仕掛けの神。帰郷後のプロローグ→自由行動→日程→試合当日→後日談→フィナーレまでを、場面単位で保存する。
 // 状態遷移は ch5-progress.js。ここは表示と再生だけを持つ。
 import { DB, bgUrl } from "../core/data.js";
-import { consultLessons } from "../core/growth.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
+import { chapterGrowthNight } from "../core/chapter-growth.js";
+import { awardChapterClearExp, awardTournamentExp, awardSceneExp, presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
+import { canReflect } from "../daily/reflection.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -12,7 +14,7 @@ import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { selectStoryEnding } from "../core/story-routes.js";
 import { playStaffRoll } from "../scenes/staff-roll.js";
-import { radar } from "../daily/status.js";
+import { chapterGrowthChart } from "../daily/status.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { newSession, openBench, waitBenchReady } from "../craft/session.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
@@ -34,7 +36,7 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_S
   chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
   beginChapterFiveMatch, chapterFiveMatchOutcome, chapterFiveVoteTally, CH5_FIRST_CUP_VOTES, recordChapterFiveSecondCup,
   chapterFiveEndingContext, beginChapterFiveFinale, completeChapterFiveScene, CH5_LIME_MILESTONES, chapterFiveLimeDue,
-  chapterFiveCreditsPending, recordChapterFiveCredits } from "./ch5-progress.js";
+  chapterFiveCreditsPending, recordChapterFiveCredits, chapterFiveFreeRemaining } from "./ch5-progress.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -156,7 +158,7 @@ export function resumeChapterFive() {
 
 async function openChapter(advance) {
   if (session) { session.active = false; session.controller?.abort(); }
-  const owner = session = { state, active: true, busy: false, menuBusy: false, controller: null };
+  const owner = session = { state, growthDay: state.day, active: true, busy: false, menuBusy: false, controller: null };
   document.body.classList.remove("ch2-city", "ch2-main", "ch2-tournament", "ch3-intro", "ch3-aftermath", "ch3-tournament", "ch4-intro");
   document.body.classList.add("ch5-intro");
   hud();
@@ -262,14 +264,23 @@ async function deliverLime(owner, milestone) {
 
 /** 読了 → 確定 → 保存。確定できなければ（別partの場面など）保存せず false。 */
 async function readAndCommit(owner, id, options = {}) {
+  const optional = chapterFiveFreeRemaining(state).some(scene => scene.id === id);
   if (!await readScene(owner, id, options)) return false;
   if (!completeChapterFiveScene(state, id)) return false;
+  if (optional) awardSceneExp(id);
+  if (state.flags._ch5_cleared) {
+    awardChapterClearExp();
+    // 最終場面は「数日後のtonari」。残る経験をここで精算する。日数・体力は新設しない。
+    await presentNight();
+    if (!current(owner)) return false;
+  }
   save();
   return true;
 }
 
 async function renderStage(owner) {
   if (!current(owner)) return;
+  if (!await chapterGrowthNight(owner, () => current(owner))) return;
   const progress = chapterFiveProgress(state);
   if (progress.part === "prologue") return renderScene(owner, CH5_PROLOGUE[progress.stage], "");
   if (progress.part === "free") {
@@ -485,6 +496,8 @@ async function craftSecondCup(owner) {
   if (!failed) finalize(cs);
   const category = failed ? "failed" : naruTastingCategory(cs);
   if (!recordChapterFiveSecondCup(state, { total: cs.total, category, failed, review: craftReviewLines(cs) })) throw new Error("二本目の記録を確定できません");
+  // 報酬表への対応（仮）: 一対一の勝利側は1位、既存の敗北側（同数を含む）は2位相当。挙手・勝敗は変えない。
+  awardTournamentExp(chapterFiveMatchOutcome(state) === "win" ? 1 : 2, cs);
   save();
   const source = DB.dialogues[CH5_MATCH_SCENES.beforeSecond]?.lines.find(line => line.cue === ADJUST_CUE);
   const text = ADJUST_LINES[category] || source?.text;
@@ -560,18 +573,27 @@ function renderComplete(owner) {
   const actions = pending ? [
     button(owner, "スタッフロールへ", "complete-credits", () => renderStaffRoll(owner), true),
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
+    ...reflectionActions(owner), // 時間を使わない盤の入口はスタッフロールの前後どちらでも出す
   ] : [
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
     button(owner, "スタッフロールを見る", "complete-credits", () => renderStaffRoll(owner)),
     button(owner, "タイトルへ", "complete-title", () => backToTitle()),
+    ...reflectionActions(owner),
   ];
   card(owner, "complete", "第五章・完", "SHISHA-9000 の勝負は終わった。店の明かりが、いつもの夜に戻っていく。", actions,
     "ここまでが、この物語の終わりです。", "",
     // 他の章と同じ比較。淡い面が第5章のはじめ、明るい面がいま。
     [el("div.end-radar", { dataset: { test: test("growth") } }, [
-      radar(state.stats, state.statsAtChapterStart || state.stats, 300),
+      chapterGrowthChart(state, 300),
       el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
     ])]);
+}
+
+function reflectionActions(owner) {
+  return canReflect() ? [button(owner, "観音堂で盤を開く（時間は進まない）", "reflect", async () => {
+    await reflectAtSpot("kannon", { boardOnly: true });
+    if (current(owner)) await renderStage(owner);
+  })] : [];
 }
 
 function renderError(owner) {

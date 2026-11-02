@@ -13,8 +13,8 @@ const source = `${tonari.slice(orderStart, functionStart)}\n${tonari.slice(funct
 const orders = ["citrus", "fruit_mint_free", "sweet_round", "double_apple"];
 const dialogues = Object.fromEntries(JSON.parse(read("data/dialogue/remake_ch1.json")).dialogues.map(d => [d.dialogue_id, d]));
 
-async function run(seed, choice, { cancelled = false, switchAt = null, flags = {} } = {}) {
-  const owner = { chapter: 1, day: 2, weatherSeed: seed, flags };
+async function run(seed, choice, { cancelled = false, switchAt = null, flags = {}, chapter = 1 } = {}) {
+  const owner = { chapter, day: 2, weatherSeed: seed, flags };
   const calls = [];
   const context = { state: owner, TONARI_BG: "tonari", DB: { dialogues },
     modal: async options => {
@@ -130,3 +130,35 @@ for (const branch of ["ta_tsumugi_named", "ta_tsumugi_unnamed", "ta_tsumugi_toda
   assert(Array.isArray(after.branches[branch]), branch);
 }
 console.log("shift mix record, dialogue, and tournament feedback: OK");
+
+// 章ごとの注文: 第2章は専用の4種だけ、第1章は従来の4種だけ。章付きでない章（第3章以降）は従来の4種へ戻る。
+{
+  const ch2Orders = ["ch2_after_work", "ch2_strawberry_light", "ch2_night_deep", "ch2_tropical_compare"];
+  const seenByChapter = { 1: new Set(), 2: new Set(), 3: new Set() };
+  for (const chapter of [1, 2, 3]) for (let seed = 0; seed < 64; seed++) for (const choice of [0, 1]) {
+    const { owner, calls } = await run(seed, choice, { chapter });
+    const mixKey = Object.keys(owner.flags).find(k => k.startsWith("_shift_mix_"));
+    assert(mixKey, `chapter ${chapter} seed ${seed}: mix missing`);
+    const id = mixKey.slice("_shift_mix_".length);
+    seenByChapter[chapter].add(id);
+    assert.equal(owner.flags[mixKey], choice);
+    assert.equal(owner.flags[`_shift_order_${chapter}:2`], true);
+    const modal = calls.find(c => c.type === "modal");
+    assert.equal(modal.options.options.length, 2);
+    assert(dialogues[calls.find(c => c.type === "play").id], `chapter ${chapter}: reaction dialogue exists`);
+  }
+  assert.deepEqual([...seenByChapter[1]].sort(), [...orders].sort());
+  assert.deepEqual([...seenByChapter[2]].sort(), [...ch2Orders].sort());
+  assert.deepEqual([...seenByChapter[3]].sort(), [...orders].sort());
+  for (const id of ch2Orders) for (const kind of ["same", "diff"]) {
+    const recall = dialogues[`shift_recall_${id}_${kind}`];
+    assert(recall && recall.lines.length === 1 && recall.lines[0].speaker === "hajime" && /^（.+）$/.test(recall.lines[0].text), `${id}_${kind}`);
+  }
+  for (const id of ch2Orders) {
+    const prev = 0;
+    const { calls } = await run(0, 1, { chapter: 2, flags: { [`_shift_mix_${id}`]: prev } });
+    const shown = calls.find(c => c.type === "play");
+    if (!shown.id.includes(id)) continue;
+    assert.deepEqual(shown.lines[0], dialogues[`shift_recall_${id}_diff`].lines[0]);
+  }
+}

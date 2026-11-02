@@ -57,6 +57,12 @@
             "condition_type": "lover",
             "char_id": "rin",
             "next_true": "mw_shuraba_rin_lover"
+          },
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "hiyori",
+            "next_true": "mw_shuraba_hiyori_lover"
           }
         ],
         "mw_shuraba_rin_lover": [
@@ -79,6 +85,28 @@
             "speaker": "hajime",
             "face": "sad",
             "text": "（……逃げ切れたわけじゃ、なかった）"
+          }
+        ],
+        "mw_shuraba_hiyori_lover": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ひよりさんからも、一件。送信は、夜明け前だった。"
+          },
+          {
+            "speaker": "hiyori",
+            "face": "smile",
+            "text": "優勝おめでとう。最前列で、ちゃんと見てたよ"
+          },
+          {
+            "speaker": "hiyori",
+            "face": "normal",
+            "text": "朝のお話は、また今度、……儚く、待ってるね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "（……待ってる、のほうが、ずっと効く）"
           }
         ]
       }

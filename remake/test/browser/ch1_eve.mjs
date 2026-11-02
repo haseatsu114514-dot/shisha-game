@@ -307,18 +307,17 @@ await suite("ch1-eve", async check => {
     assert.equal(result.state.stats.guts, 10); assert(result.done);
   });
 
-  await check("stock-rescue-before-full-practice", async page => {
+  // #2213 B08: 課題のレモンは大会支給。前夜にレモンの立て替え救済を出さない。
+  await check("no-lemon-rescue-before-full-practice", async page => {
     await setup(page);
     await page.evaluate(() => {
       E.core.state.money = 0; E.core.state.flavorStock.lemon = 1;
       E.vn.vnTest.choose = () => 0; E.run();
     });
-    await page.locator('.shop-row.errand [data-test="buy-lemon"]').click();
-    await page.locator('[data-test="shop-checkout"]').click();
-    await page.locator('[data-test="shop-leave"]').click(); await finish(page);
+    await finish(page);
     const result = await snapshot(page);
-    assert.equal(result.state.money, 0); assert.equal(result.state.flavorStock.lemon, 51);
-    assert(result.state.flags._prep_lemon_expensed);
+    assert.equal(result.state.money, 0); assert.equal(result.state.flavorStock.lemon, 1);
+    assert(!result.state.flags._prep_lemon_expensed);
     assert.equal(result.state.flags._craft_practice_runs.length, 1);
   });
 

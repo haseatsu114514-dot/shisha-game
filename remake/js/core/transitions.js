@@ -139,6 +139,7 @@ export async function nightToMorning(host, mid) {
       : !leftFlip ? el("div.tr-dawn-sub", [el("span", { text: info.undatedNote || "" })])
       : el("div.tr-dawn-sub", [el("span", { text: `${info.tournamentName || "SMOKE CROWN CUP"} まで あと` }), leftFlip, el("span", { text: "日" })]);
     const card = el("div.tr-dawn-card", { dataset: { test: "dawn-card" } }, [el("div.tr-dawn-day", [el("small", { text: info.dayLabel || "DAY" }), dayFlip]), sub]);
+    if (info.forecast) card.append(el("small.tr-dawn-sub", { text: `明日は${info.forecast}`, dataset: { test: "dawn-forecast" } }));
     if (info.sick) node.classList.add("sick");
     // その日の天気（晴れ・くもり・雨。motions/dawn-weather.js）。熱っぽい朝は出さない
     const weather = info.sick ? null : info.weather ?? (info.rain ? "rain" : null);
