@@ -155,6 +155,11 @@ async function harness({ step = 0, paid = true, revealed = true, snapshot = null
       affinity: { sumi: 24, tsumugi: 36, naru: 18 },
       tournament: { ...state.tournament, attempts: 5, lastRank: 1,
         victory: { step, paid, revealed, comment: paid ? "保存された講評" : null } } });
+    if (!paid) {
+      state.tournament.entryResources = { version: 1, stamina: 88,
+        flavorStock: { lemon: 50, mint: 50 }, source: "entry" };
+      state.tournament.stockSnap = { lemon: 50, mint: 50 };
+    }
     if (phase === "cleared") delete state.tournament.victory;
     state.flags._ch1_preview_seen = true;
     if (step > 4) state.stats.guts++;
@@ -181,12 +186,21 @@ const preserved = state => copy({ day: state.day, slot: state.slot, chapter: sta
 
 async function checkRun(h) {
   const initial = h.before.tournament.victory;
+  if (!initial.paid) {
+    assert.deepEqual(copy(h.before.tournament.entryResources), { version: 1, stamina: 88,
+      flavorStock: { lemon: 50, mint: 50 }, source: "entry" }, "real LOAD retains the seeded entry snapshot before victory");
+    assert.deepEqual(copy(h.before.tournament.stockSnap), { lemon: 50, mint: 50 });
+  }
   await h.run();
   assert.equal(h.current().phase, "cleared");
   assert.equal(h.current().tournament.victory, undefined);
   assert.deepEqual(preserved(h.current()), preserved(h.before));
   assert.equal(h.current().money, startingMoney + prize);
   assert.deepEqual(h.money, initial.paid ? [] : [prize], "prize is paid once only when its saved marker is absent");
+  for (const saved of [h.current(), ...h.writes.filter(saved => saved.tournament.victory?.paid)]) {
+    assert.equal(Object.hasOwn(saved.tournament, "entryResources"), false, "victory removes the retry entry snapshot before its paid checkpoint is saved");
+    assert.equal(Object.hasOwn(saved.tournament, "stockSnap"), false, "victory removes the legacy retry stock snapshot");
+  }
   const remaining = [
     ...(initial.step <= 4 ? [{ stat: "guts", amount: 1 }] : []),
     ...(initial.step <= 9 ? [{ stat: "insight", amount: 1 }] : []),
@@ -214,6 +228,8 @@ async function checkRun(h) {
   const beforeAgain = copy(h.current());
   assert(h.core.saveToSlot(SLOT));
   assert(h.core.loadFromSlot(SLOT));
+  assert.equal(Object.hasOwn(h.current().tournament, "entryResources"), false, "cleared SAVE/LOAD cannot restore the discarded retry snapshot");
+  assert.equal(Object.hasOwn(h.current().tournament, "stockSnap"), false);
   const awardsBefore = h.awards.length, moneyBefore = h.money.length;
   await h.run(); // cleared resumes its existing clear screen, never the victory runner again
   assert.equal(h.awards.length, awardsBefore);
