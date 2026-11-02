@@ -1,5 +1,5 @@
 {
-  "comment": "第2章の配達・街の紹介。読了と保存は呼出元が管理。初日の下見は無料。入浴・水族館の通常訪問は呼出元の費用と行動を使う。",
+  "comment": "第2章の配達・街の紹介。読了と保存は呼出元が管理。初日の下見は無料。街の遊び場の紹介（remake_ch2_*_trpg/aquarium/sento）はDAY2以降にその店へ初めて通った時に読む（VOL13）。入浴・水族館の通常訪問は呼出元の費用と行動を使う。",
   "dialogues": [
     {
       "dialogue_id": "remake_ch2_delivery_offer",
@@ -222,22 +222,22 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "ハジメっち、この街、初めてなんでしょ？"
+          "text": "ハジメっち、この街、ちょっとは慣れた？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。駅から出ただけで、ちょっと迷いました"
+          "text": "駅からここまでは、もう迷わなくなりました"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "分かる。ビルばっかで、最初はどこも同じに見えるんだよね"
+          "text": "えらいじゃん。ビルばっかで、最初はどこも同じに見えるもんね"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "でもさ、駅の向こうのビル、水族館入ってるんだよ"
+          "text": "でもさ、駅の向こうのビル、水族館入ってるの知ってた？"
         },
         {
           "speaker": "hajime",
@@ -257,27 +257,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "配達の帰りにも寄れそうですね"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "駅前にDr.fookahの支店もあるよ。仕入れなら、そこ"
+          "text": "今度、帰りに寄ってみます"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "会場はあっち。お腹すいたら、駅の地下にも色々あるから"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "ありがとうございます。急に、街が分かってきました"
-        },
-        {
-          "speaker": "ageha",
-          "face": "smile",
-          "text": "でしょ。大会のことだけじゃなくて、街も楽しんできなよ"
+          "text": "うん。煙のことばっかじゃなくて、街も楽しんできなよ"
         }
       ]
     },

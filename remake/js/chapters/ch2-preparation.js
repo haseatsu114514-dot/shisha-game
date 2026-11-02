@@ -4,11 +4,11 @@ import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 // 第2章の自由日。日常の消費・練習・保存・LIME・就寝は既存calendarを使う。
 import { DB, bgUrl } from "../core/data.js";
 import { state, save, markMet, timeOfDay } from "../core/state.js";
-import { addMoney, addStamina, earnStat, gainAffinity, affinityLevel } from "../core/stats.js";
+import { addMoney, addStamina, earnStat, gainAffinity, affinityLevel, releaseAffinity } from "../core/stats.js";
 import { imageReady, setBg, toast, withScenePreparation } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
-import { allSpots, isClosed, VISIT_COST } from "../daily/spots.js";
+import { allSpots, isClosed, VISIT_COST, CHAR_STAT, VISIT_BG, bgRef, setChapterVisitDue } from "../daily/spots.js";
 import { setHiyoriExtraShops } from "../daily/hiyori.js";
 import { trpgSpot, maybeRecruitTrpgMember } from "../daily/trpg.js";
 import { CITY_OUTINGS, CITY_SHOP, knownCityOutings, introduceCitySpot, outingDialogue, recordOutingVisit } from "./ch2-outings.js";
@@ -16,7 +16,7 @@ import { offerAgehaPurikura } from "./ch2-purikura.js";
 import { openShop } from "../daily/shop.js";
 import { MAP, STOPS, ROOMS } from "./ch2-city-data.js";
 import { dayOneProgress, recordCityVisit } from "./ch2-progress.js";
-import { chapterTwoNights } from "./ch2-story.js";
+import { chapterTwoNights, storyVisitDue, readStoryVisit } from "./ch2-story.js";
 import { agehaStoryScene, syncAgehaVibes } from "./ch2-story-data.js";
 import { CH2_VISIT_STORIES, ch2VisitDone } from "../core/affinity-stages.js";
 import { BOND_QUESTIONS, BOND_FINALES, playQuestionVisit, questionVisitDue, finaleAtVisit, playFinale } from "../daily/bonds.js";
@@ -105,8 +105,37 @@ export async function visitCityRegular(spot, { staminaGuard }) {
   return { used: true, exerted: true };
 }
 
-/** 柚ヶ谷の店・支店・外出先への来店（第2章と、第3・4章の出発前の準備期間 chapters/departure-prep.js）。 */
+/**
+ * VOL13: 地元の店で読む第2章の本編（DAY7のアダム・DAY12の夜のみんと）。期限の夜の救済より前に、この来店の会話として読む。
+ * 料金・体力・能力・好感度+5は通常の来店と同じで、最後の場面まで読んでから精算する（中断・LOADでは何も残さない）。
+ * 本編の後に、隣町の客の一服やひよりの相席は重ねない（calendar の通常来店の後処理を通らない）。
+ */
+async function visitStoryAtHome(spot, night, { staminaGuard }) {
+  const id = spot.charId;
+  if (isClosed(spot) || spendableMoney(state) < (spot.cost || 0)) return { used: false, exerted: false };
+  if (!(await staminaGuard(spot.stamina)) || isClosed(spot)) return { used: false, exerted: false };
+  const owner = state, bg = bgRef(VISIT_BG[id]);
+  const read = async (scene, opts) => {
+    const result = await play(scene, opts);
+    return state === owner && !!result && !result.cancelled;
+  };
+  if (!await readStoryVisit(night, { read, bg }) || state !== owner) return { used: false, exerted: false };
+  addMoney(-(spot.cost || 0)); addStamina(spot.stamina || -16);
+  state.visits[id] = (state.visits[id] || 0) + 1;
+  state.flags[`_spot_guide_${id}`] = true;
+  markMet(id);
+  gainAffinity(id, 5); releaseAffinity(id); earnStat(CHAR_STAT[id], 4);
+  if (state === owner) await consultLessons(id, { bg });
+  return { used: true, exerted: true };
+}
+
+/**
+ * 柚ヶ谷の店・支店・外出先への来店（第2章と、第3・4章の出発前の準備期間 chapters/departure-prep.js）。
+ * 第2章の地元の店で読む本編（VOL13）も、ここで先に受け持つ（第2章だけ）。
+ */
 export async function visitPreparationSpot(spot, { staminaGuard }) {
+  const storyVisit = spot.kind === "rival" && (spot.region || "home") === "home" ? storyVisitDue(state, spot.charId) : null;
+  if (storyVisit) return visitStoryAtHome(spot, storyVisit, { staminaGuard });
   if (spot.region !== "widehanga") return null;
   if (!(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
   const owner = state, id = spot.charId;
@@ -181,7 +210,9 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
     const result = await play(scene, stage && !stage.done ? { bg: ROOMS[id] } : undefined);
     if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
   }
-  const discovered = CITY_OUTINGS.find(item => item.introducedBy === id);
+  // 街の遊び場の紹介は、第2章でその店へ初めて通った回の最後に一度だけ（VOL13）。
+  // 第3・4章の出発前の準備期間では読まない（紹介の記録が付かず、毎回読み直しになるため）。
+  const discovered = state.chapter === 2 ? CITY_OUTINGS.find(item => item.introducedBy === id) : null;
   if (discovered && !state.flags[discovered.flag]) {
     const introduction = await play(discovered.introduction);
     if (state !== owner || !introduction || introduction.cancelled) return { used: false, exerted: false };
@@ -220,6 +251,8 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
 
 export async function runChapterTwoPreparation() {
   setHiyoriExtraShops(() => state.chapter === 2 ? PREPARATION_SPOTS : []);
+  // 地図の「！」: 地元の店で読める第2章の本編（VOL13）
+  setChapterVisitDue(charId => !!storyVisitDue(state, charId));
   normalizeCommuteState(state);
   const startDay = dayOneProgress(state).startDay;
   // 現行の卓は通常シフト後に集まれる。準備開始だけで旧DAY8の空き予定を追加しない。
