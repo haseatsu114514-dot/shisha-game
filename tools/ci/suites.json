@@ -462,7 +462,7 @@
     },
     {
       "id": "ch2-craft-prep",
-      "title": "Chapter 2 tournament prep at tonari: basics check and last rehearsal with a real board or drill (VOL13)",
+      "title": "Chapter 2 tournament prep at tonari: basics check, midpoint check with two adjustments and last rehearsal with a real board or drill (VOL13, #2032)",
       "kind": "quick",
       "run": ["node --experimental-vm-modules remake/test/ch2_craft_prep.mjs"]
     },

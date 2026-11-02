@@ -1,9 +1,11 @@
 // 第2章の大会準備で、実際に一台作る場面（VOL13）。第1章の DAY3「基礎の確認」・前日リハーサル・工程別の練習を流用する。
 // tonari を選んだ時、期間中で未読なら「スミさんに見てもらう／いつものtonari」を先に聞く（任意。地図の tonari に「！」）。
 // 基礎の確認（DAY2〜4）は店の葉（まかない）で一台、調整なし。課題の苺は当日に主催が出すので、まだ使わない。
+// 中間の確認（DAY7〜9。第1章 DAY7 の中間準備にあたる）は店の葉で一台＋調整2回。苺はまだ使わない。
+// DAY6 の検査と「残る匂い」で自分で吸って確かめるのをやめた後なので、味はスミさんが見る。苺の試作（DAY9 夜以降）より前。
 // 最後の通し（DAY11〜12）は本番と同じ一台（苺4g以上・主催支給の苺・調整2回）。工程を選んだ練習も選べる。
-// どちらも1行動・体力16。葉の在庫は減らさず、能力値・大会の加点は付けない（第1章の練習と同じ）。熟練度だけ育つ。
-// tonari で夜の本編がある日（DAY4・10・13）は calendar が tonari を塞ぐので、実際に選べるのはその前後の日。
+// どれも1行動・体力16。葉の在庫は減らさず、能力値・大会の加点は付けない（第1章の練習と同じ）。熟練度だけ育つ。
+// tonari で夜の本編がある日（DAY4・5・10・13）は calendar が tonari を塞ぐので、実際に選べるのはその前後の日。
 import { state } from "../core/state.js";
 import { DB } from "../core/data.js";
 import { addStamina } from "../core/stats.js";
@@ -14,10 +16,12 @@ import { chooseDrill } from "../daily/tonari.js";
 export const CH2_CRAFT_PREP = Object.freeze([
   Object.freeze({ id: "basics", from: 2, until: 4, label: "基礎の確認", intro: "ch2_prep_basics_intro",
     body: "スミさんが、県大会の前にいまの手を一台見たいと言っている。<br>店の葉で一台、調整なし。1行動・体力を使う。能力値は増えない。" }),
+  Object.freeze({ id: "midcheck", from: 7, until: 9, label: "中間の確認", intro: "ch2_prep_midcheck_intro",
+    body: "大会までの折り返し。店の葉で一台作り、吸われた後の調整を2回やる。<br>1行動・体力を使う。葉は減らず、能力値は増えない。" }),
   Object.freeze({ id: "rehearsal", from: 11, until: 12, label: "最後の通し", intro: "ch2_prep_rehearsal_intro",
     body: "本番と同じ一台（苺4g以上・主催支給の苺・調整2回まで）を、最後に通しておける。<br>1行動・体力を使う。葉は減らず、能力値は増えない。" }),
 ]);
-const RESULTS = { basics: ["end", "failed"], rehearsal: ["great", "good", "rough", "burnt", "drill"] };
+const RESULTS = { basics: ["end", "failed"], midcheck: ["good", "rough", "failed"], rehearsal: ["great", "good", "rough", "burnt", "drill"] };
 export const CH2_CRAFT_PREP_IDS = Object.freeze(CH2_CRAFT_PREP.flatMap(prep =>
   [prep.intro, ...RESULTS[prep.id].map(result => `ch2_prep_${prep.id}_${result}`)]));
 export const craftPrepDoneKey = id => `_ch2_prep_${id}_done`;
@@ -46,7 +50,7 @@ export function rehearsalGrade(cs, computeShisha) {
  */
 export async function offerCraftPrep(prep, { staminaGuard, bg }) {
   const owner = state;
-  const options = prep.id === "basics"
+  const options = prep.id !== "rehearsal"
     ? [{ label: "スミさんに一台見てもらう", value: "full", primary: true, test: "ch2-prep-full" }]
     : [{ label: "通しで一台（本番と同じ）", value: "full", primary: true, test: "ch2-prep-full" },
       { label: "工程を選んで練習する", value: "drill", test: "ch2-prep-drill" }];
@@ -78,11 +82,16 @@ export async function offerCraftPrep(prep, { staminaGuard, bg }) {
     if (!await read(prep.intro)) return { used: false, exerted: false };
     addStamina(-16);
     const { runFullPractice } = await import("../craft/practice.js");
-    const basics = prep.id === "basics";
-    const cs = await runFullPractice({ kind: basics ? "early" : "rehearsal", adjustments: !basics, staffPractice: basics, isCurrent });
+    // 基礎の確認・中間の確認は店の葉（まかない）。中間は第1章 DAY7 と同じく調整2回まで通す。
+    const basics = prep.id === "basics", mid = prep.id === "midcheck";
+    const cs = await runFullPractice({ kind: basics ? "early" : prep.id, adjustments: !basics, staffPractice: basics || mid, isCurrent });
     if (state !== owner || !cs || cs.cancelled || !cs.pullDone && !cs.failed) return { used: false, exerted: false };
     if (basics) result = cs.failed ? "failed" : "end";
-    else result = rehearsalGrade(cs, (await import("../craft/score.js")).computeShisha);
+    else {
+      const grade = rehearsalGrade(cs, (await import("../craft/score.js")).computeShisha);
+      // 中間は第1章の中間講評と同じく good / rough の二択（境界68）。崩れた一台は別の講評。
+      result = !mid ? grade : grade === "burnt" ? "failed" : grade === "rough" ? "rough" : "good";
+    }
   }
   if (!await read(`ch2_prep_${prep.id}_${result}`)) return { used: false, exerted: false };
   owner.visitedDay.tonari_practice = owner.day;
