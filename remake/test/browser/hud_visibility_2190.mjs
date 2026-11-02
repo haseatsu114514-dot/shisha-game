@@ -22,9 +22,9 @@ async function assertHiddenHud(page) {
     const stage = document.querySelector("#stage"), before = stage.scrollLeft;
     button.focus(); // The focus attempt must not scroll an invisible control into view.
     await new Promise(requestAnimationFrame);
-    return { before, after: stage.scrollLeft, focused: button.closest("#hud").contains(document.activeElement), visibility: getComputedStyle(button).visibility };
+    return { before, after: stage.scrollLeft, focused: button.closest("#hud").contains(document.activeElement), visible: button.checkVisibility({ visibilityProperty: true }) };
   });
-  assert.equal(result.visibility, "hidden");
+  assert.equal(result.visible, false, "Invisible HUD control is rendered");
   assert.equal(result.focused, false, "An invisible HUD control accepted focus");
   assert.equal(result.after, result.before, "Focusing hidden MENU shifted the stage");
   assert.equal(result.after, 0, "Stage scrolled sideways");
@@ -75,18 +75,25 @@ await suite("hud-visibility-2190", async check => {
       const { tournamentProgress } = await import("./js/chapters/ch2-tournament-state.js");
       tournamentProgress(state).stage = "lobby";
       (await import("./js/chapters/ch1.js")).setupHooks();
+      const { hooks } = await import("./js/vn/engine.js");
+      window.hudMenuLines = []; hooks.onLine = (id, line) => window.hudMenuLines.push({ id, text: line.text });
       void (await import("./js/chapters/ch2-tournament.js")).runChapterTwoTournament();
     });
     const custom = page.locator('#hud [data-test="ch2-tournament-menu"]');
     await custom.waitFor();
+    await page.locator("#vn.active").waitFor();
+    await page.waitForFunction(() => window.hudMenuLines.length > 0);
+    const lineCount = await page.evaluate(() => window.hudMenuLines.length);
     assert.equal(await page.locator("#hud").getByRole("button", { name: "MENU", exact: true }).count(), 1);
     await custom.focus();
     assert.equal(await custom.evaluate(node => node === document.activeElement), true);
     await page.keyboard.press("Enter");
     await page.locator('[data-test="ch2-tournament-save"]').waitFor();
-    await page.keyboard.press("Escape");
+    const close = page.locator("#modal .modal-actions").getByRole("button", { name: "閉じる", exact: true });
+    await close.focus(); await page.keyboard.press("Enter");
     await page.locator("#modal.show").waitFor({ state: "hidden" });
     assert.equal(await custom.evaluate(node => node === document.activeElement), true, "Custom VN menu lost focus restoration");
+    assert.equal(await page.evaluate(() => window.hudMenuLines.length), lineCount, "Menu keyboard input advanced the underlying dialogue");
     assert.equal(await page.locator("#stage").evaluate(node => node.scrollLeft), 0);
   }, { viewport });
 
@@ -98,6 +105,7 @@ await suite("hud-visibility-2190", async check => {
       Object.assign(s.tournament, { victory: { step: 0, revealed: true, paid: true }, lastRank: 1 });
       HV.core.save();
       (await import("./js/scenes/title.js")).showTitle();
+      HV.hud.showHud(true); // A late HUD update is still hidden by the title's display:none rule.
     });
     // Production title LOAD keeps the document and its old HUD, matching the report.
     await assertHiddenHud(page);
