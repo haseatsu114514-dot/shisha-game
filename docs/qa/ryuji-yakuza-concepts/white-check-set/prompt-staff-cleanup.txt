@@ -1,5 +1,0 @@
-Transparent asset cleanup of this EXACT four-expression junior male employee sprite sheet, no character redesign. Keep all four same faces, hair, black suits, white shirts, black neckties, body proportions and fully occluded hands behind back EXACTLY as drawn. Preserve expressions left to right stern neutral / friendly service smile / tense serious / surprised.
-
-REMOVE all the brown/black gradient background and every floor shadow completely. Everything outside the four human silhouettes must become genuinely TRANSPARENT alpha0. No painted grey background, checkerboard, glow, haze or floor. Make the man himself fully opaque, retain proper subtle antialias edges, no clipping of hair or shoes.
-
-Re-space the same four men into an evenly separated horizontal row with ample EMPTY TRANSPARENT gutters and margins; full top of hair and full shoes always visible, at least50px-equivalent transparent padding above/below and left/right. Same scale and foot baseline for all four. Do not enlarge heads or change costume or art style. No extra figures, text, labels, inset faces or decorative frame. Exactly four clean full-body isolated cutouts on a transparent RGBA sheet.

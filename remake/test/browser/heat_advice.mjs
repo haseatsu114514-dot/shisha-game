@@ -64,6 +64,10 @@ await suite("heat-advice", async check => {
       }
       const summary = await page.locator('[data-test="step-summary"]').textContent();
       assert.equal(summary.includes("・自動"), pattern !== "early");
+      assert.match(summary, /取り頃で取れた炭はなかった/);
+      assert(!/次は.*待とう/.test(summary), "The summary must describe the picks without contradicting timing advice");
+      assert.equal(await page.locator('[data-test="craft-rating"]').textContent(), pattern === "late-auto" ? "○" : "△",
+        "Timing misses and the existing heat evaluation remain separate axes");
       assert.deepEqual(await storageSnapshot(page), saved, "Heat results must not write player saves");
       await page.locator('[data-test="step-next"]').click();
       await page.evaluate(async () => { await A.run; performance.now = A.realNow; Math.random = A.random; });

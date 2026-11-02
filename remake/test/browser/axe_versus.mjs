@@ -26,10 +26,11 @@ async function press(page, { touch = false, keyboard = false } = {}) {
 }
 async function stop(page, value, options) {
   if (options?.precise) await root(page).focus();
-  await page.waitForFunction(value => {
+  // The press lands on the first frame inside the window, so a precise stop opens its window just before the value.
+  await page.waitForFunction(([value, precise]) => {
     const game = document.querySelector('[data-test="axe-game"]'), t = Number(game.dataset.timing);
-    return !game.querySelector('[data-test="axe-action"]').disabled && t >= value - .02 && t <= value + .015;
-  }, value);
+    return !game.querySelector('[data-test="axe-action"]').disabled && t >= value - (precise ? .008 : .02) && t <= value + .015;
+  }, [value, Boolean(options?.precise)]);
   if (options?.precise) await page.keyboard.press("Space");
   else await press(page, options);
 }
@@ -39,8 +40,8 @@ async function shoot(page, options = {}) {
   await stop(page, .5, options); await phase(page, "power");
   if (options.focus) {
     const [x, y] = await root(page).evaluate(game => [Number(game.dataset.aimX), Number(game.dataset.aimY)]);
-    if (Math.hypot(x, y) > .06) {
-      // Leave room inside the radius .1 bull for focused sway and the power correction.
+    if (Math.abs(x) > .03 || Math.abs(y) > .15) {
+      // The 1.5in bull (radius .051) forgives vertical error through the 4in blade; horizontal error must leave room for focused sway.
       assert((options.attempt || 0) < 5, `Visible center aiming failed: ${x},${y}`);
       await page.locator('[data-test="axe-reaim"]:not([disabled])').click();
       return shoot(page, { ...options, attempt: (options.attempt || 0) + 1 });
@@ -53,6 +54,21 @@ async function shoot(page, options = {}) {
   }
   await stop(page, options.power ?? .62, options); await phase(page, "result");
   assert.equal(await root(page).getAttribute("data-actor"), "player");
+}
+/** A tie after ten throws goes to sudden death: alternate killshot throws until the game declares a winner. */
+async function finishSuddenDeath(page, options = {}, shootInput = { x: 0, y: 0 }) {
+  for (let round = 0; round < 12 && await root(page).getAttribute("data-phase") !== "summary"; round++) {
+    await phase(page, "choice");
+    assert.equal(await root(page).getAttribute("data-sudden-death"), "true");
+    assert.equal(await page.locator(".axe-calls").count() && await page.locator(".axe-calls").isHidden(), true, "no call buttons in sudden death");
+    await shoot(page, { ...options, ...shootInput });
+    assert.equal(await root(page).getAttribute("data-player-throws"), "10", "sudden death adds no game throws");
+    await press(page, options); await phase(page, "opponent-ready"); await phase(page, "result");
+    assert.match(await page.locator('[data-test="axe-call-status"]').textContent(), /サドンデス/);
+    await press(page, options);
+    await page.waitForFunction(() => ["choice", "summary"].includes(document.querySelector('[data-test="axe-game"]')?.dataset.phase));
+  }
+  await phase(page, "summary");
 }
 async function start(page, difficulty = "normal", options = {}) {
   await page.goto(new URL("axe-throw.html", page.url()).href);
@@ -68,6 +84,10 @@ async function start(page, difficulty = "normal", options = {}) {
   const button = page.locator('[data-test="axe-versus"]');
   if (options.keyboard) { await button.focus(); await page.keyboard.press("Enter"); }
   else if (options.touch) await button.tap(); else await button.click();
+  // The setup sheet: keep the shown division and one game, then start.
+  await page.locator('[data-test="axe-setup"]').waitFor();
+  if (options.keyboard) await page.keyboard.press("Enter");
+  else if (options.touch) await page.locator('[data-test="axe-setup-start"]').tap(); else await page.locator('[data-test="axe-setup-start"]').click();
   // A second same-host call observes the existing Promise; no state or outcomes are injected.
   await page.evaluate(() => { window.matchPromise = import("./js/minigames/axe.js").then(m => m.runAxeThrow({host:document.getElementById("axe-app")})); });
   await phase(page, "choice"); await fit(page);
@@ -88,16 +108,20 @@ await suite("axe-versus", async check => {
       await press(page, options); await phase(page, "opponent-ready");
       assert.equal(await root(page).getAttribute("data-actor"), "opponent");
       if (i === 5 || i === 10) {
-        assert.equal(await root(page).getAttribute("data-called"), i === 5 ? "upper-left" : "lower-left");
-        assert.match(await page.locator('.axe-comment').textContent(), /キルショット/);
+        // Throw five calls the upper-left blue. Throw ten calls a left blue, unless a drop's bonus call was spent on throw eight:
+        // the last call must then go to the opposite height, and if that height is already closed there is no legal call (checked below).
+        const calledNow = await root(page).getAttribute("data-called");
+        if (i === 5) assert.equal(calledNow, "upper-left"); else assert.match(calledNow, /^((upper|lower)-left)?$/);
+        if (calledNow) assert.match(await page.locator('.axe-comment').textContent(), /キルショット/);
       }
       await phase(page, "result");
       assert.equal(await root(page).getAttribute("data-opponent-throws"), String(i));
       if (i === 1) { await fit(page); await capture(page, label + "-opponent-result"); }
       await press(page, options);
     }
+    if (await root(page).getAttribute("data-phase") !== "summary") await finishSuddenDeath(page, options);
     await phase(page, "summary"); await fit(page); await capture(page, label + "-summary");
-    assert.match(await page.locator('.axe-note').textContent(), /勝ち|引き分け/);
+    assert.match(await page.locator('.axe-note').textContent(), /勝ち/);
     assert.equal(await page.locator('.axe-match-records > div').count(), 2);
     await press(page, options);
     const result = await page.evaluate(() => window.matchPromise);
@@ -108,23 +132,28 @@ await suite("axe-versus", async check => {
     assert.equal(result.total, result.match.playerTotal);
     assert.equal(result.match.playerTotal, result.match.player.reduce((sum, s) => sum + s.score, 0));
     assert.equal(result.match.opponentTotal, result.match.opponent.reduce((sum, s) => sum + s.score, 0));
-    assert.equal(result.match.winner, result.match.playerTotal === result.match.opponentTotal ? "draw"
+    assert.equal(result.match.winner, result.match.playerTotal === result.match.opponentTotal ? result.match.suddenDeath.winner
       : result.match.playerTotal > result.match.opponentTotal ? "player" : "opponent");
+    if (result.match.playerTotal === result.match.opponentTotal) assert(result.match.suddenDeath.rounds >= 1 && ["player", "opponent"].includes(result.match.winner));
     const scoring = await page.evaluate(async result => {
       const model = await import("./js/minigames/axe-model.js");
       return [result.match.player, result.match.opponent].every(history => history.every((s, i) =>
-        JSON.stringify(model.resolveThrow({ ...s.aim, power: s.power, called: s.called }, history.slice(0, i))) ===
+        JSON.stringify(model.resolveThrow({ ...s.aim, power: s.power, called: s.called }, history.slice(0, i), { division: result.match.division, throws: 10 })) ===
         JSON.stringify(Object.fromEntries(Object.entries(s).filter(([k]) => !["baseAim", "sway"].includes(k))))));
     }, result);
     assert(scoring, "every rendered shot uses resolveThrow and its own history");
+    if (!result.match.opponent[9].called) assert(await page.evaluate(async history => {
+      const { KILLS, canCall } = await import("./js/minigames/axe-model.js");
+      return !KILLS.some(k => canCall(k.id, history, 10));
+    }, result.match.opponent.slice(0, 9)), "the opponent skips its last call only when no blue is legal");
     assert.deepEqual(await storageSnapshot(page), before);
   }, context);
 
-  await check("seeded-draw-ends-at-ten-and-retry-clears-both-histories", async page => {
+  await check("seeded-tie-goes-to-sudden-death-and-retry-clears-both-histories", async page => {
     await page.goto(new URL("axe-throw.html", page.url()).href);
     await page.evaluate(async () => {
       const mini = await import("./js/minigames/axe.js");
-      window.matchPromise = mini.runAxeThrow({ host: document.getElementById("axe-app"), mode: "versus", difficulty: "hard", seed: 9 });
+      window.matchPromise = mini.runAxeThrow({ host: document.getElementById("axe-app"), mode: "versus", difficulty: "hard", seed: 0 });
     });
     await phase(page, "choice");
     const before = await storageSnapshot(page);
@@ -133,20 +162,29 @@ await suite("axe-versus", async check => {
       assert.match(await page.locator('.axe-note').textContent(), /6点/, "real focused bull must score six");
       await press(page); await phase(page, "opponent-ready"); await phase(page, "result"); await press(page);
     }
-    await phase(page, "summary");
+    await phase(page, "choice");
     assert.equal(await root(page).getAttribute("data-player-throws"), "10");
     assert.equal(await root(page).getAttribute("data-opponent-throws"), "10");
     assert.match(await page.locator('.axe-match-score').textContent(), /あなた 60 — 60 ひより/);
-    assert.match(await page.locator('.axe-note').textContent(), /引き分け.*延長なし/);
-    assert.match(await page.locator('.axe-comment').textContent(), /引き分け/);
-    await capture(page, "seeded-draw-summary");
+    assert.equal(await root(page).getAttribute("data-sudden-death"), "true");
+    assert.equal(await root(page).getAttribute("data-called"), "upper-left", "sudden death starts at the upper-left blue");
+    assert.match(await page.locator('.axe-comment').textContent(), /同点|決着/);
+    await capture(page, "seeded-tie-sudden-death");
+    // The player throws at the centre (zero on a called blue); the hard opponent decides the round on the blue or by distance.
+    await finishSuddenDeath(page, { focus: true, precise: true });
+    assert.match(await page.locator('.axe-match-score').textContent(), /あなた 60 — 60 ひより/);
+    assert.match(await page.locator('.axe-note').textContent(), /勝ち.*サドンデス/);
+    assert.equal(await page.locator('.axe-tile-sd').count() >= 2, true, "sudden-death tiles join both scoreboard rows");
+    await capture(page, "seeded-tie-summary");
+    const finished = await page.evaluate(() => JSON.parse(document.querySelector('[data-test="axe-game"]').dataset.suddenDeathRounds));
+    assert(finished >= 1);
     await page.locator('[data-test="axe-retry"]:not([disabled])').click(); await phase(page, "choice");
     assert.equal(await root(page).getAttribute("data-player-throws"), "0");
     assert.equal(await root(page).getAttribute("data-opponent-throws"), "0");
     assert.match(await page.locator('.axe-call-status').textContent(), /残り2回/);
     await page.keyboard.press("Escape");
     const result = await page.evaluate(() => window.matchPromise);
-    assert.equal(result.match.seed, 9); assert.equal(result.match.winner, null);
+    assert.equal(result.match.seed, 0); assert.equal(result.match.winner, null);
     assert.deepEqual(result.match.player, []); assert.deepEqual(result.match.opponent, []);
     assert.deepEqual(await storageSnapshot(page), before);
   });
@@ -184,7 +222,7 @@ await suite("axe-versus", async check => {
     assert(cancelled.cancelled && !cancelled.completed);
     assert.equal(cancelled.match.winner, null); assert.equal(cancelled.match.player.length, 1); assert.equal(cancelled.match.opponent.length, 0);
     assert.deepEqual(await storageSnapshot(page), before);
-    await page.locator('[data-test="axe-versus"]').click(); await phase(page, "choice");
+    await page.locator('[data-test="axe-versus"]').click(); await page.locator('[data-test="axe-setup-start"]').click(); await phase(page, "choice");
     assert.equal(await root(page).getAttribute("data-player-throws"), "0");
     await page.keyboard.press("Escape");
   });

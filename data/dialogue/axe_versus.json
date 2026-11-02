@@ -93,6 +93,41 @@
         "id": "big-behind",
         "speaker": "hiyori",
         "text": "……点差、開いちゃった。ここから巻き返すから"
+      },
+      {
+        "id": "switch",
+        "speaker": "hiyori",
+        "text": "……後半だね。的を交代。木目が変わると、気分も変わる"
+      },
+      {
+        "id": "sudden",
+        "speaker": "hiyori",
+        "text": "……同点。キルショットで決着、だね。……儚い勝負"
+      },
+      {
+        "id": "sudden-call",
+        "speaker": "hiyori",
+        "text": "……私のサドンデス。青い的だけを見る"
+      },
+      {
+        "id": "sudden-hit",
+        "speaker": "hiyori",
+        "text": "よしっ！ ……こほん。青に、届いた"
+      },
+      {
+        "id": "sudden-miss",
+        "speaker": "hiyori",
+        "text": "……外した。まだ終わりじゃない、よね"
+      },
+      {
+        "id": "sudden-player-hit",
+        "speaker": "hiyori",
+        "text": "……今の、青に当たった。……強いね"
+      },
+      {
+        "id": "sudden-player-miss",
+        "speaker": "hiyori",
+        "text": "……惜しい。次は私の番"
       }
     ]
   }
