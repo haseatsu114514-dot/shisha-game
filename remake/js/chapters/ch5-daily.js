@@ -19,7 +19,7 @@ import { returnCityHome } from "./ch2-commute.js";
 import { cityRegularSpots, visitCityRegular } from "./ch2-preparation.js";
 import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNight, tokyoWakeBackground, chapterFiveMukaiShift } from "./ch5-tokyo.js";
 import { DUBAI, DUBAI_SPOTS, TO_DUBAI_SPOT, performDubaiSpot, inDubai, dubaiNight, dubaiWakeBackground } from "./ch5-dubai.js";
-import { CH5_SHOPS, chapterFiveShops, performChapterFiveShop } from "./ch5-shops.js";
+import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop } from "./ch5-shops.js";
 import {
   chapterFiveProgress, chapterFiveFreeRemaining, chapterFiveRead, chapterFiveTimeoutPending,
   chapterFivePreparation, chapterFivePrepPending, recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
@@ -44,7 +44,7 @@ export const CH5_CALL_SPOT = Object.freeze({
 
 // 第1章の店そのものは地図に出さない行き先。第1・2章の物語の続きが流れるため。
 //   naru（KEMURIKUSA）・c_station: 第5章の通いの小会話だけで出す（chapters/ch5-shops.js。#2033 F）
-//   minto（PEPPERMINT）/ shishark（SHISHARK）: ヒロインの店（第5章向けの会話はまだ。#2033 F の残り）
+//   minto（PEPPERMINT）/ shishark（SHISHARK）: ヒロインの店も同じく通いの小会話で出す（恋人でも友人でも自然な会話）
 //   trpg_bar: 柚ヶ谷の店（隣町の地域で出す）
 // 占い師は第5章にも現れる（章で1〜2回・予定の無い昼か夜。daily/fortune-schedule.js）。
 const HIDDEN_SPOTS = Object.freeze(["naru", "minto", "shishark", "c_station", "trpg_bar"]);
@@ -95,7 +95,7 @@ export function chapterFiveDailyDefinition(io) {
       : destination && (destination.region || "home") === "home" ? returnCityHome() : true,
     // 東京の屋根裏でも寝る前の家シーシャを選べる（台を持って行く・VOL12。FIN10 の「出さない」を更新）。
     wakeBackground: () => inTokyo() ? tokyoWakeBackground() : inDubai() ? dubaiWakeBackground() : null,
-    spotById: id => [CH5_CALL_SPOT, CH5_CITY_SHOP, TO_TOKYO_SPOT, ...TOKYO_SPOTS, TO_DUBAI_SPOT, ...DUBAI_SPOTS, ...CH5_SHOPS, ...cityRegularSpots()].find(spot => spot.id === id) || null,
+    spotById: id => [CH5_CALL_SPOT, CH5_CITY_SHOP, TO_TOKYO_SPOT, ...TOKYO_SPOTS, TO_DUBAI_SPOT, ...DUBAI_SPOTS, ...cityRegularSpots()].find(spot => spot.id === id) || chapterFiveShopById(id),
     performSpot: (spot, options) => performChapterFiveSpot(spot, io, options),
     // ムカイさんの LIME で呼ばれたシフト（VOL10）
     mukaiShift: ({ called = false } = {}) => chapterFiveMukaiShift(state, { called }),
@@ -122,9 +122,9 @@ export const chapterFiveTokyoSpots = () => [...TOKYO_SPOTS.filter(spot => !spot.
 /** 柚ヶ谷の支店（第2章の「県大会向け」の説明は使わない）。 */
 const CH5_CITY_SHOP = Object.freeze({ ...CITY_SHOP, desc: "隣町の支店。仕入れはここでも。" });
 
-/** 第5章の柚ヶ谷の行き先: 神崎・REIの店（会ったことがあれば）・支店・ボドゲカフェ（知っていれば）。 */
+/** 第5章の柚ヶ谷の行き先: 神崎・REI・あげはの店（会ったことがあれば）・支店・ボドゲカフェ（知っていれば）。 */
 export function chapterFiveCitySpots() {
-  return [...cityRegularSpots(), CH5_CITY_SHOP, trpgSpot()].filter(Boolean);
+  return [...cityRegularSpots(), ...chapterFiveCityShops(), CH5_CITY_SHOP, trpgSpot()].filter(Boolean);
 }
 
 async function performChapterFiveSpot(spot, io, options = {}) {
