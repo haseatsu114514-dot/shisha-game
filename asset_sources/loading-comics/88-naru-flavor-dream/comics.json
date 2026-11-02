@@ -2,7 +2,7 @@
   "game": "水煙前線 -EN:CODE-",
   "episodes": 1,
   "candidate": true,
-  "registration_status": "選別待ち・ゲーム未登録",
+  "registration_status": "オーナーの選別で不採用",
   "reading_order": "左①導入→右②オチ",
   "canon_status": "番外編ギャグ。誇張・夢・想像は本編能力や人物設定を変更しない。",
   "image_manifest": [
@@ -108,5 +108,6 @@
         ]
       }
     }
-  ]
+  ],
+  "selection_note": "2026-11-02 オーナーの選別で不採用（ゲームに登録しない）。"
 }

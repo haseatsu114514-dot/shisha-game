@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { LOADING_COMICS } from '../js/core/loading-comics.js';
+import { LOADING_COMICS, eligibleLoadingComics } from '../js/core/loading-comics.js';
+import { hasMetCharacter } from '../js/core/title-art-unlock.js';
 
 // Registration guard: every comic offered to the loading screen must fit the fixed
 // display frame (3:2, css/loading.css --loading-panel-ratio; authoring spec:
@@ -72,4 +73,44 @@ for (const comic of LOADING_COMICS) {
   });
 }
 
-console.log(`loading comics spec: PASS (${LOADING_COMICS.length} comics fit the 3:2 frame band)`);
+// Cast: every comic names the characters in it (besides hajime) by their data/characters.json id
+// (samechan's profile lives in data/dialogue/samechan.json), so it unlocks only after meeting them all.
+const root = fileURLToPath(new URL('../../', import.meta.url));
+const characterIds = new Set([
+  ...JSON.parse(readFileSync(root + 'data/characters.json', 'utf8')).map(c => c.id),
+  JSON.parse(readFileSync(root + 'data/dialogue/samechan.json', 'utf8')).profile?.id || 'samechan',
+]);
+for (const comic of LOADING_COMICS) {
+  assert(Array.isArray(comic.cast) && comic.cast.length > 0, `${comic.id}: cast (character ids) is required for the met-based unlock`);
+  for (const id of comic.cast) {
+    assert(id !== 'hajime', `${comic.id}: hajime is in every comic; list only the other characters`);
+    assert(characterIds.has(id), `${comic.id}: unknown character id "${id}" in cast`);
+  }
+}
+assert.equal(new Set(LOADING_COMICS.map(c => c.id)).size, LOADING_COMICS.length, 'comic ids are unique');
+
+// Unlock: only comics whose whole cast the player has met. A fresh game has met only sumi
+// (LIME contact from the start), so the bench shows sumi's comics until others are met.
+const craft = (chapter, save) => eligibleLoadingComics(LOADING_COMICS, { context: 'craft', chapter, isMet: id => hasMetCharacter(save, id) }).map(c => c.id);
+const fresh = { met: {}, flags: {}, contacts: ['sumi'], story: {} };
+const freshIds = craft(1, fresh);
+assert(freshIds.length > 0, 'a fresh game must still have at least one comic (sumi)');
+assert(freshIds.every(id => LOADING_COMICS.find(c => c.id === id).cast.every(x => x === 'sumi')), `fresh game shows only sumi comics, got ${freshIds}`);
+const metNaru = craft(1, { ...fresh, met: { naru: true } });
+assert(metNaru.some(id => LOADING_COMICS.find(c => c.id === id).cast.includes('naru')), 'meeting naru unlocks naru comics');
+assert(metNaru.every(id => LOADING_COMICS.find(c => c.id === id).cast.every(x => x === 'sumi' || x === 'naru')), 'no comic of an unmet character');
+// A comic with two characters needs both; a spoiler comic also waits for its chapter.
+const multi = LOADING_COMICS.filter(c => c.cast.length > 1);
+for (const comic of multi) {
+  const partial = { ...fresh, met: { [comic.cast[0]]: true } };
+  assert(!craft(9, partial).includes(comic.id), `${comic.id}: meeting only ${comic.cast[0]} must not unlock it`);
+}
+const everyone = { ...fresh, met: Object.fromEntries([...characterIds].map(id => [id, true])) };
+const spoilers = LOADING_COMICS.filter(c => c.minChapter > 1);
+for (const comic of spoilers) {
+  assert(!craft(comic.minChapter - 1, everyone).includes(comic.id), `${comic.id}: hidden before chapter ${comic.minChapter}`);
+  assert(craft(comic.minChapter, everyone).includes(comic.id), `${comic.id}: shown from chapter ${comic.minChapter} once met`);
+}
+assert.equal(eligibleLoadingComics(LOADING_COMICS, { context: 'craft', chapter: 9 }).length, LOADING_COMICS.length, 'without isMet (previews) the cast is not checked');
+
+console.log(`loading comics spec: PASS (${LOADING_COMICS.length} comics fit the 3:2 frame band; cast-based unlock: fresh game ${freshIds.length})`);
