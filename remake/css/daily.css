@@ -564,6 +564,10 @@ body.game-ds .pin-station .pin-symbol { color: #29485d; }
 @keyframes pop-in-c { from { opacity: 0; transform: translate(-50%, -46%); } }
 .sub-title { margin: 0; font-family: var(--font); font-size: 34px; letter-spacing: 0.12em; color: var(--gold-hi); }
 .sub-lead { margin: 8px 0 22px; color: var(--text-dim); font-size: 16px; }
+/* 遊びの道具（VOL07）。店のメニューに1行だけ置く。 */
+.gear-offer { margin: 0 0 14px; }
+p.gear-offer.owned { color: var(--text-dim); font-size: 14px; }
+p.gear-offer.owned b { color: var(--gold); }
 .sub-choices { display: flex; flex-direction: column; gap: 12px; }
 .sub-choices.grid { display: grid; grid-template-columns: 1fr 1fr; }
 .big-choice {
