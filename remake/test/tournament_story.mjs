@@ -39,12 +39,17 @@ assert(!text('packed',{...cs,mix:{mint:12,strawberry:NaN}}).includes('NaN'));
 for (const r of [0,.34,.99]) assert.equal(tournamentStoryDialogue(cs,'waiting',()=>r).lines.length,5);
 const b=temperatureBands(cs),good={temp:b.center},hot={temp:b.ideal[1]+.01},cold={temp:b.ideal[0]-.01};
 const base={...cs,pull:good,careHistory:[good,good]};
-assert.match(text('tasting',base),/最初の香りがはっきり/);
+assert.match(text('tasting',base),/香りがすっと鼻に抜けた/);
+// 試飲の感想は配合カードではなく葉の名前で言う（メーカー略称・g数を読み上げない。主役2種まで）
+assert.match(text('tasting',base),/さっきのミントとストロベリーだねえ/);assert.doesNotMatch(text('tasting',base),/\d+g/);
+{ const saved=DB.flavorById; DB.flavorById={...saved,lemon:{short_name:'AF レモン'},peach:{short_name:'ドバジ ピーチ'}};
+  const three=text('tasting',{...base,mix:{lemon:3,peach:5,mint:4}});assert.match(three,/さっきのピーチとミントだねえ/);assert.doesNotMatch(three,/AF|ドバジ|レモン/);
+  DB.flavorById=saved; }
 assert.match(text('tasting',base),/最後まで届けた/);
 assert.match(text('tasting',{...base,pull:hot}),/提供時|立ち上がり/);
 assert.match(text('tasting',{...base,pull:cold,careHistory:[hot,good]}),/最後の調整で戻した/);
 assert.match(text('tasting',{...base,careHistory:[good,hot]}),/最後の調整は熱が強い/);
-assert.match(text('tasting',{...base,careHistory:[good,cold]}),/最後の調整では熱が足りなかった/);
+assert.match(text('tasting',{...base,careHistory:[good,cold]}),/最後の調整は熱が足りない/);
 assert.match(text('tasting',{...base,tournamentStory:{servedAroma:20}}),/もう少し輪郭/);
 assert.match(text('tasting',{...base,tournamentStory:undefined}),/最後まで味わわせて/);
 assert.match(text('tasting',{...cs}),/提供後の変化/);
