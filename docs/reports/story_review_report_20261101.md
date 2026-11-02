@@ -352,7 +352,7 @@
 - `cafe_herb_tea[3]`「（香りの立ち上がり方……お湯の温度でこんなに変わるのか）」は、温度が変わる描写が無いので唐突 →「（冷めるにつれて、ミントが前に出てくる。温度で香りの順番が変わるのか）」。
 
 ### 設定・事実の誤り
-- **みんとのミントの温度**: 現物 `ch1_minto_second[25]`「温度ちょい高めの甘いミントが好き♡」・`ch1_minto_third[4][5][10]`。正本 `data/flavors.json` の `mint.thermal_expression`（低め「やわらかな甘い香り」甘さ4.2／高め「清涼感くっきり」甘さ3.5）。第1章の店頭のミントはこれだけ（`remake/js/daily/shop.js` の SHOP_FLAVORS）。`docs/master_spec.md` 2026-10-26節にも「高温ほど甘くなる一律則を設けない」とある。直す先は指摘1。二次資料 `docs/archive/setting_book/06_flavors_recipes.md` 39行の引用も合わせて直す。※「熱めで甘さがふくらむ」はドバジミント（高め「甘い余韻がふくらむ」）なら正しい。みんとの持論として残したいなら、銘柄を言わせる手もある（ただし第1章の店頭には無い）。
+- **みんとのミントの温度**: 現物 `ch1_minto_second[25]`「温度ちょい高めの甘いミントが好き♡」・`ch1_minto_third[4][5][10]`。正本 `data/flavors.json` の `mint.thermal_expression`（低め「やわらかな甘い香り」甘さ4.2／高め「清涼感くっきり」甘さ3.5）。第1章の店頭のミントはこれだけ（`remake/js/daily/shop.js` の SHOP_FLAVORS）。`docs/master_spec.md` 2026-10-26節にも「高温ほど甘くなる一律則を設けない」とある。直す先は指摘1。※「熱めで甘さがふくらむ」はドバジミント（高め「甘い余韻がふくらむ」）なら正しい。みんとの持論として残したいなら、銘柄を言わせる手もある（ただし第1章の店頭には無い）。
 - **アダムのダブルアップルの温度**: 現物 `ch1_adam_fourth[3][4][5][10]`。正本 `data/flavors.json` の `double_apple.thermal_expression`（低め「甘い余韻が丸い」甘さ7／高め「アニスの輪郭」甘さ5.2・スパイス8）と、`data/characters.json` adam.specialty_flavor「ダブルアップル（アニス強め）」。直す先は指摘2。`data/relationship_memories.json` の echo「焦げる手前の攻め方」は、案の後もそのままで矛盾しない。
 - **台詞の「蒸気」**: 現物 `ch1_naru_second[4]`。正本は `docs/gameplay_agent_reference.md`「用語の統一」（台詞・地の文は「煙」）。直す先は指摘6。
 

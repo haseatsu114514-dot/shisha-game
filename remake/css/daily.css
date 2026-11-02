@@ -709,6 +709,7 @@ img.lime-face[src$="/face_hiyori.png"] { box-sizing: border-box; padding-left: 3
 .lcr-face img.lime-face[src$="/face_hiyori.png"] { padding-left: 4px; }
 .lime-chat {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 14px 12px;
   display: flex;
@@ -716,7 +717,7 @@ img.lime-face[src$="/face_hiyori.png"] { box-sizing: border-box; padding-left: 3
   gap: 8px;
   scrollbar-width: none;
 }
-.lime-row { display: flex; align-items: flex-end; gap: 6px; animation: lime-pop 0.22s ease-out both; }
+.lime-row { flex: none; display: flex; align-items: flex-end; gap: 6px; animation: lime-pop 0.22s ease-out both; }
 .lime-row.me { justify-content: flex-end; }
 .lime-bubble {
   max-width: 78%;
@@ -773,6 +774,7 @@ img.lime-face[src$="/face_hiyori.png"] { box-sizing: border-box; padding-left: 3
   transition: background 0.15s, transform 0.1s;
   animation: lime-pop 0.22s ease-out both;
 }
+.lime-reply.multiline { white-space: normal; overflow-wrap: anywhere; text-overflow: clip; line-height: 1.5; }
 .lime-reply:hover { background: #e8f8ec; }
 .lime-reply:active { transform: scale(0.97); }
 .lime-reply.ghost { color: #fff; background: linear-gradient(180deg, #21b24e, var(--lime)); border-color: transparent; }

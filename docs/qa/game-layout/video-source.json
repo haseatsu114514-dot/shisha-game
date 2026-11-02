@@ -1,8 +1,0 @@
-{
-  "source_sha256": "60e87c126dc1b8c9ea773954d065570628b977113e81e702f74163e12c640ace",
-  "source_bytes": 7731079,
-  "capture": "game_layout.mjs touch-ds-shared-practice-save-load",
-  "conversion": "ffmpeg -i source.webm -vf setpts=0.5*PTS -r 30 -an -c:v libx264 -preset fast -crf 27 -movflags +faststart touch-walkthrough.mp4",
-  "audio": "not recorded by Playwright",
-  "speed": 2
-}

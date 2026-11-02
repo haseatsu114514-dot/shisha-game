@@ -4,7 +4,7 @@
 import { SETS } from "../../previews/dj/tracks.mjs";
 
 export const DJ_RANKS = Object.freeze(["C", "B", "A", "S"]);
-export const DJ_SETS = Object.freeze(SETS.map((set, index) => Object.freeze({ id: index + 1, name: set.name, label: set.label, tracks: set.tracks.length })));
+export const DJ_SETS = Object.freeze(SETS.map((set, index) => Object.freeze({ id: index + 1, name: set.name, label: set.label, tracks: set.count })));
 const rankIndex = rank => DJ_RANKS.indexOf(rank);
 const record = value => value && typeof value === "object" && !Array.isArray(value) ? value : null;
 const percent = value => Number.isFinite(value) && value >= 0 && value <= 100 ? Math.round(value) : null;

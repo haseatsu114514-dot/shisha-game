@@ -1,0 +1,116 @@
+{
+  "game": "水煙前線 -EN:CODE-",
+  "episodes": 1,
+  "reading_order": "左①導入→右②オチ",
+  "canon_status": "番外編ギャグ。布の鶴・巻物・座布団などの誇張は本編能力を変更しない。猫は本編の常連設定への追加ではない。",
+  "image_manifest": [
+    {
+      "file": "43-sumi-reserved-seat.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "014fe6f3b2175f009212847bc884a705b326d663773849624a822cb821c7d019",
+      "bytes": 1644353
+    }
+  ],
+  "pages": [
+    {
+      "file": "43-sumi-reserved-seat.png",
+      "ids": [
+        "hajime",
+        "sumi"
+      ],
+      "range": "43",
+      "rows": [
+        [
+          "43 予約の正体",
+          "はじめ・スミさん",
+          "左: はじめが空の椅子にある小さな膨らみを指して「予約ですか？」。右のスミさんは「先客だ。」。右コマ: 椅子の座布団の下で寝ていた丸い三毛猫がふんぞり返り目を開ける。はじめはびっくり、スミさんが「常連の顔だ。」。猫は1匹だけ。"
+        ]
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "episode": 43,
+      "dialogue": [
+        "予約ですか？",
+        "先客だ。",
+        "常連の顔だ。"
+      ],
+      "generator": "OpenAI image_gen",
+      "prompt_summary": "添付1の下敷きを編集し1536x1024の2コマ漫画1話。枠は左x36..756、右780..1500、y272..752、各720x480厳守。枠線残す。枠外は全て紙色#EEE3CFの無地。題名・番号・署名・擬音文字なし。枠から4%内側に顔・吹き出しを収める。添付2ははじめ（黒い野球帽・黒パーカー・黒髪・青年）、添付3はスミさん（黒ハンチング・四角眼鏡・短い顎髭・炭色シャツ・茶腰エプロン）。2.5頭身の太線セル塗り、暖かな紙質、表情豊かなギャグ。両コマではじめは左、スミさんは右を厳守。白吹き出しに太いゴシックで台詞を大きく正確に。2人以外の人・シーシャ器具・炭・ホース・煙・武器は描かない。店の静かな木カウンター背景。左: はじめが空の椅子にある小さな膨らみを指して「予約ですか？」。右のスミさんは「先客だ。」。右コマ: 椅子の座布団の下で寝ていた丸い三毛猫がふんぞり返り目を開ける。はじめはびっくり、スミさんが「常連の顔だ。」。猫は1匹だけ。",
+      "revision_prompt": "下敷きに合わせて各720x480へ再構成。先客だ。を復元。背景は扉収納。",
+      "reference_images": [
+        "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "assets/sprites/characters/sumi/chr_sumi_normal.png"
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "episode": 43,
+      "result": "採用。原画を目視、画像規格検査成功。PC・スマホ横のゲーム画面はQA参照。",
+      "checks": {
+        "dialogue_exact": "3台詞一致",
+        "identity": "野球帽/パーカーとハンチング/眼鏡/髭/腰エプロン、左右固定を目視確認",
+        "prohibited": "炭・機材・武器なし",
+        "frame": "比率判定ok。位置には生成由来の微差あり。"
+      },
+      "known_deviations": [
+        "枠位置・紙色は下敷きから微差あり。切り出し後に顔と台詞の欠けなし。",
+        "枠線除去後の数pxの寸法差は表示側の同一3:2枠で吸収する。"
+      ],
+      "browser": {
+        "sizes": [
+          "1280x720",
+          "844x390"
+        ],
+        "result": "各話を固定して全12画面で画像decode成功・撮影。スマホ横全話とPC第45話を目視確認、台詞の欠けなし。",
+        "screenshots": [
+          "qa-pc.png",
+          "qa-phone.png"
+        ],
+        "regression": "loading_craft: pc/mobile/portrait 全3ケース成功（既存画像LFS取得後）"
+      }
+    }
+  ],
+  "source": [
+    {
+      "file": "43-sumi-reserved-seat.png",
+      "region": {
+        "x": 41,
+        "y": 275,
+        "width": 711,
+        "height": 475,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "43-sumi-reserved-seat.png",
+      "region": {
+        "x": 784,
+        "y": 275,
+        "width": 711,
+        "height": 473,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "sumi-reserved-seat-1.webp",
+      "width": 711,
+      "height": 475,
+      "sha256": "d40354b9fb56ba33fb64a2da8ad8f40143950653f6511313d1c432b25a97afb0"
+    },
+    {
+      "file": "sumi-reserved-seat-2.webp",
+      "width": 711,
+      "height": 473,
+      "sha256": "322c438542aae4b887029f1169020ece4e65540d7d8c898b888772c56678bca8"
+    }
+  ]
+}
