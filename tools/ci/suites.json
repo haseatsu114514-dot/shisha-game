@@ -431,6 +431,7 @@
         "node remake/test/camel_race_model.mjs",
         "node remake/test/ch4_camel_race.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
+        "node remake/test/ch5_party.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
         "node remake/test/ch3_outings.mjs",
