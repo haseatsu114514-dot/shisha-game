@@ -235,8 +235,12 @@
 /* チェキの拡大は MENU の上に重ねる（daily.css の暗い面のまま） */
 #modal > .keepsake-viewer { z-index: 2; }
 
-/* ---------------------------------------------------------------- HUD：火種の印は MENU の右上 */
+/* ---------------------------------------------------------------- HUD：火種の印は MENU の右上、能力アップの光も MENU に当たる */
 .hud-menu .hidane-badge { right: -9px; top: -9px; }
+.hud-menu .hud-gain {
+  position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 18%, var(--gain-color) 38%, transparent 72%); pointer-events: none;
+}
 
 /* ---------------------------------------------------------------- DS風：上下2画面ぶんを使い、タブは下の帯 */
 body.game-ds #modal:has(> .dmenu) {

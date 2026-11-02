@@ -175,10 +175,10 @@ async function fullLevelUp(r) {
   if (choice === "board") await openGrowthBoard();
 }
 
-/** 火種の粒を HUD の五角形（盤への入り口）へ飛ばす。HUD が見えなければ飛ばさない。 */
+/** 火種の粒を HUD の MENU（火種の印と、盤への入り口のステータスタブがある所・DUI05）へ飛ばす。HUD が見えなければ飛ばさない。 */
 function flyHidane(panel) {
   if (reducedMotion()) return;
-  const target = document.querySelector(".hud-level");
+  const target = document.querySelector("#hud .hud-menu");
   const stage = document.querySelector("#stage")?.getBoundingClientRect();
   const source = panel.querySelector(".lu-gauge")?.getBoundingClientRect();
   const goal = target?.getBoundingClientRect();
