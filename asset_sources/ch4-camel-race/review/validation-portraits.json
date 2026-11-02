@@ -1,0 +1,115 @@
+{
+  "date": "2026-11-02",
+  "scope": "Existing built-in image_gen normal proposals, independently reverified. No duplicate generation, expression generation, adoption, integration or upload performed.",
+  "canonical_character_data_sha": "92650782b57c8c327669d287d81c98e46b3c338a",
+  "canonical_request_readme_sha": "5f64cf1f158c1fded8b56722d88a33a8fc0b67b5",
+  "canonical_checks": {
+    "main_character_folders": "Both exact assets/sprites/characters/saif and rashid contents requests returned 404. No alternate retrieval attempted.",
+    "latest_pr_comment": "6570961690; background/camel/jockey/SUV only; no portrait adoption recorded.",
+    "ownership": "Existing local workpack explicitly covers all six proposals. No fresh generation started to avoid duplicate work; live external owner not inferred."
+  },
+  "generation_prompts": "output/ch4-camel-race-additions-20261102/generation.json",
+  "previews": [
+    "output/ch4-camel-race-additions-20261102/qa/saif-comparison.jpg",
+    "output/ch4-camel-race-additions-20261102/qa/rashid-comparison.jpg"
+  ],
+  "quality_limit": "More angular smooth anime shading than baseline fine pixel-painter reference; user choice pending. B Saif has a more tousled top than short close-cropped source; prefer considering A for strict haircut fidelity. This is review-only, not production QA.",
+  "results": [
+    {
+      "file": "output/ch4-camel-race-additions-20261102/originals/rashid-normal-A.png",
+      "size": [
+        887,
+        1774
+      ],
+      "foreground_bbox": [
+        156,
+        24,
+        761,
+        1749
+      ],
+      "foreground_height": 1725,
+      "sha256": "43370e4a96526879e8c0902f3fe88e2427428a6204f3fe9a7801a1b0503d1a24",
+      "visual_review": "full body, neutral expression, correct outfit/prop, no window frame, no text identified"
+    },
+    {
+      "file": "output/ch4-camel-race-additions-20261102/originals/rashid-normal-B.png",
+      "size": [
+        887,
+        1774
+      ],
+      "foreground_bbox": [
+        148,
+        22,
+        765,
+        1755
+      ],
+      "foreground_height": 1733,
+      "sha256": "d2c02f934120075cec198a64e96e87a80146e4f0882e8538dd29a1f9faafa33b",
+      "visual_review": "full body, neutral expression, correct outfit/prop, no window frame, no text identified"
+    },
+    {
+      "file": "output/ch4-camel-race-additions-20261102/originals/rashid-normal-C.png",
+      "size": [
+        887,
+        1774
+      ],
+      "foreground_bbox": [
+        134,
+        17,
+        760,
+        1759
+      ],
+      "foreground_height": 1742,
+      "sha256": "75b2cbe98e3bd9f7ca355005f5a44a6416c92df724f3a235177daaf10b68bc3b",
+      "visual_review": "full body, neutral expression, correct outfit/prop, no window frame, no text identified"
+    },
+    {
+      "file": "output/ch4-camel-race-additions-20261102/originals/saif-normal-A-v2.png",
+      "size": [
+        887,
+        1774
+      ],
+      "foreground_bbox": [
+        201,
+        30,
+        724,
+        1750
+      ],
+      "foreground_height": 1720,
+      "sha256": "0308bfb8af01fc40a2a0b8a5af5bfe375740fd0b5ab30152e75095b016f676d5",
+      "visual_review": "full body, neutral expression, correct outfit/prop, no window frame, no text identified"
+    },
+    {
+      "file": "output/ch4-camel-race-additions-20261102/originals/saif-normal-B-v2.png",
+      "size": [
+        887,
+        1774
+      ],
+      "foreground_bbox": [
+        208,
+        44,
+        720,
+        1726
+      ],
+      "foreground_height": 1682,
+      "sha256": "3a75f5c017d909a9a275a27041870e70fe33f4803ac907c6b9b52ee78fcfa481",
+      "visual_review": "full body, neutral expression, correct outfit/prop, no window frame, no text identified"
+    },
+    {
+      "file": "output/ch4-camel-race-additions-20261102/originals/saif-normal-C-v2.png",
+      "size": [
+        887,
+        1774
+      ],
+      "foreground_bbox": [
+        212,
+        24,
+        696,
+        1751
+      ],
+      "foreground_height": 1727,
+      "sha256": "7180c5417889dd3c82a5b7bac502e64f88feedab75de74d88bb4fe9ee37cd296",
+      "visual_review": "full body, neutral expression, correct outfit/prop, no window frame, no text identified"
+    }
+  ]
+}

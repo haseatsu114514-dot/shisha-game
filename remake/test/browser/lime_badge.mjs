@@ -31,7 +31,7 @@ try {
       Object.assign(s, { phase: 'daily', day: 4, slot: 0, seed: 131, money: 90000 });
       s.met.minto = true;
       window.badgeQA = { core, hud: await import('./js/daily/hud.js'), phone: await import('./js/daily/phone.js'), clicks: [] };
-      badgeQA.hud.initHud({ phone: () => badgeQA.clicks.push('phone'), status: () => badgeQA.clicks.push('status'), menu: () => badgeQA.clicks.push('menu') });
+      badgeQA.hud.initHud({ phone: () => badgeQA.clicks.push('phone'), menu: () => badgeQA.clicks.push('menu') });
       badgeQA.hud.showHud(true);
       const map = await import('./js/daily/map.js');
       window.mapFlow = map.chooseSpot();
@@ -51,7 +51,7 @@ try {
           numberRect: b.querySelector('.badge-number') ? rect(b.querySelector('.badge-number')) : null,
           plusRect: b.querySelector('.badge-plus') ? rect(b.querySelector('.badge-plus')) : null,
           fontSize: parseFloat(css.fontSize), plusSize: b.querySelector('.badge-plus') ? parseFloat(getComputedStyle(b.querySelector('.badge-plus')).fontSize) : null,
-          adjacent: [...document.querySelectorAll('.hud-level,.hud-menu')].map(rect) };
+          adjacent: [...document.querySelectorAll('.hud-menu')].map(rect) };
       }, count);
       assert.equal(geometry.display, count ? (baseline ? 'grid' : 'flex') : 'none');
       assert.equal(geometry.text, count > (baseline ? 9 : 99) ? (baseline ? '9+' : '99+') : count ? String(count) : '');
@@ -114,11 +114,13 @@ try {
     if (rotateHint) {
       assert(await page.locator('#rotate-hint').isVisible(), 'normal portrait keeps its existing rotation prompt');
     } else {
-      for (const id of ['hud-status', 'hud-phone', 'hud-menu']) {
+      // 五角形のステータスボタンは廃止（DUI05）。右上は LIME と MENU だけ。
+      assert.equal(await page.locator('[data-test="hud-status"]').count(), 0);
+      for (const id of ['hud-phone', 'hud-menu']) {
         const target = page.locator(`[data-test="${id}"]`);
         if (touch) await target.tap(); else await target.click();
       }
-      assert.deepEqual(await page.evaluate(() => badgeQA.clicks), ['status', 'phone', 'menu']);
+      assert.deepEqual(await page.evaluate(() => badgeQA.clicks), ['phone', 'menu']);
     }
     assert.deepEqual(errors, []);
     results.push({ device, viewport, layout, states, counts, rotateHint, errors });

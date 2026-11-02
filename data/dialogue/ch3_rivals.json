@@ -23,7 +23,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "懐かしいけど……勝負になると、人の迷いを見つけて無理をする。会うなら、気をつけて"
+          "text": "懐かしいけど……会うなら、気をつけて"
         },
         {
           "speaker": "hajime",
@@ -390,7 +390,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……俺も、楽しみです。少し怖いですけど"
+          "text": "……俺も、楽しみだよ。少し怖いけど"
         },
         {
           "speaker": "",
@@ -435,11 +435,6 @@
           "speaker": "kuze",
           "face": "surprise",
           "text": "え、覚えてるの？　……じゃあ僕の大きな組織、初日で解散だね"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "二人とも、昔から知ってるみたいですね"
         },
         {
           "speaker": "mashiro",
@@ -505,6 +500,11 @@
           "speaker": "mashiro",
           "face": "normal",
           "text": "珍しい。朔、素直だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言う前に、久世は小さく笑った。ましろが、その口元を見ている。"
         },
         {
           "speaker": "kuze",
@@ -642,7 +642,7 @@
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "隣の一口に歓声が上がると、俺も熱を足したくなる。前はそれで、ライムまで飛ばした"
+          "text": "前に一度、急いで熱を足して、ライムまで飛ばした"
         },
         {
           "speaker": "steve",
@@ -863,6 +863,173 @@
           }
         }
       ]
+    },
+    {
+      "dialogue_id": "ch3_kuze_bond_finale",
+      "comment": "#2028 好感度の締めくくり（友情のみ・久世は恋愛対象外）。LIME交換（ch3_kuze_lime）と「答えを返しに行く」外出の後、第3章の場面カードから一度だけ（daily/bonds.js）。福岡から持ってきたアールグレイの素焼きを渡し、客の答えではなく友人の返事として書き残す。第3章の場面カードは大会前夜までだが、時系列ルールに沿って大会後の分岐も置く。",
+      "metadata": {
+        "bond_finale": "kuze"
+      },
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 3,
+          "next_true": "after_tournament",
+          "next_false": "before_tournament"
+        },
+        {
+          "speaker": "",
+          "text": "久世はカウンターの奥から、布に包んだものを持ってきた。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "先に中身を見る？　それとも、名前を伏せたまま当てる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "見てからにします"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "だよね。君はいつもそっち"
+        },
+        {
+          "speaker": "",
+          "text": "布の中は、飴色に焼けた素焼きのハガルだった。鼻を近づけると、柑橘のあとに紅茶が残った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "アールグレイ……。久世さんの、いつもの葉ですよね"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "福岡から持ってきた一つ。閉店後、客の答えを確かめる時は、ずっとこれで吸ってた"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "君に渡したい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "えっ。大事な道具なんじゃ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smug",
+          "text": "間借りが終わったら、荷物を減らさないといけないから"
+        },
+        {
+          "speaker": "kuze",
+          "face": "nervous",
+          "text": "……っていうのは、半分。残りの半分は、ちゃんと言うね"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "僕のノート、客の答えばかりで、返事の欄がなかったでしょ"
+        },
+        {
+          "speaker": "",
+          "text": "久世はノートの最後のページを開いた。はじめが外した予想と、久世が外した予想が、交互に並んでいた。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "ここだけ、客の記録じゃないんだ。君が返してくれた分"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺、外してばっかりですね"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "僕もね。だから続きを書きたくなる"
+        },
+        {
+          "speaker": "kuze",
+          "face": "serious",
+          "text": "このハガルは、柑橘を先に立てて、茶を最後に残す熱の順番を覚えてる"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "君が詰めたら、別の順番を覚えるかもしれない。それを、いつか吸わせて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（煙幕は数週間で閉まる。それでも、続きを聞く場所を残そうとしてくれてる）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "預かります。久世さんの予想、また外しますから"
+        },
+        {
+          "speaker": "kuze",
+          "face": "surprise",
+          "text": "……あ、今の、読めなかった"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "やっぱり君、客じゃなくて友達の欄だね。組織じゃなくて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "書記にも入りませんよ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "知ってる。葉も一箱つけとく。……おいしく帰ってほしいのは、本当だから"
+        },
+        {
+          "speaker": "",
+          "text": "久世はノートの新しい行に、はじめの名前を書いた。その横に「客」とは書かなかった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 2
+          }
+        }
+      ],
+      "branches": {
+        "before_tournament": [
+          {
+            "speaker": "",
+            "text": "閉店後の煙幕。久世はノートを閉じ、はじめの分の席だけを空けて待っていた。"
+          },
+          {
+            "speaker": "kuze",
+            "face": "normal",
+            "text": "来てくれた。勝負の話は、今夜はなしね。これは大会とは別の議題"
+          }
+        ],
+        "after_tournament": [
+          {
+            "speaker": "",
+            "text": "閉店後の煙幕。久世はノートを閉じ、はじめの分の席だけを空けて待っていた。"
+          },
+          {
+            "speaker": "kuze",
+            "face": "normal",
+            "text": "来てくれた。今夜の議題は、勝ち負けとは別の話"
+          }
+        ]
+      }
     }
   ]
 }

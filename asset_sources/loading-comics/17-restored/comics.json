@@ -3,8 +3,8 @@
   "title": "似顔絵",
   "cast": "つむぎ・はじめ",
   "theme": "旧話の復刻",
-  "status": "candidate-awaiting-owner-selection",
-  "registered": false,
+  "status": "adopted-registered-20261102",
+  "registered": true,
   "reading_order": "左①導入→右②オチ",
   "source_reference": {
     "file": "asset_sources/short-comics-20261024/14-17-everyday.png",
@@ -100,5 +100,6 @@
       ],
       "screenshots": []
     }
-  }
+  },
+  "selection_note": "2026-11-02 オーナー採用。remake/js/core/loading-comics.js の id 'restored-17'（出てくるキャラと会った後に出る）。画風の統一は後日の作り直しで行う。"
 }

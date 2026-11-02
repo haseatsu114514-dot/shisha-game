@@ -1,8 +1,8 @@
 {
   "episode": 55,
   "title": "比率の大改革",
-  "status": "adopted-registered-20261102",
-  "registered": true,
+  "status": "not-adopted-owner-20261102",
+  "registered": false,
   "canon_status": "不条理ギャグの誇張。本編の能力・人物・店の衛生や営業設定への追加ではない。",
   "reading_order": "左①導入→右②オチ",
   "image_manifest": [
@@ -94,5 +94,5 @@
     }
   },
   "theme": "シーシャあるある",
-  "selection_note": "2026-11-02 採用。remake/js/core/loading-comics.js の id 'apple-ratio'、配信用は remake/img/loading/apple-ratio-1.webp / -2.webp。"
+  "selection_note": "2026-11-02 オーナーの選別で不採用（ゲームに登録しない）。"
 }

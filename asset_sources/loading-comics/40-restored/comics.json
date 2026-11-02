@@ -3,7 +3,7 @@
   "title": "即戦力",
   "cast": "つむぎ・はじめ",
   "theme": "旧・暴走編（復刻）",
-  "status": "candidate-awaiting-owner-selection",
+  "status": "not-adopted-owner-20261102",
   "registered": false,
   "reading_order": "左①導入→右②オチ",
   "source_reference": {
@@ -94,5 +94,6 @@
         "qa-phone.png"
       ]
     }
-  }
+  },
+  "selection_note": "2026-11-02 オーナーの選別で不採用（ゲームに登録しない）。"
 }

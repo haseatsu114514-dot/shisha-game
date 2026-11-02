@@ -13,7 +13,7 @@
 | 水晶のしずく | [PNG](mouthpiece-01-crystal-drop.png)・[指示](mouthpiece-01-crystal-drop.prompt.txt) | 小さな半透明淡青の樹脂風チップ。中空の先端・短い差し込み部・止め段 |
 | 星月のチャーム | [PNG](mouthpiece-02-starmoon-charm.png)・[指示](mouthpiece-02-starmoon-charm.prompt.txt) | 真鍮色の短い中空チップ、黒い弾性接続部、外側の携帯リング。星月の表面意匠、鎖は描かない |
 
-全原画1536×1024のRGBA。原画と実際の生成指示、参照・ハッシュ・alpha・目視所見は [candidates.json](candidates.json) に保存。既存素材の置換はなく、比較前は「独立した装備外観アセットなし」。写真との構造比較は [既存実物4ハンドル＋3チップ](../mouthpiece-handle-skins-20261009.md) と [使用・着脱写真](../hose-and-mouthpieces-20261009.md) を使う。元写真の広告・人物・ロゴは生成しない。
+全原画1536×1024のRGBA。原画と実際の生成指示、参照・ハッシュ・alpha・目視所見は [candidates.json](candidates.json) に保存。既存素材の置換はなく、比較前は「独立した装備外観アセットなし」。写真との構造比較は [既存実物4ハンドル＋3チップ](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/mouthpiece-handle-skins-20261009.md) と [使用・着脱写真](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/hose-and-mouthpieces-20261009.md) を使う。元写真の広告・人物・ロゴは生成しない。
 
 [同じ想定縮尺での比較](comparisons/concept-relative-scale.jpg)では長いハンドルと短いチップを区別。ハンドル30cm／チップ4cmは**本候補の設計目安**であり、写真から測った実寸でも全製品の共通規格でもない。上の拡大一覧で両者が同じ大きさに見えても実使用で同じ縮尺にしない。
 

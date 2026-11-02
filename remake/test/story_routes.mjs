@@ -108,9 +108,13 @@ const fileScenes = file => new Set(JSON.parse(fs.readFileSync(new URL(`data/dial
 }
 const tokyo = () => {
   const value = newState();
-  Object.assign(value, {chapter: 2, day: 28, phase: 'cleared', lovers: [], contacts: ['sumi']});
+  Object.assign(value, {chapter: 2, day: 25, phase: 'cleared', lovers: [], contacts: ['sumi']});
   value.flags = {_ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true, _ch2_tournament: {stage: 'complete'}};
   assert(progress.advanceToChapterThree(value));
+  // 出発前の準備3日（VOL02）を過ごした出発の朝。東京DAY1は従来どおり通算29日。
+  value.day += 3;
+  assert(progress.departChapterThree(value));
+  value.flags._ch3_intro.routeVersion = 2; // 場面カードの東京（作業中の旧セーブの行程）を確かめる
   return value;
 };
 const readUntil = (value, sceneId) => {
@@ -391,6 +395,7 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
     Object.assign(value, {chapter: 3, phase: 'cleared', day: 45, slot: 1, lovers});
     value.flags = {_ch3_cleared: true, _ch3_aftermath: {version: 2, winDay: 42, stage: 6}, _ch3_tournament_won: true};
     assert(ch4Progress.advanceToChapterFour(value));
+    delete value.flags._ch4.routeVersion; // 旧行程（ドバイ5日）の前夜を組む
     assert(companion.chooseOverseasCompanion(value, pick));
     const p = value.flags._ch4;
     Object.assign(p, {part: 'eve', day: ch4Progress.CH4_EVE_DAY, stage: ch4Progress.CH4_PROLOGUE.length, firstDay: 1});
@@ -454,6 +459,17 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
     // 恋人の分岐は、その人が鉢合わせに居合わせた（=恋人）ときだけ開く。
     const lover = reached.flat().find(row => row.condition_type === 'lover' && row.char_id === who);
     assert(lover && scene.branches[lover.next_true]?.some(row => row.speaker === who), `${who} answers in ${sceneId}`);
+  }
+  // #2025: ひよりを含む3人以上の台本は、ひより以外の恋人の台詞を本人の恋人条件の分岐だけに置く。
+  const allHiyori = sceneData.get('remake_shuraba_all_hiyori');
+  assert(ch1.scenes.includes('remake_shuraba_all_hiyori') && allHiyori, 'chapter 1 shuraba with Hiyori and 2+ others');
+  assert(allHiyori.lines.some(row => row.speaker === 'hiyori'), 'Hiyori always speaks');
+  for (const who of ['minto', 'rin', 'tsumugi']) {
+    assert(!allHiyori.lines.some(row => row.speaker === who), `${who} is not in the unconditional lines`);
+    const gated = allHiyori.lines.filter(row => row.type === 'condition' && row.condition_type === 'lover' && row.char_id === who);
+    const own = new Set(gated.map(row => row.next_true));
+    assert(gated.length && [...own].every(key => allHiyori.branches[key]?.every(row => row.speaker === who)), `${who} speaks only in own lover branches`);
+    for (const [key, rows] of Object.entries(allHiyori.branches)) if (rows.some(row => row.speaker === who)) assert(own.has(key), `${key} is gated by ${who}`);
   }
 }
 

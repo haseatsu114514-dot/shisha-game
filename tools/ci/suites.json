@@ -91,7 +91,7 @@
       "id": "growth-levelup",
       "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
       "kind": "quick",
-      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs"]
+      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs"]
     },
     {
       "id": "vent-lid",
@@ -143,6 +143,10 @@
       "timeout": 5,
       "paths": [
         "remake/js/core/growth.js",
+        "remake/js/core/growth-mode.js",
+        "remake/js/core/growth-respec.js",
+        "remake/js/core/growth-effects.js",
+        "remake/js/core/growth-board-layout.js",
         "remake/js/daily/levelup.js",
         "remake/js/core/growth-board.js",
         "remake/js/core/growth-board-data.js",
@@ -156,10 +160,50 @@
         "remake/js/daily/tonari.js",
         "remake/js/daily/hud.js",
         "remake/css/daily.css",
+        "remake/js/chapters/ch3-tokyo-daily.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
+        "remake/js/chapters/ch5-tokyo.js",
+        "remake/js/chapters/ch5-dubai.js",
+        "remake/js/chapters/ch5-daily.js",
         "remake/test/browser/growth_levelup.mjs"
       ],
       "run": [
         "node remake/test/browser/growth_levelup.mjs"
+      ]
+    },
+    {
+      "id": "debug-tools",
+      "title": "Debug tools for development: ?debug=1 panel, speed, auto shisha-making (debug_tools)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 5,
+      "paths": [
+        "remake/js/dev/**",
+        "remake/js/main.js",
+        "remake/js/craft/session.js",
+        "remake/test/browser/debug_tools.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/debug_tools.mjs"
+      ]
+    },
+    {
+      "id": "board-tutorial",
+      "title": "Growth board first-time tutorial and starter fire (board_tutorial)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/growth-board-tutorial.js",
+        "remake/js/daily/growth-board-screen.js",
+        "remake/js/daily/reflection.js",
+        "remake/js/core/growth.js",
+        "remake/test/browser/board_tutorial.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/board_tutorial.mjs"
       ]
     },
     {
@@ -181,6 +225,36 @@
       "run": ["node remake/test/browser/dj_preview.mjs"]
     },
     {
+      "id": "hobby-gear-vol07",
+      "title": "Minigame gear bought once at each venue: hatchet, headphones and dice (VOL07)",
+      "kind": "quick",
+      "run": [
+        "node remake/test/hobby_gear.mjs"
+      ]
+    },
+    {
+      "id": "hobby-gear-browser-vol07",
+      "title": "Minigame gear offers at the axe bar, club SEAM and the board game cafe (VOL07)",
+      "kind": "browser",
+      "weight": 0.8,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/hobby-gear.js",
+        "remake/js/daily/axe-bar.js",
+        "remake/js/daily/dj-club.js",
+        "remake/js/minigames/axe.js",
+        "remake/js/minigames/axe-model.js",
+        "remake/js/minigames/dj.js",
+        "remake/previews/dj/**",
+        "remake/js/trpg/campaign-view.js",
+        "remake/js/daily/status.js",
+        "remake/test/browser/hobby_gear.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/hobby_gear.mjs"
+      ]
+    },
+    {
       "id": "dj-club",
       "title": "Club SEAM from the game: first meeting with the owner, embedded DJ, result recorded to state.dj, no time used (DJS10/DJS12)",
       "kind": "browser",
@@ -188,6 +262,36 @@
       "timeout": 3,
       "paths": ["remake/js/minigames/dj.js", "remake/js/daily/dj-club.js", "remake/js/chapters/ch3.js", "remake/js/chapters/ch3-map-model.js", "remake/previews/dj/**", "data/dialogue/ch3_club.json", "remake/test/browser/dj_club.mjs"],
       "run": ["node remake/test/browser/dj_club.mjs"]
+    },
+    {
+      "id": "desert-ride-rules",
+      "title": "DESERT RIDE course fairness, jump/landing/fall rules, ranks and the chapter 4 desk/outing/record rules",
+      "kind": "quick",
+      "run": ["node --test remake/test/desert_ride.mjs remake/test/ch4_desert.mjs"]
+    },
+    {
+      "id": "desert-ride",
+      "title": "DESERT RIDE on PC and touch, reduced motion, and the chapter 4 outing with save/load and interruption",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 5,
+      "paths": [
+        "remake/js/minigames/desert-ride.js",
+        "remake/js/minigames/desert-ride-model.js",
+        "remake/js/minigames/desert-ride-art.js",
+        "remake/img/ui/desert_ride/**",
+        "remake/js/chapters/ch4-desert.js",
+        "remake/js/chapters/ch4-desert-progress.js",
+        "remake/js/chapters/ch4.js",
+        "remake/js/chapters/ch4-map-model.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
+        "remake/js/desert-ride-page.js",
+        "remake/desert-ride.html",
+        "remake/css/desert-ride.css",
+        "data/dialogue/ch4_desert.json",
+        "remake/test/browser/desert_ride.mjs"
+      ],
+      "run": ["node remake/test/browser/desert_ride.mjs"]
     },
     {
       "id": "title-art-met",
@@ -368,7 +472,10 @@
         "node remake/test/ch3_map.mjs",
         "node --experimental-vm-modules remake/test/ch4_progress.mjs",
         "node --experimental-vm-modules remake/test/ch4_rewards.mjs",
+        "node remake/test/camel_race_model.mjs",
+        "node remake/test/ch4_camel_race.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
+        "node remake/test/ch5_party.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
         "node remake/test/ch3_outings.mjs",
@@ -397,6 +504,24 @@
       "title": "Lover LIME and lover_events milestones after chapter 3 (#2024)",
       "kind": "quick",
       "run": ["node --experimental-vm-modules remake/test/ch3_lover_entry.mjs"]
+    },
+    {
+      "id": "ch2-craft-prep",
+      "title": "Chapter 2 tournament prep at tonari: basics check, midpoint check with two adjustments and last rehearsal with a real board or drill (VOL13, #2032)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ch2_craft_prep.mjs"]
+    },
+    {
+      "id": "ch2-home-talks",
+      "title": "Chapter 2 home talks: facility encounters, Rin's chapter talks, Ageha's four small talks and greetings, aquarium revisits (VOL13)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ch2_home_talks.mjs"]
+    },
+    {
+      "id": "ch2-story-visits",
+      "title": "Chapter 2 story visits: Adam at EDEN and Minto's night at PEPPERMINT read on the map, rescued on the deadline night (VOL13)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ch2_story_visits.mjs"]
     },
     {
       "id": "affinity-stages",
@@ -528,6 +653,8 @@
       "run": [
         "node --test tools/ci/test_ci.mjs",
         "python3 tools/check_face_icons_fresh.py",
+        "python3 tools/portrait_metrics.py check",
+        "python3 tools/background_catalog.py check",
         "node --test tools/sequential_merge/test.mjs",
         "python3 -B -m unittest discover -s tools -p 'test*job_checkpoint*.py'",
         "node remake/test/dev_inspector.mjs"
@@ -650,6 +777,7 @@
         "remake/test/facility_icons.mjs",
         "assets/ui/map-facilities-579.png",
         "assets/ui/map-facilities-extra-579.webp",
+        "assets/ui/map-facilities-*.webp",
         "asset_sources/store-logos/ch1-issue470/ingame-qa/pin-cutout-546/**",
         "asset_sources/map-facilities-579/**"
       ],
@@ -1075,6 +1203,32 @@
       ]
     },
     {
+      "id": "ch4-camel-race",
+      "title": "Chapter 4 camel race in the real UI (legacy 5-day map and the 14-day daily map): meet, invite, watch, race, record, save/load, replay, one daytime slot",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 8,
+      "paths": [
+        "remake/js/minigames/camel-race.js",
+        "remake/js/minigames/camel-race-model.js",
+        "remake/js/chapters/ch4-camel-race.js",
+        "remake/js/chapters/ch4-camel-progress.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
+        "remake/js/chapters/ch4-map-model.js",
+        "remake/css/camel-race.css",
+        "remake/camel-race.html",
+        "remake/js/camel-race-page.js",
+        "data/dialogue/ch4_camel_race.json",
+        "assets/ui/camel_race/**",
+        "remake/img/ui/camel_race/**",
+        "assets/sprites/characters/saif/**",
+        "assets/sprites/characters/rashid/**",
+        "assets/backgrounds/bg_dubai_camel_track_morning.png",
+        "remake/test/browser/ch4_camel_race.mjs"
+      ],
+      "run": ["node remake/test/browser/ch4_camel_race.mjs"]
+    },
+    {
       "id": "ch4-tournament",
       "title": "Chapter 4 real craft, scoring, plans and checkpoint recovery",
       "kind": "quick",
@@ -1084,6 +1238,21 @@
       ]
     },
     {
+      "id": "ch4-dubai-daily",
+      "title": "Chapter 4 Dubai days on the shared daily loop (VOL04)",
+      "kind": "browser",
+      "weight": 0.8,
+      "timeout": 6,
+      "paths": [
+        "remake/js/chapters/ch4-dubai-daily.js",
+        "remake/js/chapters/ch4-progress.js",
+        "remake/js/chapters/ch4.js",
+        "data/dialogue/ch4_dubai_daily.json",
+        "remake/test/browser/ch4_dubai_daily.mjs"
+      ],
+      "run": ["node remake/test/browser/ch4_dubai_daily.mjs"]
+    },
+    {
       "id": "ch4-full-flow",
       "title": "Chapter 4 full playthrough on one save",
       "kind": "browser",
@@ -1091,6 +1260,7 @@
       "timeout": 10,
       "paths": [
         "remake/js/chapters/ch4*.js",
+        "remake/js/chapters/departure-prep.js",
         "remake/js/chapters/ch3-aftermath*.js",
         "remake/js/chapters/ch1.js",
         "data/dialogue/ch4_main.json",
@@ -1215,6 +1385,45 @@
       "run": [
         "node remake/test/browser/ch3_tournament.mjs"
       ]
+    },
+    {
+      "id": "ch3-departure-prep",
+      "title": "Chapter 3 three prep days at home before the Tokyo departure (VOL02)",
+      "kind": "browser",
+      "weight": 0.8,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/ch3-prep.js",
+        "remake/js/chapters/departure-prep.js",
+        "remake/js/chapters/ch2-preparation.js",
+        "remake/js/core/chapter-clock.js",
+        "remake/js/core/travel-budget.js",
+        "remake/js/core/tokyo-visits.js",
+        "remake/js/daily/calendar.js",
+        "remake/js/daily/hud.js",
+        "data/dialogue/ch3_departure.json",
+        "remake/test/browser/ch3_departure_prep.mjs"
+      ],
+      "run": ["node remake/test/browser/ch3_departure_prep.mjs"]
+    },
+    {
+      "id": "ch3-tokyo-daily",
+      "title": "Chapter 3 Tokyo days on the shared daily loop (VOL03)",
+      "kind": "browser",
+      "weight": 0.8,
+      "timeout": 6,
+      "paths": [
+        "remake/js/chapters/ch3-tokyo-daily.js",
+        "remake/js/chapters/tokyo-mukai.js",
+        "data/dialogue/mukai_shift.json",
+        "remake/js/core/tokyo-clock.js",
+        "remake/js/core/tokyo-visits.js",
+        "remake/js/daily/calendar.js",
+        "remake/js/daily/hud.js",
+        "data/dialogue/ch3_tokyo_daily.json",
+        "remake/test/browser/ch3_tokyo_daily.mjs"
+      ],
+      "run": ["node remake/test/browser/ch3_tokyo_daily.mjs"]
     },
     {
       "id": "ch3-full-flow",
@@ -1718,6 +1927,31 @@
       "run": [
         "node remake/test/browser/home_rig_backgrounds.mjs",
         "node remake/test/browser/story_edit_564.mjs"
+      ]
+    },
+    {
+      "id": "premium-equipment-vol08",
+      "title": "Premium equipment and home stands from chapter 2 (VOL08)",
+      "kind": "quick",
+      "run": [
+        "node remake/test/premium_equipment.mjs"
+      ]
+    },
+    {
+      "id": "premium-shop-browser-vol08",
+      "title": "Premium equipment and home stands in the branch shops (VOL08)",
+      "kind": "browser",
+      "weight": 0.6,
+      "timeout": 4,
+      "paths": [
+        "data/equipment.json",
+        "remake/js/daily/shop.js",
+        "remake/js/daily/home-rig.js",
+        "remake/js/craft/flavor-guide.js",
+        "remake/test/browser/premium_shop.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/premium_shop.mjs"
       ]
     },
     {
@@ -2503,7 +2737,8 @@
         "remake/test/browser/facility_icons.mjs",
         "remake/js/daily/facility-icons.js",
         "remake/css/facility-icons.css",
-        "remake/facility-icons-preview.html"
+        "remake/facility-icons-preview.html",
+        "assets/ui/map-facilities-*.webp"
       ],
       "run": [
         "node remake/test/store_logos.mjs",
@@ -2535,6 +2770,23 @@
         "remake/test/browser/hud_visibility_2190.mjs"
       ],
       "run": ["node remake/test/browser/hud_visibility_2190.mjs"],
+      "chrome": "playwright"
+    },
+    {
+      "id": "daily-menu",
+      "title": "Full-screen daily MENU: four read-only tabs, keys, save guard and DS layout (#2097)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/menu.js",
+        "remake/js/daily/hud.js",
+        "remake/js/daily/status.js",
+        "remake/css/daily-menu.css",
+        "remake/img/ui/paper/menu-bg.webp",
+        "remake/test/browser/daily_menu.mjs"
+      ],
+      "run": ["node remake/test/browser/daily_menu.mjs"],
       "chrome": "playwright"
     },
     {
@@ -3000,7 +3252,7 @@
     },
     {
       "id": "new-flavors-dubai-shop",
-      "title": "New flavors release chapters, shop catalogs and Dubai shop (NF01-NF03)",
+      "title": "New flavors release chapters, shop catalogs, Dubai shop and cartons (NF01-NF04)",
       "kind": "quick",
       "run": [
         "node --experimental-vm-modules remake/test/shop_new_flavors_dubai.mjs"
@@ -3016,7 +3268,8 @@
         "node remake/test/flavor_data_contract.mjs",
         "node remake/test/mastery_balance.mjs",
         "node remake/test/craft_review.mjs",
-        "node --experimental-vm-modules remake/test/shop_display_775.mjs"
+        "node --experimental-vm-modules remake/test/shop_display_775.mjs",
+        "node --experimental-vm-modules remake/test/shop_tokyo_nightside.mjs"
       ]
     },
     {
@@ -3081,6 +3334,24 @@
       ],
       "sparse": [
         "/asset_sources/backgrounds/osu-sakae-map-remaster-v1/"
+      ]
+    },
+    {
+      "id": "intro-transition",
+      "title": "Intro cut-in transformation transition (morph / card / slash)",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 5,
+      "paths": [
+        "remake/test/intro_transition.mjs",
+        "remake/js/vn/intro-transition.js",
+        "remake/js/vn/intro.js",
+        "remake/js/vn/intro-art.js",
+        "remake/css/intro.css",
+        "remake/intro-transition-preview.html"
+      ],
+      "run": [
+        "node remake/test/intro_transition.mjs"
       ]
     },
     {

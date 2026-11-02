@@ -1,0 +1,431 @@
+[
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/apple-thief/background-a.png",
+    "relative_path": "apple-thief/background-a.png",
+    "bytes": 2610425,
+    "sha256": "4acd1b40347ea41eceb374ce0694ce26c77a89b8ba1b903dd790fb9338d12e51",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "apple-thief/background-a.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/apple-thief/background-b.png",
+    "relative_path": "apple-thief/background-b.png",
+    "bytes": 2874263,
+    "sha256": "d9ad2f65af0036833a0dbee2b5d134b3ec0cf874cf9ebeba70f584577408cbe1",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "apple-thief/background-b.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/apple-thief/background-c.png",
+    "relative_path": "apple-thief/background-c.png",
+    "bytes": 2995441,
+    "sha256": "b45ce539011437ceca335495e5d86c81af31633c111f3aff3ff05f115eed0299",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "apple-thief/background-c.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/doll-requiem/background-a.png",
+    "relative_path": "doll-requiem/background-a.png",
+    "bytes": 2957843,
+    "sha256": "f688f18266c6a0e2933f86e9c6f01fe1a197031dea0276ccb9b9a1708c9a4b58",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "doll-requiem/background-a.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/doll-requiem/background-b.png",
+    "relative_path": "doll-requiem/background-b.png",
+    "bytes": 2849736,
+    "sha256": "db133d874dd5d10b8a2dab3935062299d14acecbc6d84e0568683586b8b7f7ba",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "doll-requiem/background-b.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/doll-requiem/background-c.png",
+    "relative_path": "doll-requiem/background-c.png",
+    "bytes": 2963429,
+    "sha256": "58f860a06ad10d4201b2a778bd1fbb037feb13a40920b0c438b55a51b0d653ff",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "doll-requiem/background-c.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/fading-familiar/background-a.png",
+    "relative_path": "fading-familiar/background-a.png",
+    "bytes": 2851021,
+    "sha256": "7baeb4a4c2695595c7703ea833223c77c30ecec77ab1ec72ab0db4fd4ef4e705",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "fading-familiar/background-a.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/fading-familiar/background-b.png",
+    "relative_path": "fading-familiar/background-b.png",
+    "bytes": 2813681,
+    "sha256": "00e47bef852729ade3c3b970b419db84dbb6acf46ff3297b02223ec35c60e33d",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "fading-familiar/background-b.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/fading-familiar/background-c.png",
+    "relative_path": "fading-familiar/background-c.png",
+    "bytes": 2794638,
+    "sha256": "bb1c430b9206ed6156b2d4b8060a3e8445632f6cf41be283259c688860ee30fb",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "fading-familiar/background-c.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/fox-market/background-a.png",
+    "relative_path": "fox-market/background-a.png",
+    "bytes": 2812790,
+    "sha256": "935c6ef24ed1a159b67320f06c525405a940adb3905ccf44cd39e91c8ade6e4a",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "fox-market/background-a.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/fox-market/background-b.png",
+    "relative_path": "fox-market/background-b.png",
+    "bytes": 3025545,
+    "sha256": "7e4c5d96325783bba54fe1d4b851788a949b7cd8d3bebad11bdf8f82f8e2e4a9",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "fox-market/background-b.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/fox-market/background-c.png",
+    "relative_path": "fox-market/background-c.png",
+    "bytes": 2803323,
+    "sha256": "fd8b3dcad2bb8b5639aacbc9be6a70d1330873947adc55b15e87a47a3789296a",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "fox-market/background-c.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/leaf-mail/background-a.png",
+    "relative_path": "leaf-mail/background-a.png",
+    "bytes": 3037780,
+    "sha256": "6cb7591d6b5b108d3484f82eb3479ebe946b997852e2137cb5760b09b0dc8ec5",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "leaf-mail/background-a.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/leaf-mail/background-b.png",
+    "relative_path": "leaf-mail/background-b.png",
+    "bytes": 3046337,
+    "sha256": "64748928e7c1b43f89677295c71f784407adc6a164ad1da322c79a385142dd15",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "leaf-mail/background-b.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/leaf-mail/background-c.png",
+    "relative_path": "leaf-mail/background-c.png",
+    "bytes": 3173900,
+    "sha256": "1286c5a68e0a1064c25bdd423c5032d2bf94d7a7e7ddf9c211d5b92def944e00",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "leaf-mail/background-c.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/mist-kingdom/background-a.png",
+    "relative_path": "mist-kingdom/background-a.png",
+    "bytes": 2892301,
+    "sha256": "398c962e1358556f3954e6f4d429d3bb51d90e2214b019c6a61a4552c155a959",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "mist-kingdom/background-a.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/mist-kingdom/background-b.png",
+    "relative_path": "mist-kingdom/background-b.png",
+    "bytes": 2888759,
+    "sha256": "9cba677531c3cf94940f816440e899c096ef005c9f6ec96ce910d015702f828e",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "mist-kingdom/background-b.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/mist-kingdom/background-c.png",
+    "relative_path": "mist-kingdom/background-c.png",
+    "bytes": 2777908,
+    "sha256": "61da363d11cb7ddedda3de96b7aefe2f94896114e142a1f2c5f1ff81ccc406b4",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "mist-kingdom/background-c.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/moonflower-encore/background-a.png",
+    "relative_path": "moonflower-encore/background-a.png",
+    "bytes": 2754619,
+    "sha256": "b7df4c4eff1b182598d9b407fa58335cb0069b83910e74f31d6411fc1e644b89",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "moonflower-encore/background-a.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/moonflower-encore/background-b.png",
+    "relative_path": "moonflower-encore/background-b.png",
+    "bytes": 2690019,
+    "sha256": "890d48d9315eec3dd339fe16c091c3b622247659cf9a2bb6ea92221615160c1e",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "moonflower-encore/background-b.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/moonflower-encore/background-c.png",
+    "relative_path": "moonflower-encore/background-c.png",
+    "bytes": 2905441,
+    "sha256": "a3c7f6971dbf63de225a4555cdac7db7c26798cc6b4f6183d27266857ac44d66",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "moonflower-encore/background-c.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/purikura-hero/background-a.png",
+    "relative_path": "purikura-hero/background-a.png",
+    "bytes": 3192790,
+    "sha256": "96d560b9301359228d6fa2132912e4a2277315b3353217651b484d0819adfa48",
+    "dimensions": [
+      1672,
+      940
+    ],
+    "mode": "RGB",
+    "archive_path": "purikura-hero/background-a.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/purikura-hero/background-b.png",
+    "relative_path": "purikura-hero/background-b.png",
+    "bytes": 3044751,
+    "sha256": "3212ad063be7b5a1a6d74d1c850ac9d34f4a1e8372a1ae1791981ef7a97ad98d",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "purikura-hero/background-b.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/purikura-hero/background-c.png",
+    "relative_path": "purikura-hero/background-c.png",
+    "bytes": 3016424,
+    "sha256": "1a9aa892e041dbdac8ecf53524d3d7307dc6d65c9487d23e752f57f56f8d96b4",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "purikura-hero/background-c.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/shark-island/background-a.png",
+    "relative_path": "shark-island/background-a.png",
+    "bytes": 3444704,
+    "sha256": "ba5fbcf9f123d174cabff5532bf56a926ce81820622df7953fafe66984e4b1a5",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "shark-island/background-a.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/shark-island/background-b.png",
+    "relative_path": "shark-island/background-b.png",
+    "bytes": 3589056,
+    "sha256": "afb3b132a480b22e09f4c7417c77e8523f0cc7ef2ffc88545861fd7735b987f2",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "shark-island/background-b.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/shark-island/background-c.png",
+    "relative_path": "shark-island/background-c.png",
+    "bytes": 3332195,
+    "sha256": "2d83b6455b8ee3e4d7a2bc8c93a07090e77389ed74326fd512c7a60611222cf0",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "shark-island/background-c.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/smoke-robot/background-a.png",
+    "relative_path": "smoke-robot/background-a.png",
+    "bytes": 2540806,
+    "sha256": "1076a30bada2be84a33a48f3aa006877e8367d4c703acd9770db329cb7de706d",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "smoke-robot/background-a.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/smoke-robot/background-b.png",
+    "relative_path": "smoke-robot/background-b.png",
+    "bytes": 2480973,
+    "sha256": "f381ef294feb52ec2d8a04152842c5e79da4cb0f58a9ec5e7408ec84fec34095",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "smoke-robot/background-b.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/smoke-robot/background-c.png",
+    "relative_path": "smoke-robot/background-c.png",
+    "bytes": 2503617,
+    "sha256": "67f08859cea67556a3b8d1c8bba288fc03c08b2ff69ad0e914ffcc85b432fc39",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "smoke-robot/background-c.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/stage-ghost/background-a.png",
+    "relative_path": "stage-ghost/background-a.png",
+    "bytes": 2252204,
+    "sha256": "a2bb7ce184f91ced371cd47fa33fc42b3eb0cbe71419a4e5224673eecea54e8e",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "stage-ghost/background-a.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/stage-ghost/background-b.png",
+    "relative_path": "stage-ghost/background-b.png",
+    "bytes": 2363830,
+    "sha256": "e33ddeb20909bc62da7bdeeecaa1c6c0340100f9765f63e1253d5e83b17868f2",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "stage-ghost/background-b.png"
+  },
+  {
+    "group": "trpg-backgrounds",
+    "source_path": "/workspace/shared/trpg-background-candidates/stage-ghost/background-c.png",
+    "relative_path": "stage-ghost/background-c.png",
+    "bytes": 2302782,
+    "sha256": "c015237437f8e4d9a9382663b77cfd69c13dc52edf3a7e43ad0c1103bd242b15",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "archive_path": "stage-ghost/background-c.png"
+  }
+]

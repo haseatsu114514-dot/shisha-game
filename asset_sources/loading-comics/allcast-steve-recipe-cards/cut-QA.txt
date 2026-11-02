@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EDE2CD  枠の段 1: 2コマ@y=275
+  コマ1: 716x477 @(40,275) 比率 1.501 → ok
+  コマ2: 718x480 @(781,272) 比率 1.496 → ok
+コマ1: 716x477 (1.501) そのまま → 出力 716x477  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/allcast-steve-recipe-cards/panels/steve-recipe-cards-1.webp (74 KiB)
+コマ2: 718x480 (1.496) → 左右に各0.1%の紙帯 → 出力 720x480  /workspace/shared/allcast-comics-20261102/allcast-steve-recipe-cards/panels/steve-recipe-cards-2.webp (86 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "steve-recipe-cards",
+  "title": "新作のカード",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/allcast-steve-recipe-cards/panels/steve-recipe-cards-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/allcast-steve-recipe-cards/panels/steve-recipe-cards-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/allcast-steve-recipe-cards/source-A-v1.png",
+      "region": {
+        "x": 40,
+        "y": 275,
+        "width": 716,
+        "height": 477,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/allcast-steve-recipe-cards/source-A-v1.png",
+      "region": {
+        "x": 781,
+        "y": 272,
+        "width": 718,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "steve-recipe-cards-1.webp",
+      "width": 716,
+      "height": 477,
+      "sha256": "81b31f940a239af29919f0f58b8185a55910dc663ae7e9cad19e38db264905e9"
+    },
+    {
+      "file": "steve-recipe-cards-2.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "6195de9fc10b58a4b8d7a9835f5948ccff4659e317993e8d0bc11086a0015771"
+    }
+  ]
+}

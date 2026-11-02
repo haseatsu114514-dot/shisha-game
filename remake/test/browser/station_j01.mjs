@@ -56,10 +56,10 @@ for (const [name, options] of [['pc',{}],['touch',{viewport:{width:844,height:39
  await suite(`station-j01-${name}`,async check=>{
   const hit = (page, id) => name === 'touch' ? page.locator(t(id)).tap() : page.locator(t(id)).click();
   const loadRoundTrip = async page => {
-   await hit(page,'hud-menu'); await hit(page,'menu-save'); await hit(page,'slot-1');
+   await hit(page,'hud-menu'); await hit(page,'menu-tab-system'); await hit(page,'menu-save'); await hit(page,'slot-1');
    if (await page.locator(t('confirm-overwrite')).isVisible()) await hit(page,'confirm-overwrite');
    await page.locator('#modal.show').waitFor({state:'hidden'});
-   await hit(page,'hud-menu'); await hit(page,'menu-load'); await hit(page,'slot-1');
+   await hit(page,'hud-menu'); await hit(page,'menu-tab-system'); await hit(page,'menu-load'); await hit(page,'slot-1');
    await Promise.all([page.waitForEvent('load'),hit(page,'confirm-load')]);
    await page.locator('#screen .map:not(.done)').waitFor();
   };

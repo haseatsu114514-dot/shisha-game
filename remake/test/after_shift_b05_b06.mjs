@@ -70,9 +70,17 @@ function synthetic(name, exportsObj) {
   instances.set(name, mod);
   return mod;
 }
+// 遅延 import（まかない練習の runner など）も同じ差し替え表から返す。
+async function dynamicModule(spec) {
+  const mod = instances.get(spec.split("/").pop());
+  if (!mod) throw new Error(`Unexpected dynamic import: ${spec}`);
+  if (mod.status === "unlinked") await mod.link(() => { throw new Error(`Unexpected import in ${spec}`); });
+  if (mod.status === "linked") await mod.evaluate();
+  return mod;
+}
 async function realModule(name, path) {
   if (instances.has(name)) return instances.get(name);
-  const mod = new vm.SourceTextModule(await read(path), { identifier: name });
+  const mod = new vm.SourceTextModule(await read(path), { identifier: name, importModuleDynamically: dynamicModule });
   instances.set(name, mod);
   await mod.link((spec) => instances.get(spec.split("/").pop()));
   await mod.evaluate();
@@ -120,9 +128,12 @@ synthetic("hiyori.js", { meetHiyoriAtTonari: async () => {} });
 synthetic("attack-lesson.js", { canStudyAttack: () => false, studyAttack: async () => {} });
 synthetic("coal-lesson.js", { canStudyCubeCoals: () => false, studyCubeCoals: async () => {} });
 synthetic("growth.js", { readyLessons: () => [], consultLessons: async () => [] });
+synthetic("growth-effects.js", { callingSalesBonus: () => 0 });
 synthetic("tsumugi-schedule.js", { tsumugiAtTonari: () => false });
 synthetic("flavor-mastery.js", { staffFlavors: () => [], staffStock: () => 0 });
 synthetic("axe-bar-discovery.js", { hiyoriFirstMeetingReady: () => false });
+const practiceRuns = [];
+synthetic("practice.js", { runFullPractice: async (opts) => { practiceRuns.push(opts); return { masteryGained: true }; } });
 
 await realModule("spot-encounters.js", "remake/js/daily/spot-encounters.js");
 await realModule("hiyori-route.js", "remake/js/core/hiyori-route.js");
@@ -160,6 +171,23 @@ assert.equal(plays.filter((id) => id === "remake_sumi_after_shift").length, 1, "
 const afterMenuTexts = texts(screens.at(-1).node);
 assert(!afterMenuTexts.includes("スミさんと話す"), "シフト上がりメニューにスミ会話の選択肢は無い");
 assert(afterMenuTexts.includes("まっすぐ上がる"), "特訓・授業以外の締めの選択肢は残る");
+
+// --- #2213 B04: まかない練習はシフト上がりで選んだ日だけ。選ばなければ練習しない ---
+assert(afterMenuTexts.includes("まかないで練習"), "シフト上がりでまかない練習を選べる");
+assert.equal(practiceRuns.length, 0, "選ばなかった日は練習しない");
+assert.equal(state.visitedDay.tonari_practice, undefined);
+reset(); menuPick = "after-makanai";
+await tonari.doBaito();
+assert.equal(practiceRuns.length, 1, "選んだ日は一台だけ作る");
+assert.equal(practiceRuns[0].staffPractice, true, "旧・独立コマンドと同じまかないの runner で熟練度を育てる");
+assert.equal(practiceRuns[0].kind, "self");
+assert.equal(plays.filter((id) => id === "remake_staff_practice").length, 1);
+assert.equal(state.visitedDay.tonari_practice, 2, "同じ日の苺・まかないとの重複判定に使う記録");
+menuPick = "after-none";
+await tonari.doBaito();
+assert(!texts(screens.at(-1).node).includes("まかないで練習"), "同じ日に二度目のまかない練習は出ない");
+assert.equal(practiceRuns.length, 1);
+practiceRuns.length = 0;
 
 // --- B06: 前提を満たすまでは露出しない ---
 reset({ ...PREREQ_STATE, flags: {} });

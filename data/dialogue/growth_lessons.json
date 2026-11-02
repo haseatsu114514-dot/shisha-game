@@ -1,6 +1,16 @@
 {
   "dialogues": [
     {
+      "dialogue_id": "baito_minto_calling",
+      "lines": [
+        { "speaker": "", "text": "窓際の灯りを早めにつけ、客席が見えるように席を整えた。" },
+        { "speaker": "", "text": "通りがかった人が足を止め、空いていた卓が一つ埋まる。" },
+        { "speaker": "hajime", "face": "smile", "text": "（煙を吸う前にも、店の良さは伝えられる。みんとさんに教わったとおりだ）" },
+        { "speaker": "", "text": "帰り際に声をかけると、もう一杯の注文が入った。" },
+        { "speaker": "", "text": "追加注文のぶんは、店からの売上ボーナスとして給料に上乗せされる。" }
+      ]
+    },
+    {
       "dialogue_id": "lesson_minto_calling",
       "lines": [
         {
@@ -1211,7 +1221,12 @@
         {
           "speaker": "steve",
           "face": "smile",
-          "text": "グッド。場所はここを使っていい。ピザも俺が頼んでおく"
+          "text": "グッド。大会が終わって、東京にいる最後の夜にしよう"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "場所はここを使っていい。ピザも俺が頼んでおく"
         }
       ]
     },
@@ -1386,7 +1401,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "通りの外れのテラス席で、ダ・シルヴァ太陽がアサイーの一台に炭を置いている。"
+          "text": "FESTAの炭台で、ダ・シルヴァ太陽がアサイーの一台に炭を置いている。"
         },
         {
           "speaker": "hajime",
@@ -1462,6 +1477,191 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "次の蒸らしで、一回だけ、でかくやってみます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_master_hookah_dragon",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片づけの進む会場の隅。王煙楼が、冷めた炭を一つずつ壺へ戻している。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "相談してもいいですか。前夜祭で見た、龍の煙のことです"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "見ていたね。客席の誰より、君の目が大きかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あの時、会場じゅうの息が止まったんです。俺も止まってました"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "龍は、驚かせるための技ではないよ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "客が息を止めると、ざわめきが消える。そこで一口目の香りがよく通る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼はホースを取り、短く三度、同じ長さで息を吐いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "三つの輪が重なり、身をくねらせながら天井へ昇っていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……輪が、龍になった"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "輪を一つ作れるなら、三つ続ければいい。息の長さを揃えるだけだ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "laugh",
+          "text": "私も若い頃は、四つ目で咳き込んだ。客がいちばん笑った夜だったな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "吸い出しで三回続けて、ちょうどいいところを取る……"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "serious",
+          "text": "大事なのは、龍が消えた後だ。静かになるのは客席だけではない"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "作る側の胸の中も静かになる。その間に、次の手を落ち着いて選びなさい"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "serious",
+          "text": "派手な技は、待つための前置きに過ぎないよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（龍で場を静めて、その静けさの中で、自分も急がずに作る）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "マスターフーカーって呼ばれる理由が、少し分かった気がします"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "laugh",
+          "text": "その名は、客が勝手に付けたものだ。私は水煙所の店主だよ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "龍が出たら、煙より客の顔を見なさい。答えはそちらにある"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_dr_kemuri_hmd",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一緒に作った一台を吸い終えたあと。博士が、鞄から銀色の蓋を一つ取り出した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "博士、相談してもいいですか。炭を替えると、熱がどうしても揺れるんです"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "smile",
+          "text": "ええ、揺れますね。炭を置いた所だけ、急に熱くなる"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "これを使ってみてください。熱を蓋全体に回して、ボウルへ均一に落とします"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "見たことない形のHMDですね"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "試作品です。店で出していた頃から、ずっと直し続けています"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "蓋の裏には、細かい刻みが渦のように入っていた。縁には、日付の違う傷がいくつも並んでいる。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "炭を替えても、熱の山がなだらかになる。失敗の幅を、少しだけ狭くする道具です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "これがあれば、熱で失敗しなくなるんですか"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "serious",
+          "text": "いいえ。失敗しにくくなるだけです。客の顔を見るのは、君の仕事のまま"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……すごい。これ、どこで売ってるんですか"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "smile",
+          "text": "売っていません。それ作ったの、俺だもん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言ってから、博士は少し照れたように眼鏡を押し上げた。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "使った感想を、聞かせてください。次の試作に入れます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。熱の記録も、ちゃんと取っておきます"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "smile",
+          "text": "記録と、お客さんが何と言ったかも。……両方、お願いします"
         }
       ]
     }

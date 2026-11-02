@@ -216,10 +216,11 @@ try {
   });
   assert.equal(g.belowHeart, false, "2nd talk waits for ♥1");
   assert.equal(g.atHeart, true, "♥1 opens the 2nd talk");
-  assert.deepEqual(g.first, { story: 1, pts: 9, lv: 1, open: true }, "First completed talk guarantees ♥1");
-  assert.deepEqual(g.gained, { story: 1, pts: 35, lv: 3, waiting: 0, open: true },
+  // #2279 から段階会話は +16（×0.85 で13点、端数0.6は繰り越し）。最初の一本だけで♥1（9点）に届く。
+  assert.deepEqual(g.first, { story: 1, pts: 13, lv: 1, open: true }, "First completed talk reaches at least ♥1");
+  assert.deepEqual(g.gained, { story: 1, pts: 39, lv: 3, waiting: 0, open: true },
     "Ordinary gains cross unread hearts without reading the next talk or deferring points");
-  assert.deepEqual(g.second, { story: 2, pts: 43, lv: 3, waiting: 0, read: true, released: 0 },
+  assert.deepEqual(g.second, { story: 2, pts: 52, lv: 4, waiting: 0, read: true, released: 0 },
     "One visit reads only the 2nd talk and grants its normal reward");
   assert.deepEqual(g.ch2, { story: 0, open: true, level: 4, points: 51, waiting: 0 },
     "Chapter 2 gains leave the first chapter's oldest unread talk available");

@@ -6,11 +6,15 @@ async function seed(page, { lovers = ["tsumugi", "minto", "rin", "samechan", "hi
   await page.evaluate(async ({ lovers, schema }) => {
     const core = await import("./js/core/state.js");
     const value = core.newGame();
-    Object.assign(value, { chapter: 2, day: 28, phase: "cleared", lovers, contacts: ["sumi", ...lovers], money: 23456, stamina: 65 });
+    Object.assign(value, { chapter: 2, day: 25, /* 準備3日の後の東京DAY1が従来どおり通算29日 */ phase: "cleared", lovers, contacts: ["sumi", ...lovers], money: 23456, stamina: 65 });
     value.owned.push("home_rig_set");
     value.flags = { _elapsed_calendar: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true, _ch2_tournament: { stage: "complete" } };
     const progress = await import("./js/chapters/ch3-progress.js");
     if (!progress.advanceToChapterThree(value)) throw new Error("Natural chapter boundary failed");
+    // 出発前の準備3日（VOL02）を過ごした出発の朝から始める（準備の3日は ch3_departure_prep で遊ぶ）。
+    value.day += 3;
+    if (!progress.departChapterThree(value)) throw new Error("Departure failed");
+    value.flags._ch3_intro.routeVersion = 2; // 場面カードの東京（作業中の旧セーブの行程）を確かめる
     // This suite starts inside Tokyo; the separate chapter-entry suite plays the prologue.
     value.flags._ch3_intro.titleSeen = true;
     value.flags._ch3_intro.prologueStep = 4;
@@ -237,7 +241,7 @@ await suite("tokyo-visits", async check => {
     assert.equal(await page.locator(".lime-chat-row").count(), 0);
     const value = await get(page);
     assert.deepEqual(value.tokyoVisits.plans, []);
-    assert.equal(value.schema, 24);
+    assert.equal(value.schema, 25); // 25: 盤のデンスパック制限から旧セーブの選択肢を保護（#2166）
     await page.locator(t("phone-close")).click();
   });
 });

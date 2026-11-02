@@ -19,6 +19,9 @@ from pathlib import Path
 
 from PIL import Image
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from portrait_metrics import icon_box, load as load_portrait_metrics  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CHARS_DIR = REPO_ROOT / "assets" / "sprites" / "characters"
 OUT_DIR = REPO_ROOT / "assets" / "ui" / "face_icons"
@@ -26,40 +29,21 @@ OUT_DIR = REPO_ROOT / "assets" / "ui" / "face_icons"
 SIZE = 160         # 解像度（2026-10-04 オーナー指定で48→96→160。顔の切り抜きは元絵で約180〜240pxなので、これ以上は拡大になる）
 COLORS = 256       # パレット色数（32色では瞳の色・肌の階調が潰れた）
 
-# 頭部クロップの調整値。
-# 立ち絵（透過スプライト）は「頭部スライスの重心」を顔の中心とみなし、
-# コンテンツ高さ ch に対する比 f で正方形の辺を決める（bbox幅基準だと
-# ツインテール・広げた腕などで拡大率がキャラごとにバラつくため・2026-07-02）。
-#   f:  辺 = ch * f（大きいほど引き＝顔が小さく写る）
+# 顔の切り抜き枠は data/portrait_metrics.json（立ち絵ごとに測った目・あご・頭頂・頬の位置）から決める
+# （2026-11-02 立ち絵の規格 docs/portrait_standard.md）。顔の大きさ（頭頂〜あごの高さ×頬の幅の相乗平均）が
+# 枠の spec.icon.face 倍、頭の上下の中央が上から spec.icon.mid_y、頬の左右の中央が枠の中央に来る。
+# 値は 2026-10-04〜10-10 にオーナー確認で手調整した主要キャラのアイコン（「顔のサイズ近くなるように」）の中央値。
+# 立ち絵を差し替えたら tools/portrait_metrics.py で測り直す（古い記録のままだと、このスクリプトは止まる）。
+#
+# TUNE は測れないキャラだけの手調整（キャラ固有の例外）。
+#   f:  辺 = 本体の高さ ch * f（大きいほど引き＝顔が小さく写る）
 #   dx/dy: 辺に対する比での微調整（+で右/下）
 #   size: そのキャラだけ解像度を変える（既定は SIZE）
-# 背景込み一枚絵のキャラは abs 指定（画像全体に対する顔中心 cx/cy と辺 side の比）。
+#   abs: 画像全体に対する顔中心 cx/cy と辺 side の比で指定する
 DEFAULT = {"f": 0.20, "dx": 0.0, "dy": 0.0}
 TUNE = {
-    "hiyori": {"abs": True, "cx": 0.46, "cy": 0.23, "side": 0.18},
-    # 2026-10-31 上げた腕で頭部の重心がずれ、顔が端に寄っていた（SBD83）。立ち絵の顔（目 x453・y80、頬幅99px）に合わせる
-    "da_silva": {"abs": True, "cx": 0.506, "cy": 0.08, "side": 0.165},  # 採用立ち絵の顔を中央に合わせ、髪の余白を保つ。
     # マスコット。2026-10-09 に目・口・蝶ネクタイまで寄せたが、頭の巻き毛が切れたため（#575）、巻き毛の先から蝶ネクタイまで収める
     "pakki":   {"f": 0.70, "dx": -0.03, "dy": 0.12},
-    # 2026-10-04 顔の大きさを全キャラで揃える（オーナー「顔のサイズ近くなるように」）。
-    # 目の下の頬の幅がアイコン幅の約0.50になるよう、目線の位置（横0.5・縦0.55）を固定して拡大縮小した値。
-    # 立ち絵を差し替えたら、頬の幅を測り直して f を比例で直す（f_new = f_old × 測った幅 / 0.50）
-    "adam": {"f": 0.188, "dy": 0.03},
-    "ageha": {"f": 0.228, "dy": 0.058},
-    "dr_kemuri": {"f": 0.173, "dx": -0.059, "dy": 0.04},
-    "hajime": {"f": 0.186, "dx": -0.051, "dy": 0.081},
-    # 2026-10-10 立ち絵そろえ: 新原画の頬幅・目線で切り抜きを再調整。
-    # つむぎの元の頭身、ましろの大きめの丸い顔は全身側で保持する。
-    "samechan": {"f": 0.192, "dx": -0.093, "dy": 0.295},
-    "maezono": {"f": 0.215, "dx": -0.038, "dy": -0.059},
-    "mashiro": {"f": 0.230, "dy": 0.068},
-    "minto": {"f": 0.213, "dy": 0.101},
-    "minto_private": {"f": 0.214, "dy": 0.089},
-    "nagumo": {"f": 0.169, "dx": -0.055, "dy": 0.068},
-    "naru": {"f": 0.18, "dy": 0.052},
-    "rin": {"f": 0.188, "dx": 0.011, "dy": 0.158},
-    "sumi": {"f": 0.182, "dx": -0.038, "dy": 0.011},
-    "tsumugi": {"f": 0.218, "dx": -0.045, "dy": 0.143},
 }
 # 別衣装のアイコン: 出力名 → (キャラのフォルダ, 表情)。
 # minto_private = 本名「栞」を聞いた後の私的な場面（LIME・恋人の絆）で使う私服の顔
@@ -74,6 +58,20 @@ HEAD_ROOM = 0.03
 MAX_SHIFT = 0.10
 
 
+_METRICS = None
+
+
+def load_metrics() -> dict:
+    global _METRICS
+    if _METRICS is None:
+        _METRICS = load_portrait_metrics()
+    return _METRICS
+
+
+def metrics_entry(char_id: str) -> dict | None:
+    return load_metrics()["characters"].get(char_id)
+
+
 def face_box(char_id: str, im: Image.Image) -> tuple[int, int, int] | None:
     """顔アイコンの切り抜き枠 (x0, y0, side) を返す。TUNE で顔の大きさを全キャラ揃えてある。
     tools/make_reference_sheet.py も同じ枠を使い、シートの顔アップの大きさをアイコンと揃える。"""
@@ -83,7 +81,11 @@ def face_box(char_id: str, im: Image.Image) -> tuple[int, int, int] | None:
     left, top, right, bottom = bbox
     cw, ch = right - left, bottom - top
     p = {**DEFAULT, **TUNE.get(char_id, {})}
-    if p.get("abs"):
+    entry = metrics_entry(char_id)
+    if char_id not in TUNE and entry and "chin" in entry:
+        bx, by, bside = icon_box(entry, load_metrics()["spec"]["icon"])
+        x0, y0, side = int(round(bx)), int(round(by)), int(round(bside))
+    elif p.get("abs"):
         side = int(im.height * p["side"])
         x0 = int(im.width * p["cx"] - side / 2)
         y0 = int(im.height * p["cy"] - side / 2)
@@ -155,7 +157,7 @@ def sprite_blob(src: Path) -> str:
     return subprocess.run(["git", "hash-object", rel], cwd=REPO_ROOT, capture_output=True, text=True).stdout.strip()
 
 
-def main() -> None:
+def main() -> int:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     icons = {}
     sources = json.loads(SOURCES.read_text(encoding="utf-8")) if SOURCES.exists() else {}
@@ -174,9 +176,17 @@ def main() -> None:
         jobs.append((cid, cid, src))
         jobs += [(name, cid, char_dir / f"chr_{cid}_{face}.png")
                  for name, (folder, face) in EXTRA.items() if folder == cid]
+    stale = []
     for cid, folder, src in jobs:
         if only and cid not in only and folder not in only:
             continue
+        entry = metrics_entry(cid)
+        if cid not in TUNE:
+            if not entry or "chin" not in entry:
+                print(f"WARN {cid}: 顔の位置の記録が無いので仮の枠で作る → tools/portrait_metrics.py で測る")
+            elif entry.get("blob") != sprite_blob(src):
+                stale.append(cid)
+                continue
         icon = make_icon(cid, src)
         if icon is None:
             print(f"skip {cid} (empty bbox)")
@@ -189,6 +199,10 @@ def main() -> None:
     # どの立ち絵（の版）から作ったかを残す（SBD83「旧デザインを根絶」）。立ち絵を描き直したのにアイコンを作り直し忘れると
     # remake/test/face_icons_fresh.mjs が落ちる。blob は git の登録内容（LFS ならポインタ）の SHA で、手元と CI で同じ値になる
     SOURCES.write_text(json.dumps(dict(sorted(sources.items())), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    if stale:
+        print("立ち絵が描き直されたのに顔の位置の記録が古いので作らなかった: " + ", ".join(stale)
+              + "\n  → python3 tools/portrait_metrics.py grid <id> で測り直して set（位置が同じなら overlay で確かめて stamp）")
+        return 1
 
     if "--sheet" in sys.argv[1:]:
         scale = 4
@@ -201,7 +215,8 @@ def main() -> None:
         sheet_path = OUT_DIR / "_sheet_preview.png"
         sheet.save(sheet_path)
         print(f"wrote {sheet_path} (order: {', '.join(icons)})")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

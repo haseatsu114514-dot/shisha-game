@@ -1,0 +1,179 @@
+{
+  "comment": "第3章の出発前の準備3日と出発の朝（VOL02・2026-11-02 オーナー「遠出する章は3日前に準備期間をあげたい」）。県大会の翌日から3日を地元で過ごし、4日目の朝の新幹線で東京へ。受診日は第2章の最後の「東京へ発つ前の日」。必須の場面なので能力・好感度の報酬は付けない。味覚の原因を断定しない・心因性と言わない（brand/story_and_structure.md「味の不調と受診」）。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_prep_opening",
+      "comment": "準備1日目の朝・開店前のtonari。スミさんがmukaiへの段取りと出発日を伝える（ch3_train_departure の「スミさんが紹介してくれた、mukaiのムカイさん」の前段）。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "県大会の翌日。開店前のtonari。"
+        },
+        {
+          "speaker": "",
+          "text": "カウンターを拭いていると、スミさんがスマホを置いた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "東京の件な。ムカイに話を通しておいた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ムカイさん、ですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "うちの姉妹店、mukaiの店長だ。向こうで働きながら、全国の準備をすればいい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "三日後の朝の新幹線だ。それまでに、会っておきたい相手には会っとけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……三日後"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "病院は、発つ前の日だったな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。出発の前の日です"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "なら、それまで無理に吸って確かめるな。飯はうちで食ってけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（東京まで、あと三日。会っておきたい人の顔が、順に浮かんだ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_prep_clinic",
+      "comment": "準備3日目の昼（東京へ発つ前の日）。耳鼻科の再診。その日の昼の行動を使う。原因は断定されず、経過を見る。東京でも生活と相談を続ける。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "東京へ発つ前の日。昼に、耳鼻科でもう一度、味と匂いの検査を受けた。"
+        },
+        {
+          "speaker": "",
+          "text": "結果は、前と大きくは変わらなかった。原因は、まだはっきりしない。"
+        },
+        {
+          "speaker": "",
+          "text": "医師は、急がずに経過を見ること、眠りと食事を崩さないことを、もう一度話した。"
+        },
+        {
+          "speaker": "",
+          "text": "向こうでも相談できるように、東京の耳鼻科の名前を書いた紙を受け取った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（治ったわけじゃない。でも、続け方は分かっている）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙を四つに折って、財布の一番手前にしまった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_prep_farewell",
+      "comment": "準備3日目の夜（出発の前の晩）・閉店後のtonari。荷物に家の台を詰めた一言は、東京でも寝る前の家シーシャを選べる前提（VOL12）。店の匂いのモチーフは各章一度だけなので使わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "出発の前の晩。閉店後のtonari。"
+        },
+        {
+          "speaker": "",
+          "text": "最後の灰皿を洗い終えると、スミさんがカウンターの奥から顔を出した。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "荷物は詰めたか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "だいたいは。着替えと、ノートと、家の台です"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "台まで持ってくのか。……まあ、お前らしいな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ムカイには、よろしく言っとけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "明日は早いんだろ。今日はもう上がれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……行ってきます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "おう。行ってこい"
+        },
+        {
+          "speaker": "",
+          "text": "店を出て振り返ると、看板の灯りがまだ点いていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_train_departure",
+      "comment": "出発の朝・東京へ向かう新幹線の中（旧 ch3_childhood_opening の冒頭4行）。続けて新幹線の演出と ch3_train_arrival（浅い眠りから目を覚ます）。旧行程の保存では章頭の回想の前に読む。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "東京へ向かう列車の中。大会の案内を確かめた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（味は、まだよく分からない。このまま全国大会に出るのか）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（スミさんが紹介してくれた、mukaiのムカイさんを頼ろう）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（着いたら、まず大会の参加受付だ。それからmukaiへ行く）"
+        }
+      ]
+    }
+  ]
+}

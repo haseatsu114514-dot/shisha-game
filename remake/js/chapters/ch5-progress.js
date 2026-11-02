@@ -41,7 +41,7 @@ export const CH5_SCENE_BG = Object.freeze({
   ch5_prep_keep: "bg_tonari_inside_night",
   ch5_schedule_contact: "bg_tonari_inside_night",    // 仮置き bg（閉店後の場面）
   ch5_timeout: "bg_tonari_inside_night",             // 仮置き bg
-  ch5_match_day_arrival: "bg_tonari_inside_day",      // 休業日の朝の店から始まる場面なので tonari・昼（Q13: 会場の固有名は出さない）
+  ch5_match_day_arrival: "bg_tonari_inside_day",      // 休業日の朝の店から始まる場面なので tonari・昼（会場 SMOKE LAB の背景と切り替えは #2222 待ち）
   ch5_copy_first_cup: "bg_tournament_stage",         // 仮置き bg
   ch5_relationship_before_second_cup: "bg_tournament_stage", // 仮置き bg
   ch5_second_cup_result: "bg_tournament_stage",      // 仮置き bg
@@ -433,9 +433,22 @@ export function chapterFiveMatchOutcome(value) {
 
 // ---- フィナーレ ---------------------------------------------------------------------
 /**
+ * エンディングの context（story_routes の location_contract 準拠。#517）。runner はこれで selectStoryEnding を呼ぶ。
+ * オーナー決定（2026-10-30）: 9000の勝負のあと、恋人がいれば後日談を足す。
+ * - 恋人は保存の lovers（告白の返事で交際した人）だけ。好感度から作らない。
+ * - 第5章は全員が帰郷後で、渡航中の人はいない。epilogue_* はどれも「別の日」に本人の部屋や店で会う場面なので、
+ *   その場面自体が会う約束になる。よって恋人を present/accepted に入れる。
+ * - 恋人が2人以上・未解決の修羅場があれば、selectStoryEnding が ending_normal を選ぶ（後段の修羅場は未接続）。
+ */
+export function chapterFiveEndingContext(routes, value) {
+  const lovers = [...new Set(value.lovers || [])].filter(id => routes.heroine_ids.includes(id));
+  return { present: lovers, accepted: lovers, unresolved: [] };
+}
+
+/**
  * エンディングの3場面を受け取り、finale の再生順として固定する。
- * ※仮置き（#517）: present/accepted の供給元が未整備のため、runner は捏造せず空で
- * selectStoryEnding を呼び、その結果をここへ渡す。供給元ができたら呼び出し側だけ差し替える。
+ * runner は chapterFiveEndingContext で selectStoryEnding を呼び、その結果をここへ渡す。
+ * 一度固定した順は保存に残るので、恋人の状態が後から変わっても読みかけのフィナーレは差し替えない。
  */
 export function beginChapterFiveFinale(value, scenes) {
   const progress = chapterFiveProgress(value);

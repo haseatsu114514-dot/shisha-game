@@ -8,6 +8,7 @@ import { play, isPlaying } from "../vn/engine.js";
 import { finaleAtVisit, playFinale } from "./bonds.js";
 import { maybeRecruitTrpgMember } from "./trpg.js";
 import { CINEMA_INTRO, cinemaIntroductionDue } from "../core/cinema-discovery.js";
+import { SAMECHAN_HEART_EVENTS, samechanHeartEventDone } from "../core/affinity-stages.js";
 import { readCinemaIntroduction } from "./cinema.js";
 
 export const SAMECHAN_NICKNAME_TOPIC = "lime_naru_samechan_nickname";
@@ -42,6 +43,13 @@ export function samechanVisitDialogue() {
       && !state.flags._samechan_bond_question_done && !state.finales?.samechan
       && !state.flags._friend_samechan && !(state.lovers || []).includes("samechan")) {
       return "samechan_shop_bond_question";
+    }
+    if (state.flags._samechan_bond_question_done) {
+      for (const event of SAMECHAN_HEART_EVENTS) {
+        if (samechanHeartEventDone(state, event)) continue;
+        if (affinityLevel("samechan") >= event.heart && DB.dialogues[event.dialogue]?.lines?.length) return event.dialogue;
+        break;
+      }
     }
   }
   if (finaleAtVisit("samechan")) return "samechan_bond_finale";
@@ -151,7 +159,7 @@ export async function visitSamechan(spot, { signal = null } = {}) {
     if (dialogue === "samechan_bond_finale") {
       if (!await playFinale("samechan", { deferSave: true, signal })) return false;
     } else {
-      const result = await play(visitScript(dialogue), { signal });
+      const result = await play(visitScript(dialogue), { signal, growthScene: true });
       if ((!result || result.cancelled)) return false;
     }
     if (!current()) return false;
@@ -162,7 +170,7 @@ export async function visitSamechan(spot, { signal = null } = {}) {
     // 読了時に一度だけ確定。中断のセーブは未払いなので、残金が訪問料だけでも再開できる。
     addMoney(-(spot.cost || 0));
     addStamina(spot.stamina || 0);
-    const event = [...entryEvents, cinemaImpression, unwellVisit].find(e => e.dialogue === dialogue);
+    const event = [...entryEvents, ...SAMECHAN_HEART_EVENTS, cinemaImpression, unwellVisit].find(e => e.dialogue === dialogue);
     if (event) state.flags[event.flag] = true;
     if (dialogue === "samechan_shop_bond_question") {
       state.flags._samechan_bond_question_done = true;

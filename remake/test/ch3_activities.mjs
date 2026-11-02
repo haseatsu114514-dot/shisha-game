@@ -4,7 +4,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 import { newState, setState, saveToSlot, loadFromSlot } from "../js/core/state.js";
 import * as stats from "../js/core/stats.js";
-import { advanceToChapterThree, chapterThreeScenes, completeChapterThreeScene,
+import { advanceToChapterThree, departChapterThree, chapterThreeScenes, completeChapterThreeScene,
   chapterThreeFreeTime, completeChapterThreeFreeTime } from "../js/chapters/ch3-progress.js";
 import { proposeTokyoVisit, bookTokyoVisit } from "../js/core/tokyo-visits.js";
 import { TOKYO_FREE_TIMES, tokyoTime, tokyoWindowReserved } from "../js/core/tokyo-clock.js";
@@ -25,11 +25,14 @@ for (const scene of data.dialogues) {
 
 function departure({ member = true, legacy = false } = {}) {
   const value = newState();
-  Object.assign(value, { chapter: 2, day: 28, phase: "cleared", money: 12345, stamina: 80 });
+  Object.assign(value, { chapter: 2, day: 25, /* 準備3日の後の東京DAY1が従来どおり通算29日になる */ phase: "cleared", money: 12345, stamina: 80 });
   value.flags = { _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
     _ch2_tournament: { stage: "complete" } };
   if (member) value.flags._gym_member = true;
   assert(advanceToChapterThree(value));
+  value.day += 3; // 出発前の準備3日（VOL02）を過ごした出発の朝
+  assert(departChapterThree(value));
+  value.flags._ch3_intro.routeVersion = 2; // 場面カードの東京（作業中の旧セーブの行程）を確かめる
   if (legacy) delete value.flags._ch3_intro.routeVersion;
   return value;
 }
@@ -197,7 +200,7 @@ const vnModule = synthetic(["play"], { play: (_dialogue, { signal }) => {
 const deps = {
   "../core/data.js": dataModule,
   "../core/state.js": stateModule,
-  "../core/stats.js": synthetic(["addStamina", "earnStat", "paidAction"], stats),
+  "../core/stats.js": synthetic(["addStamina", "earnStat", "paidAction", "earnSceneCompletion"], stats),
   "../core/ui.js": uiModule,
   "../vn/engine.js": vnModule,
   "../daily/spots.js": synthetic(["facilityGrowth"], { facilityGrowth: spot => {
@@ -283,4 +286,17 @@ for (const cancellation of ["abort", "cancelled", "load"]) {
   assert.equal(playCalls, calls); assert.deepEqual(selected, before);
 }
 
+{
+  globalThis.document ||= { addEventListener() {} };
+  const growth = await import("../js/core/growth.js");
+  growth.setGrowthPreview(true);
+  choose(firstWindow()); const before=copy(selected), window=chapterThreeFreeTime(selected);
+  finishPlay=null; const pending=visit(window.id); await ready(); finishPlay({cancelled:false});
+  assert.equal(await pending,true);
+  assert.deepEqual(selected.stats,before.stats,"盤モードでは東京の施設も旧能力へ直接加算しない");
+  assert.equal(selected.growth.xp,135,"東京の施設 X1=45・初場所=60・固有場面=30");
+  assert.deepEqual(selected.growth.firsts.places,["tokyo:gym"]);
+  const once=copy(selected);assert.equal(await visit(window.id),false);assert.deepEqual(selected,once);
+  storage.delete("suien_growth_preview");
+}
 console.log("PASS: Tokyo membership, one finite action, reservations, day-bound fit, once-only real stamina/growth, rest, interruption and LOAD boundaries");

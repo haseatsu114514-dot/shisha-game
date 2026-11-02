@@ -11,6 +11,17 @@ export function weakestPart(parts = {}, completed = ADVICE_PARTS) {
   }
   return weakest;
 }
+/** 炭焼きの次の練習は、炭焼き結果の助言と同じ向き（早取り／遅取り）で示す（#2190 P03）。 */
+export function heatPracticeOf(picks = []) {
+  const list = Array.isArray(picks) ? picks : [];
+  const early = list.some(p => ["raw", "early", "pre"].includes(p));
+  const late = list.some(p => ["hot", "over"].includes(p));
+  if (early && late) return "次の練習：黒い面が消えて全面が赤くなった炭から取り出そう。";
+  if (late) return "次の練習：炭の全面が赤くなったら、待たずに取り出そう。";
+  if (early) return "次の練習：黒い面が消えるまで待ってから取り出そう。";
+  return "次の練習：炭の全面が赤くなる頃合いを確かめよう。";
+}
+
 export function improvementOf(cs) {
   const bands = temperatureBands(cs);
   const rounds = [["提供", cs.pull, 3], ["調整1回目", cs.careHistory?.[0], 2], ["調整2回目", cs.careHistory?.[1], 2]];
@@ -33,7 +44,7 @@ export function improvementOf(cs) {
     ? "次の練習：今回の記録を見て、次に試すことを選ぼう。" : null;
   return {
     holes: "次の練習：目印に合わせて、穴を均等に開けよう。",
-    heat: "次の練習：炭の全面が赤くなる頃合いを確かめよう。",
+    heat: heatPracticeOf(cs.heat?.picks),
     shisha: temperaturePractice || "次の練習：配合と、提供時の温度を確かめよう。",
     care1: temperaturePractice || "次の練習：1回目の調整で、交換する炭の数を見直そう。",
     care2: temperaturePractice || "次の練習：2回目まで葉を残し、適温で仕上げよう。",

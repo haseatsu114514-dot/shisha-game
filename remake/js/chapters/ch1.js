@@ -2,7 +2,7 @@ import { craftContinueContext, recordContinueContext, clearContinueHistory } fro
 // 第1章「煙がつなぐ街（スモーク・アンド・タイズ）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
-import { playEntrance } from "./tournament-entrance.js";
+import { playEntrance, CH1_EVE_NOTES } from "./tournament-entrance.js";
 import { playTournamentArrival } from "./ch1-arrival.js";
 import { DB, bgUrl, faceIconUrl, realName, displayName, loadTournamentCraftDialogue } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
@@ -11,6 +11,7 @@ import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, t
 import { withLoadingNotice } from "../core/module-loading.js";
 import { state, save, markMet, setFlag, flag, requestResumeOnBoot } from "../core/state.js";
 import { addMoney, maxStamina, addStamina, gainStat } from "../core/stats.js";
+import { awardTournamentExp, awardChapterClearExp } from "../core/growth.js";
 import { playBgm, preloadBgm, stopBgm, SE } from "../core/audio.js";
 import { play, hooks } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
@@ -19,7 +20,7 @@ import { initHud, showHud, daysLeft } from "../daily/hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { openPhone, morningMessages } from "../daily/phone.js";
-import { radar } from "../daily/status.js";
+import { chapterGrowthChart } from "../daily/status.js";
 import { onDialogueEnter } from "../daily/romance.js";
 import { recordRomanceChoice, bondCondition } from "../daily/bonds.js";
 import { storySeen } from "../daily/spots.js";
@@ -353,7 +354,9 @@ async function lastNight() {
     }
     progress = owner.flags._ch1_eve;
     if (progress.choice !== "drill" || progress.practiceDone || progress.drill) break;
-    const drill = await chooseDrill({ allowBack: true });
+    // 直近の通し練習でいちばん低かった工程をおすすめし、反復の効き目を先に伝える（#2091）。
+    const drill = await chooseDrill({ allowBack: true, recommended: recommendedDrill(),
+      lead: "苦手な工程を反復しよう。★1つ以上で終えると、明日の一台に少し効きます。能力値は増えません。" });
     requireCurrent();
     if (owner.flags._ch1_eve !== progress) throw new DOMException("Tournament eve selection changed", "AbortError");
     if (drill !== null) { progress.drill = drill; save(); break; }
@@ -368,6 +371,7 @@ async function lastNight() {
     const tier = await runDrill(progress.drill);
     requireCurrent();
     state.best[progress.drill] = Math.max(state.best[progress.drill] ?? -1, tier);
+    progress.drillTier = tier; // ★1つ以上なら本番に「前夜の反復」+1（craft/score.js bonusOf）
     progress.practiceDone = true;
     save();
   }
@@ -539,10 +543,7 @@ async function tournamentDay() {
   });
   await playTsumugiStory(TOURNAMENT_DAY - 1, { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N) });
   // 旧セーブでDAY14の日常から再開しても、前夜の会話を落とさず大会へ進める。
-  if (state.phase !== "tournament") {
-    await prepareFlavorStock();
-    await lastNight();
-  }
+  if (state.phase !== "tournament") await lastNight();
   // SKIPで会場の会話がすぐ終わっても、操作は素材の準備完了まで始めない。
   const assetsReady = warmCraftAssets("tournament");
   clearScreen();
@@ -663,6 +664,7 @@ async function tournamentDay() {
   const out = outcomeOf(cs.total);
   state.tournament.lastRank = out.rank;
   state.tournament.lastTotal = cs.total;
+  awardTournamentExp(out.rank, cs);
   save();
 
   if (out.rank === 1) {
@@ -695,7 +697,7 @@ async function tournamentDay() {
 }
 
 /** 入場（ライバル → 主人公）。スミさんの一言つき。共有部品 tournament-entrance.js（#2031） */
-const entrance = () => playEntrance(1);
+const entrance = () => playEntrance(1, { heroNote: CH1_EVE_NOTES[state.flags._last_night] || null });
 
 // ---------------------------------------------------------------- 優勝のあと
 
@@ -795,6 +797,7 @@ async function finishAfterTournament() {
   if (state !== owner) return;
   delete state.flags._rest_after_tournament;
   owner.phase = "cleared";
+  awardChapterClearExp();
   save();
   await bannersIdle();
   if (state !== owner) return;
@@ -822,7 +825,7 @@ export async function showClear() {
     el("div.end-title", { text: "第1章 クリア" }),
     el("div.end-sub", { text: "SMOKE CROWN CUP 優勝 ── 勝ちは、始まりだった。" }),
     el("div.end-body", [
-      el("div.end-radar", [radar(state.stats, state.statsAtChapterStart, 300)]),
+      el("div.end-radar", [chapterGrowthChart(state, 300)]),
       el("div.end-notes", [
         el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
         el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ホロウ・クラウン / HAZE: OPEN CLOUD 編" })]),
@@ -859,6 +862,7 @@ export async function showClear() {
 /** 一台がダメになった大会は、審査を待たずにその場でGAME OVER（TH06・TH18〜TH20）。 */
 async function failedOut(reason, cs) {
   bc.clearComments();
+  awardTournamentExp(4, cs);
   save();
   await smokeWipe(() => showGameOver({ reason, cs }), { color: "dark" });
 }

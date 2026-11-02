@@ -14,7 +14,7 @@ import { STAMINA_LOW } from "../core/stats.js";
 import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent, spotDetailLabel } from "./spots.js";
 import { updateHud } from "./hud.js";
 import { mountReel } from "./reel.js";
-import { isRainy } from "./weather.js";
+import { isRainy, tomorrowForecast } from "./weather.js";
 import { fortuneToday } from "./fortune.js";
 import { spotVisible, spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
 import { spotPeople } from "./spot-people.js";
@@ -106,6 +106,8 @@ function cueMove(shield, spot) {
     label: known ? spot.label : spot.unknownLabel || spot.label,
     area: spot.area || "",
     glyph: known ? spot.glyph || "" : "？",
+    // 名前を伏せた行き先（会う前のクラブSEAM＝「地下の店」）では、到着時に店のロゴを見せない。
+    anonymous: !known && !!spot.unknownLabel,
   });
 }
 
@@ -140,7 +142,8 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     const freeGuide = (s) => isFreeGuide(s, guide);
     const availability = (s) => spotAvailability(s, { guide, visitBlock });
 
-    const movesLeft = () => (state.slot >= 1 ? "夜 ── 今日はあと1回動ける" : "昼 ── 今日はあと2回動ける");
+    const movesLeft = () => (state.slot >= 1 ? "夜 ── 今日はあと1回動ける" : "昼 ── 今日はあと2回動ける")
+      + (tomorrowForecast() ? ` ／ 明日は${tomorrowForecast()}` : "");
     const idleInfo = () => {
       if (guide) {
         info.replaceChildren(
@@ -318,7 +321,8 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       const locked = av.why === "locked";
       const known = knowsOwner(s);
       const people = locked ? [] : spotPeople(s, { visitBlock });
-      const facility = !(s.id === "trpg_bar" && hasStoreLogo(s.id)) && !locked && !(!known && s.unknownLabel) ? createMapFacilityIcon(s.id) : null;
+      // facilityIcon: false の行き先は、同じ id でも今の段階では絵を出さない（ラクダレースの「Dr.fookah の店先」）。
+      const facility = !(s.id === "trpg_bar" && hasStoreLogo(s.id)) && !locked && !(!known && s.unknownLabel) && s.facilityIcon !== false ? createMapFacilityIcon(s.id) : null;
       const logo = !facility && !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 82, height: 46 }) : null;
       const hidane = s.id === "kannon" && growthEnabled() ? hidaneTotal() : 0;
       const badge = locked ? null
@@ -328,7 +332,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         : null;
       const caption = pinCaption(s, locked);
       const guideCls = guide ? (guide.pin === s.id ? ".guide" : ".guided-off") : "";
-      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) && !logo ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}`, {
+      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) && s.facilityIcon !== false && !logo ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
         "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${hidane > 0 ? `・火種 ${hidane}・内省で灯せる` : badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,

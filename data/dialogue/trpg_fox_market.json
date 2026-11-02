@@ -58,7 +58,8 @@
           "nerve": 2
         },
         "trait": "夜風にも消えそうな灯り番……のはず。ラーメンの匂いには負けない",
-        "likes": "屋台のラーメン。湯気の向こうの提灯"
+        "likes": "屋台のラーメン。湯気の向こうの提灯",
+        "portrait": "../../img/ui/trpg/pc-kasumi.webp"
       }
     },
     {
@@ -79,7 +80,8 @@
           "nerve": 4
         },
         "trait": "腕っぷしと度胸は一人前。暗いところは、ちと苦手",
-        "likes": "サメ柄の手ぬぐい。夜の海のサメ映画"
+        "likes": "サメ柄の手ぬぐい。夜の海のサメ映画",
+        "portrait": "../../img/ui/trpg/pc-namimaru.webp"
       }
     }
   ],
@@ -238,43 +240,43 @@
       "id": "mask",
       "label": "お面屋の棚",
       "short": "お面屋",
-      "x": 15,
-      "y": 30
+      "x": 17,
+      "y": 32
     },
     {
       "id": "goldfish",
       "label": "金魚すくいの水槽",
       "short": "金魚",
-      "x": 30,
-      "y": 76
+      "x": 25,
+      "y": 70
     },
     {
       "id": "torii",
       "label": "神社の鳥居",
       "short": "鳥居",
-      "x": 80,
-      "y": 22
+      "x": 74,
+      "y": 17
     },
     {
       "id": "cotton",
       "label": "綿あめの屋台",
       "short": "綿あめ",
-      "x": 50,
-      "y": 42
+      "x": 49,
+      "y": 38
     },
     {
       "id": "bell",
       "label": "落ちていた鈴",
       "short": "鈴",
-      "x": 63,
-      "y": 84
+      "x": 62,
+      "y": 86
     },
     {
       "id": "board",
       "label": "迷子案内の掲示板",
       "short": "掲示板",
-      "x": 89,
-      "y": 63
+      "x": 90,
+      "y": 46
     }
   ],
   "consult": {
@@ -2965,7 +2967,8 @@
     "number": "09",
     "genre": "和の不思議",
     "tagline": "お面の下の、帰り道を探す。",
-    "backdrop": "radial-gradient(ellipse at 50% 112%, rgba(235, 138, 52, 0.55), rgba(235, 138, 52, 0) 58%), linear-gradient(172deg, #171b4d, #0e1133 62%, #2a1838)",
+    "image": "../../img/backgrounds/trpg_fox-market_room.webp",
+    "choiceArt": {"src": "../../img/ui/trpg/choices-fox-market.webp", "rowCount": 5, "rows": {"light": 0, "stall": 1, "farewell": 2, "tactic": 3, "hypotheses": 4}},
     "sceneAlt": "夏祭りの夜市。お面屋の棚、金魚すくいの水槽、神社の鳥居、綿あめの屋台、落ちていた鈴、迷子案内の掲示板。",
     "location": "灯籠通り / 夏の夜市",
     "atmosphere": "提灯の列と、遠い太鼓。お面の子が、ひとり。",
@@ -3104,7 +3107,7 @@
         "detail": "短い黒髪に、紺の法被",
         "color": "#2c3566",
         "accent": "#e0913a",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-fox-market-indigo.webp"
       },
       {
         "id": "ash",
@@ -3112,7 +3115,7 @@
         "detail": "伸びた灰色の髪を、手ぬぐいでまとめる",
         "color": "#6b6a72",
         "accent": "#d9cdb6",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-fox-market-ash.webp"
       },
       {
         "id": "rust",
@@ -3120,7 +3123,7 @@
         "detail": "日に焼けた肌と、赤茶の癖毛に鉢巻き",
         "color": "#7a4a37",
         "accent": "#e3b27a",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-fox-market-rust.webp"
       },
       {
         "id": "moss",
@@ -3128,7 +3131,7 @@
         "detail": "丸眼鏡と、苔色の浴衣",
         "color": "#4c5f49",
         "accent": "#bcd3a8",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-fox-market-moss.webp"
       }
     ],
     "archetypes": [
@@ -3192,7 +3195,8 @@
             "talk": 2,
             "nerve": 2
           },
-          "making": "trpg_fox_market_make_hiyori_hiyori_kasumi"
+          "making": "trpg_fox_market_make_hiyori_hiyori_kasumi",
+          "portrait": "../../img/ui/trpg/pc-kasumi.webp"
         },
         {
           "id": "shizuku",
@@ -3206,7 +3210,8 @@
             "talk": 1,
             "nerve": 2
           },
-          "making": "trpg_fox_market_make_hiyori_hiyori_shizuku"
+          "making": "trpg_fox_market_make_hiyori_hiyori_shizuku",
+          "portrait": "../../img/ui/trpg/pc-shizuku.webp"
         }
       ]
     },
@@ -3224,7 +3229,8 @@
             "talk": 3,
             "nerve": 4
           },
-          "making": "trpg_fox_market_make_samechan_samechan_namimaru"
+          "making": "trpg_fox_market_make_samechan_samechan_namimaru",
+          "portrait": "../../img/ui/trpg/pc-namimaru.webp"
         },
         {
           "id": "fukajiro",
@@ -3238,7 +3244,8 @@
             "talk": 2,
             "nerve": 3
           },
-          "making": "trpg_fox_market_make_samechan_samechan_fukajiro"
+          "making": "trpg_fox_market_make_samechan_samechan_fukajiro",
+          "portrait": "../../img/ui/trpg/pc-fukajiro.webp"
         }
       ]
     }

@@ -1,0 +1,78 @@
+{
+  "candidates/CR-GM02-C-generic-v2.png": {
+    "size": [
+      720,
+      360
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      8,
+      38,
+      712,
+      322
+    ],
+    "transparent_pixels": 112016,
+    "sha256": "092dc5527372974b6ca576c8d8fb61b32974ede437525c4c8b1d30709343c0d2"
+  },
+  "candidates/CR-GM02-wheel-overlay-140.png": {
+    "size": [
+      160,
+      160
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      10,
+      10,
+      150,
+      149
+    ],
+    "transparent_pixels": 9944,
+    "sha256": "cdb4bad95c3b7b59d97a3f44e84c4a1aa3332fc608b3c7498638537d0d95a45a"
+  },
+  "originals/CR-GM02-C-generic-v2.png": {
+    "size": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      3,
+      1760,
+      887
+    ],
+    "transparent_pixels": 686261,
+    "sha256": "24d918323aa19c5af57b077b63b505fde86b511d013a6b1d127f52d282a806ad"
+  },
+  "originals/CR-GM02-wheel.png": {
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      36,
+      1236,
+      1254
+    ],
+    "transparent_pixels": 599248,
+    "sha256": "43d888db865649b8e3fd1ef9b736fd05f30b377392dbcb5be2bd723a2f058dd5"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "items": [
+    {
+      "id": "grapefruit",
+      "variant": "A",
+      "maker": "af",
+      "source": "asset_sources/new-flavor-cartons-nf04/candidates/grapefruit-A.png",
+      "sha256": "ce8827da98491634b4047e08a49e7b77d3ef3953e575e2f11e6541d4f6ba85f6",
+      "reference": "remake/img/shop/heaven10/lemon.webp",
+      "generator": "Codex built-in image_gen",
+      "transparent_background": true,
+      "cleanup": "alpha<=4 -> 0 (generation specks at alpha 1)"
+    },
+    {
+      "id": "honey",
+      "variant": "B",
+      "maker": "afsahr",
+      "source": "asset_sources/new-flavor-cartons-nf04/candidates/honey-B.png",
+      "sha256": "a4cb791d50813e8b3eb8cf51ad44b502933f35946c2ba1d01d3f922f0e505c61",
+      "reference": "remake/img/shop/remaining8/lychee.webp",
+      "generator": "Codex built-in image_gen",
+      "transparent_background": true,
+      "cleanup": "alpha<=4 -> 0 (generation specks at alpha 1)"
+    },
+    {
+      "id": "milk",
+      "variant": "A",
+      "maker": "dobaj",
+      "source": "asset_sources/new-flavor-cartons-nf04/candidates/milk-A.png",
+      "sha256": "69e3bd8a8eae3a7daee7391b5286727e71f33f71a3069d1c6d06a126c566acfd",
+      "reference": "remake/img/shop/remaining8/mango.webp",
+      "generator": "Codex built-in image_gen",
+      "transparent_background": true,
+      "cleanup": "alpha<=4 -> 0 (generation specks at alpha 1)"
+    },
+    {
+      "id": "cherry",
+      "variant": "B",
+      "maker": "afsahr",
+      "source": "asset_sources/new-flavor-cartons-nf04/candidates/cherry-B.png",
+      "sha256": "b4366834cab6650be002fe4df977786e632b6ed86f6eaee8bc4b5977e8465ca1",
+      "reference": "remake/img/shop/remaining8/lychee.webp",
+      "generator": "Codex built-in image_gen",
+      "transparent_background": true,
+      "cleanup": "alpha<=4 -> 0 (generation specks at alpha 1)"
+    },
+    {
+      "id": "passion_fruit",
+      "variant": "B",
+      "maker": "dobaj",
+      "source": "asset_sources/new-flavor-cartons-nf04/candidates/passion_fruit-B.png",
+      "sha256": "959d0d4c7326b9267b5ebd848073a1c1b778cb12452809c5545ed7b3f2bd766a",
+      "reference": "remake/img/shop/remaining8/mango.webp",
+      "generator": "Codex built-in image_gen",
+      "transparent_background": true,
+      "cleanup": "alpha<=4 -> 0 (generation specks at alpha 1)"
+    },
+    {
+      "id": "lime",
+      "variant": "A",
+      "maker": "af",
+      "source": "asset_sources/new-flavor-cartons-nf04/candidates/lime-A.png",
+      "sha256": "8ffe414e6c1fa6eeb05f7e92b7ac8684f6e2f02dd5fef55ff69a167f4c079814",
+      "reference": "remake/img/shop/heaven10/lemon.webp",
+      "generator": "Codex built-in image_gen",
+      "transparent_background": true,
+      "cleanup": "alpha<=4 -> 0 (generation specks at alpha 1)"
+    },
+    {
+      "id": "biscuit",
+      "variant": "B",
+      "maker": "dobaj",
+      "source": "asset_sources/new-flavor-cartons-nf04/candidates/biscuit-B.png",
+      "sha256": "21c2150254ee69ebced36de5608cbd94dcdcaa91617c0cfc87637f8c96252623",
+      "reference": "remake/img/shop/remaining8/mango.webp",
+      "generator": "Codex built-in image_gen",
+      "transparent_background": true,
+      "cleanup": "alpha<=4 -> 0 (generation specks at alpha 1)"
+    }
+  ]
+}

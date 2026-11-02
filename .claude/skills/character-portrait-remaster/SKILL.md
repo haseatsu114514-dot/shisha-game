@@ -1,9 +1,11 @@
 ---
 name: character-portrait-remaster
-description: shisha-gameの既存キャラの立ち絵・表情差分を、元の見た目と高密度のドット絵調を保って1キャラずつ作り直す。営業姿／私服の同一人物性、表情に伴う小さなポーズ変化、確認用プレビュー、承認済み素材の組み込みを扱う。Use for remaking character portraits and expression variants in this repository.
+description: shisha-gameの既存キャラの立ち絵・表情差分を、元の見た目と規格（docs/portrait_standard.md）の画風・頭身を保って1キャラずつ作り直す。営業姿／私服の同一人物性、表情に伴う小さなポーズ変化、確認用プレビュー、承認済み素材の組み込みを扱う。Use for remaking character portraits and expression variants in this repository.
 ---
 
 # キャラクター立ち絵の再制作
+
+**画風・頭身・参照画像の正本は [立ち絵の規格](../../../docs/portrait_standard.md)**（2026-11-02 に1本化）。生成のプロンプトは規格3節の英文、参照は6節の4枚、受け取ったら2節で測り、7節の並び検査をする。本ファイルと `references/` にある「高密度のドット絵調」「fine pixel-art grain」の言葉は制作当時の記録で、新しい生成には使わない。
 
 このスキルは2026-10-03のオーナーとの制作・修正・採用確認を引き継ぐ。
 新チャットでも本ファイル、[制作記録](references/review-status.md)、[過去画像の参照手順](references/style-references.md)、
@@ -53,7 +55,7 @@ description: shisha-gameの既存キャラの立ち絵・表情差分を、元�
 - **高解像度の細かなドット絵のような質感を意図的に残し、高級感のある仕上げにする。**
   普通の滑らかなアニメ塗りに変えない。粗い巨大なドットやぼかし、ノイズを足す処理でもない。
 - 表情に連動して指先・手首・肘・肩・首の角度などを少し変える。動きの大きさは性格に合わせる。
-- **解像度（2026-10-09）**：ゲーム用896×1200での人物の高さ（約900〜1120px）より原画の人物が小さいと、引き伸ばしでぼやけ、キャラ間で画質がそろわない。5表情を横1枚のシートで作ると人物は約850pxに縮むので、**最終素材は1回の生成で1人・1表情、人物の高さ1300px以上**で作り、配置は縮小だけにする（凛v12の方式）。**顔の大きさ**はゲーム画面で中央値（みんと・アダム）から±10%以内（`python3 tools/make_reference_sheet.py facesize` で確認）。画風はみんと・アゲハが基準。調査と依頼文は [resolution-upgrade-20261009](../../../asset_sources/portraits/resolution-upgrade-20261009/README.md)。
+- **解像度（2026-10-09）**：ゲーム用896×1200での人物の高さ（約900〜1120px）より原画の人物が小さいと、引き伸ばしでぼやけ、キャラ間で画質がそろわない。5表情を横1枚のシートで作ると人物は約850pxに縮むので、**最終素材は1回の生成で1人・1表情、人物の高さ1300px以上**で作り、配置は縮小だけにする（凛v12の方式）。**頭身・顔の大きさ**は [立ち絵の規格](../../../docs/portrait_standard.md)（標準6.4〜7.7・小柄5.4〜6.2頭身）。通常を差し替えたら顔の位置を測り直し、`python3 tools/portrait_metrics.py check` で確認する。画風はみんと・アゲハが基準。調査と依頼文は [resolution-upgrade-20261009](../../../asset_sources/portraits/resolution-upgrade-20261009/README.md)。
 - みんと・あげはは元から品質が高いので、元の顔と基本ポーズを大きく変えない。
 - **新しいデザインは1キャラ（別衣装は1セット）ずつ生成して見せ、採用確認を待つ。**
   生成・保存・比較資料・確認用PRの作成は先に進める。採用済みデザインの指定修正や明示的に採用された素材の組み込みでは、同じ承認を取り直さない。画像の確認、採用、ゲームへの組み込み／マージは区別して記録する。
@@ -204,7 +206,7 @@ node remake/test/rin_portraits.mjs
 
 - **通常（`normal`）と私服（みんとの `ura_normal`）を描き直したら、丸アイコンの作り直しは省略しない**（2026-10-31 オーナー「旧デザインは使わないで。根絶して」SBD83。みんとの描き直しで作り直し忘れ、旧デザインの顔が LIME・地図に残っていた）。作り直したら WebP も `remake/tools/build_images.py` で更新する。忘れると quick の `tools/check_face_icons_fresh.py` が落ちる。
 - 心得の盤の授業の札の顔と右パネルの立ち絵の位置は、立ち絵の目の位置の表（`asset_sources/ui/growth-board-20261030/faces/make_faces.py` の `EYES` と `growth-board-screen.js` の `PORTRAIT_EYES`）で決まる。顔の位置が変わる描き直しなら測り直して `make_faces.py` を走らせる。
-- 丸アイコンは `tools/make_face_icons.py` の `TUNE` で切り抜きを調整し、他キャラと並べて顔の大きさ・目線の高さを揃える。
+- 丸アイコンは、測った顔の位置（`data/portrait_metrics.json`）から `tools/make_face_icons.py` が自動で切り抜き、全キャラの顔の大きさを揃える（2026-11-02〜。手で拡大率を直さない）。通常を差し替えたら [立ち絵の規格](../../../docs/portrait_standard.md) 2節の手順で測り直す。`TUNE` はパッキーなど測れないキャラだけ。
   頭のてっぺん（髪・角・帽子・フード）は切らない（SBD84）。`make_face_icons.py` が自動で余白を残す（少し下へずらし、足りなければ顔を軸に少し引く）。
   別衣装の顔は `EXTRA`（例: みんと私服＝`face_minto_private`）。
   アイコンは全員160px・256色・輪郭は滑らかな透明度（2026-10-04 オーナー指定。元絵の顔の切り抜きが約180〜240pxのため160pxが上限の目安）。拡大表示とスマートフォンの高密度表示で目が読めるか確認する。キャラ別に変える場合は `TUNE` の `size`。

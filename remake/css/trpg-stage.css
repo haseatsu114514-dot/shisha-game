@@ -943,3 +943,144 @@
 .trpg-campaign .trpg-scene-fallback { width: 100%; height: 100%; display: grid; place-items: center; }
 /* The seat rail marks who is speaking. While the player chooses, it steps aside so cards and the main button stay clear. */
 .trpg-root.trpg-cinematic.trpg-idle:not([data-phase="cover"]) .trpg-table { visibility: hidden; }
+
+/* ===== 道具を使う手ざわり（2026-11-02）: ダイストレイに投げ込み、跳ねて止まる。切り札は場に置き、手がかりはメモへ。 ===== */
+/* ダイストレイ: 木の縁と、目の詰んだフェルト。 */
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene {
+  width: min(560px, 100%); min-height: 168px; margin: 8px auto 6px; border-radius: 16px; overflow: visible;
+  background:
+    radial-gradient(ellipse at 50% 38%, #ffffff12, transparent 62%),
+    repeating-radial-gradient(circle at 30% 40%, #ffffff06 0 1px, transparent 1px 3px),
+    linear-gradient(160deg, #2f4a46, #1d3331 70%);
+  box-shadow: inset 0 0 0 7px #6e4a2c, inset 0 0 0 9px #3a2414, inset 0 0 0 10px #a07a4f55, inset 0 14px 26px #0009, 0 10px 20px #0005;
+}
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene .trpg-dice-row { margin: 18px 0; gap: 38px; }
+/* 補正は、トレイの縁に置いた真鍮のチップ。 */
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-bonus {
+  display: grid; place-items: center; min-width: 58px; height: 58px; padding: 0 8px; border-radius: 50%;
+  font-size: 22px; font-weight: 700; color: #3a2a10; text-shadow: 0 1px 0 #fff5d1;
+  background: radial-gradient(circle at 35% 30%, #fff1c2, #d9b062 55%, #9c7430);
+  box-shadow: inset 0 0 0 3px #f6dc96, inset 0 0 0 5px #a98340, 2px 4px 6px #0007;
+}
+/* ダイスの体: 宝石のように光る面と、明るい稜線。数字は面の真ん中。 */
+.trpg-root .trpg-die.trpg-d20 .trpg-die-body {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  clip-path: polygon(50% 2%, 95% 26%, 95% 74%, 50% 98%, 5% 74%, 5% 26%);
+  background: radial-gradient(circle at 32% 22%, #fffdf3 0, #f3e3bb 36%, #cfb27c 78%, #a88751 100%);
+}
+.trpg-root .trpg-die.trpg-d20 .trpg-die-body::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(150deg, #ffffff66 0, transparent 34%), linear-gradient(330deg, #00000026 0, transparent 40%);
+}
+.trpg-root .trpg-die.trpg-d20 .trpg-die-body polygon { fill: transparent; }
+html:root[data-ui-theme="paper"] .trpg-root .trpg-die.trpg-d20 .trpg-die-body { background: radial-gradient(circle at 32% 22%, #c9a9df 0, #8a63a8 34%, #5b3a78 76%, #3f2557 100%); }
+html:root[data-ui-theme="paper"] .trpg-root .trpg-die.trpg-d20 .trpg-die-body polygon { fill: transparent; stroke: #2f1b42; stroke-width: 2.5; }
+html:root[data-ui-theme="paper"] .trpg-root .trpg-die.trpg-d20 .trpg-die-body path { stroke: #e7d6f3aa; stroke-width: 1.4; }
+html:root[data-ui-theme="paper"] .trpg-root .trpg-die.trpg-d20 .trpg-d20-value { color: #fff8e7; text-shadow: 0 1px 2px #1d0f2a; }
+/* 振る前は、トレイに少し傾いて転がっている。 */
+.trpg-root.trpg-cinematic .trpg-roll-stage:not([data-roll-state]) .trpg-die:nth-child(1) .trpg-die-body { transform: rotate(-9deg); }
+.trpg-root.trpg-cinematic .trpg-roll-stage:not([data-roll-state]) .trpg-die:nth-child(2) .trpg-die-body { transform: rotate(7deg); }
+@media (prefers-reduced-motion: no-preference) {
+  /* 袋のある右上から放り込み、2〜3回跳ねて止まる。影は宙では大きく淡く、着地で小さく濃く。 */
+  .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="rolling"] .trpg-die[data-throw="a"] { animation: trpg-throw-a 1s cubic-bezier(.22,.7,.3,1) both; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="rolling"] .trpg-die[data-throw="b"] { animation: trpg-throw-b 1.04s cubic-bezier(.22,.7,.3,1) .04s both; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="rolling"] .trpg-die[data-throw="a"] .trpg-die-body { animation: trpg-spin-a 1s cubic-bezier(.25,.6,.3,1) both; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="rolling"] .trpg-die[data-throw="b"] .trpg-die-body { animation: trpg-spin-b 1.04s cubic-bezier(.25,.6,.3,1) .04s both; }
+  /* 結果の画面では、もう着地している。ことんと落ち着くだけ。 */
+  .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="settled"] .trpg-die,
+  .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="settled"] .trpg-die:nth-child(2) { animation: trpg-die-settle .24s ease-out both; }
+  /* 振り直し: 1個を拾い上げて、もう一度投げる。新しい目は着地で見える。 */
+  .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="settled"] .trpg-die.rethrown { animation: trpg-rethrow .82s cubic-bezier(.25,.7,.3,1) both; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-die.rethrown .trpg-die-body { animation: trpg-respin .82s cubic-bezier(.25,.6,.3,1) both; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-die.rethrown .trpg-d20-value { animation: trpg-face-land .82s steps(1, end) both; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-rerolled-die .trpg-reroll-stamp { animation: trpg-stamp .3s ease-out .78s both; }
+}
+@keyframes trpg-throw-a {
+  0% { transform: translate(330px, -170px) scale(1.2); filter: drop-shadow(20px 34px 12px #00000030); opacity: 0; }
+  10% { opacity: 1; }
+  36% { transform: translate(42px, 8px) scale(1); filter: drop-shadow(3px 5px 3px #00000075); }
+  50% { transform: translate(16px, -30px) scale(1.05); filter: drop-shadow(9px 18px 8px #00000045); }
+  66% { transform: translate(-6px, 4px) scale(1); filter: drop-shadow(3px 5px 3px #00000075); }
+  78% { transform: translate(-3px, -8px); filter: drop-shadow(5px 10px 5px #00000055); }
+  88% { transform: translate(0, 1px); filter: drop-shadow(3px 5px 3px #00000075); }
+  100% { transform: none; filter: drop-shadow(3px 5px 3px #00000070); }
+}
+@keyframes trpg-throw-b {
+  0% { transform: translate(250px, -210px) scale(1.2); filter: drop-shadow(20px 34px 12px #00000030); opacity: 0; }
+  12% { opacity: 1; }
+  40% { transform: translate(-30px, 10px) scale(1); filter: drop-shadow(3px 5px 3px #00000075); }
+  54% { transform: translate(-14px, -24px) scale(1.04); filter: drop-shadow(8px 16px 7px #00000045); }
+  70% { transform: translate(4px, 3px) scale(1); filter: drop-shadow(3px 5px 3px #00000075); }
+  82% { transform: translate(2px, -5px); filter: drop-shadow(4px 8px 4px #00000055); }
+  92% { transform: translate(0, 1px); filter: drop-shadow(3px 5px 3px #00000075); }
+  100% { transform: none; filter: drop-shadow(3px 5px 3px #00000070); }
+}
+@keyframes trpg-spin-a { 0% { transform: rotate(-260deg); } 36% { transform: rotate(120deg); } 66% { transform: rotate(300deg); } 88% { transform: rotate(352deg); } 100% { transform: rotate(360deg); } }
+@keyframes trpg-spin-b { 0% { transform: rotate(320deg); } 40% { transform: rotate(-80deg); } 70% { transform: rotate(-300deg); } 92% { transform: rotate(-356deg); } 100% { transform: rotate(-360deg); } }
+@keyframes trpg-die-settle { 0% { transform: scale(1.05, .95); } 60% { transform: scale(.98, 1.02); } 100% { transform: none; } }
+@keyframes trpg-rethrow {
+  0% { transform: translateY(0) scale(1); filter: drop-shadow(3px 5px 3px #00000070); }
+  22% { transform: translateY(-70px) scale(1.25); filter: drop-shadow(16px 30px 12px #00000030); }
+  55% { transform: translate(10px, 4px) scale(1); filter: drop-shadow(3px 5px 3px #00000075); }
+  70% { transform: translate(4px, -14px) scale(1.03); filter: drop-shadow(6px 12px 6px #00000050); }
+  85% { transform: translate(0, 1px); }
+  100% { transform: none; filter: drop-shadow(3px 5px 3px #00000070); }
+}
+@keyframes trpg-respin { 0% { transform: rotate(0deg); } 22% { transform: rotate(-60deg); } 55% { transform: rotate(250deg); } 85% { transform: rotate(352deg); } 100% { transform: rotate(360deg); } }
+@keyframes trpg-face-land { 0% { opacity: 0; } 56% { opacity: 1; } 100% { opacity: 1; } }
+@keyframes trpg-stamp { 0% { opacity: 0; transform: scale(1.6) rotate(-8deg); } 100% { opacity: 1; transform: none; } }
+.trpg-root.trpg-cinematic[data-paused="true"] :is(.trpg-die-body, .trpg-d20-value, .trpg-reroll-stamp, .trpg-teamwork i, .trpg-aid, .trpg-sheet, .trpg-note-card) { animation-play-state: paused !important; }
+
+/* 切り札を借りると、仲間のカードを場に置く。置いたカードには「場に出した」の印。 */
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid {
+  position: relative; border: 1px solid #c9b48a; border-radius: 8px; box-shadow: 0 3px 0 #a98f6266, 0 6px 12px #0003;
+  transition: transform .22s cubic-bezier(.2,1.3,.4,1), box-shadow .22s;
+}
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid:has(input:checked) { transform: translateY(-6px) rotate(-1.4deg); box-shadow: 0 10px 0 -2px #a98f6266, 0 14px 22px #0004; }
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid:has(input:checked)::after {
+  content: "場に出した"; position: absolute; right: -10px; top: -12px; padding: 2px 8px; border: 2px solid #a33f44; border-radius: 4px;
+  color: #a33f44; background: #fff8f0; font-size: 12px; font-weight: 700; transform: rotate(8deg); pointer-events: none;
+}
+/* 振り直しのボタンは、切り札のカード。 */
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice { border-radius: 8px; box-shadow: 0 3px 0 #a98f6255, 0 5px 10px #0002; transition: transform .18s; }
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice:hover:not(:disabled) { transform: translateY(-4px) rotate(-1deg); }
+/* 上の連携札は小さなカード。使うと裏返って抜け、戻ると表になって入る。 */
+.trpg-root.trpg-cinematic .trpg-teamwork i { width: 11px; height: 15px; border-radius: 2px; border: 1px solid #ffffff55; }
+.trpg-root.trpg-cinematic .trpg-teamwork i.just-spent { animation: trpg-card-out .55s ease-in both; }
+.trpg-root.trpg-cinematic .trpg-teamwork i.just-gained { animation: trpg-card-in .55s cubic-bezier(.2,1.3,.4,1) both; }
+@keyframes trpg-card-out { 0% { transform: none; } 45% { transform: translateY(-8px) rotateY(90deg); } 100% { transform: none; } }
+@keyframes trpg-card-in { 0% { transform: translateY(-10px) rotateY(90deg) scale(1.4); } 100% { transform: none; } }
+/* キャラクターシートとメモは、机に紙を一枚ずつ置くように。 */
+@media (prefers-reduced-motion: no-preference) {
+  .trpg-root.trpg-cinematic .trpg-sheet-stage .trpg-sheet { animation: trpg-paper-place .36s cubic-bezier(.2,.9,.3,1) both; }
+  .trpg-root.trpg-cinematic .trpg-sheet-stage .trpg-sheet:nth-child(2) { animation-delay: .07s; }
+  .trpg-root.trpg-cinematic .trpg-sheet-stage .trpg-sheet:nth-child(3) { animation-delay: .14s; }
+  .trpg-root.trpg-cinematic .trpg-sheet-stage .trpg-sheet:nth-child(4) { animation-delay: .21s; }
+  .trpg-root.trpg-cinematic .trpg-notes-grid .trpg-note-card { animation: trpg-paper-place .32s cubic-bezier(.2,.9,.3,1) both; }
+  .trpg-root.trpg-cinematic .trpg-notes-grid .trpg-note-card:nth-child(2) { animation-delay: .05s; }
+  .trpg-root.trpg-cinematic .trpg-notes-grid .trpg-note-card:nth-child(3) { animation-delay: .1s; }
+  .trpg-root.trpg-cinematic .trpg-notes-grid .trpg-note-card:nth-child(n+4) { animation-delay: .15s; }
+}
+@keyframes trpg-paper-place { 0% { opacity: 0; transform: translateY(-18px) rotate(-3deg); } 70% { opacity: 1; transform: translateY(2px) rotate(.6deg); } 100% { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .trpg-root.trpg-cinematic .trpg-teamwork i, .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid, .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice { animation: none; transition: none; }
+}
+/* 調べる画面の見出しは、最上部の細い1行の札に。画面の上半分に置かれた調査地点の輪や名札と重ならない。 */
+.trpg-root.trpg-cinematic[data-phase="explore"] .trpg-stage-cue {
+  top: 68px; display: flex; flex-wrap: nowrap; justify-content: center; align-items: baseline; gap: 14px; white-space: nowrap;
+  width: max-content; max-width: 960px; padding: 4px 18px; border: 1px solid #f1e3c033; border-radius: 999px;
+  background: #0b1420c4; box-shadow: 0 4px 14px #0005;
+}
+.trpg-root.trpg-cinematic[data-phase="explore"] .trpg-stage-cue .trpg-kicker { display: none; }
+.trpg-root.trpg-cinematic[data-phase="explore"] .trpg-stage-cue h2 { margin: 0; font-size: 18px; line-height: 1.4; }
+.trpg-root.trpg-cinematic[data-phase="explore"] .trpg-stage-cue :is(.trpg-stage-investigation, .trpg-stage-risk) { margin: 0; font-size: 13px; line-height: 1.4; }
+.trpg-root.trpg-cinematic[data-phase="explore"]:not(:has(.trpg-overlay)) .trpg-table-status { visibility: hidden; }
+/* 結末の下地は上下をぼかして、四角い帯に見せない。 */
+.trpg-root.trpg-cinematic .trpg-ending::before { -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 16%, #000 84%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 16%, #000 84%, transparent 100%); }
+/* 明るい背景の絵（朝霧・お城など）でも、選ぶ画面の見出しと選んだ項目が読めるように、暗い札を敷く。 */
+.trpg-root.trpg-cinematic .trpg-selection-title {
+  left: 50%; right: auto; width: max-content; max-width: 980px; transform: translateX(-50%);
+  padding: 6px 26px 9px; border: 1px solid #f1e3c02e; border-radius: 14px; background: #0b1420c2; box-shadow: 0 6px 18px #0006;
+}
+.trpg-root.trpg-cinematic .trpg-choice-tabs .trpg-choice-token { min-height: 30px; padding: 4px 14px; border-radius: 999px; background: #0b1420c2; border-bottom: 0; color: #efe8d6; }
+.trpg-root.trpg-cinematic .trpg-interview-prompt { width: max-content; max-width: 900px; margin-left: auto; margin-right: auto; padding: 3px 16px; border-radius: 999px; background: #0b1420c2; color: #efe8d6; text-shadow: none; }

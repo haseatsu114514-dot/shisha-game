@@ -226,6 +226,36 @@
       ]
     },
     {
+      "dialogue_id": "venue_ageha_day",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼のMELTY PUFF。窓から入る光で、ソファのクマたちがつやつやしている。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、いらっしゃい！ 昼の席、空いてるよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_ageha_night",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のMELTY PUFF。ピンクの照明の下で、プリクラ機の画面だけがちかちか光っている。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "お、夜のハジメっちだ。いらっしゃーい"
+        }
+      ]
+    },
+    {
       "dialogue_id": "venue_kumicho_day",
       "lines": [
         {

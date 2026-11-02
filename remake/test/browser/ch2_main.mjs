@@ -177,7 +177,7 @@ await suite('ch2-main', async check => {
     assert.doesNotMatch(await page.locator('.ch2-route-note').innerText(), /県大会ホールの入口と搬入場所も確認しよう。/);
     assert.equal(await page.locator('.map-info .mi-no').count(), 0, 'Station guidance appears once');
     assert.doesNotMatch(await page.locator('.map-info').innerText(), /null|undefined/);
-    await assertFits(page, '.spot-pin .sub-label, .ch2-route-note, .map-info, '+test('menu'));
+    await assertFits(page, '.spot-pin .sub-label, .ch2-route-note, .map-info, '+test('menu')+', '+test('lime'));
     const overlap = await page.evaluate(() => {
       const panel = document.querySelector('.ch2-route-note').getBoundingClientRect();
       return [...document.querySelectorAll('.spot-pin')].map(node => {
@@ -187,6 +187,12 @@ await suite('ch2-main', async check => {
     });
     for (const result of overlap) assert(result.area < 1, `Summary covers a destination: ${JSON.stringify(result)}`);
     await screenshot(page, 'city-day1.png');
+    // 第1章以降と同じLIMEボタン。初日の地図で開いて閉じても、地図と進行はそのまま。
+    await page.locator(test('lime')).click();
+    await page.locator('[data-test="phone-close"]').click();
+    await page.locator('.phone-overlay').waitFor({ state: 'detached' });
+    await page.locator(test('map')).waitFor();
+    assert.equal(await page.evaluate(() => window.__remake.state.flags._lime_opened), true);
     await preserved(page, before);
   });
 
@@ -201,8 +207,11 @@ await suite('ch2-main', async check => {
       const music = await page.evaluate(() => window.__ch2SceneMusic);
       assert.equal(music.find(row => row.id === `ch2_city_${id}_inside`)?.key, 'kansetsu_shomei_to_black_coffee');
     }
-    for (const id of ['ch2_aquarium', 'ch2_sento', 'trpg_bar']) assert.equal(await page.locator(test(`pin-${id}`)).count(), 1);
-    await screenshot(page, 'city-discovered-spots.png');
+    // VOL13: 街の遊び場の紹介は初日に続けて読まず、DAY2以降にその店へ初めて通った時に読む（ch2_daily で確認）
+    for (const id of ['ch2_aquarium', 'ch2_sento', 'trpg_bar']) assert.equal(await page.locator(test(`pin-${id}`)).count(), 0, 'Deliveries do not read the city introductions');
+    const intros = await page.evaluate(() => window.__ch2SceneMusic.map(row => row.id));
+    for (const id of ['remake_ch2_rei_trpg', 'remake_ch2_ageha_aquarium', 'remake_ch2_kumicho_sento']) assert(!intros.includes(id), `${id} waits for the first own visit`);
+    await screenshot(page, 'city-after-deliveries.png');
     await page.locator(test('station')).tap();
     assert.match(await page.locator('.map-info .mi-desc').innerText(), /三軒への配達と会場の確認を終えた。/);
     assert.doesNotMatch(await page.locator('.ch2-route-note').innerText(), /三軒への配達と会場の確認を終えた。/);
@@ -242,7 +251,8 @@ await suite('ch2-main', async check => {
     const before = await setup(page); await begin(page); await visit(page, 'kumicho');
     // Clear only the fixture's first manual slot so the real overwrite flow is not bypassed.
     await page.evaluate(() => localStorage.removeItem('suien_remake_slot1'));
-    await page.locator(test('menu')).click(); await page.locator(test('save')).click();
+    // The first-day map MENU is the daily full-screen MENU: save/load live on the システム tab.
+    await page.locator(test('menu')).click(); await page.locator('[data-test="menu-tab-system"]').click(); await page.locator('[data-test="menu-save"]').click();
     await page.locator('[data-test="slot-1"]').click();
     await page.locator(test('map')).waitFor();
     await visit(page, 'c_station');
@@ -253,7 +263,7 @@ await suite('ch2-main', async check => {
     await visit(page, 'ageha'); await visit(page, 'rei'); await page.locator(test('station')).click(); await page.locator(test('go')).click(); await page.locator('[data-test="ch2-morning-home"]').waitFor();
     await page.locator('[data-test="ch2-morning-home"]').click();
     await page.locator('[data-destination-selection]:not(.done)').waitFor();
-    await page.locator('[data-test="hud-menu"]').click(); await page.locator('[data-test="menu-load"]').click();
+    await page.locator('[data-test="hud-menu"]').click(); await page.locator('[data-test="menu-tab-system"]').click(); await page.locator('[data-test="menu-load"]').click();
     assert.match(await page.locator('[data-test="slot-1"] .ss-info').textContent(), /第2章\s*DAY 1(?!\d)/);
     await page.locator('[data-test="slot-1"]').click(); await page.locator('[data-test="confirm-load"]').click();
     await page.locator(test('map')).waitFor();
@@ -359,10 +369,10 @@ await suite('ch2-main', async check => {
     assert.equal(branch.flags._ch2_city_visit_c_station, undefined, 'The branch is distinct from checking the tournament hall');
     assert.equal(branch.money, after.money); assert.equal(branch.slot, after.slot);
     await visit(page, 'rei');
-    assert.equal(await page.locator(test('pin-trpg_bar')).count(), 1);
+    assert.equal(await page.locator(test('pin-trpg_bar')).count(), 0, 'A delivery greeting is not the TRPG introduction (VOL13)');
     await page.reload(); await page.locator('[data-test="title-load"]').click(); await page.locator('[data-test="slot-0"]').click();
     await page.locator(test('map')).waitFor();
-    assert.equal(await page.locator(test('pin-trpg_bar')).count(), 1, 'Actual discovery survives reload');
+    assert.equal(await page.locator(test('pin-trpg_bar')).count(), 0, 'Reload does not invent the discovery');
     assert.equal(await page.evaluate(() => __remake.state.flavorStock.strawberry), 50);
   });
 

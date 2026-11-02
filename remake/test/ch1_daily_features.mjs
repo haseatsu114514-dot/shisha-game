@@ -30,8 +30,12 @@ const ports = {
   hasNewStory: () => false, spotFollowupDue: () => null,
   axeThrowExposed: () => true, canStudyAttack: () => false, canStudyCubeCoals: () => false,
   readyLessons: () => [],
+  on: () => () => {},
+  callingSalesBonus: () => 0,
+  // #2213 B04: シフト上がりのメニューにまかない練習（今日の葉の表示）が並ぶ
+  staffFlavors: () => [], staffStock: () => 0,
 };
-const ctx = vm.createContext({ console, queueMicrotask });
+const ctx = vm.createContext({ console, queueMicrotask, AbortController });
 const actual = new Set(['core/chapter-features.js', 'core/stat-step-tables.js', 'daily/home-rig.js', 'daily/tonari.js']);
 const modules = new Map();
 function get(id) {
@@ -67,7 +71,8 @@ const chapters = [1, 2, 3, 4, 5, '1', undefined];
 let cases = 0;
 for (const chapter of chapters) {
   for (const feature of ['earlyHomeRig', 'baitoCameos']) assert.equal(features.chapterFeatureEnabled(chapter, feature), chapter === 1);
-  assert.equal(features.chapterFeatureEnabled(chapter, 'fortune'), chapter === 1 || chapter === 2);
+  // 占い師は第1〜5章（2026-11-02 台帳 URA・VOL15。現れる時間帯は daily/fortune-schedule.js）
+  assert.equal(features.chapterFeatureEnabled(chapter, 'fortune'), [1, 2, 3, 4, 5].includes(chapter));
 }
 assert.equal(features.chapterFeatureEnabled(1, 'unknown'), false);
 // DAY1/2/13/14, partial/full rest, old ownership including pro-only: exact old gift window.

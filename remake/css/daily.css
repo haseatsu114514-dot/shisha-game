@@ -564,6 +564,10 @@ body.game-ds .pin-station .pin-symbol { color: #29485d; }
 @keyframes pop-in-c { from { opacity: 0; transform: translate(-50%, -46%); } }
 .sub-title { margin: 0; font-family: var(--font); font-size: 34px; letter-spacing: 0.12em; color: var(--gold-hi); }
 .sub-lead { margin: 8px 0 22px; color: var(--text-dim); font-size: 16px; }
+/* 遊びの道具（VOL07）。店のメニューに1行だけ置く。 */
+.gear-offer { margin: 0 0 14px; }
+p.gear-offer.owned { color: var(--text-dim); font-size: 14px; }
+p.gear-offer.owned b { color: var(--gold); }
 .sub-choices { display: flex; flex-direction: column; gap: 12px; }
 .sub-choices.grid { display: grid; grid-template-columns: 1fr 1fr; }
 .big-choice {
@@ -813,6 +817,9 @@ img.lime-face[src$="/face_hiyori.png"] { box-sizing: border-box; padding-left: 3
 }
 .lime-chat-row:hover { background: #f1faf3; }
 .lcr-face { position: relative; flex: none; }
+/* 章の入口の行（第3章の東京の「地元との連絡」）。顔の代わりに緑の丸い印。 */
+.lime-shortcut-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: #06c755; color: #fff; font-size: 20px; }
+.lime-shortcut { border-bottom: 2px solid #e3e7ec; }
 .lcr-face .lime-face { width: 42px; height: 42px; border-color: #e3e7ec; }
 .lcr-dot {
   position: absolute;
@@ -1142,6 +1149,8 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .hud-exp .hx-today { background: rgba(255, 226, 150, 0.55); }
 .hud-exp .hx-settled { z-index: 1; background: linear-gradient(90deg, #c08a2a, #f4d27a); }
 .hud-exp .hx-left { font-size: 12px; font-weight: 700; color: var(--text-dim); white-space: nowrap; }
+.hud-exp .hx-target { flex: none; font-size: 12px; font-weight: 700; color: #b8741a; white-space: nowrap; }
+.hud-exp .hx-target[hidden] { display: none; }
 .hud-exp[data-milestone="true"] .hx-bar::after { content: ""; position: absolute; right: 1px; top: 1px; width: 8px; height: 2px; border-radius: 1px; background: radial-gradient(circle, #ffb347 40%, transparent 45%) 0 0 / 4px 2px repeat-x; }
 .hud-exp.ready .hx-left { color: #ffd88a; font-weight: 700; }
 .hud-exp.ready .hx-bar { box-shadow: 0 0 8px rgba(255, 196, 92, 0.85); animation: exp-ready 1.6s ease-in-out infinite; }

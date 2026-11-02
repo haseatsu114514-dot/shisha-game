@@ -252,7 +252,8 @@ export function callName(id, state, opts = {}) {
 let WEBP = new Set();
 // #983で採用した顔修正を、同名URLに残った旧画像のキャッシュと区別する。
 // 2026-10-28: #1081 I03 でみんと通常を斜め向きへ復元したため revision を更新。
-const FACE_CORRECTION_REVISION = "face-restore-20261028";
+// 2026-11-02: 立ち絵の規格（TS09）でみんと営業姿の頭を私服の大きさへ作り直したため revision を更新。
+const FACE_CORRECTION_REVISION = "portrait-standard-20261102";
 function faceCorrectionVersion(rel) {
   return /^(sprites\/characters\/(minto\/chr_minto_normal|ageha\/chr_ageha_[a-z]+)\.png|ui\/face_icons\/face_(minto|ageha)\.png)$/.test(rel)
     ? `?v=${FACE_CORRECTION_REVISION}` : "";
@@ -274,7 +275,7 @@ const BG_ALIASES = {
 };
 
 // 昼夜の差分がある場所（無印・_day は時間帯で切り替える。明示の _night は演出なのでそのまま）
-const BG_TIME_BASE = new Set(["bg_tonari_inside", "bg_tonari_outside", "bg_home", "bg_c_station", "bg_cafe", "bg_street", "bg_kannon", "bg_choizap"]);
+const BG_TIME_BASE = new Set(["bg_tonari_inside", "bg_tonari_outside", "bg_home", "bg_c_station", "bg_cafe", "bg_street", "bg_kannon", "bg_choizap", "bg_tokyo_park"]);
 // 窓の無い店内は外光が入らない＝夜も昼の絵のまま（オーナー指定・旧版と同じ）
 const BG_NO_NIGHT_TINT = new Set([
   "bg_rojiura_cinema.png",

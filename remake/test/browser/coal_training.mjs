@@ -46,7 +46,8 @@ try {
     });
     page.setDefaultTimeout(20000);
     page.on("pageerror", e => errors.push(e.message));
-    await page.goto(origin + "/remake/");
+    // スミさんの♥2の炭の授業は旧しくみ（?growth=0）の口。心得の盤（通常プレイの既定）ではキューブ炭は盤の授業 M-W1 で習う（#2166）。
+    await page.goto(origin + "/remake/?growth=0");
     await page.locator('[data-test="title-new"]').waitFor({ timeout: 30000 });
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js"); core.newGame();
@@ -59,7 +60,7 @@ try {
       for (const id of Object.keys(Q.data.DB.characters)) intro.markIntroSeen(id);
       Q.core.config.textSpeed = 1;
       Q.core.state.owned.push("cube_charcoal"); Q.core.state.equip.charcoal = "cube_charcoal";
-      Q.core.state.affinity.sumi = 9; Q.core.state.flags.ch1_sumi_training = true; // ♥1。シフト後のスミとの会話で好感度が上がっても♥2（20）に届かない値
+      Q.core.state.affinity.sumi = 0; Q.core.state.flags.ch1_sumi_training = true; // シフト後のスミとの会話で好感度が上がっても♥2（20）に届かない値（#2279 で会話の伸びが大きくなったので 9 → 0）
       Q.vn.vnTest.turbo = true;
       Q.shift = Q.tonari.doBaito();
     });

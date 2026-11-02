@@ -10,6 +10,8 @@ try {
   const page = await browser.newPage({ viewport: { width: 1331, height: 760 } });
   const errors = []; page.on("pageerror", e => errors.push(e.message));
   await page.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
+  // 旧しくみ（能力の通知カード STATUS UP）の検査。心得の盤（通常プレイの既定・SBD97）では能力を直接伸ばさないので、?growth=0 と同じ印で旧しくみにする（盤の経験値の通知は growth_levelup が確かめる）
+  await page.evaluate(() => localStorage.setItem("suien_growth_preview", "0"));
   await page.waitForSelector('[data-test="title-new"]');
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js"), stats = await import("./js/core/stats.js");

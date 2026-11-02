@@ -131,6 +131,16 @@
         { "speaker": "", "face": "", "text": "屋根裏で横になった。下の店から、コーヒーの匂いが上がってくる。" },
         { "speaker": "", "face": "", "text": "少し眠ると、体が軽くなった。" }
       ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_fortune",
+      "lines": [
+        { "speaker": "", "face": "", "text": "路地の角に、紫の布をかけた小さな机が出ていた。" },
+        { "speaker": "uranaishi", "face": "normal", "text": "……ヒヒ。こんな所で会うとはね" },
+        { "speaker": "hajime", "face": "surprise", "text": "東京にも、出るんですか？" },
+        { "speaker": "uranaishi", "face": "smile", "text": "縁のある所なら、どこへでも。……理由は聞かない方がいい" },
+        { "speaker": "uranaishi", "face": "normal", "text": "さて。今日は誰との縁が気になるんだい？" }
+      ]
     }
   ]
 }

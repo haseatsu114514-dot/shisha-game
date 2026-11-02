@@ -48,22 +48,23 @@ export function gaugeAt(milliseconds, cycle = 3200) {
   return phase <= 1 ? phase : 2 - phase;
 }
 export const axisAt = needle => { finite(needle); return (needle * 2 - 1) * AIM_RANGE; };
-/** Visible, reproducible hand movement. Time is the active stance clock, not wall time. */
-export function swayAt(milliseconds, power = POWER.ideal, throwIndex = 0, focused = false) {
-  finite(milliseconds, power, throwIndex);
-  if (milliseconds < 0 || power < 0 || power > 1 || !Number.isInteger(throwIndex) || throwIndex < 0)
+/** Visible, reproducible hand movement. Time is the active stance clock, not wall time.
+ *  steady (0.5..1) scales it for the player's own hatchet at the bar (VOL07: 0.9); 1 is the house axe. */
+export function swayAt(milliseconds, power = POWER.ideal, throwIndex = 0, focused = false, steady = 1) {
+  finite(milliseconds, power, throwIndex, steady);
+  if (milliseconds < 0 || power < 0 || power > 1 || !Number.isInteger(throwIndex) || throwIndex < 0 || steady < .5 || steady > 1)
     throw new RangeError("Invalid stance values");
   const fatigue = Math.min(1, Math.max(0, (milliseconds - SWAY.fatigueStart) / (SWAY.fatigueFull - SWAY.fatigueStart)));
   const strain = Math.max(0, POWER.sweetMin - power, power - POWER.sweetMax);
-  const amplitude = (SWAY.min + (SWAY.max - SWAY.min) * fatigue) * (1 + strain) * (focused ? SWAY.focusScale : 1);
+  const amplitude = (SWAY.min + (SWAY.max - SWAY.min) * fatigue) * (1 + strain) * (focused ? SWAY.focusScale : 1) * steady;
   const t = milliseconds / 1000, offset = throwIndex * 1.73;
   return { x: amplitude * (.75 * Math.sin(t * 4.7 + offset) + .25 * Math.sin(t * 10.3 + offset)),
     y: amplitude * (.75 * Math.cos(t * 3.9 + offset) + .25 * Math.sin(t * 8.1 - offset)), amplitude, fatigue, focused };
 }
-export function releaseAimAt(aim, milliseconds, power, throwIndex, focused) {
+export function releaseAimAt(aim, milliseconds, power, throwIndex, focused, steady = 1) {
   finite(aim.x, aim.y);
   if (Math.abs(aim.x) > AIM_RANGE || Math.abs(aim.y) > AIM_RANGE) throw new RangeError("Aim out of range");
-  const sway = swayAt(milliseconds, power, throwIndex, focused);
+  const sway = swayAt(milliseconds, power, throwIndex, focused, steady);
   const clampAxis = n => Math.max(-AIM_RANGE, Math.min(AIM_RANGE, n));
   return { x: clampAxis(aim.x + sway.x), y: clampAxis(aim.y + sway.y), sway };
 }

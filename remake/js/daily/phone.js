@@ -212,6 +212,10 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (m.exclude_flag && state.flags[m.exclude_flag]) return false;
   // みんとの最初の私的な買い出しは、♥3到達だけで正体判明より先行させない。
   if (m.id === "lime_outing_minto_1" && !state.flags._minto_identity_revealed) return false;
+  // サメちゃんの♥3の外出（#2025）は、本人から路地裏シネマを紹介された後（cinemaDiscovered と同じ条件）にだけ届く。
+  if (m.id === "lime_outing_samechan_1" && !(state.chapter >= 2 && state.flags._samechan_cinema_introduced === true)) return false;
+  // 凛の♥3の外出（#2025）は問屋街の豆屋。はじめが地元にいる第1・2章だけ届く。
+  if (m.id === "lime_outing_rin_1" && state.chapter > 2) return false;
   if (cond === "hiyori_tonari") return hiyoriEventStatus("tonari_return") === "ready";
   if (cond === "story_count") return (state.story[m.sender] || 0) >= (m.trigger_value || 1);
   if (cond === "lime_exchanged") {
@@ -263,6 +267,12 @@ export function morningMessages(opts = {}) {
     out.push(sumi);
     senders.add("sumi");
   }
+  // 東京にいる間の、ムカイさんのシフトの誘い（VOL10）。スミさんの誘いと同じ仕事の連絡。
+  const mukai = mukaiBaitoInvite(opts);
+  if (mukai && out.length < 3 && !senders.has("mukai_master") && !delivered.has(mukai.id)) {
+    out.push(mukai);
+    senders.add("mukai_master");
+  }
   // 大事な外出の誘いは、通常の雑談より先に届ける。同じ相手からは1朝1話題。
   const messages = [...DB.lime, ...tsumugiMessages(state, DB.friends)].sort((a, b) => (Number(importantInvite(b)) + (b.priority || 0)) - (Number(importantInvite(a)) + (a.priority || 0)));
   // 大会の朝は3通までなので、応援は仲の深い相手から届く（同じ深さなら台本順）。
@@ -284,7 +294,7 @@ export function morningMessages(opts = {}) {
   // 友人になった相手から、たまのLIME（雑談かシーシャのお誘い）。物語のLIMEの後に、朝1通まで（HF09）。
   // お誘いは、人と会うほかの誘い（物語・恋人）が今朝届く日・返事待ちの日には重ねず、同じ相手の雑談にする。
   // スミさんの急なバイトの誘いは仕事の連絡なので、重なってもよい（オーナー指定。どちらを受けるかはプレイヤーが選ぶ）
-  const meetInvite = (m) => m?.type === "invitation" && m.accept_event !== "__sumi_baito__";
+  const meetInvite = (m) => m?.type === "invitation" && !WORK_INVITES.has(m.accept_event);
   const otherInvite = out.some(meetInvite) || inbox.some((i) => !i.done && meetInvite(i.msg));
   const hiyori = hiyoriInvite(opts);
   if (hiyori && out.length < 3 && !otherInvite && !state.pendingInvite && !senders.has("hiyori")
@@ -294,7 +304,7 @@ export function morningMessages(opts = {}) {
   }
   // 返事の要る連絡（物語の返信・誘い）が今朝すでに届くなら、返事の要る雑談は重ねない（LM04）。
   // スミさんのバイトの誘いは仕事の連絡なので数えない（オーナー「すみさんのバイト入れるか？みたいなやつはいい」）
-  const needsReply = (m) => m.accept_event !== "__sumi_baito__" && (m.type === "invitation" || !!m.replies?.length);
+  const needsReply = (m) => !WORK_INVITES.has(m.accept_event) && (m.type === "invitation" || !!m.replies?.length);
   let casualSlot = true;
   for (const template of friendMessages(opts)) {
     if (out.length >= 3) break;
@@ -338,6 +348,28 @@ function hiyoriInvite({ tournamentDay = false, fixedNight = () => false } = {}) 
  * スミさんからの「急で悪い、昼のシフト入れるか？」。序盤の固定2回（DAY3/8）＋4日以上バイトに出ていない朝。
  * 乗るとそのまま昼のシフトへ（行動1回・給料に上乗せ）。各章の大会当日は来ない
  */
+// 仕事の連絡としてのシフトの誘い（人と会う約束・返事の要る雑談には数えない）。
+const WORK_INVITES = new Set(["__sumi_baito__", "__mukai_baito__"]);
+
+/**
+ * ムカイさんのシフトの誘い（VOL10・2026-11-02 オーナー「ムカイさんからバイトの誘いもあるようにしたい」）。
+ * 東京にいる間だけ（第3章の東京の日常・第5章の東京）。LIMEを交換していて、最後のシフトから3日あいた日に、
+ * 一日おきに届く。乗るとそのまま昼の mukai のシフトへ（行動1回・日当に上乗せ）。大会の日・夜の予定がある日は来ない。
+ */
+function mukaiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
+  if (tournamentDay || state.flags?._ch2_region !== "tokyo" || !hasContact("mukai_master")) return null;
+  if (!(state.chapter === 5 || state.chapter === 3 && state.flags?._ch3_intro?.routeVersion === 3)) return null;
+  const id = `_mukai_baito_inv_d${state.day}`;
+  if (state.limeRead.includes(id) || fixedNight?.(state.day)) return null;
+  if (state.day - (state.flags._mukai_shift_day || 0) < 3 || (state.day + (state.weatherSeed || 0)) % 2) return null;
+  const { reasons, ...template } = DB.limeTemplates.mukai_baito || {};
+  if (!template.accept_event) return null;
+  return { ...template, id, visit_spot: state.chapter === 5 ? "ch5_tokyo_mukai" : "ch3_tokyo_mukai",
+    messages: template.messages.map(text => text === "{reason}" ? reasons[state.day % reasons.length] : text),
+    accept_reply: { ...template.accept_reply },
+    decline_response: { ...template.decline_response } };
+}
+
 function sumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
   if (tournamentDay || !chapterFeatureEnabled(state.chapter, "hiyoriDaily") || (state.chapter === 1 && state.day >= TOURNAMENT_DAY)) return null;
   const id = `_sumi_baito_inv_d${state.day}`;
@@ -414,6 +446,20 @@ function replyMedia(item, line) {
   if (position >= 0 && [siblings[position - 1], siblings[position + 1]].some((old) => old && mediaLines(old).length)) return null;
   return { sender, stamp: line.stamp, ...(line.media_chapters ? { media_chapters: [...line.media_chapters] } : {}) };
 }
+
+/** 章の側から1件届ける（第3章の東京の恋人からの訪問の相談など）。受信の整形は朝のLIMEと同じ。 */
+export function deliverLimeMessage(m) {
+  const item = receiveItem(m);
+  state.inbox.push(item);
+  return item;
+}
+
+/**
+ * 返事（replies[].action）を選んだ後に一度だけ呼ぶ処理。章の側が名前で登録する。
+ * 戻り値の文字列は、返事の後にトークの中へ小さく出す（「約束した：…」など）。
+ */
+const LIME_REPLY_ACTIONS = new Map();
+export const registerLimeReplyAction = (name, run) => LIME_REPLY_ACTIONS.set(name, run);
 
 /** 受信時だけ素材を選別し、DBや過去の受信箱を変更しない。dayは章をまたぐ通算日。 */
 function receiveItem(m) {
@@ -852,7 +898,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     const no = st === "busy"
       ? polite ? "すみません、先に別の約束があって……" : "ごめん、先に別の約束をしてしまった"
       : polite ? "すみません、今日は難しいです……" : "ごめん、今日は難しい";
-    const hintKey = m.hint ? "_hint_sumi_baito" : "_hint_invite";
+    const hintKey = m.accept_event === "__mukai_baito__" ? "_hint_mukai_baito" : m.hint ? "_hint_sumi_baito" : "_hint_invite";
     const first = !state.flags[hintKey];
     const night = replySlot(m) === 1;
     const deadline = storeInvitationSpot(m) ? "夜の行動の前まで（店の営業日だけ）" : night ? "夜の行動の前まで" : "昼の行動の前まで";
@@ -890,6 +936,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
         declineConflictingInvites(item, ui.inviteOptions);
       }
       const t = m.accept_event === "__sumi_baito__" ? "このあと tonari のシフトに入る"
+        : m.accept_event === "__mukai_baito__" ? "このあと mukai のシフトに入る"
         : m.temporary_closed ? "臨時休暇の午後に会う約束ができた"
         : m.after_close ? "仕事を終えたあとに会う約束ができた"
         : m.closed_on != null ? "定休日の午後に会う約束ができた"
@@ -918,6 +965,9 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     item.done = true;
     item.replyState = "replied";
     item.log.push({ me: true, text: r.text });
+    // 返事で決まること（約束など）は、返事を確定した時に一度だけ。
+    const actionNote = r.action ? LIME_REPLY_ACTIONS.get(r.action)?.(item, r) || null : null;
+    if (actionNote) item.log.push({ note: actionNote });
     const responseMedia = replyMedia(item, r.response_media);
     if (responseMedia) item.log.push({ me: false, ...responseMedia });
     if (r.response) item.log.push({ me: false, text: r.response });
@@ -939,6 +989,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     if (responseMedia) await drawMessage(ui, responseMedia, false, from);
     if (!alive() || state !== session) return;
     if (r.response) await ui.bubble(r.response, false, from);
+    if (actionNote && alive() && state === session) ui.note(actionNote);
     return;
   }
   item.done = true;
@@ -972,7 +1023,11 @@ function drawHistory(items, ui) {
  * @param opts.tutorial 初回の説明を一覧の上に出す
  * @param opts.sender   最初に開くトーク（アカウント。みんとの私用は "minto_private"）
  */
-export async function openLime({ tutorial = false, sender = null, fixedNight = () => false, beforeClose = null } = {}) {
+/**
+ * @param shortcuts 章が足す入口の行（トーク一覧の一番上）。[{ id, label, sub?, tag?, attention?, icon?, run }]。
+ *   押すとスマホを閉じてから run() を呼ぶ（例: 第3章の東京の「地元との連絡」）。
+ */
+export async function openLime({ tutorial = false, sender = null, fixedNight = () => false, beforeClose = null, shortcuts = [] } = {}) {
   // HUD・案内の穴・プッシュ通知のどこから開いても、地図の上の初回案内を片付ける。
   layers.fx.querySelectorAll(".lime-coach").forEach((coach) => coach.remove());
   state.flags._lime_tut = 1;
@@ -983,6 +1038,7 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
   ui.inviteOptions = { fixedNight };
   let resolveClose;
   const closed = new Promise((r) => { resolveClose = r; });
+  let chosenShortcut = null;
 
   const showList = () => {
     ui.gen++;
@@ -1001,6 +1057,17 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
         el("span", { text: "誘いには、その日のうちなら返事ができる（店への誘いは営業日なら夜まで・昼限定のお出かけは昼まで）。" }),
       ]));
     }
+    for (const shortcut of shortcuts) ui.chat.append(el("button.lime-chat-row.lime-shortcut", {
+      dataset: { test: `lime-shortcut-${shortcut.id}` },
+      onclick: () => { SE.click(); chosenShortcut = shortcut; resolveClose(); },
+    }, [
+      el("div.lcr-face", [el("span.lime-shortcut-icon", { text: shortcut.icon || "☎", "aria-hidden": "true" }), shortcut.attention ? el("i.lcr-dot") : null]),
+      el("div.lcr-main", [
+        el("div.lcr-name", { text: shortcut.label }),
+        el("div.lcr-preview", { text: shortcut.sub || "" }),
+      ]),
+      el("div.lcr-side", [shortcut.tag ? el("span.lcr-tag", { text: shortcut.tag }) : null]),
+    ]));
     if (!senders.length) ui.chat.append(el("p.lime-empty", { text: "まだトークはない" }));
     for (const sender of senders) {
       const items = thread(sender);
@@ -1076,6 +1143,8 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
       await beforeClose?.();
     }
   } finally { await ui.close(); }
+  // 入口の行を選んだ: スマホを閉じてから、その画面へ。
+  if (chosenShortcut && state === owner) await chosenShortcut.run();
   return accepted;
 }
 

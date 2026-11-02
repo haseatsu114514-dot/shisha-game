@@ -118,10 +118,10 @@ await check('visitChar normal completion, same-owner concurrent entry and heart 
   f.setPlay(() => new Promise(r=>resolve=r));
   const pending=f.spots.visitChar('naru'); assert.equal(await f.spots.visitChar('naru'),false);
   assert.equal(s.story.naru||0,0); resolve(done); assert.equal(await pending,true);
-  assert.equal(s.story.naru,1); assert.equal(s.visits.naru,1); assert.equal(s.affinity.naru,9);
+  assert.equal(s.story.naru,1); assert.equal(s.visits.naru,1); assert.equal(s.affinity.naru,13); // 来店の段階会話 16×0.85（AFB01）
   assert.equal(f.stats.affinityLevel('naru'),1); assert.equal(f.spots.hasNewStory('naru'),true);
   f.setPlay(async()=>done); await f.spots.visitChar('naru'); // next visit reads only the newly eligible second scene
-  assert.equal(s.story.naru,2); assert.equal(s.affinity.naru,18); assert.equal(f.stats.affinityLevel('naru'),1); assert.equal(f.spots.hasNewStory('naru'),false);
+  assert.equal(s.story.naru,2); assert.equal(s.affinity.naru,27); assert.equal(f.stats.affinityLevel('naru'),2); assert.equal(f.spots.hasNewStory('naru'),true); // ♥2で3本目が開く
 });
 await check('question selected then cancelled: retain answer, resume reaction and complete once', async f => {
   const s=f.core.state; s.story.rin=3; s.affinity.rin=33;
@@ -141,11 +141,12 @@ for (const outcome of ['missing','abort','load','throw']) await check(`question 
   if(outcome==='throw')await assert.rejects(p,/expected/); else assert.equal(await p,false);
   assert.equal(s.flags[f.stages.questionDoneKey('rin')],undefined);
 });
-await check('Rin third story completes at heart2; question becomes due only at heart3',async f=>{
+await check('Rin third story completes at heart2 and reaches heart3; question is due only at heart3',async f=>{
   const s=f.core.state;s.story.rin=2;s.affinity.rin=20;
   f.setPlay(async()=>done);assert.equal(await f.spots.visitChar('rin'),true);
-  assert.equal(s.story.rin,3);assert.equal(s.affinity.rin,28);assert.equal(f.bonds.questionVisitDue('rin'),false);
-  f.stats.gainAffinity('rin',6);assert.equal(s.affinity.rin,33);assert.equal(f.bonds.questionVisitDue('rin'),true);
+  assert.equal(s.story.rin,3);assert.equal(s.affinity.rin,33);assert.equal(f.bonds.questionVisitDue('rin'),true);
+  s.affinity.rin=32;assert.equal(f.bonds.questionVisitDue('rin'),false);
+  f.stats.gainAffinity('rin',2);assert.equal(s.affinity.rin,34);assert.equal(f.bonds.questionVisitDue('rin'),true);
 });
 await check('legacy current/carry/history stay intact; deferred ordinary credit releases once without reading stages across SAVE/LOAD', async f => {
   let s=f.core.state;s.affinity.tsumugi=66;s.affinityCarry.tsumugi=.7;
@@ -165,7 +166,8 @@ await check('LIME .25/carry crosses unread hearts; old credit releases once with
   s.flags._naru_affinity_waiting_pts=1;s.fortune={char:'naru'};
   assert.equal(f.stats.releaseAffinity('naru'),1);assert(s.fortune);assert.equal(f.stats.releaseAffinity('naru'),0);
   f.stats.gainAffinity('naru',2,{source:'lime'});assert.equal(s.fortune,undefined);assert.equal(s.affinity.naru,10);
-  close(s.affinityCarry.naru,.7);assert.equal(s.story.naru,0);
+  // 占いの相手は ×2（2026-11-02 台帳 URA。旧 ×1.5 の .7 から）: round(2×2)×.25×.85 + .0625
+  close(s.affinityCarry.naru,.9125);assert.equal(s.story.naru,0);
 });
 await check('LIME reply feedback follows actual fractional progress without ordinary story caps, SAVE/LOAD and integer rollover', async f => {
   let s = f.core.state; s.story.naru = 1; s.affinity.naru = 9;
@@ -332,7 +334,10 @@ await check('ageha ♥5 gummy stage and MELTY PUFF finale (#2023): once, gift, r
     s.flags._ch2_read_remake_ch2_ageha_gummy=true;assert.equal(f.stages.pendingAffinityStage(s,'ageha'),null);
     s.affinity.ageha=65;assert.equal(f.bonds.finaleDue('ageha'),false,'needs ♥5');s.affinity.ageha=66;
     assert.equal(f.bonds.finaleDue('ageha'),true);assert.equal(f.bonds.finaleAtVisit('ageha'),true);
-    s.chapter=3;assert.equal(f.bonds.finaleDue('ageha'),false,'MELTY PUFF visits are chapter 2 only');s.chapter=2;
+    s.chapter=3;assert.equal(f.bonds.finaleDue('ageha'),false,'MELTY PUFF visits are chapter 2 only');
+    // VOL02: 第3章でも東京へ発つ前の準備3日は柚ヶ谷へ通える。出発後は地図に無い。
+    s.flags._ch3_prep={startDay:29,days:3,step:4,departed:false};assert.equal(f.bonds.finaleDue('ageha'),true,'MELTY PUFF before the Tokyo departure');
+    s.flags._ch3_prep.departed=true;assert.equal(f.bonds.finaleDue('ageha'),false,'not after the departure');delete s.flags._ch3_prep;s.chapter=2;
     f.setPlay(async()=>({cancelled:true}));
     assert.equal(await f.bonds.playFinale('ageha',{deferSave:true}),false);assert(!s.finales.ageha);assert(!s.owned.includes('suyaki_ageha'));
     f.setPlay(async()=>done);
@@ -601,6 +606,41 @@ await check('Mashiro (#2022): chapter 3 optional reads are the ladder, ♥3 ques
   assert.equal(after.flags._confession_due, undefined, 'the chapter 3 detour owns the confession');
   assert.equal(after.owned.filter(id => id === 'suyaki_mashiro').length, 1);
   assert.equal(await f.bonds.playFinale('mashiro'), false);
+});
+await check('Kuze (#2028): chapter 3 finale after the LIME detour and the answer outing, friendship only, hagal once, then friend LIME', async f => {
+  const rivals = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_rivals.json', import.meta.url))).dialogues;
+  for (const d of rivals) f.db.dialogues[d.dialogue_id] = d;
+  const gear = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json', import.meta.url))).equipment.find(e => e.id === 'suyaki_kuze');
+  assert.equal(gear.gift.from, 'kuze');
+  f.db.equipById.suyaki_kuze = gear;
+  f.db.flavorById.absal_earlgrey = { id: 'absal_earlgrey' };
+  f.db.friends = JSON.parse(fs.readFileSync(new URL('../data/friends.json', import.meta.url)));
+  assert.equal(f.bonds.BOND_FINALES.kuze.gift, 'suyaki_kuze');
+  assert.equal(f.bonds.finaleHeart('kuze'), 1, 'provisional heart gate');
+  const s = f.core.state; s.chapter = 3; s.met.kuze = true; s.affinity.kuze = 66;
+  assert.equal(f.bonds.finaleDue('kuze'), false, 'affinity alone does not open the finale');
+  s.flags._lime_contact_kuze = true; s.flags._ch3_read_ch3_kuze_lime = true;
+  assert.equal(f.bonds.finaleDue('kuze'), false, 'the answer outing comes first');
+  s.flags._ch3_outings = { enmaku_answer: 1 };
+  s.affinity.kuze = 8; assert.equal(f.bonds.finaleDue('kuze'), false, 'needs ♥1');
+  s.affinity.kuze = 9; assert.equal(f.bonds.finaleAtVisit('kuze'), true);
+  s.chapter = 4; assert.equal(f.bonds.finaleDue('kuze'), false, 'only on the chapter 3 cards');
+  assert.equal(await f.bonds.playFinale('kuze'), false); s.chapter = 3;
+  f.setPlay(async () => ({ cancelled: true }));
+  assert.equal(await f.bonds.playFinale('kuze'), false, 'cancel records nothing');
+  assert(!s.finales?.kuze); assert(!s.owned.includes('suyaki_kuze'));
+  f.setPlay(async () => done);
+  assert.equal(await f.bonds.playFinale('kuze'), true);
+  const after = f.roundTrip();
+  assert.equal(after.finales.kuze.route, 'friend');
+  assert.equal(after.flags._confession_due, undefined);
+  assert.equal(after.owned.filter(id => id === 'suyaki_kuze').length, 1);
+  assert.equal(after.flavorStock.absal_earlgrey, 50);
+  assert.equal(await f.bonds.playFinale('kuze'), false, 'once');
+  assert.equal(f.bonds.settledFriend('kuze'), true);
+  after.day += 10;
+  const lime = f.bonds.friendMessages({ sceneChapter: true });
+  assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['kuze', 'chat']], 'chat only on the scene-card chapters');
 });
 
 console.log(`affinity stages: ${count} PASS; browser/real LOAD not executed`);

@@ -130,10 +130,12 @@ await suite("ch1-eve", async check => {
         } else {
           assert.equal(s.rehearsal, null); assert.equal(s.flags._ev_rehearsal, undefined);
           assert.equal(s.flags._craft_practice_runs, undefined);
-          assert.deepEqual(result.bonus, { bonus: 0, notes: [] });
+          // #2091: 苦手工程の反復を★1つ以上で終えた夜だけ「前夜の反復」+1。話す・早寝は加点なし。
+          assert.deepEqual(result.bonus, branch === "drill" ? { bonus: 1, notes: ["前夜の反復"] } : { bonus: 0, notes: [] });
           if (branch === "drill") {
             assert.equal(result.benches, 1); assert.deepEqual(result.steps, ["drill:heat"]);
             assert.equal(s.best.heat, 2); assert(s.flags._ch1_eve.practiceDone);
+            assert.equal(s.flags._ch1_eve.drillTier, 2);
           } else assert.equal(result.benches, 0);
           assert.deepEqual(s.stats, { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 });
         }
@@ -305,18 +307,17 @@ await suite("ch1-eve", async check => {
     assert.equal(result.state.stats.guts, 10); assert(result.done);
   });
 
-  await check("stock-rescue-before-full-practice", async page => {
+  // #2213 B08: 課題のレモンは大会支給。前夜にレモンの立て替え救済を出さない。
+  await check("no-lemon-rescue-before-full-practice", async page => {
     await setup(page);
     await page.evaluate(() => {
       E.core.state.money = 0; E.core.state.flavorStock.lemon = 1;
       E.vn.vnTest.choose = () => 0; E.run();
     });
-    await page.locator('.shop-row.errand [data-test="buy-lemon"]').click();
-    await page.locator('[data-test="shop-checkout"]').click();
-    await page.locator('[data-test="shop-leave"]').click(); await finish(page);
+    await finish(page);
     const result = await snapshot(page);
-    assert.equal(result.state.money, 0); assert.equal(result.state.flavorStock.lemon, 51);
-    assert(result.state.flags._prep_lemon_expensed);
+    assert.equal(result.state.money, 0); assert.equal(result.state.flavorStock.lemon, 1);
+    assert(!result.state.flags._prep_lemon_expensed);
     assert.equal(result.state.flags._craft_practice_runs.length, 1);
   });
 

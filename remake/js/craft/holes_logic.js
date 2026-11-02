@@ -8,7 +8,7 @@ export const RINGS = [
   { id: "inner", label: "内周", r: 0.28, targets: 4, period: 3.8, weight: 0.2, role: "中心へ熱を入れる（開けすぎ注意）" },
 ];
 // アルミを使わないHMD（ロートス型）。ボウルに直接のせるので、アルミ張り＋穴あけをしない。
-export const FOIL_FREE_HMS = ["lotos_hagal"];
+export const FOIL_FREE_HMS = ["lotos_hagal", "lotos_plus"];
 /**
  * この一台でアルミ穴あけを行うか。ロートスHMDは既定で飛ばす（#1107 B2）。
  * レッスンと自主練（穴あけドリル）は技術を教える場なので必ず行い、任意トグル（cs.foilOptIn）でも行う。

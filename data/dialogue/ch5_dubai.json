@@ -1,0 +1,151 @@
+{
+  "comment": "第5章のドバイ（#2033 E）。オーナー指定（2026-11-02）: シェイクがはじめを気に入り「また遊びに来い」と言い、宿（屋敷の客間）は用意してくれる。飛行機は1回目はシェイクが往復の切符をくれて、2回目からは往復100,000円。招待は手紙で届く（シェイクはLIMEの相手ではない）。第4章の大会の後、はじめは新しい王者。FESTAは大会の出張ブースだったので第5章には出さず、太陽は休暇でシェイクの屋敷に遊びに来ている（2026-11-02 オーナー「任せる」）。報酬は台詞に書かず、chapters/ch5-dubai.js が付ける。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch5_dubai_letter",
+      "lines": [
+        { "speaker": "", "face": "", "text": "郵便受けに、厚い封筒が届いていた。差出人は、シェイク・アル=ガリヤーン。" },
+        { "speaker": "sheikh", "face": "normal", "text": "新しい王者へ。また遊びに来なさい" },
+        { "speaker": "sheikh", "face": "smile", "text": "屋敷の客間は、いつでも空けておく。好きなだけ泊まっていけばいい" },
+        { "speaker": "sheikh", "face": "normal", "text": "最初の切符は同封しておく。二度目からは、来たい日に自分で来なさい" },
+        { "speaker": "hajime", "face": "surprise", "text": "（本当に、また呼んでくれるんだ）" },
+        { "speaker": "", "face": "", "text": "封筒の底に、ドバイ行きの往復の切符と、空港から屋敷までの地図が入っていた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_go",
+      "lines": [
+        { "speaker": "", "face": "", "text": "空港行きのバスに乗り、ドバイ行きの便に乗った。" },
+        { "speaker": "", "face": "", "text": "窓の下に、砂の色をした街の明かりが近づいてくる。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_back",
+      "lines": [
+        { "speaker": "", "face": "", "text": "迎えの車で空港へ送ってもらい、帰りの便に乗った。" },
+        { "speaker": "", "face": "", "text": "窓の下に、見慣れた海岸線が近づいてくる。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_arrival",
+      "lines": [
+        { "speaker": "", "face": "", "text": "空港を出ると、迎えの車が待っていた。運転手は名前を確かめただけで、何も聞かなかった。" },
+        { "speaker": "", "face": "", "text": "屋敷の門をくぐる。中庭の噴水の向こうで、シェイクが手を上げた。" },
+        { "speaker": "sheikh", "face": "smile", "text": "よく来た。王者も、ここでは客だ" },
+        { "speaker": "hajime", "face": "smile", "text": "お招き、ありがとうございます" },
+        { "speaker": "sheikh", "face": "normal", "text": "客間は二階の奥だ。帰りたい日に、空港まで車を出そう" },
+        { "speaker": "sheikh", "face": "normal", "text": "それと、tonariの葉は届いた。葡萄の隣に置いてある" },
+        { "speaker": "hajime", "face": "normal", "text": "もう吸ってみましたか？" },
+        { "speaker": "sheikh", "face": "smile", "text": "まだだ。君が来た日に開けようと思っていた" },
+        { "speaker": "", "face": "", "text": "案内された客間には、冷えた水の瓶と、白い布をかけた寝台が用意されていた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_sheikh",
+      "lines": [
+        { "speaker": "", "face": "", "text": "中庭に面した低い卓の部屋。シェイクが、日本から届いた袋の封を切った。" },
+        { "speaker": "sheikh", "face": "normal", "text": "開けるなら、君がいる日がいい" },
+        { "speaker": "hajime", "face": "normal", "text": "tonariの常連さんが、いちばんよく頼む葉です" },
+        { "speaker": "", "face": "", "text": "甘い香りが、乾いた部屋にふわりと広がった。" },
+        { "speaker": "sheikh", "face": "smile", "text": "……軽いな。疲れた客のための葉だ" },
+        { "speaker": "hajime", "face": "smile", "text": "スミさんも、同じことを言ってました" },
+        { "speaker": "sheikh", "face": "normal", "text": "そうか。……あの人は、変わらないな" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_sheikh_b",
+      "lines": [
+        { "speaker": "", "face": "", "text": "中庭の噴水の縁に、シェイクが腰かけていた。" },
+        { "speaker": "sheikh", "face": "normal", "text": "次の勝負は、まだ日が決まっていないそうだな" },
+        { "speaker": "hajime", "face": "normal", "text": "相手と、相談して決めることになってて" },
+        { "speaker": "sheikh", "face": "smile", "text": "決めるのは君か。なら、決めた日がいちばんいい日だ" },
+        { "speaker": "sheikh", "face": "serious", "text": "急ぐな。待てる者のほうが、最後の一口まで見ていられる" },
+        { "speaker": "hajime", "face": "normal", "text": "（待つのも、勝負のうちか）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_sheikh_c",
+      "lines": [
+        { "speaker": "", "face": "", "text": "屋敷の長い廊下。使用人たちが、シェイクに深く頭を下げて通り過ぎていく。" },
+        { "speaker": "sheikh", "face": "normal", "text": "ここでは、皆が私の機嫌を見て話す" },
+        { "speaker": "sheikh", "face": "smile", "text": "君は、まずい時はまずいと言う。それが、ありがたい" },
+        { "speaker": "hajime", "face": "normal", "text": "言わないと、次の一台が良くならないので" },
+        { "speaker": "sheikh", "face": "smile", "text": "職人の答えだな。……あとで一台、頼めるか" },
+        { "speaker": "hajime", "face": "smile", "text": "はい。今日は、ちゃんと客として座ってください" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_souq",
+      "lines": [
+        { "speaker": "", "face": "", "text": "スークの細い通り。スパイスの袋が、店先に山になって並んでいる。" },
+        { "speaker": "", "face": "", "text": "店主が、見たことのない乾いた花を一つまみ、手のひらに載せてくれた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（この香り、葉に合わせたらどうなるんだろう）" },
+        { "speaker": "", "face": "", "text": "名前だけ聞いて、手帳に書き留めた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_souq_b",
+      "lines": [
+        { "speaker": "", "face": "", "text": "金細工の店の前で、前に会った店主がこちらに気づいた。" },
+        { "speaker": "", "face": "", "text": "また来たのか、と言うように、店主が肩をすくめて笑った。" },
+        { "speaker": "hajime", "face": "smile", "text": "（覚えててくれたんだ）" },
+        { "speaker": "", "face": "", "text": "冷たいミントティーを一杯もらって、通りの人の流れをしばらく眺めた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_alley",
+      "lines": [
+        { "speaker": "", "face": "", "text": "路地の奥の小さなカフェ。古い台が、壁際に並んでいる。" },
+        { "speaker": "", "face": "", "text": "前にここで、旅装の男と向かい合ったことを思い出す。" },
+        { "speaker": "hajime", "face": "normal", "text": "（あの時は、王者だなんて知らなかった）" },
+        { "speaker": "", "face": "", "text": "店主の一台を頼んで、炭が落ち着くのを待った。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_alley_b",
+      "lines": [
+        { "speaker": "", "face": "", "text": "路地裏のカフェに、シェイクが地味な旅装で座っていた。" },
+        { "speaker": "sheikh", "face": "smug", "text": "ここでは、私はただの客だ。名前は呼ぶな" },
+        { "speaker": "hajime", "face": "smile", "text": "分かりました。じゃあ、ただの常連さんで" },
+        { "speaker": "sheikh", "face": "smile", "text": "それでいい。この店の水は、少しぬるい。それも悪くない" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_guest_rest",
+      "lines": [
+        { "speaker": "", "face": "", "text": "客間の寝台に横になった。窓の外で、噴水の音がしている。" },
+        { "speaker": "", "face": "", "text": "少し眠ると、体が軽くなった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_taiyo",
+      "lines": [
+        { "speaker": "", "face": "", "text": "屋敷の中庭に、手拍子が響いていた。噴水の前で、太陽が使用人たちに踊りを教えている。" },
+        { "speaker": "da_silva", "face": "excited", "text": "来たな、世界一！　見てたぞ、審査席からな" },
+        { "speaker": "hajime", "face": "surprise", "text": "太陽さん。どうして、ここに？" },
+        { "speaker": "da_silva", "face": "smile", "text": "休暇だ。シェイクの家は、氷が切れねえからな" },
+        { "speaker": "da_silva", "face": "normal", "text": "座れよ。今日は審査じゃねえ。ただのフェスタだ" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_taiyo_b",
+      "lines": [
+        { "speaker": "", "face": "", "text": "中庭の木陰。太陽が、アサイーの一台を詰めていた。" },
+        { "speaker": "da_silva", "face": "smile", "text": "大会の時のお前の一台、手拍子ひとつ無しで見入っちまった" },
+        { "speaker": "hajime", "face": "normal", "text": "静かすぎましたか" },
+        { "speaker": "da_silva", "face": "normal", "text": "いいや。静かでも、あれはフェスタだった。客が楽しんでりゃ、それでいい" },
+        { "speaker": "da_silva", "face": "excited", "text": "でも次は、手拍子も入れてみろよ！" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_taiyo_c",
+      "lines": [
+        { "speaker": "", "face": "", "text": "中庭の噴水の縁に、太陽とシェイクが並んで座っていた。" },
+        { "speaker": "da_silva", "face": "smile", "text": "この王様、俺の店に来ると一番静かに笑うんだ" },
+        { "speaker": "sheikh", "face": "smile", "text": "君の店では、王族の顔をしなくていいからな" },
+        { "speaker": "da_silva", "face": "normal", "text": "ハジメ、お前の店もそういう店にしろよ。誰が来ても、ただの客でいられる店" },
+        { "speaker": "hajime", "face": "normal", "text": "（ただの客で、いられる店）" }
+      ]
+    }
+  ]
+}

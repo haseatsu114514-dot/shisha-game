@@ -341,6 +341,21 @@ assert.equal(finalize(evenCup(3)).total, 70, "real chapter 3 transition must sto
 assert.equal(prepared.rehearsal, "great", "keep the historical preparation record");
 assert.equal(prepared.flags._last_night, "practice");
 
+// #2091: 前夜に苦手工程を反復し★1つ以上で終えたら +1。★0・記録の無い旧セーブ・第2章以降は加点しない。
+for (const [chapter, eve, expected] of [
+  [1, { choice: "drill", drillTier: 2 }, 1], [1, { choice: "drill", drillTier: 1 }, 1],
+  [1, { choice: "drill", drillTier: 0 }, 0], [1, { choice: "drill" }, 0], [1, undefined, 0],
+  [2, { choice: "drill", drillTier: 2 }, 0],
+]) {
+  const saved = newGame();
+  saved.chapter = chapter;
+  saved.flags._last_night = "drill";
+  if (eve) saved.flags._ch1_eve = eve;
+  assert.equal(bonusOf().bonus, expected, `drill eve chapter=${chapter} ${JSON.stringify(eve)}`);
+  assert.equal(finalize(evenCup(chapter)).total, 70 + expected);
+  if (expected) assert.deepEqual(bonusOf().notes, ["前夜の反復"]);
+}
+
 for (const chapter of [1, 2, 3, 4, 5]) {
   for (const rehearsal of [null, "rough", "good", "great"]) {
     for (const choice of [undefined, "sleep_early", "talk_sumi", "practice"]) {
@@ -387,3 +402,16 @@ assert.equal(Object.hasOwn(lotosCup.parts, "holes"), false);
 assert.equal(lotosCup.total, 62.5, "four completed parts share the score when foil is skipped");
 assert.equal(improvementOf(lotosCup), "次の練習：炭の全面が赤くなる頃合いを確かめよう。");
 
+
+// #2190 P03: 炭焼きが一番弱い一台の「次の練習」は、炭焼き結果の助言と同じ向き（遅取り＝待たずに／早取り＝待ってから）。
+for (const [picks, expected] of [
+  [["over", "over", "over"], "次の練習：炭の全面が赤くなったら、待たずに取り出そう。"],
+  [["hot", "just", "just"], "次の練習：炭の全面が赤くなったら、待たずに取り出そう。"],
+  [["early", "pre", "just"], "次の練習：黒い面が消えるまで待ってから取り出そう。"],
+  [["early", "over", "just"], "次の練習：黒い面が消えて全面が赤くなった炭から取り出そう。"],
+]) {
+  newGame();
+  const cup = finalize({ ...evenCup(1), heat: { score: 40, picks } });
+  assert.equal(improvementOf(cup), expected, `heat practice follows picks ${picks.join(",")}`);
+}
+console.log("[craft scoring spec] PASS: heat practice tip matches early/late pick direction");

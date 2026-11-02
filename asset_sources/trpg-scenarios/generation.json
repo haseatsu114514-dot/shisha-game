@@ -1,0 +1,668 @@
+{
+  "_comment": "採用したTRPG背景の原画・派生・ホットスポットQA（README『受け取ったあと』4.）",
+  "date": "2026-11-02",
+  "backgrounds": [
+    {
+      "scenario": "leaf-mail",
+      "adopted": "c",
+      "source": "asset_sources/trpg-scenarios/candidates-20261102/leaf-mail/background-c.png",
+      "source_sha256": "1286c5a68e0a1064c25bdd423c5032d2bf94d7a7e7ddf9c211d5b92def944e00",
+      "source_size": [
+        1672,
+        941
+      ],
+      "processing": "crop (0,0,1671,940) to 16:9 -> LANCZOS 1280x720 -> PNG; WebP via remake/tools/build_manifest.py --backgrounds-only",
+      "png": "assets/backgrounds/trpg_leaf-mail_room.png",
+      "png_sha256": "303f3b9ad623f7240946ddcd320de55cf66a8b379574a954b1833bb54e21633f",
+      "webp": "remake/img/backgrounds/trpg_leaf-mail_room.webp",
+      "webp_sha256": "498e28dfe5f6fd0352029dcdbd6eac6169ab9634aa1572586a5437c071cc08e5",
+      "spots": {
+        "bag": {
+          "x": 52,
+          "y": 82
+        },
+        "clock": {
+          "x": 27,
+          "y": 16
+        },
+        "roof": {
+          "x": 62,
+          "y": 25
+        },
+        "bridge": {
+          "x": 86,
+          "y": 58
+        },
+        "bakery": {
+          "x": 13,
+          "y": 45
+        },
+        "board": {
+          "x": 38,
+          "y": 47
+        }
+      },
+      "visualQA": "人物・猫なし、掲示板の紙は無地。Bは猫が写り込むため不採用、Aは橋と屋根が遠い。",
+      "hotspotQA": "時計塔・屋根・パン屋の窓・橋を絵の位置へ移動。1280×720の実画面で輪と対象物・見出し文字の重なりを確認（2026-11-02）"
+    },
+    {
+      "scenario": "apple-thief",
+      "adopted": "b",
+      "source": "asset_sources/trpg-scenarios/candidates-20261102/apple-thief/background-b.png",
+      "source_sha256": "d9ad2f65af0036833a0dbee2b5d134b3ec0cf874cf9ebeba70f584577408cbe1",
+      "source_size": [
+        1672,
+        941
+      ],
+      "processing": "crop (0,0,1671,940) to 16:9 -> LANCZOS 1280x720 -> PNG; WebP via remake/tools/build_manifest.py --backgrounds-only",
+      "png": "assets/backgrounds/trpg_apple-thief_room.png",
+      "png_sha256": "39b29ee9dbc3400e0c50667b9035d066300ef00036c5c5117b2d4ad826b71d82",
+      "webp": "remake/img/backgrounds/trpg_apple-thief_room.webp",
+      "webp_sha256": "e62ca7808c059c35d59b65af9127ceae1fa82478256c513fccfff6a49edefee8",
+      "spots": {
+        "notebook": {
+          "x": 13,
+          "y": 20
+        },
+        "tree": {
+          "x": 86,
+          "y": 24
+        },
+        "portrait": {
+          "x": 41,
+          "y": 16
+        },
+        "shelf": {
+          "x": 14,
+          "y": 59
+        },
+        "notice": {
+          "x": 57,
+          "y": 88
+        },
+        "chair": {
+          "x": 77,
+          "y": 58
+        }
+      },
+      "visualQA": "6地点すべて識別可。予告状は封蝋のみで文字なし。A/Cも可だが、Bが配合帳・香り棚・椅子の位置に最も近い。",
+      "hotspotQA": "肖像画は中央上の見出し文字と重ならないよう額の左縁へ。予告状は皿の上の封筒へ下げた。1280×720の実画面で輪と対象物・見出し文字の重なりを確認（2026-11-02）"
+    },
+    {
+      "scenario": "shark-island",
+      "adopted": "b",
+      "source": "asset_sources/trpg-scenarios/candidates-20261102/shark-island/background-b.png",
+      "source_sha256": "afb3b132a480b22e09f4c7417c77e8523f0cc7ef2ffc88545861fd7735b987f2",
+      "source_size": [
+        1672,
+        941
+      ],
+      "processing": "crop (0,0,1671,940) to 16:9 -> LANCZOS 1280x720 -> PNG; WebP via remake/tools/build_manifest.py --backgrounds-only",
+      "png": "assets/backgrounds/trpg_shark-island_room.png",
+      "png_sha256": "f9da9f0a53984391a4b9c4090acdb35b0f9b26219ccb059db9388b14087db82c",
+      "webp": "remake/img/backgrounds/trpg_shark-island_room.webp",
+      "webp_sha256": "c24ee2417b79c35a02d63560b42aab17fbcee862d8aff00bf829126434dc2c1b",
+      "spots": {
+        "map": {
+          "x": 13,
+          "y": 24
+        },
+        "pedestal": {
+          "x": 79,
+          "y": 22
+        },
+        "graffiti": {
+          "x": 37,
+          "y": 33
+        },
+        "water": {
+          "x": 58,
+          "y": 56
+        },
+        "anchor": {
+          "x": 91,
+          "y": 66
+        },
+        "footprints": {
+          "x": 30,
+          "y": 84
+        }
+      },
+      "visualQA": "地図・台座・落書き・サメの影・錨・足跡すべて識別可。地図は記号のみ。",
+      "hotspotQA": "落書きを見出しの下、錨と足跡を実物へ移動。1280×720の実画面で輪と対象物・見出し文字の重なりを確認（2026-11-02）"
+    },
+    {
+      "scenario": "mist-kingdom",
+      "adopted": "b",
+      "source": "asset_sources/trpg-scenarios/candidates-20261102/mist-kingdom/background-b.png",
+      "source_sha256": "9cba677531c3cf94940f816440e899c096ef005c9f6ec96ce910d015702f828e",
+      "source_size": [
+        1672,
+        941
+      ],
+      "processing": "crop (0,0,1671,940) to 16:9 -> LANCZOS 1280x720 -> PNG; WebP via remake/tools/build_manifest.py --backgrounds-only",
+      "png": "assets/backgrounds/trpg_mist-kingdom_room.png",
+      "png_sha256": "c2a854c35e895a2b87977fae93500b19b1e3fcb3054f900926120c3f5dfd737f",
+      "webp": "remake/img/backgrounds/trpg_mist-kingdom_room.webp",
+      "webp_sha256": "68d155e51926f6e521d18ad0a7cf932564cad914944fb94813ca7d6045f0234d",
+      "spots": {
+        "throne": {
+          "x": 51,
+          "y": 37
+        },
+        "portrait": {
+          "x": 22,
+          "y": 22
+        },
+        "window": {
+          "x": 85,
+          "y": 24
+        },
+        "judges": {
+          "x": 36,
+          "y": 58
+        },
+        "shelf": {
+          "x": 74,
+          "y": 57
+        },
+        "corridor": {
+          "x": 6,
+          "y": 68
+        }
+      },
+      "visualQA": "6地点識別可、人物なし。3案とも画面上部が白く明るく、見出し文字のコントラストは弱め。",
+      "hotspotQA": "玉座は見出しと重ならない座面へ、回廊は左端の消えゆく回廊へ。1280×720の実画面で輪と対象物・見出し文字の重なりを確認（2026-11-02）"
+    },
+    {
+      "scenario": "smoke-robot",
+      "adopted": "b",
+      "source": "asset_sources/trpg-scenarios/candidates-20261102/smoke-robot/background-b.png",
+      "source_sha256": "f381ef294feb52ec2d8a04152842c5e79da4cb0f58a9ec5e7408ec84fec34095",
+      "source_size": [
+        1672,
+        941
+      ],
+      "processing": "crop (0,0,1671,940) to 16:9 -> LANCZOS 1280x720 -> PNG; WebP via remake/tools/build_manifest.py --backgrounds-only",
+      "png": "assets/backgrounds/trpg_smoke-robot_room.png",
+      "png_sha256": "569b0529be81e048c5ec6423da303e6602f09e3ae9ff6e753e8b57257bfceb19",
+      "webp": "remake/img/backgrounds/trpg_smoke-robot_room.webp",
+      "webp_sha256": "ae8ab4af005cf79d4845004aea941a14f43ba386d6829b5b9e476c856e3b1c0e",
+      "spots": {
+        "bench": {
+          "x": 50,
+          "y": 59
+        },
+        "window": {
+          "x": 72,
+          "y": 22
+        },
+        "storage": {
+          "x": 90,
+          "y": 56
+        },
+        "comms": {
+          "x": 12,
+          "y": 22
+        },
+        "memo": {
+          "x": 18,
+          "y": 79
+        },
+        "pile": {
+          "x": 40,
+          "y": 34
+        }
+      },
+      "visualQA": "メモは歯車の図だけで文字なし。端末画面の細かい表示は小さく目立たない。シーシャなし（失敗作は汎用の試作部品）。",
+      "hotspotQA": "失敗作の山を見出しの下へ、メモをクリップボードへ移動。1280×720の実画面で輪と対象物・見出し文字の重なりを確認（2026-11-02）"
+    },
+    {
+      "scenario": "fading-familiar",
+      "adopted": "b",
+      "source": "asset_sources/trpg-scenarios/candidates-20261102/fading-familiar/background-b.png",
+      "source_sha256": "00e47bef852729ade3c3b970b419db84dbb6acf46ff3297b02223ec35c60e33d",
+      "source_size": [
+        1672,
+        941
+      ],
+      "processing": "crop (0,0,1671,940) to 16:9 -> LANCZOS 1280x720 -> PNG; WebP via remake/tools/build_manifest.py --backgrounds-only",
+      "png": "assets/backgrounds/trpg_fading-familiar_room.png",
+      "png_sha256": "7cb14fdec1ab8803e7cdf8adaa6de895d9cba22aa005cd0a7be8a1373edc03b7",
+      "webp": "remake/img/backgrounds/trpg_fading-familiar_room.webp",
+      "webp_sha256": "d65e4627e2c04774ecad6876dc2923ded0da5a9b94bf8a77727538e7c9d40c02",
+      "spots": {
+        "bed": {
+          "x": 14,
+          "y": 26
+        },
+        "library": {
+          "x": 86,
+          "y": 22
+        },
+        "garden": {
+          "x": 86,
+          "y": 74
+        },
+        "stairs": {
+          "x": 53,
+          "y": 34
+        },
+        "board": {
+          "x": 18,
+          "y": 58
+        },
+        "trail": {
+          "x": 50,
+          "y": 82
+        }
+      },
+      "visualQA": "掲示の紙は無地。Aは掲示紙に疑似文字あり。",
+      "hotspotQA": "階段・掲示板・薬草園を実物へ移動。1280×720の実画面で輪と対象物・見出し文字の重なりを確認（2026-11-02）"
+    },
+    {
+      "scenario": "fox-market",
+      "adopted": "b",
+      "source": "asset_sources/trpg-scenarios/candidates-20261102/fox-market/background-b.png",
+      "source_sha256": "7e4c5d96325783bba54fe1d4b851788a949b7cd8d3bebad11bdf8f82f8e2e4a9",
+      "source_size": [
+        1672,
+        941
+      ],
+      "processing": "crop (0,0,1671,940) to 16:9 -> LANCZOS 1280x720 -> PNG; WebP via remake/tools/build_manifest.py --backgrounds-only",
+      "png": "assets/backgrounds/trpg_fox-market_room.png",
+      "png_sha256": "6a47e6dbc25adf27111fd043ecc0cfd5ed5ce7b5250876529eed0df44d34c5d1",
+      "webp": "remake/img/backgrounds/trpg_fox-market_room.webp",
+      "webp_sha256": "125b4560c6332e687be260f503424a3c805a3ed2dbacb1c72fa97a5c121ac305",
+      "spots": {
+        "mask": {
+          "x": 17,
+          "y": 32
+        },
+        "goldfish": {
+          "x": 25,
+          "y": 70
+        },
+        "torii": {
+          "x": 74,
+          "y": 17
+        },
+        "cotton": {
+          "x": 49,
+          "y": 38
+        },
+        "bell": {
+          "x": 62,
+          "y": 86
+        },
+        "board": {
+          "x": 90,
+          "y": 46
+        }
+      },
+      "visualQA": "掲示板の紙は無地、人物なし。Cは紙に疑似文字。",
+      "hotspotQA": "掲示板・鳥居・鈴を実物へ移動。1280×720の実画面で輪と対象物・見出し文字の重なりを確認（2026-11-02）"
+    },
+    {
+      "scenario": "stage-ghost",
+      "adopted": "a",
+      "source": "asset_sources/trpg-scenarios/candidates-20261102/stage-ghost/background-a.png",
+      "source_sha256": "a2bb7ce184f91ced371cd47fa33fc42b3eb0cbe71419a4e5224673eecea54e8e",
+      "source_size": [
+        1672,
+        941
+      ],
+      "processing": "crop (0,0,1671,940) to 16:9 -> LANCZOS 1280x720 -> PNG; WebP via remake/tools/build_manifest.py --backgrounds-only",
+      "png": "assets/backgrounds/trpg_stage-ghost_room.png",
+      "png_sha256": "7bcf78b8c48965ecb6abd01ee24cf4546d195e72496ca6249c0e535d85474469",
+      "webp": "remake/img/backgrounds/trpg_stage-ghost_room.webp",
+      "webp_sha256": "a6306a5a102278436d1c577c676f7e027f810906d098838e01b2ea709a447eae",
+      "spots": {
+        "curtain": {
+          "x": 50,
+          "y": 42
+        },
+        "mirror": {
+          "x": 10,
+          "y": 22
+        },
+        "lights": {
+          "x": 88,
+          "y": 16
+        },
+        "frontrow": {
+          "x": 50,
+          "y": 82
+        },
+        "shelf": {
+          "x": 14,
+          "y": 60
+        },
+        "board": {
+          "x": 91,
+          "y": 62
+        }
+      },
+      "visualQA": "掲示の紙は無地。Bは右奥の非常口サインに疑似文字、Cは掲示紙に薄い走り書き。",
+      "hotspotQA": "楽屋の鏡・照明室・掲示を実物へ移動。1280×720の実画面で輪と対象物・見出し文字の重なりを確認（2026-11-02）"
+    },
+    {
+      "scenario": "moonflower-encore",
+      "adopted": "b",
+      "source": "asset_sources/trpg-scenarios/candidates-20261102/moonflower-encore/background-b.png",
+      "source_sha256": "890d48d9315eec3dd339fe16c091c3b622247659cf9a2bb6ea92221615160c1e",
+      "source_size": [
+        1672,
+        941
+      ],
+      "processing": "crop (0,0,1671,940) to 16:9 -> LANCZOS 1280x720 -> PNG; WebP via remake/tools/build_manifest.py --backgrounds-only",
+      "png": "assets/backgrounds/trpg_moonflower-encore_room.png",
+      "png_sha256": "cc15d57d5e445e00a7e4a15fce37443f11d4d2eb7c9815133abc1ef44f78c622",
+      "webp": "remake/img/backgrounds/trpg_moonflower-encore_room.webp",
+      "webp_sha256": "51ac5084efd1c8da8acea39641d02fa0176ac48b7fdcc05ad0a7ebae25ba79fc",
+      "spots": {
+        "stage": {
+          "x": 40,
+          "y": 33
+        },
+        "nameplates": {
+          "x": 23,
+          "y": 55
+        },
+        "score": {
+          "x": 13,
+          "y": 22
+        },
+        "garden": {
+          "x": 74,
+          "y": 38
+        },
+        "portrait": {
+          "x": 92,
+          "y": 26
+        },
+        "keys": {
+          "x": 50,
+          "y": 84
+        }
+      },
+      "visualQA": "6地点識別可。Cは右側が断面コラージュ風の構造で不採用。幽霊客は描かない指定どおり。",
+      "hotspotQA": "舞台を見出しの下の壇上へ、肖像画を右壁の額へ、月光花を庭の白い花へ。1280×720の実画面で輪と対象物・見出し文字の重なりを確認（2026-11-02）"
+    },
+    {
+      "scenario": "purikura-hero",
+      "adopted": "c",
+      "source": "asset_sources/trpg-scenarios/candidates-20261102/purikura-hero/background-c.png",
+      "source_sha256": "1a9aa892e041dbdac8ecf53524d3d7307dc6d65c9487d23e752f57f56f8d96b4",
+      "source_size": [
+        1672,
+        941
+      ],
+      "processing": "crop (0,0,1671,940) to 16:9 -> LANCZOS 1280x720 -> PNG; WebP via remake/tools/build_manifest.py --backgrounds-only",
+      "png": "assets/backgrounds/trpg_purikura-hero_room.png",
+      "png_sha256": "0d9a2ca49f4330655126204a7a36c74eb0bdc3894b9558671271b85ba51776c4",
+      "webp": "remake/img/backgrounds/trpg_purikura-hero_room.webp",
+      "webp_sha256": "de108ea477dabb4fddfb1d2f31c000f101edecb90a10ed500b321e847b8c7f1c",
+      "spots": {
+        "plaza": {
+          "x": 24,
+          "y": 60
+        },
+        "showcase": {
+          "x": 12,
+          "y": 26
+        },
+        "sign": {
+          "x": 57,
+          "y": 36
+        },
+        "mirror": {
+          "x": 86,
+          "y": 26
+        },
+        "purikura": {
+          "x": 41,
+          "y": 86
+        },
+        "throne": {
+          "x": 62,
+          "y": 16
+        }
+      },
+      "visualQA": "看板・玉座・鏡の間が分かれて識別できる。A/Bは看板と玉座が縦に近い。落とし物のプリは顔なしの枠のみ。",
+      "hotspotQA": "看板を城門上の飾り枠、玉座・鏡の間を実物へ移動。1280×720の実画面で輪と対象物・見出し文字の重なりを確認（2026-11-02）"
+    },
+    {
+      "scenario": "doll-requiem",
+      "adopted": "c",
+      "source": "asset_sources/trpg-scenarios/candidates-20261102/doll-requiem/background-c.png",
+      "source_sha256": "58f860a06ad10d4201b2a778bd1fbb037feb13a40920b0c438b55a51b0d653ff",
+      "source_size": [
+        1672,
+        941
+      ],
+      "processing": "crop (0,0,1671,940) to 16:9 -> LANCZOS 1280x720 -> PNG; WebP via remake/tools/build_manifest.py --backgrounds-only",
+      "png": "assets/backgrounds/trpg_doll-requiem_room.png",
+      "png_sha256": "44506fd3f7e91b813e8b3217f1eea7b5126d6f350702b0b628b8d26f01941035",
+      "webp": "remake/img/backgrounds/trpg_doll-requiem_room.webp",
+      "webp_sha256": "eea2c613db51f28c05d7166e137b186f0f5237fb9b489ffc98ee3affdbfacc67",
+      "spots": {
+        "shelf": {
+          "x": 13,
+          "y": 30
+        },
+        "stage": {
+          "x": 58,
+          "y": 33
+        },
+        "diary": {
+          "x": 82,
+          "y": 32
+        },
+        "pane": {
+          "x": 84,
+          "y": 60
+        },
+        "clock": {
+          "x": 52,
+          "y": 50
+        },
+        "musicbox": {
+          "x": 17,
+          "y": 72
+        }
+      },
+      "visualQA": "6地点とも対象物がある。人形は小さな無生物として描写。",
+      "hotspotQA": "小さな舞台を見出しと重ならない舞台の前縁へ、柱時計を文字盤へ移動。1280×720の実画面で輪と対象物・見出し文字の重なりを確認（2026-11-02）"
+    }
+  ],
+  "choices": [
+    {
+      "scenario": "leaf-mail",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_leaf-mail_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-leaf-mail.png",
+      "pngSizeBytes": 1418249,
+      "png_sha256": "d492d1b6b21a07f4d15aea0ef1c6129a360bb1cc55324fdd8c2576c6e8f6bf24",
+      "webp": "remake/img/ui/trpg/choices-leaf-mail.webp",
+      "webpSizeBytes": 1072592,
+      "webp_sha256": "fa059d2dc413c4f9cabf9527288eca08934c950e7c573052e2255dee9ca8a67c",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "apple-thief",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_apple-thief_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-apple-thief.png",
+      "pngSizeBytes": 1331225,
+      "png_sha256": "4547c68affc433a745900aaee7e9e2722beac9ae5c46eae944c612639bffede9",
+      "webp": "remake/img/ui/trpg/choices-apple-thief.webp",
+      "webpSizeBytes": 1003080,
+      "webp_sha256": "c5bfcc6d2f246af0d69ec51971e6b0838f9d68bce8dc1624b6bf9b5737d7a310",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "shark-island",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_shark-island_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-shark-island.png",
+      "pngSizeBytes": 1785937,
+      "png_sha256": "9ec66eaae1c1bad863db9f77ed684f2f168895c36fdf48263394d263daad6ad9",
+      "webp": "remake/img/ui/trpg/choices-shark-island.webp",
+      "webpSizeBytes": 1360110,
+      "webp_sha256": "3f83ebc3a2f5615ba0e38ce31f410fe773db6eb325ceb7e8876ddead393ae6a5",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "mist-kingdom",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_mist-kingdom_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-mist-kingdom.png",
+      "pngSizeBytes": 1742052,
+      "png_sha256": "eb9d260eae7ba625ea220518cd19b19eaef2361a67bfb13853406135c0ad9a9a",
+      "webp": "remake/img/ui/trpg/choices-mist-kingdom.webp",
+      "webpSizeBytes": 1316288,
+      "webp_sha256": "c5686d3750b5673fe00e2f31a818b93cb7427ff06010a72a0f852abad691f7f2",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "smoke-robot",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_smoke-robot_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-smoke-robot.png",
+      "pngSizeBytes": 1386513,
+      "png_sha256": "7a85591e76da6e784e2bbdb535ae126463aed7f8b1aac3ee8b57ca629525a2da",
+      "webp": "remake/img/ui/trpg/choices-smoke-robot.webp",
+      "webpSizeBytes": 1048208,
+      "webp_sha256": "6ae506a46fafd1d641dd7dd49d8564d1a74a6c54ae014bd7465ca51bea8fe481",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "fading-familiar",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_fading-familiar_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-fading-familiar.png",
+      "pngSizeBytes": 1429004,
+      "png_sha256": "1258a55f8e84950b817eb507cf4761bd3690d25c3740854c629000217a9cfc87",
+      "webp": "remake/img/ui/trpg/choices-fading-familiar.webp",
+      "webpSizeBytes": 1089920,
+      "webp_sha256": "f5299a4771ee4b97172d7b66eab6920baa5c9e556b6612a9c5309423dde5b0f0",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "fox-market",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_fox-market_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-fox-market.png",
+      "pngSizeBytes": 1438692,
+      "png_sha256": "25239487a141a2c8450b297953dc79aa4c334d181e220bde7b82363e2f2adbd5",
+      "webp": "remake/img/ui/trpg/choices-fox-market.webp",
+      "webpSizeBytes": 1142446,
+      "webp_sha256": "b73f606333cfef033404505368940625c88a76200fbfdc53b47f177ac347a2f8",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "stage-ghost",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_stage-ghost_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-stage-ghost.png",
+      "pngSizeBytes": 1352074,
+      "png_sha256": "61847c6945a68582e680bd738e6985f84b583d89c321928f07e8887831c27e02",
+      "webp": "remake/img/ui/trpg/choices-stage-ghost.webp",
+      "webpSizeBytes": 1005436,
+      "webp_sha256": "bca17744a2ee5b517c7945cdd6545a4563e16c29cd313b487aa3f5ebe5744e62",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "moonflower-encore",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_moonflower-encore_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-moonflower-encore.png",
+      "pngSizeBytes": 1345134,
+      "png_sha256": "5bb280953271f2fb1fefb36c9b37251686c82f62de61eacbe3e6bd32e6ba3413",
+      "webp": "remake/img/ui/trpg/choices-moonflower-encore.webp",
+      "webpSizeBytes": 1045140,
+      "webp_sha256": "4a93de05969336cd8a86b3f3898fceb11fa67001b1dffc6313199e068e5db874",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "purikura-hero",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_purikura-hero_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-purikura-hero.png",
+      "pngSizeBytes": 1854200,
+      "png_sha256": "9fe365c7885be7bf37c881087456e6dbfb3188dee5fc7772536b22a478bc7e19",
+      "webp": "remake/img/ui/trpg/choices-purikura-hero.webp",
+      "webpSizeBytes": 1469628,
+      "webp_sha256": "9c1f94ab56ecec3630e892d67f35f4b247722bc0cac2fada21d0836b3b80c56e",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    },
+    {
+      "scenario": "doll-requiem",
+      "date": "2026-11-02",
+      "sourcePrompt": "asset_sources/trpg-scenarios/README.md choices atlas block plus Issue #2344 exact layout and no-hardware sentences",
+      "backgroundReference": "remake/img/backgrounds/trpg_doll-requiem_room.webp (color palette only; hand-painted style fixed)",
+      "png": "assets/ui/trpg/choices-doll-requiem.png",
+      "pngSizeBytes": 1589735,
+      "png_sha256": "46c72bc5c637b7033191eaa8515b20d20f130b10c2d620d1cac25adcfd7c838b",
+      "webp": "remake/img/ui/trpg/choices-doll-requiem.webp",
+      "webpSizeBytes": 1173712,
+      "webp_sha256": "20eadd1c2f09d8fc4699d6909acc94b37cffdcb85f433380e9bbf6fc01633ed4",
+      "size": [
+        1020,
+        1700
+      ],
+      "visualQA": "15マス原寸切り出し確認。各マス正方形、内側15%余白、マス越境・伸び・文字・人物の顔・シーシャ機材なし。背景は透過、色調は各物語の背景と照合。"
+    }
+  ]
+}

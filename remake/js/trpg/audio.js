@@ -50,9 +50,32 @@ export function createTrpgAudio(initialTheme = "harbor") {
     o.onended = () => { voices.delete(o); o.disconnect(); g.disconnect(); };
     o.start(now); o.stop(now + duration + .01);
   }
+  let grainBuffer = null;
+  // A short filtered noise burst: dice hitting wood and felt, or paper sliding across the table.
+  function grain(delay, duration, volume, frequency, q = 1.4, type = "bandpass") {
+    if (!grainBuffer) {
+      grainBuffer = context.createBuffer(1, Math.floor(context.sampleRate * .6), context.sampleRate);
+      const data = grainBuffer.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    }
+    const source = context.createBufferSource(), filter = context.createBiquadFilter(), g = context.createGain();
+    const now = context.currentTime + delay;
+    source.buffer = grainBuffer; filter.type = type; filter.frequency.value = frequency; filter.Q.value = q;
+    g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(volume, now + .004);
+    g.gain.exponentialRampToValueAtTime(.0001, now + duration);
+    source.connect(filter).connect(g).connect(master); voices.add(source);
+    source.onended = () => { voices.delete(source); source.disconnect(); filter.disconnect(); g.disconnect(); };
+    source.start(now, Math.random() * .4); source.stop(now + duration + .02);
+  }
+  const clack = (delay, volume) => { grain(delay, .05, volume, 2600 + Math.random() * 900, 2.2); tone(190 + Math.random() * 70, delay, .06, volume * .55, "triangle"); };
+  const rattle = times => times.forEach(delay => grain(delay, .035, .045, 4200, 3));
   function play(kind = "tap") {
     if (disposed || !enabled || !context || context.state !== "running") return;
-    if (kind === "roll") [0, .12, .26, .4].forEach((delay, i) => tone(170 + i * 18, delay, .075, .15, "triangle"));
+    // Shaken in the hand, then two dice land on the tray: hits matched to the throw animation.
+    if (kind === "roll") { rattle([0, .05, .1, .16, .21]); [[.37, .16], [.44, .13], [.66, .1], [.73, .085], [.87, .055], [.93, .04]].forEach(([d, v]) => clack(d, v)); }
+    else if (kind === "rethrow") { rattle([0, .06, .12]); [[.3, .14], [.5, .09], [.62, .05]].forEach(([d, v]) => clack(d, v)); }
+    else if (kind === "card") { grain(0, .16, .07, 1500, .7, "lowpass"); tone(620, .1, .05, .04, "triangle"); }
+    else if (kind === "slip") { grain(0, .22, .05, 2200, .8); grain(.5, .06, .05, 900, 1.2); }
     else if (kind === "clue") { tone(523.25, 0, .19, .06); tone(783.99, .08, .28, .04); }
     else if (kind === "success") { tone(130.81, 0, .18, .16, "triangle"); [523.25, 659.25, 783.99].forEach((f, i) => tone(f, .035 + i * .07, .35, .075)); }
     else if (kind === "mixed") { tone(174.61, 0, .16, .13, "triangle"); tone(440, .09, .24, .06); }

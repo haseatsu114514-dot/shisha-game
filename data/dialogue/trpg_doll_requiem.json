@@ -89,7 +89,8 @@
           "nerve": 1
         },
         "trait": "かわいい服なら一晩で縫う。人形は、怖いより先にかわいい",
-        "likes": "フリルとリボンと、白と赤のグミ"
+        "likes": "フリルとリボンと、白と赤のグミ",
+        "portrait": "../../img/ui/trpg/pc-doll-requiem-kirara.webp"
       }
     },
     {
@@ -110,7 +111,8 @@
           "nerve": 2
         },
         "trait": "指先ひとつで人形を直す、儚い人形師。なぜか斧を一本、背負っている",
-        "likes": "ゆるい顔のぬいぐるみと、斧投げ"
+        "likes": "ゆるい顔のぬいぐるみと、斧投げ",
+        "portrait": "../../img/ui/trpg/pc-cecilia.webp"
       }
     }
   ],
@@ -119,21 +121,21 @@
       "id": "shelf",
       "label": "人形の飾り棚",
       "short": "飾り棚",
-      "x": 14,
-      "y": 34
+      "x": 13,
+      "y": 30
     },
     {
       "id": "stage",
       "label": "子ども部屋の小さな舞台",
       "short": "小さな舞台",
-      "x": 50,
-      "y": 26
+      "x": 58,
+      "y": 33
     },
     {
       "id": "diary",
       "label": "書斎の日記",
       "short": "日記",
-      "x": 86,
+      "x": 82,
       "y": 32
     },
     {
@@ -141,21 +143,21 @@
       "label": "雪の窓辺",
       "short": "窓辺",
       "x": 84,
-      "y": 68
+      "y": 60
     },
     {
       "id": "clock",
       "label": "柱時計",
       "short": "柱時計",
-      "x": 50,
-      "y": 72
+      "x": 52,
+      "y": 50
     },
     {
       "id": "musicbox",
       "label": "オルゴールの箱",
       "short": "オルゴール",
-      "x": 16,
-      "y": 70
+      "x": 17,
+      "y": 72
     }
   ],
   "hypotheses": [
@@ -2537,7 +2539,8 @@
     "number": "13",
     "genre": "怖すぎない洋館ミステリー",
     "tagline": "真夜中の鐘までに、人形たちのわけを知る。",
-    "backdrop": "radial-gradient(ellipse at 72% 8%, #ece8ff55 0%, transparent 42%), radial-gradient(ellipse at 18% 92%, #b9a3d933 0%, transparent 50%), linear-gradient(165deg, #3d3060, #171334 72%)",
+    "image": "../../img/backgrounds/trpg_doll-requiem_room.webp",
+    "choiceArt": {"src": "../../img/ui/trpg/choices-doll-requiem.webp", "rowCount": 5, "rows": {"mend": 0, "tea": 1, "call": 2, "tactic": 3, "hypotheses": 4}},
     "sceneAlt": "雪の夜の洋館の広間。人形の飾り棚、子ども部屋の小さな舞台、書斎の日記、雪の窓辺、柱時計、オルゴールの箱。棚に硝子の瞳の人形たち。",
     "location": "霧氷の丘 / 洋館「ラベンダー館」",
     "atmosphere": "降りやまない雪。ラベンダーの香り。硝子の瞳が、灯を映す。",
@@ -2834,7 +2837,7 @@
         "detail": "短い黒髪に、厚手の黒い外套",
         "color": "#2b2733",
         "accent": "#c9a7e0",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-doll-requiem-ink.webp"
       },
       {
         "id": "snow",
@@ -2842,7 +2845,7 @@
         "detail": "雪のような銀の髪と、紺のマフラー",
         "color": "#4a4f63",
         "accent": "#dfe4f0",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-doll-requiem-snow.webp"
       },
       {
         "id": "wine",
@@ -2850,7 +2853,7 @@
         "detail": "赤茶の髪に、ワインレッドの手袋",
         "color": "#5e2a33",
         "accent": "#e29aa8",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-doll-requiem-wine.webp"
       },
       {
         "id": "braid",
@@ -2858,7 +2861,7 @@
         "detail": "長い髪を一つに編み、ラベンダー色の上着",
         "color": "#3a2f4f",
         "accent": "#b9a3d9",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-doll-requiem-braid.webp"
       }
     ],
     "archetypes": [
@@ -2922,7 +2925,8 @@
             "talk": 3,
             "nerve": 1
           },
-          "making": "trpg_doll_requiem_make_ageha_ageha_kirara"
+          "making": "trpg_doll_requiem_make_ageha_ageha_kirara",
+          "portrait": "../../img/ui/trpg/pc-doll-requiem-kirara.webp"
         },
         {
           "id": "marie",
@@ -2936,7 +2940,8 @@
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_doll_requiem_make_ageha_ageha_marie"
+          "making": "trpg_doll_requiem_make_ageha_ageha_marie",
+          "portrait": "../../img/ui/trpg/pc-marie.webp"
         }
       ]
     },
@@ -2954,7 +2959,8 @@
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_doll_requiem_make_hiyori_hiyori_cecilia"
+          "making": "trpg_doll_requiem_make_hiyori_hiyori_cecilia",
+          "portrait": "../../img/ui/trpg/pc-cecilia.webp"
         },
         {
           "id": "chloe",
@@ -2968,7 +2974,8 @@
             "talk": 3,
             "nerve": 3
           },
-          "making": "trpg_doll_requiem_make_hiyori_hiyori_chloe"
+          "making": "trpg_doll_requiem_make_hiyori_hiyori_chloe",
+          "portrait": "../../img/ui/trpg/pc-chloe.webp"
         }
       ]
     }

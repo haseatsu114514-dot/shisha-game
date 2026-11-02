@@ -68,6 +68,20 @@
           "text": "うん。俺も、遅れそうな日は送るよ"
         },
         {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "俺のも入れておいてくれ。手が足りない日は、こっちから声をかける"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_mukai_master"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。呼んでもらえたら、すぐ来ます"
+        },
+        {
           "type": "remember",
           "memory_id": "mukai_master_seat"
         }
@@ -133,6 +147,120 @@
         }
       ],
       "comment": "はじめとプレイヤーは推測できるが、ましろ本人へ噂の正体を告知しない。"
+    },
+    {
+      "dialogue_id": "ch3_mukai_after_tournament",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客が引いた時間に、ムカイさんがカウンターへ皿を一枚置いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "焼いたパンに、目玉焼きが載っている。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "食っていけ。大会の前は、まともに座って食べてなかっただろう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……見てたんですか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "奥の部屋の流しに、皿が一枚もなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "優勝した夜は、ちゃんと食べましたよ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "知ってる。次の朝、皿が一枚あった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（見られてたのは、皿のほうか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口かじると、思っていたより腹が減っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんは？"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "先に帰した。あいつも、この何週間かよく働いた"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "勝ったのは、はじめくんの腕だ。俺は、ここを開けてただけだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "開いてたから、戻ってこられたんです"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "……そうか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんはハットを壁に掛けて、甘いラテを二つ淹れた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "帰るんだろう。地元に"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。スミさんにも、報告しないと"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "また来ればいい。コーヒーくらいは出す"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……ありがとうございます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "甘いラテは、二人で飲むとちょうどよかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【魅力】が少し上がった。"
+        }
+      ],
+      "comment": "大会後のmukai（#2028 残件3・#1658 ⑥）。ムカイさんが、食事と休みで生活を立て直させる保護者役を見せる。大会後の寄り道（ch3-aftermath-progress.js の CH3_AFTERMATH_DETOURS）から一度だけ。屋根裏と鍵の申し出は第5章の場面にあるので、ここでは言わせない。"
     }
   ]
 }

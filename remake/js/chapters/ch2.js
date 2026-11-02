@@ -4,17 +4,17 @@ import { DB, bgUrl } from "../core/data.js";
 import { el, yen } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { storeLogo } from "../core/store-logos.js";
-import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
+import { state, save, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
-import { layers, showScreen, setBg, imageReady, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { layers, showScreen, setBg, imageReady, chapterTitle, toast, withScenePreparation, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { showHud } from "../daily/hud.js";
-import { openStatus } from "../daily/status.js";
-import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { openMenu } from "../daily/menu.js";
+import { openLime, unreadCount } from "../daily/phone.js";
 import { play } from "../vn/engine.js";
-import { glossaryPanel } from "../vn/glossary.js";
 import { MAP, STATION, STOPS, ROOMS, loadChapterTwoDialogues, loadPreparationDialogues } from "./ch2-city-data.js";
 import { trainRide } from "../core/scene-motions.js";
+import { cueTransition } from "../core/transitions.js";
 import { playBgm } from "../core/audio.js";
 import { TRAIN_ICON_SVG } from "../core/train-icon.js";
 import { advanceToChapterTwo, dayOneProgress, cityVisits, recordCityVisit } from "./ch2-progress.js";
@@ -22,7 +22,7 @@ import { advanceToChapterTwo, dayOneProgress, cityVisits, recordCityVisit } from
 import { acceptChapterTwoDeliveries, deliveryPending, finishChapterTwoDelivery, chapterTwoDeliveriesDone, DELIVERY_STOPS, snapshotDeliveryIdentity, confirmDeliveryIdentity, reconcileDeliveryIdentity } from "./ch2-deliveries.js";
 import { openShop } from "../daily/shop.js";
 import { openTrpgBar } from "../daily/trpg.js";
-import { CITY_OUTINGS, CITY_SHOP, knownCityOutings, introduceCitySpot } from "./ch2-outings.js";
+import { CITY_SHOP, knownCityOutings } from "./ch2-outings.js";
 
 import { offerAgehaPurikura } from "./ch2-purikura.js";
 
@@ -101,18 +101,20 @@ async function checkpoint(stage) {
   save();
 }
 
-async function scene(id, label, background, dialogue = id) {
+// place を渡すと、背景の切り替えを入店の幕（行き先の名前つき）で開く（第1章の店に入るときと同じ型）。
+async function scene(id, background, dialogue = id, place = null) {
   const owner = session;
   showHud(false);
   if (!DB.dialogues[id]) throw new Error(`台本がありません: ${id}`);
   owner.scene = id;
   if (background) {
-    await withScenePreparation(setBg(background, { instant: true }));
+    if (place) cueTransition("place", { spotId: place.id, label: place.name, area: CH2_CITY_NAME });
+    await withScenePreparation(setBg(background, { instant: !place }));
   }
   if (!current(owner)) return false;
   playBgm(background?.includes("bg_tonari_inside") ? "tonari" : CITY_BGM);
   showScreen("none", null);
-  layers.hud.replaceChildren(el("div.ch2-vn-label", { text: `第2章・DAY ${chapterDay(state)} ／ ${label}` }));
+  layers.hud.replaceChildren();
   const controller = new AbortController();
   owner.controller = controller;
   const result = await play(dialogue, { signal: controller.signal });
@@ -146,9 +148,9 @@ async function continueDayOne() {
         progress().titleSeen = true;
         save();
       }
-      if (!await scene("remake_ch2_departure", "隣町へ出発", bgUrl("bg_tonari_inside", "day"))) return;
+      if (!await scene("remake_ch2_departure", bgUrl("bg_tonari_inside", "day"))) return;
       if (!state.flags._ch2_deliveries) {
-        if (!await scene("remake_ch2_delivery_offer", "スミさんからの配達", bgUrl("bg_tonari_inside", "day"))) return;
+        if (!await scene("remake_ch2_delivery_offer", bgUrl("bg_tonari_inside", "day"))) return;
         acceptChapterTwoDeliveries(state); save();
       }
       // 電車で隣町へ。車内が通り過ぎる間に駅前へ替える（駅前の絵が遅いときは地図の昼）
@@ -158,7 +160,7 @@ async function continueDayOne() {
     } else if (stage === "arrival") {
       const ready = await withScenePreparation(imageReady(STATION, 15000));
       if (!current(owner)) return;
-      if (!await scene("ch2_city_arrival", "隣町の駅前", ready ? STATION : MAP.day)) return;
+      if (!await scene("ch2_city_arrival", ready ? STATION : MAP.day)) return;
       await checkpoint("map");
     } else if (stage === "map") {
       if (!await mapBackground()) return;
@@ -166,14 +168,14 @@ async function continueDayOne() {
       focus(cityVisits(state).has("c_station") ? "station" : "pin-c_station");
       return;
     } else if (stage === "return") {
-      if (!await scene("ch2_city_return", "地元へ帰る列車", MAP.night)) return;
+      if (!await scene("ch2_city_return", MAP.night)) return;
       await trainRide(() => setBg(bgUrl("bg_tonari_inside", "night"), { instant: true }), { from: "widehanga", to: "home" });
       if (!current(owner)) return;
       state.slot = 1;
       await checkpoint("tonari");
     } else if (stage === "tonari") {
       // 配達の報告は夜の会話の中で読む（#1706）。締めの後に「それと」で報告を継ぎ足さない。
-      if (!await scene("remake_ch2_day1_night", "tonariへ戻る", bgUrl("bg_tonari_inside", "night"))) return;
+      if (!await scene("remake_ch2_day1_night", bgUrl("bg_tonari_inside", "night"))) return;
       if (state.flags._ch2_deliveries?.accepted && !state.flags._ch2_deliveries.reported) {
         state.flags._ch2_deliveries.reported = true; save();
       }
@@ -197,15 +199,6 @@ function greetingWithoutFarewell(id) {
   return { ...dialogue, branches: { ...dialogue.branches, first: first.filter(line => !(line.type === "jump" && line.next_id === farewell)) } };
 }
 
-async function introduceStop(id, background) {
-  const outing = CITY_OUTINGS.find(item => item.introducedBy === id);
-  if (!outing || state.flags[outing.flag]) return true;
-  // 旧版ですでにTRPGを遊んだ人にも紹介台詞を読める。進捗を消さない。
-  if (!await scene(outing.introduction, "街のおすすめ", background)) return false;
-  introduceCitySpot(state, id); save();
-  return true;
-}
-
 async function visit(stop) {
   const owner = session;
   const delivering = deliveryPending(state, stop.id);
@@ -214,7 +207,7 @@ async function visit(stop) {
   // 完読まで面識を確定しない（SKIP/LOAD/中断で面識だけ先に付くのを防ぐ）。
   const restore = tracked ? snapshotDeliveryIdentity(state, stop.id) : null;
   const greeting = `ch2_city_${stop.id}`;
-  if (!await scene(greeting, stop.sceneLabel || stop.name, undefined, delivering ? greetingWithoutFarewell(greeting) : greeting)) { restore?.(); return; }
+  if (!await scene(greeting, undefined, delivering ? greetingWithoutFarewell(greeting) : greeting)) { restore?.(); return; }
   // 完読したので面識と名前表示を確定する（台詞の set_flag が失われても整合させる保険・idempotent）。
   if (tracked) confirmDeliveryIdentity(state, stop.id);
   recordCityVisit(state, stop.id); save();
@@ -223,19 +216,19 @@ async function visit(stop) {
     if (!current(owner)) return;
     state.flags._ch2_rules_read = true; save();
   }
-  // 配達と街の紹介は挨拶と同じ店頭（背景を替えない）で読む。室内の絵は店内の場面で初めて出す（#1706）。
+  // 配達は挨拶と同じ店頭（背景を替えない）で読む。室内の絵は店内の場面で初めて出す（#1706）。
+  // 街の遊び場の紹介（ボドゲカフェ・水族館・銭湯）は初日に続けて読まず、DAY2以降にその店へ初めて通った時に読む（VOL13・ch2-preparation.js）。
   if (delivering) {
-    if (!await scene(`remake_ch2_delivery_${stop.id}`, "配達とご挨拶")) return;
+    if (!await scene(`remake_ch2_delivery_${stop.id}`)) return;
     finishChapterTwoDelivery(state, stop.id); save();
   }
-  if (!await introduceStop(stop.id)) return;
   // J05: 配達で来たら、そのまま店内へ入って店主と話す（「店内をのぞく」は出さない）。
   // 室内の絵が間に合わないときだけ、通常訪問と同じ店頭カード（再読み込みできる）に落とす。
   if (delivering && ROOMS[stop.id]) {
     const ready = await withScenePreparation(imageReady(ROOMS[stop.id], 15000));
     if (!current(owner)) return;
     if (ready) {
-      if (!await scene(`ch2_city_${stop.id}_inside`, stop.sceneLabel || stop.name, ROOMS[stop.id])) return;
+      if (!await scene(`ch2_city_${stop.id}_inside`, ROOMS[stop.id], undefined, stop)) return;
       state.flags[`_ch2_city_inside_${stop.id}`] = true; save();
       // あげはのプリクラは入口の機械なので、店内に入ってから撮る。
       if (stop.id === "ageha" && !await offerAgehaPurikura(ROOMS.ageha)) return;
@@ -263,7 +256,7 @@ function renderStop(stop, failed = false) {
         const ready = await withScenePreparation(imageReady(ROOMS[stop.id], 15000));
         if (!current(owner)) return;
         if (!ready) { renderStop(stop, true); return; }
-        if (!await scene(`ch2_city_${stop.id}_inside`, stop.sceneLabel || stop.name, ROOMS[stop.id])) return;
+        if (!await scene(`ch2_city_${stop.id}_inside`, ROOMS[stop.id], undefined, stop)) return;
         state.flags[`_ch2_city_inside_${stop.id}`] = true;
         save();
         if (!await mapBackground()) return;
@@ -312,7 +305,7 @@ function renderMap() {
       return;
     }
     if (stop.outing) {
-      if (!await scene(stop.look, stop.label, stop.previewUrl || MAP.day)) return;
+      if (!await scene(stop.look, stop.previewUrl || MAP.day)) return;
       state.flags[`_ch2_looked_${stop.id}`] = true; save();
       if (await mapBackground()) renderMap();
       return;
@@ -330,7 +323,6 @@ function renderMap() {
         : stop.id === "c_station" ? "C.STATIONと同じビルの県大会ホール。入口と搬入場所を確認する。"
         : pending ? "tonariから預かった包みを渡して、ご挨拶しよう。" : "顔を見て挨拶した店。中をのぞくこともできます。" }),
     ];
-    if (!isStation) details.push(el("p.mi-foot", { text: stop.outing ? "今日は下見。配達の合間に立ち寄れます。" : "初日の配達・下見は代金と行動を使いません。" }));
     if (!isStation || canReturn) details.push(el("button.mi-go", { type: "button", dataset: { test: test("go") }, disabled: session.busy,
       text: isStation ? "tonariへ戻る" : pending ? "配達して挨拶する" : stop.shop ? "仕入れに行く" : stop.outing ? "立ち寄る" : "ここへ行く", onclick: () => go(stop) }));
     info.replaceChildren(...details);
@@ -351,9 +343,9 @@ function renderMap() {
     pins.push(pin);
   }
   info.append(el("h2.mi-banner", { text: "配達しながら、街を知ろう" }),
-    el("p.mi-desc", { text: deliveries?.accepted ? "三つの包みを届けて、会場を下見しよう。回る順番は自由です。行き先を選ぼう。" : "会場の確認と、新しい店へのご挨拶。行き先を選ぼう。" }));
+    el("p.mi-desc", { text: deliveries?.accepted ? "三つの包みを届けて、会場を下見しよう。回る順番は自由で、配達・下見は代金も行動も使いません。行き先を選ぼう。" : "会場の確認と、新しい店へのご挨拶。行き先を選ぼう。" }));
   if (!deliveries) info.append(button("スミさんの配達メモ", "delivery-offer", async () => {
-    if (!await scene("remake_ch2_delivery_offer", "スミさんからの配達", MAP.day)) return;
+    if (!await scene("remake_ch2_delivery_offer", MAP.day)) return;
     acceptChapterTwoDeliveries(state); save();
     if (await mapBackground()) renderMap();
   }));
@@ -366,32 +358,26 @@ function renderMap() {
   layers.hud.replaceChildren(el("div.hud", [
     el("div.hud-card", [el("div.dc-main", [el("div.dc-area", { text: CH2_CITY_EN }), el("div.dc-day", [el("b", { text: chapterDay(state) }), el("small", { text: "/14" })]), el("div.dc-slot", { text: "配達" })]),
       el("div.dc-meta", [el("div.dc-row.money", [el("span", { text: "所持金" }), el("b", { text: yen(state.money) })]), el("div.dc-row", [el("span", { text: "次の大会まで" }), el("b", { text: `あと${chapterDaysLeft(state)}日` })])])]),
-    el("div.hud-right", [el("button.hud-menu", { type: "button", dataset: { test: test("menu") }, onclick: () => perform(openMenu) }, [el("i"), el("span", { text: "MENU" })])]),
+    el("div.hud-right", [
+      el("button.hud-lime", { type: "button", title: "LIME", dataset: { test: test("lime") }, onclick: () => perform(openLimeFromMap) }, [el("span", { text: "LIME" }), el(`em.badge${unreadCount() ? ".single" : ""}`, unreadCount() ? [el("b.badge-number", { text: String(Math.min(unreadCount(), 99)) })] : [])]),
+      el("button.hud-menu", { type: "button", dataset: { test: test("menu") }, onclick: () => perform(openMapMenu) }, [el("i"), el("span", { text: "MENU" })])]),
   ]));
   showHud(true);
 }
 
-async function openMenu() {
+// 第1章以降の日常と同じ全画面MENU（設定・セーブ・ロードはシステムタブ）。手動セーブは地図で行き先を選んでいる時だけ。
+function openMapMenu() {
   const owner = session;
-  const choice = await modal({ title: "MENU", body: `第${state.chapter}章・DAY ${chapterDay(state)} ／ 場面の区切りで自動セーブしています。`, options: [
-    { label: "セーブ", value: "save", test: test("save") }, { label: "ロード", value: "load", test: test("load") },
-    { label: "設定", value: "config", test: test("config") }, { label: "用語集", value: "glossary", test: test("glossary") },
-    { label: "ステータス・人間関係", value: "status", test: test("status") },
-    { label: "大会の規則", value: "rules", test: test("rules") },
-    { label: "タイトルへ戻る", value: "title", test: test("title") },
-    { label: "閉じる", value: null, primary: true },
-  ] });
-  if (!current(owner)) return;
-  if (choice === "save") await saveFlow();
-  if (choice === "config") await (await import("../scenes/title.js")).openConfig();
-  if (choice === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
-  if (choice === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
-  if (choice === "load") {
-    const key = await loadFlow({ inGame: true });
-    if (key && loadFromSlot(key)) { requestResumeOnBoot(); location.reload(); }
-  }
-  if (choice === "status") await openStatus();
-  if (choice === "title") { save(); location.reload(); }
+  return openMenu({ canSave: () => current(owner) && owner.scene === "map", current: () => current(owner), leave: () => {} });
+}
+
+// 日常と同じLIME。初日の地図で行き先を選んでいる時だけ開ける（誘いの予約は受けない）。
+async function openLimeFromMap() {
+  const owner = session;
+  if (owner.scene !== "map" || layers.modal.classList.contains("show")) { toast("LIME は行き先を選んでいるときに開ける"); return; }
+  state.flags._lime_opened = true;
+  await openLime({});
+  if (current(owner)) { save(); renderMap(); }
 }
 
 async function continuePreparation() {

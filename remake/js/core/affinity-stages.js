@@ -47,6 +47,14 @@ export const MASHIRO_AFFINITY_SCENES = ["ch3_mashiro_play_1", "ch3_mashiro_play_
 export const mashiroScenesRead = flags => MASHIRO_AFFINITY_SCENES.every(scene => !!flags?.[`_ch3_read_${scene}`]);
 export const questionDoneKey = id => `_${id}_affinity_question_done`;
 const settled = (s, id) => !!s.finales?.[id] || !!s.flags?.[`_friend_${id}`] || (s.lovers || []).includes(id);
+// サメちゃんの♥4・♥5の来店会話（#2025）。♥3の問いかけの後、締めくくりの前に一本ずつ読む。
+// 締めくくり・友人・恋人へ着地済みの旧セーブには後から出さず、読んだものとして扱う。
+export const SAMECHAN_HEART_EVENTS = [
+  { dialogue: "samechan_shop_heart4", flag: "_samechan_heart4_done", heart: 4 },
+  { dialogue: "samechan_shop_heart5", flag: "_samechan_heart5_done", heart: 5 },
+];
+export const samechanHeartEventDone = (s, event) => settled(s, "samechan") || !!s.flags?.[event.flag];
+export const samechanHeartEventsDone = s => SAMECHAN_HEART_EVENTS.every(event => samechanHeartEventDone(s, event));
 export function questionComplete(s, id) {
   return settled(s, id) || !!s.flags?.[id === "samechan" ? "_samechan_bond_question_done" : questionDoneKey(id)];
 }
@@ -63,6 +71,7 @@ export function pendingAffinityStage(s, id, db = {}) {
     { level: 1, done: (s.story?.samechan || 0) > 0 },
     { level: 2, done: !!flags._samechan_quiet_seat_done },
     { level: 3, done: !!flags._samechan_closing_check_done && questionComplete(s, id) },
+    ...SAMECHAN_HEART_EVENTS.map(event => ({ level: event.heart, scene: event.dialogue, done: samechanHeartEventDone(s, event) })),
   );
   if (id === "hiyori" && db.hiyori?.route?.enabled) {
     const route = db.hiyori.route, events = route.events || [];

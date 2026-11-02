@@ -50,7 +50,7 @@ const all = await loader(async (url, options) => {
 });
 const progress = [];
 // manifest読込前のPNG経路でも、旧版の顔画像キャッシュを使わない。
-assert.equal(all.img("sprites/characters/ageha/chr_ageha_sad.png"), "../assets/sprites/characters/ageha/chr_ageha_sad.png?v=face-restore-20261028");
+assert.equal(all.img("sprites/characters/ageha/chr_ageha_sad.png"), "../assets/sprites/characters/ageha/chr_ageha_sad.png?v=portrait-standard-20261102");
 await all.loadAll((p) => progress.push(p));
 // The restored catalog keeps the saved vanilla ID and the lottery reward aligned.
 const vanilla = all.DB.flavorById.vanilla;
@@ -62,10 +62,10 @@ const vanillaReward = realJSON("../data/kuji.json").grades.g500.prizes.find(item
 assert(vanillaReward.name.startsWith(vanilla.short_name));
 for (const id of ["minto", "ageha"]) {
   for (const face of all.DB.manifest.portraits[id].faces) {
-    const version = id === "ageha" || face === "normal" ? "?v=face-restore-20261028" : "";
+    const version = id === "ageha" || face === "normal" ? "?v=portrait-standard-20261102" : "";
     assert.equal(all.portraitInfo(id, face).src, `img/sprites/characters/${id}/chr_${id}_${face}.webp${version}`);
   }
-  assert.equal(all.faceIconUrl(id), `img/ui/face_icons/face_${id}.webp?v=face-restore-20261028`);
+  assert.equal(all.faceIconUrl(id), `img/ui/face_icons/face_${id}.webp?v=portrait-standard-20261102`);
   assert(all.allFaceIconUrls().includes(all.faceIconUrl(id)), "preload and display use the same revised icon URL");
 }
 assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/bg_tonari_inside_day.webp");
@@ -87,11 +87,12 @@ assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
 const limeMessages = realJSON("../data/lime_messages.json").messages;
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.lime)), limeMessages);
 assert.equal(new Set(all.DB.lime.map(m => m.id)).size, all.DB.lime.length);
-assert.deepEqual(Array.from(all.DB.lime.slice(-3), m => m.id), [
+assert.deepEqual(Array.from(all.DB.lime.slice(-7), m => m.id), [
   "lime_naru_samechan_nickname", "lime_samechan_preparing_thanks", "lime_samechan_opening",
+  "lime_outing_samechan_1", "lime_after_outing_samechan", "lime_outing_rin_1", "lime_after_outing_rin",
 ]);
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.limeTemplates)), realJSON("../data/lime_messages.json").templates);
-assert.equal(all.DB.lime.length, 72);
+assert.equal(all.DB.lime.length, 76);
 assert(!all.DB.lime.some(m => m.accept_event === "__hiyori_shop__"));
 assert.equal(all.DB.samechan.lime, undefined);
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");

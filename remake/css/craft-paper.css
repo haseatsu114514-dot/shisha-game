@@ -7,10 +7,10 @@
    文字・数値・針・ゲージはこれまでどおり DOM で動かす。新しいレイアウトや素材は追加しない。
    ============================================================ */
 html .bench[data-mode] {
-  --paper: #30203f; --paper-card: #3d2a50; --paper-line: #76588d; --paper-ink: #fcf8f2; --paper-muted: #d2c2df;
-  --lavender: #dfc6f4; --lavender-soft: #503465; --lavender-line: #aa85c4; --lavender-deep: #382247;
-  --lavender-fill: #69497e; --button-ink: #563768; --button-muted: #76667e;
-  --amber: #e2b86d; --amber-ink: #f3ce89; --amber-soft: #57412e;
+  --paper: #221534; --paper-card: #2e1d45; --paper-line: #5a4475; --paper-ink: #f6f1fa; --paper-muted: #c9a7e6;
+  --lavender: #c9a7e6; --lavender-soft: #2e1d45; --lavender-line: #5a4475; --lavender-deep: #221534;
+  --lavender-fill: #2e1d45; --button-ink: #221534; --button-muted: #c9a7e6;
+  --amber: #e3bd6e; --amber-ink: #e3bd6e; --amber-soft: #4a3521;
   --cool-ink: #91cef4; --warm-ink: #ffb58a; --good-ink: #94deb2; --bad-ink: #ffa3ac;
   --accent: var(--lavender); --accent-2: var(--amber);
   --text: var(--paper-ink); --text-dim: var(--paper-muted); --gold: var(--lavender); --gold-hi: var(--lavender);
@@ -22,11 +22,11 @@ html .bench[data-mode] {
   --cp-button-primary: url("../img/ui/craft-paper/button-lavender.webp");
   --cp-button-amber: url("../img/ui/craft-paper/button-amber.webp");
   --cp-shadow: 0 10px 24px #160b244d;
-  --bench-bg: var(--cp-backdrop) center / cover no-repeat, #30203f;
+  --bench-bg: var(--cp-backdrop) center / cover no-repeat, #150d22;
   background: var(--bench-bg);
   color: var(--paper-ink);
 }
-html .bench[data-mode="tournament"] { --accent: var(--lavender); --accent-2: var(--amber); --bench-bg: var(--cp-backdrop) center / cover no-repeat, #30203f; }
+html .bench[data-mode="tournament"] { --accent: var(--lavender); --accent-2: var(--amber); --bench-bg: var(--cp-backdrop) center / cover no-repeat, #150d22; }
 html .bench[data-mode].thermal-active { --accent: var(--lavender); }
 
 /* ---------------------------------------------------------------- 上の帯（モード・工程） */

@@ -1,40 +1,39 @@
 import { nextTokyoFreeTime } from "../core/tokyo-clock.js";
 import { syncTokyoVisits, tokyoVisitState } from "../core/tokyo-visits.js";
+import { CH3_INTRO_SCENES, chapterThreeScenes } from "./ch3-scenes.js";
+export { CH3_INTRO_SCENES, chapterThreeScenes } from "./ch3-scenes.js";
 import { recordChapterThreeStoryLime } from "./ch3-story-lime.js";
-// 第3章の東京到着から全国大会前夜。読了した場面だけを確定する。
-// day は章内の日付。通算の value.day は startDay から換算する。
-const LEGACY_SCENES = Object.freeze([
-  { id: "ch3_opening", day: 1, slot: 0, label: "東京へ", location: "東京駅", bg: "bg_street_day" },
-  { id: "ch3_mukai_arrival", day: 1, slot: 1, label: "mukaiの扉", location: "mukai", bg: "bg_mukai_shop" },
-  { id: "ch3_mukai_intro", day: 2, slot: 0, label: "新しい店の朝", location: "mukai", bg: "bg_mukai_shop" },
-  { id: "ch3_individuality_doubt", day: 2, slot: 1, label: "肩に残る勝利", location: "東京", bg: "bg_street_night" },
-  { id: "ch3_tokyo_shop_gap", day: 3, slot: 0, label: "違う店の手つき", location: "東京の店", bg: "bg_hideaway" },
-  { id: "ch3_double_apple_incident", day: 3, slot: 1, label: "閉店後の一台", location: "mukai", bg: "bg_mukai_shop" },
-  { id: "ch3_rest_before_recovery", day: 4, slot: 0, label: "作れない日の席", location: "mukai", bg: "bg_mukai_shop" },
-  { id: "ch3_daily_cup_1", day: 4, slot: 1, label: "今日の一台", location: "mukai", bg: "bg_mukai_shop" },
-  { id: "ch3_taste_return", day: 5, slot: 1, label: "ダブルアップルの輪郭", location: "mukai", bg: "bg_mukai_shop" },
-  { id: "ch3_abyss_recovery", day: 6, slot: 0, label: "昨日とは違う今日", location: "mukai", bg: "bg_mukai_shop" },
-  { id: "ch3_naru_contact_before_tournament", day: 7, slot: 1, label: "自分からの電話", location: "東京", bg: "bg_street_night" },
-  { id: "ch3_naru_work", day: 7, slot: 1, label: "もう一つの予選", location: "東京", bg: "bg_street_night" },
-  { id: "ch3_kuze_first", day: 8, slot: 0, label: "煙幕", location: "煙幕", bg: "bg_yohaku_shop" },
-  { id: "ch3_kuze_advice", day: 11, slot: 0, label: "予想の外側", location: "煙幕", bg: "bg_yohaku_shop" },
-  { id: "ch3_steve_low_heat", day: 11, slot: 1, label: "待つためのタイマー", location: "Smoke & Glory", bg: "bg_steve_shop" },
-  { id: "ch3_volk_first", day: 12, slot: 1, label: "鉄の煙", location: "鉄の煙", bg: "bg_volk_shop" },
-  { id: "ch3_strategy", day: 13, slot: 0, label: "残したいもの", location: "mukai", bg: "bg_mukai_shop" },
-  { id: "ch3_tournament_eve", day: 13, slot: 1, label: "全国大会の前夜", location: "東京", bg: "bg_street_night" },
-]);
-// 既存の東京セーブは旧行程を続ける。新規開始だけ中盤の積み重ねを通る。
-export const CH3_INTRO_SCENES = Object.freeze([
-  ...LEGACY_SCENES.slice(0, 8),
-  { id: "ch3_work_without_taste", day: 5, slot: 1, label: "分かることを伝える", location: "mukai", bg: "bg_mukai_shop" },
-  ...LEGACY_SCENES.slice(10, 13),
-  { id: "ch3_kuze_mukai_visit", day: 9, slot: 0, label: "客席の久世", location: "mukai", bg: "bg_mukai_shop" },
-  { ...LEGACY_SCENES[8], day: 10, slot: 1 },
-  { ...LEGACY_SCENES[9], day: 11, slot: 0 },
-  ...LEGACY_SCENES.slice(13),
-]);
-export const chapterThreeScenes = value => value?.flags?._ch3_intro?.routeVersion === 2
-  ? CH3_INTRO_SCENES : LEGACY_SCENES;
+import { DEPARTURE_PREP_DAYS } from "../core/chapter-clock.js";
+
+/**
+ * 東京の14日も共通の日常ループで遊ぶ行程（routeVersion 3・VOL03）。場面の並びは版2と同じで、
+ * 昼の行動を使う場面（slot）と夜の予定（night）に分けて日付に置く（DAYは正本の東京DAY）。
+ * 日付・時間帯は日常ループが進めるので、場面の読了で時計を動かさない。
+ */
+export const CH3_DAILY_PLAN = Object.freeze({
+  ch3_opening: { kind: "slot", day: 1, slot: 0 },
+  ch3_mukai_arrival: { kind: "slot", day: 1, slot: 1 },
+  ch3_mukai_intro: { kind: "slot", day: 2, slot: 0 },
+  ch3_individuality_doubt: { kind: "night", day: 2 },
+  ch3_tokyo_shop_gap: { kind: "slot", day: 3, slot: 0 },
+  ch3_double_apple_incident: { kind: "night", day: 3 },
+  ch3_rest_before_recovery: { kind: "slot", day: 4, slot: 0 },
+  ch3_daily_cup_1: { kind: "night", day: 4 },
+  ch3_work_without_taste: { kind: "night", day: 5 },
+  ch3_naru_contact_before_tournament: { kind: "night", day: 7 },
+  ch3_naru_work: { kind: "night", day: 7 },
+  ch3_kuze_first: { kind: "slot", day: 8, slot: 0 },
+  // DAY9の久世来店は強制だが行動枠を使わない（正本「一度の崩れと、続いていく回復」）。
+  ch3_kuze_mukai_visit: { kind: "night", day: 9 },
+  ch3_taste_return: { kind: "night", day: 10 },
+  ch3_abyss_recovery: { kind: "slot", day: 11, slot: 0 },
+  ch3_kuze_advice: { kind: "slot", day: 11, slot: 0 },
+  ch3_steve_low_heat: { kind: "night", day: 11 },
+  ch3_volk_first: { kind: "night", day: 12 },
+  ch3_strategy: { kind: "slot", day: 13, slot: 0 },
+  ch3_tournament_eve: { kind: "night", day: 13 },
+});
+export const chapterThreeDaily = value => value?.chapter === 3 && value.flags?._ch3_intro?.routeVersion === 3;
 
 /** 第2章の優勝と後日談を終えた保存だけ、東京の初日へ進める。 */
 export function canAdvanceToChapterThree(value) {
@@ -51,7 +50,34 @@ export function advanceToChapterThree(value) {
   value.slot = 0;
   value.phase = "opening";
   value.statsAtChapterStart = { ...value.stats };
-  value.flags._ch3_intro = { startDay: value.day, stage: 0, titleSeen: false, prologueStep: 0, routeVersion: 2 };
+  // 出発前の3日を地元で過ごしてから東京へ（VOL02）。章頭の回想・章題・準備・出発は chapters/ch3.js の renderPrep。
+  // 東京DAY1は出発の朝（準備の最後の日の翌朝）。出発時に実際の日付で確定し直す。
+  value.flags._ch3_prep = { startDay: value.day, days: DEPARTURE_PREP_DAYS, step: 0, departed: false };
+  value.flags._ch2_region = "home";
+  value.flags._ch3_intro = { startDay: value.day + DEPARTURE_PREP_DAYS, stage: 0, titleSeen: false, routeVersion: 3 };
+  return true;
+}
+
+/** 出発前の準備期間（VOL02）が終わって出発の朝に着いたか。準備期間の無い旧保存は false。 */
+export const chapterThreePrepPending = value => {
+  const prep = value?.flags?._ch3_prep;
+  return value?.chapter === 3 && !!prep && !prep.departed;
+};
+
+/**
+ * 出発の朝（準備の最後の日の翌朝）に東京DAY1を確定する。以後は東京の行程（場面の順と自由時間）のまま。
+ * 準備期間の無い保存・まだ出発の朝でない保存・出発済みは false（何も変えない）。
+ */
+export function departChapterThree(value) {
+  const prep = value?.flags?._ch3_prep;
+  if (!chapterThreePrepPending(value) || !Number.isInteger(prep.startDay) || !Number.isInteger(prep.days)
+    || value.day < prep.startDay + prep.days) return false;
+  const progress = chapterThreeProgress(value);
+  prep.departed = true;
+  progress.startDay = value.day;
+  value.slot = 0;
+  value.phase = "opening";
+  value.flags._ch2_region = "home";
   return true;
 }
 
@@ -62,7 +88,7 @@ export function chapterThreeProgress(value) {
   if (!Number.isInteger(progress.startDay) || progress.startDay < 1
     || !Number.isInteger(progress.stage) || progress.stage < 0 || progress.stage > chapterThreeScenes(value).length
     || typeof progress.titleSeen !== "boolean"
-    || (progress.routeVersion !== undefined && progress.routeVersion !== 2)
+    || (progress.routeVersion !== undefined && progress.routeVersion !== 2 && progress.routeVersion !== 3)
     || (progress.prologueStep !== undefined && (!Number.isInteger(progress.prologueStep)
       || progress.prologueStep < 0 || progress.prologueStep > 4))) throw new Error("東京編の保存地点を確認できません");
   return progress;
@@ -74,6 +100,8 @@ export function completeChapterThreeScene(value, sceneId) {
   if (chapterThreeScenes(value)[progress.stage]?.id !== sceneId || chapterThreeFreeTime(value)) return false;
   recordChapterThreeStoryLime(value, sceneId);
   progress.stage += 1;
+  // 東京も日常ループの行程（版3）は、日付と時間帯を日常ループが進める。
+  if (progress.routeVersion === 3) return true;
   setNextChapterThreeTime(value);
   return true;
 }

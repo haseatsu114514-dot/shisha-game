@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
-import { slashProfile, slashTouchesBullet, slashAngle } from '../js/craft/steam-slash.js';
+import { slashProfile, slashTouchesBullet, slashAngle, sharkPulseTouchesBullet } from '../js/craft/steam-slash.js';
 import { installLoadingComicReader } from './browser/loading_reader.mjs';
 const { chromium } = createRequire(import.meta.url)('playwright');
 for (const [count, reach, recharge] of [[0,80,1.8],[2,80,1.8],[3,90,1.5],[5,90,1.5],[6,100,1.2],[50,100,1.2]]) {
@@ -16,6 +16,9 @@ for (const [count, reach, recharge] of [[0,80,1.8],[2,80,1.8],[3,90,1.5],[5,90,1
     assert(!slashTouchesBullet(b(-20),0,0,angle,reach));
   }
 }
+const sideWord={x:40,y:-5,w:20,h:10};
+assert(!slashTouchesBullet(sideWord,0,0,-Math.PI/2,80));assert(slashTouchesBullet(sideWord,0,0,-Math.PI/2,80,Math.PI/2));
+assert(sharkPulseTouchesBullet({x:-100,y:0,w:20,h:10},0,0,120));assert(!sharkPulseTouchesBullet({x:121,y:0,w:20,h:10},0,0,120));
 const browser = await chromium.launch({headless:true, ...(process.env.CHROME_EXECUTABLE_PATH ? {executablePath:process.env.CHROME_EXECUTABLE_PATH} : {})});
 const shots = process.env.SHOTS;
 if (shots) fs.mkdirSync(shots,{recursive:true});
@@ -30,14 +33,16 @@ const shot=async(page,name)=>{
   await page.evaluate(()=>shotAnimations.forEach(a=>a.play()));
 };
 try {
-  for (const mobile of [false,true]) {
+  for (const [mobile,afterglow,shark] of [[false,false,false],[true,false,false],[false,true,false],[false,false,true]]) {
     const page = await browser.newPage({viewport:mobile?{width:844,height:390}:{width:1280,height:720},hasTouch:mobile,isMobile:mobile,reducedMotion:mobile?'reduce':'no-preference'});
     await installLoadingComicReader(page);
     const errors=[]; page.on('pageerror',e=>errors.push(e.message));
     await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');
     await page.waitForSelector('[data-test="title-new"]');
-    await page.evaluate(async()=>{
+    await page.evaluate(async({afterglow,shark})=>{
+      window.captureGlow=afterglow;window.captureShark=shark;
       const core=await import('./js/core/state.js');core.newGame();core.state.flags._sumi_attack_learned=true;core.state.stamina=80;
+      const growth=await import("./js/core/growth.js");growth.setGrowthPreview(afterglow||shark);if(afterglow)growth.ensureGrowth().nodes=["K22"];if(shark)Object.assign(growth.ensureGrowth(),{nodes:["M-W7"],learned:["M-W7"]});
       window.session=await import('./js/craft/session.js');window.steam=await import('./js/craft/steam.js');
       window.geometry=await import('./js/craft/steam-slash.js');
       __remake.craftTest.auto=null;Math.random=()=>.5;
@@ -71,24 +76,39 @@ try {
           if(button().disabled)return null;
           const all=enemies(),reach=Number(button().dataset.reach);
           for(const target of all.filter(b=>b.word)) {
-            for(const [hx,hy] of [[target.x-12,target.y+target.h+reach*.3],[target.x+target.w+12,target.y+target.h+reach*.3],[target.x+target.w/2,target.y+target.h/2+reach*.65]]) {
+            for(const [hx,hy] of [...(captureShark?[[target.x+target.w+reach*.5,target.y+target.h/2]]:[]),[target.x-12,target.y+target.h+reach*.3],[target.x+target.w+12,target.y+target.h+reach*.3],[target.x+target.w/2,target.y+target.h/2+reach*.65]]) {
               if(hx<16||hx>768||hy<16||hy>398)continue;
               if(all.some(b=>hx>=b.x-8&&hx<=b.x+b.w+8&&hy>=b.y-8&&hy<=b.y+b.h+8))continue;
-              if(geometry.slashTouchesBullet(target,hx,hy,-Math.PI/2,reach))return screenPoint(hx,hy);
+              if(geometry.slashTouchesBullet(target,hx,hy,-Math.PI/2,reach,captureShark?Math.PI/2:undefined)&&(!captureShark||!geometry.slashTouchesBullet(target,hx,hy,-Math.PI/2,reach)))return screenPoint(hx,hy);
             }
           }
         return null;
       };
       window.strike=()=>{
+        const wasGlow=document.querySelector('[data-test="dodge"]').dataset.afterglow==="true";
+        let velocities=new Map();
+        if(captureGlow){
+          const original=new Map(enemies().map(b=>[b.node,b])),previousTime=now;advance();
+          const dt=Math.min(.05,(now-previousTime)/1000);
+          for(const b of enemies()){const p=original.get(b.node);if(p&&dt>0)velocities.set(b.node,{vx:(b.x-p.x)/dt,vy:(b.y-p.y)/dt});}
+        }
         const before=Number(button().dataset.cutWords),profile=geometry.slashProfile(before);
-        const near=enemies().filter(b=>geometry.slashTouchesBullet(b,b.hx,b.hy,-Math.PI/2,profile.reach));
+        const all=enemies();let near=all.filter(b=>geometry.slashTouchesBullet(b,b.hx,b.hy,-Math.PI/2,profile.reach,captureShark?Math.PI/2:undefined));
+        const lateral=near.some(b=>b.word&&!geometry.slashTouchesBullet(b,b.hx,b.hy,-Math.PI/2,profile.reach));
+        if(captureShark&&Math.floor((before+near.filter(b=>b.word).length)/3)>Math.floor(before/3))near=[...new Set([...near,...all.filter(b=>geometry.sharkPulseTouchesBullet(b,b.hx,b.hy,profile.reach*1.5))])];
         const words=near.filter(b=>b.word).length;
         button().dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,pointerType:'touch'}));
+        let slowRatios=[];
+        if(captureGlow){
+          const original=new Map(enemies().map(b=>[b.node,b])),previousTime=now;advance();
+          const dt=Math.min(.05,(now-previousTime)/1000);
+          for(const b of enemies()){const p=original.get(b.node),v=velocities.get(b.node);if(p&&v&&dt>0&&Math.hypot(v.vx,v.vy)>1)slowRatios.push(Math.hypot(b.x-p.x,b.y-p.y)/dt/Math.hypot(v.vx,v.vy));}
+        }
         const halves=[...document.querySelectorAll('.dodge-word-cut')];
-        return {before,words,pieces:halves.length,split:halves.every(n=>n.children.length===2&&n.children[0].textContent===n.children[1].textContent),still:halves.every(n=>[...n.children].every(h=>getComputedStyle(h).animationName==='none')),near:near.length,removed:near.every(b=>!b.node.isConnected),after:Number(button().dataset.cutWords),recharge:Number(button().dataset.cooldown),reach:Number(button().dataset.reach),feedback:document.querySelector('[data-test="slash-feedback"]').textContent};
+        return {lateral,sharkPulse:!!document.querySelector('[data-test="shark-bite"][data-pulse="true"]'),wasGlow,slowRatios,glow:document.querySelector('[data-test="dodge"]').dataset.afterglow,before,words,pieces:halves.length,split:halves.every(n=>n.children.length===2&&n.children[0].textContent===n.children[1].textContent),still:halves.every(n=>[...n.children].every(h=>getComputedStyle(h).animationName==='none')),near:near.length,removed:near.every(b=>!b.node.isConnected),after:Number(button().dataset.cutWords),recharge:Number(button().dataset.cooldown),reach:Number(button().dataset.reach),feedback:document.querySelector('[data-test="slash-feedback"]').textContent};
       };
       start('drill');
-    });
+    },{afterglow,shark});
     await page.waitForFunction(()=>window.button && button() && !button().disabled);
     await page.evaluate(()=>controlFrames());
     await page.waitForFunction(()=>frames.size>0,null,{polling:50});
@@ -113,8 +133,8 @@ try {
     // Empty shot starts cooldown but gives no growth. A repeated pointer can't attack again.
     const empty=await page.evaluate(()=>{const r=strike();strike();return {...r,uses:button().dataset.uses};});
     assert.equal(empty.after,0);assert.equal(empty.feedback,'空振り');assert.equal(empty.uses,'1');
-    let total=0; const tiers=new Set([0]); let objectOnly=false;
-    for(let attempt=0;attempt<12 && total<6;attempt++) {
+    let total=0,cumulative=0,maxSeen=0,measuredSlow=false,lateralSeen=false,pulseSeen=false; const tiers=new Set([0]); let objectOnly=false;
+    for(let attempt=0;attempt<12 && total<(afterglow||shark?3:6);attempt++) {
       const point=await seekShot();
       assert(point,'No reachable real word before steam end');await move(point);
       const result=await page.evaluate(()=>strike());
@@ -122,12 +142,34 @@ try {
       assert.equal(result.pieces,result.words);assert(result.split,'Each cut word should leave two matching clipped halves');
       if(mobile)assert(result.still,'Reduced-motion word halves must not animate');
       if(result.words===0){objectOnly=true;assert.equal(result.after,result.before);}
-      total=result.after;
+      if(afterglow&&!result.wasGlow&&Math.floor(result.after/3)>Math.floor(result.before/3)){
+        measuredSlow=true;assert.equal(result.glow,"true");assert(result.slowRatios.length>0,"observe surviving real bullets");
+        // CSS transform行列の丸め誤差は0.2%未満。速度が0.65倍かを実移動で検査する。
+        for(const ratio of result.slowRatios)assert(Math.abs(ratio-.65)<.002,`real motion slowdown ${ratio}`);
+      }
+      lateralSeen ||= result.lateral;pulseSeen ||= result.sharkPulse;
+      total=result.after;cumulative+=result.words;maxSeen=Math.max(maxSeen,result.after);
       const p=slashProfile(total),newTier=!tiers.has(p.tier);tiers.add(p.tier);
       assert.equal(result.reach,p.reach);assert(result.recharge>=p.recharge && result.recharge<=p.recharge+.1+1e-9);
-      assert.match(result.feedback,/個斬った/);
+      assert.match(result.feedback,shark?/個噛んだ/:/個斬った/);
       if(newTier)await shot(page,`tier-${p.tier}-${mobile?'mobile-reduced':'desktop'}`);
       await shelter();
+    }
+    if(shark){
+      assert(total>=3&&lateralSeen&&pulseSeen,"learned shark must bite sideways and pulse at three words");
+      await page.evaluate(()=>{for(let i=0;i<1800&&frames.size;i++)advance();restoreFrames();});
+      await page.waitForSelector('.result-card.show');assert(await page.evaluate(()=>cs.steam.sharkPulses>=1));
+      assert.equal(await page.locator('.dodge-slash-fx,.dodge-slash-impact,.dodge-word-cut').count(),0);assert.deepEqual(errors,[]);
+      console.log('[attack growth] PASS: learned M-W7 real lateral word hits, three-combo radial bite, jaws and cleanup');await page.close();continue;
+    }
+    if(afterglow){
+      assert(total>=3&&measuredSlow,"K22 must slow actual surviving bullets after three consecutive cuts");
+      await dodgeFrames(170);assert.equal(await page.locator('[data-test="dodge"]').getAttribute('data-afterglow'),'false',"the slowdown expires after three seconds");
+      await page.evaluate(()=>{for(let i=0;i<1800&&frames.size;i++)advance();restoreFrames();});
+      await page.waitForSelector('.result-card.show');assert(await page.evaluate(()=>cs.steam.afterglows>=1));
+      assert.equal(await page.locator('.dodge-slash-fx,.dodge-slash-impact,.dodge-word-cut,.dodge-refresh-fx').count(),0);
+      assert.deepEqual(errors,[]);console.log('[attack growth] PASS: K22 real bullet motion x0.65, three-cut trigger, three-second expiry and cleanup');
+      await page.close();continue;
     }
     assert(total>=6);assert(tiers.has(1)&&tiers.has(2),'Both approved growth thresholds must be exercised');
     await page.evaluate(()=>document.fonts.ready);
@@ -158,7 +200,7 @@ try {
       return {before,after:button().dataset.cutWords,reach:button().dataset.reach,recharge:button().dataset.recharge,total:button().dataset.totalWordsCut,hitsBefore:hits,hitsAfter:Number(document.querySelector('[data-test="mental-trace"]').dataset.hits)};
     });
     assert(Number(damage.before)>=6);assert.equal(damage.hitsAfter,damage.hitsBefore+1);assert.equal(damage.after,'0');
-    assert.equal(damage.reach,'80');assert.equal(damage.recharge,'1.8');assert.equal(Number(damage.total),total);
+    assert.equal(damage.reach,'80');assert.equal(damage.recharge,'1.8');assert.equal(Number(damage.total),cumulative);
     await shelter();
     // Find a real small object and a firing position that excludes every word.
     const smallPosition=await page.evaluate(()=>{
@@ -196,8 +238,9 @@ try {
     await page.evaluate(()=>{for(let i=0;i<1800 && frames.size;i++)advance();restoreFrames();});
     await page.waitForSelector('.result-card.show');
     assert.equal(await page.locator('.dodge-slash-fx,.dodge-slash-impact,.dodge-word-cut,.dodge-refresh-fx').count(),0);
-    assert.equal(await page.evaluate(()=>cs.steam.wordsCut),total);
-    assert.equal(await page.evaluate(()=>cs.steam.combo),0);assert.equal(await page.evaluate(()=>cs.steam.maxCombo),total);
+    assert.equal(await page.evaluate(()=>cs.steam.wordsCut),cumulative);
+    if(afterglow)assert(await page.evaluate(()=>cs.steam.afterglows>=2));
+    assert.equal(await page.evaluate(()=>cs.steam.combo),0);assert.equal(await page.evaluate(()=>cs.steam.maxCombo),maxSeen);
     // The next (initial practice) session resets growth and needs no new unlock flags.
     await page.evaluate(()=>{restoreFrames();start('tutorial');});
     await page.waitForFunction(() => document.querySelector('.bench-guide')?.open
@@ -210,7 +253,7 @@ try {
     assert.equal(await page.locator('[data-test="dodge-slash"]').getAttribute('data-reach'),'80');
     assert.equal(await page.locator('[data-test="dodge-slash"]').getAttribute('data-recharge'),'1.8');
     assert.deepEqual(errors,[]);
-    console.log(`[attack growth] PASS: ${mobile?'touch/reduced motion':'PC'} real words, approved tiers, miss/repeat, refresh retention, damage breaks combo, total/maximum preserved, cleanup and initial-practice reset (object-only shot observed: ${objectOnly})`);
+    console.log(`[attack growth] PASS: ${mobile?'touch/reduced motion':afterglow?'PC + K22 actual motion':'PC'} real words, approved tiers, miss/repeat, refresh retention, damage breaks combo, total/maximum preserved, cleanup and initial-practice reset (object-only shot observed: ${objectOnly})`);
     await page.close();
   }
 } finally {await browser.close();}

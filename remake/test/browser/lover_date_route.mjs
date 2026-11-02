@@ -88,6 +88,7 @@ await suite("lover-date-route", async check => {
             choices: D.choices.filter(c => c.scene === `remake_date_${id}`),
             lastDate: s.lastDate[id], savedLastDate: saved.lastDate[id], pending: s.pendingInvite,
             pts: s.lovePts[id], beforePts: before.lovePts[id], stats: s.stats, beforeStats: before.stats,
+            xp: s.growth?.xp || 0, beforeXp: before.growth?.xp || 0,
             lines, repeated, inboxCount: s.inbox.filter(i => i.id === `_date_inv_${id}_d4`).length };
         }, id);
         assert.equal(result.dateCount, 1); assert.equal(result.choices.length, 1);
@@ -97,7 +98,10 @@ await suite("lover-date-route", async check => {
         // The date choice supplies the candidate when the character has no primary.
         const stat = await page.evaluate(async ({ id, choice }) => (await import("./js/daily/spots.js")).CHAR_STAT[id]
           || window.__remake.DB.lover.dates[id][choice ? "optB" : "optA"].stat, { id, choice });
-        assert(result.stats[stat] >= result.beforeStats[stat] + 2, "Paid date reward missing");
+        // 心得の盤（通常プレイの既定・SBD97）では、誘いのデートは自由行動の経験値になり、能力は書き換えない
+        if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled())) {
+          assert(result.xp > result.beforeXp, "Paid date EXP missing"); assert.deepEqual(result.stats, result.beforeStats);
+        } else assert(result.stats[stat] >= result.beforeStats[stat] + 2, "Paid date reward missing");
         if (id === "mashiro") {
           assert(result.lines.some(t => t.includes("僕"))); assert(result.lines.some(t => t.includes("はじめくん")));
           assert(!result.lines.some(t => /はじめさん|蒸野くん/.test(t)));

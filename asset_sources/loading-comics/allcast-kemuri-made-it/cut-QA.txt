@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #F0E4CF  枠の段 1: 2コマ@y=275
+  コマ1: 714x475 @(39,275) 比率 1.503 → ok
+  コマ2: 716x475 @(781,275) 比率 1.507 → ok
+コマ1: 714x475 (1.503) そのまま → 出力 714x475  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/allcast-kemuri-made-it/panels/kemuri-made-it-1.webp (71 KiB)
+コマ2: 716x475 (1.507) → 上下に各0.2%の紙帯 → 出力 716x477  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/allcast-kemuri-made-it/panels/kemuri-made-it-2.webp (70 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "kemuri-made-it",
+  "title": "作った人",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/allcast-kemuri-made-it/panels/kemuri-made-it-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/allcast-kemuri-made-it/panels/kemuri-made-it-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/allcast-kemuri-made-it/source-A-v2.png",
+      "region": {
+        "x": 39,
+        "y": 275,
+        "width": 714,
+        "height": 475,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/allcast-kemuri-made-it/source-A-v2.png",
+      "region": {
+        "x": 781,
+        "y": 275,
+        "width": 716,
+        "height": 475,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "kemuri-made-it-1.webp",
+      "width": 714,
+      "height": 475,
+      "sha256": "fc061292ca757feef2ae8a0320e2efe312e2de58022f60e970caae3192feb09b"
+    },
+    {
+      "file": "kemuri-made-it-2.webp",
+      "width": 716,
+      "height": 477,
+      "sha256": "5c20a30e4050637023aafe64f343c2520bd756b421f7fd80eb34afdb130344f7"
+    }
+  ]
+}

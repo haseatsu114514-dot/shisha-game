@@ -3,6 +3,7 @@ import { state, newState, newCycleId, setState, save, STAT_KEYS } from "./state.
 import { readCycleMeta } from "./cycle-meta.js";
 import { MAX_MONEY } from "./rules.js";
 import { maxStamina } from "./stats.js";
+import { syncRespecOpportunity } from "./growth-respec.js";
 
 // §3.5: 自己ベスト best は知識・記録系として knowledge に含める。
 const GROUP_KEYS = {
@@ -68,6 +69,7 @@ export function startNextCycle(pkg, options = {}) {
   next.cycleStartStats = structuredClone(Object.fromEntries(STAT_KEYS.map(key => [key, next.stats[key]])));
   next.statsAtChapterStart = structuredClone(next.cycleStartStats);
   setState(next);
+  if (next.growth?.respec) syncRespecOpportunity(next.growth, next);
   // §3.4-4: maxStamina はグローバル state の根性を読むため、差し替えの後で計算する。
   next.stamina = maxStamina();
 

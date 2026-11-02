@@ -1,4 +1,7 @@
 // 選択画面の基本情報は熟練度に関係なく開示。強さと品質、素材と仕上がりを分ける。
+import { state } from "../core/state.js";
+import { DB } from "../core/data.js";
+import { floralLayers } from "../core/growth-effects.js";
 import { el, clamp } from "../core/util.js";
 import { flavorFeatures, forecastExpression, mixExpression } from "./flavor-profile.js";
 import { compareEquipment, equipSpecOf, flavorThermalGuide } from "./temperature-model.js";
@@ -33,8 +36,10 @@ export function flavorTags(flavor) {
 /** 予想の区間と区別し、実際に提供した温度から読む一本の棒。品質点にはしない。 */
 export function actualExpressionCard(cs, temp) {
   const expression = mixExpression(cs, temp);
+  const layers=floralLayers(state,cs,DB.flavorById),round=Math.min(2,Math.max(0,cs.careRound||0));
   return el("section.flavor-actual", { dataset: { test: "actual-flavor", zone: expression.zone } }, [
     el("b", { text: `今回の仕上がり · ${expression.label}` }),
+    layers.length?el("p.flavor-guide-caption",{dataset:{test:"floral-layer"},text:round===2?"重なった花の余韻が立つ":`${layers[round%layers.length].name}の層が立つ`}):null,
     flavorAxes([["sweetness", "甘い印象"], ["cooling", "清涼感"], ["body", "煙の厚み"]].map(([key, label]) =>
       ({ key, label, value: expression.values[key] }))),
     el("small.flavor-guide-caption", { text: "提供時の味の傾向。強さと品質は別です。" }),
@@ -102,9 +107,16 @@ const EQUIPMENT_USE = {
   amaburst_hms: ["全サイズ対応。繊細な温度合わせに", "適温幅が狭いので温度を見よう"],
   flat_charcoal: ["低めの熱へ細かく合わせやすい", "大容量・デンスは立ち上げ長め"],
   cube_charcoal: ["大容量・デンスにも熱を入れやすい", "温度の上がりすぎに注意"],
+  kumogama_phunnel: ["最大16g。適温幅がやや広い器", "多く詰めるほど蒸らしは長め"],
+  lotos_plus: ["アルミ不要の全サイズ対応。熱が安定しやすい", "適温幅はタヌキッシュリッドより狭い"],
+  dense_flat_charcoal: ["フラット炭より適温幅が少し広い", "炭を選べるのはキューブ炭を覚えてから"],
 };
 
 export function equipmentUse(item) {
+  // 家シーシャの台は制作の性能を持たない。実際に効く熟練度の経験値だけを書く（home-shisha.js）。
+  if (item?.type === "homeware" && Number.isFinite(item.home_xp)) {
+    return { use: `家シーシャ1回で熟練度の経験値${item.home_xp}（卓上台は6）`, caution: "店や大会で作る一台の点数は変わらない" };
+  }
   const [use, caution] = EQUIPMENT_USE[item?.id] || (String(item?.id || "").startsWith("suyaki_")
     ? ["大容量。使い込んだ香りを活かす", "葉の系統を合わせ、温度は丁寧に"]
     : [item?.description || "", ""]);

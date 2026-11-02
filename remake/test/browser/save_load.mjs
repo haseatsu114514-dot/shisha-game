@@ -211,6 +211,7 @@ await suite("save-load", async check => {
       await page.locator('[data-test="slot-0"]').click();
       await page.locator("#screen .map:not(.done)").waitFor();
       await page.locator('[data-test="hud-menu"]').click();
+      await page.locator('[data-test="menu-tab-system"]').click();
       await page.locator('[data-test="menu-save"]').click();
       assert(await page.locator('[data-test="slot-0"]').isDisabled());
       await page.locator('[data-test="slot-1"]').click();
@@ -221,11 +222,13 @@ await suite("save-load", async check => {
       // Cancel overwrite and cancel a load: neither may change storage or current progress.
       const before = await storageSnapshot(page);
       await page.locator('[data-test="hud-menu"]').click();
+      await page.locator('[data-test="menu-tab-system"]').click();
       await page.locator('[data-test="menu-save"]').click();
       await page.locator('[data-test="slot-1"]').click();
       await page.locator("#modal .modal-actions button").first().click();
       await page.locator('[data-test="slot-cancel"]').click();
       await page.locator('[data-test="hud-menu"]').click();
+      await page.locator('[data-test="menu-tab-system"]').click();
       await page.locator('[data-test="menu-load"]').click();
       await page.locator('[data-test="slot-1"]').click();
       await page.locator("#modal .modal-actions button").first().click();
@@ -234,6 +237,7 @@ await suite("save-load", async check => {
       // Confirming overwrite replaces this slot with the new progress.
       await page.evaluate(() => { QA.core.state.money = 12345; });
       await page.locator('[data-test="hud-menu"]').click();
+      await page.locator('[data-test="menu-tab-system"]').click();
       await page.locator('[data-test="menu-save"]').click();
       await page.locator('[data-test="slot-1"]').click();
       await page.locator('[data-test="confirm-overwrite"]').click();
@@ -243,6 +247,7 @@ await suite("save-load", async check => {
       await page.evaluate(() => { QA.core.state.money = 999; });
       // A confirmed manual load reloads the document and resumes directly on the map.
       await page.locator('[data-test="hud-menu"]').click();
+      await page.locator('[data-test="menu-tab-system"]').click();
       await page.locator('[data-test="menu-load"]').click();
       await page.locator('[data-test="slot-1"]').click();
       await Promise.all([
@@ -274,6 +279,7 @@ await suite("save-load", async check => {
     await page.locator("#screen .map:not(.done)").waitFor();
     const uiSave = async () => {
       await page.locator('[data-test="hud-menu"]').click();
+      await page.locator('[data-test="menu-tab-system"]').click();
       await page.locator('[data-test="menu-save"]').click();
       await page.locator('[data-test="slot-1"]').click();
     };
@@ -386,11 +392,11 @@ await suite("save-load", async check => {
       assert.deepEqual(await progress(), before, "choosing another pin is also free");
     };
     await assertBlocked();
-    await press('[data-test="hud-menu"]'); await press('[data-test="menu-save"]');
+    await press('[data-test="hud-menu"]'); await press('[data-test="menu-tab-system"]'); await press('[data-test="menu-save"]');
     await press('[data-test="slot-1"]');
     await page.locator("#modal.show").waitFor({ state: "hidden" });
     const saved = await page.evaluate(() => localStorage.getItem("suien_remake_slot1"));
-    await press('[data-test="hud-menu"]'); await press('[data-test="menu-load"]');
+    await press('[data-test="hud-menu"]'); await press('[data-test="menu-tab-system"]'); await press('[data-test="menu-load"]');
     await press('[data-test="slot-1"]');
     await Promise.all([page.waitForEvent("load"), press('[data-test="confirm-load"]')]);
     await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.turbo = true; });

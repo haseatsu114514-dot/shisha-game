@@ -15,5 +15,5 @@ export function awardLoverSceneExp(id, owner) {
     || state.flags[`_${id}_reward_done`]
     || id === "hiyori_feelings_spoken" && state.flags._hiyori_feelings_spoken) return 0;
   state.flags[key] = true;
-  return gainExp(LOVER_SCENE_EXP, { key: character, tag: "会話", source: "lover" });
+  return gainExp(LOVER_SCENE_EXP, { key: character, tag: "会話", source: "lover", first: true });
 }

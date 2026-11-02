@@ -4,7 +4,7 @@ import { move } from "./transition-kit.js";
 import { hasStoreLogo, storeLogo } from "./store-logos.js";
 
 export function withStoreArrival(host, curtain, opts, { fast = false, reduced = false } = {}) {
-  if (!hasStoreLogo(opts?.spotId)) return curtain;
+  if (opts?.anonymous || !hasStoreLogo(opts?.spotId)) return curtain; // 名前を伏せた行き先ではロゴで明かさない
   let node = null, shownAt = 0, released = false;
   const covered = curtain.covered.then(() => {
     node = el("div.store-arrival", {

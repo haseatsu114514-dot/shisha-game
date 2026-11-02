@@ -96,7 +96,7 @@ async function initialLegacyLoad(name, options, malformed) {
       ]);
     }
     // Reach GALLERY only after LOAD/autosave has discarded the old raw evidence.
-    await press("hud-menu");
+    await press("hud-menu"); await press("menu-tab-system");
     await Promise.all([page.waitForEvent("load"), press("menu-title")]);
     await page.locator(t("title-gallery")).waitFor();
     await page.locator("#boot").waitFor({ state: "detached" });

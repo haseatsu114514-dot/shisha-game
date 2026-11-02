@@ -1,16 +1,18 @@
 import { CH2_CITY_EN, CH2_CITY_NAME, HOME_CITY_EN, HOME_CITY_NAME } from "../core/city-locations.js";
-// 日常パートの常時表示（日付・時間帯・大会までの日数・所持金・体力・スマホ・ステータス）。
-// 見た目は旧版の墨×金を踏襲: 左上に DAY カード、右上に体力・ステータスの五角形・LIME・MENU。
+// 日常パートの常時表示（日付・時間帯・大会までの日数・所持金・体力・スマホ・MENU）。
+// 左上に DAY カード、右上に LIME と MENU。ステータスは全画面MENU（daily/menu.js）のタブへ移し、
+// 五角形のステータスボタンは廃止した（DUI05）。未使用の火種の印は MENU の右上に出す。
 import { el, yen, sleep } from "../core/util.js";
 import { layers, toast } from "../core/ui.js";
 import { on } from "../core/bus.js";
-import { state, STAT_KEYS } from "../core/state.js";
-import { staminaRatio, currentCondition, maxStamina, step } from "../core/stats.js";
+import { state } from "../core/state.js";
+import { staminaRatio, currentCondition, maxStamina } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
 import { chapterDay, chapterDaysLeft, chapterFinalDay, chapterGoalLabel } from "../core/chapter-clock.js";
 import { travelsBetweenCities } from "../core/travel-budget.js";
-import { growthEnabled, ensureGrowth, gaugeInfo, hidaneTotal, openGrowthBoard } from "../core/growth.js";
+import { growthEnabled, growthView, gaugeInfo, hidaneTotal } from "../core/growth.js";
+import { NODE_BY_ID, pathTo } from "../core/growth-board.js";
 
 // 体力バーの長さ（最大体力100のとき）。根性で最大体力が伸びるとバーも同じ割合で伸びる（GUI26）。
 const STAMINA_BAR_BASE = 92;
@@ -19,7 +21,7 @@ const STAMINA_BAR_BASE = 92;
 export const daysLeft = () => chapterDaysLeft(state);
 
 let dom = null;
-let handlers = { phone: null, status: null, menu: null };
+let handlers = { phone: null, menu: null };
 let recoveryTimer = null;
 let pendingRecovery = null;
 let recoveryFrame = 0;
@@ -61,22 +63,23 @@ function scheduleRecovery() {
   });
 }
 
-const SVG = "http://www.w3.org/2000/svg";
-const svgEl = (tag, attrs = {}) => {
-  const n = document.createElementNS(SVG, tag);
-  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
-  return n;
-};
-const pt = (i, r) => {
-  const a = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
-  return `${(24 + Math.cos(a) * r).toFixed(1)},${(24 + Math.sin(a) * r).toFixed(1)}`;
-};
-/** ステータスの五角形（数値は出さず★段階の形だけ） */
-function miniRadar() {
-  const svg = svgEl("svg", { viewBox: "0 0 48 48", class: "hud-radar" });
-  for (const k of [1, 0.6]) svg.append(svgEl("polygon", { points: [0, 1, 2, 3, 4].map((i) => pt(i, 20 * k)).join(" "), class: "hr-grid" }));
-  svg.append(svgEl("polygon", { class: "hr-fill" }));
-  return svg;
+// 地図で行き先を選んでいる間だけ、M キーで MENU を開く（MENU の中では M・Esc で閉じる）。
+let menuKey = false;
+function installMenuKey() {
+  if (menuKey) return;
+  menuKey = true;
+  window.addEventListener("keydown", (e) => {
+    if (e.repeat || e.ctrlKey || e.metaKey || e.altKey || (e.key !== "m" && e.key !== "M")) return;
+    if (e.target?.closest?.("input, select, textarea, [contenteditable]")) return;
+    const body = document.body;
+    if (!dom || !layers.hud.classList.contains("show") || body.dataset.screen !== "map" || !document.querySelector("#screen .map:not(.done)")) return;
+    if (layers.modal.classList.contains("show") || body.classList.contains("vn-open") || body.classList.contains("in-vn")
+      || document.querySelector(".phone-overlay") || layers.fx.querySelector(".gboard, .levelup-backdrop")) return;
+    const button = layers.hud.querySelector(".hud-menu");
+    if (!button) return;
+    e.preventDefault();
+    button.click();
+  });
 }
 
 export function initHud(h) {
@@ -91,26 +94,25 @@ export function initHud(h) {
     left: el("b"),
     leftLabel: el("span", { text: "次の大会まで" }),
     stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b")])])]),
-    radar: miniRadar(),
     phone: el("button.hud-lime", { title: "LIME", dataset: { test: "hud-phone" }, onclick: () => handlers.phone?.() }, [el("span", { text: "LIME" }), el("em.badge")]),
-    status: el("button.hud-level", { title: "ステータス", dataset: { test: "hud-status" }, onclick: () =>
-      growthEnabled() && hidaneTotal() > 0 ? openGrowthBoard() : handlers.status?.() }),
     // 経験値と次のレベルまで（SPEC 6.1a）。置き場所は情報カードの体力の下（REPORT P4・R5）
     exp: el("div.hud-exp", { hidden: true, dataset: { test: "hud-exp" } }, [
       el("span.hx-lv"), el("i.hud-bar.hx-bar", [el("b.hx-settled"), el("b.hx-today")]), el("small.hx-left"),
+      // 盤の目標までの火種（SPEC 6.1「火の番まで 火種6」）。目標が無い間は出さない
+      el("small.hx-target", { hidden: true, dataset: { test: "hud-target" } }),
     ]),
     // 未使用の火種の印。火の色・個数入りで、LIME の未読の赤丸と区別する（REPORT P5・R6）
     hidane: el("em.hidane-badge", { hidden: true, dataset: { test: "hud-hidane" } }),
-    menu: el("button.hud-menu", { dataset: { test: "hud-menu" }, onclick: () => handlers.menu?.() }, [el("i"), el("span", { text: "MENU" })]),
+    menu: el("button.hud-menu", { title: "MENU（M）", "aria-label": "MENU", dataset: { test: "hud-menu" }, onclick: () => handlers.menu?.() }, [el("i"), el("span", { text: "MENU" })]),
   };
-  dom.status.append(dom.radar, dom.hidane);
+  dom.menu.append(dom.hidane);
   const moneyRow = el("div.dc-row.money", [el("span", { text: "所持金" }), dom.money]);
   const root = el("div.hud", [
     el("div.hud-card", [
       el("div.dc-main", [dom.area, dom.day, dom.slot]),
       el("div.dc-meta", [moneyRow, el("div.dc-row", [dom.leftLabel, dom.left]), dom.stamina, dom.exp]),
     ]),
-    el("div.hud-right", [dom.status, dom.phone, dom.menu]),
+    el("div.hud-right", [dom.phone, dom.menu]),
   ]);
   dom.moneyRow = moneyRow;
   layers.hud.replaceChildren(root);
@@ -125,6 +127,7 @@ export function initHud(h) {
     setTimeout(() => pop.remove(), 1400);
   });
   on("exp-gain", showExpChip);
+  installMenuKey();
 }
 
 /** 1行動につき1枚の「EXP +N　はじめて・なじみ」（内訳の数字は出さない。REPORT R7） */
@@ -144,13 +147,14 @@ function showExpChip({ total, tags = [], publicReward = false }) {
 function updateGrowth() {
   const on = growthEnabled();
   dom.exp.hidden = !on;
-  const total = on ? hidaneTotal(ensureGrowth()) : 0;
+  const view = on ? growthView() : null; // HUD は見るだけ。成長データが無くても作らない
+  const total = view ? hidaneTotal(view) : 0;
   dom.hidane.hidden = !(total > 0);
   dom.hidane.textContent = total > 99 ? "99" : String(total || "");
-  dom.status.title = total > 0 ? `心得の盤を見る（未使用の火種 ${total}）` : "ステータス";
-  dom.status.setAttribute("aria-label", dom.status.title);
+  dom.menu.title = total > 0 ? `MENU（M）・未使用の火種 ${total}` : "MENU（M）";
+  dom.menu.setAttribute("aria-label", total > 0 ? `MENU（未使用の火種 ${total}）` : "MENU");
   if (!on) return;
-  const g = gaugeInfo();
+  const g = gaugeInfo(view);
   dom.exp.querySelector(".hx-lv").textContent = `Lv.${g.level}`;
   dom.exp.querySelector(".hx-settled").style.width = `${Math.round(g.settled * 100)}%`;
   dom.exp.querySelector(".hx-today").style.width = `${Math.round(g.now * 100)}%`;
@@ -158,9 +162,24 @@ function updateGrowth() {
   left.textContent = g.max ? "MAX" : g.pending > 0 ? `今夜 Lv UP${g.pending > 1 ? ` ×${g.pending}` : ""}` : `あと${g.left}`;
   dom.exp.classList.toggle("ready", g.pending > 0);
   dom.exp.dataset.milestone = g.nextMilestone && !g.max ? "true" : "false";
+  renderTarget(view);
   dom.exp.title = g.max ? `Lv.${g.level} MAX` : g.pending > 0
     ? `今夜レベルアップ（あふれた分 +${g.overflow}）` : `次のレベルまで EXP ${g.left}${g.nextMilestone ? "（次は火種が2つ）" : ""}`;
   dom.exp.setAttribute("aria-label", dom.exp.title);
+}
+
+/** 盤で目標にしたマスまでの残りの火種。届いたら目標は盤の決定で外れる（SPEC 2.4） */
+function renderTarget(g) {
+  const target = dom.exp.querySelector(".hx-target");
+  const node = g.target ? NODE_BY_ID[g.target] : null;
+  if (!node) { target.hidden = true; target.textContent = ""; return; }
+  const name = node.kind === "stat" ? (node.peak ? "極み" : node.notable ? "要のマス" : "マス") : node.kind === "gate" ? "台座" : node.name;
+  const { cost } = pathTo(node.id, new Set(g.nodes));
+  target.hidden = false;
+  // 情報カードは幅が狭いので、ゲージを潰さない短い印だけ出す。目標の名前は説明（title・読み上げ）で
+  target.textContent = `◎火種${cost}`;
+  target.title = `心得の盤の目標「${name}」まで、あと火種${cost}`;
+  target.setAttribute("aria-label", target.title);
 }
 
 export function showHud(v = true) {
@@ -170,10 +189,11 @@ export function showHud(v = true) {
 
 export function updateHud() {
   if (!dom || !state) return;
-  // 今いる街（第2章・第5章は flags._ch2_region。第5章は東京にも泊まれる・#2033）
-  const region = travelsBetweenCities(state) ? state.flags._ch2_region : "home";
+  // 今いる街（第2章・第5章は flags._ch2_region。第5章は東京にも泊まれる・#2033。第3章の東京も同じ印・VOL03）
+  const region = travelsBetweenCities(state) || [3, 4].includes(state.chapter) ? state.flags._ch2_region : "home";
   const [areaId, areaEn, areaName] = region === "widehanga" ? ["widehanga", CH2_CITY_EN, CH2_CITY_NAME]
-    : region === "tokyo" && state.chapter === 5 ? ["tokyo", "TOKYO", "東京"] : ["sakae", HOME_CITY_EN, HOME_CITY_NAME];
+    : region === "tokyo" && [3, 5].includes(state.chapter) ? ["tokyo", "TOKYO", "東京"]
+    : region === "dubai" && [4, 5].includes(state.chapter) ? ["dubai", "DUBAI", "ドバイ"] : ["sakae", HOME_CITY_EN, HOME_CITY_NAME];
   dom.area.dataset.region = areaId;
   dom.area.setAttribute("aria-label", areaEn);
   dom.area.replaceChildren(
@@ -193,7 +213,7 @@ export function updateHud() {
   const r = staminaRatio();
   const condition = currentCondition();
   // ゲージは実残量。発病日の制作コンディションは従来どおり別に保持する。
-  const health = conditionForRatio(r).health;
+  const health = conditionForRatio(staminaRatio({ forCondition: true })).health;
   dom.stamina.dataset.health = health;
   dom.stamina.title = `体力：${condition.label}。${condition.hint}`;
   dom.stamina.querySelector(".hud-bar").setAttribute("aria-label", dom.stamina.title);
@@ -202,7 +222,6 @@ export function updateHud() {
   dom.stamina.classList.toggle("low", health === "red");
   // 育成（根性）で最大体力が増えると、バー自体が伸びる。上乗せ分の色分け・印・点線の枠は出さない（DUI13・2026-10-31 オーナー指示）。
   dom.stamina.querySelector(".hud-bar").style.width = `${Math.round(STAMINA_BAR_BASE * (maxStamina() / 100))}px`;
-  dom.radar.querySelector(".hr-fill").setAttribute("points", STAT_KEYS.map((k, i) => pt(i, 7.2 + 12.8 * (step(k) - 1) / 9)).join(" "));
   updateGrowth();
 }
 
@@ -228,7 +247,7 @@ export async function presentSleepRecovery({ before, after }) {
   pendingRecovery = null;
   const maximum = maxStamina();
   const fill = el("b", { style: `width:${Math.min(100, before / maximum * 100)}%` });
-  const panel = el("div.sleep-recovery", { dataset: { test: "sleep-recovery", health: conditionForRatio(after / maximum).health }, role: "status" }, [
+  const panel = el("div.sleep-recovery", { dataset: { test: "sleep-recovery", health: conditionForRatio(after / maxStamina({ forCondition: true })).health }, role: "status" }, [
     el("p", { text: "ぐっすり眠って、体力が回復した" }),
     el("div.sleep-gauge", { role: "img", "aria-label": "睡眠で体力が回復している" }, [fill]),
   ]);

@@ -59,7 +59,8 @@
           "nerve": 4
         },
         "trait": "どんな呪文を唱えても、サメが来る。陸ではちょっと困る",
-        "likes": "サメの出る映画。夜ふかしの上映会"
+        "likes": "サメの出る映画。夜ふかしの上映会",
+        "portrait": "../../img/ui/trpg/pc-hirena.webp"
       }
     },
     {
@@ -80,7 +81,8 @@
           "nerve": 2
         },
         "trait": "何を錬成しても林檎になる。腕は学年一",
-        "likes": "ダブルアップル。宇宙の始まりの香り"
+        "likes": "ダブルアップル。宇宙の始まりの香り",
+        "portrait": "../../img/ui/trpg/pc-mars.webp"
       }
     }
   ],
@@ -239,42 +241,42 @@
       "id": "bed",
       "label": "空っぽの寝床",
       "short": "寝床",
-      "x": 15,
-      "y": 30
+      "x": 14,
+      "y": 26
     },
     {
       "id": "library",
       "label": "図書館の窓",
       "short": "図書館",
-      "x": 80,
-      "y": 24
+      "x": 86,
+      "y": 22
     },
     {
       "id": "garden",
       "label": "薬草園",
       "short": "薬草園",
       "x": 86,
-      "y": 70
+      "y": 74
     },
     {
       "id": "stairs",
       "label": "天文台の階段",
       "short": "階段",
-      "x": 52,
-      "y": 20
+      "x": 53,
+      "y": 34
     },
     {
       "id": "board",
       "label": "掲示板の試験表",
       "short": "掲示板",
-      "x": 20,
-      "y": 72
+      "x": 18,
+      "y": 58
     },
     {
       "id": "trail",
       "label": "廊下に残る煙の跡",
       "short": "煙の跡",
-      "x": 52,
+      "x": 50,
       "y": 82
     }
   ],
@@ -3091,7 +3093,8 @@
     "number": "08",
     "genre": "学園ファンタジー・儚さ",
     "tagline": "朝が来たら、もう会えないかもしれない。",
-    "backdrop": "radial-gradient(circle at 82% 16%, rgba(255, 244, 214, .34), transparent 16%), radial-gradient(circle at 18% 26%, rgba(214, 196, 255, .16), transparent 28%), radial-gradient(circle at 60% 12%, rgba(255, 255, 255, .12), transparent 6%), linear-gradient(165deg, #3d2b66, #1b1238 60%, #0d0a20)",
+    "image": "../../img/backgrounds/trpg_fading-familiar_room.webp",
+    "choiceArt": {"src": "../../img/ui/trpg/choices-fading-familiar.webp", "rowCount": 5, "rows": {"spell": 0, "item": 1, "call": 2, "tactic": 3, "hypotheses": 4}},
     "sceneAlt": "夜の魔法学校。空っぽの寝床、図書館の窓、薬草園、天文台の階段、掲示板の試験表、廊下の煙の跡。",
     "location": "星見ヶ丘魔法学校 / 夜の寮と校舎",
     "atmosphere": "試験前夜の静かな校舎。夜明けまで、あと少し。",
@@ -3230,7 +3233,7 @@
         "detail": "短い黒髪に、紺のローブ",
         "color": "#2f3552",
         "accent": "#89bbc4",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-fading-familiar-ink.webp"
       },
       {
         "id": "silver",
@@ -3238,7 +3241,7 @@
         "detail": "肩までの銀髪に、星の刺繍のマント",
         "color": "#5d5a78",
         "accent": "#d8d4ee",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-fading-familiar-silver.webp"
       },
       {
         "id": "ember",
@@ -3246,7 +3249,7 @@
         "detail": "跳ねた赤毛と、呪文で焦げた袖",
         "color": "#7a3f3a",
         "accent": "#f0b27a",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-fading-familiar-ember.webp"
       },
       {
         "id": "owl",
@@ -3254,7 +3257,7 @@
         "detail": "丸眼鏡と、ふくろう色のベスト",
         "color": "#4e4a3c",
         "accent": "#d9c79a",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-fading-familiar-owl.webp"
       }
     ],
     "archetypes": [
@@ -3318,7 +3321,8 @@
             "talk": 1,
             "nerve": 4
           },
-          "making": "trpg_fading_familiar_make_samechan_samechan_hirena"
+          "making": "trpg_fading_familiar_make_samechan_samechan_hirena",
+          "portrait": "../../img/ui/trpg/pc-hirena.webp"
         },
         {
           "id": "fukami",
@@ -3332,7 +3336,8 @@
             "talk": 1,
             "nerve": 4
           },
-          "making": "trpg_fading_familiar_make_samechan_samechan_fukami"
+          "making": "trpg_fading_familiar_make_samechan_samechan_fukami",
+          "portrait": "../../img/ui/trpg/pc-fukami.webp"
         }
       ]
     },
@@ -3350,7 +3355,8 @@
             "talk": 3,
             "nerve": 2
           },
-          "making": "trpg_fading_familiar_make_adam_adam_mars"
+          "making": "trpg_fading_familiar_make_adam_adam_mars",
+          "portrait": "../../img/ui/trpg/pc-mars.webp"
         },
         {
           "id": "nox",
@@ -3364,7 +3370,8 @@
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_fading_familiar_make_adam_adam_nox"
+          "making": "trpg_fading_familiar_make_adam_adam_nox",
+          "portrait": "../../img/ui/trpg/pc-nox.webp"
         }
       ]
     }

@@ -1,0 +1,3 @@
+samechan-comfy-seat-1.webp: 余白 左2% 右2% 上0% 下0% → そのまま
+samechan-comfy-seat-2.webp: 余白 左2% 右2% 上0% 下0% → そのまま
+拡大して埋めた: 0 / 2 枚

@@ -1,0 +1,325 @@
+/* 全画面MENU（DUI03・#2097・設計 docs/design/daily-ui-menu-design.md §4）。
+   どのUIテーマでも紙×ラベンダー＋琥珀。紙の絵は assets/ui/paper/menu-bg.png（build_ui_skin.py で 1536×838 へ）。
+   通常表示は 1280×720 の舞台に 1232×672 の紙を置く。左の帯（タブ）と枠線の位置は絵に合わせてある。
+   DS風は絵を引き伸ばさず、上下2画面ぶんの紙と線で描き、タブは下の帯に並べる。 */
+
+#modal > .dmenu {
+  --dm-paper: #f7f3ed; --dm-card: #fffcf8; --dm-line: #d5c8dc; --dm-ink: #38283f; --dm-muted: #76667e;
+  --dm-lav: #69497e; --dm-lav-ink: #58386c; --dm-lav-soft: #e9dfef; --dm-lav-line: #9676a8; --dm-band: #efe9f0;
+  --dm-amber: #d8963f; --dm-amber-ink: #b8651f; --dm-hover: #f4eef6;
+  /* 共通部品（ハート・贈り物の札・レシピの詳細）が読む文字色も紙の上の色へ */
+  --text: var(--dm-ink); --text-dim: var(--dm-muted); --gold: var(--dm-lav); --gold-hi: var(--dm-lav);
+  position: absolute; inset: 0; color: var(--dm-ink); font-family: var(--font); text-shadow: none;
+}
+.dmenu .dm-backdrop { position: absolute; inset: 0; background: #1e1429b8; }
+.dmenu .dm-sheet {
+  position: absolute; left: 24px; top: 24px; width: 1232px; height: 672px; box-sizing: border-box;
+  padding: 36px 52px 40px 39px;
+  display: grid; grid-template-columns: 194px minmax(0, 1fr); grid-template-rows: 58px minmax(0, 1fr);
+  grid-template-areas: "side head" "side panel"; column-gap: 24px; row-gap: 12px;
+  /* 絵が読めない時も同じ色の紙と帯で開く（DUI12 と同じ考え方） */
+  background: url("../img/ui/paper/menu-bg.webp") 0 0 / 100% 100% no-repeat,
+    linear-gradient(90deg, transparent 38px, var(--dm-band) 38px 233px, transparent 233px), var(--dm-paper);
+  border-radius: 4px; box-shadow: 0 0 0 1px #ded3dc, 0 16px 54px #110a2254;
+  animation: dm-in .18s ease-out both;
+}
+@keyframes dm-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .dmenu .dm-sheet { animation: none; } }
+
+/* ---------------------------------------------------------------- 左の帯：見出しとタブ */
+.dmenu .dm-side { grid-area: side; display: flex; flex-direction: column; min-height: 0; padding: 0 10px; }
+.dmenu .dm-title { display: flex; align-items: baseline; gap: 8px; margin: 2px 4px 14px; font-size: 28px; font-weight: 700; letter-spacing: .04em; line-height: 1.2; color: var(--dm-ink); }
+.dmenu .dm-cycle { padding: 2px 8px; border-radius: 10px; font-size: 13px; font-weight: 700; letter-spacing: 0; color: var(--dm-amber-ink); background: #fbe9cf; border: 1px solid #e4b57a; }
+.dmenu .dm-tabs { display: flex; flex-direction: column; gap: 6px; }
+.dmenu .dm-tab {
+  display: flex; flex-direction: column; justify-content: center; gap: 3px; height: 56px; padding: 0 16px; box-sizing: border-box;
+  border: 1px solid transparent; border-radius: 4px; background: transparent; color: var(--dm-lav-ink);
+  text-align: left; cursor: pointer; font-family: var(--font);
+}
+.dmenu .dm-tab .dm-en { font-size: 12px; font-weight: 700; letter-spacing: .02em; line-height: 1; color: var(--dm-muted); }
+.dmenu .dm-tab .dm-label { font-size: 18px; font-weight: 700; line-height: 1.2; }
+.dmenu .dm-tab:hover { background: var(--dm-lav-soft); }
+.dmenu .dm-tab.on {
+  color: #fff; border-color: var(--dm-lav);
+  background: url("../img/ui/paper/lavender.webp") center / 256px repeat, var(--dm-lav); box-shadow: inset 0 0 0 1px #c3a9d566;
+}
+.dmenu .dm-tab.on .dm-en { color: #e9dcf1; }
+.dmenu :is(.dm-tab, .dm-close, .dm-btn, .dm-row, .dm-person, .dm-chip.recipe, .dm-keepsake):focus-visible { outline: 3px solid var(--dm-amber); outline-offset: 2px; }
+
+/* ---------------------------------------------------------------- 上の帯：要約と閉じる */
+.dmenu .dm-head { grid-area: head; display: flex; align-items: center; gap: 16px; min-width: 0; border-bottom: 1px solid var(--dm-line); }
+.dmenu .dm-summary { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 22px; min-width: 0; }
+.dmenu .dm-sum { display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+.dmenu .dm-sum > small { font-size: 14px; font-weight: 700; color: var(--dm-muted); }
+.dmenu .dm-sum > b { font-size: 19px; font-weight: 900; color: var(--dm-ink); }
+.dmenu .dm-sum > b small { margin-left: 2px; font-size: 14px; font-weight: 700; color: var(--dm-muted); }
+.dmenu .dm-slot { font-size: 16px; font-weight: 700; color: var(--dm-lav); }
+.dmenu .dm-amber, .dmenu .dm-sum > b.dm-amber { color: var(--dm-amber-ink); }
+.dmenu .dm-health.h-green > b { color: #2f6b45; }
+.dmenu .dm-health.h-yellow > b { color: #8a6a13; }
+.dmenu .dm-health.h-red > b { color: #b83a3a; }
+.dmenu .dm-close, .dmenu .dm-btn {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 20px; box-sizing: border-box;
+  border: 2px solid var(--dm-lav-line); border-radius: 4px; background: var(--dm-card); color: var(--dm-lav-ink);
+  font-family: var(--font); font-size: 16px; font-weight: 700; letter-spacing: .06em; cursor: pointer;
+}
+.dmenu .dm-close { flex: none; margin-left: auto; }
+.dmenu :is(.dm-close, .dm-btn):hover:not(:disabled), .dmenu .dm-btn.primary {
+  color: #fff; border-color: var(--dm-lav); background: url("../img/ui/paper/lavender.webp") center / 256px repeat, var(--dm-lav);
+}
+.dmenu .dm-btn:disabled { color: #a99cb0; border-color: var(--dm-line); background: #f1ecf2; cursor: not-allowed; }
+
+/* ---------------------------------------------------------------- 中身（タブの面） */
+.dmenu .dm-panel {
+  grid-area: panel; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 2px 6px 2px 0;
+  display: flex; flex-direction: column; gap: 12px; scrollbar-width: thin; scrollbar-color: var(--dm-lav-line) transparent;
+}
+.dmenu .dm-panel:focus { outline: none; }
+.dmenu .dm-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 14px; }
+.dmenu .dm-heading h3 { margin: 0; font-size: 22px; font-weight: 900; color: var(--dm-ink); }
+.dmenu .dm-sub { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.5; color: var(--dm-muted); }
+.dmenu .dm-note { margin: 0; font-size: 14px; font-weight: 500; line-height: 1.65; color: var(--dm-muted); }
+.dmenu .dm-empty { margin: 0; font-size: 15px; font-weight: 500; color: var(--dm-muted); }
+.dmenu .dm-strong { font-size: 17px; font-weight: 700; color: var(--dm-ink); }
+.dmenu .dm-en { font-size: 13px; font-weight: 700; letter-spacing: .02em; color: var(--dm-muted); }
+.dmenu .dm-card {
+  display: flex; flex-direction: column; gap: 10px; min-width: 0; padding: 14px 16px; box-sizing: border-box;
+  background: var(--dm-card); border: 1px solid var(--dm-line); border-radius: 4px;
+}
+.dmenu .dm-card-head { display: flex; align-items: baseline; gap: 10px; }
+.dmenu .dm-grid { display: grid; gap: 14px; align-items: start; }
+.dmenu .dm-grid-2 { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: stretch; }
+.dmenu .dm-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.dmenu .dm-actions { display: flex; justify-content: flex-end; }
+.dmenu .dm-condition { margin: 0; font-size: 15px; font-weight: 500; line-height: 1.6; color: var(--dm-ink); }
+.dmenu .dm-condition b { font-weight: 900; }
+
+/* ゲージ（濃い紫＝精算済み・薄い紫＝今日の分） */
+.dmenu .dm-gauge { position: relative; display: block; height: 12px; overflow: hidden; border-radius: 6px; background: #ece5ee; border: 1px solid #c9b8d2; }
+.dmenu .dm-gauge b { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 6px; }
+.dmenu .dm-gauge b.settled { background: linear-gradient(90deg, var(--dm-lav), #a98bc0); }
+.dmenu .dm-gauge b.today { background: #d8b9e6; }
+.dmenu .dm-pips { display: inline-flex; gap: 3px; }
+.dmenu .dm-pips i { width: 9px; height: 9px; border-radius: 50%; border: 1px solid #b9a5c6; box-sizing: border-box; }
+.dmenu .dm-pips i.on { background: var(--dm-lav); border-color: var(--dm-lav); }
+.dmenu .dm-chip {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 26px; padding: 2px 10px; box-sizing: border-box; border-radius: 13px;
+  font-family: var(--font); font-size: 14px; font-weight: 700; line-height: 1.3; white-space: nowrap;
+  color: var(--dm-lav-ink); background: var(--dm-card); border: 1px solid var(--dm-line);
+}
+.dmenu .dm-chip small { font-size: 13px; font-weight: 700; letter-spacing: 0; color: var(--dm-muted); white-space: normal; }
+.dmenu .dm-chip.on { color: #fff; background: var(--dm-lav); border-color: var(--dm-lav); }
+.dmenu .dm-chip.gift { border-style: dashed; border-color: var(--dm-lav-line); }
+.dmenu .dm-chip.on.gift { border-color: #fff9; }
+.dmenu .dm-chip.new { color: #8a5413; background: #fbe9cf; border-color: #e4b57a; }
+/* LIME札は「連絡先あり」の所持表示。押せる操作に見えないよう、ほかの関係札と同じ淡い地＋濃い文字にそろえ、LIMEの緑は先頭の点で残す（#2363、文字#0a6b34／地#e6f7ec＝5.96:1） */
+.dmenu .dm-chip.lime { color: #0a6b34; background: #e6f7ec; border-color: #8fd9ac; }
+.dmenu .dm-chip.lime::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: #06c755; }
+.dmenu .dm-chip.blank { visibility: hidden; }
+.dmenu .dm-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* ---------------------------------------------------------------- ステータス */
+.dmenu .dm-row {
+  display: grid; align-items: center; width: 100%; box-sizing: border-box; margin: 0; padding: 10px 12px;
+  border: 0; border-bottom: 1px solid var(--dm-line); background: transparent; color: inherit; text-align: left;
+  font-family: var(--font); cursor: pointer;
+}
+.dmenu .dm-row:last-child { border-bottom: 0; }
+.dmenu .dm-row:hover { background: var(--dm-hover); }
+.dmenu .dm-row.sel { background: var(--dm-lav-soft); }
+.dmenu .dm-stats { gap: 0; padding: 4px 6px; }
+.dmenu .dm-stat { grid-template-columns: 36px minmax(0, 1fr) 196px; column-gap: 14px; }
+.dmenu .s-technique { --sc: var(--stat-technique); }
+.dmenu .s-sense { --sc: var(--stat-sense); }
+.dmenu .s-guts { --sc: var(--stat-guts); }
+.dmenu .s-charm { --sc: var(--stat-charm); }
+.dmenu .s-insight { --sc: var(--stat-insight); }
+.dmenu .dm-badge {
+  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; box-sizing: border-box;
+  font-size: 16px; font-weight: 700; color: color-mix(in srgb, var(--sc) 55%, var(--dm-ink));
+  background: color-mix(in srgb, var(--sc) 22%, #fff); border: 2px solid color-mix(in srgb, var(--sc) 70%, var(--dm-ink));
+}
+.dmenu .dm-stat-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.dmenu .dm-stat-line { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px; }
+.dmenu .dm-stat-line .dm-rank { min-width: 128px; }
+.dmenu .dm-stat-line .dm-strong { width: 56px; font-size: 18px; font-weight: 900; }
+.dmenu .dm-stat .dm-pips i.on { background: color-mix(in srgb, var(--sc) 70%, var(--dm-ink)); border-color: color-mix(in srgb, var(--sc) 70%, var(--dm-ink)); }
+.dmenu .dm-rank { font-size: 16px; font-weight: 700; color: color-mix(in srgb, var(--sc) 50%, var(--dm-ink)); }
+.dmenu .dm-up { font-size: 16px; font-weight: 700; color: var(--dm-amber-ink); }
+.dmenu .dm-fx { font-size: 14px; font-weight: 500; line-height: 1.5; color: color-mix(in srgb, var(--sc) 25%, var(--dm-muted)); }
+.dmenu .dm-next { display: flex; flex-direction: column; gap: 5px; }
+.dmenu .dm-next small { font-size: 13px; font-weight: 700; letter-spacing: 0; color: var(--dm-muted); }
+.dmenu .dm-next .dm-gauge { height: 8px; }
+.dmenu .dm-stat .dm-next b.settled { background: color-mix(in srgb, var(--sc) 75%, var(--dm-ink)); }
+.dmenu .dm-next.capped b.settled { background: #b9aebf; }
+
+.dmenu .dm-level-line, .dmenu .dm-hidane-line { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 12px; }
+.dmenu .dm-lv small { font-size: 16px; font-weight: 700; color: var(--dm-muted); }
+.dmenu .dm-lv b, .dmenu .dm-big { font-size: 40px; font-weight: 900; line-height: 1; color: var(--dm-ink); }
+.dmenu .dm-big.dm-amber { color: var(--dm-amber-ink); }
+.dmenu .dm-level-left { margin-left: auto; font-size: 15px; font-weight: 700; color: var(--dm-muted); }
+.dmenu .dm-exp { height: 14px; }
+.dmenu .dm-board { gap: 0; }
+.dmenu .dm-board > .dm-en { margin-bottom: 4px; }
+.dmenu .b-body { --bc: #c8603a; }
+.dmenu .b-sense { --bc: #3f79c0; }
+.dmenu .b-wisdom { --bc: #3e8a4a; }
+.dmenu .dm-board-row { grid-template-columns: 30px 52px minmax(0, 1fr) 72px; column-gap: 12px; padding: 8px 6px; }
+.dmenu .dm-board-head { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 6px; font-size: 16px; font-weight: 900; color: #fff; background: var(--bc); }
+.dmenu .dm-board-bar { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.dmenu .dm-board-row .dm-gauge b.settled { background: color-mix(in srgb, var(--bc) 85%, #fff); }
+.dmenu .dm-board-bar small.dm-sub { font-size: 13px; font-weight: 700; letter-spacing: 0; overflow-wrap: anywhere; }
+.dmenu .dm-count { font-size: 15px; font-weight: 700; text-align: right; color: var(--dm-muted); }
+.dmenu .dm-board .dm-actions { margin-top: 10px; }
+
+/* ---------------------------------------------------------------- 人間関係 */
+.dmenu .dm-people { gap: 0; padding: 0 4px; }
+.dmenu .dm-person-item { border-bottom: 1px solid var(--dm-line); }
+.dmenu .dm-person-item:last-child { border-bottom: 0; }
+.dmenu .dm-person {
+  display: flex; align-items: center; gap: 14px; width: 100%; min-height: 62px; box-sizing: border-box; margin: 0; padding: 7px 12px;
+  border: 0; background: transparent; color: inherit; text-align: left; font-family: var(--font); cursor: pointer;
+}
+.dmenu .dm-person:hover { background: var(--dm-hover); }
+.dmenu .dm-person[aria-expanded="true"] { background: var(--dm-lav-soft); }
+.dmenu .dm-face { flex: none; width: 46px; height: 46px; box-sizing: border-box; border-radius: 50%; object-fit: cover; image-rendering: pixelated; background: #211c2b; border: 2px solid #e2d9c7; }
+.dmenu .dm-face.ph { display: grid; place-items: center; font-size: 18px; font-weight: 900; color: #fff; background: var(--dm-lav); }
+.dmenu .dm-name { flex: none; width: 132px; overflow-wrap: anywhere; }
+.dmenu .dm-person-status { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; min-width: 0; }
+.dmenu .dm-person .heart-row { display: inline-flex; flex: none; gap: 2px; }
+.dmenu .dm-person .lime { margin-left: auto; }
+.dmenu .dm-person .blank { margin-left: auto; }
+.dmenu .dm-chip.rel-romance { color: #a8345f; border-color: #e7a6bf; background: #fbe8ef; }
+.dmenu .dm-chip.rel-lover { color: #fff; border-color: #c2507e; background: #c2507e; }
+.dmenu .dm-chip.rel-friend { color: #2f6f99; border-color: #a9cbe0; background: #e7f2f9; }
+.dmenu .dm-chip.rel-choice { color: #8a5413; border-color: #e4b57a; background: #fbe9cf; }
+.dmenu .dm-person-detail { padding: 6px 16px 12px 72px; background: #fbf8fc; }
+.dmenu .dm-person-detail[hidden] { display: none; }
+.dmenu .dm-person-detail p { margin: 4px 0 0; font-size: 15px; font-weight: 500; line-height: 1.6; }
+.dmenu .dm-memory { color: #5a5068; }
+.dmenu .dm-memory::before { content: "思い出　"; font-size: 13px; font-weight: 700; color: var(--dm-lav); }
+.dmenu .dm-hint { color: var(--dm-muted); }
+.dmenu .dm-gift { color: var(--dm-lav-ink); }
+
+/* ---------------------------------------------------------------- 持ち物 */
+.dmenu .dm-items { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+.dmenu .dm-flavors { display: flex; flex-direction: column; }
+.dmenu .dm-flavor { display: grid; grid-template-columns: minmax(0, 1fr) 56px auto 44px; align-items: center; column-gap: 12px; min-height: 44px; border-bottom: 1px solid var(--dm-line); }
+.dmenu .dm-flavor:last-child { border-bottom: 0; }
+.dmenu .dm-flavor-name { font-size: 16px; word-break: keep-all; overflow-wrap: anywhere; }
+.dmenu .dm-grams, .dmenu .dm-mastery { font-size: 15px; font-weight: 700; color: var(--dm-muted); text-align: right; }
+.dmenu .dm-chip.recipe { cursor: pointer; border-color: var(--dm-lav-line); }
+.dmenu .dm-chip.recipe:hover { color: #fff; background: var(--dm-lav); border-color: var(--dm-lav); }
+.dmenu .dm-later { display: flex; flex-direction: column; gap: 6px; }
+.dmenu .dm-later .dm-strong { font-size: 15px; }
+.dmenu .dm-gifts { display: grid; gap: 4px; }
+.dmenu .gift-note { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; padding: 4px 10px; border-left: 3px solid var(--dm-lav-line); background: #f4eef6; }
+.dmenu .gift-note b { font-size: 14px; color: var(--dm-ink); }
+.dmenu .gift-note small { font-size: 13px; font-weight: 700; color: var(--dm-muted); }
+.dmenu .dm-keepsakes { display: grid; gap: 8px; }
+.dmenu .dm-keepsake {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 6px; box-sizing: border-box; text-align: left; cursor: pointer;
+  font-family: var(--font); color: var(--dm-ink); background: var(--dm-card); border: 1px solid var(--dm-line); border-radius: 4px;
+}
+.dmenu .dm-keepsake:hover { background: var(--dm-hover); }
+.dmenu .dm-keepsake img { flex: none; width: 72px; height: 54px; object-fit: cover; border-radius: 3px; background: #ece5ee; }
+.dmenu .dm-keepsake span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dmenu .dm-keepsake b { font-size: 15px; }
+.dmenu .dm-keepsake small { font-size: 14px; font-weight: 500; line-height: 1.45; color: var(--dm-muted); }
+.dmenu .dm-recipe { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.dmenu .dm-recipe .recipe-detail { align-self: stretch; padding: 16px 18px; background: var(--dm-card); border: 1px solid var(--dm-line); border-radius: 4px; }
+.dmenu .dm-recipe .recipe-detail h4 { margin: 0 0 8px; font-size: 20px; font-weight: 900; color: var(--dm-lav); }
+.dmenu .dm-recipe .recipe-detail p { margin: 6px 0; font-size: 16px; line-height: 1.6; color: var(--dm-ink); }
+.dmenu .dm-recipe .recipe-detail .st-note { font-size: 14px; color: var(--dm-muted); }
+
+/* ---------------------------------------------------------------- システム */
+.dmenu .dm-system { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.dmenu .dm-sys { min-height: 72px; font-size: 18px; }
+/* チェキの拡大は MENU の上に重ねる（daily.css の暗い面のまま） */
+#modal > .keepsake-viewer { z-index: 2; }
+
+/* ---------------------------------------------------------------- HUD：火種の印は MENU の右上、能力アップの光も MENU に当たる */
+.hud-menu .hidane-badge { right: -9px; top: -9px; }
+.hud-menu .hud-gain {
+  position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 18%, var(--gain-color) 38%, transparent 72%); pointer-events: none;
+}
+
+/* ---------------------------------------------------------------- DS風：上下2画面ぶんを使い、タブは下の帯 */
+body.game-ds #modal:has(> .dmenu) {
+  left: var(--ds-vx); top: var(--ds-vy);
+  width: calc(var(--ds-cx) + var(--ds-cw) - var(--ds-vx)); height: calc(var(--ds-cy) + var(--ds-ch) - var(--ds-vy));
+}
+body.game-ds .dmenu .dm-backdrop { background: #0b0812e6; }
+body.game-ds .dmenu .dm-sheet {
+  inset: 0; width: auto; height: auto; padding: 10px 10px 8px; border-radius: 8px;
+  background: var(--dm-paper); box-shadow: inset 0 0 0 1px var(--dm-lav-line);
+  grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas: "head" "panel" "side"; row-gap: 8px;
+}
+body.game-ds .dmenu .dm-side { padding: 0; }
+body.game-ds .dmenu .dm-title { display: none; }
+body.game-ds .dmenu .dm-tabs { flex-direction: row; gap: 3px; padding: 4px; border-radius: 6px; background: var(--dm-band); border: 1px solid var(--dm-line); }
+body.game-ds .dmenu .dm-tab { flex: 1 1 0; min-width: 0; height: 50px; padding: 0 2px; align-items: center; text-align: center; }
+/* 幅320pxでも「ステータス」が隣のタブに付かない大きさ（13〜15px） */
+body.game-ds .dmenu .dm-tab .dm-label { font-size: clamp(13px, 3.9vw, 15px); font-weight: 700; letter-spacing: 0; white-space: nowrap; }
+body.game-ds .dmenu .dm-head { flex-wrap: nowrap; gap: 8px; padding-bottom: 6px; align-items: flex-start; }
+body.game-ds .dmenu .dm-summary { gap: 2px 12px; }
+body.game-ds .dmenu .dm-sum > small { font-size: 13px; }
+body.game-ds .dmenu .dm-sum > b { font-size: 16px; }
+body.game-ds .dmenu .dm-slot { font-size: 14px; }
+body.game-ds .dmenu .dm-close { min-height: 44px; padding: 0 12px; font-size: 15px; letter-spacing: .02em; }
+body.game-ds .dmenu .dm-heading h3 { font-size: 19px; }
+body.game-ds .dmenu .dm-card { padding: 10px 12px; }
+body.game-ds .dmenu .dm-sys { min-height: 56px; font-size: 16px; }
+body.game-ds .dmenu .dm-person-detail { padding: 6px 10px 10px 16px; }
+/* 「表示」の切替（ヒンジの小さな札）は MENU を閉じれば使える。開いている間は中身に重ねない */
+body.game-ds:has(#modal > .dmenu) .game-layout-toolbar { visibility: hidden; }
+/* 縦持ち（上下2画面）は幅が狭いので1列にし、行の中身を2段に組む */
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-grid-2,
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-items { grid-template-columns: minmax(0, 1fr); }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-system { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat { grid-template-columns: 34px minmax(0, 1fr); column-gap: 10px; row-gap: 6px; padding: 8px 6px; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat .dm-next { grid-column: 2; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat-line .dm-strong { width: auto; }
+/* 縦持ち: 能力名と段位を1行目、丸を2行目、効き目の下に「次の段まで」を文字とゲージの1行で。1行 約130px → 約110px */
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat-line { gap: 2px 10px; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat-line .dm-rank { min-width: 0; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat .dm-pips { flex-basis: 100%; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat .dm-next { flex-direction: row; align-items: center; gap: 8px; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat .dm-next small { flex: none; white-space: nowrap; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat .dm-next .dm-gauge { flex: 1 1 0; min-width: 24px; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-board-row {
+  grid-template-columns: 28px minmax(0, 1fr) auto; grid-template-areas: "head name count" "bar bar bar"; row-gap: 6px;
+}
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-board-head { grid-area: head; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-board-name { grid-area: name; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-board-bar { grid-area: bar; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-count { grid-area: count; white-space: nowrap; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-person {
+  display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; grid-template-areas: "face name lime" "face status status";
+  gap: 4px 10px; padding: 8px 6px;
+}
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-person .dm-face { grid-area: face; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-name { grid-area: name; width: auto; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-person-status { grid-area: status; gap: 4px 10px; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-person :is(.lime, .blank) { grid-area: lime; margin-left: 0; }
+body.game-ds .dmenu .dm-flavor {
+  grid-template-columns: minmax(0, 1fr) auto 40px; grid-template-areas: "name grams lv" "name pips lv"; column-gap: 8px; row-gap: 2px; padding: 4px 0;
+}
+body.game-ds .dmenu .dm-flavor-name { grid-area: name; font-size: 15px; }
+body.game-ds .dmenu .dm-grams { grid-area: grams; }
+body.game-ds .dmenu .dm-flavor .dm-pips { grid-area: pips; }
+body.game-ds .dmenu .dm-mastery { grid-area: lv; }
+/* 横持ちのDS風（左右2画面）は幅があるので、2列の並びとタブの縦の帯を残す */
+:root[data-ds-layout="side"] body.game-ds .dmenu .dm-sheet {
+  grid-template-columns: 150px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas: "side head" "side panel"; column-gap: 12px;
+  background: linear-gradient(90deg, var(--dm-band) 0 160px, transparent 160px), var(--dm-paper);
+}
+:root[data-ds-layout="side"] body.game-ds .dmenu .dm-tabs { flex-direction: column; padding: 0; background: none; border: 0; }
+:root[data-ds-layout="side"] body.game-ds .dmenu .dm-tab { flex: none; height: 52px; align-items: flex-start; text-align: left; padding: 0 12px; }
+:root[data-ds-layout="side"] body.game-ds .dmenu .dm-title { display: flex; font-size: 22px; margin: 2px 4px 8px; }
+:root[data-ds-layout="side"] body.game-ds .dmenu .dm-grid-2,
+:root[data-ds-layout="side"] body.game-ds .dmenu .dm-items { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+:root[data-ds-layout="side"] body.game-ds .dmenu .dm-system { grid-template-columns: repeat(3, minmax(0, 1fr)); }
