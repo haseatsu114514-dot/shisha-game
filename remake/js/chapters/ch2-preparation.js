@@ -4,7 +4,7 @@ import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 // 第2章の自由日。日常の消費・練習・保存・LIME・就寝は既存calendarを使う。
 import { DB, bgUrl } from "../core/data.js";
 import { state, save, markMet, timeOfDay } from "../core/state.js";
-import { addMoney, addStamina, earnStat, gainAffinity, affinityLevel } from "../core/stats.js";
+import { addMoney, addStamina, earnStat, gainAffinity, visitAffinity, affinityLevel } from "../core/stats.js";
 import { imageReady, setBg, toast, withScenePreparation } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
@@ -70,7 +70,7 @@ async function loadRegularScenes() {
   await regularScenes;
 }
 
-/** 第5章の柚ヶ谷の店への来店。代金・体力・好感度+5・能力+4は第2章の通い訪問と同じ。 */
+/** 第5章の柚ヶ谷の店への来店。代金・体力・能力+4は第2章の通い訪問と同じ。好感度は第5章の通いの値（+5）。 */
 export async function visitCityRegular(spot, { staminaGuard }) {
   const id = spot.charId;
   if (spot.region !== "widehanga" || !CITY_REGULARS.includes(id) || !state.met[id]) return null;
@@ -100,7 +100,7 @@ export async function visitCityRegular(spot, { staminaGuard }) {
   talks[id] = (talks[id] || 0) + 1;
   state.visits[id] = (state.visits[id] || 0) + 1;
   markMet(id);
-  gainAffinity(id, 5); earnStat(stat[id], 4);
+  gainAffinity(id, visitAffinity("talk")); earnStat(stat[id], 4);
   if (state === owner) await consultLessons(id, { bg: ROOMS[id] });
   return { used: true, exerted: true };
 }
@@ -207,8 +207,8 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   if (state.flags[`_lime_contact_${id}`] && !state.contacts.includes(id)) state.contacts.push(id);
   // あげはの交換後LIME（lime_ch2_ageha_after_visit）と旧セーブ互換の到達フラグ
   if (id === "ageha" && state.flags._lime_contact_ageha) state.flags._ch2_ageha_contact = true;
-  // 神崎・REIの長い段階会話と締めくくりは、第1章の固有会話と同じ+10（#2027）。
-  gainAffinity(id, first || finale || stages && stage?.file ? 10 : 5); earnStat(stat[id], 4);
+  // 神崎・REIの長い段階会話・あげはの店に通う回・締めくくりは、第1章の固有会話と同じ（#2027。値は core/stats.js の visitAffinity・AFB01）。
+  gainAffinity(id, visitAffinity(first || finale || story || stages && stage?.file ? "story" : "talk")); earnStat(stat[id], 4);
   // 心得の盤で灯した授業があれば、その店で相談して習う（SBD61: 会った時だけ）
   if (state === owner) await consultLessons(id, { bg: ROOMS[id] });
   // 部活の勧誘（REI・あげは）も地元の訪問と同じく、会えた後にだけ。入部は暦の精算と一緒に保存する。

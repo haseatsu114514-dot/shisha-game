@@ -61,20 +61,22 @@ async function fixture() {
 let failures=0,groups=0;
 async function check(name,fn){try{await fn(await fixture());groups++;console.log(`PASS ${name}`);}catch(e){failures++;console.error(`FAIL ${name}: ${e.stack}`);}}
 const done={id:'controlled-complete',visited:[]};
+// 来店の好感度（台帳 AFB01）: 段階会話 16×0.85=13.6、通い 8×0.85=6.8。端数は相手ごとに持ち越す。
+const FIRST_VISIT=13,TWO_VISITS=27,REPEAT_VISIT=6;
 const first=(f,id)=>{const s=f.fresh();delete s.met[id];s.story[id]=0;s.affinity[id]=0;s.flags._cafe_introduced=true;return s;};
 for(const id of ['naru','adam','minto','rin','tsumugi','sumi'])await check(`${id} first complete guarantees displayed heart1 without reading next scene`,async f=>{
  const s=first(f,id);assert.equal(f.stats.affinityLevel(id),0);
  assert.equal(await f.spots.visitChar(id),true);assert.equal(f.stats.affinityLevel(id),1);
- assert.equal(s.affinity[id],f.stats.AFFINITY_RANK_PTS[1]);assert.equal(s.story[id],1);assert.equal(s.met[id],true);
+ assert.equal(s.affinity[id],FIRST_VISIT);assert(s.affinity[id]>=f.stats.AFFINITY_RANK_PTS[1]);assert.equal(s.story[id],1);assert.equal(s.met[id],true);
  const after=JSON.parse(JSON.stringify(s)),loaded=f.roundTrip(),copy=JSON.parse(JSON.stringify(loaded));delete after.savedAt;delete copy.savedAt;assert.deepEqual(copy,after);
  assert.equal(f.stats.affinityLevel(id),1);assert.equal(loaded.story[id],1);
 });
 await check('high value is not reduced; a later visit does not repeat the first-visit floor',async f=>{
  let s=first(f,'naru');s.affinity.naru=40;await f.spots.visitChar('naru');assert(s.affinity.naru>=40);assert.equal(s.story.naru,1);
- s=first(f,'naru');await f.spots.visitChar('naru');await f.spots.visitChar('naru');assert.equal(s.story.naru,2);assert.equal(s.affinity.naru,18);
+ s=first(f,'naru');await f.spots.visitChar('naru');await f.spots.visitChar('naru');assert.equal(s.story.naru,2);assert.equal(s.affinity.naru,TWO_VISITS);
  s=first(f,'naru');await f.spots.visitChar('naru');s.affinity.naru=0;s.affinityCarry.naru=0;
  // Already read first story: the new guarantee must not turn every visit into a floor.
- await f.spots.visitChar('naru');assert.equal(s.affinity.naru,4);assert.equal(s.story.naru,1); // real repeat +5 at .85, not a second floor
+ await f.spots.visitChar('naru');assert.equal(s.affinity.naru,REPEAT_VISIT);assert.equal(s.story.naru,1); // real repeat +8 at .85, not a second floor
 });
 for(const outcome of ['cancel','missing','throw','abort','load'])await check(`ordinary first visit ${outcome} cannot award heart or story`,async f=>{
  const s=first(f,'naru'),controller=new AbortController();
@@ -84,7 +86,7 @@ for(const outcome of ['cancel','missing','throw','abort','load'])await check(`or
 });
 await check('concurrent first entry rejected and first grant not committed until completion',async f=>{
  const s=first(f,'naru');let resolve;f.setPlay(()=>new Promise(r=>resolve=r));const pending=f.spots.visitChar('naru');
- assert.equal(s.affinity.naru,0);assert.equal(await f.spots.visitChar('naru'),false);resolve(done);assert.equal(await pending,true);assert.equal(s.affinity.naru,9);assert.equal(s.story.naru,1);
+ assert.equal(s.affinity.naru,0);assert.equal(await f.spots.visitChar('naru'),false);resolve(done);assert.equal(await pending,true);assert.equal(s.affinity.naru,FIRST_VISIT);assert.equal(s.story.naru,1);
 });
 const readyMeeting=f=>{const s=f.fresh();for(const e of f.db.hiyori.route.events)delete s.flags[e.flag];s.affinity.hiyori=0;s.story.hiyori=0;return s;};
 await check('Hiyori actual dedicated meeting completes once at heart1 and preserves later prerequisites',async f=>{
@@ -116,24 +118,24 @@ for (const route of ['ordinary','hiyori']) for (const interruption of ['abort','
   // Already committed by the existing read path, independently of the visit's eventual return value.
   assert.equal(s.story[id],1);
   if(route==='hiyori')assert.equal(s.flags._hiyori_meeting_done,true);
-  const pendingAffinity=s.affinity[id];
+  const pendingAffinity=s.affinity[id],floor=route==='ordinary'?FIRST_VISIT:9;
   const loaded=interruption==='load'?f.roundTrip():null;
   const before=loaded?JSON.stringify(loaded):null;
   if(interruption==='abort')controller.abort();
   release(false);assert.equal(await job,false);
   if(loaded)assert.equal(JSON.stringify(loaded),before,'old runner cannot mutate loaded owner');
-  assert.equal(pendingAffinity,9,'completed first VN must commit its floor before unrelated postprocessing');
-  assert.equal((loaded||s).affinity[id],9);
+  assert.equal(pendingAffinity,floor,'completed first VN must commit its floor before unrelated postprocessing');
+  assert.equal((loaded||s).affinity[id],floor);
   assert.equal(f.stats.affinityLevel(id),1);
   f.setRecruit(async()=>false);
-  f.roundTrip();assert.equal(f.core.state.affinity[id],9,'isolated save/reload retains the one-time floor');
+  f.roundTrip();assert.equal(f.core.state.affinity[id],floor,'isolated save/reload retains the one-time floor');
   const committed=f.core.state;
   if(route==='hiyori'){
    assert.equal(await f.hiyori.playHiyoriEvent('meeting'),false);
    assert.equal(committed.affinity[id],9,'already committed meeting cannot award again');
   }else{
    assert.equal(await f.spots.visitChar(id),true);
-   assert.equal(committed.story[id],2);assert.equal(committed.affinity[id],18,'next visit reads exactly one next scene');
+   assert.equal(committed.story[id],2);assert.equal(committed.affinity[id],TWO_VISITS,'next visit reads exactly one next scene');
   }
  });
 }
