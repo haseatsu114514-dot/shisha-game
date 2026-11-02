@@ -606,6 +606,19 @@ await check('Mashiro (#2022): chapter 3 optional reads are the ladder, ♥3 ques
   assert.equal(after.flags._confession_due, undefined, 'the chapter 3 detour owns the confession');
   assert.equal(after.owned.filter(id => id === 'suyaki_mashiro').length, 1);
   assert.equal(await f.bonds.playFinale('mashiro'), false);
+  // IR20: 告白（休日の部屋）は寄り道だけ。恋愛ルートでも、日常の夜の帰り道（maybeConfession）では拾わない。
+  const confessions = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/confession.json', import.meta.url))).dialogues;
+  for (const d of confessions) f.db.dialogues[d.dialogue_id] = d;
+  assert.equal(f.romance.romanceRouteOpen('mashiro'), true, 'the relationship status still reads the open route');
+  Object.assign(after, { phase: 'daily', slot: 2 });
+  let beat = null;
+  assert.equal(await f.romance.maybeConfession(async text => { beat = text; }), false, 'no night-walk confession for mashiro');
+  assert.equal(beat, null);
+  assert.equal(after.flags._confession_due, undefined);
+  after.flags._confession_due = 'mashiro';
+  assert.equal(await f.romance.maybeConfession(async text => { beat = text; }), false, 'a stray reservation is dropped');
+  assert.equal(after.flags._confession_due, undefined);
+  assert.equal(beat, null);
 });
 await check('Kuze (#2028): chapter 3 finale after the LIME detour and the answer outing, friendship only, hagal once, then friend LIME', async f => {
   const rivals = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_rivals.json', import.meta.url))).dialogues;
