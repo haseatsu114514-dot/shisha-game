@@ -11,13 +11,14 @@ import { growthPerks, growthFeature, useGrowthInsurance, growthSkill, growthLess
 // 左の作業風景に温度計、右に半円ダイヤル。左の熱を逃がす吸い=寒色→キープ→右の熱を入れる吸い=暖色。
 // TH61: 真円の半円と中央から振れる細い針。止めたら一口を吸い終えるまで固定する。
 // 各帯には温度が上下することだけを添える。時間・強さは画面に書かない（TH60）。
-// 熱管理では、立ち上げから吸われて消耗した炭を交換する。交換する炭はもう一度炭焼きで焼き、焼け具合で戻る熱と持ちが変わる（TH39）。
+// 熱管理では、立ち上げから吸われて消耗した炭を交換する。交換する炭は最初の炭焼きのときに一緒に焼いておいたものをトングで持ってくる。
+// 炭焼きは挟まず、焼け具合は最初の炭焼きと同じで、それで戻る熱と持ちが変わる（TH39・#2213）。
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE, startBubbling } from "../core/audio.js";
 import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, setBenchDraw, failBench, setBenchLeaf, dockBenchLeaf, strainBench, scoreStep, waitBenchReady } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys } from "./common.js";
-import { burnCoals, HEAT_GRADES } from "./heat.js";
+import { HEAT_GRADES } from "./heat.js";
 
 import { craftConditions, heatDelta, pullResult, isIdealTemperature, isOptimalTemperature, temperatureBands, visualTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
@@ -52,7 +53,7 @@ export const ZONES = [
 // 交換する炭の個数ごとの、戻ってくる熱と、その後の燃え進む速さ（0個は消耗した炭のままで早く冷える）。
 const COAL_HEAT = [0, 0.06, 0.11, 0.16, .21];
 const COAL_COOL = [1.6, 0.75, 0.5, 0.35, .28];
-// 交換用に焼いた炭の焼け具合。熱の戻り（火力）と持ち（安定）を、最初の炭焼きと同じ判定から決める。
+// 交換用に焼いておいた炭の焼け具合。熱の戻り（火力）と持ち（安定）を、最初の炭焼きの結果から決める。
 const coalHeatFactor = (picks) => picks.reduce((s, g) => s + 1 + HEAT_GRADES[g].hp / 100, 0) / picks.length;
 const coalLifeFactor = (picks) => picks.reduce((s, g) => s + 1 - HEAT_GRADES[g].hs / 100, 0) / picks.length;
 // 半円ダイヤルの形（SVG座標）。p=0が左端、p=1が右端。
@@ -95,7 +96,7 @@ const MODES = {
   },
   care: {
     store: "care", title: "熱管理", min: 1, safe: 2, drift: true, serveLabel: "整え終える",
-    hint: "立ち上げから吸われ続けた炭は消耗して、温度が下がっていく。まず交換する炭の数を決め、その炭を焼いてから替える。焼け具合が良いほど温度がしっかり戻り、長く持つ。ダイヤルは吸い出しと同じで、キープなら温度を保てる。炎の印まで上がって焦げても、雪の印まで冷え切っても、その一台はダメになる",
+    hint: "立ち上げから吸われ続けた炭は消耗して、温度が下がっていく。まず交換する炭の数を決める。替える炭は最初の炭焼きのときに一緒に焼いておいたもので、トングで持ってきて入れ替える。最初の炭焼きの焼け具合が良いほど温度がしっかり戻り、長く持つ。ダイヤルは吸い出しと同じで、キープなら温度を保てる。炎の印まで上がって焦げても、雪の印まで冷え切っても、その一台はダメになる",
     start: careStartTemp, focus: () => ({ slow: 1, window: 1 }),
   },
 };
@@ -407,7 +408,8 @@ async function pullGame(cs, mode) {
 
   /**
    * 熱管理の準備（TH21・TH39）: 立ち上げから吸われて消耗した炭を、何個交換するか選ぶ。
-   * 交換する炭はもう一度炭焼きで焼き、焼け具合で戻る熱と持ちが決まる。替えた分だけ温度が戻る。
+   * 交換する炭は焼いておいたものをトングで持ってくる（炭焼きは挟まない）。最初の炭焼きの焼け具合で戻る熱と持ちが決まる。
+   * 替えた分だけ温度が戻る。
    */
   const prepareCoals = async () => {
     choosing = true;
@@ -451,18 +453,19 @@ async function pullGame(cs, mode) {
       play.hidden = false;
       return;
     }
-    // 交換する炭を焼く。最初の炭焼きと同じ遊び方で、個数だけ違う。
-    choice.replaceChildren(el("p.care-coals-lead", { text: `交換する炭を${coals}個焼こう` }));
-    const stage = el("div.care-burn", { dataset: { test: "care-burn" } });
-    choice.append(stage);
-    const { picks } = await burnCoals(cs, stage, { count: coals, compact: true, replacement: true });
+    // 交換する炭は、最初の炭焼きのときに一緒に焼いておいたもの。炭焼きは挟まず、トングで持ってきて入れ替える（#2213）。
+    // 焼け具合は最初の炭焼きと同じ。焼いた記録が無い台（スミさんが用意した一台など）は標準の焼き炭として係数を掛けない。
+    const batch = cs.heat?.picks?.length ? cs.heat.picks : null;
+    const picks = batch ? Array.from({ length: coals }, (_, i) => batch[i % batch.length]) : [];
+    choice.replaceChildren(el("p.care-coals-lead", { dataset: { test: "care-tong" }, text: `焼いておいた炭を${coals}個、トングで持ってくる` }));
+    SE.coalSnip();
+    await sleep(autoSkill() ? 40 : 700);
     if(state!==owner||!play.isConnected){abandoned=true;choice.remove();choosing=false;return;}
-    coolRate *= coalLifeFactor(picks);
+    coolRate *= batch ? coalLifeFactor(batch) : 1;
     cs.careCoals = { count: coals, picks };
-    await sleep(autoSkill() ? 40 : 450);
-    choice.replaceChildren(el("p.care-coals-lead", { text: "消耗した炭を交換した。温度が戻ってくる" }));
+    choice.replaceChildren(el("p.care-coals-lead", { text: "消耗した炭と入れ替えた。温度が戻ってくる" }));
     SE.coalPlace();
-    const from = coreTemp, add = heatDelta(cs, COAL_HEAT[coals] * coalHeatFactor(picks)), started = gameClock.now(), dur = autoSkill() ? 200 : 1400;
+    const from = coreTemp, add = heatDelta(cs, COAL_HEAT[coals] * (batch ? coalHeatFactor(batch) : 1)), started = gameClock.now(), dur = autoSkill() ? 200 : 1400;
     for (;;) {
       if(state!==owner||!play.isConnected){abandoned=true;break;}
       const k = Math.min(1, (gameClock.now() - started) / dur);
