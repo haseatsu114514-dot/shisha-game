@@ -59,6 +59,8 @@ const fixedNight = (day) => nightOccupied(chapterDef.nightEvents, day);
  * @param def.departure true なら最終日は大会ではなく遠出の出発の朝（第3・4章の準備期間・VOL02）。
  *   前夜の内省・家シーシャの見送り・大会の朝の発病の場面など、大会前夜だけの扱いをしない
  * @param def.dayLabel 朝のカード・夜明けの幕の日付の小見出し（既定 "DAY"。準備期間は "出発前"）
+ * @param def.slotEvent () => { beat?, run: async () => boolean } | null。この時間帯の行動を使う本筋の場面・約束
+ *   （第3章の東京の昼の場面・恋人の東京訪問）。読み終えて true なら行動を一つ使う。中断・失敗は行動を残す
  * @param def.wakeBackground () => 背景ID。朝に目を覚ます場所（無ければ家）
  */
 export async function runDaily(def) {
@@ -119,6 +121,19 @@ export async function runDaily(def) {
     }
     await chapterDef.morningDeparture?.();
     while (state.slot < 2) {
+      const story = await chapterDef.slotEvent?.();
+      if (story) {
+        if (story.beat) await beat(story.beat);
+        const read = await story.run();
+        if (state !== owner) return;
+        if (read) {
+          state.slot = Math.min(2, state.slot + 1);
+          await afterAction({ exerted: story.exerted === true });
+          updateHud();
+          save();
+          continue;
+        }
+      }
       const delivery = dueDelivery();
       if (delivery) await deliver(delivery);
       else await takeAction();
@@ -689,7 +704,7 @@ function postponeUnaffordableInvitation(inv) {
 }
 
 async function guardInvitation(inv) {
-  if (await staminaGuard(inv.event === "__sumi_baito__" ? -24 : -10)) return true;
+  if (await staminaGuard(inv.event === "__sumi_baito__" ? -24 : inv.event === "__mukai_baito__" ? -14 : -10)) return true;
   rescheduleInvitation(inv, "体調を考え、約束を別の日に改めることにした");
   save();
   return false;
@@ -724,6 +739,10 @@ async function meetInvitation(inv) {
     state.visitedDay.tonari_baito = state.day;
     state.visitedDay.tonari = state.day;
     await doBaito({ called: true });
+  } else if (inv.event === "__mukai_baito__") {
+    // ムカイさんのLIMEで呼ばれた東京の mukai のシフト（VOL10）。シフトの中身は章の側（chapters/tokyo-mukai.js）
+    if (!await chapterDef.mukaiShift?.({ called: true })) return false;
+    if (inv.visitSpot) state.visitedDay[inv.visitSpot] = state.day;
   } else if (inv.event === "hiyori_tonari_return") {
     await playHiyoriEvent("tonari_return");
     state.visitedDay.tonari = state.day;
@@ -764,7 +783,7 @@ async function meetInvitation(inv) {
     state.visitedDay[destination] = state.day;
     state.flags[`_invitation_visit_${destination}`] = `${state.chapter}:${state.day}`;
   }
-  if (inv.event !== "__sumi_baito__" && CHAR_STAT[inv.sender]) {
+  if (!["__sumi_baito__", "__mukai_baito__"].includes(inv.event) && CHAR_STAT[inv.sender]) {
     const { earnStat } = await import("../core/stats.js");
     earnStat(CHAR_STAT[inv.sender], 1);
   }
