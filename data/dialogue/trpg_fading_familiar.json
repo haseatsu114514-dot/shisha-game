@@ -3094,6 +3094,7 @@
     "genre": "学園ファンタジー・儚さ",
     "tagline": "朝が来たら、もう会えないかもしれない。",
     "image": "../../img/backgrounds/trpg_fading-familiar_room.webp",
+    "choiceArt": {"src": "../../img/ui/trpg/choices-fading-familiar.webp", "rowCount": 5, "rows": {"spell": 0, "item": 1, "call": 2, "tactic": 3, "hypotheses": 4}},
     "sceneAlt": "夜の魔法学校。空っぽの寝床、図書館の窓、薬草園、天文台の階段、掲示板の試験表、廊下の煙の跡。",
     "location": "星見ヶ丘魔法学校 / 夜の寮と校舎",
     "atmosphere": "試験前夜の静かな校舎。夜明けまで、あと少し。",

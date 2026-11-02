@@ -2636,6 +2636,7 @@
     "genre": "ゴシック幻想 / 音楽",
     "tagline": "アンコールは鳴りやまない。夜明けまでに、最後の一曲を。",
     "image": "../../img/backgrounds/trpg_moonflower-encore_room.webp",
+    "choiceArt": {"src": "../../img/ui/trpg/choices-moonflower-encore.webp", "rowCount": 5, "rows": {"stage": 0, "scent": 1, "finale": 2, "tactic": 3, "hypotheses": 4}},
     "sceneAlt": "月夜の古城の大広間。大広間の舞台、客席の名札、楽屋の譜面台、庭の月光花、回廊の肖像画、家令の鍵束。客席には青白い幽霊たち。",
     "location": "月の丘 / 月光花城",
     "atmosphere": "燭台の灯り。白い花の香り。鳴りやまない、アンコール。",

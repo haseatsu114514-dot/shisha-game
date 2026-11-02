@@ -3158,6 +3158,7 @@
     "genre": "コメディ・ファンタジー",
     "tagline": "盛りを盗む魔王に、勇者たちが会いに行く。",
     "image": "../../img/backgrounds/trpg_purikura-hero_room.webp",
+    "choiceArt": {"src": "../../img/ui/trpg/choices-purikura-hero.webp", "rowCount": 5, "rows": {"deco": 0, "light": 1, "pose": 2, "tactic": 3, "hypotheses": 4}},
     "sceneAlt": "きらめき王国。色あせた広場の噴水、写真屋のショーケース、サメの泳ぐ堀と城門、撮影城の鏡の間、落ちていたプリ、魔王の玉座。",
     "location": "きらめき王国 / 王国の広場と撮影城",
     "atmosphere": "盛りを吸われて、王国じゅうが少し地味。城から、今日もシャッターの音。",

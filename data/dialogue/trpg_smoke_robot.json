@@ -2622,6 +2622,7 @@
     "genre": "SF / ロボと一台",
     "tagline": "寂しいビープ音の、わけを探す。",
     "image": "../../img/backgrounds/trpg_smoke-robot_room.webp",
+    "choiceArt": {"src": "../../img/ui/trpg/choices-smoke-robot.webp", "rowCount": 5, "rows": {"part": 0, "flavor": 1, "gift": 2, "tactic": 3, "hypotheses": 4}},
     "sceneAlt": "軌道の休憩所。作業台、展望デッキの窓、倉庫の扉、通信室、整備士のメモと失敗作の山。窓の外に青い地球。",
     "location": "地球周回軌道 / 星の駅ポラリス",
     "atmosphere": "夜間モードの灯り。通路の奥で、小さなビープ音。",

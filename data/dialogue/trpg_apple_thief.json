@@ -2570,6 +2570,7 @@
     "genre": "館の怪盗もの / 謎解き",
     "tagline": "予告状は一枚。狙いは、原点の香り。",
     "image": "../../img/backgrounds/trpg_apple-thief_room.webp",
+    "choiceArt": {"src": "../../img/ui/trpg/choices-apple-thief.webp", "rowCount": 5, "rows": {"trap": 0, "post": 1, "confront": 2, "tactic": 3, "hypotheses": 4}},
     "sceneAlt": "湖畔の館の夜会。書斎の配合帳、温室の林檎の木、大広間の肖像画、厨房の香りの棚、玄関の予告状、主人の椅子。",
     "location": "ミルト湖畔 / 白林檎館",
     "atmosphere": "燭台の灯り。林檎の香り。どこかに、怪盗。",
