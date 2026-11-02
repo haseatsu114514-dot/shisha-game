@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EEE2CE  枠の段 1: 2コマ@y=272
+  コマ1: 720x477 @(36,272) 比率 1.509 → ok
+  コマ2: 719x480 @(780,272) 比率 1.498 → ok
+コマ1: 720x477 (1.509) → 上下に各0.3%の紙帯 → 出力 720x480  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-camel-gift/panels/sheikh-camel-gift-1.webp (65 KiB)
+コマ2: 719x480 (1.498) そのまま → 出力 719x480  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-camel-gift/panels/sheikh-camel-gift-2.webp (81 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "sheikh-camel-gift",
+  "title": "みかんのお礼",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "シェイクの好きな味はぶどう。お礼も王様の大きさ。",
+  "panels": [
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-camel-gift/panels/sheikh-camel-gift-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-camel-gift/panels/sheikh-camel-gift-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-camel-gift/source-v1.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 720,
+        "height": 477,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-camel-gift/source-v1.png",
+      "region": {
+        "x": 780,
+        "y": 272,
+        "width": 719,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "sheikh-camel-gift-1.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "3ef1efacdfb866a00bfbddac20bb97bc21c2d4239db99c8563b761def83111f4"
+    },
+    {
+      "file": "sheikh-camel-gift-2.webp",
+      "width": 719,
+      "height": 480,
+      "sha256": "6d406bba4ac71d2f966fa6148707c8eb7b47b0caea445dc9cf86d78a02a0e1c6"
+    }
+  ]
+}

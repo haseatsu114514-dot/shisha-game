@@ -1,0 +1,2 @@
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-beach/panels/uranaishi-beach-1.webp: 716x478 比率 1.498 74 KiB
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-beach/panels/uranaishi-beach-2.webp: 721x481 比率 1.499 75 KiB

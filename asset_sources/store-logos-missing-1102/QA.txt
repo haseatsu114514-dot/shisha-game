@@ -1,0 +1,10 @@
+NOT ADOPTED / Owner selection required
+9 original PNGs: 1536x1024 RGBA, real alpha, SHA-256 in generation.json.
+Visual QA: SHISHARK spelling correct in A/B/C; one shark each; no people, hands, crowns or shisha equipment.
+Dubai: no letters, pseudo-script, labels, people or shisha equipment. Dallah reads as coffee pot, not hookah.
+Transparent edges checked by compositing on #fffaf0 and #1f1a29; 82x46 and 180x104 previews included.
+Distinct variants: SHISHARK plaque/porthole/compact, center arch/wide plaque/round medallion, alley hanging/wall-mounted/round tin.
+Alley B/C and center C were regenerated for shape adherence; exact retry prompts recorded.
+Center A/B include furnishing motifs from the supplied interior reference.
+Existing supplied logos were viewed for style comparison only, not included in this delivery.
+No game files changed; SLG04/05 left with PR #2378.

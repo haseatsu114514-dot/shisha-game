@@ -175,7 +175,9 @@ async function morning() {
   else await dayCard(dayTitle(), countdownText(), { weather: weatherOf(), forecast: tomorrowForecast() });
   // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
   // 恋人のデートの誘いを出さない章（第5章）は、恋人の朝のLIMEだけ届く（lover-entry.js と同じ扱い）。
-  const n = deliverMorning({ fixedNight, invitations: chapterDef.dateInvitations !== false });
+  // 章の側から届く朝のLIME（第3章の東京の恋人からの訪問の相談など）
+  const extra = chapterDef.morningLime?.() || 0;
+  const n = deliverMorning({ fixedNight, invitations: chapterDef.dateInvitations !== false }) + extra;
   if (n) pushNotice(n, { onOpen: (sender) => {
     if (isChoosingDestination() && !layers.modal.classList.contains("show")) phoneButton({ sender });
     else queuedLimeSender = sender;

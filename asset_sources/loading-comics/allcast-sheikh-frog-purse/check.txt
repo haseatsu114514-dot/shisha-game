@@ -1,0 +1,2 @@
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-frog-purse/panels/sheikh-frog-purse-1.webp: 753x502 比率 1.500 69 KiB
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-frog-purse/panels/sheikh-frog-purse-2.webp: 758x505 比率 1.501 69 KiB
