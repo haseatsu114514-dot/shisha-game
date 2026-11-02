@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // TRPG scenario validator: structure, references, voices, text rules, campaign casting and a full simulation.
 // Usage: node tools/validate_trpg_scenario.mjs [data/dialogue/trpg_xxx.json ...]   (no argument: every catalog scenario)
-// Writing guide: docs/trpg_scenario_authoring.md. Exit code 1 when any ERROR is found.
+// Writing guide: docs/spec/trpg_scenario_authoring.md. Exit code 1 when any ERROR is found.
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
