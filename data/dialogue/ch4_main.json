@@ -836,7 +836,7 @@
         {
           "speaker": "da_silva",
           "face": "normal",
-          "text": "手拍子ひとつ打たずに最後まで見てたフェスタなんて、俺は初めてだぞ"
+          "text": "手拍子ひとつ無しで最後まで見入る客なんて、FESTAじゃ見たことねえぞ"
         }
       ],
       "comment": "成功時。全て同じ一台・同時進行の一試合。なるの敗北受容は最終集計後だけ。"
@@ -1294,6 +1294,21 @@
           "speaker": "sumi",
           "face": "smile",
           "text": "……来週、店に来るとさ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "南雲は昔、煙を吐きながら笑うやつでな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "南雲さんが、ですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "むせても、また笑う、……うるさかった"
         },
         {
           "speaker": "hajime",

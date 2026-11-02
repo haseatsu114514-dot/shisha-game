@@ -114,6 +114,7 @@ const tokyo = () => {
   // 出発前の準備3日（VOL02）を過ごした出発の朝。東京DAY1は従来どおり通算29日。
   value.day += 3;
   assert(progress.departChapterThree(value));
+  value.flags._ch3_intro.routeVersion = 2; // 場面カードの東京（作業中の旧セーブの行程）を確かめる
   return value;
 };
 const readUntil = (value, sceneId) => {
@@ -394,6 +395,7 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
     Object.assign(value, {chapter: 3, phase: 'cleared', day: 45, slot: 1, lovers});
     value.flags = {_ch3_cleared: true, _ch3_aftermath: {version: 2, winDay: 42, stage: 6}, _ch3_tournament_won: true};
     assert(ch4Progress.advanceToChapterFour(value));
+    delete value.flags._ch4.routeVersion; // 旧行程（ドバイ5日）の前夜を組む
     assert(companion.chooseOverseasCompanion(value, pick));
     const p = value.flags._ch4;
     Object.assign(p, {part: 'eve', day: ch4Progress.CH4_EVE_DAY, stage: ch4Progress.CH4_PROLOGUE.length, firstDay: 1});

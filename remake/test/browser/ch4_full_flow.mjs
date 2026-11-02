@@ -94,6 +94,8 @@ await suite("ch4-full-flow", async check => {
 
     // 2. 出発前の準備3日（VOL02）: 1日目の昼にスミさんとの特訓、夜に持っていく配合 → 2・3日目は自由 → 出発の朝にドバイ。
     await prepMap(page, { day: 46, slot: 1 });
+    // このスイートは旧行程（ドバイ5日・場面カード）を確かめる。ドバイの日常（版2）は ch4_dubai_daily。
+    await page.evaluate(() => { delete window.__remake.state.flags._ch4.routeVersion; });
     state = await get(page);
     assert.equal(state.chapter, 4);
     assert.equal(state.flags._ch4.day, 1);

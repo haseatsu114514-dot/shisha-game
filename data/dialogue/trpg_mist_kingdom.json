@@ -89,7 +89,8 @@
           "nerve": 2
         },
         "trait": "選手権の常連。毎回、林檎の香りで勝負する。腕は本物",
-        "likes": "林檎。この宇宙の最初の一個"
+        "likes": "林檎。この宇宙の最初の一個",
+        "portrait": "../../img/ui/trpg/pc-orchard.webp"
       }
     },
     {
@@ -110,7 +111,8 @@
           "nerve": 3
         },
         "trait": "選手権には興味がない。王宮の椅子と通路を見に来ただけ",
-        "likes": "座り心地のいい椅子と、サメの彫り物"
+        "likes": "座り心地のいい椅子と、サメの彫り物",
+        "portrait": "../../img/ui/trpg/pc-koban.webp"
       }
     }
   ],
@@ -119,43 +121,43 @@
       "id": "throne",
       "label": "玉座",
       "short": "玉座",
-      "x": 50,
-      "y": 28
+      "x": 51,
+      "y": 37
     },
     {
       "id": "portrait",
       "label": "王妃の肖像",
       "short": "肖像",
-      "x": 20,
-      "y": 24
+      "x": 22,
+      "y": 22
     },
     {
       "id": "window",
       "label": "霧の窓",
       "short": "窓",
-      "x": 82,
-      "y": 22
+      "x": 85,
+      "y": 24
     },
     {
       "id": "judges",
       "label": "審査員席",
       "short": "審査員席",
-      "x": 30,
-      "y": 60
+      "x": 36,
+      "y": 58
     },
     {
       "id": "shelf",
       "label": "王宮の香り棚",
       "short": "香り棚",
-      "x": 70,
-      "y": 58
+      "x": 74,
+      "y": 57
     },
     {
       "id": "corridor",
       "label": "消えかけの回廊",
       "short": "回廊",
-      "x": 14,
-      "y": 82
+      "x": 6,
+      "y": 68
     }
   ],
   "hypotheses": [
@@ -2749,7 +2751,7 @@
     "number": "06",
     "genre": "剣と魔法 / 霧の選手権",
     "tagline": "霧が晴れるまでに、王女に最後の一台を。",
-    "backdrop": "radial-gradient(ellipse at 50% 12%, #f1eef8 0%, transparent 55%), linear-gradient(170deg, #c7c0dc 0%, #8f89ad 50%, #4b4764 100%)",
+    "image": "../../img/backgrounds/trpg_mist-kingdom_room.webp",
     "sceneAlt": "霧に包まれた王宮の広間。玉座、王妃の肖像、霧の窓、審査員席、香り棚と、薄れかけた回廊。",
     "location": "朝霧の王国 / 霧の王宮",
     "atmosphere": "白い霧。薄れていく回廊。小さな王女の、透けそうな笑顔。",
@@ -3046,7 +3048,7 @@
         "detail": "短い黒髪に、借り物の礼服",
         "color": "#2f3446",
         "accent": "#c9c3e6",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-mist-kingdom-ink.webp"
       },
       {
         "id": "silver",
@@ -3054,7 +3056,7 @@
         "detail": "霧に溶けそうな銀髪と、灰色の外套",
         "color": "#5d5f72",
         "accent": "#e8e6f2",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-mist-kingdom-silver.webp"
       },
       {
         "id": "auburn",
@@ -3062,7 +3064,7 @@
         "detail": "赤毛を一つに結び、番号札を胸に",
         "color": "#7a4136",
         "accent": "#f0c09a",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-mist-kingdom-auburn.webp"
       },
       {
         "id": "dawn",
@@ -3070,7 +3072,7 @@
         "detail": "肩までの髪と、朝焼け色のスカーフ",
         "color": "#4a3d5e",
         "accent": "#f3b9a8",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-mist-kingdom-dawn.webp"
       }
     ],
     "archetypes": [
@@ -3134,7 +3136,8 @@
             "talk": 2,
             "nerve": 2
           },
-          "making": "trpg_mist_kingdom_make_adam_adam_orchard"
+          "making": "trpg_mist_kingdom_make_adam_adam_orchard",
+          "portrait": "../../img/ui/trpg/pc-orchard.webp"
         },
         {
           "id": "grants",
@@ -3148,7 +3151,8 @@
             "talk": 2,
             "nerve": 3
           },
-          "making": "trpg_mist_kingdom_make_adam_adam_grants"
+          "making": "trpg_mist_kingdom_make_adam_adam_grants",
+          "portrait": "../../img/ui/trpg/pc-grants.webp"
         }
       ]
     },
@@ -3166,7 +3170,8 @@
             "talk": 1,
             "nerve": 3
           },
-          "making": "trpg_mist_kingdom_make_samechan_samechan_koban"
+          "making": "trpg_mist_kingdom_make_samechan_samechan_koban",
+          "portrait": "../../img/ui/trpg/pc-koban.webp"
         },
         {
           "id": "sharuku",
@@ -3180,7 +3185,8 @@
             "talk": 2,
             "nerve": 3
           },
-          "making": "trpg_mist_kingdom_make_samechan_samechan_sharuku"
+          "making": "trpg_mist_kingdom_make_samechan_samechan_sharuku",
+          "portrait": "../../img/ui/trpg/pc-sharuku.webp"
         }
       ]
     }

@@ -89,7 +89,8 @@
           "nerve": 2
         },
         "trait": "ノクターンを追って、城まで来たファン。うちわもペンライトも自作",
-        "likes": "プリクラと、白と赤のグミベア"
+        "likes": "プリクラと、白と赤のグミベア",
+        "portrait": "../../img/ui/trpg/pc-moonflower-encore-kirara.webp"
       }
     },
     {
@@ -110,7 +111,8 @@
           "nerve": 2
         },
         "trait": "吸血鬼を狩りに来た……が、実は平和主義。武器は林檎と名言",
-        "likes": "ダブルアップルと、舞台の仕掛け"
+        "likes": "ダブルアップルと、舞台の仕掛け",
+        "portrait": "../../img/ui/trpg/pc-moonflower-encore-leon.webp"
       }
     }
   ],
@@ -119,43 +121,43 @@
       "id": "stage",
       "label": "大広間の舞台",
       "short": "舞台",
-      "x": 48,
-      "y": 20
+      "x": 40,
+      "y": 33
     },
     {
       "id": "nameplates",
       "label": "客席の名札",
       "short": "名札",
-      "x": 22,
-      "y": 66
+      "x": 23,
+      "y": 55
     },
     {
       "id": "score",
       "label": "楽屋の譜面台",
       "short": "譜面台",
-      "x": 14,
-      "y": 28
+      "x": 13,
+      "y": 22
     },
     {
       "id": "garden",
       "label": "庭の月光花",
       "short": "月光花",
-      "x": 84,
-      "y": 26
+      "x": 74,
+      "y": 38
     },
     {
       "id": "portrait",
       "label": "回廊の肖像画",
       "short": "肖像画",
-      "x": 78,
-      "y": 64
+      "x": 92,
+      "y": 26
     },
     {
       "id": "keys",
       "label": "家令の鍵束",
       "short": "鍵束",
       "x": 50,
-      "y": 82
+      "y": 84
     }
   ],
   "hypotheses": [
@@ -2633,7 +2635,7 @@
     "number": "11",
     "genre": "ゴシック幻想 / 音楽",
     "tagline": "アンコールは鳴りやまない。夜明けまでに、最後の一曲を。",
-    "backdrop": "radial-gradient(ellipse at 72% 14%, rgba(238, 230, 255, 0.5), rgba(238, 230, 255, 0) 40%), linear-gradient(165deg, #5c1840, #2e0c38 55%, #12061c)",
+    "image": "../../img/backgrounds/trpg_moonflower-encore_room.webp",
     "sceneAlt": "月夜の古城の大広間。大広間の舞台、客席の名札、楽屋の譜面台、庭の月光花、回廊の肖像画、家令の鍵束。客席には青白い幽霊たち。",
     "location": "月の丘 / 月光花城",
     "atmosphere": "燭台の灯り。白い花の香り。鳴りやまない、アンコール。",
@@ -2930,7 +2932,7 @@
         "detail": "短い黒髪に、黒いエプロンと工具袋",
         "color": "#2a2430",
         "accent": "#9b1b3f",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-moonflower-encore-apron.webp"
       },
       {
         "id": "tailcoat",
@@ -2938,7 +2940,7 @@
         "detail": "銀色の髪に、ワイン色の燕尾服",
         "color": "#c9c4d6",
         "accent": "#6e1a3c",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-moonflower-encore-tailcoat.webp"
       },
       {
         "id": "glasses",
@@ -2946,7 +2948,7 @@
         "detail": "丸い眼鏡に、楽譜を抱えた黒いベスト",
         "color": "#3a3045",
         "accent": "#e6d7b8",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-moonflower-encore-glasses.webp"
       },
       {
         "id": "cloak",
@@ -2954,7 +2956,7 @@
         "detail": "長い黒マントに、月光花のブローチ",
         "color": "#1f1a2e",
         "accent": "#e9e4f5",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-moonflower-encore-cloak.webp"
       }
     ],
     "archetypes": [
@@ -3018,7 +3020,8 @@
             "talk": 3,
             "nerve": 2
           },
-          "making": "trpg_moonflower_encore_make_ageha_ageha_kirara"
+          "making": "trpg_moonflower_encore_make_ageha_ageha_kirara",
+          "portrait": "../../img/ui/trpg/pc-moonflower-encore-kirara.webp"
         },
         {
           "id": "moka",
@@ -3032,7 +3035,8 @@
             "talk": 3,
             "nerve": 1
           },
-          "making": "trpg_moonflower_encore_make_ageha_ageha_moka"
+          "making": "trpg_moonflower_encore_make_ageha_ageha_moka",
+          "portrait": "../../img/ui/trpg/pc-moka.webp"
         }
       ]
     },
@@ -3050,7 +3054,8 @@
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_moonflower_encore_make_adam_adam_leon"
+          "making": "trpg_moonflower_encore_make_adam_adam_leon",
+          "portrait": "../../img/ui/trpg/pc-moonflower-encore-leon.webp"
         },
         {
           "id": "ziek",
@@ -3064,7 +3069,8 @@
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_moonflower_encore_make_adam_adam_ziek"
+          "making": "trpg_moonflower_encore_make_adam_adam_ziek",
+          "portrait": "../../img/ui/trpg/pc-ziek.webp"
         }
       ]
     }

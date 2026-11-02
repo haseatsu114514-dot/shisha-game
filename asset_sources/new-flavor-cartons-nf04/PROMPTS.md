@@ -8,7 +8,7 @@
   - アフサール: `remake/img/shop/remaining8/lychee.webp`
   - ドバジ: `remake/img/shop/remaining8/mango.webp`
 - 保存先: `asset_sources/new-flavor-cartons-nf04/<商品ID>.png`（正方形・透過PNG、1024px以上）。
-- 受け取り後: 512×512 の透過WebPにして `remake/img/shop/new-flavors/<商品ID>.webp` へ置き、箱の見える範囲を測って店の画像表に登録する（`tools/build_limited_flavor_art.py` と同じ手順）。
+- 受け取り後: 512×512 の透過WebPにして `remake/img/shop/new-flavors/<商品ID>.webp` へ置き、箱の見える範囲を測って店の画像表に登録する（`tools/build_new_flavor_art.py`）。2026-11-02 に採用・組み込み済み（README.md）。
 - 生成後チェック: 箱が1つだけ・画像内に全体が収まる・背景が透過・文字や数字や実在ロゴが無い・同じメーカーの既存の箱と並べて違和感がない・果物や素材が商品名どおり（ライムが緑でレモンに見えない等）。
 
 ```text

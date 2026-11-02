@@ -89,7 +89,8 @@
           "nerve": 1
         },
         "trait": "光に透けそうな衣装係。針と糸で、何でも直せる",
-        "likes": "ゆるいキャラの刺繍ワッペン"
+        "likes": "ゆるいキャラの刺繍ワッペン",
+        "portrait": "../../img/ui/trpg/pc-mirei.webp"
       }
     },
     {
@@ -110,7 +111,8 @@
           "nerve": 2
         },
         "trait": "相棒の人形と二人で一座。幽霊は、ほんの少しだけ苦手",
-        "likes": "海の見える芝居小屋と、サメ映画"
+        "likes": "海の見える芝居小屋と、サメ映画",
+        "portrait": "../../img/ui/trpg/pc-minamo.webp"
       }
     }
   ],
@@ -120,41 +122,41 @@
       "label": "舞台の幕",
       "short": "幕",
       "x": 50,
-      "y": 46
+      "y": 42
     },
     {
       "id": "mirror",
       "label": "楽屋の鏡",
       "short": "鏡",
-      "x": 12,
-      "y": 30
+      "x": 10,
+      "y": 22
     },
     {
       "id": "lights",
       "label": "照明室",
       "short": "照明室",
       "x": 88,
-      "y": 22
+      "y": 16
     },
     {
       "id": "frontrow",
       "label": "客席の最前列",
       "short": "最前列",
       "x": 50,
-      "y": 80
+      "y": 82
     },
     {
       "id": "shelf",
       "label": "台本の棚",
       "short": "台本棚",
-      "x": 16,
-      "y": 66
+      "x": 14,
+      "y": 60
     },
     {
       "id": "board",
       "label": "劇場の掲示",
       "short": "掲示",
-      "x": 84,
+      "x": 91,
       "y": 62
     }
   ],
@@ -2507,7 +2509,7 @@
     "number": "10",
     "genre": "やさしい幽霊劇",
     "tagline": "夜明けまでに、幕をきちんと下ろす。",
-    "backdrop": "radial-gradient(ellipse at 50% 0%, #e2b85a55 0%, transparent 45%), linear-gradient(160deg, #6a1826, #2a0a12 72%)",
+    "image": "../../img/backgrounds/trpg_stage-ghost_room.webp",
     "sceneAlt": "閉館した劇場。舞台の幕、楽屋の鏡、照明室、客席の最前列、台本の棚、劇場の掲示。空の舞台に淡い人影。",
     "location": "港坂 / 閉館した劇場「月灯座」",
     "atmosphere": "赤い幕。三百の空席。夜明けまで、あと少し。",
@@ -2804,7 +2806,7 @@
         "detail": "短い黒髪に、作業用の前掛け",
         "color": "#2f2a33",
         "accent": "#e2b85a",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-stage-ghost-ink.webp"
       },
       {
         "id": "rust",
@@ -2812,7 +2814,7 @@
         "detail": "赤毛を手ぬぐいでまとめる",
         "color": "#7b3f33",
         "accent": "#f0b27a",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-stage-ghost-rust.webp"
       },
       {
         "id": "silver",
@@ -2820,7 +2822,7 @@
         "detail": "月明かりのような銀の髪と、紺の上着",
         "color": "#4a4f63",
         "accent": "#d9dbe8",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-stage-ghost-silver.webp"
       },
       {
         "id": "long",
@@ -2828,7 +2830,7 @@
         "detail": "長い髪を一つに結び、黒い稽古着",
         "color": "#2d2440",
         "accent": "#c9a7e0",
-        "portrait": null
+        "portrait": "../../img/ui/trpg/look-stage-ghost-long.webp"
       }
     ],
     "archetypes": [
@@ -2892,7 +2894,8 @@
             "talk": 2,
             "nerve": 1
           },
-          "making": "trpg_stage_ghost_make_hiyori_hiyori_mirei"
+          "making": "trpg_stage_ghost_make_hiyori_hiyori_mirei",
+          "portrait": "../../img/ui/trpg/pc-mirei.webp"
         },
         {
           "id": "serena",
@@ -2906,7 +2909,8 @@
             "talk": 3,
             "nerve": 2
           },
-          "making": "trpg_stage_ghost_make_hiyori_hiyori_serena"
+          "making": "trpg_stage_ghost_make_hiyori_hiyori_serena",
+          "portrait": "../../img/ui/trpg/pc-serena.webp"
         }
       ]
     },
@@ -2924,7 +2928,8 @@
             "talk": 5,
             "nerve": 2
           },
-          "making": "trpg_stage_ghost_make_samechan_samechan_minamo"
+          "making": "trpg_stage_ghost_make_samechan_samechan_minamo",
+          "portrait": "../../img/ui/trpg/pc-minamo.webp"
         },
         {
           "id": "hiremaru",
@@ -2938,7 +2943,8 @@
             "talk": 3,
             "nerve": 3
           },
-          "making": "trpg_stage_ghost_make_samechan_samechan_hiremaru"
+          "making": "trpg_stage_ghost_make_samechan_samechan_hiremaru",
+          "portrait": "../../img/ui/trpg/pc-hiremaru.webp"
         }
       ]
     }

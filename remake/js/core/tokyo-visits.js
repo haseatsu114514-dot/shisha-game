@@ -1,5 +1,5 @@
 // 訪問の正本。人物の常住地・恋愛・能力・旧pendingInviteは変更しない。
-import { TOKYO_FREE_TIMES, tokyoTime, timeNumber } from "./tokyo-clock.js";
+import { tokyoFreeTimes, tokyoTime, timeNumber } from "./tokyo-clock.js";
 
 import { emptyTokyoVisits } from "./state.js";
 export const tokyoVisitState = value => value.tokyoVisits ||= emptyTokyoVisits();
@@ -52,7 +52,7 @@ export function proposeTokyoVisit(value, definitions, id) {
     || !character || value.chapter < character.dateMinChapter) return null;
   const visits = syncTokyoVisits(value);
   if (visits.plans.some(plan => plan.characterId === id && plan.status !== "returned")) return null;
-  const windows = TOKYO_FREE_TIMES.map(window => tokyoTime(value, window)).filter(window => windowAvailable(value, window));
+  const windows = tokyoFreeTimes(value).map(window => tokyoTime(value, window)).filter(window => windowAvailable(value, window));
   for (const meetup of windows) {
     if (meetup.day < value.day + definitions.leadDays) continue;
     const returnDay = meetup.day + definitions.stayDays;
