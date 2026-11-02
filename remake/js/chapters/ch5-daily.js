@@ -1,14 +1,20 @@
 // 第5章の自由行動を、第1・2章と同じ日常ループ（daily/calendar.js の runDaily）で遊ぶ（#2033）。
 // 日付・昼夜・体力・睡眠・天気・LIMEの受信箱・地図・育成（能力の上限は100）は日常ループが持つ。
 // ここでは第5章の行き先と、tonari の3場面・閉店後の試作・EDEN・博士への連絡だけを差し込む。
+// 地域は地元・橙須と隣町・柚ヶ谷（駅で行き来。夜は地元へ帰る。第2章と同じ電車の仕組み）。
 // 勝負の日は博士と決めるまで無い（untilDay = Infinity）。決めると翌日が勝負の日になり、その朝でループが終わる。
 import { state, save, timeOfDay } from "../core/state.js";
 import { bgUrl } from "../core/data.js";
 import { modal } from "../core/ui.js";
-import { HOME_CITY_NAME } from "../core/city-locations.js";
+import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 import { runDaily } from "../daily/calendar.js";
 import { allSpots } from "../daily/spots.js";
 import { openShop } from "../daily/shop.js";
+import { trpgSpot } from "../daily/trpg.js";
+import { MAP } from "./ch2-city-data.js";
+import { CITY_SHOP } from "./ch2-outings.js";
+import { returnCityHome } from "./ch2-commute.js";
+import { cityRegularSpots, visitCityRegular } from "./ch2-preparation.js";
 import {
   chapterFiveProgress, chapterFiveFreeRemaining, chapterFiveRead, chapterFiveTimeoutPending,
   chapterFivePreparation, chapterFivePrepPending, recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
@@ -53,7 +59,6 @@ export function dueTonariScene(value = state) {
  * 日常ループの章定義。
  * @param io.readAndCommit (id) => Promise<boolean> 読了して進行を確定・保存する（ch5.js）
  * @param io.readScene (id) => Promise<boolean> 読むだけ（試作の場面。確定は呼び出し側）
- * @param io.recordSchedule (choice) => void 博士への連絡の選択を記録する（ch5.js が台本の選択から拾う）
  */
 export function chapterFiveDailyDefinition(io) {
   return {
@@ -67,20 +72,51 @@ export function chapterFiveDailyDefinition(io) {
     dateInvitations: false,
     confessions: false,
     mapOptions: () => ({
-      regionId: "home",
-      regions: [{ id: "home", label: `地元・${HOME_CITY_NAME}`, background: () => bgUrl(`bg_osu_map_${timeOfDay()}`), spots: chapterFiveHomeSpots }],
+      regionId: currentRegion(),
+      regions: [
+        { id: "home", label: `地元・${HOME_CITY_NAME}`, background: () => bgUrl(`bg_osu_map_${timeOfDay()}`), spots: chapterFiveHomeSpots },
+        { id: "widehanga", label: `隣町・${CH2_CITY_NAME}`, background: () => MAP[timeOfDay()], spots: chapterFiveCitySpots },
+      ],
+      onRegionChange: id => { state.flags._ch2_region = id; save(); },
     }),
-    spotById: id => id === CH5_CALL_SPOT.id ? CH5_CALL_SPOT : null,
-    performSpot: spot => performChapterFiveSpot(spot, io),
+    // 夜は地元へ帰ってから（柚ヶ谷にいれば帰りの電車。第2章と同じ）。
+    beforeHomecoming: returnCityHome,
+    beforeInvitation: destination => destination && (destination.region || "home") === "home" ? returnCityHome() : true,
+    spotById: id => [CH5_CALL_SPOT, CH5_CITY_SHOP, ...cityRegularSpots()].find(spot => spot.id === id) || null,
+    performSpot: (spot, options) => performChapterFiveSpot(spot, io, options),
   };
 }
 
 /** 第5章の自由行動を日常ループで回す。勝負の日の朝（または LOAD）で戻る。 */
 export async function runChapterFiveDaily(io) {
+  // 現在地は第2章と同じ flags._ch2_region。第5章は地元から始める（第2章の保存の柚ヶ谷を持ち込まない）。
+  if (!state.flags._ch5_region_started) {
+    state.flags._ch2_region = "home";
+    state.flags._ch5_region_started = true;
+    save();
+  }
   await runDaily(chapterFiveDailyDefinition(io));
 }
 
-async function performChapterFiveSpot(spot, io) {
+const currentRegion = () => state.flags._ch2_region === "widehanga" ? "widehanga" : "home";
+
+/** 柚ヶ谷の支店（第2章の「県大会向け」の説明は使わない）。 */
+const CH5_CITY_SHOP = Object.freeze({ ...CITY_SHOP, desc: "隣町の支店。仕入れはここでも。" });
+
+/** 第5章の柚ヶ谷の行き先: 神崎・REIの店（会ったことがあれば）・支店・ボドゲカフェ（知っていれば）。 */
+export function chapterFiveCitySpots() {
+  return [...cityRegularSpots(), CH5_CITY_SHOP, trpgSpot()].filter(Boolean);
+}
+
+async function performChapterFiveSpot(spot, io, options = {}) {
+  if (spot.region === "widehanga") {
+    if (spot.id === CH5_CITY_SHOP.id) {
+      await openShop({ branch: "widehanga" }); // 時間は使わない
+      return { used: false, exerted: false };
+    }
+    const visited = await visitCityRegular(spot, options);
+    if (visited) return visited;
+  }
   if (spot.id === "tonari") {
     // 閉店後の試作が途中なら、まずその続き（LOAD 後など）。
     if (chapterFivePrepPending(state)) return { used: await runPrep(io), exerted: false };

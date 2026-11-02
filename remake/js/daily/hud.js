@@ -9,6 +9,7 @@ import { staminaRatio, currentCondition, maxStamina, step } from "../core/stats.
 import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
 import { chapterDay, chapterDaysLeft, chapterFinalDay, chapterGoalLabel } from "../core/chapter-clock.js";
+import { travelsBetweenCities } from "../core/travel-budget.js";
 import { growthEnabled, ensureGrowth, gaugeInfo, hidaneTotal, openGrowthBoard } from "../core/growth.js";
 
 // 体力バーの長さ（最大体力100のとき）。根性で最大体力が伸びるとバーも同じ割合で伸びる（GUI26）。
@@ -169,7 +170,7 @@ export function showHud(v = true) {
 
 export function updateHud() {
   if (!dom || !state) return;
-  const widehanga = state.chapter === 2 && state.flags._ch2_region === "widehanga";
+  const widehanga = travelsBetweenCities(state) && state.flags._ch2_region === "widehanga";
   dom.area.dataset.region = widehanga ? "widehanga" : "sakae";
   dom.area.setAttribute("aria-label", widehanga ? CH2_CITY_EN : HOME_CITY_EN);
   dom.area.replaceChildren(
