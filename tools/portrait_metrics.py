@@ -51,14 +51,16 @@ def save(data: dict) -> None:
 
 
 def git_blob(rel: str) -> str | None:
-    """git に登録された版（ls-files の blob SHA。LFS ならポインタの SHA）。CI の quick は画像を checkout しないので中身を読まない"""
-    out = subprocess.run(["git", "ls-files", "-s", "--", rel], cwd=ROOT, capture_output=True, text=True).stdout.split()
-    if len(out) >= 2:
-        return out[1]
+    """立ち絵の git 上の版（blob SHA。LFS ならポインタの SHA）。
+    手元にファイルがあれば中身から計算する（git add 前に測っても、add 後と同じ値になる。LFS は clean フィルタでポインタになる）。
+    CI の quick は画像を checkout しないので、無ければ登録内容（ls-files）を使う"""
     path = ROOT / rel
     if path.exists():
-        return subprocess.run(["git", "hash-object", rel], cwd=ROOT, capture_output=True, text=True).stdout.strip()
-    return None
+        out = subprocess.run(["git", "hash-object", "--", rel], cwd=ROOT, capture_output=True, text=True).stdout.strip()
+        if out:
+            return out
+    out = subprocess.run(["git", "ls-files", "-s", "--", rel], cwd=ROOT, capture_output=True, text=True).stdout.split()
+    return out[1] if len(out) >= 2 else None
 
 
 def tracked_normals() -> dict[str, str]:

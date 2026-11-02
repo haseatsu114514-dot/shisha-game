@@ -1,0 +1,34 @@
+{
+ "phase": "立ち絵そろえ 第2期（規格そろえ）TS10",
+ "face": "normal",
+ "chosen": "maki-normal-b",
+ "status": "合格（2026-11-02 オーナー「推奨のをお願い」でB案に決定）。ゲームの素材は表情差分ができてから差し替える",
+ "chosen_by": "2026-11-02 Claude。頭身が規格内で 7.0 に近く、顔・ポーズ・衣装が今の通常と同じ案",
+ "source": {
+  "generated_by": "Codex built-in image_gen",
+  "shared_by": "オーナーがギガファイル便（期限 2026-11-09）で共有",
+  "zip_sha256": "dac280234dbbf36391b14b95d07ff3c8ec480de249309cbc85c63856d326aa15",
+  "original_sha256": "e2a9b6f4114413c32772cecc57c5df6d3fd272dce7c6618fdd37c7461ac3b7f2"
+ },
+ "candidates": {
+  "maki-normal-a": {
+   "head_body_codex": 7.36,
+   "head_body_claude": 7.05,
+   "disposition_codex": "COMPARISON provisional in range; NOT ADOPTED",
+   "sha256": "531ce03da722825014a78f14ce037fea991902338196b6902eaa702fcb26cf8c"
+  },
+  "maki-normal-b": {
+   "head_body_codex": 7.2,
+   "head_body_claude": 7.11,
+   "disposition_codex": "COMPARISON provisional in range; NOT ADOPTED",
+   "sha256": "e2a9b6f4114413c32772cecc57c5df6d3fd272dce7c6618fdd37c7461ac3b7f2"
+  },
+  "maki-normal-c": {
+   "head_body_codex": 7.42,
+   "head_body_claude": 7.2,
+   "disposition_codex": "COMPARISON provisional in range; NOT ADOPTED",
+   "sha256": "9f1b59914bbb37433fc3caa092aaa4acb3ee1c9bb8bfeb8aeb135cb8ee6a950a"
+  }
+ },
+ "game_integration": "未実施。表情差分を同じ頭の大きさで作ってから、キャラ単位で組み込む"
+}

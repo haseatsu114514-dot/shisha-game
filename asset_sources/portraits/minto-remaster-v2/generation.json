@@ -1,0 +1,220 @@
+{
+ "phase": "立ち絵そろえ 第2期（規格そろえ）",
+ "expressions": {
+  "normal": {
+   "chosen": "minto-normal-b",
+   "original_sha256": "136f349c4584edab27419f78d285af7c8b01b96c82d119d1434a271a746c77ef",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6576946583",
+   "zip_sha256": "ace795647b1de46f25ffbe3e6ac2e37e98f381d4d850d6f09e12460d96577ebc",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "minto-normal-a": {
+     "head_body_codex": 6.47,
+     "disposition": "COMPARISON ONLY; near casual6.41; NOT ADOPTED",
+     "sha256": "9ef19ad891a6bc22e10146de0872645f18a63a1000a893f2b25b11086f4a1bd6"
+    },
+    "minto-normal-b": {
+     "head_body_codex": 6.4,
+     "disposition": "COMPARISON ONLY; near casual6.41; NOT ADOPTED",
+     "sha256": "136f349c4584edab27419f78d285af7c8b01b96c82d119d1434a271a746c77ef"
+    },
+    "minto-normal-c": {
+     "head_body_codex": 6.33,
+     "disposition": "HOLD: boundary or mismatch to target6.41",
+     "sha256": "7ecd1cb9ad8f001ed3ec84cd94e98389772da2ea5d7ec1217a2c4c0d1218756b"
+    }
+   }
+  },
+  "smile": {
+   "chosen": "minto-smile-a-v3",
+   "original_sha256": "b7cbd9442e0a508c30c12123e8dc337a160891be65300c52466e8bb240fcffc0",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6576946583",
+   "zip_sha256": "ace795647b1de46f25ffbe3e6ac2e37e98f381d4d850d6f09e12460d96577ebc",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "minto-smile-a": {
+     "head_body_codex": 6.15,
+     "disposition": "SUPERSEDED HISTORY: head too large; compare v3",
+     "sha256": "16450059a466a02a2f83760a80deb7d4dd0a0f7ab20c2a806782dc9a8fe0fbfd"
+    },
+    "minto-smile-b": {
+     "head_body_codex": 6.34,
+     "disposition": "SUPERSEDED HISTORY: head too large; compare v3",
+     "sha256": "f79006cfb19bcf2c97d3250f4f930987f18fbcacf4c350aee5c82691b616b9bb"
+    },
+    "minto-smile-c": {
+     "head_body_codex": 6.05,
+     "disposition": "SUPERSEDED HISTORY: head too large; compare v3",
+     "sha256": "6241cfd403069eba69a0152079366ab43271282db5e88bfc30c6645aebe18a48"
+    },
+    "minto-smile-a-v2": {
+     "head_body_codex": 7.04,
+     "disposition": "SUPERSEDED HISTORY: head shrank beyond casual target; compare v3",
+     "sha256": "f99b328aae957c6f9bbfdb487af189dabaa266b2a7feaf718562de0cea4faed5"
+    },
+    "minto-smile-b-v2": {
+     "head_body_codex": 7.01,
+     "disposition": "SUPERSEDED HISTORY: head shrank beyond casual target; compare v3",
+     "sha256": "5c40e90e83d41fbd5b3d284bc39065aebba8e8797c698f587301dc0ca80a6a05"
+    },
+    "minto-smile-c-v2": {
+     "head_body_codex": 6.78,
+     "disposition": "SUPERSEDED HISTORY: head shrank beyond casual target; compare v3",
+     "sha256": "cb26a0e0c00617bc21a5bcf2c73dc86181996b3df4082a5e47ea2de055f4edaa"
+    },
+    "minto-smile-a-v3": {
+     "head_body_codex": 6.41,
+     "disposition": "COMPARISON ONLY; near casual6.41; NOT ADOPTED",
+     "sha256": "b7cbd9442e0a508c30c12123e8dc337a160891be65300c52466e8bb240fcffc0"
+    },
+    "minto-smile-b-v3": {
+     "head_body_codex": 6.1,
+     "disposition": "HOLD: boundary or mismatch to target6.41",
+     "sha256": "f5f1ffe03ea79bdd14ff7ecb3dd8322d158f4415f6da95e119c82ed6c82ee7a9"
+    },
+    "minto-smile-c-v3": {
+     "head_body_codex": 6.03,
+     "disposition": "HOLD: boundary or mismatch to target6.41",
+     "sha256": "fef44d5130fa1113a701fa3dfc5d85d636737240dfc709006ae19d0f9e42c3d4"
+    }
+   }
+  },
+  "sad": {
+   "chosen": "minto-sad-b",
+   "original_sha256": "b114c5188693a280f62a113530f6ad63e49d0c8285a374c346507a4667692e84",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6576946583",
+   "zip_sha256": "ace795647b1de46f25ffbe3e6ac2e37e98f381d4d850d6f09e12460d96577ebc",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "minto-sad-a": {
+     "head_body_codex": 6.6,
+     "disposition": "COMPARISON ONLY; near casual6.41; NOT ADOPTED",
+     "sha256": "c63fdc21f6e2da9218dece8b819b632286d77effc29c4ae8d244a7999576f68f"
+    },
+    "minto-sad-b": {
+     "head_body_codex": 6.29,
+     "disposition": "HOLD: boundary or mismatch to target6.41",
+     "sha256": "b114c5188693a280f62a113530f6ad63e49d0c8285a374c346507a4667692e84"
+    },
+    "minto-sad-c": {
+     "head_body_codex": 6.19,
+     "disposition": "HOLD: boundary or mismatch to target6.41",
+     "sha256": "ec57ed90d7385cebbab532d56709d113a88de3c31fa1446678069c929f2199a5"
+    }
+   }
+  },
+  "surprise": {
+   "chosen": "minto-surprise-c-v3",
+   "original_sha256": "807688dee7b4f96b59f29bd525566395ccb6300a1626863e2e23cf3e2f6657a1",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6576946583",
+   "zip_sha256": "ace795647b1de46f25ffbe3e6ac2e37e98f381d4d850d6f09e12460d96577ebc",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "minto-surprise-a": {
+     "head_body_codex": 6.18,
+     "disposition": "SUPERSEDED HISTORY: head too large; compare v3",
+     "sha256": "fdd9d98959f0653119aa710d42e5ccbaab8fc617f374cfc2459e08c5c878890d"
+    },
+    "minto-surprise-b": {
+     "head_body_codex": 5.96,
+     "disposition": "SUPERSEDED HISTORY: head too large; compare v3",
+     "sha256": "b5a816946d5fbef1ef7206d5f80972bad5ba47159056de49926be1a1e8b8146f"
+    },
+    "minto-surprise-c": {
+     "head_body_codex": 6.23,
+     "disposition": "SUPERSEDED HISTORY: head too large; compare v3",
+     "sha256": "08b1cf4e83309e4c2573f0af012c7613fb16c8887258ad37f24eead51a4f78d9"
+    },
+    "minto-surprise-a-v2": {
+     "head_body_codex": 7.03,
+     "disposition": "SUPERSEDED HISTORY: head shrank beyond casual target; compare v3",
+     "sha256": "d16db2a39605b6fc0cd388772444ed0398bf521efe004007dd6b9a3ebb3f76b7"
+    },
+    "minto-surprise-b-v2": {
+     "head_body_codex": 6.77,
+     "disposition": "SUPERSEDED HISTORY: head shrank beyond casual target; compare v3",
+     "sha256": "2a163149b6a1d7232dde1368ea1b4ccac88648fe53240ee5249d9f906a45f2cb"
+    },
+    "minto-surprise-c-v2": {
+     "head_body_codex": 6.98,
+     "disposition": "SUPERSEDED HISTORY: head shrank beyond casual target; compare v3",
+     "sha256": "7081ead6b0f1339adc704d33bbba4765c30be05b24b19b590c4c4576e65e7db2"
+    },
+    "minto-surprise-a-v3": {
+     "head_body_codex": 6.32,
+     "disposition": "HOLD: boundary or mismatch to target6.41",
+     "sha256": "94b0cc69c448b4f056516e891c4c5f8f9e39fd8ac32b92e794c41614cbecbc07"
+    },
+    "minto-surprise-b-v3": {
+     "head_body_codex": 6.33,
+     "disposition": "HOLD: boundary or mismatch to target6.41",
+     "sha256": "61d61af6098e7de57106d0c0ac437267f93de55ff57f00215ce37060c3f65afa"
+    },
+    "minto-surprise-c-v3": {
+     "head_body_codex": 6.4,
+     "disposition": "COMPARISON ONLY; near casual6.41; NOT ADOPTED",
+     "sha256": "807688dee7b4f96b59f29bd525566395ccb6300a1626863e2e23cf3e2f6657a1"
+    }
+   }
+  },
+  "wink": {
+   "chosen": "minto-wink-b-v3",
+   "original_sha256": "14a9e69246aa68c501e506acc45d6f863ae0044fe59121a362ec0575d4e5e6a4",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6576946583",
+   "zip_sha256": "ace795647b1de46f25ffbe3e6ac2e37e98f381d4d850d6f09e12460d96577ebc",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "minto-wink-a": {
+     "head_body_codex": 6.1,
+     "disposition": "SUPERSEDED HISTORY: head too large; compare v3",
+     "sha256": "4e97a3d7a988f43d3d12839bca8ca18fdea8be542a918618ac9d923bfc843ad9"
+    },
+    "minto-wink-b": {
+     "head_body_codex": 6.19,
+     "disposition": "SUPERSEDED HISTORY: head too large; compare v3",
+     "sha256": "6149d3ed466d06b4e1e4d46e016a3c0b1159811ba42c4bef36bff061ecb623b7"
+    },
+    "minto-wink-c": {
+     "head_body_codex": 6.0,
+     "disposition": "SUPERSEDED HISTORY: head too large; compare v3",
+     "sha256": "c1374eee24c3f22b42d3e00054206e4cac7d15857e6978161647b9b5a1db6dda"
+    },
+    "minto-wink-a-v2": {
+     "head_body_codex": 7.42,
+     "disposition": "SUPERSEDED HISTORY: head shrank beyond casual target; compare v3",
+     "sha256": "415ec6471f7e93310efe0427e46ad0ca7420ac2032dbd6a7d832ff1c44156f7b"
+    },
+    "minto-wink-b-v2": {
+     "head_body_codex": 7.46,
+     "disposition": "SUPERSEDED HISTORY: head shrank beyond casual target; compare v3",
+     "sha256": "33f03623e40ed9676b91cc70c2db4dede33a6688c40aab95d523b5a1031fdd92"
+    },
+    "minto-wink-c-v2": {
+     "head_body_codex": 7.36,
+     "disposition": "SUPERSEDED HISTORY: head shrank beyond casual target; compare v3",
+     "sha256": "f782b9ee98e1ebe3d2e64f1db798a5412e45db8e0a581cacb198eec740852dd3"
+    },
+    "minto-wink-a-v3": {
+     "head_body_codex": 6.59,
+     "disposition": "COMPARISON ONLY; near casual6.41; NOT ADOPTED",
+     "sha256": "ca9a3695a50621b621a24d5231c09a78db78ed533217316ce37a8b3d77a26427"
+    },
+    "minto-wink-b-v3": {
+     "head_body_codex": 6.36,
+     "disposition": "HOLD: boundary or mismatch to target6.41",
+     "sha256": "14a9e69246aa68c501e506acc45d6f863ae0044fe59121a362ec0575d4e5e6a4"
+    },
+    "minto-wink-c-v3": {
+     "head_body_codex": 6.16,
+     "disposition": "HOLD: boundary or mismatch to target6.41",
+     "sha256": "d2adfb89b9b9a6ab8915d00bfc30339772aaff31e8ced14313b0a20bec89362c"
+    }
+   }
+  }
+ }
+}

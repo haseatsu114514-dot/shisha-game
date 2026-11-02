@@ -50,7 +50,7 @@ const all = await loader(async (url, options) => {
 });
 const progress = [];
 // manifest読込前のPNG経路でも、旧版の顔画像キャッシュを使わない。
-assert.equal(all.img("sprites/characters/ageha/chr_ageha_sad.png"), "../assets/sprites/characters/ageha/chr_ageha_sad.png?v=face-restore-20261028");
+assert.equal(all.img("sprites/characters/ageha/chr_ageha_sad.png"), "../assets/sprites/characters/ageha/chr_ageha_sad.png?v=portrait-standard-20261102");
 await all.loadAll((p) => progress.push(p));
 // The restored catalog keeps the saved vanilla ID and the lottery reward aligned.
 const vanilla = all.DB.flavorById.vanilla;
@@ -62,10 +62,10 @@ const vanillaReward = realJSON("../data/kuji.json").grades.g500.prizes.find(item
 assert(vanillaReward.name.startsWith(vanilla.short_name));
 for (const id of ["minto", "ageha"]) {
   for (const face of all.DB.manifest.portraits[id].faces) {
-    const version = id === "ageha" || face === "normal" ? "?v=face-restore-20261028" : "";
+    const version = id === "ageha" || face === "normal" ? "?v=portrait-standard-20261102" : "";
     assert.equal(all.portraitInfo(id, face).src, `img/sprites/characters/${id}/chr_${id}_${face}.webp${version}`);
   }
-  assert.equal(all.faceIconUrl(id), `img/ui/face_icons/face_${id}.webp?v=face-restore-20261028`);
+  assert.equal(all.faceIconUrl(id), `img/ui/face_icons/face_${id}.webp?v=portrait-standard-20261102`);
   assert(all.allFaceIconUrls().includes(all.faceIconUrl(id)), "preload and display use the same revised icon URL");
 }
 assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/bg_tonari_inside_day.webp");
