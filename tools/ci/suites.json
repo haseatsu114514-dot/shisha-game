@@ -3201,6 +3201,24 @@
       ]
     },
     {
+      "id": "intro-transition",
+      "title": "Intro cut-in transformation transition (morph / card / slash)",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 5,
+      "paths": [
+        "remake/test/intro_transition.mjs",
+        "remake/js/vn/intro-transition.js",
+        "remake/js/vn/intro.js",
+        "remake/js/vn/intro-art.js",
+        "remake/css/intro.css",
+        "remake/intro-transition-preview.html"
+      ],
+      "run": [
+        "node remake/test/intro_transition.mjs"
+      ]
+    },
+    {
       "id": "flavor-expression",
       "title": "Compact flavor features, forecasts and actual cup review",
       "kind": "browser",
