@@ -417,6 +417,7 @@ export const FLAG_EXACT_RULES = [
   ["_rin_sample", "person"],
   ["_rin_sample_received", "person"],
   ["_roam_day", "progression"],
+  ["_roam_seen_dr_kemuri", "person"], // 第5章の ch5_opening が読む（よその店で博士に居合わせた回数）
   ["_ryuji_melty_greeting", "person"],
   ["_ryuji_melty_visit", "person"],
   ["_salaryman_service_order", "progression"],
