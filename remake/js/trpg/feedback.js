@@ -1,6 +1,6 @@
 // Public roll information only: never inspect the hidden traveler profile.
 const grades = ["success", "mixed", "trouble"];
-import { DICE, gradeOf } from "./session.js";
+import { DICE, gradeOf, approachBase } from "./session.js";
 
 function percentages(totals) {
   const counts = { success: 0, mixed: 0, trouble: 0 };
@@ -22,14 +22,17 @@ export function rollOdds(bonus) {
   return percentages(totals);
 }
 
-export function checkForecast(scenario, state, kind, { support = false } = {}) {
+export function checkForecast(scenario, state, kind, { support = false, approach = null, sheets = null } = {}) {
   // Momentum from table excitement is public and spent on this roll.
   const momentum = Number.isInteger(state.momentum) ? state.momentum : 0;
-  const baseBonus = DICE.base + (support ? DICE.support : 0) + momentum * DICE.momentum;
+  // The declared PC's stat is printed on the sheet; it is public like the flat base it replaces.
+  const { base } = approachBase(scenario, kind, approach, sheets);
+  const baseBonus = base + (support ? DICE.support : 0) + momentum * DICE.momentum;
   // The potential is deliberately identical for correct and incorrect guesses.
   const potentialBonus = kind === "prepare" && state.hypothesis ? (scenario.rules?.hypothesisBonus || 0) * DICE.hypothesis : 0;
   return {
     baseBonus,
+    base,
     momentum,
     potentialBonus,
     odds: rollOdds(baseBonus),

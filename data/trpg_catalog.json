@@ -124,5 +124,6 @@
   "club": {
     "name": "煙とサイコロ部",
     "file": "dialogue/trpg_club.json"
-  }
+  },
+  "tutorial": "dialogue/trpg_tutorial.json"
 }

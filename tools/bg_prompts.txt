@@ -194,3 +194,13 @@ Anime visual novel background, detailed digital painting, bright lighting, no pe
 
 --- RP03/3: bg_dubai_waterside_dusk.png（第4章・大会前夜、モスクの見える水辺） ---
 Anime visual novel background, detailed digital painting, warm lighting, no people, 1280x720, painterly brushwork. A quiet creek-side promenade in Dubai at dusk on the night before a competition. A low metal railing in the foreground, calm water reflecting the orange-violet sky, and across the water a small fictional white mosque with one modest dome and a slim minaret softly lit, among low sand-colored buildings. A few traditional wooden boats moored far away, faint city lights starting to glow. Calm, reflective mood. Keep the center foreground open for a character overlay. Fine pixel-painter texture matching bg_eden_shop.png, not photographic, not glossy 3D. No people, no text, no Arabic calligraphy, no signs, no logos, no numbers, no watermark, no glowing beams. Do not copy any real landmark. 16:9, 1280x720 (or 2048x1152 for downsampling), opaque.
+
+==========
+第3章 クラブSEAM（2026-11-01・Issue #2199。DJミニゲームの店。人物は data/characters.json の yoru）
+==========
+
+--- 1/2: bg_club_seam.png ---
+Anime visual novel background, detailed digital painting, dramatic lighting, no people, 1280x720, painterly brushwork. Interior of a small intimate basement nightclub in a Tokyo back alley, seen from the middle of the dance floor. Low ceiling with exposed pipes and a simple truss of stage lights, rough concrete walls, a slightly raised DJ booth against the far wall with two decks and a mixer on a dark counter (no brand names, no readable screens), small speaker stacks on both sides, a short bar counter with a few stools along the right wall. Deep violet and cyan beams cut through a light haze; the floor reflects the colored light. Calm and welcoming rather than wild, an open-deck night before the crowd arrives. No people, no text, no letters, no logos, no posters with writing, no watermark.
+
+--- 2/2: bg_club_seam_entrance.png ---
+Anime visual novel background, detailed digital painting, night, no people, 1280x720, painterly brushwork. A narrow Tokyo back alley at night between old low-rise buildings, wet pavement reflecting neon. On the right, a steep narrow concrete staircase leads down to a basement door; violet light spills up the stairs from below, as if music is rising from underground. A small lit wall sign by the stairs shows only a thin stitched seam-line symbol (two circles joined by a stitched line), no letters. A few bicycles, an air-conditioner unit, utility poles and wires, a distant warm street light. Quiet, slightly mysterious, inviting. No people, no readable text, no logos, no watermark.

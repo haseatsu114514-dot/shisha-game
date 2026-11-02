@@ -10,7 +10,7 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_FREE_SC
   CH5_AUDIENCE, CH5_FIRST_CUP_VOTES, CH5_PREP_TRIALS, chapterFivePrepScene, chapterFivePreparation,
   chapterFivePrepPending, chapterFivePrepEcho, recordChapterFivePrepTrial,
   recordChapterFivePrepAdjustment, CH5_LIME_CONDITION, CH5_LIME_MILESTONES,
-  chapterFiveLimeDue } from "../js/chapters/ch5-progress.js";
+  chapterFiveLimeDue, CH5_CREDITS_FLAG, chapterFiveCreditsPending, recordChapterFiveCredits } from "../js/chapters/ch5-progress.js";
 
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
 const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url)));
@@ -373,6 +373,23 @@ assert.equal(value.flags._ch5_cleared, true);
 assert.equal(value.phase, "cleared");
 roundTrip(value);
 rejects(value, v => completeChapterFiveScene(v, "ending_start"));
+
+// スタッフロール（#517）: cleared になってから一度だけ確定する。確定前に再開すると、もう一度流す。
+{
+  const before = toFinale();
+  assert.equal(chapterFiveCreditsPending(before), false, "Not before the finale is read");
+  assert.equal(recordChapterFiveCredits(before), false);
+  assert.equal(before.flags[CH5_CREDITS_FLAG], undefined);
+  assert.equal(chapterFiveCreditsPending(value), true, "Pending right after the last ending scene");
+  const resumed = structuredClone(value);
+  assert.equal(chapterFiveCreditsPending(resumed), true, "A save closed during the roll plays it again");
+  assert.equal(recordChapterFiveCredits(value), true);
+  assert.equal(value.flags[CH5_CREDITS_FLAG], true);
+  assert.equal(chapterFiveCreditsPending(value), false);
+  assert.equal(recordChapterFiveCredits(value), false, "Recorded only once");
+  assert.equal(value.flags._ch5.part, "cleared", "The roll does not change the chapter state");
+  roundTrip(value);
+}
 
 // フィナーレ（恋人の epilogue が中間に来る分岐）も完走できる。
 {

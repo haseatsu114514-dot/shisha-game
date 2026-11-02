@@ -22,7 +22,7 @@ function decodeArt(url) {
   return artReady.get(url);
 }
 // The WATL board (five 2x10 planks, calm light centre) from Codex, #2198 / AXR06. The older square board stays in the repository.
-const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_800.webp") };
+const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_c_800.webp") };
 // Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
 if (typeof Image !== "undefined") decodeArt(ART.board).catch(() => {});
 const faceArt = (id, face) => imgFileUrl("sprites/characters/" + id + "/chr_" + id + "_" + face + ".webp");

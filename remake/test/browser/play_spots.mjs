@@ -81,7 +81,11 @@ async function finishAxe(page, count, confirm = true, aimed = false) {
   }
 }
 async function lines(page) { for (let i = 0; i < 35 && await page.locator(t("trpg-next")).isVisible(); i++) await hit(page, "trpg-next"); }
-async function roll(page) { await hit(page, "trpg-roll"); await page.locator(t("trpg-settle")).waitFor(); await hit(page, "trpg-settle"); await lines(page); }
+async function declare(page) {
+  const card = page.locator('[data-test^="trpg-approach-"]').first();
+  if (await card.count() && await card.isVisible()) { await card.click(); await lines(page); }
+}
+async function roll(page) { await declare(page); await hit(page, "trpg-roll"); await page.locator(t("trpg-settle")).waitFor(); await hit(page, "trpg-settle"); await lines(page); }
 async function manualSave(page) {
   await hit(page, "hud-menu"); await hit(page, "menu-save"); await hit(page, "slot-1");
   await page.waitForFunction(() => localStorage.getItem("suien_remake_slot1") !== null);
@@ -262,7 +266,7 @@ await suite("play-spots", async runCheck => {
     await travel(page, "widehanga"); await go(page, "trpg_bar");
     assert.equal(await page.locator(t("trpg-buy-ordinary-cup")).count(), 0);
     assert(await page.locator(t("trpg-play-ordinary-cup")).isEnabled());
-    await hit(page, "trpg-play-ordinary-cup"); await hit(page, "trpg-start"); await lines(page); await roll(page);
+    await hit(page, "trpg-play-ordinary-cup"); await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
     for (const id of ["menu", "window", "bag"]) { await hit(page, "trpg-spot-" + id); await lines(page); }
     await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-quiet"); await lines(page);
     await hit(page, "trpg-plan-aroma-tea"); await hit(page, "trpg-plan-seat-window");
@@ -304,7 +308,7 @@ await suite("play-spots", async runCheck => {
       const bought = await value(page);
       assert.equal(bought.money, before.money - 800); assert.equal(bought.slot, 1); assert.equal(bought.stamina, before.stamina);
       assert.deepEqual(bought.trpg.owned, ["shark-last-order"]);
-      await hit(page, "trpg-play-shark-last-order"); await hit(page, "trpg-start"); await lines(page); await roll(page);
+      await hit(page, "trpg-play-shark-last-order"); await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
       assert.deepEqual(await value(page), bought, "An unfinished table must not commit its ending or night action");
       for (const id of ["radio", "leaves", "fan"]) { await hit(page, "trpg-spot-" + id); await lines(page); }
       await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-scent"); await lines(page);
