@@ -237,16 +237,30 @@ try {
     await page.evaluate(phase => {
       T.core.config.introArtStyle = 'graphic'; T.core.config.reduceShake = false;
       T.abort = new AbortController(); T.failure = '';
+      if (phase === 'exit') {
+        T.exitLayers = 0;
+        T.exitObserver = new MutationObserver(records => {
+          for (const record of records) for (const node of record.addedNodes) {
+            if (node.nodeType !== 1 || !node.matches('.ci-silhouette-layer')) continue;
+            T.exitLayers++;
+            if (T.exitLayers === 2) { T.abort.abort(); T.exitObserver.disconnect(); }
+          }
+        });
+        T.exitObserver.observe(document.querySelector('#fx'), { childList: true, subtree: true });
+      }
       T.done = T.intro.playIntro('naru', { signal: T.abort.signal, onAppear: phase === 'error' ? () => { throw new Error('pilot injected error'); } : null })
         .catch(error => { T.failure = error.message; });
     }, phase);
     if (phase === 'error') { await page.evaluate(() => T.done); assert.equal(await page.evaluate(() => T.failure), 'pilot injected error'); }
+    else if (phase === 'exit') {
+      await page.evaluate(() => T.done);
+      assert.equal(await page.evaluate(() => { T.exitObserver.disconnect(); return T.exitLayers; }), 2, '退場の色面で中断する');
+    }
     else {
       await page.locator('.ci-silhouette-layer').waitFor({ state: 'attached' });
       if (phase === 'wipe') await page.waitForTimeout(180);
-      if (['hold','exit','load'].includes(phase)) {
+      if (['hold','load'].includes(phase)) {
         await page.locator('.ci-silhouette-layer').waitFor({ state: 'detached' });
-        if (phase === 'exit') await page.locator('.ci-silhouette-layer').waitFor({ state: 'attached' });
       }
       await page.evaluate(phase => { if (phase === 'load') { T.core.save(); T.core.load(); } else T.abort.abort(); }, phase);
       await page.evaluate(() => T.done);
