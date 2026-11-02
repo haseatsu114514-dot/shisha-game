@@ -316,7 +316,7 @@
       "id": "master_hookah_wait",
       "char_id": "master_hookah",
       "dialogue_id": "ch4_wang_reception",
-      "echo": "（王煙楼さんは、こちらの都合で待たせるのと、相手を待つのは違うと言った）"
+      "echo": "（王煙楼は、こちらの都合で待たせるのと、相手を待つのは違うと言った）"
     }
   ]
 }

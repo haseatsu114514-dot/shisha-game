@@ -98,7 +98,7 @@ for (const [chapter, cast] of Object.entries(chapterCast)) {
   }
 }
 // 第4章の顔ぶれ。旅装の男（シェイク）の正体は大会当日まで伏せるので、記憶の言葉にも名前を出さない。
-const ch4Names = { da_silva: '太陽さん', sheikh: '路地裏のあの人', master_hookah: '王煙楼さん' };
+const ch4Names = { da_silva: '太陽さん', sheikh: '路地裏のあの人', master_hookah: '王煙楼' };
 for (const [charId, name] of Object.entries(ch4Names)) {
   for (const m of byChar[charId]) assert(m.echo.includes(name), `${m.id}: echo must name ${name}`);
 }

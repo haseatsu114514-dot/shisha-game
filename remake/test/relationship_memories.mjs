@@ -217,7 +217,7 @@ try {
     "重ねられたカップを見ていると、誰かと過ごした時間がふとよみがえった。",
     "（太陽さんに「誰に来てほしい？」と聞かれて、俺の店の形が少し見えた）",
     "（吸いづらくないかと聞いたら、路地裏のあの人は、久しぶりだと笑った）",
-    "（王煙楼さんは、こちらの都合で待たせるのと、相手を待つのは違うと言った）",
+    "（王煙楼は、こちらの都合で待たせるのと、相手を待つのは違うと言った）",
     "（誰かにもらったものまで、消さなくていい）",
   ], "ch4 eve reflection closes the last required eve scene");
   assert(!eves.ch4.some((t) => /シェイク|ヴォルク|ましろ/.test(t)), "ch4 eve revealed the traveler or reached past the newest three");
