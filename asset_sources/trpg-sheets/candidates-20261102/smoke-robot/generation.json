@@ -1,0 +1,190 @@
+{
+  "generator": "built-in image_gen",
+  "date": "2026-11-02",
+  "source": "main asset_sources/trpg-scenarios/README.md blob b6c51024d50634b9922bb18fd45e7d59871a20b2",
+  "reference_images": [],
+  "reference_roles": "No image references: original scenario fictional roles, not actual tabletop participants",
+  "adopted": false,
+  "outputs": [
+    {
+      "file": "portraits-smoke-robot-a.png",
+      "sha256": "502bb7d7fe6348d895408a2f77373d535ae766272494d4b9409d960dfe57f3d6",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.501252591294268,
+      "margins_ltrb": [
+        [
+          85,
+          61,
+          38,
+          6
+        ],
+        [
+          63,
+          58,
+          35,
+          7
+        ],
+        [
+          56,
+          57,
+          42,
+          6
+        ],
+        [
+          71,
+          66,
+          59,
+          11
+        ],
+        [
+          76,
+          27,
+          19,
+          47
+        ],
+        [
+          65,
+          30,
+          17,
+          45
+        ],
+        [
+          54,
+          31,
+          28,
+          46
+        ],
+        [
+          55,
+          30,
+          33,
+          44
+        ]
+      ]
+    },
+    {
+      "file": "portraits-smoke-robot-b.png",
+      "sha256": "fcc2e7de4b6d6ebb70f63305f8107336c4d8a037f0fb049ac258310c21ba3180",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.7790113743678259,
+      "margins_ltrb": [
+        [
+          230,
+          215,
+          0,
+          0
+        ],
+        [
+          150,
+          212,
+          75,
+          0
+        ],
+        [
+          83,
+          214,
+          139,
+          0
+        ],
+        [
+          5,
+          213,
+          214,
+          0
+        ],
+        [
+          221,
+          0,
+          0,
+          53
+        ],
+        [
+          0,
+          0,
+          64,
+          53
+        ],
+        [
+          73,
+          0,
+          139,
+          53
+        ],
+        [
+          0,
+          0,
+          205,
+          53
+        ]
+      ]
+    },
+    {
+      "file": "portraits-smoke-robot-c.png",
+      "sha256": "1ad43177a470e36b797f8c8cc1ae1ab9ea615ab31807e82740e7bc37bc6c8220",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.59161392988285,
+      "margins_ltrb": [
+        [
+          109,
+          112,
+          41,
+          15
+        ],
+        [
+          85,
+          106,
+          40,
+          7
+        ],
+        [
+          76,
+          96,
+          66,
+          7
+        ],
+        [
+          74,
+          102,
+          87,
+          16
+        ],
+        [
+          91,
+          46,
+          21,
+          68
+        ],
+        [
+          72,
+          44,
+          14,
+          68
+        ],
+        [
+          70,
+          49,
+          64,
+          71
+        ],
+        [
+          58,
+          49,
+          71,
+          70
+        ]
+      ]
+    }
+  ]
+}
