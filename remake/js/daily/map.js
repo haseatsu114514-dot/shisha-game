@@ -376,8 +376,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
           "aria-label": `駅から電車で街を移動する・片道 ${yen(STATION_FARE)}`,
           onclick: openStation,
         }, [el("div.pin-visual", [el("div.shield", [el("div.ico", [el("span.pin-symbol", { html: TRAIN_ICON_SVG })])])]),
-          el("div.sub-label", { text: "駅" }),
-          el("small.pin-cost", { text: `片道 ${yen(STATION_FARE)}` })]));
+          el("div.sub-label", { text: `駅・片道 ${yen(STATION_FARE)}` })]));
         markers.append(el("i.ds-map-marker", { dataset: { marker: "station", label: "駅" },
           style: { left: `${station.x}%`, top: `${station.y}%` } }));
       }
