@@ -1,0 +1,101 @@
+[
+  {
+    "file": "output/seam-candidates/originals/seam-interior-c.png",
+    "size": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "alpha": null,
+    "bytes": 2452449
+  },
+  {
+    "file": "output/seam-candidates/originals/seam-logo-a.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha": [
+      0,
+      254
+    ],
+    "bytes": 838500
+  },
+  {
+    "file": "output/seam-candidates/originals/seam-entrance-b.png",
+    "size": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "alpha": null,
+    "bytes": 2811687
+  },
+  {
+    "file": "output/seam-candidates/originals/seam-entrance-c.png",
+    "size": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "alpha": null,
+    "bytes": 2872646
+  },
+  {
+    "file": "output/seam-candidates/originals/seam-interior-b.png",
+    "size": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "alpha": null,
+    "bytes": 2536295
+  },
+  {
+    "file": "output/seam-candidates/originals/seam-interior-a.png",
+    "size": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "alpha": null,
+    "bytes": 2557927
+  },
+  {
+    "file": "output/seam-candidates/originals/seam-entrance-a.png",
+    "size": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "alpha": null,
+    "bytes": 2924461
+  },
+  {
+    "file": "output/seam-candidates/originals/seam-logo-b.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha": [
+      0,
+      254
+    ],
+    "bytes": 846807
+  },
+  {
+    "file": "output/seam-candidates/originals/seam-logo-c.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha": [
+      0,
+      254
+    ],
+    "bytes": 868145
+  }
+]

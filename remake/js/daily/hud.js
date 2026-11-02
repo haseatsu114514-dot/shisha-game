@@ -8,14 +8,13 @@ import { state, STAT_KEYS } from "../core/state.js";
 import { staminaRatio, currentCondition, maxStamina, step } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
-import { TOURNAMENT_DAY } from "../core/rules.js";
-import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
+import { chapterDay, chapterDaysLeft, chapterFinalDay, chapterGoalLabel } from "../core/chapter-clock.js";
 import { growthEnabled, ensureGrowth, gaugeInfo, hidaneTotal, openGrowthBoard } from "../core/growth.js";
 
 // 体力バーの長さ（最大体力100のとき）。根性で最大体力が伸びるとバーも同じ割合で伸びる（GUI26）。
 const STAMINA_BAR_BASE = 92;
 
-/** 大会（DAY14）まであと何日か。台詞の {daysLeft} もこれに一本化する */
+/** 章の最終日（大会・勝負の日）まであと何日か。決まっていなければ null。台詞の {daysLeft} もこれに一本化する */
 export const daysLeft = () => chapterDaysLeft(state);
 
 let dom = null;
@@ -89,6 +88,7 @@ export function initHud(h) {
     slot: el("div.dc-slot"),
     money: el("b"),
     left: el("b"),
+    leftLabel: el("span", { text: "次の大会まで" }),
     stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b")])])]),
     radar: miniRadar(),
     phone: el("button.hud-lime", { title: "LIME", dataset: { test: "hud-phone" }, onclick: () => handlers.phone?.() }, [el("span", { text: "LIME" }), el("em.badge")]),
@@ -107,7 +107,7 @@ export function initHud(h) {
   const root = el("div.hud", [
     el("div.hud-card", [
       el("div.dc-main", [dom.area, dom.day, dom.slot]),
-      el("div.dc-meta", [moneyRow, el("div.dc-row", [el("span", { text: "次の大会まで" }), dom.left]), dom.stamina, dom.exp]),
+      el("div.dc-meta", [moneyRow, el("div.dc-row", [dom.leftLabel, dom.left]), dom.stamina, dom.exp]),
     ]),
     el("div.hud-right", [dom.status, dom.phone, dom.menu]),
   ]);
@@ -176,13 +176,16 @@ export function updateHud() {
     el("span.dc-area-full", { text: widehanga ? CH2_CITY_EN : HOME_CITY_EN }),
     el("span.dc-area-short", { text: widehanga ? CH2_CITY_NAME : HOME_CITY_NAME }),
   );
-  dom.day.replaceChildren(el("b", { text: String(chapterDay(state)) }), el("small", { text: `/${TOURNAMENT_DAY}` }));
+  const finalDay = chapterFinalDay(state);
+  dom.day.replaceChildren(...[el("b", { text: String(chapterDay(state)) }), finalDay === null ? null : el("small", { text: `/${finalDay}` })].filter(Boolean));
   const night = state.slot >= 1;
   const rain = isRainy() ? "・雨" : "";
   dom.slot.textContent = state.phase === "tournament" ? "大会当日" : state.slot >= 2 ? "帰宅" : night ? `夜${rain}` : `昼${rain}`;
   dom.slot.dataset.slot = night ? "night" : "day";
   dom.money.textContent = yen(state.money);
-  dom.left.textContent = `あと${daysLeft()}日`;
+  const left = daysLeft();
+  dom.leftLabel.textContent = chapterGoalLabel(state);
+  dom.left.textContent = left === null ? "未定" : `あと${left}日`;
   const r = staminaRatio();
   const condition = currentCondition();
   // ゲージは実残量。発病日の制作コンディションは従来どおり別に保持する。

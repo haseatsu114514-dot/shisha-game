@@ -1,7 +1,8 @@
+if (!process.env.CASE_FILTER || process.env.CASE_FILTER.startsWith("layout-")) await import("./lime_layout_2190.mjs");
 // #326: 本番LIME→マップ割り込み→夜の試飲→翌朝をPC/タッチで通す。
 import assert from 'node:assert/strict';
 import { suite, assertFits } from './support.mjs';
-await suite('lime-evening', async check => {
+if (!process.env.CASE_FILTER?.startsWith("layout-")) await suite('lime-evening', async check => {
   for (const [label, options, read, legacy] of [
     ['pc-unread', {}, false, false], ['pc-waiting', {}, true, false],
     ['touch-waiting', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true, false],

@@ -6,8 +6,8 @@
       "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "昼下がりのシフト。ハンチング帽を目深にかぶった男の人が、１人で入ってきた。" },
-        { "speaker": "", "face": "", "text": "「おまかせで」とだけ言って、窓際の席へ。……注文の仕方が、妙に慣れている。" },
-        { "speaker": "hajime", "face": "normal", "text": "（おまかせ、か。……よし、今日の自信作でいこう）" },
+        { "speaker": "", "face": "", "text": "「おまかせで」とだけ言って窓際へ。鞄から、自分の吸い口を出している。" },
+        { "speaker": "hajime", "face": "normal", "text": "（自分の吸い口持ち……かなり通ってる人だ。よし、今日の自信作でいこう）" },
         { "speaker": "", "face": "", "text": "一台を作って運ぶ。男の人は一口吸って、少しだけ眉を動かした。" },
         { "speaker": "???", "face": "normal", "text": "……ふうん。ねえ君、この一台、狙いは？" },
         { "type": "choice", "id": "reviewer_ask", "choices": [
@@ -36,7 +36,7 @@
       "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "夕方前の、店がいちばん静かな時間。上品なジャケットに、目深な帽子とメガネの男性が、ふらりと入ってきた。" },
-        { "speaker": "???", "face": "normal", "text": "若いの、一台お願いできるかな。甘すぎないのがいい" },
+        { "speaker": "???", "face": "normal", "text": "一台、お願いできるかな。甘すぎないのがいい" },
         { "speaker": "hajime", "face": "normal", "text": "はい、少々お待ちください" },
         { "speaker": "", "face": "", "text": "一台を出す。男性は一口ごとに目を閉じて、ゆっくり、ゆっくり味わっている。" },
         { "speaker": "", "face": "", "text": "急かさず、話しかけず。気づけば、こっちまで呼吸が深くなっていた。" },
