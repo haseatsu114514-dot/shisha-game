@@ -81,7 +81,7 @@
  },
  "face_rashid.png": {
   "sprite": "assets/sprites/characters/rashid/chr_rashid_normal.png",
-  "blob": "e67fc4dcf2ecc83675e4896909514099c96593dd"
+  "blob": "1a32bc251a516e8fe52284e86848bbe613e4ef3a"
  },
  "face_rei.png": {
   "sprite": "assets/sprites/characters/rei/chr_rei_normal.png",
@@ -97,7 +97,7 @@
  },
  "face_saif.png": {
   "sprite": "assets/sprites/characters/saif/chr_saif_normal.png",
-  "blob": "d06710c9aa128e8c10c54cd1633978ff688b3e50"
+  "blob": "ec60aafb94c1f7e35bce48b8f2c82294d7633448"
  },
  "face_salaryman.png": {
   "sprite": "assets/sprites/characters/salaryman/chr_salaryman_normal.png",
