@@ -1121,6 +1121,21 @@
       ]
     },
     {
+      "dialogue_id": "tournament_craft_interlude1_4_naru",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "提供後の票で、なる選手が先頭ッ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（なるが前に……。次の調整で、炭を寄せて追いつかないと）"
+        }
+      ]
+    },
+    {
       "dialogue_id": "tournament_craft_interlude1_4",
       "lines": [
         {
@@ -1137,6 +1152,16 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（客の呼吸……。俺の客も、まだ一台の途中にいる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude2_4_naru",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "先頭は、なる選手ッ！ 最後の調整で、まだ動きますッ！"
         }
       ]
     },

@@ -65,8 +65,14 @@ export function tournamentStoryDialogue(cs, event, random = Math.random, context
   // 第2章の提供後の掛け合いは、画面の票と提供の実績に合わせて組み立てる（第1章の naruTastingLine と同じ考え方）。
   else if (event === "interlude1" && chapter === 2) ids.push(`interlude1_2_ageha_${agehaServedVotes(context.progress)}`,
     "interlude1_2_mid", `interlude1_2_hajime_${hajimeServedState(cs)}`);
-  // 第4章の提供後は、はじめの実際の順位（途中の持ち点）で先頭か追う側かを分ける。なるが先頭とは言わない。
-  else if (event === "interlude1" && chapter === 4) ids.push(`interlude1_4_${context?.rank === 1 ? "lead" : "chase"}`, "interlude1_4");
+  // 第4章の提供後と調整1回目の後は、直前の途中順位（はじめの順位と先頭）だけを語る。
+  // なるが先頭と言うのは、実際になるが先頭のときだけ（正本「中間でなるが上回り、はじめが焦りそうになる」）。
+  else if (event === "interlude1" && chapter === 4) ids.push(`interlude1_4_${context?.rank === 1 ? "lead"
+    : context?.leader === "naru" ? "naru" : "chase"}`, "interlude1_4");
+  else if (event === "interlude2" && chapter === 4) {
+    if (context?.rank !== 1 && context?.leader === "naru") ids.push("interlude2_4_naru");
+    ids.push("interlude2_4");
+  }
   else if (event.startsWith("interlude")) ids.push(`${event}_${chapter}`);
   else if (event === "packed") ids.push("packed_intro", `pack_${PACKING[cs.pack] ? cs.pack : "normal"}`,
     ingredients.length > 1 ? "mix_blend" : "mix_single", "packed_end");

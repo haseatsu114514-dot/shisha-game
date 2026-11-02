@@ -5,7 +5,8 @@ import { DB } from "../js/core/data.js";
 import { advanceToChapterFour, CH4_PROLOGUE, completeChapterFourScene, chapterFourTournamentOutcome,
   chapterFourAfterDefeat, CH4_PRIZE } from "../js/chapters/ch4-progress.js";
 import { chapterFourMatch, startChapterFourCraft, beginChapterFourStep, finishChapterFourStep,
-  recoverChapterFourStep, resetChapterFourCraft, CH4_JUDGES, CH4_CONTESTANTS } from "../js/chapters/ch4-tournament-state.js";
+  recoverChapterFourStep, resetChapterFourCraft, CH4_JUDGES, CH4_CONTESTANTS, CH4_RIVAL_CURVE, chapterFourStandings } from "../js/chapters/ch4-tournament-state.js";
+import { liftRivalScore, setRivalScoreObserver } from "../js/core/ngplus-difficulty.js";
 // Shared score/served-eval imports browser audio; only its visibility observer runs at module load.
 globalThis.document = { addEventListener() {} };
 const { finalize, computeShisha } = await import("../js/craft/score.js");
@@ -234,4 +235,94 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   assert.equal(resetChapterFourCraft(value), true);
   assert.equal(chapterFourMatch(value).craft, null, "A retry replays the banter from the opening");
 }
-console.log("PASS: Chapter 4 real scores, votes, failure/retry, resource rollback, plans and local-learning feedback");
+// 2026-11-02 オーナー決定「なるを強くする」: 相手の出来は投票の回ごと。なるは提供後・調整1回目で伸び、
+// ふつうの出来のはじめなら途中で先頭に立つ。最後の票はシェイクが一番強く、はじめの勝ちの境目は変えない。
+{
+  // 回ごとに、各人が得た票と直後の途中順位を残しながら最後まで通す。
+  const byRound = (value, cs) => {
+    startChapterFourCraft(value, cs);
+    const rounds = [];
+    let before = structuredClone(chapterFourMatch(value).votes);
+    for (let step = chapterFourMatch(value).step; step < 11; step++) {
+      beginChapterFourStep(value);
+      const c = structuredClone(cs);
+      if (step === 10) finalize(c);
+      const p = finishChapterFourStep(value, c);
+      if (p.voted === rounds.length) continue;
+      const got = id => CH4_JUDGES.reduce((sum, judge) => sum + p.votes[judge][id] - before[judge][id], 0);
+      rounds.push({ got: Object.fromEntries(CH4_CONTESTANTS.map(id => [id, got(id)])), leader: chapterFourStandings(p)[0].id,
+        rank: chapterFourStandings(p).find(row => row.id === "hajime").rank });
+      before = structuredClone(p.votes);
+    }
+    return { p: chapterFourMatch(value), rounds };
+  };
+  // 相手の並び: 途中（提供後・調整1回目）はなるが一番上、最後はシェイク＞なる＞王煙楼。王煙楼は終始同じ。
+  assert.deepEqual(Object.keys(CH4_RIVAL_CURVE), ["naru", "master_hookah", "sheikh"]);
+  for (const curve of Object.values(CH4_RIVAL_CURVE)) assert.equal(curve.length, 4);
+  for (const round of [1, 2]) assert(CH4_RIVAL_CURVE.naru[round] > CH4_RIVAL_CURVE.sheikh[round]);
+  assert(CH4_RIVAL_CURVE.sheikh[3] > CH4_RIVAL_CURVE.naru[3] && CH4_RIVAL_CURVE.naru[3] > CH4_RIVAL_CURVE.master_hookah[3]);
+  assert.equal(new Set(CH4_RIVAL_CURVE.master_hookah).size, 1);
+  // ふつうの出来（全工程89）: 提供後と調整1回目の票でなるが先頭に立ち、はじめは2位。最後の票で逆転し、なるが2位で終わる。
+  const average = byRound(entry(), craft(89));
+  assert.deepEqual(average.rounds.map(r => r.leader), ["hajime", "naru", "naru", "hajime"]);
+  assert.deepEqual(average.rounds.map(r => r.rank), [1, 2, 2, 1]);
+  assert.equal(average.rounds[1].got.naru, 6, "Naru takes the first-place votes after serving");
+  assert(average.rounds[2].got.naru > 0);
+  assert.equal(average.p.result.win, true);
+  assert.equal(average.p.result.rows[1].id, "naru", "Naru competes to the end");
+  // 最後の総合がシェイクに届かない一台（全工程87）: 最後の票の1位はシェイク、2位はなる。シェイクが勝つ。
+  const short = byRound(entry(), craft(87));
+  assert.equal(short.rounds[3].got.sheikh, 6);
+  assert.equal(short.rounds[3].got.naru, 3);
+  assert.equal(short.p.result.win, false);
+  assert.equal(short.p.result.rows[0].id, "sheikh");
+  // 強い一台（全工程96）: なるは途中の票を取る（2位）が、先頭はずっとはじめ。
+  const strong = byRound(entry(), craft(96));
+  assert.deepEqual(strong.rounds.map(r => r.leader), ["hajime", "hajime", "hajime", "hajime"]);
+  assert.equal(strong.rounds[1].got.naru, 3);
+  assert.equal(strong.rounds[2].got.naru, 3);
+  assert.equal(strong.p.result.win, true);
+  // 勝ちの境目は旧定数と同じ（全工程そろった一台なら最後の総合88で勝ち、87.9で負け）。
+  assert.equal(byRound(entry(), craft(88)).p.result.win, true);
+  assert.equal(byRound(entry(), craft(87.9)).p.result.win, false);
+  // 提供後の票まで入った保存から再開しても、票は二重に入らず、通しと同じ結果になる。
+  let value = entry();
+  startChapterFourCraft(value, craft(89));
+  for (let step = 0; step < 9; step++) { beginChapterFourStep(value); finishChapterFourStep(value, craft(89)); }
+  beginChapterFourStep(value);
+  value = JSON.parse(JSON.stringify(value));
+  recoverChapterFourStep(value);
+  assert.equal(chapterFourMatch(value).voted, 2);
+  assert.equal(chapterFourStandings(chapterFourMatch(value))[0].id, "naru");
+  const resumed = byRound(value, craft(89)).p.result;
+  assert.deepEqual(resumed.rows, average.p.result.rows);
+  assert.deepEqual(resumed.votes, average.p.result.votes);
+  // 旧定数のころの保存（提供後の票まで: はじめ1位・シェイク2位）も、そのまま新しい回の値で最後まで進む。
+  value = entry();
+  startChapterFourCraft(value, craft(89));
+  for (let step = 0; step < 9; step++) { beginChapterFourStep(value); finishChapterFourStep(value, craft(89)); }
+  Object.assign(chapterFourMatch(value), { quality: { naru: 86, master_hookah: 87, sheikh: 88, hajime: 89 },
+    votes: Object.fromEntries(CH4_JUDGES.map(judge => [judge, { hajime: 3, naru: 0, master_hookah: 0, sheikh: 2 }])) });
+  value = JSON.parse(JSON.stringify(value));
+  const legacy = byRound(value, craft(89)).p.result;
+  assert.equal(legacy.win, true);
+  for (const judge of CH4_JUDGES) assert.equal(CH4_CONTESTANTS.reduce((sum, id) => sum + legacy.votes[judge][id], 0), 10);
+  // 周回の持ち込み（NG+）の底上げは、回ごとの値にそれぞれ掛かる。
+  value = entry();
+  value.cycle = 2;
+  value.cycleStartStats = { technique: 100, sense: 100, guts: 100, charm: 100, insight: 100 };
+  const seen = [];
+  setRivalScoreObserver(row => seen.push(row));
+  const lifted = byRound(value, craft(96)).p;
+  setRivalScoreObserver(null);
+  assert.equal(seen.length, 12);
+  seen.forEach((row, index) => {
+    const round = Math.floor(index / 3), id = Object.keys(CH4_RIVAL_CURVE)[index % 3];
+    assert.equal(row.rival, CH4_RIVAL_CURVE[id][round], `round ${round} ${id} base`);
+    assert.equal(row.p, 1);
+    assert.equal(row.lifted, liftRivalScore(CH4_RIVAL_CURVE[id][round], 1, 4));
+    assert(row.lifted > row.rival);
+  });
+  for (const id of Object.keys(CH4_RIVAL_CURVE)) assert.equal(lifted.quality[id], liftRivalScore(CH4_RIVAL_CURVE[id][3], 1, 4));
+}
+console.log("PASS: Chapter 4 real scores, per-round rival curve, votes, failure/retry, resource rollback, plans and local-learning feedback");

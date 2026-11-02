@@ -48,8 +48,10 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
     // 制作中の掛け合い（#2031）。工程の前に一度だけ読み、既読は制作保存に残す（再挑戦では最初から）。
     const event = p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : TOURNAMENT_STORY_STEPS.get(p.step);
     if (event && !p.craft.tournamentStory?.seen?.includes(event)) {
-      const rank = chapterFourStandings(p).find(row => row.id === "hajime")?.rank ?? null;
-      const told = await playTournamentEvent(p.craft, event, { context: { rank } });
+      // 台本は直前に見せた途中順位と同じ並び（はじめの順位と先頭）だけを語る。
+      const rows = chapterFourStandings(p);
+      const rank = rows.find(row => row.id === "hajime")?.rank ?? null;
+      const told = await playTournamentEvent(p.craft, event, { context: { rank, leader: rows[0]?.id ?? null } });
       requireCurrent();
       if (!told) return false;
       save();

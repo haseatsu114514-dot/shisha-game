@@ -148,14 +148,30 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
  const lines=(event,context,c)=>say(event,context,c).lines.map(l=>l.text).join('\n');
  const speakers=(event,context,c)=>say(event,context,c).lines.map(l=>l.speaker);
  const others=['maezono','dr_kemuri','adam','minto','ageha','kumicho','rei','kuze','steve','volk'];
- const events=[['opening'],['packed'],['waiting'],['interlude1',{rank:1}],['interlude1',{rank:3}],['interlude1'],['interlude2']];
+ const events=[['opening'],['packed'],['waiting'],['interlude1',{rank:1,leader:'hajime'}],['interlude1',{rank:3,leader:'sheikh'}],['interlude1',{rank:2,leader:'naru'}],
+  ['interlude1',{rank:3}],['interlude1'],['interlude2'],['interlude2',{rank:1,leader:'hajime'}],['interlude2',{rank:2,leader:'naru'}],['interlude2',{rank:2,leader:'sheikh'}]];
+ // なるが先頭だと言う行。言ってよいのは、直前の途中順位で本当になるが先頭のときだけ（2026-11-02 なるを強くする）。
+ const naruLeads=/なる(選手)?が、?(先頭|トップ|リード|前)|先頭は、?なる/;
  for (const [event,context] of events) {
-  const d=say(event,context);
+  const d=say(event,context),text=d.lines.map(l=>l.text).join('\n');
   assert(d.lines.length>=4&&d.lines.length<=7,`chapter4 ${event} line count`);
   assert(!d.lines.some(l=>others.includes(l.speaker)),`chapter4 ${event} used another chapter's cast`);
-  // 点数や数字は言わない（配合カードのg数だけは読む）。途中でなるが先頭とも言わない（CH4_RIVAL_QUALITY ではなるは途中の票を取れない）。
-  assert.doesNotMatch(d.lines.map(l=>l.text).join('\n').replace(/\d+g/g,''),/\d|点|一位|なる(選手)?が(先頭|トップ|リード)/,`chapter4 ${event} must not state scores`);
+  // 点数や数字は言わない（配合カードのg数だけは読む）。
+  assert.doesNotMatch(text.replace(/\d+g/g,''),/\d|点|一位/,`chapter4 ${event} must not state scores`);
+  if (context?.leader==='naru') assert.match(text,naruLeads,`chapter4 ${event} must say naru leads when he does`);
+  else assert.doesNotMatch(text,naruLeads,`chapter4 ${event} must not claim naru leads (${JSON.stringify(context)})`);
   assert.equal(d.dialogue_id,`tournament_craft_4_${event}`);
+ }
+ // なるが提供後の先頭に立ったら、はじめが焦りかけ（パッキーの直後）、王煙楼の言葉のあとで落ち着く（正本「はじめが焦りそうになる」）。
+ {
+  const d=say('interlude1',{rank:2,leader:'naru'}),who=d.lines.map(l=>l.speaker);
+  assert.equal(who[0],'pakki');assert.equal(who[1],'hajime');assert.equal(who.at(-1),'hajime');
+  assert(who.indexOf('master_hookah')<who.lastIndexOf('hajime'));
+  assert.doesNotMatch(lines('interlude1',{rank:2,leader:'naru'}),/追いかける展開/);
+  // 調整1回目の後もなるが先頭なら、パッキーがそれだけを言い足す（ほかの行は同じ）。
+  const two=say('interlude2',{rank:2,leader:'naru'}).lines,base=say('interlude2').lines;
+  assert.equal(two.length,base.length+1);assert.deepEqual(two.slice(1),base);assert.equal(two[0].speaker,'pakki');
+  assert.equal(lines('interlude2',{rank:2,leader:'sheikh'}),lines('interlude2'));
  }
  // 開幕は第4章の審査員3人がそろい、第3章のエミルの行を繰り返さない。
  assert.deepEqual(speakers('opening').filter(s=>s!=='pakki'),['nagumo','emil','da_silva']);

@@ -4,7 +4,18 @@ import { difficultyEvidence } from "../core/cycle-start.js";
 
 export const CH4_CONTESTANTS = Object.freeze(["hajime", "naru", "master_hookah", "sheikh"]);
 export const CH4_JUDGES = Object.freeze(["nagumo", "da_silva", "emil"]);
-export const CH4_RIVAL_QUALITY = Object.freeze({ naru: 86, master_hookah: 87, sheikh: 88 });
+// 相手の出来は投票の回（制作後・提供後・調整1回目・最後）ごとに変わる（2026-11-02 オーナー決定「なるを強くする」）。
+// 正本「中間でなるが上回り、はじめが焦りそうになる」: なるの甘さは吸い進めてから伸び、提供後と調整1回目の票で
+// 王煙楼・シェイクより上に来る。最後の票はシェイクが一番強く、なるは王煙楼の上で踏みとどまる。王煙楼は終始同じ。
+// 最後の票のシェイク88は旧定数のままで、はじめの勝ちの境目は動かない（remake/tools/balance/ch4_rivals.mjs）。
+export const CH4_RIVAL_CURVE = Object.freeze({
+  naru: Object.freeze([86, 91, 92, 87.5]),
+  master_hookah: Object.freeze([87, 87, 87, 87]),
+  sheikh: Object.freeze([88, 88, 88, 88]),
+});
+// 互換用: 最後の票の値。
+export const CH4_RIVAL_QUALITY = Object.freeze(Object.fromEntries(
+  Object.entries(CH4_RIVAL_CURVE).map(([id, curve]) => [id, curve.at(-1)])));
 export const CH4_SPEND = Object.freeze([2, 3, 2, 3]);
 export const CH4_CRAFT_STEP_COUNT = 11;
 const clone = value => structuredClone(value);
@@ -97,7 +108,8 @@ export function finishChapterFourStep(value, craft) {
   if (!craft.failed && round >= 0) {
     if (p.voted !== round) throw new Error("世界大会の投票順が一致しません");
     const carry = difficultyForRun(value, difficultyEvidence(value));
-    p.quality = Object.fromEntries(Object.entries(CH4_RIVAL_QUALITY).map(([id, base]) => {
+    p.quality = Object.fromEntries(Object.entries(CH4_RIVAL_CURVE).map(([id, curve]) => {
+      const base = curve[round];
       const lifted = liftRivalScore(base, carry, 4);
       observeRivalScore(base, carry, 4, lifted);
       return [id, lifted];
