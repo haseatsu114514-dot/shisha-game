@@ -1,0 +1,11 @@
+{
+ "date": "2026-11-02",
+ "file": "assets/sprites/characters/da_silva/chr_da_silva_serious.png",
+ "reason": "真剣だけ他の4表情より頭が約80px低く（人物が約7%小さく）描かれていた。会話で真剣に切り替えると縮んで見えるため、足元を軸に拡大して頭の高さを他の表情にそろえた",
+ "scale": 1.072,
+ "anchor": "足元の下端。横は人物全体の重心を元の真剣と同じ位置に戻した",
+ "before_sha256": "45744bffa37df0f814e4772388b40c91760d3ef6cce32f7bb730a42a49bb8047",
+ "after_sha256": "107ea0694ea784c406c734bbcc324b09f4e85f601d4b10fc816715a03db25610",
+ "before_copy": "asset_sources/portraits/size-alignment-review/da_silva-serious-before.png",
+ "horizontal_shift_px": -11
+}
