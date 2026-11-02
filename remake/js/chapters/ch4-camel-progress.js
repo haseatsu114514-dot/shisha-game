@@ -113,7 +113,9 @@ export function camelDailySpot(value, fields = {}) {
     ...fields, id: CAMEL_DAILY_SPOT_ID, place: "camel",
     label: race ? "ラクダレース場" : "Dr.fookah の店先",
     area: race ? "郊外の砂漠" : "街の中心",
-    x: race ? 84 : 46, y: race ? 76 : 42,
+    // レース場はアイコン（MPI07）が入るので、右下の案内の札に重ならない位置へ（84,76 → 86,62）。
+    x: race ? 86 : 46, y: race ? 62 : 42,
+    ...(race ? {} : { facilityIcon: false }), // 店先の段階は会話の場所。レース場の絵を出さない
     theme: race ? "park" : "shop", glyph: race ? "駱" : "話",
     preview: race ? CAMEL_TRACK_BG : CAMEL_SHOP_BG,
     desc: destination.purpose,
