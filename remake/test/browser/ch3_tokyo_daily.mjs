@@ -74,9 +74,18 @@ await suite("ch3-tokyo-daily", async check => {
     const hud = await page.locator(".hud").innerText();
     assert.match(hud, /TOKYO|東京/);
     assert.match(hud, /2\s*\/\s*14/, "Tokyo DAY2 of 14");
-    for (const pin of ["ch3_tokyo_park", "ch3_tokyo_shop", "ch3_tokyo_room", "ch3_tokyo_lime"])
+    for (const pin of ["ch3_tokyo_park", "ch3_tokyo_shop", "ch3_tokyo_room"])
       assert.equal(await page.locator(dt(`pin-${pin}`)).count(), 1, `${pin} is on the Tokyo map`);
     assert.equal(await page.locator(dt("pin-tonari")).count(), 0, "The hometown is not on the Tokyo map");
+    // 地元との連絡は地図の行き先ではなく、右上の LIME のトーク一覧の一番上の行（オーナー決定 2026-11-02）。
+    assert.equal(await page.locator(dt("pin-ch3_tokyo_lime")).count(), 0, "No map pin for hometown contacts");
+    const slotBefore = (await get(page)).slot;
+    await page.locator(dt("hud-phone")).click();
+    await page.locator(dt("lime-shortcut-tokyo_contacts")).click();
+    await page.locator(".lime-title", { hasText: "地元との連絡" }).waitFor({ timeout: 30000 });
+    await page.locator(dt("phone-close")).last().click();
+    await tokyoMap(page, { day: 33 });
+    assert.equal((await get(page)).slot, slotBefore, "Opening hometown contacts uses no time");
 
     // 保存→リロード→同じ時間帯（DAY2の夜）の東京の地図から再開。
     await loadSlot(page, 0);
