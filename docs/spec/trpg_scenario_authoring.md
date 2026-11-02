@@ -69,17 +69,24 @@ python3 tools/lint_dialogue.py trpg_<名前>                             # 台�
 
 `data/trpg_catalog.json` の `scenarios` に `{id, file, price, stockRequires}` を足す（入荷条件にGMを含める）。GMが新しい人なら `data/dialogue/trpg_table_talk.json` に `trpg_talk_<GM>_{critical,critical_full,fumble,double,heat_up,heat_max}` を足す。
 
-## 企画一覧（全10本・03〜10はタイトル相談中）
+## 企画の方針（オーナー指示）
 
-| 番号 | ID / ファイル | 題名 | GM | PL（はじめ＋） | ジャンル | 調査 |
+- **タイトルの段階で相談し、了承を得てから書く**（2026-11-01）。
+- **新規シナリオはシーシャかキャラに少し絡める**。たまに絡まない回があってもよい（2026-11-02）。
+- **ひよりがGMの回だけ「儚さ」を題名と物語に入れる**（消えていくもの・一夜かぎり・朝霧など。2026-11-02）。悲しい結末にはせず、ほろ苦く温かく終える。
+- シーシャに触れるときは香り・一台・過ごす時間の話にとどめ、機材や工程の細かい説明はしない（描写の正本は `docs/shisha_reference.md`）。
+
+## 企画一覧（全10本・2026-11-02 了承）
+
+| 番号 | ID / ファイル | 題名 | GM | PL（はじめ＋） | 絡め方 | 調査 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 01 | ordinary-cup / trpg_ordinary.json | 世界一普通の一台 | ひより | アダム・つむぎ | 日常ミステリー | 自由 |
-| 02 | shark-last-order / trpg_shark.json | サメは閉店を待たない | サメちゃん | ひより・つむぎ | サメ映画・脱出 | 4箇所・危機 |
-| 03 | moon-mail / trpg_moon_mail.json | 月夜の猫郵便 | つむぎ | ひより・アダム | 絵本ファンタジー | 自由 |
-| 04 | tea-thief / trpg_tea_thief.json | 怪盗は紅茶を盗まない | アダム | ひより・つむぎ | 館の怪盗もの | 4箇所・警戒 |
-| 05 | shark-island / trpg_shark_island.json | サメ島の宝の地図 | サメちゃん | ひより・アダム | 海賊の冒険 | 4箇所・潮 |
-| 06 | snow-lodge / trpg_snow_lodge.json | 雪の山荘と消えた主役 | ひより | つむぎ・アダム | 山荘ミステリー（事件なし） | 自由 |
-| 07 | star-robot / trpg_star_robot.json | 星の駅の迷子ロボ | サメちゃん | アダム・つむぎ | SF | 4箇所・酸素 |
-| 08 | magic-exam / trpg_magic_exam.json | 魔法学校の試験前夜 | ひより | サメちゃん・アダム | 学園ファンタジー | 自由 |
-| 09 | fox-market / trpg_fox_market.json | 夜市と狐のお面 | つむぎ | ひより・サメちゃん | 和の不思議 | 自由 |
-| 10 | stage-ghost / trpg_stage_ghost.json | 幕の降りない劇場 | アダム | ひより・サメちゃん | やさしい幽霊劇 | 4箇所・夜明け |
+| 01 | ordinary-cup / trpg_ordinary.json | 世界一普通の一台 | ひより | アダム・つむぎ | シーシャ | 自由 |
+| 02 | shark-last-order / trpg_shark.json | サメは閉店を待たない | サメちゃん | ひより・つむぎ | サメちゃん | 4箇所・危機 |
+| 03 | leaf-mail / trpg_leaf_mail.json | 葉っぱ耳の郵便猫 | つむぎ | ひより・アダム | つむぎの絵の猫 | 自由 |
+| 04 | apple-thief / trpg_apple_thief.json | 怪盗と原点の林檎 | アダム | ひより・つむぎ | アダム・ダブルアップル | 4箇所・警戒 |
+| 05 | shark-island / trpg_shark_island.json | サメ島の宝の地図 | サメちゃん | ひより・アダム | コロちゃん | 4箇所・潮 |
+| 06 | mist-kingdom / trpg_mist_kingdom.json | 朝霧の王国と、最後の一台 | ひより | アダム・サメちゃん | シーシャ大会のパロディ・儚さ | 4箇所・霧晴れ |
+| 07 | smoke-robot / trpg_smoke_robot.json | 星の駅の煙職人ロボ | サメちゃん | アダム・つむぎ | シーシャ | 4箇所・酸素 |
+| 08 | fading-familiar / trpg_fading_familiar.json | 試験前夜、消えかけの使い魔 | ひより | サメちゃん・アダム | 煙の使い魔・儚さ | 自由 |
+| 09 | fox-market / trpg_fox_market.json | 夜市と狐のお面 | つむぎ | ひより・サメちゃん | ほぼ絡まない回 | 自由 |
+| 10 | stage-ghost / trpg_stage_ghost.json | 幕の降りない劇場 | アダム | ひより・サメちゃん | アダムの舞台好き | 4箇所・夜明け |
