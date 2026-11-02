@@ -1,4 +1,5 @@
-// DJ set (2026-11-01 redesign) in a real Chromium: ▶ ×2 + crossfader (+ optional PITCH/SYNC), quantized entry, 8-bar mix scoring, floor meter.
+// DJ set (2026-11-01 redesign, DJS17 gameplay) in a real Chromium: ▶ ×2 + crossfader (+ optional PITCH/SYNC), quantized entry,
+// riding the guide band for 8 bars, 選曲 cards, floor meter.
 // Normal PR CI only; never launch locally around the recorded Chrome refusal.
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
@@ -85,24 +86,44 @@ try{
   await until(page,'B audible',s=>s.beats[1]>=0,errors);near((await snap(page)).phase_error,0,.02);
   assert.equal(await page.locator('#judge').textContent(),entered.lastPlay.grade);
   assert.equal(await page.locator('#indicator-b').textContent(),'ON AIR');
-  // 8-bar mix: the crossfader is moved toward B in steps (keyboard = genuine native input); automatic EQ cuts A's lows past the centre.
-  const fader=page.locator('#crossfader');
-  if(kind==='pc'){await fader.focus();for(let n=0;n<10;n++){await fader.press('PageUp');await page.waitForTimeout(450);}}
-  else{const r=await fader.boundingBox();for(let n=1;n<=10;n++){await page.touchscreen.tap(r.x+r.width*(.08+.84*n/10),r.y+r.height/2);await page.waitForTimeout(450);}}
-  const mixed=await snap(page);assert(mixed.mix>=.9,`fader reached B: ${mixed.mix}`);assert(mixed.fader.maxJump<=.2,`smooth fader: ${mixed.fader.maxJump}`);assert(mixed.fader.reached!=null&&mixed.fader.reached<1);
-  assert(await page.locator('#led-autoeq').evaluate(e=>e.classList.contains('on')),'AUTO EQ lamp while A\'s lows are cut');
-  // Transition end: scored toast, A leaves the air and loads the third track, next cue from B.
+  // 8-bar mix: the guide band shows where the fader should be on every beat; ride it toward B (keyboard / tap = genuine native input).
+  // Automatic EQ cuts A's lows past the centre.
+  const fader=page.locator('#crossfader'),fr=await fader.boundingBox(),thumb=46*stageScale;
+  assert(await page.locator('#guide').isVisible(),'guide band during the mix');
+  if(kind==='pc')await fader.focus();
+  let mixed=null,comboText='';
+  for(let i=0;i<600;i++){
+   const s=await snap(page);if(s.phase!=='mix')break;
+   const target=s.guide==null?s.mix:s.guide,diff=target-s.mix;
+   if(kind==='pc'){if(Math.abs(diff)>.03)await fader.press(diff>0?(diff>.12?'PageUp':'ArrowRight'):(diff<-.12?'PageDown':'ArrowLeft'));}
+   else if(Math.abs(diff)>.06)await page.touchscreen.tap(fr.x+thumb/2+Math.min(1,target+.02)*(fr.width-thumb),fr.y+fr.height/2);
+   if(!mixed&&s.mix>.8){mixed=s;assert(await page.locator('#led-autoeq').evaluate(e=>e.classList.contains('on')),'AUTO EQ lamp while A\'s lows are cut');}
+   if(!comboText&&s.fader?.combo>=4){await page.waitForTimeout(40);comboText=await page.locator('#combo').textContent();}
+   await page.waitForTimeout(40);
+  }
+  assert(mixed,'the fader rode past 0.8 during the 8 bars');assert.match(comboText,/^COMBO \d+$/,'combo counter on the fader');
+  // Transition end: scored toast, A leaves the air and empties, then the 選曲 cards appear over deck A.
   const done=await until(page,'transition',s=>s.transitions.length>=1,errors,20000,100);
-  const t=done.transitions[0];assert.equal(t.to,'digitalLemonade');assert.equal(t.parts[0],100,'BPM matched');assert(t.parts[2]>=85,`fader ${t.parts[2]}`);assert(['S','A'].includes(t.rank),t.rank);
-  assert.deepEqual(done.playing,[false,true]);assert.equal(done.master,1);assert.deepEqual([done.cue.from,done.cue.to],[1,0]);assert.equal(done.tracks[0],'danceMonster');assert(done.floor>.5);
+  const t=done.transitions[0];assert.equal(t.to,'digitalLemonade');assert.equal(t.parts[0],100,'BPM matched');assert(t.parts[2]>=85,`fader ${t.parts[2]} follow ${t.follow}`);assert(t.combo>=16,`combo ${t.combo}`);assert(['S','A'].includes(t.rank),t.rank);
+  assert.deepEqual(done.playing,[false,true]);assert.equal(done.master,1);assert.equal(done.cue,null);assert.equal(done.phase,'select');assert.equal(done.tracks[0],null);assert(done.floor>.5);
   assert.equal(await page.locator('#toast').evaluate(e=>e.textContent.length>0),true,'transition toast');
-  assert.equal(await page.locator('#indicator-a').textContent(),'STANDBY');assert.equal(await page.locator('#set-progress').textContent(),'2 / 3');
+  assert.equal(await page.locator('#indicator-a').textContent(),'EMPTY');assert.equal(await page.locator('#track-a').textContent(),'— 選曲中 —');assert.equal(await page.locator('#set-progress').textContent(),'2 / 3');
+  assert(await page.locator('#guide').isHidden(),'no guide band outside the mix');
+  await page.locator('#pick').waitFor();assert.equal(await page.locator('#pick').getAttribute('data-side'),'a');assert.equal(await page.locator('.pick-card').count(),2);
+  assert.match(await page.locator('#request').textContent(),/フロアの声：「.+」/);
+  for(const [i,key] of done.select.options.entries())assert.match(await page.locator('#pick-'+i).textContent(),new RegExp(await page.evaluate(async k=>(await import('./tracks.mjs')).TRACKS[k].title.replace(/[()]/g,'.'),key)));
+  // Pick the first card: it loads on deck A at the master tempo (SET 1) and the next cue opens from B.
+  await press('pick-0');
+  const picked=await until(page,'pick',s=>s.phase==='cue',errors);
+  assert.equal(picked.tracks[0],done.select.options[0]);assert.deepEqual(picked.bpms,[120,120]);assert.deepEqual([picked.cue.from,picked.cue.to],[1,0]);assert.equal(picked.played.length,3);
+  assert(await page.locator('#pick').isHidden());assert.equal(await page.locator('#indicator-a').textContent(),'STANDBY');
+  assert.match(await page.locator('#toast').textContent(),/[◎○△]/,'the pick is rated');
   assert.equal(await page.locator('#score-result').evaluate(e=>e.children.length),0,'set result only after the last transition');
   // Restart rebuilds a fresh set without a page reload.
   await press('restart');const fresh=await until(page,'restart',s=>!s.running&&s.transitions.length===0,errors);assert.deepEqual(fresh.playing,[false,false]);assert.equal(fresh.voices,0);near(fresh.floor,.5);
   assert.deepEqual(errors,[]);
   await page.screenshot({path:path.join(out,`visual-${kind}.png`),fullPage:true});
-  results.push({kind,ready,started,entered,mixed,done,passed:true,limits:'Real WebAudio/UI only; physical listening/capture excluded'});await context.close();
+  results.push({kind,ready,started,entered,mixed,done,picked,passed:true,limits:'Real WebAudio/UI only; physical listening/capture excluded'});await context.close();
  }
  fs.writeFileSync(path.join(out,'result.json'),JSON.stringify({url,results},null,2));console.log('DJ set PC/touch/reduced WebAudio/UI PASS; no physical listening/video claim');
 }catch(error){
