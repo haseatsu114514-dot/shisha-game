@@ -151,6 +151,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_naru_listened", "person"],
   ["_ch2_naru_warm_done", "person"],
   ["_ch2_no_audience", "progression"],
+  ["_ch2_prep_rehearsal_result", "progression"], // 第2章の最後の通しの講評（chapters/ch2-craft-prep.js）。大会の加点にはしない
   ["_ch2_preparation_started", "progression"],
   ["_ch2_preview_seen", "progression"],
   ["_ch2_read_ch2_kumicho_fifth", "person"],
