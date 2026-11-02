@@ -111,6 +111,11 @@ const cheatScene = (id) => ({
   },
 });
 
+// 告白の台本が自分の場面を持つ相手（daily/bonds.js の BOND_FINALES.ownConfession）。夜の帰り道では始めない。
+// ましろは第3章の寄り道（休日の部屋。chapters/ch3-story-wiring.js の confession_mashiro・IR20）だけで告白する。
+const OWN_CONFESSION_SCENE = Object.freeze(["mashiro"]);
+const nightWalkConfession = (id) => !OWN_CONFESSION_SCENE.includes(id) && romanceRouteOpen(id);
+
 /**
  * 一日の終わり（夜の行動と固定イベントの後）に呼ぶ。恋愛ルートで告白を待つ相手がいれば告白イベントを始める。
  * 予約（_confession_due）は締めくくりの直後に入るが、再生の前にもルートを確かめ直す。
@@ -123,9 +128,9 @@ const cheatScene = (id) => ({
 export async function maybeConfession(beat, { busyNight = false, companion = null } = {}) {
   if (state.phase !== "daily" || state.slot < 2) return false; // 昼の行動から仕事後の夜へ飛ばない
   let id = state.flags._confession_due;
-  if (id && !romanceRouteOpen(id)) { delete state.flags._confession_due; id = null; }
+  if (id && !nightWalkConfession(id)) { delete state.flags._confession_due; id = null; }
   // 2人目の恋愛ルートなど、予約の空きを待っていた相手を拾う（締めくくりの順）
-  if (!id) id = Object.keys(state.finales || {}).find(romanceRouteOpen) || null;
+  if (!id) id = Object.keys(state.finales || {}).find(nightWalkConfession) || null;
   if (!id) return false;
   state.flags._confession_due = id;
   // 新規進行は私的な約束の後。旧セーブの紹介済み・本名記録なしは、下の名乗り補完へ進める。

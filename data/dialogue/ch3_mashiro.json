@@ -437,7 +437,7 @@
     },
     {
       "dialogue_id": "ch3_mashiro_bond_finale",
-      "comment": "交友の締めくくり（♥5・#2022）。任意の交流（ch3_mashiro_play_1〜3・practice・black_tea）と♥3の質問を読んだ後、第3章の場面カードから一度だけ。終わりに専用ハガル suyaki_mashiro。恋人／恋愛の答えを重ねた相手／友人で分岐する。告白は仮置きの寄り道 confession_mashiro（#1930）のまま。大会に触れない。",
+      "comment": "交友の締めくくり（♥5・#2022）。任意の交流（ch3_mashiro_play_1〜3・practice・black_tea）と♥3の質問を読んだ後、第3章の場面カードから一度だけ。終わりに専用ハガル suyaki_mashiro。恋人／恋愛の答えを重ねた相手／友人で分岐する。告白は寄り道 confession_mashiro（#1930・IR20 の正式原稿）。大会に触れない。",
       "metadata": {
         "bond_finale": "mashiro"
       },
