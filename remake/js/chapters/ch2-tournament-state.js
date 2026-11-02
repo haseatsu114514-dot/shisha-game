@@ -1,3 +1,4 @@
+import { finishTournamentStep } from "./tournament-finish-step.js";
 import { tournamentResources, restoreTournamentResources } from "./tournament-resource-snapshot.js";
 import { tournamentStandings } from "./tournament-standings.js";
 // 第2章の保存境界と持ち点。第1章のstate.tournament/固定逆転票には触れない。
@@ -87,11 +88,7 @@ export function beginStep(value) {
 }
 export function finishStep(value, craft) {
   const p = tournamentProgress(value);
-  p.craft = copy(craft);
-  p.rollback = null;
-  if (craft.failed) { p.stage = "defeat"; p.failure = craft.failed; }
-  else p.step++;
-  return p;
+  return finishTournamentStep(p, craft);
 }
 
 /** 1回投入した点は保存後も戻らない。各審査員の累計を常に10以内にする。 */
