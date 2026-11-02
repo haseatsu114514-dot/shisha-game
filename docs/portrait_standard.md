@@ -8,6 +8,9 @@
 - 道具：`tools/portrait_metrics.py`（測る・確かめる・表と比較図を出す）
 - 比較図：[face-size-ingame.png](../asset_sources/reference-sheets/face-size-ingame.png)（会話画面と同じ倍率で全員の顔を並べる）
 - 直す順番と進捗：[asset_sources/portraits/standard-20261102/progress.md](../asset_sources/portraits/standard-20261102/progress.md)（「立ち絵そろえ」で進める）
+- 背景の規格は別に [背景の規格](background_standard.md)
+
+**立ち絵の作り方の入口はこの文書だけ**（2026-11-02 に1本化）。`docs/prompts/image_generation_guide.md`・`codex-image-prompt`・`character-portrait-remaster` の各スキルは、画風と頭身についてはここを指す。古い「高密度のドット絵調」「fine pixel-art grain」の画風の言葉は使わない。
 
 ## 1. そろえるもの
 
@@ -94,3 +97,34 @@ HEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoo
 3. `fit_portrait.py` 等で896×1200へ縮小・配置し、表情差分は通常の足元・頭の位置に合わせる。
 4. 2節の手順で測り、`check` で規格内か見る。外れたら頭の大きさの指定を直して作り直す。
 5. 顔アイコン・WebP・manifest を作り直し、会話画面で表情を切り替えて確認する（portrait-fix スキル）。
+
+## 6. 生成のたびに渡す参照セット（1回の生成で4枚）
+
+どの経路（Codex・画像API・人への依頼）で作るときも、参照画像は次の4枚を**リポジトリのファイルから**渡し、プロンプトに役割を書く。言葉だけで画風や頭身を伝えない。足りない参照を別のキャラで代用したり、横並びのシートを渡したりしない（人物が縮んでぼやける）。
+
+| 役割 | 渡すもの | 標準 | 小柄 |
+|---|---|---|---|
+| ① 本人（顔・髪・衣装・色・ポーズ） | その表情の現行立ち絵 `assets/sprites/characters/<id>/chr_<id>_<face>.png`。表情差分では合格済みの新しい通常の原画も | 共通 | 共通 |
+| ② 頭身の目標（同じ区分・同じ性別） | 規格内のキャラの通常 | 男性は南雲（6.93）、女性は凛（6.53） | ましろ（5.76） |
+| ③④ 画風の目標 | みんと営業姿の通常 と あげはの通常 | 共通 | 共通 |
+
+プロンプトには 3節の英文と、②の役割を「頭身の目標だけ。顔・髪・体格・衣装は写さない」と明記する（完成した書き方は [prompts.md](../asset_sources/portraits/standard-20261102/prompts.md) の各ブロック）。新しいキャラの初回も同じ4枚で、①の代わりに `brand/character_profiles.md` の容姿の文を使う。
+
+## 7. 並べたときの検査（立ち絵を足した・差し替えたPRで必ず）
+
+頭身が規格内でも、並べたときの違和感は**配置**から起きる。原因は3つに分かれる。
+
+| 原因 | 何が起きるか | 直し方 |
+|---|---|---|
+| 足元の基線・余白 | 表情を切り替えると上下に動く、足が浮く | `tools/fit_portrait.py` で通常と同じ足元に合わせる。`python3 tools/portrait_metrics.py faces <id>` で差を見る |
+| 左右の重心 | 表情で左右に跳ぶ | 同上。`align_sprite_anchor.py` で数px動かした後は `overlay` で点を見てから `stamp` |
+| 会話画面の天井 | `spriteScale` が約1.02以上のキャラは、頭が画面の上端97%を越えないように会話エンジンが下へ沈める（`remake/js/vn/engine.js` の `frame()`）。2026-11-02 時点で組長・シェイク・スミさん・サイフ・サイ・マキ・アダム・南雲・博士・なるの10人が当たっていて、背の高い人ほど沈むので身長差が画面では潰れる | 絵では直らない。`FRAMING.target`（1.36）を下げるか天井を上げるかはコード側の判断で、オーナーの依頼があるときだけ変える |
+
+PRでは次の2枚を作り直して貼る。
+
+```bash
+python3 tools/portrait_metrics.py sheet                   # asset_sources/reference-sheets/face-size-ingame.png（会話画面と同じ倍率で顔を並べる）
+python3 tools/make_reference_sheet.py lineup              # asset_sources/reference-sheets/height-lineup.png（身長の設定どおりの背比べ）
+```
+
+同じ区分のキャラと顔の大きさが揃っているか、足元が一直線か、表情を切り替えて頭が動かないかを、この2枚と会話画面（portrait-fix スキルの「直した後の確認」）で見る。
