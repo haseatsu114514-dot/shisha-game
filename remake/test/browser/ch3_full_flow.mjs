@@ -192,6 +192,9 @@ await suite("ch3-full-flow", async check => {
 
     // 3. 全国大会
     await page.locator(dt("ch3-intro-tournament")).click();
+    await page.locator(".phone-overlay").waitFor();
+    await page.locator('[data-test="reply-0"]:not([disabled])').click();
+    await page.locator(dt("phone-next")).click();
     await page.locator(t("entry")).waitFor();
     await page.locator(t("start")).click();
     await page.locator(t("ready")).waitFor();
