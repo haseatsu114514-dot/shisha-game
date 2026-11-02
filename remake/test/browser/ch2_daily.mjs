@@ -254,7 +254,8 @@ await suite('ch2-daily',async check=>{
     await travelToCity(page,'home');await act(page,'rest');
     await wide(page);await act(page,'ch2_ageha');v=await value(page);
     assert.equal(v.money,27000-stationFares(page));assert.equal(v.flags._ch2_talks.ageha,3);
-    // 続編のあとは、あげはの店に通う回を順に読む（#626）。初対面+16・続編+8で♥2に届くので、3回目は最初の回（台帳 AFB01）
+    // 続編のあとは、あげはの店に通う回を順に読む（#626）。初対面+16・続編+8で♥2に届くので、3回目は最初の回（台帳 AFB01）。
+    // いつもの会話の巡回とあいさつ（VOL13）は、店に通う回を読み終えた後に出る
     assert((await page.evaluate(()=>window.__dailyTrace)).includes('remake_ch2_ageha_gyaru'));assert(v.flags._ch2_read_remake_ch2_ageha_gyaru);
   });
   await check('installed-reel-preserves-draw-on-reload',async page=>{

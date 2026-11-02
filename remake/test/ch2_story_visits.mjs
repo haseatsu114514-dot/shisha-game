@@ -13,7 +13,7 @@ const dialogues = Object.fromEntries(["ch2_isolation", "ch2_main", "ch2_ageha_st
   .flatMap(file => JSON.parse(read(`data/dialogue/${file}.json`)).dialogues).map(d => [d.dialogue_id, d]));
 const START = 15, abs = day => START + day - 1;
 const context = vm.createContext({ console, AbortController, setTimeout, clearTimeout });
-let state, played, mode, saves, visitDue, lessons;
+let state, played, mode, saves, visitDue, lessons, prepDue = null;
 const DB = { dialogues };
 const statePort = new vm.SyntheticModule(["state", "save", "markMet", "timeOfDay"], function () {
   this.setExport("state", state); this.setExport("save", () => saves++);
@@ -38,10 +38,10 @@ const mocks = {
     return { id };
   } },
   "remake/js/daily/calendar.js": { runDaily: async def => { state.def = def; } },
-  "remake/js/daily/spots.js": { allSpots: () => [], VISIT_COST: 3000,
+  "remake/js/daily/spots.js": { allSpots: () => [{ id: "tonari", kind: "tonari" }], VISIT_COST: 3000,
     isClosed: spot => spot.closedOn !== undefined && state.day % 7 === spot.closedOn,
     CHAR_STAT: { adam: "guts", minto: "charm" }, VISIT_BG: { adam: "bg_eden_shop", minto: "peppermint" },
-    bgRef: name => `res://assets/backgrounds/${name}.png`, setChapterVisitDue: fn => { visitDue = fn; } },
+    bgRef: name => `res://assets/backgrounds/${name}.png`, setChapterVisitDue: fn => { visitDue = fn; }, hasNewEvent: () => false },
   "remake/js/daily/hiyori.js": { setHiyoriExtraShops: () => {} },
   "remake/js/daily/trpg.js": { trpgSpot: () => null, maybeRecruitTrpgMember: async () => false },
   "remake/js/daily/shop.js": { openShop: async () => null },
@@ -57,6 +57,7 @@ const mocks = {
   "remake/js/core/growth.js": { consultLessons: async id => { lessons.push(id); return []; } },
   "remake/js/core/chapter-data.js": { readDialogues: async () => ({}) },
   "remake/js/core/affinity-stages.js": { AGEHA_AFFINITY_VISITS: [], CH2_VISIT_STORIES: {}, ch2VisitDone: () => false },
+  "remake/js/chapters/ch2-craft-prep.js": { craftPrepDue: () => prepDue, offerCraftPrep: async () => ({ used: true, exerted: true }) },
 };
 const REAL = ["remake/js/chapters/ch2-preparation.js", "remake/js/chapters/ch2-story.js", "remake/js/chapters/ch2-story-data.js", "remake/js/chapters/ch2-outings.js"];
 const modules = new Map([["remake/js/core/state.js", statePort]]);
@@ -142,6 +143,16 @@ await setup(); mode = "replace-state";
 const old = state; before = plain(state);
 assert.deepEqual(plain(await go(EDEN)), { used: false, exerted: false });
 assert.deepEqual(plain(old), before, "LOAD target must receive no old action effects");
+
+// tonariの大会準備（ch2-craft-prep.js）: 期間中は地図の tonari に「！」、tonari を選ぶと準備の問いを先に出す
+await setup();
+const tonari = () => state.def.mapOptions().regions.find(region => region.id === "home").spots().find(spot => spot.id === "tonari");
+assert.equal(tonari().hasNew(), false);
+prepDue = { id: "basics" };
+assert.equal(tonari().hasNew(), true);
+assert.deepEqual(plain(await go({ id: "tonari", kind: "tonari" })), { used: true, exerted: true });
+prepDue = null;
+assert.equal(await go({ id: "tonari", kind: "tonari" }), null, "no prep: the usual tonari menu");
 
 // 夜の予定表: 訪問の本編は自分の日の夜を塞がず、期限の夜に救済する
 await setup();
