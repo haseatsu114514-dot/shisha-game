@@ -1,0 +1,2 @@
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-shuffle/panels/uranaishi-shuffle-1.webp: 764x509 比率 1.501 75 KiB
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-shuffle/panels/uranaishi-shuffle-2.webp: 764x509 比率 1.501 91 KiB

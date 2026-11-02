@@ -160,6 +160,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_read_ch2_kumicho_fifth", "person"],
   ["_ch2_read_ch2_kumicho_sixth", "person"],
   ["_ch2_read_ch2_kumicho_third", "person"],
+  ["_ch2_read_ch2_lingering_smell", "progression"], // スミさんの飯の接客回（baito_ch2_staff_meal）の条件
   ["_ch2_read_ch2_pre_tournament_realisation", "progression"],
   ["_ch2_read_ch2_rei_fifth", "person"],
   ["_ch2_read_ch2_rei_fourth", "person"],
@@ -195,6 +196,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_delivery_steve", "person"],
   ["_ch3_delivery_volk", "person"],
   ["_ch3_evening", "progression"],
+  ["_ch3_tokyo_proposal_day", "progression"],
   ["_ch3_intro", "progression"],
   ["_ch3_japan_first_representative", "progression"],
   ["_ch3_mukai_work_intro_read", "person"],
@@ -402,6 +404,7 @@ export const FLAG_EXACT_RULES = [
   ["_outing_done_ageha", "person"],
   ["_outing_done_minto", "person"],
   ["_outing_done_naru", "person"],
+  ["_outing_done_rin", "person"],
   ["_outing_done_samechan", "person"],
   ["_outing_done_tsumugi", "person"],
   ["_overwork", "progression"],

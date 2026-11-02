@@ -1,0 +1,3 @@
+samechan-cardboard-throne-1.webp: 余白 左5% 右5% 上0% 下0% → そのまま
+samechan-cardboard-throne-2.webp: 余白 左5% 右5% 上0% 下0% → 拡大 40%（切った所 top4%・bottom0%）
+拡大して埋めた: 1 / 2 枚
