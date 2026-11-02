@@ -700,6 +700,183 @@
       }
     },
     {
+      "dialogue_id": "outing_rin_1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "add_affinity": {
+          "rin": 1
+        },
+        "add_stat": {
+          "sense": 2
+        },
+        "topic": "豆の仕入れ",
+        "private_scene": true,
+        "setting": "♥3の外出（lime_outing_rin_1 の承諾）。昼、問屋街の外れの焙煎所で、ショールームに置くコーヒー豆の仕入れにつき合う。試香の合間に豆で鼻を戻す凛の習慣と、誰にも言っていない行きつけを見せる。大会の前後どちらでも読める内容にする。"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼。問屋街の外れ、ガラス戸の奥で焙煎機が回っている小さな豆屋の前で、凛さんが待っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "薄暗いショールームの外で見ると、白シャツの袖まくりも、少しだけ別の人みたいだった。"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "来たね、モルモットくん。今日は試香じゃなくて、荷物持ち"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "コーヒー豆って、ショールームのどこで使うんですか"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "試香の合間に嗅ぐの。鼻が同じ香りに慣れたら、豆で一回、元に戻す"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "香水の売り場にも置いてあるでしょ。あれ。うちのは、私の好みで選んでるけど"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の中は、焦げる手前の甘い匂いでいっぱいだった。棚の瓶には、産地と焙煎の深さだけが書いてある。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんは瓶を一つずつ開けて、鼻を近づけては閉じる。ショールームで黒い袋を開けるときと、同じ手つきだった。"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "……これは浅すぎる。こっちは、焼いた日が古い"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの奥で、店主のおじさんが笑った。「匂坂さん、また全部開けてる」"
+        },
+        {
+          "speaker": "rin",
+          "face": "smug",
+          "text": "開けないと分からないでしょ。……ね、悪い客"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "凛さん、ここの常連なんですね"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "出張から戻った日は、まずここ。……誰にも言ってないけどね"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "で、君はどれがいい？ 鼻をもう一つ借りるって、言ったでしょ"
+        },
+        {
+          "type": "choice",
+          "id": "rin_outing_beans",
+          "choices": [
+            {
+              "text": "凛さんが最初に手を止めた瓶",
+              "next": "watched"
+            },
+            {
+              "text": "正直、まだ違いが分からない",
+              "next": "honest"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "結局、紙袋は二つになった。片方はショールームの分。もう片方を、凛さんは黙ってこちらへ押しつけた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "そっちは君の分。家で飲むなり、休憩のときに嗅ぐなり、好きにしなよ"
+        },
+        {
+          "speaker": "rin",
+          "face": "smug",
+          "text": "報酬じゃないよ。……これは業務外"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます。……業務外、ですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店を出ると、凛さんは昼の光に少しだけ目を細めた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "昼に外を歩くの、久しぶり。……君といると、夜の側から出てくる口実ができるね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙袋から、まだ温かい豆の匂いがした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】が少し上がった。"
+        }
+      ],
+      "branches": {
+        "watched": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "凛さんが最初に、二回嗅いだ瓶です"
+          },
+          {
+            "speaker": "rin",
+            "face": "surprise",
+            "text": "……見てたの。豆じゃなくて、私を"
+          },
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "……正解。モルモットくんに観察されるとは、思わなかった"
+          }
+        ],
+        "honest": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "正直、どれもいい匂いで……まだ、違いが分からないです"
+          },
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "それでいい。分からないって言える鼻の方が、私は信用できる"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "じゃあ、今日のは私が選ぶ。次に来たとき、違いを当ててみて"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "ch1_rei_cameo",
       "comment": "後の章のライバル・零-REI-（田中健太）のカメオ来店。名前・正体は一切出さない（話者なしの「」で通す）。V系の芝居がかった声と、帰り際の素の声のギャップが本体。ch2県大会の出場者名『零-REI-』で回収",
       "metadata": {
