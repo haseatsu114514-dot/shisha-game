@@ -54,7 +54,7 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   assert.deepEqual(value, before, "Reading the destination mutated the save");
   assert.equal(camel.kind, "camel"); assert.equal(camel.consumes, false); assert.equal(camel.ok, true);
   assert.match(camel.label, /店員と話す/);
-  assert.deepEqual(chapterFourMapModel(value).destinations.map(item => item.id), ["souq", "festa", "center_cafe", "shop", "camel", "inn"]);
+  assert.deepEqual(chapterFourMapModel(value).destinations.map(item => item.id), ["souq", "festa", "center_cafe", "tour_desk", "shop", "camel", "inn"]);
   // 知り合う（DAY1）。同じ日はまた話せない。翌日に誘われる。
   assert(advanceCamelRaceStage(value, CAMEL_SCENES.meet));
   assert(!advanceCamelRaceStage(value, CAMEL_SCENES.meet), "meeting twice does nothing");
