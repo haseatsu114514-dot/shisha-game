@@ -138,6 +138,7 @@ await suite("ch5-full-flow", async check => {
     await committed(page, "ch5_free_mashiro_visit");
     await mapReady(page, { day: 51, slot: 1 });
     await page.locator(dt("hud-menu")).click();
+    await page.locator(dt("menu-tab-system")).click();
     await page.locator(dt("menu-save")).click();
     await page.locator(dt("slot-1")).click();
     await loadSlot(page, 1);

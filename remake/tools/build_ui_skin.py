@@ -78,8 +78,31 @@ def build_paper():
         source.convert("RGB").resize((512, 512), Image.Resampling.LANCZOS).save(PAPER_OUT / "panel.webp", "WEBP", quality=88, method=6)
     with Image.open(PAPER_SOURCES / "lavender.png") as source:
         source.convert("RGB").resize((256, 256), Image.Resampling.LANCZOS).save(PAPER_OUT / "lavender.webp", "WEBP", quality=88, method=6)
+    build_menu_bg()
     for path in sorted(PAPER_OUT.glob("*.webp")):
         print(f"{path.relative_to(ROOT)}: {path.stat().st_size:,} bytes")
+
+
+# 全画面MENU（DUI03・#2097）の紙。表示は 1232×672（1280×720 の舞台から上下左右24px）。
+# 原画（3:2）の上の枠線と、左下のシーシャ台の絵を含む下側はそのまま残し、無地の中ほどだけを縦に詰めて
+# 表示と同じ縦横比（1536×838）にする。横は伸縮しないので、タブの帯と枠線の位置は原画と同じ割合のまま。
+PAPER_MENU = {"source_size": (1536, 1024), "keep_top": 80, "keep_bottom": 424, "height": 838}
+
+
+def build_menu_bg():
+    spec = PAPER_MENU
+    with Image.open(PAPER_SOURCES / "menu-bg.png") as source:
+        if source.size != spec["source_size"]:
+            raise ValueError(f"paper menu-bg: update PAPER_MENU for new source size {source.size}")
+        image = source.convert("RGB")
+        w, h = image.size
+        top, bottom = spec["keep_top"], spec["keep_bottom"]
+        middle = spec["height"] - top - bottom
+        out = Image.new("RGB", (w, spec["height"]))
+        out.paste(image.crop((0, 0, w, top)), (0, 0))
+        out.paste(image.crop((0, top, w, h - bottom)).resize((w, middle), Image.Resampling.LANCZOS), (0, top))
+        out.paste(image.crop((0, h - bottom, w, h)), (0, top + middle))
+        out.save(PAPER_OUT / "menu-bg.webp", "WEBP", quality=82, method=6)
 
 
 # 制作（シーシャ作り）の紙×ラベンダー＋琥珀（CUI01〜）。原画は assets/ui/craft-paper/（生成記録は asset_sources/ui/craft-paper-20261031/）。

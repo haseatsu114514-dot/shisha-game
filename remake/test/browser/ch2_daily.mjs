@@ -185,10 +185,10 @@ await suite('ch2-daily',async check=>{
     assert.match(await page.locator('#bg > .bg-img').last().getAttribute('style'), /bg_home/);
     assert.equal(await page.evaluate(async () => (await import('./js/core/audio.js')).currentBgm()), 'kansetsu_shomei_to_black_coffee');
     await begin(page);
-    await page.locator(t('hud-menu')).click(); await page.locator(t('menu-save')).click();
+    await page.locator(t('hud-menu')).click(); await page.locator(t('menu-tab-system')).click(); await page.locator(t('menu-save')).click();
     await page.locator(t('slot-1')).click(); await page.locator(t('confirm-overwrite')).click();
     await page.locator('#modal.show').waitFor({ state: 'hidden' });
-    await page.locator(t('hud-menu')).click(); await page.locator(t('menu-load')).click();
+    await page.locator(t('hud-menu')).click(); await page.locator(t('menu-tab-system')).click(); await page.locator(t('menu-load')).click();
     await page.locator(t('slot-1')).click(); await page.locator(t('confirm-load')).click();
     await page.locator(map).waitFor();
     const after = await value(page);
@@ -221,7 +221,7 @@ await suite('ch2-daily',async check=>{
     assert.match(preview.src,/bg_ch2_rei_entry.webp/);assert.equal(preview.width,1280);assert.equal(preview.height,720);
     await capture(page,'day2-widehanga.png');
     v=await value(page);assert.equal(v.money,36000-stationFares(page));assert.equal(v.slot,0);assert(Object.values(v.stats).every(n=>n===31));
-    await page.locator(t('hud-menu')).click();await page.locator(t('menu-save')).click();
+    await page.locator(t('hud-menu')).click();await page.locator(t('menu-tab-system')).click();await page.locator(t('menu-save')).click();
     await page.locator(t('slot-0')).waitFor();
     assert.match(await page.locator(t('slot-0')).textContent(),/第2章\s*DAY 2(?!\d)/);
     assert(!/初日終了/.test(await page.locator(t('slot-0')).textContent()),'DAY2 saves must not keep the DAY1-complete caption');
