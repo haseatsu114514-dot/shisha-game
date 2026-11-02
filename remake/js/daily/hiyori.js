@@ -85,7 +85,7 @@ function encounterRoll(spot) {
 
 /** tonariの次の対面で実際にひより本人が登場する場合。スミさんへの伝言だけの日は除く。 */
 export function hiyoriAtTonari() {
-  if (["tonari_followup", "tonari_afterwork", "work_talk"].some(id => hiyoriEventStatus(id) === "ready")) return true;
+  if (["tonari_followup", "tonari_afterwork", "work_talk", "peach_talk", "promise"].some(id => hiyoriEventStatus(id) === "ready")) return true;
   return hiyoriQuestionReady() || !!state.flags._hiyori_work_talk_done && finaleAtVisit("hiyori");
 }
 
@@ -188,6 +188,9 @@ export async function meetHiyoriAtTonari() {
     try { if (await playHiyoriQuestion({ signal: lifetime.signal })) { await maybeRecruitTrpgMember("hiyori"); return true; } }
     finally { lifetime.close(); active = false; }
   }
+  // ♥3の質問の後、♥4のピーチの会話・♥5の約束を読んでから締めくくりへ。
+  if (hiyoriEventStatus("peach_talk") === "ready") return playHiyoriEvent("peach_talk");
+  if (hiyoriEventStatus("promise") === "ready") return playHiyoriEvent("promise");
   if (!active && !isPlaying() && finaleAtVisit("hiyori")) {
     const lifetime = ownedConversation(); active = true;
     try { const played = await playFinale("hiyori", { signal: lifetime.signal });

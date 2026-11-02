@@ -6,7 +6,9 @@
       "meeting",
       "cracks",
       "axe_reveal",
-      "work_talk"
+      "work_talk",
+      "peach_talk",
+      "promise"
     ],
     "question": {
       "dialogue": "hiyori_bond_question",
@@ -158,6 +160,40 @@
         ],
         "met": true,
         "affinity": 5
+      },
+      {
+        "id": "peach_talk",
+        "dialogue": "hiyori_peach_talk",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_peach_talk_done",
+        "requires": [
+          "_hiyori_work_talk_done",
+          "_hiyori_bond_question_done"
+        ],
+        "met": true,
+        "minAffinity": 4,
+        "affinity": 10,
+        "untilFinale": true
+      },
+      {
+        "id": "promise",
+        "dialogue": "hiyori_promise",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_promise_done",
+        "requires": [
+          "_hiyori_peach_talk_done"
+        ],
+        "met": true,
+        "minAffinity": 5,
+        "affinity": 10,
+        "slot": 1,
+        "untilFinale": true
       },
       {
         "id": "tokyo_contact",
@@ -1676,6 +1712,231 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "hiyori_peach_talk",
+      "comment": "♥4の段階会話（#2025）兼ひよりの味の会話。好み＝ドバジ ピーチ（characters.json favorite_flavor、専用ハガル suyaki_hiyori の香り）。♥3の質問の後、tonariで一度だけ。大会・章に触れず、どの時期に読んでも成立する文面。はじめ自身の味覚には触れない（第2章の味覚の不調と矛盾させない）。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
+        "private_scene": true,
+        "flavor_lesson": {
+          "peach": 1
+        }
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "カウンターの端に、ひよりが座っていた。メニューは開かずに、指先でピーチの行をなぞっている。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……今日は、桃にしようかな。触れたら崩れてしまいそうな果実……私みたいでしょ",
+          "face": "sad",
+          "inner": "単純に、今日いちばん吸いたい味。桃は正義"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめ、作ってみろ。ひよりのピーチは、うちでいちばんうるさい注文だぞ"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "うるさくないです！ ……ちょっと、こだわりがあるだけで",
+          "face": "surprise"
+        },
+        {
+          "speaker": "hajime",
+          "text": "そのこだわり、聞いてもいいですか"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "ピーチって、熱を上げすぎると、すぐ甘さが焦げるの。缶詰のシロップを煮詰めたみたいな匂いになって",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "だから炭は控えめ。最初の数分は、物足りないくらいで待つの",
+          "face": "serious"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "そうすると、皮の近くのちょっと酸っぱいところまで残るんだよ",
+          "face": "serious",
+          "inner": "バイトの頃に三回焦がして、スミさんに三回『待て』って言われた"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……詳しいですね。さすが元スタッフ"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……昔の話。遠い、煙の向こうの……",
+          "face": "sad",
+          "inner": "ごまかせてない。顔が完全に得意げになってる"
+        },
+        {
+          "speaker": "",
+          "text": "言われたとおり、炭を少なめに載せる。ボウルが温まるまで、ひよりは黙ってホースの先を見ていた。"
+        },
+        {
+          "speaker": "",
+          "text": "数分後。ひよりはひと口吸って目を閉じ、ゆっくり煙を吐いた。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……うん、これ。甘いのに、ちゃんと果物の味がする",
+          "face": "smile"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "桃ってね、柔らかいけど、甘さはしぶといの。疲れてる日でも、ちゃんと最後まで届く",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "儚い果物じゃなくて、しぶとい果物。……本当は、だから好き",
+          "face": "smile",
+          "inner": "言っちゃった。儚い設定、桃で崩れた"
+        },
+        {
+          "speaker": "hajime",
+          "text": "しぶとい桃、いいと思います。ひよりさんっぽいです"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "えっ、それ褒めてる？ 今、しぶとい女って言った？",
+          "face": "surprise"
+        },
+        {
+          "speaker": "hajime",
+          "text": "褒めてます。毎日ちゃんと仕事して、それでもここに笑いに来るの、すごいと思うんで"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……そういうこと、さらっと言うんだから",
+          "face": "smile",
+          "inner": "ずるい。今日の桃より甘い"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "そろそろ炭をひとつ足していい頃だ。待った分だけ、後半が伸びる"
+        },
+        {
+          "speaker": "",
+          "text": "甘い煙が、カウンターの上でゆっくり広がっていった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_promise",
+      "comment": "♥5の段階会話（#2025）。ピーチの回の後、夜のtonariで一度だけ。締めくくり hiyori_bond_finale の「前に言った約束。はじめくんの一台、いつか吸わせてね」の約束をここで交わす。告白・恋人を前提にせず、好意は inner に留める。大会・章に触れない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "夜のtonari。ひよりは空になったグラスを、指で小さく回していた。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "ねえ、はじめくん。私、ここでバイトしてた頃、閉店の片づけがいちばん好きだったんだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "片づけが、ですか"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "ホースを洗って、灰を落として。スミさんがレジを締めながら、今日の一台の話をしてくれるの",
+          "face": "smile"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "あの頃は儚いとか、考えたこともなかったなあ。毎日、声が大きいって言われてた",
+          "face": "smile",
+          "inner": "今も大きい。自覚はある"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "今もでかいだろ"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "スミさん！ 今は儚い時間なんです！",
+          "face": "office_mukii"
+        },
+        {
+          "speaker": "",
+          "text": "スミさんは肩をすくめて、奥へ炭の様子を見に行った。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……会社だとね、ちゃんとしてる私でいなきゃって思うの。三年目だし、頼られてるし",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "だから、ここでは違う私でいたかったのかも。儚いのも、そういう遊びだったんだと思う",
+          "face": "sad"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "でも、はじめくんは、どっちの私でも笑って聞いてくれるでしょ",
+          "face": "smile"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "だから最近は、演じ分けなくても平気になってきた",
+          "face": "smile",
+          "inner": "平気っていうか、楽しい。会うのが"
+        },
+        {
+          "speaker": "hajime",
+          "text": "儚いひよりさんも、斧のひよりさんも、どっちも面白いです"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "面白い枠なの！？",
+          "face": "surprise"
+        },
+        {
+          "speaker": "hajime",
+          "text": "いい意味です。……一緒にいると、楽なんです"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……ふふ。じゃあ、今日はひとつ約束して",
+          "face": "smile"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "いつか、はじめくんが自分で考えた一台、私に吸わせて。スミさんの真似じゃないやつ",
+          "face": "serious"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……はい。ちゃんと、俺の一台って言えるのが作れたら"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "約束ね。桃じゃなくてもいいよ。……桃だったら、もっとうれしいけど",
+          "face": "smile",
+          "inner": "その一台は、誰より先に吸いたい"
+        },
+        {
+          "speaker": "",
+          "text": "ひよりは小指を立てかけて、照れくさそうに引っ込めた。代わりに、グラスを軽く鳴らす。"
+        },
+        {
+          "speaker": "",
+          "text": "煙の向こうで笑うその顔は、演技でも、作った笑顔でもなかった。"
+        }
+      ]
     },
     {
       "dialogue_id": "hiyori_bond_finale",
