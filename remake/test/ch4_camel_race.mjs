@@ -5,7 +5,8 @@ import { newState } from "../js/core/state.js";
 import { advanceToChapterFour, completeChapterFourScene, endChapterFourDay, CH4_PROLOGUE } from "../js/chapters/ch4-progress.js";
 import { chapterFourMapModel } from "../js/chapters/ch4-map-model.js";
 import { CAMEL_FLAG, CAMEL_SCENES, CH4_CAMEL_SCENE_FILES, CAMEL_STAGES, camelRaceRecord, camelRaceDestination, camelRaceOpen,
-  recordCamelRaceResult, consumeCamelRaceDaytime, advanceCamelRaceStage, resultSceneFor, camelSceneBg, CAMEL_TRACK_BG, CAMEL_SHOP_BG } from "../js/chapters/ch4-camel-progress.js";
+  recordCamelRaceResult, consumeCamelRaceDaytime, advanceCamelRaceStage, resultSceneFor, camelSceneBg, CAMEL_TRACK_BG, CAMEL_SHOP_BG,
+  CAMEL_DAILY_SPOT_ID, camelDailySpot } from "../js/chapters/ch4-camel-progress.js";
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
 import { newGrowth, claimPlayRewards } from "../js/core/growth.js";
 import { classifyFlag } from "../js/core/carry.js";
@@ -145,5 +146,39 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   recordCamelRaceResult(value, { total: 99, rank: 1, grade: "S", time: 50 });
   assert.deepEqual(claimPlayRewards(g, value).filter(item => item.label === reward.label), [], "claimed once");
   assert.equal(classifyFlag(CAMEL_FLAG), "progression");
+}
+// ドバイ14日の日常ループの地図（ch4-dubai-daily.js）: 段階で場所と押せる条件が変わる。読むだけで保存を変えない。
+{
+  const value = dubaiFreeDay();
+  const fields = { region: "dubai", kind: "ch4_dubai" };
+  const spotOf = () => camelDailySpot(value, fields);
+  const before = structuredClone(value);
+  let spot = spotOf();
+  assert.deepEqual(value, before, "Building the daily spot mutated the save");
+  assert.equal(spot.id, CAMEL_DAILY_SPOT_ID); assert.equal(spot.region, "dubai"); assert.equal(spot.kind, "ch4_dubai");
+  assert.equal(spot.place, "camel"); assert.equal(spot.label, "Dr.fookah の店先"); assert.equal(spot.unavailable, "");
+  assert.equal(spot.hasNew(), true);
+  assert(Object.isFrozen(spot));
+  advanceCamelRaceStage(value, CAMEL_SCENES.meet);
+  spot = spotOf();
+  assert.match(spot.unavailable, /また明日/); assert.equal(spot.unavailableTag, "また明日"); assert.equal(spot.hasNew(), false);
+  value.day += 1;
+  assert.equal(spotOf().unavailable, "");
+  advanceCamelRaceStage(value, CAMEL_SCENES.invite);
+  spot = spotOf();
+  assert.equal(spot.label, "ラクダレース場"); assert.equal(spot.preview, CAMEL_TRACK_BG); assert.equal(spot.unavailableTag, "レースは明日の朝");
+  value.day += 1;
+  assert.equal(spotOf().unavailable, "", "the race opens the next daytime");
+  value.slot = 1;
+  assert.equal(spotOf().unavailableTag, "レースは昼だけ");
+  value.slot = 0;
+  recordCamelRaceResult(value, { total: 70, rank: 2, grade: "A", time: 52 });
+  assert.equal(spotOf().unavailableTag, "今日はもう走った");
+  assert.equal(spotOf().hasNew(), false, "replays are not new events");
+  value.day += 1;
+  assert.equal(spotOf().unavailable, "");
+  assert.match(spotOf().desc, /自己ベスト 70/);
+  value.flags._ch4.part = "eve";
+  assert.equal(spotOf(), null, "not on the map after the free days");
 }
 console.log("ch4_camel_race: ok");

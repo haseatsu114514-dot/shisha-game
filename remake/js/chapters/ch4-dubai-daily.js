@@ -6,6 +6,7 @@
 //     Dr.fookah ドバイ店・モスク（火種がある時・見学時間）・宿
 //   - 必須の出会い（FESTAの太陽・スークの出会い・路地裏の約束）は、期限の夜までに寄らなければその夜に読む
 //   - 再訪の会話は data/dialogue/ch4_dubai_daily.json から巡回して読む
+//   - ラクダレース（任意・ch4-camel-race.js）: 店先でサイフと知り合う→誘い→昼にレース場。行き先は段階で変わる
 // 読了の確定は ch4-progress.js の completeChapterFourScene だけ（本筋の場面）。現在地は flags._ch2_region = "dubai"。
 import { state, save, timeOfDay } from "../core/state.js";
 import { DB, bgUrl } from "../core/data.js";
@@ -21,6 +22,8 @@ import { spendableMoney } from "../core/travel-budget.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_DAILY_EVE_DAY, CH4_FREE_SCENE_IDS, chapterFourProgress, syncChapterFourDay,
   chapterFourSecondAvailable } from "./ch4-progress.js";
+import { CAMEL_DAILY_SPOT_ID, camelDailySpot, camelSceneBg } from "./ch4-camel-progress.js";
+import { visitCamelRace } from "./ch4-camel-race.js";
 
 export const DUBAI = "dubai";
 const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと）
@@ -87,14 +90,20 @@ function spotHasNew(entry) {
   return false;
 }
 
+/** ラクダレースの行き先（段階・日付・昼夜で中身が変わるので、地図を描くたびに作る）。 */
+const camelSpot = () => camelDailySpot(state, { region: DUBAI, kind: "ch4_dubai", stamina: 0 });
+
 /** 今の時間・物語の時点で地図に出す行き先。 */
 export function chapterFourDubaiSpots() {
-  return CH4_DUBAI_SPOTS.filter(entry => {
+  const spots = CH4_DUBAI_SPOTS.filter(entry => {
     if (entry.place === "alley_cafe") return read("ch4_stranger_second") || chapterFourSecondAvailable(state);
     if (entry.place === "naru") return nextTalk("naru", { once: true }) !== null;
     if (entry.place === "mosque") return canReflect(state);
     return true;
   });
+  const camel = camelSpot();
+  if (camel) spots.splice(spots.findIndex(entry => entry.place === "inn"), 0, camel);
+  return spots;
 }
 
 /** 行き先の次の会話。once は一巡したら出さない（なると会う・練習会場の初回）。 */
@@ -155,7 +164,7 @@ export function chapterFourDubaiDefinition(io) {
     wakeBackground: () => CH4_PLACE_BG.inn,
     dateInvitations: false,
     confessions: false,
-    spotById: id => CH4_DUBAI_SPOTS.find(entry => entry.id === id) || null,
+    spotById: id => id === CAMEL_DAILY_SPOT_ID ? camelSpot() : CH4_DUBAI_SPOTS.find(entry => entry.id === id) || null,
     performSpot: (entry, options) => performDubaiSpot(entry, io, options),
   };
 }
@@ -214,6 +223,7 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
     await keepDailyHud(() => reflectAt("dubai_mosque"));
     return unused;
   }
+  if (entry.place === "camel") return visitCamel(owner);
   if ((entry.cost || 0) > spendableMoney(state)) { toast(`お金が足りない（${entry.cost.toLocaleString("ja-JP")}円）`); return unused; }
   if (entry.stamina < 0 && !(await staminaGuard(entry.stamina))) return unused;
   let done = false;
@@ -227,6 +237,19 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   if (entry.place === "festa") gainAffinity("da_silva", 5);
   if (entry.place === "naru") gainAffinity("naru", 5);
   return { used: true, exerted: (entry.stamina || 0) < 0 };
+}
+
+/**
+ * ラクダレース。会話の段階は時間を使わない。レースは完走した時だけ昼の枠を使い、ch4-camel-race.js が
+ * 記録と一緒に枠を進めて保存する（日常ループには slotsUsed: 0 を返し、二重に進めない）。体力・能力は使わない。
+ */
+async function visitCamel(owner) {
+  const result = await keepDailyHud(() => visitCamelRace({
+    read: id => readPlain(id, camelSceneBg(id), owner),
+    isCurrent: () => state === owner,
+    beforeRace: () => showHud(false),
+  }));
+  return result.used && state === owner ? { used: true, exerted: false, slotsUsed: 0 } : unused;
 }
 
 /** 宿で休む。2日目以降の最初の一回は、道具の手入れ（本筋の場面）を先に読む。 */
