@@ -240,6 +240,7 @@
   "rei": {
    "faces": [
     "normal",
+    "sad",
     "serious",
     "smile",
     "surprise"
@@ -252,6 +253,7 @@
   "volk": {
    "faces": [
     "normal",
+    "sad",
     "serious",
     "smile",
     "surprise"
@@ -329,6 +331,7 @@
   "steve": {
    "faces": [
     "normal",
+    "sad",
     "serious",
     "smile",
     "surprise"
@@ -342,6 +345,7 @@
    "faces": [
     "excited",
     "normal",
+    "serious",
     "smile",
     "surprise"
    ],
@@ -396,7 +400,8 @@
     "normal",
     "serious",
     "smile",
-    "smug"
+    "smug",
+    "surprise"
    ],
    "h": 0.9725,
    "b": 0.0133,
@@ -2903,6 +2908,11 @@
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
   "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
+  "sprites/characters/da_silva/chr_da_silva_serious.png",
+  "sprites/characters/rei/chr_rei_sad.png",
+  "sprites/characters/sheikh/chr_sheikh_surprise.png",
+  "sprites/characters/steve/chr_steve_sad.png",
+  "sprites/characters/volk/chr_volk_sad.png",
   "sprites/characters/yoru/chr_yoru_normal.png",
   "ui/character_intros/yoru.png",
   "sprites/characters/yoru/chr_yoru_sad.png",
