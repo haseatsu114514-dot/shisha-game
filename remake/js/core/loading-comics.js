@@ -10,7 +10,7 @@ import { imgFileUrl } from "./img-file.js";
 //   panels[2]: { src, alt, region?, bubbles? }（region は原画シートの一部を切り出すとき。現在の登録は使っていない）
 // 新規の話は 1536x1024 の下敷きで描き、tools/loading_comic_cut.py で 1コマ=1ファイル（3:2・最大 1440x960 の WebP）に
 // 揃え、紙色の余白は fill で埋める。ネタバレになる話は minChapter で明かす章まで待たせる（シガーマンの2話は第4章から）。
-// 2026-11-02 オーナーの選別（102話から採用25話、全キャラ参戦34話から採用4話、補充の1回目から5話）。1キャラ2話を超えた採用分は保留で残し、
+// 2026-11-02 オーナーの選別（102話から採用25話、全キャラ参戦34話から採用4話、補充の1回目から5話・2回目から3話）。1キャラ2話を超えた採用分は保留で残し、
 // どれをゲームに入れるかは最後にオーナーが決める（asset_sources/loading-comics/batch-allcast-refill-20261102/README.md）。画風の統一は後日の作り直しで行い、今は元の絵で登録している。
 export const LOADING_COMICS = [
   {
@@ -453,6 +453,45 @@ export const LOADING_COMICS = [
     panels: [
       { src: imgFileUrl("loading/samechan-watermelon-bite-1.webp"), alt: "海辺の店で、はじめが丸ごとのスイカを抱えて「スイカ、切ります？」。サメのパペットを持ったサメちゃんが「そのままでよいのじゃ。」。" },
       { src: imgFileUrl("loading/samechan-watermelon-bite-2.webp"), alt: "スイカにサメの歯型そのままのギザギザの大きなかじり跡。サメちゃんは満足げにもぐもぐしている。はじめ「歯型がサメだ。」。" },
+    ],
+  },
+  {
+    id: "kuze-every-order",
+    title: "注文当て",
+    cast: ["kuze"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2407:allcast-kuze-every-order）",
+    caption: "久世は客の好みを予想するのが好き。ときどき、ずるい。",
+    panels: [
+      { src: imgFileUrl("loading/kuze-every-order-1.webp"), alt: "店のカウンターで、久世が指を立てて「注文、当ててみせる。」。メニューを持ったはじめが「じゃあ、どうぞ。」。" },
+      { src: imgFileUrl("loading/kuze-every-order-2.webp"), alt: "カウンターいっぱいに、紅茶・コーヒー・ジュース・ソーダの飲み物がずらりと並び、久世はピースして得意げ。はじめ「全部出てきた。」。" },
+    ],
+  },
+  {
+    id: "kuze-photo-face",
+    title: "記念写真",
+    cast: ["kuze"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2407:allcast-kuze-photo-face）",
+    caption: "片側だけ上がる久世の笑顔は、写真だと少し怪しい。",
+    panels: [
+      { src: imgFileUrl("loading/kuze-photo-face-1.webp"), alt: "店の入口の前で、はじめがスマホを構えて「一枚撮りますね。」。久世がピースして「かわいく頼むよ。」。" },
+      { src: imgFileUrl("loading/kuze-photo-face-2.webp"), alt: "はじめが見せるスマホの画面には、稲妻を背に悪役のように笑う久世が写っている。本人はきょとんとしている。はじめ「悪役の顔だ。」。" },
+    ],
+  },
+  {
+    id: "ageha-full-coord",
+    title: "全身コーデ",
+    cast: ["ageha"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（PR2407:allcast-ageha-full-coord）",
+    caption: "あげはは「カワイイは最強」が信条のギャル店長。",
+    panels: [
+      { src: imgFileUrl("loading/ageha-full-coord-1.webp"), alt: "ピンクの店内で、あげはが服のハンガーを抱えて「コーデしたげる！」。はじめは少し引いて「お手柔らかに。」。" },
+      { src: imgFileUrl("loading/ageha-full-coord-2.webp"), alt: "はじめが帽子からズボンまで全身ヒョウ柄、ハートのサングラスに金のチェーンの姿で光の中に立ち、あげはが両手の親指を立てる。はじめ「全身ヒョウ柄。」。" },
     ],
   },
 ];
