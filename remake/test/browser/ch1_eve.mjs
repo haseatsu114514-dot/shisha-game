@@ -148,6 +148,50 @@ await suite("ch1-eve", async check => {
         assert.equal(again.benches, 0); assert.deepEqual(again.entries, []);
       }, options);
     }
+    await check(`${device}-drill-back-to-sleep`, async page => {
+      await setup(page, { manual: true, auto: null }); await page.evaluate(() => E.run());
+      await choose(page, 1, touch);
+      await page.locator('[data-test="drill-back"]').waitFor();
+      await assertFits(page, ".big-choice, [data-test=drill-back]");
+      const before = await snapshot(page);
+      // A saved, unstarted drill still offers the same normal return control.
+      await page.evaluate(() => E.core.saveToSlot("suien_remake_slot1"));
+      await reload(page, { manual: true, auto: null });
+      await page.evaluate(() => { E.core.loadFromSlot("suien_remake_slot1"); E.run(); });
+      await page.locator('[data-test="drill-back"]').waitFor();
+      assert.equal((await snapshot(page)).benches, 0);
+      await select(page, '[data-test="drill-back"]', touch);
+      await advanceTo(page, '[data-test="choice-3"]', touch);
+      assert.equal(await page.locator(".vn-choice").count(), 4);
+      const returned = await snapshot(page);
+      for (const key of ["chapter", "day", "slot", "money", "stamina", "stats", "growth", "flavorStock", "best", "rehearsal", "reel"]) {
+        assert.deepEqual(returned.state[key], before.state[key], `${key}: returning from the selector is free`);
+      }
+      assert.deepEqual(returned.state.flags._ch1_eve, { menuShown: true });
+      assert.equal(returned.state.flags._ev_last_night, undefined);
+      assert.equal(returned.benches, 0);
+      await assertFits(page, ".vn-choice");
+      await page.screenshot({ path: `${shots}/eve-${device}-drill-back.png` });
+      // Reload after Back must resume the four choices without replaying the introduction.
+      await page.evaluate(() => E.core.saveToSlot("suien_remake_slot2"));
+      await reload(page, { manual: true, auto: null });
+      await page.evaluate(() => {
+        E.core.loadFromSlot("suien_remake_slot2");
+        E.eveLines = [];
+        E.vn.hooks.onLine = (id, line) => { if (id === "ch1_day7_last_night" && line.text) E.eveLines.push(line.text); };
+        E.run();
+      });
+      await choose(page, 3, touch); await finish(page, touch);
+      const result = await snapshot(page);
+      assert.deepEqual(await page.evaluate(() => E.eveLines), ["今夜、どう過ごす？"]);
+      assert(!result.entries.includes("ch1_tsumugi_eve"));
+      assert.equal(result.state.flags._last_night, "sleep_early");
+      assert.equal(result.state.stamina, 100); assert(result.state.flags._home_tonight);
+      assert.equal(result.benches, 0); assert.deepEqual(result.steps, []);
+      assert.equal(result.state.flags._craft_practice_runs, undefined);
+      assert.equal(result.state.rehearsal, null);
+      assert.deepEqual(result.bonus, { bonus: 0, notes: [] });
+    }, options);
   }
 
   for (const kind of ["holes", "steam", "pull"]) await check(`single-drill-${kind}`, async page => {

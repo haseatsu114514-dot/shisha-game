@@ -443,6 +443,7 @@
         "node --experimental-vm-modules remake/test/purikura_fee.mjs",
         "node --experimental-vm-modules remake/test/appearance_selection.mjs",
         "node --experimental-vm-modules remake/test/ch1_eve_setup.mjs",
+        "node --experimental-vm-modules remake/test/ch1_eve_cancel.mjs",
         "node remake/test/coal_training.mjs",
         "node remake/test/continue_premium.mjs",
         "node --experimental-vm-modules remake/test/craft_keys_focus.mjs",
