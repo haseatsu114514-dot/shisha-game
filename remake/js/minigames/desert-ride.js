@@ -19,6 +19,15 @@ const HORIZON = 262;             // 地平線の高さ
 const CAM = { depth: 1.5, height: 2.0, back: 4.5, meterPerLane: 1.6 }; // 疑似3Dのカメラ（人物の4.5m後ろ・高さ2m。lane 1 = 1.6m）
 const COUNTDOWN = 2.4;           // 本番のスタートの合図（3・2・1・GO）の秒数
 const SPEED_FULL = SPEED.boost;  // 演出の「最速」（ブースト）
+const RIVAL_NAMES = Object.freeze({ noor: "ヌール", naru: "なる" });
+// 競走相手の図形の色（滑る絵が届くまで）。ヌール: 青緑の板・オリーブのシャツ・ベージュのスカーフ・束ねた黒髪・頭のサングラス。
+// なる: クリーム色の板・白い袖の黒いボンバー・黒いカーゴ・白いスニーカー・銀灰色の短い髪
+const RIVAL_LOOKS = Object.freeze({
+  noor: { board: [[34, 168, 156], [44, 140, 132]], pants: [[168, 146, 108], [160, 124, 98]], shoes: "#3a2c22", shirt: [[110, 118, 62], [116, 100, 66]],
+    sleeve: null, skin: [[176, 122, 84], [176, 110, 80]], hair: "#1b161d", ponytail: true, scarf: true, glasses: true, tag: "rgba(60,70,30,0.82)" },
+  naru: { board: [[242, 220, 166], [236, 196, 140]], pants: [[34, 32, 36], [40, 32, 34]], shoes: "#f2f0ea", shirt: [[26, 26, 30], [34, 28, 30]],
+    sleeve: [[236, 234, 228], [236, 214, 196]], skin: [[236, 200, 170], [232, 182, 150]], hair: "#b9b6b4", ponytail: false, scarf: false, glasses: false, tag: "rgba(40,36,40,0.85)" },
+});
 const SEG = 6;                   // 描く路面の1区間（m）
 const DRAW_DIST = 380;           // 前方に描く距離（m）
 const active = new WeakMap();
@@ -95,8 +104,9 @@ const TUTORIAL = {
  * @param opts.best 表示する自己ベスト { score, rank }（保存は呼び出し側）
  * @param opts.reducedMotion 揺れ・閃光・速度線を止める
  * @param opts.guide 練習と結果のひとことを言う人の名前（無ければ地の文）
+ * @param opts.rivals 本番で競える相手（"noor"、ヌールに勝った後は "naru" も）
  */
-export function runDesertRide({ host = document.getElementById("stage"), signal = null, tutorial = false, best = null, seed = DEFAULT_SEED,
+export function runDesertRide({ host = document.getElementById("stage"), signal = null, tutorial = false, best = null, seed = DEFAULT_SEED, rivals = ["noor"],
   reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = null, speedUp = 1 } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
@@ -122,7 +132,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     const input = { left: false, right: false };
     let pose = "rider";
     let game = null, mode = null, bot = null, botMemo = {}, botLag = 0, last = 0, world = null, particles = [], shakeT = 0, flashT = 0, popT = 0, popText = "", popKind = "";
-    let rival = null, countdown = 0, countShown = "", slowT = 0, rings = [], floaters = [], halfShown = 0;
+    let rival = null, raceWith = "noor", countdown = 0, countShown = "", slowT = 0, rings = [], floaters = [], halfShown = 0;
     const view = { depth: CAM.depth, back: CAM.back, roll: 0, kick: 0 }; // 速さで広がる視界。back を depth に比例させ、人物の大きさは変えない
     const streaks = Array.from({ length: 56 }, (_, i) => ({ angle: (i / 56) * Math.PI * 2 + Math.random() * 0.1, phase: Math.random(), len: 0.6 + Math.random() * 0.8, w: 1 + Math.random() * 2 }));
     let tut = null;
@@ -188,7 +198,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       mode = null; game = null; tut = null; bot = null;
       controls.hidden = true; quit.hidden = true; caption.textContent = ""; hud.replaceChildren();
       setPhase("menu");
-      const start = el("button.btn.primary.dr-button", { type: "button", text: results.length ? "もう一度滑る" : "滑る", dataset: { test: "desert-start" }, onclick: () => startRun("run") });
+      const start = el("button.btn.primary.dr-button", { type: "button", text: results.length ? "もう一度滑る" : "滑る", dataset: { test: "desert-start" }, onclick: () => startRun("run", "noor") });
+      const naruButton = rivals.includes("naru") ? el("button.btn.dr-button", { type: "button", text: "★ なると勝負（裏）", dataset: { test: "desert-start-naru" }, onclick: () => startRun("run", "naru") }) : null;
       const practice = el("button.btn.ghost.dr-button", { type: "button", text: practiced || results.length ? "練習をもう一度" : "練習から始める", dataset: { test: "desert-practice" }, onclick: () => startRun("practice") });
       const leave = el("button.btn.ghost.dr-button", { type: "button", text: "砂丘を下りる", dataset: { test: "desert-leave" }, onclick: finish });
       panel.replaceChildren(el("div.dr-card.dr-menu", { dataset: { test: "desert-menu" } }, [
@@ -202,21 +213,23 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
           el("li", { text: "ゲージが満タンで ↓（BOOST）。超加速して、岩も砕く" }),
         ]),
         currentBest ? el("p.dr-best", { text: `自己ベスト ${currentBest.score.toLocaleString("ja-JP")}点 ／ ${currentBest.rank}`, dataset: { test: "desert-best" } }) : null,
-        el("div.dr-actions", [start, practice, leave]),
+        el("div.dr-actions", [start, naruButton, practice, leave]),
       ]));
       (tutorial && !practiced ? practice : start).focus();
     }
-    function startRun(kind) {
+    function startRun(kind, who = raceWith) {
+      raceWith = rivals.includes(who) ? who : "noor";
       mode = kind;
       panel.replaceChildren();
       const course = kind === "practice" ? practiceCourse() : generateCourse(seed);
-      rival = kind === "practice" ? null : rivalRun(course);
+      rival = kind === "practice" ? null : rivalRun(course, { who: raceWith });
       game = createGame(course, { rival });
       world = { sky: 0, yaw: 0, sunPulse: 0 };
       particles = []; rings = []; floaters = []; clearTimeout(cutinTimer); cutin.classList.remove("show"); cutin.replaceChildren(); shakeT = 0; flashT = 0; popT = 0; slowT = 0; halfShown = 0; bot = null; botMemo = {}; botLag = 0;
       Object.assign(view, { depth: CAM.depth, back: CAM.back, roll: 0, kick: 0 });
       countdown = kind === "practice" ? 0 : COUNTDOWN; countShown = "";
       root.dataset.countdown = countdown > 0 ? "on" : "";
+      root.dataset.rival = rival ? raceWith : "";
       tut = kind === "practice" ? { step: "move", moved: false, bumpTries: 0, said: new Set() } : null;
       controls.hidden = false; quit.hidden = false;
       setPhase(kind);
@@ -262,7 +275,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       hudNodes = {
         score: el("strong.dr-score", { text: "0" }), combo: el("span.dr-combo", { text: "" }),
         time: el("span.dr-time", { text: "0.0" }), kmh: el("strong.dr-kmh", { text: "0" }), gauge: el("i"), gaugeBox: null, progress: el("i"),
-        you: el("b.dr-mark.dr-mark-you", { title: "あなた" }), noor: el("b.dr-mark.dr-mark-noor", { title: "ヌール" }), race: el("span.dr-race", { dataset: { test: "desert-race-gap" } }),
+        you: el("b.dr-mark.dr-mark-you", { title: "あなた" }), noor: el(`b.dr-mark.dr-mark-${raceWith}`, { title: RIVAL_NAMES[raceWith] }), race: el("span.dr-race", { dataset: { test: "desert-race-gap" } }),
       };
       hudNodes.gaugeBox = el("div.dr-gauge", { dataset: { test: "desert-gauge" } }, [hudNodes.gauge, el("span", { text: "BOOST" })]);
       hud.replaceChildren(
@@ -297,7 +310,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         const noor = rivalAt(rival, game.t);
         hudNodes.noor.style.left = progress(noor.z);
         const gap = Math.round(game.z - Math.min(noor.z, game.course.length));
-        hudNodes.race.textContent = countdown > 0 ? "VS ヌール" : Math.abs(gap) < 3 ? "ヌールと並走" : gap > 0 ? `ヌールに ${gap}m 差` : `ヌールまで ${-gap}m`;
+        const name = RIVAL_NAMES[raceWith];
+        hudNodes.race.textContent = countdown > 0 ? `VS ${name}` : Math.abs(gap) < 3 ? `${name}と並走` : gap > 0 ? `${name}に ${gap}m 差` : `${name}まで ${-gap}m`;
         hudNodes.race.dataset.lead = countdown > 0 || Math.abs(gap) < 3 ? "" : gap > 0 ? "you" : "noor";
       }
     }
@@ -411,7 +425,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
           SE.whoosh(); SE.jingle(); showPop("BOOST!!", "boost"); burst(24, 1.6);
           if (!reducedMotion) { shakeT = 0.3; flashT = 0.1; view.kick = 1.4; }
         } else if (event.kind === "race") {
-          if (event.won) { floater(`ヌールに勝利 +${event.points}`, "race"); }
+          if (event.won) { floater(`${RIVAL_NAMES[event.who] || "ヌール"}に勝利 +${event.points}`, "race"); }
         } else if (event.kind === "finish") { SE.just(); if (game.race?.won) SE.fanfare(); }
       }
       // 回転中は半回転ごとに角度を見せる（180 → 360 → …）
@@ -431,7 +445,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
           el("h2.dr-title", { text: "練習おわり" }),
           el("p.dr-lead", { text: guide ? `${guide}「上手！ じゃあ本番、上から一本いこ！」` : "体が動きを覚えた。上から一本、滑る。" }),
           el("div.dr-actions", [
-            el("button.btn.primary.dr-button", { type: "button", text: "本番を滑る", dataset: { test: "desert-start" }, onclick: () => startRun("run") }),
+            el("button.btn.primary.dr-button", { type: "button", text: "本番を滑る", dataset: { test: "desert-start" }, onclick: () => startRun("run", "noor") }),
             el("button.btn.ghost.dr-button", { type: "button", text: "もう一度練習", dataset: { test: "desert-practice" }, onclick: () => startRun("practice") }),
             el("button.btn.ghost.dr-button", { type: "button", text: "砂丘を下りる", dataset: { test: "desert-leave" }, onclick: finish }),
           ]),
@@ -450,8 +464,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const race = result.race;
       panel.replaceChildren(el("div.dr-card.dr-result", { dataset: { test: "desert-result", rank: result.rank } }, [
         el("p.dr-kicker", { text: "RESULT" }),
-        race ? el("p.dr-race-result", { dataset: { test: "desert-race", won: String(race.won) } }, [
-          el("b", { text: race.won ? "ヌールに勝った！" : "ヌールの勝ち" }),
+        race ? el("p.dr-race-result", { dataset: { test: "desert-race", won: String(race.won), who: race.who } }, [
+          el("b", { text: race.won ? `${RIVAL_NAMES[race.who]}に勝った！` : `${RIVAL_NAMES[race.who]}の勝ち` }),
           el("span", { text: race.won ? `${race.gap.toFixed(1)}秒差` : race.gap > 0 ? `あと ${race.gap.toFixed(1)}秒` : "同時…わずかに届かず" }),
         ]) : null,
         el("div.dr-rank", { dataset: { test: "desert-rank" } }, [el("b", { text: result.rank }), el("span", { text: RANK_WORDS[result.rank] })]),
@@ -468,7 +482,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         ]),
         el("p.dr-best", { text: newBest ? "自己ベスト更新！" : `自己ベスト ${currentBest.score.toLocaleString("ja-JP")}点 ／ ${currentBest.rank}`, dataset: { test: "desert-best" } }),
         el("div.dr-actions", [
-          el("button.btn.primary.dr-button", { type: "button", text: "もう一度滑る", dataset: { test: "desert-retry" }, onclick: () => startRun("run") }),
+          el("button.btn.primary.dr-button", { type: "button", text: "もう一度滑る", dataset: { test: "desert-retry" }, onclick: () => startRun("run", raceWith) }),
+          rivals.includes("naru") ? el("button.btn.dr-button", { type: "button", text: raceWith === "naru" ? "ヌールと競走" : "なると勝負",
+            dataset: { test: raceWith === "naru" ? "desert-start-noor" : "desert-start-naru" }, onclick: () => startRun("run", raceWith === "naru" ? "noor" : "naru") }) : null,
           el("button.btn.ghost.dr-button", { type: "button", text: "砂丘を下りる", dataset: { test: "desert-leave" }, onclick: finish }),
         ]),
       ]));
@@ -761,7 +777,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         drawPlayerIfBehind(d.z);
         if (d.kind === "bump") drawBump(d.f, dusk);
         else if (d.kind === "rock") drawRock(d.f, dusk);
-        else if (d.kind === "noor") drawNoor(d.noor, dusk);
+        else if (d.kind === "noor") drawRival(d.noor, dusk);
         else drawGoal(dusk);
       }
       if (!playerDrawn) drawPlayer(dusk);
@@ -1081,7 +1097,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
      * ヌール（本番の競走相手）。滑る絵はまだ無いので、図形で描く: 青緑の板・オリーブのシャツ・ベージュのスカーフ・
      * 後ろで束ねた黒髪・頭のサングラス。近い時だけ名前の札を出す。
      */
-    function drawNoor(noor, dusk) {
+    function drawRival(noor, dusk) {
+      const look = RIVAL_LOOKS[raceWith] || RIVAL_LOOKS.noor, name = RIVAL_NAMES[raceWith];
       const p = placeAt(noor.z, noor.x);
       if (!p) return;
       const unit = p.scale * (H / 2);
@@ -1100,44 +1117,65 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       ctx.lineCap = "round"; ctx.lineJoin = "round";
       // 板（青緑）: 斜めに置き、上面に明るい筋
       ctx.save(); ctx.rotate(-0.42 + lean * 0.3);
-      ctx.fillStyle = mixColor([34, 168, 156], [44, 140, 132], dusk);
+      ctx.fillStyle = mixColor(...look.board, dusk);
       ctx.beginPath(); ctx.ellipse(0, -u * 0.04, u * 0.66, u * 0.12, 0, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "rgba(255,255,255,0.45)"; ctx.beginPath(); ctx.ellipse(-u * 0.05, -u * 0.07, u * 0.5, u * 0.035, 0, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
       // 脚（ベージュのパンツ）: 膝を外へ曲げて板に乗る
-      const pants = mixColor([168, 146, 108], [160, 124, 98], dusk), hipY = -0.9 * c;
+      const pants = mixColor(...look.pants, dusk), hipY = -0.9 * c;
       line(0.19, pants, [-0.3, -0.16, -0.42, -0.5 * c, -0.14, hipY]);
       line(0.19, pants, [0.26, 0.06, 0.4, -0.38 * c, 0.14, hipY]);
-      ctx.fillStyle = "#3a2c22"; // 靴
+      ctx.fillStyle = look.shoes; // 靴
       ctx.beginPath(); ctx.ellipse(-0.3 * u, -0.12 * u, 0.13 * u, 0.07 * u, -0.4, 0, Math.PI * 2); ctx.ellipse(0.26 * u, 0.08 * u, 0.13 * u, 0.07 * u, -0.4, 0, Math.PI * 2); ctx.fill();
       // 胴（オリーブのシャツ）: 腰から肩へ広がる。片側を少し暗く
-      const shoulderY = hipY - 0.82 * c, shirt = mixColor([110, 118, 62], [116, 100, 66], dusk);
+      const shoulderY = hipY - 0.82 * c, shirt = mixColor(...look.shirt, dusk), sleeve = look.sleeve ? mixColor(...look.sleeve, dusk) : shirt;
       ctx.fillStyle = shirt;
       ctx.beginPath(); ctx.moveTo(-0.26 * u, hipY * u); ctx.quadraticCurveTo(-0.4 * u, (hipY - 0.45) * u, -0.38 * u, shoulderY * u);
       ctx.quadraticCurveTo(0, (shoulderY - 0.1) * u, 0.38 * u, shoulderY * u); ctx.quadraticCurveTo(0.4 * u, (hipY - 0.45) * u, 0.26 * u, hipY * u); ctx.closePath(); ctx.fill();
       ctx.fillStyle = "rgba(40,40,10,0.22)"; ctx.fillRect(0.1 * u, shoulderY * u, 0.26 * u, (hipY - shoulderY) * u);
       ctx.fillStyle = "#2b2a20"; ctx.fillRect(-0.27 * u, (hipY - 0.06) * u, 0.54 * u, 0.08 * u); // ベルト
       // 腕: 肩から外へ、肘を曲げて釣り合いを取る（空中では高く）
-      const skin = mixColor([176, 122, 84], [176, 110, 80], dusk), up = noor.air > 0 ? -0.25 : 0.15, reach = 0.75 + Math.abs(lean) * 0.3;
-      line(0.12, shirt, [-0.34, shoulderY + 0.06, -0.62, shoulderY + 0.3 + up * 0.5]);
-      line(0.1, skin, [-0.62, shoulderY + 0.3 + up * 0.5, -0.34 - reach * 0.6, shoulderY + 0.12 + up]);
-      line(0.12, shirt, [0.34, shoulderY + 0.06, 0.62, shoulderY + 0.3 + up * 0.5]);
-      line(0.1, skin, [0.62, shoulderY + 0.3 + up * 0.5, 0.34 + reach * 0.6, shoulderY + 0.12 + up]);
+      const skin = mixColor(...look.skin, dusk), up = noor.air > 0 ? -0.25 : 0.15, reach = 0.75 + Math.abs(lean) * 0.3;
+      const fore = look.sleeve ? sleeve : skin; // なるは長袖（白い袖）
+      line(0.12, sleeve, [-0.34, shoulderY + 0.06, -0.62, shoulderY + 0.3 + up * 0.5]);
+      line(0.1, fore, [-0.62, shoulderY + 0.3 + up * 0.5, -0.34 - reach * 0.6, shoulderY + 0.12 + up]);
+      line(0.12, sleeve, [0.34, shoulderY + 0.06, 0.62, shoulderY + 0.3 + up * 0.5]);
+      line(0.1, fore, [0.62, shoulderY + 0.3 + up * 0.5, 0.34 + reach * 0.6, shoulderY + 0.12 + up]);
+      if (look.sleeve) { // 白い肩の切り替え
+        ctx.fillStyle = sleeve;
+        for (const s of [-1, 1]) { ctx.beginPath(); ctx.ellipse(s * 0.3 * u, (shoulderY + 0.05) * u, 0.11 * u, 0.07 * u, 0, 0, Math.PI * 2); ctx.fill(); }
+      }
       // 首とスカーフ（ベージュ）。スカーフの端が風でなびく
       ctx.fillStyle = skin; ctx.fillRect(-0.07 * u, (shoulderY - 0.16) * u, 0.14 * u, 0.18 * u);
-      const scarf = mixColor([234, 220, 184], [236, 200, 160], dusk), flutter = Math.sin(noor.t * 11) * 0.06;
-      ctx.fillStyle = scarf; ctx.beginPath(); ctx.ellipse(0, (shoulderY + 0.02) * u, 0.24 * u, 0.09 * u, 0, 0, Math.PI * 2); ctx.fill();
-      line(0.08, scarf, [0.14, shoulderY + 0.04, 0.32, shoulderY + 0.2 + flutter, 0.46, shoulderY + 0.16 - flutter]);
+      if (look.scarf) {
+        const scarf = mixColor([234, 220, 184], [236, 200, 160], dusk), flutter = Math.sin(noor.t * 11) * 0.06;
+        ctx.fillStyle = scarf; ctx.beginPath(); ctx.ellipse(0, (shoulderY + 0.02) * u, 0.24 * u, 0.09 * u, 0, 0, Math.PI * 2); ctx.fill();
+        line(0.08, scarf, [0.14, shoulderY + 0.04, 0.32, shoulderY + 0.2 + flutter, 0.46, shoulderY + 0.16 - flutter]);
+      }
       // 頭（後ろ姿の黒髪）と、後ろで束ねて揺れる髪
       const headY = shoulderY - 0.36;
-      ctx.fillStyle = "#1b161d"; ctx.beginPath(); ctx.ellipse(0, headY * u, 0.21 * u, 0.24 * u, 0, 0, Math.PI * 2); ctx.fill();
-      const sway = Math.sin(noor.t * 8.5) * 0.05;
-      ctx.beginPath(); ctx.moveTo(-0.07 * u, (headY + 0.08) * u); ctx.quadraticCurveTo((0.02 + sway) * u, (headY + 0.42) * u, (0.06 + sway * 1.6) * u, (headY + 0.5) * u);
-      ctx.quadraticCurveTo((0.1 + sway) * u, (headY + 0.3) * u, 0.07 * u, (headY + 0.08) * u); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = look.hair; ctx.beginPath(); ctx.ellipse(0, headY * u, 0.21 * u, 0.24 * u, 0, 0, Math.PI * 2); ctx.fill();
+      if (look.ponytail) {
+        const sway = Math.sin(noor.t * 8.5) * 0.05;
+        ctx.beginPath(); ctx.moveTo(-0.07 * u, (headY + 0.08) * u); ctx.quadraticCurveTo((0.02 + sway) * u, (headY + 0.42) * u, (0.06 + sway * 1.6) * u, (headY + 0.5) * u);
+        ctx.quadraticCurveTo((0.1 + sway) * u, (headY + 0.3) * u, 0.07 * u, (headY + 0.08) * u); ctx.closePath(); ctx.fill();
+      } else {
+        // 短く跳ねた髪: 頭の下半分の縁から、毛先が横と下へ少し跳ねる（風で揺れる）
+        const flick = Math.sin(noor.t * 10) * 0.08;
+        ctx.beginPath();
+        for (const ang of [0.15, 0.6, 1.1, 1.57, 2.05, 2.55, 3.0]) {
+          const bx = Math.cos(ang) * 0.2, by = headY + Math.sin(ang) * 0.22, tip = ang + 0.35 + flick;
+          ctx.moveTo((bx - Math.sin(ang) * 0.05) * u, (by + Math.cos(ang) * 0.05) * u);
+          ctx.lineTo((bx + Math.cos(tip) * 0.09) * u, (by + Math.sin(tip) * 0.09) * u);
+          ctx.lineTo((bx + Math.sin(ang) * 0.05) * u, (by - Math.cos(ang) * 0.05) * u);
+        }
+        ctx.fill();
+      }
       ctx.fillStyle = "rgba(255,255,255,0.12)"; ctx.beginPath(); ctx.ellipse(-0.07 * u, (headY - 0.08) * u, 0.07 * u, 0.12 * u, 0.4, 0, Math.PI * 2); ctx.fill();
-      // 頭に乗せたサングラス（黄色の縁）
-      ctx.fillStyle = "#2a2430"; ctx.strokeStyle = "#e3b23c"; ctx.lineWidth = Math.max(1, 0.03 * u);
-      for (const sx of [-0.09, 0.09]) { ctx.beginPath(); ctx.ellipse(sx * u, (headY - 0.17) * u, 0.075 * u, 0.045 * u, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+      if (look.glasses) { // 頭に乗せたサングラス（黄色の縁）
+        ctx.fillStyle = "#2a2430"; ctx.strokeStyle = "#e3b23c"; ctx.lineWidth = Math.max(1, 0.03 * u);
+        for (const sx of [-0.09, 0.09]) { ctx.beginPath(); ctx.ellipse(sx * u, (headY - 0.17) * u, 0.075 * u, 0.045 * u, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+      }
       ctx.restore();
       if (p.dz < 70) {
         const tagY = Math.max(150, p.y - height * unit * 0.9 - unit * 2.45);
@@ -1145,9 +1183,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         ctx.globalAlpha = Math.min(1, (70 - p.dz) / 25);
         ctx.font = `800 ${Math.round(Math.max(16, Math.min(24, unit * 0.32)))}px ${fontFamily()}`;
         ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        const w = ctx.measureText("ヌール").width + 20;
-        ctx.fillStyle = "rgba(60,70,30,0.82)"; ctx.beginPath(); ctx.roundRect?.(p.x - w / 2, tagY - 15, w, 30, 15); ctx.fill();
-        ctx.fillStyle = "#f6ecd2"; ctx.fillText("ヌール", p.x, tagY);
+        const w = ctx.measureText(name).width + 20;
+        ctx.fillStyle = look.tag; ctx.beginPath(); ctx.roundRect?.(p.x - w / 2, tagY - 15, w, 30, 15); ctx.fill();
+        ctx.fillStyle = "#f6ecd2"; ctx.fillText(name, p.x, tagY);
         ctx.restore();
       }
     }
@@ -1156,9 +1194,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     window.__desertRide = {
       get game() { return game; }, get mode() { return mode; }, get results() { return results; },
       press: act, setInput(left, right) { input.left = !!left; input.right = !!right; },
-      autoplay(skill = "expert") { bot = skill; }, boost: doBoost, get rival() { return rival; }, get countdown() { return countdown; },
+      autoplay(skill = "expert") { bot = skill; }, boost: doBoost, get rival() { return rival; }, get countdown() { return countdown; }, get raceWith() { return raceWith; },
       setSpeedUp(value) { speedUp = Math.max(1, Number(value) || 1); },
-      start(kind = "run") { if (!mode) startRun(kind); }, leave: finish,
+      start(kind = "run", who = "noor") { if (!mode) startRun(kind, who); }, leave: finish,
     };
     showMenu();
     if (tutorial) startRun("practice");

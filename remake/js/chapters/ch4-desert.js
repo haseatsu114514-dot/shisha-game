@@ -13,7 +13,7 @@ import { play } from "../vn/engine.js";
 import { awardActionExp } from "../core/growth.js";
 
 export * from "./ch4-desert-progress.js";
-import { DESERT_TALKS, DESERT_SCENES, DESERT_RACE_WIN_LINE, DESERT_DIALOGUE_IDS, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
+import { DESERT_TALKS, DESERT_SCENES, DESERT_RACE_WIN_LINE, DESERT_NARU_LINES, DESERT_DIALOGUE_IDS, desertRivals, markNaruMet, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
   desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertProgress } from "./ch4-desert-progress.js";
 
 let dialogueTask = null;
@@ -77,21 +77,30 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     save(); changed = true;
     showScreen("none", null);
     const before = desertRecords(owner);
-    const name = DB.characters[DESERT_GUIDE]?.display_name || "ヌール";
-    let firstWin = false;
+    const name = DB.characters[DESERT_GUIDE]?.display_name || "ヌール", naruName = DB.characters.naru?.display_name || "なる";
+    const rivals = desertRivals(owner);
+    // ヌールに勝った後の最初の外出: なるが砂丘に来て勝負を持ちかける（一度だけ）
+    if (rivals.includes("naru") && !before.naruMet) {
+      if (!await read(DESERT_SCENES.naruArrive, bgUrl(DESERT_BG))) return changed;
+      if (markNaruMet(owner)) save();
+      showScreen("none", null);
+    }
+    let firstWin = false, firstNaruWin = false;
     const { results } = await runDesertRide({
       host: host || document.getElementById("stage") || layers.screen, signal, tutorial: status.first,
       best: before.best ? { score: before.best.score, rank: before.best.rank } : null,
       reducedMotion: (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches) || !!config.reduceShake,
-      guide: name,
+      guide: name, rivals,
       onResult: result => {
         if (!current()) return;
         const saved = recordDesertResult(owner, result, { awardExp: awardActionExp });
         if (!saved) return;
         save();
         if (saved.firstWin) firstWin = true;
-        const line = firstLine(saved.won ? DESERT_RACE_WIN_LINE : `venue_noor_result_${result.rank}`);
-        toast(`${name}「${line}」${saved.newBest && !saved.firstClear ? " 自己ベスト更新" : ""}`, { kind: "good" });
+        if (saved.firstNaruWin) firstNaruWin = true;
+        const best = saved.newBest && !saved.firstClear ? " 自己ベスト更新" : "";
+        if (saved.who === "naru") toast(`${naruName}「${firstLine(saved.won ? DESERT_NARU_LINES.win : DESERT_NARU_LINES.lose)}」${best}`, { kind: "good" });
+        else toast(`${name}「${firstLine(saved.won ? DESERT_RACE_WIN_LINE : `venue_noor_result_${result.rank}`)}」${best}`, { kind: "good" });
         if (saved.firstClear) toast("初めての完走。砂丘の写真を、ヌールが撮ってくれた", { kind: "good" });
       },
     });
@@ -100,6 +109,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     void results;
     // 初めて競走でヌールに勝った日は、ゴールの旗の下で短く話してから夕日へ
     if (firstWin && !await read(DESERT_SCENES.raceFirstWin, bgUrl(DESERT_BG))) return changed;
+    // 初めてなるに勝った日も、夕日の前に一言
+    if (firstNaruWin && !await read(DESERT_SCENES.naruFirstWin, bgUrl(DESERT_BG))) return changed;
     await read(status.first ? DESERT_SCENES.sunsetFirst : DESERT_SCENES.sunsetAgain, bgUrl(DESERT_DUSK_BG));
     return changed;
   } finally { active = false; }

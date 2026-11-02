@@ -6,10 +6,13 @@ export const DESERT_FLAG = "_ch4_desert";
 export const DESERT_GUIDE = "noor";
 export const DESERT_TALKS = Object.freeze(["ch4_noor_meet", "ch4_noor_talk2", "ch4_noor_invite"]);
 export const DESERT_SCENES = Object.freeze({ arrive: "ch4_desert_arrive", again: "ch4_desert_again", sunsetFirst: "ch4_desert_sunset_first", sunsetAgain: "ch4_desert_sunset_again",
-  raceFirstWin: "ch4_desert_race_first_win" });
+  raceFirstWin: "ch4_desert_race_first_win", naruArrive: "ch4_desert_naru_arrive", naruFirstWin: "ch4_desert_naru_first_win" });
 /** 競走でヌールに勝った完走のひとこと（ランクのひとことの代わり）。 */
 export const DESERT_RACE_WIN_LINE = "venue_noor_race_win";
-export const DESERT_DIALOGUE_IDS = Object.freeze([...DESERT_TALKS, ...Object.values(DESERT_SCENES), ...RANK_ORDER.map(rank => `venue_noor_result_${rank}`), DESERT_RACE_WIN_LINE]);
+/** なる（裏の相手）との競走のひとこと。 */
+export const DESERT_NARU_LINES = Object.freeze({ win: "venue_naru_race_win", lose: "venue_naru_race_lose" });
+export const DESERT_DIALOGUE_IDS = Object.freeze([...DESERT_TALKS, ...Object.values(DESERT_SCENES), ...RANK_ORDER.map(rank => `venue_noor_result_${rank}`), DESERT_RACE_WIN_LINE,
+  ...Object.values(DESERT_NARU_LINES)]);
 export const DESERT_DIALOGUE_FILE = "ch4_desert";
 // 地図の位置（百分率）。ドバイの地図で HUD・案内の枠・ほかの行き先と重ならない所（デスクは宿・FESTA・店の間、砂丘は左下＝街の外）。
 export const DESERT_PLACES = Object.freeze({
@@ -80,13 +83,25 @@ export function desertRecords(value) {
   const raw = value?.desert && typeof value.desert === "object" && !Array.isArray(value.desert) ? value.desert : {};
   const best = readResult(raw.best);
   const firstClear = raw.firstClear && Number.isInteger(raw.firstClear.day) ? { chapter: raw.firstClear.chapter ?? null, day: raw.firstClear.day } : null;
-  return { runs: integer(raw.runs) ?? 0, best, bestRank: best?.rank ?? null, firstClear, rewarded: raw.rewarded === true, wins: integer(raw.wins) ?? 0 };
+  return { runs: integer(raw.runs) ?? 0, best, bestRank: best?.rank ?? null, firstClear, rewarded: raw.rewarded === true, wins: integer(raw.wins) ?? 0,
+    naruMet: raw.naruMet === true, naruWins: integer(raw.naruWins) ?? 0 };
+}
+
+/** 本番で競える相手。ヌールに一度勝つと、なる（裏の相手）が砂丘に来る。 */
+export const desertRivals = value => desertRecords(value).wins >= 1 ? ["noor", "naru"] : ["noor"];
+/** なるが初めて砂丘に来た場面を読んだ印。 */
+export function markNaruMet(value) {
+  if (!value || typeof value !== "object" || !value.desert || typeof value.desert !== "object") return false;
+  if (value.desert.naruMet === true) return false;
+  value.desert.naruMet = true;
+  return true;
 }
 
 /**
  * 完走を記録する。自己ベストは点数で比べる。初めての完走だけ awardExp（growth.js の awardActionExp）を呼ぶ。二度目以降は呼ばない。
  * 競走でヌールに勝った回数（wins）も数える。
- * 戻り値: { entry, newBest, firstClear, exp, won, firstWin } か、形の合わない結果なら null。
+ * なる（裏の相手）に勝った回数は naruWins。
+ * 戻り値: { entry, newBest, firstClear, exp, won, firstWin, who, firstNaruWin } か、形の合わない結果なら null。
  */
 export function recordDesertResult(value, data, { awardExp = null } = {}) {
   const result = readResult(data);
@@ -94,10 +109,11 @@ export function recordDesertResult(value, data, { awardExp = null } = {}) {
   const before = desertRecords(value);
   const newBest = !before.best || result.score > before.best.score;
   const firstClear = !before.firstClear;
-  const won = result.race?.won === true, firstWin = won && before.wins === 0;
+  const who = result.race?.who === "naru" ? "naru" : "noor", won = result.race?.won === true;
+  const firstWin = won && who === "noor" && before.wins === 0, firstNaruWin = won && who === "naru" && before.naruWins === 0;
   const desert = { runs: before.runs + 1, best: newBest ? result : before.best,
     firstClear: before.firstClear || { chapter: Number.isInteger(value.chapter) ? value.chapter : null, day: Number.isInteger(value.day) ? value.day : 0 },
-    rewarded: before.rewarded, wins: before.wins + (won ? 1 : 0) };
+    rewarded: before.rewarded, wins: before.wins + (won && who === "noor" ? 1 : 0), naruMet: before.naruMet, naruWins: before.naruWins + (won && who === "naru" ? 1 : 0) };
   let exp = 0;
   if (!before.rewarded) {
     desert.rewarded = true;
@@ -105,7 +121,7 @@ export function recordDesertResult(value, data, { awardExp = null } = {}) {
   }
   desert.bestRank = desert.best.rank;
   value.desert = desert;
-  return { entry: result, newBest, firstClear, exp, won, firstWin };
+  return { entry: result, newBest, firstClear, exp, won, firstWin, who, firstNaruWin };
 }
 
 /** 遊びのご褒美の判定（growth.js が読む）: 自己ベストが need 以上か。 */

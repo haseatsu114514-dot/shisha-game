@@ -35,6 +35,7 @@
 .dr-mark { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; border: 2px solid #fff; }
 .dr-mark-you { background: #e9532b; box-shadow: 0 0 8px rgba(233,83,43,.8); }
 .dr-mark-noor { background: #7c8a3a; width: 13px; height: 13px; margin: -6.5px 0 0 -6.5px; }
+.dr-mark-naru { background: #2a272c; border-color: #e8e4dc; width: 13px; height: 13px; margin: -6.5px 0 0 -6.5px; }
 .dr-race { padding: 4px 14px; border-radius: 999px; background: rgba(40,26,30,.72); color: #fff5e6; font-size: 16px; font-weight: 800; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
 .dr-race[data-lead="you"] { background: rgba(212,82,31,.88); }
 

@@ -73,6 +73,19 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-page-best")).waitFor();
     assert.equal(await page.locator(t("desert-ride")).count(), 0, "the game cleans itself up");
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_desert_ride_preview")).rank), "S");
+    // ヌールに勝ったので、単体ページでもなる（裏の相手）と勝負できる
+    assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_desert_ride_preview")).beatNoor), true);
+    await page.locator(t("desert-page-naru")).waitFor();
+    await page.locator(t("desert-page-start")).click();
+    await page.locator(t("desert-start-naru")).click();
+    await phase(page, "run");
+    assert.equal(await page.evaluate(() => window.__desertRide.raceWith), "naru");
+    assert.equal(await page.locator(t("desert-race-gap")).innerText(), "VS なる");
+    await autoplayToResult(page, "perfect");
+    assert.equal(await page.locator(t("desert-race")).getAttribute("data-who"), "naru");
+    assert.equal(await page.locator(t("desert-race")).getAttribute("data-won"), "false", "clean landings without spins lose to Naru");
+    await page.locator(t("desert-leave")).click();
+    await page.locator(t("desert-page-best")).waitFor();
     assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), null, "the page never touches the real save");
   });
 
@@ -241,6 +254,10 @@ await suite("desert-ride", async check => {
     assert.match(await page.locator(t("ch4-free")).innerText(), /自己ベスト/);
     await page.locator(t("ch4-go-dunes")).click();
     await phase(page, "menu");
+    // ヌールに勝った後の外出: なるが砂丘に来て、勝負の相手に加わる（来た場面は一度だけ）
+    assert.equal(await page.locator(t("desert-start-naru")).count(), 1, "after beating Noor, Naru waits at the dunes");
+    value = await get(page);
+    assert.equal(value.desert.naruMet, true);
     await page.locator(t("desert-start")).click();
     await phase(page, "run");
     await page.waitForFunction(() => window.__desertRide.game.z > 40);

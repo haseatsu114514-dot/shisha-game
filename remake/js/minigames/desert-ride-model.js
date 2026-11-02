@@ -12,7 +12,12 @@ export const JUMP = Object.freeze({ bigAir: 1.15, hopAir: 0.5, bounceAir: 0.26, 
 export const FALL = Object.freeze({ recover: 1.1, points: -150 });
 export const STEER = Object.freeze({ accel: 4.6, damping: 4.0, curveDrift: 0.28 });
 export const SCORE = Object.freeze({ finish: 1200, timePar: 72, timeBonusPerSec: 30, bigJump: 150, airPerSec: 120, perfect: 250, good: 120, hopPerfect: 40, nearMiss: 60, comboStep: 0.15, comboMax: 3,
-  smash: 100, raceWin: 600 });
+  smash: 100, raceWin: 600, raceWinNaru: 1500 });
+// 競走の相手。ヌールは着地が少し遅い滑り（ブーストは使う）。なる（裏の相手・ヌールに勝った後）は 360 を決めて着地も完璧、ブーストも使う。
+export const RIVALS = Object.freeze({
+  noor: Object.freeze({ skill: "rival", startX: -0.42, only360: false }),
+  naru: Object.freeze({ skill: "expert", startX: 0.42, only360: true }),
+});
 // 空中トリック: 大ジャンプ中に ← か → を押している間だけ回る（rate 回転/秒）。離すと次の半回転まで finishRate で回り切る。
 // 着地の瞬間に半回転の区切りから tolerance（回転）以上ずれていると転倒。points は半回転の数ごとの得点（180, 360, 540 …）。
 // 跳んだ瞬間から押していた向きは、一度離すまで回転に使わない（よけながら跳んだだけで回り出さないように）。
@@ -370,10 +375,11 @@ function finish(game) {
   const bonus = Math.max(0, Math.round((SCORE.timePar - game.t) * SCORE.timeBonusPerSec));
   game.score += bonus;
   if (game.rival) {
-    const won = game.t < game.rival.finishTime;
-    game.race = { won, gap: Math.round(Math.abs(game.rival.finishTime - game.t) * 10) / 10, rivalTime: Math.round(game.rival.finishTime * 10) / 10 };
-    if (won) game.score += SCORE.raceWin;
-    game.events.push({ kind: "race", t: game.t, ...game.race, points: won ? SCORE.raceWin : 0 });
+    const won = game.t < game.rival.finishTime, who = game.rival.who || "noor";
+    const bonus = won ? (who === "naru" ? SCORE.raceWinNaru : SCORE.raceWin) : 0;
+    game.race = { won, gap: Math.round(Math.abs(game.rival.finishTime - game.t) * 10) / 10, rivalTime: Math.round(game.rival.finishTime * 10) / 10, who };
+    game.score += bonus;
+    game.events.push({ kind: "race", t: game.t, ...game.race, points: bonus });
   }
   game.score = Math.max(0, Math.round(game.score));
   game.events.push({ kind: "finish", t: game.t, bonus });
@@ -402,7 +408,7 @@ export function readResult(value) {
   const score = n(value.score), time = n(value.time), maxCombo = n(value.maxCombo), falls = n(value.falls);
   if (score === null || time === null || maxCombo === null || falls === null || !RANK_ORDER.includes(value.rank)) return null;
   const race = value.race && typeof value.race === "object" && typeof value.race.won === "boolean" && n(value.race.gap) !== null
-    ? { won: value.race.won, gap: Math.round(value.race.gap * 10) / 10 } : null;
+    ? { won: value.race.won, gap: Math.round(value.race.gap * 10) / 10, who: value.race.who === "naru" ? "naru" : "noor" } : null;
   return { finished: true, score: Math.round(score), rank: value.rank, time: Math.round(time * 10) / 10, maxCombo: Math.round(maxCombo), falls: Math.round(falls),
     bigJumps: Math.round(n(value.bigJumps) ?? 0), perfect: Math.round(n(value.perfect) ?? 0), good: Math.round(n(value.good) ?? 0), nearMiss: Math.round(n(value.nearMiss) ?? 0),
     tricks: Math.round(n(value.tricks) ?? 0), bestTrick: Math.round(n(value.bestTrick) ?? 0), boosts: Math.round(n(value.boosts) ?? 0), race };
@@ -459,11 +465,12 @@ export function botStep(game, skill, memo, dt) {
 
 const RIVAL_SAMPLE = 1 / 30;
 /**
- * 本番のヌールの滑り。同じコースを自動操作（"rival"）で最後まで滑り、ゴールの時刻と、1/30 秒ごとの位置・姿勢を返す。
+ * 本番の競走相手（who: "noor"／"naru"、`RIVALS`）の滑り。同じコースを自動操作で最後まで滑り、ゴールの時刻と、1/30 秒ごとの位置・姿勢を返す。
  * 同じコースなら毎回同じ（決定的）。人物とは当たらない（並んで滑るだけ）。
  */
-export function rivalRun(course, { skill = "rival", startX = -0.42, maxTime = 200 } = {}) {
-  const game = createGame(course), memo = { lane: startX }, samples = [];
+export function rivalRun(course, { who = "noor", maxTime = 200 } = {}) {
+  const { skill, startX, only360 } = RIVALS[who] || RIVALS.noor;
+  const game = createGame(course), memo = { lane: startX, only360 }, samples = [];
   game.x = startX;
   const snap = () => samples.push({ t: game.t, z: game.z, x: game.x, vx: game.vx, air: game.air, airTotal: game.airTotal, airKind: game.airKind,
     landingPress: game.landingPress, fallT: game.fallT, landedAt: game.landedAt, rot: game.rot });
@@ -473,7 +480,7 @@ export function rivalRun(course, { skill = "rival", startX = -0.42, maxTime = 20
     botStep(game, skill, memo, 1 / 60);
     if (game.t >= next - 1e-9 || game.finished) { snap(); next += RIVAL_SAMPLE; }
   }
-  return Object.freeze({ finishTime: game.finishTime ?? game.t, samples, falls: game.falls });
+  return Object.freeze({ who: RIVALS[who] ? who : "noor", finishTime: game.finishTime ?? game.t, samples, falls: game.falls });
 }
 
 /** 時刻 t のヌール（rivalRun の結果）。ゴールの後は旗の先で止まる。 */
