@@ -501,7 +501,8 @@ async function takeAction() {
   const fortuneBusy = (state.slot >= 1 && fixedNight(state.day)) || restingToday()
     || !!invite && (invite.day ?? state.day) === state.day && invite.slot === state.slot;
   const fortuneWhere = state.flags._ch2_region === "tokyo" ? "tokyo" : state.flags._ch2_region === "widehanga" ? "widehanga" : "home";
-  if (syncFortune(state, { busy: fortuneBusy, where: fortuneWhere })) save();
+  // ここでは保存しない（記録は次の行動の精算で保存される。読み直しても同じ時間帯に同じく現れる）。
+  syncFortune(state, { busy: fortuneBusy, where: fortuneWhere });
   const visitBlock = spot => fixedNightVisitBlock(chapterDef.nightEvents, spot);
   const ev = nightPlan(chapterDef.nightEvents)[0];
   syncSamechanKnowledge();
