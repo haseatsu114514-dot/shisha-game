@@ -31,7 +31,7 @@ html .bench[data-mode].thermal-active { --accent: var(--lavender); }
 
 /* ---------------------------------------------------------------- 上の帯（モード・工程） */
 html .bench[data-mode] .bench-top, html .bench[data-mode][data-art-skin] .bench-top, html .bench[data-mode].thermal-active .bench-top {
-  background: linear-gradient(180deg, #513269f5, #352044f5); border-bottom: 1px solid #c4a164; box-shadow: 0 2px 10px #160b2440;
+  background: linear-gradient(180deg, #2e1d45f5, #221534f5); border-bottom: 1px solid #e3bd6e; box-shadow: 0 2px 10px #160b2440;
 }
 html .bench[data-mode] .bench-mode { color: var(--amber-ink); letter-spacing: .14em; }
 html .bench[data-mode] .bench-top .bench-mode small { color: var(--paper-muted); border-left-color: var(--paper-line); }
@@ -539,3 +539,19 @@ html .bench[data-mode] .bench-phase:not(.now) .bench-phase-copy b { display: non
 html .bench[data-mode] .bench-phase.now .bench-phase-copy small { display: none; }
 html .bench[data-mode] .bench-phase.seen .bench-phase-copy small { font-size: 0; }
 html .bench[data-mode] .bench-phase.seen .bench-phase-copy small::after { content: "✓"; font-size: 15px; color: #c9a7e6; }
+
+/* #2359: 白い選択面と金の透明角に、旧スキンの文字色・白地を残さない。 */
+html .bench[data-mode] .ht-option[aria-pressed="true"],
+html .bench[data-mode][data-art-skin] .ht-option[aria-pressed="true"],
+html .bench[data-mode] .ht-option[aria-pressed="true"] small { color: #2e1d45; }
+html .bench[data-mode] .btn.primary:is(.hr-punch, .pack-confirm),
+html .bench[data-mode] .btn.primary:is(.hr-punch, .pack-confirm):hover:not(:disabled),
+html .bench[data-mode][data-art-skin] .btn.primary:is(.hr-punch, .pack-confirm),
+html .bench[data-mode][data-art-skin] .btn.primary:is(.hr-punch, .pack-confirm):hover:not(:disabled),
+html .bench[data-mode] .pull-btns .btn.primary,
+html .bench[data-mode] .pull-btns .btn.primary:hover:not(:disabled) {
+  background: transparent; border: 14px solid transparent;
+  border-image: var(--cp-button-amber) 36 fill / 14px / 0 stretch; box-shadow: none;
+}
+/* 名前欄は元から絵に重なるabsolute層。空の帯を塗らず、見える台詞だけ窓に載せる。 */
+html .bench[data-mode] .bench-worker-name { background: none; }

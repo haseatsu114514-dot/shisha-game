@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
+import { assertCraftProgress } from "./craft_progress_assertions.mjs";
 import { prepareAppearanceCatalog } from "./appearance_setup.mjs";
 prepareAppearanceCatalog();
 const shots = process.env.SHOTS;
@@ -264,7 +265,7 @@ await suite("ch1-tournament", async check => {
     assert(lane.width > .95 && lane.count > 0 && lane.count <= 4);
     assert.equal(lane.pointer, "none");
     // 工程間の矢印はセル外へ描く。ラベル自体とヘッダー全体の収まりを確認する。
-    await assertFits(page, '.bench-progress, .bench-phase-copy b');
+    await assertCraftProgress(page);
     await page.evaluate(() => { T.broadcast.clearComments(); T.broadcast.burst(cs, "perfect", 4); T.broadcast.clearComments(); });
     await page.waitForTimeout(900);
     assert.equal(await page.locator('.nico').count(), 0, "Old comments leaked after fast transition");
