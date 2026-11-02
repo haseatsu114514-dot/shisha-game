@@ -1,0 +1,95 @@
+/* スタッフロール（#517）。1280×720 の固定ステージ上で、下から上へ文字だけを流す。
+   名前・役職は本文書体。拡縮後も読めるよう、役職は24px・名前は44px以上にする。 */
+.staff-roll {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 120%, #1b1430 0%, var(--ink) 62%);
+  color: var(--text);
+  font-family: var(--font);
+  transition: opacity 1.2s ease;
+}
+.staff-roll.ending { opacity: 0; }
+.staff-roll-view { position: absolute; inset: 0; overflow: hidden; }
+.staff-roll-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 92px;
+  padding: 0 64px;
+  text-align: center;
+  will-change: transform;
+  transform: translateY(720px);
+}
+.staff-roll section { margin: 0; max-width: 1040px; }
+.staff-roll p { margin: 0; }
+.staff-roll-title h1 {
+  margin: 0 0 40px;
+  font-size: 56px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  color: var(--gold-hi);
+}
+.staff-roll-role {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text-dim);
+}
+.staff-roll .staff-roll-name {
+  margin-top: 12px;
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.staff-roll-music { display: flex; flex-direction: column; align-items: center; gap: 28px; }
+.staff-roll-song-title { font-size: 32px; font-weight: 700; letter-spacing: 0.02em; }
+.staff-roll .staff-roll-song-credit { margin-top: 6px; font-size: 24px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-dim); }
+.staff-roll-closing p {
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--gold);
+}
+.staff-roll-skip {
+  position: absolute;
+  right: 28px;
+  bottom: 24px;
+  z-index: 2;
+  min-width: 112px;
+  min-height: 48px;
+  padding: 8px 20px;
+  border: 1px solid var(--panel-edge);
+  border-radius: 999px;
+  background: rgba(16, 12, 28, 0.72);
+  color: var(--text);
+  font: 700 20px/1 var(--font);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+.staff-roll-skip:hover, .staff-roll-skip:focus-visible { border-color: var(--gold); color: var(--gold-hi); }
+
+/* 動きを減らす設定: 流さずに1枚ずつ中央で入れ替える */
+.staff-roll[data-mode="pages"] .staff-roll-track {
+  inset: 0;
+  transform: none;
+  will-change: auto;
+}
+.staff-roll[data-mode="pages"] section {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(1040px, calc(100% - 128px));
+  translate: -50% -50%;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.staff-roll[data-mode="pages"] section.on { opacity: 1; }
+.staff-roll[data-mode="pages"] .staff-roll-title h1 { margin: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .staff-roll, .staff-roll[data-mode="pages"] section { transition: none; }
+}
