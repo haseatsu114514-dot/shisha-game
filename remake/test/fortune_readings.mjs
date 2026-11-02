@@ -62,7 +62,7 @@ for (const char of castIds) for (const entry of trivia.characters[char]) {
   for (const text of [entry.teller, entry.reaction]) {
     assert.equal(paginate(text).length, 1, `${entry.id} spills onto a second page: ${text}`);
     assert(!/。$/.test(text) && !/。）$/.test(text), `${entry.id} ends a spoken line with 。`);
-    assert(!/健太|シガーマン|若い衆|ファヴェーラ|レモンケーキ/.test(text), `${entry.id} reveals a secret: ${text}`);
+    assert(!/健太|田中|シガーマン|若い?衆|抗争|ファヴェーラ|スラム|軍で|15年前|レモンケーキ/.test(text), `${entry.id} reveals a secret: ${text}`);
   }
   assert(/^（.+）$/.test(entry.reaction), `${entry.id} reaction must be Hajime's inner voice`);
 }
