@@ -5,7 +5,7 @@ import { addStamina, addMoney, earnStat, gainAffinity, paidAction } from "../cor
 import { layers, showScreen, setBg, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
-import { OUTING_DIALOGUE_IDS, chapterThreeOutings, claimChapterThreeOuting, outingDialogueId } from "./ch3-outing-progress.js";
+import { OUTING_DIALOGUE_IDS, chapterThreeOutings, claimChapterThreeOuting, outingDialogueId, outingAffinity } from "./ch3-outing-progress.js";
 import { consultLessons } from "../core/growth.js";
 
 export { chapterThreeOutings } from "./ch3-outing-progress.js";
@@ -48,6 +48,7 @@ export async function visitChapterThreeOuting(windowId, id, { signal = null, isC
     showScreen("none", null);
     layers.hud.replaceChildren();
     layers.hud.classList.remove("show");
+    const gains = outingAffinity(state, outing); // 回数を数える前に（通いの1回目か2回目以降か）
     const result = await play(dialogues[outingDialogueId(state, outing, outing.window)], { signal: owner.controller.signal });
     if (!current() || !result || result.cancelled) return false;
     const settled = await paidAction(() => {
@@ -55,7 +56,7 @@ export async function visitChapterThreeOuting(windowId, id, { signal = null, isC
       addStamina(outing.stamina);
       if (outing.money) addMoney(outing.money);
       if (outing.stat) earnStat(outing.stat, 4);
-      for (const [who, pts] of Object.entries(outing.affinity || {})) gainAffinity(who, pts);
+      for (const [who, pts] of Object.entries(gains)) gainAffinity(who, pts);
       return true;
     }, { consumed: used => used && !!outing.stat });
     if (!settled.value || !current()) return false;
