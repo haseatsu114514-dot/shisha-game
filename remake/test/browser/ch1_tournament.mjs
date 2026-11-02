@@ -324,9 +324,12 @@ await suite("ch1-tournament", async check => {
       await capture(page, "result-count");
       await page.evaluate(async () => { await countdown; (await import("./js/core/ui.js")).retireScreen(); });
     }
-    await page.evaluate(() => { window.standings = T.result.showStandings(3, 88); });
+    await page.evaluate(() => {
+      window.standingsDone = false;
+      window.standings = T.result.showStandings(3, 88).then(() => { window.standingsDone = true; });
+    });
     await page.locator('[data-test="standings"].show').waitFor();
-    await assertFits(page, '.standings, .sd-row, .sd-status');
+    await assertFits(page, '.standings, .sd-row, .sd-status, [data-test="standings-next"]');
     const interim = await page.locator('[data-test="standings"]').evaluate(board => ({
       judges: Object.fromEntries([...board.querySelectorAll('.judge-chip')].map(chip =>
         [chip.dataset.judge, {spent:Number(chip.dataset.spent),left:chip.querySelector('.judge-left').textContent}])),
@@ -343,8 +346,17 @@ await suite("ch1-tournament", async check => {
     // Measure its settled layout, not its temporarily translated overflow.
     await page.waitForTimeout(1100);
     await assertFits(page,'.standings .judge-panel, .standings .judge-chip, .standings .judge-left, .standings .sd-feed-lines');
+    if (label !== "portrait") {
+      await page.waitForTimeout(3100); // Past the former 3.6s automatic dismissal.
+      assert.equal(await page.evaluate(() => window.standingsDone), false);
+      assert(await page.locator('[data-test="standings"].show:not(.out)').isVisible());
+      assert.equal(await page.locator('.sd-feed-lines > div').count(), 2);
+    }
     await capture(page, `standings-${label}`);
+    if (mobile) await page.locator('[data-test="standings-next"]').tap();
+    else await page.locator('[data-test="standings-next"]').click();
     await page.evaluate(() => window.standings);
+    assert.equal(await page.locator('[data-test="standings"], .fx-dim').count(), 0);
     await page.evaluate(() => { window.cut = T.result.nagumoCutin(1); });
     await page.locator('.nc-cut.show').waitFor();
     await page.waitForTimeout(550);
@@ -371,4 +383,46 @@ await suite("ch1-tournament", async check => {
     for(const [id,points] of Object.entries(interim.points))assert(finalVotes[id].points>=points,`${id}: displayed allocated points returned`);
     await assertFits(page,'.rt-name, .rt-votes, .rt-pt');
   }, { viewport, isMobile: mobile, hasTouch: mobile });
+
+  for (const [round, key] of [[1, "Enter"], [2, "Space"]]) await check(`standings-round${round}-${key}`, async page => {
+    await init(page);
+    await page.evaluate(async round => {
+      T.core.markMet("maezono");
+      // Build the real VN controls without starting a scene, then use their
+      // normal handlers to leave AUTO/SKIP enabled while reading the board.
+      await T.vn.play({ dialogue_id: "__standings_controls", lines: [] }, { signal: AbortSignal.abort() });
+      T.core.config.autoSpeed = 3;
+      T.standingsMode = round === 1 ? "vn-auto" : "vn-skip";
+      document.querySelector(`[data-test="${T.standingsMode}"]`).click();
+      T.beforeStandings = JSON.stringify(T.core.state);
+      T.standingsDone = false;
+      T.standings = T.result.showStandings(round, 60).then(() => { T.standingsDone = true; });
+    }, round);
+    const next = page.locator('[data-test="standings-next"]');
+    await next.waitFor({ state: "visible" });
+    await page.waitForTimeout(4200);
+    assert.equal(await page.evaluate(() => T.standingsDone), false, "VN AUTO/SKIP cannot dismiss standings");
+    assert.equal(await page.evaluate(() => document.querySelector(`[data-test="${T.standingsMode}"]`).getAttribute("aria-pressed")), "true");
+    assert.equal(await next.evaluate(button => document.activeElement === button), true);
+    assert.equal(await next.evaluate(button => getComputedStyle(button).pointerEvents), "auto");
+    await assertFits(page, '[data-test="standings"], .sd-feed-lines, [data-test="standings-next"]');
+    await page.keyboard.press(key);
+    await page.evaluate(() => T.standings);
+    assert.equal(await page.locator('[data-test="standings"], .fx-dim').count(), 0);
+    assert(await page.evaluate(() => JSON.stringify(T.core.state) === T.beforeStandings));
+    await page.evaluate(() => document.querySelector(`[data-test="${T.standingsMode}"]`).click());
+  });
+
+  await check("standings-load-cancels-old-tournament", async page => {
+    await init(page);
+    await page.evaluate(() => {
+      T.standingsContinued = false;
+      T.standings = T.result.showStandings(1, 60).then(() => { T.standingsContinued = true; return null; }, error => error.name);
+    });
+    await page.locator('[data-test="standings-next"]').waitFor({ state: "visible" });
+    await page.evaluate(() => T.core.setState(T.core.newState()));
+    assert.equal(await page.evaluate(() => T.standings), "AbortError");
+    assert.equal(await page.evaluate(() => T.standingsContinued), false);
+    assert.equal(await page.locator('[data-test="standings"], .fx-dim').count(), 0);
+  });
 });
