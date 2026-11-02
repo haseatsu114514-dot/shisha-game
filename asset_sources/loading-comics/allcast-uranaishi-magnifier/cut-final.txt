@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EEE2CD  枠の段 1: 2コマ@y=272
+  コマ1: 717x499 @(36,272) 比率 1.437 → ok
+  コマ2: 717x499 @(780,272) 比率 1.437 → ok
+コマ1: 717x499 (1.437) → 左右に各2.1%の紙帯 → 出力 748x499  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-magnifier/panels/uranaishi-magnifier-1.webp (69 KiB)
+コマ2: 717x499 (1.437) → 左右に各2.1%の紙帯 → 出力 748x499  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-magnifier/panels/uranaishi-magnifier-2.webp (76 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "uranaishi-magnifier",
+  "title": "むずかしい札",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "占い師も、細かい絵柄には少し苦労するらしい。",
+  "panels": [
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-magnifier/panels/uranaishi-magnifier-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-magnifier/panels/uranaishi-magnifier-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-magnifier/source-v1.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 717,
+        "height": 499,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-magnifier/source-v1.png",
+      "region": {
+        "x": 780,
+        "y": 272,
+        "width": 717,
+        "height": 499,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "uranaishi-magnifier-1.webp",
+      "width": 748,
+      "height": 499,
+      "sha256": "04ddf87ba996abee8e6b02c63497ecd9e13141851a890b8589625d4913f40f12"
+    },
+    {
+      "file": "uranaishi-magnifier-2.webp",
+      "width": 748,
+      "height": 499,
+      "sha256": "60318b9f7e4196880b6373f5be4b151a5d6e7f46e7463e4df3213025dd7b286b"
+    }
+  ]
+}

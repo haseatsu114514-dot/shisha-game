@@ -1,0 +1,3 @@
+samechan-wide-entrance-1.webp: 余白 左4% 右5% 上0% 下0% → 拡大 10%（切った所 top1%・bottom0%）
+samechan-wide-entrance-2.webp: 余白 左5% 右5% 上0% 下0% → 拡大 35%（切った所 top1%・bottom2%）
+拡大して埋めた: 2 / 2 枚

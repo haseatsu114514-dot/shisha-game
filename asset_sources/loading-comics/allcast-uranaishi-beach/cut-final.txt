@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #ECE1D1  枠の段 1: 2コマ@y=272
+  コマ1: 716x478 @(38,272) 比率 1.498 → ok
+  コマ2: 721x478 @(779,272) 比率 1.508 → ok
+コマ1: 716x478 (1.498) そのまま → 出力 716x478  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-beach/panels/uranaishi-beach-1.webp (74 KiB)
+コマ2: 721x478 (1.508) → 上下に各0.3%の紙帯 → 出力 721x481  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-beach/panels/uranaishi-beach-2.webp (75 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "uranaishi-beach",
+  "title": "海にも出店",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "路上の占い師は、なぜか思わぬ所にも現れる。",
+  "panels": [
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-beach/panels/uranaishi-beach-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-beach/panels/uranaishi-beach-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-beach/source-v2.png",
+      "region": {
+        "x": 38,
+        "y": 272,
+        "width": 716,
+        "height": 478,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-beach/source-v2.png",
+      "region": {
+        "x": 779,
+        "y": 272,
+        "width": 721,
+        "height": 478,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "uranaishi-beach-1.webp",
+      "width": 716,
+      "height": 478,
+      "sha256": "af0d0880b7224d749ed850d8ee289a20cceed6145572041ffb48e4c9dd02ad9b"
+    },
+    {
+      "file": "uranaishi-beach-2.webp",
+      "width": 721,
+      "height": 481,
+      "sha256": "a74cba4ee1aa8a59eba30750b0776bcb052912b74e71348575bdc117baed3257"
+    }
+  ]
+}

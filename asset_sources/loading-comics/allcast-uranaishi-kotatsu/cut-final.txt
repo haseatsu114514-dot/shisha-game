@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EDE2CF  枠の段 1: 2コマ@y=272
+  コマ1: 720x514 @(36,272) 比率 1.401 → ok
+  コマ2: 720x514 @(780,272) 比率 1.401 → ok
+コマ1: 720x514 (1.401) → 左右に各3.3%の紙帯 → 出力 771x514  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-kotatsu/panels/uranaishi-kotatsu-1.webp (69 KiB)
+コマ2: 720x514 (1.401) → 左右に各3.3%の紙帯 → 出力 771x514  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-kotatsu/panels/uranaishi-kotatsu-2.webp (77 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "uranaishi-kotatsu",
+  "title": "机の正体",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "路上の占い師は、冬でも同じ机で待っている。",
+  "panels": [
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-kotatsu/panels/uranaishi-kotatsu-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-kotatsu/panels/uranaishi-kotatsu-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-kotatsu/source-v1.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 720,
+        "height": 514,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-kotatsu/source-v1.png",
+      "region": {
+        "x": 780,
+        "y": 272,
+        "width": 720,
+        "height": 514,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "uranaishi-kotatsu-1.webp",
+      "width": 771,
+      "height": 514,
+      "sha256": "c70cac3607d8ffaa37d90ac162f363ce0588db85004716ef90371cba8e1ce534"
+    },
+    {
+      "file": "uranaishi-kotatsu-2.webp",
+      "width": 771,
+      "height": 514,
+      "sha256": "0b937db8a29bc80c5840a6979ad31897ec4217d7f683468efecb1053ba9708a8"
+    }
+  ]
+}

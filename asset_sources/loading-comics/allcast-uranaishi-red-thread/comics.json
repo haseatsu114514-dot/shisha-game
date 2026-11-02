@@ -1,0 +1,138 @@
+{
+  "id": "uranaishi-red-thread",
+  "title": "絡まる縁",
+  "cast": [
+    "uranaishi"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "俺の縁、見えます？",
+    "ヒヒ、見せようか。",
+    "縁が多すぎる。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "アーケードの外れ。左のはじめが自分の小指を見ながら「俺の縁、見えます？」。右の占い師がタロットを一枚かざし、フードの奥で笑って「ヒヒ、見せようか。」。",
+  "panel2": "はじめの全身に何十本もの赤い糸がぐるぐる巻きつき、糸はコマの外へあちこち伸びている。はじめは毛糸玉のようになって、目とキャップだけ出ている。占い師は満足げにうなずく。はじめ「縁が多すぎる。」。",
+  "caption": "占い師は、カードで人と人の縁を見てくれる。",
+  "type": "量の過剰",
+  "note": "占いの効果（指名した相手と次に会ったときの縁）は変えない。糸は番外編の誇張。",
+  "num": 111,
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "533bcb8cec9eb17a34daafc7cc8a6f3c20227494",
+  "generator": "built-in image_gen",
+  "source": "allcast-uranaishi-red-thread.png",
+  "source_sha256": "c89dfb32effadc330edb7439cbb696bd54a3164be7f51fca790c161f20fdee2d",
+  "references": [
+    {
+      "path": "hajime-sheet/normal.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "role": "hajime official normal"
+    },
+    {
+      "path": "portrait-standard-2369-ts11-ts12/uranaishi/refs/uranaishi-current-normal.png",
+      "sha256": "38ef4fa13f7e082db74108c52719ab8127071d98db391cea9895a6b4fdfc3f8d",
+      "role": "uranaishi current-main official normal; parent verified hash"
+    },
+    {
+      "path": "ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+      "role": "early adopted style only, not deliverable"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "role": "official template regenerated using unchanged repository tool"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked, 3 lines matching official script",
+    "reading_order": "left-to-right / first speaker upper-left when speaker is on right; tails checked",
+    "identity": "normal references; same positions both panels; eye hood per official script",
+    "style": "early adopted Menu Revision style: cute 2.5-head chibi, bold lines, warm cel palette",
+    "hardware": "none; no siryou hardware needed in these scripts",
+    "in_game_pc_phone": "NOT PERFORMED; not registered",
+    "selection": "awaiting owner; not adopted",
+    "template": "frame detection results retained; vertical drift recorded; no force",
+    "fill_inspection": "Changed derivatives visually inspected. Kotatsu right fill=0 preserves slippers; sleeve internal paper band remains under official fill limit.",
+    "gag_exaggeration": "Visual exaggeration follows script; not a new canon power or behavior."
+  },
+  "cut_source_regions": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-red-thread/source-v1.png",
+      "region": {
+        "x": 39,
+        "y": 272,
+        "width": 718,
+        "height": 492,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-red-thread/source-v1.png",
+      "region": {
+        "x": 779,
+        "y": 272,
+        "width": 720,
+        "height": 492,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/uranaishi-red-thread-1.webp",
+      "sha256": "f98cca0277f691f36ba02c8eeca789cf6f312165914ef7874e68b0ed60909ab8",
+      "width": 738,
+      "height": 492,
+      "bytes": 73744
+    },
+    {
+      "file": "panels/uranaishi-red-thread-2.webp",
+      "sha256": "b2811bb47acc1913f86074981918734357279d2c95eb30414dcee77126f1bf3b",
+      "width": 738,
+      "height": 492,
+      "bytes": 86616
+    }
+  ],
+  "originals": [
+    {
+      "file": "allcast-uranaishi-red-thread.png",
+      "sha256": "c89dfb32effadc330edb7439cbb696bd54a3164be7f51fca790c161f20fdee2d",
+      "bytes": 1841981
+    }
+  ],
+  "generation_calls": [
+    {
+      "output": "source-v1.png",
+      "prompt": "prompt-v1.txt",
+      "references": [
+        {
+          "path": "hajime-sheet/normal.png",
+          "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+          "role": "hajime official normal"
+        },
+        {
+          "path": "portrait-standard-2369-ts11-ts12/uranaishi/refs/uranaishi-current-normal.png",
+          "sha256": "38ef4fa13f7e082db74108c52719ab8127071d98db391cea9895a6b4fdfc3f8d",
+          "role": "uranaishi current-main official normal; parent verified hash"
+        },
+        {
+          "path": "ryuji-sheet/loading/pc.png",
+          "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+          "role": "early adopted style only, not deliverable"
+        },
+        {
+          "path": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+          "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+          "role": "official template regenerated using unchanged repository tool"
+        }
+      ],
+      "engine": "built-in image_gen",
+      "transparent_background": false
+    }
+  ],
+  "local_source_before_handoff": "source-v1.png"
+}

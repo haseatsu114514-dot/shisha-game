@@ -1,0 +1,2 @@
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-hidden-prize/panels/nagumo-hidden-prize-1.webp: 766x511 比率 1.499 57 KiB
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-hidden-prize/panels/nagumo-hidden-prize-2.webp: 770x513 比率 1.501 63 KiB
