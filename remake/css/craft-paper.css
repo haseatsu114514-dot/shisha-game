@@ -15,12 +15,12 @@ html .bench[data-mode] {
   --accent: var(--lavender); --accent-2: var(--amber);
   --text: var(--paper-ink); --text-dim: var(--paper-muted); --gold: var(--lavender); --gold-hi: var(--lavender);
   --good: var(--good-ink);
-  --cp-board: linear-gradient(135deg, #8c669e, #49305f 14%, #30203f 50%, #382348 84%, #a080b0);
-  --cp-backdrop: linear-gradient(135deg, #4c2865e6, #281733ed), url("../img/ui/craft-paper/backdrop.webp");
-  --cp-thermo: url("../img/ui/craft-paper/thermo-frame.webp");
-  --cp-button: url("../img/ui/craft-paper/button-paper.webp");
-  --cp-button-primary: url("../img/ui/craft-paper/button-lavender.webp");
-  --cp-button-amber: url("../img/ui/craft-paper/button-amber.webp");
+  --cp-board: url("../img/ui/craft-night/board.webp");
+  --cp-backdrop: url("../img/ui/craft-night/backdrop.webp");
+  --cp-thermo: url("../img/ui/craft-night/thermo-frame.webp");
+  --cp-button: url("../img/ui/craft-night/button-glass.webp");
+  --cp-button-primary: url("../img/ui/craft-night/button-white.webp");
+  --cp-button-amber: url("../img/ui/craft-night/button-gold.webp");
   --cp-shadow: 0 10px 24px #160b244d;
   --bench-bg: var(--cp-backdrop) center / cover no-repeat, #150d22;
   background: var(--bench-bg);
@@ -94,7 +94,7 @@ html .bench[data-mode] .bench-demo-sheet button { background: var(--paper-card);
 html .bench[data-mode] .bench-demo-caption { color: var(--paper-ink); }
 html .bench[data-mode] .bench-demo-link:focus-visible, html .bench[data-mode] .bench-demo-sheet button:focus-visible { outline-color: var(--amber); }
 html .bench[data-mode] .bench-appearance-dialog { background: var(--paper); border: 1px solid var(--lavender-line); color: var(--paper-ink); box-shadow: var(--cp-shadow); }
-html .bench[data-mode] .craft-loading { background: #30203fee; color: var(--paper-ink); }
+html .bench[data-mode] .craft-loading { background: #150d22ee; color: var(--paper-ink); }
 html .bench[data-mode] .craft-loading::before { border-color: var(--paper-line); border-top-color: var(--lavender); }
 
 /* ---------------------------------------------------------------- 左の作業風景・はじめの欄・観客 */
@@ -302,8 +302,8 @@ html .bench[data-mode] .thermo-housing .thermo-skin {
 }
 /* 枠の透明な窓（幅 33.4〜66.3%・高さ 5.1〜92.6%）に管を合わせる。矢印・目印・吹き出しは thermometer.js が
    --thermo-inset（上下同じ余白）で置くので、管も同じ変数で上下対称に置く（ずらすと矢印が判定とずれる）。 */
-html .bench[data-mode] .thermo:has(.thermo-housing) { --thermo-inset: 6.4% !important; }
-html .bench[data-mode] .thermo-housing .thermo-tube { left: 34%; right: 34%; top: var(--thermo-inset); bottom: var(--thermo-inset); border-radius: 6px; background: linear-gradient(90deg, #ddd3e2, #efe7f2, #d9cde0); }
+html .bench[data-mode] .thermo:has(.thermo-housing) { --thermo-inset: 8.2% !important; }
+html .bench[data-mode] .thermo-housing .thermo-tube { left: 35%; right: 36%; top: var(--thermo-inset); bottom: var(--thermo-inset); border-radius: 6px; background: linear-gradient(90deg, #ddd3e2, #efe7f2, #d9cde0); }
 html .bench[data-mode] .thermo-tube { border-color: var(--lavender-line); background: var(--lavender-soft); }
 html .bench[data-mode] .thermo-zone { background: #2f8a5a2e; border-color: var(--good-ink); }
 html .bench[data-mode] .thermo-projected { border-color: var(--lavender); background: #69497e22; }
@@ -422,8 +422,8 @@ html:has(.bench[data-mode]:not(.done)) .countdown.go { color: #f3ce89; }
    台所の石の天板＝炭焼き・調整、ラベンダーの縁のリネンマット＝穴あけ・蒸らし時間・配合と詰め方のボウル。
    文字は天板の上に直接置かず、紙のカードや札に載せる。DS（2画面）は今回の対象外なので通常表示だけ。 */
 html body:not(.game-ds) .bench[data-mode] {
-  --cp-stage-kitchen: linear-gradient(135deg, #553965cc, #30203fe0), url("../img/ui/craft-paper/stage-kitchen.webp");
-  --cp-stage-workbench: linear-gradient(135deg, #5a3971cc, #352044de), url("../img/ui/craft-paper/stage-workbench.webp");
+  --cp-stage-kitchen: url("../img/ui/craft-night/stage-kitchen.webp");
+  --cp-stage-workbench: url("../img/ui/craft-night/stage-workbench.webp");
   --cp-stage-edge: inset 0 0 0 1px var(--lavender-line), inset 0 0 0 4px #dbc5ed1f, inset 0 14px 28px #2a1a3a24;
 }
 html body:not(.game-ds) .bench[data-mode]:is([data-step="heat"], [data-step="care"], [data-step="holes"]) .bench-panel,
@@ -500,3 +500,42 @@ html body:not(.game-ds) .bench[data-mode] .bench-panel > * { animation: cp-panel
 @media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
   html body:not(.game-ds) .bench[data-mode] :is(.mix-vessel, .pack-vessel) { background: none; box-shadow: none; }
 }
+
+/* CUI07: 夜紫の生成部品。寸法と当たり判定は既存のまま。 */
+html .bench[data-mode] .btn:not(.primary),
+html .bench[data-mode][data-art-skin] .btn:not(.primary) { color: #f6f1fa; background-color: #2e1d45; }
+html .bench[data-mode] .btn.primary,
+html .bench[data-mode] .btn.primary:hover:not(:disabled),
+html .bench[data-mode][data-art-skin] .btn.primary,
+html .bench[data-mode][data-art-skin] .btn.primary:hover:not(:disabled) {
+  color: #221534; background-color: #f6f1fa; border: 12px solid transparent;
+  border-image: var(--cp-button-primary) 28 fill / 12px / 0 stretch;
+}
+html .bench[data-mode] .btn:hover:not(:disabled):not(.primary) {
+  color: #221534; background-color: #f6f1fa; border: 12px solid transparent;
+  border-image: var(--cp-button-primary) 28 fill / 12px / 0 stretch;
+}
+html .bench[data-mode] .btn.primary .btn-desc { color: #5a4475; }
+html .bench[data-mode] .btn.primary:is(.hr-punch, .pack-confirm),
+html .bench[data-mode] .pull-btns .btn.primary { color: #221534; border: 14px solid transparent; border-image: var(--cp-button-amber) 36 fill / 14px / 0 stretch; }
+html .bench[data-mode] :is(.bench-condition-tip, .bench-guide-tip) {
+  background: #2e1d45 url("../img/ui/craft-night/window.webp") center / 100% 100% no-repeat;
+}
+html .bench[data-mode] .bench-worker-caption {
+  background: #2e1d45 url("../img/ui/craft-night/window.webp") center / 100% 100% no-repeat;
+}
+html .bench[data-mode] .bench-progress-track > .bench-phase { background: #221534; border-color: #5a4475; }
+html .bench[data-mode] .bench-progress-track > .bench-phase .bench-phase-icon {
+  background: url("../img/ui/craft-night/step-next.webp") center / contain no-repeat;
+}
+html .bench[data-mode] .bench-progress-track > .bench-phase.seen .bench-phase-icon {
+  background-image: url("../img/ui/craft-night/step-done.webp");
+}
+html .bench[data-mode] .bench-progress-track > .bench-phase.now .bench-phase-icon {
+  background-image: url("../img/ui/craft-night/step-now.webp");
+}
+html .bench[data-mode] .bench-phase-icon svg { display: none; }
+html .bench[data-mode] .bench-phase:not(.now) .bench-phase-copy b { display: none; }
+html .bench[data-mode] .bench-phase.now .bench-phase-copy small { display: none; }
+html .bench[data-mode] .bench-phase.seen .bench-phase-copy small { font-size: 0; }
+html .bench[data-mode] .bench-phase.seen .bench-phase-copy small::after { content: "✓"; font-size: 15px; color: #c9a7e6; }
