@@ -196,12 +196,25 @@ await suite("ch4-full-flow", async check => {
     assert.deepEqual((await get(page)).stats, beforeRevisit.stats, "Revisit must not add stat growth");
     assert.equal((await get(page)).money, beforeRevisit.money);
 
-    // 5. DAY4 の宿で前夜へ。前夜祭（繋ぎ→本編）→ stranger_third を強制消化して大会日へ。
+    // 5. DAY4 の宿で前夜へ。別便で来たましろちゃん（友人版）の到着 → 前夜祭（繋ぎ→本編）→ stranger_third を強制消化して大会日へ。
     await page.locator(dt("ch4-go-inn")).click();
     await freeDay(page, 4);
     await page.locator(dt("ch4-go-inn")).click();
+    const arrival = `${dt("ch4-arrival")}[data-scene="ch4_mashiro_dubai_friend"]`;
+    await page.locator(arrival).waitFor();
+    assert.match(await page.locator(arrival).innerText(), /DAY 4・前夜祭の日/);
+    state = await get(page);
+    assert.equal(state.flags._ch4.part, "eve");
+    assert.equal(state.flags._ch4.read.ch4_mashiro_dubai_friend, undefined, "The arrival commits only after it is read");
+    await page.locator(dt("ch4-continue")).click();
     await page.locator(`${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`).waitFor();
     state = await get(page);
+    assert.equal(state.flags._ch4.read.ch4_mashiro_dubai_friend, true);
+    // 友人として来たましろは視察の別行動。前夜の「その場にいる」人にも、恋人の数にも入らない。
+    assert.deepEqual(await page.evaluate(async () => {
+      const routes = await (await import("./js/core/chapter-data.js")).loadStoryRoutes();
+      return (await import("./js/chapters/ch4-story-wiring.js")).chapterFourEveningContext(routes, window.__remake.state).present;
+    }), []);
     assert.equal(state.flags._ch4.part, "eve");
     assert.equal(state.flags._ch4.day, 4);
     assert.equal(state.flags._ch4.read.ch4_wang_reception, undefined, "The reception is forced, not yet read");
@@ -288,8 +301,9 @@ await suite("ch4-full-flow", async check => {
     assert(["sakura", "peach", "tea"].includes(state.flags._ch4_strategy));
     assert.equal(state.flags._ch4_sheikh_revealed, true);
     assert.equal(state.day, startDay + 4);
-    for (const id of ["ch4_stranger_first", "ch4_stranger_second", "ch4_wang_reception", "ch4_stranger_third",
-      ...prologue, ...resolution]) assert.equal(state.flags._ch4.read[id], true, `${id} must be read`);
+    for (const id of ["ch4_stranger_first", "ch4_stranger_second", "ch4_mashiro_dubai_friend", "ch4_wang_reception",
+      "ch4_stranger_third", ...prologue, ...resolution]) assert.equal(state.flags._ch4.read[id], true, `${id} must be read`);
+    assert.deepEqual(state.flags._ch4_evening, { kind: "rest", participants: [] }, "No lover is present on the eve");
     // 完了後に保存データを読み直しても、完了カードに戻り場面は再演されない。
     assert.equal(await page.evaluate(async () => {
       const core = await import("./js/core/state.js");

@@ -43,6 +43,7 @@ const mocks = {
     CHAR_STAT: { adam: "guts", minto: "charm" }, VISIT_BG: { adam: "bg_eden_shop", minto: "peppermint" },
     bgRef: name => `res://assets/backgrounds/${name}.png`, setChapterVisitDue: fn => { visitDue = fn; }, hasNewEvent: () => false },
   "remake/js/daily/hiyori.js": { setHiyoriExtraShops: () => {} },
+  "remake/js/daily/roamers.js": { addRoamerSpots: () => {} }, // よその店に居合わせる人（第2章は柚ヶ谷の店も登録する）
   "remake/js/daily/trpg.js": { trpgSpot: () => null, maybeRecruitTrpgMember: async () => false },
   "remake/js/daily/shop.js": { openShop: async () => null },
   "remake/js/chapters/ch2-purikura.js": { offerAgehaPurikura: async () => true },
