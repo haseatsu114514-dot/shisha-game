@@ -16,6 +16,7 @@ import { runDaily } from "../daily/calendar.js";
 import { showHud } from "../daily/hud.js";
 import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
 import { openShop } from "../daily/shop.js";
+import { fortuneSpot } from "../daily/spots.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
 import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
 import { chapterDay } from "../core/chapter-clock.js";
@@ -123,7 +124,7 @@ export function chapterThreeTokyoSpots() {
     if (entry.place === "shrine") return canReflect(state);
     if (entry.place === "club") return night;
     return true;
-  });
+  }).concat([fortuneSpot(TOKYO)].filter(Boolean)); // 路上占い師は東京にも現れる（章で1〜2回・理由は語らない。VOL15）
 }
 
 // ---- 読む -------------------------------------------------------------------------------
@@ -203,7 +204,7 @@ export async function runChapterThreeTokyo(io) {
 
 const OUTING_IDS = ["ch3_outing_mukai_help_lost", "ch3_outing_mukai_help", "ch3_outing_enmaku_notes", "ch3_outing_enmaku_answer",
   "ch3_outing_mukai_steve", "ch3_outing_steve_timer", "ch3_outing_park_walk_day", "ch3_outing_park_walk_night", "ch3_outing_tetsuko"];
-export const TOKYO_DAILY_IDS = Object.freeze(["ch3_tokyo_room_rest"]);
+export const TOKYO_DAILY_IDS = Object.freeze(["ch3_tokyo_room_rest", "ch3_tokyo_fortune"]);
 
 // ---- 昼の行動を使う場面・約束 ----------------------------------------------------------
 function tokyoSlotEvent(io) {
