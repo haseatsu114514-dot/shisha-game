@@ -130,10 +130,12 @@ await suite("ch1-eve", async check => {
         } else {
           assert.equal(s.rehearsal, null); assert.equal(s.flags._ev_rehearsal, undefined);
           assert.equal(s.flags._craft_practice_runs, undefined);
-          assert.deepEqual(result.bonus, { bonus: 0, notes: [] });
+          // #2091: 苦手工程の反復を★1つ以上で終えた夜だけ「前夜の反復」+1。話す・早寝は加点なし。
+          assert.deepEqual(result.bonus, branch === "drill" ? { bonus: 1, notes: ["前夜の反復"] } : { bonus: 0, notes: [] });
           if (branch === "drill") {
             assert.equal(result.benches, 1); assert.deepEqual(result.steps, ["drill:heat"]);
             assert.equal(s.best.heat, 2); assert(s.flags._ch1_eve.practiceDone);
+            assert.equal(s.flags._ch1_eve.drillTier, 2);
           } else assert.equal(result.benches, 0);
           assert.deepEqual(s.stats, { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 });
         }

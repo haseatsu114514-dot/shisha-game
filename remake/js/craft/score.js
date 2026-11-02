@@ -97,6 +97,8 @@ export function bonusOf(cs = null) {
     if (state?.rehearsal === "great") { b += 3; notes.push("前日リハーサルの手応え"); }
     else if (state?.rehearsal === "good") { b += 1.5; notes.push("前日リハーサルの手応え"); }
     if (state?.flags?._last_night === "practice") { b += 2; notes.push("前夜の最終調整"); }
+    // 前夜に苦手工程を反復し、★1つ以上で終えた（#2091）。記録の無い旧セーブは加点しない。
+    if (state?.flags?._last_night === "drill" && (state?.flags?._ch1_eve?.drillTier ?? 0) >= 1) { b += 1; notes.push("前夜の反復"); }
   }
   const gift = cs && giftBowlEffect(cs);
   if (gift?.bonus) { b += gift.bonus; notes.push(gift.note); }

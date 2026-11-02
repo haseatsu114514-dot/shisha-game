@@ -32,7 +32,7 @@ async function harness(initial = fresh(), { cancelEnding = false, holdDrill = fa
     DB: { dialogues: { ch1_day7_last_night: scene } }, hooks, DRILLS: drills, CRAFT_STEPS: [], TOURNAMENT_DAY: 14,
     SE: { select: () => select++, cancel: () => cancel++ }, config: {},
     save: () => saves.push(copy(game)), flag: key => !!game.flags[key], setFlag: key => { game.flags[key] = true; },
-    maxStamina: () => 100, addStamina: amount => { game.stamina += amount; }, recordRomanceChoice() {},
+    maxStamina: () => 100, addStamina: amount => { game.stamina += amount; }, recordRomanceChoice() {}, recommendedDrill: () => "heat",
     playTsumugiStory: async () => {},
     showScreen: (name, node) => { screen = name; menu = node; return node; }, retire: node => node.classList.add("done"),
     runDrill: id => { drillRuns.push(id); return holdDrill ? new Promise(resolve => { finishDrill = resolve; }) : Promise.resolve(2); },
