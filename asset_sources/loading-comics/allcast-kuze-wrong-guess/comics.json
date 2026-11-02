@@ -1,0 +1,92 @@
+{
+  "id": "kuze-wrong-guess",
+  "title": "外れて上機嫌",
+  "cast": [
+    "kuze"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "どっちの手に飴？",
+    "うーん、右！",
+    "外れたのに優勝？"
+  ],
+  "first_speaker": "kuze",
+  "panel1": "久世の店のカウンター。右の久世がにぎった両手を前に出し、いたずらっぽく笑う「どっちの手に飴？」（左上に高く）。左のはじめが片方の手を指して「うーん、右！」（右下）。",
+  "panel2": "同じ位置。久世が開いた手は空っぽ（飴はもう片方の手）。なのに久世は大喜びで、はじめに金色の大きなトロフィーを渡し、紙吹雪が舞う。左のはじめはトロフィーを抱えて困惑「外れたのに優勝？」。トロフィーはコマの中央に大きく。",
+  "caption": "久世は、予想が外れたときの答えが一番うれしい。",
+  "type": "反応が過剰（外れて大喜び）",
+  "note": "正本の台詞「外れたね。でも、こういう答えが一番うれしい」から。",
+  "num": 19,
+  "source": "allcast-kuze-wrong-guess.png",
+  "source_sha256": "21852bd10bc8d43bd7fcc1d1894f9042eb0374da8c086251880d559509f4480b",
+  "generator": "built-in image_gen",
+  "prompt": "prompt-v1.txt",
+  "exact_prompt": "exact-prompt.txt",
+  "references": {
+    "template": {
+      "path": "output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+      "size": 7055,
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    "hajime": {
+      "path": "hajime-sheet/normal.png",
+      "size": 402899,
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "dimensions": [
+        896,
+        1200
+      ]
+    },
+    "kuze": {
+      "path": "kuze-sheet/kuze-normal.png",
+      "size": 479307,
+      "sha256": "c39ee51522b8082b831f0814959cc071b5104c808dc7452d5ec9b5890dba68ee",
+      "dimensions": [
+        896,
+        1200
+      ]
+    },
+    "early_adopted_style": {
+      "path": "ryuji-sheet/loading/pc.png",
+      "size": 642944,
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+      "dimensions": [
+        1188,
+        668
+      ]
+    }
+  },
+  "qa": {
+    "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+    "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+    "identity": "official Hajime/Kuze normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+    "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+    "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+    "gag": "Trophy handoff and open palms visible; candy itself not prominent after reveal. Large cheerful victory gag.",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+    "in_game_qa": "not run",
+    "adoption": "not adopted/not registered"
+  },
+  "canonical_original": "asset_sources/loading-comics/allcast-kuze-wrong-guess/allcast-kuze-wrong-guess.png",
+  "status": "candidate-not-adopted-not-registered",
+  "registered": false,
+  "adopted": false,
+  "originals": [
+    {
+      "file": "allcast-kuze-wrong-guess.png",
+      "sha256": "21852bd10bc8d43bd7fcc1d1894f9042eb0374da8c086251880d559509f4480b",
+      "bytes": 1653094,
+      "original_version": "source-v1.png",
+      "review_candidate": true
+    }
+  ],
+  "handoff": "Original PNGs copied byte-for-byte; no resize/crop/re-encode. Reference metadata only, no reference image bytes."
+}
