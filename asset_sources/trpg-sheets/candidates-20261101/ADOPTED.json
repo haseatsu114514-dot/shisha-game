@@ -1,0 +1,25 @@
+{
+  "chosen": {
+    "look-ordinary-ink": "b",
+    "look-ordinary-ash": "b",
+    "look-ordinary-rust": "b",
+    "look-ordinary-moss": "b",
+    "look-shark-ink": "b",
+    "look-shark-salt": "b",
+    "look-shark-rust": "b",
+    "look-shark-deep": "b",
+    "pc-nico": "b",
+    "pc-pippin": "b",
+    "pc-luca": "b",
+    "pc-leaf": "c",
+    "pc-otto": "a",
+    "pc-midori": "c",
+    "pc-mackin": "a",
+    "pc-sera": "b",
+    "pc-noa": "c"
+  },
+  "source": "asset_sources/trpg-sheets/candidates-20261101/{look,pc}-<案>.png",
+  "tool": "tools/trpg_crop_portraits.py",
+  "date": "2026-11-02",
+  "reason": "見た目はB（小さい丸窓で輪郭と髪色が読みやすい）。仲間の役は1人ずつ特徴が出ている案: ニコB(スコップ)・ピピンB・ルカB・リーフC(葉の耳と煙の尾)・オットA(30代らしさ)・ミドリC(背中の斧)・マッキンA(肩のカメラ)・セラB(ヘッドライト)・ノアC(顎下の懐中電灯)"
+}

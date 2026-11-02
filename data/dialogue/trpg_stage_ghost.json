@@ -1,0 +1,2980 @@
+{
+  "id": "stage-ghost",
+  "version": 1,
+  "title": "幕の降りない劇場",
+  "subtitle": "閉館した劇場と、幕引きの幽霊",
+  "author": "楠木ひさめ",
+  "collection": "船灯文庫・小さな卓の冒険 10",
+  "duration": "約10分",
+  "premise": "閉館した劇場「月灯座」では、毎晩、誰もいない舞台に幕が上がる。待っているのは、幕引きのエル。小さな一座は、夜明けまでに幕をきちんと下ろせるだろうか。",
+  "fiction": {
+    "town": "港坂",
+    "shop": "劇場「月灯座」",
+    "traveler": "幕引きのエル"
+  },
+  "flow": {
+    "prepare": [
+      "staging",
+      "prop"
+    ],
+    "serve": [
+      "curtain"
+    ],
+    "twist": [
+      "tactic"
+    ]
+  },
+  "fitWeights": {
+    "staging": 1,
+    "prop": 1,
+    "curtain": 2,
+    "tactic": 0
+  },
+  "fallbackEnding": "matinee",
+  "rules": {
+    "exploreLimit": 4,
+    "pressureMax": 6,
+    "initialPressure": 0,
+    "inspectionPressure": 1,
+    "checkPressure": {
+      "success": 0,
+      "mixed": 1,
+      "trouble": 2
+    },
+    "detourThreshold": 5,
+    "hypothesisBonus": 1
+  },
+  "cast": [
+    {
+      "id": "adam",
+      "part": "GM",
+      "role": "語り手と、幕引きのエル",
+      "color": "#c9463a"
+    },
+    {
+      "id": "hajime",
+      "part": "PLAYER",
+      "role": "{pc}／見習い道具方",
+      "color": "#89bbc4",
+      "ability": "土壇場のひらめき",
+      "abilityType": "reroll",
+      "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
+      "sheet": {
+        "name": "トキ",
+        "title": "見習い道具方",
+        "stats": {
+          "eye": 2,
+          "hand": 4,
+          "talk": 2,
+          "nerve": 3
+        },
+        "trait": "綱も釘も任せてほしい。台詞は、まだ噛む"
+      }
+    },
+    {
+      "id": "hiyori",
+      "part": "PLAYER",
+      "role": "{pc:hiyori}／一座の衣装係",
+      "color": "#dab978",
+      "ability": "仕立ての段取り",
+      "abilityType": "prepare",
+      "abilityText": "舞台を整えるとき、判定に一度だけ＋7",
+      "sheet": {
+        "name": "ミレイ",
+        "title": "月影の衣装係",
+        "stats": {
+          "eye": 3,
+          "hand": 5,
+          "talk": 2,
+          "nerve": 1
+        },
+        "trait": "光に透けそうな衣装係。針と糸で、何でも直せる",
+        "likes": "ゆるいキャラの刺繍ワッペン"
+      }
+    },
+    {
+      "id": "samechan",
+      "part": "PLAYER",
+      "role": "{pc:samechan}／一座の芸人",
+      "color": "#73b8df",
+      "ability": "客席を沸かす声",
+      "abilityType": "serve",
+      "abilityText": "幕を下ろすとき、判定に一度だけ＋7",
+      "sheet": {
+        "name": "ミナモ",
+        "title": "腹話術の旅芸人",
+        "stats": {
+          "eye": 2,
+          "hand": 2,
+          "talk": 5,
+          "nerve": 2
+        },
+        "trait": "相棒の人形と二人で一座。幽霊は、ほんの少しだけ苦手",
+        "likes": "海の見える芝居小屋と、サメ映画"
+      }
+    }
+  ],
+  "spots": [
+    {
+      "id": "curtain",
+      "label": "舞台の幕",
+      "short": "幕",
+      "x": 50,
+      "y": 46
+    },
+    {
+      "id": "mirror",
+      "label": "楽屋の鏡",
+      "short": "鏡",
+      "x": 12,
+      "y": 30
+    },
+    {
+      "id": "lights",
+      "label": "照明室",
+      "short": "照明室",
+      "x": 88,
+      "y": 22
+    },
+    {
+      "id": "frontrow",
+      "label": "客席の最前列",
+      "short": "最前列",
+      "x": 50,
+      "y": 80
+    },
+    {
+      "id": "shelf",
+      "label": "台本の棚",
+      "short": "台本棚",
+      "x": 16,
+      "y": 66
+    },
+    {
+      "id": "board",
+      "label": "劇場の掲示",
+      "short": "掲示",
+      "x": 84,
+      "y": 62
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "finale",
+      "label": "最後の一場を、誰かと演じたい",
+      "description": "相手役のいない場面を一緒に演じれば、幕を下ろせそう。",
+      "discussion": "trpg_stage_ghost_discuss_finale"
+    },
+    {
+      "id": "page",
+      "label": "なくした最後のページを見つけたい",
+      "description": "欠けた最後の台詞が見つかれば、幕を下ろせるのかも。",
+      "discussion": "trpg_stage_ghost_discuss_page"
+    },
+    {
+      "id": "applause",
+      "label": "満員の拍手を、一度聞きたい",
+      "description": "客席が拍手で埋まれば、幕を下ろせそう。",
+      "discussion": "trpg_stage_ghost_discuss_applause"
+    }
+  ],
+  "options": {
+    "staging": [
+      {
+        "id": "spotlight",
+        "label": "スポットライト",
+        "description": "光の輪を二つ、舞台の真ん中へ向ける。",
+        "response": "trpg_stage_ghost_choice_staging_spotlight"
+      },
+      {
+        "id": "confetti",
+        "label": "紙吹雪",
+        "description": "終幕に、天井の籠から紙吹雪を降らせる。",
+        "response": "trpg_stage_ghost_choice_staging_confetti"
+      },
+      {
+        "id": "moon",
+        "label": "静かな月明かり",
+        "description": "灯りを落とし、天窓の月だけで照らす。",
+        "response": "trpg_stage_ghost_choice_staging_moon"
+      }
+    ],
+    "prop": [
+      {
+        "id": "script",
+        "label": "古い台本",
+        "description": "棚に残る、いちばん古い一冊。",
+        "response": "trpg_stage_ghost_choice_prop_script"
+      },
+      {
+        "id": "bouquet",
+        "label": "花束",
+        "description": "終幕に手渡す、一抱えの花束。",
+        "response": "trpg_stage_ghost_choice_prop_bouquet"
+      },
+      {
+        "id": "seatcards",
+        "label": "空の客席札",
+        "description": "三百枚の席札を、客席に一枚ずつ並べる。",
+        "response": "trpg_stage_ghost_choice_prop_seatcards"
+      }
+    ],
+    "curtain": [
+      {
+        "id": "together",
+        "label": "一緒に演じる",
+        "description": "最後の一場をエルと演じきって、幕を下ろす。",
+        "response": "trpg_stage_ghost_choice_curtain_together"
+      },
+      {
+        "id": "read",
+        "label": "ページを読み上げる",
+        "description": "見つけた台詞を声に出して、幕を下ろす。",
+        "response": "trpg_stage_ghost_choice_curtain_read"
+      },
+      {
+        "id": "clap",
+        "label": "みんなで拍手する",
+        "description": "客席から全員で拍手を送り、幕を下ろす。",
+        "response": "trpg_stage_ghost_choice_curtain_clap"
+      }
+    ],
+    "tactic": [
+      {
+        "id": "guide",
+        "label": "影の観客を席へ案内する",
+        "description": "通路を歩いて、一人ずつ席へ案内する。",
+        "response": "trpg_stage_ghost_choice_tactic_guide"
+      },
+      {
+        "id": "booth",
+        "label": "照明室へ走る",
+        "description": "勝手に回る照明を、操作盤で止める。",
+        "response": "trpg_stage_ghost_choice_tactic_booth"
+      },
+      {
+        "id": "improv",
+        "label": "即興で芝居を始める",
+        "description": "舞台に立って、影の観客に一幕を見せる。",
+        "response": "trpg_stage_ghost_choice_tactic_improv"
+      }
+    ]
+  },
+  "profiles": [
+    {
+      "id": "finale",
+      "arrival": "この幕はね、一人では下ろせない決まりなんだ",
+      "likes": {
+        "staging": [
+          "spotlight"
+        ],
+        "prop": [
+          "bouquet"
+        ],
+        "curtain": [
+          "together"
+        ]
+      },
+      "ending": "last-scene",
+      "evidence": {
+        "curtain": {
+          "title": "印の手前で止まる幕",
+          "text": "幕の綱に、最後の一場の印が結んである。毎晩、幕はその印の手前で止まる。",
+          "lines": "trpg_stage_ghost_clue_finale_curtain"
+        },
+        "mirror": {
+          "title": "空いたままの椅子",
+          "text": "楽屋の鏡の前に椅子が二つ。片方には、一度も座った跡がない。",
+          "lines": "trpg_stage_ghost_clue_finale_mirror"
+        },
+        "lights": {
+          "title": "スポット二つ",
+          "text": "操作盤の札に『最後の一場、スポット二つ』とある。光の輪は二人分だ。",
+          "lines": "trpg_stage_ghost_clue_finale_lights"
+        },
+        "frontrow": {
+          "title": "踏まれていない立ち位置",
+          "text": "最前列から見ると、舞台の床に立ち位置の印が二つ。片方はまだ新しい。",
+          "lines": "trpg_stage_ghost_clue_finale_frontrow"
+        },
+        "shelf": {
+          "title": "花束を渡す場面",
+          "text": "最後の一場の台本。二人の掛け合いの締めに、相手へ花束を渡すト書きがある。",
+          "lines": "trpg_stage_ghost_clue_finale_shelf"
+        },
+        "board": {
+          "title": "配役表の空欄",
+          "text": "色あせた配役表。最後の一場の、エルの相手役の欄だけが空いている。",
+          "lines": "trpg_stage_ghost_clue_finale_board"
+        }
+      },
+      "answers": {
+        "closing": {
+          "title": "最後の場面の直前",
+          "text": "閉館の夜、嵐で灯りが落ち、芝居は最後の一場の直前で止まった。",
+          "lines": "trpg_stage_ghost_ask_finale_closing"
+        },
+        "elle": {
+          "title": "袖で台詞を口ずさむ人",
+          "text": "エルはいつか誰かと舞台に立つのが夢で、袖で台詞を口ずさんでいた。",
+          "lines": "trpg_stage_ghost_ask_finale_elle"
+        },
+        "nightly": {
+          "title": "誰もいない隣",
+          "text": "毎晩エルは舞台の真ん中に立ち、誰もいない隣を向いて待っている。",
+          "lines": "trpg_stage_ghost_ask_finale_nightly"
+        },
+        "keepsake": {
+          "title": "届かなかった花束",
+          "text": "楽屋に、閉館の夜に相手役へ渡すはずだった花束の注文票が残っている。",
+          "lines": "trpg_stage_ghost_ask_finale_keepsake"
+        }
+      }
+    },
+    {
+      "id": "page",
+      "arrival": "最後に何を言うのだったか……そこだけ、霧の中なんだ",
+      "likes": {
+        "staging": [
+          "moon"
+        ],
+        "prop": [
+          "script"
+        ],
+        "curtain": [
+          "read"
+        ]
+      },
+      "ending": "last-page",
+      "evidence": {
+        "curtain": {
+          "title": "幕裏の紙片",
+          "text": "幕の裏地に、破れた紙の端が引っかかっている。台本と同じ紙だ。",
+          "lines": "trpg_stage_ghost_clue_page_curtain"
+        },
+        "mirror": {
+          "title": "鏡に浮かぶ書き出し",
+          "text": "曇った鏡に、指で書いた一行が浮かぶ。『この幕が』……そこで途切れている。",
+          "lines": "trpg_stage_ghost_clue_page_mirror"
+        },
+        "lights": {
+          "title": "月明かりのきっかけ",
+          "text": "照明の台本に『最後の一場は客席灯を消し、天窓の月明かりだけ』とある。",
+          "lines": "trpg_stage_ghost_clue_page_lights"
+        },
+        "frontrow": {
+          "title": "月の落ちる舞台",
+          "text": "最前列から見ると、天窓の月明かりが舞台の真ん中に落ちる。台詞を読む位置だ。",
+          "lines": "trpg_stage_ghost_clue_page_frontrow"
+        },
+        "shelf": {
+          "title": "厚い裏表紙",
+          "text": "棚の台本はどれも最後の一枚がない。いちばん古い台本だけ、裏表紙が妙に厚い。",
+          "lines": "trpg_stage_ghost_clue_page_shelf"
+        },
+        "board": {
+          "title": "脚本家の走り書き",
+          "text": "掲示の隅に脚本家の字。『最後の一枚は書き直す。幕引きに読んでもらう』",
+          "lines": "trpg_stage_ghost_clue_page_board"
+        }
+      },
+      "answers": {
+        "closing": {
+          "title": "最後の一枚がない",
+          "text": "閉館の夜、台本の最後のページが見つからず、最後の台詞なしで幕を閉じた。",
+          "lines": "trpg_stage_ghost_ask_page_closing"
+        },
+        "elle": {
+          "title": "台本の番人",
+          "text": "エルは幕引きと一緒に台本の番も任され、なくした一枚をずっと気にしていた。",
+          "lines": "trpg_stage_ghost_ask_page_elle"
+        },
+        "nightly": {
+          "title": "探し物をする幽霊",
+          "text": "毎晩、幕が上がると、エルは舞台の床や袖をのぞき込んで何かを探している。",
+          "lines": "trpg_stage_ghost_ask_page_nightly"
+        },
+        "keepsake": {
+          "title": "いちばん古い台本",
+          "text": "脚本家は書き直した最後の一枚を、劇場でいちばん古い台本に挟んだらしい。",
+          "lines": "trpg_stage_ghost_ask_page_keepsake"
+        }
+      }
+    },
+    {
+      "id": "applause",
+      "arrival": "客席が静かすぎてね。幕を下ろす合図が、聞こえないんだ",
+      "likes": {
+        "staging": [
+          "confetti"
+        ],
+        "prop": [
+          "seatcards"
+        ],
+        "curtain": [
+          "clap"
+        ]
+      },
+      "ending": "full-house",
+      "evidence": {
+        "curtain": {
+          "title": "幕の覗き穴",
+          "text": "幕の端に、小さな覗き穴。袖から客席を見るために、エルが開けたものらしい。",
+          "lines": "trpg_stage_ghost_clue_applause_curtain"
+        },
+        "mirror": {
+          "title": "すり減った床",
+          "text": "楽屋の鏡の前の床だけがすり減っている。何百回もお辞儀を練習した跡だ。",
+          "lines": "trpg_stage_ghost_clue_applause_mirror"
+        },
+        "lights": {
+          "title": "吊られたままの籠",
+          "text": "照明室の天井に紙吹雪の籠が吊られたまま。閉館の夜に降らせるはずだった。",
+          "lines": "trpg_stage_ghost_clue_applause_lights"
+        },
+        "frontrow": {
+          "title": "札のない三百の席",
+          "text": "三百の客席に席札が一枚もない。座った跡だけが、ぼんやり浮かんでは消える。",
+          "lines": "trpg_stage_ghost_clue_applause_frontrow"
+        },
+        "shelf": {
+          "title": "正面で受ける拍手",
+          "text": "台本の最後に手書きのト書き。『幕引きも、正面で拍手を受けること』",
+          "lines": "trpg_stage_ghost_clue_applause_shelf"
+        },
+        "board": {
+          "title": "客入りの記録",
+          "text": "掲示の客入り表。閉館の夜の数字だけが、ひと桁しかない。",
+          "lines": "trpg_stage_ghost_clue_applause_board"
+        }
+      },
+      "answers": {
+        "closing": {
+          "title": "ひと桁の客席",
+          "text": "閉館の夜は大雨で、三百の客席は数えるほどしか埋まらなかった。",
+          "lines": "trpg_stage_ghost_ask_applause_closing"
+        },
+        "elle": {
+          "title": "拍手を背中で聞く人",
+          "text": "エルはいつも幕の裏で、客席の拍手を背中越しに聞いていた。",
+          "lines": "trpg_stage_ghost_ask_applause_elle"
+        },
+        "nightly": {
+          "title": "空の客席を照らす",
+          "text": "毎晩エルは客席の灯りを点け、舞台の縁から空の客席を見渡している。",
+          "lines": "trpg_stage_ghost_ask_applause_nightly"
+        },
+        "keepsake": {
+          "title": "並ばなかった席札",
+          "text": "楽屋に、満員の夜のために用意した三百枚の客席札が、箱のまま残っている。",
+          "lines": "trpg_stage_ghost_ask_applause_keepsake"
+        }
+      }
+    }
+  ],
+  "endings": {
+    "last-scene": {
+      "title": "最後の一場",
+      "line": "エルは最後の場面を、一座と一緒に演じきった。幕は、印の先まで静かに下りた。",
+      "dialogue": "trpg_stage_ghost_ending_last-scene"
+    },
+    "last-page": {
+      "title": "最後のページ",
+      "line": "古い台本から見つかった一枚を、声に出して読み上げた。最後の台詞が、ようやく客席に届いた。",
+      "dialogue": "trpg_stage_ghost_ending_last-page"
+    },
+    "full-house": {
+      "title": "満場の拍手",
+      "line": "三百の席が影の観客で埋まり、拍手が鳴りやまなかった。エルは正面で、深く一礼した。",
+      "dialogue": "trpg_stage_ghost_ending_full-house"
+    },
+    "matinee": {
+      "title": "昼の公演の約束",
+      "line": "幕は途中で止まったまま、夜が明けた。消えていくエルと、次は昼の公演で会うと約束した。",
+      "dialogue": "trpg_stage_ghost_ending_matinee"
+    }
+  },
+  "dialogues": [
+    {
+      "dialogue_id": "trpg_stage_ghost_session_zero_open",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "さあ、幕を上げる前に配役だ。君たちの役を聞かせてくれ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_session_zero_close",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "俺は{pc}。{pcTitle}でいく"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "役者はそろった。さあ、幕を上げよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_make_hiyori_hiyori_mirei",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私はミレイ。月影の衣装係よ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "幽霊と並んだら、どちらが幽霊か分からないくらい儚いの"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "いい配役だ。衣装係は、舞台の魔法使いだからな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_make_hiyori_hiyori_serena",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "……私はセレナ。悲劇の舞台で、何度も儚く倒れた女優よ"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "ほう。ではその倒れ方、ひとつ見せてもらおうか"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "任せて！ 受け身なら百回は……あ、か弱く倒れるのよ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "今、受け身って言ったよね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_make_samechan_samechan_minamo",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "わしの役はミナモ。相棒の人形と旅をする、腹話術師じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余が相棒である。幽霊が出たら、余が追い払ってくれよう"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "頼もしい二人組だ。だが今夜の幽霊は、追い払わなくていい"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ほっ……い、いや。それは残念じゃのう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_make_samechan_samechan_hiremaru",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "わしの役はヒレマル！ どんな芝居にも、サメ役で出る怪優じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "台本にサメがおらぬゆえ、余が書き足しておいた"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "幽霊劇にサメか……いや、悪くない。舞台に不可能はない"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "アダムさん、許しちゃうんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_intro",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "今夜の演目は幽霊劇だ。怖い場面は一つもない、約束しよう"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "俺が語り手。君たちは、小さな旅の一座だ",
+          "castIntro": true,
+          "smallTableText": "俺が語り手。空いた役は、俺が兼ねて演じよう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "アダムさんがGMだと、舞台装置が本格的そうですね"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "当然だ。劇場は宇宙、そして宇宙の原点はダブルアップルだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "幽霊劇でも、そこには戻ってくるんですね"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ゆ、幽霊劇か。わしは平気じゃぞ。まったく平気じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余は幽霊を恐れぬ。むしろ握手を所望する"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……幽霊劇。消えていく人の気持ちなら、少し分かるわ"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "港坂の上、閉館した劇場『月灯座』"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "毎晩、誰もいない舞台に、ひとりでに幕が上がるという"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}は、舞台袖で古い幕の綱を確かめている"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:hiyori}は、客席の通路で衣装箱の埃を払っている"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:samechan}は、入口の扉に手をかけたまま、まだ入ってこない"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "依頼はひとつ。この劇場の幕を、きちんと下ろすこと"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "そのとき、空の舞台に、ふっと人影が立った"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_listen",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "幕引きのエル／物語",
+          "face": "smile",
+          "text": "やあ、一座の皆さん。待っていたよ。僕はエル、ここの幕引きだ"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "足元は月明かりに透けているのに、声は客席の奥までよく通る"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "（本当に透けてる……。でも、全然怖くないな）"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "幕を下ろしに来ました。……何か、困っていることがあるんですか？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_listen_success",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "エルは少し肩の力を抜いた。夜明けまでは、まだ時間がある"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "話してくれそうだな。まずは、事情を聞いていこう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_listen_mixed",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "客席の古い時計が、こつんと進む。夜明けが一つ近づいた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……時計の音って、どうしてこんなに急かすのかしら"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_listen_trouble",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "エルが驚いて、ふっと薄くなる。時計の針が二つ進んだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "わ、消えないで！ 驚かせるつもりじゃなかったんです"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "夜明けは二つ近づいた。だが、話はまだ聞けるぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_declare_listen_sit",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}は舞台の縁に座って、エルの話を聞きます"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定だ。急かさないのが、聞き上手のこつだ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_declare_listen_costume",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:hiyori}は、エルの衣装をそっと見るわ。仕立てで、役が分かるの"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定だ。衣装は、役の履歴書だ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_declare_listen_near",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:samechan}が隣へ行くぞ。……こ、怖くはないのじゃ"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "度胸で判定だ。震える膝も、芝居のうちだ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_declare_twist_rope",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}が綱元に飛びついて、照明の綱を押さえます！"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "手際で判定だ。道具方の腕の見せどころだ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_declare_twist_usher",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:hiyori}が客席に声をかけるわ。『どうぞ、お席へ』って"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定だ。影にも、礼儀は通じる。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_declare_twist_center",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:samechan}が舞台の真ん中に立つ。……ひ、膝は笑っておらぬ"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "度胸で判定だ。主役は、震えても立つものだ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_declare_prepare_rig",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}が綱と照明を仕込みます。結び目は二重で"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "手際で判定だ。いい道具方は、結び目で語る。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_declare_prepare_sew",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:hiyori}が仕立て直すわ。……針仕事の間は、消えずにいられるの"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定だ。見立てが合っていれば追い風だ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_declare_prepare_seat",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:samechan}は最前列から見ておくぞ。……隣の席、空いておるよな？"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "観察で判定だ。客の目で見る者が、舞台を救う。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_declare_serve_stand",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "{pc}が舞台の真ん中に立ちます。最後まで、逃げません"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "度胸で判定だ。幕が下りるまでが芝居だ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_declare_serve_voice",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "{pc:samechan}の声で、劇場じゅうを満たすのじゃ！"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定だ。三百の席の奥まで届かせろ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_declare_serve_cue",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:hiyori}が、エルの顔を見て合図を出すわ"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定だ。合図は一度きりだ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_consult_hiyori",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "全部は調べられないのね……。手がかりを比べてみましょう"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "楽屋の鏡と照明室。役者の気持ちと、舞台の段取りが分かりそう"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "相談とメモの読み返しは、何度でも無料だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_consult_samechan",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "夜明けまでに、要るところだけ調べるのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "台本の棚と劇場の掲示。紙に残ったものは、嘘をつかぬぞ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余は客席の最前列を推す。特等席である"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "いい相談だ。相談では、夜明けは近づかない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_twist_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "serious",
+          "text": "そのとき、照明がひとりでに回り始めた"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "光の輪が客席を横切るたび、ぼんやりした影の観客が座っていく"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "影！？ すごい、本物の満席みたい……あ、こ、怖いわ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "ひっ……わ、わしは平気じゃ。震えておるのはコロちゃんじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余は震えておらぬ。影の客人よ、ようこそである"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "驚かなくていい。幽霊劇の見せ場だ。さあ、どうする？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_twist_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "照明が静まり、影の観客はそれぞれの席で前を向いた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "みんな、ちゃんと見に来てくれたんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_twist_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "照明は止まったが、天窓が少し白んできた。夜明けが近づく"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……急ぎましょう。私も、朝日には弱いの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_twist_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "スポットライトが、ぐるりと回って{pc}を照らし出す"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "え、俺！？ 台本、持ってないんですけど！"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "夜明けは二つ近づいた。だが、影の観客は拍手をくれたぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_preparation",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "使えるのは、この劇場に残るものだけだ。古い仕掛けは宝の山だぞ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "見立ては決まった。演出と小道具を選ぼう"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……衣装の直しなら任せて。小道具も、きれいにしておくわ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "わしは客席から、見え方を確かめておくぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_prepare_success",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "舞台が整った。光も小道具も、あるべき場所に収まる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……うまくいったわ。あとは、幕を下ろすだけね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_prepare_mixed",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "仕込みに手間取るうち、天窓の色が少し薄くなる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "直せたから大丈夫。急ごう、夜明けが来る"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_prepare_trouble",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "吊り物が一つ、どさりと落ちた。誰も怪我はない"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "ひゃっ……い、今のは幽霊ではないな？ 道具じゃな？"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "ただの砂袋だ。仕掛けは、まだ使えるぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_serving",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "天窓の向こうが、うっすら明るい。最後の一場の時間だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "幕引きのエル／物語",
+          "face": "smile",
+          "text": "……準備をしてくれたんだね。ありがとう、一座の皆さん"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "いきます。幕を下ろす、最後の一場です"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_serve_success",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "一座の芝居が、劇場の隅々まで届いていく"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……決まったのう。今のは、いい間じゃった"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "幕の綱が、するすると下りはじめる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_serve_mixed",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "途中で綱が引っかかる。{pc}が、もう一度力いっぱい引いた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "よし、動いた！ 最後まで下ろそう"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "多少の引っかかりも、生の舞台の味だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_serve_trouble",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "天窓から朝日が差しこむ。エルの輪郭が、淡く揺れた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "待って、まだ消えないで！……えっと、消えないでほしいわ"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "大丈夫だ。エルは、最後まで舞台に残ってくれる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_ending_last-scene",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "舞台の真ん中で、最後の一場が始まる"
+        },
+        {
+          "speaker": "adam",
+          "role": "幕引きのエル／物語",
+          "face": "smile",
+          "text": "……ずっと、この台詞を誰かに返したかったんだ"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "最後の台詞が交わされ、幕は印の先まで、静かに下りた"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "幕の向こうで、エルは深く一礼し、朝の光にほどけていった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "相手役、俺たちで務まったかな"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "務まったさ。舞台は、相手がいて初めて完成する"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……わし、ちょっと泣きそうじゃ。泣いてはおらぬぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_ending_last-page",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "古い台本の裏表紙から、折りたたんだ一枚が出てきた"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "一座はその台詞を、客席へ向けて読み上げる"
+        },
+        {
+          "speaker": "adam",
+          "role": "幕引きのエル／物語",
+          "face": "smile",
+          "text": "『この幕が下りても、物語は客席に残る』……これが、続きか"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "幕は静かに下り、エルは台本を胸に、朝の光へ溶けていった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……いい台詞ね。ずっと、ここで待っていたのね"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "脚本家は知っていたのさ。幕を下ろす者こそ、最後を語るにふさわしいと"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "書き直したページ、ちゃんと届いたんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_ending_full-house",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "三百の席に、影の観客がそろって腰を下ろす"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "劇場いっぱいに、拍手が鳴りやまない"
+        },
+        {
+          "speaker": "adam",
+          "role": "幕引きのエル／物語",
+          "face": "smile",
+          "text": "これが、正面で聞く拍手か。……背中で聞くより、ずっと温かい"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "わしも叩くぞ！ コロちゃんも、ヒレで叩くのじゃ！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余の拍手は、満員の一人分である"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "エルは正面で深く一礼し、下りる幕の向こうで朝の光にほどけた"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "拍手は、客席から舞台への手紙だ。今夜、ちゃんと届いた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_ending_matinee",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "幕は半分まで下りて、そこで止まった"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "天窓が白んでいく。エルの姿が、朝の光に溶けていく"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "待って、まだ幕が……！"
+        },
+        {
+          "speaker": "adam",
+          "role": "幕引きのエル／物語",
+          "face": "smile",
+          "text": "いいんだ。今度は、昼の公演においで。袖で、待っているから"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……約束ね。昼の公演なら、日傘を持ってくるわ"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "幕は下りなかった。だが、次の開演が決まった。悪くない終わりだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_debrief_smooth",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "夜明けまで、まだ余裕があったな。見事な一座だった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "怖いどころか、あったかい話でしたね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_debrief_with_detour",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "朝日に追われながらの一夜か。それもまた、名舞台の条件だ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ぎりぎりじゃったのう。……間に合って、よかったのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_epilogue",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "これにて終演だ。幽霊劇、楽しんでもらえたか"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "はい。怖い場面、本当に一つもなかったですね"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "わ、わしは最初から平気じゃったぞ、……ほんとじゃぞ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余は見ていた。入口で三分、固まっておった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……劇場の夜って、少し寂しくて、いい夜ね"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "幕は終わりではない。次の幕を上げるための、始まりの合図だ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "アダムさんのGM、仕掛けも語りもすごかったです"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "拍手は受け取ろう。終演後の一台は、もちろんダブルアップルだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_ask_finale_closing",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "守衛ゴードン／物語",
+          "face": "serious",
+          "text": "最後の場面の直前だった。嵐で、灯りが全部落ちてな"
+        },
+        {
+          "speaker": "adam",
+          "role": "守衛ゴードン／物語",
+          "face": "normal",
+          "text": "その場面で、エルは初めて役をもらってたんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_ask_finale_elle",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "守衛ゴードン／物語",
+          "face": "smile",
+          "text": "あいつは袖で、役者の台詞をいつも一緒に口ずさんでた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "ずっと、舞台に立ちたかったんですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_ask_finale_nightly",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "守衛ゴードン／物語",
+          "face": "normal",
+          "text": "真ん中に立って、隣を向くんだ。誰もいない、隣をな"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……相手役を、待っておるのかのう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_ask_finale_keepsake",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "守衛ゴードン／物語",
+          "face": "normal",
+          "text": "楽屋に花束の注文票がある。相手役に渡すはずだったらしい"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "渡せなかった花束……。少し、胸が痛むわね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_ask_page_closing",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "守衛ゴードン／物語",
+          "face": "serious",
+          "text": "台本の最後の一枚が、どこを探してもなくてな"
+        },
+        {
+          "speaker": "adam",
+          "role": "守衛ゴードン／物語",
+          "face": "normal",
+          "text": "最後の台詞を言わないまま、幕を下ろすしかなかった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_ask_page_elle",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "守衛ゴードン／物語",
+          "face": "normal",
+          "text": "台本の番もあいつの仕事でな。一枚足りないと、ずっと気にしてた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "責任感の強い人だったんですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_ask_page_nightly",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "守衛ゴードン／物語",
+          "face": "normal",
+          "text": "幕が上がると、床をのぞき込んで、何か探してるんだ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……探し物。何をなくしたのかしら"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_ask_page_keepsake",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "守衛ゴードン／物語",
+          "face": "normal",
+          "text": "脚本家が言ってたよ。書き直した一枚は、一番古い台本に挟んだと"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "挟んだ場所を、皆が忘れてしもうたのか……わしもよくやるのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_ask_applause_closing",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "守衛ゴードン／物語",
+          "face": "serious",
+          "text": "最後の夜は大雨でな。客は、片手で数えるほどだった"
+        },
+        {
+          "speaker": "adam",
+          "role": "守衛ゴードン／物語",
+          "face": "normal",
+          "text": "拍手も、ぱらぱらとな。それでも、あいつは幕を下ろした"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_ask_applause_elle",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "守衛ゴードン／物語",
+          "face": "smile",
+          "text": "幕引きは拍手を背中で聞く仕事だ、ってのが口癖でな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "正面から聞いたことは、なかったんですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_ask_applause_nightly",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "守衛ゴードン／物語",
+          "face": "normal",
+          "text": "客席の灯りを点けて、空っぽの席をずっと眺めてるよ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "誰か来るのを、待っておるのじゃな……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_ask_applause_keepsake",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "守衛ゴードン／物語",
+          "face": "normal",
+          "text": "楽屋に、三百枚の客席札が箱ごと残ってる。満員の夜の用意さ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "一度も並ばなかった札……。少し切ないわね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_finale_curtain",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "幕の綱は、最後の一場の印のすぐ手前で止まったままだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "最後の場面の直前で、毎晩止まってるのか"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "綱の印は、劇場の日記のようなものだ。よく読んでおけ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_finale_mirror",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "鏡に、二つの椅子が映る。片方は、埃をかぶったままだ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "誰かの席を、ずっと空けて待っているのね……"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "わしらは鏡に映っておるな。……よし、ちゃんと映っておる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_finale_lights",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "操作盤に古い札。『最後の一場、スポット二つ』"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "光の輪が二つ……。二人で立つ場面なのじゃな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "停電さえなければ、ここが点くはずだったんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_finale_frontrow",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "最前列から見上げると、舞台の床に、印が二つ並んでいる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "片方の印だけ、まだ一度も踏まれてないみたいだ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……相手役の場所、なのかしら"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_finale_shelf",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "台本の最後は、二人の掛け合い。締めに『花束を渡す』とある"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "相手役の欄は空白じゃ。誰が演じてもよい、ということかの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_finale_board",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "色あせた配役表。最後の一場、エルの相手役だけが空欄だ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "相手役が決まらないまま、閉館したのね……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_page_curtain",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "幕の裏地に、小さな紙の切れ端が引っかかっていた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "台本の紙だ。最後のページの、かけらかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_page_mirror",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "曇った鏡に、指で書いた一行。『この幕が』で、途切れている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……最後の台詞の、書き出しかしら。続きが気になるわね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_page_lights",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "照明の台本に、走り書き。『最後の一場は、月明かりだけ』"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "灯りを全部消すのか。……つ、月があるなら、平気じゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_page_frontrow",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "天窓から落ちた月明かりが、舞台の真ん中を丸く照らす"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "あそこに立って読めば、客席まで声が届きそうだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_page_shelf",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "どの台本も、最後の一枚がない。一番古い一冊だけ、裏表紙が厚い"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "怪しいのう！ 何か挟まっておるぞ、きっと"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_page_board",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "掲示の隅に走り書き。『最後の一枚は、幕引きに読ませたい』"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "最後の台詞は、エルのためのもの……。素敵な脚本家さんね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_applause_curtain",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "幕の端に、小さな覗き穴。袖から客席が見える高さだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ここから、ずっと客席を見てたのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_applause_mirror",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "鏡の前の床が、一か所だけすり減っている。お辞儀の跡だ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……何百回も。客席に向けて、お辞儀をしたかったんだわ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_applause_lights",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "照明室の天井に、紙吹雪の籠が吊られたままだ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "閉館の夜に、降らせそびれたのじゃな。もったいないのう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_applause_frontrow",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "どの席にも、席札が一枚もない"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "三百の空席に、座った跡がぼんやり浮かんでは消える"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "だ、誰か座っておる……わけでは、ないのじゃな？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_applause_shelf",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "台本の最後に、手書きのト書き。『幕引きも、正面で拍手を受けること』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "最後に、エルも舞台に出る予定だったんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_clue_applause_board",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "客入りの表。閉館の夜の数字だけ、ひと桁だ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "最後の夜が、いちばん寂しかったのね……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_discuss_finale",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "相手役がいないから、最後まで行けないのね……"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ならば、わしらが相手役じゃ。台詞なら、コロちゃんが覚えるぞ"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "二人で立つ場面か。いい読みだ、その線でいこう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_discuss_page",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "最後の台詞が欠けたままじゃ、幕は下りないのね……"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "探し物なら任せよ。わしの店でも、毎日何か探しておる"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "物語は、最後の一行で完成する。その読みでいこう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_discuss_applause",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "拍手を背中で聞くだけじゃ、寂しかったのかしら……"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "拍手なら得意じゃ！ わしとコロちゃんで、二人分は叩けるぞ"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "三百の拍手か。劇場が一番輝く音だ。その読みでいこう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_choice_staging_spotlight",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "光の輪が二つ……。並んで立つと、きっときれいね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_choice_staging_confetti",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "紙吹雪ね。片付けは大変だけど、最後は華やかにいきましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_choice_staging_moon",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "月明かりだけ……。私にいちばん似合う灯りね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_choice_prop_script",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "古い台本か。ページをめくる音まで、芝居じみておるのう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_choice_prop_bouquet",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "花束じゃな。渡す役は、わしがやってもよいぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_choice_prop_seatcards",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "三百枚並べるのか。コロちゃん、お主も手伝うのじゃぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_choice_curtain_together",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "最後の場面、俺たちが相手役になろう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_choice_curtain_read",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "最後の台詞、ちゃんと声に出して届けよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_choice_curtain_clap",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "客席から、思いきり拍手を送ろう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_choice_tactic_guide",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "通路を歩き、影の観客を一人ずつ席へ案内していく"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "足元にお気をつけて……。あら、会釈してくれたわ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_choice_tactic_booth",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "照明室へ駆け上がる。操作盤のつまみが、ひとりでに回っている"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "つまみ、押さえた！ 誰か、主電源を見て！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_choice_tactic_improv",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "舞台に立ち、即興の一幕を始める。影の観客が、静かに前を向いた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "わしの見せ場じゃ！ コロちゃん、台詞は任せたぞ"
+        }
+      ]
+    }
+  ],
+  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。variantsは代役本人のために書いた台詞。",
+  "presentation": {
+    "theme": "stage",
+    "number": "10",
+    "genre": "やさしい幽霊劇",
+    "tagline": "夜明けまでに、幕をきちんと下ろす。",
+    "backdrop": "radial-gradient(ellipse at 50% 0%, #e2b85a55 0%, transparent 45%), linear-gradient(160deg, #6a1826, #2a0a12 72%)",
+    "sceneAlt": "閉館した劇場。舞台の幕、楽屋の鏡、照明室、客席の最前列、台本の棚、劇場の掲示。空の舞台に淡い人影。",
+    "location": "港坂 / 閉館した劇場「月灯座」",
+    "atmosphere": "赤い幕。三百の空席。夜明けまで、あと少し。",
+    "coverHeading": "誰もいない舞台に、今夜も幕が上がる。",
+    "coverRule": "四箇所を調べ、幽霊の望みを見立て、夜明け前に幕を下ろす。",
+    "titleLines": [
+      "幕の降りない",
+      "劇場"
+    ],
+    "fields": {
+      "staging": "演出",
+      "prop": "小道具",
+      "curtain": "幕の下ろし方",
+      "tactic": "影の観客への手"
+    },
+    "prepareTitle": "どんな舞台で、幕を下ろす？",
+    "prepareDescription": "演出を一つ、小道具を一つ。見つけた望みを舞台にしよう。",
+    "serveTitle": "いよいよ、最後の一場。",
+    "serveDescription": "どうやって、エルの幕を下ろす？",
+    "hypothesisTitle": "幕引きのエルは、何を待っている？",
+    "arrivalRole": "幕引きのエル／物語",
+    "riskLabel": "夜明け",
+    "exploreIdle": "調べられるのは四箇所までだ。メモの読み返しと相談は、何度でもいいぞ",
+    "listenIdle": "まずは、幕引きの話を聞こう。サイコロは二つだ",
+    "interviewIdle": "ゴードンに聞けるのは二つまでだ。何を聞く？",
+    "twistIdle": "照明が暴れている。手を選んで、誰が動くか決めてくれ",
+    "prepareIdle": "準備を選ぼう。仲間がいれば、切り札も頼める",
+    "serveIdle": "ここが見せ場だ。夜明け前に、幕を下ろそう",
+    "endingIdle": "この晩の話は、ここまで。次は、また別の本で会おう",
+    "phases": {
+      "listen": {
+        "kicker": "01 / 話を聞く",
+        "title": "空の舞台に、人影",
+        "description": "幕の上がった舞台に、透けた役者が立っている。まずは話を聞こう。",
+        "button": "話を聞く"
+      },
+      "interview": {
+        "kicker": "02 / 守衛に聞く",
+        "title": "守衛ゴードンに、何を聞く？",
+        "description": "見回りの合間に聞けるのは二つ。答えは、エルの望みしだいで変わる。",
+        "button": "話を聞き終えて、劇場を調べる"
+      },
+      "explore": {
+        "kicker": "03 / 劇場を調べる",
+        "title": "幕引きの望みを探す",
+        "description": "調べられるのは四箇所まで。三つ以上の手がかりから、幕の下ろし方を考えよう。",
+        "button": "見立てを話す"
+      },
+      "twist": {
+        "kicker": "04 / 動き出す照明",
+        "title": "影の観客",
+        "description": "照明がひとりでに回り、客席に影が座り始めた。",
+        "button": "この手で切り抜ける"
+      },
+      "prepare": {
+        "kicker": "05 / 舞台を整える",
+        "title": "演出と、小道具",
+        "description": "使えるのは、この劇場に残るものだけ。",
+        "button": "舞台を整える"
+      },
+      "serve": {
+        "kicker": "06 / 幕を下ろす",
+        "title": "最後の一場",
+        "description": "エルの望みに合わせて、幕を下ろそう。夜明けは、もうすぐ。",
+        "button": "幕を下ろす"
+      },
+      "ending": {
+        "kicker": "カーテンコールのあと",
+        "title": "幕が下りた",
+        "description": "夜明けの劇場に、静けさが戻った。さて、今夜の舞台の感想は？"
+      }
+    },
+    "help": "守衛に二つ質問し、劇場を最大四箇所調べます。新しい場所を調べるたび夜明けが一つ近づきます。三つ以上の手がかりでエルの望みを見立てたあと、影の観客を切り抜け、演出・小道具・幕の下ろし方を決めます。相談とメモの再読は無料。見立てが合うと準備の判定に＋4。",
+    "exitText": "芝居をここで中断して、本棚へ戻ります。次に遊ぶと、エルは別の望みを抱えているかもしれません。",
+    "endingKicker": "TONIGHT’S CURTAIN / 今夜の終幕",
+    "stats": {
+      "eye": "観察",
+      "hand": "手際",
+      "talk": "話術",
+      "nerve": "度胸"
+    },
+    "declareTitle": "どうする？ 行動を宣言せよ",
+    "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
+    "sheetTitle": "キャラクターシート",
+    "target": "GMの裁定 · 目標値30（19以上でひと手間）",
+    "twistTitle": "照明が勝手に動き出した。どうする？",
+    "planTitle": "幕を下ろす演出"
+  },
+  "intro": "trpg_stage_ghost_intro",
+  "listen": "trpg_stage_ghost_listen",
+  "checks": {
+    "listen": {
+      "title": "幕引きのエルの話を聞く",
+      "hint": "宣言した座員の能力で判定。どの出目でも聞き込みへ進みます。",
+      "success": "trpg_stage_ghost_listen_success",
+      "mixed": "trpg_stage_ghost_listen_mixed",
+      "trouble": "trpg_stage_ghost_listen_trouble",
+      "approaches": [
+        {
+          "id": "listen_sit",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "舞台の縁に座って、話を聞く",
+          "detail": "{pc}が隣に腰かけ、エルの言葉をゆっくり待つ",
+          "declare": "trpg_stage_ghost_declare_listen_sit"
+        },
+        {
+          "id": "listen_costume",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "eye",
+          "label": "エルの衣装を見る",
+          "detail": "{pc:hiyori}が古い衣装の仕立てから、エルの役柄を読む",
+          "declare": "trpg_stage_ghost_declare_listen_costume"
+        },
+        {
+          "id": "listen_near",
+          "actor": "samechan",
+          "sheet": "samechan",
+          "stat": "nerve",
+          "label": "怖くないふりで、隣へ行く",
+          "detail": "{pc:samechan}が勇気を出して、エルのすぐそばまで近づく",
+          "declare": "trpg_stage_ghost_declare_listen_near"
+        }
+      ]
+    },
+    "prepare": {
+      "title": "幕を下ろす舞台を整える",
+      "hint": "宣言した座員の能力で判定。見立てが合えば、さらに＋4。",
+      "success": "trpg_stage_ghost_prepare_success",
+      "mixed": "trpg_stage_ghost_prepare_mixed",
+      "trouble": "trpg_stage_ghost_prepare_trouble",
+      "helper": "hiyori",
+      "approaches": [
+        {
+          "id": "prepare_rig",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "hand",
+          "label": "綱と照明を、手早く仕込む",
+          "detail": "{pc}が道具方の腕で、舞台の仕掛けを組み上げる",
+          "declare": "trpg_stage_ghost_declare_prepare_rig"
+        },
+        {
+          "id": "prepare_sew",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "hand",
+          "label": "衣装と小道具を仕立て直す",
+          "detail": "{pc:hiyori}が針と糸で、舞台の細部まで整える",
+          "declare": "trpg_stage_ghost_declare_prepare_sew"
+        },
+        {
+          "id": "prepare_seat",
+          "actor": "samechan",
+          "sheet": "samechan",
+          "stat": "eye",
+          "label": "客席から見え方を確かめる",
+          "detail": "{pc:samechan}が最前列に座り、舞台の見え方を確かめる",
+          "declare": "trpg_stage_ghost_declare_prepare_seat"
+        }
+      ]
+    },
+    "serve": {
+      "title": "最後の一場で、幕を下ろす",
+      "hint": "宣言した座員の能力で判定。どの出目でも、幕を下ろして結末へ進みます。",
+      "success": "trpg_stage_ghost_serve_success",
+      "mixed": "trpg_stage_ghost_serve_mixed",
+      "trouble": "trpg_stage_ghost_serve_trouble",
+      "helper": "samechan",
+      "approaches": [
+        {
+          "id": "serve_stand",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "舞台の真ん中に立つ",
+          "detail": "{pc}が胸を張って、最後の一場の舞台に立つ",
+          "declare": "trpg_stage_ghost_declare_serve_stand"
+        },
+        {
+          "id": "serve_voice",
+          "actor": "samechan",
+          "sheet": "samechan",
+          "stat": "talk",
+          "label": "劇場いっぱいに声を響かせる",
+          "detail": "{pc:samechan}が客席の奥まで届く声で、最後の場面を盛り上げる",
+          "declare": "trpg_stage_ghost_declare_serve_voice"
+        },
+        {
+          "id": "serve_cue",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "eye",
+          "label": "幕を下ろす瞬間を見極める",
+          "detail": "{pc:hiyori}がエルの表情を見て、合図の瞬間を決める",
+          "declare": "trpg_stage_ghost_declare_serve_cue"
+        }
+      ]
+    },
+    "twist": {
+      "title": "動き出す照明と、影の観客",
+      "hint": "宣言した座員の能力で判定。どの出目でも物語は続きます。",
+      "success": "trpg_stage_ghost_twist_success",
+      "mixed": "trpg_stage_ghost_twist_mixed",
+      "trouble": "trpg_stage_ghost_twist_trouble",
+      "approaches": [
+        {
+          "id": "twist_rope",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "hand",
+          "label": "照明の綱を押さえる",
+          "detail": "{pc}が綱元に飛びつき、暴れる照明を止める",
+          "declare": "trpg_stage_ghost_declare_twist_rope"
+        },
+        {
+          "id": "twist_usher",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "talk",
+          "label": "客席へ、案内の声をかける",
+          "detail": "{pc:hiyori}が案内係のように、影の観客へ優しく呼びかける",
+          "declare": "trpg_stage_ghost_declare_twist_usher"
+        },
+        {
+          "id": "twist_center",
+          "actor": "samechan",
+          "sheet": "samechan",
+          "stat": "nerve",
+          "label": "舞台の真ん中で、堂々と立つ",
+          "detail": "{pc:samechan}が舞台に立ち、影の観客の目を引きつける",
+          "declare": "trpg_stage_ghost_declare_twist_center"
+        }
+      ]
+    }
+  },
+  "consult": {
+    "hiyori": "trpg_stage_ghost_consult_hiyori",
+    "samechan": "trpg_stage_ghost_consult_samechan"
+  },
+  "preparation": "trpg_stage_ghost_preparation",
+  "serving": "trpg_stage_ghost_serving",
+  "epilogue": "trpg_stage_ghost_epilogue",
+  "debrief": {
+    "smooth": "trpg_stage_ghost_debrief_smooth",
+    "with-detour": "trpg_stage_ghost_debrief_with_detour"
+  },
+  "campaign": {
+    "seats": [
+      {
+        "actor": "adam",
+        "candidates": [
+          "adam"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hajime",
+        "candidates": [
+          "hajime"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hiyori",
+        "candidates": [
+          "hiyori"
+        ],
+        "required": false
+      },
+      {
+        "actor": "samechan",
+        "candidates": [
+          "samechan"
+        ],
+        "required": false
+      }
+    ]
+  },
+  "builder": {
+    "seat": "hajime",
+    "points": 11,
+    "min": 1,
+    "max": 5,
+    "nameMax": 6,
+    "title": "あなたのキャラクターを作る",
+    "intro": "この芝居で演じる座員を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
+    "looks": [
+      {
+        "id": "ink",
+        "label": "黒髪の座員",
+        "detail": "短い黒髪に、作業用の前掛け",
+        "color": "#2f2a33",
+        "accent": "#e2b85a",
+        "portrait": null
+      },
+      {
+        "id": "rust",
+        "label": "赤毛の座員",
+        "detail": "赤毛を手ぬぐいでまとめる",
+        "color": "#7b3f33",
+        "accent": "#f0b27a",
+        "portrait": null
+      },
+      {
+        "id": "silver",
+        "label": "銀髪の座員",
+        "detail": "月明かりのような銀の髪と、紺の上着",
+        "color": "#4a4f63",
+        "accent": "#d9dbe8",
+        "portrait": null
+      },
+      {
+        "id": "long",
+        "label": "長髪の座員",
+        "detail": "長い髪を一つに結び、黒い稽古着",
+        "color": "#2d2440",
+        "accent": "#c9a7e0",
+        "portrait": null
+      }
+    ],
+    "archetypes": [
+      {
+        "id": "stagehand",
+        "name": "トキ",
+        "title": "見習い道具方",
+        "trait": "綱も釘も任せてほしい。台詞は、まだ噛む",
+        "stats": {
+          "eye": 2,
+          "hand": 4,
+          "talk": 2,
+          "nerve": 3
+        },
+        "recommended": true
+      },
+      {
+        "id": "childstar",
+        "name": "ナオ",
+        "title": "元子役",
+        "trait": "舞台度胸は一座で一番。手先は、とても不器用",
+        "stats": {
+          "eye": 2,
+          "hand": 1,
+          "talk": 3,
+          "nerve": 5
+        }
+      },
+      {
+        "id": "lightboy",
+        "name": "シン",
+        "title": "照明見習い",
+        "trait": "暗がりでもよく見える。人前に出るのは苦手",
+        "stats": {
+          "eye": 5,
+          "hand": 3,
+          "talk": 1,
+          "nerve": 2
+        }
+      }
+    ],
+    "statHelp": {
+      "eye": "よく見て、気づく力。調べる・様子を見るときに使う",
+      "hand": "手先の器用さ。道具を使う・準備するときに使う",
+      "talk": "話す・聞く力。人と向き合うときに使う",
+      "nerve": "怖がらない力。危ない場面や、勇気が要るときに使う"
+    }
+  },
+  "companionBuilds": {
+    "hiyori": {
+      "hiyori": [
+        {
+          "id": "mirei",
+          "name": "ミレイ",
+          "title": "月影の衣装係",
+          "trait": "光に透けそうな衣装係。針と糸で、何でも直せる",
+          "likes": "ゆるいキャラの刺繍ワッペン",
+          "stats": {
+            "eye": 3,
+            "hand": 5,
+            "talk": 2,
+            "nerve": 1
+          },
+          "making": "trpg_stage_ghost_make_hiyori_hiyori_mirei"
+        },
+        {
+          "id": "serena",
+          "name": "セレナ",
+          "title": "元看板女優の衣装係",
+          "trait": "悲劇の舞台で百回倒れた元女優。いまは衣装係。受け身は完璧",
+          "likes": "楽屋で食べる、夜食のラーメン",
+          "stats": {
+            "eye": 2,
+            "hand": 4,
+            "talk": 3,
+            "nerve": 2
+          },
+          "making": "trpg_stage_ghost_make_hiyori_hiyori_serena"
+        }
+      ]
+    },
+    "samechan": {
+      "samechan": [
+        {
+          "id": "minamo",
+          "name": "ミナモ",
+          "title": "腹話術の旅芸人",
+          "trait": "相棒の人形と二人で一座。幽霊は、ほんの少しだけ苦手",
+          "likes": "海の見える芝居小屋と、サメ映画",
+          "stats": {
+            "eye": 2,
+            "hand": 2,
+            "talk": 5,
+            "nerve": 2
+          },
+          "making": "trpg_stage_ghost_make_samechan_samechan_minamo"
+        },
+        {
+          "id": "hiremaru",
+          "name": "ヒレマル",
+          "title": "サメ着ぐるみの芸人",
+          "trait": "どんな芝居にもサメ役で出る。台本にサメがいなくても出る",
+          "likes": "サメ映画の、二作目から先",
+          "stats": {
+            "eye": 2,
+            "hand": 3,
+            "talk": 3,
+            "nerve": 3
+          },
+          "making": "trpg_stage_ghost_make_samechan_samechan_hiremaru"
+        }
+      ]
+    }
+  },
+  "sessionZero": {
+    "open": "trpg_stage_ghost_session_zero_open",
+    "close": "trpg_stage_ghost_session_zero_close"
+  },
+  "interview": {
+    "title": "守衛ゴードンに、何を聞く？",
+    "prompt": "見回りの合間に聞けるのは二つだけ。エルの望みに近づく話を聞こう",
+    "picks": 2,
+    "topics": [
+      {
+        "id": "closing",
+        "label": "閉館の夜のこと",
+        "description": "最後の公演で何があったか聞く"
+      },
+      {
+        "id": "elle",
+        "label": "エルという幕引き",
+        "description": "どんな人だったか聞く"
+      },
+      {
+        "id": "nightly",
+        "label": "毎晩の舞台",
+        "description": "幕が上がったあと、何が起きるか聞く"
+      },
+      {
+        "id": "keepsake",
+        "label": "残された品",
+        "description": "エルが大事にしていたものを聞く"
+      }
+    ]
+  },
+  "twist": {
+    "intro": "trpg_stage_ghost_twist_intro"
+  }
+}

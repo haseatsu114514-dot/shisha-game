@@ -16,13 +16,26 @@ ATLAS = ("Create a production videogame sprite atlas on a TRANSPARENT background
          "storybook object vignette with a 15% clear margin inside its own cell, never crossing a cell boundary. Cohesive premium illustrated "
          "adventure style matching the scenario's background palette: tactile brushwork, crisp silhouettes, a little magical realism. "
          "Not flat UI icons, not photorealistic, no people's faces, no text.")
+SHEET = ("Generate ONE sprite sheet image, 2048x1024, transparent background (PNG), containing 8 circular character portrait medallions "
+         "in a 4x2 grid (4 columns, 2 rows), each medallion 460x460 px with even spacing and a transparent margin inside every cell. "
+         "Style: painterly storybook ink-and-watercolor bust portrait, soft lamplight, muted palette matching the story's world, consistent across all eight. "
+         "Shoulders-up, facing slightly left, readable face. No text, no numbers, no logos, no frames (the game draws the round frame), no watermark, "
+         "no shisha pipes, no real brands, no resemblance to any existing character.")
+
+
+def companions(s):
+    """The four companion PCs in sheet order: each seat's player, both of their builds."""
+    return [o for seat in (s.get("companionBuilds") or {}).values() for builds in seat.values() for o in builds]
+
+
 out = ["# TRPG シナリオの背景と選択肢の絵（Codexへの指示書）", "",
        "`python3 tools/trpg_art_prompts.py` が各シナリオのJSONから自動で書き出す。調査地点の位置（x%, y%）を背景の指示に焼き込むので、画面の光る輪が絵の物の上に来る。",
        "", "## 受け取ったあと", "",
        "1. 背景: 原画 `assets/backgrounds/trpg_<id>_room.png`（1280×720）→ 配信 `remake/img/backgrounds/trpg_<id>_room.webp`（品質90）。JSONの `presentation.image` に `\"../../img/backgrounds/trpg_<id>_room.webp\"`。",
        "2. 選択肢: 原画 `assets/ui/trpg/choices-<id>.png`（透過・3列×5行）→ 配信 `remake/img/ui/trpg/choices-<id>.webp`（lossless）。JSONの `presentation.choiceArt` に `{\"src\": \"../../img/ui/trpg/choices-<id>.webp\", \"rowCount\": 5, \"rows\": {...}}`（下の行番号のとおり）。",
        "3. 新規画像は Git LFS（`git lfs ls-files` で確認）。`node tools/validate_trpg_scenario.mjs` で画像の存在を検査し、`remake/trpg-preview.html?scenario=<id>` で輪と物の位置を目視する。",
-       "4. 生成日・SHA-256・目視QAを `asset_sources/trpg-scenarios/generation.json` に残す。", ""]
+       "4. 生成日・SHA-256・目視QAを `asset_sources/trpg-scenarios/generation.json` に残す。",
+       "5. 人物シート（上段=はじめの見た目4種、下段=仲間の役4人）: 原画を `asset_sources/trpg-sheets/<id>/` に置き、`python3 tools/trpg_crop_portraits.py scenario <sheet.png> <id>` で切り出す。512px原寸は `assets/ui/trpg/`、256px WebP は `remake/img/ui/trpg/` に書かれ、JSONの `portrait` も埋まる。丸窓で目視してから commit。", ""]
 for entry in catalog["scenarios"]:
     s = json.loads((ROOT / "data" / entry["file"]).read_text(encoding="utf-8"))
     p, sid = s["presentation"], s["id"]
@@ -44,5 +57,16 @@ for entry in catalog["scenarios"]:
             rows.append(f"Row {i + 1} ({p['fields'][f]}), left to right: " + "; ".join(f"({i * 3 + j + 1}) {o['label']} — {o['description']}" for j, o in enumerate(s["options"][f])))
         rows.append("Row 5 (guesses), left to right: " + "; ".join(f"({13 + j}) {h['label']} — {h['description']}" for j, h in enumerate(s["hypotheses"])))
         out += ["```", f"--- choices atlas: choices-{sid}.png ---", ATLAS + " Paint each item as an evocative object or tiny diorama (no people's faces). " + " ".join(rows), "```", ""]
+    looks, pcs = s.get("builder", {}).get("looks", []), companions(s)
+    if any(not x.get("portrait") for x in [*looks, *pcs]):
+        world = f"{p.get('location', '')} ({p.get('genre', '')}): {p.get('atmosphere', '')}"
+        out += ["```", f"--- portraits: portraits-{sid}.png ---",
+                f"{SHEET} World: {world}",
+                "Row 1 = the player's character, four looks of the same role. Androgynous young adult (18-24) so the player can give any name; "
+                "the look must not depend on background or name:",
+                *[f"--- {chr(97 + i)}: look-{sid}-{l['id']} --- {l['label']}. {l.get('detail', '')}" for i, l in enumerate(looks)],
+                "Row 2 = characters the companions made for this story. Light comedy is welcome, keep faces readable:",
+                *[f"--- {chr(101 + i)}: pc-{o['id']} --- {o['name']}, {o['title']}. {o.get('trait', '')} Likes: {o.get('likes', '')}" for i, o in enumerate(pcs)],
+                "```", ""]
 (ROOT / "asset_sources/trpg-scenarios/README.md").write_text("\n".join(out) + "\n", encoding="utf-8")
 print("wrote asset_sources/trpg-scenarios/README.md for", len(catalog["scenarios"]), "scenarios")

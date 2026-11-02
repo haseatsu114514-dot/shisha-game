@@ -10,7 +10,7 @@ import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
 import { allSpots, isClosed, VISIT_COST } from "../daily/spots.js";
 import { setHiyoriExtraShops } from "../daily/hiyori.js";
-import { trpgSpot } from "../daily/trpg.js";
+import { trpgSpot, maybeRecruitTrpgMember } from "../daily/trpg.js";
 import { CITY_OUTINGS, CITY_SHOP, knownCityOutings, introduceCitySpot, outingDialogue, recordOutingVisit } from "./ch2-outings.js";
 import { offerAgehaPurikura } from "./ch2-purikura.js";
 import { openShop } from "../daily/shop.js";
@@ -159,6 +159,8 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   gainAffinity(id, first || finale || stages && stage?.file ? 10 : 5); earnStat(stat[id], 4);
   // 心得の盤で灯した授業があれば、その店で相談して習う（SBD61: 会った時だけ）
   if (state === owner) await consultLessons(id, { bg: ROOMS[id] });
+  // 部活の勧誘（REI・あげは）も地元の訪問と同じく、会えた後にだけ。入部は暦の精算と一緒に保存する。
+  if (state === owner) await maybeRecruitTrpgMember(id);
   return { used: true, exerted: true };
 }
 

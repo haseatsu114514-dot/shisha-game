@@ -59,6 +59,20 @@
         "text": "なぜか部長にされてて……TRPGの部活、一緒にどうですか？"
       }
     ],
+    "invite_rei": [
+      {
+        "speaker": "hajime",
+        "face": "normal",
+        "text": "REIさんに教わった店で、なぜか部長にされてて……部活、一緒にどうですか？"
+      }
+    ],
+    "invite_ageha": [
+      {
+        "speaker": "hajime",
+        "face": "normal",
+        "text": "あげはさん、TRPGって知ってます？　なぜか部長にされてて……部活、一緒にどうですか？"
+      }
+    ],
     "founded": [
       {
         "speaker": "",
@@ -123,6 +137,30 @@
       {
         "speaker": "adam",
         "text": "入ろう。店が休みの夜なら、物語の仕掛けを考えに行ける。"
+      }
+    ],
+    "rei": [
+      {
+        "speaker": "rei",
+        "face": "surprise",
+        "text": "……部長。お前が？"
+      },
+      {
+        "speaker": "rei",
+        "face": "smile",
+        "text": "……入る。店が休みの夜なら行ける。回してみたい本も、ある"
+      }
+    ],
+    "ageha": [
+      {
+        "speaker": "ageha",
+        "face": "surprise",
+        "text": "てぃーあーる……？　わかんないけど、ハジメっちが部長なのウケる"
+      },
+      {
+        "speaker": "ageha",
+        "face": "smile",
+        "text": "入る入る！　店閉めたら行くね。うち、ノリで来るから"
       }
     ],
     "host_day": [

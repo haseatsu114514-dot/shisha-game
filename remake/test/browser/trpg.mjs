@@ -113,10 +113,14 @@ async function finish(page, choices) {
 async function fits(page) {
   const clips = await page.locator("button:not([hidden]), .trpg-speech p, .trpg-spot span, .trpg-object-label, .trpg-object-detail").evaluateAll(nodes => {
     const stage = document.getElementById("stage").getBoundingClientRect();
+    // A long shelf scrolls inside its own list: those books are reached by scrolling (checked in library-every-story), not clipped.
+    const scrolled = n => { for (let a = n.parentElement; a && a.id !== "stage"; a = a.parentElement) {
+      if (/auto|scroll/.test(getComputedStyle(a).overflowY) && a.scrollHeight > a.clientHeight + 1) return true;
+    } return false; };
     return nodes.filter(n => n.offsetWidth && n.offsetHeight && n.checkVisibility({ opacityProperty: true, visibilityProperty: true })).filter(n => {
       const r = n.getBoundingClientRect();
-      return r.left < stage.left - 1 || r.right > stage.right + 1 || r.top < stage.top - 1
-        || r.bottom > stage.bottom + 1 || !n.matches(".trpg-spot, .trpg-spot span, .trpg-object-choice, .trpg-object-label, .trpg-object-detail")
+      return !scrolled(n) && (r.left < stage.left - 1 || r.right > stage.right + 1 || r.top < stage.top - 1
+        || r.bottom > stage.bottom + 1) || !n.matches(".trpg-spot, .trpg-spot span, .trpg-object-choice, .trpg-object-label, .trpg-object-detail")
           && (n.scrollWidth > n.clientWidth + 1 || n.scrollHeight > n.clientHeight + 1);
     }).map(n => ({ text: n.textContent, width: n.clientWidth, scroll: n.scrollWidth }));
   });
@@ -315,9 +319,18 @@ try {
     assert.equal(cancelled.children, 0);
     assert.equal(await page.locator(".trpg-root").count(), 1);
   });
-  await run("library-two-stories", {}, {}, async page => {
+  await run("library-every-story", {}, {}, async page => {
     assert.equal((await page.evaluate(() => __trpg.snapshot())).phase, "library");
-    assert.equal(await page.locator(".trpg-library-book").count(), 2);
+    const catalog = JSON.parse(fs.readFileSync(new URL("../../../data/trpg_catalog.json", import.meta.url), "utf8"));
+    assert.equal(await page.locator(".trpg-library-book").count(), catalog.scenarios.length);
+    // Every book on the long shelf scrolls fully into view, above the footer, with its open button unclipped.
+    const reach = await page.locator(".trpg-library-copy > button").evaluateAll(buttons => buttons.map(button => {
+      button.scrollIntoView({ block: "nearest" });
+      const r = button.getBoundingClientRect(), list = button.closest(".trpg-library-books").getBoundingClientRect();
+      return r.top >= list.top - 1 && r.bottom <= list.bottom + 1 && button.scrollWidth <= button.clientWidth + 1 ? null : button.textContent;
+    }));
+    assert.deepEqual(reach.filter(Boolean), [], "Every book can be scrolled into view");
+    await page.locator(".trpg-library-books").evaluate(list => { list.scrollTop = 0; });
     await page.screenshot({ path: path.join(artifacts, "library-pc.png") });
     await hit(page, '[data-test="trpg-select-ordinary-cup"]');
     assert.equal((await page.evaluate(() => __trpg.snapshot())).scenarioId, "ordinary-cup");
