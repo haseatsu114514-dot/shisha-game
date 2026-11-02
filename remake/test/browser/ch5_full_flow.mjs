@@ -390,7 +390,7 @@ await suite("ch5-full-flow", async check => {
   });
 
   // IR16・IR17: 第5章は帰郷後なので、第1・2章と同じく恋人のLIMEの誘い→デート（絆が深まる）→節目（lover_events）。
-  // 今日の約束があるまま東京へ発とうとすると確かめられ、行くなら約束は別の日に改める。
+  // FIN13: 今夜の約束がある日は東京配送便に乗れない。ドバイ出発の確認では取消・再案内も検証する。
   await check("chapter-five-lover-invitation-date-and-milestone", async page => {
     page.setDefaultTimeout(30000);
     await page.evaluate(async () => {
@@ -426,13 +426,24 @@ await suite("ch5-full-flow", async check => {
     state = await get(page);
     assert.equal(state.pendingInvite?.event, "date_tsumugi");
     assert.equal(state.pendingInvite.slot, 1);
-    // 東京へ発とうとすると、今日の約束を確かめられる。やめれば約束も現在地もそのまま。
-    await go(page, "ch5_to_tokyo");
+    const beforeTravel = state;
+    const unchangedAppointment = value => ({
+      day: value.day, slot: value.slot, money: value.money, region: value.flags._ch2_region ?? "home",
+      pendingInvite: value.pendingInvite, inbox: value.inbox,
+    });
+    // 配送便は今夜の約束を優先し、出発ボタン自体を出さない。約束・行動・お金も保持。
+    await page.locator(dt("pin-ch5_to_tokyo")).click();
+    assert.match(await page.locator(".mi-no").innerText(), /今夜はLIMEの約束/);
+    assert.equal(await page.locator(dt("map-go")).count(), 0, "Tonight's appointment blocks the Tokyo van");
+    assert.deepEqual(unchangedAppointment(await get(page)), unchangedAppointment(beforeTravel));
+    // ドバイは出発前に約束を確認する。「やめる」なら手紙・切符も消費せず地元に残る。
+    await go(page, "ch5_to_dubai");
     await page.locator(dt("ch5-date-stay")).click();
     await mapReady(page, { day: 51, slot: 0 });
     state = await get(page);
-    assert.equal(state.flags._ch2_region ?? "home", "home");
-    assert.equal(state.pendingInvite?.event, "date_tsumugi", "Staying keeps the date");
+    assert.deepEqual(unchangedAppointment(state), unchangedAppointment(beforeTravel));
+    for (const flag of ["_ch5_dubai_letter", "_ch5_dubai_ticket", "_ch5_dubai_flights"])
+      assert.equal(state.flags[flag], beforeTravel.flags[flag], `Cancel preserves ${flag}`);
     // 昼は家で休む → 仕事のあと約束の場所へ → デート → 節目 → 翌朝。
     await go(page, "rest");
     const settle = async (day, slot) => {
@@ -457,7 +468,7 @@ await suite("ch5-full-flow", async check => {
     assert(state.loverEventsSeen.includes("lover_tsumugi_lv1"), "The first milestone follows the date");
     assert.equal(state.pendingInvite, null);
     assert(state.inbox.find(item => item.id === invite.id)?.completed, "The appointment is completed once");
-    // 約束を改めて東京へ行くと、その日の約束は流れ、また誘ってもらえる。
+    // 約束を改めてドバイへ行くと、その日の約束は流れ、また誘ってもらえる。切符で無料・1行動。
     await page.evaluate(() => {
       const s = window.__remake.state;
       s.inbox.push({ id: "_date_inv_tsumugi_test_d52", originId: "_date_inv_tsumugi_test_d52", day: 52, chapter: 5, read: true, done: true, result: "accepted", log: [],
@@ -465,15 +476,25 @@ await suite("ch5-full-flow", async check => {
           time_slot: "night", after_close: true, messages: ["今日は仕事を終えてから、少し会える？"] } });
       s.pendingInvite = { event: "date_tsumugi", sender: "tsumugi", slot: 1, day: 52, originId: "_date_inv_tsumugi_test_d52", afterClose: true };
     });
-    await go(page, "ch5_to_tokyo");
+    const beforeFlight = await get(page);
+    await go(page, "ch5_to_dubai");
     await page.locator(dt("ch5-date-leave")).click();
-    await page.waitForFunction(() => window.__remake.state.flags._ch2_region === "tokyo" && window.__remake.state.slot === 1, null, { timeout: 60000 });
+    await page.locator(dt("ch5-dubai-go")).click({ timeout: 60000 });
+    await page.waitForFunction(() => {
+      const s = window.__remake.state;
+      return s.flags._ch2_region === "dubai" && s.day === 52 && s.slot === 1
+        && !!document.querySelector('.map:not(.done):not([data-revealing="true"])[data-region="dubai"]');
+    }, null, { timeout: 60000 });
     state = await get(page);
     assert.equal(state.pendingInvite, null, "The date is moved to another day");
     const moved = state.inbox.find(item => item.id === "_date_inv_tsumugi_test_d52");
     assert.equal(moved.result, "expired");
     assert.equal(moved.needsResend, true);
-    assert.equal(state.lastDate.tsumugi, 51, "No date in Tokyo");
+    assert.equal(state.lastDate.tsumugi, 51, "No date in Dubai");
+    assert.equal(state.money, beforeFlight.money, "The letter covers the fare");
+    assert.equal(state.flags._ch5_dubai_letters, 1);
+    assert.equal(state.flags._ch5_dubai_flights, 1);
+    assert.equal(state.flags._ch5_dubai_ticket, false, "The ticket funds one round trip");
   });
 
   // 帰国後の tonari の打ち上げ（オーナー指定 2026-11-02）: 自由行動の始めに一度だけ、誰の隣に座るかを選ぶ。
