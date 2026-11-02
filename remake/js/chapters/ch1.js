@@ -334,23 +334,47 @@ export const NIGHT_EVENTS = {
 async function lastNight() {
   // 旧セーブの読了は維持。通し練習がなくても、過ごし方を終えた夜へ戻さない。
   if (flag("_ev_last_night")) return;
+  const owner = state, chapter = owner.chapter, day = owner.day, slot = owner.slot;
+  const requireCurrent = () => {
+    if (state !== owner || owner.chapter !== chapter || owner.day !== day || owner.slot !== slot) {
+      throw new DOMException("Tournament eve interrupted", "AbortError");
+    }
+  };
   const dialogue = DB.dialogues.ch1_day7_last_night;
-  if (!state.flags._ch1_eve?.choice) {
-    // 既存のVN選択を使い、分岐会話は実作業の後に読む。
-    await play({ ...dialogue, branches: {} }, { bg: TONARI_N });
+  let progress;
+  for (;;) {
+    if (!owner.flags._ch1_eve?.choice) {
+      // 戻った後の保存も、導入を繰り返さず元の問いと4択から再開する。
+      const choiceAt = dialogue.lines.findIndex(line => line.id === "night_before_choice");
+      const lines = owner.flags._ch1_eve?.menuShown ? dialogue.lines.slice(choiceAt - 1, choiceAt + 1) : dialogue.lines;
+      const result = await play({ ...dialogue, lines, branches: {} }, { bg: TONARI_N });
+      requireCurrent();
+      if (!result || result.cancelled) throw new DOMException("Tournament eve interrupted", "AbortError");
+    }
+    progress = owner.flags._ch1_eve;
+    if (progress.choice !== "drill" || progress.practiceDone || progress.drill) break;
+    const drill = await chooseDrill();
+    requireCurrent();
+    if (owner.flags._ch1_eve !== progress) throw new DOMException("Tournament eve selection changed", "AbortError");
+    if (drill !== null) { progress.drill = drill; save(); break; }
+    delete progress.choice;
+    progress.menuShown = true;
+    save();
   }
-  const progress = state.flags._ch1_eve;
   if (progress.choice === "practice") await rehearsal(progress);
+  requireCurrent();
   if (progress.choice === "drill" && !progress.practiceDone) {
-    if (!progress.drill) { progress.drill = await chooseDrill(); save(); }
     beginEvePractice(progress);
     const tier = await runDrill(progress.drill);
+    requireCurrent();
     state.best[progress.drill] = Math.max(state.best[progress.drill] ?? -1, tier);
     progress.practiceDone = true;
     save();
   }
   // 報酬キューは分岐の末尾でVNが一度だけ適用する（コード側では加算しない）。
-  await play({ dialogue_id: `${dialogue.dialogue_id}_${progress.choice}`, lines: dialogue.branches[progress.choice] }, { bg: TONARI_N });
+  const result = await play({ dialogue_id: `${dialogue.dialogue_id}_${progress.choice}`, lines: dialogue.branches[progress.choice] }, { bg: TONARI_N });
+  requireCurrent();
+  if (!result || result.cancelled) throw new DOMException("Tournament eve interrupted", "AbortError");
   state.flags._last_night = progress.choice;
   if (progress.choice === "sleep_early") {
     addStamina(maxStamina() - state.stamina);
