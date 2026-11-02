@@ -87,12 +87,13 @@ assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
 const limeMessages = realJSON("../data/lime_messages.json").messages;
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.lime)), limeMessages);
 assert.equal(new Set(all.DB.lime.map(m => m.id)).size, all.DB.lime.length);
-assert.deepEqual(Array.from(all.DB.lime.slice(-7), m => m.id), [
+assert.deepEqual(Array.from(all.DB.lime.slice(-9), m => m.id), [
   "lime_naru_samechan_nickname", "lime_samechan_preparing_thanks", "lime_samechan_opening",
   "lime_outing_samechan_1", "lime_after_outing_samechan", "lime_outing_rin_1", "lime_after_outing_rin",
+  "lime_outing_hiyori_1", "lime_after_outing_hiyori",
 ]);
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.limeTemplates)), realJSON("../data/lime_messages.json").templates);
-assert.equal(all.DB.lime.length, 76);
+assert.equal(all.DB.lime.length, 78);
 assert(!all.DB.lime.some(m => m.accept_event === "__hiyori_shop__"));
 assert.equal(all.DB.samechan.lime, undefined);
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");

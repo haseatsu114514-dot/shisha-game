@@ -401,6 +401,7 @@ export const FLAG_EXACT_RULES = [
   ["_op_praise_talent", "progression"],
   ["_outing_done_adam", "person"],
   ["_outing_done_ageha", "person"],
+  ["_outing_done_hiyori", "person"],
   ["_outing_done_minto", "person"],
   ["_outing_done_naru", "person"],
   ["_outing_done_rin", "person"],
