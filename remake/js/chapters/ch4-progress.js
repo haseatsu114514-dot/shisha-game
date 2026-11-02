@@ -26,6 +26,7 @@ export const CH4_PLACE_BG = Object.freeze({
   alley_cafe: "bg_dubai_alley_cafe_night",
   inn: "bg_dubai_inn_day",
   venue: "bg_dubai_grand_smoke_stage",
+  shop: "bg_shop",                // Dr.fookah ドバイ店（NF03）。ドバイ店専用の店内画が無いので日本の店内を流用
 });
 
 export const CH4_SCENE_BG = Object.freeze({
