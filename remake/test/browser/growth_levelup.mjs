@@ -1124,7 +1124,10 @@ await suite("growth-levelup", async (runCheck) => {
       void (await import("./js/core/growth.js")).openGrowthBoard({ place: "kannon" });
     });
     await page.locator(t("board-tab-body")).waitFor({ timeout: 30000 });
-    assert.match(await page.locator(t("hud-target")).innerText(), /早寝早起きまで 火種\d+/, "HUD に目標までの火種");
+    assert.match(await page.locator(t("hud-target")).innerText(), /^◎火種\d+$/, "HUD に目標までの火種");
+    assert.match(await page.locator(t("hud-target")).getAttribute("title"), /早寝早起き」まで、あと火種\d+/, "目標の名前は説明に");
+    const bar = await page.locator(".hud-exp .hx-bar").boundingBox();
+    assert(bar && bar.width >= 40, `経験値ゲージを潰さない（${bar?.width}px）`);
     const hudBefore = await page.locator(t("hud-target")).innerText();
     // 目標への道の最初のマスを灯す（HUD の残りが減ることを見る）
     const first = await page.evaluate(async () => (await import("./js/core/growth-board.js")).pathTo("K03", new Set()).path[0]);

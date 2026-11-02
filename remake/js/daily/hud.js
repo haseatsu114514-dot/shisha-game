@@ -174,8 +174,10 @@ function renderTarget() {
   const name = node.kind === "stat" ? (node.peak ? "極み" : node.notable ? "要のマス" : "マス") : node.kind === "gate" ? "台座" : node.name;
   const { cost } = pathTo(node.id, new Set(g.nodes));
   target.hidden = false;
-  target.textContent = `◎${name}まで 火種${cost}`;
-  target.title = `心得の盤の目標。${name}まで、あと火種${cost}`;
+  // 情報カードは幅が狭いので、ゲージを潰さない短い印だけ出す。目標の名前は説明（title・読み上げ）で
+  target.textContent = `◎火種${cost}`;
+  target.title = `心得の盤の目標「${name}」まで、あと火種${cost}`;
+  target.setAttribute("aria-label", target.title);
 }
 
 export function showHud(v = true) {
