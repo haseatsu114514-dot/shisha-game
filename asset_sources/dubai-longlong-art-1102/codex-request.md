@@ -1,7 +1,7 @@
-# Codex への依頼: 龍龍水煙所のロゴ・店の背景と、ドバイの葉4種の箱絵（DBS08・DBS03）
+# Codex への依頼: 龍龍水煙所のロゴと店の背景（DBS08）
 
 このファイルは Codex がそのまま実行する依頼書。まず `AGENTS.md`（Git・通信量・LFS・PR の決まり）を読む。
-**PR #2400（龍龍水煙所の店。#2392 のドバイの葉を含む）が main に入ってから始める**（ロゴのプロンプトと `ch4-longlong.js` がそこで入る）。
+**PR #2400（龍龍水煙所の店）が main に入ってから始める**（ロゴのプロンプトと `ch4-longlong.js` がそこで入る）。
 
 ## 作るもの（すべて候補。オーナーが選ぶまでゲームに入れない・マージしない）
 
@@ -9,7 +9,6 @@
 |---|---|---|---|---|
 | 1 | 地図のロゴ（`ch4_dubai_longlong`） | `asset_sources/store-logos-missing-1102/longlong-prompt.txt` | A・B・C | `asset_sources/store-logos-missing-1102/longlong-{a,b,c}.png` |
 | 2 | 店の背景 `bg_dubai_longlong` | `tools/bg_prompts.txt` の **LL01** | 3案 | `asset_sources/backgrounds/dubai-longlong-20261102/candidate-{a,b,c}.png` |
-| 3 | 箱絵4種（Dr.fookah ドバイ店の「ドバイの定番」） | この下の「3. 箱絵」のブロック | 1種3案（計12枚） | `asset_sources/dubai-longlong-art-1102/boxes/<商品ID>-{A,B,C}.png` |
 
 参照画像のうち LFS のものだけ取る: `git lfs pull --include="assets/sprites/characters/master_hookah/chr_master_hookah_normal.png,assets/ui/store_logos/ch3-smoke-and-glory.webp"`（ほかは checkout に実体がある）。
 
@@ -70,70 +69,8 @@ siryou は非公開リポジトリ（PC では `../siryou/shisha-hardware-refere
 3. `python3 tools/background_catalog.py sync` → `check` → `sheet`。台帳の `prompt` に `tools/bg_prompts.txt LL01`。
 4. `node remake/test/ch4_longlong.mjs`、プレビューサーバーを起動して `node remake/test/browser/ch4_dubai_daily.mjs`。ドバイの昼・夜の枠で龍龍水煙所に入り、絵と立ち絵の重なりを実画面で見る。
 
-## 3. 箱絵（`absal_double_apple`・`dobaj_double_apple`・`absal_mint`・`dobaj_mint`）
-
-調べた決まり（2026-11-02 の main）:
-
-- 4種とも `data/flavors.json` にある葉で、メーカーは作中の架空メーカー（`afsahr`＝アフサール、`dobaj`＝ドバジ。`docs/shisha_reference.md` §0）。実在の製品・ロゴ・包装は描かない。
-- 箱には文字を入れず、メーカーは**紋章と箱の意匠**で表す（`asset_sources/flavor-packages-maker-fix-20261028/INVENTORY.md`）。アフサール＝淡い色の紙箱・日の出アーチの紋章（正面上と右側面）・斜めの帯・丸い枠の絵（`remake/img/shop/remaining8/lychee.webp` など）。ドバジ＝生成り白の箱・正面左の黒帯と黒い右側面に白い抽象の紋章・流れる帯（`remaining8/mango.webp` など）。
-- 書式・参照・変換は直近の NF04（`asset_sources/new-flavor-cartons-nf04/PROMPTS.md`・`README.md`）と同じ: メーカーごとに既存の箱1枚を添付、正方形の透過 PNG（1024px 以上）、1種3案。ゲームでは 512x512 の WebP になり、店の棚では66px前後で見える。
-- 今は4種とも絵が無く、店では文字の箱で出る（台帳 DBS03）。
-
-```text
-Common rules for every image below:
-Create ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.
-Match the attached reference carton exactly in packaging design system: the same 3/4 perspective,
-compact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and
-illustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole
-carton fully inside the frame with generous margins, no cast shadow on the background.
-No words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.
-This is an original fictional game asset, not a reproduction of a real product.
-
---- 1/4: asset_sources/dubai-longlong-art-1102/boxes/absal_double_apple-{A,B,C}.png （添付: remake/img/shop/remaining8/lychee.webp） ---
-Keep the pale matte paper carton style of the reference, the same small dark sunrise-over-water-lines
-emblem on the upper front and on the right side, the diagonal ribbon across the front and the round
-cream vignette. Change the carton color to warm pale sand beige, the diagonal ribbon to a deep
-apple-red ribbon, and the round vignette illustration to one red apple and one green apple side by
-side with a single star anise pod in front of them, drawn in the same clean geometric painted style
-as the lychee.
-
---- 2/4: asset_sources/dubai-longlong-art-1102/boxes/absal_mint-{A,B,C}.png （添付: remake/img/shop/remaining8/lychee.webp） ---
-Keep the pale matte paper carton style of the reference, the same small dark sunrise-over-water-lines
-emblem on the upper front and on the right side, the diagonal ribbon across the front and the round
-cream vignette. Change the carton color to pale cool blue-grey, the diagonal ribbon to a deep
-spearmint-green ribbon, and the round vignette illustration to a sprig of spearmint with pointed,
-serrated dark green leaves, drawn in the same clean geometric painted style as the lychee.
-
---- 3/4: asset_sources/dubai-longlong-art-1102/boxes/dobaj_double_apple-{A,B,C}.png （添付: remake/img/shop/remaining8/mango.webp） ---
-Keep the cream-white carton of the reference with the black vertical band on the left of the front and
-the black right side panel, the same small white stylized emblem on both black areas, and the flowing
-swoosh ribbon. Change the swoosh ribbon colors to glossy apple red and fresh apple green and replace
-the mango illustration with one glossy red apple and one green apple, slightly overlapping, drawn in
-the same flat illustrated style.
-
---- 4/4: asset_sources/dubai-longlong-art-1102/boxes/dobaj_mint-{A,B,C}.png （添付: remake/img/shop/remaining8/mango.webp） ---
-Keep the cream-white carton of the reference with the black vertical band on the left of the front and
-the black right side panel, the same small white stylized emblem on both black areas, and the flowing
-swoosh ribbon. Change the swoosh ribbon colors to cool mint green and soft white and replace the mango
-illustration with a fresh sprig of peppermint with soft, rounded bright green leaves, drawn in the
-same flat illustrated style.
-```
-
-### 生成後チェックと比較画像
-
-- [ ] 箱が1つだけで全体が画像内。背景が本当に透過（市松模様・影なし）
-- [ ] 文字・数字・実在のロゴが無い。紋章は参照の箱と同じ形（アフサールの日の出アーチ／ドバジの白い抽象マーク）
-- [ ] 中身が商品名どおり（赤と緑のりんご2個、アフサールは八角1つ。ミントはアフサールが尖ったスペアミント、ドバジが丸いペパーミント）
-- [ ] 66px に縮めて、同じ味のアフサールとドバジ、日本の店の AF の黒箱（`remake/img/shop/heaven10/double_apple.webp`・`mint.webp`）を見分けられる
-- 比較画像 `asset_sources/dubai-longlong-art-1102/qa/boxes.jpg`: 1種1行で A・B・C、横に参照の箱と同じ味の AF の箱、各案の下に66pxの縮小。`generation.json` にプロンプト・ツール・サイズ・SHA-256・添付した参照を書く（NF04 の `codex-generation-log.json` と同じ中身）。
-
-### 採用後の組み込み（オーナーが選んでから同じ PR で）
-
-1. 採用原画の SHA-256 を `asset_sources/dubai-longlong-art-1102/boxes/sources.json` に固定し、NF04 と同じ変換（alpha≤4 を0 → 512x512 LANCZOS → WebP q88、箱の範囲を測る）で `remake/img/shop/dubai/<商品ID>.webp` と `remake/js/daily/shop-art-dubai.js`（`DUBAI_FLAVOR_ART`）を作る。`tools/build_new_flavor_art.py` と `remake/test/shop_new_flavors_dubai.mjs` は NF04 の7種ちょうどを前提にしているので、NF04 の表には足さない（同じ形の変換を別に用意する）。
-2. `remake/js/daily/shop.js` の `generatedFlavorArt` に `DUBAI_FLAVOR_ART` を足し、`remake/test/shop_new_flavors_dubai.mjs` に「4種とも512角・配信先・文字の箱に落ちない」を足す。Dr.fookah ドバイ店で4種が箱で出ることを実画面（PC・タッチ）で見る。
-
 ## PR
 
-1. 最新 `origin/main` から branch を作り、候補（原画・`generation.json`・比較画像）を保存して **Ready for review** で PR を出す。比較画像3つ（ロゴ・背景・箱）を PR に貼る。
+1. 最新 `origin/main` から branch を作り、候補（原画・`generation.json`・比較画像）を保存して **Ready for review** で PR を出す。比較画像2つ（ロゴ・背景）を PR に貼る。
 2. **オーナーが採用案を選ぶまでゲームに入れず、マージしない**。不採用は作り直す。
-3. 採用後、上の各「組み込み」を同じ PR で行い、台帳 `docs/owner_requests.md` の DBS08（背景・ロゴ）と DBS03（「4種の箱絵はまだ無く」）を更新する。
+3. 採用後、上の各「組み込み」を同じ PR で行い、台帳 `docs/owner_requests.md` の DBS08（背景・ロゴ）を更新する。

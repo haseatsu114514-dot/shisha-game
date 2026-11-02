@@ -88,7 +88,7 @@
 
 ## 共通スタイル指針（全アセット冒頭に付ける）
 
-フレーバーの商品箱は現行採用画像のメーカー意匠を参照する。AFバニラの生成指示と参照画像は [`asset_sources/af-vanilla/prompt.txt`](../../asset_sources/af-vanilla/prompt.txt)、原画・変換・検品は[制作資料](../../asset_sources/af-vanilla/README.md)。黒箱・白い翼と独立した輪・味の筆帯は既存AFから継承し、既存10点の採用正本は変更しない。新しい味の箱は、メーカーごとに既存の箱1枚を添付して意匠を合わせる書式（共通の英文＋1種1ブロック、文字なし・透過の正方形）で頼む: 3社の書式は [NF04 の PROMPTS.md](../../asset_sources/new-flavor-cartons-nf04/PROMPTS.md)、ドバイの定番4種（アフサール／ドバジのダブルアップル・ミント。DBS03）は [依頼書の「3. 箱絵」](../../asset_sources/dubai-longlong-art-1102/codex-request.md)。
+フレーバーの商品箱は現行採用画像のメーカー意匠を参照する。AFバニラの生成指示と参照画像は [`asset_sources/af-vanilla/prompt.txt`](../../asset_sources/af-vanilla/prompt.txt)、原画・変換・検品は[制作資料](../../asset_sources/af-vanilla/README.md)。黒箱・白い翼と独立した輪・味の筆帯は既存AFから継承し、既存10点の採用正本は変更しない。
 
 ```
 スタイル: 薄暗いシーシャラウンジの空気。`assets/backgrounds/bg_eden_shop.png` 程度の2Dドット絵〜ピクセルペインター調で、輪郭・影・質感に細かいドット感を残す。リアル写真調や滑らかすぎる3D調は避ける。シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない。手・腕は細身で中性的、明るいピーチ系の同一肌色に統一する。
