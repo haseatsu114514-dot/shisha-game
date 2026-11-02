@@ -45,3 +45,16 @@ README の「組み込み手順」1〜6 のとおり。要点:
 
 - 最新 `origin/main` から branch を作り、Ready for review で出す。**比較画像を PR に貼り、オーナーの採用確認が済むまでマージしない**（不採用の絵は差し替える）。
 - 台帳 `docs/owner_requests.md` の MPI01・MPI03 を、採用されたら ✅ にする。
+
+## 追加分（MPI06・2026-11-02）
+
+最初の13枚は採用済み（12枚を組み込み、神社は保留）。後から入ったドバイの行き先3つにも絵が無いので、同じ手順で作る。参照画像は観音堂（`kannondo`）＋斧投げBar（`axe_bar`）、それに今回採用した旧市街の宿 `assets/ui/map-facilities-dubai-inn.webp`（ドバイの画風の基準）。
+
+| アイコン | 地図の行き先 id | プロンプト | ゲーム用の予定ファイル |
+|---|---|---|---|
+| 砂漠ツアーのデスク | `ch4_dubai_tour_desk` | `desert-tour-desk-prompt.txt` | `assets/ui/map-facilities-desert-tour-desk.webp` |
+| 砂丘（サンドボード） | `ch4_dubai_dunes` | `desert-dunes-prompt.txt` | `assets/ui/map-facilities-desert-dunes.webp` |
+| ラクダレース場 | `ch4_dubai_camel`（レース場の段階だけ。誘われる前の「Dr.fookah の店先」は会話の場所なので絵を付けない） | `camel-race-track-prompt.txt` | `assets/ui/map-facilities-camel-race-track.webp` |
+
+- 1種につき3案を作って比較画像を貼り、オーナーの採用を待つ（13枚のときと同じ）。
+- ラクダレース場だけは、乗り手のいないラクダを1頭だけ描いてよい（ほかの動物・人物は不可）。

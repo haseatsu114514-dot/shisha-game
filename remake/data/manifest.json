@@ -430,6 +430,15 @@
    "ax": 0.5176,
    "aspect": 0.7467
   },
+  "noor": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.975,
+   "b": 0.0117,
+   "ax": 0.5889,
+   "aspect": 0.7467
+  },
   "rashid": {
    "faces": [
     "normal"
@@ -474,6 +483,7 @@
   "bg_dubai_cafe_day.png",
   "bg_dubai_camel_track_morning.png",
   "bg_dubai_dunes_day.png",
+  "bg_dubai_dunes_dusk.png",
   "bg_dubai_festa.png",
   "bg_dubai_grand_smoke_stage.png",
   "bg_dubai_inn_day.png",
@@ -614,7 +624,8 @@
   "face_steve.png",
   "face_kuze.png",
   "face_maki.png",
-  "face_salaryman.png"
+  "face_salaryman.png",
+  "face_noor.png"
  ],
  "making": [
   "bench_base.png",
@@ -2548,6 +2559,7 @@
   "backgrounds/bg_dubai_cafe_day.png",
   "backgrounds/bg_dubai_camel_track_morning.png",
   "backgrounds/bg_dubai_dunes_day.png",
+  "backgrounds/bg_dubai_dunes_dusk.png",
   "backgrounds/bg_dubai_festa.png",
   "backgrounds/bg_dubai_grand_smoke_stage.png",
   "backgrounds/bg_dubai_inn_day.png",
@@ -2883,6 +2895,7 @@
   "ui/face_icons/face_minto_private.png",
   "ui/face_icons/face_nagumo.png",
   "ui/face_icons/face_naru.png",
+  "ui/face_icons/face_noor.png",
   "ui/face_icons/face_pakki.png",
   "ui/face_icons/face_rei.png",
   "ui/face_icons/face_rin.png",
@@ -2991,7 +3004,8 @@
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
-  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png"
+  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
+  "sprites/characters/noor/chr_noor_normal.png"
  ],
  "limeMedia": {
   "st_adam_bless": {

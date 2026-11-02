@@ -18,6 +18,8 @@ export async function suite(name, run, {
   initScript = null,
   readLoadingComics = true,
   acknowledgeGrowth = true,
+  // 心得の盤のはじめての案内と最初の火種（growth-board-tutorial.js）。他の検査の火種の数を変えないよう既定は出さない
+  boardTutorial = false,
 } = {}) {
   fs.mkdirSync(artifacts, { recursive: true });
   const timeoutMs = Number(process.env.BROWSER_TIMEOUT_MS || 10000);
@@ -32,6 +34,7 @@ export async function suite(name, run, {
     const page = await context.newPage();
     if (readLoadingComics) await installLoadingComicReader(page);
     if (acknowledgeGrowth) await installGrowthAcknowledger(page);
+    if (!boardTutorial) await page.addInitScript(() => { try { localStorage.setItem("suien_board_tutorial", "off"); } catch {} });
     if (initScript) await page.addInitScript(initScript);
     const errors = [];
     const failedResources = [];

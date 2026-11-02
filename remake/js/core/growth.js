@@ -617,9 +617,10 @@ export async function presentNight({ evePlace = null } = {}) {
 export async function reflectAtSpot(spotId, { boardOnly = false } = {}) {
   if (spotId !== "kannon" || !growthEnabled() || !state) return false;
   const owner = state;
-  const { canReflect, reflectAt } = await import("../daily/reflection.js");
+  const { canReflectAt, reflectAt } = await import("../daily/reflection.js");
   if (state !== owner || !growthEnabled()) return true;
-  if (!canReflect()) return false;
+  // 最初の火種をまだもらっていなければ、火種が0でも初回だけは盤を開ける（はじめての案内）
+  if (!canReflectAt("kannon")) return false;
   const { modal } = await import("./ui.js");
   if (state !== owner || !growthEnabled()) return true;
   const how = await modal({ title: "観音堂", body: "学んできたことを振り返り、火種を盤に灯せる。", options: [

@@ -1,5 +1,5 @@
 {
-  "source": "Codex image_gen candidates delivered on PR #2306 (gigafile ZIPs, SHA-256 checked against the handoff comments)",
+  "source": "Codex image_gen candidates delivered on PR #2306 and #2333 (gigafile ZIPs, SHA-256 checked against the handoff comments)",
   "adopt": {
     "backdrop": {
       "raw": "raw/phase1/backdrop_day-B-raw.png",
@@ -32,6 +32,34 @@
     "rider": {
       "raw": "raw/rider/rider_ride-B-raw.png",
       "raw_sha256": "e3d8ef778338f95fbaadad26390977607a32fcdceb908e3fca94c0ebeeb4a3f0"
+    },
+    "backdrop_dusk": {
+      "raw": "raw/phase4/backdrop_dusk-raw.png",
+      "raw_sha256": "ac1c0f29dc33688ca2c46c79ba2f199cb0c2df03309ff5b588c306f44d870b21"
+    },
+    "vn_dusk": {
+      "raw": "raw/phase4/bg_dubai_dunes_dusk-raw.png",
+      "raw_sha256": "8e5e6e34039f88d05c2c67151f04055907885906c93ca33f119724fb5ccf46f0"
+    },
+    "rider_lean_left": {
+      "raw": "raw/phase4/rider_lean_left-raw.png",
+      "raw_sha256": "0db52ee5e0f417fe0011dbc02d64dffa2c00deeb7bc39dd5c654f5699ef10d39"
+    },
+    "rider_lean_right": {
+      "raw": "raw/phase4/rider_lean_right-raw.png",
+      "raw_sha256": "4223a740508b20d22ed8e075e4b018dbda283d16d9a08963d59c002929a0b897"
+    },
+    "rider_jump": {
+      "raw": "raw/phase4/rider_jump-raw.png",
+      "raw_sha256": "c9f1b57c9a014c540c23b86e233f430283ebcfadee96be6f2427cd52558ba9b3"
+    },
+    "rider_brace": {
+      "raw": "raw/phase4/rider_brace-raw.png",
+      "raw_sha256": "2b668ec460047ae7603d9d6f3bbe485a66b6a34f5d0c22a704850202f76b0fff"
+    },
+    "rider_fall": {
+      "raw": "raw/phase4/rider_fall-raw.png",
+      "raw_sha256": "353ae8e0060e37d55d259af22e0c62f5e663dab03b63eee2c0bf6be5a7919074"
     }
   },
   "backdrop": {
@@ -70,6 +98,28 @@
       196,
       98
     ]
+  },
+  "backdrop_dusk": {
+    "sky": {
+      "png": "assets/ui/desert_ride/backdrop_dusk_sky.png",
+      "png_sha256": "a1f87535dc744af4950ee29590ea285d768337615c49fe405eb995a79b5b7045",
+      "webp": "remake/img/ui/desert_ride/backdrop_dusk_sky.webp",
+      "webp_sha256": "bb957c23745064967c6e884f9842b8963baa95cc624519b84bf8b4c1625b1b91",
+      "size": [
+        1800,
+        412
+      ]
+    },
+    "land": {
+      "png": "assets/ui/desert_ride/backdrop_dusk_land.png",
+      "png_sha256": "326511acc411207f704f4cbf53ade460c595821cc56408c6cf9711dcdf4c808e",
+      "webp": "remake/img/ui/desert_ride/backdrop_dusk_land.webp",
+      "webp_sha256": "a8556ba0e1fef52203604bfbe8eba48809e471f806078414a8e1e5d6529f422e",
+      "size": [
+        1800,
+        451
+      ]
+    }
   },
   "sand_puff": {
     "png": "assets/ui/desert_ride/sand_puff.png",
@@ -147,9 +197,108 @@
       "boardRight": 0.8732
     }
   },
+  "rider_lean_left": {
+    "png": "assets/ui/desert_ride/rider_lean_left.png",
+    "png_sha256": "f472babed2f6168698cb6da32ec799b54c81508a0c84ed5b15c685350b5ca4d9",
+    "webp": "remake/img/ui/desert_ride/rider_lean_left.webp",
+    "webp_sha256": "c9cbc240ae3f8f51a10d6285029407b3f74a0ff50ffd6e66d6009c5e7d6a6ba6",
+    "size": [
+      536,
+      724
+    ],
+    "stray_alpha_cleared": 17411,
+    "scale": 0.560993,
+    "anchor": {
+      "x": 0.6294,
+      "y": 0.8209
+    }
+  },
+  "rider_lean_right": {
+    "png": "assets/ui/desert_ride/rider_lean_right.png",
+    "png_sha256": "1d64b4da7816396aca8b7b5824fdb0b7ee175eaae77aad8cd6cda78f8e37ac0c",
+    "webp": "remake/img/ui/desert_ride/rider_lean_right.webp",
+    "webp_sha256": "5554fcb92484f4fb7fa376699491116c9e56a90dea253506e9487a93dd0976b1",
+    "size": [
+      542,
+      771
+    ],
+    "stray_alpha_cleared": 18979,
+    "scale": 0.560993,
+    "anchor": {
+      "x": 0.5103,
+      "y": 0.8261
+    }
+  },
+  "rider_jump": {
+    "png": "assets/ui/desert_ride/rider_jump.png",
+    "png_sha256": "1b2062cc49cc4e5a975cc831412102b6e34c306f6ee2bf430bf1b7568b7f8d96",
+    "webp": "remake/img/ui/desert_ride/rider_jump.webp",
+    "webp_sha256": "b76c851c38d332d5d643a64e1f041f8722d0d7050eed6f55475580b443f6ba04",
+    "size": [
+      537,
+      670
+    ],
+    "stray_alpha_cleared": 18355,
+    "scale": 0.560993,
+    "anchor": {
+      "x": 0.5761,
+      "y": 0.8388
+    }
+  },
+  "rider_brace": {
+    "png": "assets/ui/desert_ride/rider_brace.png",
+    "png_sha256": "8ae9e4ac8edcd1139a4c3af836caa2c4d6198115bd7ac3788c18bb63884868f6",
+    "webp": "remake/img/ui/desert_ride/rider_brace.webp",
+    "webp_sha256": "5b1ed5d16002a78a880ed6b4c54c09e46d60291a5a6d1f69447a1beddf46b986",
+    "size": [
+      561,
+      644
+    ],
+    "stray_alpha_cleared": 23796,
+    "scale": 0.560993,
+    "anchor": {
+      "x": 0.558,
+      "y": 0.8198
+    }
+  },
+  "rider_fall": {
+    "png": "assets/ui/desert_ride/rider_fall.png",
+    "png_sha256": "fc5ac804af2db638ef456c3f7a36b43e3ed202b44165b768297cfcde0a627750",
+    "webp": "remake/img/ui/desert_ride/rider_fall.webp",
+    "webp_sha256": "62ecba99ab2231516703ec17cd057b60731ffe52a810f20100992c60f4171080",
+    "size": [
+      554,
+      655
+    ],
+    "stray_alpha_cleared": 24260,
+    "scale": 0.560993,
+    "anchor": {
+      "x": 0.5256,
+      "y": 0.9569
+    }
+  },
+  "noor_normal": {
+    "raw": "raw/phase4/noor-candidates/noor_normal_A-raw.png",
+    "raw_sha256": "2e72bc62ee718aced3dbb59de3cb1bcd968eeaa85fd3e9c6f8f2211b3aad3b53",
+    "png": "assets/sprites/characters/noor/chr_noor_normal.png",
+    "png_sha256": "1374af232413652aaa6285982730e308ba47edf31305d89c3f3632b279b07266",
+    "size": [
+      896,
+      1200
+    ],
+    "scale": 0.77381
+  },
   "bg_dubai_dunes_day": {
     "png": "assets/backgrounds/bg_dubai_dunes_day.png",
     "png_sha256": "8533039c13d3f5c8a41e33f07c811d5c5fa450f3244bc8bb79656fc6fbcf082d",
+    "size": [
+      1280,
+      720
+    ]
+  },
+  "bg_dubai_dunes_dusk": {
+    "png": "assets/backgrounds/bg_dubai_dunes_dusk.png",
+    "png_sha256": "2d01fdaf3b48a3b5debc64f37e7456eacab7d3bbf9d2d68e74b2d399d8a9d577",
     "size": [
       1280,
       720
