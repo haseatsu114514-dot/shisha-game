@@ -1,5 +1,5 @@
 {
-  "_comment": "シーシャくじ。新品箱は各50枚・S賞1枚。定価換算は実際に付与する葉のg×店頭50g価格、非売品は既存中古評価額で保守的に計算する。売却益のプラスは保証しない。旧箱はlegacyGradesの景品・残り順を引き切る。",
+  "_comment": "シーシャくじ。500円・1,000円の箱は各50枚、第2章から順に並ぶ上位くじ（3,000円・5,000円・10,000円）は20〜40枚で、どの箱もS賞1枚。定価換算は実際に付与する葉のg×店頭50g価格、店で売る機材は店頭価格、非売品は既存中古評価額で保守的に計算する。持っている機材が当たったら中古買い取り額（非売品は景品評価の半額）のお金に替える。売却益のプラスは保証しない。旧箱はlegacyGradesの景品・残り順を引き切る。",
   "meta": {
     "refillDays": 3,
     "version": 2
@@ -169,6 +169,356 @@
         "sell": 3000,
         "count": 1,
         "desc": "箱を引き切った人だけがもらえる、NIGHTSIDEのプレミアムなハガル。",
+        "secret": true
+      }
+    },
+    "g3000": {
+      "price": 3000,
+      "boxSize": 20,
+      "chapterMin": 2,
+      "label": "機材くじ（1回3,000円）",
+      "ev_comment": "第2章から（KJ02）。20枚60,000円。S1/20。台30,000＋機材15,200（店頭価格）＋葉18,375円＝63,575円相当（105.96%）。ラストワンを中古評価3,000円で加えると66,575円相当（110.96%）。機材を全部売っても22,600円（37.7%）。S賞の台は店で30,000円なので、箱を引き切るより店で買う方が安い。持っている機材は中古買い取り額のお金に替わる。",
+      "prizes": [
+        {
+          "rank": "S",
+          "name": "ステンレス削り出しの台",
+          "type": "stand",
+          "equipId": "stand_stainless",
+          "sell": 15000,
+          "count": 1,
+          "desc": "ステンレスの細いステムに角型のガラスベース。引きが軽く、家シーシャで葉の違いをつかみやすい。"
+        },
+        {
+          "rank": "A",
+          "name": "雲窯ファンネルハガル",
+          "type": "equip",
+          "equipId": "kumogama_phunnel",
+          "sell": 4900,
+          "count": 1,
+          "desc": "窯元が一つずつ挽いた釉薬のファンネル。容量16gで、適温の幅が少し広い。"
+        },
+        {
+          "rank": "A",
+          "name": "ビッグタヌキッシュリッド",
+          "type": "equip",
+          "equipId": "winkwink_hagal",
+          "sell": 1500,
+          "count": 1,
+          "desc": "素焼きなど大きいハガル向けのHMD。熱持ちが良い。"
+        },
+        {
+          "rank": "A",
+          "name": "高密度フラット炭",
+          "type": "equip",
+          "equipId": "dense_flat_charcoal",
+          "sell": 1200,
+          "count": 1,
+          "desc": "灰が少なく、熱の入り方が揺れにくい上位のフラット炭。"
+        },
+        {
+          "rank": "B",
+          "name": "新入荷の葉 3種セット",
+          "type": "flavor",
+          "sell": 0,
+          "count": 1,
+          "desc": "ドバジ ミルク・アフサール レッドチェリー・ドバジ パッションフルーツを各50g。手持ちの葉に加わる。",
+          "flavors": [
+            {
+              "id": "milk",
+              "grams": 50
+            },
+            {
+              "id": "cherry",
+              "grams": 50
+            },
+            {
+              "id": "passion_fruit",
+              "grams": 50
+            }
+          ]
+        },
+        {
+          "rank": "C",
+          "name": "ドバジ ミルク（25g）",
+          "type": "flavor",
+          "flavorId": "milk",
+          "grams": 25,
+          "sell": 0,
+          "count": 5,
+          "desc": "いちごミルクにも使えるミルク25g。手持ちの葉に加わる。"
+        },
+        {
+          "rank": "C",
+          "name": "アフサール レッドチェリー（25g）",
+          "type": "flavor",
+          "flavorId": "cherry",
+          "grams": 25,
+          "sell": 0,
+          "count": 5,
+          "desc": "甘酸っぱいチェリー25g。手持ちの葉に加わる。"
+        },
+        {
+          "rank": "C",
+          "name": "ドバジ パッションフルーツ（25g）",
+          "type": "flavor",
+          "flavorId": "passion_fruit",
+          "grams": 25,
+          "sell": 0,
+          "count": 5,
+          "desc": "南国らしいパッションフルーツ25g。手持ちの葉に加わる。"
+        }
+      ],
+      "lastOne": {
+        "rank": "LAST",
+        "name": "ラストワン賞・ナイトサイド プレミアハガル",
+        "equipId": "nightside_premier_hagal",
+        "type": "equip",
+        "sell": 3000,
+        "count": 1,
+        "desc": "箱を引き切った人だけがもらえる、NIGHTSIDEのプレミアムなハガル。",
+        "secret": true
+      }
+    },
+    "g5000": {
+      "price": 5000,
+      "boxSize": 40,
+      "chapterMin": 3,
+      "label": "上級機材くじ（1回5,000円）",
+      "ev_comment": "第3章から（KJ02）。40枚200,000円。S1/40。台130,000＋機材23,800（店頭価格）＋葉69,500円＝223,300円相当（111.65%）。ラストワンを景品評価3,000円で加えると226,300円相当（113.15%）。機材を全部売っても76,900円（38.45%）。S賞の台は店で100,000円。",
+      "prizes": [
+        {
+          "rank": "S",
+          "name": "くるみ材と真鍮の台",
+          "type": "stand",
+          "equipId": "stand_walnut",
+          "sell": 50000,
+          "count": 1,
+          "desc": "真鍮のステムをくるみ材で包んだ台。煙がなめらかに通り、家シーシャで熟練度がよく育つ。"
+        },
+        {
+          "rank": "A",
+          "name": "ステンレス削り出しの台",
+          "type": "stand",
+          "equipId": "stand_stainless",
+          "sell": 15000,
+          "count": 1,
+          "desc": "ステンレスの細いステムに角型のガラスベース。引きが軽く、家シーシャで葉の違いをつかみやすい。"
+        },
+        {
+          "rank": "A",
+          "name": "ロートスプラスHMD",
+          "type": "equip",
+          "equipId": "lotos_plus",
+          "sell": 7000,
+          "count": 1,
+          "desc": "ロートスHMDの上位モデル。アルミは張らず、厚い蓋で熱がぶれにくい。"
+        },
+        {
+          "rank": "A",
+          "name": "雲窯ファンネルハガル",
+          "type": "equip",
+          "equipId": "kumogama_phunnel",
+          "sell": 4900,
+          "count": 1,
+          "desc": "窯元が一つずつ挽いた釉薬のファンネル。容量16gで、適温の幅が少し広い。"
+        },
+        {
+          "rank": "B",
+          "name": "東京の葉 3種セット",
+          "type": "flavor",
+          "sell": 0,
+          "count": 3,
+          "desc": "AF ピスタチオ・フォースフェクタ マウンテンミスト・ドバジ ビスケットを各50g。手持ちの葉に加わる。",
+          "flavors": [
+            {
+              "id": "pistachio",
+              "grams": 50
+            },
+            {
+              "id": "mountain_mist",
+              "grams": 50
+            },
+            {
+              "id": "biscuit",
+              "grams": 50
+            }
+          ]
+        },
+        {
+          "rank": "C",
+          "name": "AF ライム（50g）",
+          "type": "flavor",
+          "flavorId": "lime",
+          "grams": 50,
+          "sell": 0,
+          "count": 9,
+          "desc": "レモンライムにも使えるライム1箱50g。手持ちの葉に加わる。"
+        },
+        {
+          "rank": "C",
+          "name": "ドバジ ビスケット（50g）",
+          "type": "flavor",
+          "flavorId": "biscuit",
+          "grams": 50,
+          "sell": 0,
+          "count": 8,
+          "desc": "焼き菓子の香りのビスケット1箱50g。手持ちの葉に加わる。"
+        },
+        {
+          "rank": "C",
+          "name": "AF ピスタチオ（50g）",
+          "type": "flavor",
+          "flavorId": "pistachio",
+          "grams": 50,
+          "sell": 0,
+          "count": 8,
+          "desc": "香ばしいピスタチオ1箱50g。手持ちの葉に加わる。"
+        },
+        {
+          "rank": "C",
+          "name": "フォースフェクタ マウンテンミスト（50g）",
+          "type": "flavor",
+          "flavorId": "mountain_mist",
+          "grams": 50,
+          "sell": 0,
+          "count": 8,
+          "desc": "レモンとライムが重なるマウンテンミスト1箱50g。手持ちの葉に加わる。"
+        }
+      ],
+      "lastOne": {
+        "rank": "LAST",
+        "name": "ラストワン賞・大会公式モデルの台",
+        "equipId": "home_rig_pro",
+        "type": "stand",
+        "sell": 3000,
+        "count": 1,
+        "desc": "箱を引き切った人だけがもらえる、大会の本番と同じ台。",
+        "secret": true
+      }
+    },
+    "g10000": {
+      "price": 10000,
+      "boxSize": 40,
+      "chapterMin": 4,
+      "label": "特注台くじ（1回10,000円）",
+      "ev_comment": "第4章から（KJ02）。40枚400,000円。S1/40。台300,000＋機材29,200（店頭価格）＋葉95,950円＝425,150円相当（106.29%）。ラストワンの台を店頭価格30,000円で加えると455,150円相当（113.79%）。機材を全部売っても164,600円（41.15%）。S賞の台は店で300,000円。",
+      "prizes": [
+        {
+          "rank": "S",
+          "name": "職人仕立ての特注台",
+          "type": "stand",
+          "equipId": "stand_custom",
+          "sell": 150000,
+          "count": 1,
+          "desc": "職人が一台ずつ仕立てる真鍮のステムと手吹きガラスのベース。家シーシャで熟練度がいちばん育つ。"
+        },
+        {
+          "rank": "A",
+          "name": "ロートスプラスHMD",
+          "type": "equip",
+          "equipId": "lotos_plus",
+          "sell": 7000,
+          "count": 1,
+          "desc": "ロートスHMDの上位モデル。アルミは張らず、厚い蓋で熱がぶれにくい。"
+        },
+        {
+          "rank": "A",
+          "name": "雲窯ファンネルハガル",
+          "type": "equip",
+          "equipId": "kumogama_phunnel",
+          "sell": 4900,
+          "count": 1,
+          "desc": "窯元が一つずつ挽いた釉薬のファンネル。容量16gで、適温の幅が少し広い。"
+        },
+        {
+          "rank": "A",
+          "name": "ビッグタヌキッシュリッド",
+          "type": "equip",
+          "equipId": "winkwink_hagal",
+          "sell": 1500,
+          "count": 1,
+          "desc": "素焼きなど大きいハガル向けのHMD。熱持ちが良い。"
+        },
+        {
+          "rank": "A",
+          "name": "高密度フラット炭",
+          "type": "equip",
+          "equipId": "dense_flat_charcoal",
+          "sell": 1200,
+          "count": 1,
+          "desc": "灰が少なく、熱の入り方が揺れにくい上位のフラット炭。"
+        },
+        {
+          "rank": "B",
+          "name": "アフサールの定番 3種セット",
+          "type": "flavor",
+          "sell": 0,
+          "count": 10,
+          "desc": "アフサール ダブルアップル・アフサール ミント・アフサール カルダモンを各50g。手持ちの葉に加わる。",
+          "flavors": [
+            {
+              "id": "absal_double_apple",
+              "grams": 50
+            },
+            {
+              "id": "absal_mint",
+              "grams": 50
+            },
+            {
+              "id": "cardamom",
+              "grams": 50
+            }
+          ]
+        },
+        {
+          "rank": "C",
+          "name": "ナイトサイド ブラストミント（50g）",
+          "type": "flavor",
+          "flavorId": "nightside_blast_mint",
+          "grams": 50,
+          "sell": 0,
+          "count": 7,
+          "desc": "ナイトサイドの強い清涼ミント1箱50g。手持ちの葉に加わる。"
+        },
+        {
+          "rank": "C",
+          "name": "ナイトサイド アールグレイ（50g）",
+          "type": "flavor",
+          "flavorId": "nightside_earlgrey_release",
+          "grams": 50,
+          "sell": 0,
+          "count": 6,
+          "desc": "NIGHTSIDEのアールグレイ1箱50g。手持ちの葉に加わる。"
+        },
+        {
+          "rank": "C",
+          "name": "アフサール ローズ（50g）",
+          "type": "flavor",
+          "flavorId": "rose",
+          "grams": 50,
+          "sell": 0,
+          "count": 6,
+          "desc": "華やかなローズ1箱50g。手持ちの葉に加わる。"
+        },
+        {
+          "rank": "C",
+          "name": "AF バニラ（50g）",
+          "type": "flavor",
+          "flavorId": "vanilla",
+          "grams": 50,
+          "sell": 0,
+          "count": 6,
+          "desc": "甘い香りのバニラ1箱50g。手持ちの葉に加わる。"
+        }
+      ],
+      "lastOne": {
+        "rank": "LAST",
+        "name": "ラストワン賞・ステンレス削り出しの台",
+        "equipId": "stand_stainless",
+        "type": "stand",
+        "sell": 15000,
+        "count": 1,
+        "desc": "箱を引き切った人だけがもらえる、引きの軽いステンレスの台。",
         "secret": true
       }
     }

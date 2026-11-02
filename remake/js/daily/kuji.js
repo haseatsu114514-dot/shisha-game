@@ -43,23 +43,31 @@ function boxOf(g) {
   return b;
 }
 
-/** 景品を実体化。goods は売れる小物、flavor は手持ちに加わる、consumable は使う物（演出のみ） */
+/** 景品を実体化。goods は売れる小物、flavor は手持ちに加わる、台・機材（equipId）は持ち物に入る、consumable（旧箱）は演出のみ。
+ * 機材は同じ物を二つ持てないので、持っている物が当たったら中古買い取りの額をお金で渡す（非売品で買い取りの無い台は景品評価の半額）。
+ * 戻り値はその時に渡した額（持っていなかった・機材でない景品は null） */
 function grant(prize) {
   if (prize.equipId) {
-    if (state.owned.includes(prize.equipId)) { if (prize.sell) addMoney(Math.round(prize.sell * 0.5)); }
-    else state.owned.push(prize.equipId);
-    return;
+    if (!state.owned.includes(prize.equipId)) { state.owned.push(prize.equipId); return null; }
+    const gear = DB.equipById?.[prize.equipId];
+    const cash = gear && !gear.unsellable && gear.sell_price > 0 ? gear.sell_price : Math.round((prize.sell || 0) * 0.5);
+    if (cash) addMoney(cash);
+    return cash;
   }
   if (prize.type === "flavor" && prize.flavorId) {
     addFlavorStock(prize.flavorId, prize.grams ?? FLAVOR_BOX_GRAMS);
-    return;
+    return null;
   }
   if (prize.type === "flavor" && prize.flavors) {
     for (const leaf of prize.flavors) addFlavorStock(leaf.id, leaf.grams);
-    return;
+    return null;
   }
   if ((prize.type === "goods" || prize.type === "stand") && prize.sell) state.goods.push({ name: prize.name, sell: prize.sell });
+  return null;
 }
+/** 持っていた機材をお金に替えた時は、結果のカードにその額を出す */
+const withDupe = (prize, cash) => cash == null ? prize : { ...prize, dupCash: cash };
+const dupeText = (prize) => `持っているので、中古買い取りの${yen(prize.dupCash)}を受け取った`;
 
 /** ショップの「くじ」タブの中身 */
 export function kujiRows(rerender) {
@@ -127,7 +135,7 @@ export function kujiRows(rerender) {
         el("b", { text: g.label }),
         el("small", { text: empty
           ? `売り切れ（あと${Math.max(0, refill - (state.day - box.emptyDay))}日で新しい箱）`
-          : `のこり ${left} / ${size} 枚 ・ S賞: ${top}${size !== g.boxSize ? "（旧箱・次回は50枚）" : ""}` }),
+          : `のこり ${left} / ${size} 枚 ・ S賞: ${top}${size !== g.boxSize ? `（旧箱・次回は${g.boxSize}枚）` : ""}` }),
         el("small", { text: left === 1 ? "次が最後の1枚！ ラストワン賞・シークレットつき" : "ラストワン賞・シークレット（中身は獲得してから）" }),
       ]),
       el("div.kuji-actions", actions),
@@ -143,11 +151,10 @@ function takeTicket(g, box) {
   box.drawn += 1;
   const last = box.drawn >= box.order.length;
   if (last) box.emptyDay = state.day;
-  grant(prize);
-  const extras = last && box.lastOne ? [box.lastOne] : [];
-  extras.forEach(grant);
+  const shown = withDupe(prize, grant(prize));
+  const extras = (last && box.lastOne ? [box.lastOne] : []).map((ex) => withDupe(ex, grant(ex)));
   save(); // 引いた直後に保存（結果を見てからのロードでは変わらない）
-  return { prize, extras };
+  return { prize: shown, extras };
 }
 
 async function draw(g, box) {
@@ -177,6 +184,7 @@ function revealMany(results, count) {
     const cards = results.map(prize => el(`div.kuji-card.kuji-short.rank-${prize.rank}${instant ? "" : ".kuji-facedown"}`, [
       el("div.kuji-rank", { text: prize.rank === "LAST" ? "ラストワン賞" : `${prize.rank}賞` }),
       el("div.kuji-name", { text: prize.rank === "LAST" ? prize.name.replace(/^ラストワン賞・/, "") : prize.name }),
+      ...(prize.dupCash != null ? [el("div.kuji-dupe", { text: `持っている → ${yen(prize.dupCash)}` })] : []),
     ]));
     layers.modal.replaceChildren(el("div.kuji-overlay.kuji-multi", { dataset: { test: "kuji-multi-reveal" } }, [
       el("div.kuji-multi-panel", [
@@ -223,7 +231,10 @@ function reveal(prize, extras = []) {
       }
       await revealOne(ov, p, skip);
       open = true;
-      if (skip) for (const ex of extras) { await sleep(500); toast(`${ex.name} を手に入れた！`, { kind: "good" }); }
+      if (skip) for (const ex of extras) {
+        await sleep(500);
+        toast(ex.dupCash != null ? `${ex.name} は${dupeText(ex)}` : `${ex.name} を手に入れた！`, { kind: "good" });
+      }
     };
     ov.onclick = () => {
       if (!open) return;
@@ -255,6 +266,7 @@ function revealOne(ov, prize, skip) {
         el("div.kuji-rank", { text: last ? "ラストワン賞" : `${prize.rank}賞` }),
         el("div.kuji-name", { text: last ? prize.name.replace(/^ラストワン賞・/, "") : prize.name }),
         el("div.kuji-desc", { text: prize.desc || "" }),
+        ...(prize.dupCash != null ? [el("div.kuji-dupe", { text: dupeText(prize) })] : []),
         el("div.kuji-tap", { text: "タップで閉じる" }),
       );
       SE.stamp();

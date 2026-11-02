@@ -136,6 +136,12 @@
       "run": ["node remake/test/kuji_sell_guard.mjs"]
     },
     {
+      "id": "kuji-tiers-kj02",
+      "title": "Kuji tiers by chapter, gear prizes and duplicate cash (KJ02)",
+      "kind": "quick",
+      "run": ["node remake/test/kuji_tiers.mjs"]
+    },
+    {
       "id": "growth-levelup-browser",
       "title": "Growth HUD gauge, EXP chip, night level-up and hidane badge (?growth=1)",
       "kind": "browser",
@@ -2737,6 +2743,8 @@
         "remake/css/store-logos.css",
         "remake/js/daily/map.js",
         "remake/js/daily/shop.js",
+        "remake/js/daily/kuji.js",
+        "data/kuji.json",
         "remake/css/shop*.css",
         "remake/test/store_logos.mjs",
         "remake/test/browser/facility_map.mjs",
@@ -3482,7 +3490,9 @@
       "weight": 0.5,
       "timeout": 10,
       "paths": [
-        "remake/test/kuji_purchase.mjs"
+        "remake/test/kuji_purchase.mjs",
+        "remake/js/daily/kuji.js",
+        "data/kuji.json"
       ],
       "run": [
         "node remake/test/kuji_purchase.mjs"
