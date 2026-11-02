@@ -12,7 +12,7 @@
 //                → 観客の挙手の合計で勝敗 →（勝ち）余韻／（負け・同数）そのまま後日談へ
 //   aftermath  : 博士の後日談 → tonari へ戻る
 //   finale     : ending の3場面（開始 → 中間 → 日常）→ cleared
-//   cleared    : スタッフロール（#517）を最後まで流したら _ch5_staff_roll_done → タイトルへ。以後の再開は完了カード
+//   cleared    : スタッフロール（#517）を最後まで流したら _ch5_staff_roll_done → 周回を解放してタイトルへ。以後の再開は完了カード
 //
 // 触らないもの（オーナー判断待ち）:
 //   Q13 会場の固有名・Q14 客席の台詞は台本側が空白のまま。表示名は「会場」で固定する。
@@ -474,6 +474,18 @@ export function recordChapterFiveCredits(value) {
   if (!chapterFiveCreditsPending(value)) return false;
   value.flags[CH5_CREDITS_FLAG] = true;
   return true;
+}
+
+/**
+ * 真エンドに到達したか（周回の解放条件。#1228「解放条件は真エンド到達」）。
+ * 真エンド＝9000との決着→フィナーレ→スタッフロール（#517 の決着後の流れ・RTP04）。別の真ENDは作らない。
+ * 勝敗は問わない読み方にしている: #517 の「9000に勝てば」は第5章が勝ち固定だった時期の言葉で、
+ * その後の progression_contract.loss で負け・同数も同じ後日談とフィナーレへ続くようになった。
+ * 勝ちだけにする場合は、この条件に `&& progress.won === true` を足すだけでよい。
+ */
+export function chapterFiveTrueEndReached(value) {
+  const progress = chapterFiveProgress(value);
+  return progress.part === "cleared" && value.flags[CH5_CREDITS_FLAG] === true;
 }
 
 /** 読了を確定する唯一の入口。今のpartで再生してよい場面だけ受け付ける。 */
