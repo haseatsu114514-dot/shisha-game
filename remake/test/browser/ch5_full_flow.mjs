@@ -16,6 +16,16 @@ const arm = page => page.evaluate(async () => {
   vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
 });
 const committed = (page, id) => page.waitForFunction(sceneId => window.__remake.state.flags._ch5.read[sceneId] === true, id);
+// 日常ループ（#2033）の地図が開いて、指定の日・時間帯で行き先を選べる状態か。
+const mapReady = (page, { day, slot } = {}) => page.waitForFunction(([day, slot]) => {
+  const s = window.__remake?.state;
+  return s && (day === undefined || s.day === day) && (slot === undefined || s.slot === slot)
+    && document.querySelector(".map:not(.done) [data-test=pin-tonari]") && !document.querySelector("#modal.show");
+}, [day, slot], { timeout: 60000 });
+async function go(page, pin) {
+  await page.locator(dt(`pin-${pin}`)).click();
+  await page.locator(dt("map-go")).click();
+}
 
 async function seed(page) {
   page.setDefaultTimeout(30000);
@@ -27,7 +37,7 @@ async function seed(page) {
       weatherSeed: 5, lovers: [], contacts: ["sumi"] });
     // 予告3の自動再生は chapter_preview.mjs が専任で検証する。ここでは既読にして第5章本体に集中する。
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true,
-      _ch4_preview_seen: true,
+      _ch4_preview_seen: true, _lime_opened: true, _lime_tut: 1,
       _ch4_cleared: true, _ch4_sheikh_revealed: true,
       _ch4: { startDay: 46, day: 5, stage: 4, part: "cleared", titleSeen: true, read: {},
         firstDay: 1, resolution: 5, attempts: 1 } };
@@ -110,55 +120,63 @@ await suite("ch5-full-flow", async check => {
       await page.locator(scene(id)).waitFor();
       await page.locator(dt("ch5-continue")).click();
     }
-    await page.locator(dt("ch5-free")).waitFor();
+    // 3. 自由行動は日常ループ（#2033）: 地図・日付・昼夜。勝負の日はまだ無い。
+    await mapReady(page, { day: 51, slot: 0 });
     state = await get(page);
     assert.equal(state.flags._ch5.part, "free");
     assert.equal(state.flags._ch5.stage, 2);
-
-    // 3. 自由行動: 最初の自由場面→実セーブ→リロード→再開しても読了が保たれる。
-    await page.locator(dt("ch5-spend-tonari")).click();
+    assert.equal(state.flags._ch5.matchDay, undefined);
+    assert.match(await page.locator(".hud").innerText(), /勝負の日まで[\s\S]*未定/);
+    for (const hidden of ["naru", "minto", "samechan", "c_station"])
+      assert.equal(await page.locator(dt(`pin-${hidden}`)).count(), 0, `${hidden} is not on the Chapter 5 map yet`);
+    // 昼の tonari: ましろの訪問 → 実セーブ → リロード → 再開しても読了と日付が保たれる。
+    await go(page, "tonari");
     await committed(page, "ch5_free_mashiro_visit");
-    await page.locator(dt("ch5-free")).waitFor();
-    await page.locator(dt("ch5-menu")).click();
-    await page.locator(dt("ch5-save")).click();
+    await mapReady(page, { day: 51, slot: 1 });
+    await page.locator(dt("hud-menu")).click();
+    await page.locator(dt("menu-save")).click();
     await page.locator(dt("slot-1")).click();
     await loadSlot(page, 1);
-    await page.locator(dt("ch5-free")).waitFor({ timeout: 60000 });
+    await mapReady(page, { day: 51, slot: 1 });
     const resumed = await get(page);
     assert.equal(resumed.flags._ch5.part, "free");
     assert.equal(resumed.flags._ch5.read.ch5_free_mashiro_visit, true);
     assert.equal(resumed.flags._ch5.stage, 2, "Reload must not replay the prologue");
-    assert.equal(resumed.day, 51);
 
-    // 4. 残りの自由場面を読み切ると「tonari で過ごす」が消える。
-    await page.locator(dt("ch5-spend-tonari")).click();
+    // 4. 夜の tonari: 初めての客 → 寝て翌日（DAY2）。閉店後の練習は夜だけ。
+    await go(page, "tonari");
     await committed(page, "ch5_free_first_visitor");
-    await page.locator(dt("ch5-free")).waitFor();
-    await page.locator(dt("ch5-spend-tonari")).click();
-    await committed(page, "ch5_free_tonari_practice");
-    // 閉店後の試作（#1666）: 試す→スミさんの返答→直す。能力・日・所持金は動かない。
-    await page.locator(dt("ch5-prep")).waitFor();
+    await mapReady(page, { day: 52, slot: 0 });
+    // 昼は家で休む（練習の場面は夜だけなので、昼の tonari ではいつものメニューになる）。
+    await go(page, "rest");
+    await mapReady(page, { day: 52, slot: 1 });
     const beforePrep = await get(page);
+    await go(page, "tonari");
+    await committed(page, "ch5_free_tonari_practice");
+    // 閉店後の試作（#1666）: 試す→スミさんの返答→直す。能力・所持金は動かない。
     await page.locator(dt("ch5-prep-heat")).click();
     await page.waitForFunction(() => window.__remake.state.flags._ch5.prep?.trial === "heat");
     await page.locator(dt("ch5-prep-adjust")).click();
     await page.waitForFunction(() => window.__remake.state.flags._ch5.prep?.adjusted === true);
-    await page.locator(dt("ch5-free")).waitFor();
+    await mapReady(page, { day: 53, slot: 0 });
     state = await get(page);
-    for (const key of ["day", "slot", "money", "stamina", "stats"])
+    for (const key of ["money", "stats"])
       assert.deepEqual(state[key], beforePrep[key], `${key} must not change by the prep`);
-    assert.equal(await page.locator(dt("ch5-spend-tonari")).count(), 0);
+    for (const id of ["ch5_free_mashiro_visit", "ch5_free_first_visitor", "ch5_free_tonari_practice"])
+      assert.equal(state.flags._ch5.read[id], true);
 
-    // 5. 連絡（1回目）: 「記録に残らない一日」を先に読み、選択肢で日程が決まる。
-    await page.locator(dt("ch5-contact")).click();
+    // 5. 博士に連絡（1回目）: 「記録に残らない一日」を先に読み、日を決める → その夜を越えて翌朝が勝負の日。
+    await go(page, "ch5_call");
     await committed(page, "ch5_unrecorded_day");
     await committed(page, "ch5_schedule_contact");
-    await page.locator(dt("ch5-scheduled")).waitFor();
+    await page.locator(dt("ch5-scheduled")).waitFor({ timeout: 60000 });
     state = await get(page);
     assert.equal(state.flags._ch5.part, "scheduled");
     assert.equal(state.flags._ch5_match_scheduled, true);
+    assert.equal(state.day, 54);
+    assert.equal(state.flags._ch5.matchDay, 54);
 
-    // 6. 会場確認で「まだ行かない」: 先送りの場面を読んで自由行動へ戻る。
+    // 6. 会場確認で「まだ行かない」→ 日程を取り消す: 先送りの場面を読んで、自由行動（同じ日）へ戻る。
     await page.locator(dt("ch5-go-venue")).click();
     await page.locator(dt("ch5-venue-stay")).click();
     // 「まだ行かない」は保留だけ。日程は残り、カードに留まる。
@@ -166,15 +184,17 @@ await suite("ch5-full-flow", async check => {
     assert.equal((await get(page)).flags._ch5_match_scheduled, true);
     await page.locator(dt("ch5-cancel-schedule")).click();
     await committed(page, "ch5_timeout");
-    await page.locator(dt("ch5-free")).waitFor();
+    await mapReady(page, { day: 54, slot: 0 });
     state = await get(page);
     assert.equal(state.flags._ch5.part, "free");
     assert.equal(state.flags._ch5_match_scheduled, false);
     assert.equal(state.flags._ch5.scheduleDecision, null);
+    assert.equal(state.flags._ch5.matchDay, undefined);
 
-    // 7. 連絡（2回目）→ 日程確定 → 「向かう」で試合へ。
-    await page.locator(dt("ch5-contact")).click();
-    await page.locator(dt("ch5-scheduled")).waitFor();
+    // 7. 連絡（2回目）→ 日程確定 → 翌朝（DAY5）に「向かう」で試合へ。
+    await go(page, "ch5_call");
+    await page.locator(dt("ch5-scheduled")).waitFor({ timeout: 60000 });
+    assert.equal((await get(page)).day, 55);
     await page.locator(dt("ch5-go-venue")).click();
     await page.locator(dt("ch5-venue-go")).click();
     await page.locator(matchScene("ch5_match_day_arrival")).waitFor();
