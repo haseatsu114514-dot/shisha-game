@@ -472,6 +472,30 @@
         "aroma": 4,
         "bonus": 1
       }
+    },
+    {
+      "id": "suyaki_kuze",
+      "type": "bowl",
+      "name": "久世が育てたアールグレイ専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_kuze",
+      "description": "久世が福岡から持ってきて、煙幕の閉店後に客の答えを確かめるたび使い込んだ素焼き。アールグレイの柑橘と紅茶の香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "kuze",
+        "reason": "返事の欄の続きを、別の台で",
+        "flavor": "absal_earlgrey",
+        "leaf_grams": 50,
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
     }
   ]
 }
