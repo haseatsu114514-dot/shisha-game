@@ -389,6 +389,31 @@
         {
           "speaker": "traveler",
           "face": "normal",
+          "text": "甘いだけの葉だと、よく言われる。急いで焚けば、本当にそうなる"
+        },
+        {
+          "speaker": "traveler",
+          "face": "normal",
+          "text": "待ってやれば、皮の渋みが戻ってくる。……葡萄は、お世辞を言わない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お世辞、ですか"
+        },
+        {
+          "speaker": "traveler",
+          "face": "normal",
+          "text": "重ければ重い、焦げれば焦げたと、すぐ舌に出る。だから、これにしている"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "男は吸い口を拭き、急がずに煙を吐いた。煙は、台の上で静かにほどけた。"
+        },
+        {
+          "speaker": "traveler",
+          "face": "normal",
           "text": "明日が本番だな、ハジメ"
         },
         {
