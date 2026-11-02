@@ -7,6 +7,8 @@ import { SE, unlockAudio } from "../core/audio.js";
 import { COURSE, EDGE, SPEED, DEFAULT_SEED, generateCourse, practiceCourse, createGame, step, press, summary, curveAt, botControl } from "./desert-ride-model.js";
 import { DESERT_ART, loadDesertArt } from "./desert-ride-art.js";
 
+const BOT_STEP = 1 / 60; // 自動操縦の判断と物理の刻み（モデルの検査と同じ）
+
 const W = 1280, H = 720;
 const HORIZON = 262;             // 地平線の高さ
 const CAM = { depth: 1.5, height: 2.0, back: 4.5, meterPerLane: 1.6 }; // 疑似3Dのカメラ（人物の4.5m後ろ・高さ2m。lane 1 = 1.6m）
@@ -54,7 +56,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     root.focus({ preventScroll: true });
 
     const input = { left: false, right: false };
-    let game = null, mode = null, bot = null, botMemo = {}, last = 0, world = null, particles = [], shakeT = 0, flashT = 0, popT = 0, popText = "", popKind = "";
+    let game = null, mode = null, bot = null, botMemo = {}, botLag = 0, last = 0, world = null, particles = [], shakeT = 0, flashT = 0, popT = 0, popText = "", popKind = "";
     let tut = null;
     const finish = () => {
       if (done) return;
@@ -136,7 +138,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const course = kind === "practice" ? practiceCourse() : generateCourse(seed);
       game = createGame(course);
       world = { sky: 0, yaw: 0, sunPulse: 0 };
-      particles = []; shakeT = 0; flashT = 0; popT = 0; bot = null; botMemo = {};
+      particles = []; shakeT = 0; flashT = 0; popT = 0; bot = null; botMemo = {}; botLag = 0;
       tut = kind === "practice" ? { step: "move", moved: false, bumpTries: 0, said: new Set() } : null;
       controls.hidden = false; quit.hidden = false;
       setPhase(kind);
@@ -210,9 +212,21 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const dt = Math.min(0.05, (now - last) / 1000) * speedUp;
       last = now;
       const before = game.events.length;
-      if (bot) { const { input: botInput, action } = botControl(game, bot, botMemo); Object.assign(input, botInput); if (action) { const kind = press(game); if (kind) onPress(kind); } }
-      const steps = Math.max(1, Math.ceil(dt / (1 / 60)));
-      for (let i = 0; i < steps && !game.finished; i++) step(game, input, dt / steps);
+      if (bot) {
+        // 自動操縦（検査の pilot）は 1/60 秒ごとに判断して進める。画面の更新間隔に左右されず、
+        // モデルの検査（remake/test/desert_ride.mjs）と同じ滑りになる。人の操作は従来どおり。
+        botLag += dt;
+        while (botLag >= BOT_STEP - 1e-9 && !game.finished) {
+          const { input: botInput, action } = botControl(game, bot, botMemo);
+          Object.assign(input, botInput);
+          if (action) { const kind = press(game); if (kind) onPress(kind); }
+          step(game, input, BOT_STEP);
+          botLag -= BOT_STEP;
+        }
+      } else {
+        const steps = Math.max(1, Math.ceil(dt / (1 / 60)));
+        for (let i = 0; i < steps && !game.finished; i++) step(game, input, dt / steps);
+      }
       const events = game.events.slice(before);
       react(events);
       updateTutorial(events);
