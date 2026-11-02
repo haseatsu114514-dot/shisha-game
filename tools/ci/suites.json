@@ -1084,6 +1084,21 @@
       ]
     },
     {
+      "id": "ch4-dubai-daily",
+      "title": "Chapter 4 Dubai days on the shared daily loop (VOL04)",
+      "kind": "browser",
+      "weight": 0.8,
+      "timeout": 6,
+      "paths": [
+        "remake/js/chapters/ch4-dubai-daily.js",
+        "remake/js/chapters/ch4-progress.js",
+        "remake/js/chapters/ch4.js",
+        "data/dialogue/ch4_dubai_daily.json",
+        "remake/test/browser/ch4_dubai_daily.mjs"
+      ],
+      "run": ["node remake/test/browser/ch4_dubai_daily.mjs"]
+    },
+    {
       "id": "ch4-full-flow",
       "title": "Chapter 4 full playthrough on one save",
       "kind": "browser",

@@ -74,6 +74,14 @@ export const CH4_SCENE_BGM = Object.freeze({
 // ---- 日数・解放条件 -----------------------------------------------------------------
 export const CH4_EVE_DAY = 4;
 export const CH4_TOURNAMENT_DAY = 5;
+// ドバイも日常ループで遊ぶ行程（版2・VOL04・2026-11-02 オーナー「3も4も14日」）。DAY1〜12は日常（昼夜1行動ずつ。
+// chapters/ch4-dubai-daily.js）、DAY13は前夜祭と前夜（今までの「前夜」の流れ）、DAY14が世界大会。
+export const CH4_DAILY_EVE_DAY = 13;
+export const CH4_DAILY_TOURNAMENT_DAY = 14;
+export const chapterFourDaily = value => value?.chapter === 4 && value.flags?._ch4?.routeVersion === 2;
+/** その保存の行程での前夜・大会の日（ドバイDAY）。 */
+export const chapterFourEveDay = value => chapterFourDaily(value) ? CH4_DAILY_EVE_DAY : CH4_EVE_DAY;
+export const chapterFourTournamentDay = value => chapterFourDaily(value) ? CH4_DAILY_TOURNAMENT_DAY : CH4_TOURNAMENT_DAY;
 // 仮置き（DRAFT §4）: stranger_second は stranger_first を読んだ日 +2日以降に解放。
 export const CH4_SECOND_GAP_DAYS = 2;
 
@@ -167,7 +175,7 @@ export function advanceToChapterFour(value) {
   value.flags._ch4_prep = { startDay: value.day, days: DEPARTURE_PREP_DAYS, step: 0, departed: false };
   value.flags._ch2_region = "home";
   value.flags._ch4 = { startDay: value.day + DEPARTURE_PREP_DAYS, day: 1, stage: 0, part: "prologue", titleSeen: false,
-    read: {}, firstDay: null, resolution: 0, attempts: 0 };
+    read: {}, firstDay: null, resolution: 0, attempts: 0, routeVersion: 2 };
   // シェイクの正体は ch4_tournament_start で明かされる（DRAFT §3）。それまで表示側は固有名を出さない。
   value.flags._ch4_sheikh_revealed = false;
   return true;
@@ -203,7 +211,8 @@ export function chapterFourProgress(value) {
   const progress = value.flags?._ch4;
   const integer = (number, min, max) => Number.isInteger(number) && number >= min && number <= max;
   const valid = !!progress && integer(progress.startDay, 1, Infinity)
-    && integer(progress.day, 1, CH4_TOURNAMENT_DAY)
+    && (progress.routeVersion === undefined || progress.routeVersion === 2)
+    && integer(progress.day, 1, chapterFourTournamentDay(value))
     && PARTS.includes(progress.part)
     && integer(progress.stage, 0, CH4_PROLOGUE.length)
     && typeof progress.titleSeen === "boolean"
@@ -214,9 +223,9 @@ export function chapterFourProgress(value) {
     && (progress.part === "prologue"
       ? progress.day === 1 && progress.stage < CH4_PROLOGUE.length
       : progress.stage === CH4_PROLOGUE.length)
-    && (progress.part !== "free" || progress.day < CH4_TOURNAMENT_DAY)
-    && (progress.part !== "eve" || progress.day === CH4_EVE_DAY)
-    && (!["tournament", "resolution", "cleared"].includes(progress.part) || progress.day === CH4_TOURNAMENT_DAY)
+    && (progress.part !== "free" || progress.day < chapterFourTournamentDay(value))
+    && (progress.part !== "eve" || progress.day === chapterFourEveDay(value))
+    && (!["tournament", "resolution", "cleared"].includes(progress.part) || progress.day === chapterFourTournamentDay(value))
     && (progress.part !== "resolution" || progress.resolution < CH4_RESOLUTION.length)
     && ((progress.part === "cleared") === (progress.resolution === CH4_RESOLUTION.length
       && value.flags._ch4_cleared === true));
@@ -257,6 +266,31 @@ export function chapterFourMandatory(value) {
   }));
 }
 
+/**
+ * 版2: 日常ループの今の日付を章内日（_ch4.day）に写す。日は日常ループの就寝で進む（宿で終える操作は無い）。
+ * 前夜の日（DAY13）以降へは enterChapterFourEve で入る。
+ */
+export function syncChapterFourDay(value) {
+  if (!chapterFourDaily(value)) return false;
+  const progress = chapterFourProgress(value);
+  if (progress.part !== "free") return false;
+  const day = Math.max(1, Math.min(CH4_DAILY_EVE_DAY - 1, value.day - progress.startDay + 1));
+  progress.day = day;
+  return true;
+}
+
+/** 版2: 日常ループの最後の朝（DAY13）に前夜の流れへ入る（前夜祭・前夜の場面と過ごし方）。 */
+export function enterChapterFourEve(value) {
+  if (!chapterFourDaily(value)) return false;
+  const progress = chapterFourProgress(value);
+  if (progress.part !== "free" || value.day < progress.startDay + CH4_DAILY_EVE_DAY - 1) return false;
+  progress.day = CH4_DAILY_EVE_DAY;
+  progress.part = "eve";
+  value.slot = 1;
+  value.phase = "daily";
+  return true;
+}
+
 /** 読了を確定する唯一の入口。今のpartで再生してよい場面だけ受け付ける。 */
 export function completeChapterFourScene(value, id) {
   const progress = chapterFourProgress(value);
@@ -272,6 +306,13 @@ export function completeChapterFourScene(value, id) {
     return true;
   }
   if (part === "free") {
+    syncChapterFourDay(value);
+    // 版2: 期限の夜に読むスークの出会い（寄らなかった時の繋ぎ場面つき）も自由行動の間に確定できる。
+    if (chapterFourDaily(value) && id === "ch4_stranger_first_forced_in") {
+      if (progress.read[id] === true || progress.read[FREE_SCENES.first] === true) return false;
+      progress.read[id] = true;
+      return true;
+    }
     const allowed = CH4_FREE_SCENE_IDS.includes(id)
       && (id !== FREE_SCENES.second || chapterFourSecondAvailable(value))
       && (id !== FREE_SCENES.alleyQuiet || progress.read[FREE_SCENES.second] === true)
@@ -332,7 +373,7 @@ function advanceChapterFourDay(value, progress) {
 export function endChapterFourDay(value) {
   const progress = chapterFourProgress(value);
   if (progress.part !== "free") return null;
-  if (progress.day < CH4_EVE_DAY) {
+  if (progress.day < chapterFourEveDay(value)) {
     advanceChapterFourDay(value, progress);
     return "next_day";
   }

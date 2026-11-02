@@ -16,7 +16,8 @@ import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_
   CH4_VISITOR_SCENE_FILES, canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
   endChapterFourDay, finishChapterFourEve, chapterFourMandatory, revealChapterFourSheikh,
   chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE,
-  CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour, chapterFourRead } from "./ch4-progress.js";
+  CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour, chapterFourRead,
+  chapterFourDaily, enterChapterFourEve, chapterFourEveDay, chapterFourTournamentDay } from "./ch4-progress.js";
 
 const CH4_SPOT_SCENES = CH4_SCENE_FILES.ch4_spots;
 import { chapterFourMapModel } from "./ch4-map-model.js";
@@ -201,7 +202,7 @@ async function renderStage(owner) {
   if (canChooseOverseasCompanion(state)) return renderCompanionChoice(owner);
   if (chapterFourPrepPending(state)) return renderPrep(owner);
   if (progress.part === "prologue") return renderScene(owner, CH4_PROLOGUE[progress.stage], `DAY ${progress.day}`);
-  if (progress.part === "free") return renderFree(owner);
+  if (progress.part === "free") return chapterFourDaily(state) ? renderDubaiDaily(owner) : renderFree(owner);
   if (progress.part === "eve") return renderEve(owner);
   if (progress.part === "tournament") return renderTournament(owner);
   if (progress.part === "resolution") return renderScene(owner, CH4_RESOLUTION[progress.resolution], "");
@@ -319,6 +320,22 @@ async function renderFree(owner) {
     [model.guide, model.hint, model.note].filter(Boolean).join(" "));
 }
 
+/**
+ * ドバイの日常（版2・VOL04）: DAY1〜12は第1・2章と同じ日常ループ（chapters/ch4-dubai-daily.js）。
+ * 前夜祭の日（DAY13）の朝に戻り、今までの「前夜」の流れ（必須の場面・前夜の過ごし方）へ入る。
+ */
+async function renderDubaiDaily(owner) {
+  const dubai = await import("./ch4-dubai-daily.js");
+  if (!current(owner)) return;
+  showScreen("none", null);
+  await dubai.runChapterFourDubai({ readAndCommit: id => readAndCommit(owner, id) });
+  if (!current(owner) || state.day < dubai.dubaiEveDay(state)) return;
+  if (!enterChapterFourEve(state)) throw new Error("前夜へ進めません");
+  save();
+  hud();
+  await renderStage(owner);
+}
+
 /** 行き先の場面を順に再生してマップへ戻る。日が進むのは「その日を終える」だけ。 */
 async function visit(owner, id) {
   const destination = chapterFourMapModel(state, { canReflect: canReflect() })?.destinations.find(item => item.id === id);
@@ -366,7 +383,7 @@ async function renderEve(owner) {
   }
   await setBg(bgUrl(CH4_SCENE_BG[next.lead || next.id]), { instant: true });
   if (!current(owner)) return;
-  card(owner, "eve", "DAY 4・前夜", "夜になった。大会の前に、済ませておくことが残っている。", [
+  card(owner, "eve", `DAY ${chapterFourEveDay(state)}・前夜`, "夜になった。大会の前に、済ませておくことが残っている。", [
     button(owner, "続きを読む", "continue", async () => {
       for (const id of [next.lead, next.id].filter(Boolean)) {
         if (!await readAndCommit(owner, id)) return;
@@ -399,7 +416,7 @@ async function renderEvening(owner) {
   const name = displayName(partner, state, { context: "private" });
   await setBg(bgUrl(CH4_EVENING_BG), { instant: true });
   if (!current(owner)) return;
-  card(owner, "evening", "DAY 4・前夜", `大会前夜。${name}と過ごす時間がある。`, [
+  card(owner, "evening", `DAY ${chapterFourEveDay(state)}・前夜`, `大会前夜。${name}と過ごす時間がある。`, [
     button(owner, `${name}と過ごす`, "evening-date",
       () => settle(selectChapterFourEvening(routes, state, partner)), true),
     button(owner, "ひとりで休む", "evening-rest", () => settle(selectChapterFourEvening(routes, state))),
@@ -410,7 +427,7 @@ async function renderTournament(owner) {
   const progress = chapterFourProgress(state);
   await setBg(bgUrl(CH4_SCENE_BG[CH4_TOURNAMENT_SCENES.start]), { instant: true });
   if (!current(owner)) return;
-  card(owner, "tournament", "DAY 5・大会当日", "会場へ向かう。",
+  card(owner, "tournament", `DAY ${chapterFourTournamentDay(state)}・大会当日`, "会場へ向かう。",
     [button(owner, "大会へ", "start", () => runTournament(owner), true)],
     progress.attempts ? "同じ大会に、もう一度挑む。" : "", CH4_TOURNAMENT_SCENES.start);
 }
