@@ -606,5 +606,68 @@ await check('Kuze (#2028): chapter 3 finale after the LIME detour and the answer
   assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['kuze', 'chat']], 'chat only on the scene-card chapters');
 });
 
-console.log(`affinity stages: ${count} PASS; browser/real LOAD not executed`);
+// #2025: 凛の♥4・♥5。既存4本の後ろに足し、♥3の質問の後・締めくくりの前に一本ずつ読む。
+const RIN_LATE = ['ch1_rin_fifth', 'ch1_rin_sixth'];
+const rinAt = (f, story, heart = 5) => {
+  const s = f.fresh(); s.story.rin = story; s.affinity.rin = f.stats.AFFINITY_RANK_PTS[heart]; s.met.rin = true;
+  s.flags[f.stages.questionDoneKey('rin')] = true; s.flags._spot_seen_ch1_rin_prototype_night = true;
+  s.romanceChoices.bond_q1_rin = { char: 'rin', value: 1, day: 5 };
+  return s;
+};
+const sceneIds = f => f.plays.map(([scene]) => typeof scene === 'string' ? scene : scene.dialogue_id);
+await check('Rin #2025: heart4/5 follow the fourth, one per visit, before the finale', async f => {
+  assert.deepEqual(Array.from(f.spots.VISIT_SEQ.rin).slice(4), RIN_LATE);
+  for (const [story, scene] of [[4, RIN_LATE[0]], [5, RIN_LATE[1]], [6, null]]) {
+    const s = rinAt(f, story);
+    assert.equal(f.stages.pendingAffinityStage(s, 'rin')?.scene ?? null, scene);
+    assert.equal(f.bonds.finaleDue('rin'), story === 6, `finale at story ${story}`);
+  }
+  const s = rinAt(f, 4);
+  assert.equal(await f.spots.visitChar('rin'), true); assert.deepEqual(sceneIds(f), [RIN_LATE[0]]);
+  assert.equal(s.story.rin, 5); assert.equal(f.bonds.finaleDue('rin'), false);
+  assert.equal(await f.spots.visitChar('rin'), true); assert.deepEqual(sceneIds(f), RIN_LATE);
+  assert.equal(s.story.rin, 6); assert.equal(f.bonds.finaleDue('rin'), true);
+  assert.equal(f.roundTrip().story.rin, 6);
+});
+await check('Rin #2025: heart4 needs ♥4 and heart5 needs ♥5; the ♥3 question still comes first', async f => {
+  for (const [story, heart, reads] of [[4, 3, false], [4, 4, true], [5, 4, false], [5, 5, true]]) {
+    f.plays.length = 0; const s = rinAt(f, story, heart);
+    assert.equal(f.spots.hasNewStory('rin'), reads, `story ${story} heart ${heart}`);
+    assert.equal(await f.spots.visitChar('rin'), true);
+    assert.equal(sceneIds(f).some(id => RIN_LATE.includes(id)), reads); assert.equal(s.story.rin, story + Number(reads));
+  }
+  const s = rinAt(f, 4); delete s.flags[f.stages.questionDoneKey('rin')]; delete s.romanceChoices.bond_q1_rin;
+  assert.equal(f.stages.pendingAffinityStage(s, 'rin').scene, 'ch1_rin_bond_question');
+  assert.equal(f.bonds.questionVisitDue('rin'), true, 'unanswered question is offered before the new stages');
+});
+await check('Rin #2025: a cancelled heart4/5 read keeps the stage for the next visit', async f => {
+  for (const story of [4, 5]) {
+    const s = rinAt(f, story); f.setPlay(async () => ({ cancelled: true }));
+    assert.equal(await f.spots.visitChar('rin'), false);
+    assert.equal(s.story.rin, story); assert.equal(s.visits.rin || 0, 0);
+  }
+});
+await check('Rin #2025: saves already landed (finale, friend, lover) are not sent back to heart4/5', async f => {
+  for (const settle of [s => { s.finales.rin = { day: 9, chapter: 1, route: 'friend' }; s.flags._friend_rin = true; },
+    s => { s.finales.rin = { day: 9, chapter: 1, route: 'lover' }; s.lovers = ['rin']; }, s => { s.flags._friend_rin = true; }]) {
+    f.plays.length = 0; const s = rinAt(f, 4); settle(s);
+    assert.equal(f.stages.pendingAffinityStage(s, 'rin'), null);
+    assert.equal(f.spots.hasNewStory('rin'), false);
+    assert.equal(await f.spots.visitChar('rin'), true);
+    assert(!sceneIds(f).some(id => RIN_LATE.includes(id)), JSON.stringify(sceneIds(f)));
+    assert.equal(s.story.rin, 4, 'the skipped stages are not written back');
+  }
+});
+await check('Rin #2025: heart4/5 branch on the ♥3 answer and carry no new romance question', async f => {
+  for (const id of RIN_LATE) {
+    const scene = f.db.dialogues[id], rows = [...scene.lines, ...Object.values(scene.branches).flat()];
+    assert.equal(scene.metadata.flavor_lesson, undefined, 'the taste talk stays in ch1_rin_fourth');
+    const cond = rows.find(l => l.type === 'condition');
+    assert.equal(cond.condition_type, 'romance_open'); assert.equal(cond.char_id, 'rin');
+    assert(scene.branches[cond.next_true]?.length && scene.branches[cond.next_false]?.length);
+    assert(rows.filter(l => l.type === 'choice').every(l => !l.romance_char && l.choices.every(c => c.romance === undefined)));
+    assert(!rows.some(l => l.type === 'set_flag'), 'read state stays in the story counter');
+  }
+});
 
+console.log(`affinity stages: ${count} PASS; browser/real LOAD not executed`);
