@@ -1,0 +1,85 @@
+{
+  "id": "yoru-next-head",
+  "title": "次の頭",
+  "cast": [
+    "yoru"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "いつ入ればいい？",
+    "次の頭で入れよう。",
+    "注文もそれ？"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "mukaiのカウンター。左のはじめが「いつ入ればいい？」。右のヨルがヘッドフォンを首にかけて「次の頭で入れよう。」。",
+  "panel2": "ヨルがメニューを前に、指で拍を数えながら注文のタイミングを待っている。店員は待っている。はじめ「注文もそれ？」。",
+  "caption": "ヨルさんの口癖は、「次の頭で入れよう」。",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "102a9c9b46891c577ef9910b5be36ead66d2204e",
+  "generator": "built-in image_gen",
+  "source": "source-A-v1.png",
+  "source_sha256": "0acbb1d11d3371243756e429161c25001d6a82b5bef6d1610bd51c52fd370f27",
+  "references": [
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "role": "dimension template"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "role": "character normal identity"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/yoru.png",
+      "sha256": "24c14f268e31db5d8a6130abc9a889fa133a3d0c95a5cf9ef5d71702fbd940e3",
+      "role": "character normal identity"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+      "role": "initial adopted game comic style only"
+    }
+  ],
+  "prompts": [
+    {
+      "path": "prompt-A-v1.txt",
+      "sha256": "b491d58b6f7b43828f8aadc5a0b292293e4628274a0c7432b0b704ef7f53bcaa"
+    }
+  ],
+  "versions": [
+    {
+      "path": "source-A-v1.png",
+      "sha256": "0acbb1d11d3371243756e429161c25001d6a82b5bef6d1610bd51c52fd370f27",
+      "status": "review candidate"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "all three canonical lines visually read; punctuation matched",
+    "reading_order": "left panel then right; first speaker top/left before response; tails to correct speaker",
+    "identity": "official normal images viewed before generation; both panels preserve Hajime left and partner right",
+    "style": "initial adopted comic screenshot used as fourth reference every generation; cute chibi 2.5-head proportions, thick clean outlines, warm cel colors visually consistent",
+    "hardware": "none: no shisha stand/bowl/HMD/coal/hose/smoking",
+    "prohibited_text": "no title, UI, watermark, or extra text in review candidate",
+    "cut": "16/16 panel check OK; fill changed 0; <400KiB each; minor 1-3px size/rounding differences recorded, no forced ratio or upscaling",
+    "notes": "Only 2 humans drawn; waiting staff is offscreen. Finger-counting and blank menu communicate timing gag. Bob/undercut/silver streak/headphones/purple nails match normal.",
+    "in_game_pc_phone": "not run; candidates remain unregistered"
+  },
+  "delivery": [
+    {
+      "file": "panels/yoru-next-head-1.webp",
+      "width": 714,
+      "height": 477,
+      "bytes": 61214,
+      "sha256": "b6237d879edb524fc0022de1570c5aea2e7807574d5fa8035e23ba631c2c5505"
+    },
+    {
+      "file": "panels/yoru-next-head-2.webp",
+      "width": 715,
+      "height": 477,
+      "bytes": 62576,
+      "sha256": "4eb08d2bf78fee929183c0885d9526dfa864dab2e6f863a3e68e66538e3764e5"
+    }
+  ]
+}

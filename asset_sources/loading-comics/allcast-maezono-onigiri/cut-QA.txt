@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE4CF  枠の段 1: 2コマ@y=275
+  コマ1: 715x477 @(39,275) 比率 1.499 → ok
+  コマ2: 714x480 @(783,272) 比率 1.488 → ok
+コマ1: 715x477 (1.499) そのまま → 出力 715x477  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/late/allcast-maezono-onigiri/panels/maezono-onigiri-1.webp (64 KiB)
+コマ2: 714x480 (1.488) → 左右に各0.4%の紙帯 → 出力 720x480  /workspace/shared/allcast-comics-20261102/late/allcast-maezono-onigiri/panels/maezono-onigiri-2.webp (71 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "maezono-onigiri",
+  "title": "おにぎり特集",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "上園さんは、何でも本当においしそうに食べる。",
+  "panels": [
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/late/allcast-maezono-onigiri/panels/maezono-onigiri-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/late/allcast-maezono-onigiri/panels/maezono-onigiri-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/late/allcast-maezono-onigiri/source-A-v1.png",
+      "region": {
+        "x": 39,
+        "y": 275,
+        "width": 715,
+        "height": 477,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/late/allcast-maezono-onigiri/source-A-v1.png",
+      "region": {
+        "x": 783,
+        "y": 272,
+        "width": 714,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "maezono-onigiri-1.webp",
+      "width": 715,
+      "height": 477,
+      "sha256": "54dcb2bed9c65a404ab2dc49eb8daad3d521aa14890a0bcf614a602c92e17b15"
+    },
+    {
+      "file": "maezono-onigiri-2.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "40437ffe8378da6483ff6648768ab4d8d01a79de3c022171d74031b1661e0870"
+    }
+  ]
+}

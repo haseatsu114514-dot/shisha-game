@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #F0E5D1  枠の段 1: 2コマ@y=273
+  コマ1: 714x470 @(39,273) 比率 1.519 → ok
+  コマ2: 713x476 @(783,273) 比率 1.498 → ok
+コマ1: 714x470 (1.519) → 上下に各0.6%の紙帯 → 出力 714x476  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/middle/allcast-sheikh-traveler/panels/sheikh-traveler-1.webp (63 KiB)
+コマ2: 713x476 (1.498) そのまま → 出力 713x476  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/middle/allcast-sheikh-traveler/panels/sheikh-traveler-2.webp (68 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "sheikh-traveler",
+  "title": "旅の人",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 4,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "ドバイで会った旅人は、実は。",
+  "panels": [
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/middle/allcast-sheikh-traveler/panels/sheikh-traveler-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/middle/allcast-sheikh-traveler/panels/sheikh-traveler-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/middle/allcast-sheikh-traveler/source-A-v2.png",
+      "region": {
+        "x": 39,
+        "y": 273,
+        "width": 714,
+        "height": 470,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/middle/allcast-sheikh-traveler/source-A-v2.png",
+      "region": {
+        "x": 783,
+        "y": 273,
+        "width": 713,
+        "height": 476,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "sheikh-traveler-1.webp",
+      "width": 714,
+      "height": 476,
+      "sha256": "74d170b53cff344b017c78feddca93a86420e886a207b145db1a855fca857e55"
+    },
+    {
+      "file": "sheikh-traveler-2.webp",
+      "width": 713,
+      "height": 476,
+      "sha256": "c1fecdff078fd251d7c31ee01c2cd1e6cc062f8b0673819ccb768e2c042f772f"
+    }
+  ]
+}
