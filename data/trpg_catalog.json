@@ -84,6 +84,22 @@
       "stockRequires": [
         "adam"
       ]
+    },
+    {
+      "id": "moonflower-encore",
+      "file": "dialogue/trpg_moonflower_encore.json",
+      "price": 800,
+      "stockRequires": [
+        "rei"
+      ]
+    },
+    {
+      "id": "doll-requiem",
+      "file": "dialogue/trpg_doll_requiem.json",
+      "price": 700,
+      "stockRequires": [
+        "rei"
+      ]
     }
   ],
   "unlockChapter": 2,
