@@ -218,6 +218,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_cleared", "progression"],
   ["_ch5_match_scheduled", "progression"],
   ["_ch5_match_started", "progression"],
+  ["_ch5_region_started", "progression"],
   ["_cheat_go", "progression"],
   ["_cinema_visit", "progression"],
   ["_city_guest_day", "progression"],

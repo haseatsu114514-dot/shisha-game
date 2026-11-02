@@ -4,6 +4,7 @@
 // 1本のセーブで実UI・実saveだけで通す。自由行動の途中で実セーブ→リロード→再開し、進行が壊れないことも確認する。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
+import { travelToCity, stationFares } from "./station_helpers.mjs";
 
 const dt = name => `[data-test="${name}"]`;
 const scene = id => `[data-test="ch5-scene"][data-scene="${id}"]`;
@@ -255,6 +256,55 @@ await suite("ch5-full-flow", async check => {
   }, { reducedMotion: "reduce" });
 
   // 二本目の出来が足りなければ、挙手の合計で負け（同数含む）→ 敗北の場面 → 後日談へ続く（#1665）。
+  // #2033: 第5章も柚ヶ谷へ電車で行ける。神崎の店は通い訪問の小会話だけ。夜は電車で地元へ帰る。
+  await check("chapter-five-train-to-yuzugaya-regular-visit-and-home-at-night", async page => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 5, day: 51, slot: 0, phase: "daily", money: 50000, stamina: 100,
+        weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
+        _ch2_preparation_started: true, _ch2_region: "widehanga", _lime_opened: true, _lime_tut: 1,
+        _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
+          read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
+          finaleScenes: null, won: null, secondCup: null },
+        _ch5_match_scheduled: false, _ch5_match_started: false };
+      Object.assign(value.met, { kumicho: true, rei: true, ageha: true });
+      value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      core.saveConfig(); core.save();
+    });
+    await loadSlot(page, 0);
+    // 第2章の保存に残っていた柚ヶ谷ではなく、地元から始まる。
+    await mapReady(page, { day: 51, slot: 0 });
+    let state = await get(page);
+    assert.equal(state.flags._ch2_region, "home");
+    await travelToCity(page, "widehanga");
+    for (const pin of ["ch2_kumicho", "ch2_rei", "ch2_shop"])
+      assert.equal(await page.locator(dt(`pin-${pin}`)).count(), 1, `${pin} is on the Chapter 5 Yuzugaya map`);
+    assert.equal(await page.locator(dt("pin-ch2_ageha")).count(), 0, "The heroine's shop is not on the Chapter 5 map yet");
+    assert.match(await page.locator(".hud").innerText(), /柚ヶ谷|YUZUGAYA/i);
+    const before = await get(page);
+    await page.locator(dt("pin-ch2_kumicho")).click();
+    await page.locator(dt("map-go")).click();
+    await page.waitForFunction(() => window.__remake.state.slot === 1 && !document.querySelector("#modal.show"), null, { timeout: 60000 });
+    state = await get(page);
+    assert.equal(state.flags._ch2_talks?.kumicho, (before.flags._ch2_talks?.kumicho || 0) + 1, "A regular visit is counted");
+    assert.equal(state.money, before.money - 3000, "The visit costs the usual 3,000 yen");
+    assert.equal(state.flags._ch5.part, "free", "Visiting Yuzugaya does not move the Chapter 5 story");
+    // 夜の行き先（柚ヶ谷の支店は時間を使わないので、家で休む代わりに神崎の店へもう一度）→ 帰りの電車 → 翌朝は地元。
+    await page.locator(".map:not(.done)[data-region=\"widehanga\"]").waitFor({ timeout: 60000 });
+    await page.locator(dt("pin-ch2_rei")).click();
+    await page.locator(dt("map-go")).click();
+    await mapReady(page, { day: 52, slot: 0 });
+    state = await get(page);
+    assert.equal(state.flags._ch2_region, "home", "The night ends at home");
+    assert.equal(state.money, before.money - 3000 * 2 - 200, "Two visits and the train home");
+    assert.equal(state.flags._ch2_talks?.rei, (before.flags._ch2_talks?.rei || 0) + 1);
+    assert.equal(stationFares(page), 200, "One fare out, paid by the station UI");
+  });
+
   await check("chapter-five-weak-second-cup-loses-on-votes-and-continues", async page => {
     page.setDefaultTimeout(30000);
     await page.evaluate(async () => {
