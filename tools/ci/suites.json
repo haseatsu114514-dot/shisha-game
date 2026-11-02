@@ -3000,7 +3000,7 @@
     },
     {
       "id": "new-flavors-dubai-shop",
-      "title": "New flavors release chapters, shop catalogs and Dubai shop (NF01-NF03)",
+      "title": "New flavors release chapters, shop catalogs, Dubai shop and cartons (NF01-NF04)",
       "kind": "quick",
       "run": [
         "node --experimental-vm-modules remake/test/shop_new_flavors_dubai.mjs"
