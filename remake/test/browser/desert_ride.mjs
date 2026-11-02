@@ -170,7 +170,7 @@ await suite("desert-ride", async check => {
     const freeDay = day => page.locator(t("ch4-free")).getByRole("heading", { name: new RegExp(`^DAY ${day}・`) }).waitFor();
     const talksDone = n => page.waitForFunction(n => window.__remake.state.flags._ch4_desert?.talks === n, n);
     // DAY1: デスクをのぞく → 名乗り → 登場カットイン。同じ日は二度話せない。
-    assert.match(await page.locator(t("ch4-go-tour_desk")).innerText(), /ツアーデスク/);
+    assert.match(await page.locator(t("ch4-go-tour_desk")).innerText(), /カフェ/);
     assert.equal(await page.locator(t("ch4-go-dunes")).count(), 0, "the dunes wait for the invitation");
     await page.locator(t("ch4-go-tour_desk")).click();
     await talksDone(1);
@@ -184,9 +184,12 @@ await suite("desert-ride", async check => {
     await page.locator(t("ch4-go-inn")).click(); await freeDay(2);
     await page.locator(t("ch4-go-tour_desk")).click(); await talksDone(2); await freeDay(2);
     await page.locator(t("ch4-go-inn")).click(); await freeDay(3);
-    await page.locator(t("ch4-go-tour_desk")).click(); await talksDone(3);
+    // 旧カードの地図（5日）は以前と同じ3回目で誘う（店の3つ目は飛ばして、段階は全部読んだ扱い）
+    await page.locator(t("ch4-go-tour_desk")).click(); await talksDone(4);
     await page.locator(".toast", { hasText: "ヌールと砂丘へ" }).waitFor();
     await freeDay(3);
+    value = await get(page);
+    assert(value.affinity.noor > 0, "talking at the café raises Noor's affinity");
     assert.equal(await page.locator(t("ch4-go-tour_desk")).count(), 0, "the desk gives way to the dunes");
     assert.match(await page.locator(t("ch4-go-dunes")).innerText(), /ヌールと砂丘へ/);
     assert.match(await page.locator(t("ch4-free")).innerText(), /昼の行動を1つ使う/);
@@ -196,7 +199,8 @@ await suite("desert-ride", async check => {
     assert.match(await page.locator("#bg .bg-img").last().evaluate(node => node.style.backgroundImage), /bg_dubai_dunes_day/, "the arrival scene uses the adopted dunes background");
     value = await get(page);
     assert.equal(value.slot, 1, "the trip spends the daytime action (shared with the camel race)");
-    assert.deepEqual(value.flags._ch4_desert, { talks: 3, lastTalkDay: 3, outings: 1, lastOutingDay: 3 }, "the outing is spent when the trip starts");
+    assert.deepEqual(value.flags._ch4_desert, { v: 2, talks: 4, chats: 0, lastTalkDay: 3, outings: 1, lastOutingDay: 3 }, "the outing is spent when the trip starts");
+    assert.equal(value.money, before.money, "the first trip is free");
     assert.equal(value.desert, undefined);
     await page.evaluate(() => { window.__desertRide.autoplay("perfect"); window.__desertRide.setSpeedUp(8); });
     await phase(page, "practiced");
@@ -215,7 +219,7 @@ await suite("desert-ride", async check => {
     // 同じ外出の中の再挑戦: 行動は増えず、記録だけ増える。自己ベストは点数で更新。回ってブーストすればヌールに勝つ（勝ちのひとこと）
     await page.locator(t("desert-retry")).click();
     await autoplayToResult(page, "expert");
-    await page.locator(".toast", { hasText: "ヌール「スゴイ！ ……悔しいけど、今日は私の負け」" }).waitFor();
+    await page.locator(".toast", { hasText: "ヌール「ファッ！？ ……悔しいけど、今日は私の負け」" }).waitFor();
     value = await get(page);
     assert.equal(value.desert.runs, 2); assert.equal(value.desert.bestRank, "S"); assert.equal(value.flags._ch4_desert.outings, 1);
     assert.equal(value.desert.wins, 1);
@@ -246,12 +250,14 @@ await suite("desert-ride", async check => {
     await page.locator(t("ch4-free")).waitFor({ timeout: 60000 });
     value = await get(page);
     assert.equal(value.desert.bestRank, "S"); assert.equal(value.desert.runs, 2);
-    assert.deepEqual(value.flags._ch4_desert, { talks: 3, lastTalkDay: 3, outings: 1, lastOutingDay: 3 });
+    assert.deepEqual(value.flags._ch4_desert, { v: 2, talks: 4, chats: 0, lastTalkDay: 3, outings: 1, lastOutingDay: 3 });
     assert(await page.locator(t("ch4-go-dunes")).isDisabled());
     // 翌日はまた行ける。2回目の外出は短い到着 → 練習なしで本番。途中で中断（再読込）しても外出の消費だけ残り、記録は増えない。
     await page.locator(t("ch4-go-inn")).click(); await freeDay(4);
     assert(!(await page.locator(t("ch4-go-dunes")).isDisabled()));
     assert.match(await page.locator(t("ch4-free")).innerText(), /自己ベスト/);
+    assert.match(await page.locator(t("ch4-free")).innerText(), /6,000円/, "the second trip shows the tour fee");
+    const moneyBefore = (await get(page)).money;
     await page.locator(t("ch4-go-dunes")).click();
     await phase(page, "menu");
     // ヌールに勝った後の外出: なるが砂丘に来て、勝負の相手に加わる（来た場面は一度だけ）
@@ -263,12 +269,13 @@ await suite("desert-ride", async check => {
     await page.waitForFunction(() => window.__desertRide.game.z > 40);
     value = await get(page);
     assert.equal(value.flags._ch4_desert.outings, 2);
+    assert.equal(value.money, moneyBefore - 6000, "from the second trip, the tour fee is paid when the trip starts");
     await page.evaluate(async () => { (await import("./js/core/state.js")).requestResumeOnBoot(); });
     await page.reload();
     await page.locator(t("ch4-free")).waitFor({ timeout: 60000 });
     value = await get(page);
     assert.equal(value.desert.runs, 2, "an interrupted run leaves no record");
-    assert.deepEqual(value.flags._ch4_desert, { talks: 3, lastTalkDay: 3, outings: 2, lastOutingDay: 4 });
+    assert.deepEqual(value.flags._ch4_desert, { v: 2, talks: 4, chats: 0, lastTalkDay: 3, outings: 2, lastOutingDay: 4 });
     assert(await page.locator(t("ch4-go-dunes")).isDisabled(), "the interrupted trip still used the day");
     assert.equal(await page.locator(t("desert-ride")).count(), 0);
   });
@@ -292,7 +299,8 @@ await suite("desert-ride", async check => {
       for (const id of progress.CH4_PREP_SCENES) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);
       value.day += 3;
       if (!progress.departChapterFour(value)) throw new Error("Departure failed");
-      value.flags._ch4_desert = { talks: 2, lastTalkDay: null, outings: 0, lastOutingDay: null }; // デスクで2回話した後
+      value.flags._ch4_desert = { v: 2, talks: 3, chats: 0, lastTalkDay: null, outings: 0, lastOutingDay: null }; // カフェで3つ話した後
+      value.affinity = { ...(value.affinity || {}), noor: 33 }; // ♥3
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
       core.saveConfig(); Object.assign(core.state, value); core.save(); core.requestResumeOnBoot();
     });
@@ -316,14 +324,21 @@ await suite("desert-ride", async check => {
     await dubaiMap(0);
     let value = await get(page);
     assert.equal(value.flags._ch4.routeVersion, 2);
-    assert.equal(await page.locator(t("pin-ch4_dubai_tour_desk")).count(), 1, "the tour desk is on the Dubai map");
+    assert.equal(await page.locator(t("pin-ch4_dubai_tour_desk")).count(), 1, "the café is on the Dubai map");
     assert.equal(await page.locator(t("pin-ch4_dubai_dunes")).count(), 0, "the dunes appear after the invitation");
-    // デスクの3回目（誘い）は時間を使わない。読み終えると同じ昼の地図に砂丘が出る
+    // ♥3 でカフェに寄ると誘い。一台頼む来店なので 3,000円と行動を1つ使い、好感度も上がる。カフェは地図に残り、砂丘が加わる
+    const cafeBefore = await get(page);
     await go("ch4_dubai_tour_desk");
-    await page.waitForFunction(() => window.__remake.state.flags._ch4_desert.talks === 3);
-    await dubaiMap(0);
+    await page.waitForFunction(() => window.__remake.state.flags._ch4_desert.talks === 4);
+    await dubaiMap(1);
+    value = await get(page);
+    assert.equal(value.money, cafeBefore.money - 3000, "a shisha at the café costs 3,000円");
+    assert(value.affinity.noor > cafeBefore.affinity.noor, "talking at the café raises Noor's affinity");
     await page.locator(t("pin-ch4_dubai_dunes")).waitFor();
-    assert.equal(await page.locator(t("pin-ch4_dubai_tour_desk")).count(), 0);
+    assert.equal(await page.locator(t("pin-ch4_dubai_tour_desk")).count(), 1, "the café stays on the map");
+    // 砂丘は昼だけ。宿で夜を越して翌日の昼に出かける
+    await go("ch4_dubai_inn");
+    await dubaiMap(0);
     const before = await get(page);
     await go("ch4_dubai_dunes");
     await phase(page, "practice");

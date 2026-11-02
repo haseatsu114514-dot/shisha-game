@@ -36,7 +36,9 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_S
   chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
   beginChapterFiveMatch, chapterFiveMatchOutcome, chapterFiveVoteTally, CH5_FIRST_CUP_VOTES, recordChapterFiveSecondCup,
   chapterFiveEndingContext, beginChapterFiveFinale, completeChapterFiveScene, CH5_LIME_MILESTONES, chapterFiveLimeDue,
-  chapterFiveCreditsPending, recordChapterFiveCredits, chapterFiveTrueEndReached, chapterFiveFreeRemaining } from "./ch5-progress.js";
+  chapterFiveCreditsPending, recordChapterFiveCredits, chapterFiveTrueEndReached, chapterFiveFreeRemaining,
+  chapterFivePostEndingPlan, chapterFivePostEndingUndecided, beginChapterFivePostEnding, chapterFivePostEndingNext,
+  completeChapterFivePostEnding } from "./ch5-progress.js";
 import { readCycleMeta, recordTrueEndForRun } from "../core/cycle-meta.js";
 
 let session = null;
@@ -126,7 +128,7 @@ async function loadDialogues() {
 }
 
 let routesTask = null;
-/** 正本 data/story_routes.json（フィナーレの振り分けにだけ使う）。失敗したら次回また取りに行く。 */
+/** 正本 data/story_routes.json（フィナーレとスタッフロールの後の振り分けにだけ使う）。失敗したら次回また取りに行く。 */
 function loadEndingRoutes() {
   routesTask ||= (async () => {
     const controller = new AbortController();
@@ -137,7 +139,8 @@ function loadEndingRoutes() {
       const routes = await response.json();
       if (typeof routes.ending?.start !== "string" || typeof routes.ending?.normal !== "string"
         || typeof routes.ending?.daily !== "string" || !Array.isArray(routes.heroine_ids)
-        || !routes.romance || typeof routes.romance !== "object") {
+        || !routes.romance || typeof routes.romance !== "object"
+        || typeof routes.conflict?.open !== "string" || typeof routes.conflict?.pending_ending !== "string") {
         throw new Error("story_routes: 形式を確認してください");
       }
       return routes;
@@ -297,6 +300,12 @@ async function renderStage(owner) {
     return renderScene(owner, CH5_AFTERMATH[progress.aftermath], "");
   }
   if (progress.part === "finale") return renderFinale(owner);
+  // スタッフロールを流し終えた後、恋人が2人以上なら修羅場と話し直し（IR32）。済んでいれば完了カード。
+  if (!chapterFiveCreditsPending(state)) {
+    const due = await preparePostEnding(owner);
+    if (!current(owner)) return;
+    if (due) return renderPostEnding(owner);
+  }
   return renderComplete(owner);
 }
 
@@ -525,7 +534,7 @@ async function renderFinale(owner) {
   let progress = chapterFiveProgress(state);
   if (!progress.finaleScenes) {
     // 恋人がちょうど1人なら中間がその人の後日談（epilogue_*）、それ以外は ending_normal（#517）。
-    // 読み終えたらスタッフロール（renderStaffRoll）。その後の本格的な修羅場（Q20後段）は接続しない。
+    // 読み終えたらスタッフロール（renderStaffRoll）。恋人が2人以上なら、その後に修羅場と話し直し（renderPostEnding）。
     const routes = await loadEndingRoutes();
     if (!current(owner)) return;
     const scenes = selectStoryEnding(routes, state, chapterFiveEndingContext(routes, state));
@@ -563,7 +572,57 @@ async function renderStaffRoll(owner) {
   if (!first) return renderComplete(owner);
   if (!recordChapterFiveCredits(state)) throw new Error("スタッフロールの記録を確定できません");
   noteTrueEnd({ justFinished: true }); // 戻った先のタイトルに NEXT CYCLE が出る
+  save();
+  // 恋人が2人以上なら、タイトルの前にスタッフロールの後の修羅場と話し直し（IR32）。読み終えたらタイトルへ。
+  const due = await preparePostEnding(owner);
+  if (!current(owner)) return;
+  if (due) return renderPostEnding(owner);
   backToTitle();
+}
+
+/**
+ * スタッフロールの後の並びを、まだなら一度だけ決めて保存する（IR32）。読む場面が残っていれば true。
+ * この接続より前にスタッフロールまで見終えた保存も、次に開いた時にここで決まる。
+ */
+async function preparePostEnding(owner) {
+  if (chapterFivePostEndingUndecided(state)) {
+    const routes = await loadEndingRoutes();
+    if (!current(owner)) return false;
+    if (!beginChapterFivePostEnding(state, chapterFivePostEndingPlan(routes, state))) {
+      throw new Error("スタッフロールの後の場面を決められません");
+    }
+    save();
+  }
+  return !!chapterFivePostEndingNext(state);
+}
+
+/**
+ * スタッフロールの後（IR32）。修羅場（開始→恋人ごとの反応→謝罪→話し直しの決意）は続けて読み、
+ * 話し直しは本人が決めた日に一人ずつ、カードから読む。場面ごとに確定・保存するので、途中のLOADは読みかけの場面から。
+ * 報酬・経験は付けない。全部読み終えたらタイトルへ（以後の再開は完了カード）。
+ */
+async function renderPostEnding(owner) {
+  const next = chapterFivePostEndingNext(state);
+  if (!next) return renderComplete(owner);
+  await setBg(bgUrl(CH5_SCENE_BG[next.id]), { instant: true });
+  if (!current(owner)) return;
+  const [title, description, note] = next.talk
+    ? ["話し直し", "本人が決めた日に、一人ずつ会って話す。", `${next.index}人目／${next.total}人`]
+    : ["後日のtonari", "閉店後のtonariで、次の話を読む。", ""];
+  card(owner, "scene", title, description, [
+    button(owner, "続きを読む", "continue", async () => {
+      for (;;) {
+        const scene = chapterFivePostEndingNext(state);
+        if (!scene || !await readScene(owner, scene.id)) return;
+        if (!completeChapterFivePostEnding(state, scene.id)) return;
+        save();
+        const following = chapterFivePostEndingNext(state);
+        if (!following) return backToTitle();
+        if (following.talk) break;
+      }
+      await renderStage(owner);
+    }, true),
+  ], note, next.id);
 }
 
 /**
