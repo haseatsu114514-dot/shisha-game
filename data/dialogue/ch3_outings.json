@@ -191,7 +191,7 @@
         { "speaker": "hajime", "face": "normal", "text": "てつこ、少しだけな。嫌だったら逃げていいから" },
         { "speaker": "", "text": "背中にそっとブラシを当てる。てつこは片目だけ開けて、また閉じた。" },
         { "speaker": "", "text": "茶色の毛が、ブラシにふわりと絡む。" },
-        { "speaker": "tetsuko", "face": "normal", "text": "……ん、にゃ" },
+        { "speaker": "tetsuko", "face": "serious", "text": "……ん、にゃ" },
         { "speaker": "hajime", "face": "smile", "text": "（今の、返事……だよな）" },
         { "speaker": "", "text": "ブラシを止めると、しっぽの先が一度だけ動いた。続けろ、ということらしい。" },
         { "speaker": "", "text": "言われたとおり、しばらくブラシをかけ続けた。" }
@@ -217,7 +217,7 @@
         "play": [
           { "speaker": "", "text": "店の奥で見つけた猫じゃらしを、ベンチの端で小さく振る。" },
           { "speaker": "", "text": "てつこは目で追うだけで、動かない。……と思ったら、前足が一度だけ伸びた。" },
-          { "speaker": "tetsuko", "face": "normal", "text": "にゃっ" },
+          { "speaker": "tetsuko", "face": "surprise", "text": "にゃっ" },
           { "speaker": "hajime", "face": "smile", "text": "今、取ろうとしただろ" },
           { "speaker": "", "text": "てつこは何もなかった顔で、前足をなめはじめた。" }
         ],
@@ -234,7 +234,7 @@
       "lines": [
         { "speaker": "", "text": "裏口の戸を開けると、てつこがベンチから降りてきた。" },
         { "speaker": "", "text": "そのまま足元まで来て、すねに頭をこすりつける。" },
-        { "speaker": "tetsuko", "face": "normal", "text": "……にゃあ" },
+        { "speaker": "tetsuko", "face": "smile", "text": "……にゃあ" },
         { "speaker": "hajime", "face": "surprise", "text": "てつこ……？" },
         { "speaker": "", "text": "低い喉の音が、足元から聞こえる。ましろちゃんにしか聞かせない音だと思っていた。" },
         { "speaker": "", "text": "戸の向こうで、ましろちゃんが目を丸くしていた。" },
@@ -252,7 +252,7 @@
         { "speaker": "", "text": "ベンチに座ると、てつこが膝に前足をかけた。" },
         { "speaker": "", "text": "そのまま、当たり前のように乗ってくる。" },
         { "speaker": "hajime", "face": "normal", "text": "……重いな、お前" },
-        { "speaker": "tetsuko", "face": "normal", "text": "……にゃ" },
+        { "speaker": "tetsuko", "face": "smile", "text": "……にゃ" },
         { "speaker": "", "text": "膝の上で丸くなると、てつこはすぐに目を閉じた。" },
         { "speaker": "hajime", "face": "smile", "text": "（これじゃ、立てない）" },
         { "speaker": "", "text": "しばらく、このままでいることにした。" }
@@ -277,7 +277,7 @@
         { "speaker": "", "text": "てつこの耳の後ろを、指先でかいてやる。" },
         { "speaker": "", "text": "帰ろうと立ち上がると、てつこが戸の前までついてきた。" },
         { "speaker": "hajime", "face": "normal", "text": "見送ってくれるのか？" },
-        { "speaker": "tetsuko", "face": "normal", "text": "にゃ" },
+        { "speaker": "tetsuko", "face": "smile", "text": "にゃ" },
         { "speaker": "", "text": "一度だけ鳴いて、てつこはベンチへ戻っていった。" },
         { "speaker": "hajime", "face": "smile", "text": "（また来いってことかな）" }
       ]
