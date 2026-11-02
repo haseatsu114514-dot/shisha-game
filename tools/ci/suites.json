@@ -1223,9 +1223,7 @@
       "weight": 0.8,
       "timeout": 5,
       "paths": [
-        "remake/js/chapters/ch3.js",
         "remake/js/chapters/ch3-prep.js",
-        "remake/js/chapters/ch3-progress.js",
         "remake/js/chapters/departure-prep.js",
         "remake/js/chapters/ch2-preparation.js",
         "remake/js/core/chapter-clock.js",
@@ -1234,7 +1232,6 @@
         "remake/js/daily/calendar.js",
         "remake/js/daily/hud.js",
         "data/dialogue/ch3_departure.json",
-        "data/dialogue/ch3_prologue.json",
         "remake/test/browser/ch3_departure_prep.mjs"
       ],
       "run": ["node remake/test/browser/ch3_departure_prep.mjs"]
