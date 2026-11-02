@@ -97,8 +97,10 @@ export const CH4_PROLOGUE = Object.freeze([
 // 出発前の準備3日（VOL02）の中で読むプロローグの先頭2場面（準備1日目の昼の特訓・夜の持っていく配合）。
 export const CH4_PREP_SCENES = Object.freeze(CH4_PROLOGUE.slice(0, 2).map(scene => scene.id));
 
-// 前夜までの必須4場面（story_routes の順）。lead は強制発生用の繋ぎ場面。
+// 前夜までの必須5場面（story_routes の順）。lead は強制発生用の繋ぎ場面。
+// FESTA は審査員の太陽と会う場面。自由行動で寄らなかった時も、前夜に会場の出張ブースで読む（VOL05）。
 export const CH4_MANDATORY = Object.freeze([
+  { id: "ch4_festa", lead: null },
   { id: "ch4_stranger_first", lead: "ch4_stranger_first_forced_in" },
   { id: "ch4_stranger_second", lead: null },
   { id: "ch4_wang_reception", lead: "ch4_wang_reception_forced_in" },

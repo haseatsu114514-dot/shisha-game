@@ -1,6 +1,7 @@
 // 東京の路地の地下のクラブ「SEAM」（第3章の夜の自由時間・DJS10/DJS12）。店主は針間ヨル（characters.json の yoru）。
 // 初めて入る夜だけ出会いの場面（ch3_club_first → 登場カットイン → ch3_club_first_after）、初めてAランク以上を出した夜だけヨルとの会話（ch3_club_a_talk）を流す。
 // ミニゲームなので時間・お金・体力・好感度は変えない（#2113）。記録（state.dj）と既読フラグだけを保存する。
+// お金が動くのは、メニューでモニターヘッドホン（VOL07）を買うときだけ。
 // 入口は chapters/ch3.js の freeTimeChoices（djNightChoices）と openTokyoMap（action.dj → visitDjClub）。
 import { state, save, config } from "../core/state.js";
 import { el } from "../core/util.js";
@@ -12,6 +13,7 @@ import { readDialogues } from "../core/chapter-data.js";
 import { play } from "../vn/engine.js";
 import { playIntro } from "../vn/intro.js";
 import { CLUB_MET_FLAG, DJ_SETS, djRecords, djSetOpen, recordDjResult, runDjSet } from "../minigames/dj.js";
+import { gearOffer, ownsGear } from "../core/hobby-gear.js";
 
 export { DJ_NIGHT, DJ_NIGHT_FIRST, djNightChoices, clubKnown } from "../minigames/dj.js";
 export const CLUB_A_TALK_FLAG = "_club_yoru_a_talk";
@@ -79,6 +81,10 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
         host.append(el("h2.sub-title", { text: "クラブSEAM" }),
           venueHost("yoru", firstLine(dialogues, played ? "venue_yoru_return" : "venue_yoru_greet"), DB),
           el("p.sub-lead", { text: "今夜はオープンデッキ。▶と横フェーダーで曲をつなぐ。時間は進まない。" }),
+          // モニターヘッドホン（VOL07）: ヨルの店で一度だけ買える。▶の判定が10ms広くなる。
+          gearOffer(owner, "gear_headphones", { isCurrent: current, onBought: item => {
+            save(); toast(`「${item.name}」を買った。${item.effect}`, { kind: "good" });
+          } }),
           el("div.sub-choices", DJ_SETS.map(set => el("button.big-choice", {
             type: "button", disabled: !djSetOpen(owner, set.id), dataset: { test: `dj-set-${set.id}` },
             onclick: () => { if (djSetOpen(owner, set.id)) resolve(set.id); },
@@ -90,7 +96,7 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
       host.hidden = true;
       stopBgm(0.4);
       const { results } = await runDjSet({ host: document.getElementById("stage") || layers.screen, set: pick, signal: controller.signal,
-        muted: !!config.mute, volume: config.bgmVolume,
+        muted: !!config.mute, volume: config.bgmVolume, phones: ownsGear(owner, "gear_headphones"),
         onResult: result => {
           if (!current()) return;
           const saved = recordDjResult(owner, result);

@@ -529,13 +529,18 @@ function bondActions(owner) {
     if (current(owner)) await renderStage(owner);
   })];
   const kind = questionVisitDue("mashiro") ? "question" : finaleAtVisit("mashiro") ? "finale" : null;
-  return kind ? [button(owner, kind === "question" ? "ましろちゃんと話す（mukai）" : "ましろちゃんに呼ばれる（mukai）",
-    `bond-${kind}`, () => readBond(owner, kind))] : [];
+  return [
+    ...kind ? [button(owner, kind === "question" ? "ましろちゃんと話す（mukai）" : "ましろちゃんに呼ばれる（mukai）",
+      `bond-${kind}`, () => readBond(owner, kind))] : [],
+    // 久世の締めくくり（#2028）。条件は daily/bonds.js（LIME交換の寄り道と答えを返す外出の後）。友情の着地だけ。
+    ...finaleAtVisit("kuze") ? [button(owner, "久世に呼ばれる（煙幕）", "bond-kuze-finale",
+      () => readBond(owner, "finale", "kuze"))] : [],
+  ];
 }
 
-async function readBond(owner, kind) {
+async function readBond(owner, kind, id = "mashiro") {
   if (!current(owner)) return;
-  const background = bgUrl("bg_mukai_shop");
+  const background = bgUrl(id === "kuze" ? "bg_yohaku_shop" : "bg_mukai_shop");
   showScreen("none", null);
   hud(owner);
   await withScenePreparation(setBg(background, { instant: true }));
@@ -550,7 +555,7 @@ async function readBond(owner, kind) {
   try {
     const options = { bg: background, signal: controller.signal };
     if (kind === "question") await playQuestionVisit("mashiro", options);
-    else if (finaleAtVisit("mashiro")) await playFinale("mashiro", options);
+    else if (finaleAtVisit(id)) await playFinale(id, options);
   } finally {
     if (hooks.onChoice === choiceHook) hooks.onChoice = previousChoice;
     if (hooks.evalCondition === conditionHook) hooks.evalCondition = previousCondition;

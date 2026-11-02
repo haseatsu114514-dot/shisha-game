@@ -356,11 +356,14 @@ assert.equal(completeChapterFourScene(value, "ch4_two_tables"), false, "A cleare
   for (let step = 0; step < 3; step++) assert.equal(endChapterFourDay(forced), "next_day");
   assert.equal(endChapterFourDay(forced), "eve");
   assert.deepEqual(chapterFourMandatory(forced), [
+    { id: "ch4_festa", lead: null },
     { id: "ch4_stranger_first", lead: "ch4_stranger_first_forced_in" },
     { id: "ch4_stranger_second", lead: null },
     { id: "ch4_wang_reception", lead: "ch4_wang_reception_forced_in" },
     { id: "ch4_stranger_third", lead: null },
   ]);
+  assert.equal(completeChapterFourScene(forced, "ch4_stranger_first_forced_in"), false, "FESTA comes first on the eve");
+  assert.equal(completeChapterFourScene(forced, "ch4_festa"), true);
   assert.equal(completeChapterFourScene(forced, "ch4_stranger_first_forced_in"), true);
   assert.equal(completeChapterFourScene(forced, "ch4_stranger_first"), true);
   assert.equal(forced.flags._ch4.firstDay, CH4_EVE_DAY, "A forced first meeting records its own day");

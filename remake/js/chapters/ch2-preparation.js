@@ -209,7 +209,8 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   // あげはの交換後LIME（lime_ch2_ageha_after_visit）と旧セーブ互換の到達フラグ
   if (id === "ageha" && state.flags._lime_contact_ageha) state.flags._ch2_ageha_contact = true;
   // 神崎・REIの長い段階会話と締めくくりは、第1章の固有会話と同じ+10（#2027）。
-  gainAffinity(id, first || finale || stages && stage?.file ? 10 : 5); earnStat(stat[id], 4);
+  // あげはの店に通う回（ギャル友・初めての客など）も同じ+10。いつもの会話だけが+5（VOL06）。
+  gainAffinity(id, first || finale || story || stages && stage?.file ? 10 : 5); earnStat(stat[id], 4);
   // 心得の盤で灯した授業があれば、その店で相談して習う（SBD61: 会った時だけ）
   if (state === owner) await consultLessons(id, { bg: ROOMS[id] });
   // 部活の勧誘（REI・あげは）も地元の訪問と同じく、会えた後にだけ。入部は暦の精算と一緒に保存する。

@@ -181,6 +181,36 @@
       "run": ["node remake/test/browser/dj_preview.mjs"]
     },
     {
+      "id": "hobby-gear-vol07",
+      "title": "Minigame gear bought once at each venue: hatchet, headphones and dice (VOL07)",
+      "kind": "quick",
+      "run": [
+        "node remake/test/hobby_gear.mjs"
+      ]
+    },
+    {
+      "id": "hobby-gear-browser-vol07",
+      "title": "Minigame gear offers at the axe bar, club SEAM and the board game cafe (VOL07)",
+      "kind": "browser",
+      "weight": 0.8,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/hobby-gear.js",
+        "remake/js/daily/axe-bar.js",
+        "remake/js/daily/dj-club.js",
+        "remake/js/minigames/axe.js",
+        "remake/js/minigames/axe-model.js",
+        "remake/js/minigames/dj.js",
+        "remake/previews/dj/**",
+        "remake/js/trpg/campaign-view.js",
+        "remake/js/daily/status.js",
+        "remake/test/browser/hobby_gear.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/hobby_gear.mjs"
+      ]
+    },
+    {
       "id": "dj-club",
       "title": "Club SEAM from the game: first meeting with the owner, embedded DJ, result recorded to state.dj, no time used (DJS10/DJS12)",
       "kind": "browser",
@@ -1773,6 +1803,31 @@
       "run": [
         "node remake/test/browser/home_rig_backgrounds.mjs",
         "node remake/test/browser/story_edit_564.mjs"
+      ]
+    },
+    {
+      "id": "premium-equipment-vol08",
+      "title": "Premium equipment and home stands from chapter 2 (VOL08)",
+      "kind": "quick",
+      "run": [
+        "node remake/test/premium_equipment.mjs"
+      ]
+    },
+    {
+      "id": "premium-shop-browser-vol08",
+      "title": "Premium equipment and home stands in the branch shops (VOL08)",
+      "kind": "browser",
+      "weight": 0.6,
+      "timeout": 4,
+      "paths": [
+        "data/equipment.json",
+        "remake/js/daily/shop.js",
+        "remake/js/daily/home-rig.js",
+        "remake/js/craft/flavor-guide.js",
+        "remake/test/browser/premium_shop.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/premium_shop.mjs"
       ]
     },
     {
