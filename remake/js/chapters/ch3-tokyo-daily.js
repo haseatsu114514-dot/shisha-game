@@ -177,6 +177,8 @@ export function chapterThreeTokyoDefinition(io) {
     // 地元の恋人・知り合いとの連絡（デートの相談・訪問の約束）は、右上の LIME のトーク一覧の一番上から開く
     // （地図の「地元と連絡」は廃止。オーナー決定 2026-11-02）。
     limeShortcuts: () => [tokyoContactsShortcut()],
+    // 地元の恋人のほうから「東京へ行ってもいい？」が朝の LIME で届く（返事で約束が決まる・MPI09）
+    morningLime: () => tokyoSocial?.deliverTokyoVisitProposals() || 0,
     wakeBackground: () => "bg_mukai_shop",
     // 地元の恋人のデートの誘いは東京では受けられない（東京へ来る約束は右上の LIME の「地元との連絡」から）。
     dateInvitations: false,
@@ -186,6 +188,9 @@ export function chapterThreeTokyoDefinition(io) {
     mukaiShift: ({ called = false } = {}) => mukaiShift(state, { called }),
   };
 }
+
+// 東京の連絡（ch3-social.js）。日常ループの前に読み込む（朝の LIME の相談に使う）。
+let tokyoSocial = null;
 
 /** 右上の LIME の「地元との連絡」の行。訪問の相談・恋人からの未読があれば印を付ける。 */
 function tokyoContactsShortcut() {
@@ -210,7 +215,7 @@ export async function runChapterThreeTokyo(io) {
     readDialogues("ch3_activities", ["ch3_choizap_day", "ch3_choizap_night"]).then(found => Object.assign(DB.dialogues, found)),
     readDialogues("ch3_tokyo_daily", TOKYO_DAILY_IDS).then(found => Object.assign(DB.dialogues, found)),
     loadMukaiShift(),
-    import("./ch3-social.js").then(social => social.loadTokyoSocial()),
+    import("./ch3-social.js").then(social => { tokyoSocial = social; return social.loadTokyoSocial(); }),
     refreshOptional(),
   ]);
   if (state !== owner) return;

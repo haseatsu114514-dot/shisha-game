@@ -208,4 +208,42 @@ await suite("ch3-tokyo-daily", async check => {
     const lines = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map(entry => entry.text));
     assert(lines.includes("……ヒヒ。ずいぶん遠くまで来たね"), "The Tokyo greeting is read");
   });
+
+  // MPI09: 地元の恋人のほうから「東京へ行ってもいい？」が朝の LIME で届き、返事で約束が決まる（オーナー「連絡はあっちからくるように」）。
+  await check("a-hometown-lover-asks-to-visit-tokyo-by-lime", async page => {
+    await seed(page);
+    const day = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const progress = await import("./js/chapters/ch3-progress.js");
+      const value = core.state, intro = value.flags._ch3_intro;
+      // 東京DAY6の昼。地元の恋人つむぎと連絡先を交換済みで、東京への訪問はまだ無い。
+      intro.stage = progress.CH3_INTRO_SCENES.findIndex(scene => scene.id === "ch3_naru_contact_before_tournament");
+      value.day = intro.startDay + 5; value.slot = 0; value.phase = "daily";
+      Object.assign(value.met, { mashiro: true, mukai_master: true, tsumugi: true });
+      value.lovers = ["tsumugi"]; value.contacts = [...new Set([...(value.contacts || []), "tsumugi"])];
+      value.flags._intro_tsumugi = true;
+      value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
+      core.save();
+      return value.day;
+    });
+    await loadSlot(page, 0);
+    await tokyoMap(page, { day, slot: 0 });
+    let state = await get(page);
+    const offer = state.tokyoVisits.offers.tsumugi;
+    assert(offer, "Tsumugi proposes a visit by the morning LIME");
+    assert(state.inbox.some(item => item.msg?.tokyoProposal && item.msg.sender === "tsumugi" && !item.read), "The proposal arrives as an unread LIME");
+    await page.locator(dt("hud-phone")).click();
+    await page.locator(dt("lime-chat-tsumugi")).click();
+    await page.locator(".lime-actions .lime-reply", { hasText: "その日に会おう" }).click();
+    await page.locator(".lime-chat", { hasText: "約束した" }).waitFor({ timeout: 30000 });
+    await page.locator(dt("phone-next")).click();
+    await page.locator(dt("phone-close")).last().click();
+    await tokyoMap(page, { day, slot: 0 });
+    state = await get(page);
+    const plan = state.tokyoVisits.plans.find(entry => entry.characterId === "tsumugi");
+    assert(plan, "The reply books the visit");
+    assert.equal(plan.arrivalDay, offer.arrivalDay, "The proposed dates are booked");
+    assert.equal(state.tokyoVisits.offers.tsumugi, undefined, "The answered proposal is closed");
+    assert.equal(state.slot, 0, "Answering the LIME uses no time");
+  });
 });
