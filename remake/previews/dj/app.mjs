@@ -92,7 +92,9 @@ function wave(canvas, id, now) {
 function makeCrowd() {
   let seed = 11 + setIndex; const rnd = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
   const people = [];
-  for (const [row, count, y, size] of [[0, 46, 9, 1], [1, 34, 15, 1.4], [2, 24, 22, 1.9]]) for (let i = 0; i < count; i++) people.push({ row, x: 2 + (i + rnd() * .8) * (309 / count), y, size, phase: rnd(), hands: rnd(), lean: rnd() < .5 ? -1 : 1 });
+  // The painted crowd (img/ui/dj/floor-crowd.webp, DJS15) is the room now: the canvas only sweeps light on the beat,
+  // and the FLOOR meter brightens the painting (style.css .floor:before). Pixel people are no longer drawn.
+  void rnd;
   return people;
 }
 function drawCrowd(beat, floor, running) {
@@ -108,7 +110,7 @@ function drawCrowd(beat, floor, running) {
   for (const p of crowd) {
     const ph = mod(beat + p.phase * 4, 4) / 4 * Math.PI * 2, bob = still ? 0 : Math.round((1 - Math.cos(ph * 2)) * p.size * .6);
     const up = p.hands < floor, s = p.size, x = Math.round(p.x), y = p.y - bob, w = Math.round(2 * s);
-    const shade = p.row === 0 ? '#2b1f46' : p.row === 1 ? '#1c1333' : '#0e0919';
+    const shade = '#07040d';
     c.fillStyle = shade;
     c.fillRect(x, y, w, w); // head
     c.fillRect(x - Math.round(s * .5), y + w, Math.round(3 * s), 28 - y); // body
@@ -116,7 +118,7 @@ function drawCrowd(beat, floor, running) {
     if (up) { const sway = still ? 0 : Math.round(Math.sin(ph) * s * p.lean); c.fillRect(x - Math.round(s) + sway, y - Math.round(2.5 * s), arm, Math.round(3 * s)); c.fillRect(x + w + sway, y - Math.round(2.5 * s), arm, Math.round(3 * s)); }
     else { c.fillRect(x - Math.round(s), y + Math.round(2.5 * s), arm, Math.round(2 * s)); c.fillRect(x + w, y + Math.round(2.5 * s), arm, Math.round(2 * s)); }
     // backlit rim on the head and shoulders
-    c.fillStyle = p.row === 2 ? '#c39bffb0' : p.row === 1 ? '#b45cf070' : '#b45cf040'; c.fillRect(x, y, w, 1); c.fillRect(x - Math.round(s * .5), y + w, Math.round(3 * s), 1);
+    c.fillStyle = '#c39bff80'; c.fillRect(x, y, w, 1); c.fillRect(x - Math.round(s * .5), y + w, Math.round(3 * s), 1);
   }
 }
 function toast(html, ms = 2600) { $('toast').innerHTML = html; toastUntil = performance.now() + ms; }
@@ -163,7 +165,7 @@ function render() {
   $('sync').classList.toggle('needed', !!(cue && m.running && bpmDiffPct(m.decks[cue.from], m.decks[cue.to]) > LOCK_PCT));
   $('mix-value').textContent = `A ${Math.round((1 - m.mix) * 100)} / B ${Math.round(m.mix * 100)}%`;
   $('phrase').value = m.phase === 'mix' ? view.progress : 0;
-  $('floor-fill').style.setProperty('--f', m.floor.toFixed(3)); $('floor-value').value = String(Math.round(m.floor * 100));
+  $('floor-fill').style.setProperty('--f', m.floor.toFixed(3)); document.querySelector('.floor').style.setProperty('--f', m.floor.toFixed(3)); $('floor-value').value = String(Math.round(m.floor * 100));
   $('set-progress').textContent = `${m.phase === 'done' ? m.queue.length : m.position - 1} / ${m.queue.length}`;
   $('set-next').textContent = cue ? `NEXT ▶ ${cue.to ? 'B' : 'A'}` : m.phase === 'done' ? 'LAST TRACK' : '';
   const target = cue ? (cue.to ? 'B' : 'A') : '';

@@ -46,7 +46,7 @@ const overrides = {
   },
   sleep: asyncNoop, layers: { fx: { append: noop }, modal: { classList: { contains: () => false } } },
   dayTurn: async fn => fn(), fadeBlack: async fn => fn?.(),
-  chapterDay: () => state.day, daysLeft: () => 14 - state.day, TOURNAMENT_DAY: 14,
+  chapterDay: () => state.day, daysLeft: () => 14 - state.day, TOURNAMENT_DAY: 14, atChapterFinalDay: () => state.day >= 14,
   maxStamina: () => 100, staminaRatio: () => state.stamina / 100,
   spendableMoney: () => state.money,
   addMoney: n => state.money += n, addStamina: n => state.stamina = Math.max(0, Math.min(100, state.stamina + n)),

@@ -57,7 +57,7 @@ export function resultLines(lines, craft, strategyKey) {
   const table = new Map();
   if (history.some(care => care.moved)) {
     table.set("君の炭は動かなかった。助言は、本当だよ", [{ text: "君は炭を替えた。僕の煙に釣られたんじゃなく、自分の目で決めて。助言は、本当だよ" }]);
-    table.set("客の一口を待てました。どっちも急がず、俺の一台を選べた", [{ text: "客の様子を見て、必要な分だけ替えました。動かすのも待つのも、俺が選べた" }]);
+    table.set("客の一口を待てました。助言にも揺さぶりにも急がず、俺の一台を選べた", [{ text: "客の様子を見て、必要な分だけ替えました。動かすのも待つのも、俺が選べた" }]);
   }
   const strategy = STRATEGY_LINES[strategyKey];
   const out = history.length ? replaceLines(lines, table) : lines;
