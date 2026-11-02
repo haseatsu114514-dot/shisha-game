@@ -8,7 +8,7 @@ const get = page => page.evaluate(() => structuredClone(window.__remake.state));
 const ride = (page, code) => page.evaluate(code);
 const game = page => page.evaluate(() => { const g = window.__desertRide?.game; return g ? { z: g.z, x: g.x, air: g.air, airKind: g.airKind, t: g.t, score: g.score, falls: g.falls, finished: g.finished, hops: g.stats.hops, bigJumps: g.stats.bigJumps } : null; });
 const phase = (page, value) => page.waitForFunction(value => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === value, value, { timeout: 90000 });
-const autoplayToResult = async (page, skill = "perfect") => {
+const autoplayToResult = async (page, skill = "expert") => {
   await page.evaluate(skill => { window.__desertRide.autoplay(skill); window.__desertRide.setSpeedUp(8); }, skill);
   await phase(page, "result");
 };
@@ -23,6 +23,10 @@ await suite("desert-ride", async check => {
     assert.equal(await page.locator(t("desert-best")).count(), 0, "no best yet");
     await page.locator(t("desert-start")).click();
     await phase(page, "run");
+    // 本番はスタートの合図（3・2・1・GO）から。合図の間は進まず、ヌールが左に並んでいる
+    assert(await page.evaluate(() => window.__desertRide.countdown > 0), "the run starts with a countdown");
+    assert.equal(await page.locator(t("desert-race-gap")).innerText(), "VS ヌール");
+    assert(await page.evaluate(() => window.__desertRide.rival.finishTime > 45), "Noor races the same course");
     // PC: → を押し続けると慣性で右へ、Space はホップ（起伏が無い所）
     await page.keyboard.down("ArrowRight");
     await page.waitForFunction(() => window.__desertRide.game.x > 0.3);
@@ -37,13 +41,17 @@ await suite("desert-ride", async check => {
     const loaded = await page.evaluate(() => performance.getEntriesByType("resource").map(entry => entry.name).filter(name => name.includes("/img/ui/desert_ride/")).map(name => name.split("/").pop()).sort());
     assert.deepEqual(loaded, ["backdrop_day_land.webp", "backdrop_day_sky.webp", "backdrop_dusk_land.webp", "backdrop_dusk_sky.webp", "flag_pole.webp", "goal_banner.webp",
       "rider_brace.webp", "rider_fall.webp", "rider_jump.webp", "rider_lean_left.webp", "rider_lean_right.webp", "rider_ride.webp", "rock_large.webp", "rock_small.webp", "sand_puff.webp"]);
-    await autoplayToResult(page, "perfect");
+    // 空中トリックとブーストを使う理想の滑り: S、ヌールに勝つ
+    await autoplayToResult(page, "expert");
     const text = await resultText(page);
     assert.match(text, /RESULT/); assert.match(text, /転倒 0 回/); assert.match(text, /大ジャンプ 7 回/); assert.match(text, /自己ベスト更新/);
+    assert.match(text, /トリック 7 回（最高 720）/); assert.match(text, /ブースト [2-9] 回/);
+    assert.equal(await page.locator(t("desert-race")).getAttribute("data-won"), "true");
+    assert.match(await page.locator(t("desert-race")).innerText(), /ヌールに勝った！/);
     assert.equal(await page.locator(t("desert-result")).getAttribute("data-rank"), "S", "the ideal run is S on the fixed course");
     const total = Number((await page.locator(t("desert-total")).innerText()).replace(/[^\d]/g, ""));
-    assert(total >= 9000, `S needs 9000+ (${total})`);
-    assert.match(await page.locator(t("desert-time")).innerText(), /5\d\.\d 秒/, "a run takes about a minute");
+    assert(total >= 16000, `S needs 16000+ (${total})`);
+    assert.match(await page.locator(t("desert-time")).innerText(), /(4[5-9]|5\d)\.\d 秒/, "a run takes about a minute");
     // もう一度 → 途中でやめる（Escape）: 記録は残らず、メニューへ
     await page.locator(t("desert-retry")).click();
     await phase(page, "run");
@@ -70,7 +78,8 @@ await suite("desert-ride", async check => {
     // ボタンは下辺の左右に分かれ、真ん中の視界を隠さない
     const stage = await page.locator("#stage").boundingBox();
     const left = await page.locator(t("desert-left")).boundingBox(), right = await page.locator(t("desert-right")).boundingBox(), jump = await page.locator(t("desert-jump")).boundingBox();
-    for (const box of [left, right, jump]) {
+    const boostButton = await page.locator(t("desert-boost")).boundingBox();
+    for (const box of [left, right, jump, boostButton]) {
       assert(box.width >= 100 * (stage.width / 1280) && box.height >= 80 * (stage.height / 720), "buttons are big enough for a thumb");
       assert(box.y > stage.y + stage.height * 0.7, "buttons sit at the bottom");
     }
@@ -90,9 +99,24 @@ await suite("desert-ride", async check => {
     await press(jump, 60);
     g = await game(page);
     assert(g.hops + g.bigJumps >= 1, "the jump button jumps");
-    // 練習は説明つきで、終わると本番へ進むカード
-    await page.evaluate(() => { window.__desertRide.autoplay("perfect"); window.__desertRide.setSpeedUp(8); });
+    // BOOST ボタン: ゲージが空の間は効かず、満タンなら押すと超加速
+    await press(boostButton, 60);
+    assert.equal(await page.evaluate(() => window.__desertRide.game.stats.boosts), 0, "an empty gauge does not boost");
+    await page.evaluate(async () => { const { chargeBoost } = await import("./js/minigames/desert-ride-model.js"); chargeBoost(window.__desertRide.game, 1); });
+    await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]').dataset.gauge === "full");
+    await press(boostButton, 60);
+    assert.equal(await page.evaluate(() => window.__desertRide.game.stats.boosts), 1, "the BOOST button boosts when the gauge is full");
+    // 練習は説明つきで（回転・ブーストまで）、終わると本番へ進むカード
+    await page.evaluate(() => {
+      window.__captions = [];
+      new MutationObserver(() => { const text = document.querySelector('[data-test="desert-caption"]').textContent; if (text && !window.__captions.includes(text)) window.__captions.push(text); })
+        .observe(document.querySelector('[data-test="desert-caption"]'), { childList: true, characterData: true, subtree: true });
+      window.__desertRide.autoplay("expert"); window.__desertRide.setSpeedUp(4);
+    });
     await phase(page, "practiced");
+    const captions = await page.evaluate(() => window.__captions);
+    assert(captions.some(text => /空中で ← か → を押し続けて回ろう/.test(text)), `the lesson teaches the spin (${captions.join(" / ")})`);
+    assert(captions.some(text => /ゲージが満タン/.test(text)), "the lesson hands over a full gauge for the boost");
     assert.match(await page.locator(t("desert-practiced")).innerText(), /練習おわり/);
     await page.locator(t("desert-start")).tap();
     await phase(page, "run");
@@ -155,25 +179,39 @@ await suite("desert-ride", async check => {
     assert.equal(value.desert, undefined);
     await page.evaluate(() => { window.__desertRide.autoplay("perfect"); window.__desertRide.setSpeedUp(8); });
     await phase(page, "practiced");
-    assert.match(await page.locator(t("desert-practiced")).innerText(), /ヌール「いいね/);
+    assert.match(await page.locator(t("desert-practiced")).innerText(), /ヌール「上手！/);
     await page.locator(t("desert-start")).click();
+    // 1本目は着地が遅い滑り: B。ヌールと同じ滑りなので競走は負け
     await autoplayToResult(page, "good");
     await page.locator(".toast", { hasText: "ヌール「" }).waitFor();
     await page.locator(".toast", { hasText: "初めての完走" }).waitFor();
     value = await get(page);
-    assert.equal(value.desert.runs, 1); assert.equal(value.desert.best.rank, "A"); assert.equal(value.desert.bestRank, "A");
+    assert.equal(value.desert.runs, 1); assert.equal(value.desert.best.rank, "B"); assert.equal(value.desert.bestRank, "B");
+    assert.equal(value.desert.wins, 0); assert.equal(value.desert.best.race.won, false);
     assert.deepEqual(value.desert.firstClear, { chapter: 4, day: 48 }); assert.equal(value.desert.rewarded, true);
     assert.deepEqual(value.stats, before.stats, "no direct stat gain"); assert.equal(value.money, before.money);
-    assert.equal(JSON.parse(await page.evaluate(() => localStorage.getItem("suien_remake_save"))).desert.bestRank, "A", "recorded to the autosave");
-    // 同じ外出の中の再挑戦: 行動は増えず、記録だけ増える。自己ベストは点数で更新
+    assert.equal(JSON.parse(await page.evaluate(() => localStorage.getItem("suien_remake_save"))).desert.bestRank, "B", "recorded to the autosave");
+    // 同じ外出の中の再挑戦: 行動は増えず、記録だけ増える。自己ベストは点数で更新。回ってブーストすればヌールに勝つ（勝ちのひとこと）
     await page.locator(t("desert-retry")).click();
-    await autoplayToResult(page, "perfect");
+    await autoplayToResult(page, "expert");
+    await page.locator(".toast", { hasText: "ヌール「スゴイ！ ……悔しいけど、今日は私の負け」" }).waitFor();
     value = await get(page);
     assert.equal(value.desert.runs, 2); assert.equal(value.desert.bestRank, "S"); assert.equal(value.flags._ch4_desert.outings, 1);
+    assert.equal(value.desert.wins, 1);
     assert.match(await resultText(page), /自己ベスト更新/);
-    // 砂丘を下りる → 夕日の場面（大会前の分岐）→ 地図。今日はもう行けない。
+    // 初めて勝った日は、夕日の前に旗の下で短く話す
+    await page.evaluate(async () => {
+      const { hooks } = await import("./js/vn/engine.js");
+      window.__played = [];
+      const previous = hooks.onEnter;
+      hooks.onEnter = (id, dlg) => { window.__played.push(id); return previous?.(id, dlg); };
+    });
+    // 砂丘を下りる → （初勝利の会話）→ 夕日の場面（大会前の分岐）→ 地図。今日はもう行けない。
     await page.locator(t("desert-leave")).click();
     await freeDay(3);
+    const played = await page.evaluate(() => window.__played);
+    assert(played.indexOf("ch4_desert_race_first_win") >= 0 && played.indexOf("ch4_desert_race_first_win") < played.indexOf("ch4_desert_sunset_first"),
+      `the first win talk comes before the sunset (${played.join(", ")})`);
     assert(await page.locator(t("ch4-go-dunes")).isDisabled(), "no second trip on the same day");
     assert.match(await page.locator(t("ch4-free")).innerText(), /今日はもう砂丘へ行った/);
     value = await get(page);
@@ -281,7 +319,8 @@ await suite("desert-ride", async check => {
     await dubaiMap(1);
     value = await get(page);
     assert.equal(value.day, before.day); assert.equal(value.slot, 1);
-    assert.equal(value.desert.bestRank, "S"); assert.equal(value.desert.rewarded, true);
+    assert.equal(value.desert.bestRank, "A", "clean landings without spins are an A"); assert.equal(value.desert.rewarded, true);
+    assert.equal(value.desert.wins, 1, "clean landings and the boost beat Noor");
     assert.equal(value.stamina, before.stamina, "the trip uses no stamina");
     assert.deepEqual(value.stats, before.stats, "no direct stat gain");
     assert.match(await page.locator(t("pin-ch4_dubai_dunes")).getAttribute("class"), /\boff\b/, "no second trip tonight (the pin stays, disabled)");

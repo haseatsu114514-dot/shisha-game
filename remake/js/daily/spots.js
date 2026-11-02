@@ -28,6 +28,9 @@ import { openingStatus, rinUnavailable } from "./spot-hours.js";
 import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
 
 export const VISIT_COST = 3000;
+// 東京のシーシャ屋は少し相場が上がって一台4,000円（2026-11-02 オーナー「東京編はシーシャ屋の値段4000円にしたい　少し相場上がって」）。
+// 第3章の東京（煙幕・Smoke & Glory・鉄の煙）と第5章の東京（Smoke & Glory・鉄の煙）で使う。本筋の場面は払わない。
+export const TOKYO_VISIT_COST = 4000;
 
 // キャラ別の「通うと伸びる」主要ステ（ch1の6人で5種を一通りカバー）
 export const CHAR_STAT = { sumi: "technique", tsumugi: "sense", naru: "insight", adam: "guts", minto: "charm", rin: "sense" };

@@ -49,6 +49,8 @@ Codex が2回に分けてギガファイル便で渡した候補から選んだ�
 | CR-GM01 | `assets/ui/camel_race/camel_body_{1..4}.png`・`camel_jockey.png` | レース画面のラクダ（自分・AI 3頭は色相を変えて使う）とロボット騎手 | 各 512×384・透過 PNG。騎手は 160×160・透過 | 側面（右向き）走りの4コマ（脚の位相違い）。騎手は別レイヤーで、こぶの後ろに座る位置で合成 |
 | CR-GM02 | `assets/ui/camel_race/suv_side.png` | 並走する白いSUV | 720×360・透過 | 側面（右向き）。運転席側の窓から調教師が腕を出し、小さなリモコンのアンテナ。車輪は別レイヤーでも可（回転はコード） |
 | CR-GM03 | `assets/ui/camel_race/dust_{1..3}.png`・`finish_gate.png`・`tent.png` | 砂煙（任意）・ゴールゲート・テント | 砂煙 256×256 透過×3、ゲート 400×480 透過、テント 320×240 透過 | 砂煙は輪郭の柔らかい塊3種。ゲートは FINISH の横断幕だが**文字は描かない**（コードで描く） |
+| CR-GM02-v3 | `assets/ui/camel_race/suv.png`（差し替え） | 並走する白いSUV。**リモコンを持つのは後ろの窓のはじめ**（オーナー「何で今はじめがリモコンじゃないんだっけ」2026-11-02） | 720×360・透過（今の絵と同じ寸法・同じ車体の位置） | 今の絵は運転席のラシードが窓からリモコンを出している（最初の依頼が本番レースの調教師の姿だったため）。練習レースではリモコンをはじめに貸しているので、ラシードは両手でハンドルを握るだけにし、後ろのドアの窓は下ろして空けておく（はじめは CR-GM04 をコードで重ねる）。車輪は今と同じ別レイヤー |
+| CR-GM04 | `assets/ui/camel_race/hajime_window_{normal,shout}.png` | SUV の後ろの窓から身を乗り出すはじめ（今は立ち絵の切り抜きで代用。オーナー「車がはじめが見えない」2026-11-02） | 各 320×320・透過 | 横向き（右）の上半身。黒いキャップと黒いパーカー。片手に小さなリモコン（短いアンテナ）。通常と、口を開けて叫ぶ顔の2枚。窓の下の縁より下は描かない（車体で隠す） |
 
 ## 依頼文（コピペ用）
 
@@ -106,6 +108,23 @@ No text, no logos, no numbers, no ground shadow (the game draws shadows), no bac
 ```
 Game sprite asset, side view facing right, 720x360, fully transparent background, high-density pixel-painter style (no thick outlines, no photo realism).
 A white desert SUV driving fast on a sand track, seen from the side. Tinted windows; from the front passenger window a man in a white kandura leans out holding a small remote controller with a short antenna. Wheels drawn as separate circles so they can be rotated by code. Slight dust is NOT needed (the game draws dust). No brand badges, no license plate text, no logos, no text.
+```
+
+### CR-GM02-v3 SUV（ラシードは運転だけ・後ろの窓は空ける）
+
+今の `assets/ui/camel_race/suv.png` を添付し、車体の形・大きさ・位置・車輪の位置を変えないように頼む。
+
+```
+Edit the attached game sprite (image 1, a white SUV, side view facing right, 720x360, transparent background). Keep the car body, its exact size and position on the canvas, the colors, the painterly pixel style and the wheel positions identical. Change only the people: the driver (a 56-year-old Emirati man in a white kandura and a red-and-white checkered ghutra) sits normally with BOTH hands on the steering wheel; remove his arm, hand and the remote controller from the window. Roll the rear side door window fully down so its opening is empty and clear (a passenger will be drawn there separately by the game). No other passengers, no remote controller anywhere, no text, no logos, no license plate text, no dust.
+```
+
+### CR-GM04 窓から身を乗り出すはじめ
+
+正本の立ち絵 `assets/sprites/characters/hajime/chr_hajime_normal.png` を本人の参照として添付する。
+
+```
+Game sprite asset, 320x320, fully transparent background, same hand as the game's character sprites (Japanese 2D visual-novel art, confident dark outlines, flat colors with two to three cel-shadow steps; no glossy 3D, no photo realism).
+The attached image is the canonical character Hajime: keep his face, black baseball cap, black zip hoodie over a black T-shirt and his age exactly. Draw ONLY his upper body leaning out of a car's rear side window toward the right (three-quarter view facing right), from the top of the cap down to just below the chest, cut off flat at the bottom where the window sill will hide him. One hand holds a small black key-fob sized remote controller with a short antenna, raised near his face as if calling into it. Two separate images: (1) focused, mouth closed; (2) shouting with an open mouth and a determined face. No car, no window frame, no text, no logos, no watermark.
 ```
 
 ### CR-GM03 砂煙・ゴールゲート・テント

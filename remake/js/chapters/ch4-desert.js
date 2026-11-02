@@ -13,7 +13,7 @@ import { play } from "../vn/engine.js";
 import { awardActionExp } from "../core/growth.js";
 
 export * from "./ch4-desert-progress.js";
-import { DESERT_TALKS, DESERT_SCENES, DESERT_DIALOGUE_IDS, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
+import { DESERT_TALKS, DESERT_SCENES, DESERT_RACE_WIN_LINE, DESERT_DIALOGUE_IDS, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
   desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertProgress } from "./ch4-desert-progress.js";
 
 let dialogueTask = null;
@@ -78,6 +78,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     showScreen("none", null);
     const before = desertRecords(owner);
     const name = DB.characters[DESERT_GUIDE]?.display_name || "ヌール";
+    let firstWin = false;
     const { results } = await runDesertRide({
       host: host || document.getElementById("stage") || layers.screen, signal, tutorial: status.first,
       best: before.best ? { score: before.best.score, rank: before.best.rank } : null,
@@ -88,7 +89,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
         const saved = recordDesertResult(owner, result, { awardExp: awardActionExp });
         if (!saved) return;
         save();
-        const line = firstLine(`venue_noor_result_${result.rank}`);
+        if (saved.firstWin) firstWin = true;
+        const line = firstLine(saved.won ? DESERT_RACE_WIN_LINE : `venue_noor_result_${result.rank}`);
         toast(`${name}「${line}」${saved.newBest && !saved.firstClear ? " 自己ベスト更新" : ""}`, { kind: "good" });
         if (saved.firstClear) toast("初めての完走。砂丘の写真を、ヌールが撮ってくれた", { kind: "good" });
       },
@@ -96,6 +98,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     if (!current()) return changed;
     // 夕日の砂丘で話す（完走の有無にかかわらず、下りてきたら）。中断しても外出の記録は残っている。
     void results;
+    // 初めて競走でヌールに勝った日は、ゴールの旗の下で短く話してから夕日へ
+    if (firstWin && !await read(DESERT_SCENES.raceFirstWin, bgUrl(DESERT_BG))) return changed;
     await read(status.first ? DESERT_SCENES.sunsetFirst : DESERT_SCENES.sunsetAgain, bgUrl(DESERT_DUSK_BG));
     return changed;
   } finally { active = false; }

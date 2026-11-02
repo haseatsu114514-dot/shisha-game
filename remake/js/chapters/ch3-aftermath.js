@@ -1,5 +1,5 @@
 // 全国大会の勝利後。結果発表は大会ランナーが読了・保存し、ここでは再生しない。
-import { DB, bgUrl } from "../core/data.js";
+import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay } from "../core/chapter-clock.js";
@@ -17,12 +17,12 @@ import { playChapterPreview } from "./chapter-preview.js";
 import { shinkansenRide } from "../core/scene-motions.js";
 import { syncTokyoVisits } from "../core/tokyo-visits.js";
 import { growthLesson } from "../core/growth-effects.js";
-import { awardChapterClearExp } from "../core/growth.js";
+import { awardChapterClearExp, readyLessons, consultLessons } from "../core/growth.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { chapterThreePartyGuests } from "./ch3-party-progress.js";
 import { CH3_AFTERMATH_SCENES, CH3_AFTERMATH_DETOURS, canRunChapterThreeAftermath, beginChapterThreeAftermath,
   chapterThreeAftermathProgress, completeChapterThreeAftermathScene, availableAftermathDetours,
-  completeAftermathDetour } from "./ch3-aftermath-progress.js";
+  completeAftermathDetour, availableAftermathLessons } from "./ch3-aftermath-progress.js";
 
 const IDS = CH3_AFTERMATH_SCENES.map(scene => scene.id);
 const test = name => `ch3-aftermath-${name}`;
@@ -161,17 +161,25 @@ async function loadDetours(owner) {
 
 /** 東京にいる間の場面カードに、大会後の寄り道の入口を出す。読んでも日時は進まない。 */
 function detourActions(owner) {
-  const scenes = availableAftermathDetours(state);
-  return scenes.length ? [button(owner, `寄り道をする（${scenes.length}）`, "detour-open", () => renderDetours(owner))] : [];
+  const count = availableAftermathDetours(state).length + availableAftermathLessons(state, readyLessons).length;
+  return count ? [button(owner, `寄り道をする（${count}）`, "detour-open", () => renderDetours(owner))] : [];
 }
 
 async function renderDetours(owner) {
   if (!live(owner)) return;
   const scenes = availableAftermathDetours(state);
-  if (!scenes.length) { await renderStage(owner); return; }
+  const lessons = availableAftermathLessons(state, readyLessons);
+  if (!scenes.length && !lessons.length) { await renderStage(owner); return; }
   card(owner, "detour", "寄り道", "帰る前に、立ち寄れる場所がある。読んでも、予定は進まない。", [
     ...scenes.map(scene => button(owner, `${scene.label}（${scene.location}）`, `detour-${scene.id}`,
       () => readDetour(owner, scene.id))),
+    // 心得の盤で灯した授業を、東京にいるうちにその人へ相談する（SPEC 2.6・SBD61）
+    ...lessons.map(entry => button(owner,
+      `${entry.place}で${displayName(entry.who, state)}に相談する（${entry.lessons.map(lesson => lesson.name).join("・")}）`,
+      `lesson-${entry.who}`, async () => {
+        await consultAftermathLesson(owner, entry.who);
+        if (live(owner)) await renderStage(owner);
+      })),
     button(owner, "戻る", "detour-back", () => renderStage(owner)),
   ], "読んだ場面は、あとから読み返せません。");
 }
@@ -181,7 +189,29 @@ async function readDetour(owner, id) {
   const scene = availableAftermathDetours(state).find(item => item.id === id);
   if (scene && !await readScene(owner, scene)) return;
   if (scene && completeAftermathDetour(state, id)) save();
+  // 鉄の煙の後日談を読んだその場で、灯した授業をヴォルクに相談する（大会前の寄り道の鉄の煙と同じ）
+  if (scene?.id === "ch3_volk_after_ch3" && live(owner)) await consultAftermathLesson(owner, "volk");
   await renderStage(owner);
+}
+
+/**
+ * 大会後の東京で、灯した授業をその場にいる人に相談する（無料・寄り道と同じく stage・日時は進めない）。
+ * 会話中は場面と同じく HUD を隠す。LOAD・ページ離脱で owner.controller を止めると相談も止まる（習得は完読した時だけ）。
+ */
+async function consultAftermathLesson(owner, who) {
+  // 押した時点で条件を引き直す。古い画面・二重クリック・相談済みでは何もしない。
+  const entry = availableAftermathLessons(state, readyLessons).find(item => item.who === who);
+  if (!entry || !live(owner)) return;
+  const scene = CH3_AFTERMATH_SCENES[chapterThreeAftermathProgress(state).stage];
+  const background = bgUrl(entry.bg, scene?.slot ? "night" : "day");
+  await setBg(background, { instant: true });
+  if (!live(owner)) return;
+  showScreen("none", null);
+  layers.hud.replaceChildren();
+  layers.hud.classList.remove("show");
+  const controller = owner.controller = new AbortController();
+  try { await consultLessons(who, { bg: background, signal: controller.signal }); }
+  finally { if (owner.controller === controller) owner.controller = null; }
 }
 
 async function readScene(owner, scene) {

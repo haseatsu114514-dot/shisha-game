@@ -14,6 +14,7 @@ import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { SPOTS, CHAR_STAT, VISIT_BG } from "../daily/spots.js";
 import { PREPARATION_SPOTS } from "./ch2-preparation.js";
+import { consultLessons } from "../core/growth.js";
 
 const TALKS_FLAG = "_ch5_shop_talks"; // 小会話の巡回の回数（店ごと）
 
@@ -89,5 +90,7 @@ export async function performChapterFiveShop(spot, { staminaGuard } = {}) {
   talks[entry.id] = (talks[entry.id] || 0) + 1;
   if (entry.talkWith) { gainAffinity(entry.talkWith, entry.affinity || 5); markMet(entry.talkWith); }
   if (entry.stat) earnStat(entry.stat, 4);
+  // 心得の盤の授業（SPEC 2.6・SBD61）: 通い店で会った人に、灯した授業があれば相談する（なる・みんと・サメちゃん・あげは）
+  if (entry.talkWith && state === owner) await consultLessons(entry.talkWith, { bg: entry.bgUrl || sceneBg(entry.bg, timeOfDay()).url });
   return { used: true, exerted: true };
 }
