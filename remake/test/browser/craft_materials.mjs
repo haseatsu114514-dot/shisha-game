@@ -295,7 +295,12 @@ await suite("craft-materials", async check => {
       }
       assert.equal(await page.locator('.bench-worker-name').evaluate(n => getComputedStyle(n).backgroundImage), "none");
       // 外部画像が全て実画像としてデコード済みであることを確認する（placeholderは不可）。
-      await page.waitForFunction(() => [...document.querySelectorAll('.bench-worker img:not([hidden])')].every(n => n.complete && n.naturalWidth > 0));
+      await page.waitForFunction(step => {
+        const worker = document.querySelector('.bench-worker');
+        const image = worker.querySelector('.worker-action:not([hidden])');
+        return worker.dataset.scene === step && image?.complete && image.naturalWidth > 0
+          && image.checkVisibility({ visibilityProperty: true });
+      }, step);
       await capture(page, `night-${step}-${viewport.width}x${viewport.height}`);
     }, { viewport, reducedMotion: "reduce" });
   }
