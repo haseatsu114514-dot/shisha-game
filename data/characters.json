@@ -1128,7 +1128,8 @@
     ],
     "voice": {
       "first_person": "俺"
-    }
+    },
+    "spriteScale": 1.05
   },
   {
     "id": "rashid",
