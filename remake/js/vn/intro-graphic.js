@@ -3,10 +3,11 @@
 // 設定「登場カットインの絵柄」で旧（立ち絵）へいつでも戻せる。素材と指示文: asset_sources/character-intros/graphic-20261031/
 // 絵の差し替え: python3 tools/intro_graphic_import.py <id> <原画.png> [--background]（手順は同フォルダの README）
 const ROOT = "img/ui/character_intros/graphic/";
+// SHISHA-9000 は正式 normal の独立したシアン／紫の眼を優先し、専用人物絵へ差し替えない。
 const PORTRAITS = new Set([
   "adam", "ageha", "dr_kemuri", "hajime", "hiyori", "kumicho", "kuze", "maezono", "maki", "mashiro", "minto", "nagumo",
   "naru", "oneesan", "pakki", "rei", "rin", "sai", "samechan", "steve", "sumi", "tsumugi", "uranaishi", "volk", "yoru",
-  "master_hookah", "sheikh", "shisha_9000", "da_silva", "emil", "mukai_master", "noor",
+  "master_hookah", "sheikh", "da_silva", "emil", "mukai_master", "noor",
 ]);
 // 背景も新しい絵柄に合わせて描き直した（2026-10-31 全24人）。無い人物は旧背景を使う
 const BACKGROUNDS = new Set([...PORTRAITS]);

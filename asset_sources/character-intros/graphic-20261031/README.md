@@ -11,6 +11,8 @@
 - 切り抜き: `python3 key_background.py <原画> <出力.png> m|g`（m=マゼンタ, g=緑）。黒背景の原画は外周からつながる黒だけを抜く。
 - 採用素材: `remake/img/ui/character_intros/graphic/<id>.webp`（1024×1024・透過）、`bg_<id>.webp`（1672×941）。一覧は `remake/js/vn/intro-graphic.js`。
 
+SHISHA-9000 は正式normalの立ち絵を優先し、ゲームではこのフォルダ由来の専用人物絵に切り替えない。顔の参照元は `assets/sprites/characters/shisha_9000/chr_shisha_9000_normal.png`。独立したシアンと紫の二眼を維持し、目を髪で隠す共通指示は適用しない。既存の原画と配置記録は制作履歴として残す。
+
 ## 差し替え手順（ポーズ違いなど・Codex 向け）
 
 1. 原画を用意する。正方形・人物は胸〜腰から上・**背景は人物に使わない単色（マゼンタ #FF00FF か鮮やかなピンク／緑）**。黒背景は髪や服と区別できないので不可。目は髪で隠す。画風の見本は `owner_originals/samechan.png`・`ageha_v1.png`・`rin.png`、指示文は `portrait_prompt.txt`。
