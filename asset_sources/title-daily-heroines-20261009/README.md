@@ -29,9 +29,9 @@
 
 ![みんと4案：お出迎え、チェキ、休日の私服、閉店後の素顔](../title-art/heroine-concepts-v2-personality-pixel-20261008/review/minto.png)
 
-### アゲハ
+### あげは
 
-![アゲハ3案：ピンクの試香席、買い出しの笑顔、撮影スタジオ](../title-art/heroine-concepts-v2-personality-pixel-20261008/review/ageha.png)
+![あげは3案：ピンクの試香席、買い出しの笑顔、撮影スタジオ](../title-art/heroine-concepts-v2-personality-pixel-20261008/review/ageha.png)
 
 ### くゆり
 

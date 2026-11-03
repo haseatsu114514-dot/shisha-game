@@ -118,7 +118,7 @@
 | # | 論点 | 根拠（場所） | 候補 |
 |---|---|---|---|
 | C1 | **あげはの一人称** | 接続済みの範囲で「あたし」（ch2_city・ch2_tournament・remake_ch2・ch2_main）、「うち」（ch2_preparation・ch1 outing・LIME）、「アタシ」（lover_events）が混在。confession_ageha は[2][3]が「うち」、accept[1]が「アタシ」で、同じ場面の中で変わる | ①「あたし」に統一（正本の story_and_structure の引用は「あたし」） ②「うち」（ギャル寄り） ③場面ごとに使い分けるなら規則を決める |
-| C2 | **あげはの表記** | characters.json の display_name は「あげは」で、ch2 本編の地の文と呼び方は「あげは／あげはさん」。confession・relationship_memories・選択肢は「アゲハ／アゲハさん」 | 地の文・呼び方を「あげは」に統一するか |
+| C2 | **あげはの表記** | characters.json の display_name は「あげは」で、ch2 本編の地の文と呼び方は「あげは／あげはさん」。confession・relationship_memories・選択肢は「あげは／あげはさん」 | 地の文・呼び方を「あげは」に統一するか |
 | C3 | **はじめ→みんとの呼び方と敬語** | 対面ではほぼ「みんと」＋タメ口。phantom_smell（ch1_minto.json:1248/1300）は「みんとさん」＋敬語。LIMEの返信「みんとさんに勝ちたいです」「おはよう、みんとさん」「みんとさんこそ大丈夫？」。venue_minto_day・ch1_bonds の選択肢も敬語 | ①「みんと」＋タメ口に統一 ②初期は「みんとさん」、親しくなったら「みんと」と段階を決める |
 | C4 | **みんと営業モードの一人称** | ch2_minto_warning（営業口調＋♡）で「わたし」「吸いに来な」。この台詞は chapter_previews/ch2.json にも引用されている。LIME day5/12 も正体判明前に素の口調。正本は営業＝「みんと」、素＝「私」 | ①「みんと」に戻す ②仮面が外れる演出として「私」（「わたし」は使わない）。変える場合は予告の引用も同時に直す |
 | C5 | **チャコール博士の一人称** | 接続済み: ch1_spots（須井に）「僕」、ch2_city／ch2_tournament「私」、cs_kemuri_solo「きみ」。未接続: ch2_opening「俺」（正本の「作ったの俺だもん」パロディ）、ch5_dream「僕」、ch5_main「私」 | 公の場＝私、くだけた場面＝僕、機材自慢の時だけ「俺」、と使い分けを決めるか |

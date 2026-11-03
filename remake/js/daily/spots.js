@@ -101,7 +101,7 @@ export const FACILITY_GROWTH_SPOTS = Object.freeze(["kannon", "choizap", "cafe",
 export const facilityGrowth = (spot) => FACILITY_GROWTH_SPOTS.includes(spot?.id)
   ? { budget: 1, points: 2, primary: spot.stat || null } : {};
 /**
- * 路上占い師（旧版 F11）: 章ごとに1〜2回、予定の無い昼か夜に、街のどこかへ現れる（daily/fortune-schedule.js・台帳 URA）。
+ * 辻占のオババ（旧版 F11）: 章ごとに1〜2回、予定の無い昼か夜に、街のどこかへ現れる（daily/fortune-schedule.js・台帳 URA）。
  * 時間を使わない・相性占い3,000円。現れている時間帯だけ、その回の場所に出す。未対面の人物情報は引き続き伏せる。
  * @param where 地図の地域（"home" | "tokyo"）
  */

@@ -21,7 +21,7 @@ KITE（1998）とBASTARD!!の旧OVA（1992）を参考に、正規キャラと�
 | 01 | ひより・KITE寄りの立ち絵 | [![01](images/01.png)](images/01.png) |
 | 02 | ひより・BASTARD寄りの立ち絵 | [![02](images/02.png)](images/02.png) |
 | 03 | みんと・小悪魔の立ち絵 | [![03](images/03.png)](images/03.png) |
-| 04 | アゲハ・明るいOVA立ち絵 | [![04](images/04.png)](images/04.png) |
+| 04 | あげは・明るいOVA立ち絵 | [![04](images/04.png)](images/04.png) |
 | 05 | くゆり・都会的なOVA立ち絵 | [![05](images/05.png)](images/05.png) |
 | 06 | つむぎ・柔らかなOVA立ち絵 | [![06](images/06.png)](images/06.png) |
 | 07 | tonari・夜の背景 | [![07](images/07.png)](images/07.png) |
@@ -29,7 +29,7 @@ KITE（1998）とBASTARD!!の旧OVA（1992）を参考に、正規キャラと�
 | 09 | EDEN・深い琥珀色の背景 | [![09](images/09.png)](images/09.png) |
 | 10 | ぺぱーみんと・夜の背景 | [![10](images/10.png)](images/10.png) |
 | 11 | ひより・雨の窓辺 | [![11](images/11.png)](images/11.png) |
-| 12 | アゲハとはじめ・屈託のない笑顔 | [![12](images/12.png)](images/12.png) |
+| 12 | あげはとはじめ・屈託のない笑顔 | [![12](images/12.png)](images/12.png) |
 | 13 | みんと・接客中のウインク | [![13](images/13.png)](images/13.png) |
 | 14 | みんと・素顔の帰り道 | [![14](images/14.png)](images/14.png) |
 | 15 | つむぎ・タブレットの猫スケッチ | [![15](images/15.png)](images/15.png) |

@@ -58,7 +58,7 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
     ],
   },
   ageha: {
-    id: "premium_ageha", title: "帰るには早くない？", name: "アゲハ",
+    id: "premium_ageha", title: "帰るには早くない？", name: "あげは",
     bio: "恋人 / MELTY PUFF", speaker: "ageha", duration: 20,
     audio: null,
     reactions: {

@@ -154,7 +154,7 @@ await suite('ch2-daily',async check=>{
   await check('city-guest-paid-visit-and-reload',async page=>{
     await setup(page,{guest:'ageha'}); await begin(page); await settled(page);
     const guestNames=await page.locator(t('pin-minto')).locator('.pin-person').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('title')));
-    assert(guestNames.some(name=>name?.includes('アゲハ')||name?.includes('あげは')), `Missing guest marker: ${guestNames}`);
+    assert(guestNames.some(name=>name?.includes('あげは')||name?.includes('あげは')), `Missing guest marker: ${guestNames}`);
     const before=await value(page);
     // 通常の初回訪問には有料チェキの選択もある。今回は見送り、基本の一服だけを比較する。
     await page.evaluate(()=>{ window.__remake.vnTest.choose=(_id,choices)=>Math.max(0,choices.indexOf('今日は見送る')); });

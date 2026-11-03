@@ -4,7 +4,7 @@
     {
       "dialogue_id": "ch5_dubai_letter",
       "lines": [
-        { "speaker": "", "face": "", "text": "郵便受けに、厚い封筒が届いていた。差出人は、シェイク・アル=ガリヤーン。" },
+        { "speaker": "", "face": "", "text": "郵便受けに、厚い封筒が届いていた。差出人は、シェイク・ナジュム・アル=ガリヤーン。" },
         { "speaker": "sheikh", "face": "normal", "text": "新しい王者へ。また遊びに来なさい" },
         { "speaker": "sheikh", "face": "smile", "text": "屋敷の客間は、いつでも空けておく。好きなだけ泊まっていけばいい" },
         { "speaker": "sheikh", "face": "normal", "text": "往復の切符は同封しておく。来たい日に来なさい" },
@@ -17,7 +17,7 @@
       "dialogue_id": "ch5_dubai_letter_again",
       "comment": "2通目からの招待の手紙（ドバイから帰って2日後に届き、「ドバイへ」を選んだ時に読む）。_b と巡回。",
       "lines": [
-        { "speaker": "", "face": "", "text": "郵便受けに、また厚い封筒が届いていた。差出人は、シェイク・アル=ガリヤーン。" },
+        { "speaker": "", "face": "", "text": "郵便受けに、また厚い封筒が届いていた。差出人は、シェイク・ナジュム・アル=ガリヤーン。" },
         { "speaker": "sheikh", "face": "normal", "text": "君が帰ってから、客間が空いたままだ" },
         { "speaker": "sheikh", "face": "smile", "text": "切符を入れておく。王族の招待だと思わなくていい。友人の誘いだ" },
         { "speaker": "hajime", "face": "smile", "text": "（今度は、tonariの葉をもう一袋持っていこう）" },

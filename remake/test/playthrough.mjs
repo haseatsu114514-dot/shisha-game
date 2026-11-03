@@ -319,7 +319,7 @@ for (;;) {
   // LIME: 朝は通知だけ。はじめて届いた日はアイコンが照らされる（案内）→ 以後は赤丸があれば自分で開く
   if (snap.screen === "map" && (await click('[data-test="coach-lime"]'))) { limeCoach++; continue; }
   if (snap.screen === "map" && snap.rain) rainMaps++;
-  // 路上占い師（週2日だけ出る）: 見かけたら一度だけ占ってもらう（時間は使わない）
+  // 辻占のオババ（週2日だけ出る）: 見かけたら一度だけ占ってもらう（時間は使わない）
   if (snap.screen === "map" && !fortuneTried && snap.money >= 3000 && (await page.$('[data-test="pin-fortune"]:not(.off)'))) {
     if (!await click('[data-test="pin-fortune"]') || !await click('[data-test="map-go"]'))
       throw new Error("Fortune input failed before visiting");

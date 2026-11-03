@@ -104,8 +104,8 @@ LEGACY_CHARACTER_RE = re.compile(r"kafuka|カフカ|かふか", re.IGNORECASE)
 IDENTITY_FIXTURES = {"remake/test/samechan_migration.mjs", "tools/check_legacy_terms.py"}
 IDENTITY_TEXT_EXTENSIONS = EXTENSIONS | {".mjs", ".cjs", ".html", ".css", ".yml", ".yaml", ".svg", ".xml", ".toml", ".lock"}
 # 2026-11-03 改名（#2474）。旧名は履歴・素材メモを含む全追跡ファイルで禁止する（「凛とした」等の一般語は許す）。
-RENAMED_CHARACTER_RE = re.compile(r"凛(?!とし|々|然|冽)|水瀬|白木 ?つむぎ|さぎさか りん|南雲|なぐも しゅうじ")
-RENAMED_CHARACTER_FIX = "旧キャラ名 → 匂坂 くゆり（rin）／猫柳 つむぎ（tsumugi）／黒葉 ましろ（mashiro）／須井 修二（nagumo）に統一（#2474）"
+RENAMED_CHARACTER_RE = re.compile(r"凛(?!とし|々|然|冽)|水瀬|白木 ?つむぎ|さぎさか りん|南雲|なぐも しゅうじ|デイビス|Steve Davis|波多野|ラシード|\bRashid\b|アゲハ(?!蝶|チョウ)|路上占い師|\bPak(?:i|ie)\b|サラリーマンさん")
+RENAMED_CHARACTER_FIX = "旧キャラ名 → 匂坂 くゆり（rin）／猫柳 つむぎ（tsumugi）／黒葉 ましろ（mashiro）／須井 修二（nagumo）／スティーブ・ライマン（steve）／汐見 なぎさ（samechan）／ハリール（rashid）／あげは（ageha）／辻占のオババ（uranaishi）／Packy（pakki）／鉄仮面さん（salaryman）に統一（#2474）"
 MINTO_HAIR_RE = re.compile(r"(?:mint|light)[ -]green (?:hair|twin)|black twin[ -]?tails|ミント(?:グリーン|色)のツイン|黒髪ツインテール|角ツインテール", re.IGNORECASE)
 
 

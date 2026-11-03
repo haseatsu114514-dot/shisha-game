@@ -1,8 +1,8 @@
 {
   "profile": {
     "id": "samechan",
-    "name": "波多野なぎさ",
-    "full_name": "波多野なぎさ",
+    "name": "汐見なぎさ",
+    "full_name": "汐見なぎさ",
     "display_name": "サメちゃん",
     "speech_style": {
       "samechan": "一人称は「わし」、はじめへの呼びかけは「お主」。親しみのある「〜じゃ」「〜のじゃ」「〜じゃぞ」で話し、照れたり慌てたりすると言いよどむ。",
@@ -1803,7 +1803,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "波多野なぎさじゃ。……一度しか言わんぞ"
+          "text": "汐見なぎさじゃ。……一度しか言わんぞ"
         },
         {
           "type": "set_flag",

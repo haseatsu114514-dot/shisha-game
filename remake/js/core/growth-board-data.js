@@ -208,7 +208,7 @@ export const LESSONS = [
     hint: "零と仲良くなると、香りの重ね方を教えてもらえそう",
     text: "花の葉を2種以上重ねると香りの層ができ、調整のたびに次の層が立つ", scene: "lesson_rei_layers" },
   { id: "M-S4", cell: "5,-1", board: "sense", who: "ageha", need: 5, ring: 2, sig: true, reward: "skill", name: "ズボーって",
-    hint: "アゲハと仲良くなると、感覚の吸い方を教えてもらえそう",
+    hint: "あげはと仲良くなると、感覚の吸い方を教えてもらえそう",
     text: "吸い出しに「ズボー（同じ長さで吸う一回）」が加わる。一回ずつ刻んで温度を立て直せる", scene: "lesson_ageha_zuboo" },
   { id: "M-W4", cell: "-4,1", board: "wisdom", who: "kumicho", need: 5, ring: 2, sig: true, reward: "skill", name: "0分立ち上げ",
     hint: "組長と仲良くなると、蒸らさない立ち上げ方を教えてもらえそう",

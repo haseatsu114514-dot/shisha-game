@@ -1,4 +1,4 @@
-// 採用した登場イラスト・DAY4の未知アゲハ・新人物PNG・昼夜マップの本編接続。
+// 採用した登場イラスト・DAY4の未知あげは・新人物PNG・昼夜マップの本編接続。
 // 8123でpreviewを起動後: CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/intro_art.mjs
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";

@@ -4,7 +4,7 @@
 
 最新の添付参考を完成形として再構築。斜めの「コンティニューする？」、右上の実時計HUD、暗いスモークステージ、中央の正規人物、迫る巨大数字、線付きの1行セリフ、金と紫の鋭角ボタン。GAME OVERは同じ筆文字と青紫の発光でシンプルに中央表示。カウントとボタン文字はライブUIで、素材へ焼き込んでいない。
 
-- [完成・アゲハ1080p](neon-reference-20261011/neon-ageha-1080.png) / [スミさん720p](neon-reference-20261011/neon-sumi-720.png) / [スマホ横持ち](neon-reference-20261011/neon-ageha-phone.png)
+- [完成・あげは1080p](neon-reference-20261011/neon-ageha-1080.png) / [スミさん720p](neon-reference-20261011/neon-sumi-720.png) / [スマホ横持ち](neon-reference-20261011/neon-ageha-phone.png)
 - [残り5秒](neon-reference-20261011/neon-ageha-5.png) / [迫る残り1秒](neon-reference-20261011/neon-ageha-1.png) / [シンプルなGAME OVER](neon-reference-20261011/neon-game-over.png)
 - [初回実画面](neon-reference-20261011/iteration-1.png)から、タイトルを右へ58px・幅824→752px、セリフ34→32px、ボタンとの間隔を修正。長い強調行でも8px以上、ボタン下21px以上を確認。終了ロゴに前行の微小な光が混じらないよう切出し境界も調整。
 - [透過アトラス原画](neon-reference-20261011/neon-atlas-original.png) / [完全な生成指示](neon-reference-20261011/neon-atlas.prompt.txt) / [実参照・SHA256・変換記録](neon-reference-20261011/generation.json)
@@ -25,10 +25,10 @@
 背景も「紫の煙（採用中）」／「暗いステージ（試用）」を独立して比較できる。
 
 - PC・スミさん: [採用中](top-buttons-experiment/current-sumi.png) / [上にボタン・実験](top-buttons-experiment/top-sumi.png)
-- スマホ横持ち・アゲハ: [採用中](top-buttons-experiment/current-phone-ageha.png) / [上にボタン・実験](top-buttons-experiment/top-phone-ageha.png)
+- スマホ横持ち・あげは: [採用中](top-buttons-experiment/current-phone-ageha.png) / [上にボタン・実験](top-buttons-experiment/top-phone-ageha.png)
 - 暗いステージ: [上段ボタン](top-buttons-experiment/stage-top-sumi.png) / [背面カウント15](top-buttons-experiment/back-count-15.png) / [5](top-buttons-experiment/back-count-5.png) / [1](top-buttons-experiment/back-count-1.png)
 - [紫背景＋背面カウント](top-buttons-experiment/back-count-purple.png) / [暗いステージ・スマホ横持ち](top-buttons-experiment/stage-phone-ageha.png)
-- 王道・アゲハ: [数字なしの背面](top-buttons-experiment/classic-stage-ageha.png) / [かなり大きく迫る数字15](top-buttons-experiment/classic-count-15.png) / [5](top-buttons-experiment/classic-count-5.png) / [1](top-buttons-experiment/classic-count-1.png)
+- 王道・あげは: [数字なしの背面](top-buttons-experiment/classic-stage-ageha.png) / [かなり大きく迫る数字15](top-buttons-experiment/classic-count-15.png) / [5](top-buttons-experiment/classic-count-5.png) / [1](top-buttons-experiment/classic-count-1.png)
 - [王道＋迫る数字・スマホ横持ち](top-buttons-experiment/classic-count-phone-ageha.png) / [同じ版の紫背景](top-buttons-experiment/classic-count-purple.png) / [終了時は数字を非表示](top-buttons-experiment/classic-count-game-over.png)
 - [数字を消したGAME OVER](top-buttons-experiment/game-over.png) / [表示検証記録](top-buttons-experiment/verification.json)
 
@@ -53,7 +53,7 @@ GAME OVER時の数字非表示は全版へ反映し、今回の煙と金の透�
 選択肢は明るい「大会に戻る」と紫の「諦める」の2択ボタンに変更し、下に24pxの余白を確保。
 顔高256pxを保ち、人物の表示枠を画面下端まで延長。元の人物画像・表情・紫背景はそのまま使用する。
 
-- [スミさん・PC](buttons-inline/sumi.png) / [アゲハ・スマホ横持ち](buttons-inline/phone-ageha.png)
+- [スミさん・PC](buttons-inline/sumi.png) / [あげは・スマホ横持ち](buttons-inline/phone-ageha.png)
 - [つむぎ・PC](buttons-inline/tsumugi.png) / [残り2秒](buttons-inline/urgent.png) / [GAME OVER・0秒](buttons-inline/game-over.png)
 - [表示検証記録](buttons-inline/verification.json)
 
@@ -75,7 +75,7 @@ PR #265を最新mainと統合し、追加要望を反映。
 以前の英字CONTINUEロゴ・藍色の確認画像は制作記録として保持する。
 
 - [スミさん・日本語見出し](purple-japanese/sumi.png) / [残り2秒](purple-japanese/urgent.png)
-- [GAME OVER・0秒](purple-japanese/game-over.png) / [スマホ横持ち・アゲハ](purple-japanese/phone-ageha.png)
+- [GAME OVER・0秒](purple-japanese/game-over.png) / [スマホ横持ち・あげは](purple-japanese/phone-ageha.png)
 - [表示検証記録](purple-japanese/verification.json)
 
 `continue_screen.mjs`（全18分岐・中央配置・はみ出しなし・20秒・画面離脱・タブ復帰・横持ち・セーブ保持）、
@@ -109,7 +109,7 @@ PR #265を最新mainと統合し、追加要望を反映。
 
 - [スミさん・共同責任](sumi.png) / [世界の終わり](sumi-disaster.png) / [反対多数](sumi-meeting.png)
 - [つむぎ](tsumugi.png) / [栞](minto.png) / [くゆり](rin.png)
-- [アゲハ](ageha.png) / [ましろ](mashiro.png) / [サメちゃん](samechan.png)
+- [あげは](ageha.png) / [ましろ](mashiro.png) / [サメちゃん](samechan.png)
 - [可決スタンプと再挑戦の一言](meeting-retry.png) / [サメちゃんの再出航](samechan-retry.png)
 - [スマホ横持ち・つむぎ最終キュー・動き軽減](phone-tsumugi.png)
 - [時間切れのGAME OVERと00](game-over.png)

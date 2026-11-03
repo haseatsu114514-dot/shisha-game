@@ -4,7 +4,7 @@
 
 [Issue #929 の外見指定・3案](https://github.com/haseatsu114514-dot/shisha-game/issues/929#issuecomment-6376954529)をもとに新しく制作した候補です。**今回の新3案は未採用で、本編の立ち絵・アイコン・登場絵は差し替えていません。**
 
-V系が好きな25歳の一般の美形青年・店長。旧絵の舞台衣装・密な刺青・チェーンを減らし、顔と髪の本人性を保った普段着へ変更しました。画風は今回の指示に従って、みんと・アゲハの採用画像に寄せています。
+V系が好きな25歳の一般の美形青年・店長。旧絵の舞台衣装・密な刺青・チェーンを減らし、顔と髪の本人性を保った普段着へ変更しました。画風は今回の指示に従って、みんと・あげはの採用画像に寄せています。
 
 ## まず3案を並べて見る
 
@@ -19,9 +19,9 @@ Aは落ち着いた店長らしさ、Bは黒とワインレッドの配色、C�
 
 ## 画風の参照と現行REI
 
-| 現行REI（旧デザイン） | みんと・現在の笑顔 | アゲハ・現在の通常 |
+| 現行REI（旧デザイン） | みんと・現在の笑顔 | あげは・現在の通常 |
 |---|---|---|
-| <img src="../../assets/sprites/characters/rei/chr_rei_normal.png" width="230" alt="旧REI"> | <img src="../../assets/sprites/characters/minto/chr_minto_smile.png" width="230" alt="頭を傾けた現行みんと笑顔"> | <img src="../../assets/sprites/characters/ageha/chr_ageha_normal.png" width="230" alt="アゲハ現行通常"> |
+| <img src="../../assets/sprites/characters/rei/chr_rei_normal.png" width="230" alt="旧REI"> | <img src="../../assets/sprites/characters/minto/chr_minto_smile.png" width="230" alt="頭を傾けた現行みんと笑顔"> | <img src="../../assets/sprites/characters/ageha/chr_ageha_normal.png" width="230" alt="あげは現行通常"> |
 
 みんとの笑顔は、正面化案が不採用になったあと元の頭を傾けた笑顔へ復元された現行画像を参照しています。復元記録のSHA-256と一致を確認しました。前回の画風試作の基準欄はnormal画像で、今回ここではsmileを明記しています。
 

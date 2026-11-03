@@ -6,7 +6,7 @@
 参照画像はリポジトリのファイルを、エージェントが自分で読み込んで渡す（オーナーに保存・添付を頼まない）。
 
 - ① 対象の表情の現行PNG `assets/sprites/characters/<id>/chr_<id>_<face>.png`（表情差分では、②の前に合格済みの新しい通常原画 `asset_sources/portraits/<id>-remaster-v2/normal-source.png` も入れ、顔の同一性と頭の大きさの基準にする）
-- ② 須井 `assets/sprites/characters/nagumo/chr_nagumo_normal.png`（大人の男性の頭身の目標。6.93頭身）。女性（マキ・路上占い師）は、標準枠の女性のくゆり `assets/sprites/characters/rin/chr_rin_normal.png`（6.53頭身）を使い、文中の Nagumo / he を Rin / she に直す
+- ② 須井 `assets/sprites/characters/nagumo/chr_nagumo_normal.png`（大人の男性の頭身の目標。6.93頭身）。女性（マキ・辻占のオババ）は、標準枠の女性のくゆり `assets/sprites/characters/rin/chr_rin_normal.png`（6.53頭身）を使い、文中の Nagumo / he を Rin / she に直す
 - ③ みんと `assets/sprites/characters/minto/chr_minto_normal.png`・④ あげは `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ## 生成後チェック（1枚ごと）
@@ -48,7 +48,7 @@ Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and colors. (2) approved Nagumo normal sprite: the TARGET head-to-body proportion of an adult man ONLY (not his face, hair, build or suit). (3) approved Minto normal sprite and (4) approved Ageha normal sprite: the TARGET rendering style ONLY. Never copy the faces, hair, bodies or outfits of images 2, 3 and 4.
 
-Character: Steve Davis, 30-year-old white American man, clearly obese rounded silhouette with large capable hands, short slightly tousled dark brown hair, short beard, glasses, patterned retro teal-and-cream shirt with abstract motifs (no letters), dark practical apron, brown trousers and shoes, holding a tiny kitchen timer and a recipe card.
+Character: Steve Lyman, 30-year-old white American man, clearly obese rounded silhouette with large capable hands, short slightly tousled dark brown hair, short beard, glasses, patterned retro teal-and-cream shirt with abstract motifs (no letters), dark practical apron, brown trousers and shoes, holding a tiny kitchen timer and a recipe card.
 Expression and pose to keep exactly as image 1 (normal: warm focused small smile, timer held up in one hand, recipe card in the other)
 
 HEAD SIZE CORRECTION: in image 1 the head is too SMALL for the body (about 8.0 heads tall). Make the whole head (face, hair and ears) about 9% LARGER relative to the body so that he is about 7.4 heads tall, like image 2. Keep the same total height from the top of the hair to the shoe soles, the same stance, silhouette and body build; only the head changes scale relative to the body, and the neck and shoulders stay natural. He must still look like the same man of the same age.
@@ -317,13 +317,13 @@ Japanese 2D visual-novel game art in the same artist's hand as the approved Mint
 Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
 ```
 
-## 作り直し：路上占い師・シェイク・王煙楼（TS12）
+## 作り直し：辻占のオババ・シェイク・王煙楼（TS12）
 
 1回目（TS10）は「頭を約○%大きく」の指示で、頭が2〜9%しか大きくならず、規格（6.4〜7.7頭身）に届かなかった。フード・頭巾・長いひげで頭頂やあごが隠れているのが原因とみられる。今回は**画像の中の大きさをpxで**指定する。参照画像は①現行の通常、②須井（頭身の文脈だけ）、③みんと・④あげは（画風だけ）。
 
-合格の条件：目の高さからあごまでの長さが、全身の高さ（頭・フードの上端〜靴底）の目安の値以上。全身1400pxなら、路上占い師 約85px・シェイク 約100px・王煙楼 約85px。顔・年齢・衣装・ポーズは①のまま。
+合格の条件：目の高さからあごまでの長さが、全身の高さ（頭・フードの上端〜靴底）の目安の値以上。全身1400pxなら、辻占のオババ 約85px・シェイク 約100px・王煙楼 約85px。顔・年齢・衣装・ポーズは①のまま。
 
-### 路上占い師（`uranaishi`）・normal
+### 辻占のオババ（`uranaishi`）・normal
 
 ```
 Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Nagumo is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
@@ -365,14 +365,14 @@ Japanese 2D visual-novel game art in the same artist's hand as the approved Mint
 Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
 ```
 
-## ラクダレースの2人：サイフ・ラシード（TS13）
+## ラクダレースの2人：サイーフ・ハリール（TS13）
 
-第4章ドバイの任意イベント（ラクダレース・PR #2304／#2373）で増えた2人。通常の立ち絵は Codex の候補（サイフA-v2・ラシードB）をそのまま入れたので、**頭が小さい**（サイフ 8.62頭身・ラシード 9.75頭身。規格は標準6.4〜7.7）。2026-11-02 オーナー「任せる」で、表情差分を作る前に通常を約7頭身で作り直すことにした（[asset_sources/ch4-camel-race/README.md](../../ch4-camel-race/README.md)）。
+第4章ドバイの任意イベント（ラクダレース・PR #2304／#2373）で増えた2人。通常の立ち絵は Codex の候補（サイーフA-v2・ハリールB）をそのまま入れたので、**頭が小さい**（サイーフ 8.62頭身・ハリール 9.75頭身。規格は標準6.4〜7.7）。2026-11-02 オーナー「任せる」で、表情差分を作る前に通常を約7頭身で作り直すことにした（[asset_sources/ch4-camel-race/README.md](../../ch4-camel-race/README.md)）。
 
-TS12 と同じく、頭の大きさは「○%大きく」ではなく**画像の中のpx**で指定する。ラシードは頭頂がグトラの下なので顔（目〜あご）で指定する。
+TS12 と同じく、頭の大きさは「○%大きく」ではなく**画像の中のpx**で指定する。ハリールは頭頂がグトラの下なので顔（目〜あご）で指定する。
 
 参照画像（エージェントが自分で読み込んで渡す）：
-- ① 採用した原画（887×1774。ゲーム用より大きい）：サイフ `asset_sources/ch4-camel-race/originals/saif-normal-A-v2.png`・ラシード `asset_sources/ch4-camel-race/originals/rashid-normal-B.png`
+- ① 採用した原画（887×1774。ゲーム用より大きい）：サイーフ `asset_sources/ch4-camel-race/originals/saif-normal-A-v2.png`・ハリール `asset_sources/ch4-camel-race/originals/rashid-normal-B.png`
 - ② 須井 `assets/sprites/characters/nagumo/chr_nagumo_normal.png`（大人の男性の頭身の目標。6.93頭身）
 - ③ みんと `assets/sprites/characters/minto/chr_minto_normal.png`・④ あげは `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風だけ）
 
@@ -380,12 +380,12 @@ TS12 と同じく、頭の大きさは「○%大きく」ではなく**画像の
 
 | キャラ | いま | 目標 | 確かめ方 |
 |---|---|---|---|
-| サイフ（`saif`） | 頭（頭頂〜あご）約162px・目〜あご約69px | 頭 約200px（7.0頭身。6.4〜7.7なら合格）・目〜あご 約85px | `portrait_metrics.py grid --image` → `calc` |
-| ラシード（`rashid`） | 目〜あご 約73px（頭頂は推定） | 目〜あご 約100px（約7頭身） | 同上。頭頂はグトラの下を目〜あごの長さから推定 |
+| サイーフ（`saif`） | 頭（頭頂〜あご）約162px・目〜あご約69px | 頭 約200px（7.0頭身。6.4〜7.7なら合格）・目〜あご 約85px | `portrait_metrics.py grid --image` → `calc` |
+| ハリール（`rashid`） | 目〜あご 約73px（頭頂は推定） | 目〜あご 約100px（約7頭身） | 同上。頭頂はグトラの下を目〜あごの長さから推定 |
 
-顔・年齢・表情・ポーズ・服・小物・色は①のまま。身長（`spriteScale`：サイフ 1.05＝183cm、ラシード 1.0＝172cm）は変えない。原画は `asset_sources/portraits/<id>-remaster-v2/normal-source.png` に保存する。
+顔・年齢・表情・ポーズ・服・小物・色は①のまま。身長（`spriteScale`：サイーフ 1.05＝183cm、ハリール 1.0＝172cm）は変えない。原画は `asset_sources/portraits/<id>-remaster-v2/normal-source.png` に保存する。
 
-### サイフ（`saif`）・normal
+### サイーフ（`saif`）・normal
 
 ```
 Redraw the attached APPROVED game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Nagumo is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
@@ -399,12 +399,12 @@ Japanese 2D visual-novel game art in the same artist's hand as the approved Mint
 Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
 ```
 
-### ラシード（`rashid`）・normal
+### ハリール（`rashid`）・normal
 
 ```
 Redraw the attached APPROVED game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Nagumo is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
 
-Character: Rashid, a 56-year-old Emirati camel trainer, quiet and composed, sun-tanned face with deep wrinkles, short grey-streaked beard and moustache, a white-and-red checkered ghutra headcloth with a black agal worn casually with one end over the shoulder, a white ankle-length kandura, a worn sand-colored multi-pocket vest over it, dark brown leather shoes. One hand holds a small key-fob sized remote control with a short cord at chest height, the other hand rests in the vest pocket. Not a real person.
+Character: Khalil, a 56-year-old Emirati camel trainer, quiet and composed, sun-tanned face with deep wrinkles, short grey-streaked beard and moustache, a white-and-red checkered ghutra headcloth with a black agal worn casually with one end over the shoulder, a white ankle-length kandura, a worn sand-colored multi-pocket vest over it, dark brown leather shoes. One hand holds a small key-fob sized remote control with a short cord at chest height, the other hand rests in the vest pocket. Not a real person.
 
 HEAD SIZE (a percentage instruction barely changes the head, so use pixels): The skull is hidden by the headcloth, so size the FACE: in a figure about 1400 px tall (headcloth top to soles), the distance from the eye line to the chin (under the beard) must be about 100 px (now about 73 px), so that he is about 7 heads tall like image 2. Enlarge the whole face, beard, headcloth and agal together; keep the neck and shoulders natural. Keep the total figure height, the kandura and vest silhouette, both hands, the remote control and the stance. He must still look like the same man of the same age.
 
@@ -415,9 +415,9 @@ Output ONE complete figure on a tall canvas about 1085x1450, the figure at least
 
 ### 表情差分（通常が合格してから）
 
-会話で使う表情（`data/dialogue/ch4_camel_race.json`）：サイフは smile・surprise・excited・wink、ラシードは smile。①に**合格した新しい通常の原画** `asset_sources/portraits/<id>-remaster-v2/normal-source.png` を入れる（今の表情の絵は無い）。合格の条件は①と同じ頭の大きさ（会話画面で±5%以内）・同じ足元・同じ服と小物。全表情が合格してから、キャラ単位で組み込む。
+会話で使う表情（`data/dialogue/ch4_camel_race.json`）：サイーフは smile・surprise・excited・wink、ハリールは smile。①に**合格した新しい通常の原画** `asset_sources/portraits/<id>-remaster-v2/normal-source.png` を入れる（今の表情の絵は無い）。合格の条件は①と同じ頭の大きさ（会話画面で±5%以内）・同じ足元・同じ服と小物。全表情が合格してから、キャラ単位で組み込む。
 
-共通の前文（各表情の英文の先頭に付ける。`<NAME>` はサイフなら Saif、ラシードなら Rashid）：
+共通の前文（各表情の英文の先頭に付ける。`<NAME>` はサイーフなら Saif、ハリールなら Khalil）：
 
 ```
 Expression variant of the SAME character. Reference roles IN ORDER: image 1 is the APPROVED new <NAME> normal original: keep this exact person's face design, age, hair, skin tone, outfit, accessories, colors, head size and head-to-body ratio (about 7 heads tall), linework, figure height and standing position, so that image 1 and this sprite can switch in the game without the head changing size or the feet moving. Image 2 Nagumo is head-to-body proportion context only, never identity. Images 3 Minto and 4 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes. Change only the facial expression and the small matching pose change described below. Do not add props that are not in image 1.
@@ -431,11 +431,11 @@ Output ONE complete figure on a tall canvas about 1085x1450, the figure at least
 
 | キャラ | 表情 | 英文 |
 |---|---|---|
-| サイフ | smile | `Expression: a big open friendly grin showing a little of the upper teeth, eyes narrowed by the smile, eyebrows relaxed; the tin hand and the pocket hand stay as in image 1.` |
-| サイフ | surprise | `Expression: genuine surprise: eyebrows raised high, eyes wide open, mouth open in a small round "oh"; the tin hand lifts slightly and the shoulders rise a little. Not comical.` |
-| サイフ | excited | `Expression: excitedly explaining something: eyebrows up, bright eyes, mouth open mid-sentence, leaning slightly forward; the tin is put away (not visible) and both empty hands are held in front of the chest about a tin's width apart, palms facing each other, as if showing the size of a small tobacco tin.` |
-| サイフ | wink | `Expression: a playful teasing wink: one eye closed as a curved line, the other open, a lopsided grin; the tin hand is raised a little closer to the face, the other hand stays in the pocket.` |
-| ラシード | smile | `Expression: a rare, restrained smile: only the corners of the mouth relax under the beard, the eyes soften slightly; still reserved and quiet, not a grin, no teeth. Pose, remote control and headcloth exactly as image 1.` |
+| サイーフ | smile | `Expression: a big open friendly grin showing a little of the upper teeth, eyes narrowed by the smile, eyebrows relaxed; the tin hand and the pocket hand stay as in image 1.` |
+| サイーフ | surprise | `Expression: genuine surprise: eyebrows raised high, eyes wide open, mouth open in a small round "oh"; the tin hand lifts slightly and the shoulders rise a little. Not comical.` |
+| サイーフ | excited | `Expression: excitedly explaining something: eyebrows up, bright eyes, mouth open mid-sentence, leaning slightly forward; the tin is put away (not visible) and both empty hands are held in front of the chest about a tin's width apart, palms facing each other, as if showing the size of a small tobacco tin.` |
+| サイーフ | wink | `Expression: a playful teasing wink: one eye closed as a curved line, the other open, a lopsided grin; the tin hand is raised a little closer to the face, the other hand stays in the pocket.` |
+| ハリール | smile | `Expression: a rare, restrained smile: only the corners of the mouth relax under the beard, the eyes soften slightly; still reserved and quiet, not a grin, no teeth. Pose, remote control and headcloth exactly as image 1.` |
 
 ## 試作1回目でわかったこと（2026-11-02）
 
@@ -460,7 +460,7 @@ Codex が上の3つの英文で各3案（計9案）を生成した。頭身は�
 | 六角サイ（`sai`） | 8.39 | 約13% | normal・smile・serious・surprise・thinking | asset_sources/venue-staff/sai/normal-prompt.txt |
 | 零-REI-（`rei`） | 8.67 | 約17% | normal・smile・serious・surprise・sad | asset_sources/ch2-characters/rei/normal-prompt.txt |
 | 斧崎マキ（`maki`） | 8.74 | 約18% | normal・smile・serious・surprise・excited | asset_sources/venue-staff/maki/normal-prompt.txt |
-| 路上占い師（`uranaishi`） | 8.78 | 約19% | normal・smile・serious・surprise・sad | asset_sources/portraits/style-unify-20261026/uranaishi/normal-prompt.txt |
+| 辻占のオババ（`uranaishi`） | 8.78 | 約19% | normal・smile・serious・surprise・sad | asset_sources/portraits/style-unify-20261026/uranaishi/normal-prompt.txt |
 | シェイク（`sheikh`） | 8.88 | 約20% | normal・smile・serious・surprise・smug | asset_sources/portraits/expressions-5-20261102/sheikh/prompt.txt |
 | 王煙楼（`master_hookah`） | 8.98 | 約21% | normal・smile・serious・surprise・sad・angry・laugh | （原画の記録なし。data/characters.json の外見メモから書く） |
 | ダ・シルヴァ太陽（`da_silva`） | 9.08 | 約23% | normal・smile・serious・surprise・excited | asset_sources/portraits/expressions-5-20261102/da_silva/prompt.txt |
