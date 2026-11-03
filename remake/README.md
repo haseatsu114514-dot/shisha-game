@@ -89,6 +89,8 @@ python3 remake/tools/serve_preview.py --port 8123
 **ビルド不要**。file:// では fetch が通らないため、必ずローカルサーバー越しに開く。
 開発ブランチの確認は raw.githack でも可:
 `https://raw.githack.com/haseatsu114514-dot/shisha-game/<ブランチ名>/remake/index.html`
+ただし raw.githack では Git LFS の画像がポインタテキストで返るため、素材を含む見た目の合否は判断できない。
+素材も確認するときは、Git LFS の実体を取得したローカル checkout で上記の同梱サーバーを起動する。
 
 同梱サーバーは同時接続の待ち数を増やし、HTML・JS・CSS・JSONの古いキャッシュが
 更新後のファイルに混ざらないようにする。データは4件ずつ読み、各通信は15秒で中断する。
