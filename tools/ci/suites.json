@@ -10,6 +10,37 @@
   ],
   "suites": [
     {
+      "id": "craft-rank-hud",
+      "title": "Craft rank display-only snapshots, accessibility and lifecycle",
+      "kind": "quick",
+      "run": [
+        "node --experimental-vm-modules remake/test/craft_rank_hud.mjs"
+      ]
+    },
+    {
+      "id": "craft-rank-hud-browser",
+      "title": "Isolated craft rank header on PC, landscape touch and DS",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/craft/rank-hud.js",
+        "remake/js/craft/progress.js",
+        "remake/js/core/util.js",
+        "remake/css/craft-rank.css",
+        "remake/css/craft.css",
+        "remake/css/craft-header.css",
+        "remake/css/craft-paper.css",
+        "remake/css/game-ds.css",
+        "remake/craft-rank-preview.html",
+        "remake/test/browser/craft_rank_hud.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/craft_rank_hud.mjs"
+      ],
+      "chrome": "playwright"
+    },
+    {
       "id": "naru-finish",
       "title": "Naru finishing temperature, catalog balance and SAVE/LOAD",
       "kind": "quick",
