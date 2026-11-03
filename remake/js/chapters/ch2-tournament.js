@@ -4,6 +4,7 @@ import { craftContinueContext, recordContinueContext, clearContinueHistory } fro
 // HAZE: OPEN CLOUD。一試合の制作と、各工程の確定済み状態だけを保存する。
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, CHAPTER_DIALOGUE_FILES, loadTournamentCraftDialogue } from "../core/data.js";
 import { el, yen } from "../core/util.js";
+import { createChapterActions } from "../core/chapter-actions.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, modal, imageReady, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
@@ -52,17 +53,7 @@ let session;
 const live = owner => session === owner && owner.active && owner.state === state;
 const progress = () => tournamentProgress(state);
 
-function button(owner, text, name, action, primary = false) {
-  return el(`button.btn${primary ? ".primary" : ""}`, { type: "button", text,
-    dataset: { test: id(name) }, onclick: () => perform(owner, action) });
-}
-async function perform(owner, action) {
-  if (!live(owner) || owner.busy) return;
-  owner.busy = true;
-  try { await action(); }
-  catch (error) { if (live(owner)) { console.error("[ch2 tournament]", error); renderError(owner); } }
-  finally { owner.busy = false; }
-}
+const { button, perform } = createChapterActions({ current: live, test: id, logName: "[ch2 tournament]", renderError });
 function menuButton(owner) {
   return el("button.btn.ch2-tournament-menu", { type: "button", text: "MENU", dataset: { test: id("menu") }, onclick: () => openMenu(owner) });
 }
@@ -461,4 +452,5 @@ async function drive(owner) {
     else throw new Error(`不明な県大会の保存地点: ${p.stage}`);
   }
 }
+
 
