@@ -76,6 +76,14 @@ await check('five social shop routes: ordinary gains are independent of every un
     assert.equal(s.flags[`_${id}_affinity_waiting_pts`]||0,0);
   }
 });
+await check('#2035 Row6/7: samechan の締めくくりIDは BOND_FINALES の単一の正本（保存互換の samechan_bond_finale）', async f => {
+  // samechan.js は締めくくりの台本IDを二重定義せず BOND_FINALES.samechan.dialogue を参照する（挙動不変の正本化）。
+  assert.equal(f.bonds.BOND_FINALES.samechan.dialogue, 'samechan_bond_finale');
+  // 参照先が実在する台本であること（保存・台本IDの不変を保証）。
+  assert.ok(f.db.dialogues['samechan_bond_finale'], 'finale dialogue exists in samechan.json');
+  // samechanVisitDialogue が壊れていないこと（モジュールが読み込める）。
+  assert.equal(typeof f.samechan.samechanVisitDialogue, 'function');
+});
 await check('Sumi lessons remain outside social heart caps', async f => {
   const s=f.fresh(); s.affinity.sumi=0;
   assert.equal(f.stages.pendingAffinityStage(s,'sumi'),null);
