@@ -1,3 +1,5 @@
+import { growthEnabled } from "../core/growth-mode.js";
+import { naruFinishBonus } from "../core/naru-finish.js";
 import { mixMasteryProfile } from "../core/flavor-mastery.js";
 // 完成品の性能と総合評価。
 //   穴あけ・炭焼き・配合・蒸らし・吸い出し・熱管理 → 完成品ステータス（shishaStats）
@@ -94,6 +96,8 @@ export function computeShisha(cs) {
 export function bonusOf(cs = null) {
   let b = 0;
   const notes = [];
+  const naru = growthEnabled() ? naruFinishBonus(cs) : 0;
+  if (naru) { b += naru; notes.push(`焼き際の見極め +${naru.toFixed(1)}`); }
   const grape = grapeReceptionBonus(state, cs, DB.flavorById);
   if (grape) { b += grape; notes.push(`グレープの王道・受け止め +${grape.toFixed(1)}`); }
   if (cs?.mode === "tournament" && !cs.failed && cs.pullDone && cs.pull?.smokeRings > 0 && growthSkill(state,"K21")) { b += SKILL_TUNING.smokeRing; notes.push("スモークリングの余韻"); }

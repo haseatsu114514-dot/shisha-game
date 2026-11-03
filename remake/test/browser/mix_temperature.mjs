@@ -384,6 +384,89 @@ await suite("mix-temperature", async check => {
     assert.equal(results.vanillaRisk - results.vanillaCenterRisk, 12);
   });
 
+  await check("naru-finish-real-provide", async page => {
+    await prepare(page, "practice");
+    for (const flavor of ["orange", "mint"]) {
+      await page.evaluate(async flavor => {
+        const growth = await import("./js/core/growth.js"); growth.setGrowthPreview(true);
+        const g = growth.ensureGrowth(); g.nodes = ["M-W3"]; g.learned = ["M-W3"];
+        const naru = await import("./js/core/naru-finish.js");
+        const cs = QA.session.newSession("practice"); cs.mix = { [flavor]: 12 };
+        const target = naru.naruFinishRange(QA.conditions.temperatureBands(cs));
+        cs.steam = { temp: (target.low + target.high) / 2, score: 100 };
+        QA.cs = cs; await QA.session.openBench(cs).ready;
+        QA.session.craftTest.auto = null; QA.run = QA.pull.runPull(cs);
+      }, flavor);
+      await page.locator('[data-test="pull-stop"]:enabled').waitFor();
+      assert(await page.locator('[data-test="naru-finish-range"]').isVisible());
+      await keep(page); await keep(page); await page.locator('[data-test="pull-serve"]').click();
+      await page.locator('[data-test="step-next"]:enabled').waitFor();
+      const result = await page.evaluate(() => ({ record: QA.cs.naruFinish, notes: QA.score.bonusOf(QA.cs).notes, temp: QA.cs.pull.temp }));
+      assert.equal(result.record.hit, true, JSON.stringify(result));
+      assert.equal(result.record.temp, result.temp);
+      assert.equal(result.notes.filter(n => n.startsWith("焼き際の見極め")).length, 1);
+      await finishResult(page);
+    }
+  });
+
+  await check("naru-finish-guide-and-persistence", async page => {
+    await prepare(page, "practice");
+    const result = await page.evaluate(async () => {
+      const { DB } = await import("./js/core/data.js");
+      const naru = await import("./js/core/naru-finish.js");
+      const { core, session, thermometer, conditions } = QA;
+      const growth = await import("./js/core/growth.js"); growth.setGrowthPreview(true);
+      const rows = [];
+      // DB.flavors is the starting blond-only selection; flavorById retains the full catalog.
+      for (const flavor of Object.values(DB.flavorById)) {
+        const cs = { mode: "practice", mix: { [flavor.id]: 12 } };
+        naru.startNaruFinish(cs, true);
+        const bands = conditions.temperatureBands(cs), target = naru.naruFinishRange(bands);
+        const meter = thermometer.buildThermometer({ cs, finishGuide: true });
+        session.stepPanel("pull", "焼き際の目安").append(meter.root);
+        meter.update(target.low); meter.preview(target.high + .03);
+        const mark = meter.root.querySelector(".thermo-naru-finish"), tube = meter.root.querySelector(".thermo-tube");
+        const a = mark.getBoundingClientRect(), b = tube.getBoundingClientRect();
+        rows.push({ id: flavor.id, hidden: mark.hidden, width: a.width, height: a.height,
+          measured: [(b.bottom - a.bottom) / b.height, (b.bottom - a.top) / b.height],
+          target, highlighted: meter.root.dataset.naruFinish, bonusBefore: naru.naruFinishBonus(cs),
+          text: meter.root.getAttribute("aria-description"), rainbowHidden: meter.root.querySelector(".thermo-optimal").hidden,
+          expressive: bands.expressionWeight >= .999 });
+        cs.leaf = { dmg: 12 }; meter.update(target.low);
+        const damaged = naru.naruFinishRange(conditions.temperatureBands(cs));
+        rows.at(-1).damaged = { low: Number(mark.dataset.low), high: Number(mark.dataset.high), expected: damaged };
+        cs.pull = { temp: damaged.low, score: 95 }; cs.pullDone = true;
+        naru.recordNaruFinish(cs, conditions.temperatureBands(cs)); meter.update(damaged.low);
+        rows.at(-1).hiddenAfter = mark.hidden;
+        core.state.flags._naruFinishTest = cs; core.save(); core.load();
+        rows.at(-1).savedBonus = naru.naruFinishBonus(core.state.flags._naruFinishTest);
+      }
+      const hidden = [];
+      for (const options of [{}, { finishGuide: true, compact: true }, { finishGuide: true, bandPreview: true }, { finishGuide: true, mode: "drill" }, { finishGuide: true, learned: false }]) {
+        const cs = { mode: options.mode || "practice", mix: { mint: 12 } }; naru.startNaruFinish(cs, options.learned !== false);
+        const meter = thermometer.buildThermometer({ cs, ...options }); meter.update(.6);
+        hidden.push(meter.root.querySelector(".thermo-naru-finish").hidden);
+      }
+      const offCup = { mode: "practice", mix: { mint: 12 } }; naru.startNaruFinish(offCup, true);
+      const offMeter = thermometer.buildThermometer({ cs: offCup, finishGuide: true });
+      growth.setGrowthPreview(false); offMeter.update(.6);
+      const offHidden = offMeter.root.querySelector(".thermo-naru-finish").hidden;
+      growth.setGrowthPreview(true);
+      return { rows, hidden, offHidden };
+    });
+    assert(result.rows.length >= 84);
+    for (const row of result.rows) {
+      assert(!row.hidden && row.width > 0 && row.height > 0, JSON.stringify(row));
+      near(row.measured[0], row.target.low); near(row.measured[1], row.target.high);
+      assert.equal(row.highlighted, "true"); assert.equal(row.bonusBefore, 0);
+      assert.match(row.text, /焼き際/); assert.equal(row.rainbowHidden, row.expressive);
+      near(row.damaged.low, row.damaged.expected.low); near(row.damaged.high, row.damaged.expected.high);
+      assert(row.hiddenAfter); assert.equal(row.savedBonus, .5);
+    }
+    assert(result.offHidden);
+    assert(result.hidden.every(Boolean), "no guide in care/default, compact, preview, drill or unlearned cup");
+  });
+
   await check("legacy-save-care-start-and-auto-targets", async page => {
     await prepare(page, "drill");
     const result = await page.evaluate(async () => {

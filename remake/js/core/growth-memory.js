@@ -1,10 +1,15 @@
 // 配合と完成した一台の記録。答えの黄金比は参照せず、プレイヤーが作った配合を保存する。
 import { growthEnabled, ensureGrowth } from "./growth.js";
-import { growthSkill } from "./growth-effects.js";
+import { growthSkill, growthLesson } from "./growth-effects.js";
+
+import { startNaruFinish } from "./naru-finish.js";
 
 const object = value => value && typeof value === "object" && !Array.isArray(value);
 const owners = new WeakMap();
-export const noteGrowthCraftOwner = (cs, s) => owners.set(cs, s);
+export const noteGrowthCraftOwner = (cs, s) => {
+  owners.set(cs, s);
+  startNaruFinish(cs, growthLesson(s, "M-W3"));
+};
 export const cleanRememberedMix = mix => Object.fromEntries(Object.entries(object(mix) ? mix : {})
   .filter(([id, grams]) => id && Number.isFinite(grams) && grams > 0 && grams <= 100));
 

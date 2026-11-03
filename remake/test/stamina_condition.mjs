@@ -27,6 +27,7 @@ class Element {
   addEventListener(type, fn) { (this.listeners[type] ||= []).push(fn); }
   setAttribute(name, value) { this[name] = String(value); }
   getAttribute(name) { return this[name] ?? null; }
+  removeAttribute(name) { delete this[name]; }
   querySelector(selector) {
     assert(selector.startsWith(".") && !selector.includes(" "), `Unsupported fixture selector: ${selector}`);
     const name = selector.slice(1);
