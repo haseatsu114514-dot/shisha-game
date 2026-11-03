@@ -16,7 +16,7 @@ import { masteryLevel } from "../core/flavor-mastery.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
 import { HOBBY_GEAR } from "../core/hobby-gear.js";
 import { growthEnabled, gaugeAt, hidaneTotal, openGrowthBoard } from "../core/growth.js";
-import { BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, STAT_SQUARES, statCount, perkTotals } from "../core/growth-board.js";
+import { BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, statTotal, statCount, perkTotals } from "../core/growth-board.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { isRainy } from "./weather.js";
@@ -257,7 +257,7 @@ function growthCards(choose, select) {
     el("section.dm-card.dm-board", [
       el("span.dm-en", { text: "BOARD" }),
       ...BOARD_KEYS.map((k) => {
-        const count = statCount(k, lit), total = STAT_SQUARES[k] || 1;
+        const count = statCount(k, lit), total = statTotal(k) || 1;
         const sums = perkTotals(k, lit).filter((p) => p.sum);
         const row = el(`button.dm-row.dm-board-row.b-${k}`, { type: "button", dataset: { test: `menu-board-${k}` },
           onclick: () => select(row, `【${BOARD_JA[k]}】${BOARD_WHERE[k]}`) }, [
