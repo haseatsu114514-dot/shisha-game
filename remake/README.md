@@ -277,7 +277,6 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
 進行の回復と旧セーブの引き継ぎ:
 
 ```bash
-node --experimental-vm-modules remake/test/samechan_migration.mjs
 node --experimental-vm-modules remake/test/lime_consistency.mjs
 node remake/test/browser/ch1_opening_resume.mjs
 node remake/test/browser/lover_milestones.mjs

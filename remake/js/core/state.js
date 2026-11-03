@@ -113,21 +113,6 @@ export function newState() {
   };
 }
 
-/** スキーマ12以前のキャラIDを、予約内の台本・選択肢・読了記録も含めて引き継ぐ。 */
-function migrateSamechanIdentity(value) {
-  // 旧名はこのセーブ互換処理だけで扱う。新しく届く台本や素材には使わない。
-  const rename = text => text.replace(/kafuka/g, "samechan").replace(/Kafuka/g, "Samechan")
-    .replace(/KAFUKA/g, "SAMECHAN").replace(/カフカ|かふか/g, "サメちゃん");
-  if (typeof value === "string") return rename(value);
-  if (Array.isArray(value)) return value.map(migrateSamechanIdentity);
-  if (!value || typeof value !== "object") return value;
-  const entries = Object.entries(value);
-  // 移行途中のデータに新旧キーが同居していても、明示された現行キーを優先する。
-  const legacy = entries.filter(([key]) => rename(key) !== key);
-  const current = entries.filter(([key]) => rename(key) === key);
-  return Object.fromEntries([...legacy, ...current].map(([key, item]) => [rename(key), migrateSamechanIdentity(item)]));
-}
-
 /** 旧スキーマのセーブを現行の形にそろえる（互換処理はここに集約） */
 function migrate(s) {
   // 配列など、状態として解釈できない形は移行せず読み込み不可にする。
@@ -155,12 +140,6 @@ function migrate(s) {
   for (const key of STAT_KEYS) {
     if (s.stats && !Number.isFinite(s.stats[key])) s.stats[key] = fresh.stats[key];
     if (s.statsAtChapterStart && !Number.isFinite(s.statsAtChapterStart[key])) s.statsAtChapterStart[key] = fresh.statsAtChapterStart[key];
-  }
-  if (oldSchema < 13) {
-    s = migrateSamechanIdentity(s);
-    for (const key of ["contacts", "lovers", "limeRead", "loverEventsSeen", "relationshipMemories"]) {
-      if (Array.isArray(s[key])) s[key] = [...new Set(s[key])];
-    }
   }
   if (oldSchema < 9) {
     // 以前の経験値は★帯のコストを割って、次の1Pまでの進捗率として引き継ぐ。
