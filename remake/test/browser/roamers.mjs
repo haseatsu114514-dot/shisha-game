@@ -136,6 +136,29 @@ await suite("roamers", async check => {
     for (const id of ["maezono", "dr_kemuri", "nagumo", "adam", "rin", "tsumugi"]) assert(result.counts[id] > 0, `${id} が一度も出ない`);
   });
 
+  await check("owner-not-double-listed-while-roaming-away-2444", async page => {
+    // #2444: 店主がよその店へ居合わせに出ている間、地図で自分の店とよその店の両方に「在店」表示される二重在店を防ぐ。
+    // DAY4 はEDEN（アダムの店）が開いている（定休は day%7===5）。アダムが居合わせに出た時、EDENには出さない。
+    await prepare(page, { id: "adam", day: 4 });
+    const result = await page.evaluate(() => {
+      const value = R.core.state, eden = R.spots.spotById("adam");
+      const plan = R.roamers.roamerPlan(); // prepare が選んだ、アダムが居合わせに出る種
+      const roaming = { id: plan.id, spotId: plan.spotId,
+        roamed: R.people.spotPeople(R.spots.spotById(plan.spotId)).map(p => p.id),
+        eden: R.people.spotPeople(eden).map(p => p.id) };
+      // 誰も居合わせない種では、アダムは自分の店（EDEN）に出る
+      let baseline = null;
+      for (let seed = 1; seed < 20000 && !baseline; seed++) { value.seed = seed; if (!R.roamers.roamerPlan()) baseline = R.people.spotPeople(eden).map(p => p.id); }
+      return { roaming, baseline, edenOpen: value.day % 7 !== 5 };
+    });
+    assert.equal(result.roaming.id, "adam");
+    assert(result.roaming.spotId !== "adam", "アダムは自分の店には居合わせない");
+    assert(result.edenOpen, "DAY4 はEDENが開いている");
+    assert(result.roaming.roamed.includes("adam"), "居合わせ先にはアダムが出る");
+    assert(!result.roaming.eden.includes("adam"), "よそへ出ている間は自分の店（EDEN）に出さない（#2444 二重在店の防止）");
+    assert(result.baseline?.includes("adam"), "誰も居合わせない時は、EDENにアダムが出る");
+  });
+
   await check("no-one-else-on-a-day-with-another-shop-guest", async page => {
     await prepare(page, { id: "maezono" });
     const result = await page.evaluate(() => {
