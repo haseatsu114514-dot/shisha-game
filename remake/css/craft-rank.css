@@ -40,5 +40,7 @@ body.game-ds .bench-top:has(> .craft-rank) .bench-phase:not(.now) .bench-phase-i
 body.game-ds .bench-top:has(> .craft-rank) .bench-progress-track { gap: 2px; }
 body.game-ds .bench-top:has(> .craft-rank) .bench-phase { padding: 2px; gap: 2px; }
 body.game-ds .bench-top:has(> .craft-rank) .bench-phase.now { max-width: none; padding: 2px 4px; }
+/* DSの詰めた行高（1.1/1）では字の高さが枠を越えるため、ランク表示中は標準に戻す。 */
+body.game-ds .bench-top:has(> .craft-rank) .bench-phase-copy :is(b, small) { line-height: normal; }
 @media (max-width: 359px) { body.game-ds .bench-top > .craft-rank { flex-basis: 64px; width: 64px; } }
 @media (prefers-reduced-motion: reduce) { .craft-rank *, .craft-rank[data-change] * { animation: none !important; transition: none !important; } }
