@@ -15,7 +15,11 @@ async function init(page) {
       T.session.openBench(cs, { steps: T.practice.CRAFT_STEPS });
       await T.session.waitBenchReady(cs);
       window.running = T.holes.runHoles(cs);
-    await suite("hmd-unify", async run => {
+    };
+  });
+}
+
+await suite("hmd-unify", async run => {
   for (const hms of ["lotos_hagal", "lotos_plus", "tanukish_lid", "amaburst_hms"]) {
     await run(`${hms}-uses-foil`, async page => {
       await init(page);
