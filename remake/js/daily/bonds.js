@@ -253,13 +253,13 @@ export function finaleDue(id) {
   // MELTY PUFFに通えるのは第2章と、第3章の東京へ発つ前の準備3日だけ（VOL02。東京にいる間は店が地図に無い）
   if (id === "ageha" && !chapterFeatureEnabled(state.chapter, "agehaVisit") && !beforeTokyoDeparture()) return false;
   if (id === "mashiro" && !chapterFeatureEnabled(state.chapter, "mashiroBond")) return false;
-  if (id === "kuze" && state.chapter !== 3) return false; // 煙幕は第3章の東京にだけある
+  if (id === "kuze" && !chapterFeatureEnabled(state.chapter, "kuzeBond")) return false; // 煙幕は第3章の東京にだけある
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue] || !storiesDone(id)) return false;
   if (affinityLevel(id) < finaleHeart(id) || questionVisitDue(id)) return false;
   // つむぎは第1章本筋のDAY11「絵を描き終えて応募する」を関係の節目にする。
   // DAY12以降は旧セーブで当時の読了フラグが欠ける場合だけ進行不能を避けるフォールバック。
-  if (id === "tsumugi" && (state.chapter || 1) === 1 && state.day < 12 && !state.flags._tsumugi_contest_submitted) return false;
+  if (id === "tsumugi" && chapterFeatureEnabled(state.chapter || 1, "tsumugiContestGate") && state.day < 12 && !state.flags._tsumugi_contest_submitted) return false;
   if (id === "minto" && !(state.flags._minto_identity_revealed && state.flags._minto_name_known)) return false;
   return true;
 }

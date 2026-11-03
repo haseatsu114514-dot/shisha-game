@@ -223,7 +223,7 @@ function eligible(m, { tournamentDay = false } = {}) {
   // サメちゃんの♥3の外出（#2025）は、本人から路地裏シネマを紹介された後（cinemaDiscovered と同じ条件）にだけ届く。
   if (m.id === "lime_outing_samechan_1" && !(state.chapter >= 2 && state.flags._samechan_cinema_introduced === true)) return false;
   // くゆりの♥3の外出（#2025）は問屋街の豆屋。はじめが地元にいる第1・2章だけ届く。
-  if (m.id === "lime_outing_rin_1" && state.chapter > 2) return false;
+  if (m.id === "lime_outing_rin_1" && !chapterFeatureEnabled(state.chapter || 1, "rinHomeOuting")) return false;
   // ひよりの♥3の外出（#2025）は第1章の昼だけ。tonariでの再会（スミさんのLIME）の後に届き、夜や締めくくりの前提は増やさない。
   if (m.id === "lime_outing_hiyori_1" && !(chapterFeatureEnabled(state.chapter, "hiyoriHomeOuting") && state.flags._hiyori_tonari_return_done)) return false;
   if (cond === "hiyori_tonari") return hiyoriEventStatus("tonari_return") === "ready";
