@@ -375,8 +375,9 @@ export function friendMessages({ tournamentDay = false, sceneChapter = false } =
   // お誘いの約束は第1・2章の calendar.js 専用なので、第3章以降は雑談だけ（#2022）。
   if (tournamentDay) return [];
   // 第5章の自由行動は日常ループ（calendar.js）の朝に届く。お誘いは出さず雑談だけ（#2033）。
-  const chatOnly = sceneChapter || state.chapter === 5;
-  if (sceneChapter ? ![3, 4, 5].includes(state.chapter) : (state.phase !== "daily" || ![1, 2, 5].includes(state.chapter || 1))) return [];
+  const chatOnly = sceneChapter || chapterFeatureEnabled(state.chapter, "friendChatOnly");
+  if (sceneChapter ? !chapterFeatureEnabled(state.chapter, "friendSceneLime")
+    : (state.phase !== "daily" || !chapterFeatureEnabled(state.chapter || 1, "friendDailyLime"))) return [];
   const cfg = DB.friends || {};
   const gap = cfg.gapDays || 4;
   const all = friendSent();
@@ -439,3 +440,4 @@ export async function playFriendHangout(id) {
   save();
   return true;
 }
+
