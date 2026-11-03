@@ -2,6 +2,9 @@
 import { state, save } from "../core/state.js";
 import { loadTournamentCraftDialogue } from "../core/data.js";
 import { awardTournamentExp } from "../core/growth.js";
+import { maxStamina } from "../core/stats.js";
+import { chooseRetryAssist } from "./retry-assist.js";
+import { applyAssistRecovery } from "./tournament-resources.js";
 import { play } from "../vn/engine.js";
 import { modal, retireScreen } from "../core/ui.js";
 import { playBgm } from "../core/audio.js";
@@ -18,7 +21,7 @@ import { block, clearComments } from "../craft/broadcast.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { showChapterFourStandings } from "./ch4-standings.js";
-import { chapterFourMatch, startChapterFourCraft, recoverChapterFourStep,
+import { chapterFourMatch, startChapterFourCraft, recoverChapterFourStep, chapterFourRetryContext,
   beginChapterFourStep, finishChapterFourStep, chapterFourStandings } from "./ch4-tournament-state.js";
 import { chapterFourCraftAdvice, chapterFourCustomerLines } from "./ch4-verdict.js";
 
@@ -37,7 +40,14 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
   requireCurrent();
   const p = recoverChapterFourStep(state);
   if (!p.craft && !p.result) {
+    // 第1〜3章と同じ補助を次の一台だけに適用。中断再開では聞き直さない。
+    const retry = chapterFourRetryContext(state);
+    const assisted = await chooseRetryAssist(retry, () => live() && !p.craft && !p.result);
+    requireCurrent();
+    if (assisted === null) return false;
+    applyAssistRecovery(state, assisted, maxStamina());
     const cs = newSession("tournament");
+    cs.retryAssist = assisted === true;
     cs.eventTitle = "HAZE: GRAND SMOKE";
     cs.eventNote = "世界大会・一台を二度調整";
     if (!startChapterFourCraft(state, cs)) throw new Error("世界大会の開始地点を確認できません");

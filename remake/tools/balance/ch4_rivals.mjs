@@ -1,13 +1,14 @@
 /** 第4章（世界大会）の相手の出来の曲線を、はじめの出来の格子で測る。Run: `node remake/tools/balance/ch4_rivals.mjs`
  * 投票・途中順位・勝敗は本物の ch4-tournament-state.js で出す。比較の「旧」は同じモジュールの CH4_RIVAL_CURVE だけを
- * 旧定数（なる86・王煙楼87・シェイク88を全回）へメモリ上で読み替えたもの（ゲームのファイルは変えない）。
+ * 今回の変更前（なる86/91/92/87.5、王煙楼87、シェイク88、配点2/3/2/3）へメモリ上で読み替えたもの。
+ * ゲームのファイルは変えない。新しい値も実機確認前の暫定値で、人間の勝率を予測するものではない。
  * はじめの一台: 5工程（穴あけ・炭焼き・完成品・調整1・調整2）を平均 μ のまわりに −4/−2/0/+2/+4 で振った全組み合わせ
  * （3125台、乱数なし）。途中の票は工程の平均、最後の票は総合（5工程の平均＋加点 BONUS）で、本番の qualityAt と同じ。
  */
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
 
-const OLD = "naru: Object.freeze([86, 86, 86, 86]), master_hookah: Object.freeze([87, 87, 87, 87]), sheikh: Object.freeze([88, 88, 88, 88])";
+const OLD = "naru: Object.freeze([86, 91, 92, 87.5]), master_hookah: Object.freeze([87, 87, 87, 87]), sheikh: Object.freeze([88, 88, 88, 88])";
 registerHooks({ load(url, context, nextLoad) {
   const loaded = nextLoad(url, context);
   if (!url.endsWith("/chapters/ch4-tournament-state.js?baseline")) return loaded;
@@ -20,7 +21,8 @@ registerHooks({ load(url, context, nextLoad) {
 const { newState } = await import("../../js/core/state.js");
 const now = await import("../../js/chapters/ch4-tournament-state.js");
 const old = await import("../../js/chapters/ch4-tournament-state.js?baseline");
-assert.deepEqual(old.CH4_RIVAL_QUALITY, { naru: 86, master_hookah: 87, sheikh: 88 });
+assert.deepEqual(old.CH4_RIVAL_QUALITY, { naru: 87.5, master_hookah: 87, sheikh: 88 });
+assert.deepEqual(old.CH4_SPEND, [2, 3, 2, 3]);
 
 const BONUS = 1; // 熟練度などの加点（最後の総合だけに乗る）。
 const OFFSETS = [-4, -2, 0, 2, 4];
@@ -67,7 +69,7 @@ function measure(mod, mu, drop = 0) {
     naruSole2: rate(r => r.rounds[2].leader === "naru" && r.rounds[2].margin > 0),
     naruWin: rate(r => r.rows[0].id === "naru"),
     naruSecond: rate(r => r.win && r.rows[1].id === "naru"),
-    sheikhLast: rate(r => r.rounds[3].got.sheikh === 6),
+    sheikhLast: rate(r => r.rounds[3].got.sheikh === (mod.CH4_SPEND[3] - 1) * mod.CH4_JUDGES.length),
   };
 }
 
@@ -87,6 +89,7 @@ function evenBar(mod) {
 const pct = x => `${(x * 100).toFixed(1)}%`;
 console.log(`相手の出来: 旧 ${JSON.stringify(old.CH4_RIVAL_CURVE)}`);
 console.log(`           新 ${JSON.stringify(now.CH4_RIVAL_CURVE)}`);
+console.log(`持ち点配分: 旧 ${old.CH4_SPEND.join("/")} → 新 ${now.CH4_SPEND.join("/")}`);
 console.log(`はじめ: 5工程を μ±4（${SPREAD.length}台）、最後の総合に加点 +${BONUS}\n`);
 console.log("| はじめ | μ | 勝率 旧→新 | なるが途中（提供後・調整1）に票 | なるが先頭: 提供後 / 調整1の後 | 勝って2位がなる | 最後の票の1位がシェイク |");
 console.log("|---|---:|---:|---:|---:|---:|---:|");
@@ -102,7 +105,7 @@ for (const [label, mu] of [["弱め", 85], ["ふつう", 88], ["良い", 91], ["
   const b = measure(now, mu);
   console.log(`| ${label} | ${mu} | ${pct(b.naruLead1)} / ${pct(b.naruLead2)} | ${pct(b.naruSole1)} / ${pct(b.naruSole2)} |`);
 }
-console.log("\n最後の調整（調整2回目）だけ崩れた一台で、優勝がなる（旧はなるが優勝しない）:");
+console.log("\n最後の調整（調整2回目）だけ崩れた一台で、優勝がなる:");
 console.log("| はじめ | μ | 調整2回目 | 勝率 旧→新 | 優勝がなる 旧→新 |");
 console.log("|---|---:|---:|---:|---:|");
 for (const [label, mu] of [["ふつう", 88], ["良い", 91]]) for (const drop of [10, 20]) {

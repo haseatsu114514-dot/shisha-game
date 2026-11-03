@@ -392,7 +392,7 @@ stacked.nodes=["M-W8"];stacked.learned=["M-W8"];
 growth.setGrowthPreview(false);assert.equal(finalize(grapeCup()).total,85);growth.setGrowthPreview(true);
 assert.equal(effects.LESSON_TUNING.grapeReception,2);assert(effects.LESSON_TUNING.grapeReception<2*effects.LESSON_TUNING.flowerLayer);
 const voteImpact=[];
-for(const base of [50,80,82,83,84,85,88,90,98]){
+for(const base of [50,80,82,83,84,85,86,87,88,90,98]){
  const evaluate=createCh3TournamentEvaluate({performanceOf:(scenario)=>({rounds:[base,base,base,scenario.final],processScores:[]})});
  const tally={base,boosted:base+2,seeds:200,baselineWins:0,boostedWins:0,rankChanged:0,votesChanged:0};
  for(let seed=1;seed<=200;seed++){
@@ -404,9 +404,22 @@ for(const base of [50,80,82,83,84,85,88,90,98]){
  voteImpact.push(tally);
 }
 assert.equal(voteImpact[0].boostedWins,0,"授業を覚えても低い制作点は勝利にならない");
-const boundaryVote=createCh3TournamentEvaluate({performanceOf:s=>({rounds:[80,84,80,s.final]})});
+// 版1の旧保存の境界は旧期待値のまま残す。計測アダプターは新規挑戦なので、ここだけ実投票を版1で使う。
+const legacyTournament=await import("../js/chapters/ch3-tournament-state.js");
+const boundaryVote=(scenario,seed,{p})=>{
+ const value={chapter:3,day:42,weatherSeed:seed,flags:{}};
+ const progress=legacyTournament.startAttempt(value,{careHistory:[]});delete progress.rulesVersion;
+ for(const [round,performance]of [80,84,80,scenario.final].entries()) assert(legacyTournament.castVotes(progress,round,performance,null,p));
+ const rows=legacyTournament.standings(progress);
+ return {rank:rows.find(r=>r.id==="hajime").rank,votes:Object.fromEntries(rows.map(r=>[r.id,r.points]))};
+};
 const withoutGrape=boundaryVote({id:"without",final:82},1,{p:0}),withGrape=boundaryVote({id:"with",final:84},1,{p:0});
 assert.equal(withoutGrape.rank,2);assert.equal(withGrape.rank,1,"既存の総票・同点規則のまま境界例では勝敗が変わる");
 assert.equal(withoutGrape.votes.hajime,9);assert.equal(withGrape.votes.hajime,11);
-console.log("[grape lesson] PASS: family/unique-most, learned/off/failure, +2 once/cap/SAVE/LOAD, existing C3 votes unchanged rules",JSON.stringify(voteImpact));
+// 版2の新規挑戦にも同じ+2の境界効果がある。敵値やassertを下げず、明示的な新基準を別に固定する。
+const currentBoundary=createCh3TournamentEvaluate({performanceOf:s=>({rounds:[84,88,84,s.final]})});
+const currentWithout=currentBoundary({id:"without",final:86},1,{p:0}),currentWith=currentBoundary({id:"with",final:88},1,{p:0});
+assert.equal(currentWithout.rank,2);assert.equal(currentWith.rank,1);
+assert.equal(currentWithout.votes.hajime,9);assert.equal(currentWith.votes.hajime,11);
+console.log("[grape lesson] PASS: family/unique-most, learned/off/failure, +2 once/cap/SAVE/LOAD, legacy/current C3 rules and exact +2 boundaries",JSON.stringify(voteImpact));
 growth.setGrowthPreview(false);
