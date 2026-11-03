@@ -30,6 +30,9 @@ body:not(.game-ds) .bench[data-step="mix"] .mix-vessel-art { top: auto; height: 
 .fr-feature:hover b { text-decoration: underline; text-underline-offset: 4px; }
 .flavor-guide-more summary:focus-visible, .fr-feature:focus-visible, .equipment-compare:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .equipment-compare { margin-bottom: 12px; }
+.equipment-set-preview { margin-bottom: 12px; padding: 10px 12px; border: 1px solid #c4ab7a66; border-radius: 8px; }
+.equipment-set-preview .equipment-guide-rows { grid-template-columns: minmax(0, 8em) minmax(0, 1fr); gap: 4px 10px; }
+.equipment-set-preview .flavor-guide-caption { margin: 5px 0; font-size: 13px; overflow-wrap: anywhere; }
 .equipment-guide p { margin: 7px 0; font-size: 16px; line-height: 1.5; }
 .equipment-guide-rows { margin: 8px 0; display: grid; grid-template-columns: minmax(6em, auto) 1fr; gap: 8px 14px; font-size: 13px; line-height: 1.5; }
 .equipment-guide-rows dt { color: var(--guide-muted); }

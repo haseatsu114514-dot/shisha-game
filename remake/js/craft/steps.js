@@ -25,6 +25,7 @@ import { flavorFamilyGrams } from "./score.js";
 import { mixPercents } from "./mix-ratio.js";
 import { makerMixProfile } from "./temperature-model.js";
 import { flavorFeatureCard, flavorTags, mixForecastCard, equipmentUse, equipmentGuide } from "./flavor-guide.js";
+import { equipmentPreview } from "./equipment-preview.js";
 
 // 章ごとの課題。第1章レモン・第2章の新作苺・第3章ドバジ チョコレート。
 // オーナー決定（2026-10-28 13:29）：課題フレーバーは大会が当日 supply で用意し、本番中は無制限に使える。
@@ -63,12 +64,14 @@ const LESSON = {
   steam: "スミ「分と秒で時間を決めてスタートだ。秒は10秒ずつ動くぞ」",
 };
 
-function choose(panel, options, { cols = 2 } = {}) {
+function choose(panel, options, { cols = 2, onPreview } = {}) {
   return new Promise((resolve) => {
     const grid = el(`div.opt-grid.cols-${cols}`, options.map((o) =>
       el(`button.opt${o.disabled ? ".off" : ""}`, {
         disabled: o.disabled || null,
         dataset: { test: `opt-${o.value}` },
+        onfocus: () => { if (!o.disabled) onPreview?.(o.value); },
+        onpointerenter: () => { if (!o.disabled) onPreview?.(o.value); },
         onclick: () => { SE.select(); resolve(o.value); },
       }, [
         o.badge ? el("span.opt-badge", { text: o.badge }) : null,
@@ -112,6 +115,8 @@ export async function stepSetup(cs) {
     const currentId = state.equip[type];
     const categoryHint = { bowl: "ハガルは葉を詰める器。使う量と狙う味で選ぼう", hms: "HMDは炭を載せる道具。温度の合わせやすさを見比べよう", charcoal: "同じ3個でも熱の入り方が変わる。狙う温度で選ぼう" };
     const panel = stepPanel("setup", `機材 ${label}`, lessonHint(cs, "setup", categoryHint[type]));
+    const preview = el("div", [equipmentPreview(cs)]);
+    panel.append(preview);
     panel.append(el("button.btn.small.equipment-compare", { type: "button", text: "性能を見比べる", dataset: { test: "setup-compare" },
       onclick: () => modal({ title: `${label}を見比べる`, className: "flavor-guide-dialog", body: el("div.equipment-compare-list", owned.map(item =>
         el("section", [el("b", { text: item.name }), equipmentGuide(item, currentId)]))),
@@ -125,7 +130,7 @@ export async function stepSetup(cs) {
         badge: e.id === currentId ? "装備中" : null,
         auto: e.id === currentId,
       };
-    }));
+    }), { onPreview: id => preview.replaceChildren(equipmentPreview({ ...cs, equip: { ...cs.equip, [type]: id } }, { candidate: true })) });
   }
   // 制作中の制限で旧セーブの装備・所有品を消さない。
   state.equip = { ...cs.equip, ...(!trained ? { charcoal: state.equip.charcoal } : {}) };

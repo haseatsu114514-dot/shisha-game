@@ -50,7 +50,7 @@ const deps={
  '../core/scene-motions.js':{sharkSwim:async swap=>{await swap();}},
  '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),affinityLevel:()=>heart,releaseAffinity:()=>0,ensureAffinityLevel:()=>{},earnStat:()=>{},addMoney:()=>{},addStamina:()=>{},STAMINA_LOW:25},
  '../vn/engine.js':{play:async id=>{played.push(id);return {id,visited:[]};},isPlaying:()=>false},
- './bonds.js':{finaleAtVisit:()=>false,playFinale:async()=>false},
+ './bonds.js':{finaleAtVisit:()=>false,playFinale:async()=>false,BOND_FINALES:{samechan:{dialogue:"samechan_bond_finale"}}},
  './trpg.js':{maybeRecruitTrpgMember:async()=>false},
 };
 const samechanModule=new vm.SourceTextModule(await read('js/daily/samechan.js'),{context});

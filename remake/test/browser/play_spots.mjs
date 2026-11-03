@@ -14,6 +14,10 @@ async function hit(page, id) {
 async function setup(page, { chapter = 1, day = chapter === 1 ? 5 : 16, slot = chapter === 1 ? 1 : 0, money = 12000, club = false, clubIds = ["hiyori"], run = true, lessonDone = true } = {}) {
   page.setDefaultTimeout(20000);
   await page.evaluate(async ({ chapter, day, slot, money, club, clubIds, run, lessonDone }) => {
+    // 施設の直接成長（#784: 斧投げBarは根性に2P）を見るため、この端末を旧しくみにする。
+    // 心得の盤（SBD97・91e0463f0 で通常プレイの既定を true に）では施設は火種になり能力を書き換えない。
+    // 盤側の挙動は spot_encounters.mjs / paid_action_growth.mjs が受け持つ。
+    localStorage.setItem("suien_growth_preview", "0");
     const core = await import("./js/core/state.js"), s = core.newGame();
     s.flags._rei_trpg_introduced = true; s.flags._axe_bar_legacy_access = true; // #577: 既存店舗の精算・取消回帰は互換保存として維持
     if (lessonDone) s.flags._axe_lesson_done = true; // AXR08: 初回の店主レッスンは first-play の検査で扱う
