@@ -17,6 +17,18 @@ export const RACE = Object.freeze({
   countdown: 3,
 });
 
+// 練習は従来の1000mを維持。大会は同じ操作で短距離から順に挑戦する。
+export const CAMEL_CUPS = Object.freeze([
+  { id: "practice", name: "練習レース", length: 1000, rivalBoost: 0, note: "操作を練習。初回完走のご褒美はそのまま" },
+  { id: "rookie", name: "入門大会", length: 700, rivalBoost: -0.9, note: "3位以内で標準大会へ" },
+  { id: "standard", name: "標準大会", length: 1000, rivalBoost: 0, note: "入賞・声20点・スタミナ20点・連打なしで中級認定" },
+  { id: "expert", name: "上級大会", length: 1300, rivalBoost: 0.25, note: "1位・S評価・連打なしで砂漠の名調教師" },
+].map(cup => Object.freeze(cup)));
+export const camelCup = id => CAMEL_CUPS.find(cup => cup.id === id) || CAMEL_CUPS[0];
+export const camelCupQualified = run => !!run && run.cup !== "practice" && run.rank <= 3 && Number.isFinite(run.total);
+export const camelMastered = run => run?.cup === "standard" && run.rank <= 3 && run.parts?.timing >= 20 && run.parts?.stamina >= 20 && run.stats?.spam === 0;
+export const camelExpert = run => run?.cup === "expert" && run.rank === 1 && run.total >= 85 && run.stats?.spam === 0;
+
 export const PLAYER = Object.freeze({
   base: 18.3,            // 基本速度 m/s（調子が最大で ×(floor+span)、最低で ×floor）
   rhythmFloor: 0.9, rhythmSpan: 0.14,
@@ -88,15 +100,16 @@ function scheduleCues(random) {
   return cues;
 }
 
-export function createRace({ seed = 1, length = RACE.length } = {}) {
+export function createRace({ seed = 1, cup = "practice", length = camelCup(cup).length } = {}) {
+  const event = camelCup(cup);
   const random = rng(seed);
   const rivals = RIVAL_PROFILES.map((profile, index) => {
-    const offset = (random() - 0.5) * 0.8;
+    const offset = (random() - 0.5) * 0.8 + event.rivalBoost;
     return { id: profile.id, name: profile.name, color: profile.color, index: index + 1, distance: 0, speed: profile.speeds[0] + offset,
       offset, wobble: random() * Math.PI * 2, finishedAt: null };
   });
   return {
-    seed, length, t: 0, finished: false, finishedAt: null, rank: null,
+    seed, cup: event.id, length, t: 0, finished: false, finishedAt: null, rank: null,
     player: { id: "player", name: PLAYER_CAMEL.name, color: PLAYER_CAMEL.color, index: 0, distance: 0, speed: PLAYER.base * 0.95,
       rhythm: PLAYER.rhythmStart, stamina: 100, finishedAt: null, surge: 0,
       whipHeld: false, whipping: false, whipLocked: false, lastVoice: -Infinity, exhausted: false },
@@ -298,7 +311,7 @@ export function scoreRace(state) {
   const pacing = remain <= 30 ? 8 : clamp(8 - (remain - 30) / 7, 0, 8);
   const stamina = clamp(Math.round(spurt + efficiency + pacing), 0, 25);
   const total = clamp(Math.round(rankPoints + timing + stamina), 0, 100);
-  return { total, grade: gradeOf(total), rank, time: state.finishedAt,
+  return { total, grade: gradeOf(total), rank, time: state.finishedAt, cup: state.cup,
     parts: { rank: rankPoints, timing: Math.round(timing), stamina },
     stats: { ...stats, whipTime: Math.round(stats.whipTime * 10) / 10, spurtWhip: Math.round(stats.spurtWhip * 10) / 10,
       emptyWhip: Math.round(stats.emptyWhip * 10) / 10, judged, staminaLeft: Math.round(remain) } };
@@ -309,8 +322,8 @@ export function scoreRace(state) {
  * policy: "perfect"（毎回ぴたり・中盤は息が満ちたら短くムチ・スパートで使い切る）／"good"／"cruise"（声はぴたり・ムチなし）
  *         ／"hold"（声はぴたり・ムチを押しっぱなし）／"none"（何もしない）／"spam"（連打）／関数(state)→{voice, whip}
  */
-export function simulateRace({ seed = 1, policy = "perfect", dt = 1 / 60 } = {}) {
-  const state = createRace({ seed });
+export function simulateRace({ seed = 1, policy = "perfect", cup = "practice", dt = 1 / 60 } = {}) {
+  const state = createRace({ seed, cup });
   const decide = typeof policy === "function" ? policy : POLICIES[policy];
   if (!decide) throw new RangeError(`Unknown policy: ${policy}`);
   let guard = 0;
@@ -342,3 +355,4 @@ export const POLICIES = {
   none: () => ({}),
   spam: state => ({ voice: Math.round(state.t * 60) % 6 === 0, whip: true }),
 };
+

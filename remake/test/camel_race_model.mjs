@@ -1,7 +1,7 @@
 // CAMEL RACE の競走モデル: 再現性・所要時間・採点・連打の罰・順位。
 import assert from "node:assert/strict";
 import { RACE, CUE, WHIP, createRace, stepRace, pressVoice, setWhip, whipReady, activeCue, scoreRace, simulateRace, standings,
-  gradeOf, GRADES, RANK_POINTS, RIVAL_PROFILES, POLICIES } from "../js/minigames/camel-race-model.js";
+  gradeOf, GRADES, RANK_POINTS, RIVAL_PROFILES, POLICIES, CAMEL_CUPS, camelMastered, camelExpert } from "../js/minigames/camel-race-model.js";
 
 // 同じ seed なら同じレース。違う seed なら輪の間隔とライバルの個体差が変わる。
 {
@@ -146,3 +146,28 @@ assert(goodWins <= 4, `GOOD-only rarely wins (${goodWins}/20)`);
   assert.deepEqual(Object.keys(POLICIES), ["perfect", "good", "cruise", "hold", "none", "spam"]);
 }
 console.log("camel_race_model: ok");
+
+
+// 標準の認定は1位やPERFECT限定にしない。GOOD中心＋適切なムチで達成可能。
+for (let seed = 1; seed <= 60; seed++) {
+  const good = simulateRace({ seed, cup: "standard", policy: "good" }).score;
+  assert(camelMastered(good), `GOOD-centered run qualifies, seed ${seed}`);
+  for (const policy of ["hold", "cruise", "none", "spam"]) {
+    assert(!camelMastered(simulateRace({ seed, cup: "standard", policy }).score), `not mastery: ${policy}, seed ${seed}`);
+  }
+  assert.equal(simulateRace({ seed, cup: "rookie", policy: "good" }).score.rank, 1);
+}
+{
+  const qualified = { cup: "standard", rank: 3, total: 60, parts: { timing: 20, stamina: 20 }, stats: { spam: 0 } };
+  assert(camelMastered(qualified));
+  assert(!camelMastered({ ...qualified, rank: 4 }));
+  assert(!camelMastered({ ...qualified, parts: { timing: 19, stamina: 20 } }));
+  assert(!camelMastered({ ...qualified, parts: { timing: 20, stamina: 19 } }));
+  assert(!camelMastered({ ...qualified, stats: { spam: 1 } }));
+  assert(!camelMastered({ ...qualified, cup: "practice" }));
+  assert(!camelMastered({ ...qualified, stats: undefined }));
+  assert(!camelExpert({ cup: "expert", rank: 1, total: 84, stats: { spam: 0 } }));
+  assert(camelExpert({ cup: "expert", rank: 1, total: 85, stats: { spam: 0 } }));
+  assert.deepEqual(CAMEL_CUPS.map(cup => cup.length), [1000, 700, 1000, 1300]);
+}
+console.log("camel_cups: 360 policy runs + boundaries ok");

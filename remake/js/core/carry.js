@@ -222,6 +222,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_trial_steve", "progression"],
   ["_ch3_tokyo_call_night", "progression"],
   ["_ch4", "progression"],
+  ["_camel_cups", "unlock"], // 大会の解放・中級認定・上級称号を周回へ残す
   ["_ch4_camel", "progression"], // ドバイのラクダレース（段階・自己ベスト）。周回では持ち越さない
   ["_ch4_cafe_orders", "progression"], // ドバイのカフェで頼んだ一台の回数（メニューごと・ch4-dubai-cafe.js）
   ["_ch4_cleared", "progression"],
@@ -669,3 +670,4 @@ export function buildCarryPackage(s) {
     .map(([name, v]) => [name, clone(v)]));
   return data;
 }
+

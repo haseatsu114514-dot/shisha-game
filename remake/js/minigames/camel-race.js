@@ -9,7 +9,7 @@
 import { el } from "../core/util.js";
 import { SE } from "../core/audio.js";
 import { imgFileUrl } from "../core/img-file.js";
-import { RACE, CUE, PLAYER, WHIP, rng, createRace, stepRace, pressVoice, setWhip, whipReady, activeCue, inSpurt, standings, scoreRace,
+import { RACE, CUE, PLAYER, WHIP, CAMEL_CUPS, camelCup, camelCupQualified, camelMastered, camelExpert, rng, createRace, stepRace, pressVoice, setWhip, whipReady, activeCue, inSpurt, standings, scoreRace,
   POLICIES, PLAYER_CAMEL, RIVAL_PROFILES } from "./camel-race-model.js";
 
 export const CAMEL_RACE_TITLE = "CAMEL RACE";
@@ -205,10 +205,12 @@ const active = new WeakMap();
  * 戻り値: { completed, cancelled, runs: [採点…], best: 最高の採点, last: 最後の採点 }
  */
 export function runCamelRace({ host = document.getElementById("stage"), signal = null, seed = null, tutorial = true, allowRetry = true,
-  pilot = null, timeScale = 1, best = null, reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches } = {}) {
+  pilot = null, timeScale = 1, best = null, cups = null, cupRecords = {}, reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   const runs = [];
+  const unlocked = new Set(cups || ["practice", "rookie"]);
+  let selectedCup = "practice";
   const summary = completed => {
     const bestRun = runs.reduce((top, run) => !top || run.total > top.total ? run : top, null);
     return { completed, cancelled: !completed, runs: runs.map(run => ({ ...run })), best: bestRun ? { ...bestRun } : null, last: runs.length ? { ...runs.at(-1) } : null };
@@ -244,7 +246,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     el("span.camel-speed-read", [speedValue, el("small", { text: "km/h" })]), el("span.camel-speed-bar", [speedFill])]);
   const clockNode = el("div.camel-clock", { "aria-hidden": "true" }, [
     el("h1.camel-title", { text: CAMEL_RACE_TITLE }), clockTime, speedNode,
-    el("small.camel-clock-sub", { text: `練習 ${RACE.length.toLocaleString("ja-JP")}m・${RIVAL_PROFILES.length + 1}頭` })]);
+    el("small.camel-clock-sub", { text: "練習レース 1,000m・4頭", dataset: { test: "camel-event-name" } })]);
   const rhythmBars = Array.from({ length: 5 }, () => el("i"));
   const staminaValue = el("b", { text: "100" });
   const staminaFill = el("i");
@@ -453,9 +455,33 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     sheet.hidden = false;
     next.focus();
   }
+  function openCups() {
+    setPhase("cups");
+    hudNode.hidden = true;
+    sheet.replaceChildren(el("div.camel-card.camel-cup-card", { dataset: { test: "camel-cups" } }, [
+      el("p.camel-eyebrow", { text: "HABIBA RACING CLUB" }),
+      el("h2", { text: "ハビーバと、次の大会へ" }),
+      el("p", { text: "大会は入門から。中級認定の追加火種は一度だけ、上級は称号への挑戦。" }),
+      el("div.camel-cups", CAMEL_CUPS.map((cup, index) => {
+        const enabled = unlocked.has(cup.id);
+        const mastered = cupRecords[cup.id]?.mastered || runs.some(run => cup.id === "standard" ? camelMastered(run) : cup.id === "expert" && camelExpert(run));
+        return el("button.camel-cup", { type: "button", disabled: !enabled,
+          dataset: { test: "camel-cup", cup: cup.id }, onclick: () => { selectedCup = cup.id; startRace(); } }, [
+          el("small", { text: index ? `CUP 0${index}` : "PRACTICE" }),
+          el("strong", { text: cup.name }), el("span", { text: `${cup.length.toLocaleString("ja-JP")}m ・ 4頭` }),
+          el("span", { text: enabled ? cup.note : cup.id === "standard" ? "入門大会3位以内で解放" : "標準大会の中級認定で解放" }),
+          el("b", { text: mastered ? cup.id === "expert" ? "砂漠の名調教師" : "中級認定済み" : enabled ? "出走する →" : "未解放" }),
+        ]);
+      })),
+      el("small", { text: "この訪問中の再挑戦は日付を進めません。完走して戻ると従来どおり昼の1行動を使います。" }),
+    ]));
+    sheet.hidden = false;
+    sheet.querySelector("button:not(:disabled)")?.focus();
+  }
   function startRace() {
     sheet.hidden = true; sheet.replaceChildren();
-    race = createRace({ seed: rivalSeed() });
+    race = createRace({ seed: rivalSeed(), cup: selectedCup });
+    clockNode.querySelector(".camel-clock-sub").textContent = `${camelCup(selectedCup).name} ${race.length.toLocaleString("ja-JP")}m・4頭`;
     dust.length = 0; confetti.length = 0; sparks.length = 0; waves.length = 0; floaters.length = 0;
     whip = 0; spurtShown = false; goalAt = 0; settleTimer = 0;
     shake = 0; slow = 0; goTime = -1; combo = 0; spurtTint = 0; lastCallAt = -9; lastPosition = 0; leaderId = null; marks = new Set();
@@ -669,6 +695,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     else drawPlainGround(camX);
     for (const lane of LANES) { ctx.fillStyle = "rgba(255,240,210,0.07)"; ctx.fillRect(0, lane.y - 2, W, 3); }
     // 柵（奥と手前）と100mごとの表示板。
+    drawEventDecor(camX);
     drawFence(camX, 396, 0.7);
     drawMarkers(camX);
     drawGates(camX);
@@ -762,6 +789,26 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     ctx.lineTo(W, HORIZON + 4); ctx.closePath(); ctx.fill(); ctx.restore();
   }
   /** 白い管の柵。支柱は砂に右下へ影を落とし、手すりは上が明るく下が陰る。 */
+  // 大会の飾りは走路の奥だけに置く。視線を遮らず、既存の背景・ラクダの絵を活かす。
+  function drawEventDecor(camX) {
+    if (!race || race.cup === "practice") return;
+    const palette = race.cup === "expert" ? ["#e5b64a", "#51396e", "#fff1cf"]
+      : race.cup === "standard" ? ["#e5b64a", "#bd4946", "#fff1cf"] : ["#40978d", "#f2c16b", "#fff1cf"];
+    const offset = ((camX * 2) % 360 + 360) % 360;
+    ctx.save();
+    for (let x = -offset; x < W + 360; x += 360) {
+      ctx.strokeStyle = "#80613d"; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(x, 320); ctx.lineTo(x, 393); ctx.moveTo(x + 360, 320); ctx.lineTo(x + 360, 393); ctx.stroke();
+      ctx.strokeStyle = "#e6d0a2"; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(x, 322); ctx.quadraticCurveTo(x + 180, 354, x + 360, 322); ctx.stroke();
+      for (let i = 0; i < 12; i++) {
+        const px = x + 15 + i * 30, k = (px - x) / 360, py = 322 + 64 * k * (1 - k);
+        ctx.fillStyle = palette[i % palette.length];
+        ctx.beginPath(); ctx.moveTo(px - 8, py); ctx.lineTo(px + 8, py + 1); ctx.lineTo(px, py + 19); ctx.closePath(); ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
   function drawFence(camX, y, scale) {
     const spacing = 5 * PX_PER_M;
     const start = -((camX * PX_PER_M - PLAYER_SCREEN_X) % spacing) - spacing;
@@ -1229,10 +1276,13 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       requestAnimationFrame(count);
       setTimeout(() => { if (!done && runs.length === shownRun && phase === "result") sfx("stamp"); }, 1050);
     }
+    if (run.cup === "rookie" && camelCupQualified(run)) unlocked.add("standard");
+    if (camelMastered(run)) unlocked.add("expert");
     const again = el("button.btn.primary", { type: "button", text: "もう一度", dataset: { test: "camel-retry" }, onclick: () => startRace() });
+    const choose = el("button.btn", { type: "button", text: "大会を選ぶ", dataset: { test: "camel-choose-cup" }, onclick: openCups });
     const leave = el("button.btn", { type: "button", text: "終える", dataset: { test: "camel-finish" }, onclick: () => cleanup(true) });
     sheet.replaceChildren(el("div.camel-card.camel-result", { dataset: { test: "camel-result", rank: String(score.rank), grade: score.grade, total: String(score.total) } }, [
-      el("p.camel-eyebrow", { text: "RESULT" }),
+      el("p.camel-eyebrow", { text: `${camelCup(run.cup).name} / RESULT` }),
       el("div.camel-result-head", [
         el("div.camel-medal", { dataset: { rank: String(score.rank) } }, [el("strong", { text: String(score.rank) }), el("span", { text: "位" })]),
         el("div.camel-result-score", [
@@ -1246,7 +1296,9 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         ["無駄な声", score.stats.miss], ["連打", score.stats.spam], ["ムチ", `${score.stats.whipTime}秒（スパート${score.stats.spurtWhip}秒）`]]
         .map(([label, value]) => el("li", [el("small", { text: label }), el("b", { text: String(value) })]))),
       isBest && (best !== null || runs.length > 1) ? el("p.camel-best", { text: "自己ベスト更新！", dataset: { test: "camel-new-best" } }) : null,
-      el("div.camel-card-actions", allowRetry ? [again, leave] : [leave]),
+      camelMastered(run) ? el("p.camel-best", { text: "中級認定！ 連打に頼らず、声と息を合わせた走り。追加の火種は初回のみ夜に精算。" })
+        : camelExpert(run) ? el("p.camel-best", { text: "称号獲得：砂漠の名調教師" }) : null,
+      el("div.camel-card-actions", allowRetry ? [again, choose, leave] : [leave]),
     ]));
     sheet.hidden = false;
     (allowRetry ? again : leave).focus();
@@ -1254,7 +1306,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
 
   // ---- 開始 -----------------------------------------------------------------------------------------
   draw();
-  if (tutorial) openTutorial(0); else startRace();
+  if (tutorial) openTutorial(0); else if (cups) openCups(); else startRace();
   return promise;
 }
 
@@ -1266,3 +1318,4 @@ function shade(hex, amount) {
 }
 
 export { PLAYER_CAMEL, RIVAL_PROFILES };
+

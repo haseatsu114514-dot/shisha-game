@@ -1,3 +1,4 @@
+import { CAMEL_CUPS, camelCupQualified, camelMastered, camelExpert } from "../minigames/camel-race-model.js";
 // 第4章ドバイ編・任意イベント「ラクダレース」の進み具合・行き先・記録（純粋関数。DOM・保存・音を持たない）。
 // 画面と訪問の流れは ch4-camel-race.js、遊びの本体は minigames/camel-race.js。
 //
@@ -35,6 +36,7 @@ const integer = (value, fallback = null) => Number.isInteger(value) ? value : fa
 /** 保存済みの進み具合を読める形にそろえる（読むだけ。value は変えない）。 */
 export function camelRaceRecord(value) {
   const raw = record(value?.flags?.[CAMEL_FLAG]);
+  const honors = record(value?.flags?._camel_cups) || record(raw?.cups);
   const best = record(raw?.best);
   return {
     stage: Math.min(CAMEL_STAGES.unlocked, Math.max(0, integer(raw?.stage, 0))),
@@ -42,13 +44,24 @@ export function camelRaceRecord(value) {
     watched: raw?.watched === true,
     plays: Math.max(0, integer(raw?.plays, 0)),
     lastPlayDay: integer(raw?.lastPlayDay),
+    cups: Object.fromEntries(CAMEL_CUPS.slice(1).map(cup => {
+      const saved = record(honors?.[cup.id]);
+      return [cup.id, { qualified: saved?.qualified === true, mastered: saved?.mastered === true,
+        best: record(saved?.best) && Number.isFinite(saved.best.total) ? { ...saved.best } : null }];
+    })),
     best: best && Number.isFinite(best.total) ? { total: Math.round(best.total), rank: integer(best.rank, 4), grade: typeof best.grade === "string" ? best.grade : "C",
       time: Number.isFinite(best.time) ? best.time : null, chapter: integer(best.chapter), day: integer(best.day) } : null,
   };
 }
+export function availableCamelCups(value) {
+  const { cups } = camelRaceRecord(value);
+  return CAMEL_CUPS.filter(cup => cup.id === "practice" || cup.id === "rookie"
+    || cup.id === "standard" && cups.rookie.qualified || cup.id === "expert" && cups.standard.mastered).map(cup => cup.id);
+}
 function ensureRecord(value) {
   const current = camelRaceRecord(value);
   value.flags[CAMEL_FLAG] = { ...current };
+  value.flags._camel_cups = current.cups;
   return value.flags[CAMEL_FLAG];
 }
 
@@ -127,10 +140,18 @@ export function camelDailySpot(value, fields = {}) {
 /** 練習レースの結果を記録する。戻り値 { firstClear, newBest, plays }。形の合わない結果は null。 */
 export function recordCamelRaceResult(value, run, runs = 1) {
   if (!value || !record(run) || !Number.isFinite(run.total)) return null;
+  const cup = run.cup || "practice";
+  if (!availableCamelCups(value).includes(cup)) return null;
   const camel = ensureRecord(value);
   const firstClear = camel.plays === 0;
   const entry = { total: Math.round(run.total), rank: integer(run.rank, 4), grade: typeof run.grade === "string" ? run.grade : "C",
     time: Number.isFinite(run.time) ? Math.round(run.time * 100) / 100 : null, chapter: integer(value.chapter), day: integer(value.day) };
+  if (cup !== "practice") {
+    const saved = camel.cups[cup];
+    if (!saved.best || entry.total > saved.best.total) saved.best = { ...entry };
+    saved.qualified ||= camelCupQualified(run);
+    saved.mastered ||= camelMastered(run) || camelExpert(run);
+  }
   const newBest = !camel.best || entry.total > camel.best.total;
   camel.plays += Math.max(1, integer(runs, 1));
   if (newBest) camel.best = entry;
@@ -156,3 +177,4 @@ export function advanceCamelRaceStage(value, sceneId) {
 }
 
 export const resultSceneFor = rank => rank === 1 ? CAMEL_SCENES.win : rank >= 4 ? CAMEL_SCENES.last : CAMEL_SCENES.place;
+
