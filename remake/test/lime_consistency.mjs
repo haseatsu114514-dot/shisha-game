@@ -90,7 +90,7 @@ async function load(name) {
   if (mods.has(name)) return mods.get(name);
   let mod;
   if (values[name]) mod = new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name });
-  else mod = new vm.SourceTextModule(await fs.readFile(new URL(coreFiles[name] ? `js/core/${coreFiles[name]}` : `js/daily/${name}`, root), "utf8") + (name === "phone.js" ? "\nexport { hiyoriInvite as testHiyoriInvite, sumiBaitoInvite as testSumiBaitoInvite, scheduledInvitation as testScheduledInvitation };\n" + legacyScheduledSource + "\nexport { legacyScheduledInvitation };" : ""), { context, identifier: name });
+  else mod = new vm.SourceTextModule(await fs.readFile(new URL(coreFiles[name] ? `js/core/${coreFiles[name]}` : `js/daily/${name}`, root), "utf8") + (name === "phone.js" ? "\nexport { eligible as testEligible, hiyoriInvite as testHiyoriInvite, sumiBaitoInvite as testSumiBaitoInvite, scheduledInvitation as testScheduledInvitation };\n" + legacyScheduledSource + "\nexport { legacyScheduledInvitation };" : ""), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod;
 }
 const statsModule = await load("production-stats.js"); await statsModule.evaluate();
@@ -909,3 +909,35 @@ for (const sender of ["naru", "adam", "minto", "rin", "sumi"]) {
 }
 assert(closureNull>0 && closureNoon>0 && closureNight>0 && closurePrepended>0);
 console.log("PASS #2035 closure preface: frozen algorithm / schedules / mixed messages / placeholders / order / input and DB invariance", { closureCases, closureNull, closureNoon, closureNight, closurePrepended });
+
+// #2035: 章の機能表へ移す前と同じ、地元外出と本筋シフトの境界。
+let chapterGateCases = 0;
+for (const chapter of [1, 2, 3, 4, 5, 6, "1", "2", undefined, null, 0, false, NaN]) {
+  for (const returned of [false, true]) for (const tournamentDay of [false, true]) {
+    reset({ chapter, contacts: ["hiyori"], flags: { _hiyori_tonari_return_done: returned } });
+    const before = JSON.stringify(state);
+    const message = invitation("lime_outing_hiyori_1", "hiyori");
+    assert.equal(phone.testEligible(message, { tournamentDay }), chapter === 1 && returned && !tournamentDay,
+      `home outing: chapter=${String(chapter)}, returned=${returned}, tournament=${tournamentDay}`);
+    assert.equal(JSON.stringify(state), before, "外出候補の照会は状態を変えない");
+    chapterGateCases++;
+  }
+  for (const day of [3, 5, 8, 13, 14, 20]) for (const worked of [0, day - 1, day - 5])
+    for (const tournamentDay of [false, true]) for (const fixedNight of [false, true]) {
+      reset({ chapter, day, lastBaitoDay: worked });
+      const before = JSON.stringify(state);
+      const fixed = chapter === 1 && (day === 3 || day === 8);
+      const slacking = day >= 5 && day - (worked || 0) >= 4;
+      const expected = !tournamentDay && [1, 2].includes(chapter) && !(chapter === 1 && day >= 14)
+        && (fixed || slacking) && (fixed || !fixedNight);
+      const actual = phone.testSumiBaitoInvite({ tournamentDay, fixedNight: () => fixedNight });
+      assert.equal(!!actual, expected, `shift: chapter=${String(chapter)}, day=${day}, worked=${worked}, tournament=${tournamentDay}, fixedNight=${fixedNight}`);
+      if (actual) {
+        assert.equal(actual.id, `_sumi_baito_inv_d${day}`);
+        assert.equal(actual.sender, db.limeTemplates.sumi_baito.sender);
+      }
+      assert.equal(JSON.stringify(state), before, "シフト候補の照会は状態を変えない");
+      chapterGateCases++;
+    }
+}
+console.log("PASS #2035 phone chapter features", { chapterGateCases });
