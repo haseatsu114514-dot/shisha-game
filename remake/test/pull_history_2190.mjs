@@ -5,6 +5,7 @@ import vm from "node:vm";
 
 globalThis.document = { addEventListener() {} };
 globalThis.window = {};
+const naru = await import("../js/core/naru-finish.js");
 const { craftContext } = await import("../js/craft/context.js");
 const [{ DB }, conditions, life, coals, model, water, waterText, { judgeComment }, { improvementOf }, { gradeOf }] = await Promise.all([
   import("../js/core/data.js"), import("../js/craft/conditions.js"), import("../js/craft/flavor-life.js"),
@@ -56,7 +57,7 @@ class Node {
   }
 }
 
-async function harness() {
+async function harness({ learned = false } = {}) {
   let now = 1000, frameId = 0, panel;
   const frames = new Map(), metrics = { results: 0 };
   const context = vm.createContext({
@@ -65,6 +66,7 @@ async function harness() {
     cancelAnimationFrame(id) { frames.delete(id); },
   });
   const imports = {
+    "../core/naru-finish.js": naru,
     "../core/util.js": { el: (...args) => new Node(...args), sleep: async () => {}, clamp: (v, a, b) => Math.max(a, Math.min(b, v)), rand: (a, b) => (a + b) / 2 },
     "../core/ui.js": { countdown: async () => {}, shake: noop },
     "../core/audio.js": { SE: new Proxy({}, { get: () => noop }), startBubbling: () => noop },
@@ -86,7 +88,7 @@ async function harness() {
     "./context.js": { craftContext },
     "../core/state.js": { state: {} },
     "../core/growth-effects.js": { growthPerks: () => null, growthFeature: () => false, useGrowthInsurance: () => false,
-      growthSkill: () => false, growthLesson: () => false, growthCritical: () => false,
+      growthSkill: () => false, growthLesson: (_s, id) => learned && id === "M-W3", growthCritical: () => false,
       settleGrowthPhase: (s, cs, key, result) => result?.score, LESSON_TUNING: {}, SKILL_TUNING: {} },
   };
   const source = fs.readFileSync(new URL("../js/craft/pull.js", import.meta.url), "utf8");
@@ -170,3 +172,21 @@ for (const [steamSeconds, extra] of [[480, false], [600, false], [480, true]]) {
     serving: restored.pull.temp, originalBand: before.ideal, finalBand: after.ideal, next: improvementOf(restored) }));
 }
 console.log("PASS: real pull/care safe-history negative controls and later-overpull temperature-history regression");
+
+// Naru's lesson goes through the real initial pull and provide handler, never a helper-only award.
+for (const id of ["orange", "mint"]) for (const learned of [false, true]) {
+  const h = await harness({ learned }), cs = fresh(480); cs.mix = { [id]: 12 };
+  const target = naru.naruFinishRange(model.temperatureBands(cs));
+  cs.steam.temp = (target.low + target.high) / 2;
+  await h.run(cs, 0, [.5, .5]);
+  assert.equal(naru.naruFinishBonus(cs), learned ? .5 : 0, `${id}, learned=${learned}`);
+  assert.equal(cs.naruFinish.learned, learned);
+  if (learned) {
+    assert.equal(cs.naruFinish.temp, cs.pull.temp);
+    const record = JSON.stringify(cs.naruFinish);
+    await h.run(cs, 1, [.5]);
+    assert.equal(JSON.stringify(cs.naruFinish), record, "care must not re-evaluate first service");
+    assert.equal(naru.naruFinishBonus(JSON.parse(JSON.stringify(cs))), .5);
+  }
+}
+console.log("PASS Naru lesson: real provide for focused/expressive leaves, learned gating, care and serialized record");

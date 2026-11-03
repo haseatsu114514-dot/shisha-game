@@ -270,7 +270,7 @@ export function noteLit(g, board, cost) {
  */
 export function giveColored(g, board, n = COLORED_GIFT) {
   const give = Math.max(0, Math.min(n, BOARD_TOTAL - g.earned));
-  const kind = boardHasRoom(g, board) ? board : "any";
+  const kind = board === "any" || boardHasRoom(g, board) ? board : "any";
   g.hidane[kind] += give;
   g.earned += give;
   return { kind, n: give };
@@ -508,7 +508,7 @@ function playRewardMet(reward, s) {
     return cleared.length >= reward.clears;
   }
   if (reward.game === "dj") { const rank = s.dj?.bestRank; return typeof rank === "string" && atLeast(rank, reward.rank); }
-  if (reward.game === "camel") { const plays = s.flags?._ch4_camel?.plays; return Number.isInteger(plays) && plays >= (reward.clears || 1); }
+  if (reward.game === "camel") { if (reward.master) return s.flags?._camel_cups?.standard?.mastered === true; const plays = s.flags?._ch4_camel?.plays; return Number.isInteger(plays) && plays >= (reward.clears || 1); }
   if (reward.game === "desert") { const rank = s.desert?.bestRank; return typeof rank === "string" && atLeast(rank, reward.rank); }
   return false;
 }

@@ -6,11 +6,13 @@ import { advanceToChapterFour, completeChapterFourScene, endChapterFourDay, CH4_
 import { chapterFourMapModel } from "../js/chapters/ch4-map-model.js";
 import { CAMEL_FLAG, CAMEL_SCENES, CH4_CAMEL_SCENE_FILES, CAMEL_STAGES, camelRaceRecord, camelRaceDestination, camelRaceOpen,
   recordCamelRaceResult, consumeCamelRaceDaytime, advanceCamelRaceStage, resultSceneFor, camelSceneBg, CAMEL_TRACK_BG, CAMEL_SHOP_BG,
-  CAMEL_DAILY_SPOT_ID, camelDailySpot } from "../js/chapters/ch4-camel-progress.js";
+  CAMEL_DAILY_SPOT_ID, camelDailySpot, availableCamelCups } from "../js/chapters/ch4-camel-progress.js";
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
 import { newGrowth, claimPlayRewards } from "../js/core/growth.js";
-import { classifyFlag } from "../js/core/carry.js";
+import { simulateRace, camelMastered, camelExpert, CAMEL_CUPS } from "../js/minigames/camel-race-model.js";
+import { classifyFlag, buildCarryPackage } from "../js/core/carry.js";
 
+const emptyCups = () => Object.fromEntries(CAMEL_CUPS.slice(1).map(cup => [cup.id, { qualified: false, mastered: false, best: null }]));
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
 
 // 台本はすべて実在し、本文がある。登録ファイルは1つ。話者は characters.json に居る。
@@ -49,7 +51,7 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
 {
   const value = dubaiFreeDay();
   assert(camelRaceOpen(value));
-  assert.deepEqual(camelRaceRecord(value), { stage: 0, meetDay: null, inviteDay: null, watched: false, plays: 0, lastPlayDay: null, best: null });
+  assert.deepEqual(camelRaceRecord(value), { stage: 0, meetDay: null, inviteDay: null, watched: false, plays: 0, lastPlayDay: null, best: null, cups: emptyCups() });
   const before = structuredClone(value);
   let camel = camelOf(value);
   assert.deepEqual(value, before, "Reading the destination mutated the save");
@@ -66,7 +68,7 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   assert(!advanceCamelRaceStage(value, CAMEL_SCENES.watch), "cannot skip to the track");
   assert.equal(endChapterFourDay(value), "next_day");
   camel = camelOf(value);
-  assert.equal(camel.ok, true); assert.match(camel.label, /サイフとまた話す/); assert.equal(camel.consumes, false);
+  assert.equal(camel.ok, true); assert.match(camel.label, /サイーフとまた話す/); assert.equal(camel.consumes, false);
   assert(advanceCamelRaceStage(value, CAMEL_SCENES.invite));
   assert.equal(camelRaceRecord(value).stage, CAMEL_STAGES.invited);
   // 誘われた日はまだ行けない（レースは翌朝）。翌日の昼に行ける。夜（slot 1）は行けない。
@@ -114,7 +116,7 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   assert.deepEqual(value.stats, newState().stats, "no direct stat gains");
   // 壊れた保存は安全に読む。
   value.flags[CAMEL_FLAG] = { stage: 9, plays: "x", best: { total: "no" } };
-  assert.deepEqual(camelRaceRecord(value), { stage: 3, meetDay: null, inviteDay: null, watched: false, plays: 0, lastPlayDay: null, best: null });
+  assert.deepEqual(camelRaceRecord(value), { stage: 3, meetDay: null, inviteDay: null, watched: false, plays: 0, lastPlayDay: null, best: null, cups: emptyCups() });
 }
 
 // 第4章の自由行動の外では出ない（プロローグ・前夜・大会・他章）。
@@ -181,4 +183,42 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   value.flags._ch4.part = "eve";
   assert.equal(spotOf(), null, "not on the map after the free days");
 }
+// 大会の段階、旧セーブ、複数走、夜の一度きりの精算と周回の保持。
+{
+  const value = dubaiFreeDay();
+  assert.deepEqual(availableCamelCups(value), ["practice", "rookie"]);
+  assert.equal(recordCamelRaceResult(value, simulateRace({ cup: "standard" }).score), null, "locked events cannot be recorded");
+  assert.equal(value.flags._camel_cups, undefined, "rejected runs do not mutate the save");
+  const rookie = simulateRace({ cup: "rookie", policy: "good" }).score;
+  recordCamelRaceResult(value, rookie);
+  assert.deepEqual(availableCamelCups(value), ["practice", "rookie", "standard"]);
+  const standard = simulateRace({ cup: "standard", policy: "good" }).score;
+  assert(camelMastered(standard));
+  recordCamelRaceResult(value, standard);
+  assert.deepEqual(availableCamelCups(value), CAMEL_CUPS.map(cup => cup.id));
+  const expert = simulateRace({ cup: "expert", policy: "perfect" }).score;
+  assert(camelExpert(expert));
+  recordCamelRaceResult(value, expert);
+  assert(camelRaceRecord(value).cups.expert.mastered);
+  const g = newGrowth();
+  const rewards = claimPlayRewards(g, value);
+  assert.deepEqual(rewards.find(row => row.label === "ラクダレース中級認定").parts, [{ kind: "any", n: 1 }]);
+  assert.equal(rewards.filter(row => /ラクダ/.test(row.label)).length, 2, "old finish and new mastery are separate");
+  assert.equal(g.rewards["camel-master"], true);
+  assert.deepEqual(claimPlayRewards(g, JSON.parse(JSON.stringify(value))), [], "SAVE/LOAD cannot duplicate the gift");
+  value.growth = g;
+  assert.equal(classifyFlag("_camel_cups"), "unlock");
+  const carry = buildCarryPackage(value);
+  assert.deepEqual(carry.flags._camel_cups, value.flags._camel_cups);
+  assert.equal(carry.growth.rewards["camel-master"], true);
+  const next = dubaiFreeDay(); Object.assign(next.flags, carry.flags);
+  assert.equal(next.flags._ch4_camel, undefined, "story progress resets for the next cycle");
+  assert.deepEqual(availableCamelCups(next), CAMEL_CUPS.map(cup => cup.id));
+  assert.deepEqual(claimPlayRewards(carry.growth, next), [], "NG+ cannot duplicate the gift");
+  const cap = newGrowth(); cap.earned = 198;
+  const capped = claimPlayRewards(cap, value).find(row => row.label === "ラクダレース中級認定");
+  assert.deepEqual(capped.parts, [], "at the cap mastery is recorded without a false +1");
+  assert.equal(cap.rewards["camel-master"], true);
+}
 console.log("ch4_camel_race: ok");
+

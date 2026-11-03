@@ -222,10 +222,12 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_trial_steve", "progression"],
   ["_ch3_tokyo_call_night", "progression"],
   ["_ch4", "progression"],
+  ["_camel_cups", "unlock"], // 大会の解放・中級認定・上級称号を周回へ残す
   ["_ch4_camel", "progression"], // ドバイのラクダレース（段階・自己ベスト）。周回では持ち越さない
   ["_ch4_cafe_orders", "progression"], // ドバイのカフェで頼んだ一台の回数（メニューごと・ch4-dubai-cafe.js）
   ["_ch4_cleared", "progression"],
   ["_ch4_dubai_talks", "progression"],
+  ["_ch4_dubai_nights", "progression"], // ドバイの夜がにぎわう店に夜に行った回数（店ごと・ch4-dubai-local.js）。周回では持ち越さない
   ["_ch4_longlong", "progression"], // 龍龍水煙所のドバイの店の段階の既読・通いの回数（ch4-longlong.js）
   ["_ch4_desert", "progression"],
   ["_ch4_evening", "progression"],
@@ -423,6 +425,8 @@ export const FLAG_EXACT_RULES = [
   ["_rest_after_tournament", "progression"],
   ["_rin_sample", "person"],
   ["_rin_sample_received", "person"],
+  ["_roam_day", "progression"],
+  ["_roam_seen_dr_kemuri", "person"], // 第5章の ch5_opening が読む（よその店で博士に居合わせた回数）
   ["_ryuji_melty_greeting", "person"],
   ["_ryuji_melty_visit", "person"],
   ["_salaryman_service_order", "progression"],
@@ -566,6 +570,7 @@ export const FLAG_FAMILY_RULES = [
   ["_ch3_trial_*", "progression"],
   ["_cafe_recall_*", "progression"],
   ["_city_guest_seen_*", "progression"],
+  ["_roam_seen_*", "person"],
   ["_date_inv_*", "person"],
   ["_delivery_*", "progression"],
   ["_fortune_*", "progression"],
@@ -587,7 +592,7 @@ export const FLAG_FAMILY_RULES = [
   ["_shift_mix_*", "progression"],
   ["_shift_order_*", "progression"],
   ["_spot_*", "progression"],
-  ["_talk_seen_*", "person"], // 章の間だけ店で読む会話（第2章の凛・daily/spots.js の CHAPTER_TALKS）
+  ["_talk_seen_*", "person"], // 章の間だけ店で読む会話（第2章のくゆり・daily/spots.js の CHAPTER_TALKS）
   ["_sumi_baito_inv_*", "pending"],
   ["_mukai_baito_inv_*", "pending"],
   ["_temporary_closed_*", "progression"],
@@ -665,3 +670,4 @@ export function buildCarryPackage(s) {
     .map(([name, v]) => [name, clone(v)]));
   return data;
 }
+

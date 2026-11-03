@@ -31,6 +31,34 @@ async function seed(page, auto = "good", overrides = {}) {
 }
 
 await suite("ch3-tournament", async check => {
+  // IR19: 大会の朝、会場へ向かう前に恋人の応援のLIMEが届く（第1・2章と同じ形）。地元のつむぎは配信で見る側の文面、
+  // 東京に住むましろはいつもの文面。返事をして閉じると朝のカードへ。もう一度入っても重ねて届かない。
+  await check("lover-cheers-arrive-once-before-the-venue", async page => {
+    await seed(page, "good", { lovers: ["tsumugi", "mashiro"], loveLevel: { tsumugi: 1, mashiro: 1 }, lovePts: { tsumugi: 9, mashiro: 9 },
+      contacts: ["sumi", "tsumugi", "mashiro"] });
+    await page.locator(".phone-overlay").waitFor();
+    for (let n = 0; n < 2; n++) {
+      await page.locator('[data-test="reply-0"]:not([disabled])').click();
+      await page.locator('[data-test="phone-next"]').click();
+    }
+    await page.locator(t("entry")).waitFor();
+    const lover = await page.evaluate(() => window.__remake.DB.lover);
+    const state = await get(page);
+    const cheer = id => state.inbox.find(item => item.id === `_lover_gameday_${id}_c3`);
+    assert.deepEqual(cheer("tsumugi").msg.messages.map(line => line.text ?? line), lover.gameday_away.tsumugi[0].m);
+    assert(lover.gameday.mashiro.some(v => JSON.stringify(v.m) === JSON.stringify(cheer("mashiro").msg.messages.map(line => line.text ?? line))));
+    for (const id of ["tsumugi", "mashiro"]) {
+      assert.equal(cheer(id).read, true);
+      assert(state.limeRead.includes(`_lover_gameday_${id}_c3`));
+    }
+    assert(state.lovePts.tsumugi > 9, "Answering the cheer deepens the private bond");
+    assert.equal(state.flags._ch3_tournament.stage, "entry", "The cheers do not start the tournament");
+    await page.evaluate(() => { void import("./js/chapters/ch3-tournament.js").then(m => m.runChapterThreeTournament()); });
+    await page.locator(t("entry")).waitFor();
+    await page.waitForTimeout(600);
+    assert.equal(await page.locator(".phone-overlay").count(), 0, "The same morning's cheers come once");
+    assert.equal((await get(page)).inbox.filter(item => /^_lover_gameday_/.test(item.id)).length, 2);
+  }, { reducedMotion: "reduce" });
   await check("abandoned-pull-keeps-the-vote-and-recovers-the-step", async page => {
     await seed(page);
     await page.locator(t("entry")).waitFor();
@@ -138,7 +166,7 @@ await suite("ch3-tournament", async check => {
       assert.match(await page.locator(".ch2-contest-judges").textContent(), /エミル|Emil/);
       const explanation = await page.locator(t("vote-reason")).innerText();
       if (round === 1) assert.doesNotMatch(explanation, /鋭い苦みの余韻/, "No tasting effect before service");
-      if (round === 2) assert.match(explanation, /南雲は水を飲んだ.*久世の直後にはじめを試喫.*比較-2/s,
+      if (round === 2) assert.match(explanation, /須井は水を飲んだ.*久世の直後にはじめを試喫.*比較-2/s,
         "Show the actual palate trap that affected Hajime");
       if (round === 3) assert.match(explanation, /鋭い苦みは直後の比較に残らなかった/,
         "Show when the same tactic failed because of order and water");

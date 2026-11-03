@@ -7,17 +7,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "宿の隣に、砂漠ツアーのデスクがあった。壁の写真では、四輪駆動の車が砂丘を斜めに駆け上がっている。"
+          "text": "宿の隣に、シーシャカフェがあった。表の小さなデスクには、砂丘を駆け上がる車の写真が貼ってある。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "写真に見入っていると、デスクの女の人が手を振った。ゆっくりした英語に、日本語の単語が混じる。"
+          "text": "中で一台頼むと、運んできた女の人が、はじめの顔をのぞきこんだ。"
         },
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "こんにちは！　日本の人？　宿の人から聞いた。隣に、日本から来た子がいるって"
+          "text": "ねえ、日本の人でしょ？ 宿の人が言ってた。隣に日本の子が来たって"
         },
         {
           "speaker": "hajime",
@@ -26,27 +26,47 @@
         },
         {
           "speaker": "noor",
-          "face": "normal",
-          "text": "単語だけね。お客さんから、ひとつずつ覚えた。「アツイ」「スゴイ」「コワイ」"
+          "face": "smile",
+          "text": "やりますねぇ！ ……あ、今のは「ありがとう」の意味ね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……どこで覚えたんだ、それ）"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "日本のアニメ。夜、店を閉めてから見てるの。感想の欄も全部読む"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "覚えた言葉は、私の宝物。「アツイ」「スゴイ」「完全に理解した」"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "全部、砂漠で言いそうな言葉だ"
+          "text": "最後のは、たぶん理解してない時の言葉です"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "ファッ！？ ……そうなの？ 宝物の順番、入れ替えなきゃ"
         },
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "でしょ。私はヌール。ここで砂漠のツアーをやってる"
-        },
-        {
-          "speaker": "noor",
-          "face": "smile",
-          "text": "写真の車も、私が運転してるの"
+          "text": "あはは。私はヌール。ここは父の店で、昼は表のデスクで砂漠のガイドもしてる"
         },
         {
           "type": "set_flag",
           "flag": "_met_noor"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "写真の車も、私が運転してるの。カッコイイでしょ"
         },
         {
           "speaker": "hajime",
@@ -56,7 +76,7 @@
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "砂は待ってくれるから、慌てなければ平気。ハジメは観光？"
+          "text": "砂は、慌てなければ待ってくれる。……で、ハジメは観光？"
         },
         {
           "speaker": "hajime",
@@ -66,20 +86,30 @@
         {
           "speaker": "noor",
           "face": "surprise",
-          "text": "知ってる！　うちの父も毎晩吸ってる。競技があるのは、初めて聞いたけど"
+          "text": "知ってる！ 父も毎晩、奥の席で吸ってる。競技があるのは、初めて聞いたけど"
         },
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "じゃあ、忙しいね。暇な日があったら、またおしゃべりしに来て。日本語を増やしたい"
+          "text": "じゃあ忙しいね。でも暇な日は、また吸いに来て。おしゃべりしよ"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "（……話していると、肩の力が抜ける人だ）"
+          "text": "はい、ぜひ"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ヤクソク！ ……あ、今の顔、ちょっとカワイイ。尊い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……からかわれてる。たぶん）"
         }
       ],
-      "comment": "第4章ドバイ・サンドボード（DESERT RIDE）の導入1回目。宿の隣のツアーデスクで現地ガイドのヌールと知り合う。好感度・恋愛・LIMEの対象にしない現地の遊び相手（街の遊び場の店主と同じ扱い）。"
+      "comment": "第4章ドバイ（DSR21）: 宿の隣のカフェ・サーリム（ヌールの父の店。表に砂漠ツアーのデスク）に初めて入る。ヌールと知り合う（名乗り→登場カットイン）。日本のアニメと感想の欄で覚えた、少しずれた日本語を「宝物」と呼んで集めている（DSR19）。"
     },
     {
       "dialogue_id": "ch4_noor_talk2",
@@ -87,12 +117,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ツアーデスクをのぞくと、ヌールさんが地図に印をつけていた。"
+          "text": "カフェ・サーリムに寄ると、ヌールさんがカウンターで、鼻歌まじりに地図へ印をつけていた。"
         },
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "ハジメ、おかえり。今日も暑いね。「アツイ」"
+          "text": "ハジメ！ いらっしゃい。今日もアツイね。いいゾ〜これ"
         },
         {
           "speaker": "hajime",
@@ -112,7 +142,7 @@
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "砂だからね。前の日と同じ走り方はしない。砂を見て、その日の線を決める"
+          "text": "砂だからね。昨日と同じ走り方はしない。砂を見て、その日の線を決めるの"
         },
         {
           "speaker": "hajime",
@@ -139,7 +169,7 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "内緒。「スゴイ」の方だから、安心して"
+          "text": "内緒！ ……そんな顔しないの。「スゴイ」の方だから、安心して"
         }
       ],
       "branches": {
@@ -156,25 +186,35 @@
           },
           {
             "speaker": "noor",
-            "face": "normal",
-            "text": "知らない場所で、知らない人に出すんだもの。当たり前。でも、ここのお客さんは正直よ"
+            "face": "smile",
+            "text": "知らない街で、知らない人に出すんだもん。緊張して当たり前"
           },
           {
             "speaker": "noor",
             "face": "smile",
-            "text": "おいしければ笑う。それだけ"
+            "text": "それに、ここのお客さんは正直よ。おいしければ笑う。それだけ"
           },
           {
             "speaker": "hajime",
             "face": "smile",
             "text": "分かりやすくて、いいですね"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "でしょ。ハジメも、笑うと分かりやすいよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（……そんなに顔に出てたか）"
           }
         ],
         "after_tournament": [
           {
             "speaker": "noor",
             "face": "smile",
-            "text": "大会、終わったんでしょ。お疲れさま。父が「日本の子がすごかった」って"
+            "text": "大会、終わったんでしょ。お疲れさま！ 父が「日本の子がすごかった」って"
           },
           {
             "speaker": "hajime",
@@ -185,10 +225,91 @@
             "speaker": "noor",
             "face": "normal",
             "text": "父は、この街のシーシャの話なら何でも知ってる。煙より早く噂が回るの"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "だから私、知り合いだって自慢しといた。いいでしょ？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "……光栄です"
           }
         ]
       },
-      "comment": "導入2回目。大会前後で会話を分ける（交流の時系列ルール）。"
+      "comment": "♥1で読む（DSR21）。カフェ・サーリムで。大会前後で会話を分ける（交流の時系列ルール）。"
+    },
+    {
+      "dialogue_id": "ch4_noor_cafe_3",
+      "comment": "♥2で読む（DSR21）。カフェ・サーリムで。昼はガイド、夜は父の店。アニメと感想の欄で覚えた日本語。大会の話はしない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カフェ・サーリムは、今日も常連でにぎわっていた。ヌールさんは炭を運びながら、こちらへ手を振った。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ハジメ、来た！ ちょっと待って、……はい、父のおまかせのダブルアップル"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます。忙しそうですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "昼はガイド、夜は店。父がね、「客の顔を見ない日はない方がいい」って"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "でも二つあると、二倍楽しい。それな、ってやつ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "使い方、合ってます、……たぶん"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ふふん。毎晩アニメで勉強してるからね。字幕と、感想の欄で"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "そうだ、聞きたかったの。「草」って、なんで草なの？ 笑ってるのに、草"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "笑う時の「w」が、生えてる草に見えるから……らしいです"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "……日本語、深い。神回だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんは、エプロンのポケットから小さな手帳を出して、何かを書き足した。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "宝物、ひとつ追加。ありがと、ハジメ先生"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（……先生って呼ばれるの、悪くない）"
+        }
+      ]
     },
     {
       "dialogue_id": "ch4_noor_invite",
@@ -196,7 +317,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "デスクの前に、見慣れない大きな板が立てかけてあった。"
+          "text": "カフェ・サーリムに寄ると、表のデスクに見慣れない大きな板が立てかけてあった。"
         },
         {
           "speaker": "hajime",
@@ -206,7 +327,7 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "近いけど、違う。サンドボード。砂丘を滑る板"
+          "text": "惜しい！ サンドボード。ガイドの仕事で教えてるの。砂丘を滑る板"
         },
         {
           "speaker": "hajime",
@@ -221,22 +342,42 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "せっかくドバイに来たなら、砂漠へ行こう。昼なら、ツアーの車に乗せてあげる"
-        },
-        {
-          "speaker": "noor",
-          "face": "normal",
-          "text": "お金はいらない。代わりに、練習台になって"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "練習台？"
+          "text": "せっかくドバイに来たなら、砂漠へ行こう！ これ、すっごく楽しいよ"
         },
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "日本語の練習。板の練習はハジメの方。ね、「ヤクソク」"
+          "text": "最初の一回は、サービス。いつも先生してくれるお礼"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "次からはツアー代ね、6,000円。友だち価格だよ。父には内緒"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……商売上手ですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "そうだよ（便乗）。……あれ、今の使い方、合ってる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "微妙に違います"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "あはは。じゃあ、ヤクソク"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんが、小指を差し出してきた。どこで覚えたのか、指切りだ。"
         },
         {
           "speaker": "hajime",
@@ -245,16 +386,279 @@
         },
         {
           "speaker": "noor",
-          "face": "normal",
-          "text": "大事。頭ばかり使ってると、砂に負ける"
+          "face": "smile",
+          "text": "よし！ 頭ばっかり使ってると、砂に負けるよ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "昼の暇な日に、宿の隣から砂漠へ出かけられるようになった。"
+          "text": "昼の暇な日に、ヌールさんと砂丘へ出かけられるようになった。"
         }
       ],
-      "comment": "導入3回目。砂丘への誘い。読了後、昼の行動として「ヌールと砂丘へ」が地図に出る。"
+      "comment": "♥3で読む誘い（DSR21）。ガイドの仕事のサンドボードへ。初回は無料、2回目からツアー代 6,000円（オーナー指定）。読了で地図に「ヌールと砂丘へ」。"
+    },
+    {
+      "dialogue_id": "ch4_noor_bond_question",
+      "comment": "DSR20（ヒロイン化）の♥3の問い。サンドボードに誘われた後の来店で一度だけ（♥3）。選択肢 bond_q1_noor が実回答（romance 1=恋愛寄り／0=友情）。関係名の札は付けず、ヌールの反応で違いを伝える。大会に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客の少ない時間のカフェ・サーリム。ヌールさんが、片付けの手を止めて向かいに座った。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ねえハジメ。前から聞きたかったこと、聞いてもいい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "なんですか、改まって"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "手帳の宝物、ハジメにもらった言葉がいちばん多いの。先生だから、当たり前だけど"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……ハジメにとって、私って何？ ガイド？ 店の人？ それとも……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんは手帳を閉じて、いつもより少しだけ真面目な顔で、返事を待っている。"
+        },
+        {
+          "type": "choice",
+          "id": "bond_q1_noor",
+          "romance_char": "noor",
+          "choices": [
+            {
+              "text": "「……気になる人、です」",
+              "next": "personal",
+              "romance": 1
+            },
+            {
+              "text": "「大事な友だちです」",
+              "next": "friend",
+              "romance": 0
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "personal": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……気になる人、です"
+          },
+          {
+            "speaker": "noor",
+            "face": "surprise",
+            "text": "……ファッ！？ ……あ、ちが、今のは本当にびっくりした時のやつ"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "そっか。……気になる人。宝物の、いちばん上に書いとく"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ヌールさんは手帳の最初のページを開いて、何かを大きく書き足した。耳が、少し赤い。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（……言ってしまった）"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "大事な友だちです。ここに来るのが、毎日の楽しみなので"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "友だち！ いいね。友だちは、一生モノの宝物"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "じゃあ、友だち価格はずっと続くね、……あはは、冗談"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "（……笑ってくれて、よかった）"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_noor_cafe_4",
+      "comment": "DSR20（ヒロイン化）の♥4。♥3の問いの後。アニメの舞台の町（聖地巡礼）と、日本へ行ったらはじめがガイドをする約束。大会に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カフェ・サーリムの奥の席。ヌールさんが、スマホの写真を見せてくれた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "見て。日本のアニメの、舞台になった町。いつか行きたい場所リスト"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "聖地巡礼ですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "それ！ 「セイチジュンレイ」、……宝物、ひとつ追加"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……ハジメは、いつか日本に帰っちゃうんだよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そうですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "じゃあ、私が日本に行ったら、今度はハジメがガイドね"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "砂の代わりに、ハジメの好きな場所を見せて。ヤクソク"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出された小指は、前より少しだけ長く、はじめの指に絡んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……心臓に悪い。本当に）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_cafe_chat_a",
+      "comment": "カフェ・サーリムの雑談（段階の会話が無い日に順に読む）。大会の話はしない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カフェ・サーリムで一台頼むと、ヌールさんが向かいの席に座った。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "休憩。……ねえハジメ、日本の店でも、常連さんは同じ席に座る？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "座りますね。うちの店にも、いつも同じ席の人がいます"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "世界共通だ。エモい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙の向こうで、ヌールさんは楽しそうに笑っていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_cafe_chat_b",
+      "comment": "カフェ・サーリムの雑談。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店に入ると、ヌールさんが炭を運びながら声をかけてきた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "いらっしゃい！ 今日は父のおまかせ。「おかのした」って言って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……おかのした？"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "「オッケー、かしこまりました」の短い形。感想の欄で覚えた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……それ、人前ではあんまり言わない方がいい気がする）"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "あっ、そっかぁ。じゃあ、ハジメの前だけで言う"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_cafe_chat_c",
+      "comment": "カフェ・サーリムの雑談。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カフェ・サーリムの奥の席は、外より少しだけ涼しい。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ハジメ、見て。今日のお客さんにもらったスタンプ。ドバイのラクダ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "かわいいですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "カワイイ、出た！ 今日のカワイイ、二回目"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "数えてるんですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "宝物だからね。……ハジメのカワイイは、集めがいがある"
+        }
+      ]
     },
     {
       "dialogue_id": "ch4_desert_arrive",
@@ -275,14 +679,24 @@
           "text": "街が遠くなり、窓の外は砂の色だけになった。車は、砂丘の肩へ斜めに上がっていく。"
         },
         {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ハジメ、つかまってて！ ここからが本番。いくゾ〜！"
+        },
+        {
           "speaker": "hajime",
           "face": "surprise",
           "text": "（……飛行機の着陸より、揺れる）"
         },
         {
           "speaker": "noor",
+          "face": "surprise",
+          "text": "あっ、これはまずいですよ！ ……冗談。慣れてる"
+        },
+        {
+          "speaker": "noor",
           "face": "smile",
-          "text": "着いた。ここが私の職場"
+          "text": "着いた！ ここが私の職場"
         },
         {
           "speaker": "",
@@ -296,33 +710,58 @@
         },
         {
           "speaker": "noor",
-          "face": "normal",
-          "text": "でしょ。板を履く前に、約束がひとつ"
+          "face": "smile",
+          "text": "でしょ。はい、板に乗って。足は肩幅"
         },
         {
-          "speaker": "noor",
-          "face": "normal",
-          "text": "転んだら、無理に立たない。砂が止めてくれる"
-        },
-        {
-          "speaker": "noor",
-          "face": "normal",
-          "text": "足は肩幅。目は足元じゃなく、先の砂を見る。岩は黒く見えるから、早めに避ける"
-        },
-        {
-          "speaker": "noor",
-          "face": "normal",
-          "text": "起伏の手前で膝を伸ばすと跳べる。着地の直前に、もう一度膝を曲げる。それだけ"
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんが後ろに回って、肩をぽんと押した。膝の角度まで、手で直される。"
         },
         {
           "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……近い）"
+        },
+        {
+          "speaker": "noor",
           "face": "normal",
-          "text": "それだけ、って……"
+          "text": "目は足元じゃなく、先の砂。岩は黒く見えるから、早めに避ける"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "起伏の手前で膝を伸ばすと跳べる。着地の直前に、もう一度膝を曲げる"
         },
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "あとは砂が教えてくれる。まず低いところで、ゆっくり"
+          "text": "慣れたら、空中でくるっと回ってみて。決まると、すっごく気持ちいいよ"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "転んだら、無理に立たないこと。砂が止めてくれるから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……それだけ、ですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "それだけ！ ……あれ、顔赤いよ？ もう日焼けした？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ひ、日焼けです"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "あはは。じゃあ、まず低いところで練習。本番は、私と競走ね"
         }
       ],
       "comment": "初めての砂丘。この後に DESERT RIDE の練習→本番が始まる。"
@@ -341,9 +780,14 @@
           "text": "今日の砂は速いよ。風紋を見て"
         },
         {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "で、今日も競走する？ 手加減はしないよ。ガチ勢だから"
+        },
+        {
           "speaker": "hajime",
           "face": "smile",
-          "text": "はい、……行ってきます"
+          "text": "……受けて立ちます"
         }
       ],
       "comment": "2回目以降の砂丘。短く本番へ。"
@@ -359,7 +803,7 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "お疲れさま。座って。この時間のために来てるようなものだから"
+          "text": "お疲れさま！ 座って座って。この時間のために、ここに来てるようなものだから"
         },
         {
           "speaker": "",
@@ -384,7 +828,22 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "単純なのが一番長く続くの。ツアーも、父の煙も"
+          "text": "単純なのが一番長く続くの。ツアーも、父の店の煙も"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんが手を伸ばして、はじめの髪についた砂を払った。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "砂まみれ。日本まで、持って帰るつもり？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……心臓に悪い）"
         },
         {
           "speaker": "hajime",
@@ -409,7 +868,7 @@
           {
             "speaker": "noor",
             "face": "smile",
-            "text": "顔が変わった。来た日より、ずっといい"
+            "text": "来た日より、ずっといい顔になった"
           },
           {
             "speaker": "hajime",
@@ -418,8 +877,8 @@
           },
           {
             "speaker": "noor",
-            "face": "normal",
-            "text": "砂のおかげ。あとは、ハジメのシーシャの番。……でも今日は、もう砂の話だけ"
+            "face": "smile",
+            "text": "砂のおかげ。あとは、ハジメのシーシャの番。……でも今日は、もう砂の話だけね"
           }
         ],
         "after_tournament": [
@@ -457,8 +916,18 @@
         },
         {
           "speaker": "noor",
+          "face": "surprise",
+          "text": "……え、今の、もう一回言って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え？ 教え方が、いい……"
+        },
+        {
+          "speaker": "noor",
           "face": "smile",
-          "text": "「ジョウズ」。それ、新しい日本語ね"
+          "text": "ふふ。日本語、ひとつもらった。宝物にする"
         },
         {
           "speaker": "",
@@ -469,12 +938,148 @@
       "comment": "2回目以降の砂丘のあと。"
     },
     {
+      "dialogue_id": "ch4_desert_race_first_win",
+      "comment": "初めて競走でヌールに勝った外出で1回だけ。滑り終えて砂丘を下りたあと、夕日の会話の前（DSR15）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ゴールの旗を越えて振り返ると、少し遅れてヌールさんが滑り込んできた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "ファッ！？ ……うそ。今の、私、本気だったよ！？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "砂を見てただけです"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "それ、私の台詞！ ……もう、悔しい！"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "負けは負け。帰りに、カラク・チャイをおごる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "そんな決まり、ありました？"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "今決めた。……次は負けないからね、ハジメ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_desert_naru_arrive",
+      "comment": "DSR22: ヌールに初めて勝った後の外出で一度だけ。到着の会話のあと、なる（裏の相手）が砂丘に来て勝負を持ちかける。大会前後で一言を分ける。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "砂丘に着くと、見覚えのある銀色の頭が、板を抱えて待っていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "よう。ヌールさんに勝ったんだって？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "なる！？ なんでここに"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "宿のロビーにチラシがあった。「日本の子に負けた。挑戦者求む」って"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "書いた！ ライバル登場ってやつ。ハジメの友だちでしょ？"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "板は初めてだけどな。……滑り方は、ここで全部見てた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……なるの「全部見てけ」は、見る側も本気だ）"
+        },
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 4,
+          "next_true": "after_tournament",
+          "next_false": "before_tournament"
+        }
+      ],
+      "branches": {
+        "before_tournament": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "一本、勝負しようぜ。本番前の、いい肩慣らしだ"
+          }
+        ],
+        "after_tournament": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "一本、勝負しようぜ。大会の打ち上げ代わりだ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_desert_naru_first_win",
+      "comment": "DSR22: 初めてなるに勝った外出で一度だけ。砂丘を下りたあと、夕日の会話の前。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ゴールで振り返ると、なるが砂の上に大の字になっていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……あー、くそ。悔しい"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "でも最後の回転は、見てても真似できねえわ。いい滑りだった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "なるが悔しがるの、久しぶりに見た"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "言ってろ。次は、負けねえ"
+        }
+      ]
+    },
+    {
       "dialogue_id": "venue_noor_result_S",
       "lines": [
         {
           "speaker": "noor",
-          "face": "smile",
-          "text": "完璧。砂が、ハジメの味方をした"
+          "face": "surprise",
+          "text": "やりますねぇ！ ……ちょっと、見とれちゃった"
         }
       ]
     },
@@ -484,7 +1089,7 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "いい滑り！　最後まで砂を見てたね"
+          "text": "いい滑り！ 最後まで、ちゃんと砂を見てたね"
         }
       ]
     },
@@ -493,8 +1098,8 @@
       "lines": [
         {
           "speaker": "noor",
-          "face": "normal",
-          "text": "転んでも立てた。それが一番大事"
+          "face": "smile",
+          "text": "転んでも、すぐ立てた。えらいえらい"
         }
       ]
     },
@@ -504,7 +1109,40 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "砂に負けた日。でも、砂は明日も待ってる"
+          "text": "砂に負けた日。大丈夫、砂は明日も待ってる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_noor_race_win",
+      "comment": "競走でヌールに勝った完走のあとのひとこと（ランクのひとことの代わり）。",
+      "lines": [
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "ファッ！？ ……悔しいけど、今日は私の負け"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_naru_race_win",
+      "comment": "DSR22: なるに勝った完走のあとのひとこと。",
+      "lines": [
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……くっそ、負けた！ ……いい滑りだったぜ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_naru_race_lose",
+      "comment": "DSR22: なるに負けた完走のあとのひとこと。",
+      "lines": [
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "まだまだだな。回るなら、もっと高く跳べ"
         }
       ]
     }

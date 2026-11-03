@@ -30,11 +30,11 @@ CHROME_BIN=/usr/bin/chromium SHOTS=/tmp/portrait-qa node remake/test/portrait_un
 
 ## 2026-10-10の実制作で優先する指定
 
-- 対象はつむぎ7、サメちゃん6、上園5、スミさん5、ましろ6、南雲5の計34表情。各原画は無加工で保存し、人物1300px以上・透過・元絵との原寸比較を検品する。ゲーム用は896×1200のまま、元の人物高と足元に合わせて縮小・配置する。
+- 対象はつむぎ7、サメちゃん6、上園5、スミさん5、ましろ6、須井5の計34表情。各原画は無加工で保存し、人物1300px以上・透過・元絵との原寸比較を検品する。ゲーム用は896×1200のまま、元の人物高と足元に合わせて縮小・配置する。
 - つむぎはPU05により頭身変更を撤回。元の大きめの丸い頭、小柄な体格、短い胴と脚へ戻し、解像度と画風だけをそろえる。参照②にも元の通常絵を使い、体格を変えた候補から再生成を重ねない。
 - ましろはPU04により少し大きめの丸い顔・ふっくらした頬・眠そうな可愛さを優先。以前の8%縮小は強制しない。
 - 色は常に各表情の元のランタイム画像を基準にする。生成候補を色の基準にして、繰り返すたびに薄くしない。採用原画への後付けの彩度・明度加工は行わない。
-- 実際に使った参照の役割は `generation.json` が正本。女性はみんと・アゲハ、男性はアダム・みんとを参照する。旧調査・旧ひな形にある凛参照や±10%判定より、PU04・PU05と実行記録を優先する。
+- 実際に使った参照の役割は `generation.json` が正本。女性はみんと・あげは、男性はアダム・みんとを参照する。旧調査・旧ひな形にあるくゆり参照や±10%判定より、PU04・PU05と実行記録を優先する。
 
 以下は依頼を作成した2026-10-09時点の調査とひな形。原画の旧解像度や旧目標は履歴として残す。
 
@@ -44,11 +44,11 @@ CHROME_BIN=/usr/bin/chromium SHOTS=/tmp/portrait-qa node remake/test/portrait_un
 表示倍率は全員ほぼ同じ（はじめ＝1.00 に対して 0.90〜1.03）なので、差の原因は**生成した原画の解像度**。
 
 - 5表情を**横1枚のシート**で作ったキャラは、人物1人が高さ約800〜880pxしかない。それをゲーム用の896×1200へ**1.2〜1.4倍に引き伸ばした**ため、線が太めで少しぼやける。
-- **1人ずつ縦長**で作ったキャラ（凛・サメちゃん）や、引き伸ばしの少ないキャラ（つむぎ・みんと）はくっきりしている。
+- **1人ずつ縦長**で作ったキャラ（くゆり・サメちゃん）や、引き伸ばしの少ないキャラ（つむぎ・みんと）はくっきりしている。
 
 | キャラ | 原画の人物の高さ | ゲーム用の高さ | 引き伸ばし | 表示1単位あたりの原画の細かさ（大きいほど精細） | 判定 |
 |---|---|---|---|---|---|
-| 凛 | 1407px（1人ずつ縦長） | 1004px | 0.71倍（縮小） | 1450 | 基準より精細 |
+| くゆり | 1407px（1人ずつ縦長） | 1004px | 0.71倍（縮小） | 1450 | 基準より精細 |
 | サメちゃん | 925px | 913px | 0.99倍 | 1016 | 基準 |
 | つむぎ | 886px | 878px | 0.99倍 | 1007 | 基準 |
 | みんと（私服） | 887px | 948px | 1.07倍 | 975 | 基準 |
@@ -58,16 +58,16 @@ CHROME_BIN=/usr/bin/chromium SHOTS=/tmp/portrait-qa node remake/test/portrait_un
 | 博士 | 877px | 1098px | 1.25倍 | 860 | 対象B |
 | アダム | 871px | 1056px | 1.21倍 | 846 | 対象B |
 | 上園 | 819px | 1116px | **1.36倍** | 836 | **対象A（目で見ても一番ぼやける）** |
-| 南雲 | 846px | 1119px | **1.32倍** | 821 | **対象A** |
+| 須井 | 846px | 1119px | **1.32倍** | 821 | **対象A** |
 | スミさん | 852px | 1079px | **1.27倍** | 811 | **対象A** |
 
 - 「表示1単位あたりの原画の細かさ」＝原画の人物の高さ ÷ spriteScale。画面上で同じ高さに換算したときの描き込みの量。
-- みんと営業姿・アゲハ・パッキーは原画シートがリポジトリに無く未計測（同時期のみんと私服から、引き伸ばしは小さいと推定）。依頼対象には入れていない。
+- みんと営業姿・あげは・パッキーは原画シートがリポジトリに無く未計測（同時期のみんと私服から、引き伸ばしは小さいと推定）。依頼対象には入れていない。
 - 身長は今回 `data/dialogue/samechan.json` のサメちゃんの `spriteScale` を 1 → 0.91（156cm）へ直し、全員が身長設定どおりになった。背比べ図は [height-lineup.png](../../reference-sheets/height-lineup.png)。**画質の作り直しでは身長・表示倍率は変えない。**
 
 ## 依頼の方針（2026-10-09 オーナー決定で更新）
 
-**画質・顔の大きさ・画風を1回の作り直しでまとめて直す。** 対象は、ゲーム画面での顔の大きさが中央値から±10%を超える6人：つむぎ・上園・スミさん・ましろ（大きい）、南雲・サメちゃん（小さい）。画風はみんと・アゲハに合わせる（サメちゃんのつやの強い塗り、上園の平たい塗りを基準へ）。
+**画質・顔の大きさ・画風を1回の作り直しでまとめて直す。** 対象は、ゲーム画面での顔の大きさが中央値から±10%を超える6人：つむぎ・上園・スミさん・ましろ（大きい）、須井・サメちゃん（小さい）。画風はみんと・あげはに合わせる（サメちゃんのつやの強い塗り、上園の平たい塗りを基準へ）。
 顔の大きさの比較は [face-size-ingame.png](../../reference-sheets/face-size-ingame.png)。完成版のプロンプト（34表情）は [prompts.md](prompts.md)。
 
 1. **1回の生成で1人・1表情**。縦長（約1085×1450）で、人物の高さを**1300px以上**にする。
@@ -81,7 +81,7 @@ CHROME_BIN=/usr/bin/chromium SHOTS=/tmp/portrait-qa node remake/test/portrait_un
 |---|---|---|
 | 1 | 対象の表情の現行PNG `assets/sprites/characters/<id>/chr_<id>_<face>.png` | **最優先。** 人物・表情・ポーズ・衣装・頭身をこのとおりに |
 | 2 | 同じキャラの通常 `chr_<id>_normal.png` | 顔の同一性の補助（通常の依頼では1と同じなので省略可） |
-| 3 | 凛 `assets/sprites/characters/rin/chr_rin_normal.png` | **画質・線の細かさだけ**の参照（1人ずつ高解像度で作った例） |
+| 3 | くゆり `assets/sprites/characters/rin/chr_rin_normal.png` | **画質・線の細かさだけ**の参照（1人ずつ高解像度で作った例） |
 | 4 | みんと `assets/sprites/characters/minto/chr_minto_normal.png` | **画質・陰影の段階だけ**の参照（採用済みの基準） |
 
 3・4の顔・髪・体型・衣装は写さない。
@@ -112,7 +112,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
   - surprise：`round open eyes, small O-shaped mouth, SCREEN-LEFT palm raised, SCREEN-RIGHT hand in pocket`
   - excited：`both eyes open, big delighted open-mouth grin, SCREEN-LEFT fist near shoulder, SCREEN-RIGHT fist near waist, leaning forward slightly`
 
-**南雲**（5表情：normal / smile / serious / surprise / thinking）
+**須井**（5表情：normal / smile / serious / surprise / thinking）
 - CHARACTER LINE：`Nagumo, 45-year-old stern Japanese male executive and judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.`
 - EXPRESSION LINE：各表情の現行画像のとおり（顔・手の位置を画像1から読み取る）と書く。
 
@@ -126,7 +126,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 - [ ] 原画の人物の高さが1300px以上。透過がきれい（手足の間も）
 - [ ] 現行画像と並べて、顔・表情・手と肩の位置・衣装・小物・頭身が変わっていない（重ねて見比べる）
-- [ ] 線が細くくっきりし、ぼやけ・のっぺり・粗いドット・AI的な艶が出ていない（凛・みんとと原寸で比べる）
+- [ ] 線が細くくっきりし、ぼやけ・のっぺり・粗いドット・AI的な艶が出ていない（くゆり・みんとと原寸で比べる）
 - [ ] 1キャラの5枚が同じ人物に見える
 
 ## 受け取った後（こちら側）

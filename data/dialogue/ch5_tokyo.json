@@ -1,25 +1,39 @@
 {
-  "comment": "第5章の東京（#2033 D）。勝負の日を決める前の自由行動で、新幹線で東京へ行き、mukaiの屋根裏に好きなだけ泊まれる（オーナー指定 2026-11-02）。ましろ（ヒロイン）は第5章の会話に出さない。久世は第3章の後に福岡へ戻ったので、煙幕は出さない。報酬は台詞に書かず、chapters/ch5-tokyo.js が付ける。",
+  "comment": "第5章の東京（#2033 D）。勝負の日を決める前の自由行動で、Dr.fookah の配送便（問屋街から東京店へ葉を運ぶ車）に乗せてもらって東京へ行き、mukaiの屋根裏に好きなだけ泊まれる（オーナー指定 2026-11-02。配送便は FIN13 オーナー「東京は配送便で」: 運賃はかからず、昼に出て夜に着く）。乗せてくれるのは名前の無い Dr.fookah の店員（ch5_tokyo_van_first）。ましろ（ヒロイン）は第5章の会話に出さない。久世は第3章の後に福岡へ戻ったので、煙幕は出さない。報酬は台詞に書かず、chapters/ch5-tokyo.js が付ける。",
   "dialogues": [
+    {
+      "dialogue_id": "ch5_tokyo_van_first",
+      "comment": "最初に「東京へ（配送便）」を選んだ日だけ。Dr.fookah（問屋街）の1階。店員は名前の無いモブ（くゆり・2階の場面は出さない）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "Dr.fookahで、店員が葉の箱を台車に積んでいた。裏の車で、東京店へ運ぶ便だという。" },
+        { "speaker": "shop_clerk", "face": "", "text": "東京へ行くなら、助手席が空いてますよ。乗っていきます？" },
+        { "speaker": "hajime", "face": "surprise", "text": "いいんですか？" },
+        { "speaker": "shop_clerk", "face": "", "text": "世界大会のあと、はじめさんの使った葉はどれかって、よく聞かれるんです" },
+        { "speaker": "shop_clerk", "face": "", "text": "そのお礼です。途中で何軒か寄るので、着くのは夜になりますけど" },
+        { "speaker": "hajime", "face": "smile", "text": "十分です。荷下ろし、手伝います" },
+        { "speaker": "", "face": "", "text": "昼に出る便なら、いつでも乗せてもらえることになった。" }
+      ]
+    },
     {
       "dialogue_id": "ch5_tokyo_go",
       "lines": [
-        { "speaker": "", "face": "", "text": "橙須の駅で、東京行きの新幹線に乗った。" },
-        { "speaker": "", "face": "", "text": "窓の外を、田んぼと工場の屋根が流れていく。" },
+        { "speaker": "", "face": "", "text": "Dr.fookahの配送の車に乗せてもらい、東京へ向かった。" },
+        { "speaker": "", "face": "", "text": "途中の店で箱を降ろすのを手伝ううちに、窓の外が暗くなっていく。" },
         { "speaker": "hajime", "face": "normal", "text": "（着いたら、まずmukaiに顔を出そう）" }
       ]
     },
     {
       "dialogue_id": "ch5_tokyo_back",
       "lines": [
-        { "speaker": "", "face": "", "text": "東京駅から、帰りの新幹線に乗った。" },
-        { "speaker": "", "face": "", "text": "窓の外が、少しずつ見慣れた景色に変わっていく。" }
+        { "speaker": "", "face": "", "text": "東京店の裏で、帰りの配送の車に乗せてもらった。" },
+        { "speaker": "", "face": "", "text": "空になった箱を積んで、車は高速を西へ走る。" },
+        { "speaker": "", "face": "", "text": "見慣れた街の明かりが見えた頃には、もう夜だった。" }
       ]
     },
     {
       "dialogue_id": "ch5_tokyo_arrival",
       "lines": [
-        { "speaker": "", "face": "", "text": "高架下の商店街を抜けて、mukaiの戸を開けた。コーヒーの匂いがする。" },
+        { "speaker": "", "face": "", "text": "東京店で箱を降ろし終えて、高架下のmukaiの戸を開けた。コーヒーの匂いがする。" },
         { "speaker": "mukai_master", "face": "normal", "text": "はじめくん。久しぶりだな" },
         { "speaker": "hajime", "face": "smile", "text": "ご無沙汰してます。しばらく、こっちの店も見て回りたくて" },
         { "speaker": "mukai_master", "face": "normal", "text": "泊まる所は決めてるのか" },

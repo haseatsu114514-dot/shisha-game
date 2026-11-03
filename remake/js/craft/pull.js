@@ -1,3 +1,4 @@
+import { startNaruFinish, recordNaruFinish } from "../core/naru-finish.js";
 import { craftContext } from "./context.js";
 import { state } from "../core/state.js";
 import { growthPerks, growthFeature, useGrowthInsurance, growthSkill, growthLesson, growthCritical, settleGrowthPhase, LESSON_TUNING, SKILL_TUNING } from "../core/growth-effects.js";
@@ -92,12 +93,12 @@ export function careStartTemp(cs) {
 const MODES = {
   pull: {
     store: "pull", title: "吸い出し", min: 2, safe: 3, drift: false, serveLabel: "提供する",
-    hint: "右で温度を上げ、左で下げる。中央はキープ。吸い終えてから次の針を止めよう。緑の範囲で味を整える。低めと高めで表情が変わる葉もある。蒸らしで集中できたほど針はゆっくり動く",
+    hint: "右で温度を上げ、左で下げる。中央のキープは左寄りで微減、右寄りで微増。雨の日は熱が入りにくいので、温度が下がったら熱を入れる吸いを増やそう。吸い終えてから次の針を止めよう。緑の範囲で味を整える。低めと高めで表情が変わる葉もある。蒸らしで集中できたほど針はゆっくり動く",
     start: startTemp, focus: pullFocusFromSteam,
   },
   care: {
     store: "care", title: "熱管理", min: 1, safe: 2, drift: true, serveLabel: "整え終える",
-    hint: "立ち上げから吸われ続けた炭は消耗して、温度が下がっていく。まず交換する炭の数を決める。替える炭は最初の炭焼きのときに一緒に焼いておいたもので、トングで持ってきて入れ替える。最初の炭焼きの焼け具合が良いほど温度がしっかり戻り、長く持つ。ダイヤルは吸い出しと同じで、キープなら温度を保てる。炎の印まで上がって焦げても、雪の印まで冷え切っても、その一台はダメになる",
+    hint: "立ち上げから吸われ続けた炭は消耗して、温度が下がっていく。まず交換する炭の数を決める。替える炭は最初の炭焼きのときに一緒に焼いておいたもので、トングで持ってきて入れ替える。最初の炭焼きの焼け具合が良いほど温度がしっかり戻り、長く持つ。ダイヤルは吸い出しと同じで、中央のキープは左寄りで微減、右寄りで微増。雨の日は熱を入れる吸いを増やそう。炎の印まで上がって焦げても、雪の印まで冷え切っても、その一台はダメになる",
     start: careStartTemp, focus: () => ({ slow: 1, window: 1 }),
   },
 };
@@ -118,7 +119,11 @@ async function pullGame(cs, mode) {
   await waitBenchReady(cs, mode.store);
   if(state!==owner)return false;
   const tutorial = cs.mode === "tutorial";
+  if (mode.store === "pull" && !cs.pullDone) startNaruFinish(cs, growthLesson(state, "M-W3"));
   const context=craftContext(cs);
+  // 提供ボタンの実ラベル。吸い出しでも「提供」画面でないとき（チュートリアル・試し吸い等）は「確かめる」。
+  // 吸い切りの案内文も必ずこの実ラベルを指すよう、ボタンと同じ値から文言を作る。
+  const serveBtnLabel = mode.store === "pull" && context.title !== "提供" ? "確かめる" : mode.serveLabel;
   // 葉が傷むと適温帯が細くなるので、ダメージのたびに bands/ideal を取り直す。中心は動かないので一度だけ。
   let bands = temperatureBands(cs), ideal = bands.ideal;
   const center = bands.center;
@@ -127,7 +132,7 @@ async function pullGame(cs, mode) {
   // 熱すぎる吸引のペナルティも、緑上端〜危険帯の中の同じ相対位置で始める。
   const harshTemp = visualTemperature(.76, bands);
   const panel = stepPanel(mode.store, mode.title, tutorial
-    ? "中央のキープで温度を保つ。右の熱を入れる吸いは温度を上げ、左の熱を逃がす吸いは温度を下げる。吸い終わってから次の針を止める"
+    ? "中央のキープは左寄りで微減、右寄りで微増。右の熱を入れる吸いは温度を上げ、左の熱を逃がす吸いは温度を下げる。雨の日は熱を入れる吸いを増やそう。吸い終わってから次の針を止める"
     : mode.hint);
   const gameClock = createCraftClock(panel);
   const concentration = mode.focus(cs);
@@ -150,7 +155,7 @@ async function pullGame(cs, mode) {
   const wobble = () => (mode.drift ? conditions.sparsity * 0.05 * Math.sin(elapsed * Math.PI * 2 / 2.6) + 0.014 * (1 - 0.7 * clarity) * Math.sin(elapsed * 1.7 + wobblePhase) : 0);
 
   // ---- 画面
-  const thermometer = buildThermometer({ cs, coldLimit: mode.drift ? COLD_OUT : null, height: 360, width: 64 });
+  const thermometer = buildThermometer({ cs, finishGuide: mode.store === "pull", coldLimit: mode.drift ? COLD_OUT : null, height: 360, width: 64 });
   // SVGの縦横比を保ち、針・リングを同じ中心で回す。
   const id = ++dials;
   const dial = el("div.pull-dial", { html: `<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
@@ -164,6 +169,7 @@ async function pullGame(cs, mode) {
     <path class="dial-ring" d="${dialSector(0, 1)}" fill="url(#dial-grad-${id})"/>
     <path class="dial-shade" d="${dialSector(0, 1)}" fill="url(#dial-shade-${id})"/>
     <path class="dial-gloss" d="${dialSector(0, 1, DIAL.r1 - 18, DIAL.r1)}"/>
+    ${[ZONES[0].to, ZONES[1].to].map((p) => `<path class="pg-divider" d="M${dialPoint(p, DIAL.r0 - 4)}L${dialPoint(p, DIAL.r1 + 2)}"/>`).join("")}
     ${ZONES.map((z) => `<g class="pg-zone z-${z.id}"><path class="pg-sense-extra"/><path class="pg-just"/></g>`).join("")}
     <path class="dial-rim" d="${dialSector(0, 1)}"/>
     <g class="pg-needle" data-test="pull-needle">
@@ -175,13 +181,17 @@ async function pullGame(cs, mode) {
     <circle class="dial-pivot-rim" cx="${DIAL.cx}" cy="${DIAL.cy}" r="9"/>
     <circle class="dial-pivot" cx="${DIAL.cx}" cy="${DIAL.cy}" r="5"/>
   </svg>` });
-  const labels = el("div.pull-dial-labels", ZONES.map(z => el(`div.pull-zone-label.l-${z.id}`, [
+  const labels = el("div.pull-dial-labels", ZONES.filter(z => z.id !== "keep").map(z => el(`div.pull-zone-label.l-${z.id}`, [
     el("b", { text: z.id === "keep" ? z.label : `${z.mark} ${z.label}` }),
     el("span", { text: z.id === "keep" ? "この温度を維持" : z.id === "down" ? "温度を下げる" : "温度を上げる" }),
   ].filter(Boolean))));
   if (effectVisible("sense")) dial.append(effectBadge("sense", "感"));
   if (effectVisible("technique")) dial.append(effectBadge("technique", "技"));
-  const dialRow = el("div.pull-dial-row", [dial, labels]);
+  const currentZoneLabel = el("b", { text: "熱を逃がす吸い" });
+  const currentZone = el("div.pull-current-zone", { dataset: { test: "pull-current-zone" } }, [
+    el("small", { text: "針の現在位置" }), currentZoneLabel,
+  ]);
+  const dialRow = el("div.pull-dial-row", [dial, labels, currentZone]);
   const needle = dial.querySelector(".pg-needle");
   const justs$ = [...dial.querySelectorAll(".pg-just")];
   const senseExtras = [...dial.querySelectorAll(".pg-sense-extra")];
@@ -198,6 +208,10 @@ async function pullGame(cs, mode) {
   const moveNeedle = (at) => {
     needle.setAttribute("transform", `rotate(${((at - 0.5) * 180).toFixed(2)} ${DIAL.cx} ${DIAL.cy})`);
     needle.dataset.pos = (at * 100).toFixed(2);
+    const zone = ZONES.find(z => at >= z.from && at <= z.to) || ZONES[1];
+    currentZone.dataset.zone = zone.id;
+    const label = zone.id === "keep" ? at < .5 ? "キープ左・微減" : "キープ右・微増" : zone.label;
+    if (currentZoneLabel.textContent !== label) currentZoneLabel.textContent = label;
   };
   moveNeedle(0);
   // 回数の点は表示しない（TH80）。炭・雨・少穴だけ短い札に残す。
@@ -213,7 +227,7 @@ async function pullGame(cs, mode) {
     text:"味の名前を伏せる",title:"白紙の味カード。審査員の受け止めの振れ幅が大きくなる",dataset:{test:"pull-blind"},"aria-pressed":String(!!cs.blindService),
     onclick:()=>{if(state!==owner||drawing||finished)return;cs.blindService=!cs.blindService;blindBtn.setAttribute("aria-pressed",String(cs.blindService));},
   }):null;
-  const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.pull-serve-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 48 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="23" width="8" height="14" rx="1.5"/><path d="m11 26 7-6c1-1 3-1 4-1h6c2 0 3 1 3 3s-1 3-3 3h-7M11 34h16c2 0 4-1 6-2l10-7c2-1 3-4 1-6s-3-1-5 0l-8 6"/></svg>' }), el("span.btn-label", { text: mode.store==="pull"&&context.title!=="提供"?"確かめる":mode.serveLabel })]);
+  const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.pull-serve-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 48 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="23" width="8" height="14" rx="1.5"/><path d="m11 26 7-6c1-1 3-1 4-1h6c2 0 3 1 3 3s-1 3-3 3h-7M11 34h16c2 0 4-1 6-2l10-7c2-1 3-4 1-6s-3-1-5 0l-8 6"/></svg>' }), el("span.btn-label", { text: serveBtnLabel })]);
   // 吸った回数の点。無傷で吸える回数を超える点は橙の枠で、吸いすぎの範囲だと分かるようにする。
   const pips = Array.from({ length: MAX_PULLS }, (_, i) => el(`i.pull-pip${i >= mode.safe ? ".over" : ""}`, { "aria-hidden": "true" }));
   const pullCount = el("b.pull-count-num");
@@ -386,7 +400,7 @@ async function pullGame(cs, mode) {
         animation.finished.then(()=>ring.remove(),()=>ring.remove());
       }
       const overdone = pulls > safeLimit;
-      const exhaustedAdvice = tutorial && pulls >= MAX_PULLS ? `吸うのはここまでだ。「${mode.serveLabel}」で次へ進もう` : "";
+      const exhaustedAdvice = tutorial && pulls >= MAX_PULLS ? `吸うのはここまでだ。「${serveBtnLabel}」で次へ進もう` : "";
       reactAudience(cs, isIdealTemperature(T, bands) ? "good" : Math.abs(T - center) > Math.abs(before - center) ? "bad" : "good",
         { text: exhaustedAdvice, force: !!exhaustedAdvice });
       thermometer.pop(z.id === "keep" ? z.mark : isJust ? z.mark.repeat(2) : z.mark, z.id);
@@ -553,7 +567,7 @@ async function pullGame(cs, mode) {
     cs.failed = failed;
     scoreStep(cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, 0);
     if (failed === "burnt") cs.burnt = true;
-    if (mode.store === "pull") { cs.pullDone = true; refreshBench(); }
+    if (mode.store === "pull") { cs.pullDone = true; recordNaruFinish(cs, bands, { automatic: !!autoSkill() }); refreshBench(); }
     tickerSay(text.ticker);
     await resultCard(panel, { title: text.title, lines: [text.line, waterComfortLine(cs.water), `${pulls}回吸った`] });
     return true;
@@ -568,12 +582,14 @@ async function pullGame(cs, mode) {
   scoreStep(cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, score, mode.title);
   if (mode.store === "pull") {
     cs.pullDone = true;
+    const naruFinished = recordNaruFinish(cs, bands, { automatic: !!autoSkill() });
     refreshBench();
     tickerSay(inZone ? "パッキー「きた〜！ 煙の立ち方が変わりましたよ〜♪」" : "パッキー「おっと、ちょっと温度が怪しいか〜！？」");
     await resultCard(panel, {
       title: context.title,
       summary: [context.summary],
       lines: [
+        ...(naruFinished ? ["焼き際を見極めた。仕上げの評価に小さな手応え"] : []),
         inZone && bands.expressionWeight >= .999 ? "適温で、味の表情を整えられた" : optimal ? "最適温に合わせられた" : inZone ? "適温に整えられた" : T > ideal[1] ? "少し熱いままだった" : "まだぬるかった",
         tasteCard,
         waterComfortLine(cs.water),

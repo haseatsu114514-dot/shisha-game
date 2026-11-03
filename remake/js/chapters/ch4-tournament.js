@@ -2,6 +2,9 @@
 import { state, save } from "../core/state.js";
 import { loadTournamentCraftDialogue } from "../core/data.js";
 import { awardTournamentExp } from "../core/growth.js";
+import { maxStamina } from "../core/stats.js";
+import { chooseRetryAssist } from "./retry-assist.js";
+import { applyAssistRecovery } from "./tournament-resources.js";
 import { play } from "../vn/engine.js";
 import { modal, retireScreen } from "../core/ui.js";
 import { playBgm } from "../core/audio.js";
@@ -18,7 +21,7 @@ import { block, clearComments } from "../craft/broadcast.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { showChapterFourStandings } from "./ch4-standings.js";
-import { chapterFourMatch, startChapterFourCraft, recoverChapterFourStep,
+import { chapterFourMatch, startChapterFourCraft, recoverChapterFourStep, chapterFourRetryContext,
   beginChapterFourStep, finishChapterFourStep, chapterFourStandings } from "./ch4-tournament-state.js";
 import { chapterFourCraftAdvice, chapterFourCustomerLines } from "./ch4-verdict.js";
 
@@ -37,7 +40,14 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
   requireCurrent();
   const p = recoverChapterFourStep(state);
   if (!p.craft && !p.result) {
+    // 第1〜3章と同じ補助を次の一台だけに適用。中断再開では聞き直さない。
+    const retry = chapterFourRetryContext(state);
+    const assisted = await chooseRetryAssist(retry, () => live() && !p.craft && !p.result);
+    requireCurrent();
+    if (assisted === null) return false;
+    applyAssistRecovery(state, assisted, maxStamina());
     const cs = newSession("tournament");
+    cs.retryAssist = assisted === true;
     cs.eventTitle = "HAZE: GRAND SMOKE";
     cs.eventNote = "世界大会・一台を二度調整";
     if (!startChapterFourCraft(state, cs)) throw new Error("世界大会の開始地点を確認できません");
@@ -48,8 +58,12 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
     // 制作中の掛け合い（#2031）。工程の前に一度だけ読み、既読は制作保存に残す（再挑戦では最初から）。
     const event = p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : TOURNAMENT_STORY_STEPS.get(p.step);
     if (event && !p.craft.tournamentStory?.seen?.includes(event)) {
-      const rank = chapterFourStandings(p).find(row => row.id === "hajime")?.rank ?? null;
-      const told = await playTournamentEvent(p.craft, event, { context: { rank } });
+      // 台本は直前に見せた途中順位と同じ並び（はじめの順位・先頭・先頭と同じ持ち点か）だけを語る。
+      const rows = chapterFourStandings(p);
+      const me = rows.find(row => row.id === "hajime"), top = rows[0];
+      const context = { rank: me?.rank ?? null, leader: top?.id ?? null,
+        tied: rows[1]?.points === top?.points, level: me?.points === top?.points };
+      const told = await playTournamentEvent(p.craft, event, { context });
       requireCurrent();
       if (!told) return false;
       save();

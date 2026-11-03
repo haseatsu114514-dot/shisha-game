@@ -10,6 +10,51 @@
   ],
   "suites": [
     {
+      "id": "ch2-tournament-actions",
+      "title": "Chapter 2 tournament action session and error recovery",
+      "kind": "quick",
+      "run": [
+        "node --experimental-vm-modules remake/test/ch2_tournament_actions.mjs"
+      ]
+    },
+    {
+      "id": "craft-rank-hud",
+      "title": "Craft rank display-only snapshots, accessibility and lifecycle",
+      "kind": "quick",
+      "run": [
+        "node --experimental-vm-modules remake/test/craft_rank_hud.mjs"
+      ]
+    },
+    {
+      "id": "craft-rank-hud-browser",
+      "title": "Isolated craft rank header on PC, landscape touch and DS",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/craft/rank-hud.js",
+        "remake/js/craft/progress.js",
+        "remake/js/core/util.js",
+        "remake/css/craft-rank.css",
+        "remake/css/craft.css",
+        "remake/css/craft-header.css",
+        "remake/css/craft-paper.css",
+        "remake/css/game-ds.css",
+        "remake/craft-rank-preview.html",
+        "remake/test/browser/craft_rank_hud.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/craft_rank_hud.mjs"
+      ],
+      "chrome": "playwright"
+    },
+    {
+      "id": "naru-finish",
+      "title": "Naru finishing temperature, catalog balance and SAVE/LOAD",
+      "kind": "quick",
+      "run": ["node remake/test/naru_finish.mjs"]
+    },
+    {
       "id": "ch1-victory-resume-2190",
       "title": "Chapter 1 victory SAVE/LOAD backgrounds, resources and sentence boundaries",
       "kind": "quick",
@@ -136,6 +181,12 @@
       "run": ["node remake/test/kuji_sell_guard.mjs"]
     },
     {
+      "id": "kuji-tiers-kj02",
+      "title": "Kuji tiers by chapter, gear prizes and duplicate cash (KJ02)",
+      "kind": "quick",
+      "run": ["node remake/test/kuji_tiers.mjs"]
+    },
+    {
       "id": "growth-levelup-browser",
       "title": "Growth HUD gauge, EXP chip, night level-up and hidane badge (?growth=1)",
       "kind": "browser",
@@ -189,6 +240,28 @@
       ]
     },
     {
+      "id": "roamers",
+      "title": "People who drop by other shops: plan, map faces, talk, once a day (roamers)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/roamers.js",
+        "remake/js/daily/spot-people.js",
+        "remake/js/daily/calendar.js",
+        "remake/js/chapters/ch2-preparation.js",
+        "remake/js/chapters/ch3-tokyo-daily.js",
+        "remake/js/chapters/ch3-outing-progress.js",
+        "data/dialogue/roaming_guests.json",
+        "data/dialogue/ch5_main.json",
+        "remake/test/browser/roamers.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/roamers.mjs"
+      ]
+    },
+    {
       "id": "board-tutorial",
       "title": "Growth board first-time tutorial and starter fire (board_tutorial)",
       "kind": "browser",
@@ -204,6 +277,24 @@
       ],
       "run": [
         "node remake/test/browser/board_tutorial.mjs"
+      ]
+    },
+    {
+      "id": "growth-board-denominator",
+      "title": "Growth board, status and menu share one stat denominator statTotal (#2444)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/growth-board.js",
+        "remake/js/daily/growth-board-screen.js",
+        "remake/js/daily/status.js",
+        "remake/js/daily/menu.js",
+        "remake/test/browser/growth_board_denominator.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/growth_board_denominator.mjs"
       ]
     },
     {
@@ -475,9 +566,11 @@
         "node remake/test/camel_race_model.mjs",
         "node remake/test/ch4_camel_race.mjs",
         "node remake/test/ch4_dubai_cafe.mjs",
+        "node remake/test/ch4_dubai_local.mjs",
         "node remake/test/ch4_longlong.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node remake/test/ch5_party.mjs",
+        "node remake/test/ch5_travel.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
         "node remake/test/ch3_outings.mjs",
@@ -548,13 +641,13 @@
         "node --experimental-vm-modules remake/test/illness.mjs",
         "node --experimental-vm-modules remake/test/tournament_resources.mjs",
         "node remake/test/friend_lime_scene_chapters.mjs",
+        "node remake/test/chapter_feature_gates_2035.mjs",
         "node remake/test/tournament_entrance.mjs",
         "node --experimental-vm-modules remake/test/rin_sample.mjs",
         "node --experimental-vm-modules remake/test/invites_781.mjs",
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",
         "node --experimental-vm-modules remake/test/lime_consistency.mjs",
         "node --experimental-vm-modules remake/test/lime_balance.mjs",
-        "node --experimental-vm-modules remake/test/samechan_migration.mjs",
         "node --experimental-vm-modules remake/test/hiyori_frequency.mjs",
         "node --experimental-vm-modules remake/test/hiyori_quiet_visit.mjs",
         "node remake/test/spot_encounter_doctor.mjs",
@@ -1207,7 +1300,7 @@
     },
     {
       "id": "ch4-camel-race",
-      "title": "Chapter 4 camel race in the real UI (legacy 5-day map and the 14-day daily map): meet, invite, watch, race, record, save/load, replay, one daytime slot",
+      "title": "Chapter 4 camel race in the real UI (legacy 5-day map and the 14-day daily map): meet, invite, watch, race, record, save/load, replay, one daytime slot; hold-to-whip controls on the standalone page",
       "kind": "browser",
       "weight": 2,
       "timeout": 8,
@@ -1226,6 +1319,7 @@
         "remake/img/ui/camel_race/**",
         "assets/sprites/characters/saif/**",
         "assets/sprites/characters/rashid/**",
+        "remake/img/sprites/characters/hajime/**",
         "assets/backgrounds/bg_dubai_camel_track_morning.png",
         "remake/test/browser/ch4_camel_race.mjs"
       ],
@@ -1241,22 +1335,50 @@
       ]
     },
     {
+      "id": "lesson-consult-coverage",
+      "title": "Growth-board lessons consulted in the chapter 3 aftermath, chapter 5 Tokyo and chapter 5 regular shops (#1801)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 4,
+      "paths": [
+        "remake/js/chapters/ch3-aftermath*.js",
+        "remake/js/chapters/ch5-tokyo.js",
+        "remake/js/chapters/ch5-dubai.js",
+        "remake/js/chapters/ch5-shops.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
+        "remake/js/core/growth.js",
+        "data/dialogue/growth_lessons.json",
+        "remake/test/browser/lesson_consult_coverage.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/lesson_consult_coverage.mjs"
+      ]
+    },
+    {
       "id": "ch4-dubai-daily",
-      "title": "Chapter 4 Dubai days on the shared daily loop (VOL04), one shisha at the local cafes, the Longlong shop and the eve acquaintance branch (DBS)",
+      "title": "Chapter 4 Dubai days on the shared daily loop (VOL04), one shisha at the local cafes, the Longlong shop, the eve acquaintance branch, daytime heat, lively nights and the souq stall (DBS)",
       "kind": "browser",
       "weight": 0.8,
       "timeout": 6,
       "paths": [
         "remake/js/chapters/ch4-dubai-daily.js",
         "remake/js/chapters/ch4-dubai-cafe.js",
+        "remake/js/chapters/ch4-dubai-local.js",
         "remake/js/chapters/ch4-longlong.js",
         "remake/js/core/affinity-stages.js",
         "remake/js/chapters/ch4-progress.js",
         "remake/js/chapters/ch4.js",
+        "remake/js/chapters/ch4-story-wiring.js",
+        "remake/js/core/overseas-companion.js",
+        "remake/js/core/story-routes.js",
+        "data/story_routes.json",
         "data/dialogue/ch4_dubai_daily.json",
         "data/dialogue/ch4_spots.json",
         "data/dialogue/ch4_longlong.json",
         "data/dialogue/ch4_main.json",
+        "data/dialogue/ch4_visitors.json",
+        "data/dialogue/ch4_*_dubai.json",
+        "data/dialogue/tournament_dates.json",
         "remake/test/browser/ch4_dubai_daily.mjs"
       ],
       "run": ["node remake/test/browser/ch4_dubai_daily.mjs"]
@@ -1272,8 +1394,11 @@
         "remake/js/chapters/departure-prep.js",
         "remake/js/chapters/ch3-aftermath*.js",
         "remake/js/chapters/ch1.js",
+        "remake/js/core/overseas-companion.js",
         "data/dialogue/ch4_main.json",
         "data/dialogue/ch4_spots.json",
+        "data/dialogue/ch4_visitors.json",
+        "data/dialogue/ch4_*_dubai.json",
         "remake/test/browser/ch4_full_flow.mjs"
       ],
       "run": [
@@ -1291,7 +1416,10 @@
         "remake/js/chapters/ch4.js",
         "remake/js/chapters/ch1.js",
         "data/dialogue/ch5_main.json",
+        "data/dialogue/ch5_tokyo.json",
+        "data/dialogue/ch5_dubai.json",
         "data/dialogue/ending.json",
+        "remake/js/daily/romance.js",
         "remake/test/browser/ch5_full_flow.mjs"
       ],
       "run": [
@@ -1300,7 +1428,7 @@
     },
     {
       "id": "staff-roll",
-      "title": "Chapter 5 end card radar, staff roll, first-time no skip, then title and NEXT CYCLE unlock",
+      "title": "Chapter 5 end card radar, staff roll, first-time no skip, post-roll shuraba and talks, then title and NEXT CYCLE unlock",
       "kind": "browser",
       "weight": 0.4,
       "timeout": 10,
@@ -1308,6 +1436,10 @@
         "remake/js/scenes/staff-roll.js",
         "remake/css/staff-roll.css",
         "remake/js/chapters/ch5*.js",
+        "remake/js/core/story-routes.js",
+        "data/story_routes.json",
+        "data/dialogue/ending.json",
+        "data/dialogue/relationship_conflicts.json",
         "remake/js/core/cycle-meta.js",
         "remake/js/core/cycle-start.js",
         "remake/js/scenes/title.js",
@@ -1392,6 +1524,8 @@
         "data/dialogue/tournament_craft.json",
         "data/characters.json",
         "remake/data/manifest.json",
+        "remake/js/chapters/lover-entry.js",
+        "remake/data/lover.json",
         "remake/test/browser/ch3_tournament.mjs"
       ],
       "run": [
@@ -2115,6 +2249,7 @@
       "timeout": 20,
       "paths": [
         "data/flavors.json",
+        "remake/js/core/naru-finish.js",
         "remake/js/craft/**",
         "remake/css/craft.css",
         "remake/test/mix_temperature.mjs",
@@ -2737,6 +2872,8 @@
         "remake/css/store-logos.css",
         "remake/js/daily/map.js",
         "remake/js/daily/shop.js",
+        "remake/js/daily/kuji.js",
+        "data/kuji.json",
         "remake/css/shop*.css",
         "remake/test/store_logos.mjs",
         "remake/test/browser/facility_map.mjs",
@@ -3482,7 +3619,9 @@
       "weight": 0.5,
       "timeout": 10,
       "paths": [
-        "remake/test/kuji_purchase.mjs"
+        "remake/test/kuji_purchase.mjs",
+        "remake/js/daily/kuji.js",
+        "data/kuji.json"
       ],
       "run": [
         "node remake/test/kuji_purchase.mjs"
@@ -3644,3 +3783,4 @@
     }
   ]
 }
+

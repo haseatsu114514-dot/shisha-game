@@ -6,7 +6,7 @@ import { toast } from "../core/ui.js";
 import { growthEnabled } from "../core/growth.js";
 import { runCamelRace } from "../minigames/camel-race.js";
 import { CAMEL_SCENES, CAMEL_STAGES, camelRaceRecord, camelRaceDestination, recordCamelRaceResult, consumeCamelRaceDaytime,
-  advanceCamelRaceStage, resultSceneFor } from "./ch4-camel-progress.js";
+  advanceCamelRaceStage, resultSceneFor, availableCamelCups } from "./ch4-camel-progress.js";
 export * from "./ch4-camel-progress.js";
 
 /**
@@ -39,9 +39,15 @@ export async function visitCamelRace({ read, signal = null, isCurrent = () => tr
   const test = typeof window !== "undefined" ? window.__remake?.camelTest : null;
   const { value: outcome } = await paidAction(async () => {
     const result = await runCamelRace({ host, signal, tutorial: camel.plays === 0, best: camel.best, allowRetry: true,
-      pilot: test?.pilot ?? null, timeScale: test?.timeScale ?? 1, ...(options || {}) });
+      cups: availableCamelCups(value), cupRecords: camel.cups, pilot: test?.pilot ?? null, timeScale: test?.timeScale ?? 1, ...(options || {}) });
     if (!result.completed || !result.best || !isCurrent() || state !== value) return { completed: false };
-    const recorded = recordCamelRaceResult(value, result.best, result.runs.length);
+    // 総合最高点だけでなく、全完走を順に確定。大会ごとの認定を取り落とさない。
+    let recorded = null;
+    for (const run of result.runs) {
+      const next = recordCamelRaceResult(value, run);
+      if (next) recorded = { ...next, firstClear: recorded?.firstClear || next.firstClear, newBest: recorded?.newBest || next.newBest };
+    }
+    if (!recorded) return { completed: false };
     consumeCamelRaceDaytime(value);
     save();
     return { completed: true, ...recorded, result };
@@ -55,3 +61,4 @@ export async function visitCamelRace({ read, signal = null, isCurrent = () => tr
   await read(first ? resultSceneFor(best.rank) : outcome.newBest ? CAMEL_SCENES.replayBest : CAMEL_SCENES.replayUsual);
   return { used: true, exerted: true, slotsUsed: 0 };
 }
+

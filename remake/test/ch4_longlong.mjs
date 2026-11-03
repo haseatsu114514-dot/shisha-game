@@ -134,5 +134,8 @@ assert.match(daily, /id: "ch4_dubai_longlong", place: "longlong", label: "龍龍
 assert.match(daily, /readDialogues\("ch4_longlong", LONGLONG_IDS\)/);
 assert.match(daily, /gainAffinity\(LONGLONG_CHAR, visitAffinity\(longlong\.kind === "story" \? "story" : "talk"\)\)/);
 assert.doesNotMatch(daily, /longlong: "master_hookah"|teacher.*longlong/, "授業（龍の煙）は大会後の会場の台詞なので、店では相談しない");
+// IR23: FESTA の太陽も、来店ごとに通いの小会話と同じ値（visitAffinity。第4章は +8）。♥5の授業（フェスタの煙）に届く
+assert.match(daily, /if \(entry\.place === "festa"\) gainAffinity\("da_silva", visitAffinity\("talk"\)\)/);
+assert.doesNotMatch(daily, /gainAffinity\("da_silva", \d/, "no fixed number for Taiyo");
 
 console.log("PASS ch4 Longlong Dubai shop: stages, hearts, records, scripts, eve-of-tournament acquaintance branch");

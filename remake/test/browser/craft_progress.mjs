@@ -1,6 +1,7 @@
 // 提供成功/失敗、同じ調整セルへの2回の実プレイ、単工程のヘッダー。
 import assert from "node:assert/strict";
 import { suite, assertFits, storageSnapshot } from "./support.mjs";
+import { assertCraftProgress } from "./craft_progress_assertions.mjs";
 
 const labels = ["パッキング", "炭焼き", "蒸らし", "吸い出し", "提供", "調整"];
 async function init(page, steps = null) {
@@ -20,7 +21,7 @@ async function init(page, steps = null) {
 }
 const active = page => page.locator('.bench-phase[aria-current="step"]').getAttribute("data-step");
 const headerLabels = page => page.locator(".bench-phase-copy b").allTextContents();
-const fits = page => assertFits(page, ".bench-progress, .bench-phase-copy b");
+const fits = page => assertCraftProgress(page);
 
 await suite("craft-progress", async check => {
   for (const [name, viewport, mobile, reducedMotion] of [

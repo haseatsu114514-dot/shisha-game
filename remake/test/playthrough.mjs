@@ -1,7 +1,7 @@
 // リメイク版 第1章の通しテスト。
 //   1) 新規ゲーム → コールドオープン → チュートリアル → DAY1〜13の日常 → DAY14の大会
 //   2) 大会1回目は「下手」で挑んで GAME OVER になること
-//   3) 「もう一度挑戦する」→「上手」で南雲の最後の一票による優勝 → 第1章クリアになること
+//   3) 「もう一度挑戦する」→「上手」で須井の最後の一票による優勝 → 第1章クリアになること
 // 使い方: リポジトリのルートで `python3 -m http.server 8123` を起動してから
 //         node remake/test/playthrough.mjs
 import { enterPlannedShop, purchasePlannedFlavor } from "./playthrough-shopping.mjs";
@@ -206,6 +206,8 @@ for (;;) {
   }
   // 寝る前のレベルアップ（心得の盤、11/02から通常プレイで有効）。初回はOKを押すまで待つ全画面の演出。
   if (await click('[data-test="levelup-ok"]')) continue;
+  // 観音堂などで開く心得の盤（時間は進まない）。灯さずに閉じて予定を続ける。
+  if (await click('[data-test="board-close"]')) continue;
   // 体力の警告は素直に引き返す
   if (snap.modal) {
     // スロットの初回説明（タップ送り）・くじの開封（タップで閉じる）
@@ -317,7 +319,7 @@ for (;;) {
   // LIME: 朝は通知だけ。はじめて届いた日はアイコンが照らされる（案内）→ 以後は赤丸があれば自分で開く
   if (snap.screen === "map" && (await click('[data-test="coach-lime"]'))) { limeCoach++; continue; }
   if (snap.screen === "map" && snap.rain) rainMaps++;
-  // 路上占い師（週2日だけ出る）: 見かけたら一度だけ占ってもらう（時間は使わない）
+  // 辻占のオババ（週2日だけ出る）: 見かけたら一度だけ占ってもらう（時間は使わない）
   if (snap.screen === "map" && !fortuneTried && snap.money >= 3000 && (await page.$('[data-test="pin-fortune"]:not(.off)'))) {
     if (!await click('[data-test="pin-fortune"]') || !await click('[data-test="map-go"]'))
       throw new Error("Fortune input failed before visiting");

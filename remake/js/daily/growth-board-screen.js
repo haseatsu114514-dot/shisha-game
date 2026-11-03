@@ -85,7 +85,7 @@ export function loadBoardArt() {
   }))).then((ok) => ok.every(Boolean)).catch(() => false);
   return artReady;
 }
-export const PLACE_JA = { kannon: "観音堂", tokyo_shrine: "路地裏の神社", dubai_mosque: "モスクの回廊", inn_window: "宿の窓辺" };
+export const PLACE_JA = { kannon: "観音堂", tokyo_shrine: "池の弁天堂", dubai_mosque: "モスクの回廊", inn_window: "宿の窓辺" };
 
 let current = null;
 

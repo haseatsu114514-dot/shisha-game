@@ -3,11 +3,27 @@
     {
       "dialogue_id": "baito_minto_calling",
       "lines": [
-        { "speaker": "", "text": "窓際の灯りを早めにつけ、客席が見えるように席を整えた。" },
-        { "speaker": "", "text": "通りがかった人が足を止め、空いていた卓が一つ埋まる。" },
-        { "speaker": "hajime", "face": "smile", "text": "（煙を吸う前にも、店の良さは伝えられる。みんとさんに教わったとおりだ）" },
-        { "speaker": "", "text": "帰り際に声をかけると、もう一杯の注文が入った。" },
-        { "speaker": "", "text": "追加注文のぶんは、店からの売上ボーナスとして給料に上乗せされる。" }
+        {
+          "speaker": "",
+          "text": "窓際の灯りを早めにつけ、客席が見えるように席を整えた。"
+        },
+        {
+          "speaker": "",
+          "text": "通りがかった人が足を止め、空いていた卓が一つ埋まる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（煙を吸う前にも、店の良さは伝えられる。みんとさんに教わったとおりだ）"
+        },
+        {
+          "speaker": "",
+          "text": "帰り際に声をかけると、もう一杯の注文が入った。"
+        },
+        {
+          "speaker": "",
+          "text": "追加注文のぶんは、店からの売上ボーナスとして給料に上乗せされる。"
+        }
       ]
     },
     {
@@ -184,61 +200,129 @@
           "text": "なんだ、今日は顔に『聞きたいことがある』って書いてあるぞ"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……なるさんって、どうやってそんなにうまくなったんですか"
-        },
-        {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "どうやってって……決まってんだろ。全部見てきたんだよ"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "よその店に行ったら、吸うだけで帰るな。詰め方、炭、客への声のかけ方"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "それと、何を混ぜてるか。分からなきゃ、吸いながら当ててみる"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "聞いてもいいものなんですか？ 店の秘密じゃ……"
-        },
-        {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "聞けば教えてくれる奴は、案外多いぜ。俺だって聞かれりゃ答える"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "教えてくれなくても、覚えて帰って、自分の台で試せばいい"
-        },
-        {
-          "speaker": "naru",
-          "face": "serious",
-          "text": "菓子と同じだ。よそのうまいもん食って、何が入ってるか考える。その繰り返しだ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（吸って終わりにしないで、持ち帰って確かめる）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "次にどこかの店に行ったら、ミックスを覚えて帰ります"
-        },
-        {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "おう。で、覚えたら俺にも教えろよ。タダで見せてんだからな"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 3,
+          "next_true": "consult_after",
+          "next_false": "consult_before"
         }
-      ]
+      ],
+      "branches": {
+        "consult_before": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "なるさん、少し高めの温度で止めるんですね"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "ああ。次に触るまでに落ちる分もあるからな"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "真ん中から少し上。焦がさず、そこで止める感じ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "その頃合いまで聞いてもいいんですか？"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "隠すほどのことじゃないだろ。俺はこう作ってるってだけ"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "菓子を焼いてた時も、ここで止めるって瞬間が好きだった"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（温度だけじゃなくて、止める頃合いを見ている）"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "葉は何でもいい。その一台の帯を見てる"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "俺も試してみます。うまくいったら、一台吸ってください"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "おう、楽しみにしてる"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "焼き際の目安が温度計に琥珀色で見える。印に合わせて提供すると、仕上げの評価が少し上がる。"
+          }
+        ],
+        "consult_after": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "なるって、少し高めの温度で止めるよね"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "ああ。次に触るまでに落ちる分もあるからな"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "真ん中から少し上。焦がさず、そこで止める感じ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "その頃合いまで話してくれるんだ"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "隠すほどのことじゃないだろ。俺はこう作ってるってだけ"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "菓子を焼いてた時も、ここで止めるって瞬間が好きだった"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（温度だけじゃなくて、止める頃合いを見ている）"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "葉は何でもいい。その一台の帯を見てる"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "俺も試してみる。うまくいったら、次は俺の一台で"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "おう、楽しみにしてる"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "焼き際の目安が温度計に琥珀色で見える。印に合わせて提供すると、仕上げの評価が少し上がる。"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "lesson_tsumugi_lavender",
@@ -559,86 +643,179 @@
       "dialogue_id": "lesson_ageha_zuboo",
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "客足の途切れたMELTY PUFF。あげはさんが豹柄のソファで、クマの並びを直している。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "あげはさん、ちょっと相談いいですか。吸い出しのことで"
-        },
-        {
-          "speaker": "ageha",
-          "face": "smile",
-          "text": "お、ハジメっちから相談とか、テンション上がるんだけど。なになに？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "熱を動かしすぎたり、足りなかったり。吸い出しの加減が、毎回ぶれるんです"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "あー、あるある。そういう時はね、ズボーって吸うの"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "ズボー……ですか"
-        },
-        {
-          "speaker": "ageha",
-          "face": "smile",
-          "text": "そ！ 固いシェイクをストローで吸うみたいに。ズボーの長さで、吸う量を決めんの"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "あげはさんが頬をへこませて、ズボー、と一息。煙を見てから、もう半分だけ足した。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "……毎回同じ長さで吸うから、ずれないんですね"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "そ。量が決まってれば、足すのも止めるのも迷わないっしょ"
-        },
-        {
-          "speaker": "ageha",
-          "face": "serious",
-          "text": "一気にキメようとしないで、ズボー一回ずつ。煙を見ながら足すの"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "吸う長さをそろえて、煙を見ながら刻む……ってことですか"
-        },
-        {
-          "speaker": "ageha",
-          "face": "surprise",
-          "text": "……それ。うちが言いたかったの、それ"
-        },
-        {
-          "speaker": "ageha",
-          "face": "smile",
-          "text": "やば、うち今ちゃんと教えられたじゃん。ハジメっち、忘れたら泣くからね"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（「ズボー」の中に、ちゃんと手順が入ってた）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "次の吸い出しから、ズボーで数えてみます"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 3,
+          "next_true": "consult_after",
+          "next_false": "consult_before"
         }
-      ]
+      ],
+      "branches": {
+        "consult_before": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "客足の途切れたMELTY PUFF。あげはさんが豹柄のソファで、クマの並びを直している。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あげはさん、ちょっと相談いいですか。吸い出しのことで"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "お、ハジメっちから相談とか、テンション上がるんだけど。なになに？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "熱を動かしすぎたり、足りなかったり。吸い出しの加減が、毎回ぶれるんです"
+          },
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "あー、あるある。そういう時はね、ズボーって吸うの"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "ズボー……ですか"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "そ！ 固いシェイクをストローで吸うみたいに。ズボーの長さで、吸う量を決めんの"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "あげはさんが頬をへこませて、ズボー、と一息。煙を見てから、もう半分だけ足した。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "……毎回同じ長さで吸うから、ずれないんですね"
+          },
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "そ。量が決まってれば、足すのも止めるのも迷わないっしょ"
+          },
+          {
+            "speaker": "ageha",
+            "face": "serious",
+            "text": "一気にキメようとしないで、ズボー一回ずつ。煙を見ながら足すの"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "吸う長さをそろえて、煙を見ながら刻む……ってことですか"
+          },
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "……それ。うちが言いたかったの、それ"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "やば、うち今ちゃんと教えられたじゃん。ハジメっち、忘れたら泣くからね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（「ズボー」の中に、ちゃんと手順が入ってた）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "次の吸い出しから、ズボーで数えてみます"
+          }
+        ],
+        "consult_after": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "客足の途切れたMELTY PUFF。あげはが豹柄のソファで、クマの並びを直している。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ちょっと相談いい？ 吸い出しのことで"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "お、ハジメっちから相談とか、テンション上がるんだけど。なになに？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "熱を動かしすぎたり、足りなかったり。吸い出しの加減が、毎回ぶれるんだ"
+          },
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "あー、あるある。そういう時はね、ズボーって吸うの"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "ズボー……？"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "そ！ 固いシェイクをストローで吸うみたいに。ズボーの長さで、吸う量を決めんの"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "あげはが頬をへこませて、ズボー、と一息。煙を見てから、もう半分だけ足した。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "……毎回同じ長さで吸うから、ずれないんだ"
+          },
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "そ。量が決まってれば、足すのも止めるのも迷わないっしょ"
+          },
+          {
+            "speaker": "ageha",
+            "face": "serious",
+            "text": "一気にキメようとしないで、ズボー一回ずつ。煙を見ながら足すの"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "吸う長さをそろえて、煙を見ながら刻む……ってこと？"
+          },
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "……それ。うちが言いたかったの、それ"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "やば、うち今ちゃんと教えられたじゃん。ハジメっち、忘れたら泣くからね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（「ズボー」の中に、ちゃんと手順が入ってた）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "次の吸い出しから、ズボーで数えてみるよ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "lesson_kumicho_zero",
@@ -811,12 +988,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "Dr.fookahの2階。黒いフィルム越しの薄明かりの中、凛がクリップボードをめくっている。"
+          "text": "Dr.fookahの2階。黒いフィルム越しの薄明かりの中、くゆりがクリップボードをめくっている。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "凛さん、今日はモニターじゃなくて、相談があって来ました"
+          "text": "くゆりさん、今日はモニターじゃなくて、相談があって来ました"
         },
         {
           "speaker": "rin",
@@ -841,7 +1018,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "凛は棚の端から、見慣れたブルーベリーの袋を取り出した。"
+          "text": "くゆりは棚の端から、見慣れたブルーベリーの袋を取り出した。"
         },
         {
           "speaker": "rin",
@@ -1219,16 +1396,34 @@
           "text": "まずは、誰を誘うか書き出してみます"
         },
         {
-          "speaker": "steve",
-          "face": "smile",
-          "text": "グッド。大会が終わって、東京にいる最後の夜にしよう"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 3,
+          "next_true": "night_after",
+          "next_false": "night_before"
         },
         {
           "speaker": "steve",
           "face": "smile",
           "text": "場所はここを使っていい。ピザも俺が頼んでおく"
         }
-      ]
+      ],
+      "branches": {
+        "night_before": [
+          {
+            "speaker": "steve",
+            "face": "smile",
+            "text": "グッド。大会が終わって、東京にいる最後の夜にしよう"
+          }
+        ],
+        "night_after": [
+          {
+            "speaker": "steve",
+            "face": "smile",
+            "text": "グッド。ちょうど今夜が、東京にいる最後の夜だ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "lesson_volk_precision",

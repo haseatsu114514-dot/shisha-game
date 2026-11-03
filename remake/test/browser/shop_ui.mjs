@@ -448,6 +448,50 @@ await suite("shop-ui", async check => {
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem(S.core.SAVE_KEY)));
     assert.equal(saved.kuji.g500.drawn, 1);
   });
+  // KJ02: 章が進むと高いくじが並ぶ（第2章3,000円・第3章5,000円・第4章10,000円）。箱はどの店でも共通。
+  for (const [platform, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await run(`${platform}-kuji-tiers-by-chapter`, async page => {
+      const labels = () => page.locator('.kuji-row b').allTextContents();
+      await setup(page, { chapter: 2, money: 500000 }); await open(page);
+      await page.locator('[data-tab="kuji"]').click();
+      assert.deepEqual(await labels(), ["シーシャくじ（1回500円）", "プレミアムくじ（1回1,000円）", "機材くじ（1回3,000円）"]);
+      assert.match(await page.locator('.kuji-row').nth(2).innerText(), /のこり 20 \/ 20 枚 ・ S賞: ステンレス削り出しの台/);
+      await page.locator('[data-test="shop-leave"]').click();
+      // 第4章のドバイ店: 5段すべて。10,000円のくじのS賞（特注台）を引くと持ち物に入る。
+      await page.evaluate(() => { Object.assign(S.core.state, { chapter: 4, money: 500000 }); S.open({ branch: "dubai" }); });
+      await page.locator('.shop-tabs').waitFor(); await page.locator('[data-tab="kuji"]').click();
+      assert.deepEqual(await labels(), ["シーシャくじ（1回500円）", "プレミアムくじ（1回1,000円）", "機材くじ（1回3,000円）",
+        "上級機材くじ（1回5,000円）", "特注台くじ（1回10,000円）"]);
+      const top = page.locator('.kuji-row').filter({ has: page.locator('[data-test="kuji-g10000"]') });
+      assert.match(await top.innerText(), /のこり 40 \/ 40 枚 ・ S賞: 職人仕立ての特注台/);
+      assert.equal(await page.evaluate(() => S.core.state.kuji.g3000.order.length), 20, "第2章で作った箱をドバイ店でも使う");
+      assert.equal(await page.locator('.kuji-row').evaluateAll(rows => rows.filter(r => r.scrollWidth > r.clientWidth + 1).length), 0, "行が横にはみ出さない");
+      // 箱の先頭を S賞・A賞（ロートスプラス）に並べ替え、ロートスプラスは持っておく（持っている機材は中古買い取りの額になる）。
+      await page.evaluate(() => {
+        const s = S.core.state, box = s.kuji.g10000;
+        const first = ["stand_custom", "lotos_plus"].map(id => box.prizes.findIndex(p => p.equipId === id));
+        const rest = [...box.order]; for (const i of first) rest.splice(rest.indexOf(i), 1);
+        box.order = [...first, ...rest]; s.owned.push("lotos_plus");
+      });
+      await page.locator('[data-tab="sell"]').click(); await page.locator('[data-tab="kuji"]').click();
+      await top.locator('[data-test="kuji-g10000"]').scrollIntoViewIfNeeded(); await tap(page, 'kuji-g10000');
+      await page.locator('.kuji-card.reveal').waitFor();
+      assert.match(await page.locator('.kuji-card.reveal').innerText(), /S賞[\s\S]*職人仕立ての特注台/);
+      assert.equal(await page.locator('.kuji-card.reveal .kuji-dupe').count(), 0);
+      await tap(page, 'kuji-reveal');
+      let saved = await page.evaluate(() => JSON.parse(localStorage.getItem(S.core.SAVE_KEY)));
+      assert.equal(saved.money, 490000); assert(saved.owned.includes("stand_custom")); assert.equal(saved.kuji.g10000.drawn, 1);
+      await tap(page, 'kuji-g10000');
+      await page.locator('.kuji-card.reveal').waitFor();
+      assert.match(await page.locator('.kuji-card.reveal .kuji-dupe').innerText(), /持っているので、中古買い取りの7,000円を受け取った/);
+      await capture(page, `kuji-tiers-dupe-${platform}`);
+      await tap(page, 'kuji-reveal');
+      saved = await page.evaluate(() => JSON.parse(localStorage.getItem(S.core.SAVE_KEY)));
+      assert.equal(saved.money, 490000 - 10000 + 7000);
+      assert.equal(saved.owned.filter(id => id === "lotos_plus").length, 1, "同じ機材を二つ持たない");
+      await capture(page, `kuji-tiers-${platform}`);
+    }, options);
+  }
   await run('shortfall-scroll-discard-stale-state', async page => {
     await setup(page, { money: 1600 }); await open(page);
     await tap(page, 'buy-lychee'); const scroll = await page.locator('.shop-body').evaluate(n => n.scrollTop);

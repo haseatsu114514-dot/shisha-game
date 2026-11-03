@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-02 16:00 UTC",
+ "generated": "2026-11-02 19:23 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -458,6 +458,19 @@
    "b": 0.0167,
    "ax": 0.5437,
    "aspect": 0.7467
+  },
+  "tetsuko": {
+   "faces": [
+    "normal",
+    "serious",
+    "sleep",
+    "smile",
+    "surprise"
+   ],
+   "h": 0.2908,
+   "b": 0.0433,
+   "ax": 0.5054,
+   "aspect": 0.7467
   }
  },
  "backgrounds": [
@@ -629,7 +642,8 @@
   "face_salaryman.png",
   "face_noor.png",
   "face_saif.png",
-  "face_rashid.png"
+  "face_rashid.png",
+  "face_tetsuko.png"
  ],
  "making": [
   "bench_base.png",
@@ -3035,7 +3049,13 @@
   "sprites/characters/noor/chr_noor_normal.png",
   "sprites/characters/noor/chr_noor_smile.png",
   "sprites/characters/noor/chr_noor_surprise.png",
-  "ui/character_intros/noor.png"
+  "ui/character_intros/noor.png",
+  "ui/face_icons/face_tetsuko.png",
+  "sprites/characters/tetsuko/chr_tetsuko_normal.png",
+  "sprites/characters/tetsuko/chr_tetsuko_serious.png",
+  "sprites/characters/tetsuko/chr_tetsuko_sleep.png",
+  "sprites/characters/tetsuko/chr_tetsuko_smile.png",
+  "sprites/characters/tetsuko/chr_tetsuko_surprise.png"
  ],
  "limeMedia": {
   "st_adam_bless": {

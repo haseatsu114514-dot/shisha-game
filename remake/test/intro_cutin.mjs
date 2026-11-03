@@ -116,6 +116,12 @@ try {
   const classicMaki = await artFor("maki", "classic");
   assert.match(classicMaki.portrait, /sprites\/characters\/maki\//, "classic で旧の立ち絵に戻る");
   assert.doesNotMatch(classicMaki.background, /graphic\//, "classic で旧の背景に戻る");
+  // SHISHA-9000 はどちらの設定でも正式normalを使い、旧専用人物絵を再表示しない。
+  for (const style of ["graphic", "classic"]) {
+    const robot = await artFor("shisha_9000", style);
+    assert.match(robot.portrait, /sprites\/characters\/shisha_9000\/chr_shisha_9000_normal\.webp(?:\?.*)?$/, `${style}: 正式normalの二眼を維持する`);
+    assert.doesNotMatch(robot.portrait, /character_intros\/graphic\//, `${style}: 旧専用人物絵を使わない`);
+  }
   await page.evaluate(() => { T.core.config.introArtStyle = "graphic"; });
 
   // 2) 名前の出し方: 全員で呼び名のみ、本名の括弧を廃止。物語の名乗りは残す

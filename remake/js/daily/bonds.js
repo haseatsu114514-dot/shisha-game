@@ -45,12 +45,12 @@ export const BOND_FINALES = {
   // あげは（#2023）: 第2章のMELTY PUFFで。方向は♥3の答え（bond_q1_ageha）だけで決まり、最後の質問は置かない。
   // 告白は日常の予約ではなく、第3章の帰郷後に ch3-romance-entry.js が出す（laterConfession）。
   ageha: { dialogue: "ch2_ageha_bond_finale", gift: "suyaki_ageha", laterConfession: true },
-  // ましろ（#2022）: 第3章の場面カードから（chapters/ch3.js）。告白は仮置きの寄り道 confession_mashiro（#1930）が担うので予約しない。
+  // ましろ（#2022）: 第3章の場面カードから（chapters/ch3.js）。告白は寄り道 confession_mashiro（#1930・IR20）が担うので予約しない。
   mashiro: { dialogue: "ch3_mashiro_bond_finale", gift: "suyaki_mashiro", question: "bond_q2_mashiro", ownConfession: true },
-  // 久世（#2028）: 第3章の場面カードから（chapters/ch3.js）。恋愛対象外なので友情の着地だけ。
-  // 好感度は煙幕への外出とLIME交換でしか付かず最大でも♥2前後のため、♥5ではなく heart（仮判断・♥1）と
-  // 久世の場面を読み終えたこと（storiesDone）で開く。数値はオーナー判断待ち（#2028 の PR 本文）。
-  kuze: { dialogue: "ch3_kuze_bond_finale", gift: "suyaki_kuze", heart: 1 },
+  // 久世（#2028）: 第3章の煙幕への来店（ch3-tokyo-daily.js）・旧行程の場面カード（chapters/ch3.js）・
+  // 大会後の寄り道（ch3-aftermath.js）から。恋愛対象外なので友情の着地だけ。条件はほかの人物と同じ♥5（IR22）。
+  // 煙幕には何度でも通えて♥5に届く（AFB02・#2347）ので、仮の♥1（#2281）は外した。
+  kuze: { dialogue: "ch3_kuze_bond_finale", gift: "suyaki_kuze" },
   hiyori: {
     get dialogue() { return hiyoriRoute().finale?.dialogue || ""; },
     get gift() { return hiyoriRoute().finale?.gift || null; },
@@ -104,7 +104,7 @@ export function recordRomanceChoice(line, choice) {
 export function romanceOpen(id) {
   if (id === "hiyori" && !hiyoriFinaleReady()) return false;
   if (id === "samechan" && (!chapterFeatureEnabled(state.chapter, "samechanRomance")
-    || !state.flags._samechan_bond_question_done
+    || !state.flags[questionDoneKey("samechan")]
     || state.romanceChoices?.bond_q1_samechan?.char !== id)) return false;
   const def = BOND_FINALES[id];
   // 最後の質問がない相手は、実際に答えた質問がある時だけ（未回答を恋愛と推測しない）
@@ -229,7 +229,7 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
   : id === "mashiro" ? mashiroScenesRead(state.flags) && questionComplete(state, id)
   : id === "samechan"
   ? storyCount(id) >= 3 && !!state.flags._samechan_quiet_seat_done && !!state.flags._samechan_closing_check_done
-    && (isLover(id) || !!state.flags._friend_samechan || !!state.flags._samechan_bond_question_done
+    && (isLover(id) || !!state.flags._friend_samechan || !!state.flags[questionDoneKey("samechan")]
       && state.romanceChoices?.bond_q1_samechan?.char === id)
     && samechanHeartEventsDone(state) // ♥4・♥5の来店会話（#2025）
   // 久世: LIME交換の寄り道と、助言の後の「答えを返しに行く」外出の両方（ch3-story-wiring.js / ch3-outing-progress.js の保存キーの写し）
@@ -253,13 +253,13 @@ export function finaleDue(id) {
   // MELTY PUFFに通えるのは第2章と、第3章の東京へ発つ前の準備3日だけ（VOL02。東京にいる間は店が地図に無い）
   if (id === "ageha" && !chapterFeatureEnabled(state.chapter, "agehaVisit") && !beforeTokyoDeparture()) return false;
   if (id === "mashiro" && !chapterFeatureEnabled(state.chapter, "mashiroBond")) return false;
-  if (id === "kuze" && state.chapter !== 3) return false; // 煙幕は第3章の東京にだけある
+  if (id === "kuze" && !chapterFeatureEnabled(state.chapter, "kuzeBond")) return false; // 煙幕は第3章の東京にだけある
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue] || !storiesDone(id)) return false;
   if (affinityLevel(id) < finaleHeart(id) || questionVisitDue(id)) return false;
   // つむぎは第1章本筋のDAY11「絵を描き終えて応募する」を関係の節目にする。
   // DAY12以降は旧セーブで当時の読了フラグが欠ける場合だけ進行不能を避けるフォールバック。
-  if (id === "tsumugi" && (state.chapter || 1) === 1 && state.day < 12 && !state.flags._tsumugi_contest_submitted) return false;
+  if (id === "tsumugi" && chapterFeatureEnabled(state.chapter || 1, "tsumugiContestGate") && state.day < 12 && !state.flags._tsumugi_contest_submitted) return false;
   if (id === "minto" && !(state.flags._minto_identity_revealed && state.flags._minto_name_known)) return false;
   return true;
 }
@@ -375,8 +375,9 @@ export function friendMessages({ tournamentDay = false, sceneChapter = false } =
   // お誘いの約束は第1・2章の calendar.js 専用なので、第3章以降は雑談だけ（#2022）。
   if (tournamentDay) return [];
   // 第5章の自由行動は日常ループ（calendar.js）の朝に届く。お誘いは出さず雑談だけ（#2033）。
-  const chatOnly = sceneChapter || state.chapter === 5;
-  if (sceneChapter ? ![3, 4, 5].includes(state.chapter) : (state.phase !== "daily" || ![1, 2, 5].includes(state.chapter || 1))) return [];
+  const chatOnly = sceneChapter || chapterFeatureEnabled(state.chapter, "friendChatOnly");
+  if (sceneChapter ? !chapterFeatureEnabled(state.chapter, "friendSceneLime")
+    : (state.phase !== "daily" || !chapterFeatureEnabled(state.chapter || 1, "friendDailyLime"))) return [];
   const cfg = DB.friends || {};
   const gap = cfg.gapDays || 4;
   const all = friendSent();
@@ -439,3 +440,4 @@ export async function playFriendHangout(id) {
   save();
   return true;
 }
+

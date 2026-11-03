@@ -9,14 +9,18 @@ globalThis.document = { addEventListener() {} };
 const score = await import("../js/craft/score.js");
 const verdict = await import("../js/chapters/ch4-verdict.js");
 const growth = await import("../js/core/growth.js");
+const { maxStamina } = await import("../js/core/stats.js");
+const { applyAssistRecovery } = await import("../js/chapters/tournament-resources.js");
 const { TOURNAMENT_STORY_STEPS } = await import("../js/craft/tournament-story-data.js");
 delete globalThis.document;
 const data = file => JSON.parse(fs.readFileSync(new URL(`../../data/${file}.json`, import.meta.url)));
 DB.flavorById = Object.fromEntries(data("flavors").flavors.map(row => [row.id, row]));
 DB.equipById = Object.fromEntries(data("equipment").equipment.map(row => [row.id, row]));
 const source = fs.readFileSync(new URL("../js/chapters/ch4-tournament.js", import.meta.url), "utf8");
+const retrySource = fs.readFileSync(new URL("../js/chapters/retry-assist.js", import.meta.url), "utf8");
 
-async function run({ failure = null, abandon = false, invalidate = false, resume = null, ask = true, loadFails = false, storyCancel = null } = {}) {
+async function run({ failure = null, abandon = false, invalidate = false, resume = null, ask = true, loadFails = false,
+  storyCancel = null, quality = 96, rulesVersion, assistChoice = false, assistInvalidate = false } = {}) {
   const value = resume || newState();
   if (!resume) {
     value.chapter = 4; value.phase = "tournament";
@@ -24,20 +28,29 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
     value.flags._ch4 = { part: "tournament", read: { ch4_tournament_start: true, ch4_stranger_second: true, ch4_stranger_third: true } };
   }
   setState(value);
-  const trace = [], snapshots = [];
+  const trace = [], snapshots = [], contexts = [], shown = [];
   let current = true;
-  const initial = () => ({ mode: "tournament", chapter: 4, equip: {}, mix: {}, careHistory: [],
-    pack: "normal", place: "triangle", steamSeconds: 480, pullDone: false, total: 0 });
+  const initial = () => { trace.push(`session-stamina:${value.stamina}`); return { mode: "tournament", chapter: 4, equip: {}, mix: {}, careHistory: [],
+    pack: "normal", place: "triangle", steamSeconds: 480, pullDone: false, total: 0 }; };
   const values = { ...match, ...score, ...verdict, ...growth, state: value, CRAFT_STEPS: [],
+    maxStamina, applyAssistRecovery,
+    startChapterFourCraft: (value, cs) => {
+      const p = match.startChapterFourCraft(value, cs);
+      if (rulesVersion !== undefined) p.rulesVersion = rulesVersion;
+      return p;
+    },
     newSession: initial,
     save: () => snapshots.push(JSON.parse(JSON.stringify(value))),
     openBench: cs => trace.push(`bench:${match.chapterFourMatch(value).step}`),
     waitBenchReady: async () => trace.push("ready"),
     benchRoot: () => ({ querySelector: () => ({ append: () => trace.push("menu") }) }),
-    showChapterFourStandings: async p => trace.push(`standings:${p.voted}`),
+    showChapterFourStandings: async p => { trace.push(`standings:${p.voted}`); shown.push(match.chapterFourStandings(p)); },
     retireScreen: () => trace.push("retire"), playBgm() {}, clearComments() {}, block() {},
     play: async dialogue => { trace.push(dialogue.dialogue_id); return {}; },
-    modal: async options => { trace.push(options.title); return ask; },
+    modal: async options => { trace.push(options.title);
+      if (options.title === "コンティニュー") { if (assistInvalidate) current = false; return assistChoice; }
+      return ask;
+    },
     // 制作中の掛け合い（#2031）: 台本の読み込みと、既読を制作保存へ書く共通の再生（本物と同じく既読は読まない）。
     TOURNAMENT_STORY_STEPS,
     loadTournamentCraftDialogue: async () => { trace.push("craft-dialogue"); if (loadFails) throw new Error("offline"); },
@@ -46,6 +59,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
       story.seen ||= [];
       if (story.seen.includes(event)) return true;
       trace.push(`story:${event}:${options?.context?.rank ?? "-"}`);
+      contexts.push({ event, ...options?.context });
       if (storyCancel === event) return false;
       story.seen.push(event);
       return true;
@@ -53,25 +67,29 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
     stepSetup: async () => trace.push("setup"), stepWater: async () => trace.push("water"),
     stepMix: async cs => { trace.push("mix"); cs.mix = { sakura: 12 }; cs.mixInfo = { total: 12, score: 96, intensity: 5 }; },
     stepPack: async cs => { trace.push("pack"); cs.pack = "normal"; },
-    runHoles: async cs => { trace.push("holes"); cs.holes = { score: 96, outerEven: 1, total: 24, minimumComplete: true, innerExcess: 0 }; },
+    runHoles: async cs => { trace.push("holes"); cs.holes = { score: quality, outerEven: 1, total: 24, minimumComplete: true, innerExcess: 0 }; },
     stepPlace: async cs => { trace.push("place"); cs.place = "triangle"; },
-    runHeat: async cs => { trace.push("heat"); cs.heat = { score: 96, heatPower: 85, heatStability: 100, burnRisk: 0, aromaRetention: 100 }; },
+    runHeat: async cs => { trace.push("heat"); cs.heat = { score: quality, heatPower: 85, heatStability: 100, burnRisk: 0, aromaRetention: 100 }; },
     stepSteamTime: async cs => { trace.push("steam-time"); cs.steamSeconds = 480; },
     runSteamDodge: async cs => { trace.push("steam"); cs.steam = { score: 96 }; },
     runPull: async cs => {
       trace.push("pull"); value.stamina -= 4;
       if (invalidate) { current = false; return true; }
       if (abandon) return false;
-      cs.pull = { score: 96, temp: .54, pulls: 2 }; cs.pullDone = true;
+      cs.pull = { score: quality, temp: .54, pulls: 2 }; cs.pullDone = true;
       if (failure === "pull") cs.failed = "burnt";
       return true;
     },
     runCare: async (cs, { round }) => {
-      trace.push(`care${round}`); cs.careHistory[round - 1] = { score: 96, temp: .54, coals: 1 };
+      trace.push(`care${round}`); cs.careHistory[round - 1] = { score: quality, temp: .54, coals: 1 };
       if (failure === `care${round}`) cs.failed = "cold";
     },
   };
   const context = vm.createContext({ console, structuredClone, DOMException });
+  // 実際の3敗判定/取消/所有者確認を使い、UIの選択だけを制御する。
+  const retry = new vm.SourceTextModule(retrySource, { context });
+  await retry.link(() => new vm.SyntheticModule(["modal"], function () { this.setExport("modal", values.modal); }, { context }));
+  await retry.evaluate(); values.chooseRetryAssist = retry.namespace.chooseRetryAssist;
   const module = new vm.SourceTextModule(source, { context });
   await module.link(async spec => {
     const names = [...source.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)]
@@ -85,7 +103,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
   let result, error;
   try { result = await module.namespace.runChapterFourCraft({ isCurrent: () => current, menuButton: () => ({}) }); }
   catch (e) { error = e; }
-  return { trace, snapshots, value, result, error };
+  return { trace, snapshots, value, result, error, contexts, shown };
 }
 const success = await run();
 assert.equal(success.error, undefined);
@@ -143,8 +161,8 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   assert(at(t, "standings:2") < story(t, "interlude1") && story(t, "interlude1") < at(t, "ch4_craft_advice_9"));
   assert(at(t, "ch4_craft_advice_9") < at(t, "ch4_customer_1"));
   assert(at(t, "standings:3") < story(t, "interlude2") && story(t, "interlude2") < at(t, "ch4_customer_2"));
-  // 提供後の掛け合いには、はじめの実際の順位を渡す（高得点の一台は先頭）。
-  assert(t.includes("story:interlude1:1"));
+  // 提供後の掛け合いには実際の順位を渡す。版2は炭/調整96だけでは中盤のなるに並ばれる。
+  assert(t.includes("story:interlude1:2"));
   assert.deepEqual(success.value.flags._ch4.match.craft.tournamentStory.seen, ["opening", "packed", "waiting", "interlude1", "interlude2"]);
   // 保存から再開しても、読んだ掛け合いは繰り返さない。提供で失敗した一台に調整前の掛け合いは出ない。
   assert.deepEqual(told(resumed.trace), ["interlude1", "interlude2"]);
@@ -164,6 +182,34 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   const reopened = await run({ resume: structuredClone(closed.value) });
   assert.equal(reopened.result.win, true);
   assert.deepEqual(told(reopened.trace), ["packed", "waiting", "interlude1", "interlude2"]);
+}
+// 2026-11-02「なるを強くする」: ふつうの出来の一台では、提供後・調整1回目の票でなるが先頭に立ち、最後の票で逆転する。
+// 掛け合いには、直前に見せた途中順位と同じ並び（はじめの順位と先頭）を渡す。強い一台では先頭ははじめのまま。
+{
+  const average = await run({ quality: 89, rulesVersion: 1 });
+  const legacyStrong = await run({ rulesVersion: 1 });
+  const currentStrong = await run({ quality: 100 });
+  assert(legacyStrong.trace.includes("story:interlude1:1"), "Legacy strong crafts keep the original story context");
+  assert.equal(currentStrong.result.win, true);
+  assert.equal(average.result.win, true);
+  const told = (r, event) => r.contexts.find(row => row.event === event);
+  assert.deepEqual(average.shown.map(rows => rows[0].id), ["hajime", "naru", "naru"]);
+  for (const r of [average, legacyStrong, success, currentStrong]) for (const [event, index] of [["interlude1", 1], ["interlude2", 2]]) {
+    const rows = r.shown[index], me = rows.find(row => row.id === "hajime");
+    assert.deepEqual(told(r, event), { event, leader: rows[0].id, rank: me.rank,
+      tied: rows[1].points === rows[0].points, level: me.points === rows[0].points }, `${event} is told the standings just shown`);
+  }
+  // ふつうの一台では、なるは提供後・調整1回目の票の1位を取って、はじめと同じ持ち点に並ぶ（盤の上はその回の出来の差）。
+  // 台本には「並んだ」と渡し、単独の先頭とは言わせない。
+  assert.deepEqual(average.shown.slice(1).map(rows => rows.slice(0, 2).map(row => `${row.id}:${row.points}`)),
+    [["naru:6", "hajime:6"], ["naru:9", "hajime:9"]]);
+  assert.equal(told(average, "interlude1").tied, true);
+  assert.equal(told(average, "interlude1").level, true);
+  assert.equal(told(legacyStrong, "interlude1").leader, "hajime");
+  assert.equal(told(legacyStrong, "interlude2").leader, "hajime");
+  assert.equal(told(currentStrong, "interlude1").leader, "hajime");
+  assert.equal(told(currentStrong, "interlude2").leader, "hajime");
+  assert.equal(told(success, "interlude1").leader, "naru", "Current mid-game Naru lead is passed to the story, never a stale fixed rank");
 }
 const noAsk = await run({ ask: false });
 assert.deepEqual(noAsk.value.flags._ch4.match.craft.customerChecks, [false, false]);
@@ -185,4 +231,37 @@ assert.equal(grownRetry.error,undefined);assert.equal(grownRetry.value.growth.xp
 assert(grownRetry.trace.includes("story:opening:1"),"再挑戦は大会の最初からなので、開幕の掛け合いも読み直す");
 assert.equal(grownRetry.value.growth.earned,2,"再挑戦は順位の差分だけ。色の火種は完成後に一度");
 previewStorage.clear();
+// 版2の強化と同時に既存の操作補助を接続。明示的な3敗からだけ、次の一台に適用する。
+{
+  const failed = newState(); failed.chapter = 4; failed.phase = "tournament"; failed.stamina = 22;
+  failed.flags._ch4_strategy = "sakura";
+  failed.flags._ch4 = { part: "tournament", read: { ch4_tournament_start: true } };
+  match.chapterFourMatch(failed).history = [{ win: false }, { win: false }, { win: false }];
+  const yes = await run({ resume: structuredClone(failed), assistChoice: true });
+  assert.equal(yes.error, undefined);
+  assert.equal(yes.value.flags._ch4.match.craft.retryAssist, true);
+  assert(yes.trace.includes("session-stamina:100"), "The accepted one-craft assist recovers stamina before creating its condition snapshot");
+  assert.equal(yes.trace.filter(item => item === "コンティニュー").length, 1);
+  const no = await run({ resume: structuredClone(failed), assistChoice: false });
+  assert.equal(no.value.flags._ch4.match.craft.retryAssist, false);
+  assert(no.trace.includes("session-stamina:22"), "Declining assist does not recover stamina");
+  const cancelled = await run({ resume: structuredClone(failed), assistChoice: null });
+  assert.equal(cancelled.result, false);
+  assert.equal(cancelled.value.flags._ch4.match.craft, null);
+  assert.equal(cancelled.value.stamina, 22);
+  assert.equal(cancelled.snapshots.length, 0, "Cancel does not start or save a new attempt");
+  const changed = await run({ resume: structuredClone(failed), assistChoice: true, assistInvalidate: true });
+  assert.equal(changed.error?.name, "AbortError");
+  assert.equal(changed.value.flags._ch4.match.craft, null);
+  assert.equal(changed.value.stamina, 22);
+  const pending = yes.snapshots.find(snapshot => snapshot.flags._ch4.match.step === 8 && snapshot.flags._ch4.match.rollback);
+  const continued = await run({ resume: pending });
+  assert.equal(continued.value.flags._ch4.match.craft.retryAssist, true);
+  assert(!continued.trace.includes("コンティニュー"), "SAVE/LOAD keeps the selected assist without asking again mid-craft");
+  const unknown = structuredClone(failed); unknown.flags._ch4.match.history = [];
+  unknown.flags._ch4.attempts = 99;
+  const noInferredLoss = await run({ resume: unknown, assistChoice: true });
+  assert.equal(noInferredLoss.value.flags._ch4.match.craft.retryAssist, false);
+  assert(!noInferredLoss.trace.includes("コンティニュー"));
+}
 console.log("PASS: real Chapter 4 runner awaits each craft step, handles failures/abandonment/owner changes and resumes serialized saves");

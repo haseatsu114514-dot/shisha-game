@@ -204,7 +204,9 @@ export function homeShishaDialogue(result, rig, random = Math.random, { distant 
     : "（この味の感触、覚えておこう。片付けたら今日は寝よう）" });
   // 会話の間だけ夜の曲に替え、終わったら元の曲へ戻る。味覚不調の章は ch2 の既存曲に合わせる
   const bgm = distant ? "bgm_taste_distant" : "kansetsu_shomei_to_black_coffee";
-  return { dialogue_id: "home_shisha_night", metadata: { bg: HOME_BG, bgm }, lines };
+  // #2447 item10: この場面だけ、卓上・床の台を本文ボックスの上辺まで持ち上げて全体を見せる
+  // （台の下半分が会話ウィンドウに隠れないように）。他の家の場面は従来どおり机へ接地させる。
+  return { dialogue_id: "home_shisha_night", metadata: { bg: HOME_BG, bgm, lift_scene_props: true }, lines };
 }
 
 /** 自分で配合する（合計12gちょうど）。決めたら mix、やめたら null */

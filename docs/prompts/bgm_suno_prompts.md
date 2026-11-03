@@ -60,7 +60,7 @@ About 2 minutes.
 テイスト違い予備案: 「electro-house」を「big-beat / breakbeat」にすると
 レトロゲーム調UIとの相性が上がる。
 
-## 4. bgm_result_emotional.mp3 — 優勝リザルト（南雲コール後の余韻）
+## 4. bgm_result_emotional.mp3 — 優勝リザルト（須井コール後の余韻）
 
 機能: 優勝コール＋紙吹雪の直後、リザルト画面の**涙腺曲**。1〜2分だけ流れる
 一発場面なので、冒頭から感情を張ってよい（山を前に置く）。
@@ -262,3 +262,39 @@ sudden loud hits. About 3 minutes.
 - **新しく足すなら曲ごとに確認が要る**: ①ゲームでの利用（個人・同人の有償配布を含む）、②公開リポジトリへの同梱（`.bgm` で単体再配布を避けても許されるか）、③ループのための切り出し・つなぎ（改変）の可否、④クレジットの要否。サイト単位でなく曲ごとに条件が違う（`docs/prompts/external_asset_sources.md`）。Mixkit の音楽のように「ゲーム利用不可」もある。
 - **スタッフロールとの両立**: オーナー指示はスタッフロールを全部「あつき」。**クレジット表記が必須の音源（CC BY・OtoLogic 等）は採用できない**。任意の音源でも、他人の曲を「作曲：あつき」と書くのは事実と違うので、音楽の欄は「選曲・音響」などの書き方にするか、使用楽曲の欄を別に置くかを #517 で決める（今あるフリー音源の曲もこの扱いが要る）。
 - **推奨**: Suno の MCP が今日届くので、6曲とも Suno で作る。フリー音源は仮でも新しく入れない（確認と記録を2回やることになり、仮の曲が残りやすい）。MCP が遅れて先に音を付けたい場合は、新しい曲を探さず、**すでに入っている曲を仮に当てる**（スタッフロールは `title` のタイトル曲、ドバイは今のまま `tonari`）。
+
+## 2026-11-02 第2章の街 柚ヶ谷（J04・IR28）
+
+第2章の隣町・**柚ヶ谷**（高いビル・広い交差点・大型ビジョン、全国から選手が集まる都会）は今、第1章の日常曲 `kansetsu_shomei_to_black_coffee`（間接照明とブラックコーヒー）の仮当て。地元の橙須（気だるい商店街）と温度を変え、第2章の「才能の壁」の少し張った空気を出す。調査は `docs/reports/issue1081-j04-ch2-town-bgm-20261028.md`。
+
+- 共通: **Instrumental（歌なし）**。ボーカル・ボーカルチョップ・語りが混ざったテイクは不採用。ループで鳴らすので、フェードアウト・完全終止を付けない。1曲につき2〜3テイク作って選ぶ。
+
+### 組み込み先
+
+| キー（案） | 鳴らす場面（コード） | 今鳴っている曲 |
+|---|---|---|
+| `bgm_yuzugaya` | `remake/js/chapters/ch2.js` の `CITY_BGM`（初日の駅前到着・街の地図・各店の店頭・帰りの電車）。第2章の日常（DAY2〜13）の朝と地図は `remake/js/daily/calendar.js` の朝の `playBgm` が第1章の曲を鳴らしているので、第2章のときだけ `bgm_yuzugaya` にする | `kansetsu_shomei_to_black_coffee` |
+
+- tonari の店内（`tonari`）、ボドゲカフェ（`bgm_trpg`）、斧投げBAR（`bgm_axe`）、プリクラ、DAY5夜のスランプ（`bgm_taste_distant`）、大会の曲は今のまま。
+
+### bgm_yuzugaya — 柚ヶ谷の街
+
+機能: 第2章の大半で鳴る日常曲（地図・店の店頭・会話）。何度も聞くので主張しすぎず、地元より少しだけ速くて洗練された都会の空気。会話を読ませるので音数は抑える。
+
+```
+Title: Yuzugaya Crossing
+Style（短）: instrumental, city pop, nu-jazz chillhop, Rhodes, muted guitar, 94 BPM, loopable, no vocals
+説明（長）:
+Instrumental only, no vocals. Stylish city-pop / nu-jazz chillhop for walking a
+bright modern city of glass towers, wide crossings and big street screens in a
+shisha lounge adventure game. Warm Rhodes electric piano with minor-seventh
+chords, clean muted guitar cutting, round fingered bass, light brushed drums with
+a soft shuffle, a thin airy synth pad and a faint distant city ambience. A little
+more tense and polished than a sleepy hometown song — quietly ambitious, the
+feeling of standing next to people more talented than you — but still relaxed
+enough to read dialogue over. 94 BPM. Short 2-bar intro, even groove with small
+variations, no build-ups, no drops, no sudden loud hits. Seamless loop: the
+ending flows back into the opening phrase. About 2 minutes 30 seconds.
+```
+
+テイスト違い予備案: 「Rhodes electric piano」を「lo-fi house plucks and side-chained pads, 112 BPM」に替えると夜の繁華街寄り（夜の地図が多いと感じたら）。

@@ -129,7 +129,7 @@
     },
     {
       "id": "C09",
-      "name": "アゲハ：プロの試飲［顔修正版］",
+      "name": "あげは：プロの試飲［顔修正版］",
       "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-01-professional-face.png",
       "sha256": "18b145af29181d868413142567676f96b1f020077bedbda6c758b9fff2594a83",
       "ai_recommendation": "revise",
@@ -147,7 +147,7 @@
     },
     {
       "id": "C10",
-      "name": "アゲハ：買い物の笑顔［顔修正版］",
+      "name": "あげは：買い物の笑顔［顔修正版］",
       "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-02-grocery-face.png",
       "sha256": "b26136e0a318160012feb551e9565c7b63e5fae27ee5ae734cc0e7bf46b06ced",
       "ai_recommendation": "retain",
@@ -160,7 +160,7 @@
     },
     {
       "id": "C11",
-      "name": "アゲハ：スタジオ［顔修正版］",
+      "name": "あげは：スタジオ［顔修正版］",
       "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-03-studio-face.png",
       "sha256": "a9810bd85aa1f66ffe8604d03bdf3d07d6f1bbb04b00341ac6d23f8f2965cccd",
       "ai_recommendation": "retain",
@@ -173,7 +173,7 @@
     },
     {
       "id": "C12",
-      "name": "アゲハ：舞台裏の自撮り［顔修正版］",
+      "name": "あげは：舞台裏の自撮り［顔修正版］",
       "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-04-selfie-face.png",
       "sha256": "0061c86a41317ee9cb9feb11c713a1147fbb0a118b05e14d66b597d3167baddc",
       "ai_recommendation": "retain",
@@ -186,7 +186,7 @@
     },
     {
       "id": "C13",
-      "name": "アゲハ：閉店後の乾燥ラック",
+      "name": "あげは：閉店後の乾燥ラック",
       "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-05-closing-rack.png",
       "sha256": "e493e76b3eb741940ff64c4d5e73399ae50f092ed3e4274efc26ae6263a76b98",
       "ai_recommendation": "inspect",

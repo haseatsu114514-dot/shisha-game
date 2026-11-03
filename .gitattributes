@@ -1060,13 +1060,11 @@ asset_sources/images/chillhouse_inside_source.png !filter !diff !merge text=auto
 asset_sources/images/desktop_backup/chr_adam_normal.png !filter !diff !merge text=auto eol=lf
 asset_sources/images/desktop_backup/chr_dr_kemuri_normal.png !filter !diff !merge text=auto eol=lf
 asset_sources/images/desktop_backup/chr_hajime_normal.png !filter !diff !merge text=auto eol=lf
-asset_sources/images/desktop_backup/chr_kako_normal.png !filter !diff !merge text=auto eol=lf
 asset_sources/images/desktop_backup/chr_maezono_normal.png !filter !diff !merge text=auto eol=lf
 asset_sources/images/desktop_backup/chr_minto_cafe_normal.png !filter !diff !merge text=auto eol=lf
 asset_sources/images/desktop_backup/chr_minto_normal.png !filter !diff !merge text=auto eol=lf
 asset_sources/images/desktop_backup/chr_nagumo_normal.png !filter !diff !merge text=auto eol=lf
 asset_sources/images/desktop_backup/chr_naru_normal.png !filter !diff !merge text=auto eol=lf
-asset_sources/images/desktop_backup/chr_rira_normal.png !filter !diff !merge text=auto eol=lf
 asset_sources/images/desktop_backup/chr_salaryman_normal.png !filter !diff !merge text=auto eol=lf
 asset_sources/images/map_city_night_source.png !filter !diff !merge text=auto eol=lf
 asset_sources/images/map_city_source.png !filter !diff !merge text=auto eol=lf

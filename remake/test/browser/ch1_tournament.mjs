@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
+import { assertCraftProgress } from "./craft_progress_assertions.mjs";
 import { prepareAppearanceCatalog } from "./appearance_setup.mjs";
 prepareAppearanceCatalog();
 const shots = process.env.SHOTS;
@@ -264,7 +265,7 @@ await suite("ch1-tournament", async check => {
     assert(lane.width > .95 && lane.count > 0 && lane.count <= 4);
     assert.equal(lane.pointer, "none");
     // 工程間の矢印はセル外へ描く。ラベル自体とヘッダー全体の収まりを確認する。
-    await assertFits(page, '.bench-progress, .bench-phase-copy b');
+    await assertCraftProgress(page);
     await page.evaluate(() => { T.broadcast.clearComments(); T.broadcast.burst(cs, "perfect", 4); T.broadcast.clearComments(); });
     await page.waitForTimeout(900);
     assert.equal(await page.locator('.nico').count(), 0, "Old comments leaked after fast transition");
@@ -354,7 +355,27 @@ await suite("ch1-tournament", async check => {
       assert(await page.locator('[data-test="standings"].show:not(.out)').isVisible());
       assert.equal(await page.locator('.sd-feed-lines > div').count(), 2);
     }
+    const paint = await page.locator('.standings .rank-medal').evaluateAll(nodes => nodes.map(n => {
+      const s = getComputedStyle(n); return { image: s.backgroundImage, size: s.backgroundSize,
+        position: s.backgroundPosition, repeat: s.backgroundRepeat, clip: s.clipPath };
+    }));
+    assert(paint.length > 0);
+    for (const medal of paint) {
+      assert.match(medal.image, /medal-(gold|silver|bronze|plain)\.webp/);
+      assert.equal(medal.size, 'contain'); assert.equal(medal.position, '50% 50%');
+      assert.equal(medal.repeat, 'no-repeat'); assert.equal(medal.clip, 'none');
+    }
+    assert.equal(await page.locator('.standings .sd-board').evaluate(n => getComputedStyle(n).backgroundImage), 'none');
+    const decorations = await page.locator('.standings .sd-row').evaluateAll(nodes => nodes.map(n => {
+      const s = getComputedStyle(n); return [s.borderTopColor, s.boxShadow];
+    }));
+    assert(decorations.every(([border, shadow]) => border === 'rgba(0, 0, 0, 0)' && shadow === 'none'));
+    assert(await page.locator('.standings .sd-board').evaluate(n => {
+      const legend = n.querySelector('.judge-legend').getBoundingClientRect();
+      return legend.bottom <= n.querySelector('.sd-rows').getBoundingClientRect().top;
+    }), 'Judge legend overlaps the ranking rows');
     await capture(page, `standings-${label}`);
+    await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/night-standings-${viewport.width}x${viewport.height}.png` });
     if (label === "portrait") {
       // Keep the portrait layout checks, then follow the guide to rotate before tapping.
       assert(await page.locator("#rotate-hint").isVisible());
@@ -384,10 +405,10 @@ await suite("ch1-tournament", async check => {
     const finalVotes = await page.locator('.rt-row').evaluateAll(rows => Object.fromEntries(rows.map(row =>
       [row.dataset.id,{points:parseInt(row.querySelector('.rt-pt').textContent,10),votes:row.querySelector('.rt-votes').textContent}])));
     assert.deepEqual(finalVotes,{
-      naru:{points:5,votes:'上園 2 · 博士 3 · 南雲 0'},
-      adam:{points:5,votes:'上園 2 · 博士 3 · 南雲 0'},
-      minto:{points:3,votes:'上園 2 · 博士 1 · 南雲 0'},
-      hajime:{points:17,votes:'上園 4 · 博士 3 · 南雲 10'},
+      naru:{points:5,votes:'上園 2 · 博士 3 · 須井 0'},
+      adam:{points:5,votes:'上園 2 · 博士 3 · 須井 0'},
+      minto:{points:3,votes:'上園 2 · 博士 1 · 須井 0'},
+      hajime:{points:17,votes:'上園 4 · 博士 3 · 須井 10'},
     });
     for(const [id,points] of Object.entries(interim.points))assert(finalVotes[id].points>=points,`${id}: displayed allocated points returned`);
     await assertFits(page,'.rt-name, .rt-votes, .rt-pt');

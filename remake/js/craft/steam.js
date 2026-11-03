@@ -73,7 +73,7 @@ export async function runSteamDodge(cs) {
     await resultCard(panel,{title:"0分蒸らし",lines:["待たずに立ち上げる。吸い出しで低温から熱を運ぼう"]});
     return;
   }
-  const panel = stepPanel("steam", "蒸らし", "アタックはZ／ボタンで上側の前方を斬る。移動中も向きは変わらない。コンボが3・6になると刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。被弾するとコンボは途切れる。空振り・リフレッシュでは維持し、次の蒸らしでは0から始まる。", { brief: "" });
+  const panel = stepPanel("steam", "蒸らし", "雑念を避けよう。被弾するたび蒸らしの評価が下がり、アタックのコンボも途切れる。蒸らし後の温度は被弾では変わらない。アタックはZ／ボタンで上側の前方を斬る。移動中も向きは変わらない。コンボが3・6になると刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。空振り・リフレッシュでは維持し、次の蒸らしでは0から始まる。", { brief: "" });
   const isCurrent = () => state === owner && benchRoot(cs) === root && panel.dataset.step === "steam";
   const W = 784, H = 414;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius) } });

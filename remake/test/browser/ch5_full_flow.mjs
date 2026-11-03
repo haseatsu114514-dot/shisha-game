@@ -45,7 +45,7 @@ async function seed(page) {
         firstDay: 1, resolution: 5, attempts: 1 } };
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
-    // 路上占い師（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、第5章の出現は済んだことにする（第3・4章の検査と同じ）。
+    // 辻占のオババ（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、第5章の出現は済んだことにする（第3・4章の検査と同じ）。
     const fortunePlan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter: 5 });
     value.flags._fortune_wander = { chapter: 5, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
     core.saveConfig(); core.save();
@@ -281,7 +281,7 @@ await suite("ch5-full-flow", async check => {
       Object.assign(value.met, { kumicho: true, rei: true, ageha: true });
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
-      // 路上占い師（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、第5章の出現は済んだことにする（第3・4章の検査と同じ）。
+      // 辻占のオババ（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、第5章の出現は済んだことにする（第3・4章の検査と同じ）。
       const fortunePlan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter: 5 });
       value.flags._fortune_wander = { chapter: 5, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
       core.saveConfig(); core.save();
@@ -316,8 +316,9 @@ await suite("ch5-full-flow", async check => {
     assert.equal(stationFares(page), 200, "One fare out, paid by the station UI");
   });
 
-  // #2033 D: 新幹線で東京へ。最初の到着でムカイさんに屋根裏を借り、好きなだけ泊まれて、好きな時に帰れる。
-  await check("chapter-five-tokyo-attic-stay-and-train-home", async page => {
+  // #2033 D・FIN13: Dr.fookah の配送便で東京へ（運賃はかからない・昼に出て夜に着く＝昼と夜の2行動。新幹線の1行動より1つ多い）。
+  // 最初は店員に乗せてもらう話、最初の到着でムカイさんに屋根裏を借りる。好きなだけ泊まれて、帰りも配送便（昼だけ）。
+  await check("chapter-five-tokyo-van-attic-stay-and-van-home", async page => {
     page.setDefaultTimeout(30000);
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js");
@@ -333,43 +334,167 @@ await suite("ch5-full-flow", async check => {
       Object.assign(value.met, { steve: true, volk: true, mukai_master: true });
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
-      // 路上占い師（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、第5章の出現は済んだことにする（第3・4章の検査と同じ）。
+      // 辻占のオババ（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、第5章の出現は済んだことにする（第3・4章の検査と同じ）。
       const fortunePlan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter: 5 });
       value.flags._fortune_wander = { chapter: 5, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
       core.saveConfig(); core.save();
     });
     await loadSlot(page, 0);
     await mapReady(page, { day: 51, slot: 0 });
-    // 昼: 東京へ（片道11,000円・1行動）→ 初めての到着でムカイさんに屋根裏を借りる。
-    await go(page, "ch5_to_tokyo");
+    // 地元の地図の「東京へ（配送便）」: 文字の盾（新幹線の駅の絵・店のロゴは付けない）。説明に決まりを書く。
+    const toTokyo = dt("pin-ch5_to_tokyo");
+    assert.equal(await page.locator(`${toTokyo} .facility-icon, ${toTokyo} .store-logo`).count(), 0, "The van pin is a plain shield");
+    await page.locator(toTokyo).click();
+    assert.match(await page.locator(".mi-desc").innerText(), /運賃はかからない.*昼と夜の2行動/);
+    assert.equal(await page.locator(`${dt("map-go")} .mi-note`).innerText(), "無料");
+    // 昼: 配送便で東京へ → 最初は Dr.fookah の店員に乗せてもらう話 → 夜に着いてムカイさんに屋根裏を借りる → 屋根裏で寝る。
+    await page.locator(dt("map-go")).click();
     const tokyoMap = (day, slot) => page.waitForFunction(([day, slot]) => {
       const s = window.__remake?.state;
       return s && s.day === day && s.slot === slot && document.querySelector('.map:not(.done):not([data-revealing="true"])[data-region="tokyo"] [data-test=pin-ch5_tokyo_mukai]')
         && !document.querySelector("#modal.show");
     }, [day, slot], { timeout: 60000 });
-    await tokyoMap(51, 1);
+    await tokyoMap(52, 0);
     let state = await get(page);
-    assert.equal(state.flags._ch2_region, "tokyo");
+    assert.equal(state.flags._ch2_region, "tokyo", "The night of the ride is spent in the attic");
+    assert.equal(state.flags._ch5_tokyo_van, true, "A Dr.fookah clerk offers the ride the first time");
     assert.equal(state.flags._ch5_tokyo_attic, true, "Mukai lends the attic on the first arrival");
-    assert.equal(state.money, 60000 - 11000);
+    assert.equal(state.money, 60000, "The delivery van is free");
+    assert.equal(state.visitedDay?.ch5_to_tokyo, 51, "The van used the whole day 51 (day and night)");
     for (const pin of ["ch5_tokyo_steve", "ch5_tokyo_volk", "ch5_tokyo_park", "ch5_tokyo_attic", "ch5_tokyo_home", "ch5_tokyo_shop"])
       assert.equal(await page.locator(dt(`pin-${pin}`)).count(), 1, `${pin} is on the Chapter 5 Tokyo map`);
     assert.equal(await page.locator(dt("pin-ch5_call")).count(), 0, "The doctor is called from home");
     assert.match(await page.locator(".hud").innerText(), /TOKYO|東京/);
-    // 夜: スティーブの店 → 屋根裏で寝て、翌朝も東京。
+    // 昼: スティーブの店（東京のシーシャ屋は4,000円。帰りの分は取り置かない）。
     await go(page, "ch5_tokyo_steve");
-    await tokyoMap(52, 0);
+    await tokyoMap(52, 1);
+    state = await get(page);
+    assert.equal(state.money, 60000 - 4000, "A Tokyo shisha shop is 4,000 yen (TKP01)");
+    assert.equal(state.flags._ch5_tokyo_talks?.ch5_tokyo_steve, 1);
+    // 夜: 帰りの配送便は昼だけ（押せない）→ 屋根裏で休んで、翌朝も東京。
+    await page.locator(dt("pin-ch5_tokyo_home")).click();
+    assert.match(await page.locator(".mi-no").innerText(), /配送便は昼に出る/);
+    assert.equal(await page.locator(dt("map-go")).count(), 0, "No van at night");
+    await go(page, "ch5_tokyo_attic");
+    await tokyoMap(53, 0);
     state = await get(page);
     assert.equal(state.flags._ch2_region, "tokyo", "The night is spent in the attic");
-    assert.equal(state.money, 60000 - 11000 - 4000, "A Tokyo shisha shop is 4,000 yen (TKP01)");
-    assert.equal(state.flags._ch5_tokyo_talks?.ch5_tokyo_steve, 1);
-    // 昼: 帰りの新幹線（取り置いた片道分）→ 夜は地元。
+    // 昼: 帰りの配送便 → 夜に地元へ着いて寝る → 翌朝は地元。
     await go(page, "ch5_tokyo_home");
-    await mapReady(page, { day: 52, slot: 1 });
+    await mapReady(page, { day: 54, slot: 0 });
     state = await get(page);
     assert.equal(state.flags._ch2_region, "home");
-    assert.equal(state.money, 60000 - 11000 * 2 - 4000);
+    assert.equal(state.visitedDay?.ch5_tokyo_home, 53, "The van home used the whole day 53");
+    assert.equal(state.money, 60000 - 4000, "The van home is free too");
     assert.equal(state.flags._ch5.part, "free", "The Tokyo stay does not move the Chapter 5 story");
+  });
+
+  // IR16・IR17: 第5章は帰郷後なので、第1・2章と同じく恋人のLIMEの誘い→デート（絆が深まる）→節目（lover_events）。
+  // FIN13: 今夜の約束がある日は東京配送便に乗れない。ドバイ出発の確認では取消・再案内も検証する。
+  await check("chapter-five-lover-invitation-date-and-milestone", async page => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 5, day: 51, slot: 0, phase: "daily", money: 60000, stamina: 100,
+        weatherSeed: 5, lovers: ["tsumugi"], loveLevel: { tsumugi: 1 }, lovePts: { tsumugi: 9 }, loverSince: { tsumugi: 44 },
+        contacts: ["sumi", "tsumugi"], limeRead: ["_lover_private_account_tsumugi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
+        _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
+        _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
+          read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
+          finaleScenes: null, won: null, secondCup: null },
+        _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true };
+      Object.assign(value.met, { tsumugi: true });
+      value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      const fortunePlan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter: 5 });
+      value.flags._fortune_wander = { chapter: 5, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
+      core.saveConfig(); core.save();
+    });
+    await loadSlot(page, 0);
+    await mapReady(page, { day: 51, slot: 0 });
+    let state = await get(page);
+    const invite = state.inbox.find(item => item.msg?.accept_event === "date_tsumugi");
+    assert(invite && !invite.read, "The morning LIME brings a date invitation in Chapter 5");
+    await page.locator(dt("hud-phone")).click();
+    await page.locator(dt("lime-chat-tsumugi")).click();
+    await page.locator('[data-test="reply-0"]:not([disabled])').click();
+    await page.locator(dt("phone-next")).click();
+    await page.locator(dt("phone-close")).click();
+    await mapReady(page, { day: 51, slot: 0 });
+    state = await get(page);
+    assert.equal(state.pendingInvite?.event, "date_tsumugi");
+    assert.equal(state.pendingInvite.slot, 1);
+    const beforeTravel = state;
+    const unchangedAppointment = value => ({
+      day: value.day, slot: value.slot, money: value.money, region: value.flags._ch2_region ?? "home",
+      pendingInvite: value.pendingInvite, inbox: value.inbox,
+    });
+    // 配送便は今夜の約束を優先し、出発ボタン自体を出さない。約束・行動・お金も保持。
+    await page.locator(dt("pin-ch5_to_tokyo")).click();
+    assert.match(await page.locator(".mi-no").innerText(), /今夜はLIMEの約束/);
+    assert.equal(await page.locator(dt("map-go")).count(), 0, "Tonight's appointment blocks the Tokyo van");
+    assert.deepEqual(unchangedAppointment(await get(page)), unchangedAppointment(beforeTravel));
+    // ドバイは出発前に約束を確認する。「やめる」なら手紙・切符も消費せず地元に残る。
+    await go(page, "ch5_to_dubai");
+    await page.locator(dt("ch5-date-stay")).click();
+    await mapReady(page, { day: 51, slot: 0 });
+    state = await get(page);
+    assert.deepEqual(unchangedAppointment(state), unchangedAppointment(beforeTravel));
+    for (const flag of ["_ch5_dubai_letter", "_ch5_dubai_ticket", "_ch5_dubai_flights"])
+      assert.equal(state.flags[flag], beforeTravel.flags[flag], `Cancel preserves ${flag}`);
+    // 昼は家で休む → 仕事のあと約束の場所へ → デート → 節目 → 翌朝。
+    await go(page, "rest");
+    const settle = async (day, slot) => {
+      for (let n = 0; n < 180; n++) {
+        for (const name of ["levelup-ok", "board-close"]) {
+          const button = page.locator(dt(name));
+          if (await button.count() && await button.first().isVisible()) await button.first().click().catch(() => {});
+        }
+        if (await page.evaluate(([day, slot]) => {
+          const s = window.__remake?.state;
+          return s && s.day === day && s.slot === slot && !!document.querySelector('.map:not(.done):not([data-revealing="true"]) [data-test=pin-tonari]')
+            && !document.querySelector("#modal.show");
+        }, [day, slot])) return;
+        await page.waitForTimeout(500);
+      }
+      throw new Error(`The map of day ${day} did not open`);
+    };
+    await settle(52, 0);
+    state = await get(page);
+    assert.equal(state.lastDate.tsumugi, 51, "The date happened on the promised night");
+    assert(state.lovePts.tsumugi > 9, "The date deepens the private bond (lovePts)");
+    assert(state.loverEventsSeen.includes("lover_tsumugi_lv1"), "The first milestone follows the date");
+    assert.equal(state.pendingInvite, null);
+    assert(state.inbox.find(item => item.id === invite.id)?.completed, "The appointment is completed once");
+    // 約束を改めてドバイへ行くと、その日の約束は流れ、また誘ってもらえる。切符で無料・1行動。
+    await page.evaluate(() => {
+      const s = window.__remake.state;
+      s.inbox.push({ id: "_date_inv_tsumugi_test_d52", originId: "_date_inv_tsumugi_test_d52", day: 52, chapter: 5, read: true, done: true, result: "accepted", log: [],
+        msg: { id: "_date_inv_tsumugi_test_d52", sender: "tsumugi", type: "invitation", lover: true, accept_event: "date_tsumugi",
+          time_slot: "night", after_close: true, messages: ["今日は仕事を終えてから、少し会える？"] } });
+      s.pendingInvite = { event: "date_tsumugi", sender: "tsumugi", slot: 1, day: 52, originId: "_date_inv_tsumugi_test_d52", afterClose: true };
+    });
+    const beforeFlight = await get(page);
+    await go(page, "ch5_to_dubai");
+    await page.locator(dt("ch5-date-leave")).click();
+    await page.locator(dt("ch5-dubai-go")).click({ timeout: 60000 });
+    await page.waitForFunction(() => {
+      const s = window.__remake.state;
+      return s.flags._ch2_region === "dubai" && s.day === 52 && s.slot === 1
+        && !!document.querySelector('.map:not(.done):not([data-revealing="true"])[data-region="dubai"]');
+    }, null, { timeout: 60000 });
+    state = await get(page);
+    assert.equal(state.pendingInvite, null, "The date is moved to another day");
+    const moved = state.inbox.find(item => item.id === "_date_inv_tsumugi_test_d52");
+    assert.equal(moved.result, "expired");
+    assert.equal(moved.needsResend, true);
+    assert.equal(state.lastDate.tsumugi, 51, "No date in Dubai");
+    assert.equal(state.money, beforeFlight.money, "The letter covers the fare");
+    assert.equal(state.flags._ch5_dubai_letters, 1);
+    assert.equal(state.flags._ch5_dubai_flights, 1);
+    assert.equal(state.flags._ch5_dubai_ticket, false, "The ticket funds one round trip");
   });
 
   // 帰国後の tonari の打ち上げ（オーナー指定 2026-11-02）: 自由行動の始めに一度だけ、誰の隣に座るかを選ぶ。
@@ -454,9 +579,9 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5.part, "free", "Regular talks do not move the Chapter 5 story");
   });
 
-  // #2033 E: シェイクの招待でドバイへ。最初に手紙を読み、1回目は同封の切符で無料、2回目からは往復100,000円。
-  // 屋敷の客間に泊まれて、帰りの便は払わない。
-  await check("chapter-five-dubai-letter-guest-room-and-flight-home", async page => {
+  // #2033 E・FIN14: シェイクの招待でドバイへ。手紙に毎回、往復の切符が同封されている（運賃はかからない）。
+  // 最初の手紙は「ドバイへ」を選んだ時に読み、2通目からは帰ってから2日後の朝に届く。屋敷の客間に泊まれる。
+  await check("chapter-five-dubai-letters-tickets-guest-room-and-flight-home", async page => {
     page.setDefaultTimeout(30000);
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js");
@@ -472,13 +597,14 @@ await suite("ch5-full-flow", async check => {
       Object.assign(value.met, { sheikh: true });
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
-      // 路上占い師（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、第5章の出現は済んだことにする（第3・4章の検査と同じ）。
+      // 辻占のオババ（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、第5章の出現は済んだことにする（第3・4章の検査と同じ）。
       const fortunePlan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter: 5 });
       value.flags._fortune_wander = { chapter: 5, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
       core.saveConfig(); core.save();
     });
     await loadSlot(page, 0);
     await mapReady(page, { day: 51, slot: 0 });
+    assert.equal(await page.locator(`${dt("pin-ch5_to_dubai")} .evt-badge`).count(), 1, "The Sheikh's letter is waiting");
     // 昼: ドバイへ → 最初はシェイクの手紙 → 往復の確認 → 着いたら屋敷の客間へ。
     await go(page, "ch5_to_dubai");
     await page.locator(dt("ch5-dubai-go")).click({ timeout: 60000 });
@@ -494,6 +620,8 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5_dubai_guest, true, "The Sheikh prepares the guest room on the first arrival");
     assert.equal(state.money, 150000, "The Sheikh's ticket makes the first flight free");
     assert.equal(state.flags._ch5_dubai_flights, 1);
+    assert.equal(state.flags._ch5_dubai_letters, 1);
+    assert.equal(state.flags._ch5_dubai_ticket, false, "The ticket is used for this round trip");
     for (const pin of ["ch5_dubai_taiyo", "ch5_dubai_souq", "ch5_dubai_alley", "ch5_dubai_creek", "ch5_dubai_shop", "ch5_dubai_guest", "ch5_dubai_home"])
       assert.equal(await page.locator(dt(`pin-${pin}`)).count(), 1, `${pin} is on the Chapter 5 Dubai map`);
     assert.equal(await page.locator(dt("pin-ch5_call")).count(), 0, "The doctor is called from home");
@@ -514,14 +642,27 @@ await suite("ch5-full-flow", async check => {
     state = await get(page);
     assert.equal(state.flags._ch2_region, "home");
     assert.equal(state.money, 150000, "The flight home is already in the round trip");
+    assert.equal(state.flags._ch5_dubai_back_day, 52);
     assert.equal(state.flags._ch5.part, "free", "The Dubai stay does not move the Chapter 5 story");
-    // 夜: 2回目は自分で往復100,000円（手紙は読み直さない）→ 客間で寝て、翌朝もドバイ。
+    // 夜: 次の手紙はまだ（帰ってから2日後の朝に届く）。「ドバイへ」は理由を出して押せない。
+    await page.locator(dt("pin-ch5_to_dubai")).click();
+    assert.match(await page.locator(".mi-no").innerText(), /シェイクの次の手紙は、まだ届いていない（あと2日）/);
+    assert.equal(await page.locator(dt("map-go")).count(), 0, "No flight without a ticket");
+    // 家で休んで2日を過ごす（夜→翌日の昼→夜）。
+    for (const [day, slot] of [[53, 0], [53, 1], [54, 0]]) {
+      await go(page, "rest");
+      await mapReady(page, { day, slot });
+    }
+    // 2日後の朝: 2通目の手紙（切符入り）が届いている → 読んで、また無料で飛ぶ → 客間の夜。
+    assert.equal(await page.locator(`${dt("pin-ch5_to_dubai")} .evt-badge`).count(), 1, "The second letter has arrived");
     await go(page, "ch5_to_dubai");
     await page.locator(dt("ch5-dubai-go")).click({ timeout: 60000 });
-    await dubaiMap(53, 0);
+    await dubaiMap(54, 1);
     state = await get(page);
-    assert.equal(state.money, 150000 - 100000, "From the second flight, the round trip costs 100,000 yen");
+    assert.equal(state.money, 150000, "The second flight is free too: the Sheikh sent another ticket");
+    assert.equal(state.flags._ch5_dubai_letters, 2, "The second letter was read");
     assert.equal(state.flags._ch5_dubai_flights, 2);
+    assert.equal(state.flags._ch5_dubai_ticket, false);
   });
 
   await check("chapter-five-weak-second-cup-loses-on-votes-and-continues", async page => {

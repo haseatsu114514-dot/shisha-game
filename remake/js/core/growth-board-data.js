@@ -198,9 +198,9 @@ export const LESSONS = [
   { id: "M-W2", cell: "-3,-1", board: "wisdom", who: "sumi", need: 0, ring: 2, reward: "skill", name: "四つ置き・混ぜ置き",
     hint: "盤の道が届いたら、スミさんが炭の置き方の奥を教えてくれる",
     text: "炭の四つ置きと、フラット炭とキューブ炭の混ぜ置きを選べる", unlocks: ["_coal_four_unlocked", "_coal_mix_unlocked"], scene: "lesson_sumi_four" },
-  { id: "M-W3", cell: "1,-2", board: "wisdom", who: "naru", need: 5, sig: true, reward: "skill", name: "全部見てけ",
-    hint: "なると仲良くなると、店の見方を教えてもらえそう",
-    text: "ライバル店で一服すると、その一台の配合がレシピ帳に残る", scene: "lesson_naru_watch" },
+  { id: "M-W3", cell: "1,-2", board: "wisdom", who: "naru", need: 5, sig: true, reward: "skill", name: "焼き際の見極め",
+    hint: "なると仲良くなると、提供する頃合いを話してくれそう",
+    text: "温度計の琥珀の印に合わせて提供すると、焼き際を見極めた一台として総合評価が少し上がる。味の種類は問わない", scene: "lesson_naru_watch" },
   { id: "M-W6", cell: "-3,-2", board: "sense", who: "sumi", need: 0, ring: 2, reward: "special", name: "カルダモンの一つまみ",
     hint: "盤の道が届いたら、スミさんが相性の悪い葉のつなぎ方を教えてくれる",
     text: "配合にカルダモンを一つまみ足すと、相性の悪い組み合わせのぶつかりがやわらぐ", scene: "lesson_sumi_cardamom" },
@@ -208,7 +208,7 @@ export const LESSONS = [
     hint: "零と仲良くなると、香りの重ね方を教えてもらえそう",
     text: "花の葉を2種以上重ねると香りの層ができ、調整のたびに次の層が立つ", scene: "lesson_rei_layers" },
   { id: "M-S4", cell: "5,-1", board: "sense", who: "ageha", need: 5, ring: 2, sig: true, reward: "skill", name: "ズボーって",
-    hint: "アゲハと仲良くなると、感覚の吸い方を教えてもらえそう",
+    hint: "あげはと仲良くなると、感覚の吸い方を教えてもらえそう",
     text: "吸い出しに「ズボー（同じ長さで吸う一回）」が加わる。一回ずつ刻んで温度を立て直せる", scene: "lesson_ageha_zuboo" },
   { id: "M-W4", cell: "-4,1", board: "wisdom", who: "kumicho", need: 5, ring: 2, sig: true, reward: "skill", name: "0分立ち上げ",
     hint: "組長と仲良くなると、蒸らさない立ち上げ方を教えてもらえそう",
@@ -225,7 +225,7 @@ export const LESSONS = [
   // 追加の6人（2026-10-30 オーナーが推しの案を全部採用。SBD57）。会って相談する場面は growth_lessons.json（SBD70）
   // ひよりの授業は斧投げを明かした後（_hiyori_real_self_known）だけ分かる（2026-10-31 オーナー「斧投げ明かした後で」SBD71）
   { id: "M-S6", cell: "3,-1", board: "sense", who: "rin", need: 5, ring: 1, sig: true, reward: "special", name: "ブルーベリーに帰る",
-    hint: "凛と仲良くなると、迷った時に帰る葉を教えてもらえそう",
+    hint: "くゆりと仲良くなると、迷った時に帰る葉を教えてもらえそう",
     text: "配合にブルーベリーを2割以上入れると、どんな葉と合わせても香りがまとまり、配合の点が上がる", scene: "lesson_rin_blueberry" },
   { id: "M-B4", cell: "1,-2", board: "body", who: "hiyori", need: 5, ring: 1, sig: true, revealFlag: "_hiyori_real_self_known", reward: "special", name: "ラーメンと斧で元気",
     hint: "ひよりと仲良くなると、元気でいるコツを教えてもらえそう",
@@ -274,8 +274,10 @@ export const PLAY_REWARDS = [
   { id: "dj-a", game: "dj", rank: "A", label: "DJで Aランク", gift: { sense: 1 } },
   // ラクダレース（第4章ドバイ・chapters/ch4-camel-race.js）: 初めて練習レースを走り切ったら1つ（順位は問わない。再プレイでは増えない）
   { id: "camel-finish", game: "camel", clears: 1, label: "ラクダレースを完走", gift: { sense: 1 } },
+  { id: "camel-master", game: "camel", master: true, label: "ラクダレース中級認定", gift: { any: 1 } },
   // 第4章ドバイのサンドボード（chapters/ch4-desert.js が state.desert.bestRank を残す）
   { id: "desert-a", game: "desert", rank: "A", label: "サンドボードで Aランク", gift: { body: 1 } },
 ];
 /** くじのラストワン賞（中身はシークレット）。箱を引き切るたびに色つきの火種1つ（いちばん伸びの少ない盤の色） */
 export const KUJI_LAST_ONE_GIFT = 1;
+

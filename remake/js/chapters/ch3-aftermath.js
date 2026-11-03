@@ -1,5 +1,5 @@
 // 全国大会の勝利後。結果発表は大会ランナーが読了・保存し、ここでは再生しない。
-import { DB, bgUrl } from "../core/data.js";
+import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay } from "../core/chapter-clock.js";
@@ -17,12 +17,13 @@ import { playChapterPreview } from "./chapter-preview.js";
 import { shinkansenRide } from "../core/scene-motions.js";
 import { syncTokyoVisits } from "../core/tokyo-visits.js";
 import { growthLesson } from "../core/growth-effects.js";
-import { awardChapterClearExp } from "../core/growth.js";
+import { awardChapterClearExp, readyLessons, consultLessons } from "../core/growth.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { chapterThreePartyGuests } from "./ch3-party-progress.js";
-import { CH3_AFTERMATH_SCENES, CH3_AFTERMATH_DETOURS, canRunChapterThreeAftermath, beginChapterThreeAftermath,
+import { finaleDue, playFinale } from "../daily/bonds.js";
+import { CH3_AFTERMATH_SCENES, CH3_AFTERMATH_DETOURS, CH3_AFTERMATH_FINALES, canRunChapterThreeAftermath, beginChapterThreeAftermath,
   chapterThreeAftermathProgress, completeChapterThreeAftermathScene, availableAftermathDetours,
-  completeAftermathDetour } from "./ch3-aftermath-progress.js";
+  completeAftermathDetour, availableAftermathLessons, availableAftermathFinales } from "./ch3-aftermath-progress.js";
 
 const IDS = CH3_AFTERMATH_SCENES.map(scene => scene.id);
 const test = name => `ch3-aftermath-${name}`;
@@ -147,11 +148,12 @@ export async function runChapterThreeAftermath() {
   });
 }
 
-/** 大会後の寄り道の台本（#2028 残件3）。ファイルごとに読み、欠けていれば後日談の再開を止める。 */
+/** 大会後の寄り道と締めくくり（IR22）の台本（#2028 残件3）。ファイルごとに読み、欠けていれば後日談の再開を止める。 */
 async function loadDetours(owner) {
-  const files = [...new Set(CH3_AFTERMATH_DETOURS.map(scene => scene.file))];
+  const scripts = [...CH3_AFTERMATH_DETOURS, ...CH3_AFTERMATH_FINALES.map(entry => ({ id: entry.dialogue, file: entry.file }))];
+  const files = [...new Set(scripts.map(scene => scene.file))];
   for (const file of files) {
-    const ids = CH3_AFTERMATH_DETOURS.filter(scene => scene.file === file).map(scene => scene.id);
+    const ids = scripts.filter(scene => scene.file === file).map(scene => scene.id);
     if (ids.every(id => DB.dialogues[id]?.lines?.length)) continue;
     const dialogues = await readDialogues(file, ids);
     if (!live(owner)) return;
@@ -161,17 +163,30 @@ async function loadDetours(owner) {
 
 /** 東京にいる間の場面カードに、大会後の寄り道の入口を出す。読んでも日時は進まない。 */
 function detourActions(owner) {
-  const scenes = availableAftermathDetours(state);
-  return scenes.length ? [button(owner, `寄り道をする（${scenes.length}）`, "detour-open", () => renderDetours(owner))] : [];
+  const count = availableAftermathDetours(state).length + availableAftermathLessons(state, readyLessons).length
+    + availableAftermathFinales(state, finaleDue).length;
+  return count ? [button(owner, `寄り道をする（${count}）`, "detour-open", () => renderDetours(owner))] : [];
 }
 
 async function renderDetours(owner) {
   if (!live(owner)) return;
   const scenes = availableAftermathDetours(state);
-  if (!scenes.length) { await renderStage(owner); return; }
+  const lessons = availableAftermathLessons(state, readyLessons);
+  const finales = availableAftermathFinales(state, finaleDue);
+  if (!scenes.length && !lessons.length && !finales.length) { await renderStage(owner); return; }
   card(owner, "detour", "寄り道", "帰る前に、立ち寄れる場所がある。読んでも、予定は進まない。", [
+    // ♥5の締めくくり（IR22）。大会前の来店で読めなかった時だけ、帰る前に一度
+    ...finales.map(entry => button(owner, `${entry.label}（${entry.place}）`, `finale-${entry.who}`,
+      () => readAftermathFinale(owner, entry.who))),
     ...scenes.map(scene => button(owner, `${scene.label}（${scene.location}）`, `detour-${scene.id}`,
       () => readDetour(owner, scene.id))),
+    // 心得の盤で灯した授業を、東京にいるうちにその人へ相談する（SPEC 2.6・SBD61）
+    ...lessons.map(entry => button(owner,
+      `${entry.place}で${displayName(entry.who, state)}に相談する（${entry.lessons.map(lesson => lesson.name).join("・")}）`,
+      `lesson-${entry.who}`, async () => {
+        await consultAftermathLesson(owner, entry.who);
+        if (live(owner)) await renderStage(owner);
+      })),
     button(owner, "戻る", "detour-back", () => renderStage(owner)),
   ], "読んだ場面は、あとから読み返せません。");
 }
@@ -181,7 +196,50 @@ async function readDetour(owner, id) {
   const scene = availableAftermathDetours(state).find(item => item.id === id);
   if (scene && !await readScene(owner, scene)) return;
   if (scene && completeAftermathDetour(state, id)) save();
+  // 鉄の煙の寄り道を読んだその場で、灯した授業をヴォルクに相談する（大会前の寄り道の鉄の煙と同じ）
+  if (scene?.location === "鉄の煙" && live(owner)) await consultAftermathLesson(owner, "volk");
   await renderStage(owner);
+}
+
+/**
+ * 大会後の締めくくり（IR22）。条件・記録・贈り物は daily/bonds.js（一度だけ。中断・LOADでは何も残さない）。
+ * 寄り道と同じく stage・日時は進めない。
+ */
+async function readAftermathFinale(owner, who) {
+  // 押した時点で条件を引き直す。古い画面・二重クリックで再読しない。
+  const entry = availableAftermathFinales(state, finaleDue).find(item => item.who === who);
+  if (!entry || !live(owner)) return;
+  const scene = CH3_AFTERMATH_SCENES[chapterThreeAftermathProgress(state).stage];
+  const background = bgUrl(entry.bg, scene?.slot ? "night" : "day");
+  await setBg(background, { instant: true });
+  if (!live(owner)) return;
+  showScreen("none", null);
+  layers.hud.replaceChildren();
+  layers.hud.classList.remove("show");
+  const controller = owner.controller = new AbortController();
+  try { await playFinale(who, { bg: background, signal: controller.signal }); }
+  finally { if (owner.controller === controller) owner.controller = null; }
+  if (live(owner)) await renderStage(owner);
+}
+
+/**
+ * 大会後の東京で、灯した授業をその場にいる人に相談する（無料・寄り道と同じく stage・日時は進めない）。
+ * 会話中は場面と同じく HUD を隠す。LOAD・ページ離脱で owner.controller を止めると相談も止まる（習得は完読した時だけ）。
+ */
+async function consultAftermathLesson(owner, who) {
+  // 押した時点で条件を引き直す。古い画面・二重クリック・相談済みでは何もしない。
+  const entry = availableAftermathLessons(state, readyLessons).find(item => item.who === who);
+  if (!entry || !live(owner)) return;
+  const scene = CH3_AFTERMATH_SCENES[chapterThreeAftermathProgress(state).stage];
+  const background = bgUrl(entry.bg, scene?.slot ? "night" : "day");
+  await setBg(background, { instant: true });
+  if (!live(owner)) return;
+  showScreen("none", null);
+  layers.hud.replaceChildren();
+  layers.hud.classList.remove("show");
+  const controller = owner.controller = new AbortController();
+  try { await consultLessons(who, { bg: background, signal: controller.signal }); }
+  finally { if (owner.controller === controller) owner.controller = null; }
 }
 
 async function readScene(owner, scene) {
@@ -212,15 +270,16 @@ async function playScene(owner, scene) {
 }
 
 /**
- * あげはの告白（#1930 仮置き・#1988。条件は ch3-romance-entry.js: ♥3の分岐で恋愛寄り・♥5の保存だけ）。
+ * あげはの告白（#1930・#1988・台本は IR20 の正式原稿。条件は ch3-romance-entry.js: ♥3の分岐で恋愛寄り・♥5の保存だけ）。
  * 再会の翌日、もう一度店を訪ねた帰り際に、あげはから言葉にする（台本の「練習の続き」が再会の「言う練習中」を受ける）。
  * 返事（付き合う／友達のまま）を読み終えた時だけ関係を確定し、中断したらこの場面からやり直す。着地するまで第4章へは進めない。
+ * 昼に寄って暗くなるまでいた帰り際なので、時計は昼のまま、背景は店の裏の夜の通り（台本の地の文と一枚絵 cg_ageha_confession に合わせる）。
  */
 function renderAgehaConfession(owner) {
   if (beginAgehaConfessionDay(state)) { syncTokyoVisits(state); save(); }
   card(owner, "ageha-confession", `DAY ${chapterDay(state)}・昼 ／ 帰り際`, "翌日、もう一度MELTY PUFFに寄った。帰り際、あげはに呼び止められた。", [
     button(owner, "続きを読む", "ageha-confession-continue", async () => {
-      const result = await playScene(owner, { id: "confession_ageha", bg: "bg_street_day" });
+      const result = await playScene(owner, { id: "confession_ageha", bg: "bg_street_night" });
       if (!live(owner) || !result || result.cancelled) return;
       const answer = confessionAnswer(result.visited, "ageha");
       if (!answer) return;

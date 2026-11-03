@@ -36,6 +36,7 @@ function peopleRow(people) {
 const knowsOwner = (s) => !s.charId || !!state.met[s.charId];
 
 // 施設は大きな記号、その下に名前。顔のある店は同じ場所に店主の顔を置く。
+const POND_HALL = '<path d="M2 10 12 4l10 6M5 10v8M19 10v8M9 18v-5h6v5M2 21c2.5-1.5 4.5 1.5 7 0s4.5 1.5 7 0 4.5 1.5 6 0"/>';
 const PIN_SYMBOLS = {
   axe_bar: '<path d="m7 22 7-18M12 5l7-2 3 8-8-1M11 8l4 2"/>',
   trpg_bar: '<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M7 7h.01M17 7h.01M12 12h.01M7 17h.01M17 17h.01"/>',
@@ -46,6 +47,8 @@ const PIN_SYMBOLS = {
   c_station: '<path d="M3 20v-9c4-4 14-4 18 0v9H3ZM3 15c4-3 14-3 18 0M12 3v5M12 3h6l-2 3h-4M8 16v4M16 16v4"/>',
   rest: '<path d="m2 11 10-8 10 8M5 9v12h14V9M9 21v-7h6v7"/>',
   fortune: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2H3v16h2m7-10 1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3Z"/>',
+  // 東京の池の弁天堂（IR26。id は仮置きの神社の時のまま）: 水の上のお堂。店の印にしない
+  ch3_tokyo_shrine: POND_HALL, ch5_tokyo_shrine: POND_HALL,
 };
 function pinSymbol(s) {
   return el("span.pin-symbol", { html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PIN_SYMBOLS[s.id] || PIN_SYMBOLS.store}</svg>` });
@@ -280,7 +283,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         return;
       }
       info.replaceChildren(el("div.mi-banner", { text: "駅・行き先を選ぶ" }),
-        el("p.mi-desc", { text: `現在地 ${region?.label || ""} ／ 片道 ${yen(STATION_FARE)} ／ 時間・行動消費なし` }),
+        el("p.mi-desc", { text: `現在地 ${region?.label || ""} ／ どこへでも一律 片道${yen(STATION_FARE)} ／ 時間・行動消費なし` }),
         ...destinations.map(item => el("button.mi-go", { type: "button", text: `${item.label} ／ ${yen(STATION_FARE)}`,
           dataset: { test: `station-destination-${item.id}` }, onclick: () => choose(item) })),
         el("button.mi-go.mi-go-alt", { type: "button", text: "キャンセル", dataset: { test: "station-cancel" }, onclick: cancel }));
@@ -335,7 +338,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) && s.facilityIcon !== false && !logo ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
-        "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${hidane > 0 ? `・火種 ${hidane}・内省で灯せる` : badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
+        "aria-label": `${caption}${s.cost && !freeGuide(s) ? `・利用料 ${yen(s.cost)}` : ""}${av.tag ? `（${av.tag}）` : ""}${hidane > 0 ? `・火種 ${hidane}・内省で灯せる` : badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
         onclick: () => (selected === s && av.ok ? go(s) : select(s, btn)),
       }, [
         el("div.pin-visual", [
@@ -347,6 +350,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
           peopleRow(people),
         ]),
         el("div.sub-label", { text: caption }),
+        s.cost && !freeGuide(s) ? el("small.pin-cost", { text: `利用料 ${yen(s.cost)}` }) : null,
         av.tag ? el("small.pin-status", { text: av.tag }) : null,
       ]);
       if (facility) {
@@ -369,10 +373,10 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         pins.append(el("button.spot-pin.pin-station", {
           type: "button", style: { left: `${station.x}%`, top: `${station.y}%` },
           dataset: { test: "station-open", spot: "station" },
-          "aria-label": "駅から電車で街を移動する",
+          "aria-label": `駅から電車で街を移動する・どこへでも一律 片道${yen(STATION_FARE)}`,
           onclick: openStation,
         }, [el("div.pin-visual", [el("div.shield", [el("div.ico", [el("span.pin-symbol", { html: TRAIN_ICON_SVG })])])]),
-          el("div.sub-label", { text: "駅" })]));
+          el("div.sub-label", { text: `駅・一律${yen(STATION_FARE)}` })]));
         markers.append(el("i.ds-map-marker", { dataset: { marker: "station", label: "駅" },
           style: { left: `${station.x}%`, top: `${station.y}%` } }));
       }

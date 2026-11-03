@@ -101,7 +101,7 @@ export const FACILITY_GROWTH_SPOTS = Object.freeze(["kannon", "choizap", "cafe",
 export const facilityGrowth = (spot) => FACILITY_GROWTH_SPOTS.includes(spot?.id)
   ? { budget: 1, points: 2, primary: spot.stat || null } : {};
 /**
- * 路上占い師（旧版 F11）: 章ごとに1〜2回、予定の無い昼か夜に、街のどこかへ現れる（daily/fortune-schedule.js・台帳 URA）。
+ * 辻占のオババ（旧版 F11）: 章ごとに1〜2回、予定の無い昼か夜に、街のどこかへ現れる（daily/fortune-schedule.js・台帳 URA）。
  * 時間を使わない・相性占い3,000円。現れている時間帯だけ、その回の場所に出す。未対面の人物情報は引き続き伏せる。
  * @param where 地図の地域（"home" | "tokyo"）
  */
@@ -164,25 +164,30 @@ export const rinPrototypeDue = () => !state.flags[RIN_PROTOTYPE_SEEN]
 /**
  * 章が明けて最初の来店で一度だけ読む後日談（#2026）。第1章で実際に通った店主だけ（regulars は
  * 章の切り替え時の記録。ch2-progress.js）。既読は台本末尾の set_flag。第2章の地元の地図だけが入口。
+ * なるは修行から戻った後、ドバイへ発つ前の準備期間（第4章の flags._ch4_prep、出発前）だけ。第1章からの
+ * 好敵手なので regulars は見ず、面識だけを見る。第3章の電話（ch3_naru_reconcile）の「帰ったら、約束の一台を」の続き（#2035）。
  */
 export const AFTER_CHAPTER_VISITS = Object.freeze({
   adam: { chapter: 2, regulars: "_ch1_regulars", scene: "ch1_adam_after_ch1", done: "ch1_adam_after_ch1_done" },
   minto: { chapter: 2, regulars: "_ch1_regulars", scene: "ch1_minto_after_ch1", done: "ch1_minto_after_ch1_done" },
+  naru: { chapter: 4, prep: "_ch4_prep", scene: "ch1_naru_after_return", done: "ch1_naru_after_return_done" },
 });
 export function afterChapterVisitDue(charId, s = state) {
   const entry = AFTER_CHAPTER_VISITS[charId];
-  return entry && (s.chapter || 1) === entry.chapter && !s.flags?.[entry.done] && !!s.flags?.[entry.regulars]?.[charId]
+  const known = entry?.regulars ? !!s.flags?.[entry.regulars]?.[charId] : !!s.met?.[charId];
+  const inPrep = !entry?.prep || !!s.flags?.[entry.prep] && !s.flags[entry.prep].departed;
+  return entry && (s.chapter || 1) === entry.chapter && !s.flags?.[entry.done] && known && inPrep
     && DB.dialogues[entry.scene]?.lines?.length ? entry.scene : null;
 }
 /**
- * その章の間だけ店で読める短い会話（第2章の凛・VOL13）。段階会話より先に、一来店に一本ずつ・一度だけ。
+ * その章の間だけ店で読める短い会話（第2章のくゆり・VOL13）。段階会話より先に、一来店に一本ずつ・一度だけ。
  * flag は読める時期（味の不調の後など）。台本は章の準備期間に読み込む（data/dialogue/ch2_home.json）ので、未読込なら出さない。
  * 初対面の固有会話（VISIT_SEQ の1本目）を読んだ相手だけ（呼び名・面識を前提にするため）。
  * 既読は `_talk_seen_<scene>`。好感度は通い訪問と同じ+5。
  */
 export const CHAPTER_TALKS = Object.freeze({
   rin: Object.freeze([
-    // 「……君、今日は煙の褒め方が嘘だね」（characters.json の凛）。味の不調に誰より早く気づく
+    // 「……君、今日は煙の褒め方が嘘だね」（characters.json のくゆり）。味の不調に誰より早く気づく
     { chapter: 2, scene: "ch2_rin_taste", flag: "_ch2_taste_distant" },
     { chapter: 2, scene: "ch2_rin_strawberry" },
   ]),
@@ -282,11 +287,15 @@ export function naruRiftActive(save = state) {
   );
 }
 
-/** 届いたLIMEで知らせた臨時休暇は、その章・その日だけ店にも反映する。なるは対峙後、行き先を告げず修行へ出るため継続して休業にする。 */
+/**
+ * 届いたLIMEで知らせた臨時休暇は、その章・その日だけ店にも反映する。なるは対峙後、行き先を告げず修行へ出るため継続して休業にする。
+ * 修行から戻った後の一度だけの来店（AFTER_CHAPTER_VISITS の naru）が残っている間だけは開ける。
+ */
+export const naruShopClosed = (s = state) => naruRiftActive(s) && !afterChapterVisitDue("naru", s);
 export function isTemporaryClosed(spot) {
   return !!spot.charId && (
     state.flags[`_temporary_closed_${spot.charId}`] === `${state.chapter || 1}:${state.day}`
-    || spot.charId === "naru" && naruRiftActive(state)
+    || spot.charId === "naru" && naruShopClosed()
   );
 }
 
@@ -333,7 +342,7 @@ export const bgRef = (name) => `res://assets/backgrounds/${name}.png`;
  */
 const visitsInFlight = new WeakMap();
 export async function visitChar(charId, { welcome = null, signal = null } = {}) {
-  if (charId === "naru" && naruRiftActive(state)) return false;
+  if (charId === "naru" && naruShopClosed()) return false;
   const owner = state;
   const active = visitsInFlight.get(owner) || new Set();
   if (active.has(charId) || signal?.aborted) return false;

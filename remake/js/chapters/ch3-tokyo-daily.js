@@ -4,7 +4,7 @@
 //   - 本筋の場面: 昼の行動を使う場面（slotEvent）と夜の予定（nightEvents）。並びと日付は ch3-progress.js の CH3_DAILY_PLAN
 //   - 恋人の東京訪問: 約束した時間帯に、合流・散歩が一つの行動として入る（core/tokyo-visits.js）
 //   - 行き先: mukai（手伝い・ましろちゃんとの時間・店番・作業台・裏口のてつこ）・煙幕・Smoke & Glory・鉄の煙・公園・
-//     東京の店・CHOI-ZAP・路地裏の神社・クラブSEAM・mukaiの奥の部屋（地元との連絡は右上の LIME の一番上の行）
+//     東京の店・CHOI-ZAP・池の弁天堂・クラブSEAM・mukaiの奥の部屋（地元との連絡は右上の LIME の一番上の行）
 //   - 寄り道（任意の場面）は、その場所を訪ねた時に一つずつ読む（行動を使うので選んで読む。台本の能力報酬も効く）。
 //     遠くからの電話（みんと・つむぎ・ひより）は、本筋の予定が無い夜に一つ届く
 // 現在地は flags._ch2_region = "tokyo"（HUD の街の札）。台詞の正本は data/dialogue/ch3_*.json と ch3_tokyo_daily.json。
@@ -14,7 +14,7 @@ import { layers, setBg, toast, modal } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
 import { showHud } from "../daily/hud.js";
-import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
+import { addMoney, addStamina, earnStat, gainAffinity, paidAction, earnSceneCompletion } from "../core/stats.js";
 import { openShop } from "../daily/shop.js";
 import { fortuneSpot, TOKYO_VISIT_COST } from "../daily/spots.js";
 import { spendableMoney } from "../core/travel-budget.js";
@@ -33,6 +33,7 @@ import { availableOptionalScenes, commitOptionalRead, selectChapterThreeEvening,
 import { loverMilestonesDue, readLoverMilestone, pendingLoverLime } from "./lover-entry.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { runMukaiShift, loadMukaiShift, MUKAI_PAY, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
+import { addRoamerSpots } from "../daily/roamers.js";
 
 export const TOKYO = "tokyo";
 const BG = name => bgUrl(name, timeOfDay());
@@ -97,8 +98,9 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
     preview: "bg_fookah_showroom", desc: "東京の店。葉を買える（時間は使わない）。" }),
   spot({ id: "ch3_tokyo_gym", place: "gym", label: "CHOI-ZAP", area: "高架下のジム", x: 34.9, y: 75.9, theme: "gym", glyph: "体",
     preview: "bg_choizap", stamina: -8, stat: "charm", desc: "全国の店で使える会員証で、体を動かす。" }),
-  spot({ id: "ch3_tokyo_shrine", place: "shrine", label: "路地裏の神社", area: "路地の奥", x: 54, y: 70, theme: "rest", glyph: "社",
-    preview: "bg_street", desc: "学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
+  // 心得の盤の内省。公園の池に浮かぶお堂（IR26・SBD98）。id は仮置きの「路地裏の神社」の時のまま（互換）
+  spot({ id: "ch3_tokyo_shrine", place: "shrine", label: "池の弁天堂", area: "公園の池", x: 91, y: 73, theme: "rest", glyph: "弁",
+    preview: "bg_tokyo_park", desc: "池に浮かぶ小さなお堂。学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
   // 店名は入口で知る（DJS12）。店主の針間ヨルに会うまでは「地下の店」と出す（daily/map.js の charId・unknownLabel）。
   spot({ id: "ch3_tokyo_club", place: "club", label: "クラブSEAM", area: "路地の地下", x: 86, y: 50, theme: "stadium", glyph: "♪",
     charId: "yoru", unknownLabel: "地下の店", unknownDesc: "地下から低い音がする。のぞいてみる（時間は使わない）。",
@@ -109,12 +111,15 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
 
 function spotHasNew(entry) {
   if (["mukai", "enmaku", "volk"].includes(entry.place) && optionalAt(entry.place).length) return true;
+  if (entry.place === "enmaku" && finaleAtVisit("kuze")) return true; // 久世の締めくくり（IR22）
   if (entry.place === "mukai") return mukaiBondDue() || outingsAt("mukai").some(outing => !outing.repeat);
   return outingsAt(entry.place).some(outing => !outing.repeat);
 }
 
 const outingsAt = place => chapterThreeOutingCandidates(state).filter(outing => outing.place === place && outing.id !== "tetsuko");
 const mukaiBondDue = () => loverMilestonesDue(["mashiro"]).length > 0 || questionVisitDue("mashiro") || finaleAtVisit("mashiro");
+
+const ROAMER_TOKYO_SPOTS = () => state.chapter === 3 ? chapterThreeTokyoSpots() : [];
 
 /** 今の時間・物語の時点で地図に出す行き先。 */
 export function chapterThreeTokyoSpots() {
@@ -126,7 +131,7 @@ export function chapterThreeTokyoSpots() {
     if (entry.place === "shrine") return canReflect(state);
     if (entry.place === "club") return night;
     return true;
-  }).concat([fortuneSpot(TOKYO)].filter(Boolean)); // 路上占い師は東京にも現れる（章で1〜2回・理由は語らない。VOL15）
+  }).concat([fortuneSpot(TOKYO)].filter(Boolean)); // 辻占のオババは東京にも現れる（章で1〜2回・理由は語らない。VOL15）
 }
 
 // ---- 読む -------------------------------------------------------------------------------
@@ -157,6 +162,8 @@ async function readPlain(id, bg, owner) {
  * @param io.openRuleSheet () => Promise 受付の規則
  */
 export function chapterThreeTokyoDefinition(io) {
+  // よその店に居合わせる人（daily/roamers.js）。東京の日常ループでは、東京の店にいる
+  addRoamerSpots(ROAMER_TOKYO_SPOTS);
   return {
     get untilDay() { return tokyoTournamentDay(state); },
     tournamentName: "HAZE: NATIONAL TOKYO",
@@ -211,12 +218,13 @@ function tokyoContactsShortcut() {
 /** 東京の14日を日常ループで回す。大会の朝（DAY14）か LOAD で戻る。 */
 export async function runChapterThreeTokyo(io) {
   const owner = state;
-  const [, , , definitions] = await Promise.all([
+  // 訪問の定義（ch3-social.js）は先頭で受け取る。並びの途中に読み込みを足しても位置がずれないように
+  const [definitions] = await Promise.all([
+    import("./ch3-social.js").then(social => { tokyoSocial = social; return social.loadTokyoSocial(); }),
     readDialogues("ch3_outings", OUTING_IDS).then(found => Object.assign(DB.dialogues, found)),
     readDialogues("ch3_activities", ["ch3_choizap_day", "ch3_choizap_night"]).then(found => Object.assign(DB.dialogues, found)),
     readDialogues("ch3_tokyo_daily", TOKYO_DAILY_IDS).then(found => Object.assign(DB.dialogues, found)),
     loadMukaiShift(),
-    import("./ch3-social.js").then(social => { tokyoSocial = social; return social.loadTokyoSocial(); }),
     refreshOptional(),
   ]);
   if (state !== owner) return;
@@ -259,10 +267,19 @@ function dueVisitNow() {
 let socialDefinitions = null;
 const tokyoDefinitions = () => socialDefinitions;
 
+/**
+ * 恋人の東京訪問（合流・散歩）は「その人に会う」行動。地元のデートと同じく、相手の鍵で X1・X2、場面の初完読で X5
+ * （SPEC 1.3）。日常ループは本筋の場面と同じく paidAction の外で回すので、ここで包む。節目の場面は外（恋人の報酬の側）。
+ */
 async function meetTokyoVisitor({ plan, window, definitions }) {
-  const owner = state, id = plan.characterId, kind = plan.met ? "date" : "meetup";
-  if (!await readPlain(`ch3_visit_${id}_${kind}`, window.slot ? "bg_street_night" : "bg_street_day", owner)) return false;
-  if (!completeTokyoVisitAction(state, definitions, plan.id, window)) return false;
+  const owner = state, id = plan.characterId, kind = plan.met ? "date" : "meetup", sceneId = `ch3_visit_${id}_${kind}`;
+  const { value: done } = await paidAction(async () => {
+    if (!await readPlain(sceneId, window.slot ? "bg_street_night" : "bg_street_day", owner)) return false;
+    if (!completeTokyoVisitAction(state, definitions, plan.id, window)) return false;
+    earnSceneCompletion(sceneId, owner);
+    return true;
+  }, { consumed: ok => ok === true, exp: personExp(id) });
+  if (!done || state !== owner) return false;
   save();
   if (kind === "date" && loverMilestonesDue([id]).length) await readLoverMilestone(id);
   return state === owner;
@@ -379,6 +396,13 @@ async function readCall(io, call) {
 
 // ---- 行き先の処理 -------------------------------------------------------------------------
 const unused = { used: false, exerted: false };
+// 経験値の鍵（SPEC 1.3）: 人に会う行動はその人のキャラID、シフト・ジムは旧行程と同じ行動の鍵（ch3-outings.js の
+// OUTING_EXP・ch3-activities.js）。日常ループは result.exp を地図の行き先の鍵より先に使う（daily/calendar.js）。
+// 寄り道の相手は場所で決まる（mukai・問屋・ましろの部屋＝ましろちゃん、煙幕＝久世、鉄の煙＝ヴォルク）。
+const personExp = id => id ? Object.freeze({ key: id, person: id }) : null;
+const MUKAI_SHIFT_EXP = Object.freeze({ key: "tokyo:mukai_help", place: "tokyo:mukai_help" });
+const GYM_EXP = Object.freeze({ key: "tokyo:gym", place: "tokyo:gym" });
+const OPTIONAL_HOST = Object.freeze({ mukai: "mashiro", enmaku: "kuze", volk: "volk" });
 
 async function performTokyoSpot(entry, io, { staminaGuard }) {
   if (entry.region !== TOKYO) return null;
@@ -420,22 +444,27 @@ async function goOuting(outing, staminaGuard, owner) {
   if (outing.stamina < 0 && !(await staminaGuard(outing.stamina))) return unused;
   const bg = outing.bg || visitBg[outing.place] || "bg_street";
   const gains = outingAffinity(state, outing); // 回数を数える前に（通いの1回目か2回目以降か）
-  if (!await readPlain(outingDialogueId(state, outing), bg, owner)) return unused;
+  const sceneId = outingDialogueId(state, outing);
+  if (!await readPlain(sceneId, bg, owner)) return unused;
   addStamina(outing.stamina);
   if (outing.money) addMoney(outing.money);
   if (outing.stat) earnStat(outing.stat, 4);
   for (const [who, pts] of Object.entries(gains)) gainAffinity(who, pts);
   state.flags[OUTINGS_FLAG] = { ...outingCounts(state), [outing.id]: (outingCounts(state)[outing.id] || 0) + 1 };
   if (outing.money) toast(`+${outing.money.toLocaleString("ja-JP")}円`, { kind: "good" });
-  return { used: true, exerted: outing.stamina < 0 };
+  // 体力を使う外出だけ、話の初完読で X5（通いの小会話も話ごとに一度。第1・2章の店の会話と同じ）
+  if (outing.stamina < 0) earnSceneCompletion(sceneId, owner);
+  return { used: true, exerted: outing.stamina < 0, exp: personExp(outing.affinityWith) };
 }
 
 async function goGym(entry, staminaGuard, owner) {
   if (!(await staminaGuard(entry.stamina))) return unused;
-  if (!await readPlain(state.slot ? "ch3_choizap_night" : "ch3_choizap_day", "bg_choizap", owner)) return unused;
+  const sceneId = state.slot ? "ch3_choizap_night" : "ch3_choizap_day";
+  if (!await readPlain(sceneId, "bg_choizap", owner)) return unused;
   addStamina(entry.stamina);
   earnStat(entry.stat, 4);
-  return { used: true, exerted: true };
+  earnSceneCompletion(sceneId, owner);
+  return { used: true, exerted: true, exp: GYM_EXP };
 }
 
 /** 寄り道を一つ読む（行動を一つ使う）。台本の能力・好感度の報酬は日常ループの行動の中で効く。 */
@@ -444,16 +473,20 @@ async function readOptionalHere(io, scene, staminaGuard, owner, stamina = -10) {
   if (!await keepDailyHud(() => io.readScene(scene)) || state !== owner) return unused;
   commitOptionalRead(state, scene.id);
   addStamina(stamina);
+  earnSceneCompletion(scene.id, owner);
   await refreshOptional();
-  return { used: true, exerted: true };
+  return { used: true, exerted: true, exp: personExp(OPTIONAL_HOST[optionalPlace(scene)]) };
 }
 
 /**
  * 煙幕・Smoke & Glory・鉄の煙: 寄り道があればそれ、無ければその店の外出（#1655）。
  * 東京のシーシャ屋は一台4,000円（TOKYO_VISIT_COST）。読み終えた時だけ払う。本筋の場面（日程の枠で読む）は払わない。
+ * 煙幕では、久世の締めくくり（♥5・IR22）が来ていれば「久世に呼ばれる」を先頭に出す（閉店後に呼ばれるので払わない）。
  */
 async function visitRivalShop(entry, io, staminaGuard, owner) {
+  const finale = entry.place === "enmaku" && finaleAtVisit("kuze");
   const choices = [
+    ...finale ? [{ label: "久世に呼ばれる", value: "finale:kuze" }] : [],
     ...optionalAt(entry.place).map(scene => ({ label: scene.label, value: `scene:${scene.id}` })),
     ...outingsAt(entry.place).map(outing => ({ label: `${outing.label.replace(/\s*に(顔を出す|寄る)$/, "")}：${outingReason(state, outing)}`, value: `outing:${outing.id}` })),
   ];
@@ -465,10 +498,21 @@ async function visitRivalShop(entry, io, staminaGuard, owner) {
       { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
   if (!pick || state !== owner) return unused;
   const [kind, id] = pick.split(":");
+  if (kind === "finale") return readKuzeFinale(staminaGuard, owner);
   const result = kind === "scene" ? await readOptionalHere(io, optional.find(scene => scene.id === id), staminaGuard, owner)
     : await goOuting(outingById(id), staminaGuard, owner);
   if (result?.used && state === owner && cost) addMoney(-cost);
   return result;
+}
+
+/** 久世の締めくくり（daily/bonds.js の条件・一度だけ）。ましろちゃんの節目と同じく行動を一つ使う。 */
+async function readKuzeFinale(staminaGuard, owner) {
+  if (!(await staminaGuard(-10))) return unused;
+  const bg = BG(visitBg.enmaku);
+  await setBg(bg, { instant: true });
+  if (!await playFinale("kuze", { bg }) || state !== owner) return unused;
+  addStamina(-10);
+  return { used: true, exerted: true, exp: personExp("kuze") };
 }
 
 /**
@@ -499,7 +543,7 @@ async function visitMukai(io, staminaGuard, owner) {
   if (kind === "bond") result = await readMashiroBond(id, staminaGuard, owner);
   else if (kind === "scene") result = await readOptionalHere(io, optional.find(scene => scene.id === id), staminaGuard, owner);
   else if (id === "mukai_help") result = await (await staminaGuard(MUKAI_SHIFT_STAMINA) ? mukaiShift(owner) : false)
-    ? { used: true, exerted: true } : unused;
+    ? { used: true, exerted: true, exp: MUKAI_SHIFT_EXP } : unused;
   else result = await goOuting(outingById(id), staminaGuard, owner);
   if (result.used && state === owner) await offerTetsuko(owner);
   return result;
@@ -509,7 +553,13 @@ async function visitMukai(io, staminaGuard, owner) {
 async function mukaiShift(owner, { called = false } = {}) {
   const help = outingById("mukai_help");
   if (!help || state !== owner) return false;
-  const done = await runMukaiShift({ called, intro: () => readPlain(outingDialogueId(state, help), "bg_mukai_shop", owner) });
+  const sceneId = outingDialogueId(state, help);
+  const intro = async () => {
+    const ok = await readPlain(sceneId, "bg_mukai_shop", owner);
+    if (ok) earnSceneCompletion(sceneId, owner); // 手伝いの導入（味が戻る前・後）の初完読は X5。注文を選ばずにやめたら確定しない
+    return ok;
+  };
+  const done = await runMukaiShift({ called, intro });
   if (!done || state !== owner) return false;
   state.flags[OUTINGS_FLAG] = { ...outingCounts(state), mukai_help: (outingCounts(state).mukai_help || 0) + 1 };
   return true;
@@ -526,7 +576,7 @@ async function readMashiroBond(kind, staminaGuard, owner) {
   if (!done || state !== owner) return unused;
   addStamina(-10);
   gainAffinity("mashiro", 5);
-  return { used: true, exerted: true };
+  return { used: true, exerted: true, exp: personExp("mashiro") };
 }
 
 /** 帰りに裏口のてつこへ（行動を使わない）。会うかどうかは選べる。 */

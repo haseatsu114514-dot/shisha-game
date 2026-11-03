@@ -32,6 +32,7 @@ for (let n = 2; n <= all.length; n++) {
   assert.deepEqual(result.participants, lovers);
   assert.equal(result.scenes.length, n + 3);
   assert.deepEqual(result.unresolved, lovers);
+  assert.deepEqual(result.talks, lovers.map(id => routes.romance[id].talk), 'one talk per hurt lover, in order');
   result.scenes.forEach(id => assert.ok(scenes.has(id), id));
   assert.equal(selectStoryEvening(routes, state, {present: [lovers[0]]}).kind, 'rest');
   assert.equal(selectStoryEnding(routes, state, context)[1], routes.ending.normal);
@@ -67,6 +68,18 @@ for (const id of all) {
 assert(!sceneData.get(routes.romance.hiyori.conflict).lines.some(row => row.text?.includes('付き合おう')), 'hiyori quotes her real confession');
 assert.equal(selectPostEndingConflict(routes, {lovers: [], flags: {_story_shuraba_unresolved: true}}).kind, 'pending');
 assert.equal(selectPostEndingConflict(routes, {}, context).kind, 'none');
+assert.deepEqual(selectPostEndingConflict(routes, {}, context).talks, []);
+// IR32: 先に修羅場を済ませた恋人（context.unresolved）は反応を繰り返さず、話し直しの決意と一人ずつの話し直しだけ。
+{
+  const done = selectPostEndingConflict(routes, {lovers: ['minto', 'rin'], flags: {_story_shuraba_unresolved: true}},
+    {present: [], unresolved: ['minto', 'rin']});
+  assert.deepEqual([done.kind, done.scenes, done.unresolved, done.talks],
+    ['pending', [routes.conflict.pending_ending], ['minto', 'rin'], [routes.romance.minto.talk, routes.romance.rin.talk]]);
+  const more = selectPostEndingConflict(routes, {lovers: ['minto', 'rin', 'ageha']}, {present: ['rin', 'ageha'], unresolved: ['minto']});
+  assert.deepEqual(more.participants, ['rin', 'ageha']);
+  assert.deepEqual(more.unresolved, ['minto', 'rin', 'ageha'], 'earlier hurt lovers stay unresolved first');
+  assert.deepEqual(more.talks, ['minto', 'rin', 'ageha'].map(id => routes.romance[id].talk));
+}
 assert.equal(selectStoryEvening(routes, {chapter: 4, lovers: ['rin', 'rin', 'unknown']}, {present: ['rin']}).kind, 'rest');
 assert.equal(selectStoryEvening(routes, {}).kind, 'rest');
 const mintoCall = 'ch3_minto_small_lies';
@@ -422,9 +435,22 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.equal(ch4.selectChapterFourEvening(routes, value, 'minto').kind, 'rest');
   value = dubaiEve(['minto'], null, {arrived: ['minto']});
   assert.equal(ch4.chapterFourEveningPartner(routes, value), 'minto');
-  // 友人として来るましろは恋人ではないので誘えず、恋人の数にも入らない。
-  value = dubaiEve(['rin'], 'rin', {arrived: ['mashiro']});
-  assert(ch4.chapterFourEveningContext(routes, value).present.includes('mashiro'));
+  // 前夜祭の日の到着（ch4-progress.js）: 前夜祭より前に到着を確定した別便の恋人が、前夜に誘える相手になる。
+  // 友人版で来たましろ（視察の別行動）はその場に数えない。
+  value = dubaiEve(['minto'], null);
+  for (const entry of ch4Progress.CH4_MANDATORY) delete value.flags._ch4.read[entry.id]; // 前夜祭の前の前夜
+  assert.deepEqual(ch4Progress.chapterFourArrivalsDue(value).map(entry => entry.scene),
+    [routes.romance.minto.arrival, 'ch4_mashiro_dubai_friend']);
+  assert(ch4Progress.completeChapterFourScene(value, routes.romance.minto.arrival));
+  assert(ch4Progress.completeChapterFourScene(value, 'ch4_mashiro_dubai_friend'));
+  for (const entry of ch4Progress.CH4_MANDATORY) value.flags._ch4.read[entry.id] = true;
+  assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, ['minto']);
+  assert.equal(ch4.chapterFourEveningPartner(routes, value), 'minto');
+  assert.deepEqual(ch4.selectChapterFourEvening(routes, value, 'minto').scenes, [routes.romance.minto.date]);
+  // 友人として来るましろ（友人版の到着を読了）は恋人ではないので誘えず、その場の人数にも入らない。
+  value = dubaiEve(['rin'], 'rin');
+  value.flags._ch4.read.ch4_mashiro_dubai_friend = true;
+  assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, ['rin']);
   assert.equal(ch4.chapterFourEveningPartner(routes, value), 'rin');
   // 同じ場所の恋人が二人以上: 第4章ではスティーブの茶化しを出さず、重なった予定を保留する。誘いの選択は出さない。
   value = dubaiEve(['tsumugi', 'ageha'], 'tsumugi', {arrived: ['ageha']});

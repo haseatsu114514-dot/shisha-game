@@ -49,7 +49,7 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   ch3_kuze_lime: { file: "ch3_rivals", label: "返事の欄", location: "煙幕", bg: "bg_yohaku_shop",
     after: ["ch3_kuze_advice"], heart: { kuze: 1 } },
   // ひよりルートの tokyo_contact（#1434 決定B）。route.events と同じ条件に、mukai到着後・東京滞在中でないことを足す。
-  // ましろの告白（#1930 仮置き）。任意4場面を読み終えた後の休日に、彼女の部屋で。返事が交際／友人の着地になる。
+  // ましろの告白（#1930・台本は IR20 の正式原稿）。任意4場面を読み終えた後の休日に、彼女の部屋で。返事が交際／友人の着地になる。
   confession_mashiro: { file: "confession", label: "ましろちゃんの部屋でお茶", location: "ましろの部屋", bg: "bg_home_day",
     after: ["ch3_mashiro_play_3", "ch3_mashiro_practice"], unsettled: ["mashiro"] },
   hiyori_tokyo_contact: { file: "hiyori", label: "ひよりからの夜の通話", location: "閉店後のmukaiの前", bg: "bg_street_night",

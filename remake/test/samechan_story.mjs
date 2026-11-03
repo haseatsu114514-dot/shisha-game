@@ -50,7 +50,7 @@ const deps={
  '../core/scene-motions.js':{sharkSwim:async swap=>{await swap();}},
  '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),affinityLevel:()=>heart,releaseAffinity:()=>0,ensureAffinityLevel:()=>{},earnStat:()=>{},addMoney:()=>{},addStamina:()=>{},STAMINA_LOW:25},
  '../vn/engine.js':{play:async id=>{played.push(id);return {id,visited:[]};},isPlaying:()=>false},
- './bonds.js':{finaleAtVisit:()=>false,playFinale:async()=>false},
+ './bonds.js':{finaleAtVisit:()=>false,playFinale:async()=>false,BOND_FINALES:{samechan:{dialogue:"samechan_bond_finale"}}},
  './trpg.js':{maybeRecruitTrpgMember:async()=>false},
 };
 const samechanModule=new vm.SourceTextModule(await read('js/daily/samechan.js'),{context});
@@ -112,7 +112,7 @@ for(const id of ['samechan_shop_heart4','samechan_shop_heart5']){const scene=sto
  const rows=[...scene.lines,...Object.values(scene.branches).flat()];
  assert(!rows.some(r=>r.type==='choice'&&r.romance_char),`${id}: 隠し恋愛値を増やす新しい問いは置かない`);
  assert(!JSON.stringify(scene).includes(story.profile.full_name)&&!JSON.stringify(scene).includes('なぎさ'),`${id}: 本名は恋人絆Lv4まで伏せる`);}
-state.flags._samechan_name_known=true;assert.equal(data.displayName('samechan',state),'波多野なぎさ');
+state.flags._samechan_name_known=true;assert.equal(data.displayName('samechan',state),'汐見なぎさ');
 // 表示名は台詞の正本を参照し、名乗る前に本名を漏らさない。
 const encounter=story.dialogues.find(d=>d.dialogue_id==='samechan_first_encounter');
 const aliasAt=encounter.lines.findIndex(l=>l.text==='強いていうなら、サメちゃんと呼ばれておる');

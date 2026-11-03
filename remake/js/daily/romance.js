@@ -15,6 +15,7 @@ import { play, isPlaying } from "../vn/engine.js";
 import { samechanMilestoneDue, playSamechanMilestone } from "./samechan-bonds.js";
 import { dateScene, dateVenue, relationshipDayTotal } from "./date-scene.js";
 import { playSamechanDate, samechanDateGap, samechanDateReady } from "./samechan-date.js";
+import { questionDoneKey } from "../core/affinity-stages.js";
 
 // 告白は「帰り道」の場面。背景を持たない台本は通りの絵で（前の場面の背景を引き継がない）
 const STREET = "res://assets/backgrounds/bg_street.png";
@@ -25,6 +26,9 @@ export const isLover = (id) => (state.lovers || []).includes(id);
 // 告白・デート・恋人の節目は仕事を離れた私的な場面（みんとは本名を聞いた後なら「栞さん」と呼ぶ）
 const privateCall = (id) => callName(id, state, { context: "private" });
 
+/** この章から先に初めて届いた締めくくりでは告白しない（下の romanceRouteOpen）。 */
+export const NO_CONFESSION_FINALE_CHAPTER = 5;
+
 /**
  * 告白できる相手か。交友の締めくくり（daily/bonds.js）で恋愛ルートに入り（答えた質問がすべて恋愛寄り）、
  * まだ恋人でも「友達のまま」でもない。予約（締めくくりの直後）と再生（夜の帰り道）の両方でこれを確かめる
@@ -32,13 +36,17 @@ const privateCall = (id) => callName(id, state, { context: "private" });
 export function romanceRouteOpen(id) {
   // あげはの告白は日常の帰り道ではなく、第3章の帰郷後（chapters/ch3-romance-entry.js）だけ。
   if (id === "ageha") return false;
+  // 第5章で初めて届いた締めくくりでは告白しない（オーナー既定 B・2026-11-02。正本は「恋愛ルートは第3章までに着地」）。
+  // 第5章は夜の告白を出さない（ch5-daily.js の confessions: false）ので、予約（bonds.js の _confession_due）を入れず、
+  // 関係の表示も「告白を選べる」にしない。
+  if ((state.finales?.[id]?.chapter || 0) >= NO_CONFESSION_FINALE_CHAPTER) return false;
   if (id === "hiyori") {
     const route = hiyoriRoute();
     if (!hiyoriFinaleReady() || !state.flags[route.finale?.flag]
       || ![route.question?.choice,route.finale?.question].every(key => state.romanceChoices[key]?.char === id && state.romanceChoices[key].value > 0)) return false;
   }
   if (id === "samechan" && (!(state.chapter >= 2 && state.chapter <= 3)
-    || !state.flags._samechan_bond_question_done
+    || !state.flags[questionDoneKey("samechan")]
     || state.romanceChoices?.bond_q1_samechan?.char !== id
     || state.romanceChoices?.bond_q2_samechan?.char !== id
     || !(state.romanceChoices?.bond_q1_samechan?.value > 0)
@@ -111,6 +119,11 @@ const cheatScene = (id) => ({
   },
 });
 
+// 告白の台本が自分の場面を持つ相手（daily/bonds.js の BOND_FINALES.ownConfession）。夜の帰り道では始めない。
+// ましろは第3章の寄り道（休日の部屋。chapters/ch3-story-wiring.js の confession_mashiro・IR20）だけで告白する。
+const OWN_CONFESSION_SCENE = Object.freeze(["mashiro"]);
+const nightWalkConfession = (id) => !OWN_CONFESSION_SCENE.includes(id) && romanceRouteOpen(id);
+
 /**
  * 一日の終わり（夜の行動と固定イベントの後）に呼ぶ。恋愛ルートで告白を待つ相手がいれば告白イベントを始める。
  * 予約（_confession_due）は締めくくりの直後に入るが、再生の前にもルートを確かめ直す。
@@ -123,9 +136,9 @@ const cheatScene = (id) => ({
 export async function maybeConfession(beat, { busyNight = false, companion = null } = {}) {
   if (state.phase !== "daily" || state.slot < 2) return false; // 昼の行動から仕事後の夜へ飛ばない
   let id = state.flags._confession_due;
-  if (id && !romanceRouteOpen(id)) { delete state.flags._confession_due; id = null; }
+  if (id && !nightWalkConfession(id)) { delete state.flags._confession_due; id = null; }
   // 2人目の恋愛ルートなど、予約の空きを待っていた相手を拾う（締めくくりの順）
-  if (!id) id = Object.keys(state.finales || {}).find(romanceRouteOpen) || null;
+  if (!id) id = Object.keys(state.finales || {}).find(nightWalkConfession) || null;
   if (!id) return false;
   state.flags._confession_due = id;
   // 新規進行は私的な約束の後。旧セーブの紹介済み・本名記録なしは、下の名乗り補完へ進める。
@@ -257,6 +270,17 @@ export function dateSchedule(id, { day = state.day, fixedNight = () => false, al
   return { time_slot: "night", after_close: true };
 }
 
+// 恋人のデートは地元（橙須・柚ヶ谷）の店で会う約束（lover.json の venues）。はじめが東京・ドバイにいる間は誘いが届かず、
+// 届いていた誘いにも乗れない（第5章の遠出・IR16）。東京に住む恋人（ましろ）は地元のデートに誘ってこない
+// （第4章の地元で、ましろの節目を出さないのと同じ。chapters/ch3-story-wiring.js の TOKYO_RESIDENT_IDS）。
+const AWAY_REGIONS = Object.freeze(["tokyo", "dubai"]);
+const TOKYO_LOVERS = Object.freeze(["mashiro"]);
+/** はじめが地元から離れた街（東京・ドバイ）にいるか。現在地は第2章からの flags._ch2_region。 */
+const awayFromHome = (value = state) => AWAY_REGIONS.includes(value?.flags?._ch2_region);
+/** この恋人と、今、地元のデートの約束ができるか（ましろが東京に住むのは、出会う第3章から）。 */
+export const hometownDateOpen = (id, value = state) => !awayFromHome(value)
+  && !(TOKYO_LOVERS.includes(id) && (value?.chapter || 1) >= 3);
+
 // 恋人の連絡の塩梅（2026-10-31 オーナー「恋人とかはたまに連絡きて欲しい」「ストレスになるレベルで連絡きてる」LM01〜03）
 // - 朝のひとことは3日おき・返事なし（読むだけ）。恋人が何人いても朝に1通まで（長く届いていない恋人から）
 // - デートの誘いは恋人全員あわせて LOVER_INVITE_GAP 日に1回まで（長く会っていない恋人から）
@@ -270,21 +294,32 @@ const lastInboxDay = (match) => Math.max(-99, ...(state.inbox || []).filter(matc
  * @param opts.tournamentDay 大会当日の朝か
  * @param opts.fixedNight (day) => その夜に固定イベントがあるか（夜の約束を重ねない）
  * @param opts.invitations デートの誘いを出すか（約束の仕組みが無い場面カード式の章は false）
+ * @param opts.away 大会当日、会場の街にいない恋人（配信で見る側の文面 gameday_away を使う。第3章の東京・IR19）
+ * @param opts.exclude 今いっしょにいて、LIMEを送ってこない恋人（第4章のドバイの同行者・IR17）
+ * @param opts.home はじめが地元にいるか。離れた街（東京・ドバイ）にいる朝は、地元で会う前提の文面を送ってこない
+ *   （朝のひとことの hometown を除き、記念日は anniversary_away・#2024）。省略時は現在地（flags._ch2_region）から。
+ *   場面カードの章は帰郷・帰国の後も印が東京・ドバイのままなので、呼び出し側が渡す（chapters/lover-entry.js）
  */
-export function loverMessages({ tournamentDay = false, fixedNight = () => false, invitations = true } = {}) {
+export function loverMessages({ tournamentDay = false, fixedNight = () => false, invitations = true, away = [], exclude = [], home = !awayFromHome() } = {}) {
   const out = [];
   const read = (id) => state.limeRead.includes(id);
   const phase = L().limePhase || {};
   const invites = [];
   const mornings = [];
   // 恋人全員で分け合う誘いの間隔。届いた日で数えるので、断っても見送っても連日には来ない
-  const inviteOpen = invitations && state.day - lastInboxDay((i) => i.msg?.lover && i.msg.type === "invitation") >= LOVER_INVITE_GAP;
+  // 修羅場が未解決のあいだ（第5章の打ち上げ・PTY02 の謝罪 shuraba_accountability が立てる印）は誰からも誘われない
+  // （story-routes.js の selectStoryEvening・tokyo-visits.js と同じ。個別の話し合いが済むまで解除しない）
+  const inviteOpen = invitations && !state.flags?._story_shuraba_unresolved
+    && state.day - lastInboxDay((i) => i.msg?.lover && i.msg.type === "invitation") >= LOVER_INVITE_GAP;
   for (const id of state.lovers || []) {
     if (id === "samechan" && (state.chapter || 1) < 2) continue;
+    if (exclude.includes(id)) continue;
     const chapterKey = id === "samechan" ? `_c${state.chapter || 1}` : "";
     if (tournamentDay) {
       // #2089: 第1章のみんとは対戦相手なので、送り出す側の文面にしない
-      const pool = ((state.chapter || 1) === 1 && (L().gameday_rival || {})[id]) || (L().gameday || {})[id];
+      // 遠くの会場（第3章の東京）は、地元にいる恋人から「配信で見る」文面（IR19）。会場の街にいる恋人はいつもの文面
+      const pool = (away.includes(id) && (L().gameday_away || {})[id])
+        || ((state.chapter || 1) === 1 && (L().gameday_rival || {})[id]) || (L().gameday || {})[id];
       const msgId = `_lover_gameday_${id}_c${state.chapter}`;
       if (pool?.length && !read(msgId)) out.push(chat(id, msgId, pool[(state.day + (phase[id] || 0)) % pool.length]));
       continue;
@@ -296,9 +331,9 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false,
       out.push(chat(id, introId, intro));
       continue;
     }
-    // 記念日（付き合って10日ごと）
+    // 記念日（付き合って10日ごと）。離れた街にいる日は「帰ってきてからお祝い」の文面（無い恋人はいつもの文面）
     const n = dayTotal() - (state.loverSince[id] ?? dayTotal());
-    const anniv = (L().anniversary || {})[id];
+    const anniv = (!home && (L().anniversary_away || {})[id]) || (L().anniversary || {})[id];
     if (n > 0 && n % 10 === 0 && anniv && !read(`_lover_anniv_${id}_n${n}`)) {
       const v = { m: anniv.m.map((t) => typeof t === "string" ? t.replace("{n}", n) : { sender: id, ...t }), r: anniv.r };
       out.push(chat(id, `_lover_anniv_${id}_n${n}`, v));
@@ -310,7 +345,9 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false,
     const invId = `_date_inv_${id}${chapterKey}_d${state.day}`;
     const schedule = dateSchedule(id, { fixedNight });
     const gap = id === "samechan" ? samechanDateGap() : state.day - last;
-    if (inviteOpen && schedule && gap >= (maxed ? 5 : 3) && chapterDay(state) < 14 && !read(invId)
+    // 大会のある章は大会の前日まで。第5章は勝負の日の朝で日常が終わるので、日数で止めない（IR16）
+    const beforeFinal = (state.chapter || 1) >= 5 || chapterDay(state) < 14;
+    if (inviteOpen && schedule && hometownDateOpen(id) && gap >= (maxed ? 5 : 3) && beforeFinal && !read(invId)
       && (id !== "samechan" || samechanDateReady() && state.pendingInvite?.event !== "date_samechan")) {
       const lastInvite = lastInboxDay((i) => i.msg?.lover && i.msg.type === "invitation" && i.msg.sender === id);
       invites.push({ gap, lastInvite, msg: {
@@ -324,8 +361,9 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false,
       } });
     }
     // 朝のひとこと（3日おき・キャラごとに位相をずらす・返事なし）。誘いの枠を取れなかった恋人もこちらへ
+    // 地元で会う前提のひとこと（hometown）は、はじめが地元にいる朝だけ
     const turn = state.day + (phase[id] || 0);
-    const pool = (L().morning || {})[id];
+    const pool = ((L().morning || {})[id] || []).filter((v) => home || !v.hometown);
     const msgId = `_lover_morning_${id}${chapterKey}_d${state.day}`;
     if (pool?.length && turn % LOVER_MORNING_GAP === 0 && !read(msgId)) {
       const k = Math.floor(turn / LOVER_MORNING_GAP);

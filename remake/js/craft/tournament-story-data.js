@@ -13,7 +13,7 @@ function leafName(id) {
   return sp > 0 && MAKER_TOKENS.has(name.slice(0, sp)) ? name.slice(sp + 1) : name;
 }
 const NATIONAL_JUDGE_SCENES = new Set(["mix_single", "mix_blend", "crowd_2", "aroma_good", "aroma_work", "aroma_unknown"]);
-// 第4章（世界大会）の審査員は南雲・エミル・太陽。博士の行は太陽へ、上園の行は第3章と同じエミルの行へ切り替える。
+// 第4章（世界大会）の審査員は須井・エミル・太陽。博士の行は太陽へ、上園の行は第3章と同じエミルの行へ切り替える。
 const WORLD_JUDGE_SCENES = new Set(["packed_intro", "pack_fluffy", "pack_normal", "pack_firm"]);
 function sceneIdFor(chapter, id) {
   if (chapter === 4 && WORLD_JUDGE_SCENES.has(id)) return `${id}_4`;
@@ -65,8 +65,19 @@ export function tournamentStoryDialogue(cs, event, random = Math.random, context
   // 第2章の提供後の掛け合いは、画面の票と提供の実績に合わせて組み立てる（第1章の naruTastingLine と同じ考え方）。
   else if (event === "interlude1" && chapter === 2) ids.push(`interlude1_2_ageha_${agehaServedVotes(context.progress)}`,
     "interlude1_2_mid", `interlude1_2_hajime_${hajimeServedState(cs)}`);
-  // 第4章の提供後は、はじめの実際の順位（途中の持ち点）で先頭か追う側かを分ける。なるが先頭とは言わない。
-  else if (event === "interlude1" && chapter === 4) ids.push(`interlude1_4_${context?.rank === 1 ? "lead" : "chase"}`, "interlude1_4");
+  // 第4章の提供後と調整1回目の後は、直前の途中順位（はじめの順位・先頭・持ち点の並び）だけを語る。
+  // なるが先頭と言うのは、実際になるが先頭のときだけ（正本「中間でなるが上回り、はじめが焦りそうになる」）。
+  // 持ち点が同じで、その回の出来の差で上に出ているだけなら「先頭に並んだ」と言う（tied）。
+  // はじめも同じ持ち点なら「並ばれた」、なるの方が多ければ「前に」と焦りかける（level）。
+  else if (event === "interlude1" && chapter === 4) {
+    if (context?.rank !== 1 && context?.leader === "naru") ids.push(`interlude1_4_naru${context?.tied ? "_tie" : ""}`,
+      `interlude1_4_naru_${context?.level ? "level" : "ahead"}`);
+    else ids.push(`interlude1_4_${context?.rank === 1 ? "lead" : "chase"}`);
+    ids.push("interlude1_4");
+  } else if (event === "interlude2" && chapter === 4) {
+    if (context?.rank !== 1 && context?.leader === "naru") ids.push(`interlude2_4_naru${context?.tied ? "_tie" : ""}`);
+    ids.push("interlude2_4");
+  }
   else if (event.startsWith("interlude")) ids.push(`${event}_${chapter}`);
   else if (event === "packed") ids.push("packed_intro", `pack_${PACKING[cs.pack] ? cs.pack : "normal"}`,
     ingredients.length > 1 ? "mix_blend" : "mix_single", "packed_end");

@@ -261,18 +261,18 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   const lesson = b.cs.mode === "tutorial" ? b.cs.lessonHelp?.[lessonStep] || TUTORIAL_STEP_HELP[lessonStep] : null;
   b.title.textContent = titleText;
   b.hint.textContent = lesson?.brief || brief;
+  b.guide.root.querySelector(".bench-demo-link")?.remove();
   if (demoFor(lessonStep)) {
     const link = el("button.bench-demo-link", { type: "button", text: "お手本を見る" });
     link.addEventListener("click", () => {
       if (bench === b && b.panel.dataset.step === id && !b.root.dataset.demoPaused) openDemoSheet(b.root, lessonStep);
     });
-    b.hint.append(" ", link);
+    // 工程名の旧見出しは非表示。再表示の入口は、操作できる「?」説明内へ置く。
+    b.guide.note.after(link);
   }
   b.guide.root.open = false;
   b.guide.root.hidden = !hintText && !lesson;
-  b.guide.note.textContent = lesson
-    ? [lesson.detail, hintText].filter(Boolean).join("　操作：")
-    : hintText;
+  b.guide.note.textContent = lesson?.detail || hintText;
   b.phaseProgress.update(id === "care" && b.cs.careRound ? `care${b.cs.careRound}` : id, titleText);
   // 短い操作案内は、隠れている見出しではなく既存のスミさんの欄へ。
   // 蒸らし弾幕中は従来どおり無言とし、説明は「?」で読み返せる。

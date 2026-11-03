@@ -2,7 +2,7 @@
 // 昼の行動の消費と1日1回、途中でやめた場合の非消費、実セーブ→ロード後の継続、再挑戦で報酬が増えないこと。
 // もう一件は、ドバイ14日の日常ループの地図（ch4-dubai-daily.js・#2297）から同じ流れに入り、昼の枠を一度だけ使うこと。
 import assert from "node:assert/strict";
-import { suite } from "./support.mjs";
+import { suite, baseURL } from "./support.mjs";
 
 const dt = name => `[data-test="${name}"]`;
 const get = page => page.evaluate(() => structuredClone(window.__remake.state));
@@ -73,11 +73,11 @@ await suite("ch4-camel-race", async check => {
     await assert.rejects(() => camel.click({ timeout: 1500 }), /not enabled|disabled|Timeout/i, "no second talk on the same day");
     // DAY2: 誘われる。レースは翌朝なのでまだ行けない。
     await endDay(page, 2);
-    await expectLabel(camel, /サイフとまた話す/);
+    await expectLabel(camel, /サイーフとまた話す/);
     await camel.click();
     await page.waitForFunction(() => window.__remake.state.flags._ch4_camel?.stage === 2);
     await page.locator(dt("ch4-free")).waitFor();
-    assert.equal((await get(page)).met.rashid, undefined, "Rashid appears at the track, not in the shop");
+    assert.equal((await get(page)).met.rashid, undefined, "Khalil appears at the track, not in the shop");
     await assert.rejects(() => camel.click({ timeout: 1500 }), /not enabled|disabled|Timeout/i, "the race is tomorrow morning");
     // DAY3: 本番を見て、レースを途中でやめる → 消費なし・見学は既読のまま。
     await endDay(page, 3);
@@ -142,6 +142,7 @@ await suite("ch4-camel-race", async check => {
     await camel.click();
     await page.locator(dt("camel-game")).waitFor({ timeout: 60000 });
     assert.equal(await page.locator(dt("camel-tutorial")).count(), 0, "no tutorial after the first run");
+    await page.locator('[data-test="camel-cup"][data-cup="practice"]').click();
     await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
     const second = await page.locator(dt("camel-result")).evaluate(node => ({ ...node.dataset }));
     assert.equal(second.rank, "4");
@@ -252,7 +253,86 @@ await suite("ch4-camel-race-daily", async check => {
   });
 });
 
+await suite("ch4-camel-cups", async check => {
+  await check("cup-unlocks-cancel-multiple-runs-and-save-load", async page => {
+    await seedDaily(page, { stage: 3, watched: true, plays: 1, lastPlayDay: null, best: null });
+    await loadSlot(page, 0);
+    await dubaiMap(page, { slot: 0 });
+    await camelTest(page, { pilot: "good", timeScale: 8 });
+    const before = await get(page);
+    await go(page, "ch4_dubai_camel");
+    await page.locator(dt("camel-cups")).waitFor();
+    const cup = id => page.locator(`[data-test="camel-cup"][data-cup="${id}"]`);
+    assert.equal(await cup("standard").isDisabled(), true);
+    assert.equal(await cup("expert").isDisabled(), true);
+    await page.locator(dt("camel-close")).click();
+    await dubaiMap(page, { slot: 0 });
+    const cancelled = await get(page);
+    assert.deepEqual(cancelled.flags._ch4_camel, before.flags._ch4_camel);
+    assert.equal(cancelled.slot, before.slot);
+    await go(page, "ch4_dubai_camel");
+    await cup("rookie").click();
+    await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
+    await page.locator(dt("camel-choose-cup")).click();
+    assert.equal(await cup("standard").isDisabled(), false);
+    await cup("standard").click();
+    await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
+    assert.match(await page.locator(dt("camel-result")).textContent(), /中級認定/);
+    await page.locator(dt("camel-choose-cup")).click();
+    assert.equal(await cup("expert").isDisabled(), false);
+    await page.locator(dt("camel-close")).click();
+    await dubaiMap(page, { day: before.day, slot: 1 });
+    const completed = await get(page);
+    assert.equal(completed.flags._ch4_camel.plays, 3, "all finished runs are saved once");
+    assert.equal(completed.flags._camel_cups.standard.mastered, true);
+    assert.equal(completed.flags._camel_cups.expert.mastered, false);
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: before.day, slot: 1 });
+    assert.deepEqual((await get(page)).flags._camel_cups, completed.flags._camel_cups);
+  });
+});
+
 async function expectLabel(locator, pattern) {
   await locator.waitFor();
   assert.match(await locator.textContent(), pattern);
 }
+
+// 独立ページで操作の手ごたえを確かめる（2026-11-02 オーナー「ラクダ操ってる感」）: ムチは X／右のボタンを押している間だけ効き、
+// 離すと止まる。押している間は速度計が赤く、スタミナが減る。窓のはじめ・幕の絵が読めている。
+await suite("ch4-camel-race-controls", async check => {
+  await check("whip-works-only-while-held-by-key-and-by-pointer", async page => {
+    await page.locator(dt("camel-menu-quick")).click();
+    const game = page.locator(dt("camel-game"));
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-game"]')?.dataset.phase === "race", null, { timeout: 15000 });
+    assert.equal(await game.getAttribute("data-art"), "sprites");
+    const whip = page.locator(dt("camel-signal"));
+    const stamina = async () => Number(await page.locator(".camel-stamina b").textContent());
+    const full = await stamina();
+    // キーボード: 押している間だけムチ。
+    await page.keyboard.down("x");
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"]').dataset.state === "whipping");
+    await page.waitForTimeout(700);
+    assert.equal(await page.locator(".camel-speed").getAttribute("data-state"), "whip");
+    const pressed = await stamina();
+    assert(pressed < full - 5, `holding X spends stamina (${full} → ${pressed})`);
+    await page.keyboard.up("x");
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"]').dataset.state !== "whipping");
+    const released = await stamina();
+    await page.waitForTimeout(500);
+    assert(await stamina() >= released - 1, "releasing stops the drain");
+    // 右のボタン: 指を置いている間だけ。
+    const box = await whip.boundingBox();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"]').dataset.state === "whipping");
+    await page.mouse.up();
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"]').dataset.state !== "whipping");
+    // Space の声も、本編の会話エンジンに取られずレースに届く（判定の文字が出る）。
+    await page.keyboard.press("Space");
+    await page.locator(".camel-feedback.show").waitFor();
+    assert.match(await page.locator(".camel-feedback").textContent(), /PERFECT|GOOD|無駄な声|連打/);
+    await page.locator(dt("camel-close")).click();
+    await page.locator(dt("camel-menu-quick")).waitFor();
+  });
+}, { entry: new URL("camel-race.html", baseURL).href, readySelector: '[data-test="camel-menu-quick"]' });
+

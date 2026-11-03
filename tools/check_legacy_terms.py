@@ -99,15 +99,15 @@ DOC_FILES = {
 
 EXTENSIONS = {".json", ".js", ".md", ".py", ".gd", ".txt", ".csv", ".sh"}
 
-# セーブ互換処理・その回帰テスト・この検査定義だけに旧名のリテラルを許す。
-LEGACY_CHARACTER_RE = re.compile(r"kafuka|カフカ|かふか", re.IGNORECASE)
-IDENTITY_FIXTURES = {"remake/test/samechan_migration.mjs", "tools/check_legacy_terms.py"}
 IDENTITY_TEXT_EXTENSIONS = EXTENSIONS | {".mjs", ".cjs", ".html", ".css", ".yml", ".yaml", ".svg", ".xml", ".toml", ".lock"}
+# 2026-11-03 改名（#2474）。旧名は履歴・素材メモを含む全追跡ファイルで禁止する（「凛とした」等の一般語は許す）。
+RENAMED_CHARACTER_RE = re.compile(r"凛(?!とし|々|然|冽)|水瀬|白木 ?つむぎ|さぎさか りん|南雲|なぐも しゅうじ|デイビス|Steve Davis|波多野|ラシード|\bRashid\b|アゲハ(?!蝶|チョウ)|路上占い師|\bPak(?:i|ie)\b|サラリーマンさん")
+RENAMED_CHARACTER_FIX = "旧キャラ名 → 匂坂 くゆり（rin）／猫柳 つむぎ（tsumugi）／黒葉 ましろ（mashiro）／須井 修二（nagumo）／スティーブ・ライマン（steve）／汐見 なぎさ（samechan）／ハリール（rashid）／あげは（ageha）／辻占のオババ（uranaishi）／Packy（pakki）／鉄仮面さん（salaryman）に統一（#2474）"
 MINTO_HAIR_RE = re.compile(r"(?:mint|light)[ -]green (?:hair|twin)|black twin[ -]?tails|ミント(?:グリーン|色)のツイン|黒髪ツインテール|角ツインテール", re.IGNORECASE)
 
 
 def scan_character_identity(errors: list):
-    """素材のファイル名・疎チェックアウト未取得分も含め、追跡対象の旧名を防ぐ。"""
+    """疎チェックアウト未取得分も含め、追跡対象のみんとの旧髪設定を防ぐ。"""
     result = subprocess.run(
         ["git", "-C", str(REPO), "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
         check=True, stdout=subprocess.PIPE,
@@ -115,9 +115,7 @@ def scan_character_identity(errors: list):
     for rel in sorted(set(result.stdout.decode("utf-8").split("\0")) - {""}):
         if "_legacy" in Path(rel).parts:
             continue
-        if LEGACY_CHARACTER_RE.search(rel):
-            errors.append(f"{rel}: 旧キャラIDのファイル名 → samechan に統一")
-        if rel in IDENTITY_FIXTURES:
+        if rel == "tools/check_legacy_terms.py":
             continue
         path = REPO / rel
         if path.suffix not in IDENTITY_TEXT_EXTENSIONS:
@@ -126,13 +124,9 @@ def scan_character_identity(errors: list):
             text = path.read_text(encoding="utf-8")
         except (UnicodeDecodeError, OSError):
             continue
-        if rel == "remake/js/core/state.js":
-            # この関数の外に互換IDや旧表記を増やすことは許さない。
-            text = re.sub(r"^function migrateSamechanIdentity\(value\) \{.*?^\}",
-                          lambda match: "\n" * match.group().count("\n"), text, flags=re.MULTILINE | re.DOTALL)
         for number, line in enumerate(text.splitlines(), 1):
-            if LEGACY_CHARACTER_RE.search(line):
-                errors.append(f"{rel}:{number}: 旧キャラ名・ID → サメちゃん / samechan に統一")
+            if RENAMED_CHARACTER_RE.search(line):
+                errors.append(f"{rel}:{number}: {RENAMED_CHARACTER_FIX}")
             if ("minto" in rel.lower() or "minto" in line.lower() or "みんと" in line) and MINTO_HAIR_RE.search(line):
                 # 過去の検品を現行の事実に書き換えず、誤記を明示した訂正注記は残せる。
                 if not ("旧" in line and "誤" in line):

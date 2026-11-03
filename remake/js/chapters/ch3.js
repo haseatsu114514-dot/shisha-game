@@ -749,8 +749,8 @@ function freeTimeChoices(value) {
   if (!window) return [];
   return [
     ...chapterThreeOutings(value, window.id),
-    // 心得の盤: 路地裏の神社で内省して火種を灯す（時間を使わない。SPEC 2.8・#1788）
-    ...(canReflect(value) ? [{ id: "reflect", place: "shrine", label: "路地裏の神社で振り返る", reasonText: "学んだことを火にして、心得の盤に灯す", ok: true, consumes: false, reflect: true }] : []),
+    // 心得の盤: 池の弁天堂で内省して火種を灯す（時間を使わない。SPEC 2.8・#1788・IR26）
+    ...(canReflect(value) ? [{ id: "reflect", place: "shrine", label: "池の弁天堂で振り返る", reasonText: "学んだことを火にして、心得の盤に灯す", ok: true, consumes: false, reflect: true }] : []),
     // 夜だけ、路地の地下のクラブSEAMでDJ（時間を使わない。初回は店主の針間ヨルとの出会い。DJS11）
     ...djNightChoices(value, window),
     ...availableChapterThreeTrials(value).map(trial => ({ id: `trial-${trial.id}`, trialId: trial.id, place: "mukai",

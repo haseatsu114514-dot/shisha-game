@@ -104,6 +104,43 @@ await check('Samechan reuses existing first-encounter guarantee without another 
  assert.equal(await f.samechan.playSamechanEncounter(),true);assert.equal(f.stats.affinityLevel('samechan'),1);
  const after=JSON.stringify(s);assert.equal(await f.samechan.playSamechanEncounter(),false);assert.equal(JSON.stringify(s),after);
 });
+// Current samechan ID only. The retired-name migration was removed in #2469.
+// Low-level LIME without a reply callback reports integer gains; reply feedback also sees carry.
+const close = (actual, expected) => assert(Math.abs(actual-expected)<1e-8, `${actual} != ${expected}`);
+const heartEvents = f => f.events.filter(event => event.type === 'affinity-gain');
+await check('Samechan LIME without onGain stays quiet until the first integer heart gain', async f => {
+ let s=f.fresh();s.chapter=2;s.affinity.samechan=8;
+ for(let i=1;i<=4;i++){
+  assert.equal(f.stats.gainAffinity('samechan',1,{source:'lime'}),0);
+  assert.equal(s.affinity.samechan,8);close(s.affinityCarry.samechan,i*.2125);
+  f.tick();assert.equal(heartEvents(f).length,0,'carry alone must not queue a heart card');
+ }
+ assert.equal(f.stats.gainAffinity('samechan',1,{source:'lime'}),1);
+ assert.equal(s.affinity.samechan,9);close(s.affinityCarry.samechan,.0625);
+ assert.equal(heartEvents(f).length,0,'integer gain uses the normal notification batch');
+ f.tick();assert.deepEqual(clone(heartEvents(f).map(event=>event.payload)),[
+  {id:'samechan',level:1,levelUp:true,prevPts:8,pts:9},
+ ]);
+ f.tick();assert.equal(heartEvents(f).length,1,'flushing twice cannot repeat the notification');
+});
+await check('Samechan LIME onGain retains fractional feedback across SAVE/LOAD without heart cards', async f => {
+ let s=f.fresh();s.chapter=2;s.affinity.samechan=8;
+ const deltas=[],opts={source:'lime',onGain:delta=>deltas.push(delta)};
+ for(let i=1;i<=5;i++){
+  assert.equal(f.stats.gainAffinity('samechan',1,opts),i<5?0:1);
+  assert.equal(deltas.length,i);close(deltas.at(-1),.2125);
+  // Flush before LOAD too: changing owner must not hide an incorrectly queued duplicate card.
+  f.tick();assert.equal(heartEvents(f).length,0,'reply feedback replaces the heart card');
+  s=f.roundTrip();
+  assert.equal(s.affinity.samechan,i<5?8:9);
+  close(s.affinityCarry.samechan,i*.2125-(i<5?0:1));
+  f.tick();assert.equal(deltas.length,i,'LOAD cannot replay reply feedback');
+  assert.equal(heartEvents(f).length,0);
+ }
+ close(deltas.reduce((sum,delta)=>sum+delta,0),1.0625);
+ assert.equal(s.story.samechan||0,0,'numeric progress does not read an introduction or story');
+ assert.equal(s.flags._samechan_first_encounter,undefined);
+});
 // The initial VN commit is real; only the unrelated recruitment UI is a controlled deferred port.
 for (const route of ['ordinary','hiyori']) for (const interruption of ['abort','load']) {
  await check(`${route} completed first VN keeps heart floor across pending recruitment ${interruption}`,async f=>{
@@ -166,6 +203,30 @@ await check('after-chapter revisit plays once on the first chapter-2 visit of a 
  assert.equal(f.spots.afterChapterVisitDue('minto'),null,'only the recorded regulars');
  const later=f.fresh();later.chapter=3;later.flags._ch1_regulars={adam:true};
  assert.equal(f.spots.afterChapterVisitDue('adam'),null,'only in chapter 2');
+});
+// #2035: 修行から戻ったなるの後日談は、第4章の出発前の準備期間に、休業中のKEMURIKUSAで一度だけ。
+await check('naru after-return visit opens the closed shop once during the chapter-4 departure prep',async f=>{
+ const s=f.fresh();s.chapter=4;s.phase='daily';s.met.naru=true;s.story.naru=3;s.flags._cafe_introduced=true;s.flags._ch2_read_ch2_naru_confrontation=true;
+ const shop=f.spots.SPOTS.find(spot=>spot.id==='naru');
+ assert.equal(f.spots.afterChapterVisitDue('naru'),null,'not outside the departure prep');
+ assert.equal(f.spots.isTemporaryClosed(shop),true,'rift keeps the shop closed');
+ s.flags._ch4_prep={startDay:s.day,days:3,step:0,departed:false};
+ assert.equal(f.spots.afterChapterVisitDue('naru'),'ch1_naru_after_return');
+ assert.equal(f.spots.isTemporaryClosed(shop),false,'open for the one return visit');
+ assert.equal(f.spots.hasNewStory('naru'),true);
+ assert.equal(f.spots.naruRiftActive(s),true,'LIME/invitation rift judgement is unchanged');
+ f.setPlay(async scene=>{const id=typeof scene==='string'?scene:scene.dialogue_id;if(id==='ch1_naru_after_return')s.flags.ch1_naru_after_return_done=true;return {id,visited:[]};});
+ const ids=from=>f.plays.slice(from).map(args=>typeof args[0]==='string'?args[0]:args[0].dialogue_id);
+ const mark=f.plays.length,story=s.story.naru;
+ assert.equal(await f.spots.visitChar('naru',{welcome:'venue_naru_day'}),true);
+ assert.deepEqual(ids(mark),['ch1_naru_after_return'],'no shop greeting or story stage on the return visit');
+ assert.equal(s.story.naru,story);
+ assert.equal(f.spots.isTemporaryClosed(shop),true,'closed again after reading once');
+ assert.equal(await f.spots.visitChar('naru'),false);
+ const departed=f.fresh();departed.chapter=4;departed.met.naru=true;departed.flags._ch4_prep={startDay:1,days:3,step:3,departed:true};
+ assert.equal(f.spots.afterChapterVisitDue('naru'),null,'not after leaving for Dubai');
+ const unmet=f.fresh();delete unmet.met.naru;unmet.chapter=4;unmet.flags._ch4_prep={startDay:1,days:3,step:0,departed:false};
+ assert.equal(f.spots.afterChapterVisitDue('naru'),null,'only when they have met');
 });
 console.log(JSON.stringify({groups,failures,scope:'actual modules with controlled VN/UI and isolated Map storage; not real browser/menu LOAD'}));
 if(failures)process.exitCode=1;

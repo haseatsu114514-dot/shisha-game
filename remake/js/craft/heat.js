@@ -101,6 +101,9 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
     c.node.classList.add("picked", `g-${g}`);
     c.node.classList.remove("pikan", "soon");
     c.node.disabled = true;
+    c.pickButton.disabled = true;
+    c.pickButton.dataset.phase = "picked";
+    c.status.textContent = "回収済み";
     c.node.dataset.phase = g;
     if (g === "just") { SE.just(); tickerSay("パッキー「出たーッ！ EXCELLENT！ 全面が真っ赤だーッ！」"); }
     else if (g === "pre" || g === "hot") SE.good();
@@ -130,6 +133,9 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
       const n = c.node;
       paint(c, c.p);
       n.dataset.phase = ph;
+      const secondsLeft = Math.max(0, c.tj - t);
+      c.status.textContent = ph === "just" ? "いま取り頃！" : secondsLeft > 0 ? `あと${secondsLeft.toFixed(1)}秒` : "取り頃を過ぎた";
+      c.pickButton.dataset.phase = ph;
       // 洞察★: ジャスト直前にかすかな揺らぎ（読みやすさ）
       n.classList.toggle("soon", clarity > 0 && ph === "pre" && c.p > 1 - 0.1 * clarity);
       if (effectVisible("insight") && n.classList.contains("soon") && !n.querySelector(".effect-badge")) n.append(effectBadge("insight", "察"));
@@ -151,11 +157,14 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
   coals.forEach((c) => {
     c.node.addEventListener("pointerdown", e => { e.preventDefault(); pick(c); });
     c.node.addEventListener("click", e => { if (e.detail === 0) pick(c); });
+    c.pickButton.addEventListener("pointerdown", e => { e.preventDefault(); pick(c); });
+    c.pickButton.addEventListener("click", e => { if (e.detail === 0) pick(c); });
   });
 
   await countdown();
   SE.crackle();
   t0 = gameClock.now();
+  coals.forEach(c => { c.pickButton.disabled = false; });
   view.root.setAttribute("aria-busy", "false");
   raf = requestAnimationFrame(loop);
 

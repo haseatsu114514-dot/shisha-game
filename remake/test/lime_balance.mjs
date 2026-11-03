@@ -116,6 +116,40 @@ function deliver(msgs) {
   console.log("[LM01-03] PASS lovers: one morning note per day, read-only, 3-day gap, shared 4-day invite budget, stamp mornings");
 }
 
+// IR16: 第5章は帰郷後なので、地元にいる朝は恋人のデートの誘いが届く（大会の章の DAY14 の止めは無い）。
+// 東京・ドバイへ出ると、届いていた誘いには乗れず、約束したデートは別の日に改める。一緒にいる恋人からは届かない（IR17）。
+{
+  reset({ chapter: 5, day: 80, flags: { _ch5: { startDay: 60, stage: 2, part: "free" }, _elapsed_calendar: true }, contacts: ["tsumugi"],
+    lovers: ["tsumugi"], loverSince: { tsumugi: 41 }, loveLevel: { tsumugi: 1 }, lovePts: { tsumugi: 9 }, limeRead: ["_lover_private_account_tsumugi"] });
+  const invite = () => phone.morningMessages({ fixedNight: () => false }).find((m) => m.accept_event === "date_tsumugi");
+  const first = invite();
+  assert(first, "第5章の地元の朝は、恋人のデートの誘いが届く");
+  assert.equal(first.time_slot, "night");
+  assert(!phone.morningMessages({ fixedNight: () => false, exclude: ["tsumugi"] }).some((m) => m.lover && m.sender === "tsumugi"), "一緒にいる恋人からは恋人のLIMEが届かない");
+  state.flags._ch2_region = "tokyo";
+  assert(!invite(), "東京にいる朝は届かない");
+  // 地元で受け取った誘いに、東京へ出てから返事はできない（期限切れの扱い）。
+  state.flags._ch2_region = "home";
+  state.inbox.push({ id: first.id, originId: first.id, day: 80, chapter: 5, msg: { ...first }, read: true, done: false, replyState: "waiting", log: [] });
+  state.flags._ch2_region = "dubai";
+  phone.expireInvitations({ fixedNight: () => false });
+  assert.equal(state.inbox[0].result, "expired", "ドバイにいる間は地元のデートの誘いに乗れない");
+  // 約束したデートも、東京にいたら別の日に改める（その場では会わない）。
+  reset({ chapter: 5, day: 81, slot: 1, flags: { _ch5: { startDay: 60, stage: 2, part: "free" }, _ch2_region: "home" }, contacts: ["tsumugi"],
+    lovers: ["tsumugi"], loveLevel: { tsumugi: 1 } });
+  state.inbox.push({ id: "_date_inv_tsumugi_d81", originId: "_date_inv_tsumugi_d81", day: 81, msg: { id: "_date_inv_tsumugi_d81", sender: "tsumugi", type: "invitation", lover: true,
+    accept_event: "date_tsumugi", time_slot: "night", after_close: true, messages: [] }, read: true, done: true, result: "accepted", log: [] });
+  state.pendingInvite = { event: "date_tsumugi", sender: "tsumugi", slot: 1, day: 81, originId: "_date_inv_tsumugi_d81", afterClose: true };
+  phone.expireInvitations({ fixedNight: () => false });
+  assert(state.pendingInvite, "地元にいれば約束はそのまま");
+  state.flags._ch2_region = "tokyo";
+  phone.expireInvitations({ fixedNight: () => false });
+  assert.equal(state.pendingInvite, null, "東京にいれば、地元のデートの約束は改める");
+  assert.equal(state.inbox[0].result, "expired");
+  assert.equal(state.inbox[0].needsResend, true, "改めた約束は、また誘ってもらえる");
+  console.log("[IR16] PASS chapter 5 hometown date invitations; none in Tokyo/Dubai, open ones expire, booked dates are rescheduled; together lovers send none");
+}
+
 // LM01: 恋人の読むだけの連絡は、私的なやりとりとして既読で絆に積もる
 {
   reset({ lovers: ["tsumugi"], loverSince: { tsumugi: 0 }, loveLevel: { tsumugi: 1 } });

@@ -11,6 +11,18 @@ const ngCase = ng => Object.fromEntries(ng.flavors.map(family => [
 if (shots) fs.mkdirSync(shots, { recursive: true });
 const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
 const click = (page, selector, touch) => touch ? page.locator(selector).tap() : page.locator(selector).click();
+async function demoKeyboardLoop(page) {
+  await page.waitForFunction(() => document.activeElement?.classList.contains("bench-demo-skip"));
+  await page.keyboard.press("Shift+Tab");
+  assert.equal(await page.locator(".bench-demo-finish").evaluate(n => n === document.activeElement), true);
+  await page.keyboard.press("Tab");
+  assert.equal(await page.locator(".bench-demo-skip").evaluate(n => n === document.activeElement), true);
+  // Include native video controls when present, the text disclosure, and both close buttons.
+  for (const key of ["Tab", "Shift+Tab"]) for (let i = 0; i < 16; i++) {
+    await page.keyboard.press(key);
+    assert.equal(await page.locator(".bench-demo-sheet").evaluate(n => n.contains(document.activeElement)), true, key);
+  }
+}
 async function setup(page) {
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js"); core.newGame();
@@ -268,9 +280,165 @@ await suite("craft-materials", async check => {
       await capture(page, `${device}-preview`);
     }, options);
   }
+  await check("demo-reopen-keyboard-background", async page => {
+    await page.route("**/media/demo-holes.mp4", route => route.fulfill({ contentType: "video/mp4", body: "invalid video fixture" }));
+    await setup(page);
+    await page.evaluate(() => { F.running = F.holes.runHoles(F.cs); });
+    await page.locator(".bench-demo-skip").click();
+    await page.locator('[data-test="hole-start"]').waitFor();
+    await page.locator(".bench-guide > summary").click();
+    await page.locator(".bench-demo-link").click();
+    await page.waitForFunction(() => document.activeElement?.classList.contains("bench-demo-skip"));
+    await page.keyboard.press("Shift+Tab");
+    const escaped = await page.evaluate(() => !document.querySelector(".bench-demo-sheet").contains(document.activeElement));
+    const target = await page.evaluate(() => document.activeElement?.getAttribute("data-test"));
+    if (escaped && target === "bench-guide-close") {
+      await page.keyboard.press("Enter");
+      await page.waitForFunction(() => !document.querySelector(".bench-guide").open && !document.querySelector(".bench-panel").inert);
+    }
+    if (escaped) await page.locator(".bench-demo-skip").click();
+    else {
+      assert.equal(await page.locator(".bench-demo-finish").evaluate(n => n === document.activeElement), true);
+      await page.keyboard.press("Enter");
+    }
+    await page.locator(".bench-demo-sheet").waitFor({ state: "detached" });
+    const state = await page.evaluate(escaped => ({ escaped, guideOpen: document.querySelector(".bench-guide").open,
+      panelInert: document.querySelector(".bench-panel").inert }), escaped);
+    console.log("demo keyboard restoration", JSON.stringify({ target, ...state }));
+    assert.equal(escaped, false, "Shift+Tab must not reach the background guide");
+    assert.equal(state.guideOpen, true);
+    assert.equal(state.panelInert, true, "The still-open guide keeps the work panel paused");
+    await page.locator('[data-test="bench-guide-close"]').click();
+    await page.waitForFunction(() => !document.querySelector(".bench-panel").inert);
+  });
+  // #2447: failure simulation is separate from verifying the packaged video's contents.
+  for (const [device, touch, options] of [["pc", false, {}], ["touch", true,
+    { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await check(`demo-decode-error-${device}`, async page => {
+      // A successful HTTP response with undecodable media exercises the real media error event.
+      await page.route("**/media/demo-holes.mp4", route => route.fulfill({ contentType: "video/mp4", body: "invalid video fixture" }));
+      await setup(page);
+      await page.evaluate(() => { F.running = F.holes.runHoles(F.cs); });
+      const sheet = page.locator(".bench-demo-sheet");
+      await sheet.waitFor();
+      await page.waitForFunction(() => document.querySelector(".bench-demo-stage")?.hidden);
+      await demoKeyboardLoop(page);
+      assert.match(await page.locator(".bench-demo-status").innerText(), /動画を再生できません/);
+      assert.equal(await page.locator(".bench-demo-instructions").evaluate(n => n.open), true);
+      const expected = await page.evaluate(async () => (await import("./js/craft/demo.js")).STEP_DEMOS.holes.cues.map(c => c.text));
+      assert.deepEqual(await page.locator(".bench-demo-instructions li").allTextContents(), expected);
+      const contrasts = await page.locator(".bench-demo-card").evaluate(card => {
+        const luma = css => css.match(/[\d.]+/g).slice(0, 3).map(Number).map(n => {
+          const c = n / 255; return c <= .04045 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4;
+        }).reduce((sum, c, i) => sum + c * [.2126, .7152, .0722][i], 0);
+        const bg = luma(getComputedStyle(card).backgroundColor);
+        return [...card.querySelectorAll(".bench-demo-status, .bench-demo-instructions summary, .bench-demo-instructions li")].map(n => {
+          const fg = luma(getComputedStyle(n).color);
+          return { text: n.textContent, ratio: (Math.max(fg, bg) + .05) / (Math.min(fg, bg) + .05) };
+        });
+      });
+      assert.equal(contrasts.length, 8);
+      assert(contrasts.every(row => row.ratio >= 4.5), JSON.stringify(contrasts));
+      await page.locator(".bench-demo-instructions summary").scrollIntoViewIfNeeded();
+      await assertFits(page, ".bench-demo-instructions summary");
+      await capture(page, `2447-demo-error-${device}`);
+      await click(page, ".bench-demo-finish", touch);
+      await sheet.waitFor({ state: "detached" });
+      await page.locator('[data-test="hole-start"]').waitFor();
+      assert.equal(await page.locator(".bench-panel").evaluate(n => n.inert), false);
+      assert.equal(await page.locator(".bench").getAttribute("data-demo-paused"), null);
+      // Reopen through the real help entry; skipping remains available after another error.
+      await click(page, ".bench-guide > summary", touch);
+      await click(page, ".bench-guide .bench-demo-link", touch);
+      await sheet.waitFor();
+      await demoKeyboardLoop(page);
+      await click(page, ".bench-demo-skip", touch);
+      await sheet.waitFor({ state: "detached" });
+      assert.equal(await page.locator(".bench-demo-link").evaluate(n => n === document.activeElement), true);
+      await click(page, '[data-test="bench-guide-close"]', touch);
+      await page.waitForFunction(() => !document.querySelector(".bench-panel").inert);
+    }, options);
+    await check(`demo-stall-and-interrupt-${device}`, async page => {
+      const pending = [];
+      await page.route("**/media/demo-holes.mp4", route => { pending.push(route); });
+      await setup(page);
+      await page.evaluate(async () => {
+        F.demo = await import("./js/craft/demo.js");
+        F.beforeDemo = JSON.stringify(F.core.state);
+        F.beforeDemoInert = [...document.querySelector(".bench").children].map(n => n.inert);
+        F.plays = [];
+        // Controlled promises/events test autoplay and delayed callbacks without relying on network timing.
+        HTMLMediaElement.prototype.play = function () { return new Promise((resolve, reject) => F.plays.push({ resolve, reject })); };
+        F.startDemo = () => F.demo.openDemoSheet(document.querySelector(".bench"), "holes");
+        F.demoTask = F.startDemo();
+      });
+      await page.locator(".bench-demo-sheet").waitFor();
+      await demoKeyboardLoop(page);
+      assert.equal(await page.locator(".bench-demo-instructions li").count(), 6, "Instructions exist before any media event");
+      await page.evaluate(() => F.plays[0].reject(new DOMException("fixture autoplay policy", "NotAllowedError")));
+      await page.waitForFunction(() => document.querySelector(".bench-demo-status")?.textContent.includes("自動再生できません"));
+      assert.equal(await page.locator(".bench-demo-stage").evaluate(n => n.hidden), false, "Manual video controls stay available");
+      for (const type of ["stalled", "waiting"]) {
+        await page.evaluate(type => document.querySelector(".bench-demo-stage video").dispatchEvent(new Event(type)), type);
+        assert.match(await page.locator(".bench-demo-status").innerText(), /読み込みが止まっています/);
+        assert.equal(await page.locator(".bench-demo-instructions").evaluate(n => n.open), true);
+      }
+      await page.evaluate(() => document.querySelector(".bench-demo-stage video").dispatchEvent(new Event("playing")));
+      assert.match(await page.locator(".bench-demo-status").innerText(), /再生中/);
+      await page.locator(".bench-demo-finish").scrollIntoViewIfNeeded();
+      await assertFits(page, ".bench-demo-finish");
+      await capture(page, `2447-demo-steps-${device}`);
+      await page.evaluate(() => { F.oldFinish = document.querySelector(".bench-demo-finish"); });
+      await click(page, ".bench-demo-finish", touch);
+      assert.equal(await page.evaluate(() => F.demoTask), true);
+      assert.deepEqual(await page.evaluate(() => [...document.querySelector(".bench").children].map(n => n.inert)),
+        await page.evaluate(() => F.beforeDemoInert), "Restore every background element's previous inert state");
+      await page.evaluate(() => { F.oldFinish.click(); F.oldFinish.click(); F.demoTask = F.startDemo(); });
+      await page.locator(".bench-demo-sheet").waitFor();
+      // Replacing the scene (as on LOAD) cancels the old sheet and its late promise safely.
+      await page.evaluate(() => document.querySelector(".bench").remove());
+      assert.equal(await page.evaluate(() => F.demoTask), false);
+      await page.evaluate(() => F.plays[1].reject(new DOMException("late rejection", "NotAllowedError")));
+      assert.equal(await page.locator(".bench-demo-sheet").count(), 0);
+      assert.equal(await page.evaluate(() => JSON.stringify(F.core.state)), await page.evaluate(() => F.beforeDemo));
+      for (const route of pending) await route.abort("aborted").catch(() => {});
+    }, options);
+  }
   await check("automatic-packing", async page => {
     await setup(page);
     await page.evaluate(async () => { F.session.craftTest.auto = "good"; await F.steps.stepPack(F.cs); F.session.craftTest.auto = null; });
     assert.equal(await page.evaluate(() => F.cs.pack), "normal");
   });
+  // #2359: 実際の制作処理と素材で3サイズを撮影。縦長はデスクトップ窓で確認し、回転案内は改変しない。
+  for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }, { width: 390, height: 844 }]) {
+    for (const step of ["pack", "holes", "heat"]) await check(`night-${step}-${viewport.width}x${viewport.height}`, async page => {
+      await setup(page);
+      await page.evaluate(async step => {
+        F.cs.mode = "drill";
+        const heat = await import("./js/craft/heat.js");
+        F.running = step === "pack" ? F.steps.stepPack(F.cs) : step === "holes" ? F.holes.runHoles(F.cs) : heat.runHeat(F.cs);
+      }, step);
+      await page.locator(step === "pack" ? '[data-test="pack-confirm"]' : step === "holes" ? '[data-test="hole-start"]' : '.heat[aria-busy="false"]').waitFor();
+      if (step === "pack") {
+        const paint = await page.locator('[data-test="pack-confirm"]').evaluate(n => {
+          const s = getComputedStyle(n); return { background: s.backgroundColor, image: s.borderImageSource, width: s.borderTopWidth };
+        });
+        assert.deepEqual(paint, { background: "rgb(227, 189, 110)", image: paint.image, width: "14px" });
+        assert.match(paint.image, /button-gold\.webp/);
+      }
+      if (step === "holes") {
+        assert.equal(await page.locator('.ht-option[aria-pressed="true"]').evaluate(n => getComputedStyle(n).color), "rgb(46, 29, 69)");
+      }
+      assert.equal(await page.locator('.bench-worker-name').evaluate(n => getComputedStyle(n).backgroundImage), "none");
+      // 外部画像が全て実画像としてデコード済みであることを確認する（placeholderは不可）。
+      await page.waitForFunction(step => {
+        const worker = document.querySelector('.bench-worker');
+        const image = worker.querySelector('.worker-action:not([hidden])');
+        return worker.dataset.scene === step && image?.complete && image.naturalWidth > 0
+          && image.checkVisibility({ visibilityProperty: true });
+      }, step);
+      await capture(page, `night-${step}-${viewport.width}x${viewport.height}`);
+    }, { viewport, reducedMotion: "reduce" });
+  }
+
 });

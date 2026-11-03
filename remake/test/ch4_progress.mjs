@@ -3,6 +3,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { newState, setState } from "../js/core/state.js";
 import { paidAction, applyStats } from "../js/core/stats.js";
 import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_SCENE_FILES, CH4_VISITOR_SCENE_FILES, CH4_PROLOGUE, CH4_RESOLUTION, CH4_MANDATORY,
+  CH4_ARRIVAL_SCENES, CH4_FRIEND_ARRIVAL_SCENES, chapterFourArrivalsDue, CH4_ARRIVAL_EVENING_SCENES, chapterFourArrivalEveningsDue,
   CH4_TOURNAMENT_DAY, CH4_EVE_DAY, canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress,
   completeChapterFourScene, endChapterFourDay, finishChapterFourEve, chapterFourMandatory,
   chapterFourSecondAvailable, chapterFourSheikhRevealed, revealChapterFourSheikh,
@@ -10,6 +11,7 @@ import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_SCENE_FILES, CH4_VISITOR_SCENE_FILES, C
   CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour, chapterFourDaily, syncChapterFourDay, enterChapterFourEve,
   chapterFourEveDay, chapterFourTournamentDay, CH4_DAILY_EVE_DAY, CH4_DAILY_TOURNAMENT_DAY } from "../js/chapters/ch4-progress.js";
 import { chapterFourMapModel, DUBAI_MAP_PLACES } from "../js/chapters/ch4-map-model.js";
+import { OVERSEAS_HEROINES, chooseOverseasCompanion } from "../js/core/overseas-companion.js";
 
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
 const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url)));
@@ -25,10 +27,12 @@ for (const [file, ids] of Object.entries(CH4_SCENE_FILES)) {
 }
 for (const id of [...CH4_PROLOGUE, ...CH4_RESOLUTION].map(scene => scene.id)
   .concat(CH4_MANDATORY.flatMap(entry => [entry.id, entry.lead]).filter(Boolean))) assert(connected.includes(id), id);
-for (const id of ["ch4_return", "ch4_samechan_dubai_evening", "ch4_hiyori_dubai_evening"])
-  assert(!connected.includes(id), `${id} must stay unconnected`);
+assert(!connected.includes("ch4_return"), "ch4_return must stay unconnected");
+// 到着の後の夕方（IR18）は ch4_main から読み込む。サメちゃん・ひよりの2本だけ（_legacy へ移さない）。
+assert.deepEqual(CH4_ARRIVAL_EVENING_SCENES, { samechan: "ch4_samechan_dubai_evening", hiyori: "ch4_hiyori_dubai_evening" });
+for (const id of Object.values(CH4_ARRIVAL_EVENING_SCENES)) assert(CH4_SCENE_FILES.ch4_main.includes(id), id);
 assert.equal(new Set(connected).size, connected.length, "A scene is listed twice");
-// ヒロイン来訪の台本は全ファイル（ch4_visitors と *_dubai）を読込登録し、本文があり、接続場面とは重ならない。
+// ヒロイン来訪の台本は全ファイル（ch4_visitors と *_dubai）を読込登録し、本文があり、本編の場面表（CH4_SCENE_FILES）とは別に持つ。
 const visitorFiles = readdirSync(new URL("../../data/dialogue/", import.meta.url))
   .map(name => name.replace(/\.json$/, "")).filter(name => /^ch4_(visitors|\w+_dubai)$/.test(name)).sort();
 assert.deepEqual(Object.keys(CH4_VISITOR_SCENE_FILES).sort(), visitorFiles);
@@ -37,8 +41,18 @@ for (const [file, ids] of Object.entries(CH4_VISITOR_SCENE_FILES)) {
   assert.deepEqual([...ids].sort(), rows.map(row => row.dialogue_id).sort(), `${file}: all scenes registered`);
   for (const id of ids) {
     assert(rows.some(row => row.dialogue_id === id && row.lines?.length), `${file}:${id}`);
-    assert(!connected.includes(id), `${id} is load-only`);
+    assert(!connected.includes(id), `${id} is registered apart from the main scene table`);
   }
+}
+// 別便の応援の到着場面: 恋人版は story_routes の romance[id].arrival と同じ。恋人版＋友人版で来訪の台本をちょうど覆う。
+{
+  const romance = readData("story_routes").romance;
+  assert.deepEqual(Object.keys(CH4_ARRIVAL_SCENES), OVERSEAS_HEROINES);
+  for (const id of readData("story_routes").heroine_ids) assert.equal(CH4_ARRIVAL_SCENES[id], romance[id].arrival, id);
+  assert.deepEqual([...Object.values(CH4_ARRIVAL_SCENES), ...Object.values(CH4_FRIEND_ARRIVAL_SCENES)].sort(),
+    Object.values(CH4_VISITOR_SCENE_FILES).flat().sort());
+  for (const scene of [...Object.values(CH4_ARRIVAL_SCENES), ...Object.values(CH4_FRIEND_ARRIVAL_SCENES)])
+    assert.equal(CH4_SCENE_BG[scene], "bg_dubai_inn_day", `${scene} is met in the inn lobby`);
 }
 assert(readData("dialogue/ch4_rin_dubai").dialogues[0].lines
   .some(line => line.speaker === "rin" && line.text.includes("最重要サンプルの品質管理") && line.text.includes("業務は午後で終わり")),
@@ -56,7 +70,7 @@ assert.deepEqual(CH4_PROLOGUE.map(scene => scene.id),
 const mandatoryIds = CH4_MANDATORY.map(entry => entry.id);
 assert.deepEqual(routes.before_eve.filter(id => mandatoryIds.includes(id)), mandatoryIds);
 assert.deepEqual(routes.after_eve, ["ch4_tournament_start", "ch4_final"]);
-// 勝ち側は南雲を屋敷・帰国の前に置く（CH4-CONNECTION-DESIGN 要点3。story_routes の順とは意図的に違う）。
+// 勝ち側は須井を屋敷・帰国の前に置く（CH4-CONNECTION-DESIGN 要点3。story_routes の順とは意図的に違う）。
 assert.deepEqual(CH4_RESOLUTION.map(scene => scene.id),
   ["ch4_result", "ch4_nagumo_old_rival", "ch4_ending", "ch4_sumi_return", "ch4_two_tables"]);
 assert.deepEqual([...routes.on_win].sort(), CH4_RESOLUTION.map(scene => scene.id).sort());
@@ -328,7 +342,7 @@ assert.equal(value.flags._ch4.part, "resolution");
 assert.equal(value.phase, "aftermath");
 assert.equal(value.flags._ch4_cleared, undefined);
 
-// 勝ち側の本線: 南雲 → 屋敷 → 帰国の順。順番違いは確定しない。
+// 勝ち側の本線: 須井 → 屋敷 → 帰国の順。順番違いは確定しない。
 for (const [index, scene] of CH4_RESOLUTION.entries()) {
   assert.equal(value.flags._ch4.resolution, index);
   const wrong = CH4_RESOLUTION[(index + 1) % CH4_RESOLUTION.length].id;
@@ -486,4 +500,127 @@ console.log("PASS: Chapter 4 runner state keeps the Dubai days, mandatory scenes
   assert.equal(finishChapterFourEve(daily), true);
   assert.deepEqual([p.part, p.day, daily.day], ["tournament", 14, p.startDay + 13], "The world tournament is Dubai DAY14");
   console.log("PASS: Chapter 4 daily route keeps Dubai DAY1-12 free, the DAY13 eve and the DAY14 tournament");
+}
+
+// 別便の応援の到着（前夜祭の日）: 出発前に決めた supports だけ、前夜の part の前夜祭より前に、1人ずつ順に確定する。
+{
+  // 第3章クリア→第4章（版2）で同行を選び、ドバイDAY12まで進めた保存。
+  const arrivalSave = (lovers, companion, { decide = true } = {}) => {
+    const save = clearedSave();
+    save.lovers = [...lovers];
+    assert(advanceToChapterFour(save));
+    if (decide) assert(chooseOverseasCompanion(save, companion));
+    for (const id of CH4_PREP_SCENES) assert(completeChapterFourScene(save, id));
+    save.day += 3;
+    assert(departChapterFour(save));
+    for (const scene of CH4_PROLOGUE.slice(CH4_PREP_SCENES.length)) assert(completeChapterFourScene(save, scene.id));
+    save.day = save.flags._ch4.startDay + 11; syncChapterFourDay(save);
+    return save;
+  };
+  const toEve = save => { save.day = save.flags._ch4.startDay + 12; assert(enterChapterFourEve(save)); return save; };
+  const due = save => chapterFourArrivalsDue(save).map(entry => entry.scene);
+
+  // 同行なし・恋人はくゆり: くゆり（恋人版）→ ましろ（友人版）の順。自由行動の間は出さない。
+  const save = arrivalSave(["rin"], null);
+  assert.deepEqual(save.flags._overseas_companion.supports, ["rin", "mashiro"]);
+  assert.deepEqual(chapterFourArrivalsDue(save), [], "No arrival during the Dubai daily days");
+  assert.equal(completeChapterFourScene(save, "ch4_rin_dubai_girlfriend"), false, "An arrival is not a free-time scene");
+  toEve(save);
+  assert.deepEqual(chapterFourArrivalsDue(save), [
+    { id: "rin", scene: "ch4_rin_dubai_girlfriend" },
+    { id: "mashiro", scene: "ch4_mashiro_dubai_friend" },
+  ]);
+  // 1人ずつ順に。2人目・恋人でない人の恋人版・来ない人の到着は確定しない。
+  for (const wrong of ["ch4_mashiro_dubai_friend", "ch4_mashiro_dubai_girlfriend", "ch4_tsumugi_dubai_girlfriend"]) {
+    const prior = structuredClone(save);
+    assert.equal(completeChapterFourScene(save, wrong), false, wrong);
+    assert.deepEqual(save, prior);
+  }
+  const before = structuredClone(save);
+  assert.equal(completeChapterFourScene(save, "ch4_rin_dubai_girlfriend"), true);
+  assert.equal(completeChapterFourScene(save, "ch4_rin_dubai_girlfriend"), false, "An arrival commits once");
+  assert.deepEqual([save.money, save.stats, save.day, save.flags._ch4.day, save.flags._ch4.part],
+    [before.money, before.stats, before.day, before.flags._ch4.day, "eve"], "An arrival pays nothing and keeps the day");
+  assert.deepEqual(due(save), ["ch4_mashiro_dubai_friend"]);
+  // 到着待ちの間も必須場面は確定できる（旧保存・LOADを止めない）。
+  const [required] = chapterFourMandatory(save);
+  const blocked = structuredClone(save);
+  assert.equal(completeChapterFourScene(blocked, required.lead || required.id), true, "Mandatory scenes stay committable");
+  assert.equal(completeChapterFourScene(save, "ch4_mashiro_dubai_friend"), true);
+  assert.deepEqual(chapterFourArrivalsDue(save), []);
+  assert.deepEqual(chapterFourProgress(JSON.parse(JSON.stringify(save))), save.flags._ch4, "Arrival reads survive SAVE/LOAD");
+
+  // 前夜祭が始まった後・前夜の過ごし方を記録した後は、到着を足さない。
+  const festival = toEve(arrivalSave(["rin"], null));
+  for (const id of ["ch4_festa", "ch4_stranger_first", "ch4_stranger_second"]) festival.flags._ch4.read[id] = true;
+  assert.deepEqual(chapterFourMandatory(festival)[0], { id: "ch4_wang_reception", lead: "ch4_wang_reception_forced_in" });
+  assert.deepEqual(due(festival), ["ch4_rin_dubai_girlfriend", "ch4_mashiro_dubai_friend"],
+    "Scenes read before the festival keep the arrivals");
+  assert.equal(completeChapterFourScene(festival, "ch4_wang_reception_forced_in"), true);
+  assert.deepEqual(chapterFourArrivalsDue(festival), [], "No lobby arrival after the festival started");
+  assert.equal(completeChapterFourScene(festival, "ch4_rin_dubai_girlfriend"), false);
+  const evening = toEve(arrivalSave(["rin"], null));
+  evening.flags._ch4_evening = { kind: "rest", participants: [] };
+  assert.deepEqual(chapterFourArrivalsDue(evening), []);
+  assert.equal(completeChapterFourScene(evening, "ch4_rin_dubai_girlfriend"), false);
+
+  // 同行者は同じ便なので到着場面が無い。ましろが恋人なら恋人版。順は OVERSEAS_HEROINES。
+  const companion = toEve(arrivalSave(["hiyori", "tsumugi", "mashiro"], "tsumugi"));
+  assert.deepEqual(due(companion), ["ch4_mashiro_dubai_girlfriend", "ch4_hiyori_dubai_girlfriend"]);
+  assert.equal(completeChapterFourScene(companion, "ch4_tsumugi_dubai_girlfriend"), false, "The companion has no arrival");
+  // 同行の選択が無い旧保存は supports が空なので、ましろも含め到着を作らない。
+  const undecided = toEve(arrivalSave(["rin"], null, { decide: false }));
+  assert.equal(undecided.flags._overseas_companion, undefined);
+  assert.deepEqual(chapterFourArrivalsDue(undecided), []);
+  // 大会の後（tournament・resolution）は出さない。
+  for (const part of ["tournament", "resolution"]) {
+    const after = toEve(arrivalSave(["rin"], null));
+    Object.assign(after.flags._ch4, { part, day: CH4_DAILY_TOURNAMENT_DAY });
+    assert.deepEqual(chapterFourArrivalsDue(after), [], part);
+    assert.equal(completeChapterFourScene(after, "ch4_rin_dubai_girlfriend"), false, part);
+  }
+  console.log("PASS: Chapter 4 separate-flight arrivals play once each, in order, before the eve festival, never for the companion");
+
+  // IR18: 到着したサメちゃん・ひよりとは、到着の後、前夜祭の前に夕方を任意で一度過ごせる。
+  const evenings = save => chapterFourArrivalEveningsDue(save).map(entry => entry.scene);
+  const visit = arrivalSave(["samechan", "hiyori"], null);
+  assert.deepEqual(evenings(visit), [], "No evening during the Dubai daily days");
+  assert.equal(completeChapterFourScene(visit, "ch4_samechan_dubai_evening"), false);
+  toEve(visit);
+  assert.deepEqual(due(visit), ["ch4_mashiro_dubai_friend", "ch4_samechan_dubai_girlfriend", "ch4_hiyori_dubai_girlfriend"]);
+  assert.deepEqual(evenings(visit), [], "The evening waits for every arrival");
+  assert.equal(completeChapterFourScene(visit, "ch4_samechan_dubai_evening"), false, "Not before she arrives");
+  for (const scene of due(visit)) assert(completeChapterFourScene(visit, scene));
+  assert.deepEqual(chapterFourArrivalEveningsDue(visit), [
+    { id: "samechan", scene: "ch4_samechan_dubai_evening" },
+    { id: "hiyori", scene: "ch4_hiyori_dubai_evening" },
+  ]);
+  const plain = structuredClone(visit);
+  assert.equal(completeChapterFourScene(visit, "ch4_samechan_dubai_evening"), true);
+  assert.equal(completeChapterFourScene(visit, "ch4_samechan_dubai_evening"), false, "An evening commits once");
+  assert.deepEqual([visit.money, visit.stats, visit.day, visit.slot, visit.flags._ch4.day, visit.flags._ch4.part],
+    [plain.money, plain.stats, plain.day, plain.slot, plain.flags._ch4.day, "eve"], "An evening pays nothing and keeps the day");
+  assert.deepEqual(chapterFourMandatory(visit), chapterFourMandatory(plain), "An evening does not move the eve");
+  assert.deepEqual(evenings(visit), ["ch4_hiyori_dubai_evening"]);
+  // 任意なので、読まずに前夜祭へ進めば出ない。前夜の過ごし方の記録の後・大会の後も出さない。
+  for (const id of ["ch4_festa", "ch4_stranger_first", "ch4_stranger_second"]) visit.flags._ch4.read[id] = true;
+  assert.equal(completeChapterFourScene(visit, "ch4_wang_reception_forced_in"), true);
+  assert.deepEqual(evenings(visit), [], "No evening after the festival started");
+  assert.equal(completeChapterFourScene(visit, "ch4_hiyori_dubai_evening"), false);
+  const settled = structuredClone(plain);
+  settled.flags._ch4_evening = { kind: "rest", participants: [] };
+  assert.deepEqual(evenings(settled), []);
+  const later = structuredClone(plain);
+  Object.assign(later.flags._ch4, { part: "tournament", day: CH4_DAILY_TOURNAMENT_DAY });
+  assert.deepEqual(evenings(later), []);
+  // 同行者（同じ便・到着場面なし）には夕方も無い。恋人でない人にも無い。
+  const together = toEve(arrivalSave(["samechan", "hiyori"], "samechan"));
+  for (const scene of due(together)) assert(completeChapterFourScene(together, scene));
+  assert.deepEqual(evenings(together), ["ch4_hiyori_dubai_evening"], "The companion came on the same flight");
+  assert.equal(completeChapterFourScene(together, "ch4_samechan_dubai_evening"), false);
+  const friends = toEve(arrivalSave(["rin"], null));
+  for (const scene of due(friends)) assert(completeChapterFourScene(friends, scene));
+  assert.deepEqual(evenings(friends), []);
+  assert.deepEqual(chapterFourProgress(JSON.parse(JSON.stringify(plain))), plain.flags._ch4, "Evening reads survive SAVE/LOAD");
+  console.log("PASS: Chapter 4 arrival evenings: after the arrival, before the festival, once, never for the companion");
 }

@@ -15,7 +15,7 @@ export function buildCraftProgress(steps) {
   if (available.has("pull")) available.add("serve");
   const phases = PHASES.filter(([, , ids]) => !steps.length || ids.some(id => available.has(id)));
   const count = el("b.bench-progress-count");
-  const cells = phases.map(([phase, label, ids, icon], i) => el("span.bench-phase", { dataset: { step: phase, steps: ids.join(",") } }, [
+  const cells = phases.map(([phase, label, ids, icon], i) => el("span.bench-phase", { "aria-label": label, title: label, dataset: { step: phase, steps: ids.join(",") } }, [
     el("i.bench-phase-icon", { "aria-hidden": "true", html: `<svg viewBox="0 0 36 36">${icon}</svg>` }),
     el("span.bench-phase-copy", [el("small", { text: String(i + 1).padStart(2, "0") }), el("b", { text: label })]),
   ]));

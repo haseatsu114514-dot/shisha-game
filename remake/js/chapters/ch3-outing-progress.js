@@ -44,8 +44,12 @@ export const TOKYO_OUTINGS = Object.freeze([
     stamina: -10, stat: "technique", affinityWith: "steve", reason: "スティーブのタイマーの置き方を、また見せてもらう" },
   { id: "park_walk", place: "park", label: "公園を歩く", repeat: true, stamina: 20,
     reason: "何も決めずに歩いて、少し体を休める" },
-  // mukaiの看板猫てつこ（#1993）。撫でるか餌をあげるかを選び、体力だけ少し戻す。能力・好感度は増やさない。
+  // mukaiの看板猫てつこ（#1993）。体力だけ少し戻す。能力・好感度は増やさない。
+  // 通うほど懐いていく（2026-11-02 オーナー「てつこは店の裏で世話したい」）: 素っ気ない→ブラシ→待っている→自分から寄ってくる、
+  // その後は懐いた後の場面を巡回する（stages の順に読み、尽きたら loop を回す）。
   { id: "tetsuko", place: "mukai", label: "裏口のてつこに会う", repeat: true, stamina: 12, bg: "bg_street",
+    stages: ["ch3_outing_tetsuko", "ch3_outing_tetsuko_brush", "ch3_outing_tetsuko_wait", "ch3_outing_tetsuko_trust"],
+    loop: ["ch3_outing_tetsuko_lap", "ch3_outing_tetsuko_belly", "ch3_outing_tetsuko_door"],
     toast: "てつこに、少し元気をもらった", reason: "裏口のベンチで、看板猫のてつこを構う" },
 ]);
 export const OUTINGS_FLAG = "_ch3_outings";
@@ -53,6 +57,10 @@ const RECOVERY_SCENE = "ch3_taste_return";
 
 /** 台本ID。手伝いは味が戻る前後、公園は昼夜、通う行き先は回数で読み分ける。 */
 export function outingDialogueId(value, outing, window = null) {
+  if (outing.stages?.length) {
+    const count = outingCounts(value)[outing.id] || 0;
+    return count < outing.stages.length ? outing.stages[count] : outing.loop[(count - outing.stages.length) % outing.loop.length];
+  }
   if (outing.talks?.length) {
     const count = outingCounts(value)[outing.id] || 0;
     return count === 0 || outing.talks.length === 1 ? outing.talks[0] : outing.talks[1 + (count - 1) % (outing.talks.length - 1)];
@@ -64,6 +72,8 @@ export function outingDialogueId(value, outing, window = null) {
 export const OUTING_DIALOGUE_IDS = Object.freeze(["ch3_outing_mukai_help_lost", "ch3_outing_mukai_help",
   "ch3_outing_enmaku_notes", "ch3_outing_enmaku_answer", "ch3_outing_mukai_steve", "ch3_outing_steve_timer",
   "ch3_outing_park_walk_day", "ch3_outing_park_walk_night", "ch3_outing_tetsuko",
+  "ch3_outing_tetsuko_brush", "ch3_outing_tetsuko_wait", "ch3_outing_tetsuko_trust",
+  "ch3_outing_tetsuko_lap", "ch3_outing_tetsuko_belly", "ch3_outing_tetsuko_door",
   "ch3_outing_enmaku_visit", "ch3_outing_enmaku_visit_b", "ch3_outing_enmaku_visit_c",
   "ch3_outing_mukai_steve_b", "ch3_outing_mukai_steve_c", "ch3_outing_steve_visit", "ch3_outing_steve_visit_b"]);
 

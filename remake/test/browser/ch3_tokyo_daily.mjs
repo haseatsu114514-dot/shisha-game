@@ -44,7 +44,7 @@ async function seed(page) {
     value.day += 3;
     if (!progress.departChapterThree(value)) throw new Error("Departure failed");
     value.flags._ch3_intro.titleSeen = true;
-    // 路上占い師（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、この章の出現は済んだことにする。
+    // 辻占のオババ（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、この章の出現は済んだことにする。
     const fortune = await import("./js/daily/fortune-schedule.js");
     const fortunePlan = fortune.fortunePlan({ seed: value.seed, chapter: 3 });
     value.flags._fortune_wander = { chapter: 3, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
@@ -180,6 +180,41 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(state.money, 6000, "One visit to Kuze's shop in Tokyo is 4,000 yen");
   });
 
+  // IR22: 久世の締めくくり（♥5・LIME交換の寄り道と「答えを返しに行く」の後）を、日常ループの煙幕の来店から読める。
+  // 閉店後に呼ばれるので代金は払わず、行動を一つ使う。専用ハガルは一度だけ。
+  await check("kuze-heart5-finale-is-reached-from-enmaku-on-the-daily-loop", async page => {
+    await seed(page);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const progress = await import("./js/chapters/ch3-progress.js");
+      const value = core.state, intro = value.flags._ch3_intro;
+      intro.stage = progress.CH3_INTRO_SCENES.findIndex(scene => scene.id === "ch3_strategy");
+      value.day = intro.startDay + 12; value.slot = 0; value.phase = "daily";
+      Object.assign(value.met, { kuze: true, steve: true, volk: true, mashiro: true, mukai_master: true });
+      value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
+      Object.assign(value.flags, { _lime_contact_kuze: true, _ch3_read_ch3_kuze_lime: true, _ch3_outings: { enmaku_answer: 1, enmaku_visit: 3 } });
+      value.affinity.kuze = 66; value.money = 10000;
+      core.save();
+    });
+    await loadSlot(page, 0);
+    await tokyoMap(page, { day: 44, slot: 1 });
+    await go(page, "ch3_tokyo_enmaku");
+    const finale = page.locator(dt("tokyo-enmaku-0"));
+    await finale.waitFor();
+    assert.equal((await finale.innerText()).trim(), "久世に呼ばれる", "the finale comes first at Enmaku");
+    await finale.click();
+    await page.waitForFunction(() => !!window.__remake?.state?.finales?.kuze, null, { timeout: 60000 });
+    const state = await get(page);
+    assert.equal(state.finales.kuze.route, "friend");
+    assert.equal(state.owned.filter(id => id === "suyaki_kuze").length, 1);
+    assert.equal(state.money, 10000, "being called after closing costs nothing");
+    const backlog = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map(row => row.text).join("\n"));
+    assert.match(backlog, /勝負の話は、今夜はなし/, "read before the tournament: the before-tournament branch");
+    assert.doesNotMatch(backlog, /今夜の議題は、勝ち負けとは別の話/);
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
+    assert.equal(saved.finales?.kuze?.route, "friend", "the finale is saved");
+  });
+
   await check("tournament-eve-then-the-national-morning-card", async page => {
     await seed(page);
     await page.evaluate(async () => {
@@ -209,7 +244,7 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(await page.locator('[data-test="ch3-intro-tournament"]').count(), 1);
   });
 
-  // VOL15: 路上占い師は東京にも現れる（理由は語らない）。地図の行き先になり、時間を使わずに3,000円で占う。
+  // VOL15: 辻占のオババは東京にも現れる（理由は語らない）。地図の行き先になり、時間を使わずに3,000円で占う。
   await check("the-street-fortune-teller-appears-in-tokyo-too", async page => {
     await seed(page);
     const day = await page.evaluate(async () => {

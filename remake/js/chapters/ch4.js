@@ -4,10 +4,11 @@ import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 import { createChapterActions } from "../core/chapter-actions.js";
+import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
-import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
+import { state, save } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal, toast } from "../core/ui.js";
-import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { saveFlow } from "../scenes/saves.js";
 import { play, hooks } from "../vn/engine.js";
 import { chapterGrowthChart } from "../daily/status.js";
 import { paidAction } from "../core/stats.js";
@@ -19,7 +20,8 @@ import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_
   endChapterFourDay, finishChapterFourEve, chapterFourMandatory, revealChapterFourSheikh,
   chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE,
   CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour, chapterFourRead,
-  chapterFourDaily, enterChapterFourEve, chapterFourEveDay, chapterFourTournamentDay } from "./ch4-progress.js";
+  chapterFourDaily, enterChapterFourEve, chapterFourEveDay, chapterFourTournamentDay, chapterFourArrivalsDue,
+  CH4_ARRIVAL_SCENES, CH4_FRIEND_ARRIVAL_SCENES, chapterFourArrivalEveningsDue } from "./ch4-progress.js";
 
 const CH4_SPOT_SCENES = CH4_SCENE_FILES.ch4_spots;
 import { chapterFourMapModel } from "./ch4-map-model.js";
@@ -48,37 +50,7 @@ function menuButton(owner) {
     onclick: () => openMenu(owner) });
 }
 
-async function openMenu(owner) {
-  if (!current(owner) || owner.menuBusy) return;
-  owner.menuBusy = true;
-  try {
-    const choice = await modal({ title: "第四章 MENU", body: "読み終えた場面から再開できます。", options: [
-      { label: "セーブ", value: "save", test: test("save") },
-      { label: "ロード", value: "load", test: test("load") },
-      { label: "設定", value: "config", test: test("config") },
-      { label: "タイトルへ戻る", value: "title", test: test("title") },
-      { label: "閉じる", value: null, primary: true },
-    ] });
-    if (!current(owner)) return;
-    if (choice === "save") await saveFlow();
-    if (choice === "config") await (await import("../scenes/title.js")).openConfig();
-    if (choice === "load") {
-      const key = await loadFlow({ inGame: true });
-      if (key && loadFromSlot(key)) {
-        owner.active = false;
-        owner.controller?.abort();
-        requestResumeOnBoot();
-        location.reload();
-      }
-    }
-    if (choice === "title") {
-      save();
-      owner.active = false;
-      owner.controller?.abort();
-      location.reload();
-    }
-  } finally { owner.menuBusy = false; }
-}
+const openMenu = createChapterMenu({ current, test, title: "第四章 MENU" });
 
 function hud() {
   layers.hud.replaceChildren();
@@ -286,17 +258,18 @@ async function renderScene(owner, scene, dayLabel) {
 /**
  * 恋人の入口（#2024）。第1・2章と同じ処理（lover-entry.js → daily/romance.js）を使う。
  * 日本にいる間（出発前・帰国後のtonari）は恋人LIMEと節目。ドバイ滞在中は遠くの恋人からのLIMEだけで、
- * 恋人と過ごす場面（節目・dubai_evening 系）はつながない（ch4-progress.js の FREE_SCENES の方針）。
+ * 節目は進めない（IR17）。到着した恋人と過ごす夕方（dubai_evening 系）は、前夜祭の日の renderEve で読む（IR18）。
  * 同行した恋人は一緒にいるのでLIMEを送ってこない。東京在住のましろとは地元では会えない。
+ * 地元にいるかは home で渡す（帰国後のtonariでも現在地の印はドバイのまま。離れている間は地元前提の文面を送ってこない・#2024）。
  */
 async function loverActions(owner, { home = false } = {}) {
   const lover = await import("./lover-entry.js");
   const exclude = home ? [] : [overseasCompanion(state).companion].filter(Boolean);
   const actions = [];
-  if (lover.pendingLoverLime({ exclude }).length) actions.push(button(owner, "恋人からのLIMEを読む", "lover-lime", async () => {
+  if (lover.pendingLoverLime({ exclude, home }).length) actions.push(button(owner, "恋人からのLIMEを読む", "lover-lime", async () => {
     showScreen("none", null);
     hud();
-    await lover.readLoverLime({ exclude });
+    await lover.readLoverLime({ exclude, home });
     if (current(owner)) await renderStage(owner);
   }));
   // 友人からのたまのLIME（#2022）。同行者は一緒にいるので送ってこない。
@@ -414,8 +387,13 @@ async function visit(owner, id) {
   await renderStage(owner);
 }
 
-/** 前夜: 未読の必須場面を story_routes の順に強制消化する。繋ぎ場面があれば先に再生。 */
+/**
+ * 前夜: 別便で来た応援の到着を1人ずつ読んでから、未読の必須場面を story_routes の順に強制消化する。
+ * 繋ぎ場面があれば先に再生。到着を読み終えた恋人だけが、前夜の過ごし方で「その場にいる」人になる。
+ */
 async function renderEve(owner) {
+  const [arrival] = chapterFourArrivalsDue(state);
+  if (arrival) { await renderArrival(owner, arrival); return; }
   const [next] = chapterFourMandatory(state);
   if (!next) {
     // 必須場面の後、大会日へ進む前に、前夜の過ごし方を一度だけ確定する（#1895）。
@@ -429,16 +407,44 @@ async function renderEve(owner) {
     await renderStage(owner);
     return;
   }
+  // 到着した恋人と過ごす夕方（任意で一度・IR18）。前夜祭が始まると、もう出ない。
+  const evenings = chapterFourArrivalEveningsDue(state);
   await setBg(bgUrl(CH4_SCENE_BG[next.lead || next.id]), { instant: true });
   if (!current(owner)) return;
-  card(owner, "eve", `DAY ${chapterFourEveDay(state)}・前夜`, "夜になった。大会の前に、済ませておくことが残っている。", [
+  card(owner, "eve", `DAY ${chapterFourEveDay(state)}・${evenings.length ? "前夜祭の日" : "前夜"}`,
+    evenings.length ? "夕方になった。前夜祭の前に、少し時間がある。" : "夜になった。大会の前に、済ませておくことが残っている。", [
+      button(owner, "続きを読む", "continue", async () => {
+        for (const id of [next.lead, next.id].filter(Boolean)) {
+          if (!await readAndCommit(owner, id)) return;
+        }
+        await renderStage(owner);
+      }, true),
+      ...evenings.map(evening => button(owner, `${displayName(evening.id, state, { context: "private" })}と夕方を過ごす`,
+        `arrival-evening-${evening.id}`, async () => {
+          // 最後まで読んだ時だけ確定・保存する。読んだ後は同じカードに戻り、前夜祭へ進む。
+          if (!await readAndCommit(owner, evening.scene)) return;
+          await renderStage(owner);
+        })),
+    ], evenings.length ? "夕方を過ごしても、明日の大会には影響しません。前夜祭が始まると、夕方の時間は終わります。" : "", next.id);
+}
+
+/**
+ * 前夜祭の日、別便の応援の到着（台本の冒頭が出迎え）。名前はカードに出さない（ましろちゃん等の呼び方は台本に任せる）。
+ * 2人目からは「もう一人」の文にして、同じカードが繰り返されたように見せない。
+ */
+async function renderArrival(owner, arrival) {
+  await setBg(bgUrl(CH4_SCENE_BG[arrival.scene]), { instant: true });
+  if (!current(owner)) return;
+  const another = [...Object.values(CH4_ARRIVAL_SCENES), ...Object.values(CH4_FRIEND_ARRIVAL_SCENES)]
+    .some(id => chapterFourRead(state, id));
+  const text = another ? "別の便で応援に来てくれる人が、もう一人着いたらしい。" : "別の便で応援に来てくれる人が、ドバイに着いたらしい。";
+  card(owner, "arrival", `DAY ${chapterFourEveDay(state)}・前夜祭の日`, text, [
     button(owner, "続きを読む", "continue", async () => {
-      for (const id of [next.lead, next.id].filter(Boolean)) {
-        if (!await readAndCommit(owner, id)) return;
-      }
+      // 最後まで読んだ時だけ確定・保存する。中断・LOADでは同じ到着からやり直す。
+      if (!await readAndCommit(owner, arrival.scene)) return;
       await renderStage(owner);
     }, true),
-  ], "", next.id);
+  ], "", arrival.scene);
 }
 
 /**

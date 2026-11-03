@@ -192,9 +192,11 @@ export function showTitle(preparedArt = null) {
 
   menu.append(
     item("NEW GAME", "はじめから", async () => {
+      // wipeSave() はオートセーブ（AUTOキー）だけを消し、newGame() も手動枠に触れない。
+      // 何が消えるかを L121 の周回開始と同じ文面で明示する（#2444 item6）。
       if (saved && !(await modal({
         title: "はじめから",
-        body: "今のセーブデータは上書きされます。よろしいですか？",
+        body: `現在のオートセーブ（${saved.cycle ?? 1}周目・第${saved.chapter ?? 1}章）は上書きされます。手動セーブ枠は残ります。よろしいですか？`,
         options: [{ label: "はじめから遊ぶ", value: true, primary: true, test: "confirm-new" }, { label: "やめる", value: false, test: "cancel-new" }],
       }))) { refresh(); return; }
       if (!current()) return;

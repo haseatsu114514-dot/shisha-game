@@ -19,6 +19,7 @@ function find(node, id) { if (node.dataset?.test === id) return node; return nod
 const values = {
   "practice.js": { runFullPractice: async () => {} },
   "hiyori.js": { meetHiyoriAtTonari: async () => false, hiyoriShopEncounterDue: () => hiyoriDue, hiyoriAtTonari: () => false },
+  "roamers.js": { roamerAt: () => null, roamerPlan: () => null, meetRoamer: async () => false, addRoamerSpots: () => {} }, // よその店に居合わせる人。この検査では居合わせない
   "hiyori-axe.js": { hiyoriAxeReady: () => false, hiyoriAxeAffordable: () => false, hiyoriAxePrereqsMet: () => false, axeThrowExposed: () => false },
   "util.js": { el, seeded, pick: (pool) => { selectedPools.push(pool.map((e) => e.id)); return pool[0]; } },
   "data.js": { DB: db, sceneBg: () => ({}), loadCinemaDialogue: async () => db, bgUrl: () => "bg", displayName: id => id },

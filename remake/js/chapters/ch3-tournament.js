@@ -36,6 +36,9 @@ import { readDialogues } from "../core/chapter-data.js";
 import { adjustmentLines, resultLines, defeatLines } from "./ch3-verdict.js";
 import { awardTournamentExp } from "../core/growth.js";
 import { chapterThreeScenes, chapterThreeProgress } from "./ch3-progress.js";
+import { readTournamentCheers } from "./lover-entry.js";
+import { TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
+import { syncTokyoVisits, visitingTokyo } from "../core/tokyo-visits.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
   startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult, CH3_PRIZE } from "./ch3-tournament-state.js";
 
@@ -207,10 +210,23 @@ export async function runChapterThreeTournament() {
   });
 }
 
+/**
+ * 大会の朝、会場へ向かう前に届く恋人の応援（第1・2章の大会の朝と同じ形・IR19）。
+ * 地元にいる恋人は配信で見る側の文面。東京に住む恋人（ましろ）と、訪問で東京に来ている恋人はいつもの文面。
+ * 一度読めば既読になり、LOAD・再挑戦で重ねて届かない。
+ */
+async function morningCheers(owner) {
+  syncTokyoVisits(state);
+  const away = (state.lovers || []).filter(who => !TOKYO_RESIDENT_IDS.includes(who) && !visitingTokyo(state, who));
+  showScreen("none", null);
+  await readTournamentCheers({ away });
+  return live(owner);
+}
+
 function renderEntry(owner) {
   card(owner, "entry", "全国大会の朝。", "はじめ・久世・スティーブ・ヴォルク。四人が同時に一台を仕上げる。", [
     button(owner, "会場へ向かう", "start", async () => { checkpoint("opening"); await drive(owner); }, true),
-  ], [el("p.ch2-contest-note", { text: "審査員は南雲・チャコール博士・エミル。各10点を四回に分けて投じる。" })]);
+  ], [el("p.ch2-contest-note", { text: "審査員は須井・チャコール博士・エミル。各10点を四回に分けて投じる。" })]);
 }
 
 function renderReady(owner) {
@@ -288,9 +304,9 @@ function voteReason(p, cs, final = false) {
     const target = displayName(tactic.affected, state);
     const contrast = tactic.delta > 0 ? "香りが強く映った" : "香りが薄く映った";
     const others = affected.filter(who => who !== judge);
-    lines.push(`南雲は水を飲んだ。${names([judge])}は水を挟まず、久世の直後に${target}を試喫。鋭い苦みの余韻で${contrast}（比較${tactic.delta > 0 ? "+" : ""}${tactic.delta}）。${others.length ? `${names(others)}にも残った。` : ""}`);
+    lines.push(`須井は水を飲んだ。${names([judge])}は水を挟まず、久世の直後に${target}を試喫。鋭い苦みの余韻で${contrast}（比較${tactic.delta > 0 ? "+" : ""}${tactic.delta}）。${others.length ? `${names(others)}にも残った。` : ""}`);
   } else if (JUDGES.some(judge => last[judge]?.tactic)) {
-    lines.push("南雲は水を飲んだ。ほかの席も試喫順と給水が噛み合わず、久世の鋭い苦みは直後の比較に残らなかった。");
+    lines.push("須井は水を飲んだ。ほかの席も試喫順と給水が噛み合わず、久世の鋭い苦みは直後の比較に残らなかった。");
   }
   return lines;
 }
@@ -393,7 +409,11 @@ function renderError(owner) {
 async function drive(owner) {
   while (live(owner)) {
     const p = progress();
-    if (p.stage === "entry") { renderEntry(owner); return; }
+    if (p.stage === "entry") {
+      if (!await morningCheers(owner)) return;
+      renderEntry(owner);
+      return;
+    }
     if (p.stage === "opening") {
       if (!await read(owner, "tournament_day")) return;
       await playEntrance(3);

@@ -2,7 +2,7 @@ import { finishTournamentStep } from "./tournament-finish-step.js";
 import { tournamentResources, restoreTournamentResources } from "./tournament-resource-snapshot.js";
 import { tournamentStandings } from "./tournament-standings.js";
 // 第2章の保存境界と持ち点。第1章のstate.tournament/固定逆転票には触れない。
-import { MAX_MONEY } from "../core/rules.js";
+import { payTournamentPrize } from "./tournament-prize.js";
 
 // 大会賞金（2026-10-30 決定の階段式: 第1章30,000円／第2章50,000円／第3章100,000円／第4章200,000円／第5章は賞金なし）。
 export const CH2_PRIZE = 50000;
@@ -18,7 +18,7 @@ export const RIVAL_QUALITY = { ageha: 77, kumicho: 80, rei: 78 };
 // maxPrefDelta は設定パラメータではなく、BASE_PREF_SCALE * prefWeight から一意に導出する。
 export const BASE_PREF_SCALE = 20;
 export const JUDGE_PROFILES = Object.freeze({
-  nagumo: Object.freeze({ id: "nagumo", label: "南雲", qualityWeight: 0.90, prefWeight: 0.10 }),
+  nagumo: Object.freeze({ id: "nagumo", label: "須井", qualityWeight: 0.90, prefWeight: 0.10 }),
   dr_kemuri: Object.freeze({ id: "dr_kemuri", label: "チャコール博士", qualityWeight: 0.85, prefWeight: 0.15 }),
   maezono: Object.freeze({ id: "maezono", label: "上園", qualityWeight: 0.78, prefWeight: 0.22 }),
 });
@@ -129,10 +129,7 @@ export function recordResult(value, total) {
   p.result = { attempt: p.attempts, total, rank: rows.find(row => row.id === "hajime").rank,
     rows, votes: copy(p.votes), careHistory: copy(p.craft.careHistory) };
   // 賞金は優勝の確定と同じ更新で一度だけ渡す（再挑戦・LOADで二重に付けない）。
-  if (p.result.rank === 1 && !p.prizePaid) {
-    p.prizePaid = true;
-    value.money = Math.min(MAX_MONEY, Math.max(0, Math.round((value.money || 0) + CH2_PRIZE)));
-  }
+  payTournamentPrize(value, p, p.result.rank, CH2_PRIZE);
   p.history.push(copy(p.result));
   return p.result;
 }

@@ -40,10 +40,11 @@ const SPOT_ICONS = Object.freeze({ kannon: 'kannondo', rest: 'home', cafe: 'koha
   rojiura_cinema: 'rojiura_cinema',
   axe_bar: 'axe_bar', choizap: 'choizap', fortune: 'fortune', trpg_bar: 'trpg_bar',
   ch3_tokyo_gym: 'choizap', // 第3章の東京のCHOI-ZAP（同じチェーンの高架下の店）
-  // MPI: 東京・ドバイ・第5章の行き先。新幹線の駅は2か所で共用（オーナー決定 2026-11-02）。路地裏の神社は場所の決定待ち（#2166）
+  // MPI: 東京・ドバイ・第5章の行き先。路地裏の神社は場所の決定待ち（#2166）
   ch3_tokyo_park: 'tokyo_park', ch5_tokyo_park: 'tokyo_park', ch3_tokyo_room: 'mukai_back_room', ch5_tokyo_attic: 'mukai_attic',
   ch5_call: 'smartphone', // 第3章の「地元と連絡」は地図から外し、右上の LIME の一番上の行に（オーナー決定 2026-11-02）
-  ch5_to_tokyo: 'shinkansen_station', ch5_tokyo_home: 'shinkansen_station',
+  // 第5章の東京への行き来は Dr.fookah の配送便になった（FIN13）ので、新幹線の駅の絵は使わず文字の盾（「便」）にする。
+  // 絵（shinkansen_station）は FACILITY_ICONS に残す。店のロゴも付けない（同じ地図の Dr.fookah の店と見分けるため）。
   // MPI07: 砂漠ツアーのデスク・砂丘・ラクダレース場（ラクダは誘われた後のレース場だけ。店先の段階は facilityIcon: false）
   ch4_dubai_tour_desk: 'desert_tour_desk', ch4_dubai_dunes: 'desert_dunes', ch4_dubai_camel: 'camel_race_track',
   ch4_dubai_souq: 'dubai_souq', ch4_dubai_creek: 'dubai_creek', ch4_dubai_mosque: 'dubai_mosque', ch4_dubai_inn: 'dubai_inn',

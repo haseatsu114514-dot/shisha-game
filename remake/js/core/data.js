@@ -198,9 +198,10 @@ const ALWAYS_KNOWN = new Set([
   "hajime", "sumi", "tsumugi", "salaryman", "oneesan", "pakki",
   "shop_clerk", "old_man", "customer", "everyone", "staff_choizap", "master_cafe",
   "spice_merchant", "cafe_staff", "traveler",
+  "tetsuko", // mukai の看板猫。地の文で最初から名前で呼ぶ
 ]);
 // 立ち絵フォルダ・別名（oneesan はみんとの私服＝ura_* 差分）
-export const SPEAKER_ALIAS = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", oneesan: "minto" };
+export const SPEAKER_ALIAS = { tumugi: "tsumugi", hazime: "hajime", oneesan: "minto" };
 
 /** characters.json の name からあだ名（短い呼び名）を取り出す（master_spec #8） */
 export function realName(id) {

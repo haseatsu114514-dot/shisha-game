@@ -23,6 +23,9 @@
    },
    "mascot": {
     "label": "マスコット（測定なし）"
+   },
+   "animal": {
+    "label": "動物（頭身は対象外。てつこ）"
    }
   },
   "same_person_tolerance": 0.05,
@@ -824,6 +827,14 @@
     208
    ],
    "blob": "b16b085ff96c47fbef9d8561ebd26cbbc87b4d49"
+  },
+  "tetsuko": {
+   "class": "animal",
+   "eyes": [[446, 849], [501, 872]],
+   "chin": [474, 915],
+   "crown": [468, 801],
+   "cheeks": [397, 547, 880],
+   "blob": "6f8d6f539b2524af6f08aa17073e5f02cd95952e"
   },
   "tsumugi": {
    "class": "petite",

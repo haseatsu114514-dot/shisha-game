@@ -141,22 +141,49 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
   assert.equal(tournamentStoryLeadIn({...base,chapter},event),null,`chapter${chapter} keeps its own round-end scenes`);
  assert.equal(JSON.stringify(c2),before,'Round-end call must not alter craft/results');
 }
-// #2031: 第4章（世界大会）の制作中の掛け合い。審査員は南雲・エミル・太陽、対戦相手はなる・王煙楼・シェイク。
+// #2031: 第4章（世界大会）の制作中の掛け合い。審査員は須井・エミル・太陽、対戦相手はなる・王煙楼・シェイク。
 {
  const c4={...cs,chapter:4},before=JSON.stringify(c4);
  const say=(event,context,c=c4)=>tournamentStoryDialogue(c,event,()=>0,context);
  const lines=(event,context,c)=>say(event,context,c).lines.map(l=>l.text).join('\n');
  const speakers=(event,context,c)=>say(event,context,c).lines.map(l=>l.speaker);
  const others=['maezono','dr_kemuri','adam','minto','ageha','kumicho','rei','kuze','steve','volk'];
- const events=[['opening'],['packed'],['waiting'],['interlude1',{rank:1}],['interlude1',{rank:3}],['interlude1'],['interlude2']];
+ // tied: 先頭と2位が同じ持ち点（その回の出来の差で上に出ているだけ）。level: はじめも先頭と同じ持ち点。
+ const naruLead={rank:2,leader:'naru',tied:false,level:false},naruTieMe={rank:2,leader:'naru',tied:true,level:true},
+  naruTieOther={rank:3,leader:'naru',tied:true,level:false};
+ const events=[['opening'],['packed'],['waiting'],['interlude1',{rank:1,leader:'hajime'}],['interlude1',{rank:3,leader:'sheikh'}],
+  ['interlude1',naruLead],['interlude1',naruTieMe],['interlude1',naruTieOther],['interlude1',{rank:3}],['interlude1'],['interlude2'],
+  ['interlude2',{rank:1,leader:'hajime'}],['interlude2',naruLead],['interlude2',naruTieMe],['interlude2',naruTieOther],['interlude2',{rank:2,leader:'sheikh'}]];
+ // なるが先頭だと言う行。言ってよいのは、直前の途中順位で本当になるが先頭のときだけ（2026-11-02 なるを強くする）。
+ // 持ち点が同じなら「先頭に並んだ」とだけ言い、単独の先頭とは言わない（盤には同じ持ち点が並んで見える）。
+ const naruTop=/なる(選手)?が、?(先頭|トップ|リード|前)|先頭(は|に並ぶのは)、?なる|先頭に、?なる/,sole=/なる選手が先頭|先頭は、なる/,tie=/先頭に並/;
  for (const [event,context] of events) {
-  const d=say(event,context);
+  const d=say(event,context),text=d.lines.map(l=>l.text).join('\n');
   assert(d.lines.length>=4&&d.lines.length<=7,`chapter4 ${event} line count`);
   assert(!d.lines.some(l=>others.includes(l.speaker)),`chapter4 ${event} used another chapter's cast`);
-  // 点数や数字は言わない（配合カードのg数だけは読む）。途中でなるが先頭とも言わない（CH4_RIVAL_QUALITY ではなるは途中の票を取れない）。
-  assert.doesNotMatch(d.lines.map(l=>l.text).join('\n').replace(/\d+g/g,''),/\d|点|一位|なる(選手)?が(先頭|トップ|リード)/,`chapter4 ${event} must not state scores`);
+  // 点数や数字は言わない（配合カードのg数だけは読む）。
+  assert.doesNotMatch(text.replace(/\d+g/g,''),/\d|点|一位/,`chapter4 ${event} must not state scores`);
   assert.equal(d.dialogue_id,`tournament_craft_4_${event}`);
+  const why=`chapter4 ${event} ${JSON.stringify(context)}`;
+  if (context?.leader!=='naru'||context?.rank===1) { assert.doesNotMatch(text,naruTop,`${why} must not claim naru leads`); continue; }
+  assert.match(text,naruTop,`${why} must say naru is on top when he is`);
+  if (context.tied) { assert.match(text,tie,why); assert.doesNotMatch(text,sole,`${why}: a tie is not a sole lead`); }
+  else { assert.match(text,sole,why); assert.doesNotMatch(text,tie,why); }
+  // はじめの焦り: 同じ持ち点なら「並ばれた」、なるの方が多ければ「前に」。
+  if (event==='interlude1') assert.match(text,context.level?/並ばれた/:/なるが前に/,why);
+  assert.doesNotMatch(text,context.level?/なるが前に/:/並ばれた/,why);
  }
+ // なるが提供後の先頭に立ったら（同じ持ち点でも）、はじめが焦りかけ（パッキーの直後）、王煙楼の言葉のあとで落ち着く（正本「はじめが焦りそうになる」）。
+ for (const context of [naruLead,naruTieMe,naruTieOther]) {
+  const d=say('interlude1',context),who=d.lines.map(l=>l.speaker);
+  assert.equal(who[0],'pakki');assert.equal(who[1],'hajime');assert.equal(who.at(-1),'hajime');
+  assert(who.indexOf('master_hookah')<who.lastIndexOf('hajime'));
+  assert.doesNotMatch(lines('interlude1',context),/追いかける展開/);
+  // 調整1回目の後もなるが先頭なら、パッキーがそれだけを言い足す（ほかの行は同じ）。
+  const two=say('interlude2',context).lines,base=say('interlude2').lines;
+  assert.equal(two.length,base.length+1);assert.deepEqual(two.slice(1),base);assert.equal(two[0].speaker,'pakki');
+ }
+ assert.equal(lines('interlude2',{rank:2,leader:'sheikh'}),lines('interlude2'));
  // 開幕は第4章の審査員3人がそろい、第3章のエミルの行を繰り返さない。
  assert.deepEqual(speakers('opening').filter(s=>s!=='pakki'),['nagumo','emil','da_silva']);
  assert.match(lines('opening'),/誰のための一台/);assert.doesNotMatch(lines('opening'),/古い手順も新しい道具も/);

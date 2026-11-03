@@ -9,15 +9,12 @@ const inDeparturePrep = value => {
   return !!prep && !prep.departed && Number.isInteger(prep.startDay);
 };
 export const travelsBetweenCities = value => CITY_TRAVEL_CHAPTERS.includes(value?.chapter) || inDeparturePrep(value);
-/** 第5章の東京への新幹線（片道）。橙須（名古屋の大須が元）から東京の実際の運賃に合わせる（#2033・2026-11-02）。 */
-export const TOKYO_TRAIN_FARE = 11000;
-/** 第5章のドバイへの飛行機（往復・出発の時に払う。1回目はシェイクが切符をくれる。宿はシェイクの屋敷の客間で無料。#2033 E・2026-11-02 オーナー指定）。 */
-export const DUBAI_ROUND_TRIP_FARE = 100000;
+// 第5章の東京（Dr.fookah の配送便）とドバイ（シェイクの手紙に同封の往復の切符）は運賃がかからないので、
+// 帰りの分は取り置かない（FIN13・FIN14・2026-11-02。決まりは chapters/ch5-travel.js）。
 export const returnFareReserve = value => {
   if (!travelsBetweenCities(value)) return 0;
   const region = value.flags?._ch2_region;
   if (region === "widehanga" && value.flags?._ch2_preparation_started) return CITY_TRAIN_FARE;
-  if (region === "tokyo" && value.chapter === 5) return TOKYO_TRAIN_FARE;
   return 0;
 };
 export const spendableMoney = value => Math.max(0, (value?.money || 0) - returnFareReserve(value));

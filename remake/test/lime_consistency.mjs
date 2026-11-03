@@ -90,7 +90,7 @@ async function load(name) {
   if (mods.has(name)) return mods.get(name);
   let mod;
   if (values[name]) mod = new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name });
-  else mod = new vm.SourceTextModule(await fs.readFile(new URL(coreFiles[name] ? `js/core/${coreFiles[name]}` : `js/daily/${name}`, root), "utf8") + (name === "phone.js" ? "\nexport { hiyoriInvite as testHiyoriInvite, sumiBaitoInvite as testSumiBaitoInvite, scheduledInvitation as testScheduledInvitation };\n" + legacyScheduledSource + "\nexport { legacyScheduledInvitation };" : ""), { context, identifier: name });
+  else mod = new vm.SourceTextModule(await fs.readFile(new URL(coreFiles[name] ? `js/core/${coreFiles[name]}` : `js/daily/${name}`, root), "utf8") + (name === "phone.js" ? "\nexport { eligible as testEligible, hiyoriInvite as testHiyoriInvite, sumiBaitoInvite as testSumiBaitoInvite, scheduledInvitation as testScheduledInvitation };\n" + legacyScheduledSource + "\nexport { legacyScheduledInvitation };" : ""), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod;
 }
 const statsModule = await load("production-stats.js"); await statsModule.evaluate();
@@ -354,7 +354,7 @@ for (const pts of [0, 1, 2]) {
 reset({ lovers: ["minto"] }); state.inbox.push(item({ id: "loverchat", sender: "minto", type: "chat", messages: ["おはよう"], replies: [{ text: "おはよう", affinity: 1 }] }));
 session = phone.openLime({ sender: "minto" }); await click("reply-0"); await closeThread(session); assert.equal(gains[0].pts, 3);
 
-// 五つの噂も返信可能（南雲は連絡先を交換しないため噂LIMEなし・#2026）。全選択肢が自然な文面/反応/小さい点数を持ち、洞察報酬は読む時に一度だけ。
+// 五つの噂も返信可能（須井は連絡先を交換しないため噂LIMEなし・#2026）。全選択肢が自然な文面/反応/小さい点数を持ち、洞察報酬は読む時に一度だけ。
 const rumors = allMessages.filter((m) => m.type === "rumor"); assert.equal(rumors.length, 5);
 for (const rumor of rumors) {
   assert(rumor.replies.length >= 2); assert(rumor.replies.some((r) => r.affinity === 0));
@@ -472,7 +472,7 @@ reset({ chapter: 2, day: 5, contacts: ["samechan"], affinity: { samechan: 33 }, 
 reset({ chapter: 1, day: 5, contacts: ["samechan"], affinity: { samechan: 33 }, flags: { _samechan_cinema_introduced: true } }); assert(!sharkOuting(), "第1章では誘わない");
 reset({ chapter: 2, day: 5, contacts: ["samechan"], affinity: { samechan: 33 }, flags: { _samechan_cinema_introduced: true, _invited_lime_outing_samechan_1: true, _outing_done_samechan: true } });
 assert(phone.morningMessages().some((m) => m.id === "lime_after_outing_samechan"), "外出の後日談は『この前』で届く");
-// 凛の♥3の外出（#2025）は昼の豆屋。♥3で届き（affinity_level の汎用判定）、はじめが地元を離れる第3章以降は届かない。
+// くゆりの♥3の外出（#2025）は昼の豆屋。♥3で届き（affinity_level の汎用判定）、はじめが地元を離れる第3章以降は届かない。
 assert.equal(invitationById.lime_outing_rin_1.time_slot, "noon"); assert(!invitationById.lime_outing_rin_1.after_close);
 assert.equal(invitationById.lime_outing_rin_1.accept_event, "outing_rin_1");
 const rinOuting = () => phone.morningMessages().some((m) => m.id === "lime_outing_rin_1");
@@ -480,7 +480,7 @@ reset({ chapter: 1, day: 5, contacts: ["rin"], affinity: { rin: 33 } }); assert(
 reset({ chapter: 2, day: 5, contacts: ["rin"], affinity: { rin: 33 } }); assert(rinOuting(), "第2章の♥3でも誘う");
 reset({ chapter: 3, day: 5, contacts: ["rin"], affinity: { rin: 33 } }); assert(!rinOuting(), "東京にいる第3章では誘わない");
 reset({ chapter: 1, day: 5, contacts: ["rin"], affinity: { rin: 33 }, limeRead: ["lime_fookah_promo_1"], flags: { _invited_lime_outing_rin_1: true, _outing_done_rin: true } });
-assert(!rinOuting()); assert(phone.morningMessages().some((m) => m.id === "lime_after_outing_rin"), "凛の外出の後日談も『この前』で届く");
+assert(!rinOuting()); assert(phone.morningMessages().some((m) => m.id === "lime_after_outing_rin"), "くゆりの外出の後日談も『この前』で届く");
 // ひよりの♥3の外出（#2025）は第1章の昼だけ。tonariでの再会の後に♥3で届き（affinity_level の汎用判定）、第2章以降には届かない。
 assert.equal(invitationById.lime_outing_hiyori_1.time_slot, "noon"); assert(!invitationById.lime_outing_hiyori_1.after_close);
 assert.equal(invitationById.lime_outing_hiyori_1.accept_event, "outing_hiyori_1");
@@ -909,3 +909,35 @@ for (const sender of ["naru", "adam", "minto", "rin", "sumi"]) {
 }
 assert(closureNull>0 && closureNoon>0 && closureNight>0 && closurePrepended>0);
 console.log("PASS #2035 closure preface: frozen algorithm / schedules / mixed messages / placeholders / order / input and DB invariance", { closureCases, closureNull, closureNoon, closureNight, closurePrepended });
+
+// #2035: 章の機能表へ移す前と同じ、地元外出と本筋シフトの境界。
+let chapterGateCases = 0;
+for (const chapter of [1, 2, 3, 4, 5, 6, "1", "2", undefined, null, 0, false, NaN]) {
+  for (const returned of [false, true]) for (const tournamentDay of [false, true]) {
+    reset({ chapter, contacts: ["hiyori"], flags: { _hiyori_tonari_return_done: returned } });
+    const before = JSON.stringify(state);
+    const message = invitation("lime_outing_hiyori_1", "hiyori");
+    assert.equal(phone.testEligible(message, { tournamentDay }), chapter === 1 && returned && !tournamentDay,
+      `home outing: chapter=${String(chapter)}, returned=${returned}, tournament=${tournamentDay}`);
+    assert.equal(JSON.stringify(state), before, "外出候補の照会は状態を変えない");
+    chapterGateCases++;
+  }
+  for (const day of [3, 5, 8, 13, 14, 20]) for (const worked of [0, day - 1, day - 5])
+    for (const tournamentDay of [false, true]) for (const fixedNight of [false, true]) {
+      reset({ chapter, day, lastBaitoDay: worked });
+      const before = JSON.stringify(state);
+      const fixed = chapter === 1 && (day === 3 || day === 8);
+      const slacking = day >= 5 && day - (worked || 0) >= 4;
+      const expected = !tournamentDay && [1, 2].includes(chapter) && !(chapter === 1 && day >= 14)
+        && (fixed || slacking) && (fixed || !fixedNight);
+      const actual = phone.testSumiBaitoInvite({ tournamentDay, fixedNight: () => fixedNight });
+      assert.equal(!!actual, expected, `shift: chapter=${String(chapter)}, day=${day}, worked=${worked}, tournament=${tournamentDay}, fixedNight=${fixedNight}`);
+      if (actual) {
+        assert.equal(actual.id, `_sumi_baito_inv_d${day}`);
+        assert.equal(actual.sender, db.limeTemplates.sumi_baito.sender);
+      }
+      assert.equal(JSON.stringify(state), before, "シフト候補の照会は状態を変えない");
+      chapterGateCases++;
+    }
+}
+console.log("PASS #2035 phone chapter features", { chapterGateCases });

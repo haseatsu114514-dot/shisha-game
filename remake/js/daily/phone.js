@@ -30,6 +30,10 @@ import { invitationCost, storeInvitationSpot, visitReminderSpot, missedInvitatio
 const naruRiftActive = (save) => (save?.chapter || 1) >= 2 && !!(save?.flags?._ch2_read_ch2_naru_confrontation
   || save?.flags?._ch2_night_11_done || save?.flags?._ch2_naru_listened || save?.flags?._ch2_naru_hurt);
 
+// IR16: 恋人のデートは地元の店で会う約束。はじめが東京・ドバイにいる間は乗れない。
+// romance.js の awayFromHome と同じ条件（試験の依存を増やさないため写し）
+const awayFromHome = (save) => ["tokyo", "dubai"].includes(save?.flags?._ch2_region);
+
 // C03: 初回受信から返信を待つ目安。再案内の日付では数え直さない。
 const LIME_REPLY_NUDGE_DAYS = 3;
 
@@ -50,6 +54,8 @@ function invitationAvailable(m, { fixedNight = () => false } = {}) {
   if (m.closed_on != null && state.day % 7 !== m.closed_on) return false;
   if (m.exclude_closed_on != null && state.day % 7 === m.exclude_closed_on) return false;
   if (m.time_slot === "night" && fixedNight(state.day)) return false;
+  // 恋人のデートは地元で会う約束。東京・ドバイにいる間は乗れない（IR16）
+  if (m.lover && m.type === "invitation" && awayFromHome(state)) return false;
   return true;
 }
 
@@ -170,7 +176,9 @@ export function expireInvitations(opts = {}) {
     if (storeVisit && dueDay === state.day && state.slot === 1 && pending.slot === 0) pending.slot = 1;
     const past = dueDay < state.day || dueDay === state.day && pending.slot < state.slot && !waitingForClose;
     const conflict = dueDay === state.day && !waitingForClose && (pending.slot === 1 && !storeVisit && opts.fixedNight?.(dueDay) || schedule === null
-      || schedule && (!invitationAvailable(schedule, opts) || pending.slot !== replySlot(schedule)));
+      || schedule && (!invitationAvailable(schedule, opts) || pending.slot !== replySlot(schedule))
+      // 約束した恋人のデートの日に東京・ドバイへ出ていたら、地元のデートはできない（IR16）
+      || /^date_/.test(pending.event) && awayFromHome(state));
     if (past || conflict) {
       rescheduleInvitation(pending, conflict
         ? "仕事や別の予定と重なったため、約束を別の日に改めることにした"
@@ -214,10 +222,10 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (m.id === "lime_outing_minto_1" && !state.flags._minto_identity_revealed) return false;
   // サメちゃんの♥3の外出（#2025）は、本人から路地裏シネマを紹介された後（cinemaDiscovered と同じ条件）にだけ届く。
   if (m.id === "lime_outing_samechan_1" && !(state.chapter >= 2 && state.flags._samechan_cinema_introduced === true)) return false;
-  // 凛の♥3の外出（#2025）は問屋街の豆屋。はじめが地元にいる第1・2章だけ届く。
-  if (m.id === "lime_outing_rin_1" && state.chapter > 2) return false;
+  // くゆりの♥3の外出（#2025）は問屋街の豆屋。はじめが地元にいる第1・2章だけ届く。
+  if (m.id === "lime_outing_rin_1" && !chapterFeatureEnabled(state.chapter || 1, "rinHomeOuting")) return false;
   // ひよりの♥3の外出（#2025）は第1章の昼だけ。tonariでの再会（スミさんのLIME）の後に届き、夜や締めくくりの前提は増やさない。
-  if (m.id === "lime_outing_hiyori_1" && !(state.chapter === 1 && state.flags._hiyori_tonari_return_done)) return false;
+  if (m.id === "lime_outing_hiyori_1" && !(chapterFeatureEnabled(state.chapter, "hiyoriHomeOuting") && state.flags._hiyori_tonari_return_done)) return false;
   if (cond === "hiyori_tonari") return hiyoriEventStatus("tonari_return") === "ready";
   if (cond === "story_count") return (state.story[m.sender] || 0) >= (m.trigger_value || 1);
   if (cond === "lime_exchanged") {
@@ -373,10 +381,10 @@ function mukaiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
 }
 
 function sumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
-  if (tournamentDay || !chapterFeatureEnabled(state.chapter, "hiyoriDaily") || (state.chapter === 1 && state.day >= TOURNAMENT_DAY)) return null;
+  if (tournamentDay || !chapterFeatureEnabled(state.chapter, "hiyoriDaily") || (chapterFeatureEnabled(state.chapter, "sumiStoryShifts") && state.day >= TOURNAMENT_DAY)) return null;
   const id = `_sumi_baito_inv_d${state.day}`;
   if (state.limeRead.includes(id)) return null;
-  const fixed = state.chapter === 1 && (state.day === 3 || state.day === 8);
+  const fixed = chapterFeatureEnabled(state.chapter, "sumiStoryShifts") && (state.day === 3 || state.day === 8);
   const slacking = state.day >= 5 && state.day - (state.lastBaitoDay || 0) >= 4;
   if (!fixed && !slacking) return null;
   // #2088: 夜のtonariに外せない予定がある日は「シフトには入れない」と断るので、サボり気味の催促は出さない（翌日以降に再送）。
@@ -651,7 +659,7 @@ export function actionInviteNeedingReply(spotId, opts = {}, ignoredIds = []) {
   );
   const matching = waiting.find((item) => visitReminderSpot(item.msg) === spotId);
   if (matching) return { item: matching, kind: "venue" };
-  // 買い物や占いへの入場は時間を使わない。凛との会話や終日休養は確定時に判定する。
+  // 買い物や占いへの入場は時間を使わない。くゆりとの会話や終日休養は確定時に判定する。
   if (opts.spendsAction === false) return null;
   // みんとの店頭試飲のような「昼・夜どちらでも返信可」は夜が最後の機会。
   const expiring = waiting.find((item) =>
@@ -829,10 +837,13 @@ function readReward(m) {
   }
 }
 
+/** 事前案内と自動辞退で、同じ返事待ちの誘いを対象にする。 */
+const conflictingInvites = (acceptedItem, opts = {}) => (state.inbox || []).filter((other) =>
+  other !== acceptedItem && !other.done && other.msg?.type === "invitation" && inviteState(other, opts) !== "expired");
+
 /** 一方の約束を承諾したら、その日に競合する誘いには先の約束を理由に返事を残す */
 function declineConflictingInvites(acceptedItem, opts = {}) {
-  for (const other of state.inbox || []) {
-    if (other === acceptedItem || other.done || other.msg?.type !== "invitation" || inviteState(other, opts) === "expired") continue;
+  for (const other of conflictingInvites(acceptedItem, opts)) {
     const m = other.msg;
     const source = DB.lime.find((message) => message.id === originId(other)) || m;
     const text = POLITE.has(m.sender) ? "すみません、先に別の約束があって……" : "ごめん、先に別の約束をしてしまった";
@@ -904,6 +915,8 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     const first = !state.flags[hintKey];
     const night = replySlot(m) === 1;
     const deadline = storeInvitationSpot(m) ? "夜の行動の前まで（店の営業日だけ）" : night ? "夜の行動の前まで" : "昼の行動の前まで";
+    const conflicts = !forced && st === "open" ? conflictingInvites(item, ui.inviteOptions).length : 0;
+    const hint = st === "busy" ? null : first ? m.hint || `誘いに乗ると行動を1回使う。返事は今日の${deadline}ならできる。断っても嫌われたりはしない` : `返事は今日の${deadline}`;
     const pick = await ui.choose(
       [
         st === "busy"
@@ -912,7 +925,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
         { text: no, go: false },
         ...(!forced ? [{ text: "あとで返事する（トーク一覧へ）", later: true }] : []),
       ],
-      st === "busy" ? null : first ? m.hint || `誘いに乗ると行動を1回使う。返事は今日の${deadline}ならできる。断っても嫌われたりはしない` : `返事は今日の${deadline}`,
+      conflicts ? `${hint}。承諾すると、ほかの返事待ちの誘い${conflicts}件に、自動で断りの返信を送る` : hint,
     );
     if (!pick || !alive() || state !== session || item.done) return; // 返事をせずに抜けた（期限内ならまた返事できる）
     if (pick.later) { item.replyState = "waiting"; return "deferred"; }
@@ -1192,7 +1205,7 @@ export async function openPhone(messages, { title = null, time = "朝" } = {}) {
 
 /**
  * はじめて LIME が届いたとき、マップの上でアイコンを照らして開かせる（オーナー指定）。
- * 照らした穴だけ押せる。押したら onOpen（＝ふつうに LIME を開く処理）へ
+ * 照らしたアイコンか案内を押すと onOpen（＝ふつうに LIME を開く処理）へ。
  */
 export function limeCoach(onOpen) {
   if (state.flags._lime_tut || !hasUnread()) return false;
@@ -1207,15 +1220,24 @@ export function limeCoach(onOpen) {
   const y = (ir.top - sr.top) / k;
   const w = ir.width / k;
   const h = ir.height / k;
+  const owner = state;
+  let opened = false;
+  const open = () => {
+    if (opened || state !== owner || !coach.isConnected) return;
+    opened = true;
+    SE.select(); coach.remove(); onOpen();
+  };
   const coach = el("div.lime-coach", [
     el("button.lc-hole", {
+      type: "button", "aria-label": "LIMEを開く",
       style: { left: `${x - 8}px`, top: `${y - 8}px`, width: `${w + 16}px`, height: `${h + 16}px` },
       dataset: { test: "coach-lime" },
-      onclick: () => { SE.select(); coach.remove(); onOpen(); },
+      onclick: open,
     }),
-    el("div.lc-bubble", { style: { right: `${stage.offsetWidth - x - w - 4}px`, top: `${y + h + 22}px` } }, [
+    el("button.lc-bubble", { type: "button", "aria-label": "案内からLIMEを開く", dataset: { test: "coach-lime-bubble" },
+      onclick: open, style: { right: `${Math.max(16, stage.offsetWidth - x - w - 4)}px`, top: `${y + h + 22}px` } }, [
       el("b", { text: "LIMEにメッセージが届いた！" }),
-      el("span", { text: "右上のLIMEをタップして開いてみよう。" }),
+      el("span", { text: "この案内か右上のLIMEをタップして開いてみよう。" }),
       el("span", { text: "まずは一度開いてみよう。次からは好きなときに読める。返事や誘いの受諾は、今決めなくて大丈夫。" }),
     ]),
   ]);
@@ -1277,3 +1299,4 @@ export async function openContactLime({ contacts, summary, actions, onAction, si
     await ui.close();
   }
 }
+

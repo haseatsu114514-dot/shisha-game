@@ -1172,7 +1172,7 @@ await suite("growth-levelup", async (runCheck) => {
     });
     assert.deepEqual(legacy, { board: null, grew: true, oldSame: true });
   });
-  // 大会前夜の内省の場所は今いる地域で決まる（地元＝観音堂、東京＝路地裏の神社、柚ヶ谷＝宿の窓辺）
+  // 大会前夜の内省の場所は今いる地域で決まる（地元＝観音堂、東京＝池の弁天堂（id は tokyo_shrine のまま）、柚ヶ谷＝宿の窓辺）
   await check("eve-place-by-region", async (page) => {
     await setupDaily(page);
     const places = await page.evaluate(async () => {
@@ -1232,7 +1232,7 @@ await suite("growth-levelup", async (runCheck) => {
     const saved = await page.evaluate(async () => JSON.parse(localStorage.getItem((await import("./js/core/state.js")).SAVE_KEY)).growth.nodes);
     assert.deepEqual(saved, ["B1"], "灯した盤は保存される");
   }, { viewport: { width: 1331, height: 760 } });
-  // 第5章で東京・ドバイに泊まっている間も、路地裏の神社・風の回廊モスクで盤を開ける（SBD97。2026-11-02）。
+  // 第5章で東京・ドバイに泊まっている間も、池の弁天堂（IR26）・風の回廊モスクで盤を開ける（SBD97。2026-11-02）。
   // 灯せる火種がある時だけ地図に出て、灯しても時間・体力・お金は変わらない。火種を使い切ると地図から消える。
   await check("chapter-five-tokyo-shrine-and-dubai-mosque", async (page) => {
     page.setDefaultTimeout(30000);
@@ -1261,6 +1261,19 @@ await suite("growth-levelup", async (runCheck) => {
       await page.evaluate(async () => { const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0; });
       await page.locator(t("slot-0")).click();
       await page.locator(`.map:not(.done)[data-region="${region}"] ${t(`pin-${pin}`)}`).waitFor({ timeout: 60000 });
+      if (region === "tokyo") {
+        // 池の弁天堂は地図の右下の池のお堂に立つ。地図からはみ出さず、ほかの行き先のピンと重ならない（IR26）
+        const layout = await page.evaluate((pin) => {
+          const box = node => { const r = node.getBoundingClientRect(); return { x: r.x, y: r.y, right: r.right, bottom: r.bottom }; };
+          const map = document.querySelector(".map:not(.done) .map-pins"), mine = map.querySelector(`[data-spot="${pin}"]`);
+          return { map: box(map), mine: box(mine), caption: mine.querySelector(".sub-label")?.textContent,
+            others: [...map.querySelectorAll(".spot-pin")].filter(node => node !== mine).map(node => ({ id: node.dataset.spot, ...box(node) })) };
+        }, pin);
+        assert.equal(layout.caption, "池の弁天堂");
+        assert(layout.mine.right <= layout.map.right + 1 && layout.mine.bottom <= layout.map.bottom + 1, `${pin}: 地図からはみ出さない`);
+        for (const other of layout.others) assert(layout.mine.right <= other.x || other.right <= layout.mine.x
+          || layout.mine.bottom <= other.y || other.bottom <= layout.mine.y, `${pin} と ${other.id} が重なる`);
+      }
       const before = await page.evaluate(() => ({ day: __remake.state.day, slot: __remake.state.slot, stamina: __remake.state.stamina, money: __remake.state.money }));
       await page.locator(t(`pin-${pin}`)).click(); await page.locator(t("map-go")).click();
       for (let i = 0; i < 80 && !(await page.locator(t("growth-board")).count()); i++) {
@@ -1278,7 +1291,7 @@ await suite("growth-levelup", async (runCheck) => {
       assert.deepEqual(after.nodes, ["B1"]); assert.equal(after.region, region);
       assert.equal(await page.locator(t(`pin-${pin}`)).count(), 0, `${pin}: 火種を使い切ると地図から消える`);
     };
-    await open("tokyo", "ch5_tokyo_shrine", /神社/);
+    await open("tokyo", "ch5_tokyo_shrine", /池の弁天堂/);
     await open("dubai", "ch5_dubai_mosque", /モスク/);
   }, { viewport: { width: 1331, height: 760 } });
   // 日常ループ（第3章の版3）でも、会いに行った店で灯した授業を相談できる: mukai のシフトの帰りに、ましろちゃんの「ブラックティーを一割」（2026-11-02）
@@ -1320,6 +1333,125 @@ await suite("growth-levelup", async (runCheck) => {
       await page.waitForTimeout(200);
     }
     assert.equal(await page.evaluate(() => __remake.state.growth.learned.includes("M-B5")), true, "mukai のシフトのあと、ましろちゃんに相談して習う");
+    // 経験値の鍵はシフトの鍵（旧行程と同じ tokyo:mukai_help）。地図の行き先の鍵（ch3_tokyo_*）では数えない。導入の初完読は X5
+    await page.waitForFunction(() => __remake.state.growth.read.some(id => /^ch3_outing_mukai_help(_lost)?$/.test(id)), null, { timeout: 30000 });
+    const growth = await page.evaluate(() => structuredClone(__remake.state.growth));
+    assert.equal(growth.fresh.counts["tokyo:mukai_help"], 1, "シフトはシフトの鍵で一回");
+    assert.deepEqual(Object.keys(growth.fresh.counts).filter(key => key.startsWith("ch3_tokyo_")), [], "地図の行き先の鍵で数えない");
+  }, { viewport: { width: 1331, height: 760 } });
+  // 日常ループ（版3）で人に会う行動は、その人の鍵で数える（SPEC 1.3）。煙幕の外出＝久世、鉄の煙の寄り道＝ヴォルク。話の初完読は X5
+  await check("tokyo-daily-rival-person-exp", async (page) => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"), progress = await import("./js/chapters/ch3-progress.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 2, day: 28, slot: 0, phase: "cleared", money: 30000, stamina: 100, weatherSeed: 5, contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
+        _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
+        _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
+      for (const who of ["hajime", "sumi", "pakki", "maezono", "dr_kemuri", "nagumo"]) value.flags[`_intro_${who}`] = true;
+      if (!progress.advanceToChapterThree(value)) throw new Error("chapter three");
+      value.day += 3; if (!progress.departChapterThree(value)) throw new Error("departure");
+      const intro = value.flags._ch3_intro;
+      intro.titleSeen = true;
+      // DAY13 の朝。作戦（昼）まで読み終え、昼も夜も自由に動ける保存。鉄の煙の初来店（DAY12夜）も済み。
+      intro.stage = progress.CH3_INTRO_SCENES.findIndex(scene => scene.id === "ch3_tournament_eve");
+      value.day = intro.startDay + 12; value.phase = "daily";
+      Object.assign(value.met, { kuze: true, steve: true, volk: true, mashiro: true, mukai_master: true });
+      value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
+      const fortune = await import("./js/daily/fortune-schedule.js");
+      const plan = fortune.fortunePlan({ seed: value.seed, chapter: 3 });
+      value.flags._fortune_wander = { chapter: 3, shown: plan.map(() => null), used: plan.map(() => true) };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
+      Object.assign(core.state, value); core.save();
+    });
+    await page.reload(); await page.locator(t("title-load")).click();
+    await page.evaluate(async () => { const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0; });
+    await page.locator(t("slot-0")).click();
+    const tokyoMap = slot => page.waitForFunction(slot => __remake.state.day === 44 && __remake.state.slot === slot
+      && document.querySelector('.map:not(.done) [data-test="pin-ch3_tokyo_mukai"]') && !document.querySelector("#modal.show"), slot, { timeout: 60000 });
+    const readUntil = async id => {
+      for (let i = 0; i < 200 && !(await page.evaluate(id => !!__remake.state.growth?.read?.includes(id), id)); i++) {
+        if (await page.locator(".vn-box").isVisible().catch(() => false)) await page.locator(".vn-box").click().catch(() => {});
+        await page.waitForTimeout(200);
+      }
+      assert.equal(await page.evaluate(id => !!__remake.state.growth?.read?.includes(id), id), true, `${id} の初完読で X5`);
+    };
+    await tokyoMap(0);
+    await page.locator(t("pin-ch3_tokyo_enmaku")).click(); await page.locator(t("map-go")).click();
+    await page.locator("#modal.show button", { hasText: "答えを返しに行く" }).click();
+    await readUntil("ch3_outing_enmaku_answer");
+    await tokyoMap(1);
+    await page.locator(t("pin-ch3_tokyo_volk")).click(); await page.locator(t("map-go")).click(); // 寄り道は二度目の来店だけなので、そのまま読む
+    await readUntil("ch3_volk_second");
+    const growth = await page.evaluate(() => structuredClone(__remake.state.growth));
+    assert.equal(growth.fresh.counts.kuze, 1, "煙幕の外出は久世の鍵");
+    assert.equal(growth.fresh.counts.volk, 1, "鉄の煙の寄り道はヴォルクの鍵");
+    assert.deepEqual(Object.keys(growth.fresh.counts).filter(key => key.startsWith("ch3_tokyo_")), [], "地図の行き先の鍵で数えない");
+    for (const who of ["kuze", "volk"]) {
+      assert(growth.firsts.people.includes(who), `${who}: はじめて会った人（X2）`);
+      assert(growth.chapterLog[3].people.includes(who), `${who}: 章末の広さは人として数える（X11）`);
+    }
+  }, { viewport: { width: 1331, height: 760 } });
+  // 恋人の東京訪問（合流）は、その人に会う行動（SPEC 1.3）。相手の鍵で X1・X2、場面の初完読で X5。途中の LOAD では何も残さない
+  await check("tokyo-daily-visit-person-exp", async (page) => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"), progress = await import("./js/chapters/ch3-progress.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 2, day: 28, slot: 0, phase: "cleared", money: 30000, stamina: 100, weatherSeed: 5, contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
+        _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
+        _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
+      for (const who of ["hajime", "sumi", "pakki", "maezono", "dr_kemuri", "nagumo", "tsumugi"]) value.flags[`_intro_${who}`] = true;
+      if (!progress.advanceToChapterThree(value)) throw new Error("chapter three");
+      value.day += 3; if (!progress.departChapterThree(value)) throw new Error("departure");
+      const intro = value.flags._ch3_intro;
+      intro.titleSeen = true;
+      // 東京DAY6の昼（本筋の予定が無い時間帯）。地元の恋人つむぎが、この昼に東京駅へ着く約束（散歩は翌日の昼）。
+      intro.stage = progress.CH3_INTRO_SCENES.findIndex(scene => scene.id === "ch3_naru_contact_before_tournament");
+      value.day = intro.startDay + 5; value.phase = "daily";
+      Object.assign(value.met, { mashiro: true, mukai_master: true, tsumugi: true });
+      value.lovers = ["tsumugi"]; value.contacts = [...new Set([...value.contacts, "tsumugi"])];
+      value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
+      value.tokyoVisits.plans.push({ id: `tokyo.tsumugi.${value.day}`, characterId: "tsumugi", arrivalDay: value.day, returnDay: value.day + 2,
+        meetup: { id: "d6-noon", day: value.day, slot: 0 }, date: { id: "d7-noon", day: value.day + 1, slot: 0 },
+        status: "booked", met: false, dateDone: false });
+      const fortune = await import("./js/daily/fortune-schedule.js");
+      const plan = fortune.fortunePlan({ seed: value.seed, chapter: 3 });
+      value.flags._fortune_wander = { chapter: 3, shown: plan.map(() => null), used: plan.map(() => true) };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
+      Object.assign(core.state, value); core.save();
+    });
+    const startVisit = async (cancel) => {
+      await page.reload(); await page.locator(t("title-load")).click();
+      await page.evaluate(async (cancel) => {
+        const vn = await import("./js/vn/engine.js"), core = await import("./js/core/state.js");
+        vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
+        window.visitExp = value => ({ met: value.tokyoVisits.plans[0].met, count: value.growth?.fresh?.counts?.tsumugi ?? 0,
+          read: !!value.growth?.read?.includes("ch3_visit_tsumugi_meetup") });
+        // 合流の場面の途中で LOAD する（読む前の保存へ戻る）
+        if (cancel) vn.hooks.onLine = id => {
+          if (id !== "ch3_visit_tsumugi_meetup" || window.visitOld) return;
+          window.visitOld = core.state; core.load(); window.visitLoaded = core.state;
+          vn.hooks.onLine = null;
+        };
+      }, cancel);
+      await page.locator(t("slot-0")).click();
+    };
+    await startVisit(true);
+    await page.waitForFunction(() => window.visitLoaded && !document.body.classList.contains("in-vn"), null, { timeout: 60000 });
+    await page.waitForTimeout(500);
+    const cancelled = await page.evaluate(() => ({ old: visitExp(window.visitOld), loaded: visitExp(__remake.state), same: window.visitLoaded === __remake.state }));
+    assert.deepEqual(cancelled, { old: { met: false, count: 0, read: false }, loaded: { met: false, count: 0, read: false }, same: true },
+      "途中の LOAD では、古い保存にも読み込んだ保存にも経験値・既読・合流を残さない");
+    await startVisit(false);
+    await page.waitForFunction(() => __remake.state.day === __remake.state.tokyoVisits.plans[0].arrivalDay && __remake.state.slot === 1
+      && document.querySelector('.map:not(.done) [data-test="pin-ch3_tokyo_mukai"]') && !document.querySelector("#modal.show"), null, { timeout: 60000 });
+    const state = await page.evaluate(() => ({ ...visitExp(__remake.state), growth: structuredClone(__remake.state.growth) }));
+    assert.deepEqual({ met: state.met, count: state.count, read: state.read }, { met: true, count: 1, read: true }, "合流を読み終えると、つむぎの鍵で一回・場面の X5");
+    assert(state.growth.firsts.people.includes("tsumugi"), "はじめて会った人（X2）");
+    assert(state.growth.chapterLog[3].people.includes("tsumugi"), "章末の広さは人として数える（X11）");
   }, { viewport: { width: 1331, height: 760 } });
   // 日常ループ（第4章の版2）でも、会いに行った店で灯した授業を相談できる: FESTA で太陽の「フェスタの煙」（2026-11-02）
   await check("dubai-daily-festa-lesson", async (page) => {

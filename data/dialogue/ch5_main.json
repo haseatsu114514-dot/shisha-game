@@ -25,6 +25,13 @@
           "text": "今日は挑戦者として来ました。君の大会記録は、すべて学習済みです"
         },
         {
+          "type": "condition",
+          "condition_type": "flag_count",
+          "flag": "_roam_seen_dr_kemuri",
+          "threshold": 1,
+          "next_true": "roam_record"
+        },
+        {
           "speaker": "hajime",
           "face": "serious",
           "text": "……勝った日の俺、ですね"
@@ -139,7 +146,26 @@
           "face": "",
           "text": "博士はケースをしまい、今日の注文をした。まずは客として、一台吸っていくという。"
         }
-      ]
+      ],
+      "branches": {
+        "roam_record": [
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "……大会だけじゃないですよね。街の店で、隅の席にいたのも"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "smile",
+            "text": "ええ。あの席で見せてもらった一服も、少しだけ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（あの箱の明かりは、ずっとこの日につながってたのか）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch5_timeout",

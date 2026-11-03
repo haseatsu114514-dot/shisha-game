@@ -56,4 +56,9 @@ for (const [id, art] of Object.entries(NEW_FLAVOR_ART)) {
   assert(x > 0 && y > 0 && x + w < 512 && y + h < 512 && w > 150 && h > 300, `${id} の表示範囲が箱を囲む`);
 }
 
-console.log('PASS new flavors release chapters, shop catalogs and Dubai shop catalog and NF04 cartons (map destination: ch4_progress.mjs)');
+// シーシャくじは Dr.fookah の各店（地元・柚ヶ谷・東京・ドバイ）で引ける（2026-11-02 オーナー「ドクターフーカーくじを各地で」）。
+const shopSource = fs.readFileSync(new URL('../js/daily/shop.js', import.meta.url), 'utf8');
+assert.doesNotMatch(shopSource, /kuji:\s*false/, 'どの店でもくじのタブを消さない');
+assert.match(shopSource, /kuji = true/, 'くじのタブは既定で出る');
+
+console.log('PASS new flavors release chapters, shop catalogs and Dubai shop catalog and NF04 cartons, and the lottery at every Dr.fookah (map destination: ch4_progress.mjs)');

@@ -4,6 +4,8 @@ import { state } from "../core/state.js";
 import { relationshipElapsedDay } from "../core/chapter-clock.js";
 
 export const relationshipDayTotal = () => relationshipElapsedDay(state);
+/** 過去の日（章と日付）を、今の保存と同じ数え方で通算した日。通算日の保存はその日のまま、章内日の旧保存は章の14日を足す。 */
+export const relationshipDayOf = (day, chapter) => relationshipElapsedDay({ flags: state.flags, chapter, day });
 
 export function dateVenue(id, savedId = null) {
   const exclude = { minto: "pepermint", rin: "drfookah", samechan: "shishark" }[id];

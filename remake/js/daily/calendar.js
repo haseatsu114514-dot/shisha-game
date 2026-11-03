@@ -34,6 +34,7 @@ import { syncSamechanKnowledge, maybeSamechanEncounter, visitSamechan } from "./
 import { invitationCost, invitationGrowth, storeInvitationSpot, storeInvitationDialogue, invitationVisitSpot, immediateInvitation } from "./invitations.js";
 import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocation } from "./hiyori.js";
 import { cityGuestAtShop, visitCityGuestAtShop } from "./city-guests.js";
+import { roamerAt, meetRoamer } from "./roamers.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
 import { presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
@@ -53,6 +54,7 @@ const fixedNight = (day) => nightOccupied(chapterDef.nightEvents, day);
  * @param def.untilDay 最終日の通算日（大会・勝負の日）。getter でもよい（第5章は日程が決まるまで Infinity）
  * @param def.undatedNote 最終日が決まっていないときの朝・夜明けのカードの一言
  * @param def.dateInvitations false で恋人のデートの誘いを出さない
+ * @param def.withLovers () => 恋人ID[]。今いっしょにいて、朝のLIMEを送ってこない恋人（第4章のドバイの同行者）
  * @param def.confessions false で夜の告白の場面を出さない
  * @param def.homeShisha () => false で寝る前の家シーシャを聞かない（家の台が無い泊まり先）
  * @param def.departure true なら最終日は大会ではなく遠出の出発の朝（第3・4章の準備期間・VOL02）。
@@ -174,10 +176,12 @@ async function morning() {
   if (dawnShownDay === state.day) dawnShownDay = null;
   else await dayCard(dayTitle(), countdownText(), { weather: weatherOf(), forecast: tomorrowForecast() });
   // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
-  // 恋人のデートの誘いを出さない章（第5章）は、恋人の朝のLIMEだけ届く（lover-entry.js と同じ扱い）。
+  // 恋人のデートの誘いを出さない章（第3章の東京・第4章のドバイ）は、恋人の朝のLIMEだけ届く（lover-entry.js と同じ扱い）。
+  // 一緒にいる恋人（ドバイの同行者）からは届かない。
   // 章の側から届く朝のLIME（第3章の東京の恋人からの訪問の相談など）
   const extra = chapterDef.morningLime?.() || 0;
-  const n = deliverMorning({ fixedNight, invitations: chapterDef.dateInvitations !== false }) + extra;
+  const n = deliverMorning({ fixedNight, invitations: chapterDef.dateInvitations !== false,
+    exclude: chapterDef.withLovers?.() || [] }) + extra;
   if (n) pushNotice(n, { onOpen: (sender) => {
     if (isChoosingDestination() && !layers.modal.classList.contains("show")) phoneButton({ sender });
     else queuedLimeSender = sender;
@@ -248,7 +252,7 @@ async function confirmLimeReminder(destination, { spendsAction = true, slotsUsed
   state.flags._venue_lime_reminders = [...remembered, reminderId];
   const sender = pending.msg.sender;
   const senderName = { minto: "みんと", sumi: "スミさん", hiyori: "ひより", naru: "なる",
-    adam: "アダム", tsumugi: "つむぎ", ageha: "アゲハ", samechan: "サメちゃん" }[sender] || "誰か";
+    adam: "アダム", tsumugi: "つむぎ", ageha: "あげは", samechan: "サメちゃん" }[sender] || "誰か";
   const choice = await modal({
     title: "LIMEのお誘い",
     body: kind === "venue"
@@ -377,7 +381,7 @@ async function fixedShift() {
   await afterAction({ exerted: true, spent });
 }
 
-/** #2213 B02: 常連のサラリーマンの話（夜イベント「常連さんの話」）は、固定シフトの接客として流す。
+/** #2213 B02: 常連の鉄仮面さん（サラリーマン）の話（夜イベント「常連さんの話」）は、固定シフトの接客として流す。
  * シフトに入れなかった日（休養など）は、夜イベントの定義どおり後日の夜に読む。 */
 async function regularCustomerStory() {
   const scene = DB.dialogues.ch1_salaryman_regular;
@@ -475,8 +479,8 @@ async function deliver({ charId, scene, text }) {
 async function staminaGuard(cost, { mandatory = false } = {}) {
   if (!(cost < 0) || !coldRisk(staminaAfter(cost) / maxStamina({ forCondition: true }))) return true;
   const go = await modal({
-    title: "体が重い……",
-    body: "体力が赤い状態での行動だ。残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。"
+    title: "行動後の体力に注意",
+    body: "この行動の後は、体力が赤い範囲になる。行動後の残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。"
       + (mandatory ? "<br>今日のシフトは外せない。" : "<br>無事に済むこともあるけど、今は「家に帰る」で休める。")
       + (fitActive(state) ? "<br>（チョコザップで体を整えたので、今は風邪をひきにくい）" : ""),
     options: mandatory ? [{ label: "わかった", value: true, test: "stamina-go" }]
@@ -582,6 +586,10 @@ async function performSpotAction(spot) {
   const actionOwner = state;
   const scheduledGuestSpot = hiyoriShopLocation();
   const scheduledCityVisit = cityGuestAtShop(spot);
+  // よその店に居合わせる人は、入る前に地図で見た人（来店で「今日行った店」が変わっても変えない）
+  const scheduledRoamer = roamerAt(spot);
+  // 背景は店の絵（東京の店は preview、柚ヶ谷の店は previewUrl）
+  const roamerBg = () => spot.previewUrl || spot.bgUrl || bgRef(spot.bg || spot.preview || VISIT_BG[spot.charId] || "bg_tonari_inside");
   if (!openingStatus(spot, state).ok) return { used: false, exerted: false };
   if (spot.kind === "axe") {
     // 直接呼び出された入口にも、地図と同じ発見条件を適用する。
@@ -592,7 +600,10 @@ async function performSpotAction(spot) {
   }
   if (chapterDef.performSpot) {
     const result = await chapterDef.performSpot(spot, { staminaGuard });
-    if (result) return result;
+    if (result) {
+      if (result.used && state === actionOwner) await meetRoamer(spot, scheduledRoamer, { bg: roamerBg() });
+      return result;
+    }
   }
   if (spot.kind === "trpg") {
     const result = await openTrpgBar({ nightBusy: () => fixedNight(state.day) });
@@ -693,6 +704,7 @@ async function performSpotAction(spot) {
     if (await visitHiyoriAtShop(spot, { scheduledSpot: scheduledGuestSpot, bg: guestBg })) await consultLessons("hiyori", { bg: guestBg });
   }
   if (used) await visitCityGuestAtShop(spot, { scheduledVisit: scheduledCityVisit });
+  if (used && state === actionOwner) await meetRoamer(spot, scheduledRoamer, { bg: roamerBg() });
   return { used, exerted, slotsUsed, exp };
 }
 
@@ -704,7 +716,7 @@ const TONARI_EXP = {
   customer: { key: "tonari_seat", place: "tonari_seat" },
 };
 /**
- * 大会前夜に内省する場所（SPEC 2.8）。今いる地域の静かな場所: 地元は観音堂、東京は路地裏の神社、ドバイはモスクの見える水辺、
+ * 大会前夜に内省する場所（SPEC 2.8）。今いる地域の静かな場所: 地元は観音堂、東京は池の弁天堂、ドバイはモスクの見える水辺、
  * 柚ヶ谷は宿の窓辺（参拝の場所を置かない。SBD34）。2026-11-02: 東京の日常ループ（第3章・第5章）でも地元の観音堂になっていたのを直す
  */
 export function evePlaceFor(s) {
