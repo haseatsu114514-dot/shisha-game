@@ -4,10 +4,11 @@ import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 import { createChapterActions } from "../core/chapter-actions.js";
+import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
-import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
+import { state, save } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal, toast } from "../core/ui.js";
-import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { saveFlow } from "../scenes/saves.js";
 import { play, hooks } from "../vn/engine.js";
 import { chapterGrowthChart } from "../daily/status.js";
 import { paidAction } from "../core/stats.js";
@@ -49,37 +50,7 @@ function menuButton(owner) {
     onclick: () => openMenu(owner) });
 }
 
-async function openMenu(owner) {
-  if (!current(owner) || owner.menuBusy) return;
-  owner.menuBusy = true;
-  try {
-    const choice = await modal({ title: "第四章 MENU", body: "読み終えた場面から再開できます。", options: [
-      { label: "セーブ", value: "save", test: test("save") },
-      { label: "ロード", value: "load", test: test("load") },
-      { label: "設定", value: "config", test: test("config") },
-      { label: "タイトルへ戻る", value: "title", test: test("title") },
-      { label: "閉じる", value: null, primary: true },
-    ] });
-    if (!current(owner)) return;
-    if (choice === "save") await saveFlow();
-    if (choice === "config") await (await import("../scenes/title.js")).openConfig();
-    if (choice === "load") {
-      const key = await loadFlow({ inGame: true });
-      if (key && loadFromSlot(key)) {
-        owner.active = false;
-        owner.controller?.abort();
-        requestResumeOnBoot();
-        location.reload();
-      }
-    }
-    if (choice === "title") {
-      save();
-      owner.active = false;
-      owner.controller?.abort();
-      location.reload();
-    }
-  } finally { owner.menuBusy = false; }
-}
+const openMenu = createChapterMenu({ current, test, title: "第四章 MENU" });
 
 function hud() {
   layers.hud.replaceChildren();

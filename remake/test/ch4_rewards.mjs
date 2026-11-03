@@ -11,7 +11,7 @@ const node = (spec, attrs = {}, children = []) => Array.isArray(attrs)
 let state, owner, screen, cancel = false, saves = 0;
 const notices = [], comparisons = [];
 const dialogues = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch4_main.json", import.meta.url))).dialogues;
-const values = {
+const values = {createChapterMenu: () => () => {},
   DB: { dialogues: Object.fromEntries(dialogues.map(d => [d.dialogue_id, d])) },
   bgUrl: id => id, el: node, save: () => saves++,
   layers: { hud: { replaceChildren() {}, classList: { remove() {} } } },

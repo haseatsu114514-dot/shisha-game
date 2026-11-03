@@ -3,12 +3,13 @@
 import { DB, bgUrl } from "../core/data.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
+import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardChapterClearExp, awardTournamentExp, awardSceneExp, presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
 import { canReflect } from "../daily/reflection.js";
-import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
+import { state, save } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
-import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { saveFlow } from "../scenes/saves.js";
 import { play, hooks, vnTest } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
@@ -68,37 +69,7 @@ function menuButton(owner) {
     onclick: () => openMenu(owner) });
 }
 
-async function openMenu(owner) {
-  if (!current(owner) || owner.menuBusy) return;
-  owner.menuBusy = true;
-  try {
-    const choice = await modal({ title: "第五章 MENU", body: "読み終えた場面から再開できます。", options: [
-      { label: "セーブ", value: "save", test: test("save") },
-      { label: "ロード", value: "load", test: test("load") },
-      { label: "設定", value: "config", test: test("config") },
-      { label: "タイトルへ戻る", value: "title", test: test("title") },
-      { label: "閉じる", value: null, primary: true },
-    ] });
-    if (!current(owner)) return;
-    if (choice === "save") await saveFlow();
-    if (choice === "config") await (await import("../scenes/title.js")).openConfig();
-    if (choice === "load") {
-      const key = await loadFlow({ inGame: true });
-      if (key && loadFromSlot(key)) {
-        owner.active = false;
-        owner.controller?.abort();
-        requestResumeOnBoot();
-        location.reload();
-      }
-    }
-    if (choice === "title") {
-      save();
-      owner.active = false;
-      owner.controller?.abort();
-      location.reload();
-    }
-  } finally { owner.menuBusy = false; }
-}
+const openMenu = createChapterMenu({ current, test, title: "第五章 MENU" });
 
 function hud() {
   layers.hud.replaceChildren();

@@ -205,3 +205,118 @@ assert.equal(owner.busy, false);
   assert(walk(screens.at(-1).root).some(item => item.dataset?.test === "ch2-main-retry"));
 }
 console.log("chapter actions: chapter 2–5 DOM/test names, single action, stale sessions and error recovery PASS");
+
+
+// #2035: 第4・5章の実MENUを旧実装から固定する。共通化後も同じ入口をlinkする。
+for (const chapter of [4, 5]) {
+  const state = { chapter }, events = [], dialogs = [];
+  let choice = null, waiting = null, loadKey = 'slot1', loaded = true;
+  let loadError = false, saveError = false, configError = false, errorAt = '', loadWaiting = null, loadEntered = null;
+  const step = value => { events.push(value); if (value === errorAt) throw new Error('step failure'); };
+  const bindings = {
+    state, CH4_SCENE_FILES: {},
+    createChapterActions: () => ({ button() {}, perform() {} }),
+    modal: async spec => { dialogs.push(spec); if (errorAt === 'modal') throw new Error('modal failure'); if (waiting) await waiting.promise; return choice; },
+    save: () => { events.push('save'); if (saveError) throw new Error('save failure'); },
+    saveFlow: async () => { events.push('saveFlow'); if (saveError) throw new Error('save failure'); },
+    loadFlow: async options => { events.push(['loadFlow', options.inGame]); loadEntered?.resolve(); if (loadError) throw new Error('load failure'); if (loadWaiting) await loadWaiting.promise; return loadKey; },
+    loadFromSlot: key => { events.push(['loadFromSlot', key]); if (errorAt === 'loadFromSlot') throw new Error('slot failure'); return loaded; },
+    requestResumeOnBoot: () => step('resume'),
+  };
+  const context = vm.createContext({ location: { reload: () => step('reload') } });
+  const configModule = new vm.SyntheticModule(['openConfig'], function () {
+    this.setExport('openConfig', async () => { events.push('config'); if (configError) throw new Error('config failure'); });
+  }, { context });
+  await configModule.link(() => {}); await configModule.evaluate();
+  const options = { context, importModuleDynamically: async () => configModule };
+  const url = new URL(`../js/chapters/ch${chapter}.js`, import.meta.url);
+  const source = read(url);
+  let stateModule;
+  const modules = new Map();
+  async function link(spec, parent) {
+    const target = new URL(spec, parent.identifier);
+    if (spec.endsWith('chapter-menu.js')) {
+      if (!modules.has(target.href)) {
+        const helper = new vm.SourceTextModule(read(target), { ...options, identifier: target.href });
+        modules.set(target.href, helper); await helper.link(link);
+      }
+      return modules.get(target.href);
+    }
+    if (target.pathname.endsWith('/core/state.js') && stateModule) return stateModule;
+    const parentSource = parent.identifier === url.href ? source : read(new URL(parent.identifier));
+    let names = [...parentSource.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)]
+      .find(match => match[2] === spec)[1].split(',').map(name => name.trim());
+    if (target.pathname.endsWith('/core/state.js')) names = ['state', 'save', 'loadFromSlot', 'requestResumeOnBoot'];
+    const stub = new vm.SyntheticModule(names, function () {
+      for (const name of names) this.setExport(name, bindings[name] ?? (() => {}));
+    }, { context });
+    if (target.pathname.endsWith('/core/state.js')) stateModule = stub;
+    return stub;
+  }
+  const runner = new vm.SourceTextModule(source + `
+    export { openMenu };
+    export function owner() { return session = { state, active: true, busy: false, menuBusy: false,
+      controller: { abort() { step('abort'); } } }; }
+  `, { ...options, identifier: url.href });
+  context.events = events; context.step = step;
+  await runner.link(link); await runner.evaluate();
+  const api = runner.namespace;
+  const reset = () => { events.length = 0; dialogs.length = 0; choice = null; waiting = null;
+    loadKey = 'slot1'; loaded = true; loadError = saveError = configError = false; errorAt = ''; loadWaiting = null; return api.owner(); };
+  let owner = reset();
+  await api.openMenu(owner);
+  assert.equal(dialogs[0].title, chapter === 4 ? '第四章 MENU' : '第五章 MENU');
+  assert.equal(dialogs[0].body, '読み終えた場面から再開できます。');
+  assert.deepEqual(JSON.parse(JSON.stringify(dialogs[0].options)), [
+    { label: 'セーブ', value: 'save', test: `ch${chapter}-save` },
+    { label: 'ロード', value: 'load', test: `ch${chapter}-load` },
+    { label: '設定', value: 'config', test: `ch${chapter}-config` },
+    { label: 'タイトルへ戻る', value: 'title', test: `ch${chapter}-title` },
+    { label: '閉じる', value: null, primary: true },
+  ]);
+  assert.deepEqual(events, []); assert.equal(owner.menuBusy, false);
+  for (const selected of ['save', 'config', 'load', 'title', 'unknown']) {
+    owner = reset(); choice = selected; await api.openMenu(owner);
+    const expected = { save: ['saveFlow'], config: ['config'], load: [['loadFlow', true], ['loadFromSlot', 'slot1'], 'abort', 'resume', 'reload'],
+      title: ['save', 'abort', 'reload'], unknown: [] }[selected];
+    assert.deepEqual(events, expected); assert.equal(owner.menuBusy, false);
+    assert.equal(owner.active, !['load', 'title'].includes(selected));
+  }
+  for (const key of [null, '', 'slot1']) {
+    owner = reset(); choice = 'load'; loadKey = key; loaded = false;
+    await api.openMenu(owner);
+    assert.deepEqual(events, [['loadFlow', true], ...(key ? [['loadFromSlot', key]] : [])]);
+    assert.equal(owner.active, true); assert.equal(owner.menuBusy, false);
+  }
+  owner = reset(); owner.active = false; await api.openMenu(owner); assert.equal(dialogs.length, 0);
+  owner = reset(); owner.menuBusy = true; await api.openMenu(owner); assert.equal(dialogs.length, 0);
+  owner = reset(); stateModule.setExport('state', { chapter }); await api.openMenu(owner);
+  assert.equal(dialogs.length, 0); stateModule.setExport('state', state);
+  owner = reset(); waiting = deferred(); const pending = api.openMenu(owner);
+  await api.openMenu(owner); assert.equal(dialogs.length, 1); assert.equal(owner.menuBusy, true);
+  waiting.resolve(); await pending; assert.equal(owner.menuBusy, false);
+  for (const invalidate of [() => api.owner(), old => { old.active = false; }, () => stateModule.setExport('state', { chapter })]) {
+    owner = reset(); choice = 'title'; waiting = deferred(); const pending = api.openMenu(owner);
+    invalidate(owner); waiting.resolve(); await pending;
+    assert.deepEqual(events, []); assert.equal(owner.menuBusy, false); stateModule.setExport('state', state);
+  }
+  for (const selected of ['save', 'config', 'load', 'title']) {
+    owner = reset(); choice = selected;
+    if (selected === 'config') configError = true; else if (selected === 'load') loadError = true; else saveError = true;
+    await assert.rejects(api.openMenu(owner), /failure/);
+    assert.equal(owner.menuBusy, false); assert.equal(owner.active, true);
+    assert(!events.includes('reload')); assert(!events.includes('abort'));
+  }
+  for (const failure of ['modal', 'loadFromSlot', 'abort', 'resume', 'reload']) {
+    owner = reset(); choice = 'load'; errorAt = failure;
+    await assert.rejects(api.openMenu(owner), /failure/); assert.equal(owner.menuBusy, false);
+  }
+  owner = reset(); owner.controller = null; choice = 'title'; await api.openMenu(owner);
+  assert.deepEqual(events, ['save', 'reload']); assert.equal(owner.active, false);
+  // 既存仕様: loadFlow待機中のsession交代後にもslot処理は継続する。今回の抽出でガードは追加しない。
+  owner = reset(); choice = 'load'; loadWaiting = deferred(); loadEntered = deferred(); const lateLoad = api.openMenu(owner);
+  await loadEntered.promise; api.owner(); loadWaiting.resolve(); await lateLoad;
+  assert.deepEqual(events, [['loadFlow', true], ['loadFromSlot', 'slot1'], 'abort', 'resume', 'reload']);
+  assert.equal(owner.menuBusy, false);
+}
+console.log('chapter menus: chapter 4–5 real runner options, dispatch, guards, retries and errors PASS');
