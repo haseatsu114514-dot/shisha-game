@@ -1485,6 +1485,33 @@ await suite("growth-levelup", async (runCheck) => {
     assert.equal(await page.evaluate(() => __remake.state.growth.learned.includes("M-B6")), true, "FESTA の訪問のあと、太陽に相談して習う");
   }, { viewport: { width: 1331, height: 760 } });
   // 灯した効果が分かる（REPORT P1）: マスの説明に「合計 いま→灯すと」、決定のカードに増えた恩恵、HUDに目標までの火種
+  // #2480: 経路の合計は不足分ではない。手持ちが0/1/2でも、1個の経路は同じ案内にする。
+  await check("target-cost-is-path-total-not-shortfall", async (page) => {
+    await setupDaily(page);
+    for (const fire of [0, 1, 2]) {
+      const snapshot = await page.evaluate(async (fire) => {
+        const growth = await import("./js/core/growth.js");
+        growth.setGrowthPreview(true);
+        const g = growth.ensureGrowth();
+        Object.assign(g, { nodes: [], target: "B1", hidane: { ...g.hidane, any: fire } });
+        const before = JSON.stringify(g);
+        (await import("./js/daily/hud.js")).updateHud();
+        return { before, after: JSON.stringify(g) };
+      }, fire);
+      assert.equal(snapshot.after, snapshot.before, "HUD は成長データを変更しない");
+      const target = page.locator(t("hud-target"));
+      assert.equal(await target.isVisible(), true);
+      assert.equal(await target.innerText(), "◎火種1");
+      const label = "心得の盤の目標「マス」までに使う火種1（経路の合計）";
+      assert.equal(await target.getAttribute("title"), label);
+      assert.equal(await target.getAttribute("aria-label"), label);
+    }
+    await page.evaluate(async () => {
+      (await import("./js/core/growth.js")).ensureGrowth().target = null;
+      (await import("./js/daily/hud.js")).updateHud();
+    });
+    assert.equal(await page.locator(t("hud-target")).isVisible(), false);
+  }, { viewport: { width: 1331, height: 760 } });
   await check("perk-totals-and-target", async (page) => {
     await setupDaily(page);
     await page.evaluate(async () => {
@@ -1495,7 +1522,7 @@ await suite("growth-levelup", async (runCheck) => {
     });
     await page.locator(t("board-tab-body")).waitFor({ timeout: 30000 });
     assert.match(await page.locator(t("hud-target")).innerText(), /^◎火種\d+$/, "HUD に目標までの火種");
-    assert.match(await page.locator(t("hud-target")).getAttribute("title"), /早寝早起き」まで、あと火種\d+/, "目標の名前は説明に");
+    assert.match(await page.locator(t("hud-target")).getAttribute("title"), /早寝早起き」までに使う火種\d+（経路の合計）/, "目標の名前は説明に");
     const bar = await page.locator(".hud-exp .hx-bar").boundingBox();
     assert(bar && bar.width >= 40, `経験値ゲージを潰さない（${bar?.width}px）`);
     const hudBefore = await page.locator(t("hud-target")).innerText();
