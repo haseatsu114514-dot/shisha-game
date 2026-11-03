@@ -4,7 +4,8 @@ import assert from "node:assert/strict";
 import { newState } from "../js/core/state.js";
 import { CONTESTANTS, JUDGES, SPEND, tournamentProgress, resources, startAttempt,
   beginStep, finishStep, recoverStep, buildTastingPlan, tastingEffect,
-  castVotes, standings, recordResult, CH3_PRIZE } from "../js/chapters/ch3-tournament-state.js";
+  castVotes, standings, recordResult, CH3_PRIZE, TOURNAMENT_RULES_VERSION,
+  LEGACY_RIVAL_QUALITY, RIVAL_QUALITY } from "../js/chapters/ch3-tournament-state.js";
 
 const copy = value => JSON.parse(JSON.stringify(value));
 const makeState = () => {
@@ -60,6 +61,8 @@ assert(plans.some(plan => plan.waterAfterKuze));
 assert(plans.some(plan => !plan.waterAfterKuze));
 const withWater = startAttempt(makeState(), craft);
 const withoutWater = startAttempt(makeState(), craft);
+// この数値の旧残り香テストは、保存互換の版1としてそのまま残す。
+withWater.rulesVersion = 1; withoutWater.rulesVersion = 1;
 withWater.tastingPlan[1].dr_kemuri = { ...direct, waterAfterKuze: true };
 withoutWater.tastingPlan[1].dr_kemuri = direct;
 castVotes(withWater, 0, 83);
@@ -138,4 +141,50 @@ for (const [quality, expectedWin] of [[98, true], [25, false]]) {
   assert.equal(caseState.money, moneyBefore + (expectedWin ? CH3_PRIZE : 0), "prize is paid once");
 }
 assert.throws(() => tournamentProgress({ chapter: 2, flags: {} }), /第3章/);
+
+// 版2は全国の基準を上げる。旧保存の残り票と確定済みの結果は再評価しない。
+assert.equal(TOURNAMENT_RULES_VERSION, 2);
+assert.deepEqual(LEGACY_RIVAL_QUALITY, { kuze: 82, steve: 80, volk: 84 });
+assert.deepEqual(RIVAL_QUALITY, { kuze: 86, steve: 85, volk: 88 });
+{
+  const fresh = makeState(), current = startAttempt(fresh, craft);
+  assert.equal(current.rulesVersion, 2);
+  castVotes(current, 0, 84);
+  assert.equal(current.quality.volk, 88);
+  const old = makeState(), legacy = startAttempt(old, craft);
+  delete legacy.rulesVersion; // rulesVersion が無い実保存は版1。
+  castVotes(legacy, 0, 84);
+  const committed = copy(legacy.votes);
+  const loaded = copy(old), resumed = tournamentProgress(loaded);
+  castVotes(resumed, 1, 84);
+  assert.equal(resumed.quality.volk, 84);
+  for (const judge of JUDGES) for (const id of CONTESTANTS) assert(resumed.votes[judge][id] >= committed[judge][id]);
+  assert.equal(startAttempt(loaded, craft).rulesVersion, undefined, "Continuing a running legacy craft keeps its rule set");
+  resumed.stage = "defeat";
+  assert.equal(startAttempt(loaded, craft).rulesVersion, 2, "Only a new attempt opts into the new rules");
+}
+{
+  const cases = [NaN, Infinity, -Infinity, -1, 101, "90", null];
+  for (const invalid of cases) {
+    const bad = startAttempt(makeState(), craft), before = copy(bad);
+    assert.throws(() => castVotes(bad, 0, invalid), /工程成績/);
+    assert.deepEqual(bad, before, "Invalid performance cannot commit any votes");
+  }
+  for (const invalid of [null, 0, 3, "2", NaN]) {
+    const v = makeState(), bad = startAttempt(v, craft);
+    bad.rulesVersion = invalid;
+    assert.throws(() => tournamentProgress(v), /採点規則/);
+  }
+}
+{
+  const v = makeState(), p = startAttempt(v, craft);
+  p.step = 11; p.craft.careHistory = [{ score: 90 }, { score: 94 }];
+  for (let round = 0; round < SPEND.length; round++) castVotes(p, round, 98);
+  const before = copy(v);
+  assert.throws(() => recordResult(v, Infinity), /総合成績/);
+  assert.deepEqual(v, before, "Invalid final score cannot pay a prize or record a result");
+  const result = recordResult(v, 98);
+  assert.equal(result.rulesVersion, 2);
+  assert.equal(recordResult(v, 1), result, "A saved winning result is not recomputed");
+}
 console.log("PASS: chapter3 four-person 3x10 voting, conditional citrus, save rollback, retry and honest ranking");

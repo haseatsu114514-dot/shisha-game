@@ -28,7 +28,7 @@ for (const rival of [-100, 0, .1, 82.333333333, 100]) {
   for (const p of [.5, 1]) equal(liftRivalScore(rival, p, 3), rival + (99 - rival) * KB * p);
 }
 
-// 変更前のcastVotes/standingsで取得したゴールデン値。全4投票と全順位を比較する。
+// 版1の旧保存を、変更前のcastVotes/standingsで取得したゴールデン値と比較。全4投票と全順位を保持。
 const digest = createHash("sha256");
 const events = [];
 setRivalScoreObserver(event => events.push(event));
@@ -37,6 +37,7 @@ for (const seed of [1, 7, 42, 7317, 0xffffffff]) {
     for (const p of [0, .5, 1]) {
       const value = { chapter: 3, day: 42, weatherSeed: seed, flags: {} };
       const progress = tournament.startAttempt(value, { careHistory: [] });
+      delete progress.rulesVersion; // 版のない旧保存。新規挑戦の版2と混ぜない。
       for (let round = 0; round < 4; round++) {
         tournament.castVotes(progress, round, performance, { emil: -1, dr_kemuri: .5, nagumo: 1 }, p);
         if (p === 0) digest.update(JSON.stringify([progress.votes, progress.lastVotes, progress.quality, tournament.standings(progress)]));
@@ -50,8 +51,30 @@ assert(events.every(e => Object.isFrozen(e) && e.lifted === liftRivalScore(e.riv
 assert(events.some(e => e.p > 0 && e.lifted !== e.rival)); checks++;
 assert(events.filter(e => e.p === 0).every(e => Object.is(e.rival, e.lifted))); checks++;
 equal([...new Set(events.map(e => e.p))], [0, .5, 1]);
+// オーナー承認の強化版も別の固定値で全4投票/全順位/持ち込みを検査。旧ゴールデン値は上で維持する。
+equal(tournament.RIVAL_QUALITY, { kuze: 86, steve: 85, volk: 88 });
+const currentDigest = createHash("sha256"), currentEvents = [];
+setRivalScoreObserver(event => currentEvents.push(event));
+for (const seed of [1, 7, 42, 7317, 0xffffffff]) {
+  for (const performance of [0, 30, 79, 80, 81, 82, 83, 84, 85, 98, 100]) {
+    for (const p of [0, .5, 1]) {
+      const value = { chapter: 3, day: 42, weatherSeed: seed, flags: {} };
+      const progress = tournament.startAttempt(value, { careHistory: [] });
+      equal(progress.rulesVersion, 2);
+      for (let round = 0; round < 4; round++) {
+        assert(tournament.castVotes(progress, round, performance, { emil: -1, dr_kemuri: .5, nagumo: 1 }, p));
+        if (p === 0) currentDigest.update(JSON.stringify([progress.votes, progress.lastVotes, progress.quality, tournament.standings(progress)]));
+      }
+    }
+  }
+}
+equal(currentDigest.digest("hex"), "b2f5d099ee57bfcad4edc0443af4d6c70bc8932525b0b1b8e5f925f9e8038633");
+equal(currentEvents.length, events.length);
+assert(currentEvents.every(e => Object.isFrozen(e) && e.lifted === liftRivalScore(e.rival, e.p, e.chapter) && e.chapter === 3)); checks++;
+assert(currentEvents.filter(e => e.p === 0).every(e => Object.is(e.rival, e.lifted))); checks++;
+equal([...new Set(currentEvents.map(e => e.p))], [0, .5, 1]);
 setRivalScoreObserver(() => { throw new Error("observer failed"); });
 const value = { chapter: 3, flags: {} };
 assert(tournament.castVotes(tournament.startAttempt(value, {}), 0, 80)); checks++;
 setRivalScoreObserver();
-console.log(`PASS: ${checks} U4 assertions; 220 legacy-equivalent voting rounds (P=0), 440 lifted rounds, observer isolation`);
+console.log(`PASS: ${checks} U4 assertions; 220 legacy + 220 current voting rounds (P=0), 880 lifted rounds, observer isolation`);
