@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "naru-finish",
+      "title": "Naru finishing temperature, catalog balance and SAVE/LOAD",
+      "kind": "quick",
+      "run": ["node remake/test/naru_finish.mjs"]
+    },
+    {
       "id": "ch1-victory-resume-2190",
       "title": "Chapter 1 victory SAVE/LOAD backgrounds, resources and sentence boundaries",
       "kind": "quick",
@@ -2186,6 +2192,7 @@
       "timeout": 20,
       "paths": [
         "data/flavors.json",
+        "remake/js/core/naru-finish.js",
         "remake/js/craft/**",
         "remake/css/craft.css",
         "remake/test/mix_temperature.mjs",
