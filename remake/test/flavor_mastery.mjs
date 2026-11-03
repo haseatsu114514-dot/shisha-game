@@ -104,7 +104,7 @@ gainFlavorExperience(s,{lemon:12},7.5,DB.flavorById);assert.equal(masteryLevel(s
  s=core.newGame();
 }
 {
- // 凛の3つの味は第4回で一度だけ受け取る。旧第2回・反復回の受領分は差し引く。
+ // くゆりの3つの味は第4回で一度だけ受け取る。旧第2回・反復回の受領分は差し引く。
  const rin=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch1_rin.json',import.meta.url))).dialogues;
  const second=rin.find(d=>d.dialogue_id==='ch1_rin_second');
  const repeat=rin.find(d=>d.dialogue_id==='ch1_rin_repeat');

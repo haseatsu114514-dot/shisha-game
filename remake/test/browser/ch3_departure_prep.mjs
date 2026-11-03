@@ -49,7 +49,7 @@ async function seed(page) {
     for (const who of ["ageha", "kumicho", "rei", "hajime", "sumi"]) value.flags[`_intro_${who}`] = true;
     Object.assign(value.met, { ageha: true, kumicho: true, rei: true });
     if (!progress.advanceToChapterThree(value)) throw new Error("Chapter boundary failed");
-    // 路上占い師（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、この章の出現は済んだことにする。
+    // 辻占のオババ（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、この章の出現は済んだことにする。
     const fortune = await import("./js/daily/fortune-schedule.js");
     const fortunePlan = fortune.fortunePlan({ seed: value.seed, chapter: 3 });
     value.flags._fortune_wander = { chapter: 3, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };

@@ -354,7 +354,7 @@ for (const pts of [0, 1, 2]) {
 reset({ lovers: ["minto"] }); state.inbox.push(item({ id: "loverchat", sender: "minto", type: "chat", messages: ["おはよう"], replies: [{ text: "おはよう", affinity: 1 }] }));
 session = phone.openLime({ sender: "minto" }); await click("reply-0"); await closeThread(session); assert.equal(gains[0].pts, 3);
 
-// 五つの噂も返信可能（南雲は連絡先を交換しないため噂LIMEなし・#2026）。全選択肢が自然な文面/反応/小さい点数を持ち、洞察報酬は読む時に一度だけ。
+// 五つの噂も返信可能（須井は連絡先を交換しないため噂LIMEなし・#2026）。全選択肢が自然な文面/反応/小さい点数を持ち、洞察報酬は読む時に一度だけ。
 const rumors = allMessages.filter((m) => m.type === "rumor"); assert.equal(rumors.length, 5);
 for (const rumor of rumors) {
   assert(rumor.replies.length >= 2); assert(rumor.replies.some((r) => r.affinity === 0));
@@ -472,7 +472,7 @@ reset({ chapter: 2, day: 5, contacts: ["samechan"], affinity: { samechan: 33 }, 
 reset({ chapter: 1, day: 5, contacts: ["samechan"], affinity: { samechan: 33 }, flags: { _samechan_cinema_introduced: true } }); assert(!sharkOuting(), "第1章では誘わない");
 reset({ chapter: 2, day: 5, contacts: ["samechan"], affinity: { samechan: 33 }, flags: { _samechan_cinema_introduced: true, _invited_lime_outing_samechan_1: true, _outing_done_samechan: true } });
 assert(phone.morningMessages().some((m) => m.id === "lime_after_outing_samechan"), "外出の後日談は『この前』で届く");
-// 凛の♥3の外出（#2025）は昼の豆屋。♥3で届き（affinity_level の汎用判定）、はじめが地元を離れる第3章以降は届かない。
+// くゆりの♥3の外出（#2025）は昼の豆屋。♥3で届き（affinity_level の汎用判定）、はじめが地元を離れる第3章以降は届かない。
 assert.equal(invitationById.lime_outing_rin_1.time_slot, "noon"); assert(!invitationById.lime_outing_rin_1.after_close);
 assert.equal(invitationById.lime_outing_rin_1.accept_event, "outing_rin_1");
 const rinOuting = () => phone.morningMessages().some((m) => m.id === "lime_outing_rin_1");
@@ -480,7 +480,7 @@ reset({ chapter: 1, day: 5, contacts: ["rin"], affinity: { rin: 33 } }); assert(
 reset({ chapter: 2, day: 5, contacts: ["rin"], affinity: { rin: 33 } }); assert(rinOuting(), "第2章の♥3でも誘う");
 reset({ chapter: 3, day: 5, contacts: ["rin"], affinity: { rin: 33 } }); assert(!rinOuting(), "東京にいる第3章では誘わない");
 reset({ chapter: 1, day: 5, contacts: ["rin"], affinity: { rin: 33 }, limeRead: ["lime_fookah_promo_1"], flags: { _invited_lime_outing_rin_1: true, _outing_done_rin: true } });
-assert(!rinOuting()); assert(phone.morningMessages().some((m) => m.id === "lime_after_outing_rin"), "凛の外出の後日談も『この前』で届く");
+assert(!rinOuting()); assert(phone.morningMessages().some((m) => m.id === "lime_after_outing_rin"), "くゆりの外出の後日談も『この前』で届く");
 // ひよりの♥3の外出（#2025）は第1章の昼だけ。tonariでの再会の後に♥3で届き（affinity_level の汎用判定）、第2章以降には届かない。
 assert.equal(invitationById.lime_outing_hiyori_1.time_slot, "noon"); assert(!invitationById.lime_outing_hiyori_1.after_close);
 assert.equal(invitationById.lime_outing_hiyori_1.accept_event, "outing_hiyori_1");

@@ -801,7 +801,7 @@ for (const [base, change] of [
     assert.equal(completeChapterFiveScene(save, CH5_AFTERMATH[1].id), true);
     assert.deepEqual(due(save, CH5_LIME_MILESTONES.afterMatch), [], "Not after returning to tonari");
   }
-  // 第5章の場面で会っていない相手（つむぎ・みんと・凛など）からは届かない。朝の配信条件にも乗らない。
+  // 第5章の場面で会っていない相手（つむぎ・みんと・くゆりなど）からは届かない。朝の配信条件にも乗らない。
   assert(chapterFive.every(m => ["mashiro", "adam"].includes(m.sender)));
 }
 

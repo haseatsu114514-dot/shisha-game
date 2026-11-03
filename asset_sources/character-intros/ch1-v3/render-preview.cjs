@@ -27,7 +27,7 @@ function packageHTML(){
   ['最初の名乗り後案（比較用）','first-named.png'],
   ['今回の第2章版・プロの顔','../ageha/preview.png']
  ].map(([label,src])=>'<figure><figcaption>'+label+'</figcaption><img src="'+src+'" alt="'+label+'"></figure>').join('');
- fs.writeFileSync(path.join(base,'ageha-comparison/index.html'),'<!doctype html><html lang="ja"><meta charset="utf-8"><title>アゲハの最初の案と今回の2版</title><style>*{box-sizing:border-box}body{margin:0;background:#0b0f14;color:#fff;font:700 18px sans-serif}.grid{display:grid;grid-template-columns:repeat(2,640px)}figure{margin:0}figcaption{height:48px;padding:12px 16px}img{display:block;width:640px;height:360px}</style><main class="grid">'+comparisonCards+'</main></html>');
+ fs.writeFileSync(path.join(base,'ageha-comparison/index.html'),'<!doctype html><html lang="ja"><meta charset="utf-8"><title>あげはの最初の案と今回の2版</title><style>*{box-sizing:border-box}body{margin:0;background:#0b0f14;color:#fff;font:700 18px sans-serif}.grid{display:grid;grid-template-columns:repeat(2,640px)}figure{margin:0}figcaption{height:48px;padding:12px 16px}img{display:block;width:640px;height:360px}</style><main class="grid">'+comparisonCards+'</main></html>');
 }
 function composition(){
  const out={};

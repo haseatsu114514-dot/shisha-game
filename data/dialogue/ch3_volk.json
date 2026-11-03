@@ -73,7 +73,7 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "日本の窓口は凛に任せている。あいつの上司だ"
+          "text": "日本の窓口はくゆりに任せている。あいつの上司だ"
         },
         {
           "type": "condition",
@@ -95,7 +95,7 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "……凛は、日本の店を一人で回っている"
+          "text": "……くゆりは、日本の店を一人で回っている"
         },
         {
           "speaker": "volk",
@@ -320,7 +320,7 @@
           {
             "speaker": "volk",
             "face": "normal",
-            "text": "凛の報告に、名前を伏せたモニターがいた。舌が素直だ、と書いてあった"
+            "text": "くゆりの報告に、名前を伏せたモニターがいた。舌が素直だ、と書いてあった"
           },
           {
             "speaker": "volk",
@@ -332,14 +332,14 @@
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "凛さんの……？"
+            "text": "くゆりさんの……？"
           }
         ],
         "rin_report_lover": [
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "……凛さんから、聞いてます"
+            "text": "……くゆりさんから、聞いてます"
           }
         ],
         "unseen": [
@@ -509,7 +509,7 @@
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "このアールグレイ……前に凛さんから、黒い袋の試作をもらいました"
+            "text": "このアールグレイ……前にくゆりさんから、黒い袋の試作をもらいました"
           },
           {
             "speaker": "volk",
@@ -531,7 +531,7 @@
           {
             "speaker": "volk",
             "face": "normal",
-            "text": "これまでは、凛が試作を店で試してもらう段階だった。試供品は練習用だ"
+            "text": "これまでは、くゆりが試作を店で試してもらう段階だった。試供品は練習用だ"
           },
           {
             "speaker": "volk",

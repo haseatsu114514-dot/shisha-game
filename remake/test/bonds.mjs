@@ -437,7 +437,7 @@ try {
   assert.deepEqual(loverSave.asked, []);
   log("HF04/05 existing-lover save: relationship kept, lover landing once, gift, no confession reservation");
 
-  // 凛: 3つ目の固有会話の後の最初の訪問で質問 → 4つ目の固有会話 → MAXの締めくくり（友情寄り）
+  // くゆり: 3つ目の固有会話の後の最初の訪問で質問 → 4つ目の固有会話 → MAXの締めくくり（友情寄り）
   const rin = await page.evaluate(async () => {
     const { fresh, spots, bonds, vn, pick } = window.T;
     const state = fresh({ met: { rin: true }, story: { rin: 3 }, affinity: { rin: 90 }, slot: 0 });

@@ -252,7 +252,7 @@ async function confirmLimeReminder(destination, { spendsAction = true, slotsUsed
   state.flags._venue_lime_reminders = [...remembered, reminderId];
   const sender = pending.msg.sender;
   const senderName = { minto: "みんと", sumi: "スミさん", hiyori: "ひより", naru: "なる",
-    adam: "アダム", tsumugi: "つむぎ", ageha: "アゲハ", samechan: "サメちゃん" }[sender] || "誰か";
+    adam: "アダム", tsumugi: "つむぎ", ageha: "あげは", samechan: "サメちゃん" }[sender] || "誰か";
   const choice = await modal({
     title: "LIMEのお誘い",
     body: kind === "venue"
@@ -381,7 +381,7 @@ async function fixedShift() {
   await afterAction({ exerted: true, spent });
 }
 
-/** #2213 B02: 常連のサラリーマンの話（夜イベント「常連さんの話」）は、固定シフトの接客として流す。
+/** #2213 B02: 常連の鉄仮面さん（サラリーマン）の話（夜イベント「常連さんの話」）は、固定シフトの接客として流す。
  * シフトに入れなかった日（休養など）は、夜イベントの定義どおり後日の夜に読む。 */
 async function regularCustomerStory() {
   const scene = DB.dialogues.ch1_salaryman_regular;

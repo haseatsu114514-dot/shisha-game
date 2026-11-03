@@ -13,7 +13,7 @@
   ],
   "minChapter": 1,
   "note": "番外編のギャグ漫画です。左から右へお読みください。",
-  "caption": "いかつい南雲会長にも、かわいい戦利品があります。",
+  "caption": "いかつい須井会長にも、かわいい戦利品があります。",
   "panels": [
     {
       "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-hidden-prize/panels/nagumo-hidden-prize-1.webp",

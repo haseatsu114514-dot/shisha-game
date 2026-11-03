@@ -226,7 +226,7 @@ async function morningCheers(owner) {
 function renderEntry(owner) {
   card(owner, "entry", "全国大会の朝。", "はじめ・久世・スティーブ・ヴォルク。四人が同時に一台を仕上げる。", [
     button(owner, "会場へ向かう", "start", async () => { checkpoint("opening"); await drive(owner); }, true),
-  ], [el("p.ch2-contest-note", { text: "審査員は南雲・チャコール博士・エミル。各10点を四回に分けて投じる。" })]);
+  ], [el("p.ch2-contest-note", { text: "審査員は須井・チャコール博士・エミル。各10点を四回に分けて投じる。" })]);
 }
 
 function renderReady(owner) {
@@ -304,9 +304,9 @@ function voteReason(p, cs, final = false) {
     const target = displayName(tactic.affected, state);
     const contrast = tactic.delta > 0 ? "香りが強く映った" : "香りが薄く映った";
     const others = affected.filter(who => who !== judge);
-    lines.push(`南雲は水を飲んだ。${names([judge])}は水を挟まず、久世の直後に${target}を試喫。鋭い苦みの余韻で${contrast}（比較${tactic.delta > 0 ? "+" : ""}${tactic.delta}）。${others.length ? `${names(others)}にも残った。` : ""}`);
+    lines.push(`須井は水を飲んだ。${names([judge])}は水を挟まず、久世の直後に${target}を試喫。鋭い苦みの余韻で${contrast}（比較${tactic.delta > 0 ? "+" : ""}${tactic.delta}）。${others.length ? `${names(others)}にも残った。` : ""}`);
   } else if (JUDGES.some(judge => last[judge]?.tactic)) {
-    lines.push("南雲は水を飲んだ。ほかの席も試喫順と給水が噛み合わず、久世の鋭い苦みは直後の比較に残らなかった。");
+    lines.push("須井は水を飲んだ。ほかの席も試喫順と給水が噛み合わず、久世の鋭い苦みは直後の比較に残らなかった。");
   }
   return lines;
 }

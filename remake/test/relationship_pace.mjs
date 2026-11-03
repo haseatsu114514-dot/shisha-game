@@ -36,7 +36,7 @@ try {
     P.vn.hooks.onEnter = (id, dlg) => { enter?.(id, dlg); P.events.push({ id, day: P.core.state.day, slot: P.core.state.slot }); };
     P.vn.hooks.onChoice = (...args) => { choose?.(...args); P.choices.push({ scene: args[0], choice: args[1], branch: args[2], next: args[3], text: args[4]?.text, day: P.core.state.day }); };
     P.vn.vnTest.choose = (scene, labels) => {
-      if (scene === "remake_fortune_pick_live") return Math.max(0, labels.findIndex(t => ({ rin: /凛/, tsumugi: /つむぎ/, minto: /みんと|栞/ })[target].test(t)));
+      if (scene === "remake_fortune_pick_live") return Math.max(0, labels.findIndex(t => ({ rin: /くゆり/, tsumugi: /つむぎ/, minto: /みんと|栞/ })[target].test(t)));
       if (mode === "friend" && scene === `ch1_${target}_bond_question`) return 1;
       if (mode === "hold" && scene === `remake_confession_gate_${target}` && !P.held) { P.held = true; return 1; }
       return 0;

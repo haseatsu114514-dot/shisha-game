@@ -339,7 +339,7 @@ body.game-ds :is(#toasts, #banners) { left: var(--ds-vx); top: calc(var(--ds-vy)
 /* 上画面は端末の半分の高さなので、吸い出し以降の機材の絵は常に縮めて収める（旧配置の大画面向け例外を打ち消す）。 */
 body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { bottom: 128px; transform: scale(.4) !important; transform-origin: 50% 100%; }
 
-/* ---------------------------------------------------------------- 大会の中継グラフィック（中間投票・南雲の10点・カウント・結果）
+/* ---------------------------------------------------------------- 大会の中継グラフィック（中間投票・須井の10点・カウント・結果）
    上画面＝見せ場（見出し・順位・カットイン・カウント）、下画面＝読む情報と操作（持ち点・内訳・ボタン）。
    2つの画面の地はそれぞれの枠に合わせて塗り、ヒンジは塗らない。 */
 body.game-ds :is(.standings.tournament-board, .nagumo-cut, .count-screen, .result-table) {
@@ -405,7 +405,7 @@ body.game-ds .standings .sd-feed {
 }
 body.game-ds .standings .sd-feed-tag { padding: 0 10px; font-size: 12px; }
 
-/* 南雲の10点：上＝カットイン（立ち絵と10点）、下＝見出しと票の帯 */
+/* 須井の10点：上＝カットイン（立ち絵と10点）、下＝見出しと票の帯 */
 body.game-ds .nagumo-cut { padding: 0; display: block; }
 body.game-ds .nagumo-cut .nc-rays { left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: var(--ds-vh); inset: auto; }
 body.game-ds .nagumo-cut .tournament-heading {

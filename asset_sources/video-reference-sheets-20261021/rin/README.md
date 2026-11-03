@@ -1,4 +1,4 @@
-# 凛：動画生成用リファレンスシート 1案
+# くゆり：動画生成用リファレンスシート 1案
 
 完成PNG: `rin-reference-sheet.png`（1536×1024、1833700 bytes）。正規内蔵 image_gen.imagegen で新規制作。`preview.html` で表示できます。
 

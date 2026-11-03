@@ -162,7 +162,7 @@
       "chapter": 2,
       "title": "才能の壁",
       "english": "Jealousy Haze",
-      "concept": "影から識別できるアゲハ、才能の壁と大物感",
+      "concept": "影から識別できるあげは、才能の壁と大物感",
       "variant": "dark-v2",
       "original": "originals/ch2-dark-v2.png",
       "original_sha256": "67d30486ec9dbb507c442cdf8d241aca5cdee0568148fb809e0f755fb9911a5d",
@@ -208,7 +208,7 @@
       "chapter": 2,
       "title": "才能の壁",
       "english": "Jealousy Haze",
-      "concept": "アゲハの強いシルエットに勇気を出して立ち向かうはじめ",
+      "concept": "あげはの強いシルエットに勇気を出して立ち向かうはじめ",
       "variant": "silhouette-v3",
       "original": "originals/ch2-silhouette-v3.png",
       "original_sha256": "0301c5b609168d8a51baac12804a92224226644f35ff5c2abcee541b933f65b3",
@@ -224,7 +224,7 @@
       "chapter": 2,
       "title": "才能の壁",
       "english": "Jealousy Haze",
-      "concept": "アゲハの強いシルエットに勇気を出して立ち向かうはじめ",
+      "concept": "あげはの強いシルエットに勇気を出して立ち向かうはじめ",
       "variant": "green-v4",
       "original": "originals/ch2-green-v4.png",
       "original_sha256": "efdb7f00911c4b6eb55a15800665d0d7c89cb158274860cc1143744273281146",
@@ -409,7 +409,7 @@
   "lighting_variants": [
     {
       "id": "A",
-      "label": "アゲハの目元",
+      "label": "あげはの目元",
       "original": "originals/ch2-light-A.png",
       "original_sha256": "9cdb2d480ec58780c1327ddd45c3259b7246a9ca51ef24f55ac98141381cfcd9",
       "original_size": [
@@ -427,7 +427,7 @@
     },
     {
       "id": "B",
-      "label": "アゲハの顔半分",
+      "label": "あげはの顔半分",
       "original": "originals/ch2-light-B.png",
       "original_sha256": "ea5f637477f4987d6581bf6043a2f1771bab83cbda7a899616a248c6603c75a4",
       "original_size": [

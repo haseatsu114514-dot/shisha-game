@@ -1,4 +1,4 @@
-// 凛の腰・中央配置修正の回帰。manifest の数値だけでなく、実際に描画した
+// くゆりの腰・中央配置修正の回帰。manifest の数値だけでなく、実際に描画した
 // WebP の頭部中心と画面中央、全5表情の配置枠と見切れをPC／スマホで確認する。
 import { createRequire } from "module";
 import fs from "node:fs";

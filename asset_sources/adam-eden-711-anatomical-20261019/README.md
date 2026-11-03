@@ -33,7 +33,7 @@
 | 第1章の実Adamレイヤー `naru.png` | 右向き横顔で本人左が緑、奥の右が赤 | 正しいため元blob維持。対応WebP・影も維持 |
 | 第1章レイヤー `adam.png` | 実画像は銀髪のなる | 対象外として維持。命名整理は行わない |
 | 採用済み第1章全体タイトル | 左から2人目のAdamが正しい横顔 | 元blob維持 |
-| 旧ch1 keyart、大会の南雲・博士CG | 確認した表示用画像にAdam／リンゴ対なし | 維持 |
+| 旧ch1 keyart、大会の須井・博士CG | 確認した表示用画像にAdam／リンゴ対なし | 維持 |
 | tournament_tension仮PNG | 文字だけで現行CG目録・非legacy参照なし | 未採用のまま維持 |
 
 立ち絵の旧採用元は `asset_sources/portraits/adam-remaster-v1/<expression>-preview.png` で、元の本番PNGと同一blob。[ch1-art採用記録](https://github.com/haseatsu114514-dot/shisha-game/blob/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d/asset_sources/adoptions/ch1-art-20261008/adoption.json) は改変しない。登場原画は `asset_sources/character-intros/adam-hajime-v4-20261008/adam/source.png` と同一blobだった。

@@ -32,10 +32,10 @@ try {
   await check('all-images-and-catalog',async page=>{
     catalog=await page.evaluate(async()=>await(await fetch('catalog.json')).json());
     assert.equal(catalog.summary.current,41); assert.equal(new Set(catalog.items.map(a=>a.id)).size,catalog.items.length);
-    assert.equal(catalog.items.filter(a=>a.groups.includes('アゲハ修正')).length,5);
+    assert.equal(catalog.items.filter(a=>a.groups.includes('あげは修正')).length,5);
     assert.equal(catalog.items.filter(a=>a.groups.includes('タッパー修正')).length,5);
     assert.equal(catalog.items.filter(a=>a.current&&a.character==='hiyori').length,6);
-    assert.equal(catalog.characters.samechan,'サメちゃん／波多野なぎさ');
+    assert.equal(catalog.characters.samechan,'サメちゃん／汐見なぎさ');
     const urls=[...catalog.items.flatMap(a=>[a.image,a.thumbnail]),...Object.values(catalog.references).flat().map(a=>a.url)];
     const failures=await page.evaluate(async urls=>{
       const failures=[];
@@ -150,8 +150,8 @@ try {
     assert.match(await page.locator('#notice').innerText(),/上書きしていません/);
   },{},()=>localStorage.setItem('shisha-title-review-v4','{broken'));
   await check('related-before-after',async page=>{
-    await page.locator('#group').selectOption('アゲハ修正');
-    const target=catalog.items.find(a=>a.groups.includes('アゲハ修正')&&a.related.some(id=>catalog.items.find(b=>b.id===id)?.current));
+    await page.locator('#group').selectOption('あげは修正');
+    const target=catalog.items.find(a=>a.groups.includes('あげは修正')&&a.related.some(id=>catalog.items.find(b=>b.id===id)?.current));
     await page.locator(`[data-art="${target.id}"] .art-button`).click();
     await page.locator('#viewer .related button').first().click();
     assert.equal(await page.locator('.comparison .review-panel').count(),2);

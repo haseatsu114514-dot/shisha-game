@@ -24,7 +24,7 @@
 | 5 | `cg_mashiro_double_apple` | ch3 | ch3_double_apple_incident | 制作・接続済み。閉店後のmukaiで、ましろがハンドルを差し出す一人称の近景。顔・吸い口・握る手を会話枠より上へ置く。種明かし前なので缶・味名・果物は写さない。[原画・生成指示・検品](../../asset_sources/ch3-mashiro-handoff/README.md) |
 | 6 | `cg_tsumugi_confession` | 告白 | confession_tsumugi_accept | 服の裾をぎゅっと掴む潤み目の上目遣い |
 | 7 | `cg_minto_confession` | 告白 | confession_minto_accept | 素の栞の顔で泣き笑い |
-| 8 | `cg_ageha_confession` | 告白 | confession_ageha_accept | いつも強気なアゲハが目を逸らして頬を掻く |
+| 8 | `cg_ageha_confession` | 告白 | confession_ageha_accept | いつも強気なあげはが目を逸らして頬を掻く |
 | 9 | `cg_mashiro_confession` | 告白 | confession_mashiro_accept | ふにゃっと崩れた満面の笑み（ダウナーが解ける瞬間） |
 | 10 | `cg_tsumugi_epilogue` | 結 | epilogue_tsumugi | 夜の公園。絡めた指、肩に頭。吐息が白い |
 | 11 | `cg_minto_epilogue` | 結 | epilogue_minto | 仕事終わりの裏口で、私服（ura）の栞が胸に飛び込む。素の照れ笑い。黒髪のストレートロングと緑の瞳を維持し、コンカフェ衣装・ツノや羽のアクセサリーは描かない |
