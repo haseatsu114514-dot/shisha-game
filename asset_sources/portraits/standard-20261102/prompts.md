@@ -6,7 +6,7 @@
 参照画像はリポジトリのファイルを、エージェントが自分で読み込んで渡す（オーナーに保存・添付を頼まない）。
 
 - ① 対象の表情の現行PNG `assets/sprites/characters/<id>/chr_<id>_<face>.png`（表情差分では、②の前に合格済みの新しい通常原画 `asset_sources/portraits/<id>-remaster-v2/normal-source.png` も入れ、顔の同一性と頭の大きさの基準にする）
-- ② 南雲 `assets/sprites/characters/nagumo/chr_nagumo_normal.png`（大人の男性の頭身の目標。6.93頭身）。女性（マキ・路上占い師）は、標準枠の女性のくゆり `assets/sprites/characters/rin/chr_rin_normal.png`（6.53頭身）を使い、文中の Nagumo / he を Rin / she に直す
+- ② 須井 `assets/sprites/characters/nagumo/chr_nagumo_normal.png`（大人の男性の頭身の目標。6.93頭身）。女性（マキ・路上占い師）は、標準枠の女性のくゆり `assets/sprites/characters/rin/chr_rin_normal.png`（6.53頭身）を使い、文中の Nagumo / he を Rin / she に直す
 - ③ みんと `assets/sprites/characters/minto/chr_minto_normal.png`・④ あげは `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ## 生成後チェック（1枚ごと）
@@ -22,7 +22,7 @@
 
 ### 組長（神崎竜二）（`kumicho`）・normal
 
-現在 6.29頭身 → 目標 6.7頭身（頭を約6%小さく）。参照：① `assets/sprites/characters/kumicho/chr_kumicho_normal.png` ／ ② 南雲 ／ ③ みんと ／ ④ あげは
+現在 6.29頭身 → 目標 6.7頭身（頭を約6%小さく）。参照：① `assets/sprites/characters/kumicho/chr_kumicho_normal.png` ／ ② 須井 ／ ③ みんと ／ ④ あげは
 
 ```
 Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, outfit, accessories and colors as image 1. Change ONLY two things: the head-to-body proportion below and the rendering style standard below.
@@ -41,7 +41,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### スティーブ（`steve`）・normal
 
-現在 8.04頭身 → 目標 7.4頭身（頭を約9%大きく）。参照：① `assets/sprites/characters/steve/chr_steve_normal.png` ／ ② 南雲 ／ ③ みんと ／ ④ あげは
+現在 8.04頭身 → 目標 7.4頭身（頭を約9%大きく）。参照：① `assets/sprites/characters/steve/chr_steve_normal.png` ／ ② 須井 ／ ③ みんと ／ ④ あげは
 
 ```
 Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, outfit, accessories and colors as image 1. Change ONLY two things: the head-to-body proportion below and the rendering style standard below.
@@ -60,7 +60,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### ヴォルク（`volk`）・normal
 
-現在 9.04頭身 → 目標 7.4頭身（頭を約22%大きく）。参照：① `assets/sprites/characters/volk/chr_volk_normal.png` ／ ② 南雲 ／ ③ みんと ／ ④ あげは
+現在 9.04頭身 → 目標 7.4頭身（頭を約22%大きく）。参照：① `assets/sprites/characters/volk/chr_volk_normal.png` ／ ② 須井 ／ ③ みんと ／ ④ あげは
 
 ```
 Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, outfit, accessories and colors as image 1. Change ONLY two things: the head-to-body proportion below and the rendering style standard below.
@@ -97,7 +97,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 2026-11-02 オーナー「推奨のをお願い」で、通常はサイB・零C-v2・マキB・太陽Bに決まった。残りの表情を、この新しい通常と同じ頭の大きさで作る。全表情が合格したら、キャラ単位で組み込む。
 
-参照画像（エージェントが自分で読み込んで渡す）：① 対象の表情の現行PNG `assets/sprites/characters/<id>/chr_<id>_<face>.png` ／ ② 合格した通常の原画 `asset_sources/portraits/<id>-remaster-v2/normal-source.png` ／ ③ 頭身の文脈（男性は南雲、マキはくゆり）／ ④ みんと ／ ⑤ あげは（画風だけ）。
+参照画像（エージェントが自分で読み込んで渡す）：① 対象の表情の現行PNG `assets/sprites/characters/<id>/chr_<id>_<face>.png` ／ ② 合格した通常の原画 `asset_sources/portraits/<id>-remaster-v2/normal-source.png` ／ ③ 頭身の文脈（男性は須井、マキはくゆり）／ ④ みんと ／ ⑤ あげは（画風だけ）。
 
 合格の条件：②と同じ頭の大きさ（会話画面で±5%以内。`tools/portrait_metrics.py grid --image` で測る）、①の表情・手・ポーズのまま、髪・手・靴が切れていない。
 
@@ -319,7 +319,7 @@ Output ONE complete figure on a tall canvas about 1085x1450, the figure at least
 
 ## 作り直し：路上占い師・シェイク・王煙楼（TS12）
 
-1回目（TS10）は「頭を約○%大きく」の指示で、頭が2〜9%しか大きくならず、規格（6.4〜7.7頭身）に届かなかった。フード・頭巾・長いひげで頭頂やあごが隠れているのが原因とみられる。今回は**画像の中の大きさをpxで**指定する。参照画像は①現行の通常、②南雲（頭身の文脈だけ）、③みんと・④あげは（画風だけ）。
+1回目（TS10）は「頭を約○%大きく」の指示で、頭が2〜9%しか大きくならず、規格（6.4〜7.7頭身）に届かなかった。フード・頭巾・長いひげで頭頂やあごが隠れているのが原因とみられる。今回は**画像の中の大きさをpxで**指定する。参照画像は①現行の通常、②須井（頭身の文脈だけ）、③みんと・④あげは（画風だけ）。
 
 合格の条件：目の高さからあごまでの長さが、全身の高さ（頭・フードの上端〜靴底）の目安の値以上。全身1400pxなら、路上占い師 約85px・シェイク 約100px・王煙楼 約85px。顔・年齢・衣装・ポーズは①のまま。
 
@@ -373,7 +373,7 @@ TS12 と同じく、頭の大きさは「○%大きく」ではなく**画像の
 
 参照画像（エージェントが自分で読み込んで渡す）：
 - ① 採用した原画（887×1774。ゲーム用より大きい）：サイフ `asset_sources/ch4-camel-race/originals/saif-normal-A-v2.png`・ラシード `asset_sources/ch4-camel-race/originals/rashid-normal-B.png`
-- ② 南雲 `assets/sprites/characters/nagumo/chr_nagumo_normal.png`（大人の男性の頭身の目標。6.93頭身）
+- ② 須井 `assets/sprites/characters/nagumo/chr_nagumo_normal.png`（大人の男性の頭身の目標。6.93頭身）
 - ③ みんと `assets/sprites/characters/minto/chr_minto_normal.png`・④ あげは `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風だけ）
 
 合格の条件（全身1400px＝髪・グトラの上端〜靴底に換算）：
@@ -447,7 +447,7 @@ Codex が上の3つの英文で各3案（計9案）を生成した。頭身は�
 | スティーブ | 8.04→7.4（頭を9%大きく） | A 6.89／6.80、B 6.99／6.98、C 6.88／6.74 |
 | ヴォルク | 9.04→7.4（頭を22%大きく） | A 7.70／7.53、B 7.70／7.64、C 7.92／7.72 |
 
-- 拡大率の指定は効かず、元の頭身にかかわらず約6.8〜7.7頭身に寄った。参照②（南雲・6.93頭身）に引っ張られたとみられる。残りの人は拡大率を書かず、「image 2 と同じ約7頭身」と書くほうが確実。
+- 拡大率の指定は効かず、元の頭身にかかわらず約6.8〜7.7頭身に寄った。参照②（須井・6.93頭身）に引っ張られたとみられる。残りの人は拡大率を書かず、「image 2 と同じ約7頭身」と書くほうが確実。
 - 頭頂・あごの読み取りには1枚あたり±4px（約±0.2頭身）の差が出る。境目の案は2人で測る。
 - 頭身のほかに、余白の不足（スティーブA・ヴォルクAは足底が画像の端に接する）、透明度の低いノイズ、髪・靴の艶の残りがあった。
 

@@ -13,7 +13,7 @@
 | 上園 | +17% | 頭を約14%小さく | 平たい塗り・太い線を基準へ | 5 |
 | スミさん | +15% | 頭（帽子込み）を約13%小さく | 基準に合わせる | 5 |
 | ましろ | +13% | やや大きめの丸い顔と頬の可愛さを優先。8%縮小は強制しない（2026-10-10追記） | 基準に合わせる | 6 |
-| 南雲 | −13% | 頭を約15%大きく | 基準に合わせる | 5 |
+| 須井 | −13% | 頭を約15%大きく | 基準に合わせる | 5 |
 | サメちゃん | −10% | 頭（フード込み）を約11%大きく | つやの強い今風の塗り・大きめの目を基準へ | 6 |
 
 顔の大きさの比較図は [face-size-ingame.png](../../reference-sheets/face-size-ingame.png)（`python3 tools/make_reference_sheet.py facesize` で作り直せる）。
@@ -32,11 +32,11 @@
 → 3枚を Claude に見せて確認。直す点があればここでプロンプトを調整する。
 
 **ステップ2：残りの3人の通常**
-4. **#13 スミさん・normal** → 5. **#18 ましろ・normal** → 6. **#24 南雲・normal**
+4. **#13 スミさん・normal** → 5. **#18 ましろ・normal** → 6. **#24 須井・normal**
 
 **ステップ3：各キャラの残りの表情**（キャラごとにまとめて）
 - **②（同じキャラの通常）には、ステップ1・2で合格した「新しい通常」を添付する。** 表情どうしの顔と頭の大きさがそろいやすい。ただし、つむぎはPU05により、体格を変えた候補を引き継がず「元の通常」を添付する。
-- 順番：つむぎ #2〜7 → ましろ #19〜23 → サメちゃん #30〜34 → 上園 #9〜12 → スミさん #14〜17 → 南雲 #25〜28
+- 順番：つむぎ #2〜7 → ましろ #19〜23 → サメちゃん #30〜34 → 上園 #9〜12 → スミさん #14〜17 → 須井 #25〜28
 - 1キャラの全表情がそろったら並べて確認し、`asset_sources/portraits/<id>-remaster-v2/` に置いて commit。キャラ単位で組み込みを頼んでよい。
 
 ## リポジトリに触れないチャット（ChatGPTなど）で手作業で頼むときの手順
@@ -609,9 +609,9 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
 ```
 
-## 南雲（nagumo）
+## 須井（nagumo）
 
-### 24. 南雲・normal
+### 24. 須井・normal
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -633,7 +633,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
 ```
 
-### 25. 南雲・smile
+### 25. 須井・smile
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_smile.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -655,7 +655,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
 ```
 
-### 26. 南雲・serious
+### 26. 須井・serious
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_serious.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -677,7 +677,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
 ```
 
-### 27. 南雲・surprise
+### 27. 須井・surprise
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_surprise.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -699,7 +699,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
 ```
 
-### 28. 南雲・thinking
+### 28. 須井・thinking
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_thinking.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 

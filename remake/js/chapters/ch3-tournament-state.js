@@ -14,7 +14,7 @@ export const SPEND = Object.freeze([2, 3, 2, 3]);
 // 第2章より高い全国出場者の基準値。はじめの値は実際の制作成績で上書きする。
 export const RIVAL_QUALITY = Object.freeze({ kuze: 82, steve: 80, volk: 84 });
 
-// 柑橘への好みと、直後の一口との比較は別。南雲は台本どおり水を飲む。
+// 柑橘への好みと、直後の一口との比較は別。須井は台本どおり水を飲む。
 export const JUDGE_PROFILES = Object.freeze({
   emil: Object.freeze({ prefWeight: 0.20, citrus: -1, contrast: -2, waterChance: 0.25 }),
   dr_kemuri: Object.freeze({ prefWeight: 0.15, citrus: 2, contrast: 2, waterChance: 0.50 }),

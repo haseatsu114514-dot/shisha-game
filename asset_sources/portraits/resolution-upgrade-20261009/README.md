@@ -30,7 +30,7 @@ CHROME_BIN=/usr/bin/chromium SHOTS=/tmp/portrait-qa node remake/test/portrait_un
 
 ## 2026-10-10の実制作で優先する指定
 
-- 対象はつむぎ7、サメちゃん6、上園5、スミさん5、ましろ6、南雲5の計34表情。各原画は無加工で保存し、人物1300px以上・透過・元絵との原寸比較を検品する。ゲーム用は896×1200のまま、元の人物高と足元に合わせて縮小・配置する。
+- 対象はつむぎ7、サメちゃん6、上園5、スミさん5、ましろ6、須井5の計34表情。各原画は無加工で保存し、人物1300px以上・透過・元絵との原寸比較を検品する。ゲーム用は896×1200のまま、元の人物高と足元に合わせて縮小・配置する。
 - つむぎはPU05により頭身変更を撤回。元の大きめの丸い頭、小柄な体格、短い胴と脚へ戻し、解像度と画風だけをそろえる。参照②にも元の通常絵を使い、体格を変えた候補から再生成を重ねない。
 - ましろはPU04により少し大きめの丸い顔・ふっくらした頬・眠そうな可愛さを優先。以前の8%縮小は強制しない。
 - 色は常に各表情の元のランタイム画像を基準にする。生成候補を色の基準にして、繰り返すたびに薄くしない。採用原画への後付けの彩度・明度加工は行わない。
@@ -58,7 +58,7 @@ CHROME_BIN=/usr/bin/chromium SHOTS=/tmp/portrait-qa node remake/test/portrait_un
 | 博士 | 877px | 1098px | 1.25倍 | 860 | 対象B |
 | アダム | 871px | 1056px | 1.21倍 | 846 | 対象B |
 | 上園 | 819px | 1116px | **1.36倍** | 836 | **対象A（目で見ても一番ぼやける）** |
-| 南雲 | 846px | 1119px | **1.32倍** | 821 | **対象A** |
+| 須井 | 846px | 1119px | **1.32倍** | 821 | **対象A** |
 | スミさん | 852px | 1079px | **1.27倍** | 811 | **対象A** |
 
 - 「表示1単位あたりの原画の細かさ」＝原画の人物の高さ ÷ spriteScale。画面上で同じ高さに換算したときの描き込みの量。
@@ -67,7 +67,7 @@ CHROME_BIN=/usr/bin/chromium SHOTS=/tmp/portrait-qa node remake/test/portrait_un
 
 ## 依頼の方針（2026-10-09 オーナー決定で更新）
 
-**画質・顔の大きさ・画風を1回の作り直しでまとめて直す。** 対象は、ゲーム画面での顔の大きさが中央値から±10%を超える6人：つむぎ・上園・スミさん・ましろ（大きい）、南雲・サメちゃん（小さい）。画風はみんと・アゲハに合わせる（サメちゃんのつやの強い塗り、上園の平たい塗りを基準へ）。
+**画質・顔の大きさ・画風を1回の作り直しでまとめて直す。** 対象は、ゲーム画面での顔の大きさが中央値から±10%を超える6人：つむぎ・上園・スミさん・ましろ（大きい）、須井・サメちゃん（小さい）。画風はみんと・アゲハに合わせる（サメちゃんのつやの強い塗り、上園の平たい塗りを基準へ）。
 顔の大きさの比較は [face-size-ingame.png](../../reference-sheets/face-size-ingame.png)。完成版のプロンプト（34表情）は [prompts.md](prompts.md)。
 
 1. **1回の生成で1人・1表情**。縦長（約1085×1450）で、人物の高さを**1300px以上**にする。
@@ -112,7 +112,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
   - surprise：`round open eyes, small O-shaped mouth, SCREEN-LEFT palm raised, SCREEN-RIGHT hand in pocket`
   - excited：`both eyes open, big delighted open-mouth grin, SCREEN-LEFT fist near shoulder, SCREEN-RIGHT fist near waist, leaning forward slightly`
 
-**南雲**（5表情：normal / smile / serious / surprise / thinking）
+**須井**（5表情：normal / smile / serious / surprise / thinking）
 - CHARACTER LINE：`Nagumo, 45-year-old stern Japanese male executive and judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.`
 - EXPRESSION LINE：各表情の現行画像のとおり（顔・手の位置を画像1から読み取る）と書く。
 

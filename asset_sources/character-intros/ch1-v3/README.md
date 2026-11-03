@@ -34,7 +34,7 @@
 | みんと | ミント・葉とハートとチェキ | [PNG](minto/preview.png) |
 | くゆり | 藍色・サンプル缶と試香紙とブルーベリー | [PNG](rin/preview.png) |
 | サメちゃん | 海の青・王冠を被ったサメと波 | [PNG](samechan/preview.png) |
-| 南雲修二 | 銀灰・ネクタイと審査の円 | [PNG](nagumo/preview.png) |
+| 須井修二 | 銀灰・ネクタイと審査の円 | [PNG](nagumo/preview.png) |
 | 上園文太郎 | 深い青緑・誌面と眼鏡とペン | [PNG](maezono/preview.png) |
 | チャコール博士 | シアン・温度計と計測円とグラフ | [PNG](dr_kemuri/preview.png) |
 | パッキー | 橙・マイクと蝶ネクタイと音の波 | [PNG](pakki/preview.png) |
