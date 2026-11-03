@@ -11,7 +11,7 @@ const catalogPath = "asset_sources/shisha-hardware-reference/skin-candidates-iss
 const document = JSON.parse(fs.readFileSync(path.join(root, catalogPath)));
 const equipment = JSON.parse(fs.readFileSync(path.join(root, "data/equipment.json"))).equipment;
 const files = ["appearance/model.js", "appearance/select.js", "core/state.js", "core/util.js", "core/rules.js", "core/bus.js", "core/gallery-progress.js",
-  "craft/steps.js", "craft/coals.js", "craft/temperature-model.js"];
+  "craft/steps.js", "craft/coals.js", "craft/temperature-model.js", "craft/equipment-preview.js", "craft/holes_logic.js", "craft/flavor-life.js"];
 const texts = new Map(files.map(file => ["/remake/js/" + file, fs.readFileSync(path.join(root, "remake/js", file), "utf8")]));
 
 class Element {
@@ -20,6 +20,7 @@ class Element {
     this.style = { setProperty() {} }; this.classList = { add() {}, remove() {} };
   }
   append(...nodes) { this.children.push(...nodes); }
+  replaceChildren(...nodes) { this.children = nodes; }
   addEventListener(name, fn) { this.handlers[name] = fn; }
   setAttribute(key, value) { this.attrs[key] = value; }
   click() { if (!("disabled" in this.attrs)) this.handlers.click?.(); }
@@ -32,7 +33,7 @@ async function check(label, body) { await body(); cases.push(label); console.log
 
 async function fixture() {
   const storage = new Map(); let failWrites = false, auto = false, fetchError = null;
-  let panel = new Element("section"); const requests = [], notices = [];
+  let panel = new Element("section"); const requests = [], notices = [], modals = [];
   const context = vm.createContext({ console, URL, AbortController, setTimeout, clearTimeout,
     Node: Element,
     document: { createElement: tag => new Element(tag), createTextNode: text => Object.assign(new Element("#text"), { textContent: text }) },
@@ -45,7 +46,7 @@ async function fixture() {
   });
   const stubs = new Map([
     ["/remake/js/core/data.js", { DB: { equipById: Object.fromEntries(equipment.map(item => [item.id, item])) } }],
-    ["/remake/js/core/ui.js", { toast: message => notices.push(message) }],
+    ["/remake/js/core/ui.js", { toast: message => notices.push(message), modal: options => modals.push(options) }],
     ["/remake/js/core/audio.js", { SE: { select() {} } }],
     ["/remake/js/craft/common.js", { autoSkill: () => auto }],
     ["/remake/js/craft/flavor-guide.js", { equipmentUse: () => ({ use: "fixture" }), equipmentGuide: () => new Element("section") }],
@@ -79,7 +80,7 @@ async function fixture() {
     import * as steps from '/remake/js/craft/steps.js';export {model,select,core,steps};`, { context });
   await entry.link((specifier, parent) => moduleFor(path.posix.resolve(path.posix.dirname(parent.identifier), specifier)));
   await entry.evaluate();
-  return { ...entry.namespace, requests, notices, storage,
+  return { ...entry.namespace, requests, notices, storage, modals,
     get panel() { return panel; },
     newPanel: () => (panel = new Element("section")),
     failWrites: value => { failWrites = value; }, auto: value => { auto = value; }, failFetch: value => { fetchError = value; },
@@ -214,6 +215,61 @@ await check("#1927 owned Lotos remains selectable; empty HMD inventory cannot ge
   const before = copy(f.core.state);
   await assert.rejects(f.steps.stepSetup({ mode: "practice", equip: { ...before.equip } }), /対応する所持機材/);
   assert.deepEqual(copy(f.core.state), before);
+});
+
+const nodeText = node => [node.textContent || "", ...node.children.map(nodeText)].join(" ");
+const previewRows = f => {
+  const preview = f.control("setup-preview");
+  const nodes = descendants(preview).filter(node => ["dt", "dd"].includes(node.tag));
+  return Object.fromEntries(nodes.filter((_, i) => i % 2 === 0).map((node, i) => [node.textContent, nodes[i * 2 + 1].textContent]));
+};
+
+await check("#2500 one-set preview follows bowl, HMD, foil and coal without committing hovered candidates", async () => {
+  const f = await fixture(); f.core.newGame();
+  f.core.state.flags._coal_cube_learned = true;
+  f.core.state.owned = ["silicone_bowl", "kumogama_phunnel", "lotos_hagal", "lotos_plus", "flat_charcoal", "cube_charcoal", "dense_flat_charcoal"];
+  const before = copy(f.core.state);
+  // Old per-coal/layout choices must not override the selected type's three-coal preview.
+  const cs = { mode: "practice", equip: { ...before.equip }, place: "four", coalTypes: Array(4).fill("cube_charcoal") };
+  const pending = f.steps.stepSetup(cs); await flush();
+  assert.equal(previewRows(f)["葉を詰める量"], "最大12g");
+  assert.match(previewRows(f)["適温の合わせやすさ"], /×1\.04/);
+  assert.match(previewRows(f)["炭3個の加熱"], /×0\.90/);
+  assert.match(previewRows(f)["熱を入れる吸い"], /×0\.94/);
+  f.control("opt-kumogama_phunnel").handlers.focus();
+  assert.equal(previewRows(f)["葉を詰める量"], "最大16g");
+  assert.equal(cs.equip.bowl, before.equip.bowl);
+  f.control("setup-compare").click();
+  assert.equal(f.modals.at(-1).options[0].test, "setup-compare-close");
+  assert.equal(f.modals.at(-1).body.children.length, 2);
+  f.control("opt-kumogama_phunnel").click(); await flush();
+  assert.equal(previewRows(f)["葉を詰める量"], "最大16g");
+  f.control("opt-lotos_plus").handlers.pointerenter();
+  assert.match(previewRows(f)["適温の合わせやすさ"], /×1\.19/); // 1.10 * 1.04 * 1.04
+  assert.equal(previewRows(f)["熱の安定"], "仕上がり補正 +4");
+  f.control("opt-lotos_plus").click(); await flush();
+  assert.match(previewRows(f)["アルミの工程"], /^なし/);
+  f.control("opt-true").handlers.focus();
+  assert.match(previewRows(f)["アルミの工程"], /^あり/);
+  assert.equal(cs.foilOptIn, undefined);
+  f.control("opt-true").click(); await flush();
+  assert.match(previewRows(f)["アルミの工程"], /^あり/);
+  f.control("opt-cube_charcoal").handlers.pointerenter();
+  assert.match(previewRows(f)["炭3個の加熱"], /×1\.13/);
+  assert.match(previewRows(f)["熱を入れる吸い"], /×1\.00/);
+  assert.match(previewRows(f)["適温の合わせやすさ"], /×1\.08/); // 1.10 * 1.04 * .94
+  assert.match(nodeText(f.control("setup-preview")), /キューブ/);
+  assert.equal(cs.equip.charcoal, "flat_charcoal");
+  assert.deepEqual(copy(f.core.state), before);
+  f.control("opt-dense_flat_charcoal").handlers.focus();
+  assert.match(previewRows(f)["適温の合わせやすさ"], /×1\.21/);
+  assert.match(previewRows(f)["炭3個の加熱"], /×0\.90/);
+  f.control("setup-compare").click();
+  assert.equal(f.modals.at(-1).body.children.length, 3);
+  f.control("opt-cube_charcoal").click(); await pending;
+  assert.deepEqual(copy(f.core.state.equip), { ...before.equip, bowl: "kumogama_phunnel", hms: "lotos_plus", charcoal: "cube_charcoal" });
+  assert.deepEqual(copy(f.core.state.owned), before.owned);
+  assert.equal(cs.foilOptIn, true);
 });
 
 console.log(`appearance selection: ${cases.length} cases passed (DOM/Storage fixture; no renderer or physical-fit QA)`);

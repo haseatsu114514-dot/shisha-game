@@ -26,6 +26,7 @@ import { FOIL_FREE_HMS } from "./holes_logic.js";
 import { mixPercents } from "./mix-ratio.js";
 import { makerMixProfile } from "./temperature-model.js";
 import { flavorFeatureCard, flavorTags, mixForecastCard, equipmentUse, equipmentGuide } from "./flavor-guide.js";
+import { equipmentPreview } from "./equipment-preview.js";
 
 // 章ごとの課題。第1章レモン・第2章の新作苺・第3章ドバジ チョコレート。
 // オーナー決定（2026-10-28 13:29）：課題フレーバーは大会が当日 supply で用意し、本番中は無制限に使える。
@@ -64,12 +65,14 @@ const LESSON = {
   steam: "スミ「分と秒で時間を決めてスタートだ。秒は10秒ずつ動くぞ」",
 };
 
-function choose(panel, options, { cols = 2 } = {}) {
+function choose(panel, options, { cols = 2, onPreview } = {}) {
   return new Promise((resolve) => {
     const grid = el(`div.opt-grid.cols-${cols}`, options.map((o) =>
       el(`button.opt${o.disabled ? ".off" : ""}`, {
         disabled: o.disabled || null,
         dataset: { test: `opt-${o.value}` },
+        onfocus: () => { if (!o.disabled) onPreview?.(o.value); },
+        onpointerenter: () => { if (!o.disabled) onPreview?.(o.value); },
         onclick: () => { SE.select(); resolve(o.value); },
       }, [
         o.badge ? el("span.opt-badge", { text: o.badge }) : null,
@@ -114,6 +117,8 @@ export async function stepSetup(cs) {
     const currentId = state.equip[type];
     const categoryHint = { bowl: "ハガルは葉を詰める器。使う量と狙う味で選ぼう", hms: "HMDは炭を載せる道具。温度の合わせやすさを見比べよう", charcoal: "同じ3個でも熱の入り方が変わる。狙う温度で選ぼう" };
     const panel = stepPanel("setup", `機材 ${label}`, lessonHint(cs, "setup", categoryHint[type]));
+    const preview = el("div", [equipmentPreview(cs)]);
+    panel.append(preview);
     panel.append(el("button.btn.small.equipment-compare", { type: "button", text: "性能を見比べる", dataset: { test: "setup-compare" },
       onclick: () => modal({ title: `${label}を見比べる`, className: "flavor-guide-dialog", body: el("div.equipment-compare-list", owned.map(item =>
         el("section", [el("b", { text: item.name }), equipmentGuide(item, currentId)]))),
@@ -128,7 +133,7 @@ export async function stepSetup(cs) {
         disabled, badge: disabled ? (type === "bowl" ? "対応するHMDを持っていません" : "素焼き非対応") : e.id === currentId ? "装備中" : null,
         auto: !disabled && e.id === currentId,
       };
-    }));
+    }), { onPreview: id => preview.replaceChildren(equipmentPreview({ ...cs, equip: { ...cs.equip, [type]: id } }, { candidate: true })) });
     // ロートスを選んだら、アルミを付けるか選べる（既定はアルミなし／#1107 B2）。
     if (type === "hms" && FOIL_FREE_HMS.includes(cs.equip.hms) && cs.mode !== "tutorial" && cs.mode !== "drill") await chooseFoilOption(cs);
   }
@@ -140,10 +145,12 @@ export async function stepSetup(cs) {
 /** ロートスHMDで、アルミを付けて作るか選ぶ。既定はアルミなし（穴あけを飛ばす）。 */
 async function chooseFoilOption(cs) {
   const panel = stepPanel("setup", "機材 アルミ", lessonHint(cs, "setup", "ロートスはアルミなしで使える。アルミを足すと穴あけの工程が増える"));
+  const preview = el("div", [equipmentPreview(cs)]);
+  panel.append(preview);
   cs.foilOptIn = await choose(panel, [
     { value: false, label: "アルミなしで作る", desc: "ロートスに直接のせる。穴あけはしない", auto: !cs.foilOptIn },
     { value: true, label: "アルミを付けて作る", desc: "アルミを張って穴を開ける。熱の入り方を自分で決める", auto: !!cs.foilOptIn },
-  ]);
+  ], { onPreview: foilOptIn => preview.replaceChildren(equipmentPreview({ ...cs, foilOptIn }, { candidate: true })) });
 }
 
 // ---------------------------------------------------------------- ミックス
