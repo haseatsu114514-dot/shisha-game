@@ -237,6 +237,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       setPhase(kind);
       caption.textContent = kind === "practice" ? TUTORIAL.move : "";
       buildHud();
+      updateHud(); // 開始直後から相手名・速度・BOOSTを表示する。最初の描画フレームを待たない。
       last = performance.now();
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(tick);
