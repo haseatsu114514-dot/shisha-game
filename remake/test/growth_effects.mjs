@@ -409,4 +409,17 @@ const withoutGrape=boundaryVote({id:"without",final:82},1,{p:0}),withGrape=bound
 assert.equal(withoutGrape.rank,2);assert.equal(withGrape.rank,1,"既存の総票・同点規則のまま境界例では勝敗が変わる");
 assert.equal(withoutGrape.votes.hajime,9);assert.equal(withGrape.votes.hajime,11);
 console.log("[grape lesson] PASS: family/unique-most, learned/off/failure, +2 once/cap/SAVE/LOAD, existing C3 votes unchanged rules",JSON.stringify(voteImpact));
+{
+ // #2213・オーナー判断 2026-11-04 案1: K11「火の番」は、熱管理の交換でトングで持ってくる焼き炭の焼け具合を1段よくする。
+ const { replacementCoals, FIRE_KEEPER_STEP, HEAT_GRADES } = await import("../js/craft/heat_logic.js");
+ assert.deepEqual(Object.keys(FIRE_KEEPER_STEP).sort(), Object.keys(HEAT_GRADES).sort(), "全ての焼け具合に1段上が決まっている");
+ assert.deepEqual(FIRE_KEEPER_STEP, { raw:"early", early:"pre", pre:"just", just:"just", hot:"just", over:"hot" });
+ const rank = g => HEAT_GRADES[g].hp + HEAT_GRADES[g].hs;
+ for (const [from, to] of Object.entries(FIRE_KEEPER_STEP)) assert(rank(to) >= rank(from), `${from}→${to}: 熱の戻り・持ちが悪くならない`);
+ assert.deepEqual(replacementCoals(["pre","over","just"], 4), { batch:["pre","over","just"], picks:["pre","over","just","pre"] }, "K11なしは最初の炭焼きそのまま");
+ assert.deepEqual(replacementCoals(["pre","over","just"], 2, { fireKeeper:true }), { batch:["just","hot","just"], picks:["just","hot"] }, "K11ありは1段だけ上がる（二重に上がらない）");
+ assert.deepEqual(replacementCoals(undefined, 2, { fireKeeper:true }), { batch:null, picks:[] }, "焼いた記録が無い台は標準の焼き炭のまま");
+ assert.equal(effects.SKILL_TUNING.coalReplacement, undefined, "旧効果（交換の炭焼きのジャスト幅×1.2）は残さない");
+ console.log("[K11 fire keeper] PASS: tong-fetched coals step one grade toward just, no double step, standard coals without a record");
+}
 growth.setGrowthPreview(false);

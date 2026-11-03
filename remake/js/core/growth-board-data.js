@@ -152,7 +152,7 @@ export const SKILLS = [
   { id: "K06", cell: "2,-1", board: "sense", ring: 1, cost: 4, glyph: "波", name: "二枚目のリフレッシュ", scene: "蒸らし", text: "蒸らしのリフレッシュを2回使える（2回目は範囲が半分）" },
   { id: "K10", cell: "6,-1", board: "sense", ring: 3, cost: 5, glyph: "目", name: "審査員の目", scene: "大会", text: "大会の工程ごとに、審査員の受け止めが肌で分かる" },
   { id: "K16", cell: "-2,-4", board: "sense", ring: 3, cost: 5, glyph: "勢", name: "勝負勘", scene: "大会", text: "大会で前の工程が会心・ジャストだと、次の工程の点が少し上振れする" },
-  { id: "K11", cell: "6,-3", board: "sense", ring: 4, cost: 7, glyph: "火", name: "火の番", scene: "熱管理", text: "熱管理で炭を替えるときのジャストの幅が広がる" },
+  { id: "K11", cell: "6,-3", board: "sense", ring: 4, cost: 7, glyph: "火", name: "火の番", scene: "熱管理", text: "熱管理で炭を替えるとき、トングで持ってくる焼き炭が1段よく焼けている" },
   { id: "K14", cell: "5,-7", board: "sense", ring: 4, cost: 7, glyph: "炭", name: "炭の声", scene: "蒸らし", text: "蒸らし予測で読める揺らぎが増える" },
   // 理論（知識・熟練度・作りの選択肢）
   { id: "K01", cell: "3,1", board: "wisdom", ring: 1, cost: 4, glyph: "段", name: "段取り八分", scene: "穴あけ", text: "穴あけの制限時間が少し延びる" },

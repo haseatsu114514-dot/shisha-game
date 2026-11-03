@@ -19,6 +19,7 @@ import { SE, startBubbling } from "../core/audio.js";
 import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, setBenchDraw, failBench, setBenchLeaf, dockBenchLeaf, strainBench, scoreStep, waitBenchReady } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys } from "./common.js";
 import { HEAT_GRADES } from "./heat.js";
+import { replacementCoals } from "./heat_logic.js";
 
 import { craftConditions, heatDelta, pullResult, isIdealTemperature, isOptimalTemperature, temperatureBands, visualTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
@@ -455,9 +456,11 @@ async function pullGame(cs, mode) {
     }
     // 交換する炭は、最初の炭焼きのときに一緒に焼いておいたもの。炭焼きは挟まず、トングで持ってきて入れ替える（#2213）。
     // 焼け具合は最初の炭焼きと同じ。焼いた記録が無い台（スミさんが用意した一台など）は標準の焼き炭として係数を掛けない。
-    const batch = cs.heat?.picks?.length ? cs.heat.picks : null;
-    const picks = batch ? Array.from({ length: coals }, (_, i) => batch[i % batch.length]) : [];
-    choice.replaceChildren(el("p.care-coals-lead", { dataset: { test: "care-tong" }, text: `焼いておいた炭を${coals}個、トングで持ってくる` }));
+    // K11「火の番」は、持ってくる炭の焼け具合を1段よくする（チュートリアルでは効かない。オーナー判断 2026-11-04）。
+    const fireKeeper = !!cs.heat?.picks?.length && cs.mode !== "tutorial" && growthSkill(state, "K11");
+    const { batch, picks } = replacementCoals(cs.heat?.picks, coals, { fireKeeper });
+    choice.replaceChildren(el("p.care-coals-lead", { dataset: { test: "care-tong", fireKeeper: fireKeeper ? "1" : "" },
+      text: `焼いておいた炭を${coals}個、トングで持ってくる${fireKeeper ? "。火の番の目で、焼けのいいのを選んだ" : ""}` }));
     SE.coalSnip();
     await sleep(autoSkill() ? 40 : 700);
     if(state!==owner||!play.isConnected){abandoned=true;choice.remove();choosing=false;return;}
