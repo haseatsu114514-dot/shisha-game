@@ -373,7 +373,7 @@ Issue・PR整理の報告で判断を求めた5点への回答。オーナー「
 |---|---|---|
 | CL07 | ✅ 本PR | 旧設定資料集（`docs/archive/setting_book/`・`setting_reference.html`・生成スクリプト）を削除。みんと「スナック＆シーシャのオーナーママ」「ピンクのツインテール」の出どころ。参照していた章予告・コメント・資料のリンクは `brand/story_and_structure.md` へ |
 | CL08 | ✅ 本PR | 改稿前の旧台本 `data/dialogue/_legacy/`、`data/_legacy/`、案内だけの `data/forced_events.json` を削除 |
-| CL09 | ✅ 本PR | 読み込まれない旧データを削除: `data/secret_recipes.json`（旧採点ボーナス・存在しないバッドエンド）、`data/dialogue/shop_event.json`、`data/dialogue/dreams.json` と夢シーン構想、未使用の `mystery_girl`、没キャラのかこ・りら（`flavors.json` の説明文から名前も外す） |
+| CL09 | ✅ 本PR | 読み込まれない旧データを削除: `data/secret_recipes.json`（旧採点ボーナス・存在しないバッドエンド）、`data/dialogue/shop_event.json`、`data/dialogue/dreams.json` と夢シーン構想、使われない旧キャラのデータ（`flavors.json` の説明文の名前も含む） |
 | CL10 | ✅ 本PR | 古い資料を削除: 素材進捗表CSV（旧名入り）、完了済みの登場カット配置案、重複した主題メモ、旧モブ立ち絵の控え、ギャラリー仕様に混入した旧 master_spec の冒頭、参照されていない archive の旧メモ12本。`relationship_and_ch1_preparation_notes_20261011.md` は未実装の要望を含むため残す |
 | CL11 | ✅ 本PR | **チャコール博士の外見は立ち絵（乱れた茶髪）が正**。設定文（`characters.json`・`character_profiles.md`）と第1章の初対面の地の文を「乱れた茶髪・黒縁の四角いメガネ・ネクタイなしの白シャツ・染みのある白衣」へ統一。旧本名「炭場 創」は使わない。一人称・持ちネタは2026-11-01決定（基本「私」、「それ作ったの、俺だもん」だけ俺）へ |
 | CL12 | ✅ 本PR | 「マスター・フーカ」は第4章の王煙楼の旧名。用語集のナイトサイドの説明で問屋街の窓口として出ていたのを、凛の代理店デスクへ直す（→ CL17 で訂正: マスターフーカーは旧名ではなく王煙楼の称号。問屋街の窓口から外したのはそのまま） |
