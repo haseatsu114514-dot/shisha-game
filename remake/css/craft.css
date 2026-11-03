@@ -103,7 +103,7 @@
 .bench-demo-arrow[hidden] { display: none; }
 @keyframes bench-demo-bob { from { margin-top: -5px; } to { margin-top: 5px; } }
 .bench-demo-caption { min-height: 3em; margin: 10px 0; color: #f2e9dc; font-size: 17px; line-height: 1.5; }
-.bench-demo-status, .bench-demo-instructions { color: #f2e9dc; font-size: 16px; line-height: 1.6; }
+.bench-demo-status, .bench-demo-instructions { color: inherit; font-size: 16px; line-height: 1.6; }
 .bench-demo-status { margin: 10px 0; }
 .bench-demo-instructions { margin: 10px 0 14px; padding: 10px 14px; border: 1px solid #a895b6; border-radius: 8px; }
 .bench-demo-instructions summary { cursor: pointer; }

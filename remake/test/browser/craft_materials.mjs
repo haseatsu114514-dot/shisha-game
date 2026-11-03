@@ -283,6 +283,18 @@ await suite("craft-materials", async check => {
       assert.equal(await page.locator(".bench-demo-instructions").evaluate(n => n.open), true);
       const expected = await page.evaluate(async () => (await import("./js/craft/demo.js")).STEP_DEMOS.holes.cues.map(c => c.text));
       assert.deepEqual(await page.locator(".bench-demo-instructions li").allTextContents(), expected);
+      const contrasts = await page.locator(".bench-demo-card").evaluate(card => {
+        const luma = css => css.match(/[\d.]+/g).slice(0, 3).map(Number).map(n => {
+          const c = n / 255; return c <= .04045 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4;
+        }).reduce((sum, c, i) => sum + c * [.2126, .7152, .0722][i], 0);
+        const bg = luma(getComputedStyle(card).backgroundColor);
+        return [...card.querySelectorAll(".bench-demo-status, .bench-demo-instructions summary, .bench-demo-instructions li")].map(n => {
+          const fg = luma(getComputedStyle(n).color);
+          return { text: n.textContent, ratio: (Math.max(fg, bg) + .05) / (Math.min(fg, bg) + .05) };
+        });
+      });
+      assert.equal(contrasts.length, 8);
+      assert(contrasts.every(row => row.ratio >= 4.5), JSON.stringify(contrasts));
       await page.locator(".bench-demo-instructions summary").scrollIntoViewIfNeeded();
       await assertFits(page, ".bench-demo-instructions summary");
       await capture(page, `2447-demo-error-${device}`);
@@ -292,11 +304,14 @@ await suite("craft-materials", async check => {
       assert.equal(await page.locator(".bench-panel").evaluate(n => n.inert), false);
       assert.equal(await page.locator(".bench").getAttribute("data-demo-paused"), null);
       // Reopen through the real help entry; skipping remains available after another error.
-      await click(page, ".bench-demo-link", touch);
+      await click(page, ".bench-guide > summary", touch);
+      await click(page, ".bench-guide .bench-demo-link", touch);
       await sheet.waitFor();
       await click(page, ".bench-demo-skip", touch);
       await sheet.waitFor({ state: "detached" });
       assert.equal(await page.locator(".bench-demo-link").evaluate(n => n === document.activeElement), true);
+      await click(page, '[data-test="bench-guide-close"]', touch);
+      await page.waitForFunction(() => !document.querySelector(".bench-panel").inert);
     }, options);
     await check(`demo-stall-and-interrupt-${device}`, async page => {
       const pending = [];
