@@ -531,7 +531,7 @@ const STEPS_R1 = CRAFT_STEPS.filter(([id]) => !["pull", "care1", "care2"].includ
 // チュートリアルは吸い出し・提供まで同じ作業台で進むため、進捗ヘッダーにも pull を含める（大会R1用の STEPS_R1 とは分ける）。
 export const TUTORIAL_STEPS = CRAFT_STEPS.filter(([id]) => !["setup", "care1", "care2"].includes(id));
 const STEPS_ALL = CRAFT_STEPS;
-// 中間順位の出来栄えは、ある工程の点だけで平均する（ロートスでアルミを飛ばすと穴あけの点が無い）。
+// 中間順位の出来栄えは、ある工程の点だけで平均する（旧仕様でロートスのアルミを飛ばした記録は穴あけの点が無い）。
 const avgScore = (...values) => { const f = values.filter(Number.isFinite); return f.length ? f.reduce((a, b) => a + b, 0) / f.length : 0; };
 
 async function tournamentDay() {

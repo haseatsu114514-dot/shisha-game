@@ -139,12 +139,6 @@
       "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs"]
     },
     {
-      "id": "vent-lid",
-      "title": "Lotos lid vent heat and eligibility",
-      "kind": "quick",
-      "run": ["node remake/test/vent_lid.mjs"]
-    },
-    {
       "id": "water-comfort",
       "title": "Water comfort bands and craft scoring invariants",
       "kind": "quick",
@@ -681,7 +675,7 @@
         "node remake/test/continue_premium.mjs",
         "node --experimental-vm-modules remake/test/craft_keys_focus.mjs",
         "node remake/test/craft_scoring_spec.mjs",
-        "node remake/test/foil_skip.mjs",
+        "node remake/test/hmd_unify.mjs",
         "node remake/test/kuji_balance.mjs",
         "node --experimental-vm-modules remake/test/map_unlock_780.mjs",
         "node --experimental-vm-modules remake/test/stat_growth_balance.mjs",
@@ -1674,12 +1668,12 @@
         "remake/test/browser/worker_scenes.mjs",
         "remake/test/browser/craft_readiness.mjs",
         "remake/test/foil_holes.mjs",
-        "remake/test/browser/foil_skip.mjs"
+        "remake/test/browser/hmd_unify.mjs"
       ],
       "run": [
         "node remake/test/browser/worker_scenes.mjs",
         "node remake/test/browser/craft_readiness.mjs",
-        "node remake/test/browser/foil_skip.mjs"
+        "node remake/test/browser/hmd_unify.mjs"
       ],
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/craft-scenes",

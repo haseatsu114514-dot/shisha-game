@@ -218,32 +218,32 @@ export const EQUIP_THERMAL_SPECS = Object.freeze({
   suyaki_hagal: Object.freeze({
     id: "suyaki_hagal", type: "bowl", capacity: 20, widthFactor: 0.90,
     warmup: "ゆっくり（大容量20g）", hold: "最大（味+32・持続+24）",
-    fitNote: "タヌキッシュリッド装着不可（ロートスHMD／アマバースト等を使用）",
+    fitNote: "全HMD対応",
     summary: "伝統的な素焼き（クレイトップ）。適温帯は-10%狭まり温まりも遅いが、芯まで温まると圧倒的な味の深みが出る。",
   }),
   lotos_hagal: Object.freeze({
     id: "lotos_hagal", type: "hms", widthFactor: 1.00, stabilityBonus: 2,
     warmup: "じんわり（標準）", response: "素直（基準）", fitNote: "全ボウル対応",
-    summary: "じんわり温まる標準HMD。蓋の通気で熱のこもり方を変えられる。",
+    summary: "じんわり温まる標準HMD。癖が少なく、熱の合わせ方を覚える基準になる。",
   }),
   lotos_plus: Object.freeze({
     id: "lotos_plus", type: "hms", widthFactor: 1.04, stabilityBonus: 4,
-    warmup: "じんわり（標準）", response: "素直（ロートスと同じ）", fitNote: "全ボウル対応・アルミ不要",
-    summary: "アルミを張らずに使うロートスの上位モデル。適温帯が+4%・熱安定が+2伸びる。",
+    warmup: "じんわり（標準）", response: "素直（ロートスと同じ）", fitNote: "全ボウル対応",
+    summary: "厚い蓋で熱がぶれにくいロートスの上位モデル。適温帯が+4%・熱安定が+2伸びる。",
   }),
   tanukish_lid: Object.freeze({
     id: "tanukish_lid", type: "hms", widthFactor: 1.08, stabilityBonus: 5,
-    warmup: "穏やか", response: "マイルド（熱が上がりすぎない）", fitNote: "12g/15gボウル専用（素焼き20g非対応）",
+    warmup: "穏やか", response: "マイルド（熱が上がりすぎない）", fitNote: "全ボウル対応",
     summary: "熱当たりが柔らかく、適温帯が+8%・熱安定が+3伸びる。吸い出しで通り過ぎにくく初心者にも扱いやすい。",
   }),
   winkwink_hagal: Object.freeze({
     id: "winkwink_hagal", type: "hms", widthFactor: 1.05, stabilityBonus: 4,
-    warmup: "ややゆっくり", response: "マイルド（蓄熱重視）", fitNote: "素焼き20g含む全ボウル対応",
-    summary: "素焼きの大口径にも載る大型タヌキッシュ。適温帯+5%・高い蓄熱性で大容量ボウルを安定させる。",
+    warmup: "ややゆっくり", response: "マイルド（蓄熱重視）", fitNote: "全ボウル対応",
+    summary: "大口径の大型タヌキッシュ。適温帯+5%・高い蓄熱性で大容量ボウルを安定させる。",
   }),
   amaburst_hms: Object.freeze({
     id: "amaburst_hms", type: "hms", widthFactor: 0.88, stabilityBonus: 0,
-    warmup: "非常に早い（高火力）", response: "鋭い（1口で強く上がる）", fitNote: "素焼き20g含む全ボウル対応",
+    warmup: "非常に早い（高火力）", response: "鋭い（1口で強く上がる）", fitNote: "全ボウル対応",
     summary: "直炭に近い高火力HMD。適温帯は-12%狭まるが、温まりにくい素焼き20gや高耐熱ミックスを一気に立ち上げられる。",
   }),
   flat_charcoal: Object.freeze({

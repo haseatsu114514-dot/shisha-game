@@ -185,18 +185,18 @@ await check("catalog failure preserves state; manual and auto setup never reques
   }
 });
 
-await check("#1927 sold Lotos: incompatible bowls stay disabled and pending setup preserves saved equipment", async () => {
+await check("#1927/#2213 sold Lotos: every bowl fits Tanukish and pending setup preserves saved equipment", async () => {
   for (const auto of [false, true]) {
     const f = await fixture(); f.core.newGame(); f.auto(auto);
     f.core.state.owned = ["silicone_bowl", "suyaki_hagal", "tanukish_lid", "flat_charcoal"];
     f.core.state.equip.hms = "tanukish_lid";
     const before = copy(f.core.state), cs = { mode: "practice", equip: { ...before.equip } };
     const pending = f.steps.stepSetup(cs); await flush();
-    assert.equal(f.control("opt-suyaki_hagal").attrs.disabled, "");
-    f.control("opt-suyaki_hagal").click(); await flush();
-    assert.deepEqual(copy(f.core.state), before, "blocked/pending input must not commit equipment");
-    if (!auto) f.control("opt-silicone_bowl").click();
+    assert.equal("disabled" in f.control("opt-suyaki_hagal").attrs, false, "HMDの装着条件は全HMD共通（素焼きにもタヌキッシュ）");
+    assert.deepEqual(copy(f.core.state), before, "pending input must not commit equipment");
+    if (!auto) f.control("opt-suyaki_hagal").click();
     await pending;
+    assert.equal(cs.equip.bowl, auto ? before.equip.bowl : "suyaki_hagal");
     assert.equal(cs.equip.hms, "tanukish_lid");
     for (const id of Object.values(cs.equip)) assert(f.core.state.owned.includes(id), id);
     assert.deepEqual(copy(f.core.state.owned), before.owned);

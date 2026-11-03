@@ -32,7 +32,7 @@
 | 工程の順番（準備→配合→パッキング→水入れ→穴あけ→炭→蒸らし→吸い出し→提供→調整2回→審査、5工程各20%） | `docs/master_spec.md` 冒頭の最新節と「本書の読み方」、`remake/README.md`「第1章の流れ」 |
 | 蒸らしタイマー（分1分・秒10秒刻み、上限10分、00:00では開始不可、通常5〜8分） | `remake/README.md`、`data/glossary.json`、`docs/owner_requests.md` GP21〜26 |
 | 水入れ（開始水量0から適正ラインまで注ぐ） | `remake/js/craft/water-pour.js`、`docs/owner_requests.md` #1081 E01 |
-| 穴あけテンプレート（外12・中8・内4。ロートスHMDはアルミを張らず穴工程を飛ばす） | `remake/js/craft/holes_logic.js`、`holes_templates.js` |
+| 穴あけテンプレート（外12・中8・内4。どのHMDでも同じ穴あけ工程を通る。#2213） | `remake/js/craft/holes_logic.js`、`holes_templates.js` |
 | 炭（フラット／キューブ、三角3個が基本、4個・混合は解放フラグ） | `data/equipment.json`、`docs/gameplay_agent_reference.md`「炭の配置」 |
 | 温度帯の表情・熟練度・適温の見せ方（陽炎・虹背景は過熱側の演出） | `docs/master_spec.md` 2026-10-26 の節、`remake/js/craft/thermal.js`、`remake/js/craft/temperature-model.js` |
 | 機材の容量・価格・一言説明（シリコン12g／80beat 15g／素焼き20g、HMD、炭、パイプ、専用ハガル） | `data/equipment.json` |

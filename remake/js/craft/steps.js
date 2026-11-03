@@ -22,7 +22,6 @@ import { cafeNoted } from "../daily/cafe-ideas.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK, applyCoalTraining } from "./coals.js";
 import { buildMixTemperatureGauge } from "./thermometer.js";
 import { flavorFamilyGrams } from "./score.js";
-import { FOIL_FREE_HMS } from "./holes_logic.js";
 import { mixPercents } from "./mix-ratio.js";
 import { makerMixProfile } from "./temperature-model.js";
 import { flavorFeatureCard, flavorTags, mixForecastCard, equipmentUse, equipmentGuide } from "./flavor-guide.js";
@@ -100,15 +99,11 @@ export async function stepSetup(cs) {
   for (const [type, label] of types) {
     if (type === "charcoal" && !trained) continue;
     const owned = state.owned.map((id) => DB.equipById[id]).filter((e) => e && e.type === type);
-    const suyaki = type === "hms" && isSuyakiBowl(cs.equip.bowl);
-    const compatible = (e) => type === "bowl"
-      ? state.owned.some((id) => DB.equipById[id]?.type === "hms" && !(isSuyakiBowl(e.id) && id === "tanukish_lid"))
-      : !(suyaki && e.id === "tanukish_lid");
-    const selectable = owned.filter(compatible);
+    // HMDの装着条件は全HMD共通（#2213）。どのハガルにもどのHMDも載せられる。
     // 所持品だけでは制作できない旧セーブでも、未所持機材を補って確定しない。
-    if (!selectable.length) throw new Error(`${label}に対応する所持機材がありません`);
+    if (!owned.length) throw new Error(`${label}に対応する所持機材がありません`);
     if (owned.length <= 1) {
-      cs.equip[type] = selectable[0].id;
+      cs.equip[type] = owned[0].id;
       continue;
     }
     const currentId = state.equip[type];
@@ -120,30 +115,18 @@ export async function stepSetup(cs) {
       options: [{ label: "選択に戻る", primary: true, test: "setup-compare-close" }] }),
     }));
     cs.equip[type] = await choose(panel, owned.map((e) => {
-      const disabled = !compatible(e);
       const guide = equipmentUse(e);
       return {
         value: e.id, label: e.name,
         desc: `${guide.use}${guide.caution ? ` ／ 注意：${guide.caution}` : ""}`,
-        disabled, badge: disabled ? (type === "bowl" ? "対応するHMDを持っていません" : "素焼き非対応") : e.id === currentId ? "装備中" : null,
-        auto: !disabled && e.id === currentId,
+        badge: e.id === currentId ? "装備中" : null,
+        auto: e.id === currentId,
       };
     }));
-    // ロートスを選んだら、アルミを付けるか選べる（既定はアルミなし／#1107 B2）。
-    if (type === "hms" && FOIL_FREE_HMS.includes(cs.equip.hms) && cs.mode !== "tutorial" && cs.mode !== "drill") await chooseFoilOption(cs);
   }
   // 制作中の制限で旧セーブの装備・所有品を消さない。
   state.equip = { ...cs.equip, ...(!trained ? { charcoal: state.equip.charcoal } : {}) };
   refreshBench();
-}
-
-/** ロートスHMDで、アルミを付けて作るか選ぶ。既定はアルミなし（穴あけを飛ばす）。 */
-async function chooseFoilOption(cs) {
-  const panel = stepPanel("setup", "機材 アルミ", lessonHint(cs, "setup", "ロートスはアルミなしで使える。アルミを足すと穴あけの工程が増える"));
-  cs.foilOptIn = await choose(panel, [
-    { value: false, label: "アルミなしで作る", desc: "ロートスに直接のせる。穴あけはしない", auto: !cs.foilOptIn },
-    { value: true, label: "アルミを付けて作る", desc: "アルミを張って穴を開ける。熱の入り方を自分で決める", auto: !!cs.foilOptIn },
-  ]);
 }
 
 // ---------------------------------------------------------------- ミックス
@@ -563,18 +546,6 @@ export async function stepPack(cs) {
   });
   SE.stamp();
   refreshBench();
-}
-
-export async function stepVent(cs) {
-  await waitBenchReady(cs, "holes");
-  const first = ["rehearsal", "practice", "tournament"].includes(cs.mode) && !state.flags._lotos_vent_hint;
-  const hint = first ? "スミ「迷ったら通気は開けとけ。閉じれば熱がこもって、待ちも一口も強くなる」" : "";
-  const panel = stepPanel("holes", "蓋の通気", hint, { brief: "蓋の通気を選ぶ" });
-  if (first) state.flags._lotos_vent_hint = true;
-  cs.vent = await choose(panel, [
-    { value: "open", label: "通気を開ける（標準）", auto: true },
-    { value: "closed", label: "通気を閉じる（熱がこもる）" },
-  ]);
 }
 
 export async function stepPlace(cs) {

@@ -13,9 +13,8 @@ import { state as gameState } from "../core/state.js";
 import { growthSkill, settleGrowthPhase, SKILL_TUNING } from "../core/growth-effects.js";
 import { artImg } from "./art.js";
 
-import { RINGS, circularAngleDistance, templateComplete, evaluateFoil, usesFoil, skippedFoilResult } from "./holes_logic.js";
+import { RINGS, circularAngleDistance, templateComplete, evaluateFoil } from "./holes_logic.js";
 import { HOLE_TEMPLATES, DEFAULT_HOLE_TEMPLATE, availableHoleTemplates, ringsForTemplate, templateCountsLabel } from "./holes_templates.js";
-import { stepVent } from "./steps.js";
 export { RINGS } from "./holes_logic.js";
 const TIME_LIMIT = 32;
 const DEG = Math.PI / 180;
@@ -82,13 +81,6 @@ async function chooseTemplate(panel, cs) {
 }
 
 export async function runHoles(cs) {
-  // ロートスHMDはアルミなし。穴あけ工程を飛ばし、中立な穴あけ相当値だけ残して次の工程へ。
-  if (!usesFoil(cs)) {
-    await stepVent(cs);
-    cs.holes = skippedFoilResult(cs.vent);
-    refreshBench();
-    return;
-  }
   await waitBenchReady(cs, "holes");
   const tutorial = cs.mode === "tutorial";
   const panel = stepPanel("holes", "アルミ穴あけ", "配置図を見てテンプレートを選ぶ。開始してから、光が目印に重なった瞬間にタップ（Space）", { brief: "穴の配置を選んでから、穴あけを始める" });
