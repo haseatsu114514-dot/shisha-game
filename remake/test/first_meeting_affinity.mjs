@@ -104,6 +104,43 @@ await check('Samechan reuses existing first-encounter guarantee without another 
  assert.equal(await f.samechan.playSamechanEncounter(),true);assert.equal(f.stats.affinityLevel('samechan'),1);
  const after=JSON.stringify(s);assert.equal(await f.samechan.playSamechanEncounter(),false);assert.equal(JSON.stringify(s),after);
 });
+// Current samechan ID only. The retired-name migration was removed in #2469.
+// Low-level LIME without a reply callback reports integer gains; reply feedback also sees carry.
+const close = (actual, expected) => assert(Math.abs(actual-expected)<1e-8, `${actual} != ${expected}`);
+const heartEvents = f => f.events.filter(event => event.type === 'affinity-gain');
+await check('Samechan LIME without onGain stays quiet until the first integer heart gain', async f => {
+ let s=f.fresh();s.chapter=2;s.affinity.samechan=8;
+ for(let i=1;i<=4;i++){
+  assert.equal(f.stats.gainAffinity('samechan',1,{source:'lime'}),0);
+  assert.equal(s.affinity.samechan,8);close(s.affinityCarry.samechan,i*.2125);
+  f.tick();assert.equal(heartEvents(f).length,0,'carry alone must not queue a heart card');
+ }
+ assert.equal(f.stats.gainAffinity('samechan',1,{source:'lime'}),1);
+ assert.equal(s.affinity.samechan,9);close(s.affinityCarry.samechan,.0625);
+ assert.equal(heartEvents(f).length,0,'integer gain uses the normal notification batch');
+ f.tick();assert.deepEqual(clone(heartEvents(f).map(event=>event.payload)),[
+  {id:'samechan',level:1,levelUp:true,prevPts:8,pts:9},
+ ]);
+ f.tick();assert.equal(heartEvents(f).length,1,'flushing twice cannot repeat the notification');
+});
+await check('Samechan LIME onGain retains fractional feedback across SAVE/LOAD without heart cards', async f => {
+ let s=f.fresh();s.chapter=2;s.affinity.samechan=8;
+ const deltas=[],opts={source:'lime',onGain:delta=>deltas.push(delta)};
+ for(let i=1;i<=5;i++){
+  assert.equal(f.stats.gainAffinity('samechan',1,opts),i<5?0:1);
+  assert.equal(deltas.length,i);close(deltas.at(-1),.2125);
+  // Flush before LOAD too: changing owner must not hide an incorrectly queued duplicate card.
+  f.tick();assert.equal(heartEvents(f).length,0,'reply feedback replaces the heart card');
+  s=f.roundTrip();
+  assert.equal(s.affinity.samechan,i<5?8:9);
+  close(s.affinityCarry.samechan,i*.2125-(i<5?0:1));
+  f.tick();assert.equal(deltas.length,i,'LOAD cannot replay reply feedback');
+  assert.equal(heartEvents(f).length,0);
+ }
+ close(deltas.reduce((sum,delta)=>sum+delta,0),1.0625);
+ assert.equal(s.story.samechan||0,0,'numeric progress does not read an introduction or story');
+ assert.equal(s.flags._samechan_first_encounter,undefined);
+});
 // The initial VN commit is real; only the unrelated recruitment UI is a controlled deferred port.
 for (const route of ['ordinary','hiyori']) for (const interruption of ['abort','load']) {
  await check(`${route} completed first VN keeps heart floor across pending recruitment ${interruption}`,async f=>{
