@@ -280,6 +280,24 @@
       ]
     },
     {
+      "id": "growth-board-denominator",
+      "title": "Growth board, status and menu share one stat denominator statTotal (#2444)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/growth-board.js",
+        "remake/js/daily/growth-board-screen.js",
+        "remake/js/daily/status.js",
+        "remake/js/daily/menu.js",
+        "remake/test/browser/growth_board_denominator.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/growth_board_denominator.mjs"
+      ]
+    },
+    {
       "id": "station-j01",
       "title": "Station availability, layout and save/load",
       "kind": "browser",
