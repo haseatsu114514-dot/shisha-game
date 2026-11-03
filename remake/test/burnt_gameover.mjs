@@ -96,9 +96,11 @@ try {
     window.__remake.craftTest.auto = 'burn';
     window.__run = ch1.devRehearsal().then(() => { window.__done = true; });
   });
-  // 新規保存には持込在庫がない。旧セーブ救済の仕入れを実操作してから制作へ進む。
-  // 第1章はレモン課題の仕入れ（12g以上）を済ませないと店を出られない（#1018）。1箱でその香りの準備も揃う。
-  await page.locator('[data-test="buy-lemon"]').click();
+  // 新規保存には持込在庫がない。前夜の「大会に持っていく香り」を選んで実際に仕入れてから制作へ進む。
+  // #2213 B08（a5e7e8a22）でレモン立て替えを撤廃し、課題のレモンは大会支給に。前夜はブルーベリー／レモン／
+  // グレープから選ぶ形になり、auto では先頭のブルーベリーが選ばれる。errand の香り（ブルーベリー・12g以上）を
+  // 仕入れないと店を出られないので、1箱（50g）のブルーベリーを買う。
+  await page.locator('[data-test="buy-blueberry"]').click();
   await page.locator('[data-test="shop-checkout"]').click();
   await page.locator('[data-test="shop-leave"]').click();
   await page.waitForFunction(() => window.__done, null, { timeout: 180000 });
