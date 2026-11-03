@@ -283,7 +283,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         return;
       }
       info.replaceChildren(el("div.mi-banner", { text: "駅・行き先を選ぶ" }),
-        el("p.mi-desc", { text: `現在地 ${region?.label || ""} ／ 片道 ${yen(STATION_FARE)} ／ 時間・行動消費なし` }),
+        el("p.mi-desc", { text: `現在地 ${region?.label || ""} ／ どこへでも一律 片道${yen(STATION_FARE)} ／ 時間・行動消費なし` }),
         ...destinations.map(item => el("button.mi-go", { type: "button", text: `${item.label} ／ ${yen(STATION_FARE)}`,
           dataset: { test: `station-destination-${item.id}` }, onclick: () => choose(item) })),
         el("button.mi-go.mi-go-alt", { type: "button", text: "キャンセル", dataset: { test: "station-cancel" }, onclick: cancel }));
@@ -338,7 +338,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) && s.facilityIcon !== false && !logo ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
-        "aria-label": `${caption}${s.cost && !freeGuide(s) ? `・料金 ${yen(s.cost)}` : ""}${av.tag ? `（${av.tag}）` : ""}${hidane > 0 ? `・火種 ${hidane}・内省で灯せる` : badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
+        "aria-label": `${caption}${s.cost && !freeGuide(s) ? `・利用料 ${yen(s.cost)}` : ""}${av.tag ? `（${av.tag}）` : ""}${hidane > 0 ? `・火種 ${hidane}・内省で灯せる` : badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
         onclick: () => (selected === s && av.ok ? go(s) : select(s, btn)),
       }, [
         el("div.pin-visual", [
@@ -350,7 +350,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
           peopleRow(people),
         ]),
         el("div.sub-label", { text: caption }),
-        s.cost && !freeGuide(s) ? el("small.pin-cost", { text: `料金 ${yen(s.cost)}` }) : null,
+        s.cost && !freeGuide(s) ? el("small.pin-cost", { text: `利用料 ${yen(s.cost)}` }) : null,
         av.tag ? el("small.pin-status", { text: av.tag }) : null,
       ]);
       if (facility) {
@@ -373,10 +373,10 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         pins.append(el("button.spot-pin.pin-station", {
           type: "button", style: { left: `${station.x}%`, top: `${station.y}%` },
           dataset: { test: "station-open", spot: "station" },
-          "aria-label": `駅から電車で街を移動する・片道 ${yen(STATION_FARE)}`,
+          "aria-label": `駅から電車で街を移動する・どこへでも一律 片道${yen(STATION_FARE)}`,
           onclick: openStation,
         }, [el("div.pin-visual", [el("div.shield", [el("div.ico", [el("span.pin-symbol", { html: TRAIN_ICON_SVG })])])]),
-          el("div.sub-label", { text: `駅・片道 ${yen(STATION_FARE)}` })]));
+          el("div.sub-label", { text: `駅・一律${yen(STATION_FARE)}` })]));
         markers.append(el("i.ds-map-marker", { dataset: { marker: "station", label: "駅" },
           style: { left: `${station.x}%`, top: `${station.y}%` } }));
       }
