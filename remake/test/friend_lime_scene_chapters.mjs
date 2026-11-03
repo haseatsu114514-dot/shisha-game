@@ -75,7 +75,7 @@ assert.deepEqual(bonds.friendMessages({ sceneChapter: true }), [], "第1・2章�
 }
 
 // #2025: 第3〜4章のヒロインの近況（読むだけ・各2通）。ひより・サメちゃんは第3・4章、
-// 東京で一緒に働くましろは第4章だけ。凛は LM07 の later で既に届く。恋人には届かない。
+// 東京で一緒に働くましろは第4章だけ。くゆりは LM07 の later で既に届く。恋人には届かない。
 {
   const people = DB.casualLime.people;
   for (const id of ["hiyori", "samechan", "mashiro", "rin"]) assert.equal(people[id]?.later?.length, 2, `${id}: 近況は2通`);

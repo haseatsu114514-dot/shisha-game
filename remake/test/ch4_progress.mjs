@@ -520,7 +520,7 @@ console.log("PASS: Chapter 4 runner state keeps the Dubai days, mandatory scenes
   const toEve = save => { save.day = save.flags._ch4.startDay + 12; assert(enterChapterFourEve(save)); return save; };
   const due = save => chapterFourArrivalsDue(save).map(entry => entry.scene);
 
-  // 同行なし・恋人は凛: 凛（恋人版）→ ましろ（友人版）の順。自由行動の間は出さない。
+  // 同行なし・恋人はくゆり: くゆり（恋人版）→ ましろ（友人版）の順。自由行動の間は出さない。
   const save = arrivalSave(["rin"], null);
   assert.deepEqual(save.flags._overseas_companion.supports, ["rin", "mashiro"]);
   assert.deepEqual(chapterFourArrivalsDue(save), [], "No arrival during the Dubai daily days");

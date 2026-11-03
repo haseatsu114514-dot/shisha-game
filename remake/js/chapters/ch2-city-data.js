@@ -63,7 +63,7 @@ export async function loadPreparationDialogues() {
     ...["b", "c", "d"].map(suffix => `remake_ch2_ageha_repeat_${suffix}`)].filter(Boolean);
   if (agehaVisits.length) (files.ch2_ageha_story ||= []).push(...agehaVisits);
   if (STRAWBERRY_TRIAL_IDS.length) (files.ch2_main ||= []).push(...STRAWBERRY_TRIAL_IDS); // まかないの苺の試作（#1650）
-  // 地元の施設の第2章の寄り道（daily/spot-encounters.js）と凛の会話（daily/spots.js の CHAPTER_TALKS）（VOL13）
+  // 地元の施設の第2章の寄り道（daily/spot-encounters.js）とくゆりの会話（daily/spots.js の CHAPTER_TALKS）（VOL13）
   files.ch2_home = [...CH2_HOME_IDS];
   // 全台本を検証してから、接続するIDだけ公開。旧導入・大会結果は日常へ混ぜない。
   const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => {

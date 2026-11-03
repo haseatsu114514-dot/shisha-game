@@ -6,7 +6,7 @@
 参照画像はリポジトリのファイルを、エージェントが自分で読み込んで渡す（オーナーに保存・添付を頼まない）。
 
 - ① 対象の表情の現行PNG `assets/sprites/characters/<id>/chr_<id>_<face>.png`（表情差分では、②の前に合格済みの新しい通常原画 `asset_sources/portraits/<id>-remaster-v2/normal-source.png` も入れ、顔の同一性と頭の大きさの基準にする）
-- ② 南雲 `assets/sprites/characters/nagumo/chr_nagumo_normal.png`（大人の男性の頭身の目標。6.93頭身）。女性（マキ・路上占い師）は、標準枠の女性の凛 `assets/sprites/characters/rin/chr_rin_normal.png`（6.53頭身）を使い、文中の Nagumo / he を Rin / she に直す
+- ② 南雲 `assets/sprites/characters/nagumo/chr_nagumo_normal.png`（大人の男性の頭身の目標。6.93頭身）。女性（マキ・路上占い師）は、標準枠の女性のくゆり `assets/sprites/characters/rin/chr_rin_normal.png`（6.53頭身）を使い、文中の Nagumo / he を Rin / she に直す
 - ③ みんと `assets/sprites/characters/minto/chr_minto_normal.png`・④ あげは `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ## 生成後チェック（1枚ごと）
@@ -97,7 +97,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 2026-11-02 オーナー「推奨のをお願い」で、通常はサイB・零C-v2・マキB・太陽Bに決まった。残りの表情を、この新しい通常と同じ頭の大きさで作る。全表情が合格したら、キャラ単位で組み込む。
 
-参照画像（エージェントが自分で読み込んで渡す）：① 対象の表情の現行PNG `assets/sprites/characters/<id>/chr_<id>_<face>.png` ／ ② 合格した通常の原画 `asset_sources/portraits/<id>-remaster-v2/normal-source.png` ／ ③ 頭身の文脈（男性は南雲、マキは凛）／ ④ みんと ／ ⑤ あげは（画風だけ）。
+参照画像（エージェントが自分で読み込んで渡す）：① 対象の表情の現行PNG `assets/sprites/characters/<id>/chr_<id>_<face>.png` ／ ② 合格した通常の原画 `asset_sources/portraits/<id>-remaster-v2/normal-source.png` ／ ③ 頭身の文脈（男性は南雲、マキはくゆり）／ ④ みんと ／ ⑤ あげは（画風だけ）。
 
 合格の条件：②と同じ頭の大きさ（会話画面で±5%以内。`tools/portrait_metrics.py grid --image` で測る）、①の表情・手・ポーズのまま、髪・手・靴が切れていない。
 

@@ -33,11 +33,11 @@
 
 ![アゲハ3案：ピンクの試香席、買い出しの笑顔、撮影スタジオ](../title-art/heroine-concepts-v2-personality-pixel-20261008/review/ageha.png)
 
-### 凛
+### くゆり
 
-![凛3案：黒い試香室、サンプル、眼鏡とコーヒー](../title-art/heroine-concepts-v2-personality-pixel-20261008/review/rin.png)
+![くゆり3案：黒い試香室、サンプル、眼鏡とコーヒー](../title-art/heroine-concepts-v2-personality-pixel-20261008/review/rin.png)
 
-凛02の葉は茶色寄りに見えるため、採用前に黒いダークリーフへ調整する候補です。絵の保存と採用承認は別に記録しています。
+くゆり02の葉は茶色寄りに見えるため、採用前に黒いダークリーフへ調整する候補です。絵の保存と採用承認は別に記録しています。
 
 ### サメちゃん
 

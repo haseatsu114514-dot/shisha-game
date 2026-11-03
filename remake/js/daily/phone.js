@@ -222,7 +222,7 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (m.id === "lime_outing_minto_1" && !state.flags._minto_identity_revealed) return false;
   // サメちゃんの♥3の外出（#2025）は、本人から路地裏シネマを紹介された後（cinemaDiscovered と同じ条件）にだけ届く。
   if (m.id === "lime_outing_samechan_1" && !(state.chapter >= 2 && state.flags._samechan_cinema_introduced === true)) return false;
-  // 凛の♥3の外出（#2025）は問屋街の豆屋。はじめが地元にいる第1・2章だけ届く。
+  // くゆりの♥3の外出（#2025）は問屋街の豆屋。はじめが地元にいる第1・2章だけ届く。
   if (m.id === "lime_outing_rin_1" && state.chapter > 2) return false;
   // ひよりの♥3の外出（#2025）は第1章の昼だけ。tonariでの再会（スミさんのLIME）の後に届き、夜や締めくくりの前提は増やさない。
   if (m.id === "lime_outing_hiyori_1" && !(state.chapter === 1 && state.flags._hiyori_tonari_return_done)) return false;
@@ -659,7 +659,7 @@ export function actionInviteNeedingReply(spotId, opts = {}, ignoredIds = []) {
   );
   const matching = waiting.find((item) => visitReminderSpot(item.msg) === spotId);
   if (matching) return { item: matching, kind: "venue" };
-  // 買い物や占いへの入場は時間を使わない。凛との会話や終日休養は確定時に判定する。
+  // 買い物や占いへの入場は時間を使わない。くゆりとの会話や終日休養は確定時に判定する。
   if (opts.spendsAction === false) return null;
   // みんとの店頭試飲のような「昼・夜どちらでも返信可」は夜が最後の機会。
   const expiring = waiting.find((item) =>

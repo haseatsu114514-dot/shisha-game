@@ -14,9 +14,9 @@
 | ましろ | [重い一服](mashiro/01-heavy-smoke.png) | [お茶とひと息](mashiro/02-tea-break.png) | [雨上がりの帰り道](mashiro/03-after-rain.png) |
 | みんと | [ぺぱーみんとのお出迎え](minto/01-cafe-welcome.png) | [チェキの瞬間](minto/02-instant-photo.png) | [私服の窓辺](minto/03-private-window.png) |
 | アゲハ | [プロの顔](ageha/01-professional-taste.png) | [買い出しの笑顔](ageha/02-grocery-smile.png) | [モデルのひとコマ](ageha/03-model-moment.png) |
-| 凛 | [試香のひととき](rin/01-night-tasting.png) | [サンプルを選ぶ](rin/02-flavor-samples.png) | [夜更けのコーヒー](rin/03-late-coffee.png) |
+| くゆり | [試香のひととき](rin/01-night-tasting.png) | [サンプルを選ぶ](rin/02-flavor-samples.png) | [夜更けのコーヒー](rin/03-late-coffee.png) |
 
-みんと03は採用済み私服立ち絵を参照した別案。私生活の見せ方は本編の開示順序に従うため、この制作によってタイトルへ先行表示するわけではない。アゲハ01・03は目を開いたプロの表情、02は初遭遇に合う笑顔。凛の試料は細かく刻まれた黒く湿ったダークリーフを指定。
+みんと03は採用済み私服立ち絵を参照した別案。私生活の見せ方は本編の開示順序に従うため、この制作によってタイトルへ先行表示するわけではない。アゲハ01・03は目を開いたプロの表情、02は初遭遇に合う笑顔。くゆりの試料は細かく刻まれた黒く湿ったダークリーフを指定。
 
 ## 器具の実物参照
 

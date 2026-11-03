@@ -1,7 +1,7 @@
 import { storeLogo } from "../core/store-logos.js";
 import { spendableMoney } from "../core/travel-budget.js";
 // Dr.fookah（問屋街の卸直営店）。フレーバー・機材の売り買いは時間を使わない。
-// 2階のショールーム（凛）へ上がると1行動使う。
+// 2階のショールーム（くゆり）へ上がると1行動使う。
 import { CITY_BACKGROUNDS } from "../core/city-locations.js";
 import { WIDEHANGA_FLAVORS, WIDEHANGA_SHOP_NAME, TOKYO_FLAVORS, TOKYO_SHOP_NAME, DUBAI_SHOP_NAME, tokyoShopFlavors } from "./shop-catalogs.js";
 import { el, yen } from "../core/util.js";

@@ -103,6 +103,9 @@ EXTENSIONS = {".json", ".js", ".md", ".py", ".gd", ".txt", ".csv", ".sh"}
 LEGACY_CHARACTER_RE = re.compile(r"kafuka|カフカ|かふか", re.IGNORECASE)
 IDENTITY_FIXTURES = {"remake/test/samechan_migration.mjs", "tools/check_legacy_terms.py"}
 IDENTITY_TEXT_EXTENSIONS = EXTENSIONS | {".mjs", ".cjs", ".html", ".css", ".yml", ".yaml", ".svg", ".xml", ".toml", ".lock"}
+# 2026-11-03 改名（#2474）。旧名は履歴・素材メモを含む全追跡ファイルで禁止する（「凛とした」等の一般語は許す）。
+RENAMED_CHARACTER_RE = re.compile(r"凛(?!とし|々|然|冽)|水瀬|白木 ?つむぎ|さぎさか りん")
+RENAMED_CHARACTER_FIX = "旧キャラ名 → 匂坂 くゆり（rin）／猫柳 つむぎ（tsumugi）／黒葉 ましろ（mashiro）に統一（#2474）"
 MINTO_HAIR_RE = re.compile(r"(?:mint|light)[ -]green (?:hair|twin)|black twin[ -]?tails|ミント(?:グリーン|色)のツイン|黒髪ツインテール|角ツインテール", re.IGNORECASE)
 
 
@@ -133,6 +136,8 @@ def scan_character_identity(errors: list):
         for number, line in enumerate(text.splitlines(), 1):
             if LEGACY_CHARACTER_RE.search(line):
                 errors.append(f"{rel}:{number}: 旧キャラ名・ID → サメちゃん / samechan に統一")
+            if RENAMED_CHARACTER_RE.search(line):
+                errors.append(f"{rel}:{number}: {RENAMED_CHARACTER_FIX}")
             if ("minto" in rel.lower() or "minto" in line.lower() or "みんと" in line) and MINTO_HAIR_RE.search(line):
                 # 過去の検品を現行の事実に書き換えず、誤記を明示した訂正注記は残せる。
                 if not ("旧" in line and "誤" in line):
