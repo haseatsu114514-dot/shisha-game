@@ -10,6 +10,14 @@
   ],
   "suites": [
     {
+      "id": "ch2-tournament-actions",
+      "title": "Chapter 2 tournament action session and error recovery",
+      "kind": "quick",
+      "run": [
+        "node --experimental-vm-modules remake/test/ch2_tournament_actions.mjs"
+      ]
+    },
+    {
       "id": "craft-rank-hud",
       "title": "Craft rank display-only snapshots, accessibility and lifecycle",
       "kind": "quick",
@@ -3757,3 +3765,4 @@
     }
   ]
 }
+
