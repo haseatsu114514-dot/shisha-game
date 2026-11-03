@@ -1,7 +1,7 @@
 // DESERT RIDE（第4章ドバイ・サンドボード）の規則: コースの決定性と公平さ、ジャンプ・着地・転倒、採点と評価の境目。
 import assert from "node:assert/strict";
 import test from "node:test";
-import { COURSE, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, RANKS, DEFAULT_SEED, generateCourse, practiceCourse, curveAt, createGame, step, press, boost, chargeBoost,
+import { COURSE, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, RULES_VERSION, RANKS, DEFAULT_SEED, generateCourse, practiceCourse, curveAt, createGame, step, press, boost, chargeBoost,
   summary, rankOf, readResult, botControl, botStep, nextBumpDistance, comboMultiplier, rivalRun, rivalAt, smashing, RIVALS } from "../js/minigames/desert-ride-model.js";
 
 const DT = 1 / 60;
@@ -74,7 +74,9 @@ test("pressing near a bump is a big jump, pressing in the air braces the landing
   assert.equal(press(game), "big");
   assert(game.air > 0 && game.airKind === "big");
   assert.equal(game.stats.bigJumps, 1);
-  assert(game.score >= SCORE.bigJump, "the jump itself scores");
+  assert.equal(game.score, 0, "takeoff does not score");
+  assert.equal(game.combo, 0, "takeoff does not build a combo");
+  assert.equal(game.gauge, 0, "recovery waits until landing");
   // 空中でもう一度押すと着地の構え。着地の直前（landingWindow 以内）なら完璧
   while (game.air > JUMP.landingWindow * 0.5) step(game, {}, DT);
   assert.equal(press(game), "brace");
@@ -83,7 +85,7 @@ test("pressing near a bump is a big jump, pressing in the air braces the landing
   assert.equal(game.stats.perfect, 1);
   assert(game.speed > speedBefore, "a perfect landing adds speed");
   assert(game.passed.has(bump));
-  assert.equal(game.combo, 2, "jump + landing chain the combo");
+  assert.equal(game.combo, 1, "only the successful landing builds the combo");
 });
 
 test("a bump taken without pressing only bounces (slower, no score); a flat press is a small hop", () => {
@@ -93,6 +95,7 @@ test("a bump taken without pressing only bounces (slower, no score); a flat pres
   while (!game.passed.has(bump)) step(game, {}, DT);
   assert.equal(game.airKind, "bounce");
   assert.equal(game.stats.bounces, 1);
+  assert.equal(game.gauge, 0, "a bounce never recovers boost");
   assert.equal(game.stats.bigJumps, 0);
   assert.equal(game.falls, 0, "missing a bump never counts as a fall");
   assert.equal(press(game), null, "no brace during a bounce");
@@ -189,7 +192,7 @@ test("every generated course up to seed 30 can be finished by the ideal rider wi
 test("summary and readResult keep only well-formed finished records", () => {
   const game = play(generateCourse(DEFAULT_SEED), "expert", { race: true });
   const result = summary(game);
-  assert.deepEqual(readResult(result), { finished: true, score: result.score, rank: result.rank, time: result.time, maxCombo: result.maxCombo,
+  assert.deepEqual(readResult(result), { rulesVersion: RULES_VERSION, finished: true, score: result.score, rank: result.rank, time: result.time, maxCombo: result.maxCombo,
     falls: result.falls, bigJumps: result.bigJumps, perfect: result.perfect, good: result.good, nearMiss: result.nearMiss,
     tricks: result.tricks, bestTrick: result.bestTrick, boosts: result.boosts, race: { won: true, gap: result.race.gap, who: "noor" } });
   // 以前の形の記録（トリック・ブースト・競走が無い）も読める
@@ -199,6 +202,7 @@ test("summary and readResult keep only well-formed finished records", () => {
   assert.equal(readResult({ ...result, rank: "Z" }), null);
   assert.equal(readResult({ ...result, score: -1 }), null);
   assert.equal(readResult(null), null);
+  assert.equal(readResult({ ...result, rulesVersion: 99 }), null, "unknown scoring versions must not become legacy records");
   const unfinished = summary(createGame(generateCourse(DEFAULT_SEED)));
   assert.equal(unfinished.finished, false); assert.equal(unfinished.rank, null);
   assert.equal(summary(play(practiceCourse(), "perfect")).score, 0, "practice has no score");
@@ -234,7 +238,7 @@ test("air spins: hold ← or → in a big jump to rotate, letting go finishes th
   assert.equal(game.falls, 1);
   assert.equal(game.events.at(-1).kind, "fall"); assert.equal(game.events.at(-1).reason, "spin");
   assert.equal(game.stats.spinFalls, 1);
-  assert(Math.abs(game.gauge - (0.5 + BOOST.jump - BOOST.fallLoss)) < 1e-9, "a fall drains the gauge");
+  assert(Math.abs(game.gauge - (0.5 - BOOST.fallLoss)) < 1e-9, "a fall drains the gauge");
   // 小さなホップでは回らない
   game = createGame(course);
   step(game, {}, DT); press(game); step(game, {}, DT);
@@ -242,7 +246,7 @@ test("air spins: hold ← or → in a big jump to rotate, letting go finishes th
   assert.equal(game.spinDir, 0);
 });
 
-test("boost: the gauge fills from near misses, jumps, landings and spins; when full it lifts the top speed and smashes rocks", () => {
+test("boost: the gauge fills from near misses, successful big landings and spins; when full it lifts the top speed and smashes rocks", () => {
   const course = generateCourse(DEFAULT_SEED);
   const game = createGame(course);
   assert.equal(boost(game), null, "an empty gauge cannot boost");
@@ -272,11 +276,11 @@ test("boost: the gauge fills from near misses, jumps, landings and spins; when f
   // かすめ・大ジャンプ・完璧な着地で貯まる
   const fill = createGame(course);
   jumpAtNextBump(fill);
-  assert(Math.abs(fill.gauge - BOOST.jump) < 1e-9);
+  assert.equal(fill.gauge, 0, "takeoff alone cannot recover boost");
   while (fill.air > JUMP.landingWindow * 0.5) step(fill, {}, DT);
   press(fill);
   while (fill.air > 0) step(fill, {}, DT);
-  assert(Math.abs(fill.gauge - BOOST.jump - BOOST.perfect) < 1e-9);
+  assert(Math.abs(fill.gauge - BOOST.land - BOOST.perfect) < 1e-9);
 });
 
 test("race: Noor runs the same course deterministically; finishing first wins a bonus; the result keeps the gap", () => {
@@ -394,4 +398,55 @@ test("the rider pose follows the run: lean with hysteresis, jump, brace before a
   game.fallT = 0.2; assert.notEqual(riderPose(game), "riderFall", "getting up");
   game.fallT = 0; game.air = 0.2; game.airTotal = 0.26; game.airKind = "bounce";
   assert.equal(riderPose(game), "rider", "a small bounce over a bump keeps the riding pose");
+});
+
+
+
+test("repeated flat hops cannot farm score, combo, speed or gauge, including the deep sand edge", () => {
+  const course = { length: 10000, features: [], curves: [{ z: 0, c: 0 }], practice: false };
+  for (const x of [0, 1]) {
+    const game = createGame(course), grounded = createGame(course);
+    game.x = grounded.x = x;
+    for (let i = 0; i < 1800; i++) {
+      if (game.air <= 0 || game.air <= JUMP.landingWindow * 0.5) press(game);
+      step(game, {}, DT); step(grounded, {}, DT);
+      assert.equal(game.speed, grounded.speed, "hops do not accelerate or escape edge drag");
+      assert.equal(game.z, grounded.z);
+    }
+    assert(game.stats.hops > 40);
+    assert.equal(game.score, 0); assert.equal(game.combo, 0); assert.equal(game.gauge, 0);
+    assert.equal(game.stats.perfect, 0); assert.equal(game.stats.good, 0);
+  }
+});
+
+test("landing recovery is capped, awarded once and absent on a failed spin or bounce", () => {
+  for (const [grade, braceAt, gain] of [["plain", null, BOOST.land], ["good", 0.45, BOOST.land + BOOST.good]]) {
+    const game = createGame(generateCourse(DEFAULT_SEED));
+    jumpAtNextBump(game);
+    if (braceAt !== null) { while (game.air > braceAt) step(game, {}, DT); press(game); }
+    while (game.air > 0) step(game, {}, DT);
+    assert.equal(game.events.find(e => e.kind === "land").grade, grade);
+    assert(Math.abs(game.gauge - gain) < 1e-9);
+  }
+  for (const initial of [0, 0.99, 1]) {
+    const game = createGame(generateCourse(DEFAULT_SEED));
+    game.gauge = initial; jumpAtNextBump(game);
+    assert.equal(game.gauge, initial);
+    while (game.air > JUMP.landingWindow * 0.5) step(game, {}, DT);
+    press(game); press(game);
+    while (game.air > 0) step(game, {}, DT);
+    const expected = Math.min(1, initial + BOOST.land + BOOST.perfect);
+    assert(Math.abs(game.gauge - expected) < 1e-9);
+    const landing = game.events.find(e => e.kind === "land" && e.grade === "perfect");
+    assert(Math.abs(landing.gaugeGained - (expected - initial)) < 1e-9);
+    for (let i = 0; i < 5; i++) step(game, {}, DT);
+    assert(Math.abs(game.gauge - expected) < 1e-9, "the reward is not repeated");
+  }
+});
+
+test("360-only clean runs keep S without making a no-spin run S", () => {
+  const course = generateCourse(DEFAULT_SEED), game = createGame(course, { rival: rivalRun(course) }), memo = { only360: true };
+  while (!game.finished && game.t < 200) botStep(game, "expert", memo, DT);
+  assert.equal(summary(game).bestTrick, 360); assert.equal(summary(game).rank, "S");
+  assert.equal(summary(play(course, "perfect", { race: true })).rank, "A");
 });

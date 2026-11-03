@@ -259,3 +259,30 @@ test("the 14-day daily map (route 2) keeps the café on the map (3,000円, one a
   const desert = readFileSync(new URL("../js/chapters/ch4-desert.js", import.meta.url), "utf8");
   assert.match(desert, /gainAffinity\(DESERT_GUIDE, visitAffinity\(visit\.kind\)\)/);
 });
+
+
+
+test("v2 keeps old scores separately and preserves highest earned rank, rewards and rival unlocks across SAVE/LOAD", () => {
+  const value = fresh();
+  const old = result(30000, "S", { race: { won: true, gap: 2, who: "noor" } });
+  recordDesertResult(value, old);
+  const previous = structuredClone(value.desert.best);
+  const current = result(3500, "B", { rulesVersion: 2 });
+  let called = 0;
+  const first = recordDesertResult(value, current, { awardExp: () => ++called });
+  assert.equal(first.newBest, true, "new scoring has its own first best");
+  assert.deepEqual(value.desert.legacyBest, previous);
+  assert.equal(value.desert.best.score, 3500);
+  assert.equal(value.desert.best.rulesVersion, 2);
+  assert.equal(value.desert.bestRank, "S");
+  assert.equal(desertRankAtLeast(value, "A"), true, "the fire seed requirement stays earned");
+  assert.equal(called, 0); assert.equal(value.desert.rewarded, true);
+  const loaded = JSON.parse(JSON.stringify(value));
+  assert.equal(desertRecords(loaded).bestRank, "S");
+  assert.deepEqual(desertRivals(loaded), ["noor", "naru"]);
+  assert.equal(recordDesertResult(loaded, result(6000, "A", { rulesVersion: 2 })).newBest, true);
+  assert.equal(recordDesertResult(loaded, current).newBest, false);
+  assert.equal(recordDesertResult(loaded, old), null, "a delayed old-version result cannot replace current records");
+  assert.deepEqual(loaded.desert.legacyBest, previous);
+  assert.equal(loaded.desert.bestRank, "S");
+});

@@ -11,7 +11,7 @@ export const SPEED = Object.freeze({ start: 15, min: 8, max: 34, boost: 46, boos
 export const JUMP = Object.freeze({ bigAir: 1.15, hopAir: 0.5, bounceAir: 0.26, landingWindow: 0.3, goodWindow: 0.6, bumpWindow: 0.36, bumpGrace: 0.14, steerInAir: 0.55 });
 export const FALL = Object.freeze({ recover: 1.1, points: -150 });
 export const STEER = Object.freeze({ accel: 4.6, damping: 4.0, curveDrift: 0.28 });
-export const SCORE = Object.freeze({ finish: 1200, timePar: 72, timeBonusPerSec: 30, bigJump: 150, airPerSec: 120, perfect: 250, good: 120, hopPerfect: 40, nearMiss: 60, comboStep: 0.15, comboMax: 3,
+export const SCORE = Object.freeze({ finish: 1200, timePar: 72, timeBonusPerSec: 30, perfect: 250, good: 120, nearMiss: 60, comboStep: 0.15, comboMax: 3,
   smash: 100, raceWin: 600, raceWinNaru: 1500 });
 // 競走の相手。ヌールは着地が少し遅い滑り（ブーストは使う）。なる（裏の相手・ヌールに勝った後）は 360 を決めて着地も完璧、ブーストも使う。
 export const RIVALS = Object.freeze({
@@ -22,13 +22,14 @@ export const RIVALS = Object.freeze({
 // 着地の瞬間に半回転の区切りから tolerance（回転）以上ずれていると転倒。points は半回転の数ごとの得点（180, 360, 540 …）。
 // 跳んだ瞬間から押していた向きは、一度離すまで回転に使わない（よけながら跳んだだけで回り出さないように）。
 export const SPIN = Object.freeze({ rate: 1.7, finishRate: 3.2, tolerance: 0.1, points: Object.freeze([0, 150, 400, 700, 1100, 1500, 2000, 2600, 3300]) });
-// ブースト: かすめ・大ジャンプ・着地・トリックでゲージ（0〜1）が貯まり、満タンで発動できる。duration 秒のあいだ速度の上限が SPEED.boost になり、
+// ブースト: かすめ・大ジャンプの着地・トリックでゲージ（0〜1）が貯まり、満タンで発動できる。duration 秒のあいだ速度の上限が SPEED.boost になり、
 // 当たった岩は砕ける（転倒しない）。転倒するとゲージが fallLoss 減る。
-export const BOOST = Object.freeze({ duration: 3, near: 0.12, jump: 0.05, perfect: 0.22, good: 0.1, trickPerHalf: 0.1, fallLoss: 0.3 });
+export const BOOST = Object.freeze({ duration: 3, near: 0.12, land: 0.05, perfect: 0.22, good: 0.1, trickPerHalf: 0.1, fallLoss: 0.3 });
 // 本編のコースは1本（DEFAULT_SEED）。評価の境目はそのコースで、空中で回って着地も決める＝S、回らないが着地を決めてブーストも使う＝A、
 // 着地が「良い」止まり＝B、ジャンプを使わず避けるだけ＝C になるよう合わせた（remake/test/desert_ride.mjs のボットで照合）。
+export const RULES_VERSION = 2; // 離陸加点なし・着地回復。旧記録とは点数を比較しない
 export const DEFAULT_SEED = 7;
-export const RANKS = Object.freeze([["S", 16000], ["A", 10000], ["B", 5000], ["C", 0]]);
+export const RANKS = Object.freeze([["S", 12000], ["A", 6000], ["B", 3500], ["C", 0]]);
 export const RANK_ORDER = Object.freeze(["C", "B", "A", "S"]);
 
 /** 決定的な乱数（mulberry32）。同じ seed なら同じコース。 */
@@ -200,8 +201,7 @@ function startAir(game, kind) {
   game.rot = 0; game.spinDir = 0; game.spinHold = false; game.spinArmed = null;
   if (kind === "big") {
     game.stats.bigJumps += 1;
-    award(game, "jump", SCORE.bigJump + SCORE.airPerSec * game.airTotal, { at: { airTotal: game.airTotal } });
-    chargeBoost(game, BOOST.jump);
+    game.events.push({ kind: "jump", t: game.t, airTotal: game.airTotal });
   } else if (kind === "hop") game.stats.hops += 1;
   else game.stats.bounces += 1;
 }
@@ -211,6 +211,7 @@ function land(game) {
   game.air = 0; game.airKind = null;
   if (kind === "bounce") { game.events.push({ kind: "land", grade: "bounce", t: game.t }); return; }
   game.landedAt = game.t; // 画面が着地の構えを少し残すため（採点には使わない）
+  const gaugeBefore = game.gauge;
   if (kind === "big" && game.spinDir !== 0) {
     // トリック: 半回転の区切りで着地できたか。回りかけなら転倒
     const turns = Math.abs(game.rot), half = Math.round(turns * 2);
@@ -230,6 +231,13 @@ function land(game) {
       chargeBoost(game, BOOST.trickPerHalf * half);
     }
   }
+  // 平地のホップは回避用。連打で得点・コンボ・加速・回復を稼がせない。
+  if (kind === "hop") {
+    game.landingPress = null;
+    game.events.push({ kind: "land", grade: "hop", t: game.t });
+    return;
+  }
+  chargeBoost(game, BOOST.land); // 離陸ではなく、転ばず大ジャンプを着地した時だけ回復
   const remaining = game.landingPress;
   let grade = "plain";
   if (remaining !== null && remaining <= JUMP.landingWindow) grade = "perfect";
@@ -237,16 +245,16 @@ function land(game) {
   if (grade === "perfect") {
     game.stats.perfect += 1;
     game.speed = Math.max(game.speed, Math.min(speedCap(game), game.speed + SPEED.landingBoost));
-    award(game, "land", kind === "big" ? SCORE.perfect : SCORE.hopPerfect, { at: { grade } });
-    if (kind === "big") chargeBoost(game, BOOST.perfect);
+    chargeBoost(game, BOOST.perfect);
+    award(game, "land", SCORE.perfect, { at: { grade, gaugeGained: game.gauge - gaugeBefore } });
   } else if (grade === "good") {
     game.stats.good += 1;
-    award(game, "land", kind === "big" ? SCORE.good : Math.round(SCORE.hopPerfect / 2), { at: { grade } });
-    if (kind === "big") chargeBoost(game, BOOST.good);
+    chargeBoost(game, BOOST.good);
+    award(game, "land", SCORE.good, { at: { grade, gaugeGained: game.gauge - gaugeBefore } });
   } else {
     game.stats.plain += 1;
     game.speed = Math.max(SPEED.min, game.speed * SPEED.plainLanding);
-    game.events.push({ kind: "land", grade, t: game.t });
+    game.events.push({ kind: "land", grade, gaugeGained: game.gauge - gaugeBefore, t: game.t });
   }
   game.landingPress = null;
 }
@@ -289,7 +297,7 @@ export function step(game, input, dt) {
     game.boostT = Math.max(0, game.boostT - dt);
     if (game.boostT === 0) game.events.push({ kind: "boostEnd", t: game.t });
   }
-  if (Math.abs(game.x) > EDGE && game.air <= 0) {
+  if (Math.abs(game.x) > EDGE && (game.air <= 0 || game.airKind === "hop")) {
     game.speed = Math.max(SPEED.min, game.speed - SPEED.edgeDrag * dt);
     game.stats.edgeTime += dt;
   }
@@ -393,7 +401,7 @@ export function summary(game) {
   const time = Math.round((game.finishTime ?? game.t) * 10) / 10;
   const score = game.course.practice ? 0 : Math.max(0, Math.round(game.score)); // 練習は採点しない
   return {
-    finished: game.finished, score, rank: game.finished ? rankOf(score) : null, time,
+    rulesVersion: RULES_VERSION, finished: game.finished, score, rank: game.finished ? rankOf(score) : null, time,
     maxCombo: game.maxCombo, falls: game.falls, bigJumps: game.stats.bigJumps, perfect: game.stats.perfect,
     good: game.stats.good, nearMiss: game.stats.nearMiss, seed: game.course.seed,
     tricks: game.stats.tricks, bestTrick: game.stats.bestTrick, boosts: game.stats.boosts, smashed: game.stats.smashed,
@@ -404,12 +412,13 @@ export function summary(game) {
 /** 保存する記録の形を検査して整える（形が合わなければ null）。 */
 export function readResult(value) {
   if (!value || typeof value !== "object" || value.finished !== true) return null;
+  if (value.rulesVersion != null && value.rulesVersion !== 1 && value.rulesVersion !== RULES_VERSION) return null;
   const n = (v, lo = 0) => Number.isFinite(v) && v >= lo ? v : null;
   const score = n(value.score), time = n(value.time), maxCombo = n(value.maxCombo), falls = n(value.falls);
   if (score === null || time === null || maxCombo === null || falls === null || !RANK_ORDER.includes(value.rank)) return null;
   const race = value.race && typeof value.race === "object" && typeof value.race.won === "boolean" && n(value.race.gap) !== null
     ? { won: value.race.won, gap: Math.round(value.race.gap * 10) / 10, who: value.race.who === "naru" ? "naru" : "noor" } : null;
-  return { finished: true, score: Math.round(score), rank: value.rank, time: Math.round(time * 10) / 10, maxCombo: Math.round(maxCombo), falls: Math.round(falls),
+  return { ...(value.rulesVersion === RULES_VERSION ? { rulesVersion: RULES_VERSION } : {}), finished: true, score: Math.round(score), rank: value.rank, time: Math.round(time * 10) / 10, maxCombo: Math.round(maxCombo), falls: Math.round(falls),
     bigJumps: Math.round(n(value.bigJumps) ?? 0), perfect: Math.round(n(value.perfect) ?? 0), good: Math.round(n(value.good) ?? 0), nearMiss: Math.round(n(value.nearMiss) ?? 0),
     tricks: Math.round(n(value.tricks) ?? 0), bestTrick: Math.round(n(value.bestTrick) ?? 0), boosts: Math.round(n(value.boosts) ?? 0), race };
 }
@@ -496,3 +505,4 @@ export function rivalAt(rival, t) {
   const k = b.t > a.t ? Math.min(1, Math.max(0, (t - a.t) / (b.t - a.t))) : 1;
   return { ...a, z: a.z + (b.z - a.z) * k, x: a.x + (b.x - a.x) * k, rot: a.rot + (b.rot - a.rot) * k, t, finished: false };
 }
+

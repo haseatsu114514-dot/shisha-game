@@ -1,5 +1,6 @@
 // DESERT RIDE を単体で遊ぶページ（remake/desert-ride.html）。本編の保存は読み書きしない。
 // 自己ベストはこのページだけの localStorage（suien_desert_ride_preview）に残す。
+import { RULES_VERSION } from "./minigames/desert-ride-model.js";
 import { el } from "./core/util.js";
 import { runDesertRide } from "./minigames/desert-ride.js";
 
@@ -21,11 +22,13 @@ function menu(message = "狙いは、S。") {
     app.hidden = true;
     // ヌールに一度勝つと、なる（裏の相手）とも勝負できる
     const rivals = best?.beatNoor ? ["noor", "naru"] : ["noor"];
-    const { results } = await runDesertRide({ host: stage, tutorial, best, rivals, reducedMotion: reduce, onResult: result => {
+    const { results } = await runDesertRide({ host: stage, tutorial, best, legacyBest: best?.legacyBest, rivals, reducedMotion: reduce, onResult: result => {
       const prev = readBest();
       const beatNoor = !!prev?.beatNoor || (result.race?.who === "noor" && result.race.won);
-      const top = !prev || result.score > prev.score ? { score: result.score, rank: result.rank } : { score: prev.score, rank: prev.rank };
-      try { localStorage.setItem(KEY, JSON.stringify({ ...top, beatNoor })); } catch { /* 保存できない環境 */ }
+      const sameRules = prev?.rulesVersion === RULES_VERSION;
+      const legacyBest = prev?.legacyBest || (prev && !sameRules ? { score: prev.score, rank: prev.rank } : null);
+      const top = !sameRules || result.score > prev.score ? { score: result.score, rank: result.rank } : { score: prev.score, rank: prev.rank };
+      try { localStorage.setItem(KEY, JSON.stringify({ ...top, rulesVersion: RULES_VERSION, ...(legacyBest ? { legacyBest } : {}), beatNoor })); } catch { /* 保存できない環境 */ }
     } });
     app.hidden = false;
     const last = results.at(-1);
@@ -35,7 +38,9 @@ function menu(message = "狙いは、S。") {
     el("p", { text: "DUBAI · SAND DUNES", style: { letterSpacing: ".4em", fontSize: "13px", color: "#8a4b22" } }),
     el("h1", { text: "DESERT RIDE" }),
     el("p", { text: message }),
-    best ? el("p", { text: `自己ベスト ${best.score.toLocaleString("ja-JP")}点 ／ ${best.rank}`, dataset: { test: "desert-page-best" } }) : null,
+    best && best.rulesVersion !== RULES_VERSION ? el("p", { text: `旧ルールの記録 ${best.score.toLocaleString("ja-JP")}点 ／ ${best.rank}（別記録）`, dataset: { test: "desert-page-legacy-best" } }) : null,
+    best?.legacyBest ? el("p", { text: `旧ルールの記録 ${best.legacyBest.score.toLocaleString("ja-JP")}点 ／ ${best.legacyBest.rank}（別記録）`, dataset: { test: "desert-page-legacy-best" } }) : null,
+    best?.rulesVersion === RULES_VERSION ? el("p", { text: `自己ベスト ${best.score.toLocaleString("ja-JP")}点 ／ ${best.rank}`, dataset: { test: "desert-page-best" } }) : null,
     el("div.row", [
       el("button.btn.primary", { type: "button", text: "滑る", dataset: { test: "desert-page-start" }, onclick: start(false) }),
       el("button.btn", { type: "button", text: "練習から始める", dataset: { test: "desert-page-tutorial" }, onclick: start(true) }),
@@ -46,3 +51,4 @@ function menu(message = "狙いは、S。") {
   );
 }
 menu();
+

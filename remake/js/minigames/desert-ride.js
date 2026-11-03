@@ -8,7 +8,7 @@
 import { el } from "../core/util.js";
 import { SE, unlockAudio } from "../core/audio.js";
 import { COURSE, EDGE, SPEED, SPIN, DEFAULT_SEED, generateCourse, practiceCourse, createGame, step, press, boost, chargeBoost, summary, curveAt, botControl,
-  rivalRun, rivalAt } from "./desert-ride-model.js";
+  rivalRun, rivalAt, RULES_VERSION } from "./desert-ride-model.js";
 import { DESERT_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
 import { imgFileUrl } from "../core/img-file.js";
 
@@ -106,14 +106,15 @@ const TUTORIAL = {
  * @param opts.guide 練習と結果のひとことを言う人の名前（無ければ地の文）
  * @param opts.rivals 本番で競える相手（"noor"、ヌールに勝った後は "naru" も）
  */
-export function runDesertRide({ host = document.getElementById("stage"), signal = null, tutorial = false, best = null, seed = DEFAULT_SEED, rivals = ["noor"],
+export function runDesertRide({ host = document.getElementById("stage"), signal = null, tutorial = false, best = null, legacyBest = null, seed = DEFAULT_SEED, rivals = ["noor"],
   reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = null, speedUp = 1 } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   const art = loadDesertArt();
   const promise = new Promise(resolve => {
     const results = [];
-    let practiced = false, done = false, frame = 0, currentBest = best;
+    let practiced = false, done = false, frame = 0, currentBest = best?.rulesVersion === RULES_VERSION ? best : null;
+    const oldBest = legacyBest || (best && best.rulesVersion !== RULES_VERSION ? best : null);
     const root = el("section.desert-ride", { dataset: { test: "desert-ride", phase: "menu", reducedMotion: String(!!reducedMotion) }, tabindex: "-1", "aria-label": "DESERT RIDE" });
     const canvas = el("canvas.dr-canvas", { width: W, height: H, "aria-hidden": "true" });
     const ctx = canvas.getContext("2d");
@@ -208,10 +209,11 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         el("p.dr-lead", { text: message || "砂丘を一気に滑り下りる。ヌールより先に、ゴールの旗へ。" }),
         el("ul.dr-howto", [
           el("li", { text: "← → で左右。砂の上なので、少し遅れてついてくる" }),
-          el("li", { text: "起伏の手前で Space で大ジャンプ。着地の直前にもう一度押すと加速" }),
+          el("li", { text: "起伏の手前で Space で大ジャンプ。着地でブースト回復、直前にもう一度押すと加速" }),
           el("li", { text: "空中で ← → を押し続けると回転。回りかけで着地すると転ぶ" }),
           el("li", { text: "ゲージが満タンで ↓（BOOST）。超加速して、岩も砕く" }),
         ]),
+        oldBest ? el("p.dr-legacy-best", { text: `旧ルールの記録 ${oldBest.score.toLocaleString("ja-JP")}点 ／ ${oldBest.rank}（別記録）`, dataset: { test: "desert-legacy-best" } }) : null,
         currentBest ? el("p.dr-best", { text: `自己ベスト ${currentBest.score.toLocaleString("ja-JP")}点 ／ ${currentBest.rank}`, dataset: { test: "desert-best" } }) : null,
         el("div.dr-actions", [start, naruButton, practice, leave]),
       ]));
@@ -274,10 +276,10 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     function buildHud() {
       hudNodes = {
         score: el("strong.dr-score", { text: "0" }), combo: el("span.dr-combo", { text: "" }),
-        time: el("span.dr-time", { text: "0.0" }), kmh: el("strong.dr-kmh", { text: "0" }), gauge: el("i"), gaugeBox: null, progress: el("i"),
+        time: el("span.dr-time", { text: "0.0" }), kmh: el("strong.dr-kmh", { text: "0" }), gauge: el("i"), gaugeLabel: el("span", { text: "BOOST 0%" }), gaugeBox: null, progress: el("i"),
         you: el("b.dr-mark.dr-mark-you", { title: "あなた" }), noor: el(`b.dr-mark.dr-mark-${raceWith}`, { title: RIVAL_NAMES[raceWith] }), race: el("span.dr-race", { dataset: { test: "desert-race-gap" } }),
       };
-      hudNodes.gaugeBox = el("div.dr-gauge", { dataset: { test: "desert-gauge" } }, [hudNodes.gauge, el("span", { text: "BOOST" })]);
+      hudNodes.gaugeBox = el("div.dr-gauge", { dataset: { test: "desert-gauge" } }, [hudNodes.gauge, hudNodes.gaugeLabel]);
       hud.replaceChildren(
         el("div.dr-hud-left", [el("small", { text: mode === "practice" ? "PRACTICE" : "SCORE" }), hudNodes.score, hudNodes.combo]),
         el("div.dr-hud-center", [
@@ -301,6 +303,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       hudNodes.kmh.dataset.fast = game.boostT > 0 ? "boost" : game.speed > SPEED.max * 0.85 ? "fast" : "";
       const full = game.gauge >= 1, boosting = game.boostT > 0;
       hudNodes.gauge.style.width = `${Math.round(100 * (boosting ? game.boostT / 3 : game.gauge))}%`;
+      hudNodes.gaugeLabel.textContent = boosting ? "BOOST!!" : `BOOST ${Math.round(game.gauge * 100)}%`;
       hudNodes.gaugeBox.dataset.state = boosting ? "boost" : full ? "full" : "";
       root.dataset.gauge = boosting ? "boost" : full ? "full" : "";
       const progress = z => `${(100 * Math.min(1, z / game.course.length)).toFixed(1)}%`;
@@ -402,20 +405,20 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const trick = events.find(e => e.kind === "trick");
       for (const event of events) {
         if (event.kind === "land") {
-          const big = event.grade !== "bounce";
+          const big = event.grade !== "bounce" && event.grade !== "hop";
           const big360 = trick && trick.half >= 2; // 360 以上はカットイン（真ん中の文字は出さない）
           if (big360) showCutin(trick, event.grade);
           if (event.grade === "perfect") { SE.perfect(); if (!big360) showPop(trick ? `${trick.degrees} PERFECT!` : "PERFECT", trick ? "trick" : "perfect"); burst(30, 1.5); }
           else if (event.grade === "good") { SE.good(); if (!big360) showPop(trick ? `${trick.degrees}! GOOD` : "GOOD", trick ? "trick" : "good"); burst(18, 1.1); }
           else if (event.grade === "plain") { if (trick && !big360) showPop(`${trick.degrees}!`, "trick"); burst(12, 0.9); }
           else burst(6, 0.6);
-          if (event.points) floater(`+${event.points}`, event.grade);
+          if (event.gaugeGained > 0) floater(`BOOST +${Math.round(event.gaugeGained * 100)}%`, "gauge");
+          else if (event.points) floater(`+${event.points}`, event.grade);
           if (big) { rings.push({ age: 0, life: 0.55, power: event.grade === "perfect" ? 1.3 : 1 }); if (!reducedMotion) shakeT = Math.max(shakeT, event.grade === "perfect" ? 0.2 : 0.12); }
         } else if (event.kind === "trick") {
           SE.reelWin(); floater(`${event.degrees} +${event.points}`, "trick");
           if (event.half >= 2) { SE.just(); if (!reducedMotion) slowT = 0.5; } // カットインの間はゆっくり
-        } else if (event.kind === "jump") floater(`+${event.points}`, "jump");
-        else if (event.kind === "fall") {
+        } else if (event.kind === "fall") {
           SE.hit(); showPop(event.reason === "spin" ? "回り切れず…" : "転倒…", "fall"); burst(34, 1.6);
           if (!reducedMotion) { shakeT = 0.45; flashT = 0.18; }
         } else if (event.kind === "near") { SE.tick(); floater(`かすめ +${event.points}`, "near"); if (game.combo >= 2) showPop(`${game.combo} COMBO`, "combo"); }
@@ -1205,3 +1208,4 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
   promise.finally(() => active.delete(host));
   return promise;
 }
+
