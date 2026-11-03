@@ -85,10 +85,6 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
     "ch3_shuraba_mashiro", "ch3_shuraba_samechan", "ch3_shuraba_hiyori", "ch3_shuraba_steve", "tournament_evening_overlap"],
 });
 
-/** 正本 data/story_routes.json。読み込みに失敗したら次回また取りに行く。 */
-// story_routes.json の読み込みは core/chapter-data.js（#2035）。既存の呼び出し元のために再エクスポートする。
-export { loadStoryRoutes } from "../core/chapter-data.js";
-
 /**
  * canReadOptionalStory に渡す「読み終えた場面」。実際の記録だけから組み立て、好感度や所在からは作らない。
  * - 必須場面: stage より前（章の進行が正本）。

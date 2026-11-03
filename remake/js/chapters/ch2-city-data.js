@@ -1,8 +1,7 @@
 // 本編の初日と独立試遊が使う同じ街・同じ台本。セーブ操作を含めない。
 import { DB } from "../core/data.js";
-// 台本の読み込みは core/chapter-data.js（#2035）。既存の呼び出し元のために再エクスポートする。
+// 台本の読み込みは core/chapter-data.js（#2035）。この章の読み込みでも使う。
 import { readDialogues } from "../core/chapter-data.js";
-export { readDialogues };
 import { CH2_NIGHTS, AGEHA_VISITS, AGEHA_BADDAY, STRAWBERRY_TRIAL_IDS } from "./ch2-story-data.js";
 import { CH2_VISIT_STORIES } from "../core/affinity-stages.js";
 

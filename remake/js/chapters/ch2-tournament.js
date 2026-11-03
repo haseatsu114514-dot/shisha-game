@@ -33,7 +33,7 @@ import { voteStack, judgePanel, judgeLegend, craftReviewBlock } from "../craft/t
 import { craftReviewLines } from "../craft/advice.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
-import { readDialogues } from "./ch2-city-data.js";
+import { readDialogues } from "../core/chapter-data.js";
 import { chapterTwoCheers, chapterTwoCongratulations, recordSentLime } from "./ch2-lime.js";
 import { playChapterPreview } from "./chapter-preview.js";
 import { CH2_SCENE_BACKGROUNDS } from "../core/city-locations.js";
