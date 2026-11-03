@@ -15,6 +15,7 @@ import { play, isPlaying } from "../vn/engine.js";
 import { samechanMilestoneDue, playSamechanMilestone } from "./samechan-bonds.js";
 import { dateScene, dateVenue, relationshipDayTotal } from "./date-scene.js";
 import { playSamechanDate, samechanDateGap, samechanDateReady } from "./samechan-date.js";
+import { questionDoneKey } from "../core/affinity-stages.js";
 
 // 告白は「帰り道」の場面。背景を持たない台本は通りの絵で（前の場面の背景を引き継がない）
 const STREET = "res://assets/backgrounds/bg_street.png";
@@ -45,7 +46,7 @@ export function romanceRouteOpen(id) {
       || ![route.question?.choice,route.finale?.question].every(key => state.romanceChoices[key]?.char === id && state.romanceChoices[key].value > 0)) return false;
   }
   if (id === "samechan" && (!(state.chapter >= 2 && state.chapter <= 3)
-    || !state.flags._samechan_bond_question_done
+    || !state.flags[questionDoneKey("samechan")]
     || state.romanceChoices?.bond_q1_samechan?.char !== id
     || state.romanceChoices?.bond_q2_samechan?.char !== id
     || !(state.romanceChoices?.bond_q1_samechan?.value > 0)

@@ -8,7 +8,7 @@ import { play, isPlaying } from "../vn/engine.js";
 import { finaleAtVisit, playFinale } from "./bonds.js";
 import { maybeRecruitTrpgMember } from "./trpg.js";
 import { CINEMA_INTRO, cinemaIntroductionDue } from "../core/cinema-discovery.js";
-import { SAMECHAN_HEART_EVENTS, samechanHeartEventDone } from "../core/affinity-stages.js";
+import { SAMECHAN_HEART_EVENTS, samechanHeartEventDone, questionDoneKey } from "../core/affinity-stages.js";
 import { readCinemaIntroduction } from "./cinema.js";
 
 export const SAMECHAN_NICKNAME_TOPIC = "lime_naru_samechan_nickname";
@@ -40,11 +40,11 @@ export function samechanVisitDialogue() {
       return event.dialogue;
     }
     if (state.flags._samechan_closing_check_done && affinityLevel("samechan") >= 3
-      && !state.flags._samechan_bond_question_done && !state.finales?.samechan
+      && !state.flags[questionDoneKey("samechan")] && !state.finales?.samechan
       && !state.flags._friend_samechan && !(state.lovers || []).includes("samechan")) {
       return "samechan_shop_bond_question";
     }
-    if (state.flags._samechan_bond_question_done) {
+    if (state.flags[questionDoneKey("samechan")]) {
       for (const event of SAMECHAN_HEART_EVENTS) {
         if (samechanHeartEventDone(state, event)) continue;
         if (affinityLevel("samechan") >= event.heart && DB.dialogues[event.dialogue]?.lines?.length) return event.dialogue;
@@ -173,7 +173,7 @@ export async function visitSamechan(spot, { signal = null } = {}) {
     const event = [...entryEvents, ...SAMECHAN_HEART_EVENTS, cinemaImpression, unwellVisit].find(e => e.dialogue === dialogue);
     if (event) state.flags[event.flag] = true;
     if (dialogue === "samechan_shop_bond_question") {
-      state.flags._samechan_bond_question_done = true;
+      state.flags[questionDoneKey("samechan")] = true;
       releaseAffinity("samechan");
     }
     state.story.samechan = count + 1;

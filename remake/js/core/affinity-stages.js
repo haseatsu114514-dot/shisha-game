@@ -56,7 +56,10 @@ export const LONGLONG_VISIT_STORIES = Object.freeze([
   { scene: "ch4_longlong_fifth", heart: 4 },
 ].map(entry => Object.freeze(entry)));
 export const longlongStoryRead = (flags, scene) => flags?._ch4_longlong?.read?.[scene] === true;
-export const questionDoneKey = id => `_${id}_affinity_question_done`;
+// 質問済みフラグの保存キーは id から機械的に導出する（第1章の形式）。
+// 既存IDは保存互換のため改名せず、旧文字列を使う相手だけ下の対応表で返す（#2035）。
+const LEGACY_QUESTION_DONE_KEYS = { samechan: "_samechan_bond_question_done" };
+export const questionDoneKey = id => LEGACY_QUESTION_DONE_KEYS[id] || `_${id}_affinity_question_done`;
 const settled = (s, id) => !!s.finales?.[id] || !!s.flags?.[`_friend_${id}`] || (s.lovers || []).includes(id);
 // サメちゃんの♥4・♥5の来店会話（#2025）。♥3の問いかけの後、締めくくりの前に一本ずつ読む。
 // 締めくくり・友人・恋人へ着地済みの旧セーブには後から出さず、読んだものとして扱う。
@@ -70,7 +73,7 @@ export const samechanHeartEventsDone = s => SAMECHAN_HEART_EVENTS.every(event =>
 export const RIN_LATE_STORIES = ["ch1_rin_fifth", "ch1_rin_sixth"];
 export const visitStorySkipped = (s, id, scene) => id === "rin" && RIN_LATE_STORIES.includes(scene) && settled(s, id);
 export function questionComplete(s, id) {
-  return settled(s, id) || !!s.flags?.[id === "samechan" ? "_samechan_bond_question_done" : questionDoneKey(id)];
+  return settled(s, id) || !!s.flags?.[questionDoneKey(id)];
 }
 
 /** 最初の未完段階。0は初対面、1〜5はそのハートで読める既存会話。存在しない段階は作らない。 */

@@ -104,7 +104,7 @@ export function recordRomanceChoice(line, choice) {
 export function romanceOpen(id) {
   if (id === "hiyori" && !hiyoriFinaleReady()) return false;
   if (id === "samechan" && (!chapterFeatureEnabled(state.chapter, "samechanRomance")
-    || !state.flags._samechan_bond_question_done
+    || !state.flags[questionDoneKey("samechan")]
     || state.romanceChoices?.bond_q1_samechan?.char !== id)) return false;
   const def = BOND_FINALES[id];
   // 最後の質問がない相手は、実際に答えた質問がある時だけ（未回答を恋愛と推測しない）
@@ -229,7 +229,7 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
   : id === "mashiro" ? mashiroScenesRead(state.flags) && questionComplete(state, id)
   : id === "samechan"
   ? storyCount(id) >= 3 && !!state.flags._samechan_quiet_seat_done && !!state.flags._samechan_closing_check_done
-    && (isLover(id) || !!state.flags._friend_samechan || !!state.flags._samechan_bond_question_done
+    && (isLover(id) || !!state.flags._friend_samechan || !!state.flags[questionDoneKey("samechan")]
       && state.romanceChoices?.bond_q1_samechan?.char === id)
     && samechanHeartEventsDone(state) // ♥4・♥5の来店会話（#2025）
   // 久世: LIME交換の寄り道と、助言の後の「答えを返しに行く」外出の両方（ch3-story-wiring.js / ch3-outing-progress.js の保存キーの写し）
