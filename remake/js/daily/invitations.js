@@ -42,5 +42,7 @@ export function invitationVisitSpot(invite, source) {
 export const immediateInvitation = (invite, save) => !!invite && !invite.afterClose
   && (invite.day ?? save.day) === save.day && invite.slot === save.slot;
 
+// 再案内へ戻した予約（旧セーブ救済を含む）と、実際に送った返信の履歴は隠さない。
 export const missedInvitationNote = item => item.msg?.type === "invitation"
-  && item.result === "expired" ? "返信するタイミングを逃した" : null;
+  && item.result === "expired" && !item.needsResend && !item.log?.some((entry) => entry.me) ? "返信するタイミングを逃した" : null;
+

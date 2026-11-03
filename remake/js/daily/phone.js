@@ -837,10 +837,13 @@ function readReward(m) {
   }
 }
 
+/** 事前案内と自動辞退で、同じ返事待ちの誘いを対象にする。 */
+const conflictingInvites = (acceptedItem, opts = {}) => (state.inbox || []).filter((other) =>
+  other !== acceptedItem && !other.done && other.msg?.type === "invitation" && inviteState(other, opts) !== "expired");
+
 /** 一方の約束を承諾したら、その日に競合する誘いには先の約束を理由に返事を残す */
 function declineConflictingInvites(acceptedItem, opts = {}) {
-  for (const other of state.inbox || []) {
-    if (other === acceptedItem || other.done || other.msg?.type !== "invitation" || inviteState(other, opts) === "expired") continue;
+  for (const other of conflictingInvites(acceptedItem, opts)) {
     const m = other.msg;
     const source = DB.lime.find((message) => message.id === originId(other)) || m;
     const text = POLITE.has(m.sender) ? "すみません、先に別の約束があって……" : "ごめん、先に別の約束をしてしまった";
@@ -912,6 +915,8 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     const first = !state.flags[hintKey];
     const night = replySlot(m) === 1;
     const deadline = storeInvitationSpot(m) ? "夜の行動の前まで（店の営業日だけ）" : night ? "夜の行動の前まで" : "昼の行動の前まで";
+    const conflicts = !forced && st === "open" ? conflictingInvites(item, ui.inviteOptions).length : 0;
+    const hint = st === "busy" ? null : first ? m.hint || `誘いに乗ると行動を1回使う。返事は今日の${deadline}ならできる。断っても嫌われたりはしない` : `返事は今日の${deadline}`;
     const pick = await ui.choose(
       [
         st === "busy"
@@ -920,7 +925,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
         { text: no, go: false },
         ...(!forced ? [{ text: "あとで返事する（トーク一覧へ）", later: true }] : []),
       ],
-      st === "busy" ? null : first ? m.hint || `誘いに乗ると行動を1回使う。返事は今日の${deadline}ならできる。断っても嫌われたりはしない` : `返事は今日の${deadline}`,
+      conflicts ? `${hint}。承諾すると、ほかの返事待ちの誘い${conflicts}件に、自動で断りの返信を送る` : hint,
     );
     if (!pick || !alive() || state !== session || item.done) return; // 返事をせずに抜けた（期限内ならまた返事できる）
     if (pick.later) { item.replyState = "waiting"; return "deferred"; }
@@ -1294,3 +1299,4 @@ export async function openContactLime({ contacts, summary, actions, onAction, si
     await ui.close();
   }
 }
+
