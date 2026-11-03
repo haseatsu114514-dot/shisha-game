@@ -225,7 +225,7 @@ function eligible(m, { tournamentDay = false } = {}) {
   // くゆりの♥3の外出（#2025）は問屋街の豆屋。はじめが地元にいる第1・2章だけ届く。
   if (m.id === "lime_outing_rin_1" && state.chapter > 2) return false;
   // ひよりの♥3の外出（#2025）は第1章の昼だけ。tonariでの再会（スミさんのLIME）の後に届き、夜や締めくくりの前提は増やさない。
-  if (m.id === "lime_outing_hiyori_1" && !(state.chapter === 1 && state.flags._hiyori_tonari_return_done)) return false;
+  if (m.id === "lime_outing_hiyori_1" && !(chapterFeatureEnabled(state.chapter, "hiyoriHomeOuting") && state.flags._hiyori_tonari_return_done)) return false;
   if (cond === "hiyori_tonari") return hiyoriEventStatus("tonari_return") === "ready";
   if (cond === "story_count") return (state.story[m.sender] || 0) >= (m.trigger_value || 1);
   if (cond === "lime_exchanged") {
@@ -381,10 +381,10 @@ function mukaiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
 }
 
 function sumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
-  if (tournamentDay || !chapterFeatureEnabled(state.chapter, "hiyoriDaily") || (state.chapter === 1 && state.day >= TOURNAMENT_DAY)) return null;
+  if (tournamentDay || !chapterFeatureEnabled(state.chapter, "hiyoriDaily") || (chapterFeatureEnabled(state.chapter, "sumiStoryShifts") && state.day >= TOURNAMENT_DAY)) return null;
   const id = `_sumi_baito_inv_d${state.day}`;
   if (state.limeRead.includes(id)) return null;
-  const fixed = state.chapter === 1 && (state.day === 3 || state.day === 8);
+  const fixed = chapterFeatureEnabled(state.chapter, "sumiStoryShifts") && (state.day === 3 || state.day === 8);
   const slacking = state.day >= 5 && state.day - (state.lastBaitoDay || 0) >= 4;
   if (!fixed && !slacking) return null;
   // #2088: 夜のtonariに外せない予定がある日は「シフトには入れない」と断るので、サボり気味の催促は出さない（翌日以降に再送）。
