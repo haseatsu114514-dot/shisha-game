@@ -19,24 +19,9 @@ export const CH4_RIVAL_QUALITY = Object.freeze(Object.fromEntries(
 export const CH4_SPEND = Object.freeze([2, 3, 2, 3]);
 export const CH4_CRAFT_STEP_COUNT = 11;
 const clone = value => structuredClone(value);
-// 旧保存の内部名 wang（王煙楼）は master_hookah へ読み替える（#2031）。読み替えはこの別名だけ。
-const LEGACY_ID = Object.freeze({ wang: "master_hookah" });
 // 同点時の並びは改名前（wang）の文字列順を保つ。
 const tieKey = id => id === "master_hookah" ? "wang" : id;
 const byTie = (a, b) => tieKey(a).localeCompare(tieKey(b));
-const renameKeys = obj => obj && typeof obj === "object" && !Array.isArray(obj)
-  ? Object.fromEntries(Object.entries(obj).map(([key, v]) => [LEGACY_ID[key] || key, v])) : obj;
-function migrateResult(result) {
-  if (!result || typeof result !== "object") return;
-  if (Array.isArray(result.rows)) for (const row of result.rows) if (row && LEGACY_ID[row.id]) row.id = LEGACY_ID[row.id];
-  if (result.votes) result.votes = Object.fromEntries(Object.entries(result.votes).map(([judge, row]) => [judge, renameKeys(row)]));
-}
-function migrateLegacyIds(p) {
-  if (p.votes) p.votes = Object.fromEntries(Object.entries(p.votes).map(([judge, row]) => [judge, renameKeys(row)]));
-  if (p.quality) p.quality = renameKeys(p.quality);
-  migrateResult(p.result);
-  for (const entry of p.history || []) migrateResult(entry);
-}
 const resources = value => clone(Object.fromEntries(["flavorStock", "stamina", "equip", "recipes", "stats"].map(key => [key, value[key]])));
 const restore = (value, snapshot) => Object.assign(value, clone(snapshot));
 const emptyVotes = () => Object.fromEntries(CH4_JUDGES.map(judge => [judge,
@@ -51,7 +36,6 @@ export function chapterFourMatch(value) {
     || !Number.isInteger(p.voted) || p.voted < 0 || p.voted > CH4_SPEND.length || !Array.isArray(p.history)) {
     throw new Error("世界大会の制作保存を確認できません");
   }
-  migrateLegacyIds(p);
   return p;
 }
 
