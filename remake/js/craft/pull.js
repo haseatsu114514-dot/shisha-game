@@ -90,12 +90,12 @@ export function careStartTemp(cs) {
 const MODES = {
   pull: {
     store: "pull", title: "吸い出し", min: 2, safe: 3, drift: false, serveLabel: "提供する",
-    hint: "右で温度を上げ、左で下げる。中央はキープ。吸い終えてから次の針を止めよう。緑の範囲で味を整える。低めと高めで表情が変わる葉もある。蒸らしで集中できたほど針はゆっくり動く",
+    hint: "右で温度を上げ、左で下げる。中央のキープは左寄りで微減、右寄りで微増。雨の日は熱が入りにくいので、温度が下がったら熱を入れる吸いを増やそう。吸い終えてから次の針を止めよう。緑の範囲で味を整える。低めと高めで表情が変わる葉もある。蒸らしで集中できたほど針はゆっくり動く",
     start: startTemp, focus: pullFocusFromSteam,
   },
   care: {
     store: "care", title: "熱管理", min: 1, safe: 2, drift: true, serveLabel: "整え終える",
-    hint: "立ち上げから吸われ続けた炭は消耗して、温度が下がっていく。まず交換する炭の数を決め、その炭を焼いてから替える。焼け具合が良いほど温度がしっかり戻り、長く持つ。ダイヤルは吸い出しと同じで、キープなら温度を保てる。炎の印まで上がって焦げても、雪の印まで冷え切っても、その一台はダメになる",
+    hint: "立ち上げから吸われ続けた炭は消耗して、温度が下がっていく。まず交換する炭の数を決め、その炭を焼いてから替える。焼け具合が良いほど温度がしっかり戻り、長く持つ。ダイヤルは吸い出しと同じで、中央のキープは左寄りで微減、右寄りで微増。雨の日は熱を入れる吸いを増やそう。炎の印まで上がって焦げても、雪の印まで冷え切っても、その一台はダメになる",
     start: careStartTemp, focus: () => ({ slow: 1, window: 1 }),
   },
 };
@@ -125,7 +125,7 @@ async function pullGame(cs, mode) {
   // 熱すぎる吸引のペナルティも、緑上端〜危険帯の中の同じ相対位置で始める。
   const harshTemp = visualTemperature(.76, bands);
   const panel = stepPanel(mode.store, mode.title, tutorial
-    ? "中央のキープで温度を保つ。右の熱を入れる吸いは温度を上げ、左の熱を逃がす吸いは温度を下げる。吸い終わってから次の針を止める"
+    ? "中央のキープは左寄りで微減、右寄りで微増。右の熱を入れる吸いは温度を上げ、左の熱を逃がす吸いは温度を下げる。雨の日は熱を入れる吸いを増やそう。吸い終わってから次の針を止める"
     : mode.hint);
   const gameClock = createCraftClock(panel);
   const concentration = mode.focus(cs);
@@ -173,13 +173,17 @@ async function pullGame(cs, mode) {
     <circle class="dial-pivot-rim" cx="${DIAL.cx}" cy="${DIAL.cy}" r="9"/>
     <circle class="dial-pivot" cx="${DIAL.cx}" cy="${DIAL.cy}" r="5"/>
   </svg>` });
-  const labels = el("div.pull-dial-labels", ZONES.map(z => el(`div.pull-zone-label.l-${z.id}`, [
+  const labels = el("div.pull-dial-labels", ZONES.filter(z => z.id !== "keep").map(z => el(`div.pull-zone-label.l-${z.id}`, [
     el("b", { text: z.id === "keep" ? z.label : `${z.mark} ${z.label}` }),
     el("span", { text: z.id === "keep" ? "この温度を維持" : z.id === "down" ? "温度を下げる" : "温度を上げる" }),
   ].filter(Boolean))));
   if (effectVisible("sense")) dial.append(effectBadge("sense", "感"));
   if (effectVisible("technique")) dial.append(effectBadge("technique", "技"));
-  const dialRow = el("div.pull-dial-row", [dial, labels]);
+  const currentZoneLabel = el("b", { text: "熱を逃がす吸い" });
+  const currentZone = el("div.pull-current-zone", { dataset: { test: "pull-current-zone" } }, [
+    el("small", { text: "針の現在位置" }), currentZoneLabel,
+  ]);
+  const dialRow = el("div.pull-dial-row", [dial, labels, currentZone]);
   const needle = dial.querySelector(".pg-needle");
   const justs$ = [...dial.querySelectorAll(".pg-just")];
   const senseExtras = [...dial.querySelectorAll(".pg-sense-extra")];
@@ -196,6 +200,10 @@ async function pullGame(cs, mode) {
   const moveNeedle = (at) => {
     needle.setAttribute("transform", `rotate(${((at - 0.5) * 180).toFixed(2)} ${DIAL.cx} ${DIAL.cy})`);
     needle.dataset.pos = (at * 100).toFixed(2);
+    const zone = ZONES.find(z => at >= z.from && at <= z.to) || ZONES[1];
+    currentZone.dataset.zone = zone.id;
+    const label = zone.id === "keep" ? at < .5 ? "キープ左・微減" : "キープ右・微増" : zone.label;
+    if (currentZoneLabel.textContent !== label) currentZoneLabel.textContent = label;
   };
   moveNeedle(0);
   // 回数の点は表示しない（TH80）。炭・雨・少穴だけ短い札に残す。

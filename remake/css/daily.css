@@ -361,6 +361,7 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
 }
 .spot-pin .sub-label.closed-tag { background: rgba(40, 18, 24, 0.92); color: #f0b9b9; border: 1px solid rgba(240, 185, 185, 0.4); }
+.spot-pin .pin-cost { margin-top: 2px; padding: 2px 7px; color: #ffe6ac; background: rgba(24, 14, 36, .92); border: 1px solid rgba(255, 214, 136, .7); border-radius: 6px; font-size: 12px; white-space: nowrap; }
 .pin-status { margin-top: 3px; padding: 2px 7px; color: #f0b9b9; background: rgba(20, 12, 20, 0.85); font-size: 14px; line-height: 1.25; white-space: nowrap; }
 /* 行けない場所は「消えた」ではなく「無効化」に見せる（旧版 #6） */
 .spot-pin.off .shield { filter: grayscale(0.5) brightness(0.74); }
@@ -865,7 +866,7 @@ img.lime-face[src$="/face_hiyori.png"] { box-sizing: border-box; padding-left: 3
   pointer-events: auto;
   cursor: pointer;
   position: absolute;
-  top: 16px;
+  top: 68px;
   left: 50%;
   display: flex;
   align-items: center;
@@ -1076,7 +1077,7 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 
 /* 暗転が終わった朝に、睡眠による回復を見せる。 */
 .sleep-recovery { position:absolute; left:50%; top:37%; translate:-50% 0; width:540px; padding:30px 38px;
-  border:1px solid #c8e8ca88; border-radius:12px; background:#101b17e8; color:#edf9ee; text-align:center;
+  border:1px solid #c8e8ca; border-radius:12px; background:#101b17f7; color:#fff; text-align:center;
   opacity:0; transform:translateY(12px); transition:opacity .22s,transform .22s; box-shadow:0 12px 50px #0008; }
 .sleep-recovery.show {opacity:1; transform:none;}
 .sleep-recovery p {font-size:25px; margin:0 0 24px; font-weight:700;}
@@ -1179,7 +1180,7 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .levelup-band .lb-top { color: #ffd35e; font-size: 20px; letter-spacing: 0.08em; }
 .levelup-band .lb-lv { font-size: 22px; font-weight: 700; }
 .levelup-band .lb-hidane { color: #fff1d0; font-size: 18px; font-weight: 700; }
-.levelup-band .lb-learned { grid-column: 1 / -1; color: var(--text-dim); font-size: 15px; }
+.levelup-band .lb-learned { grid-column: 1 / -1; color: #f6eefc; font-size: 15px; }
 .levelup-band .lb-gift { grid-column: 1 / -1; color: #ffd08a; font-size: 15px; }
 .levelup-band.gift { grid-template-columns: auto; justify-items: center; text-align: center; }
 
@@ -1205,9 +1206,9 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .lu-hidane-icon, .hidane-flight { display: inline-block; width: 17px; height: 17px; border-radius: 50%; background: radial-gradient(circle at 50% 45%, #ffffff, #fff1d0 45%, #d9b46a 80%, #7a5a2a); box-shadow: 0 0 10px rgba(255, 238, 200, 0.9); }
 .hidane-flight { position: absolute; left: 0; top: 0; margin: -9px 0 0 -8px; pointer-events: none; z-index: 5; }
 .lu-milestone { color: #ffe08a; }
-.lu-learned { color: var(--text); }
+.lu-learned { color: #f6eefc; }
 .lu-gift { color: #ffd08a; }
-.lu-note { color: var(--text-dim); font-size: 15px !important; }
+.lu-note { color: #ead9f2; font-size: 15px !important; }
 .levelup .lu-ok { margin-top: 12px; min-width: 140px; min-height: 44px; opacity: 0; pointer-events: none; transition: opacity .2s; }
 .levelup.lu-settled-state .lu-ok { opacity: 1; pointer-events: auto; }
 @media (prefers-reduced-motion: reduce) { .lu-gauge b, .levelup-band, .levelup-backdrop { transition: none; } .levelup.burst .lu-head { animation: none; } }

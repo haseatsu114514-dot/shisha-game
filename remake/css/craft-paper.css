@@ -258,6 +258,8 @@ html .bench[data-mode] .coal-corners { border-color: #c5a2dc88; }
 html .bench[data-mode] .coal.pikan .coal-corners, html .bench[data-mode] .coal:focus-visible .coal-corners { border-color: var(--amber-ink); filter: drop-shadow(0 0 6px #d8963f); }
 html .bench[data-mode] .coal.soon .coal-corners { border-color: var(--amber); }
 html .bench[data-mode] .coal:focus-visible { outline-color: var(--amber); }
+html .bench[data-mode] .heat-pick { background: var(--paper-card); color: var(--paper-ink); border-color: var(--lavender-line); }
+html .bench[data-mode] .heat-pick[data-phase="just"] { background: #fff1d8; color: #793a1c; border-color: var(--amber-ink); }
 html .bench[data-mode] .care-coals-ask { color: var(--lavender); }
 html .bench[data-mode] .care-coals-lead { color: var(--paper-ink); }
 html .bench[data-mode] .care-coal .btn-desc { color: #9b581d; }
@@ -372,6 +374,9 @@ html .bench[data-mode] .pull-zone-label > b { text-shadow: none; }
 html .bench[data-mode] .pull-zone-label.l-down { color: var(--cool-ink); }
 html .bench[data-mode] .pull-zone-label.l-up { color: var(--warm-ink); }
 html .bench[data-mode] .pull-zone-label.l-keep { color: var(--paper-ink); }
+html .bench[data-mode] .pull-current-zone { background: var(--paper-card); color: var(--paper-ink); border-color: var(--amber-ink); }
+html .bench[data-mode] .pull-current-zone[data-zone="down"] { color: var(--cool-ink); border-color: var(--cool-ink); }
+html .bench[data-mode] .pull-current-zone[data-zone="up"] { color: var(--warm-ink); border-color: var(--warm-ink); }
 html .bench[data-mode] .leaf-icon { filter: none; }
 
 /* ---------------------------------------------------------------- 結果カード */
@@ -562,6 +567,16 @@ html .bench[data-mode] .pull-btns .btn.primary,
 html .bench[data-mode] .pull-btns .btn.primary:hover:not(:disabled) {
   background: transparent; border: 14px solid transparent;
   border-image: var(--cp-button-amber) 36 fill / 14px / 0 stretch; box-shadow: none;
+}
+/* 練習・レッスンの確定操作を同じ金ボタンに揃える。 */
+html .bench[data-mode] .btn.primary:is(.pack-confirm, .hr-punch),
+html .bench[data-mode] .btn.primary:is(.pack-confirm, .hr-punch):hover:not(:disabled),
+html .bench[data-mode][data-art-skin] .btn.primary:is(.pack-confirm, .hr-punch),
+html .bench[data-mode][data-art-skin] .btn.primary:is(.pack-confirm, .hr-punch):hover:not(:disabled) {
+  color: #3b2208; background-color: var(--amber);
+}
+html .bench[data-mode] .bench-demo-sheet .bench-demo-finish {
+  color: #3b2208; background: var(--amber); border-color: #b88132; font-weight: 700;
 }
 /* 名前欄は元から絵に重なるabsolute層。空の帯を塗らず、見える台詞だけ窓に載せる。 */
 html .bench[data-mode] .bench-worker-name { background: none; }

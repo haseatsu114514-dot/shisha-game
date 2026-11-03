@@ -1567,12 +1567,6 @@
           "text": "でも今日は、はじめくんとお茶してる時の私でいたいな"
         },
         {
-          "type": "condition",
-          "condition_type": "flag",
-          "flag": "_minto_identity_revealed",
-          "next_true": "id_card_known"
-        },
-        {
           "type": "set_flag",
           "flag": "_minto_identity_revealed"
         },
@@ -1726,18 +1720,6 @@
             "speaker": "hajime",
             "face": "smile",
             "text": "そう言ってもらえて、俺もうれしい"
-          }
-        ],
-        "id_card_known": [
-          {
-            "speaker": "minto",
-            "face": "ura_normal",
-            "text": "……身分証で見たかもしれないけど、ちゃんと言うね"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "……うん。名前は、あの時見てた。でも、俺から呼んでいいのか、分からなくて"
           }
         ]
       }

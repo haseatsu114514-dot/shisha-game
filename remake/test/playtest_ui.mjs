@@ -100,21 +100,56 @@ try {
       });
       await probe.locator(".gain-card.affinity").first().waitFor();
       await probe.waitForTimeout(500); // production entrance animation
-      const cards = await probe.locator(".gain-card.affinity").evaluateAll(nodes => {
-        const luminance = css => {
-          const rgb = css.match(/[\d.]+/g).slice(0, 3).map(Number).map(n => { const s = n / 255; return s <= .04045 ? s / 12.92 : ((s + .055) / 1.055) ** 2.4; });
+      const readContrasts = () => probe.locator(".gain-card.affinity").evaluateAll(nodes => {
+        const rgba = css => {
+          const values = css.match(/[\d.]+/g).map(Number);
+          return [...values.slice(0, 3), values[3] ?? 1];
+        };
+        const over = (front, back) => {
+          const alpha = front[3] + back[3] * (1 - front[3]);
+          return [...front.slice(0, 3).map((v, i) => alpha ?
+            (v * front[3] + back[i] * back[3] * (1 - front[3])) / alpha : 0), alpha];
+        };
+        const luminance = rgba => {
+          const rgb = rgba.slice(0, 3).map(n => { const s = n / 255; return s <= .04045 ? s / 12.92 : ((s + .055) / 1.055) ** 2.4; });
           return rgb[0] * .2126 + rgb[1] * .7152 + rgb[2] * .0722;
         };
-        return nodes.map(node => {
-          const bg = luminance(getComputedStyle(node).backgroundColor);
-          return [...node.querySelectorAll(".gc-main, .gc-top, .gc-sub")].map(text => {
-            const fg = luminance(getComputedStyle(text).color);
-            return { text: text.textContent, contrast: (Math.max(fg, bg) + .05) / (Math.min(fg, bg) + .05) };
-          });
-        });
+        return nodes.flatMap(node => [...node.querySelectorAll(".gc-main, .gc-top, .gc-sub")].map(text => {
+          // Include the name's own translucent plaque, not just the whole card.
+          // Fail explicitly if a future image/opacity layer makes color-only measurement insufficient.
+          let background = [0, 0, 0, 0];
+          for (let layer = text; layer && background[3] < 1; layer = layer.parentElement) {
+            const style = getComputedStyle(layer);
+            if (style.backgroundImage !== "none" || style.borderImageSource !== "none" || +style.opacity !== 1)
+              throw new Error(`Unmeasured affinity background layer: ${layer.className}`);
+            background = over(background, rgba(style.backgroundColor));
+          }
+          if (background[3] !== 1) throw new Error("No opaque affinity background found");
+          const foreground = over(rgba(getComputedStyle(text).color), background);
+          const fg = luminance(foreground), bg = luminance(background);
+          return { bond: node.classList.contains("bond"), selector: text.className, text: text.textContent,
+            color: getComputedStyle(text).color, ownBackground: getComputedStyle(text).backgroundColor,
+            background, contrast: (Math.max(fg, bg) + .05) / (Math.min(fg, bg) + .05) };
+        }));
       });
-      assert.equal(cards.length, 2);
-      for (const row of cards.flat()) assert(row.contrast >= 4.5, `paper affinity contrast: ${JSON.stringify(row)}`);
+      const cards = await readContrasts();
+      assert.equal(cards.length, 6, "Name, heading and supplement for ordinary affinity and bond");
+      assert.deepEqual([...new Set(cards.map(row => row.bond))], [false, true]);
+      for (const row of cards) {
+        assert(row.contrast >= 4.5, `paper affinity effective contrast: ${JSON.stringify(row)}`);
+        if (row.selector === "gc-main") {
+          assert.equal(row.color, "rgb(255, 255, 255)", "Keep main's white name label");
+          assert.equal(row.ownBackground, "rgba(26, 14, 30, 0.9)", "Keep main's translucent dark plaque");
+        }
+      }
+      // Negative control: the old high-specificity paper-ink override must fail on the dark plaque.
+      await probe.locator(".gain-card.affinity .gc-main").evaluateAll(ns => ns.forEach(n => n.style.color = "var(--paper-ink)"));
+      const broken = (await readContrasts()).filter(row => row.selector === "gc-main");
+      assert.equal(broken.length, 2);
+      assert(broken.every(row => row.contrast < 4.5), "Detector missed the old dark-on-dark regression");
+      await probe.locator(".gain-card.affinity .gc-main").evaluateAll(ns => ns.forEach(n => n.style.removeProperty("color")));
+      assert((await readContrasts()).every(row => row.contrast >= 4.5), "Restored production styles must pass");
+      console.log(`[playtest UI] #2447 effective contrast (${touch ? "touch" : "desktop"}): ${JSON.stringify(cards)}`);
       const shots = process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser";
       fs.mkdirSync(shots, { recursive: true });
       await probe.screenshot({ path: `${shots}/2447-affinity-${touch ? "touch" : "desktop"}.png` });
@@ -126,9 +161,12 @@ try {
       });
       assert(geometry.clear && geometry.fits, `coach covers icon or viewport: ${JSON.stringify(geometry)}`);
       const bubble = probe.getByRole("button", { name: "案内からLIMEを開く" });
+      await bubble.evaluate(n => { window.retainedCoach = n; });
       if (touch) await bubble.tap(); else { await bubble.focus(); await probe.keyboard.press("Enter"); }
       await probe.locator('[data-test="phone-close"]').waitFor();
       assert.equal(await probe.locator(".lime-coach").count(), 0);
+      await probe.evaluate(() => { retainedCoach.click(); retainedCoach.click(); });
+      assert.equal(await probe.evaluate(() => P.opens), 1, "Repeated input must not reopen the active phone");
       await probe.locator('[data-test="phone-close"]').click();
       await probe.evaluate(() => P.closed);
       assert.equal(await probe.evaluate(() => P.opens), 1);

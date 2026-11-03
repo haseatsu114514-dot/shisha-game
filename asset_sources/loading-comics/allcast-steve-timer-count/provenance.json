@@ -1,0 +1,83 @@
+{
+  "id": "steve-timer-count",
+  "title": "タイマーの数",
+  "request": "LDC24 #021",
+  "purpose": "same-executor image generation and candidate-only repository storage pilot",
+  "status": "candidate_needs_art_revision_not_adopted",
+  "generation_tool": "image_gen__imagegen",
+  "generation_calls": 1,
+  "generated_output_basename": "exec-d5f1a8ce-2e59-4ad9-a8ef-e849600b7de7.png",
+  "original": {
+    "file": "original.png",
+    "sha256": "c582cbd9e8ecec52784b65bc4f2a4c200e2156b201aefa099cbf235182a21dc2",
+    "bytes": 1813689,
+    "width": 1536,
+    "height": 1024,
+    "mode": "RGB",
+    "reencoded": false
+  },
+  "references": [
+    {
+      "source": "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+      "bytes": 7055,
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB"
+    },
+    {
+      "source": "assets/sprites/characters/steve/chr_steve_normal.png",
+      "bytes": 809572,
+      "sha256": "e1997092f72560f735958bdd1145459fd30efa650803d24fbeaa646527cbe5bd",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "source": "assets/backgrounds/bg_steve_shop.png",
+      "bytes": 1257049,
+      "sha256": "628b5e7ae953a3fcb8553f10161d6956507ee24c21c110cabb75fcc8ca7e52a7",
+      "size": [
+        1280,
+        720
+      ],
+      "mode": "RGB"
+    },
+    {
+      "source": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+      "bytes": 402899,
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    }
+  ],
+  "reference_image_payload_received_bytes": 2073676,
+  "reference_transfer": "Official git-lfs smudge, exact authoritative pointers only; existing authenticated repository; no full-tree LFS scan",
+  "base_commit": "fe68ff7b37ff7cf7d91d2ba69ce5fa6ea6719381",
+  "script_source": "asset_sources/loading-comics/batch-allcast-refill-20261102/scripts.json #021",
+  "script_blob": "29694575c58c97b406387a0d70c79460dcc66b49",
+  "caption": "スティーブは、急ぎすぎないようにタイマーを使う職人。",
+  "script_minChapter": 1,
+  "readme_chapter_label": 3,
+  "chapter_discrepancy": "Recorded only; no unlock or game data changed.",
+  "created_utc": "2026-11-02T17:04:05.809411+00:00",
+  "manual_chat_file_relay_used": false,
+  "runtime_registered": false,
+  "adopted": false,
+  "single_episode_owner_selection_requested": false,
+  "global_configuration_audit": {
+    "initialization_original_metadata_unchanged": true,
+    "later_session_mtime_changed": true,
+    "other_metadata_unchanged": true,
+    "writer_or_cause": "unconfirmed",
+    "no_original_global_write_command_executed": true,
+    "original_global_values_not_inspected_or_copied": true
+  }
+}
