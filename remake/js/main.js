@@ -246,7 +246,8 @@ window.__remake = {
       }
       // プリクラ（#939）: purikura は演出だけ、purikura-scene はあげはのギャル友の回を通しで
       if (name.startsWith("purikura")) {
-        const { ROOMS, readDialogues } = await import("./chapters/ch2-city-data.js");
+        const { ROOMS } = await import("./chapters/ch2-city-data.js");
+        const { readDialogues } = await import("./core/chapter-data.js");
         Object.assign(state, { chapter: 2, slot: 0 });
         state.met.ageha = true;
         await setBg(ROOMS.ageha);
