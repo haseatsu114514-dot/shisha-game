@@ -3,7 +3,7 @@
 // 2026-11-02 オーナー「ヌールはシーシャ屋もしつつガイドもしてる。シーシャの方へ行くと交流が深まり、好感度3ぐらいでサンドボードに誘われる。
 // 最初は無料、その後は相場」（DSR21）: 宿の隣のカフェ・サーリム（ヌールの父の店。表にツアーデスク）で一台頼んで話すと好感度が上がる。
 // 段階の会話は♥0・1・2・3で読み、♥3の誘いで砂丘へ。2回目以降の砂丘は 6,000円（相場: ガイド付きのサンドボード単体 約150ディルハム）。
-import { readResult, rankAtLeast, RANK_ORDER } from "../minigames/desert-ride-model.js";
+import { readResult, rankAtLeast, RANK_ORDER, RULES_VERSION } from "../minigames/desert-ride-model.js";
 import { spendableMoney } from "../core/travel-budget.js";
 
 export const DESERT_FLAG = "_ch4_desert";
@@ -146,8 +146,11 @@ export function beginDesertOuting(value, day) {
 export function desertRecords(value) {
   const raw = value?.desert && typeof value.desert === "object" && !Array.isArray(value.desert) ? value.desert : {};
   const best = readResult(raw.best);
+  const legacyBest = readResult(raw.legacyBest);
+  const ranks = [best?.rank, legacyBest?.rank, raw.bestRank].filter(rank => RANK_ORDER.includes(rank));
+  const bestRank = ranks.sort((a, b) => RANK_ORDER.indexOf(b) - RANK_ORDER.indexOf(a))[0] ?? null;
   const firstClear = raw.firstClear && Number.isInteger(raw.firstClear.day) ? { chapter: raw.firstClear.chapter ?? null, day: raw.firstClear.day } : null;
-  return { runs: integer(raw.runs) ?? 0, best, bestRank: best?.rank ?? null, firstClear, rewarded: raw.rewarded === true, wins: integer(raw.wins) ?? 0,
+  return { runs: integer(raw.runs) ?? 0, best, ...(legacyBest ? { legacyBest } : {}), bestRank, firstClear, rewarded: raw.rewarded === true, wins: integer(raw.wins) ?? 0,
     naruMet: raw.naruMet === true, naruWins: integer(raw.naruWins) ?? 0 };
 }
 
@@ -171,11 +174,15 @@ export function recordDesertResult(value, data, { awardExp = null } = {}) {
   const result = readResult(data);
   if (!value || typeof value !== "object" || !result) return null;
   const before = desertRecords(value);
-  const newBest = !before.best || result.score > before.best.score;
+  const sameRules = before.best && (before.best.rulesVersion ?? 1) === (result.rulesVersion ?? 1);
+  // 旧ルールの高得点を残し、新ルールの初回は必ず新しいベストとして扱う。
+  if (before.best?.rulesVersion === RULES_VERSION && result.rulesVersion !== RULES_VERSION) return null;
+  const legacyBest = before.legacyBest || (!sameRules && before.best ? before.best : null);
+  const newBest = !sameRules || result.score > before.best.score;
   const firstClear = !before.firstClear;
   const who = result.race?.who === "naru" ? "naru" : "noor", won = result.race?.won === true;
   const firstWin = won && who === "noor" && before.wins === 0, firstNaruWin = won && who === "naru" && before.naruWins === 0;
-  const desert = { runs: before.runs + 1, best: newBest ? result : before.best,
+  const desert = { ...(legacyBest ? { legacyBest } : {}), runs: before.runs + 1, best: newBest ? result : before.best,
     firstClear: before.firstClear || { chapter: Number.isInteger(value.chapter) ? value.chapter : null, day: Number.isInteger(value.day) ? value.day : 0 },
     rewarded: before.rewarded, wins: before.wins + (won && who === "noor" ? 1 : 0), naruMet: before.naruMet, naruWins: before.naruWins + (won && who === "naru" ? 1 : 0) };
   let exp = 0;
@@ -183,7 +190,7 @@ export function recordDesertResult(value, data, { awardExp = null } = {}) {
     desert.rewarded = true;
     exp = awardExp ? awardExp({ key: "desert_ride", place: "dubai_dunes", person: DESERT_GUIDE }) : 0;
   }
-  desert.bestRank = desert.best.rank;
+  desert.bestRank = before.bestRank && rankAtLeast(before.bestRank, desert.best.rank) ? before.bestRank : desert.best.rank;
   value.desert = desert;
   return { entry: result, newBest, firstClear, exp, won, firstWin, who, firstNaruWin };
 }
@@ -257,3 +264,4 @@ export function desertDailySpots(value, day) {
 
 /** 地図で選んだ行き先を、今行ける時だけ返す（行けない行き先は処理しない）。 */
 export const desertDailySpotById = (value, day, id) => desertDailySpots(value, day).find(entry => entry.id === id && !entry.unavailable) || null;
+

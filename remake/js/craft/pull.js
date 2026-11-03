@@ -1,3 +1,4 @@
+import { startNaruFinish, recordNaruFinish } from "../core/naru-finish.js";
 import { craftContext } from "./context.js";
 import { state } from "../core/state.js";
 import { growthPerks, growthFeature, useGrowthInsurance, growthSkill, growthLesson, growthCritical, settleGrowthPhase, LESSON_TUNING, SKILL_TUNING } from "../core/growth-effects.js";
@@ -116,6 +117,7 @@ async function pullGame(cs, mode) {
   await waitBenchReady(cs, mode.store);
   if(state!==owner)return false;
   const tutorial = cs.mode === "tutorial";
+  if (mode.store === "pull" && !cs.pullDone) startNaruFinish(cs, growthLesson(state, "M-W3"));
   const context=craftContext(cs);
   // 葉が傷むと適温帯が細くなるので、ダメージのたびに bands/ideal を取り直す。中心は動かないので一度だけ。
   let bands = temperatureBands(cs), ideal = bands.ideal;
@@ -148,7 +150,7 @@ async function pullGame(cs, mode) {
   const wobble = () => (mode.drift ? conditions.sparsity * 0.05 * Math.sin(elapsed * Math.PI * 2 / 2.6) + 0.014 * (1 - 0.7 * clarity) * Math.sin(elapsed * 1.7 + wobblePhase) : 0);
 
   // ---- 画面
-  const thermometer = buildThermometer({ cs, coldLimit: mode.drift ? COLD_OUT : null, height: 360, width: 64 });
+  const thermometer = buildThermometer({ cs, finishGuide: mode.store === "pull", coldLimit: mode.drift ? COLD_OUT : null, height: 360, width: 64 });
   // SVGの縦横比を保ち、針・リングを同じ中心で回す。
   const id = ++dials;
   const dial = el("div.pull-dial", { html: `<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
@@ -555,7 +557,7 @@ async function pullGame(cs, mode) {
     cs.failed = failed;
     scoreStep(cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, 0);
     if (failed === "burnt") cs.burnt = true;
-    if (mode.store === "pull") { cs.pullDone = true; refreshBench(); }
+    if (mode.store === "pull") { cs.pullDone = true; recordNaruFinish(cs, bands, { automatic: !!autoSkill() }); refreshBench(); }
     tickerSay(text.ticker);
     await resultCard(panel, { title: text.title, lines: [text.line, waterComfortLine(cs.water), `${pulls}回吸った`] });
     return true;
@@ -570,12 +572,14 @@ async function pullGame(cs, mode) {
   scoreStep(cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, score, mode.title);
   if (mode.store === "pull") {
     cs.pullDone = true;
+    const naruFinished = recordNaruFinish(cs, bands, { automatic: !!autoSkill() });
     refreshBench();
     tickerSay(inZone ? "パッキー「きた〜！ 煙の立ち方が変わりましたよ〜♪」" : "パッキー「おっと、ちょっと温度が怪しいか〜！？」");
     await resultCard(panel, {
       title: context.title,
       summary: [context.summary],
       lines: [
+        ...(naruFinished ? ["焼き際を見極めた。仕上げの評価に小さな手応え"] : []),
         inZone && bands.expressionWeight >= .999 ? "適温で、味の表情を整えられた" : optimal ? "最適温に合わせられた" : inZone ? "適温に整えられた" : T > ideal[1] ? "少し熱いままだった" : "まだぬるかった",
         tasteCard,
         waterComfortLine(cs.water),

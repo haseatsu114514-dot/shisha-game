@@ -1,6 +1,6 @@
 # CAMEL RACE のUI素材 ── Codex への依頼（2026-11-02・CR08）
 
-オーナー「UIとかがクロード臭いから生成したい」（2026-11-02）。同日「UIがまだクロードで作ったゲーム感あるから専用に作りたい生成で」で、#2422 の画面（ムチを押し続ける操作・速度計・サイフの声・はじめの吹き出し）に合わせて一覧を更新し、決まった英語の文字（PERFECT・GO! など）の手描きの字も足した（CR-UI12〜14）。
+オーナー「UIとかがクロード臭いから生成したい」（2026-11-02）。同日「UIがまだクロードで作ったゲーム感あるから専用に作りたい生成で」で、#2422 の画面（ムチを押し続ける操作・速度計・サイーフの声・はじめの吹き出し）に合わせて一覧を更新し、決まった英語の文字（PERFECT・GO! など）の手描きの字も足した（CR-UI12〜14）。
 
 今のレース画面のUI（#2384）は、CSSのグラデーション・半透明の板・丸い錠剤形・SVGの記号で組んでいて、どのゲームにもある「AIが作った画面」に見える。そこで**枠・札・ボタン・メダル・遊び方の絵を手で描いた素材に置き換える**。数字・名前・ゲージの量・判定の文字は今までどおりコードが描く（素材に焼き込まない）。
 
@@ -29,8 +29,8 @@ Claude は画像を生成しない。下の「Codex へ渡す文」をそのま�
 | CR-UI08 | `program-card.png` | 1280×800 | 上下左右96px | 遊び方とリザルトのカード | クリーム色の出走表の紙を、日に焼けた木の板に真鍮の角金具で留めたもの。紙の縁に細い二重線。中央は無地の紙（文字はコード） |
 | CR-UI09 | `button-primary.png` / `button-secondary.png` | 各600×160 | 左右64px・上下48px | カードのボタン（もう一度・次へ／終える・とばす） | 主は金色の真鍮の札、副は木の札に真鍮の縁。どちらも中央は無地 |
 | CR-UI10 | `stamp-{s,a,b,c}.png` | 各256×256 | ─ | リザルトの評価 | 審判の朱肉の判子を紙に押した跡（角の丸い四角、少しかすれて傾く）。S は朱、A は橙、B は藍、C は灰のインク。中は無地（文字はコード） |
-| CR-UI11 | `howto-camel.png` / `howto-voice.png` / `howto-whip.png` | 各640×480 | ─ | 遊び方の3ページの絵 | 1: 金の幕（★）を掛け、背にロボット騎手を乗せて走るラクダ。2: SUV の後ろの窓から身を乗り出し、借りたリモコンに口を寄せて叫ぶはじめ（運転席のラシードはハンドルを握るだけ）。3: リモコンのボタンを押し込むはじめの手と、腕を回してムチを振るロボット騎手。背景は砂と空だけで、外側は透過 |
-| CR-UI12 | `call-plate.png` | 720×160 | 左右160px・上下48px | 上の中央の「サイフの声」 | 車の無線機の細長い前面。黒い樹脂に真鍮の縁、左端に丸い窓（顔のアイコンをコードが入れる）と、その右に細かいスピーカーの網目の帯。中央から右は無地（台詞はコード） |
+| CR-UI11 | `howto-camel.png` / `howto-voice.png` / `howto-whip.png` | 各640×480 | ─ | 遊び方の3ページの絵 | 1: 金の幕（★）を掛け、背にロボット騎手を乗せて走るラクダ。2: SUV の後ろの窓から身を乗り出し、借りたリモコンに口を寄せて叫ぶはじめ（運転席のハリールはハンドルを握るだけ）。3: リモコンのボタンを押し込むはじめの手と、腕を回してムチを振るロボット騎手。背景は砂と空だけで、外側は透過 |
+| CR-UI12 | `call-plate.png` | 720×160 | 左右160px・上下48px | 上の中央の「サイーフの声」 | 車の無線機の細長い前面。黒い樹脂に真鍮の縁、左端に丸い窓（顔のアイコンをコードが入れる）と、その右に細かいスピーカーの網目の帯。中央から右は無地（台詞はコード） |
 | CR-UI13 | `balloon.png` | 384×192 | 上下左右48px | はじめの吹き出し（「ハイッ！」「いけっ！」） | クリーム色の紙に墨の手描きの線で描いた吹き出し。下の左寄りに短い尻尾。線は少し揺れて太さが変わる。中は無地 |
 | CR-UI14 | `word-{perfect,good,miss,go,3,2,1,last-spurt,goal,title}.png` | 長辺1024以内・透過 | ─ | 判定・カウントダウン・バナー・題名の大きな字 | ペンキで手描きした看板の字（英字と数字のみ）。PERFECT は金に濃い茶の縁、GOOD は水色、MISS は灰色がかった赤、GO! と 3・2・1 は白にくっきりした影、LAST SPURT は朱、GOAL は金、題名 CAMEL RACE は砂色に藍の縁。字だけを描き、外は透過。**綴りが違う案は不採用** |
 
@@ -40,7 +40,7 @@ Claude は画像を生成しない。下の「Codex へ渡す文」をそのま�
 ラクダレース（第4章ドバイの任意ミニゲーム・PR #2304/#2384/#2422）のUI素材を作ってください。
 今のUIはCSSのグラデーションと半透明の板とフォントの字で、AIが作った画面に見えるので、手で描いた素材に置き換えます。
 数字・名前・ゲージの量・台詞はゲームのコードが描きます。CR-UI14 の決まった英語の字を除き、素材には文字・数字・擬似文字・ロゴ・透かしを一切描かないでください。
-操作: 左のボタン＝声（輪が重なる瞬間に押す）、右のボタン＝ムチ（押し続けている間だけ効く）。リモコンを持っているのは、SUV の後ろの窓から身を乗り出すはじめ（運転席のラシードはハンドルを握るだけ）。
+操作: 左のボタン＝声（輪が重なる瞬間に押す）、右のボタン＝ムチ（押し続けている間だけ効く）。リモコンを持っているのは、SUV の後ろの窓から身を乗り出すはじめ（運転席のハリールはハンドルを握るだけ）。
 
 【共通の画風（各画像の指示の先頭にそのまま付ける）】
 STYLE: UI parts for a Japanese pixel-painterly visual novel minigame set at a desert camel racetrack in Dubai at sunrise. Paint them as real, used physical objects with honest materials: sun-bleached wood, dull worn brass, black rubber and matte plastic, cream paper, red stamp ink. Same painter's hand and texture as the game's racetrack background (bg_dubai_camel_track_morning) and camel sprites: fine painterly pixel texture, confident dark outlines slightly heavier on the outer silhouette, flat local colors with two to three clearly shaped shadow steps, light from the upper left. Palette: sand #e2c48c, sun-bleached cream #f4ead6, brass #c9963a, deep indigo #1c2236, ink #1a110a, accent amber #e08a2c. NO glossy gradients, NO glow or bloom, NO neon, NO glassmorphism or frosted glass, NO plastic bevel-and-emboss, NO airbrush, NO excessive symmetric ornament, NO gems, gears, ribbons, lace or flowers. Never draw any text, letters, digits, pseudo-writing, logos or watermark. Leave the areas where the game prints numbers and labels plain and flat.
@@ -63,7 +63,7 @@ CR-UI12 call-plate.png 720x160 nine-slice（左右160px・上下48px）: the lon
 CR-UI13 balloon.png 384x192 nine-slice（上下左右48px）: a speech balloon drawn with an ink brush on cream paper, a short tail at the lower left, the line slightly wobbly with varying thickness, plain inside.
 CR-UI14 word-perfect.png / word-good.png / word-miss.png / word-go.png / word-3.png / word-2.png / word-1.png / word-last-spurt.png / word-goal.png / word-title.png（長辺1024以内）: hand-painted sign-writer lettering of exactly these words, nothing else on the canvas, transparent outside the letters: "PERFECT" (gold with a dark brown outline), "GOOD" (light blue with a dark outline), "MISS" (greyish red), "GO!", "3", "2", "1" (white with a crisp dark drop shadow painted as part of the letters), "LAST SPURT" (vermilion), "GOAL" (gold), "CAMEL RACE" (sand with a deep indigo outline). Bold, slightly irregular brush strokes like paint on a racecourse board; not a computer font, no gradients, no glow. Every letter must be spelled exactly as written.
 
-【参照】画風は assets/backgrounds/bg_dubai_camel_track_morning.png と assets/ui/camel_race/camel_1.png、jockey.png、suv.png（添付できれば添付）。はじめは assets/sprites/characters/hajime/chr_hajime_normal.png、ラシードは assets/sprites/characters/rashid/chr_rashid_normal.png。
+【参照】画風は assets/backgrounds/bg_dubai_camel_track_morning.png と assets/ui/camel_race/camel_1.png、jockey.png、suv.png（添付できれば添付）。はじめは assets/sprites/characters/hajime/chr_hajime_normal.png、ハリールは assets/sprites/characters/rashid/chr_rashid_normal.png。
 【渡し方】原画をそのまま asset_sources/ch4-camel-race/ui/originals/ に置き、生成の指示と日付を asset_sources/ch4-camel-race/ui/generation.json に書いて push。各ファイルの SHA-256 も添えてください。候補が複数ある部品は -A/-B を付けて全部ください。
 ```
 

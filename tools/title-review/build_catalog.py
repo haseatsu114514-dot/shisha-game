@@ -9,7 +9,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = Path(__file__).resolve().parent
-CHARACTERS = {'ageha': 'アゲハ', 'hiyori': 'ひより', 'samechan': 'サメちゃん／波多野なぎさ', 'mashiro': 'ましろ', 'minto': 'みんと', 'rin': '凛', 'tsumugi': 'つむぎ', 'sumi': 'スミ', 'naru': 'なる', 'adam': 'アダム', 'other': 'その他'}
+CHARACTERS = {'ageha': 'あげは', 'hiyori': 'ひより', 'samechan': 'サメちゃん／汐見なぎさ', 'mashiro': 'ましろ', 'minto': 'みんと', 'rin': 'くゆり', 'tsumugi': 'つむぎ', 'sumi': 'スミ', 'naru': 'なる', 'adam': 'アダム', 'other': 'その他'}
 V1 = 'asset_sources/title-art/heroine-concepts-v1-20261008'
 V2 = 'asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008'
 DAILY = 'asset_sources/heroine-title-candidates-20261009'
@@ -86,7 +86,7 @@ def build(check=False):
         add(str(p.relative_to(ROOT)), group='過去NG', history='機材・ホースの過去NG原画。再採用にはオーナー判断と修正確認が必要。')
 
     for c in read(AGEHA + '/candidates.json')['candidates']:
-        add(c['candidate']['path'], 'ageha', 'アゲハ修正', {'ageha-01-professional-face':'試香席・顔修正','ageha-02-grocery-face':'商店街・顔修正','ageha-03-studio-face':'撮影スタジオ・顔修正','ageha-04-selfie-face':'セルフィー・顔修正','ageha-05-closing-rack':'閉店後の乾燥ラック'}.get(c['id'], c['id']), c['status'] + '：' + c.get('locality', ''), c['prompt'], c['source']['path'])
+        add(c['candidate']['path'], 'ageha', 'あげは修正', {'ageha-01-professional-face':'試香席・顔修正','ageha-02-grocery-face':'商店街・顔修正','ageha-03-studio-face':'撮影スタジオ・顔修正','ageha-04-selfie-face':'セルフィー・顔修正','ageha-05-closing-rack':'閉店後の乾燥ラック'}.get(c['id'], c['id']), c['status'] + '：' + c.get('locality', ''), c['prompt'], c['source']['path'])
     for c in read(HIYORI + '/candidates.json')['candidates']:
         add(c['candidate']['path'], 'hiyori', 'ひより候補', c['scene'], c['status'], c['prompt'])
         if 'prior_version' in c:

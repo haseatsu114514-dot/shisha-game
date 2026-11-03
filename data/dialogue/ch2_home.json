@@ -1,5 +1,5 @@
 {
-  "comment": "第2章の地元（橙須）で読む短い会話（VOL13）。施設の寄り道（daily/spot-encounters.js の chapter: 2）と、Dr.fookah 2階の凛の会話（daily/spots.js の CHAPTER_TALKS）、tonariの大会準備で一台作る場面（chapters/ch2-craft-prep.js・ch2_prep_*）。第2章の準備期間に ch2-city-data.js の loadPreparationDialogues で読み込む。施設の能力の伸びは来店の処理が付けるので、台本に報酬の文は書かない。",
+  "comment": "第2章の地元（橙須）で読む短い会話（VOL13）。施設の寄り道（daily/spot-encounters.js の chapter: 2）と、Dr.fookah 2階のくゆりの会話（daily/spots.js の CHAPTER_TALKS）、tonariの大会準備で一台作る場面（chapters/ch2-craft-prep.js・ch2_prep_*）。第2章の準備期間に ch2-city-data.js の loadPreparationDialogues で読み込む。施設の能力の伸びは来店の処理が付けるので、台本に報酬の文は書かない。",
   "dialogues": [
     {
       "dialogue_id": "cafe_ch2_commute",
@@ -300,7 +300,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "夜の2階。凛さんが、銀色の袋の口を開けて待っていた。"
+          "text": "夜の2階。くゆりさんが、銀色の袋の口を開けて待っていた。"
         },
         {
           "speaker": "rin",
@@ -310,7 +310,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんが一口吸って、うなずく。渡されたホースを、ゆっくり吸った。"
+          "text": "くゆりさんが一口吸って、うなずく。渡されたホースを、ゆっくり吸った。"
         },
         {
           "speaker": "hajime",
@@ -320,7 +320,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんは返事をしなかった。ホースを受け取って、もう一度だけ吸う。"
+          "text": "くゆりさんは返事をしなかった。ホースを受け取って、もう一度だけ吸う。"
         },
         {
           "speaker": "rin",
@@ -370,7 +370,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんは袋の口を閉じて、代わりに温かいお茶を一杯置いた。"
+          "text": "くゆりさんは袋の口を閉じて、代わりに温かいお茶を一杯置いた。"
         },
         {
           "speaker": "hajime",
@@ -388,7 +388,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "夜の2階。凛さんの机に、赤い付箋だらけの入荷表が広がっていた。"
+          "text": "夜の2階。くゆりさんの机に、赤い付箋だらけの入荷表が広がっていた。"
         },
         {
           "type": "condition",
@@ -400,7 +400,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "帰り際、凛さんは入荷表の「苺」の行に、小さく丸を付けていた。"
+          "text": "帰り際、くゆりさんは入荷表の「苺」の行に、小さく丸を付けていた。"
         }
       ],
       "branches": {
@@ -474,7 +474,7 @@
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "はい。吸えたら、凛さんに話しに来ます"
+            "text": "はい。吸えたら、くゆりさんに話しに来ます"
           }
         ],
         "after": [

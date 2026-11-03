@@ -222,7 +222,7 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (m.id === "lime_outing_minto_1" && !state.flags._minto_identity_revealed) return false;
   // サメちゃんの♥3の外出（#2025）は、本人から路地裏シネマを紹介された後（cinemaDiscovered と同じ条件）にだけ届く。
   if (m.id === "lime_outing_samechan_1" && !(state.chapter >= 2 && state.flags._samechan_cinema_introduced === true)) return false;
-  // 凛の♥3の外出（#2025）は問屋街の豆屋。はじめが地元にいる第1・2章だけ届く。
+  // くゆりの♥3の外出（#2025）は問屋街の豆屋。はじめが地元にいる第1・2章だけ届く。
   if (m.id === "lime_outing_rin_1" && state.chapter > 2) return false;
   // ひよりの♥3の外出（#2025）は第1章の昼だけ。tonariでの再会（スミさんのLIME）の後に届き、夜や締めくくりの前提は増やさない。
   if (m.id === "lime_outing_hiyori_1" && !(state.chapter === 1 && state.flags._hiyori_tonari_return_done)) return false;
@@ -659,7 +659,7 @@ export function actionInviteNeedingReply(spotId, opts = {}, ignoredIds = []) {
   );
   const matching = waiting.find((item) => visitReminderSpot(item.msg) === spotId);
   if (matching) return { item: matching, kind: "venue" };
-  // 買い物や占いへの入場は時間を使わない。凛との会話や終日休養は確定時に判定する。
+  // 買い物や占いへの入場は時間を使わない。くゆりとの会話や終日休養は確定時に判定する。
   if (opts.spendsAction === false) return null;
   // みんとの店頭試飲のような「昼・夜どちらでも返信可」は夜が最後の機会。
   const expiring = waiting.find((item) =>
@@ -1200,7 +1200,7 @@ export async function openPhone(messages, { title = null, time = "朝" } = {}) {
 
 /**
  * はじめて LIME が届いたとき、マップの上でアイコンを照らして開かせる（オーナー指定）。
- * 照らした穴だけ押せる。押したら onOpen（＝ふつうに LIME を開く処理）へ
+ * 照らしたアイコンか案内を押すと onOpen（＝ふつうに LIME を開く処理）へ。
  */
 export function limeCoach(onOpen) {
   if (state.flags._lime_tut || !hasUnread()) return false;
@@ -1215,15 +1215,24 @@ export function limeCoach(onOpen) {
   const y = (ir.top - sr.top) / k;
   const w = ir.width / k;
   const h = ir.height / k;
+  const owner = state;
+  let opened = false;
+  const open = () => {
+    if (opened || state !== owner || !coach.isConnected) return;
+    opened = true;
+    SE.select(); coach.remove(); onOpen();
+  };
   const coach = el("div.lime-coach", [
     el("button.lc-hole", {
+      type: "button", "aria-label": "LIMEを開く",
       style: { left: `${x - 8}px`, top: `${y - 8}px`, width: `${w + 16}px`, height: `${h + 16}px` },
       dataset: { test: "coach-lime" },
-      onclick: () => { SE.select(); coach.remove(); onOpen(); },
+      onclick: open,
     }),
-    el("div.lc-bubble", { style: { right: `${stage.offsetWidth - x - w - 4}px`, top: `${y + h + 22}px` } }, [
+    el("button.lc-bubble", { type: "button", "aria-label": "案内からLIMEを開く", dataset: { test: "coach-lime-bubble" },
+      onclick: open, style: { right: `${Math.max(16, stage.offsetWidth - x - w - 4)}px`, top: `${y + h + 22}px` } }, [
       el("b", { text: "LIMEにメッセージが届いた！" }),
-      el("span", { text: "右上のLIMEをタップして開いてみよう。" }),
+      el("span", { text: "この案内か右上のLIMEをタップして開いてみよう。" }),
       el("span", { text: "まずは一度開いてみよう。次からは好きなときに読める。返事や誘いの受諾は、今決めなくて大丈夫。" }),
     ]),
   ]);

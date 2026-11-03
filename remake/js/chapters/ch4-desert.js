@@ -103,7 +103,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     let firstWin = false, firstNaruWin = false;
     const { results } = await runDesertRide({
       host: host || document.getElementById("stage") || layers.screen, signal, tutorial: status.first,
-      best: before.best ? { score: before.best.score, rank: before.best.rank } : null,
+      best: before.best, legacyBest: before.legacyBest,
       reducedMotion: (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches) || !!config.reduceShake,
       guide: name, rivals,
       onResult: result => {
@@ -154,3 +154,4 @@ export async function performDesertSpot(entry, { day, showHud = null } = {}) {
   const went = desertProgress(owner).outings > before.outings;
   return { used: went, exerted: false, slotsUsed: 0 };
 }
+

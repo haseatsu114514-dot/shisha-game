@@ -70,7 +70,7 @@ assert.deepEqual(CH4_PROLOGUE.map(scene => scene.id),
 const mandatoryIds = CH4_MANDATORY.map(entry => entry.id);
 assert.deepEqual(routes.before_eve.filter(id => mandatoryIds.includes(id)), mandatoryIds);
 assert.deepEqual(routes.after_eve, ["ch4_tournament_start", "ch4_final"]);
-// 勝ち側は南雲を屋敷・帰国の前に置く（CH4-CONNECTION-DESIGN 要点3。story_routes の順とは意図的に違う）。
+// 勝ち側は須井を屋敷・帰国の前に置く（CH4-CONNECTION-DESIGN 要点3。story_routes の順とは意図的に違う）。
 assert.deepEqual(CH4_RESOLUTION.map(scene => scene.id),
   ["ch4_result", "ch4_nagumo_old_rival", "ch4_ending", "ch4_sumi_return", "ch4_two_tables"]);
 assert.deepEqual([...routes.on_win].sort(), CH4_RESOLUTION.map(scene => scene.id).sort());
@@ -342,7 +342,7 @@ assert.equal(value.flags._ch4.part, "resolution");
 assert.equal(value.phase, "aftermath");
 assert.equal(value.flags._ch4_cleared, undefined);
 
-// 勝ち側の本線: 南雲 → 屋敷 → 帰国の順。順番違いは確定しない。
+// 勝ち側の本線: 須井 → 屋敷 → 帰国の順。順番違いは確定しない。
 for (const [index, scene] of CH4_RESOLUTION.entries()) {
   assert.equal(value.flags._ch4.resolution, index);
   const wrong = CH4_RESOLUTION[(index + 1) % CH4_RESOLUTION.length].id;
@@ -520,7 +520,7 @@ console.log("PASS: Chapter 4 runner state keeps the Dubai days, mandatory scenes
   const toEve = save => { save.day = save.flags._ch4.startDay + 12; assert(enterChapterFourEve(save)); return save; };
   const due = save => chapterFourArrivalsDue(save).map(entry => entry.scene);
 
-  // 同行なし・恋人は凛: 凛（恋人版）→ ましろ（友人版）の順。自由行動の間は出さない。
+  // 同行なし・恋人はくゆり: くゆり（恋人版）→ ましろ（友人版）の順。自由行動の間は出さない。
   const save = arrivalSave(["rin"], null);
   assert.deepEqual(save.flags._overseas_companion.supports, ["rin", "mashiro"]);
   assert.deepEqual(chapterFourArrivalsDue(save), [], "No arrival during the Dubai daily days");

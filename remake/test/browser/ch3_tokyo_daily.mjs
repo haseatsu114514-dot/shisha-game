@@ -44,7 +44,7 @@ async function seed(page) {
     value.day += 3;
     if (!progress.departChapterThree(value)) throw new Error("Departure failed");
     value.flags._ch3_intro.titleSeen = true;
-    // 路上占い師（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、この章の出現は済んだことにする。
+    // 辻占のオババ（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、この章の出現は済んだことにする。
     const fortune = await import("./js/daily/fortune-schedule.js");
     const fortunePlan = fortune.fortunePlan({ seed: value.seed, chapter: 3 });
     value.flags._fortune_wander = { chapter: 3, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
@@ -244,7 +244,7 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(await page.locator('[data-test="ch3-intro-tournament"]').count(), 1);
   });
 
-  // VOL15: 路上占い師は東京にも現れる（理由は語らない）。地図の行き先になり、時間を使わずに3,000円で占う。
+  // VOL15: 辻占のオババは東京にも現れる（理由は語らない）。地図の行き先になり、時間を使わずに3,000円で占う。
   await check("the-street-fortune-teller-appears-in-tokyo-too", async page => {
     await seed(page);
     const day = await page.evaluate(async () => {

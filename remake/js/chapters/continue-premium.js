@@ -40,8 +40,8 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
     ],
   },
   rin: {
-    id: "premium_rin", title: "この先の香り", name: "凛",
-    bio: "恋人 / 凛", speaker: "rin", duration: 20,
+    id: "premium_rin", title: "この先の香り", name: "くゆり",
+    bio: "恋人 / くゆり", speaker: "rin", duration: 20,
     audio: null,
     reactions: {
       retry: { text: ["いいね。次の一台、確かめよう"], faces: ["serious", "smile"], effect: "scan", word: "次の一台、私に見せて" },
@@ -58,7 +58,7 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
     ],
   },
   ageha: {
-    id: "premium_ageha", title: "帰るには早くない？", name: "アゲハ",
+    id: "premium_ageha", title: "帰るには早くない？", name: "あげは",
     bio: "恋人 / MELTY PUFF", speaker: "ageha", duration: 20,
     audio: null,
     reactions: {

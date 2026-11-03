@@ -5,7 +5,8 @@ import { DB } from "../js/core/data.js";
 import { advanceToChapterFour, CH4_PROLOGUE, completeChapterFourScene, chapterFourTournamentOutcome,
   chapterFourAfterDefeat, CH4_PRIZE } from "../js/chapters/ch4-progress.js";
 import { chapterFourMatch, startChapterFourCraft, beginChapterFourStep, finishChapterFourStep,
-  recoverChapterFourStep, resetChapterFourCraft, CH4_JUDGES, CH4_CONTESTANTS, CH4_RIVAL_CURVE, chapterFourStandings } from "../js/chapters/ch4-tournament-state.js";
+  recoverChapterFourStep, resetChapterFourCraft, CH4_JUDGES, CH4_CONTESTANTS, CH4_RIVAL_CURVE, chapterFourStandings,
+  CH4_RULES_VERSION, CH4_SPEND, CH4_LEGACY_SPEND, CH4_LEGACY_RIVAL_CURVE, chapterFourRetryContext } from "../js/chapters/ch4-tournament-state.js";
 import { liftRivalScore, setRivalScoreObserver } from "../js/core/ngplus-difficulty.js";
 // Shared score/served-eval imports browser audio; only its visibility observer runs at module load.
 globalThis.document = { addEventListener() {} };
@@ -68,19 +69,6 @@ function drive(value, cs, { failAt = -1, failureKind = "burnt" } = {}) {
   assert.equal(value.money, money + CH4_PRIZE);
   assert.equal(chapterFourAfterDefeat(value), false);
   assert.deepEqual(chapterFourMatch(JSON.parse(JSON.stringify(value))).result, p.result);
-}
-// #2031: 旧保存の内部名 wang は master_hookah として読み込み、結果・票・順位は変わらない。
-{
-  const value = entry();
-  const p = drive(value, craft());
-  const legacy = JSON.parse(JSON.stringify(value).replaceAll('"master_hookah"', '"wang"'));
-  assert.ok(JSON.stringify(legacy.flags._ch4.match).includes('"wang"'));
-  const migrated = chapterFourMatch(legacy);
-  assert.ok(!JSON.stringify(migrated).includes('"wang"'), "No legacy id remains after loading");
-  assert.deepEqual(migrated.votes, p.votes);
-  assert.deepEqual(migrated.result, p.result);
-  assert.deepEqual(migrated.quality, p.quality);
-  assert.equal(chapterFourTournamentOutcome(legacy), "win");
 }
 // Poor complete craft loses; burnt/cold/leaf failure cannot be promoted to a completed victory.
 for (const [failAt, failureKind] of [[-1, null], [8, "burnt"], [9, "cold"], [10, "leaf"]]) {
@@ -237,10 +225,15 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
 }
 // 2026-11-02 オーナー決定「なるを強くする」: 相手の出来は投票の回ごと。なるは提供後・調整1回目で伸び、
 // ふつうの出来のはじめなら途中で先頭に立つ。最後の票はシェイクが一番強く、はじめの勝ちの境目は変えない。
+// 旧版の期待値を弱めず保持する互換回帰。以下だけは明示的に版1で走らせる。
 {
+  const startLegacy = (value, cs) => {
+    startChapterFourCraft(value, cs);
+    chapterFourMatch(value).rulesVersion = 1;
+  };
   // 回ごとに、各人が得た票と直後の途中順位を残しながら最後まで通す。
   const byRound = (value, cs) => {
-    startChapterFourCraft(value, cs);
+    startLegacy(value, cs);
     const rounds = [];
     let before = structuredClone(chapterFourMatch(value).votes);
     for (let step = chapterFourMatch(value).step; step < 11; step++) {
@@ -258,11 +251,11 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
     return { p: chapterFourMatch(value), rounds };
   };
   // 相手の並び: 途中（提供後・調整1回目）はなるが一番上、最後はシェイク＞なる＞王煙楼。王煙楼は終始同じ。
-  assert.deepEqual(Object.keys(CH4_RIVAL_CURVE), ["naru", "master_hookah", "sheikh"]);
-  for (const curve of Object.values(CH4_RIVAL_CURVE)) assert.equal(curve.length, 4);
-  for (const round of [1, 2]) assert(CH4_RIVAL_CURVE.naru[round] > CH4_RIVAL_CURVE.sheikh[round]);
-  assert(CH4_RIVAL_CURVE.sheikh[3] > CH4_RIVAL_CURVE.naru[3] && CH4_RIVAL_CURVE.naru[3] > CH4_RIVAL_CURVE.master_hookah[3]);
-  assert.equal(new Set(CH4_RIVAL_CURVE.master_hookah).size, 1);
+  assert.deepEqual(Object.keys(CH4_LEGACY_RIVAL_CURVE), ["naru", "master_hookah", "sheikh"]);
+  for (const curve of Object.values(CH4_LEGACY_RIVAL_CURVE)) assert.equal(curve.length, 4);
+  for (const round of [1, 2]) assert(CH4_LEGACY_RIVAL_CURVE.naru[round] > CH4_LEGACY_RIVAL_CURVE.sheikh[round]);
+  assert(CH4_LEGACY_RIVAL_CURVE.sheikh[3] > CH4_LEGACY_RIVAL_CURVE.naru[3] && CH4_LEGACY_RIVAL_CURVE.naru[3] > CH4_LEGACY_RIVAL_CURVE.master_hookah[3]);
+  assert.equal(new Set(CH4_LEGACY_RIVAL_CURVE.master_hookah).size, 1);
   // ふつうの出来（全工程89）: 提供後と調整1回目の票でなるが先頭に立ち、はじめは2位。最後の票で逆転し、なるが2位で終わる。
   const average = byRound(entry(), craft(89));
   assert.deepEqual(average.rounds.map(r => r.leader), ["hajime", "naru", "naru", "hajime"]);
@@ -294,7 +287,7 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   assert.equal(byRound(entry(), craft(87.9)).p.result.win, false);
   // 提供後の票まで入った保存から再開しても、票は二重に入らず、通しと同じ結果になる。
   let value = entry();
-  startChapterFourCraft(value, craft(89));
+  startLegacy(value, craft(89));
   for (let step = 0; step < 9; step++) { beginChapterFourStep(value); finishChapterFourStep(value, craft(89)); }
   beginChapterFourStep(value);
   value = JSON.parse(JSON.stringify(value));
@@ -306,7 +299,7 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   assert.deepEqual(resumed.votes, average.p.result.votes);
   // 旧定数のころの保存（提供後の票まで: はじめ1位・シェイク2位）も、そのまま新しい回の値で最後まで進む。
   value = entry();
-  startChapterFourCraft(value, craft(89));
+  startLegacy(value, craft(89));
   for (let step = 0; step < 9; step++) { beginChapterFourStep(value); finishChapterFourStep(value, craft(89)); }
   Object.assign(chapterFourMatch(value), { quality: { naru: 86, master_hookah: 87, sheikh: 88, hajime: 89 },
     votes: Object.fromEntries(CH4_JUDGES.map(judge => [judge, { hajime: 3, naru: 0, master_hookah: 0, sheikh: 2 }])) });
@@ -324,12 +317,171 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   setRivalScoreObserver(null);
   assert.equal(seen.length, 12);
   seen.forEach((row, index) => {
-    const round = Math.floor(index / 3), id = Object.keys(CH4_RIVAL_CURVE)[index % 3];
-    assert.equal(row.rival, CH4_RIVAL_CURVE[id][round], `round ${round} ${id} base`);
+    const round = Math.floor(index / 3), id = Object.keys(CH4_LEGACY_RIVAL_CURVE)[index % 3];
+    assert.equal(row.rival, CH4_LEGACY_RIVAL_CURVE[id][round], `round ${round} ${id} base`);
     assert.equal(row.p, 1);
-    assert.equal(row.lifted, liftRivalScore(CH4_RIVAL_CURVE[id][round], 1, 4));
+    assert.equal(row.lifted, liftRivalScore(CH4_LEGACY_RIVAL_CURVE[id][round], 1, 4));
     assert(row.lifted > row.rival);
   });
-  for (const id of Object.keys(CH4_RIVAL_CURVE)) assert.equal(lifted.quality[id], liftRivalScore(CH4_RIVAL_CURVE[id][3], 1, 4));
+  for (const id of Object.keys(CH4_LEGACY_RIVAL_CURVE)) assert.equal(lifted.quality[id], liftRivalScore(CH4_LEGACY_RIVAL_CURVE[id][3], 1, 4));
 }
-console.log("PASS: Chapter 4 real scores, per-round rival curve, votes, failure/retry, resource rollback, plans and local-learning feedback");
+// 2026-11-03: 新しい一台は版2、途中/結果の旧保存は版1で完走し、再挑戦でだけ更新する。
+{
+  assert.equal(CH4_RULES_VERSION, 2);
+  assert.deepEqual(CH4_SPEND, [2, 3, 2, 3]);
+  assert.deepEqual(CH4_LEGACY_SPEND, [2, 3, 2, 3]);
+  assert.deepEqual(CH4_RIVAL_CURVE, { naru: [87, 94, 94.5, 92.5],
+    master_hookah: [87.5, 87.5, 87.5, 87.5], sheikh: [90, 88, 88.25, 94] });
+  const run = (value, cs) => {
+    setState(value);
+    startChapterFourCraft(value, cs);
+    const rounds = [];
+    let previous = 0;
+    for (let step = chapterFourMatch(value).step; step < 11; step++) {
+      beginChapterFourStep(value);
+      const c = structuredClone(cs);
+      if (step === 10) finalize(c);
+      const p = finishChapterFourStep(value, c);
+      if (p.voted !== rounds.length) {
+        const spent = Object.values(p.votes.nagumo).reduce((sum, n) => sum + n, 0);
+        rounds.push({ spent: spent - previous, rows: chapterFourStandings(p) });
+        previous = spent;
+      }
+    }
+    return { p: chapterFourMatch(value), rounds };
+  };
+  const held = run(entry(), craft(96));
+  assert.deepEqual(held.rounds.map(row => row.spent), [2, 3, 2, 3]);
+  assert.equal(held.p.result.rulesVersion, 2);
+  assert.equal(held.p.result.win, true);
+  for (const judge of CH4_JUDGES) assert.equal(Object.values(held.p.votes[judge]).reduce((sum, n) => sum + n, 0), 10);
+  // 3回すべて1位なら確保した支持で勝てる。30%の最終票だけで毎回ひっくり返さない。
+  const collapsed = craft(96); collapsed.careHistory[1].score = 56;
+  const swept = run(entry(), collapsed);
+  assert.equal(swept.rounds[2].rows[0].id, "hajime");
+  assert.equal(swept.p.result.win, true, "Sweeping all three earlier polls secures the title");
+  // 途中が接戦なら、同じ支持と最後の調整だけの差で勝者が変わる。
+  const contested = craft(96); contested.servedQuality = 89; contested.careHistory[0].score = 100;
+  const maintained = run(entry(), contested);
+  const slipped = structuredClone(contested); slipped.careHistory[1].score = 56;
+  const lost = run(entry(), slipped);
+  assert.equal(lost.rounds[2].rows[0].id, "hajime", "A contested lead can still be lost on the final poll");
+  assert.equal(maintained.p.result.win, true);
+  assert.equal(lost.p.result.win, false);
+  assert.equal(lost.p.result.rows[0].id, "naru", "Naru remains a possible champion, not a fixed lower-ranked rival");
+  const pressured = run(entry(), craft(90));
+  assert.deepEqual(pressured.rounds.slice(1, 3).map(row => row.rows[0].id), ["naru", "naru"]);
+  assert.equal(pressured.p.result.rows[0].id, "naru");
+  const short = run(entry(), craft(85));
+  assert.equal(short.p.result.rows[0].id, "sheikh", "Sheikh can take the title on the final poll");
+  assert.equal(short.rounds[0].rows.find(row => row.id === "master_hookah").points, 3,
+    "The steady master can receive early support; no rival is forced to zero votes");
+  const comeback = craft(100);
+  comeback.holes = craft(89).holes; comeback.heat = craft(89).heat; comeback.servedQuality = 96;
+  const recovered = run(entry(), comeback);
+  assert.notEqual(recovered.rounds[0].rows[0].id, "hajime");
+  assert.equal(recovered.p.result.win, true, "A late recovery can win; the first poll is not a hard gate");
+
+  let old = entry(), cs = craft(89);
+  startChapterFourCraft(old, cs);
+  delete chapterFourMatch(old).rulesVersion;
+  for (let step = 0; step < 9; step++) { beginChapterFourStep(old); finishChapterFourStep(old, cs); }
+  const committed = structuredClone(chapterFourMatch(old).votes);
+  beginChapterFourStep(old);
+  old = JSON.parse(JSON.stringify(old)); recoverChapterFourStep(old);
+  const p = chapterFourMatch(old);
+  assert.equal(p.rulesVersion, undefined);
+  assert.deepEqual(p.votes, committed, "Loading a legacy match never withdraws or recalculates its committed votes");
+  for (let step = p.step; step < 11; step++) {
+    beginChapterFourStep(old); const c = structuredClone(cs); if (step === 10) finalize(c); finishChapterFourStep(old, c);
+  }
+  assert.equal(p.result.rulesVersion, 1); assert.equal(p.result.win, true);
+  for (const judge of CH4_JUDGES) assert.equal(Object.values(p.votes[judge]).reduce((sum, n) => sum + n, 0), 10);
+  const result = structuredClone(p.result), history = structuredClone(p.history);
+  chapterFourMatch(old); assert.deepEqual(p.result, result); assert.deepEqual(p.history, history);
+
+  // すべての投票境界と結果保存をJSON往復。旧規則を新規則で再採点せず、二重投票もしない。
+  for (const version of [1, 2]) {
+    const make = () => {
+      const value = entry(); startChapterFourCraft(value, craft(89));
+      if (version === 1) delete chapterFourMatch(value).rulesVersion;
+      return value;
+    };
+    const advance = (value, until) => {
+      setState(value);
+      for (let step = chapterFourMatch(value).step; step < until; step++) {
+        beginChapterFourStep(value); const c = craft(89); if (step === 10) finalize(c);
+        finishChapterFourStep(value, c);
+      }
+    };
+    const straight = make(); advance(straight, 11);
+    const expected = structuredClone(chapterFourMatch(straight).result);
+    for (const boundary of [7, 8, 9, 10, 11]) {
+      let value = make(); advance(value, boundary);
+      const votes = structuredClone(chapterFourMatch(value).votes);
+      if (boundary < 11) beginChapterFourStep(value);
+      value = JSON.parse(JSON.stringify(value)); setState(value); recoverChapterFourStep(value);
+      assert.deepEqual(chapterFourMatch(value).votes, votes, `v${version} boundary ${boundary} keeps committed votes`);
+      startChapterFourCraft(value, craft(100)); // 保存済みの一台は上書きしない。
+      assert.equal(chapterFourMatch(value).rulesVersion, version === 1 ? undefined : 2);
+      advance(value, 11);
+      assert.deepEqual(chapterFourMatch(value).result, expected, `v${version} boundary ${boundary} matches uninterrupted result`);
+    }
+  }
+  // 新基準にも既存NG+の底上げを各回適用。最高の一台は持ち込み最大でも通せる。
+  const ng = entry(); ng.cycle = 2;
+  ng.cycleStartStats = { technique: 100, sense: 100, guts: 100, charm: 100, insight: 100 };
+  const observed = []; setRivalScoreObserver(row => observed.push(row));
+  const ngMatch = run(ng, craft(100)).p; setRivalScoreObserver(null);
+  assert.equal(ngMatch.result.win, true);
+  assert.equal(observed.length, 12);
+  observed.forEach((row, index) => {
+    const round = Math.floor(index / 3), id = Object.keys(CH4_RIVAL_CURVE)[index % 3];
+    assert.equal(row.rival, CH4_RIVAL_CURVE[id][round]);
+    assert.equal(row.p, 1); assert.equal(row.lifted, liftRivalScore(row.rival, 1, 4));
+  });
+
+  const failed = entry(); startChapterFourCraft(failed, craft());
+  const prior = chapterFourMatch(failed); delete prior.rulesVersion;
+  beginChapterFourStep(failed); finishChapterFourStep(failed, { ...craft(), failed: "burnt" });
+  assert.equal(prior.result.rulesVersion, 1);
+  assert(resetChapterFourCraft(failed));
+  assert.equal(prior.rulesVersion, 2); assert.equal(prior.result, null);
+  assert.equal(prior.history[0].rulesVersion, 1, "Retry keeps the legacy result history");
+  startChapterFourCraft(failed, craft()); assert.equal(prior.rulesVersion, 2);
+
+  const mistakes = entry();
+  const retry = chapterFourMatch(mistakes);
+  mistakes.flags._ch4.attempts = 99;
+  retry.history = [{ win: false }, { win: true }, {}, { win: false }, { win: false }];
+  assert.equal(chapterFourRetryContext(mistakes).losses, 3);
+  assert.equal(chapterFourRetryContext(mistakes).retryAssist, false);
+  retry.history = [];
+  assert.equal(chapterFourRetryContext(mistakes).losses, 0, "Old attempt counters do not invent known losses");
+}
+// 不正な採点・保存は工程や一部の票を進める前に拒否する。
+{
+  for (const invalid of [null, 0, 3, "2", NaN]) {
+    const value = entry(); chapterFourMatch(value).rulesVersion = invalid;
+    assert.throws(() => chapterFourMatch(value), /採点規則/);
+  }
+  for (const invalid of [NaN, Infinity, -Infinity, -1, 101, "90", null]) {
+    const value = entry(), cs = craft(); startChapterFourCraft(value, cs);
+    for (let i = 0; i < 7; i++) { beginChapterFourStep(value); finishChapterFourStep(value, cs); }
+    beginChapterFourStep(value); cs.heat.score = invalid;
+    const before = structuredClone(chapterFourMatch(value));
+    assert.throws(() => finishChapterFourStep(value, cs), /工程成績/);
+    assert.deepEqual(chapterFourMatch(value), before);
+  }
+  const value = entry(), cs = craft(); startChapterFourCraft(value, cs);
+  for (let i = 0; i < 10; i++) { beginChapterFourStep(value); finishChapterFourStep(value, cs); }
+  beginChapterFourStep(value); cs.total = Infinity;
+  const before = structuredClone(chapterFourMatch(value));
+  assert.throws(() => finishChapterFourStep(value, cs), /総合成績/);
+  assert.deepEqual(chapterFourMatch(value), before, "Invalid final total cannot commit the final poll");
+  cs.total = 96; chapterFourMatch(value).votes.emil.hajime += 1;
+  const badVotes = structuredClone(chapterFourMatch(value));
+  assert.throws(() => finishChapterFourStep(value, cs), /持ち点/);
+  assert.deepEqual(chapterFourMatch(value), badVotes, "One malformed judge cannot partially commit the others");
+}
+console.log("PASS: Chapter 4 real scores, old/new rules, final recovery/collapse, votes, failure/retry, rollback and feedback");

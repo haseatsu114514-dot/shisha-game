@@ -1,3 +1,5 @@
+import { growthEnabled } from "../core/growth-mode.js";
+import { naruFinishGuide, naruFinishRange, inNaruFinishRange } from "../core/naru-finish.js";
 // 蒸らし・吸い出し・熱管理で同じ温度の目盛り・適温帯を使う。
 // 管は一本のグラデーション（クリーム→黄→適温のミント→橙→赤→深紅）。薄い横目盛りを重ね、現在地より上だけ少し暗くする。
 // 文字の目盛りは置かず、管の中の印で示す。低め・高めを作り分ける配合では、中央だけを虹で強調しない。
@@ -19,7 +21,7 @@ const SCALE_COLORS = [[0, "#fff4d2"], [.13, "#ffedb0"], [.26, "#ffe270"], [.37, 
   [.44, "#4fcf98"], [.54, "#74e0b0"], [.64, "#4fcf98"], [.66, "#79d9a9"], [.71, "#ffb247"], [.76, "#ff8a2a"],
   [.83, "#ff3f17"], [.89, "#eb210d"], [.94, "#b0140a"], [1, "#650609"]];
 
-export function buildThermometer({ cs, compact = false, bandPreview = false, unsteady = false, coldLimit = null, height = 440, width = 76 } = {}) {
+export function buildThermometer({ cs, compact = false, bandPreview = false, unsteady = false, finishGuide = false, coldLimit = null, height = 440, width = 76 } = {}) {
   let bands;
   const mark = el("i.thermo-mark"), dim = el("i.thermo-dim");
   // 管の外から今の温度を指す、目立つ矢印（TH30）。黒い縁取りで金枠・背景に埋もれさせない（TH85）。
@@ -27,6 +29,9 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
   const projected = el("i.thermo-projected", { hidden: true, "aria-hidden": "true" });
   const range = el("i.thermo-range", { hidden: true, "aria-hidden": "true", dataset: { test: "steam-forecast-range" } });
   const rangeNote = el("span.thermo-range-note", { hidden: true, text: "目安", "aria-hidden": "true" });
+  const finishMark = el("i.thermo-naru-finish", { hidden: true, "aria-hidden": "true", title: "焼き際の目安",
+    dataset: { test: "naru-finish-range" }, style: { position: "absolute", left: "0", right: "0", boxSizing: "border-box",
+      boxShadow: "inset 0 1px #8a4500, inset 0 -1px #8a4500", background: "#ffd16699", pointerEvents: "none", zIndex: "3" } });
   const projectedLabel = el("span.thermo-projected-label", { hidden: true, text: "点線：止めたらここ", dataset: { test: "pull-projection" } });
   const tube = el("div.thermo-tube", [
     el("div.thermo-scale"),
@@ -36,7 +41,7 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
     coldLimit ? el("div.thermo-cold", { style: { height: pct(coldLimit) }, title: "冷え切り", dataset: { test: "thermo-cold" } }, [el("i.thermo-icon.snow", { html: SNOW })]) : null,
     el("div.thermo-zone", { title: "適温" }),
     el("div.thermo-optimal", { title: "最適温", dataset: { test: bandPreview ? "mix-optimal" : compact ? "steam-optimal" : "pull-optimal" } }),
-    projected, range, mark,
+    projected, range, finishMark, mark,
   ]);
   const framed = !!makingUrl("ui_temperature_frame.png");
   const frameWidth = width;
@@ -68,6 +73,15 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
   if (bandPreview) { pointer.hidden = mark.hidden = dim.hidden = true; }
   const updateBands = () => {
     const next = temperatureBands(cs);
+    const target = growthEnabled() && finishGuide && !compact && !bandPreview && naruFinishGuide(cs) ? naruFinishRange(next) : null;
+    finishMark.hidden = !target;
+    if (target) {
+      finishMark.style.bottom = pct(target.low); finishMark.style.height = pct(target.high - target.low);
+      Object.assign(finishMark.dataset, target);
+      root.setAttribute("aria-description", "琥珀色の細い帯は焼き際の目安。合わせて提供すると総合評価が少し上がる");
+    } else {
+      delete finishMark.dataset.low; delete finishMark.dataset.high; root.removeAttribute("aria-description");
+    }
     if (bands?.center === next.center && bands?.totalWidthScale === next.totalWidthScale
       && bands?.expressionWeight === next.expressionWeight && bands?.selected === next.selected
       && bands?.damageScale === next.damageScale) return bands;
@@ -97,6 +111,8 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
     root.classList.toggle("hot", temp > bands.ideal[1] && temp < DANGER_TEMP);
     root.classList.toggle("cool", temp < bands.ideal[0]);
     root.classList.toggle("freezing", !!coldLimit && temp <= coldLimit + 0.06);
+    const finishTarget = !finishMark.hidden ? { low: Number(finishMark.dataset.low), high: Number(finishMark.dataset.high) } : null;
+    root.dataset.naruFinish = String(inNaruFinishRange(temp, finishTarget));
     root.setAttribute("aria-valuenow", temp.toFixed(4));
     root.setAttribute("aria-valuetext", temp >= DANGER_TEMP ? "焦げる寸前" : temp > bands.ideal[1] ? "熱い"
       : isIdealTemperature(temp, bands) ? fullExpression(bands) ? "おいしく作れる範囲" : isOptimalTemperature(temp, bands) ? "最適温" : "適温" : "ぬるい");

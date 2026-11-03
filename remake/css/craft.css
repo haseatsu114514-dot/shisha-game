@@ -103,6 +103,14 @@
 .bench-demo-arrow[hidden] { display: none; }
 @keyframes bench-demo-bob { from { margin-top: -5px; } to { margin-top: 5px; } }
 .bench-demo-caption { min-height: 3em; margin: 10px 0; color: #f2e9dc; font-size: 17px; line-height: 1.5; }
+.bench-demo-status, .bench-demo-instructions { color: inherit; font-size: 16px; line-height: 1.6; }
+.bench-demo-status { margin: 10px 0; }
+.bench-demo-instructions { margin: 10px 0 14px; padding: 10px 14px; border: 1px solid #a895b6; border-radius: 8px; }
+.bench-demo-instructions summary { cursor: pointer; }
+.bench-demo-instructions summary:focus-visible { outline: 3px solid #ffe3a7; outline-offset: 3px; }
+.bench-demo-instructions ol { margin: 10px 0 0; padding-left: 24px; }
+.bench-demo-instructions li + li { margin-top: 6px; }
+.bench-demo-stage[hidden], .bench-demo-caption[hidden] { display: none; }
 .bench-demo-finish { display: block; margin-left: auto; }
 
 /* 制作中の操作ボタンは、道具・表情より目立ちすぎない面と一色の縁で統一。 */
@@ -605,7 +613,7 @@
 @keyframes fade-in { from { opacity: 0; } }
 .rc-over { position: absolute; left: 0; right: 0; top: 44%; text-align: center; font-size: 72px; font-weight: 800; color: #ff4a4a; text-shadow: 0 0 30px #f00; z-index: 5; animation: rc-pop 0.5s var(--ease-out); }
 
-/* ---------------------------------------------------------------- 南雲カットイン */
+/* ---------------------------------------------------------------- 須井カットイン */
 .nagumo-cut { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: rgba(0, 0, 0, 0.9); opacity: 0; transition: opacity 0.4s; pointer-events: none; }
 .nagumo-cut.show { opacity: 1; }
 .nagumo-cut.out { opacity: 0; }

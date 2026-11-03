@@ -162,7 +162,7 @@ await suite("roamers", async check => {
       await R.roamers.meetRoamer(R.spots.spotById(plan.spotId), plan);
       return R.trace.filter(x => x.speaker === "nagumo").length;
     });
-    assert(known > 0, "会った後は南雲さん本人が話す");
+    assert(known > 0, "会った後は須井さん本人が話す");
   });
 
   await check("load-during-the-talk-leaves-no-record", async page => {

@@ -21,7 +21,7 @@
     },
     {
       "dialogue_id": "ch3_tokyo_fortune",
-      "comment": "東京で路上占い師に再会する（VOL15・台帳 URA の「東京にも理由は詳しく教えてくれないけど現れる」）。daily/fortune.js が東京で2回目以降に会ったとき読む。続きは remake_fortune_offer。",
+      "comment": "東京で辻占のオババに再会する（VOL15・台帳 URA の「東京にも理由は詳しく教えてくれないけど現れる」）。daily/fortune.js が東京で2回目以降に会ったとき読む。続きは remake_fortune_offer。",
       "lines": [
         {
           "speaker": "",

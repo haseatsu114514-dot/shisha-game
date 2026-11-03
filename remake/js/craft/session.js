@@ -261,12 +261,14 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   const lesson = b.cs.mode === "tutorial" ? b.cs.lessonHelp?.[lessonStep] || TUTORIAL_STEP_HELP[lessonStep] : null;
   b.title.textContent = titleText;
   b.hint.textContent = lesson?.brief || brief;
+  b.guide.root.querySelector(".bench-demo-link")?.remove();
   if (demoFor(lessonStep)) {
     const link = el("button.bench-demo-link", { type: "button", text: "お手本を見る" });
     link.addEventListener("click", () => {
       if (bench === b && b.panel.dataset.step === id && !b.root.dataset.demoPaused) openDemoSheet(b.root, lessonStep);
     });
-    b.hint.append(" ", link);
+    // 工程名の旧見出しは非表示。再表示の入口は、操作できる「?」説明内へ置く。
+    b.guide.note.after(link);
   }
   b.guide.root.open = false;
   b.guide.root.hidden = !hintText && !lesson;

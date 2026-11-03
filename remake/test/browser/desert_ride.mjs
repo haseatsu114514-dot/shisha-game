@@ -367,5 +367,53 @@ await suite("desert-ride", async check => {
     assert(await page.locator(".hud").isVisible(), "the daily HUD comes back");
     assert((await page.evaluate(() => window.__bgs)).some(url => /bg_dubai_dunes_dusk/.test(url)), "the sunset talk uses the adopted dusk background");
   });
+  await check("legacy-preview-best-is-separate-from-the-new-landing-rules", async page => {
+    await page.evaluate(() => localStorage.setItem("suien_desert_ride_preview", JSON.stringify({ score: 99999, rank: "S", beatNoor: true })));
+    await page.goto(new URL("desert-ride.html", page.url()).href);
+    assert.match(await page.locator(t("desert-page-legacy-best")).innerText(), /旧ルール.*99,999/);
+    assert.equal(await page.locator(t("desert-page-best")).count(), 0);
+    await page.locator(t("desert-page-start")).click();
+    await page.locator(t("desert-menu")).waitFor();
+    assert.match(await page.locator(t("desert-legacy-best")).innerText(), /99,999/);
+    assert.equal(await page.locator(t("desert-best")).count(), 0, "the old score is not the target for the new rules");
+    await page.locator(t("desert-start")).click();
+    await autoplayToResult(page, "perfect");
+    assert.equal(await page.locator(t("desert-result")).getAttribute("data-rank"), "A");
+    assert.match(await page.locator(t("desert-best")).innerText(), /自己ベスト更新/);
+    await page.locator(t("desert-leave")).click();
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_desert_ride_preview")));
+    assert.equal(saved.rulesVersion, 2); assert(saved.score < 99999);
+    assert.deepEqual(saved.legacyBest, { score: 99999, rank: "S" });
+    assert.equal(saved.beatNoor, true);
+    await page.reload();
+    assert.match(await page.locator(t("desert-page-legacy-best")).innerText(), /99,999/);
+    assert.match(await page.locator(t("desert-page-best")).innerText(), /自己ベスト.*A/);
+  });
+
+  await check("legacy-main-records-survive-real-auto-and-slot-save-load", async page => {
+    const got = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const progress = await import("./js/chapters/ch4-desert-progress.js");
+      const value = core.newGame();
+      const old = { finished: true, score: 30000, rank: "S", time: 48, maxCombo: 20, falls: 0 };
+      value.desert = { runs: 7, best: old, bestRank: "S", rewarded: true, wins: 2, naruMet: true, naruWins: 1, firstClear: { chapter: 4, day: 46 } };
+      const saved = progress.recordDesertResult(value, { ...old, score: 3500, rank: "B", rulesVersion: 2 });
+      core.save();
+      const auto = structuredClone(core.load().desert);
+      const slotSaved = core.saveToSlot("suien_remake_slot1");
+      core.state.desert = null;
+      const loaded = core.loadFromSlot("suien_remake_slot1");
+      return { newBest: saved.newBest, auto, slotSaved, slot: structuredClone(loaded?.desert), unlocked: progress.desertRivals(loaded) };
+    });
+    assert.equal(got.newBest, true); assert.equal(got.slotSaved, true);
+    assert.equal(got.auto.best.score, 3500); assert.equal(got.auto.best.rulesVersion, 2);
+    assert.equal(got.auto.legacyBest.score, 30000); assert.equal(got.auto.bestRank, "S");
+    assert.equal(got.auto.runs, 8); assert.equal(got.auto.rewarded, true);
+    assert.equal(got.auto.wins, 2); assert.equal(got.auto.naruWins, 1); assert.equal(got.auto.naruMet, true);
+    assert.deepEqual(got.slot, got.auto);
+    assert.deepEqual(got.unlocked, ["noor", "naru"]);
+  });
+
 });
+
 

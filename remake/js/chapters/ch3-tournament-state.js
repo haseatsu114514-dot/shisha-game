@@ -11,10 +11,20 @@ export const CH3_PRIZE = 100000;
 export const CONTESTANTS = Object.freeze(["hajime", "kuze", "steve", "volk"]);
 export const JUDGES = Object.freeze(["emil", "dr_kemuri", "nagumo"]);
 export const SPEND = Object.freeze([2, 3, 2, 3]);
-// 第2章より高い全国出場者の基準値。はじめの値は実際の制作成績で上書きする。
-export const RIVAL_QUALITY = Object.freeze({ kuze: 82, steve: 80, volk: 84 });
+// 2026-11-03「3・4章を難しく調整」: 全国で練習の手応えを求める暫定値（実機調整前）。
+// 試合途中の旧保存は旧基準で最後まで進め、新しい挑戦だけ版2を使う。
+export const TOURNAMENT_RULES_VERSION = 2;
+export const LEGACY_RIVAL_QUALITY = Object.freeze({ kuze: 82, steve: 80, volk: 84 });
+export const RIVAL_QUALITY = Object.freeze({ kuze: 86, steve: 85, volk: 88 });
 
-// 柑橘への好みと、直後の一口との比較は別。南雲は台本どおり水を飲む。
+const rulesVersion = p => p.rulesVersion === undefined ? 1 : p.rulesVersion;
+function rivalQuality(p) {
+  const version = rulesVersion(p);
+  if (version !== 1 && version !== TOURNAMENT_RULES_VERSION) throw new Error("全国大会の採点規則を確認できません");
+  return version === 1 ? LEGACY_RIVAL_QUALITY : RIVAL_QUALITY;
+}
+
+// 柑橘への好みと、直後の一口との比較は別。須井は台本どおり水を飲む。
 export const JUDGE_PROFILES = Object.freeze({
   emil: Object.freeze({ prefWeight: 0.20, citrus: -1, contrast: -2, waterChance: 0.25 }),
   dr_kemuri: Object.freeze({ prefWeight: 0.15, citrus: 2, contrast: 2, waterChance: 0.50 }),
@@ -59,13 +69,14 @@ export function buildTastingPlan(seed) {
 export function tournamentProgress(value) {
   if (value?.chapter !== 3) throw new Error("第3章の保存ではありません");
   const p = value.flags._ch3_tournament ||= {
-    version: 1, stage: "entry", attempts: 0, step: 0, craft: null, rollback: null,
+    version: 1, rulesVersion: TOURNAMENT_RULES_VERSION, stage: "entry", attempts: 0, step: 0, craft: null, rollback: null,
     votes: {}, voted: 0, result: null, history: [], entry: null, prizePaid: false,
     tastingSeed: null, tastingPlan: null,
   };
   if (p.version !== 1 || !Number.isInteger(p.step) || p.step < 0 || p.step > 11
     || !Number.isInteger(p.voted) || p.voted < 0 || p.voted > SPEND.length
     || !Array.isArray(p.history)) throw new Error("全国大会の保存地点を確認できません");
+  rivalQuality(p);
   return p;
 }
 
@@ -88,7 +99,7 @@ export function startAttempt(value, craft) {
   const seed = ((Number(value.weatherSeed) >>> 0) ^ Math.imul(Number(value.day) || 1, 0x9e3779b1)
     ^ Math.imul(p.attempts, 0x85ebca6b)) >>> 0;
   Object.assign(p, {
-    stage: "craft", step: 0, craft: copy(craft), rollback: null,
+    rulesVersion: TOURNAMENT_RULES_VERSION, stage: "craft", step: 0, craft: copy(craft), rollback: null,
     votes: initialVotes(), voted: 0, lastVotes: null, result: null, failure: null, defeatRead: false,
     tastingSeed: seed, tastingPlan: buildTastingPlan(seed),
   });
@@ -133,9 +144,11 @@ export function tastingEffect(plan, judge) {
 /** 各審査員の一回分をまとめて確定し、持ち点の二重投入を防ぐ。 */
 export function castVotes(p, round, performance, prefByJudge = null, carryP = 0) {
   if (!p || p.result || round !== p.voted || round < 0 || round >= SPEND.length) return false;
+  const rivals = rivalQuality(p);
+  if (!Number.isFinite(performance) || performance < 0 || performance > 100) throw new Error("全国大会の工程成績を確認できません");
   const plan = p.tastingPlan?.[round];
   if (!plan) throw new Error("試喫順を確認できません");
-  const quality = Object.fromEntries(Object.entries(RIVAL_QUALITY).map(([id, rival]) => {
+  const quality = Object.fromEntries(Object.entries(rivals).map(([id, rival]) => {
     const lifted = liftRivalScore(rival, carryP, 3);
     observeRivalScore(rival, carryP, 3, lifted);
     return [id, lifted];
@@ -145,7 +158,7 @@ export function castVotes(p, round, performance, prefByJudge = null, carryP = 0)
   for (const judge of JUDGES) {
     const profile = JUDGE_PROFILES[judge], row = p.votes?.[judge];
     if (!row || CONTESTANTS.some(id => !Number.isInteger(row[id]) || row[id] < 0)
-      || CONTESTANTS.reduce((sum, id) => sum + row[id], 0) + SPEND[round] > 10) {
+      || CONTESTANTS.reduce((sum, id) => sum + row[id], 0) !== SPEND.slice(0, round).reduce((sum, n) => sum + n, 0)) {
       throw new Error("審査員の持ち点が不足しています");
     }
     // 最初の票は吸い出し・提供前の手元評価。残り香は一口目以降だけ効く。
@@ -180,8 +193,9 @@ export function recordResult(value, total) {
   if (p.result) return p.result;
   if (p.voted !== SPEND.length || p.step !== 11 || p.craft?.careHistory?.length !== 2
     || p.craft.failed) throw new Error("提供と2回の調整が未完了です");
+  if (!Number.isFinite(total) || total < 0 || total > 100) throw new Error("全国大会の総合成績を確認できません");
   const rows = standings(p), rank = rows.find(row => row.id === "hajime").rank;
-  p.result = { attempt: p.attempts, total, rank, win: rank === 1,
+  p.result = { attempt: p.attempts, rulesVersion: rulesVersion(p), total, rank, win: rank === 1,
     rows, votes: copy(p.votes), careHistory: copy(p.craft.careHistory),
     tastingPlan: copy(p.tastingPlan) };
   // 賞金は優勝の確定と同じ更新で一度だけ渡す（再挑戦・LOADで二重に付けない）。

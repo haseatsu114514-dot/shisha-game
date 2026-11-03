@@ -2,7 +2,7 @@
 import { selectPostEndingConflict } from "../core/story-routes.js";
 
 // はじめの呼び方（台本での呼び方に合わせる。店の外の打ち上げでも、みんとは「みんと」）
-export const SEAT_LABELS = Object.freeze({ tsumugi: "つむぎちゃん", minto: "みんと", rin: "凛さん", ageha: "あげはさん",
+export const SEAT_LABELS = Object.freeze({ tsumugi: "つむぎちゃん", minto: "みんと", rin: "くゆりさん", ageha: "あげはさん",
   mashiro: "ましろちゃん", samechan: "サメちゃん", hiyori: "ひよりさん" });
 
 /** 打ち上げにいるヒロイン（会ったことのある人）と、その中の恋人。 */

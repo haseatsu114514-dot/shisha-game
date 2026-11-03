@@ -46,7 +46,7 @@
 | 19 | `t-map-ch3` | 第3章 東京 | 修正版 | 植物を減らす。構図・雰囲気は維持（ピン座標のため地形を動かさない） |
 | 20 | `t-ext-hiyori` | ひより | 修正版 | 植物をなくす・シーシャ部品を図解どおり（洗浄中なので炭・煙なし）。構図維持 |
 | 21 | `t-trailer-ch4-06` | 第4章予告カット6 はじめの手とホース | 修正版 | ホース・本体・HMD・ボウル・炭をすべて図解どおりに。手と構図は維持 |
-| 22 | `t-trailer-ch4-05` | 第4章予告カット5 南雲の後ろ姿 | 修正版 | ハガル・炭・HMD・ボウルを正しく。南雲の後ろ姿と構図は維持 |
+| 22 | `t-trailer-ch4-05` | 第4章予告カット5 須井の後ろ姿 | 修正版 | ハガル・炭・HMD・ボウルを正しく。須井の後ろ姿と構図は維持 |
 | 23 | `t-trailer-ch3-03` | 第3章予告カット3 久世の視線 | 修正版 | 機材を図解どおり＋背景を煙幕の実背景へ。人物・構図は維持 |
 | 24 | `t-trailer-ch5-06` | 第5章予告カット6 二台のシーシャ | 修正版 | 2台ともHMD・ボウル・炭・ホース・本体を正しく。構図は維持 |
 | 25 | `t-trailer-ch3-02` | 第3章予告カット2 ましろと茶杯 | 修正版 | 機材を正しく＋植物0＋背景をmukaiの実背景へ |
@@ -1623,10 +1623,10 @@ HMD       : ONMO型（蓋なし）
 - 文字・ロゴ・透かし・UIが焼き込まれていない
 ```
 
-## 22. `t-trailer-ch4-05` — 第4章予告カット5 南雲の後ろ姿（修正版）
+## 22. `t-trailer-ch4-05` — 第4章予告カット5 須井の後ろ姿（修正版）
 
 ```text
-【対象】t-trailer-ch4-05 ／ 章末予告スチル（第3〜5章） ／ 第4章予告カット5 南雲の後ろ姿 ／ 修正版（残す画像を元に直す）
+【対象】t-trailer-ch4-05 ／ 章末予告スチル（第3〜5章） ／ 第4章予告カット5 須井の後ろ姿 ／ 修正版（残す画像を元に直す）
 【使い方】このブロックだけで完結しています。まず元画像を添付し、下の「直す点」だけを編集した版を5通り作ってください（1回に1枚ずつ）。
 【元画像（必ず添付・画像1）】r2.webp（オーナーPCの選別データにある原寸。リポジトリには無い）
 【保存先】work/picker-refill-1030/t-trailer-ch4-05/ に refill1030-t-trailer-ch4-05-01.png 〜 refill1030-t-trailer-ch4-05-05.png
@@ -1639,7 +1639,7 @@ HMD       : ONMO型（蓋なし）
 【直す点（オーナー指示）】
 - ハガル・炭が変／HMD・ボウルが変 → 正しい構造に
 【そのまま残す点】
-- 構図・南雲の後ろ姿（単独）・雨の夜の窓とランプの色調・画風
+- 構図・須井の後ろ姿（単独）・雨の夜の窓とランプの色調・画風
 
 【共通スタイル指針（正本: asset_sources/trailer-90s-anime-concept/prompts/04-tsumugi-water.v2.txt。第1章予告の採用カットの指示文から転記・改変なし）】
 Character input images are IDENTITY MODEL SHEETS ONLY: preserve face geometry, hair, clothing and accessories, but invent the camera, acting, body pose, perspective and light specifically for the described story action. Never paste upright sprites onto an existing background. No characters looking into lens for a promotional portrait.
@@ -1666,7 +1666,7 @@ EDIT RULE: Edit image 1 with precise hardware corrections only; preserve composi
 --- 1/5: refill1030-t-trailer-ch4-05-01.png ---
 HMD: ONMO-type open low cup, 2 coals inside.
 8行:
-人物      : 南雲（後ろ姿のまま）
+人物      : 須井（後ろ姿のまま）
 場面      : 完成（卓に置かれた一台）
 台の型    : 元画像の台の型・色のまま
 HMD       : ONMO型（蓋なし）
@@ -1678,7 +1678,7 @@ HMD       : ONMO型（蓋なし）
 --- 2/5: refill1030-t-trailer-ch4-05-02.png ---
 HMD: Kaloud Lotus I+-type with its matching lid CLOSED and one short handle; coals hidden under the lid, faint glow at the vents only.
 8行:
-人物      : 南雲（後ろ姿のまま）
+人物      : 須井（後ろ姿のまま）
 場面      : 完成（卓に置かれた一台）
 台の型    : 元画像の台の型・色のまま
 HMD       : Lotus I+型（蓋を閉じる・取手1本）
@@ -1690,7 +1690,7 @@ HMD       : Lotus I+型（蓋を閉じる・取手1本）
 --- 3/5: refill1030-t-trailer-ch4-05-03.png ---
 HMD: ONMO-type with 2 coals, one of them more ash-grey than the other; the bowl top seen from slightly higher so both coals are clearly visible inside the cup's rim (no coal outside it).
 8行:
-人物      : 南雲（後ろ姿のまま）
+人物      : 須井（後ろ姿のまま）
 場面      : 完成（卓に置かれた一台）
 台の型    : 元画像の台の型・色のまま
 HMD       : ONMO型（蓋なし）
@@ -1702,7 +1702,7 @@ HMD       : ONMO型（蓋なし）
 --- 4/5: refill1030-t-trailer-ch4-05-04.png ---
 HMD: Kaloud Lotus I+-type with the lid set aside on the tray and 2 coals visible inside the open HMD.
 8行:
-人物      : 南雲（後ろ姿のまま）
+人物      : 須井（後ろ姿のまま）
 場面      : 完成（卓に置かれた一台）
 台の型    : 元画像の台の型・色のまま
 HMD       : Lotus I+型（蓋は受け皿の上・取手1本）
@@ -1714,7 +1714,7 @@ HMD       : Lotus I+型（蓋は受け皿の上・取手1本）
 --- 5/5: refill1030-t-trailer-ch4-05-05.png ---
 HMD: ONMO-type with 2 coals, and the bowl/HMD drawn slightly smaller and more refined in proportion (if image 1's bowl looked oversized), keeping the neck long.
 8行:
-人物      : 南雲（後ろ姿のまま）
+人物      : 須井（後ろ姿のまま）
 場面      : 完成（卓に置かれた一台）
 台の型    : 元画像の台の型・色のまま
 HMD       : ONMO型（蓋なし）

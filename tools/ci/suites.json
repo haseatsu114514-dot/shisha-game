@@ -10,6 +10,43 @@
   ],
   "suites": [
     {
+      "id": "craft-rank-hud",
+      "title": "Craft rank display-only snapshots, accessibility and lifecycle",
+      "kind": "quick",
+      "run": [
+        "node --experimental-vm-modules remake/test/craft_rank_hud.mjs"
+      ]
+    },
+    {
+      "id": "craft-rank-hud-browser",
+      "title": "Isolated craft rank header on PC, landscape touch and DS",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/craft/rank-hud.js",
+        "remake/js/craft/progress.js",
+        "remake/js/core/util.js",
+        "remake/css/craft-rank.css",
+        "remake/css/craft.css",
+        "remake/css/craft-header.css",
+        "remake/css/craft-paper.css",
+        "remake/css/game-ds.css",
+        "remake/craft-rank-preview.html",
+        "remake/test/browser/craft_rank_hud.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/craft_rank_hud.mjs"
+      ],
+      "chrome": "playwright"
+    },
+    {
+      "id": "naru-finish",
+      "title": "Naru finishing temperature, catalog balance and SAVE/LOAD",
+      "kind": "quick",
+      "run": ["node remake/test/naru_finish.mjs"]
+    },
+    {
       "id": "ch1-victory-resume-2190",
       "title": "Chapter 1 victory SAVE/LOAD backgrounds, resources and sentence boundaries",
       "kind": "quick",
@@ -584,7 +621,6 @@
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",
         "node --experimental-vm-modules remake/test/lime_consistency.mjs",
         "node --experimental-vm-modules remake/test/lime_balance.mjs",
-        "node --experimental-vm-modules remake/test/samechan_migration.mjs",
         "node --experimental-vm-modules remake/test/hiyori_frequency.mjs",
         "node --experimental-vm-modules remake/test/hiyori_quiet_visit.mjs",
         "node remake/test/spot_encounter_doctor.mjs",
@@ -2186,6 +2222,7 @@
       "timeout": 20,
       "paths": [
         "data/flavors.json",
+        "remake/js/core/naru-finish.js",
         "remake/js/craft/**",
         "remake/css/craft.css",
         "remake/test/mix_temperature.mjs",

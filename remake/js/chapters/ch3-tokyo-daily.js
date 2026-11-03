@@ -131,7 +131,7 @@ export function chapterThreeTokyoSpots() {
     if (entry.place === "shrine") return canReflect(state);
     if (entry.place === "club") return night;
     return true;
-  }).concat([fortuneSpot(TOKYO)].filter(Boolean)); // 路上占い師は東京にも現れる（章で1〜2回・理由は語らない。VOL15）
+  }).concat([fortuneSpot(TOKYO)].filter(Boolean)); // 辻占のオババは東京にも現れる（章で1〜2回・理由は語らない。VOL15）
 }
 
 // ---- 読む -------------------------------------------------------------------------------

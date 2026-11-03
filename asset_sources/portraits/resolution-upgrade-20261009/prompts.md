@@ -1,6 +1,6 @@
 # 立ち絵の作り直し：コピペ用プロンプト（画質・顔の大きさ・画風を1回で）
 
-[調査と方針](README.md)。2026-10-09 オーナー決定：**顔の大きさが中央値から±10%を超える6人だけ直す**／**画風はみんと・アゲハに合わせる**。
+[調査と方針](README.md)。2026-10-09 オーナー決定：**顔の大きさが中央値から±10%を超える6人だけ直す**／**画風はみんと・あげはに合わせる**。
 1回の生成で1人・1表情。各ブロックの英文と、ブロックに書いたリポジトリの参照画像4枚で1回ずつ生成する。全34表情。参照画像は**エージェントがリポジトリから直接読み込む**（オーナーが保存・添付する必要はない）。
 
 > 2026-10-10 最終更新（要望台帳 PU02・PU05）：主目的は画風と解像度をそろえること。つむぎは頭身の変更で印象が変わったため、元絵の頭・胴・脚の比率と小柄な体格へ戻す。7ブロックの10%縮小指定は撤回し、参照②も元の通常絵を使う。みんとからは描画品質だけを参照する。
@@ -13,7 +13,7 @@
 | 上園 | +17% | 頭を約14%小さく | 平たい塗り・太い線を基準へ | 5 |
 | スミさん | +15% | 頭（帽子込み）を約13%小さく | 基準に合わせる | 5 |
 | ましろ | +13% | やや大きめの丸い顔と頬の可愛さを優先。8%縮小は強制しない（2026-10-10追記） | 基準に合わせる | 6 |
-| 南雲 | −13% | 頭を約15%大きく | 基準に合わせる | 5 |
+| 須井 | −13% | 頭を約15%大きく | 基準に合わせる | 5 |
 | サメちゃん | −10% | 頭（フード込み）を約11%大きく | つやの強い今風の塗り・大きめの目を基準へ | 6 |
 
 顔の大きさの比較図は [face-size-ingame.png](../../reference-sheets/face-size-ingame.png)（`python3 tools/make_reference_sheet.py facesize` で作り直せる）。
@@ -27,16 +27,16 @@
 **ステップ1：試しの3枚で方向を確かめる**（ここで合格してから量産する）
 1. **#1 つむぎ・normal** … 元絵の頭身・小柄な丸さを保ち、解像度と画風だけを揃える（PU05）
 2. **#29 サメちゃん・normal** … 塗りを寄せても本人に見えるか（採用したばかりのデザイン）
-3. **#8 上園・normal** … 線が細くなり、塗りがみんと・アゲハに近づくか
+3. **#8 上園・normal** … 線が細くなり、塗りがみんと・あげはに近づくか
 
 → 3枚を Claude に見せて確認。直す点があればここでプロンプトを調整する。
 
 **ステップ2：残りの3人の通常**
-4. **#13 スミさん・normal** → 5. **#18 ましろ・normal** → 6. **#24 南雲・normal**
+4. **#13 スミさん・normal** → 5. **#18 ましろ・normal** → 6. **#24 須井・normal**
 
 **ステップ3：各キャラの残りの表情**（キャラごとにまとめて）
 - **②（同じキャラの通常）には、ステップ1・2で合格した「新しい通常」を添付する。** 表情どうしの顔と頭の大きさがそろいやすい。ただし、つむぎはPU05により、体格を変えた候補を引き継がず「元の通常」を添付する。
-- 順番：つむぎ #2〜7 → ましろ #19〜23 → サメちゃん #30〜34 → 上園 #9〜12 → スミさん #14〜17 → 南雲 #25〜28
+- 順番：つむぎ #2〜7 → ましろ #19〜23 → サメちゃん #30〜34 → 上園 #9〜12 → スミさん #14〜17 → 須井 #25〜28
 - 1キャラの全表情がそろったら並べて確認し、`asset_sources/portraits/<id>-remaster-v2/` に置いて commit。キャラ単位で組み込みを頼んでよい。
 
 ## リポジトリに触れないチャット（ChatGPTなど）で手作業で頼むときの手順
@@ -47,7 +47,7 @@ Codex・Claude Code では「立ち絵そろえ」で済むので、この節は
    - ① いま作り直す表情の現行PNG（各ブロックに書いたパス）
    - ② 同じキャラの `chr_<id>_normal.png`（①が通常のときは省略してよい）
    - ③ 頭身の目標：女性は みんと、男性は アダム の normal。ただし、つむぎは①の元の頭身を保ち、③は描画品質だけの参照
-   - ④ 画風の目標：女性は アゲハ、男性は みんと の normal
+   - ④ 画風の目標：女性は あげは、男性は みんと の normal
 2. 新しいチャットで、①→②→③→④の順に添付し、そのキャラ・表情のブロックをそのまま貼って送る。
 3. できた画像を原寸で見て、下のチェックを確認する。ダメなら同じチャットで、直す点だけを伝えて作り直す（例：「顔を画像1にもっと近づけて」「頭をもう少し小さく」「手の位置を画像1と同じに」）。
 4. 1キャラの全表情がそろったら並べて、同じ人物・同じ頭の大きさに見えるか確かめる。
@@ -609,9 +609,9 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
 ```
 
-## 南雲（nagumo）
+## 須井（nagumo）
 
-### 24. 南雲・normal
+### 24. 須井・normal
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -633,7 +633,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
 ```
 
-### 25. 南雲・smile
+### 25. 須井・smile
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_smile.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -655,7 +655,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
 ```
 
-### 26. 南雲・serious
+### 26. 須井・serious
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_serious.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -677,7 +677,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
 ```
 
-### 27. 南雲・surprise
+### 27. 須井・surprise
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_surprise.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -699,7 +699,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
 ```
 
-### 28. 南雲・thinking
+### 28. 須井・thinking
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_thinking.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
