@@ -289,6 +289,9 @@ export function play(idOrDlg, opts = {}) {
     const portraitsReady = firstPortraits(dlg);
     const bgReady = bg ? sceneSetBg(bg, portraitsReady) : Promise.resolve();
     dom.effect.dataset.effect = meta.effect || "";
+    // #2447 item10: metadata.lift_scene_props の場面だけ、背景の台（卓上・床）を本文ボックスの
+    // 上辺まで持ち上げて、下半分が会話ウィンドウに隠れないようにする。既定の家の場面には付けない。
+    document.body.classList.toggle("vn-lift-props", !!meta.lift_scene_props);
     sceneBgm(meta);
     if (hooks.onEnter) hooks.onEnter(dlg.dialogue_id || "", dlg);
     dropRetired(); // 選び終えた前の画面（マップ等）を会話の後ろに残さない
@@ -405,7 +408,7 @@ function finish(cancelled = false) {
   if (!cancelled) awardLoverSceneExp(r.id, r.owner);
   if (!cancelled && r.growthScene) earnSceneCompletion(r.id, r.owner);
   layers.vn.classList.remove("active");
-  document.body.classList.remove("in-vn", "vn-open");
+  document.body.classList.remove("in-vn", "vn-open", "vn-lift-props");
   dom.cg.classList.remove("show");
   dom.portraits.replaceChildren();
   hideShishaDiagram(); // 会話終了（SKIP/キャンセル含む）で図解を片付ける（#1128）
