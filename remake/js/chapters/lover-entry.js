@@ -11,16 +11,18 @@ import { openPhone } from "../daily/phone.js";
  * いま届く恋人LIME（私用アカウントの最初のひとこと・記念日・朝のひとこと）。
  * @param opts.senders この相手からだけ（省略時は恋人全員）
  * @param opts.exclude その場に一緒にいて、LIMEを送ってこない恋人
+ * @param opts.home はじめが地元にいるか。離れた街では地元で会う前提の文面を送ってこない（#2024）。
+ *   場面カードでは現在地の印が場面と合わないことがあるので、場面の側が分かる時は渡す（省略時は印から）
  */
-export function pendingLoverLime({ senders = null, exclude = [] } = {}) {
+export function pendingLoverLime({ senders = null, exclude = [], home } = {}) {
   const delivered = new Set((state.inbox || []).map(item => item.id));
-  return loverMessages({ invitations: false }).filter(m => (!senders || senders.includes(m.sender))
+  return loverMessages({ invitations: false, home }).filter(m => (!senders || senders.includes(m.sender))
     && !exclude.includes(m.sender) && !delivered.has(m.id));
 }
 
 /** 届いている恋人LIMEを既存の端末で読む。返信の絆・既読は phone.js（runItem）が付ける。 */
-export async function readLoverLime({ senders = null, exclude = [], title = "恋人からのLIME", time = null } = {}) {
-  const due = pendingLoverLime({ senders, exclude });
+export async function readLoverLime({ senders = null, exclude = [], home, title = "恋人からのLIME", time = null } = {}) {
+  const due = pendingLoverLime({ senders, exclude, home });
   if (!due.length) return false;
   await openPhone(due, { title, time: time || (state.slot ? "夜" : "昼") });
   save();

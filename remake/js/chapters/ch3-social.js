@@ -164,7 +164,9 @@ export async function openTokyoLime({ signal = null } = {}) {
       { id: "book", label: "この日程で約束する" },
       { id: "hold", label: "今は保留する" },
     ];
-    const lover = pendingLoverLime({ senders: [id] }).length ? [{ id: "lover", label: "新しいLIMEを読む" }] : [];
+    // 現在地の印（flags._ch2_region）は帰郷の後も東京のまま、日常ループの無い旧版の東京では地元のままなので、
+    // 地元にいるかは playerRegion で渡す（離れている間は地元前提の文面を送ってこない・#2024）
+    const lover = pendingLoverLime({ senders: [id], home: playerRegion(state) === "home" }).length ? [{ id: "lover", label: "新しいLIMEを読む" }] : [];
     if (!definitions.characters[id]) return lover;
     const options = [...lover, { id: "chat", label: "話しかける" }];
     const plan = latestPlan(id);
@@ -222,7 +224,7 @@ export async function openTokyoLime({ signal = null } = {}) {
   } });
   signal?.removeEventListener("abort", forward);
   if (!loverRead || signal?.aborted) return;
-  await readLoverLime({ senders: [loverRead] });
+  await readLoverLime({ senders: [loverRead], home: playerRegion(state) === "home" });
   if (!signal?.aborted) await openTokyoLime({ signal });
 }
 
