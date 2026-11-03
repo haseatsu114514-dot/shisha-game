@@ -119,6 +119,9 @@ async function pullGame(cs, mode) {
   const tutorial = cs.mode === "tutorial";
   if (mode.store === "pull" && !cs.pullDone) startNaruFinish(cs, growthLesson(state, "M-W3"));
   const context=craftContext(cs);
+  // 提供ボタンの実ラベル。吸い出しでも「提供」画面でないとき（チュートリアル・試し吸い等）は「確かめる」。
+  // 吸い切りの案内文も必ずこの実ラベルを指すよう、ボタンと同じ値から文言を作る。
+  const serveBtnLabel = mode.store === "pull" && context.title !== "提供" ? "確かめる" : mode.serveLabel;
   // 葉が傷むと適温帯が細くなるので、ダメージのたびに bands/ideal を取り直す。中心は動かないので一度だけ。
   let bands = temperatureBands(cs), ideal = bands.ideal;
   const center = bands.center;
@@ -222,7 +225,7 @@ async function pullGame(cs, mode) {
     text:"味の名前を伏せる",title:"白紙の味カード。審査員の受け止めの振れ幅が大きくなる",dataset:{test:"pull-blind"},"aria-pressed":String(!!cs.blindService),
     onclick:()=>{if(state!==owner||drawing||finished)return;cs.blindService=!cs.blindService;blindBtn.setAttribute("aria-pressed",String(cs.blindService));},
   }):null;
-  const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.pull-serve-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 48 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="23" width="8" height="14" rx="1.5"/><path d="m11 26 7-6c1-1 3-1 4-1h6c2 0 3 1 3 3s-1 3-3 3h-7M11 34h16c2 0 4-1 6-2l10-7c2-1 3-4 1-6s-3-1-5 0l-8 6"/></svg>' }), el("span.btn-label", { text: mode.store==="pull"&&context.title!=="提供"?"確かめる":mode.serveLabel })]);
+  const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.pull-serve-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 48 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="23" width="8" height="14" rx="1.5"/><path d="m11 26 7-6c1-1 3-1 4-1h6c2 0 3 1 3 3s-1 3-3 3h-7M11 34h16c2 0 4-1 6-2l10-7c2-1 3-4 1-6s-3-1-5 0l-8 6"/></svg>' }), el("span.btn-label", { text: serveBtnLabel })]);
   // 吸った回数の点。無傷で吸える回数を超える点は橙の枠で、吸いすぎの範囲だと分かるようにする。
   const pips = Array.from({ length: MAX_PULLS }, (_, i) => el(`i.pull-pip${i >= mode.safe ? ".over" : ""}`, { "aria-hidden": "true" }));
   const pullCount = el("b.pull-count-num");
@@ -395,7 +398,7 @@ async function pullGame(cs, mode) {
         animation.finished.then(()=>ring.remove(),()=>ring.remove());
       }
       const overdone = pulls > safeLimit;
-      const exhaustedAdvice = tutorial && pulls >= MAX_PULLS ? `吸うのはここまでだ。「${mode.serveLabel}」で次へ進もう` : "";
+      const exhaustedAdvice = tutorial && pulls >= MAX_PULLS ? `吸うのはここまでだ。「${serveBtnLabel}」で次へ進もう` : "";
       reactAudience(cs, isIdealTemperature(T, bands) ? "good" : Math.abs(T - center) > Math.abs(before - center) ? "bad" : "good",
         { text: exhaustedAdvice, force: !!exhaustedAdvice });
       thermometer.pop(z.id === "keep" ? z.mark : isJust ? z.mark.repeat(2) : z.mark, z.id);
