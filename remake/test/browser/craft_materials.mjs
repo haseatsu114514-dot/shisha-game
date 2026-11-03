@@ -268,6 +268,32 @@ await suite("craft-materials", async check => {
       await capture(page, `${device}-preview`);
     }, options);
   }
+  await check("demo-reopen-keyboard-background", async page => {
+    await page.route("**/media/demo-holes.mp4", route => route.fulfill({ contentType: "video/mp4", body: "invalid video fixture" }));
+    await setup(page);
+    await page.evaluate(() => { F.running = F.holes.runHoles(F.cs); });
+    await page.locator(".bench-demo-skip").click();
+    await page.locator('[data-test="hole-start"]').waitFor();
+    await page.locator(".bench-guide > summary").click();
+    await page.locator(".bench-demo-link").click();
+    await page.waitForFunction(() => document.activeElement?.classList.contains("bench-demo-skip"));
+    await page.keyboard.press("Shift+Tab");
+    const escaped = await page.evaluate(() => !document.querySelector(".bench-demo-sheet").contains(document.activeElement));
+    const target = await page.evaluate(() => document.activeElement?.getAttribute("data-test"));
+    if (escaped && target === "bench-guide-close") {
+      await page.keyboard.press("Enter");
+      await page.waitForFunction(() => !document.querySelector(".bench-guide").open && !document.querySelector(".bench-panel").inert);
+    }
+    await page.locator(".bench-demo-skip").click();
+    const state = await page.evaluate(escaped => ({ escaped, guideOpen: document.querySelector(".bench-guide").open,
+      panelInert: document.querySelector(".bench-panel").inert }), escaped);
+    console.log("demo keyboard restoration", JSON.stringify({ target, ...state }));
+    assert.equal(escaped, false, "Shift+Tab must not reach the background guide");
+    assert.equal(state.guideOpen, true);
+    assert.equal(state.panelInert, true, "The still-open guide keeps the work panel paused");
+    await page.locator('[data-test="bench-guide-close"]').click();
+    await page.waitForFunction(() => !document.querySelector(".bench-panel").inert);
+  });
   // #2447: failure simulation is separate from verifying the packaged video's contents.
   for (const [device, touch, options] of [["pc", false, {}], ["touch", true,
     { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
