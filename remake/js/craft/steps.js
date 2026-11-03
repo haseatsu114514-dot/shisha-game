@@ -96,12 +96,15 @@ export async function stepSetup(cs) {
   const trained = applyCoalTraining(cs, state.flags);
   await waitBenchReady(cs, "setup");
   const types = [["bowl", "ボウル（ハガル）"], ["hms", "HMD（ヒートマネジメント）"], ["charcoal", "炭（チャコール）"]];
+  const ownedOf = (type) => state.owned.map((id) => DB.equipById[id]).filter((e) => e && e.type === type);
+  // HMDの装着条件は全HMD共通（#2213）。どのハガルにもどのHMDも載せられる。
+  // 所持品だけでは制作できない旧セーブでも、未所持機材を補って確定しない（選ぶ前に止める）。
+  for (const [type, label] of types) {
+    if ((type !== "charcoal" || trained) && !ownedOf(type).length) throw new Error(`${label}に対応する所持機材がありません`);
+  }
   for (const [type, label] of types) {
     if (type === "charcoal" && !trained) continue;
-    const owned = state.owned.map((id) => DB.equipById[id]).filter((e) => e && e.type === type);
-    // HMDの装着条件は全HMD共通（#2213）。どのハガルにもどのHMDも載せられる。
-    // 所持品だけでは制作できない旧セーブでも、未所持機材を補って確定しない。
-    if (!owned.length) throw new Error(`${label}に対応する所持機材がありません`);
+    const owned = ownedOf(type);
     if (owned.length <= 1) {
       cs.equip[type] = owned[0].id;
       continue;
