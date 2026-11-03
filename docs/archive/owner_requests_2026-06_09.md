@@ -74,7 +74,7 @@
 
 | # | 状態 | 内容 |
 |---|---|---|
-| Z5 | ✅ 2b9fad8 | **各章1大会1試合の正史適用**（オーナー指示「ch2の県大会は1日だけ・各章1大会1試合（4人一気）・ch5だけ別」）: ch2の予選(DAY8)/準決勝(DAY11)/決勝(DAY14)3試合制を廃止し、**DAY14に はじめ・あげは・神崎竜二・零-REI- の4人一斉一発勝負のみ**へ（game.js `CH2_FINAL`）。孤立アークは準備期間へ再配線（D3なる祝福→D7アダム→D10スミさん沈黙→D11なる直言→D12みんと→D13つむぎ→前日のあげは言語化）。**あげは正史変更**: 「決勝前夜の空席LIME」→**当日の対戦相手として敗れ、直後に「……ごめん。理由は、聞かないで」と言い残して消える**（ch4彼女ルート回収も同期）。ch3=はじめ・ナンディ・スティーブ・ヴォルクの一戦（レイ不出場・東京で本格登場／なる=隣県ラインの県で敗退・`ch3_naru_reconcile`改稿）。ch4=`ch4_main.json`を準決勝+決勝の2段→**4人一斉の決勝一戦**へ再構成（旧名マスター・フーカ排除・決勝の一台を「和の一台」に統一）。CLAUDE.md/brand/setting_book/master_spec/ch2.mjs 全同期。lint ERROR 0・legacy 0・build 2本・ch2.mjs 緑 |
+| Z5 | ✅ 2b9fad8 | **各章1大会1試合の正史適用**（オーナー指示「ch2の県大会は1日だけ・各章1大会1試合（4人一気）・ch5だけ別」）: ch2の予選(DAY8)/準決勝(DAY11)/決勝(DAY14)3試合制を廃止し、**DAY14に はじめ・あげは・神崎竜二・零-REI- の4人一斉一発勝負のみ**へ（game.js `CH2_FINAL`）。孤立アークは準備期間へ再配線（D3なる祝福→D7アダム→D10スミさん沈黙→D11なる直言→D12みんと→D13つむぎ→前日のあげは言語化）。**あげは正史変更**: 「決勝前夜の空席LIME」→**当日の対戦相手として敗れ、直後に「……ごめん。理由は、聞かないで」と言い残して消える**（ch4彼女ルート回収も同期）。ch3=はじめ・スティーブ・ヴォルクほかの一戦（レイ不出場・東京で本格登場／なる=隣県ラインの県で敗退・`ch3_naru_reconcile`改稿）。ch4=`ch4_main.json`を準決勝+決勝の2段→**4人一斉の決勝一戦**へ再構成（旧名マスター・フーカ排除・決勝の一台を「和の一台」に統一）。CLAUDE.md/brand/setting_book/master_spec/ch2.mjs 全同期。lint ERROR 0・legacy 0・build 2本・ch2.mjs 緑 |
 | Z6 | ✅ 2b9fad8 | **「筋肉の記憶」禁止**（オーナー指示「わかりづらいので禁止」）: brand×2・setting_book01×1 を「体で覚えた手つき」へ置換。check_legacy_terms.py に ERROR ルール追加（ゲーム内台詞には元々未使用） |
 | Z7 | ✅ 2b9fad8 | **略記「DA」禁止**（オーナー指示）: CLAUDE.md・brand・docs・tools の「DA要素/DA単体/DA事件/DA一筋/DA6/DA 12g」等を全て「ダブルアップル」表記へ統一。CLAUDE.md のダブルアップル正史に「❌略記DA禁止」を明文化 |
 | Z8 | ✅ 2b9fad8 | **ダブルアップル正史の最終確定**（オーナー指示）: ①味の正史=**アニスとリコリス──二つのスパイスの香りで林檎を再現した、シーシャにしかない独特な味**（アニス単独表記を修正）②ch3事件でましろが出すのは**グレープ**（シトラスミント→シナモン→グレープ。スパイスの気配ゼロの果実味との取り違えが味覚喪失の動かぬ証拠）。`ch3_double_apple.json`・CLAUDE.md・brand・setting_book01・web_version_plan・legacy検査ルールを同期 |
@@ -119,7 +119,6 @@
 | X4 | ✅ 5330136 | **未執筆パートの執筆①**: ch4決勝の王煙楼戦（story_and_structure.md【転−２】新設・【転】を4人一斉に再構成。「究極に合わせる煙」はch5の9000の人間側予告編として接続） |
 | X5 | ✅ 5330136 | **未執筆パートの執筆②**: ch4応援登場セリフ つむぎ/みんと/凛の彼女ルート版（`ch4_tsumugi_dubai.json`・`ch4_minto_dubai.json`・`ch4_rin_dubai.json` 新規）。既存のましろ・あげは版に報酬キュー【根性】を追加して5人分を統一。lint ERROR 0・新規WARN 0・build 2本緑 |
 | X6 | ✅ f1dae73 | **設定資料の「まだない」4冊を追加**（オーナー指示「まだないのを作って」）: `03_world_shops.md`（世界観・章別の街と店舗・店の匂い一覧）／`04_glossary.md`（用語集）／`05_tournament.md`（大会仕様）／`06_flavors_recipes.md`（ブランド・64種・レシピ帳・秘伝・機材）。READMEの収録表・拡張候補も更新 |
-| X7 | ✅ 098b92c | **チャドの扱い**: オーナー裁定「チャドはもう存在しない・統合が正」→ ストーリー正本ch4のSHOWTIMEパートを太陽のFESTAに一本化（ショータイムの教えを太陽に移譲・審査員紹介からチャド削除）、character_profilesのチャド項を太陽に統合、lint_dialogue の BANNED_ERROR に「チャド」「SHOWTIME」追加で再混入防止 |
 | X8 | ✅ | **設定資料の再点検（矛盾・分かりづらさ・薄さ）**: 全6冊＋正本を突き合わせて点検、レポートはチャットで提出。資料側の誤記（フレーバーのブランド数）は 098b92c で修正済み |
 | X9 | ✅ | **点検で発見した正本の矛盾6件をオーナー委任で調整**（「うまいこと調整して任せる」）: ①凛を修羅場対象・個別エンド（閉店後ショールームED）に追加②「20年」→「15年」に統一③南雲=**スミさんと同じ大会を戦った元選手**で確定④パッキーの原型=**若き日のスミさんの公募採用案**で確定（作中では説明しない）（※この由来は2026-10-29のオーナー決定で撤回。パッキーの出自・過去・正体は謎のままとする）⑤シーステーション=**C.STATIONの読み＝店舗ブランド名**で確定（オーナー回答）⑥ch4「一年半」→「一年ちょっと」に調整。characters.json（nagumo/pakki）・CLAUDE.md・story正本・setting_bookへ反映 |
 | X10 | ✅ 8fad494 | **薄い7箇所の補完**: オーナー承認済み（「補完して欲しい」）。7件の設計草案を `docs/setting_book/HANDOVER.md` に記載して引き継ぎ→**2026-07-19の後続セッションで7件すべて草案どおり正本化済み**（上のY1参照） |
@@ -258,7 +257,7 @@ A1頭3行フック・A2長尺分割・B1BGM発注・B2話者ブリップ・C1未
 | H2 | ✅ | **タイトルBGM・右キービジュアルの表示遅れ**: 既に `<link rel=preload>`（O1）で対策済みだったのに加え、`fetchpriority="high"` を付与して他の先読みより先に帯域を確保。起動直後から取得が走る |
 | H3 | ✅ | **体力が現バランスでもまだ余る**: 就寝回復 19→14 に再調整（F8の続き）。バイト+訪問プレイで章に4〜5回「家で休むか」を考えるカーブに。balance.mjs の許容も更新（検討≤5回・素直に休めば酸欠圏に入らない・無理2バイトは寝込む、は維持） |
 | H4 | ✅ | **好感度が上がりにくい（固有会話なし訪問が2連続する）をマイルドに**: repeat訪問の好感度増分 3→4。doVisit は「次の訪問で段階が上がる見込みのときだけ固有会話を出す」設計で、ランク境界との噛み合わせでテンプレ訪問が2連続する隙間ができていた→隙間を縮小。大きく変えず「もう少しだけ」の緩和（オーナー指定どおり） |
-| H5 | ✅ | **未生成キャラの立ち絵プロンプト控えを作成**: `docs/prompts/portrait_prompts_pending.md` に、りゅうじ（kumicho・最優先／新保存先 chr_kumicho_*）ほか rei/volk/nandi/steve/master_hookah/sheikh/da_silva/emil/mukai_master/kako/rira/uranaishi の①マスター＋②表情シート＋変換コマンドを完成品で常備。容姿は characters.json の visual_concepts から流用。依頼が来たらコピペで即発注できる。CLAUDE.md 参照節にも導線追加 |
+| H5 | ✅ | **未生成キャラの立ち絵プロンプト控えを作成**: `docs/prompts/portrait_prompts_pending.md` に、りゅうじ（kumicho・最優先／新保存先 chr_kumicho_*）ほか rei/volk/steve/master_hookah/sheikh/da_silva/emil/mukai_master/uranaishi の①マスター＋②表情シート＋変換コマンドを完成品で常備。容姿は characters.json の visual_concepts から流用。依頼が来たらコピペで即発注できる。CLAUDE.md 参照節にも導線追加 |
 
 ## 2026-07-07 セッション（ブランチ claude/game-balance-ui-fixes-1saylu・プレイ感想12件）
 
@@ -303,7 +302,7 @@ A1頭3行フック・A2長尺分割・B1BGM発注・B2話者ブリップ・C1未
 | R3 | ✅ | **りゅうじ（神崎竜二）の旧立ち絵を廃止**: ネオンバーの少女画（chr_ryuji_*・face_ryuji）は設定不一致のため assets から削除し、kumicho→ryuji のエイリアス（engine.js/game.js/build_data.py）も撤去。ゲーム内は文字バッジ「崎」にフォールバック。新画像は chr_kumicho_* で追加する運用 |
 | R4 | ✅ | **前園の名前確認**: ゲーム内・characters.json とも「前園 壮一郎」で統一済みを確認。旧審査員の残骸 **白峰恒一郎・霧島レン** を characters.json / engine.js から削除（台詞での使用ゼロを確認済み） |
 | R5 | ✅ | **DJ SMOKE を廃止**: characters.json から削除（台詞・game.js での使用ゼロ）。CLAUDE.md 早見表・brand/character_profiles.md（ch2審査員候補→ゲスト未定）・設定資料集からも除去 |
-| R6 | ✅ | **紛らわしい残存の掃除**: secret_recipes.json の character:"ryuji"→"kumicho"、profiles のch4審査員候補からチャドを外す（審査員はダ・シルヴァに統合済み・店主としては登場継続）、tools のryuji例記述を整理、characters.json の volk role rival_ch2→rival_ch3（CLAUDE.md 早見表に整合） |
+| R6 | ✅ | **紛らわしい残存の掃除**: secret_recipes.json の character:"ryuji"→"kumicho"、tools のryuji例記述を整理、characters.json の volk role rival_ch2→rival_ch3（CLAUDE.md 早見表に整合） |
 | R7 | ✅ | **設定資料集へ反映**: docs/setting_reference.html を再生成（アゲハ22歳・みんと正体の記述・組長立ち絵プレースホルダ化・DJ SMOKE削除・ゆれ注記の解消） |
 
 ## 2026-07-05 セッション（同ブランチ・第3便: ショップ改装＋Day1強制チュートリアル2本＋ステータス演出）
@@ -512,7 +511,7 @@ A3/A4/A6/A8=`docs/archive/demo_release_spec.md` に仕様化（実装はGO待ち
 ### ✅ 完了（第2便: 身長スケール全展開＋背景再生成プロンプト）
 | 件 | 内容 |
 |---|---|
-| 身長スケール全キャラ | maezono(推定168cm=0.98・正典未設定)・master_hookah(165)・sheikh(192)・kako(160) を追加＝立ち絵があるキャラは全員反映、未支給キャラも届いた瞬間から正しく出る。naru×ageha / adam×tsumugi / nagumo×mashiro / maezono×rin の4ペアで見え方と足元の床合わせを確認 |
+| 身長スケール全キャラ | maezono(推定168cm=0.98・正典未設定)・master_hookah(165)・sheikh(192) を追加＝立ち絵があるキャラは全員反映、未支給キャラも届いた瞬間から正しく出る。naru×ageha / adam×tsumugi / nagumo×mashiro / maezono×rin の4ペアで見え方と足元の床合わせを確認 |
 | 背景再生成プロンプト | `tools/bg_prompts.txt` 末尾に「再生成バッチ（2026-07-02）」を追加（Codex作業用・全10件＋共通ワークフロー）。2048x1152で生成→Lanczosで1280x720へ縮小・夜も輝度80〜110で焼き込まない・触ってはいけない重複ファイル一覧つき |
 | 新背景の自動配線 | `bg_fookah_showroom.png`（凛の2階ショールーム）を先に配線し、`BG_FALLBACKS` で未着の間は bg_shop.png を表示。PNGを置いて build するだけで自動切替 |
 

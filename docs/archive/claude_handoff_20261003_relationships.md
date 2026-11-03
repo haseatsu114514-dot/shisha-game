@@ -110,10 +110,10 @@
 
 - オーナーの要望は各キャラ。現在好感度の交流導線があるキャラ全員を確認する。主人公、エイリアス、一般客を新規攻略対象にする依頼ではない。
 - リメイクの通常交流は章1の `sumi / tsumugi / naru / adam / minto / rin`。恋愛対象の現行定義は `tsumugi / minto / rin / ageha`。
-- 旧版 `web/js/game.js` の `CHAR_STAT` は後続章を含む18名。章2：`ageha / kumicho / rei / dr_kemuri`、章3：`mashiro / mukai_master / nandi / steve / volk`、章4：`master_hookah / sheikh / da_silva`。章1の6名に加えた一覧として取り漏れを確認する。
+- 旧版 `web/js/game.js` の `CHAR_STAT` は後続章を含む。章2：`ageha / kumicho / rei / dr_kemuri`、章3：`mashiro / mukai_master / steve / volk`、章4：`master_hookah / sheikh / da_silva`。章1の6名に加えた一覧として取り漏れを確認する。
 - 第2章以降のリメイク進行への接続は保留。後続キャラのイベントや贈り物のデータを用意する場合も、現在の章制限を維持し、「データ準備」と「通常プレイで到達できる」を区別して報告する。
 - サメちゃんは別overlay。章1の出会いと章2以降の店の設定があり、現在 `romance_available: false`。身長変更だけを理由に恋愛解禁しない。将来のMAXイベントはコロちゃんの「王の褒美」から本人のお礼へ着地する案がある。
-- **未決定の香りを勝手に確定しない**：サメちゃんは `favorite_flavor / specialty_flavor` がnull。スティーブのMountain Fog、ナンディのパンラースナ、ましろ・ヴォルクのシガー／ダークリーフ系など、現行フレーバーIDと一致しない設定がある。既存正本と予定フレーバーを確認し、未整備・判断待ちを明示する。
+- **未決定の香りを勝手に確定しない**：サメちゃんは `favorite_flavor / specialty_flavor` がnull。スティーブのMountain Fog、ましろ・ヴォルクのシガー／ダークリーフ系など、現行フレーバーIDと一致しない設定がある。既存正本と予定フレーバーを確認し、未整備・判断待ちを明示する。
 
 ## 今回は保留・別担当
 
