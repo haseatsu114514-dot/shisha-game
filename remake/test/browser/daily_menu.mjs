@@ -157,7 +157,7 @@ await suite("daily-menu", async (check) => {
     await settle(page);
     assert.match(await page.locator(t("menu-level")).innerText(), /Lv\.\s*3[\s\S]*EXP 110/);
     assert.match(await page.locator(t("menu-hidane")).innerText(), /2\s*火種/);
-    assert.match(await page.locator(t("menu-board-body")).innerText(), /才能[\s\S]*2 \/ 26/);
+    assert.match(await page.locator(t("menu-board-body")).innerText(), /才能[\s\S]*2 \/ 27/);
     assert.equal(await page.locator(".dmenu svg, .dmenu .radar").count(), 0, "no triangle graph (DUI03)");
     await assertLayout(page, "pc-growth");
     await page.screenshot({ path: path.join(out, "daily-menu-pc-growth-status.png") });
