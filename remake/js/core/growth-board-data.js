@@ -208,7 +208,7 @@ export const LESSONS = [
     hint: "零と仲良くなると、香りの重ね方を教えてもらえそう",
     text: "花の葉を2種以上重ねると香りの層ができ、調整のたびに次の層が立つ", scene: "lesson_rei_layers" },
   { id: "M-S4", cell: "5,-1", board: "sense", who: "ageha", need: 5, ring: 2, sig: true, reward: "skill", name: "ズボーって",
-    hint: "アゲハと仲良くなると、感覚の吸い方を教えてもらえそう",
+    hint: "あげはと仲良くなると、感覚の吸い方を教えてもらえそう",
     text: "吸い出しに「ズボー（同じ長さで吸う一回）」が加わる。一回ずつ刻んで温度を立て直せる", scene: "lesson_ageha_zuboo" },
   { id: "M-W4", cell: "-4,1", board: "wisdom", who: "kumicho", need: 5, ring: 2, sig: true, reward: "skill", name: "0分立ち上げ",
     hint: "組長と仲良くなると、蒸らさない立ち上げ方を教えてもらえそう",
@@ -225,7 +225,7 @@ export const LESSONS = [
   // 追加の6人（2026-10-30 オーナーが推しの案を全部採用。SBD57）。会って相談する場面は growth_lessons.json（SBD70）
   // ひよりの授業は斧投げを明かした後（_hiyori_real_self_known）だけ分かる（2026-10-31 オーナー「斧投げ明かした後で」SBD71）
   { id: "M-S6", cell: "3,-1", board: "sense", who: "rin", need: 5, ring: 1, sig: true, reward: "special", name: "ブルーベリーに帰る",
-    hint: "凛と仲良くなると、迷った時に帰る葉を教えてもらえそう",
+    hint: "くゆりと仲良くなると、迷った時に帰る葉を教えてもらえそう",
     text: "配合にブルーベリーを2割以上入れると、どんな葉と合わせても香りがまとまり、配合の点が上がる", scene: "lesson_rin_blueberry" },
   { id: "M-B4", cell: "1,-2", board: "body", who: "hiyori", need: 5, ring: 1, sig: true, revealFlag: "_hiyori_real_self_known", reward: "special", name: "ラーメンと斧で元気",
     hint: "ひよりと仲良くなると、元気でいるコツを教えてもらえそう",

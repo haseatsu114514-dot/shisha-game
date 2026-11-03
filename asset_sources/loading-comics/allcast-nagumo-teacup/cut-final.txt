@@ -13,7 +13,7 @@
   ],
   "minChapter": 1,
   "note": "番外編のギャグ漫画です。左から右へお読みください。",
-  "caption": "南雲会長の大事な話は、場所を選ばない……？",
+  "caption": "須井会長の大事な話は、場所を選ばない……？",
   "panels": [
     {
       "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-teacup/panels/nagumo-teacup-1.webp",

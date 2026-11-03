@@ -1,12 +1,12 @@
 {
   "version": 1,
   "characters": {
-    "ageha": "アゲハ",
+    "ageha": "あげは",
     "hiyori": "ひより",
-    "samechan": "サメちゃん／波多野なぎさ",
+    "samechan": "サメちゃん／汐見なぎさ",
     "mashiro": "ましろ",
     "minto": "みんと",
-    "rin": "凛",
+    "rin": "くゆり",
     "tsumugi": "つむぎ",
     "sumi": "スミ",
     "naru": "なる",
@@ -1165,7 +1165,7 @@
         "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-04-selfie-face.png"
       ],
       "groups": [
-        "アゲハ修正"
+        "あげは修正"
       ],
       "history": [
         "候補保存のみ・オーナー承認待ち：生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。"
@@ -1193,7 +1193,7 @@
         "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-02-grocery-face.png"
       ],
       "groups": [
-        "アゲハ修正"
+        "あげは修正"
       ],
       "history": [
         "候補保存のみ・オーナー承認待ち：生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。"
@@ -1221,7 +1221,7 @@
         "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-03-studio-face.png"
       ],
       "groups": [
-        "アゲハ修正"
+        "あげは修正"
       ],
       "history": [
         "候補保存のみ・オーナー承認待ち：生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。"
@@ -1249,7 +1249,7 @@
         "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-01-professional-face.png"
       ],
       "groups": [
-        "アゲハ修正"
+        "あげは修正"
       ],
       "history": [
         "候補保存のみ・オーナー承認待ち：生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。"
@@ -1277,7 +1277,7 @@
         "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-05-closing-rack.png"
       ],
       "groups": [
-        "アゲハ修正"
+        "あげは修正"
       ],
       "history": [
         "候補保存のみ・オーナー承認待ち：生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。"
@@ -1977,7 +1977,7 @@
         "別タイトル候補"
       ],
       "history": [
-        "要修正：v2ではホースは側面ポート→一つのたるみ→硬質ハンドルでY字なし。顔・営業衣装の同一性は維持。奥の室内鉢植えはCI97に照らして除去候補。短いボウル脚は具体モデルとの再照合を承認前に行う（凛NGと同一とは断定しない）。"
+        "要修正：v2ではホースは側面ポート→一つのたるみ→硬質ハンドルでY字なし。顔・営業衣装の同一性は維持。奥の室内鉢植えはCI97に照らして除去候補。短いボウル脚は具体モデルとの再照合を承認前に行う（くゆりNGと同一とは断定しない）。"
       ],
       "prompts": [
         "asset_sources/heroine-title-candidates-20261009/minto/minto_01_afterhours_smoke.prompt.txt"
@@ -2393,7 +2393,7 @@
         "別タイトル候補"
       ],
       "history": [
-        "候補保存のみ：長いウルフ・半目・白シャツ・フープ・無色爪を維持。鼻へ近づける缶と机上のボウルは別小物。炭・完成台なし。正式系の凛02（葉の色修正待ち）とは別ファイル。"
+        "候補保存のみ：長いウルフ・半目・白シャツ・フープ・無色爪を維持。鼻へ近づける缶と机上のボウルは別小物。炭・完成台なし。正式系のくゆり02（葉の色修正待ち）とは別ファイル。"
       ],
       "prompts": [
         "asset_sources/heroine-title-candidates-20261009/rin/title_art_rin_02_aroma_blend.prompt.txt"

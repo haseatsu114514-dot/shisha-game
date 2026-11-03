@@ -18,7 +18,7 @@
 
 > 2026-11-02 CR08: ラクダレースのレース画面のUI素材（調教師のリモコンのボタン・SUVの計器板・掲示板の札・出走表のカード・メダル・判子・遊び方の絵）の[Codex用依頼文](../../asset_sources/ch4-camel-race/ui-request.md)。九分割の縁と透過、文字を描かない条件つき。未生成。
 
-> 2026-11-02 CR06: 第4章ドバイのラクダレース（CAMEL RACE）の[Codex用指示書（背景・サイフ／ラシードの立ち絵・ラクダとロボット騎手・SUV・砂煙とゲート）](../../asset_sources/ch4-camel-race/README.md)。背景の英文は `tools/bg_prompts.txt` の CR01。未生成。届くまで Canvas 描写で代用中。
+> 2026-11-02 CR06: 第4章ドバイのラクダレース（CAMEL RACE）の[Codex用指示書（背景・サイーフ／ハリールの立ち絵・ラクダとロボット騎手・SUV・砂煙とゲート）](../../asset_sources/ch4-camel-race/README.md)。背景の英文は `tools/bg_prompts.txt` の CR01。未生成。届くまで Canvas 描写で代用中。
 
 > 2026-11-01 TRB05・TRB08・TRB12: TRPGの「キャラクターを作る」の見た目8点（通常編4・サメ編4）と仲間のPC似顔絵9点（各仲間の2案）の[Codex用指示書（保存先・サイズ・プロンプト・組み込み手順）](../../asset_sources/trpg-sheets/README.md)。未生成。シルエットと本人の立ち絵で代用中。
 

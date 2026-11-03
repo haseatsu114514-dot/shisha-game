@@ -73,11 +73,11 @@ await suite("ch4-camel-race", async check => {
     await assert.rejects(() => camel.click({ timeout: 1500 }), /not enabled|disabled|Timeout/i, "no second talk on the same day");
     // DAY2: 誘われる。レースは翌朝なのでまだ行けない。
     await endDay(page, 2);
-    await expectLabel(camel, /サイフとまた話す/);
+    await expectLabel(camel, /サイーフとまた話す/);
     await camel.click();
     await page.waitForFunction(() => window.__remake.state.flags._ch4_camel?.stage === 2);
     await page.locator(dt("ch4-free")).waitFor();
-    assert.equal((await get(page)).met.rashid, undefined, "Rashid appears at the track, not in the shop");
+    assert.equal((await get(page)).met.rashid, undefined, "Khalil appears at the track, not in the shop");
     await assert.rejects(() => camel.click({ timeout: 1500 }), /not enabled|disabled|Timeout/i, "the race is tomorrow morning");
     // DAY3: 本番を見て、レースを途中でやめる → 消費なし・見学は既読のまま。
     await endDay(page, 3);

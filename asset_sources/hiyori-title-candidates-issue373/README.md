@@ -41,4 +41,4 @@
 - [抽選・PC／スマホ全21画像の結果](qa/adopted-title-results.json)：3ケースPASS。実際のpickerでひよりを選択、同キャラ連続回避、起動1枚先読み、全21枚の表示とセーブ不変。
 - [旧セーブ・保存／読込](qa/adopted-save-load-results.json)：6ケースPASS（全スロット・旧形式移行・壊れたJSON・PC UI・タッチUI・縦持ち回転）。
 - 正式WebPの画面：01 [PC](qa/adopted-pc-title_art_hiyori_01_twilight_walk.png)／[スマホ](qa/adopted-mobile-title_art_hiyori_01_twilight_walk.png)、02 [PC](qa/adopted-pc-title_art_hiyori_02_window_pause.png)／[スマホ](qa/adopted-mobile-title_art_hiyori_02_window_pause.png)、03 [PC](qa/adopted-pc-title_art_hiyori_03_after_rain.png)／[スマホ](qa/adopted-mobile-title_art_hiyori_03_after_rain.png)。
-- 詳細は [validation.md](validation.md)。CI／公開反映の結果はIssueへ追記する。アゲハの正式3枚はオーナーが選定保留したため維持。
+- 詳細は [validation.md](validation.md)。CI／公開反映の結果はIssueへ追記する。あげはの正式3枚はオーナーが選定保留したため維持。

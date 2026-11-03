@@ -101,7 +101,7 @@ export const FACILITY_GROWTH_SPOTS = Object.freeze(["kannon", "choizap", "cafe",
 export const facilityGrowth = (spot) => FACILITY_GROWTH_SPOTS.includes(spot?.id)
   ? { budget: 1, points: 2, primary: spot.stat || null } : {};
 /**
- * 路上占い師（旧版 F11）: 章ごとに1〜2回、予定の無い昼か夜に、街のどこかへ現れる（daily/fortune-schedule.js・台帳 URA）。
+ * 辻占のオババ（旧版 F11）: 章ごとに1〜2回、予定の無い昼か夜に、街のどこかへ現れる（daily/fortune-schedule.js・台帳 URA）。
  * 時間を使わない・相性占い3,000円。現れている時間帯だけ、その回の場所に出す。未対面の人物情報は引き続き伏せる。
  * @param where 地図の地域（"home" | "tokyo"）
  */
@@ -180,14 +180,14 @@ export function afterChapterVisitDue(charId, s = state) {
     && DB.dialogues[entry.scene]?.lines?.length ? entry.scene : null;
 }
 /**
- * その章の間だけ店で読める短い会話（第2章の凛・VOL13）。段階会話より先に、一来店に一本ずつ・一度だけ。
+ * その章の間だけ店で読める短い会話（第2章のくゆり・VOL13）。段階会話より先に、一来店に一本ずつ・一度だけ。
  * flag は読める時期（味の不調の後など）。台本は章の準備期間に読み込む（data/dialogue/ch2_home.json）ので、未読込なら出さない。
  * 初対面の固有会話（VISIT_SEQ の1本目）を読んだ相手だけ（呼び名・面識を前提にするため）。
  * 既読は `_talk_seen_<scene>`。好感度は通い訪問と同じ+5。
  */
 export const CHAPTER_TALKS = Object.freeze({
   rin: Object.freeze([
-    // 「……君、今日は煙の褒め方が嘘だね」（characters.json の凛）。味の不調に誰より早く気づく
+    // 「……君、今日は煙の褒め方が嘘だね」（characters.json のくゆり）。味の不調に誰より早く気づく
     { chapter: 2, scene: "ch2_rin_taste", flag: "_ch2_taste_distant" },
     { chapter: 2, scene: "ch2_rin_strawberry" },
   ]),

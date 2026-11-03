@@ -133,7 +133,7 @@ await suite("affinity-gates", async check => {
         assert.equal(r.opened.answer.value, r.value); assert.equal(r.opened.due, null);
         assert.equal(r.duplicate.points, r.pts); assert.equal(r.duplicate.romance, r.romance);
         assert.equal(r.duplicate.release, 0); assert.equal(r.saved.points, r.pts); assert.equal(r.saved.again, 0);
-        // 質問の直後はどの相手も締めくくりにならない。凛も #1752 で4つ目の固有会話が質問の後に入った。
+        // 質問の直後はどの相手も締めくくりにならない。くゆりも #1752 で4つ目の固有会話が質問の後に入った。
         assert.equal(r.earlyFinale, false, JSON.stringify({ id: r.id, value: r.value, ...r.earlyWhy })); assert(r.ready); assert.equal(r.finale.route, r.value ? "romance" : "friend");
         assert.equal(r.finale.due, r.value ? r.id : null); assert.equal(r.finale.open, !!r.value);
         assert.equal(r.finale.giftCount, 1); assert(!r.replay && r.stable); assert.equal(r.held,0);
@@ -288,7 +288,7 @@ await suite("affinity-gates", async check => {
         }, { route, flag, lover, registered });
         await page.locator('[data-tab="people"]').click();
         const result = await page.evaluate(() => {
-          const row = [...document.querySelectorAll(".pp-row")].find(n => n.querySelector(".pp-name").textContent === "凛");
+          const row = [...document.querySelectorAll(".pp-row")].find(n => n.querySelector(".pp-name").textContent === "くゆり");
           return {
             friend: [...row.querySelectorAll(".pp-relation")].some(n => n.textContent === "友達"),
             settled: G.bonds.settledFriend("rin"),

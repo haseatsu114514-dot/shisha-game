@@ -58,9 +58,9 @@ await suite("samechan-milestones", async check => {
         assert(!x.noNext);
         assert.equal(!!x.after.flags._samechan_swimming_known, level >= 3);
         assert.equal(!!x.after.flags._samechan_name_known, level >= 4);
-        if (level < 3) assert(!/泳|波多野|なぎさ/.test(x.log));
-        if (level === 3) assert(x.log.includes("泳ぐのは") && !/波多野|なぎさ/.test(x.log));
-        if (level === 4) assert(x.log.includes("波多野なぎさ") && x.log.includes("サメちゃんで十分"));
+        if (level < 3) assert(!/泳|汐見|なぎさ/.test(x.log));
+        if (level === 3) assert(x.log.includes("泳ぐのは") && !/汐見|なぎさ/.test(x.log));
+        if (level === 4) assert(x.log.includes("汐見なぎさ") && x.log.includes("サメちゃんで十分"));
         if (level === 5) assert(x.log.includes("声を借りず") && x.log.includes("はじめさんが、好きです"));
       }
       assert.deepEqual(r.events.filter(id => /^lover_samechan_lv/.test(id)), [1, 2, 3, 4, 5].map(n => `lover_samechan_lv${n}`));

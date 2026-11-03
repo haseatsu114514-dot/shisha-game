@@ -60,7 +60,7 @@ About 2 minutes.
 テイスト違い予備案: 「electro-house」を「big-beat / breakbeat」にすると
 レトロゲーム調UIとの相性が上がる。
 
-## 4. bgm_result_emotional.mp3 — 優勝リザルト（南雲コール後の余韻）
+## 4. bgm_result_emotional.mp3 — 優勝リザルト（須井コール後の余韻）
 
 機能: 優勝コール＋紙吹雪の直後、リザルト画面の**涙腺曲**。1〜2分だけ流れる
 一発場面なので、冒頭から感情を張ってよい（山を前に置く）。

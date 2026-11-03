@@ -32,10 +32,10 @@
 - `data/dialogue/ch1_sumi.json` — スミ個別
 - `data/dialogue/ch1_naru.json` — なる個別
 - `data/dialogue/ch1_minto.json` — みんと個別
-- `data/dialogue/ch1_rin.json` — 凛個別
-- `data/dialogue/ch1_ageha.json` — アゲハ（ch1カメオ）
+- `data/dialogue/ch1_rin.json` — くゆり個別
+- `data/dialogue/ch1_ageha.json` — あげは（ch1カメオ）
 - `data/dialogue/ch2_main.json` — 第2章メイン
-- `data/dialogue/ch2_ageha_story.json` — アゲハ個別
+- `data/dialogue/ch2_ageha_story.json` — あげは個別
 - `data/dialogue/ch2_kumicho.json` — 神崎竜二個別
 - `data/dialogue/ch2_rei.json` — 零個別
 - `data/dialogue/ch3_volk.json` — ヴォルク個別（第2章では名無しの偵察者「？？？」としてのみ登場）
@@ -47,7 +47,7 @@
 - `data/dialogue/ch3_mashiro.json` — ましろ
 - `data/dialogue/ch4_main.json` — 第4章メイン
 - `data/dialogue/ch4_spots.json` — 第4章スポット
-- `data/dialogue/ch4_ageha_dubai.json` — アゲハ（ドバイ）
+- `data/dialogue/ch4_ageha_dubai.json` — あげは（ドバイ）
 - `data/dialogue/ch4_mashiro_dubai.json` — ましろ（ドバイ）
 - `data/dialogue/ch5_main.json` — 第5章メイン
 - `data/dialogue/lover_events.json` — 恋人イベント
@@ -85,7 +85,7 @@
 - 「C.STATION」が正式名称
 
 ### 3. ストーリーライン整合性
-- ch1の優勝はきちんと祝う。南雲の持ち点10は提供品質の基準を満たした上での評価で、採点表で勝利を取り消さない（2026-10-18）
+- ch1の優勝はきちんと祝う。須井の持ち点10は提供品質の基準を満たした上での評価で、採点表で勝利を取り消さない（2026-10-18）
 - みんとの私服姿=「お姉さん」(speaker: oneesan)。正体は♥3以上・固有会話2回以上の後の来店途中で明かす
 - ましろの呼び方は「ましろちゃん」で統一
 - はじめはブロンドリーフのみ使用。ダーク/シガーリーフを使う描写がないか
@@ -120,7 +120,7 @@
 - ch1で張った伏線がch2以降で回収されているか（or 回収予定として自然に配置されているか）
 - 「店の匂い」モチーフが各章に一度だけさりげなく置かれているか
 - みんと＝お姉さんの伏線が自然に機能しているか
-- 南雲のキャラクター（「もう一口吸いたい一台」に一括投入）が印象的に描かれているか
+- 須井のキャラクター（「もう一口吸いたい一台」に一括投入）が印象的に描かれているか
 
 ### 3. 感情の流れ
 - 各章にプレイヤーが感情移入できるピークシーン（燃える/泣ける/笑える）があるか

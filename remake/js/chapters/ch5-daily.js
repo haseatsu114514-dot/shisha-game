@@ -192,7 +192,7 @@ async function performChapterFiveSpot(spot, io, options = {}) {
     return { used: await io.readAndCommit("ch5_free_eden_adam"), exerted: false };
   }
   if (spot.kind === "shop") {
-    // 第5章は1階の買い物だけ（2階の相談＝凛の場面は出さない）。時間は使わない。
+    // 第5章は1階の買い物だけ（2階の相談＝くゆりの場面は出さない）。時間は使わない。
     await openShop({ errand: true });
     return { used: false, exerted: false };
   }

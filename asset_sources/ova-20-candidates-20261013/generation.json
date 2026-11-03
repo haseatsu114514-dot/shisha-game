@@ -93,7 +93,7 @@
     },
     {
       "id": "04",
-      "label": "アゲハ・明るいOVA立ち絵",
+      "label": "あげは・明るいOVA立ち絵",
       "kind": "portrait",
       "filename": "images/04.png",
       "generated_workspace_path": "/workspace/generated_images/exec-3d1a9c81-e400-4e29-8143-44bdd617afbf.png",
@@ -124,7 +124,7 @@
     },
     {
       "id": "05",
-      "label": "凛・都会的なOVA立ち絵",
+      "label": "くゆり・都会的なOVA立ち絵",
       "kind": "portrait",
       "filename": "images/05.png",
       "generated_workspace_path": "/workspace/generated_images/exec-e3506ecf-60ea-4dfa-919f-50f80f84b640.png",
@@ -302,7 +302,7 @@
     },
     {
       "id": "12",
-      "label": "アゲハとはじめ・屈託のない笑顔",
+      "label": "あげはとはじめ・屈託のない笑顔",
       "kind": "still",
       "filename": "images/12.png",
       "generated_workspace_path": "/workspace/generated_images/exec-e12eaed8-8f1e-4a88-a787-c7746b1cc30b.png",
@@ -436,7 +436,7 @@
     },
     {
       "id": "17",
-      "label": "凛・雨の日の仕事顔",
+      "label": "くゆり・雨の日の仕事顔",
       "kind": "still",
       "filename": "images/17.png",
       "generated_workspace_path": "/workspace/generated_images/exec-33a9f29d-9f7b-4e46-9e4c-b9fd3d79f2f3.png",

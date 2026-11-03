@@ -100,6 +100,9 @@ DOC_FILES = {
 EXTENSIONS = {".json", ".js", ".md", ".py", ".gd", ".txt", ".csv", ".sh"}
 
 IDENTITY_TEXT_EXTENSIONS = EXTENSIONS | {".mjs", ".cjs", ".html", ".css", ".yml", ".yaml", ".svg", ".xml", ".toml", ".lock"}
+# 2026-11-03 改名（#2474）。旧名は履歴・素材メモを含む全追跡ファイルで禁止する（「凛とした」等の一般語は許す）。
+RENAMED_CHARACTER_RE = re.compile(r"凛(?!とし|々|然|冽)|水瀬|白木 ?つむぎ|さぎさか りん|南雲|なぐも しゅうじ|デイビス|Steve Davis|波多野|ラシード|\bRashid\b|アゲハ(?!蝶|チョウ)|路上占い師|\bPak(?:i|ie)\b|サラリーマンさん")
+RENAMED_CHARACTER_FIX = "旧キャラ名 → 匂坂 くゆり（rin）／猫柳 つむぎ（tsumugi）／黒葉 ましろ（mashiro）／須井 修二（nagumo）／スティーブ・ライマン（steve）／汐見 なぎさ（samechan）／ハリール（rashid）／あげは（ageha）／辻占のオババ（uranaishi）／Packy（pakki）／鉄仮面さん（salaryman）に統一（#2474）"
 MINTO_HAIR_RE = re.compile(r"(?:mint|light)[ -]green (?:hair|twin)|black twin[ -]?tails|ミント(?:グリーン|色)のツイン|黒髪ツインテール|角ツインテール", re.IGNORECASE)
 
 
@@ -122,6 +125,8 @@ def scan_character_identity(errors: list):
         except (UnicodeDecodeError, OSError):
             continue
         for number, line in enumerate(text.splitlines(), 1):
+            if RENAMED_CHARACTER_RE.search(line):
+                errors.append(f"{rel}:{number}: {RENAMED_CHARACTER_FIX}")
             if ("minto" in rel.lower() or "minto" in line.lower() or "みんと" in line) and MINTO_HAIR_RE.search(line):
                 # 過去の検品を現行の事実に書き換えず、誤記を明示した訂正注記は残せる。
                 if not ("旧" in line and "誤" in line):
