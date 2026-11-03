@@ -295,8 +295,11 @@ const lastInboxDay = (match) => Math.max(-99, ...(state.inbox || []).filter(matc
  * @param opts.invitations デートの誘いを出すか（約束の仕組みが無い場面カード式の章は false）
  * @param opts.away 大会当日、会場の街にいない恋人（配信で見る側の文面 gameday_away を使う。第3章の東京・IR19）
  * @param opts.exclude 今いっしょにいて、LIMEを送ってこない恋人（第4章のドバイの同行者・IR17）
+ * @param opts.home はじめが地元にいるか。離れた街（東京・ドバイ）にいる朝は、地元で会う前提の文面を送ってこない
+ *   （朝のひとことの hometown を除き、記念日は anniversary_away・#2024）。省略時は現在地（flags._ch2_region）から。
+ *   場面カードの章は帰郷・帰国の後も印が東京・ドバイのままなので、呼び出し側が渡す（chapters/lover-entry.js）
  */
-export function loverMessages({ tournamentDay = false, fixedNight = () => false, invitations = true, away = [], exclude = [] } = {}) {
+export function loverMessages({ tournamentDay = false, fixedNight = () => false, invitations = true, away = [], exclude = [], home = !awayFromHome() } = {}) {
   const out = [];
   const read = (id) => state.limeRead.includes(id);
   const phase = L().limePhase || {};
@@ -327,9 +330,9 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false,
       out.push(chat(id, introId, intro));
       continue;
     }
-    // 記念日（付き合って10日ごと）
+    // 記念日（付き合って10日ごと）。離れた街にいる日は「帰ってきてからお祝い」の文面（無い恋人はいつもの文面）
     const n = dayTotal() - (state.loverSince[id] ?? dayTotal());
-    const anniv = (L().anniversary || {})[id];
+    const anniv = (!home && (L().anniversary_away || {})[id]) || (L().anniversary || {})[id];
     if (n > 0 && n % 10 === 0 && anniv && !read(`_lover_anniv_${id}_n${n}`)) {
       const v = { m: anniv.m.map((t) => typeof t === "string" ? t.replace("{n}", n) : { sender: id, ...t }), r: anniv.r };
       out.push(chat(id, `_lover_anniv_${id}_n${n}`, v));
@@ -357,8 +360,9 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false,
       } });
     }
     // 朝のひとこと（3日おき・キャラごとに位相をずらす・返事なし）。誘いの枠を取れなかった恋人もこちらへ
+    // 地元で会う前提のひとこと（hometown）は、はじめが地元にいる朝だけ
     const turn = state.day + (phase[id] || 0);
-    const pool = (L().morning || {})[id];
+    const pool = ((L().morning || {})[id] || []).filter((v) => home || !v.hometown);
     const msgId = `_lover_morning_${id}${chapterKey}_d${state.day}`;
     if (pool?.length && turn % LOVER_MORNING_GAP === 0 && !read(msgId)) {
       const k = Math.floor(turn / LOVER_MORNING_GAP);

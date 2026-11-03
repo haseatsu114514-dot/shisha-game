@@ -289,15 +289,16 @@ async function renderScene(owner, scene, dayLabel) {
  * 日本にいる間（出発前・帰国後のtonari）は恋人LIMEと節目。ドバイ滞在中は遠くの恋人からのLIMEだけで、
  * 節目は進めない（IR17）。到着した恋人と過ごす夕方（dubai_evening 系）は、前夜祭の日の renderEve で読む（IR18）。
  * 同行した恋人は一緒にいるのでLIMEを送ってこない。東京在住のましろとは地元では会えない。
+ * 地元にいるかは home で渡す（帰国後のtonariでも現在地の印はドバイのまま。離れている間は地元前提の文面を送ってこない・#2024）。
  */
 async function loverActions(owner, { home = false } = {}) {
   const lover = await import("./lover-entry.js");
   const exclude = home ? [] : [overseasCompanion(state).companion].filter(Boolean);
   const actions = [];
-  if (lover.pendingLoverLime({ exclude }).length) actions.push(button(owner, "恋人からのLIMEを読む", "lover-lime", async () => {
+  if (lover.pendingLoverLime({ exclude, home }).length) actions.push(button(owner, "恋人からのLIMEを読む", "lover-lime", async () => {
     showScreen("none", null);
     hud();
-    await lover.readLoverLime({ exclude });
+    await lover.readLoverLime({ exclude, home });
     if (current(owner)) await renderStage(owner);
   }));
   // 友人からのたまのLIME（#2022）。同行者は一緒にいるので送ってこない。

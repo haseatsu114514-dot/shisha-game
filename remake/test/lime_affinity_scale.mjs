@@ -44,7 +44,7 @@ test('返信が複数ある雑談LIMEは好感度が全選択肢同値になっ�
     assert.ok(m, `${id} が存在する`);
     groups.push([id, m.replies]);
   }
-  for (const sec of ['privateAccount', 'morning', 'anniversary', 'gameday']) {
+  for (const sec of ['privateAccount', 'morning', 'anniversary', 'anniversary_away', 'gameday']) {
     for (const [char, node] of Object.entries(lover[sec] || {})) {
       for (const [i, e] of (Array.isArray(node) ? node : [node]).entries()) groups.push([`lover:${sec}/${char}[${i}]`, e.r]);
     }

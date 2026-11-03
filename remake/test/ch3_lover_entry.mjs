@@ -91,7 +91,7 @@ await check('chapter 3 lover LIME comes from lover.json without date invitations
   const s = f.chapterThree(['mashiro']);
   // ましろは東京に住むので、第3章からは地元のデートに誘ってこない（IR16）。入口はそもそも誘いを出さない。
   assert.equal(f.romance.loverMessages().some(m => m.type === 'invitation'), false);
-  assert.match(fs.readFileSync(path.join(root, 'chapters/lover-entry.js'), 'utf8'), /loverMessages\(\{ invitations: false \}\)/);
+  assert.match(fs.readFileSync(path.join(root, 'chapters/lover-entry.js'), 'utf8'), /loverMessages\(\{ invitations: false, home \}\)/);
   const due = f.entry.pendingLoverLime();
   same(due.map(m => m.id), ['_lover_morning_mashiro_d30']);
   assert.equal(due[0].type, 'chat');
@@ -241,6 +241,75 @@ await check('a lover who is with hajime sends no LIME, and the rest still do (IR
   same(f.romance.loverMessages({ tournamentDay: true, exclude: ['ageha'] }).map(m => m.sender), ['tsumugi']);
 });
 
+await check('in Tokyo/Dubai, lover notes do not assume hajime is in town; the anniversary waits for his return (#2024)', async f => {
+  const text = m => JSON.stringify(m.messages);
+  const filled = (v, n) => JSON.stringify(v.m.map(t => typeof t === 'string' ? t.replace('{n}', n) : t));
+  // 文面の決まり: 地元前提の朝のひとことは印だけ付け、どの恋人にも離れていても届く文を残す。離れている日の記念日はいつもの記念日と同じ恋人だけ。
+  const hometown = lover.morning.tsumugi.filter(v => v.hometown);
+  same(hometown.map(v => v.m[0]), ['……今日、tonariに行きます']);
+  for (const [id, pool] of Object.entries(lover.morning)) assert(pool.some(v => !v.hometown), `${id}: an away-safe morning note`);
+  const awayIds = Object.keys(lover.anniversary_away).filter(id => !id.startsWith('_'));
+  for (const id of ['minto', 'ageha']) assert(awayIds.includes(id), `${id}: the anniversary plans a same-night date, so it needs an away text`);
+  for (const id of awayIds) {
+    assert(lover.anniversary[id], `${id}: the away anniversary replaces an existing one`);
+    assert.match(lover.anniversary_away[id].m[0], /\{n\}/, `${id}: the away anniversary counts the days`);
+    assert.doesNotMatch(JSON.stringify(lover.anniversary_away[id]), /閉店後|今夜|夜、/, `${id}: no same-night plan while away`);
+  }
+
+  // つむぎ（位相0）の DAY12 の朝は、地元なら「今日、tonariに行きます」に当たる。離れていても朝のひとこと自体は届く（IR17）。
+  const morning = () => f.romance.loverMessages({ invitations: false }).find(m => m.id.startsWith('_lover_morning_'));
+  const s = f.chapterAt(4, ['tsumugi'], { day: 12, flags: { _ch2_region: 'home' } });
+  assert.equal(text(morning()), JSON.stringify(hometown[0].m), 'Control: at home the visit note arrives');
+  for (const region of ['tokyo', 'dubai']) {
+    s.flags._ch2_region = region;
+    const note = morning();
+    assert.equal(note?.id, '_lover_morning_tsumugi_d12', `${region}: the morning note still arrives`);
+    assert(lover.morning.tsumugi.some(v => !v.hometown && JSON.stringify(v.m) === text(note)), `${region}: an away-safe note`);
+  }
+  // 3日おきの朝を120日分たどっても、地元にいる時だけ届く（記念日に当たらない日で見る）。
+  for (const region of ['home', 'widehanga', 'tokyo', 'dubai']) {
+    s.flags._ch2_region = region;
+    let visits = 0;
+    for (let day = 3; day <= 120; day += 3) {
+      Object.assign(s, { day }); s.loverSince.tsumugi = day - 7;
+      const note = morning();
+      assert(note, `${region} DAY${day}: the morning note arrives`);
+      if (text(note) === JSON.stringify(hometown[0].m)) visits++;
+    }
+    if (['home', 'widehanga'].includes(region)) assert(visits > 0, `${region}: the visit note is still in the rotation`);
+    else assert.equal(visits, 0, `${region}: no "coming to tonari today" while hajime is away`);
+  }
+
+  // 記念日（付き合って10日）: 地元はいつもの文面、離れている日は「帰ってきてから」。返事と好感度もその文面のもの。
+  const anniversary = (id, region, opts = {}) => {
+    const t = f.chapterAt(4, [id], { day: 40, flags: { _ch2_region: region } });
+    t.loverSince[id] = 30;
+    return f.romance.loverMessages({ invitations: false, ...opts }).find(m => m.id === `_lover_anniv_${id}_n10`);
+  };
+  for (const id of awayIds) {
+    assert.equal(text(anniversary(id, 'home')), filled(lover.anniversary[id], 10), `${id}: at home`);
+    for (const region of ['tokyo', 'dubai']) {
+      const note = anniversary(id, region);
+      assert.equal(text(note), filled(lover.anniversary_away[id], 10), `${id}: in ${region}`);
+      same(note.replies, lover.anniversary_away[id].r);
+    }
+  }
+  const usual = Object.keys(lover.anniversary).find(id => !awayIds.includes(id));
+  assert.equal(text(anniversary(usual, 'dubai')), filled(lover.anniversary[usual], 10), `${usual} has no away text: the usual anniversary`);
+
+  // 場面カードは現在地の印が場面と合わない（第4章の帰国後の tonari は印がドバイのまま）。呼び出し側の home が勝つ。
+  assert.equal(text(anniversary('minto', 'dubai', { home: true })), filled(lover.anniversary.minto, 10));
+  assert.equal(text(anniversary('minto', 'home', { home: false })), filled(lover.anniversary_away.minto, 10));
+  // 入口（lover-entry.js）も home を渡すだけ。省略時は印から。読んだ文面が受信箱に残る。
+  const u = f.chapterAt(4, ['minto'], { day: 40, flags: { _ch2_region: 'dubai' } });
+  u.loverSince.minto = 30;
+  assert.equal(text(f.entry.pendingLoverLime()[0]), filled(lover.anniversary_away.minto, 10));
+  assert.equal(text(f.entry.pendingLoverLime({ home: true })[0]), filled(lover.anniversary.minto, 10));
+  assert.equal(await f.entry.readLoverLime({ home: true }), true);
+  assert.equal(text(u.inbox.find(item => item.id === '_lover_anniv_minto_n10').msg), filled(lover.anniversary.minto, 10));
+  same(f.entry.pendingLoverLime({ home: false }), [], 'Read once, whichever text it was');
+});
+
 await check('non-lovers and cancelled milestones stay unread', async f => {
   const s = f.chapterThree([]);
   same(f.entry.pendingLoverLime(), []);
@@ -276,6 +345,13 @@ await check('chapter runners call the shared entry (no duplicated lover logic)',
   assert.doesNotMatch(ch4Daily, /lover-entry|playLoverMilestone|readLoverMilestone/);
   // 第3章の大会の朝は、共通の入口から応援を届ける（IR19）。
   assert.match(src('chapters/ch3-tournament.js'), /readTournamentCheers\(\{ away \}\)/);
+  // 場面カードは地元にいるかを入口へ渡す（#2024）。第4章は既存の home（帰国後の tonari）、第3章は playerRegion（帰郷の後）。
+  const ch4 = src('chapters/ch4.js');
+  assert.match(ch4, /lover\.pendingLoverLime\(\{ exclude, home \}\)/);
+  assert.match(ch4, /lover\.readLoverLime\(\{ exclude, home \}\)/);
+  const social = src('chapters/ch3-social.js');
+  assert.match(social, /pendingLoverLime\(\{ senders: \[id\], home: playerRegion\(state\) === "home" \}\)/);
+  assert.match(social, /readLoverLime\(\{ senders: \[loverRead\], home: playerRegion\(state\) === "home" \}\)/);
   assert.doesNotMatch(src('chapters/lover-entry.js'), /lover_\$\{|limePhase|morning/, 'Text and timing stay in romance.js / lover.json');
 });
 
