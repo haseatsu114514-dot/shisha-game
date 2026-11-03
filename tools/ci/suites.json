@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "affection-regressions",
+      "title": "Free max-heart gifts, private Mashiro bond, SHISHARK pace and later people visibility",
+      "kind": "quick",
+      "run": ["node remake/test/affection_regressions.mjs"]
+    },
+    {
       "id": "ch1-victory-resume-2190",
       "title": "Chapter 1 victory SAVE/LOAD backgrounds, resources and sentence boundaries",
       "kind": "quick",
@@ -3719,3 +3725,4 @@
     }
   ]
 }
+

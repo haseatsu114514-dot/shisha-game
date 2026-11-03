@@ -563,6 +563,9 @@ export function milestoneSystem(g = ensureGrowth()) {
 export function settleGrowth() {
   if (!growthEnabled() || !state) return null;
   const g = ensureGrowth();
+  // 無料LIME・物語で♥5になった場合も、未受領分を夜に回収する。EXPは付けない。
+  // giftedは周回ごとの台帳なので、旧セーブ・再精算・LOADでも二重付与しない。
+  for (const id of Object.keys(CHAR_TYPE)) giftAtMaxHeart(id);
   const from = g.level, to = levelForExp(g.xp);
   const xpFrom = g.settledXp;
   const learned = Object.entries(g.today.learned).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([key]) => key);
@@ -688,3 +691,4 @@ setExpHooks({ enabled: growthEnabled, hold: holdExpChip, action: awardActionExp,
     * (growthLesson(s, "M-S3") && s.flags?._home_lavender_sleep === `${s.chapter || 1}:${s.day}` ? 1 + LESSON_TUNING.lavenderSleep : 1) });
 masteryHooks.multiplier = s => (1 + (growthPerks(s)?.tongue || 0) / 100)
   * (growthSkill(s, "K09") ? 1 + SKILL_TUNING.mastery : 1);
+

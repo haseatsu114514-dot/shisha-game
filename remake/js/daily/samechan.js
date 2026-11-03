@@ -3,7 +3,7 @@ import { DB, sceneBg, loadCinemaDialogue } from "../core/data.js";
 import { state, save, markMet, timeOfDay } from "../core/state.js";
 import { setBg } from "../core/ui.js";
 import { sharkSwim } from "../core/scene-motions.js";
-import { gainAffinity, affinityLevel, releaseAffinity, ensureAffinityLevel, earnStat, addMoney, addStamina, STAMINA_LOW } from "../core/stats.js";
+import { gainAffinity, affinityLevel, releaseAffinity, ensureAffinityLevel, earnStat, addMoney, addStamina, STAMINA_LOW, visitAffinity } from "../core/stats.js";
 import { play, isPlaying } from "../vn/engine.js";
 import { finaleAtVisit, playFinale } from "./bonds.js";
 import { maybeRecruitTrpgMember } from "./trpg.js";
@@ -178,7 +178,9 @@ export async function visitSamechan(spot, { signal = null } = {}) {
     }
     state.story.samechan = count + 1;
     releaseAffinity("samechan");
-    gainAffinity("samechan", count === 0 ? 2 : 1);
+    // 固有の節目は他店と同じ量、質問・短い通いは小会話の量。会話の順序は変えない。
+    const story = dialogue === "samechan_shop_first" || dialogue === "samechan_bond_finale" || !!event;
+    gainAffinity("samechan", visitAffinity(story ? "story" : "talk"));
     earnStat("insight", 4);
     syncSamechanKnowledge();
     // 紹介・訪問の精算を同期的にまとめ、後続の任意勧誘では再課金しない。
@@ -190,3 +192,4 @@ export async function visitSamechan(spot, { signal = null } = {}) {
     return true;
   } finally { visiting = false; }
 }
+

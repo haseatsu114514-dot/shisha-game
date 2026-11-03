@@ -14,7 +14,7 @@ import { layers, setBg, toast, modal } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
 import { showHud } from "../daily/hud.js";
-import { addMoney, addStamina, earnStat, gainAffinity, paidAction, earnSceneCompletion } from "../core/stats.js";
+import { addMoney, addStamina, earnStat, gainAffinity, paidAction, earnSceneCompletion, privateBondScope } from "../core/stats.js";
 import { openShop } from "../daily/shop.js";
 import { fortuneSpot, TOKYO_VISIT_COST } from "../daily/spots.js";
 import { spendableMoney } from "../core/travel-budget.js";
@@ -575,7 +575,10 @@ async function readMashiroBond(kind, staminaGuard, owner) {
   else done = await playFinale("mashiro", { bg });
   if (!done || state !== owner) return unused;
   addStamina(-10);
-  gainAffinity("mashiro", 5);
+  // 恋人の節目を読んだ後の私的な交流。店の仕事中の加算とは分ける。
+  const restore = kind === "lover" ? privateBondScope() : null;
+  try { gainAffinity("mashiro", 5); }
+  finally { restore?.(); }
   return { used: true, exerted: true, exp: personExp("mashiro") };
 }
 
@@ -591,3 +594,4 @@ async function offerTetsuko(owner) {
   state.flags[OUTINGS_FLAG] = { ...outingCounts(state), tetsuko: (outingCounts(state).tetsuko || 0) + 1 };
   toast(outing.toast || "てつこに、少し元気をもらった", { kind: "good" });
 }
+
