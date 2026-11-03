@@ -238,3 +238,17 @@
 .camel-menu h1 { margin: 0; font-size: clamp(32px, 6vw, 60px); letter-spacing: .14em; color: #ffd77a; }
 .camel-menu p { margin: 0; line-height: 1.7; color: #d9c6a3; }
 .camel-menu .btn { min-height: 52px; }
+
+
+/* 大会の入口は砂漠のクラブ会員証。ロックと認定は色だけでなく文字でも示す。 */
+.camel-cup-card { max-width: 1020px; width: 90cqw; }
+.camel-cups { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1cqw; margin: 1.4cqw 0; }
+.camel-cup { display: flex; flex-direction: column; gap: .65cqw; text-align: left; padding: 1.35cqw; border: 1px solid #b27f36; border-radius: 12px; color: #ffe9bf; background: linear-gradient(150deg,#493020,#201b19); box-shadow: inset 0 0 0 3px #ffffff08; cursor: pointer; font: inherit; }
+.camel-cup small { color: #efbd6f; letter-spacing: .1em; }
+.camel-cup strong { font-size: 1.6cqw; }
+.camel-cup span { font-size: max(11px,1.05cqw); line-height: 1.5; }
+.camel-cup b { margin-top: auto; padding-top: 1cqw; color: #ffe4a4; }
+.camel-cup:disabled { opacity: .58; cursor: default; }
+.camel-cup:not(:disabled):hover, .camel-cup:focus-visible { outline: 2px solid #ffd77a; outline-offset: 2px; transform: translateY(-2px); }
+@media (max-width: 700px) { .camel-cups { gap: 1cqw; } .camel-cup { padding: 1cqw; } .camel-cup strong { font-size: 2.2cqw; } .camel-cup span { font-size: 1.7cqw; } .camel-cup b { font-size: 1.7cqw; } }
+@media (prefers-reduced-motion: reduce) { .camel-cup:not(:disabled):hover { transform: none; } }

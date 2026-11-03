@@ -142,6 +142,7 @@ await suite("ch4-camel-race", async check => {
     await camel.click();
     await page.locator(dt("camel-game")).waitFor({ timeout: 60000 });
     assert.equal(await page.locator(dt("camel-tutorial")).count(), 0, "no tutorial after the first run");
+    await page.locator('[data-test="camel-cup"][data-cup="practice"]').click();
     await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
     const second = await page.locator(dt("camel-result")).evaluate(node => ({ ...node.dataset }));
     assert.equal(second.rank, "4");
@@ -252,6 +253,45 @@ await suite("ch4-camel-race-daily", async check => {
   });
 });
 
+await suite("ch4-camel-cups", async check => {
+  await check("cup-unlocks-cancel-multiple-runs-and-save-load", async page => {
+    await seedDaily(page, { stage: 3, watched: true, plays: 1, lastPlayDay: null, best: null });
+    await loadSlot(page, 0);
+    await dubaiMap(page, { slot: 0 });
+    await camelTest(page, { pilot: "good", timeScale: 8 });
+    const before = await get(page);
+    await go(page, "ch4_dubai_camel");
+    await page.locator(dt("camel-cups")).waitFor();
+    const cup = id => page.locator(`[data-test="camel-cup"][data-cup="${id}"]`);
+    assert.equal(await cup("standard").isDisabled(), true);
+    assert.equal(await cup("expert").isDisabled(), true);
+    await page.locator(dt("camel-close")).click();
+    await dubaiMap(page, { slot: 0 });
+    const cancelled = await get(page);
+    assert.deepEqual(cancelled.flags._ch4_camel, before.flags._ch4_camel);
+    assert.equal(cancelled.slot, before.slot);
+    await go(page, "ch4_dubai_camel");
+    await cup("rookie").click();
+    await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
+    await page.locator(dt("camel-choose-cup")).click();
+    assert.equal(await cup("standard").isDisabled(), false);
+    await cup("standard").click();
+    await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
+    assert.match(await page.locator(dt("camel-result")).textContent(), /中級認定/);
+    await page.locator(dt("camel-choose-cup")).click();
+    assert.equal(await cup("expert").isDisabled(), false);
+    await page.locator(dt("camel-close")).click();
+    await dubaiMap(page, { day: before.day, slot: 1 });
+    const completed = await get(page);
+    assert.equal(completed.flags._ch4_camel.plays, 3, "all finished runs are saved once");
+    assert.equal(completed.flags._camel_cups.standard.mastered, true);
+    assert.equal(completed.flags._camel_cups.expert.mastered, false);
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: before.day, slot: 1 });
+    assert.deepEqual((await get(page)).flags._camel_cups, completed.flags._camel_cups);
+  });
+});
+
 async function expectLabel(locator, pattern) {
   await locator.waitFor();
   assert.match(await locator.textContent(), pattern);
@@ -295,3 +335,4 @@ await suite("ch4-camel-race-controls", async check => {
     await page.locator(dt("camel-menu-quick")).waitFor();
   });
 }, { entry: new URL("camel-race.html", baseURL).href, readySelector: '[data-test="camel-menu-quick"]' });
+
