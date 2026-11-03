@@ -168,7 +168,7 @@ function updateGrowth() {
   dom.exp.setAttribute("aria-label", dom.exp.title);
 }
 
-/** 盤で目標にしたマスまでの残りの火種。届いたら目標は盤の決定で外れる（SPEC 2.4） */
+/** 盤で目標にしたマスまでの経路で使う火種の合計（手持ちとの差額ではない）。届いたら目標は盤の決定で外れる（SPEC 2.4） */
 function renderTarget(g) {
   const target = dom.exp.querySelector(".hx-target");
   const node = g.target ? NODE_BY_ID[g.target] : null;
@@ -178,7 +178,7 @@ function renderTarget(g) {
   target.hidden = false;
   // 情報カードは幅が狭いので、ゲージを潰さない短い印だけ出す。目標の名前は説明（title・読み上げ）で
   target.textContent = `◎火種${cost}`;
-  target.title = `心得の盤の目標「${name}」まで、あと火種${cost}`;
+  target.title = `心得の盤の目標「${name}」までに使う火種${cost}（経路の合計）`;
   target.setAttribute("aria-label", target.title);
 }
 
