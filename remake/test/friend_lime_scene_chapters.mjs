@@ -47,6 +47,23 @@ for (const chapter of [4, 5]) { s.chapter = chapter; assert.ok(bonds.friendMessa
 s.chapter = 2; s.phase = "chapter2";
 assert.deepEqual(bonds.friendMessages({ sceneChapter: true }), [], "第1・2章は従来の朝の端末だけ");
 
+// #2035: 機能表へ移しても、入口・章の型・旧セーブのfallback・お誘い条件は変えない。
+for (const chapter of [1, 2, 3, 4, 5, 6, "1", "3", undefined, null, 0, false, NaN]) {
+  for (const sceneChapter of [false, true]) for (const phase of ["daily", "chapter3"])
+    for (const tournamentDay of [false, true]) for (const pending of [false, true]) {
+      Object.assign(s, { chapter, phase, day: 50, pendingInvite: pending ? { event: "other" } : null,
+        inbox: [{ id: "_friend_chat_naru_d30", day: 30, read: true,
+          msg: { sender: "naru", type: "chat", friend: true } }] });
+      const before = JSON.stringify(s);
+      const open = !tournamentDay && (sceneChapter ? [3, 4, 5].includes(chapter)
+        : phase === "daily" && [1, 2, 5].includes(chapter || 1));
+      const expected = !open ? [] : !sceneChapter && chapter !== 5 && !pending ? ["invitation", "chat"] : ["chat"];
+      assert.deepEqual(bonds.friendMessages({ sceneChapter, tournamentDay }).map(m => m.type), expected,
+        `chapter=${String(chapter)}, scene=${sceneChapter}, phase=${phase}, tournament=${tournamentDay}, pending=${pending}`);
+      assert.equal(JSON.stringify(s), before, "候補の照会で保存状態を変えない");
+    }
+}
+
 // LM07: 友人のLIMEが無い時は、♥3以上で締めくくり前の知り合いの雑談が第3〜5章でも届く（読むだけ・一度ずつ・離れた場所からの文面が続く）
 {
   const t = core.newGame();
@@ -120,3 +137,4 @@ for (const file of ["ch3.js", "ch4.js"]) assert.match(src(file), /readFriendLime
 // 第5章は日常ループの朝の端末から届く（場面カードの入口は無い）。
 assert.match(src("ch5-daily.js"), /runDaily\(/, "ch5-daily.js が日常ループに乗っていない");
 console.log("friend_lime_scene_chapters: ok");
+
