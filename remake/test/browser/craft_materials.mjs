@@ -11,6 +11,18 @@ const ngCase = ng => Object.fromEntries(ng.flavors.map(family => [
 if (shots) fs.mkdirSync(shots, { recursive: true });
 const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
 const click = (page, selector, touch) => touch ? page.locator(selector).tap() : page.locator(selector).click();
+async function demoKeyboardLoop(page) {
+  await page.waitForFunction(() => document.activeElement?.classList.contains("bench-demo-skip"));
+  await page.keyboard.press("Shift+Tab");
+  assert.equal(await page.locator(".bench-demo-finish").evaluate(n => n === document.activeElement), true);
+  await page.keyboard.press("Tab");
+  assert.equal(await page.locator(".bench-demo-skip").evaluate(n => n === document.activeElement), true);
+  // Include native video controls when present, the text disclosure, and both close buttons.
+  for (const key of ["Tab", "Shift+Tab"]) for (let i = 0; i < 16; i++) {
+    await page.keyboard.press(key);
+    assert.equal(await page.locator(".bench-demo-sheet").evaluate(n => n.contains(document.activeElement)), true, key);
+  }
+}
 async function setup(page) {
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js"); core.newGame();
@@ -284,7 +296,12 @@ await suite("craft-materials", async check => {
       await page.keyboard.press("Enter");
       await page.waitForFunction(() => !document.querySelector(".bench-guide").open && !document.querySelector(".bench-panel").inert);
     }
-    await page.locator(".bench-demo-skip").click();
+    if (escaped) await page.locator(".bench-demo-skip").click();
+    else {
+      assert.equal(await page.locator(".bench-demo-finish").evaluate(n => n === document.activeElement), true);
+      await page.keyboard.press("Enter");
+    }
+    await page.locator(".bench-demo-sheet").waitFor({ state: "detached" });
     const state = await page.evaluate(escaped => ({ escaped, guideOpen: document.querySelector(".bench-guide").open,
       panelInert: document.querySelector(".bench-panel").inert }), escaped);
     console.log("demo keyboard restoration", JSON.stringify({ target, ...state }));
@@ -305,6 +322,7 @@ await suite("craft-materials", async check => {
       const sheet = page.locator(".bench-demo-sheet");
       await sheet.waitFor();
       await page.waitForFunction(() => document.querySelector(".bench-demo-stage")?.hidden);
+      await demoKeyboardLoop(page);
       assert.match(await page.locator(".bench-demo-status").innerText(), /動画を再生できません/);
       assert.equal(await page.locator(".bench-demo-instructions").evaluate(n => n.open), true);
       const expected = await page.evaluate(async () => (await import("./js/craft/demo.js")).STEP_DEMOS.holes.cues.map(c => c.text));
@@ -333,6 +351,7 @@ await suite("craft-materials", async check => {
       await click(page, ".bench-guide > summary", touch);
       await click(page, ".bench-guide .bench-demo-link", touch);
       await sheet.waitFor();
+      await demoKeyboardLoop(page);
       await click(page, ".bench-demo-skip", touch);
       await sheet.waitFor({ state: "detached" });
       assert.equal(await page.locator(".bench-demo-link").evaluate(n => n === document.activeElement), true);
@@ -346,6 +365,7 @@ await suite("craft-materials", async check => {
       await page.evaluate(async () => {
         F.demo = await import("./js/craft/demo.js");
         F.beforeDemo = JSON.stringify(F.core.state);
+        F.beforeDemoInert = [...document.querySelector(".bench").children].map(n => n.inert);
         F.plays = [];
         // Controlled promises/events test autoplay and delayed callbacks without relying on network timing.
         HTMLMediaElement.prototype.play = function () { return new Promise((resolve, reject) => F.plays.push({ resolve, reject })); };
@@ -353,6 +373,7 @@ await suite("craft-materials", async check => {
         F.demoTask = F.startDemo();
       });
       await page.locator(".bench-demo-sheet").waitFor();
+      await demoKeyboardLoop(page);
       assert.equal(await page.locator(".bench-demo-instructions li").count(), 6, "Instructions exist before any media event");
       await page.evaluate(() => F.plays[0].reject(new DOMException("fixture autoplay policy", "NotAllowedError")));
       await page.waitForFunction(() => document.querySelector(".bench-demo-status")?.textContent.includes("自動再生できません"));
@@ -370,6 +391,8 @@ await suite("craft-materials", async check => {
       await page.evaluate(() => { F.oldFinish = document.querySelector(".bench-demo-finish"); });
       await click(page, ".bench-demo-finish", touch);
       assert.equal(await page.evaluate(() => F.demoTask), true);
+      assert.deepEqual(await page.evaluate(() => [...document.querySelector(".bench").children].map(n => n.inert)),
+        await page.evaluate(() => F.beforeDemoInert), "Restore every background element's previous inert state");
       await page.evaluate(() => { F.oldFinish.click(); F.oldFinish.click(); F.demoTask = F.startDemo(); });
       await page.locator(".bench-demo-sheet").waitFor();
       // Replacing the scene (as on LOAD) cancels the old sheet and its late promise safely.

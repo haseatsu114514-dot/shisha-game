@@ -60,6 +60,9 @@ export function openDemoSheet(root, step) {
   card.append(head, stage, caption, status, instructions, finish); sheet.append(card);
   const previousInert = root.querySelector(".bench-panel")?.inert;
   const panel = root.querySelector(".bench-panel");
+  // ガイドを含む背後の作業台を操作させない。各要素の既存状態は閉じる際に戻す。
+  const background = [...root.children].map(node => ({ node, inert: node.inert }));
+  for (const { node } of background) node.inert = true;
   if (panel) panel.inert = true;
   root.dataset.demoPaused = "true";
   root.append(sheet);
@@ -75,6 +78,16 @@ export function openDemoSheet(root, step) {
   };
   return new Promise(resolve => {
     let closed = false;
+    // native video controls内のTab操作はブラウザへ任せ、シートの両端だけを循環させる。
+    const containTab = event => {
+      if (event.key !== "Tab") return;
+      if (event.shiftKey && doc.activeElement === skip) {
+        event.preventDefault(); finish.focus();
+      } else if (!event.shiftKey && doc.activeElement === finish) {
+        event.preventDefault(); skip.focus();
+      }
+    };
+    sheet.addEventListener("keydown", containTab);
     const showInstructions = (message, broken = false) => {
       if (closed || !sheet.isConnected) return;
       status.textContent = message;
@@ -92,8 +105,10 @@ export function openDemoSheet(root, step) {
       if (closed) return;
       closed = true;
       observer.disconnect();
+      sheet.removeEventListener("keydown", containTab);
       for (const [name, handler] of listeners) video.removeEventListener(name, handler);
       video.pause(); video.removeAttribute("src"); video.load(); sheet.remove();
+      for (const { node, inert } of background) if (node.isConnected) node.inert = inert;
       if (panel?.isConnected) panel.inert = previousInert;
       delete root.dataset.demoPaused;
       if (completed && previousFocus?.isConnected && root.contains(previousFocus)) previousFocus.focus();
