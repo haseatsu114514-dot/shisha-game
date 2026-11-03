@@ -962,6 +962,7 @@
 .dial-ring { filter: drop-shadow(0 0 10px #c8a36335); }
 .dial-rim { fill: none; stroke: #ffe4b778; stroke-width: 1.5; }
 .dial-gloss { fill: #fff8e529; }
+.pg-divider { fill: none; stroke: #fff4d9; stroke-width: 2.4; stroke-linecap: round; opacity: .92; filter: drop-shadow(0 0 3px #2015108c); }
 .pg-just { fill: #fffcdfaa; stroke: #fff8e6; stroke-width: 1.5; filter: drop-shadow(0 0 6px #fff0bcb0); }
 .pg-sense-extra { fill: var(--stat-sense); stroke: var(--stat-sense); stroke-width: 1; filter: drop-shadow(0 0 5px var(--stat-sense)); }
 .pull-dial .effect-badge { position: absolute; bottom: 10px; }

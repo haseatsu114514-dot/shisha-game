@@ -356,6 +356,7 @@ html .bench[data-mode] .dial-recess { fill: var(--paper-card); stroke: var(--lav
 html .bench[data-mode] .dial-ring { filter: drop-shadow(0 4px 8px #2a1a3a26); }
 html .bench[data-mode] .dial-rim { stroke: var(--lavender-line); stroke-width: 1.5; }
 html .bench[data-mode] .dial-gloss { fill: #69497e08; }
+html .bench[data-mode] .pg-divider { stroke: #fff6e8; opacity: 1; filter: drop-shadow(0 0 2px #3a241bcc); }
 html .bench[data-mode] .pg-just { fill: #fff6d8; stroke: var(--amber); stroke-width: 1.6; filter: drop-shadow(0 0 6px #d8963f80); }
 html .bench[data-mode] .dial-label { stroke: var(--paper-card); }
 html .bench[data-mode] .dial-label.l-up { fill: var(--warm-ink); }
