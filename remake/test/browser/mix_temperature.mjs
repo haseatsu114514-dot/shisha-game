@@ -417,7 +417,8 @@ await suite("mix-temperature", async check => {
       const { core, session, thermometer, conditions } = QA;
       const growth = await import("./js/core/growth.js"); growth.setGrowthPreview(true);
       const rows = [];
-      for (const flavor of DB.flavors) {
+      // DB.flavors is the starting blond-only selection; flavorById retains the full catalog.
+      for (const flavor of Object.values(DB.flavorById)) {
         const cs = { mode: "practice", mix: { [flavor.id]: 12 } };
         naru.startNaruFinish(cs, true);
         const bands = conditions.temperatureBands(cs), target = naru.naruFinishRange(bands);
