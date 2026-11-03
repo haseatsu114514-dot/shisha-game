@@ -268,6 +268,78 @@ await suite("craft-materials", async check => {
       await capture(page, `${device}-preview`);
     }, options);
   }
+  // #2447: failure simulation is separate from verifying the packaged video's contents.
+  for (const [device, touch, options] of [["pc", false, {}], ["touch", true,
+    { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await check(`demo-decode-error-${device}`, async page => {
+      // A successful HTTP response with undecodable media exercises the real media error event.
+      await page.route("**/media/demo-holes.mp4", route => route.fulfill({ contentType: "video/mp4", body: "invalid video fixture" }));
+      await setup(page);
+      await page.evaluate(() => { F.running = F.holes.runHoles(F.cs); });
+      const sheet = page.locator(".bench-demo-sheet");
+      await sheet.waitFor();
+      await page.waitForFunction(() => document.querySelector(".bench-demo-stage")?.hidden);
+      assert.match(await page.locator(".bench-demo-status").innerText(), /動画を再生できません/);
+      assert.equal(await page.locator(".bench-demo-instructions").evaluate(n => n.open), true);
+      const expected = await page.evaluate(async () => (await import("./js/craft/demo.js")).STEP_DEMOS.holes.cues.map(c => c.text));
+      assert.deepEqual(await page.locator(".bench-demo-instructions li").allTextContents(), expected);
+      await page.locator(".bench-demo-instructions summary").scrollIntoViewIfNeeded();
+      await assertFits(page, ".bench-demo-instructions summary");
+      await capture(page, `2447-demo-error-${device}`);
+      await click(page, ".bench-demo-finish", touch);
+      await sheet.waitFor({ state: "detached" });
+      await page.locator('[data-test="hole-start"]').waitFor();
+      assert.equal(await page.locator(".bench-panel").evaluate(n => n.inert), false);
+      assert.equal(await page.locator(".bench").getAttribute("data-demo-paused"), null);
+      // Reopen through the real help entry; skipping remains available after another error.
+      await click(page, ".bench-demo-link", touch);
+      await sheet.waitFor();
+      await click(page, ".bench-demo-skip", touch);
+      await sheet.waitFor({ state: "detached" });
+      assert.equal(await page.locator(".bench-demo-link").evaluate(n => n === document.activeElement), true);
+    }, options);
+    await check(`demo-stall-and-interrupt-${device}`, async page => {
+      const pending = [];
+      await page.route("**/media/demo-holes.mp4", route => { pending.push(route); });
+      await setup(page);
+      await page.evaluate(async () => {
+        F.demo = await import("./js/craft/demo.js");
+        F.beforeDemo = JSON.stringify(F.core.state);
+        F.plays = [];
+        // Controlled promises/events test autoplay and delayed callbacks without relying on network timing.
+        HTMLMediaElement.prototype.play = function () { return new Promise((resolve, reject) => F.plays.push({ resolve, reject })); };
+        F.startDemo = () => F.demo.openDemoSheet(document.querySelector(".bench"), "holes");
+        F.demoTask = F.startDemo();
+      });
+      await page.locator(".bench-demo-sheet").waitFor();
+      assert.equal(await page.locator(".bench-demo-instructions li").count(), 6, "Instructions exist before any media event");
+      await page.evaluate(() => F.plays[0].reject(new DOMException("fixture autoplay policy", "NotAllowedError")));
+      await page.waitForFunction(() => document.querySelector(".bench-demo-status")?.textContent.includes("自動再生できません"));
+      assert.equal(await page.locator(".bench-demo-stage").evaluate(n => n.hidden), false, "Manual video controls stay available");
+      for (const type of ["stalled", "waiting"]) {
+        await page.evaluate(type => document.querySelector(".bench-demo-stage video").dispatchEvent(new Event(type)), type);
+        assert.match(await page.locator(".bench-demo-status").innerText(), /読み込みが止まっています/);
+        assert.equal(await page.locator(".bench-demo-instructions").evaluate(n => n.open), true);
+      }
+      await page.evaluate(() => document.querySelector(".bench-demo-stage video").dispatchEvent(new Event("playing")));
+      assert.match(await page.locator(".bench-demo-status").innerText(), /再生中/);
+      await page.locator(".bench-demo-finish").scrollIntoViewIfNeeded();
+      await assertFits(page, ".bench-demo-finish");
+      await capture(page, `2447-demo-steps-${device}`);
+      await page.evaluate(() => { F.oldFinish = document.querySelector(".bench-demo-finish"); });
+      await click(page, ".bench-demo-finish", touch);
+      assert.equal(await page.evaluate(() => F.demoTask), true);
+      await page.evaluate(() => { F.oldFinish.click(); F.oldFinish.click(); F.demoTask = F.startDemo(); });
+      await page.locator(".bench-demo-sheet").waitFor();
+      // Replacing the scene (as on LOAD) cancels the old sheet and its late promise safely.
+      await page.evaluate(() => document.querySelector(".bench").remove());
+      assert.equal(await page.evaluate(() => F.demoTask), false);
+      await page.evaluate(() => F.plays[1].reject(new DOMException("late rejection", "NotAllowedError")));
+      assert.equal(await page.locator(".bench-demo-sheet").count(), 0);
+      assert.equal(await page.evaluate(() => JSON.stringify(F.core.state)), await page.evaluate(() => F.beforeDemo));
+      for (const route of pending) await route.abort("aborted").catch(() => {});
+    }, options);
+  }
   await check("automatic-packing", async page => {
     await setup(page);
     await page.evaluate(async () => { F.session.craftTest.auto = "good"; await F.steps.stepPack(F.cs); F.session.craftTest.auto = null; });
