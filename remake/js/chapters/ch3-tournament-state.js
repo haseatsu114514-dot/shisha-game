@@ -1,7 +1,7 @@
 import { finishTournamentStep } from "./tournament-finish-step.js";
 import { tournamentResources, restoreTournamentResources } from "./tournament-resource-snapshot.js";
 import { tournamentStandings } from "./tournament-standings.js";
-import { MAX_MONEY } from "../core/rules.js";
+import { payTournamentPrize } from "./tournament-prize.js";
 import { liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
 
 // 大会賞金（2026-10-30 決定の階段式: 第1章30,000円／第2章50,000円／第3章100,000円／第4章200,000円／第5章は賞金なし）。
@@ -199,10 +199,7 @@ export function recordResult(value, total) {
     rows, votes: copy(p.votes), careHistory: copy(p.craft.careHistory),
     tastingPlan: copy(p.tastingPlan) };
   // 賞金は優勝の確定と同じ更新で一度だけ渡す（再挑戦・LOADで二重に付けない）。
-  if (rank === 1 && !p.prizePaid) {
-    p.prizePaid = true;
-    value.money = Math.min(MAX_MONEY, Math.max(0, Math.round((value.money || 0) + CH3_PRIZE)));
-  }
+  payTournamentPrize(value, p, rank, CH3_PRIZE);
   p.history.push(copy(p.result));
   return p.result;
 }
