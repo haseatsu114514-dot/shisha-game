@@ -82,7 +82,12 @@ for (const [name, options] of [['pc',{}],['touch',{viewport:{width:844,height:39
    await setup(page,{reel:true}); await begin(page); await settled(page);
    const overlaps=await page.evaluate(()=>{const s=document.querySelector('[data-test="station-open"]').getBoundingClientRect(); return [...document.querySelectorAll('.spot-pin:not(.pin-station), .hud-card, .hud-stamina, .hud-level, .hud-lime, .hud-menu, .reel-widget, .map-info')].map(n=>{const r=n.getBoundingClientRect();return {name:n.dataset.test||n.className,area:Math.max(0,Math.min(s.right,r.right)-Math.max(s.left,r.left))*Math.max(0,Math.min(s.bottom,r.bottom)-Math.max(s.top,r.top))}}).filter(x=>x.area>1)});
    assert.deepEqual(overlaps,[]); await page.screenshot({path:evidence+name+'-ch2.png'});
-   await hit(page,'station-open'); assert.equal(await page.locator(t('station-destination-widehanga')).count(),1); await hit(page,'station-cancel');
+   // 運賃は距離別ではなく一律であることが駅の表示から伝わる（#2447 項目7）。
+   assert.match(await page.locator(t('station-open')).innerText(), /一律/, '駅ピンが一律運賃であることを示す');
+   await hit(page,'station-open');
+   assert.equal(await page.locator(t('station-destination-widehanga')).count(),1);
+   assert.match(await page.locator('.map-info').innerText(), /どこへでも一律/, '行き先選択でも一律運賃と伝える');
+   await hit(page,'station-cancel');
    await loadRoundTrip(page); assert.equal(await page.evaluate(()=>__remake.state.chapter),2);
    await page.locator(t('station-open')).waitFor(); await page.screenshot({path:evidence+name+'-ch2-load.png'});
   },options);
