@@ -144,7 +144,7 @@ await suite("regular-service-response", async check => {
     await check(`${label}-auto-stops-at-service-and-reads-later-response`, async page => {
       await prepare(page); await page.evaluate(() => { T.fresh(); });
       await start(page, REG, true);
-      await advanceUntil(page, "いつものサラリーマンが、いつもの席に座る。襟元に指を入れて、無言でメニューを指差した。", touch);
+      await advanceUntil(page, "いつもの鉄仮面さんが、いつもの席に座る。襟元に指を入れて、無言でメニューを指差した。", touch);
       await input(page.locator('[data-test="vn-auto"]'), touch);
       const choices = page.locator('.vn-choices button');
       await choices.first().waitFor({ timeout: 20000 }); await page.waitForTimeout(500);
@@ -154,7 +154,7 @@ await suite("regular-service-response", async check => {
       const answer = touch ? 0 : 1;
       await input(choices.nth(answer), touch);
       const reply = answer === 0 ? "ダブルアップルにミント少し、ですね"
-        : "先に水を置くと、サラリーマンは一口飲んでから、小さく頷いた。";
+        : "先に水を置くと、鉄仮面さんは一口飲んでから、小さく頷いた。";
       await page.waitForFunction(text => T.lines().includes(text), reply);
       await input(page.locator('[data-test="vn-auto"]'), touch);
       await input(page.locator('[data-test="vn-skip"]'), touch);
