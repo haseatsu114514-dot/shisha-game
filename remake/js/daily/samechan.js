@@ -5,7 +5,7 @@ import { setBg } from "../core/ui.js";
 import { sharkSwim } from "../core/scene-motions.js";
 import { gainAffinity, affinityLevel, releaseAffinity, ensureAffinityLevel, earnStat, addMoney, addStamina, STAMINA_LOW } from "../core/stats.js";
 import { play, isPlaying } from "../vn/engine.js";
-import { finaleAtVisit, playFinale } from "./bonds.js";
+import { finaleAtVisit, playFinale, BOND_FINALES } from "./bonds.js";
 import { maybeRecruitTrpgMember } from "./trpg.js";
 import { CINEMA_INTRO, cinemaIntroductionDue } from "../core/cinema-discovery.js";
 import { SAMECHAN_HEART_EVENTS, samechanHeartEventDone, questionDoneKey } from "../core/affinity-stages.js";
@@ -52,7 +52,7 @@ export function samechanVisitDialogue() {
       }
     }
   }
-  if (finaleAtVisit("samechan")) return "samechan_bond_finale";
+  if (finaleAtVisit("samechan")) return BOND_FINALES.samechan.dialogue;
   if (count >= 1 && cinemaImpressionDue()) return cinemaImpression.dialogue;
   if (count >= 1 && unwellVisitDue()) return unwellVisit.dialogue;
   return `samechan_shop_repeat_${(count - 1) % 2}`;
@@ -156,7 +156,7 @@ export async function visitSamechan(spot, { signal = null } = {}) {
       state.flags._samechan_visit = { stamp, dialogue, cinemaIntroduction: introduceCinema, complete: false };
       save();
     }
-    if (dialogue === "samechan_bond_finale") {
+    if (dialogue === BOND_FINALES.samechan.dialogue) {
       if (!await playFinale("samechan", { deferSave: true, signal })) return false;
     } else {
       const result = await play(visitScript(dialogue), { signal, growthScene: true });
