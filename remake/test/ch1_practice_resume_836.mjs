@@ -7,9 +7,9 @@ import assert from 'node:assert/strict';
 const [root='.',out=null,...opts]=process.argv.slice(2);
 const clone=x=>JSON.parse(JSON.stringify(x));
 const dialogues=Object.fromEntries(JSON.parse(fs.readFileSync(`${root}/data/dialogue/remake_ch1.json`)).dialogues.map(d=>[d.dialogue_id,d]));
-const real=new Set(['chapters/ch1.js','core/state.js','craft/practice.js','craft/practice-history.js','daily/night-events.js']);
+const real=new Set(['chapters/ch1.js','core/state.js','craft/practice.js','craft/practice-history.js','daily/night-events.js','chapters/naru-match.js']);
 const ticks=async()=>{for(let i=0;i<8;i++)await Promise.resolve()};
-async function harness({route='first',holdAt=null,breakAt=null,broken='cancel',craftMode='success',storageWritable=true}={}){
+async function harness({route='first',holdAt=null,breakAt=null,broken='cancel',craftMode='success',storageWritable=true,day=3}={}){
  const modules=new Map(),synth=new Map(),memory=new Map(),writes=[],entries=[],choiceScenes=[],steps=[],sessions=[],retired=[],ownerNumbers=new WeakMap();
  let stateModule,ownerSeq=0,generation=0,gateResolve,gate=new Promise(r=>gateResolve=r),releaseGate,waitGate=new Promise(r=>releaseGate=r),held=false;
  const current=()=>stateModule?.namespace.state;
@@ -19,18 +19,20 @@ async function harness({route='first',holdAt=null,breakAt=null,broken='cancel',c
  const boundary=async name=>{if(name===holdAt&&!held){held=true;gateResolve();await waitGate}if(name===breakAt){if(broken==='throw')throw Error('controlled '+name+' error');if(broken==='abort')throw new DOMException('controlled '+name+' abort','AbortError');return broken==='missing'?undefined:broken==='false'?false:{cancelled:true}}return {id:name,visited:[name]}};
  const owners=new WeakMap();
  const ports={
+  temperatureBands:()=>({ideal:[.4,.7]}),isIdealTemperature:t=>t>=.4&&t<=.7,prepareFlavorStock:async()=>{},giveSumiRig:async()=>{await boundary('giveSumiRig');return false},toast:()=>{},masteryDay:()=>7,growthSkill:()=>false,gainFlavorExperience:()=>[],notifyMastery:()=>{},computeShisha:()=>({craftQuality:80}),
   MAX_MONEY:100000000,TOURNAMENT_DAY:14,emit:()=>{},recordGalleryProgress:()=>{},
   DB:{dialogues,characters:{}},hooks:{},chapterDay:s=>s.day,atChapterFinalDay:s=>s.day>=14,recordRomanceChoice:()=>{},
   playTsumugiStory:async()=>{await boundary('tsumugi')},
   play:async input=>{const d=typeof input==='string'?dialogues[input]:input;assert(d,'actual dialogue must exist');entries.push(d.dialogue_id);
    const question=d.lines.find(x=>x.type==='choice');if(question){choiceScenes.push(d.dialogue_id);const choice=question.choices.find(x=>x.next==='full');assert(choice);ports.hooks.onChoice?.(d.dialogue_id,'',choice.next,'',choice,question)}
    return boundary(d.dialogue_id)},
-  newSession:mode=>{assert.equal(mode,'tutorial');const cs={mode,pullDone:false,mix:{double_apple:12},careHistory:[],failed:null};sessions.push(cs);owners.set(cs,current());return cs},
+  newSession:mode=>{assert.equal(mode,day===7?'rehearsal':'tutorial');const cs={mode,pullDone:false,mix:{double_apple:12},careHistory:[],failed:null};sessions.push(cs);owners.set(cs,current());return cs},
   openBench:cs=>steps.push('bench'),waitBenchReady:async()=>{await boundary('ready')},
   retireScreen:()=>retired.push(ownerNumber(current())),waterQuantity:x=>x,
  };
  for(const name of ['stepSetup','stepWater','stepMix','stepPack','runHoles','stepPlace','runHeat','stepSteamTime','runSteamDodge'])ports[name]=async cs=>{steps.push(name);if(name==='stepSetup')owners.get(cs).stamina-=4;await boundary(name)};
  ports.runPull=async cs=>{steps.push('pull');await boundary('pull');if(craftMode==='throw')throw Error('controlled pull error');if(craftMode==='abort')throw new DOMException('controlled pull abort','AbortError');if(craftMode==='unserved')return false;cs.pullDone=true;cs.failed=craftMode==='failed'?'burnt':null;cs.pull={failed:!!cs.failed};return true};
+ ports.runCare=async (cs,{round})=>{steps.push('care'+round);await boundary('care'+round);cs.careHistory.push({score:80})};
  const code=id=>fs.readFileSync(`${root}/remake/js/${id}`,'utf8');
  function module(id){if(modules.has(id))return modules.get(id);const m=new vm.SourceTextModule(code(id),{identifier:id,context});modules.set(id,m);return m}
  async function link(spec,ref){const id=path.posix.normalize(path.posix.join(path.posix.dirname(ref.identifier),spec));if(real.has(id))return module(id);
@@ -38,10 +40,10 @@ async function harness({route='first',holdAt=null,breakAt=null,broken='cancel',c
   const names=[...code(ref.identifier).matchAll(/import\s*\{([^}]+)\}\s*from\s*["']([^"']+)["']/g)].filter(m=>m[2]===spec).flatMap(m=>m[1].split(',').map(x=>x.trim().split(/\s+as\s+/)[0]));
   const m=new vm.SyntheticModule([...new Set(names)],function(){for(const n of new Set(names))this.setExport(n,ports[n]??(()=>{throw Error('Unexpected controlled port '+n)}))},{identifier:key,context});synth.set(key,m);return m}
  const chapter=module('chapters/ch1.js');await chapter.link(link);await chapter.evaluate();stateModule=modules.get('core/state.js');const core=stateModule.namespace;
- core.newGame();Object.assign(current(),{phase:'daily',day:3,slot:2,stamina:80,money:18000,flavorStock:{double_apple:50},best:{heat:1},met:{sumi:true}});current().flags._tsumugi_contest_progress=true;
+ core.newGame();Object.assign(current(),{phase:'daily',day,slot:2,stamina:80,money:18000,flavorStock:{double_apple:50},best:{heat:1},met:{sumi:true}});current().flags._tsumugi_contest_progress=true;
  if(route!=='first')current().flags._craft_practice_runs=[{day:route==='retry'?3:1,kind:route==='retry'?'practice':'tutorial',scope:'full',success:route!=='retry',served:route!=='retry',adjustments:0,mix:{double_apple:12},scores:{},careScores:[]}];
  chapter.namespace.setupHooks();const initial=current();ownerNumber(initial);
- const run=(night=false)=>(night?modules.get('daily/night-events.js').namespace.runNightPlan(chapter.namespace.NIGHT_EVENTS):chapter.namespace.NIGHT_EVENTS[3].run()).then(()=>null,error=>({name:error.name,message:error.message}));
+ const run=(night=false)=>(night?modules.get('daily/night-events.js').namespace.runNightPlan(chapter.namespace.NIGHT_EVENTS):chapter.namespace.NIGHT_EVENTS[day].run()).then(()=>null,error=>({name:error.name,message:error.message}));
  const deferred=()=>{current().deferredNightEvents=[{id:'_ev_first_practice',chapter:1,originalDay:3,deferredOn:2,doneKeys:['_ev_first_practice']}];};
  const saveSlot=()=>{assert(core.saveToSlot('suien_remake_slot1'));return JSON.parse(memory.get('suien_remake_slot1'))};
  const loadSlot=()=>{generation++;const loaded=core.loadFromSlot('suien_remake_slot1');assert(loaded);return loaded};
@@ -97,5 +99,25 @@ await check('LOAD-before-first-microtask-does-not-start-new-owner',async()=>{
 await check('memory-storage-unwritable-still-current-lifecycle-no-second-record',async()=>{
  const h=await harness({storageWritable:false});assert.equal(await h.run(),null);assert.equal(await h.run(),null);assert.equal(h.stats().sessions,1);assert.equal(earlyRecords(h.current()).length,1);assert.equal(h.stats().writes.length,0);
 });
-const summary={root,total:results.length,passed:results.filter(x=>x.passed).length,failed:results.filter(x=>!x.passed).length,scope:'current-schema newGame checkpoint -> real saveToSlot/loadFromSlot in isolated memory storage -> public DAY3 + real full runner/history + optional real night plan; UI/VN/individual craft steps/bus/gallery are controlled ports. No old-save fixtures, browser, user storage, natural New Game walk-through, AUTO/SKIP or actual craft resource acceptance.',results};
+// DAY7 naruMatch must not let once() mark a newly loaded DAY3 save complete.
+// home-rig returns false on LOAD; its UI is controlled here, while state/once/save/load are real.
+for (const loadDay of [3,7]) await check('DAY7-LOAD-day'+loadDay+'-during-rig-stops-old-completion',async()=>{
+ const h=await harness({day:7,holdAt:'giveSumiRig'});
+ h.current().day=loadDay;h.saveSlot();h.current().day=7;
+ const pending=h.run();await h.gate;h.loadSlot();
+ h.current().flags.keep_new_owner='preserve';h.core.save();
+ const owner=h.current(),before=stable(owner),writes=h.stats().writes.length,retired=h.stats().retired.length;
+ h.release();const error=await pending;assert(error,'old DAY7 must abort after LOAD');assert.equal(error.name,'AbortError');
+ assert.strictEqual(h.current(),owner);assert.deepEqual(stable(h.current()),before);
+ assert.equal(h.stats().writes.length,writes);assert.equal(h.stats().retired.length,retired);
+ assert(!h.current().flags._ev_midcheck);
+});
+await check('DAY7-current-rig-completes-and-reLOAD-does-not-repeat',async()=>{
+ const h=await harness({day:7});assert.equal(await h.run(),null);
+ assert(h.current().flags._ev_midcheck);assert(h.current().flags._ch1_mid.feedbackRead);
+ h.saveSlot();h.loadSlot();const before=stable(h.current());assert.equal(await h.run(),null);
+ assert.deepEqual(stable(h.current()),before);assert.equal(h.stats().sessions,1);
+});
+const summary={root,total:results.length,passed:results.filter(x=>x.passed).length,failed:results.filter(x=>!x.passed).length,scope:'current-schema newGame checkpoint -> real saveToSlot/loadFromSlot in isolated memory storage -> public DAY3/DAY7 + real full runner/history + optional real night plan; UI/VN/individual craft steps/bus/gallery are controlled ports. No old-save fixtures, browser, user storage, natural New Game walk-through, AUTO/SKIP or actual craft resource acceptance.',results};
 if(out)fs.writeFileSync(out,JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify(summary,null,2));if(!opts.includes('--baseline'))assert.equal(summary.failed,0);
+

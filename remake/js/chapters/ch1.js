@@ -548,6 +548,7 @@ async function naruMatch(progress) {
     save();
   }
   await giveSumiRig({ bg: TONARI_N });
+  requireCurrent();
 }
 
 // 前日リハーサルは本番と同じ一台＋2回の調整。旧セーブにも仕入れの機会を用意する。

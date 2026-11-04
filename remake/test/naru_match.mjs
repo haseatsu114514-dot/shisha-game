@@ -45,8 +45,17 @@ for (const result of ["win", "draw", "lose"]) for (const heat of ["hajime", "nar
   seen.add(text(match));
 }
 assert.equal(seen.size, 3 * 2 * 3 + 3 * 2, "勝敗・熱・提供の違いが講評に出る（unknown は提供の行なし）");
-const failed = text(judgeNaruMatch({ failed: "burnt" }));
-assert.match(failed, /焦がした台/); assert.match(failed, /今日の一台は、なるだ/);
+for (const reason of ["burnt", "cold", "leaf"]) {
+  const match = judgeNaruMatch({ failed: reason });
+  assert.equal(match.result, "lose");
+  const failed = text(match);
+  assert.match(failed, /最後まで仕上げて/);
+  assert.match(failed, /一台を最後まで保つ/);
+  assert.match(failed, /今日の一台は、なるだ/);
+  assert.doesNotMatch(failed, /焦がした|炭と葉の距離|出した時/);
+}
+// #2515 の保存済み failed:true にも、理由を決めつけない共通講評を使う。
+assert.equal(text({ result: "lose", score: 0, heat: "failed", served: "unknown", failed: true }), text(judgeNaruMatch({ failed: "cold" })));
 assert.match(text({ result: "win", heat: "hajime", served: "ideal" }), /今日の一台は、はじめだ/);
 assert.match(text({ result: "draw", heat: "naru", served: "hot" }), /引分け/);
 // なるが店を出てからスミさんが締める。報酬は従来のDAY7と同じ洞察+2の一度だけ。
@@ -62,3 +71,4 @@ for (const result of ["win", "draw", "lose"]) {
 assert(invite.branches.new.some(l => l.type === "set_flag" && l.flag === "_met_naru"));
 assert(invite.lines.some(l => l.type === "condition" && l.flag === "_met_naru"));
 console.log("naru_match: ok");
+
