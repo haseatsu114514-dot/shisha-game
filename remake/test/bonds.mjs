@@ -465,13 +465,13 @@ try {
   assert.equal(rin.badge, true); assert.equal(rin.finaleBlocked, false);
   // 質問の場面と友情側の着地（d7a613c6 で台本を書き直し）
   assert(rin.first.includes("今日は試香紙がなかった")); assert(rin.first.includes("相談を遠慮しなくてよい、仕事仲間の時間だった"));
-  assert(!rin.first.includes("ラベルも同意書もない"));
+  assert(!rin.first.includes("ラベルも同意書もついてないやつ"));
   // 質問の次は4つ目の固有会話（#1696）。締めくくりはその後
-  assert(rin.fourth.includes("吸ってる人の顔だけ、知らない")); assert(!rin.fourth.includes("ラベルも同意書もない"));
+  assert(rin.fourth.includes("吸ってる人の顔だけ、知らない")); assert(!rin.fourth.includes("ラベルも同意書もついてないやつ"));
   assert(rin.late[0].includes("角のすり切れた、黒い手帳だ")); assert(rin.late[0].includes("共同研究ってことにしよう"));
   assert(rin.late[1].includes("袋しか見えないの")); assert(rin.late[1].includes("代わりなんて、もう探さないからね"));
-  assert(rin.late.every((text) => !text.includes("ラベルも同意書もない")));
-  assert(rin.second.includes("ラベルも同意書もない")); assert(rin.second.includes("仕事仲間からのプレゼント"));
+  assert(rin.late.every((text) => !text.includes("ラベルも同意書もついてないやつ")));
+  assert(rin.second.includes("ラベルも同意書もついてないやつ")); assert(rin.second.includes("仕事仲間からのプレゼント"));
   assert.equal(rin.answer, 0); assert.equal(rin.route, "friend"); assert(rin.owned);
   log("HF04/05 rin: question visit, heart4/5 stages, then the MAX finale with a friendship landing and a personal gift");
 
