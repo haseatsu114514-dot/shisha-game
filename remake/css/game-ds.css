@@ -594,7 +594,7 @@ body.game-ds .bench-top .bench-progress { padding-right: 0; overflow: hidden; }
 
 /* 「外観を選ぶ」は小さな札にして下画面の右上へ。下の中身は札ぶん下げる。 */
 body.game-ds .bench-appearance-button {
-  left: auto; right: calc(100% - var(--ds-cx) - var(--ds-cw) + 8px); top: calc(var(--ds-cy) + 6px);
+  left: auto; right: calc(100% - var(--ds-cx) - var(--ds-cw) + 56px); top: calc(var(--ds-cy) + 6px);
   min-height: 30px; padding: 4px 10px; font-size: 12px; letter-spacing: .02em;
 }
 body.game-ds .bench-right, body.game-ds .bench[data-step] .bench-right { padding-top: 42px; }
@@ -687,3 +687,9 @@ body.game-ds .store-arrival-card { zoom: .62; }
 /* 3) 座標で操作する工程（穴あけ・炭・蒸らし・吸い出し）は、タイミング操作中にスクロールさせないため縮小のまま。
       代わりに押せる範囲が画面上で小さすぎる炭のつまみは、見た目を変えずに当たり判定だけを広げる（縮小倍率ぶんを打ち消す）。 */
 body.game-ds .bench button.coal::after { content: ""; position: absolute; inset: calc(-9px / var(--ds-k, 1)); }
+
+/* 横並びDSでは、工程6つが「表示」ボタンとランク表示に隠れないよう、今の工程以外の札を詰める。 */
+:root[data-ds-layout="side"] body.game-ds .bench-top { padding-right: 68px; }
+:root[data-ds-layout="side"] body.game-ds .bench-progress-track { width: 100%; min-width: 0; gap: 2px; }
+:root[data-ds-layout="side"] body.game-ds .bench .bench-progress-track > .bench-phase:not(.now) { padding: 2px; }
+:root[data-ds-layout="side"] body.game-ds .bench .bench-progress-track > .bench-phase:not(.now) .bench-phase-icon { display: none; }
