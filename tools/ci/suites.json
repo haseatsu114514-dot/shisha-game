@@ -10,6 +10,22 @@
   ],
   "suites": [
     {
+      "id": "craft-result-card",
+      "title": "Craft result card data, layout and PNG rendering",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/craft_result_card.mjs"]
+    },
+    {
+      "id": "craft-result-card-browser",
+      "title": "Craft result PNG download on desktop and touch screens",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/craft/result-card.js", "remake/js/craft/result-save.js", "remake/js/craft/result.js", "remake/css/tournament.css", "remake/test/browser/craft_result_card.mjs"],
+      "run": ["node remake/test/browser/craft_result_card.mjs"],
+      "chrome": "playwright"
+    },
+    {
       "id": "chapter-cards",
       "title": "Chapter 4/5 card DOM equivalence",
       "kind": "quick",
