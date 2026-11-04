@@ -125,7 +125,7 @@
 .camel-feedback[data-kind="spurt"] b { color: var(--cr-amber); font-size: clamp(26px, 5cqw, 56px); }
 @keyframes camel-pop { 0% { opacity: 0; transform: translate(-50%, -30%) scale(.4); } 22% { opacity: 1; transform: translate(-50%, -50%) scale(1.18); } 40% { transform: translate(-50%, -50%) scale(1); } 75% { opacity: 1; transform: translate(-50%, -62%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -80%) scale(.96); } }
 
-/* 助手席のサイーフの声（上の中央、進み具合の下） */
+/* 助手席のスハイルの声（上の中央、進み具合の下） */
 .camel-call { position: absolute; left: 50%; top: calc(2.2cqw + 3.4em); z-index: 1; display: flex; align-items: center; gap: .6em; max-width: 52%; padding: .35em 1.1em .35em .35em; border-radius: 99px; background: rgba(18,11,6,.82); border: 1px solid var(--cr-line); box-shadow: 0 .4em 1.2em rgba(0,0,0,.35); font-size: clamp(12px, 1.3cqw, 17px); opacity: 0; transform: translate(-50%, -.6em); transition: opacity .25s, transform .25s; pointer-events: none; }
 .camel-call.show { opacity: 1; transform: translate(-50%, 0); }
 .camel-call-icon { width: 2.4em; height: 2.4em; flex: none; border-radius: 50%; background: #3a2a1a; border: 2px solid var(--cr-gold); object-fit: cover; }

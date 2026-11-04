@@ -10,7 +10,7 @@ Claude は画像を生成しない。ここにある依頼文を Codex にコピ
 
 ## 採用の記録（2026-11-02）
 
-Codex が2回に分けてギガファイル便で渡した候補から選んだ。1回目は PR #2304 のコメント（背景3・ラクダ3・騎手3・SUV3。ZIP SHA-256 `569ea24f…`）、2回目はオーナー経由（SUV の修正版・回転用の車輪・サイーフとハリールの通常各3案。ZIP SHA-256 `ced7ee26…`）。どちらも同梱の SHA256SUMS と全ファイルが一致した。オーナー「確認して選定して」で Claude が選んだ。
+Codex が2回に分けてギガファイル便で渡した候補から選んだ。1回目は PR #2304 のコメント（背景3・ラクダ3・騎手3・SUV3。ZIP SHA-256 `569ea24f…`）、2回目はオーナー経由（SUV の修正版・回転用の車輪・スハイルとハリールの通常各3案。ZIP SHA-256 `ced7ee26…`）。どちらも同梱の SHA256SUMS と全ファイルが一致した。オーナー「確認して選定して」で Claude が選んだ。
 
 | 素材 | 採用 | 理由 | ゲーム用 |
 |---|---|---|---|
@@ -19,13 +19,13 @@ Codex が2回に分けてギガファイル便で渡した候補から選んだ�
 | CR-GM01 騎手 | **B** | いちばん簡潔な箱型。コブの頂点（x=260）の 45px 後ろ・背の線に鞍の底を合わせ、ラクダの 0.9 倍で自然に座ることを確認（`review/jockey-B-on-camel-A-fit.png`） | `assets/ui/camel_race/jockey.png`（160×160） |
 | CR-GM02 SUV | **C の修正版（generic-v2）** | 1回目の3案は前の顔と背面のスペアタイヤが実在の車種にそっくりだったので、前の顔を四角い灯と平らなグリルにした修正版を採用。背面のスペアなし | `assets/ui/camel_race/suv.png`（720×360） |
 | 回転用の車輪 | 採用 | 車体の車輪（後 167,259・前 581,259）の上に 137/160 倍で重ね、地面を流れる速さで回す | `assets/ui/camel_race/wheel.png`（160×160） |
-| サイーフ 通常 | **A** | 正本の「短く刈った黒髪・細い整えた髭・よく笑う」に最も近い（B は髪が長め、C は茶色がかった髪） | `assets/sprites/characters/saif/chr_saif_normal.png`（896×1200） |
+| スハイル 通常 | **A** | 正本の「短く刈った黒髪・細い整えた髭・よく笑う」に最も近い（B は髪が長め、C は茶色がかった髪） | `assets/sprites/characters/saif/chr_saif_normal.png`（896×1200） |
 | ハリール 通常 | **B** | 日焼けと深いしわ、口数の少ない調教師らしい硬い表情。小さなリモコンが見える | `assets/sprites/characters/rashid/chr_rashid_normal.png`（896×1200） |
 
 - ゲーム用は Codex の候補（縮小と配置だけ・拡大なし）をそのまま使い、`tools/pixelize.py` は通していない（ヨルの立ち絵と同じ扱い）。WebP は `remake/tools/build_images.py` の `encode`、立ち絵と背景の目録は `build_manifest.py --portraits-only saif rashid` と `--backgrounds-only`。
-- 立ち絵の顔の位置は `data/portrait_metrics.json` に記録した。**サイーフ 8.62 頭身、ハリール 9.75 頭身で、規格（標準 6.4〜7.7）より頭が小さい**。既存のシェイク 8.88・太陽 9.08 と同じ帯で、CI は警告だけ。表情差分を作る前に、規格どおり約7頭身で通常を作り直すかはオーナー判断（`docs/portrait_standard.md`）。ハリールの頭頂はグトラの下なので推定（目〜あごの長さから）。
+- 立ち絵の顔の位置は `data/portrait_metrics.json` に記録した。**スハイル 8.62 頭身、ハリール 9.75 頭身で、規格（標準 6.4〜7.7）より頭が小さい**。既存のシェイク 8.88・太陽 9.08 と同じ帯で、CI は警告だけ。表情差分を作る前に、規格どおり約7頭身で通常を作り直すかはオーナー判断（`docs/portrait_standard.md`）。ハリールの頭頂はグトラの下なので推定（目〜あごの長さから）。
 - **2026-11-02 オーナー「任せる」→ 作り直す。** 表情差分を作る前に、2人の通常を約7頭身で作り直す。依頼文は [standard-20261102/prompts.md の TS13](../portraits/standard-20261102/prompts.md)（頭の大きさを px で指定・画風は立ち絵の規格）。原画は `asset_sources/portraits/{saif,rashid}-remaster-v2/` に置く。下の CR-SP01・CR-SP02 は最初の依頼の記録で、画風の指定（「太い輪郭にしない」）が規格より前のもの。新しく作るときは TS13 を使う。
-- 顔アイコンは `python3 tools/make_face_icons.py saif rashid`。サイーフは身長 183cm なので `spriteScale` 1.05（スミ 182cm と同じ）。
+- 顔アイコンは `python3 tools/make_face_icons.py saif rashid`。スハイルは身長 183cm なので `spriteScale` 1.05（スミ 182cm と同じ）。
 - 表情差分は未制作。台本の smile／surprise／excited／wink は、無い表情として normal で表示される。
 - 不採用の候補は `review/` の比較図（contact-1〜3・saif/rashid-comparison・suv-wheel-sand）に残す。採用分の原画は `originals/`。生成指示と検証は `review/*.json`。
 
@@ -58,7 +58,7 @@ Codex が2回に分けてギガファイル便で渡した候補から選んだ�
 
 `tools/bg_prompts.txt` の「CR01/1: bg_dubai_camel_track_morning.png」をそのまま使う。
 
-### CR-SP01 サイーフ（マスター1枚 → 表情を1枚ずつ）
+### CR-SP01 スハイル（マスター1枚 → 表情を1枚ずつ）
 
 > 旧依頼（記録）。作り直し・表情差分は prompts.md の TS13 を使う。
 

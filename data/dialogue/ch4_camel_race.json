@@ -1,5 +1,5 @@
 {
-  "comment": "第4章ドバイ編・任意イベント「ラクダレース」（CAMEL RACE）。Dr.fookah ドバイ店のサイーフと知り合い、叔父ハリールの練習レースでリモコンを借りる。接続は remake/js/chapters/ch4-camel-race.js。大会前後の時系列を前提にしない（大会の予告・結果に触れない）。",
+  "comment": "第4章ドバイ編・任意イベント「ラクダレース」（CAMEL RACE）。Dr.fookah ドバイ店のスハイルと知り合い、叔父ハリールの練習レースでリモコンを借りる。接続は remake/js/chapters/ch4-camel-race.js。大会前後の時系列を前提にしない（大会の予告・結果に触れない）。",
   "dialogues": [
     {
       "dialogue_id": "ch4_camel_meet",
@@ -32,7 +32,7 @@
         {
           "speaker": "saif",
           "face": "normal",
-          "text": "サイーフ。ここで葉を量ってる。あなたは？"
+          "text": "スハイル。ここで葉を量ってる。あなたは？"
         },
         {
           "type": "set_flag",
@@ -101,7 +101,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "Dr.fookah ドバイ店。サイーフが、葉の缶を抱えたまま手を振った。"
+          "text": "Dr.fookah ドバイ店。スハイルが、葉の缶を抱えたまま手を振った。"
         },
         {
           "speaker": "saif",
@@ -176,7 +176,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "サイーフが両手で、葉の缶くらいの大きさを作った。"
+          "text": "スハイルが両手で、葉の缶くらいの大きさを作った。"
         },
         {
           "speaker": "hajime",
@@ -226,7 +226,7 @@
         {
           "speaker": "rashid",
           "face": "normal",
-          "text": "サイーフの友人か。ハリールだ"
+          "text": "スハイルの友人か。ハリールだ"
         },
         {
           "type": "set_flag",
@@ -260,7 +260,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "サイーフが見せたのは、車のキーみたいな小さなリモコン。ハリールは窓から腕を出し、短く叫んだ。"
+          "text": "スハイルが見せたのは、車のキーみたいな小さなリモコン。ハリールは窓から腕を出し、短く叫んだ。"
         },
         {
           "speaker": "hajime",
