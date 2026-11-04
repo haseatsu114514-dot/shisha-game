@@ -63,7 +63,7 @@ try {
           rinRefusal = { spent: refused.spent, unchanged: snapshot === JSON.stringify(core.state), spins: core.state.reel.count - count };
           // 同日再訪の拒否を確認し、既存の再訪報酬assertは次の営業夜で実行する。
           for (let i = 0; i < 7 && hours.rinUnavailable(core.state); i++) core.state.day++;
-          if (hours.rinUnavailable(core.state)) throw new Error("No available Rin night in the next week");
+          if (hours.rinUnavailable(core.state)) throw new Error("No available Kuyuri night in the next week");
         }
         const before = xp();
         const previous = { ...core.state.stats };

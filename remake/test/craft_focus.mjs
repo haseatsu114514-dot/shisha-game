@@ -151,7 +151,7 @@ try {
   assert.match(modes[0].first,/針を止め/); assert.match(modes[0].live,/キープ左/);
   assert(!/針|ゲージ|ボタン|キープ左/.test(modes[1].first+modes[1].live));
   assert(modes.every(m=>m.rating));
-  console.log('[craft focus] PASS: one current speaker, real Sumi/judge success feedback, distinct ◎/○/△ scores and lines, optional result detail, hidden undiscovered names and reserved Nagumo');
+  console.log('[craft focus] PASS: one current speaker, real Sumi/judge success feedback, distinct ◎/○/△ scores and lines, optional result detail, hidden undiscovered names and reserved Sui');
 
   // 自主練4工程は、途中の感触も3段階の結果もはじめ本人の内心。
   for (const step of ['holes','heat','steam','pull']) {

@@ -2,7 +2,7 @@
 
 Source: PR #2383 head 533bcb8cec9eb17a34daafc7cc8a6f3c20227494.
 
-- Episodes #066–070 (Nagumo), #096–100 (Sheikh), #106–115 (Uranaishi), #166–170 (Samechan), 25 episodes, 29 unmodified PNG originals.
+- Episodes #066–070 (Sui), #096–100 (Sheikh), #106–115 (Uranaishi), #166–170 (Samechan), 25 episodes, 29 unmodified PNG originals.
 - All original PNGs are 1536×1024; 51,843,035 bytes total. Throne, frog purse, beach, and shuffle have v1 and v2; include both, v2 is the current review candidate.
 - `publish-manifest.json` maps local originals to README-required repository destinations. `asset_sources/loading-comics/allcast-<id>/` contains byte-identical PNGs and provenance metadata/prompts/QA.
 - 50 preview panels passed the official tool's check. They are preview derivatives, NOT replacements for full originals.

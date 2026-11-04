@@ -189,4 +189,4 @@ assert(/煙の褒め方が嘘だね/.test(taste)); assert(!/心因|気のせい|
 for (const id of ["remake_ch2_aquarium_repeat", "remake_ch2_aquarium_repeat_b", "remake_ch2_aquarium_repeat_c"]) {
   assert(all[id].lines.length >= 4, `${id} has a few more lines`);
 }
-console.log("PASS ch2 home talks: chapter 2 facility encounters, Rin's two talks, Ageha's four small talks with greetings, tournament-safe scripts, aquarium revisits");
+console.log("PASS ch2 home talks: chapter 2 facility encounters, Kuyuri's two talks, Ageha's four small talks with greetings, tournament-safe scripts, aquarium revisits");

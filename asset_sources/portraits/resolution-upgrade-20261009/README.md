@@ -96,7 +96,7 @@ Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-reso
 Character: <CHARACTER LINE>
 Expression to keep exactly as image 1: <EXPRESSION LINE>
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Rin sprite and (4) approved Minto sprite: ONLY the target rendering quality — fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Kuyuri sprite and (4) approved Minto sprite: ONLY the target rendering quality — fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from hair top to shoe bottom. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background (also between limbs). No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
@@ -104,7 +104,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 ### キャラごとの差し替え文
 
 **上園**（5表情：normal / smile / serious / surprise / excited）
-- CHARACTER LINE：`Maezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.`
+- CHARACTER LINE：`Uezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.`
 - EXPRESSION LINE（現行画像のとおり）：
   - normal：`gentle small closed-mouth smile, SCREEN-LEFT hand lifted in greeting, SCREEN-RIGHT hand in pocket`
   - smile：`both eyes closed, joyful open-mouth smile, same greeting hand`
@@ -113,7 +113,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
   - excited：`both eyes open, big delighted open-mouth grin, SCREEN-LEFT fist near shoulder, SCREEN-RIGHT fist near waist, leaning forward slightly`
 
 **須井**（5表情：normal / smile / serious / surprise / thinking）
-- CHARACTER LINE：`Nagumo, 45-year-old stern Japanese male executive and judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.`
+- CHARACTER LINE：`Sui, 45-year-old stern Japanese male executive and judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.`
 - EXPRESSION LINE：各表情の現行画像のとおり（顔・手の位置を画像1から読み取る）と書く。
 
 **スミさん**（5表情：normal / smile / serious / surprise / thinking）

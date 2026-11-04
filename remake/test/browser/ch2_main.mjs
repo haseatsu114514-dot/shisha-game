@@ -353,7 +353,7 @@ await suite('ch2-main', async check => {
     await page.locator(test('pin-ch2_shop')).click(); await page.locator(test('go')).click();
     await page.locator('[data-test="buy-strawberry"]').waitFor();
     assert.match(await page.locator('.shop-head').textContent(), /Dr.fookah 柚ヶ谷店/);
-    assert.equal(await page.locator('[data-test="shop-upstairs"]').count(), 0, 'Rin is not teleported to the branch');
+    assert.equal(await page.locator('[data-test="shop-upstairs"]').count(), 0, 'Kuyuri is not teleported to the branch');
     await page.locator('[data-test="buy-strawberry"]').click();
     assert.equal(await page.evaluate(() => __remake.state.money), initial.money, 'Selecting is not purchasing');
     await page.locator('[data-test="shop-checkout"]').click();

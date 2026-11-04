@@ -96,7 +96,7 @@ await suite("title-arts", async (check) => {
       assert.deepEqual(arts.filter(art => art.character === "naru").map(art => art.file), ["title_art_naru_01_bakery_morning.png"]);
       // アダムは選定アートに加え、拡充候補（Draft PR #1387）から追加採用された1枚を持つ。
       assert.deepEqual(arts.filter(art => art.character === "adam").map(art => art.file), ["title_art_adam_01_sunset_proclamation.png", "title_art_adam_02_twin_apple_throne.png"]);
-      assert.ok(!arts.some(art => art.file.includes("rin_02")), "The refinement-pending Rin image was adopted");
+      assert.ok(!arts.some(art => art.file.includes("rin_02")), "The refinement-pending Kuyuri image was adopted");
       const before = await storageSnapshot(page);
       const output = path.resolve(process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser", "title-variants");
       fs.mkdirSync(output, { recursive: true });

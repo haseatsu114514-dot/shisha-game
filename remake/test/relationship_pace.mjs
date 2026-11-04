@@ -60,7 +60,7 @@ try {
         day: s.day, slot: s.slot, phase: s.phase, money: s.money, stamina: s.stamina,
         stats: s.stats, points: s.affinity[target] || 0, level, story: s.story[target] || 0, finale: s.finales[target] || null,
         lover: s.lovers.includes(target), ranks: { ...P.ranks }, visited: s.visitedDay[target] === s.day,
-        // 2F (Rin) follows the game rule: night only, not on her away day, once per day.
+        // 2F (Kuyuri) follows the game rule: night only, not on her away day, once per day.
         rinClosed: !!P.hours.rinUnavailable(s),
         met: !!s.met[target], fortuneDay: s.fortuneDay ?? null,
         visitedTsumugi: s.visitedDay.tonari_customer === s.day, baito: s.visitedDay.tonari_baito === s.day,

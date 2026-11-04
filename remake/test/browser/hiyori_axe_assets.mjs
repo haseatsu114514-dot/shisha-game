@@ -22,7 +22,7 @@ await suite("hiyori-axe-assets", async check => {
         return { sourceHeight: hiyori.h * 1200, visibleRatio: hiyori.scale / rin.scale };
       });
       assert(Math.abs(framing.sourceHeight - 1000) <= 1, "Hiyori's exported figure must be 1000px tall");
-      assert(Math.abs(framing.visibleRatio - 1) <= 0.05, "Hiyori and Rin must appear at similar height");
+      assert(Math.abs(framing.visibleRatio - 1) <= 0.05, "Hiyori and Kuyuri must appear at similar height");
       for (const face of faces) {
         await page.evaluate(face => {
           K.flow = K.vn.play({ metadata: { bg: "res://assets/backgrounds/bg_axe_lounge_night.png" }, lines: [
