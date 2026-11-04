@@ -216,3 +216,24 @@ test("reduced motion also skips first measurement", async () => {
   assert.equal(rank.root.dataset.change, undefined); assert.equal(h.timers.size, 0);
   assert.equal(rank.root.querySelector(".craft-rank-meter").getAttribute("aria-valuenow"), "60");
 });
+
+test("sibling mount preserves the mode title, note and identity through disposal", async () => {
+  const h = await harness();
+  const title = h.document.createTextNode("SMOKE CROWN CUP");
+  h.mode.replaceChildren(title);
+  const note = h.document.createElement("small"); note.textContent = "今回のみ操作補助";
+  h.mode.append(note);
+  const rank = h.api.mountCraftRank(h.top, { grade: "S" }, { preserveMode: true });
+  assert.equal(h.top.firstChild, h.mode);
+  assert.equal(h.mode.firstChild, title);
+  assert.equal(h.mode.querySelector("small"), note);
+  assert.equal(h.top.children[1], rank.root);
+  assert.equal(h.top.children[2], h.phases);
+  assert.equal(h.top.lastElementChild, h.button);
+  assert.throws(() => h.api.mountCraftRank(h.top, null, { preserveMode: true }), /already mounted/);
+  rank.dispose(); rank.dispose();
+  assert.equal(h.top.firstChild, h.mode);
+  assert.equal(h.top.children[1], h.phases);
+  assert.equal(h.mode.querySelector("small"), note);
+  assert.equal(h.timers.size, 0);
+});

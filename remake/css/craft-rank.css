@@ -51,3 +51,11 @@ body.game-ds .bench-top:has(> .craft-rank) .bench-phase.now { max-width: none; p
 body.game-ds .bench-top:has(> .craft-rank) .bench-phase-copy :is(b, small) { line-height: normal; }
 @media (max-width: 359px) { body.game-ds .bench-top > .craft-rank { flex-basis: 64px; width: 64px; } }
 @media (prefers-reduced-motion: reduce) { .craft-rank *, .craft-rank[data-change] * { animation: none !important; transition: none !important; } }
+
+/* 本編ではモードと案内を二行で残し、ランクを隣へ併設する。DSの非表示規則は維持する。 */
+body:not(.game-ds) .bench-top:has(> .craft-rank):has(> .bench-mode) { gap: 12px; }
+body:not(.game-ds) .bench-top:has(> .craft-rank) > .bench-mode { width: 160px; letter-spacing: .02em; }
+body:not(.game-ds) .bench-top:has(> .craft-rank) > .bench-mode small {
+  display: block; margin: 4px 0 0; padding: 0; border: 0; line-height: normal;
+}
+body:not(.game-ds) .bench-top:has(> .bench-mode) > .craft-rank { flex-basis: 100px; width: 100px; }

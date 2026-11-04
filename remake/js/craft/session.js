@@ -169,7 +169,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
     sequence: steps.map(([id]) => id), prefetchSteps: new Set() };
   // 固定レッスンと単工程ドリルには総合評価を出さない。
   if (cs.mode !== "tutorial" && cs.mode !== "drill") {
-    bench.rankHud = mountCraftRank(root.querySelector(".bench-top"));
+    bench.rankHud = mountCraftRank(root.querySelector(".bench-top"), null, { preserveMode: true });
     const b = bench;
     const observer = new MutationObserver(() => {
       if (!root.isConnected || root.classList.contains("done")) b.disposeRank();

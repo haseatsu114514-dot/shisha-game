@@ -4,7 +4,12 @@ import { suite, assertFits } from './support.mjs';
 import { assertCraftProgress } from './craft_progress_assertions.mjs';
 
 await suite('craft-rank-wire', async check => {
-  for (const ds of [false, true]) await check(ds ? 'session-ds' : 'session-pc', async page => {
+  for (const [name, ds, options] of [
+    ['session-pc', false, {}],
+    ['session-pc-1180', false, { viewport: { width: 1180, height: 740 } }],
+    ['session-touch', false, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+    ['session-ds', true, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+  ]) await check(name, async page => {
     await page.evaluate(async ds => {
       const core = await import('./js/core/state.js'); core.newGame();
       window.T = { session: await import('./js/craft/session.js'), heat: await import('./js/craft/heat.js'),
@@ -20,6 +25,8 @@ await suite('craft-rank-wire', async check => {
     }, ds);
     assert.equal(await page.locator('body.game-ds').count(), ds ? 1 : 0);
     assert.equal(await page.locator('.craft-rank').count(), 1);
+    assert.equal(await page.locator('.bench-mode').count(), 1);
+    if (!ds) await assertFits(page, '.bench-mode');
     assert.equal(await page.locator('.craft-rank-wide .craft-rank-grade').textContent(), '—');
     await page.evaluate(() => { T.session.craftTest.auto = 'good'; window.heatRun = T.heat.runHeat(T.cs); });
     await page.evaluate(() => window.heatRun);
@@ -34,6 +41,15 @@ await suite('craft-rank-wire', async check => {
       assert(['enter', 'up', 'down'].includes(await page.locator('.craft-rank').getAttribute('data-change')));
       assert.equal(await page.locator('.craft-rank-meter').getAttribute('aria-valuenow'), progress);
       await assertFits(page, '.craft-rank, .craft-rank-meter');
+      if (!ds) {
+        await assertFits(page, '.bench-mode');
+        const separated = await page.evaluate(() => {
+          const a = document.querySelector('.bench-mode').getBoundingClientRect();
+          const b = document.querySelector('.craft-rank').getBoundingClientRect();
+          return a.right <= b.left;
+        });
+        assert(separated, 'Mode context must stay beside the rank');
+      }
       await assertCraftProgress(page);
       const overlaps = await page.evaluate(() => {
         const a = document.querySelector('.craft-rank').getBoundingClientRect();
@@ -41,7 +57,7 @@ await suite('craft-rank-wire', async check => {
         return a.left < b.right - 1 && a.right > b.left + 1 && a.top < b.bottom - 1 && a.bottom > b.top + 1;
       });
       assert.equal(overlaps, false);
-      if (process.env.SHOTS) {
+      if (process.env.SHOTS && ['session-pc', 'session-ds'].includes(name)) {
         fs.mkdirSync(process.env.SHOTS, { recursive: true });
         await page.waitForTimeout(400);
         await page.screenshot({ path: `${process.env.SHOTS}/U6-${ds ? 'DS' : 'PC'}-${grade}.png` });
@@ -87,5 +103,5 @@ await suite('craft-rank-wire', async check => {
       T.ui.clearScreen();
     });
     await page.waitForFunction(() => !document.querySelector('.craft-rank'));
-  }, ds ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {});
+  }, options);
 });
