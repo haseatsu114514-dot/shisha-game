@@ -1,4 +1,4 @@
-// 第1章だけの採用済み01。原画の同じ6領域を順に表示し、他章の共通章題は変更しない。
+// 第1章の採用画像1枚を表示する。読込・LOAD中断・入力ガードと表示時間は既存契約を保つ。
 import { el } from "../core/util.js";
 import { layers } from "../core/ui.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
@@ -16,7 +16,7 @@ const title = CHAPTER_TITLE_ART.find(entry => entry.chapter === 1);
 const ease = value => { const p = Math.max(0, Math.min(1, value)); return p * p * (3 - 2 * p); };
 let active = null;
 
-/** 章開幕の装飾層。煙（テーマ）・人物をなでる一筋の光・周辺減光。canvasの画素には触れない。 */
+/** 保管用（現行では呼び出さない）の章開幕装飾層。煙（テーマ）・人物をなでる一筋の光・周辺減光。canvasの画素には触れない。 */
 function buildTitleFx() {
   const fx = el("div.ch1-title-fx", { "aria-hidden": "true" });
   // 各人の足元から立ちのぼる煙。右から順に少し遅れて上がり、集まってくる気配を出す。
@@ -107,14 +107,11 @@ export function playCh1Title({ signal } = {}) {
       const card = el("div.ch1-title-picture", { role: "img", "aria-label": [title.no, title.name, title.read, title.sub].filter(Boolean).join("　"),
         style: { position: "absolute", inset: "0", background: "#0b0812", display: "flex", alignItems: "center", justifyContent: "center" } });
       if (ready) {
-        const canvas = el("canvas", { width: 1280, height: 720, "aria-hidden": "true",
-          style: { width: "100%", height: "100%", objectFit: "contain" } });
-        context = canvas.getContext("2d"); card.append(canvas);
-        if (context) drawCh1Title(context, image, media.matches ? CH1_TITLE_TIMING.fullAt : 0);
-        // 動きを出すときだけ、装飾の演出層を絵の上へ重ねる。画素検査はcanvasだけを見るので影響しない。
-        if (context && !media.matches) { fx = buildTitleFx(); card.append(fx); }
-      }
-      if (!context) {
+        // 最新方針: 人物の切り分けや装飾は使わず、採用済み画像をそのまま1枚表示する。
+        image.alt = ""; image.setAttribute("aria-hidden", "true");
+        Object.assign(image.style, { width: "100%", height: "100%", objectFit: "contain" });
+        card.append(image);
+      } else {
         shield.dataset.art = "text";
         card.replaceChildren(el("div", { style: { textAlign: "center", color: "#fff", maxWidth: "95%" } }, [
           el("div", { text: title.no, style: { fontSize: "24px" } }),
@@ -125,8 +122,7 @@ export function playCh1Title({ signal } = {}) {
       }
       shield.append(card); started = performance.now();
       SE.jingle(); // 従来と同じ正規SEを画像準備後に一度だけ。
-      scheduleEnd(context && !media.matches ? CH1_TITLE_TIMING.duration : CH1_TITLE_TIMING.hold);
-      if (context && !media.matches) frame = requestAnimationFrame(tick);
+      scheduleEnd(ready && !media.matches ? CH1_TITLE_TIMING.duration : CH1_TITLE_TIMING.hold);
     };
     host.append(shield);
     window.addEventListener("keydown", blockKey, true);

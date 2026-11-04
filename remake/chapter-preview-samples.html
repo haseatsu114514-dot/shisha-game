@@ -13,6 +13,8 @@
 <style>#shell { position: fixed; inset: 0; overflow: hidden; }</style>
 </head>
 <body>
+<!-- 旧比較UIは保管するが、現在の画面では読み込まず実行しない。 -->
+<template id="retired-preview-samples">
 <div id="shell"><div id="stage"><div id="bg"></div><div id="screen"></div><div id="vn"></div><div id="hud"></div><div id="fx"></div><div id="toasts"></div><div id="banners"></div><div id="wipe"></div><div id="modal"></div></div></div>
 <script type="module">
 import { el } from "./js/core/util.js";
@@ -60,5 +62,7 @@ button.addEventListener("click", async () => {
 });
 // 本編のセーブ・報酬・既読は読み書きしない。
 </script>
+</template>
+<script>location.replace("chapter-preview.html?ch=ch2");</script>
 </body>
 </html>

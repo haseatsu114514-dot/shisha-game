@@ -36,7 +36,8 @@ async function drawn(page, entry) {
   assert.match(await image.getAttribute('src'), new RegExp(`/ch${entry.chapter}-title\\.webp$`));
   assert((await image.getAttribute('alt')).includes(entry.name));
   assert.equal(await card.locator('.cc-copy').isVisible(), false, 'Image and DOM titles were both shown');
-  assert.equal(await card.locator('.cc-frame').count(), 0);
+  assert.equal(await card.locator('img').count(),1,'採用画像1枚だけを表示する');
+  assert.equal(await card.locator('.ct-stage,.ct-glint,.ct-painted,.cc-frame').count(), 0);
   const geometry = await image.evaluate(image => {
     const r = image.getBoundingClientRect();
     return { size: [image.naturalWidth, image.naturalHeight], fit: getComputedStyle(image).objectFit,
@@ -190,9 +191,10 @@ await suite('chapter-titles', async check => {
     await page.evaluate(() => { __remake.vnTest.turbo = true; });
     await page.locator('[data-test="title-new"]').click();
     await page.locator('.ch1-title-motion[data-art="ready"]').waitFor({ timeout: 60000 });
-    await page.waitForFunction(() => Number(document.querySelector('.ch1-title-motion')?.dataset.elapsed) >= 3150);
+    await page.locator('.ch1-title-motion img').evaluate(img=>img.decode());
     assert.equal(await page.evaluate(() => __remake.state.chapter), 1);
-    assert.equal(await page.locator('.ch1-title-motion canvas').count(), 1);
+    assert.equal(await page.locator('.ch1-title-motion img').count(), 1);
+    assert.equal(await page.locator('.ch1-title-motion canvas,.ch1-title-fx').count(),0);
     assert.equal(await page.locator('.chapter-card').count(), 0);
     await page.screenshot({ path: path.join(out, 'new-game-chapter-1.png') });
     await page.locator('.ch1-title-motion').waitFor({ state: 'detached' });

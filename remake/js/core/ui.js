@@ -546,7 +546,7 @@ export function shake(target = document.getElementById("stage"), ms = 380) {
   setTimeout(() => target.classList.remove("shake"), ms);
 }
 
-/** 章タイトル（煙の中から浮かぶ） */
+/** 章タイトル（採用画像1枚。表示時間・送り入力ガードは維持） */
 export async function chapterTitle({ no, name, read, sub }) {
   // 読込中も前場面を見せたまま、クリック・タップ・会話送りキーを吸収する。
   const swallow = event => { event.preventDefault(); event.stopPropagation(); };
@@ -569,10 +569,8 @@ export async function chapterTitle({ no, name, read, sub }) {
       el("div.cc-read", { text: read }),
       sub ? el("div.cc-sub", { text: sub }) : null,
     ]);
-    const card = el("div.chapter-card", { dataset: { chapter: no, art: "text" } }, [copy]);
-    // 動き（motions/chapter-title.js）が読めなければ、従来の静止表示のまま進める。
-    const motion = await import("../motions/chapter-title.js").catch(() => null);
-    let play = null;
+    const card = el("div.chapter-card.static-title", { dataset: { chapter: no, art: "text" } }, [copy]);
+    let hold = 3200;
     // 画像が準備できるまでは本編の上に空白のカードを出さない。
     // 失敗・タイムアウト時は既存の文字表示で章進行を続ける。
     if (art && await imageReady(art, 15000)) {
@@ -581,13 +579,11 @@ export async function chapterTitle({ no, name, read, sub }) {
       card.dataset.art = "ready";
       const full = el("img.cc-art", { src: art, alt: [no, name, read, sub].filter(Boolean).join("　") });
       card.append(full);
-      // 分けたレイヤーが一枚でも欠けたら、採用画像の静止表示にする。
-      const extra = motion?.chapterArtUrls(no) || [];
-      if (extra.length && (await Promise.all(extra.map(url => imageReady(url, 15000)))).every(Boolean)) {
-        play = motion.mountChapterTitle(card, { no, full });
-      }
-    } else if (motion) {
-      play = motion.mountChapterTitle(card, { no });
+      // 採用画像1枚のみ。旧演出の表示時間は保ち、分割・寄り・光の追加画像は読まない。
+      if (!reducedMotion()) hold = no === "第一章" ? 5800 : 4400;
+    } else if (!reducedMotion()) {
+      // 第3章など採用画像のない章は、既存の文字フォールバックを静止表示する。
+      hold = 3600;
     }
     shield.append(card);
     // 単一rAFだけでは追加とshowが同じ初回描画にまとまり、画像が突然現れる。
@@ -596,9 +592,7 @@ export async function chapterTitle({ no, name, read, sub }) {
     SE.jingle();
     await nextFrame();
     card.classList.add("show");
-    // 動きは退場してよい時刻まで待つ。動きの不具合で章進行を止めない。
-    if (play) await Promise.race([play().catch(() => {}), sleep(7000)]);
-    else await sleep(3200);
+    await sleep(hold);
     card.classList.add("out");
     // タイマーだけで消すと最後の描画より先にremoveされる。動き軽減や背景タブでも待ち続けない。
     await Promise.race([
