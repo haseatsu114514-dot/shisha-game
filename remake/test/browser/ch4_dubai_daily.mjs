@@ -64,6 +64,38 @@ async function seed(page, adjust = null) {
 }
 
 await suite("ch4-dubai-daily", async check => {
+  await check("day-three-inn-trial", async page => {
+    await seed(page, (value, progress) => {
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      for (const id of ["ch4_festa", "ch4_dubai_souq", "ch4_stranger_first", "ch4_inn_tool_care"]) p.read[id] = true;
+      p.firstDay = 1;
+      value.day = p.startDay + 2; value.slot = 0; p.day = 3; value.stamina = 80;
+    });
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: 51, slot: 0 });
+    const before = await get(page);
+    await go(page, "ch4_dubai_inn");
+    await page.locator(dt("ch4-inn-trial")).waitFor();
+    assert.equal((await get(page)).flags._ch4_inn_trial, undefined);
+    await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = "good"; });
+    await page.locator(dt("ch4-inn-trial")).click();
+    await dubaiMap(page, { day: 51, slot: 1 });
+    const after = await get(page);
+    assert.equal(after.flags._ch4_inn_trial?.feedbackRead, true);
+    assert(["good", "rough"].includes(after.flags._ch4_inn_trial.result));
+    assert.equal(after.flags._craft_practice_runs.at(-1).kind, "ch4_inn_trial");
+    assert.equal(after.stamina, before.stamina - 16);
+    assert.equal(after.money, before.money);
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: 51, slot: 1 });
+    const due = await page.evaluate(async () => {
+      const { innTrialDue } = await import("./js/chapters/ch4-inn-trial.js");
+      return innTrialDue(window.__remake.state);
+    });
+    assert.equal(due, false);
+  });
+
   await check("dubai-days-run-on-the-daily-loop", async page => {
     await seed(page);
     await loadSlot(page, 0);
