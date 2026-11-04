@@ -1,4 +1,4 @@
-/* 表示部品の準備用。本編は採点と素材の接続が決まるまで読み込まない。 */
+/* 制作画面と表示確認ページで共有するランク表示。 */
 .bench-top > .craft-rank {
   position: relative; flex: 0 0 220px; width: 220px; height: 56px; min-width: 0;
   --rank-color: #e3bd6e; --rank-glow: transparent; color: var(--rank-color); isolation: isolate; pointer-events: none; user-select: none;

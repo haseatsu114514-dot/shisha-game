@@ -9,6 +9,7 @@ import { DB } from "../core/data.js";
 import { state } from "../core/state.js";
 import { growthPerks, growthSkill, growthLesson, floralLayers, grapeReceptionBonus, LESSON_TUNING, SKILL_TUNING } from "../core/growth-effects.js";
 import { rememberGrowthCraft } from "../core/growth-memory.js";
+import { refreshBench } from "./session.js";
 import { gradeOf } from "./common.js";
 import { steamSecondsOf, steamOpening, steamBurnRisk } from "./steam-time.js";
 import { foilHeatProfile } from "./holes_logic.js";
@@ -129,6 +130,34 @@ export function bonusOf(cs = null) {
   return { bonus: b, notes };
 }
 
+/** 最終採点と暫定表示で同じ重みを使う。 */
+export function scoreWeights(cs) {
+  // アルミ穴あけを飛ばした一台は穴あけの重みを外す。第1章大会だけ完成品を40%にする。
+  const foilSkipped = !!cs.holes?.skipped;
+  const weights = { ...WEIGHTS };
+  if (foilSkipped) {
+    delete weights.holes;
+    if ((cs?.chapter ?? state?.chapter) === 1 && cs.mode === "tournament") {
+      Object.assign(weights, { heat: .2, shisha: .4, care1: .2, care2: .2 });
+    }
+  }
+  return weights;
+}
+
+/** 確定した項目だけの暫定平均。未実施項目と完成時のボーナスは含めない。状態は変更しない。 */
+export function provisionalCraftScore(cs) {
+  const parts = {
+    holes: cs.holes?.skipped ? undefined : cs.holes?.score,
+    heat: cs.heat?.score,
+    shisha: cs.pullDone ? (cs.stats || computeShisha(cs)).craftQuality : undefined,
+    care1: cs.careHistory?.[0]?.score,
+    care2: cs.careHistory?.[1]?.score,
+  };
+  const entries = Object.entries(scoreWeights(cs)).filter(([key]) => Number.isFinite(parts[key]));
+  const weight = entries.reduce((sum, [, w]) => sum + w, 0);
+  return weight ? clamp(entries.reduce((sum, [key, w]) => sum + parts[key] * (w / weight), 0), 0, 100) : null;
+}
+
 export function finalize(cs) {
   cs.stats = cs.stats || computeShisha(cs);
   const { bonus, notes } = bonusOf(cs);
@@ -139,15 +168,8 @@ export function finalize(cs) {
     care1: cs.careHistory?.[0]?.score ?? 0,
     care2: cs.careHistory?.[1]?.score ?? 0,
   };
-  // アルミ穴あけを飛ばした一台は穴あけの重みを外す。第1章大会だけ完成品を40%にする。
+  const weights = scoreWeights(cs);
   const foilSkipped = !!cs.holes?.skipped;
-  const weights = { ...WEIGHTS };
-  if (foilSkipped) {
-    delete weights.holes;
-    if ((cs?.chapter ?? state?.chapter) === 1 && cs.mode === "tournament") {
-      Object.assign(weights, { heat: .2, shisha: .4, care1: .2, care2: .2 });
-    }
-  }
   const wsum = Object.values(weights).reduce((sum, w) => sum + w, 0) || 1;
   const total = clamp(Object.entries(weights).reduce((s, [k, w]) => s + parts[k] * (w / wsum), 0) + bonus, 0, 100);
   cs.total = Math.round(total * 10) / 10;
@@ -156,5 +178,6 @@ export function finalize(cs) {
   cs.foilSkipped = foilSkipped;
   cs.bonusNotes = notes;
   rememberGrowthCraft(state, cs);
+  refreshBench();
   return cs;
 }

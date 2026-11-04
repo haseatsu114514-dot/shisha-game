@@ -35,6 +35,9 @@ import { warmCraftAssets } from "./readiness.js";
 import { prepareBenchEntry } from "./loading.js";
 import { applyCoalTraining } from "./coals.js";
 import { attachBenchAppearance } from "../appearance/bench.js";
+import { mountCraftRank, craftRankProgress } from "./rank-hud.js";
+import { CRAFT_RANK_THRESHOLDS } from "./common.js";
+import { provisionalCraftScore } from "./score.js";
 import { demoFor, openDemoSheet } from "./demo.js";
 
 /**
@@ -138,6 +141,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
       Promise.all([bench.ready.assetsReady, background.assetsReady]));
     return bench;
   }
+  bench?.disposeRank?.();
   const worker = buildWorkerScene(cs);
   const audience = buildAudience(cs);
   const title = el("div.bench-title");
@@ -163,6 +167,18 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   showScreen("bench", root);
   bench = { cs, owner:state, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf,
     sequence: steps.map(([id]) => id), prefetchSteps: new Set() };
+  // 固定レッスンと単工程ドリルには総合評価を出さない。
+  if (cs.mode !== "tutorial" && cs.mode !== "drill") {
+    bench.rankHud = mountCraftRank(root.querySelector(".bench-top"));
+    const b = bench;
+    const observer = new MutationObserver(() => {
+      if (!root.isConnected || root.classList.contains("done")) b.disposeRank();
+    });
+    b.disposeRank = () => { observer.disconnect(); b.rankHud.dispose(); };
+    observer.observe(layers.screen, { childList: true });
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    updateBenchRank();
+  }
   attachBenchAppearance(bench, cs);
   const background = bg();
   // A missing entryAssets is an already completed fourth step in the loading count.
@@ -409,6 +425,7 @@ export function scoreStep(cs, key, score) {
   const cleanScore = Number.isFinite(numericScore) ? Math.min(100, Math.max(0, numericScore)) : 0;
   cs.arcade.parts[key] = Math.round(cleanScore * (SCORE_WEIGHT[step] ?? 0));
   cs.arcade.total = Object.values(cs.arcade.parts).reduce((a, b) => a + b, 0);
+  if (!key.includes(":")) updateBenchRank();
   // 旧保存と記録の互換用。制作中や結果画面には表示しない。
   return cs.arcade.total;
 }
@@ -441,9 +458,22 @@ export async function failBench(cs, kind) {
   await sleep(reduced ? 300 : 1200);
 }
 
+/** 採点状態から表示だけを更新する。 */
+function updateBenchRank() {
+  if (!bench?.rankHud) return;
+  const cs = bench.cs;
+  const final = !!cs.parts && Number.isFinite(cs.total);
+  const score = final ? cs.total : provisionalCraftScore(cs);
+  bench.rankHud.update(score === null ? null : craftRankProgress(score, CRAFT_RANK_THRESHOLDS));
+  bench.rankHud.root.dataset.provisional = String(!final);
+  bench.rankHud.root.setAttribute("aria-label", final ? "制作ランク" : "制作ランク（暫定）");
+  bench.rankHud.root.querySelector(".craft-rank-caption").textContent = final ? "RANK" : "RANK（暫定）";
+}
+
 /** 左側の工程キャプションを更新。今後の作業アニメーションもここで同期する。 */
 export function refreshBench() {
   if (!bench) return;
+  updateBenchRank();
   bench.worker.root.dataset.ready = String(!!(bench.cs.pullDone || bench.cs.practiceSource));
   // pullDoneは失敗時にも立つので、成功した提供だけを現在地にする。
   // panelの工程IDは結果評価が参照するためpullのまま保持する。

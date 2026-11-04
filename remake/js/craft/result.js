@@ -9,7 +9,8 @@ import { layers, showScreen, flash, shake, retireScreen } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { on } from "../core/bus.js";
 import { SE, stopBgm } from "../core/audio.js";
-import { autoSkill } from "./common.js";
+import { autoSkill, CRAFT_RANK_THRESHOLDS } from "./common.js";
+import { craftRankProgress } from "./rank-hud.js";
 import { mixColor } from "./art.js";
 import { NAGUMO_BAR } from "./score.js";
 import { evaluationOf, judgeComment } from "./feedback.js";
@@ -358,7 +359,7 @@ export function resultTable(cs, rank) {
       ...[["穴あけ", P.holes], ["炭焼き", P.heat], ["完成品", P.shisha], ["調整1回目", P.care1], ["調整2回目", P.care2]]
         .filter(([k]) => !(k === "穴あけ" && cs.foilSkipped)).map(([k, v]) =>
         el("div.rt-part", [el("span", { text: k }), evaluation(v), el("small", { text: evaluationOf(v || 0).label })])),
-      el("div.rt-part.total", [el("span", { text: "総合" }), evaluation(cs.total)]),
+      el("div.rt-part.total", [el("span", { text: "総合" }), evaluation(cs.total), el("b", { text: craftRankProgress(cs.total, CRAFT_RANK_THRESHOLDS).grade, dataset: { test: "craft-final-rank" }, "aria-label": "制作ランク" })]),
       el("small.rt-judge-comment", { text: `上園「${judgeComment(cs)}」` }),
       cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
       goodPointOf(cs) ? el("small.rt-good-point", { text: goodPointOf(cs), dataset: { test: "result-good-point" } }) : null,
