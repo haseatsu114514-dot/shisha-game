@@ -1192,6 +1192,7 @@
   },
   {
     "id": "noor",
+    "spriteAnchor": "head",
     "birthday": "09-28",
     "name": "ヌール / ヌール・アル＝サーリム（Noor Al-Salim）",
     "display_name": "ヌール",

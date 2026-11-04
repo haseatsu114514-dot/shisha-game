@@ -245,10 +245,10 @@ function morph(ctx) {
       keep(animate(dim, [{ opacity: 0 }, { opacity: .7 }], { duration: 380 }));
       keep(animate(ink, [{ transform: "translateY(101%)" }, { transform: "translateY(0)" }], { duration: 320, easing: EASE.inOut }));
       if (rect.img?.isConnected) keep(animate(rect.img, [{ opacity: 1 }, { opacity: 0 }], { duration: 120, delay: 260 }));
-      // ② 影がカメラへ迫り、頭の位置をカットインに合わせる（260〜600ms）
-      keep(animate(sil, [{ transform: "none" }, { transform: t.to }], { duration: 340, delay: 260, easing: "cubic-bezier(.45,0,.2,1)" }));
+      // ② 影がカメラへ迫り、頭の位置をカットインに合わせる（260〜549ms、速度比較のB）
+      keep(animate(sil, [{ transform: "none" }, { transform: t.to }], { duration: 289, delay: 260, easing: "cubic-bezier(.45,0,.2,1)" }));
       setTimeout(() => SE.whoosh(), 260);
-      await sleep(600);
+      await sleep(549);
       shape = await ready;
 
       const mountCutin = () => {
@@ -271,18 +271,18 @@ function morph(ctx) {
         await sleep(90);
         return unmount;
       }
-      // ③ 影の形が、立ち絵のポーズからカットインのポーズへ変わる。終わりに白く光る（600〜1060ms）
+      // ③ 影の形が、立ち絵のポーズからカットインのポーズへ変わる。終わりに白く光る（549〜940ms）
       over.insertBefore(shape.canvas, edge);
       shape.draw(0);
       keep(animate(shape.canvas, [{ opacity: 0 }, { opacity: 1 }], { duration: 70 }));
       keep(animate(sil, [{ opacity: 1 }, { opacity: 0 }], { duration: 70, delay: 30 }));
       let mounted = false;
-      await tween(460, (u) => {
+      await tween(391, (u) => {
         shape.draw(easeInOutCubic(u), Math.max(0, (u - .6) / .4) * .9);
         if (!mounted && u > .5) { mounted = true; mountCutin(); }
       });
       if (!mounted) mountCutin();
-      // ④ 光った影が、ポスター調の本人にほどける。斜めの光が一度だけ通る（1060〜1300ms）
+      // ④ 光った影が、ポスター調の本人にほどける。斜めの光が一度だけ通る（940〜1220ms）
       const portrait = ctx.host.querySelector(".ci-portrait");
       portrait.style.opacity = "";
       keep(animate(portrait, [{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: "ease-out" }));
