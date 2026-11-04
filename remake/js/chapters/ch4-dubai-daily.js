@@ -40,6 +40,9 @@ import { CAFE_MENU, CAFE_PLACES, CAFE_TASTE_IDS, OMAKASE, OMAKASE_LINE, SMOKED_I
 import { LONGLONG_BG, LONGLONG_CHAR, LONGLONG_IDS, nextLonglongVisit, longlongHasNew, recordLonglongVisit } from "./ch4-longlong.js";
 import { NIGHT_SCENE_IDS, STALL_NONE, STALL_PLACE, STALL_SCENE_IDS, dubaiSpotAt, nightVisit, recordNightVisit, priceText,
   stallChoices, stallItem, stallLabel, stallSceneId } from "./ch4-dubai-local.js";
+import { runFullPractice } from "../craft/practice.js";
+import { computeShisha } from "../craft/score.js";
+import { INN_TRIAL_FLAG, INN_TRIAL_IDS, innTrialDue, innTrialResult } from "./ch4-inn-trial.js";
 
 export const DUBAI = "dubai";
 const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと）
@@ -64,7 +67,7 @@ const TALK_BG = Object.freeze({
 });
 export const DUBAI_DAILY_IDS = Object.freeze([
   ...["souq", "festa", "center_cafe", "alley_cafe", "naru", "practice"].flatMap(id => TALKS[id].filter(scene => /_(talk_[b-d]|dubai_\d|hall_\d|culture_[a-z]+)$/.test(scene))),
-  "ch4_creek_walk_day", "ch4_creek_walk_night", "ch4_inn_rest", ...CAFE_TASTE_IDS, ...NIGHT_SCENE_IDS, ...STALL_SCENE_IDS,
+  "ch4_creek_walk_day", "ch4_creek_walk_night", "ch4_inn_rest", ...INN_TRIAL_IDS, ...CAFE_TASTE_IDS, ...NIGHT_SCENE_IDS, ...STALL_SCENE_IDS,
 ]);
 
 const read = id => chapterFourProgress(state).read[id] === true;
@@ -109,6 +112,7 @@ function spotHasNew(entry) {
   if (entry.place === "naru") return nextTalk("naru", { once: true }) !== null;
   if (entry.place === "practice") return nextTalk("practice", { once: true }) !== null;
   if (entry.place === "longlong") return longlongHasNew(state, affinityLevel(LONGLONG_CHAR));
+  if (entry.place === "inn") return (dubaiDay() >= 2 && !read("ch4_inn_tool_care")) || innTrialDue(state);
   return false;
 }
 
@@ -267,8 +271,11 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   // 夜がにぎわう店（ch4-dubai-local.js）: 先に店の夜を読む。初めての夜は短い場面、二度目からは最初の一行だけ。
   const night = nightVisit(state, entry.place);
   if (night && !await readNight(night, entry, owner)) return unused;
-  let done = false, longlong = null;
-  if (entry.place === "inn") done = await restAtInn(io, owner);
+  let done = false, longlong = null, innTrial = false;
+  if (entry.place === "inn") {
+    const visit = await visitInn(io, owner, staminaGuard);
+    done = visit.done; innTrial = visit.trial;
+  }
   else if (entry.place === "creek") done = await readPlain(state.slot ? "ch4_creek_walk_night" : "ch4_creek_walk_day", "bg_dubai_street_night", owner);
   else if (entry.place === "longlong") {
     // 必要ハートに届いた最古の未読の段階、無ければ小会話（ch4-longlong.js）。読み終えた時だけ記録する。
@@ -280,11 +287,11 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   if (night) recordNightVisit(state, entry.place);
   if (longlong) recordLonglongVisit(state, longlong);
   if (entry.cost) addMoney(-entry.cost);
-  addStamina(entry.stamina || 0);
+  addStamina(innTrial ? 0 : entry.stamina || 0);
   if (entry.heat) toast(entry.heat); // 昼の屋外（暑さで多めに使った・夜ほど休まらない）
   // スークの後は屋台で軽く買える（時間は使わない・体力が少し戻る）。体力を使った後に戻すので、上限で消えにくい。
   if (entry.place === STALL_PLACE && state === owner) await visitStall(owner);
-  if (entry.stat) earnStat(entry.stat, 4);
+  if (entry.stat && !innTrial) earnStat(entry.stat, 4);
   if (entry.place === "festa") gainAffinity("da_silva", visitAffinity("talk")); // 太陽: 来店ごとに通いの小会話と同じ +8（IR23）
   if (entry.place === "naru") gainAffinity("naru", 5);
   // 龍龍水煙所: ほかの章のライバルの店と同じ値（段階の会話 +16・通いの小会話 +8。core/stats.js の visitAffinity）
@@ -293,7 +300,7 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   // 路地裏のカフェの日常の会話で話すのは店員で、シェイクの授業は大会で名を明かすまで伏せる。シェイクへの相談は第5章の屋敷（ch5-dubai.js）。
   const teacher = { festa: "da_silva" }[entry.place];
   if (teacher && state === owner) await keepDailyHud(() => consultLessons(teacher));
-  return { used: true, exerted: (entry.stamina || 0) < 0 };
+  return { used: true, exerted: innTrial || (entry.stamina || 0) < 0 };
 }
 
 /**
@@ -309,10 +316,34 @@ async function visitCamel(owner) {
   return result.used && state === owner ? { used: true, exerted: false, slotsUsed: 0 } : unused;
 }
 
-/** 宿で休む。2日目以降の最初の一回は、道具の手入れ（本筋の場面）を先に読む。 */
-async function restAtInn(io, owner) {
-  if (dubaiDay() >= 2 && !read("ch4_inn_tool_care")) return keepDailyHud(() => io.readAndCommit("ch4_inn_tool_care"));
-  return readPlain("ch4_inn_rest", "bg_dubai_inn_night", owner);
+/** 宿で休むか、持ってきた葉で一台試すかを選ぶ。最初の道具の手入れは従来どおり先に読む。 */
+async function visitInn(io, owner, staminaGuard) {
+  if (dubaiDay() >= 2 && !read("ch4_inn_tool_care"))
+    return { done: await keepDailyHud(() => io.readAndCommit("ch4_inn_tool_care")), trial: false };
+  if (!innTrialDue(state)) return { done: await readPlain("ch4_inn_rest", "bg_dubai_inn_night", owner), trial: false };
+  const pending = state.flags[INN_TRIAL_FLAG]?.result;
+  if (!pending) {
+    const choice = await modal({ title: "宿の作業台", body: "持ってきた葉で一台試せる。試作は1行動・体力16。休むなら体力が戻る。",
+      options: [
+        { label: "一台試作する", value: "trial", test: "ch4-inn-trial", primary: true },
+        { label: "休む", value: "rest", test: "ch4-inn-rest" },
+        { label: "戻る", value: "cancel", test: "ch4-inn-cancel" },
+      ] });
+    if (state !== owner || !choice || choice === "cancel") return { done: false, trial: false };
+    if (choice === "rest") return { done: await readPlain("ch4_inn_rest", "bg_dubai_inn_night", owner), trial: false };
+    if (!(await staminaGuard(-16)) || state !== owner) return { done: false, trial: false };
+    if (!await readPlain("ch4_inn_trial_intro", "bg_dubai_inn_night", owner)) return { done: false, trial: false };
+    const cs = await runFullPractice({ kind: "ch4_inn_trial", adjustments: false, note: "宿での試作", isCurrent: () => state === owner });
+    if (state !== owner || !cs || cs.cancelled || !cs.pullDone && !cs.failed) return { done: false, trial: false };
+    const result = innTrialResult(cs, cs.failed ? null : computeShisha(cs).craftQuality);
+    owner.flags[INN_TRIAL_FLAG] = { result, feedbackRead: false, day: dubaiDay() };
+    addStamina(-16);
+    save(); // 講評中のLOADでも完成した一台を作り直させない
+  }
+  const result = owner.flags[INN_TRIAL_FLAG].result;
+  const done = await readPlain(`ch4_inn_trial_${result}`, "bg_dubai_inn_night", owner);
+  if (done) owner.flags[INN_TRIAL_FLAG].feedbackRead = true;
+  return { done, trial: done };
 }
 
 /**

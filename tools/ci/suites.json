@@ -618,6 +618,7 @@
         "node remake/test/ch4_camel_race.mjs",
         "node remake/test/ch4_dubai_cafe.mjs",
         "node remake/test/ch4_dubai_local.mjs",
+        "node remake/test/ch4_inn_trial.mjs",
         "node remake/test/ch4_longlong.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node remake/test/ch5_party.mjs",
