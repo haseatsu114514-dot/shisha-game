@@ -33,6 +33,17 @@ for (const [chapter, prefix, log, retry] of [
   `, { context });
   let stateModule;
   await runner.link(async spec => {
+    if (spec === "../core/chapter-card.js") {
+      const helper = new vm.SourceTextModule(read(new URL("../js/core/chapter-card.js", import.meta.url), "utf8"), { context });
+      await helper.link(dependency => {
+        const names = dependency === "./util.js" ? ["el"] : ["showScreen"];
+        return new vm.SyntheticModule(names, function () {
+          for (const name of names) this.setExport(name, bindings[name]);
+        }, { context });
+      });
+      return helper;
+    }
+
     if (spec === "../core/chapter-actions.js") {
       const helper = new vm.SourceTextModule(read(new URL(spec, url)), { context });
       await helper.link(() => new vm.SyntheticModule(["el"], function () { this.setExport("el", node); }, { context }));
@@ -320,3 +331,4 @@ for (const chapter of [4, 5]) {
   assert.equal(owner.menuBusy, false);
 }
 console.log('chapter menus: chapter 4–5 real runner options, dispatch, guards, retries and errors PASS');
+

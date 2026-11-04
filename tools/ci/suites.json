@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "chapter-cards",
+      "title": "Chapter 4/5 card DOM equivalence",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/chapter_cards.mjs"]
+    },
+    {
       "id": "ch2-tournament-actions",
       "title": "Chapter 2 tournament action session and error recovery",
       "kind": "quick",
@@ -3777,4 +3783,5 @@
     }
   ]
 }
+
 

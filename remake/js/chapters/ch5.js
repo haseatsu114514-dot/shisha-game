@@ -3,6 +3,7 @@
 import { DB, bgUrl } from "../core/data.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
+import { createChapterCard } from "../core/chapter-card.js";
 import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardChapterClearExp, awardTournamentExp, awardSceneExp, presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
@@ -76,19 +77,7 @@ function hud() {
   layers.hud.classList.remove("show");
 }
 
-function card(owner, name, title, description, actions = [], note = "", sceneId = "", extra = []) {
-  hud();
-  showScreen("ch5", el("main.ch2-contest", { dataset: { test: test(name), scene: sceneId } }, [
-    el("header.ch2-contest-header", [
-      el("div", [el("p", { text: "第五章 ／ 機械仕掛けの神" }), el("h1", { text: title })]),
-      menuButton(owner),
-    ]),
-    el("p.ch2-contest-description", { text: description }),
-    note ? el("p.ch2-contest-note", { text: note }) : null,
-    ...extra,
-    el("div.ch2-contest-actions", actions),
-  ]));
-}
+const card = createChapterCard({ hud, screen: "ch5", test, heading: "第五章 ／ 機械仕掛けの神", menuButton });
 
 /** 必要な台本をすべて確認してから DB に公開する。欠けていれば状態を進めない。 */
 async function loadDialogues() {
@@ -653,3 +642,4 @@ function renderError(owner) {
     button(owner, "もう一度読み込む", "retry", () => state.chapter === 5 ? resumeChapterFive() : beginChapterFive(), true),
   ]);
 }
+

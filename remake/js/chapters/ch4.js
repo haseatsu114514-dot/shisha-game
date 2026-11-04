@@ -4,6 +4,7 @@ import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 import { createChapterActions } from "../core/chapter-actions.js";
+import { createChapterCard } from "../core/chapter-card.js";
 import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { state, save } from "../core/state.js";
@@ -57,18 +58,9 @@ function hud() {
   layers.hud.classList.remove("show");
 }
 
+const renderCard = createChapterCard({ hud, screen: "ch4", test, heading: "第四章 ／ 継承の煙", menuButton });
 function card(owner, name, title, description, actions = [], note = "", sceneId = "", content = null) {
-  hud();
-  showScreen("ch4", el("main.ch2-contest", { dataset: { test: test(name), scene: sceneId } }, [
-    el("header.ch2-contest-header", [
-      el("div", [el("p", { text: "第四章 ／ 継承の煙" }), el("h1", { text: title })]),
-      menuButton(owner),
-    ]),
-    el("p.ch2-contest-description", { text: description }),
-    note ? el("p.ch2-contest-note", { text: note }) : null,
-    content,
-    el("div.ch2-contest-actions", actions),
-  ]));
+  renderCard(owner, name, title, description, actions, note, sceneId, [content]);
 }
 
 /** 必要な台本をすべて確認してから DB に公開する。欠けていれば状態を進めない。 */
@@ -640,3 +632,4 @@ function renderError(owner) {
     button(owner, "もう一度読み込む", "retry", () => state.chapter === 4 ? resumeChapterFour() : beginChapterFour(), true),
   ]);
 }
+
