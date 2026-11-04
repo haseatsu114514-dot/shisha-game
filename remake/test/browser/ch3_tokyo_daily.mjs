@@ -114,6 +114,43 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(state.flags._ch2_region, "tokyo", "The night is spent in Tokyo");
   });
 
+  // #2454: 裏口の選択に「てつこといっしょ」がある。選ぶと準備中の画面が出て、「帰る」で日常ループへ戻る。
+  // 入口の土台なので何も確定しない: 回復・来訪・好感度・フラグ・時間は動かず、既存の「少し構っていく」
+  // （回復+12・来訪加算）とは別物。シフトの報酬だけが残る（二重回復・二重来訪は起きない）。
+  await check("tetsuko-time-entry-opens-a-placeholder-and-grants-nothing", async page => {
+    await seed(page);
+    await loadSlot(page, 0);
+    await page.locator(dt("rule-sheet")).waitFor({ timeout: 60000 });
+    await page.locator(dt("rule-sheet-close")).click();
+    await tokyoMap(page, { day: 33, slot: 1 });
+    const before = await get(page);
+    // 夜: mukai で手伝う → 帰りの裏口で「てつこといっしょ」を選ぶ。
+    await go(page, "ch3_tokyo_mukai");
+    const help = page.locator(`#modal.show button`, { hasText: "シフトに入る" });
+    await help.waitFor();
+    await help.click();
+    await page.locator(dt("mukai-order-0")).waitFor({ timeout: 60000 });
+    await page.locator(dt("mukai-order-0")).click();
+    await page.locator(dt("tokyo-tetsuko-game")).waitFor({ timeout: 60000 });
+    await page.locator(dt("tokyo-tetsuko-game")).click();
+    // 準備中の画面（タイトル・準備中の表示・帰るボタン）。
+    const screen = page.locator(dt("tetsuko-time-screen"));
+    await screen.waitFor({ timeout: 60000 });
+    const text = await screen.innerText();
+    assert.match(text, /てつこといっしょ/, "The placeholder shows the title");
+    assert.match(text, /準備中/, "The placeholder tells the player it is in preparation");
+    assert.equal(await page.locator(dt("tetsuko-time-back")).count(), 1, "There is a back button");
+    // 帰る → 日常ループに戻り、夜の本筋 → DAY3 → 夜の地図へ、普段どおり続く。
+    await page.locator(dt("tetsuko-time-back")).click();
+    await tokyoMap(page, { day: 34, slot: 1 });
+    const after = await get(page);
+    assert.equal(after.flags._ch3_outings.tetsuko, undefined, "The game option counts no tetsuko visit");
+    assert.equal(after.flags._ch3_outings.mukai_help, 1, "The shift still counted exactly once");
+    assert.equal(after.money, before.money + 6000, "Only the shift pay changed money; the game adds nothing");
+    assert.equal(await page.locator(dt("tetsuko-time-screen")).count(), 0, "The placeholder is gone after returning");
+    assert.equal(await page.locator('.map:not(.done) [data-test="pin-ch3_tokyo_mukai"]').count(), 1, "The Tokyo map is back");
+  });
+
   // VOL10: 東京にいる間、LIMEを交換したムカイさんから、最後のシフトから3日あいた日にシフトの誘いが届く。
   await check("mukai-invites-a-shift-by-lime-in-tokyo", async page => {
     await seed(page);

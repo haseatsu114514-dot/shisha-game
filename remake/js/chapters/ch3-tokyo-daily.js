@@ -579,15 +579,32 @@ async function readMashiroBond(kind, staminaGuard, owner) {
   return { used: true, exerted: true, exp: personExp("mashiro") };
 }
 
-/** 帰りに裏口のてつこへ（行動を使わない）。会うかどうかは選べる。 */
+/**
+ * 帰りに裏口のてつこへ（行動を使わない）。会うかどうか・どう過ごすかを選べる。
+ * 「少し構っていく」は既存のまま（4段階＋巡回の会話・回復+12・来訪加算。#1993）。
+ * 「てつこといっしょ」は新しいミニゲームの入口の土台（#2454）。いまは準備中の画面を見せるだけで、
+ * 回復・来訪・好感度・フラグ・時間は一切動かさない（正ゲームは別途実装）。
+ */
 async function offerTetsuko(owner) {
   const outing = outingById("tetsuko");
   if (!outing) return;
-  const go = await modal({ title: "裏口のてつこ", body: "帰りに裏口をのぞくと、看板猫のてつこがベンチで丸くなっている。",
-    options: [{ label: "少し構っていく", value: true, test: "tokyo-tetsuko-yes", primary: true }, { label: "今日はそっとしておく", value: false, test: "tokyo-tetsuko-no" }] });
-  if (!go || state !== owner) return;
+  const pick = await modal({ title: "裏口のてつこ", body: "帰りに裏口をのぞくと、看板猫のてつこがベンチで丸くなっている。",
+    options: [
+      { label: "少し構っていく", value: "care", test: "tokyo-tetsuko-yes", primary: true },
+      { label: "てつこといっしょ", value: "game", test: "tokyo-tetsuko-game" },
+      { label: "今日はそっとしておく", value: null, test: "tokyo-tetsuko-no" },
+    ] });
+  if (!pick || state !== owner) return;
+  // てつこといっしょ（#2454）: ミニゲームの入口の土台。準備中の画面を見せて帰るだけ。保存は変えない。
+  if (pick === "game") { await playTetsukoTime(owner); return; }
   if (!await readPlain(outingDialogueId(state, outing), outing.bg || "bg_street", owner)) return;
   addStamina(outing.stamina);
   state.flags[OUTINGS_FLAG] = { ...outingCounts(state), tetsuko: (outingCounts(state).tetsuko || 0) + 1 };
   toast(outing.toast || "てつこに、少し元気をもらった", { kind: "good" });
+}
+
+/** 「てつこといっしょ」を開く（#2454・ミニゲームの入口の土台）。準備中の画面を見せるだけで保存は変えない。 */
+async function playTetsukoTime(owner) {
+  const { openTetsukoTime } = await import("../minigames/tetsuko-time.js");
+  await openTetsukoTime({ isCurrent: () => state === owner });
 }
