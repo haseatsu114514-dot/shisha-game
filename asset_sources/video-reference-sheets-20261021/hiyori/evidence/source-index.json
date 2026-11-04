@@ -25,8 +25,8 @@
   "setting_source": "data/characters.json",
   "setting": {
     "id": "hiyori",
-    "name": "朝霧ひより",
-    "reading": "あさぎり ひより",
+    "name": "薄羽ひより",
+    "reading": "うすば ひより",
     "display_name": "ひより",
     "role": "heroine_local",
     "age": 25,

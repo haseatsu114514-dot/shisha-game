@@ -166,7 +166,7 @@ await suite("ch3-tournament", async check => {
       assert.match(await page.locator(".ch2-contest-judges").textContent(), /エミル|Emil/);
       const explanation = await page.locator(t("vote-reason")).innerText();
       if (round === 1) assert.doesNotMatch(explanation, /鋭い苦みの余韻/, "No tasting effect before service");
-      if (round === 2) assert.match(explanation, /須井は水を飲んだ.*久世の直後にはじめを試喫.*比較-2/s,
+      if (round === 2) assert.match(explanation, /須井は水を飲んだ.*綾取の直後にはじめを試喫.*比較-2/s,
         "Show the actual palate trap that affected Hajime");
       if (round === 3) assert.match(explanation, /鋭い苦みは直後の比較に残らなかった/,
         "Show when the same tactic failed because of order and water");

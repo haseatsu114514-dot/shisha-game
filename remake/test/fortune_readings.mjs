@@ -57,7 +57,7 @@ assert.equal(Object.keys(trivia.characters).length, 18);
 const all = Object.values(trivia.characters).flat();
 assert.equal(all.length, 107);
 assert.equal(new Set(all.map(x => x.id)).size, 107);
-// 追加分は吹き出し1枚に収め、本名や正体を先出ししない（REIの本名・ましろの噂の正体・組長の過去）。
+// 追加分は吹き出し1枚に収め、本名や正体を先出ししない（レヰの本名・ましろの噂の正体・組長の過去）。
 for (const char of castIds) for (const entry of trivia.characters[char]) {
   for (const text of [entry.teller, entry.reaction]) {
     assert.equal(paginate(text).length, 1, `${entry.id} spills onto a second page: ${text}`);

@@ -40,12 +40,12 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
     after: ["ch3_tokyo_shop_gap"] },
   // 味の会話（#2022）。味を確かめる場面なので、味覚が戻った後（routes の seen）。
   ch3_mashiro_black_tea: { file: "ch3_mashiro", label: "ブラックティーを一割", location: "mukai", bg: "bg_mukai_shop" },
-  // 久世とましろの過去。ましろ側はレモンケーキの客を見た煙幕の初訪問後、久世側はmukaiへ客として来た後。
+  // 綾取とましろの過去。ましろ側はレモンケーキの客を見た煙幕の初訪問後、綾取側はmukaiへ客として来た後。
   ch3_kuze_mashiro_tea_tin: { file: "ch3_kuze_mashiro", label: "茶缶の半分", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_kuze_first"] },
   ch3_kuze_mashiro_soon_back: { file: "ch3_kuze_mashiro", label: "すぐ戻るの嘘", location: "煙幕", bg: "bg_yohaku_shop",
     after: ["ch3_kuze_mukai_visit"] },
-  // 久世とLIMEを交換する（#2028）。助言の後、煙幕への再訪で♥1になってから。後日談の片づけで返事の欄を回収する。
+  // 綾取とLIMEを交換する（#2028）。助言の後、煙幕への再訪で♥1になってから。後日談の片づけで返事の欄を回収する。
   ch3_kuze_lime: { file: "ch3_rivals", label: "返事の欄", location: "煙幕", bg: "bg_yohaku_shop",
     after: ["ch3_kuze_advice"], heart: { kuze: 1 } },
   // ひよりルートの tokyo_contact（#1434 決定B）。route.events と同じ条件に、mukai到着後・東京滞在中でないことを足す。
@@ -67,7 +67,7 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
 export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_double_apple: ["ch3_minto_small_lies"],
   ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_trace"],
-  // 久世の締めくくり（#2028）は寄り道ではなく、場面カードの「久世に呼ばれる」から（daily/bonds.js の条件）。
+  // 綾取の締めくくり（#2028）は寄り道ではなく、場面カードの「綾取に呼ばれる」から（daily/bonds.js の条件）。
   ch3_rivals: ["ch3_emil_workshop", "ch3_kuze_lime", "ch3_kuze_bond_finale"],
   // ♥3の質問と締めくくりは寄り道ではなく、場面カードの「ましろちゃんと話す」から（daily/bonds.js の条件）。
   ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice",

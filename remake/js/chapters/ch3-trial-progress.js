@@ -1,4 +1,4 @@
-// 第3章の回復後に置く試作（#1654）。久世・スティーブから聞いたことを、mukaiの作業台で一度ずつ確かめる。
+// 第3章の回復後に置く試作（#1654）。綾取・スティーブから聞いたことを、mukaiの作業台で一度ずつ確かめる。
 // DOMを持たない進行判定。再生・制作・保存は ch3-trials.js が担う。
 import { chapterThreeScenes, chapterThreeProgress } from "./ch3-progress.js";
 

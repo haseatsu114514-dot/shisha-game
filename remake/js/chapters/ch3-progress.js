@@ -23,7 +23,7 @@ export const CH3_DAILY_PLAN = Object.freeze({
   ch3_naru_contact_before_tournament: { kind: "night", day: 7 },
   ch3_naru_work: { kind: "night", day: 7 },
   ch3_kuze_first: { kind: "slot", day: 8, slot: 0 },
-  // DAY9の久世来店は強制だが行動枠を使わない（正本「一度の崩れと、続いていく回復」）。
+  // DAY9の綾取来店は強制だが行動枠を使わない（正本「一度の崩れと、続いていく回復」）。
   ch3_kuze_mukai_visit: { kind: "night", day: 9 },
   ch3_taste_return: { kind: "night", day: 10 },
   ch3_abyss_recovery: { kind: "slot", day: 11, slot: 0 },

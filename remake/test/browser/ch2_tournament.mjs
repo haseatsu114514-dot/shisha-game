@@ -111,7 +111,7 @@ async function finishChapterThreePrologue(page) {
   let reached=await get(page);
   if(reached.flags._ch3_prep&&!reached.flags._ch3_prep.departed){
     assert.equal(reached.flags._ch3_intro.titleSeen,true);
-    assert.equal(reached.met.kuze,undefined,'The anonymous prologue must not reveal Kuze to Hajime');
+    assert.equal(reached.met.kuze,undefined,'The anonymous prologue must not reveal Ayatori to Hajime');
     assert.equal(reached.phase,'daily');
     assert.match(await page.locator('.hud').innerText(),/出発まで/);
     await page.evaluate(async()=>{
@@ -131,7 +131,7 @@ async function finishChapterThreePrologue(page) {
     assert.equal(reached.flags._ch3_intro.prologueStep,4);
   }
   assert.equal(reached.flags._ch3_intro.titleSeen,true);
-  assert.equal(reached.met.kuze,undefined,'The anonymous prologue must not reveal Kuze to Hajime');
+  assert.equal(reached.met.kuze,undefined,'The anonymous prologue must not reveal Ayatori to Hajime');
 }
 // play() の入口で、実VNと同じ名乗り・カットインの副作用を作ってから制御を止める。
 // onLine で throw すると非同期表示側の拒否となり、play() の失敗を再現できない。
@@ -443,7 +443,7 @@ await suite('ch2-tournament',async check=>{
     await assertFits(page,'.ch2-contest .btn');await page.locator(t('start')).click();await phone(page);
     await page.locator(t('ready')).waitFor();
     const texts=await page.evaluate(()=>window.__texts.join('\n'));
-    assert.match(texts,/名前を聞くのは初めて/);assert.match(texts,/零-ZERO-のREI/);
+    assert.match(texts,/名前を聞くのは初めて/);assert.match(texts,/零-ZERO-のレヰ/);
     assert.match(texts,/神崎煙草店の神崎竜二でさ/);
     assert.match(texts,/今日は、いち職人として来た。文句なら、俺の煙に言いな/);
     assert.doesNotMatch(texts,/昔は組を張って|足は洗った/);
@@ -694,12 +694,12 @@ await suite('ch2-tournament',async check=>{
         await portrait.waitFor();
         await page.waitForFunction(()=>document.querySelector('#vn.active .vn-text')?.textContent.includes('いらっしゃい'));
         assert(await portrait.evaluate(async node=>{await node.decode();return node.naturalWidth>0;}),
-          'Kuze portrait must decode in his first conversation');
-        assert.match(await page.locator('#vn.active .vn-name').textContent(),/久世/);
+          'Ayatori portrait must decode in his first conversation');
+        assert.match(await page.locator('#vn.active .vn-name').textContent(),/綾取/);
         assert(await page.locator('#bg > .bg-img').last().evaluate(node=>node.style.backgroundImage.includes('bg_yohaku_shop')),
-          'Kuze must appear inside 煙幕');
+          'Ayatori must appear inside 煙幕');
         assert.equal(await page.locator(dt('ch3-intro-menu')).count(),0,
-          'Saving during Kuze dialogue could commit his name before the first scene completes');
+          'Saving during Ayatori dialogue could commit his name before the first scene completes');
         await page.waitForTimeout(500);
         await capture(page,'ch3-kuze-first');
         await page.evaluate(()=>{window.__remake.vnTest.turbo=true;});
@@ -723,7 +723,7 @@ await suite('ch2-tournament',async check=>{
     assert.equal(s.flags._ch3_intro.stage,ordered.length);
     assert.equal(s.chapter,3);assert.equal(s.day,45);assert.equal(s.phase,'tournament');
     assert.equal(s.flags._ch3_cleared,undefined);
-    assert(s.met.kuze,'Kuze must be known after the first visit');
+    assert(s.met.kuze,'Ayatori must be known after the first visit');
     assert(s.met.steve,'Steve must be known after the low-heat visit');
     assert(s.met.volk,'Volk must be known after his shop visit');
     assert.equal(s.flags._ch3_strategy,'aroma','The chosen strategy must survive the eve checkpoint');
@@ -752,7 +752,7 @@ await suite('ch2-tournament',async check=>{
     const prior=await get(page);
     await page.locator(t('chapter-three')).click();
     await page.locator(dt('ch3-intro-error')).waitFor();
-    assert.deepEqual(await get(page),prior,'Missing later Kuze dialogue must not advance the chapter or consume resources');
+    assert.deepEqual(await get(page),prior,'Missing later Ayatori dialogue must not advance the chapter or consume resources');
     bad=false;await page.locator(dt('ch3-intro-reload')).click();
     await finishChapterThreePrologue(page);
     await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_opening"]').waitFor();

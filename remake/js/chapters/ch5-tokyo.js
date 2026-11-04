@@ -4,7 +4,7 @@
 // 便は昼に出て夜に着く（その日の昼と夜の2行動）。帰りも同じ。決まりは chapters/ch5-travel.js。
 // 最初に乗る日は、Dr.fookah の裏口で店員に乗せてもらう話になる（ch5_tokyo_van_first）。
 // 行き先: mukai（手伝い）・Smoke & Glory（スティーブ）・鉄の煙（ヴォルク）・公園・裏口のてつこ・東京の店・屋根裏・地元へ帰る。
-// ましろ（ヒロイン）は第5章の会話に出さない。久世は第3章の後に福岡へ戻ったので煙幕は出さない。
+// ましろ（ヒロイン）は第5章の会話に出さない。綾取は第3章の後に福岡へ戻ったので煙幕は出さない。
 // 台詞は data/dialogue/ch5_tokyo.json（てつこと夜の公園は第3章の場面を使う）。現在地は flags._ch2_region = "tokyo"。
 import { state, save, timeOfDay, markMet } from "../core/state.js";
 import { DB, sceneBg } from "../core/data.js";

@@ -1,5 +1,5 @@
 // #2035 slice A: bonds.js / phone.js の章番号決め打ちを chapterFeatureEnabled へ寄せても、
-// 章ごとの開放（久世の締めくくり・くゆりの地元外出・つむぎの応募ゲート）は変えない。
+// 章ごとの開放（綾取の締めくくり・くゆりの地元外出・つむぎの応募ゲート）は変えない。
 // 旧式と新式のブロック判定が、照合しうる章の値で一致することを確かめる（挙動不変）。
 import assert from "node:assert/strict";
 import { chapterFeatureEnabled } from "../js/core/chapter-features.js";
@@ -10,7 +10,7 @@ const CHAPTERS = [1, 2, 3, 4, 5, 6, 0, undefined, null];
 for (const ch of CHAPTERS) {
   const label = `chapter=${String(ch)}`;
 
-  // 久世の締めくくり（bonds.finaleDue）: 旧 `state.chapter !== 3` と同じブロック判定を保つ。
+  // 綾取の締めくくり（bonds.finaleDue）: 旧 `state.chapter !== 3` と同じブロック判定を保つ。
   assert.equal(!chapterFeatureEnabled(ch, "kuzeBond"), ch !== 3, `kuze: ${label}`);
 
   // くゆりの♥3の外出（phone.eligible, lime_outing_rin_1）: 旧 `state.chapter > 2` と同じブロック判定を保つ。

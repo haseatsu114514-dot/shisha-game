@@ -1,4 +1,4 @@
-"""Build Kuze's paired 896x1200 transparent game sprites from saved imagegen sources."""
+"""Build Ayatori's paired 896x1200 transparent game sprites from saved imagegen sources."""
 
 from pathlib import Path
 
