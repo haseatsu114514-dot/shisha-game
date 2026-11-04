@@ -10,15 +10,13 @@ export function createChapterSample(base, id) {
   const data = structuredClone(base);
   data.sample = id;
   if (id === "rush") {
-    const durations = [1700, 1700, 1200, 2600, 3400, 3500, 2600, 2600, 3600, 3700, 2600];
-    data.frames.forEach((cut, i) => { cut.duration = durations[i]; cut.move = "still"; });
-    data.frames.find(cut => cut.id === "naru-confrontation").text = "……今の話、\n点になるのか？";
-    data.frames.find(cut => cut.id === "minto-warning").text = "何があっても、\nわたしはここにいるから。";
-    data.frames.find(cut => cut.id === "empty-victory").text = "……おめでとうが、\n届いてるのに。";
+    const durations = { afterglow: 900, next: 1800, "tsumugi-water": 2600,
+      "minto-warning": 3400, "ageha-promise": 3500, "sumi-silence": 5000,
+      "naru-confrontation": 2600, "empty-victory": 3600, "chapter-title": 3700, "last-question": 3500 };
+    data.frames.forEach(cut => { cut.duration = durations[cut.id] ?? cut.duration; cut.move = "still"; });
   }
   if (id === "quiet") {
-    const durations = [3000, 3500, 1500, 4000, 4500, 4500, 5000, 4000, 6000, 4000, 4000];
-    data.frames.forEach((cut, i) => { cut.duration = durations[i]; cut.move = "still"; });
+    data.frames.forEach(cut => { cut.move = "still"; });
     const minto = structuredClone(data.frames.find(cut => cut.id === "minto-warning"));
     minto.id = "minto-return";
     minto.duration = 3500;

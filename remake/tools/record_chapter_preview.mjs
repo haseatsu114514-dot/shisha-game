@@ -3,17 +3,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-const require = createRequire(import.meta.url);
-const { chromium } = require('playwright');
+const { chromium } = createRequire(new URL('../test/browser/package.json', import.meta.url))('playwright');
 const url = process.env.PREVIEW_URL || 'http://127.0.0.1:8123/remake/chapter-preview.html';
 const captureFolder = path.resolve(process.env.CAPTURE_DIR || '.codex/artifacts/chapter-preview-recording');
 const output = path.resolve(process.env.OUTPUT_VIDEO || path.join(captureFolder, 'preview.mp4'));
+const autoPlay = new URL(url).pathname.endsWith('/chapter-preview.html');
 const startSelector = process.env.START_SELECTOR || '[data-test="preview-start"]';
 const previewSeconds = Number(process.env.PREVIEW_SECONDS || 42);
-const introSeconds = Number(process.env.INTRO_SECONDS || 1.8);
+const introSeconds = Number(process.env.INTRO_SECONDS ?? (autoPlay ? 0 : 1.8));
 const waitForEnd = process.env.WAIT_FOR_END !== '0';
 const doneSelector = process.env.DONE_SELECTOR || '[data-test="preview-ended"]';
-const endSeconds = Number(process.env.END_SECONDS || 3);
+const endSeconds = Number(process.env.END_SECONDS ?? (autoPlay ? 0 : 3));
 fs.mkdirSync(captureFolder, { recursive: true });
 fs.mkdirSync(path.dirname(output), { recursive: true });
 
@@ -110,28 +110,42 @@ try {
   const page = await context.newPage();
   const errors = [];
   page.on('pageerror', error => errors.push(String(error)));
-  await page.goto(url, { waitUntil: 'networkidle' });
-  await page.locator(startSelector).waitFor({ state: 'visible' });
+  // 自動再生ページの台本だけ、録画準備が整うまで待たせる。開始用の画面や操作は追加しない。
+  let releaseAutoplay;
+  if (autoPlay) {
+    const gate = new Promise(resolve => { releaseAutoplay = resolve; });
+    let first = true;
+    await page.route('**/data/chapter_previews/*.json', async route => {
+      if (first) { first = false; await gate; }
+      await route.continue();
+    });
+  }
+  await page.goto(url, { waitUntil: autoPlay ? 'load' : 'networkidle' });
+  await page.locator(autoPlay ? '[data-test="chapter-preview"]' : startSelector).waitFor({ state: 'visible' });
   const preload = await page.evaluate(async () => {
     try {
-      const response = await fetch('../data/chapter_previews/ch2.json');
+      const key = new URLSearchParams(location.search).get('ch') || 'ch2';
+      const { PREVIEWS } = await import('./js/chapters/chapter-preview.js');
+      const entry = PREVIEWS[key];
+      const response = await fetch(entry.scriptUrl);
       if (!response.ok) throw new Error(`Preview data ${response.status}`);
       const base = await response.json();
       const sample = new URLSearchParams(location.search).get('sample');
       const { createChapterSample } = await import('./js/chapters/chapter-preview-samples.js');
-      const data = createChapterSample(base, sample ?? base.presentation);
+      const data = entry.samples ? createChapterSample(base, sample ?? base.presentation) : base;
       const arts = [...new Set(data.frames.map(cut => cut.art).filter(Boolean))];
       await Promise.all(arts.map(art => new Promise((resolve, reject) => {
         const image = new Image();
         image.onload = async () => { try { await image.decode(); resolve(); } catch (error) { reject(error); } };
         image.onerror = () => reject(new Error(`Missing art ${art}`));
-        image.src = `../assets/cgs/ch2_preview/${art}.webp`;
+        image.src = `${entry.assetDir}${art}.webp`;
       })));
       return { artworks: arts.length, durationMs: data.duration, cuts: data.frames.map(cut => cut.id) };
     } catch (error) { return { error: String(error) }; }
   });
   await page.evaluate(async () => {
     await document.fonts.load('400 30px \"Chapter Preview Dot\"', '水煙前線次回予告みんと');
+    await document.fonts.load('400 27px \"Chapter Preview Mincho\"', '何があっても、わたしはここにいるから。');
     await document.fonts.ready;
     await Promise.all([...document.images].filter(img => !img.complete)
       .map(img => new Promise(resolve => {
@@ -145,6 +159,14 @@ try {
     const capture = window.__previewCapture;
     capture.visuals = [];
     capture.layoutFailures = [];
+    capture.playbackObserver = new MutationObserver(() => {
+      const root = document.querySelector('[data-test="chapter-preview"]');
+      if (root?.dataset.phase === 'playing') capture.hasPlayback = true;
+      if (capture.hasPlayback && !root && !capture.visualEndEpochMs) {
+        capture.visualEndEpochMs = performance.timeOrigin + performance.now();
+      }
+    });
+    capture.playbackObserver.observe(document.getElementById('stage'), { childList: true, subtree: true, attributes: true, attributeFilter: ['data-phase'] });
     capture.observeTimer = setInterval(() => {
       const root = document.querySelector('[data-test="chapter-preview"]');
       const cut = root?.dataset.cut;
@@ -163,7 +185,7 @@ try {
         caption: caption?.textContent || '' };
       capture.visuals.push(visual);
       if (!controlsFit || !captionFits || !artFits) capture.layoutFailures.push(visual);
-    }, 200);
+    }, 50);
   });
   const cdp = await context.newCDPSession(page);
   const frames = [];
@@ -181,7 +203,8 @@ try {
   if (!frames.length) throw new Error('CDP did not produce a video frame');
   await page.waitForTimeout(introSeconds * 1000);
   const clickEpochMs = await page.evaluate(() => performance.timeOrigin + performance.now());
-  await page.locator(startSelector).click();
+  if (autoPlay) releaseAutoplay();
+  else await page.locator(startSelector).click();
   console.log(JSON.stringify({ status: 'recording', clickEpochMs, duration: previewSeconds, url }));
   if (waitForEnd) {
     await page.locator(doneSelector).waitFor({ state: 'visible', timeout: 65000 });
@@ -189,7 +212,7 @@ try {
   } else {
     await page.waitForTimeout(previewSeconds * 1000);
   }
-  const captureEndEpochMs = await page.evaluate(() => performance.timeOrigin + performance.now());
+  let captureEndEpochMs = await page.evaluate(() => performance.timeOrigin + performance.now());
   const finalPageState = await page.evaluate(() => {
     const preview = document.querySelector('[data-test="chapter-preview"]');
     return {
@@ -200,7 +223,8 @@ try {
   });
   const visualQA = await page.evaluate(() => {
     clearInterval(window.__previewCapture.observeTimer);
-    return { visuals: window.__previewCapture.visuals, layoutFailures: window.__previewCapture.layoutFailures,
+    window.__previewCapture.playbackObserver.disconnect();
+    return { visualEndEpochMs: window.__previewCapture.visualEndEpochMs, visuals: window.__previewCapture.visuals, layoutFailures: window.__previewCapture.layoutFailures,
       storageAfter: JSON.stringify({ ...localStorage }) };
   });
   await cdp.send('Page.stopScreencast');
@@ -211,6 +235,12 @@ try {
   fs.writeFileSync(audioFile, Buffer.from(audio.base64, 'base64'));
   if (!audio.tapCount) throw new Error('No game AudioContext was connected to the recording mix');
 
+  if (autoPlay && visualQA.visuals.length) {
+    if (visualQA.visualEndEpochMs) captureEndEpochMs = Math.min(captureEndEpochMs, visualQA.visualEndEpochMs);
+    while (frames.length > 1 && frames.at(-1).timestamp * 1000 >= captureEndEpochMs) frames.pop();
+    const firstCut = visualQA.visuals[0].epochMs / 1000;
+    while (frames.length > 1 && frames[1].timestamp < firstCut) frames.shift();
+  }
   // CDP records actual render timestamps. Preserve their durations, including
   // static frames, before converting to a portable 30 fps H.264/AAC file.
   const concatFile = path.join(captureFolder, 'frames.ffconcat');
