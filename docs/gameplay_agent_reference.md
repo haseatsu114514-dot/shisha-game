@@ -430,6 +430,7 @@ jq '[.dialogues[].dialogue_id]' data/dialogue/ch1_main.json
 | 台詞 | `data/dialogue/*.json` | 現行版は正本JSONを直接読み、複製・バンドルを作らない |
 
 - 同じ事実を2箇所に書かない。書くなら一方を「→ ○○を参照」にする。
+- 公式誕生日（#2465）は `data/characters.json` の任意フィールド `birthday` に、生年なし・ゼロ埋めの `MM-DD` 文字列で持つ。サメちゃんは既存の独立プロフィール `data/dialogue/samechan.json` の `profile.birthday` が正本。`02-29` は有効で、別名・無名の役割には付けない。承認済み35名の日付・暦上の妥当性・重複なしは `node remake/test/character_birthdays.mjs` で検証する。
 - ⚠️ **正本だが古い記述が残っている既知の地雷**:
   - brand/docs に**旧タイトル「煙の向こう側」「ケムリの向こう側」**が残ることがある。**正式タイトルは「水煙前線 -EN:CODE-」**（本資料が正）。見つけたら直す。
   - `brand/brand` / `brand/chapter1（character）` は**旧設定の残骸**（旧名「ドクター・ケムリ」、旧主人公表記「蒸野 始」等）。**参照・引用しない**。`review_scope.md` の「コア」に `brand/**` とあるが、これらの旧ファイルは正史ではない。

@@ -3787,6 +3787,12 @@
         "node remake/test/browser/judge_comment_2190.mjs"
       ],
       "chrome": "playwright"
+    },
+    {
+      "id": "character-birthdays",
+      "title": "Official character birthday data contract",
+      "kind": "quick",
+      "run": ["node remake/test/character_birthdays.mjs"]
     }
   ]
 }
