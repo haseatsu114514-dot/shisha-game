@@ -10,6 +10,10 @@
           "text": "全国大会から六週間後。世界大会のため、ドバイへ来た。"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_ch4_dubai_arrival"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "空港の案内板の前で、なるが機材ケースを持ち上げた。"
@@ -53,6 +57,9 @@
           "speaker": "",
           "face": "",
           "text": "二人でケースを運ぶ。出口の熱気に、同時に顔をしかめた。"
+        },
+        {
+          "type": "hide_cg"
         },
         {
           "speaker": "",
@@ -988,9 +995,16 @@
           "text": "お前のも。……優勝おめでとう。次は、俺が取る"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_ch4_world_handshake"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "差し出された手を、強く握った。王煙楼とシェイクの台からも、まだ煙が立っていた。"
+        },
+        {
+          "type": "hide_cg"
         },
         {
           "speaker": "",

@@ -1391,9 +1391,17 @@
           "comment": "Q13: 会場はSMOKE LAB（2026-11-02 DXM02）。背景の切り替え行（#2222）はこの行の直後に足す"
         },
         {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_smoke_lab.png"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "部屋の奥に、それはあった。"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_ch5_shisha_9000"
         },
         {
           "speaker": "",
@@ -1409,6 +1417,9 @@
           "speaker": "",
           "face": "",
           "text": "SHISHA-9000。博士の言う「装置」は、人の形をしていた。"
+        },
+        {
+          "type": "hide_cg"
         },
         {
           "speaker": "shisha_9000",

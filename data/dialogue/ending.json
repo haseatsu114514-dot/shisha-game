@@ -10,6 +10,10 @@
           "text": "9000との二本勝負から、何日かたった。"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_ending_tonari_night"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "tonariの閉店後。スミさんが、洗い終えたグラスを伏せる。"
@@ -23,6 +27,9 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "はい。今日は俺も作ります"
+        },
+        {
+          "type": "hide_cg"
         }
       ]
     },
