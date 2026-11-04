@@ -345,7 +345,7 @@ try {
   assert.equal(friend.storiesFirst.story, 6); assert.equal(friend.storiesFirst.seen, false);
   assert.equal(friend.beforeSubmission, false);
   assert.equal(friend.noonBadge, false); assert.equal(friend.noon, false); assert.equal(friend.nightBadge, true);
-  assert(friend.finaleText.includes("描き終わった絵、最初に見てほしくて"));
+  assert(friend.finaleText.includes("描き終わった絵、いちばん最初に見てほしくて"));
   assert(friend.finaleText.includes("この子の続きも、ここで描きます"), "friendship landing missing");
   assert(!friend.finaleText.includes("今度は２人で"), "romance question shown after a friendly answer");
   assert.equal(friend.record.route, "friend"); assert(friend.owned); assert.equal(friend.lavender, 50);
@@ -433,7 +433,7 @@ try {
       due: state.flags._confession_due ?? null, text, asked: Object.keys(state.romanceChoices) };
   });
   assert.deepEqual(loverSave.lovers, ["tsumugi"]); assert.equal(loverSave.level, 3); assert.equal(loverSave.route, "lover");
-  assert(loverSave.owned); assert.equal(loverSave.due, null); assert(loverSave.text.includes("会えない日も少し近い"));
+  assert(loverSave.owned); assert.equal(loverSave.due, null); assert(loverSave.text.includes("会えない日も、少し近い"));
   assert.deepEqual(loverSave.asked, []);
   log("HF04/05 existing-lover save: relationship kept, lover landing once, gift, no confession reservation");
 
