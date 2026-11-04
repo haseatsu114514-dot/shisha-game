@@ -44,7 +44,7 @@ export function availableAftermathDetours(value) {
 /**
  * 大会後の東京で、心得の盤で灯した授業を相談できる人と場所（SPEC 2.6・SBD61「灯したら、会える所で相談できる」）。
  * from〜to は CH3_AFTERMATH_SCENES の場面id（その場面を読む前の間だけ開く）。寄り道と同じく stage・日時は進めない。
- * 久世は煙幕の片づけ（店を畳む朝）の前まで、ましろは閉店後の mukai（翌日の夜）だけ。
+ * 綾取は煙幕の片づけ（店を畳む朝）の前まで、ましろは閉店後の mukai（翌日の夜）だけ。
  * スティーブの授業（ピザとシーシャの夜）はこの夜に開くので、なるへの報告を読んで開催の夜になったら出さない。
  */
 export const CH3_AFTERMATH_LESSONS = Object.freeze([
@@ -72,11 +72,11 @@ export function availableAftermathLessons(value, ready) {
 
 /**
  * 大会後の東京で読める締めくくり（IR22）。♥5に届いた次の来店が大会の後になった時も、帰る前に一度だけ読める
- * （台本は大会の前後で分かれる）。窓は久世の授業と同じく、煙幕の片づけ（店を畳む朝）の前まで。
+ * （台本は大会の前後で分かれる）。窓は綾取の授業と同じく、煙幕の片づけ（店を畳む朝）の前まで。
  * due(who) は daily/bonds.js の finaleDue（♥5・前提の場面・既読）。寄り道と同じく stage・日時は進めず、保存は変更しない。
  */
 export const CH3_AFTERMATH_FINALES = Object.freeze([
-  { who: "kuze", file: "ch3_rivals", dialogue: "ch3_kuze_bond_finale", label: "久世に呼ばれる", place: "煙幕", bg: "bg_yohaku_shop",
+  { who: "kuze", file: "ch3_rivals", dialogue: "ch3_kuze_bond_finale", label: "綾取に呼ばれる", place: "煙幕", bg: "bg_yohaku_shop",
     from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },
 ]);
 export function availableAftermathFinales(value, due) {

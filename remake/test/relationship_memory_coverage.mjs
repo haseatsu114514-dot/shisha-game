@@ -31,13 +31,13 @@ for (const [sceneId, scene] of scenes) {
   for (const id of rememberIds(scene)) assert(ids.has(id), `${sceneId}: unknown memory ${id}`);
 }
 
-// サメちゃん・ひより（恋人候補）は第5章の回想に、久世・スティーブ（第4章正本の調整の記憶）は第3章の前夜の回想に浮かぶ。
+// サメちゃん・ひより（恋人候補）は第5章の回想に、綾取・スティーブ（第4章正本の調整の記憶）は第3章の前夜の回想に浮かぶ。
 const byChar = {};
 for (const m of memories) (byChar[m.char_id] ||= []).push(m);
 const expected = {
   samechan: { scenes: ['samechan_shop_closing_check', 'samechan_bond_finale'], name: 'サメちゃん' },
   hiyori: { scenes: ['hiyori_work_talk', 'hiyori_axe_reveal_close'], name: 'ひより' },
-  kuze: { scenes: ['ch3_kuze_advice'], name: '久世' },
+  kuze: { scenes: ['ch3_kuze_advice'], name: '綾取' },
   steve: { scenes: ['ch3_steve_low_heat'], name: 'スティーブ' },
 };
 for (const [charId, spec] of Object.entries(expected)) {

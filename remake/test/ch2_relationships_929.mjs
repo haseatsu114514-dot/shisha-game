@@ -1,4 +1,4 @@
-// 第2章のオーナー採用改稿（#929）: なるとだけ本当に傷つき、あげは・神崎・REIは見捨てない。
+// 第2章のオーナー採用改稿（#929）: なるとだけ本当に傷つき、あげは・神崎・レヰは見捨てない。
 // 台本の構造で確かめる（表示・保存はブラウザの ch2_story / ch2_tournament / story_canon が確認する）。
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -43,7 +43,7 @@ assert.equal(text(main.ch2_slump_taste).match(/いつもの(お前|はじめ)/g)
 const eve = main.ch2_pre_tournament_realisation.lines;
 assert.match(eve[1].text, /戻ってきた/); assert.doesNotMatch(text(main.ch2_pre_tournament_realisation), /何してんの/);
 
-// DAY14: あげはは消えない。悔しさと祝福を両立し、関係は続く。神崎・REIも勝者を認める
+// DAY14: あげはは消えない。悔しさと祝福を両立し、関係は続く。神崎・レヰも勝者を認める
 const farewell = text(tournament.ch2_tournament_farewell);
 assert.doesNotMatch(farewell, /理由は、聞かないで|消えた|もう帰るんですか/);
 assert.match(farewell, /悔しい/); assert.match(farewell, /おめでと、ハジメっち/); assert.match(farewell, /うちの店/);
@@ -56,7 +56,7 @@ for (const id of ["kumicho", "rei", "ageha"]) assert(waiting.some((l) => l.speak
 assert(waiting.some((l) => ["maezono", "dr_kemuri", "nagumo"].includes(l.speaker)), "審査員の短い反応");
 assert.doesNotMatch(waiting.map((l) => l.text).join("\n"), /やもん|決めてん/);
 
-// REI再訪: 曲の感想に具体的に答え、同じ空返事を繰り返さない
+// レヰ再訪: 曲の感想に具体的に答え、同じ空返事を繰り返さない
 const rei = prep.remake_ch2_rei_repeat.lines.filter((l) => l.speaker === "hajime").map((l) => l.text);
 assert.match(rei[0], /サビ|音/); assert.equal(new Set(rei).size, rei.length);
 
@@ -155,4 +155,4 @@ for (const outing of [...CITY_OUTINGS.filter((o) => o.kind === "outing"), CITY_C
 }
 assert.equal(CITY_OUTINGS.find((o) => o.id === "ch2_aquarium").stat, undefined, "水族館に能力値を一律で足さない");
 
-console.log("[ch2 relationships 929] PASS: Naru rupture on screen, choice depth, no forced arrogance, burn safety, Ageha stays, Kanzaki/REI moments, ch3 bridge, new forced nights, Ageha\'s last inner voice, anonymous scout");
+console.log("[ch2 relationships 929] PASS: Naru rupture on screen, choice depth, no forced arrogance, burn safety, Ageha stays, Kanzaki/レヰ moments, ch3 bridge, new forced nights, Ageha\'s last inner voice, anonymous scout");

@@ -67,7 +67,7 @@ withWater.tastingPlan[1].dr_kemuri = { ...direct, waterAfterKuze: true };
 withoutWater.tastingPlan[1].dr_kemuri = direct;
 castVotes(withWater, 0, 83);
 castVotes(withoutWater, 0, 83);
-assert.deepEqual(withWater.votes, withoutWater.votes, "The pre-service poll cannot taste Kuze's aroma");
+assert.deepEqual(withWater.votes, withoutWater.votes, "The pre-service poll cannot taste Ayatori's aroma");
 assert(JUDGES.every(judge => withWater.lastVotes[judge].tactic === null));
 castVotes(withWater, 1, 83);
 castVotes(withoutWater, 1, 83);

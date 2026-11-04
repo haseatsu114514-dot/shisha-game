@@ -14,7 +14,7 @@ assert.equal(first.pins[0].label, "東京駅から");
 assert(first.pins[0].current); assert(!first.canTrain);
 assert.equal(JSON.stringify(initial), before, "Projecting a map must not normalize or save state");
 assert.deepEqual(first.landmarks.map(item => item.id), ["park", "zoo", "pond", "livehouse", "tower", "station"]);
-assert(!JSON.stringify(first).includes("久世")); assert(!JSON.stringify(first).includes("煙幕"));
+assert(!JSON.stringify(first).includes("綾取")); assert(!JSON.stringify(first).includes("煙幕"));
 assert(!JSON.stringify(first).includes("鉄の煙")); assert(!JSON.stringify(first).includes("Smoke & Glory"));
 
 const find = id => CH3_INTRO_SCENES.findIndex(scene => scene.id === id);

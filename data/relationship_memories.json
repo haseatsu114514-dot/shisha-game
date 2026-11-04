@@ -172,19 +172,19 @@
       "id": "rei_listen",
       "char_id": "rei",
       "dialogue_id": "ch2_rei_first",
-      "echo": "（REIさんの沈黙を、俺もすぐに言葉で埋めなくなった）"
+      "echo": "（レヰさんの沈黙を、俺もすぐに言葉で埋めなくなった）"
     },
     {
       "id": "rei_smile",
       "char_id": "rei",
       "dialogue_id": "ch2_rei_fourth",
-      "echo": "（REIさんの小さな笑顔は、二人で話した時に出てきた）"
+      "echo": "（レヰさんの小さな笑顔は、二人で話した時に出てきた）"
     },
     {
       "id": "rei_voice",
       "char_id": "rei",
       "dialogue_id": "ch2_rei_fifth",
-      "echo": "（REIさんの話を待つうちに、俺も自分の感想を急がなくなった）"
+      "echo": "（レヰさんの話を待つうちに、俺も自分の感想を急がなくなった）"
     },
     {
       "id": "kumicho_taste_first",
@@ -202,7 +202,7 @@
       "id": "rei_reach",
       "char_id": "rei",
       "dialogue_id": "ch2_rei_sixth",
-      "echo": "（REIさんの「嘘」を、最初に吸ったのは俺だった）"
+      "echo": "（レヰさんの「嘘」を、最初に吸ったのは俺だった）"
     },
     {
       "id": "volk_measure",
@@ -292,7 +292,7 @@
       "id": "kuze_decide",
       "char_id": "kuze",
       "dialogue_id": "ch3_kuze_advice",
-      "echo": "（久世さんは「決めるのは君」と言った。炭を外すかは、俺が決める）"
+      "echo": "（綾取さんは「決めるのは君」と言った。炭を外すかは、俺が決める）"
     },
     {
       "id": "steve_wait",

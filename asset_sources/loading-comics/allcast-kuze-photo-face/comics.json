@@ -11,9 +11,9 @@
     "悪役の顔だ。"
   ],
   "first_speaker": "hajime",
-  "panel1": "久世の店の前。左のはじめがスマホを構えて「一枚撮りますね。」。右の久世がにこっとあどけない笑顔でピース「かわいく頼むよ。」。",
-  "panel2": "同じ位置。はじめが差し出すスマホの画面（コマの中央に大きく拡大）には、片側だけ口角を上げた不敵な笑みの久世が、暗い背景と稲妻を背負って写っている。右の本物の久世は画面を見てきょとん。左のはじめが「悪役の顔だ。」。",
-  "caption": "片側だけ上がる久世の笑顔は、写真だと少し怪しい。",
+  "panel1": "綾取の店の前。左のはじめがスマホを構えて「一枚撮りますね。」。右の綾取がにこっとあどけない笑顔でピース「かわいく頼むよ。」。",
+  "panel2": "同じ位置。はじめが差し出すスマホの画面（コマの中央に大きく拡大）には、片側だけ口角を上げた不敵な笑みの綾取が、暗い背景と稲妻を背負って写っている。右の本物の綾取は画面を見てきょとん。左のはじめが「悪役の顔だ。」。",
+  "caption": "片側だけ上がる綾取の笑顔は、写真だと少し怪しい。",
   "type": "写真写りのギャップ",
   "note": "スマホにロゴは描かない。正本の「柔らかな目と片側だけ上がる笑顔」から。",
   "num": 18,
@@ -63,10 +63,10 @@
   "qa": {
     "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
     "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
-    "identity": "official Hajime/Kuze normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+    "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
     "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
     "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
-    "gag": "v1 extra human silhouettes in background; v2 removes them. Smartphone Kuze is scripted photo, not extra character.",
+    "gag": "v1 extra human silhouettes in background; v2 removes them. Smartphone Ayatori is scripted photo, not extra character.",
     "dimensions": [
       1536,
       1024

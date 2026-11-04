@@ -310,7 +310,7 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   }
 }
 {
-  // 久世とましろの任意場面: 煙幕の初訪問の後にましろ側、mukaiの客として来た後に久世側。
+  // 綾取とましろの任意場面: 煙幕の初訪問の後にましろ側、mukaiの客として来た後に綾取側。
   const value = tokyo();
   readUntil(value, 'ch3_kuze_first');
   assert(!offered(value).some(id => id.startsWith('ch3_kuze_mashiro_')), 'no childhood scenes before meeting kuze');

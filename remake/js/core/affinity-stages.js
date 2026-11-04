@@ -10,7 +10,7 @@ export const VISIT_SEQ = {
 
 // ♥2〜♥5。最後の白・赤のグミベアの試作（#2023）は味の会話を兼ねる。
 export const AGEHA_AFFINITY_VISITS = ["remake_ch2_ageha_gyaru", "remake_ch2_ageha_newcomer", "remake_ch2_ageha_magazine", "remake_ch2_ageha_gummy"];
-// 第2章の神崎・REIの通常訪問列（#1648）。初回chatの後、必要ハートに届いた最古の未読を一訪問一本読む。
+// 第2章の神崎・レヰの通常訪問列（#1648）。初回chatの後、必要ハートに届いた最古の未読を一訪問一本読む。
 // 短い続編・再訪は既存の保存フラグ、長い段階会話は `_ch2_read_<scene>` で既読を持つ。
 const ch2Story = (file, scene, heart) => ({ file, scene, heart });
 export const CH2_VISIT_STORIES = {
@@ -24,7 +24,7 @@ export const CH2_VISIT_STORIES = {
     ch2Story("ch2_kumicho", "ch2_kumicho_fifth", 4),
     ch2Story("ch2_kumicho", "ch2_kumicho_sixth", 5),
   ],
-  // 準備期間（DAY2〜13）に締めくくりまで届くよう、REIの「嘘」の相談を♥4に置く（#2027）。
+  // 準備期間（DAY2〜13）に締めくくりまで届くよう、レヰの「嘘」の相談を♥4に置く（#2027）。
   rei: [
     { scene: "remake_ch2_rei_followup", heart: 1, done: "_ch2_followup_done" },
     ch2Story("ch2_rei", "ch2_rei_first", 1),

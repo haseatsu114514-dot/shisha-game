@@ -113,7 +113,7 @@ await suite("ch1-preview", async check => {
       const visual = result.visuals.find(v => v.cut === frame.id);
       assert(visual && visual.file === `${frame.art}.webp` && visual.width === 1664 && visual.height === 936,
         `An approved sample frame was replaced: ${JSON.stringify(visual)}`);
-      assert(visual.wholeImageFits && visual.captionFits && visual.captionFont.includes("Suien Gothic") && visual.dotFontLoaded,
+      assert(visual.wholeImageFits && visual.captionFits && visual.captionFont.includes("Chapter Preview Mincho") && visual.dotFontLoaded,
         `The adopted C composition or subtitle font changed: ${JSON.stringify(visual)}`);
     }
     const returnIndex = result.cuts.findIndex(cut => cut.id === "minto-return");
@@ -295,8 +295,8 @@ await suite("ch1-preview", async check => {
     await setup(page);
     const before = await storageSnapshot(page);
     await page.goto(new URL("chapter-preview.html", page.url()).href);
-    await page.locator('[data-test="preview-start"]').click();
     await playing(page);
+    assert.equal(await page.locator('[data-test="preview-start"]').count(), 0);
     await assertPreviewLayout(page);
     await page.locator('[data-test="preview-skip"]').click();
     await page.locator(preview).waitFor({ state: "detached" });

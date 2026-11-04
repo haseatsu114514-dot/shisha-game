@@ -203,7 +203,7 @@ await suite("ch3-tokyo-daily", async check => {
     await tokyoMap(page, { day: 44, slot: 1 });
     await page.locator(dt("pin-ch3_tokyo_enmaku")).click();
     await page.locator(".mi-no", { hasText: "お金が足りない" }).waitFor();
-    assert.equal(await page.locator(dt("map-go")).count(), 0, "Without 4,000 yen Kuze's shop can't be entered");
+    assert.equal(await page.locator(dt("map-go")).count(), 0, "Without 4,000 yen Ayatori's shop can't be entered");
     let state = await get(page);
     assert.equal(state.slot, 1);
     assert.equal(state.money, 3999);
@@ -217,10 +217,10 @@ await suite("ch3-tokyo-daily", async check => {
     if (await pick.count()) await pick.click();
     await page.waitForFunction(() => window.__remake?.state?.money === 6000, null, { timeout: 60000 });
     state = await get(page);
-    assert.equal(state.money, 6000, "One visit to Kuze's shop in Tokyo is 4,000 yen");
+    assert.equal(state.money, 6000, "One visit to Ayatori's shop in Tokyo is 4,000 yen");
   });
 
-  // IR22: 久世の締めくくり（♥5・LIME交換の寄り道と「答えを返しに行く」の後）を、日常ループの煙幕の来店から読める。
+  // IR22: 綾取の締めくくり（♥5・LIME交換の寄り道と「答えを返しに行く」の後）を、日常ループの煙幕の来店から読める。
   // 閉店後に呼ばれるので代金は払わず、行動を一つ使う。専用ハガルは一度だけ。
   await check("kuze-heart5-finale-is-reached-from-enmaku-on-the-daily-loop", async page => {
     await seed(page);
@@ -241,7 +241,7 @@ await suite("ch3-tokyo-daily", async check => {
     await go(page, "ch3_tokyo_enmaku");
     const finale = page.locator(dt("tokyo-enmaku-0"));
     await finale.waitFor();
-    assert.equal((await finale.innerText()).trim(), "久世に呼ばれる", "the finale comes first at Enmaku");
+    assert.equal((await finale.innerText()).trim(), "綾取に呼ばれる", "the finale comes first at Enmaku");
     await finale.click();
     await page.waitForFunction(() => !!window.__remake?.state?.finales?.kuze, null, { timeout: 60000 });
     const state = await get(page);

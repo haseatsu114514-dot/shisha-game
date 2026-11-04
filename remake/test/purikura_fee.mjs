@@ -12,7 +12,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 async function fixture() {
  let state={chapter:2,day:2,slot:0,phase:'daily',money:1000,stamina:77,inventory:{lemon:12},story:{ageha:1},keepsakes:[],flags:{_ageha_first_purikura:true,_ageha_purikura_offer:'2:1:0'}};
  const log=[],saved=[],memory=new Map();let mode='solo',guest='kumicho',playImpl=async id=>({id,visited:[]}),modalImpl=null;
- let present=[{id:'kumicho',role:'guest',known:true,name:'神崎'},{id:'rei',role:'guest',known:true,name:'REI'}];
+ let present=[{id:'kumicho',role:'guest',known:true,name:'神崎'},{id:'rei',role:'guest',known:true,name:'レヰ'}];
  const ctx=vm.createContext({console,WeakSet});
  const fixed=(id,values)=>new vm.SyntheticModule(Object.keys(values),function(){for(const [k,v] of Object.entries(values))this.setExport(k,v);},{context:ctx,identifier:id});
  let stateModule=fixed('core/state.js',{state,save:()=>{saved.push(clone(state));memory.set('save',JSON.stringify(state));}});
