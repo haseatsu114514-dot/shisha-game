@@ -464,6 +464,27 @@
       ]
     },
     {
+      "id": "encourage_ch2_minto",
+      "sender": "minto",
+      "chapter": 2,
+      "trigger_condition": "tournament_day",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "はじめくん、今日は県大会だねっ！"
+        },
+        {
+          "sender": "minto",
+          "text": "みんとはお店から配信で見てるよ♪ 応援は任せてっ"
+        },
+        {
+          "sender": "minto",
+          "text": "……手元、慌てないでね。終わったら、どんな一台だったか聞かせて"
+        }
+      ]
+    },
+    {
       "id": "encourage_tsumugi",
       "sender": "tsumugi",
       "chapter": 1,

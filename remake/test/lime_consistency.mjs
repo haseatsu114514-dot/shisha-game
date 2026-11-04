@@ -713,6 +713,22 @@ assert.deepEqual(cheers({ contacts: ["samechan"] }), ["encourage_samechan"]);
 assert.deepEqual(cheers({ chapter: 2, contacts: ["ageha", "samechan"] }), ["encourage_ageha", "encourage_ch2_samechan"], "開店前の文面は第1章だけ・第2章は店からの応援");
 assert.equal(cheers({ contacts: ["tsumugi", "minto", "rin", "hiyori"], flags: { _hiyori_tonari_return_done: true } }).length, 3, "大会の朝も3通まで");
 reset();
+// #2025: みんとは第2章では出場せず、店からの応援を別IDで届ける。
+assert.deepEqual(cheers({ chapter: 2, contacts: ["minto"], limeRead: ["encourage_minto"] }), ["encourage_ch2_minto"], "第1章の応援を読んだ保存にも第2章の1通が届く");
+for (const chapter of [1, 3, 4, 5]) assert(!cheers({ chapter, contacts: ["minto"] }).includes("encourage_ch2_minto"), `第${chapter}章へ県大会の応援を混ぜない`);
+assert(!cheers({ chapter: 2, contacts: [] }).includes("encourage_ch2_minto"), "連絡先がなければ届かない");
+assert(!cheers({ chapter: 2, contacts: ["minto"], limeRead: ["encourage_ch2_minto"] }).includes("encourage_ch2_minto"), "既読の応援を再送しない");
+reset({ chapter: 2, contacts: ["minto"] });
+assert(!phone.morningMessages().some(m => m.id === "encourage_ch2_minto"), "大会日以外は届かない");
+assert.equal(phone.deliverMorning({ tournamentDay: true }), 1);
+assert.equal(phone.deliverMorning({ tournamentDay: true }), 0, "受信直後の再実行でも増殖しない");
+const mintoCheer = state.inbox.find(i => i.id === "encourage_ch2_minto");
+assert(mintoCheer && !mintoCheer.read);
+const savedCheer = clone(state.inbox);
+reset({ chapter: 2, contacts: ["minto"], inbox: savedCheer });
+assert.equal(phone.deliverMorning({ tournamentDay: true }), 0, "保存を復元しても同じ応援を重ねない");
+assert.deepEqual(clone(state.inbox), savedCheer);
+reset();
 console.log("[1897] PASS tournament-day cheers follow data senders, contacts, ch1 ageha and hiyori gate");
 
 // #1668 2-8: 第5章の節目のLIMEは朝の配信に乗らない。openPhone で読むと返信つきで一度だけ履歴に残り、好感度は動かない。
