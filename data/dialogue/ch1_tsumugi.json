@@ -1514,32 +1514,12 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "イラストのコンテストに、出したくて"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……芸大でも、記憶や感覚を絵にする課題があって。今回は、公募にも出してみようと思って"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "テーマが「{tsumugiContestTheme}」なんです"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "ここで過ごしてる時間を、まるごと一枚にしたくて"
+          "text": "イラストのコンテストに出したくて。ここで過ごす時間を、一枚にしたいんです"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ひびの入った画面には、窓とカウンターの下描きがあった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "窓辺では、葉の耳と煙の尾の猫が眠っている。"
+          "text": "ひびの入った画面の窓辺で、葉の耳と煙の尾の猫が眠っていた。"
         },
         {
           "speaker": "hajime",
@@ -1557,39 +1537,14 @@
           "text": "はい。顔は描かずに、手元や座ってるところだけ"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "でも、うちでいいの？ もっと広い店もあるのに"
-        },
-        {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……ここが、いいんです"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……ここが、好きなので"
+          "text": "……ここがいいんです。ここが、好きなので"
         },
         {
           "speaker": "hajime",
           "face": "smile",
           "text": "そっか。じゃあ、いい絵にしてもらわないとな"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "入賞したら、どうなるの？"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "選ばれた絵は、会場に飾ってもらえます"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "画面越しじゃなく、歩いてる人に見てほしくて"
         },
         {
           "speaker": "hajime",
@@ -1616,7 +1571,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "大会の試作をする日も送るよ。煙を描きたい日に、見に来られるように"
+          "text": "俺も、試作する日を送るよ"
         },
         {
           "speaker": "tsumugi",
@@ -1761,7 +1716,22 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……まだ、どこに置くかは、決めてないんです"
+          "text": "公募のテーマは「{tsumugiContestTheme}」なんです"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "選ばれた絵は、会場に飾ってもらえるんです"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "画面越しじゃなく、歩いてる人に見てほしくて"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……この子を絵のどこに置くかは、まだ決めてないんです"
         },
         {
           "speaker": "hajime",
