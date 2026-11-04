@@ -173,7 +173,7 @@ export function buildRig() {
       const rimMid = rimTop - bh * spec.rim;
       const rimW = bw * 0.94;
       const hasMix = Object.values(cs.mix || {}).some(Boolean);
-      // アルミを張った一台だけ foil を重ねる。ロートスの直のせ（skipped）は葉のまま。
+      // アルミを張った一台だけ foil を重ねる。旧仕様のロートス直のせの記録（skipped）は葉のまま。
       const foiled = !!cs.holes && !cs.holes.skipped;
       // 葉: 詰めた差分が無い器（素焼き）と、配合したが詰める前の状態は色の楕円で見せる
       const showLeaf = hasMix && (!packed || !spec.packed) && !foiled;

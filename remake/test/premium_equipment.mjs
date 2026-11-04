@@ -24,7 +24,6 @@ const { forSale } = await import("../js/daily/shop.js");
 const rig = await import("../js/daily/home-rig.js");
 const home = await import("../js/daily/home-shisha.js");
 const { EQUIP_WIDTH_FACTORS, EQUIP_THERMAL_SPECS, temperatureBands, temperatureFitness } = await import("../js/craft/temperature-model.js");
-const { usesFoil } = await import("../js/craft/holes_logic.js");
 const { coalWarmth, coalTypes } = await import("../js/craft/coals.js");
 const { computeShisha, finalize } = await import("../js/craft/score.js");
 const { outcomeOf } = await import("../js/craft/result.js");
@@ -71,8 +70,6 @@ assert.equal(EQUIP_WIDTH_FACTORS.hms.lotos_plus, EQUIP_THERMAL_SPECS.lotos_plus.
 assert.equal(EQUIP_WIDTH_FACTORS.charcoal.dense_flat_charcoal, EQUIP_THERMAL_SPECS.dense_flat_charcoal.widthFactor);
 assert(EQUIP_WIDTH_FACTORS.bowl.kumogama_phunnel < EQUIP_WIDTH_FACTORS.bowl.nightside_premier_hagal, "くじのラストワン賞より控えめ");
 assert(EQUIP_WIDTH_FACTORS.hms.lotos_plus < EQUIP_WIDTH_FACTORS.hms.tanukish_lid, "適温幅はタヌキッシュリッドに及ばない");
-assert.equal(usesFoil({ equip: { hms: "lotos_plus" } }), false, "ロートスプラスはアルミを張らない");
-assert.equal(usesFoil({ equip: { hms: "tanukish_lid" } }), true);
 // 炭: 高密度フラットは火力・反応・焦げはフラットと同じで、適温帯だけ ×1.04 → ×1.06。
 const flat = coalWarmth({ equip: { charcoal: "flat_charcoal" }, place: "triangle" });
 const dense = coalWarmth({ equip: { charcoal: "dense_flat_charcoal" }, place: "triangle" });
