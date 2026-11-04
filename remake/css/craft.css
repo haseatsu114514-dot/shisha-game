@@ -918,6 +918,12 @@
 .care-coal { min-width: 0; padding: 14px 8px; font-size: 19px; }
 .care-coal .btn-desc { font-size: 15px; font-weight: 900; letter-spacing: -.1em; color: #ffb36a; }
 .care-coal[data-test="care-coal-0"] .btn-desc { color: #a9cdff; letter-spacing: 0; }
+/* 炭の置き方（E06 案A）。個数の前に選んでおく三択。 */
+.care-places { display: flex; align-items: center; gap: 8px; }
+.care-places-label { font-size: 16px; font-weight: 800; color: #ffe3a1; margin-right: 4px; }
+.care-place { min-width: 0; flex: 1; padding: 8px 6px; font-size: 16px; }
+.care-place .btn-desc { font-size: 12px; }
+.care-place[aria-pressed="true"] { border-color: #ffb36a; box-shadow: inset 0 -3px #ffb36a; }
 /* 画面全体の大爆発（TH17）。ステージ全体を覆う。 */
 .screen-blast { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .screen-blast.still { background: #fff4d0; animation: blast-still .45s ease-out forwards; }

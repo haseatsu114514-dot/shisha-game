@@ -76,7 +76,8 @@ async function harness({ learned = false } = {}) {
     "./common.js": { gradeOf, autoSkill: () => null, skill: { slow: () => 1, window: () => 1, clarity: () => 1 },
       resultCard: async () => { metrics.results++; }, keys: () => noop },
     "./heat.js": { burnCoals: () => { throw Error("This fixture selects no replacement coals"); }, HEAT_GRADES: {} },
-    "./heat_logic.js": { replacementCoals: () => { throw Error("This fixture selects no replacement coals"); } },
+    // 一台に最初の炭焼きの記録が無いので、トングで持ってくる炭は標準の焼き炭になる（#2213）。
+    "./heat_logic.js": { replacementCoals: () => ({ batch: null, picks: [] }) },
     "./conditions.js": conditions,
     "./thermometer.js": { buildThermometer: () => ({ root: new Node(), update: noop, preview: noop, pop: noop }) },
     "./flavor-life.js": life, "./coals.js": coals, "./temperature-model.js": model,
@@ -111,7 +112,8 @@ async function harness({ learned = false } = {}) {
     metrics,
     async run(cs, round, positions) {
       const running = round ? mod.namespace.runCare(cs, { round }) : mod.namespace.runPull(cs);
-      if (round) { await until(() => find("care-coal-0")); find("care-coal-0").click(); }
+      // E06 案A: 調整の温度は炭で戻す。標準の置き方で2個替え、吸いは確かめの一口にする。
+      if (round) { await until(() => find("care-coal-2")); find("care-coal-2").click(); }
       await until(() => find("pull-stop") && !find("pull-stop").disabled);
       for (const target of positions) {
         await until(() => !find("pull-stop").disabled && Math.abs(Number(panel.querySelector(".pg-needle").dataset.pos) / 100 - target) < .015);

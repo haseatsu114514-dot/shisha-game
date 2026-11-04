@@ -55,6 +55,15 @@ export const ZONES = [
 // 交換する炭の個数ごとの、戻ってくる熱と、その後の燃え進む速さ（0個は消耗した炭のままで早く冷える）。
 const COAL_HEAT = [0, 0.06, 0.11, 0.16, .21];
 const COAL_COOL = [1.6, 0.75, 0.5, 0.35, .28];
+// E06 案A（#2213）: 熱管理の温度は炭の個数と置き方で決める。吸いは味の確かめで、温度は少ししか動かない。
+const CARE_PULL_SCALE = .25;
+// 炭の置き方。外寄りは穏やかに、内寄りは強く熱が入る。持ち（冷え方）は置き方で変えない。
+export const COAL_PLACES = [
+  { id: "outer", label: "外寄り", desc: "穏やか", heat: .6 },
+  { id: "std", label: "標準", desc: "まっすぐ", heat: 1 },
+  { id: "inner", label: "内寄り", desc: "強め", heat: 1.35 },
+];
+const coalPlace = (id) => COAL_PLACES.find((p) => p.id === id) || COAL_PLACES[1];
 // 交換用に焼いておいた炭の焼け具合。熱の戻り（火力）と持ち（安定）を、最初の炭焼きの結果から決める。
 const coalHeatFactor = (picks) => picks.reduce((s, g) => s + 1 + HEAT_GRADES[g].hp / 100, 0) / picks.length;
 const coalLifeFactor = (picks) => picks.reduce((s, g) => s + 1 - HEAT_GRADES[g].hs / 100, 0) / picks.length;
@@ -98,7 +107,7 @@ const MODES = {
   },
   care: {
     store: "care", title: "熱管理", min: 1, safe: 2, drift: true, serveLabel: "整え終える",
-    hint: "立ち上げから吸われ続けた炭は消耗して、温度が下がっていく。まず交換する炭の数を決める。替える炭は最初の炭焼きのときに一緒に焼いておいたもので、トングで持ってきて入れ替える。最初の炭焼きの焼け具合が良いほど温度がしっかり戻り、長く持つ。ダイヤルは吸い出しと同じで、中央のキープは左寄りで微減、右寄りで微増。雨の日は熱を入れる吸いを増やそう。炎の印まで上がって焦げても、雪の印まで冷え切っても、その一台はダメになる",
+    hint: "立ち上げから吸われ続けた炭は消耗して、温度が下がっていく。温度を戻すのは炭だ。交換する炭の数と置き方を決める。外寄りは穏やかに、内寄りは強く熱が入る。替える炭は最初の炭焼きのときに一緒に焼いておいたもので、トングで持ってきて入れ替える。最初の炭焼きの焼け具合が良いほど温度がしっかり戻り、長く持つ。そのあとの吸いは味の確かめで、温度は少ししか動かない。1〜2口で整え終えよう。炎の印まで上がって焦げても、雪の印まで冷え切っても、その一台はダメになる",
     start: careStartTemp, focus: () => ({ slow: 1, window: 1 }),
   },
 };
@@ -132,7 +141,8 @@ async function pullGame(cs, mode) {
   // 熱すぎる吸引のペナルティも、緑上端〜危険帯の中の同じ相対位置で始める。
   const harshTemp = visualTemperature(.76, bands);
   const panel = stepPanel(mode.store, mode.title, tutorial
-    ? "中央のキープは左寄りで微減、右寄りで微増。右の熱を入れる吸いは温度を上げ、左の熱を逃がす吸いは温度を下げる。雨の日は熱を入れる吸いを増やそう。吸い終わってから次の針を止める"
+    ? mode.drift ? "温度を戻すのは炭。交換する数と置き方で決まる。そのあとの吸いは味の確かめで、温度は少ししか動かない。1〜2口で整え終えよう"
+    : "中央のキープは左寄りで微減、右寄りで微増。右の熱を入れる吸いは温度を上げ、左の熱を逃がす吸いは温度を下げる。雨の日は熱を入れる吸いを増やそう。吸い終わってから次の針を止める"
     : mode.hint);
   const gameClock = createCraftClock(panel);
   const concentration = mode.focus(cs);
@@ -328,7 +338,9 @@ async function pullGame(cs, mode) {
     const jw = (z.just[1] - z.just[0]) * widen;
     const isJust = at >= z.just[0] && at <= z.just[0] + jw;
     // キープ中央は維持。半円の色に合わせ、左寄りは微減、右寄りは微増。
-    const delta = z.id === "keep" ? (at - .5) * .18 : (isJust ? z.justDelta : z.delta) + .015;
+    const raw = z.id === "keep" ? (at - .5) * .18 : (isJust ? z.justDelta : z.delta) + .015;
+    // 熱管理の吸いは確かめの一口。熱を入れる吸いで冷えた一台を戻すことはできない（E06 案A）。
+    const delta = mode.drift ? raw * CARE_PULL_SCALE : raw;
     return { z, isJust, delta, critical: isJust && growthCritical(state, at - (z.just[0] + jw / 2), jw, { tutorial }) };
   };
   // 吸いすぎでフレーバーが傷む。文字は出さず、ダメージの音と揺れ、葉の傷みで伝える（TH27・TH28）。
@@ -422,9 +434,9 @@ async function pullGame(cs, mode) {
   };
 
   /**
-   * 熱管理の準備（TH21・TH39）: 立ち上げから吸われて消耗した炭を、何個交換するか選ぶ。
+   * 熱管理の準備（TH21・TH39）: 立ち上げから吸われて消耗した炭を、何個交換するか、どこに置くかを選ぶ。
    * 交換する炭は焼いておいたものをトングで持ってくる（炭焼きは挟まない）。最初の炭焼きの焼け具合で戻る熱と持ちが決まる。
-   * 替えた分だけ温度が戻る。
+   * 個数×置き方×焼け具合で戻る温度がほぼ決まる（E06 案A）。
    */
   const prepareCoals = async () => {
     choosing = true;
@@ -435,32 +447,45 @@ async function pullGame(cs, mode) {
       + "。炭を選ぶ間は時間が止まるので、急がなくていい" });
     // 説明文の代わりに、温度計と同じ印で戻る熱を示す（▲が多いほど戻る。交換しないと ↓ 落ちていく）。
     const options = Array.from({ length: coalCount(cs) + 1 }, (_, i) => i);
+    // 置き方は先に選んでおき、個数のボタンで決める。既定は標準なので、個数を押すだけでも進める。
+    let place = "std";
+    const swapHeat = (n, id = place) => COAL_HEAT[n] * coalPlace(id).heat;
+    const placeButtons = COAL_PLACES.map((p) => el("button.btn.small.care-place", {
+      dataset: { test: `care-place-${p.id}` }, "aria-pressed": String(p.id === place),
+      title: { outer: "ボウルの外周寄りに置く。熱は穏やかに入る", std: "いつもの位置に置く", inner: "ボウルの中心寄りに置く。熱が強く入る" }[p.id],
+      onclick: () => { place = p.id; placeButtons.forEach((b, i) => b.setAttribute("aria-pressed", String(COAL_PLACES[i].id === place))); },
+    }, [el("span.btn-label", { text: p.label }), el("small.btn-desc", { text: p.desc })]));
     const buttons = el("div.care-coal-btns", options.map((n) => el("button.btn.care-coal", {
       dataset: { test: `care-coal-${n}` }, onclick: () => pick(n),
       title: n ? `消耗した炭を${n}個、焼いた炭に交換する。温度が${["", "少し", "そこそこ", "しっかり", "強く"][n]}戻る` : "消耗した炭のまま。温度は落ちていく",
-      onpointerenter: () => thermometer.preview(n ? clamp(T + heatDelta(cs, COAL_HEAT[n]), 0, 1) : null, "点線：交換するとここ"),
+      onpointerenter: () => thermometer.preview(n ? clamp(T + heatDelta(cs, swapHeat(n)), 0, 1) : null, "点線：交換するとここ"),
       onpointerleave: () => thermometer.preview(null),
     }, [
       el("span.btn-label", { text: n ? `${n}個` : "交換しない" }), el("small.btn-desc", { text: n ? "▲".repeat(n) : "↓" }),
     ])));
-    const choice = el("div.care-coals", { dataset: { test: "care-coals" } }, [lead, el("p.care-coals-ask", { text: "炭を交換しますか？" }), buttons]);
+    const choice = el("div.care-coals", { dataset: { test: "care-coals" } }, [lead,
+      el("div.care-places", { role: "group", "aria-label": "炭の置き方" }, [el("span.care-places-label", { text: "置き方" }), ...placeButtons]),
+      el("p.care-coals-ask", { text: "炭を交換しますか？" }), buttons]);
     main.append(choice);
     render();
     let pick;
     const picked = new Promise((r) => { pick = r; });
     const auto = autoSkill();
     if (auto) {
-      const best = options.slice().sort((a, b) => Math.abs(T + heatDelta(cs, COAL_HEAT[a]) - center - 0.02) - Math.abs(T + heatDelta(cs, COAL_HEAT[b]) - center - 0.02))[0];
-      setTimeout(() => pick(auto === "good" ? best : auto === "burn" ? 3 : 0), 60);
+      const plans = options.flatMap((n) => n ? COAL_PLACES.map((p) => [n, p.id]) : [[0, "std"]]);
+      const gap = ([n, id]) => Math.abs(T + heatDelta(cs, swapHeat(n, id)) - center - 0.02);
+      const [n, id] = auto === "good" ? plans.sort((a, b) => gap(a) - gap(b))[0] : auto === "burn" ? [3, "inner"] : [0, "std"];
+      place = id;
+      setTimeout(() => pick(n), 60);
     }
     coals = await picked;
     if(state!==owner||!play.isConnected){abandoned=true;choice.remove();choosing=false;return;}
     thermometer.preview(null);
-    buttons.querySelectorAll("button").forEach((b) => { b.disabled = true; });
+    choice.querySelectorAll("button").forEach((b) => { b.disabled = true; });
     SE.select();
     coolRate = baseCool * COAL_COOL[coals] / (1 + (growthPerks(state)?.coal || 0) / 100);
     if (!coals) {
-      cs.careCoals = { count: 0, picks: [] };
+      cs.careCoals = { count: 0, picks: [], place: null };
       lead.textContent = "消耗した炭のまま整える。熱は落ちていく";
       await sleep(autoSkill() ? 60 : 700);
       choice.remove();
@@ -475,14 +500,15 @@ async function pullGame(cs, mode) {
     const { batch, picks } = replacementCoals(cs.heat?.picks, coals, { fireKeeper });
     choice.replaceChildren(el("p.care-coals-lead", { dataset: { test: "care-tong", fireKeeper: fireKeeper ? "1" : "" },
       text: `焼いておいた炭を${coals}個、トングで持ってくる${fireKeeper ? "。火の番の目で、焼けのいいのを選んだ" : ""}` }));
+    const placed = coalPlace(place);
     SE.coalSnip();
     await sleep(autoSkill() ? 40 : 700);
     if(state!==owner||!play.isConnected){abandoned=true;choice.remove();choosing=false;return;}
     coolRate *= batch ? coalLifeFactor(batch) : 1;
-    cs.careCoals = { count: coals, picks };
-    choice.replaceChildren(el("p.care-coals-lead", { text: "消耗した炭と入れ替えた。温度が戻ってくる" }));
+    cs.careCoals = { count: coals, picks, place: placed.id };
+    choice.replaceChildren(el("p.care-coals-lead", { text: `消耗した炭と入れ替えて、${{ outer: "外寄りに置いた。熱がじんわり戻ってくる", std: "いつもの位置に置いた。温度が戻ってくる", inner: "内寄りに寄せた。熱がぐっと戻ってくる" }[placed.id]}` }));
     SE.coalPlace();
-    const from = coreTemp, add = heatDelta(cs, COAL_HEAT[coals] * (batch ? coalHeatFactor(batch) : 1)), started = gameClock.now(), dur = autoSkill() ? 200 : 1400;
+    const from = coreTemp, add = heatDelta(cs, swapHeat(coals, placed.id) * (batch ? coalHeatFactor(batch) : 1)), started = gameClock.now(), dur = autoSkill() ? 200 : 1400;
     for (;;) {
       if(state!==owner||!play.isConnected){abandoned=true;break;}
       const k = Math.min(1, (gameClock.now() - started) / dur);
@@ -602,10 +628,10 @@ async function pullGame(cs, mode) {
   await resultCard(panel, {
     title: `${mode.title} 結果`,
     lines: [
-      inZone ? `適温に整えて、${context.returned}` : T > ideal[1] ? cs.mode==="tournament"?"熱いまま審査員に任せてしまった":"まだ熱い。次は少し熱を逃がそう" : cs.mode==="tournament"?"冷めたまま審査員に任せてしまった":"まだぬるい。次は少し熱を入れよう",
+      inZone ? `適温に整えて、${context.returned}` : T > ideal[1] ? cs.mode==="tournament"?"熱いまま審査員に任せてしまった":"まだ熱い。次は炭を減らすか、外寄りに置こう" : cs.mode==="tournament"?"冷めたまま審査員に任せてしまった":"まだぬるい。次は炭を多めに替えるか、内寄りに寄せよう",
       tasteCard,
       waterComfortLine(cs.water),
-      coals ? `消耗した炭を${coals}個交換した` : "炭は交換せずに整えた",
+      coals ? `消耗した炭を${coals}個${{ outer: "、外寄りに置いて", inner: "、内寄りに寄せて" }[cs.careCoals?.place] || ""}交換した` : "炭は交換せずに整えた",
       `${pulls}回吸った`,
     ],
   });
