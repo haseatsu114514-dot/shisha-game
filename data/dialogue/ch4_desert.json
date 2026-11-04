@@ -620,12 +620,22 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "（……それを人前で使うのは……。本人は、全然気にしてないな）"
+          "text": "それ、人前で言うと勘違いされますよ……"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "私の日本語、変？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "合ってますけど……その、なんて言えばいいんだろう"
         },
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "奥の席、風が通るよ。座って待ってて"
+          "text": "じゃあ、よかった！ 奥の席、風が通るよ。座って待ってて"
         }
       ]
     },
