@@ -42,6 +42,17 @@ async function runner(name,progress,exposed){
   source+=`\nexport function testOwner(o){session=o;}\nexport {${exposed.join(",")}};`;
   const module=new vm.SourceTextModule(source,{context});
   await module.link(async spec=>{
+    if (spec === "../core/chapter-card.js") {
+      const helper = new vm.SourceTextModule(fs.readFileSync(new URL("../js/core/chapter-card.js", import.meta.url), "utf8"), { context });
+      await helper.link(dependency => {
+        const names = dependency === "./util.js" ? ["el"] : ["showScreen"];
+        return new vm.SyntheticModule(names, function () {
+          for (const name of names) this.setExport(name, ports[name]);
+        }, { context });
+      });
+      return helper;
+    }
+
     const matches=[...source.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)];
     const names=matches.filter(m=>m[2]===spec).flatMap(m=>m[1].split(",").map(x=>x.trim()));
     const stub=new vm.SyntheticModule(names,function(){
@@ -193,3 +204,4 @@ console.log("PASS: actual chapter 3/4/5 runner commit boundaries save clear/brea
   const stamp=owner.growthDay;value.day=12;assert.equal(await run(),false);assert.equal(owner.growthDay,stamp);
 }
 console.log("PASS: chapter night boundary detects real date advance once, preserves reload/redraw and stops after owner replacement");
+
