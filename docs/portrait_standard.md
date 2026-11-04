@@ -136,3 +136,5 @@ python3 tools/make_reference_sheet.py lineup              # asset_sources/refere
 採用した新立ち絵は `assets/sprites/character_variants/new/<id>/chr_<id>_<face>.png` に置く。本書の検品後、`python3 remake/tools/build_manifest.py --portrait-variants-only <id>` で新絵の表情・余白・WebPだけを登録する。同じ人物の新絵は同一キャンバス・足元にそろえ、旧絵のframing値をコピーしない。みんとの私服は `ura_*` のまま保持する。
 
 局所検証: `node --experimental-vm-modules remake/test/portrait_style.mjs`。生成処理は Pillow・NumPy・SciPy の揃った環境で `python3 remake/test/portrait_variants.py` を実行する。
+
+ブラウザ回帰: プレビューサーバーを起動し、`node tools/ci/run.mjs --kind browser --suites portrait-style-browser`。PC・横持ちタッチで旧設定、反復切替、同席者、未制作の表情・人物・私服、設定の開閉・再読込、台詞・配置・保存への非干渉を確認する。部分的な新絵のテストはブラウザ内だけで行い、検証画像を本編へ登録しない。

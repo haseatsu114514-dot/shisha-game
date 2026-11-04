@@ -45,6 +45,8 @@ class PortraitVariants(unittest.TestCase):
                     self.assertIn(rel,result['webp'])
                     with Image.open(images.OUT/Path(rel).with_suffix('.webp')) as im:
                         self.assertEqual(im.size,(896,1200))
+                        with Image.open(builder.ASSETS/rel) as source:
+                            self.assertEqual(im.convert('RGBA').tobytes(),source.convert('RGBA').tobytes())
                 self.assertEqual(builder.portraits(base=root/'missing'),{})
             finally:
                 builder.ASSETS,builder.OUT,builder.load_characters,images.ASSETS,images.OUT,sys.argv=original
