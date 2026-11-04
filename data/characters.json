@@ -1,6 +1,7 @@
 [
   {
     "id": "hajime",
+    "birthday": "04-08",
     "name": "はじめ / 蒸野 はじめ（むしの はじめ）",
     "role": "protagonist",
     "age": 22,
@@ -33,6 +34,7 @@
   },
   {
     "id": "sumi",
+    "birthday": "12-22",
     "name": "スミさん / 墨田 丈一郎（すみだ じょういちろう）",
     "role": "mentor",
     "age": 46,
@@ -67,6 +69,7 @@
   },
   {
     "id": "naru",
+    "birthday": "01-15",
     "name": "鳴切 亮太（なるぎれ りょうた / なる）",
     "role": "rival_ch1",
     "age": 23,
@@ -97,6 +100,7 @@
   },
   {
     "id": "adam",
+    "birthday": "11-05",
     "name": "アダム / 吾妻 大夢（あづま だいむ）",
     "role": "rival_ch1",
     "age": 28,
@@ -127,6 +131,7 @@
   },
   {
     "id": "minto",
+    "birthday": "03-10",
     "name": "みんと / 緑川 栞（みどりかわ しおり）",
     "private_name": "栞",
     "lime_name": "みんと＠PEPPERMINT",
@@ -173,6 +178,7 @@
   },
   {
     "id": "shisha_9000",
+    "birthday": "01-12",
     "name": "SHISHA-9000",
     "role": "hidden_boss_ch5",
     "age": "N/A（AI）",
@@ -202,6 +208,7 @@
   },
   {
     "id": "kuze",
+    "birthday": "02-01",
     "name": "久世 朔（くぜ さく）",
     "role": "rival_ch3",
     "age": 23,
@@ -235,6 +242,7 @@
   },
   {
     "id": "steve",
+    "birthday": "08-20",
     "name": "スティーブ / スティーブ・ライマン",
     "role": "rival_ch3",
     "age": 30,
@@ -269,6 +277,7 @@
   },
   {
     "id": "volk",
+    "birthday": "02-09",
     "name": "ヴォルク / ヴォルク・イヴァノフ",
     "role": "rival_ch3",
     "age": 37,
@@ -298,6 +307,7 @@
   },
   {
     "id": "rei",
+    "birthday": "05-20",
     "name": "零-REI- / 田中 健太（たなか けんた）",
     "role": "rival_ch2",
     "age": 25,
@@ -354,6 +364,7 @@
   },
   {
     "id": "master_hookah",
+    "birthday": "07-03",
     "name": "王 煙楼（ワン・イェンロウ）",
     "role": "rival_ch4",
     "age": 58,
@@ -387,6 +398,7 @@
   },
   {
     "id": "tsumugi",
+    "birthday": "07-12",
     "name": "つむぎ / 猫柳 つむぎ（ねこやなぎ つむぎ）",
     "role": "sub_character",
     "age": 21,
@@ -439,6 +451,7 @@
   },
   {
     "id": "rin",
+    "birthday": "02-26",
     "name": "匂坂 くゆり（さぎさか くゆり）",
     "display_name": "くゆり",
     "role": "heroine_ch1",
@@ -472,6 +485,7 @@
   },
   {
     "id": "ageha",
+    "birthday": "08-01",
     "name": "あげは / 宵野 葉子（よいの ようこ）",
     "display_name": "あげは",
     "role": "rival_ch2",
@@ -516,6 +530,7 @@
   },
   {
     "id": "salaryman",
+    "birthday": "12-01",
     "name": "鉄仮面さん",
     "full_name": "表 克己（おもて かつみ）",
     "role": "story_character",
@@ -539,6 +554,7 @@
   },
   {
     "id": "kumicho",
+    "birthday": "10-02",
     "name": "シーシャ組長 / 神崎 竜二（かんざき りゅうじ）",
     "display_name": "神崎竜二",
     "role": "rival_ch2",
@@ -574,6 +590,7 @@
   },
   {
     "id": "dr_kemuri",
+    "birthday": "05-08",
     "name": "チャコール博士 / 火浦 理一（ひうら りいち）",
     "role": "judge_and_hidden_boss",
     "age": 38,
@@ -610,6 +627,7 @@
   },
   {
     "id": "pakki",
+    "birthday": "10-10",
     "name": "パッキー",
     "role": "mc",
     "age": "年齢不詳",
@@ -639,6 +657,7 @@
   },
   {
     "id": "nagumo",
+    "birthday": "12-16",
     "name": "須井 修二（すい しゅうじ）",
     "role": "judge",
     "age": 45,
@@ -669,6 +688,7 @@
   },
   {
     "id": "emil",
+    "birthday": "08-25",
     "name": "エミル",
     "role": "judge",
     "age": 48,
@@ -698,6 +718,7 @@
   },
   {
     "id": "sheikh",
+    "birthday": "09-15",
     "name": "シェイク / シェイク・ナジュム・アル=ガリヤーン",
     "role": "rival_ch4",
     "age": 52,
@@ -728,6 +749,7 @@
   },
   {
     "id": "da_silva",
+    "birthday": "06-24",
     "name": "ダ・シルヴァ太陽 / エンリケ・ダ・シルヴァ・太陽",
     "role": "judge",
     "age": 28,
@@ -757,6 +779,7 @@
   },
   {
     "id": "mashiro",
+    "birthday": "12-07",
     "name": "ましろ / 黒葉 ましろ（くろは ましろ）",
     "role": "sub_character",
     "age": 22,
@@ -791,6 +814,7 @@
   },
   {
     "id": "uranaishi",
+    "birthday": "02-29",
     "name": "辻占のオババ（つじうらのオババ）",
     "role": "sub_character",
     "age": null,
@@ -819,6 +843,7 @@
   },
   {
     "id": "tetsuko",
+    "birthday": "02-22",
     "internal_name": "tetsuko",
     "display_name": "てつこ",
     "age": "不明",
@@ -841,6 +866,7 @@
   },
   {
     "id": "mukai_master",
+    "birthday": "04-13",
     "name": "ムカイさん / 向井 玄（むかい げん）",
     "role": "sub_character",
     "age": 48,
@@ -874,6 +900,7 @@
   },
   {
     "id": "maezono",
+    "birthday": "03-04",
     "name": "上園 文太郎",
     "role": "judge",
     "age": 39,
@@ -973,6 +1000,7 @@
   },
   {
     "id": "hiyori",
+    "birthday": "11-01",
     "name": "朝霧ひより",
     "lime_name": "白昼夢ひより",
     "reading": "あさぎり ひより",
@@ -1044,6 +1072,7 @@
   },
   {
     "id": "maki",
+    "birthday": "04-10",
     "name": "斧崎 マキ（おのざき まき）",
     "display_name": "斧崎マキ",
     "role": "venue_host",
@@ -1066,6 +1095,7 @@
   },
   {
     "id": "sai",
+    "birthday": "06-06",
     "name": "六角 サイ（ろっかく さい）",
     "display_name": "六角サイ",
     "role": "venue_host",
@@ -1088,6 +1118,7 @@
   },
   {
     "id": "yoru",
+    "birthday": "11-04",
     "name": "針間 ヨル（はりま よる）",
     "display_name": "針間ヨル",
     "role": "venue_host",
@@ -1109,6 +1140,7 @@
   },
   {
     "id": "saif",
+    "birthday": "07-24",
     "name": "サイーフ",
     "role": "sub_character",
     "age": 24,
@@ -1135,6 +1167,7 @@
   },
   {
     "id": "rashid",
+    "birthday": "10-20",
     "name": "ハリール",
     "role": "sub_character",
     "age": 56,
@@ -1159,6 +1192,7 @@
   },
   {
     "id": "noor",
+    "birthday": "09-28",
     "name": "ヌール / ヌール・アル＝サーリム（Noor Al-Salim）",
     "display_name": "ヌール",
     "role": "venue_host",
