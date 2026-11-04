@@ -190,10 +190,42 @@ await suite("ch3-tournament", async check => {
         assert.deepEqual(resumed.flags._ch3_tournament.votes, first);
         assert.equal(resumed.flags._ch3_tournament.history.length, 0);
       }
+      if (round === 3) await page.evaluate(() => {
+        // Capture the real auto-save immediately after final care, before tasting commentary.
+        const setItem = Storage.prototype.setItem;
+        Storage.prototype.setItem = function (key, raw) {
+          if (key === "suien_remake_save" && !window.finalCareSave
+            && JSON.parse(raw).flags?._ch3_tournament?.stage === "tasting") window.finalCareSave = raw;
+          return setItem.call(this, key, raw);
+        };
+      });
       await page.locator(t("continue")).click();
     }
     await page.locator(t("result")).waitFor();
+    const continuous = await get(page);
+    const reasons = await page.locator(".judge-deduction").allTextContents();
+    assert.equal(reasons.length, 3);
+    const finalCare = await page.evaluate(() => JSON.parse(window.finalCareSave));
+    assert.equal(finalCare.flags._ch3_tournament.stage, "tasting");
+    assert.deepEqual(finalCare.flags._ch3_tournament.craft.parts, continuous.flags._ch3_tournament.craft.parts,
+      "Final care must save the finalized parts before tasting starts");
+    assert.equal(finalCare.flags._ch3_tournament.craft.total, continuous.flags._ch3_tournament.craft.total);
+    await page.evaluate(() => localStorage.setItem("suien_remake_slot1", window.finalCareSave));
+    await page.reload();
+    await page.locator('[data-test="title-load"]').click();
+    await page.evaluate(async () => {
+      const vn = await import("./js/vn/engine.js");
+      vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
+      (await import("./js/craft/session.js")).craftTest.auto = "good";
+    });
+    await page.locator('[data-test="slot-1"]').click();
+    await page.locator(t("result")).waitFor();
+    assert.deepEqual(await page.locator(".judge-deduction").allTextContents(), reasons,
+      "Loading the final-care save must preserve all three deduction reasons");
     state = await get(page);
+    assert.deepEqual(state.flags._ch3_tournament.craft.parts, continuous.flags._ch3_tournament.craft.parts);
+    assert.deepEqual(state.flags._ch3_tournament.votes, continuous.flags._ch3_tournament.votes);
+    assert.deepEqual(state.flags._ch3_tournament.result, continuous.flags._ch3_tournament.result);
     const result = state.flags._ch3_tournament.result;
     assert.equal(state.flags._ch3_tournament.voted, 4);
     assert.equal(state.flags._ch3_tournament.history.length, 1);
