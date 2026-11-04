@@ -1,0 +1,84 @@
+{
+  "id": "noor-shoe-sand",
+  "title": "靴の中の砂",
+  "cast": [
+    "noor"
+  ],
+  "minChapter": 4,
+  "dialogue": [
+    "ハジメ、靴を脱いで。",
+    "はい……？",
+    "砂丘が出た。"
+  ],
+  "first_speaker": "noor",
+  "panel1": "砂漠ツアーから戻った車の横。右のヌールがにやにや笑って、はじめの靴を指さし「ハジメ、靴を脱いで。」（左上に高く）。左のはじめが片足立ちで靴に手をかけ、首をかしげて「はい……？」（右下）。",
+  "panel2": "はじめが逆さにした片方のスニーカーから、はじめの背丈ほどの砂の山がざあっと流れ出て、コマ中央にそびえている（砂は粒で描く）。ヌールはお腹を抱えて大笑い。はじめは目を丸くして「砂丘が出た。」。",
+  "caption": "砂丘を歩くと、靴の中は砂でいっぱいになる。",
+  "type": "量の過剰（靴から砂丘）",
+  "note": "ヌールは第4章ドバイで会う（cast で解放）。",
+  "num": 159,
+  "status": "candidate_needs_geometry_revision",
+  "registered": false,
+  "script_source": "asset_sources/loading-comics/batch-allcast-refill-20261102/scripts.json#noor-shoe-sand",
+  "selected_source": "allcast-noor-shoe-sand-b.png",
+  "generation": {
+    "tool": "image_gen.imagegen",
+    "model": "not exposed by tool",
+    "date": "2026-11-04",
+    "transparent_background": false,
+    "full_prompts": [
+      "exact-prompt.txt",
+      "revision-prompt.txt"
+    ],
+    "references": [
+      "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+      "assets/sprites/characters/hajime/chr_hajime_normal.png",
+      "assets/sprites/characters/noor/chr_noor_normal.png"
+    ],
+    "history": [
+      {
+        "file": "allcast-noor-shoe-sand-a.png",
+        "status": "superseded",
+        "reason": "枠が720x574で縦長。右コマの脱いだ足の描写が曖昧。",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2048940,
+        "sha256": "21c68593aee2b5a9e370d7a71495aad47d7428ccc362c569ae335f370b3cd6ad"
+      },
+      {
+        "file": "allcast-noor-shoe-sand-b.png",
+        "status": "candidate_needs_geometry_revision",
+        "reason": "片足の靴下は修正。枠の高さは規定480より大きく、紙の色も均一でない。",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 1832981,
+        "sha256": "a4175e08e6addc196db2ff75fa572fb3f050e776e9d353847eec2700cd56b981"
+      }
+    ],
+    "reference_sha256": {
+      "asset_sources/loading-comics/template/2koma_template_1536x1024.png": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "assets/sprites/characters/hajime/chr_hajime_normal.png": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "assets/sprites/characters/noor/chr_noor_normal.png": "1374af232413652aaa6285982730e308ba47edf31305d89c3f3632b279b07266"
+    }
+  },
+  "qa": {
+    "image_decode": "PASS: Pillow verify + load, both versions",
+    "canvas": "PASS: 1536x1024, both versions; unmodified PNG",
+    "visual": {
+      "characters": "はじめ左・ヌール右で両コマ一致。黒キャップ/パーカー、ヌールの髪・サングラス・スカーフ・カーキ服を正式立ち絵と照合。",
+      "dialogue": "3つの吹き出しを目視。ハジメ、靴を脱いで。→はい……？→砂丘が出た。左①はヌール左上・はじめ右下。右②ははじめに尻尾。",
+      "joke": "靴から大きな砂山、ヌールが笑う。番外編の量の誇張。右②では脱いだ側の足が靴下。",
+      "exclusions": "シーシャ機材・煙・酒・武器・署名・題名なし。",
+      "limitations": [
+        "コマ寸法は切り出しツールのwarn。規定720x480の厳密一致は未達。",
+        "紙色が単色#EEE3CFではなくグラデーション。",
+        "顔/吹き出しのセーフマージンは全箇所29x19pxを保証しない。",
+        "PC横・スマホ横のゲーム内読字QAは未実施。",
+        "最終画風統一・採否はオーナー選別待ち。"
+      ]
+    },
+    "production_ready": false
+  }
+}
