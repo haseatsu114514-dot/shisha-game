@@ -469,7 +469,7 @@ try {
   // 質問の次は4つ目の固有会話（#1696）。締めくくりはその後
   assert(rin.fourth.includes("吸ってる人の顔だけ、知らない")); assert(!rin.fourth.includes("ラベルも同意書もない"));
   assert(rin.late[0].includes("角のすり切れた、黒い手帳だ")); assert(rin.late[0].includes("共同研究ってことにしよう"));
-  assert(rin.late[1].includes("袋しか見えないの")); assert(rin.late[1].includes("代わりは、探さないからね"));
+  assert(rin.late[1].includes("袋しか見えないの")); assert(rin.late[1].includes("代わりなんて、もう探さないからね"));
   assert(rin.late.every((text) => !text.includes("ラベルも同意書もない")));
   assert(rin.second.includes("ラベルも同意書もない")); assert(rin.second.includes("仕事仲間からのプレゼント"));
   assert.equal(rin.answer, 0); assert.equal(rin.route, "friend"); assert(rin.owned);
