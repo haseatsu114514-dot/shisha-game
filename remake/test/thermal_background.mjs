@@ -178,7 +178,7 @@ try {
   assert(swapped > chosen + .03, `coal swap did not raise the temperature: ${chosen} -> ${swapped}`);
   assert.equal(await page.locator('.pull-drift').count(), 1, 'heat care must show the falling heat');
   assert.equal(await page.evaluate(() => cs.heat?.picks?.length ?? 0), 0, 'the swap must not overwrite the first coal result');
-  assert.deepEqual(await page.evaluate(() => cs.careCoals), { count: 2, picks: [] }, 'without a first burn record the swap uses standard coals');
+  assert.deepEqual(await page.evaluate(() => cs.careCoals), { count: 2, picks: [], place: 'std' }, 'without a first burn record the swap uses standard coals');
   assert(await page.locator('[data-test="pull-serve"]').isDisabled(), 'can finish heat care without pulling');
   await page.waitForTimeout(500);
   assert.notEqual(await backdropTemp(), swapped, 'heat care temperature does not move');
@@ -190,6 +190,33 @@ try {
   assert.deepEqual(await page.evaluate(() => [cs.care.pulls, cs.care.coals]), [1, 2]);
   assert(Math.abs(await backdropTemp() - await page.evaluate(() => cs.care.temp)) < .0001);
   await shot('care-pulled');
+  await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.run);
+
+  // E06 案A（#2213）: 置き方で戻る熱が変わる（外寄り＜内寄り）。熱管理の吸いは確かめの一口で、熱を入れる吸いのジャストでも温度は少ししか動かない。
+  const placedSwap = async (place) => {
+    await page.evaluate(() => { cs.pull.temp = .46; window.run = T.care.runCare(cs); });
+    await page.waitForSelector('[data-test="care-coals"]');
+    assert.equal(await page.locator('[data-test="care-place-std"]').getAttribute('aria-pressed'), 'true', 'standard placement is the default');
+    await page.locator(`[data-test="care-place-${place}"]`).click();
+    assert.equal(await page.locator(`[data-test="care-place-${place}"]`).getAttribute('aria-pressed'), 'true');
+    const before = await backdropTemp();
+    await page.locator('[data-test="care-coal-2"]').click();
+    await page.waitForFunction(() => parseFloat(document.querySelector('.pg-needle').dataset.pos) > 0, null, { timeout: 15000 });
+    return (await backdropTemp()) - before;
+  };
+  const outerRise = await placedSwap('outer');
+  await pullAt(45, 55); await page.keyboard.press('Enter'); await page.waitForSelector('.result-card.show');
+  assert.match(await page.locator('.result-card.show').textContent(), /消耗した炭を2個、外寄りに置いて交換した/);
+  await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.run);
+  const innerRise = await placedSwap('inner');
+  assert(innerRise > outerRise + .04, `inner placement must return more heat than outer: ${outerRise} vs ${innerRise}`);
+  assert.equal(await page.evaluate(() => cs.careCoals.place), 'inner');
+  const beforeUp = await backdropTemp();
+  await pullAt(80, 84);
+  const upPull = (await backdropTemp()) - beforeUp;
+  assert(upPull < .07, `a heat-care pull must only nudge the temperature: ${upPull}`);
+  await page.keyboard.press('Enter'); await page.waitForSelector('.result-card.show');
+  assert.match(await page.locator('.result-card.show').textContent(), /消耗した炭を2個、内寄りに寄せて交換した/);
   await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.run);
 
   // TH94・TH95: 左に赤い葉の持ち、右に吸った回数の5つの点。5回で吸えなくなる。3回目から吸いすぎ（葉が1枚ずつ焦げる・疲れ・減点）。
