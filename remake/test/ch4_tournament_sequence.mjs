@@ -106,6 +106,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
   return { trace, snapshots, value, result, error, contexts, shown };
 }
 const success = await run();
+const versionTwo = await run({ rulesVersion: 2 });
 assert.equal(success.error, undefined);
 assert.equal(success.result.win, true);
 assert.equal(success.value.flags._ch4.match.step, 11);
@@ -161,8 +162,9 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   assert(at(t, "standings:2") < story(t, "interlude1") && story(t, "interlude1") < at(t, "ch4_craft_advice_9"));
   assert(at(t, "ch4_craft_advice_9") < at(t, "ch4_customer_1"));
   assert(at(t, "standings:3") < story(t, "interlude2") && story(t, "interlude2") < at(t, "ch4_customer_2"));
-  // 提供後の掛け合いには実際の順位を渡す。版2は炭/調整96だけでは中盤のなるに並ばれる。
-  assert(t.includes("story:interlude1:2"));
+  // 同じ制作でも版3は注目工程の違いが票へ出る。旧版の順位も変えない。
+  assert(versionTwo.trace.includes("story:interlude1:2"));
+  assert(t.includes("story:interlude1:1"));
   assert.deepEqual(success.value.flags._ch4.match.craft.tournamentStory.seen, ["opening", "packed", "waiting", "interlude1", "interlude2"]);
   // 保存から再開しても、読んだ掛け合いは繰り返さない。提供で失敗した一台に調整前の掛け合いは出ない。
   assert.deepEqual(told(resumed.trace), ["interlude1", "interlude2"]);
@@ -194,7 +196,7 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   assert.equal(average.result.win, true);
   const told = (r, event) => r.contexts.find(row => row.event === event);
   assert.deepEqual(average.shown.map(rows => rows[0].id), ["hajime", "naru", "naru"]);
-  for (const r of [average, legacyStrong, success, currentStrong]) for (const [event, index] of [["interlude1", 1], ["interlude2", 2]]) {
+  for (const r of [average, legacyStrong, versionTwo, success, currentStrong]) for (const [event, index] of [["interlude1", 1], ["interlude2", 2]]) {
     const rows = r.shown[index], me = rows.find(row => row.id === "hajime");
     assert.deepEqual(told(r, event), { event, leader: rows[0].id, rank: me.rank,
       tied: rows[1].points === rows[0].points, level: me.points === rows[0].points }, `${event} is told the standings just shown`);
@@ -209,7 +211,8 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   assert.equal(told(legacyStrong, "interlude2").leader, "hajime");
   assert.equal(told(currentStrong, "interlude1").leader, "hajime");
   assert.equal(told(currentStrong, "interlude2").leader, "hajime");
-  assert.equal(told(success, "interlude1").leader, "naru", "Current mid-game Naru lead is passed to the story, never a stale fixed rank");
+  assert.equal(told(versionTwo, "interlude1").leader, "naru", "The v2 Naru lead is retained");
+  assert.equal(told(success, "interlude1").leader, "hajime", "The v3 lead follows actual judge votes");
 }
 const noAsk = await run({ ask: false });
 assert.deepEqual(noAsk.value.flags._ch4.match.craft.customerChecks, [false, false]);

@@ -327,7 +327,7 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
 }
 // 2026-11-03: 新しい一台は版2、途中/結果の旧保存は版1で完走し、再挑戦でだけ更新する。
 {
-  assert.equal(CH4_RULES_VERSION, 2);
+  assert.equal(CH4_RULES_VERSION, 3);
   assert.deepEqual(CH4_SPEND, [2, 3, 2, 3]);
   assert.deepEqual(CH4_LEGACY_SPEND, [2, 3, 2, 3]);
   assert.deepEqual(CH4_RIVAL_CURVE, { naru: [87, 94, 94.5, 92.5],
@@ -335,6 +335,7 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   const run = (value, cs) => {
     setState(value);
     startChapterFourCraft(value, cs);
+    chapterFourMatch(value).rulesVersion = 2; // Preserve the v2 balance regression oracle.
     const rounds = [];
     let previous = 0;
     for (let step = chapterFourMatch(value).step; step < 11; step++) {
@@ -401,10 +402,11 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   chapterFourMatch(old); assert.deepEqual(p.result, result); assert.deepEqual(p.history, history);
 
   // すべての投票境界と結果保存をJSON往復。旧規則を新規則で再採点せず、二重投票もしない。
-  for (const version of [1, 2]) {
+  for (const version of [1, 2, 3]) {
     const make = () => {
       const value = entry(); startChapterFourCraft(value, craft(89));
       if (version === 1) delete chapterFourMatch(value).rulesVersion;
+      else chapterFourMatch(value).rulesVersion = version;
       return value;
     };
     const advance = (value, until) => {
@@ -423,7 +425,7 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
       value = JSON.parse(JSON.stringify(value)); setState(value); recoverChapterFourStep(value);
       assert.deepEqual(chapterFourMatch(value).votes, votes, `v${version} boundary ${boundary} keeps committed votes`);
       startChapterFourCraft(value, craft(100)); // 保存済みの一台は上書きしない。
-      assert.equal(chapterFourMatch(value).rulesVersion, version === 1 ? undefined : 2);
+      assert.equal(chapterFourMatch(value).rulesVersion, version === 1 ? undefined : version);
       advance(value, 11);
       assert.deepEqual(chapterFourMatch(value).result, expected, `v${version} boundary ${boundary} matches uninterrupted result`);
     }
@@ -446,9 +448,9 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   beginChapterFourStep(failed); finishChapterFourStep(failed, { ...craft(), failed: "burnt" });
   assert.equal(prior.result.rulesVersion, 1);
   assert(resetChapterFourCraft(failed));
-  assert.equal(prior.rulesVersion, 2); assert.equal(prior.result, null);
+  assert.equal(prior.rulesVersion, 3); assert.equal(prior.result, null);
   assert.equal(prior.history[0].rulesVersion, 1, "Retry keeps the legacy result history");
-  startChapterFourCraft(failed, craft()); assert.equal(prior.rulesVersion, 2);
+  startChapterFourCraft(failed, craft()); assert.equal(prior.rulesVersion, 3);
 
   const mistakes = entry();
   const retry = chapterFourMatch(mistakes);
@@ -461,7 +463,7 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
 }
 // 不正な採点・保存は工程や一部の票を進める前に拒否する。
 {
-  for (const invalid of [null, 0, 3, "2", NaN]) {
+  for (const invalid of [null, 0, 4, "2", NaN]) {
     const value = entry(); chapterFourMatch(value).rulesVersion = invalid;
     assert.throws(() => chapterFourMatch(value), /採点規則/);
   }
@@ -483,5 +485,63 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   const badVotes = structuredClone(chapterFourMatch(value));
   assert.throws(() => finishChapterFourStep(value, cs), /持ち点/);
   assert.deepEqual(chapterFourMatch(value), badVotes, "One malformed judge cannot partially commit the others");
+}
+// #2536: version 3 uses the recorded stages, with fixed, equal-sized judge weights.
+{
+  const run = parts => {
+    const cs = craft(parts[0]);
+    cs.servedQuality = parts[1]; cs.stats.craftQuality = parts[1];
+    cs.careHistory[0].score = parts[2]; cs.careHistory[1].score = parts[3];
+    return drive(entry(), cs);
+  };
+  const points = p => p.result.rows.find(row => row.id === "hajime").points;
+  const uniform = [0, 20, 45, 70, 85, 87.5, 88, 89, 90, 91, 92, 93, 94, 95, 96, 100];
+  const margins = new Set(); let last = -1, different = false, agreed = false;
+  for (const score of uniform) {
+    const p = run([score, score, score, score]);
+    assert.equal(p.result.rulesVersion, 3);
+    assert(points(p) >= last, `Improving all stages at ${score} cannot lose votes`); last = points(p);
+    assert.deepEqual(p.result.judgeQuality, p.judgeQuality);
+    for (const judge of CH4_JUDGES) {
+      assert.equal(Object.values(p.votes[judge]).reduce((a, b) => a + b, 0), 10);
+      for (const q of Object.values(p.judgeQuality[judge])) assert(q >= 0 && q <= 100);
+    }
+    const rows = p.result.rows;
+    margins.add(rows[0].points - rows[1].points);
+    const signatures = CH4_JUDGES.map(judge => JSON.stringify(p.votes[judge]));
+    different ||= new Set(signatures).size > 1;
+    agreed ||= new Set(signatures).size === 1;
+    assert.deepEqual(run([score, score, score, score]).result, p.result, "Same input gives identical result");
+  }
+  assert(different, "Judge emphasis must change actual votes for some records");
+  assert(agreed, "Judges may legitimately agree; do not force a split");
+  assert(margins.has(1), "A naturally close result exists");
+  assert(Math.max(...margins) >= 10, "A real large lead must not be rounded to a close result");
+  assert.equal(run([0, 0, 0, 0]).result.win, false);
+  assert.equal(run([100, 100, 100, 100]).result.win, true);
+  // Test single-stage improvements against varied surrounding records, not only uniform scores.
+  let comparisons = 0;
+  for (const base of [[85, 94, 87, 96], [96, 89, 100, 56], [90, 90, 90, 90], [100, 100, 100, 100]]) {
+    for (let part = 0; part < 4; part++) {
+      let previous = null;
+      for (let n = 0; n <= 100; n++) {
+        const parts = [...base]; parts[part] = n;
+        const p = run(parts);
+        if (previous) {
+          assert(points(p) >= points(previous), `stage ${part}: ${parts} does not lose support`);
+          assert(p.result.rank <= previous.result.rank, "An improvement cannot worsen rank");
+          for (const judge of CH4_JUDGES) assert(p.votes[judge].hajime >= previous.votes[judge].hajime);
+          comparisons++;
+        }
+        previous = p;
+      }
+    }
+  }
+  assert.equal(comparisons, 1600);
+  // An exact total-point tie uses quality, then the pre-rename contestant key, on all versions.
+  const tied = { votes: Object.fromEntries(CH4_JUDGES.map(j => [j,
+    { hajime: 0, naru: 0, master_hookah: 0, sheikh: 0 }])),
+    quality: { hajime: 90, naru: 91, master_hookah: 91, sheikh: 91 } };
+  assert.deepEqual(chapterFourStandings(tied).map(row => row.id), ["naru", "sheikh", "master_hookah", "hajime"]);
 }
 console.log("PASS: Chapter 4 real scores, old/new rules, final recovery/collapse, votes, failure/retry, rollback and feedback");

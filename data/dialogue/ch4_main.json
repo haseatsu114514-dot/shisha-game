@@ -749,6 +749,36 @@
         {
           "speaker": "pakki",
           "face": "smile",
+          "text": "持ち点は一人10点！ 準備、提供、調整二回で、2・3・2・3点ずつ投じますッ！"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "各回の上位二台へ！ 2点の回は一人1点、3点の回は一番に2点、次に1点です！"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "serious",
+          "text": "全工程を見る。その上で、私は調整後の一口を少し重く見る"
+        },
+        {
+          "speaker": "emil",
+          "face": "normal",
+          "text": "私は最初に出された一口を。あとからの調整も、もちろん見る"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "俺は準備の手際も見てる。最後まで、同じ一台を追うぜ"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "総得票が同点なら最終の総合評価、それも同じなら大会の登録順で決定しますッ！"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
           "text": "四人同時の一発勝負！　最後の調整まで、瞬きしないでくださいねッ！　ぷぷぷっ！"
         }
       ]

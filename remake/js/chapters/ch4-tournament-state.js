@@ -6,8 +6,8 @@ export const CH4_CONTESTANTS = Object.freeze(["hajime", "naru", "master_hookah",
 export const CH4_JUDGES = Object.freeze(["nagumo", "da_silva", "emil"]);
 // 2026-11-03「3・4章を難しく調整」: なるの中盤、シェイクの終盤を強める暫定値（実機調整前）。
 // 配点は2/3/2/3を保持。最後40%の案は、相手の固定順位を生むため採用しない。
-// 途中の旧保存は旧基準を保持し、新しい一台から版2で競う。
-export const CH4_RULES_VERSION = 2;
+// 版2で相手基準を調整。版3はその曲線を保って審査員差を追加。途中保存は開始時の版で完走する。
+export const CH4_RULES_VERSION = 3;
 export const CH4_LEGACY_RIVAL_CURVE = Object.freeze({
   naru: Object.freeze([86, 91, 92, 87.5]),
   master_hookah: Object.freeze([87, 87, 87, 87]),
@@ -27,9 +27,25 @@ export const CH4_CRAFT_STEP_COUNT = 11;
 const rulesVersion = p => p.rulesVersion === undefined ? 1 : p.rulesVersion;
 function rulesFor(p) {
   const version = rulesVersion(p);
-  if (version !== 1 && version !== CH4_RULES_VERSION) throw new Error("世界大会の採点規則を確認できません");
+  if (![1, 2, CH4_RULES_VERSION].includes(version)) throw new Error("世界大会の採点規則を確認できません");
   return version === 1 ? { curve: CH4_LEGACY_RIVAL_CURVE, spend: CH4_LEGACY_SPEND }
     : { curve: CH4_RIVAL_CURVE, spend: CH4_SPEND };
+}
+// 版3: 共通評価85% + 注目工程15%。順位を見る前に固定し、全選手へ同じ式を適用する。
+// 須井=直近の調整、エミル=提供、太陽=準備。まだない工程は準備を見る。
+export const CH4_JUDGE_FOCUS = Object.freeze({ nagumo: "care", emil: "served", da_silva: "prepared" });
+function judgeQualities(craft, round, quality, curve, carry) {
+  const prepared = qualityAt(craft, 0);
+  const records = [prepared, craft.servedQuality, craft.careHistory?.[0]?.score, craft.careHistory?.[1]?.score];
+  return Object.fromEntries(CH4_JUDGES.map(judge => {
+    const focus = CH4_JUDGE_FOCUS[judge];
+    const at = focus === "prepared" ? 0 : focus === "served" ? Math.min(1, round) : round;
+    const scores = Object.fromEntries(CH4_CONTESTANTS.map(id => {
+      const evidence = id === "hajime" ? records[at] : liftRivalScore(curve[id][at], carry, 4);
+      return [id, quality[id] * .85 + evidence * .15];
+    }));
+    return [judge, scores];
+  }));
 }
 const clone = value => structuredClone(value);
 // 同点時の並びは改名前（wang）の文字列順を保つ。
@@ -111,7 +127,7 @@ export function finishChapterFourStep(value, craft) {
   const rules = rulesFor(p), nextStep = p.step + 1;
   const round = [8, 9, 10, 11].indexOf(nextStep);
   // 検査を先に済ませ、不正な成績・持ち点で工程や一部の票だけを確定しない。
-  let quality = null;
+  let quality = null, judgeQuality = null;
   if (!craft.failed && round >= 0) {
     if (p.voted !== round) throw new Error("世界大会の投票順が一致しません");
     const hajime = qualityAt(craft, round);
@@ -131,6 +147,7 @@ export function finishChapterFourStep(value, craft) {
       return [id, lifted];
     }));
     quality.hajime = hajime;
+    if (rulesVersion(p) >= 3) judgeQuality = judgeQualities(craft, round, quality, rules.curve, carry);
   }
   if (!craft.failed && nextStep === CH4_CRAFT_STEP_COUNT
     && (!craft.pullDone || craft.careHistory?.length !== 2 || !Number.isFinite(craft.total))) {
@@ -141,8 +158,10 @@ export function finishChapterFourStep(value, craft) {
   p.step = nextStep;
   if (quality) {
     p.quality = quality;
-    const [first, second] = [...CH4_CONTESTANTS].sort((a, b) => p.quality[b] - p.quality[a] || byTie(a, b));
+    if (judgeQuality) p.judgeQuality = judgeQuality;
     for (const judge of CH4_JUDGES) {
+      const scores = judgeQuality?.[judge] || quality;
+      const [first, second] = [...CH4_CONTESTANTS].sort((a, b) => scores[b] - scores[a] || byTie(a, b));
       p.votes[judge][first] += rules.spend[round] - 1;
       p.votes[judge][second] += 1;
     }
@@ -152,7 +171,7 @@ export function finishChapterFourStep(value, craft) {
     const rows = chapterFourStandings(p);
     const rank = craft.failed ? 4 : rows.find(row => row.id === "hajime").rank;
     p.result = { rulesVersion: rulesVersion(p), win: !craft.failed && rank === 1, rank, total: craft.total, failure: craft.failed || null,
-      rows, votes: clone(p.votes), parts: clone(craft.parts || {}), careHistory: clone(craft.careHistory || []) };
+      rows, votes: clone(p.votes), ...(judgeQuality ? { judgeQuality: clone(judgeQuality) } : {}), parts: clone(craft.parts || {}), careHistory: clone(craft.careHistory || []) };
     p.history.push(clone(p.result));
   }
   return p;
@@ -162,6 +181,6 @@ export function resetChapterFourCraft(value) {
   const p = chapterFourMatch(value);
   if (!p.result || p.result.win) return false;
   if (p.entry) restore(value, p.entry);
-  Object.assign(p, { rulesVersion: CH4_RULES_VERSION, step: 0, craft: null, rollback: null, result: null, voted: 0, votes: emptyVotes(), quality: null });
+  Object.assign(p, { rulesVersion: CH4_RULES_VERSION, step: 0, craft: null, rollback: null, result: null, voted: 0, votes: emptyVotes(), quality: null, judgeQuality: null });
   return true;
 }
