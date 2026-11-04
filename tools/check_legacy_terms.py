@@ -105,6 +105,28 @@ IDENTITY_TEXT_EXTENSIONS = EXTENSIONS | {".mjs", ".cjs", ".html", ".css", ".yml"
 RENAMED_CHARACTER_RE = re.compile(r"サイーフ|\bSaif\b|凛(?!とし|々|然|冽)|水瀬|白木 ?つむぎ|さぎさか りん|南雲|なぐも しゅうじ|デイビス|Steve Davis|波多野|ラシード|\bRashid\b|アゲハ(?!蝶|チョウ)|路上占い師|\bPak(?:i|ie)\b|サラリーマンさん")
 RENAMED_CHARACTER_FIX = "旧キャラ名 → 匂坂 くゆり（rin）／猫柳 つむぎ（tsumugi）／黒葉 ましろ（mashiro）／須井 修二（nagumo）／スティーブ・ライマン（steve）／汐見 なぎさ（samechan）／ハリール（rashid）／あげは（ageha）／辻占のオババ（uranaishi）／Packy（pakki）／鉄仮面さん（salaryman）／スハイル（saif）に統一（#2474・#2528）"
 MINTO_HAIR_RE = re.compile(r"(?:mint|light)[ -]green (?:hair|twin)|black twin[ -]?tails|ミント(?:グリーン|色)のツイン|黒髪ツインテール|角ツインテール", re.IGNORECASE)
+# 2026-11-04 追加（#2528 残骸チェック）: 改名済みキャラの旧ローマ字。英字は前後が英数字でない時だけ検出する
+# （内部ID rin / nagumo / maezono / samechan / dr_kemuri の小文字表記・ファイル名は対象外）。
+RENAMED_ROMAJI_RE = re.compile(r"(?<![A-Za-z0-9_])(?:Rin|RIN|Nagumo|NAGUMO|Maezono|MAEZONO|Hatano|HATANO)(?![A-Za-z0-9_])|Dr\.? ?Kemuri")
+RENAMED_ROMAJI_FIX = "旧キャラ名（英字・旧表記） → Kuyuri（rin）／Sui（nagumo）／Uezono（maezono）／Shiomi（samechan）／Dr. Charcoal（dr_kemuri）に統一（#2528）"
+
+
+JSON_STRING_RE = re.compile(r'"(?:[^"\\]|\\.)*"')
+
+
+def has_renamed_romaji(line: str, json_strings: bool = False) -> bool:
+    """Keep raw checks and also inspect decoded JSON text on its original line."""
+    if RENAMED_ROMAJI_RE.search(line):
+        return True
+    if json_strings:
+        for match in JSON_STRING_RE.finditer(line):
+            try:
+                value = json.loads(match.group())
+            except json.JSONDecodeError:
+                continue
+            if RENAMED_ROMAJI_RE.search(value):
+                return True
+    return False
 
 
 def scan_character_identity(errors: list):
@@ -128,6 +150,8 @@ def scan_character_identity(errors: list):
         for number, line in enumerate(text.splitlines(), 1):
             if RENAMED_CHARACTER_RE.search(line):
                 errors.append(f"{rel}:{number}: {RENAMED_CHARACTER_FIX}")
+            if has_renamed_romaji(line, json_strings=path.suffix == ".json"):
+                errors.append(f"{rel}:{number}: {RENAMED_ROMAJI_FIX}")
             if ("minto" in rel.lower() or "minto" in line.lower() or "みんと" in line) and MINTO_HAIR_RE.search(line):
                 # 過去の検品を現行の事実に書き換えず、誤記を明示した訂正注記は残せる。
                 if not ("旧" in line and "誤" in line):

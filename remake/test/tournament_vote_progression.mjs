@@ -29,7 +29,7 @@ const frozenFinal={
   4:{maezono:{naru:4,adam:3,minto:1,hajime:2},dr_kemuri:{adam:5,minto:3,naru:1,hajime:1},nagumo:{naru:10}}
 };
 for(const rank of [1,3,4]){
-  assert.deepEqual(clone(pointTable(rank)),frozenFinal[rank],'Final votes match the frozen table (updated for #1282 no-reversal); Nagumo ten points unchanged');
+  assert.deepEqual(clone(pointTable(rank)),frozenFinal[rank],'Final votes match the frozen table (updated for #1282 no-reversal); Sui ten points unchanged');
   let previous={};
   for(const current of [interim(1),interim(2),interim(3),pointTable(rank)]){
     for(const judge of ['maezono','dr_kemuri','nagumo']){
@@ -40,7 +40,7 @@ for(const rank of [1,3,4]){
 }
 for(const round of [1,2,3])assert.equal(Object.values(interim(round).nagumo).reduce((a,b)=>a+b,0),0);
 if(interimPointTable){assert.match(source,/const table = interimPointTable\(round\)/);assert.doesNotMatch(source,/チャコール博士が最後の持ち点を投入/);}
-console.log(JSON.stringify({groups:3,ranks:[1,3,4],scope:'actual vote module with controlled unused render ports; no browser',result:'interim votes monotonic through all unchanged final tables; per-judge <=10; Nagumo held'},null,2));
+console.log(JSON.stringify({groups:3,ranks:[1,3,4],scope:'actual vote module with controlled unused render ports; no browser',result:'interim votes monotonic through all unchanged final tables; per-judge <=10; Sui held'},null,2));
 
 // #2190 P22: exercise the actual standings/graphics/DOM builder with a controlled
 // clock and DOM lifecycle. Browser geometry and native key activation live in

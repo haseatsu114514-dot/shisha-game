@@ -585,6 +585,7 @@
         "python3 tools/check_mashiro_address.py",
         "python3 tools/check_confession_flags.py",
         "python3 -m unittest discover -s tools -p test_mashiro_address.py",
+        "python3 -B -m unittest discover -s tools -p test_legacy_romaji.py",
         "python3 tools/check_legacy_terms.py"
       ]
     },
@@ -660,7 +661,7 @@
     },
     {
       "id": "ch2-home-talks",
-      "title": "Chapter 2 home talks: facility encounters, Rin's chapter talks, Ageha's four small talks and greetings, aquarium revisits (VOL13)",
+      "title": "Chapter 2 home talks: facility encounters, Kuyuri's chapter talks, Ageha's four small talks and greetings, aquarium revisits (VOL13)",
       "kind": "quick",
       "run": ["node --experimental-vm-modules remake/test/ch2_home_talks.mjs"]
     },

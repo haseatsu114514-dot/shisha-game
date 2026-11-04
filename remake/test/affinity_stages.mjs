@@ -149,7 +149,7 @@ for (const outcome of ['missing','abort','load','throw']) await check(`question 
   if(outcome==='throw')await assert.rejects(p,/expected/); else assert.equal(await p,false);
   assert.equal(s.flags[f.stages.questionDoneKey('rin')],undefined);
 });
-await check('Rin third story completes at heart2 and reaches heart3; question is due only at heart3',async f=>{
+await check('Kuyuri third story completes at heart2 and reaches heart3; question is due only at heart3',async f=>{
   const s=f.core.state;s.story.rin=2;s.affinity.rin=20;
   f.setPlay(async()=>done);assert.equal(await f.spots.visitChar('rin'),true);
   assert.equal(s.story.rin,3);assert.equal(s.affinity.rin,33);assert.equal(f.bonds.questionVisitDue('rin'),true);
@@ -701,7 +701,7 @@ const rinAt = (f, story, heart = 5) => {
   return s;
 };
 const sceneIds = f => f.plays.map(([scene]) => typeof scene === 'string' ? scene : scene.dialogue_id);
-await check('Rin #2025: heart4/5 follow the fourth, one per visit, before the finale', async f => {
+await check('Kuyuri #2025: heart4/5 follow the fourth, one per visit, before the finale', async f => {
   assert.deepEqual(Array.from(f.spots.VISIT_SEQ.rin).slice(4), RIN_LATE);
   for (const [story, scene] of [[4, RIN_LATE[0]], [5, RIN_LATE[1]], [6, null]]) {
     const s = rinAt(f, story);
@@ -715,7 +715,7 @@ await check('Rin #2025: heart4/5 follow the fourth, one per visit, before the fi
   assert.equal(s.story.rin, 6); assert.equal(f.bonds.finaleDue('rin'), true);
   assert.equal(f.roundTrip().story.rin, 6);
 });
-await check('Rin #2025: heart4 needs ♥4 and heart5 needs ♥5; the ♥3 question still comes first', async f => {
+await check('Kuyuri #2025: heart4 needs ♥4 and heart5 needs ♥5; the ♥3 question still comes first', async f => {
   for (const [story, heart, reads] of [[4, 3, false], [4, 4, true], [5, 4, false], [5, 5, true]]) {
     f.plays.length = 0; const s = rinAt(f, story, heart);
     assert.equal(f.spots.hasNewStory('rin'), reads, `story ${story} heart ${heart}`);
@@ -726,14 +726,14 @@ await check('Rin #2025: heart4 needs ♥4 and heart5 needs ♥5; the ♥3 questi
   assert.equal(f.stages.pendingAffinityStage(s, 'rin').scene, 'ch1_rin_bond_question');
   assert.equal(f.bonds.questionVisitDue('rin'), true, 'unanswered question is offered before the new stages');
 });
-await check('Rin #2025: a cancelled heart4/5 read keeps the stage for the next visit', async f => {
+await check('Kuyuri #2025: a cancelled heart4/5 read keeps the stage for the next visit', async f => {
   for (const story of [4, 5]) {
     const s = rinAt(f, story); f.setPlay(async () => ({ cancelled: true }));
     assert.equal(await f.spots.visitChar('rin'), false);
     assert.equal(s.story.rin, story); assert.equal(s.visits.rin || 0, 0);
   }
 });
-await check('Rin #2025: saves already landed (finale, friend, lover) are not sent back to heart4/5', async f => {
+await check('Kuyuri #2025: saves already landed (finale, friend, lover) are not sent back to heart4/5', async f => {
   for (const settle of [s => { s.finales.rin = { day: 9, chapter: 1, route: 'friend' }; s.flags._friend_rin = true; },
     s => { s.finales.rin = { day: 9, chapter: 1, route: 'lover' }; s.lovers = ['rin']; }, s => { s.flags._friend_rin = true; }]) {
     f.plays.length = 0; const s = rinAt(f, 4); settle(s);
@@ -744,7 +744,7 @@ await check('Rin #2025: saves already landed (finale, friend, lover) are not sen
     assert.equal(s.story.rin, 4, 'the skipped stages are not written back');
   }
 });
-await check('Rin #2025: heart4/5 branch on the ♥3 answer and carry no new romance question', async f => {
+await check('Kuyuri #2025: heart4/5 branch on the ♥3 answer and carry no new romance question', async f => {
   for (const id of RIN_LATE) {
     const scene = f.db.dialogues[id], rows = [...scene.lines, ...Object.values(scene.branches).flat()];
     assert.equal(scene.metadata.flavor_lesson, undefined, 'the taste talk stays in ch1_rin_fourth');

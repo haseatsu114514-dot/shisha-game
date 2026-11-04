@@ -32,7 +32,7 @@ try {
         }
       }
       const scene = find(source);
-      if (!scene) throw Error("Rin scene missing");
+      if (!scene) throw Error("Kuyuri scene missing");
       const state = await import(new URL("js/core/state.js", location.href));
       const vn = await import(new URL("js/vn/engine.js", location.href));
       state.newGame(); state.state.met.rin = true; vn.vnTest.turbo = false;
@@ -73,7 +73,7 @@ try {
       });
       if (m.width !== 896 || m.height !== 1200 || m.position !== "center" || m.edges ||
           !Number.isFinite(m.offset) || Math.abs(m.fraction) > .015 || m.headTop < m.stageTop - .5)
-        throw Error("Rin portrait alignment/clipping: " + JSON.stringify({ face, viewport, ...m }));
+        throw Error("Kuyuri portrait alignment/clipping: " + JSON.stringify({ face, viewport, ...m }));
       frames.push(JSON.stringify(m.frame));
       records.push({ viewport: viewport.width, face, offsetPx: Number(m.offset.toFixed(2)) });
       if (SHOTS) await page.screenshot({ path: SHOTS + "/rin-" + viewport.width + "-" + face + ".png" });
@@ -84,7 +84,7 @@ try {
         if (!src.endsWith("chr_rin_" + faces[i + 1] + ".webp")) await page.keyboard.press("Enter");
       }
     }
-    if (new Set(frames).size !== 1) throw Error("Rin frame moves between expressions");
+    if (new Set(frames).size !== 1) throw Error("Kuyuri frame moves between expressions");
     await page.close();
   }
   if (errors.length) throw Error(JSON.stringify(errors));
