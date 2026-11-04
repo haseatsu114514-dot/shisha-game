@@ -238,3 +238,6 @@
 .rank-medal, [data-rank] > .rank-medal, .rank-medal.gold {
   clip-path: none; background-position: center; background-size: contain; background-repeat: no-repeat;
 }
+
+.result-table .rt-save { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.result-table .rt-save .btn { min-height: 44px; max-width: 100%; }
