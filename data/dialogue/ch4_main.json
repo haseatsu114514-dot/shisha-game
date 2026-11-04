@@ -159,7 +159,37 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "来たな、日本の二人！　まず座れ。暑かっただろ"
+          "text": "カカッテコイ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "えっ、何がですか？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "太陽は笑って、空いた椅子と水を指した。今の一言は、スマホを通さず日本語だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺が通訳アプリを開くと、太陽が身を寄せた。画面に日本語が流れる。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "日本の客に教わったんだ。歓迎するときの日本語！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……ずいぶん気合いの入った歓迎ですね"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "来たな、日本の二人！　まず座れ！　暑かっただろ、水を飲め！"
         },
         {
           "speaker": "da_silva",
