@@ -461,6 +461,8 @@ async function drive(owner) {
         else if (p.step === 10) p.stage = "national_adjustment";
         else {
           const round = MILESTONES.get(p.step), quality = partialQuality(cs, round);
+          // Final scoring creates parts/total; persist them before the tasting save boundary.
+          p.craft = clone(cs);
           if (!castVotes(p, round, quality, null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error("全国大会の投票地点を確認できません");
           p.stage = p.step === STEPS.length ? "tasting" : "votes";
           if (p.stage === "tasting") { const result = recordResult(state, cs.total); awardTournamentExp(result.rank, cs); }

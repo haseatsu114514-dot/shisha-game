@@ -352,7 +352,9 @@ export function resultTable(cs, rank) {
       const review = evaluationOf(score || 0);
       return el(`b.craft-evaluation.${review.tone}`, { text: review.mark, "aria-label": review.label });
     };
-    const detail = el("div.rt-detail", [
+    const detail = el("div.rt-detail", [el("div.rt-detail-scroll", {
+      tabindex: "0", role: "region", "aria-label": "あなたの一台の評価",
+    }, [
       el("h4", { text: "あなたの一台" }),
       Number.isFinite(cs.pull?.temp) && !cs.pull.failed ? actualExpressionCard(cs, cs.pull.temp) : null,
       ...[["穴あけ", P.holes], ["炭焼き", P.heat], ["完成品", P.shisha], ["調整1回目", P.care1], ["調整2回目", P.care2]]
@@ -365,7 +367,7 @@ export function resultTable(cs, rank) {
       goodPointOf(cs) ? el("small.rt-good-point", { text: goodPointOf(cs), dataset: { test: "result-good-point" } }) : null,
       el("small.rt-next-tip", { text: improvementOf(cs) }),
       resultSaveButton(cs),
-    ]);
+    ])]);
     const btn = el("button.btn.primary", { dataset: { test: "result-next" }, onclick: () => { SE.select(); retireScreen(); resolve(); } }, [
       el("span.btn-label", { text: rank === 1 ? "表彰のあとへ" : "……結果を受け止める" }),
     ]);
