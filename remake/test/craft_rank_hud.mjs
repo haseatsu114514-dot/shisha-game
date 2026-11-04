@@ -143,3 +143,76 @@ test("a detached view stays quiet and can be disposed without returning old mark
   h.top.remove(); rank.update({ grade: "S" }); assert.equal(h.timers.size, 0);
   rank.dispose(); assert.equal(rank.root.parentNode, null);
 });
+
+test("injected grade floors cover every boundary and clamp both ends", async () => {
+  const { api } = await harness();
+  const floors = Object.freeze([-10, 10, 30, 50, 70, 90, 110]);
+  const expect = (score, grade, progress) => {
+    const result = api.craftRankProgress(score, floors);
+    assert.equal(result.grade, grade); assert.equal(result.progress, progress);
+  };
+  api.CRAFT_GRADES.forEach((grade, index) => {
+    expect(floors[index], grade, index === 6 ? 1 : 0);
+    expect(floors[index] + 10, grade, index === 6 ? 1 : .5);
+    if (index < 6) {
+      const result = api.craftRankProgress(floors[index + 1] - .001, floors);
+      assert.equal(result.grade, grade); assert(result.progress > .999 && result.progress < 1);
+    }
+  });
+  expect(-1e6, "D", 0); expect(1e6, "SSS", 1);
+  const extreme = api.craftRankProgress(0, [-1e308, 1e308, 1.1e308, 1.2e308, 1.3e308, 1.4e308, 1.5e308]);
+  assert.equal(extreme.grade, "D"); assert.equal(extreme.progress, .5);
+});
+
+test("progress rejects nonfinite scores and missing, sparse or unordered floors", async () => {
+  const { api } = await harness(), floors = [0, 10, 20, 30, 40, 50, 60];
+  for (const score of [undefined, null, "20", NaN, Infinity, -Infinity]) {
+    assert.throws(() => api.craftRankProgress(score, floors), /score/);
+  }
+  for (const input of [undefined, null, {}, [], floors.slice(1), [...floors, 70],
+    [0, 10, 10, 30, 40, 50, 60], [0, 20, 10, 30, 40, 50, 60],
+    [0, 10, NaN, 30, 40, 50, 60], [0, 10, Infinity, 30, 40, 50, 60],
+    [0, 10, "20", 30, 40, 50, 60], new Array(7)]) {
+    assert.throws(() => api.craftRankProgress(20, input), /thresholds/);
+  }
+});
+
+test("first measurement enters once and same-grade progress preserves the letter", async () => {
+  const h = await harness(), rank = h.api.mountCraftRank(h.top);
+  rank.update({ grade: "S", progress: .6 });
+  assert.equal(rank.root.dataset.change, "enter");
+  assert.equal(rank.root.dataset.emphasis, "s");
+  const letter = rank.root.querySelector(".craft-rank-grade");
+  const status = rank.root.querySelector(".craft-rank-status"), writes = status.textWrites;
+  const meter = rank.root.querySelector(".craft-rank-meter");
+  assert.equal(meter.firstElementChild.style.width, "60%");
+  assert.equal(meter.getAttribute("aria-valuenow"), "60");
+  assert.equal(meter.getAttribute("aria-valuetext"), "ランク内 60%、次はSS");
+  rank.update({ grade: "S", progress: .8 });
+  assert.equal(rank.root.querySelector(".craft-rank-grade"), letter);
+  assert.equal(status.textWrites, writes); assert.equal(h.timers.size, 1);
+  rank.update(null); assert.equal(rank.root.dataset.change, undefined);
+  rank.update({ grade: "D" }, { animate: false }); assert.equal(rank.root.dataset.change, undefined);
+});
+
+test("emphasis tiers and maximum meter are independent of optional artwork", async () => {
+  const h = await harness(), rank = h.api.buildCraftRank();
+  for (const grade of h.api.CRAFT_GRADES) {
+    rank.update({ grade, progress: .25, artwork: { compact: "img/rank.webp" } });
+    assert.equal(rank.root.dataset.emphasis, grade.startsWith("S") ? grade.toLowerCase() : "base");
+    assert.equal(rank.root.dataset.maxed, String(grade === "SSS"));
+  }
+  const meter = rank.root.querySelector(".craft-rank-meter");
+  assert.equal(meter.getAttribute("aria-valuenow"), "100");
+  assert.equal(meter.getAttribute("aria-valuetext"), "最高ランク");
+  assert.equal(meter.firstElementChild.style.width, "100%");
+  rank.update({ grade: "SSS" }); assert.equal(meter.hidden, false);
+  rank.update(null); assert.equal(meter.hidden, true); assert.equal(meter.getAttribute("aria-valuetext"), null);
+});
+
+test("reduced motion also skips first measurement", async () => {
+  const h = await harness({ reduced: true }), rank = h.api.mountCraftRank(h.top);
+  rank.update({ grade: "S", progress: .6 });
+  assert.equal(rank.root.dataset.change, undefined); assert.equal(h.timers.size, 0);
+  assert.equal(rank.root.querySelector(".craft-rank-meter").getAttribute("aria-valuenow"), "60");
+});

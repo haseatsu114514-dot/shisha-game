@@ -12,13 +12,14 @@
   <link rel="stylesheet" href="css/craft-paper.css">
   <link rel="stylesheet" href="css/craft-rank.css">
   <style>
-    :root { --rank-tools-height: 100px; }
-    #viewport { top: var(--rank-tools-height); }
+    :root { --rank-tools-height: 144px; }
+    #viewport, body.game-ds #viewport { top: var(--rank-tools-height); }
     .rank-preview-tools { position: fixed; inset: 0 0 auto; z-index: 1000; height: var(--rank-tools-height); padding: 4px 8px; background: #221534; color: #f6f1fa; overflow: auto; }
     .rank-preview-tools p { margin: 0 0 4px; font-size: 12px; line-height: 1.3; }
     .rank-preview-tools > div { display: flex; align-items: center; gap: 4px; min-width: max-content; }
     .rank-preview-tools button { min-width: 44px; min-height: 44px; padding: 5px 8px; border: 1px solid #c9a7e6; border-radius: 4px; background: #2e1d45; color: #f6f1fa; }
     .rank-preview-tools button:focus-visible { outline: 3px solid #e3bd6e; outline-offset: 1px; }
+    .rank-preview-tools input:focus-visible { outline: 3px solid #e3bd6e; outline-offset: 1px; }
     .rank-preview-region { display: grid; place-items: center; height: 100%; min-height: 0; color: #c9a7e6; text-align: center; padding: 20px; }
     .rank-preview-frame { position: absolute; inset: 48px 20px 100px; border: 2px dashed #5a4475; display: grid; place-items: center; }
     .rank-preview-actions { position: absolute; left: 20px; right: 20px; bottom: 12px; display: flex; gap: 10px; }
@@ -39,6 +40,12 @@
       <button type="button" data-grade="SSS">SSS</button>
       <button type="button" data-test="rank-preview-ds">DS表示に切替え</button>
     </div>
+    <div>
+      <label for="rank-progress">ランク内の進捗（仮値）</label>
+      <input id="rank-progress" type="range" min="0" max="100" value="60" disabled>
+      <output for="rank-progress" id="rank-progress-value">未計測</output>
+      <button type="button" data-test="rank-preview-demo" aria-pressed="false">自動デモ</button>
+    </div>
   </header>
   <div id="viewport"><div id="stage"><div id="screen">
     <div class="bench" data-mode="tournament" data-step="steam">
@@ -51,7 +58,7 @@
     </div>
   </div></div></div>
   <script type="module">
-    import { mountCraftRank } from "./js/craft/rank-hud.js";
+    import { mountCraftRank, craftRankProgress, CRAFT_GRADES } from "./js/craft/rank-hud.js";
     import { buildCraftProgress } from "./js/craft/progress.js";
     import { dsGeometry } from "./js/scenes/ds-geometry.js";
     const top = document.querySelector(".bench-top");
@@ -68,10 +75,41 @@
       document.documentElement.dataset.dsLayout = g.layout;
     };
     const setLayout = ds => { document.body.classList.toggle("game-ds", ds); resize(); };
-    document.querySelectorAll("[data-grade]").forEach(button => button.addEventListener("click", () => {
-      const grade = button.dataset.grade || null;
-      rank.update({ grade, label: grade === "A" ? "Aromatic" : "" });
+    // Preview-only floors: these are temporary values, never gameplay balance.
+    const previewFloors = [0, 100, 200, 300, 400, 500, 600];
+    const slider = document.querySelector("#rank-progress");
+    const output = document.querySelector("#rank-progress-value");
+    const demo = document.querySelector('[data-test="rank-preview-demo"]');
+    let demoTimer = null, demoScore = 0;
+    const stopDemo = () => { clearInterval(demoTimer); demoTimer = null; demo.setAttribute("aria-pressed", "false"); };
+    const showScore = score => {
+      const value = craftRankProgress(score, previewFloors);
+      rank.update({ ...value, label: value.grade === "A" ? "Aromatic" : "" });
+      slider.disabled = value.grade === "SSS";
+      slider.value = String(Math.round(value.progress * 100));
+      output.textContent = value.grade === "SSS" ? "最高ランク" : `${slider.value}%`;
+    };
+    document.querySelectorAll("button[data-grade]").forEach(button => button.addEventListener("click", () => {
+      stopDemo();
+      const index = CRAFT_GRADES.indexOf(button.dataset.grade);
+      if (index < 0) { rank.update(null); slider.disabled = true; output.textContent = "未計測"; }
+      else showScore(previewFloors[index] + 60);
     }));
+    slider.addEventListener("input", () => {
+      stopDemo();
+      showScore(previewFloors[CRAFT_GRADES.indexOf(rank.root.dataset.grade)] + Number(slider.value));
+    });
+    demo.addEventListener("click", () => {
+      if (demoTimer !== null) { stopDemo(); return; }
+      rank.update(null); demoScore = 0; showScore(demoScore);
+      demo.setAttribute("aria-pressed", "true");
+      demoTimer = setInterval(() => {
+        demoScore += 5; showScore(demoScore);
+        if (demoScore >= previewFloors.at(-1)) stopDemo();
+      }, 100);
+    });
+    document.addEventListener("visibilitychange", () => { if (document.hidden) stopDemo(); });
+    window.addEventListener("pagehide", stopDemo);
     document.querySelector('[data-test="rank-preview-ds"]').addEventListener("click", () => setLayout(!document.body.classList.contains("game-ds")));
     window.addEventListener("resize", resize); resize();
     window.rankPreview = { rank, phases, setLayout, resize };

@@ -6,6 +6,25 @@ import { el } from "../core/util.js";
 
 export const CRAFT_GRADES = Object.freeze(["D", "C", "B", "A", "S", "SS", "SSS"]);
 
+/** Seven strictly increasing grade floors, in CRAFT_GRADES order; no gameplay defaults. */
+export function craftRankProgress(score, thresholds) {
+  if (!Number.isFinite(score)) throw new TypeError("Craft rank score must be finite");
+  if (!Array.isArray(thresholds) || thresholds.length !== CRAFT_GRADES.length
+    || Array.from(thresholds).some((floor, index) => !Number.isFinite(floor)
+      || (index > 0 && floor <= thresholds[index - 1]))) {
+    throw new TypeError("Craft rank thresholds must be seven finite increasing floors");
+  }
+  let index = 0;
+  while (index < thresholds.length - 1 && score >= thresholds[index + 1]) index++;
+  if (index === thresholds.length - 1) return { grade: CRAFT_GRADES[index], progress: 1 };
+  const span = thresholds[index + 1] - thresholds[index];
+  const fraction = Number.isFinite(span)
+    ? (score - thresholds[index]) / span
+    : (score / 2 - thresholds[index] / 2) / (thresholds[index + 1] / 2 - thresholds[index] / 2);
+  const progress = Math.max(0, Math.min(1, fraction));
+  return { grade: CRAFT_GRADES[index], progress };
+}
+
 function readSnapshot(input) {
   const value = input ?? {};
   const grade = value.grade ?? null;
@@ -25,7 +44,7 @@ function readSnapshot(input) {
     }
     return resolved.href;
   };
-  return { grade, progress: grade === null ? null : progress, label, wide: url("wide"), compact: url("compact") };
+  return { grade, progress: grade === null ? null : grade === "SSS" ? 1 : progress, label, wide: url("wide"), compact: url("compact") };
 }
 
 /**
@@ -43,7 +62,10 @@ export function buildCraftRank(initial = null) {
   ]);
   let current = null, disposed = false, timer = null, generation = 0;
   const stopMotion = () => { clearTimeout(timer); timer = null; delete root.dataset.change; };
-  const reduced = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const motion = typeof matchMedia === "function" ? matchMedia("(prefers-reduced-motion: reduce)") : null;
+  const reduced = () => motion?.matches ?? false;
+  const motionChanged = () => { if (reduced()) stopMotion(); };
+  motion?.addEventListener?.("change", motionChanged);
   const draw = (host, value, art, token, isCompact) => {
     const mark = el("b.craft-rank-grade", { text: value.grade ?? "—" });
     const fallback = el("span.craft-rank-fallback", [mark]);
@@ -66,6 +88,8 @@ export function buildCraftRank(initial = null) {
     const pictureChanged = !before || ["grade", "label", "wide", "compact"].some(key => before[key] !== next[key]);
     current = next;
     root.dataset.grade = next.grade ?? "unavailable";
+    root.dataset.emphasis = next.grade?.startsWith("S") ? next.grade.toLowerCase() : "base";
+    root.dataset.maxed = String(next.grade === "SSS");
     root.title = next.grade ? `制作ランク ${next.grade}${next.label ? `：${next.label}` : ""}` : "制作ランクは未計測";
     if (root.getAttribute("aria-label") !== root.title) root.setAttribute("aria-label", root.title);
     if (pictureChanged) {
@@ -77,10 +101,13 @@ export function buildCraftRank(initial = null) {
     meter.hidden = next.progress === null;
     if (next.progress === null) {
       meter.removeAttribute("aria-valuenow");
+      meter.removeAttribute("aria-valuetext");
       meter.firstElementChild.style.width = "0%";
     } else {
       const value = Math.round(next.progress * 100);
       meter.setAttribute("aria-valuenow", String(value));
+      const nextGrade = CRAFT_GRADES[CRAFT_GRADES.indexOf(next.grade) + 1];
+      meter.setAttribute("aria-valuetext", nextGrade ? `ランク内 ${value}%、次は${nextGrade}` : "最高ランク");
       meter.firstElementChild.style.width = `${next.progress * 100}%`;
     }
     if (rankChanged || !before || before.label !== next.label) {
@@ -89,12 +116,12 @@ export function buildCraftRank(initial = null) {
     }
     if (rankChanged) {
       stopMotion();
-      if (animate && before?.grade && next.grade && root.isConnected && !document.hidden && !reduced()) {
-        const change = CRAFT_GRADES.indexOf(next.grade) > CRAFT_GRADES.indexOf(before.grade) ? "up" : "down";
+      if (animate && before && next.grade && root.isConnected && !document.hidden && !reduced()) {
+        const change = !before.grade ? "enter" : CRAFT_GRADES.indexOf(next.grade) > CRAFT_GRADES.indexOf(before.grade) ? "up" : "down";
         // 頻度の低い昇降格時だけ再始動する。進捗更新では再配置しない。
         void root.offsetWidth;
         root.dataset.change = change;
-        timer = setTimeout(() => { timer = null; delete root.dataset.change; }, 600);
+        timer = setTimeout(() => { timer = null; delete root.dataset.change; }, change === "down" ? 150 : change === "enter" ? 240 : 360);
       }
     }
     return true;
@@ -102,7 +129,7 @@ export function buildCraftRank(initial = null) {
   update(initial, { animate: false });
   return { root, update, dispose() {
     if (disposed) return;
-    disposed = true; generation++; stopMotion(); root.remove();
+    disposed = true; generation++; stopMotion(); motion?.removeEventListener?.("change", motionChanged); root.remove();
   } };
 }
 

@@ -35,17 +35,21 @@ await suite("craft-rank-hud", async check => {
     ["ds-landscape", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true],
   ]) await check(`layout-${name}`, async page => {
     await prepare(page, ds);
-    let anchor;
+    let anchor, phaseAnchor;
     for (const step of ["pack", "heat", "steam", "pull", "serve", "care"]) {
       await page.evaluate(step => { rankPreview.phases.update(step, step); document.querySelector('.bench').dataset.step = step; }, step);
       for (const grade of ["D", "C", "B", "A", "S", "SS", "SSS"]) {
         await page.evaluate(grade => rankPreview.rank.update({ grade, label: grade === "A" ? "Aromatic" : "", progress: .4 }), grade);
+        assert.equal(await page.locator('.craft-rank-meter').getAttribute('aria-valuenow'), grade === "SSS" ? "100" : "40");
         await assertFits(page, '.craft-rank, .craft-rank-meter');
         await assertCraftProgress(page);
         const layout = await rects(page);
         assert(!overlap(layout.rank, layout.progress), `rank covers phases: ${JSON.stringify(layout)}`);
         assert(!overlap(layout.rank, layout.button), `rank covers appearance button: ${JSON.stringify(layout)}`);
-        if (!anchor) anchor = layout.rank;
+        if (!anchor) { anchor = layout.rank; phaseAnchor = layout.progress; }
+        for (const key of ["x", "y", "width", "height"]) assert(Math.abs(layout.progress[key] - phaseAnchor[key]) < 1, `${step}/${grade}: phase header moved`);
+        const meterBox = await page.locator('.craft-rank-meter').evaluate(node => node.getBoundingClientRect().toJSON());
+        assert(meterBox.height >= 1 && !overlap(meterBox, layout.progress), "meter must stay visible outside phases");
         for (const key of ["x", "y", "width", "height"]) assert(Math.abs(layout.rank[key] - anchor[key]) < 1, `${step}/${grade}: rank moved`);
         const gradeBox = await page.locator(ds || name === 'touch-landscape' ? '.craft-rank-compact .craft-rank-grade' : '.craft-rank-wide .craft-rank-grade').evaluate(node => node.getBoundingClientRect().toJSON());
         assert(gradeBox && gradeBox.left >= layout.rank.left - 1 && gradeBox.right <= layout.rank.right + 1, `grade clipped: ${grade}`);
@@ -62,11 +66,44 @@ await suite("craft-rank-hud", async check => {
     assert.equal(await page.locator('.craft-rank').getAttribute('data-change'), null);
     const motion = await page.locator('.craft-rank-wide').evaluate(node => getComputedStyle(node).animationName);
     assert.equal(motion, 'none');
+    assert.equal(await page.locator('.craft-rank-wide').evaluate(node => getComputedStyle(node).transform), 'none');
+    assert.equal(await page.locator('.craft-rank-meter i').evaluate(node => getComputedStyle(node).transitionDuration), '0s');
     await page.evaluate(() => rankPreview.rank.dispose());
     assert.equal(await page.locator('.craft-rank').count(), 0);
     assert.equal(await page.locator('.bench-mode').textContent(), 'SMOKE CROWN CUP');
     assert.equal(await page.locator('.bench-progress').count(), 1);
     assert.equal(await page.locator('.bench-appearance-button').count(), 1);
+  });
+  await check("staging-and-motion-preference-change", async page => {
+    const changes = await page.evaluate(() => {
+      const changes = [];
+      for (const grade of ['D', 'SSS', 'S']) {
+        rankPreview.rank.update({ grade, progress: .6 });
+        changes.push(rankPreview.rank.root.dataset.change);
+      }
+      return changes;
+    });
+    assert.deepEqual(changes, ['enter', 'up', 'down']);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.waitForFunction(() => !document.querySelector('.craft-rank').dataset.change);
+    assert.equal(await page.locator('.craft-rank-wide').evaluate(node => getComputedStyle(node).transform), 'none');
+    await page.evaluate(() => rankPreview.setLayout(true));
+    await assertFits(page, '.craft-rank, .craft-rank-meter');
+    const toolsBottom = await page.locator('.rank-preview-tools').evaluate(node => node.getBoundingClientRect().bottom);
+    const rankTop = await page.locator('.craft-rank').evaluate(node => node.getBoundingClientRect().top);
+    assert(rankTop >= toolsBottom, 'Preview controls must not cover the DS rank');
+  });
+  await check("preview-slider-and-auto-demo", async page => {
+    await page.locator('button[data-grade="S"]').click();
+    assert.equal(await page.locator('.craft-rank-meter').getAttribute('aria-valuenow'), '60');
+    await page.locator('#rank-progress').fill('85');
+    await page.locator('#rank-progress').dispatchEvent('input');
+    assert.equal(await page.locator('.craft-rank-meter').getAttribute('aria-valuenow'), '85');
+    await page.locator('[data-test="rank-preview-demo"]').click();
+    assert.equal(await page.locator('.craft-rank').getAttribute('data-grade'), 'D');
+    await page.waitForFunction(() => document.querySelector('.craft-rank').dataset.grade === 'SSS', null, { timeout: 16000 });
+    assert.equal(await page.locator('.craft-rank-meter').getAttribute('aria-valuenow'), '100');
+    assert.equal(await page.locator('[data-test="rank-preview-demo"]').getAttribute('aria-pressed'), 'false');
   });
   await check("resize-keeps-snapshot", async page => {
     await prepare(page, true);
@@ -76,7 +113,7 @@ await suite("craft-rank-hud", async check => {
       await page.evaluate(() => rankPreview.resize());
       await assertFits(page, '.craft-rank, .craft-rank-meter');
       assert.equal(await page.locator('.craft-rank').getAttribute('data-grade'), 'SSS');
-      assert.equal(await page.locator('.craft-rank-meter').getAttribute('aria-valuenow'), '75');
+      assert.equal(await page.locator('.craft-rank-meter').getAttribute('aria-valuenow'), '100');
     }
   });
 }, {
