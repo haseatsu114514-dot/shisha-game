@@ -17,7 +17,7 @@
 
 第2章は `createChapterSample(base, "quiet")` が章題後のみんとの同じ台詞を反復する。他章の反復は台本側で保持する。比較A/Bも同じ正本の台詞を使い、旧文言の上書きはしない。正式採用Cのスタイルは全章に適用する。
 
-元絵は16:9の全構図を表示し、白文字と黒縁・影の字幕を映像内の下部へ直接重ねる。テロップ枠・黒帯・通常会話ウインドウ・話者名は表示しない。縮小表示でも字幕16px・操作ボタン高さ44px以上を確保する。字幕を読んでいる間は絵を暗転させない。章題はDotGothic16、字幕はSuien Gothic。音声ナレーションは付けない。
+元絵は16:9の全構図を表示し、落ち着いた明朝体の白文字と細い輪郭・控えめな影の字幕を映像内の下部へ直接重ねる。テロップ枠・黒帯・通常会話ウインドウ・話者名は表示しない。縮小表示でも字幕16px・操作ボタン高さ44px以上を確保する。字幕を読んでいる間は絵を暗転させない。章題はDotGothic16、字幕は既存のZen Old Mincho Regular。PC基準は27px・通常の太さ・0.5pxの輪郭で、余白を広く取る。音声ナレーションは付けない。
 
 既存素材 `assets/cgs/ch2_preview/`〜`ch5_preview/`（1664×936 WebP）を再利用。第2章の採用元は `asset_sources/ch2-preview/adoption.json`。新規画像生成はしない。曲は第2章向けが `preview-score.js`、他章は `preview-cue.js` に章別arrangementを渡す。既存のBGM音量と消音を尊重する。
 
@@ -32,14 +32,16 @@
 
 ## 確認・録画
 
-`python3 remake/tools/serve_preview.py --port 8123` を起動し、`/remake/chapter-preview.html?ch=ch2`〜`ch5` から再生できる。確認ページは本編の保存を変えない。第2〜4章末は未視聴なら完了カードから再生し、再生中は次章ボタンを無効化する。完走・明示スキップだけ既読を保存する。第5章末は予告を置かず完結する。
+`python3 remake/tools/serve_preview.py --port 8123` を起動し、`/remake/chapter-preview.html?ch=ch2`〜`ch5` を開くと直接自動再生する。「勝ちは、始まりだった。」等の開始画面と再生ボタンは置かない。終了後の再視聴ボタンは残す。確認ページは本編の保存を変えない。第2〜4章末は未視聴なら完了カードから再生し、再生中は次章ボタンを無効化する。完走・明示スキップだけ既読を保存する。第5章末は予告を置かず完結する。
 
 - `node remake/test/chapter_preview_scripts.mjs`: 次章の台詞の出典・原文一致、無言の間、キッカー混入、登録・素材。
 - `node remake/test/browser/chapter_preview.mjs`: 全章のPC・スマホ横/縦、見出し、映像内字幕・文字サイズ・操作ボタン、完走、保存不変、章末接続。
 - `node remake/test/browser/ch1_preview.mjs`: 初回・再視聴・旧セーブ、完走、読込遅延/失敗、中断、非表示時停止、動き軽減。
 - `node remake/test/browser/chapter_preview_samples.mjs`: 比較B/CのPC・タッチ、停止・スキップ・保存不変。
 
-録画は本編と同じ共通プレイヤーをChromiumで自然完走する。Playwrightは `remake/test/browser/` の依存を使う。CDPの実描画時刻を保持した30fps H.264/AACで音楽も録る。同じフォルダの `capture.json` に全カット・字幕/操作の収まり・画像デコード・保存不変・ブラウザエラーを記録する。
+初めて開いたブラウザでは映像だけが先に進み、音声が制限される場合は共通プレイヤーの「音を入れる」で音楽を解放する。映像の開始ボタンは不要。本編は既存のpointerdown/keydownによる音声解放と章末の自動再生を維持する。自動再生制限の実測は、テストの操作が許可を与えないようCDPのuserGesture:falseで確認する。
+
+録画は本編と同じ共通プレイヤーをChromiumで自然完走する。録画準備中だけ最初の台本要求を待たせ、開始用画面を挟まず、映像の先頭から音楽付きで記録する。Playwrightは `remake/test/browser/` の依存を使う。CDPの実描画時刻を保持した30fps H.264/AACで音楽も録る。同じフォルダの `capture.json` に全カット・字幕/操作の収まり・画像デコード・保存不変・ブラウザエラーを記録する。
 
 ```bash
 PREVIEW_URL='http://127.0.0.1:8123/remake/chapter-preview.html?ch=ch3' \

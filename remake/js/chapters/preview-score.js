@@ -278,5 +278,12 @@ export function createPreviewScore({ timeline = null, originalTimeline = null, q
     syncVolumes(true);
   }
 
-  return { seek, pause, resume, stop, setMuted };
+  // 自動再生で音声だけ止められている場合、実際の状態をUIへ返す。
+  function unlock() {
+    if (stopped || !ensureContext()) return Promise.resolve(false);
+    return ctx.resume().then(() => ctx.state === "running", () => false);
+  }
+  return { seek, pause, resume, stop, setMuted, unlock,
+    getAudioState: () => ctx?.state ?? "unavailable" };
+
 }

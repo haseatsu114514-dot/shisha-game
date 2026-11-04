@@ -1,5 +1,6 @@
 /* 既存セル画の構図を保つ。採用済みCは横長、比較A/Bは4:3のTV枠。 */
 @font-face { font-family: "Chapter Preview Dot"; src: url("../../assets/fonts/DotGothic16-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "Chapter Preview Mincho"; src: url("../fonts/ZenOldMincho-Blue-Regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
 .chapter-preview { position: absolute; inset: 0; z-index: 40; display: grid; place-items: center; background: #040508; color: #f9f6ec; pointer-events: auto; font-family: var(--font); isolation: isolate; }
 .preview-screen { position: absolute; left: 200px; top: 10px; width: 880px; height: 660px; overflow: hidden; background: #080c15; box-shadow: 0 0 0 1px #2a2930, 0 0 80px #181d36; }
 .preview-screen::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(transparent 53%, #04060d24 70%, #04060dc9 100%); box-shadow: inset 0 0 50px #0005; }
@@ -64,9 +65,9 @@
 .sample-quiet .preview-art { inset: 0; width: 100%; height: 100%; animation: none; }
 .sample-quiet .preview-grain { opacity: .045; }
 .sample-quiet .preview-bug { font-size: 16px; top: 20px; right: 20px; letter-spacing: .02em; color: #e8e3d9; }
-.sample-quiet .preview-caption { text-align: center; left: 45px; right: 45px; bottom: 32px; }
+.sample-quiet .preview-caption { text-align: center; left: 70px; right: 70px; bottom: 44px; }
 .sample-quiet .preview-caption small { display: none; }
-.sample-quiet .preview-caption p { font-family: var(--font); font-size: var(--preview-subtitle-size, 32px); line-height: 1.5; font-weight: 500; color: #fff; -webkit-text-stroke: 3px #080a0f; paint-order: stroke fill; text-shadow: 0 2px 4px #000, 1px 0 2px #000, -1px 0 2px #000; overflow-wrap: anywhere; }
+.sample-quiet .preview-caption p { font-family: "Chapter Preview Mincho", "Yu Mincho", serif; font-size: var(--preview-subtitle-size, 27px); line-height: 1.65; letter-spacing: .035em; font-weight: 400; color: #f8f5ed; -webkit-text-stroke: .5px #101116b3; paint-order: stroke fill; text-shadow: 0 1px 2px #000e; overflow-wrap: anywhere; }
 .sample-quiet .preview-screen[data-kind="prologue"] { background: #06070b; }
 .sample-quiet .preview-screen[data-kind="prologue"] .preview-caption { display: none; }
 .sample-quiet .preview-slate { background: #06070b; }
@@ -79,7 +80,7 @@
 .sample-quiet .preview-chapter-title span { font-size: 24px; }
 .sample-quiet .preview-chapter-title b { margin-top: 25px; font-size: 22px; color: #c3b69b; }
 .sample-quiet .preview-screen[data-kind="echo"] .preview-caption { bottom: 240px; text-align: center; }
-.sample-quiet .preview-screen[data-kind="echo"] .preview-caption p { font-size: var(--preview-subtitle-size, 32px); }
+.sample-quiet .preview-screen[data-kind="echo"] .preview-caption p { font-size: var(--preview-subtitle-size, 27px); }
 .sample-quiet .preview-controls, .sample-quiet .preview-progress { left: 80px; right: 80px; }
 .sample-quiet .preview-controls { height: var(--preview-control-height, 44px); }
 .sample-quiet .preview-control { min-height: var(--preview-control-height, 44px); font-size: var(--preview-control-size, 18px); }
