@@ -41,7 +41,7 @@ async function loadDialogues() {
   if (IDS.every(id => DB.dialogues[id]?.lines?.length)) return;
   if (!loading) loading = (async () => {
     const { CHAPTER_DIALOGUE_FILES } = await import("../core/data.js");
-    const { readDialogues } = await import("../chapters/ch2-city-data.js");
+    const { readDialogues } = await import("../core/chapter-data.js");
     Object.assign(DB.dialogues, await readDialogues(CHAPTER_DIALOGUE_FILES.cityGuests, IDS));
   })().finally(() => { loading = null; });
   await loading;
