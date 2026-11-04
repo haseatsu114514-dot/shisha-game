@@ -106,7 +106,8 @@ export function buildWorkerScene(cs) {
     const face = mental === "shaken" ? "surprise" : mental === "unsteady" ? "sad" : ["serious", "normal", "sad"][fatigue] || "serious";
     const p = portraitInfo("hajime", face);
     const calmUrl = makingUrl("hajime_steam_wait.png");
-    const calm = waiting && mental === "steady" && fatigue < 2 && usable(calmUrl) && calmUrl;
+    const settled = mental === "steady" || mental === "clear"; // 無心（#2519）も目を閉じた集中の絵
+    const calm = waiting && settled && fatigue < 2 && usable(calmUrl) && calmUrl;
     const src = calm || (usable(p?.src) ? p.src : faceUrls.find(usable));
     if (actor) actor.hidden = !src;
     if (actor && src && actor.getAttribute("src") !== src) actor.src = src;
@@ -120,7 +121,7 @@ export function buildWorkerScene(cs) {
     stage.setAttribute("aria-label", scene?.description || `はじめの作業風景：${WORKER_STEPS[root.dataset.step] || "一台を仕上げる"}`);
     if (waiting) {
       caption.textContent = WORKER_STEPS.steam;
-      stage.setAttribute("aria-label", calm ? "はじめが目を閉じて精神を集中し、蒸らしを待つ" : fatigue === 2 && mental === "steady" ? "蒸らしを待つはじめの目元に疲れが出ている" : mental !== "steady" ? "蒸らしを待つはじめの目元に動揺が出ている" : "はじめが集中して蒸らしを待つ");
+      stage.setAttribute("aria-label", calm ? (mental === "clear" ? "はじめが目を閉じ、無心で蒸らしを待つ" : "はじめが目を閉じて精神を集中し、蒸らしを待つ") : fatigue === 2 && settled ? "蒸らしを待つはじめの目元に疲れが出ている" : !settled ? "蒸らしを待つはじめの目元に動揺が出ている" : "はじめが集中して蒸らしを待つ");
     }
   };
   const ready = Promise.all([actions.ready, holes.ready, warmFaces, ...sceneArtUrls(homeBg, { homeRigs: false }).map(url => imageReady(url, 15000))]).then(async () => {

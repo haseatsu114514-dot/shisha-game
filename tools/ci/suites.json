@@ -71,6 +71,34 @@
       "chrome": "playwright"
     },
     {
+      "id": "craft-rank-wire",
+      "title": "Craft rank thresholds, provisional average and scoring compatibility",
+      "kind": "quick",
+      "run": [
+        "node --experimental-vm-modules remake/test/craft_rank_wire.mjs"
+      ]
+    },
+    {
+      "id": "craft-rank-wire-browser",
+      "title": "Craft rank during real sessions and cleanup",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/craft/session.js",
+        "remake/js/craft/score.js",
+        "remake/js/craft/common.js",
+        "remake/js/craft/pull.js",
+        "remake/js/craft/result.js",
+        "remake/css/craft-rank.css",
+        "remake/test/browser/craft_rank_wire.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/craft_rank_wire.mjs"
+      ],
+      "chrome": "playwright"
+    },
+    {
       "id": "naru-finish",
       "title": "Naru finishing temperature, catalog balance and SAVE/LOAD",
       "kind": "quick",
@@ -693,6 +721,8 @@
         "node --experimental-vm-modules remake/test/water_setup_helper.mjs",
         "node remake/test/water_setup_lifetime.mjs",
         "node remake/test/steam_heart.mjs",
+        "node remake/test/steam_patterns.mjs",
+        "node remake/test/steam_mind.mjs",
         "node remake/test/venue_hours.mjs",
         "node remake/test/ch2_progress.mjs",
         "node --experimental-vm-modules remake/test/ch2_followups.mjs",

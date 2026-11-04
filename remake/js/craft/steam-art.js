@@ -2,6 +2,15 @@
 import { el, clamp } from "../core/util.js";
 import { smokeUrl } from "./smoke-art.js";
 import { makingUrl } from "../core/data.js";
+import { SWEEP_LANES, RAIN_LANES } from "./steam-patterns.js";
+
+// 心の状態（#2519）ごとの精神世界の色と金の輪の揺れ。無心は澄み、動揺すると赤く大きく揺れる。
+const MIND_WORLD = {
+  clear: { halo: "#a8e6ff30", ring: [190, 225, 240], wobble: 1.2, pace: .45 },
+  steady: { halo: "#9d8bba26", ring: [205, 185, 143], wobble: 3, pace: .7 },
+  unsteady: { halo: "#e4bc7726", ring: [228, 188, 119], wobble: 5, pace: 1.3 },
+  shaken: { halo: "#ef879533", ring: [239, 135, 149], wobble: 9, pace: 2.6 },
+};
 
 export const HEART_ART = '<svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 24C9 20 2.5 15.5 2.5 9.5a6 6 0 0 1 11.5-2 6 6 0 0 1 11.5 2C25.5 15.5 19 20 14 24Z" fill="currentColor" stroke="#eefaff" stroke-width="1.6"/></svg>';
 export const BULLET_ART = {
@@ -12,7 +21,7 @@ export const BULLET_ART = {
   smoke: '<svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="#8e76be" fill-opacity=".25" stroke="#c8b5e8" stroke-width="1"/><path d="M8 20C1 12 17 3 21 12c4 9-12 13-13 5-1-7 11-9 10-3s-7 7-8 3" fill="none" stroke="#ddd1f9" stroke-width="1.5"/><circle cx="14" cy="14" r="2" fill="#f0e4ff"/></svg>',
 };
 
-export function buildSteamWorld(width, height) {
+export function buildSteamWorld(width, height, initialLevel = "steady") {
   const canvas = el("canvas.dodge-world", { "aria-hidden": "true", dataset: { test: "steam-world" } });
   const scale = Math.min(window.devicePixelRatio || 1, 1.5);
   canvas.width = Math.round(width * scale); canvas.height = Math.round(height * scale);
@@ -38,14 +47,15 @@ export function buildSteamWorld(width, height) {
     const bg = ctx.createLinearGradient(0, 0, width * .3, height);
     bg.addColorStop(0, "#17112847"); bg.addColorStop(.6, "#16192b30"); bg.addColorStop(1, "#0e0c1c44");
     ctx.fillStyle = bg; ctx.fillRect(0, 0, width, height);
+    const mind = MIND_WORLD[level] || MIND_WORLD.steady;
     const halo = ctx.createRadialGradient(cx, cy, 6, cx, cy, width * .48);
-    halo.addColorStop(0, "#9d8bba26"); halo.addColorStop(.38, "#77668816"); halo.addColorStop(1, "#16122400");
+    halo.addColorStop(0, mind.halo); halo.addColorStop(.38, "#77668816"); halo.addColorStop(1, "#16122400");
     ctx.fillStyle = halo; ctx.fillRect(0, 0, width, height);
     // 奥へ溶ける、細い金の円。判定を持つ弾よりずっと暗く描く。
     for (let i = 0; i < 4; i++) {
-      const r = 65 + i * 32 + Math.sin(t * .7 + i) * 3;
+      const r = 65 + i * 32 + Math.sin(t * mind.pace + i) * mind.wobble;
       ctx.beginPath(); ctx.ellipse(cx, cy, r * 1.6, r * .6, -.18 + i * .08, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(205,185,143,${.08 - i * .012})`; ctx.lineWidth = .8; ctx.stroke();
+      ctx.strokeStyle = `rgba(${mind.ring.join(",")},${.08 - i * .012})`; ctx.lineWidth = .8; ctx.stroke();
     }
     const horizon = ctx.createLinearGradient(0, 0, width, 0);
     horizon.addColorStop(0, "#d6c49b00"); horizon.addColorStop(.5, "#cbb79828"); horizon.addColorStop(1, "#d6c49b00");
@@ -66,12 +76,33 @@ export function buildSteamWorld(width, height) {
       ctx.strokeStyle = trail; ctx.lineWidth = 1.3;
       ctx.beginPath(); ctx.moveTo(x - dx, y - dy); ctx.lineTo(x, y); ctx.stroke();
     }
-    // 横なぎの予告は、入口と通れる隙間の両方を見せる。
+    // 波の予告は、入口と通れる隙間の両方を見せる（横なぎ・挟み撃ち・雨は隙間の帯、扇・輪は撃つ点と向き）。
     if (warning) {
-      const y = (warning.gap - 1) * height / 9, h = height / 3;
-      ctx.fillStyle = "#9edddc0b"; ctx.fillRect(0, y, width, h);
-      ctx.strokeStyle = "#b5e9de55"; ctx.lineWidth = 1; ctx.setLineDash([3, 7]);
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.moveTo(0, y + h); ctx.lineTo(width, y + h); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = "#9edddc0b"; ctx.strokeStyle = "#b5e9de55"; ctx.lineWidth = 1; ctx.setLineDash([3, 7]);
+      ctx.beginPath();
+      const band = gap => {
+        const y = (gap - 1) * height / SWEEP_LANES, h = height * 3 / SWEEP_LANES;
+        ctx.fillRect(0, y, width, h); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.moveTo(0, y + h); ctx.lineTo(width, y + h);
+      };
+      if (warning.kind === "rain") {
+        const x = (warning.gap - 1) * width / RAIN_LANES, w = width * 3 / RAIN_LANES;
+        ctx.fillRect(x, 0, w, height); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.moveTo(x + w, 0); ctx.lineTo(x + w, height);
+      } else if (warning.kind === "fan") {
+        for (let i = -2; i <= 2; i++) {
+          const a = warning.angle + i * .2;
+          ctx.moveTo(warning.x, warning.y); ctx.lineTo(warning.x + Math.cos(a) * 150, warning.y + Math.sin(a) * 150);
+        }
+      } else if (warning.kind === "ring") {
+        ctx.moveTo(warning.x + 18, warning.y); ctx.arc(warning.x, warning.y, 18, 0, Math.PI * 2);
+        for (let i = 0; i < 12; i++) {
+          const a = warning.turn + i * Math.PI / 6;
+          ctx.moveTo(warning.x + Math.cos(a) * 26, warning.y + Math.sin(a) * 26); ctx.lineTo(warning.x + Math.cos(a) * 40, warning.y + Math.sin(a) * 40);
+        }
+      } else {
+        band(warning.gap);
+        if (warning.kind === "pincer") band(warning.otherGap);
+      }
+      ctx.stroke(); ctx.setLineDash([]);
     }
     if (burst) {
       const p = clamp((time - burst.time) / .85, 0, 1);
@@ -85,7 +116,7 @@ export function buildSteamWorld(width, height) {
       if (p === 1) { burst.echoes.forEach(n => n.remove()); burst = null; }
     }
   };
-  draw(0, width / 2, height / 2);
+  draw(0, width / 2, height / 2, [], null, initialLevel);
   return { root, draw, dissolve(time, cleared, { echoWords = true } = {}) {
     burst?.echoes.forEach(n => n.remove());
     const echoes = cleared.filter(b => echoWords && b.word).map(b => el("span.dodge-thought-echo", {

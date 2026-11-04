@@ -123,6 +123,7 @@ export async function runCare(cs, { round = 0 } = {}) {
   if (round && cs.care) {
     cs.careHistory ??= [];
     cs.careHistory[round - 1] = { ...cs.care, coalsDetail: cs.careCoals ? { ...cs.careCoals } : null };
+    refreshBench();
   }
 }
 
