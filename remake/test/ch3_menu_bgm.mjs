@@ -72,7 +72,7 @@ async function harness(chapter, value) {
     const depUrl = new URL(specifier, url);
     if (specifier === "../core/chapter-actions.js") {
       const dep = new vm.SourceTextModule(readFileSync(depUrl, "utf8"), { context });
-      await dep.link(async () => synthetic(new URL("../core/util.js", url), ["el"]));
+      await dep.link(async () => synthetic(new URL("../core/util.js", url), [...(required.get(new URL("../core/util.js", url).href) || []), "el"]));
       return dep;
     }
     if (specifier === "./ch3-aftermath-progress.js") {
