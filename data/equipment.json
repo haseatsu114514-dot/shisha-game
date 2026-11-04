@@ -60,7 +60,7 @@
       "sell_price": 750,
       "price": 1500,
       "value": "lotos_hagal",
-      "description": "初期装備。熱が均一に回り、再現性が高い。"
+      "description": "初期装備。ボウルに直接のせて使い、アルミは張らない。熱が均一に回り、再現性が高い。"
     },
     {
       "id": "tanukish_lid",
@@ -71,7 +71,7 @@
       "sell_price": 1000,
       "price": 2000,
       "value": "tanukish_lid",
-      "description": "使いやすく癖が少ない。"
+      "description": "使いやすく癖が少ない。素焼きサイズには使えない。"
     },
     {
       "id": "amaburst_hms",
@@ -82,7 +82,7 @@
       "sell_price": 750,
       "price": 1500,
       "value": "amaburst",
-      "description": "温度が上がりやすく、直炭に近い高火力を出しやすい。"
+      "description": "素焼きハガルにも装着可能。温度が上がりやすく、直炭に近い高火力を出しやすい。"
     },
     {
       "id": "flat_charcoal",
@@ -522,7 +522,7 @@
       "price": 14000,
       "value": "lotos_plus",
       "art": "lotos_hagal",
-      "description": "ロートスHMDの上位モデル。厚い蓋で熱がぶれにくい。"
+      "description": "ロートスHMDの上位モデル。ボウルに直接のせて使い、アルミは張らない。厚い蓋で熱がぶれにくい。"
     },
     {
       "id": "dense_flat_charcoal",
