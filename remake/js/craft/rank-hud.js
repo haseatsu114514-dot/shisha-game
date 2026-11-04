@@ -133,21 +133,22 @@ export function buildCraftRank(initial = null) {
   } };
 }
 
-/** モード名の位置を置換。進行パネルや他の上帯ボタンには触れない。 */
-export function mountCraftRank(top, initial = null) {
+/** モード名の位置へ取付け。preserveMode は案内を残す本編用の併設。 */
+export function mountCraftRank(top, initial = null, { preserveMode = false } = {}) {
   if (!top?.classList?.contains("bench-top")) throw new TypeError("A bench-top element is required");
   if (top.querySelector(".craft-rank")) throw new Error("Craft rank is already mounted");
   const rank = buildCraftRank(initial);
   const mode = top.querySelector(".bench-mode");
   const next = mode?.nextSibling ?? top.firstChild;
-  if (mode) mode.replaceWith(rank.root);
+  if (mode && preserveMode) top.insertBefore(rank.root, next);
+  else if (mode) mode.replaceWith(rank.root);
   else top.prepend(rank.root);
   let disposed = false;
   return { root: rank.root, update: rank.update, dispose() {
     if (disposed) return;
     disposed = true;
-    if (mode && rank.root.parentNode === top) rank.root.replaceWith(mode);
-    else if (mode && top.isConnected && !top.querySelector(".bench-mode")) top.insertBefore(mode, next?.parentNode === top ? next : top.firstChild);
+    if (!preserveMode && mode && rank.root.parentNode === top) rank.root.replaceWith(mode);
+    else if (!preserveMode && mode && top.isConnected && !top.querySelector(".bench-mode")) top.insertBefore(mode, next?.parentNode === top ? next : top.firstChild);
     rank.dispose();
   } };
 }
