@@ -151,7 +151,7 @@ await suite('ch2-story', async check => {
     assert.deepEqual(trace.filter(id => expected.includes(id)), expected);
     const texts = await page.evaluate(() => window.__storyTexts.join('\n'));
     assert(!/ヴォルク|組長の|鉄の煙/.test(texts));
-    // #929: DAY9はC.STATION柚ヶ谷店のアフサール新作試煙会。未対面の神崎・REIはそこで名乗り、面識が残る
+    // #929: DAY9はC.STATION柚ヶ谷店のアフサール新作試煙会。未対面の神崎・レヰはそこで名乗り、面識が残る
     assert.match(texts, /アフサール新作 先行試煙会/); assert(!/店長同士の試飲会/.test(texts));
     assert(s.met.kumicho && s.met.rei); assert(s.flags._ch2_afsahr_tasting);
     assert(s.flags._ch2_scout_seen && !s.met.volk); // #929: 名乗らない偵察の男を見た記録だけ残す
@@ -216,7 +216,7 @@ await suite('ch2-story', async check => {
     assert.deepEqual((await page.locator('.spot-pin').evaluateAll(nodes=>nodes.map(n=>n.dataset.test))).sort(),
       ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-ch2_shop','pin-ch2_c_station','station-open'].sort());
     assert.equal(await page.locator(t('pin-ch2_volk')).count(), 0);
-    assert.equal(await page.locator(t('pin-trpg_bar')).count(), 0, 'TRPG bar waits for REI introduction');
+    assert.equal(await page.locator(t('pin-trpg_bar')).count(), 0, 'TRPG bar waits for レヰ introduction');
     const logos = await page.locator('.store-logo img').evaluateAll(async imgs => {
       await Promise.all(imgs.map(i => i.decode())); return imgs.map(i => i.naturalWidth);
     }); assert.equal(logos.length, 5); assert(logos.every(width => width > 0), "All five adopted store logos must decode");

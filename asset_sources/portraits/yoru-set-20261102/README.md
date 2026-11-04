@@ -13,6 +13,6 @@ Issue #2199。Codex（image_gen）が PR #2228 で作った5枚組（normal / sm
 | `surprise-source.png` | `6aaef3623931f0555845ef703f80411843c8abcd2d116d4bb9dd23195444f9aa` |
 | `sad-source.png` | `fec2e72eb1909ce19dc666e8d0ad1d5b96b55b2e427c25a451ae15823b6c8eb4` |
 
-- Codex の記録（#2228）: normal は41歳の落ち着いた表情、左側の刈り上げと銀メッシュ、首のヘッドフォン、紫の縫い目、全身と両足、透明アルファを確認して採用。残り4枚は normal を同一性参照として1表情ずつ生成し、同じ衣装・髪型・体格と透明アルファを確認。久世・あげはの採用済み立ち絵は画風だけの参照で、実在の DJ・アーティストは参照していない。
+- Codex の記録（#2228）: normal は41歳の落ち着いた表情、左側の刈り上げと銀メッシュ、首のヘッドフォン、紫の縫い目、全身と両足、透明アルファを確認して採用。残り4枚は normal を同一性参照として1表情ずつ生成し、同じ衣装・髪型・体格と透明アルファを確認。綾取・あげはの採用済み立ち絵は画風だけの参照で、実在の DJ・アーティストは参照していない。
 - 配布用 `assets/sprites/characters/yoru/chr_yoru_<表情>.png`（896×1200 透過）と WebP は #2228 のものをそのまま使う（`tools/fit_portrait.py` で人物の高さ1160・足元を下から20pxにそろえてある）。5枚とも人物の高さ・足元の位置が同じで、表情を切り替えても上下にずれないことを確認した。
 - 顔アイコン `assets/ui/face_icons/face_yoru.png` は `python3 tools/make_face_icons.py yoru` で作り直し、#2228 のものと画素まで一致。目録は `python3 remake/tools/build_manifest.py --portraits-only yoru` と `--intros-only yoru`（旧絵柄のカットインの人物位置）。

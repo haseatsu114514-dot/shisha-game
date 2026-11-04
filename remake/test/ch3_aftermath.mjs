@@ -187,7 +187,7 @@ assert(!mukaiAfter.lines.some(line => /屋根裏|鍵/.test(line.text || "")), "t
   assert.deepEqual(volkOpen(), ["ch3_volk_after_ch3"]);
 }
 console.log("PASS: Chapter 3 aftermath reopens Volk's unread visits in order, each with the same optional-scene affinity");
-// IR22: 久世の締めくくり（♥5）は、大会前の来店で読めなかった時だけ大会後の寄り道から。煙幕の片づけの前まで。
+// IR22: 綾取の締めくくり（♥5）は、大会前の来店で読めなかった時だけ大会後の寄り道から。煙幕の片づけの前まで。
 {
   assert.deepEqual(CH3_AFTERMATH_FINALES.map(entry => [entry.who, entry.dialogue]), [["kuze", "ch3_kuze_bond_finale"]]);
   const finale = scenes.ch3_kuze_bond_finale;
@@ -210,11 +210,11 @@ console.log("PASS: Chapter 3 aftermath reopens Volk's unread visits in order, ea
   completeChapterThreeAftermathScene(window, "ch3_mashiro_recovery");
   assert.deepEqual(open(window), ["kuze"]);
   completeChapterThreeAftermathScene(window, "ch3_naru_reconcile");
-  assert.deepEqual(open(window), [], "the cleanup morning: Kuze is packing the shop");
+  assert.deepEqual(open(window), [], "the cleanup morning: Ayatori is packing the shop");
   const loser = winningSave(); loser.flags._ch3_tournament.result.rank = 4;
   assert.deepEqual(open(loser), [], "a non-winning save has no aftermath finale");
 }
-console.log("PASS: Chapter 3 aftermath offers Kuze's ♥5 finale until the cleanup morning, read-only");
+console.log("PASS: Chapter 3 aftermath offers Ayatori's ♥5 finale until the cleanup morning, read-only");
 // 大会後の東京で、灯した授業を相談できる（SPEC 2.6・SBD61）。窓は場面idで決まり、保存は変更しない。
 {
   assert.deepEqual(CH3_AFTERMATH_LESSONS.map(entry => entry.who), ["kuze", "steve", "volk", "mashiro"]);
@@ -245,7 +245,7 @@ console.log("PASS: Chapter 3 aftermath offers Kuze's ♥5 finale until the clean
   assert.deepEqual(who(lessonSave, () => []), [], "nothing lit, nothing listed");
   assert.deepEqual(who(lessonSave, () => undefined), [], "a missing growth list is treated as empty");
   completeChapterThreeAftermathScene(lessonSave, "ch3_naru_reconcile");
-  assert.deepEqual(who(lessonSave), ["volk"], "the cleanup morning: Kuze is packing the shop, only Volk is left");
+  assert.deepEqual(who(lessonSave), ["volk"], "the cleanup morning: Ayatori is packing the shop, only Volk is left");
   // 寄り道を全部読んでも、授業だけで寄り道の入口が開く（ch3-aftermath.js は寄り道と授業の合計で入口を出す）
   lessonSave.met = { ...lessonSave.met, emil: true, volk: true };
   for (const id of detourIds) assert.equal(completeAftermathDetour(lessonSave, id), true);

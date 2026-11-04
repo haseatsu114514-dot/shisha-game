@@ -287,7 +287,7 @@ async function renderPrologue(owner) {
 }
 
 /**
- * 出発前の準備3日（VOL02）: 章頭の回想 → 久世の調べもの → 章題 → 準備1日目の朝のtonari →
+ * 出発前の準備3日（VOL02）: 章頭の回想 → 綾取の調べもの → 章題 → 準備1日目の朝のtonari →
  * 地元・柚ヶ谷の日常ループ3日（最後の日の昼に耳鼻科、夜に出発前夜）→ 出発の朝の新幹線 → 東京DAY1。
  * 進み具合は flags._ch3_prep.step（0〜6）。各段は読み終えた時だけ進め、中断・LOADは同じ段から。
  */
@@ -414,7 +414,7 @@ async function renderStage(owner) {
     if (!state.flags._ch3_evening && !await settleEveningAtReady(owner)) return;
     if (!current(owner)) return;
     if (!await chapterGrowthNight(owner, () => current(owner), { evePlace: "tokyo_shrine" })) return;
-    card(owner, "ready", "全国大会の朝", "久世、スティーブ、ヴォルクと同じ舞台へ。手順と、昨日決めた一台を確かめる。", [
+    card(owner, "ready", "全国大会の朝", "綾取、スティーブ、ヴォルクと同じ舞台へ。手順と、昨日決めた一台を確かめる。", [
       button(owner, "HAZE: NATIONAL TOKYOへ", "tournament", async () => {
         const mod = await withLoadingNotice(import("./ch3-tournament.js"), loadingNotice("全国大会を準備しています…"));
         await mod.runChapterThreeTournament();
@@ -533,7 +533,7 @@ function friendActions(owner) {
 }
 
 /**
- * 回復後の試作（#1654）。久世・スティーブの場面を読んだあと、大会前の場面カードに一度ずつ出す。
+ * 回復後の試作（#1654）。綾取・スティーブの場面を読んだあと、大会前の場面カードに一度ずつ出す。
  * 寄り道と同じく本筋の予定は進めない。完了と講評の既読は ch3-trials.js が保存する。
  */
 function trialActions(owner) {
@@ -555,8 +555,8 @@ function bondActions(owner) {
   return [
     ...kind ? [button(owner, kind === "question" ? "ましろちゃんと話す（mukai）" : "ましろちゃんに呼ばれる（mukai）",
       `bond-${kind}`, () => readBond(owner, kind))] : [],
-    // 久世の締めくくり（#2028）。条件は daily/bonds.js（LIME交換の寄り道と答えを返す外出の後）。友情の着地だけ。
-    ...finaleAtVisit("kuze") ? [button(owner, "久世に呼ばれる（煙幕）", "bond-kuze-finale",
+    // 綾取の締めくくり（#2028）。条件は daily/bonds.js（LIME交換の寄り道と答えを返す外出の後）。友情の着地だけ。
+    ...finaleAtVisit("kuze") ? [button(owner, "綾取に呼ばれる（煙幕）", "bond-kuze-finale",
       () => readBond(owner, "finale", "kuze"))] : [],
   ];
 }
@@ -732,7 +732,7 @@ async function renderFreeTime(owner, window) {
 
 /** 「今日は誰に何を聞きに行くか」「大会までに何を試すか」を、行ける行き先の理由から短く示す。 */
 function freeTimeHint(window) {
-  // 通いの行き先（久世の煙幕・客のスティーブ）は、初めての時だけ候補に挙げる。
+  // 通いの行き先（綾取の煙幕・客のスティーブ）は、初めての時だけ候補に挙げる。
   const outings = chapterThreeOutings(state, window.id).filter(item => !item.repeat || item.talks && !outingCounts(state)[item.id]);
   const trials = availableChapterThreeTrials(state);
   const parts = [

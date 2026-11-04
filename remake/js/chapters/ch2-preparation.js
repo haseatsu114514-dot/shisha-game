@@ -43,7 +43,7 @@ function repeatScene(id) {
 const descriptions = {
   ageha: "平成ギャルの店。あげはと香りの話を。",
   kumicho: "黒革の応接室で、神崎と仕事の話をする。",
-  rei: "CDとギターの店。REIと曲の話をする。",
+  rei: "CDとギターの店。レヰと曲の話をする。",
 };
 const unknownDescriptions = {
   ageha: "クマとギャル小物が並ぶシーシャ店。",
@@ -59,11 +59,11 @@ export const PREPARATION_SPOTS = STOPS.filter(stop => ROOMS[stop.id]).map(stop =
 }));
 
 // ---- 第2章の後の柚ヶ谷（第5章の日常ループ・#2033） ----------------------------------
-// 第5章は、神崎・REIの店に「昼夜のあいさつ＋通い訪問の小会話」だけで通える。
+// 第5章は、神崎・レヰの店に「昼夜のあいさつ＋通い訪問の小会話」だけで通える。
 // 第2章の段階会話・続編・締めくくり・あげはの通う回・プリクラ・質問は出さない（第2章の物語のため）。
 // あげはの店（ヒロイン）は、第5章の通いの小会話として chapters/ch5-shops.js が出す。
 export const CITY_REGULARS = Object.freeze(["kumicho", "rei"]);
-/** 第5章の柚ヶ谷に出す店（会ったことのある神崎・REIだけ）。 */
+/** 第5章の柚ヶ谷に出す店（会ったことのある神崎・レヰだけ）。 */
 export const cityRegularSpots = (value = state) => PREPARATION_SPOTS.filter(spot => CITY_REGULARS.includes(spot.charId) && value.met?.[spot.charId]);
 let regularScenes = null;
 async function loadRegularScenes() {
@@ -167,7 +167,7 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   const first = !state.flags._ch2_talks?.[id];
   // 旧セーブの総訪問・好感度・思い出から、新しい会話の読了を作らない。
   const stages = CH2_VISIT_STORIES[id];
-  // 神崎・REIは訪問列の最古の未読を、必要ハートに届いた時だけ読む。届くまではrepeat（#1648）。
+  // 神崎・レヰは訪問列の最古の未読を、必要ハートに届いた時だけ読む。届くまではrepeat（#1648）。
   const pendingStage = !first && stages ? stages.find(entry => !ch2VisitDone(state.flags, id, entry)) : null;
   const stage = pendingStage && affinityLevel(id) >= pendingStage.heart ? pendingStage : null;
   const pendingFollowup = !first && !stages && !state.flags._ch2_followup_done?.[id];
@@ -247,12 +247,12 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   if (state.flags[`_lime_contact_${id}`] && !state.contacts.includes(id)) state.contacts.push(id);
   // あげはの交換後LIME（lime_ch2_ageha_after_visit）と旧セーブ互換の到達フラグ
   if (id === "ageha" && state.flags._lime_contact_ageha) state.flags._ch2_ageha_contact = true;
-  // 神崎・REIの長い段階会話・あげはの店に通う回（VOL06）・締めくくりは、第1章の固有会話と同じ（#2027）。
+  // 神崎・レヰの長い段階会話・あげはの店に通う回（VOL06）・締めくくりは、第1章の固有会話と同じ（#2027）。
   // 値は core/stats.js の visitAffinity（段階 +16・いつもの会話 +8。第5章は +10／+5。AFB01）。
   gainAffinity(id, visitAffinity(first || finale || story || stages && stage?.file ? "story" : "talk")); earnStat(stat[id], 4);
   // 心得の盤で灯した授業があれば、その店で相談して習う（SBD61: 会った時だけ）
   if (state === owner) await consultLessons(id, { bg: ROOMS[id] });
-  // 部活の勧誘（REI・あげは）も地元の訪問と同じく、会えた後にだけ。入部は暦の精算と一緒に保存する。
+  // 部活の勧誘（レヰ・あげは）も地元の訪問と同じく、会えた後にだけ。入部は暦の精算と一緒に保存する。
   if (state === owner) await maybeRecruitTrpgMember(id);
   return { used: true, exerted: true };
 }

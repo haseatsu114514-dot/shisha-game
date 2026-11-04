@@ -28,9 +28,9 @@
     {
       "dialogue_id": "ch3_outing_enmaku_notes",
       "lines": [
-        { "speaker": "", "text": "路地の「煙幕」。開店前の店で、久世がノートをめくっていた。" },
+        { "speaker": "", "text": "路地の「煙幕」。開店前の店で、綾取がノートをめくっていた。" },
         { "speaker": "kuze", "face": "smile", "text": "あれ、来てくれたんだ。今日は吸う？　休む？" },
-        { "speaker": "hajime", "face": "normal", "text": "今日は話だけ。久世さんのノート、何を書いてるのか気になって" },
+        { "speaker": "hajime", "face": "normal", "text": "今日は話だけ。綾取さんのノート、何を書いてるのか気になって" },
         { "speaker": "kuze", "face": "normal", "text": "葉と炭の位置。それから、客が何の味だと言ったか" },
         { "speaker": "kuze", "face": "normal", "text": "同じ一台でも、答えはばらばら。外れた答えの方が、面白いことも多いよ" },
         { "speaker": "hajime", "face": "normal", "text": "外れた答えも、消さないんですね" },
@@ -44,7 +44,7 @@
     {
       "dialogue_id": "ch3_outing_enmaku_answer",
       "lines": [
-        { "speaker": "", "text": "昼の煙幕。久世は客席を拭きながら、こちらに手を振った。" },
+        { "speaker": "", "text": "昼の煙幕。綾取は客席を拭きながら、こちらに手を振った。" },
         { "speaker": "kuze", "face": "smile", "text": "来たね。で、どうしたいか決まった？" },
         {
           "type": "condition",
@@ -61,7 +61,7 @@
         "tried": [
           { "speaker": "hajime", "face": "normal", "text": "mukaiで一台作りました。炭を急がない方が、後ろに甘さが残りました" },
           { "speaker": "kuze", "face": "surprise", "text": "自分の台で確かめたんだ。……それ、僕に教えてよかったの？" },
-          { "speaker": "hajime", "face": "smile", "text": "久世さんに聞いたことだから。答えも返したくて" },
+          { "speaker": "hajime", "face": "smile", "text": "綾取さんに聞いたことだから。答えも返したくて" },
           { "speaker": "kuze", "face": "smile", "text": "律儀だなぁ。じゃあ僕からも一つ" }
         ],
         "untried": [
@@ -317,11 +317,11 @@
     },
     {
       "dialogue_id": "ch3_outing_enmaku_visit",
-      "comment": "煙幕に通う（AFB02）。久世のノートの話の後に、繰り返し寄れる。1回目はこれ、2回目からは _b と _c を交互。味の言葉ははじめに言わせない（味覚が戻る前でも読める）。好感度は任意の外出の確定時に付ける。",
+      "comment": "煙幕に通う（AFB02）。綾取のノートの話の後に、繰り返し寄れる。1回目はこれ、2回目からは _b と _c を交互。味の言葉ははじめに言わせない（味覚が戻る前でも読める）。好感度は任意の外出の確定時に付ける。",
       "lines": [
-        { "speaker": "", "text": "路地の「煙幕」。久世はカウンターで、ノートに二本の線を引いていた。" },
+        { "speaker": "", "text": "路地の「煙幕」。綾取はカウンターで、ノートに二本の線を引いていた。" },
         { "speaker": "kuze", "face": "smile", "text": "いらっしゃい。ちょうどいい所に来た。これ見て" },
-        { "speaker": "", "text": "ノートの左には久世の予想、右には客の答えが並んでいる。" },
+        { "speaker": "", "text": "ノートの左には綾取の予想、右には客の答えが並んでいる。" },
         { "speaker": "hajime", "face": "normal", "text": "「雨の日の縁側」……これ、味の名前ですか？" },
         { "speaker": "kuze", "face": "smile", "text": "さっきの客の答え。僕の予想は「白桃」だった" },
         { "speaker": "kuze", "face": "smug", "text": "外れたね。でも、こういう答えが一番うれしい" },
@@ -335,7 +335,7 @@
       "dialogue_id": "ch3_outing_enmaku_visit_b",
       "comment": "煙幕に通う（_c と交互）。大げさな噂は自分で流し、片付けは自分でする（characters.json）。",
       "lines": [
-        { "speaker": "", "text": "客の引いた煙幕。久世は一人で、ホースを一本ずつ洗っていた。" },
+        { "speaker": "", "text": "客の引いた煙幕。綾取は一人で、ホースを一本ずつ洗っていた。" },
         { "speaker": "hajime", "face": "normal", "text": "手伝います" },
         { "speaker": "kuze", "face": "surprise", "text": "え、いいの？　……じゃあ、そっちのボウルをお願い" },
         { "speaker": "kuze", "face": "smug", "text": "そうだ。今日も噂、流しといたよ" },
@@ -348,9 +348,9 @@
     },
     {
       "dialogue_id": "ch3_outing_enmaku_visit_c",
-      "comment": "煙幕に通う（_b と交互）。はじめの手帳。「書記」は久世のノートの話（ch3_outing_enmaku_notes）と同じ冗談。",
+      "comment": "煙幕に通う（_b と交互）。はじめの手帳。「書記」は綾取のノートの話（ch3_outing_enmaku_notes）と同じ冗談。",
       "lines": [
-        { "speaker": "", "text": "煙幕のカウンター。久世が、こちらの手帳をのぞき込んだ。" },
+        { "speaker": "", "text": "煙幕のカウンター。綾取が、こちらの手帳をのぞき込んだ。" },
         { "speaker": "kuze", "face": "smile", "text": "それ、手帳？　何を書いてるの" },
         { "speaker": "hajime", "face": "normal", "text": "客の顔と、煙の量です" },
         { "speaker": "kuze", "face": "normal", "text": "見せて。……「二口目で黙る」って書いてある" },

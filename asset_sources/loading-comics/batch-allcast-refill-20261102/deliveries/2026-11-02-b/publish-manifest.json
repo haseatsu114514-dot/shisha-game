@@ -17,7 +17,7 @@
       "qa": {
         "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
         "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
-        "identity": "official Hajime/Kuze normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
         "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
         "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
         "gag": "v1 extra background human silhouettes; v2 fixed silhouettes; v3 moved reply bubble up and resolved narrow lower margin.",
@@ -39,7 +39,7 @@
       "qa": {
         "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
         "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
-        "identity": "official Hajime/Kuze normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
         "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
         "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
         "gag": "v2 moves reply bubble up, resolving narrow lower margin. Large nonalcoholic drinks reveal.",
@@ -61,7 +61,7 @@
       "qa": {
         "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
         "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
-        "identity": "official Hajime/Kuze normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
         "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
         "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
         "gag": "Large impossible pouch inventory gag. No text on props.",
@@ -83,10 +83,10 @@
       "qa": {
         "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
         "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
-        "identity": "official Hajime/Kuze normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
         "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
         "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
-        "gag": "Extra Kuze images are scripted mirror reflections, not extra characters. Multiple reflection poses are gag stylization.",
+        "gag": "Extra Ayatori images are scripted mirror reflections, not extra characters. Multiple reflection poses are gag stylization.",
         "dimensions": [
           1536,
           1024
@@ -105,10 +105,10 @@
       "qa": {
         "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
         "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
-        "identity": "official Hajime/Kuze normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
         "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
         "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
-        "gag": "Kuze shrinks and hides in/behind teacup as gag exaggeration. No person-setting change.",
+        "gag": "Ayatori shrinks and hides in/behind teacup as gag exaggeration. No person-setting change.",
         "dimensions": [
           1536,
           1024
@@ -127,7 +127,7 @@
       "qa": {
         "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
         "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
-        "identity": "official Hajime/Kuze normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
         "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
         "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
         "gag": "Hajime wears scripted protective goggles and respirator and uses kitchen tongs; these are gag precautions, not smoking hardware.",
@@ -149,7 +149,7 @@
       "qa": {
         "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
         "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
-        "identity": "official Hajime/Kuze normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
         "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
         "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
         "gag": "v1 reply touched lower frame; v2 fixes margin and final speech tail to Hajime. Falling character has cushion; no injury.",
@@ -171,10 +171,10 @@
       "qa": {
         "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
         "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
-        "identity": "official Hajime/Kuze normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
         "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
         "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
-        "gag": "v1 extra human silhouettes in background; v2 removes them. Smartphone Kuze is scripted photo, not extra character.",
+        "gag": "v1 extra human silhouettes in background; v2 removes them. Smartphone Ayatori is scripted photo, not extra character.",
         "dimensions": [
           1536,
           1024
@@ -193,7 +193,7 @@
       "qa": {
         "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
         "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
-        "identity": "official Hajime/Kuze normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
         "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
         "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
         "gag": "Trophy handoff and open palms visible; candy itself not prominent after reveal. Large cheerful victory gag.",
@@ -215,7 +215,7 @@
       "qa": {
         "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
         "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
-        "identity": "official Hajime/Kuze normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
         "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
         "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
         "gag": "Upside-down notebook indicated by spiral binding moving from top to bottom; shakes, sweat and spilled tea clear.",

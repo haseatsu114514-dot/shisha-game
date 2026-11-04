@@ -11,9 +11,9 @@
     "どこに入ってた？"
   ],
   "first_speaker": "hajime",
-  "panel1": "久世の店の前。左のはじめがメモ帳を手に「ペン、ありますか？」。右の久世が腰の小さな藍色のポーチに手を入れて「あるよ、待って。」。",
-  "panel2": "同じ位置。右の久世の小さなポーチから、ペンの束・ノート十冊・やかん・地球儀・植木鉢・折りたたみ椅子・大きなクッションが次々に出てきて、足元に山になっている。久世はまだ何か引っぱり出している最中。左のはじめが「どこに入ってた？」。物の山はコマの中央寄りに大きく。",
-  "caption": "腰のポーチは久世の目印。中身はノートのはず。",
+  "panel1": "綾取の店の前。左のはじめがメモ帳を手に「ペン、ありますか？」。右の綾取が腰の小さな藍色のポーチに手を入れて「あるよ、待って。」。",
+  "panel2": "同じ位置。右の綾取の小さなポーチから、ペンの束・ノート十冊・やかん・地球儀・植木鉢・折りたたみ椅子・大きなクッションが次々に出てきて、足元に山になっている。綾取はまだ何か引っぱり出している最中。左のはじめが「どこに入ってた？」。物の山はコマの中央寄りに大きく。",
+  "caption": "腰のポーチは綾取の目印。中身はノートのはず。",
   "type": "持ち物が多すぎる",
   "note": "正本の「ノートを入れた腰のポーチ」から。中身の量は番外編の誇張。",
   "num": 13,
@@ -63,7 +63,7 @@
   "qa": {
     "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
     "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
-    "identity": "official Hajime/Kuze normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+    "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
     "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
     "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
     "gag": "Large impossible pouch inventory gag. No text on props.",

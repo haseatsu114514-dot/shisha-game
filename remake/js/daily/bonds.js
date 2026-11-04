@@ -47,7 +47,7 @@ export const BOND_FINALES = {
   ageha: { dialogue: "ch2_ageha_bond_finale", gift: "suyaki_ageha", laterConfession: true },
   // ましろ（#2022）: 第3章の場面カードから（chapters/ch3.js）。告白は寄り道 confession_mashiro（#1930・IR20）が担うので予約しない。
   mashiro: { dialogue: "ch3_mashiro_bond_finale", gift: "suyaki_mashiro", question: "bond_q2_mashiro", ownConfession: true },
-  // 久世（#2028）: 第3章の煙幕への来店（ch3-tokyo-daily.js）・旧行程の場面カード（chapters/ch3.js）・
+  // 綾取（#2028）: 第3章の煙幕への来店（ch3-tokyo-daily.js）・旧行程の場面カード（chapters/ch3.js）・
   // 大会後の寄り道（ch3-aftermath.js）から。恋愛対象外なので友情の着地だけ。条件はほかの人物と同じ♥5（IR22）。
   // 煙幕には何度でも通えて♥5に届く（AFB02・#2347）ので、仮の♥1（#2281）は外した。
   kuze: { dialogue: "ch3_kuze_bond_finale", gift: "suyaki_kuze" },
@@ -232,7 +232,7 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
     && (isLover(id) || !!state.flags._friend_samechan || !!state.flags[questionDoneKey("samechan")]
       && state.romanceChoices?.bond_q1_samechan?.char === id)
     && samechanHeartEventsDone(state) // ♥4・♥5の来店会話（#2025）
-  // 久世: LIME交換の寄り道と、助言の後の「答えを返しに行く」外出の両方（ch3-story-wiring.js / ch3-outing-progress.js の保存キーの写し）
+  // 綾取: LIME交換の寄り道と、助言の後の「答えを返しに行く」外出の両方（ch3-story-wiring.js / ch3-outing-progress.js の保存キーの写し）
   : id === "kuze" ? !!state.flags._ch3_read_ch3_kuze_lime && !!state.flags._lime_contact_kuze
     && (state.flags._ch3_outings?.enmaku_answer || 0) > 0
   : id === "ageha" ? AGEHA_AFFINITY_VISITS.every((scene) => !!state.flags[`_ch2_read_${scene}`]) && questionComplete(state, id)

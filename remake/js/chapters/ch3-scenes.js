@@ -25,7 +25,7 @@ export const CH3_INTRO_SCENES = Object.freeze([
   ...LEGACY_SCENES.slice(0, 8),
   { id: "ch3_work_without_taste", day: 5, slot: 1, label: "分かることを伝える", location: "mukai", bg: "bg_mukai_shop" },
   ...LEGACY_SCENES.slice(10, 13),
-  { id: "ch3_kuze_mukai_visit", day: 9, slot: 0, label: "客席の久世", location: "mukai", bg: "bg_mukai_shop" },
+  { id: "ch3_kuze_mukai_visit", day: 9, slot: 0, label: "客席の綾取", location: "mukai", bg: "bg_mukai_shop" },
   { ...LEGACY_SCENES[8], day: 10, slot: 1 },
   { ...LEGACY_SCENES[9], day: 11, slot: 0 },
   ...LEGACY_SCENES.slice(13),

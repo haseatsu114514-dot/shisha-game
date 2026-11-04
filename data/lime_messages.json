@@ -1233,7 +1233,7 @@
       "messages": [
         {
           "sender": "rei",
-          "text": "……REI"
+          "text": "……レヰ"
         },
         {
           "sender": "rei",
@@ -1406,7 +1406,7 @@
           "affinity": 2
         },
         {
-          "text": "REIさんの煙だからです",
+          "text": "レヰさんの煙だからです",
           "response": "……お前は、すぐそういうことを言う",
           "affinity": 1
         }
@@ -1435,7 +1435,7 @@
       ],
       "replies": [
         {
-          "text": "REIさんのおすすめを",
+          "text": "レヰさんのおすすめを",
           "response": "……なら、明日の朝に送る。静かなやつ",
           "affinity": 2
         },

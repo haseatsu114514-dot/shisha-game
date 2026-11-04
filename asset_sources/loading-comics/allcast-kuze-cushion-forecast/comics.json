@@ -11,9 +11,9 @@
     "クッションがある。"
   ],
   "first_speaker": "kuze",
-  "panel1": "久世の店の入口。右の久世がノートを片手に、さらりと指さして「次、転ぶよ。」（左上に高く）。左のはじめが笑って一歩踏み出し「転びませんよ。」（右下）。",
-  "panel2": "同じ位置。左のはじめが床の小さな段差につまずいて宙に浮き、ちょうど落ちる場所に置かれた大きなふわふわのクッションへ倒れ込む寸前。右の久世は落ち着いて湯のみのお茶を飲み、ノートに大きな丸を付けている。はじめ「クッションがある。」。宙のはじめとクッションはコマの中央に大きく。",
-  "caption": "久世は、相手の次の動きを読むのがとても得意。",
+  "panel1": "綾取の店の入口。右の綾取がノートを片手に、さらりと指さして「次、転ぶよ。」（左上に高く）。左のはじめが笑って一歩踏み出し「転びませんよ。」（右下）。",
+  "panel2": "同じ位置。左のはじめが床の小さな段差につまずいて宙に浮き、ちょうど落ちる場所に置かれた大きなふわふわのクッションへ倒れ込む寸前。右の綾取は落ち着いて湯のみのお茶を飲み、ノートに大きな丸を付けている。はじめ「クッションがある。」。宙のはじめとクッションはコマの中央に大きく。",
+  "caption": "綾取は、相手の次の動きを読むのがとても得意。",
   "type": "先読みの的中",
   "note": "正本の「相手の手を読む」を日常で誇張。けがはしない。",
   "num": 17,
@@ -63,7 +63,7 @@
   "qa": {
     "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
     "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
-    "identity": "official Hajime/Kuze normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+    "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
     "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
     "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
     "gag": "v1 reply touched lower frame; v2 fixes margin and final speech tail to Hajime. Falling character has cushion; no injury.",

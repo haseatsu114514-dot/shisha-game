@@ -68,7 +68,7 @@ NAME_TO_ID = {
     "神崎 竜二": "kumicho",
     "神崎竜二": "kumicho",
     "田中 健太": "rei",
-    "零-REI-": "rei",
+    "鴉葬レヰ": "rei",
     "チャコール博士": "dr_kemuri",
     "チャコール博士 / 火浦 理一": "dr_kemuri",
     "黒葉 ましろ": "mashiro",
@@ -92,7 +92,7 @@ NAME_TO_ID = {
     "辻占のオババ": "uranaishi",
     "SHISHA-9000": "shisha_9000",
     "ダ・シルヴァ太陽": "da_silva",
-    "久世 朔": "kuze",
+    "綾取 朔": "kuze",
     "スティーブ・ライマン": "steve",
     "ヴォルク・イヴァノフ": "volk",
 }

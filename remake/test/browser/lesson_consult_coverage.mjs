@@ -21,7 +21,7 @@ async function openAftermath(page, { stage, lit, extra = "" }) {
     p.beginChapterThreeAftermath(s);
     for (const scene of p.CH3_AFTERMATH_SCENES.slice(0, stage)) if (!p.completeChapterThreeAftermathScene(s, scene.id)) throw new Error(scene.id);
     if (extra === "all-detours-read") for (const scene of p.CH3_AFTERMATH_DETOURS) s.flags[`_ch3_read_${scene.id}`] = true;
-    // 久世の締めくくりの前提（LIME交換の寄り道・答えを返しに行く外出）を大会前に済ませた保存（IR22）
+    // 綾取の締めくくりの前提（LIME交換の寄り道・答えを返しに行く外出）を大会前に済ませた保存（IR22）
     if (extra === "kuze-finale") Object.assign(s.flags, { _lime_contact_kuze: true, _ch3_read_ch3_kuze_lime: true, _ch3_outings: { enmaku_answer: 1 } });
     if (extra === "volk-low") s.affinity.volk = 0;
     growth.setGrowthPreview(true);
@@ -88,14 +88,14 @@ await suite("lesson-consult-coverage", async (check) => {
     assert.equal(await page.evaluate(() => window.__remake.state.flags._ch3_naru_party_ready), true);
   }, { viewport: { width: 1331, height: 760 } });
 
-  // 寄り道を全部読んだ後でも、授業だけで入口が開く。帰郷の日の朝はヴォルクだけ（久世は店を畳んでいる）
+  // 寄り道を全部読んだ後でも、授業だけで入口が開く。帰郷の日の朝はヴォルクだけ（綾取は店を畳んでいる）
   await check("ch3-aftermath-cleanup-morning-lists-only-volk", async (page) => {
     await openAftermath(page, { stage: 3, lit: ["M-W5", "M-B3", "M-B5"], extra: "all-detours-read" });
     const before = await unchanged(page);
     assert.match(await page.locator(t("ch3-aftermath-detour-open")).innerText(), /（1）/);
     await page.locator(t("ch3-aftermath-detour-open")).click();
     await page.locator(t("ch3-aftermath-detour")).waitFor();
-    assert.equal(await page.locator(t("ch3-aftermath-lesson-kuze")).count(), 0, "Kuze is packing up Enmaku on this morning");
+    assert.equal(await page.locator(t("ch3-aftermath-lesson-kuze")).count(), 0, "Ayatori is packing up Enmaku on this morning");
     assert.equal(await page.locator(t("ch3-aftermath-lesson-mashiro")).count(), 0);
     assert.equal(await page.locator('[data-test^="ch3-aftermath-detour-ch3_"]').count(), 0, "every detour was read");
     await page.locator(t("ch3-aftermath-lesson-volk")).click();
@@ -163,13 +163,13 @@ await suite("lesson-consult-coverage", async (check) => {
     assert.doesNotMatch(ageha, /相談いいですか|ズボー……ですか|数えてみます/, "after the tournament Hajime speaks casually to Ageha");
   });
 
-  // (d) IR22: 大会前の来店で読めなかった久世の締めくくり（♥5）を、大会後の寄り道から一度だけ。日時・stage・お金は進めない
+  // (d) IR22: 大会前の来店で読めなかった綾取の締めくくり（♥5）を、大会後の寄り道から一度だけ。日時・stage・お金は進めない
   await check("ch3-aftermath-kuze-heart5-finale-once-before-the-cleanup", async (page) => {
     await openAftermath(page, { stage: 1, lit: [], extra: "kuze-finale" });
     const before = await unchanged(page);
     await page.locator(t("ch3-aftermath-detour-open")).click();
     await page.locator(t("ch3-aftermath-detour")).waitFor();
-    assert.match(await page.locator(t("ch3-aftermath-finale-kuze")).innerText(), /久世に呼ばれる（煙幕）/);
+    assert.match(await page.locator(t("ch3-aftermath-finale-kuze")).innerText(), /綾取に呼ばれる（煙幕）/);
     await page.locator(t("ch3-aftermath-finale-kuze")).click();
     await page.waitForFunction(() => !!window.__remake.state.finales?.kuze, null, { timeout: 30000 });
     await page.locator(t("ch3-aftermath-scene")).waitFor({ timeout: 30000 });
