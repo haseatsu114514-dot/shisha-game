@@ -84,7 +84,7 @@ export function beginChapterFourStep(value) {
 }
 
 function qualityAt(craft, round) {
-  // 旧仕様でアルミを飛ばした一台（#2213 で廃止）は穴あけ成績を持たない（score: null）。共通finalizeの
+  // アルミなしのHMS（ロートス等）は穴あけ成績を持たない（score: null）。共通finalizeの
   // 重み再配分と同じく、スキップ時は穴あけを平均から除く。
   const parts = [craft.heat?.score];
   if (!craft.holes?.skipped) parts.unshift(craft.holes?.score);

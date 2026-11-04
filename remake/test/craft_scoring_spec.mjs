@@ -11,6 +11,7 @@ const { state, newGame, setState } = await import("../js/core/state.js");
 const { MAKER_SPECS, makerOfFlavor, makerMixProfile, compareEquipment, flavorThermalGuide } = await import("../js/craft/temperature-model.js");
 const { coalWarmth } = await import("../js/craft/coals.js");
 const { flavorFamilyGrams, giftBowlEffect, computeShisha, bonusOf, finalize } = await import("../js/craft/score.js");
+const { skippedFoilResult } = await import("../js/craft/holes_logic.js");
 const { improvementOf } = await import("../js/craft/advice.js");
 const { advanceToChapterTwo } = await import("../js/chapters/ch2-progress.js");
 const { advanceToChapterThree } = await import("../js/chapters/ch3-progress.js");
@@ -387,11 +388,11 @@ for (const chapter of [1, 2, 3, 4, 5]) {
 }
 console.log("[craft scoring spec] PASS: chapter-scoped preparation, real transitions, legacy LOAD, and independent gift/mastery bonuses");
 
-// #1907: 旧仕様（#2213 で廃止）のロートスで穴あけを飛ばした記録は、採点・助言・結果の工程一覧から穴を除く。
+// #1907: ロートスで穴あけを飛ばした一台は、採点・助言・結果の工程一覧から穴を除く。
 newGame();
 const lotosCup = finalize({
   ...evenCup(4),
-  holes: { skipped: true, total: 24, outer: 12, middle: 8, inner: 4, outerEven: .75, innerExcess: 0, minimumComplete: true, score: null },
+  holes: skippedFoilResult(),
   equip: { hms: "lotos_hagal" },
   heat: { score: 40 },
 });

@@ -272,6 +272,7 @@ async function pullGame(cs, mode) {
     tags.replaceChildren(...[
       coals != null && el("span.pull-tag", { text: coals ? `炭×${coals}` : "炭そのまま", title: coals ? `消耗した炭を${coals}個交換した` : "炭は交換していない" }),
       conditions.sparsity && el("span.pull-tag", { text: "少穴", title: "吸い方による温度変化が大きい" }),
+      cs.vent === "closed" && el("span.pull-tag", { text: "蓋：閉" }),
       conditions.rainy && el("span.pull-tag", { text: "雨", title: "熱が入りづらい" }),
     ].filter(Boolean));
     pips.forEach((pip, i) => pip.classList.toggle("on", i < pulls));

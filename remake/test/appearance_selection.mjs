@@ -186,18 +186,18 @@ await check("catalog failure preserves state; manual and auto setup never reques
   }
 });
 
-await check("#1927/#2213 sold Lotos: every bowl fits Tanukish and pending setup preserves saved equipment", async () => {
+await check("#1927 sold Lotos: incompatible bowls stay disabled and pending setup preserves saved equipment", async () => {
   for (const auto of [false, true]) {
     const f = await fixture(); f.core.newGame(); f.auto(auto);
     f.core.state.owned = ["silicone_bowl", "suyaki_hagal", "tanukish_lid", "flat_charcoal"];
     f.core.state.equip.hms = "tanukish_lid";
     const before = copy(f.core.state), cs = { mode: "practice", equip: { ...before.equip } };
     const pending = f.steps.stepSetup(cs); await flush();
-    assert.equal("disabled" in f.control("opt-suyaki_hagal").attrs, false, "HMDの装着条件は全HMD共通（素焼きにもタヌキッシュ）");
-    assert.deepEqual(copy(f.core.state), before, "pending input must not commit equipment");
-    if (!auto) f.control("opt-suyaki_hagal").click();
+    assert.equal(f.control("opt-suyaki_hagal").attrs.disabled, "");
+    f.control("opt-suyaki_hagal").click(); await flush();
+    assert.deepEqual(copy(f.core.state), before, "blocked/pending input must not commit equipment");
+    if (!auto) f.control("opt-silicone_bowl").click();
     await pending;
-    assert.equal(cs.equip.bowl, auto ? before.equip.bowl : "suyaki_hagal");
     assert.equal(cs.equip.hms, "tanukish_lid");
     for (const id of Object.values(cs.equip)) assert(f.core.state.owned.includes(id), id);
     assert.deepEqual(copy(f.core.state.owned), before.owned);
@@ -224,7 +224,7 @@ const previewRows = f => {
   return Object.fromEntries(nodes.filter((_, i) => i % 2 === 0).map((node, i) => [node.textContent, nodes[i * 2 + 1].textContent]));
 };
 
-await check("#2500 one-set preview follows bowl, HMD and coal without committing hovered candidates", async () => {
+await check("#2500 one-set preview follows bowl, HMD, foil and coal without committing hovered candidates", async () => {
   const f = await fixture(); f.core.newGame();
   f.core.state.flags._coal_cube_learned = true;
   f.core.state.owned = ["silicone_bowl", "kumogama_phunnel", "lotos_hagal", "lotos_plus", "flat_charcoal", "cube_charcoal", "dense_flat_charcoal"];
@@ -248,9 +248,12 @@ await check("#2500 one-set preview follows bowl, HMD and coal without committing
   assert.match(previewRows(f)["適温の合わせやすさ"], /×1\.19/); // 1.10 * 1.04 * 1.04
   assert.equal(previewRows(f)["熱の安定"], "仕上がり補正 +4");
   f.control("opt-lotos_plus").click(); await flush();
-  // HMDの作りは全HMD共通（#2213）。ロートスでもアルミ選択は出ず、プレビューにアルミの工程の行も無い。
-  assert.equal(previewRows(f)["アルミの工程"], undefined);
-  assert(!descendants(f.panel).some(node => node.dataset.test === "opt-true"));
+  assert.match(previewRows(f)["アルミの工程"], /^なし/);
+  f.control("opt-true").handlers.focus();
+  assert.match(previewRows(f)["アルミの工程"], /^あり/);
+  assert.equal(cs.foilOptIn, undefined);
+  f.control("opt-true").click(); await flush();
+  assert.match(previewRows(f)["アルミの工程"], /^あり/);
   f.control("opt-cube_charcoal").handlers.pointerenter();
   assert.match(previewRows(f)["炭3個の加熱"], /×1\.13/);
   assert.match(previewRows(f)["熱を入れる吸い"], /×1\.00/);
@@ -266,7 +269,7 @@ await check("#2500 one-set preview follows bowl, HMD and coal without committing
   f.control("opt-cube_charcoal").click(); await pending;
   assert.deepEqual(copy(f.core.state.equip), { ...before.equip, bowl: "kumogama_phunnel", hms: "lotos_plus", charcoal: "cube_charcoal" });
   assert.deepEqual(copy(f.core.state.owned), before.owned);
-  assert.equal(cs.foilOptIn, undefined);
+  assert.equal(cs.foilOptIn, true);
 });
 
 console.log(`appearance selection: ${cases.length} cases passed (DOM/Storage fixture; no renderer or physical-fit QA)`);

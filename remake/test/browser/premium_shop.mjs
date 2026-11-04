@@ -50,7 +50,7 @@ await suite("premium-shop", async check => {
     for (const id of ["lotos_plus", "stand_walnut", "stand_custom", "kumogama_phunnel"]) assert(ids.includes(id), `${id} は東京店に並ぶ`);
     await tap(page, "detail-lotos_plus");
     const guide = page.locator(".shop-detail .equipment-guide");
-    assert.match(await guide.innerText(), /全サイズ対応/);
+    assert.match(await guide.innerText(), /アルミ不要/);
     await guide.locator("summary").click();
     assert.match(await guide.innerText(), /仕上がり補正 \+2 → \+4/);
     await tap(page, "shop-detail-close");

@@ -139,7 +139,7 @@ export function finalize(cs) {
     care1: cs.careHistory?.[0]?.score ?? 0,
     care2: cs.careHistory?.[1]?.score ?? 0,
   };
-  // 旧仕様でアルミ穴あけを飛ばした一台（#2213 で廃止）は穴あけの重みを外す。第1章大会だけ完成品を40%にする。
+  // アルミ穴あけを飛ばした一台は穴あけの重みを外す。第1章大会だけ完成品を40%にする。
   const foilSkipped = !!cs.holes?.skipped;
   const weights = { ...WEIGHTS };
   if (foilSkipped) {
