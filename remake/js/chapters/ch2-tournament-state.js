@@ -1,5 +1,5 @@
 import { finishTournamentStep } from "./tournament-finish-step.js";
-import { tournamentResources, restoreTournamentResources } from "./tournament-resource-snapshot.js";
+import { tournamentResources, restoreTournamentResources, recoverTournamentResources } from "./tournament-resource-snapshot.js";
 import { tournamentStandings } from "./tournament-standings.js";
 // 第2章の保存境界と持ち点。第1章のstate.tournament/固定逆転票には触れない。
 import { payTournamentPrize } from "./tournament-prize.js";
@@ -78,8 +78,7 @@ export function startAttempt(value, craft) {
 }
 export function recoverStep(value) {
   const p = tournamentProgress(value);
-  if (p.rollback) { restoreResources(value, p.rollback); p.rollback = null; }
-  return p;
+  return recoverTournamentResources(value, p);
 }
 export function beginStep(value) {
   const p = tournamentProgress(value);
@@ -133,3 +132,4 @@ export function recordResult(value, total) {
   p.history.push(copy(p.result));
   return p.result;
 }
+
