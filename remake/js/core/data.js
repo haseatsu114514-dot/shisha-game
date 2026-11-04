@@ -3,6 +3,7 @@
 // 実行時に fetch するだけで、書き換えも二重コピーもしない。
 // ページは remake/index.html なので、リポジトリ直下は "../"。
 
+import { portraitStyle } from "./portrait-style.js";
 import { registerFortuneReadings } from "./fortune-effects.js";
 
 const ROOT = "../";
@@ -315,7 +316,7 @@ export function sceneBg(ref, timeOfDay = "day") {
 
 export const bgUrl = (ref, timeOfDay = "day") => sceneBg(ref, timeOfDay).url;
 
-export function portraitInfo(speaker, face) {
+export function portraitInfo(speaker, face, style = portraitStyle()) {
   const folder = SPEAKER_ALIAS[speaker] || speaker;
   const p = DB.manifest.portraits[folder];
   if (!p) return null;
@@ -329,10 +330,15 @@ export function portraitInfo(speaker, face) {
     const near = { excited: "smile", smug: "smile", wink: "smile", evil: "serious", thinking: "serious", intense: "serious" }[f];
     f = near && p.faces.includes(near) ? near : "normal";
   }
+  // 表情・私服の対応を保つ。新絵に同じ差分が無ければ、その表情の現行絵へ戻す。
+  const candidate = style === "new" ? DB.manifest.portraitVariants?.new?.[folder] : null;
+  const useNew = candidate?.faces?.includes(f) === true;
+  const metrics = useNew ? candidate : p;
+  const base = useNew ? "sprites/character_variants/new" : "sprites/characters";
   return {
-    folder, face: f,
-    src: img(`sprites/characters/${folder}/chr_${folder}_${f}.png`),
-    h: p.h || 0.85, b: p.b || 0.02, ax: p.ax ?? 0.5, aspect: p.aspect || 0.75,
+    folder, face: f, style: useNew ? "new" : "classic",
+    src: img(`${base}/${folder}/chr_${folder}_${f}.png`),
+    h: metrics.h || 0.85, b: useNew ? (metrics.b ?? 0.02) : (p.b || 0.02), ax: metrics.ax ?? 0.5, aspect: metrics.aspect || 0.75,
     scale: DB.characters[folder]?.spriteScale || DB.characters[speaker]?.spriteScale || 1,
   };
 }

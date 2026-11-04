@@ -128,3 +128,11 @@ python3 tools/make_reference_sheet.py lineup              # asset_sources/refere
 ```
 
 同じ区分のキャラと顔の大きさが揃っているか、足元が一直線か、表情を切り替えて頭が動かないかを、この2枚と会話画面（portrait-fix スキルの「直した後の確認」）で見る。
+
+## 会話で現行と新立ち絵を切り替える
+
+設定の「会話の立ち絵」で現行／新を切り替える。初期値は現行。端末設定として保存し、進行・セーブ枠・登場カットインの絵柄とは独立する。会話中は同席者も即時に切り替わる。新絵がない人物・表情・私服は、その表情の現行絵へ戻す。候補画像は自動で採用しない。現行画像を削除・上書きしない。
+
+採用した新立ち絵は `assets/sprites/character_variants/new/<id>/chr_<id>_<face>.png` に置く。本書の検品後、`python3 remake/tools/build_manifest.py --portrait-variants-only <id>` で新絵の表情・余白・WebPだけを登録する。同じ人物の新絵は同一キャンバス・足元にそろえ、旧絵のframing値をコピーしない。みんとの私服は `ura_*` のまま保持する。
+
+局所検証: `node --experimental-vm-modules remake/test/portrait_style.mjs`。生成処理は Pillow・NumPy・SciPy の揃った環境で `python3 remake/test/portrait_variants.py` を実行する。

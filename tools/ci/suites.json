@@ -10,6 +10,14 @@
   ],
   "suites": [
     {
+      "id": "portrait-style",
+      "title": "Classic/new portrait selection, expression fallback and config persistence",
+      "kind": "quick",
+      "run": [
+        "node --experimental-vm-modules remake/test/portrait_style.mjs"
+      ]
+    },
+    {
       "id": "craft-result-card",
       "title": "Craft result card data, layout and PNG rendering",
       "kind": "quick",
@@ -3860,5 +3868,3 @@
     }
   ]
 }
-
-

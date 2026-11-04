@@ -901,6 +901,7 @@ function updatePortraits(speaker, face) {
         await visualSettled(img);
       })();
     }
+    img.dataset.face = face || "normal";
     if (img.getAttribute("src") !== info.src) img.src = info.src;
     frame(img, info);
   }
@@ -1026,6 +1027,15 @@ async function openSettings() {
   try {
     await openVnConfig({
       onChange(key) {
+        if (key === "portraitStyle" && running) {
+          // 進行・LOG・左右の並びは変えず、今出ている人物をその場で比較する。
+          for (const image of dom.portraits.querySelectorAll("img")) {
+            const info = portraitInfo(image.dataset.speaker, image.dataset.face);
+            if (!info) continue;
+            image.src = info.src;
+            frame(image, info);
+          }
+        }
         if (key === "uiTheme") nameFit?.fit();
         if (key === "textSpeed" && running?.typing && config.textSpeed >= 4) completeTyping();
       },
