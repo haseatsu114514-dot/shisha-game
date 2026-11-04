@@ -12,13 +12,13 @@
 |---|---|
 | <img src="../../../assets/sprites/characters/minto/chr_minto_normal.png" width="210" alt="基準 みんと"> | <img src="../../../assets/sprites/characters/ageha/chr_ageha_normal.png" width="210" alt="基準 あげは"> |
 
-### レヰ（レヰ）
+### 鴉葬レヰ（あそう れい）
 
 線と刺繍を整理。背景のにじみが残るため、採用前に透過を要修正。
 
 | 現行 | 試作 |
 |---|---|
-| <img src="../../../assets/sprites/characters/rei/chr_rei_normal.png" width="280" alt="レヰ（レヰ） 現行"> | <img src="rei/normal-preview.jpg" width="280" alt="レヰ（レヰ） 試作"> |
+| <img src="../../../assets/sprites/characters/rei/chr_rei_normal.png" width="280" alt="鴉葬レヰ（あそう れい） 現行"> | <img src="rei/normal-preview.jpg" width="280" alt="鴉葬レヰ（あそう れい） 試作"> |
 
 [試作の透過PNG原画](rei/normal-source.png) · [生成指示](rei/normal-prompt.txt)
 
