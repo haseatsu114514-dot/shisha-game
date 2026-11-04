@@ -397,6 +397,23 @@ await suite("ch1-tournament", async check => {
     await page.locator('[data-test="result-next"]').waitFor();
     await page.waitForTimeout(550);
     await assertFits(page, '.result-table, .rt-layout, .rt-row, .rt-detail, [data-test="result-next"]');
+    await capture(page, `result-${label}-top`);
+    const scroll = page.locator('.rt-detail-scroll');
+    assert.equal(await scroll.getAttribute("tabindex"), "0");
+    const deductions = page.locator('.rt-judge-deduction');
+    assert.equal(await deductions.count(), 3);
+    for (const line of await deductions.all()) {
+      await line.scrollIntoViewIfNeeded();
+      await assertFits(page, `.rt-judge-deduction[data-judge="${await line.getAttribute("data-judge")}"]`);
+      assert(await line.evaluate(node => {
+        const card = node.closest('.rt-detail-scroll').getBoundingClientRect();
+        const text = node.getBoundingClientRect();
+        return text.top >= card.top - 1 && text.bottom <= card.bottom + 1;
+      }), "Each deduction must be readable inside the scroll area");
+    }
+    await page.locator('.rt-detail-scroll button').last().scrollIntoViewIfNeeded();
+    await assertFits(page, '.rt-detail, .rt-detail-scroll button');
+    await capture(page, `result-${label}-bottom`);
     const labels = await page.locator('.rt-part > span').allTextContents();
     assert.deepEqual(labels, ["穴あけ", "炭焼き", "完成品", "調整1回目", "調整2回目", "総合"]);
     assert.match(await page.locator('.rt-judge-comment').innerText(), /上園「.+」/);

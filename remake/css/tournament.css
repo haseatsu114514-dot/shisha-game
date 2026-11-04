@@ -37,6 +37,8 @@
 .judge-pips b { height: 9px; border-radius: 2px; background: #ffffff14; box-shadow: inset 0 0 0 1px #ffffff12; }
 .judge-pips b.on { background: var(--c); box-shadow: 0 0 6px color-mix(in srgb, var(--c) 70%, transparent); }
 .judge-left { font-size: 14px; color: #b8afc2; }
+.judge-chip:has(.judge-deduction):not(:has(.judge-face)) { grid-template-columns: minmax(0, 1fr); }
+.judge-deduction { grid-column: 1 / -1; min-width: 0; font-size: 12px; line-height: 1.5; color: #cfc4d8; white-space: normal; overflow-wrap: anywhere; }
 .judge-chip.held { background: linear-gradient(110deg, #3a2a0c, #140f19 75%); }
 .judge-chip.held .judge-pips b { background: repeating-linear-gradient(135deg, #f6c95e33 0 3px, #f6c95e12 3px 6px); }
 .judge-chip.held .judge-left { color: #f6d68e; font-weight: 700; }
@@ -157,17 +159,22 @@
 .rt-votes { display: inline; margin: 0; font-family: var(--font); font-size: 14px; font-weight: 500; color: #a79dae; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .result-table .rt-bar { grid-area: bar; display: flex; height: 12px; }
 .result-table .rt-pt { grid-area: pt; width: auto; text-align: right; font-size: 26px; font-weight: 900; font-style: italic; color: #eee6d4; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.result-table .rt-detail { width: auto; display: grid; grid-template-columns: 1fr 1fr; align-content: start; align-items: start; gap: 8px 12px; padding: 16px 18px; border: 1px solid #e8c27a2e; border-radius: 12px; background: linear-gradient(160deg, #1a1226d9, #0d0a15d9); }
+.result-table .rt-detail { width: auto; display: block; gap: 8px 12px; padding: 16px 18px; border: 1px solid #e8c27a2e; border-radius: 12px; background: linear-gradient(160deg, #1a1226d9, #0d0a15d9); }
 .result-table .rt-detail h4 { grid-column: 1 / -1; margin: 0 0 4px; font-size: 14px; letter-spacing: .08em; color: #cfc4d8; }
 .result-table .rt-part { position: relative; display: grid; grid-template-columns: 1fr 40px; align-items: center; gap: 2px 8px; padding: 7px 12px 9px; border-radius: 8px; background: #ffffff07; border: 1px solid #ffffff0f; font-size: 14px; font-weight: 700; }
 .result-table .rt-part b { grid-column: 2; grid-row: 1 / 3; font-size: 28px; text-align: center; }
 .result-table .rt-part small { width: auto; font-size: 14px; color: #a39cae; font-weight: 500; }
 .result-table .rt-part.total { margin: 0; background: linear-gradient(110deg, #f6c95e22, #f6c95e08); border-color: #f6c95e55; }
-.result-table .rt-detail > small { grid-column: 1 / -1; font-size: 12px; line-height: 1.5; color: #a39baa; }
+.result-table .rt-detail-scroll > small { grid-column: 1 / -1; font-size: 12px; line-height: 1.5; color: #a39baa; }
 .result-table .rt-judge-comment { color: #f6d68e !important; }
+.result-table .rt-deductions { grid-column: 1 / -1; display: grid; gap: 1px; }
+.result-table .rt-detail:has(.rt-deductions) { gap: 6px 12px; padding-top: 12px; padding-bottom: 12px; }
+.result-table .rt-deductions > small { font-size: 12px; line-height: 1.35; color: #a39baa; }
 .result-table .rt-next-tip { color: #9fe7d9 !important; }
 .result-table .flavor-actual { grid-column: 1 / -1; }
-.result-table .rt-detail { min-height: 0; overflow: auto; overscroll-behavior: contain; }
+/* Keep the card within its screen; only its evaluation content scrolls. */
+.result-table .rt-detail { min-height: 0; overflow: hidden; }
+.result-table .rt-detail-scroll { height: 100%; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-content: start; align-items: start; gap: inherit; overflow: auto; overscroll-behavior: contain; }
 .result-table .rt-good-point { color: #e9d6a1; }
 .result-table > .btn { justify-self: end; min-width: 320px; border: 1px solid #f6c95e99; border-radius: 8px; background: linear-gradient(135deg, #6a4e2c, #2f2536); box-shadow: inset 0 1px 0 #ffe8b526, 0 6px 20px #0008; color: #fff1d0; font-size: 18px; font-weight: 800; }
 .result-table > :is(.rt-hero, .rt-layout, .btn) { position: relative; }

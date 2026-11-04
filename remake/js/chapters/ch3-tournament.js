@@ -326,7 +326,7 @@ function renderVotes(owner, final = false) {
     el("strong", [String(value.points), el("small", { text: "pt" })]),
   ]);
   const judgeFace = judge => { const face = contestantAvatar(judge); face.classList.add("judge-face"); return face; };
-  const judges = judgePanel(p.votes, JUDGES, { cls: ".ch2-contest-judges", face: judgeFace });
+  const judges = judgePanel(p.votes, JUDGES, { cls: ".ch2-contest-judges", face: judgeFace, craft: final ? craft : null });
   card(owner, final ? "result" : "votes", final ? "全国大会の結果" : "いま、動いた持ち点。",
     final ? `はじめは${p.result.rank}位。審査員三人、それぞれの10点が出揃いました。`
       : ["制作が終わり、次は吸い出しと提供。", "提供を終えた一台。次は客席での調整。",
@@ -461,6 +461,8 @@ async function drive(owner) {
         else if (p.step === 10) p.stage = "national_adjustment";
         else {
           const round = MILESTONES.get(p.step), quality = partialQuality(cs, round);
+          // Final scoring creates parts/total; persist them before the tasting save boundary.
+          p.craft = clone(cs);
           if (!castVotes(p, round, quality, null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error("全国大会の投票地点を確認できません");
           p.stage = p.step === STEPS.length ? "tasting" : "votes";
           if (p.stage === "tasting") { const result = recordResult(state, cs.total); awardTournamentExp(result.rank, cs); }
