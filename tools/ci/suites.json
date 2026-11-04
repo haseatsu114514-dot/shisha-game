@@ -580,6 +580,7 @@
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
         "node remake/test/ch3_outings.mjs",
+        "node remake/test/tetsuko_time.mjs",
         "node remake/test/golden_ratio.mjs",
         "node remake/test/home_shisha.mjs",
         "node remake/test/practice_shop_only_783.mjs",
@@ -1574,6 +1575,7 @@
         "remake/js/daily/calendar.js",
         "remake/js/daily/hud.js",
         "data/dialogue/ch3_tokyo_daily.json",
+        "remake/js/minigames/tetsuko-time.js",
         "remake/test/browser/ch3_tokyo_daily.mjs"
       ],
       "run": ["node remake/test/browser/ch3_tokyo_daily.mjs"]
