@@ -81,17 +81,22 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "いえ、大会に。シーシャの、世界大会があって"
+          "text": "シーシャの世界大会で、ドバイに来たんです"
         },
         {
           "speaker": "noor",
           "face": "surprise",
-          "text": "知ってる！ 父も毎晩、奥の席で吸ってる。競技があるのは、初めて聞いたけど"
+          "text": "シーシャの世界大会！？ 競技があるの、初めて聞いた"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "父も毎晩、奥の席で吸ってるけど、いつものんびりしてるから"
         },
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "じゃあ忙しいね。でも暇な日は、また吸いに来て。おしゃべりしよ"
+          "text": "息抜きしたくなったら、また吸いに来て。おしゃべりしよ"
         },
         {
           "speaker": "hajime",
@@ -175,9 +180,19 @@
       "branches": {
         "before_tournament": [
           {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "そういえば、ヌールさんも大会に出るんですか？"
+          },
+          {
             "speaker": "noor",
             "face": "normal",
-            "text": "大会の準備は順調？"
+            "text": "私は出ないよ。昼はガイドで、夜はここの手伝い"
+          },
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "で、ハジメは？ 大会の準備、順調？"
           },
           {
             "speaker": "hajime",
@@ -227,9 +242,19 @@
             "text": "父は、この街のシーシャの話なら何でも知ってる。煙より早く噂が回るの"
           },
           {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ヌールさんも、大会に出てたんですか？"
+          },
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "私は出てないよ。昼はガイドで、夜はここの手伝い"
+          },
+          {
             "speaker": "noor",
             "face": "smile",
-            "text": "だから私、知り合いだって自慢しといた。いいでしょ？"
+            "text": "でも私、知り合いだって自慢しといた。いいでしょ？"
           },
           {
             "speaker": "hajime",
@@ -419,12 +444,17 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "手帳の宝物、ハジメにもらった言葉がいちばん多いの。先生だから、当たり前だけど"
+          "text": "手帳の宝物、ハジメに教わった言葉がいちばん多いの"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "でも最近は、新しい言葉がなくても、ハジメと話したい"
         },
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "……ハジメにとって、私って何？ ガイド？ 店の人？ それとも……"
+          "text": "……ハジメは？ 私のこと、どう思ってる？"
         },
         {
           "speaker": "",
@@ -463,6 +493,16 @@
           },
           {
             "speaker": "noor",
+            "face": "normal",
+            "text": "……今の、からかってないよね？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。……ちょっと、言うのに勇気がいりました"
+          },
+          {
+            "speaker": "noor",
             "face": "smile",
             "text": "そっか。……気になる人。宝物の、いちばん上に書いとく"
           },
@@ -470,11 +510,6 @@
             "speaker": "",
             "face": "",
             "text": "ヌールさんは手帳の最初のページを開いて、何かを大きく書き足した。耳が、少し赤い。"
-          },
-          {
-            "speaker": "hajime",
-            "face": "surprise",
-            "text": "（……言ってしまった）"
           }
         ],
         "friend": [
@@ -496,7 +531,7 @@
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "（……笑ってくれて、よかった）"
+            "text": "値引きがなくても、話しに来ますよ"
           }
         ]
       }
@@ -548,12 +583,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "差し出された小指は、前より少しだけ長く、はじめの指に絡んでいた。"
+          "text": "ヌールさんが差し出した小指に、はじめも自分の指を重ねた。"
         },
         {
           "speaker": "hajime",
-          "face": "surprise",
-          "text": "（……心臓に悪い。本当に）"
+          "face": "smile",
+          "text": "はい。今度は俺が、好きな場所を案内します"
         }
       ]
     },
@@ -600,7 +635,7 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "いらっしゃい！ 今日は父のおまかせ。「おかのした」って言って"
+          "text": "いらっしゃい！ 今日も父のおまかせね。おかのした！"
         },
         {
           "speaker": "hajime",
@@ -615,7 +650,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……それ、人前ではあんまり言わない方がいい気がする）"
+          "text": "お客さんには、「かしこまりました」の方がいいかも"
         },
         {
           "speaker": "noor",
