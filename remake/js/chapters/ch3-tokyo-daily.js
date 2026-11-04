@@ -591,7 +591,7 @@ async function offerTetsuko(owner) {
   const pick = await modal({ title: "裏口のてつこ", body: "帰りに裏口をのぞくと、看板猫のてつこがベンチで丸くなっている。",
     options: [
       { label: "少し構っていく", value: "care", test: "tokyo-tetsuko-yes", primary: true },
-      { label: "てつこといっしょ", value: "game", test: "tokyo-tetsuko-game" },
+      { label: "てつこといっしょ（準備中）", value: "game", test: "tokyo-tetsuko-game" },
       { label: "今日はそっとしておく", value: null, test: "tokyo-tetsuko-no" },
     ] });
   if (!pick || state !== owner) return;

@@ -132,6 +132,9 @@ await suite("ch3-tokyo-daily", async check => {
     await page.locator(dt("mukai-order-0")).waitFor({ timeout: 60000 });
     await page.locator(dt("mukai-order-0")).click();
     await page.locator(dt("tokyo-tetsuko-game")).waitFor({ timeout: 60000 });
+    // 選択肢のラベルにも準備中であることを出す（オーナー判断 2026-11-04）。
+    assert.equal((await page.locator(dt("tokyo-tetsuko-game")).innerText()).trim(), "てつこといっしょ（準備中）",
+      "The choice label says the game is in preparation");
     await page.locator(dt("tokyo-tetsuko-game")).click();
     // 準備中の画面（タイトル・準備中の表示・帰るボタン）。
     const screen = page.locator(dt("tetsuko-time-screen"));
