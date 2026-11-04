@@ -111,6 +111,24 @@ RENAMED_ROMAJI_RE = re.compile(r"(?<![A-Za-z0-9_])(?:Rin|RIN|Nagumo|NAGUMO|Maezo
 RENAMED_ROMAJI_FIX = "旧キャラ名（英字・旧表記） → Kuyuri（rin）／Sui（nagumo）／Uezono（maezono）／Shiomi（samechan）／Dr. Charcoal（dr_kemuri）に統一（#2528）"
 
 
+JSON_STRING_RE = re.compile(r'"(?:[^"\\]|\\.)*"')
+
+
+def has_renamed_romaji(line: str, json_strings: bool = False) -> bool:
+    """Keep raw checks and also inspect decoded JSON text on its original line."""
+    if RENAMED_ROMAJI_RE.search(line):
+        return True
+    if json_strings:
+        for match in JSON_STRING_RE.finditer(line):
+            try:
+                value = json.loads(match.group())
+            except json.JSONDecodeError:
+                continue
+            if RENAMED_ROMAJI_RE.search(value):
+                return True
+    return False
+
+
 def scan_character_identity(errors: list):
     """疎チェックアウト未取得分も含め、追跡対象のみんとの旧髪設定を防ぐ。"""
     result = subprocess.run(
@@ -132,7 +150,7 @@ def scan_character_identity(errors: list):
         for number, line in enumerate(text.splitlines(), 1):
             if RENAMED_CHARACTER_RE.search(line):
                 errors.append(f"{rel}:{number}: {RENAMED_CHARACTER_FIX}")
-            if RENAMED_ROMAJI_RE.search(line):
+            if has_renamed_romaji(line, json_strings=path.suffix == ".json"):
                 errors.append(f"{rel}:{number}: {RENAMED_ROMAJI_FIX}")
             if ("minto" in rel.lower() or "minto" in line.lower() or "みんと" in line) and MINTO_HAIR_RE.search(line):
                 # 過去の検品を現行の事実に書き換えず、誤記を明示した訂正注記は残せる。

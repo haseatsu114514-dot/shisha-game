@@ -557,6 +557,7 @@
         "python3 tools/check_mashiro_address.py",
         "python3 tools/check_confession_flags.py",
         "python3 -m unittest discover -s tools -p test_mashiro_address.py",
+        "python3 -B -m unittest discover -s tools -p test_legacy_romaji.py",
         "python3 tools/check_legacy_terms.py"
       ]
     },
