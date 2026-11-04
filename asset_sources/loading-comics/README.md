@@ -212,3 +212,5 @@ python3 tools/loading_comic_cut.py check remake/img/loading/<id>-*.webp
 
 旧バッチで立ち絵未整備のため外したスハイル（`saif`）・ハリール（`rashid`）は、現在のmainに正式立ち絵がある。各3案のネームと全文プロンプトを [batch-recent-cast-20261104/](batch-recent-cast-20261104/README.md) に追加した。ヌールは補充185話にある既存10案を再利用し、重複した台本を作らない。画像候補は各話の `allcast-<id>/` に保存する。選別・採用・本編登録は未実施。
 
+追制作で新規6話とヌール『靴の中の砂』の7話14コマを保存した。現在の候補は `loading_comic_cut.py panel` の1コマ全面方式（1536×1024原画2枚→1440×960 WebP2枚、3:2）。[画像一覧・各話の品質と未完](batch-recent-cast-20261104/README.md#各話の品質と未完)を参照する。ヌールの旧シート2版と、袋・リモコンの修正前も履歴として保全する。
+

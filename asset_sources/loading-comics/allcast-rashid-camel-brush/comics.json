@@ -1,0 +1,131 @@
+{
+  "id": "rashid-camel-brush",
+  "title": "朝の身支度",
+  "cast": [
+    "rashid"
+  ],
+  "minChapter": 4,
+  "dialogue": [
+    "髪、整ってます？",
+    "まず、こっちだ。",
+    "俺よりつやつや。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "朝のレース場の休憩区画。左のはじめが帽子を持ち寝ぐせを押さえる。右のハリールが柔らかいブラシを手に、隣のラクダへ向き直る。",
+  "panel2": "ラクダが右奥から首を伸ばし、手入れの終わった毛並みが一筋の明るいハイライトで整っている。ハリールはブラシを下ろして満足げ。はじめの寝ぐせは前コマのまま。ラクダの整った顔と、はじめの髪を並べて大きく。",
+  "caption": "ハリールは、口数の少ないラクダの調教師。",
+  "note": "調教師として動物を優先する小さなギャグ。毛並みのツヤはセル塗りの一段で、全体をテカらせない。動物の世話の新規手順・本編の能力や過去は確定しない。",
+  "status": "image_candidate_unselected",
+  "registered": false,
+  "num": 6,
+  "source": [
+    {
+      "file": "panel-1-source.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2383192,
+      "sha256": "3eeddb7084c5019c5bb1d966503344cd867f848a2370a8d85d7c7c49aba4aeda"
+    },
+    {
+      "file": "panel-2-source.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2382824,
+      "sha256": "e8a6b5642bbb1ba319fa5d24a3c7e451a1c9b9fef7321b341276f9860cb07595"
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/rashid-camel-brush-1.webp",
+      "width": 1440,
+      "height": 960,
+      "mode": "RGB",
+      "bytes": 219518,
+      "sha256": "489e3fec23908b6732b8cbc214344ce8d0ddafe59af847998285a833a5526952"
+    },
+    {
+      "file": "panels/rashid-camel-brush-2.webp",
+      "width": 1440,
+      "height": 960,
+      "mode": "RGB",
+      "bytes": 224880,
+      "sha256": "7977031a71497481a50ab4d0bdaf05c78aa078c60475fd764902bf9e2ae50e1f"
+    }
+  ],
+  "generation": {
+    "tool": "image_gen.imagegen",
+    "model": "not exposed by tool",
+    "date": "2026-11-04",
+    "mode": "full-canvas single panel; loading_comic_cut.py panel",
+    "transparent_background": false,
+    "calls": [
+      {
+        "prompt": "panel-1-prompt.txt",
+        "references": [
+          "assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "assets/sprites/characters/rashid/chr_rashid_normal.png",
+          "asset_sources/loading-comics/allcast-noor-shoe-sand/allcast-noor-shoe-sand-b.png"
+        ],
+        "result": "panel-1-source.png"
+      },
+      {
+        "prompt": "panel-2-prompt.txt",
+        "references": [
+          "panel-1-source.png",
+          "assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "assets/sprites/characters/rashid/chr_rashid_normal.png"
+        ],
+        "result": "panel-2-source.png"
+      }
+    ],
+    "formal_reference_sha256": {
+      "assets/sprites/characters/hajime/chr_hajime_normal.png": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "assets/sprites/characters/rashid/chr_rashid_normal.png": "1614c5f994ce82c4e5b1b60034e51bc05cfee97300a1fac211fb8d933d876155"
+    },
+    "style_reference": {
+      "file": "asset_sources/loading-comics/allcast-noor-shoe-sand/allcast-noor-shoe-sand-b.png",
+      "sha256": "a4175e08e6addc196db2ff75fa572fb3f050e776e9d353847eec2700cd56b981"
+    },
+    "history": [
+      {
+        "file": "panel-1-source.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2383192,
+        "sha256": "3eeddb7084c5019c5bb1d966503344cd867f848a2370a8d85d7c7c49aba4aeda",
+        "status": "candidate"
+      },
+      {
+        "file": "panel-2-source.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2382824,
+        "sha256": "e8a6b5642bbb1ba319fa5d24a3c7e451a1c9b9fef7321b341276f9860cb07595",
+        "status": "candidate"
+      }
+    ]
+  },
+  "qa": {
+    "native_source_dimensions": "PASS: both unmodified PNGs 1536x1024, 3:2",
+    "delivery_dimensions": "PASS: both 1440x960 WebP, <=400KiB, quality 85, no upscaling",
+    "decode": "PASS: Pillow verify + load of current PNG/WebP and retained PNG history",
+    "ratio_tool": "PASS: panel mode ok, no force, no added paper bands, no fill/crop",
+    "visual_note": "はじめが帽子を外して寝ぐせが見える姿と、手入れ後のラクダの毛並みの対比を確認。動物の光は漫画の強調記号で、写実的な光沢を追加していない。",
+    "visual_checks": [
+      "正式立ち絵と髪・肌・服・年齢感の本人性を照合",
+      "両コマではじめ左・相手右、台詞3つと読む順を目視",
+      "シーシャ機材・煙・酒・武器・第三の人物・署名・題名・余計な文字なし"
+    ],
+    "pending": [
+      "オーナーの選別・最終画風統一",
+      "PC横・スマホ横の本編表示と読字QA",
+      "四辺4%の吹き出し外縁・手などのセーフマージンを全点で保証しない。一部が外周に近いため、採用前の確認・必要時の再構図"
+    ],
+    "production_ready": false,
+    "runtime_registered": false
+  }
+}

@@ -17,11 +17,119 @@
   "type": "量の過剰（靴から砂丘）",
   "note": "ヌールは第4章ドバイで会う（cast で解放）。",
   "num": 159,
-  "status": "candidate_needs_geometry_revision",
+  "status": "image_candidate_unselected",
   "registered": false,
   "script_source": "asset_sources/loading-comics/batch-allcast-refill-20261102/scripts.json#noor-shoe-sand",
-  "selected_source": "allcast-noor-shoe-sand-b.png",
+  "source": [
+    {
+      "file": "panel-1-source.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2240734,
+      "sha256": "5f3ffcda0bfb17580686230a59bd1a5a0328c6100bbabae9356b41790cde6e37"
+    },
+    {
+      "file": "panel-2-source.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2317503,
+      "sha256": "de4dc628fb2718cba05822d9af3d2c05aa3c6c5534c1192d72d8253c80e3cd90"
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/noor-shoe-sand-1.webp",
+      "width": 1440,
+      "height": 960,
+      "mode": "RGB",
+      "bytes": 195310,
+      "sha256": "952d1a77a5504d064f2e656a6db16cd47ad1a3517339756c05dc8ec188bc0db2"
+    },
+    {
+      "file": "panels/noor-shoe-sand-2.webp",
+      "width": 1440,
+      "height": 960,
+      "mode": "RGB",
+      "bytes": 222560,
+      "sha256": "eb31f7bfae0b1cdd109cddd3f90898e8ea9d68f5619f3039e71a9c12f0a1f9c0"
+    }
+  ],
   "generation": {
+    "tool": "image_gen.imagegen",
+    "model": "not exposed by tool",
+    "date": "2026-11-04",
+    "mode": "full-canvas single panel; loading_comic_cut.py panel",
+    "transparent_background": false,
+    "calls": [
+      {
+        "prompt": "panel-1-prompt.txt",
+        "references": [
+          "assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "assets/sprites/characters/noor/chr_noor_normal.png",
+          "asset_sources/loading-comics/allcast-noor-shoe-sand/allcast-noor-shoe-sand-b.png"
+        ],
+        "result": "panel-1-source.png"
+      },
+      {
+        "prompt": "panel-2-prompt.txt",
+        "references": [
+          "panel-1-source.png",
+          "assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "assets/sprites/characters/noor/chr_noor_normal.png"
+        ],
+        "result": "panel-2-source.png"
+      }
+    ],
+    "formal_reference_sha256": {
+      "assets/sprites/characters/hajime/chr_hajime_normal.png": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "assets/sprites/characters/noor/chr_noor_normal.png": "1374af232413652aaa6285982730e308ba47edf31305d89c3f3632b279b07266"
+    },
+    "style_reference": {
+      "file": "asset_sources/loading-comics/allcast-noor-shoe-sand/allcast-noor-shoe-sand-b.png",
+      "sha256": "a4175e08e6addc196db2ff75fa572fb3f050e776e9d353847eec2700cd56b981"
+    },
+    "history": [
+      {
+        "file": "allcast-noor-shoe-sand-a.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2048940,
+        "sha256": "21c68593aee2b5a9e370d7a71495aad47d7428ccc362c569ae335f370b3cd6ad",
+        "status": "superseded"
+      },
+      {
+        "file": "allcast-noor-shoe-sand-b.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 1832981,
+        "sha256": "a4175e08e6addc196db2ff75fa572fb3f050e776e9d353847eec2700cd56b981",
+        "status": "superseded"
+      },
+      {
+        "file": "panel-1-source.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2240734,
+        "sha256": "5f3ffcda0bfb17580686230a59bd1a5a0328c6100bbabae9356b41790cde6e37",
+        "status": "candidate"
+      },
+      {
+        "file": "panel-2-source.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2317503,
+        "sha256": "de4dc628fb2718cba05822d9af3d2c05aa3c6c5534c1192d72d8253c80e3cd90",
+        "status": "candidate"
+      }
+    ]
+  },
+  "superseded_sheet_generation": {
     "tool": "image_gen.imagegen",
     "model": "not exposed by tool",
     "date": "2026-11-04",
@@ -63,7 +171,7 @@
       "assets/sprites/characters/noor/chr_noor_normal.png": "1374af232413652aaa6285982730e308ba47edf31305d89c3f3632b279b07266"
     }
   },
-  "qa": {
+  "superseded_sheet_qa": {
     "image_decode": "PASS: Pillow verify + load, both versions",
     "canvas": "PASS: 1536x1024, both versions; unmodified PNG",
     "visual": {
@@ -80,5 +188,24 @@
       ]
     },
     "production_ready": false
+  },
+  "qa": {
+    "native_source_dimensions": "PASS: both unmodified PNGs 1536x1024, 3:2",
+    "delivery_dimensions": "PASS: both 1440x960 WebP, <=400KiB, quality 85, no upscaling",
+    "decode": "PASS: Pillow verify + load of current PNG/WebP and retained PNG history",
+    "ratio_tool": "PASS: panel mode ok, no force, no added paper bands, no fill/crop",
+    "visual_note": "靴から砂山が出るオチ、片足の靴下、ヌールの笑い、人物の左右・服装・台詞順を確認。旧シートの縦長問題は全面3:2の別原画で解消。右コマのはじめの左手は外周に近く、採用前に余白の再確認が必要。",
+    "visual_checks": [
+      "正式立ち絵と髪・肌・服・年齢感の本人性を照合",
+      "両コマではじめ左・相手右、台詞3つと読む順を目視",
+      "シーシャ機材・煙・酒・武器・第三の人物・署名・題名・余計な文字なし"
+    ],
+    "pending": [
+      "オーナーの選別・最終画風統一",
+      "PC横・スマホ横の本編表示と読字QA",
+      "四辺4%の吹き出し外縁・手などのセーフマージンを全点で保証しない。一部が外周に近いため、採用前の確認・必要時の再構図"
+    ],
+    "production_ready": false,
+    "runtime_registered": false
   }
 }

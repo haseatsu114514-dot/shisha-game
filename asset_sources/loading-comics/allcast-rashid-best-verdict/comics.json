@@ -1,0 +1,131 @@
+{
+  "id": "rashid-best-verdict",
+  "title": "最高の一言",
+  "cast": [
+    "rashid"
+  ],
+  "minChapter": 4,
+  "dialogue": [
+    "お茶、どうです？",
+    "悪くない。",
+    "それ、最高点だ。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "日よけの下。左のはじめが水出し茶のコップを差し出す。右のハリールは落ち着いた顔で一口飲む。",
+  "panel2": "ハリールは同じ顔でコップを持っているだけなのに、はじめの背後には巨大な金色のトロフィーと紙吹雪の想像図。はじめは両手を上げて満面の笑顔。トロフィーは文字なし、想像図と分かる丸い境界内に収める。",
+  "caption": "ハリールは、口数の少ないラクダの調教師。",
+  "note": "『悪くない』が最高評価という本編会話を、はじめ側の想像で見せる。実際の受賞・大会の結果・ハリールの饒舌な称賛は追加しない。",
+  "status": "image_candidate_unselected",
+  "registered": false,
+  "num": 5,
+  "source": [
+    {
+      "file": "panel-1-source.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2556805,
+      "sha256": "25543d33cf292017c8f21414938fe44abc3713fdd1802217de20a97044dbc2b7"
+    },
+    {
+      "file": "panel-2-source.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2478704,
+      "sha256": "963b15ff1581dd7d2035f84b4a32bd2af85168fd3f0389dbee6536607040c91f"
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/rashid-best-verdict-1.webp",
+      "width": 1440,
+      "height": 960,
+      "mode": "RGB",
+      "bytes": 252630,
+      "sha256": "f747159cae6b93cf61bddf1c37ac921ef986f1e0a577006e14ce8340f8bf32cd"
+    },
+    {
+      "file": "panels/rashid-best-verdict-2.webp",
+      "width": 1440,
+      "height": 960,
+      "mode": "RGB",
+      "bytes": 257064,
+      "sha256": "a8f56eb053c0f55dfb5d2cc1a374772dbfbd79ae12ab3946f5a059078f69463c"
+    }
+  ],
+  "generation": {
+    "tool": "image_gen.imagegen",
+    "model": "not exposed by tool",
+    "date": "2026-11-04",
+    "mode": "full-canvas single panel; loading_comic_cut.py panel",
+    "transparent_background": false,
+    "calls": [
+      {
+        "prompt": "panel-1-prompt.txt",
+        "references": [
+          "assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "assets/sprites/characters/rashid/chr_rashid_normal.png",
+          "asset_sources/loading-comics/allcast-noor-shoe-sand/allcast-noor-shoe-sand-b.png"
+        ],
+        "result": "panel-1-source.png"
+      },
+      {
+        "prompt": "panel-2-prompt.txt",
+        "references": [
+          "panel-1-source.png",
+          "assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "assets/sprites/characters/rashid/chr_rashid_normal.png"
+        ],
+        "result": "panel-2-source.png"
+      }
+    ],
+    "formal_reference_sha256": {
+      "assets/sprites/characters/hajime/chr_hajime_normal.png": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "assets/sprites/characters/rashid/chr_rashid_normal.png": "1614c5f994ce82c4e5b1b60034e51bc05cfee97300a1fac211fb8d933d876155"
+    },
+    "style_reference": {
+      "file": "asset_sources/loading-comics/allcast-noor-shoe-sand/allcast-noor-shoe-sand-b.png",
+      "sha256": "a4175e08e6addc196db2ff75fa572fb3f050e776e9d353847eec2700cd56b981"
+    },
+    "history": [
+      {
+        "file": "panel-1-source.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2556805,
+        "sha256": "25543d33cf292017c8f21414938fe44abc3713fdd1802217de20a97044dbc2b7",
+        "status": "candidate"
+      },
+      {
+        "file": "panel-2-source.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2478704,
+        "sha256": "963b15ff1581dd7d2035f84b4a32bd2af85168fd3f0389dbee6536607040c91f",
+        "status": "candidate"
+      }
+    ]
+  },
+  "qa": {
+    "native_source_dimensions": "PASS: both unmodified PNGs 1536x1024, 3:2",
+    "delivery_dimensions": "PASS: both 1440x960 WebP, <=400KiB, quality 85, no upscaling",
+    "decode": "PASS: Pillow verify + load of current PNG/WebP and retained PNG history",
+    "ratio_tool": "PASS: panel mode ok, no force, no added paper bands, no fill/crop",
+    "visual_note": "落ち着いたハリールと、はじめの想像の巨大トロフィーの対比。想像枠なので大会の実際の受賞結果にしない。",
+    "visual_checks": [
+      "正式立ち絵と髪・肌・服・年齢感の本人性を照合",
+      "両コマではじめ左・相手右、台詞3つと読む順を目視",
+      "シーシャ機材・煙・酒・武器・第三の人物・署名・題名・余計な文字なし"
+    ],
+    "pending": [
+      "オーナーの選別・最終画風統一",
+      "PC横・スマホ横の本編表示と読字QA",
+      "四辺4%の吹き出し外縁・手などのセーフマージンを全点で保証しない。一部が外周に近いため、採用前の確認・必要時の再構図"
+    ],
+    "production_ready": false,
+    "runtime_registered": false
+  }
+}

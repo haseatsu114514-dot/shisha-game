@@ -1,0 +1,131 @@
+{
+  "id": "saif-welcome-carpet",
+  "title": "歓迎の長さ",
+  "cast": [
+    "saif"
+  ],
+  "minChapter": 4,
+  "dialogue": [
+    "少し寄りました。",
+    "よく来た、ハジメ！",
+    "道まで歓迎だ。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "店の入口。左のはじめが気軽に片手を上げる。右のスハイルが大きな笑顔で迎え、足元の丸めた赤い敷物に手をかける。",
+  "panel2": "同じ入口から赤い敷物が画面奥の路地いっぱいまで伸び、はじめは遠くに見える入口へ向かって歩いている。右手前のスハイルが端を持って満面の笑顔。長い赤い帯をコマ中央に大きく。",
+  "caption": "スハイルは、ドバイで出会う接客上手な友人。",
+  "note": "明るい接客を歓迎の量で誇張。店に赤い敷物が実在するという設定追加ではない。",
+  "status": "image_candidate_unselected",
+  "registered": false,
+  "num": 1,
+  "source": [
+    {
+      "file": "panel-1-source.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2413124,
+      "sha256": "0e4ba00062025b26a0b76c534af71a407fa06d861673b8b974f0eb19aba365dc"
+    },
+    {
+      "file": "panel-2-source.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2748338,
+      "sha256": "7f293b08bd88d5d896643093c24342b6791364dd603a7be9e34eded78cb70149"
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/saif-welcome-carpet-1.webp",
+      "width": 1440,
+      "height": 960,
+      "mode": "RGB",
+      "bytes": 227944,
+      "sha256": "855c50fd53e100af97d56feeb88587230949f3633d68d21c0c28842b2f3e6a4f"
+    },
+    {
+      "file": "panels/saif-welcome-carpet-2.webp",
+      "width": 1440,
+      "height": 960,
+      "mode": "RGB",
+      "bytes": 294776,
+      "sha256": "4d470e8a2f75d9d02f64729b4779152a0f7ec4664657336473b2a19dc896cf25"
+    }
+  ],
+  "generation": {
+    "tool": "image_gen.imagegen",
+    "model": "not exposed by tool",
+    "date": "2026-11-04",
+    "mode": "full-canvas single panel; loading_comic_cut.py panel",
+    "transparent_background": false,
+    "calls": [
+      {
+        "prompt": "panel-1-prompt.txt",
+        "references": [
+          "assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "assets/sprites/characters/saif/chr_saif_normal.png",
+          "asset_sources/loading-comics/allcast-noor-shoe-sand/allcast-noor-shoe-sand-b.png"
+        ],
+        "result": "panel-1-source.png"
+      },
+      {
+        "prompt": "panel-2-prompt.txt",
+        "references": [
+          "panel-1-source.png",
+          "assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "assets/sprites/characters/saif/chr_saif_normal.png"
+        ],
+        "result": "panel-2-source.png"
+      }
+    ],
+    "formal_reference_sha256": {
+      "assets/sprites/characters/hajime/chr_hajime_normal.png": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "assets/sprites/characters/saif/chr_saif_normal.png": "7f15b37d9a705696ed994878eb8a5993148445be7a91f0e30515addf1b72e78d"
+    },
+    "style_reference": {
+      "file": "asset_sources/loading-comics/allcast-noor-shoe-sand/allcast-noor-shoe-sand-b.png",
+      "sha256": "a4175e08e6addc196db2ff75fa572fb3f050e776e9d353847eec2700cd56b981"
+    },
+    "history": [
+      {
+        "file": "panel-1-source.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2413124,
+        "sha256": "0e4ba00062025b26a0b76c534af71a407fa06d861673b8b974f0eb19aba365dc",
+        "status": "candidate"
+      },
+      {
+        "file": "panel-2-source.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2748338,
+        "sha256": "7f293b08bd88d5d896643093c24342b6791364dd603a7be9e34eded78cb70149",
+        "status": "candidate"
+      }
+    ]
+  },
+  "qa": {
+    "native_source_dimensions": "PASS: both unmodified PNGs 1536x1024, 3:2",
+    "delivery_dimensions": "PASS: both 1440x960 WebP, <=400KiB, quality 85, no upscaling",
+    "decode": "PASS: Pillow verify + load of current PNG/WebP and retained PNG history",
+    "ratio_tool": "PASS: panel mode ok, no force, no added paper bands, no fill/crop",
+    "visual_note": "巻かれた敷物から長い道いっぱいの敷物への変化を確認。スハイルの髪・髭・黒ポロ・革紐と白い靴、はじめとの左右、3台詞が一致。",
+    "visual_checks": [
+      "正式立ち絵と髪・肌・服・年齢感の本人性を照合",
+      "両コマではじめ左・相手右、台詞3つと読む順を目視",
+      "シーシャ機材・煙・酒・武器・第三の人物・署名・題名・余計な文字なし"
+    ],
+    "pending": [
+      "オーナーの選別・最終画風統一",
+      "PC横・スマホ横の本編表示と読字QA",
+      "四辺4%の吹き出し外縁・手などのセーフマージンを全点で保証しない。一部が外周に近いため、採用前の確認・必要時の再構図"
+    ],
+    "production_ready": false,
+    "runtime_registered": false
+  }
+}

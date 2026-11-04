@@ -1,0 +1,54 @@
+panel-1-source.png: 全面 1536x1024 比率 1.500 → ok
+panel-2-source.png: 全面 1536x1024 比率 1.500 → ok
+コマ1: 1536x1024 (1.500) そのまま → 出力 1440x960  asset_sources/loading-comics/allcast-noor-shoe-sand/panels/noor-shoe-sand-1.webp (190 KiB)
+コマ2: 1536x1024 (1.500) そのまま → 出力 1440x960  asset_sources/loading-comics/allcast-noor-shoe-sand/panels/noor-shoe-sand-2.webp (217 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "noor-shoe-sand",
+  "title": "靴の中の砂",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 4,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "asset_sources/loading-comics/allcast-noor-shoe-sand/panels/noor-shoe-sand-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "asset_sources/loading-comics/allcast-noor-shoe-sand/panels/noor-shoe-sand-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "asset_sources/loading-comics/allcast-noor-shoe-sand/panel-1-source.png",
+      "region": null
+    },
+    {
+      "file": "asset_sources/loading-comics/allcast-noor-shoe-sand/panel-2-source.png",
+      "region": null
+    }
+  ],
+  "delivery": [
+    {
+      "file": "noor-shoe-sand-1.webp",
+      "width": 1440,
+      "height": 960,
+      "sha256": "952d1a77a5504d064f2e656a6db16cd47ad1a3517339756c05dc8ec188bc0db2"
+    },
+    {
+      "file": "noor-shoe-sand-2.webp",
+      "width": 1440,
+      "height": 960,
+      "sha256": "eb31f7bfae0b1cdd109cddd3f90898e8ea9d68f5619f3039e71a9c12f0a1f9c0"
+    }
+  ]
+}

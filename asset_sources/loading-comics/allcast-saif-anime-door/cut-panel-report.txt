@@ -1,0 +1,54 @@
+panel-1-source.png: 全面 1536x1024 比率 1.500 → ok
+panel-2-source.png: 全面 1536x1024 比率 1.500 → ok
+コマ1: 1536x1024 (1.500) そのまま → 出力 1440x960  asset_sources/loading-comics/allcast-saif-anime-door/panels/saif-anime-door-1.webp (181 KiB)
+コマ2: 1536x1024 (1.500) そのまま → 出力 1440x960  asset_sources/loading-comics/allcast-saif-anime-door/panels/saif-anime-door-2.webp (172 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "saif-anime-door",
+  "title": "開く奥義",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 4,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "asset_sources/loading-comics/allcast-saif-anime-door/panels/saif-anime-door-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "asset_sources/loading-comics/allcast-saif-anime-door/panels/saif-anime-door-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "asset_sources/loading-comics/allcast-saif-anime-door/panel-1-source.png",
+      "region": null
+    },
+    {
+      "file": "asset_sources/loading-comics/allcast-saif-anime-door/panel-2-source.png",
+      "region": null
+    }
+  ],
+  "delivery": [
+    {
+      "file": "saif-anime-door-1.webp",
+      "width": 1440,
+      "height": 960,
+      "sha256": "4ba87513c3b6cd8f7d289ed12ca4634a7ac6be354e35ab725a63372c75f44ddf"
+    },
+    {
+      "file": "saif-anime-door-2.webp",
+      "width": 1440,
+      "height": 960,
+      "sha256": "b4c5bce4962519e1d86459120fe5fd9c4c2c08100153b8de911d7f0b89958b91"
+    }
+  ]
+}

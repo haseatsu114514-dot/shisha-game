@@ -1,0 +1,14 @@
+OK  /workspace/loading-comics-recent-cast/asset_sources/loading-comics/allcast-noor-shoe-sand/panels/noor-shoe-sand-1.webp: 1440x960 比率 1.500 190 KiB
+OK  /workspace/loading-comics-recent-cast/asset_sources/loading-comics/allcast-noor-shoe-sand/panels/noor-shoe-sand-2.webp: 1440x960 比率 1.500 217 KiB
+OK  /workspace/loading-comics-recent-cast/asset_sources/loading-comics/allcast-saif-welcome-carpet/panels/saif-welcome-carpet-1.webp: 1440x960 比率 1.500 222 KiB
+OK  /workspace/loading-comics-recent-cast/asset_sources/loading-comics/allcast-saif-welcome-carpet/panels/saif-welcome-carpet-2.webp: 1440x960 比率 1.500 287 KiB
+OK  /workspace/loading-comics-recent-cast/asset_sources/loading-comics/allcast-saif-anime-door/panels/saif-anime-door-1.webp: 1440x960 比率 1.500 181 KiB
+OK  /workspace/loading-comics-recent-cast/asset_sources/loading-comics/allcast-saif-anime-door/panels/saif-anime-door-2.webp: 1440x960 比率 1.500 172 KiB
+OK  /workspace/loading-comics-recent-cast/asset_sources/loading-comics/allcast-saif-listen-cushions/panels/saif-listen-cushions-1.webp: 1440x960 比率 1.500 179 KiB
+OK  /workspace/loading-comics-recent-cast/asset_sources/loading-comics/allcast-saif-listen-cushions/panels/saif-listen-cushions-2.webp: 1440x960 比率 1.500 215 KiB
+OK  /workspace/loading-comics-recent-cast/asset_sources/loading-comics/allcast-rashid-small-control/panels/rashid-small-control-1.webp: 1440x960 比率 1.500 203 KiB
+OK  /workspace/loading-comics-recent-cast/asset_sources/loading-comics/allcast-rashid-small-control/panels/rashid-small-control-2.webp: 1440x960 比率 1.500 234 KiB
+OK  /workspace/loading-comics-recent-cast/asset_sources/loading-comics/allcast-rashid-best-verdict/panels/rashid-best-verdict-1.webp: 1440x960 比率 1.500 246 KiB
+OK  /workspace/loading-comics-recent-cast/asset_sources/loading-comics/allcast-rashid-best-verdict/panels/rashid-best-verdict-2.webp: 1440x960 比率 1.500 251 KiB
+OK  /workspace/loading-comics-recent-cast/asset_sources/loading-comics/allcast-rashid-camel-brush/panels/rashid-camel-brush-1.webp: 1440x960 比率 1.500 214 KiB
+OK  /workspace/loading-comics-recent-cast/asset_sources/loading-comics/allcast-rashid-camel-brush/panels/rashid-camel-brush-2.webp: 1440x960 比率 1.500 219 KiB
