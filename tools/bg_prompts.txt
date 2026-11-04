@@ -2,6 +2,14 @@
 規格（2026-11-02〜）: docs/background_standard.md が正本。1920x1080 で保存（生成は 2048x1152 以上から縮小）／画風は基準画像4枚（bg_eden_shop・bg_tonari_inside_day・bg_street_night・bg_dubai_souq_day）と規格2節の英文／保存後に python3 tools/background_catalog.py sync で台帳へ記録。
 このファイルは依頼文の書式と過去の依頼文の置き場。下の各ブロックにある「1280x720」「ドット絵調」は制作当時の指定で、新しい依頼は規格に従う。
 シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない（機材が写るときは docs/shisha_reference.md §4）。
+
+==========
+第5章 SMOKE LAB（2026-11-02・Issue #2222）
+==========
+
+--- assets/backgrounds/bg_smoke_lab.png ---
+Anime visual novel background, detailed digital painting, cool clean lighting with a warm accent, no people, 1280x720, painterly brushwork. SMOKE LAB: the research laboratory of a gentle shisha scientist that also works as a small shisha tasting room, on an upper floor of an ordinary Japanese city building (not a sci-fi spaceship). Clean white walls and pale wood, long lab benches with neat rows of plain unlabeled sample tins and glass jars, a few monitors showing abstract curves without any numbers or text, small sensor arrays on stands, soft panel lights in the ceiling. In the center, two identical white-and-stainless square modern shisha stand side by side on two identical small tables for a fair match, each with a small digital scale with a blank display; their bowls are NOT mounted yet, so each stem ends in a small convex metal post, with no bowl, no HMD, no charcoal and no smoke; one hose per hookah sags from the side port onto the tabletop with its rigid handle lying flat. In front, a single row of about ten simple chairs for guests. At the back, an empty alcove with a charging stand for a humanoid robot (no robot in the image). Calm, precise, slightly warm despite all the white. Keep the center foreground open for a character overlay. Fine pixel-painter texture matching bg_eden_shop.png, not photographic, not glossy 3D. No people, no robot, no text, no labels with writing, no logos, no numbers, no watermark. 16:9, 1280x720 (or 2048x1152 for downsampling), opaque. For hookah hardware, follow docs/shisha_reference.md §4.2 and the eight-line setup in asset_sources/ch5-smoke-lab-and-cgs-20261102/README.md; finished-setup components do not apply to this unmounted-bowl scene.
+
 ==========
 
 --- 1/11: bg_home.png ---

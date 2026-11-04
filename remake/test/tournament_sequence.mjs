@@ -67,3 +67,46 @@ for(const insight of [0,30]){
  const fresh=await run(null,{insight});assert.equal(fresh.trace.filter(x=>x==='ch1_tournament_served').length,1);
  console.log(JSON.stringify({fresh_success_insight:insight,served:1,scope:'caller only; VN branch content is separately byte-preserved'}));
 }
+
+// #2035: the real chapter-3 tournament buttons keep their session/error contract.
+{
+ const chapterSource=fs.readFileSync(new URL('../js/chapters/ch3-tournament.js',import.meta.url),'utf8');
+ const helperSource=fs.readFileSync(new URL('../js/core/chapter-actions.js',import.meta.url),'utf8');
+ const errors=[],screens=[];const chapterState={chapter:3};
+ const node=(selector,attrs={},children=[])=>({selector,...(Array.isArray(attrs)?{children:attrs}:{...attrs,children})});
+ const context=vm.createContext({console:{error:(...args)=>errors.push(args)}});
+ const runner=new vm.SourceTextModule(chapterSource+`\nexport {button,perform}; export function owner(){return session={state,active:true,busy:false};}`,{context});
+ let stateModule;
+ await runner.link(async spec=>{
+  if(spec==='../core/chapter-actions.js'){
+   const helper=new vm.SourceTextModule(helperSource,{context});
+   await helper.link(()=>new vm.SyntheticModule(['el'],function(){this.setExport('el',node);},{context}));return helper;
+  }
+  const names=spec==='../craft/broadcast.js'?['block','judge','judgeOf','burst','clearComments']:
+   [...chapterSource.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)].filter(m=>m[2]===spec).flatMap(m=>m[1].split(',').map(s=>s.trim()));
+  const values={state:chapterState,el:node,layers:{hud:{replaceChildren(){},classList:{toggle(){}}}},showScreen:(name,root)=>screens.push({name,root})};
+  const stub=new vm.SyntheticModule(names,function(){for(const n of names)this.setExport(n,values[n]??(()=>{}));},{context});
+  if(spec==='../core/state.js')stateModule=stub;return stub;
+ });await runner.evaluate();const api=runner.namespace;
+ let owner=api.owner(),calls=0,release;
+ const wait=new Promise(resolve=>release=resolve);
+ const button=api.button(owner,'続ける','next',()=>{calls++;return wait;});
+ assert.equal(button.selector,'button.btn');assert.equal(button.type,'button');assert.equal(button.text,'続ける');assert.equal(button.dataset.test,'ch3-tournament-next');
+ assert.equal(api.button(owner,'進む','go',()=>{},true).selector,'button.btn.primary');
+ const pending=button.onclick();assert.equal(owner.busy,true);await button.onclick();assert.equal(calls,1,'repeated clicks run once');
+ release();await pending;assert.equal(owner.busy,false);await api.perform(owner,()=>calls++);assert.equal(calls,2);
+ api.owner();await button.onclick();assert.equal(calls,2,'stale session is ignored');
+ owner=api.owner();owner.active=false;await api.perform(owner,()=>calls++);assert.equal(calls,2,'inactive session is ignored');
+ owner=api.owner();stateModule.setExport('state',{});await api.perform(owner,()=>calls++);assert.equal(calls,2,'LOAD invalidates the owner');stateModule.setExport('state',chapterState);
+ for(const asyncError of [false,true]){
+  owner=api.owner();const error=new Error('controlled chapter 3 action failure');
+  await api.perform(owner,()=>{if(asyncError)return Promise.reject(error);throw error;});
+  assert.equal(owner.busy,false);assert.equal(errors.at(-1)[0],'[ch3 tournament]');assert.equal(errors.at(-1)[1],error);
+  assert.equal(screens.at(-1).name,'ch3-tournament');assert.equal(screens.at(-1).root.dataset.test,'ch3-tournament-error');
+ }
+ const before=errors.length;owner=api.owner();await api.perform(owner,()=>{api.owner();throw new Error('stale failure');});
+ assert.equal(errors.length,before,'stale errors do not replace newer screens');assert.equal(owner.busy,false);
+ owner=api.owner();let finish;const later=new Promise(resolve=>finish=resolve);const running=api.perform(owner,()=>later);api.owner();finish();await running;
+ assert.equal(owner.busy,false,'busy resets on an old owner without mutating the newer session');
+ console.log('chapter-3 tournament actions: session, repeated input and error recovery PASS');
+}

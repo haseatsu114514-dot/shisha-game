@@ -737,6 +737,17 @@
    "luma": 90,
    "blob": "6a75e7ae3a7625894049d691ee2b0ba60414dd39"
   },
+  "bg_smoke_lab.png": {
+   "place": "smoke_lab",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 139,
+   "blob": "3553f3b18ca24d0723246bec28ffacdc7d834231"
+  },
   "bg_steve_shop.png": {
    "place": "steve_shop",
    "time": "",

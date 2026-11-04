@@ -101,9 +101,9 @@ EXTENSIONS = {".json", ".js", ".md", ".py", ".gd", ".txt", ".csv", ".sh"}
 
 IDENTITY_TEXT_EXTENSIONS = EXTENSIONS | {".mjs", ".cjs", ".html", ".css", ".yml", ".yaml", ".svg", ".xml", ".toml", ".lock"}
 # 2026-11-03 改名（#2474）。旧名は履歴・素材メモを含む全追跡ファイルで禁止する（「凛とした」等の一般語は許す）。
-# 2026-11-04 追加（#2528）: saif の「サイーフ」→「スハイル」。同じく全追跡ファイルで禁止。
-RENAMED_CHARACTER_RE = re.compile(r"サイーフ|\bSaif\b|凛(?!とし|々|然|冽)|水瀬|白木 ?つむぎ|さぎさか りん|南雲|なぐも しゅうじ|デイビス|Steve Davis|波多野|ラシード|\bRashid\b|アゲハ(?!蝶|チョウ)|路上占い師|\bPak(?:i|ie)\b|サラリーマンさん")
-RENAMED_CHARACTER_FIX = "旧キャラ名 → 匂坂 くゆり（rin）／猫柳 つむぎ（tsumugi）／黒葉 ましろ（mashiro）／須井 修二（nagumo）／スティーブ・ライマン（steve）／汐見 なぎさ（samechan）／ハリール（rashid）／あげは（ageha）／辻占のオババ（uranaishi）／Packy（pakki）／鉄仮面さん（salaryman）／スハイル（saif）に統一（#2474・#2528）"
+# 2026-11-04 追加（#2528）: rin の姓「匂坂（さぎさか）」→「香坂（こうさか）」、saif の「サイーフ」→「スハイル」。同じく全追跡ファイルで禁止。
+RENAMED_CHARACTER_RE = re.compile(r"匂坂|さぎさか|サギサカ|\bSagisaka\b|サイーフ|\bSaif\b|凛(?!とし|々|然|冽)|水瀬|白木 ?つむぎ|さぎさか りん|南雲|なぐも しゅうじ|デイビス|Steve Davis|波多野|ラシード|\bRashid\b|アゲハ(?!蝶|チョウ)|路上占い師|\bPak(?:i|ie)\b|サラリーマンさん")
+RENAMED_CHARACTER_FIX = "旧キャラ名 → 香坂 くゆり（rin）／猫柳 つむぎ（tsumugi）／黒葉 ましろ（mashiro）／須井 修二（nagumo）／スティーブ・ライマン（steve）／汐見 なぎさ（samechan）／ハリール（rashid）／あげは（ageha）／辻占のオババ（uranaishi）／Packy（pakki）／鉄仮面さん（salaryman）／スハイル（saif）に統一（#2474・#2528）"
 MINTO_HAIR_RE = re.compile(r"(?:mint|light)[ -]green (?:hair|twin)|black twin[ -]?tails|ミント(?:グリーン|色)のツイン|黒髪ツインテール|角ツインテール", re.IGNORECASE)
 # 2026-11-04 追加（#2528 残骸チェック）: 改名済みキャラの旧ローマ字。英字は前後が英数字でない時だけ検出する
 # （内部ID rin / nagumo / maezono / samechan / dr_kemuri の小文字表記・ファイル名は対象外）。

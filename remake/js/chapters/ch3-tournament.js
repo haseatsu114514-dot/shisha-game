@@ -1,5 +1,6 @@
 import { playEntrance } from "./tournament-entrance.js";
 // HAZE: NATIONAL TOKYO。四人同時の一試合を、確定した制作工程と票から再開する。
+import { createChapterActions } from "../core/chapter-actions.js";
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
 import { difficultyEvidence } from "../core/cycle-start.js";
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, loadTournamentCraftDialogue } from "../core/data.js";
@@ -56,18 +57,8 @@ let session;
 const live = owner => session === owner && owner.active && owner.state === state;
 const progress = () => tournamentProgress(state);
 
-function button(owner, text, name, action, primary = false) {
-  return el(`button.btn${primary ? ".primary" : ""}`, { type: "button", text,
-    dataset: { test: id(name) }, onclick: () => perform(owner, action) });
-}
-
-async function perform(owner, action) {
-  if (!live(owner) || owner.busy) return;
-  owner.busy = true;
-  try { await action(); }
-  catch (error) { if (live(owner)) { console.error("[ch3 tournament]", error); renderError(owner); } }
-  finally { owner.busy = false; }
-}
+const { button, perform } = createChapterActions({ current: live, test: id,
+  logName: "[ch3 tournament]", renderError });
 
 function menuButton(owner) {
   return el("button.btn.ch2-tournament-menu", { type: "button", text: "MENU",
@@ -497,3 +488,4 @@ async function drive(owner) {
     else throw new Error(`不明な全国大会の保存地点: ${p.stage}`);
   }
 }
+

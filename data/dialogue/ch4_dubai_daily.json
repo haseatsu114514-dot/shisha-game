@@ -222,6 +222,42 @@
       ]
     },
     {
+      "dialogue_id": "ch4_inn_trial_intro",
+      "comment": "ドバイDAY3〜8。宿の作業台で持参した葉を使う任意の試作。次の制作操作で一台作る。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "宿の机に、持ってきた葉と道具を並べた。窓の向こうでは、夜の街に灯りが増えていく。" },
+        { "speaker": "hajime", "face": "normal", "text": "（出発前に決めた配合を、こっちの空気で一度作ってみよう）" },
+        { "speaker": "", "face": "", "text": "道具を手に取る。いつもの手順を、最初から通そう。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_inn_trial_good",
+      "comment": "宿の試作。工程の平均68以上。大会の加点は付けない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "吸い出すと、狙った香りが先に届いた。冷房の中でも、炭の立ち上がりは読める。" },
+        { "speaker": "hajime", "face": "smile", "text": "（よし。これなら、明日も同じ手で始められる）" },
+        { "speaker": "", "face": "", "text": "配合と炭の位置を手帳に書いた。試した一台を、静かに片づけた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_inn_trial_rough",
+      "comment": "宿の試作。工程の平均68未満。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "香りが出るまで、思ったより時間がかかった。窓を閉めると、炭の熱だけが近い。" },
+        { "speaker": "hajime", "face": "normal", "text": "（葉はこのままでいい。炭の置き方を、もう少し見よう）" },
+        { "speaker": "", "face": "", "text": "手帳に気づいた点を残し、台を片づけた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_inn_trial_failed",
+      "comment": "宿の試作。制作失敗時も試した記録を残す。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "煙が薄くなり、狙った香りまで届かなかった。炭を外して、台を冷ます。" },
+        { "speaker": "hajime", "face": "normal", "text": "（失敗したところは分かった。次は、そこから直せる）" },
+        { "speaker": "", "face": "", "text": "手帳に工程を記してから、机の上を元に戻した。" }
+      ]
+    },
+    {
       "dialogue_id": "ch4_inn_rest",
       "comment": "宿で休む（昼・夜どちらでも読める）。",
       "lines": [

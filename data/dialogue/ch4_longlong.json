@@ -65,6 +65,11 @@
             "flag": "_met_master_hookah"
           },
           {
+            "speaker": "",
+            "face": "",
+            "text": "通訳アプリを開きかけた俺に、男が日本語で声をかけた。"
+          },
+          {
             "speaker": "master_hookah",
             "face": "normal",
             "text": "いらっしゃい。座って。……急いでいる顔ではないね"
@@ -73,6 +78,16 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "はい。今日は、ゆっくり吸いたくて"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "日本語で話せるんですね。助かります"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "世界を旅して、日本の店にも長くいた。言葉はそこで覚えた"
           },
           {
             "speaker": "master_hookah",

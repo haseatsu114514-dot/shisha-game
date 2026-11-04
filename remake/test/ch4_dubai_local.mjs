@@ -116,7 +116,7 @@ for (const item of STALL_MENU) {
 }
 assert(daily.ch4_souq_stall_karak.lines.some(line => line.speaker === "hajime" && line.text === "シュクラン"), "受け取ってお礼を言う");
 // 屋台は体力を使った後に戻し、時間は使わない（スークの行動の中）。選んだ時に代金と体力を確定する
-assert.match(dailySource, /addStamina\(entry\.stamina \|\| 0\);\n\s*if \(entry\.heat\)[^\n]*\n[^\n]*\n\s*if \(entry\.place === STALL_PLACE && state === owner\) await visitStall\(owner\);/);
+assert.match(dailySource, /addStamina\(innTrial \? 0 : entry\.stamina \|\| 0\);\n\s*if \(entry\.heat\)[^\n]*\n[^\n]*\n\s*if \(entry\.place === STALL_PLACE && state === owner\) await visitStall\(owner\);/);
 assert.match(dailySource, /stallChoices\(spendableMoney\(state\)\)/);
 assert.match(dailySource, /\{ label: "何も買わない", value: STALL_NONE, test: `stall-\$\{STALL_NONE\}` \}/);
 assert.match(dailySource, /addMoney\(-item\.price\);\n\s*addStamina\(item\.stamina\);/);
