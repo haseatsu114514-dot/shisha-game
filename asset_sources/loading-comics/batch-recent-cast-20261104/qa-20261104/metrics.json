@@ -1,0 +1,1645 @@
+{
+  "tested_head": "98a7f2cc22175feb8531f5b444263b3eaa438efe",
+  "browser": "system Chromium; chromiumSandbox:true",
+  "method": "actual withLoading + actual loading.css/base.css; candidate array passed only to local QA harness; no runtime registry edit",
+  "loadingCssBlob": "0259d4413ecb758b7165133ea269e8e7b2c621d1",
+  "loadingJsBlob": "3c13e20f4b82886e54bc489470e26a293dbe681a",
+  "baseCssBlob": "e7abcb0e71090a569868fee4fd200d0935d9d546",
+  "deviceScaleFactor": 1,
+  "viewports": [
+    {
+      "id": "pc",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "id": "phone-landscape",
+      "width": 844,
+      "height": 390
+    },
+    {
+      "id": "phone-portrait",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "records": [
+    {
+      "id": "noor-shoe-sand",
+      "viewport": "pc",
+      "screenshot": "pc-noor-shoe-sand.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "gate": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "right": 1280,
+          "bottom": 720
+        },
+        "card": {
+          "x": 73,
+          "y": 124.109375,
+          "width": 1134,
+          "height": 473.59375,
+          "right": 1207,
+          "bottom": 597.703125
+        },
+        "panels": [
+          {
+            "x": 92,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 629,
+            "bottom": 551.703125
+          },
+          {
+            "x": 651,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 1188,
+            "bottom": 551.703125
+          }
+        ],
+        "images": [
+          {
+            "x": 92,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 629,
+            "bottom": 551.703125,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 651,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 1188,
+            "bottom": 551.703125,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "靴の中の砂",
+        "caption": "砂丘を歩くと、靴の中は砂でいっぱいになる。",
+        "bodyScroll": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "saif-welcome-carpet",
+      "viewport": "pc",
+      "screenshot": "pc-saif-welcome-carpet.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "gate": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "right": 1280,
+          "bottom": 720
+        },
+        "card": {
+          "x": 73,
+          "y": 124.109375,
+          "width": 1134,
+          "height": 473.59375,
+          "right": 1207,
+          "bottom": 597.703125
+        },
+        "panels": [
+          {
+            "x": 92,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 629,
+            "bottom": 551.703125
+          },
+          {
+            "x": 651,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 1188,
+            "bottom": 551.703125
+          }
+        ],
+        "images": [
+          {
+            "x": 92,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 629,
+            "bottom": 551.703125,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 651,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 1188,
+            "bottom": 551.703125,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "歓迎の長さ",
+        "caption": "スハイルは、ドバイで出会う接客上手な友人。",
+        "bodyScroll": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "saif-anime-door",
+      "viewport": "pc",
+      "screenshot": "pc-saif-anime-door.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "gate": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "right": 1280,
+          "bottom": 720
+        },
+        "card": {
+          "x": 73,
+          "y": 124.109375,
+          "width": 1134,
+          "height": 473.59375,
+          "right": 1207,
+          "bottom": 597.703125
+        },
+        "panels": [
+          {
+            "x": 92,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 629,
+            "bottom": 551.703125
+          },
+          {
+            "x": 651,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 1188,
+            "bottom": 551.703125
+          }
+        ],
+        "images": [
+          {
+            "x": 92,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 629,
+            "bottom": 551.703125,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 651,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 1188,
+            "bottom": 551.703125,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "開く奥義",
+        "caption": "スハイルは、ドバイで出会う接客上手な友人。",
+        "bodyScroll": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "saif-listen-cushions",
+      "viewport": "pc",
+      "screenshot": "pc-saif-listen-cushions.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "gate": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "right": 1280,
+          "bottom": 720
+        },
+        "card": {
+          "x": 73,
+          "y": 124.109375,
+          "width": 1134,
+          "height": 473.59375,
+          "right": 1207,
+          "bottom": 597.703125
+        },
+        "panels": [
+          {
+            "x": 92,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 629,
+            "bottom": 551.703125
+          },
+          {
+            "x": 651,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 1188,
+            "bottom": 551.703125
+          }
+        ],
+        "images": [
+          {
+            "x": 92,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 629,
+            "bottom": 551.703125,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 651,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 1188,
+            "bottom": 551.703125,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "話す準備",
+        "caption": "スハイルは、ドバイで出会う接客上手な友人。",
+        "bodyScroll": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "rashid-small-control",
+      "viewport": "pc",
+      "screenshot": "pc-rashid-small-control.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "gate": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "right": 1280,
+          "bottom": 720
+        },
+        "card": {
+          "x": 73,
+          "y": 124.109375,
+          "width": 1134,
+          "height": 473.59375,
+          "right": 1207,
+          "bottom": 597.703125
+        },
+        "panels": [
+          {
+            "x": 92,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 629,
+            "bottom": 551.703125
+          },
+          {
+            "x": 651,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 1188,
+            "bottom": 551.703125
+          }
+        ],
+        "images": [
+          {
+            "x": 92,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 629,
+            "bottom": 551.703125,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 651,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 1188,
+            "bottom": 551.703125,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "小さな担当",
+        "caption": "ハリールは、口数の少ないラクダの調教師。",
+        "bodyScroll": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "rashid-best-verdict",
+      "viewport": "pc",
+      "screenshot": "pc-rashid-best-verdict.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "gate": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "right": 1280,
+          "bottom": 720
+        },
+        "card": {
+          "x": 73,
+          "y": 124.109375,
+          "width": 1134,
+          "height": 473.59375,
+          "right": 1207,
+          "bottom": 597.703125
+        },
+        "panels": [
+          {
+            "x": 92,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 629,
+            "bottom": 551.703125
+          },
+          {
+            "x": 651,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 1188,
+            "bottom": 551.703125
+          }
+        ],
+        "images": [
+          {
+            "x": 92,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 629,
+            "bottom": 551.703125,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 651,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 1188,
+            "bottom": 551.703125,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "最高の一言",
+        "caption": "ハリールは、口数の少ないラクダの調教師。",
+        "bodyScroll": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "rashid-camel-brush",
+      "viewport": "pc",
+      "screenshot": "pc-rashid-camel-brush.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "gate": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "right": 1280,
+          "bottom": 720
+        },
+        "card": {
+          "x": 73,
+          "y": 124.109375,
+          "width": 1134,
+          "height": 473.59375,
+          "right": 1207,
+          "bottom": 597.703125
+        },
+        "panels": [
+          {
+            "x": 92,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 629,
+            "bottom": 551.703125
+          },
+          {
+            "x": 651,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 1188,
+            "bottom": 551.703125
+          }
+        ],
+        "images": [
+          {
+            "x": 92,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 629,
+            "bottom": 551.703125,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 651,
+            "y": 193.703125,
+            "width": 537,
+            "height": 358,
+            "right": 1188,
+            "bottom": 551.703125,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "朝の身支度",
+        "caption": "ハリールは、口数の少ないラクダの調教師。",
+        "bodyScroll": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "noor-shoe-sand",
+      "viewport": "phone-landscape",
+      "screenshot": "phone-landscape-noor-shoe-sand.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "gate": {
+          "x": 75.33331298828125,
+          "y": 0,
+          "width": 693.3333740234375,
+          "height": 390,
+          "right": 768.6666870117188,
+          "bottom": 390
+        },
+        "card": {
+          "x": 114.87498474121094,
+          "y": 67.22591400146484,
+          "width": 614.25,
+          "height": 256.5299377441406,
+          "right": 729.1249847412109,
+          "bottom": 323.75585174560547
+        },
+        "panels": [
+          {
+            "x": 125.1666488647461,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 416.0416488647461,
+            "bottom": 298.8392028808594
+          },
+          {
+            "x": 427.95831298828125,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 718.8333129882812,
+            "bottom": 298.8392028808594
+          }
+        ],
+        "images": [
+          {
+            "x": 125.1666488647461,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 416.0416488647461,
+            "bottom": 298.8392028808594,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 427.95831298828125,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 718.8333129882812,
+            "bottom": 298.8392028808594,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "靴の中の砂",
+        "caption": "砂丘を歩くと、靴の中は砂でいっぱいになる。",
+        "bodyScroll": {
+          "width": 844,
+          "height": 390
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "saif-welcome-carpet",
+      "viewport": "phone-landscape",
+      "screenshot": "phone-landscape-saif-welcome-carpet.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "gate": {
+          "x": 75.33331298828125,
+          "y": 0,
+          "width": 693.3333740234375,
+          "height": 390,
+          "right": 768.6666870117188,
+          "bottom": 390
+        },
+        "card": {
+          "x": 114.87498474121094,
+          "y": 67.22591400146484,
+          "width": 614.25,
+          "height": 256.5299377441406,
+          "right": 729.1249847412109,
+          "bottom": 323.75585174560547
+        },
+        "panels": [
+          {
+            "x": 125.1666488647461,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 416.0416488647461,
+            "bottom": 298.8392028808594
+          },
+          {
+            "x": 427.95831298828125,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 718.8333129882812,
+            "bottom": 298.8392028808594
+          }
+        ],
+        "images": [
+          {
+            "x": 125.1666488647461,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 416.0416488647461,
+            "bottom": 298.8392028808594,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 427.95831298828125,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 718.8333129882812,
+            "bottom": 298.8392028808594,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "歓迎の長さ",
+        "caption": "スハイルは、ドバイで出会う接客上手な友人。",
+        "bodyScroll": {
+          "width": 844,
+          "height": 390
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "saif-anime-door",
+      "viewport": "phone-landscape",
+      "screenshot": "phone-landscape-saif-anime-door.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "gate": {
+          "x": 75.33331298828125,
+          "y": 0,
+          "width": 693.3333740234375,
+          "height": 390,
+          "right": 768.6666870117188,
+          "bottom": 390
+        },
+        "card": {
+          "x": 114.87498474121094,
+          "y": 67.22591400146484,
+          "width": 614.25,
+          "height": 256.5299377441406,
+          "right": 729.1249847412109,
+          "bottom": 323.75585174560547
+        },
+        "panels": [
+          {
+            "x": 125.1666488647461,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 416.0416488647461,
+            "bottom": 298.8392028808594
+          },
+          {
+            "x": 427.95831298828125,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 718.8333129882812,
+            "bottom": 298.8392028808594
+          }
+        ],
+        "images": [
+          {
+            "x": 125.1666488647461,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 416.0416488647461,
+            "bottom": 298.8392028808594,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 427.95831298828125,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 718.8333129882812,
+            "bottom": 298.8392028808594,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "開く奥義",
+        "caption": "スハイルは、ドバイで出会う接客上手な友人。",
+        "bodyScroll": {
+          "width": 844,
+          "height": 390
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "saif-listen-cushions",
+      "viewport": "phone-landscape",
+      "screenshot": "phone-landscape-saif-listen-cushions.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "gate": {
+          "x": 75.33331298828125,
+          "y": 0,
+          "width": 693.3333740234375,
+          "height": 390,
+          "right": 768.6666870117188,
+          "bottom": 390
+        },
+        "card": {
+          "x": 114.87498474121094,
+          "y": 67.22591400146484,
+          "width": 614.25,
+          "height": 256.5299377441406,
+          "right": 729.1249847412109,
+          "bottom": 323.75585174560547
+        },
+        "panels": [
+          {
+            "x": 125.1666488647461,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 416.0416488647461,
+            "bottom": 298.8392028808594
+          },
+          {
+            "x": 427.95831298828125,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 718.8333129882812,
+            "bottom": 298.8392028808594
+          }
+        ],
+        "images": [
+          {
+            "x": 125.1666488647461,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 416.0416488647461,
+            "bottom": 298.8392028808594,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 427.95831298828125,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 718.8333129882812,
+            "bottom": 298.8392028808594,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "話す準備",
+        "caption": "スハイルは、ドバイで出会う接客上手な友人。",
+        "bodyScroll": {
+          "width": 844,
+          "height": 390
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "rashid-small-control",
+      "viewport": "phone-landscape",
+      "screenshot": "phone-landscape-rashid-small-control.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "gate": {
+          "x": 75.33331298828125,
+          "y": 0,
+          "width": 693.3333740234375,
+          "height": 390,
+          "right": 768.6666870117188,
+          "bottom": 390
+        },
+        "card": {
+          "x": 114.87498474121094,
+          "y": 67.22591400146484,
+          "width": 614.25,
+          "height": 256.5299377441406,
+          "right": 729.1249847412109,
+          "bottom": 323.75585174560547
+        },
+        "panels": [
+          {
+            "x": 125.1666488647461,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 416.0416488647461,
+            "bottom": 298.8392028808594
+          },
+          {
+            "x": 427.95831298828125,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 718.8333129882812,
+            "bottom": 298.8392028808594
+          }
+        ],
+        "images": [
+          {
+            "x": 125.1666488647461,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 416.0416488647461,
+            "bottom": 298.8392028808594,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 427.95831298828125,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 718.8333129882812,
+            "bottom": 298.8392028808594,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "小さな担当",
+        "caption": "ハリールは、口数の少ないラクダの調教師。",
+        "bodyScroll": {
+          "width": 844,
+          "height": 390
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "rashid-best-verdict",
+      "viewport": "phone-landscape",
+      "screenshot": "phone-landscape-rashid-best-verdict.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "gate": {
+          "x": 75.33331298828125,
+          "y": 0,
+          "width": 693.3333740234375,
+          "height": 390,
+          "right": 768.6666870117188,
+          "bottom": 390
+        },
+        "card": {
+          "x": 114.87498474121094,
+          "y": 67.22591400146484,
+          "width": 614.25,
+          "height": 256.5299377441406,
+          "right": 729.1249847412109,
+          "bottom": 323.75585174560547
+        },
+        "panels": [
+          {
+            "x": 125.1666488647461,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 416.0416488647461,
+            "bottom": 298.8392028808594
+          },
+          {
+            "x": 427.95831298828125,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 718.8333129882812,
+            "bottom": 298.8392028808594
+          }
+        ],
+        "images": [
+          {
+            "x": 125.1666488647461,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 416.0416488647461,
+            "bottom": 298.8392028808594,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 427.95831298828125,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 718.8333129882812,
+            "bottom": 298.8392028808594,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "最高の一言",
+        "caption": "ハリールは、口数の少ないラクダの調教師。",
+        "bodyScroll": {
+          "width": 844,
+          "height": 390
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "rashid-camel-brush",
+      "viewport": "phone-landscape",
+      "screenshot": "phone-landscape-rashid-camel-brush.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "gate": {
+          "x": 75.33331298828125,
+          "y": 0,
+          "width": 693.3333740234375,
+          "height": 390,
+          "right": 768.6666870117188,
+          "bottom": 390
+        },
+        "card": {
+          "x": 114.87498474121094,
+          "y": 67.22591400146484,
+          "width": 614.25,
+          "height": 256.5299377441406,
+          "right": 729.1249847412109,
+          "bottom": 323.75585174560547
+        },
+        "panels": [
+          {
+            "x": 125.1666488647461,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 416.0416488647461,
+            "bottom": 298.8392028808594
+          },
+          {
+            "x": 427.95831298828125,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 718.8333129882812,
+            "bottom": 298.8392028808594
+          }
+        ],
+        "images": [
+          {
+            "x": 125.1666488647461,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 416.0416488647461,
+            "bottom": 298.8392028808594,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 427.95831298828125,
+            "y": 104.92253112792969,
+            "width": 290.875,
+            "height": 193.9166717529297,
+            "right": 718.8333129882812,
+            "bottom": 298.8392028808594,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "朝の身支度",
+        "caption": "ハリールは、口数の少ないラクダの調教師。",
+        "bodyScroll": {
+          "width": 844,
+          "height": 390
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "noor-shoe-sand",
+      "viewport": "phone-portrait",
+      "screenshot": "phone-portrait-noor-shoe-sand.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "gate": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "right": 390,
+          "bottom": 844
+        },
+        "card": {
+          "x": 11.703125,
+          "y": 128.125,
+          "width": 366.59375,
+          "height": 562.53125,
+          "right": 378.296875,
+          "bottom": 690.65625
+        },
+        "panels": [
+          {
+            "x": 21.28125,
+            "y": 178.765625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 410.390625
+          },
+          {
+            "x": 21.28125,
+            "y": 420.515625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 652.140625
+          }
+        ],
+        "images": [
+          {
+            "x": 21.28125,
+            "y": 178.765625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 410.390625,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 21.28125,
+            "y": 420.515625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 652.140625,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "靴の中の砂",
+        "caption": "砂丘を歩くと、靴の中は砂でいっぱいになる。",
+        "bodyScroll": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "saif-welcome-carpet",
+      "viewport": "phone-portrait",
+      "screenshot": "phone-portrait-saif-welcome-carpet.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "gate": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "right": 390,
+          "bottom": 844
+        },
+        "card": {
+          "x": 11.703125,
+          "y": 128.125,
+          "width": 366.59375,
+          "height": 562.53125,
+          "right": 378.296875,
+          "bottom": 690.65625
+        },
+        "panels": [
+          {
+            "x": 21.28125,
+            "y": 178.765625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 410.390625
+          },
+          {
+            "x": 21.28125,
+            "y": 420.515625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 652.140625
+          }
+        ],
+        "images": [
+          {
+            "x": 21.28125,
+            "y": 178.765625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 410.390625,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 21.28125,
+            "y": 420.515625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 652.140625,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "歓迎の長さ",
+        "caption": "スハイルは、ドバイで出会う接客上手な友人。",
+        "bodyScroll": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "saif-anime-door",
+      "viewport": "phone-portrait",
+      "screenshot": "phone-portrait-saif-anime-door.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "gate": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "right": 390,
+          "bottom": 844
+        },
+        "card": {
+          "x": 11.703125,
+          "y": 128.125,
+          "width": 366.59375,
+          "height": 562.53125,
+          "right": 378.296875,
+          "bottom": 690.65625
+        },
+        "panels": [
+          {
+            "x": 21.28125,
+            "y": 178.765625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 410.390625
+          },
+          {
+            "x": 21.28125,
+            "y": 420.515625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 652.140625
+          }
+        ],
+        "images": [
+          {
+            "x": 21.28125,
+            "y": 178.765625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 410.390625,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 21.28125,
+            "y": 420.515625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 652.140625,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "開く奥義",
+        "caption": "スハイルは、ドバイで出会う接客上手な友人。",
+        "bodyScroll": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "saif-listen-cushions",
+      "viewport": "phone-portrait",
+      "screenshot": "phone-portrait-saif-listen-cushions.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "gate": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "right": 390,
+          "bottom": 844
+        },
+        "card": {
+          "x": 11.703125,
+          "y": 128.125,
+          "width": 366.59375,
+          "height": 562.53125,
+          "right": 378.296875,
+          "bottom": 690.65625
+        },
+        "panels": [
+          {
+            "x": 21.28125,
+            "y": 178.765625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 410.390625
+          },
+          {
+            "x": 21.28125,
+            "y": 420.515625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 652.140625
+          }
+        ],
+        "images": [
+          {
+            "x": 21.28125,
+            "y": 178.765625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 410.390625,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 21.28125,
+            "y": 420.515625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 652.140625,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "話す準備",
+        "caption": "スハイルは、ドバイで出会う接客上手な友人。",
+        "bodyScroll": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "rashid-small-control",
+      "viewport": "phone-portrait",
+      "screenshot": "phone-portrait-rashid-small-control.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "gate": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "right": 390,
+          "bottom": 844
+        },
+        "card": {
+          "x": 11.703125,
+          "y": 128.125,
+          "width": 366.59375,
+          "height": 562.53125,
+          "right": 378.296875,
+          "bottom": 690.65625
+        },
+        "panels": [
+          {
+            "x": 21.28125,
+            "y": 178.765625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 410.390625
+          },
+          {
+            "x": 21.28125,
+            "y": 420.515625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 652.140625
+          }
+        ],
+        "images": [
+          {
+            "x": 21.28125,
+            "y": 178.765625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 410.390625,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 21.28125,
+            "y": 420.515625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 652.140625,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "小さな担当",
+        "caption": "ハリールは、口数の少ないラクダの調教師。",
+        "bodyScroll": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "rashid-best-verdict",
+      "viewport": "phone-portrait",
+      "screenshot": "phone-portrait-rashid-best-verdict.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "gate": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "right": 390,
+          "bottom": 844
+        },
+        "card": {
+          "x": 11.703125,
+          "y": 128.125,
+          "width": 366.59375,
+          "height": 562.53125,
+          "right": 378.296875,
+          "bottom": 690.65625
+        },
+        "panels": [
+          {
+            "x": 21.28125,
+            "y": 178.765625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 410.390625
+          },
+          {
+            "x": 21.28125,
+            "y": 420.515625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 652.140625
+          }
+        ],
+        "images": [
+          {
+            "x": 21.28125,
+            "y": 178.765625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 410.390625,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 21.28125,
+            "y": 420.515625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 652.140625,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "最高の一言",
+        "caption": "ハリールは、口数の少ないラクダの調教師。",
+        "bodyScroll": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    },
+    {
+      "id": "rashid-camel-brush",
+      "viewport": "phone-portrait",
+      "screenshot": "phone-portrait-rashid-camel-brush.jpg",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "gate": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "right": 390,
+          "bottom": 844
+        },
+        "card": {
+          "x": 11.703125,
+          "y": 128.125,
+          "width": 366.59375,
+          "height": 562.53125,
+          "right": 378.296875,
+          "bottom": 690.65625
+        },
+        "panels": [
+          {
+            "x": 21.28125,
+            "y": 178.765625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 410.390625
+          },
+          {
+            "x": 21.28125,
+            "y": 420.515625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 652.140625
+          }
+        ],
+        "images": [
+          {
+            "x": 21.28125,
+            "y": 178.765625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 410.390625,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          },
+          {
+            "x": 21.28125,
+            "y": 420.515625,
+            "width": 347.4375,
+            "height": 231.625,
+            "right": 368.71875,
+            "bottom": 652.140625,
+            "naturalWidth": 1440,
+            "naturalHeight": 960,
+            "complete": true
+          }
+        ],
+        "title": "朝の身支度",
+        "caption": "ハリールは、口数の少ないラクダの調教師。",
+        "bodyScroll": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "errors": [],
+      "proceed": "PASS"
+    }
+  ]
+}

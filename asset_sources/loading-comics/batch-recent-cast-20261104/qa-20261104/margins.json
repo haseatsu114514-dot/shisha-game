@@ -1,0 +1,508 @@
+{
+  "method": "Read-only analysis of 1536x1024 native PNG. White connected components at stride 4, RGB>=235/chroma<=20, bubble-like size/aspect/fill filters, bbox expanded by 6px. Approximation; not OCR, not exact ink-boundary proof. Thought bubbles may be included. Images are unchanged.",
+  "required_safe_margin_percent": 4,
+  "records": [
+    {
+      "id": "noor-shoe-sand",
+      "panel": 1,
+      "bubble_like_regions": [
+        {
+          "approx_bbox": {
+            "x": 142,
+            "y": 18,
+            "right": 846,
+            "bottom": 302
+          },
+          "gaps_percent": {
+            "left": 9.24,
+            "right": 44.92,
+            "top": 1.76,
+            "bottom": 70.51
+          },
+          "edges_under_4_percent": [
+            "top"
+          ],
+          "manual_classification": "bubble_like"
+        },
+        {
+          "approx_bbox": {
+            "x": 606,
+            "y": 726,
+            "right": 1118,
+            "bottom": 978
+          },
+          "gaps_percent": {
+            "left": 39.45,
+            "right": 27.21,
+            "top": 70.9,
+            "bottom": 4.49
+          },
+          "edges_under_4_percent": [],
+          "manual_classification": "bubble_like"
+        }
+      ],
+      "manual_hand_note": null
+    },
+    {
+      "id": "noor-shoe-sand",
+      "panel": 2,
+      "bubble_like_regions": [
+        {
+          "approx_bbox": {
+            "x": 70,
+            "y": 22,
+            "right": 710,
+            "bottom": 270
+          },
+          "gaps_percent": {
+            "left": 4.56,
+            "right": 53.78,
+            "top": 2.15,
+            "bottom": 73.63
+          },
+          "edges_under_4_percent": [
+            "top"
+          ],
+          "manual_classification": "bubble_like"
+        }
+      ],
+      "manual_hand_note": "右コマのはじめの左手は左端に近い（既存目視）"
+    },
+    {
+      "id": "saif-welcome-carpet",
+      "panel": 1,
+      "bubble_like_regions": [
+        {
+          "approx_bbox": {
+            "x": 38,
+            "y": 34,
+            "right": 662,
+            "bottom": 314
+          },
+          "gaps_percent": {
+            "left": 2.47,
+            "right": 56.9,
+            "top": 3.32,
+            "bottom": 69.34
+          },
+          "edges_under_4_percent": [
+            "left",
+            "top"
+          ],
+          "manual_classification": "bubble_like"
+        },
+        {
+          "approx_bbox": {
+            "x": 1022,
+            "y": 610,
+            "right": 1506,
+            "bottom": 966
+          },
+          "gaps_percent": {
+            "left": 66.54,
+            "right": 1.95,
+            "top": 59.57,
+            "bottom": 5.66
+          },
+          "edges_under_4_percent": [
+            "right"
+          ],
+          "manual_classification": "bubble_like"
+        }
+      ],
+      "manual_hand_note": null
+    },
+    {
+      "id": "saif-welcome-carpet",
+      "panel": 2,
+      "bubble_like_regions": [
+        {
+          "approx_bbox": {
+            "x": 66,
+            "y": 34,
+            "right": 790,
+            "bottom": 354
+          },
+          "gaps_percent": {
+            "left": 4.3,
+            "right": 48.57,
+            "top": 3.32,
+            "bottom": 65.43
+          },
+          "edges_under_4_percent": [
+            "top"
+          ],
+          "manual_classification": "bubble_like"
+        }
+      ],
+      "manual_hand_note": null
+    },
+    {
+      "id": "saif-anime-door",
+      "panel": 1,
+      "bubble_like_regions": [
+        {
+          "approx_bbox": {
+            "x": 82,
+            "y": 58,
+            "right": 706,
+            "bottom": 322
+          },
+          "gaps_percent": {
+            "left": 5.34,
+            "right": 54.04,
+            "top": 5.66,
+            "bottom": 68.55
+          },
+          "edges_under_4_percent": [],
+          "manual_classification": "bubble_like"
+        },
+        {
+          "approx_bbox": {
+            "x": 1106,
+            "y": 602,
+            "right": 1494,
+            "bottom": 922
+          },
+          "gaps_percent": {
+            "left": 72.01,
+            "right": 2.73,
+            "top": 58.79,
+            "bottom": 9.96
+          },
+          "edges_under_4_percent": [
+            "right"
+          ],
+          "manual_classification": "bubble_like"
+        }
+      ],
+      "manual_hand_note": null
+    },
+    {
+      "id": "saif-anime-door",
+      "panel": 2,
+      "bubble_like_regions": [
+        {
+          "approx_bbox": {
+            "x": 86,
+            "y": 58,
+            "right": 674,
+            "bottom": 338
+          },
+          "gaps_percent": {
+            "left": 5.6,
+            "right": 56.12,
+            "top": 5.66,
+            "bottom": 66.99
+          },
+          "edges_under_4_percent": [],
+          "manual_classification": "bubble_like"
+        }
+      ],
+      "manual_hand_note": null
+    },
+    {
+      "id": "saif-listen-cushions",
+      "panel": 1,
+      "bubble_like_regions": [
+        {
+          "approx_bbox": {
+            "x": 126,
+            "y": 26,
+            "right": 842,
+            "bottom": 326
+          },
+          "gaps_percent": {
+            "left": 8.2,
+            "right": 45.18,
+            "top": 2.54,
+            "bottom": 68.16
+          },
+          "edges_under_4_percent": [
+            "top"
+          ],
+          "manual_classification": "bubble_like"
+        },
+        {
+          "approx_bbox": {
+            "x": 782,
+            "y": 638,
+            "right": 1402,
+            "bottom": 998
+          },
+          "gaps_percent": {
+            "left": 50.91,
+            "right": 8.72,
+            "top": 62.3,
+            "bottom": 2.54
+          },
+          "edges_under_4_percent": [
+            "bottom"
+          ],
+          "manual_classification": "bubble_like"
+        }
+      ],
+      "manual_hand_note": null
+    },
+    {
+      "id": "saif-listen-cushions",
+      "panel": 2,
+      "bubble_like_regions": [
+        {
+          "approx_bbox": {
+            "x": 126,
+            "y": 26,
+            "right": 838,
+            "bottom": 326
+          },
+          "gaps_percent": {
+            "left": 8.2,
+            "right": 45.44,
+            "top": 2.54,
+            "bottom": 68.16
+          },
+          "edges_under_4_percent": [
+            "top"
+          ],
+          "manual_classification": "bubble_like"
+        }
+      ],
+      "manual_hand_note": null
+    },
+    {
+      "id": "rashid-small-control",
+      "panel": 1,
+      "bubble_like_regions": [
+        {
+          "approx_bbox": {
+            "x": 78,
+            "y": 26,
+            "right": 698,
+            "bottom": 302
+          },
+          "gaps_percent": {
+            "left": 5.08,
+            "right": 54.56,
+            "top": 2.54,
+            "bottom": 70.51
+          },
+          "edges_under_4_percent": [
+            "top"
+          ],
+          "manual_classification": "bubble_like"
+        },
+        {
+          "approx_bbox": {
+            "x": 878,
+            "y": 674,
+            "right": 1458,
+            "bottom": 986
+          },
+          "gaps_percent": {
+            "left": 57.16,
+            "right": 5.08,
+            "top": 65.82,
+            "bottom": 3.71
+          },
+          "edges_under_4_percent": [
+            "bottom"
+          ],
+          "manual_classification": "bubble_like"
+        }
+      ],
+      "manual_hand_note": null
+    },
+    {
+      "id": "rashid-small-control",
+      "panel": 2,
+      "bubble_like_regions": [
+        {
+          "approx_bbox": {
+            "x": 30,
+            "y": 46,
+            "right": 618,
+            "bottom": 354
+          },
+          "gaps_percent": {
+            "left": 1.95,
+            "right": 59.77,
+            "top": 4.49,
+            "bottom": 65.43
+          },
+          "edges_under_4_percent": [
+            "left"
+          ],
+          "manual_classification": "bubble_like"
+        }
+      ],
+      "manual_hand_note": null
+    },
+    {
+      "id": "rashid-best-verdict",
+      "panel": 1,
+      "bubble_like_regions": [
+        {
+          "approx_bbox": {
+            "x": 90,
+            "y": 50,
+            "right": 758,
+            "bottom": 334
+          },
+          "gaps_percent": {
+            "left": 5.86,
+            "right": 50.65,
+            "top": 4.88,
+            "bottom": 67.38
+          },
+          "edges_under_4_percent": [],
+          "manual_classification": "bubble_like"
+        },
+        {
+          "approx_bbox": {
+            "x": 950,
+            "y": 662,
+            "right": 1466,
+            "bottom": 998
+          },
+          "gaps_percent": {
+            "left": 61.85,
+            "right": 4.56,
+            "top": 64.65,
+            "bottom": 2.54
+          },
+          "edges_under_4_percent": [
+            "bottom"
+          ],
+          "manual_classification": "bubble_like"
+        }
+      ],
+      "manual_hand_note": null
+    },
+    {
+      "id": "rashid-best-verdict",
+      "panel": 2,
+      "bubble_like_regions": [
+        {
+          "approx_bbox": {
+            "x": 62,
+            "y": 50,
+            "right": 530,
+            "bottom": 394
+          },
+          "gaps_percent": {
+            "left": 4.04,
+            "right": 65.49,
+            "top": 4.88,
+            "bottom": 61.52
+          },
+          "edges_under_4_percent": [],
+          "manual_classification": "bubble_like"
+        }
+      ],
+      "manual_hand_note": null
+    },
+    {
+      "id": "rashid-camel-brush",
+      "panel": 1,
+      "bubble_like_regions": [
+        {
+          "approx_bbox": {
+            "x": 730,
+            "y": 10,
+            "right": 1046,
+            "bottom": 114
+          },
+          "gaps_percent": {
+            "left": 47.53,
+            "right": 31.9,
+            "top": 0.98,
+            "bottom": 88.87
+          },
+          "edges_under_4_percent": [
+            "top"
+          ],
+          "manual_classification": "sky_cloud_false_positive"
+        },
+        {
+          "approx_bbox": {
+            "x": 58,
+            "y": 42,
+            "right": 674,
+            "bottom": 302
+          },
+          "gaps_percent": {
+            "left": 3.78,
+            "right": 56.12,
+            "top": 4.1,
+            "bottom": 70.51
+          },
+          "edges_under_4_percent": [
+            "left"
+          ],
+          "manual_classification": "bubble_like"
+        },
+        {
+          "approx_bbox": {
+            "x": 826,
+            "y": 670,
+            "right": 1450,
+            "bottom": 974
+          },
+          "gaps_percent": {
+            "left": 53.78,
+            "right": 5.6,
+            "top": 65.43,
+            "bottom": 4.88
+          },
+          "edges_under_4_percent": [],
+          "manual_classification": "bubble_like"
+        }
+      ],
+      "manual_hand_note": null
+    },
+    {
+      "id": "rashid-camel-brush",
+      "panel": 2,
+      "bubble_like_regions": [
+        {
+          "approx_bbox": {
+            "x": 730,
+            "y": 10,
+            "right": 1046,
+            "bottom": 114
+          },
+          "gaps_percent": {
+            "left": 47.53,
+            "right": 31.9,
+            "top": 0.98,
+            "bottom": 88.87
+          },
+          "edges_under_4_percent": [
+            "top"
+          ],
+          "manual_classification": "sky_cloud_false_positive"
+        },
+        {
+          "approx_bbox": {
+            "x": 58,
+            "y": 38,
+            "right": 718,
+            "bottom": 310
+          },
+          "gaps_percent": {
+            "left": 3.78,
+            "right": 53.26,
+            "top": 3.71,
+            "bottom": 69.73
+          },
+          "edges_under_4_percent": [
+            "left",
+            "top"
+          ],
+          "manual_classification": "bubble_like"
+        }
+      ],
+      "manual_hand_note": null
+    }
+  ]
+}

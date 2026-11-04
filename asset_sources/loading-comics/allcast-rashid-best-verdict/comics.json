@@ -121,11 +121,30 @@
       "シーシャ機材・煙・酒・武器・第三の人物・署名・題名・余計な文字なし"
     ],
     "pending": [
-      "オーナーの選別・最終画風統一",
-      "PC横・スマホ横の本編表示と読字QA",
-      "四辺4%の吹き出し外縁・手などのセーフマージンを全点で保証しない。一部が外周に近いため、採用前の確認・必要時の再構図"
+      "オーナー選別・最終画風統一",
+      "4%安全余白の修正・厳密確認（現表示では欠けなし）",
+      "実端末・本編のキャラ面識解放との接続・タップ送りの確認"
     ],
     "production_ready": false,
-    "runtime_registered": false
-  }
+    "runtime_registered": false,
+    "viewport_check": {
+      "result": "PASS: 3 viewports; decode, panel bounds/ratio, ready hold and Enter proceed",
+      "evidence": "../batch-recent-cast-20261104/qa-20261104/metrics.json",
+      "phone_visual": "landscape 844x390 and portrait 390x844 screenshots viewed at native dimensions; all three dialogue strings readable, no clipped bubble/text",
+      "desktop_visual": "1280x720 metrics and screenshot recorded; no separate manual full-screen read",
+      "is_real_device": false,
+      "device_scale_factor": 1,
+      "does_not_cover": [
+        "physical phone / Safari",
+        "story flow and actual cast-unlock integration",
+        "touch proceed input"
+      ]
+    },
+    "safe_margin_review": {
+      "result": "needs_revision_or_exact_review",
+      "note": "左コマの「悪くない。」の下端が約2.5%。",
+      "measurement": "read-only white-component approximation; not exact ink contour; see margins.json"
+    }
+  },
+  "review_suggestion": "reserve_for_comparison"
 }
