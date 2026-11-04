@@ -326,7 +326,7 @@ function renderVotes(owner, final = false) {
     el("strong", [String(value.points), el("small", { text: "pt" })]),
   ]);
   const judgeFace = judge => { const face = contestantAvatar(judge); face.classList.add("judge-face"); return face; };
-  const judges = judgePanel(p.votes, JUDGES, { cls: ".ch2-contest-judges", face: judgeFace });
+  const judges = judgePanel(p.votes, JUDGES, { cls: ".ch2-contest-judges", face: judgeFace, craft: final ? craft : null });
   card(owner, final ? "result" : "votes", final ? "全国大会の結果" : "いま、動いた持ち点。",
     final ? `はじめは${p.result.rank}位。審査員三人、それぞれの10点が出揃いました。`
       : ["制作が終わり、次は吸い出しと提供。", "提供を終えた一台。次は客席での調整。",

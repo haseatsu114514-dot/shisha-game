@@ -3783,12 +3783,26 @@
         "remake/js/craft/advice.js",
         "remake/js/craft/temperature-records.js",
         "remake/js/craft/result.js",
+        "remake/js/craft/tournament-graphics.js",
+        "remake/css/tournament.css",
+        "remake/js/chapters/ch2-tournament.js",
+        "remake/js/chapters/ch3-tournament.js",
+        "remake/js/chapters/ch4-standings.js",
+        "remake/js/chapters/ch4.js",
         "remake/test/browser/judge_comment_2190.mjs"
       ],
       "run": [
         "node remake/test/browser/judge_comment_2190.mjs"
       ],
       "chrome": "playwright"
+    },
+    {
+      "id": "judge-deduction-2516",
+      "title": "Judge deduction reasons preserve scoring and follow weighted item losses",
+      "kind": "quick",
+      "run": [
+        "node remake/test/judge_deduction_2516.mjs"
+      ]
     }
   ]
 }
