@@ -76,6 +76,7 @@ async function harness({ learned = false } = {}) {
     "./common.js": { gradeOf, autoSkill: () => null, skill: { slow: () => 1, window: () => 1, clarity: () => 1 },
       resultCard: async () => { metrics.results++; }, keys: () => noop },
     "./heat.js": { burnCoals: () => { throw Error("This fixture selects no replacement coals"); }, HEAT_GRADES: {} },
+    "./heat_logic.js": { replacementCoals: () => { throw Error("This fixture selects no replacement coals"); } },
     "./conditions.js": conditions,
     "./thermometer.js": { buildThermometer: () => ({ root: new Node(), update: noop, preview: noop, pop: noop }) },
     "./flavor-life.js": life, "./coals.js": coals, "./temperature-model.js": model,

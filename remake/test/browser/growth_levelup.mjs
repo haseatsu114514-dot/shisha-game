@@ -639,30 +639,38 @@ await suite("growth-levelup", async (runCheck) => {
     await page.evaluate(async()=>{(await import("./js/core/state.js")).newGame();await window.skillSteam;});
   });
 
-  await check("replacement-coal-window", async (page) => {
+  await check("fire-keeper-tong-coals", async (page) => {
+    // #2213: 交換では炭焼きを挟まず、焼いておいた炭をトングで持ってくる。K11 はその焼け具合を1段よくする（案1）。
     await setupDaily(page);
     await page.evaluate(async()=>{
       window.skillCore=await import("./js/core/state.js");window.skillGrowth=await import("./js/core/growth.js");
-      window.skillSession=await import("./js/craft/session.js");window.skillHeat=await import("./js/craft/heat.js");
-      window.skillCommon=await import("./js/craft/common.js");
-      window.coalClock=1000;Object.defineProperty(performance,"now",{configurable:true,value:()=>window.coalClock});
-      const raf=window.requestAnimationFrame.bind(window);window.requestAnimationFrame=fn=>raf(()=>fn(window.coalClock));
-      Math.random=()=>.5;skillSession.craftTest.auto=null;
-      window.startSkillCoal=async({enabled,replacement})=>{
+      window.skillSession=await import("./js/craft/session.js");window.skillPull=await import("./js/craft/pull.js");
+      Math.random=()=>.5;
+      window.startSkillCare=async({enabled,mode})=>{
         skillCore.newGame();skillGrowth.setGrowthPreview(enabled);skillGrowth.ensureGrowth().nodes=["K11"];
-        coalClock=1000;const cs=skillSession.newSession("tournament");skillSession.openBench(cs);
-        await skillSession.waitBenchReady(cs,"heat");const panel=skillSession.stepPanel("heat","炭の交換");
-        window.baseCoalWindow=.5*skillCommon.skill.window(cs);
-        window.skillCoal=skillHeat.burnCoals(cs,panel,{count:1,compact:true,replacement});
+        const cs=skillSession.newSession(mode);window.cs=cs;
+        cs.place="triangle";cs.holes={total:24,minimumComplete:true};cs.pack="normal";
+        cs.steam={temp:.54,score:100,hits:0,concentration:1};cs.pull={temp:.54,pulls:2,score:100};
+        cs.heat={score:80,grade:"B",picks:["pre","over","early"],heatPower:60,heatStability:70,startup:55,burnRisk:25,aromaRetention:70};
+        skillSession.openBench(cs);skillSession.craftTest.auto=null;
+        // 炭を入れ替えたところまで見れば足りる。次のケースで台を開き直すと前の熱管理は中断になる。
+        window.skillCare=skillPull.runCare(cs).catch(e=>{if(!/interrupted/.test(e.message))throw e;});
       };
     });
-    for(const [enabled,replacement,phase] of [[true,false,"hot"],[true,true,"just"],[false,true,"hot"]]) {
-      await page.evaluate(args=>startSkillCoal(args),{enabled,replacement});
-      await page.waitForFunction(()=>document.querySelector('[data-test="coal-0"]')?.dataset.phase==="raw");
-      await page.evaluate(()=>{coalClock=1000+(5.8+baseCoalWindow+.03)*1000;});
-      await page.waitForTimeout(40);await page.locator(t("coal-0")).click();
-      const result=await page.evaluate(async()=>await window.skillCoal);
-      assert.equal(result.timings[0].phase,phase);
+    for(const [enabled,mode,picks,fire] of [[true,"tournament",["just","hot"],"1"],[false,"tournament",["pre","over"],""],[true,"tutorial",["pre","over"],""]]) {
+      const label=`${enabled}/${mode}`;
+      await page.evaluate(args=>startSkillCare(args),{enabled,mode});
+      // トングの一文は短い間だけ出るので、出た瞬間を記録して確かめる。
+      await page.evaluate(()=>{window.tongSeen=null;window.tongWatch?.disconnect();window.tongWatch=new MutationObserver(()=>{
+        const n=document.querySelector('[data-test="care-tong"]');if(n&&!window.tongSeen)window.tongSeen={text:n.textContent,fire:n.dataset.fireKeeper};
+      });window.tongWatch.observe(document.body,{childList:true,subtree:true});});
+      await page.locator(`${t("care-coals")}:not(:has(button[disabled])) ${t("care-coal-2")}`).click();
+      await page.waitForFunction(()=>window.tongSeen&&cs.careCoals?.count===2,null,{timeout:20000});
+      const seen=await page.evaluate(()=>window.tongSeen);
+      assert.equal(seen.fire,fire,label);
+      assert.match(seen.text,fire?/^焼いておいた炭を2個、トングで持ってくる。火の番/:/^焼いておいた炭を2個、トングで持ってくる$/,label);
+      assert.deepEqual(await page.evaluate(()=>cs.careCoals.picks),picks,label);
+      assert.deepEqual(await page.evaluate(()=>cs.heat.picks),["pre","over","early"],"最初の炭焼きの記録は書き換えない");
     }
   });
 

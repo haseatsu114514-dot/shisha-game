@@ -6,7 +6,7 @@ import { STAMINA_CONDITIONS } from "./condition.js";
 
 /** 調整用の初期値。通常マスの百分率とは別に重ねる（SPEC 2.5）。 */
 export const SKILL_TUNING = Object.freeze({ sleep: .1, first: .2, mastery: .2, leaf: .2, holesSeconds: 6, strain: .75,
-  coalReplacement: .2, forecastRead: .15, bargain: .1, critical: 1.5, criticalCap: 3, momentum: 2, smokeRing: 1, afterglowSeconds: 3, afterglowSpeed: .65 });
+  forecastRead: .15, bargain: .1, critical: 1.5, criticalCap: 3, momentum: 2, smokeRing: 1, afterglowSeconds: 3, afterglowSpeed: .65 });
 const skillIds = new Set(SKILLS.map(s => s.id));
 const lessonIds = new Set(LESSONS.map(s => s.id));
 export const LESSON_TUNING = Object.freeze({ stamina: 20, mix: 4, cardamomPenalty: .5, lavenderSleep: .2, single: 4, flowerLayer: 2, blindSwing: 3, deepHeat: .27, sharkRadius: 1.5, climateVariation: .5, callingSales: 1000, grapeReception: 2 });

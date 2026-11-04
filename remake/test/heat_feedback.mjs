@@ -1,4 +1,5 @@
 // #354: 大会3/4炭と実際の交換1〜4炭。実入力・評価・操作領域・画面内の収まりを確認。
+// #2213: 熱管理の交換では炭焼きを挟まない。焼いておいた炭をトングで持ってきて、焼け具合は最初の炭焼きを引き継ぐ。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { createRequire } from "node:module";
@@ -112,7 +113,21 @@ try {
         QA.justSeconds = .5 * common.skill.window(cs);
         QA.ideal = 5.8 + QA.justSeconds / 2;
       }, { compact, count });
-      if (compact) await page.locator(`[data-test="care-coal-${count}"]`).click();
+      if (compact) {
+        await page.locator(`[data-test="care-coal-${count}"]`).click();
+        await page.waitForSelector('[data-test="care-tong"]');
+        assert.match(await page.locator('[data-test="care-tong"]').textContent(), new RegExp(`焼いておいた炭を${count}個、トングで持ってくる`));
+        assert.equal(await page.locator('[data-test="care-burn"], .stove .coal').count(), 0, `${label}: 交換で炭焼きを挟まない`);
+        await page.waitForFunction(() => cs.careCoals?.count > 0);
+        const first = ["pre", "just", "pre"];
+        assert.deepEqual(await page.evaluate(() => cs.careCoals.picks), Array.from({ length: count }, (_, i) => first[i % first.length]));
+        assert.equal(await page.evaluate(() => JSON.stringify(cs.heat)), await page.evaluate(() => QA.originalHeat));
+        assert.equal(await page.evaluate(() => JSON.stringify(QA.core.state)), await page.evaluate(() => QA.before), "UI/工程単体の検証で保存状態を変えない");
+        assert.deepEqual(errors, []);
+        console.log(`PASS heat feedback ${label}: swap uses pre-burned coals by tong, first burn kept`);
+        await page.close();
+        continue;
+      }
       await page.waitForFunction(() => document.querySelector('[data-test="coal-0"]')?.dataset.phase === "raw");
       await page.evaluate(() => { Math.random = QA.random; });
       assert.equal(await page.locator(".stove .coal").count(), count);
