@@ -3,6 +3,39 @@ import fs from 'node:fs';
 import { suite, assertFits } from './support.mjs';
 import { assertCraftProgress } from './craft_progress_assertions.mjs';
 
+const overlaps = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+
+async function assertHeaderControls(page, checkClicks) {
+  const boxes = await page.evaluate(() => {
+    const rect = selector => document.querySelector(selector).getBoundingClientRect().toJSON();
+    return {
+      top: rect('.bench-top'), rank: rect('.craft-rank'), display: rect('.game-layout-toolbar summary'),
+      appearance: rect('.bench-appearance-button'), help: rect('.bench-guide summary'),
+      progress: rect('.bench-progress'),
+      phases: [...document.querySelectorAll('.bench-phase')].map(node => node.getBoundingClientRect().toJSON()),
+    };
+  });
+  assert.equal(boxes.phases.length, 6);
+  for (const phase of boxes.phases) {
+    assert(phase.width > 0 && phase.height > 0);
+    for (const container of [boxes.top, boxes.progress]) {
+      assert(phase.left >= container.left && phase.right <= container.right + .1
+        && phase.top >= container.top && phase.bottom <= container.bottom + .1,
+      `Phase clipped: ${JSON.stringify(boxes)}`);
+    }
+    for (const control of [boxes.rank, boxes.display, boxes.appearance]) {
+      assert(!overlaps(phase, control), `Phase covered: ${JSON.stringify(boxes)}`);
+    }
+  }
+  assert(boxes.rank.width > 0 && boxes.rank.height > 0);
+  assert(boxes.appearance.width > 0 && boxes.help.width > 0);
+  assert(!overlaps(boxes.appearance, boxes.help), `Appearance covered: ${JSON.stringify(boxes)}`);
+  if (!checkClicks) return;
+  await page.locator('.bench-appearance-button').click({ trial: true });
+  await page.locator('.bench-guide summary').click({ trial: true });
+  if (boxes.display.width) await page.locator('.game-layout-toolbar summary').click({ trial: true });
+}
+
 await suite('craft-rank-wire', async check => {
   for (const [name, ds, options] of [
     ['session-pc', false, {}],
@@ -21,8 +54,17 @@ await suite('craft-rank-wire', async check => {
       T.bench = T.session.openBench(T.cs, { steps: CRAFT_STEPS });
       while (!T.bench.root.isConnected) await new Promise(requestAnimationFrame);
       await T.bench.ready;
-      T.session.stepPanel('heat', '炭焼き');
+      T.session.stepPanel('heat', '炭焼き', '黒い面が消えて全面が赤くなった炭を、タップして取り上げる');
     }, ds);
+    // どの工程が今でも（いちばん長い名前でも）、残りの工程が全部見えること
+    if (ds || name === 'session-pc' || name === 'session-pc-1180') {
+      const phases = await page.locator('.bench-phase').evaluateAll(nodes => nodes.map(node => ({ step: node.dataset.step, label: node.getAttribute('aria-label') })));
+      for (const { step, label } of phases) {
+        await page.evaluate(({ step, label }) => T.session.stepPanel(step, label, label), { step, label });
+        await assertHeaderControls(page, step === 'heat');
+      }
+      await page.evaluate(() => T.session.stepPanel('heat', '炭焼き', '黒い面が消えて全面が赤くなった炭を、タップして取り上げる'));
+    }
     assert.equal(await page.locator('body.game-ds').count(), ds ? 1 : 0);
     assert.equal(await page.locator('.craft-rank').count(), 1);
     assert.equal(await page.locator('.bench-mode').count(), 1);
