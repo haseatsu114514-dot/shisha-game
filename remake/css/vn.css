@@ -5,6 +5,12 @@
 #vn.active { opacity: 1; }
 /* 会話終了と同時に次画面が見えるため、前の文字と操作欄は残像にしない。 */
 #vn:not(.active) :is(.vn-box, .vn-choices, .vn-controls, .vn-log) { visibility: hidden; }
+/* 登場変形中は直前の台詞を読み終えた画面を片付け、カットイン後に会話へ戻す。 */
+#vn :is(.vn-box, .vn-choices, .vn-controls) { transition: opacity 0.18s ease; }
+#vn.intro-morph-dialog-hidden :is(.vn-box, .vn-choices, .vn-controls) {
+  opacity: 0;
+  pointer-events: none;
+}
 
 .vn-loading { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); z-index: 101;
   display: flex; align-items: center; gap: 14px; padding: 16px 24px; border: 1px solid #b59d7166; border-radius: 8px;

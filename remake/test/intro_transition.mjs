@@ -30,6 +30,8 @@ try {
     const started = Date.now();
     await page.click("#play");
     await page.waitForSelector(`.cutin.art-intro[data-char="${id}"]`, { timeout: 8000 });
+    assert.equal(await page.locator("#vn").evaluate((node) => node.classList.contains("intro-morph-dialog-hidden")),
+      variant === "morph", `${variant}/${id}: 会話ウィンドウの退避`);
     // つなぎの間も、クリック・Enterで短縮できない
     await page.mouse.click(640, 360); await page.keyboard.press("Enter");
     await page.waitForFunction(() => document.getElementById("status").textContent.startsWith("再生終了"), null, { timeout: 20000 });
@@ -39,11 +41,12 @@ try {
       transition: document.querySelectorAll(".ci-transition").length, cutin: document.querySelectorAll(".cutin").length,
       surface: document.querySelectorAll(".intro-fit-surface").length,
       portraitOpacity: getComputedStyle(document.querySelector(".vn-portraits img.portrait")).opacity,
+      dialogueHidden: document.querySelector("#vn").classList.contains("intro-morph-dialog-hidden"),
     }));
     assert.equal(seen.cutin, 1, `${variant}/${id}: カットインが一度だけ出る`);
     assert.equal(seen.transition > 0, variant !== "none", `${variant}/${id}: つなぎの部品の有無`);
     if (variant === "morph") assert(seen.silhouette > 0, `${variant}/${id}: 影を作る`);
-    assert.deepEqual(left, { transition: 0, cutin: 0, surface: 0, portraitOpacity: "1" }, `${variant}/${id}: 終わった後に部品が残る・立ち絵が戻らない ${JSON.stringify(left)}`);
+    assert.deepEqual(left, { transition: 0, cutin: 0, surface: 0, portraitOpacity: "1", dialogueHidden: false }, `${variant}/${id}: 終わった後に部品が残る・立ち絵が戻らない ${JSON.stringify(left)}`);
     assert(elapsed > 4000, `${variant}/${id}: 短縮されている（${elapsed}ms）`);
   }
   // 動きを減らす設定: 影も一閃も作らず、暗転とフェードだけ

@@ -143,9 +143,10 @@ function silhouette(ctx, rect) {
 }
 
 /** 影を「頭が目標の位置・大きさになる」ように動かす変換 */
-function headTransform(rect, p) {
+function headTransform(rect, p, frame) {
   const head = headOf(rect, p);
-  const s = HEAD.height / head.height;
+  // 影が到着先の人物より広がらない範囲で拡大し、頭の残りは形の変化中に合わせる。
+  const s = Math.min(HEAD.height / head.height, Math.max(1, frame.width / rect.width));
   return {
     origin: `${head.x - rect.left}px ${head.top - rect.top}px`,
     to: `translate(${HEAD.faceX - head.x}px, ${HEAD.top - head.top}px) scale(${s.toFixed(4)})`,
@@ -167,8 +168,8 @@ const slashClip = (x) => `polygon(${x}px 0px, 1400px 0px, 1400px 720px, ${x - SL
 // ---------------------------------------------------------------- morph: 影になって迫り、形を変えて本人になる
 
 /** 立ち絵を、頭がカットインの頭（HEAD）に重なるよう拡大して置いた矩形 */
-function alignedRect(rect, p) {
-  const head = headOf(rect, p), s = HEAD.height / head.height;
+function alignedRect(rect, p, frame) {
+  const head = headOf(rect, p), s = Math.min(HEAD.height / head.height, Math.max(1, frame.width / rect.width));
   return {
     left: HEAD.faceX + s * (rect.left - head.x), top: HEAD.top + s * (rect.top - head.top),
     width: s * rect.width, height: s * rect.height,
@@ -180,10 +181,11 @@ const easeInOutCubic = (u) => (u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2,
 function morph(ctx) {
   if (!ctx.standing) return slash(ctx); // 立ち絵が無ければ一閃だけ
   const { rect, p } = ctx.standing;
+  const dialogue = document.querySelector("#vn");
   const nodes = [], run = [];
   const keep = (a) => { run.push(a); return a; };
   let unmount = null, shape = null, raf = 0;
-  const t = headTransform(rect, p);
+  const t = headTransform(rect, p, ctx.frame);
   /** requestAnimationFrame で u を 0→1 に進める（距離場の変形は CSS では動かせないため） */
   const tween = (duration, step) => new Promise((resolve) => {
     const start = performance.now();
@@ -198,6 +200,7 @@ function morph(ctx) {
     skip: new Set(["background", "portrait"]),
     async enter() {
       const under = layer(ctx, "under"), over = layer(ctx, "over");
+      dialogue?.classList.add("intro-morph-dialog-hidden");
       nodes.push(under, over);
       const dim = el("div.ci-tr-dim.desat"); under.append(dim);
       const sil = silhouette(ctx, rect); over.append(sil);
@@ -208,7 +211,7 @@ function morph(ctx) {
       const target = new Image();
       target.src = ctx.host.querySelector(".ci-portrait").src;
       const ready = sleep(16).then(() => target.decode()).then(() => prepareShapeMorph(
-        { img: rect.img, ...alignedRect(rect, p) }, { img: target, ...ctx.frame }, ctx.colors,
+        { img: rect.img, ...alignedRect(rect, p, ctx.frame) }, { img: target, ...ctx.frame }, ctx.colors,
       )).catch(() => null);
 
       // ① 世界の色が抜け、本人の足元から色が満ちて影になる（0〜320ms）
@@ -284,6 +287,7 @@ function morph(ctx) {
       cancelAnimationFrame(raf);
       run.forEach((a) => a.cancel());
       nodes.forEach((n) => n.remove()); nodes.length = 0;
+      dialogue?.classList.remove("intro-morph-dialog-hidden");
     },
   };
 }
