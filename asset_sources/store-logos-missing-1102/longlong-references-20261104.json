@@ -1,0 +1,23 @@
+{
+  "references": [
+    {
+      "path": "assets/sprites/characters/master_hookah/chr_master_hookah_normal.png",
+      "role": "garment palette and embroidery material only",
+      "bytes": 743739,
+      "sha256": "532c7a850a5e25a2cf0d702c4a24fbd273bb39dca656b08b9ae149709020da29"
+    },
+    {
+      "path": "assets/ui/store_logos/kanzaki.webp",
+      "role": "logo finish only",
+      "bytes": 269368,
+      "sha256": "fb1c99e5687e8f85562ff0d353afc7064778962b080d9b5b0b0cff574f668c4b"
+    },
+    {
+      "path": "assets/ui/store_logos/ch3-smoke-and-glory.webp",
+      "role": "logo finish only",
+      "bytes": 123608,
+      "sha256": "9b475fb3ffe277e40a90a786044cdc77eff618e14b4962996a13d7668762c80f"
+    }
+  ],
+  "private_photo_bytes_included": false
+}
