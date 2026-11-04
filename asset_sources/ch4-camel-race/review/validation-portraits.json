@@ -13,7 +13,7 @@
     "output/ch4-camel-race-additions-20261102/qa/saif-comparison.jpg",
     "output/ch4-camel-race-additions-20261102/qa/rashid-comparison.jpg"
   ],
-  "quality_limit": "More angular smooth anime shading than baseline fine pixel-painter reference; user choice pending. B Saif has a more tousled top than short close-cropped source; prefer considering A for strict haircut fidelity. This is review-only, not production QA.",
+  "quality_limit": "More angular smooth anime shading than baseline fine pixel-painter reference; user choice pending. B Suhail has a more tousled top than short close-cropped source; prefer considering A for strict haircut fidelity. This is review-only, not production QA.",
   "results": [
     {
       "file": "output/ch4-camel-race-additions-20261102/originals/rashid-normal-A.png",
