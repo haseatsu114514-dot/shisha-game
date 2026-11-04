@@ -670,7 +670,7 @@
     },
     "rei": {
       "stat": "charm",
-      "call": "REIさん",
+      "call": "レヰさん",
       "place": "零-ZERO-",
       "bg": "bg_ch2_rei_entry.webp",
       "invite": {
@@ -1137,7 +1137,7 @@
     },
     "kuze": {
       "stat": "insight",
-      "call": "久世さん",
+      "call": "綾取さん",
       "place": "閉店後の煙幕",
       "bg": "bg_yohaku_shop.png",
       "invite": {
@@ -1209,7 +1209,7 @@
               "affinity": 2
             },
             {
-              "text": "久世さんでも外すんですね",
+              "text": "綾取さんでも外すんですね",
               "response": "外す方が多いよ。だから書いてる",
               "affinity": 1
             }
@@ -1227,7 +1227,7 @@
               "affinity": 2
             },
             {
-              "text": "まだ、久世さんの順番のままです",
+              "text": "まだ、綾取さんの順番のままです",
               "response": "それも返事だね。急がなくていいよ",
               "affinity": 1
             }

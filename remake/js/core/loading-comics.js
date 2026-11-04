@@ -462,10 +462,10 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2407:allcast-kuze-every-order）",
-    caption: "久世は客の好みを予想するのが好き。ときどき、ずるい。",
+    caption: "綾取は客の好みを予想するのが好き。ときどき、ずるい。",
     panels: [
-      { src: imgFileUrl("loading/kuze-every-order-1.webp"), alt: "店のカウンターで、久世が指を立てて「注文、当ててみせる。」。メニューを持ったはじめが「じゃあ、どうぞ。」。" },
-      { src: imgFileUrl("loading/kuze-every-order-2.webp"), alt: "カウンターいっぱいに、紅茶・コーヒー・ジュース・ソーダの飲み物がずらりと並び、久世はピースして得意げ。はじめ「全部出てきた。」。" },
+      { src: imgFileUrl("loading/kuze-every-order-1.webp"), alt: "店のカウンターで、綾取が指を立てて「注文、当ててみせる。」。メニューを持ったはじめが「じゃあ、どうぞ。」。" },
+      { src: imgFileUrl("loading/kuze-every-order-2.webp"), alt: "カウンターいっぱいに、紅茶・コーヒー・ジュース・ソーダの飲み物がずらりと並び、綾取はピースして得意げ。はじめ「全部出てきた。」。" },
     ],
   },
   {
@@ -475,10 +475,10 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2407:allcast-kuze-photo-face）",
-    caption: "片側だけ上がる久世の笑顔は、写真だと少し怪しい。",
+    caption: "片側だけ上がる綾取の笑顔は、写真だと少し怪しい。",
     panels: [
-      { src: imgFileUrl("loading/kuze-photo-face-1.webp"), alt: "店の入口の前で、はじめがスマホを構えて「一枚撮りますね。」。久世がピースして「かわいく頼むよ。」。" },
-      { src: imgFileUrl("loading/kuze-photo-face-2.webp"), alt: "はじめが見せるスマホの画面には、稲妻を背に悪役のように笑う久世が写っている。本人はきょとんとしている。はじめ「悪役の顔だ。」。" },
+      { src: imgFileUrl("loading/kuze-photo-face-1.webp"), alt: "店の入口の前で、はじめがスマホを構えて「一枚撮りますね。」。綾取がピースして「かわいく頼むよ。」。" },
+      { src: imgFileUrl("loading/kuze-photo-face-2.webp"), alt: "はじめが見せるスマホの画面には、稲妻を背に悪役のように笑う綾取が写っている。本人はきょとんとしている。はじめ「悪役の顔だ。」。" },
     ],
   },
   {

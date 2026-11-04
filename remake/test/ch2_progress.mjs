@@ -128,7 +128,7 @@ const availableScenes = new Set(["ch3_main", "ch3_double_apple", "ch3_mukai", "c
 assert(ids.every(id => availableScenes.has(id)), "A Chapter 3 scene is absent from dialogue data");
 assert.equal(CH3_INTRO_SCENES.find(scene => scene.id === "ch3_kuze_first").day, 8);
 assert.equal(CH3_INTRO_SCENES.find(scene => scene.id === "ch3_kuze_advice").day, 11,
-  "Kuze must have several days between first meeting and return visit");
+  "Ayatori must have several days between first meeting and return visit");
 // 東京も日常ループの行程（版3・VOL03）: 場面の並びは同じで、全場面に日付（昼の行動を使う場面か夜の予定か）がある。
 // 場面の読了で時計を動かさない（日付と時間帯は日常ループが進める）。
 {

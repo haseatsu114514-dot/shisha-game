@@ -630,7 +630,7 @@ await check('Mashiro (#2022): chapter 3 optional reads are the ladder, ♥3 ques
   assert.equal(after.flags._confession_due, undefined);
   assert.equal(beat, null);
 });
-await check('Kuze (#2028): chapter 3 finale after the LIME detour and the answer outing, friendship only, hagal once, then friend LIME', async f => {
+await check('Ayatori (#2028): chapter 3 finale after the LIME detour and the answer outing, friendship only, hagal once, then friend LIME', async f => {
   const rivals = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_rivals.json', import.meta.url))).dialogues;
   for (const d of rivals) f.db.dialogues[d.dialogue_id] = d;
   const gear = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json', import.meta.url))).equipment.find(e => e.id === 'suyaki_kuze');

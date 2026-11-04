@@ -149,7 +149,7 @@ export async function runChapterTwoTournament() {
 }
 
 function renderEntry(owner) {
-  card(owner, "entry", "県大会の朝。", "はじめ・あげは・神崎竜二・REI。4人一斉、一台を仕上げる一発勝負。", [
+  card(owner, "entry", "県大会の朝。", "はじめ・あげは・神崎竜二・レヰ。4人一斉、一台を仕上げる一発勝負。", [
     button(owner, "LIMEを読んで会場へ", "start", async () => { checkpoint("morning"); await drive(owner); }, true),
   ], [el("p.ch2-contest-note", { text: "課題はストロベリー。アフサールの新作を主催者が支給。制作から提供、その後の調整まで同じ一台で行います。" })]);
 }

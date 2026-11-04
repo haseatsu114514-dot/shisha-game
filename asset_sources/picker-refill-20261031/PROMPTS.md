@@ -303,22 +303,22 @@ HMD       : Lotus I+型（蓋を閉じる・取手1本）
 ## 4. `t-trailer-ch3-03`
 
 ```text
-【対象】t-trailer-ch3-03 ／ 章末予告スチル（第3〜5章） ／ 第3章予告カット3 久世の視線 ／ 修正版（残す画像を元に直す）
+【対象】t-trailer-ch3-03 ／ 章末予告スチル（第3〜5章） ／ 第3章予告カット3 綾取の視線 ／ 修正版（残す画像を元に直す）
 【使い方】このブロックだけで完結しています。まず元画像を添付し、下の「直す点」だけを編集した版を5通り作ってください（1回に1枚ずつ）。
 【元画像（必ず添付・画像1）】r7.webp（asset_sources/picker-refill-20261031/refs/ にある選別画面のプレビュー）
 【保存先】asset_sources/picker-refill-20261031/out/t-trailer-ch3-03/ に refill1031-t-trailer-ch3-03-01.png 〜 refill1031-t-trailer-ch3-03-05.png
 【サイズ】横16:9・原寸 1672x941 前後（または 2048x1152）PNG・不透明。ゲームでは 1664x936 に収めて表示（asset_sources/ch3-preview/adoption.json）
 【添付する画像（役割を区別する）】
 1. 元画像 r7.webp（構図・画風の正。これを編集する）
-2. 店の正（久世の店「煙幕」＝ゲーム内背景）: assets/backgrounds/bg_yohaku_shop.png（墨色の壁・ワイン色のベンチ・ずらした半透明スクリーン・細い鏡と複数の明かり。asset_sources/ch3-enmaku-20261025/README.md）
+2. 店の正（綾取の店「煙幕」＝ゲーム内背景）: assets/backgrounds/bg_yohaku_shop.png（墨色の壁・ワイン色のベンチ・ずらした半透明スクリーン・細い鏡と複数の明かり。asset_sources/ch3-enmaku-20261025/README.md）
 3. 人物の確認: assets/sprites/characters/kuze/chr_kuze_normal.png
 4. 画風の参照（絵の塗り・線のみ。場面・人物は移さない）: 採用済み第1章予告スチル assets/cgs/ch2_preview/04-tsumugi-water.webp と assets/cgs/ch2_preview/01-sumi-silence.webp
 5. 機材の実写（形と縮尺）: 選んだHMDをボウルに装着した実写と台全体の実写（heat-management-closeups-20261009.md No.05・06 等の元写真、installed-and-handheld-scale-20261009.md の出典）。早見表・構造図は添付しない
 【直す点（オーナー指示）】
 - ハガル・炭が変／HMD・ボウルが変／シーシャを図解どおりに → 正しい構造に
-- 背景をゲームの店に合わせる → 久世の店「煙幕」の実背景（墨色の壁・ワイン色のベンチ・半透明スクリーン・細い鏡）の素材・色・家具で描き直す。新しい窓・棚・カウンターを作らない
+- 背景をゲームの店に合わせる → 綾取の店「煙幕」の実背景（墨色の壁・ワイン色のベンチ・半透明スクリーン・細い鏡）の素材・色・家具で描き直す。新しい窓・棚・カウンターを作らない
 【そのまま残す点】
-- 人物はこのまま・構図はこのまま（オーナー指定）。久世の顔・視線・衣装・ポーズ・カメラ・画風
+- 人物はこのまま・構図はこのまま（オーナー指定）。綾取の顔・視線・衣装・ポーズ・カメラ・画風
 【前回（1030）からの変更】
 - 1030の5枚はどれも採用されなかった（理由の記入なし）。元画像を添付の先頭に置き、構図・人物の保持を強める。
 - 3枚目は「迷ったら機材を見せすぎない」の基準に沿って、ボウルの上を画面の外に出す版にする。
@@ -343,14 +343,14 @@ OWNER'S SELECTION CRITERIA (2026-10-30, these decide adoption):
 Wordless still for an in-game chapter preview: no subtitles, no title, no results board, no scores, no rankings, no podium. Absolutely no text, letters, numbers, logos, brand marks, signatures, watermarks, UI, subtitles, borders or panels baked into the image.
 （上の指針の1行目「カメラや演技を新しく作る」は新規生成向け。この修正版では元画像の構図・カメラ・演技を優先する）
 
-EDIT RULE: Edit image 1 with precise hardware corrections only; preserve composition, camera, characters (faces, clothes, poses), lighting, color grade and the matte cel-OVA drawing. Redraw the hookah top so it is physically correct: one ceramic bowl (cup on a slim neck, total height about 1.3–1.5x the HMD width) seated on the stem above a broad ash tray about 2.5x the HMD width; on the bowl rim exactly ONE HMD of the model named in that variation; small cube coals (fingertip size, grey ash with a little red glow, no flames) only INSIDE the HMD — never on bare foil or the ceramic. Smoke only from a person's mouth or as a faint residual haze in the air, never from the HMD, hose root or base. Keep one continuous hose from the side port to one rigid handle. Do not change hand size or poses, subject scale or image dimensions. Replace the background behind Kuze with his actual shop "Enmaku" from the attached official background: soot-black walls, wine-red bench, offset translucent screens, a slim mirror and several small lights. Do not invent new windows, shelves or counters; if the camera angle cannot be matched, keep the background tight and softly defocused showing only those materials and colors. No plants.
+EDIT RULE: Edit image 1 with precise hardware corrections only; preserve composition, camera, characters (faces, clothes, poses), lighting, color grade and the matte cel-OVA drawing. Redraw the hookah top so it is physically correct: one ceramic bowl (cup on a slim neck, total height about 1.3–1.5x the HMD width) seated on the stem above a broad ash tray about 2.5x the HMD width; on the bowl rim exactly ONE HMD of the model named in that variation; small cube coals (fingertip size, grey ash with a little red glow, no flames) only INSIDE the HMD — never on bare foil or the ceramic. Smoke only from a person's mouth or as a faint residual haze in the air, never from the HMD, hose root or base. Keep one continuous hose from the side port to one rigid handle. Do not change hand size or poses, subject scale or image dimensions. Replace the background behind Ayatori with his actual shop "Enmaku" from the attached official background: soot-black walls, wine-red bench, offset translucent screens, a slim mirror and several small lights. Do not invent new windows, shelves or counters; if the camera angle cannot be matched, keep the background tight and softly defocused showing only those materials and colors. No plants.
 
 --- 1/5: refill1031-t-trailer-ch3-03-01.png ---
-HMD: ONMO-type open low cup, 2 coals inside. The hookah top sits a little lower in the frame so the hardware reads small and clean; Kuze's face, gaze and pose exactly as in image 1.
+HMD: ONMO-type open low cup, 2 coals inside. The hookah top sits a little lower in the frame so the hardware reads small and clean; Ayatori's face, gaze and pose exactly as in image 1.
 背景: 煙幕の実背景（墨色の壁・ワイン色のベンチ・半透明スクリーン）。
 8行:
 人物      : kuze（そのまま）
-場面      : 完成（久世の前の一台）
+場面      : 完成（綾取の前の一台）
 台の型    : 元画像の台の型・色のまま
 HMD       : ONMO型（蓋なし）
 炭        : 小さな角炭2個（HMD内）
@@ -372,7 +372,7 @@ HMD       : Lotus I+型（蓋を閉じる・取手1本）
 構図      : 元画像どおり
 
 --- 3/5: refill1031-t-trailer-ch3-03-03.png ---
-Show less hardware: reframe slightly so the bowl and HMD are just outside the top/right edge of the frame; only the tray rim, stem, glass base and hose remain visible. Kuze's face and gaze become the clear focus.
+Show less hardware: reframe slightly so the bowl and HMD are just outside the top/right edge of the frame; only the tray rim, stem, glass base and hose remain visible. Ayatori's face and gaze become the clear focus.
 背景: 煙幕の実背景。
 8行:
 人物      : kuze（そのまま）

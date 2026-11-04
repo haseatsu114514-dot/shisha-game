@@ -64,7 +64,7 @@ await suite("ch3-map-activities", async check => {
       const image = document.querySelector('[data-test="ch3-map-image"]');
       return image?.complete && image.naturalWidth > 0;
     });
-    assert.doesNotMatch(await page.locator(t("ch3-map")).innerText(), /煙幕|Smoke & Glory|鉄の煙|久世|ヴォルク/);
+    assert.doesNotMatch(await page.locator(t("ch3-map")).innerText(), /煙幕|Smoke & Glory|鉄の煙|綾取|ヴォルク/);
     assert.match(await page.locator(t("ch3-map-details")).innerText(), /会員登録が必要/);
     assert.equal(await page.locator(t("ch3-map-gym")).count(), 0);
     await visibleInViewport(page, '.ch3-map-dialog, .ch3-map-canvas, .ch3-map-pin, .ch3-map-close');

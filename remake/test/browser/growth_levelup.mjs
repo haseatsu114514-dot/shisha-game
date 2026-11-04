@@ -1339,7 +1339,7 @@ await suite("growth-levelup", async (runCheck) => {
     assert.equal(growth.fresh.counts["tokyo:mukai_help"], 1, "シフトはシフトの鍵で一回");
     assert.deepEqual(Object.keys(growth.fresh.counts).filter(key => key.startsWith("ch3_tokyo_")), [], "地図の行き先の鍵で数えない");
   }, { viewport: { width: 1331, height: 760 } });
-  // 日常ループ（版3）で人に会う行動は、その人の鍵で数える（SPEC 1.3）。煙幕の外出＝久世、鉄の煙の寄り道＝ヴォルク。話の初完読は X5
+  // 日常ループ（版3）で人に会う行動は、その人の鍵で数える（SPEC 1.3）。煙幕の外出＝綾取、鉄の煙の寄り道＝ヴォルク。話の初完読は X5
   await check("tokyo-daily-rival-person-exp", async (page) => {
     page.setDefaultTimeout(30000);
     await page.evaluate(async () => {
@@ -1385,7 +1385,7 @@ await suite("growth-levelup", async (runCheck) => {
     await page.locator(t("pin-ch3_tokyo_volk")).click(); await page.locator(t("map-go")).click(); // 寄り道は二度目の来店だけなので、そのまま読む
     await readUntil("ch3_volk_second");
     const growth = await page.evaluate(() => structuredClone(__remake.state.growth));
-    assert.equal(growth.fresh.counts.kuze, 1, "煙幕の外出は久世の鍵");
+    assert.equal(growth.fresh.counts.kuze, 1, "煙幕の外出は綾取の鍵");
     assert.equal(growth.fresh.counts.volk, 1, "鉄の煙の寄り道はヴォルクの鍵");
     assert.deepEqual(Object.keys(growth.fresh.counts).filter(key => key.startsWith("ch3_tokyo_")), [], "地図の行き先の鍵で数えない");
     for (const who of ["kuze", "volk"]) {
