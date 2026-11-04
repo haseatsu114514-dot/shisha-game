@@ -1,9 +1,14 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-// 99cf987e（抽出前）の2関数をoracleとして固定する。
-// 章別の処理は同じソースで実行し、資源処理だけを旧実装へ差し戻して比較する。
+// 99cf987e（資源抽出前）の2関数と、rollback共通化前のrecoverStepをoracleとして固定する。
+// 章別の処理は同じソースで実行し、資源処理・復元境界だけを旧実装へ差し戻して比較する。
 const legacy = {
+  recoverStep: `export function recoverStep(value) {
+  const p = tournamentProgress(value);
+  if (p.rollback) { restoreResources(value, p.rollback); p.rollback = null; }
+  return p;
+}`,
   resources: `export function resources(value) {
   return JSON.parse(JSON.stringify({ flavorStock: value.flavorStock, stamina: value.stamina,
     equip: value.equip, recipes: value.recipes, stats: value.stats }));
@@ -85,6 +90,30 @@ for (const chapter of [2, 3]) {
   actual.restoreResources(restored, snapshot);
   same(restored, snapshot, "restore does not share nested references and can repeat");
 
+  // 章ごとのprogress検証はそのまま。復元が失敗したらrollbackを消さない。
+  for (const snapshot of [...atoms, {}, { stamina: 0, arbitrary: { nested: [1] } }]) {
+    freeze(snapshot);
+    const a = resourceState(chapter), b = resourceState(chapter);
+    actual.tournamentProgress(a).rollback = snapshot;
+    oracle.tournamentProgress(b).rollback = snapshot;
+    const result = outcome(() => actual.recoverStep(a));
+    same(result, outcome(() => oracle.recoverStep(b)), "recover result/JSON exception");
+    same(a, b, "recover restores arbitrary/partial snapshots and keeps failure state");
+    const p = actual.tournamentProgress(a);
+    assert.equal(p.rollback, snapshot && !result.error ? null : snapshot);
+  }
+  for (const api of [actual, oracle]) {
+    const state = resourceState(chapter), p = api.tournamentProgress(state);
+    const snapshot = p.rollback = { arbitrary: { restored: true }, stamina: 0 };
+    Object.defineProperty(state, "stamina", { get: () => 78, set: () => { throw new Error("controlled restore failure"); } });
+    assert.throws(() => api.recoverStep(state), /controlled restore failure/);
+    assert.deepEqual(state.arbitrary, { restored: true }, "prior writes keep their existing order");
+    assert.equal(p.rollback, snapshot, "partial restore failure remains recoverable");
+  }
+  for (const bad of [null, undefined, {}, { chapter: 9, flags: {} }]) {
+    same(outcome(() => actual.recoverStep(bad)), outcome(() => oracle.recoverStep(bad)), "chapter progress validation stays first");
+  }
+
   // JSON経由の旧SAVEを含む中断/再開・工程確定・失敗後再戦を両章で比較。
   const run = (api, missingKeys = false) => {
     let state = resourceState(chapter);
@@ -123,3 +152,4 @@ for (const chapter of [2, 3]) {
   same(run(actual, true), run(oracle, true), `ch${chapter} old SAVE missing fields trace`);
 }
 console.log(`tournament_resources: ${comparisons} legacy comparisons passed (chapter 2/3)`);
+

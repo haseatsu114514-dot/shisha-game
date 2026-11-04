@@ -10,3 +10,12 @@ export function tournamentResources(value) {
 export function restoreTournamentResources(value, snapshot) {
   for (const [key, data] of Object.entries(copy(snapshot))) value[key] = data;
 }
+
+/** 未確定工程の消費だけ戻す。復元が完了するまで保存したrollbackを残す。 */
+export function recoverTournamentResources(value, progress) {
+  if (progress.rollback) {
+    restoreTournamentResources(value, progress.rollback);
+    progress.rollback = null;
+  }
+  return progress;
+}

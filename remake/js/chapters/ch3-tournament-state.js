@@ -1,5 +1,5 @@
 import { finishTournamentStep } from "./tournament-finish-step.js";
-import { tournamentResources, restoreTournamentResources } from "./tournament-resource-snapshot.js";
+import { tournamentResources, restoreTournamentResources, recoverTournamentResources } from "./tournament-resource-snapshot.js";
 import { tournamentStandings } from "./tournament-standings.js";
 import { payTournamentPrize } from "./tournament-prize.js";
 import { liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
@@ -110,8 +110,7 @@ export function startAttempt(value, craft) {
 /** 工程の途中で保存された消費だけ巻き戻す。確定済み工程はそのまま。 */
 export function recoverStep(value) {
   const p = tournamentProgress(value);
-  if (p.rollback) { restoreResources(value, p.rollback); p.rollback = null; }
-  return p;
+  return recoverTournamentResources(value, p);
 }
 
 export function beginStep(value) {
@@ -203,3 +202,4 @@ export function recordResult(value, total) {
   p.history.push(copy(p.result));
   return p.result;
 }
+
