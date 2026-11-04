@@ -801,6 +801,40 @@ try {
   else assert(friendsLime.charmUp);
   log("HF09 friends: shared cadence (1 friend LIME per 2 days, oldest contact first, 4+ days per person), invites 6+ days apart after a chat, never with a story/lover invitation (Sumi's shift call may overlap), holiday/after-close, none for lovers/pending romance/tournament");
 
+  // #2025: ひよりの友人の一服も2本を交互に読む。章や大会の前後に依存しない日常の話題。
+  const hiyoriHangouts = await page.evaluate(async () => {
+    const { fresh, core, bonds, vn, DB = window.__remake.DB } = window.T;
+    const variants = DB.friends.friends.hiyori.hangouts;
+    const results = [];
+    for (const chapter of [1, 2]) for (const tournamentPhase of ["pending", "aftermath"]) {
+      fresh({ chapter, tournament: { phase: tournamentPhase },
+        finales: { hiyori: { day: 1, chapter: 1, route: "friend" } } });
+      const rows = [];
+      for (let visit = 0; visit < 3; visit++) {
+        vn.backlog().length = 0;
+        await bonds.playFriendHangout("hiyori");
+        rows.push(vn.backlog().map(line => line.text).join("|"));
+        if (visit === 0) {
+          core.state.friendHangouts.hiyori = 0; // メモリ上の値を戻し、保存内容からの復元を確かめる。
+          if (!core.load() || core.state.friendHangouts.hiyori !== 1) throw Error("ひよりの一服回数を保存から復元できない");
+        }
+      }
+      results.push({ rows, count: core.state.friendHangouts.hiyori });
+    }
+    return { variants, results };
+  });
+  assert.equal(hiyoriHangouts.variants.length, 2, "ひよりの友人の一服は2本");
+  for (const { rows, count } of hiyoriHangouts.results) {
+    assert.equal(count, 3);
+    for (let visit = 0; visit < rows.length; visit++) {
+      const expected = hiyoriHangouts.variants[visit % 2];
+      for (const line of [expected.arrive, expected.mid, expected.close]) assert(rows[visit].includes(line.text), rows[visit]);
+    }
+    assert.notEqual(rows[0], rows[1], "2回目は別の一服を読む");
+    assert.equal(rows[0], rows[2], "3回目は最初の一服へ戻る");
+  }
+  log("#2025 hiyori friend hangouts: 2 variants alternate across save/load in chapters 1/2, before/after tournament");
+
   assert.deepEqual(errors, []);
   log("PASS");
 } finally {
