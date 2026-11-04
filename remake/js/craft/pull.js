@@ -57,6 +57,9 @@ const COAL_HEAT = [0, 0.06, 0.11, 0.16, .21];
 const COAL_COOL = [1.6, 0.75, 0.5, 0.35, .28];
 // E06 案A（#2213）: 熱管理の温度は炭の個数と置き方で決める。吸いは味の確かめで、温度は少ししか動かない。
 const CARE_PULL_SCALE = .25;
+// 補正後の上げ幅も一回の調整全体で微量に留める。下げ吸いで予算は戻さない。
+// 開始時の低下 .075 は炭で戻すため、吸いだけでは取り戻せない。
+const CARE_PULL_HEAT_LIMIT = .05;
 // 炭の置き方。外寄りは穏やかに、内寄りは強く熱が入る。持ち（冷え方）は置き方で変えない。
 export const COAL_PLACES = [
   { id: "outer", label: "外寄り", desc: "穏やか", heat: .6 },
@@ -152,6 +155,11 @@ async function pullGame(cs, mode) {
   let widen = widenNow();
   let coreTemp = mode.start(cs);
   const initialTemp = coreTemp;
+  let carePullHeat = 0;
+  const pullHeat = delta => {
+    const heat = heatDelta(cs, delta);
+    return mode.drift && heat > 0 ? Math.min(heat, Math.max(0, CARE_PULL_HEAT_LIMIT - carePullHeat)) : heat;
+  };
   let T = coreTemp;
   const conditions = craftConditions(cs);
   ensureFlavorLife(cs);
@@ -261,7 +269,7 @@ async function pullGame(cs, mode) {
   const render = () => {
     thermometer.update(T);
     setBenchTemperature(cs, T);
-    const predicted = clamp(T + heatDelta(cs, actionAt(pos).delta),0,1);
+    const predicted = clamp(T + pullHeat(actionAt(pos).delta),0,1);
     thermometer.preview(running && !drawing && !finished ? predicted : null);
     if (omen) omen.textContent = !running || drawing || finished ? "" : isBurnt(predicted) ? "次の一口で焦げそうだ"
       : mode.drift && predicted <= COLD_OUT + .04 ? "冷え切る前に熱を戻したい"
@@ -371,7 +379,9 @@ async function pullGame(cs, mode) {
     moveNeedle(landed);
     pulls++;
     const duration = autoSkill() ? 120 : DRAW_MS[z.id] * (deep ? 1.5 : 1);
-    const from = coreTemp, to = clamp(from + heatDelta(cs, delta), 0, 1), sway = T - coreTemp;
+    const heat = pullHeat(delta);
+    if (mode.drift && heat > 0) carePullHeat += heat;
+    const from = coreTemp, to = clamp(from + heat, 0, 1), sway = T - coreTemp;
     const insuranceAtStart = !!cs.growthInsuranceUsed;
     play.dataset.draw = z.id;
     play.style.setProperty("--draw-duration", `${duration}ms`);
@@ -562,13 +572,13 @@ async function pullGame(cs, mode) {
           const diff = center - T, response = Math.abs(heatDelta(cs, .18));
           const keep = clamp(.5 + diff / response, .341, .659);
           const candidates = [.141, .3, keep, .75, .796];
-          at = candidates.sort((a, b) => Math.abs(T + heatDelta(cs, actionAt(a).delta) - center) - Math.abs(T + heatDelta(cs, actionAt(b).delta) - center))[0];
+          at = candidates.sort((a, b) => Math.abs(T + pullHeat(actionAt(a).delta) - center) - Math.abs(T + pullHeat(actionAt(b).delta) - center))[0];
         } else if (auto === "burn") {
           at = .83; // テスト用: 右のジャスト熱を入れる吸いを重ねて焦がす
         } else {
           at = rand(0, 1) < 0.5 ? 0.7 : 0.75;
           // 雑な吸い方の自動操作でも、焦がす一手は打たない（大会の敗北テストを安定させる）。
-          if (isBurnt(T + heatDelta(cs, actionAt(at).delta) + 0.03)) at = .25;
+          if (isBurnt(T + pullHeat(actionAt(at).delta) + 0.03)) at = .25;
         }
         await doPull(at);
         await sleep(40);
