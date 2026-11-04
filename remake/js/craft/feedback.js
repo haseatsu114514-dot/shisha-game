@@ -1,4 +1,5 @@
 // 工程の成績を、記号と見守る人物の短い一言で伝える。
+import { state } from "../core/state.js";
 import { DB } from "../core/data.js";
 import { recordedTemperatureStates } from "./temperature-records.js";
 
@@ -62,6 +63,71 @@ export function judgeComment(cs) {
   if (temperatures.every(value => value === true)) return "提供も2回の調整も、いい温度だったねえ";
   if (temperatures.some(value => value === false)) return "温度が合わなかったところがあるねえ。次は一口ずついこう";
   return feedbackLine("maezono", "default", evaluationOf(cs?.parts?.shisha || 0));
+}
+
+// 結果画面に登場する5人。COMMENTS・WATCHと大会台詞の口調を使い、未記録の失敗原因は断定しない。
+const JUDGE_DEDUCTION_LINES = {
+  maezono: {
+    holes: "穴：次は間隔を揃えてみようか",
+    heat: "炭：取り出す頃合いを見てみようか",
+    shisha: "完成品：配合と仕上がりを見直そうか",
+    care1: "調整1：炭の交換を見直したいねえ",
+    care2: "調整2：後半の熱も確かめたいねえ",
+  },
+  dr_kemuri: {
+    holes: "穴：目印と間隔を確かめましょう",
+    heat: "炭：全面の熾き具合を確かめましょう",
+    shisha: "完成品：配合と熱のつながりを見ましょう",
+    care1: "調整1：交換する炭の数を見直しましょう",
+    care2: "調整2：葉の残りと熱を確かめましょう",
+  },
+  nagumo: {
+    holes: "穴：急がず、間隔を揃えなさい",
+    heat: "炭：取り出す時機を見直しなさい",
+    shisha: "完成品：配合の狙いを最後まで通しなさい",
+    care1: "調整1：一手ずつ熱を確かめなさい",
+    care2: "調整2：最後まで葉と熱を見なさい",
+  },
+  emil: {
+    holes: "穴：通り道の間隔を確かめたい",
+    heat: "炭：取り出す瞬間をもう一度見よう",
+    shisha: "完成品：配合から続く味を見せてくれ",
+    care1: "調整1：炭を換えた後の変化を見よう",
+    care2: "調整2：葉の残りと熱を最後まで見よう",
+  },
+  da_silva: {
+    holes: "穴：目印を見て、間隔を揃えようぜ",
+    heat: "炭：全面が赤くなる瞬間を見とけ",
+    shisha: "完成品：配合と仕上がり、もう一段だ",
+    care1: "調整1：炭の交換、焦らず見直そうぜ",
+    care2: "調整2：後半の葉と熱も見てやれ",
+  },
+};
+
+// 表示専用。全審査員が同じ工程品質を使い、好み・試喫順の補正は工程別ではない。
+// finalize と同じ重みで満点との差を比較。同点は穴・炭・完成品・調整1・調整2の順。
+export function judgeDeductionReason(cs, judgeId) {
+  const skipped = cs?.foilSkipped || cs?.holes?.skipped;
+  const items = [
+    ["holes", "穴あけに減点、目印と間隔を確かめよう"],
+    ["heat", "炭焼きに減点、取り出す頃合いを確かめよう"],
+    ["shisha", "完成品に減点、配合と仕上がりを見直そう"],
+    ["care1", "調整1に減点、炭の交換と熱の変化を見よう"],
+    ["care2", "調整2に減点、後半の葉と熱の変化を見よう"],
+  ];
+  let worst = null, maxLoss = 0, recorded = 0;
+  for (const [item, text] of items) {
+    if (item === "holes" && skipped) continue;
+    const score = cs?.parts?.[item];
+    if (!Number.isFinite(score)) continue;
+    recorded++;
+    // 通常は各20%。穴あけ省略の第1章大会だけ完成品40%（共通の分母は比較に不要）。
+    const weight = skipped && (cs.chapter ?? state?.chapter) === 1 && cs.mode === "tournament" && item === "shisha" ? 2 : 1;
+    const loss = Math.max(0, 100 - score) * weight;
+    if (loss > maxLoss) { maxLoss = loss; worst = { item, text }; }
+  }
+  if (worst) return { ...worst, text: JUDGE_DEDUCTION_LINES[judgeId]?.[worst.item] || worst.text };
+  return { item: null, text: recorded ? "記録のある工程は減点なし、丁寧に仕上げたね" : "工程の記録がなく、減点項目は確認できない" };
 }
 
 // 判定前の「見ている」間に出す一言。地の文の説明ではなく、本人が話す体で短く。

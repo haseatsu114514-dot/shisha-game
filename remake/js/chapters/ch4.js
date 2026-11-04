@@ -505,7 +505,7 @@ async function runTournament(owner) {
     ...craftReviewLines(match?.craft)];
   const { chapterFourStandingsView } = await import("./ch4-standings.js");
   await modal({ title: result.failure ? "制作を完了できなかった" : `世界大会 ${result.rank}位`,
-    body: match?.votes ? chapterFourStandingsView({ ...match, votes: result.votes || match.votes }, { rows: result.rows, notes, test: "ch4-result" })
+    body: match?.votes ? chapterFourStandingsView({ ...match, votes: result.votes || match.votes }, { rows: result.rows, notes, test: "ch4-result", final: true })
       : notes.join("\n"),
     options: [{ label: "講評へ", primary: true, test: "ch4-verdict-continue" }] });
   if (!current(owner)) return;

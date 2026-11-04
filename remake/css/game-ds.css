@@ -480,13 +480,13 @@ body.game-ds .result-table .rt-bar { height: 8px; }
 body.game-ds .result-table .rt-pt { font-size: 18px; }
 body.game-ds .result-table .rt-detail {
   position: absolute; left: calc(var(--ds-cx) + 10px); top: calc(var(--ds-cy) + 10px); width: calc(var(--ds-cw) - 20px);
-  height: calc(var(--ds-ch) - 80px); padding: 10px; gap: 6px 8px; overflow: auto; overscroll-behavior: contain;
+  height: calc(var(--ds-ch) - 80px); padding: 10px; gap: 6px 8px; overflow: hidden;
 }
 body.game-ds .result-table .rt-detail h4 { font-size: 12px; margin-bottom: 0; }
 body.game-ds .result-table .rt-part { padding: 5px 8px 6px; font-size: 12px; }
 body.game-ds .result-table .rt-part b { font-size: 22px; }
 body.game-ds .result-table .rt-part.score b { font-size: 22px; }
-body.game-ds .result-table .rt-detail > small { font-size: 12px; font-weight: 700; }
+body.game-ds .result-table .rt-detail-scroll > small { font-size: 12px; font-weight: 700; }
 body.game-ds .result-table > .btn {
   position: absolute; left: calc(var(--ds-cx) + 10px); width: calc(var(--ds-cw) - 20px); min-width: 0;
   top: calc(var(--ds-cy) + var(--ds-ch) - 62px); min-height: 52px; font-size: 16px;

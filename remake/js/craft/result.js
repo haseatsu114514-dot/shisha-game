@@ -13,7 +13,7 @@ import { autoSkill, CRAFT_RANK_THRESHOLDS } from "./common.js";
 import { craftRankProgress } from "./rank-hud.js";
 import { mixColor } from "./art.js";
 import { NAGUMO_BAR } from "./score.js";
-import { evaluationOf, judgeComment } from "./feedback.js";
+import { evaluationOf, judgeComment, judgeDeductionReason } from "./feedback.js";
 import { craftRecognition } from "./recognition.js";
 import { VOTE_SCALE, voteStack as stackOf, judgePanel as panelOf, judgeLegend as legendOf, countUp } from "./tournament-graphics.js";
 
@@ -353,7 +353,9 @@ export function resultTable(cs, rank) {
       const review = evaluationOf(score || 0);
       return el(`b.craft-evaluation.${review.tone}`, { text: review.mark, "aria-label": review.label });
     };
-    const detail = el("div.rt-detail", [
+    const detail = el("div.rt-detail", [el("div.rt-detail-scroll", {
+      tabindex: "0", role: "region", "aria-label": "あなたの一台の評価",
+    }, [
       el("h4", { text: "あなたの一台" }),
       Number.isFinite(cs.pull?.temp) && !cs.pull.failed ? actualExpressionCard(cs, cs.pull.temp) : null,
       ...[["穴あけ", P.holes], ["炭焼き", P.heat], ["完成品", P.shisha], ["調整1回目", P.care1], ["調整2回目", P.care2]]
@@ -361,11 +363,12 @@ export function resultTable(cs, rank) {
         el("div.rt-part", [el("span", { text: k }), evaluation(v), el("small", { text: evaluationOf(v || 0).label })])),
       el("div.rt-part.total", [el("span", { text: "総合" }), evaluation(cs.total), el("b", { text: craftRankProgress(cs.total, CRAFT_RANK_THRESHOLDS).grade, dataset: { test: "craft-final-rank" }, "aria-label": "制作ランク" })]),
       el("small.rt-judge-comment", { text: `上園「${judgeComment(cs)}」` }),
+      el("div.rt-deductions", JUDGES.map(judge => el("small.rt-judge-deduction", { text: `${judgeName(judge.id)}：${judgeDeductionReason(cs, judge.id).text}`, dataset: { judge: judge.id } }))),
       cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
       goodPointOf(cs) ? el("small.rt-good-point", { text: goodPointOf(cs), dataset: { test: "result-good-point" } }) : null,
       el("small.rt-next-tip", { text: improvementOf(cs) }),
       resultSaveButton(cs),
-    ]);
+    ])]);
     const btn = el("button.btn.primary", { dataset: { test: "result-next" }, onclick: () => { SE.select(); retireScreen(); resolve(); } }, [
       el("span.btn-label", { text: rank === 1 ? "表彰のあとへ" : "……結果を受け止める" }),
     ]);
