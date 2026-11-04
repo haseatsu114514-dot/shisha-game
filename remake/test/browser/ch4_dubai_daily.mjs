@@ -71,6 +71,7 @@ await suite("ch4-dubai-daily", async check => {
       for (const id of ["ch4_festa", "ch4_dubai_souq", "ch4_stranger_first", "ch4_inn_tool_care"]) p.read[id] = true;
       p.firstDay = 1;
       value.day = p.startDay + 2; value.slot = 0; p.day = 3; value.stamina = 80;
+      value.stats.guts = 10; // 根性の軽減なしで、試作の基本消費16を確かめる。
     });
     await loadSlot(page, 0);
     await dubaiMap(page, { day: 51, slot: 0 });
