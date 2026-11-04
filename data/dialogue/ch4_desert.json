@@ -22,22 +22,17 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "あ、はい。はじめです。……日本語、上手ですね"
+          "text": "あ、はい。はじめです。……日本語で話せるんですね"
         },
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "ヤリマスネェ！"
+          "text": "私の日本語、上手でしょ？ ヤリマスネェ！"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "（……どこで覚えたんだ、それ）"
-        },
-        {
-          "speaker": "noor",
-          "face": "smile",
-          "text": "お店に来る日本のお客さん。それに、ネットで日本の友だちと話すから"
+          "text": "（……今の、俺が褒められたのか？）"
         },
         {
           "speaker": "noor",
@@ -47,7 +42,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "お客さんと話して覚えるの、楽しそうですね"
+          "text": "言葉を集めるの、楽しそうですね"
         },
         {
           "speaker": "noor",
