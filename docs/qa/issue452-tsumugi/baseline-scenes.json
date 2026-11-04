@@ -1,5 +1,6 @@
 {
   "ref": "507809c3685a76d0853a3ca3da8c4150fb4e9f8b",
+  "notes": "旧構図の比較用台本。#2537で公募説明3台詞をDAY1からDAY3へ移したため、その3台詞をクリック数の基準にも反映。選択・応募・保存効果の基準は維持。",
   "scenes": {
     "ch1_tsumugi_work_in_progress": {
       "dialogue_id": "ch1_tsumugi_work_in_progress",
@@ -41,6 +42,21 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "煙を描くって聞いてたから、手も見てるとは思わなかった"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "公募のテーマは「{tsumugiContestTheme}」なんです"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "選ばれた絵は、会場に飾ってもらえるんです"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "画面越しじゃなく、歩いてる人に見てほしくて"
         },
         {
           "speaker": "tsumugi",
