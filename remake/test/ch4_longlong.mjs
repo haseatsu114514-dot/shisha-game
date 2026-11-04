@@ -121,7 +121,9 @@ assert.deepEqual([firstCondition.condition_type, firstCondition.char_id, firstCo
   ["met", "master_hookah", "met_at_shop", "first_sight"], "先に店で会っていれば顔見知りの分岐");
 const setFlagAt = reception.lines.findIndex(line => line.type === "set_flag" && line.flag === "_met_master_hookah");
 assert(setFlagAt > reception.lines.indexOf(firstCondition), "面識の判定は、前夜祭で面識を付ける前");
-assert.deepEqual(reception.branches.first_sight.map(line => line.flag), ["_ch2_city_visit_c_station"], "会っていなければ今までの初登場");
+assert.deepEqual(reception.branches.first_sight.filter(line => line.type === "condition")
+  .map(({ condition_type, flag, next_true, next_false }) => [condition_type, flag, next_true, next_false]),
+  [["flag", "_ch2_city_visit_c_station", "seen_on_monitor", "heard_only"]], "日本語の説明後も、モニターの既読で初登場を分ける");
 for (const key of ["seen_on_monitor", "heard_only"]) assert(reception.branches[key]?.length, key);
 assert(reception.branches.met_at_shop.some(line => line.speaker === "master_hookah" && /店の時/.test(line.text)), "店で会ったことに触れる");
 assert(!reception.branches.met_at_shop.some(line => /名前だけは|モニターで見た/.test(line.text || "")), "顔見知りに初対面の地の文を出さない");
