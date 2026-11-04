@@ -10,7 +10,11 @@ import { autoSkill } from "../craft/common.js";
 export const preparationFlavors = () => ownedFlavorIds().filter(id => !["mint", "double_apple"].includes(id) && flavorStock(id) >= 12);
 
 // #2213 B08: 課題のレモンは大会支給。前夜のレモン立て替えは置かない。
-export async function prepareFlavorStock() {
+export async function prepareFlavorStock({ isCurrent = null } = {}) {
+  const checkCurrent = () => {
+    if (isCurrent && !isCurrent()) throw new DOMException("Preparation interrupted", "AbortError");
+  };
+  checkCurrent();
   const stocked = preparationFlavors();
   if (stocked.length) {
     if (!stocked.includes(state.flags._prep_flavor)) state.flags._prep_flavor = stocked[0];
@@ -33,8 +37,11 @@ export async function prepareFlavorStock() {
     ]));
     if (autoSkill()) setTimeout(() => buttons[0].click(), 60);
   });
+  checkCurrent();
   const price = DB.flavorById[selected]?.price || 0;
   await openShop({ errand: selected, minStock: 12, expense: state.money < price, expenseFlag: "_prep_flavor_expensed" });
+  checkCurrent();
   state.flags._prep_flavor = selected;
   save();
 }
+

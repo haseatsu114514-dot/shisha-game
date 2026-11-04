@@ -36,16 +36,22 @@ export function homeRig(s = state) {
 }
 
 /** スミさんから卓上台を受け取る（一度だけ）。DAY2の帰宅前に呼ぶ。中間準備は未受領セーブのフォールバック */
-export async function giveSumiRig({ bg = null, deferSave = false } = {}) {
+export async function giveSumiRig({ bg = null, deferSave = false, isCurrent = null } = {}) {
+  const checkCurrent = () => {
+    if (isCurrent && !isCurrent()) throw new DOMException("Home rig gift interrupted", "AbortError");
+  };
+  checkCurrent();
   if (state.owned?.includes(SUMI_RIG)) return false;
   const owner = state;
   const name = DB.equipById?.[SUMI_RIG]?.name || "卓上台";
   if (DB.dialogues[RIG_SCENE]) {
     const result = await play(RIG_SCENE, bg ? { bg } : {});
+    checkCurrent();
     if (state !== owner || result?.cancelled) return false;
     if (!vnTest.turbo) {
       const url = img(SUMI_RIG_IMAGE);
       const loaded = await withScenePreparation(imageReady(url, 15000));
+      checkCurrent();
       if (state !== owner) return false;
       if (loaded) {
         await modal({ title: name, className: "home-rig-gift",
@@ -54,6 +60,7 @@ export async function giveSumiRig({ bg = null, deferSave = false } = {}) {
           } }),
           options: [{ label: "受け取る", value: true, primary: true, test: "home-rig-gift-close" }],
         });
+        checkCurrent();
         if (state !== owner) return false;
       }
     }
@@ -88,3 +95,4 @@ export async function giveEarlyHomeRig() {
       || state.owned?.includes(SUMI_RIG)) return;
   await giveSumiRig({ bg: "res://assets/backgrounds/bg_tonari_inside.png" });
 }
+

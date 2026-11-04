@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "ch1-legacy-midcheck-load",
+      "title": "Legacy DAY7 preparation owner boundaries and SAVE/LOAD",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ch1_legacy_midcheck_load.mjs"]
+    },
+    {
       "id": "craft-result-card",
       "title": "Craft result card data, layout and PNG rendering",
       "kind": "quick",
@@ -3859,5 +3865,6 @@
     }
   ]
 }
+
 
 

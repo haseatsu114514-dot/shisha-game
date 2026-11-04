@@ -463,19 +463,32 @@ async function midPreparation() {
   const progress = state.flags._ch1_mid ||= {};
   if (!progress.introRead && !progress.naruMatch) { progress.naruMatch = true; save(); }
   if (progress.naruMatch) return naruMatch(progress);
+  const owner = state, chapter = owner.chapter, day = owner.day, slot = owner.slot;
+  const requireCurrent = () => {
+    if (state !== owner || owner.chapter !== chapter || owner.day !== day || owner.slot !== slot || owner.flags._ch1_mid !== progress) {
+      throw new DOMException("DAY7 legacy preparation interrupted", "AbortError");
+    }
+  };
+  const read = async (scene) => {
+    requireCurrent();
+    const result = await play(scene, { bg: TONARI_N });
+    requireCurrent();
+    if (!result || result.cancelled) throw new DOMException("DAY7 legacy preparation dialogue interrupted", "AbortError");
+  };
   if (!progress.introRead) {
-    await play("remake_midcheck_intro", { bg: TONARI_N });
+    await read("remake_midcheck_intro");
     progress.introRead = true;
     save();
   }
-  if (!progress.stockDone) { await prepareFlavorStock(); progress.stockDone = true; save(); }
+  if (!progress.stockDone) { await prepareFlavorStock({ isCurrent: () => { requireCurrent(); return true; } }); requireCurrent(); progress.stockDone = true; save(); }
   if (!progress.choice) {
-    if (careExperienced()) await play({ ...DB.dialogues.remake_midcheck_review, branches: {} }, { bg: TONARI_N });
+    if (careExperienced()) await read({ ...DB.dialogues.remake_midcheck_review, branches: {} });
     else { progress.choice = "full"; save(); }
   }
   if (!progress.practiceDone && progress.choice !== "stock") {
     beginEvePractice(progress);
-    const cs = await runFullPractice({ kind: "midcheck" });
+    const cs = await runFullPractice({ kind: "midcheck", isCurrent: () => { requireCurrent(); return true; } });
+    requireCurrent();
     progress.failed = cs.failed || null;
     if (cs.failed) progress.midBranch = null;
     else {
@@ -488,17 +501,18 @@ async function midPreparation() {
     save();
   }
   if (!progress.feedbackRead) {
-    if (progress.failed) await play("remake_preparation_failed", { bg: TONARI_N });
+    if (progress.failed) await read("remake_preparation_failed");
     const midcheck = DB.dialogues.remake_midcheck;
     const branch = progress.midBranch ? midcheck?.branches?.[progress.midBranch] : undefined;
     // 旧セーブなど分岐記録がない場合は、従来の会話をそのまま読む。
-    if (branch) await play({ ...midcheck, lines: [...branch, ...midcheck.lines], branches: {} }, { bg: TONARI_N });
-    else await play("remake_midcheck", { bg: TONARI_N });
+    if (branch) await read({ ...midcheck, lines: [...branch, ...midcheck.lines], branches: {} });
+    else await read("remake_midcheck");
     progress.feedbackRead = true;
     save();
   }
   // 家シーシャ（#638）: 中盤の修行のあと、スミさんが「これやる」とミャアの卓上台を譲る（一度だけ・途中から再開しても渡す）
-  await giveSumiRig({ bg: TONARI_N });
+  await giveSumiRig({ bg: TONARI_N, isCurrent: () => { requireCurrent(); return true; } });
+  requireCurrent();
 }
 
 // なるの一台は操作させず、工程の節目に短い一言だけ並べる（二台目の作業台は作らない）。
@@ -977,3 +991,4 @@ export function devGameOver(reason = "burnt", rank = 2, variant = null) {
   setupHooks();
   return showGameOver({ reason, rank, variant, preview: true });
 }
+
