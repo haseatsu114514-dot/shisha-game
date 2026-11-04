@@ -167,6 +167,9 @@
 .result-table .rt-part.total { margin: 0; background: linear-gradient(110deg, #f6c95e22, #f6c95e08); border-color: #f6c95e55; }
 .result-table .rt-detail > small { grid-column: 1 / -1; font-size: 12px; line-height: 1.5; color: #a39baa; }
 .result-table .rt-judge-comment { color: #f6d68e !important; }
+.result-table .rt-deductions { grid-column: 1 / -1; display: grid; gap: 1px; }
+.result-table .rt-detail:has(.rt-deductions) { gap: 6px 12px; padding-top: 12px; padding-bottom: 12px; }
+.result-table .rt-deductions > small { font-size: 12px; line-height: 1.35; color: #a39baa; }
 .result-table .rt-next-tip { color: #9fe7d9 !important; }
 .result-table .flavor-actual { grid-column: 1 / -1; }
 .result-table .rt-detail { min-height: 0; overflow: auto; overscroll-behavior: contain; }

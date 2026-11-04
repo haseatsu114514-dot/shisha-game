@@ -360,7 +360,7 @@ export function resultTable(cs, rank) {
         el("div.rt-part", [el("span", { text: k }), evaluation(v), el("small", { text: evaluationOf(v || 0).label })])),
       el("div.rt-part.total", [el("span", { text: "総合" }), evaluation(cs.total)]),
       el("small.rt-judge-comment", { text: `上園「${judgeComment(cs)}」` }),
-      ...JUDGES.map(judge => el("small.rt-judge-deduction", { text: `${judgeName(judge.id)}：${judgeDeductionReason(cs, judge.id).text}`, dataset: { judge: judge.id } })),
+      el("div.rt-deductions", JUDGES.map(judge => el("small.rt-judge-deduction", { text: `${judgeName(judge.id)}：${judgeDeductionReason(cs, judge.id).text}`, dataset: { judge: judge.id } }))),
       cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
       goodPointOf(cs) ? el("small.rt-good-point", { text: goodPointOf(cs), dataset: { test: "result-good-point" } }) : null,
       el("small.rt-next-tip", { text: improvementOf(cs) }),
