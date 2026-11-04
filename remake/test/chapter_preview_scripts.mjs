@@ -1,6 +1,5 @@
 // 章末予告の台本（data/chapter_previews/*.json）の構造・出典・原文一致を検査する。
-// 抜粋の原則は「原データの台詞行と完全一致」。第1章台本の旧編集だけ、文境界までの
-// 前方一致（文の途中で切らない抜粋）を許し、書き換えた1件は例外として明記する。
+// 抜粋は登場人物の台詞行と一致、または文境界までの冒頭抜粋。創作ナレーションは載せない。
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
@@ -10,12 +9,6 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..")
 const SCRIPT_DIR = path.join(ROOT, "data/chapter_previews");
 const KINDS = new Set(["prologue", "slate", "image", "title", "echo"]);
 const CUES = new Set(["intro", "slate", "build", "title", "echo"]);
-
-// 完全一致から外れる個別事情（各台本の source_notes にも理由を残すこと。新規の安易な追加は禁止）。
-// - ch5 の same-return: DESIGN 4-3 が反復カットに原文の断片を指定したもの（台本化で3種から1種を選択）。
-const EXCERPT_EXCEPTIONS = new Map([
-  ["ch5.json:same-return", "DESIGN 4-3 の反復指定による原文の断片「同じところで——」"],
-]);
 
 const errors = [];
 const fail = (where, message) => errors.push(`${where}: ${message}`);
@@ -30,7 +23,7 @@ function dialogueLines(file, dialogueId) {
   const data = dialogueCache.get(file);
   if (!data) return null;
   const entry = (data.dialogues || []).find(d => d.dialogue_id === dialogueId);
-  return entry ? entry.lines.map(l => l.text).filter(t => typeof t === "string") : null;
+  return entry ? entry.lines.filter(l => l.speaker).map(l => l.text).filter(t => typeof t === "string") : null;
 }
 
 function excerptMatches(text, lines) {
@@ -65,12 +58,15 @@ for (const file of scriptFiles) {
     sum += frame.duration || 0;
     if (frame.cue !== undefined && !CUES.has(frame.cue)) fail(at, `cue が不正: ${frame.cue}`);
     if (frame.kind === "image" && !frame.art) fail(at, "image カットに art が無い");
+    if (["image", "echo"].includes(frame.kind) && !frame.source) fail(at, "字幕に次章の台詞の出典が無い");
+    if (frame.kind === "prologue" && frame.text) fail(at, "余韻は無言の間にする");
+    if (frame.kind !== "title" && frame.kicker) fail(at, "創作のキッカーを載せない");
     if (!frame.source) continue;
     const [sourceFile, dialogueId] = String(frame.source).split("#");
+    if (!sourceFile.startsWith(`data/dialogue/${file.replace(".json", "")}_`)) fail(at, "次章以外を出典にしている");
     const lines = dialogueLines(sourceFile, dialogueId);
     if (!lines) { fail(at, `出典が見つからない: ${frame.source}`); continue; }
-    const exception = EXCERPT_EXCEPTIONS.get(`${file}:${frame.id}`);
-    if (!excerptMatches(frame.text, lines) && !exception) {
+    if (!excerptMatches(frame.text, lines)) {
       fail(at, `抜粋が原文と一致しない: ${frame.source}`);
     }
   }

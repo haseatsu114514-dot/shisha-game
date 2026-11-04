@@ -4,7 +4,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const require = createRequire(import.meta.url);
-const { chromium } = require('playwright');
+const { chromium } = createRequire(new URL('../test/browser/package.json', import.meta.url))('playwright');
 const url = process.env.PREVIEW_URL || 'http://127.0.0.1:8123/remake/chapter-preview.html';
 const captureFolder = path.resolve(process.env.CAPTURE_DIR || '.codex/artifacts/chapter-preview-recording');
 const output = path.resolve(process.env.OUTPUT_VIDEO || path.join(captureFolder, 'preview.mp4'));
@@ -114,18 +114,21 @@ try {
   await page.locator(startSelector).waitFor({ state: 'visible' });
   const preload = await page.evaluate(async () => {
     try {
-      const response = await fetch('../data/chapter_previews/ch2.json');
+      const key = new URLSearchParams(location.search).get('ch') || 'ch2';
+      const { PREVIEWS } = await import('./js/chapters/chapter-preview.js');
+      const entry = PREVIEWS[key];
+      const response = await fetch(entry.scriptUrl);
       if (!response.ok) throw new Error(`Preview data ${response.status}`);
       const base = await response.json();
       const sample = new URLSearchParams(location.search).get('sample');
       const { createChapterSample } = await import('./js/chapters/chapter-preview-samples.js');
-      const data = createChapterSample(base, sample ?? base.presentation);
+      const data = entry.samples ? createChapterSample(base, sample ?? base.presentation) : base;
       const arts = [...new Set(data.frames.map(cut => cut.art).filter(Boolean))];
       await Promise.all(arts.map(art => new Promise((resolve, reject) => {
         const image = new Image();
         image.onload = async () => { try { await image.decode(); resolve(); } catch (error) { reject(error); } };
         image.onerror = () => reject(new Error(`Missing art ${art}`));
-        image.src = `../assets/cgs/ch2_preview/${art}.webp`;
+        image.src = `${entry.assetDir}${art}.webp`;
       })));
       return { artworks: arts.length, durationMs: data.duration, cuts: data.frames.map(cut => cut.id) };
     } catch (error) { return { error: String(error) }; }

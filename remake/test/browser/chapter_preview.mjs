@@ -49,6 +49,10 @@ function confirmPageCheck(entry) {
     assert.equal(await page.locator(preview).getAttribute("aria-label"), entry.aria,
       "確認ページが別の予告を再生した");
     await assertFits(page, '[data-test="preview-screen"], [data-test="preview-skip"], [data-test="preview-pause"], [data-test="preview-sound"]');
+    assert(await page.locator(`${preview}.sample-quiet`).count(), "全章で採用Cの字幕演出を使う");
+    await page.locator(`${preview}[data-cut="next"]`).waitFor();
+    assert.equal(await page.locator(".preview-slate strong").textContent(), "次回予告");
+    assert.equal(await page.locator(".preview-art").count(), 0, "導入の見出しより先に次章映像を流さない");
     // 最初の画像カットは、その章の素材が採用寸法（1664×936）のまま表示される。
     const art = page.locator(`${preview} .preview-art`);
     await art.waitFor({ timeout: 30000 });
@@ -57,6 +61,18 @@ function confirmPageCheck(entry) {
     assert(visual.complete && entry.arts.includes(visual.file), `Unexpected preview art: ${JSON.stringify(visual)}`);
     assert.equal(visual.width, 1664);
     assert.equal(visual.height, 936);
+    const subtitle = await page.locator(".preview-caption p").evaluate(node => {
+      const caption = node.getBoundingClientRect(), art = document.querySelector(".preview-art").getBoundingClientRect();
+      const scale = document.querySelector('[data-test="chapter-preview"]').getBoundingClientRect().width / 1280;
+      return { inside: caption.left >= art.left && caption.right <= art.right && caption.top >= art.top && caption.bottom <= art.bottom,
+        font: parseFloat(getComputedStyle(node).fontSize) * scale,
+        stroke: getComputedStyle(node).webkitTextStrokeWidth,
+        controls: [...document.querySelectorAll(".preview-control")].map(b => b.getBoundingClientRect().height) };
+    });
+    assert(subtitle.inside, "字幕を映像内へ収める");
+    assert(subtitle.font >= 15.9, "スマホでも字幕を16px以上で表示する");
+    assert.notEqual(subtitle.stroke, "0px", "字幕に黒縁を付ける");
+    assert(subtitle.controls.every(h => h >= 43.9), "操作ボタンは44px以上の高さを確保する");
     // 一時停止で時計が止まり、音ボタンが切り替わる。
     await page.locator('[data-test="preview-pause"]').click();
     await page.locator(`${preview}[data-phase="paused"]`).waitFor();
@@ -78,9 +94,12 @@ function confirmPageCheck(entry) {
 
 await suite("chapter-preview", async check => {
   for (const entry of entries) await check(`confirm-page-${entry.key}`, confirmPageCheck(entry));
-  const firstCue = entries.find(entry => entry.cue);
-  if (firstCue) await check(`confirm-page-${firstCue.key}-touch`, confirmPageCheck(firstCue),
-    { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+  for (const entry of entries) {
+    await check(`confirm-page-${entry.key}-touch`, confirmPageCheck(entry),
+      { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+    await check(`confirm-page-${entry.key}-portrait`, confirmPageCheck(entry),
+      { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  }
 
   // cue 駆動の予告は、仮想時計で最後まで進めても台本のカット順どおりに完走する。
   for (const entry of entries.filter(entry => entry.cue)) {

@@ -113,6 +113,15 @@ export function playChapterPreview(key, { signal, sample } = {}) {
       role: "dialog", tabindex: "-1", "aria-modal": "true", "aria-label": entry.labels.aria,
       dataset: { test: "chapter-preview", phase: "loading", elapsed: "0" },
     }, [screen, el("div.preview-controls", [counter, sound, pause, skip]), el("div.preview-progress", { "aria-hidden": "true" }, [progress])]);
+    // 固定ステージの拡縮後も字幕16px・タッチ操作44px以上を確保する。
+    const fitSubtitles = () => {
+      const scale = root.getBoundingClientRect().width / 1280 || 1;
+      root.style.setProperty("--preview-subtitle-size", `${Math.max(32, 16 / scale)}px`);
+      root.style.setProperty("--preview-control-size", `${Math.max(18, 14 / scale)}px`);
+      root.style.setProperty("--preview-control-height", `${Math.max(44, 44 / scale)}px`);
+      root.classList.toggle("compact", scale < .65);
+    };
+    const resize = new ResizeObserver(fitSubtitles);
     let done = false, mounted = false, data = null, score = null;
     let time = 0, last = 0, frame = -1, raf = null, generation = 0;
     let userPaused = false, soundOff = !!(config.mute || config.muted) || !(config.bgmVolume > 0);
@@ -125,6 +134,8 @@ export function playChapterPreview(key, { signal, sample } = {}) {
       cancelAnimationFrame(raf);
       score?.stop();
       observer.disconnect();
+      resize.disconnect();
+      window.removeEventListener("resize", fitSubtitles);
       document.removeEventListener("visibilitychange", visibility);
       root.removeEventListener("keydown", key);
       window.removeEventListener("pagehide", abort);
@@ -209,7 +220,7 @@ export function playChapterPreview(key, { signal, sample } = {}) {
       root.dataset.elapsed = String(Math.round(time));
       progress.style.width = `${Math.min(100, time / data.duration * 100)}%`;
       const remaining = Math.max(0, Math.ceil((data.duration - time) / 1000));
-      counter.textContent = frame < 2 ? entry.labels.prologueCounter : `${entry.labels.counter}　${remaining}秒`;
+      counter.textContent = `${entry.labels.counter}　${remaining}秒`;
       let start = 0, index = data.frames.length - 1;
       for (let i = 0; i < data.frames.length; i++) {
         if (time < start + data.frames[i].duration) { index = i; break; }
@@ -239,7 +250,7 @@ export function playChapterPreview(key, { signal, sample } = {}) {
         if (done || generation !== attempt) return;
         if (loaded.some(ok => !ok)) throw new Error("Preview image unavailable");
         data = entry.samples ? createChapterSample(next, sample ?? next.presentation) : next;
-        if (data.sample) root.classList.add(`sample-${data.sample}`);
+        if (data.sample || data.presentation) root.classList.add(`sample-${data.sample || data.presentation}`);
         root.dataset.sample = data.sample || "production";
         stopBgm(0.15);
         score = entry.score?.kind === "cue"
@@ -274,6 +285,9 @@ export function playChapterPreview(key, { signal, sample } = {}) {
     soundLabel();
     if (!host) { finish("aborted"); return; }
     host.append(root); mounted = true;
+    fitSubtitles();
+    window.addEventListener("resize", fitSubtitles);
+    resize.observe(document.getElementById("stage") || root);
     observer.observe(document.documentElement, { childList: true, subtree: true });
     root.focus({ preventScroll: true });
     prepare();
