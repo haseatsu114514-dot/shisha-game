@@ -86,10 +86,12 @@ def measure(png: Path, anchor="feet"):
     return {"top": y0 / h, "bottom": y1 / h, "ax": feet / w, "aspect": w / h}
 
 
-def portraits(character_ids=None):
+def portraits(character_ids=None, base=None):
     """キャラごとに表情一覧と共通の framing 値（全表情で同じ＝表情を変えても絵が動かない）。"""
     out = {}
-    base = ASSETS / "sprites" / "characters"
+    base = base or ASSETS / "sprites" / "characters"
+    if not base.exists():
+        return {}
     anchor_modes = {cid: c.get("spriteAnchor", "feet")
                     for cid, c in load_characters().items()}
     for d in sorted(p for p in base.iterdir() if p.is_dir()):
@@ -259,10 +261,34 @@ def main():
     scope.add_argument("--cgs-only", nargs="+", metavar="PNG", help="指定したCGの目録・WebPだけ更新")
     scope.add_argument("--making-only", nargs="+", metavar="PNG", help="指定した制作UIパーツの目録・WebPだけ更新")
     scope.add_argument("--scene-props-only", nargs="+", metavar="PNG", help="指定した背景の重ね素材の目録・WebPだけ更新")
+    scope.add_argument("--portrait-variants-only", nargs="+", metavar="ID", help="新立ち絵だけ計測・WebP更新。現行は変更しない")
     scope.add_argument("--portraits-only", nargs="+", metavar="ID", help="指定した人物の立ち絵計測・WebPだけ更新")
     scope.add_argument("--intros-only", nargs="+", metavar="ID", help="指定した人物の登場背景・配置・WebPだけ更新")
     args = parser.parse_args()
     generated = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    if args.portrait_variants_only:
+        import build_images
+        ids = set(args.portrait_variants_only)
+        if not ids <= load_characters().keys():
+            parser.error("人物設定がありません")
+        entries = portraits(ids, ASSETS / "sprites/character_variants/new")
+        if ids != entries.keys() or any("normal" not in e["faces"] or "h" not in e for e in entries.values()):
+            parser.error("新立ち絵の通常PNG・有効な透過領域がありません")
+        manifest = json.loads(OUT.read_text(encoding="utf-8"))
+        manifest.setdefault("portraitVariants", {}).setdefault("new", {}).update(entries)
+        webp = set(manifest.get("webp", []))
+        for cid, entry in entries.items():
+            for face in entry["faces"]:
+                rel = f"sprites/character_variants/new/{cid}/chr_{cid}_{face}.png"
+                dst = build_images.OUT / Path(rel).with_suffix(".webp")
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                dst.write_bytes(build_images.encode(ASSETS / rel, rel))
+                webp.add(rel)
+        manifest["webp"] = sorted(webp)
+        manifest["generated"] = generated
+        OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(f"wrote {len(entries)} new portrait families (classic unchanged)")
+        return
     if args.intros_only:
         import build_images
         ids = set(args.intros_only)
@@ -428,6 +454,7 @@ def main():
         "generated": generated,
         "limeMedia": lime_media(),
         "portraits": portraits(),
+        "portraitVariants": {"new": portraits(base=ASSETS / "sprites/character_variants/new")},
         "backgrounds": listing("backgrounds"),
         # 仮置きCG（文字だけの画像）は載せない＝場面では飛ばし、ギャラリーにも出さない
         "cgs": [f for f in listing("cgs") if not is_placeholder(ASSETS / "cgs" / f)],

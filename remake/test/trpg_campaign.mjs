@@ -169,7 +169,7 @@ test("noon, story nights, pending appointments and non-daily phases cannot start
   s.pendingInvite.day = 4; assert(rules.castTrpgTable(s, catalog, ordinary).ok);
   s.phase = "tournament"; assert(!rules.castTrpgTable(s, catalog, ordinary).ok);
 });
-test("REI and Ageha join from their own chapter-two shop visits and never take an unwritten seat", async () => {
+test("レヰ and Ageha join from their own chapter-two shop visits and never take an unwritten seat", async () => {
   for (const id of ["rei", "ageha"]) {
     const s = state(); rules.foundTrpgClub(s, catalog);
     const person = catalog.participants.find(p => p.id === id);
@@ -186,14 +186,14 @@ test("REI and Ageha join from their own chapter-two shop visits and never take a
   const s = own(friends(state()), ordinary.id);
   const cast = rules.castTrpgTable(s, catalog, ordinary);
   assert(cast.ok); assert(!cast.participants.includes("rei")); assert(!cast.participants.includes("ageha"));
-  // A book written in their voices seats them: REI as GM, Ageha as a player, and every line keeps a present speaker.
+  // A book written in their voices seats them: レヰ as GM, Ageha as a player, and every line keeps a present speaker.
   const encore = await json("../../data/dialogue/trpg_moonflower_encore.json");
   const night = own(friends(state()), encore.id);
   const seated = rules.castTrpgTable(night, catalog, encore);
   assert(seated.ok); assert.equal(seated.gm, "rei"); assert(seated.participants.includes("ageha"));
   const table = rules.materializeTrpgCast(encore, seated.assignments);
   assert(table.dialogues.flatMap(b => b.lines).every(l => seated.participants.includes(l.speaker)));
-  // Without REI in the club, his books are never stocked.
+  // Without レヰ in the club, his books are never stocked.
   const noRei = state(); friends(noRei, catalog.participants.map(p => p.id).filter(id => id !== "rei")); rules.syncTrpgStock(noRei, catalog);
   assert(!noRei.trpg.stock.includes(encore.id));
   // The neighbouring town's shop visit offers the same face-to-face recruitment as the home town.

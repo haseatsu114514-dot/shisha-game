@@ -32,6 +32,8 @@ def targets(m):
     rel += [art["background"] for art in m.get("introArt", {}).values()]
     for ch, p in m["portraits"].items():
         rel += [f"sprites/characters/{ch}/chr_{ch}_{f}.png" for f in p["faces"]]
+    for ch, p in m.get("portraitVariants", {}).get("new", {}).items():
+        rel += [f"sprites/character_variants/new/{ch}/chr_{ch}_{f}.png" for f in p["faces"]]
     rel += ["ui/title_arts/title_art_keyvisual_01.png", "ui/ui_title_logo.png", "ui/ui_title_logo_rich.png"]
     rel += [f"ui/title_arts/{art['file']}" for art in m.get("titleArts", [])]
     rel += ["ui/chapters/ch1_keyart.png"]
@@ -49,7 +51,8 @@ def encode(src: Path, rel: str) -> bytes:
             k = edge / max(im.size)
             im = im.resize((round(im.width * k), round(im.height * k)), Image.LANCZOS)
     # 清書版の細かな輪郭・アルファと、チェキの手書き文字は再ビルド時も可逆で保つ。
-    if (rel.startswith("sprites/characters/samechan/")
+    if (rel.startswith("sprites/character_variants/new/")
+            or rel.startswith("sprites/characters/samechan/")
             or rel.startswith("sprites/characters/hiyori/")
             or rel.startswith("sprites/characters/ageha/")
             or rel.startswith("sprites/characters/minto/")

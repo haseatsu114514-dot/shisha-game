@@ -1,0 +1,4 @@
+interface:
+  display_name: "Issueを最新状態に整理する"
+  short_description: "Issueと最新コメント・関連PR・mainを照合して残件と着手順を整理"
+  default_prompt: "$issue-triage を使って、関連PRと最新mainを確認し、Issueの完了済み・残件・保留と次に着手できるものを整理して。"

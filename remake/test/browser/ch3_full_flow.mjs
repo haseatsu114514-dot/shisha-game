@@ -68,7 +68,7 @@ await suite("ch3-full-flow", async check => {
     assert.equal(state.chapter, 3);
     assert.equal(state.flags._ch3_intro.prologueStep, 4);
     assert.equal(state.flags._ch3_intro.titleSeen, true);
-    assert.equal(state.met.kuze, undefined, "The anonymous prologue must not reveal Kuze");
+    assert.equal(state.met.kuze, undefined, "The anonymous prologue must not reveal Ayatori");
     const startDay = state.flags._ch3_intro.startDay;
     assert.equal(startDay, 29);
     const scenes = await page.evaluate(async () =>

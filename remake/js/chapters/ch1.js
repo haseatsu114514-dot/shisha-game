@@ -48,7 +48,6 @@ import { playTsumugiStory, playTsumugiSketch } from "./tsumugi-story.js";
 import { meetHiyoriAtTonari } from "../daily/hiyori.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } from "../craft/result.js";
-import { playChapterPreview } from "./ch1-preview.js";
 import { craftRecognition } from "../craft/recognition.js";
 import { playCh1Title } from "./ch1-title-motion.js";
 import { giveSumiRig, giveEarlyHomeRig } from "../daily/home-rig.js";
@@ -868,14 +867,13 @@ export async function showClear() {
   let playing = false;
   const next = el("button.btn.primary", { text: "第2章へ進む", dataset: { test: "end-chapter2" }, onclick: async () => {
     if (playing || !root.isConnected || state !== owner) return;
-    playing = true; next.disabled = true; replay.disabled = true;
+    playing = true; next.disabled = true;
     try {
       const chapter = await withLoadingNotice(import("./ch2.js"), loadingNotice("第2章の街へ向かっています…"));
       if (root.isConnected && state === owner) await chapter.beginChapterTwo();
     } catch { toast("第2章を読み込めなかった。通信を確認して、もう一度試してください"); }
-    finally { playing = false; next.disabled = false; replay.disabled = false; }
+    finally { playing = false; next.disabled = false; }
   } });
-  const replay = el("button.btn.primary", { text: "次回予告をもう一度", dataset: { test: "end-preview" } });
   const root = el("div.end-screen.clear", [
     el("div.end-title", { text: "第1章 クリア" }),
     el("div.end-sub", { text: "SMOKE CROWN CUP 優勝 ── 勝ちは、始まりだった。" }),
@@ -887,30 +885,9 @@ export async function showClear() {
       ]),
     ]),
     el("p.clear-last-line", { text: "あなたの煙は、誰に届いている？" }),
-    el("div.end-actions", [next, replay, el("button.btn", { text: "タイトルへ", dataset: { test: "end-title" }, onclick: () => location.reload() })]),
+    el("div.end-actions", [next, el("button.btn", { text: "タイトルへ", dataset: { test: "end-title" }, onclick: () => location.reload() })]),
   ]);
   showScreen("end", root);
-  async function preview(first = false) {
-    if (playing || !root.isConnected) return;
-    playing = true; replay.disabled = true; next.disabled = true;
-    const controller = new AbortController();
-    const observer = new MutationObserver(() => { if (!root.isConnected) controller.abort(); });
-    observer.observe(layers.screen, { childList: true });
-    let result;
-    try { result = await playChapterPreview({ signal: controller.signal }); }
-    finally { observer.disconnect(); }
-    if (first && root.isConnected && ["completed", "skipped"].includes(result) && state === owner && state.phase === "cleared") {
-      state.flags._ch1_preview_seen = true;
-      save();
-    }
-    playing = false; replay.disabled = false; next.disabled = false;
-    if (root.isConnected) {
-      playBgm("bgm_aftermath");
-      replay.focus({ preventScroll: true });
-    }
-  }
-  replay.addEventListener("click", () => preview(false));
-  if (!flag("_ch1_preview_seen")) await preview(true);
 }
 
 /** 一台を焦がした大会は、審査を待たずにその場でGAME OVER（TH06）。再挑戦は通常の敗北と同じ。 */

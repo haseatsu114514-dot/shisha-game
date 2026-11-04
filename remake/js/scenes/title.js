@@ -312,6 +312,14 @@ export async function openConfig(opts = {}) {
     if ((v === "seen") === !!config.skipSeenOnly) o.selected = true;
     return o;
   }));
+  const portraits = el("select", {
+    dataset: { test: "cfg-portrait-style" },
+    onchange: (e) => { config.portraitStyle = e.target.value; persist(); opts.onChange?.("portraitStyle", config.portraitStyle); },
+  }, [["classic", "現行"], ["new", "新（未制作の表情は現行）"]].map(([v, t]) => {
+    const o = el("option", { value: v, text: t });
+    if (v === (config.portraitStyle === "new" ? "new" : "classic")) o.selected = true;
+    return o;
+  }));
   const introArt = el("select", {
     dataset: { test: "cfg-intro-art" },
     onchange: (e) => { config.introArtStyle = e.target.value; persist(); opts.onChange?.("introArtStyle", config.introArtStyle); },
@@ -366,6 +374,7 @@ export async function openConfig(opts = {}) {
       row("文字の速さ", speed),
       row("AUTOの速さ", autoSpeed),
       row("SKIPの範囲", skipMode),
+      row("会話の立ち絵", portraits),
       row("登場カットインの絵柄", introArt),
       row("登場カットインへの変身", introTransition),
       row("揺れ・閃光を減らす", reduceShake),

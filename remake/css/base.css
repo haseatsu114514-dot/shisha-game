@@ -571,6 +571,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .cc-copy { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .chapter-card.illustrated { background: #0b0812; overflow: hidden; }
 .chapter-card .cc-copy[hidden] { display: none; }
+.chapter-card.static-title .cc-name { animation: none; }
 .chapter-card .cc-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 
 /* 三つの場面転換。完全に覆った状態で画像のデコードを待つ。 */

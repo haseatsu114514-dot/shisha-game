@@ -113,6 +113,15 @@ export function playChapterPreview(key, { signal, sample } = {}) {
       role: "dialog", tabindex: "-1", "aria-modal": "true", "aria-label": entry.labels.aria,
       dataset: { test: "chapter-preview", phase: "loading", elapsed: "0" },
     }, [screen, el("div.preview-controls", [counter, sound, pause, skip]), el("div.preview-progress", { "aria-hidden": "true" }, [progress])]);
+    // 固定ステージの拡縮後も字幕16px・タッチ操作44px以上を確保する。
+    const fitSubtitles = () => {
+      const scale = root.getBoundingClientRect().width / 1280 || 1;
+      root.style.setProperty("--preview-subtitle-size", `${Math.max(27, 16 / scale)}px`);
+      root.style.setProperty("--preview-control-size", `${Math.max(18, 14 / scale)}px`);
+      root.style.setProperty("--preview-control-height", `${Math.max(44, 44 / scale)}px`);
+      root.classList.toggle("compact", scale < .65);
+    };
+    const resize = new ResizeObserver(fitSubtitles);
     let done = false, mounted = false, data = null, score = null;
     let time = 0, last = 0, frame = -1, raf = null, generation = 0;
     let userPaused = false, soundOff = !!(config.mute || config.muted) || !(config.bgmVolume > 0);
@@ -125,6 +134,8 @@ export function playChapterPreview(key, { signal, sample } = {}) {
       cancelAnimationFrame(raf);
       score?.stop();
       observer.disconnect();
+      resize.disconnect();
+      window.removeEventListener("resize", fitSubtitles);
       document.removeEventListener("visibilitychange", visibility);
       root.removeEventListener("keydown", key);
       window.removeEventListener("pagehide", abort);
@@ -138,9 +149,15 @@ export function playChapterPreview(key, { signal, sample } = {}) {
     const observer = new MutationObserver(() => { if (mounted && !root.isConnected) abort(); });
 
     function soundLabel() {
-      sound.textContent = musicWasDisabled ? "音量設定：消音" : soundOff ? "音を入れる" : "音を切る";
-      sound.setAttribute("aria-pressed", String(soundOff));
+      const state = score?.getAudioState() ?? "loading";
+      const blocked = state === "suspended";
+      const audioState = musicWasDisabled || soundOff ? "muted" : blocked ? "blocked" : state;
+      if (root.dataset.audio === audioState) return;
+      root.dataset.audio = audioState;
+      sound.textContent = musicWasDisabled ? "音量設定：消音" : soundOff || blocked ? "音を入れる" : "音を切る";
+      sound.setAttribute("aria-pressed", String(soundOff || blocked));
       sound.disabled = musicWasDisabled;
+      sound.title = blocked ? "映像は自動再生中です。音楽を有効にします" : "予告の音楽";
     }
 
     function synchronizePause() {
@@ -206,10 +223,11 @@ export function playChapterPreview(key, { signal, sample } = {}) {
         time += Math.min(Math.max(0, now - last), 250);
       }
       last = now;
+      soundLabel();
       root.dataset.elapsed = String(Math.round(time));
       progress.style.width = `${Math.min(100, time / data.duration * 100)}%`;
       const remaining = Math.max(0, Math.ceil((data.duration - time) / 1000));
-      counter.textContent = frame < 2 ? entry.labels.prologueCounter : `${entry.labels.counter}　${remaining}秒`;
+      counter.textContent = `${entry.labels.counter}　${remaining}秒`;
       let start = 0, index = data.frames.length - 1;
       for (let i = 0; i < data.frames.length; i++) {
         if (time < start + data.frames[i].duration) { index = i; break; }
@@ -229,7 +247,10 @@ export function playChapterPreview(key, { signal, sample } = {}) {
         const arts = [...new Set(next.frames.map(f => f.art).filter(Boolean))];
         const fontReady = new Promise(resolve => {
           const timeout = setTimeout(resolve, 4000);
-          document.fonts.load('400 30px "Chapter Preview Dot"', "水煙前線次回予告みんと")
+          Promise.all([
+            document.fonts.load('400 30px "Chapter Preview Dot"', "水煙前線次回予告みんと"),
+            document.fonts.load('400 27px "Chapter Preview Mincho"', "何があっても、わたしはここにいるから。"),
+          ])
             .catch(() => {}).finally(() => { clearTimeout(timeout); resolve(); });
         });
         const [loaded] = await Promise.all([
@@ -239,7 +260,7 @@ export function playChapterPreview(key, { signal, sample } = {}) {
         if (done || generation !== attempt) return;
         if (loaded.some(ok => !ok)) throw new Error("Preview image unavailable");
         data = entry.samples ? createChapterSample(next, sample ?? next.presentation) : next;
-        if (data.sample) root.classList.add(`sample-${data.sample}`);
+        if (data.sample || data.presentation) root.classList.add(`sample-${data.sample || data.presentation}`);
         root.dataset.sample = data.sample || "production";
         stopBgm(0.15);
         score = entry.score?.kind === "cue"
@@ -266,7 +287,19 @@ export function playChapterPreview(key, { signal, sample } = {}) {
 
     skip.addEventListener("click", () => finish("skipped"));
     pause.addEventListener("click", () => { userPaused = !userPaused; synchronizePause(); });
-    sound.addEventListener("click", () => { soundOff = !soundOff; score?.setMuted(soundOff); soundLabel(); });
+    sound.addEventListener("click", () => {
+      if (score?.getAudioState() === "suspended") {
+        soundOff = false; score.setMuted(false);
+        // resume() はこのユーザー操作の同期部分で呼ぶ。許可後は現在の映像へ曲を合わせる。
+        score.unlock().then(() => {
+          if (done) return;
+          score.seek(time / 1000);
+          if (userPaused || document.hidden) score.pause();
+          soundLabel();
+        });
+      } else { soundOff = !soundOff; score?.setMuted(soundOff); }
+      soundLabel();
+    });
     root.addEventListener("keydown", key);
     document.addEventListener("visibilitychange", visibility);
     window.addEventListener("pagehide", abort);
@@ -274,6 +307,9 @@ export function playChapterPreview(key, { signal, sample } = {}) {
     soundLabel();
     if (!host) { finish("aborted"); return; }
     host.append(root); mounted = true;
+    fitSubtitles();
+    window.addEventListener("resize", fitSubtitles);
+    resize.observe(document.getElementById("stage") || root);
     observer.observe(document.documentElement, { childList: true, subtree: true });
     root.focus({ preventScroll: true });
     prepare();

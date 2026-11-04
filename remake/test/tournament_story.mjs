@@ -10,8 +10,8 @@ DB.flavorById = { mint:{short_name:'ミント',heat_tolerance:1}, strawberry:{sh
 const cs={chapter:1,mix:{mint:8,strawberry:4},pack:'normal',tournamentStory:{servedAroma:85,seen:[]}};
 const text=(event,c=cs,r=()=>0)=>tournamentStoryDialogue(c,event,r).lines.map(l=>l.text).join('\n');
 for (const chapter of [1,2,3]) {
- const c={...cs,chapter}; assert.match(text('opening',c),chapter===1?/なる、アダム、みんと/:chapter===2?/ストロベリー/:/久世、スティーブ、ヴォルク/);
- assert.match(text('waiting',c),chapter===1?/なる選手/:chapter===2?/あげは選手/:/久世|スティーブ|ヴォルク/);
+ const c={...cs,chapter}; assert.match(text('opening',c),chapter===1?/なる、アダム、みんと/:chapter===2?/ストロベリー/:/綾取、スティーブ、ヴォルク/);
+ assert.match(text('waiting',c),chapter===1?/なる選手/:chapter===2?/あげは選手/:/綾取|スティーブ|ヴォルク/);
 }
 for (const event of ['opening','packed','waiting','tasting']) {
  const national=tournamentStoryDialogue({...cs,chapter:3,pull:{temp:.5},careHistory:[]},event,()=>.99);
@@ -29,7 +29,7 @@ assert.equal(new Set(['nagumo','emil','dr_kemuri'].map(id=>JUDGE_LOOK[id].color)
 assert.match(feedbackLine('emil','pull',evaluationOf(90)),/奥の味/);
 const nationalBroadcast=JSON.parse(fs.readFileSync(new URL('../data/broadcast.json',import.meta.url))).chapter3;
 assert(nationalBroadcast.rivalComments.length && nationalBroadcast.rivalFeed.length);
-assert(!/なる選手|あげは|神崎|REI|アダム|みんと/.test(JSON.stringify(nationalBroadcast)));
+assert(!/なる選手|あげは|神崎|レヰ|アダム|みんと/.test(JSON.stringify(nationalBroadcast)));
 for (const [pack,expected] of [['fluffy',/ふわっと/],['normal',/均等/],['firm',/しっかり/]]) {
  const lines=text('packed',{...cs,pack});assert.match(lines,expected);assert.match(lines,/ミント 8g、ストロベリー 4g/);
  assert(!/成功|失敗|完璧/.test(lines));
@@ -115,7 +115,7 @@ for (const event of ['interlude_pull','interlude3']) {
 const ch2Broadcast=JSON.parse(fs.readFileSync(new URL('../data/broadcast.json',import.meta.url))).chapter2;
 for (const step of ['holes','heat','steam','pull','care']) for (const kind of ['perfect','great','good','miss'])
  assert(ch2Broadcast.completion[step][kind].length,`chapter2 completion ${step}.${kind}`);
-assert(!/なる選手|アダム|みんと|久世|スティーブ|ヴォルク|エミル/.test(JSON.stringify(ch2Broadcast)),'chapter2 broadcast used another chapter cast');
+assert(!/なる選手|アダム|みんと|綾取|スティーブ|ヴォルク|エミル/.test(JSON.stringify(ch2Broadcast)),'chapter2 broadcast used another chapter cast');
 const nationalInterludeSpeakers=[1,2].flatMap(n=>tournamentStoryDialogue({...cs,chapter:3},`interlude${n}`,()=>0).lines.map(l=>l.speaker));
 assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageha','kumicho','rei'].includes(s)),
  'Chapter 3 interludes used an earlier rival or judge');
@@ -215,7 +215,7 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
  assert.equal(JSON.stringify(c4),before,'Chapter 4 dialogue must not alter craft/results');
  // 客席のコメント: 第1〜3章の顔ぶれを出さず、工程×出来ごとに2本以上。調整のコメントは1回目・2回目のどちらでも出る。
  const world=JSON.parse(fs.readFileSync(new URL('../data/broadcast.json',import.meta.url))).chapter4;
- assert.doesNotMatch(JSON.stringify(world),/久世|スティーブ|ヴォルク|あげは|神崎|REI|アダム|みんと|\d+点/);
+ assert.doesNotMatch(JSON.stringify(world),/綾取|スティーブ|ヴォルク|あげは|神崎|レヰ|アダム|みんと|\d+点/);
  for (const step of ['holes','heat','steam','pull','care']) for (const kind of ['perfect','great','good','miss'])
   assert(world.completion[step][kind].length>=2,`chapter4 completion ${step}.${kind}`);
  for (const kind of ['perfect','good','miss']) assert(world.nico[kind].length>=5,`chapter4 nico ${kind}`);

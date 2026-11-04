@@ -14,7 +14,7 @@ export function flavorTag(flavor) {
   ]);
 }
 
-/** 苗字と名前の区切り。正本の名前（例「久世 朔（くぜ さく）」）に、表示名を空白で分けた形があれば [苗字, 名前] */
+/** 苗字と名前の区切り。正本の名前（例「綾取 朔（あやとり さく）」）に、表示名を空白で分けた形があれば [苗字, 名前] */
 export function nameParts(id, main) {
   const full = String(DB.characters?.[id]?.name || "");
   for (const m of full.matchAll(/([^\s/（）()・]+)[ 　]([^\s/（）()・]+)/g)) {

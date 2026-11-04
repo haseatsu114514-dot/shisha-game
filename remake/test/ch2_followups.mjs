@@ -188,14 +188,14 @@ for (const id of ids) {
   assert.equal(state.flags._ch2_followup_done[id], true);
 }
 
-// あげはの店に通う回は、神崎・REIの段階会話と同じ+16。いつもの会話だけ+8（VOL06・AFB01）。
+// あげはの店に通う回は、神崎・レヰの段階会話と同じ+16。いつもの会話だけ+8（VOL06・AFB01）。
 {
   await setup(1); state.flags._ch2_followup_done = { ageha: true };
   agehaStory = "remake_ch2_ageha_gyaru";
   DB.dialogues.remake_ch2_ageha_gyaru = { dialogue_id: agehaStory, lines: [{ speaker: "ageha", face: "smile", text: "a" }] };
   assert.equal((await visit("ageha")).used, true);
   assert.equal(played.at(-1), agehaStory);
-  assert.deepEqual(state.affinity, [["ageha", 16]], "An Ageha story visit gains like the Kanzaki/REI stages");
+  assert.deepEqual(state.affinity, [["ageha", 16]], "An Ageha story visit gains like the Kanzaki/レヰ stages");
   assert.equal(state.flags._ch2_read_remake_ch2_ageha_gyaru, true);
   agehaStory = null;
   await visit("ageha");
@@ -230,7 +230,7 @@ for (const id of validatedIds) {
   assert.deepEqual(loaderDB.dialogues, { preserved: true });
 }
 fixture = preparation; await loader.namespace.loadPreparationDialogues();
-// 31 本 + あげはの♥3の質問（#1988）＋あげは♥5の締めくくり（#2023）+ 神崎・REIの小会話6本と締めくくり2本（#2027）
+// 31 本 + あげはの♥3の質問（#1988）＋あげは♥5の締めくくり（#2023）+ 神崎・レヰの小会話6本と締めくくり2本（#2027）
 // + あげはの小会話3本と地元の第2章の会話7本、tonariの大会準備9本（VOL13）＋中間の確認4本（#2032）
 assert.equal(Object.keys(loaderDB.dialogues).length, 64 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
 for (const suffix of ["b", "c", "d"]) assert(loaderDB.dialogues[`remake_ch2_ageha_repeat_${suffix}`], `ageha small talk ${suffix}`);
@@ -273,7 +273,7 @@ for (const id of ["kumicho", "rei"]) {
 }
 console.log("PASS: actual preparation/loader, three owners, old saves, once-only followups, cancellation/LOAD, atomic preflight");
 
-// #2027: 神崎・REIの小会話は4種を巡回し、その前だけ昼夜の店のあいさつ。訪問列を読み終えた♥5で締めくくり、定休日は入れない。
+// #2027: 神崎・レヰの小会話は4種を巡回し、その前だけ昼夜の店のあいさつ。訪問列を読み終えた♥5で締めくくり、定休日は入れない。
 const allStoriesRead = id => { for (const entry of CH2_VISIT_STORIES[id]) {
   if (entry.done) (state.flags[entry.done] ||= {})[id] = true; else state.flags[`_ch2_read_${entry.scene}`] = true;
 } };

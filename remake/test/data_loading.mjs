@@ -102,7 +102,13 @@ for (const id of ["baito_tsumugi_01", "baito_minto_romance", "baito_ageha_romanc
   assert(!all.DB.baito.some(event => event.id === id), `未接続の物語イベントを一括解放しない: ${id}`);
 }
 assert(Array.isArray(all.DB.gallery.items), "the approved gallery catalog is loaded from real data");
-assert.equal(all.DB.characters.hiyori.name, "朝霧ひより");
+assert.equal(all.DB.characters.hiyori.name, "薄羽ひより");
+assert.equal(all.DB.characters.hiyori.reading, "うすば ひより");
+assert.equal(all.DB.characters.kuze.name, "綾取 朔（あやとり さく）");
+assert.equal(all.DB.characters.rei.reading, "あそう れい");
+assert.equal(all.realName("kuze"), "綾取朔");
+assert.equal(all.realName("rei"), "鴉葬レヰ");
+assert.equal(all.realName("hiyori"), "ひより");
 assert.equal(all.DB.characters.hiyori.age, 25);
 assert.equal(all.DB.hiyori.route, undefined);
 assert.equal(all.DB.dialogues.hiyori_meeting, undefined);

@@ -47,7 +47,7 @@ function rngFrom(seed) {
   };
 }
 
-/** 挑戦ごとに一度だけ決めて保存する試喫順。久世は先を狙うが確定はしない。 */
+/** 挑戦ごとに一度だけ決めて保存する試喫順。綾取は先を狙うが確定はしない。 */
 export function buildTastingPlan(seed) {
   const random = rngFrom(seed);
   return SPEND.map(() => Object.fromEntries(JUDGES.map(judge => {
@@ -126,7 +126,7 @@ export function finishStep(value, craft) {
   return finishTournamentStep(p, craft);
 }
 
-/** 久世の直後の一口だけが、無給水なら比較される。相手と符号は審査員ごとに違う。 */
+/** 綾取の直後の一口だけが、無給水なら比較される。相手と符号は審査員ごとに違う。 */
 export function tastingEffect(plan, judge) {
   const order = plan?.order;
   const profile = JUDGE_PROFILES[judge];

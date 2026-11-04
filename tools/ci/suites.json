@@ -10,6 +10,23 @@
   ],
   "suites": [
     {
+      "id": "portrait-style",
+      "title": "Classic/new portrait selection, expression fallback and config persistence",
+      "kind": "quick",
+      "run": [
+        "node --experimental-vm-modules remake/test/portrait_style.mjs"
+      ]
+    },
+    {
+      "id": "portrait-style-browser",
+      "title": "Portrait setting on desktop/touch, partial artwork, companions and save isolation",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 5,
+      "paths": ["remake/js/core/portrait-style.js", "remake/js/core/data.js", "remake/js/core/state.js", "remake/js/scenes/title.js", "remake/js/vn/engine.js", "remake/test/browser/portrait_style.mjs"],
+      "run": ["node remake/test/browser/portrait_style.mjs"]
+    },
+    {
       "id": "craft-result-card",
       "title": "Craft result card data, layout and PNG rendering",
       "kind": "quick",
@@ -3860,5 +3877,3 @@
     }
   ]
 }
-
-
