@@ -693,6 +693,8 @@
         "node --experimental-vm-modules remake/test/water_setup_helper.mjs",
         "node remake/test/water_setup_lifetime.mjs",
         "node remake/test/steam_heart.mjs",
+        "node remake/test/steam_patterns.mjs",
+        "node remake/test/steam_mind.mjs",
         "node remake/test/venue_hours.mjs",
         "node remake/test/ch2_progress.mjs",
         "node --experimental-vm-modules remake/test/ch2_followups.mjs",
