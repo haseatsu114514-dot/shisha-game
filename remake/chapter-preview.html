@@ -8,7 +8,6 @@
 <link rel="icon" href="../icon.svg">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/daily.css">
-<link rel="stylesheet" href="css/chapter-preview.css">
 <style>
 #shell { position:fixed; inset:0; overflow:hidden; }
 .preview-intro { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; background:radial-gradient(ellipse at 50% 45%,#242538,#090b12 70%); text-align:center; }
@@ -24,13 +23,14 @@ import { el } from "./js/core/util.js";
 import { initLayers } from "./js/core/ui.js";
 import { loadConfig } from "./js/core/state.js";
 import { unlockAudio } from "./js/core/audio.js";
-import { playChapterPreview, PREVIEWS } from "./js/chapters/chapter-preview.js";
-// ?ch= で予告を切り替える（キーは登録表 PREVIEWS のキー＝次章の番号。既定は第1章末の ch2）。
+import { chapterTitle } from "./js/core/ui.js";
+import { CHAPTER_TITLE_ART } from "./js/core/chapter-title-art.js";
+// 旧予告URLも、現在は既存の章タイトルコールだけを表示する。
 const TITLES = { ch2: "第二章『才能の壁』", ch3: "第三章『嘘つきたちの夜』",
   ch4: "第四章『継承の煙』", ch5: "第五章『機械仕掛けの神』" };
 const requested = new URLSearchParams(location.search).get("ch");
-const key = PREVIEWS[requested] ? requested : "ch2";
-document.title = `${TITLES[key]} 次回予告 — 水煙前線 -EN:CODE-`;
+const key = TITLES[requested] ? requested : "ch2";
+document.title = `${TITLES[key]} タイトルコール — 水煙前線 -EN:CODE-`;
 const stage = document.getElementById("stage");
 function fit() {
   const width = visualViewport?.width || innerWidth, height = visualViewport?.height || innerHeight;
@@ -39,16 +39,20 @@ function fit() {
 fit(); addEventListener("resize", fit); visualViewport?.addEventListener("resize", fit); initLayers(); loadConfig();
 async function replay() {
   document.getElementById("screen").replaceChildren();
-  const result = await playChapterPreview(key);
-  const button = el("button.btn.primary", { type: "button", text: "次回予告をもう一度", dataset: { test: "preview-start" } });
+  const chapter = Number(key.slice(2));
+  const entry = CHAPTER_TITLE_ART.find(entry => entry.chapter === chapter) || {
+    no: "第三章", name: "嘘つきたちの夜", read: "SMOKE AND MIRRORS", sub: "HAZE: NATIONAL TOKYO 編",
+  };
+  await chapterTitle(entry);
+  const button = el("button.btn.primary", { type: "button", text: "タイトルコールをもう一度", dataset: { test: "preview-start" } });
   const ended = el("div.preview-intro", { dataset: { test: "preview-ended" } }, [
-    el("p.preview-finished", { text: result === "aborted" ? "予告を中断しました。" : "次回予告 終了" }), button,
+    el("p.preview-finished", { text: "タイトルコール 終了" }), button,
   ]);
   document.getElementById("screen").replaceChildren(ended);
   button.addEventListener("click", () => { unlockAudio(); void replay(); });
   button.focus({ preventScroll: true });
 }
-// 最初の画面は予告そのもの。音がブラウザに止められた場合だけ、共通プレイヤーの音ボタンで解放する。
+// 開くとタイトルコールだけを表示する。初回の音声はブラウザの制限に従う。
 void replay();
 // 本編のセーブ・報酬・既読は読み書きしない。
 </script>

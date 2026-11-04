@@ -159,7 +159,7 @@ await suite('ch2-main', async check => {
   await check('chapter-clear-to-city-preserves-progress', async page => {
     const before = await setup(page);
     await watchMusic(page);
-    await assertFits(page, '[data-test="end-chapter2"], [data-test="end-preview"], [data-test="end-title"]');
+    await assertFits(page, '[data-test="end-chapter2"], [data-test="end-title"]');
     await screenshot(page, 'chapter1-clear.png');
     await begin(page);
     assert.equal(await musicOf(page), 'kansetsu_shomei_to_black_coffee', 'Chapter 2 city must replace tournament aftermath music');

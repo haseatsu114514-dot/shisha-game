@@ -29,7 +29,6 @@ import { chapterFourMapModel } from "./ch4-map-model.js";
 import { openShop } from "../daily/shop.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
 import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionCandidates, overseasCompanion } from "../core/overseas-companion.js";
-import { playChapterPreview } from "./chapter-preview.js";
 import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview } from "./ch4-verdict.js";
 import { craftReviewLines } from "../craft/advice.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
@@ -582,40 +581,8 @@ function renderComplete(owner) {
     const mod = await import("./ch5.js");
     await mod.beginChapterFive();
   }, true);
-  const replay = button(owner, "次回予告をもう一度", "complete-preview", () => preview(false));
-  // 外側の busy(false) は data-locked を見て disabled を再設定するため、両方を連動させる。
-  const lock = (btn, locked) => { if (btn.dataset) btn.dataset.locked = String(locked); btn.disabled = locked; };
-  lock(next, !state.flags._ch4_preview_seen);
-  // 予告3（第4章末→第5章）。設計 7-4: 「第5章へ進む」は予告の終了後にだけ押せる。
-  // 完走/明示スキップのときだけ既読を保存し、中断・別画面への遷移では何も残さない。
-  const preview = async (first) => {
-    const controller = new AbortController();
-    // MutationObserver の無い環境（Node VM の単体テスト等）では監視なしで再生だけを試みる。
-    let observer;
-    if (typeof MutationObserver !== "undefined") {
-      observer = new MutationObserver(() => { if (!next.isConnected) controller.abort(); });
-      observer.observe(layers.screen, { childList: true });
-    }
-    lock(next, true); lock(replay, true);
-    try {
-      const result = await playChapterPreview("ch5", { signal: controller.signal });
-      if (first && (result === "completed" || result === "skipped") && current(owner) && state.phase === "cleared") {
-        state.flags._ch4_preview_seen = true;
-        save();
-      }
-    } catch { /* 次回予告は任意演出。失敗しても完了画面はそのまま使える。 */ }
-    finally {
-      observer?.disconnect();
-      lock(next, !state.flags._ch4_preview_seen); lock(replay, false);
-      if (next.isConnected) {
-        playBgm("tonari");
-        replay.focus();
-      }
-    }
-  };
   card(owner, "complete", "第四章・完", chapterFourRecap(state), [
     next,
-    replay,
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
   ], "第五章・機械仕掛けの神へ進めます。", "",
@@ -624,7 +591,6 @@ function renderComplete(owner) {
     chapterGrowthChart(state, 300),
     el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
   ]));
-  if (!state.flags._ch4_preview_seen) void preview(true);
 }
 
 function renderError(owner) {
