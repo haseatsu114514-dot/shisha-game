@@ -22,7 +22,18 @@ const context=vm.createContext({AbortController,setTimeout,clearTimeout,Promise,
     return {dialogues:[]};
   }})});
 const dataModule=new vm.SourceTextModule(await read('js/core/data.js'),{context});
-await dataModule.link(spec=>{assert.equal(spec,'./fortune-effects.js','unexpected data import');return new vm.SyntheticModule(['registerFortuneReadings'],function(){this.setExport('registerFortuneReadings',()=>{});},{context});});await dataModule.evaluate();
+await dataModule.link(async spec => {
+  if (spec === './portrait-style.js') {
+    const module = new vm.SourceTextModule(await read('js/core/portrait-style.js'), { context });
+    await module.link(() => { throw Error('unexpected portrait-style import'); });
+    return module;
+  }
+  assert.equal(spec, './fortune-effects.js', 'unexpected data import');
+  return new vm.SyntheticModule(['registerFortuneReadings'], function () {
+    this.setExport('registerFortuneReadings', () => {});
+  }, { context });
+});
+await dataModule.evaluate();
 const data=dataModule.namespace;await data.loadAll();
 assert.equal(data.DB.samechan.spot.label,'SHISHARK');assert.equal(data.DB.characters.samechan.id,'samechan');
 const firstShop = story.dialogues.find(d=>d.dialogue_id==='samechan_shop_first');

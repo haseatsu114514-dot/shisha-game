@@ -2,6 +2,7 @@
 // 旧版と localStorage を共有しないよう、キーはリメイク専用。
 // 状態の形を変えたら SCHEMA を上げ、migrate() に1段足す（互換コードはここだけに置く）。
 
+import { setPortraitStyleSource } from "./portrait-style.js";
 import { MAX_MONEY, TOURNAMENT_DAY } from "./rules.js";
 import { MASTERY_THRESHOLDS, learnFlavorStory } from "./flavor-mastery.js";
 import { emit } from "./bus.js";
@@ -493,6 +494,7 @@ export function wipeSave() {
 
 // ---------------------------------------------------------------- 設定（セーブとは別）
 export const config = {
+  portraitStyle: "classic", // 現行を既定に保ち、新絵は任意で比較する端末設定
   uiTheme: "paper",    // 会話枠と共通UI。ゲームの進行とは別の端末設定（既定は紙とラベンダー・DUI08）。
   mute: false,       // すべての音を一時的に消す（旧キー muted は読み込み時に mute へ統一）
   bgmVolume: 0.5,
@@ -511,11 +513,14 @@ export const config = {
   staffRollSeen: false, // スタッフロールを一度最後まで見たか。見た端末では2回目から飛ばせる（#517）
 };
 
+setPortraitStyleSource(() => config.portraitStyle);
+
 export function loadConfig() {
   try {
     Object.assign(config, JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}"));
   } catch { /* noop */ }
   if ("muted" in config) { config.mute = !!(config.mute || config.muted); delete config.muted; }
+  if (!["classic", "new"].includes(config.portraitStyle)) config.portraitStyle = "classic";
   return config;
 }
 

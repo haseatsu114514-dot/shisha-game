@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 const [root='.',out=null,...opts]=process.argv.slice(2);
 const clone=x=>JSON.parse(JSON.stringify(x));
 const dialogues=Object.fromEntries(JSON.parse(fs.readFileSync(`${root}/data/dialogue/remake_ch1.json`)).dialogues.map(d=>[d.dialogue_id,d]));
-const real=new Set(['chapters/ch1.js','core/state.js','craft/practice.js','craft/practice-history.js','daily/night-events.js','chapters/naru-match.js']);
+const real=new Set(['chapters/ch1.js','core/state.js','core/portrait-style.js','craft/practice.js','craft/practice-history.js','daily/night-events.js','chapters/naru-match.js']);
 const ticks=async()=>{for(let i=0;i<8;i++)await Promise.resolve()};
 async function harness({route='first',holdAt=null,breakAt=null,broken='cancel',craftMode='success',storageWritable=true,day=3}={}){
  const modules=new Map(),synth=new Map(),memory=new Map(),writes=[],entries=[],choiceScenes=[],steps=[],sessions=[],retired=[],ownerNumbers=new WeakMap();
