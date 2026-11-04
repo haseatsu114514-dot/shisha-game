@@ -51,6 +51,9 @@
 | 画像・CG・立ち絵 | `.claude/skills/codex-image-prompt`、`portrait-fix`、`character-portrait-remaster`、`asset_ai_guidance.md`。立ち絵の頭身・顔アイコン・画風・参照画像は [portrait_standard.md](portrait_standard.md)、背景の画素数・画風・台帳は [background_standard.md](background_standard.md)。シーシャ機材が写るなら [shisha_reference.md §4](shisha_reference.md#4-画像生成の必須手順機材の形と構造) |
 | BGM | `.claude/skills/suno-bgm-prompt`、`prompts/bgm_suno_prompts.md` |
 | オーナーの要望・バグ報告 | `.claude/skills/owner-request`、`owner_requests.md` |
+| Issueの完了済み・残件・保留の整理 | `.claude/skills/issue-triage`（本文・最新コメント・関連PR・mainを照合） |
+| 既存PRのレビュー対応からマージまで | `.claude/skills/pr-to-merge`（依存順・現HEADのCIと指摘・保留を確認） |
+| Issueのタスク分解から実装・PR・マージまで | `.claude/skills/issue-to-merge`（`issue-triage` と `pr-to-merge` をつなぎ、要望は `owner-request`、検証は `web-build-test` を再利用） |
 | テスト・CI | `.claude/skills/web-build-test`、`remake/README.md`、`tools/ci/suites.json` |
 | 開発者コンソールの補助 | `tools/dev_inspector.md`、`tools/dev_event_preview.md`、`tools/dev_event_rehearsal.md`、`tools/remake_browser_checks.md` |
 
