@@ -52,6 +52,7 @@ import { playChapterPreview } from "./ch1-preview.js";
 import { craftRecognition } from "../craft/recognition.js";
 import { playCh1Title } from "./ch1-title-motion.js";
 import { giveSumiRig, giveEarlyHomeRig } from "../daily/home-rig.js";
+import { judgeNaruMatch, naruMatchReviewLines } from "./naru-match.js";
 import { configureFirstBrew, firstBrewOrder, rememberFirstBrew, serveFirstBrew } from "./first-brew.js";
 import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
 
@@ -456,8 +457,12 @@ function earlyPractice() {
   return task;
 }
 
+// #1089: 新しく始めたDAY7は、なるとの一台勝負（スミ審査）。仕入れだけの選択肢は出さない。
+// 旧版で導入を読み終えていた保存（introRead）は、従来の中間準備（仕入れだけ／通し）をそのまま続ける。
 async function midPreparation() {
   const progress = state.flags._ch1_mid ||= {};
+  if (!progress.introRead && !progress.naruMatch) { progress.naruMatch = true; save(); }
+  if (progress.naruMatch) return naruMatch(progress);
   if (!progress.introRead) {
     await play("remake_midcheck_intro", { bg: TONARI_N });
     progress.introRead = true;
@@ -493,6 +498,55 @@ async function midPreparation() {
     save();
   }
   // 家シーシャ（#638）: 中盤の修行のあと、スミさんが「これやる」とミャアの卓上台を譲る（一度だけ・途中から再開しても渡す）
+  await giveSumiRig({ bg: TONARI_N });
+}
+
+// なるの一台は操作させず、工程の節目に短い一言だけ並べる（二台目の作業台は作らない）。
+const NARU_MATCH_ASIDES = {
+  mix: "なる「俺はいつもの線でいく。崩れねえのが取り柄だ」",
+  heat: "なる「立ち上がりの三分は我慢だ。そこ越えたら化ける」",
+  pull: "なる「……っし、出した。お前は？」",
+};
+
+async function naruMatch(progress) {
+  const owner = state, chapter = owner.chapter, day = owner.day, slot = owner.slot;
+  const requireCurrent = () => {
+    if (state !== owner || owner.chapter !== chapter || owner.day !== day || owner.slot !== slot || owner.flags._ch1_mid !== progress) {
+      throw new DOMException("DAY7 naru match interrupted", "AbortError");
+    }
+  };
+  const read = async (scene) => {
+    requireCurrent();
+    const result = await play(scene, { bg: TONARI_N });
+    requireCurrent();
+    if (!result || result.cancelled) throw new DOMException("DAY7 naru match dialogue interrupted", "AbortError");
+  };
+  if (!progress.inviteRead) {
+    await read("remake_naru_match_invite");
+    progress.inviteRead = true;
+    save();
+  }
+  if (!progress.stockDone) { await prepareFlavorStock(); requireCurrent(); progress.stockDone = true; save(); }
+  if (!progress.practiceDone) {
+    beginEvePractice(progress);
+    const cs = await runFullPractice({ kind: "midcheck", note: "なるとの一台勝負（スミさん審査）",
+      onStep: (step) => { if (NARU_MATCH_ASIDES[step]) toast(NARU_MATCH_ASIDES[step], { ms: 3200 }); },
+      isCurrent: () => { requireCurrent(); return true; } });
+    requireCurrent();
+    if (!cs || cs.cancelled) throw new DOMException("DAY7 naru match interrupted", "AbortError");
+    // 提供前に崩れても勝負は講評まで進む（負け扱い）。結果は保存して、LOAD後も同じ講評を読む。
+    progress.failed = cs.failed || null;
+    progress.match = judgeNaruMatch(cs, cs.failed ? null : computeShisha(cs));
+    progress.practiceDone = true;
+    save();
+  }
+  if (!progress.feedbackRead) {
+    if (progress.failed) await read("remake_preparation_failed");
+    const review = DB.dialogues.remake_naru_match_review;
+    await read({ ...review, lines: naruMatchReviewLines(review, progress.match || { result: "draw", heat: "naru", served: "unknown" }), branches: {} });
+    progress.feedbackRead = true;
+    save();
+  }
   await giveSumiRig({ bg: TONARI_N });
 }
 

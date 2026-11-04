@@ -3685,6 +3685,301 @@
       }
     },
     {
+      "dialogue_id": "remake_naru_match_invite",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のtonari。閉店の札を出したところで、ドアが開いた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_naru",
+          "next_true": "known",
+          "next_false": "new"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "俺が呼んだ。大会まであと{daysLeft}日だ。今夜は、二人で一台ずつ作れ"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "スミさんに吸い比べてもらおうぜ。同じ日に同じ人が吸えば、違いがはっきりする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "勝負、ってことですか"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "そう硬くなるな。まあ、俺は負ける気ねえけどな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（気さくな人だ。でも、ここで引き下がりたくない）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "よろしくお願いします。本気で作ります"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "おう。持っていく香りを選んだら、あとは手だけ動かせ"
+        }
+      ],
+      "branches": {
+        "new": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "おー、ここがtonariか。スミさん、来たよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（スミさんの知り合い……？）"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "俺はなる。KEMURIKUSAってとこでやってる。SMOKE CROWN CUP、俺も出る"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "tonariでバイトしてる蒸野はじめです。大会、俺も出ます"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_met_naru"
+          }
+        ],
+        "known": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "よう、はじめ。スミさんに呼ばれてさ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_naru_match_review",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……あいつと並べると、自分の煙がよく見えるだろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。どこを詰めればいいか、分かった気がします"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "大会まであと{daysLeft}日だ。どこを磨くかは、お前が決めろ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ただし、寝ること。それも仕込みのうちだ"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 2
+          }
+        }
+      ],
+      "branches": {
+        "open": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "二人の一台が、カウンターに並んだ。スミさんが、順に吸い比べる。"
+          },
+          {
+            "speaker": "sumi",
+            "face": "serious",
+            "text": "……よし。まず熱だ"
+          }
+        ],
+        "open_failed": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "カウンターに残ったのは、なるさんの一台だけだった。スミさんが、ゆっくり吸う。"
+          },
+          {
+            "speaker": "sumi",
+            "face": "serious",
+            "text": "焦がした台は、客に出せない。まず熱だ"
+          }
+        ],
+        "heat_hajime": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "なるのは芯が据わってる。崩れがない"
+          },
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "はじめ、お前も今日は熱を詰めてきたな。芯で負けてない"
+          }
+        ],
+        "heat_naru": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "なるのは芯が据わってる。崩れがない"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "はじめ、熱がまだ揺れてる。芯はなるが上だ"
+          }
+        ],
+        "heat_failed": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "はじめ、炭と葉の距離を見失ったな。熱は、なるが一枚上だ"
+          }
+        ],
+        "served_ideal": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "出した時の温度は、どっちも落ち着いてた。客を待たせねえ温度だ"
+          }
+        ],
+        "served_hot": [
+          {
+            "speaker": "sumi",
+            "face": "serious",
+            "text": "はじめ、出した時に熱が前へ出た。最初の一口が痛い"
+          }
+        ],
+        "served_cold": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "はじめ、出した時は香りがまだ遠かった。もう一段、立たせたかったな"
+          }
+        ],
+        "served_unknown": [],
+        "result_win": [
+          {
+            "speaker": "sumi",
+            "face": "serious",
+            "text": "……今日の一台は、はじめだ"
+          }
+        ],
+        "result_draw": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "……決めきれねえな。今日は引分けだ"
+          }
+        ],
+        "result_lose": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "今日の一台は、なるだ。基礎の堅さで、まだ差がある"
+          }
+        ],
+        "naru_win": [
+          {
+            "speaker": "naru",
+            "face": "surprise",
+            "text": "……マジか"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "へえ、やるじゃねえか。悔しいけど、今日のお前の一台はもう一口吸いたくなる"
+          },
+          {
+            "speaker": "naru",
+            "face": "serious",
+            "text": "次は負けねえ。本番まで覚えとけよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "……はい。本番でも、負けません"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "なるさんは片手を上げて、店を出ていった。"
+          }
+        ],
+        "naru_draw": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "引分けかよ。……張り合いが出てきたじゃねえか"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "決着は本番だな。それまでに、もっと詰めてこい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "はい。次は、はっきり勝ちます"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "なるさんは片手を上げて、店を出ていった。"
+          }
+        ],
+        "naru_lose": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "まあ、まだ俺の方が堅いな。でも、伸びてるのは分かった"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "本番までに詰めてこい。張り合いがねえと困る"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……はい。次は、もっといい煙を出します"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "なるさんは片手を上げて、店を出ていった。"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "remake_preparation_failed",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
