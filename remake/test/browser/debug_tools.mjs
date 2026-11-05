@@ -9,6 +9,73 @@ const openPanel = async page => {
 };
 
 await suite("debug-tools", async check => {
+  for (const touch of [false, true]) {
+    await check(`portrait-style-shares-config-without-changing-progress-${touch ? "touch" : "desktop"}`, async page => {
+      await page.evaluate(async () => {
+        const core = await import("./js/core/state.js");
+        const { play, clearLog } = await import("./js/vn/engine.js");
+        const { markIntroSeen } = await import("./js/vn/intro.js");
+        core.newGame(); core.save(); core.saveToSlot(core.SAVE_SLOTS[1].key);
+        core.config.textSpeed = 4;
+        for (const id of ["minto", "kuyuri"]) markIntroSeen(id);
+        clearLog();
+        void play({ dialogue_id: "debug-portrait-style-fixture", lines: [
+          { speaker: "minto", face: "normal", text: "画風を比べます" },
+          { speaker: "kuyuri", face: "normal", text: "進行は変えません" },
+        ] });
+      });
+      await page.locator(".vn-next.show").waitFor();
+      const snapshot = () => page.evaluate(async () => {
+        const { state } = await import("./js/core/state.js");
+        const { backlog } = await import("./js/vn/engine.js");
+        const storage = Object.fromEntries(Object.entries(localStorage).filter(([key]) => key !== "suien_remake_config"));
+        return { state: JSON.stringify(state), storage, log: JSON.stringify(backlog()),
+          text: document.querySelector(".vn-text").innerHTML,
+          people: [...document.querySelectorAll(".vn-portraits img")].map(i => [i.dataset.speaker, i.dataset.face, i.dataset.pos, i.classList.contains("active")]) };
+      });
+      const before = await snapshot();
+      await openPanel(page);
+      const select = page.locator(t("debug-portrait-style"));
+      for (const style of ["new", "nanami", "classic", "nanami", "new"]) {
+        await select.selectOption(style);
+        await page.waitForFunction(() => [...document.querySelectorAll(".vn-portraits img")].every(i => i.complete && i.naturalWidth > 0));
+        const actual = await page.locator('.vn-portraits img[data-speaker="minto"]').getAttribute("src");
+        if (style === "classic") assert.match(actual, /sprites\/characters\/minto\//);
+        else assert.match(actual, new RegExp(`character_variants/${style}/minto/`));
+        assert.deepEqual(await snapshot(), before, "DBG changes only the shared device setting");
+        assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_config")).portraitStyle), style);
+      }
+      await page.locator(t("debug-toggle")).click();
+      await page.locator(t("vn-config")).click();
+      assert.equal(await page.locator(t("cfg-portrait-style")).inputValue(), "new");
+      await page.locator(t("cfg-portrait-style")).selectOption("classic");
+      await page.locator(t("cfg-close")).click();
+      await openPanel(page);
+      assert.equal(await select.inputValue(), "classic", "DBG syncs changes from normal CONFIG");
+      await select.selectOption("nanami");
+      await page.locator(t("debug-toggle")).click();
+      await page.waitForTimeout(350);
+      await page.locator(".vn-text").click();
+      await page.waitForFunction(() => document.querySelector(".vn-text").textContent === "進行は変えません");
+      await page.waitForFunction(() => [...document.querySelectorAll(".vn-portraits img")].every(i => i.complete && i.naturalWidth > 0));
+      const fallbackBefore = await snapshot();
+      const oldSrc = await page.locator('.vn-portraits img[data-speaker="kuyuri"]').getAttribute("src");
+      await openPanel(page);
+      await select.selectOption("new");
+      assert.equal(await page.locator('.vn-portraits img[data-speaker="kuyuri"]').getAttribute("src"), oldSrc, "Unregistered art keeps the classic portrait");
+      assert.deepEqual(await snapshot(), fallbackBefore);
+      const bounds = await select.boundingBox();
+      const panel = await page.locator(t("debug-panel")).boundingBox();
+      assert(bounds && panel && bounds.x >= panel.x && bounds.x + bounds.width <= panel.x + panel.width);
+      const storageBeforeReload = (await snapshot()).storage;
+      await page.reload({ waitUntil: "load" });
+      await page.locator(t("title-new")).waitFor();
+      await openPanel(page);
+      assert.equal(await select.inputValue(), "new", "Selection survives reload");
+      assert.deepEqual(await page.evaluate(() => Object.fromEntries(Object.entries(localStorage).filter(([key]) => key !== "suien_remake_config"))), storageBeforeReload);
+    }, { viewport: touch ? { width: 844, height: 390 } : { width: 1280, height: 720 }, hasTouch: touch });
+  }
+
   await check("shown-with-debug-1-and-gone-with-debug-0", async page => {
     await page.locator(t("debug-toggle")).waitFor();
     await openPanel(page);

@@ -1032,15 +1032,7 @@ async function openSettings() {
   try {
     await openVnConfig({
       onChange(key) {
-        if (key === "portraitStyle" && running) {
-          // 進行・LOG・左右の並びは変えず、今出ている人物をその場で比較する。
-          for (const image of dom.portraits.querySelectorAll("img")) {
-            const info = portraitInfo(image.dataset.speaker, image.dataset.face);
-            if (!info) continue;
-            image.src = info.src;
-            frame(image, info);
-          }
-        }
+        if (key === "portraitStyle") refreshPortraits();
         if (key === "uiTheme") nameFit?.fit();
         if (key === "textSpeed" && running?.typing && config.textSpeed >= 4) completeTyping();
       },
@@ -1051,7 +1043,19 @@ async function openSettings() {
   kickAuto();
 }
 
+/** 設定とDBG共通。会話の進行・LOG・人物の並びは変えず、表示中の画風だけ更新する。 */
+function refreshPortraits() {
+  if (!running) return;
+  for (const image of dom.portraits.querySelectorAll("img")) {
+    const info = portraitInfo(image.dataset.speaker, image.dataset.face);
+    if (!info) continue;
+    image.src = info.src;
+    frame(image, info);
+  }
+}
+
 export const isPlaying = () => !!running;
+export { refreshPortraits };
 export const backlog = () => log;
 /** タイトルからの「はじめから」「LOAD」で前の周の会話LOGを消す（#1912）。 */
 export function clearLog() { log.length = 0; }
