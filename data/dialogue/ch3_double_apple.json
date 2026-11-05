@@ -25,7 +25,7 @@
         {
           "speaker": "mukai_master",
           "face": "normal",
-          "text": "俺はムカイ。うちも皿洗いから。分からないことは、聞いてくれ"
+          "text": "俺はムカイ。うちも皿洗いから。分からないことは、聞いてくれ。……まずは、一杯やってけ"
         },
         {
           "type": "set_flag",
@@ -39,7 +39,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "ましろです。僕も、ここで働いてるの。よろしくねぇ"
+          "text": "はじめまして、ましろです"
         },
         {
           "type": "set_flag",
