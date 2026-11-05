@@ -167,7 +167,7 @@ await suite("ch1-tournament", async check => {
         if (variant === "current-read") state.flags._ev_first_practice = true;
         if (baselineArrival) T.data.DB.dialogues.ch1_tournament_arrival = baselineArrival;
         // 初登場カットインは3.6秒固定。既読セーブを想定し、会話のSKIPだけを検証する。
-        for (const id of ["sumi", "pakki", "nagumo", "maezono", "dr_kemuri", "naru", "adam", "minto"]) intro.markIntroSeen(id);
+        for (const id of ["sumi", "pakki", "sui", "maezono", "dr_kemuri", "naru", "adam", "minto"]) intro.markIntroSeen(id);
         vn.vnTest.turbo = false;
         window.openingRead = false;
         window.skipTrace = [];
@@ -317,7 +317,7 @@ await suite("ch1-tournament", async check => {
   ]) await check(`results-${label}`, async page => {
     await init(page);
     await page.evaluate(() => {
-      ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"].forEach(T.core.markMet);
+      ["naru", "adam", "minto", "sui", "maezono", "dr_kemuri"].forEach(T.core.markMet);
       window.cs = { mix: { blueberry: 10, mint: 2 }, total: 84.4, parts: { holes: 95, heat: 100, shisha: 78, care1: 86, care2: 91 }, arcade: { total: 92340 }, bonusNotes: ["前日リハーサルの手応え"] };
     });
     if (label === "desktop") {
@@ -342,7 +342,7 @@ await suite("ch1-tournament", async check => {
     assert.deepEqual(interim.judges, {
       maezono:{spent:7,left:'投入 7 ／ 残り 3'},
       dr_kemuri:{spent:6,left:'投入 6 ／ 残り 4'},
-      nagumo:{spent:0,left:'10点を保留中'},
+      sui:{spent:0,left:'10点を保留中'},
     });
     assert.deepEqual(interim.points,{adam:5,naru:3,minto:2,hajime:3});
     // The second feed line starts after a 0.5s delay and slides in for 0.5s.
@@ -387,11 +387,11 @@ await suite("ch1-tournament", async check => {
     await page.evaluate(() => window.standings);
     assert.equal(await page.locator('[data-test="standings"], .fx-dim').count(), 0);
     if (label === "portrait") await page.setViewportSize(viewport);
-    await page.evaluate(() => { window.cut = T.result.nagumoCutin(1); });
+    await page.evaluate(() => { window.cut = T.result.suiCutin(1); });
     await page.locator('.nc-cut.show').waitFor();
     await page.waitForTimeout(550);
-    await assertFits(page, '.nagumo-cut, .nc-row, .nc-cut');
-    await capture(page, `nagumo-${label}`);
+    await assertFits(page, '.sui-cut, .nc-row, .nc-cut');
+    await capture(page, `sui-${label}`);
     await page.evaluate(() => window.cut);
     await page.evaluate(() => { window.finalResult = T.result.resultTable(cs, 1); });
     await page.locator('[data-test="result-next"]').waitFor();

@@ -74,7 +74,7 @@ await suite("hud-visibility-2190", async check => {
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js"), state = core.newGame();
       Object.assign(state, { chapter: 2, day: 28, phase: "tournament" });
-      for (const id of ["ageha", "kumicho", "rei", "pakki", "maezono", "dr_kemuri", "nagumo", "hajime", "sumi"]) state.flags[`_intro_${id}`] = true;
+      for (const id of ["ageha", "kumicho", "rei", "pakki", "maezono", "dr_kemuri", "sui", "hajime", "sumi"]) state.flags[`_intro_${id}`] = true;
       const { tournamentProgress } = await import("./js/chapters/ch2-tournament-state.js");
       tournamentProgress(state).stage = "lobby";
       (await import("./js/chapters/ch1.js")).setupHooks();

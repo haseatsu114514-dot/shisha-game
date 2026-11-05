@@ -13,7 +13,7 @@
 }
 .gameover[data-speaker="tsumugi"] { --go-accent: #efa9d5; --go-glow: #ef73ba25; }
 .gameover[data-speaker="minto"] { --go-accent: #ffca9c; --go-glow: #f5a16a25; }
-.gameover[data-speaker="rin"] { --go-accent: #a9d7fd; --go-glow: #66b9ed25; }
+.gameover[data-speaker="kuyuri"] { --go-accent: #a9d7fd; --go-glow: #66b9ed25; }
 .gameover[data-speaker="ageha"] { --go-accent: #ff89b0; --go-glow: #f56f9425; }
 .gameover[data-speaker="mashiro"] { --go-accent: #c5bbf7; --go-glow: #a798e625; }
 .gameover[data-speaker="samechan"] { --go-accent: #7ee0ec; --go-glow: #4eabda30; }

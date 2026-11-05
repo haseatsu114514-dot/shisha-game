@@ -983,7 +983,7 @@
       ]
     },
     {
-      "dialogue_id": "lesson_rin_blueberry",
+      "dialogue_id": "lesson_kuyuri_blueberry",
       "lines": [
         {
           "speaker": "",
@@ -996,7 +996,7 @@
           "text": "くゆりさん、今日はモニターじゃなくて、相談があって来ました"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "へえ、モルモットくんから相談。珍しいね。いいよ、聞かせて"
         },
@@ -1011,7 +1011,7 @@
           "text": "でも、足すほど香りが散らばって、何の一台か分からなくなって"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "smile",
           "text": "ふふ。君だけじゃないよ。この棚の前に立つ人は、みんな一度そうなる"
         },
@@ -1021,22 +1021,22 @@
           "text": "くゆりは棚の端から、見慣れたブルーベリーの袋を取り出した。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "私は世界中の限定品が吸えるのに、結局ここに帰ってくるの"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "serious",
           "text": "ブルーベリーは、甘さも酸味も真ん中にある。花にもお茶にも寄っていける"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "serious",
           "text": "迷ったら、全体の2割以上入れてみて。1割だと、隠し味で終わるから"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "2割あれば、散らばった香りが、ちゃんと同じ場所に集まる"
         },
@@ -1046,7 +1046,7 @@
           "text": "12グラムのボウルなら、2グラムちょっと……思ったより多いですね"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "smile",
           "text": "主役を食うほどじゃない。でも、帰る場所にはなる量だよ"
         },
@@ -1061,7 +1061,7 @@
           "text": "次の試作、ブルーベリーを軸にして組んでみます"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "うん。……どんな顔で吸われたか、ちゃんと持って帰ってきてね"
         }
@@ -1233,7 +1233,7 @@
       ]
     },
     {
-      "dialogue_id": "lesson_kuze_blank",
+      "dialogue_id": "lesson_saku_blank",
       "lines": [
         {
           "speaker": "",
@@ -1241,7 +1241,7 @@
           "text": "路地の「煙幕」。鏡に映る客席の手前で、綾取が白紙のカードをそろえている。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "あ、来たね。今日は吸う？　休む？"
         },
@@ -1251,7 +1251,7 @@
           "text": "相談しに来ました。一台を出す時の、出し方のことで"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smug",
           "text": "出し方？　いいね、僕の得意分野だ"
         },
@@ -1261,7 +1261,7 @@
           "text": "味の名前を先に言うと、相手がその味を探しながら吸う気がするんです"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "うん、するね。名前って、最初の一口の地図になるから"
         },
@@ -1271,12 +1271,12 @@
           "text": "綾取は胸ポケットから、何も書いていないカードを一枚抜いた。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "だから、これ。名前を書かないで、白紙のまま添えるの"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "wild",
           "text": "地図がないと、吸った人は自分の記憶で道を探す。当たれば、すごく遠くまで届くよ"
         },
@@ -1286,12 +1286,12 @@
           "text": "……外れたら、どうなるんですか"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "何の味か分からないまま終わる。振れ幅が大きいんだ。だから勝負どころで使う"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "serious",
           "text": "それと、嘘はつかないこと。中身を聞かれたら、ちゃんと答える"
         },
@@ -1301,7 +1301,7 @@
           "text": "伏せるのは隠すためじゃなくて、名前を相手に書いてもらうため……ですね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smug",
           "text": "そういうこと。……今の、僕よりいい説明かも。ノートに書いとこ"
         },

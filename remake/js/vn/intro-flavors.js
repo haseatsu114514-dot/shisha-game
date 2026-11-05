@@ -6,14 +6,14 @@
 const flavors = {
   sumi: "カルダモン", naru: "バニラ", adam: "ダブルアップル", minto: "ミント",
   rei: "ローズ", tsumugi: "ラベンダー",
-  rin: "ブルーベリー", ageha: "ホワイトグミベア／レッドグミベア",
+  kuyuri: "ブルーベリー", ageha: "ホワイトグミベア／レッドグミベア",
   kumicho: "ドラゴンフルーツ", dr_kemuri: "コーラ", pakki: "ガムシナモン",
   emil: "ピスタチオ", da_silva: "アサイー",
   mashiro: "ブラックティー",
   samechan: "スプリングウォーター",
   // 2026-10-31 オーナー指示: 正本で決まっている好みを全員分そろえる
-  kuze: "アールグレイ", steve: "マウンテンミスト", volk: "ブラストミント",
-  nagumo: "シガー", maezono: "レモン",
+  saku: "アールグレイ", steve: "マウンテンミスト", volk: "ブラストミント",
+  sui: "シガー", maezono: "レモン",
   master_hookah: "ライチ", sheikh: "グレープ", shisha_9000: "ランダム",
 };
 

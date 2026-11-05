@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { mkdir } from "node:fs/promises";
 const { chromium } = createRequire(import.meta.url)("playwright");
-const ids = ["kuze", "steve", "volk", "mashiro", "maki", "sai", "uranaishi"];
+const ids = ["saku", "steve", "volk", "mashiro", "maki", "sai", "uranaishi"];
 const shots = process.env.ARTIFACT_DIR || "work/recent-intros";
 await mkdir(shots, { recursive: true });
 const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_EXECUTABLE_PATH || "/usr/bin/chromium" });

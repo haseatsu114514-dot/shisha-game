@@ -358,7 +358,7 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
       if (step === 10) finalize(c);
       const p = finishChapterFourStep(value, c);
       if (p.voted !== rounds.length) {
-        const spent = Object.values(p.votes.nagumo).reduce((sum, n) => sum + n, 0);
+        const spent = Object.values(p.votes.sui).reduce((sum, n) => sum + n, 0);
         rounds.push({ spent: spent - previous, rows: chapterFourStandings(p) });
         previous = spent;
       }

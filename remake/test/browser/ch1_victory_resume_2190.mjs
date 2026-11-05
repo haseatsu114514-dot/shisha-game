@@ -22,7 +22,7 @@ await suite("ch1-victory-resume-2190", async check => {
         Object.assign(s, { phase: "tournament", day: 14, slot: 0, money: 75813,
           flavorStock: { lemon: 24, mint: 18 } });
         s.tournament.victory = { step, revealed: true, paid: true };
-        for (const id of ["sumi", "tsumugi", "naru", "adam", "nagumo", "dr_kemuri", "pakki"]) intro.markIntroSeen(id);
+        for (const id of ["sumi", "tsumugi", "naru", "adam", "sui", "dr_kemuri", "pakki"]) intro.markIntroSeen(id);
         core.config.textSpeed = 4; core.saveConfig(); core.save();
         return JSON.stringify([s.day, s.slot, s.money, s.flavorStock, s.affinity]);
       }, step);

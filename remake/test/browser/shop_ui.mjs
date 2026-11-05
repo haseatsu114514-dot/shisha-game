@@ -287,11 +287,11 @@ await suite("shop-ui", async check => {
     assert(await page.locator('[data-test="shop-upstairs"]').isDisabled());
     assert.match(await page.locator('.showroom').innerText(), /出張中/);
     await tap(page, 'shop-entry-back');
-    await page.evaluate(() => { S.core.state.day = 5; S.core.state.slot = 1; S.core.state.visitedDay.rin = 5; S.open(); });
+    await page.evaluate(() => { S.core.state.day = 5; S.core.state.slot = 1; S.core.state.visitedDay.kuyuri = 5; S.open(); });
     assert(await page.locator('[data-test="shop-upstairs"]').isDisabled());
     assert.match(await page.locator('.showroom').innerText(), /訪問済み/);
     await tap(page, 'shop-entry-back');
-    await page.evaluate(() => { delete S.core.state.visitedDay.rin; S.transitions.cueTransition('place', { spotId: 'shop' }); S.open(); });
+    await page.evaluate(() => { delete S.core.state.visitedDay.kuyuri; S.transitions.cueTransition('place', { spotId: 'shop' }); S.open(); });
     await tap(page, 'shop-entry-back');
     await page.evaluate(() => { S.curtain = S.transitions.createSceneCurtain(S.ui.layers.fx, {}); });
     assert.equal(await page.locator('[data-test="store-arrival"]').count(), 0, 'Cancelled entry leaked the arrival logo');
@@ -558,7 +558,7 @@ await suite("shop-ui", async check => {
       Storage.prototype.setItem = function(key, value) {
         if (key === 'suien_remake_save') {
           const saved = JSON.parse(value);
-          if (saved.day === 5 && saved.slot === 2 && saved.visitedDay.rin === 5 && !S.showroomSave) S.showroomSave = saved;
+          if (saved.day === 5 && saved.slot === 2 && saved.visitedDay.kuyuri === 5 && !S.showroomSave) S.showroomSave = saved;
         }
         return originalSet.call(this, key, value);
       };
@@ -573,7 +573,7 @@ await suite("shop-ui", async check => {
     assert.equal(saved.money, beforeCancel.money, 'The existing free consultation must not add a fee');
     assert.deepEqual(saved.flavorStock, beforeCancel.stock);
     assert.equal((await snapshot(page)).slot, 0); assert.equal((await snapshot(page)).stamina, 100);
-    assert.equal(await page.evaluate(() => S.core.state.visitedDay.rin), 5);
+    assert.equal(await page.evaluate(() => S.core.state.visitedDay.kuyuri), 5);
     await go(); assert(await page.locator('[data-test="shop-upstairs"]').isDisabled());
   });
 });

@@ -31,8 +31,8 @@
   "sprite": "assets/sprites/characters/kumicho/chr_kumicho_normal.png",
   "blob": "6a165f7b76fc95ef85074b39598afe49961c785e"
  },
- "face_kuze.png": {
-  "sprite": "assets/sprites/characters/kuze/chr_kuze_normal.png",
+ "face_saku.png": {
+  "sprite": "assets/sprites/characters/saku/chr_saku_normal.png",
   "blob": "fce3c4e1484d3a786020d1028844b037a2d3c7ae"
  },
  "face_maezono.png": {
@@ -63,8 +63,8 @@
   "sprite": "assets/sprites/characters/mukai_master/chr_mukai_master_normal.png",
   "blob": "8e56659563233116ffeb5b7356e7808d433c63fd"
  },
- "face_nagumo.png": {
-  "sprite": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+ "face_sui.png": {
+  "sprite": "assets/sprites/characters/sui/chr_sui_normal.png",
   "blob": "37be28dcaf26b22dc17a43c55b983ef2382eece9"
  },
  "face_naru.png": {
@@ -79,24 +79,24 @@
   "sprite": "assets/sprites/characters/pakki/chr_pakki_normal.png",
   "blob": "416a8717cc7ca68f30cfe615c24a42a3906b0800"
  },
- "face_rashid.png": {
-  "sprite": "assets/sprites/characters/rashid/chr_rashid_normal.png",
+ "face_khalil.png": {
+  "sprite": "assets/sprites/characters/khalil/chr_khalil_normal.png",
   "blob": "1a32bc251a516e8fe52284e86848bbe613e4ef3a"
  },
  "face_rei.png": {
   "sprite": "assets/sprites/characters/rei/chr_rei_normal.png",
   "blob": "bfa4805f8e5ebc7fa730b3fed2ea64fce25291b2"
  },
- "face_rin.png": {
-  "sprite": "assets/sprites/characters/rin/chr_rin_normal.png",
+ "face_kuyuri.png": {
+  "sprite": "assets/sprites/characters/kuyuri/chr_kuyuri_normal.png",
   "blob": "f92f3650ff5b3cfcf0985e53142e3025581f3c7c"
  },
  "face_sai.png": {
   "sprite": "assets/sprites/characters/sai/chr_sai_normal.png",
   "blob": "18de5eb6068be272bc779eb220c1a03f102fe672"
  },
- "face_saif.png": {
-  "sprite": "assets/sprites/characters/saif/chr_saif_normal.png",
+ "face_suhail.png": {
+  "sprite": "assets/sprites/characters/suhail/chr_suhail_normal.png",
   "blob": "ec60aafb94c1f7e35bce48b8f2c82294d7633448"
  },
  "face_salaryman.png": {

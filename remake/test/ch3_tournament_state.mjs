@@ -19,8 +19,8 @@ const makeState = () => {
 };
 const craft = { careHistory: [], total: 0 };
 
-assert.deepEqual(CONTESTANTS, ["hajime", "kuze", "steve", "volk"]);
-assert.deepEqual(JUDGES, ["emil", "dr_kemuri", "nagumo"]);
+assert.deepEqual(CONTESTANTS, ["hajime", "saku", "steve", "volk"]);
+assert.deepEqual(JUDGES, ["emil", "dr_kemuri", "sui"]);
 assert.equal(SPEND.reduce((sum, value) => sum + value, 0), 10);
 const value = makeState(), before = copy(value);
 assert.equal(tournamentProgress(value).stage, "entry");
@@ -30,7 +30,7 @@ assert.equal(startAttempt(value, craft).attempts, 1); // 二度押しでも二�
 assert.deepEqual(p.tastingPlan, buildTastingPlan(p.tastingSeed));
 for (const round of p.tastingPlan) for (const judge of JUDGES) {
   assert.deepEqual([...round[judge].order].sort(), [...CONTESTANTS].sort());
-  if (judge === "nagumo") assert.equal(round[judge].waterAfterKuze, true);
+  if (judge === "sui") assert.equal(round[judge].waterAfterSaku, true);
 }
 
 // 現在工程だけはLOAD時に戻り、確定済みの前工程は戻らない。
@@ -48,22 +48,22 @@ assert.equal(committed.stamina, 75);
 assert.equal(committed.flags._ch3_tournament.step, 1);
 
 // 柑橘の残り香は直後の試喫だけ。水を飲めばゼロ、次が他人ならはじめに作用しない。
-const direct = { order: ["kuze", "hajime", "volk", "steve"], waterAfterKuze: false };
+const direct = { order: ["saku", "hajime", "volk", "steve"], waterAfterSaku: false };
 assert.deepEqual(tastingEffect(direct, "emil"), { ...direct, affected: "hajime", delta: -2 });
 assert.deepEqual(tastingEffect(direct, "dr_kemuri"), { ...direct, affected: "hajime", delta: 2 });
-assert.equal(tastingEffect({ ...direct, waterAfterKuze: true }, "emil").delta, 0);
-assert.equal(tastingEffect({ order: ["kuze", "steve", "hajime", "volk"], waterAfterKuze: false }, "emil").affected, "steve");
-assert.equal(tastingEffect({ order: ["hajime", "volk", "steve", "kuze"], waterAfterKuze: false }, "emil").affected, null);
+assert.equal(tastingEffect({ ...direct, waterAfterSaku: true }, "emil").delta, 0);
+assert.equal(tastingEffect({ order: ["saku", "steve", "hajime", "volk"], waterAfterSaku: false }, "emil").affected, "steve");
+assert.equal(tastingEffect({ order: ["hajime", "volk", "steve", "saku"], waterAfterSaku: false }, "emil").affected, null);
 const plans = Array.from({ length: 32 }, (_, seed) => buildTastingPlan(seed)[0].emil);
-assert(plans.some(plan => plan.order[0] === "kuze"));
-assert(plans.some(plan => plan.order[0] !== "kuze"));
-assert(plans.some(plan => plan.waterAfterKuze));
-assert(plans.some(plan => !plan.waterAfterKuze));
+assert(plans.some(plan => plan.order[0] === "saku"));
+assert(plans.some(plan => plan.order[0] !== "saku"));
+assert(plans.some(plan => plan.waterAfterSaku));
+assert(plans.some(plan => !plan.waterAfterSaku));
 const withWater = startAttempt(makeState(), craft);
 const withoutWater = startAttempt(makeState(), craft);
 // この数値の旧残り香テストは、保存互換の版1としてそのまま残す。
 withWater.rulesVersion = 1; withoutWater.rulesVersion = 1;
-withWater.tastingPlan[1].dr_kemuri = { ...direct, waterAfterKuze: true };
+withWater.tastingPlan[1].dr_kemuri = { ...direct, waterAfterSaku: true };
 withoutWater.tastingPlan[1].dr_kemuri = direct;
 castVotes(withWater, 0, 83);
 castVotes(withoutWater, 0, 83);
@@ -95,7 +95,7 @@ for (const judge of JUDGES) assert.equal(CONTESTANTS.reduce((sum, id) => sum + p
 
 // 不正な持ち点でも全審査員を一部だけ確定しない。
 const bad = startAttempt(makeState(), craft);
-bad.votes.nagumo.kuze = 10;
+bad.votes.sui.saku = 10;
 const untouched = copy(bad.votes);
 assert.throws(() => castVotes(bad, 0, 90), /持ち点/);
 assert.deepEqual(bad.votes, untouched);
@@ -144,8 +144,8 @@ assert.throws(() => tournamentProgress({ chapter: 2, flags: {} }), /第3章/);
 
 // 版2は全国の基準を上げる。旧保存の残り票と確定済みの結果は再評価しない。
 assert.equal(TOURNAMENT_RULES_VERSION, 2);
-assert.deepEqual(LEGACY_RIVAL_QUALITY, { kuze: 82, steve: 80, volk: 84 });
-assert.deepEqual(RIVAL_QUALITY, { kuze: 86, steve: 85, volk: 88 });
+assert.deepEqual(LEGACY_RIVAL_QUALITY, { saku: 82, steve: 80, volk: 84 });
+assert.deepEqual(RIVAL_QUALITY, { saku: 86, steve: 85, volk: 88 });
 {
   const fresh = makeState(), current = startAttempt(fresh, craft);
   assert.equal(current.rulesVersion, 2);

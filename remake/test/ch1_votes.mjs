@@ -24,7 +24,7 @@ assert.equal(match([80, 80, 80, 80, 80]).result.rank, 4);
 assert.equal(match([90, 90, 90, 90, 90]).result.rank, 1);
 const close = match([84, 87, 86, 86, 86]);
 assert.equal(close.result.rows[0].points - close.result.rows.find(row => row.id === "hajime").points, 1);
-assert.equal(close.beforeLast.nagumo.naru + 1, close.votes.nagumo.naru);
+assert.equal(close.beforeLast.sui.naru + 1, close.votes.sui.naru);
 for (const base of [60, 70, 80, 84, 85, 86, 90]) {
   const baseline = match([base, base, base, base, base]).result.votes;
   for (let part = 0; part < 5; part++) {

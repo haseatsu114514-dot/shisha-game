@@ -95,7 +95,7 @@ for (const chapter of [1, 2, 3, 4, 5, 6, "1", "3", undefined, null, 0, false, Na
 // 東京で一緒に働くましろは第4章だけ。くゆりは LM07 の later で既に届く。恋人には届かない。
 {
   const people = DB.casualLime.people;
-  for (const id of ["hiyori", "samechan", "mashiro", "rin"]) assert.equal(people[id]?.later?.length, 2, `${id}: 近況は2通`);
+  for (const id of ["hiyori", "samechan", "mashiro", "kuyuri"]) assert.equal(people[id]?.later?.length, 2, `${id}: 近況は2通`);
   assert.deepEqual(people.mashiro.chapters, [4], "ましろは東京で会えている第3章には送ってこない");
   const ids = ["hiyori", "samechan", "mashiro"];
   const make = chapter => {

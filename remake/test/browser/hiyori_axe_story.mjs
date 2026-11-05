@@ -52,10 +52,10 @@ await suite("hiyori-axe-story",async check=>{
   await check("read-gates-and-legacy-do-not-infer",async page=>{
     await setup(page);
     const result=await page.evaluate(required=>{
-      const s=S.core.state;s.affinity.hiyori=100;s.lovers=["hiyori","rin"];s.flags._friend_hiyori=true;
+      const s=S.core.state;s.affinity.hiyori=100;s.lovers=["hiyori","kuyuri"];s.flags._friend_hiyori=true;
       const gates=required.map(f=>{delete s.flags[f];const status=S.route.hiyoriEventStatus("axe_reveal");s.flags[f]=true;return status;});
       s.chapter=3;const chapter=S.route.hiyoriEventStatus("axe_reveal");s.chapter=1;s.slot=0;const time=S.route.hiyoriEventStatus("axe_reveal");s.slot=1;
-      s.lovers=["rin"];s.affinity.hiyori=20;const low=S.route.hiyoriEventStatus("axe_reveal");s.affinity.hiyori=51;
+      s.lovers=["kuyuri"];s.affinity.hiyori=20;const low=S.route.hiyoriEventStatus("axe_reveal");s.affinity.hiyori=51;
       const saved=S.data.DB.dialogues.hiyori_axe_reveal_close;delete S.data.DB.dialogues.hiyori_axe_reveal_close;
       const missing=S.route.hiyoriEventStatus("axe_reveal");S.data.DB.dialogues.hiyori_axe_reveal_close={...saved,metadata:{preview_only:true}};
       const preview=S.route.hiyoriEventStatus("axe_reveal");S.data.DB.dialogues.hiyori_axe_reveal_close=saved;
@@ -120,17 +120,17 @@ await suite("hiyori-axe-story",async check=>{
     await setup(page);
     const result=await page.evaluate(async()=>{
       const s=S.core.state;s.money=2999;const poor=JSON.stringify(s),paid=await S.daily.playHiyoriEvent("axe_reveal"),poorSame=JSON.stringify(s)===poor;
-      s.money=90000;s.pendingInvite={sender:"rin",day:s.day,slot:1,event:"date_rin"};const booked=JSON.stringify(s),play=await S.daily.playHiyoriEvent("axe_reveal");
+      s.money=90000;s.pendingInvite={sender:"kuyuri",day:s.day,slot:1,event:"date_kuyuri"};const booked=JSON.stringify(s),play=await S.daily.playHiyoriEvent("axe_reveal");
       return {paid,poorSame,play,bookedSame:JSON.stringify(s)===booked};
     });assert(!result.paid&&result.poorSame&&!result.play&&result.bookedSame);
-    await page.evaluate(()=>{S.core.state.pendingInvite.day++;S.core.state.inbox=[{id:"keep",read:false,msg:{sender:"rin"},log:["keep"]}];S.booked=JSON.stringify(S.core.state.pendingInvite);S.inbox=JSON.stringify(S.core.state.inbox);});
+    await page.evaluate(()=>{S.core.state.pendingInvite.day++;S.core.state.inbox=[{id:"keep",read:false,msg:{sender:"kuyuri"},log:["keep"]}];S.booked=JSON.stringify(S.core.state.pendingInvite);S.inbox=JSON.stringify(S.core.state.inbox);});
     await start(page);await finish(page);assert(await page.evaluate(()=>S.run));
     assert(await page.evaluate(()=>JSON.stringify(S.core.state.pendingInvite)===S.booked&&JSON.stringify(S.core.state.inbox)===S.inbox));
   });
   for(const relationship of ["friend","lovers"]) await check("existing-"+relationship+"-never-reclassified",async page=>{
     await setup(page);await page.evaluate(relationship=>{
       const s=S.core.state;s.finales.hiyori={route:relationship==="friend"?"friend":"romance",day:3,chapter:1};
-      s.flags._friend_hiyori=relationship==="friend";s.lovers=relationship==="friend"?["rin"]:["hiyori","rin"];
+      s.flags._friend_hiyori=relationship==="friend";s.lovers=relationship==="friend"?["kuyuri"]:["hiyori","kuyuri"];
       s.affinity.hiyori=88;s.lovePts.hiyori=12;s.loveLevel.hiyori=2;s.romanceChoices.bond_q1_hiyori={char:"hiyori",value:0,day:3};
       S.relationship=JSON.stringify({finales:s.finales,lovers:s.lovers,friend:s.flags._friend_hiyori,lovePts:s.lovePts,loveLevel:s.loveLevel,choices:s.romanceChoices});
     },relationship);await start(page);await finish(page);assert(await page.evaluate(()=>S.run));

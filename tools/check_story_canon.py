@@ -69,10 +69,10 @@ def character_shop_name_errors(characters):
     errors = []
     for person in characters:
         fields = ('affiliation', 'description')
-        if person.get('id') == 'nagumo':
+        if person.get('id') == 'sui':
             for field in fields:
                 if 'シーステーション' in person.get(field, ''):
-                    errors.append(f'characters.json:nagumo.{field}: 店名はC.STATION（#2015）')
+                    errors.append(f'characters.json:sui.{field}: 店名はC.STATION（#2015）')
         if person.get('id') == 'adam':
             for field in fields:
                 if re.search(r'(?<![A-Za-z])Eden(?![A-Za-z])', person.get(field, '')):

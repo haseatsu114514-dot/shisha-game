@@ -37,7 +37,7 @@ export const BOND_FINALES = {
   adam: { dialogue: "ch1_adam_bond_finale", gift: "suyaki_adam" },
   tsumugi: { dialogue: "ch1_tsumugi_bond_finale", gift: "suyaki_tsumugi", night: true, question: "bond_q2_tsumugi" },
   minto: { dialogue: "ch1_minto_bond_finale", gift: "suyaki_minto", invite: "lime_minto_bond_finale", question: "bond_q2_minto" },
-  rin: { dialogue: "ch1_rin_bond_finale", gift: "suyaki_rin", question: "bond_q2_rin" },
+  kuyuri: { dialogue: "ch1_kuyuri_bond_finale", gift: "suyaki_kuyuri", question: "bond_q2_kuyuri" },
   // 第2章の店（柚ヶ谷）で会う。訪問列（CH2_VISIT_STORIES）を読み終えた♥5の次の来店で一度だけ（#2027）
   kumicho: { dialogue: "ch2_kumicho_bond_finale", gift: "suyaki_kumicho" },
   rei: { dialogue: "ch2_rei_bond_finale", gift: "suyaki_rei" },
@@ -50,7 +50,7 @@ export const BOND_FINALES = {
   // 綾取（#2028）: 第3章の煙幕への来店（ch3-tokyo-daily.js）・旧行程の場面カード（chapters/ch3.js）・
   // 大会後の寄り道（ch3-aftermath.js）から。恋愛対象外なので友情の着地だけ。条件はほかの人物と同じ♥5（IR22）。
   // 煙幕には何度でも通えて♥5に届く（AFB02・#2347）ので、仮の♥1（#2281）は外した。
-  kuze: { dialogue: "ch3_kuze_bond_finale", gift: "suyaki_kuze" },
+  saku: { dialogue: "ch3_saku_bond_finale", gift: "suyaki_saku" },
   hiyori: {
     get dialogue() { return hiyoriRoute().finale?.dialogue || ""; },
     get gift() { return hiyoriRoute().finale?.gift || null; },
@@ -67,7 +67,7 @@ export const BOND_FINALES = {
 export const BOND_QUESTIONS = {
   tsumugi: { dialogue: "ch1_tsumugi_bond_question", choice: AFFINITY_GATE_CHOICES.tsumugi, host: "ch1_tsumugi_fourth", when: "after" },
   minto: { dialogue: "ch1_minto_bond_question", choice: AFFINITY_GATE_CHOICES.minto, host: "ch1_minto_private_1", alsoAfter: ["ch1_minto_fifth"], when: "after" },
-  rin: { dialogue: "ch1_rin_bond_question", choice: AFFINITY_GATE_CHOICES.rin, host: "ch1_rin_third", when: "visit" },
+  kuyuri: { dialogue: "ch1_kuyuri_bond_question", choice: AFFINITY_GATE_CHOICES.kuyuri, host: "ch1_kuyuri_third", when: "visit" },
   // あげは（#1988）: 第2章の店に通う回「初めての客」（♥3）を読んだ直後。第3章の帰郷後の告白はこの答えが恋愛寄りで♥5のときだけ。
   ageha: { dialogue: "ch2_ageha_bond_question", choice: AFFINITY_GATE_CHOICES.ageha, host: "remake_ch2_ageha_newcomer", when: "after" },
   // ましろ（#2022）: 第3章の寄り道「閉店後の練習」を読んだ後、♥3で場面カードから。
@@ -233,7 +233,7 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
       && state.romanceChoices?.bond_q1_samechan?.char === id)
     && samechanHeartEventsDone(state) // ♥4・♥5の来店会話（#2025）
   // 綾取: LIME交換の寄り道と、助言の後の「答えを返しに行く」外出の両方（ch3-story-wiring.js / ch3-outing-progress.js の保存キーの写し）
-  : id === "kuze" ? !!state.flags._ch3_read_ch3_kuze_lime && !!state.flags._lime_contact_kuze
+  : id === "saku" ? !!state.flags._ch3_read_ch3_saku_lime && !!state.flags._lime_contact_saku
     && (state.flags._ch3_outings?.enmaku_answer || 0) > 0
   : id === "ageha" ? AGEHA_AFFINITY_VISITS.every((scene) => !!state.flags[`_ch2_read_${scene}`]) && questionComplete(state, id)
   : CH2_VISIT_STORIES[id] ? ch2VisitStoriesDone(state.flags, id)
@@ -253,7 +253,7 @@ export function finaleDue(id) {
   // MELTY PUFFに通えるのは第2章と、第3章の東京へ発つ前の準備3日だけ（VOL02。東京にいる間は店が地図に無い）
   if (id === "ageha" && !chapterFeatureEnabled(state.chapter, "agehaVisit") && !beforeTokyoDeparture()) return false;
   if (id === "mashiro" && !chapterFeatureEnabled(state.chapter, "mashiroBond")) return false;
-  if (id === "kuze" && !chapterFeatureEnabled(state.chapter, "kuzeBond")) return false; // 煙幕は第3章の東京にだけある
+  if (id === "saku" && !chapterFeatureEnabled(state.chapter, "sakuBond")) return false; // 煙幕は第3章の東京にだけある
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue] || !storiesDone(id)) return false;
   if (affinityLevel(id) < finaleHeart(id) || questionVisitDue(id)) return false;
@@ -270,7 +270,7 @@ export const isFinaleEvent = (dialogueId) => Object.values(BOND_FINALES).some((d
 
 /** 締めくくりを再生し、ルート（恋人／恋愛／友情）を記録して専用ハガルを渡す。一度だけ */
 export async function playFinale(id, { bg = null, deferSave = false, signal = null } = {}) {
-  if (["hiyori", "samechan", "mashiro", "kuze"].includes(id) && !finaleDue(id)) return false;
+  if (["hiyori", "samechan", "mashiro", "saku"].includes(id) && !finaleDue(id)) return false;
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue]) return false;
   const owner = state;
@@ -398,7 +398,7 @@ export function friendMessages({ tournamentDay = false, sceneChapter = false } =
     const chats = sent.filter((i) => i.msg.type === "chat").length;
     // 出来事前提の雑談は、前提が揃うまで chats[0] へ退避（TL-01: 素焼き贈呈・正体開示は締めくくりで保証される前提だが、旧セーブ等でも先出ししない防御）
     let pick = f.chats?.length ? chats % f.chats.length : 0;
-    if ((pick === 2 && ["minto", "tsumugi", "rin", "kumicho", "rei", "mashiro", "samechan", "kuze"].includes(id) && !state.owned.includes(`suyaki_${id}`))
+    if ((pick === 2 && ["minto", "tsumugi", "kuyuri", "kumicho", "rei", "mashiro", "samechan", "saku"].includes(id) && !state.owned.includes(`suyaki_${id}`))
       || (pick === 1 && id === "adam" && !state.owned.includes("suyaki_adam"))
       || (pick === 1 && id === "minto" && !state.flags._minto_identity_revealed)) pick = 0;
     const chat = f.chats?.length ? { id: `${FRIEND_PREFIX}chat_${id}_d${state.day}`, sender: id, type: "chat", friend: true,

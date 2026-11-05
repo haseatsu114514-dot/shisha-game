@@ -3,7 +3,7 @@ import { ryujiAtMeltyPuff } from "../core/ryuji-visit.js";
 import { state } from "../core/state.js";
 import { displayName } from "../core/data.js";
 import { isUnlocked, isClosed } from "./spots.js";
-import { rinUnavailable } from "./spot-hours.js";
+import { kuyuriUnavailable } from "./spot-hours.js";
 import { hiyoriShopEncounterDue, hiyoriAtTonari } from "./hiyori.js";
 import { hiyoriFirstMeetingReady } from "../core/axe-bar-discovery.js";
 import { tsumugiAtTonari } from "./tsumugi-schedule.js";
@@ -32,7 +32,7 @@ export function spotPeople(spot, { visitBlock = null } = {}) {
   // 店主は自分の店に出す。ただし、この時間帯によその店へ居合わせに出ている（roamers.js）ときは、その店にだけ出し、
   // 自分の店には出さない。同じ人が2か所で「在店」になるのを防ぐ（#2444。アダム＝EDEN・ヴォルク＝鉄の煙 など）。
   const roaming = roamerPlan();
-  if (spot.face && (spot.face !== "rin" || !rinUnavailable(state)) && roaming?.id !== spot.face) ids.push(spot.face);
+  if (spot.face && (spot.face !== "kuyuri" || !kuyuriUnavailable(state)) && roaming?.id !== spot.face) ids.push(spot.face);
   for (const guest of GUESTS) if (guest.present(spot)) ids.push(guest.id);
   const visiting = cityGuestAtShop(spot);
   if (visiting) ids.push(visiting.id);

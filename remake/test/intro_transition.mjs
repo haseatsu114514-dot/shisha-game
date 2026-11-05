@@ -14,7 +14,7 @@ try {
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto(`${base}/remake/intro-transition-preview.html?character=naru`);
   await page.waitForFunction(() => !document.getElementById("play").disabled);
-  const cases = [["morph", "naru"], ["card", "nagumo"], ["slash", "rin"], ["morph", "pakki"], ["none", "naru"]];
+  const cases = [["morph", "naru"], ["card", "sui"], ["slash", "kuyuri"], ["morph", "pakki"], ["none", "naru"]];
   for (const [variant, id] of cases) {
     await page.selectOption("#variant", variant);
     await page.selectOption("#character", id);
@@ -65,7 +65,7 @@ try {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   for (const { id, viewport, standingFace, graphicFace } of [
     { id: "naru", viewport: { width: 844, height: 474 }, standingFace: 450.5, graphicFace: 464 },
-    { id: "kuze", viewport: { width: 390, height: 844 }, standingFace: 421.5, graphicFace: 528 },
+    { id: "saku", viewport: { width: 390, height: 844 }, standingFace: 421.5, graphicFace: 528 },
   ]) {
     await page.setViewportSize(viewport);
     await page.selectOption("#variant", "morph");

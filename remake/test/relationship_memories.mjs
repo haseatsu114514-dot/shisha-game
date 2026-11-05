@@ -67,7 +67,7 @@ try {
   // 現在遊べる第1章の6人。誰か一人だけを選んでも、その相手の記憶が戻る。
   const firstScenes = {
     sumi: "ch1_sumi_basics", naru: "ch1_naru_first", adam: "ch1_adam_first",
-    minto: "ch1_minto_first", tsumugi: "ch1_tsumugi_first", rin: "ch1_rin_first",
+    minto: "ch1_minto_first", tsumugi: "ch1_tsumugi_first", kuyuri: "ch1_kuyuri_first",
   };
   for (const [character, scene] of Object.entries(firstScenes)) {
     const result = await page.evaluate(async ({ scene }) => {
@@ -178,7 +178,7 @@ try {
     };
     core.newGame();
     Object.assign(core.state, { chapter: 3, phase: "daily" });
-    for (const id of ["mashiro_pace", "kuze_decide", "steve_wait", "volk_measure"]) relationships.rememberRelationship(id);
+    for (const id of ["mashiro_pace", "saku_decide", "steve_wait", "volk_measure"]) relationships.rememberRelationship(id);
     const ch3 = await read("ch3_tournament_eve");
     core.newGame();
     Object.assign(core.state, { chapter: 4, phase: "daily" });

@@ -18,7 +18,7 @@ async function seed(page, auto = "good", overrides = {}) {
       _ch3_intro: { startDay: 29, stage: CH3_INTRO_SCENES.length, titleSeen: true, routeVersion: 2 } };
     value.tournament.lastRank = 1; value.tournament.lastTotal = 88;
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
-    for (const who of ["hajime", "pakki", "kuze", "steve", "volk", "dr_kemuri", "nagumo"])
+    for (const who of ["hajime", "pakki", "saku", "steve", "volk", "dr_kemuri", "sui"])
       value.met[who] = true;
     for (const who of Object.keys(value.met)) value.flags[`_intro_${who}`] = true;
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
@@ -160,9 +160,9 @@ await suite("ch3-tournament", async check => {
       assert.equal(state.flags._ch3_tournament.voted, round);
       assert.equal(state.flags._ch3_tournament.history.length, 0);
       assert.deepEqual(await page.locator("[data-contestant]").evaluateAll(nodes =>
-        nodes.map(node => node.dataset.contestant).sort()), ["hajime", "kuze", "steve", "volk"]);
+        nodes.map(node => node.dataset.contestant).sort()), ["hajime", "saku", "steve", "volk"]);
       assert.deepEqual(await page.locator(".judge-chip").evaluateAll(nodes =>
-        nodes.map(node => node.dataset.judge).sort()), ["dr_kemuri", "emil", "nagumo"]);
+        nodes.map(node => node.dataset.judge).sort()), ["dr_kemuri", "emil", "sui"]);
       assert.match(await page.locator(".ch2-contest-judges").textContent(), /エミル|Emil/);
       const explanation = await page.locator(t("vote-reason")).innerText();
       if (round === 1) assert.doesNotMatch(explanation, /鋭い苦みの余韻/, "No tasting effect before service");
@@ -297,8 +297,8 @@ await suite("ch3-tournament", async check => {
       const p = model.tournamentProgress(core.state);
       p.stage = "result"; p.step = 11; p.voted = 4; p.attempts = 1;
       p.votes = Object.fromEntries(model.JUDGES.map(judge => [judge,
-        { hajime: 0, kuze: 3, steve: 2, volk: 5 }]));
-      p.quality = { hajime: 40, kuze: 82, steve: 80, volk: 84 };
+        { hajime: 0, saku: 3, steve: 2, volk: 5 }]));
+      p.quality = { hajime: 40, saku: 82, steve: 80, volk: 84 };
       const rows = model.standings(p);
       p.result = { attempt: 1, total: 40, rank: rows.find(row => row.id === "hajime").rank,
         win: false, rows, votes: structuredClone(p.votes), careHistory: [{ score: 40 }, { score: 40 }] };

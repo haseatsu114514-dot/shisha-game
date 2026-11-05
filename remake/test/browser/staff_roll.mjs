@@ -193,22 +193,22 @@ await suite("staff-roll", async check => {
   // この接続より前にスタッフロールまで見終えた3人の恋人の保存は、開くと修羅場から。修羅場の途中の保存は続きから。
   // 打ち上げで修羅場が済んでいれば、二度起こさず話し直しの決意から。
   await check("old-and-mid-conflict-saves-resume-the-post-ending-at-the-right-scene", async page => {
-    const lovers = ["rin", "ageha", "hiyori"];
+    const lovers = ["kuyuri", "ageha", "hiyori"];
     await seed(page, { done: true, seen: true, lovers });
     await openSlot(page);
     await page.locator(scene("shuraba_open")).waitFor({ timeout: 60000 });
     assert.equal((await get(page)).flags._ch5.postEnding.scenes.length, 9);
-    const scenes = ["shuraba_open", "shuraba_rin", "shuraba_ageha", "shuraba_hiyori", "shuraba_accountability",
+    const scenes = ["shuraba_open", "shuraba_kuyuri", "shuraba_ageha", "shuraba_hiyori", "shuraba_accountability",
       "ending_relationship_pending", ...lovers.map(talk)];
     await seed(page, { done: true, seen: true, lovers, post: { scenes, step: 2, unresolved: lovers } });
     await openSlot(page);
     await page.locator(scene("shuraba_ageha")).waitFor({ timeout: 60000 });
     await page.locator(dt("ch5-continue")).click();
-    await page.locator(scene(talk("rin"))).waitFor({ timeout: 60000 });
+    await page.locator(scene(talk("kuyuri"))).waitFor({ timeout: 60000 });
     assert.match(await page.locator(dt("ch5-scene")).innerText(), /1人目／3人/);
     const read = (await get(page)).flags._ch5.read;
     for (const id of scenes.slice(2, 6)) assert.equal(read[id], true, id);
-    assert.equal(read.shuraba_rin, undefined, "Scenes read before the save are not replayed");
+    assert.equal(read.shuraba_kuyuri, undefined, "Scenes read before the save are not replayed");
     await seed(page, { done: true, seen: true, lovers: ["tsumugi", "mashiro"],
       flags: { _ch5_after_party: true, _story_shuraba_unresolved: true } });
     await openSlot(page);

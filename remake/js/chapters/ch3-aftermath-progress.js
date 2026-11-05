@@ -48,7 +48,7 @@ export function availableAftermathDetours(value) {
  * スティーブの授業（ピザとシーシャの夜）はこの夜に開くので、なるへの報告を読んで開催の夜になったら出さない。
  */
 export const CH3_AFTERMATH_LESSONS = Object.freeze([
-  { who: "kuze", place: "煙幕", bg: "bg_yohaku_shop", from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },
+  { who: "saku", place: "煙幕", bg: "bg_yohaku_shop", from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },
   { who: "steve", place: "Smoke & Glory", bg: "bg_steve_shop", from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },
   { who: "volk", place: "鉄の煙", bg: "bg_volk_shop", from: "ch3_mashiro_recovery", to: "ch3_enmaku_cleanup" },
   { who: "mashiro", place: "mukai", bg: "bg_mukai_shop", from: "ch3_naru_reconcile", to: "ch3_naru_reconcile" },
@@ -76,7 +76,7 @@ export function availableAftermathLessons(value, ready) {
  * due(who) は daily/bonds.js の finaleDue（♥5・前提の場面・既読）。寄り道と同じく stage・日時は進めず、保存は変更しない。
  */
 export const CH3_AFTERMATH_FINALES = Object.freeze([
-  { who: "kuze", file: "ch3_rivals", dialogue: "ch3_kuze_bond_finale", label: "綾取に呼ばれる", place: "煙幕", bg: "bg_yohaku_shop",
+  { who: "saku", file: "ch3_rivals", dialogue: "ch3_saku_bond_finale", label: "綾取に呼ばれる", place: "煙幕", bg: "bg_yohaku_shop",
     from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },
 ]);
 export function availableAftermathFinales(value, due) {

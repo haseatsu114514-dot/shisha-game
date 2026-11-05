@@ -87,7 +87,7 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
   spot({ id: "ch3_tokyo_mukai", place: "mukai", label: "mukai", area: "高架下の商店街", x: 29.6, y: 62.7, theme: "baito", glyph: "店",
     face: "mukai_master", preview: "bg_mukai_shop", desc: "働かせてもらっている店。手伝い、ましろちゃんとの時間、作業台。帰りに裏口のてつこにも会える。" }),
   spot({ id: "ch3_tokyo_enmaku", place: "enmaku", label: "煙幕", area: "綾取の店", x: 45.3, y: 49.7, theme: "rival", glyph: "煙",
-    face: "kuze", preview: "bg_yohaku_shop", cost: TOKYO_VISIT_COST, desc: "綾取の店。お茶と、ノートの続き。", met: "kuze" }),
+    face: "saku", preview: "bg_yohaku_shop", cost: TOKYO_VISIT_COST, desc: "綾取の店。お茶と、ノートの続き。", met: "saku" }),
   spot({ id: "ch3_tokyo_steve", place: "steve", label: "Smoke & Glory", area: "スティーブの店", x: 23.3, y: 36.1, theme: "rival", glyph: "煙",
     face: "steve", preview: "bg_steve_shop", cost: TOKYO_VISIT_COST, desc: "タイマーの並ぶ店。", met: "steve" }),
   spot({ id: "ch3_tokyo_volk", place: "volk", label: "鉄の煙", area: "ヴォルクの店", x: 55.9, y: 40.4, theme: "rival", glyph: "煙",
@@ -111,7 +111,7 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
 
 function spotHasNew(entry) {
   if (["mukai", "enmaku", "volk"].includes(entry.place) && optionalAt(entry.place).length) return true;
-  if (entry.place === "enmaku" && finaleAtVisit("kuze")) return true; // 綾取の締めくくり（IR22）
+  if (entry.place === "enmaku" && finaleAtVisit("saku")) return true; // 綾取の締めくくり（IR22）
   if (entry.place === "mukai") return mukaiBondDue() || outingsAt("mukai").some(outing => !outing.repeat);
   return outingsAt(entry.place).some(outing => !outing.repeat);
 }
@@ -402,7 +402,7 @@ const unused = { used: false, exerted: false };
 const personExp = id => id ? Object.freeze({ key: id, person: id }) : null;
 const MUKAI_SHIFT_EXP = Object.freeze({ key: "tokyo:mukai_help", place: "tokyo:mukai_help" });
 const GYM_EXP = Object.freeze({ key: "tokyo:gym", place: "tokyo:gym" });
-const OPTIONAL_HOST = Object.freeze({ mukai: "mashiro", enmaku: "kuze", volk: "volk" });
+const OPTIONAL_HOST = Object.freeze({ mukai: "mashiro", enmaku: "saku", volk: "volk" });
 
 async function performTokyoSpot(entry, io, { staminaGuard }) {
   if (entry.region !== TOKYO) return null;
@@ -430,7 +430,7 @@ async function performTokyoSpot(entry, io, { staminaGuard }) {
  * 心得の盤の授業（SPEC 2.6・SBD50）: 会いに行った店で、灯した授業があればその人に相談して話を聞く。
  * 日常ループ（版3）でも旧行程と同じ相手に相談できるようにする（2026-11-02）。訪問を終えた時だけ。
  */
-const TOKYO_TEACHERS = Object.freeze({ enmaku: "kuze", steve: "steve", volk: "volk" });
+const TOKYO_TEACHERS = Object.freeze({ enmaku: "saku", steve: "steve", volk: "volk" });
 async function withLesson(result, who, owner) {
   if (who && result?.used && state === owner) await keepDailyHud(() => consultLessons(who));
   return result;
@@ -484,9 +484,9 @@ async function readOptionalHere(io, scene, staminaGuard, owner, stamina = -10) {
  * 煙幕では、綾取の締めくくり（♥5・IR22）が来ていれば「綾取に呼ばれる」を先頭に出す（閉店後に呼ばれるので払わない）。
  */
 async function visitRivalShop(entry, io, staminaGuard, owner) {
-  const finale = entry.place === "enmaku" && finaleAtVisit("kuze");
+  const finale = entry.place === "enmaku" && finaleAtVisit("saku");
   const choices = [
-    ...finale ? [{ label: "綾取に呼ばれる", value: "finale:kuze" }] : [],
+    ...finale ? [{ label: "綾取に呼ばれる", value: "finale:saku" }] : [],
     ...optionalAt(entry.place).map(scene => ({ label: scene.label, value: `scene:${scene.id}` })),
     ...outingsAt(entry.place).map(outing => ({ label: `${outing.label.replace(/\s*に(顔を出す|寄る)$/, "")}：${outingReason(state, outing)}`, value: `outing:${outing.id}` })),
   ];
@@ -498,7 +498,7 @@ async function visitRivalShop(entry, io, staminaGuard, owner) {
       { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
   if (!pick || state !== owner) return unused;
   const [kind, id] = pick.split(":");
-  if (kind === "finale") return readKuzeFinale(staminaGuard, owner);
+  if (kind === "finale") return readSakuFinale(staminaGuard, owner);
   const result = kind === "scene" ? await readOptionalHere(io, optional.find(scene => scene.id === id), staminaGuard, owner)
     : await goOuting(outingById(id), staminaGuard, owner);
   if (result?.used && state === owner && cost) addMoney(-cost);
@@ -506,13 +506,13 @@ async function visitRivalShop(entry, io, staminaGuard, owner) {
 }
 
 /** 綾取の締めくくり（daily/bonds.js の条件・一度だけ）。ましろちゃんの節目と同じく行動を一つ使う。 */
-async function readKuzeFinale(staminaGuard, owner) {
+async function readSakuFinale(staminaGuard, owner) {
   if (!(await staminaGuard(-10))) return unused;
   const bg = BG(visitBg.enmaku);
   await setBg(bg, { instant: true });
-  if (!await playFinale("kuze", { bg }) || state !== owner) return unused;
+  if (!await playFinale("saku", { bg }) || state !== owner) return unused;
   addStamina(-10);
-  return { used: true, exerted: true, exp: personExp("kuze") };
+  return { used: true, exerted: true, exp: personExp("saku") };
 }
 
 /**

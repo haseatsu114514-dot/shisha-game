@@ -29,45 +29,45 @@
       "dialogue_id": "ch3_outing_enmaku_notes",
       "lines": [
         { "speaker": "", "text": "路地の「煙幕」。開店前の店で、綾取がノートをめくっていた。" },
-        { "speaker": "kuze", "face": "smile", "text": "あれ、来てくれたんだ。今日は吸う？　休む？" },
+        { "speaker": "saku", "face": "smile", "text": "あれ、来てくれたんだ。今日は吸う？　休む？" },
         { "speaker": "hajime", "face": "normal", "text": "今日は話だけ。綾取さんのノート、何を書いてるのか気になって" },
-        { "speaker": "kuze", "face": "normal", "text": "葉と炭の位置。それから、客が何の味だと言ったか" },
-        { "speaker": "kuze", "face": "normal", "text": "同じ一台でも、答えはばらばら。外れた答えの方が、面白いことも多いよ" },
+        { "speaker": "saku", "face": "normal", "text": "葉と炭の位置。それから、客が何の味だと言ったか" },
+        { "speaker": "saku", "face": "normal", "text": "同じ一台でも、答えはばらばら。外れた答えの方が、面白いことも多いよ" },
         { "speaker": "hajime", "face": "normal", "text": "外れた答えも、消さないんですね" },
-        { "speaker": "kuze", "face": "serious", "text": "消したら、その人の一口がなかったことになるじゃん" },
+        { "speaker": "saku", "face": "serious", "text": "消したら、その人の一口がなかったことになるじゃん" },
         { "speaker": "hajime", "face": "serious", "text": "（今は自分の舌を信じきれない。でも、客の言葉なら書き留められる）" },
-        { "speaker": "kuze", "face": "smug", "text": "君もノート、つけてみたら？　僕の組織、書記も募集中" },
+        { "speaker": "saku", "face": "smug", "text": "君もノート、つけてみたら？　僕の組織、書記も募集中" },
         { "speaker": "hajime", "face": "smile", "text": "入りません。でも、つけてみます" },
-        { "speaker": "kuze", "face": "smile", "text": "振られた。……作業台は、いつでも空けとくよ" }
+        { "speaker": "saku", "face": "smile", "text": "振られた。……作業台は、いつでも空けとくよ" }
       ]
     },
     {
       "dialogue_id": "ch3_outing_enmaku_answer",
       "lines": [
         { "speaker": "", "text": "昼の煙幕。綾取は客席を拭きながら、こちらに手を振った。" },
-        { "speaker": "kuze", "face": "smile", "text": "来たね。で、どうしたいか決まった？" },
+        { "speaker": "saku", "face": "smile", "text": "来たね。で、どうしたいか決まった？" },
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_ch3_trial_kuze",
+          "flag": "_ch3_trial_saku",
           "next_true": "tried",
           "next_false": "untried"
         },
-        { "speaker": "kuze", "face": "normal", "text": "大会の日は、最初の一口だけで決めないでね" },
+        { "speaker": "saku", "face": "normal", "text": "大会の日は、最初の一口だけで決めないでね" },
         { "speaker": "hajime", "face": "normal", "text": "……それ、忠告ですか？" },
-        { "speaker": "kuze", "face": "smile", "text": "さあ。半分はね" }
+        { "speaker": "saku", "face": "smile", "text": "さあ。半分はね" }
       ],
       "branches": {
         "tried": [
           { "speaker": "hajime", "face": "normal", "text": "mukaiで一台作りました。炭を急がない方が、後ろに甘さが残りました" },
-          { "speaker": "kuze", "face": "surprise", "text": "自分の台で確かめたんだ。……それ、僕に教えてよかったの？" },
+          { "speaker": "saku", "face": "surprise", "text": "自分の台で確かめたんだ。……それ、僕に教えてよかったの？" },
           { "speaker": "hajime", "face": "smile", "text": "綾取さんに聞いたことだから。答えも返したくて" },
-          { "speaker": "kuze", "face": "smile", "text": "律儀だなぁ。じゃあ僕からも一つ" }
+          { "speaker": "saku", "face": "smile", "text": "律儀だなぁ。じゃあ僕からも一つ" }
         ],
         "untried": [
           { "speaker": "hajime", "face": "normal", "text": "まだです。大会までに、自分の台で一度確かめます" },
-          { "speaker": "kuze", "face": "normal", "text": "うん。僕に答えを預けるより、ずっといい" },
-          { "speaker": "kuze", "face": "smile", "text": "その代わり、僕からも一つ" }
+          { "speaker": "saku", "face": "normal", "text": "うん。僕に答えを預けるより、ずっといい" },
+          { "speaker": "saku", "face": "smile", "text": "その代わり、僕からも一つ" }
         ]
       }
     },
@@ -320,15 +320,15 @@
       "comment": "煙幕に通う（AFB02）。綾取のノートの話の後に、繰り返し寄れる。1回目はこれ、2回目からは _b と _c を交互。味の言葉ははじめに言わせない（味覚が戻る前でも読める）。好感度は任意の外出の確定時に付ける。",
       "lines": [
         { "speaker": "", "text": "路地の「煙幕」。綾取はカウンターで、ノートに二本の線を引いていた。" },
-        { "speaker": "kuze", "face": "smile", "text": "いらっしゃい。ちょうどいい所に来た。これ見て" },
+        { "speaker": "saku", "face": "smile", "text": "いらっしゃい。ちょうどいい所に来た。これ見て" },
         { "speaker": "", "text": "ノートの左には綾取の予想、右には客の答えが並んでいる。" },
         { "speaker": "hajime", "face": "normal", "text": "「雨の日の縁側」……これ、味の名前ですか？" },
-        { "speaker": "kuze", "face": "smile", "text": "さっきの客の答え。僕の予想は「白桃」だった" },
-        { "speaker": "kuze", "face": "smug", "text": "外れたね。でも、こういう答えが一番うれしい" },
+        { "speaker": "saku", "face": "smile", "text": "さっきの客の答え。僕の予想は「白桃」だった" },
+        { "speaker": "saku", "face": "smug", "text": "外れたね。でも、こういう答えが一番うれしい" },
         { "speaker": "hajime", "face": "surprise", "text": "外れたのに、ですか" },
-        { "speaker": "kuze", "face": "serious", "text": "当たったら、僕の頭の中と同じだっただけ。外れたら、その人の一口がある" },
+        { "speaker": "saku", "face": "serious", "text": "当たったら、僕の頭の中と同じだっただけ。外れたら、その人の一口がある" },
         { "speaker": "hajime", "face": "normal", "text": "（正解を当ててもらうための店じゃないんだ）" },
-        { "speaker": "kuze", "face": "smile", "text": "今日は吸わなくていいよ。座って、答えを一緒に読んでって" }
+        { "speaker": "saku", "face": "smile", "text": "今日は吸わなくていいよ。座って、答えを一緒に読んでって" }
       ]
     },
     {
@@ -337,12 +337,12 @@
       "lines": [
         { "speaker": "", "text": "客の引いた煙幕。綾取は一人で、ホースを一本ずつ洗っていた。" },
         { "speaker": "hajime", "face": "normal", "text": "手伝います" },
-        { "speaker": "kuze", "face": "surprise", "text": "え、いいの？　……じゃあ、そっちのボウルをお願い" },
-        { "speaker": "kuze", "face": "smug", "text": "そうだ。今日も噂、流しといたよ" },
+        { "speaker": "saku", "face": "surprise", "text": "え、いいの？　……じゃあ、そっちのボウルをお願い" },
+        { "speaker": "saku", "face": "smug", "text": "そうだ。今日も噂、流しといたよ" },
         { "speaker": "hajime", "face": "normal", "text": "今度は、どんな噂ですか" },
-        { "speaker": "kuze", "face": "smile", "text": "「煙幕の店主は、客の思い出の味を出す」ってね" },
+        { "speaker": "saku", "face": "smile", "text": "「煙幕の店主は、客の思い出の味を出す」ってね" },
         { "speaker": "hajime", "face": "normal", "text": "……大げさですね" },
-        { "speaker": "kuze", "face": "normal", "text": "大げさな方が、人は路地に入ってくる。入った後は、一台でちゃんと返す" },
+        { "speaker": "saku", "face": "normal", "text": "大げさな方が、人は路地に入ってくる。入った後は、一台でちゃんと返す" },
         { "speaker": "hajime", "face": "smile", "text": "（噂は大きく、片付けは自分の手で。それがこの人のやり方なんだ）" }
       ]
     },
@@ -351,14 +351,14 @@
       "comment": "煙幕に通う（_b と交互）。はじめの手帳。「書記」は綾取のノートの話（ch3_outing_enmaku_notes）と同じ冗談。",
       "lines": [
         { "speaker": "", "text": "煙幕のカウンター。綾取が、こちらの手帳をのぞき込んだ。" },
-        { "speaker": "kuze", "face": "smile", "text": "それ、手帳？　何を書いてるの" },
+        { "speaker": "saku", "face": "smile", "text": "それ、手帳？　何を書いてるの" },
         { "speaker": "hajime", "face": "normal", "text": "客の顔と、煙の量です" },
-        { "speaker": "kuze", "face": "normal", "text": "見せて。……「二口目で黙る」って書いてある" },
+        { "speaker": "saku", "face": "normal", "text": "見せて。……「二口目で黙る」って書いてある" },
         { "speaker": "hajime", "face": "normal", "text": "うまい時か、困った時か、まだ分からなくて" },
-        { "speaker": "kuze", "face": "serious", "text": "分からないって書けるの、いいね。僕はすぐ、分かったことにしちゃう" },
-        { "speaker": "kuze", "face": "smug", "text": "僕の組織、書記の席が空いてるよ" },
+        { "speaker": "saku", "face": "serious", "text": "分からないって書けるの、いいね。僕はすぐ、分かったことにしちゃう" },
+        { "speaker": "saku", "face": "smug", "text": "僕の組織、書記の席が空いてるよ" },
         { "speaker": "hajime", "face": "smile", "text": "入りません" },
-        { "speaker": "kuze", "face": "smile", "text": "……即答だ" }
+        { "speaker": "saku", "face": "smile", "text": "……即答だ" }
       ]
     },
     {

@@ -9,7 +9,7 @@ assets/sprites/characters/{id}/chr_{id}_normal.png の頭部を切り出し、
 使い方:
     python3 tools/make_face_icons.py            # 全キャラ生成
     python3 tools/make_face_icons.py --sheet    # 確認用シートも出力
-    python3 tools/make_face_icons.py rin samechan # 指定キャラだけ生成（立ち絵を差し替えたキャラだけ更新する）
+    python3 tools/make_face_icons.py kuyuri samechan # 指定キャラだけ生成（立ち絵を差し替えたキャラだけ更新する）
 """
 
 import json

@@ -201,7 +201,7 @@ function meTab() {
   ]);
 }
 
-const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "rin", "hiyori", "samechan", "ageha", "kumicho", "rei", "mashiro"];
+const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "kuyuri", "hiyori", "samechan", "ageha", "kumicho", "rei", "mashiro"];
 function peopleTab() {
   const rows = PEOPLE.filter((id) => state.met[id] || id === "sumi").map((id) => {
     const lv = affinityLevel(id);

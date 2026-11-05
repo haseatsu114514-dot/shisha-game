@@ -180,11 +180,11 @@ export function applyStats(obj = {}) {
 // ---------------------------------------------------------------- 好感度（二層: ポイント→5段階）
 
 export const AFFINITY_RANK_PTS = [0, 9, 20, 33, 48, 66];
-export const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha", "mashiro", "hiyori", "samechan"];
+export const ROMANCEABLE = ["tsumugi", "minto", "kuyuri", "ageha", "mashiro", "hiyori", "samechan"];
 
 // 実際に答えた既存の関係分岐。未接続キャラの条件は推測で足さない。
 export const AFFINITY_GATE_CHOICES = Object.freeze({
-  tsumugi: "bond_q1_tsumugi", minto: "bond_q1_minto", rin: "bond_q1_rin",
+  tsumugi: "bond_q1_tsumugi", minto: "bond_q1_minto", kuyuri: "bond_q1_kuyuri",
   samechan: "bond_q1_samechan", ageha: "bond_q1_ageha", mashiro: "bond_q1_mashiro",
 });
 const hasAffinityGate = (id) => id === "hiyori" || !!AFFINITY_GATE_CHOICES[id];

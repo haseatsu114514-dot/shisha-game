@@ -18,8 +18,8 @@ await suite("hiyori-axe-assets", async check => {
       const framing = await page.evaluate(async () => {
         const { portraitInfo } = await import("./js/core/data.js");
         const hiyori = portraitInfo("hiyori", "normal");
-        const rin = portraitInfo("rin", "normal");
-        return { sourceHeight: hiyori.h * 1200, visibleRatio: hiyori.scale / rin.scale };
+        const kuyuri = portraitInfo("kuyuri", "normal");
+        return { sourceHeight: hiyori.h * 1200, visibleRatio: hiyori.scale / kuyuri.scale };
       });
       assert(Math.abs(framing.sourceHeight - 1000) <= 1, "Hiyori's exported figure must be 1000px tall");
       assert(Math.abs(framing.visibleRatio - 1) <= 0.05, "Hiyori and Kuyuri must appear at similar height");

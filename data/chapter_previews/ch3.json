@@ -47,13 +47,13 @@
       "text": "各審査員の持ち点は10。入れた点は戻せない。……道具も、人も、同じだ"
     },
     {
-      "art": "03-kuze-gaze",
+      "art": "03-saku-gaze",
       "cue": "build",
       "duration": 5000,
-      "id": "kuze-gaze",
+      "id": "saku-gaze",
       "kind": "image",
       "move": "push",
-      "source": "data/dialogue/ch3_prologue.json#ch3_kuze_research",
+      "source": "data/dialogue/ch3_prologue.json#ch3_saku_research",
       "text": "……止まった。派手じゃないのに、この手だけ読めないな"
     },
     {
@@ -75,13 +75,13 @@
       "text": "嘘つきたちの夜"
     },
     {
-      "art": "03-kuze-gaze",
+      "art": "03-saku-gaze",
       "cue": "build",
       "duration": 3500,
-      "id": "kuze-gaze-return",
+      "id": "saku-gaze-return",
       "kind": "image",
       "move": "still",
-      "source": "data/dialogue/ch3_prologue.json#ch3_kuze_research",
+      "source": "data/dialogue/ch3_prologue.json#ch3_saku_research",
       "text": "……止まった。派手じゃないのに、この手だけ読めないな"
     },
     {
@@ -89,7 +89,7 @@
       "duration": 4000,
       "id": "last-question",
       "kind": "echo",
-      "source": "data/dialogue/ch3_rivals.json#ch3_kuze_first",
+      "source": "data/dialogue/ch3_rivals.json#ch3_saku_first",
       "text": "作業台、空けるよ。僕の予想を外しに来てね"
     }
   ],

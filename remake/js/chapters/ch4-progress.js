@@ -55,14 +55,14 @@ export const CH4_SCENE_BG = Object.freeze({
   ch4_final: "bg_dubai_grand_smoke_stage",
   ch4_defeat: "bg_dubai_grand_smoke_stage",
   ch4_result: "bg_dubai_grand_smoke_stage",
-  ch4_nagumo_old_rival: "bg_dubai_grand_smoke_stage",
+  ch4_sui_old_rival: "bg_dubai_grand_smoke_stage",
   ch4_ending: "bg_dubai_sheikh_residence",
   ch4_sumi_return: "bg_tonari_inside_night",      // 帰国後のtonari。仮置き bg（#1177 でドバイ素材に差し替え）
   ch4_two_tables: "bg_tonari_inside_night",       // 仮置き bg（#1177 でドバイ素材に差し替え）
   // 別便の応援の到着（前夜祭の日）。宿のロビーで迎える。
   ch4_tsumugi_dubai_girlfriend: "bg_dubai_inn_day",
   ch4_minto_dubai_girlfriend: "bg_dubai_inn_day",
-  ch4_rin_dubai_girlfriend: "bg_dubai_inn_day",
+  ch4_kuyuri_dubai_girlfriend: "bg_dubai_inn_day",
   ch4_ageha_dubai_girlfriend: "bg_dubai_inn_day",
   ch4_mashiro_dubai_girlfriend: "bg_dubai_inn_day",
   ch4_samechan_dubai_girlfriend: "bg_dubai_inn_day",
@@ -81,7 +81,7 @@ export const CH4_SCENE_BGM = Object.freeze({
   ch4_final: "bgm_tournament_craft",
   ch4_defeat: "bgm_aftermath",
   ch4_result: "bgm_judging",
-  ch4_nagumo_old_rival: "bgm_aftermath",
+  ch4_sui_old_rival: "bgm_aftermath",
   ch4_ending: "bgm_aftermath",
 });
 
@@ -121,12 +121,12 @@ export const CH4_MANDATORY = Object.freeze([
   { id: "ch4_stranger_third", lead: null },
 ].map(entry => Object.freeze(entry)));
 
-// 勝ち側の本線。story_routes の on_win は result → ending → nagumo_old_rival → sumi_return → two_tables だが、
-// CH4-CONNECTION-DESIGN 要点3「須井は屋敷・帰国より前」に従い nagumo_old_rival を ending の前に置く。
+// 勝ち側の本線。story_routes の on_win は result → ending → sui_old_rival → sumi_return → two_tables だが、
+// CH4-CONNECTION-DESIGN 要点3「須井は屋敷・帰国より前」に従い sui_old_rival を ending の前に置く。
 // （story_routes.json は編集しない。食い違いは PR 報告に明記）
 export const CH4_RESOLUTION = Object.freeze([
   { id: "ch4_result", label: "結果発表", location: "大会会場" },
-  { id: "ch4_nagumo_old_rival", label: "審査席から", location: "大会会場" },
+  { id: "ch4_sui_old_rival", label: "審査席から", location: "大会会場" },
   { id: "ch4_ending", label: "大会のあと", location: "屋敷" },
   { id: "ch4_sumi_return", label: "帰国後", location: "tonari" },
   { id: "ch4_two_tables", label: "翌週の閉店後", location: "tonari" },
@@ -172,14 +172,14 @@ export const CH4_VISITOR_SCENE_FILES = Object.freeze({
   ch4_visitors: Object.freeze(["ch4_samechan_dubai_girlfriend", "ch4_hiyori_dubai_girlfriend"]),
   ch4_tsumugi_dubai: Object.freeze(["ch4_tsumugi_dubai_girlfriend"]),
   ch4_minto_dubai: Object.freeze(["ch4_minto_dubai_girlfriend"]),
-  ch4_rin_dubai: Object.freeze(["ch4_rin_dubai_girlfriend"]),
+  ch4_kuyuri_dubai: Object.freeze(["ch4_kuyuri_dubai_girlfriend"]),
   ch4_ageha_dubai: Object.freeze(["ch4_ageha_dubai_girlfriend"]),
 });
 
 // 別便の応援の到着場面。恋人は data/story_routes.json の romance[id].arrival と同じ（ch4_progress.mjs が一致を確認）。
 // 恋人でないましろ（第3章クリアで来る）は友人版。同行者は同じ便なので到着場面を持たない。
 export const CH4_ARRIVAL_SCENES = Object.freeze({
-  tsumugi: "ch4_tsumugi_dubai_girlfriend", minto: "ch4_minto_dubai_girlfriend", rin: "ch4_rin_dubai_girlfriend",
+  tsumugi: "ch4_tsumugi_dubai_girlfriend", minto: "ch4_minto_dubai_girlfriend", kuyuri: "ch4_kuyuri_dubai_girlfriend",
   ageha: "ch4_ageha_dubai_girlfriend", mashiro: "ch4_mashiro_dubai_girlfriend",
   samechan: "ch4_samechan_dubai_girlfriend", hiyori: "ch4_hiyori_dubai_girlfriend",
 });

@@ -32,7 +32,7 @@
           "type": "condition",
           "condition_type": "flag",
           "flag": "_shuraba_ch1",
-          "next_true": "mw_shuraba_rin"
+          "next_true": "mw_shuraba_kuyuri"
         },
         {
           "speaker": "hajime",
@@ -51,12 +51,12 @@
         }
       ],
       "branches": {
-        "mw_shuraba_rin": [
+        "mw_shuraba_kuyuri": [
           {
             "type": "condition",
             "condition_type": "lover",
-            "char_id": "rin",
-            "next_true": "mw_shuraba_rin_lover"
+            "char_id": "kuyuri",
+            "next_true": "mw_shuraba_kuyuri_lover"
           },
           {
             "type": "condition",
@@ -65,19 +65,19 @@
             "next_true": "mw_shuraba_hiyori_lover"
           }
         ],
-        "mw_shuraba_rin_lover": [
+        "mw_shuraba_kuyuri_lover": [
           {
             "speaker": "",
             "face": "",
             "text": "その下に、くゆりさんからも一件。夜のうちに届いていたらしい。"
           },
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "smile",
             "text": "優勝おめでとう、モルモットくん。データは、ちゃんと取らせてもらったよ"
           },
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "normal",
             "text": "朝の件は、まだ保留。……結果は出たから、次は君の検証の番だね"
           },

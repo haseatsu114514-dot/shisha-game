@@ -3,14 +3,14 @@ import { difficultyForRun, liftRivalScore, observeRivalScore } from "../core/ngp
 import { difficultyEvidence } from "../core/cycle-start.js";
 
 export const CH4_CONTESTANTS = Object.freeze(["hajime", "naru", "master_hookah", "sheikh"]);
-export const CH4_JUDGES = Object.freeze(["nagumo", "da_silva", "emil"]);
+export const CH4_JUDGES = Object.freeze(["sui", "da_silva", "emil"]);
 // 2026-11-03「3・4章を難しく調整」: なるの中盤、シェイクの終盤を強める暫定値（実機調整前）。
 // 配点は2/3/2/3を保持。最後40%の案は、相手の固定順位を生むため採用しない。
 // 途中の旧保存は旧基準を保持し、新しい一台から版2で競う。
 export const CH4_RULES_VERSION = 3;
 // 穴・熱・提供・調整1・調整2・最終総合。各成分は等重みから±10pt以内。
 export const CH4_JUDGE_WEIGHTS = Object.freeze({
-  nagumo: Object.freeze([15, 15, 15, 15, 15, 25]),
+  sui: Object.freeze([15, 15, 15, 15, 15, 25]),
   da_silva: Object.freeze([15, 25, 15, 15, 15, 15]),
   emil: Object.freeze([15, 15, 15, 15, 25, 15]),
 });

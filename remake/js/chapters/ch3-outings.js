@@ -23,11 +23,11 @@ export function loadChapterThreeOutings() {
 // 地図の行き先ごとの背景。mukaiの裏口（てつこ）は専用の絵ができるまで店の背景を使う。
 const OUTING_BG = { mukai: "bg_mukai_shop", enmaku: "bg_yohaku_shop", steve: "bg_steve_shop", park: "bg_tokyo_park" };
 /** その店で会える授業の先生（心得の盤 SBD70: 授業は会って相談した時だけ習う） */
-const OUTING_TEACHER = { mukai: "mashiro", enmaku: "kuze", steve: "steve" };
+const OUTING_TEACHER = { mukai: "mashiro", enmaku: "saku", steve: "steve" };
 // 店の手伝いは仕事の鍵。人に会いに行く回は、店が変わってもその人の鍵で数える（SPEC 1.3）。
 const OUTING_EXP = {
   mukai_help: { key: "tokyo:mukai_help", place: "tokyo:mukai_help" },
-  enmaku_notes: { key: "kuze", person: "kuze" }, enmaku_answer: { key: "kuze", person: "kuze" },
+  enmaku_notes: { key: "saku", person: "saku" }, enmaku_answer: { key: "saku", person: "saku" },
   mukai_steve: { key: "steve", person: "steve" }, steve_timer: { key: "steve", person: "steve" },
 };
 

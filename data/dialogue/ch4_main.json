@@ -1666,7 +1666,7 @@
       }
     },
     {
-      "dialogue_id": "ch4_nagumo_old_rival",
+      "dialogue_id": "ch4_sui_old_rival",
       "lines": [
         {
           "speaker": "",
@@ -1679,7 +1679,7 @@
           "text": "帰ったら、勝った方が作る。忘れんなよ"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "smile",
           "text": "……懐かしい約束だ"
         },
@@ -1689,7 +1689,7 @@
           "text": "須井さんも、してたんですか"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "smile",
           "text": "ああ。あいつに何度も作らせた。悔しくて、感想だけは長くなった"
         },
@@ -1699,12 +1699,12 @@
           "text": "スミさんに？"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "thinking",
           "text": "ある晩、店を増やす話をした。あいつは、次の大会の点を数えていた"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "serious",
           "text": "勝ち負けの話はしてない。……そう言ったら、黙り込んだ"
         },
@@ -1719,12 +1719,12 @@
           "text": "そのあと、話せたんですか"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "thinking",
           "text": "会えば今の店の話はする。だが、あの晩の話はしていない"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "thinking",
           "text": "次は向こうから言うだろうと、互いに待ちすぎた"
         },
@@ -1734,17 +1734,17 @@
           "text": "……店を増やすのって、負けたからですか"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "smile",
           "text": "勝ちたかったよ。それとは別に、帰れる店を増やしたかった"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "あいつの店も、うちの店も続いている。まだ話すことはある"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "smile",
           "text": "鳴切くん。今日は、届け先が見えた"
         },
@@ -1765,7 +1765,7 @@
           "text": "翌週の閉店後。須井がネクタイを緩め、tonariのカウンターに座った。"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "smile",
           "text": "まだそのトングか"
         },
@@ -1780,7 +1780,7 @@
           "text": "スミさんが出したのは、カルダモンの一台だった。須井が二口目を吸う。"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "serious",
           "text": "勝った方が作る約束、まだ有効か"
         },
@@ -1790,7 +1790,7 @@
           "text": "……ずいぶん、溜まってるだろうな"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "serious",
           "text": "俺の店の話も、今日は最後まで聞け"
         },

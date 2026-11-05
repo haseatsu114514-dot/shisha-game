@@ -11,7 +11,7 @@ const module=new vm.SourceTextModule(source,{context});
 await module.link(spec=>{
   const match=[...source.matchAll(/import\s*\{([^}]+)\}\s*from\s*["']([^"']+)["']/g)].find(m=>m[2]===spec);assert(match,spec);
   const names=match[1].split(',').map(s=>s.trim().split(/\s+as\s+/)[0]);
-  return new vm.SyntheticModule(names,function(){for(const n of names)this.setExport(n,n==='state'?{}:n==='NAGUMO_BAR'?75:()=>{throw Error('Unexpected rendering port '+n);});},{context});
+  return new vm.SyntheticModule(names,function(){for(const n of names)this.setExport(n,n==='state'?{}:n==='SUI_BAR'?75:()=>{throw Error('Unexpected rendering port '+n);});},{context});
 });await module.evaluate();
 const {pointTable,interimPointTable}=module.namespace;
 // Baseline's actual in-function literal is evaluated only to demonstrate its withdrawn vote.
@@ -24,21 +24,21 @@ const clone=v=>JSON.parse(JSON.stringify(v));
 // #1282（オーナー決定 2026-10-28）: 第1章の逆転優勝を廃止。はじめは上園・博士からも点が入り票前から首位で競り、
 // 須井の10点は最後の一票。凍結値はこの形に合わせて更新した（須井の10点配分自体は不変）。
 const frozenFinal={
-  1:{maezono:{hajime:4,naru:2,adam:2,minto:2},dr_kemuri:{hajime:3,adam:3,naru:3,minto:1},nagumo:{hajime:10}},
-  3:{maezono:{naru:4,adam:3,hajime:2,minto:1},dr_kemuri:{adam:5,minto:2,hajime:2,naru:1},nagumo:{naru:10}},
-  4:{maezono:{naru:4,adam:3,minto:1,hajime:2},dr_kemuri:{adam:5,minto:3,naru:1,hajime:1},nagumo:{naru:10}}
+  1:{maezono:{hajime:4,naru:2,adam:2,minto:2},dr_kemuri:{hajime:3,adam:3,naru:3,minto:1},sui:{hajime:10}},
+  3:{maezono:{naru:4,adam:3,hajime:2,minto:1},dr_kemuri:{adam:5,minto:2,hajime:2,naru:1},sui:{naru:10}},
+  4:{maezono:{naru:4,adam:3,minto:1,hajime:2},dr_kemuri:{adam:5,minto:3,naru:1,hajime:1},sui:{naru:10}}
 };
 for(const rank of [1,3,4]){
   assert.deepEqual(clone(pointTable(rank)),frozenFinal[rank],'Final votes match the frozen table (updated for #1282 no-reversal); Sui ten points unchanged');
   let previous={};
   for(const current of [interim(1),interim(2),interim(3),pointTable(rank)]){
-    for(const judge of ['maezono','dr_kemuri','nagumo']){
+    for(const judge of ['maezono','dr_kemuri','sui']){
       assert(Object.values(current[judge]).reduce((a,b)=>a+b,0)<=10);
       for(const id of ['naru','adam','minto','hajime'])assert((current[judge][id]||0)>=(previous[judge]?.[id]||0),`${judge}/${id}: allocated votes cannot return (rank ${rank})`);
     }previous=current;
   }
 }
-for(const round of [1,2,3])assert.equal(Object.values(interim(round).nagumo).reduce((a,b)=>a+b,0),0);
+for(const round of [1,2,3])assert.equal(Object.values(interim(round).sui).reduce((a,b)=>a+b,0),0);
 if(interimPointTable){assert.match(source,/const table = attempt\?\.rulesVersion >= 2 \? attempt\.voteAttempt\.votes : interimPointTable\(round\);/);assert.doesNotMatch(source,/チャコール博士が最後の持ち点を投入/);}
 console.log(JSON.stringify({groups:3,ranks:[1,3,4],scope:'actual vote module with controlled unused render ports; no browser',result:'interim votes monotonic through all unchanged final tables; per-judge <=10; Sui held'},null,2));
 
@@ -92,7 +92,7 @@ async function standingsHarness(auto = null) {
     setTimeout: later, clearTimeout: unlater });
   let game = { flags: {}, marker: "original" }, statePort;
   const ports = {
-    layers: { fx }, SE: { crowd() {}, select() { selections++; } }, NAGUMO_BAR: 75,
+    layers: { fx }, SE: { crowd() {}, select() { selections++; } }, SUI_BAR: 75,
     displayName: id => id, faceIconUrl: () => null, portraitInfo: () => null,
     evaluationOf: () => ({ tone: "good", mark: "○" }), craftRecognition: () => ({ summary: "制作の記録" }),
     autoSkill: () => auto,

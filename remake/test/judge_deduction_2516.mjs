@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { judgeDeductionReason } from "../js/craft/feedback.js";
 
 const items = ["holes", "heat", "shisha", "care1", "care2"];
-const judges = ["maezono", "dr_kemuri", "nagumo", "emil", "da_silva"];
+const judges = ["maezono", "dr_kemuri", "sui", "emil", "da_silva"];
 const perfect = () => Object.fromEntries(items.map(item => [item, 100]));
 const labels = ["穴あけ", "炭焼き", "完成品", "調整1", "調整2"];
 for (const [index, item] of items.entries()) {

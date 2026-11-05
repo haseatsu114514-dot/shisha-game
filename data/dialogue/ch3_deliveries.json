@@ -27,7 +27,7 @@
       ]
     },
     {
-      "dialogue_id": "ch3_delivery_kuze",
+      "dialogue_id": "ch3_delivery_saku",
       "lines": [
         {
           "speaker": "",
@@ -42,7 +42,7 @@
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "kuze",
+          "char_id": "saku",
           "next_true": "known",
           "next_false": "new"
         },
@@ -52,7 +52,7 @@
           "text": "綾取が宛名を確かめて包みを受け取る。客席には座らず、店先で会釈した。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "今度は用事なしでおいで。客としてなら、ゆっくり話せるから"
         }
@@ -60,7 +60,7 @@
       "branches": {
         "new": [
           {
-            "speaker": "kuze",
+            "speaker": "saku",
             "face": "normal",
             "text": "綾取朔。大会の間、ここを借りてる。届けてくれてありがとう"
           },
@@ -72,7 +72,7 @@
         ],
         "known": [
           {
-            "speaker": "kuze",
+            "speaker": "saku",
             "face": "normal",
             "text": "ああ、はじめくん。今日はmukaiのお仕事なんだね。ありがとう"
           }

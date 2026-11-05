@@ -12,8 +12,8 @@ export function chapterThreePartyWindow(value) {
 }
 
 // この夜まで東京にいる店主・大会参加者。地元の仲間は実際の滞在・合流記録が必要。
-const LOCALS = ["mashiro", "kuze", "volk", "mukai_master"];
-const VISITORS = ["tsumugi", "minto", "rin", "samechan", "hiyori", "ageha"];
+const LOCALS = ["mashiro", "saku", "volk", "mukai_master"];
+const VISITORS = ["tsumugi", "minto", "kuyuri", "samechan", "hiyori", "ageha"];
 export function chapterThreePartyGuests(value) {
   if (!chapterThreePartyWindow(value)) return [];
   const last = Array.isArray(value.growth?.partyLast) ? value.growth.partyLast : [];

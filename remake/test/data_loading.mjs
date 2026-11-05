@@ -89,7 +89,7 @@ assert.deepEqual(JSON.parse(JSON.stringify(all.DB.lime)), limeMessages);
 assert.equal(new Set(all.DB.lime.map(m => m.id)).size, all.DB.lime.length);
 assert.deepEqual(Array.from(all.DB.lime.slice(-9), m => m.id), [
   "lime_naru_samechan_nickname", "lime_samechan_preparing_thanks", "lime_samechan_opening",
-  "lime_outing_samechan_1", "lime_after_outing_samechan", "lime_outing_rin_1", "lime_after_outing_rin",
+  "lime_outing_samechan_1", "lime_after_outing_samechan", "lime_outing_kuyuri_1", "lime_after_outing_kuyuri",
   "lime_outing_hiyori_1", "lime_after_outing_hiyori",
 ]);
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.limeTemplates)), realJSON("../data/lime_messages.json").templates);
@@ -104,9 +104,9 @@ for (const id of ["baito_tsumugi_01", "baito_minto_romance", "baito_ageha_romanc
 assert(Array.isArray(all.DB.gallery.items), "the approved gallery catalog is loaded from real data");
 assert.equal(all.DB.characters.hiyori.name, "薄羽ひより");
 assert.equal(all.DB.characters.hiyori.reading, "うすば ひより");
-assert.equal(all.DB.characters.kuze.name, "綾取 朔（あやとり さく）");
+assert.equal(all.DB.characters.saku.name, "綾取 朔（あやとり さく）");
 assert.equal(all.DB.characters.rei.reading, "あそう れい");
-assert.equal(all.realName("kuze"), "綾取朔");
+assert.equal(all.realName("saku"), "綾取朔");
 assert.equal(all.realName("rei"), "鴉葬レヰ");
 assert.equal(all.realName("hiyori"), "ひより");
 assert.equal(all.DB.characters.hiyori.age, 25);
@@ -130,7 +130,7 @@ assert.equal(all.DB.dialogues.tournament_craft_care_recovered, undefined);
 assert.equal(all.DB.characters.maki.display_name, "斧崎マキ");
 assert.equal(all.DB.characters.sai.display_name, "六角サイ");
 assert(all.DB.dialogues.venue_maki_greet.lines[0].text);
-assert(all.DB.dialogues.ch1_tsumugi_bond_finale && all.DB.dialogues.ch1_rin_bond_question); // 交友の締めくくり（ch1_bonds）
+assert(all.DB.dialogues.ch1_tsumugi_bond_finale && all.DB.dialogues.ch1_kuyuri_bond_question); // 交友の締めくくり（ch1_bonds）
 assert(all.DB.friends.friends.naru.chats.length > 0); // 友人のたまのLIME（remake/data/friends.json）
 assert(all.DB.manifest.backgrounds.includes("bg_tonari_inside_day.png"));
 assert(all.DB.flavors.every((f) => (f.leaf || "blond") === "blond"));

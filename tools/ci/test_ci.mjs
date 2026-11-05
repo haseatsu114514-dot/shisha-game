@@ -54,9 +54,9 @@ test("chapter 3 changes do not start unrelated chapter and feature suites", () =
   const changed = [
     "data/dialogue/ch3_prologue.json",
     "remake/js/chapters/ch3.js",
-    "remake/css/ch3-kuze-video.css",
-    "assets/backgrounds/bg_ch3_kuze_video.png",
-    "remake/img/backgrounds/bg_ch3_kuze_video.webp",
+    "remake/css/ch3-saku-video.css",
+    "assets/backgrounds/bg_ch3_saku_video.png",
+    "remake/img/backgrounds/bg_ch3_saku_video.webp",
     "remake/data/manifest.json",
     "remake/index.html",
     "remake/test/browser/ch2_tournament.mjs",

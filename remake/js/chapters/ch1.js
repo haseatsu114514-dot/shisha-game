@@ -47,7 +47,7 @@ import { warmCraftAssets } from "../craft/readiness.js";
 import { playTsumugiStory, playTsumugiSketch } from "./tsumugi-story.js";
 import { meetHiyoriAtTonari } from "../daily/hiyori.js";
 import { computeShisha, finalize } from "../craft/score.js";
-import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } from "../craft/result.js";
+import { outcomeOf, showStandings, resultCountdown, suiCutin, resultTable } from "../craft/result.js";
 import { beginCh1Votes, castCh1Votes } from "../craft/ch1-votes.js";
 import { craftRecognition } from "../craft/recognition.js";
 import { playCh1Title } from "./ch1-title-motion.js";
@@ -628,7 +628,7 @@ async function tournamentDay() {
   state.tournament.voteAttempt = state.tournament.rulesVersion >= 2 ? null : undefined;
   if (state.tournament.rulesVersion >= 2) beginCh1Votes(state.tournament);
   save();
-  for (const id of ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"]) markMet(id);
+  for (const id of ["naru", "adam", "minto", "sui", "maezono", "dr_kemuri"]) markMet(id);
   void preloadBgm("bgm_tournament_edm");
   void preloadBgm("bgm_tournament_craft");
   void warmGameOver();
@@ -746,7 +746,7 @@ async function tournamentDay() {
     await resultCountdown(cs, out.kind, state.tournament);
     retireScreen(); // カウント画面は次の場面で片付く
     playBgm("bgm_aftermath");
-    await nagumoCutin(1, state.tournament);
+    await suiCutin(1, state.tournament);
     await play("ch1_tournament_reveal", { bg: STAGE });
     await resultTable(cs, 1, state.tournament);
     state.tournament.victory.revealed = true;
@@ -755,7 +755,7 @@ async function tournamentDay() {
   } else {
     await resultCountdown(cs, out.kind, state.tournament);
     retireScreen();
-    await nagumoCutin(out.rank, state.tournament);
+    await suiCutin(out.rank, state.tournament);
     await resultTable(cs, out.rank, state.tournament);
     await play("ch1_tournament_defeat", { bg: STAGE });
     await play("remake_defeat_follow", { bg: TONARI_N });
@@ -842,7 +842,7 @@ async function resumeVictory() {
   playBgm("bgm_aftermath");
   const v = owner.tournament.victory;
   if (!v.revealed) {
-    await nagumoCutin(1, state.tournament);
+    await suiCutin(1, state.tournament);
     if (state !== owner) return;
     await play("ch1_tournament_reveal", { bg: STAGE });
     if (state !== owner) return;

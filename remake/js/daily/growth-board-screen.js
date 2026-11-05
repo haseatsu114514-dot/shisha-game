@@ -56,7 +56,7 @@ const iconOf = (node) => node.kind === "stat" ? (node.peak ? "peak" : node.perk 
  */
 const PORTRAIT_EYES = {
   sumi: [442, 198, 99], minto: [492, 375, 99], adam: [436, 218, 102], tsumugi: [423, 433, 95], naru: [454, 239, 90], rei: [440, 97, 99],
-  ageha: [472, 341, 99], kumicho: [479, 136, 122], kuze: [409, 145, 95], steve: [481, 100, 122], volk: [459, 109, 88], rin: [397, 290, 99],
+  ageha: [472, 341, 99], kumicho: [479, 136, 122], saku: [409, 145, 95], steve: [481, 100, 122], volk: [459, 109, 88], kuyuri: [397, 290, 99],
   hiyori: [426, 299, 104], samechan: [448, 397, 104], mashiro: [439, 404, 104], sheikh: [447, 89, 98], da_silva: [453, 80, 99], hajime: [528, 263, 90],
   master_hookah: [415, 100, 95], dr_kemuri: [400, 196, 94],
 };

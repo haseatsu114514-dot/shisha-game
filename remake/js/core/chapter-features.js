@@ -4,9 +4,9 @@
 // ひよりの地元外出とスミの本筋シフト（DAY3/8・大会前まで）は第1章のみ。
 // くゆりの地元外出（問屋街の豆屋）は第1・2章、綾取の締めくくり（煙幕）は第3章、つむぎの締めくくりを本筋の応募節目で待たせるゲートは第1章のみ。
 const CHAPTER_FEATURES = new Map([
-  [1, { fortune: true, earlyHomeRig: true, baitoCameos: true, hiyoriDaily: true, hiyoriHomeOuting: true, rinHomeOuting: true, sumiStoryShifts: true, tsumugiContestGate: true, lineMedia: true, friendDailyLime: true }],
-  [2, { fortune: true, hiyoriDaily: true, rinHomeOuting: true, lineMedia: true, agehaVisit: true, samechanRomance: true, friendDailyLime: true }],
-  [3, { fortune: true, lineMedia: true, mashiroBond: true, kuzeBond: true, samechanRomance: true, friendSceneLime: true }],
+  [1, { fortune: true, earlyHomeRig: true, baitoCameos: true, hiyoriDaily: true, hiyoriHomeOuting: true, kuyuriHomeOuting: true, sumiStoryShifts: true, tsumugiContestGate: true, lineMedia: true, friendDailyLime: true }],
+  [2, { fortune: true, hiyoriDaily: true, kuyuriHomeOuting: true, lineMedia: true, agehaVisit: true, samechanRomance: true, friendDailyLime: true }],
+  [3, { fortune: true, lineMedia: true, mashiroBond: true, sakuBond: true, samechanRomance: true, friendSceneLime: true }],
   [4, { fortune: true, friendSceneLime: true }],
   [5, { fortune: true, friendDailyLime: true, friendSceneLime: true, friendChatOnly: true }],
 ]);

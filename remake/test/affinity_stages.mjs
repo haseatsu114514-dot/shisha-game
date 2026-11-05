@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../js/', import.meta.url));
 const sourceRoot = process.env.AFFINITY_SOURCE_ROOT || root;
 const realPaths = ['core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/phone.js','daily/invitations.js','core/chapter-clock.js','core/chapter-features.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
-const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rin','ch1_bonds','samechan','hiyori','lover_events','confession','cinema'];
+const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_kuyuri','ch1_bonds','samechan','hiyori','lover_events','confession','cinema'];
 const data = scripts.map(name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))));
 const clone = value => JSON.parse(JSON.stringify(value));
 const limeData = JSON.parse(fs.readFileSync(new URL('../../data/lime_messages.json', import.meta.url)));
@@ -132,29 +132,29 @@ await check('visitChar normal completion, same-owner concurrent entry and heart 
   assert.equal(s.story.naru,2); assert.equal(s.affinity.naru,27); assert.equal(f.stats.affinityLevel('naru'),2); assert.equal(f.spots.hasNewStory('naru'),true); // ♥2で3本目が開く
 });
 await check('question selected then cancelled: retain answer, resume reaction and complete once', async f => {
-  const s=f.core.state; s.story.rin=3; s.affinity.rin=33;
-  f.stats.gainAffinity('rin',40);
-  f.setPlay(async () => { f.bonds.recordRomanceChoice({id:'bond_q1_rin',romance_char:'rin'},{romance:0}); return {cancelled:true}; });
-  assert.equal(await f.bonds.playQuestionVisit('rin'),false); assert.equal(f.stats.affinityGateWaiting('rin'),true);
-  assert.equal(s.flags[f.stages.questionDoneKey('rin')],undefined); assert.equal(s.romanceChoices.bond_q1_rin.value,0);
-  f.roundTrip(); f.setPlay(async scene => { assert(!scene.lines.some(l=>l.type==='choice'&&l.id==='bond_q1_rin')); return done; });
-  assert.equal(await f.bonds.playQuestionVisit('rin'),true); assert.equal(f.stats.affinityGateWaiting('rin'),false);
-  const after=clone(f.core.state); assert.equal(await f.bonds.playQuestionVisit('rin'),false);
-  assert.deepEqual(clone(f.core.state),after); assert.equal(f.core.state.romance.rin||0,0);
+  const s=f.core.state; s.story.kuyuri=3; s.affinity.kuyuri=33;
+  f.stats.gainAffinity('kuyuri',40);
+  f.setPlay(async () => { f.bonds.recordRomanceChoice({id:'bond_q1_kuyuri',romance_char:'kuyuri'},{romance:0}); return {cancelled:true}; });
+  assert.equal(await f.bonds.playQuestionVisit('kuyuri'),false); assert.equal(f.stats.affinityGateWaiting('kuyuri'),true);
+  assert.equal(s.flags[f.stages.questionDoneKey('kuyuri')],undefined); assert.equal(s.romanceChoices.bond_q1_kuyuri.value,0);
+  f.roundTrip(); f.setPlay(async scene => { assert(!scene.lines.some(l=>l.type==='choice'&&l.id==='bond_q1_kuyuri')); return done; });
+  assert.equal(await f.bonds.playQuestionVisit('kuyuri'),true); assert.equal(f.stats.affinityGateWaiting('kuyuri'),false);
+  const after=clone(f.core.state); assert.equal(await f.bonds.playQuestionVisit('kuyuri'),false);
+  assert.deepEqual(clone(f.core.state),after); assert.equal(f.core.state.romance.kuyuri||0,0);
 });
 for (const outcome of ['missing','abort','load','throw']) await check(`question public caller ${outcome} does not commit`, async f => {
-  const s=f.core.state; s.story.rin=3;s.affinity.rin=33; const controller=new AbortController();
+  const s=f.core.state; s.story.kuyuri=3;s.affinity.kuyuri=33; const controller=new AbortController();
   f.setPlay(async()=> { if(outcome==='throw')throw Error('expected'); if(outcome==='load')f.core.newGame(); if(outcome==='abort')controller.abort(); return outcome==='missing'?undefined:done; });
-  const p=f.bonds.playQuestionVisit('rin',{signal:controller.signal});
+  const p=f.bonds.playQuestionVisit('kuyuri',{signal:controller.signal});
   if(outcome==='throw')await assert.rejects(p,/expected/); else assert.equal(await p,false);
-  assert.equal(s.flags[f.stages.questionDoneKey('rin')],undefined);
+  assert.equal(s.flags[f.stages.questionDoneKey('kuyuri')],undefined);
 });
 await check('Kuyuri third story completes at heart2 and reaches heart3; question is due only at heart3',async f=>{
-  const s=f.core.state;s.story.rin=2;s.affinity.rin=20;
-  f.setPlay(async()=>done);assert.equal(await f.spots.visitChar('rin'),true);
-  assert.equal(s.story.rin,3);assert.equal(s.affinity.rin,33);assert.equal(f.bonds.questionVisitDue('rin'),true);
-  s.affinity.rin=32;assert.equal(f.bonds.questionVisitDue('rin'),false);
-  f.stats.gainAffinity('rin',2);assert.equal(s.affinity.rin,34);assert.equal(f.bonds.questionVisitDue('rin'),true);
+  const s=f.core.state;s.story.kuyuri=2;s.affinity.kuyuri=20;
+  f.setPlay(async()=>done);assert.equal(await f.spots.visitChar('kuyuri'),true);
+  assert.equal(s.story.kuyuri,3);assert.equal(s.affinity.kuyuri,33);assert.equal(f.bonds.questionVisitDue('kuyuri'),true);
+  s.affinity.kuyuri=32;assert.equal(f.bonds.questionVisitDue('kuyuri'),false);
+  f.stats.gainAffinity('kuyuri',2);assert.equal(s.affinity.kuyuri,34);assert.equal(f.bonds.questionVisitDue('kuyuri'),true);
 });
 await check('legacy current/carry/history stay intact; deferred ordinary credit releases once without reading stages across SAVE/LOAD', async f => {
   let s=f.core.state;s.affinity.tsumugi=66;s.affinityCarry.tsumugi=.7;
@@ -404,11 +404,11 @@ await check('LOAD during old private scope cannot leak into new public gain or c
   const old=f.core.state;old.lovers=['tsumugi'];old.loveLevel.tsumugi=1;old.lovePts.tsumugi=9;
   let resolve; f.setPlay(()=>new Promise(r=>resolve=r));
   const pending=f.romance.playLoverMilestone('tsumugi');
-  const s=f.fresh();s.lovers=['rin'];s.loveLevel.rin=1;s.lovePts.rin=9;
-  f.stats.gainAffinity('rin',10);assert.equal(s.lovePts.rin,9,'old private context leaked across LOAD');
+  const s=f.fresh();s.lovers=['kuyuri'];s.loveLevel.kuyuri=1;s.lovePts.kuyuri=9;
+  f.stats.gainAffinity('kuyuri',10);assert.equal(s.lovePts.kuyuri,9,'old private context leaked across LOAD');
   const restore=f.stats.privateBondScope();resolve(done);assert.equal(await pending,false);
   assert.equal(f.stats.bond.private,true,'old finally closed new context');
-  f.stats.gainAffinity('rin',10);assert.equal(s.lovePts.rin,14);restore();assert.equal(f.stats.bond.private,false);
+  f.stats.gainAffinity('kuyuri',10);assert.equal(s.lovePts.kuyuri,14);restore();assert.equal(f.stats.bond.private,false);
 });
 await check('privateBondScope: nested scopes restore fully in LIFO order (#1361)',async f=>{
   assert.equal(f.stats.bond.private,false);
@@ -441,10 +441,10 @@ await check('privateBondScope: LOAD-stale scope cannot close a scope on the new 
   live();assert.equal(f.stats.bond.private,false);
 });
 await check('question pending public caller rejects duplicate entry without a second play',async f=>{
-  const s=f.core.state;s.affinity.rin=33;s.story.rin=3;let resolve;
-  f.setPlay(()=>new Promise(r=>resolve=r));const p=f.bonds.playQuestionVisit('rin');
-  assert.equal(await f.bonds.playQuestionVisit('rin'),false);assert.equal(f.plays.length,1);
-  f.bonds.recordRomanceChoice({id:'bond_q1_rin',romance_char:'rin'},{romance:1});resolve(done);assert.equal(await p,true);
+  const s=f.core.state;s.affinity.kuyuri=33;s.story.kuyuri=3;let resolve;
+  f.setPlay(()=>new Promise(r=>resolve=r));const p=f.bonds.playQuestionVisit('kuyuri');
+  assert.equal(await f.bonds.playQuestionVisit('kuyuri'),false);assert.equal(f.plays.length,1);
+  f.bonds.recordRomanceChoice({id:'bond_q1_kuyuri',romance_char:'kuyuri'},{romance:1});resolve(done);assert.equal(await p,true);
 });
 for (const chapter of [1,2]) for (const points of [32,33,34]) await check(`chapter-spanning visit at ${points} points in chapter${chapter}: one eligible stage or daily talk`,async f=>{
   const s=f.core.state;s.chapter=chapter;s.story.naru=3;s.affinity.naru=points;s.flags._cafe_introduced=true;
@@ -633,43 +633,43 @@ await check('Mashiro (#2022): chapter 3 optional reads are the ladder, ♥3 ques
 await check('Ayatori (#2028): chapter 3 finale after the LIME detour and the answer outing, friendship only, hagal once, then friend LIME', async f => {
   const rivals = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_rivals.json', import.meta.url))).dialogues;
   for (const d of rivals) f.db.dialogues[d.dialogue_id] = d;
-  const gear = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json', import.meta.url))).equipment.find(e => e.id === 'suyaki_kuze');
-  assert.equal(gear.gift.from, 'kuze');
-  f.db.equipById.suyaki_kuze = gear;
+  const gear = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json', import.meta.url))).equipment.find(e => e.id === 'suyaki_saku');
+  assert.equal(gear.gift.from, 'saku');
+  f.db.equipById.suyaki_saku = gear;
   f.db.flavorById.absal_earlgrey = { id: 'absal_earlgrey' };
   f.db.friends = JSON.parse(fs.readFileSync(new URL('../data/friends.json', import.meta.url)));
-  assert.equal(f.bonds.BOND_FINALES.kuze.gift, 'suyaki_kuze');
+  assert.equal(f.bonds.BOND_FINALES.saku.gift, 'suyaki_saku');
   // IR22: 煙幕に何度でも通えて♥5に届く（AFB02）ので、仮の♥1をやめてほかの人物と同じ♥5
-  assert.equal(f.bonds.finaleHeart('kuze'), 5, 'the same ♥5 gate as everyone else');
-  assert.equal(f.bonds.BOND_FINALES.kuze.heart, undefined);
-  const s = f.core.state; s.chapter = 3; s.met.kuze = true; s.affinity.kuze = 66;
-  assert.equal(f.bonds.finaleDue('kuze'), false, 'affinity alone does not open the finale');
-  s.flags._lime_contact_kuze = true; s.flags._ch3_read_ch3_kuze_lime = true;
-  assert.equal(f.bonds.finaleDue('kuze'), false, 'the answer outing comes first');
+  assert.equal(f.bonds.finaleHeart('saku'), 5, 'the same ♥5 gate as everyone else');
+  assert.equal(f.bonds.BOND_FINALES.saku.heart, undefined);
+  const s = f.core.state; s.chapter = 3; s.met.saku = true; s.affinity.saku = 66;
+  assert.equal(f.bonds.finaleDue('saku'), false, 'affinity alone does not open the finale');
+  s.flags._lime_contact_saku = true; s.flags._ch3_read_ch3_saku_lime = true;
+  assert.equal(f.bonds.finaleDue('saku'), false, 'the answer outing comes first');
   s.flags._ch3_outings = { enmaku_answer: 1 };
   for (const pts of [9, 33, 48, 65]) {
-    s.affinity.kuze = pts;
-    assert.equal(f.bonds.finaleDue('kuze'), false, `${pts}pt (below ♥5) keeps the finale closed`);
-    assert.equal(f.bonds.finaleAtVisit('kuze'), false);
+    s.affinity.saku = pts;
+    assert.equal(f.bonds.finaleDue('saku'), false, `${pts}pt (below ♥5) keeps the finale closed`);
+    assert.equal(f.bonds.finaleAtVisit('saku'), false);
   }
-  s.affinity.kuze = 66; assert.equal(f.bonds.finaleAtVisit('kuze'), true, '♥5 opens it on the next visit');
-  s.chapter = 4; assert.equal(f.bonds.finaleDue('kuze'), false, 'only on the chapter 3 cards');
-  assert.equal(await f.bonds.playFinale('kuze'), false); s.chapter = 3;
+  s.affinity.saku = 66; assert.equal(f.bonds.finaleAtVisit('saku'), true, '♥5 opens it on the next visit');
+  s.chapter = 4; assert.equal(f.bonds.finaleDue('saku'), false, 'only on the chapter 3 cards');
+  assert.equal(await f.bonds.playFinale('saku'), false); s.chapter = 3;
   f.setPlay(async () => ({ cancelled: true }));
-  assert.equal(await f.bonds.playFinale('kuze'), false, 'cancel records nothing');
-  assert(!s.finales?.kuze); assert(!s.owned.includes('suyaki_kuze'));
+  assert.equal(await f.bonds.playFinale('saku'), false, 'cancel records nothing');
+  assert(!s.finales?.saku); assert(!s.owned.includes('suyaki_saku'));
   f.setPlay(async () => done);
-  assert.equal(await f.bonds.playFinale('kuze'), true);
+  assert.equal(await f.bonds.playFinale('saku'), true);
   const after = f.roundTrip();
-  assert.equal(after.finales.kuze.route, 'friend');
+  assert.equal(after.finales.saku.route, 'friend');
   assert.equal(after.flags._confession_due, undefined);
-  assert.equal(after.owned.filter(id => id === 'suyaki_kuze').length, 1);
+  assert.equal(after.owned.filter(id => id === 'suyaki_saku').length, 1);
   assert.equal(after.flavorStock.absal_earlgrey, 50);
-  assert.equal(await f.bonds.playFinale('kuze'), false, 'once');
-  assert.equal(f.bonds.settledFriend('kuze'), true);
+  assert.equal(await f.bonds.playFinale('saku'), false, 'once');
+  assert.equal(f.bonds.settledFriend('saku'), true);
   after.day += 10;
   const lime = f.bonds.friendMessages({ sceneChapter: true });
-  assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['kuze', 'chat']], 'chat only on the scene-card chapters');
+  assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['saku', 'chat']], 'chat only on the scene-card chapters');
 });
 
 // IR23: ヴォルク・シェイク・太陽も通って♥5に届く（授業 M-W5・M-W8・M-B6 の♥5は下げない）。値は各行き先と同じ
@@ -693,63 +693,63 @@ await check('IR23: Volk, the Sheikh and Taiyo reach ♥5 by visiting, with the s
 });
 
 // #2025: くゆりの♥4・♥5。既存4本の後ろに足し、♥3の質問の後・締めくくりの前に一本ずつ読む。
-const RIN_LATE = ['ch1_rin_fifth', 'ch1_rin_sixth'];
-const rinAt = (f, story, heart = 5) => {
-  const s = f.fresh(); s.story.rin = story; s.affinity.rin = f.stats.AFFINITY_RANK_PTS[heart]; s.met.rin = true;
-  s.flags[f.stages.questionDoneKey('rin')] = true; s.flags._spot_seen_ch1_rin_prototype_night = true;
-  s.romanceChoices.bond_q1_rin = { char: 'rin', value: 1, day: 5 };
+const KUYURI_LATE = ['ch1_kuyuri_fifth', 'ch1_kuyuri_sixth'];
+const kuyuriAt = (f, story, heart = 5) => {
+  const s = f.fresh(); s.story.kuyuri = story; s.affinity.kuyuri = f.stats.AFFINITY_RANK_PTS[heart]; s.met.kuyuri = true;
+  s.flags[f.stages.questionDoneKey('kuyuri')] = true; s.flags._spot_seen_ch1_kuyuri_prototype_night = true;
+  s.romanceChoices.bond_q1_kuyuri = { char: 'kuyuri', value: 1, day: 5 };
   return s;
 };
 const sceneIds = f => f.plays.map(([scene]) => typeof scene === 'string' ? scene : scene.dialogue_id);
 await check('Kuyuri #2025: heart4/5 follow the fourth, one per visit, before the finale', async f => {
-  assert.deepEqual(Array.from(f.spots.VISIT_SEQ.rin).slice(4), RIN_LATE);
-  for (const [story, scene] of [[4, RIN_LATE[0]], [5, RIN_LATE[1]], [6, null]]) {
-    const s = rinAt(f, story);
-    assert.equal(f.stages.pendingAffinityStage(s, 'rin')?.scene ?? null, scene);
-    assert.equal(f.bonds.finaleDue('rin'), story === 6, `finale at story ${story}`);
+  assert.deepEqual(Array.from(f.spots.VISIT_SEQ.kuyuri).slice(4), KUYURI_LATE);
+  for (const [story, scene] of [[4, KUYURI_LATE[0]], [5, KUYURI_LATE[1]], [6, null]]) {
+    const s = kuyuriAt(f, story);
+    assert.equal(f.stages.pendingAffinityStage(s, 'kuyuri')?.scene ?? null, scene);
+    assert.equal(f.bonds.finaleDue('kuyuri'), story === 6, `finale at story ${story}`);
   }
-  const s = rinAt(f, 4);
-  assert.equal(await f.spots.visitChar('rin'), true); assert.deepEqual(sceneIds(f), [RIN_LATE[0]]);
-  assert.equal(s.story.rin, 5); assert.equal(f.bonds.finaleDue('rin'), false);
-  assert.equal(await f.spots.visitChar('rin'), true); assert.deepEqual(sceneIds(f), RIN_LATE);
-  assert.equal(s.story.rin, 6); assert.equal(f.bonds.finaleDue('rin'), true);
-  assert.equal(f.roundTrip().story.rin, 6);
+  const s = kuyuriAt(f, 4);
+  assert.equal(await f.spots.visitChar('kuyuri'), true); assert.deepEqual(sceneIds(f), [KUYURI_LATE[0]]);
+  assert.equal(s.story.kuyuri, 5); assert.equal(f.bonds.finaleDue('kuyuri'), false);
+  assert.equal(await f.spots.visitChar('kuyuri'), true); assert.deepEqual(sceneIds(f), KUYURI_LATE);
+  assert.equal(s.story.kuyuri, 6); assert.equal(f.bonds.finaleDue('kuyuri'), true);
+  assert.equal(f.roundTrip().story.kuyuri, 6);
 });
 await check('Kuyuri #2025: heart4 needs ♥4 and heart5 needs ♥5; the ♥3 question still comes first', async f => {
   for (const [story, heart, reads] of [[4, 3, false], [4, 4, true], [5, 4, false], [5, 5, true]]) {
-    f.plays.length = 0; const s = rinAt(f, story, heart);
-    assert.equal(f.spots.hasNewStory('rin'), reads, `story ${story} heart ${heart}`);
-    assert.equal(await f.spots.visitChar('rin'), true);
-    assert.equal(sceneIds(f).some(id => RIN_LATE.includes(id)), reads); assert.equal(s.story.rin, story + Number(reads));
+    f.plays.length = 0; const s = kuyuriAt(f, story, heart);
+    assert.equal(f.spots.hasNewStory('kuyuri'), reads, `story ${story} heart ${heart}`);
+    assert.equal(await f.spots.visitChar('kuyuri'), true);
+    assert.equal(sceneIds(f).some(id => KUYURI_LATE.includes(id)), reads); assert.equal(s.story.kuyuri, story + Number(reads));
   }
-  const s = rinAt(f, 4); delete s.flags[f.stages.questionDoneKey('rin')]; delete s.romanceChoices.bond_q1_rin;
-  assert.equal(f.stages.pendingAffinityStage(s, 'rin').scene, 'ch1_rin_bond_question');
-  assert.equal(f.bonds.questionVisitDue('rin'), true, 'unanswered question is offered before the new stages');
+  const s = kuyuriAt(f, 4); delete s.flags[f.stages.questionDoneKey('kuyuri')]; delete s.romanceChoices.bond_q1_kuyuri;
+  assert.equal(f.stages.pendingAffinityStage(s, 'kuyuri').scene, 'ch1_kuyuri_bond_question');
+  assert.equal(f.bonds.questionVisitDue('kuyuri'), true, 'unanswered question is offered before the new stages');
 });
 await check('Kuyuri #2025: a cancelled heart4/5 read keeps the stage for the next visit', async f => {
   for (const story of [4, 5]) {
-    const s = rinAt(f, story); f.setPlay(async () => ({ cancelled: true }));
-    assert.equal(await f.spots.visitChar('rin'), false);
-    assert.equal(s.story.rin, story); assert.equal(s.visits.rin || 0, 0);
+    const s = kuyuriAt(f, story); f.setPlay(async () => ({ cancelled: true }));
+    assert.equal(await f.spots.visitChar('kuyuri'), false);
+    assert.equal(s.story.kuyuri, story); assert.equal(s.visits.kuyuri || 0, 0);
   }
 });
 await check('Kuyuri #2025: saves already landed (finale, friend, lover) are not sent back to heart4/5', async f => {
-  for (const settle of [s => { s.finales.rin = { day: 9, chapter: 1, route: 'friend' }; s.flags._friend_rin = true; },
-    s => { s.finales.rin = { day: 9, chapter: 1, route: 'lover' }; s.lovers = ['rin']; }, s => { s.flags._friend_rin = true; }]) {
-    f.plays.length = 0; const s = rinAt(f, 4); settle(s);
-    assert.equal(f.stages.pendingAffinityStage(s, 'rin'), null);
-    assert.equal(f.spots.hasNewStory('rin'), false);
-    assert.equal(await f.spots.visitChar('rin'), true);
-    assert(!sceneIds(f).some(id => RIN_LATE.includes(id)), JSON.stringify(sceneIds(f)));
-    assert.equal(s.story.rin, 4, 'the skipped stages are not written back');
+  for (const settle of [s => { s.finales.kuyuri = { day: 9, chapter: 1, route: 'friend' }; s.flags._friend_kuyuri = true; },
+    s => { s.finales.kuyuri = { day: 9, chapter: 1, route: 'lover' }; s.lovers = ['kuyuri']; }, s => { s.flags._friend_kuyuri = true; }]) {
+    f.plays.length = 0; const s = kuyuriAt(f, 4); settle(s);
+    assert.equal(f.stages.pendingAffinityStage(s, 'kuyuri'), null);
+    assert.equal(f.spots.hasNewStory('kuyuri'), false);
+    assert.equal(await f.spots.visitChar('kuyuri'), true);
+    assert(!sceneIds(f).some(id => KUYURI_LATE.includes(id)), JSON.stringify(sceneIds(f)));
+    assert.equal(s.story.kuyuri, 4, 'the skipped stages are not written back');
   }
 });
 await check('Kuyuri #2025: heart4/5 branch on the ♥3 answer and carry no new romance question', async f => {
-  for (const id of RIN_LATE) {
+  for (const id of KUYURI_LATE) {
     const scene = f.db.dialogues[id], rows = [...scene.lines, ...Object.values(scene.branches).flat()];
-    assert.equal(scene.metadata.flavor_lesson, undefined, 'the taste talk stays in ch1_rin_fourth');
+    assert.equal(scene.metadata.flavor_lesson, undefined, 'the taste talk stays in ch1_kuyuri_fourth');
     const cond = rows.find(l => l.type === 'condition');
-    assert.equal(cond.condition_type, 'romance_open'); assert.equal(cond.char_id, 'rin');
+    assert.equal(cond.condition_type, 'romance_open'); assert.equal(cond.char_id, 'kuyuri');
     assert(scene.branches[cond.next_true]?.length && scene.branches[cond.next_false]?.length);
     assert(rows.filter(l => l.type === 'choice').every(l => !l.romance_char && l.choices.every(c => c.romance === undefined)));
     assert(!rows.some(l => l.type === 'set_flag'), 'read state stays in the story counter');

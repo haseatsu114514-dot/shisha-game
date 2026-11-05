@@ -4,8 +4,8 @@ import { chapterThreeScenes, chapterThreeProgress } from "./ch3-progress.js";
 
 // after=この必須場面を読み終えてから。scope=full は調整なしの通し制作、care は提供後の調整2回だけ。
 export const CH3_TRIALS = Object.freeze([
-  { id: "kuze", after: "ch3_kuze_advice", scope: "full", label: "炭の順番を試す",
-    intro: "ch3_trial_kuze_intro", end: "ch3_trial_kuze_end" },
+  { id: "saku", after: "ch3_saku_advice", scope: "full", label: "炭の順番を試す",
+    intro: "ch3_trial_saku_intro", end: "ch3_trial_saku_end" },
   { id: "steve", after: "ch3_steve_low_heat", scope: "care", label: "待つ調整を試す",
     intro: "ch3_trial_steve_intro", end: "ch3_trial_steve_end" },
 ]);

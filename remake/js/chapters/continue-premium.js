@@ -39,9 +39,9 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
     { at: 16.5, face: "ura_smile", text: "……もう一回、作ってみる？" },
     ],
   },
-  rin: {
-    id: "premium_rin", title: "この先の香り", name: "くゆり",
-    bio: "恋人 / くゆり", speaker: "rin", duration: 20,
+  kuyuri: {
+    id: "premium_kuyuri", title: "この先の香り", name: "くゆり",
+    bio: "恋人 / くゆり", speaker: "kuyuri", duration: 20,
     audio: null,
     reactions: {
       retry: { text: ["いいね。次の一台、確かめよう"], faces: ["serious", "smile"], effect: "scan", word: "次の一台、私に見せて" },

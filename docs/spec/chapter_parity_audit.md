@@ -129,10 +129,10 @@
 
 **P2（第1章との差）**
 
-5. ♥4・♥5の段階会話：ひより（♥3まで）に足りない。サメちゃんは追加済み（#2025、SHISHARK来店の `samechan_shop_heart4`／`heart5`。♥3の答えで恋愛／友人の分岐、締めくくりの前提）。くゆりも追加済み（#2025、Dr.fookah 2階の `ch1_rin_fifth`「余白の手帳」／`ch1_rin_sixth`「窓の下」。訪問列の5・6本目で、♥3の答えで恋愛／友人の分岐、締めくくりの前提。着地済みの旧セーブには出さない）。
+5. ♥4・♥5の段階会話：ひより（♥3まで）に足りない。サメちゃんは追加済み（#2025、SHISHARK来店の `samechan_shop_heart4`／`heart5`。♥3の答えで恋愛／友人の分岐、締めくくりの前提）。くゆりも追加済み（#2025、Dr.fookah 2階の `ch1_kuyuri_fifth`「余白の手帳」／`ch1_kuyuri_sixth`「窓の下」。訪問列の5・6本目で、♥3の答えで恋愛／友人の分岐、締めくくりの前提。着地済みの旧セーブには出さない）。
 6. 味の会話：つむぎ（ラベンダー）、ましろ、ひより（ピーチ）にない。
 7. 友人LIME（`friends.json`）：ましろにない。サメちゃんは追加済み（#2025、第2章で友人として着地した後、雑談とSHISHARKでの一服の誘いが届く）。
-8. ♥3の外出：ましろにない。くゆりは追加済み（#2025、♥3で `lime_outing_rin_1` が届き、昼に問屋街の豆屋でショールーム用のコーヒー豆の仕入れへ。第1・2章だけ。後日LIME `lime_after_outing_rin`）。サメちゃんは追加済み（#2025、路地裏シネマの紹介後に `lime_outing_samechan_1` で閉店後のサメ映画特集へ。後日LIME `lime_after_outing_samechan`）。ひよりは追加済み（#2025、tonariでの再会の後の♥3で `lime_outing_hiyori_1` が届き、昼に代休のひよりと駅ビルの雑貨屋でゆるいキャラクターのカプセルトイへ。第1章だけ。夜の枠・締めくくりの前提は増やさない。後日LIME `lime_after_outing_hiyori`）。
+8. ♥3の外出：ましろにない。くゆりは追加済み（#2025、♥3で `lime_outing_kuyuri_1` が届き、昼に問屋街の豆屋でショールーム用のコーヒー豆の仕入れへ。第1・2章だけ。後日LIME `lime_after_outing_kuyuri`）。サメちゃんは追加済み（#2025、路地裏シネマの紹介後に `lime_outing_samechan_1` で閉店後のサメ映画特集へ。後日LIME `lime_after_outing_samechan`）。ひよりは追加済み（#2025、tonariでの再会の後の♥3で `lime_outing_hiyori_1` が届き、昼に代休のひよりと駅ビルの雑貨屋でゆるいキャラクターのカプセルトイへ。第1章だけ。夜の枠・締めくくりの前提は増やさない。後日LIME `lime_after_outing_hiyori`）。
 9. ひより：CONTINUEの恋人版がない。`lover.json` の文面が少ない（朝・大会日1件、誘い2件）。
 10. ✅ あげは：占いの豆知識とヒント（#2023）。
 11. ✅ あげはのLIME交換は台本の `set_flag` に移した（#2023）。
@@ -148,7 +148,7 @@
 | スミさん（1〜） | ○ | ○ | ○ 6段＋小会話4種 | ○ | ○ | ○ | ○ 4件 | ○ | 5・○・○ |
 | 神崎（2） | ○ | △ 定休日なし | ○ ♥1〜5（`affinity-stages.js:17`）、小会話1種 | ○ | ○ `_lime_contact_kumicho`（`ch2_kumicho.json:387`） | ○ `ch2_kumicho_bond_finale`・`suyaki_kumicho` | △ 台本なし | ○ | 5・○・○ |
 | レヰ（2） | ○ | △ | ○ ♥1〜5（集まり回含む・`affinity-stages.js:28`）、小会話1種 | ○ | ○ `_lime_contact_rei`（`ch2_rei.json:443`） | ○ `ch2_rei_bond_finale`・`suyaki_rei` | △ 台本なし | ○ | **1**・○・○ |
-| 綾取（3） | ○ | △ ピンのみ | △ 通いで♥5（`kuzeBond`・#2028）、外出2件 | ○ | ○ `_lime_contact_kuze`（`ch3_rivals.json:823`） | ○ ♥5で `ch3_kuze_bond_finale`・`suyaki_kuze`（#2028・commit `8f9833eab`） | ○ 相談（#2028） | ○ | 4（標準外）・**×**・× |
+| 綾取（3） | ○ | △ ピンのみ | △ 通いで♥5（`kuzeBond`・#2028）、外出2件 | ○ | ○ `_lime_contact_saku`（`ch3_rivals.json:823`） | ○ ♥5で `ch3_saku_bond_finale`・`suyaki_saku`（#2028・commit `8f9833eab`） | ○ 相談（#2028） | ○ | 4（標準外）・**×**・× |
 | スティーブ（3） | ○ | △ | △ 外出2件 | ○ 外出 `steve_timer` | **×** | **×** | △ | △ 3行 | **1**・**×**・× |
 | ヴォルク（3） | ○ | △ ピンのみ | △ 初回＋寄り道3件（#2026） | ○ 寄り道 `ch3_volk_second` | **×** | **×** | △ | △ 4行 | 1・○・× |
 | 王煙楼（4） | △ 既定のカットイン | — | — | ○ 前夜祭 | — | × | 盤にいない | ○ | 1・○・× |
@@ -160,14 +160,14 @@
 **P1（台本・データはあるのに遊べない）**
 
 1. ✅ ヴォルクの訪問会話 `ch3_volk_second/third/fourth` は、初来店の後の寄り道として順に読める（#2026）。初来店の後は大会まで行動が一つしかないので、読めなかった分と `ch3_volk_after_ch3` は大会後の寄り道からも読める（#2317・IR23）。
-2. **噂のLIMEが届かない。** `rumor_kumicho_cigarman`（`ch2_started`）、`rumor_nagumo_cigarman`／`rumor_ageha_mashiro`（`ch3_started`）の発火条件を処理するコードがない。
+2. **噂のLIMEが届かない。** `rumor_kumicho_cigarman`（`ch2_started`）、`rumor_sui_cigarman`／`rumor_ageha_mashiro`（`ch3_started`）の発火条件を処理するコードがない。
 3. ✅ ~~第2〜4章のライバルの授業が習得できない。~~ 2026-11-02 時点で、授業の台本（`growth_lessons.json`）と、会える所での相談（第3章の店と大会後の寄り道・第4章の FESTA・第5章の東京とドバイ）はそろった。授業の条件（♥5）は下げず、♥5への道を通いで作った（台帳 AFB02・IR23）: 綾取とスティーブは煙幕・Smoke & Glory に何度でも通える。ヴォルクは第3章の鉄の煙の寄り道（大会前に読めなかった分は大会後にも順に読める）と第5章の鉄の煙。太陽は第4章の FESTA（来店ごとに +8）と第5章の屋敷の中庭。シェイクは第4章では名を伏せているので、第5章の屋敷（会うたびに上がる）。第5章の値は1回目 +10・2回目から +5（`visitAffinity`）。
 4. **SHISHA-9000が話者として一度も出ない。** 紹介カットインのデータはあるが発火せず、立ち絵と顔アイコンも使われていない。
 
 **P2（第1章との差）**
 
-5. LIME交換：✅ 神崎・レヰ（`_lime_contact_kumicho`／`_lime_contact_rei`）と綾取（`_lime_contact_kuze`・#2028）には付いた。スティーブ・ヴォルクにはまだない（#2035）。
-6. 締めくくりと専用ハガル：✅ 神崎・レヰ（`ch2_kumicho_bond_finale`／`ch2_rei_bond_finale`・`suyaki_*`）と綾取（`ch3_kuze_bond_finale`・#2028）に付いた。第2章の訪問列も♥5まで延びた（`affinity-stages.js:17`/`:28`）。スティーブ・ヴォルクの締めくくりはまだない（#2035）。
+5. LIME交換：✅ 神崎・レヰ（`_lime_contact_kumicho`／`_lime_contact_rei`）と綾取（`_lime_contact_saku`・#2028）には付いた。スティーブ・ヴォルクにはまだない（#2035）。
+6. 締めくくりと専用ハガル：✅ 神崎・レヰ（`ch2_kumicho_bond_finale`／`ch2_rei_bond_finale`・`suyaki_*`）と綾取（`ch3_saku_bond_finale`・#2028）に付いた。第2章の訪問列も♥5まで延びた（`affinity-stages.js:17`/`:28`）。スティーブ・ヴォルクの締めくくりはまだない（#2035）。
 7. 味の会話：スティーブ（マウンテンミスト）・王煙楼（ライチ）・シェイク（グレープ）は追加済み（#2028）。ヴォルク（ブラストミント）は寄り道の `ch3_volk_second` で読める（#2026）。太陽の好みのアサイーは `flavors.json` にない。ただし正本は「人物専用の味は好感度で交流を深められる人物に限る」としている（`story_and_structure.md`「人物とフレーバーの導線」）。
 8. 通い訪問の小会話：神崎・レヰは各1種（なる4、アダム5）。
 9. ✅ レヰの集まり回 `ch2_rei_group_concert_prep` は第2章の訪問列（♥2、`ch2_rei_third` の後）に入れた（#2026）。

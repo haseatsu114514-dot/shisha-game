@@ -1,7 +1,7 @@
 {
   "dialogues": [
     {
-      "dialogue_id": "ch3_trial_kuze_intro",
+      "dialogue_id": "ch3_trial_saku_intro",
       "lines": [
         { "speaker": "", "text": "mukaiの作業台。営業前の店は、まだ炭の匂いも薄い。" },
         { "speaker": "mashiro", "face": "normal", "text": "はじめくん、朔の店で言ってたよね。自分の台で、もう一度確かめるって" },
@@ -12,7 +12,7 @@
       ]
     },
     {
-      "dialogue_id": "ch3_trial_kuze_end",
+      "dialogue_id": "ch3_trial_saku_end",
       "lines": [
         { "speaker": "hajime", "face": "normal", "text": "聞いた話を、自分の手で一回通せた" },
         { "speaker": "mashiro", "face": "normal", "text": "大会で、どこを残すか。今日の一台も材料にしよ" }

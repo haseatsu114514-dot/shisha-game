@@ -167,7 +167,7 @@ Godot版も2026-06-15に削除済みで、`project.godot` が無いのが正し�
         { "speaker": "hajime", "face": "normal", "text": "..." },
         { "speaker": "", "face": "", "text": "ナレーション行" },
         { "type": "condition", "stat": "技術", "threshold": 30, "next_true": "branch_a", "next_false": "branch_b" },
-        { "type": "show_cg", "cg_id": "cg_ch1_nagumo_smile" },
+        { "type": "show_cg", "cg_id": "cg_ch1_sui_smile" },
         { "type": "hide_cg" },
         { "type": "game_over" }
       ],
@@ -196,7 +196,7 @@ Godot版も2026-06-15に削除済みで、`project.godot` が無いのが正し�
 | `minto` | 緑川 栞 | ライバル ch1（自称20歳・実年齢29歳） |
 | `tsumugi` | 猫柳 つむぎ（ねこやなぎ つむぎ） | ヒロイン ch1 (tonari 常連) |
 | `oneesan` | お姉さん | みんとの私服・素の姿用エイリアス（立ち絵は minto の `ura_*`。PEPPERMINTで2回交流した後、3回目の訪問前に出勤姿を見かけ正体を知る。以後は知っている呼び名、本名は私的な約束で聞いた後だけ） |
-| `rin` | 香坂 くゆり（こうさか くゆり） | ヒロイン ch1〜（27歳・年上枠。問屋街『Dr.fookah』2階、海外メーカーNIGHTSIDE日本代理店。はじめを「モルモットくん」と呼ぶ） |
+| `kuyuri` | 香坂 くゆり（こうさか くゆり） | ヒロイン ch1〜（27歳・年上枠。問屋街『Dr.fookah』2階、海外メーカーNIGHTSIDE日本代理店。はじめを「モルモットくん」と呼ぶ） |
 | `hiyori` | 薄羽ひより | 地元の会社員・tonari元アルバイトの追加ヒロイン。他店の相席からスミさんの伝言とLIMEを経てtonariへ。設定の正本は `data/characters.json`、接続仕様は `docs/spec/hiyori_implementation.md` |
 | `salaryman` | 鉄仮面さん（本名 表 克己・常連のサラリーマン） | tonari 常連（ストーリー専用） |
 | `ageha` | 宵野 葉子 | ライバル ch2（ch1 DAY4以降の実際のシフト後に「謎のギャル」としてカメオ。香り=ホワイトグミベア） |
@@ -206,13 +206,13 @@ Godot版も2026-06-15に削除済みで、`project.godot` が無いのが正し�
 | `mashiro` | 黒葉 ましろ（くろは ましろ） | ヒロイン ch3（別名:シガーマン。❌「真白 ましろ」は旧表記・2026-07-18確定） |
 | `mukai_master` | ムカイさん / 向井 玄 | ch3 溜まり場「mukai」店長 |
 | `tetsuko` | てつこ | mukai 裏口の看板猫（飼い主はムカイさんだが懐くのはましろだけ。❌「テツコ」「ヤニネコ」は旧表記・2026-10-31 #1993） |
-| `kuze` | 綾取 朔 | ライバル ch3（東京の「煙幕」店主） |
+| `saku` | 綾取 朔 | ライバル ch3（東京の「煙幕」店主） |
 | `steve` | スティーブ・ライマン | ライバル ch3 |
 | `volk` | ヴォルク・イヴァノフ | ライバル ch3（ch2は名乗らない「？？？」として客席の奥などに顔を見せるだけ・県大会には出ない。「鉄の煙」は東京の店。2026-10-24オーナー指定） |
 | `master_hookah` | 王 煙楼 | ライバル ch4（世界大会の大ボス格。決勝4人の一角） |
 | `sheikh` | シェイク / シェイク・ナジュム・アル=ガリヤーン | ライバル ch4 |
 | `shisha_9000` | SHISHA-9000 | 隠しボス ch5 |
-| `nagumo` | 須井 修二（すい しゅうじ） | 大会審査員長（45歳、シーステーション会長） |
+| `sui` | 須井 修二（すい しゅうじ） | 大会審査員長（45歳、シーステーション会長） |
 | `maezono` | 上園 文太郎 | 大会審査員（口癖:「シーシャはおいしいねえ」） |
 | `pakki` | パッキー（Packy） | 大会MC兼マスコット（笑い声:「ぷぷぷっ！」） |
 | `emil` | エミル | 審査員（元トルコ職人） |
@@ -291,7 +291,7 @@ jq '[.dialogues[].dialogue_id]' data/dialogue/ch1_main.json
 ## 作業時の注意事項
 
 - **キャラクターを追加・変更する場合**: `data/characters.json` の `id` と dialogue JSON の `speaker` を必ず一致させる
-- **CG ID を指定する場合**: `cg_ch1_nagumo_smile` のように実在するキャラのIDを使う（例: `toki` は存在しない）
+- **CG ID を指定する場合**: `cg_ch1_sui_smile` のように実在するキャラのIDを使う（例: `toki` は存在しない）
 - **ステータス名**: 5種類のみ。変名・旧名は使わない
 - **growth_stats.notes の書き方**: 「〇〇から学んだ」ではなく「いつの間にか△△が変わっていた」視点で書く
 - **大会スクリプト ch2〜ch4 はほぼ同じ構造**（ch1 を参考にすれば足りることが多い）

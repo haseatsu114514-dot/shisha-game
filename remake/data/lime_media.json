@@ -41,10 +41,10 @@
     "preview": "［画像］月の写真",
     "allowed_accounts": null
   },
-  "im_rin_stock": {
+  "im_kuyuri_stock": {
     "kind": "image",
-    "owner": "rin",
-    "src": "img/ui/lime/images/im_rin_stock.webp",
+    "owner": "kuyuri",
+    "src": "img/ui/lime/images/im_kuyuri_stock.webp",
     "width": 960,
     "height": 720,
     "alt": "棚に並ぶ新しい小袋",
@@ -91,10 +91,10 @@
     "preview": "［スタンプ］がんばれ♪",
     "allowed_accounts": null
   },
-  "st_rin_smug": {
+  "st_kuyuri_smug": {
     "kind": "stamp",
-    "owner": "rin",
-    "src": "img/ui/lime/stamps/st_rin_smug.png",
+    "owner": "kuyuri",
+    "src": "img/ui/lime/stamps/st_kuyuri_smug.png",
     "width": 320,
     "height": 320,
     "alt": "試料袋。ふふ",
@@ -141,30 +141,30 @@
     "preview": "［画像］店の道具",
     "allowed_accounts": null
   },
-  "st_nagumo_ack": {
+  "st_sui_ack": {
     "kind": "stamp",
-    "owner": "nagumo",
-    "src": "img/ui/lime/stamps/st_nagumo_ack.png",
+    "owner": "sui",
+    "src": "img/ui/lime/stamps/st_sui_ack.png",
     "width": 320,
     "height": 320,
     "alt": "白い便箋とうなずく煙。承知した",
     "preview": "［スタンプ］承知した",
     "allowed_accounts": null
   },
-  "st_nagumo_cheer": {
+  "st_sui_cheer": {
     "kind": "stamp",
-    "owner": "nagumo",
-    "src": "img/ui/lime/stamps/st_nagumo_cheer.png",
+    "owner": "sui",
+    "src": "img/ui/lime/stamps/st_sui_cheer.png",
     "width": 320,
     "height": 320,
     "alt": "シーシャのボトルと細い煙。健闘を祈る",
     "preview": "［スタンプ］健闘を祈る",
     "allowed_accounts": null
   },
-  "im_nagumo_ready": {
+  "im_sui_ready": {
     "kind": "image",
-    "owner": "nagumo",
-    "src": "img/ui/lime/images/im_nagumo_ready.webp",
+    "owner": "sui",
+    "src": "img/ui/lime/images/im_sui_ready.webp",
     "width": 960,
     "height": 720,
     "alt": "開場前の整った空席と一台のシーシャ",

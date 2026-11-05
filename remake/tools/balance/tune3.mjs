@@ -80,7 +80,7 @@ for (const name of ['flavors', 'equipment', 'recipes', 'ng_mixes']) {
 }
 DB.flavorById = Object.fromEntries(DB.flavors.map(x => [x.id, x]));
 DB.equipById = Object.fromEntries(DB.equipment.map(x => [x.id, x]));
-assert.equal(score.NAGUMO_BAR, 90.8);
+assert.equal(score.SUI_BAR, 90.8);
 
 const sha = x => crypto.createHash('sha256').update(typeof x === 'string' || Buffer.isBuffer(x) ? x : JSON.stringify(x)).digest('hex');
 function fnv(s) { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; }

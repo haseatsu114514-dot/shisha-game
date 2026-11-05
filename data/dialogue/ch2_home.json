@@ -292,7 +292,7 @@
       }
     },
     {
-      "dialogue_id": "ch2_rin_taste",
+      "dialogue_id": "ch2_kuyuri_taste",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
       },
@@ -303,7 +303,7 @@
           "text": "夜の2階。くゆりさんが、銀色の袋の口を開けて待っていた。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "ちょうどいい、モルモットくん。新しいロット。先に私が吸うから、待って"
         },
@@ -323,7 +323,7 @@
           "text": "くゆりさんは返事をしなかった。ホースを受け取って、もう一度だけ吸う。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "serious",
           "text": "……君、今日は煙の褒め方が嘘だね"
         },
@@ -333,12 +333,12 @@
           "text": "え……"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "これ、最初の一口が苦いの。甘いのは、そのあと"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "君、いつもは感じた順番どおりに言う人でしょ"
         },
@@ -348,22 +348,22 @@
           "text": "……最近、味が少し遠いんです。香りは分かる気がするのに"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "そう。じゃあ、今日のサンプルはなし"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "鼻と舌はね、調子を崩すと平気で嘘をつく。原因は、私には分からない"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "serious",
           "text": "だから、吸って確かめ続けるのはやめな。うちの商材でも、無理はさせない"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "smile",
           "text": "戻ったら、また一番に吸わせてあげる。……それまで、モルモットはお休み"
         },
@@ -380,7 +380,7 @@
       ]
     },
     {
-      "dialogue_id": "ch2_rin_strawberry",
+      "dialogue_id": "ch2_kuyuri_strawberry",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
       },
@@ -406,7 +406,7 @@
       "branches": {
         "before": [
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "normal",
             "text": "あ、モルモットくん。県大会の課題、苺なんだって？"
           },
@@ -416,12 +416,12 @@
             "text": "はい。葉は、主催の支給だそうです"
           },
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "smug",
             "text": "知ってる。アフサールの新作でしょ。卸の私にも、一袋も回ってこない"
           },
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "normal",
             "text": "主催がまとめて押さえたの。……商売としては、ちょっと悔しい"
           },
@@ -435,7 +435,7 @@
         ],
         "tasted": [
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "normal",
             "text": "試煙会で吸ったんでしょ。どうだった？ 君の言葉で"
           },
@@ -450,24 +450,24 @@
             "text": "自分のは、うまく出てこなくて"
           },
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "normal",
             "text": "ふうん。じゃあ宿題。本番までに、あの苺を君の一言で言えるようにしといて"
           },
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "smile",
             "text": "正解はいらない。その日の君の鼻と肺が拾ったことで、いいから"
           }
         ],
         "untasted": [
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "normal",
             "text": "苺はね、香りが先に立って、先に消える葉が多い"
           },
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "normal",
             "text": "新作がどうかは、吸ってみないと分からない。吸えたら、教えて"
           },
@@ -479,12 +479,12 @@
         ],
         "after": [
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "normal",
             "text": "あ、モルモットくん。苺の大会、配信で見てた"
           },
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "smile",
             "text": "あの新作、卸の私には一袋も回ってこなかったのに。君は本番で使ったんだ"
           },
@@ -494,7 +494,7 @@
             "text": "主催の支給でしたから"
           },
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "normal",
             "text": "……商売としては、ちょっと悔しい。次は、うちの葉で勝ってよ"
           }

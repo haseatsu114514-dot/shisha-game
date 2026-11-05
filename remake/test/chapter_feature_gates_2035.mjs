@@ -11,23 +11,23 @@ for (const ch of CHAPTERS) {
   const label = `chapter=${String(ch)}`;
 
   // 綾取の締めくくり（bonds.finaleDue）: 旧 `state.chapter !== 3` と同じブロック判定を保つ。
-  assert.equal(!chapterFeatureEnabled(ch, "kuzeBond"), ch !== 3, `kuze: ${label}`);
+  assert.equal(!chapterFeatureEnabled(ch, "sakuBond"), ch !== 3, `saku: ${label}`);
 
-  // くゆりの♥3の外出（phone.eligible, lime_outing_rin_1）: 旧 `state.chapter > 2` と同じブロック判定を保つ。
-  assert.equal(!chapterFeatureEnabled(ch || 1, "rinHomeOuting"), ch > 2, `rin: ${label}`);
+  // くゆりの♥3の外出（phone.eligible, lime_outing_kuyuri_1）: 旧 `state.chapter > 2` と同じブロック判定を保つ。
+  assert.equal(!chapterFeatureEnabled(ch || 1, "kuyuriHomeOuting"), ch > 2, `kuyuri: ${label}`);
 
   // つむぎの締めくくりを本筋の応募前に待たせるゲート（bonds.finaleDue）: 旧 `(state.chapter || 1) === 1` と同じ。
   assert.equal(chapterFeatureEnabled(ch || 1, "tsumugiContestGate"), (ch || 1) === 1, `tsumugi: ${label}`);
 }
 
 // 文字列や未定義の章を開放しない（開くのは限定した章だけ）。
-assert.equal(chapterFeatureEnabled("3", "kuzeBond"), false);
-assert.equal(chapterFeatureEnabled("1", "rinHomeOuting"), false);
+assert.equal(chapterFeatureEnabled("3", "sakuBond"), false);
+assert.equal(chapterFeatureEnabled("1", "kuyuriHomeOuting"), false);
 assert.equal(chapterFeatureEnabled("1", "tsumugiContestGate"), false);
-assert.equal(chapterFeatureEnabled(3, "kuzeBond"), true);
-assert.equal(chapterFeatureEnabled(1, "rinHomeOuting"), true);
-assert.equal(chapterFeatureEnabled(2, "rinHomeOuting"), true);
-assert.equal(chapterFeatureEnabled(3, "rinHomeOuting"), false);
+assert.equal(chapterFeatureEnabled(3, "sakuBond"), true);
+assert.equal(chapterFeatureEnabled(1, "kuyuriHomeOuting"), true);
+assert.equal(chapterFeatureEnabled(2, "kuyuriHomeOuting"), true);
+assert.equal(chapterFeatureEnabled(3, "kuyuriHomeOuting"), false);
 assert.equal(chapterFeatureEnabled(1, "tsumugiContestGate"), true);
 assert.equal(chapterFeatureEnabled(2, "tsumugiContestGate"), false);
 

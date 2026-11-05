@@ -24,7 +24,7 @@ async function setup(page, { fresh = true, day = 13, manual = false, auto = "goo
       delete s.flags._ev_last_night; delete s.flags._tsumugi_contest_eve;
       for (const step of E.story.TSUMUGI_STORY.filter(step => step.day < 13)) s.flags[step.flag] = true;
       s.flags._morning_13 = true;
-      for (const id of ["sumi", "tsumugi", "pakki", "nagumo", "maezono", "dr_kemuri", "naru", "adam", "minto"]) E.intro.markIntroSeen(id);
+      for (const id of ["sumi", "tsumugi", "pakki", "sui", "maezono", "dr_kemuri", "naru", "adam", "minto"]) E.intro.markIntroSeen(id);
     } else E.core.load();
     E.ui.clearScreen(); E.ch1.setupHooks(); E.vn.vnTest.turbo = !manual;
     E.vn.vnTest.choose = () => 3; // automated compatibility cases choose sleep

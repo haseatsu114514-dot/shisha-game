@@ -10,10 +10,10 @@ export const PLAN = [
   "baito:heat", "cafe",
   "c_station", "customer",
   "adam", "baito:sumi",
-  "rin", "kannon",
+  "kuyuri", "kannon",
   "baito:pull", "rest",
   "naru", "choizap",
-  "rin", "baito:sumi",
+  "kuyuri", "baito:sumi",
   // 休養では回らないため、後半にも消耗する外出を残して20回以上の実回転を検証する。
   "adam", "kannon",
   "baito:steam", "customer",

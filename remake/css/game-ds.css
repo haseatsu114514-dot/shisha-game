@@ -342,7 +342,7 @@ body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve
 /* ---------------------------------------------------------------- 大会の中継グラフィック（中間投票・須井の10点・カウント・結果）
    上画面＝見せ場（見出し・順位・カットイン・カウント）、下画面＝読む情報と操作（持ち点・内訳・ボタン）。
    2つの画面の地はそれぞれの枠に合わせて塗り、ヒンジは塗らない。 */
-body.game-ds :is(.standings.tournament-board, .nagumo-cut, .count-screen, .result-table) {
+body.game-ds :is(.standings.tournament-board, .sui-cut, .count-screen, .result-table) {
   --ds-top: linear-gradient(160deg, #241634, #110c1a 70%);
   --ds-bottom: linear-gradient(160deg, #1a1226, #0d0a15 70%);
   background:
@@ -406,24 +406,24 @@ body.game-ds .standings .sd-feed {
 body.game-ds .standings .sd-feed-tag { padding: 0 10px; font-size: 12px; }
 
 /* 須井の10点：上＝カットイン（立ち絵と10点）、下＝見出しと票の帯 */
-body.game-ds .nagumo-cut { padding: 0; display: block; }
-body.game-ds .nagumo-cut .nc-rays { left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: var(--ds-vh); inset: auto; }
-body.game-ds .nagumo-cut .tournament-heading {
+body.game-ds .sui-cut { padding: 0; display: block; }
+body.game-ds .sui-cut .nc-rays { left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: var(--ds-vh); inset: auto; }
+body.game-ds .sui-cut .tournament-heading {
   position: absolute; left: calc(var(--ds-cx) + 12px); top: calc(var(--ds-cy) + 8px); width: calc(var(--ds-cw) - 24px); padding-bottom: 6px;
 }
-body.game-ds .nagumo-cut .tournament-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .02em; }
-body.game-ds .nagumo-cut .tournament-heading h1 { margin-top: 2px; font-size: 24px; }
-body.game-ds .nagumo-cut .tournament-heading p { display: none; }
-body.game-ds .nagumo-cut .nc-bars {
+body.game-ds .sui-cut .tournament-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+body.game-ds .sui-cut .tournament-heading h1 { margin-top: 2px; font-size: 24px; }
+body.game-ds .sui-cut .tournament-heading p { display: none; }
+body.game-ds .sui-cut .nc-bars {
   position: absolute; left: calc(var(--ds-cx) + 10px); top: calc(var(--ds-cy) + 66px); width: calc(var(--ds-cw) - 20px); gap: 6px;
 }
-body.game-ds .nagumo-cut .nc-row { grid-template-columns: 28px 34px minmax(0, 72px) minmax(0, 1fr) 40px; gap: 7px; min-height: 0; height: min(54px, calc((var(--ds-ch) - 100px) / 4)); padding: 4px 12px 4px 6px; }
-body.game-ds .nagumo-cut .nc-rank { width: 28px; height: 28px; font-size: 14px; }
-body.game-ds .nagumo-cut .nc-face { width: 34px; height: 34px; border-radius: 8px; }
-body.game-ds .nagumo-cut .nc-name { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-body.game-ds .nagumo-cut .nc-bar { height: 12px; }
-body.game-ds .nagumo-cut .nc-pt { font-size: 24px; }
-body.game-ds .nagumo-cut .nc-cut { left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: var(--ds-vh); right: auto; bottom: auto; overflow: hidden; border-radius: 7px; }
+body.game-ds .sui-cut .nc-row { grid-template-columns: 28px 34px minmax(0, 72px) minmax(0, 1fr) 40px; gap: 7px; min-height: 0; height: min(54px, calc((var(--ds-ch) - 100px) / 4)); padding: 4px 12px 4px 6px; }
+body.game-ds .sui-cut .nc-rank { width: 28px; height: 28px; font-size: 14px; }
+body.game-ds .sui-cut .nc-face { width: 34px; height: 34px; border-radius: 8px; }
+body.game-ds .sui-cut .nc-name { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.game-ds .sui-cut .nc-bar { height: 12px; }
+body.game-ds .sui-cut .nc-pt { font-size: 24px; }
+body.game-ds .sui-cut .nc-cut { left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: var(--ds-vh); right: auto; bottom: auto; overflow: hidden; border-radius: 7px; }
 body.game-ds .nc-cut-art { inset: 0; clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%); }
 body.game-ds .nc-cut-art img { left: 22%; width: 86%; bottom: -10%; }
 body.game-ds .nc-cut-text { left: 0; bottom: 14px; padding: 8px 18px 10px 14px; }

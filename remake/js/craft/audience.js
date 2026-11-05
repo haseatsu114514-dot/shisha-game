@@ -28,15 +28,15 @@ function wrapNote(note) {
 }
 
 export function audienceFor(mode, chapter) {
-  if (mode === "tournament") return chapter === 3 ? ["nagumo", "emil", "dr_kemuri"]
-    : chapter === 4 ? ["nagumo", "emil", "da_silva"]
-    : [1, 2].includes(chapter) ? ["nagumo", "maezono", "dr_kemuri"] : [];
+  if (mode === "tournament") return chapter === 3 ? ["sui", "emil", "dr_kemuri"]
+    : chapter === 4 ? ["sui", "emil", "da_silva"]
+    : [1, 2].includes(chapter) ? ["sui", "maezono", "dr_kemuri"] : [];
   if (mode === "drill") return ["hajime"];
   return mode === "tutorial" || mode === "rehearsal" ? ["sumi"] : [];
 }
 
 const STEP_JUDGE = { setup: "dr_kemuri", mix: "maezono", pack: "dr_kemuri", holes: "dr_kemuri", heat: "dr_kemuri", place: "dr_kemuri", steam: "maezono", pull: "maezono", care: "dr_kemuri" };
-const STEP_JUDGE_CH3 = { ...STEP_JUDGE, mix: "emil", steam: "emil", pull: "emil", care: "nagumo" };
+const STEP_JUDGE_CH3 = { ...STEP_JUDGE, mix: "emil", steam: "emil", pull: "emil", care: "sui" };
 // 第4章 GRAND SMOKE: 博士の席（手元の技術）をゲスト審査員ダ・シルヴァが見る。
 const STEP_JUDGE_CH4 = { ...STEP_JUDGE_CH3, setup: "da_silva", pack: "da_silva", holes: "da_silva", heat: "da_silva", place: "da_silva" };
 const MOODS = { watch: "手元を見守る", nod: "小さくうなずく", concern: "手元を気にかける", think: "静かに考える" };
@@ -46,11 +46,11 @@ const MOODS = { watch: "手元を見守る", nod: "小さくうなずく", conce
 // 太陽は通常だけ腕を上げていて表情ごとに頭の位置が違うので、ここには入れず本体から枠を決める。
 const FACE_CROPS = {
   hajime: [.47879, .17299, .22768], sumi: [.38393, .10938, .21429],
-  nagumo: [.34933, .05022, .23103], maezono: [.3404, .03906, .26786],
+  sui: [.34933, .05022, .23103], maezono: [.3404, .03906, .26786],
   dr_kemuri: [.35379, .0904, .21429], emil: [.40067, .00893, .2221],
   pakki: [.23549, .40848, .62388],
 };
-const faceFor = (id, mood, kind) => id === "nagumo" ? mood === "think" ? "thinking" : "serious"
+const faceFor = (id, mood, kind) => id === "sui" ? mood === "think" ? "thinking" : "serious"
   : mood === "nod" ? id === "maezono" && ["perfect", "just"].includes(kind) ? "excited" : id === "dr_kemuri" ? "normal" : "smile"
     : mood === "concern" || mood === "think" ? "serious" : "normal";
 
@@ -132,7 +132,7 @@ export function buildAudience(cs) {
       const id = ids.includes(judge) ? judge : ids.includes(active) ? active : primary;
       const positive = ["just", "perfect", "great", "good"].includes(kind), negative = ["bad", "miss", "close"].includes(kind);
       if (!positive && !negative && kind !== "watch") return;
-      const mood = id === "nagumo" ? positive ? "think" : "watch" : positive ? "nod" : negative ? "concern" : "watch";
+      const mood = id === "sui" ? positive ? "think" : "watch" : positive ? "nod" : negative ? "concern" : "watch";
       if (!force && id === active && (mood === current || performance.now() - changedAt < 350)) return;
       showPerson(id, mood, kind);
       if (!final) {

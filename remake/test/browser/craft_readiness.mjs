@@ -29,7 +29,7 @@ await suite("craft-readiness", async check => {
       const current = T.readiness.craftAssetUrls(cs.mode, { step: "heat", cs });
       const allowed = new Set([...current, ...T.readiness.craftAssetUrls(cs.mode, { cs }),
         ...["normal", "sad", "surprise"].map(face => portraitInfo("hajime", face)?.src)]);
-      const people = ["hajime", "pakki", "nagumo", "maezono", "dr_kemuri", "naru", "adam", "minto"];
+      const people = ["hajime", "pakki", "sui", "maezono", "dr_kemuri", "naru", "adam", "minto"];
       const oldMaking = DB.manifest.making.filter(name => !/^(heat_|hajime_heat_scene)/.test(name));
       const previous = [...new Set([
         ...oldMaking.map(makingUrl), img("ui/continue/backdrop_stage.png"), bgUrl("bg_tournament_stage"),

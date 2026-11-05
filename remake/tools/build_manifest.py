@@ -151,7 +151,7 @@ def title_arts():
     # titleArtDisplayCharacters uses this character order when picking a title art.
     # Keep manifest groups aligned so callers indexing its unique characters agree.
     character_order = (
-        "ageha", "hiyori", "samechan", "mashiro", "minto", "rin", "tsumugi",
+        "ageha", "hiyori", "samechan", "mashiro", "minto", "kuyuri", "tsumugi",
         "sumi", "naru", "adam",
     )
     rank = {character: index for index, character in enumerate(character_order)}
@@ -168,7 +168,7 @@ def continue_portraits():
     sys.path.insert(0, str(ROOT / "tools"))
     from make_face_icons import face_box
     out = {}
-    for character in ("sumi", "tsumugi", "minto", "rin", "ageha", "mashiro", "samechan", "hiyori"):
+    for character in ("sumi", "tsumugi", "minto", "kuyuri", "ageha", "mashiro", "samechan", "hiyori"):
         faces = {}
         for path in sorted((ASSETS / "sprites/characters" / character).glob(f"chr_{character}_*.png")):
             image = Image.open(path).convert("RGBA")

@@ -311,8 +311,8 @@ export function startBubbling({ strength = 1 } = {}) {
 
 // キャラ別の文字送りボイス（低い=スミさん、高い=みんと 等）
 const BLIP = {
-  hajime: 440, sumi: 300, naru: 420, adam: 330, minto: 1350, oneesan: 980, tsumugi: 1100, rin: 760,
-  pakki: 900, nagumo: 280, maezono: 380, dr_kemuri: 520, salaryman: 360, ageha: 1200,
+  hajime: 440, sumi: 300, naru: 420, adam: 330, minto: 1350, oneesan: 980, tsumugi: 1100, kuyuri: 760,
+  pakki: 900, sui: 280, maezono: 380, dr_kemuri: 520, salaryman: 360, ageha: 1200,
   mashiro: 880, samechan: 1250,
 };
 

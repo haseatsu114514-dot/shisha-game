@@ -17,8 +17,8 @@ assert.equal(choosePremiumContinue(["minto", "tsumugi"], 2, (() => { let i = 0; 
 assert.equal(choosePremiumContinue(["stranger"], 5, () => 0), null, "no default for unsupported lover");
 assert.equal(choosePremiumContinue(["samechan"], 1, () => 0)?.speaker, "samechan", "shark is eligible only when actually in state.lovers");
 assert.equal(choosePremiumContinue(["tsumugi"], 1, () => 0, "tsumugi"), null, "same lover cannot appear consecutively when alone");
-assert.equal(choosePremiumContinue(["tsumugi", "rin"], 1, () => 0, "tsumugi")?.speaker, "rin", "choose another eligible lover on the next continue");
-assert.equal(choosePremiumContinue(["tsumugi", "rin"], 1, () => 0, "rin")?.speaker, "tsumugi", "previous lover is excluded");
+assert.equal(choosePremiumContinue(["tsumugi", "kuyuri"], 1, () => 0, "tsumugi")?.speaker, "kuyuri", "choose another eligible lover on the next continue");
+assert.equal(choosePremiumContinue(["tsumugi", "kuyuri"], 1, () => 0, "kuyuri")?.speaker, "tsumugi", "previous lover is excluded");
 assert.equal(choosePremiumContinue(["minto", "samechan"], 1, () => 0, "samechan"), null, "chapter-one Minto cannot bypass last-speaker exclusion");
 for (const [id, s] of Object.entries(PREMIUM_CONTINUE_SCRIPTS)) {
   assert.equal(s.speaker, id);
@@ -31,11 +31,12 @@ for (const [id, s] of Object.entries(PREMIUM_CONTINUE_SCRIPTS)) {
 assert.equal(PREMIUM_CONTINUE_SCRIPTS.tsumugi.cues.at(-1).face, "smile", "Tsumugi's dark last beat should smile");
 assert.equal(PREMIUM_CONTINUE_SCRIPTS.minto.cues[0].face, "ura_surprise", "romance Minto uses private pose");
 // #2025: Hiyori joins the same lottery; existing six scripts stay byte-for-byte equivalent.
-// #2474: rin's name/bio became 「くゆり」 (only those two fields changed), so the frozen hash was renewed.
+// #2474: kuyuri's name/bio became 「くゆり」 (only those two fields changed), so the frozen hash was renewed.
+// IDREN01 (2026-11-05): rin→kuyuri のID改名で premium_rin と speaker の2箇所だけが変わり、凍結ハッシュを更新（新IDを旧IDへ戻すと従来ハッシュ bd71db25… を再現することを確認済み）。
 // #2474: ageha's name became 「あげは」 (hiragana; only that field changed; verified the old name reproduces the previous hash 1273dc9d…).
-const existingIds = ["tsumugi", "minto", "rin", "ageha", "samechan", "mashiro"];
+const existingIds = ["tsumugi", "minto", "kuyuri", "ageha", "samechan", "mashiro"];
 assert.equal(createHash("sha256").update(JSON.stringify(Object.fromEntries(existingIds.map(id => [id, PREMIUM_CONTINUE_SCRIPTS[id]])))).digest("hex"),
-  "bd71db25d1a596be2c4b3f62bcbda06eb20d6993394b693a44cbcec00f1ad478");
+  "6c0ec0cad0f036fff3382778e302ccc1a3e14cb2eaabf1652057e6cd2a49f8b3");
 assert.deepEqual(Object.keys(PREMIUM_CONTINUE_SCRIPTS), [...existingIds, "hiyori"]);
 const hiyori = PREMIUM_CONTINUE_SCRIPTS.hiyori;
 const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8"));
@@ -62,11 +63,11 @@ for (const chapter of [1, 2, 3, 4, 5]) {
   assert.equal(choosePremiumContinue(["hiyori", "hiyori"], chapter, () => 0, "hiyori"), null);
   assert.equal(choosePremiumContinue(["hiyori"], chapter, () => PREMIUM_CONTINUE_RATE), null);
   assert.equal(choosePremiumContinue(["hiyori"], chapter, () => PREMIUM_CONTINUE_RATE - Number.EPSILON), hiyori);
-  for (const previous of [null, "hiyori", "rin"]) {
-    const eligible = ["hiyori", "rin"].filter(id => id !== previous);
+  for (const previous of [null, "hiyori", "kuyuri"]) {
+    const eligible = ["hiyori", "kuyuri"].filter(id => id !== previous);
     for (const draw of [0, .49, .5, .999999]) {
       let calls = 0;
-      const result = choosePremiumContinue(["hiyori", "hiyori", "rin"], chapter, () => calls++ === 0 ? 0 : draw, previous);
+      const result = choosePremiumContinue(["hiyori", "hiyori", "kuyuri"], chapter, () => calls++ === 0 ? 0 : draw, previous);
       assert.equal(result.speaker, eligible[Math.floor(draw * eligible.length)]);
       assert.equal(calls, 2);
     }

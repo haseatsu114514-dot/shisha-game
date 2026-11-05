@@ -64,12 +64,12 @@ async function choicesFit(page, expected) {
 
 const questions = {
   tsumugi: ["絵の話がなくても、つむぎちゃんに会いたいよ", "描けない日も、ここでゆっくりしていって"], // #2221 の添削に合わせる
-  rin: ["用事がなくても、くゆりさんに会いに来ます", "次の試香も、俺に手伝わせてください"],
+  kuyuri: ["用事がなくても、くゆりさんに会いに来ます", "次の試香も、俺に手伝わせてください"],
   minto: ["栞さんと２人だと、ちょっと緊張する", "また話そう。愚痴でも聞くよ"], // #1730 で栞へはタメ口に統一
 };
 const reactions = {
   tsumugi: [/絵じゃなくて、私に/, /この席は、描かなくても/],
-  rin: [/今日は、何を話してもレポートにしない/, /向こうの机まで届かない感想/],
+  kuyuri: [/今日は、何を話してもレポートにしない/, /向こうの机まで届かない感想/],
   minto: [/私も。お店の外だと、ちょっと緊張する/, /お店の話、気楽にできる人/],
 };
 
@@ -139,10 +139,10 @@ await suite("relationship-ui", async check => {
 
     await check(`${device}-actual-questions-and-status`, async page => {
       await setup(page);
-      for (const id of ["tsumugi", "minto", "rin"]) for (const route of ["romance", "friend"]) {
+      for (const id of ["tsumugi", "minto", "kuyuri"]) for (const route of ["romance", "friend"]) {
         await page.evaluate(id => {
           const s = R.fresh(); s.met[id] = true; s.flags[`_intro_${id}`] = true;
-          s.affinity[id] = 33; s.story[id] = id === "tsumugi" ? 4 : id === "rin" ? 3 : 6;
+          s.affinity[id] = 33; s.story[id] = id === "tsumugi" ? 4 : id === "kuyuri" ? 3 : 6;
           if (id === "minto") Object.assign(s.flags, { _minto_identity_revealed: true, _minto_name_known: true, _minto_private_done: true });
           R.vn.vnTest.turbo = false;
           R.logStart = R.vn.backlog().length;
@@ -175,10 +175,10 @@ await suite("relationship-ui", async check => {
       }
       // 最終画像は、数値を満たしただけでは告白にならない♥3の待機導線。
       await page.evaluate(() => {
-        const s = R.fresh(); s.met.rin = true; s.affinity.rin = 33; s.story.rin = 3; R.core.save();
+        const s = R.fresh(); s.met.kuyuri = true; s.affinity.kuyuri = 33; s.story.kuyuri = 3; R.core.save();
       });
       await status(page);
-      assert.match(await page.locator('[data-person="rin"] .pp-next').textContent(), /Dr\.fookahの2階/);
+      assert.match(await page.locator('[data-person="kuyuri"] .pp-next').textContent(), /Dr\.fookahの2階/);
     }, { ...options, reducedMotion: "reduce" });
 
     await check(`${device}-hiyori-and-samechan-questions`, async page => {
@@ -227,18 +227,18 @@ await suite("relationship-ui", async check => {
         ["held-confession", { points: 66, answer: 1, finalAnswer: 1, finale: "romance", wait: true }, "告白を選べる", /後日の夜/],
       ]) {
         await page.evaluate(f => {
-          const s = R.fresh(); s.met.rin = true; s.affinity.rin = f.points; s.story.rin = 6; // 固有会話6本を読了（#1696で4本目、#2025で♥4・♥5の5・6本目を追加）
-          if (f.points === 66 && f.answer !== undefined && f.finalAnswer === undefined && !f.finale) s.flags._rin_affinity_question_done = true;
-          if (f.answer !== undefined) s.romanceChoices.bond_q1_rin = { char: "rin", value: f.answer, day: 7 };
-          if (f.finalAnswer !== undefined) s.romanceChoices.bond_q2_rin = { char: "rin", value: f.finalAnswer, day: 8 };
-          if (f.finale) s.finales.rin = { route: f.finale, chapter: 1, day: 8 };
-          if (f.friendFlag) s.flags._friend_rin = true;
+          const s = R.fresh(); s.met.kuyuri = true; s.affinity.kuyuri = f.points; s.story.kuyuri = 6; // 固有会話6本を読了（#1696で4本目、#2025で♥4・♥5の5・6本目を追加）
+          if (f.points === 66 && f.answer !== undefined && f.finalAnswer === undefined && !f.finale) s.flags._kuyuri_affinity_question_done = true;
+          if (f.answer !== undefined) s.romanceChoices.bond_q1_kuyuri = { char: "kuyuri", value: f.answer, day: 7 };
+          if (f.finalAnswer !== undefined) s.romanceChoices.bond_q2_kuyuri = { char: "kuyuri", value: f.finalAnswer, day: 8 };
+          if (f.finale) s.finales.kuyuri = { route: f.finale, chapter: 1, day: 8 };
+          if (f.friendFlag) s.flags._friend_kuyuri = true;
           if (f.wait) s.flags._confession_wait = 14;
-          if (f.hiddenRomance) s.romance.rin = f.hiddenRomance;
+          if (f.hiddenRomance) s.romance.kuyuri = f.hiddenRomance;
           R.core.save(); R.core.load();
         }, fixture);
         await status(page);
-        const row = page.locator('[data-person="rin"]');
+        const row = page.locator('[data-person="kuyuri"]');
         assert.equal(await row.locator(".pp-relation").textContent(), label, name);
         if (hint) assert.match(await row.locator(".pp-next").textContent(), hint, name);
         else assert.equal(await row.locator(".pp-next").count(), 0, name);
@@ -274,15 +274,15 @@ await suite("relationship-ui", async check => {
 
       await page.evaluate(() => {
         const s = R.fresh();
-        for (const id of ["sumi", "tsumugi", "naru", "adam", "minto", "rin", "hiyori", "samechan", "ageha"]) {
+        for (const id of ["sumi", "tsumugi", "naru", "adam", "minto", "kuyuri", "hiyori", "samechan", "ageha"]) {
           s.met[id] = true; s.affinity[id] = 66;
         }
         s.flags._samechan_nickname_known = true;
         s.flags._hiyori_tonari_return_done = true;
         s.finales.sumi = { route: "friend", day: 7, chapter: 1 };
-        s.lovers = ["tsumugi", "rin"];
-        s.finales.rin = { route: "friend", day: 7, chapter: 1 }; s.flags._friend_rin = true;
-        s.loveLevel = { tsumugi: 2, rin: 4 }; s.lovePts = { tsumugi: 20, rin: 48 }; R.core.save();
+        s.lovers = ["tsumugi", "kuyuri"];
+        s.finales.kuyuri = { route: "friend", day: 7, chapter: 1 }; s.flags._friend_kuyuri = true;
+        s.loveLevel = { tsumugi: 2, kuyuri: 4 }; s.lovePts = { tsumugi: 20, kuyuri: 48 }; R.core.save();
       });
       await status(page);
       assert.equal(await page.locator(".pp-row.lover").count(), 2);
@@ -299,10 +299,10 @@ await suite("relationship-ui", async check => {
       assert.equal(await page.locator('[data-person="ageha"]').count(), 0);
       await closeStatus(page);
       await page.evaluate(() => {
-        const s = R.fresh(); s.met.rin = true; s.affinity.rin = 66; s.story.rin = 3;
-        s.romanceChoices.bond_q1_rin = { char: "rin", value: 1, day: 7 };
-        s.romanceChoices.bond_q2_rin = { char: "rin", value: 1, day: 8 };
-        s.finales.rin = { route: "romance", chapter: 1, day: 8 }; R.core.save();
+        const s = R.fresh(); s.met.kuyuri = true; s.affinity.kuyuri = 66; s.story.kuyuri = 3;
+        s.romanceChoices.bond_q1_kuyuri = { char: "kuyuri", value: 1, day: 7 };
+        s.romanceChoices.bond_q2_kuyuri = { char: "kuyuri", value: 1, day: 8 };
+        s.finales.kuyuri = { route: "romance", chapter: 1, day: 8 }; R.core.save();
       });
       await status(page);
     }, { ...options, reducedMotion: "reduce" });
@@ -331,7 +331,7 @@ await suite("relationship-ui", async check => {
 
     await check(`${device}-final-choices-and-ordinary-dialogue`, async page => {
       await setup(page);
-      for (const id of ["tsumugi", "minto", "rin", "samechan", "hiyori"]) {
+      for (const id of ["tsumugi", "minto", "kuyuri", "samechan", "hiyori"]) {
         const replies = await page.evaluate(id => {
           R.fresh(); R.vn.vnTest.turbo = false;
           const scene = R.data.DB.dialogues[R.bonds.BOND_FINALES[id].dialogue];

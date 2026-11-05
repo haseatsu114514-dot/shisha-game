@@ -1,7 +1,7 @@
 // 第1章の新規試合。票は各工程の確定時に一度だけ記録し、結果表にも同じ記録を使う。
 export const CH1_VOTE_VERSION = 2;
 export const CH1_CONTESTANTS = ["naru", "adam", "minto", "hajime"];
-export const CH1_JUDGES = ["maezono", "dr_kemuri", "nagumo"];
+export const CH1_JUDGES = ["maezono", "dr_kemuri", "sui"];
 export const CH1_RIVALS = Object.freeze({
   naru: Object.freeze([84, 78, 93, 88, 87]),
   adam: Object.freeze([90, 92, 84, 80, 79]),
@@ -10,7 +10,7 @@ export const CH1_RIVALS = Object.freeze({
 export const CH1_WEIGHTS = Object.freeze({
   maezono: Object.freeze([15, 15, 30, 20, 20]),
   dr_kemuri: Object.freeze([20, 30, 10, 20, 20]),
-  nagumo: Object.freeze([20, 20, 20, 20, 20]),
+  sui: Object.freeze([20, 20, 20, 20, 20]),
 });
 const SPEND = [2, 3, 2, 3];
 const emptyVotes = () => Object.fromEntries(CH1_JUDGES.map(j => [j,
@@ -40,9 +40,9 @@ export function castCh1Votes(attempt, round, cs) {
   if (p.result || p.voted !== round || round < 0 || round > 3) return false;
   const mine = ch1Parts(cs, round), limit = [2, 3, 4, 5][round];
   for (const judge of CH1_JUDGES) {
-    const expected = SPEND.slice(0, round).reduce((a, b) => a + b, 0) - (judge === "nagumo" && round > 3 ? 1 : 0);
+    const expected = SPEND.slice(0, round).reduce((a, b) => a + b, 0) - (judge === "sui" && round > 3 ? 1 : 0);
     const spent = Object.values(p.votes[judge]).reduce((a, b) => a + b, 0);
-    if (spent !== expected || spent + SPEND[round] - (judge === "nagumo" && round === 3 ? 1 : 0) > 10)
+    if (spent !== expected || spent + SPEND[round] - (judge === "sui" && round === 3 ? 1 : 0) > 10)
       throw new Error("第1章の持ち点が一致しません");
   }
   p.finalVotes = round === 3 ? emptyVotes() : null;
@@ -51,7 +51,7 @@ export function castCh1Votes(attempt, round, cs) {
     const scores = Object.fromEntries(CH1_CONTESTANTS.map(id => [id,
       evaluated(id === "hajime" ? mine : CH1_RIVALS[id], weights, limit)]));
     const [first, second] = CH1_CONTESTANTS.slice().sort((a, b) => scores[b] - scores[a] || byId(a, b));
-    const amount = SPEND[round] - (judge === "nagumo" && round === 3 ? 1 : 0);
+    const amount = SPEND[round] - (judge === "sui" && round === 3 ? 1 : 0);
     p.votes[judge][first] += amount - 1;
     p.votes[judge][second]++;
     if (round === 3) {
@@ -65,8 +65,8 @@ export function castCh1Votes(attempt, round, cs) {
       (b === "hajime" ? mine[4] : CH1_RIVALS[b][4]) - (a === "hajime" ? mine[4] : CH1_RIVALS[a][4]) || byId(a, b))[0];
     p.lastPoint = last;
     p.beforeLast = structuredClone(p.votes);
-    p.votes.nagumo[last]++;
-    p.finalVotes.nagumo[last]++;
+    p.votes.sui[last]++;
+    p.finalVotes.sui[last]++;
     p.result = ch1Standings(p, cs.total);
   }
   return true;

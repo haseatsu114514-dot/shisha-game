@@ -84,7 +84,7 @@ await suite("dev-tools", async check => {
       assertTool("inspect");
       const inspector = __remake.inspect;
       const snapshot = inspector.snapshot();
-      snapshot.flags._qa_preserved = false; snapshot.stats.charm = 100; snapshot.lovers.push("rin");
+      snapshot.flags._qa_preserved = false; snapshot.stats.charm = 100; snapshot.lovers.push("kuyuri");
       const info = inspector.eventInfo("qa_browser"); info.metadata.reward.charm = 100;
       return { ids: inspector.events("QA_BROWSER"), zero: inspector.events("", 0),
         missing: inspector.eventInfo("qa_missing"), lines: info.lines,

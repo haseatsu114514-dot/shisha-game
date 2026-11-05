@@ -9,7 +9,7 @@ const root = process.env.HEART1_ROOT || fileURLToPath(new URL('../js/', import.m
 const sourceRoot = process.env.HIYORI_SOURCE_ROOT || root;
 const supportRoot = process.env.HIYORI_SUPPORT_ROOT || root;
 const realPaths = ['core/util.js','core/axe-bar-discovery.js','daily/hiyori.js','daily/spot-encounters.js','core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
-const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rin','ch1_bonds','samechan','hiyori','lover_events','cinema','remake_ch1','ch1_spots'];
+const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_kuyuri','ch1_bonds','samechan','hiyori','lover_events','cinema','remake_ch1','ch1_spots'];
 const data = scripts.map(name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))));
 const clone = value => JSON.parse(JSON.stringify(value));
 async function fixture() {
@@ -64,7 +64,7 @@ const done={id:'controlled-complete',visited:[]};
 // 来店の好感度（台帳 AFB01）: 段階会話 16×0.85=13.6、通い 8×0.85=6.8。端数は相手ごとに持ち越す。
 const FIRST_VISIT=13,TWO_VISITS=27,REPEAT_VISIT=6;
 const first=(f,id)=>{const s=f.fresh();delete s.met[id];s.story[id]=0;s.affinity[id]=0;s.flags._cafe_introduced=true;return s;};
-for(const id of ['naru','adam','minto','rin','tsumugi','sumi'])await check(`${id} first complete guarantees displayed heart1 without reading next scene`,async f=>{
+for(const id of ['naru','adam','minto','kuyuri','tsumugi','sumi'])await check(`${id} first complete guarantees displayed heart1 without reading next scene`,async f=>{
  const s=first(f,id);assert.equal(f.stats.affinityLevel(id),0);
  assert.equal(await f.spots.visitChar(id),true);assert.equal(f.stats.affinityLevel(id),1);
  assert.equal(s.affinity[id],FIRST_VISIT);assert(s.affinity[id]>=f.stats.AFFINITY_RANK_PTS[1]);assert.equal(s.story[id],1);assert.equal(s.met[id],true);

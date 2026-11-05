@@ -261,7 +261,7 @@
           "text": "須井修二（すい しゅうじ）さんッ！"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "serious",
           "text": "……お手並み拝見といこう。吸えば分かる"
         },
@@ -549,7 +549,7 @@
           "text": "（同じ台をもう一度……。他の審査員は、講評のあと手を伸ばしていない。……何か引っかかったのか？）"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "serious",
           "text": "……ほう"
         },
@@ -792,7 +792,7 @@
         },
         {
           "type": "show_cg",
-          "cg_id": "cg_ch1_nagumo_smile"
+          "cg_id": "cg_ch1_sui_smile"
         },
         {
           "speaker": "",
@@ -924,7 +924,7 @@
           "text": "だが須井は、先になるの前で足を止めた。"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "鳴切くん。あの配合、自分で？"
         },
@@ -934,17 +934,17 @@
           "text": "……はい"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "技術は今日一番面白かった。だが、届け先が見えん"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "serious",
           "text": "あれが『伝わる形』で出ていたら、もっと面白い勝負になったよ"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "また大会で会おう。その時は、答えを持ってきなさい"
         },
@@ -954,7 +954,7 @@
           "text": "なるが何か言うより先に、須井はもう歩き出していた。そして、はじめの前で止まる。"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "……蒸野くん"
         },
@@ -964,7 +964,7 @@
           "text": "は、はいっ"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "……懐かしい店の味だ。人が帰ってくる店の"
         },
@@ -1620,7 +1620,7 @@
           "text": "……最後の一口で、それまでの評価が台無しですよ〜♪ ぷぷぷっ！ 全員頑張ってね！"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "……出した後の手を見ている。そこに、その作り手の店が出る"
         },

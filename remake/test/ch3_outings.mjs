@@ -209,7 +209,7 @@ function nextWindow(value) {
   assert(TOKYO_OUTINGS.filter(item => item.affinityWith).every(item => !item.repeat || item.talks?.length >= 2), "Repeated affinity outings rotate talks");
   // 綾取（#2028・AFB02）: 好感度は煙幕への外出の確定時（一度きりの話は段階会話の +16）。台本には報酬行を置かない。
   for (const id of ["enmaku_notes", "enmaku_answer"]) {
-    assert.deepEqual(outingAffinity(newState(), TOKYO_OUTINGS.find(item => item.id === id)), { kuze: 16 });
+    assert.deepEqual(outingAffinity(newState(), TOKYO_OUTINGS.find(item => item.id === id)), { saku: 16 });
     assert(!JSON.stringify(byId[`ch3_outing_${id}`]).includes("affinity"));
   }
   // てつこの世話は撫でる／餌の2択。どちらの枝も次の行へ戻り、報酬行を持たない。
@@ -242,33 +242,33 @@ function nextWindow(value) {
   const scene = id => [...read("ch3_rivals"), ...read("ch3_main")].find(dialogue => dialogue.dialogue_id === id);
   const offered = value => availableOptionalScenes(routes, value).map(item => item.id);
   const early = at("d8-night");
-  early.value.affinity.kuze = AFFINITY_RANK_PTS[5];
-  assert(!offered(early.value).includes("ch3_kuze_lime"), "Ayatori's LIME before his advice");
+  early.value.affinity.saku = AFFINITY_RANK_PTS[5];
+  assert(!offered(early.value).includes("ch3_saku_lime"), "Ayatori's LIME before his advice");
   const { value } = at("d12-noon");
-  assert(!offered(value).includes("ch3_kuze_lime"), "Ayatori's LIME without affinity");
-  value.affinity.kuze = AFFINITY_RANK_PTS[1] - 1;
-  assert(!offered(value).includes("ch3_kuze_lime"), "Ayatori's LIME below ♥1");
-  value.affinity.kuze = AFFINITY_RANK_PTS[1];
-  assert(offered(value).includes("ch3_kuze_lime"));
-  commitOptionalRead(value, "ch3_kuze_lime");
-  assert(!offered(value).includes("ch3_kuze_lime"), "Ayatori's LIME read twice");
-  const lime = scene("ch3_kuze_lime").lines;
-  assert(lime.some(line => line.type === "set_flag" && line.flag === "_lime_contact_kuze"));
-  assert.deepEqual(lime.filter(line => line.type === "apply").map(line => line.affinity), [{ kuze: 2 }]);
-  assert.equal(classifyFlag("_lime_contact_kuze"), "person");
-  for (const id of ["ch3_kuze_first", "ch3_kuze_mukai_visit", "ch3_kuze_advice", "ch3_enmaku_cleanup"]) {
+  assert(!offered(value).includes("ch3_saku_lime"), "Ayatori's LIME without affinity");
+  value.affinity.saku = AFFINITY_RANK_PTS[1] - 1;
+  assert(!offered(value).includes("ch3_saku_lime"), "Ayatori's LIME below ♥1");
+  value.affinity.saku = AFFINITY_RANK_PTS[1];
+  assert(offered(value).includes("ch3_saku_lime"));
+  commitOptionalRead(value, "ch3_saku_lime");
+  assert(!offered(value).includes("ch3_saku_lime"), "Ayatori's LIME read twice");
+  const lime = scene("ch3_saku_lime").lines;
+  assert(lime.some(line => line.type === "set_flag" && line.flag === "_lime_contact_saku"));
+  assert.deepEqual(lime.filter(line => line.type === "apply").map(line => line.affinity), [{ saku: 2 }]);
+  assert.equal(classifyFlag("_lime_contact_saku"), "person");
+  for (const id of ["ch3_saku_first", "ch3_saku_mukai_visit", "ch3_saku_advice", "ch3_enmaku_cleanup"]) {
     const dialogue = scene(id);
     const lines = [...dialogue.lines, ...Object.values(dialogue.branches || {}).flat()];
-    assert(!dialogue.metadata?.add_affinity && !lines.some(line => line.affinity?.kuze), `${id}: mandatory scenes give no affinity`);
+    assert(!dialogue.metadata?.add_affinity && !lines.some(line => line.affinity?.saku), `${id}: mandatory scenes give no affinity`);
   }
   const cleanup = scene("ch3_enmaku_cleanup");
-  const gate = cleanup.lines.find(line => line.type === "condition" && line.flag === "_lime_contact_kuze");
-  assert(gate && !gate.next_false && cleanup.branches[gate.next_true].some(line => line.speaker === "kuze"));
+  const gate = cleanup.lines.find(line => line.type === "condition" && line.flag === "_lime_contact_saku");
+  assert(gate && !gate.next_false && cleanup.branches[gate.next_true].some(line => line.speaker === "saku"));
   // CI の quick は立ち絵を取得しないため、画像がある環境だけ表情を照合する（表情の登録は lint_dialogue でも検査）。
-  const spriteDir = new URL("../img/sprites/characters/kuze/", import.meta.url);
+  const spriteDir = new URL("../img/sprites/characters/saku/", import.meta.url);
   if (fs.existsSync(spriteDir)) {
-    const faces = new Set(fs.readdirSync(spriteDir).map(name => name.replace(/^chr_kuze_|\.webp$/g, "")));
-    for (const line of [...lime, ...cleanup.branches[gate.next_true]]) if (line.speaker === "kuze") assert(faces.has(line.face), line.face);
+    const faces = new Set(fs.readdirSync(spriteDir).map(name => name.replace(/^chr_saku_|\.webp$/g, "")));
+    for (const line of [...lime, ...cleanup.branches[gate.next_true]]) if (line.speaker === "saku") assert(faces.has(line.face), line.face);
   }
 }
 

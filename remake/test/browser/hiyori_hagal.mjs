@@ -79,10 +79,10 @@ await suite('hiyori-hagal', async allCheck => {
         // A current-schema appointment, including its real source message.
         // Incomplete legacy fixtures acquire originId/replyState on LOAD;
         // that migration must not be confused with a gift changing LIME.
-        s.pendingInvite = { sender: 'rin', day: 12, slot: 1, event: 'date_rin', originId: 'keep', afterClose: false };
+        s.pendingInvite = { sender: 'kuyuri', day: 12, slot: 1, event: 'date_kuyuri', originId: 'keep', afterClose: false };
         s.inbox = [{ id: 'keep', originId: 'keep', day: 11, chapter: 1, read: true, done: true,
           replyState: 'replied', result: 'accepted',
-          msg: { sender: 'rin', type: 'invitation', accept_event: 'date_rin' }, log: ['keep'] }];
+          msg: { sender: 'kuyuri', type: 'invitation', accept_event: 'date_kuyuri' }, log: ['keep'] }];
         const payment = { money: s.money, stamina: s.stamina, slot: s.slot, stock: structuredClone(s.flavorStock) };
         const lime = JSON.stringify({ inbox: s.inbox, pending: s.pendingInvite });
         H.vn.vnTest.choose = () => q2;

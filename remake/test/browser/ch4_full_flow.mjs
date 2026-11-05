@@ -52,7 +52,7 @@ async function seed(page) {
       _ch3_aftermath: { version: 2, winDay: 42, stage: 6 } };
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
     value.tournament.lastRank = 1; value.tournament.lastTotal = 88;
-    for (const who of ["ageha", "kumicho", "rei", "pakki", "maezono", "dr_kemuri", "nagumo", "hajime", "sumi", "naru"])
+    for (const who of ["ageha", "kumicho", "rei", "pakki", "maezono", "dr_kemuri", "sui", "hajime", "sumi", "naru"])
       value.flags[`_intro_${who}`] = true;
     // 辻占のオババ（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、第4章（出発前の準備）の出現は済んだことにする。
     const fortune = await import("./js/daily/fortune-schedule.js");
@@ -272,7 +272,7 @@ await suite("ch4-full-flow", async check => {
     await page.evaluate(() => window.__ch4Observer.disconnect());
     assert.equal(state.flags._ch4.part, "resolution");
     assert.equal(state.flags._ch4_cleared, undefined);
-    const resolution = ["ch4_result", "ch4_nagumo_old_rival", "ch4_ending", "ch4_sumi_return", "ch4_two_tables"];
+    const resolution = ["ch4_result", "ch4_sui_old_rival", "ch4_ending", "ch4_sumi_return", "ch4_two_tables"];
     for (const id of resolution) {
       await page.locator(scene(id)).waitFor();
       await page.locator(dt("ch4-continue")).click();

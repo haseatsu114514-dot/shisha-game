@@ -177,10 +177,10 @@ console.log("ngplus cycle start: PASS (carry/reset, groups, equipment, save/gall
 const growth = await import("../js/core/growth.js");
 const { awardLoverSceneExp } = await import("../js/core/lover-rewards.js");
 growth.setGrowthPreview(false);
-newGame(); core.state.lovers = ["rin"];
+newGame(); core.state.lovers = ["kuyuri"];
 const abilityBefore = structuredClone(core.state.stats);
-assert.equal(awardLoverSceneExp("lover_rin_lv1", core.state), 20);
-assert.equal(awardLoverSceneExp("lover_rin_lv1", core.state), 0);
+assert.equal(awardLoverSceneExp("lover_kuyuri_lv1", core.state), 20);
+assert.equal(awardLoverSceneExp("lover_kuyuri_lv1", core.state), 0);
 assert.equal(growth.gainExp(100), 0, "他のEXP源を先行公開しない");
 assert.equal(growth.awardSlotExp("big"), 0);
 assert.equal(growth.settleGrowth(), null);
@@ -188,26 +188,26 @@ assert.equal(core.state.growth.level, 1); assert.equal(growth.hidaneTotal(), 0);
 const held = structuredClone(core.state.growth);
 save(); newGame(); core.load();
 assert.deepEqual(core.state.growth, held);
-assert.equal(awardLoverSceneExp("lover_rin_lv1", core.state), 0, "保存後も一度だけ");
+assert.equal(awardLoverSceneExp("lover_kuyuri_lv1", core.state), 0, "保存後も一度だけ");
 growth.setGrowthPreview(true);
 assert.deepEqual(core.state.growth, held, "previewへ切り替えるだけでは加算・精算しない");
-assert.equal(awardLoverSceneExp("lover_rin_lv1", core.state), 0);
+assert.equal(awardLoverSceneExp("lover_kuyuri_lv1", core.state), 0);
 growth.gainExp(300);
 growth.settleGrowth();
 const settled = structuredClone(core.state.growth);
 assert.equal(settled.xp, 320); assert.equal(settled.level, 2);
 growth.setGrowthPreview(false);
 assert.deepEqual(core.state.growth, settled, "通常へ戻しても失わない");
-assert.equal(awardLoverSceneExp("lover_rin_lv2", core.state), 20);
+assert.equal(awardLoverSceneExp("lover_kuyuri_lv2", core.state), 20);
 assert.equal(growth.settleGrowth(), null, "通常プレイで火種を配らない");
 assert.deepEqual(core.state.stats, abilityBefore);
 assert.equal(core.state.growth.xp, 340);
-core.state.growth.fresh.counts.rin = 4;
-core.state.growth.firsts.people.push("rin");
-core.state.growth.gifted.rin = true;
+core.state.growth.fresh.counts.kuyuri = 4;
+core.state.growth.firsts.people.push("kuyuri");
+core.state.growth.gifted.kuyuri = true;
 const expSource = structuredClone(core.state), expPackage = buildCarryPackage(core.state);
 assert.deepEqual(core.state, expSource, "引継ぎ抽出で元セーブを変えない");
-assert.equal(expPackage.flags._lover_exp_lover_rin_lv1, undefined);
+assert.equal(expPackage.flags._lover_exp_lover_kuyuri_lv1, undefined);
 assert.deepEqual(expPackage.growth.fresh, { chapter: 1, counts: {} });
 assert.deepEqual(expPackage.growth.firsts, { people: [], places: [] });
 assert.deepEqual(expPackage.growth.gifted, {});
@@ -218,13 +218,13 @@ assert.deepEqual(nextExp.growth.hidane, settled.hidane);
 assert.deepEqual(nextExp.lovers, []);
 assert.notStrictEqual(nextExp.growth, expPackage.growth);
 assert.notStrictEqual(nextExp.growth.hidane, expPackage.growth.hidane);
-nextExp.lovers = ["rin"];
-assert.equal(awardLoverSceneExp("lover_rin_lv1", nextExp), 20, "新しい周回で実際に読むと再獲得");
+nextExp.lovers = ["kuyuri"];
+assert.equal(awardLoverSceneExp("lover_kuyuri_lv1", nextExp), 20, "新しい周回で実際に読むと再獲得");
 assert.equal(expPackage.growth.xp, 340);
 save(); newGame(); core.load();
 assert.equal(core.state.growth.xp, 360);
 growth.setGrowthPreview(true);
-assert.equal(awardLoverSceneExp("lover_rin_lv1", core.state), 0);
+assert.equal(awardLoverSceneExp("lover_kuyuri_lv1", core.state), 0);
 const resettled = growth.settleGrowth();
 assert.equal(resettled.to, resettled.from); assert.deepEqual(core.state.growth.hidane, settled.hidane);
 growth.setGrowthPreview(false);
@@ -244,7 +244,7 @@ Object.assign(boardGrowth, {
   learned: ["M-B4", "M-W1"],
   paid: { B1: { any: 1 }, K20: { body: 2 }, K18: { any: 4 }, "M-B4": {}, "M-W1": {} },
   hidane: { any: 5, body: 0, sense: 0, wisdom: 0 }, earned: 12, ringsOpen: 5,
-  partyLast: ["kuze", "mashiro"],
+  partyLast: ["saku", "mashiro"],
 });
 const rawStats = structuredClone(core.state.stats);
 const retainedBoard = structuredClone({ nodes: boardGrowth.nodes, learned: boardGrowth.learned, paid: boardGrowth.paid });
@@ -292,7 +292,7 @@ for (let cycle = 1; cycle <= 3; cycle++) {
   assert.equal(core.state.growth.xp, settledBoard.xp);
   assert.equal(core.state.growth.earned, settledBoard.earned);
   assert.equal(core.state.growth.ringsOpen, 5);
-  assert.deepEqual(core.state.growth.partyLast, ["kuze", "mashiro"]);
+  assert.deepEqual(core.state.growth.partyLast, ["saku", "mashiro"]);
   assert.deepEqual(core.state.growth.firsts, { people: [], places: [] });
   const beforeResettle = structuredClone(core.state.growth);
   growth.settleGrowth();

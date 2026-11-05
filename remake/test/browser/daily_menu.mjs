@@ -20,7 +20,7 @@ async function setup(page, { growth = false } = {}) {
     Object.assign(s, { phase: "daily", chapter: 1, day: 5, slot: 0, money: 42000, stamina: 80, weatherSeed: 1234 });
     Object.assign(s.flags, { _morning_5: true, _errand_scout_done: true, _delivery_adam_done: true, _delivery_minto_done: true,
       _lime_tut: 1, _lime_opened: true, _intro_minto: true, known_name_minto: true });
-    for (const id of ["minto", "naru", "adam", "tsumugi", "rin"]) s.met[id] = true;
+    for (const id of ["minto", "naru", "adam", "tsumugi", "kuyuri"]) s.met[id] = true;
     s.contacts.push("minto", "naru", "tsumugi");
     Object.assign(s.affinity, { minto: 40, sumi: 22, naru: 12, tsumugi: 66 });
     s.lovers = ["tsumugi"];

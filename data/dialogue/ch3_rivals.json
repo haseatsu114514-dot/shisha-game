@@ -1,7 +1,7 @@
 {
   "dialogues": [
     {
-      "dialogue_id": "ch3_kuze_first",
+      "dialogue_id": "ch3_saku_first",
       "metadata": {
         "flavor_lesson": {
           "chocolate": 1
@@ -11,7 +11,7 @@
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_ch3_delivery_kuze",
+          "flag": "_ch3_delivery_saku",
           "next_true": "delivery_known_open",
           "next_false": "delivery_new_open"
         },
@@ -47,12 +47,12 @@
         },
         {
           "type": "set_flag",
-          "flag": "_met_kuze"
+          "flag": "_met_saku"
         },
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_ch3_delivery_kuze",
+          "flag": "_ch3_delivery_saku",
           "next_true": "delivery_known_greet",
           "next_false": "delivery_new_greet"
         },
@@ -62,7 +62,7 @@
           "text": "……いえ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "僕。噂を流したのも僕だけどね。がっかりした？"
         },
@@ -72,7 +72,7 @@
           "text": "思ったより普通の店ですね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "ひどいなぁ。普通の椅子に座ってよ。吸う？　休む？"
         },
@@ -82,7 +82,7 @@
           "text": "今日は飲み物だけで"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "もちろん。煙なしの日にも、席はあるよ"
         },
@@ -102,12 +102,12 @@
           "text": "これ、レモンケーキみたい。何を入れたの？"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "柑橘とアールグレイ。粉もバターも、ひとかけらもないよ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "でも君の二口目にはあったんだ。……僕の手柄は半分かな"
         },
@@ -117,7 +117,7 @@
           "text": "菓子の味まで予想してたんですか"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "予想は書く。外れた客の答えもね"
         },
@@ -127,7 +127,7 @@
           "text": "ノートには葉と炭の位置、客ごとに違う味の名前が並んでいた。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "次に吸うなら、材料から見る？　味の名を伏せる？　選んでいい"
         },
@@ -137,7 +137,7 @@
           "text": "次は、材料から見たいです"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "了解。答えを当てる試験じゃないし"
         },
@@ -147,7 +147,7 @@
           "text": "実は、全国の課題がチョコなんです。綾取さんなら、どう組みますか"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "チョコか。じゃあ一台だけ、君の課題への差し入れを作るよ"
         },
@@ -172,12 +172,12 @@
           "text": "本当にチョコ、使ってます？　ほうじ茶の葉を足したんじゃなくて？"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "チョコと、アールグレイと、ぶどう。同じ量ずつ。ほうじ茶の葉は一枚もないよ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "素材を足すだけじゃ外れる。重ねる順番と熱で、別の記憶を呼ぶんだ"
         },
@@ -187,7 +187,7 @@
           "text": "（素材は全部知ってるのに、ほうじ茶にしか思えない）"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "実物でいつでも同じに出せる、とは言わないけどね。今日の君と、この一台の話"
         },
@@ -197,7 +197,7 @@
           "text": "大会でも、これを出すんですか"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "まさか。これは差し入れ。当日は別の仕掛けを用意してる"
         },
@@ -207,7 +207,7 @@
           "text": "ましろちゃんに聞きました。綾取さん、幼なじみなんですね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "ましろが僕の話を？　……嬉しい。でも、もう昔のことだし。今会っても、何を話せばいいんだろ"
         },
@@ -217,12 +217,12 @@
           "text": "そんなことないと思います。ましろちゃん、名前を聞いて懐かしそうでした"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "……ありがと。この話の続きは、また今度"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "同じものを見ても、違う答えが返るんだね。あの頃から、ずっと面白い"
         },
@@ -232,12 +232,12 @@
           "text": "綾取さんも、全国に出るんですよね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "うん。君にも勝ちたい"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "でも今は客でいて。飲み物、冷めるよ"
         },
@@ -252,7 +252,7 @@
           "text": "手伝い、いらないんですか"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "東京を裏で動かす組織、片付け係が僕しかいないんだ"
         },
@@ -262,7 +262,7 @@
           "text": "俺も県外から来たんです。着いた日は心細くて。綾取さんも、東京へ戻ってきたばかりなんですね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "うん。僕も東京じゃ少し迷子。よかったら、大会が終わっても友達でいてよ"
         },
@@ -272,7 +272,7 @@
           "text": "はい。今日話せて、よかったです"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "作業台、空けるよ。僕の予想を外しに来てね"
         },
@@ -299,19 +299,19 @@
         ],
         "delivery_known_greet": [
           {
-            "speaker": "kuze",
+            "speaker": "saku",
             "face": "normal",
             "text": "いらっしゃい。ほんとに用事なしで来てくれたんだ"
           },
           {
-            "speaker": "kuze",
+            "speaker": "saku",
             "face": "smug",
             "text": "じゃあ改めて。東京の煙を裏から動かす男、って聞いたことある？"
           }
         ],
         "delivery_new_greet": [
           {
-            "speaker": "kuze",
+            "speaker": "saku",
             "face": "smug",
             "text": "いらっしゃい。……ここ、東京の煙を裏から動かす男の店だよ"
           }
@@ -319,14 +319,14 @@
       }
     },
     {
-      "dialogue_id": "ch3_kuze_mukai_visit",
+      "dialogue_id": "ch3_saku_mukai_visit",
       "lines": [
         {
           "speaker": "",
           "text": "mukaiの開店前。仕込み中のはじめが顔を上げると、入口に綾取がいた。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "今日は客で来たよ。県大会の動画は見たけど、君がここで作る一台を吸ってみたくて"
         },
@@ -336,7 +336,7 @@
           "text": "動画、見たんですか。……何か分かりました？"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "見直したけど、映像じゃ最後の一口まで分からないから"
         },
@@ -346,7 +346,7 @@
           "text": "朔、……いらっしゃい"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "ましろ、ここで働いてるって聞いてたから。今日は一台だけ、よろしくね"
         },
@@ -359,7 +359,7 @@
           "text": "綾取は名前を伏せずに材料を見てから吸う。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "surprise",
           "text": "最初は静かだね。……あ、二口目で変わった。君が待った理由、少し分かった気がする"
         },
@@ -369,12 +369,12 @@
           "text": "まだ、毎回同じようには作れません"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "僕もだよ。だから、次の一台を見たい"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "……大会でもね"
         },
@@ -399,7 +399,7 @@
       ]
     },
     {
-      "dialogue_id": "ch3_kuze_advice",
+      "dialogue_id": "ch3_saku_advice",
       "metadata": {
         "flavor_lesson": {
           "orange": 1
@@ -412,7 +412,7 @@
           "text": "数日後の煙幕。ましろは客席にいた。mukaiで顔を合わせた幼なじみと、ちゃんと話すのは初めてだ。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "来たね。……ましろ、本当に来てくれたんだ。顔を見た時、少し信じられなくて"
         },
@@ -422,7 +422,7 @@
           "text": "今日はちゃんと話せるね、朔。店を借りてまで出るって聞いたから、気になって"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "sad",
           "text": "心配して来た？　そうだよね。僕なんか、まだ頼りなく見えるか"
         },
@@ -432,7 +432,7 @@
           "text": "そこは変わってないね。昔も、最後に一人で片づけてた"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "surprise",
           "text": "え、覚えてるの？　……じゃあ僕の大きな組織、初日で解散だね"
         },
@@ -442,7 +442,7 @@
           "text": "子どもの頃はね。今の朔は、僕にもまだ分からないところがある"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "……そっか。じゃあ今日の僕を見てて。嘘はつかないよ、たぶん"
         },
@@ -452,7 +452,7 @@
           "text": "綾取は二人の前に自分の一台と葉の袋を並べた。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "葉は柑橘とアールグレイ。名前を伏せるのが嫌なら、先に見て"
         },
@@ -462,7 +462,7 @@
           "text": "見てから吸います"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "うん。何に感じるかは、教えてほしいけどね"
         },
@@ -477,7 +477,7 @@
           "text": "僕には、ちゃんとお茶"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "また外した"
         },
@@ -487,12 +487,12 @@
           "text": "俺にも、柑橘と茶……だと思います。今日は、少し自信がなくて"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "同じ葉でも、炭の順番で思い出すものが変わる"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "serious",
           "text": "それを「客の思い込み」って片づけられると、腹が立つ"
         },
@@ -507,7 +507,7 @@
           "text": "言う前に、綾取は小さく笑った。ましろが、その口元を見ている。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "撤回。僕はいつも素直。……やっぱり無理があるね"
         },
@@ -517,7 +517,7 @@
           "text": "はじめは約束していた作業台で、大会用の試作を一台作った。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "おいしい。最初は軽いのに、甘さが最後まで残る"
         },
@@ -527,7 +527,7 @@
           "text": "削った方がいいですか"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "僕に決めさせる？　それ、楽だけど損じゃない？"
         },
@@ -537,17 +537,17 @@
           "text": "僕は、後半も吸っていたいなぁ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "ほら、答えも分かれた。……でも、正直に言うとね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "最後の甘さは、少し長い。二度目の調整で炭を一つ外すと締まるよ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "決めるのは君。どうしたい？"
         },
@@ -557,12 +557,12 @@
           "text": "まだ決めません。自分の台でもう一度確かめます"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "そう来るか。僕も全国に出るんだけどな"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "おいしい相手に勝つ方が楽しい。……負けたら悔しいけど"
         },
@@ -577,18 +577,18 @@
           "text": "そこまでしてくれるんですね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "計算だよ。喉が渇いた相手に勝っても自慢できないじゃん"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "……半分はね。おいしく帰ってほしいのも、本当"
         },
         {
           "type": "remember",
-          "memory_id": "kuze_decide"
+          "memory_id": "saku_decide"
         }
       ]
     },
@@ -766,7 +766,7 @@
       ]
     },
     {
-      "dialogue_id": "ch3_kuze_lime",
+      "dialogue_id": "ch3_saku_lime",
       "comment": "第3章の任意場面（#2028）。助言の後、煙幕への再訪で綾取が♥1になってから。好感度は任意場面だけで付ける。後日談の ch3_enmaku_cleanup で、交換した時だけ「返事の欄」を回収する。大会の前後を前提にしない。",
       "lines": [
         {
@@ -774,7 +774,7 @@
           "text": "閉店後の煙幕。綾取は客席で、ノートの最後のページを開いていた。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "いらっしゃい。今夜の組織の議題は、君の連絡先"
         },
@@ -784,7 +784,7 @@
           "text": "……議題、俺なんですか"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "うん。僕のノート、客の答えはたくさんあるのに、返事の欄がないんだ"
         },
@@ -794,22 +794,22 @@
           "text": "返事の欄？"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "帰ってから「やっぱり違った」って思う人もいるでしょ。それも聞きたくて"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "nervous",
           "text": "でも、煙幕は数週間だけの間借り。閉めたら、東京の客の続きは聞けない"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "nervous",
           "text": "……かといって、お客さんに連絡先を聞くのも違う気がして"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "君は客で、作業台の常連で、ライバル。どれでもいいから、聞いていい？"
         },
@@ -820,14 +820,14 @@
         },
         {
           "type": "set_flag",
-          "flag": "_lime_contact_kuze"
+          "flag": "_lime_contact_saku"
         },
         {
           "speaker": "",
           "text": "綾取は画面を確かめてから、ノートの最後のページに一行書き足した。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smug",
           "text": "書記の勧誘は、LIMEでも続けるからね"
         },
@@ -837,7 +837,7 @@
           "text": "入りません"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "知ってる。……外れた予想も、送っていい？"
         },
@@ -847,7 +847,7 @@
           "text": "当たった時だけじゃなくて？"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "外れた方が、続きを聞きたくなるんだ"
         },
@@ -859,16 +859,16 @@
         {
           "type": "apply",
           "affinity": {
-            "kuze": 2
+            "saku": 2
           }
         }
       ]
     },
     {
-      "dialogue_id": "ch3_kuze_bond_finale",
-      "comment": "#2028 好感度の締めくくり（友情のみ・綾取は恋愛対象外）。LIME交換（ch3_kuze_lime）と「答えを返しに行く」外出の後、第3章の場面カードから一度だけ（daily/bonds.js）。福岡から持ってきたアールグレイの素焼きを渡し、客の答えではなく友人の返事として書き残す。第3章の場面カードは大会前夜までだが、時系列ルールに沿って大会後の分岐も置く。",
+      "dialogue_id": "ch3_saku_bond_finale",
+      "comment": "#2028 好感度の締めくくり（友情のみ・綾取は恋愛対象外）。LIME交換（ch3_saku_lime）と「答えを返しに行く」外出の後、第3章の場面カードから一度だけ（daily/bonds.js）。福岡から持ってきたアールグレイの素焼きを渡し、客の答えではなく友人の返事として書き残す。第3章の場面カードは大会前夜までだが、時系列ルールに沿って大会後の分岐も置く。",
       "metadata": {
-        "bond_finale": "kuze"
+        "bond_finale": "saku"
       },
       "lines": [
         {
@@ -883,7 +883,7 @@
           "text": "綾取はカウンターの奥から、布に包んだものを持ってきた。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "先に中身を見る？　それとも、名前を伏せたまま当てる？"
         },
@@ -893,7 +893,7 @@
           "text": "見てからにします"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "だよね。君はいつもそっち"
         },
@@ -907,12 +907,12 @@
           "text": "アールグレイ……。綾取さんの、いつもの葉ですよね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "福岡から持ってきた一つ。閉店後、客の答えを確かめる時は、ずっとこれで吸ってた"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "君に渡したい"
         },
@@ -922,17 +922,17 @@
           "text": "えっ。大事な道具なんじゃ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smug",
           "text": "間借りが終わったら、荷物を減らさないといけないから"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "nervous",
           "text": "……っていうのは、半分。残りの半分は、ちゃんと言うね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "僕のノート、客の答えばかりで、返事の欄がなかったでしょ"
         },
@@ -941,7 +941,7 @@
           "text": "綾取はノートの最後のページを開いた。はじめが外した予想と、綾取が外した予想が、交互に並んでいた。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "ここだけ、客の記録じゃないんだ。君が返してくれた分"
         },
@@ -951,17 +951,17 @@
           "text": "俺、外してばっかりですね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "僕もね。だから続きを書きたくなる"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "serious",
           "text": "このハガルは、柑橘を先に立てて、茶を最後に残す熱の順番を覚えてる"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "君が詰めたら、別の順番を覚えるかもしれない。それを、いつか吸わせて"
         },
@@ -976,12 +976,12 @@
           "text": "預かります。綾取さんの予想、また外しますから"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "surprise",
           "text": "……あ、今の、読めなかった"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "やっぱり君、客じゃなくて友達の欄だね。組織じゃなくて"
         },
@@ -991,7 +991,7 @@
           "text": "書記にも入りませんよ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "知ってる。葉も一箱つけとく。……おいしく帰ってほしいのは、本当だから"
         },
@@ -1013,7 +1013,7 @@
             "text": "閉店後の煙幕。綾取はノートを閉じ、はじめの分の席だけを空けて待っていた。"
           },
           {
-            "speaker": "kuze",
+            "speaker": "saku",
             "face": "normal",
             "text": "来てくれた。勝負の話は、今夜はなしね。これは大会とは別の議題"
           }
@@ -1024,7 +1024,7 @@
             "text": "閉店後の煙幕。綾取はノートを閉じ、はじめの分の席だけを空けて待っていた。"
           },
           {
-            "speaker": "kuze",
+            "speaker": "saku",
             "face": "normal",
             "text": "来てくれた。今夜の議題は、勝ち負けとは別の話"
           }

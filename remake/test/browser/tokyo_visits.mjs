@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { suite, assertFits } from "./support.mjs";
 const t = name => `[data-test="${name}"]`;
 const get = page => page.evaluate(() => structuredClone(window.__remake.state));
-async function seed(page, { lovers = ["tsumugi", "minto", "rin", "samechan", "hiyori"], schema = null } = {}) {
+async function seed(page, { lovers = ["tsumugi", "minto", "kuyuri", "samechan", "hiyori"], schema = null } = {}) {
   await page.evaluate(async ({ lovers, schema }) => {
     const core = await import("./js/core/state.js");
     const value = core.newGame();
@@ -120,7 +120,7 @@ await suite("tokyo-visits", async check => {
     await page.evaluate(async () => {
       const { vnTest } = await import("./js/vn/engine.js"); vnTest.turbo = true; vnTest.choose = () => 0;
       const { state } = await import("./js/core/state.js");
-      for (const id of ["mashiro", "mukai", "kuze", "steve", "volk", "naru", "pakki"]) {
+      for (const id of ["mashiro", "mukai", "saku", "steve", "volk", "naru", "pakki"]) {
         state.met[id] = true; state.flags[`_intro_${id}`] = true;
       }
     });
@@ -241,7 +241,7 @@ await suite("tokyo-visits", async check => {
     assert.equal(await page.locator(".lime-chat-row").count(), 0);
     const value = await get(page);
     assert.deepEqual(value.tokyoVisits.plans, []);
-    assert.equal(value.schema, 25); // 25: 盤のデンスパック制限から旧セーブの選択肢を保護（#2166）
+    assert.equal(value.schema, 26); // 旧セーブは現在のSCHEMAへ移行される（25: #2166 のデンスパック保護 / 26: ID改名移行 IDREN01）
     await page.locator(t("phone-close")).click();
   });
 });

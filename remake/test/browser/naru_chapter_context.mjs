@@ -11,7 +11,7 @@ await suite('naru-chapter-context', async check => {
         ch1.setupHooks(); vn.vnTest.turbo = true;
         const out = [];
         const cases = [['adam','ch1_adam_fifth'], ['minto','ch1_minto_second'],
-          ['tsumugi','ch1_tsumugi_fifth'], ['tsumugi','ch1_tsumugi_smoke_color'], ['rin','ch1_rin_third']];
+          ['tsumugi','ch1_tsumugi_fifth'], ['tsumugi','ch1_tsumugi_smoke_color'], ['kuyuri','ch1_kuyuri_third']];
         for (const [char,id] of cases) for (const [chapter,phase] of [[1,'daily'],[1,'aftermath'],[2,'daily'],[3,'daily']]) {
           const s=core.newGame(), index=spots.VISIT_SEQ[char].indexOf(id);
           Object.assign(s,{chapter,phase,day:12,slot:1,money:100000,stamina:100});

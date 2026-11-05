@@ -43,9 +43,9 @@ assert.match(dialogue('ch2_tournament'), /ありがとう、と打ちかけて/)
 assert.doesNotMatch(dialogue('ch2_tournament'), /送信するまで、ずいぶん時間がかかった/);
 
 // 大会の朝: 第1章と同じ収集処理を使い、前夜の返事に応えるつむぎの1通を必ず含める。
-reset({ _ch2_no_audience: true }, { contacts: ['ageha', 'rin', 'hiyori'] });
-cheers = ['encourage_ageha', 'encourage_rin', 'encourage_hiyori'];
-assert.deepEqual(ids(chapterTwoCheers()), ['encourage_ch2_tsumugi_alone', 'encourage_ageha', 'encourage_rin'], '3通まで・前夜の返事を優先');
+reset({ _ch2_no_audience: true }, { contacts: ['ageha', 'kuyuri', 'hiyori'] });
+cheers = ['encourage_ageha', 'encourage_kuyuri', 'encourage_hiyori'];
+assert.deepEqual(ids(chapterTwoCheers()), ['encourage_ch2_tsumugi_alone', 'encourage_ageha', 'encourage_kuyuri'], '3通まで・前夜の返事を優先');
 reset({ _ch2_audience_welcome: true });
 cheers = [];
 assert.deepEqual(ids(chapterTwoCheers()), ['encourage_ch2_tsumugi_welcome']);

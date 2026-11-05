@@ -37,14 +37,14 @@ import { CH3_STORY_DIALOGUE_FILES, EVENING_WINDOW, availableOptionalScenes, comm
   selectChapterThreeEvening, eveningRecord } from "./ch3-story-wiring.js";
 
 const FILES = {
-  ch3_prologue: ["ch3_childhood_opening", "ch3_kuze_research", "ch3_train_arrival"],
+  ch3_prologue: ["ch3_childhood_opening", "ch3_saku_research", "ch3_train_arrival"],
   ch3_main: ["ch3_opening", "ch3_registration", "ch3_individuality_doubt", "ch3_tokyo_shop_gap", "ch3_abyss_recovery",
     "ch3_naru_contact_before_tournament", "ch3_naru_work", "ch3_strategy", "ch3_tournament_eve"],
   ch3_double_apple: ["ch3_mukai_arrival", "ch3_double_apple_incident", "ch3_rest_before_recovery",
     "ch3_daily_cup_1", "ch3_work_without_taste", "ch3_taste_return"],
   ch3_mukai: ["ch3_mukai_intro"],
   ch3_deliveries: MUKAI_DELIVERY_STEPS.filter(step => step.id !== "ch3_mukai_intro").map(step => step.id),
-  ch3_rivals: ["ch3_kuze_first", "ch3_kuze_mukai_visit", "ch3_kuze_advice", "ch3_steve_low_heat"],
+  ch3_rivals: ["ch3_saku_first", "ch3_saku_mukai_visit", "ch3_saku_advice", "ch3_steve_low_heat"],
   ch3_volk: ["ch3_volk_first"],
   // 出発前の準備3日と出発の朝（VOL02）。旧行程の保存も、章頭の回想の前に列車の4行（ch3_train_departure）を読む。
   ch3_departure: CH3_PREP_SCENES,
@@ -262,7 +262,7 @@ async function renderPrologue(owner) {
     save();
   }
   if (progress.prologueStep === 1) {
-    if (!await readPrologue(owner, "ch3_kuze_research", "bg_ch3_kuze_video")) return;
+    if (!await readPrologue(owner, "ch3_saku_research", "bg_ch3_saku_video")) return;
     progress.prologueStep = 2;
     save();
   }
@@ -301,7 +301,7 @@ async function renderPrep(owner) {
     save();
   }
   if (prep.step === 1) {
-    if (!await readPrologue(owner, "ch3_kuze_research", "bg_ch3_kuze_video")) return;
+    if (!await readPrologue(owner, "ch3_saku_research", "bg_ch3_saku_video")) return;
     prep.step = 2;
     save();
   }
@@ -473,7 +473,7 @@ async function renderStage(owner) {
     ...bondActions(owner),
     ...friendActions(owner),
     ...await optionalActions(owner),
-  ], scene.id === "ch3_kuze_advice" ? "煙幕を初めて訪ねた日から、数日が過ぎた。" : "", scene.id);
+  ], scene.id === "ch3_saku_advice" ? "煙幕を初めて訪ねた日から、数日が過ぎた。" : "", scene.id);
 }
 
 /** 東京の14日（版3）。日常ループの地図・本筋・寄り道は chapters/ch3-tokyo-daily.js。大会の朝に戻る。 */
@@ -556,14 +556,14 @@ function bondActions(owner) {
     ...kind ? [button(owner, kind === "question" ? "ましろちゃんと話す（mukai）" : "ましろちゃんに呼ばれる（mukai）",
       `bond-${kind}`, () => readBond(owner, kind))] : [],
     // 綾取の締めくくり（#2028）。条件は daily/bonds.js（LIME交換の寄り道と答えを返す外出の後）。友情の着地だけ。
-    ...finaleAtVisit("kuze") ? [button(owner, "綾取に呼ばれる（煙幕）", "bond-kuze-finale",
-      () => readBond(owner, "finale", "kuze"))] : [],
+    ...finaleAtVisit("saku") ? [button(owner, "綾取に呼ばれる（煙幕）", "bond-saku-finale",
+      () => readBond(owner, "finale", "saku"))] : [],
   ];
 }
 
 async function readBond(owner, kind, id = "mashiro") {
   if (!current(owner)) return;
-  const background = bgUrl(id === "kuze" ? "bg_yohaku_shop" : "bg_mukai_shop");
+  const background = bgUrl(id === "saku" ? "bg_yohaku_shop" : "bg_mukai_shop");
   showScreen("none", null);
   hud(owner);
   await withScenePreparation(setBg(background, { instant: true }));

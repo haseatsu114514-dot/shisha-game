@@ -207,7 +207,7 @@
     }
   },
   {
-    "id": "kuze",
+    "id": "saku",
     "birthday": "02-01",
     "name": "綾取 朔（あやとり さく）",
     "role": "rival_ch3",
@@ -452,7 +452,7 @@
     }
   },
   {
-    "id": "rin",
+    "id": "kuyuri",
     "birthday": "02-26",
     "name": "香坂 くゆり（こうさか くゆり）",
     "display_name": "くゆり",
@@ -658,7 +658,7 @@
     }
   },
   {
-    "id": "nagumo",
+    "id": "sui",
     "birthday": "12-16",
     "name": "須井 修二（すい しゅうじ）",
     "role": "judge",
@@ -1141,7 +1141,7 @@
     }
   },
   {
-    "id": "saif",
+    "id": "suhail",
     "birthday": "07-24",
     "name": "スハイル",
     "role": "sub_character",
@@ -1168,7 +1168,7 @@
     "spriteScale": 1.05
   },
   {
-    "id": "rashid",
+    "id": "khalil",
     "birthday": "10-20",
     "name": "ハリール",
     "role": "sub_character",

@@ -15,8 +15,8 @@ import { artImg } from "../craft/art.js";
 import { addMoney, addStamina } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
 import { visitChar } from "./spots.js";
-import { RIN_AWAY_DAY } from "../core/rules.js";
-import { rinUnavailable as rinVisitReason } from "./spot-hours.js";
+import { KUYURI_AWAY_DAY } from "../core/rules.js";
+import { kuyuriUnavailable as kuyuriVisitReason } from "./spot-hours.js";
 import { kujiRows, goodsSellRows } from "./kuji.js";
 import { SHOP_ART } from "./shop-art.js";
 import { AF_VANILLA_ART } from "./shop-art-af-vanilla.js";
@@ -44,7 +44,7 @@ export const releasedFlavor = (id, chapter = state?.chapter) => !!DB.flavorById[
 const SHOP_EQUIP_TYPES = ["bowl", "hms", "charcoal"];
 const CAT_LABEL = { cooling: "清涼", sweet: "スイート", fruit: "フルーツ", spice: "スパイス", floral: "フローラル" };
 const TYPE_LABEL = { bowl: "ボウル", hms: "HMD", charcoal: "炭", homeware: "シーシャ台" };
-export { RIN_AWAY_DAY };
+export { KUYURI_AWAY_DAY };
 
 // フレーバーは1箱50g（旧版 N3）。買う＝在庫+50g。自宅の試作・店への持ち込み・大会の課題以外の葉で減る（課題フレーバーは大会が支給＝減らない）
 export const FLAVOR_BOX_GRAMS = 50;
@@ -140,7 +140,7 @@ function productArt(item, flavor, size = 66) {
 function shopHeader(sub, money, name = "Dr.fookah", branded = false) {
   return el("header.shop-head", [branded ? el("h2.shop-brand", [storeLogo("shop", { width: 100, height: 44 }), el("span", { text: name })]) : el("h2", { text: name }), el("span.shop-sub", { text: sub }), money]);
 }
-const rinUnavailable = () => rinVisitReason(state);
+const kuyuriUnavailable = () => kuyuriVisitReason(state);
 
 /** 入店前に行き先を選ぶ。買い出し・大会準備の案内では、そのまま1Fへ進む。戻り値は従来どおり。 */
 export async function openShop(opts = {}) {
@@ -173,16 +173,16 @@ function chooseShopFloor() {
     let finished = false;
     const finish = (destination) => {
       if (finished || state !== session || !root.isConnected) return;
-      if (destination === "rin" && rinUnavailable()) return;
+      if (destination === "kuyuri" && kuyuriUnavailable()) return;
       finished = true;
-      // 2Fは呼び出し側の体力確認後にvisitRinで予約する。見送り時に演出を残さない。
+      // 2Fは呼び出し側の体力確認後にvisitKuyuriで予約する。見送り時に演出を残さない。
       if (destination === "shop") refreshPlaceCue("shop"); else cancelPlaceCue("shop");
       destination ? SE.select() : SE.cancel();
       retire(root); resolve(destination);
     };
-    const unavailable = rinUnavailable();
+    const unavailable = kuyuriUnavailable();
     const card = (floor, title, desc, bg, destination, disabled = false) => el(`button.shop-floor${floor === "2F" ? ".showroom" : ""}`, {
-      disabled, dataset: { test: destination === "rin" ? "shop-upstairs" : "shop-enter" }, onclick: () => finish(destination),
+      disabled, dataset: { test: destination === "kuyuri" ? "shop-upstairs" : "shop-enter" }, onclick: () => finish(destination),
     }, [
       el("span.shop-floor-picture", [el("img", { src: bgUrl(bg), alt: "", decoding: "async" }), el("span.shop-floor-number", { text: floor })]),
       el("span.shop-floor-caption", [el("b", { text: title }), el("small", { text: desc }), el("span.shop-floor-arrow", { text: "↗", "aria-hidden": "true" })]),
@@ -192,7 +192,7 @@ function chooseShopFloor() {
       el("h3", { text: "今日は、どちらへ？" }),
       el("div.shop-floors", [
         card("1F", "買い物", "時間消費なし", "bg_shop", "shop"),
-        card("2F", "夜のショールーム", unavailable || "相談受付中・1行動消費", "bg_fookah_showroom", "rin", !!unavailable),
+        card("2F", "夜のショールーム", unavailable || "相談受付中・1行動消費", "bg_fookah_showroom", "kuyuri", !!unavailable),
       ]),
       el("footer.shop-entry-foot", [el("button.shop-back", { text: "← 街に戻る", dataset: { test: "shop-entry-back" }, onclick: () => finish(null) })]),
     ]));
@@ -432,20 +432,20 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
   });
 }
 
-export async function visitRin() {
-  if (state.phase !== "daily" || rinUnavailable()) return false;
+export async function visitKuyuri() {
+  if (state.phase !== "daily" || kuyuriUnavailable()) return false;
   cueTransition("place", { spotId: "shop", label: "Dr.fookah", area: "問屋街" });
   addStamina(-14);
-  state.visitedDay.rin = state.day;
+  state.visitedDay.kuyuri = state.day;
   const owner = state;
-  const completed = await visitChar("rin");
+  const completed = await visitChar("kuyuri");
   if (!completed || state !== owner) return false;
   // 3回目で限定フレーバー（NIGHTSIDE アールグレイ試作）を分けてもらえる
-  if ((state.story.rin || 0) >= 3 && state.flags._rin_sample && !state.flags._rin_sample_received) {
+  if ((state.story.kuyuri || 0) >= 3 && state.flags._kuyuri_sample && !state.flags._kuyuri_sample_received) {
     // 旧セーブも、0gのキー／所持履歴があれば受領済み。使い切った葉を補充しない。
     const received = Object.hasOwn(state.flavorStock || {}, "nightside_earlgrey")
       || state.flavors.includes("nightside_earlgrey");
-    state.flags._rin_sample_received = true;
+    state.flags._kuyuri_sample_received = true;
     if (!received) {
       addFlavorStock("nightside_earlgrey", FLAVOR_BOX_GRAMS);
       toast("限定フレーバー「NS アールグレイ（試作）」を手に入れた", { kind: "good" });

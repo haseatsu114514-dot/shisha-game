@@ -142,7 +142,7 @@ async function read(owner, name) {
   if (!live(owner)) return false;
   showScreen("none", null);
   // 大会場面内で初めて名乗る人物の表示名を解禁する。未読で中断したら戻す。
-  const reveals = name === "tournament_day" ? ["kuze", "steve", "volk", ...JUDGES] : [];
+  const reveals = name === "tournament_day" ? ["saku", "steve", "volk", ...JUDGES] : [];
   const newlyMet = reveals.filter(who => !state.met[who]);
   const newMetFlags = reveals.filter(who => !state.flags[`_met_${who}`]);
   for (const who of reveals.filter(who => who !== "emil")) markMet(who);

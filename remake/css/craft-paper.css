@@ -116,7 +116,7 @@ html .bench[data-mode] .audience-rating { color: var(--lavender); }
 html .bench[data-mode] .audience-note { color: var(--paper-ink); }
 html .bench[data-mode] .bench-audience[data-tone="bright"] .audience-rating { color: var(--amber-ink); }
 html .bench[data-mode] .bench-audience[data-tone="bright"] .audience-note { color: var(--amber-ink); }
-html .bench[data-mode] .bench-audience[data-speaker="nagumo"][data-tone="bright"] .audience-note { color: var(--cool-ink); }
+html .bench[data-mode] .bench-audience[data-speaker="sui"][data-tone="bright"] .audience-note { color: var(--cool-ink); }
 html .bench[data-mode] .bench-audience[data-tone="warm"] .audience-note { color: var(--good-ink); }
 html .bench[data-mode] .bench-audience[data-tone="warm"] .audience-rating { color: var(--good-ink); }
 html .bench[data-mode] .bench-audience[data-tone="quiet"] .audience-note, html .bench[data-mode] .bench-audience[data-tone="quiet"] .audience-rating { color: var(--paper-muted); }

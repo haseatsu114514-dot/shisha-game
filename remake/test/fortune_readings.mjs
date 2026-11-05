@@ -33,13 +33,13 @@ const expectedIds = {
   adam: ['adam_2', 'adam_4', 'adam_5', 'adam_13', 'adam_14'],
   minto: ['minto_2', 'minto_3', 'minto_4', 'minto_5', 'minto_6', 'minto_10', 'minto_13', 'minto_15'],
   tsumugi: ['tsumugi_1', 'tsumugi_2', 'tsumugi_3', 'tsumugi_5', 'tsumugi_6', 'tsumugi_9', 'tsumugi_13', 'tsumugi_15'],
-  rin: ['rin_1', 'rin_2', 'rin_3', 'rin_5', 'rin_6', 'rin_11', 'rin_14'],
+  kuyuri: ['kuyuri_1', 'kuyuri_2', 'kuyuri_3', 'kuyuri_5', 'kuyuri_6', 'kuyuri_11', 'kuyuri_14'],
   hiyori: ['hiyori_1', 'hiyori_2', 'hiyori_3', 'hiyori_6', 'hiyori_8'],
   samechan: ['samechan_1', 'samechan_2', 'samechan_3', 'samechan_5', 'samechan_6', 'samechan_9'],
   ageha: ['ageha_1', 'ageha_2', 'ageha_3', 'ageha_4', 'ageha_5', 'ageha_6'],
 };
 // 2026-11-02: 第2〜5章で占い師が選べるのに読み物の無かった9人へ5本ずつ（第3・5章は東京にも出る）。
-const castIds = ['kumicho', 'rei', 'kuze', 'steve', 'volk', 'mashiro', 'mukai_master', 'da_silva', 'sheikh'];
+const castIds = ['kumicho', 'rei', 'saku', 'steve', 'volk', 'mashiro', 'mukai_master', 'da_silva', 'sheikh'];
 for (const char of castIds) expectedIds[char] = [1, 2, 3, 4, 5].map(n => `${char}_${n}`);
 const excludedIds = [
   'sumi_8', 'sumi_10', 'sumi_12', 'sumi_14', 'sumi_15',
@@ -47,7 +47,7 @@ const excludedIds = [
   'adam_1', 'adam_3', 'adam_6', 'adam_7', 'adam_8', 'adam_9', 'adam_10', 'adam_11', 'adam_12', 'adam_15',
   'minto_1', 'minto_7', 'minto_8', 'minto_9', 'minto_11', 'minto_12', 'minto_14',
   'tsumugi_4', 'tsumugi_7', 'tsumugi_8', 'tsumugi_10', 'tsumugi_11', 'tsumugi_12', 'tsumugi_14',
-  'rin_4', 'rin_7', 'rin_8', 'rin_9', 'rin_10', 'rin_12', 'rin_13', 'rin_15',
+  'kuyuri_4', 'kuyuri_7', 'kuyuri_8', 'kuyuri_9', 'kuyuri_10', 'kuyuri_12', 'kuyuri_13', 'kuyuri_15',
   'hiyori_4', 'hiyori_5', 'hiyori_7', 'hiyori_9', 'hiyori_10', 'hiyori_11', 'hiyori_12', 'hiyori_13', 'hiyori_14', 'hiyori_15',
   'samechan_4', 'samechan_7', 'samechan_8', 'samechan_10', 'samechan_11', 'samechan_12', 'samechan_13', 'samechan_14', 'samechan_15',
 ];
@@ -139,12 +139,12 @@ for (const [char, entries] of Object.entries(trivia.characters)) {
   const remainingReordered = Array.from({ length: 3 }, () => grantFortuneReading(withDeletedHistory, 'adam', reordered).id);
   assert.deepEqual([...remainingReordered].sort(), ['adam_13', 'adam_4', 'adam_5']);
 
-  // Character independence: reading sumi does not alter rin's unseen pool.
+  // Character independence: reading sumi does not alter kuyuri's unseen pool.
   const indep = { chapter: 1, day: 3, seed: 11, flags: {}, fortune: null };
   grantFortuneReading(indep, 'sumi', trivia);
-  grantFortuneReading(indep, 'rin', trivia);
+  grantFortuneReading(indep, 'kuyuri', trivia);
   assert.equal(indep.flags._fortune_trivia_seen_sumi.length, 1);
-  assert.equal(indep.flags._fortune_trivia_seen_rin.length, 1);
+  assert.equal(indep.flags._fortune_trivia_seen_kuyuri.length, 1);
 }
 
 // Naru rift state exclusion: tied to actual rift flags in Ch2+, not raw calendar day.
@@ -196,11 +196,11 @@ assert.equal(fortuneChoiceIndex(save, 'ch1_naru_first', { ...line, choices: [...
 const before = JSON.stringify(save);
 fortuneChoiceIndex(save, 'ch1_naru_first', line, hints);
 assert.equal(JSON.stringify(save), before);
-grantFortuneReading(save, 'rin', trivia);
+grantFortuneReading(save, 'kuyuri', trivia);
 assert.equal(fortuneChoiceIndex(save, 'ch1_naru_first', line, hints), -1);
-const romance = { id: 'bond_q1_rin', choices: [{ next: 'personal' }, { next: 'work' }] };
-assert.equal(fortuneChoiceIndex(save, 'ch1_rin_bond_question', romance, { ...hints, includeRomance: false }), -1);
-assert.equal(fortuneChoiceIndex(save, 'ch1_rin_bond_question', romance, { ...hints, includeRomance: true }), 0);
+const romance = { id: 'bond_q1_kuyuri', choices: [{ next: 'personal' }, { next: 'work' }] };
+assert.equal(fortuneChoiceIndex(save, 'ch1_kuyuri_bond_question', romance, { ...hints, includeRomance: false }), -1);
+assert.equal(fortuneChoiceIndex(save, 'ch1_kuyuri_bond_question', romance, { ...hints, includeRomance: true }), 0);
 // ましろの♥3の質問も他のヒロインと同じ恋愛の注記。恋愛の表示が切られている間は示さない。
 {
   const mashiroSave = { chapter: 3, day: 20, seed: 1, flags: {}, money: 90000 };

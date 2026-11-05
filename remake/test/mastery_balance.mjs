@@ -7,7 +7,7 @@ globalThis.document = { addEventListener() {} };
 globalThis.window = {};
 const { DB } = await import("../js/core/data.js");
 const { newGame } = await import("../js/core/state.js");
-const { computeShisha, finalize, bonusOf, NAGUMO_BAR, WEIGHTS } = await import("../js/craft/score.js");
+const { computeShisha, finalize, bonusOf, SUI_BAR, WEIGHTS } = await import("../js/craft/score.js");
 const { outcomeOf, pointTable } = await import("../js/craft/result.js");
 const { evaluateMix } = await import("../js/craft/steps.js");
 const { temperatureBands, temperatureFitness } = await import("../js/craft/temperature-model.js");
@@ -106,7 +106,7 @@ function scoreScenario(name, experience = {}, prepared = false) {
   return { cs, rank: outcomeOf(cs.total).rank };
 }
 
-assert.equal(NAGUMO_BAR, 90.8, "calibrated chapter 1 mid first-clear target");
+assert.equal(SUI_BAR, 90.8, "calibrated chapter 1 mid first-clear target");
 assert.deepEqual(WEIGHTS, { holes: .2, heat: .2, shisha: .2, care1: .2, care2: .2 });
 assert.equal(scoreScenario("precise").rank, 1, "starter equipment and Lv.1 can win with precise execution");
 assert.equal(scoreScenario("careful").rank, 3, "calibrated bar makes this unprepared Lv.1 run close");
@@ -123,9 +123,9 @@ assert.notEqual(scoreScenario("unattended", mastered.flavorMastery, true).rank, 
   "mastery does not replace the two after-service adjustments");
 assert.equal(novice.cs.parts.care1, 76);
 assert.equal(novice.cs.parts.care2, 75);
-assert.equal(outcomeOf(NAGUMO_BAR - .1).rank, 3);
-assert.equal(outcomeOf(NAGUMO_BAR).rank, 1);
-assert.deepEqual(pointTable(1).nagumo, { hajime: 10 }, "the story's voting method stays separate from flavor preferences");
+assert.equal(outcomeOf(SUI_BAR - .1).rank, 3);
+assert.equal(outcomeOf(SUI_BAR).rank, 1);
+assert.deepEqual(pointTable(1).sui, { hajime: 10 }, "the story's voting method stays separate from flavor preferences");
 
 // The displayed mastery bonus, aroma and forecast all use the same selected mix's weighting.
 let s = newGame();
@@ -154,7 +154,7 @@ restoredCup.stats = null;
 assert.equal(finalize(restoredCup).total, originalTotal, "the per-cup mastery snapshot survives serialization");
 
 console.log(JSON.stringify({
-  chapter1Target: NAGUMO_BAR,
+  chapter1Target: SUI_BAR,
   scenarios: Object.fromEntries(Object.keys(scenarios).map(name => [name, {
     novice: scoreScenario(name).cs.total,
     mastered: scoreScenario(name, mastered.flavorMastery).cs.total,

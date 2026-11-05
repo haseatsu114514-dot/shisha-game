@@ -21,14 +21,14 @@ export const TOKYO_OUTINGS = Object.freeze([
   { id: "mukai_help", place: "mukai", label: "mukaiを手伝う", repeat: true, stamina: -14, money: 6000, stat: "charm",
     reason: { lost: "味が戻るまでは、煙の量と客の顔で手伝える", back: "戻った舌で、客席の調整を任せてもらう" } },
   // 綾取の好感度は煙幕への外出で付く（#2028・AFB02）。♥1でLIME交換の任意場面が開く（ch3-story-wiring.js）。
-  { id: "enmaku_notes", place: "enmaku", after: "ch3_kuze_first", before: "ch3_kuze_advice", label: "煙幕に顔を出す",
-    stamina: -10, stat: "insight", affinityWith: "kuze", reason: "綾取のノートに、何が書いてあるか聞きに行く" },
-  { id: "enmaku_answer", place: "enmaku", after: "ch3_kuze_advice", label: "煙幕に顔を出す",
-    stamina: -10, stat: "sense", affinityWith: "kuze", reason: "どうしたいか、綾取に答えを返しに行く" },
+  { id: "enmaku_notes", place: "enmaku", after: "ch3_saku_first", before: "ch3_saku_advice", label: "煙幕に顔を出す",
+    stamina: -10, stat: "insight", affinityWith: "saku", reason: "綾取のノートに、何が書いてあるか聞きに行く" },
+  { id: "enmaku_answer", place: "enmaku", after: "ch3_saku_advice", label: "煙幕に顔を出す",
+    stamina: -10, stat: "sense", affinityWith: "saku", reason: "どうしたいか、綾取に答えを返しに行く" },
   // 煙幕に通う（AFB02）。一度きりの話を読み終えてから、何度でも寄れる。
-  { id: "enmaku_visit", place: "enmaku", after: "ch3_kuze_first", label: "煙幕で一服する", repeat: true, regular: true,
+  { id: "enmaku_visit", place: "enmaku", after: "ch3_saku_first", label: "煙幕で一服する", repeat: true, regular: true,
     talks: ["ch3_outing_enmaku_visit", "ch3_outing_enmaku_visit_b", "ch3_outing_enmaku_visit_c"],
-    stamina: -10, stat: "insight", affinityWith: "kuze", reason: "綾取の店で、客の答えを一緒に読む" },
+    stamina: -10, stat: "insight", affinityWith: "saku", reason: "綾取の店で、客の答えを一緒に読む" },
   // スティーブがmukaiへ客として来る（#1696）。タイマー越しに香りの山を逃す癖と、全国へ来た理由。店を訪ねる前まで
   // 何度でも来る（AFB02。2回目からは合図を試す回と、客の顔の回を交互）。
   { id: "mukai_steve", place: "mukai", before: "ch3_steve_low_heat", met: "steve", label: "mukaiで店番をする", repeat: true,
