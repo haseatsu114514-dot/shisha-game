@@ -143,7 +143,7 @@ python3 tools/make_reference_sheet.py lineup              # asset_sources/refere
 
 局所検証: `node --experimental-vm-modules remake/test/portrait_style.mjs`。生成処理は Pillow・NumPy・SciPy の揃った環境で `python3 remake/test/portrait_variants.py` を実行する。
 
-ブラウザ回帰: プレビューサーバーを起動し、`node tools/ci/run.mjs --kind browser --suites portrait-style-browser`。PC・横持ちタッチで旧設定、反復切替、同席者、未制作の表情・人物・私服、設定の開閉・再読込、台詞・配置・保存への非干渉を確認する。部分的な新絵のテストはブラウザ内だけで行い、検証画像を本編へ登録しない。
+ブラウザ回帰: プレビューサーバーを起動し、`node tools/ci/run.mjs --kind browser --suites portrait-style-browser,portrait-framing-desktop,portrait-framing-touch`。PC・横持ちタッチで旧設定、反復切替、同席者、未制作の表情・人物・私服、設定の開閉・再読込、台詞・配置・保存への非干渉を確認する。部分的な新絵のテストはブラウザ内だけで行い、検証画像を本編へ登録しない。
 
 新版だけ表示倍率を変える場合は `data/characters.json` の `spriteScaleVariants.new` を指定する。未指定の新版と現行への差分フォールバックは既存 `spriteScale` を使う。つむぎv4は新版0.90、現行0.88を維持する。
 
@@ -152,4 +152,8 @@ python3 tools/make_reference_sheet.py lineup              # asset_sources/refere
 
 2026-11-05 の仮採用はスミ新版5表情と、本人了承済みのあげは新版通常1枚。あげはは原画人物高1185pxの例外で、了承済み896×1200プレビューをそのまま再使用し、頭部アンカーで中央へ配置する。残り4表情は通常を保持する。七海風あげはの拒否済み生成は再試行しない。取得済みの七海風スミ通常・博士4表情は一式不足のため候補保管のみ。
 
-[候補の出典・取得状態](../asset_sources/portraits/style-trial-20261105/sources.json)。博士新版・ひより両画風・七海風スミ差分・七海風博士通常は配信元の通信許可不足で未導入。`remake/conversation-preview.html?character=ageha&portraitStyle=new` は本編と同じ会話エンジン・ウインドウで全登録人物と衣装・表情を比較でき、未導入と通常保持を明示する。実行画面の確認と静止試算を区別する。
+[前回の出典・取得状態](../asset_sources/portraits/style-trial-20261105/sources.json)は当時の記録。配信先の追加許可後に、博士・ひより両画風と七海風スミを含む128枚・35組を追加した。[追加素材の取得・書き出し記録](../asset_sources/portraits/library-candidates-20261105/integration.json)でLibrary ID・SHA256・寸法と派生PNGを対応させる。元の身長・縦横比・色・顔・体格・外線を保ち、896×1200へ縮小して足元アンカーをそろえる。外線は新版つむぎと比較し、不必要に太くしない。ヌールの頭サイズ・外線、みんとの私服、その他品質保留は完了にしない。七海風つむぎ通常は原画高1261pxで規格未達、未許可配信先の16枚は取得未試行。通常絵が取得できない組は登録しない。レヰ・組長は頭を5%大きくした新通常が別途制作中と分かったため、調整前の通常絵の登録を保留に戻す。
+
+画風別manifestの `h`・`b` は通常の人物高・足元を基準とする。ひよりの斧投げなど通常より上へ出る小物は `topOverhang` に全表情共通の上余白を記録し、会話エンジンは人物を縮めず共通の下移動で見切れを防ぐ。現行カットインの配置には現行原画、グラフィック配置には専用原画を使い、会話の画風をカットイン用配置へ流用しない。
+
+`remake/conversation-preview.html?character=ageha&portraitStyle=new` は本編と同じ会話エンジン・ウインドウで全登録人物と衣装・表情を比較でき、未導入と通常保持を明示する。実行画面の確認と静止試算を区別する。

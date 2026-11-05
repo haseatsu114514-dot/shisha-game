@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-05 09:10 UTC",
+ "generated": "2026-11-05 10:24 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -2697,7 +2697,7 @@
   "cgs/cg_ch5_shisha_9000.png",
   "cgs/cg_ending_tonari_night.png",
   "cgs/cg_hiyori_confession.png",
-  "cgs/cg_saku_mashiro_childhood.png",
+  "cgs/cg_kuyuri_confession.png",
   "cgs/cg_mashiro_confession.png",
   "cgs/cg_mashiro_double_apple.png",
   "cgs/cg_minto_casual.png",
@@ -2708,11 +2708,138 @@
   "cgs/cg_naru_last_chance.png",
   "cgs/cg_naru_next_entry.png",
   "cgs/cg_oneesan_first_smoke.png",
-  "cgs/cg_kuyuri_confession.png",
   "cgs/cg_ryuji_purikura.png",
+  "cgs/cg_saku_mashiro_childhood.png",
   "cgs/cg_samechan_confession.png",
   "cgs/cg_tsumugi_confession.png",
   "cgs/cg_tsumugi_smoke_color.png",
+  "sprites/character_variants/nanami/adam/chr_adam_intense.png",
+  "sprites/character_variants/nanami/adam/chr_adam_normal.png",
+  "sprites/character_variants/nanami/adam/chr_adam_serious.png",
+  "sprites/character_variants/nanami/adam/chr_adam_smile.png",
+  "sprites/character_variants/nanami/adam/chr_adam_surprise.png",
+  "sprites/character_variants/nanami/dr_kemuri/chr_dr_kemuri_evil.png",
+  "sprites/character_variants/nanami/dr_kemuri/chr_dr_kemuri_normal.png",
+  "sprites/character_variants/nanami/dr_kemuri/chr_dr_kemuri_serious.png",
+  "sprites/character_variants/nanami/dr_kemuri/chr_dr_kemuri_smile.png",
+  "sprites/character_variants/nanami/dr_kemuri/chr_dr_kemuri_surprise.png",
+  "sprites/character_variants/nanami/hajime/chr_hajime_normal.png",
+  "sprites/character_variants/nanami/hajime/chr_hajime_sad.png",
+  "sprites/character_variants/nanami/hajime/chr_hajime_serious.png",
+  "sprites/character_variants/nanami/hajime/chr_hajime_smile.png",
+  "sprites/character_variants/nanami/hajime/chr_hajime_surprise.png",
+  "sprites/character_variants/nanami/hiyori/chr_hiyori_axe_laugh.png",
+  "sprites/character_variants/nanami/hiyori/chr_hiyori_axe_normal.png",
+  "sprites/character_variants/nanami/hiyori/chr_hiyori_axe_shout.png",
+  "sprites/character_variants/nanami/hiyori/chr_hiyori_axe_throw.png",
+  "sprites/character_variants/nanami/hiyori/chr_hiyori_love_blush.png",
+  "sprites/character_variants/nanami/hiyori/chr_hiyori_normal.png",
+  "sprites/character_variants/nanami/hiyori/chr_hiyori_office_mukii.png",
+  "sprites/character_variants/nanami/hiyori/chr_hiyori_sad.png",
+  "sprites/character_variants/nanami/hiyori/chr_hiyori_serious.png",
+  "sprites/character_variants/nanami/hiyori/chr_hiyori_smile.png",
+  "sprites/character_variants/nanami/hiyori/chr_hiyori_student_smile.png",
+  "sprites/character_variants/nanami/hiyori/chr_hiyori_surprise.png",
+  "sprites/character_variants/nanami/hiyori/chr_hiyori_tears.png",
+  "sprites/character_variants/nanami/khalil/chr_khalil_normal.png",
+  "sprites/character_variants/nanami/mashiro/chr_mashiro_normal.png",
+  "sprites/character_variants/nanami/mashiro/chr_mashiro_sad.png",
+  "sprites/character_variants/nanami/mashiro/chr_mashiro_sleep.png",
+  "sprites/character_variants/nanami/mashiro/chr_mashiro_smile.png",
+  "sprites/character_variants/nanami/mashiro/chr_mashiro_yawn.png",
+  "sprites/character_variants/nanami/minto/chr_minto_normal.png",
+  "sprites/character_variants/nanami/minto/chr_minto_sad.png",
+  "sprites/character_variants/nanami/minto/chr_minto_smile.png",
+  "sprites/character_variants/nanami/minto/chr_minto_surprise.png",
+  "sprites/character_variants/nanami/minto/chr_minto_wink.png",
+  "sprites/character_variants/nanami/naru/chr_naru_normal.png",
+  "sprites/character_variants/nanami/naru/chr_naru_sad.png",
+  "sprites/character_variants/nanami/naru/chr_naru_serious.png",
+  "sprites/character_variants/nanami/naru/chr_naru_smile.png",
+  "sprites/character_variants/nanami/naru/chr_naru_surprise.png",
+  "sprites/character_variants/nanami/sai/chr_sai_normal.png",
+  "sprites/character_variants/nanami/saku/chr_saku_normal.png",
+  "sprites/character_variants/nanami/saku/chr_saku_wild.png",
+  "sprites/character_variants/nanami/samechan/chr_samechan_excited.png",
+  "sprites/character_variants/nanami/samechan/chr_samechan_normal.png",
+  "sprites/character_variants/nanami/samechan/chr_samechan_serious.png",
+  "sprites/character_variants/nanami/samechan/chr_samechan_smile.png",
+  "sprites/character_variants/nanami/samechan/chr_samechan_surprise.png",
+  "sprites/character_variants/nanami/samechan/chr_samechan_ventriloquism.png",
+  "sprites/character_variants/nanami/steve/chr_steve_normal.png",
+  "sprites/character_variants/nanami/suhail/chr_suhail_normal.png",
+  "sprites/character_variants/nanami/sui/chr_sui_normal.png",
+  "sprites/character_variants/nanami/sui/chr_sui_serious.png",
+  "sprites/character_variants/nanami/sui/chr_sui_smile.png",
+  "sprites/character_variants/nanami/sui/chr_sui_surprise.png",
+  "sprites/character_variants/nanami/sui/chr_sui_thinking.png",
+  "sprites/character_variants/nanami/sumi/chr_sumi_normal.png",
+  "sprites/character_variants/nanami/sumi/chr_sumi_serious.png",
+  "sprites/character_variants/nanami/sumi/chr_sumi_smile.png",
+  "sprites/character_variants/nanami/sumi/chr_sumi_surprise.png",
+  "sprites/character_variants/nanami/sumi/chr_sumi_thinking.png",
+  "sprites/character_variants/nanami/uranaishi/chr_uranaishi_normal.png",
+  "sprites/character_variants/nanami/volk/chr_volk_normal.png",
+  "sprites/character_variants/new/adam/chr_adam_intense.png",
+  "sprites/character_variants/new/adam/chr_adam_normal.png",
+  "sprites/character_variants/new/adam/chr_adam_serious.png",
+  "sprites/character_variants/new/adam/chr_adam_smile.png",
+  "sprites/character_variants/new/adam/chr_adam_surprise.png",
+  "sprites/character_variants/new/ageha/chr_ageha_normal.png",
+  "sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_evil.png",
+  "sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_normal.png",
+  "sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_serious.png",
+  "sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_smile.png",
+  "sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_surprise.png",
+  "sprites/character_variants/new/hajime/chr_hajime_normal.png",
+  "sprites/character_variants/new/hajime/chr_hajime_sad.png",
+  "sprites/character_variants/new/hajime/chr_hajime_serious.png",
+  "sprites/character_variants/new/hajime/chr_hajime_smile.png",
+  "sprites/character_variants/new/hajime/chr_hajime_surprise.png",
+  "sprites/character_variants/new/hiyori/chr_hiyori_axe_laugh.png",
+  "sprites/character_variants/new/hiyori/chr_hiyori_axe_normal.png",
+  "sprites/character_variants/new/hiyori/chr_hiyori_axe_shout.png",
+  "sprites/character_variants/new/hiyori/chr_hiyori_axe_throw.png",
+  "sprites/character_variants/new/hiyori/chr_hiyori_love_blush.png",
+  "sprites/character_variants/new/hiyori/chr_hiyori_normal.png",
+  "sprites/character_variants/new/hiyori/chr_hiyori_office_mukii.png",
+  "sprites/character_variants/new/hiyori/chr_hiyori_sad.png",
+  "sprites/character_variants/new/hiyori/chr_hiyori_serious.png",
+  "sprites/character_variants/new/hiyori/chr_hiyori_smile.png",
+  "sprites/character_variants/new/hiyori/chr_hiyori_student_smile.png",
+  "sprites/character_variants/new/hiyori/chr_hiyori_surprise.png",
+  "sprites/character_variants/new/hiyori/chr_hiyori_tears.png",
+  "sprites/character_variants/new/khalil/chr_khalil_normal.png",
+  "sprites/character_variants/new/maki/chr_maki_normal.png",
+  "sprites/character_variants/new/mashiro/chr_mashiro_normal.png",
+  "sprites/character_variants/new/mashiro/chr_mashiro_yawn.png",
+  "sprites/character_variants/new/minto/chr_minto_normal.png",
+  "sprites/character_variants/new/naru/chr_naru_normal.png",
+  "sprites/character_variants/new/naru/chr_naru_sad.png",
+  "sprites/character_variants/new/naru/chr_naru_serious.png",
+  "sprites/character_variants/new/naru/chr_naru_smile.png",
+  "sprites/character_variants/new/naru/chr_naru_surprise.png",
+  "sprites/character_variants/new/pakki/chr_pakki_angry.png",
+  "sprites/character_variants/new/pakki/chr_pakki_normal.png",
+  "sprites/character_variants/new/pakki/chr_pakki_smile.png",
+  "sprites/character_variants/new/pakki/chr_pakki_smoke.png",
+  "sprites/character_variants/new/pakki/chr_pakki_surprise.png",
+  "sprites/character_variants/new/sai/chr_sai_normal.png",
+  "sprites/character_variants/new/saku/chr_saku_normal.png",
+  "sprites/character_variants/new/saku/chr_saku_wild.png",
+  "sprites/character_variants/new/samechan/chr_samechan_excited.png",
+  "sprites/character_variants/new/samechan/chr_samechan_normal.png",
+  "sprites/character_variants/new/samechan/chr_samechan_serious.png",
+  "sprites/character_variants/new/samechan/chr_samechan_smile.png",
+  "sprites/character_variants/new/samechan/chr_samechan_surprise.png",
+  "sprites/character_variants/new/samechan/chr_samechan_ventriloquism.png",
+  "sprites/character_variants/new/steve/chr_steve_normal.png",
+  "sprites/character_variants/new/suhail/chr_suhail_normal.png",
+  "sprites/character_variants/new/sui/chr_sui_normal.png",
+  "sprites/character_variants/new/sui/chr_sui_serious.png",
+  "sprites/character_variants/new/sui/chr_sui_smile.png",
+  "sprites/character_variants/new/sui/chr_sui_surprise.png",
+  "sprites/character_variants/new/sui/chr_sui_thinking.png",
   "sprites/character_variants/new/sumi/chr_sumi_normal.png",
   "sprites/character_variants/new/sumi/chr_sumi_serious.png",
   "sprites/character_variants/new/sumi/chr_sumi_smile.png",
@@ -2725,6 +2852,8 @@
   "sprites/character_variants/new/tsumugi/chr_tsumugi_serious.png",
   "sprites/character_variants/new/tsumugi/chr_tsumugi_smile.png",
   "sprites/character_variants/new/tsumugi/chr_tsumugi_surprise.png",
+  "sprites/character_variants/new/uranaishi/chr_uranaishi_normal.png",
+  "sprites/character_variants/new/volk/chr_volk_normal.png",
   "sprites/characters/adam/chr_adam_intense.png",
   "sprites/characters/adam/chr_adam_normal.png",
   "sprites/characters/adam/chr_adam_serious.png",
@@ -2770,20 +2899,20 @@
   "sprites/characters/hiyori/chr_hiyori_student_smile.png",
   "sprites/characters/hiyori/chr_hiyori_surprise.png",
   "sprites/characters/hiyori/chr_hiyori_tears.png",
+  "sprites/characters/khalil/chr_khalil_normal.png",
   "sprites/characters/kumicho/chr_kumicho_normal.png",
   "sprites/characters/kumicho/chr_kumicho_sad.png",
   "sprites/characters/kumicho/chr_kumicho_serious.png",
   "sprites/characters/kumicho/chr_kumicho_smile.png",
   "sprites/characters/kumicho/chr_kumicho_smug.png",
   "sprites/characters/kumicho/chr_kumicho_surprise.png",
-  "sprites/characters/saku/chr_saku_nervous.png",
-  "sprites/characters/saku/chr_saku_normal.png",
-  "sprites/characters/saku/chr_saku_sad.png",
-  "sprites/characters/saku/chr_saku_serious.png",
-  "sprites/characters/saku/chr_saku_smile.png",
-  "sprites/characters/saku/chr_saku_smug.png",
-  "sprites/characters/saku/chr_saku_surprise.png",
-  "sprites/characters/saku/chr_saku_wild.png",
+  "sprites/characters/kuyuri/chr_kuyuri_normal.png",
+  "sprites/characters/kuyuri/chr_kuyuri_sad.png",
+  "sprites/characters/kuyuri/chr_kuyuri_serious.png",
+  "sprites/characters/kuyuri/chr_kuyuri_shock.png",
+  "sprites/characters/kuyuri/chr_kuyuri_smile.png",
+  "sprites/characters/kuyuri/chr_kuyuri_smug.png",
+  "sprites/characters/kuyuri/chr_kuyuri_surprise.png",
   "sprites/characters/maezono/chr_maezono_excited.png",
   "sprites/characters/maezono/chr_maezono_normal.png",
   "sprites/characters/maezono/chr_maezono_serious.png",
@@ -2823,11 +2952,6 @@
   "sprites/characters/mukai_master/chr_mukai_master_serious.png",
   "sprites/characters/mukai_master/chr_mukai_master_smile.png",
   "sprites/characters/mukai_master/chr_mukai_master_surprise.png",
-  "sprites/characters/sui/chr_sui_normal.png",
-  "sprites/characters/sui/chr_sui_serious.png",
-  "sprites/characters/sui/chr_sui_smile.png",
-  "sprites/characters/sui/chr_sui_surprise.png",
-  "sprites/characters/sui/chr_sui_thinking.png",
   "sprites/characters/naru/chr_naru_excited.png",
   "sprites/characters/naru/chr_naru_normal.png",
   "sprites/characters/naru/chr_naru_sad.png",
@@ -2844,25 +2968,24 @@
   "sprites/characters/pakki/chr_pakki_smile.png",
   "sprites/characters/pakki/chr_pakki_smoke.png",
   "sprites/characters/pakki/chr_pakki_surprise.png",
-  "sprites/characters/khalil/chr_khalil_normal.png",
   "sprites/characters/rei/chr_rei_normal.png",
   "sprites/characters/rei/chr_rei_sad.png",
   "sprites/characters/rei/chr_rei_serious.png",
   "sprites/characters/rei/chr_rei_smile.png",
   "sprites/characters/rei/chr_rei_surprise.png",
-  "sprites/characters/kuyuri/chr_kuyuri_normal.png",
-  "sprites/characters/kuyuri/chr_kuyuri_sad.png",
-  "sprites/characters/kuyuri/chr_kuyuri_serious.png",
-  "sprites/characters/kuyuri/chr_kuyuri_shock.png",
-  "sprites/characters/kuyuri/chr_kuyuri_smile.png",
-  "sprites/characters/kuyuri/chr_kuyuri_smug.png",
-  "sprites/characters/kuyuri/chr_kuyuri_surprise.png",
   "sprites/characters/sai/chr_sai_normal.png",
   "sprites/characters/sai/chr_sai_serious.png",
   "sprites/characters/sai/chr_sai_smile.png",
   "sprites/characters/sai/chr_sai_surprise.png",
   "sprites/characters/sai/chr_sai_thinking.png",
-  "sprites/characters/suhail/chr_suhail_normal.png",
+  "sprites/characters/saku/chr_saku_nervous.png",
+  "sprites/characters/saku/chr_saku_normal.png",
+  "sprites/characters/saku/chr_saku_sad.png",
+  "sprites/characters/saku/chr_saku_serious.png",
+  "sprites/characters/saku/chr_saku_smile.png",
+  "sprites/characters/saku/chr_saku_smug.png",
+  "sprites/characters/saku/chr_saku_surprise.png",
+  "sprites/characters/saku/chr_saku_wild.png",
   "sprites/characters/salaryman/chr_salaryman_normal.png",
   "sprites/characters/salaryman/chr_salaryman_smile.png",
   "sprites/characters/samechan/chr_samechan_excited.png",
@@ -2882,6 +3005,12 @@
   "sprites/characters/steve/chr_steve_serious.png",
   "sprites/characters/steve/chr_steve_smile.png",
   "sprites/characters/steve/chr_steve_surprise.png",
+  "sprites/characters/suhail/chr_suhail_normal.png",
+  "sprites/characters/sui/chr_sui_normal.png",
+  "sprites/characters/sui/chr_sui_serious.png",
+  "sprites/characters/sui/chr_sui_smile.png",
+  "sprites/characters/sui/chr_sui_surprise.png",
+  "sprites/characters/sui/chr_sui_thinking.png",
   "sprites/characters/sumi/chr_sumi_normal.png",
   "sprites/characters/sumi/chr_sumi_serious.png",
   "sprites/characters/sumi/chr_sumi_smile.png",
@@ -2923,25 +3052,25 @@
   "ui/character_intros/hajime.png",
   "ui/character_intros/hiyori.png",
   "ui/character_intros/kumicho.png",
-  "ui/character_intros/saku.png",
+  "ui/character_intros/kuyuri.png",
   "ui/character_intros/maezono.png",
   "ui/character_intros/maki.png",
   "ui/character_intros/mashiro.png",
   "ui/character_intros/master_hookah.png",
   "ui/character_intros/minto.png",
   "ui/character_intros/mukai_master.png",
-  "ui/character_intros/sui.png",
   "ui/character_intros/naru.png",
   "ui/character_intros/noor.png",
   "ui/character_intros/oneesan.png",
   "ui/character_intros/pakki.png",
   "ui/character_intros/rei.png",
-  "ui/character_intros/kuyuri.png",
   "ui/character_intros/sai.png",
+  "ui/character_intros/saku.png",
   "ui/character_intros/samechan.png",
   "ui/character_intros/sheikh.png",
   "ui/character_intros/shisha_9000.png",
   "ui/character_intros/steve.png",
+  "ui/character_intros/sui.png",
   "ui/character_intros/sumi.png",
   "ui/character_intros/tsumugi.png",
   "ui/character_intros/uranaishi.png",
@@ -2962,17 +3091,17 @@
   "ui/face_icons/face_hajime.png",
   "ui/face_icons/face_hiyori.png",
   "ui/face_icons/face_kumicho.png",
+  "ui/face_icons/face_kuyuri.png",
   "ui/face_icons/face_maezono.png",
   "ui/face_icons/face_mashiro.png",
   "ui/face_icons/face_minto.png",
   "ui/face_icons/face_minto_private.png",
-  "ui/face_icons/face_sui.png",
   "ui/face_icons/face_naru.png",
   "ui/face_icons/face_noor.png",
   "ui/face_icons/face_pakki.png",
   "ui/face_icons/face_rei.png",
-  "ui/face_icons/face_kuyuri.png",
   "ui/face_icons/face_samechan.png",
+  "ui/face_icons/face_sui.png",
   "ui/face_icons/face_sumi.png",
   "ui/face_icons/face_tetsuko.png",
   "ui/face_icons/face_tsumugi.png",
@@ -3050,6 +3179,10 @@
   "ui/title_arts/title_art_hiyori_05_ramen_break.png",
   "ui/title_arts/title_art_hiyori_06_riverside_hoodie.png",
   "ui/title_arts/title_art_keyvisual_01.png",
+  "ui/title_arts/title_art_kuyuri_01_night_tasting.png",
+  "ui/title_arts/title_art_kuyuri_03_late_coffee.png",
+  "ui/title_arts/title_art_kuyuri_04_rainy_neon_umbrella.png",
+  "ui/title_arts/title_art_kuyuri_05_blend_library_command.png",
   "ui/title_arts/title_art_mashiro_01_heavy_smoke.png",
   "ui/title_arts/title_art_mashiro_02_tea_break.png",
   "ui/title_arts/title_art_mashiro_03_after_rain.png",
@@ -3063,10 +3196,6 @@
   "ui/title_arts/title_art_minto_06_after_hours_glasscare.png",
   "ui/title_arts/title_art_minto_07_balcony_mint.png",
   "ui/title_arts/title_art_naru_01_bakery_morning.png",
-  "ui/title_arts/title_art_kuyuri_01_night_tasting.png",
-  "ui/title_arts/title_art_kuyuri_03_late_coffee.png",
-  "ui/title_arts/title_art_kuyuri_04_rainy_neon_umbrella.png",
-  "ui/title_arts/title_art_kuyuri_05_blend_library_command.png",
   "ui/title_arts/title_art_samechan_01_shishark_test_run.png",
   "ui/title_arts/title_art_samechan_02_shark_movie.png",
   "ui/title_arts/title_art_samechan_03_aquarium.png",
@@ -3078,8 +3207,7 @@
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
-  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
-  "sprites/character_variants/new/ageha/chr_ageha_normal.png"
+  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png"
  ],
  "limeMedia": {
   "st_adam_bless": {
@@ -3414,6 +3542,418 @@
     "ax": 0.5437,
     "aspect": 0.7467,
     "anchor": "head"
+   },
+   "adam": {
+    "faces": [
+     "intense",
+     "normal",
+     "serious",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4995,
+    "aspect": 0.7467
+   },
+   "dr_kemuri": {
+    "faces": [
+     "evil",
+     "normal",
+     "serious",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.9008,
+    "b": 0.0492,
+    "ax": 0.4998,
+    "aspect": 0.7467
+   },
+   "hajime": {
+    "faces": [
+     "normal",
+     "sad",
+     "serious",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.8992,
+    "b": 0.0508,
+    "ax": 0.5004,
+    "aspect": 0.7467
+   },
+   "hiyori": {
+    "faces": [
+     "axe_laugh",
+     "axe_normal",
+     "axe_shout",
+     "axe_throw",
+     "love_blush",
+     "normal",
+     "office_mukii",
+     "sad",
+     "serious",
+     "smile",
+     "student_smile",
+     "surprise",
+     "tears"
+    ],
+    "h": 0.8342,
+    "b": 0.0492,
+    "ax": 0.5582,
+    "aspect": 0.7467,
+    "topOverhang": 0.0517
+   },
+   "khalil": {
+    "faces": [
+     "normal"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4998,
+    "aspect": 0.7467
+   },
+   "maki": {
+    "faces": [
+     "normal"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.5003,
+    "aspect": 0.7467
+   },
+   "mashiro": {
+    "faces": [
+     "normal",
+     "yawn"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4998,
+    "aspect": 0.7467
+   },
+   "minto": {
+    "faces": [
+     "normal"
+    ],
+    "h": 0.9008,
+    "b": 0.0492,
+    "ax": 0.5,
+    "aspect": 0.7467
+   },
+   "naru": {
+    "faces": [
+     "normal",
+     "sad",
+     "serious",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.9008,
+    "b": 0.0492,
+    "ax": 0.4997,
+    "aspect": 0.7467
+   },
+   "pakki": {
+    "faces": [
+     "angry",
+     "normal",
+     "smile",
+     "smoke",
+     "surprise"
+    ],
+    "h": 0.75,
+    "b": 0.05,
+    "ax": 0.4997,
+    "aspect": 0.7467
+   },
+   "sai": {
+    "faces": [
+     "normal"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4997,
+    "aspect": 0.7467
+   },
+   "saku": {
+    "faces": [
+     "normal",
+     "wild"
+    ],
+    "h": 0.9,
+    "b": 0.0508,
+    "ax": 0.4997,
+    "aspect": 0.7467
+   },
+   "samechan": {
+    "faces": [
+     "excited",
+     "normal",
+     "serious",
+     "smile",
+     "surprise",
+     "ventriloquism"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.5002,
+    "aspect": 0.7467
+   },
+   "steve": {
+    "faces": [
+     "normal"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4999,
+    "aspect": 0.7467
+   },
+   "suhail": {
+    "faces": [
+     "normal"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.5003,
+    "aspect": 0.7467
+   },
+   "sui": {
+    "faces": [
+     "normal",
+     "serious",
+     "smile",
+     "surprise",
+     "thinking"
+    ],
+    "h": 0.8992,
+    "b": 0.0508,
+    "ax": 0.4997,
+    "aspect": 0.7467
+   },
+   "uranaishi": {
+    "faces": [
+     "normal"
+    ],
+    "h": 0.9008,
+    "b": 0.0492,
+    "ax": 0.4993,
+    "aspect": 0.7467
+   },
+   "volk": {
+    "faces": [
+     "normal"
+    ],
+    "h": 0.9008,
+    "b": 0.0492,
+    "ax": 0.5,
+    "aspect": 0.7467
+   }
+  },
+  "nanami": {
+   "adam": {
+    "faces": [
+     "intense",
+     "normal",
+     "serious",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4998,
+    "aspect": 0.7467
+   },
+   "dr_kemuri": {
+    "faces": [
+     "evil",
+     "normal",
+     "serious",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4997,
+    "aspect": 0.7467
+   },
+   "hajime": {
+    "faces": [
+     "normal",
+     "sad",
+     "serious",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4997,
+    "aspect": 0.7467
+   },
+   "hiyori": {
+    "faces": [
+     "axe_laugh",
+     "axe_normal",
+     "axe_shout",
+     "axe_throw",
+     "love_blush",
+     "normal",
+     "office_mukii",
+     "sad",
+     "serious",
+     "smile",
+     "student_smile",
+     "surprise",
+     "tears"
+    ],
+    "h": 0.8325,
+    "b": 0.0508,
+    "ax": 0.5578,
+    "aspect": 0.7467,
+    "topOverhang": 0.0392
+   },
+   "khalil": {
+    "faces": [
+     "normal"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4993,
+    "aspect": 0.7467
+   },
+   "mashiro": {
+    "faces": [
+     "normal",
+     "sad",
+     "sleep",
+     "smile",
+     "yawn"
+    ],
+    "h": 0.8992,
+    "b": 0.0508,
+    "ax": 0.4992,
+    "aspect": 0.7467
+   },
+   "minto": {
+    "faces": [
+     "normal",
+     "sad",
+     "smile",
+     "surprise",
+     "wink"
+    ],
+    "h": 0.9008,
+    "b": 0.0492,
+    "ax": 0.4998,
+    "aspect": 0.7467
+   },
+   "naru": {
+    "faces": [
+     "normal",
+     "sad",
+     "serious",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4993,
+    "aspect": 0.7467
+   },
+   "sai": {
+    "faces": [
+     "normal"
+    ],
+    "h": 0.9008,
+    "b": 0.05,
+    "ax": 0.4998,
+    "aspect": 0.7467
+   },
+   "saku": {
+    "faces": [
+     "normal",
+     "wild"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4999,
+    "aspect": 0.7467
+   },
+   "samechan": {
+    "faces": [
+     "excited",
+     "normal",
+     "serious",
+     "smile",
+     "surprise",
+     "ventriloquism"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4995,
+    "aspect": 0.7467
+   },
+   "steve": {
+    "faces": [
+     "normal"
+    ],
+    "h": 0.9008,
+    "b": 0.0492,
+    "ax": 0.4997,
+    "aspect": 0.7467
+   },
+   "suhail": {
+    "faces": [
+     "normal"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.5005,
+    "aspect": 0.7467
+   },
+   "sui": {
+    "faces": [
+     "normal",
+     "serious",
+     "smile",
+     "surprise",
+     "thinking"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.5002,
+    "aspect": 0.7467
+   },
+   "sumi": {
+    "faces": [
+     "normal",
+     "serious",
+     "smile",
+     "surprise",
+     "thinking"
+    ],
+    "h": 0.9008,
+    "b": 0.0492,
+    "ax": 0.4994,
+    "aspect": 0.7467
+   },
+   "uranaishi": {
+    "faces": [
+     "normal"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4997,
+    "aspect": 0.7467
+   },
+   "volk": {
+    "faces": [
+     "normal"
+    ],
+    "h": 0.9008,
+    "b": 0.05,
+    "ax": 0.4999,
+    "aspect": 0.7467
    }
   }
  }

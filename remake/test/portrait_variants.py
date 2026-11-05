@@ -13,6 +13,24 @@ import build_manifest as builder
 import build_images as images
 
 class PortraitVariants(unittest.TestCase):
+    def test_raised_prop_keeps_normal_body_height_and_common_headroom(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            folder = base / 'hiyori'
+            folder.mkdir()
+            for face in ('normal', 'axe_throw'):
+                im = Image.new('RGBA', (896, 1200))
+                draw = ImageDraw.Draw(im)
+                draw.rectangle((300,140,600,1139), fill=(20,20,20,255))
+                if face == 'axe_throw':
+                    draw.rectangle((200,60,400,180), fill=(20,20,20,255))
+                im.save(folder / f'chr_hiyori_{face}.png')
+            entry = builder.portraits(base=base, style='new')['hiyori']
+            self.assertAlmostEqual(entry['h'], 1000 / 1200, places=4)
+            self.assertAlmostEqual(entry['b'], .05)
+            self.assertAlmostEqual(entry['topOverhang'], 80 / 1200, places=4)
+            self.assertEqual(entry['faces'], ['axe_throw', 'normal'])
+
     def test_scoped_build_preserves_classic_and_uses_own_metrics(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

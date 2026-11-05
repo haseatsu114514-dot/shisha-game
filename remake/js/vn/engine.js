@@ -30,6 +30,7 @@ import { reducedMotion } from "../core/transition-kit.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man", "traveler"]);
+const canShowPortrait = speaker => !NO_PORTRAIT.has(speaker || "") || (speaker === "hajime" && running?.previewProtagonist);
 // 会話の寄り。1280×720の参考プレビュー（本体約1085px、頭頂y52px）を
 // 新版つむぎの身長倍率0.9で再現する。画像の余白・個々の身長は frame() で保つ。
 // てつこ（猫）は人と同じ高さに引き伸ばさず、会話の枠の上に座っている大きさで出す（catLift＝下から持ち上げる割合）
@@ -234,6 +235,7 @@ function waitSceneAssets(task, owner = running, assets = task.assetsReady || tas
  * @param opts.fromLine 主列の開始位置（含む）。既読キーは元の行位置を保つ
  * @param opts.toLine 主列の終了位置（含まない）。分岐は通常どおり再生する
  * @param opts.growthScene 自分で選んだ固有場面。全編の正常完読を自由行動の経験値候補にする
+ * @param opts.previewProtagonist 比較プレビューでだけ主人公の立ち絵も表示する（本編は非表示）
  * 範囲指定でも各playの終了時に台本の報酬を処理する。報酬つき台本を分割する用途には使わない。
  */
 export function play(idOrDlg, opts = {}) {
@@ -257,6 +259,7 @@ export function play(idOrDlg, opts = {}) {
       branches: dlg.branches || {},
       resolve,
       cancelOnSkip: !!opts.cancelOnSkip,
+      previewProtagonist: opts.previewProtagonist === true,
       waitingChoice: false,
       typing: false,
       pages: null,
@@ -353,7 +356,7 @@ function lineDisplayName(line, r) {
 /** 実際にこの行に出す立ち絵。無言の同席者と話者が別なら両方待つ。 */
 function linePortraits(line) {
   return [...new Set([
-    line.portrait !== false && !NO_PORTRAIT.has(line.speaker || "") ? portraitInfo(line.speaker, line.face)?.src : null,
+    line.portrait !== false && canShowPortrait(line.speaker) ? portraitInfo(line.speaker, line.face)?.src : null,
     line.portrait ? portraitInfo(line.portrait, line.portrait_face || "normal")?.src : null,
   ].filter(Boolean))];
 }
@@ -879,7 +882,7 @@ function completeTyping() {
 function updatePortraits(speaker, face) {
   const r = running;
   let entrance = Promise.resolve();
-  const info = speaker && !NO_PORTRAIT.has(speaker) ? portraitInfo(speaker, face) : null;
+  const info = speaker && canShowPortrait(speaker) ? portraitInfo(speaker, face) : null;
   if (info) {
     let img = dom.portraits.querySelector(`img[data-speaker="${speaker}"]`);
     if (!img) {
@@ -917,7 +920,7 @@ function frame(img, p) {
   const target = (cat ? FRAMING.catTarget : pakki ? FRAMING.pakkiTarget : FRAMING.target) * p.scale;
   const sink = cat ? -FRAMING.catLift : pakki ? FRAMING.pakkiSink : FRAMING.sink;
   const hPct = Math.min(target / p.h, 2.4) * 100;             // 画像の高さ（ステージ高さ比 %）
-  const contentTop = p.h * hPct - sink * 100;                // 本体上端（下からの %）
+  const contentTop = (p.h + (p.topOverhang || 0)) * hPct - sink * 100; // 小物も含む上端。人物の倍率は通常基準。
   const extra = Math.max(0, contentTop - 97);                // 頭が見切れないように沈める
   img.style.height = `${hPct}%`;
   img.style.bottom = `${-(p.b * hPct + sink * 100 + extra)}%`;

@@ -343,6 +343,7 @@ export function portraitInfo(speaker, face, style = portraitStyle()) {
     folder, face: useVariant ? variantFace : f, style: useVariant ? style : "classic",
     src: img(`${base}/${folder}/chr_${folder}_${useVariant ? variantFace : f}.png`),
     h: metrics.h || 0.85, b: useVariant ? (metrics.b ?? 0.02) : (p.b || 0.02), ax: metrics.ax ?? 0.5, aspect: metrics.aspect || 0.75,
+    topOverhang: metrics.topOverhang || 0,
     scale: (useVariant ? DB.characters[folder]?.spriteScaleVariants?.[style] : null) || DB.characters[folder]?.spriteScale || DB.characters[speaker]?.spriteScale || 1,
   };
 }

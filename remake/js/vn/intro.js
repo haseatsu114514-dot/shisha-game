@@ -65,8 +65,9 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
   if (variant !== "unknown") markMet(id);
   markIntroSeen(id, variant);
   const main = intro.display_name || introName(id).main;
-  let p = portraitInfo(id, intro.face || "normal");
-  const standingInfo = p;
+  const standingInfo = portraitInfo(id, intro.face || "normal");
+  // 登場カットインの配置は現行原画用。会話の画風設定と独立して選ぶ。
+  let p = portraitInfo(id, intro.face || "normal", "classic");
   let art = DB.manifest.introArt?.[id];
   const graphic = art && p ? graphicIntro(id, config.introArtStyle) : null;
   if (graphic) {
