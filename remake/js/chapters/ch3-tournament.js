@@ -50,7 +50,19 @@ const setupWithWater = async cs => { await stepSetup(cs); await stepWater(cs); }
 const STEPS = [setupWithWater, stepMix, stepPack, runHoles, stepPlace, runHeat,
   stepSteamTime, runSteamDodge, runPull, cs => runCare(cs, { round: 1 }), cs => runCare(cs, { round: 2 })];
 const STEP_IDS = ["setup", "mix", "pack", "foil", "place", "coalfire", "steam", "steam", "pull", "adjust", "adjust"];
-const MILESTONES = new Map([[8, 0], [9, 1], [10, 2], [11, 3]]);
+// 1・4票は工程確定直後、2・3票は対応する台詞の読了後に確定する。
+// 台詞待ちの stage は既存 SAVE の再開地点でもあるため、そのまま保持する。
+const VOTE_BOUNDARIES = new Map([
+  [8, { round: 0, after: "milestone" }],
+  [9, { round: 1, after: "national_craft" }],
+  [10, { round: 2, after: "national_adjustment" }],
+  [11, { round: 3, after: "milestone" }],
+]);
+function voteAfterDialogue(p, stage) {
+  const { round } = [...VOTE_BOUNDARIES.values()].find(boundary => boundary.after === stage);
+  const error = stage === "national_craft" ? "全国大会の提供後の投票地点を確認できません" : "全国大会の調整後の投票地点を確認できません";
+  if (!castVotes(p, round, partialQuality(p.craft, round), null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error(error);
+}
 const PART_LABELS = ["アルミ穴あけ", "炭の温度", "蒸らしと吸い出し", "一度目の調整", "二度目の調整"];
 const clone = value => JSON.parse(JSON.stringify(value));
 const id = name => `ch3-tournament-${name}`;
@@ -440,11 +452,11 @@ async function drive(owner) {
         renderError(owner);
         return;
       }
-      if (!advanceTournamentCraft({ state, progress: p, craft: cs, finishStep, milestones: MILESTONES, onMilestone: round => {
+      if (!advanceTournamentCraft({ state, progress: p, craft: cs, finishStep, milestones: VOTE_BOUNDARIES, onMilestone: boundary => {
         p.craft = clone(cs);
-        if (p.step === 9) p.stage = "national_craft";
-        else if (p.step === 10) p.stage = "national_adjustment";
+        if (boundary.after !== "milestone") p.stage = boundary.after;
         else {
+          const { round } = boundary;
           const quality = partialQuality(cs, round);
           // Final scoring creates parts/total; persist them before the tasting save boundary.
           p.craft = clone(cs);
@@ -455,11 +467,11 @@ async function drive(owner) {
       } })) continue;
     } else if (p.stage === "national_craft") {
       if (!await read(owner, "national_craft")) return;
-      if (!castVotes(p, 1, partialQuality(p.craft, 1), null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error("全国大会の提供後の投票地点を確認できません");
+      voteAfterDialogue(p, "national_craft");
       checkpoint("votes");
     } else if (p.stage === "national_adjustment") {
       if (!await read(owner, "national_adjustment")) return;
-      if (!castVotes(p, 2, partialQuality(p.craft, 2), null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error("全国大会の調整後の投票地点を確認できません");
+      voteAfterDialogue(p, "national_adjustment");
       checkpoint("votes");
     } else if (p.stage === "tasting") {
       owner.cs ||= clone(p.craft);
