@@ -1564,8 +1564,9 @@
     ],
     "production_data_and_engine": true,
     "classic_and_existing_normal_frames_preserved": true,
-    "screenshot_capture": "refreshing after enter animation settles",
-    "evidence_library_file_id": "libfile_38c0d7ce70cc81918ad0447f7df2471a"
+    "screenshot_capture": "All 43 images on both PC/touch after enter animation settles; decoded and opacity >= 0.99",
+    "evidence_library_file_id": "libfile_38c0d7ce70cc81918ad0447f7df2471a",
+    "evidence_library_version": 1
   },
   "review": "Producer independent raw review PASS; integration independent review pending"
 }
