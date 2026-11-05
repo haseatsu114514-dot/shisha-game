@@ -30,7 +30,8 @@ import { reducedMotion } from "../core/transition-kit.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man", "traveler"]);
-const canShowPortrait = speaker => !NO_PORTRAIT.has(speaker || "") || (speaker === "hajime" && running?.previewProtagonist);
+// 主人公も台本が明示した立ち絵だけは出す。通常の発話では一人称視点を保つ。
+const canShowPortrait = (speaker, explicit = false) => !NO_PORTRAIT.has(speaker || "") || (speaker === "hajime" && (explicit || running?.previewProtagonist));
 // 会話の寄り。1280×720の参考プレビュー（本体約1085px、頭頂y52px）を
 // 新版つむぎの身長倍率0.9で再現する。画像の余白・個々の身長は frame() で保つ。
 // てつこ（猫）は人と同じ高さに引き伸ばさず、会話の枠の上に座っている大きさで出す（catLift＝下から持ち上げる割合）
@@ -383,7 +384,7 @@ function prefetch(dlg) {
   const collect = (lines) => {
     for (const l of lines || []) {
       const character = l.portrait === false ? null : l.portrait || l.speaker;
-      if (character && !NO_PORTRAIT.has(character)) {
+      if (character && canShowPortrait(character, !!l.portrait)) {
         const p = portraitInfo(character, l.portrait_face || l.face);
         if (p) urls.add(p.src);
       }
@@ -715,7 +716,7 @@ async function showLine(line) {
   const entrances = [updatePortraits(line.portrait === false ? "" : speaker, face)];
   // 無言の常連も会釈だけで場面に参加できる。名乗り・好感度の処理は発話と独立。
   if (line.portrait) {
-    entrances.push(updatePortraits(line.portrait, line.portrait_face || "normal"));
+    entrances.push(updatePortraits(line.portrait, line.portrait_face || "normal", true));
   }
   if (!vnTest.turbo) await Promise.all(entrances);
   if (running !== r) return;
@@ -879,10 +880,10 @@ function completeTyping() {
 
 // ---------------------------------------------------------------- 立ち絵
 
-function updatePortraits(speaker, face) {
+function updatePortraits(speaker, face, explicit = false) {
   const r = running;
   let entrance = Promise.resolve();
-  const info = speaker && canShowPortrait(speaker) ? portraitInfo(speaker, face) : null;
+  const info = speaker && canShowPortrait(speaker, explicit) ? portraitInfo(speaker, face) : null;
   if (info) {
     let img = dom.portraits.querySelector(`img[data-speaker="${speaker}"]`);
     if (!img) {
