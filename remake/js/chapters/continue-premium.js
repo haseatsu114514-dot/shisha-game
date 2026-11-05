@@ -40,8 +40,8 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
     ],
   },
   kuyuri: {
-    id: "premium_kuyuri", title: "この先の香り", name: "くゆり",
-    bio: "恋人 / くゆり", speaker: "kuyuri", duration: 20,
+    id: "premium_kuyuri", title: "この先の香り", name: "りん",
+    bio: "恋人 / りん", speaker: "kuyuri", duration: 20,
     audio: null,
     reactions: {
       retry: { text: ["いいね。次の一台、確かめよう"], faces: ["serious", "smile"], effect: "scan", word: "次の一台、私に見せて" },

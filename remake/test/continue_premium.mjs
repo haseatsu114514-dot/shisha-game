@@ -31,12 +31,12 @@ for (const [id, s] of Object.entries(PREMIUM_CONTINUE_SCRIPTS)) {
 assert.equal(PREMIUM_CONTINUE_SCRIPTS.tsumugi.cues.at(-1).face, "smile", "Tsumugi's dark last beat should smile");
 assert.equal(PREMIUM_CONTINUE_SCRIPTS.minto.cues[0].face, "ura_surprise", "romance Minto uses private pose");
 // #2025: Hiyori joins the same lottery; existing six scripts stay byte-for-byte equivalent.
-// #2474: kuyuri's name/bio became 「くゆり」 (only those two fields changed), so the frozen hash was renewed.
+// #2474: kuyuri's name/bio became 「りん」 (only those two fields changed), so the frozen hash was renewed.
 // IDREN01 (2026-11-05): rin→kuyuri のID改名で premium_rin と speaker の2箇所だけが変わり、凍結ハッシュを更新（新IDを旧IDへ戻すと従来ハッシュ bd71db25… を再現することを確認済み）。
 // #2474: ageha's name became 「あげは」 (hiragana; only that field changed; verified the old name reproduces the previous hash 1273dc9d…).
 const existingIds = ["tsumugi", "minto", "kuyuri", "ageha", "samechan", "mashiro"];
 assert.equal(createHash("sha256").update(JSON.stringify(Object.fromEntries(existingIds.map(id => [id, PREMIUM_CONTINUE_SCRIPTS[id]])))).digest("hex"),
-  "6c0ec0cad0f036fff3382778e302ccc1a3e14cb2eaabf1652057e6cd2a49f8b3");
+  "0a008bdf3cb200f4d727ec9190f423eab02e30e9d03d9797f71d517d3407c142");
 assert.deepEqual(Object.keys(PREMIUM_CONTINUE_SCRIPTS), [...existingIds, "hiyori"]);
 const hiyori = PREMIUM_CONTINUE_SCRIPTS.hiyori;
 const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8"));

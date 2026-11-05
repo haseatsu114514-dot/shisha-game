@@ -108,7 +108,7 @@ PR #265を最新mainと統合し、追加要望を反映。
 - [C CONTINUE表記](buttons-c-continue.png): 生成ボタンをまっすぐ置き、戻る側をCONTINUE表記にする。
 
 - [スミさん・共同責任](sumi.png) / [世界の終わり](sumi-disaster.png) / [反対多数](sumi-meeting.png)
-- [つむぎ](tsumugi.png) / [栞](minto.png) / [くゆり](rin.png)
+- [つむぎ](tsumugi.png) / [栞](minto.png) / [りん](rin.png)
 - [あげは](ageha.png) / [ましろ](mashiro.png) / [サメちゃん](samechan.png)
 - [可決スタンプと再挑戦の一言](meeting-retry.png) / [サメちゃんの再出航](samechan-retry.png)
 - [スマホ横持ち・つむぎ最終キュー・動き軽減](phone-tsumugi.png)

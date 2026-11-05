@@ -692,7 +692,7 @@ await check('IR23: Volk, the Sheikh and Taiyo reach ♥5 by visiting, with the s
   s.chapter = 5; assert.equal(visitsTo5('volk'), 5, 'then 5 visits to Iron Smoke in chapter 5');
 });
 
-// #2025: くゆりの♥4・♥5。既存4本の後ろに足し、♥3の質問の後・締めくくりの前に一本ずつ読む。
+// #2025: りんの♥4・♥5。既存4本の後ろに足し、♥3の質問の後・締めくくりの前に一本ずつ読む。
 const KUYURI_LATE = ['ch1_kuyuri_fifth', 'ch1_kuyuri_sixth'];
 const kuyuriAt = (f, story, heart = 5) => {
   const s = f.fresh(); s.story.kuyuri = story; s.affinity.kuyuri = f.stats.AFFINITY_RANK_PTS[heart]; s.met.kuyuri = true;

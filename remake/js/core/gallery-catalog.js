@@ -6,7 +6,7 @@ export const GALLERY_TABS = [
 ];
 export const CHAR_LABELS = {
   minto: "みんと", ageha: "あげは", tsumugi: "つむぎ", naru: "なる",
-  kuyuri: "くゆり", mashiro: "ましろ", other: "その他",
+  kuyuri: "りん", mashiro: "ましろ", other: "その他",
 };
 const cgChars = Object.fromEntries(Object.entries({
   ageha: ["cg_ageha_first_purikura", "cg_ch2_ageha_purikura_strip", "cg_ageha_confession"],

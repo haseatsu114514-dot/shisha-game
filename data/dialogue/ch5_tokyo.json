@@ -3,7 +3,7 @@
   "dialogues": [
     {
       "dialogue_id": "ch5_tokyo_van_first",
-      "comment": "最初に「東京へ（配送便）」を選んだ日だけ。Dr.fookah（問屋街）の1階。店員は名前の無いモブ（くゆり・2階の場面は出さない）。",
+      "comment": "最初に「東京へ（配送便）」を選んだ日だけ。Dr.fookah（問屋街）の1階。店員は名前の無いモブ（りん・2階の場面は出さない）。",
       "lines": [
         { "speaker": "", "face": "", "text": "Dr.fookahで、店員が葉の箱を台車に積んでいた。裏の車で、東京店へ運ぶ便だという。" },
         { "speaker": "shop_clerk", "face": "", "text": "東京へ行くなら、助手席が空いてますよ。乗っていきます？" },

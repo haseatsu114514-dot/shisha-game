@@ -104,7 +104,7 @@ gainFlavorExperience(s,{lemon:12},7.5,DB.flavorById);assert.equal(masteryLevel(s
  s=core.newGame();
 }
 {
- // くゆりの3つの味は第4回で一度だけ受け取る。旧第2回・反復回の受領分は差し引く。
+ // りんの3つの味は第4回で一度だけ受け取る。旧第2回・反復回の受領分は差し引く。
  const kuyuri=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch1_kuyuri.json',import.meta.url))).dialogues;
  const second=kuyuri.find(d=>d.dialogue_id==='ch1_kuyuri_second');
  const repeat=kuyuri.find(d=>d.dialogue_id==='ch1_kuyuri_repeat');

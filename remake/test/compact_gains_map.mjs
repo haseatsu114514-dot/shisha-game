@@ -117,7 +117,7 @@ try {
   assert.equal(await page.locator('[data-test="pin-cafe"] .evt-badge').count(),0, await page.locator('[data-test="pin-cafe"]').evaluate(n=>n.outerHTML));
   assert.equal(await page.locator('[data-test="pin-cafe"] .sub-label').textContent(),"喫茶こはく");
 
-  // 通常会話の後でも、くゆりの未回答の質問が残っていれば印を残す。
+  // 通常会話の後でも、りんの未回答の質問が残っていれば印を残す。
   await page.evaluate(async () => {
     for(const [id,seq] of Object.entries(T.spots.VISIT_SEQ)) T.core.state.story[id]=seq.length;
     T.core.state.affinity={kuyuri:T.stats.AFFINITY_RANK_PTS[3]}; T.core.state.flags._gym_member=true;
@@ -125,7 +125,7 @@ try {
   });
   await page.waitForSelector('[data-test="pin-naru"]');
   assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge.story').textContent(), "!");
-  // 質問・締めくくりの読了後も、くゆりの試作品イベントが未読なら印を残す。
+  // 質問・締めくくりの読了後も、りんの試作品イベントが未読なら印を残す。
   await page.evaluate(async () => {
     T.core.state.finales=Object.fromEntries(Object.keys(T.spots.VISIT_SEQ).map(id => [id,{day:3,chapter:1,route:"friend"}]));
     await T.openMap();
@@ -156,7 +156,7 @@ try {
   await page.locator('[data-test="pin-naru"]').click(); await page.locator('[data-test="map-go"]').click();
   assert.equal(await page.evaluate(() => T.mapPromise),"naru");
 
-  // くゆりがいない日は買い物を開けても新規印を付けない。顔・施設の未解放も漏らさない。
+  // りんがいない日は買い物を開けても新規印を付けない。顔・施設の未解放も漏らさない。
   await page.evaluate(async () => {
     T.core.newGame(); Object.assign(T.core.state,{phase:"daily",day:2}); await T.openMap();
   });

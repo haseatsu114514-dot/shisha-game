@@ -46,7 +46,7 @@ description: shisha-gameの既存キャラの立ち絵・表情差分を、元�
 
 ## 直前の制作（2026-10-07・PRT51／52）
 
-オーナーの今回の「はじめ、アダム辺りをまず2人」の明示指示を優先し、はじめ（hajime）とアダム（adam）の5表情ずつを確認用に生成・GitHubへ保存した。[最新の制作記録](references/review-status.md)と[画像一覧](references/style-references.json)を読む。両セットはpendingで、採用・ゲームへの組み込み・mainマージは未指示。はじめは実画像の黒いキャップと黒パーカーを、アダムは画面左の緑／右の赤の髪と黒い腰エプロンを保持。以前のくゆりの作業・過去のマージ許可を、この2人の採用回答には扱わない。
+オーナーの今回の「はじめ、アダム辺りをまず2人」の明示指示を優先し、はじめ（hajime）とアダム（adam）の5表情ずつを確認用に生成・GitHubへ保存した。[最新の制作記録](references/review-status.md)と[画像一覧](references/style-references.json)を読む。両セットはpendingで、採用・ゲームへの組み込み・mainマージは未指示。はじめは実画像の黒いキャップと黒パーカーを、アダムは画面左の緑／右の赤の髪と黒い腰エプロンを保持。以前のりんの作業・過去のマージ許可を、この2人の採用回答には扱わない。
 
 ## 確定した画風と制作単位
 
@@ -55,7 +55,7 @@ description: shisha-gameの既存キャラの立ち絵・表情差分を、元�
 - **高解像度の細かなドット絵のような質感を意図的に残し、高級感のある仕上げにする。**
   普通の滑らかなアニメ塗りに変えない。粗い巨大なドットやぼかし、ノイズを足す処理でもない。
 - 表情に連動して指先・手首・肘・肩・首の角度などを少し変える。動きの大きさは性格に合わせる。
-- **解像度（2026-10-09）**：ゲーム用896×1200での人物の高さ（約900〜1120px）より原画の人物が小さいと、引き伸ばしでぼやけ、キャラ間で画質がそろわない。5表情を横1枚のシートで作ると人物は約850pxに縮むので、**最終素材は1回の生成で1人・1表情、人物の高さ1300px以上**で作り、配置は縮小だけにする（くゆりv12の方式）。**頭身・顔の大きさ**は [立ち絵の規格](../../../docs/portrait_standard.md)（標準6.4〜7.7・小柄5.4〜6.2頭身）。通常を差し替えたら顔の位置を測り直し、`python3 tools/portrait_metrics.py check` で確認する。画風はみんと・あげはが基準。調査と依頼文は [resolution-upgrade-20261009](../../../asset_sources/portraits/resolution-upgrade-20261009/README.md)。
+- **解像度（2026-10-09）**：ゲーム用896×1200での人物の高さ（約900〜1120px）より原画の人物が小さいと、引き伸ばしでぼやけ、キャラ間で画質がそろわない。5表情を横1枚のシートで作ると人物は約850pxに縮むので、**最終素材は1回の生成で1人・1表情、人物の高さ1300px以上**で作り、配置は縮小だけにする（りんv12の方式）。**頭身・顔の大きさ**は [立ち絵の規格](../../../docs/portrait_standard.md)（標準6.4〜7.7・小柄5.4〜6.2頭身）。通常を差し替えたら顔の位置を測り直し、`python3 tools/portrait_metrics.py check` で確認する。画風はみんと・あげはが基準。調査と依頼文は [resolution-upgrade-20261009](../../../asset_sources/portraits/resolution-upgrade-20261009/README.md)。
 - みんと・あげはは元から品質が高いので、元の顔と基本ポーズを大きく変えない。
 - **新しいデザインは1キャラ（別衣装は1セット）ずつ生成して見せ、採用確認を待つ。**
   生成・保存・比較資料・確認用PRの作成は先に進める。採用済みデザインの指定修正や明示的に採用された素材の組み込みでは、同じ承認を取り直さない。画像の確認、採用、ゲームへの組み込み／マージは区別して記録する。
@@ -136,7 +136,7 @@ description: shisha-gameの既存キャラの立ち絵・表情差分を、元�
   22歳のゆるい同期らしさと元の小柄な頭身。通常／笑顔／真剣／驚き／あくび・眠いの順。既存の `sad` は両目を閉じたあくび・小さなZなので、悲しみや涙へ改変しない。袖・手・肩に小さな動き。
   [生成元](references/mashiro-v1-sheet.png)、[5表情の顔比較](references/mashiro-v1-faces-preview.png)、[生成記録](references/mashiro-generation.json)を本人参照にする。当初の採用待ちと、その後のPRT49での採用を区別する。
   当時の指示「確認したい　あとあくび以上に立ちながら可愛く寝てるのも欲しい」で、あくびを残して**両目を閉じて立ったまま眠る追加6枚目v1**を提示・保存。首が画面左へこてんと傾き、口が小さく開き、両手がだらんとした寝姿。[6表情の比較](references/mashiro-six-review.png)、[あくびとの比較](references/mashiro-sleep-yawn-comparison.png)、[追加の生成記録](references/mashiro-sleep-generation.json)を読む。その後PRT49で採用されたため、当初の「採用前」「sleep未追加」を現在の状態として扱わず、runtimeと対象Issue/PRを確認する。
-- **くゆり（`rin`）**: 2026-10-03の最新指示で、既存の髪型と目を大きく刷新。
+- **りん（`rin`）**: 2026-10-03の最新指示で、既存の髪型と目を大きく刷新。
   添付写真のような、厚めに流れる前髪・頬を包む短いレイヤー・長い裾を組み合わせたロングウルフへ。
   **涼しさ・可愛さ・控えめな色気を持つ、とろんとした半目。瞳を小さくしすぎたり、細い線の目にしない。**
   旧案v3に「髪色も参考画像のに寄せたい」「髪ちょっと長すぎ」「体格ももう少しセクシー」「顔はもっと参考画像に寄せて」と追加指示。
@@ -149,7 +149,7 @@ description: shisha-gameの既存キャラの立ち絵・表情差分を、元�
   基本はクールに微笑む系。2026-10-04の制作・組み込み・マージ指示で5表情を採用し、**笑顔1枚だけ目を閉じて頬に手を添える可愛いギャップ**を加えた。
   **最新の明示指示で通常v11（rin-style-v11.png）のデザインを採用。** 同じ顔・髪・画風・白シャツと黒スラックスで残り4表情を制作し、指定ブランチのゲーム用5枚へ差し替えた。
   [v11の5表情比較](references/rin-v11-five-review.png)、[生成元・プロンプト・実参照](references/rin-v11-expressions-generation.json)、[配置・検証記録](references/rin-v11-integration.json)は採用デザインの履歴。v11制作時は通常の原画を再生成せず使用した。現在は下記の追加指摘による姿勢修正v12を参照。
-  **刷新前の旧デザイン（青いポニーテール・胸元の試香紙）は、2026-10-04 オーナー「くゆりの旧デザインはもう使わない」で廃止。** 顔・髪・衣装は採用v11を引き継ぎ、最新の5表情の立ち姿はv12（指定ブランチの`assets/sprites/characters/rin/`）。v7と追加4表情v1、刷新前との比較は制作履歴として保持し、旧画風を戻さない。
+  **刷新前の旧デザイン（青いポニーテール・胸元の試香紙）は、2026-10-04 オーナー「りんの旧デザインはもう使わない」で廃止。** 顔・髪・衣装は採用v11を引き継ぎ、最新の5表情の立ち姿はv12（指定ブランチの`assets/sprites/characters/rin/`）。v7と追加4表情v1、刷新前との比較は制作履歴として保持し、旧画風を戻さない。
   年齢27歳・白シャツと黒スラックス・クリップボードと銀の小物は採用済みv11を参照。写真の衣装・SNS画面は写さない。
   **最新の姿勢修正はv12（PRT43／44）。** オーナー「くびれというか腰が横に出過ぎてて変」で、腰を横へ突き出す姿勢と右へ傾く脚を全5表情で修正。[v12の5表情](references/rin-v12-five-review.png)、[生成元・実参照](references/rin-v12-generation.json)、[配置・検証](references/rin-v12-integration.json)、[スマホの会話比較](references/rin-v12-game-before-after-591.png)。指定ブランチへ修正用の5枚を反映。提示後にオーナー「マージして」（PRT45）で採用とmainへのPRマージを明示指示。mainマージはCodexへ変更し、丸アイコン・台詞・設定資料はClaude側を維持。
   旧案v1〜v6は制作履歴に保持し、採用基準へ加えない。ゲーム用PNG/WebP・設定は採用前に差し替えない。
@@ -200,7 +200,7 @@ description: shisha-gameの既存キャラの立ち絵・表情差分を、元�
 python3 tools/make_face_icons.py <id>   # 丸アイコン（LIME・看板・好感度カード等）も新しい立ち絵から作り直す
 python3 remake/tools/build_manifest.py
 python3 tools/align_sprite_anchor.py -c <id> --dry-run
-# くゆりを変更した場合の回帰。他のキャラはそのキャラの実画面で確認
+# りんを変更した場合の回帰。他のキャラはそのキャラの実画面で確認
 node remake/test/rin_portraits.mjs
 ```
 
@@ -211,7 +211,7 @@ node remake/test/rin_portraits.mjs
   別衣装の顔は `EXTRA`（例: みんと私服＝`face_minto_private`）。
   アイコンは全員160px・256色・輪郭は滑らかな透明度（2026-10-04 オーナー指定。元絵の顔の切り抜きが約180〜240pxのため160pxが上限の目安）。拡大表示とスマートフォンの高密度表示で目が読めるか確認する。キャラ別に変える場合は `TUNE` の `size`。
 - 表情の意味や仕草が旧画像と変わったら、そのキャラの全台詞の `face` 指定を場面に合わせて見直す
-  （2026-10-04 PRT18〜PRT21。旧つむぎ・旧くゆりは表情ファイルの中身が名前とずれていた）。立ち絵と矛盾する外見の地の文も確認する。
+  （2026-10-04 PRT18〜PRT21。旧つむぎ・旧りんは表情ファイルの中身が名前とずれていた）。立ち絵と矛盾する外見の地の文も確認する。
 - 修正対象は共有 `assets/` と現行 `remake/`。画像を差し替えたら `python3 remake/tools/build_manifest.py` で目録を更新する
   （旧 `web/` 版・単一HTML配布は廃止済みで、再ビルド対象はない）。
 - ローカルHTTPサーバー経由で**全表情を実際の会話エンジンに出す**。別衣装との切り替え、左右・上下のずれ、頭／髪／手の欠けを目視する。
@@ -231,7 +231,7 @@ node remake/test/rin_portraits.mjs
 
 過去の制作根拠は保持する。以下は現在の担当・未完を指定するものではない。
 
-- くゆりv12: [5表情](references/rin-v12-five-review.png)、[姿勢比較](references/rin-v12-stance-comparison.png)、[実会話比較](references/rin-v12-game-before-after-591.png)、[生成元](references/rin-v12-generation.json)、[検証](references/rin-v12-integration.json)、[v11からの引き継ぎ履歴](../../../docs/archive/rin_portrait_handoff.md)。
-- くゆりv11: [5表情](references/rin-v11-five-review.png)、[生成記録](references/rin-v11-expressions-generation.json)、[配置・検証](references/rin-v11-integration.json)。
+- りんv12: [5表情](references/rin-v12-five-review.png)、[姿勢比較](references/rin-v12-stance-comparison.png)、[実会話比較](references/rin-v12-game-before-after-591.png)、[生成元](references/rin-v12-generation.json)、[検証](references/rin-v12-integration.json)、[v11からの引き継ぎ履歴](../../../docs/archive/rin_portrait_handoff.md)。
+- りんv11: [5表情](references/rin-v11-five-review.png)、[生成記録](references/rin-v11-expressions-generation.json)、[配置・検証](references/rin-v11-integration.json)。
 - すみさんv1: [5表情](references/sumi-five-review.png)、[生成・配置記録](references/sumi-generation.json)。
 - ましろv1: [6表情](references/mashiro-six-review.png)、[基本5枚](references/mashiro-generation.json)、[立ち寝](references/mashiro-sleep-generation.json)。`sad` は元の絵どおりのあくび。すみさん・ましろの採用記録は要望台帳PRT49を参照。

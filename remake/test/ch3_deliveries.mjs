@@ -80,7 +80,7 @@ await check('actual script branches keep delivery and later customer introductio
  const volk=load('ch3_volk').dialogues.find(s=>s.dialogue_id==='ch3_volk_first');
  const known=expand(volk,{met:{volk:true},flags:{_ch3_delivery_volk:true}}).map(l=>l.text||'').join('\n');
  assert(!known.includes('初めて見る顔'));assert(!known.includes('名前を聞いても'));
- assert(known.includes('ナイトサイド')&&known.includes('くゆり'),'Approved parent characterization retained after delivery');
+ assert(known.includes('ナイトサイド')&&known.includes('りん'),'Approved parent characterization retained after delivery');
  const saku=load('ch3_rivals').dialogues.find(s=>s.dialogue_id==='ch3_saku_first');
  assert(expand(saku,{met:{saku:true},flags:{_ch3_delivery_saku:true}})[0].text.includes('配達で会った'));
 });

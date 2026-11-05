@@ -69,7 +69,7 @@ export const SAMECHAN_HEART_EVENTS = [
 ];
 export const samechanHeartEventDone = (s, event) => settled(s, "samechan") || !!s.flags?.[event.flag];
 export const samechanHeartEventsDone = s => SAMECHAN_HEART_EVENTS.every(event => samechanHeartEventDone(s, event));
-// くゆりの♥4・♥5（#2025）。後から足した段階なので、締めくくり・友人・恋人へ着地済みの旧セーブには出さず、読んだものとして扱う。
+// りんの♥4・♥5（#2025）。後から足した段階なので、締めくくり・友人・恋人へ着地済みの旧セーブには出さず、読んだものとして扱う。
 export const KUYURI_LATE_STORIES = ["ch1_kuyuri_fifth", "ch1_kuyuri_sixth"];
 export const visitStorySkipped = (s, id, scene) => id === "kuyuri" && KUYURI_LATE_STORIES.includes(scene) && settled(s, id);
 export function questionComplete(s, id) {

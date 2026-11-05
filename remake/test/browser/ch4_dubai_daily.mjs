@@ -418,8 +418,8 @@ await suite("ch4-dubai-daily", async check => {
     assert.equal(state.flags._ch4.read.ch4_wang_reception, true);
   });
 
-  // 同行なしで、くゆり（恋人）とましろ（第3章クリア）が別便で応援に来る。前夜祭の日にくゆり→ましろちゃんの到着を読み、
-  // 前夜祭の後、到着したくゆりを前夜に誘える。到着の場面を読む途中でロードしても、同じ到着から読み直し二重に確定しない。
+  // 同行なしで、りん（恋人）とましろ（第3章クリア）が別便で応援に来る。前夜祭の日にりん→ましろちゃんの到着を読み、
+  // 前夜祭の後、到着したりんを前夜に誘える。到着の場面を読む途中でロードしても、同じ到着から読み直し二重に確定しない。
   // 2人目の到着カードは「もう一人」の文になる。
   await check("a-separate-flight-lover-arrives-on-the-festival-day-and-can-be-invited", async page => {
     await seed(page, (value, progress) => {

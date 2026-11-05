@@ -1,6 +1,6 @@
 // VOL13: 第2章の地元の会話を足す。
 // ① 施設の寄り道（実 spot-encounters.js）: 喫茶こはく・観音堂・CHOI-ZAP・C.STATIONに第2章だけの回。第1章・第3章では出ない
-// ② Dr.fookah 2階のくゆり（実 spots.js の visitChar）: 第2章だけの会話2本。味の不調に気づく回を先に、一来店一本・一度だけ
+// ② Dr.fookah 2階のりん（実 spots.js の visitChar）: 第2章だけの会話2本。味の不調に気づく回を先に、一来店一本・一度だけ
 // ③ あげはの通い訪問（実 ch2-preparation.js）: 小会話4種を巡回し、昼夜の店のあいさつを挟む
 // ④ 台本: 大会を前提にする台詞には大会後の分岐、第2章の水族館の再訪は数行
 // node --experimental-vm-modules remake/test/ch2_home_talks.mjs
@@ -73,7 +73,7 @@ async function loadWithStubs(file, overrides, context) {
   return { ns: mod.namespace, set: (spec, name, value) => synthetic.get(spec).setExport(name, value) };
 }
 
-// ---- ② くゆりの第2章の会話（実 spots.js の visitChar） --------------------------------------
+// ---- ② りんの第2章の会話（実 spots.js の visitChar） --------------------------------------
 let state, played, affinity, playMode = "ok";
 const DB = { dialogues: all, manifest: {} };
 const context = vm.createContext({ console, AbortController, setTimeout, clearTimeout });
@@ -125,7 +125,7 @@ playMode = "ok";
 // 段階会話がまだなら、第2章の会話を先に一本（段階は次の来店）
 state = kuyuriSave({ story: { kuyuri: 2 } }); played = []; affinity = [];
 await spots.visitChar("kuyuri"); assert.deepEqual(played, ["ch2_kuyuri_strawberry"]); assert.equal(state.story.kuyuri, 2);
-// くゆりと初めて話す前（固有会話0本）は、呼び名や面識を前提にする第2章の会話を出さない（先に初対面）
+// りんと初めて話す前（固有会話0本）は、呼び名や面識を前提にする第2章の会話を出さない（先に初対面）
 state = kuyuriSave({ story: {} }); assert.equal(spots.chapterTalkDue("kuyuri"), null, "first meeting comes first");
 // 第1章・第3章、台本が無い時は出さない
 for (const chapter of [1, 3]) { state = kuyuriSave({ chapter }); assert.equal(spots.chapterTalkDue("kuyuri"), null, `chapter ${chapter}`); }
@@ -177,12 +177,12 @@ assert.deepEqual(seen.slice().sort(), ["remake_ch2_ageha_repeat", "remake_ch2_ag
 // ---- ④ 台本 ----------------------------------------------------------------------
 const tournamentSafe = id => JSON.stringify(all[id]).includes('"tournament_finished"');
 for (const id of ["cs_ch2_haze", "ch2_kuyuri_strawberry"]) assert(tournamentSafe(id), `${id} has an after-tournament branch`);
-// あげはの小会話・あいさつ・くゆりの味の回・施設の回は、大会の前後どちらでも成り立つ（出発前の準備期間でも読む）
+// あげはの小会話・あいさつ・りんの味の回・施設の回は、大会の前後どちらでも成り立つ（出発前の準備期間でも読む）
 for (const id of ["remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d", "venue_ageha_day", "venue_ageha_night",
   "ch2_kuyuri_taste", "cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers"]) {
   assert(!/大会|本番|県大会|優勝/.test(JSON.stringify(all[id])), `${id} does not presuppose the tournament`);
 }
-// くゆりの味の回は、原因を決めつけず、吸って確かめ続けない（物語の正本「味の不調と受診」）
+// りんの味の回は、原因を決めつけず、吸って確かめ続けない（物語の正本「味の不調と受診」）
 const taste = all.ch2_kuyuri_taste.lines.map(line => line.text || "").join("\n");
 assert(/煙の褒め方が嘘だね/.test(taste)); assert(!/心因|気のせい|ストレス/.test(taste)); assert(/確かめ続けるのはやめ/.test(taste));
 // 水族館の再訪（1,800円）は各4行以上

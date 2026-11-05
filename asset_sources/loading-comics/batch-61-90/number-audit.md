@@ -79,7 +79,7 @@
 - `PR2258:adam-cup-noodles` ↔ 専門外・再び（`asset_sources/short-comics-unhinged-ltr-20261025/comics.json#pages:27`）: 計測に強いアダムが家庭の調理器具で困る。 違い: 炊飯器の操作／カップ麺のお湯の線。
 - `PR2258:sumi-tasting-sketch` ↔ 一行の秘訣（`asset_sources/loading-comics/45-sumi-recipe-scroll/comics.json`）: スミさんの一言・一行の指示に対し、はじめのメモの形が予想外になる。 違い: 長い巻物／絵日記。
 - `PR2258:naru-recipe-notes` ↔ 全部見てけ（`asset_sources/short-comics-20261024/comics.json#source_sheets:11`）: なるが研究ノートを惜しまず見せる。「全部見てけ」の言葉も共通。 違い: ノートが足りないほど教える／余白もお菓子の絵。
-- `PR2258:sumi-memory-kitchen` ↔ 月曜の香り（`asset_sources/short-comics-unhinged-ltr-20261025/comics.json#pages:38`）: 香りを場所・記憶の想像図で表す。 違い: くゆりの香りで月曜のオフィス／スミさんとの会話で実家のカレー。
+- `PR2258:sumi-memory-kitchen` ↔ 月曜の香り（`asset_sources/short-comics-unhinged-ltr-20261025/comics.json#pages:38`）: 香りを場所・記憶の想像図で表す。 違い: りんの香りで月曜のオフィス／スミさんとの会話で実家のカレー。
 
 ## 保留と選別の進め方
 

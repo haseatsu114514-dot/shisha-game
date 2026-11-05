@@ -92,7 +92,7 @@ for (const chapter of [1, 2, 3, 4, 5, 6, "1", "3", undefined, null, 0, false, Na
 }
 
 // #2025: 第3〜4章のヒロインの近況（読むだけ・各2通）。ひより・サメちゃんは第3・4章、
-// 東京で一緒に働くましろは第4章だけ。くゆりは LM07 の later で既に届く。恋人には届かない。
+// 東京で一緒に働くましろは第4章だけ。りんは LM07 の later で既に届く。恋人には届かない。
 {
   const people = DB.casualLime.people;
   for (const id of ["hiyori", "samechan", "mashiro", "kuyuri"]) assert.equal(people[id]?.later?.length, 2, `${id}: 近況は2通`);

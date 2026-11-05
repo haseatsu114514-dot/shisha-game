@@ -1,4 +1,4 @@
 // 進行とHUDで共有するルール。大会前の日常はDAY1〜13、大会はDAY14。
 export const TOURNAMENT_DAY = 14;
 export const MAX_MONEY = 999_999;
-export const KUYURI_AWAY_DAY = 2; // day % 7 === 2 はくゆりが出張で不在
+export const KUYURI_AWAY_DAY = 2; // day % 7 === 2 はりんが出張で不在

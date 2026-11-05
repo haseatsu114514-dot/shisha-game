@@ -72,7 +72,7 @@ Anime visual novel background, detailed digital painting, bright lighting, no pe
   - bg_title.png（タイトル画面はCSS合成＋title_arts を使用・コード未参照）
 
 --- R1/10: bg_fookah_showroom.png ★新規（配線済み・置くだけで自動切替） ---
-用途: くゆりイベント（Dr.fookah 2階ショールーム／試香ブース）。現在は1階物販 bg_shop.png を
+用途: りんイベント（Dr.fookah 2階ショールーム／試香ブース）。現在は1階物販 bg_shop.png を
 仮表示しており、このファイルが届くと自動で切り替わる。窓は黒フィルムで塞がれた薄暗い部屋
 だが、輝度は焼き込まず「薄暗いのに読める」絵にする。
 Anime visual novel background, detailed digital painting, moody but readable lighting, no

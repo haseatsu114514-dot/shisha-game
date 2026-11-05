@@ -592,7 +592,7 @@ export const FLAG_FAMILY_RULES = [
   ["_shift_mix_*", "progression"],
   ["_shift_order_*", "progression"],
   ["_spot_*", "progression"],
-  ["_talk_seen_*", "person"], // 章の間だけ店で読む会話（第2章のくゆり・daily/spots.js の CHAPTER_TALKS）
+  ["_talk_seen_*", "person"], // 章の間だけ店で読む会話（第2章のりん・daily/spots.js の CHAPTER_TALKS）
   ["_sumi_baito_inv_*", "pending"],
   ["_mukai_baito_inv_*", "pending"],
   ["_temporary_closed_*", "progression"],

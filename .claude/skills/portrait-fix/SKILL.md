@@ -25,7 +25,7 @@ remake/js/vn/engine.js の frame() が描画位置・スケールを決定
   ビルド前に `pip install Pillow numpy scipy` を確認。目録生成はローカルで行い、Pagesは生成済みの目録を配信する。
 - ax・bottom はキャラ単位で共通化済みなので、「表情でジャンプする」場合は
   共通化が効かないほど**原画側の描かれ方がバラバラ**なのが原因。
-- `data/characters.json` の `spriteAnchor: "head"` を持つくゆりは、通常の本体上端20%の横重心を全表情共通の表示アンカーにする。画像の足元整列は従来どおり足元で行う。両ビルドが同じ指定を読み、未指定の他キャラは足元基準のまま。
+- `data/characters.json` の `spriteAnchor: "head"` を持つりんは、通常の本体上端20%の横重心を全表情共通の表示アンカーにする。画像の足元整列は従来どおり足元で行う。両ビルドが同じ指定を読み、未指定の他キャラは足元基準のまま。
 
 ## 症状別の診断フロー
 
@@ -59,7 +59,7 @@ remake/js/vn/engine.js の frame() が描画位置・スケールを決定
 ### D. キャラ同士の身長バランスがおかしい
 - 正本は `data/characters.json` の `spriteScale`（出典: brand/character_profiles.md の身長、
   基準172cm・±6%クランプ）。画像側で拡縮して調整しない。
-- キャラ同士の大小関係は実画面で比較する。`node remake/test/rin_portraits.mjs` はくゆりの5表情の頭部アンカーと見切れを検証する。
+- キャラ同士の大小関係は実画面で比較する。`node remake/test/rin_portraits.mjs` はりんの5表情の頭部アンカーと見切れを検証する。
 
 ### E. 立ち絵の追加・差し替え
 1. ファイル名は `assets/sprites/characters/<id>/chr_<id>_<face>.png`。face は基本5種
@@ -72,11 +72,11 @@ remake/js/vn/engine.js の frame() が描画位置・スケールを決定
 
 ### 足元を整列しても、上半身が画面中央に来ない場合
 
-くゆりv11では頭部が足元重心より約100px左にあり、足元を中央へ置くと顔が左へ寄った。PNG全体を左右へ動かすだけでは、ビルドが足元を再計測するので解消しない。オーナー指示に沿って不自然な腰・脚の姿勢を画像生成で直し、くゆりだけ `spriteAnchor: "head"` を採用した。通常の頭部基準を全表情で共通化し、実会話のPC／スマホで見た目の中央と切り替え時の配置枠を確認する。[くゆりの最新引き継ぎ](../../../docs/archive/rin_portrait_handoff.md)を参照。
+りんv11では頭部が足元重心より約100px左にあり、足元を中央へ置くと顔が左へ寄った。PNG全体を左右へ動かすだけでは、ビルドが足元を再計測するので解消しない。オーナー指示に沿って不自然な腰・脚の姿勢を画像生成で直し、りんだけ `spriteAnchor: "head"` を採用した。通常の頭部基準を全表情で共通化し、実会話のPC／スマホで見た目の中央と切り替え時の配置枠を確認する。[りんの最新引き継ぎ](../../../docs/archive/rin_portrait_handoff.md)を参照。
 
 ```bash
 python3 remake/tools/build_manifest.py
-node remake/test/rin_portraits.mjs        # くゆりの5表情・中央配置をPC／スマホで確認
+node remake/test/rin_portraits.mjs        # りんの5表情・中央配置をPC／スマホで確認
 ```
 
 - 仕上げに**該当キャラの表情が実際に切り替わる場面を目視**する（ズレは自動テストで
