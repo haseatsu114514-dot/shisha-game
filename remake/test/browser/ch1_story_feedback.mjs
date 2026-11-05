@@ -9,7 +9,7 @@ async function setup(page) {
     F.chapter.setupHooks(); F.vn.vnTest.turbo = true;
     F.fresh = () => {
       F.core.newGame(); F.core.state.phase = "daily"; F.core.state.day = 11;
-      for (const id of ["tsumugi", "adam", "sumi", "naru", "nagumo", "minto", "dr_kemuri"]) F.intro.markIntroSeen(id);
+      for (const id of ["tsumugi", "adam", "sumi", "naru", "sui", "minto", "dr_kemuri"]) F.intro.markIntroSeen(id);
       F.vn.backlog().length = 0;
     };
     F.lines = () => F.vn.backlog().map(line => line.text);

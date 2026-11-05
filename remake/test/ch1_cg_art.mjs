@@ -10,7 +10,7 @@ const cases = [
   ["cg_ch1_minto_casual_reveal", "ch1_minto_fifth"],
   ["cg_ch1_dr_kemuri_hook", "ch1_tournament_after"],
   ["cg_ch1_tournament_battle", "ch1_tournament_match"],
-  ["cg_ch1_nagumo_smile", "ch1_tournament_reveal"],
+  ["cg_ch1_sui_smile", "ch1_tournament_reveal"],
   ["cg_oneesan_first_smoke", "ch1_tutorial_oneesan"],
   ["cg_minto_casual", "outing_minto_1"],
   ["cg_tsumugi_smoke_color", "ch1_tsumugi_smoke_color"],
@@ -25,7 +25,7 @@ async function prepare(page) {
     const ui = await import("./js/core/ui.js"), engine = await import("./js/vn/engine.js");
     const gallery = await import("./js/scenes/gallery.js");
     core.newGame(); core.save(); core.config.textSpeed = 4;
-    for (const id of ["hajime", "sumi", "tsumugi", "minto", "naru", "adam", "nagumo", "dr_kemuri", "oneesan"]) {
+    for (const id of ["hajime", "sumi", "tsumugi", "minto", "naru", "adam", "sui", "dr_kemuri", "oneesan"]) {
       core.state.met[id] = true; core.state.flags[`_intro_${id}`] = true;
     }
     core.state.flags._minto_identity_revealed = true;

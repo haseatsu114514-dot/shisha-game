@@ -27,7 +27,7 @@ try {
       const source = await (await fetch(new URL("../data/dialogue/lover_events.json", location.href))).json();
       function find(node) {
         if (node && typeof node === "object") {
-          if (node.dialogue_id === "lover_rin_lv3") return node;
+          if (node.dialogue_id === "lover_kuyuri_lv3") return node;
           for (const value of Object.values(node)) { const found = find(value); if (found) return found; }
         }
       }
@@ -35,22 +35,22 @@ try {
       if (!scene) throw Error("Kuyuri scene missing");
       const state = await import(new URL("js/core/state.js", location.href));
       const vn = await import(new URL("js/vn/engine.js", location.href));
-      state.newGame(); state.state.met.rin = true; vn.vnTest.turbo = false;
-      window.__rinPortraitTest = vn.play({
-        dialogue_id: "__rin_portrait_test", metadata: scene.metadata,
-        lines: faces.map(face => ({ ...scene.lines.find((l) => l.speaker === "rin"), face })),
+      state.newGame(); state.state.met.kuyuri = true; vn.vnTest.turbo = false;
+      window.__kuyuriPortraitTest = vn.play({
+        dialogue_id: "__kuyuri_portrait_test", metadata: scene.metadata,
+        lines: faces.map(face => ({ ...scene.lines.find((l) => l.speaker === "kuyuri"), face })),
       });
     }, faces);
     const frames = [];
     for (let i = 0; i < faces.length; i++) {
       const face = faces[i];
       await page.waitForFunction(face => {
-        const im = document.querySelector('#vn img[data-speaker="rin"]');
-        return im && im.src.endsWith("chr_rin_" + face + ".webp") && im.complete && im.naturalWidth > 0;
+        const im = document.querySelector('#vn img[data-speaker="kuyuri"]');
+        return im && im.src.endsWith("chr_kuyuri_" + face + ".webp") && im.complete && im.naturalWidth > 0;
       }, face);
       await page.waitForTimeout(1300);
       const m = await page.evaluate(() => {
-        const im = document.querySelector('#vn img[data-speaker="rin"]');
+        const im = document.querySelector('#vn img[data-speaker="kuyuri"]');
         const b = im.getBoundingClientRect(), s = document.querySelector("#stage").getBoundingClientRect();
         const canvas = document.createElement("canvas");
         const w = canvas.width = im.naturalWidth, h = canvas.height = im.naturalHeight;
@@ -76,19 +76,19 @@ try {
         throw Error("Kuyuri portrait alignment/clipping: " + JSON.stringify({ face, viewport, ...m }));
       frames.push(JSON.stringify(m.frame));
       records.push({ viewport: viewport.width, face, offsetPx: Number(m.offset.toFixed(2)) });
-      if (SHOTS) await page.screenshot({ path: SHOTS + "/rin-" + viewport.width + "-" + face + ".png" });
+      if (SHOTS) await page.screenshot({ path: SHOTS + "/kuyuri-" + viewport.width + "-" + face + ".png" });
       if (i < faces.length - 1) {
         await page.keyboard.press("Enter");
         await page.waitForTimeout(150);
-        const src = await page.locator('#vn img[data-speaker="rin"]').getAttribute("src");
-        if (!src.endsWith("chr_rin_" + faces[i + 1] + ".webp")) await page.keyboard.press("Enter");
+        const src = await page.locator('#vn img[data-speaker="kuyuri"]').getAttribute("src");
+        if (!src.endsWith("chr_kuyuri_" + faces[i + 1] + ".webp")) await page.keyboard.press("Enter");
       }
     }
     if (new Set(frames).size !== 1) throw Error("Kuyuri frame moves between expressions");
     await page.close();
   }
   if (errors.length) throw Error(JSON.stringify(errors));
-  console.log("rin_portraits: all green — 5 expressions × PC/phone, centered, stable, no clipping");
+  console.log("kuyuri_portraits: all green — 5 expressions × PC/phone, centered, stable, no clipping");
   console.log(JSON.stringify(records));
 } finally {
   await browser.close();

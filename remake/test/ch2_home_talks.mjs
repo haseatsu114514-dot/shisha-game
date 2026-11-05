@@ -83,7 +83,7 @@ const spotsModule = await loadWithStubs("remake/js/daily/spots.js", {
   "../core/stats.js": { gainAffinity: (id, n) => affinity.push([id, n]), visitAffinity: kind => ({ story: 16, talk: 8 })[kind], affinityLevel: () => 5, releaseAffinity: () => 0,
     AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], earnStat: () => {}, addStamina: () => {}, addMoney: () => {} },
   "../vn/engine.js": { play: async (id) => { played.push(id); return playMode === "cancel" ? { cancelled: true } : { id }; } },
-  "../core/affinity-stages.js": { VISIT_SEQ: { rin: ["ch1_rin_first", "ch1_rin_second", "ch1_rin_third", "ch1_rin_fourth"] } },
+  "../core/affinity-stages.js": { VISIT_SEQ: { kuyuri: ["ch1_kuyuri_first", "ch1_kuyuri_second", "ch1_kuyuri_third", "ch1_kuyuri_fourth"] } },
   "./weather.js": { isRainy: () => false, RAIN_SPOT_TEXTS: {} },
   "./bonds.js": { questionVisitDue: () => false, finaleAtVisit: () => false, afterStory: async () => true },
   "./spot-encounters.js": { spotFollowupDue: () => null },
@@ -91,45 +91,45 @@ const spotsModule = await loadWithStubs("remake/js/daily/spots.js", {
   "./axe-bar-data.js": { AXE_BAR: { id: "axe_bar" } },
 }, context);
 const spots = spotsModule.ns;
-function rinSave(patch = {}) {
-  const value = { chapter: 2, phase: "daily", day: 20, slot: 1, story: { rin: 4 }, visits: { rin: 6 }, met: { rin: true }, contacts: [],
-    affinity: { rin: 40 }, lovers: [], flags: {}, ...patch };
+function kuyuriSave(patch = {}) {
+  const value = { chapter: 2, phase: "daily", day: 20, slot: 1, story: { kuyuri: 4 }, visits: { kuyuri: 6 }, met: { kuyuri: true }, contacts: [],
+    affinity: { kuyuri: 40 }, lovers: [], flags: {}, ...patch };
   spotsModule.set("../core/state.js", "state", value);
   return value;
 }
-async function visitRin(patch) {
-  if (patch) state = rinSave(patch);
+async function visitKuyuri(patch) {
+  if (patch) state = kuyuriSave(patch);
   played = []; affinity = [];
-  return spots.visitChar("rin");
+  return spots.visitChar("kuyuri");
 }
-state = rinSave(); played = []; affinity = [];
-assert.equal(spots.chapterTalkDue("rin"), "ch2_rin_strawberry", "Before the taste trouble, the strawberry talk");
-assert.equal(spots.hasNewStory("rin"), true, "地図の Dr.fookah に「！」");
-assert.equal(await visitRin(), true);
-assert.deepEqual(played, ["ch2_rin_strawberry"]);
-assert.deepEqual(plain(affinity), [["rin", 8]]); // 来店の通いの値（AFB01）
-assert.equal(state.flags._talk_seen_ch2_rin_strawberry, true);
-await visitRin();
-assert(!played.includes("ch2_rin_strawberry"), "read once");
+state = kuyuriSave(); played = []; affinity = [];
+assert.equal(spots.chapterTalkDue("kuyuri"), "ch2_kuyuri_strawberry", "Before the taste trouble, the strawberry talk");
+assert.equal(spots.hasNewStory("kuyuri"), true, "地図の Dr.fookah に「！」");
+assert.equal(await visitKuyuri(), true);
+assert.deepEqual(played, ["ch2_kuyuri_strawberry"]);
+assert.deepEqual(plain(affinity), [["kuyuri", 8]]); // 来店の通いの値（AFB01）
+assert.equal(state.flags._talk_seen_ch2_kuyuri_strawberry, true);
+await visitKuyuri();
+assert(!played.includes("ch2_kuyuri_strawberry"), "read once");
 // 味の不調の後は、気づく回を先に
-await visitRin({ flags: { _ch2_taste_distant: true } });
-assert.deepEqual(played, ["ch2_rin_taste"]);
-await visitRin(); assert.deepEqual(played, ["ch2_rin_strawberry"]);
-await visitRin(); assert(!played.some(id => id.startsWith("ch2_rin_")), "both read");
+await visitKuyuri({ flags: { _ch2_taste_distant: true } });
+assert.deepEqual(played, ["ch2_kuyuri_taste"]);
+await visitKuyuri(); assert.deepEqual(played, ["ch2_kuyuri_strawberry"]);
+await visitKuyuri(); assert(!played.some(id => id.startsWith("ch2_kuyuri_")), "both read");
 // 中断したら既読にしない
-state = rinSave({ flags: { _ch2_taste_distant: true } }); playMode = "cancel";
+state = kuyuriSave({ flags: { _ch2_taste_distant: true } }); playMode = "cancel";
 played = []; affinity = [];
-assert.equal(await spots.visitChar("rin"), false);
-assert(!state.flags._talk_seen_ch2_rin_taste); assert.deepEqual(plain(affinity), []);
+assert.equal(await spots.visitChar("kuyuri"), false);
+assert(!state.flags._talk_seen_ch2_kuyuri_taste); assert.deepEqual(plain(affinity), []);
 playMode = "ok";
 // 段階会話がまだなら、第2章の会話を先に一本（段階は次の来店）
-state = rinSave({ story: { rin: 2 } }); played = []; affinity = [];
-await spots.visitChar("rin"); assert.deepEqual(played, ["ch2_rin_strawberry"]); assert.equal(state.story.rin, 2);
+state = kuyuriSave({ story: { kuyuri: 2 } }); played = []; affinity = [];
+await spots.visitChar("kuyuri"); assert.deepEqual(played, ["ch2_kuyuri_strawberry"]); assert.equal(state.story.kuyuri, 2);
 // くゆりと初めて話す前（固有会話0本）は、呼び名や面識を前提にする第2章の会話を出さない（先に初対面）
-state = rinSave({ story: {} }); assert.equal(spots.chapterTalkDue("rin"), null, "first meeting comes first");
+state = kuyuriSave({ story: {} }); assert.equal(spots.chapterTalkDue("kuyuri"), null, "first meeting comes first");
 // 第1章・第3章、台本が無い時は出さない
-for (const chapter of [1, 3]) { state = rinSave({ chapter }); assert.equal(spots.chapterTalkDue("rin"), null, `chapter ${chapter}`); }
-state = rinSave(); const saved = DB.dialogues; DB.dialogues = {}; assert.equal(spots.chapterTalkDue("rin"), null); DB.dialogues = saved;
+for (const chapter of [1, 3]) { state = kuyuriSave({ chapter }); assert.equal(spots.chapterTalkDue("kuyuri"), null, `chapter ${chapter}`); }
+state = kuyuriSave(); const saved = DB.dialogues; DB.dialogues = {}; assert.equal(spots.chapterTalkDue("kuyuri"), null); DB.dialogues = saved;
 assert.equal(spots.chapterTalkDue("adam"), null);
 
 // ---- ③ あげはの通い訪問の小会話4種と昼夜のあいさつ（実 ch2-preparation.js） --------------------
@@ -176,14 +176,14 @@ assert.deepEqual(seen.slice().sort(), ["remake_ch2_ageha_repeat", "remake_ch2_ag
 
 // ---- ④ 台本 ----------------------------------------------------------------------
 const tournamentSafe = id => JSON.stringify(all[id]).includes('"tournament_finished"');
-for (const id of ["cs_ch2_haze", "ch2_rin_strawberry"]) assert(tournamentSafe(id), `${id} has an after-tournament branch`);
+for (const id of ["cs_ch2_haze", "ch2_kuyuri_strawberry"]) assert(tournamentSafe(id), `${id} has an after-tournament branch`);
 // あげはの小会話・あいさつ・くゆりの味の回・施設の回は、大会の前後どちらでも成り立つ（出発前の準備期間でも読む）
 for (const id of ["remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d", "venue_ageha_day", "venue_ageha_night",
-  "ch2_rin_taste", "cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers"]) {
+  "ch2_kuyuri_taste", "cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers"]) {
   assert(!/大会|本番|県大会|優勝/.test(JSON.stringify(all[id])), `${id} does not presuppose the tournament`);
 }
 // くゆりの味の回は、原因を決めつけず、吸って確かめ続けない（物語の正本「味の不調と受診」）
-const taste = all.ch2_rin_taste.lines.map(line => line.text || "").join("\n");
+const taste = all.ch2_kuyuri_taste.lines.map(line => line.text || "").join("\n");
 assert(/煙の褒め方が嘘だね/.test(taste)); assert(!/心因|気のせい|ストレス/.test(taste)); assert(/確かめ続けるのはやめ/.test(taste));
 // 水族館の再訪（1,800円）は各4行以上
 for (const id of ["remake_ch2_aquarium_repeat", "remake_ch2_aquarium_repeat_b", "remake_ch2_aquarium_repeat_c"]) {

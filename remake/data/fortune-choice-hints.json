@@ -22,8 +22,8 @@
       "preferred": "nose_wow",
       "reason": "作り方への興味を言葉で伝える"
     },
-    "ch1_rin_first:rin_first_pen": {
-      "target": "rin",
+    "ch1_kuyuri_first:kuyuri_first_pen": {
+      "target": "kuyuri",
       "kind": "conversation",
       "options": [
         "pen_rush",
@@ -112,8 +112,8 @@
       "preferred": "meet",
       "reason": "個人的に会いたいと伝える"
     },
-    "ch1_rin_bond_question:bond_q1_rin": {
-      "target": "rin",
+    "ch1_kuyuri_bond_question:bond_q1_kuyuri": {
+      "target": "kuyuri",
       "kind": "romance",
       "options": [
         "personal",

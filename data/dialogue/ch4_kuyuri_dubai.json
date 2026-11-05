@@ -2,7 +2,7 @@
   "comment": "来訪予定が確定し、実際に到着した恋人用。同行者の決定だけで再生しない。",
   "dialogues": [
     {
-      "dialogue_id": "ch4_rin_dubai_girlfriend",
+      "dialogue_id": "ch4_kuyuri_dubai_girlfriend",
       "lines": [
         {
           "speaker": "",
@@ -15,12 +15,12 @@
           "text": "手には、市場で買ったらしいカルダモンの小袋。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "申請は「最重要サンプルの品質管理」。……業務は午後で終わり"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "ここからは、私の休み"
         },
@@ -30,12 +30,12 @@
           "text": "……来てくれて、うれしいです"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "……うん。それを聞きに来たところもある"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "明日の煙は明日。まず、夕飯にしよう"
         }

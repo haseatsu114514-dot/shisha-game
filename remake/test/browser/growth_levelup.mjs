@@ -257,7 +257,7 @@ await suite("growth-levelup", async (runCheck) => {
       const s=partyCore.state;Object.assign(s,{chapter:3,phase:"aftermath",day:43,slot:1});
       Object.assign(s.flags,{_ch3_intro:{startDay:29,stage:18,titleSeen:true},_ch3_tournament_won:true,
         _ch3_tournament:{stage:"complete",result:{rank:1,win:true}},_ch3_aftermath:{version:3,stage:2,winDay:42}});
-      Object.assign(s.met,{mashiro:true,kuze:true,volk:true});
+      Object.assign(s.met,{mashiro:true,saku:true,volk:true});
       (await import("./js/vn/engine.js")).vnTest.turbo=true;
       window.partyInitial={day:s.day,slot:s.slot,money:s.money,stamina:s.stamina,affinity:{...s.affinity},stock:JSON.stringify(s.flavorStock)};
       void (await import("./js/chapters/ch3-aftermath.js")).runChapterThreeAftermath();
@@ -274,7 +274,7 @@ await suite("growth-levelup", async (runCheck) => {
     assert.equal(await page.evaluate(()=>!!partyCore.state.flags._ch3_pizza_party),false);
     await page.locator(t("ch3-aftermath-party")).click();
     await page.locator(t("ch3-party-guest-mashiro")).click();
-    await page.locator(t("ch3-party-guest-kuze")).click();
+    await page.locator(t("ch3-party-guest-saku")).click();
     await page.locator(t("ch3-party-start")).click();
     await page.waitForFunction(()=>!!partyCore.state.flags._ch3_pizza_party);
     await page.locator(t("ch3-aftermath-party-night")).waitFor();
@@ -285,13 +285,13 @@ await suite("growth-levelup", async (runCheck) => {
       const loaded=!!partyCore.loadFromSlot("party-proof");
       return {same:loaded&&record===JSON.stringify({flags:partyCore.state.flags,growth:partyCore.state.growth,affinity:partyCore.state.affinity}),
         unchanged:s.day===partyInitial.day&&s.slot===partyInitial.slot&&s.money===partyInitial.money&&s.stamina===partyInitial.stamina&&JSON.stringify(s.flavorStock)===partyInitial.stock,
-        guests:s.flags._ch3_pizza_party.guests,gains:["mashiro","kuze"].map(id=>(s.affinity[id]||0)-(partyInitial.affinity[id]||0)),stage:s.flags._ch3_aftermath.stage,
+        guests:s.flags._ch3_pizza_party.guests,gains:["mashiro","saku"].map(id=>(s.affinity[id]||0)-(partyInitial.affinity[id]||0)),stage:s.flags._ch3_aftermath.stage,
         xp:s.growth.xp,actionCount:s.growth.fresh.counts["tokyo:pizza_party"],firstPeople:s.growth.firsts.people,
         firstPlace:s.growth.firsts.places.includes("tokyo:pizza_party"),read:s.growth.read.includes("ch3_growth_pizza_party")};
     });
-    assert(result.same&&result.unchanged);assert.deepEqual(result.guests,["mashiro","kuze"]);assert(result.gains.every(n=>n>0));assert.equal(result.stage,2);
+    assert(result.same&&result.unchanged);assert.deepEqual(result.guests,["mashiro","saku"]);assert(result.gains.every(n=>n>0));assert.equal(result.stage,2);
     assert(result.xp>=255&&result.firstPlace&&result.read);assert.equal(result.actionCount,1);
-    assert(result.firstPeople.includes("mashiro")&&result.firstPeople.includes("kuze"));
+    assert(result.firstPeople.includes("mashiro")&&result.firstPeople.includes("saku"));
     // LOADでownerが切り替わった後、古いカードの入力では次の朝へ進まない。
     await page.locator(t("ch3-aftermath-party-next")).click();
     assert.equal(await page.evaluate(()=>partyCore.state.flags._ch3_aftermath.stage),2);
@@ -1191,7 +1191,7 @@ await suite("growth-levelup", async (runCheck) => {
       Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
       value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
         _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
-      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "nagumo", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
       if (!progress.advanceToChapterFour(value)) throw new Error("chapter four");
       value.flags._overseas_companion = { decided: true, companion: null, supports: [] }; value.flags._ch4.titleSeen = true;
       for (const id of progress.CH4_PREP_SCENES) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);
@@ -1304,7 +1304,7 @@ await suite("growth-levelup", async (runCheck) => {
       value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
         _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
         _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
-      for (const who of ["hajime", "sumi", "pakki", "maezono", "dr_kemuri", "nagumo"]) value.flags[`_intro_${who}`] = true;
+      for (const who of ["hajime", "sumi", "pakki", "maezono", "dr_kemuri", "sui"]) value.flags[`_intro_${who}`] = true;
       if (!progress.advanceToChapterThree(value)) throw new Error("chapter three");
       value.day += 3; if (!progress.departChapterThree(value)) throw new Error("departure");
       value.flags._ch3_intro.titleSeen = true;
@@ -1349,7 +1349,7 @@ await suite("growth-levelup", async (runCheck) => {
       value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
         _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
         _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
-      for (const who of ["hajime", "sumi", "pakki", "maezono", "dr_kemuri", "nagumo"]) value.flags[`_intro_${who}`] = true;
+      for (const who of ["hajime", "sumi", "pakki", "maezono", "dr_kemuri", "sui"]) value.flags[`_intro_${who}`] = true;
       if (!progress.advanceToChapterThree(value)) throw new Error("chapter three");
       value.day += 3; if (!progress.departChapterThree(value)) throw new Error("departure");
       const intro = value.flags._ch3_intro;
@@ -1357,7 +1357,7 @@ await suite("growth-levelup", async (runCheck) => {
       // DAY13 の朝。作戦（昼）まで読み終え、昼も夜も自由に動ける保存。鉄の煙の初来店（DAY12夜）も済み。
       intro.stage = progress.CH3_INTRO_SCENES.findIndex(scene => scene.id === "ch3_tournament_eve");
       value.day = intro.startDay + 12; value.phase = "daily";
-      Object.assign(value.met, { kuze: true, steve: true, volk: true, mashiro: true, mukai_master: true });
+      Object.assign(value.met, { saku: true, steve: true, volk: true, mashiro: true, mukai_master: true });
       value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
       const fortune = await import("./js/daily/fortune-schedule.js");
       const plan = fortune.fortunePlan({ seed: value.seed, chapter: 3 });
@@ -1385,10 +1385,10 @@ await suite("growth-levelup", async (runCheck) => {
     await page.locator(t("pin-ch3_tokyo_volk")).click(); await page.locator(t("map-go")).click(); // 寄り道は二度目の来店だけなので、そのまま読む
     await readUntil("ch3_volk_second");
     const growth = await page.evaluate(() => structuredClone(__remake.state.growth));
-    assert.equal(growth.fresh.counts.kuze, 1, "煙幕の外出は綾取の鍵");
+    assert.equal(growth.fresh.counts.saku, 1, "煙幕の外出は綾取の鍵");
     assert.equal(growth.fresh.counts.volk, 1, "鉄の煙の寄り道はヴォルクの鍵");
     assert.deepEqual(Object.keys(growth.fresh.counts).filter(key => key.startsWith("ch3_tokyo_")), [], "地図の行き先の鍵で数えない");
-    for (const who of ["kuze", "volk"]) {
+    for (const who of ["saku", "volk"]) {
       assert(growth.firsts.people.includes(who), `${who}: はじめて会った人（X2）`);
       assert(growth.chapterLog[3].people.includes(who), `${who}: 章末の広さは人として数える（X11）`);
     }
@@ -1403,7 +1403,7 @@ await suite("growth-levelup", async (runCheck) => {
       value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
         _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
         _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
-      for (const who of ["hajime", "sumi", "pakki", "maezono", "dr_kemuri", "nagumo", "tsumugi"]) value.flags[`_intro_${who}`] = true;
+      for (const who of ["hajime", "sumi", "pakki", "maezono", "dr_kemuri", "sui", "tsumugi"]) value.flags[`_intro_${who}`] = true;
       if (!progress.advanceToChapterThree(value)) throw new Error("chapter three");
       value.day += 3; if (!progress.departChapterThree(value)) throw new Error("departure");
       const intro = value.flags._ch3_intro;
@@ -1462,7 +1462,7 @@ await suite("growth-levelup", async (runCheck) => {
       Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
       value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
         _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
-      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "nagumo", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
       if (!progress.advanceToChapterFour(value)) throw new Error("chapter four");
       value.flags._overseas_companion = { decided: true, companion: null, supports: [] }; value.flags._ch4.titleSeen = true;
       for (const id of progress.CH4_PREP_SCENES) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);

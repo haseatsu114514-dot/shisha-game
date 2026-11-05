@@ -2659,7 +2659,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_shuraba_rin_tsumugi",
+      "dialogue_id": "remake_shuraba_kuyuri_tsumugi",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
       },
@@ -2670,12 +2670,12 @@
           "text": "受付を済ませてロビーに戻ると、見知った顔がふたつ、同じ柱の前に立っていた。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "おはよう、モルモットくん。最重要サンプルの品質管理に来たよ"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "……予定、ずらしてきた"
         },
@@ -2685,7 +2685,7 @@
           "text": "……はじめさん、……応援、来ました"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "……あら。tonariの常連の子よね。いつも奥の席で描いてる"
         },
@@ -2695,7 +2695,7 @@
           "text": "……はい。……あなたは、問屋街の。……はじめさんの、なんですか"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "私？ ……そうね。彼の、いちばん大事なサンプルの管理者、かな"
         },
@@ -2710,7 +2710,7 @@
           "text": "（やめてくれ、その「その」の続きは今じゃない！）"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "serious",
           "text": "……なるほど。データが１件、合わないね、……モルモットくん？"
         },
@@ -2725,7 +2725,7 @@
           "text": "は、はい！ 今行きます！"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "……逃げたね。いいよ、検証は結果が出てからにしてあげる"
         },
@@ -2753,7 +2753,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_shuraba_minto_rin",
+      "dialogue_id": "remake_shuraba_minto_kuyuri",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
       },
@@ -2769,7 +2769,7 @@
           "text": "はじめくーん！ おはよっ♡ 今日は出場者同士、ライバルだね！ ……推し活もやめないけど♡"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "おはよう、モルモットくん。……予定をずらして、今日は品質管理の立ち会いだよ"
         },
@@ -2779,7 +2779,7 @@
           "text": "……品質管理？ ……あ、Dr.fookahの2階のお姉さん、ですよね"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "うん。そっちはPEPPERMINTの店長さんだよね。……ずいぶん親しげだね、彼と"
         },
@@ -2789,7 +2789,7 @@
           "text": "えへへ、みんとの大事な人なので♡ ……そちらこそ、朝からご熱心で"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "大事なサンプルなの。……あら、奇遇。私にとっても「大事」みたい"
         },
@@ -2814,7 +2814,7 @@
           "text": "はーい♡ はじめくん、一緒に行こ？ ……終わったら、ちゃんと説明してね？"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "結果が出たら、次は君の検証の番、……逃げないように"
         },
@@ -2858,12 +2858,12 @@
           "text": "……はじめさん。……応援、来ました、……みなさんも？"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "おはよう、モルモットくん。……ずいぶん賑やかな応援団ね"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "……予定、ずらしてきた。見ないわけにいかないでしょ"
         },
@@ -2883,7 +2883,7 @@
           "text": "……その、です"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "serious",
           "text": "……その、ね。……データが３件、きれいに衝突してる"
         },
@@ -2908,7 +2908,7 @@
           "text": "……うん。じゃ、みんとも控室いこっと♡ お話は、あとで。３人で、ゆっくりね"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "結果を出してきなさい。……言い訳は、そのあとで聞く"
         },
@@ -3039,7 +3039,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_shuraba_hiyori_rin",
+      "dialogue_id": "remake_shuraba_hiyori_kuyuri",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
       },
@@ -3050,7 +3050,7 @@
           "text": "受付を済ませてロビーに戻ると、窓際のベンチに、見知った顔がふたつ並んでいた。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "おはよう、モルモットくん。最重要サンプルの品質管理に来たよ"
         },
@@ -3061,7 +3061,7 @@
           "inner": "有休取った。朝ごはんもしっかり食べた"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "……隣、お知り合い？ さっきから、ずっと入口の方を見てたよ"
         },
@@ -3071,7 +3071,7 @@
           "text": "……薄羽ひより。はじめくんとは、ただの、煙の縁……"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "serious",
           "text": "煙の縁。……いい言い回しだね。それで、実際のところは？"
         },
@@ -3082,7 +3082,7 @@
           "inner": "呼び方の距離が近すぎる。何者！？"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "うん。私の、いちばん大事なサンプル"
         },
@@ -3097,7 +3097,7 @@
           "text": "（その先は言わないでください。ここ、ロビーです！）"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "serious",
           "text": "……そう。同じ値が２つ。偶然にしては、きれいすぎるね"
         },
@@ -3112,7 +3112,7 @@
           "text": "は、はい！ 今行きます！"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "……逃げたね。いいよ、検証は結果が出てからにしてあげる"
         },
@@ -3275,8 +3275,8 @@
         {
           "type": "condition",
           "condition_type": "lover",
-          "char_id": "rin",
-          "next_true": "ah_rin_hello"
+          "char_id": "kuyuri",
+          "next_true": "ah_kuyuri_hello"
         },
         {
           "speaker": "hiyori",
@@ -3309,8 +3309,8 @@
         {
           "type": "condition",
           "condition_type": "lover",
-          "char_id": "rin",
-          "next_true": "ah_rin_sono"
+          "char_id": "kuyuri",
+          "next_true": "ah_kuyuri_sono"
         },
         {
           "speaker": "hiyori",
@@ -3342,8 +3342,8 @@
         {
           "type": "condition",
           "condition_type": "lover",
-          "char_id": "rin",
-          "next_true": "ah_rin_bye"
+          "char_id": "kuyuri",
+          "next_true": "ah_kuyuri_bye"
         },
         {
           "type": "condition",
@@ -3388,9 +3388,9 @@
             "text": "……はじめさん。……応援、来ました、……みなさんも？"
           }
         ],
-        "ah_rin_hello": [
+        "ah_kuyuri_hello": [
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "normal",
             "text": "おはよう、モルモットくん。……ずいぶん賑やかな応援団ね"
           }
@@ -3409,9 +3409,9 @@
             "text": "……その、です"
           }
         ],
-        "ah_rin_sono": [
+        "ah_kuyuri_sono": [
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "serious",
             "text": "……その、ね。……データが、きれいに衝突してる"
           }
@@ -3423,9 +3423,9 @@
             "text": "……うん。じゃ、みんとも控室いこっと♡ お話は、あとで。みんなで、ゆっくりね"
           }
         ],
-        "ah_rin_bye": [
+        "ah_kuyuri_bye": [
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "normal",
             "text": "結果を出してきなさい。……言い訳は、そのあとで聞く"
           }

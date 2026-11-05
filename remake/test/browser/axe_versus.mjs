@@ -74,7 +74,7 @@ async function start(page, difficulty = "normal", options = {}) {
   await page.goto(new URL("axe-throw.html", page.url()).href);
   await page.evaluate(() => {
     localStorage.setItem("suien_remake_save", JSON.stringify({ schema: 5, money: 45678, stamina: 71,
-      lovers: ["rin"], flags: { _friend_hiyori: true }, inbox: [{ id: "keep", read: true }],
+      lovers: ["kuyuri"], flags: { _friend_hiyori: true }, inbox: [{ id: "keep", read: true }],
       pendingInvite: { sender: "hiyori", day: 10, slot: 1 }, affinity: { hiyori: 66 } }));
     sessionStorage.setItem("keep", "unchanged");
   });

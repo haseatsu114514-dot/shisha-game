@@ -2,7 +2,7 @@
 export const MUKAI_DELIVERY_STEPS = Object.freeze([
   { id: "ch3_mukai_intro", flag: "_ch3_mukai_work_intro_read", bg: "bg_mukai_shop" },
   { id: "ch3_delivery_offer", flag: "_ch3_delivery_offer", bg: "bg_mukai_shop" },
-  { id: "ch3_delivery_kuze", flag: "_ch3_delivery_kuze", person: "kuze", bg: "bg_yohaku_shop" },
+  { id: "ch3_delivery_saku", flag: "_ch3_delivery_saku", person: "saku", bg: "bg_yohaku_shop" },
   { id: "ch3_delivery_steve", flag: "_ch3_delivery_steve", person: "steve", bg: "bg_steve_shop" },
   { id: "ch3_delivery_volk", flag: "_ch3_delivery_volk", person: "volk", bg: "bg_volk_shop" },
   { id: "ch3_delivery_return", flag: "_ch3_delivery_return", bg: "bg_mukai_shop" },

@@ -5,7 +5,7 @@
   "heroine_ids": [
     "tsumugi",
     "minto",
-    "rin",
+    "kuyuri",
     "ageha",
     "mashiro",
     "samechan",
@@ -30,14 +30,14 @@
       "near_conflict": "ch3_shuraba_minto",
       "talk": "shuraba_talk_minto"
     },
-    "rin": {
-      "date": "tournament_date_rin",
-      "conflict": "shuraba_rin",
-      "epilogue": "epilogue_rin",
+    "kuyuri": {
+      "date": "tournament_date_kuyuri",
+      "conflict": "shuraba_kuyuri",
+      "epilogue": "epilogue_kuyuri",
       "date_min_chapter": 3,
-      "arrival": "ch4_rin_dubai_girlfriend",
-      "near_conflict": "ch3_shuraba_rin",
-      "talk": "shuraba_talk_rin"
+      "arrival": "ch4_kuyuri_dubai_girlfriend",
+      "near_conflict": "ch3_shuraba_kuyuri",
+      "talk": "shuraba_talk_kuyuri"
     },
     "ageha": {
       "date": "tournament_date_ageha",
@@ -97,11 +97,11 @@
         "ch3_work_without_taste",
         "ch3_naru_contact_before_tournament",
         "ch3_naru_work",
-        "ch3_kuze_first",
-        "ch3_kuze_mukai_visit",
+        "ch3_saku_first",
+        "ch3_saku_mukai_visit",
         "ch3_taste_return",
         "ch3_abyss_recovery",
-        "ch3_kuze_advice",
+        "ch3_saku_advice",
         "ch3_steve_low_heat",
         "ch3_volk_first",
         "ch3_strategy",
@@ -117,9 +117,9 @@
         "ch3_mashiro_play_3",
         "ch3_mashiro_practice",
         "ch3_mashiro_black_tea",
-        "ch3_kuze_mashiro_tea_tin",
-        "ch3_kuze_mashiro_soon_back",
-        "ch3_kuze_lime",
+        "ch3_saku_mashiro_tea_tin",
+        "ch3_saku_mashiro_soon_back",
+        "ch3_saku_lime",
         "confession_mashiro",
         "hiyori_tokyo_contact",
         "ch3_tsumugi_slump",
@@ -164,7 +164,7 @@
       "on_win": [
         "ch4_result",
         "ch4_ending",
-        "ch4_nagumo_old_rival",
+        "ch4_sui_old_rival",
         "ch4_sumi_return",
         "ch4_two_tables"
       ],
@@ -251,19 +251,19 @@
       ],
       "comment": "味の会話（#2022）。味覚が戻った後、休みの日の配合メモの続きとして。"
     },
-    "ch3_kuze_mashiro_tea_tin": {
+    "ch3_saku_mashiro_tea_tin": {
       "seen": [
-        "ch3_kuze_first"
+        "ch3_saku_first"
       ]
     },
-    "ch3_kuze_mashiro_soon_back": {
+    "ch3_saku_mashiro_soon_back": {
       "seen": [
-        "ch3_kuze_mukai_visit"
+        "ch3_saku_mukai_visit"
       ]
     },
-    "ch3_kuze_lime": {
+    "ch3_saku_lime": {
       "seen": [
-        "ch3_kuze_advice"
+        "ch3_saku_advice"
       ],
       "comment": "#2028: 綾取とLIMEを交換する。助言の後。♥1（煙幕への再訪で付く好感度）の条件は場面カードの置き方（ch3-story-wiring.js の heart）。"
     },
@@ -329,11 +329,11 @@
     "flag": "_shuraba_ch1",
     "scenes": [
       "remake_shuraba_minto_tsumugi",
-      "remake_shuraba_rin_tsumugi",
-      "remake_shuraba_minto_rin",
+      "remake_shuraba_kuyuri_tsumugi",
+      "remake_shuraba_minto_kuyuri",
       "remake_shuraba_all",
       "remake_shuraba_hiyori_minto",
-      "remake_shuraba_hiyori_rin",
+      "remake_shuraba_hiyori_kuyuri",
       "remake_shuraba_hiyori_tsumugi",
       "remake_shuraba_all_hiyori"
     ],
@@ -341,7 +341,7 @@
     "recall": {
       "minto": "ch1_tournament_after",
       "tsumugi": "ch1_tournament_after",
-      "rin": "interval_day1_morning_win",
+      "kuyuri": "interval_day1_morning_win",
       "hiyori": "interval_day1_morning_win",
       "defeat": "remake_defeat_follow"
     },

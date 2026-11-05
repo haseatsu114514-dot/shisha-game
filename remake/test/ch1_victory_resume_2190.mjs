@@ -101,7 +101,7 @@ async function harness({ step = 0, paid = true, revealed = true, snapshot = null
     gainStat: (stat, amount) => {
       awards.push({ stat, amount }); current().stats[stat] += amount; observe("ability", { stat, amount });
     },
-    nagumoCutin: async rank => { cutins.push(rank); observe("cutin", { rank }); await pause("cutin"); },
+    suiCutin: async rank => { cutins.push(rank); observe("cutin", { rank }); await pause("cutin"); },
     openPhone: async (messages, options) => {
       assert.equal(titlePresent, false, "LOAD's title screen must be removed before phone content appears");
       observe("phone", { title: options.title, ids: messages.map(message => message.id) });

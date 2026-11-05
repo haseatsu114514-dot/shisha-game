@@ -47,11 +47,11 @@ async function finishTrial(page) {
 
 await suite("ch3-trials", async check => {
   await check("before-recovery-has-no-trial", async page => {
-    await seed(page, "ch3_kuze_advice");
+    await seed(page, "ch3_saku_advice");
     assert.equal(await page.locator(t("ch3-intro-trial-open")).count(), 0);
   });
 
-  for (const [id, auto] of [["steve", "good"], ["kuze", "good"]]) await check(`trial-${id}-${auto}`, async page => {
+  for (const [id, auto] of [["steve", "good"], ["saku", "good"]]) await check(`trial-${id}-${auto}`, async page => {
     await seed(page, "ch3_volk_first");
     const before = await get(page);
     assert.match(await page.locator(t("ch3-intro-trial-open")).innerText(), /（2）/);
@@ -71,7 +71,7 @@ await suite("ch3-trials", async check => {
     assert.equal(after.flags._craft_practice_runs.at(-1).kind, id === "steve" ? "ch3_trial_care" : "ch3_trial");
     assert.match(await page.locator(t("ch3-intro-trial-open")).innerText(), /（1）/, "A finished trial stayed on the card");
     await page.locator(t("ch3-intro-trial-open")).click();
-    await page.locator(t(`ch3-intro-trial-${id === "kuze" ? "steve" : "kuze"}`)).waitFor();
+    await page.locator(t(`ch3-intro-trial-${id === "saku" ? "steve" : "saku"}`)).waitFor();
     assert.equal(await page.locator(t(`ch3-intro-trial-${id}`)).count(), 0);
     await page.locator(t("ch3-intro-trial-back")).click();
     await page.locator(t("ch3-intro-scene")).waitFor();

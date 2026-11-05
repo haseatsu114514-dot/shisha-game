@@ -42,7 +42,7 @@ for (const name of ['flavors','equipment','recipes','ng_mixes']) {
 }
 DB.flavorById = Object.fromEntries(DB.flavors.map(x => [x.id,x]));
 DB.equipById = Object.fromEntries(DB.equipment.map(x => [x.id,x]));
-assert.equal(score.NAGUMO_BAR, 90.8);
+assert.equal(score.SUI_BAR, 90.8);
 const keys = ['technique','sense','guts','charm','insight'];
 const profiles = { C1:[1,1,1,1,1], C2:[3,3,2,2,3], C3:[5,5,1,1,4], C4:[5,5,2,1,5], C3cap4:[4,4,1,1,4] };
 const growth = await import('../../js/core/growth.js');

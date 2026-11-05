@@ -57,13 +57,13 @@
       "text": "一人ずつだ。葉より先に顔を見ろ"
     },
     {
-      "art": "05-nagumo-back",
+      "art": "05-sui-back",
       "cue": "build",
       "duration": 4000,
-      "id": "nagumo-back",
+      "id": "sui-back",
       "kind": "image",
       "move": "still",
-      "source": "data/dialogue/ch4_main.json#ch4_nagumo_old_rival",
+      "source": "data/dialogue/ch4_main.json#ch4_sui_old_rival",
       "text": "……懐かしい約束だ"
     },
     {

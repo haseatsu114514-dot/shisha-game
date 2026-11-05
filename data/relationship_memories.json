@@ -103,33 +103,33 @@
       "echo": "（つむぎちゃんは、見てきたものが混ざって、今の自分の絵になると言った）"
     },
     {
-      "id": "rin_feedback",
-      "char_id": "rin",
-      "dialogue_id": "ch1_rin_first",
+      "id": "kuyuri_feedback",
+      "char_id": "kuyuri",
+      "dialogue_id": "ch1_kuyuri_first",
       "echo": "（くゆりさんは、俺が試した感想も次の仕事に持っていく）"
     },
     {
-      "id": "rin_sample",
-      "char_id": "rin",
-      "dialogue_id": "ch1_rin_third",
+      "id": "kuyuri_sample",
+      "char_id": "kuyuri",
+      "dialogue_id": "ch1_kuyuri_third",
       "echo": "（くゆりさんから受け取った袋に、まだ会ったことのない人の仕事もある）"
     },
     {
-      "id": "rin_face",
-      "char_id": "rin",
-      "dialogue_id": "ch1_rin_fourth",
+      "id": "kuyuri_face",
+      "char_id": "kuyuri",
+      "dialogue_id": "ch1_kuyuri_fourth",
       "echo": "（くゆりさんに、吸っていた人の顔を持って帰る約束をした）"
     },
     {
-      "id": "rin_notebook",
-      "char_id": "rin",
-      "dialogue_id": "ch1_rin_fifth",
+      "id": "kuyuri_notebook",
+      "char_id": "kuyuri",
+      "dialogue_id": "ch1_kuyuri_fifth",
       "echo": "（くゆりさんは、俺が持ってきた客の顔を、誰にも出さない手帳に書いている）"
     },
     {
-      "id": "rin_window",
-      "char_id": "rin",
-      "dialogue_id": "ch1_rin_sixth",
+      "id": "kuyuri_window",
+      "char_id": "kuyuri",
+      "dialogue_id": "ch1_kuyuri_sixth",
       "echo": "（くゆりさんの窓からは、袋しか見えない。顔は、俺が下から持っていく）"
     },
     {
@@ -289,9 +289,9 @@
       "echo": "（ひよりさんの斧の音と大きな声。静かな顔の裏も知っている）"
     },
     {
-      "id": "kuze_decide",
-      "char_id": "kuze",
-      "dialogue_id": "ch3_kuze_advice",
+      "id": "saku_decide",
+      "char_id": "saku",
+      "dialogue_id": "ch3_saku_advice",
       "echo": "（綾取さんは「決めるのは君」と言った。炭を外すかは、俺が決める）"
     },
     {

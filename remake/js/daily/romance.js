@@ -385,7 +385,7 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false,
 
 /** 大会当日、恋人が2人以上いたら会場のロビーで鉢合わせる（1回だけ） */
 export async function maybeShuraba() {
-  const lv = (state.lovers || []).filter((id) => ["tsumugi", "minto", "rin", "hiyori"].includes(id)).sort();
+  const lv = (state.lovers || []).filter((id) => ["tsumugi", "minto", "kuyuri", "hiyori"].includes(id)).sort();
   if (lv.length < 2 || state.flags._shuraba_ch1) return false;
   state.flags._shuraba_ch1 = true;
   // 3人以上: 既存の all は3人固定の台本。ひよりを含む場合は、居合わせた恋人の行だけを出す all_hiyori

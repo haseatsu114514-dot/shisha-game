@@ -45,9 +45,9 @@ export const ROAMERS = Object.freeze([
   { id: "maezono", chapters: [1, 2], at: spot => shishaShop(spot) || spot.id === "cafe", ready: () => true },
   { id: "dr_kemuri", chapters: [1, 2], at: shishaShop, ready: () => true },
   // 自分のチェーン（C.STATION）ではなく、地元の小さな店をお忍びで見る
-  { id: "nagumo", chapters: [1, 2], at: spot => shishaShop(spot) && spot.id !== "c_station", ready: () => true },
+  { id: "sui", chapters: [1, 2], at: spot => shishaShop(spot) && spot.id !== "c_station", ready: () => true },
   { id: "adam", chapters: [1, 2], at: spot => shishaShop(spot) && !ownShop("adam")(spot), ready: metStory("adam"), bond: true },
-  { id: "rin", chapters: [1, 2], at: shishaShop, ready: metStory("rin"), bond: true },
+  { id: "kuyuri", chapters: [1, 2], at: shishaShop, ready: metStory("kuyuri"), bond: true },
   { id: "tsumugi", chapters: [1, 2], at: spot => shishaShop(spot) || spot.id === "cafe", ready: metStory("tsumugi"), bond: true },
   // 第3章の東京。ヴォルクは市場調査（自分の店「鉄の煙」には出ない）、ましろちゃんは休日（働いている mukai には出ない）、
   // エミルは全国大会で名前を知るまで伏せる（台詞は met で分岐）

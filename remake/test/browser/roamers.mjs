@@ -10,8 +10,8 @@ async function prepare(page, { id, chapter = 1, day = 5, met = true } = {}) {
     const engine = await import("./js/vn/engine.js"), data = await import("./js/core/data.js");
     const value = core.newGame();
     Object.assign(value, { chapter, phase: "daily", day, slot: 0, money: 20000, stamina: 90 });
-    for (const who of ["naru", "adam", "minto", "rin", "samechan"]) value.met[who] = true;
-    if (met) for (const who of ["maezono", "dr_kemuri", "nagumo"]) value.met[who] = true;
+    for (const who of ["naru", "adam", "minto", "kuyuri", "samechan"]) value.met[who] = true;
+    if (met) for (const who of ["maezono", "dr_kemuri", "sui"]) value.met[who] = true;
     value.flags._met_tsumugi = true;
     value.flags._cafe_introduced = true;
     let plan = null;
@@ -88,15 +88,15 @@ await suite("roamers", async check => {
   });
 
   await check("friends-only-after-meeting-and-gain-affinity", async page => {
-    await prepare(page, { id: "rin" });
+    await prepare(page, { id: "kuyuri" });
     const result = await page.evaluate(async () => {
       const plan = R.roamers.roamerPlan(), spot = R.spots.spotById(plan.spotId);
-      const before = R.core.state.affinity.rin || 0;
+      const before = R.core.state.affinity.kuyuri || 0;
       const ok = await R.roamers.meetRoamer(spot, plan);
-      const after = R.core.state.affinity.rin || 0;
+      const after = R.core.state.affinity.kuyuri || 0;
       // 会っていない人は出ない
       const value = R.core.state;
-      value.met.rin = false; value.met.adam = false; delete value.flags._met_tsumugi;
+      value.met.kuyuri = false; value.met.adam = false; delete value.flags._met_tsumugi;
       const seen = new Set();
       for (let day = 4; day < 14; day++) for (let slot = 0; slot <= 1; slot++) for (let seed = 1; seed < 60; seed++) {
         Object.assign(value, { day, slot, seed });
@@ -107,7 +107,7 @@ await suite("roamers", async check => {
     });
     assert.equal(result.ok, true);
     assert(result.gained > 0, "友人・ライバルは好感度が少し上がる");
-    for (const id of ["rin", "adam", "tsumugi"]) assert(!result.seen.includes(id), `${id} は会う前には居合わせない`);
+    for (const id of ["kuyuri", "adam", "tsumugi"]) assert(!result.seen.includes(id), `${id} は会う前には居合わせない`);
   });
 
   await check("never-at-busy-own-or-closed-shops-and-everyone-appears", async page => {
@@ -126,14 +126,14 @@ await suite("roamers", async check => {
         const spot = R.spots.spotById(plan.spotId) || { id: plan.spotId };
         if (plan.spotId === "tonari" || plan.spotId === hiyori.hiyoriShopLocation()) bad.push(["busy", plan]);
         if (plan.id === "adam" && plan.spotId === "adam") bad.push(["own", plan]);
-        if (plan.id === "nagumo" && plan.spotId === "c_station") bad.push(["chain", plan]);
+        if (plan.id === "sui" && plan.spotId === "c_station") bad.push(["chain", plan]);
         if (R.spots.isClosed(spot)) bad.push(["closed", plan]);
       }
       return { counts, bad, rate: out / slots };
     });
     assert.deepEqual(result.bad, []);
     assert(result.rate > 0.15 && result.rate < 0.35, `居合わせる割合（4回に1回ほど） ${result.rate}`);
-    for (const id of ["maezono", "dr_kemuri", "nagumo", "adam", "rin", "tsumugi"]) assert(result.counts[id] > 0, `${id} が一度も出ない`);
+    for (const id of ["maezono", "dr_kemuri", "sui", "adam", "kuyuri", "tsumugi"]) assert(result.counts[id] > 0, `${id} が一度も出ない`);
   });
 
   await check("owner-not-double-listed-while-roaming-away-2444", async page => {
@@ -179,11 +179,11 @@ await suite("roamers", async check => {
   });
 
   await check("judges-speak-by-name-only-after-meeting", async page => {
-    await prepare(page, { id: "nagumo", met: true });
+    await prepare(page, { id: "sui", met: true });
     const known = await page.evaluate(async () => {
       const plan = R.roamers.roamerPlan();
       await R.roamers.meetRoamer(R.spots.spotById(plan.spotId), plan);
-      return R.trace.filter(x => x.speaker === "nagumo").length;
+      return R.trace.filter(x => x.speaker === "sui").length;
     });
     assert(known > 0, "会った後は須井さん本人が話す");
   });
@@ -211,7 +211,7 @@ await suite("roamers", async check => {
       roamers.addRoamerSpots(() => tokyo.CH3_TOKYO_SPOTS);
       const value = core.newGame();
       Object.assign(value, { chapter: 3, phase: "daily", day: 3 });
-      for (const who of ["kuze", "steve", "volk", "mashiro", "mukai_master"]) value.met[who] = true;
+      for (const who of ["saku", "steve", "volk", "mashiro", "mukai_master"]) value.met[who] = true;
       const places = Object.fromEntries(tokyo.CH3_TOKYO_SPOTS.map(entry => [entry.id, entry.place]));
       const counts = {}, bad = [];
       for (let day = 3; day < 16; day++) for (let slot = 0; slot <= 1; slot++) for (let seed = 1; seed < 40; seed++) {

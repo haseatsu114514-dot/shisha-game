@@ -107,8 +107,8 @@ await suite("samechan-confession", async check => {
         K.vn.vnTest.choose = () => 1;
         const defer = await K.romance.maybeConfession(async () => {}), deferred = K.snap();
         s.day++; const wait = await K.romance.maybeConfession(async () => {});
-        s.day++; s.lovers.push("rin"); s.loveLevel.rin = 3; s.lovePts.rin = 34;
-        s.loverSince.rin = 4; s.loveCarry.rin = 0.5;
+        s.day++; s.lovers.push("kuyuri"); s.loveLevel.kuyuri = 3; s.lovePts.kuyuri = 34;
+        s.loverSince.kuyuri = 4; s.loveCarry.kuyuri = 0.5;
         const stay = await K.romance.maybeConfession(async () => {}), stayed = K.snap();
         s.day += 3; K.vn.vnTest.choose = () => 0;
         const accept = await K.romance.maybeConfession(async () => {}), accepted = K.snap();
@@ -123,13 +123,13 @@ await suite("samechan-confession", async check => {
       });
       assert(!r.busy && r.defer && !r.wait && r.stay && r.accept);
       assert.equal(r.deferred.flags._confession_due, "samechan"); assert.deepEqual(r.deferred.lovers, []);
-      assert.equal(r.stayed.guilt, 0); assert.deepEqual(r.stayed.lovers, ["rin"]);
-      assert.deepEqual(r.accepted.lovers, ["rin", "samechan"]); assert.equal(r.accepted.guilt, 3);
-      assert.equal(r.accepted.loveLevel.rin, 3); assert.equal(r.accepted.lovePts.rin, 34);
-      assert.equal(r.accepted.loveCarry.rin, 0.5); assert.equal(r.accepted.loverSince.rin, 4);
+      assert.equal(r.stayed.guilt, 0); assert.deepEqual(r.stayed.lovers, ["kuyuri"]);
+      assert.deepEqual(r.accepted.lovers, ["kuyuri", "samechan"]); assert.equal(r.accepted.guilt, 3);
+      assert.equal(r.accepted.loveLevel.kuyuri, 3); assert.equal(r.accepted.lovePts.kuyuri, 34);
+      assert.equal(r.accepted.loveCarry.kuyuri, 0.5); assert.equal(r.accepted.loverSince.kuyuri, 4);
       assert(!r.shuraba); assert.deepEqual(r.afterShuraba, r.accepted);
       assert(r.ch1Pair && !r.repeat); assert.equal(r.ch1Guilt, 4);
-      assert.deepEqual(r.loaded.lovers, ["rin", "samechan", "tsumugi"]);
+      assert.deepEqual(r.loaded.lovers, ["kuyuri", "samechan", "tsumugi"]);
     }, options);
 
     await check(`${mode}-legacy-and-existing-relationship-preservation`, async page => {

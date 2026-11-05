@@ -12,7 +12,7 @@
 
 | ID | 状態 | オーナー要望・対応 |
 |---|---|---|
-| NM06 | 実装・局所検証済 | 綾取朔（あやとり さく）を採用。設定正本・台詞・呼称・関連資料を更新し、内部ID `kuze` と店名「煙幕」は維持する |
+| NM06 | 実装・局所検証済 | 綾取朔（あやとり さく）を採用。設定正本・台詞・呼称・関連資料を更新し、内部ID `saku` と店名「煙幕」は維持する |
 | NM07 | 実装・局所検証済 | 活動名を鴉葬レヰ（あそう れい）とする。呼びかけはレヰ、本名「田中健太」、内部ID `rei`、店名「零-ZERO-」は維持する |
 | NM08 | 実装・局所検証済 | 薄羽ひより（うすば ひより）を採用し、以前の姓の裁定を更新。普段の呼び名「ひより」・LIME名「白昼夢ひより」・内部ID `hiyori` は維持する。姓に依存する冗談は調整し、TRPGの「朝霧の王国」は変更しない |
 
@@ -33,6 +33,14 @@
 | ID | 状態 | オーナー要望・対応 |
 |---|---|---|
 | BDAY01 | 実装 | 承認済み35名の月日を変更せず `birthday` に追加。34名は `data/characters.json`、サメちゃんは既存の独立プロフィール `data/dialogue/samechan.json` に格納。生年なしの `MM-DD` で、閏日も有効。既存のプロフィール表示欄がないためデータのみとし、新画面は作らない。35名の日付・妥当性・一意性をquick検査へ追加 |
+
+## 2026-11-05 キャラIDの改名（IDREN）
+
+オーナー「なぐもとか昔のIDが残ってるのかな変えたい」。候補を提示し、「rashidも含めて5件変える」で決定。#2474・#2528 の改名では表示名だけが変わり、内部IDは旧名のまま残っていた。その5件を現在の名前に合わせたIDへ変更する。
+
+| ID | 状態 | オーナー要望・対応 |
+|---|---|---|
+| IDREN01 | 実装 | **キャラID5件を現名に合わせて改名**: nagumo→`sui`（須井修二）、rin→`kuyuri`（香坂くゆり）、kuze→`saku`（綾取朔）、saif→`suhail`（スハイル）、rashid→`khalil`（ハリール）。対象は data/（characters・台詞・LIME・台詞ファイル名 ch1_rin→ch1_kuyuri 等）、remake/js・remake/data・remake/test、brand/・docs/ の現行文書、tools/（旧名検査のID対応表・CIスイート参照）、assets/・remake/img/ のIDを含むファイル名（内容不変の改名のみ。新規LFSアップロードなし）。asset_sources/・docs/archive/・.claude/ は対象外。セーブ互換: スキーマ26で、旧IDキー（好感度・絆・面識・固有会話・フラグ・LIME既読・TRPG部員・東京訪問の同行者等）を読み込み時に新IDへ付け替える（付け替え先に既存値がある場合は新ID側を優先）。検証テスト `remake/test/save_id_rename_migrate.mjs`（スイート save-id-rename-migrate）を追加 |
 
 ## 2026-11-05 なるの口癖の変更
 
@@ -2008,7 +2016,7 @@ CL05・06: 設定資料集（setting_book・setting_reference.html・生成ツ�
 
 **TX02（セリフ回し）**: 2つの吹き出しにまたがっていた心の声・かぎ括弧（心の声の色が後半に付かなかった）を各行で閉じる。なる・アダムへの口調（敬語）、つむぎの丁寧語、みんとの呼び方（はじめくん）、くゆりの語尾、アダムの二人称（お前）を揃える。パッキーの重複アナウンス、同じ心の声の重複、言い回しのねじれ（「作らないかミックスしないんですか」等）を直す。リンタに「DA」（ERROR）と閉じていない括弧（WARN）の検出を追加。
 
-検証: 台詞リンタ ERROR 0、整形ツール差分0、`text_wrap.mjs`・`playthrough.mjs`（敗北→再挑戦→優勝）・`relationship_memories`・`choice_oneline`・`data_loading`・`intro_cutin`・`paid_action_growth`・`samechan_story`・`temporary_closures`・`affinity_notifications`・`rin_portraits` PASS。`bonds`・`minto_progression`・`lime_consistency`・`daily_consistency`・`stat_rewards`・`gameplay_polish`・`illness`・`ui_polish` は変更前の版でも同じ箇所で失敗する既存の不具合（セーブ版数の決め打ち、存在しない `bus.js` 等）で、今回は触っていない。
+検証: 台詞リンタ ERROR 0、整形ツール差分0、`text_wrap.mjs`・`playthrough.mjs`（敗北→再挑戦→優勝）・`relationship_memories`・`choice_oneline`・`data_loading`・`intro_cutin`・`paid_action_growth`・`samechan_story`・`temporary_closures`・`affinity_notifications`・`kuyuri_portraits` PASS。`bonds`・`minto_progression`・`lime_consistency`・`daily_consistency`・`stat_rewards`・`gameplay_polish`・`illness`・`ui_polish` は変更前の版でも同じ箇所で失敗する既存の不具合（セーブ版数の決め打ち、存在しない `bus.js` 等）で、今回は触っていない。
 
 ---
 
@@ -2905,9 +2913,9 @@ GUI25〜28に続く要望。同じPR #200へまとめる。
 | PRT45 | 採用・マージ指示受領／PR経由でmainへ反映 | オーナー「マージして」。修正版5表情と実会話比較の提示後、くゆりv12の採用とmainへのマージを明示指示。以前のClaude側マージ担当だけを上書きし、Codexが検証後PRからmainへマージする。丸アイコン・台詞・設定資料の分担は保持 |
 | PRT44 | ✅ 中央配置を修正・全5表情の実会話確認済み | オーナー「配置した時ずれる　真ん中に行かない」。添付はくゆりの恋人イベント「……ん。……今の、データに記録しとく。『被験者、いい顔した』って」の笑顔。足元だけの整列に加え、実会話で上半身・顔が中央に来るか、全5表情・スマートフォン／PCで確認する |
 
-mainのPR #190〜192（634efcf）を先に取り込み、Claude側で完了したくゆりv11の丸アイコン・設定資料と全員96pxのアイコンを保持。mainのPRT39〜41を優先し、すみさんの分岐中のPRT39はPRT42へ整理した。すみさんの5表情・ましろの6表情は確認資料を保持。今回の修正も指定ブランチ `codex/rin-hair-texture-20261004` へ保存し、丸アイコン・台詞の表情・設定資料集はClaude側の分担を継続。mainへのマージは後続の明示指示PRT45でCodexへ変更した。
+mainのPR #190〜192（634efcf）を先に取り込み、Claude側で完了したくゆりv11の丸アイコン・設定資料と全員96pxのアイコンを保持。mainのPRT39〜41を優先し、すみさんの分岐中のPRT39はPRT42へ整理した。すみさんの5表情・ましろの6表情は確認資料を保持。今回の修正も指定ブランチ `codex/kuyuri-hair-texture-20261004` へ保存し、丸アイコン・台詞の表情・設定資料集はClaude側の分担を継続。mainへのマージは後続の明示指示PRT45でCodexへ変更した。
 
-[姿勢の修正前後](../.claude/skills/character-portrait-remaster/references/rin-v12-stance-comparison.png)、[5表情](../.claude/skills/character-portrait-remaster/references/rin-v12-five-review.png)、[添付と同じ場面・スマホの比較](../.claude/skills/character-portrait-remaster/references/rin-v12-game-before-after-591.png)、[生成元と実参照](../.claude/skills/character-portrait-remaster/references/rin-v12-generation.json)、[配置・検証](../.claude/skills/character-portrait-remaster/references/rin-v12-integration.json)、[Claude側の引き継ぎ](archive/rin_portrait_handoff.md)。5枚は896×1200 RGBA、共通倍率0.7132667617689016、足元下端1173px、横差0.683px未満。くゆりだけspriteAnchor=headを設定し、通常の頭部中心を全表情の共通横基準に計測。スマホ笑顔の頭部中心ずれは約−43.98px→−0.56px、全5枚の最大5.82px。PC／スマホで同じ配置枠、頭の見切れなし、ブラウザエラー0。PNG／lossless WebPのRGBA画素と配布HTMLのPNGは一致。他キャラのmanifest・属性は維持。修正版の提示後にオーナー「マージして」で採用・mainへのPRマージを指示。PRT45に従い、mainへのマージはCodexが行う。
+[姿勢の修正前後](../.claude/skills/character-portrait-remaster/references/kuyuri-v12-stance-comparison.png)、[5表情](../.claude/skills/character-portrait-remaster/references/kuyuri-v12-five-review.png)、[添付と同じ場面・スマホの比較](../.claude/skills/character-portrait-remaster/references/kuyuri-v12-game-before-after-591.png)、[生成元と実参照](../.claude/skills/character-portrait-remaster/references/kuyuri-v12-generation.json)、[配置・検証](../.claude/skills/character-portrait-remaster/references/kuyuri-v12-integration.json)、[Claude側の引き継ぎ](archive/kuyuri_portrait_handoff.md)。5枚は896×1200 RGBA、共通倍率0.7132667617689016、足元下端1173px、横差0.683px未満。くゆりだけspriteAnchor=headを設定し、通常の頭部中心を全表情の共通横基準に計測。スマホ笑顔の頭部中心ずれは約−43.98px→−0.56px、全5枚の最大5.82px。PC／スマホで同じ配置枠、頭の見切れなし、ブラウザエラー0。PNG／lossless WebPのRGBA画素と配布HTMLのPNGは一致。他キャラのmanifest・属性は維持。修正版の提示後にオーナー「マージして」で採用・mainへのPRマージを指示。PRT45に従い、mainへのマージはCodexが行う。
 
 ---
 
@@ -2928,10 +2936,10 @@ mainのPR #190〜192（634efcf）を先に取り込み、Claude側で完了し�
 
 | ID | 状態 | オーナー要望 |
 |---|---|---|
-| PRT26 | ✅ v11のデザイン採用を受領 | 表情は最低5種。最新の通常v11（rin-style-v11.png）を採用版にする。通常はクールな微笑み |
+| PRT26 | ✅ v11のデザイン採用を受領 | 表情は最低5種。最新の通常v11（kuyuri-style-v11.png）を採用版にする。通常はクールな微笑み |
 | PRT27 | ✅ v11の残り4表情を制作・保存 | v11と同じ顔・髪・画風・衣装。笑顔＝目を閉じて頬に手を添える可愛いギャップ、真剣＝指で説明、驚き＝控えめな「へえ」、悲しみ＝静かに弱さを見せる。手元の4枚はv7用なので流用せず、v11から作る |
-| PRT28 | ✅ 5枚を差し替え・表示を検証 | 896×1200 RGBA、全5枚へ共通倍率・足元を揃え、assets/sprites/characters/rin/chr_rin_{normal,smile,serious,surprise,sad}.pngを差し替える。5枚を並べた確認用画像を保存 |
-| PRT29 | ✅ main取り込み・指定ブランチへ保存 | 指定ブランチcodex/rin-hair-texture-20261004へ先にmainを取り込んでからプッシュ。mainのPR #188（764211c）をb02ffc1で取り込み済み。mainのPRT16〜25を維持し、分岐中の重複8件はPRT31〜38に整理 |
+| PRT28 | ✅ 5枚を差し替え・表示を検証 | 896×1200 RGBA、全5枚へ共通倍率・足元を揃え、assets/sprites/characters/kuyuri/chr_kuyuri_{normal,smile,serious,surprise,sad}.pngを差し替える。5枚を並べた確認用画像を保存 |
+| PRT29 | ✅ main取り込み・指定ブランチへ保存 | 指定ブランチcodex/kuyuri-hair-texture-20261004へ先にmainを取り込んでからプッシュ。mainのPR #188（764211c）をb02ffc1で取り込み済み。mainのPRT16〜25を維持し、分岐中の重複8件はPRT31〜38に整理 |
 | PRT30 | ✅ Claude側の担当分を保持・引き継ぎ | 丸アイコン・台詞の表情・設定資料集・mainへのマージはClaude側。今回の差し替え後もこれらは更新せず、最新版の変更を保持して引き継ぐ |
 | PRT50 | ✅ 本PR | オーナー「アイコンの拡大率もある程度合わせたい　顔のサイズ近くなるように」 → 目の下の頬の幅を全アイコンで測り（肌色の判定＋判定が髪や日焼けで外れたましろ・サメちゃん・須井は目盛りで目視）、頬の幅がアイコン幅の約0.50になるよう、目線の位置を固定して各キャラの切り抜きを拡大縮小。以前は0.37（サメちゃん＝フードが大きい）〜0.58（前園）とばらついていた。パッキーはマスコットのため対象外。くゆりはv12（#195）の立ち絵から作り直し。あわせてCodexの #193（生成UI・好感度通知・DAY14）と #195（くゆりv12）を取り込み、台帳の番号衝突は既存PRの番号を優先して、こちらの分をPRT48〜50へ |
 | PRT49 | ✅ 本PR | オーナー「すみさんとましろのデザインが古いかも　さっき新しいの作ったので」 → 最新の確認用を採用版として組み込み。すみさんv1の5枚（通常／笑顔／真剣／驚き／考える）とましろv1の5枚（通常／笑顔／真剣／驚き／あくび＝`sad`）＋立ち寝 `sleep` を、Codexが共通倍率・足元で揃えた896×1200で差し替え（足元整列の変更0、身長回帰合格、PNG/可逆WebPの全RGBA一致）。丸アイコンを新しい顔から作り直し（ましろは髪の量で顔が下がるため切り抜きを下へ）。表情の割り当て: ましろの `sad` は元の絵どおりあくびなので、本当に悲しい11行（「怖い人を見てる。……ちょっと寂しいなぁ」等）を通常（眠たげな半目）へ、朝の「ふぁぁ〜……」と「……充電中……」をあくびへ、恋人1話の寝言「……はじめくんのそば、安心する……えへへ」を立ち寝へ。すみさんの未使用だった `thinking`（顎に手）を「はじめ。今日はお前が作れ」（腕を組んでいる）と「あの審査員──須井は、技術じゃ持ち点を動かさねえよ」（しばらく吸ってから）に。`characters.json` の画像生成用 `visual_concepts` が旧デザイン（すみさん＝結んだ長髪・丸眼鏡、ましろ＝明るい茶髪の一本三つ編み）だったので新デザインに更新。設定資料集も再生成 |
@@ -2942,7 +2950,7 @@ mainのPR #190〜192（634efcf）を先に取り込み、Claude側で完了し�
 
 ましろの基本5表情＋立ち寝1枚は確認資料として保存済み（PRT36〜38）。くゆりのこの依頼をましろの採用回答には扱わない。後日保留だったくゆりの立ち絵制作・差し替えは今回の明示指示で再開し、アイコン等とmainへのマージはClaude側へ引き継ぐ。
 
-[くゆりv11の5表情比較](../.claude/skills/character-portrait-remaster/references/rin-v11-five-review.png)、[生成元・プロンプト・実参照とSHA-256](../.claude/skills/character-portrait-remaster/references/rin-v11-expressions-generation.json)、[共通倍率・配置と検証](../.claude/skills/character-portrait-remaster/references/rin-v11-integration.json)、[Claude側の引き継ぎ](archive/rin_portrait_handoff.md)を保存。通常は保存済みv11を再生成せず使用。
+[くゆりv11の5表情比較](../.claude/skills/character-portrait-remaster/references/kuyuri-v11-five-review.png)、[生成元・プロンプト・実参照とSHA-256](../.claude/skills/character-portrait-remaster/references/kuyuri-v11-expressions-generation.json)、[共通倍率・配置と検証](../.claude/skills/character-portrait-remaster/references/kuyuri-v11-integration.json)、[Claude側の引き継ぎ](archive/kuyuri_portrait_handoff.md)を保存。通常は保存済みv11を再生成せず使用。
 5枚へ共通倍率0.7137758743754461、896×1200 RGBA、足元下端1173px・横差0.812px未満。PNG/WebPの全RGBA画素一致、alpha>=16見切れなし、足元整列dry-run変更0。実会話の全5表情は同一表示位置・頭の見切れなし・ブラウザエラー0、身長回帰合格。manifest・旧版データ・配布HTMLをビルドし、配布HTMLのくゆり5PNGは元ファイルとバイト一致。約58.9MBの追跡HTMLはローカル確認後に元へ戻し、Pages CIの再構築に任せる。
 現行第1章の通しはセーブ／ロード、初回4位で敗北→再挑戦1位100点でクリア、VN表示中の画面漏れ0で合格。全16グループ56画像のパス・SHA-256と初期採用済み15枚の不変、記録の参照・プロンプト、Markdownリンク、台帳IDの重複なしを確認。丸アイコン・台詞・設定資料集は取り込んだmainとバイト一致、他キャラの画像・設定・manifest値も保持。mainへのマージはClaude側へ引き継ぐ。
 
@@ -2976,10 +2984,10 @@ mainのPR #190〜192（634efcf）を先に取り込み、Claude側で完了し�
 
 | ID | 状態 | オーナー要望 |
 |---|---|---|
-| PRT34 | ✅ v12同期を確認（PR #194・#195、Issue #376） | 修正版の完成後、立ち絵だけでなく顔アイコンも同じデザインに揃える要望。後続PRT43〜50で承認・反映済み。現行5立ち絵はv12採用記録のSHA256と一致し、160px顔アイコンも現行通常絵からの再計算画素と一致。比較・使用パス・PC／スマホ確認は [同期検品](../asset_sources/portraits/rin-sync-issue376/README.md) |
+| PRT34 | ✅ v12同期を確認（PR #194・#195、Issue #376） | 修正版の完成後、立ち絵だけでなく顔アイコンも同じデザインに揃える要望。後続PRT43〜50で承認・反映済み。現行5立ち絵はv12採用記録のSHA256と一致し、160px顔アイコンも現行通常絵からの再計算画素と一致。比較・使用パス・PC／スマホ確認は [同期検品](../asset_sources/portraits/kuyuri-sync-issue376/README.md) |
 | PRT35 | ✅ 引き継ぎメモを保存／反映は保留 | アイコン・立ち絵を変更する作業は別チャットで進行中。今回は後で作業できるようメモを残し、反映は後日のタイミングで対応してほしい |
 
-[後日反映の引き継ぎメモ](archive/rin_portrait_handoff.md)へ、最新の通常修正案v11・未完の残り4表情・立ち絵と顔アイコンの保存先・別チャットの変更を保持した再開手順を記録。制作記録とスキル、開発方針からも同じメモへリンクした。ゲーム素材の反映時期は今回の先送り指示を優先する。
+[後日反映の引き継ぎメモ](archive/kuyuri_portrait_handoff.md)へ、最新の通常修正案v11・未完の残り4表情・立ち絵と顔アイコンの保存先・別チャットの変更を保持した再開手順を記録。制作記録とスキル、開発方針からも同じメモへリンクした。ゲーム素材の反映時期は今回の先送り指示を優先する。
 
 ---
 
@@ -2993,7 +3001,7 @@ mainのPR #190〜192（634efcf）を先に取り込み、Claude側で完了し�
 
 PR #187は2026-10-04に `3424391` でmainへマージし、公開版の16表情×PNG/WebP計32ファイルとmanifest・キャラ・会話データの一致も確認済み。今回の指摘はその後の追加修正として扱う。
 
-[通常v11の修正案](../.claude/skills/character-portrait-remaster/references/rin-style-v11.png)、[生成元・プロンプト・実参照とSHA-256](../.claude/skills/character-portrait-remaster/references/rin-style-v11-generation.json)、[みんと／つむぎとの原寸比較](../.claude/skills/character-portrait-remaster/references/rin-style-v11-comparison-native.png)を保存。v8は変化が小さかった。v9は最新指摘で毛束が過剰・画風の差が残る旧案。v10は自然な束感へ戻したが、内部比較で肌・服の光沢が残ると判断しv11へ修正。オーナーのv10不採用回答ではない。
+[通常v11の修正案](../.claude/skills/character-portrait-remaster/references/kuyuri-style-v11.png)、[生成元・プロンプト・実参照とSHA-256](../.claude/skills/character-portrait-remaster/references/kuyuri-style-v11-generation.json)、[みんと／つむぎとの原寸比較](../.claude/skills/character-portrait-remaster/references/kuyuri-style-v11-comparison-native.png)を保存。v8は変化が小さかった。v9は最新指摘で毛束が過剰・画風の差が残る旧案。v10は自然な束感へ戻したが、内部比較で肌・服の光沢が残ると判断しv11へ修正。オーナーのv10不採用回答ではない。
 v11は青みの暗い色、少し年上の半目とクールな微笑み、白シャツ・黒スラックスを引き継ぐ。みんと・つむぎの実PNGと原寸切り抜きを主要画風参照に使用。現行版と同じ全身高・足元の全身、原寸の顔・肌・服、生成元2倍、白／暗背景を比較。生成元四辺のalpha>=24は0、比較用配置のalpha>=16見切れなし、足元下端1173px一致・横差0.390px未満。
 最新はPRT32/PRT33の通常1枚の修正案。採用と5表情への展開は未確定。ゲームの5枚・WebP・manifest・台詞・設定はこの追加修正では変更していない。
 
@@ -3039,7 +3047,7 @@ v11は青みの暗い色、少し年上の半目とクールな微笑み、白�
 | PRT22 | ✅ 本PR | 新しいくゆりは胸元の試香紙を外したデザイン（`characters.json` も「胸元に試香紙は付けない」） → 初対面の地の文「首元に細い紙が何本も挿してあって」を「抱えたクリップボードに細い紙が何本も挟んであって」に。手に持つ・胸ポケットにしまう描写は立ち絵と矛盾しないので維持 |
 | PRT23 | ✅ 本PR | 追加指示「アイコンは必要に応じて拡大縮小してね」 → 全15アイコンを目線の高さの目安線つきで並べ、みんと（営業姿・私服）・つむぎ・くゆり・サメちゃんの拡大率と位置を再調整。目線を他キャラ（スミさん・なる・あげは）と同じ高さに揃え、顎まで丸に収める。くゆりは髪に対して顔が小さく見えたので少し拡大 |
 | PRT24 | ✅ 本PR | 追加指示「くゆりの旧デザインはもう使わない」 → ゲーム内の立ち絵・丸アイコン・WebPは新デザインのみ（旧版の配布HTMLもPages CIが新しい画像から再構築）。旧デザインが埋め込まれていた設定資料集 `docs/setting_reference.html` を再生成（みんと・私服・つむぎ・あげはも新画像に。ジェネレータ側で済んでいた「ダブルアップル」表記・第4章決勝4人の正史修正も反映）。再制作スキルに「刷新前のくゆりは表情追加・別衣装・CG・アイコンの参照に使わない。v7と5表情だけを本人の参照にする」と明記。比較ページの旧画像は制作履歴としてだけ保持 |
-| PRT25 | ✅ v11で完了（PRT39） | オーナー「くゆりだけ今作り直してるのでまた変更するかも　それ以外はいいからマージ」 → くゆり以外は確定。くゆりの新しい立ち絵を組み込んだら、`python3 tools/make_face_icons.py rin`（`TUNE` の再調整）、くゆりの全台詞の `face` 指定（PRT18の振り分け）、初対面などの外見の地の文、`python3 tools/build_setting_reference.py` の設定資料集を新しい絵に合わせてやり直す |
+| PRT25 | ✅ v11で完了（PRT39） | オーナー「くゆりだけ今作り直してるのでまた変更するかも　それ以外はいいからマージ」 → くゆり以外は確定。くゆりの新しい立ち絵を組み込んだら、`python3 tools/make_face_icons.py kuyuri`（`TUNE` の再調整）、くゆりの全台詞の `face` 指定（PRT18の振り分け）、初対面などの外見の地の文、`python3 tools/build_setting_reference.py` の設定資料集を新しい絵に合わせてやり直す |
 
 横断確認: 立ち絵は会話・ギャラリー等すべて表情キーで共通の画像を読むため差し替え済み。タイトルのキービジュアルは別人物の一枚絵、CG（つむぎの絵・みんとの私服）は新デザインと矛盾しないため変更なし。あげは・みんと営業姿は表情の意味が旧画像と同じため指定変更なし。台詞の文面はPRT22の地の文1行のみ変更。
 
@@ -3061,7 +3069,7 @@ manifest・旧版データ・配布HTMLのビルド、旧版の身長回帰、�
 参照一覧12グループ42画像のパスとSHA-256、初期採用済み15枚の不変、原寸／2倍・明暗背景・390px幅の比較を確認。全41ファイルのlintはERROR 0 / WARN 254、サメちゃん対象はERROR 0 / 既存WARN 46。
 くゆりの外見メモと再制作プロンプトを新デザインに合わせ、年齢・身長・`spriteScale`は維持。サメちゃんの既存1行の表情キー以外、台詞の文面・イベント・解放条件は維持。対象外キャラのmanifest値、サメちゃん基本4枚、つむぎ6枚はこの仕上げで変更しない。
 
-[最終配置・検証記録](../.claude/skills/character-portrait-remaster/references/rin-samechan-final-integration.json)、[くゆり5表情の比較](../.claude/skills/character-portrait-remaster/references/rin-five-review.html)を保存。検証後のマージは指示済みであり、実施結果は[PR #187](https://github.com/haseatsu114514-dot/shisha-game/pull/187)を参照。配布HTML約61.8MBはローカルで再生成・検証し、追跡済みの大容量生成物は更新せず、Pages CIがソースから再構築する。
+[最終配置・検証記録](../.claude/skills/character-portrait-remaster/references/kuyuri-samechan-final-integration.json)、[くゆり5表情の比較](../.claude/skills/character-portrait-remaster/references/kuyuri-five-review.html)を保存。検証後のマージは指示済みであり、実施結果は[PR #187](https://github.com/haseatsu114514-dot/shisha-game/pull/187)を参照。配布HTML約61.8MBはローカルで再生成・検証し、追跡済みの大容量生成物は更新せず、Pages CIがソースから再構築する。
 
 ---
 
@@ -3074,7 +3082,7 @@ manifest・旧版データ・配布HTMLのビルド、旧版の身長回帰、�
 
 サメちゃんの追加5表情目とくゆりの通常表情の修正を受領し、本人ごとに確認用1枚ずつ制作。2026-10-03はくゆりv7とサメちゃんv3を確認用として保存。2026-10-04の「全て完了したらマージ」で採用し、PRT15でくゆり5枚とサメちゃん5枚目を組み込む。ましろ・すみさんは以前の制作予定として保留。
 
-[くゆりの新デザイン比較](../.claude/skills/character-portrait-remaster/references/rin-redesign-review.html)、[生成元・プロンプト・参照の役割とSHA-256](../.claude/skills/character-portrait-remaster/references/rin-redesign-generation.json)を保存。v4で写真寄りの顔・茶髪・短めのロング・体格を修正した後、v5/v6で紙を除去し青みのある髪へ戻す。v6は写真3の顔の無加工切り抜きから瞳と上下まぶたを修正。最新v7は写真1の顔の無加工切り抜きを口元と目の主要参照にし、少し年上の落ち着きとクールな微笑みを加える。旧案v1〜v6とプロンプト・生成記録も履歴へ保持。生成元は無加工で保存し、旧くゆりと全身高を合わせた896×1200の確認用配置を別に用意。全制作セットの目視と初期採用済みのみんと・あげはの実画像添付を毎回行った。写真原本と顔の切り抜きはローカルに保持。
+[くゆりの新デザイン比較](../.claude/skills/character-portrait-remaster/references/kuyuri-redesign-review.html)、[生成元・プロンプト・参照の役割とSHA-256](../.claude/skills/character-portrait-remaster/references/kuyuri-redesign-generation.json)を保存。v4で写真寄りの顔・茶髪・短めのロング・体格を修正した後、v5/v6で紙を除去し青みのある髪へ戻す。v6は写真3の顔の無加工切り抜きから瞳と上下まぶたを修正。最新v7は写真1の顔の無加工切り抜きを口元と目の主要参照にし、少し年上の落ち着きとクールな微笑みを加える。旧案v1〜v6とプロンプト・生成記録も履歴へ保持。生成元は無加工で保存し、旧くゆりと全身高を合わせた896×1200の確認用配置を別に用意。全制作セットの目視と初期採用済みのみんと・あげはの実画像添付を毎回行った。写真原本と顔の切り抜きはローカルに保持。
 
 この節は2026-10-03の新デザイン提示時点の履歴。ゲーム用素材の差し替え・外見メモの更新・最終検証とマージ指示はPRT15を参照。
 
@@ -3176,7 +3184,7 @@ PRT08・PRT09の検証：参照一覧の17ファイルとSHA-256、Markdown参�
 | HF03 | ✅ 本コミット | サメちゃんの身長を156cmへ変更（`samechan.json` の profile。年齢20・恋愛不可・初回の名乗りは変更なし） |
 | HF04 | ✅ 本コミット | 各キャラの好感度MAXイベントに感動やオチを用意し、物語に一区切りをつける → 第1章の交流6人に締めくくり（`data/dialogue/ch1_bonds.json`・`remake/js/daily/bonds.js`）。固有会話を読み終えてMAXの後、一度だけ。スミさん（閉店後にはじめが一台→道具を託す→「半額だな」）／なる（「次はお前の煙を吸わせろ」）／アダム（聖杯の継承→手入れ大全十二頁）／つむぎ（完成した絵を最初に→持って帰れる香り）／みんと（私服の約束で、隠さずにいられる区切り。幻臭は治さない）／くゆり（試験品ではない私物）。※あげは・第2章以降の人物は第1章に交流導線が無く、香りの正本も未整備（グミベア等）のため未作成（HF07） |
 | HF05 | ✅ 本コミット | 好感度を深める途中にキャラごとの恋愛／友情の質問・選択肢を置く。隠し恋愛値などで、恋愛方向に育てた相手だけ告白へ。普段から友達なら告白は発生しない → つむぎ（絵がない日にも会いたいか）・みんと（仕事を離れた栞とどんな関係でいたいか）・くゆり（口実がなくても会いたいか）に途中の質問、締めくくりに最後の質問。選択肢 id ごとに一度だけ数える隠し恋愛値。答えた質問がすべて恋愛寄りの相手だけ恋愛ルート→告白（予約時と再生時に確認）。MAXだけの自動予約は廃止し、旧セーブの予約は破棄（恋人関係は維持）。旧セーブで質問の場面を読み終えていた相手は、答えていない質問を数えず締めくくりの質問で決める。別の約束で会った夜に告白は重ねない。セーブはスキーマ8 |
-| HF06 | ✅ 本コミット | 最後に各キャラが育てた専用ハガルを贈る。理由は友情・お礼など人物ごと。売却不可で、対応フレーバーに小さな制作上の利点。友情ルートでも受け取れる → 「〇〇が育てた〇〇専用ハガル」6種（既存 suyaki_minto/adam/naru を再利用＋sumi/tsumugi/rin）。`equipment.json` に贈り主・理由・香り・非売品・売却不可・素焼きの絵を定義。店に並ばず、売却は画面とコードの両方で拒否。持ち物に贈り主・香り・売却不可、機材選択に出る、素焼きで描画。その葉を3g以上詰めた一台だけ香り+4・総合+1（80beatハガルの常時+1と同程度）。カルダモン・ラベンダーは店に無いので一箱添える。一度だけ授与・保存/ロード済み。旧版には載せない（chapter_min 99） |
+| HF06 | ✅ 本コミット | 最後に各キャラが育てた専用ハガルを贈る。理由は友情・お礼など人物ごと。売却不可で、対応フレーバーに小さな制作上の利点。友情ルートでも受け取れる → 「〇〇が育てた〇〇専用ハガル」6種（既存 suyaki_minto/adam/naru を再利用＋sumi/tsumugi/kuyuri）。`equipment.json` に贈り主・理由・香り・非売品・売却不可・素焼きの絵を定義。店に並ばず、売却は画面とコードの両方で拒否。持ち物に贈り主・香り・売却不可、機材選択に出る、素焼きで描画。その葉を3g以上詰めた一台だけ香り+4・総合+1（80beatハガルの常時+1と同程度）。カルダモン・ラベンダーは店に無いので一箱添える。一度だけ授与・保存/ロード済み。旧版には載せない（chapter_min 99） |
 | HF09 | ✅ #176・#179（バイトの誘いとの重なりは本コミット） | ヒロインが友人になった後（友情の締めくくり・告白で友達のまま）は、たまにシーシャのお誘いや雑談のLIMEが来る程度にする。好感度MAXの締めくくりを迎えた他のキャラも同様。お誘いがキャラによって被らないよう、いい感じにバランスをとる（2026-10-03 オーナー追加指示） → 締めくくりを友情で迎えた相手（スミさん・なる・アダム・くゆり・つむぎ・みんと）と、告白で友達のままを選んだ相手から、雑談→シーシャのお誘い→雑談…と交互に届く。何人と友人になっても重ならないよう、間隔は全員で分け合う: 友人のLIMEは全員あわせて2日に1通まで（いちばん長く連絡のない相手から順・同じ相手は4日以上あけ、最初は締めくくりの4日後）、お誘いは全員あわせて6日に1回まで・その相手との雑談のあとだけ。物語・恋人の誘いが届く朝、約束のある日、固定イベントの夜は雑談に切り替える。スミさんの「バイト入ってくれないか」の連絡は重なってもよい（オーナー指定・どちらを受けるかはプレイヤーが選ぶ）。物語のLIMEが優先。お誘いは定休日の午後か仕事後、大会前日まで。乗ると相手ごとの場所で一服する短い場面（得意なステ+2・言い回しは回ごとに交代）。恋人と告白待ちの相手・大会当日には届かない。文面と間隔は `remake/data/friends.json` |
 | HF07 | ⏸ オーナー保留 | 第2章以降のリメイク進行・結末への接続（監査の指摘3）、既存マージ履歴の修復（指摘5）は今回は行わない |
 | HF08 | ⏸ オーナー別担当 | 背景19枚＋透過台7枚は未回収・後日アップロード。今回のゲーム修正へ混ぜない |

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { openingStatus, rinUnavailable } from "../js/daily/spot-hours.js";
+import { openingStatus, kuyuriUnavailable } from "../js/daily/spot-hours.js";
 import { newDayTrial, rollDayTrial, stopDayTrial } from "../js/trpg/day-trial.js";
 import { AXE_BAR } from "../js/daily/axe-bar-data.js";
 
@@ -11,10 +11,10 @@ assert(openingStatus({ openSlots: [0] }, day).ok);
 assert(!openingStatus({ openSlots: [0] }, night).ok);
 assert(openingStatus({ kind: "shop" }, day).ok);
 assert(openingStatus({ kind: "shop" }, night).ok);
-assert.match(rinUnavailable(day), /夜/);
-assert.equal(rinUnavailable(night), "");
-assert.match(rinUnavailable({ ...night, day: 2 }), /出張/);
-assert.match(rinUnavailable({ ...night, visitedDay: { rin: 5 } }), /訪問済み/);
+assert.match(kuyuriUnavailable(day), /夜/);
+assert.equal(kuyuriUnavailable(night), "");
+assert.match(kuyuriUnavailable({ ...night, day: 2 }), /出張/);
+assert.match(kuyuriUnavailable({ ...night, visitedDay: { kuyuri: 5 } }), /訪問済み/);
 const trial = newDayTrial();
 assert.strictEqual(stopDayTrial(trial), trial, "Before rolling, there is no score to lock in");
 assert.strictEqual(rollDayTrial(trial, 0), trial);

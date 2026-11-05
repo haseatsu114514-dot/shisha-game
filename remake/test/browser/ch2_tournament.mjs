@@ -25,7 +25,7 @@ async function seed(page, { known = false, stage = '', auto = 'good', progress =
     s.inbox=[{id:'qa_old',originId:'qa_old',day:20,read:true,done:true,replyState:'none',log:[{text:'大切な約束'}],msg:{sender:'minto',type:'message',messages:['また会おうね']}}];
     s.tournament.lastRank=1; s.tournament.lastTotal=88;
     if(opts.known) for(const who of ['ageha','kumicho','rei'])s.met[who]=true;
-    for(const who of ['ageha','kumicho','rei','pakki','maezono','dr_kemuri','nagumo','hajime','sumi'])s.flags[`_intro_${who}`]=true;
+    for(const who of ['ageha','kumicho','rei','pakki','maezono','dr_kemuri','sui','hajime','sumi'])s.flags[`_intro_${who}`]=true;
     if(opts.stage) (await import('./js/chapters/ch2-tournament-state.js')).tournamentProgress(s).stage=opts.stage;
     if(opts.progress) Object.assign((await import('./js/chapters/ch2-tournament-state.js')).tournamentProgress(s),opts.progress);
     Object.assign(core.config,{textSpeed:4,bgmVolume:0,seVolume:0,voiceBlip:false});core.saveConfig();core.save();
@@ -84,7 +84,7 @@ async function playAttempt(page,touch=false,reloadCare=false) {
   assert.equal(p.craft.chapter,2);
   assert.deepEqual(p.craft.tournamentStory.seen,['opening','packed','waiting','interlude_pull','interlude1','interlude2','interlude3','tasting']);
   assert(Number.isFinite(p.craft.tournamentStory.servedAroma));
-  assert(await page.locator('.ch2-contest-rival img').evaluateAll(async imgs=>{await Promise.all(imgs.map(i=>i.decode()));return imgs.every(i=>i.naturalWidth>0);}));assert.deepEqual(p.craft.audienceIds.slice().sort(),['dr_kemuri','maezono','nagumo']);
+  assert(await page.locator('.ch2-contest-rival img').evaluateAll(async imgs=>{await Promise.all(imgs.map(i=>i.decode()));return imgs.every(i=>i.naturalWidth>0);}));assert.deepEqual(p.craft.audienceIds.slice().sort(),['dr_kemuri','maezono','sui']);
   // 同じ配分で計算された総合値がそのまま章2の記録に残る。
   assert.equal(p.result.total,p.craft.total);
   // #1107 B2: ロートスHMDはアルミ穴あけを飛ばすので、穴あけの重みを外し残り4工程を各25%で割り直す（finalizeと同じ配分）。
@@ -111,7 +111,7 @@ async function finishChapterThreePrologue(page) {
   let reached=await get(page);
   if(reached.flags._ch3_prep&&!reached.flags._ch3_prep.departed){
     assert.equal(reached.flags._ch3_intro.titleSeen,true);
-    assert.equal(reached.met.kuze,undefined,'The anonymous prologue must not reveal Ayatori to Hajime');
+    assert.equal(reached.met.saku,undefined,'The anonymous prologue must not reveal Ayatori to Hajime');
     assert.equal(reached.phase,'daily');
     assert.match(await page.locator('.hud').innerText(),/出発まで/);
     await page.evaluate(async()=>{
@@ -131,7 +131,7 @@ async function finishChapterThreePrologue(page) {
     assert.equal(reached.flags._ch3_intro.prologueStep,4);
   }
   assert.equal(reached.flags._ch3_intro.titleSeen,true);
-  assert.equal(reached.met.kuze,undefined,'The anonymous prologue must not reveal Ayatori to Hajime');
+  assert.equal(reached.met.saku,undefined,'The anonymous prologue must not reveal Ayatori to Hajime');
 }
 // play() の入口で、実VNと同じ名乗り・カットインの副作用を作ってから制御を止める。
 // onLine で throw すると非同期表示側の拒否となり、play() の失敗を再現できない。
@@ -264,7 +264,7 @@ await suite('ch2-tournament',async check=>{
       window.__texts=[];
       vn.hooks.onLine=(id,line)=>{
         if(line.text)window.__texts.push(line.text);
-        if(id==='ch3_kuze_research'&&line.text?.includes('机のパソコン'))vn.vnTest.turbo=false;
+        if(id==='ch3_saku_research'&&line.text?.includes('机のパソコン'))vn.vnTest.turbo=false;
       };
       void (await import('./js/chapters/ch3.js')).resumeChapterThree();
     });
@@ -272,7 +272,7 @@ await suite('ch2-tournament',async check=>{
     await page.waitForFunction(()=>window.__remake.state.flags._ch3_intro?.prologueStep===1
       && document.querySelector('#vn.active .vn-text')?.textContent.includes('机のパソコン'));
     assert((await page.evaluate(()=>window.__texts)).some(line=>line.includes('友達だもん')));
-    assert(await page.locator('#bg > .bg-img').last().evaluate(node=>node.style.backgroundImage.includes('bg_ch3_kuze_video')));
+    assert(await page.locator('#bg > .bg-img').last().evaluate(node=>node.style.backgroundImage.includes('bg_ch3_saku_video')));
     assert.equal((await get(page)).flags._ch3_intro.prologueStep,1);
     await page.reload();await page.locator(dt('title-load')).click();
     await page.evaluate(async()=>{
@@ -280,13 +280,13 @@ await suite('ch2-tournament',async check=>{
       window.__researchReplayLines=[];
       vn.hooks.onLine=(id,line)=>{
         if(line.text)window.__researchReplayLines.push({id,text:line.text});
-        if(id==='ch3_kuze_research'&&line.text?.includes('机のパソコン'))vn.vnTest.turbo=false;
+        if(id==='ch3_saku_research'&&line.text?.includes('机のパソコン'))vn.vnTest.turbo=false;
       };
     });
     await page.locator(dt('slot-0')).click();
     await page.waitForFunction(()=>document.querySelector('#vn.active .vn-text')?.textContent.includes('机のパソコン'));
     assert.equal((await get(page)).flags._ch3_intro.prologueStep,1);
-    assert.equal((await get(page)).met.kuze,undefined);
+    assert.equal((await get(page)).met.saku,undefined);
     await page.evaluate(()=>{window.__remake.vnTest.turbo=true;});
     await page.keyboard.press('Enter');
     await finishChapterThreePrologue(page);
@@ -622,7 +622,7 @@ await suite('ch2-tournament',async check=>{
     assert.equal(s.day,28);assert.equal(s.stamina,100);assert.equal(s.flavorStock.double_apple,40);assert(!s.flags._ch2_tournament);
     bad=false;await page.locator(t('reload')).click();await page.locator(t('entry')).waitFor();s=await get(page);assert.equal(s.flavorStock.double_apple,40);
   });
-  await check('chapter-three-kuze-entry-resume-and-day-spacing',async page=>{
+  await check('chapter-three-saku-entry-resume-and-day-spacing',async page=>{
     page.setDefaultTimeout(30000);
     await seed(page,{stage:'complete'});
     await page.locator(t('complete')).waitFor();
@@ -657,7 +657,7 @@ await suite('ch2-tournament',async check=>{
       vn.hooks.onLine=(id,line)=>{
         if(window.__chapterThreeTrace.at(-1)!==id)window.__chapterThreeTrace.push(id);
         const key=id==='ch3_double_apple_incident'?'mukai'
-          :id==='ch3_kuze_first'&&line.speaker==='kuze'?'kuze'
+          :id==='ch3_saku_first'&&line.speaker==='saku'?'saku'
           :id==='ch3_steve_low_heat'&&line.speaker==='steve'?'steve'
           :id==='ch3_volk_first'&&line.speaker==='volk'&&line.text?.includes('壁の計器')?'volk':null;
         if(key&&!window.__pausedChapterThree[key]){window.__pausedChapterThree[key]=true;vn.vnTest.turbo=false;}
@@ -689,8 +689,8 @@ await suite('ch2-tournament',async check=>{
         await page.evaluate(()=>{window.__remake.vnTest.turbo=true;});
         await page.keyboard.press('Enter');
       }
-      if(id==='ch3_kuze_first'){
-        const portrait=page.locator('.vn-portraits img[data-speaker="kuze"].active');
+      if(id==='ch3_saku_first'){
+        const portrait=page.locator('.vn-portraits img[data-speaker="saku"].active');
         await portrait.waitFor();
         await page.waitForFunction(()=>document.querySelector('#vn.active .vn-text')?.textContent.includes('いらっしゃい'));
         assert(await portrait.evaluate(async node=>{await node.decode();return node.naturalWidth>0;}),
@@ -701,7 +701,7 @@ await suite('ch2-tournament',async check=>{
         assert.equal(await page.locator(dt('ch3-intro-menu')).count(),0,
           'Saving during Ayatori dialogue could commit his name before the first scene completes');
         await page.waitForTimeout(500);
-        await capture(page,'ch3-kuze-first');
+        await capture(page,'ch3-saku-first');
         await page.evaluate(()=>{window.__remake.vnTest.turbo=true;});
         await page.keyboard.press('Enter');
       }
@@ -723,15 +723,15 @@ await suite('ch2-tournament',async check=>{
     assert.equal(s.flags._ch3_intro.stage,ordered.length);
     assert.equal(s.chapter,3);assert.equal(s.day,45);assert.equal(s.phase,'tournament');
     assert.equal(s.flags._ch3_cleared,undefined);
-    assert(s.met.kuze,'Ayatori must be known after the first visit');
+    assert(s.met.saku,'Ayatori must be known after the first visit');
     assert(s.met.steve,'Steve must be known after the low-heat visit');
     assert(s.met.volk,'Volk must be known after his shop visit');
     assert.equal(s.flags._ch3_strategy,'aroma','The chosen strategy must survive the eve checkpoint');
     assert(s.relationshipMemories.includes('volk_measure'),'Volk’s measured hospitality should be remembered');
     assert.deepEqual(await page.evaluate(()=>window.__chapterThreeTrace),ordered.slice(1).flatMap(scene=>
-      scene.id === 'ch3_mukai_intro' ? [scene.id, 'ch3_delivery_offer', 'ch3_delivery_kuze',
+      scene.id === 'ch3_mukai_intro' ? [scene.id, 'ch3_delivery_offer', 'ch3_delivery_saku',
         'ch3_delivery_steve', 'ch3_delivery_volk', 'ch3_delivery_return'] : [scene.id]));
-    for (const who of ['kuze', 'steve', 'volk']) assert.equal(s.flags[`_ch3_delivery_${who}`], true);
+    for (const who of ['saku', 'steve', 'volk']) assert.equal(s.flags[`_ch3_delivery_${who}`], true);
     assert.equal(await page.getByText(/全国大会・優勝|第三章・完/).count(),0,'The introduction cannot award a national win');
     for(const key of ['money','stats','flavorStock','lovers','loverSince','keepsakes','tournament'])
       assert.deepEqual(s[key],before[key],`Intro scene changed ${key}`);
@@ -741,7 +741,7 @@ await suite('ch2-tournament',async check=>{
     await page.route('**/ch3_rivals.json',async route=>{
       if(!bad)return route.continue();
       const response=await route.fetch();const body=await response.json();
-      body.dialogues=body.dialogues.filter(d=>d.dialogue_id!=='ch3_kuze_advice');
+      body.dialogues=body.dialogues.filter(d=>d.dialogue_id!=='ch3_saku_advice');
       await route.fulfill({response,json:body});
     });
     await seed(page,{stage:'complete'});await page.locator(t('complete')).waitFor();
@@ -759,15 +759,15 @@ await suite('ch2-tournament',async check=>{
     const entered=await get(page);
     assert.equal(entered.chapter,3);assert.equal(entered.day,32);assert.equal(entered.flags._ch3_intro.stage,0);
   });
-  await check('chapter-three-kuze-throw-error-menu-save-rolls-back-meeting',async page=>{
+  await check('chapter-three-saku-throw-error-menu-save-rolls-back-meeting',async page=>{
     await installChapterThreeMeetingFault(page);
-    await seedChapterThreeMeeting(page,'ch3_kuze_first');
-    await page.evaluate(()=>{window.__ch3MeetingFault={scene:'ch3_kuze_first',people:['kuze'],mode:'throw'};});
+    await seedChapterThreeMeeting(page,'ch3_saku_first');
+    await page.evaluate(()=>{window.__ch3MeetingFault={scene:'ch3_saku_first',people:['saku'],mode:'throw'};});
     await page.locator(dt('ch3-intro-continue')).click();
     await page.locator(dt('ch3-intro-error')).waitFor();
     let s=await get(page);
     assert.equal(s.flags._ch3_intro.stage,11);
-    for(const value of [s.met.kuze,s.flags._met_kuze,s.flags._intro_kuze])assert.equal(value,undefined);
+    for(const value of [s.met.saku,s.flags._met_saku,s.flags._intro_saku])assert.equal(value,undefined);
     assert.equal(s.flags._ch3_unrelated_meeting_test,true,'Unrelated state must survive the local rollback');
     await page.locator(dt('ch3-intro-menu')).click();
     await page.locator(dt('ch3-intro-save')).click();
@@ -777,37 +777,37 @@ await suite('ch2-tournament',async check=>{
       return core.readSlot(core.SAVE_SLOTS[1].key);
     });
     assert.equal(saved.flags._ch3_intro.stage,11,'The error MENU must save the unread scene');
-    for(const value of [saved.met.kuze,saved.flags._met_kuze,saved.flags._intro_kuze])assert.equal(value,undefined);
+    for(const value of [saved.met.saku,saved.flags._met_saku,saved.flags._intro_saku])assert.equal(value,undefined);
     assert.equal(saved.flags._ch3_unrelated_meeting_test,true);
     await page.locator(dt('ch3-intro-reload')).click();
-    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_kuze_first"]').waitFor();
+    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_saku_first"]').waitFor();
     await page.locator(dt('ch3-intro-continue')).click();
     // 初対面の夜は東京の空き時間（#1655）。休んで次の場面へ。
     await page.locator(dt('ch3-intro-free')).waitFor();
     await page.locator(dt('ch3-intro-visit-rest')).click();
-    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_kuze_mukai_visit"]').waitFor();
+    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_saku_mukai_visit"]').waitFor();
     s=await get(page);
     assert.equal(s.flags._ch3_intro.stage,12);
-    for(const value of [s.met.kuze,s.flags._met_kuze,s.flags._intro_kuze])assert.equal(value,true);
+    for(const value of [s.met.saku,s.flags._met_saku,s.flags._intro_saku])assert.equal(value,true);
   });
-  await check('chapter-three-real-vn-abort-rolls-back-kuze-intro',async page=>{
-    await seedChapterThreeMeeting(page,'ch3_kuze_first');
+  await check('chapter-three-real-vn-abort-rolls-back-saku-intro',async page=>{
+    await seedChapterThreeMeeting(page,'ch3_saku_first');
     await page.evaluate(async()=>{
       const vn=await import('./js/vn/engine.js');
       vn.hooks.onLine=(id,line)=>{
-        if(id==='ch3_kuze_first'&&line.speaker==='hajime'&&line.text?.includes('今日は飲み物だけで'))vn.vnTest.turbo=false;
+        if(id==='ch3_saku_first'&&line.speaker==='hajime'&&line.text?.includes('今日は飲み物だけで'))vn.vnTest.turbo=false;
       };
     });
     await page.locator(dt('ch3-intro-continue')).click();
     await page.waitForFunction(()=>{
       const s=window.__remake.state;
-      return s.met.kuze&&s.flags._met_kuze&&s.flags._intro_kuze&&document.querySelector('#vn.active .vn-text')?.textContent.includes('今日は飲み物だけで');
+      return s.met.saku&&s.flags._met_saku&&s.flags._intro_saku&&document.querySelector('#vn.active .vn-text')?.textContent.includes('今日は飲み物だけで');
     });
     await page.evaluate(async()=>{void (await import('./js/chapters/ch3.js')).resumeChapterThree();});
-    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_kuze_first"]').waitFor();
+    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_saku_first"]').waitFor();
     const s=await get(page);
     assert.equal(s.flags._ch3_intro.stage,11);
-    for(const value of [s.met.kuze,s.flags._met_kuze,s.flags._intro_kuze])assert.equal(value,undefined);
+    for(const value of [s.met.saku,s.flags._met_saku,s.flags._intro_saku])assert.equal(value,undefined);
   });
   await check('chapter-three-mukai-cancel-preserves-loaded-owner',async page=>{
     await installChapterThreeMeetingFault(page);

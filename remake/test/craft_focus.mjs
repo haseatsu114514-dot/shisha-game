@@ -107,7 +107,7 @@ try {
   assert.equal(await page.locator('.audience-person figcaption').textContent(), '？？？');
   assert.equal(await page.evaluate(() => Object.keys(T.core.state.met).length), 0);
   await page.evaluate(async () => {
-    ['nagumo','maezono','dr_kemuri'].forEach(T.core.markMet);
+    ['sui','maezono','dr_kemuri'].forEach(T.core.markMet);
     window.cs = T.session.newSession('tournament'); await T.openBench(cs, { steps });
     __remake.craftTest.auto = 'good';
     window.heatRun = T.heat.runHeat(cs);
@@ -130,13 +130,13 @@ try {
   await page.locator('[data-test="step-details"]').click(); assert(await page.locator('.rc-lines').isVisible());
   await page.locator('[data-test="step-details"]').click();
   await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.heatRun);
-  for (const judge of ['nagumo','maezono','dr_kemuri']) {
+  for (const judge of ['sui','maezono','dr_kemuri']) {
     await page.evaluate(judge => T.session.reactAudience(cs,'just',{judge,force:true}),judge);
     assert.equal(await page.locator('.audience-person').count(),1);
     assert.equal(await page.locator('.audience-person').getAttribute('data-person'),judge);
   }
-  await page.evaluate(() => T.session.reactAudience(cs,'just',{judge:'nagumo',force:true}));
-  assert.match(await page.locator('[data-person="nagumo"] img').getAttribute('src'), /thinking/);
+  await page.evaluate(() => T.session.reactAudience(cs,'just',{judge:'sui',force:true}));
+  assert.match(await page.locator('[data-person="sui"] img').getAttribute('src'), /thinking/);
   // 同じスミさんでも、システム説明はチュートリアル限定。成績記号はまだ出さない。
   const modes=[];
   for (const mode of ['tutorial','rehearsal']) {
@@ -289,7 +289,7 @@ try {
   ]) {
     const p = await open(viewport, mobile);
     await p.evaluate(async () => {
-      T.core.state.stamina = 80; ['nagumo','maezono','dr_kemuri'].forEach(T.core.markMet);
+      T.core.state.stamina = 80; ['sui','maezono','dr_kemuri'].forEach(T.core.markMet);
       window.cs = T.session.newSession('tournament'); await T.openBench(cs,{steps}); window.timerRun = T.steps.stepSteamTime(cs);
     });
     await loaded(p);

@@ -41,13 +41,13 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   // 味の会話（#2022）。味を確かめる場面なので、味覚が戻った後（routes の seen）。
   ch3_mashiro_black_tea: { file: "ch3_mashiro", label: "ブラックティーを一割", location: "mukai", bg: "bg_mukai_shop" },
   // 綾取とましろの過去。ましろ側はレモンケーキの客を見た煙幕の初訪問後、綾取側はmukaiへ客として来た後。
-  ch3_kuze_mashiro_tea_tin: { file: "ch3_kuze_mashiro", label: "茶缶の半分", location: "mukai", bg: "bg_mukai_shop",
-    after: ["ch3_kuze_first"] },
-  ch3_kuze_mashiro_soon_back: { file: "ch3_kuze_mashiro", label: "すぐ戻るの嘘", location: "煙幕", bg: "bg_yohaku_shop",
-    after: ["ch3_kuze_mukai_visit"] },
+  ch3_saku_mashiro_tea_tin: { file: "ch3_saku_mashiro", label: "茶缶の半分", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_saku_first"] },
+  ch3_saku_mashiro_soon_back: { file: "ch3_saku_mashiro", label: "すぐ戻るの嘘", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_saku_mukai_visit"] },
   // 綾取とLIMEを交換する（#2028）。助言の後、煙幕への再訪で♥1になってから。後日談の片づけで返事の欄を回収する。
-  ch3_kuze_lime: { file: "ch3_rivals", label: "返事の欄", location: "煙幕", bg: "bg_yohaku_shop",
-    after: ["ch3_kuze_advice"], heart: { kuze: 1 } },
+  ch3_saku_lime: { file: "ch3_rivals", label: "返事の欄", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_saku_advice"], heart: { saku: 1 } },
   // ひよりルートの tokyo_contact（#1434 決定B）。route.events と同じ条件に、mukai到着後・東京滞在中でないことを足す。
   // ましろの告白（#1930・台本は IR20 の正式原稿）。任意4場面を読み終えた後の休日に、彼女の部屋で。返事が交際／友人の着地になる。
   confession_mashiro: { file: "confession", label: "ましろちゃんの部屋でお茶", location: "ましろの部屋", bg: "bg_home_day",
@@ -68,20 +68,20 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_double_apple: ["ch3_minto_small_lies"],
   ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_trace"],
   // 綾取の締めくくり（#2028）は寄り道ではなく、場面カードの「綾取に呼ばれる」から（daily/bonds.js の条件）。
-  ch3_rivals: ["ch3_emil_workshop", "ch3_kuze_lime", "ch3_kuze_bond_finale"],
+  ch3_rivals: ["ch3_emil_workshop", "ch3_saku_lime", "ch3_saku_bond_finale"],
   // ♥3の質問と締めくくりは寄り道ではなく、場面カードの「ましろちゃんと話す」から（daily/bonds.js の条件）。
   ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice",
     "ch3_mashiro_black_tea", "ch3_mashiro_bond_question", "ch3_mashiro_bond_finale"],
-  ch3_kuze_mashiro: ["ch3_kuze_mashiro_tea_tin", "ch3_kuze_mashiro_soon_back"],
+  ch3_saku_mashiro: ["ch3_saku_mashiro_tea_tin", "ch3_saku_mashiro_soon_back"],
   hiyori: ["hiyori_tokyo_contact"],
   ch3_tsumugi: ["ch3_tsumugi_slump"],
   ch3_volk: ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth"],
   // 返事の場面は告白の選択肢の next_id で入る（ch3_read_confession_mashiro は返事まで読んだ時だけ立つ）。
   confession: ["confession_mashiro", "confession_mashiro_accept", "confession_mashiro_reject"],
   // 第3章で再生しうるのは date_min_chapter が3以下の恋人だけ（あげはは第4章から）。
-  tournament_dates: ["tournament_date_tsumugi", "tournament_date_minto", "tournament_date_rin",
+  tournament_dates: ["tournament_date_tsumugi", "tournament_date_minto", "tournament_date_kuyuri",
     "tournament_date_mashiro", "tournament_date_samechan", "tournament_date_hiyori"],
-  relationship_conflicts: ["ch3_shuraba_open", "ch3_shuraba_tsumugi", "ch3_shuraba_minto", "ch3_shuraba_rin",
+  relationship_conflicts: ["ch3_shuraba_open", "ch3_shuraba_tsumugi", "ch3_shuraba_minto", "ch3_shuraba_kuyuri",
     "ch3_shuraba_mashiro", "ch3_shuraba_samechan", "ch3_shuraba_hiyori", "ch3_shuraba_steve", "tournament_evening_overlap"],
 });
 

@@ -9,7 +9,7 @@
           "text": "はじめ、なる、アダム、みんと！ 四人の手元にご注目ッ！"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "配合で何を届けたいのか。最後の調整まで、それが通っているかを見る"
         },
@@ -34,7 +34,7 @@
           "text": "お題はストロベリー！ はじめ、あげは、神崎、レヰの四選手ですッ！"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "課題の香りをどう届けるか。提供して終わりではないぞ"
         },
@@ -294,7 +294,7 @@
       "dialogue_id": "tournament_craft_care_steady",
       "lines": [
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "提供と二度の調整で、適温に合わせた。最初に見せた狙いを、最後まで届けたな"
         }
@@ -304,7 +304,7 @@
       "dialogue_id": "tournament_craft_care_recovered",
       "lines": [
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "途中は熱が合っていなかったが、最後の調整で戻した。客の前で立て直した仕事は見ている"
         }
@@ -314,7 +314,7 @@
       "dialogue_id": "tournament_craft_care_hot",
       "lines": [
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "最後の調整は熱が強い。後半の煙が喉に刺さる。吸い続ける客に合わせて落ち着かせたい"
         }
@@ -324,7 +324,7 @@
       "dialogue_id": "tournament_craft_care_cold",
       "lines": [
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "最後の調整は熱が足りない。後半で煙が痩せた。もう一度、香りを届けるところが課題だ"
         }
@@ -334,7 +334,7 @@
       "dialogue_id": "tournament_craft_care_incomplete",
       "lines": [
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "提供後の変化まで見て、一台を仕上げる。それも審査する仕事のうちだ"
         }
@@ -369,7 +369,7 @@
           "text": "HAZE: NATIONAL TOKYO！ はじめ、綾取、スティーブ、ヴォルクの四台が同時に始まる！"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "最初の香りだけで決めない。提供後の変化と二度の調整まで見せてもらう"
         },
@@ -524,7 +524,7 @@
           "text": "立ち上がりはどれも悪くない。差が出るのは、煙が痩せずに続くかどうかです"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "出して終わりではない。残り半分で、配合の意図が問われる"
         },
@@ -563,7 +563,7 @@
           "text": "ふふ、おそろいだ。じゃ、あとは煙にお任せしよっか"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "手を離せ。ここから先は、一台が語る"
         }
@@ -777,7 +777,7 @@
           "text": "（ここで足し算はしない。ずれた一点だけ、元に戻す）"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "手数ではなく、意図を見せろ"
         }
@@ -860,7 +860,7 @@
       "dialogue_id": "tournament_craft_interlude1_3",
       "lines": [
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "審査員は左から回った。次は逆回りだろう。届く順番が変わる"
         },
@@ -880,7 +880,7 @@
           "text": "三人とも、見てるところが全然違う……"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "違っていい。それで、君は何を見る？"
         },
@@ -914,7 +914,7 @@
           "text": "最後の炭。置いたら、もう戻さない"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "これだけの目が、一台ずつに集まっている。流れはまだ決まっていない"
         },
@@ -959,7 +959,7 @@
           "text": "一度目の調整、完了ッ！ 審査員が持ち点を投じるのは、あと一回ですッ！"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "熱を合わせ直すのは当然だ。見ているのは、一度目の調整から何をつかんだかだ"
         },
@@ -999,7 +999,7 @@
           "text": "それでは、GRAND SMOKE……制作、開始ッ！"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "serious",
           "text": "背負うものが違う四人だ。誰のための一台か、最後まで見せてもらう"
         },

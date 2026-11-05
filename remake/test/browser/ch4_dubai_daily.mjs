@@ -47,7 +47,7 @@ async function seed(page, adjust = null) {
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
       _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
-    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "nagumo", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
     Object.assign(value.met, { naru: true });
     if (!progress.advanceToChapterFour(value)) throw new Error("Chapter boundary failed");
     value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
@@ -387,14 +387,14 @@ await suite("ch4-dubai-daily", async check => {
       for (const id of ["ch4_dubai_souq", "ch4_stranger_first", "ch4_festa", "ch4_inn_tool_care", "ch4_stranger_second"]) p.read[id] = true;
       p.firstDay = 1;
       value.day = p.startDay + 11; value.slot = 1; p.day = 12;
-      value.lovers = ["rin"]; value.met.rin = true; value.contacts.push("rin");
-      value.flags._overseas_companion = { decided: true, companion: null, supports: ["rin", "mashiro"] };
+      value.lovers = ["kuyuri"]; value.met.kuyuri = true; value.contacts.push("kuyuri");
+      value.flags._overseas_companion = { decided: true, companion: null, supports: ["kuyuri", "mashiro"] };
     });
     await loadSlot(page, 0);
     await dubaiMap(page, { day: 60, slot: 1 });
     await go(page, "ch4_dubai_inn");
     const arrival = id => `${dt("ch4-arrival")}[data-scene="${id}"]`;
-    await page.locator(arrival("ch4_rin_dubai_girlfriend")).waitFor({ timeout: 60000 });
+    await page.locator(arrival("ch4_kuyuri_dubai_girlfriend")).waitFor({ timeout: 60000 });
     assert.match(await page.locator(dt("ch4-arrival")).innerText(), /DAY 13・前夜祭の日/);
     assert.match(await page.locator(dt("ch4-arrival")).innerText(), /ドバイに着いたらしい/);
     assert.equal((await get(page)).flags._ch4.part, "eve");
@@ -403,11 +403,11 @@ await suite("ch4-dubai-daily", async check => {
     await page.locator(dt("ch4-continue")).click();
     await page.locator("#vn.active").waitFor();
     await loadSlot(page, 0);
-    await page.locator(arrival("ch4_rin_dubai_girlfriend")).waitFor({ timeout: 60000 });
-    assert.equal((await get(page)).flags._ch4.read.ch4_rin_dubai_girlfriend, undefined, "A read cut off by LOAD commits nothing");
+    await page.locator(arrival("ch4_kuyuri_dubai_girlfriend")).waitFor({ timeout: 60000 });
+    assert.equal((await get(page)).flags._ch4.read.ch4_kuyuri_dubai_girlfriend, undefined, "A read cut off by LOAD commits nothing");
     await page.locator(dt("ch4-continue")).click();
     await page.locator(arrival("ch4_mashiro_dubai_friend")).waitFor();
-    assert.equal((await get(page)).flags._ch4.read.ch4_rin_dubai_girlfriend, true);
+    assert.equal((await get(page)).flags._ch4.read.ch4_kuyuri_dubai_girlfriend, true);
     assert.match(await page.locator(dt("ch4-arrival")).innerText(), /もう一人着いたらしい/);
     await page.locator(dt("ch4-continue")).click();
     for (const id of ["ch4_wang_reception", "ch4_stranger_third"]) {
@@ -419,7 +419,7 @@ await suite("ch4-dubai-daily", async check => {
     await page.locator(dt("ch4-evening-date")).click();
     await page.waitForFunction(() => !!window.__remake.state.flags._ch4_evening, null, { timeout: 60000 });
     const state = await get(page);
-    assert.deepEqual(state.flags._ch4_evening, { kind: "date", participants: ["rin"] });
+    assert.deepEqual(state.flags._ch4_evening, { kind: "date", participants: ["kuyuri"] });
     assert.equal(state.flags._ch4.read.ch4_mashiro_dubai_friend, true);
   });
 

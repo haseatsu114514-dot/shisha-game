@@ -277,7 +277,7 @@
       }
     },
     {
-      "dialogue_id": "tournament_date_rin",
+      "dialogue_id": "tournament_date_kuyuri",
       "lines": [
         {
           "type": "condition",
@@ -288,7 +288,7 @@
         },
         {
           "type": "choice",
-          "id": "tournament_date_choice_rin",
+          "id": "tournament_date_choice_kuyuri",
           "choices": [
             {
               "text": "もう少し一緒にいよう",
@@ -312,7 +312,7 @@
             "text": "くゆりさんは買い物袋を下げていた。中身は新商品のサンプルではなかった。"
           },
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "normal",
             "text": "足、痛くない？　絆創膏。あと水"
           },
@@ -322,7 +322,7 @@
             "text": "品質管理ですか"
           },
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "normal",
             "text": "そういう口実も、今日は休み"
           },
@@ -332,7 +332,7 @@
             "text": "じゃあ、少し手をつないで歩きませんか"
           },
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "normal",
             "text": "……申請が遅い"
           },
@@ -349,7 +349,7 @@
             "text": "くゆりさんは、宿の売店の袋を下げていた。中身は水と、のど飴だった。"
           },
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "normal",
             "text": "こっちは乾くから、喉からやられるよ。明日、声が出ないと困るでしょ"
           },
@@ -359,12 +359,12 @@
             "text": "くゆりさんこそ、昼はずっと香水の店を見てましたね"
           },
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "normal",
             "text": "仕入れの下見。……って言うつもりだったけど、今日は嘘"
           },
           {
-            "speaker": "rin",
+            "speaker": "kuyuri",
             "face": "smile",
             "text": "君の隣で、知らない匂いを嗅ぎたかっただけ"
           },

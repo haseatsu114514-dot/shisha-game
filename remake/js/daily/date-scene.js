@@ -8,7 +8,7 @@ export const relationshipDayTotal = () => relationshipElapsedDay(state);
 export const relationshipDayOf = (day, chapter) => relationshipElapsedDay({ flags: state.flags, chapter, day });
 
 export function dateVenue(id, savedId = null) {
-  const exclude = { minto: "pepermint", rin: "drfookah", samechan: "shishark" }[id];
+  const exclude = { minto: "pepermint", kuyuri: "drfookah", samechan: "shishark" }[id];
   const venues = (DB.lover?.venues || []).filter(v => v.id !== exclude);
   return venues.find(v => v.id === savedId)
     || venues[((state.loveLevel[id] || 1) + (state.lastDate[id] || 0)) % venues.length];

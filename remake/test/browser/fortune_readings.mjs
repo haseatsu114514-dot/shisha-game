@@ -49,7 +49,7 @@ try{
   assert.equal(bonus.increase,3);assert(Math.abs(bonus.carry-.4)<1e-9);assert(bonus.consumed&&bonus.sight);
   const persisted=await page.evaluate(()=>{Q.core.save();Q.core.newGame();Q.core.load();return Q.effects.activeFortuneSight(Q.core.state);});assert.equal(persisted.char,'naru');assert.equal(persisted.until,5);
   async function choices(day,target,id){return page.evaluate(async({day,target,id})=>{
-   Q.core.state.day=day;if(target==='rin')Q.effects.grantFortuneReading(Q.core.state,'rin',Q.data.DB.fortuneTrivia);
+   Q.core.state.day=day;if(target==='kuyuri')Q.effects.grantFortuneReading(Q.core.state,'kuyuri',Q.data.DB.fortuneTrivia);
    Q.core.state.met[target]=true;const shown=[];
    Q.vn.vnTest.choose=(did,texts)=>{shown.push({id:did,marked:[...document.querySelectorAll('.vn-choice')].map(n=>n.classList.contains('fortune-hint'))});return 0;};
    await Q.vn.play(id);Q.vn.vnTest.choose=null;return shown;
@@ -57,7 +57,7 @@ try{
   const today=await choices(3,'naru','ch1_naru_first');assert(today.some(x=>x.marked[0]&&!x.marked[1]),'target conversation not marked');
   const last=await choices(5,'naru','ch1_naru_first');assert(last.some(x=>x.marked[0]));
   const expired=await choices(6,'naru','ch1_naru_first');assert(expired.every(x=>x.marked.every(v=>!v)),'hint survived fourth day');
-  const second=await choices(3,'rin','ch1_rin_first');assert(second.some(x=>!x.marked[0]&&x.marked[1]),'hint blindly favors first option');
+  const second=await choices(3,'kuyuri','ch1_kuyuri_first');assert(second.some(x=>!x.marked[0]&&x.marked[1]),'hint blindly favors first option');
   const riftAndTrivia=await page.evaluate(async()=>{
    const snap=JSON.stringify(Q.core.state);
    // Legacy mask 31 on naru draws from the newly added readings (naru_9 / naru_12 / naru_15) in live doFortune.
@@ -125,8 +125,8 @@ try{
   // Capture real choice DOM before selecting; this scene is authored data, not a synthetic quiz.
   await page.evaluate(()=>{
    Q.vn.vnTest.turbo=false;Q.vn.vnTest.choose=null;
-   const d=Q.data.DB.dialogues.ch1_rin_first,choice=d.lines.find(x=>x.type==='choice'&&x.id==='rin_first_pen');
-   window.preview=Q.vn.play({...d,lines:[{speaker:'rin',face:'normal',text:'……どこを見てたの？'},choice]},{bg:'bg_fookah_showroom'});
+   const d=Q.data.DB.dialogues.ch1_kuyuri_first,choice=d.lines.find(x=>x.type==='choice'&&x.id==='kuyuri_first_pen');
+   window.preview=Q.vn.play({...d,lines:[{speaker:'kuyuri',face:'normal',text:'……どこを見てたの？'},choice]},{bg:'bg_fookah_showroom'});
   });
   await page.waitForFunction(()=>document.querySelector('.vn-text')?.textContent.includes('どこを見てたの'));
   await page.keyboard.press('Enter');await page.waitForTimeout(100);

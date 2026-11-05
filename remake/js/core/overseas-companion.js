@@ -4,7 +4,7 @@
 import { tokyoVisitState, syncTokyoVisits } from "./tokyo-visits.js";
 
 // data/story_routes.json の heroine_ids と同じ順（テストで一致を確認）。
-export const OVERSEAS_HEROINES = Object.freeze(["tsumugi", "minto", "rin", "ageha", "mashiro", "samechan", "hiyori"]);
+export const OVERSEAS_HEROINES = Object.freeze(["tsumugi", "minto", "kuyuri", "ageha", "mashiro", "samechan", "hiyori"]);
 // 恋愛状態に関係なくドバイへ来る唯一のキャラ（第3章クリアが条件。gameplay_agent_reference.md の登場条件表）。
 const ALWAYS_SUPPORT = "mashiro";
 const KEY = "_overseas_companion";

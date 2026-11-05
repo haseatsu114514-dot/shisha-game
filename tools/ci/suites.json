@@ -243,6 +243,12 @@
       "run": ["node --experimental-vm-modules remake/test/corrupt_save_migrate.mjs"]
     },
     {
+      "id": "save-id-rename-migrate",
+      "title": "Legacy character IDs in old saves migrate to the renamed IDs (IDREN01)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/save_id_rename_migrate.mjs"]
+    },
+    {
       "id": "kuji-sell-guard",
       "title": "Kuji goods sell handler identity and stale clicks",
       "kind": "quick",
@@ -714,7 +720,7 @@
         "node remake/test/friend_lime_scene_chapters.mjs",
         "node remake/test/chapter_feature_gates_2035.mjs",
         "node remake/test/tournament_entrance.mjs",
-        "node --experimental-vm-modules remake/test/rin_sample.mjs",
+        "node --experimental-vm-modules remake/test/kuyuri_sample.mjs",
         "node --experimental-vm-modules remake/test/invites_781.mjs",
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",
         "node --experimental-vm-modules remake/test/lime_consistency.mjs",
@@ -1391,8 +1397,8 @@
         "data/dialogue/ch4_camel_race.json",
         "assets/ui/camel_race/**",
         "remake/img/ui/camel_race/**",
-        "assets/sprites/characters/saif/**",
-        "assets/sprites/characters/rashid/**",
+        "assets/sprites/characters/suhail/**",
+        "assets/sprites/characters/khalil/**",
         "remake/img/sprites/characters/hajime/**",
         "assets/backgrounds/bg_dubai_camel_track_morning.png",
         "remake/test/browser/ch4_camel_race.mjs"
@@ -2240,14 +2246,14 @@
         "remake/test/browser/conversation_ui.mjs",
         "remake/test/browser/regular_service_response.mjs",
         "remake/test/portrait_unify.mjs",
-        "remake/test/rin_portraits.mjs"
+        "remake/test/kuyuri_portraits.mjs"
       ],
       "run": [
         "node remake/test/browser/issue508_theme.mjs",
         "node remake/test/browser/conversation_ui.mjs",
         "node remake/test/browser/regular_service_response.mjs",
         "node remake/test/portrait_unify.mjs",
-        "node remake/test/rin_portraits.mjs"
+        "node remake/test/kuyuri_portraits.mjs"
       ],
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/remake-browser/issue508-theme"

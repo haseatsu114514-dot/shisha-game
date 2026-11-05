@@ -574,7 +574,7 @@
       "heat_tolerance": 1.15,
       "smoke_weight": 1.05,
       "steam_bias": 0.5,
-      "requires_flag": "_rin_sample",
+      "requires_flag": "_kuyuri_sample",
       "sample": true,
       "competition_legal": false,
       "serve_legal": false,

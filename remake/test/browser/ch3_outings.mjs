@@ -52,7 +52,7 @@ async function choose(page, place, action) {
 }
 
 await suite("ch3-outings", async check => {
-  await check("nonmember-visits-kuze-from-the-map", async page => {
+  await check("nonmember-visits-saku-from-the-map", async page => {
     await seed(page, "d8-night");
     assert.match(await page.locator(t("ch3-intro-map")).innerText(), /行き先を選ぶ/);
     assert.match(await page.locator(".ch2-contest-note").innerText(), /煙幕/);

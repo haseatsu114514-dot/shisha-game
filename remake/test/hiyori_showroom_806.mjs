@@ -53,7 +53,7 @@ const mocks = {
     isUnlocked: spot => !spot.locked,
     shortNormalVisit: () => false,
   },
-  "daily/spot-hours.js": { rinUnavailable: () => state.slot === 1 ? "" : "夜から" },
+  "daily/spot-hours.js": { kuyuriUnavailable: () => state.slot === 1 ? "" : "夜から" },
   "daily/hiyori-axe.js": { hiyoriAxeAffordable: () => false, playHiyoriAxeSequence: async () => false },
   "daily/trpg.js": { maybeRecruitTrpgMember: async () => false },
 };

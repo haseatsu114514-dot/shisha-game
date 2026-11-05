@@ -26,7 +26,7 @@ class MashiroVoiceTests(unittest.TestCase):
 
     def test_dialogue_speaker_and_player_choices(self):
         voice.scan({"speaker": "mashiro", "text": "僕ははじめくんと", "choices": [{"text": "私も"}],
-                    "branches": {"other": [{"speaker": "rin", "text": "私と蒸野くん"}]}}, "sample")
+                    "branches": {"other": [{"speaker": "kuyuri", "text": "私と蒸野くん"}]}}, "sample")
         self.assertEqual(voice.bad, [])
         voice.scan({"dialogues": [{"lines": [{"speaker": "mashiro", "text": "はじめさん"}]}]}, "sample")
         self.assertEqual(len(voice.bad), 1)
@@ -39,7 +39,7 @@ class MashiroVoiceTests(unittest.TestCase):
 
     def test_lover_character_keys_and_player_options(self):
         voice.scan_lover({"mashiro": {"text": "僕とはじめくん", "optA": "私も", "optB": "蒸野くん",
-                                     "replyA": "はじめさん"}, "rin": {"text": "私"}}, "sample")
+                                     "replyA": "はじめさん"}, "kuyuri": {"text": "私"}}, "sample")
         self.assertEqual(len(voice.bad), 1)
 
     def test_relocated_legacy_warning_is_contextual(self):

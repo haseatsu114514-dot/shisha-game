@@ -10,7 +10,7 @@ import { addMoney } from "../core/stats.js";
 import { SE } from "../core/audio.js";
 import { vnTest } from "../vn/engine.js";
 import { addFlavorStock, FLAVOR_BOX_GRAMS } from "./shop.js";
-import { RIN_AWAY_DAY } from "../core/rules.js";
+import { KUYURI_AWAY_DAY } from "../core/rules.js";
 
 // 全等級で購入を共有ロック。表示・セーブには保存しない。
 let purchaseLock = null, currentRows = null;
@@ -83,9 +83,9 @@ export function kujiRows(rerender) {
   const rows = [];
   if (!state.flags._kuji_seen) {
     state.flags._kuji_seen = true;
-    const staffed = state.slot === 1 && state.day % 7 !== RIN_AWAY_DAY && state.met.rin;
+    const staffed = state.slot === 1 && state.day % 7 !== KUYURI_AWAY_DAY && state.met.kuyuri;
     rows.push(el("p.kuji-note", { text: staffed
-      ? `${displayName("rin", state)}「これ、実は在庫しょぶ……なんでもない。引きは引き。直感で行きなさい」`
+      ? `${displayName("kuyuri", state)}「これ、実は在庫しょぶ……なんでもない。引きは引き。直感で行きなさい」`
       : "棚の案内には、残り枚数と景品が書かれている。くじは1階で昼夜とも引ける。" }));
   }
   const refill = DB.kuji.meta?.refillDays || 3;

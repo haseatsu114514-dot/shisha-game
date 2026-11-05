@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { suite, assertFits } from "./support.mjs";
 const t = name => `[data-test="${name}"]`;
 const get = page => page.evaluate(() => structuredClone(window.__remake.state));
-async function seed(page, { lovers = ["tsumugi", "minto", "rin", "samechan", "hiyori"], schema = null } = {}) {
+async function seed(page, { lovers = ["tsumugi", "minto", "kuyuri", "samechan", "hiyori"], schema = null } = {}) {
   await page.evaluate(async ({ lovers, schema }) => {
     const core = await import("./js/core/state.js");
     const value = core.newGame();
@@ -120,7 +120,7 @@ await suite("tokyo-visits", async check => {
     await page.evaluate(async () => {
       const { vnTest } = await import("./js/vn/engine.js"); vnTest.turbo = true; vnTest.choose = () => 0;
       const { state } = await import("./js/core/state.js");
-      for (const id of ["mashiro", "mukai", "kuze", "steve", "volk", "naru", "pakki"]) {
+      for (const id of ["mashiro", "mukai", "saku", "steve", "volk", "naru", "pakki"]) {
         state.met[id] = true; state.flags[`_intro_${id}`] = true;
       }
     });

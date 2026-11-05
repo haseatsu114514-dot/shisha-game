@@ -21,7 +21,7 @@ const WATER_TASTE_FACTOR = .5;
 
 export const WEIGHTS = { holes: .2, heat: .2, shisha: .2, care1: .2, care2: .2 };
 /** 須井が持ち点を動かす基準（これ未満なら須井票は入らず、普通に負ける） */
-export const NAGUMO_BAR = 90.8; // MEASURE.md: 第1章・mid 初回突破率 74.2%（742/1000）。
+export const SUI_BAR = 90.8; // MEASURE.md: 第1章・mid 初回突破率 74.2%（742/1000）。
 
 /** 同系統フレーバー（AF/ドバジ/アフサールのミント・ダブルアップル等）の合計グラム数 */
 export function flavorFamilyGrams(mix, family, flavorById = DB.flavorById) {

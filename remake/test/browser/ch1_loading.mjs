@@ -41,7 +41,7 @@ try { await suite('ch1-loading',async check=>{
         await L.ui.warmUiArt();
         const bgs=['bg_osu_map_day','bg_osu_map_night','bg_tonari_inside_day','bg_tonari_inside_night',
           'bg_home_day','bg_home_night','bg_shop','bg_tournament_stage'];
-        const faces=['sumi','tsumugi','naru','adam','minto','rin','pakki'];
+        const faces=['sumi','tsumugi','naru','adam','minto','kuyuri','pakki'];
         const urls=[...bgs.map(id=>L.data.bgUrl(id)),...faces.map(id=>L.data.portraitInfo(id,'normal').src),
           ...['bench_base.png','stove_coil.png','hookah_base.png'].map(id=>L.data.makingUrl(id))];
         await Promise.all(urls.map(url=>L.ui.imageReady(url,15000)));

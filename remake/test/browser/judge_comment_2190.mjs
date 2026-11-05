@@ -47,7 +47,7 @@ await suite("judge-comment-2190", async check => {
         await page.locator('[data-test="result-next"]').waitFor();
         const deductions = page.locator(".rt-judge-deduction");
         assert.equal(await deductions.count(), 3);
-        assert.deepEqual(await deductions.evaluateAll(nodes => nodes.map(node => node.dataset.judge)), ["maezono", "dr_kemuri", "nagumo"]);
+        assert.deepEqual(await deductions.evaluateAll(nodes => nodes.map(node => node.dataset.judge)), ["maezono", "dr_kemuri", "sui"]);
         for (const line of await deductions.all()) {
           const judge = await line.getAttribute("data-judge");
           const expectedReason = await page.evaluate(async judge => (await import("./js/craft/feedback.js")).judgeDeductionReason(J.cs, judge).text, judge);
@@ -89,7 +89,7 @@ await suite("judge-comment-2190", async check => {
       }
       // Chapters two and three share this judge panel; chapter four renders its actual final standings view.
       for (const chapter of [2, 3, 4]) {
-        const expectedIds = chapter === 2 ? ["maezono", "dr_kemuri", "nagumo"] : chapter === 3 ? ["emil", "dr_kemuri", "nagumo"] : ["nagumo", "da_silva", "emil"];
+        const expectedIds = chapter === 2 ? ["maezono", "dr_kemuri", "sui"] : chapter === 3 ? ["emil", "dr_kemuri", "sui"] : ["sui", "da_silva", "emil"];
         await page.evaluate(async ({ chapter, expectedIds }) => {
           const { modal } = await import("./js/core/ui.js");
           const { judgePanel } = await import("./js/craft/tournament-graphics.js");

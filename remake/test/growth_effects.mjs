@@ -93,7 +93,7 @@ core.state.growth.nodes=[nodeFor("tongue").id];
 gainFlavorExperience(core.state,{ lemon:12 },10);
 assert(core.state.flavorMastery.lemon>10);
 // 旧セーブの不足補完は、今の盤の熟練度倍率で過去の報酬を増やさない。
-core.state.schema=23; core.state.story.rin=4;
+core.state.schema=23; core.state.story.kuyuri=4;
 core.save(); core.load();
 assert.equal(core.state.flavorMastery.rose,6); assert.equal(core.state.flavorMastery.lychee,6);
 assert.equal(core.state.flavorMastery.blueberry,12);
@@ -232,7 +232,7 @@ growth.ensureGrowth().nodes=["K18"];assert(effects.densePackAvailable(core.state
 core.newGame();const oldDense=core.newState();oldDense.schema=24;
 for(const key of core.STAT_KEYS) oldDense.stats[key]=100;
 stored.set(core.SAVE_KEY,JSON.stringify(oldDense));core.load();
-assert.equal(core.state.schema,25);assert(effects.densePackAvailable(core.state));
+assert.equal(core.state.schema,26);assert(effects.densePackAvailable(core.state));
 core.save();core.load();assert(effects.densePackAvailable(core.state));
 for(const key of core.STAT_KEYS) assert.equal(core.state.stats[key],100);
 assert.equal(buildCarryPackage(core.state).flags._dense_pack_legacy,true);
@@ -340,13 +340,13 @@ console.log("[growth effects] PASS: additive legacy growth, 160+55=215, no resou
 // 集団交流は一行動。各人の初回・交流の幅だけを重複なく数える（SPEC X1/X2/X3/X11）。
 growth.setGrowthPreview(true);core.newGame();
 const group = growth.ensureGrowth();
-assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["kuze","volk","kuze"]}),150);
+assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["saku","volk","saku"]}),150);
 assert.equal(group.fresh.counts["group-test"],1);
-assert.deepEqual(group.firsts.people,["kuze","volk"]);assert.deepEqual(group.chapterLog[1].people,["kuze","volk"]);
-assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["volk","kuze"]}),30);
+assert.deepEqual(group.firsts.people,["saku","volk"]);assert.deepEqual(group.chapterLog[1].people,["saku","volk"]);
+assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["volk","saku"]}),30);
 assert.equal(group.fresh.counts["group-test"],2);
 assert.deepEqual(group.firsts.places,["party"]);
-assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["volk","kuze"]}),24);
+assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["volk","saku"]}),24);
 growth.setGrowthPreview(false);
 console.log("[growth effects] PASS: group action XP occurs once; first-person and breadth ledgers count unique real guests");
 growth.setGrowthPreview(true);core.newGame();

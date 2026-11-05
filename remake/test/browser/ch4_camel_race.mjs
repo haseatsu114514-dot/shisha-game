@@ -69,7 +69,7 @@ await suite("ch4-camel-race", async check => {
     state = await get(page);
     assert.equal(state.flags._ch4_camel.meetDay, startDay);
     assert.equal(state.slot, 0, "a conversation does not spend the daytime slot");
-    assert.equal(state.met.saif, true);
+    assert.equal(state.met.suhail, true);
     await assert.rejects(() => camel.click({ timeout: 1500 }), /not enabled|disabled|Timeout/i, "no second talk on the same day");
     // DAY2: 誘われる。レースは翌朝なのでまだ行けない。
     await endDay(page, 2);
@@ -77,7 +77,7 @@ await suite("ch4-camel-race", async check => {
     await camel.click();
     await page.waitForFunction(() => window.__remake.state.flags._ch4_camel?.stage === 2);
     await page.locator(dt("ch4-free")).waitFor();
-    assert.equal((await get(page)).met.rashid, undefined, "Khalil appears at the track, not in the shop");
+    assert.equal((await get(page)).met.khalil, undefined, "Khalil appears at the track, not in the shop");
     await assert.rejects(() => camel.click({ timeout: 1500 }), /not enabled|disabled|Timeout/i, "the race is tomorrow morning");
     // DAY3: 本番を見て、レースを途中でやめる → 消費なし・見学は既読のまま。
     await endDay(page, 3);
@@ -94,7 +94,7 @@ await suite("ch4-camel-race", async check => {
     assert.equal(state.flags._ch4_camel.plays, 0);
     assert.equal(state.flags._ch4_camel.stage, 2);
     assert.equal(state.slot, 0, "quitting mid-race spends nothing");
-    assert.equal(state.met.rashid, true);
+    assert.equal(state.met.khalil, true);
     // 同じ日にもう一度: 見学は繰り返さず、すぐチュートリアル→レース（自動操作で完走）→結果の会話。
     await camelTest(page, { pilot: "perfect", timeScale: 8 });
     const before = await get(page);
@@ -186,7 +186,7 @@ async function seedDaily(page, camel = null) {
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
       _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
-    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "nagumo", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
     Object.assign(value.met, { naru: true });
     if (!progress.advanceToChapterFour(value)) throw new Error("Chapter boundary failed");
     value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
@@ -219,7 +219,7 @@ await suite("ch4-camel-race-daily", async check => {
     await dubaiMap(page, { day, slot: 0 });
     state = await get(page);
     assert.deepEqual({ stamina: state.stamina, money: state.money, slot: state.slot }, before);
-    assert.equal(state.met.saif, true);
+    assert.equal(state.met.suhail, true);
     assert.equal(state.visitedDay.ch4_dubai_camel, undefined, "a conversation is not a visit");
   });
 
@@ -245,7 +245,7 @@ await suite("ch4-camel-race-daily", async check => {
     assert.equal(state.flags._ch4_camel.lastPlayDay, day);
     assert.equal(state.visitedDay.ch4_dubai_camel, day);
     assert.equal(state.stats.technique, 60, "no direct stat reward");
-    assert.equal(state.met.rashid, true);
+    assert.equal(state.met.khalil, true);
     // 夜はレースへ行けない（案内に理由を出し、「ここへ行く」は出さない）。
     await page.locator(dt("pin-ch4_dubai_camel")).click();
     await page.locator(".mi-no").filter({ hasText: /今日はもう走った|レースは昼だけ|今日はもう行った/ }).waitFor();

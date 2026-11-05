@@ -37,10 +37,10 @@
       ]
     },
     {
-      "dialogue_id": "ch3_shuraba_rin",
+      "dialogue_id": "ch3_shuraba_kuyuri",
       "lines": [
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "はじめくん。……私にも、紹介してくれる？"
         }
@@ -266,25 +266,25 @@
       ]
     },
     {
-      "dialogue_id": "shuraba_rin",
+      "dialogue_id": "shuraba_kuyuri",
       "lines": [
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "違う店の香りがしたから、気にはなってた"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "でも、香りだけじゃ決めない。今、本人の口から聞いた"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "私たちに黙っていたこと、ちゃんと説明して"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "試す相手を取り替えるみたいに、扱わないで"
         },
@@ -565,7 +565,7 @@
       "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"
     },
     {
-      "dialogue_id": "shuraba_talk_rin",
+      "dialogue_id": "shuraba_talk_kuyuri",
       "lines": [
         {
           "speaker": "",
@@ -573,12 +573,12 @@
           "text": "くゆりさんが指定したのは、Dr.fookahの2階。試香の時間は、もう終わっていた。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "座って。今日は、モニターの話じゃない"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "説明して、って言ったよね。聞く準備は、してきた"
         },
@@ -593,12 +593,12 @@
           "text": "くゆりさんがどう思うか、聞こうともしませんでした"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "serious",
           "text": "サンプルなら、並べて確かめることもあるよ"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "serious",
           "text": "でも、私はサンプルじゃない。君の恋人のつもりだった"
         },
@@ -608,17 +608,17 @@
           "text": "……俺が、黙って選べることじゃなかった。ごめんなさい"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "うん。聞いた。……今日は、それしか返せない"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "次に会うかは、私から連絡する。少し、考えさせて"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "……名前で呼ぶのは、その時にする"
         },

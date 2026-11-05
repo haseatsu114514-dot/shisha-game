@@ -37,7 +37,7 @@ for (const m of memories) (byChar[m.char_id] ||= []).push(m);
 const expected = {
   samechan: { scenes: ['samechan_shop_closing_check', 'samechan_bond_finale'], name: 'サメちゃん' },
   hiyori: { scenes: ['hiyori_work_talk', 'hiyori_axe_reveal_close'], name: 'ひより' },
-  kuze: { scenes: ['ch3_kuze_advice'], name: '綾取' },
+  saku: { scenes: ['ch3_saku_advice'], name: '綾取' },
   steve: { scenes: ['ch3_steve_low_heat'], name: 'スティーブ' },
 };
 for (const [charId, spec] of Object.entries(expected)) {
@@ -82,7 +82,7 @@ assert.deepEqual(ch5Reflection.chars, people, 'ch5 reflection must recall the Pe
 assert(people.includes('sumi'), 'ch5 reflection falls back to Sumi');
 const routes = readJson('data/story_routes.json').chapters;
 const chapterCast = {
-  3: ['kuze', 'steve', 'volk', 'mashiro', 'mukai_master'],
+  3: ['saku', 'steve', 'volk', 'mashiro', 'mukai_master'],
   4: ['da_silva', 'sheikh', 'master_hookah'],
 };
 for (const [chapter, cast] of Object.entries(chapterCast)) {
@@ -129,7 +129,7 @@ assert.deepEqual(texts({}), ['トングを持つ。誰かと過ごした時間�
 Object.assign(reflectionState, { chapter: 3 });
 for (const id of routes[3].before_eve) rememberAll(sceneMemories(id));
 const ch3Eve = texts(lineOf(3));
-assert.deepEqual(ch3Eve, ['kuze_decide', 'steve_wait', 'volk_measure'].map((id) => echoOf[id]),
+assert.deepEqual(ch3Eve, ['saku_decide', 'steve_wait', 'volk_measure'].map((id) => echoOf[id]),
   'ch3 eve: only the three newest echoes (the narration leads in, Hajime\'s spoken doubt follows)');
 Object.assign(reflectionState, { chapter: 4 });
 for (const id of routes[4].before_eve) rememberAll(sceneMemories(id));

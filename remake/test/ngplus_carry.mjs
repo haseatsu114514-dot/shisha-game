@@ -34,9 +34,9 @@ assert.equal(carry.flagVerdict("seenDemo"), "carry");
 const root = new URL("../../", import.meta.url);
 const copy = (v) => JSON.parse(JSON.stringify(v));
 
-// ---------------------------------------------------------------- A. SCHEMA 25 と後方互換
+// ---------------------------------------------------------------- A. SCHEMA 26 と後方互換
 {
-  assert.equal(SCHEMA, 25);
+  assert.equal(SCHEMA, 26);
   const fresh = newState();
   assert.equal(fresh.cycle, 1);
   assert.equal(typeof fresh.cycleId, "string");
@@ -73,7 +73,7 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
     return s;
   };
   const checkMigrated = (s) => {
-    assert.equal(s.schema, 25);
+    assert.equal(s.schema, 26);
     assert.equal(s.cycle, 1);
     assert.ok(typeof s.cycleId === "string" && s.cycleId.length > 0);
     assert.deepEqual(s.cycleStartStats, { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 });
@@ -116,7 +116,7 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
   prior.flavorMastery = { vanilla: 12 };
   localStorage.setItem(SAVE_KEY, JSON.stringify(prior));
   const upgraded = load();
-  assert.equal(upgraded.schema, 25);
+  assert.equal(upgraded.schema, 26);
   assert.equal(upgraded.cycle, 2);
   assert.equal(upgraded.cycleId, "kept-cycle-2");
   assert.equal(upgraded.cycleStartStats.technique, 19);
@@ -233,7 +233,7 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
   s.owned = ["hagal_80beat", "lotos_hagal", "suyaki_minto"];
   s.equip = { bowl: "suyaki_minto", hms: "lotos_hagal" };
   s.keepsakes = ["ryuji_purikura", "minto_first_cheki"];
-  s.trpg = { ...(s.trpg ?? {}), stock: ["x"], club: { founded: { chapter: 2, day: 3 }, members: { rin: { chapter: 2, day: 4 } } } };
+  s.trpg = { ...(s.trpg ?? {}), stock: ["x"], club: { founded: { chapter: 2, day: 3 }, members: { kuyuri: { chapter: 2, day: 4 } } } };
   s.flags = { _gym_member: true, _motion_seen_intro: true, _flavor_grape: true, _ch1_cleared: true,
     _brand_new_unclassified: true, _kuji_seen: false };
   s.affinity = { minto: 9 };

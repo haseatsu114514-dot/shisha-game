@@ -370,7 +370,7 @@
           "text": "私たちは、一人10点ずつ持っている。気になった煙へ、途中でも投入するよ"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "serious",
           "text": "一度入れた点は戻さない。最後に合計して、県代表を決める"
         },
@@ -480,7 +480,7 @@
           "text": "壇上を降りかけたところで、審査員席を離れた須井が、俺の前で足を止めた。"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "serious",
           "text": "見事な正解だ。だが、その煙は誰の顔を見て作った？"
         },
@@ -499,7 +499,7 @@
         },
         {
           "type": "hide_portrait",
-          "char_id": "nagumo"
+          "char_id": "sui"
         },
         {
           "speaker": "",

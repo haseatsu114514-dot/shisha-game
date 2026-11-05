@@ -275,7 +275,7 @@ await suite("first-brew", async check => {
       T.assist.recordTournamentLoss(s.tournament);
       const { TSUMUGI_STORY } = await import("./js/chapters/tsumugi-story.js");
       for (const step of TSUMUGI_STORY) s.flags[step.flag] = true;
-      for (const id of ["sumi", "pakki", "nagumo", "maezono", "dr_kemuri", "naru", "adam", "minto"]) {
+      for (const id of ["sumi", "pakki", "sui", "maezono", "dr_kemuri", "naru", "adam", "minto"]) {
         (await import("./js/vn/intro.js")).markIntroSeen(id);
       }
       await T.chapter.devGameOver("burnt", 0, 0);

@@ -86,12 +86,12 @@ try {
     }
     // 占い（一度だけ ×2。台帳 URA03）
     let state = fresh();
-    state.story.rin = spots.VISIT_SEQ.rin.length;
-    state.fortune = { char: "rin" };
-    stats.gainAffinity("rin", 10);
-    const fortune = { got: state.affinity.rin, carry: state.affinityCarry.rin, left: state.fortune };
-    stats.gainAffinity("rin", 10);
-    fortune.second = state.affinity.rin;
+    state.story.kuyuri = spots.VISIT_SEQ.kuyuri.length;
+    state.fortune = { char: "kuyuri" };
+    stats.gainAffinity("kuyuri", 10);
+    const fortune = { got: state.affinity.kuyuri, carry: state.affinityCarry.kuyuri, left: state.fortune };
+    stats.gainAffinity("kuyuri", 10);
+    fortune.second = state.affinity.kuyuri;
     // 恋人の絆: 私的な場面でだけ、従来の半分
     state = fresh({ lovers: ["tsumugi"], loveLevel: { tsumugi: 1 }, lovePts: { tsumugi: 9 } });
     stats.gainAffinity("tsumugi", 10);
@@ -137,20 +137,20 @@ try {
     core.save();
     const loaded = core.load();
     const old = core.newState();
-    old.schema = 7; old.affinity.minto = 40; old.affinityCarry = { minto: 0.7 }; old.loveCarry = { rin: 0.5 };
-    old.lovers = ["rin"]; old.loveLevel = { rin: 2 }; old.lovePts = { rin: 25 };
+    old.schema = 7; old.affinity.minto = 40; old.affinityCarry = { minto: 0.7 }; old.loveCarry = { kuyuri: 0.5 };
+    old.lovers = ["kuyuri"]; old.loveLevel = { kuyuri: 2 }; old.lovePts = { kuyuri: 25 };
     old.flags._confession_due = "minto"; old.flags._confession_wait = 9;
     delete old.romance; delete old.romanceChoices; delete old.finales;
     localStorage.setItem(core.SAVE_KEY, JSON.stringify(old));
     const migrated = core.load();
     return { carry: loaded.affinityCarry.adam, pts: loaded.affinity.adam, schema: migrated.schema, expected: core.SCHEMA,
-      oldAff: migrated.affinity.minto, oldCarry: migrated.affinityCarry.minto, loveCarry: migrated.loveCarry.rin, lovers: migrated.lovers,
+      oldAff: migrated.affinity.minto, oldCarry: migrated.affinityCarry.minto, loveCarry: migrated.loveCarry.kuyuri, lovers: migrated.lovers,
       due: migrated.flags._confession_due ?? null, wait: migrated.flags._confession_wait ?? null,
       romance: migrated.romance, choices: migrated.romanceChoices, finales: migrated.finales, before: state === loaded };
   });
   assert.equal(carry.carry, 0.85); assert.equal(carry.pts, 0);
   assert.equal(carry.schema, carry.expected); assert(carry.expected > 7);
-  assert.equal(carry.oldAff, 40); assert.equal(carry.oldCarry, 0.7); assert.equal(carry.loveCarry, 0.5); assert.deepEqual(carry.lovers, ["rin"]);
+  assert.equal(carry.oldAff, 40); assert.equal(carry.oldCarry, 0.7); assert.equal(carry.loveCarry, 0.5); assert.deepEqual(carry.lovers, ["kuyuri"]);
   assert.equal(carry.due, null, "old automatic confession reservation must be dropped");
   assert.equal(carry.wait, null);
   assert.deepEqual(carry.romance, {}); assert.deepEqual(carry.choices, {}); assert.deepEqual(carry.finales, {});
@@ -438,42 +438,42 @@ try {
   log("HF04/05 existing-lover save: relationship kept, lover landing once, gift, no confession reservation");
 
   // くゆり: 3つ目の固有会話の後の最初の訪問で質問 → 4つ目の固有会話 → MAXの締めくくり（友情寄り）
-  const rin = await page.evaluate(async () => {
+  const kuyuri = await page.evaluate(async () => {
     const { fresh, spots, bonds, vn, pick } = window.T;
-    const state = fresh({ met: { rin: true }, story: { rin: 3 }, affinity: { rin: 90 }, slot: 0 });
-    const badge = spots.hasNewStory("rin");
-    const finaleBlocked = bonds.finaleAtVisit("rin");
+    const state = fresh({ met: { kuyuri: true }, story: { kuyuri: 3 }, affinity: { kuyuri: 90 }, slot: 0 });
+    const badge = spots.hasNewStory("kuyuri");
+    const finaleBlocked = bonds.finaleAtVisit("kuyuri");
     pick("試香も");
     vn.backlog().length = 0;
-    await spots.visitChar("rin");
+    await spots.visitChar("kuyuri");
     const first = vn.backlog().map((l) => l.text).join("|");
     vn.backlog().length = 0;
-    await spots.visitChar("rin");
+    await spots.visitChar("kuyuri");
     const fourth = vn.backlog().map((l) => l.text).join("|");
     // ♥4・♥5の段階会話（#2025）。締めくくりはその後
     const late = [];
     for (let i = 0; i < 2; i++) {
       vn.backlog().length = 0;
-      await spots.visitChar("rin");
+      await spots.visitChar("kuyuri");
       late.push(vn.backlog().map((l) => l.text).join("|"));
     }
     vn.backlog().length = 0;
-    await spots.visitChar("rin");
+    await spots.visitChar("kuyuri");
     const second = vn.backlog().map((l) => l.text).join("|");
-    return { badge, finaleBlocked, first, fourth, late, second, answer: state.romanceChoices.bond_q1_rin?.value, route: state.finales.rin?.route, owned: state.owned.includes("suyaki_rin") };
+    return { badge, finaleBlocked, first, fourth, late, second, answer: state.romanceChoices.bond_q1_kuyuri?.value, route: state.finales.kuyuri?.route, owned: state.owned.includes("suyaki_kuyuri") };
   });
-  assert.equal(rin.badge, true); assert.equal(rin.finaleBlocked, false);
+  assert.equal(kuyuri.badge, true); assert.equal(kuyuri.finaleBlocked, false);
   // 質問の場面と友情側の着地（d7a613c6 で台本を書き直し）
-  assert(rin.first.includes("今日は試香紙がなかった")); assert(rin.first.includes("相談を遠慮しなくてよい、仕事仲間の時間だった"));
-  assert(!rin.first.includes("ラベルも同意書もついてないやつ"));
+  assert(kuyuri.first.includes("今日は試香紙がなかった")); assert(kuyuri.first.includes("相談を遠慮しなくてよい、仕事仲間の時間だった"));
+  assert(!kuyuri.first.includes("ラベルも同意書もついてないやつ"));
   // 質問の次は4つ目の固有会話（#1696）。締めくくりはその後
-  assert(rin.fourth.includes("吸ってる人の顔だけ、知らない")); assert(!rin.fourth.includes("ラベルも同意書もついてないやつ"));
-  assert(rin.late[0].includes("角のすり切れた、黒い手帳だ")); assert(rin.late[0].includes("共同研究ってことにしよう"));
-  assert(rin.late[1].includes("袋しか見えないの")); assert(rin.late[1].includes("代わりなんて、もう探さないからね"));
-  assert(rin.late.every((text) => !text.includes("ラベルも同意書もついてないやつ")));
-  assert(rin.second.includes("ラベルも同意書もついてないやつ")); assert(rin.second.includes("仕事仲間からのプレゼント"));
-  assert.equal(rin.answer, 0); assert.equal(rin.route, "friend"); assert(rin.owned);
-  log("HF04/05 rin: question visit, heart4/5 stages, then the MAX finale with a friendship landing and a personal gift");
+  assert(kuyuri.fourth.includes("吸ってる人の顔だけ、知らない")); assert(!kuyuri.fourth.includes("ラベルも同意書もついてないやつ"));
+  assert(kuyuri.late[0].includes("角のすり切れた、黒い手帳だ")); assert(kuyuri.late[0].includes("共同研究ってことにしよう"));
+  assert(kuyuri.late[1].includes("袋しか見えないの")); assert(kuyuri.late[1].includes("代わりなんて、もう探さないからね"));
+  assert(kuyuri.late.every((text) => !text.includes("ラベルも同意書もついてないやつ")));
+  assert(kuyuri.second.includes("ラベルも同意書もついてないやつ")); assert(kuyuri.second.includes("仕事仲間からのプレゼント"));
+  assert.equal(kuyuri.answer, 0); assert.equal(kuyuri.route, "friend"); assert(kuyuri.owned);
+  log("HF04/05 kuyuri: question visit, heart4/5 stages, then the MAX finale with a friendship landing and a personal gift");
 
   // スミ・なる・アダム（友情）: 締めくくりと贈り物。スミさんは閉店後だけ
   const friends = await page.evaluate(async () => {
@@ -545,7 +545,7 @@ try {
   // ================================================================ HF06 専用ハガル
   const gifts = await page.evaluate(async () => {
     const { fresh, shop, score, art, core, DB = window.__remake.DB } = window.T;
-    const ids = ["suyaki_sumi", "suyaki_naru", "suyaki_adam", "suyaki_tsumugi", "suyaki_minto", "suyaki_rin"];
+    const ids = ["suyaki_sumi", "suyaki_naru", "suyaki_adam", "suyaki_tsumugi", "suyaki_minto", "suyaki_kuyuri"];
     const data = ids.map((id) => {
       const e = DB.equipById[id];
       const f = DB.flavorById[e.gift.flavor];

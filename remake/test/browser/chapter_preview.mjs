@@ -38,7 +38,7 @@ await suite("chapter-preview", async check => {
         _ch2_read_ch2_tournament_ageha_heart: true };
       s.stats = { technique: 42, sense: 42, guts: 42, charm: 42, insight: 42 };
       s.tournament.lastRank = 1; s.tournament.lastTotal = 88;
-      for (const who of ["ageha", "kumicho", "rei", "pakki", "maezono", "dr_kemuri", "nagumo", "hajime", "sumi"])
+      for (const who of ["ageha", "kumicho", "rei", "pakki", "maezono", "dr_kemuri", "sui", "hajime", "sumi"])
         s.flags[`_intro_${who}`] = true;
       (await import("./js/chapters/ch2-tournament-state.js")).tournamentProgress(s).stage = "complete";
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });

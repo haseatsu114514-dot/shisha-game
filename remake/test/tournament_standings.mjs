@@ -46,5 +46,5 @@ for (const chapter of [ch2, ch3]) {
   assert.deepEqual(chapter.standings(p), expected, "呼出しごとに独立した結果を返す");
 }
 assert.deepEqual(ch2.CONTESTANTS, ["hajime", "ageha", "kumicho", "rei"]);
-assert.deepEqual(ch3.CONTESTANTS, ["hajime", "kuze", "steve", "volk"]);
+assert.deepEqual(ch3.CONTESTANTS, ["hajime", "saku", "steve", "volk"]);
 console.log("tournament_standings: ok (chapter 2/3)");

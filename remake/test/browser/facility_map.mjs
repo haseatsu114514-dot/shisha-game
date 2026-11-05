@@ -58,7 +58,7 @@ try {
           slot: ['night', 'legacy'].includes(scenario) ? 1 : 0, seed: 131, weatherSeed: 4, money: 90000, stamina: 90 });
         if (scenario === 'chapter2') s.flags._rei_trpg_introduced = true;
         if (scenario !== 'locked') {
-          for (const id of ['sumi', 'tsumugi', 'naru', 'adam', 'minto', 'rin', 'uranaishi']) s.met[id] = true;
+          for (const id of ['sumi', 'tsumugi', 'naru', 'adam', 'minto', 'kuyuri', 'uranaishi']) s.met[id] = true;
           s.flags._spot_guide_naru = s.flags._spot_guide_adam = s.flags._spot_guide_minto = true;
           s.flags._cafe_introduced = true; // #780: 喫茶店は紹介後に地図へ出る
           s.flags._fortune_rumor_heard=true; // #780: 対面の噂を完読済みの表示fixture

@@ -258,12 +258,12 @@ assert.equal(isSuyakiBowl("silicone_bowl"), false);
 
 // 5. 審査員の最終得点式（1本化・同品質 Q=80 で好みだけを変えた計算例）
 assert.equal(BASE_PREF_SCALE, 20);
-assert.equal(judgeMaxPrefDelta("nagumo"), 2.0);
+assert.equal(judgeMaxPrefDelta("sui"), 2.0);
 assert.equal(judgeMaxPrefDelta("dr_kemuri"), 3.0);
 assert.equal(judgeMaxPrefDelta("maezono"), 4.4);
 
 const expectedAtQ80 = {
-  nagumo: [78.0, 79.0, 80.0, 81.0, 82.0],
+  sui: [78.0, 79.0, 80.0, 81.0, 82.0],
   dr_kemuri: [77.0, 78.5, 80.0, 81.5, 83.0],
   maezono: [75.6, 77.8, 80.0, 82.2, 84.4],
 };

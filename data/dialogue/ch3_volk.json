@@ -78,8 +78,8 @@
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_ev_rin_monitor",
-          "next_true": "rin_report",
+          "flag": "_ev_kuyuri_monitor",
+          "next_true": "kuyuri_report",
           "next_false": ""
         },
         {
@@ -243,7 +243,7 @@
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_rin_sample_received",
+          "flag": "_kuyuri_sample_received",
           "next_true": "nightside_sample_owned",
           "next_false": "nightside_sample_none"
         },
@@ -309,13 +309,13 @@
         }
       ],
       "branches": {
-        "rin_report": [
+        "kuyuri_report": [
           {
             "type": "condition",
             "condition_type": "lover",
-            "char_id": "rin",
-            "next_true": "rin_report_lover",
-            "next_false": "rin_report_plain"
+            "char_id": "kuyuri",
+            "next_true": "kuyuri_report_lover",
+            "next_false": "kuyuri_report_plain"
           },
           {
             "speaker": "volk",
@@ -328,14 +328,14 @@
             "text": "……県大会で、それらしい手を見ていた"
           }
         ],
-        "rin_report_plain": [
+        "kuyuri_report_plain": [
           {
             "speaker": "hajime",
             "face": "surprise",
             "text": "くゆりさんの……？"
           }
         ],
-        "rin_report_lover": [
+        "kuyuri_report_lover": [
           {
             "speaker": "hajime",
             "face": "normal",

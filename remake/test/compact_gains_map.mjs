@@ -20,7 +20,7 @@ try {
     const vn = await import("./js/vn/engine.js");
     window.T = { core, stats, ui, hud, map, spots, vn };
     core.newGame(); Object.assign(core.state, { phase: "daily", day: 4, slot: 1 });
-    for (const id of ["naru", "minto", "adam", "tsumugi", "rin"]) core.state.met[id] = true;
+    for (const id of ["naru", "minto", "adam", "tsumugi", "kuyuri"]) core.state.met[id] = true;
     for (const s of spots.SPOTS) if (s.requiresMet) core.state.flags[`_spot_guide_${s.requiresMet}`] = true;
     core.state.flags._cafe_introduced = true;
     hud.initHud({}); hud.showHud(); await ui.warmUiArt();
@@ -120,7 +120,7 @@ try {
   // 通常会話の後でも、くゆりの未回答の質問が残っていれば印を残す。
   await page.evaluate(async () => {
     for(const [id,seq] of Object.entries(T.spots.VISIT_SEQ)) T.core.state.story[id]=seq.length;
-    T.core.state.affinity={rin:T.stats.AFFINITY_RANK_PTS[3]}; T.core.state.flags._gym_member=true;
+    T.core.state.affinity={kuyuri:T.stats.AFFINITY_RANK_PTS[3]}; T.core.state.flags._gym_member=true;
     T.core.state.spotVisits={cafe:1,kannon:1,choizap:1,c_station:1}; await T.openMap();
   });
   await page.waitForSelector('[data-test="pin-naru"]');
@@ -131,15 +131,15 @@ try {
     await T.openMap();
   });
   await page.locator('.map:not(.done) [data-test="pin-shop"]').waitFor();
-  assert.equal(await page.evaluate(() => T.spots.rinPrototypeDue()), true);
+  assert.equal(await page.evaluate(() => T.spots.kuyuriPrototypeDue()), true);
   assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge.story').count(),1);
   // 試作品も読了した状態では、全店舗の新規印が消える。
   await page.evaluate(async () => {
-    T.core.state.flags._spot_seen_ch1_rin_prototype_night=true;
+    T.core.state.flags._spot_seen_ch1_kuyuri_prototype_night=true;
     await T.openMap();
   });
   await page.locator('.map:not(.done) [data-test="pin-shop"]').waitFor();
-  assert.equal(await page.evaluate(() => T.spots.rinPrototypeDue()), false);
+  assert.equal(await page.evaluate(() => T.spots.kuyuriPrototypeDue()), false);
   assert.equal(await page.locator(".evt-badge.story").count(),0);
 
   // 店名は閉店日も残す。臨時休暇は別の札で伝え、訪問できない理由も一致する。

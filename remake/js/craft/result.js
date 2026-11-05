@@ -12,7 +12,7 @@ import { SE, stopBgm } from "../core/audio.js";
 import { autoSkill, CRAFT_RANK_THRESHOLDS } from "./common.js";
 import { craftRankProgress } from "./rank-hud.js";
 import { mixColor } from "./art.js";
-import { NAGUMO_BAR } from "./score.js";
+import { SUI_BAR } from "./score.js";
 import { evaluationOf, judgeComment, judgeDeductionReason } from "./feedback.js";
 import { craftRecognition } from "./recognition.js";
 import { VOTE_SCALE, voteStack as stackOf, judgePanel as panelOf, judgeLegend as legendOf, countUp } from "./tournament-graphics.js";
@@ -22,29 +22,29 @@ const RIVAL_COLOR = { naru: "#f0d8a0", adam: "#c9463a", minto: "#7fe0c2" };
 const JUDGES = [
   { id: "maezono" },
   { id: "dr_kemuri", label: "チャコール博士" },
-  { id: "nagumo", label: "須井" },
+  { id: "sui", label: "須井" },
 ];
 
 /** 総合スコア → 結末。1位は須井票（基準超え）だけが生む（ch1の正史） */
 export function outcomeOf(total) {
-  if (total >= NAGUMO_BAR) return { rank: 1, kind: total >= 90 ? "premium" : "win" };
-  if (total >= NAGUMO_BAR - 12) return { rank: 3, kind: "close" };
+  if (total >= SUI_BAR) return { rank: 1, kind: total >= 90 ? "premium" : "win" };
+  if (total >= SUI_BAR - 12) return { rank: 3, kind: "close" };
   return { rank: 4, kind: total < 38 ? "disaster" : "lose" };
 }
 
 /** 審査員の持ち点（各10点）の最終配分。はじめは上園・博士からも点が入り上位で競り、須井の10点は「最後の一票」として締める（#1282 逆転優勝の廃止、オーナー決定 2026-10-28） */
 export function pointTable(rank) {
-  if (rank === 1) return { maezono: { hajime: 4, naru: 2, adam: 2, minto: 2 }, dr_kemuri: { hajime: 3, adam: 3, naru: 3, minto: 1 }, nagumo: { hajime: 10 } };
-  if (rank === 3) return { maezono: { naru: 4, adam: 3, hajime: 2, minto: 1 }, dr_kemuri: { adam: 5, minto: 2, hajime: 2, naru: 1 }, nagumo: { naru: 10 } };
-  return { maezono: { naru: 4, adam: 3, minto: 1, hajime: 2 }, dr_kemuri: { adam: 5, minto: 3, naru: 1, hajime: 1 }, nagumo: { naru: 10 } };
+  if (rank === 1) return { maezono: { hajime: 4, naru: 2, adam: 2, minto: 2 }, dr_kemuri: { hajime: 3, adam: 3, naru: 3, minto: 1 }, sui: { hajime: 10 } };
+  if (rank === 3) return { maezono: { naru: 4, adam: 3, hajime: 2, minto: 1 }, dr_kemuri: { adam: 5, minto: 2, hajime: 2, naru: 1 }, sui: { naru: 10 } };
+  return { maezono: { naru: 4, adam: 3, minto: 1, hajime: 2 }, dr_kemuri: { adam: 5, minto: 3, naru: 1, hajime: 1 }, sui: { naru: 10 } };
 }
 /** 中間票は、どの最終結果にも残る確定分だけ。未投入票は最終審査まで保留する。 */
 export function interimPointTable(round) {
   return round === 1
-    ? { maezono: { naru: 2, adam: 1, minto: 1, hajime: 1 }, dr_kemuri: {}, nagumo: {} }
+    ? { maezono: { naru: 2, adam: 1, minto: 1, hajime: 1 }, dr_kemuri: {}, sui: {} }
     : round === 2
-      ? { maezono: { naru: 2, adam: 2, minto: 1, hajime: 2 }, dr_kemuri: { adam: 3, minto: 1, naru: 1, hajime: 1 }, nagumo: {} }
-      : { maezono: { naru: 2, adam: 2, minto: 1, hajime: 2 }, dr_kemuri: { adam: 3, minto: 1, naru: 1, hajime: 1 }, nagumo: {} };
+      ? { maezono: { naru: 2, adam: 2, minto: 1, hajime: 2 }, dr_kemuri: { adam: 3, minto: 1, naru: 1, hajime: 1 }, sui: {} }
+      : { maezono: { naru: 2, adam: 2, minto: 1, hajime: 2 }, dr_kemuri: { adam: 3, minto: 1, naru: 1, hajime: 1 }, sui: {} };
 }
 
 const totals = (table, upto = JUDGES.length) => {
@@ -117,7 +117,7 @@ export async function showStandings(round, mine, cs = null) {
           el("b.sd-points", [String(values[id]), el("small", { text: "pt" })]),
         ]))),
       ]),
-      judgePanel(table, ["nagumo"]),
+      judgePanel(table, ["sui"]),
     ]),
     el("div.sd-status", [el("span", { text: "ここまでの制作" }), el(`b.craft-evaluation.${review.tone}`, { text: review.mark }), el("span", { text: round === 3 ? "次は2回目の調整" : round === 2 ? "次は1回目の調整" : "次は吸い出し・提供" })]),
     recognition?.summary ? el("p.sd-recognition", { text: recognition.summary, dataset: { test: "standings-recognition" } }) : null,
@@ -259,7 +259,7 @@ async function parin(screen, disaster) {
 
 // ---------------------------------------------------------------- 須井カットイン（持ち点の一括投入）
 
-export async function nagumoCutin(rank) {
+export async function suiCutin(rank) {
   const table = pointTable(rank);
   const before = totals(table, 2);
   const after = totals(table, 3);
@@ -270,13 +270,13 @@ export async function nagumoCutin(rank) {
     el("span.nc-pt", { text: `${before[id]}` }),
   ]));
   const bars = el("div.nc-bars", rows);
-  const art = portraitInfo("nagumo", "serious")?.src;
+  const art = portraitInfo("sui", "serious")?.src;
   const cut = el("div.nc-cut", [
-    el("span.nc-cut-art", art ? [el("img", { src: art, alt: "", decoding: "async" })] : [faceOf("nagumo", ".nc-cut-face")]),
+    el("span.nc-cut-art", art ? [el("img", { src: art, alt: "", decoding: "async" })] : [faceOf("sui", ".nc-cut-face")]),
     el("div.nc-cut-text", [el("small", { text: "審査員長" }), el("b", { text: "須井修二" }),
       el("div.nc-cut-pt", [el("strong", { text: "10" }), el("span", { text: "持ち点10、一括投入" })])]),
   ]);
-  const ov = el("div.nagumo-cut", [el("i.nc-rays", { "aria-hidden": "true" }),
+  const ov = el("div.sui-cut", [el("i.nc-rays", { "aria-hidden": "true" }),
     header("SMOKE CROWN CUP ／ FINAL VOTE", "須井の10点", "もう一口、吸いたい一台へ。", true), bars, cut]);
   layers.fx.append(ov);
   const fast = !!autoSkill();
@@ -293,9 +293,9 @@ export async function nagumoCutin(rank) {
   // 須井の色の帯だけが伸び、点数が数え上がる。
   for (const row of rows) {
     const id = row.dataset.id;
-    const seg = row.querySelector('.nc-bar [data-judge="nagumo"]');
-    seg.style.width = `${(table.nagumo[id] || 0) / VOTE_SCALE * 100}%`;
-    if (table.nagumo[id]) row.classList.add("hit");
+    const seg = row.querySelector('.nc-bar [data-judge="sui"]');
+    seg.style.width = `${(table.sui[id] || 0) / VOTE_SCALE * 100}%`;
+    if (table.sui[id]) row.classList.add("hit");
     countUp(row.querySelector(".nc-pt"), before[row.dataset.id], after[id], 900);
   }
   SE.fanfare();
@@ -346,7 +346,7 @@ export function resultTable(cs, rank) {
     const table = pointTable(rank);
     const rows = order.map((id, i) => el(`div.rt-row${id === "hajime" ? ".me" : ""}`, { style: { "--i": String(3 - i) }, dataset: { id, rank: String(rankOf(id, t)) } }, [
       el("span.rt-rank.rank-medal", { text: `${rankOf(id, t)}位` }), faceOf(id, ".rt-face"),
-      el("span.rt-name", [nameOf(id), el("small.rt-votes", { text: `上園 ${table.maezono[id] || 0} · 博士 ${table.dr_kemuri[id] || 0} · 須井 ${table.nagumo[id] || 0}` })]),
+      el("span.rt-name", [nameOf(id), el("small.rt-votes", { text: `上園 ${table.maezono[id] || 0} · 博士 ${table.dr_kemuri[id] || 0} · 須井 ${table.sui[id] || 0}` })]),
       voteStack(table, id, "rt-bar"), el("span.rt-pt", { text: `${t[id]} pt` }),
     ]));
     const evaluation = (score) => {

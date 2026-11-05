@@ -24,8 +24,8 @@ const [{audienceFor},{JUDGE_LOOK}]=await Promise.all([
  import('../js/craft/audience.js'),import('../js/craft/tournament-graphics.js'),
 ]);
 delete globalThis.document;
-assert.deepEqual(audienceFor('tournament',3),['nagumo','emil','dr_kemuri']);
-assert.equal(new Set(['nagumo','emil','dr_kemuri'].map(id=>JUDGE_LOOK[id].color)).size,3);
+assert.deepEqual(audienceFor('tournament',3),['sui','emil','dr_kemuri']);
+assert.equal(new Set(['sui','emil','dr_kemuri'].map(id=>JUDGE_LOOK[id].color)).size,3);
 assert.match(feedbackLine('emil','pull',evaluationOf(90)),/奥の味/);
 const nationalBroadcast=JSON.parse(fs.readFileSync(new URL('../data/broadcast.json',import.meta.url))).chapter3;
 assert(nationalBroadcast.rivalComments.length && nationalBroadcast.rivalFeed.length);
@@ -129,8 +129,8 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
   assert(lead,`chapter2 ${event} has a round-end call`);
   assert(lead.lines.length>=3&&lead.lines.length<=4,`chapter2 ${event} round-end line count`);
   assert.equal(lead.lines[0].speaker,'pakki');assert.match(lead.lines[0].text,opening);
-  assert(lead.lines.some(l=>['nagumo','maezono','dr_kemuri'].includes(l.speaker)),`chapter2 ${event} round-end has a judge`);
-  assert(lead.lines.every(l=>['pakki','nagumo','maezono','dr_kemuri'].includes(l.speaker)),`chapter2 ${event} round-end cast`);
+  assert(lead.lines.some(l=>['sui','maezono','dr_kemuri'].includes(l.speaker)),`chapter2 ${event} round-end has a judge`);
+  assert(lead.lines.every(l=>['pakki','sui','maezono','dr_kemuri'].includes(l.speaker)),`chapter2 ${event} round-end cast`);
   // 結果・点数・秘密は言わない（票の画面と講評に任せる）。
   assert.doesNotMatch(lead.lines.map(l=>l.text).join('\n'),/優勝|県代表に|\d+点|一位|1位|味がしない/,`chapter2 ${event} round-end must not reveal results`);
   // 合間の掛け合い本体の長さ（4〜7行）は変えない。
@@ -147,7 +147,7 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
  const say=(event,context,c=c4)=>tournamentStoryDialogue(c,event,()=>0,context);
  const lines=(event,context,c)=>say(event,context,c).lines.map(l=>l.text).join('\n');
  const speakers=(event,context,c)=>say(event,context,c).lines.map(l=>l.speaker);
- const others=['maezono','dr_kemuri','adam','minto','ageha','kumicho','rei','kuze','steve','volk'];
+ const others=['maezono','dr_kemuri','adam','minto','ageha','kumicho','rei','saku','steve','volk'];
  // tied: 先頭と2位が同じ持ち点（その回の出来の差で上に出ているだけ）。level: はじめも先頭と同じ持ち点。
  const naruLead={rank:2,leader:'naru',tied:false,level:false},naruTieMe={rank:2,leader:'naru',tied:true,level:true},
   naruTieOther={rank:3,leader:'naru',tied:true,level:false};
@@ -185,7 +185,7 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
  }
  assert.equal(lines('interlude2',{rank:2,leader:'sheikh'}),lines('interlude2'));
  // 開幕は第4章の審査員3人がそろい、第3章のエミルの行を繰り返さない。
- assert.deepEqual(speakers('opening').filter(s=>s!=='pakki'),['nagumo','emil','da_silva']);
+ assert.deepEqual(speakers('opening').filter(s=>s!=='pakki'),['sui','emil','da_silva']);
  assert.match(lines('opening'),/誰のための一台/);assert.doesNotMatch(lines('opening'),/古い手順も新しい道具も/);
  // パッキングの講評は太陽、配合はエミル（第3章と同じ行）。詰め方の言葉は既存の判定と同じ。
  for (const [pack,expected] of [['fluffy',/ふわっと/],['normal',/均等/],['firm',/しっかり/]]) {

@@ -312,7 +312,7 @@
       }
     },
     {
-      "dialogue_id": "epilogue_rin",
+      "dialogue_id": "epilogue_kuyuri",
       "lines": [
         {
           "speaker": "",
@@ -325,7 +325,7 @@
           "text": "今日も同意書ですか"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "違う。指輪のサイズ、測ってきた"
         },
@@ -335,7 +335,7 @@
           "text": "……俺、何て返せばいいんだろう"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "今決めなくていい。渡したかっただけ"
         },
@@ -350,7 +350,7 @@
           "text": "くゆりさんは予定表を開き、ひとつの午後を指した。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "ここ。仕事は入れない"
         },
@@ -360,7 +360,7 @@
           "text": "俺も、店に話しておきます"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "……うん。楽しみにしてる"
         }

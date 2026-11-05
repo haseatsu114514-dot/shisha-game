@@ -119,15 +119,15 @@ assert.deepEqual(ids, [
   "ch3_opening", "ch3_mukai_arrival", "ch3_mukai_intro", "ch3_individuality_doubt",
   "ch3_tokyo_shop_gap", "ch3_double_apple_incident", "ch3_rest_before_recovery",
   "ch3_daily_cup_1", "ch3_work_without_taste", "ch3_naru_contact_before_tournament",
-  "ch3_naru_work", "ch3_kuze_first", "ch3_kuze_mukai_visit", "ch3_taste_return",
-  "ch3_abyss_recovery", "ch3_kuze_advice",
+  "ch3_naru_work", "ch3_saku_first", "ch3_saku_mukai_visit", "ch3_taste_return",
+  "ch3_abyss_recovery", "ch3_saku_advice",
   "ch3_steve_low_heat", "ch3_volk_first", "ch3_strategy", "ch3_tournament_eve",
 ], "Chapter 3 introduction must keep the canonical scene order through the tournament eve");
 const availableScenes = new Set(["ch3_main", "ch3_double_apple", "ch3_mukai", "ch3_rivals", "ch3_volk"].flatMap(name =>
   JSON.parse(readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))).dialogues.map(scene => scene.dialogue_id)));
 assert(ids.every(id => availableScenes.has(id)), "A Chapter 3 scene is absent from dialogue data");
-assert.equal(CH3_INTRO_SCENES.find(scene => scene.id === "ch3_kuze_first").day, 8);
-assert.equal(CH3_INTRO_SCENES.find(scene => scene.id === "ch3_kuze_advice").day, 11,
+assert.equal(CH3_INTRO_SCENES.find(scene => scene.id === "ch3_saku_first").day, 8);
+assert.equal(CH3_INTRO_SCENES.find(scene => scene.id === "ch3_saku_advice").day, 11,
   "Ayatori must have several days between first meeting and return visit");
 // 東京も日常ループの行程（版3・VOL03）: 場面の並びは同じで、全場面に日付（昼の行動を使う場面か夜の予定か）がある。
 // 場面の読了で時計を動かさない（日付と時間帯は日常ループが進める）。

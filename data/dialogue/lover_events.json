@@ -502,7 +502,7 @@
       ]
     },
     {
-      "dialogue_id": "lover_rin_lv1",
+      "dialogue_id": "lover_kuyuri_lv1",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_cafe.png",
         "private_scene": true
@@ -514,7 +514,7 @@
           "text": "くゆりさん行きつけの夕飯の店。店員さんがいつもの皿を指すと、彼女は首を振って鞄を置いた。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "今日は、別のにする。向かいに君がいるから、……君は、何にする？"
         },
@@ -524,7 +524,7 @@
           "text": "甘いのがいいです。くゆりさんは？"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "私も。仕事中は、眠くならないように苦いのばっかりだから"
         },
@@ -534,7 +534,7 @@
           "text": "食後に運ばれたカップから、同じミルクの匂いがした。くゆりさんは砂糖を足して、こちらの顔を見る。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "……そこ、意外そうな顔しない"
         },
@@ -544,7 +544,7 @@
           "text": "くゆりさんのこと、また一つ知れたなって"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "私も。君が甘いものを選ぶ顔、仕事じゃ見たことなかった"
         },
@@ -554,7 +554,7 @@
           "text": "机の上で触れた指を、くゆりさんがそっと裏返した。掌を合わせる。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "今日は、感想の提出はなし"
         },
@@ -564,7 +564,7 @@
           "text": "でも、一つだけ言わせてください。会えて、うれしいです"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "smile",
           "text": "……それは、もう一回聞かせて"
         }
@@ -572,7 +572,7 @@
       "comment": "既存の絆読了・報酬を維持。営業中の接客とは分けた私的な時間として、二人の希望と距離を具体的に描く。"
     },
     {
-      "dialogue_id": "lover_rin_lv2",
+      "dialogue_id": "lover_kuyuri_lv2",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
         "private_scene": true
@@ -584,7 +584,7 @@
           "text": "約束した夜。駅へ来たくゆりさんのスマホが、続けて二度鳴った。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "ごめん。一件だけ、返していい？"
         },
@@ -599,7 +599,7 @@
           "text": "返信を終えると、くゆりさんはスマホを鞄へしまった。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "待たせたね。私、会えてるだけで十分だと思ってたのかも"
         },
@@ -609,7 +609,7 @@
           "text": "一緒にいるのに、ずっと待ってるのは、少し寂しいです"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "……うん。言ってくれて、よかった"
         },
@@ -619,7 +619,7 @@
           "text": "少し迷ってから、彼女の方から俺の手を取った。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "急ぎの仕事が入ったら、先に連絡する。会うって決めた時間は、ちゃんと空ける"
         },
@@ -629,7 +629,7 @@
           "text": "俺も。無理して大丈夫って言って、後で黙り込むの、やめます"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "smile",
           "text": "いいね、それ。お互い、分かったふりは禁止"
         },
@@ -642,7 +642,7 @@
       "comment": "既存の絆読了・報酬を維持。営業中の接客とは分けた私的な時間として、二人の希望と距離を具体的に描く。"
     },
     {
-      "dialogue_id": "lover_rin_lv3",
+      "dialogue_id": "lover_kuyuri_lv3",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
         "private_scene": true
@@ -654,7 +654,7 @@
           "text": "来週の出張日を教わって、くゆりさんとカレンダーを見比べた。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "向こうの朝だと、こっちは夕方か。君、仕込み中だね"
         },
@@ -664,7 +664,7 @@
           "text": "その時間なら、短いメッセージは返せます。電話は遅番がない日に"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "毎日じゃなくても、寂しくない？"
         },
@@ -679,7 +679,7 @@
           "text": "くゆりさんは予定を二つ消し、空いている夜だけ丸で囲んだ。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "私、連絡を義務にして、そのうち嫌われるほうを想像してた"
         },
@@ -689,7 +689,7 @@
           "text": "話したいから話すんです。疲れた日は、おやすみだけでも"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "じゃあ、帰ってきた日は空けといて。たぶん、声だけじゃ足りなくなるから"
         },
@@ -699,7 +699,7 @@
           "text": "迎えに行きます"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "smile",
           "text": "人混みでも平気。tonariの匂いで、君を見つけられるから"
         },
@@ -712,7 +712,7 @@
       "comment": "既存の絆読了・報酬を維持。営業中の接客とは分けた私的な時間として、二人の希望と距離を具体的に描く。"
     },
     {
-      "dialogue_id": "lover_rin_lv4",
+      "dialogue_id": "lover_kuyuri_lv4",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
         "private_scene": true
@@ -724,7 +724,7 @@
           "text": "出張の話の続きで、本社勤務の打診も来ていると聞いた。帰り道のベンチで、くゆりさんが鞄を置く。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "まだ返事してない。君に黙って決めて、平気な顔をするのは違うと思って"
         },
@@ -734,7 +734,7 @@
           "text": "くゆりさんは、どんなふうに働きたいですか"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "私が選んだ葉を、日本で誰が吸うのか、もう少し見ていたい。本社も気になるけど"
         },
@@ -744,7 +744,7 @@
           "text": "俺のために、どっちかを諦めてほしいとは思わないです"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "うん。でも、君に会いたいのも私の希望。そこを勝手に勘定から外さないで"
         },
@@ -759,7 +759,7 @@
           "text": "……はい。俺の予定も、ちゃんと話します"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "日本の担当を続けて、必要な時に向こうへ行く。まずは、その形で相談してみる"
         },
@@ -769,7 +769,7 @@
           "text": "決まったら、二人の時間のことも考えましょう"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "smile",
           "text": "決まる前から考えて。私だって、君に相談してるんだから"
         },
@@ -782,7 +782,7 @@
       "comment": "既存の絆読了・報酬を維持。営業中の接客とは分けた私的な時間として、二人の希望と距離を具体的に描く。"
     },
     {
-      "dialogue_id": "lover_rin_lv5",
+      "dialogue_id": "lover_kuyuri_lv5",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
         "private_scene": true
@@ -794,7 +794,7 @@
           "text": "仕事帰りの待ち合わせで、くゆりさんが小さな試香紙を二枚差し出した。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "売り物じゃないよ。私たちの好きな匂い、少しずつ合わせてみた"
         },
@@ -804,7 +804,7 @@
           "text": "こっちは、ブルーベリーですね"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "もう片方は、君が前に好きって言ったほう。どっちかを消すの、もったいないでしょ"
         },
@@ -819,7 +819,7 @@
           "text": "名前は、まだないんですね"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "私ひとりの名前には、したくなかった。二人で決めたいの"
         },
@@ -829,7 +829,7 @@
           "text": "名前が決まる前に、これで一台組ませてください"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "smile",
           "text": "……いいね。紙の上じゃ、煙になった時の顔までは分からないから"
         },
@@ -839,7 +839,7 @@
           "text": "じゃあ、急がずに考えましょう。この先の約束も、一緒に"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "smile",
           "text": "……はじめくん。そういうの、さらっと言うんだね"
         },
@@ -849,7 +849,7 @@
           "text": "くゆりさんが一歩近づく。触れた手を握ると、彼女の方から頬へ短くキスをした。"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "normal",
           "text": "今のは記録しなくていい。次に会った時も、またするから"
         },
@@ -859,7 +859,7 @@
           "text": "俺からも、していいですか。……同意書、いりますか"
         },
         {
-          "speaker": "rin",
+          "speaker": "kuyuri",
           "face": "smile",
           "text": "……いらない。いいよ、はじめ"
         },

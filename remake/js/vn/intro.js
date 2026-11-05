@@ -114,7 +114,7 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
     framePortrait(portrait, p);
     await imageReady(p.src, 15000);
   }
-  const motif = { hajime: "smoke", adam: "duality", naru: "stripes", dr_kemuri: "science", samechan: "shark", nagumo: "stripes", maezono: "duality", pakki: "duality" }[id] || "smoke";
+  const motif = { hajime: "smoke", adam: "duality", naru: "stripes", dr_kemuri: "science", samechan: "shark", sui: "stripes", maezono: "duality", pakki: "duality" }[id] || "smoke";
   const pattern = el("div.ci-motif", { "aria-hidden": "true" });
   pattern.innerHTML = `<svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">${motifs[motif]}</svg>`;
   const host = el("div.cutin", { dataset: { char: id }, style: `--ci: ${intro.color || "var(--gold)"}` }, [

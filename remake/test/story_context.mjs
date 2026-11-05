@@ -124,7 +124,7 @@ for (const route of ['friend', 'romance', 'lover']) {
 context.hooks.evalCondition = originalEval;
 console.log('PASS: Minto finale friendship/romance/lover chronology before tournament, aftermath and chapters 2–5');
 const changed = ['ch1_naru_first','ch1_naru_second','ch1_naru_third','ch1_naru_fifth','ch1_naru_bond_finale',
-  'ch1_minto_second','ch1_adam_fifth','ch1_tsumugi_fifth','ch1_tsumugi_smoke_color','ch1_rin_third','ch2_rei_first','ch2_rei_fifth','remake_ch2_kumicho_chat'];
+  'ch1_minto_second','ch1_adam_fifth','ch1_tsumugi_fifth','ch1_tsumugi_smoke_color','ch1_kuyuri_third','ch2_rei_first','ch2_rei_fifth','remake_ch2_kumicho_chat'];
 let count=0;
 for (const id of changed) {
   const target=id.includes('ch2_')?2:1;

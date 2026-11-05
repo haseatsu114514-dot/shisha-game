@@ -13,7 +13,7 @@ const characters = {
   maezono: ["normal", "smile", "serious", "surprise", "excited"],
   sumi: ["normal", "smile", "serious", "surprise", "thinking"],
   mashiro: ["normal", "smile", "serious", "surprise", "sad", "sleep"],
-  nagumo: ["normal", "smile", "serious", "surprise", "thinking"],
+  sui: ["normal", "smile", "serious", "surprise", "thinking"],
 };
 if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 const browser = await chromium.launch({

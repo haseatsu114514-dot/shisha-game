@@ -90,7 +90,7 @@ await suite("samechan-entry", async check => {
       await setup(page);
       const r = await page.evaluate(async () => {
         const saved = K.snapshot(); saved.schema = 5; saved.story.samechan = 40;
-        saved.affinity.samechan = 66; saved.lovers = ["rin"]; saved.lovePts.rin = 40;
+        saved.affinity.samechan = 66; saved.lovers = ["kuyuri"]; saved.lovePts.kuyuri = 40;
         delete saved.romanceChoices;
         localStorage.setItem(K.core.SAVE_KEY, JSON.stringify(saved)); K.core.load();
         const before = K.snapshot(), first = K.samechan.samechanVisitDialogue();
@@ -102,8 +102,8 @@ await suite("samechan-entry", async check => {
       assert.deepEqual(r.before.romanceChoices, {});
       assert(!r.before.flags._samechan_quiet_seat_done && !r.before.flags._samechan_closing_check_done);
       assert(!r.afterSeat.flags._samechan_closing_check_done && !r.afterSeat.flags._samechan_name_known);
-      assert(r.after.affinity.samechan >= 66); assert.equal(r.after.lovePts.rin, 40);
-      assert.deepEqual(r.after.lovers, ["rin"]);
+      assert(r.after.affinity.samechan >= 66); assert.equal(r.after.lovePts.kuyuri, 40);
+      assert.deepEqual(r.after.lovers, ["kuyuri"]);
       assert.equal(r.after.romanceChoices.bond_q1_samechan.value, 1);
       assert(!r.after.flags._confession_due);
     }, options);

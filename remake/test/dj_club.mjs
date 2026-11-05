@@ -66,7 +66,7 @@ check("the club appears on the Tokyo map only in chapter 3 night free time, unna
   assert.deepEqual(dj.djNightChoices({ chapter: 3 }, { id: "d5-0", slot: 0 }), []);
   assert.deepEqual(dj.djNightChoices({ chapter: 3 }, null), []);
   for (const chapter of [1, 2, 4, 5]) assert.deepEqual(dj.djNightChoices({ chapter }, { slot: 1 }), []);
-  const value = { chapter: 3, slot: 1, flags: { _ch3_intro: { stage: 1 } } }, scenes = [{ id: "ch3_opening" }, { id: "ch3_kuze_first" }];
+  const value = { chapter: 3, slot: 1, flags: { _ch3_intro: { stage: 1 } } }, scenes = [{ id: "ch3_opening" }, { id: "ch3_saku_first" }];
   const plain = chapterThreeMapModel(value, scenes, { freeTime: true, actions: [] });
   assert.ok(!plain.pins.some(pin => /^club/.test(pin.id))); assert.ok(plain.landmarks.some(item => item.id === "livehouse"), "the drawn live house stays a landmark"); assert.doesNotMatch(plain.note, /DJ/);
   const model = chapterThreeMapModel(value, scenes, { freeTime: true, actions: dj.djNightChoices(value, { slot: 1 }) });

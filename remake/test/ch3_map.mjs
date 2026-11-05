@@ -22,16 +22,16 @@ const currentMukai = chapterThreeMapModel(freeze(saved(find("ch3_double_apple_in
 assert(currentMukai.pins.find(pin => pin.id === "mukai").current);
 assert.equal(pins(currentMukai).filter(id => id === "mukai").length, 1);
 assert(!pins(currentMukai).includes("enmaku"));
-const kuze = chapterThreeMapModel(freeze(saved(find("ch3_kuze_first"))), CH3_INTRO_SCENES);
-assert(kuze.pins.find(pin => pin.id === "enmaku").current);
-assert(!kuze.pins.find(pin => pin.id === "enmaku").visited);
-assert(!pins(kuze).includes("steve")); assert(!pins(kuze).includes("volk"));
-const beforeKuzeFree = chapterThreeMapModel(freeze(saved(find("ch3_kuze_first"))), CH3_INTRO_SCENES, { freeTime: true });
-assert(!pins(beforeKuzeFree).includes("enmaku"), "Free time must not label the next story destination as the current place");
-assert(!beforeKuzeFree.pins.some(pin => pin.current));
-assert.match(beforeKuzeFree.note, /自由時間/); assert(beforeKuzeFree.freeTime);
-const afterKuze = chapterThreeMapModel(freeze(saved(find("ch3_kuze_mukai_visit"))), CH3_INTRO_SCENES);
-assert(afterKuze.pins.find(pin => pin.id === "enmaku").visited);
+const saku = chapterThreeMapModel(freeze(saved(find("ch3_saku_first"))), CH3_INTRO_SCENES);
+assert(saku.pins.find(pin => pin.id === "enmaku").current);
+assert(!saku.pins.find(pin => pin.id === "enmaku").visited);
+assert(!pins(saku).includes("steve")); assert(!pins(saku).includes("volk"));
+const beforeSakuFree = chapterThreeMapModel(freeze(saved(find("ch3_saku_first"))), CH3_INTRO_SCENES, { freeTime: true });
+assert(!pins(beforeSakuFree).includes("enmaku"), "Free time must not label the next story destination as the current place");
+assert(!beforeSakuFree.pins.some(pin => pin.current));
+assert.match(beforeSakuFree.note, /自由時間/); assert(beforeSakuFree.freeTime);
+const afterSaku = chapterThreeMapModel(freeze(saved(find("ch3_saku_mukai_visit"))), CH3_INTRO_SCENES);
+assert(afterSaku.pins.find(pin => pin.id === "enmaku").visited);
 const cutaway = chapterThreeMapModel(freeze(saved(find("ch3_naru_work"))), CH3_INTRO_SCENES);
 assert.match(cutaway.note, /別会場/); assert(!cutaway.pins.some(pin => pin.current));
 

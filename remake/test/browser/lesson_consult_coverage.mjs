@@ -16,13 +16,13 @@ async function openAftermath(page, { stage, lit, extra = "" }) {
     Object.assign(s.flags, { _ch3_tournament_won: true, _ch3_preview_seen: true,
       _ch3_intro: { startDay: 29, stage: 18, titleSeen: true },
       _ch3_tournament: { stage: "complete", result: { rank: 1, win: true } } });
-    Object.assign(s.met, { steve: true, volk: true, kuze: true, mashiro: true, mukai_master: true, emil: true });
-    Object.assign(s.affinity, { steve: 66, volk: 66, kuze: 66, mashiro: 66 });
+    Object.assign(s.met, { steve: true, volk: true, saku: true, mashiro: true, mukai_master: true, emil: true });
+    Object.assign(s.affinity, { steve: 66, volk: 66, saku: 66, mashiro: 66 });
     p.beginChapterThreeAftermath(s);
     for (const scene of p.CH3_AFTERMATH_SCENES.slice(0, stage)) if (!p.completeChapterThreeAftermathScene(s, scene.id)) throw new Error(scene.id);
     if (extra === "all-detours-read") for (const scene of p.CH3_AFTERMATH_DETOURS) s.flags[`_ch3_read_${scene.id}`] = true;
     // 綾取の締めくくりの前提（LIME交換の寄り道・答えを返しに行く外出）を大会前に済ませた保存（IR22）
-    if (extra === "kuze-finale") Object.assign(s.flags, { _lime_contact_kuze: true, _ch3_read_ch3_kuze_lime: true, _ch3_outings: { enmaku_answer: 1 } });
+    if (extra === "saku-finale") Object.assign(s.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_outings: { enmaku_answer: 1 } });
     if (extra === "volk-low") s.affinity.volk = 0;
     growth.setGrowthPreview(true);
     Object.assign(growth.ensureGrowth(), { nodes: [...lit], learned: [] });
@@ -95,7 +95,7 @@ await suite("lesson-consult-coverage", async (check) => {
     assert.match(await page.locator(t("ch3-aftermath-detour-open")).innerText(), /（1）/);
     await page.locator(t("ch3-aftermath-detour-open")).click();
     await page.locator(t("ch3-aftermath-detour")).waitFor();
-    assert.equal(await page.locator(t("ch3-aftermath-lesson-kuze")).count(), 0, "Ayatori is packing up Enmaku on this morning");
+    assert.equal(await page.locator(t("ch3-aftermath-lesson-saku")).count(), 0, "Ayatori is packing up Enmaku on this morning");
     assert.equal(await page.locator(t("ch3-aftermath-lesson-mashiro")).count(), 0);
     assert.equal(await page.locator('[data-test^="ch3-aftermath-detour-ch3_"]').count(), 0, "every detour was read");
     await page.locator(t("ch3-aftermath-lesson-volk")).click();
@@ -164,25 +164,25 @@ await suite("lesson-consult-coverage", async (check) => {
   });
 
   // (d) IR22: 大会前の来店で読めなかった綾取の締めくくり（♥5）を、大会後の寄り道から一度だけ。日時・stage・お金は進めない
-  await check("ch3-aftermath-kuze-heart5-finale-once-before-the-cleanup", async (page) => {
-    await openAftermath(page, { stage: 1, lit: [], extra: "kuze-finale" });
+  await check("ch3-aftermath-saku-heart5-finale-once-before-the-cleanup", async (page) => {
+    await openAftermath(page, { stage: 1, lit: [], extra: "saku-finale" });
     const before = await unchanged(page);
     await page.locator(t("ch3-aftermath-detour-open")).click();
     await page.locator(t("ch3-aftermath-detour")).waitFor();
-    assert.match(await page.locator(t("ch3-aftermath-finale-kuze")).innerText(), /綾取に呼ばれる（煙幕）/);
-    await page.locator(t("ch3-aftermath-finale-kuze")).click();
-    await page.waitForFunction(() => !!window.__remake.state.finales?.kuze, null, { timeout: 30000 });
+    assert.match(await page.locator(t("ch3-aftermath-finale-saku")).innerText(), /綾取に呼ばれる（煙幕）/);
+    await page.locator(t("ch3-aftermath-finale-saku")).click();
+    await page.waitForFunction(() => !!window.__remake.state.finales?.saku, null, { timeout: 30000 });
     await page.locator(t("ch3-aftermath-scene")).waitFor({ timeout: 30000 });
     assert.deepEqual(await unchanged(page), before, "the finale does not spend time or money, nor advance the aftermath");
     const s = await page.evaluate(() => structuredClone(window.__remake.state));
-    assert.equal(s.finales.kuze.route, "friend");
-    assert.equal(s.owned.filter((id) => id === "suyaki_kuze").length, 1);
+    assert.equal(s.finales.saku.route, "friend");
+    assert.equal(s.owned.filter((id) => id === "suyaki_saku").length, 1);
     const backlog = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map((row) => row.text).join("\n"));
     assert.match(backlog, /今夜の議題は、勝ち負けとは別の話/, "read after the tournament: the after-tournament branch");
     assert.doesNotMatch(backlog, /勝負の話は、今夜はなし/);
     await page.locator(t("ch3-aftermath-detour-open")).click();
     await page.locator(t("ch3-aftermath-detour")).waitFor();
-    assert.equal(await page.locator(t("ch3-aftermath-finale-kuze")).count(), 0, "the finale is read once");
+    assert.equal(await page.locator(t("ch3-aftermath-finale-saku")).count(), 0, "the finale is read once");
   }, { viewport: { width: 1331, height: 760 } });
 
   // (e) IR23: 大会前に読めなかった鉄の煙の再訪を、大会後に順に読める。任意の場面なので台本の報酬で好感度が上がる

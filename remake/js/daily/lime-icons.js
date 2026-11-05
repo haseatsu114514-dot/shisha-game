@@ -16,11 +16,11 @@ const CUSTOM_LIME_ICONS = {
   kumicho: "kumicho-b.png",
   maezono: "maezono-08.png", // 私服セットの08番をお仕事用アカウントに使う
   mashiro: "mashiro-b.png",
-  nagumo: "nagumo-a.png",
+  sui: "sui-a.png",
   naru: "naru-private.png", // 私服案をお仕事用アカウントに使う（なるに私用アカウントは無い）
   pakki: "pakki-a.png",
   rei: "rei-b.png",
-  rin: "rin-a.png",
+  kuyuri: "kuyuri-a.png",
   samechan: "samechan-koro.png",
   sumi: "sumi-b.png",
   uranaishi: "uranaishi-b.png",

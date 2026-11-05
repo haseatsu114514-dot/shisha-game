@@ -7,7 +7,7 @@ import { payTournamentPrize } from "./tournament-prize.js";
 // 大会賞金（2026-10-30 決定の階段式: 第1章30,000円／第2章50,000円／第3章100,000円／第4章200,000円／第5章は賞金なし）。
 export const CH2_PRIZE = 50000;
 export const CONTESTANTS = ["hajime", "ageha", "kumicho", "rei"];
-export const JUDGES = ["maezono", "dr_kemuri", "nagumo"];
+export const JUDGES = ["maezono", "dr_kemuri", "sui"];
 export const SPEND = [2, 3, 2, 3];
 // 初期調整値。章2の比較用の出来であり、キャラクターの能力値ではない。
 // あげは77は上園の好み補正(+4)で81となり、神崎80・REI79を上回る（#1649）。はじめがどの出来でも
@@ -18,7 +18,7 @@ export const RIVAL_QUALITY = { ageha: 77, kumicho: 80, rei: 78 };
 // maxPrefDelta は設定パラメータではなく、BASE_PREF_SCALE * prefWeight から一意に導出する。
 export const BASE_PREF_SCALE = 20;
 export const JUDGE_PROFILES = Object.freeze({
-  nagumo: Object.freeze({ id: "nagumo", label: "須井", qualityWeight: 0.90, prefWeight: 0.10 }),
+  sui: Object.freeze({ id: "sui", label: "須井", qualityWeight: 0.90, prefWeight: 0.10 }),
   dr_kemuri: Object.freeze({ id: "dr_kemuri", label: "チャコール博士", qualityWeight: 0.85, prefWeight: 0.15 }),
   maezono: Object.freeze({ id: "maezono", label: "上園", qualityWeight: 0.78, prefWeight: 0.22 }),
 });
@@ -29,7 +29,7 @@ const boundedPref = value => Math.max(-1, Math.min(1, Number(value) || 0));
 
 /** 審査員 j の最大好み振れ幅（派生値: BASE_PREF_SCALE * prefWeight） */
 export function judgeMaxPrefDelta(judgeId, profiles = JUDGE_PROFILES) {
-  const prof = profiles[judgeId] || JUDGE_PROFILES.nagumo;
+  const prof = profiles[judgeId] || JUDGE_PROFILES.sui;
   return Math.round(BASE_PREF_SCALE * prof.prefWeight * 1000) / 1000;
 }
 
@@ -40,7 +40,7 @@ export function judgeMaxPrefDelta(judgeId, profiles = JUDGE_PROFILES) {
  * 二重乗算や未使用パラメータを生まない。
  */
 export function evaluateJudgeScore(judgeId, quality, prefNorm = 0, profiles = JUDGE_PROFILES) {
-  const prof = profiles[judgeId] || JUDGE_PROFILES.nagumo;
+  const prof = profiles[judgeId] || JUDGE_PROFILES.sui;
   const q = bounded(quality);
   const p = boundedPref(prefNorm);
   const prefAdjusted = bounded(q + BASE_PREF_SCALE * p);

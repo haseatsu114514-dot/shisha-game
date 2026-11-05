@@ -173,7 +173,7 @@ for (const seen of [[], [strip, ...candidates]]) {
 const actualCatalog = JSON.parse(fs.readFileSync(new URL("../data/gallery.json", import.meta.url), "utf8"));
 const actualEntries = galleryEntries(actualManifest, actualCatalog, empty, new Set());
 assert.equal(galleryHint(actualEntries.find(e => e.id === "cg_ch1_minto_casual_reveal")), "第1章・みんと");
-assert.equal(galleryHint(actualEntries.find(e => e.id === "cg_ch1_nagumo_smile")), "第1章");
+assert.equal(galleryHint(actualEntries.find(e => e.id === "cg_ch1_sui_smile")), "第1章");
 assert.equal(galleryHint(actualEntries.find(e => e.id === "cg_minto_confession")), "みんと");
 assert.equal(galleryHint(actualEntries.find(e => e.id === "cg_hiyori_confession")), "");
 assert.equal(galleryHint({ requiredChapter: 3, char: "minto" }), "第3章クリアで解放");
@@ -184,7 +184,7 @@ assert.equal(actualStats.total, 31, "current catalog has no approved additions")
 assert.equal(actualStats.unlocked, 0);
 assert.equal(actualStats.rate, 0);
 const expectedChars = {
-  minto: 5, ageha: 3, tsumugi: 3, naru: 3, rin: 1, mashiro: 4, other: 12,
+  minto: 5, ageha: 3, tsumugi: 3, naru: 3, kuyuri: 1, mashiro: 4, other: 12,
 };
 for (const entry of actualEntries) assert(Object.hasOwn(CHAR_LABELS, entry.char), `${entry.id} has a character tag`);
 assert.equal(actualEntries.find(e => e.id === "cg_ch3_childhood_offered_hand").char, "mashiro");

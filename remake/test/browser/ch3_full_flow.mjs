@@ -41,7 +41,7 @@ async function seed(page) {
       _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
     value.tournament.lastRank = 1; value.tournament.lastTotal = 88;
-    for (const who of ["ageha", "kumicho", "rei", "pakki", "maezono", "dr_kemuri", "nagumo", "hajime", "sumi"])
+    for (const who of ["ageha", "kumicho", "rei", "pakki", "maezono", "dr_kemuri", "sui", "hajime", "sumi"])
       value.flags[`_intro_${who}`] = true;
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
     core.saveConfig(); core.save();
@@ -68,7 +68,7 @@ await suite("ch3-full-flow", async check => {
     assert.equal(state.chapter, 3);
     assert.equal(state.flags._ch3_intro.prologueStep, 4);
     assert.equal(state.flags._ch3_intro.titleSeen, true);
-    assert.equal(state.met.kuze, undefined, "The anonymous prologue must not reveal Ayatori");
+    assert.equal(state.met.saku, undefined, "The anonymous prologue must not reveal Ayatori");
     const startDay = state.flags._ch3_intro.startDay;
     assert.equal(startDay, 29);
     const scenes = await page.evaluate(async () =>
@@ -187,7 +187,7 @@ await suite("ch3-full-flow", async check => {
     assert.equal(state.day, 42);
     assert.equal(state.phase, "tournament");
     assert.equal(state.flags._ch3_cleared, undefined);
-    assert(state.met.kuze && state.met.steve && state.met.volk, "Rivals must be known after the introduction");
+    assert(state.met.saku && state.met.steve && state.met.volk, "Rivals must be known after the introduction");
     assert.equal(state.flags._ch3_strategy, "aroma");
 
     // 3. 全国大会

@@ -137,7 +137,7 @@
    "ax": 0.5828,
    "aspect": 0.7467
   },
-  "nagumo": {
+  "sui": {
    "faces": [
     "normal",
     "serious",
@@ -179,7 +179,7 @@
    "ax": 0.5007,
    "aspect": 0.7467
   },
-  "rin": {
+  "kuyuri": {
    "faces": [
     "normal",
     "sad",
@@ -312,7 +312,7 @@
    "ax": 0.5502,
    "aspect": 0.7467
   },
-  "kuze": {
+  "saku": {
    "faces": [
     "nervous",
     "normal",
@@ -442,7 +442,7 @@
    "aspect": 0.7467,
    "anchor": "head"
   },
-  "rashid": {
+  "khalil": {
    "faces": [
     "normal"
    ],
@@ -451,7 +451,7 @@
    "ax": 0.5001,
    "aspect": 0.7467
   },
-  "saif": {
+  "suhail": {
    "faces": [
     "normal"
    ],
@@ -488,7 +488,7 @@
   "bg_ch2_ageha_closed_night.png",
   "bg_ch2_venue_bench_night.png",
   "bg_ch3_hotel_night.png",
-  "bg_ch3_kuze_video.png",
+  "bg_ch3_saku_video.png",
   "bg_ch3_train_arrival.png",
   "bg_choizap.png",
   "bg_choizap_night.png",
@@ -583,7 +583,7 @@
   "cg_ageha_first_purikura.png",
   "cg_ch1_dr_kemuri_hook.png",
   "cg_ch1_minto_casual_reveal.png",
-  "cg_ch1_nagumo_smile.png",
+  "cg_ch1_sui_smile.png",
   "cg_ch1_sumi_training.png",
   "cg_ch1_tournament_battle.png",
   "cg_ch1_tsumugi_heart_art.png",
@@ -597,7 +597,7 @@
   "cg_ch5_shisha_9000.png",
   "cg_ending_tonari_night.png",
   "cg_hiyori_confession.png",
-  "cg_kuze_mashiro_childhood.png",
+  "cg_saku_mashiro_childhood.png",
   "cg_mashiro_confession.png",
   "cg_mashiro_double_apple.png",
   "cg_minto_casual.png",
@@ -608,7 +608,7 @@
   "cg_naru_last_chance.png",
   "cg_naru_next_entry.png",
   "cg_oneesan_first_smoke.png",
-  "cg_rin_confession.png",
+  "cg_kuyuri_confession.png",
   "cg_ryuji_purikura.png",
   "cg_samechan_confession.png",
   "cg_tsumugi_confession.png",
@@ -625,10 +625,10 @@
   "face_mashiro.png",
   "face_minto.png",
   "face_minto_private.png",
-  "face_nagumo.png",
+  "face_sui.png",
   "face_naru.png",
   "face_pakki.png",
-  "face_rin.png",
+  "face_kuyuri.png",
   "face_sumi.png",
   "face_tsumugi.png",
   "face_kumicho.png",
@@ -643,12 +643,12 @@
   "face_mukai_master.png",
   "face_shisha_9000.png",
   "face_steve.png",
-  "face_kuze.png",
+  "face_saku.png",
   "face_maki.png",
   "face_salaryman.png",
   "face_noor.png",
-  "face_saif.png",
-  "face_rashid.png",
+  "face_suhail.png",
+  "face_khalil.png",
   "face_tetsuko.png"
  ],
  "making": [
@@ -842,7 +842,7 @@
     "size": 0.16583
    }
   },
-  "rin": {
+  "kuyuri": {
    "normal": {
     "cx": 0.46094,
     "top": 0.15417,
@@ -1295,11 +1295,11 @@
     }
    }
   },
-  "rin": {
+  "kuyuri": {
    "color": "#5a60b6",
    "secondary": "#cfd5ff",
    "shadow": "#131746",
-   "background": "ui/character_intros/rin.png",
+   "background": "ui/character_intros/kuyuri.png",
    "frames": {
     "smile": {
      "width": 1023.487,
@@ -1366,11 +1366,11 @@
     }
    }
   },
-  "nagumo": {
+  "sui": {
    "color": "#afbccc",
    "secondary": "#e7edf4",
    "shadow": "#152539",
-   "background": "ui/character_intros/nagumo.png",
+   "background": "ui/character_intros/sui.png",
    "frames": {
     "normal": {
      "width": 918.561,
@@ -1701,11 +1701,11 @@
     }
    }
   },
-  "kuze": {
+  "saku": {
    "color": "#8c7564",
    "secondary": "#dcc4a1",
    "shadow": "#26191b",
-   "background": "ui/character_intros/kuze.png",
+   "background": "ui/character_intros/saku.png",
    "frames": {
     "nervous": {
      "width": 864.162,
@@ -2106,20 +2106,20 @@
    "file": "title_art_minto_07_balcony_mint.png"
   },
   {
-   "character": "rin",
-   "file": "title_art_rin_01_night_tasting.png"
+   "character": "kuyuri",
+   "file": "title_art_kuyuri_01_night_tasting.png"
   },
   {
-   "character": "rin",
-   "file": "title_art_rin_03_late_coffee.png"
+   "character": "kuyuri",
+   "file": "title_art_kuyuri_03_late_coffee.png"
   },
   {
-   "character": "rin",
-   "file": "title_art_rin_04_rainy_neon_umbrella.png"
+   "character": "kuyuri",
+   "file": "title_art_kuyuri_04_rainy_neon_umbrella.png"
   },
   {
-   "character": "rin",
-   "file": "title_art_rin_05_blend_library_command.png"
+   "character": "kuyuri",
+   "file": "title_art_kuyuri_05_blend_library_command.png"
   },
   {
    "character": "tsumugi",
@@ -2595,7 +2595,7 @@
   "backgrounds/bg_ch2_ageha_closed_night.png",
   "backgrounds/bg_ch2_venue_bench_night.png",
   "backgrounds/bg_ch3_hotel_night.png",
-  "backgrounds/bg_ch3_kuze_video.png",
+  "backgrounds/bg_ch3_saku_video.png",
   "backgrounds/bg_ch3_train_arrival.png",
   "backgrounds/bg_choizap.png",
   "backgrounds/bg_choizap_night.png",
@@ -2683,7 +2683,7 @@
   "cgs/cg_ageha_first_purikura.png",
   "cgs/cg_ch1_dr_kemuri_hook.png",
   "cgs/cg_ch1_minto_casual_reveal.png",
-  "cgs/cg_ch1_nagumo_smile.png",
+  "cgs/cg_ch1_sui_smile.png",
   "cgs/cg_ch1_sumi_training.png",
   "cgs/cg_ch1_tournament_battle.png",
   "cgs/cg_ch1_tsumugi_heart_art.png",
@@ -2697,7 +2697,7 @@
   "cgs/cg_ch5_shisha_9000.png",
   "cgs/cg_ending_tonari_night.png",
   "cgs/cg_hiyori_confession.png",
-  "cgs/cg_kuze_mashiro_childhood.png",
+  "cgs/cg_saku_mashiro_childhood.png",
   "cgs/cg_mashiro_confession.png",
   "cgs/cg_mashiro_double_apple.png",
   "cgs/cg_minto_casual.png",
@@ -2708,7 +2708,7 @@
   "cgs/cg_naru_last_chance.png",
   "cgs/cg_naru_next_entry.png",
   "cgs/cg_oneesan_first_smoke.png",
-  "cgs/cg_rin_confession.png",
+  "cgs/cg_kuyuri_confession.png",
   "cgs/cg_ryuji_purikura.png",
   "cgs/cg_samechan_confession.png",
   "cgs/cg_tsumugi_confession.png",
@@ -2776,14 +2776,14 @@
   "sprites/characters/kumicho/chr_kumicho_smile.png",
   "sprites/characters/kumicho/chr_kumicho_smug.png",
   "sprites/characters/kumicho/chr_kumicho_surprise.png",
-  "sprites/characters/kuze/chr_kuze_nervous.png",
-  "sprites/characters/kuze/chr_kuze_normal.png",
-  "sprites/characters/kuze/chr_kuze_sad.png",
-  "sprites/characters/kuze/chr_kuze_serious.png",
-  "sprites/characters/kuze/chr_kuze_smile.png",
-  "sprites/characters/kuze/chr_kuze_smug.png",
-  "sprites/characters/kuze/chr_kuze_surprise.png",
-  "sprites/characters/kuze/chr_kuze_wild.png",
+  "sprites/characters/saku/chr_saku_nervous.png",
+  "sprites/characters/saku/chr_saku_normal.png",
+  "sprites/characters/saku/chr_saku_sad.png",
+  "sprites/characters/saku/chr_saku_serious.png",
+  "sprites/characters/saku/chr_saku_smile.png",
+  "sprites/characters/saku/chr_saku_smug.png",
+  "sprites/characters/saku/chr_saku_surprise.png",
+  "sprites/characters/saku/chr_saku_wild.png",
   "sprites/characters/maezono/chr_maezono_excited.png",
   "sprites/characters/maezono/chr_maezono_normal.png",
   "sprites/characters/maezono/chr_maezono_serious.png",
@@ -2823,11 +2823,11 @@
   "sprites/characters/mukai_master/chr_mukai_master_serious.png",
   "sprites/characters/mukai_master/chr_mukai_master_smile.png",
   "sprites/characters/mukai_master/chr_mukai_master_surprise.png",
-  "sprites/characters/nagumo/chr_nagumo_normal.png",
-  "sprites/characters/nagumo/chr_nagumo_serious.png",
-  "sprites/characters/nagumo/chr_nagumo_smile.png",
-  "sprites/characters/nagumo/chr_nagumo_surprise.png",
-  "sprites/characters/nagumo/chr_nagumo_thinking.png",
+  "sprites/characters/sui/chr_sui_normal.png",
+  "sprites/characters/sui/chr_sui_serious.png",
+  "sprites/characters/sui/chr_sui_smile.png",
+  "sprites/characters/sui/chr_sui_surprise.png",
+  "sprites/characters/sui/chr_sui_thinking.png",
   "sprites/characters/naru/chr_naru_excited.png",
   "sprites/characters/naru/chr_naru_normal.png",
   "sprites/characters/naru/chr_naru_sad.png",
@@ -2844,25 +2844,25 @@
   "sprites/characters/pakki/chr_pakki_smile.png",
   "sprites/characters/pakki/chr_pakki_smoke.png",
   "sprites/characters/pakki/chr_pakki_surprise.png",
-  "sprites/characters/rashid/chr_rashid_normal.png",
+  "sprites/characters/khalil/chr_khalil_normal.png",
   "sprites/characters/rei/chr_rei_normal.png",
   "sprites/characters/rei/chr_rei_sad.png",
   "sprites/characters/rei/chr_rei_serious.png",
   "sprites/characters/rei/chr_rei_smile.png",
   "sprites/characters/rei/chr_rei_surprise.png",
-  "sprites/characters/rin/chr_rin_normal.png",
-  "sprites/characters/rin/chr_rin_sad.png",
-  "sprites/characters/rin/chr_rin_serious.png",
-  "sprites/characters/rin/chr_rin_shock.png",
-  "sprites/characters/rin/chr_rin_smile.png",
-  "sprites/characters/rin/chr_rin_smug.png",
-  "sprites/characters/rin/chr_rin_surprise.png",
+  "sprites/characters/kuyuri/chr_kuyuri_normal.png",
+  "sprites/characters/kuyuri/chr_kuyuri_sad.png",
+  "sprites/characters/kuyuri/chr_kuyuri_serious.png",
+  "sprites/characters/kuyuri/chr_kuyuri_shock.png",
+  "sprites/characters/kuyuri/chr_kuyuri_smile.png",
+  "sprites/characters/kuyuri/chr_kuyuri_smug.png",
+  "sprites/characters/kuyuri/chr_kuyuri_surprise.png",
   "sprites/characters/sai/chr_sai_normal.png",
   "sprites/characters/sai/chr_sai_serious.png",
   "sprites/characters/sai/chr_sai_smile.png",
   "sprites/characters/sai/chr_sai_surprise.png",
   "sprites/characters/sai/chr_sai_thinking.png",
-  "sprites/characters/saif/chr_saif_normal.png",
+  "sprites/characters/suhail/chr_suhail_normal.png",
   "sprites/characters/salaryman/chr_salaryman_normal.png",
   "sprites/characters/salaryman/chr_salaryman_smile.png",
   "sprites/characters/samechan/chr_samechan_excited.png",
@@ -2923,20 +2923,20 @@
   "ui/character_intros/hajime.png",
   "ui/character_intros/hiyori.png",
   "ui/character_intros/kumicho.png",
-  "ui/character_intros/kuze.png",
+  "ui/character_intros/saku.png",
   "ui/character_intros/maezono.png",
   "ui/character_intros/maki.png",
   "ui/character_intros/mashiro.png",
   "ui/character_intros/master_hookah.png",
   "ui/character_intros/minto.png",
   "ui/character_intros/mukai_master.png",
-  "ui/character_intros/nagumo.png",
+  "ui/character_intros/sui.png",
   "ui/character_intros/naru.png",
   "ui/character_intros/noor.png",
   "ui/character_intros/oneesan.png",
   "ui/character_intros/pakki.png",
   "ui/character_intros/rei.png",
-  "ui/character_intros/rin.png",
+  "ui/character_intros/kuyuri.png",
   "ui/character_intros/sai.png",
   "ui/character_intros/samechan.png",
   "ui/character_intros/sheikh.png",
@@ -2966,12 +2966,12 @@
   "ui/face_icons/face_mashiro.png",
   "ui/face_icons/face_minto.png",
   "ui/face_icons/face_minto_private.png",
-  "ui/face_icons/face_nagumo.png",
+  "ui/face_icons/face_sui.png",
   "ui/face_icons/face_naru.png",
   "ui/face_icons/face_noor.png",
   "ui/face_icons/face_pakki.png",
   "ui/face_icons/face_rei.png",
-  "ui/face_icons/face_rin.png",
+  "ui/face_icons/face_kuyuri.png",
   "ui/face_icons/face_samechan.png",
   "ui/face_icons/face_sumi.png",
   "ui/face_icons/face_tetsuko.png",
@@ -3063,10 +3063,10 @@
   "ui/title_arts/title_art_minto_06_after_hours_glasscare.png",
   "ui/title_arts/title_art_minto_07_balcony_mint.png",
   "ui/title_arts/title_art_naru_01_bakery_morning.png",
-  "ui/title_arts/title_art_rin_01_night_tasting.png",
-  "ui/title_arts/title_art_rin_03_late_coffee.png",
-  "ui/title_arts/title_art_rin_04_rainy_neon_umbrella.png",
-  "ui/title_arts/title_art_rin_05_blend_library_command.png",
+  "ui/title_arts/title_art_kuyuri_01_night_tasting.png",
+  "ui/title_arts/title_art_kuyuri_03_late_coffee.png",
+  "ui/title_arts/title_art_kuyuri_04_rainy_neon_umbrella.png",
+  "ui/title_arts/title_art_kuyuri_05_blend_library_command.png",
   "ui/title_arts/title_art_samechan_01_shishark_test_run.png",
   "ui/title_arts/title_art_samechan_02_shark_movie.png",
   "ui/title_arts/title_art_samechan_03_aquarium.png",
@@ -3123,10 +3123,10 @@
    "preview": "［画像］月の写真",
    "allowed_accounts": null
   },
-  "im_rin_stock": {
+  "im_kuyuri_stock": {
    "kind": "image",
-   "owner": "rin",
-   "src": "img/ui/lime/images/im_rin_stock.webp",
+   "owner": "kuyuri",
+   "src": "img/ui/lime/images/im_kuyuri_stock.webp",
    "width": 960,
    "height": 720,
    "alt": "棚に並ぶ新しい小袋",
@@ -3173,10 +3173,10 @@
    "preview": "［スタンプ］がんばれ♪",
    "allowed_accounts": null
   },
-  "st_rin_smug": {
+  "st_kuyuri_smug": {
    "kind": "stamp",
-   "owner": "rin",
-   "src": "img/ui/lime/stamps/st_rin_smug.png",
+   "owner": "kuyuri",
+   "src": "img/ui/lime/stamps/st_kuyuri_smug.png",
    "width": 320,
    "height": 320,
    "alt": "試料袋。ふふ",
@@ -3223,30 +3223,30 @@
    "preview": "［画像］店の道具",
    "allowed_accounts": null
   },
-  "st_nagumo_ack": {
+  "st_sui_ack": {
    "kind": "stamp",
-   "owner": "nagumo",
-   "src": "img/ui/lime/stamps/st_nagumo_ack.png",
+   "owner": "sui",
+   "src": "img/ui/lime/stamps/st_sui_ack.png",
    "width": 320,
    "height": 320,
    "alt": "白い便箋とうなずく煙。承知した",
    "preview": "［スタンプ］承知した",
    "allowed_accounts": null
   },
-  "st_nagumo_cheer": {
+  "st_sui_cheer": {
    "kind": "stamp",
-   "owner": "nagumo",
-   "src": "img/ui/lime/stamps/st_nagumo_cheer.png",
+   "owner": "sui",
+   "src": "img/ui/lime/stamps/st_sui_cheer.png",
    "width": 320,
    "height": 320,
    "alt": "シーシャのボトルと細い煙。健闘を祈る",
    "preview": "［スタンプ］健闘を祈る",
    "allowed_accounts": null
   },
-  "im_nagumo_ready": {
+  "im_sui_ready": {
    "kind": "image",
-   "owner": "nagumo",
-   "src": "img/ui/lime/images/im_nagumo_ready.webp",
+   "owner": "sui",
+   "src": "img/ui/lime/images/im_sui_ready.webp",
    "width": 960,
    "height": 720,
    "alt": "開場前の整った空席と一台のシーシャ",

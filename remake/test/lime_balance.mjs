@@ -88,7 +88,7 @@ function deliver(msgs) {
 
 // LM01〜LM03: 恋人が3人いても、朝のひとことは朝に1通・同じ恋人は3日あける・返事なし。誘いは全員で4日に1回。
 {
-  reset({ lovers: ["tsumugi", "minto", "rin"], loverSince: { tsumugi: 0, minto: 0, rin: 0 }, loveLevel: { tsumugi: 1, minto: 1, rin: 1 }, lastDate: {} });
+  reset({ lovers: ["tsumugi", "minto", "kuyuri"], loverSince: { tsumugi: 0, minto: 0, kuyuri: 0 }, loveLevel: { tsumugi: 1, minto: 1, kuyuri: 1 }, lastDate: {} });
   const days = { morning: {}, invite: [] };
   let stamps = 0;
   for (let day = 1; day <= 13; day++) {
@@ -111,7 +111,7 @@ function deliver(msgs) {
   for (let i = 1; i < days.invite.length; i++) assert(days.invite[i][0] - days.invite[i - 1][0] >= 4, `誘いは全員で4日に1回: ${JSON.stringify(days.invite)}`);
   assert(days.invite.length >= 2, "誘いは止まらない");
   assert.equal(new Set(days.invite.slice(0, 3).map(([, id]) => id)).size, 3, `誘いは恋人に順番に回る: ${JSON.stringify(days.invite)}`);
-  assert.deepEqual(Object.keys(days.morning).sort(), ["minto", "rin", "tsumugi"], "誰の朝のひとことも届く");
+  assert.deepEqual(Object.keys(days.morning).sort(), ["kuyuri", "minto", "tsumugi"], "誰の朝のひとことも届く");
   assert(stamps >= 1, "スタンプの朝がある");
   console.log("[LM01-03] PASS lovers: one morning note per day, read-only, 3-day gap, shared 4-day invite budget, stamp mornings");
 }

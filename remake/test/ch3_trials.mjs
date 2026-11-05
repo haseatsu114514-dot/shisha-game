@@ -37,13 +37,13 @@ for (const legacy of [false, true]) {
     const index = scenes.indexOf(scene.id);
     // 回復前（休養中）は試作を出さない。
     if (index <= recovery) assert.deepEqual(now, [], `${scene.id}: trial before recovery`);
-    if (index <= scenes.indexOf("ch3_kuze_advice")) assert(!now.includes("kuze"), `${scene.id}: kuze trial too early`);
-    else assert(now.includes("kuze"), `${scene.id}: kuze trial missing`);
+    if (index <= scenes.indexOf("ch3_saku_advice")) assert(!now.includes("saku"), `${scene.id}: saku trial too early`);
+    else assert(now.includes("saku"), `${scene.id}: saku trial missing`);
     if (index <= scenes.indexOf("ch3_steve_low_heat")) assert(!now.includes("steve"), `${scene.id}: steve trial too early`);
     else assert(now.includes("steve"), `${scene.id}: steve trial missing`);
     seen.push(...now);
   });
-  assert(seen.includes("kuze") && seen.includes("steve"), "Both trials must be reachable before the tournament");
+  assert(seen.includes("saku") && seen.includes("steve"), "Both trials must be reachable before the tournament");
   // 全場面を読み終えた大会の朝・大会後には出さない。
   assert.deepEqual(ids(value), []);
   value.flags._ch3_tournament = { stage: "complete" };
@@ -57,17 +57,17 @@ for (const legacy of [false, true]) {
   const scenes = chapterThreeScenes(value);
   walk(value, () => {});
   value.flags._ch3_intro.stage = scenes.findIndex(scene => scene.id === "ch3_volk_first");
-  assert.deepEqual(ids(value), ["kuze", "steve"]);
-  assert.equal(recordTrialPractice(value, "kuze", "bogus"), false);
+  assert.deepEqual(ids(value), ["saku", "steve"]);
+  assert.equal(recordTrialPractice(value, "saku", "bogus"), false);
   assert.equal(recordTrialPractice(value, "nobody", "good"), false);
-  assert(recordTrialPractice(value, "kuze", "rough"));
+  assert(recordTrialPractice(value, "saku", "rough"));
   const once = structuredClone(value);
-  assert.equal(recordTrialPractice(value, "kuze", "good"), false, "A finished build was replaced");
+  assert.equal(recordTrialPractice(value, "saku", "good"), false, "A finished build was replaced");
   assert.deepEqual(value, once);
-  assert.deepEqual(ids(value), ["kuze", "steve"], "Unread feedback must stay reachable");
-  assert(finishTrialFeedback(value, "kuze"));
-  assert.equal(finishTrialFeedback(value, "kuze"), false);
-  assert(trialFinished(value, "kuze"));
+  assert.deepEqual(ids(value), ["saku", "steve"], "Unread feedback must stay reachable");
+  assert(finishTrialFeedback(value, "saku"));
+  assert.equal(finishTrialFeedback(value, "saku"), false);
+  assert(trialFinished(value, "saku"));
   assert.deepEqual(ids(value), ["steve"]);
   assert.equal(finishTrialFeedback(value, "steve"), false, "Feedback before building");
   // 壊れた古い値は未着手として扱う。

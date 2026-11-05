@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 const data = JSON.parse(readFileSync(new URL("../data/lover.json", import.meta.url), "utf8"));
-const ids = ["tsumugi", "minto", "rin", "ageha", "hiyori", "mashiro", "samechan"];
+const ids = ["tsumugi", "minto", "kuyuri", "ageha", "hiyori", "mashiro", "samechan"];
 const allowedStats = new Set(["sense", "charm", "insight", "technique", "guts"]);
 for (const id of ids) {
   const scene = data.dates?.[id];
@@ -34,7 +34,7 @@ console.log("OK: all seven romance dates have complete data and Mashiro's voice 
 // 恋人の節目は台詞中のキューも能力の加算元になる。入れ子の分岐を含めて残さない。
 const milestones = JSON.parse(readFileSync(new URL("../../data/dialogue/lover_events.json", import.meta.url), "utf8")).dialogues;
 assert.equal(milestones.length, 35);
-for (const id of ["tsumugi", "minto", "rin", "ageha", "mashiro", "samechan", "hiyori"]) {
+for (const id of ["tsumugi", "minto", "kuyuri", "ageha", "mashiro", "samechan", "hiyori"]) {
   for (let level = 1; level <= 5; level++) {
     const scene = milestones.find(scene => scene.dialogue_id === `lover_${id}_lv${level}`);
     assert.ok(scene?.lines.length, `${id} Lv${level}: missing milestone`);

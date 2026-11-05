@@ -53,7 +53,7 @@ await suite('hiyori-work-relationship',async run=>{
     lover:s=>s.lovers.push('hiyori'),friend:s=>s.flags._friend_hiyori=true,
     finale_seen:s=>s.finales.hiyori={route:'friend',day:s.day,chapter:s.chapter},
     invalid_answer:s=>s.romanceChoices[route.question.choice]={char:'hiyori'},
-    other_answer:s=>s.romanceChoices[route.question.choice]={char:'rin',value:1},
+    other_answer:s=>s.romanceChoices[route.question.choice]={char:'kuyuri',value:1},
     negative_answer:s=>s.romanceChoices[route.question.choice]={char:'hiyori',value:-1},
     nan_answer:s=>s.romanceChoices[route.question.choice]={char:'hiyori',value:NaN},
    },out=[];
@@ -147,17 +147,17 @@ await suite('hiyori-work-relationship',async run=>{
   await setup(page);assert(await work(page,1));
   const r=await page.evaluate(async()=>{W.syntheticGift();W.core.state.affinity.hiyori=66;
    W.core.state.romanceChoices.bond_q1_hiyori={char:'hiyori'};const missing=W.bonds.finaleDue('hiyori');
-   W.core.state.romanceChoices.bond_q1_hiyori={char:'hiyori',value:1,day:10};W.core.state.romanceChoices.bond_q2_hiyori={char:'rin',value:1,day:10};
+   W.core.state.romanceChoices.bond_q1_hiyori={char:'hiyori',value:1,day:10};W.core.state.romanceChoices.bond_q2_hiyori={char:'kuyuri',value:1,day:10};
    const before=JSON.stringify(W.core.state);const done=await W.bonds.playFinale('hiyori');return {missing,done,same:JSON.stringify(W.core.state)===before};});
   assert(!r.missing&&!r.done&&r.same);
  });
  await check('confession-cannot-bypass-unread-and-existing-relationships',async page=>{
   await setup(page);const r=await page.evaluate(async()=>{await W.vn.play('confession_hiyori_accept');const early=[...W.core.state.lovers];const results=[];
-   for(const type of ['friend','lover']){const s=W.fresh();s.finales.hiyori={route:type==='friend'?'friend':'lover',day:4,chapter:1};s.flags._friend_hiyori=type==='friend';s.lovers=type==='lover'?['hiyori','rin']:['rin'];s.lovePts.hiyori=12;s.loveLevel.hiyori=2;const before=JSON.stringify({finales:s.finales,lovers:s.lovers,lovePts:s.lovePts,loveLevel:s.loveLevel,friend:s.flags._friend_hiyori});await W.daily.playHiyoriEvent('work_talk');await W.vn.play('confession_hiyori_accept');results.push(before===JSON.stringify({finales:s.finales,lovers:s.lovers,lovePts:s.lovePts,loveLevel:s.loveLevel,friend:s.flags._friend_hiyori}));}return {early,results};});
+   for(const type of ['friend','lover']){const s=W.fresh();s.finales.hiyori={route:type==='friend'?'friend':'lover',day:4,chapter:1};s.flags._friend_hiyori=type==='friend';s.lovers=type==='lover'?['hiyori','kuyuri']:['kuyuri'];s.lovePts.hiyori=12;s.loveLevel.hiyori=2;const before=JSON.stringify({finales:s.finales,lovers:s.lovers,lovePts:s.lovePts,loveLevel:s.loveLevel,friend:s.flags._friend_hiyori});await W.daily.playHiyoriEvent('work_talk');await W.vn.play('confession_hiyori_accept');results.push(before===JSON.stringify({finales:s.finales,lovers:s.lovers,lovePts:s.lovePts,loveLevel:s.loveLevel,friend:s.flags._friend_hiyori}));}return {early,results};});
   assert.deepEqual(r.early,[]);assert(r.results.every(Boolean));
  });
  await check('lime-inbox-and-future-appointment-survive-work',async page=>{
-  await setup(page);await page.evaluate(()=>{const s=W.core.state;s.pendingInvite={sender:'rin',day:11,slot:1,event:'date_rin'};s.inbox=[{id:'keep',read:false,msg:{sender:'rin'},log:['keep']}];W.lime=JSON.stringify({inbox:s.inbox,invite:s.pendingInvite});});assert(await work(page,0));assert(await page.evaluate(()=>JSON.stringify({inbox:W.core.state.inbox,invite:W.core.state.pendingInvite})===W.lime));
+  await setup(page);await page.evaluate(()=>{const s=W.core.state;s.pendingInvite={sender:'kuyuri',day:11,slot:1,event:'date_kuyuri'};s.inbox=[{id:'keep',read:false,msg:{sender:'kuyuri'},log:['keep']}];W.lime=JSON.stringify({inbox:s.inbox,invite:s.pendingInvite});});assert(await work(page,0));assert(await page.evaluate(()=>JSON.stringify({inbox:W.core.state.inbox,invite:W.core.state.pendingInvite})===W.lime));
  });
  for(const [label,opts] of [['pc',{}],['touch',{viewport:{width:844,height:390},isMobile:true,hasTouch:true}]])await check(label+'-real-serious-and-love-blush',async page=>{
   await setup(page);

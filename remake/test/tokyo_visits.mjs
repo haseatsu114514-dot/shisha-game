@@ -41,8 +41,8 @@ const memory = new Map();
 globalThis.localStorage = { getItem: key => memory.get(key) ?? null, setItem: (key, value) => memory.set(key, String(value)) };
 function departure() {
   const value = newState();
-  Object.assign(value, { chapter: 2, day: 25, /* 準備3日の後の東京DAY1が従来どおり通算29日になる */ phase: "cleared", lovers: ["tsumugi", "minto", "rin", "samechan", "hiyori"],
-    contacts: ["sumi", "tsumugi", "minto", "rin", "samechan", "hiyori"], money: 23456, stamina: 45 });
+  Object.assign(value, { chapter: 2, day: 25, /* 準備3日の後の東京DAY1が従来どおり通算29日になる */ phase: "cleared", lovers: ["tsumugi", "minto", "kuyuri", "samechan", "hiyori"],
+    contacts: ["sumi", "tsumugi", "minto", "kuyuri", "samechan", "hiyori"], money: 23456, stamina: 45 });
   value.owned.push("home_rig_set");
   value.flags = { _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true, _ch2_tournament: { stage: "complete" } };
   assert(advanceToChapterThree(value));
@@ -53,7 +53,7 @@ function departure() {
 }
 const keptKeys = ["lovers", "contacts", "loverSince", "loveLevel", "lovePts", "affinity", "stats", "statXp", "stamina", "money", "owned", "equip", "goods", "keepsakes", "relationshipMemories", "pendingInvite", "guilt"];
 const kept = value => Object.fromEntries(keptKeys.map(key => [key, structuredClone(value[key])]));
-for (const id of ["tsumugi", "minto", "rin", "samechan", "hiyori"]) {
+for (const id of ["tsumugi", "minto", "kuyuri", "samechan", "hiyori"]) {
   const value = departure(), before = kept(value);
   const proposal = proposeTokyoVisit(value, definitions, id);
   assert(proposal && proposal.arrivalDay >= value.day + 2);

@@ -24,7 +24,7 @@ try {
     const stats = await import("./js/core/stats.js");
     window.T = { core, hud, ui, map, stats };
     core.state.phase = "daily";
-    for (const id of ["minto", "naru", "adam", "tsumugi", "rin"]) core.state.met[id] = true;
+    for (const id of ["minto", "naru", "adam", "tsumugi", "kuyuri"]) core.state.met[id] = true;
     hud.initHud({}); hud.showHud();
     window.previewMap = map.chooseSpot();
     await Promise.all(["panel", "button", "map-pin", "heart", "reward-clean", "gauge-frame", "gauge-fill"].map(async (name) => {

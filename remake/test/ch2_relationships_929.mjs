@@ -53,7 +53,7 @@ assert.doesNotMatch(tournament.ch2_tournament_farewell.lines.map((l) => l.text |
 assert.doesNotMatch(text(tournament.ch2_tournament_lobby), /帰って|来ないで/);
 const waiting = craft.tournament_craft_waiting_2.lines;
 for (const id of ["kumicho", "rei", "ageha"]) assert(waiting.some((l) => l.speaker === id), `制作中の ${id}`);
-assert(waiting.some((l) => ["maezono", "dr_kemuri", "nagumo"].includes(l.speaker)), "審査員の短い反応");
+assert(waiting.some((l) => ["maezono", "dr_kemuri", "sui"].includes(l.speaker)), "審査員の短い反応");
 assert.doesNotMatch(waiting.map((l) => l.text).join("\n"), /やもん|決めてん/);
 
 // レヰ再訪: 曲の感想に具体的に答え、同じ空返事を繰り返さない

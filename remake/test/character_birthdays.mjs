@@ -11,13 +11,13 @@ const profiles = [...characters, samechan];
 const expected = {
   hajime: "04-08", sumi: "12-22", naru: "01-15", adam: "11-05",
   minto: "03-10", ageha: "08-01", kumicho: "10-02", rei: "05-20",
-  kuze: "02-01", steve: "08-20", volk: "02-09", master_hookah: "07-03",
-  sheikh: "09-15", shisha_9000: "01-12", dr_kemuri: "05-08", rin: "02-26",
+  saku: "02-01", steve: "08-20", volk: "02-09", master_hookah: "07-03",
+  sheikh: "09-15", shisha_9000: "01-12", dr_kemuri: "05-08", kuyuri: "02-26",
   tsumugi: "07-12", mashiro: "12-07", hiyori: "11-01", samechan: "06-20",
-  pakki: "10-10", nagumo: "12-16", emil: "08-25", da_silva: "06-24",
+  pakki: "10-10", sui: "12-16", emil: "08-25", da_silva: "06-24",
   maezono: "03-04", mukai_master: "04-13", tetsuko: "02-22", salaryman: "12-01",
   uranaishi: "02-29", maki: "04-10", sai: "06-06", yoru: "11-04",
-  saif: "07-24", rashid: "10-20", noor: "09-28",
+  suhail: "07-24", khalil: "10-20", noor: "09-28",
 };
 assert.equal(Object.keys(expected).length, 35);
 const withBirthday = profiles.filter(c => Object.hasOwn(c, "birthday"));

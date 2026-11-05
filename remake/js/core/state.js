@@ -10,7 +10,7 @@ import { recordGalleryProgress } from "./gallery-progress.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 25; // 25: 盤のデンスパック制限から旧セーブの選択肢を保護 / 24: くゆりの味の話を第4回へ移し、旧セーブの不足分を補う / 23: 味の話を第4回へ移し、読了済みセーブの不足分を補う / 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 26; // 26: キャラID改名（IDREN01）の旧セーブ付け替え / 25: 盤のデンスパック制限から旧セーブの選択肢を保護 / 24: くゆりの味の話を第4回へ移し、旧セーブの不足分を補う / 23: 味の話を第4回へ移し、読了済みセーブの不足分を補う / 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -114,6 +114,106 @@ export function newState() {
   };
 }
 
+// スキーマ26（IDREN01・2026-11-05 オーナー決定）: キャラIDを現名に合わせて改名。
+// 旧IDで保存されたセーブは、読み込み時にここで新IDへ付け替える（移行処理以外では旧IDを使わない）。
+export const CHAR_ID_RENAMES = { nagumo: "sui", rin: "kuyuri", kuze: "saku", saif: "suhail", rashid: "khalil" };
+const CHAR_ID_TOKEN = /(?<![A-Za-z0-9])(nagumo|rin|kuze|saif|rashid)(?![A-Za-z0-9])/g;
+const renameIdToken = (v) => (typeof v === "string" ? v.replace(CHAR_ID_TOKEN, (m) => CHAR_ID_RENAMES[m]) : v);
+const renameExactId = (v) => (typeof v === "string" && CHAR_ID_RENAMES[v] ? CHAR_ID_RENAMES[v] : v);
+// マップのキーの付け替え。付け替え先（新ID側）に既存値がある場合はそちらを優先し、旧値では上書きしない。
+function renameIdKeys(obj) {
+  if (!obj || typeof obj !== "object" || Array.isArray(obj)) return obj;
+  const out = {};
+  for (const [k, v] of Object.entries(obj)) if (renameIdToken(k) === k) out[k] = v;
+  for (const [k, v] of Object.entries(obj)) {
+    const nk = renameIdToken(k);
+    if (nk !== k && !(nk in out)) out[nk] = v;
+  }
+  return out;
+}
+// IDの配列の付け替え。exact=true は要素そのものがキャラIDのもの、token は台詞ID等の複合ID。
+function renameIdList(list, token = false) {
+  return [...new Set((Array.isArray(list) ? list : [])
+    .map((v) => (token ? renameIdToken(v) : renameExactId(v)))
+    .filter((v) => typeof v === "string" && v))];
+}
+
+function renameCharIdsInSave(s) {
+  // キャラIDをキーにするマップ（面識・好感度・固有会話・恋人の絆・締めくくり等）
+  for (const k of ["met", "affinity", "affinityCarry", "loveCarry", "story",
+    "loveLevel", "lovePts", "loverSince", "lastDate", "romance", "finales", "friendHangouts"]) {
+    if (s[k] && typeof s[k] === "object") s[k] = renameIdKeys(s[k]);
+  }
+  // フラグはキーにキャラID・台詞IDを含む（例: _kuyuri_sample）。値には触れない
+  if (s.flags && typeof s.flags === "object") s.flags = renameIdKeys(s.flags);
+  // キャラIDそのものの配列（LIME連絡先・恋人）
+  s.contacts = renameIdList(s.contacts);
+  s.lovers = renameIdList(s.lovers);
+  // 複合IDの配列（LIME既読・フレーバー会話・交流の記憶・恋愛イベント・接客記録）
+  s.limeRead = renameIdList(s.limeRead, true);
+  s.flavorLessons = renameIdList(s.flavorLessons, true);
+  s.relationshipMemories = renameIdList(s.relationshipMemories, true);
+  s.loverEventsSeen = renameIdList(s.loverEventsSeen, true);
+  s.usedBaito = renameIdList(s.usedBaito, true);
+  // 恋愛の答えは値側にキャラIDを持つ
+  if (s.romanceChoices && typeof s.romanceChoices === "object") {
+    for (const ans of Object.values(s.romanceChoices)) {
+      if (ans && typeof ans.char === "string") ans.char = renameExactId(ans.char);
+    }
+  }
+  // 接客履歴の客
+  if (Array.isArray(s.baitoRecent)) {
+    for (const entry of s.baitoRecent) {
+      if (entry && Array.isArray(entry.customers)) entry.customers = renameIdList(entry.customers);
+    }
+  }
+  // LIME受信箱（送信者・メッセージID・約束イベント）と予約
+  if (Array.isArray(s.inbox)) {
+    for (const item of s.inbox) {
+      if (!item || typeof item !== "object") continue;
+      item.id = renameIdToken(item.id);
+      item.originId = renameIdToken(item.originId);
+      if (item.msg && typeof item.msg === "object") {
+        item.msg.sender = renameExactId(item.msg.sender);
+        item.msg.accept_event = renameIdToken(item.msg.accept_event);
+        item.msg.origin_id = renameIdToken(item.msg.origin_id);
+      }
+    }
+  }
+  if (s.pendingInvite && typeof s.pendingInvite === "object") {
+    s.pendingInvite.sender = renameExactId(s.pendingInvite.sender);
+    s.pendingInvite.event = renameIdToken(s.pendingInvite.event);
+    s.pendingInvite.originId = renameIdToken(s.pendingInvite.originId);
+  }
+  // 延期した夜の予定（イベントID）
+  if (Array.isArray(s.deferredNightEvents)) {
+    for (const entry of s.deferredNightEvents) if (entry && typeof entry === "object") entry.id = renameIdToken(entry.id);
+  }
+  // TRPG（部員・卓のGMと参加者）
+  if (s.trpg && typeof s.trpg === "object") {
+    if (s.trpg.club && typeof s.trpg.club === "object") s.trpg.club.members = renameIdKeys(s.trpg.club.members);
+    if (s.trpg.cleared && typeof s.trpg.cleared === "object") {
+      for (const rec of Object.values(s.trpg.cleared)) {
+        if (!rec || typeof rec !== "object") continue;
+        rec.gm = renameExactId(rec.gm);
+        if (Array.isArray(rec.participants)) rec.participants = renameIdList(rec.participants);
+      }
+    }
+  }
+  // 東京訪問（同行者）
+  if (s.tokyoVisits && typeof s.tokyoVisits === "object") {
+    if (Array.isArray(s.tokyoVisits.plans)) {
+      for (const plan of s.tokyoVisits.plans) if (plan && typeof plan === "object") plan.characterId = renameExactId(plan.characterId);
+    }
+    if (s.tokyoVisits.offers && typeof s.tokyoVisits.offers === "object") {
+      s.tokyoVisits.offers = renameIdKeys(s.tokyoVisits.offers);
+      for (const offer of Object.values(s.tokyoVisits.offers)) {
+        if (offer && typeof offer === "object") offer.characterId = renameExactId(offer.characterId);
+      }
+    }
+  }
+}
+
 /** 旧スキーマのセーブを現行の形にそろえる（互換処理はここに集約） */
 function migrate(s) {
   // 配列など、状態として解釈できない形は移行せず読み込み不可にする。
@@ -142,6 +242,8 @@ function migrate(s) {
     if (s.stats && !Number.isFinite(s.stats[key])) s.stats[key] = fresh.stats[key];
     if (s.statsAtChapterStart && !Number.isFinite(s.statsAtChapterStart[key])) s.statsAtChapterStart[key] = fresh.statsAtChapterStart[key];
   }
+  // スキーマ26: キャラID改名（IDREN01）。後段の移行処理が新IDで読めるよう、最初に付け替える。
+  if (oldSchema < 26) renameCharIdsInSave(s);
   if (oldSchema < 9) {
     // 以前の経験値は★帯のコストを割って、次の1Pまでの進捗率として引き継ぐ。
     // 能力の現在値は減らさず、ロードだけで増やさない。旧端数が通常1Pを膨らませない。
@@ -238,7 +340,7 @@ function migrate(s) {
   // グラム在庫の導入前のセーブ: 持っていたフレーバーは1箱（50g）ぶんとして引き継ぐ
   if (!s.flavorStock) {
     s.flavorStock = Object.fromEntries((s.flavors || ["double_apple"]).map((id) => [id, 50]));
-    if (s.flags?._rin_sample) s.flavorStock.nightside_earlgrey = 50;
+    if (s.flags?._kuyuri_sample) s.flavorStock.nightside_earlgrey = 50;
   }
   // スキーマ14。旧無料プレビューの試遊から購入・クリアを推測しない。
   const trpg = record(s.trpg);
@@ -324,9 +426,9 @@ function migrate(s) {
     }
   }
   // 第4回読了済みの旧セーブは再生できない。第2回・反復回で受け取った分を除き、未取得分だけ補う。
-  if (oldSchema < 24 && (s.story?.rin || 0) >= 4) {
+  if (oldSchema < 24 && (s.story?.kuyuri || 0) >= 4) {
     learnFlavorStory(s, {
-      dialogue_id: "ch1_rin_fourth",
+      dialogue_id: "ch1_kuyuri_fourth",
       metadata: { flavor_lesson: { rose: 1, lychee: 1, blueberry: 1 } },
     }, {}, { growth: false });
   }

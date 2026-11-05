@@ -213,9 +213,9 @@ export const LESSONS = [
   { id: "M-W4", cell: "-4,1", board: "wisdom", who: "kumicho", need: 5, ring: 2, sig: true, reward: "skill", name: "0分立ち上げ",
     hint: "組長と仲良くなると、蒸らさない立ち上げ方を教えてもらえそう",
     text: "蒸らしを 00:00 で始められる。低温から吸いながら熱を立ち上げる", scene: "lesson_kumicho_zero" },
-  { id: "M-B3", cell: "4,-1", board: "body", who: "kuze", need: 5, ring: 3, sig: true, reward: "special", name: "白紙の味カード",
+  { id: "M-B3", cell: "4,-1", board: "body", who: "saku", need: 5, ring: 3, sig: true, reward: "special", name: "白紙の味カード",
     hint: "綾取と仲良くなると、出し方の勝負どころを教えてもらえそう",
-    text: "提供の時に味の名前を伏せられる。審査員の受け止めの振れ幅が大きくなる", scene: "lesson_kuze_blank" },
+    text: "提供の時に味の名前を伏せられる。審査員の受け止めの振れ幅が大きくなる", scene: "lesson_saku_blank" },
   { id: "M-S5", cell: "4,-3", board: "sense", who: "steve", need: 5, ring: 3, sig: true, reward: "special", name: "ピザとシーシャの夜",
     hint: "スティーブと仲良くなると、みんなで集まる夜に誘ってもらえそう",
     text: "仲間を誘って「ピザとシーシャの夜」を開ける。誘った人の好感度がまとめて上がる（同じ人は続けて呼べない）", scene: "lesson_steve_pizza" },
@@ -224,9 +224,9 @@ export const LESSONS = [
     text: "雨・湿気・気温による温まり方の違いを読み切り、天気で熱が狂いにくくなる", scene: "lesson_volk_precision" },
   // 追加の6人（2026-10-30 オーナーが推しの案を全部採用。SBD57）。会って相談する場面は growth_lessons.json（SBD70）
   // ひよりの授業は斧投げを明かした後（_hiyori_real_self_known）だけ分かる（2026-10-31 オーナー「斧投げ明かした後で」SBD71）
-  { id: "M-S6", cell: "3,-1", board: "sense", who: "rin", need: 5, ring: 1, sig: true, reward: "special", name: "ブルーベリーに帰る",
+  { id: "M-S6", cell: "3,-1", board: "sense", who: "kuyuri", need: 5, ring: 1, sig: true, reward: "special", name: "ブルーベリーに帰る",
     hint: "くゆりと仲良くなると、迷った時に帰る葉を教えてもらえそう",
-    text: "配合にブルーベリーを2割以上入れると、どんな葉と合わせても香りがまとまり、配合の点が上がる", scene: "lesson_rin_blueberry" },
+    text: "配合にブルーベリーを2割以上入れると、どんな葉と合わせても香りがまとまり、配合の点が上がる", scene: "lesson_kuyuri_blueberry" },
   { id: "M-B4", cell: "1,-2", board: "body", who: "hiyori", need: 5, ring: 1, sig: true, revealFlag: "_hiyori_real_self_known", reward: "special", name: "ラーメンと斧で元気",
     hint: "ひよりと仲良くなると、元気でいるコツを教えてもらえそう",
     text: "最大体力が大きく増える", scene: "lesson_hiyori_genki" },
@@ -257,10 +257,10 @@ export const REWARD_JA = { skill: "スキル", special: "特殊な技", stat: "�
 /** キャラのタイプ（2.7）: ♥5でくれる色つきの火種の色だけを決める */
 export const CHAR_TYPE = {
   minto: "body", adam: "sense", naru: "wisdom",
-  rin: "sense", hiyori: "body", samechan: "wisdom", mashiro: "body", sheikh: "wisdom", da_silva: "body",
+  kuyuri: "sense", hiyori: "body", samechan: "wisdom", mashiro: "body", sheikh: "wisdom", da_silva: "body",
   master_hookah: "sense", // 龍龍水煙所のドバイの店で♥5（DBS05）。授業 M-S7 と同じ感覚盤
   rei: "body", ageha: "sense", kumicho: "wisdom",
-  kuze: "body", steve: "sense", volk: "wisdom",
+  saku: "body", steve: "sense", volk: "wisdom",
 };
 
 // ---------------------------------------------------------------- 遊びのご褒美（2026-10-30 オーナー指示 SBD39・SBD40）
