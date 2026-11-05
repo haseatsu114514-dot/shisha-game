@@ -520,6 +520,19 @@ for (const won of [true, false]) {
     roundTrip(save);
   }
 
+  // 新しいフィナーレは名乗りを読んでからクリア。3場面の旧保存は上で継続検証する。
+  {
+    const reading = toFinale();
+    const scenes = ["ending_start", "ending_normal", "ending_daily_smoke", "ending_salaryman_name"];
+    assert.equal(beginChapterFiveFinale(reading, scenes), true);
+    for (const id of scenes.slice(0, -1)) assert.equal(completeChapterFiveScene(reading, id), true, id);
+    assert.equal(reading.flags._ch5.part, "finale");
+    const resumed = JSON.parse(JSON.stringify(reading));
+    assert.equal(completeChapterFiveScene(resumed, "ending_salaryman_name"), true);
+    assert.equal(resumed.flags._ch5.part, "cleared");
+    roundTrip(resumed);
+  }
+
   // 恋人2人・3人: 修羅場はその場の恋人全員の反応を順に、話し直しは同じ順に一人ずつ。
   for (const lovers of [["minto", "tsumugi"], ["kuyuri", "hiyori", "samechan"]]) {
     const save = credits(toCleared(lovers));

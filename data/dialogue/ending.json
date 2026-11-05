@@ -616,7 +616,15 @@
           "speaker": "",
           "face": "",
           "text": "返事を聞きながら、もう一つボウルを出す。"
-        },
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ending_salaryman_name",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
         {
           "speaker": "",
           "face": "",
@@ -630,7 +638,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "やがて、ホースの持ち手をそっとテーブルに置く。会計を済ませ、帰り際にポツリと。"
+          "text": "ホースを置く手が、いつもよりゆっくり動く。会計を済ませたあと、口元がほんの少し緩んだ。"
         },
         {
           "speaker": "salaryman",
@@ -640,8 +648,18 @@
         },
         {
           "speaker": "hajime",
+          "face": "surprise",
+          "text": "……笑いました？"
+        },
+        {
+          "speaker": "salaryman",
           "face": "smile",
-          "text": "ありがとうございます。……また明日"
+          "text": "……表です。表克己。いつも、ありがとうございます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます……また明日"
         },
         {
           "speaker": "",
