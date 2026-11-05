@@ -29,7 +29,7 @@
       "dialogue_id": "ch5_naru_shop_c",
       "lines": [
         { "speaker": "", "face": "", "text": "KEMURIKUSAの作業台。なるが、炭の置き方を一つずつ変えて試していた。" },
-        { "speaker": "naru", "face": "normal", "text": "見るなら、全部見てけ。うまくいかなかった方もな" },
+        { "speaker": "naru", "face": "normal", "text": "俺の台は丸見えだ。うまくいかなかった方もな" },
         { "speaker": "hajime", "face": "normal", "text": "前も、そう言ってたよね" },
         { "speaker": "naru", "face": "smile", "text": "言ってた。言った本人が、今やっと分かってきた" },
         { "speaker": "", "face": "", "text": "うまくいかなかった一台の灰を、なるは捨てずに小皿へ取っておいた。" },
