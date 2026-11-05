@@ -30,6 +30,8 @@ export const CH4_RIVAL_QUALITY = Object.freeze(Object.fromEntries(
 export const CH4_LEGACY_SPEND = Object.freeze([2, 3, 2, 3]);
 export const CH4_SPEND = Object.freeze([2, 3, 2, 3]);
 export const CH4_CRAFT_STEP_COUNT = 11;
+// 第4章の投票確定地点。工程確定と同時に投入し、最後の票で結果も確定する。
+export const CH4_VOTE_AFTER_STEPS = Object.freeze([8, 9, 10, 11]);
 const rulesVersion = p => p.rulesVersion === undefined ? 1 : p.rulesVersion;
 function rulesFor(p) {
   const version = rulesVersion(p);
@@ -61,12 +63,17 @@ export function chapterFourMatch(value) {
 
 export function startChapterFourCraft(value, craft) {
   const p = chapterFourMatch(value);
-  if (value.flags._ch4.part !== "tournament" || !value.flags._ch4.read.ch4_tournament_start || p.result) return false;
+  // 入場（開始場面の読了）と制作開始（craft の作成）は別の確定地点。
+  if (!chapterFourCraftStartReady(value, p)) return false;
   if (p.craft) return p;
   p.entry ||= resources(value);
   p.rulesVersion = CH4_RULES_VERSION;
   p.craft = clone(craft);
   return p;
+}
+
+function chapterFourCraftStartReady(value, p) {
+  return value.flags._ch4.part === "tournament" && !!value.flags._ch4.read.ch4_tournament_start && !p.result;
 }
 
 /** 3敗後の補助は記録済みの敗北だけを数える。旧保存の挑戦回数から敗北を推定しない。 */
@@ -78,6 +85,7 @@ export function chapterFourRetryContext(value) {
 
 export function recoverChapterFourStep(value) {
   const p = chapterFourMatch(value);
+  // flags._ch4.match の旧形式もそのまま読み、未確定工程の資源だけ戻す。
   if (p.rollback) { restore(value, p.rollback); p.rollback = null; }
   return p;
 }
@@ -124,11 +132,31 @@ export function chapterFourStandings(p) {
     .map((id, index) => ({ id, rank: index + 1, points: points[id] }));
 }
 
+function commitChapterFourVote(p, craft, quality, rules, round) {
+  p.quality = quality;
+  for (const judge of CH4_JUDGES) {
+    const hajimeScore = rulesVersion(p) >= 3 ? chapterFourJudgeQuality(craft, round, judge) : p.quality.hajime;
+    const score = id => id === "hajime" ? hajimeScore : p.quality[id];
+    const [first, second] = [...CH4_CONTESTANTS].sort((a, b) => score(b) - score(a) || byTie(a, b));
+    p.votes[judge][first] += rules.spend[round] - 1;
+    p.votes[judge][second] += 1;
+  }
+  p.voted++;
+}
+
+function commitChapterFourResult(p, craft) {
+  const rows = chapterFourStandings(p);
+  const rank = craft.failed ? 4 : rows.find(row => row.id === "hajime").rank;
+  p.result = { rulesVersion: rulesVersion(p), win: !craft.failed && rank === 1, rank, total: craft.total, failure: craft.failed || null,
+    rows, votes: clone(p.votes), parts: clone(craft.parts || {}), careHistory: clone(craft.careHistory || []) };
+  p.history.push(clone(p.result));
+}
+
 export function finishChapterFourStep(value, craft) {
   const p = chapterFourMatch(value);
   if (!p.rollback || p.result || p.step >= CH4_CRAFT_STEP_COUNT) throw new Error("世界大会の工程を確定できません");
   const rules = rulesFor(p), nextStep = p.step + 1;
-  const round = [8, 9, 10, 11].indexOf(nextStep);
+  const round = CH4_VOTE_AFTER_STEPS.indexOf(nextStep);
   // 検査を先に済ませ、不正な成績・持ち点で工程や一部の票だけを確定しない。
   let quality = null;
   if (!craft.failed && round >= 0) {
@@ -158,24 +186,8 @@ export function finishChapterFourStep(value, craft) {
   p.craft = clone(craft);
   p.rollback = null;
   p.step = nextStep;
-  if (quality) {
-    p.quality = quality;
-    for (const judge of CH4_JUDGES) {
-      const hajimeScore = rulesVersion(p) >= 3 ? chapterFourJudgeQuality(craft, round, judge) : p.quality.hajime;
-      const score = id => id === "hajime" ? hajimeScore : p.quality[id];
-      const [first, second] = [...CH4_CONTESTANTS].sort((a, b) => score(b) - score(a) || byTie(a, b));
-      p.votes[judge][first] += rules.spend[round] - 1;
-      p.votes[judge][second] += 1;
-    }
-    p.voted++;
-  }
-  if (craft.failed || p.step === CH4_CRAFT_STEP_COUNT) {
-    const rows = chapterFourStandings(p);
-    const rank = craft.failed ? 4 : rows.find(row => row.id === "hajime").rank;
-    p.result = { rulesVersion: rulesVersion(p), win: !craft.failed && rank === 1, rank, total: craft.total, failure: craft.failed || null,
-      rows, votes: clone(p.votes), parts: clone(craft.parts || {}), careHistory: clone(craft.careHistory || []) };
-    p.history.push(clone(p.result));
-  }
+  if (quality) commitChapterFourVote(p, craft, quality, rules, round);
+  if (craft.failed || p.step === CH4_CRAFT_STEP_COUNT) commitChapterFourResult(p, craft);
   return p;
 }
 

@@ -6,7 +6,7 @@ import { advanceToChapterFour, CH4_PROLOGUE, completeChapterFourScene, chapterFo
   chapterFourAfterDefeat, CH4_PRIZE } from "../js/chapters/ch4-progress.js";
 import { chapterFourMatch, startChapterFourCraft, beginChapterFourStep, finishChapterFourStep,
   recoverChapterFourStep, resetChapterFourCraft, CH4_JUDGES, CH4_CONTESTANTS, CH4_RIVAL_CURVE, chapterFourStandings,
-  CH4_RULES_VERSION, CH4_SPEND, CH4_LEGACY_SPEND, CH4_LEGACY_RIVAL_CURVE, chapterFourRetryContext } from "../js/chapters/ch4-tournament-state.js";
+  CH4_RULES_VERSION, CH4_SPEND, CH4_LEGACY_SPEND, CH4_LEGACY_RIVAL_CURVE, CH4_VOTE_AFTER_STEPS, chapterFourRetryContext } from "../js/chapters/ch4-tournament-state.js";
 import { liftRivalScore, setRivalScoreObserver } from "../js/core/ngplus-difficulty.js";
 // Shared score/served-eval imports browser audio; only its visibility observer runs at module load.
 globalThis.document = { addEventListener() {} };
@@ -38,6 +38,24 @@ const craft = (score = 96) => ({ chapter: 4, mode: "tournament", mix: { sakura: 
   steam: { score }, pull: { score, temp: .54, pulls: 2 }, pullDone: true,
   careHistory: [{ score, temp: .54, coals: 1 }, { score, temp: .54, coals: 2 }],
   stats: { craftQuality: score }, servedQuality: score, total: 0 });
+// 入場の読了と制作開始は別の保存地点。票は指定工程の確定時だけ増える。
+{
+  const value = entry();
+  delete value.flags._ch4.read.ch4_tournament_start;
+  assert.equal(startChapterFourCraft(value, craft()), false);
+  assert.equal(chapterFourMatch(value).craft, null);
+  assert.equal(completeChapterFourScene(value, "ch4_tournament_start"), true);
+  assert.deepEqual(CH4_VOTE_AFTER_STEPS, [8, 9, 10, 11]);
+  startChapterFourCraft(value, craft());
+  for (let step = 1; step <= 11; step++) {
+    beginChapterFourStep(value);
+    const cs = craft();
+    if (step === 11) finalize(cs);
+    const p = finishChapterFourStep(value, cs);
+    assert.equal(p.voted, CH4_VOTE_AFTER_STEPS.filter(boundary => boundary <= step).length);
+    assert.equal(!!p.result, step === 11);
+  }
+}
 function drive(value, cs, { failAt = -1, failureKind = "burnt" } = {}) {
   startChapterFourCraft(value, cs);
   for (let step = chapterFourMatch(value).step; step < 11; step++) {

@@ -479,6 +479,21 @@ async function renderTournament(owner) {
     progress.attempts ? "同じ大会に、もう一度挑む。" : "", CH4_TOURNAMENT_SCENES.start);
 }
 
+/** 確定済み result の票と順位だけを再表示する。再開時も投票・報酬には触れない。 */
+async function showChapterFourCommittedResult(result) {
+  const parts = Object.entries(result.parts).map(([key, score]) =>
+    `${({ holes: "穴", heat: "炭", shisha: "完成品", care1: "調整1", care2: "調整2" })[key]} ${score.toFixed(1)}`).join(" ／ ");
+  const match = chapterFourProgress(state).match;
+  const notes = [result.failure ? "完了した工程から振り返ろう。" : `はじめは${result.rank}位。審査員三人、それぞれの10点が出揃った。`,
+    ...(result.failure ? [] : [`総合 ${result.total.toFixed(1)} ／ ${parts}`]),
+    ...craftReviewLines(match?.craft)];
+  const { chapterFourStandingsView } = await import("./ch4-standings.js");
+  await modal({ title: result.failure ? "制作を完了できなかった" : `世界大会 ${result.rank}位`,
+    body: match?.votes ? chapterFourStandingsView({ ...match, votes: result.votes || match.votes }, { rows: result.rows, notes, test: "ch4-result", final: true })
+      : notes.join("\n"),
+    options: [{ label: "講評へ", primary: true, test: "ch4-verdict-continue" }] });
+}
+
 async function runTournament(owner) {
   const { start, win, loss } = CH4_TOURNAMENT_SCENES;
   if (!chapterFourProgress(state).read[start]) {
@@ -493,20 +508,8 @@ async function runTournament(owner) {
   const result = await runChapterFourCraft({ isCurrent: () => current(owner), menuButton: () => menuButton(owner) });
   if (!current(owner)) return;
   if (!result) { await renderTournament(owner); return; }
-  // 順位・二度の調整・5工程の実成績を、勝敗の台本へ進む前に確認する。
-  const parts = Object.entries(result.parts).map(([key, score]) =>
-    `${({ holes: "穴", heat: "炭", shisha: "完成品", care1: "調整1", care2: "調整2" })[key]} ${score.toFixed(1)}`).join(" ／ ");
-  // 最終結果も第2・3章と同じ持ち点の盤で見せる（#2031）。票は確定済みの result.rows を使う。
-  const match = chapterFourProgress(state).match;
-  const notes = [result.failure ? "完了した工程から振り返ろう。" : `はじめは${result.rank}位。審査員三人、それぞれの10点が出揃った。`,
-    ...(result.failure ? [] : [`総合 ${result.total.toFixed(1)} ／ ${parts}`]),
-    // 第1〜3章の結果と同じ2行（#1909）。記録の無い工程は推測しない。
-    ...craftReviewLines(match?.craft)];
-  const { chapterFourStandingsView } = await import("./ch4-standings.js");
-  await modal({ title: result.failure ? "制作を完了できなかった" : `世界大会 ${result.rank}位`,
-    body: match?.votes ? chapterFourStandingsView({ ...match, votes: result.votes || match.votes }, { rows: result.rows, notes, test: "ch4-result", final: true })
-      : notes.join("\n"),
-    options: [{ label: "講評へ", primary: true, test: "ch4-verdict-continue" }] });
+  // 最終票は result.rows / result.votes から表示する。勝敗の台本はこの後に読む。
+  await showChapterFourCommittedResult(result);
   if (!current(owner)) return;
   if (chapterFourTournamentOutcome(state) === "win") {
     clearContinueHistory(state);
