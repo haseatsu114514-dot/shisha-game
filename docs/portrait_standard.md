@@ -17,7 +17,7 @@
 | 項目 | 規格 | 確かめ方 |
 |---|---|---|
 | 画像 | 896×1200 のRGBA透過PNG。通常と表情差分は同じキャンバス・同じ足元 | `tools/fit_portrait.py`・portrait-fix スキル |
-| 身長 | `data/characters.json` の `spriteScale`（身長の設定÷172cm）で決まる。承認済みの新版限定調整は `spriteScaleVariants.new` を使う。絵の中の人物の高さでは決めない | 会話エンジンが本体の高さを自動でそろえる（`remake/js/vn/engine.js` の `frame()`） |
+| 身長 | `data/characters.json` の `spriteScale`（身長の設定÷172cm）で決まる。承認済みの新版限定調整は `spriteScaleVariants.new` を使う。画風限定の横アンカーは `spriteAnchorVariants.<画風>`（`head` / `feet`）。現行のアンカーは変更しない。絵の中の人物の高さでは決めない | 会話エンジンが本体の高さを自動でそろえる（`remake/js/vn/engine.js` の `frame()`） |
 | 頭身 | **標準 6.4〜7.7（目安7.0）**、**小柄 5.4〜6.2（目安5.8）** | `python3 tools/portrait_metrics.py check` |
 | 同じ人物の衣装違い | 会話画面での頭の大きさの差が5%以内 | 同上（`same_person`） |
 | 表情差分 | 通常と同じ頭の大きさ・位置。表情に伴う小さな首の傾きだけ許す | 通常と重ねて見る（`fit_portrait.py` の比較画像） |
@@ -137,7 +137,7 @@ python3 tools/make_reference_sheet.py lineup              # asset_sources/refere
 
 ## 会話で現行と新立ち絵を切り替える
 
-設定の「会話の立ち絵」で現行／新を切り替える。初期値は現行。端末設定として保存し、進行・セーブ枠・登場カットインの絵柄とは独立する。会話中は同席者も即時に切り替わる。新絵がない人物・表情・私服は、その表情の現行絵へ戻す。候補画像は自動で採用しない。現行画像を削除・上書きしない。
+設定の「会話の立ち絵」で現行／新バージョン／七海風を切り替える。初期値は現行。端末設定として保存し、進行・セーブ枠・登場カットインの絵柄とは独立する。会話中は同席者も即時に切り替わる。同じ衣装の未制作表情は選択した画風の通常絵を保持し、衣装・顔・口具が途中で現行へ戻ることを防ぐ。衣装群自体（`ura_*`・`office_*`・`axe_*` 等）や人物が未導入なら現行を使う。通常1枚だけの仮採用を表情一式完成とは扱わない。候補画像は自動で採用しない。現行画像を削除・上書きしない。
 
 採用した新立ち絵は `assets/sprites/character_variants/new/<id>/chr_<id>_<face>.png` に置く。本書の検品後、`python3 remake/tools/build_manifest.py --portrait-variants-only <id>` で新絵の表情・余白・WebPだけを登録する。同じ人物の新絵は同一キャンバス・足元にそろえ、旧絵のframing値をコピーしない。みんとの私服は `ura_*` のまま保持する。
 
@@ -147,3 +147,9 @@ python3 tools/make_reference_sheet.py lineup              # asset_sources/refere
 
 新版だけ表示倍率を変える場合は `data/characters.json` の `spriteScaleVariants.new` を指定する。未指定の新版と現行への差分フォールバックは既存 `spriteScale` を使う。つむぎv4は新版0.90、現行0.88を維持する。
 
+
+七海風は `assets/sprites/character_variants/nanami/<id>/` と `--portrait-style nanami` を使う。全件ビルドも両画風を保持する。
+
+2026-11-05 の仮採用はスミ新版5表情と、本人了承済みのあげは新版通常1枚。あげはは原画人物高1185pxの例外で、了承済み896×1200プレビューをそのまま再使用し、頭部アンカーで中央へ配置する。残り4表情は通常を保持する。七海風あげはの拒否済み生成は再試行しない。取得済みの七海風スミ通常・博士4表情は一式不足のため候補保管のみ。
+
+[候補の出典・取得状態](../asset_sources/portraits/style-trial-20261105/sources.json)。博士新版・ひより両画風・七海風スミ差分・七海風博士通常は配信元の通信許可不足で未導入。`remake/conversation-preview.html?character=ageha&portraitStyle=new` は本編と同じ会話エンジン・ウインドウで全登録人物と衣装・表情を比較でき、未導入と通常保持を明示する。実行画面の確認と静止試算を区別する。

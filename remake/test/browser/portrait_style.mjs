@@ -92,11 +92,11 @@ await suite("portrait-style", async check => {
       const srcs = await page.locator(portraits).evaluateAll(images => images.map(image => image.src));
       await settings(page);
       await page.screenshot({ path: path.resolve(root, process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser", `portrait-style-${label}-settings.png`) });
-      for (const value of ["new", "classic", "new", "classic", "new"]) {
+      for (const value of ["new", "classic", "nanami", "new", "classic", "new"]) {
         await change(page, value);
         assert.deepEqual(await snapshot(page), before, "Settings do not advance dialogue, reorder people or mutate game state");
         const actual = await page.locator(portraits).evaluateAll(images => images.map(image => image.src));
-        if(value === "classic") assert.deepEqual(actual, srcs);
+        if(value === "classic" || value === "nanami") assert.deepEqual(actual, srcs);
         else {
           assert.match(actual[0], /character_variants\/new\/tsumugi\/chr_tsumugi_smile/);
           assert.equal(actual[1], srcs[1], "Unregistered Minto retains classic sad");
@@ -130,7 +130,7 @@ await suite("portrait-style", async check => {
     await check(`${label}-temporary-partial-variant`, async page => {
       // Browser-only fixture: existing normal bytes stand in for a visibly different smile.
       // No production image/manifest file is created or registered.
-      await page.route("**/assets/sprites/character_variants/new/tsumugi/*.png", route => route.fulfill({
+      await page.route("**/assets/sprites/character_variants/new/*/*.png", route => route.fulfill({
         path: path.join(root, "remake/img/sprites/characters/tsumugi/chr_tsumugi_normal.webp"), contentType: "image/webp",
       }));
       await page.evaluate(async () => {
@@ -153,14 +153,15 @@ await suite("portrait-style", async check => {
           assert.match(images[0].src, /character_variants\/new\/tsumugi\/chr_tsumugi_smile/);
           assert.notEqual(images[0].style, original[0].style, "New artwork uses its own framing measurements");
         } else assert.deepEqual(images[0], original[0]);
-        assert.deepEqual(images[1], original[1], "Missing expression retains exact classic image and framing");
+        if(value === "new") assert.match(images[1].src, /character_variants\/new\/minto\/chr_minto_normal/);
+        else assert.deepEqual(images[1], original[1]);
         assert.deepEqual(await savedWithoutConfig(page), saved);
       }
       await close(page);
       await page.locator(".vn-text").click();
       await page.waitForFunction(() => document.querySelector(".vn-text").textContent === "未制作の表情です");
       await decoded(page);
-      assert.match(await page.locator('img[data-speaker="tsumugi"]').getAttribute("src"), /sprites\/characters\/tsumugi\/chr_tsumugi_serious/);
+      assert.match(await page.locator('img[data-speaker="tsumugi"]').getAttribute("src"), /character_variants\/new\/tsumugi\/chr_tsumugi_normal/);
       const missingBefore = await snapshot(page);
       await settings(page);
       await change(page, "classic"); await change(page, "new");

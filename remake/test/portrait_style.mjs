@@ -38,7 +38,7 @@ test('new uses separate image and measurements', () => {
  assert.equal(p.h,.7); assert.equal(p.b,.1); assert.equal(p.ax,.6); assert.equal(p.scale,.9);
 });
 test('speaker alias and expression alias retained', () => assert.equal(data.portraitInfo('tumugi','excited').face,'smile'));
-test('missing new expression retains classic expression', () => {const p=data.portraitInfo('tsumugi','serious');assert.equal(p.style,'classic');assert.equal(p.face,'serious');assert.equal(p.b,.02);assert.equal(p.scale,.88);});
+test('missing expression retains same-style normal and framing', () => {const p=data.portraitInfo('tsumugi','serious');assert.equal(p.style,'new');assert.equal(p.face,'normal');assert.equal(p.b,.1);assert.equal(p.scale,.9);});
 test('missing character variant falls back to classic', () => assert.equal(data.portraitInfo('minto','smile').style,'classic'));
 test('unknown character stays absent', () => assert.equal(data.portraitInfo('missing'),null));
 test('private outfit never becomes public outfit', () => {const p=data.portraitInfo('oneesan','smile');assert.equal(p.face,'ura_smile');assert.match(p.src,/chr_minto_ura_smile/);});
@@ -57,6 +57,16 @@ test('old config without key defaults to classic on boot', () => {
  storage.set(state.CONFIG_KEY,'{}');state.config.portraitStyle='classic';state.loadConfig();assert.equal(style.portraitStyle(),'classic');
 });
 test('invalid saved preference normalizes', () => {storage.set(state.CONFIG_KEY,'{"portraitStyle":"invalid"}');state.loadConfig();assert.equal(state.config.portraitStyle,'classic');});
+test('nanami is independent, persists, and uses its own metrics', () => {
+ data.DB.manifest.portraitVariants.nanami={tsumugi:{faces:['normal'],h:.65,b:.05,ax:.55}};
+ state.config.portraitStyle='nanami';state.saveConfig();state.config.portraitStyle='classic';state.loadConfig();
+ assert.equal(style.portraitStyle(),'nanami');const p=data.portraitInfo('tsumugi','serious');
+ assert.equal(p.style,'nanami');assert.equal(p.face,'normal');assert.equal(p.h,.65);assert.match(p.src,/character_variants\/nanami\//);
+});
+test('unregistered costumes never use another costume normal', () => {
+ const old=legacy.faces;legacy.faces=[...old,'office_angry'];
+ assert.equal(data.portraitInfo('minto','office_angry','new').style,'classic');legacy.faces=old;
+});
 test('missing variant manifest is backward compatible', () => {delete data.DB.manifest.portraitVariants;state.config.portraitStyle='new';assert.equal(data.portraitInfo('tsumugi','normal').style,'classic');});
 // Execute production openConfig with a tiny DOM adapter, without importing unrelated scenes.
 const titleSource = await read('js/scenes/title.js');
@@ -72,7 +82,7 @@ vm.runInContext(titleSource.slice(titleSource.indexOf('export async function ope
 await configCtx.openConfig({onChange:(key,value)=>changed=[key,value]});
 const find = (node,test) => node?.dataset?.test===test ? node : (node?.children||[]).map(n=>find(n,test)).find(Boolean);
 const control=find(modalArgs.body,'cfg-portrait-style');
-test('settings expose independent classic/new control',()=>{assert.ok(control);assert.equal(control.children.length,2);assert.ok(find(modalArgs.body,'cfg-intro-art'));});
+test('settings expose independent classic/new control',()=>{assert.ok(control);assert.equal(control.children.length,3);assert.ok(find(modalArgs.body,'cfg-intro-art'));});
 test('changing settings persists and notifies current VN',()=>{control.onchange({target:{value:'new'}});assert.equal(saves,1);assert.deepEqual(changed,['portraitStyle','new']);});
 configCtx.document.body.dataset.screen='preview';control.onchange({target:{value:'classic'}});
 test('isolated preview does not write user settings',()=>assert.equal(saves,1));

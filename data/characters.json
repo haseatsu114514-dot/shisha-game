@@ -528,6 +528,9 @@
     "voice": {
       "first_person": "うち",
       "hajime_address": "ハジメっち"
+    },
+    "spriteAnchorVariants": {
+      "new": "head"
     }
   },
   {

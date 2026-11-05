@@ -43,14 +43,18 @@ async function inspect(page, label, tag) {
     // Upper 24% of the visible silhouette, not anatomical face landmarks.
     const headEnd=top+(bottom-top)*.24;
     for(let y=top;y<headEnd;y++)for(let x=0;x<c.width;x++)if(a[(y*c.width+x)*4+3]>=24){left=Math.min(left,x);right=Math.max(right,x+1);}
+    let headSum=0,headCount=0;
+    for(let y=top;y<top+(bottom-top)*.2;y++)for(let x=0;x<c.width;x++)if(a[(y*c.width+x)*4+3]>=24){headSum+=x;headCount++;}
+    const headCenter=(r.left-stage.left+headSum/headCount*r.width/c.width)*1280/stage.width;
     const k=1280/stage.width;
-    return {opaque,speaker:im.dataset.speaker,src:im.getAttribute('src'),position:im.dataset.pos,
+    return {opaque,headCenter,speaker:im.dataset.speaker,src:im.getAttribute('src'),position:im.dataset.pos,
       top:(r.top-stage.top+top*r.height/c.height)*k,
       headLeft:(r.left-stage.left+left*r.width/c.width)*k,
       headRight:(r.left-stage.left+right*r.width/c.width)*k,
       frame:im.style.cssText};
   }));
   for(const row of rows){
+    if(rows.length===1 && row.speaker==='ageha' && row.src.includes('character_variants/new/')) assert.ok(Math.abs(row.headCenter-640)<=1,`${tag}: Ageha upper silhouette must be centered ${JSON.stringify(row)}`);
     assert.ok(row.opaque>0,`${tag}: no visible raster pixels ${JSON.stringify(row)}`);
     assert.ok(row.top>=-.5,`${tag}: clipped upper silhouette ${JSON.stringify(row)}`);
     assert.ok(row.headLeft>=-.5 && row.headRight<=1280.5,`${tag}: horizontally clipped upper silhouette ${JSON.stringify(row)}`);
