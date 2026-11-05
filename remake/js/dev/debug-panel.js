@@ -113,18 +113,18 @@ function importSave(raw) {
     || !Number.isInteger(data.day) || data.day < 1 || !["opening", "daily", "tournament", "aftermath", "cleared"].includes(data.phase)
     || !Number.isInteger(data.slot) || data.slot < 0 || data.slot > 2
     || !data.flags || Array.isArray(data.flags) || typeof data.flags !== "object") throw new Error("セーブデータの形式が正しくありません");
-  if (data.schema === SCHEMA) {
+  const validate = data => {
     if (data.chapter === 2 && !data.flags._ch2_day1) throw new Error("第2章の進行地点がありません");
     try {
       if (data.chapter === 3) chapterThreeProgress(data);
       if (data.chapter === 4) chapterFourProgress(data);
       if (data.chapter === 5) chapterFiveProgress(data);
     } catch { throw new Error("章の進行地点が正しくありません"); }
-  }
+  };
   const key = "suien_debug_import_candidate";
   try {
     localStorage.setItem(key, raw);
-    if (!loadFromSlot(key)) throw new Error("セーブの検証または保存に失敗しました");
+    if (!loadFromSlot(key, { validate })) throw new Error("セーブの検証または保存に失敗しました");
   } finally { localStorage.removeItem(key); }
   requestResumeOnBoot();
   location.reload();

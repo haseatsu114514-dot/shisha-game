@@ -567,13 +567,15 @@ export function saveToSlot(key) {
 }
 
 /** 枠から読み込んで今の状態にする。以後のオートセーブもこのデータから続く */
-export function loadFromSlot(key) {
+export function loadFromSlot(key, { validate } = {}) {
   const s = readSlot(key);
   if (!s) return null;
   // 移行で想定外の例外が出ても、進行中の状態と保存元を保ったまま読み込み失敗にする。
   let migrated = null;
   try { migrated = migrate(s); } catch { migrated = null; }
   if (!migrated) return null;
+  // 外部JSONなどの候補は、移行後の形を検証してから保存・公開する。
+  try { if (validate && validate(migrated) === false) return null; } catch { return null; }
   // 保存の成否が決まるまで候補を公開しない。hud購読者は旧画面を破棄しうる。
   const { saved } = writeSave(migrated);
   // 手動枠を書き継げないと、再起動後に古いオートセーブへ戻ってしまう。

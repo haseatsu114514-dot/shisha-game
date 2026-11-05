@@ -166,4 +166,46 @@ await suite("debug-tools", async check => {
     const bounds = await page.locator(t("debug-panel")).boundingBox();
     assert(bounds && bounds.x >= 0 && bounds.x + bounds.width <= 390);
   });
+
+  await check("import-validates-migrated-chapter-before-replacing-save", async page => {
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      core.newGame(); core.state.money = 54321; core.save();
+      window.__debugImportOriginal = core.state;
+    });
+    await openPanel(page);
+    const before = await page.evaluate(() => localStorage.getItem("suien_remake_save"));
+    for (const schema of [25, 26]) for (const chapter of [4, 5]) {
+      const bad = { schema, chapter, day: 50, slot: 0, phase: "daily", flags: {} };
+      await page.locator(t("debug-save-file")).setInputFiles({ name: "bad-progress.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify(bad)) });
+      await page.locator(t("debug-save-import")).click();
+      await page.locator(t("debug-message")).filter({ hasText: "セーブの検証または保存に失敗しました" }).waitFor();
+      assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), before);
+      assert(await page.evaluate(async () => (await import("./js/core/state.js")).state === window.__debugImportOriginal), "invalid import keeps live state identity");
+      assert.equal(await page.evaluate(() => localStorage.getItem("suien_debug_import_candidate")), null);
+      assert.equal(await page.evaluate(() => sessionStorage.getItem("suien_remake_boot_load")), null);
+    }
+    // Genuine old saves pass through migration and the same chapter progress validators.
+    for (const chapter of [4, 5]) {
+      await page.locator(t("debug-chapter-select")).selectOption(String(chapter));
+      await Promise.all([page.waitForNavigation(), page.locator(t("debug-chapter-go")).click()]);
+      await page.locator("#boot").waitFor({ state: "detached" });
+      const old = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
+      old.schema = 25; old.money = 12000 + chapter;
+      await openPanel(page);
+      await page.locator(t("debug-save-file")).setInputFiles({ name: "old-valid.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify(old)) });
+      await Promise.all([page.waitForNavigation(), page.locator(t("debug-save-import")).click()]);
+      await page.locator("#boot").waitFor({ state: "detached" });
+      await page.waitForFunction(amount => JSON.parse(localStorage.getItem("suien_remake_save") || "null")?.money === amount, 12000 + chapter);
+      const migrated = await page.evaluate(async chapter => {
+        const core = await import("./js/core/state.js");
+        const saved = JSON.parse(localStorage.getItem("suien_remake_save"));
+        const progress = chapter === 4 ? (await import("./js/chapters/ch4-progress.js")).chapterFourProgress(saved) : (await import("./js/chapters/ch5-progress.js")).chapterFiveProgress(saved);
+        return { schema: saved.schema, currentSchema: core.SCHEMA, part: progress.part };
+      }, chapter);
+      assert.equal(migrated.schema, migrated.currentSchema);
+      assert.equal(migrated.part, "prologue");
+      if (chapter === 4) await openPanel(page);
+    }
+  });
 }, { entry: `${baseURL}?debug=1` });

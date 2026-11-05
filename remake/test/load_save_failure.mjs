@@ -111,4 +111,33 @@ assert.equal(files.get(core.SAVE_KEY), originalAuto);
 failAutoSave = false;
 assert.equal(core.save(), true);
 assert.equal(files.get(core.SAVE_KEY), JSON.stringify(core.state));
+
+// 外部JSON用validatorは移行後・保存前に動き、拒否時は保存と公開stateを保持する。
+failAutoSave = false;
+const validatedBefore = core.state;
+const validatedJSON = JSON.stringify(validatedBefore);
+const autoBeforeValidation = files.get(core.SAVE_KEY);
+for (const result of ["false", "throw"]) {
+  const raw = JSON.stringify({ ...core.newState(), schema: 25, chapter: 4, day: 50, phase: "daily", flags: {} });
+  files.set(invalidKey, raw);
+  notifications.length = 0;
+  let calls = 0;
+  assert.equal(core.loadFromSlot(invalidKey, { validate(candidate) {
+    calls++;
+    assert.equal(candidate.schema, core.SCHEMA, "validator receives migrated candidate");
+    assert.equal(candidate.chapter, 4);
+    if (result === "throw") throw new Error("invalid chapter progress");
+    return false;
+  } }), null);
+  assert.equal(calls, 1);
+  assert.strictEqual(core.state, validatedBefore);
+  assert.equal(JSON.stringify(core.state), validatedJSON);
+  assert.equal(files.get(core.SAVE_KEY), autoBeforeValidation);
+  assert.equal(files.get(invalidKey), raw);
+  assert.deepEqual(notifications, []);
+}
+let accepted = false;
+assert(core.loadFromSlot(invalidKey, { validate(candidate) { accepted = candidate.schema === core.SCHEMA; } }));
+assert(accepted, "valid migrated candidate may be accepted");
+
 console.log("PASS: 手動LOADの保存失敗・状態復元、正常LOAD、オートLOAD、saveの成否");
