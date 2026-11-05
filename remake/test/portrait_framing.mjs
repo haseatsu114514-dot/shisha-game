@@ -56,6 +56,12 @@ for (const folder of ['pakki', 'tetsuko']) {
 const plain = render({ folder: 'test', scale: .9, h: .9, b: .02, ax: .48 });
 const padded = render({ folder: 'test', scale: .9, h: .7, b: .12, ax: .48 });
 assert.ok(Math.abs(plain.body - padded.body) < 1e-9 && Math.abs(plain.top - padded.top) < 1e-9);
+// A raised prop reserves common headroom without shrinking the character.
+const prop = render({ folder: 'test', scale: .9, h: .9, b: .02, ax: .48, topOverhang: .08 });
+assert.equal(prop.body, plain.body);
+assert.equal(prop.height, plain.height);
+assert.ok(prop.top - .08 * prop.height >= .03 - 1e-9, 'raised prop clipped');
+assert.ok(prop.top > plain.top, 'common prop headroom must shift down');
 // Preserve the reporting tool's game-pixel measurements without changing icon proportions.
 const reportTarget = Number(read('tools/portrait_metrics.py').match(/FRAMING_TARGET = ([\d.]+)/)?.[1]);
 assert.equal(reportTarget, context.framing.target);

@@ -96,10 +96,13 @@ await suite("portrait-style", async check => {
         await change(page, value);
         assert.deepEqual(await snapshot(page), before, "Settings do not advance dialogue, reorder people or mutate game state");
         const actual = await page.locator(portraits).evaluateAll(images => images.map(image => image.src));
-        if(value === "classic" || value === "nanami") assert.deepEqual(actual, srcs);
-        else {
+        if(value === "classic") assert.deepEqual(actual, srcs);
+        else if(value === "new") {
           assert.match(actual[0], /character_variants\/new\/tsumugi\/chr_tsumugi_smile/);
-          assert.equal(actual[1], srcs[1], "Unregistered Minto retains classic sad");
+          assert.match(actual[1], /character_variants\/new\/minto\/chr_minto_normal/, "Missing new Minto sad retains the same-style normal");
+        } else {
+          assert.equal(actual[0], srcs[0], "Unregistered Nanami Tsumugi retains classic smile");
+          assert.match(actual[1], /character_variants\/nanami\/minto\/chr_minto_sad/);
         }
         assert.equal(await page.evaluate(async () => (await import("./js/core/data.js")).portraitInfo('tsumugi','smile').scale), value === 'new' ? .9 : .88);
         assert.equal(await page.evaluate(() => JSON.parse(localStorage.suien_remake_config).portraitStyle), value);

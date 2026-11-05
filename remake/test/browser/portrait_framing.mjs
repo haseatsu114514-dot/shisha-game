@@ -23,7 +23,7 @@ async function scene(page, ids, style, face = 'normal') {
     // Silent portrait on the first line gives a genuine simultaneous two-person scene.
     void play({dialogue_id:`__framing_${tag}`,metadata:{bg:'bg_tonari_inside'},lines:[
       {speaker:ids[0],face,text:tag,...(ids[1]?{portrait:ids[1],portrait_face:'normal'}:{})},
-    ]},{signal:window.framingAbort.signal});
+    ]},{signal:window.framingAbort.signal,previewProtagonist:true});
   }, {ids,style,face,tag});
   await page.waitForFunction(tag => document.querySelector('.vn-text')?.textContent === tag, tag);
   await page.locator('.vn-portraits img').evaluateAll(async imgs => Promise.all(imgs.map(im=>im.decode())));
@@ -68,14 +68,26 @@ async function inspect(page, label, tag) {
 }
 await suite('portrait-framing',async check=>{
   for(const [label,options] of [['desktop',{viewport:{width:1280,height:720}}],['landscape-touch',{viewport:{width:844,height:390},hasTouch:true}]]){
-    await check(`${label}-adopted-cast`,async page=>{
-      const inventory=await page.evaluate(async()=>{const {DB}=await import('./js/core/data.js');
-        return {classic:Object.keys(DB.manifest.portraits).filter(id=>id!=='hajime'),new:DB.manifest.portraitVariants?.new||{}};
+    const viewportArg=process.argv.find(arg=>arg.startsWith('--viewport='))?.split('=')[1];
+    if(viewportArg && viewportArg!==label)continue;
+    await check(`${label}-${process.argv.includes('--cutins-only')?'cutins':'adopted-cast'}`,async page=>{
+      await page.evaluate(async()=>{
+        const core=await import('./js/core/state.js');const {play}=await import('./js/vn/engine.js');
+        core.newGame();core.config.textSpeed=4;core.config.mute=true;
+        window.framingAbort=new AbortController();
+        void play({dialogue_id:'__default_protagonist',lines:[{speaker:'hajime',text:'__default_protagonist'}]},{signal:window.framingAbort.signal});
       });
+      await page.waitForFunction(()=>document.querySelector('.vn-text')?.textContent==='__default_protagonist');
+      assert.equal(await page.locator('.vn-portraits img').count(),0,'normal gameplay must keep protagonist off screen');
+      const inventory=await page.evaluate(async()=>{const {DB}=await import('./js/core/data.js');
+        return {classic:Object.keys(DB.manifest.portraits),variants:DB.manifest.portraitVariants||{}};
+      });
+      if(!process.argv.includes('--cutins-only')){
       for(const id of inventory.classic){const tag=await scene(page,[id],'classic');await inspect(page,label,tag);}
-      for(const [id,p] of Object.entries(inventory.new))for(const face of p.faces){const tag=await scene(page,[id],'new',face);await inspect(page,label,tag);}
-      for(const style of ['classic','new'])for(const ids of [['sumi','tsumugi'],['kumicho','mashiro'],['sumi','minto']]){
+      for(const [style,portraits] of Object.entries(inventory.variants))for(const [id,p] of Object.entries(portraits))for(const face of p.faces){const tag=await scene(page,[id],style,face);await inspect(page,label,tag);}
+      for(const style of ['classic','new','nanami'])for(const ids of [['sumi','tsumugi'],['kumicho','mashiro'],['sumi','minto'],['naru','tsumugi'],['hiyori','adam']]){
         const tag=await scene(page,ids,style);await inspect(page,label,tag);
+      }
       }
       const tag=await scene(page,['sumi','tsumugi'],'new');
       const before=await inspect(page,label,tag+'-before-intro');
@@ -91,6 +103,16 @@ await suite('portrait-framing',async check=>{
           window.framingIntro=playIntro('sumi').finally(()=>observer.disconnect());
         },art);
         await page.locator('.cutin.in').waitFor();
+        // Wait through the portrait/name entrance, including the graphic morph.
+        await page.waitForFunction(()=>{
+          const host=document.querySelector('.cutin.in');
+          return host && !host.classList.contains('ci-staged') && host.getAnimations({subtree:true})
+            .filter(a=>a.effect?.getComputedTiming().iterations!==Infinity)
+            .every(a=>a.playState==='finished'||a.playState==='idle');
+        });
+        assert.ok(await page.locator('.cutin .ci-portrait').evaluate(im=>im.complete && im.naturalWidth>0 && Number(getComputedStyle(im).opacity)>.98),'stable cutin portrait must be visible');
+        const introSrc=await page.locator('.cutin .ci-portrait').getAttribute('src');
+        if(art==='classic')assert.ok(!introSrc.includes('character_variants/'),'classic cutin must use classic frame source');
         if(art==='graphic')assert.equal(await page.evaluate(()=>window.framingMorphSeen),true,'graphic cutin did not enter standing-portrait morph');
         await page.screenshot({path:path.join(out,`framing-${label}-sumi-intro-${art}.jpg`),quality:90});
         await page.evaluate(()=>window.framingIntro);

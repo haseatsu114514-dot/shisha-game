@@ -113,12 +113,17 @@ def portraits(character_ids=None, base=None, style=None):
             top = min(r["top"] for r in metrics.values())
             bottom = max(r["bottom"] for r in metrics.values())
             ref = metrics.get("normal") or next(iter(metrics.values()))
+            # 新絵は通常の人物高を保つ。高く掲げた小物で本人を縮めない。
+            frame_top = ref["top"] if style else top
+            frame_bottom = ref["bottom"] if style else bottom
             entry.update({
-                "h": round(bottom - top, 4),     # 本体の高さ（画像高さ比）
-                "b": round(1 - bottom, 4),       # 下端の余白（画像高さ比）
+                "h": round(frame_bottom - frame_top, 4),
+                "b": round(1 - frame_bottom, 4),
                 "ax": round(ref["ax"], 4),       # normal の横アンカー（全表情共通）
                 "aspect": round(ref["aspect"], 4),
             })
+            if style and frame_top - top > 0.002:
+                entry["topOverhang"] = round(frame_top - top, 4)
         if anchor_modes.get(d.name) == "head":
             entry["anchor"] = "head"
         out[d.name] = entry

@@ -24,8 +24,26 @@
       "kind": "browser",
       "weight": 0.5,
       "timeout": 5,
-      "paths": ["remake/js/core/portrait-style.js", "remake/js/core/data.js", "remake/js/core/state.js", "remake/js/scenes/title.js", "remake/js/vn/engine.js", "remake/test/browser/portrait_style.mjs", "remake/test/browser/portrait_framing.mjs"],
-      "run": ["node remake/test/browser/portrait_style.mjs", "node remake/test/browser/portrait_framing.mjs"]
+      "paths": ["remake/js/core/portrait-style.js", "remake/js/core/data.js", "remake/js/core/state.js", "remake/js/scenes/title.js", "remake/js/vn/engine.js", "remake/test/browser/portrait_style.mjs", "remake/test/browser/portrait_framing.mjs", "remake/js/vn/intro.js", "assets/sprites/character_variants/", "remake/img/sprites/character_variants/"],
+      "run": ["node remake/test/browser/portrait_style.mjs"]
+    },
+    {
+      "id": "portrait-framing-desktop",
+      "title": "All adopted portrait rasters and companions on desktop",
+      "kind": "browser",
+      "weight": 4,
+      "timeout": 5,
+      "paths": ["remake/js/core/data.js", "remake/js/vn/engine.js", "remake/js/vn/intro.js", "remake/test/browser/portrait_framing.mjs", "assets/sprites/character_variants/", "remake/img/sprites/character_variants/"],
+      "run": ["node remake/test/browser/portrait_framing.mjs --viewport=desktop"]
+    },
+    {
+      "id": "portrait-framing-touch",
+      "title": "All adopted portrait rasters and companions on landscape touch",
+      "kind": "browser",
+      "weight": 4,
+      "timeout": 5,
+      "paths": ["remake/js/core/data.js", "remake/js/vn/engine.js", "remake/js/vn/intro.js", "remake/test/browser/portrait_framing.mjs", "assets/sprites/character_variants/", "remake/img/sprites/character_variants/"],
+      "run": ["node remake/test/browser/portrait_framing.mjs --viewport=landscape-touch"]
     },
     {
       "id": "craft-result-card",
