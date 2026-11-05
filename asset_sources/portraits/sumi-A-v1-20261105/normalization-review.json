@@ -1,0 +1,102 @@
+{
+  "operation": "One common LANCZOS scale and placement from approved A normal, old normal height/bottom and measured foot anchor. No color/paint/face compositing.",
+  "transform": {
+    "scale": 0.7228590694538098,
+    "resize": [
+      740,
+      1110
+    ],
+    "offset": [
+      96,
+      76
+    ]
+  },
+  "source_min_figure_height": 1300,
+  "frames": [
+    {
+      "face": "normal",
+      "uuid": "3125cf7c-e74c-4464-bbc6-b3ccf1cfe075",
+      "raw_size": [
+        1024,
+        1536
+      ],
+      "bbox24": [
+        294,
+        104,
+        667,
+        1175
+      ],
+      "feet_x": 471.967,
+      "rgba": "RGBA",
+      "alpha_zero_fraction": 0.7706798735119048
+    },
+    {
+      "face": "smile",
+      "uuid": "a45e4f76-3336-4bc2-a312-728452faa194",
+      "raw_size": [
+        1024,
+        1536
+      ],
+      "bbox24": [
+        213,
+        103,
+        668,
+        1176
+      ],
+      "feet_x": 471.532,
+      "rgba": "RGBA",
+      "alpha_zero_fraction": 0.7735314360119048
+    },
+    {
+      "face": "serious",
+      "uuid": "2272baee-ffb8-4af7-9d46-ca88fffbaf17",
+      "raw_size": [
+        1024,
+        1536
+      ],
+      "bbox24": [
+        284,
+        103,
+        666,
+        1176
+      ],
+      "feet_x": 471.052,
+      "rgba": "RGBA",
+      "alpha_zero_fraction": 0.7767559523809524
+    },
+    {
+      "face": "surprise",
+      "uuid": "33e098e9-a2e7-4a2b-9fab-fa565d551886",
+      "raw_size": [
+        1024,
+        1536
+      ],
+      "bbox24": [
+        292,
+        103,
+        649,
+        1176
+      ],
+      "feet_x": 471.454,
+      "rgba": "RGBA",
+      "alpha_zero_fraction": 0.7748307291666666
+    },
+    {
+      "face": "thinking",
+      "uuid": "d64daa1e-e57e-459d-b6af-1c3d6bb4bc8b",
+      "raw_size": [
+        1024,
+        1536
+      ],
+      "bbox24": [
+        299,
+        102,
+        617,
+        1176
+      ],
+      "feet_x": 471.07,
+      "rgba": "RGBA",
+      "alpha_zero_fraction": 0.7900297619047619
+    }
+  ]
+}
