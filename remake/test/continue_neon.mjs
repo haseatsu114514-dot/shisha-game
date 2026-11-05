@@ -52,7 +52,7 @@ try {
       const k = stage.width / 1280, image = root.querySelector(".go-sumi-img");
       for (const animation of image.getAnimations()) animation.finish();
       const { DB, portraitInfo } = await import("./js/core/data.js");
-      const info = portraitInfo(root.dataset.speaker, root.dataset.emotion);
+      const info = portraitInfo(root.dataset.speaker, root.dataset.emotion, "classic");
       const framing = DB.manifest.continuePortraits[info.folder][info.face], r = image.getBoundingClientRect();
       const size = r.height / k * framing.size;
       const cx = (r.left - stage.left + r.width * framing.cx) / k;

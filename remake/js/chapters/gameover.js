@@ -74,7 +74,7 @@ export function warmGameOver() {
     const faces = [...script.cues.map(cue => cue.face),
       ...Object.values(script.reactions).flatMap(reaction => reaction.faces)];
     for (const face of faces) {
-      const url = portraitInfo(script.speaker || "sumi", face)?.src;
+      const url = portraitInfo(script.speaker || "sumi", face, "classic")?.src;
       if (url) urls.add(url);
     }
   }

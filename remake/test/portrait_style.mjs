@@ -122,5 +122,24 @@ const vnContext=vm.createContext({SE:{select(){}},clearTimeout(){},autoTimer:nul
 vm.runInContext(engineSource.slice(start,end)+';globalThis.openSettings=openSettings;',vnContext);
 await vnContext.openSettings();
 test('VN refresh updates speaker and silent companion in place',()=>{assert.equal(resolved,2);assert.equal(framed,2);assert.equal(images[0].src,'new-tsumugi-smile');assert.equal(images[1].src,'new-minto-serious');assert.equal(kicked,1);assert.equal(vnContext.vnModalOpen,0);});
+// CONTINUE uses its own measured classic close-up, independently of the new conversation default.
+const continueSource=await read('js/chapters/continue-view.js');
+const continueCalls=[];
+const continueCtx=vm.createContext({script:{cues:[{face:'normal'}]},speaker:'sumi',portraitInfo(...args){continueCalls.push(args);return null;},root:{dataset:{}}});
+const initialStart=continueSource.indexOf('  const portrait = portraitInfo');
+const initialEnd=continueSource.indexOf('  const image =',initialStart);
+vm.runInContext(continueSource.slice(initialStart,initialEnd),continueCtx);
+const faceStart=continueSource.indexOf('  function face(');
+const faceEnd=continueSource.indexOf('  function reaction(',faceStart);
+vm.runInContext(continueSource.slice(faceStart,faceEnd)+';face("smile",false);',continueCtx);
+test('CONTINUE initial art and cue changes use measured classic art',()=>assert.deepEqual(continueCalls,[['sumi','normal','classic'],['sumi','smile','classic']]));
+const gameoverSource=await read('js/chapters/gameover.js');
+const warmStart=gameoverSource.indexOf('export function warmGameOver()');
+const warmEnd=gameoverSource.indexOf('\n//',warmStart);
+const warmCalls=[];
+const warmCtx=vm.createContext({SUMI_CONTINUE_SCRIPTS:[{cues:[{face:'normal'}],reactions:{retry:{faces:['smile']}}}],state:{lovers:[]},DB:{manifest:{}},portraitInfo(...args){warmCalls.push(args);return {src:'classic-image'};},preloadBgm:async()=>{},imageReady:async()=>{}});
+vm.runInContext(gameoverSource.slice(warmStart,warmEnd).replace('export function','function')+';this.warm=warmGameOver;',warmCtx);
+await warmCtx.warm();
+test('CONTINUE warmup matches its measured artwork',()=>assert.deepEqual(warmCalls,[['sumi','normal','classic'],['sumi','smile','classic']]));
 console.log(`FINAL ${passed}/${passed} passed`);
 

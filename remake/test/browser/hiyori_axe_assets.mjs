@@ -12,7 +12,8 @@ await suite("hiyori-axe-assets", async check => {
         window.K = { core: await import("./js/core/state.js"), vn: await import("./js/vn/engine.js"), ui: await import("./js/core/ui.js") };
         K.core.newGame(); K.core.state.met.hiyori = true;
         Object.assign(K.core.state.flags, { _intro_hiyori: true, _met_hiyori: true, known_name_hiyori: true });
-        K.core.config.textSpeed = 4; K.ui.clearScreen();
+        // This suite checks the classic 1000px export. New artwork has its own framing suite.
+        K.core.config.portraitStyle = "classic"; K.core.config.textSpeed = 4; K.ui.clearScreen();
       });
       const before = await page.evaluate(() => JSON.stringify(K.core.state));
       const framing = await page.evaluate(async () => {
