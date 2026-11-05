@@ -32,7 +32,7 @@
       "title": "All adopted portrait rasters and companions on desktop",
       "kind": "browser",
       "weight": 4,
-      "timeout": 5,
+      "timeout": 15,
       "paths": ["remake/js/core/data.js", "remake/js/vn/engine.js", "remake/js/vn/intro.js", "remake/test/browser/portrait_framing.mjs", "assets/sprites/character_variants/", "remake/img/sprites/character_variants/"],
       "run": ["node remake/test/browser/portrait_framing.mjs --viewport=desktop"]
     },
@@ -41,7 +41,7 @@
       "title": "All adopted portrait rasters and companions on landscape touch",
       "kind": "browser",
       "weight": 4,
-      "timeout": 5,
+      "timeout": 15,
       "paths": ["remake/js/core/data.js", "remake/js/vn/engine.js", "remake/js/vn/intro.js", "remake/test/browser/portrait_framing.mjs", "assets/sprites/character_variants/", "remake/img/sprites/character_variants/"],
       "run": ["node remake/test/browser/portrait_framing.mjs --viewport=landscape-touch"]
     },

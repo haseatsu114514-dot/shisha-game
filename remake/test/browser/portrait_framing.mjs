@@ -7,6 +7,7 @@ import { suite } from './support.mjs';
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const out = path.resolve(root, process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser');
 const measurements = [];
+const started = Date.now();
 async function scene(page, ids, style, face = 'normal') {
   const tag = `${ids.join('-')}-${style}-${face}`;
   await page.evaluate(async ({ids,style,face,tag}) => {
@@ -64,6 +65,7 @@ async function inspect(page, label, tag) {
   }
   measurements.push({label,tag,rows});
   await page.screenshot({path:path.join(out,`framing-${label}-${tag}.jpg`),quality:90});
+  if (measurements.length % 25 === 0) console.log(`[portrait-framing] ${label}: ${measurements.length} scenes checked in ${((Date.now()-started)/1000).toFixed(1)}s; last=${tag}`);
   return rows;
 }
 await suite('portrait-framing',async check=>{
