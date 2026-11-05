@@ -22,6 +22,7 @@ const MAX_MONEY = 999999999, TOURNAMENT_DAY = 14;
 const emit = event => {
   if (event === 'money') { moneyEvents++; const callback=reentry; reentry=null; callback?.(); }
 };
+const setPortraitStyleSource = () => {}; // state.js registers a config reader at module level; unrelated to kuji.
 ${strip(galleryProgress)}
 ${strip(core).replace('function save()', 'function persistState()')}
 function save() { saves++; persistState(); }

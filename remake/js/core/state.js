@@ -168,26 +168,30 @@ function renameCharIdsInSave(s) {
     }
   }
   // LIME受信箱（送信者・メッセージID・約束イベント）と予約
+  // 付け替えは文字列の値がある時だけ行う。無い項目へ undefined を代入するとキーが生えてしまい、
+  // セーブ（JSON化で undefined キーが落ちる）の前後で受信箱の形が変わってしまう。
   if (Array.isArray(s.inbox)) {
     for (const item of s.inbox) {
       if (!item || typeof item !== "object") continue;
-      item.id = renameIdToken(item.id);
-      item.originId = renameIdToken(item.originId);
+      if (typeof item.id === "string") item.id = renameIdToken(item.id);
+      if (typeof item.originId === "string") item.originId = renameIdToken(item.originId);
       if (item.msg && typeof item.msg === "object") {
-        item.msg.sender = renameExactId(item.msg.sender);
-        item.msg.accept_event = renameIdToken(item.msg.accept_event);
-        item.msg.origin_id = renameIdToken(item.msg.origin_id);
+        if (typeof item.msg.sender === "string") item.msg.sender = renameExactId(item.msg.sender);
+        if (typeof item.msg.accept_event === "string") item.msg.accept_event = renameIdToken(item.msg.accept_event);
+        if (typeof item.msg.origin_id === "string") item.msg.origin_id = renameIdToken(item.msg.origin_id);
       }
     }
   }
   if (s.pendingInvite && typeof s.pendingInvite === "object") {
-    s.pendingInvite.sender = renameExactId(s.pendingInvite.sender);
-    s.pendingInvite.event = renameIdToken(s.pendingInvite.event);
-    s.pendingInvite.originId = renameIdToken(s.pendingInvite.originId);
+    if (typeof s.pendingInvite.sender === "string") s.pendingInvite.sender = renameExactId(s.pendingInvite.sender);
+    if (typeof s.pendingInvite.event === "string") s.pendingInvite.event = renameIdToken(s.pendingInvite.event);
+    if (typeof s.pendingInvite.originId === "string") s.pendingInvite.originId = renameIdToken(s.pendingInvite.originId);
   }
   // 延期した夜の予定（イベントID）
   if (Array.isArray(s.deferredNightEvents)) {
-    for (const entry of s.deferredNightEvents) if (entry && typeof entry === "object") entry.id = renameIdToken(entry.id);
+    for (const entry of s.deferredNightEvents) {
+      if (entry && typeof entry === "object" && typeof entry.id === "string") entry.id = renameIdToken(entry.id);
+    }
   }
   // TRPG（部員・卓のGMと参加者）
   if (s.trpg && typeof s.trpg === "object") {
@@ -195,7 +199,7 @@ function renameCharIdsInSave(s) {
     if (s.trpg.cleared && typeof s.trpg.cleared === "object") {
       for (const rec of Object.values(s.trpg.cleared)) {
         if (!rec || typeof rec !== "object") continue;
-        rec.gm = renameExactId(rec.gm);
+        if (typeof rec.gm === "string") rec.gm = renameExactId(rec.gm);
         if (Array.isArray(rec.participants)) rec.participants = renameIdList(rec.participants);
       }
     }
@@ -203,12 +207,14 @@ function renameCharIdsInSave(s) {
   // 東京訪問（同行者）
   if (s.tokyoVisits && typeof s.tokyoVisits === "object") {
     if (Array.isArray(s.tokyoVisits.plans)) {
-      for (const plan of s.tokyoVisits.plans) if (plan && typeof plan === "object") plan.characterId = renameExactId(plan.characterId);
+      for (const plan of s.tokyoVisits.plans) {
+        if (plan && typeof plan === "object" && typeof plan.characterId === "string") plan.characterId = renameExactId(plan.characterId);
+      }
     }
     if (s.tokyoVisits.offers && typeof s.tokyoVisits.offers === "object") {
       s.tokyoVisits.offers = renameIdKeys(s.tokyoVisits.offers);
       for (const offer of Object.values(s.tokyoVisits.offers)) {
-        if (offer && typeof offer === "object") offer.characterId = renameExactId(offer.characterId);
+        if (offer && typeof offer === "object" && typeof offer.characterId === "string") offer.characterId = renameExactId(offer.characterId);
       }
     }
   }
