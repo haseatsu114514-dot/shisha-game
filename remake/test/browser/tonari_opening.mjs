@@ -80,8 +80,10 @@ await suite("tonari-opening", async check => {
       await page.screenshot({ path: path.join(captures, `${label}-hajime-before-intro.png`) });
       // The long thought has two pages on some layouts. Advance only until the actual cut-in begins.
       for (let n = 0; n < 5 && !await page.locator('.cutin[data-char="hajime"]').count(); n++) {
+        const previousText = await page.locator(".vn-text").textContent();
         await page.locator(".vn-text").click();
-        await page.waitForTimeout(250);
+        await page.waitForFunction(previous => document.querySelector('.cutin[data-char="hajime"]')
+          || document.querySelector(".vn-text")?.textContent !== previous, previousText);
         if (await standing.count() && !await page.locator('.cutin[data-char="hajime"]').count()) {
           assert.equal(await standing.getAttribute("data-face"), "normal");
         }
