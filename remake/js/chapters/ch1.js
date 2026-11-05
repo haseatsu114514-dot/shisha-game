@@ -205,8 +205,8 @@ export async function resumeGame() {
   if (state.chapter === 5) return resumeChapterModule(() => import("./ch5.js"), m => m.resumeChapterFive(), "第5章へ戻っています…");
   if (state.phase === "cleared") return showClear();
   if (state.phase === "aftermath") return finishAfterTournament();
-  if (state.phase === "tournament" && state.tournament?.victory) return resumeVictory();
   // 第1章の制作途中は保存しない。大会本体のLOADは当日冒頭から入場と一台をやり直す。
+  if (state.phase === "tournament" && state.tournament?.victory) return resumeVictory();
   if (state.phase === "tournament") return tournamentDay();
   if (state.phase === "opening" && await openingPart() === false) return;
   await dailyPart();
