@@ -35,8 +35,9 @@ CHARACTERS = ROOT / "data" / "characters.json"
 SPRITES = ROOT / "assets" / "sprites" / "characters"
 SHEET = ROOT / "asset_sources" / "reference-sheets" / "face-size-ingame.png"
 STAGE_H = 720           # 1280x720 の会話画面
-FRAMING_TARGET = 1.36   # remake/js/vn/engine.js の FRAMING.target（本体の高さ＝画面の高さ×1.36×spriteScale）
+FRAMING_TARGET = 1.675  # remake/js/vn/engine.js の FRAMING.target（本体の高さ＝画面の高さ×1.675×spriteScale）
 PAKKI_TARGET = 0.94     # 同 FRAMING.pakkiTarget
+CAT_TARGET = 0.34       # 同 FRAMING.catTarget（てつこは人間用の寄りにしない）
 
 
 # ---------------------------------------------------------------- 読み書き
@@ -88,7 +89,7 @@ def game_factor(entry: dict, cid: str, manifest: dict, chars: dict) -> float | N
     if not p:
         return None
     scale = (chars.get(folder) or {}).get("spriteScale") or 1
-    target = (PAKKI_TARGET if folder == "pakki" else FRAMING_TARGET) * scale
+    target = (CAT_TARGET if folder == "tetsuko" else PAKKI_TARGET if folder == "pakki" else FRAMING_TARGET) * scale
     return min(target / p["h"], 2.4) * STAGE_H / 1200
 
 
@@ -507,3 +508,4 @@ def main(argv: list[str]) -> int:
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
+

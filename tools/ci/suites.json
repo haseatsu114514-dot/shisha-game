@@ -14,7 +14,8 @@
       "title": "Classic/new portrait selection, expression fallback and config persistence",
       "kind": "quick",
       "run": [
-        "node --experimental-vm-modules remake/test/portrait_style.mjs"
+        "node --experimental-vm-modules remake/test/portrait_style.mjs",
+        "node remake/test/portrait_framing.mjs"
       ]
     },
     {
@@ -23,8 +24,8 @@
       "kind": "browser",
       "weight": 0.5,
       "timeout": 5,
-      "paths": ["remake/js/core/portrait-style.js", "remake/js/core/data.js", "remake/js/core/state.js", "remake/js/scenes/title.js", "remake/js/vn/engine.js", "remake/test/browser/portrait_style.mjs"],
-      "run": ["node remake/test/browser/portrait_style.mjs"]
+      "paths": ["remake/js/core/portrait-style.js", "remake/js/core/data.js", "remake/js/core/state.js", "remake/js/scenes/title.js", "remake/js/vn/engine.js", "remake/test/browser/portrait_style.mjs", "remake/test/browser/portrait_framing.mjs"],
+      "run": ["node remake/test/browser/portrait_style.mjs", "node remake/test/browser/portrait_framing.mjs"]
     },
     {
       "id": "craft-result-card",
@@ -3877,3 +3878,4 @@
     }
   ]
 }
+
