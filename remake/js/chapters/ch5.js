@@ -396,7 +396,7 @@ async function renderMatch(owner) {
     ], "", id);
     return;
   }
-  // 二本目: はじめが同じダブルアップル12gで実際に作り、その出来で観客の挙手が動く。
+  // 一本目は台本の固定票。二本目だけ実制作し、確定後は保存済みの挙手と結果を表示する。
   const outcome = chapterFiveMatchOutcome(state);
   if (outcome === null) return renderSecondCupReady(owner);
   const sequence = outcome === "win"
@@ -433,8 +433,9 @@ async function renderSecondCupReady(owner) {
   ], `${tally}二台目は提供のあと、同じ一台を二度調整する。`, CH5_MATCH_SCENES.beforeSecond);
 }
 
-/** 二本目の制作。作り終えるまで保存しない（途中で離れたら二本目の作り直しから）。 */
+/** U1 の制作開始境界。入場後、二本目だけ実制作する。U5: セッション途中は保存・工程 rollback しない。 */
 async function craftSecondCup(owner) {
+  // 途中離脱・再読込では secondCup が null のままなので、二本目の前から丸ごと作り直す。
   const cs = newSession("tournament");
   cs.eventTitle = "EXHIBITION MATCH";
   cs.eventNote = "SHISHA-9000 戦・二台目";
@@ -466,6 +467,7 @@ async function craftSecondCup(owner) {
   const failed = !!cs.failed;
   if (!failed) finalize(cs);
   const category = failed ? "failed" : naruTastingCategory(cs);
+  // 完成した実績から観客票を一度だけ確定。再表示・再読込では保存済みの secondCup を読む。
   if (!recordChapterFiveSecondCup(state, { total: cs.total, category, failed, review: craftReviewLines(cs) })) throw new Error("二本目の記録を確定できません");
   // 報酬表への対応（仮）: 一対一の勝利側は1位、既存の敗北側（同数を含む）は2位相当。挙手・勝敗は変えない。
   awardTournamentExp(chapterFiveMatchOutcome(state) === "win" ? 1 : 2, cs);
