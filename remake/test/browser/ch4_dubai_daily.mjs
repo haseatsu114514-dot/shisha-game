@@ -64,6 +64,37 @@ async function seed(page, adjust = null) {
 }
 
 await suite("ch4-dubai-daily", async check => {
+  for (const [device, options] of [
+    ["pc", {}],
+    ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+  ]) await check(`revisit-new-markers-${device}`, async page => {
+    const spots = ["ch4_dubai_souq", "ch4_dubai_festa", "ch4_dubai_cafe", "ch4_dubai_alley"];
+    const prepare = completed => seed(page, (value, progress) => {
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      for (const id of ["ch4_festa", "ch4_dubai_souq", "ch4_stranger_first", "ch4_stranger_second", "ch4_dubai_cafe", "ch4_inn_tool_care"]) p.read[id] = true;
+      p.firstDay = 1; p.secondDay = 3;
+      value.day = p.startDay + 4; value.slot = 0; p.day = 5;
+      value.met.da_silva = true;
+    }).then(async () => {
+      if (completed) await page.evaluate(async () => {
+        const core = await import("./js/core/state.js");
+        core.state.flags._ch4_dubai_talks = { souq: 4, festa: 4, center_cafe: 6, alley_cafe: 5 };
+        core.save();
+      });
+    });
+    await prepare(false);
+    await loadSlot(page, 0);
+    await dubaiMap(page);
+    for (const id of spots)
+      assert.equal(await page.locator(`${dt(`pin-${id}`)} .evt-badge.story`).count(), 1, `${id}: new revisit after first scene`);
+    await prepare(true);
+    await loadSlot(page, 0);
+    await dubaiMap(page);
+    for (const id of spots)
+      assert.equal(await page.locator(`${dt(`pin-${id}`)} .evt-badge.story`).count(), 0, `${id}: no marker after all revisits`);
+  }, options);
+
   await check("day-three-inn-trial", async page => {
     await seed(page, (value, progress) => {
       const p = value.flags._ch4;
