@@ -313,7 +313,7 @@ export function play(idOrDlg, opts = {}) {
     // 画像の待ち時間は場面転換の幕で覆う。短い固定待ちで読み込みを打ち切らない。
     // 最初の行を出す前に名前欄と本文の明朝を待つ。失敗時は代替書体で続ける。
     const fontsReady = loadVnFonts().catch(() => []);
-    const assetsReady = Promise.all([settingsReady, fontsReady, bgmReady, bgReady.assetsReady || bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]);
+    const assetsReady = Promise.all([settingsReady, fontsReady, bgReady.assetsReady || bgReady, bgmReady, ...portraitsReady.map((u) => imageReady(u, 15000))]);
     waitSceneAssets(bgReady, me, assetsReady).then(() => {
       if (running !== me) return;
       sceneBgm(meta);
