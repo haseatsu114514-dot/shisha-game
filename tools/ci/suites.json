@@ -14,7 +14,8 @@
       "title": "Classic/new portrait selection, expression fallback and config persistence",
       "kind": "quick",
       "run": [
-        "node --experimental-vm-modules remake/test/portrait_style.mjs"
+        "node --experimental-vm-modules remake/test/portrait_style.mjs",
+        "node remake/test/portrait_framing.mjs"
       ]
     },
     {
@@ -3877,3 +3878,4 @@
     }
   ]
 }
+

@@ -30,9 +30,10 @@ import { reducedMotion } from "../core/transition-kit.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man", "traveler"]);
-// 立ち絵の枠（ステージ高さに対する本体の高さ・足元の沈み込み）
+// 会話の寄り。1280×720の参考プレビュー（本体約1085px、頭頂y52px）を
+// 新版つむぎの身長倍率0.9で再現する。画像の余白・個々の身長は frame() で保つ。
 // てつこ（猫）は人と同じ高さに引き伸ばさず、会話の枠の上に座っている大きさで出す（catLift＝下から持ち上げる割合）
-const FRAMING = { target: 1.36, sink: 0.4, pakkiTarget: 0.94, pakkiSink: 0.08, catTarget: 0.34, catLift: 0.3 };
+const FRAMING = { target: 1.675, sink: 0.58, pakkiTarget: 0.94, pakkiSink: 0.08, catTarget: 0.34, catLift: 0.3 };
 
 /** 章の台本側が差し込むフック（特定の会話の選択肢で状態を変える等） */
 export const hooks = {
@@ -1050,3 +1051,4 @@ export const isPlaying = () => !!running;
 export const backlog = () => log;
 /** タイトルからの「はじめから」「LOAD」で前の周の会話LOGを消す（#1912）。 */
 export function clearLog() { log.length = 0; }
+

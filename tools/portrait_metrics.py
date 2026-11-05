@@ -35,7 +35,7 @@ CHARACTERS = ROOT / "data" / "characters.json"
 SPRITES = ROOT / "assets" / "sprites" / "characters"
 SHEET = ROOT / "asset_sources" / "reference-sheets" / "face-size-ingame.png"
 STAGE_H = 720           # 1280x720 の会話画面
-FRAMING_TARGET = 1.36   # remake/js/vn/engine.js の FRAMING.target（本体の高さ＝画面の高さ×1.36×spriteScale）
+FRAMING_TARGET = 1.675  # remake/js/vn/engine.js の FRAMING.target（本体の高さ＝画面の高さ×1.675×spriteScale）
 PAKKI_TARGET = 0.94     # 同 FRAMING.pakkiTarget
 
 
@@ -507,3 +507,4 @@ def main(argv: list[str]) -> int:
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
+
