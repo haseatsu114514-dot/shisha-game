@@ -88,4 +88,82 @@ await suite("debug-tools", async check => {
     assert.equal(await page.evaluate(() => window.__remake.craftTest.auto), null);
     await page.locator(t("debug-speed-1")).click();
   });
+
+  await check("date-and-chapter-jumps-save-resumable-state", async page => {
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const s = core.newGame();
+      s.phase = "daily"; s.day = 3; s.slot = 0;
+      core.save();
+    });
+    await openPanel(page);
+    await Promise.all([page.waitForNavigation(), page.locator(t("debug-night")).click()]);
+    await page.locator("#boot").waitFor({ state: "detached" });
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem("suien_remake_save") || "null")?.slot === 1);
+    assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")).day), 3);
+    await page.locator(t("debug-toggle")).click();
+    await Promise.all([page.waitForNavigation(), page.locator(t("debug-next-day")).click()]);
+    await page.locator("#boot").waitFor({ state: "detached" });
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem("suien_remake_save") || "null")?.day === 4);
+    assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")).slot), 0);
+    await page.locator(t("debug-toggle")).click();
+    await page.locator(t("debug-chapter-select")).selectOption("3");
+    await Promise.all([page.waitForNavigation(), page.locator(t("debug-chapter-go")).click()]);
+    await page.locator("#boot").waitFor({ state: "detached" });
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem("suien_remake_save") || "null")?.chapter === 3);
+    const checkpoint = await page.evaluate(() => {
+      const s = JSON.parse(localStorage.getItem("suien_remake_save"));
+      return { phase: s.phase, prep: s.flags._ch3_prep, intro: s.flags._ch3_intro };
+    });
+    assert.equal(checkpoint.phase, "opening");
+    assert.equal(checkpoint.prep.step, 0);
+    assert.equal(checkpoint.intro.stage, 0);
+  });
+
+  await check("every-chapter-head-has-a-save-checkpoint", async page => {
+    for (const chapter of [1, 2, 4, 5]) {
+      await openPanel(page);
+      await page.locator(t("debug-chapter-select")).selectOption(String(chapter));
+      await Promise.all([page.waitForNavigation(), page.locator(t("debug-chapter-go")).click()]);
+      await page.locator("#boot").waitFor({ state: "detached" });
+      const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
+      assert.equal(saved.chapter, chapter);
+      assert.equal(saved.phase, "opening");
+      if (chapter === 1) assert.equal(saved.flags._ch1_opening.introDone, false);
+      if (chapter === 2) assert.equal(saved.flags._ch2_day1.stage, "departure");
+      if (chapter === 4) assert.equal(saved.flags._ch4.part, "prologue");
+      if (chapter === 5) assert.equal(saved.flags._ch5.part, "prologue");
+    }
+  });
+
+  await check("relationship-and-save-json-import", async page => {
+    await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.newGame(); core.save(); });
+    await openPanel(page);
+    await page.locator(t("debug-character")).selectOption("minto");
+    await page.locator(t("debug-hearts")).selectOption("3");
+    await page.locator(t("debug-lover")).check();
+    await page.locator(t("debug-love-points")).fill("40");
+    await page.locator(t("debug-relationship-set")).click();
+    const current = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
+    assert(current.lovers.includes("minto"));
+    assert.equal(current.loveLevel.minto, 3);
+    assert.equal(current.lovePts.minto, 40);
+    assert.equal(current.loverSince.minto, current.day);
+    const downloadPromise = page.waitForEvent("download");
+    await page.locator(t("debug-save-export")).click();
+    const download = await downloadPromise;
+    assert.match(download.suggestedFilename(), /suien-save-ch1-day1\.json/);
+    await page.locator(t("debug-save-file")).setInputFiles({ name: "bad.json", mimeType: "application/json", buffer: Buffer.from('{"schema":999}') });
+    await page.locator(t("debug-save-import")).click();
+    await page.locator(t("debug-message")).filter({ hasText: "形式が正しくありません" }).waitFor();
+    assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), JSON.stringify(current));
+    current.money = 12345;
+    await page.locator(t("debug-save-file")).setInputFiles({ name: "good.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify(current)) });
+    await Promise.all([page.waitForNavigation(), page.locator(t("debug-save-import")).click()]);
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem("suien_remake_save") || "null")?.money === 12345);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator(t("debug-toggle")).click();
+    const bounds = await page.locator(t("debug-panel")).boundingBox();
+    assert(bounds && bounds.x >= 0 && bounds.x + bounds.width <= 390);
+  });
 }, { entry: `${baseURL}?debug=1` });
