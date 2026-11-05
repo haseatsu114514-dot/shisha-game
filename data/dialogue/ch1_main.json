@@ -104,15 +104,23 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "（『良かった』いただきました、……ふふ）"
+          "text": "（『良かった』いただきました、……ふふ）",
+          "portrait": "hajime",
+          "portrait_face": "smile"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（こういうの聞くとさ、つい思っちゃうんだよな。いつか自分の店、持てたりして、って）"
+          "text": "（こういうの聞くとさ、つい思っちゃうんだよな。いつか自分の店、持てたりして、って）",
+          "portrait": "hajime",
+          "portrait_face": "normal"
         },
         {
           "type": "intro",
+          "char_id": "hajime"
+        },
+        {
+          "type": "hide_portrait",
           "char_id": "hajime"
         },
         {
