@@ -121,4 +121,4 @@ await suite("board-notification-visibility", async check => {
       await page.evaluate(() => visibilityTest.done);
     }, touch ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" } : { reducedMotion: "reduce" });
   }
-});
+}, { acknowledgeGrowth: false });
