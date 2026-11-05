@@ -315,9 +315,9 @@ export async function openConfig(opts = {}) {
   const portraits = el("select", {
     dataset: { test: "cfg-portrait-style" },
     onchange: (e) => { config.portraitStyle = e.target.value; persist(); opts.onChange?.("portraitStyle", config.portraitStyle); },
-  }, [["classic", "現行"], ["new", "新（未制作の表情は現行）"]].map(([v, t]) => {
+  }, [["classic", "現行"], ["new", "新バージョン（仮採用）"], ["nanami", "七海風（仮採用・未導入は現行）"]].map(([v, t]) => {
     const o = el("option", { value: v, text: t });
-    if (v === (config.portraitStyle === "new" ? "new" : "classic")) o.selected = true;
+    if (v === (["new", "nanami"].includes(config.portraitStyle) ? config.portraitStyle : "classic")) o.selected = true;
     return o;
   }));
   const introArt = el("select", {

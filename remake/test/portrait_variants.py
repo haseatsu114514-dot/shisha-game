@@ -51,5 +51,30 @@ class PortraitVariants(unittest.TestCase):
             finally:
                 builder.ASSETS,builder.OUT,builder.load_characters,images.ASSETS,images.OUT,sys.argv=original
 
+    def test_nanami_targets_are_lossless_and_head_anchor_is_style_specific(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            folder = root / 'sprites/character_variants/nanami/ageha'
+            folder.mkdir(parents=True)
+            png = folder / 'chr_ageha_normal.png'
+            im = Image.new('RGBA', (896, 1200))
+            ImageDraw.Draw(im).rectangle((100,100,400,1100), fill=(10,20,30,200))
+            im.save(png)
+            old = images.ASSETS, builder.load_characters
+            try:
+                images.ASSETS = root
+                builder.load_characters = lambda: {'ageha': {'spriteAnchorVariants': {'nanami': 'head'}}}
+                entry = builder.portraits(base=folder.parent, style='nanami')['ageha']
+                self.assertEqual(entry['anchor'], 'head')
+                self.assertNotIn('anchor', builder.portraits(base=folder.parent, style='new')['ageha'])
+                manifest = {'backgrounds': [], 'cgs': [], 'making': [], 'portraits': {}, 'portraitVariants': {'nanami': {'ageha': entry}}}
+                rel = 'sprites/character_variants/nanami/ageha/chr_ageha_normal.png'
+                self.assertIn(rel, images.targets(manifest))
+                import io
+                with Image.open(io.BytesIO(images.encode(png, rel))) as result:
+                    self.assertEqual(result.convert('RGBA').tobytes(), im.tobytes())
+            finally:
+                images.ASSETS, builder.load_characters = old
+
 if __name__=='__main__':
     unittest.main()

@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-05 01:12 UTC",
+ "generated": "2026-11-05 09:10 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -3078,7 +3078,8 @@
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
-  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png"
+  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
+  "sprites/character_variants/new/ageha/chr_ageha_normal.png"
  ],
  "limeMedia": {
   "st_adam_bless": {
@@ -3399,10 +3400,20 @@
      "surprise",
      "thinking"
     ],
-    "h": 0.895,
-    "b": 0.02,
-    "ax": 0.5324,
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.5004,
     "aspect": 0.7467
+   },
+   "ageha": {
+    "faces": [
+     "normal"
+    ],
+    "h": 0.8108,
+    "b": 0.02,
+    "ax": 0.5437,
+    "aspect": 0.7467,
+    "anchor": "head"
    }
   }
  }

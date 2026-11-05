@@ -628,7 +628,7 @@ export function loadConfig() {
     Object.assign(config, JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}"));
   } catch { /* noop */ }
   if ("muted" in config) { config.mute = !!(config.mute || config.muted); delete config.muted; }
-  if (!["classic", "new"].includes(config.portraitStyle)) config.portraitStyle = "classic";
+  if (!["classic", "new", "nanami"].includes(config.portraitStyle)) config.portraitStyle = "classic";
   return config;
 }
 

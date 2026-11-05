@@ -330,16 +330,20 @@ export function portraitInfo(speaker, face, style = portraitStyle()) {
     const near = { excited: "smile", smug: "smile", wink: "smile", evil: "serious", thinking: "serious", intense: "serious" }[f];
     f = near && p.faces.includes(near) ? near : "normal";
   }
-  // 表情・私服の対応を保つ。新絵に同じ差分が無ければ、その表情の現行絵へ戻す。
-  const candidate = style === "new" ? DB.manifest.portraitVariants?.new?.[folder] : null;
-  const useNew = candidate?.faces?.includes(f) === true;
-  const metrics = useNew ? candidate : p;
-  const base = useNew ? "sprites/character_variants/new" : "sprites/characters";
+  // 一部の表情だけ旧絵に戻ると、衣装・口具・顔が突然変わる。
+  // 同じ衣装群に通常があればその絵を保持。衣装群自体が未導入なら現行を使う。
+  const candidate = ["new", "nanami"].includes(style) ? DB.manifest.portraitVariants?.[style]?.[folder] : null;
+  const costume = f.includes("_") ? f.slice(0, f.lastIndexOf("_") + 1) : "";
+  const normal = `${costume}normal`;
+  const variantFace = candidate?.faces?.includes(f) ? f : candidate?.faces?.includes(normal) ? normal : null;
+  const useVariant = variantFace !== null;
+  const metrics = useVariant ? candidate : p;
+  const base = useVariant ? `sprites/character_variants/${style}` : "sprites/characters";
   return {
-    folder, face: f, style: useNew ? "new" : "classic",
-    src: img(`${base}/${folder}/chr_${folder}_${f}.png`),
-    h: metrics.h || 0.85, b: useNew ? (metrics.b ?? 0.02) : (p.b || 0.02), ax: metrics.ax ?? 0.5, aspect: metrics.aspect || 0.75,
-    scale: (useNew ? DB.characters[folder]?.spriteScaleVariants?.new : null) || DB.characters[folder]?.spriteScale || DB.characters[speaker]?.spriteScale || 1,
+    folder, face: useVariant ? variantFace : f, style: useVariant ? style : "classic",
+    src: img(`${base}/${folder}/chr_${folder}_${useVariant ? variantFace : f}.png`),
+    h: metrics.h || 0.85, b: useVariant ? (metrics.b ?? 0.02) : (p.b || 0.02), ax: metrics.ax ?? 0.5, aspect: metrics.aspect || 0.75,
+    scale: (useVariant ? DB.characters[folder]?.spriteScaleVariants?.[style] : null) || DB.characters[folder]?.spriteScale || DB.characters[speaker]?.spriteScale || 1,
   };
 }
 

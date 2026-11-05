@@ -29,7 +29,7 @@ data.DB.characters = chars;
 let checked = 0;
 for (const [style, portraits] of [['classic', manifest.portraits], ...Object.entries(manifest.portraitVariants || {})]) {
   for (const [folder, metrics] of Object.entries(portraits)) {
-    const scale = (style === 'new' && chars[folder]?.spriteScaleVariants?.new) || chars[folder]?.spriteScale || 1;
+    const scale = chars[folder]?.spriteScaleVariants?.[style] || chars[folder]?.spriteScale || 1;
     const p = { ...metrics, folder, scale };
     const result = render(p);
     const target = (folder === 'tetsuko' ? .34 : folder === 'pakki' ? .94 : 1.675) * scale;
