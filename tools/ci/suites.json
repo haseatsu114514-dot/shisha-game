@@ -614,6 +614,18 @@
       ]
     },
     {
+      "id": "ch4-rehearsal",
+      "title": "Chapter 4 DAY12 rehearsal progress and grading",
+      "kind": "quick",
+      "paths": [
+        "remake/js/chapters/ch4-rehearsal.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
+        "data/dialogue/ch4_dubai_daily.json",
+        "remake/test/ch4_rehearsal.mjs"
+      ],
+      "run": ["node remake/test/ch4_rehearsal.mjs"]
+    },
+    {
       "id": "manifest-dependencies",
       "title": "Manifest generator required dependency diagnostics",
       "kind": "quick",

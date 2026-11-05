@@ -43,6 +43,7 @@ import { NIGHT_SCENE_IDS, STALL_NONE, STALL_PLACE, STALL_SCENE_IDS, dubaiSpotAt,
 import { runFullPractice } from "../craft/practice.js";
 import { computeShisha } from "../craft/score.js";
 import { INN_TRIAL_FLAG, INN_TRIAL_IDS, innTrialDue, innTrialResult } from "./ch4-inn-trial.js";
+import { REHEARSAL_FLAG, REHEARSAL_IDS, rehearsalDue, rehearsalResult } from "./ch4-rehearsal.js";
 
 export const DUBAI = "dubai";
 const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと）
@@ -67,7 +68,7 @@ const TALK_BG = Object.freeze({
 });
 export const DUBAI_DAILY_IDS = Object.freeze([
   ...["souq", "festa", "center_cafe", "alley_cafe", "naru", "practice"].flatMap(id => TALKS[id].filter(scene => /_(talk_[b-d]|dubai_\d|hall_\d|culture_[a-z]+)$/.test(scene))),
-  "ch4_creek_walk_day", "ch4_creek_walk_night", "ch4_inn_rest", ...INN_TRIAL_IDS, ...CAFE_TASTE_IDS, ...NIGHT_SCENE_IDS, ...STALL_SCENE_IDS,
+  "ch4_creek_walk_day", "ch4_creek_walk_night", "ch4_inn_rest", ...INN_TRIAL_IDS, ...REHEARSAL_IDS, ...CAFE_TASTE_IDS, ...NIGHT_SCENE_IDS, ...STALL_SCENE_IDS,
 ]);
 
 const read = id => chapterFourProgress(state).read[id] === true;
@@ -112,7 +113,7 @@ function spotHasNew(entry) {
   if (entry.place === "naru") return nextTalk("naru", { once: true }) !== null;
   if (entry.place === "practice") return nextTalk("practice", { once: true }) !== null;
   if (entry.place === "longlong") return longlongHasNew(state, affinityLevel(LONGLONG_CHAR));
-  if (entry.place === "inn") return (dubaiDay() >= 2 && !read("ch4_inn_tool_care")) || innTrialDue(state);
+  if (entry.place === "inn") return (dubaiDay() >= 2 && !read("ch4_inn_tool_care")) || innTrialDue(state) || rehearsalDue(state);
   return false;
 }
 
@@ -318,6 +319,7 @@ async function visitCamel(owner) {
 
 /** 宿で休むか、持ってきた葉で一台試すかを選ぶ。最初の道具の手入れは従来どおり先に読む。 */
 async function visitInn(io, owner, staminaGuard) {
+  if (rehearsalDue(state)) return visitRehearsal(owner, staminaGuard);
   if (dubaiDay() >= 2 && !read("ch4_inn_tool_care"))
     return { done: await keepDailyHud(() => io.readAndCommit("ch4_inn_tool_care")), trial: false };
   if (!innTrialDue(state)) return { done: await readPlain("ch4_inn_rest", "bg_dubai_inn_night", owner), trial: false };
@@ -343,6 +345,32 @@ async function visitInn(io, owner, staminaGuard) {
   const result = owner.flags[INN_TRIAL_FLAG].result;
   const done = await readPlain(`ch4_inn_trial_${result}`, "bg_dubai_inn_night", owner);
   if (done) owner.flags[INN_TRIAL_FLAG].feedbackRead = true;
+  return { done, trial: done };
+}
+
+/** 前日の一台は独立した一度きりの行動。完成直後に保存して講評だけ再開できるようにする。 */
+async function visitRehearsal(owner, staminaGuard) {
+  const bg = "bg_dubai_inn_night";
+  if (!owner.flags[REHEARSAL_FLAG]?.result) {
+    const choice = await modal({ title: "前日リハーサル", body: "本番と同じ手順で一台作り、調整を2回まで通す。1行動・体力16。葉は減らず、能力値は増えない。",
+      options: [
+        { label: "リハーサルをする", value: "rehearsal", test: "ch4-rehearsal", primary: true },
+        { label: "いつもの宿", value: "rest", test: "ch4-rehearsal-rest" },
+        { label: "戻る", value: "cancel", test: "ch4-rehearsal-cancel" },
+      ] });
+    if (state !== owner || !choice || choice === "cancel") return { done: false, trial: false };
+    if (choice === "rest") return { done: await readPlain("ch4_inn_rest", bg, owner), trial: false };
+    if (!(await staminaGuard(-16)) || state !== owner) return { done: false, trial: false };
+    if (!await readPlain("ch4_rehearsal_intro", bg, owner)) return { done: false, trial: false };
+    const cs = await runFullPractice({ kind: "rehearsal", isCurrent: () => state === owner });
+    if (state !== owner || !cs || cs.cancelled || !cs.pullDone && !cs.failed) return { done: false, trial: false };
+    owner.flags[REHEARSAL_FLAG] = { result: rehearsalResult(cs, computeShisha), feedbackRead: false };
+    addStamina(-16);
+    save();
+  }
+  const progress = owner.flags[REHEARSAL_FLAG];
+  const done = await readPlain(`ch4_rehearsal_${progress.result}`, bg, owner);
+  if (done) progress.feedbackRead = true;
   return { done, trial: done };
 }
 
