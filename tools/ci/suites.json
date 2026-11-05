@@ -237,7 +237,7 @@
       "id": "growth-levelup",
       "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
       "kind": "quick",
-      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs"]
+      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs", "node --experimental-vm-modules remake/test/growth_board_screen.mjs"]
     },
     {
       "id": "vent-lid",
@@ -3933,6 +3933,22 @@
       "title": "Official character birthday data contract",
       "kind": "quick",
       "run": ["node remake/test/character_birthdays.mjs"]
+    },
+    {
+      "id": "board-notification-visibility-browser",
+      "title": "Paper mastery/purchase notices and stable board selection, undo and saved lit markers",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 3,
+      "paths": [
+        "remake/css/ui-paper.css",
+        "remake/css/daily.css",
+        "remake/js/daily/growth-board-screen.js",
+        "remake/test/browser/board_notification_visibility.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/board_notification_visibility.mjs"
+      ]
     }
   ]
 }
