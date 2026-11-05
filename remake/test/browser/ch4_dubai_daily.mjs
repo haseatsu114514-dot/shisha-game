@@ -288,9 +288,13 @@ await suite("ch4-dubai-daily", async check => {
     await dubaiMap(page, { day: 60, slot: 1 });
     assert.equal(await page.locator(dt("pin-ch4_dubai_alley")).count(), 1, "The alley is open after the promise");
     await go(page, "ch4_dubai_inn");
+    // DAY12 の宿では前日リハーサルの申し出が先に出る。このケースは受けずに「いつもの宿」を選び、従来どおり前夜へ進む。
+    await page.locator(dt("ch4-rehearsal-rest")).waitFor();
+    await page.locator(dt("ch4-rehearsal-rest")).click();
     // DAY12 の夜を越えると DAY13（前夜祭の日）の前夜の流れ。前夜祭の繋ぎ場面から。
     await page.locator(`${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`).waitFor({ timeout: 60000 });
     const state = await get(page);
+    assert.equal(state.flags._ch4_rehearsal, undefined, "Skipping the rehearsal leaves no rehearsal record");
     assert.equal(state.flags._ch4.part, "eve");
     assert.equal(state.flags._ch4.day, 13);
     assert.equal(state.day, 61);
@@ -304,6 +308,40 @@ await suite("ch4-dubai-daily", async check => {
     const after = await get(page);
     assert.equal(after.met.master_hookah, true);
     assert.equal(after.affinity.master_hookah || 0, 0, "The reception itself gives no affection");
+  });
+
+  // DAY12 の宿の前日リハーサルを受ける側: 本番と同じ一台（調整2回）を作って講評まで読むと記録が残り、
+  // 1行動・体力16を使う。お金は減らない。宿は一日一度きりなので、夜は別の行き先で一日を終えて前夜祭へ進む。
+  await check("day-twelve-inn-rehearsal-runs-a-full-practice-into-the-eve", async page => {
+    await seed(page, (value, progress) => {
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      for (const id of ["ch4_dubai_souq", "ch4_stranger_first", "ch4_festa", "ch4_inn_tool_care"]) p.read[id] = true;
+      p.firstDay = 1;
+      value.day = p.startDay + 11; value.slot = 0; p.day = 12;
+      p.read.ch4_stranger_second = true;
+      value.stats.guts = 10; // 根性の軽減なしで、リハーサルの基本消費16を確かめる。
+    });
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: 60, slot: 0 });
+    const before = await get(page);
+    await go(page, "ch4_dubai_inn");
+    await page.locator(dt("ch4-rehearsal")).waitFor();
+    await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = "good"; });
+    await page.locator(dt("ch4-rehearsal")).click();
+    await dubaiMap(page, { day: 60, slot: 1 });
+    const state = await get(page);
+    assert.equal(state.flags._ch4_rehearsal?.feedbackRead, true, "The rehearsal feedback was read");
+    assert(["great", "good", "rough", "burnt"].includes(state.flags._ch4_rehearsal?.result), "The rehearsal result is recorded");
+    assert.equal(state.flags._craft_practice_runs.at(-1).kind, "rehearsal");
+    assert.equal(state.stamina, before.stamina - 16, "The rehearsal costs 16 stamina");
+    assert.equal(state.money, before.money, "The rehearsal is free");
+    // 宿は一日一度きり（リハーサルで使ったので夜は「今日はもう行った」）。別の行き先で一日を終えると前夜祭の流れへ。
+    await go(page, "ch4_dubai_creek");
+    await page.locator(`${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`).waitFor({ timeout: 60000 });
+    const eve = await get(page);
+    assert.equal(eve.flags._ch4.part, "eve");
+    assert.equal(eve.flags._ch4.day, 13);
   });
 
   // 龍龍水煙所: 最初から地図にあり、初来店で王煙楼が名乗る（面識・一台6,000円・好感度）。SAVE/LOAD をはさんでも
@@ -366,6 +404,9 @@ await suite("ch4-dubai-daily", async check => {
     await loadSlot(page, 0);
     await dubaiMap(page, { day: 60, slot: 1 });
     await go(page, "ch4_dubai_inn");
+    // 前日リハーサルは受けずに「いつもの宿」で前夜へ進む（DAY12 の宿の申し出）。
+    await page.locator(dt("ch4-rehearsal-rest")).waitFor();
+    await page.locator(dt("ch4-rehearsal-rest")).click();
     await page.locator(`${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`).waitFor({ timeout: 60000 });
     await page.locator(dt("ch4-continue")).click();
     await page.locator(`${dt("ch4-eve")}[data-scene="ch4_stranger_third"]`).waitFor({ timeout: 60000 });
@@ -393,6 +434,9 @@ await suite("ch4-dubai-daily", async check => {
     await loadSlot(page, 0);
     await dubaiMap(page, { day: 60, slot: 1 });
     await go(page, "ch4_dubai_inn");
+    // 前日リハーサルは受けずに「いつもの宿」で前夜へ進む（DAY12 の宿の申し出）。
+    await page.locator(dt("ch4-rehearsal-rest")).waitFor();
+    await page.locator(dt("ch4-rehearsal-rest")).click();
     const arrival = id => `${dt("ch4-arrival")}[data-scene="${id}"]`;
     await page.locator(arrival("ch4_kuyuri_dubai_girlfriend")).waitFor({ timeout: 60000 });
     assert.match(await page.locator(dt("ch4-arrival")).innerText(), /DAY 13・前夜祭の日/);
@@ -438,6 +482,9 @@ await suite("ch4-dubai-daily", async check => {
     await loadSlot(page, 0);
     await dubaiMap(page, { day: 60, slot: 1 });
     await go(page, "ch4_dubai_inn");
+    // 前日リハーサルは受けずに「いつもの宿」で前夜へ進む（DAY12 の宿の申し出）。
+    await page.locator(dt("ch4-rehearsal-rest")).waitFor();
+    await page.locator(dt("ch4-rehearsal-rest")).click();
     await page.locator(`${dt("ch4-arrival")}[data-scene="ch4_samechan_dubai_girlfriend"]`).waitFor({ timeout: 60000 });
     const evening = dt("ch4-arrival-evening-samechan");
     assert.equal(await page.locator(evening).count(), 0, "The arrival comes first");

@@ -39,7 +39,7 @@ for(const rank of [1,3,4]){
   }
 }
 for(const round of [1,2,3])assert.equal(Object.values(interim(round).sui).reduce((a,b)=>a+b,0),0);
-if(interimPointTable){assert.match(source,/const table = interimPointTable\(round\)/);assert.doesNotMatch(source,/チャコール博士が最後の持ち点を投入/);}
+if(interimPointTable){assert.match(source,/const table = attempt\?\.rulesVersion >= 2 \? attempt\.voteAttempt\.votes : interimPointTable\(round\);/);assert.doesNotMatch(source,/チャコール博士が最後の持ち点を投入/);}
 console.log(JSON.stringify({groups:3,ranks:[1,3,4],scope:'actual vote module with controlled unused render ports; no browser',result:'interim votes monotonic through all unchanged final tables; per-judge <=10; Sui held'},null,2));
 
 // #2190 P22: exercise the actual standings/graphics/DOM builder with a controlled

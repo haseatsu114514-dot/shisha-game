@@ -58,6 +58,12 @@
       ]
     },
     {
+      "id": "tournament-craft-runner",
+      "title": "Chapter 2/3 craft commit, milestone and failure order",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/tournament_craft_runner.mjs"]
+    },
+    {
       "id": "craft-rank-hud",
       "title": "Craft rank display-only snapshots, accessibility and lifecycle",
       "kind": "quick",
@@ -612,6 +618,18 @@
         "python3 -B -m unittest discover -s tools -p test_legacy_romaji.py",
         "python3 tools/check_legacy_terms.py"
       ]
+    },
+    {
+      "id": "ch4-rehearsal",
+      "title": "Chapter 4 DAY12 rehearsal progress and grading",
+      "kind": "quick",
+      "paths": [
+        "remake/js/chapters/ch4-rehearsal.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
+        "data/dialogue/ch4_dubai_daily.json",
+        "remake/test/ch4_rehearsal.mjs"
+      ],
+      "run": ["node remake/test/ch4_rehearsal.mjs"]
     },
     {
       "id": "manifest-dependencies",
@@ -1404,6 +1422,12 @@
         "remake/test/browser/ch4_camel_race.mjs"
       ],
       "run": ["node remake/test/browser/ch4_camel_race.mjs"]
+    },
+    {
+      "id": "ch1-votes",
+      "title": "Chapter 1 deterministic tournament votes",
+      "kind": "quick",
+      "run": ["node remake/test/ch1_votes.mjs"]
     },
     {
       "id": "ch4-tournament",

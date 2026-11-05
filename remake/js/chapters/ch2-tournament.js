@@ -1,4 +1,5 @@
 import { playEntrance } from "./tournament-entrance.js";
+import { advanceTournamentCraft } from "./tournament-craft-runner.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 // HAZE: OPEN CLOUD。一試合の制作と、各工程の確定済み状態だけを保存する。
@@ -345,21 +346,13 @@ async function drive(owner) {
         renderError(owner);
         return;
       }
-      if (p.step === 8 && !cs.failed) {
-        cs.tournamentStory ||= { seen: [] };
-        cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
-      }
-      finishStep(state, cs);
-      if (cs.failed) { awardTournamentExp(4, cs); save(); continue; }
-      if (MILESTONES.has(p.step)) {
-        broadcast.clearComments();
-        const round = MILESTONES.get(p.step), quality = partialQuality(cs, round);
+      if (!advanceTournamentCraft({ state, progress: p, craft: cs, finishStep, milestones: MILESTONES, onMilestone: round => {
+        const quality = partialQuality(cs, round);
         // finalizeの完成品と2回のcareを同じcsに残し、追加投票だけを確定する。
         p.craft = clone(cs); castVotes(p, round, quality);
         p.stage = p.step === STEPS.length ? "tasting" : "votes";
         if (p.stage === "tasting") { const result = recordResult(state, cs.total); awardTournamentExp(result.rank, cs); }
-      }
-      save();
+      } })) continue;
     } else if (p.stage === "tasting") {
       owner.cs ||= clone(p.craft);
       playBgm("bgm_judging");
