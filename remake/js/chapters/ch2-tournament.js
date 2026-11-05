@@ -46,7 +46,8 @@ const setupWithWater = async cs => { await stepSetup(cs); await stepWater(cs); }
 const STEPS = [setupWithWater, stepMix, stepPack, runHoles, stepPlace, runHeat,
   stepSteamTime, runSteamDodge, runPull, cs => runCare(cs, { round: 1 }), cs => runCare(cs, { round: 2 })];
 const STEP_IDS = ["setup", "mix", "pack", "foil", "place", "coalfire", "steam", "steam", "pull", "adjust", "adjust"];
-const MILESTONES = new Map([[8, 0], [9, 1], [10, 2], [11, 3]]);
+// 第2章の4票は各工程の確定直後に投入する（第3章の台詞読了待ちとは異なる）。
+const VOTE_BOUNDARIES = new Map([[8, 0], [9, 1], [10, 2], [11, 3]]);
 const clone = value => JSON.parse(JSON.stringify(value));
 const id = name => `ch2-tournament-${name}`;
 let session;
@@ -346,7 +347,7 @@ async function drive(owner) {
         renderError(owner);
         return;
       }
-      if (!advanceTournamentCraft({ state, progress: p, craft: cs, finishStep, milestones: MILESTONES, onMilestone: round => {
+      if (!advanceTournamentCraft({ state, progress: p, craft: cs, finishStep, milestones: VOTE_BOUNDARIES, onMilestone: round => {
         const quality = partialQuality(cs, round);
         // finalizeの完成品と2回のcareを同じcsに残し、追加投票だけを確定する。
         p.craft = clone(cs); castVotes(p, round, quality);
