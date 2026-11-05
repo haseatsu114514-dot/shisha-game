@@ -208,4 +208,24 @@ await suite("debug-tools", async check => {
       if (chapter === 4) await openPanel(page);
     }
   });
+
+  await check("old-chapter-two-without-day-one-checkpoint-keeps-compatibility", async page => {
+    const old = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const data = core.newState();
+      Object.assign(data, { schema: 25, chapter: 2, day: 15, phase: "opening", slot: 0, money: 16666 });
+      data.flags = {};
+      return data;
+    });
+    await openPanel(page);
+    await page.locator(t("debug-save-file")).setInputFiles({ name: "old-ch2.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify(old)) });
+    await Promise.all([page.waitForNavigation(), page.locator(t("debug-save-import")).click()]);
+    await page.locator("#boot").waitFor({ state: "detached" });
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
+    assert.equal(saved.chapter, 2);
+    assert.equal(saved.schema, 26);
+    assert.equal(saved.money, 16666);
+    assert.equal(saved.flags._ch2_day1.startDay, 15);
+    assert.equal(saved.flags._ch2_day1.stage, "departure");
+  });
 }, { entry: `${baseURL}?debug=1` });

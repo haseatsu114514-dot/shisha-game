@@ -9,7 +9,7 @@
 import { state, newState, setState, save, loadFromSlot, requestResumeOnBoot, SCHEMA } from "../core/state.js";
 import { addStamina, addMoney, maxStamina, ROMANCEABLE, AFFINITY_RANK_PTS, affinityLevel } from "../core/stats.js";
 import { chapterDay, chapterFinalDay } from "../core/chapter-clock.js";
-import { advanceToChapterTwo } from "../chapters/ch2-progress.js";
+import { advanceToChapterTwo, dayOneProgress } from "../chapters/ch2-progress.js";
 import { advanceToChapterThree, chapterThreeProgress } from "../chapters/ch3-progress.js";
 import { advanceToChapterFour, chapterFourProgress } from "../chapters/ch4-progress.js";
 import { advanceToChapterFive, chapterFiveProgress } from "../chapters/ch5-progress.js";
@@ -114,7 +114,8 @@ function importSave(raw) {
     || !Number.isInteger(data.slot) || data.slot < 0 || data.slot > 2
     || !data.flags || Array.isArray(data.flags) || typeof data.flags !== "object") throw new Error("セーブデータの形式が正しくありません");
   const validate = data => {
-    if (data.chapter === 2 && !data.flags._ch2_day1) throw new Error("第2章の進行地点がありません");
+    // 第2章は未接続時代の手動SAVEを、通常再開と同じ境界で補完する。
+    if (data.chapter === 2) dayOneProgress(data);
     try {
       if (data.chapter === 3) chapterThreeProgress(data);
       if (data.chapter === 4) chapterFourProgress(data);
