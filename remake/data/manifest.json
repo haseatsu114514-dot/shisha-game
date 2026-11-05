@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-02 19:23 UTC",
+ "generated": "2026-11-05 00:44 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -2713,6 +2713,13 @@
   "cgs/cg_samechan_confession.png",
   "cgs/cg_tsumugi_confession.png",
   "cgs/cg_tsumugi_smoke_color.png",
+  "sprites/character_variants/new/tsumugi/chr_tsumugi_bow.png",
+  "sprites/character_variants/new/tsumugi/chr_tsumugi_evil.png",
+  "sprites/character_variants/new/tsumugi/chr_tsumugi_normal.png",
+  "sprites/character_variants/new/tsumugi/chr_tsumugi_sad.png",
+  "sprites/character_variants/new/tsumugi/chr_tsumugi_serious.png",
+  "sprites/character_variants/new/tsumugi/chr_tsumugi_smile.png",
+  "sprites/character_variants/new/tsumugi/chr_tsumugi_surprise.png",
   "sprites/characters/adam/chr_adam_intense.png",
   "sprites/characters/adam/chr_adam_normal.png",
   "sprites/characters/adam/chr_adam_serious.png",
@@ -2822,6 +2829,9 @@
   "sprites/characters/naru/chr_naru_serious.png",
   "sprites/characters/naru/chr_naru_smile.png",
   "sprites/characters/naru/chr_naru_surprise.png",
+  "sprites/characters/noor/chr_noor_normal.png",
+  "sprites/characters/noor/chr_noor_smile.png",
+  "sprites/characters/noor/chr_noor_surprise.png",
   "sprites/characters/pakki/chr_pakki_angry.png",
   "sprites/characters/pakki/chr_pakki_evil.png",
   "sprites/characters/pakki/chr_pakki_excited.png",
@@ -2872,6 +2882,11 @@
   "sprites/characters/sumi/chr_sumi_smile.png",
   "sprites/characters/sumi/chr_sumi_surprise.png",
   "sprites/characters/sumi/chr_sumi_thinking.png",
+  "sprites/characters/tetsuko/chr_tetsuko_normal.png",
+  "sprites/characters/tetsuko/chr_tetsuko_serious.png",
+  "sprites/characters/tetsuko/chr_tetsuko_sleep.png",
+  "sprites/characters/tetsuko/chr_tetsuko_smile.png",
+  "sprites/characters/tetsuko/chr_tetsuko_surprise.png",
   "sprites/characters/tsumugi/chr_tsumugi_bow.png",
   "sprites/characters/tsumugi/chr_tsumugi_evil.png",
   "sprites/characters/tsumugi/chr_tsumugi_normal.png",
@@ -2912,6 +2927,7 @@
   "ui/character_intros/mukai_master.png",
   "ui/character_intros/nagumo.png",
   "ui/character_intros/naru.png",
+  "ui/character_intros/noor.png",
   "ui/character_intros/oneesan.png",
   "ui/character_intros/pakki.png",
   "ui/character_intros/rei.png",
@@ -2953,6 +2969,7 @@
   "ui/face_icons/face_rin.png",
   "ui/face_icons/face_samechan.png",
   "ui/face_icons/face_sumi.png",
+  "ui/face_icons/face_tetsuko.png",
   "ui/face_icons/face_tsumugi.png",
   "ui/face_icons/face_uranaishi.png",
   "ui/face_icons/face_volk.png",
@@ -3056,17 +3073,7 @@
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
-  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
-  "sprites/characters/noor/chr_noor_normal.png",
-  "sprites/characters/noor/chr_noor_smile.png",
-  "sprites/characters/noor/chr_noor_surprise.png",
-  "ui/character_intros/noor.png",
-  "ui/face_icons/face_tetsuko.png",
-  "sprites/characters/tetsuko/chr_tetsuko_normal.png",
-  "sprites/characters/tetsuko/chr_tetsuko_serious.png",
-  "sprites/characters/tetsuko/chr_tetsuko_sleep.png",
-  "sprites/characters/tetsuko/chr_tetsuko_smile.png",
-  "sprites/characters/tetsuko/chr_tetsuko_surprise.png"
+  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png"
  ],
  "limeMedia": {
   "st_adam_bless": {
@@ -3360,6 +3367,25 @@
    "alt": "練習した煙の輪",
    "preview": "［画像］煙の輪",
    "allowed_accounts": null
+  }
+ },
+ "portraitVariants": {
+  "new": {
+   "tsumugi": {
+    "faces": [
+     "bow",
+     "evil",
+     "normal",
+     "sad",
+     "serious",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.7267,
+    "b": 0.0217,
+    "ax": 0.4926,
+    "aspect": 0.7467
+   }
   }
  }
 }

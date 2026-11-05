@@ -30,15 +30,15 @@ function test(name, fn) { fn(); passed++; console.log(`PASS ${name}`); }
 const legacy = {faces:['normal','smile','serious','ura_normal','ura_smile'],h:.8,b:0,ax:.4,aspect:.75};
 data.DB.manifest.portraits = {tsumugi:legacy,minto:legacy};
 data.DB.manifest.portraitVariants = {new:{tsumugi:{faces:['normal','smile'],h:.7,b:.1,ax:.6,aspect:.8}}};
-data.DB.characters.tsumugi = {spriteScale:.9};
-test('default remains classic', () => assert.equal(data.portraitInfo('tsumugi','normal').style,'classic'));
+data.DB.characters.tsumugi = {spriteScale:.88, spriteScaleVariants:{new:.9}};
+test('default remains classic at original scale', () => { const p=data.portraitInfo('tsumugi','normal');assert.equal(p.style,'classic');assert.equal(p.scale,.88); });
 test('new uses separate image and measurements', () => {
  state.config.portraitStyle='new'; const p=data.portraitInfo('tsumugi','normal');
  assert.equal(p.src,'../assets/sprites/character_variants/new/tsumugi/chr_tsumugi_normal.png');
  assert.equal(p.h,.7); assert.equal(p.b,.1); assert.equal(p.ax,.6); assert.equal(p.scale,.9);
 });
 test('speaker alias and expression alias retained', () => assert.equal(data.portraitInfo('tumugi','excited').face,'smile'));
-test('missing new expression retains classic expression', () => {const p=data.portraitInfo('tsumugi','serious');assert.equal(p.style,'classic');assert.equal(p.face,'serious');assert.equal(p.b,.02);});
+test('missing new expression retains classic expression', () => {const p=data.portraitInfo('tsumugi','serious');assert.equal(p.style,'classic');assert.equal(p.face,'serious');assert.equal(p.b,.02);assert.equal(p.scale,.88);});
 test('missing character variant falls back to classic', () => assert.equal(data.portraitInfo('minto','smile').style,'classic'));
 test('unknown character stays absent', () => assert.equal(data.portraitInfo('missing'),null));
 test('private outfit never becomes public outfit', () => {const p=data.portraitInfo('oneesan','smile');assert.equal(p.face,'ura_smile');assert.match(p.src,/chr_minto_ura_smile/);});

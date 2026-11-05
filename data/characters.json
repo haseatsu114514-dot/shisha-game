@@ -420,6 +420,7 @@
       "reticent young illustrator at a window seat of a small shisha cafe, drawing a cat with leaf ears and a smoke tail on a cracked tablet, calm and self-accepting rather than lonely, soft lavender smoke"
     ],
     "spriteScale": 0.88,
+    "spriteScaleVariants": { "new": 0.90 },
     "art_sns": {
       "followers": 50000,
       "reveal_dialogue_id": "ch1_tsumugi_third",

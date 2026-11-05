@@ -17,7 +17,7 @@
 | 項目 | 規格 | 確かめ方 |
 |---|---|---|
 | 画像 | 896×1200 のRGBA透過PNG。通常と表情差分は同じキャンバス・同じ足元 | `tools/fit_portrait.py`・portrait-fix スキル |
-| 身長 | `data/characters.json` の `spriteScale`（身長の設定÷172cm）だけで決まる。絵の中の人物の高さでは決めない | 会話エンジンが本体の高さを自動でそろえる（`remake/js/vn/engine.js` の `frame()`） |
+| 身長 | `data/characters.json` の `spriteScale`（身長の設定÷172cm）で決まる。承認済みの新版限定調整は `spriteScaleVariants.new` を使う。絵の中の人物の高さでは決めない | 会話エンジンが本体の高さを自動でそろえる（`remake/js/vn/engine.js` の `frame()`） |
 | 頭身 | **標準 6.4〜7.7（目安7.0）**、**小柄 5.4〜6.2（目安5.8）** | `python3 tools/portrait_metrics.py check` |
 | 同じ人物の衣装違い | 会話画面での頭の大きさの差が5%以内 | 同上（`same_person`） |
 | 表情差分 | 通常と同じ頭の大きさ・位置。表情に伴う小さな首の傾きだけ許す | 通常と重ねて見る（`fit_portrait.py` の比較画像） |
@@ -138,3 +138,5 @@ python3 tools/make_reference_sheet.py lineup              # asset_sources/refere
 局所検証: `node --experimental-vm-modules remake/test/portrait_style.mjs`。生成処理は Pillow・NumPy・SciPy の揃った環境で `python3 remake/test/portrait_variants.py` を実行する。
 
 ブラウザ回帰: プレビューサーバーを起動し、`node tools/ci/run.mjs --kind browser --suites portrait-style-browser`。PC・横持ちタッチで旧設定、反復切替、同席者、未制作の表情・人物・私服、設定の開閉・再読込、台詞・配置・保存への非干渉を確認する。部分的な新絵のテストはブラウザ内だけで行い、検証画像を本編へ登録しない。
+
+新版だけ表示倍率を変える場合は `data/characters.json` の `spriteScaleVariants.new` を指定する。未指定の新版と現行への差分フォールバックは既存 `spriteScale` を使う。つむぎv4は新版0.90、現行0.88を維持する。
