@@ -7,7 +7,13 @@ export const CH4_JUDGES = Object.freeze(["nagumo", "da_silva", "emil"]);
 // 2026-11-03「3・4章を難しく調整」: なるの中盤、シェイクの終盤を強める暫定値（実機調整前）。
 // 配点は2/3/2/3を保持。最後40%の案は、相手の固定順位を生むため採用しない。
 // 途中の旧保存は旧基準を保持し、新しい一台から版2で競う。
-export const CH4_RULES_VERSION = 2;
+export const CH4_RULES_VERSION = 3;
+// 穴・熱・提供・調整1・調整2・最終総合。各成分は等重みから±10pt以内。
+export const CH4_JUDGE_WEIGHTS = Object.freeze({
+  nagumo: Object.freeze([15, 15, 15, 15, 15, 25]),
+  da_silva: Object.freeze([15, 25, 15, 15, 15, 15]),
+  emil: Object.freeze([15, 15, 15, 15, 25, 15]),
+});
 export const CH4_LEGACY_RIVAL_CURVE = Object.freeze({
   naru: Object.freeze([86, 91, 92, 87.5]),
   master_hookah: Object.freeze([87, 87, 87, 87]),
@@ -27,7 +33,7 @@ export const CH4_CRAFT_STEP_COUNT = 11;
 const rulesVersion = p => p.rulesVersion === undefined ? 1 : p.rulesVersion;
 function rulesFor(p) {
   const version = rulesVersion(p);
-  if (version !== 1 && version !== CH4_RULES_VERSION) throw new Error("世界大会の採点規則を確認できません");
+  if (version !== 1 && version !== 2 && version !== CH4_RULES_VERSION) throw new Error("世界大会の採点規則を確認できません");
   return version === 1 ? { curve: CH4_LEGACY_RIVAL_CURVE, spend: CH4_LEGACY_SPEND }
     : { curve: CH4_RIVAL_CURVE, spend: CH4_SPEND };
 }
@@ -97,6 +103,19 @@ function qualityAt(craft, round) {
   return round === 3 ? craft.total : parts.reduce((a, b) => a + b, 0) / parts.length;
 }
 
+export function chapterFourJudgeQuality(craft, round, judge) {
+  const keys = ["holes", "heat", "served", "care1", "care2", "total"];
+  const values = [craft.holes?.score, craft.heat?.score, craft.servedQuality,
+    craft.careHistory?.[0]?.score, craft.careHistory?.[1]?.score, craft.total];
+  const available = keys.map((key, i) => i).filter(i =>
+    (i !== 0 || !craft.holes?.skipped) && (i < 2 || i <= round + 1 || (i === 5 && round === 3)));
+  if (available.some(i => !Number.isFinite(values[i]) || values[i] < 0 || values[i] > 100))
+    throw new Error("世界大会の工程成績が不足しています");
+  const weights = CH4_JUDGE_WEIGHTS[judge];
+  const sum = available.reduce((n, i) => n + weights[i], 0);
+  return available.reduce((n, i) => n + values[i] * weights[i], 0) / sum;
+}
+
 export function chapterFourStandings(p) {
   const points = Object.fromEntries(CH4_CONTESTANTS.map(id => [id,
     CH4_JUDGES.reduce((sum, judge) => sum + p.votes[judge][id], 0)]));
@@ -141,8 +160,10 @@ export function finishChapterFourStep(value, craft) {
   p.step = nextStep;
   if (quality) {
     p.quality = quality;
-    const [first, second] = [...CH4_CONTESTANTS].sort((a, b) => p.quality[b] - p.quality[a] || byTie(a, b));
     for (const judge of CH4_JUDGES) {
+      const hajimeScore = rulesVersion(p) >= 3 ? chapterFourJudgeQuality(craft, round, judge) : p.quality.hajime;
+      const score = id => id === "hajime" ? hajimeScore : p.quality[id];
+      const [first, second] = [...CH4_CONTESTANTS].sort((a, b) => score(b) - score(a) || byTie(a, b));
       p.votes[judge][first] += rules.spend[round] - 1;
       p.votes[judge][second] += 1;
     }

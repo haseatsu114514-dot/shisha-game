@@ -1406,6 +1406,12 @@
       "run": ["node remake/test/browser/ch4_camel_race.mjs"]
     },
     {
+      "id": "ch1-votes",
+      "title": "Chapter 1 deterministic tournament votes",
+      "kind": "quick",
+      "run": ["node remake/test/ch1_votes.mjs"]
+    },
+    {
       "id": "ch4-tournament",
       "title": "Chapter 4 real craft, scoring, plans and checkpoint recovery",
       "kind": "quick",

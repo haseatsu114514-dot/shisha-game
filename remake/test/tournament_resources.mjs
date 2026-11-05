@@ -4,6 +4,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 import * as core from "../js/core/state.js";
 import { captureEntryResources, restoreEntryResources, applyAssistRecovery } from "../js/chapters/tournament-resources.js";
+import { beginCh1Votes } from "../js/craft/ch1-votes.js";
 globalThis.document ||= { addEventListener() {} };
 globalThis.window ||= {};
 const { regulationFor } = await import("../js/craft/steps.js");
@@ -93,7 +94,7 @@ const context = vm.createContext({
   prepareFlavorStock: stub, lastNight: stub, warmCraftAssets: () => Promise.resolve([]), clearScreen: stub, initHud: stub,
   showHud: stub, playBgm: stub, dayCard: stub, morningMessages: () => [], openPhone: stub,
   play: id => played.push(id),
-  captureEntryResources, restoreEntryResources, applyAssistRecovery, maxStamina: () => 130, regulationFor,
+  captureEntryResources, restoreEntryResources, applyAssistRecovery, beginCh1Votes, maxStamina: () => 130, regulationFor,
   save: () => saves.push(copy(entrant)), toast: stub,
   markMet: stub, preloadBgm: stub, warmGameOver: stub, smokeWipe: fn => fn(),
   playTournamentArrival: () => played.push("arrival-sequence"),
@@ -110,7 +111,9 @@ assert(!played.includes("remake_flavor_rescue") && !played.includes("remake_flav
 assert.equal(sessions[0].stamina, 52);
 entrant.stamina = 48; entrant.flavorStock.lemon = 0;
 await vm.runInContext("tournamentDay()", context);
-assert.equal(saves.length, 1, "retry never overwrites the entry save");
+// #2536: 再挑戦でも版確定と票の初期化を保存するようになったため、保存回数ではなく
+// 「どの保存でも entry スナップショットが書き換わらない」ことを直接守る。
+for (const sv of saves) assert.deepEqual(sv.tournament.entryResources, saves[0].tournament.entryResources, "retry never overwrites the entry save");
 assert.equal(sessions[1].stamina, 52);
 assert.deepEqual(sessions[1].flavorStock, {});
 // #590: 救済を選んだ挑戦だけ、戻した直後に現在の最大体力（根性込みの値）へ。entryは書き換えない。
@@ -123,7 +126,7 @@ entrant.stamina = 3; entrant.tournament.retryAssist = false;
 await vm.runInContext("tournamentDay()", context);
 assert.equal(sessions[3].stamina, 52, "declining the assist keeps the entry stamina");
 assert.equal(applyAssistRecovery({ stamina: 9 }, "yes", 130), false, "only an explicit true assists");
-assert.equal(saves.length, 1, "recovery never writes a new entry save");
+for (const sv of saves) assert.deepEqual(sv.tournament.entryResources, saves[0].tournament.entryResources, "recovery never writes a new entry save");
 assert.equal(notices.length, 4, "every tournamentDay run wraps the entry wait in the loading notice");
 for (const notice of notices) assert.deepEqual(notice, { label: "大会の準備をしています…" });
 const victory = source.slice(source.indexOf("async function victory(cs)"), source.indexOf('  const after = DB.dialogues.ch1_tournament_after;'));
