@@ -1314,8 +1314,8 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gb-node.s-locked .gb-face { opacity: 0.22; }
 .gb-node.on-path:not(.s-unlocked):not(.s-pending) .gb-face { border-color: var(--gold-hi); opacity: 0.85; }
 .gb-node.target .gb-face { outline: 2px dashed var(--gold-hi); outline-offset: 4px; }
-@keyframes gb-breathe { 50% { box-shadow: 0 0 14px var(--c); transform: scale(1.1); } }
-@keyframes gb-breathe-skill { 50% { filter: drop-shadow(0 0 8px var(--c)); transform: scale(1.06); } }
+@keyframes gb-breathe { 50% { opacity: 0.75; transform: scale(1.1); } }
+@keyframes gb-breathe-skill { 50% { opacity: 0.75; transform: scale(1.06); } }
 .gb-node.selected .gb-face { outline: 3px solid #fff; outline-offset: 3px; }
 .gb-node:focus-visible { outline: none; }
 .gb-node:focus-visible .gb-face { outline: 3px solid var(--gold-hi); outline-offset: 3px; }
@@ -1402,14 +1402,14 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gb-board { border-radius: 0 0 14px 14px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.05); border-top: 0;
   background: radial-gradient(ellipse 34% 40% at 50% 80%, color-mix(in srgb, var(--board-c) 9%, transparent), transparent 70%), radial-gradient(ellipse 80% 90% at 50% 45%, #110d17, #060409 85%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), inset 0 0 60px rgba(0, 0, 0, 0.8); }
-.gb-smoke { opacity: 0.18; }
 .gb-dot { fill: rgba(244, 210, 122, 0.10); }
-.gb-fog { fill: rgba(150, 140, 175, 0.08); }
 /* 道のネオン管 */
 .gb-path { stroke: var(--tube); stroke-width: 4; }
 .gb-path-hi { stroke: rgba(255, 255, 255, 0.06); stroke-width: 1; stroke-linecap: round; }
 .gb-tube-glow { stroke: var(--board-c); stroke-width: 6; stroke-linecap: round; opacity: 0.55; }
 .gb-path.lit { stroke: color-mix(in srgb, var(--board-c) 40%, #fff); stroke-width: 2; filter: none; }
+.gb-tube-glow.pending { stroke-dasharray: 5 4; opacity: 0.3; }
+.gb-path.lit.pending { stroke: #fff1b8; stroke-dasharray: 5 4; }
 .gb-path.aim { stroke: var(--gold-hi); stroke-width: 2; stroke-dasharray: 4 6; opacity: 0.85; }
 .gb-path.sealed { stroke: rgba(143, 134, 160, 0.16); stroke-width: 3; stroke-dasharray: 1 7; }
 /* 紋のネオンの輪（漢字はコード） */
@@ -1449,7 +1449,6 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gboard.has-art { background: #07050b url(../img/ui/growth_board/screen_backdrop.webp) center / cover no-repeat; }
 .gboard.has-art .gb-board { background: radial-gradient(ellipse 34% 40% at 50% 80%, color-mix(in srgb, var(--board-c) 9%, transparent), transparent 70%),
   url(../img/ui/growth_board/board_glass.webp) center / 100% 100% no-repeat; }
-.gboard.has-art .gb-smoke { opacity: 0.08; }
 .gboard.has-art .gb-hub-art-base { fill: rgba(10, 7, 14, 0.92); stroke: none; }
 .gboard.has-art .gb-hub-art { filter: drop-shadow(0 0 6px var(--board-c)); pointer-events: none; }
 /* 札の枠: 画像を敷き、盤の色の光は drop-shadow で重ねる。灯っていない札は暗く */
@@ -1515,7 +1514,7 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gb-wall-art { pointer-events: none; filter: drop-shadow(0 0 5px rgba(244, 210, 122, 0.55)); animation: gb-wall-breathe 2.6s ease-in-out infinite; }
 .gb-seal { stroke: #c9a24a; stroke-width: 2.5; stroke-linecap: round; filter: drop-shadow(0 0 3px rgba(244, 210, 122, 0.6)); }
 .gb-seal-lock { fill: #1d1426; stroke: #f4d27a; stroke-width: 2; }
-@keyframes gb-wall-breathe { 50% { filter: drop-shadow(0 0 9px rgba(244, 210, 122, 0.9)); } }
+@keyframes gb-wall-breathe { 50% { opacity: 0.65; } }
 .gb-node.s-locked .gb-face { opacity: 0.3; }
 .gb-node.s-locked.lesson .gb-face { opacity: 0.7; }
 .gb-face-icon.silhouette { filter: brightness(0) drop-shadow(0 0 1.5px rgba(244, 210, 122, 0.95)) drop-shadow(0 0 4px rgba(244, 210, 122, 0.35)); }
@@ -1632,6 +1631,16 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gboard.has-art .gb-node.lesson .gb-face { width: 72px; height: 72px; }
 .gboard.has-art .gb-node.lesson.sig .gb-face { width: 78px; height: 78px; }
 .gboard.has-art .gb-node.lesson { --fh: 72px; } .gboard.has-art .gb-node.lesson.sig { --fh: 78px; }
+/* 灯した札は ✓、決定前は破線の +。画像の明暗・点滅・色だけに頼らず区別する。 */
+.gb-node > .gb-node-state {
+  position: absolute; left: calc(50% + var(--fh) * 0.3 - 5px); top: calc(50% - var(--fh) * 0.4 - 8px); z-index: 3;
+  display: grid; place-items: center; width: 18px; height: 18px; box-sizing: border-box; border-radius: 50%;
+  color: #14261b; background: #b8f3c7; border: 2px solid #14261b; box-shadow: 0 0 0 2px #0a0610;
+  font-size: 13px; line-height: 1; font-weight: 900; text-shadow: none; pointer-events: none;
+}
+.gb-node.s-pending > .gb-node-state { color: #fff1b8; background: #302035; border: 2px dashed #fff1b8; }
+.gb-legend-item i.s-unlocked { background: #b8f3c7; border-color: #14261b; }
+.gb-legend-item i.s-pending { background: #302035; border: 2px dashed #b8651f; }
 /* 色の台座（SBD89）: ひし形の台座に、その盤の色の火がはまる。はめる前は暗いくぼみ、今はめられる時は息づき、はめたら光る */
 .gb-gate-gem { display: none; position: absolute; left: 50%; top: 50%; width: 62%; height: 62%; translate: -50% -50%; object-fit: contain; pointer-events: none; z-index: 1;
   filter: brightness(0.75) saturate(0.7) drop-shadow(0 0 2px rgba(0, 0, 0, 0.9)); opacity: 0.85; }
@@ -1642,7 +1651,7 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gboard.has-art .gb-node.gate.s-locked .gb-gate-gem { filter: brightness(0.6) saturate(0.45) drop-shadow(0 0 2px rgba(0, 0, 0, 0.9)); opacity: 0.75; }
 .gboard.has-art .gb-node.gate .gb-face { width: 46px; height: 46px; }
 .gboard.has-art .gb-node.gate { --fh: 46px; }
-@keyframes gb-gem-breathe { 50% { filter: brightness(1) saturate(1) drop-shadow(0 0 8px var(--c)); } }
+@keyframes gb-gem-breathe { 50% { opacity: 0.7; } }
 @media (prefers-reduced-motion: reduce) { .gb-gate-gem { animation: none !important; } }
 .gb-art.k-gate .gb-art-icon { width: 84px; height: 84px; }
 /* 色の台座を目立たせる（SBD90「まあまあ目立つように」「最初からその色が光っていて、この色しかはまらないと分かるように」）:

@@ -102,6 +102,7 @@ export function openBoard({ place = null } = {}) {
   let pending = [];
   let board = boardOfTarget() || BOARD_KEYS[0];
   let selected = null;
+  let renderedView = null;
   let resolveDone;
   const done = new Promise((r) => { resolveDone = r; });
 
@@ -240,19 +241,17 @@ export function openBoard({ place = null } = {}) {
     const lit = (id) => id === HUB || v.unlocked.has(id);
     const goal = g.target && NODE_BY_ID[g.target]?.board === board ? new Set(pathTo(g.target, v.unlocked).path) : new Set();
     const walls = [];
-    // ネオンのラウンジ（GB03 の見本）: 光のにじみ・封の曇り・ガラスの煙はコードで描く（画像が来たら重ねる）
+    // 広い盤全体へのノイズ・ぼかしフィルターは避け、光と曇りは静的な線・グラデーションで重ねる。
     const parts = [svg("defs", {}, [
       svg("radialGradient", { id: "gb-ember", cx: "50%", cy: "62%", r: "60%" }, [
         svg("stop", { offset: "0%", "stop-color": "#fff1b8" }), svg("stop", { offset: "45%", "stop-color": "#ffb43c" }),
         svg("stop", { offset: "100%", "stop-color": "#e86a12", "stop-opacity": "0" }),
       ]),
-      svg("filter", { id: "gb-glow", x: "-50%", y: "-50%", width: "200%", height: "200%" }, [svg("feGaussianBlur", { stdDeviation: "3" })]),
-      svg("filter", { id: "gb-fog", x: "-50%", y: "-50%", width: "200%", height: "200%" }, [svg("feGaussianBlur", { stdDeviation: "14" })]),
-      svg("filter", { id: "gb-smoke" }, [
-        svg("feTurbulence", { type: "fractalNoise", baseFrequency: "0.006 0.012", numOctaves: "3", seed: "7" }),
-        svg("feColorMatrix", { values: "0 0 0 0 0.75  0 0 0 0 0.7  0 0 0 0 0.85  0 0 0 0.9 -0.32" }),
+      svg("radialGradient", { id: "gb-fog" }, [
+        svg("stop", { offset: "0%", "stop-color": "#968caf", "stop-opacity": "0.08" }),
+        svg("stop", { offset: "100%", "stop-color": "#968caf", "stop-opacity": "0" }),
       ]),
-    ]), svg("rect", { x: 0, y: 0, width: W, height: H, filter: "url(#gb-smoke)", class: "gb-smoke" })];
+    ])];
     drawBoard = board;
     const fill = statRatio(board, v.unlocked);
     reveal.className = `gb-reveal r-${board}`;
@@ -263,11 +262,11 @@ export function openBoard({ place = null } = {}) {
     const [hx, hy] = hubAt();
     for (let gx = -GRID.w; gx <= GRID.w; gx++) for (let gy = -GRID.h; gy <= 0; gy++) { const p = at(gx - hx, gy - hy); parts.push(svg("circle", { cx: p.x, cy: p.y, r: 1.5, class: "gb-dot" })); }
     // まだ開いていない範囲は、ガラスが曇って沈む
-    const fog = svg("g", { filter: "url(#gb-fog)", class: "gb-fog-layer" });
-    for (const n of nodes) if (n.ring > open) { const p = at(n.gx, n.gy); fog.append(svg("circle", { cx: p.x, cy: p.y, r: 30, class: "gb-fog" })); }
+    const fog = svg("g", { class: "gb-fog-layer" });
+    for (const n of nodes) if (n.ring > open) { const p = at(n.gx, n.gy); fog.append(svg("circle", { cx: p.x, cy: p.y, r: 52, fill: "url(#gb-fog)" })); }
     parts.push(fog);
     // 道（使うマスどうしだけ。紋の隣は紋とつなぐ）。消えた管は暗い管と薄いハイライト、灯った管は盤の色のにじみと白い芯
-    const glow = svg("g", { filter: "url(#gb-glow)", class: "gb-glow-layer" }), cores = [];
+    const glow = svg("g", { class: "gb-glow-layer" }), cores = [];
     const drawn = new Set();
     for (const n of nodes) {
       for (const id of n.links) {
@@ -278,7 +277,10 @@ export function openBoard({ place = null } = {}) {
         const on = lit(n.id) && lit(id), aim = (goal.has(n.id) || lit(n.id)) && (id === HUB || goal.has(id) || lit(id)) && (goal.has(n.id) || goal.has(id));
         const closedA = n.ring > open, closedB = id !== HUB && NODE_BY_ID[id].ring > open;
         const line = (cls) => svg("line", { x1: a.x, y1: a.y, x2: b.x, y2: b.y, class: cls });
-        if (on) { glow.append(line("gb-tube-glow")); cores.push(line("gb-path lit")); }
+        if (on) {
+          const provisional = pending.includes(n.id) || pending.includes(id);
+          glow.append(line(`gb-tube-glow${provisional ? " pending" : ""}`)); cores.push(line(`gb-path lit${provisional ? " pending" : ""}`));
+        }
         else if (closedA || closedB) parts.push(line("gb-path sealed"));
         else { parts.push(line("gb-path"), line("gb-path-hi")); if (aim) parts.push(line("gb-path aim")); }
         // 開いている所と、まだ開いていない所の境に結界（章の数は出さない。SBD42。文字の「封」はやめ、鎖の壁で「この先はまだ」を見せる。SBD74）
@@ -302,7 +304,7 @@ export function openBoard({ place = null } = {}) {
       parts.push(svg("image", { href: `${ART_DIR}hub_${board}.webp`, x: hub.x - 44, y: hub.y - 44, width: 88, height: 88, class: "gb-hub-art" }));
     } else {
       // 紋: ネオンの輪（外の太い管のにじみ＋管＋内の細い輪＋6つの短い渦）
-      parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 34, class: "gb-hub-glow", filter: "url(#gb-glow)" }));
+      parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 34, class: "gb-hub-glow" }));
       parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 30, class: "gb-hub" }));
       parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 25, class: "gb-hub-inner" }));
       for (let i = 0; i < 6; i++) {
@@ -335,6 +337,7 @@ export function openBoard({ place = null } = {}) {
           node.kind === "gate" ? el("img.gb-gate-gem", { src: `${ART_DIR}hidane_${node.board}.webp`, alt: "", draggable: "false", loading: "lazy" }) : null,
           icon && node.kind !== "gate" && (st !== "locked" || node.kind !== "skill") ? el("img.gb-icon-img", { src: `${ART_DIR}icons/${icon}.webp`, alt: "", draggable: "false", loading: "lazy" }) : null,
         ]),
+        ["unlocked", "pending"].includes(st) ? el("span.gb-node-state", { text: st === "unlocked" ? "✓" : "+", "aria-hidden": "true" }) : null,
         // ? と火種の数は、札の下の辺の真ん中に重ねる（SBD86「？丸マークも位置がちぐはぐ」。押せる箱の角に付けていたので札から離れて見えた）。
         // 札の暗さ（filter）を受けないよう札の外に置き、札の高さ（--fh）から位置を決める
         node.kind === "lesson" && !lessonKnown(node, g) ? el("span.gb-mystery", { text: "?", "aria-hidden": "true" }) : null,
@@ -542,7 +545,7 @@ export function openBoard({ place = null } = {}) {
       text: rebuilding ? "組み直しを決定" : pending.length ? `決定（${pending.length}）` : "閉じる", dataset: { test: "board-decide" }, onclick: () => (pending.length || rebuilding ? finish(true) : close()),
     }));
     footer.replaceChildren(wallet, el("p.gb-legend", [
-      legend("available", "今灯せる"), legend("far", "道がまだ"), el("span", { text: "◆ 色の台座（光っている色の火をはめる）" }), legend("sealed", "授業の錠"), legend("locked", "結界の先（物語が進むと開く）"), el("span", { text: "✦ できることが増える" }),
+      legend("unlocked", "✓ 灯した"), legend("pending", "+ 仮置き"), legend("available", "今灯せる"), legend("far", "道がまだ"), el("span", { text: "◆ 色の台座（色の火）" }), legend("sealed", "授業の錠"), legend("locked", "結界の先"), el("span", { text: "✦ できることが増える" }),
     ]), el("div.gb-actions", actions));
   }
   function legend(st, text) { return el("span.gb-legend-item", [el(`i.s-${st}`), el("span", { text })]); }
@@ -550,6 +553,7 @@ export function openBoard({ place = null } = {}) {
   function render() {
     const v = view();
     pending = v.pending;
+    renderedView = v;
     renderHeader(); renderTabs(v); renderBoard(v); renderSide(v); renderFooter(v);
   }
   function startRespec() {
@@ -570,10 +574,14 @@ export function openBoard({ place = null } = {}) {
     render();
   }
   function select(id, sound) {
+    nodeLayer.querySelector(`[data-test="board-node-${selected}"]`)?.classList.remove("selected");
     selected = id;
     if (sound) SE.click?.();
-    render();
-    nodeLayer.querySelector(`[data-test="board-node-${id}"]`)?.focus({ preventScroll: true });
+    const node = nodeLayer.querySelector(`[data-test="board-node-${id}"]`);
+    node?.classList.add("selected");
+    // 選択だけでは盤・火種は変わらない。札と道を作り直さず、右の説明だけを更新する。
+    renderSide(renderedView);
+    node?.focus({ preventScroll: true });
   }
   function light(id) {
     if (!canLight) return;
