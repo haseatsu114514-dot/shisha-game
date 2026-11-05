@@ -13,6 +13,7 @@ import { autoSkill, CRAFT_RANK_THRESHOLDS } from "./common.js";
 import { craftRankProgress } from "./rank-hud.js";
 import { mixColor } from "./art.js";
 import { NAGUMO_BAR } from "./score.js";
+import { castCh1Votes } from "./ch1-votes.js";
 import { evaluationOf, judgeComment, judgeDeductionReason } from "./feedback.js";
 import { craftRecognition } from "./recognition.js";
 import { VOTE_SCALE, voteStack as stackOf, judgePanel as panelOf, judgeLegend as legendOf, countUp } from "./tournament-graphics.js";
@@ -88,12 +89,13 @@ const judgeLegend = () => legendOf(JUDGE_IDS);
  * @param round 1 | 2 | 3
  * @param mine  ここまでのはじめの出来（0〜100）
  */
-export async function showStandings(round, mine, cs = null) {
+export async function showStandings(round, mine, cs = null, attempt = null) {
   const owner = state;
   // 実際に投入された持ち点だけを順位にする。制作の出来と投票を混ぜない。
-  const table = interimPointTable(round);
+  if (attempt?.rulesVersion >= 2) castCh1Votes(attempt, round - 1, cs);
+  const table = attempt?.rulesVersion >= 2 ? attempt.voteAttempt.votes : interimPointTable(round);
   const values = totals(table);
-  const feed = round === 1
+  const feed = attempt?.rulesVersion >= 2 ? ["3人の審査員が、ここまでの工程に投票", `須井審査員長も${round}回目の配点を投入`] : round === 1
     ? [`${displayName("maezono", state)}、なるに2点・はじめに1点投入！`, "須井審査員長、まだ動かず"]
     : round === 2
       ? ["チャコール博士、アダムに3点投入！", "須井審査員長、10点まるまる温存"]
@@ -105,7 +107,7 @@ export async function showStandings(round, mine, cs = null) {
   }, [el("span.btn-label", { text: "次へ" })]);
   next.disabled = true;
   const board = el("div.standings.tournament-board", { dataset: { test: "standings", round }, role: "status" }, [
-    header(`SMOKE CROWN CUP ／ ROUND ${round}`, "中間投票", "審査員3人の持ち点（各10点）。須井審査員長は、まだ1点も入れていない。", true),
+    header(`SMOKE CROWN CUP ／ ROUND ${round}`, "中間投票", attempt?.rulesVersion >= 2 ? "審査員3人が各10点を工程ごとに配分。須井は最後の1点を調整後に投じる。" : "審査員3人の持ち点（各10点）。須井審査員長は、まだ1点も入れていない。", true),
     el("div.sd-main", [
       el("div.sd-board", [
         judgeLegend(),
@@ -117,7 +119,7 @@ export async function showStandings(round, mine, cs = null) {
           el("b.sd-points", [String(values[id]), el("small", { text: "pt" })]),
         ]))),
       ]),
-      judgePanel(table, ["nagumo"]),
+      judgePanel(table, attempt?.rulesVersion >= 2 ? [] : ["nagumo"]),
     ]),
     el("div.sd-status", [el("span", { text: "ここまでの制作" }), el(`b.craft-evaluation.${review.tone}`, { text: review.mark }), el("span", { text: round === 3 ? "次は2回目の調整" : round === 2 ? "次は1回目の調整" : "次は吸い出し・提供" })]),
     recognition?.summary ? el("p.sd-recognition", { text: recognition.summary, dataset: { test: "standings-recognition" } }) : null,
@@ -180,7 +182,7 @@ export async function showStandings(round, mine, cs = null) {
  * kind: premium（残り2〜3でフライングプチュン）/ win（0でプチュン）/ close（プチュ…→パリン）/ lose（即パリン）/ disaster（ヒビ→バキン）
  * カウント中の画面はクリックを吸わない（自動で進む）
  */
-export async function resultCountdown(cs, kind) {
+export async function resultCountdown(cs, kind, attempt = null) {
   stopBgm(0.4);
   const fast = !!autoSkill();
   const tick = fast ? 60 : 620;
@@ -192,7 +194,7 @@ export async function resultCountdown(cs, kind) {
     el("i.rc-shisha", { style: { background: id === "hajime" ? mixColor(cs.mix) : RIVAL_COLOR[id] } }),
     el("span", { text: nameOf(id) }),
   ])));
-  const screen = el("div.count-screen", { dataset: { test: "result-count" } }, [header("SMOKE CROWN CUP / FINAL JUDGING", "結果発表", "最後の10点が、動く。"), cuts, ring, num, pray, el("div.rc-crt")]);
+  const screen = el("div.count-screen", { dataset: { test: "result-count" } }, [header("SMOKE CROWN CUP / FINAL JUDGING", "結果発表", attempt?.rulesVersion >= 2 ? "最後の調整と、残る1点の行方。" : "最後の10点が、動く。"), cuts, ring, num, pray, el("div.rc-crt")]);
   showScreen("count", screen);
   const mainLeaf = Object.entries(cs.mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0).sort((a, b) => b[1] - a[1])[0]?.[0];
   const leafName = DB.flavorById?.[mainLeaf]?.short_name || DB.flavorById?.[mainLeaf]?.name || "葉";
@@ -259,14 +261,15 @@ async function parin(screen, disaster) {
 
 // ---------------------------------------------------------------- 須井カットイン（持ち点の一括投入）
 
-export async function nagumoCutin(rank) {
-  const table = pointTable(rank);
-  const before = totals(table, 2);
-  const after = totals(table, 3);
+export async function nagumoCutin(rank, attempt = null) {
+  const modern = attempt?.rulesVersion >= 2;
+  const table = modern ? attempt.voteAttempt.votes : pointTable(rank);
+  const before = modern ? totals(attempt.voteAttempt.beforeLast) : totals(table, 2);
+  const after = totals(table);
   const rows = CONTESTANTS.slice().sort((a, b) => before[b] - before[a]).map((id) => el(`div.nc-row${id === "hajime" ? ".me" : ""}`, { dataset: { id } }, [
     el("span.nc-rank.rank-medal", { text: String(rankOf(id, before)) }),
     faceOf(id, ".nc-face"), el("span.nc-name", { text: nameOf(id) }),
-    voteStack(table, id, "nc-bar", 2),
+    voteStack(modern ? attempt.voteAttempt.beforeLast : table, id, "nc-bar", modern ? 3 : 2),
     el("span.nc-pt", { text: `${before[id]}` }),
   ]));
   const bars = el("div.nc-bars", rows);
@@ -274,10 +277,10 @@ export async function nagumoCutin(rank) {
   const cut = el("div.nc-cut", [
     el("span.nc-cut-art", art ? [el("img", { src: art, alt: "", decoding: "async" })] : [faceOf("nagumo", ".nc-cut-face")]),
     el("div.nc-cut-text", [el("small", { text: "審査員長" }), el("b", { text: "須井修二" }),
-      el("div.nc-cut-pt", [el("strong", { text: "10" }), el("span", { text: "持ち点10、一括投入" })])]),
+      el("div.nc-cut-pt", [el("strong", { text: modern ? "1" : "10" }), el("span", { text: modern ? "最後の調整に、残る1点" : "持ち点10、一括投入" })])]),
   ]);
   const ov = el("div.nagumo-cut", [el("i.nc-rays", { "aria-hidden": "true" }),
-    header("SMOKE CROWN CUP ／ FINAL VOTE", "須井の10点", "もう一口、吸いたい一台へ。", true), bars, cut]);
+    header("SMOKE CROWN CUP ／ FINAL VOTE", modern ? "須井の最後の1点" : "須井の10点", modern ? "二度目の調整で味を守った一台へ" : "もう一口、吸いたい一台へ。", true), bars, cut]);
   layers.fx.append(ov);
   const fast = !!autoSkill();
   await sleep(40);
@@ -316,7 +319,7 @@ export async function nagumoCutin(rank) {
   }
   if (order[0] === "hajime") {
     // 須井票の前から首位なら「確定」、追い抜いた時だけ「逆転」（#1282: 1位は票前から首位）
-    ov.append(el("div.nc-stamp", { text: rankOf("hajime", before) === 1 ? "確定！" : "逆転！" }));
+    ov.append(el("div.nc-stamp", { text: modern ? "集計！" : rankOf("hajime", before) === 1 ? "確定！" : "逆転！" }));
     SE.stamp();
   }
   await sleep(fast ? 100 : 1500);
@@ -338,14 +341,14 @@ function confetti(host) {
 
 // ---------------------------------------------------------------- 最終順位表
 
-export function resultTable(cs, rank) {
+export function resultTable(cs, rank, attempt = null) {
   return new Promise((resolve) => {
-    const t = totals(pointTable(rank));
-    const order = ordered(t);
+    const table = attempt?.rulesVersion >= 2 ? attempt.voteAttempt.votes : pointTable(rank);
+    const t = totals(table);
+    const order = attempt?.rulesVersion >= 2 ? attempt.voteAttempt.result.rows.map(row => row.id) : ordered(t);
     const P = cs.parts || {};
-    const table = pointTable(rank);
-    const rows = order.map((id, i) => el(`div.rt-row${id === "hajime" ? ".me" : ""}`, { style: { "--i": String(3 - i) }, dataset: { id, rank: String(rankOf(id, t)) } }, [
-      el("span.rt-rank.rank-medal", { text: `${rankOf(id, t)}位` }), faceOf(id, ".rt-face"),
+    const rows = order.map((id, i) => el(`div.rt-row${id === "hajime" ? ".me" : ""}`, { style: { "--i": String(3 - i) }, dataset: { id, rank: String(i + 1) } }, [
+      el("span.rt-rank.rank-medal", { text: `${attempt?.rulesVersion >= 2 ? i + 1 : rankOf(id, t)}位` }), faceOf(id, ".rt-face"),
       el("span.rt-name", [nameOf(id), el("small.rt-votes", { text: `上園 ${table.maezono[id] || 0} · 博士 ${table.dr_kemuri[id] || 0} · 須井 ${table.nagumo[id] || 0}` })]),
       voteStack(table, id, "rt-bar"), el("span.rt-pt", { text: `${t[id]} pt` }),
     ]));

@@ -48,6 +48,7 @@ import { playTsumugiStory, playTsumugiSketch } from "./tsumugi-story.js";
 import { meetHiyoriAtTonari } from "../daily/hiyori.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } from "../craft/result.js";
+import { beginCh1Votes, castCh1Votes } from "../craft/ch1-votes.js";
 import { craftRecognition } from "../craft/recognition.js";
 import { playCh1Title } from "./ch1-title-motion.js";
 import { giveSumiRig, giveEarlyHomeRig } from "../daily/home-rig.js";
@@ -602,8 +603,10 @@ async function tournamentDay() {
   const assetsReady = warmCraftAssets("tournament");
   clearScreen();
   initHud({});
-  if (state.phase !== "tournament") {
+  const newTournament = state.phase !== "tournament";
+  if (newTournament) {
     state.phase = "tournament";
+    state.tournament.rulesVersion = 2;
     state.day = TOURNAMENT_DAY;
     state.slot = 0;
     showHud(true);
@@ -618,7 +621,13 @@ async function tournamentDay() {
   showHud(false);
   restoreEntryResources(state);
   applyAssistRecovery(state, state.tournament.retryAssist, maxStamina());
+  // 版の無い旧SAVEは旧配点で完走。敗北後の再挑戦は新しい試合として始める。
+  if (!newTournament && state.tournament.rulesVersion == null) state.tournament.rulesVersion = state.tournament.lastRank == null ? 1 : 2;
+  if (state.tournament.lastRank != null) state.tournament.rulesVersion = 2;
   state.tournament.attempts++;
+  state.tournament.voteAttempt = state.tournament.rulesVersion >= 2 ? null : undefined;
+  if (state.tournament.rulesVersion >= 2) beginCh1Votes(state.tournament);
+  save();
   for (const id of ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"]) markMet(id);
   void preloadBgm("bgm_tournament_edm");
   void preloadBgm("bgm_tournament_craft");
@@ -669,7 +678,8 @@ async function tournamentDay() {
   bc.clearComments();
   await play("ch1_tournament_match", { bg: STAGE });
   await play("ch1_tournament_r1_end", { bg: STAGE });
-  await showStandings(1, avgScore(cs.holes.score, cs.heat.score), cs);
+  await showStandings(1, avgScore(cs.holes.score, cs.heat.score), cs, state.tournament);
+  save();
   await playTournamentEvent(cs, "interlude1", { bg: STAGE });
 
   // ROUND 2 ── 吸い出し・提供
@@ -690,7 +700,8 @@ async function tournamentDay() {
   bc.clearComments();
   await play("ch1_tournament_r2_end", { bg: STAGE });
   cs.stats = computeShisha(cs);
-  await showStandings(2, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality), cs);
+  await showStandings(2, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality), cs, state.tournament);
+  save();
   await playTournamentEvent(cs, "interlude2", { bg: STAGE });
 
   // ROUND 3・4 ── 同じ一台を2回調整する。温度・炭交換・葉の持ちは連続する。
@@ -705,7 +716,7 @@ async function tournamentDay() {
     bc.clearComments();
     cs.stats = null;
     await play(round === 1 ? "ch1_tournament_r3_end" : "remake_round4_end", { bg: STAGE });
-    if (round === 1) await showStandings(3, avgScore(cs.holes.score, cs.heat.score, computeShisha(cs).craftQuality, cs.care.score), cs);
+    if (round === 1) { cs.stats = computeShisha(cs); await showStandings(3, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality, cs.care.score), cs, state.tournament); save(); }
   }
 
   await playTournamentEvent(cs, "interlude3", { bg: STAGE });
@@ -715,7 +726,9 @@ async function tournamentDay() {
   await play("remake_judging_intro", { bg: STAGE });
   finalize(cs);
   await playTournamentEvent(cs, "tasting", { bg: STAGE });
-  const out = outcomeOf(cs.total);
+  if (state.tournament.rulesVersion >= 2) castCh1Votes(state.tournament, 3, cs);
+  const rank = state.tournament.rulesVersion >= 2 ? state.tournament.voteAttempt.result.rank : outcomeOf(cs.total).rank;
+  const out = state.tournament.rulesVersion >= 2 ? { rank, kind: rank === 1 ? "win" : rank === 2 || rank === 3 ? "close" : "lose" } : outcomeOf(cs.total);
   state.tournament.lastRank = out.rank;
   state.tournament.lastTotal = cs.total;
   awardTournamentExp(out.rank, cs);
@@ -730,20 +743,20 @@ async function tournamentDay() {
     const judgingLines = judging.lines.map(line =>
       line.cue === "naru_tasting" ? { ...line, text: naruTastingLine(cs) } : line);
     await play({ ...judging, lines: judgingLines }, { bg: STAGE });
-    await resultCountdown(cs, out.kind);
+    await resultCountdown(cs, out.kind, state.tournament);
     retireScreen(); // カウント画面は次の場面で片付く
     playBgm("bgm_aftermath");
-    await nagumoCutin(1);
+    await nagumoCutin(1, state.tournament);
     await play("ch1_tournament_reveal", { bg: STAGE });
-    await resultTable(cs, 1);
+    await resultTable(cs, 1, state.tournament);
     state.tournament.victory.revealed = true;
     save();
     await victory(cs);
   } else {
-    await resultCountdown(cs, out.kind);
+    await resultCountdown(cs, out.kind, state.tournament);
     retireScreen();
-    await nagumoCutin(out.rank);
-    await resultTable(cs, out.rank);
+    await nagumoCutin(out.rank, state.tournament);
+    await resultTable(cs, out.rank, state.tournament);
     await play("ch1_tournament_defeat", { bg: STAGE });
     await play("remake_defeat_follow", { bg: TONARI_N });
     await showGameOver({ rank: out.rank, cs });
@@ -829,7 +842,7 @@ async function resumeVictory() {
   playBgm("bgm_aftermath");
   const v = owner.tournament.victory;
   if (!v.revealed) {
-    await nagumoCutin(1);
+    await nagumoCutin(1, state.tournament);
     if (state !== owner) return;
     await play("ch1_tournament_reveal", { bg: STAGE });
     if (state !== owner) return;

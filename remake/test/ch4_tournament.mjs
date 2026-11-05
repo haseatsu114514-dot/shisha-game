@@ -70,6 +70,20 @@ function drive(value, cs, { failAt = -1, failureKind = "burnt" } = {}) {
   assert.equal(chapterFourAfterDefeat(value), false);
   assert.deepEqual(chapterFourMatch(JSON.parse(JSON.stringify(value))).result, p.result);
 }
+// 版3では同じ記録から審査員ごとの票が分かれ、一律に高い記録では一致する。
+{
+  const divergent = craft(88);
+  divergent.holes.score = 82;
+  divergent.heat.score = 100;
+  divergent.servedQuality = 90;
+  divergent.careHistory[0].score = 76;
+  divergent.careHistory[1].score = 96;
+  const p = drive(entry(), divergent);
+  assert.equal(p.result.rulesVersion, 3);
+  assert(new Set(CH4_JUDGES.map(j => JSON.stringify(p.votes[j]))).size > 1, "審査員別の重みが実票に出る");
+  const agreed = drive(entry(), craft(100));
+  assert.equal(new Set(CH4_JUDGES.map(j => JSON.stringify(agreed.votes[j]))).size, 1, "一致も正当な結果");
+}
 // Poor complete craft loses; burnt/cold/leaf failure cannot be promoted to a completed victory.
 for (const [failAt, failureKind] of [[-1, null], [8, "burnt"], [9, "cold"], [10, "leaf"]]) {
   const value = entry(), money = value.money, stock = structuredClone(value.flavorStock);
@@ -327,7 +341,7 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
 }
 // 2026-11-03: 新しい一台は版2、途中/結果の旧保存は版1で完走し、再挑戦でだけ更新する。
 {
-  assert.equal(CH4_RULES_VERSION, 2);
+  assert.equal(CH4_RULES_VERSION, 3);
   assert.deepEqual(CH4_SPEND, [2, 3, 2, 3]);
   assert.deepEqual(CH4_LEGACY_SPEND, [2, 3, 2, 3]);
   assert.deepEqual(CH4_RIVAL_CURVE, { naru: [87, 94, 94.5, 92.5],
@@ -335,6 +349,7 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   const run = (value, cs) => {
     setState(value);
     startChapterFourCraft(value, cs);
+    chapterFourMatch(value).rulesVersion = 2; // 既存の版2シナリオを保持
     const rounds = [];
     let previous = 0;
     for (let step = chapterFourMatch(value).step; step < 11; step++) {
@@ -404,6 +419,7 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   for (const version of [1, 2]) {
     const make = () => {
       const value = entry(); startChapterFourCraft(value, craft(89));
+      chapterFourMatch(value).rulesVersion = 2;
       if (version === 1) delete chapterFourMatch(value).rulesVersion;
       return value;
     };
@@ -446,9 +462,9 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   beginChapterFourStep(failed); finishChapterFourStep(failed, { ...craft(), failed: "burnt" });
   assert.equal(prior.result.rulesVersion, 1);
   assert(resetChapterFourCraft(failed));
-  assert.equal(prior.rulesVersion, 2); assert.equal(prior.result, null);
+  assert.equal(prior.rulesVersion, 3); assert.equal(prior.result, null);
   assert.equal(prior.history[0].rulesVersion, 1, "Retry keeps the legacy result history");
-  startChapterFourCraft(failed, craft()); assert.equal(prior.rulesVersion, 2);
+  startChapterFourCraft(failed, craft()); assert.equal(prior.rulesVersion, 3);
 
   const mistakes = entry();
   const retry = chapterFourMatch(mistakes);
@@ -461,7 +477,7 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
 }
 // 不正な採点・保存は工程や一部の票を進める前に拒否する。
 {
-  for (const invalid of [null, 0, 3, "2", NaN]) {
+  for (const invalid of [null, 0, 4, "2", NaN]) {
     const value = entry(); chapterFourMatch(value).rulesVersion = invalid;
     assert.throws(() => chapterFourMatch(value), /採点規則/);
   }
