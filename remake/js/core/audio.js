@@ -590,9 +590,15 @@ function bgmSource(url) {
   if (!url.endsWith(".bgm")) return Promise.resolve(url);
   if (!packedSources.has(url)) {
     const source = (async () => {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`BGM HTTP ${response.status}`);
-      const bytes = new Uint8Array(await response.arrayBuffer());
+      const controller = typeof AbortController === "function" ? new AbortController() : null;
+      const timer = globalThis.setTimeout?.(() => controller?.abort(), 8000);
+      let response, raw;
+      try {
+        response = await fetch(url, controller ? { signal: controller.signal } : undefined);
+        if (!response.ok) throw new Error(`BGM HTTP ${response.status}`);
+        raw = await response.arrayBuffer();
+      } finally { globalThis.clearTimeout?.(timer); }
+      const bytes = new Uint8Array(raw);
       const header = bytes.subarray(0, PACKED_MAGIC.length);
       if (bytes.length < PACKED_MAGIC.length + 12 + 16 || new TextDecoder().decode(header) !== PACKED_MAGIC) {
         throw new Error("Invalid game BGM format");
@@ -643,15 +649,86 @@ function prepareContinueBgm(url) {
   return prepared.ready;
 }
 
-/** 大会到着中に先読み。取得失敗で進行を止めない。 */
+// 圧縮音源のまま最大3曲を保持する。全曲のPCMデコードや一括取得はしない。
+// canplay は再生開始可能の目安。iOSの自動再生許可を得たことにはしない。
+const preparedBgm = new Map();
+const BGM_PREPARE_MAX = 3;
+function discardPrepared(entry) {
+  entry.cancel?.();
+  entry.audio.pause();
+  releasePacked(entry.audio.src);
+  entry.audio.removeAttribute("src");
+  entry.audio.load();
+}
+
+/** 必要になった1曲だけ、取得・復号とAudio要素の再生準備まで待つ。失敗は次回再試行。 */
 export function preloadBgm(key) {
   const url = bgmUrl(key);
-  if (key === "bgm_continue_urgent" && url && !url.endsWith(".bgm")) return prepareContinueBgm(url);
-  return url ? bgmSource(url).then(() => true, () => false) : Promise.resolve(false);
+  if (!url) return Promise.resolve(false);
+  // HTMLMediaElementを持たない環境ではURLの復元まで。
+  if (typeof Audio.prototype.load !== "function") return bgmSource(url).then(() => true, () => false);
+  if (key === currentKey && currentEl) {
+    const audio = currentEl;
+    if (audio.readyState >= 3) return Promise.resolve(true);
+    if (audio.error) return Promise.resolve(false);
+    // 直前の呼び出しが既に再生要求した曲は、別のAudio要素を作らず同じ読込を待つ。
+    if (typeof audio.removeEventListener !== "function") return Promise.resolve(false);
+    return new Promise(resolve => {
+      const finish = loaded => {
+        clearTimeout(timer);
+        audio.removeEventListener("canplay", loadedTrack);
+        audio.removeEventListener("error", failedTrack);
+        resolve(loaded);
+      };
+      const loadedTrack = () => finish(true), failedTrack = () => finish(false);
+      audio.addEventListener("canplay", loadedTrack, { once: true });
+      audio.addEventListener("error", failedTrack, { once: true });
+      const timer = setTimeout(failedTrack, 8000);
+    });
+  }
+  if (key === "bgm_continue_urgent" && !url.endsWith(".bgm")) return prepareContinueBgm(url);
+  if (preparedBgm.has(url)) return preparedBgm.get(url).ready;
+  while (preparedBgm.size >= BGM_PREPARE_MAX) {
+    const [oldUrl, old] = preparedBgm.entries().next().value;
+    preparedBgm.delete(oldUrl); discardPrepared(old);
+  }
+  const entry = { audio: new Audio(), loaded: false, ready: null };
+  entry.audio.preload = "auto";
+  entry.ready = new Promise(resolve => {
+    let settled = false;
+    const finish = loaded => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      entry.audio.removeEventListener("canplay", loadedTrack);
+      entry.audio.removeEventListener("error", failedTrack);
+      entry.cancel = null;
+      entry.loaded = loaded;
+      if (!loaded) {
+        if (preparedBgm.get(url) === entry) preparedBgm.delete(url);
+        discardPrepared(entry);
+      }
+      resolve(loaded);
+    };
+    const loadedTrack = () => finish(true), failedTrack = () => finish(false);
+    entry.cancel = failedTrack;
+    entry.audio.addEventListener("canplay", loadedTrack);
+    entry.audio.addEventListener("error", failedTrack);
+    const timer = setTimeout(failedTrack, 8000); // 通信・復号・メディア準備の合計上限
+    bgmSource(url).then(source => {
+      if (settled) return; // タイムアウト/破棄後の遅い完了を再生へ持ち越さない。
+      packedInUse.add(source);
+      entry.audio.src = source;
+      entry.audio.load();
+      if (entry.audio.readyState >= 3) loadedTrack();
+    }, failedTrack);
+  });
+  preparedBgm.set(url, entry);
+  return entry.ready;
 }
 
 export function playBgm(key) {
-  if (key === currentKey) return;
+  if (key === currentKey && !preparedBgm.has(bgmUrl(key))) return;
   stopBgm(0.6);
   currentKey = key;
   if (!key) return;
@@ -660,14 +737,18 @@ export function playBgm(key) {
   const url = bgmUrl(key);
   if (url) {
     const packed = url.endsWith(".bgm");
-    const prepared = key === "bgm_continue_urgent" && preparedContinue?.url === url ? preparedContinue : null;
-    if (prepared) preparedContinue = null;
-    if (prepared && prepared.audio.readyState < 3) {
+    const cached = preparedBgm.get(url);
+    const prepared = key === "bgm_continue_urgent" && preparedContinue?.url === url ? preparedContinue
+      : cached || null;
+    if (cached) preparedBgm.delete(url);
+    if (prepared && prepared === preparedContinue) preparedContinue = null;
+    if (key === "bgm_continue_urgent" && prepared && prepared.audio.readyState < 3) {
       prepared.audio.removeAttribute("src"); prepared.audio.load();
       synthStop = startSynth(SYNTH_FALLBACK[key]);
       return; // 外部曲を待っている間に、20秒のカウントだけ進ませない。
     }
     const a = prepared?.audio || (packed ? new Audio() : new Audio(url));
+    a.preload = "auto";
     a.loop = true;
     a.volume = 0;
     if (key === "bgm_continue_urgent") {
@@ -693,7 +774,19 @@ export function playBgm(key) {
       });
       fadeEl(a, () => bgmLevel(key), key === "bgm_continue_urgent" ? 160 : 1200);
     };
-    if (packed) {
+    if (cached && !cached.loaded) {
+      // 先読み中に再生要求が追いついても同じ要素を引き継ぐ。完了前に曲を替えたら破棄。
+      cached.ready.then(ready => {
+        if (currentEl !== a) { discardPrepared(cached); return; }
+        if (ready) start();
+        else {
+          currentEl = null;
+          a.pause();
+          if (SYNTH_FALLBACK[key]) synthStop = startSynth(SYNTH_FALLBACK[key]);
+        }
+      });
+    } else if (prepared) start();
+    else if (packed) {
       bgmSource(url).then((source) => {
         if (currentEl !== a) return;
         packedInUse.add(source); // 止まるまで Blob を解放しない
@@ -852,3 +945,4 @@ function startSynth(kind) {
     setTimeout(() => out.disconnect(), fadeSec * 1000 + 200);
   };
 }
+
