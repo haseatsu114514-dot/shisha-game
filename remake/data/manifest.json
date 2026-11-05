@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-05 13:02 UTC",
+ "generated": "2026-11-05 13:58 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -2746,6 +2746,11 @@
   "sprites/character_variants/nanami/kumicho/chr_kumicho_normal.png",
   "sprites/character_variants/nanami/kumicho/chr_kumicho_sad.png",
   "sprites/character_variants/nanami/kumicho/chr_kumicho_smile.png",
+  "sprites/character_variants/nanami/maezono/chr_maezono_excited.png",
+  "sprites/character_variants/nanami/maezono/chr_maezono_normal.png",
+  "sprites/character_variants/nanami/maezono/chr_maezono_serious.png",
+  "sprites/character_variants/nanami/maezono/chr_maezono_smile.png",
+  "sprites/character_variants/nanami/maezono/chr_maezono_surprise.png",
   "sprites/character_variants/nanami/mashiro/chr_mashiro_normal.png",
   "sprites/character_variants/nanami/mashiro/chr_mashiro_sad.png",
   "sprites/character_variants/nanami/mashiro/chr_mashiro_sleep.png",
@@ -2777,6 +2782,8 @@
   "sprites/character_variants/nanami/saku/chr_saku_sad.png",
   "sprites/character_variants/nanami/saku/chr_saku_smug.png",
   "sprites/character_variants/nanami/saku/chr_saku_wild.png",
+  "sprites/character_variants/nanami/salaryman/chr_salaryman_normal.png",
+  "sprites/character_variants/nanami/salaryman/chr_salaryman_smile.png",
   "sprites/character_variants/nanami/samechan/chr_samechan_excited.png",
   "sprites/character_variants/nanami/samechan/chr_samechan_normal.png",
   "sprites/character_variants/nanami/samechan/chr_samechan_serious.png",
@@ -2835,6 +2842,11 @@
   "sprites/character_variants/new/kumicho/chr_kumicho_smile.png",
   "sprites/character_variants/new/kumicho/chr_kumicho_smug.png",
   "sprites/character_variants/new/kumicho/chr_kumicho_surprise.png",
+  "sprites/character_variants/new/maezono/chr_maezono_excited.png",
+  "sprites/character_variants/new/maezono/chr_maezono_normal.png",
+  "sprites/character_variants/new/maezono/chr_maezono_serious.png",
+  "sprites/character_variants/new/maezono/chr_maezono_smile.png",
+  "sprites/character_variants/new/maezono/chr_maezono_surprise.png",
   "sprites/character_variants/new/maki/chr_maki_normal.png",
   "sprites/character_variants/new/mashiro/chr_mashiro_normal.png",
   "sprites/character_variants/new/mashiro/chr_mashiro_yawn.png",
@@ -2870,6 +2882,8 @@
   "sprites/character_variants/new/saku/chr_saku_smug.png",
   "sprites/character_variants/new/saku/chr_saku_surprise.png",
   "sprites/character_variants/new/saku/chr_saku_wild.png",
+  "sprites/character_variants/new/salaryman/chr_salaryman_normal.png",
+  "sprites/character_variants/new/salaryman/chr_salaryman_smile.png",
   "sprites/character_variants/new/samechan/chr_samechan_excited.png",
   "sprites/character_variants/new/samechan/chr_samechan_normal.png",
   "sprites/character_variants/new/samechan/chr_samechan_serious.png",
@@ -3833,6 +3847,29 @@
     "b": 0.05,
     "ax": 0.5002,
     "aspect": 0.7467
+   },
+   "maezono": {
+    "faces": [
+     "excited",
+     "normal",
+     "serious",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.5,
+    "aspect": 0.7467
+   },
+   "salaryman": {
+    "faces": [
+     "normal",
+     "smile"
+    ],
+    "h": 0.9008,
+    "b": 0.0492,
+    "ax": 0.4992,
+    "aspect": 0.7467
    }
   },
   "nanami": {
@@ -4071,6 +4108,29 @@
     "h": 0.9008,
     "b": 0.05,
     "ax": 0.5003,
+    "aspect": 0.7467
+   },
+   "maezono": {
+    "faces": [
+     "excited",
+     "normal",
+     "serious",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4997,
+    "aspect": 0.7467
+   },
+   "salaryman": {
+    "faces": [
+     "normal",
+     "smile"
+    ],
+    "h": 0.9008,
+    "b": 0.05,
+    "ax": 0.4994,
     "aspect": 0.7467
    }
   }
