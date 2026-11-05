@@ -670,6 +670,7 @@ export function preloadBgm(key) {
   if (key === currentKey && currentEl) {
     const audio = currentEl;
     if (audio.readyState >= 3) return Promise.resolve(true);
+    if (audio.error) return Promise.resolve(false);
     // 直前の呼び出しが既に再生要求した曲は、別のAudio要素を作らず同じ読込を待つ。
     if (typeof audio.removeEventListener !== "function") return Promise.resolve(false);
     return new Promise(resolve => {
@@ -727,7 +728,7 @@ export function preloadBgm(key) {
 }
 
 export function playBgm(key) {
-  if (key === currentKey) return;
+  if (key === currentKey && !preparedBgm.has(bgmUrl(key))) return;
   stopBgm(0.6);
   currentKey = key;
   if (!key) return;

@@ -65,6 +65,12 @@ for (const outcome of ["ready", "error", "timeout", "stop", "replace"]) {
   assert.equal(await p, !["error", "timeout"].includes(outcome)); await flush();
   assert.equal(waiting.plays, outcome === "ready" ? 1 : 0, "Only the still-current successful request may play");
   if (outcome !== "ready") assert.equal(waiting.src, "", "Obsolete/failed prepared media is released");
+  if (["error", "timeout"].includes(outcome)) {
+    const retry = audio.preloadBgm(`race-${outcome}`); await flush();
+    const restored = elements.at(-1); ready(restored); assert.equal(await retry, true);
+    audio.playBgm(`race-${outcome}`); await flush();
+    assert.equal(restored.plays, 1, "Retry of the same failed key must not be skipped as already playing");
+  }
 }
 // Invalid media and a stuck mobile preload are bounded, clean listeners/sources and can retry.
 let failed = audio.preloadBgm("broken"); await flush(); const broken = elements.at(-1); broken.emit("error");
