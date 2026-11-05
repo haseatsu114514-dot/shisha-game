@@ -118,6 +118,34 @@ await check('an unresolved shuraba stops every date invitation; a single lover a
   same(invites(), ['tsumugi'], 'One lover at the party: no shuraba, dates go on');
 });
 
+await check('chapter 3 and 4 departure preparation closes invitations and night confession, then reopens', async f => {
+  const invites = () => f.romance.loverMessages().filter(m => m.type === 'invitation');
+  for (const chapter of [3, 4]) {
+    const s = f.chapterAt(chapter, ['tsumugi'], { day: 70, flags: chapter === 3
+      ? { _ch3_intro: { startDay: 69 } } : { _ch4: { startDay: 69 } } });
+    const key = `_ch${chapter}_prep`;
+    assert.equal(invites().length, 1, `chapter ${chapter} outside preparation`);
+    f.db.dialogues.confession_kuyuri = { dialogue_id: 'confession_kuyuri', lines: [] };
+    s.romanceChoices = { bond_q_kuyuri: { char: 'kuyuri', value: 1 } };
+    s.finales = { kuyuri: { day: 60, chapter: 2, route: 'romance' } };
+    s.slot = 2;
+    s.flags._confession_due = 'kuyuri';
+    s.flags[key] = { startDay: 70, days: 3, step: 0, departed: false };
+    for (let day = 70; day < 73; day++) {
+      s.day = day;
+      assert.equal(invites().length, 0, `chapter ${chapter} prep day ${day} invitation`);
+      assert.equal(await f.romance.maybeConfession(async () => {}), false, `chapter ${chapter} prep day ${day} confession`);
+      assert.equal(s.flags._confession_due, 'kuyuri', 'reserved confession remains due');
+    }
+    s.flags[key].departed = true;
+    assert.equal(invites().length, 1, `chapter ${chapter} after departure`);
+  }
+  f.chapterAt(5, ['tsumugi'], { day: 70, flags: { _ch5: { startDay: 65, part: 'free' } } });
+  assert.equal(invites().length, 1, 'chapter 5 invitation stays open');
+  f.chapterAt(2, ['tsumugi'], { day: 70, flags: { _ch2_day1: { startDay: 69 } } });
+  assert.equal(invites().length, 1, 'chapter 2 invitation stays open');
+});
+
 await check('samechan date gap counts elapsed days on _elapsed_calendar saves; legacy chapter-local saves keep the 14-day offset', async f => {
   // 通算日の保存: 第2章の通算40日にデート → 第3章の通算45日。間は5日（旧式は 45-(14+40) = -9 で誘いが止まっていた）
   const s = f.chapterAt(3, ['samechan'], { day: 45, flags: { _ch3_intro: { startDay: 44 } } });

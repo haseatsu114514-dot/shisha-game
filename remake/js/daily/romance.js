@@ -7,7 +7,7 @@
 // 文面の正本: 告白=data/dialogue/confession.json、節目=lover_events.json、LIME・デート=remake/data/lover.json
 import { DB, callName } from "../core/data.js";
 import { state, save } from "../core/state.js";
-import { chapterDay } from "../core/chapter-clock.js";
+import { chapterDay, departurePrep } from "../core/chapter-clock.js";
 import { gainAffinity, releaseLoveAffinity, privateBondScope, addStamina, bond, AFFINITY_RANK_PTS } from "../core/stats.js";
 import { emit } from "../core/bus.js";
 import { hiyoriRoute, hiyoriFinaleReady } from "../core/hiyori-route.js";
@@ -135,6 +135,7 @@ const nightWalkConfession = (id) => !OWN_CONFESSION_SCENE.includes(id) && romanc
  */
 export async function maybeConfession(beat, { busyNight = false, companion = null } = {}) {
   if (state.phase !== "daily" || state.slot < 2) return false; // 昼の行動から仕事後の夜へ飛ばない
+  if (departurePrep(state)) return false; // 第3・4章の出発前は予約を残して帰郷後に回す
   let id = state.flags._confession_due;
   if (id && !nightWalkConfession(id)) { delete state.flags._confession_due; id = null; }
   // 2人目の恋愛ルートなど、予約の空きを待っていた相手を拾う（締めくくりの順）
@@ -309,7 +310,7 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false,
   // 恋人全員で分け合う誘いの間隔。届いた日で数えるので、断っても見送っても連日には来ない
   // 修羅場が未解決のあいだ（第5章の打ち上げ・PTY02 の謝罪 shuraba_accountability が立てる印）は誰からも誘われない
   // （story-routes.js の selectStoryEvening・tokyo-visits.js と同じ。個別の話し合いが済むまで解除しない）
-  const inviteOpen = invitations && !state.flags?._story_shuraba_unresolved
+  const inviteOpen = invitations && !departurePrep(state) && !state.flags?._story_shuraba_unresolved
     && state.day - lastInboxDay((i) => i.msg?.lover && i.msg.type === "invitation") >= LOVER_INVITE_GAP;
   for (const id of state.lovers || []) {
     if (id === "samechan" && (state.chapter || 1) < 2) continue;
