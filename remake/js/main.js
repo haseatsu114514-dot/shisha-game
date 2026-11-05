@@ -5,7 +5,7 @@ import { loadAll, loadDeferredDialogues, loadCinemaDialogue, loadTournamentCraft
 import { loadVnFonts } from "./core/vn-fonts.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
 import { loadConfig, state, load, consumeResumeOnBoot } from "./core/state.js";
-import { unlockAudio } from "./core/audio.js";
+import { unlockAudio, preloadBgm } from "./core/audio.js";
 import { applyUiTheme } from "./core/ui-theme.js";
 import { imgFileUrl } from "./core/img-file.js";
 import { withLoading } from "./core/loading.js";
@@ -66,7 +66,7 @@ export async function boot() {
       try { report(Math.round(p * 100), 100); } catch { /* 表示だけの進捗で起動を止めない */ }
     }), fonts]);
     // 抽選した1枚だけをデコードしてから幕を開ける。全候補を起動時にダウンロードしない。
-    [titleArt] = await Promise.all([prepareTitleArt(), Promise.all([
+    [titleArt] = await Promise.all([prepareTitleArt(), preloadBgm("title"), Promise.all([
       imageReady(imgFileUrl("ui/ui_title_logo_rich.webp"), 3000),
       ...FRAME_ART.map((u) => imageReady(u, 3000, { keep: true })),
     ])]);
@@ -287,3 +287,4 @@ window.__remake = {
     },
   },
 };
+

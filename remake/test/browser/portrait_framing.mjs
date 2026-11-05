@@ -7,7 +7,6 @@ import { suite } from './support.mjs';
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const out = path.resolve(root, process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser');
 const measurements = [];
-const started = Date.now();
 async function scene(page, ids, style, face = 'normal') {
   const tag = `${ids.join('-')}-${style}-${face}`;
   await page.evaluate(async ({ids,style,face,tag}) => {
@@ -28,8 +27,12 @@ async function scene(page, ids, style, face = 'normal') {
   }, {ids,style,face,tag});
   await page.waitForFunction(tag => document.querySelector('.vn-text')?.textContent === tag, tag);
   await page.locator('.vn-portraits img').evaluateAll(async imgs => Promise.all(imgs.map(im=>im.decode())));
-  // Wait for the production entry and active-speaker transitions, not just image download.
-  await page.waitForTimeout(450);
+  // The engine waits for entry before showing the line. Confirm the actual visual
+  // state as well, instead of adding 450ms to every already-settled raster.
+  await page.waitForFunction(() => [...document.querySelectorAll('.vn-portraits img')].every(im =>
+    !im.classList.contains('enter') && Number(getComputedStyle(im).opacity) > .98 &&
+    im.getAnimations().filter(a => a.effect?.getComputedTiming().iterations !== Infinity)
+      .every(a => a.playState === 'finished' || a.playState === 'idle')));
   assert.equal(await page.locator('.vn-portraits img').count(),ids.length);
   return tag;
 }
@@ -65,7 +68,6 @@ async function inspect(page, label, tag) {
   }
   measurements.push({label,tag,rows});
   await page.screenshot({path:path.join(out,`framing-${label}-${tag}.jpg`),quality:90});
-  if (measurements.length % 25 === 0) console.log(`[portrait-framing] ${label}: ${measurements.length} scenes checked in ${((Date.now()-started)/1000).toFixed(1)}s; last=${tag}`);
   return rows;
 }
 await suite('portrait-framing',async check=>{

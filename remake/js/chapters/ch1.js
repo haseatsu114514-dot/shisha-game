@@ -645,11 +645,12 @@ async function tournamentDay() {
   showHud(false);
   prepareTournamentAttempt(newTournament);
   for (const id of ["naru", "adam", "minto", "sui", "maezono", "dr_kemuri"]) markMet(id);
-  void preloadBgm("bgm_tournament_edm");
-  void preloadBgm("bgm_tournament_craft");
+  const openingBgmReady = preloadBgm("bgm_tournament_edm");
+  const craftBgmReady = preloadBgm("bgm_tournament_craft");
   void warmGameOver();
   await smokeWipe(() => playBgm("bgm_tournament_wait"), { color: "dark" });
   await playTournamentArrival();
+  await withLoadingNotice(openingBgmReady, loadingNotice("音楽を準備しています…"));
   playBgm("bgm_tournament_edm");
   await play("ch1_tournament_opening", { bg: STAGE });
   const regulation = regulationFor({ mode: "tournament" });
@@ -658,7 +659,7 @@ async function tournamentDay() {
   await play({ dialogue_id: "ch1_tournament_rule_recap", lines: [
     { speaker: "pakki", face: "excited", text: `本日の課題はッ！ ${challenge}を2g以上！ ${source}` },
   ] }, { bg: STAGE });
-  await withLoadingNotice(assetsReady, loadingNotice("大会の準備をしています…"));
+  await withLoadingNotice(Promise.all([assetsReady, craftBgmReady]), loadingNotice("大会の準備をしています…"));
   await entrance();
 
   // ROUND 1 ── 準備
@@ -983,3 +984,4 @@ export function devGameOver(reason = "burnt", rank = 2, variant = null) {
   setupHooks();
   return showGameOver({ reason, rank, variant, preview: true });
 }
+
