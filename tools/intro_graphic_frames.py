@@ -34,7 +34,7 @@ RIGHT_EDGE = 640  # 人物はこの線より右に出さない（名前・一言
 SKIP = {"pakki"}  # マスコットは全身で見せるので、共通の配置のまま
 SAFE_TOP_IDS = {"master_hookah", "emil", "da_silva", "yoru", "sheikh", "mukai_master"}
 MAX_FRAME_WIDTH = {"emil": 1024, "mukai_master": 1024}
-SAFE_HAND_LEFT = {"emil": -170, "mukai_master": -200}
+SAFE_HAND_LEFT = {"adam": -110, "emil": -170, "mukai_master": -200}
 
 
 def touches(alpha, box):

@@ -2,8 +2,8 @@
  "_comment": "登場カットイン（グラフィック絵柄）の頭の位置。remake/img/ui/character_intros/graphic/<id>.webp（1024×1024）上の [頭頂のy, 顎のy, 顔の中心のx]。頭頂は髪の量・帽子・フードを除いた頭の上端。tools/intro_graphic_frames.py がこれで全員の頭の大きさをそろえる（2026-11-02 オーナー指定）。",
  "adam": [
   25,
-  345,
-  490
+  370,
+  525
  ],
  "ageha": [
   40,

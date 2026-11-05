@@ -18,7 +18,7 @@ export const GRAPHIC_FRAME = { width: 720, left: -88, top: 0 };
 // 測った頭の位置は asset_sources/character-intros/graphic-20261031/heads.json。fade=下を薄くする%、right=これより右を薄く消す%。
 // FRAMES:BEGIN tools/intro_graphic_frames.py が heads.json から書き出す（手で直さない）
 const FRAME_OVERRIDES = {
-  adam: {width: 896, left: -161, top: -6, right: 89.4},
+  adam: {width: 831, left: -110, top: -4, right: 90.2},
   ageha: {width: 691, left: -94, top: -11, fade: 14},
   da_silva: {width: 1147, left: -314, top: -113, right: 83.2},
   dr_kemuri: {width: 699, left: -38, top: 0, fade: 14, right: 96.9},

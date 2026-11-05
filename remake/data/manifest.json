@@ -2718,6 +2718,11 @@
   "sprites/character_variants/nanami/adam/chr_adam_serious.png",
   "sprites/character_variants/nanami/adam/chr_adam_smile.png",
   "sprites/character_variants/nanami/adam/chr_adam_surprise.png",
+  "sprites/character_variants/nanami/da_silva/chr_da_silva_excited.png",
+  "sprites/character_variants/nanami/da_silva/chr_da_silva_normal.png",
+  "sprites/character_variants/nanami/da_silva/chr_da_silva_serious.png",
+  "sprites/character_variants/nanami/da_silva/chr_da_silva_smile.png",
+  "sprites/character_variants/nanami/da_silva/chr_da_silva_surprise.png",
   "sprites/character_variants/nanami/dr_kemuri/chr_dr_kemuri_evil.png",
   "sprites/character_variants/nanami/dr_kemuri/chr_dr_kemuri_normal.png",
   "sprites/character_variants/nanami/dr_kemuri/chr_dr_kemuri_serious.png",
@@ -2726,6 +2731,8 @@
   "sprites/character_variants/nanami/emil/chr_emil_normal.png",
   "sprites/character_variants/nanami/emil/chr_emil_serious.png",
   "sprites/character_variants/nanami/emil/chr_emil_smile.png",
+  "sprites/character_variants/nanami/emil/chr_emil_surprise.png",
+  "sprites/character_variants/nanami/emil/chr_emil_thinking.png",
   "sprites/character_variants/nanami/hajime/chr_hajime_excited.png",
   "sprites/character_variants/nanami/hajime/chr_hajime_normal.png",
   "sprites/character_variants/nanami/hajime/chr_hajime_sad.png",
@@ -2764,7 +2771,11 @@
   "sprites/character_variants/nanami/mashiro/chr_mashiro_sleep.png",
   "sprites/character_variants/nanami/mashiro/chr_mashiro_smile.png",
   "sprites/character_variants/nanami/mashiro/chr_mashiro_yawn.png",
+  "sprites/character_variants/nanami/master_hookah/chr_master_hookah_angry.png",
+  "sprites/character_variants/nanami/master_hookah/chr_master_hookah_laugh.png",
   "sprites/character_variants/nanami/master_hookah/chr_master_hookah_normal.png",
+  "sprites/character_variants/nanami/master_hookah/chr_master_hookah_sad.png",
+  "sprites/character_variants/nanami/master_hookah/chr_master_hookah_serious.png",
   "sprites/character_variants/nanami/master_hookah/chr_master_hookah_smile.png",
   "sprites/character_variants/nanami/master_hookah/chr_master_hookah_surprise.png",
   "sprites/character_variants/nanami/minto/chr_minto_normal.png",
@@ -2779,6 +2790,8 @@
   "sprites/character_variants/nanami/minto/chr_minto_wink.png",
   "sprites/character_variants/nanami/mukai_master/chr_mukai_master_normal.png",
   "sprites/character_variants/nanami/mukai_master/chr_mukai_master_sad.png",
+  "sprites/character_variants/nanami/mukai_master/chr_mukai_master_serious.png",
+  "sprites/character_variants/nanami/mukai_master/chr_mukai_master_smile.png",
   "sprites/character_variants/nanami/mukai_master/chr_mukai_master_surprise.png",
   "sprites/character_variants/nanami/naru/chr_naru_excited.png",
   "sprites/character_variants/nanami/naru/chr_naru_normal.png",
@@ -2808,6 +2821,11 @@
   "sprites/character_variants/nanami/samechan/chr_samechan_smile.png",
   "sprites/character_variants/nanami/samechan/chr_samechan_surprise.png",
   "sprites/character_variants/nanami/samechan/chr_samechan_ventriloquism.png",
+  "sprites/character_variants/nanami/sheikh/chr_sheikh_normal.png",
+  "sprites/character_variants/nanami/sheikh/chr_sheikh_serious.png",
+  "sprites/character_variants/nanami/sheikh/chr_sheikh_smile.png",
+  "sprites/character_variants/nanami/sheikh/chr_sheikh_smug.png",
+  "sprites/character_variants/nanami/sheikh/chr_sheikh_surprise.png",
   "sprites/character_variants/nanami/shisha_9000/chr_shisha_9000_normal.png",
   "sprites/character_variants/nanami/steve/chr_steve_normal.png",
   "sprites/character_variants/nanami/steve/chr_steve_sad.png",
@@ -2832,6 +2850,8 @@
   "sprites/character_variants/nanami/tetsuko/chr_tetsuko_surprise.png",
   "sprites/character_variants/nanami/uranaishi/chr_uranaishi_normal.png",
   "sprites/character_variants/nanami/uranaishi/chr_uranaishi_sad.png",
+  "sprites/character_variants/nanami/uranaishi/chr_uranaishi_serious.png",
+  "sprites/character_variants/nanami/uranaishi/chr_uranaishi_smile.png",
   "sprites/character_variants/nanami/uranaishi/chr_uranaishi_surprise.png",
   "sprites/character_variants/nanami/volk/chr_volk_normal.png",
   "sprites/character_variants/nanami/volk/chr_volk_sad.png",
@@ -2849,14 +2869,21 @@
   "sprites/character_variants/new/adam/chr_adam_smile.png",
   "sprites/character_variants/new/adam/chr_adam_surprise.png",
   "sprites/character_variants/new/ageha/chr_ageha_normal.png",
+  "sprites/character_variants/new/da_silva/chr_da_silva_excited.png",
+  "sprites/character_variants/new/da_silva/chr_da_silva_normal.png",
+  "sprites/character_variants/new/da_silva/chr_da_silva_serious.png",
+  "sprites/character_variants/new/da_silva/chr_da_silva_smile.png",
+  "sprites/character_variants/new/da_silva/chr_da_silva_surprise.png",
   "sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_evil.png",
   "sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_normal.png",
   "sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_serious.png",
   "sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_smile.png",
   "sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_surprise.png",
   "sprites/character_variants/new/emil/chr_emil_normal.png",
+  "sprites/character_variants/new/emil/chr_emil_serious.png",
   "sprites/character_variants/new/emil/chr_emil_smile.png",
   "sprites/character_variants/new/emil/chr_emil_surprise.png",
+  "sprites/character_variants/new/emil/chr_emil_thinking.png",
   "sprites/character_variants/new/hajime/chr_hajime_excited.png",
   "sprites/character_variants/new/hajime/chr_hajime_normal.png",
   "sprites/character_variants/new/hajime/chr_hajime_sad.png",
@@ -2896,8 +2923,13 @@
   "sprites/character_variants/new/maki/chr_maki_surprise.png",
   "sprites/character_variants/new/mashiro/chr_mashiro_normal.png",
   "sprites/character_variants/new/mashiro/chr_mashiro_yawn.png",
+  "sprites/character_variants/new/master_hookah/chr_master_hookah_angry.png",
+  "sprites/character_variants/new/master_hookah/chr_master_hookah_laugh.png",
   "sprites/character_variants/new/master_hookah/chr_master_hookah_normal.png",
+  "sprites/character_variants/new/master_hookah/chr_master_hookah_sad.png",
+  "sprites/character_variants/new/master_hookah/chr_master_hookah_serious.png",
   "sprites/character_variants/new/master_hookah/chr_master_hookah_smile.png",
+  "sprites/character_variants/new/master_hookah/chr_master_hookah_surprise.png",
   "sprites/character_variants/new/minto/chr_minto_normal.png",
   "sprites/character_variants/new/minto/chr_minto_ura_normal.png",
   "sprites/character_variants/new/minto/chr_minto_ura_sad.png",
@@ -2905,8 +2937,10 @@
   "sprites/character_variants/new/minto/chr_minto_ura_smug.png",
   "sprites/character_variants/new/minto/chr_minto_ura_surprise.png",
   "sprites/character_variants/new/mukai_master/chr_mukai_master_normal.png",
+  "sprites/character_variants/new/mukai_master/chr_mukai_master_sad.png",
   "sprites/character_variants/new/mukai_master/chr_mukai_master_serious.png",
   "sprites/character_variants/new/mukai_master/chr_mukai_master_smile.png",
+  "sprites/character_variants/new/mukai_master/chr_mukai_master_surprise.png",
   "sprites/character_variants/new/naru/chr_naru_excited.png",
   "sprites/character_variants/new/naru/chr_naru_normal.png",
   "sprites/character_variants/new/naru/chr_naru_sad.png",
@@ -2945,6 +2979,11 @@
   "sprites/character_variants/new/samechan/chr_samechan_smile.png",
   "sprites/character_variants/new/samechan/chr_samechan_surprise.png",
   "sprites/character_variants/new/samechan/chr_samechan_ventriloquism.png",
+  "sprites/character_variants/new/sheikh/chr_sheikh_normal.png",
+  "sprites/character_variants/new/sheikh/chr_sheikh_serious.png",
+  "sprites/character_variants/new/sheikh/chr_sheikh_smile.png",
+  "sprites/character_variants/new/sheikh/chr_sheikh_smug.png",
+  "sprites/character_variants/new/sheikh/chr_sheikh_surprise.png",
   "sprites/character_variants/new/shisha_9000/chr_shisha_9000_normal.png",
   "sprites/character_variants/new/steve/chr_steve_normal.png",
   "sprites/character_variants/new/steve/chr_steve_sad.png",
@@ -2975,6 +3014,9 @@
   "sprites/character_variants/new/tsumugi/chr_tsumugi_smile.png",
   "sprites/character_variants/new/tsumugi/chr_tsumugi_surprise.png",
   "sprites/character_variants/new/uranaishi/chr_uranaishi_normal.png",
+  "sprites/character_variants/new/uranaishi/chr_uranaishi_sad.png",
+  "sprites/character_variants/new/uranaishi/chr_uranaishi_serious.png",
+  "sprites/character_variants/new/uranaishi/chr_uranaishi_smile.png",
   "sprites/character_variants/new/uranaishi/chr_uranaishi_surprise.png",
   "sprites/character_variants/new/volk/chr_volk_normal.png",
   "sprites/character_variants/new/volk/chr_volk_sad.png",
@@ -2984,6 +3026,7 @@
   "sprites/character_variants/new/yoru/chr_yoru_normal.png",
   "sprites/character_variants/new/yoru/chr_yoru_sad.png",
   "sprites/character_variants/new/yoru/chr_yoru_serious.png",
+  "sprites/character_variants/new/yoru/chr_yoru_smile.png",
   "sprites/character_variants/new/yoru/chr_yoru_surprise.png",
   "sprites/characters/adam/chr_adam_intense.png",
   "sprites/characters/adam/chr_adam_normal.png",
@@ -3892,6 +3935,9 @@
    "uranaishi": {
     "faces": [
      "normal",
+     "sad",
+     "serious",
+     "smile",
      "surprise"
     ],
     "h": 0.9008,
@@ -3965,8 +4011,10 @@
    "emil": {
     "faces": [
      "normal",
+     "serious",
      "smile",
-     "surprise"
+     "surprise",
+     "thinking"
     ],
     "h": 0.9008,
     "b": 0.05,
@@ -3975,8 +4023,13 @@
    },
    "master_hookah": {
     "faces": [
+     "angry",
+     "laugh",
      "normal",
-     "smile"
+     "sad",
+     "serious",
+     "smile",
+     "surprise"
     ],
     "h": 0.9,
     "b": 0.05,
@@ -3986,8 +4039,10 @@
    "mukai_master": {
     "faces": [
      "normal",
+     "sad",
      "serious",
-     "smile"
+     "smile",
+     "surprise"
     ],
     "h": 0.9,
     "b": 0.0492,
@@ -4021,12 +4076,41 @@
      "normal",
      "sad",
      "serious",
+     "smile",
      "surprise"
     ],
     "h": 0.9008,
     "b": 0.05,
     "ax": 0.5001,
     "aspect": 0.7467
+   },
+   "da_silva": {
+    "faces": [
+     "excited",
+     "normal",
+     "serious",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.5005,
+    "aspect": 0.7467,
+    "topOverhang": 0.0033
+   },
+   "sheikh": {
+    "faces": [
+     "normal",
+     "serious",
+     "smile",
+     "smug",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4996,
+    "aspect": 0.7467,
+    "topOverhang": 0.0025
    }
   },
   "nanami": {
@@ -4238,6 +4322,8 @@
     "faces": [
      "normal",
      "sad",
+     "serious",
+     "smile",
      "surprise"
     ],
     "h": 0.9,
@@ -4308,7 +4394,9 @@
     "faces": [
      "normal",
      "serious",
-     "smile"
+     "smile",
+     "surprise",
+     "thinking"
     ],
     "h": 0.9008,
     "b": 0.0492,
@@ -4330,7 +4418,11 @@
    },
    "master_hookah": {
     "faces": [
+     "angry",
+     "laugh",
      "normal",
+     "sad",
+     "serious",
      "smile",
      "surprise"
     ],
@@ -4343,6 +4435,8 @@
     "faces": [
      "normal",
      "sad",
+     "serious",
+     "smile",
      "surprise"
     ],
     "h": 0.9008,
@@ -4384,6 +4478,34 @@
     "b": 0.05,
     "ax": 0.4999,
     "aspect": 0.7467
+   },
+   "da_silva": {
+    "faces": [
+     "excited",
+     "normal",
+     "serious",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4998,
+    "aspect": 0.7467,
+    "topOverhang": 0.0042
+   },
+   "sheikh": {
+    "faces": [
+     "normal",
+     "serious",
+     "smile",
+     "smug",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4999,
+    "aspect": 0.7467,
+    "topOverhang": 0.0033
    }
   }
  }
