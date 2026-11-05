@@ -63,11 +63,13 @@ assert(vanillaReward.name.startsWith(vanilla.short_name));
 for (const id of ["minto", "ageha"]) {
   for (const face of all.DB.manifest.portraits[id].faces) {
     const version = id === "ageha" || face === "normal" ? "?v=portrait-standard-20261102" : "";
-    assert.equal(all.portraitInfo(id, face).src, `img/sprites/characters/${id}/chr_${id}_${face}.webp${version}`);
+    assert.equal(all.portraitInfo(id, face, "classic").src, `img/sprites/characters/${id}/chr_${id}_${face}.webp${version}`);
   }
   assert.equal(all.faceIconUrl(id), `img/ui/face_icons/face_${id}.webp?v=portrait-standard-20261102`);
   assert(all.allFaceIconUrls().includes(all.faceIconUrl(id)), "preload and display use the same revised icon URL");
 }
+assert.equal(all.portraitInfo("minto", "normal").style, "new");
+assert.equal(all.portraitInfo("minto", "normal").src, "img/sprites/character_variants/new/minto/chr_minto_normal.webp");
 assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/bg_tonari_inside_day.webp");
 assert.equal(all.faceIconUrl("oneesan"), "img/ui/face_icons/face_minto_private.webp");
 assert.equal(all.portraitInfo("oneesan", "normal").face, "ura_normal");
