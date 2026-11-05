@@ -64,12 +64,24 @@ async function prepare(page, options = {}) {
     localStorage.setItem("qa_unrelated", "keep"); sessionStorage.setItem("qa_unrelated", "keep");
   }, options);
 }
+// 初回入店ではサイの紹介前に主人公の VN 1 行を読み進める。
+// 実際の入店経路を検査するため、既読フラグを立てて省略しない。
+async function advanceSaiIntro(page) {
+  if (await page.evaluate(() => __remake.state.flags._intro_sai)) return;
+  await page.waitForFunction(() => document.querySelector("#vn.active .vn-text")?.textContent === "こんばんは。遊べる卓を探していて");
+  // VN 開始から 320ms は入力が無視される。表示だけで直ちに押すと会話が進まない。
+  await page.waitForTimeout(350);
+  await page.locator("#vn.active .vn-box").click();
+  await page.locator('.cutin.in[data-char="sai"]').waitFor();
+  await page.locator(".cutin").waitFor({ state: "detached" });
+}
 async function open(page, { nightBusy = false } = {}) {
   await page.evaluate(async nightBusy => {
     const { openTrpgBar } = await import("./js/daily/trpg.js");
     window.__trpgBarResult = null;
     openTrpgBar({ nightBusy: () => nightBusy }).then(result => { window.__trpgBarResult = result; });
   }, nightBusy);
+  await advanceSaiIntro(page);
   await button(page, "trpg-campaign-notice").waitFor();
 }
 async function snapshot(page) { return page.evaluate(() => structuredClone(__remake.state)); }
@@ -131,6 +143,7 @@ await suite("trpg-main", async check => {
     await page.evaluate(async () => {
       const { openTrpgBar } = await import("./js/daily/trpg.js"); openTrpgBar();
     });
+    await advanceSaiIntro(page);
     await hit(page, "trpg-club-choice-people"); await hit(page, "trpg-campaign-close");
     assert.equal(await button(page, "trpg-demo-meet-samechan").count(), 0, "Real bar has no remote recruitment");
     await page.evaluate(async () => {
@@ -280,6 +293,7 @@ await suite("trpg-main", async check => {
     await prepare(page); let broken = true;
     await page.route("**/data/trpg_catalog.json", route => broken ? route.fulfill({ status: 200, contentType: "application/json", body: "{broken" }) : route.continue());
     await page.evaluate(async () => { const { openTrpgBar } = await import("./js/daily/trpg.js"); openTrpgBar(); });
+    await advanceSaiIntro(page);
     await button(page, "trpg-campaign-retry").waitFor(); const before = await storageSnapshot(page);
     broken = false; await hit(page, "trpg-campaign-retry"); await button(page, "trpg-buy-ordinary-cup").waitFor();
     await hit(page, "trpg-campaign-close");
@@ -299,6 +313,7 @@ await suite("trpg-main", async check => {
     });
     await button(page, "pin-trpg_bar").waitFor();
     await hit(page, "pin-trpg_bar"); await hit(page, "map-go");
+    await advanceSaiIntro(page);
     await button(page, "trpg-buy-ordinary-cup").waitFor();
     await hit(page, "trpg-buy-ordinary-cup"); await hit(page, "trpg-campaign-close");
     await button(page, "pin-trpg_bar").waitFor();
