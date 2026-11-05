@@ -27,8 +27,12 @@ async function scene(page, ids, style, face = 'normal') {
   }, {ids,style,face,tag});
   await page.waitForFunction(tag => document.querySelector('.vn-text')?.textContent === tag, tag);
   await page.locator('.vn-portraits img').evaluateAll(async imgs => Promise.all(imgs.map(im=>im.decode())));
-  // Wait for the production entry and active-speaker transitions, not just image download.
-  await page.waitForTimeout(450);
+  // The engine waits for entry before showing the line. Confirm the actual visual
+  // state as well, instead of adding 450ms to every already-settled raster.
+  await page.waitForFunction(() => [...document.querySelectorAll('.vn-portraits img')].every(im =>
+    !im.classList.contains('enter') && Number(getComputedStyle(im).opacity) > .98 &&
+    im.getAnimations().filter(a => a.effect?.getComputedTiming().iterations !== Infinity)
+      .every(a => a.playState === 'finished' || a.playState === 'idle')));
   assert.equal(await page.locator('.vn-portraits img').count(),ids.length);
   return tag;
 }
