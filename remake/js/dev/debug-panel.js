@@ -6,7 +6,7 @@
 // - 今の状態（章・日・時間帯・体力・お金）
 // 会話の早送りは、会話の操作バーの SKIP（設定で未読も飛ばせる）を使う。
 // リリース前に消す: remake/js/dev/ のフォルダと、main.js の「デバッグ用の道具」の1行（remake/README.md）。
-import { state, newState, setState, save, loadFromSlot, requestResumeOnBoot, SCHEMA } from "../core/state.js";
+import { state, newState, setState, save, loadFromSlot, requestResumeOnBoot, SCHEMA, config, saveConfig } from "../core/state.js";
 import { addStamina, addMoney, maxStamina, ROMANCEABLE, AFFINITY_RANK_PTS, affinityLevel } from "../core/stats.js";
 import { chapterDay, chapterFinalDay } from "../core/chapter-clock.js";
 import { advanceToChapterTwo, dayOneProgress } from "../chapters/ch2-progress.js";
@@ -16,6 +16,7 @@ import { advanceToChapterFive, chapterFiveProgress } from "../chapters/ch5-progr
 import { craftTest } from "../craft/session.js";
 import { growthEnabled, gainExp, ensureGrowth } from "../core/growth.js";
 import { emit } from "../core/bus.js";
+import { refreshPortraits } from "../vn/engine.js";
 import { installTimeWarp, setSpeed, getSpeed, SPEEDS, realTime } from "./time-warp.js";
 
 const SPEED_KEY = "suien_debug_speed";
@@ -159,6 +160,12 @@ export function mountDebugPanel() {
   const craftRow = el("div", { className: "dbg-row" }, CRAFT_MODES.map(mode => el("button", { type: "button", textContent: mode.label,
     dataset: { value: mode.value, test: `debug-craft-${mode.value || "manual"}` },
     onclick: () => { craftTest.auto = mode.value || null; store.set(CRAFT_KEY, mode.value); pressed(craftRow, mode.value); } })));
+  const portraitSelect = el("select", { dataset: { test: "debug-portrait-style" }, title: "会話の立ち絵の画風",
+    onchange: () => { config.portraitStyle = portraitSelect.value; saveConfig(); refreshPortraits(); } },
+    [["classic", "現行"], ["new", "新バージョン"], ["nanami", "七海風"]].map(([value, label]) => el("option", { value, textContent: label })));
+  const syncPortraitStyle = () => { portraitSelect.value = ["new", "nanami"].includes(config.portraitStyle) ? config.portraitStyle : "classic"; };
+  syncPortraitStyle();
+  const portraitRow = el("div", { className: "dbg-row" }, [portraitSelect]);
   const action = (label, test, run) => el("button", { type: "button", textContent: label, dataset: { test },
     onclick: () => { if (!state) return; run(); emit("hud"); status.textContent = stateText(); } });
   const tools = el("div", { className: "dbg-row" }, [
@@ -235,6 +242,8 @@ export function mountDebugPanel() {
   panel.append(
     el("h4", { textContent: "速さ（音は変わらない）" }), speedRow,
     el("h4", { textContent: "シーシャ作り" }), craftRow,
+    el("h4", { textContent: "会話の立ち絵" }), portraitRow,
+    el("div", { className: "dbg-note", textContent: "通常の設定と共通。未導入の人物・衣装は現行、未導入の表情は同じ画風の通常絵。進行・セーブは変えない。" }),
     el("h4", { textContent: "便利" }), tools,
     el("h4", { textContent: "日付・時間帯" }), warpRow,
     el("h4", { textContent: "章・場面ジャンプ" }), chapterRow,
@@ -244,7 +253,7 @@ export function mountDebugPanel() {
     el("div", { className: "dbg-note", textContent: "会話の早送りは、会話の SKIP。経験値は寝ると精算される。" }),
     el("div", { className: "dbg-note", textContent: "この道具を消す: URL に ?debug=0。リリース前には remake/js/dev/ を消す。" }),
   );
-  const open = show => { panel.hidden = !show; if (show) { status.textContent = stateText(); if (state) syncRelationship(); } };
+  const open = show => { panel.hidden = !show; if (show) { syncPortraitStyle(); status.textContent = stateText(); if (state) syncRelationship(); } };
   toggle.addEventListener("click", () => open(panel.hidden));
   document.addEventListener("keydown", event => {
     if (event.key === "`" && !event.repeat && !/^(INPUT|TEXTAREA|SELECT)$/.test(event.target?.tagName || "")) open(panel.hidden);
