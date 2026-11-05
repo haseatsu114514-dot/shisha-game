@@ -6,8 +6,13 @@
 // - 今の状態（章・日・時間帯・体力・お金）
 // 会話の早送りは、会話の操作バーの SKIP（設定で未読も飛ばせる）を使う。
 // リリース前に消す: remake/js/dev/ のフォルダと、main.js の「デバッグ用の道具」の1行（remake/README.md）。
-import { state } from "../core/state.js";
-import { addStamina, addMoney, maxStamina } from "../core/stats.js";
+import { state, newState, setState, save, loadFromSlot, requestResumeOnBoot, SCHEMA } from "../core/state.js";
+import { addStamina, addMoney, maxStamina, ROMANCEABLE, AFFINITY_RANK_PTS, affinityLevel } from "../core/stats.js";
+import { chapterDay, chapterFinalDay } from "../core/chapter-clock.js";
+import { advanceToChapterTwo, dayOneProgress } from "../chapters/ch2-progress.js";
+import { advanceToChapterThree, chapterThreeProgress } from "../chapters/ch3-progress.js";
+import { advanceToChapterFour, chapterFourProgress } from "../chapters/ch4-progress.js";
+import { advanceToChapterFive, chapterFiveProgress } from "../chapters/ch5-progress.js";
 import { craftTest } from "../craft/session.js";
 import { growthEnabled, gainExp, ensureGrowth } from "../core/growth.js";
 import { emit } from "../core/bus.js";
@@ -38,6 +43,10 @@ const STYLE = `
 .dbg-row{display:flex;flex-wrap:wrap;gap:6px}
 .dbg-panel button{font:600 12px/1 system-ui,sans-serif;padding:7px 9px;border-radius:6px;border:1px solid #6b5a8a;background:#2b2340;color:#f4ede0;cursor:pointer}
 .dbg-panel button[aria-pressed="true"]{background:#f5c26b;border-color:#f5c26b;color:#1c1626}
+.dbg-panel select,.dbg-panel input{font:12px system-ui,sans-serif;max-width:100%;min-width:0;padding:6px;border:1px solid #6b5a8a;border-radius:6px;background:#2b2340;color:#f4ede0}
+.dbg-panel input[type="number"]{width:64px}
+.dbg-panel input[type="file"]{width:100%}
+.dbg-panel .dbg-row{align-items:center}
 .dbg-state{font:12px/1.5 ui-monospace,monospace;color:#cfc6b6;white-space:pre-wrap}
 .dbg-note{font-size:11px;color:#9d93a8;margin-top:6px}
 `;
@@ -50,6 +59,77 @@ function el(tag, { dataset = {}, ...props } = {}, children = []) {
   return node;
 }
 const SLOT = ["昼", "夜", "就寝"];
+const CHAR_LABELS = { tsumugi: "つむぎ", minto: "みんと", kuyuri: "くゆり", ageha: "あげは", mashiro: "ましろ", hiyori: "ひより", samechan: "サメちゃん" };
+
+// 画面で走っている旧ループを破棄するため、保存後は既存のブート再開経路へ戻す。
+function resumeSaved() {
+  if (!save()) throw new Error("保存に失敗しました");
+  requestResumeOnBoot();
+  location.reload();
+}
+
+function warp(slot, nextDay = false) {
+  if (!state || state.phase !== "daily") throw new Error("日常パートで使用してください");
+  if (nextDay) {
+    const last = chapterFinalDay(state);
+    if (last !== null && chapterDay(state) >= last) throw new Error("章の最終日です。章ジャンプを使ってください");
+    state.day += 1;
+    state.slot = 0;
+    state.restDay = null;
+  } else {
+    if (state.slot >= slot) throw new Error("現在より後の時間帯を選んでください");
+    state.slot = slot;
+  }
+  resumeSaved();
+}
+
+// 各章の正規遷移は前章の完了状態を要求する。デバッグ用の新規状態でその境界だけ満たして呼ぶ。
+function chapterStart(chapter) {
+  const next = newState();
+  next.flags._ch1_opening = { introDone: false };
+  for (let step = 2; step <= chapter; step++) {
+    next.phase = "cleared";
+    if (step === 3) {
+      next.flags._ch2_cleared = true;
+      next.flags._ch2_read_ch2_tournament_ageha_heart = true;
+      next.flags._ch2_tournament = { stage: "complete" };
+    }
+    if (step === 4) next.flags._ch3_cleared = true;
+    if (step === 5) next.flags._ch4_cleared = true;
+    const advance = [null, null, advanceToChapterTwo, advanceToChapterThree, advanceToChapterFour, advanceToChapterFive][step];
+    if (!advance(next)) throw new Error(`第${step}章の入口を作れませんでした`);
+  }
+  setState(next);
+  resumeSaved();
+}
+
+function importSave(raw) {
+  let data;
+  try { data = JSON.parse(raw); } catch { throw new Error("JSON を読み取れません"); }
+  // migrate は古いセーブの欠落を補うため、任意のオブジェクトも受け入れる。外部入力には最小形を要求する。
+  if (!data || Array.isArray(data) || typeof data !== "object"
+    || !Number.isInteger(data.schema) || data.schema < 1 || data.schema > SCHEMA
+    || !Number.isInteger(data.chapter) || data.chapter < 1 || data.chapter > 5
+    || !Number.isInteger(data.day) || data.day < 1 || !["opening", "daily", "tournament", "aftermath", "cleared"].includes(data.phase)
+    || !Number.isInteger(data.slot) || data.slot < 0 || data.slot > 2
+    || !data.flags || Array.isArray(data.flags) || typeof data.flags !== "object") throw new Error("セーブデータの形式が正しくありません");
+  const validate = data => {
+    // 第2章は未接続時代の手動SAVEを、通常再開と同じ境界で補完する。
+    if (data.chapter === 2) dayOneProgress(data);
+    try {
+      if (data.chapter === 3) chapterThreeProgress(data);
+      if (data.chapter === 4) chapterFourProgress(data);
+      if (data.chapter === 5) chapterFiveProgress(data);
+    } catch { throw new Error("章の進行地点が正しくありません"); }
+  };
+  const key = "suien_debug_import_candidate";
+  try {
+    localStorage.setItem(key, raw);
+    if (!loadFromSlot(key, { validate })) throw new Error("セーブの検証または保存に失敗しました");
+  } finally { localStorage.removeItem(key); }
+  requestResumeOnBoot();
+  location.reload();
+}
 function stateText() {
   const s = state;
   if (!s) return "（ゲーム開始前）";
@@ -87,17 +167,84 @@ export function mountDebugPanel() {
     action("経験値＋200", "debug-exp", () => { if (growthEnabled()) gainExp(200); }),
     action("火種＋6", "debug-hidane", () => { if (growthEnabled()) { const g = ensureGrowth(); g.hidane.any = (g.hidane.any || 0) + 6; } }),
   ]);
+  const message = el("div", { className: "dbg-note", role: "status", dataset: { test: "debug-message" } });
+  const run = task => { try { task(); message.textContent = "反映しました"; status.textContent = stateText(); } catch (error) { message.textContent = error.message; } };
+  const warpRow = el("div", { className: "dbg-row" }, [
+    el("button", { type: "button", textContent: "夜へ", dataset: { test: "debug-night" }, onclick: () => run(() => warp(1)) }),
+    el("button", { type: "button", textContent: "翌日へ", dataset: { test: "debug-next-day" }, onclick: () => run(() => warp(0, true)) }),
+  ]);
+  const chapterSelect = el("select", { dataset: { test: "debug-chapter-select" }, title: "ジャンプ先の章" },
+    [1, 2, 3, 4, 5].map(n => el("option", { value: String(n), textContent: `第${n}章・章頭` })));
+  const chapterRow = el("div", { className: "dbg-row" }, [chapterSelect,
+    el("button", { type: "button", textContent: "章頭へ", dataset: { test: "debug-chapter-go" },
+      onclick: () => run(() => chapterStart(Number(chapterSelect.value))) }),
+  ]);
+  const character = el("select", { dataset: { test: "debug-character" }, title: "キャラ" },
+    ROMANCEABLE.map(id => el("option", { value: id, textContent: CHAR_LABELS[id] || id })));
+  const hearts = el("select", { dataset: { test: "debug-hearts" }, title: "好感度のハート" },
+    [0, 1, 2, 3, 4, 5].map(n => el("option", { value: String(n), textContent: `♥ ${n}` })));
+  const lovePoints = el("input", { type: "number", min: "0", max: "999", step: "1", value: "9", dataset: { test: "debug-love-points" }, title: "恋愛ポイント（恋人の絆）" });
+  const lover = el("input", { type: "checkbox", dataset: { test: "debug-lover" }, title: "恋人状態" });
+  const syncRelationship = () => {
+    const id = character.value, dating = !!state?.lovers?.includes(id);
+    lover.checked = dating;
+    hearts.value = String(dating ? (state.loveLevel[id] || 1) : affinityLevel(id));
+    lovePoints.value = String(dating ? (state.lovePts[id] || 9) : 9);
+  };
+  character.onchange = syncRelationship;
+  const relationshipRow = el("div", { className: "dbg-row" }, [character, hearts, lovePoints,
+    el("label", {}, [lover, "恋人"]),
+    el("button", { type: "button", textContent: "設定", dataset: { test: "debug-relationship-set" }, onclick: () => run(() => {
+      if (!state) throw new Error("ゲーム開始後に使用してください");
+      const id = character.value, level = Number(hearts.value), points = Number(lovePoints.value);
+      if (!Number.isInteger(points) || points < 0 || points > 999) throw new Error("ポイントは0〜999で指定してください");
+      if (lover.checked) {
+        if (!state.lovers.includes(id)) state.lovers.push(id);
+        state.affinity[id] = Math.max(state.affinity[id] || 0, AFFINITY_RANK_PTS[5]);
+        state.loveLevel[id] = Math.max(1, level);
+        state.lovePts[id] = Math.max(points, AFFINITY_RANK_PTS[state.loveLevel[id]]);
+        state.loverSince[id] ??= state.day;
+      } else {
+        state.lovers = state.lovers.filter(value => value !== id);
+        state.affinity[id] = AFFINITY_RANK_PTS[level];
+        delete state.loveLevel[id]; delete state.lovePts[id]; delete state.loverSince[id]; delete state.lastDate[id];
+      }
+      state.affinityCarry[id] = 0; state.loveCarry[id] = 0;
+      if (!save()) throw new Error("保存に失敗しました");
+      emit("hud"); emit("lovers", { id });
+      syncRelationship();
+    }) }),
+  ]);
+  const importFile = el("input", { type: "file", accept: ".json,application/json", dataset: { test: "debug-save-file" } });
+  const saveRow = el("div", { className: "dbg-row" }, [
+    el("button", { type: "button", textContent: "JSONを書き出す", dataset: { test: "debug-save-export" }, onclick: () => run(() => {
+      if (!state) throw new Error("ゲーム開始後に使用してください");
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob), link = el("a", { href: url, download: `suien-save-ch${state.chapter}-day${state.day}.json` });
+      document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }) }),
+    importFile,
+    el("button", { type: "button", textContent: "JSONを読み込む", dataset: { test: "debug-save-import" }, onclick: async () => {
+      const file = importFile.files?.[0];
+      if (!file) { message.textContent = "JSONファイルを選んでください"; return; }
+      try { importSave(await file.text()); } catch (error) { message.textContent = error.message; }
+    } }),
+  ]);
   pressed(speedRow, getSpeed());
   pressed(craftRow, craftTest.auto || "");
   panel.append(
     el("h4", { textContent: "速さ（音は変わらない）" }), speedRow,
     el("h4", { textContent: "シーシャ作り" }), craftRow,
     el("h4", { textContent: "便利" }), tools,
+    el("h4", { textContent: "日付・時間帯" }), warpRow,
+    el("h4", { textContent: "章・場面ジャンプ" }), chapterRow,
+    el("h4", { textContent: "好感度・恋人" }), relationshipRow,
+    el("h4", { textContent: "セーブの入出力" }), saveRow, message,
     el("h4", { textContent: "今の状態" }), status,
     el("div", { className: "dbg-note", textContent: "会話の早送りは、会話の SKIP。経験値は寝ると精算される。" }),
     el("div", { className: "dbg-note", textContent: "この道具を消す: URL に ?debug=0。リリース前には remake/js/dev/ を消す。" }),
   );
-  const open = show => { panel.hidden = !show; if (show) status.textContent = stateText(); };
+  const open = show => { panel.hidden = !show; if (show) { status.textContent = stateText(); if (state) syncRelationship(); } };
   toggle.addEventListener("click", () => open(panel.hidden));
   document.addEventListener("keydown", event => {
     if (event.key === "`" && !event.repeat && !/^(INPUT|TEXTAREA|SELECT)$/.test(event.target?.tagName || "")) open(panel.hidden);
