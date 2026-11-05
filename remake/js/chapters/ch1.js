@@ -205,6 +205,7 @@ export async function resumeGame() {
   if (state.chapter === 5) return resumeChapterModule(() => import("./ch5.js"), m => m.resumeChapterFive(), "第5章へ戻っています…");
   if (state.phase === "cleared") return showClear();
   if (state.phase === "aftermath") return finishAfterTournament();
+  // 第1章の制作途中は保存しない。大会本体のLOADは当日冒頭から入場と一台をやり直す。
   if (state.phase === "tournament" && state.tournament?.victory) return resumeVictory();
   if (state.phase === "tournament") return tournamentDay();
   if (state.phase === "opening" && await openingPart() === false) return;
@@ -589,6 +590,42 @@ const STEPS_ALL = CRAFT_STEPS;
 // 中間順位の出来栄えは、ある工程の点だけで平均する（ロートスでアルミを飛ばすと穴あけの点が無い）。
 const avgScore = (...values) => { const f = values.filter(Number.isFinite); return f.length ? f.reduce((a, b) => a + b, 0) / f.length : 0; };
 
+// 入場の確定地点。初回だけ phase=tournament と当日の資源を保存する。
+async function enterTournamentDay() {
+  state.phase = "tournament";
+  state.tournament.rulesVersion = 2;
+  state.day = TOURNAMENT_DAY;
+  state.slot = 0;
+  showHud(true);
+  playBgm("kansetsu_shomei_to_black_coffee");
+  await dayCard(`DAY ${TOURNAMENT_DAY}`, "SMOKE CROWN CUP 当日");
+  const cheers = morningMessages({ tournamentDay: true });
+  if (cheers.length) await openPhone(cheers, { time: "AM 7:40" });
+  captureEntryResources(state); // 初回制作前に一度だけ。在庫と体力を同じ境界で保存。
+  save();
+  toast("大会直前のデータをセーブした");
+}
+
+// 入場後の一台に備える試行境界。現行順どおり、資源・試行・票は入場演出前に確定する。
+function prepareTournamentAttempt(newTournament) {
+  restoreEntryResources(state);
+  applyAssistRecovery(state, state.tournament.retryAssist, maxStamina());
+  // 版の無い旧SAVEは旧配点で完走。敗北後の再挑戦は新しい試合として始める。
+  if (!newTournament && state.tournament.rulesVersion == null) state.tournament.rulesVersion = state.tournament.lastRank == null ? 1 : 2;
+  if (state.tournament.lastRank != null) state.tournament.rulesVersion = 2;
+  state.tournament.attempts++;
+  state.tournament.voteAttempt = state.tournament.rulesVersion >= 2 ? null : undefined;
+  if (state.tournament.rulesVersion >= 2) beginCh1Votes(state.tournament);
+  save();
+}
+
+// 入場演出の後、一台の制作を始める。制作中の工程状態はSAVEに持たない。
+function startTournamentCraft() {
+  const cs = newSession("tournament");
+  cs.retryAssist = state.tournament.retryAssist === true;
+  return cs;
+}
+
 async function tournamentDay() {
   await loadTournamentCraftDialogue();
   // DAY14から再開しても、実際に延期した準備だけを本番の前に救済する。
@@ -604,30 +641,9 @@ async function tournamentDay() {
   clearScreen();
   initHud({});
   const newTournament = state.phase !== "tournament";
-  if (newTournament) {
-    state.phase = "tournament";
-    state.tournament.rulesVersion = 2;
-    state.day = TOURNAMENT_DAY;
-    state.slot = 0;
-    showHud(true);
-    playBgm("kansetsu_shomei_to_black_coffee");
-    await dayCard(`DAY ${TOURNAMENT_DAY}`, "SMOKE CROWN CUP 当日");
-    const cheers = morningMessages({ tournamentDay: true });
-    if (cheers.length) await openPhone(cheers, { time: "AM 7:40" });
-    captureEntryResources(state); // 初回制作前に一度だけ。在庫と体力を同じ境界で保存。
-    save();
-    toast("大会直前のデータをセーブした");
-  }
+  if (newTournament) await enterTournamentDay();
   showHud(false);
-  restoreEntryResources(state);
-  applyAssistRecovery(state, state.tournament.retryAssist, maxStamina());
-  // 版の無い旧SAVEは旧配点で完走。敗北後の再挑戦は新しい試合として始める。
-  if (!newTournament && state.tournament.rulesVersion == null) state.tournament.rulesVersion = state.tournament.lastRank == null ? 1 : 2;
-  if (state.tournament.lastRank != null) state.tournament.rulesVersion = 2;
-  state.tournament.attempts++;
-  state.tournament.voteAttempt = state.tournament.rulesVersion >= 2 ? null : undefined;
-  if (state.tournament.rulesVersion >= 2) beginCh1Votes(state.tournament);
-  save();
+  prepareTournamentAttempt(newTournament);
   for (const id of ["naru", "adam", "minto", "sui", "maezono", "dr_kemuri"]) markMet(id);
   void preloadBgm("bgm_tournament_edm");
   void preloadBgm("bgm_tournament_craft");
@@ -647,8 +663,7 @@ async function tournamentDay() {
 
   // ROUND 1 ── 準備
   playBgm("bgm_tournament_craft");
-  const cs = newSession("tournament");
-  cs.retryAssist = state.tournament.retryAssist === true;
+  const cs = startTournamentCraft();
   await roundCut("ROUND 1", "準備");
   await play("remake_round1_intro", { bg: STAGE });
   await playTournamentEvent(cs, "opening", { bg: STAGE });
@@ -726,6 +741,7 @@ async function tournamentDay() {
   await play("remake_judging_intro", { bg: STAGE });
   finalize(cs);
   await playTournamentEvent(cs, "tasting", { bg: STAGE });
+  // 最終工程と試飲の表示後に4回目を確定。最後の1点・同点規則はVOTE01に委ねる。
   if (state.tournament.rulesVersion >= 2) castCh1Votes(state.tournament, 3, cs);
   const rank = state.tournament.rulesVersion >= 2 ? state.tournament.voteAttempt.result.rank : outcomeOf(cs.total).rank;
   const out = state.tournament.rulesVersion >= 2 ? { rank, kind: rank === 1 ? "win" : rank === 2 || rank === 3 ? "close" : "lose" } : outcomeOf(cs.total);

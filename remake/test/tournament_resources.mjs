@@ -80,10 +80,11 @@ for (const [chapter, phase] of [[1, "daily"], [1, "aftermath"], [2, "tournament"
 // Execute the actual tournamentDay prefix through its first newSession call.
 // UI/story/assets are stubs; resource functions and source ordering are real.
 const source = fs.readFileSync(new URL("../js/chapters/ch1.js", import.meta.url), "utf8");
+const boundaries = source.slice(source.indexOf("async function enterTournamentDay()"), source.indexOf("async function tournamentDay()"));
 const start = source.indexOf("async function tournamentDay()");
-const end = source.indexOf('  const cs = newSession("tournament");', start);
-assert(start >= 0 && end > start);
-const prefix = source.slice(start, end) + '  return newSession("tournament");\n}';
+const end = source.indexOf("  const cs = startTournamentCraft();", start);
+assert(boundaries.startsWith("async function enterTournamentDay()") && start >= 0 && end > start);
+const prefix = boundaries + source.slice(start, end) + '  return startTournamentCraft();\n}';
 core.newGame(); // regulationFor closes over the real core.state, not the sandbox's `state`; reset it to Chapter 1 defaults
 const entrant = core.newState();
 Object.assign(entrant, { phase: "daily", day: 14, stamina: 52, flavorStock: {} });
