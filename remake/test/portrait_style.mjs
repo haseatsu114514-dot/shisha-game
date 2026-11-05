@@ -80,6 +80,12 @@ test('unregistered costumes never use another costume normal', () => {
  const old=legacy.faces;legacy.faces=[...old,'office_angry'];
  assert.equal(data.portraitInfo('minto','office_angry','new').style,'classic');legacy.faces=old;
 });
+test('new-only costume keeps same-costume expressions and missing-face fallback', () => {
+ data.DB.manifest.portraitVariants.new.tsumugi.faces.push('baito_normal','baito_smile');
+ assert.equal(data.portraitInfo('tsumugi','baito_smile','new').face,'baito_smile');
+ assert.equal(data.portraitInfo('tsumugi','baito_surprise','new').face,'baito_normal');
+ assert.equal(data.portraitInfo('tsumugi','baito_smile','classic').face,'normal');
+});
 test('missing variant manifest is backward compatible', () => {delete data.DB.manifest.portraitVariants;state.config.portraitStyle='new';assert.equal(data.portraitInfo('tsumugi','normal').style,'classic');});
 // Execute production openConfig with a tiny DOM adapter, without importing unrelated scenes.
 const titleSource = await read('js/scenes/title.js');
@@ -141,5 +147,97 @@ const warmCtx=vm.createContext({SUMI_CONTINUE_SCRIPTS:[{cues:[{face:'normal'}],r
 vm.runInContext(gameoverSource.slice(warmStart,warmEnd).replace('export function','function')+';this.warm=warmGameOver;',warmCtx);
 await warmCtx.warm();
 test('CONTINUE warmup matches its measured artwork',()=>assert.deepEqual(warmCalls,[['sumi','normal','classic'],['sumi','smile','classic']]));
+// The standing image in an intro morph is the current VN portrait, not always classic.
+const transitionSource=await read('js/vn/intro-transition.js');
+const metricStart=transitionSource.indexOf('const STANDING_FACE_X =');
+const metricEnd=transitionSource.indexOf('\n};',metricStart)+3;
+const headStart=transitionSource.indexOf('function headOf(');
+const headEnd=transitionSource.indexOf('\nfunction animate(',headStart);
+const headCtx=vm.createContext({});
+vm.runInContext(transitionSource.slice(metricStart,metricEnd)+'\n'+transitionSource.slice(headStart,headEnd)+';this.head=headOf;',headCtx);
+const manifest=JSON.parse(await read('data/manifest.json'));
+data.DB.manifest.portraits=manifest.portraits;
+data.DB.manifest.portraitVariants=manifest.portraitVariants;
+test('intro morph uses classic eye measurements only with classic art',()=>{
+ const rect={left:100,top:20,width:448,height:600,img:{naturalWidth:896}};
+ for(const choice of ['new','classic']) {
+  state.config.portraitStyle=choice;
+  const p=data.portraitInfo('hajime','normal');
+  const head=headCtx.head(rect,p);
+  assert.equal(head.x,100+448*(choice==='classic'?544.5/896:p.ax));
+  assert.equal(head.top,20+(1-p.b-p.h)*600);
+  assert.equal(head.height,p.h*600*.16);
+  assert.equal(state.config.portraitStyle,choice,'Measuring the transition never changes the preference');
+ }
+});
+// Run the authored craft layouts with the real portrait resolver under either setting.
+function layoutNode(selector,attrs={},children=[]) {
+ if(Array.isArray(attrs)){children=attrs;attrs={};}
+ const node={selector,...attrs,dataset:{...attrs.dataset},style:{...attrs.style,setProperty(k,v){this[k]=v;}},children:[],classList:{add(){},remove(){}},
+  append(...xs){this.children.push(...xs.filter(Boolean));},prepend(...xs){this.children.unshift(...xs.filter(Boolean));},
+  setAttribute(k,v){this[k]=v;},getAttribute(k){return this[k];},querySelector(){return null;},replaceChildren(...xs){this.children=xs;}};
+ node.append(...children);return node;
+}
+const executable=source=>source.replace(/^import .*;\n/gm,'').replace(/^export /gm,'');
+const audienceSource=await read('js/craft/audience.js');
+for(const choice of ['new','classic']) {
+ state.config.portraitStyle=choice;
+ const calls=[],loaded=[],nodes=[];
+ const layoutEl=(...args)=>{const n=layoutNode(...args);nodes.push(n);return n;};
+ const ctx=vm.createContext({el:layoutEl,state:{chapter:1},performance:{now:()=>0},getComputedStyle:()=>({fontSize:'16px'}),
+  displayName:id=>id,portraitInfo:(...args)=>{calls.push(args);return data.portraitInfo(...args);},faceIconUrl:()=>null,
+  imageReady:async url=>loaded.push(url),growthSkill:()=>false,innerVoiceLine:()=>'',watchLine:()=>'',autoWrap:text=>text});
+ vm.runInContext(executable(audienceSource)+';this.api={buildAudience,FACE_CROPS};',ctx);
+ for(const id of ['hajime','sumi','sui','maezono','dr_kemuri','emil','pakki','da_silva']) {
+  ctx.api.buildAudience({mode:'tutorial',audienceIds:[id]});
+  const image=nodes.filter(n=>n.selector==='img').at(-1),p=data.portraitInfo(id,id==='sui'?'serious':'normal','classic');
+  assert.equal(image.src,p.src);
+  const crop=ctx.api.FACE_CROPS[p.folder];
+  if(crop) {
+   assert.equal(image.style.width,`${80/crop[2]}px`);
+   assert.equal(image.style.left,`${-crop[0]*(80/crop[2])}px`);
+   assert.equal(image.style.top,`${-crop[1]*(80/crop[2])}px`);
+  }
+  assert(loaded.includes(image.src),'Displayed audience expression is preloaded');
+ }
+ test(`craft audience ${choice} setting keeps fixed crops on measured art`,()=>{
+  assert(calls.length>8 && calls.every(args=>args[2]==='classic'));
+  assert.equal(state.config.portraitStyle,choice);
+ });
+}
+const workerSource=await read('js/craft/worker.js');
+for(const choice of ['new','classic']) {
+ state.config.portraitStyle=choice;
+ const calls=[],loaded=[],nodes=[];
+ const layoutEl=(...args)=>{const n=layoutNode(...args);nodes.push(n);return n;};
+ const ctx=vm.createContext({el:layoutEl,portraitInfo:(...args)=>{calls.push(args);return data.portraitInfo(...args);},
+  bgUrl:()=>null,makingUrl:()=>null,timeOfDay:()=> 'day',artHeight:()=>20,artImg:()=>layoutEl('img.art'),
+  buildWorkerActions:()=>({root:layoutEl('div.actions'),ready:Promise.resolve(),show:()=>null,prepare:async()=>{}}),
+  buildWorkerHoles:()=>({root:layoutEl('div.holes'),ready:Promise.resolve(),show(){},reset(){},prepare:async()=>{}}),
+  imageReady:async url=>{loaded.push(url);return true;},workerSceneKey:()=>null,sceneArtUrls:()=>[],readyWorkerImage:async()=>true});
+ vm.runInContext(executable(workerSource)+';this.build=buildWorkerScene;',ctx);
+ const worker=ctx.build({mode:'practice'});await worker.ready;
+ const actor=nodes.find(n=>n.selector==='img.worker-actor');
+ for(const [mental,face] of [['steady','serious'],['unsteady','sad'],['shaken','surprise']]) {
+  worker.setMental(mental);
+  assert.equal(actor.src,data.portraitInfo('hajime',face,'classic').src);
+  assert(loaded.includes(actor.src),'Displayed worker expression is preloaded');
+ }
+ worker.setMental('steady');worker.setFatigue(1);
+ assert.equal(actor.src,data.portraitInfo('hajime','normal','classic').src);
+ test(`craft worker ${choice} setting keeps fixed face overlays on measured art`,()=>{
+  assert(calls.length>5 && calls.every(args=>args[2]==='classic'));
+  assert.equal(state.config.portraitStyle,choice);
+ });
+}
+const readinessSource=await read('js/craft/readiness.js');
+const readinessCtx=vm.createContext({makingUrl:()=>null,bgUrl:()=>null,faceIconUrl:()=>null,audienceAssetUrls:()=>[],WORKER_SCENES:{},
+ portraitInfo:(...args)=>data.portraitInfo(...args)});
+vm.runInContext(executable(readinessSource)+';this.urls=craftAssetUrls;',readinessCtx);
+test('craft readiness warms the same measured worker artwork',()=>{
+ state.config.portraitStyle='new';
+ assert.deepEqual(Array.from(readinessCtx.urls('practice')),[data.portraitInfo('hajime','serious','classic').src]);
+ assert.equal(state.config.portraitStyle,'new');
+});
 console.log(`FINAL ${passed}/${passed} passed`);
 

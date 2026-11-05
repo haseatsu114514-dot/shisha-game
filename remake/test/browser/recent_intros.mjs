@@ -91,6 +91,10 @@ try {
         : (await import("./js/daily/trpg.js")).openTrpgBar();
       T.visit = T.open();
     }, id);
+    await page.waitForFunction(text => document.querySelector("#vn.active .vn-text")?.textContent === text,
+      id === "maki" ? "あの、ここで投げてみたくて" : "こんばんは。遊べる卓を探していて");
+    assert.equal(await page.locator("#vn.active .vn-text").textContent(), id === "maki" ? "あの、ここで投げてみたくて" : "こんばんは。遊べる卓を探していて");
+    await page.locator("#vn.active .vn-box").click();
     await page.locator(`.cutin.in[data-char="${id}"]`).waitFor();
     assert.equal(await page.locator(".cutin .ci-name").textContent(), id === "maki" ? "斧崎マキ" : "六角サイ");
     await page.locator(".cutin").waitFor({ state: "detached" });

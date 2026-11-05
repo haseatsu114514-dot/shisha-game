@@ -15,7 +15,7 @@ const CASES = ['expressions', 'intro', 'map-and-entry', 'eden-visit', 'tournamen
 // preserve them. A future intentional adoption must update this baseline.
 const PRESERVED = {
   '/assets/ui/store_logos/eden.png': '68b3102129af4c1f8c3bc218c9a03ffa7216483285c62bbd227f62aa062ca2a6',
-  '/remake/img/ui/chapters/ch1-title.webp': '39dd98c35a3394985f847adecf2884108acd2ae559507aa0879914e7ce341c44',
+  '/remake/img/ui/chapters/ch1-title.webp': 'e9f022529f26e2240025a6056f53f117a5c1c47ff018a5102b124702e9708559',
 };
 fs.mkdirSync(OUT, { recursive: true });
 const report = { test: 'adam-eden-711', ref: process.env.TEST_REF || null, prHeadSHA: process.env.PR_HEAD_SHA || null, baseURL: BASE,

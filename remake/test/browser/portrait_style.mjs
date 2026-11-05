@@ -106,7 +106,10 @@ await suite("portrait-style", async check => {
     await check(`${label}-registered-and-persistence`, async page => {
       assert.equal(await page.evaluate(async () => (await import("./js/core/state.js")).config.portraitStyle), "new");
       const manifest = await page.evaluate(async () => (await import("./js/core/data.js")).DB.manifest.portraitVariants?.new || {});
-      assert.deepEqual(manifest.tsumugi.faces, ['bow','evil','normal','sad','serious','smile','surprise']);
+      assert.deepEqual(manifest.tsumugi.faces, [
+        'baito_bow','baito_evil','baito_normal','baito_sad','baito_serious','baito_smile','baito_surprise',
+        'bow','evil','normal','sad','serious','smile','surprise',
+      ]);
       await startScene(page);
       await page.evaluate(async () => { (await import("./js/core/state.js")).config.portraitStyle = "classic"; (await import("./js/vn/engine.js")).refreshPortraits(); });
       await decoded(page);

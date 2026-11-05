@@ -78,7 +78,8 @@ function stageBox(fx) {
 function headOf(rect, p) {
   const bodyTop = rect.top + (1 - p.b - p.h) * rect.height;
   const headH = p.h * rect.height * 0.16;
-  const face = STANDING_FACE_X[p.folder];
+  // 両目の測定値は旧版専用。新版の実画像には新版の配置基準を使う。
+  const face = p.style === "classic" ? STANDING_FACE_X[p.folder] : null;
   const anchor = face == null ? p.ax : face / rect.img.naturalWidth;
   return { top: bodyTop, height: headH, x: rect.left + anchor * rect.width };
 }
