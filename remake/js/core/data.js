@@ -317,6 +317,7 @@ export function sceneBg(ref, timeOfDay = "day") {
 export const bgUrl = (ref, timeOfDay = "day") => sceneBg(ref, timeOfDay).url;
 
 export function portraitInfo(speaker, face, style = portraitStyle()) {
+  style = style === "classic" ? "classic" : "new";
   const folder = SPEAKER_ALIAS[speaker] || speaker;
   const p = DB.manifest.portraits[folder];
   if (!p) return null;
@@ -332,7 +333,7 @@ export function portraitInfo(speaker, face, style = portraitStyle()) {
   }
   // 一部の表情だけ旧絵に戻ると、衣装・口具・顔が突然変わる。
   // 同じ衣装群に通常があればその絵を保持。衣装群自体が未導入なら現行を使う。
-  const candidate = ["new", "nanami"].includes(style) ? DB.manifest.portraitVariants?.[style]?.[folder] : null;
+  const candidate = style === "new" ? DB.manifest.portraitVariants?.new?.[folder] : null;
   const costume = f.includes("_") ? f.slice(0, f.lastIndexOf("_") + 1) : "";
   const normal = `${costume}normal`;
   const variantFace = candidate?.faces?.includes(f) ? f : candidate?.faces?.includes(normal) ? normal : null;
@@ -397,3 +398,4 @@ export function preload(urls, timeoutMs = 4000) {
     new Promise((r) => setTimeout(r, timeoutMs)),
   ]);
 }
+

@@ -31,7 +31,8 @@ const legacy = {faces:['normal','smile','serious','ura_normal','ura_smile'],h:.8
 data.DB.manifest.portraits = {tsumugi:legacy,minto:legacy};
 data.DB.manifest.portraitVariants = {new:{tsumugi:{faces:['normal','smile'],h:.7,b:.1,ax:.6,aspect:.8}}};
 data.DB.characters.tsumugi = {spriteScale:.88, spriteScaleVariants:{new:.9}};
-test('default remains classic at original scale', () => { const p=data.portraitInfo('tsumugi','normal');assert.equal(p.style,'classic');assert.equal(p.scale,.88); });
+test('default is adopted new version', () => { const p=data.portraitInfo('tsumugi','normal');assert.equal(p.style,'new');assert.equal(p.scale,.9); });
+test('classic remains available at original scale', () => { const p=data.portraitInfo('tsumugi','normal','classic');assert.equal(p.style,'classic');assert.equal(p.scale,.88); });
 test('new uses separate image and measurements', () => {
  state.config.portraitStyle='new'; const p=data.portraitInfo('tsumugi','normal');
  assert.equal(p.src,'../assets/sprites/character_variants/new/tsumugi/chr_tsumugi_normal.png');
@@ -53,15 +54,27 @@ test('explicit comparison does not change saved preference', () => {assert.equal
 test('config survives reload independently of game state', () => {
  state.config.portraitStyle='new';state.saveConfig();state.config.portraitStyle='classic';state.loadConfig();assert.equal(state.config.portraitStyle,'new');assert.equal(state.state,null);
 });
-test('old config without key defaults to classic on boot', () => {
- storage.set(state.CONFIG_KEY,'{}');state.config.portraitStyle='classic';state.loadConfig();assert.equal(style.portraitStyle(),'classic');
+test('old config without key migrates to new without touching other settings', () => {
+ storage.set(state.CONFIG_KEY,'{"mute":true,"bgmVolume":0.25}');state.config.portraitStyle='classic';state.loadConfig();
+ assert.equal(style.portraitStyle(),'new');assert.equal(state.config.mute,true);assert.equal(state.config.bgmVolume,.25);assert.equal(state.state,null);
 });
-test('invalid saved preference normalizes', () => {storage.set(state.CONFIG_KEY,'{"portraitStyle":"invalid"}');state.loadConfig();assert.equal(state.config.portraitStyle,'classic');});
-test('nanami is independent, persists, and uses its own metrics', () => {
+test('old classic default migrates once and later classic choice persists', () => {
+ storage.set(state.CONFIG_KEY,'{"portraitStyle":"classic"}');state.loadConfig();assert.equal(state.config.portraitStyle,'new');
+ state.config.portraitStyle='classic';state.saveConfig();state.config.portraitStyle='new';state.loadConfig();
+ assert.equal(state.config.portraitStyle,'classic');assert.equal(style.portraitStyle(),'classic');
+});
+test('invalid saved preference uses new', () => {storage.set(state.CONFIG_KEY,'{"portraitStyle":"invalid","portraitStyleVersion":1}');state.loadConfig();assert.equal(state.config.portraitStyle,'new');});
+test('retired nanami preference migrates to new even after migration', () => {
  data.DB.manifest.portraitVariants.nanami={tsumugi:{faces:['normal'],h:.65,b:.05,ax:.55}};
- state.config.portraitStyle='nanami';state.saveConfig();state.config.portraitStyle='classic';state.loadConfig();
- assert.equal(style.portraitStyle(),'nanami');const p=data.portraitInfo('tsumugi','serious');
- assert.equal(p.style,'nanami');assert.equal(p.face,'normal');assert.equal(p.h,.65);assert.match(p.src,/character_variants\/nanami\//);
+ for(const version of [undefined,1]) {
+  storage.set(state.CONFIG_KEY,JSON.stringify({portraitStyle:'nanami',portraitStyleVersion:version}));state.loadConfig();
+  assert.equal(state.config.portraitStyle,'new');assert.equal(style.portraitStyle(),'new');
+  const p=data.portraitInfo('tsumugi','serious');assert.equal(p.style,'new');assert.equal(p.face,'normal');assert.equal(p.h,.7);
+ }
+});
+test('explicit retired style cannot activate archived art', () => {
+ const p=data.portraitInfo('tsumugi','normal','nanami');assert.equal(p.style,'new');assert.match(p.src,/character_variants\/new\//);
+ assert.equal(data.DB.manifest.portraitVariants.nanami.tsumugi.h,.65,'Archived metadata remains intact');
 });
 test('unregistered costumes never use another costume normal', () => {
  const old=legacy.faces;legacy.faces=[...old,'office_angry'];
@@ -82,10 +95,20 @@ vm.runInContext(titleSource.slice(titleSource.indexOf('export async function ope
 await configCtx.openConfig({onChange:(key,value)=>changed=[key,value]});
 const find = (node,test) => node?.dataset?.test===test ? node : (node?.children||[]).map(n=>find(n,test)).find(Boolean);
 const control=find(modalArgs.body,'cfg-portrait-style');
-test('settings expose independent classic/new control',()=>{assert.ok(control);assert.equal(control.children.length,3);assert.ok(find(modalArgs.body,'cfg-intro-art'));});
+test('settings expose independent classic/new control',()=>{assert.ok(control);assert.deepEqual(Array.from(control.children,option=>option.value),['new','classic']);assert.ok(find(modalArgs.body,'cfg-intro-art'));});
 test('changing settings persists and notifies current VN',()=>{control.onchange({target:{value:'new'}});assert.equal(saves,1);assert.deepEqual(changed,['portraitStyle','new']);});
 configCtx.document.body.dataset.screen='preview';control.onchange({target:{value:'classic'}});
 test('isolated preview does not write user settings',()=>assert.equal(saves,1));
+const previewSource=await read('js/vn/conversation-preview.js');
+const previewStart=previewSource.indexOf('const portraitStyleSelect=');
+const previewEnd=previewSource.indexOf('const faceSelect=',previewStart);
+for(const [query,expected] of [['','new'],['?portraitStyle=nanami','new'],['?portraitStyle=classic','classic'],['?portraitStyle=invalid','new']]) {
+ const ctx=vm.createContext({previewQuery:new URLSearchParams(query),document:{createElement(){return {options:[],setAttribute(){},addEventListener(){},append(option){this.options.push(option);}};}},characterSelect:{after(){}},start(){}});
+ vm.runInContext(previewSource.slice(previewStart,previewEnd)+';globalThis.select=portraitStyleSelect;',ctx);
+ test(`preview ${query || 'default'} uses ${expected} and offers only adopted styles`,()=>{
+  assert.equal(ctx.select.value,expected);assert.deepEqual(Array.from(ctx.select.options,option=>option.value),['new','classic']);
+ });
+}
 // Run production VN settings refresh against two retained portrait nodes.
 const engineSource=await read('js/vn/engine.js');
 const start=engineSource.indexOf('async function openSettings()');
@@ -100,3 +123,4 @@ vm.runInContext(engineSource.slice(start,end)+';globalThis.openSettings=openSett
 await vnContext.openSettings();
 test('VN refresh updates speaker and silent companion in place',()=>{assert.equal(resolved,2);assert.equal(framed,2);assert.equal(images[0].src,'new-tsumugi-smile');assert.equal(images[1].src,'new-minto-serious');assert.equal(kicked,1);assert.equal(vnContext.vnModalOpen,0);});
 console.log(`FINAL ${passed}/${passed} passed`);
+

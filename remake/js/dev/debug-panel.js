@@ -162,8 +162,8 @@ export function mountDebugPanel() {
     onclick: () => { craftTest.auto = mode.value || null; store.set(CRAFT_KEY, mode.value); pressed(craftRow, mode.value); } })));
   const portraitSelect = el("select", { dataset: { test: "debug-portrait-style" }, title: "会話の立ち絵の画風",
     onchange: () => { config.portraitStyle = portraitSelect.value; saveConfig(); refreshPortraits(); } },
-    [["classic", "現行"], ["new", "新バージョン"], ["nanami", "七海風"]].map(([value, label]) => el("option", { value, textContent: label })));
-  const syncPortraitStyle = () => { portraitSelect.value = ["new", "nanami"].includes(config.portraitStyle) ? config.portraitStyle : "classic"; };
+    [["new", "新バージョン"], ["classic", "現行"]].map(([value, label]) => el("option", { value, textContent: label })));
+  const syncPortraitStyle = () => { portraitSelect.value = config.portraitStyle === "classic" ? "classic" : "new"; };
   syncPortraitStyle();
   const portraitRow = el("div", { className: "dbg-row" }, [portraitSelect]);
   const action = (label, test, run) => el("button", { type: "button", textContent: label, dataset: { test },
@@ -261,3 +261,4 @@ export function mountDebugPanel() {
   realTime.setInterval(() => { if (!panel.hidden) status.textContent = stateText(); }, 500);
   document.body.append(panel, toggle);
 }
+
