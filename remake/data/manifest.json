@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-05 00:44 UTC",
+ "generated": "2026-11-05 01:12 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -2713,6 +2713,11 @@
   "cgs/cg_samechan_confession.png",
   "cgs/cg_tsumugi_confession.png",
   "cgs/cg_tsumugi_smoke_color.png",
+  "sprites/character_variants/new/sumi/chr_sumi_normal.png",
+  "sprites/character_variants/new/sumi/chr_sumi_serious.png",
+  "sprites/character_variants/new/sumi/chr_sumi_smile.png",
+  "sprites/character_variants/new/sumi/chr_sumi_surprise.png",
+  "sprites/character_variants/new/sumi/chr_sumi_thinking.png",
   "sprites/character_variants/new/tsumugi/chr_tsumugi_bow.png",
   "sprites/character_variants/new/tsumugi/chr_tsumugi_evil.png",
   "sprites/character_variants/new/tsumugi/chr_tsumugi_normal.png",
@@ -3384,6 +3389,19 @@
     "h": 0.7267,
     "b": 0.0217,
     "ax": 0.4926,
+    "aspect": 0.7467
+   },
+   "sumi": {
+    "faces": [
+     "normal",
+     "serious",
+     "smile",
+     "surprise",
+     "thinking"
+    ],
+    "h": 0.895,
+    "b": 0.02,
+    "ax": 0.5324,
     "aspect": 0.7467
    }
   }

@@ -1,0 +1,45 @@
+{
+  "base_main": "f76e029f6502ba3d67c21e224933c5cff9273b5a",
+  "reference_sha256": {
+    "assets/sprites/characters/sumi/chr_sumi_normal.png": "7a2e5a5d073ebb40ed32f7a9f1a47a98ef5055eb97b3d11dad5df81d768734a5",
+    "assets/sprites/characters/sumi/chr_sumi_smile.png": "5a1658d3d97ea291e1025c9ec8503cf67636fcdd6ae12537bf2a43f525ef41fa",
+    "assets/sprites/characters/sumi/chr_sumi_serious.png": "680dbed6808b2cc7f1374306a78c302135bee869f7ee7519a4251cc54f71271f",
+    "assets/sprites/characters/sumi/chr_sumi_surprise.png": "7d0ee95d2c0c16789acfb33a0ccdf694e48ae435974bbbaed9ba97d329ce63d5",
+    "assets/sprites/characters/sumi/chr_sumi_thinking.png": "f9e2886318d5718084e5889221cc315d53fda098d93b4fb257260cd526de4d91",
+    "assets/sprites/characters/nagumo/chr_nagumo_normal.png": "c29ed0b480b049f2dd069ff401abd7e702b0825449ed9652e1d8768772778ba1",
+    "assets/sprites/characters/minto/chr_minto_normal.png": "7a778a53e35050f7daf38d08a16ec3ff9cbf0b506324a01aa6770c47ec6c8d71",
+    "assets/sprites/characters/ageha/chr_ageha_normal.png": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+  },
+  "manual_proportion_estimate": {
+    "source": "approved A raw normal",
+    "crown_under_cap_estimated": [
+      510,
+      65
+    ],
+    "chin_estimated": [
+      506,
+      274
+    ],
+    "soles_y": 1518,
+    "estimated_heads": 6.952,
+    "note": "Hair crown is inferred beneath the cap; manual estimate, not a certified facial metric."
+  },
+  "quality": {
+    "five_existing_faces": true,
+    "new_design_changes": false,
+    "old_art_retained": true,
+    "scale_unchanged": 1.05,
+    "feet_deviation_pixels_at_alpha24": 1,
+    "hand_and_glasses_visual_review": "passed; current characteristic gestures retained",
+    "alpha_and_edges": "RGBA alpha zero verified; light-background comparison reviewed; no clipping at canvas edges"
+  },
+  "validation": {
+    "portrait_unit": "18/18 passed",
+    "portrait_builder": "passed; all classic portrait metadata and Tsumugi variant metadata unchanged",
+    "PC_preview": "current5 and candidate5; same background/lines/placement/scale. Textures decoded; actual draw difference verified.",
+    "native_PC_preview": "5/5 new WebP images rendered through registered variant manifest with no HTTP/page errors",
+    "touch_preview": "candidate5 and native registered variant5 passed; viewport844x390, cap/head visible, no HTTP/page errors"
+  },
+  "library_expression_compare": "libfile_24ca6fc6c3848191a19e58b0c1bb9786",
+  "library_game_compare": "libfile_34d2b0dbc7688191ac3f677fe1657964"
+}
