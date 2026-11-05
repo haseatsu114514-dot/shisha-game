@@ -37,7 +37,7 @@
 | [prompts/](prompts/) | 画像・音・レビューの発注書とガイド（人やAIに渡す文面） | `asset_gen_prompts.md`、`image_generation_guide.md`、`bgm_suno_prompts.md`、`cg_production_plan.md`、`story_review_prompt.md` |
 | [marketing/](marketing/) | SNS・集客の運用ルール | `sns_operation.md` |
 | [tools/](tools/) | ツール・開発者コンソールの手引き（任意の試作ツールの説明もここ） | `text_editor_manual.md`、`dev_inspector.md`、`remake_browser_checks.md`、`sequential_merge.md` |
-| [design/](design/)・[reports/](reports/) | オーナー未決定の提案・設計案・調査（採用扱いにしない） | |
+| [design/](design/)・[reports/](reports/) | オーナー未決定の提案・設計案・調査（採用扱いにしない） | [大会進行の共通契約ドラフト](design/tournament-common-contract-2031.md) |
 | [archive/](archive/README.md) | 日付付きの引き継ぎ・計画・記録・二次資料（履歴。根拠にしない） | |
 | `qa/` | テストが読む基準ファイルだけ（検証記録は2026-11-02に削除。過去の記録はgit履歴にある） | |
 
