@@ -4302,5 +4302,52 @@
       "host": "sdmntprnortheu.oaiusercontent.com",
       "download_attempted": false
     }
-  ]
+  ],
+  "runtime_validation": {
+    "status": "passed_local_independent_review",
+    "production_data_and_engine": true,
+    "candidate_asset_injection": false,
+    "desktop": {
+      "viewport": [
+        1280,
+        720
+      ],
+      "passed": true
+    },
+    "landscape_touch": {
+      "viewport": [
+        844,
+        390
+      ],
+      "hasTouch": true,
+      "passed": true
+    },
+    "framing_measurement_records": 624,
+    "coverage": "all canonical expressions in classic/new/nanami for 11 actors; exact face or same-style normal fallback; all normal returns; five duos across three styles; 11 actors paired with Tsumugi; live settings repeated switching",
+    "existing_intro_cases": 40,
+    "intro_art_styles": [
+      "classic",
+      "graphic"
+    ],
+    "intro_assertions": "portrait and selected background decoded, opacity 1, names displayed, dedicated assets independent from standing style; robot retains existing classic-source choice",
+    "static_checks": {
+      "portrait_style": "20/20",
+      "portrait_framing_entries": 461,
+      "portrait_variants_python": "3/3",
+      "docs_suite": "1/1",
+      "png_webp_rgba": "74/74 exact"
+    },
+    "independent_review": {
+      "raw_fit_all_74": true,
+      "white_dark_edges": true,
+      "code_manifest_existing_frames_preserved": true,
+      "pc_touch_expression_duo_settings": true,
+      "intro_all_40": true,
+      "normal_return_stage_pixel_equal_pc": 30,
+      "normal_return_stage_pixel_equal_touch": 30,
+      "blocking_findings": []
+    },
+    "formal_ci": "pending latest pushed HEAD",
+    "game_adoption": "pending PR merge and deployment"
+  }
 }
