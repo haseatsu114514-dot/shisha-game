@@ -320,19 +320,21 @@ export function portraitInfo(speaker, face, style = portraitStyle()) {
   const folder = SPEAKER_ALIAS[speaker] || speaker;
   const p = DB.manifest.portraits[folder];
   if (!p) return null;
+  const candidate = ["new", "nanami"].includes(style) ? DB.manifest.portraitVariants?.[style]?.[folder] : null;
   let f = face || "normal";
   if (speaker === "oneesan") {
     // 私服のみんと＝ura_* 差分。通常差分で代用すると正体が見た目でバレるので、無ければ出さない
     f = f.startsWith("ura_") ? f : `ura_${f}`;
     if (!p.faces.includes(f)) f = "ura_normal";
     if (!p.faces.includes(f)) return null;
-  } else if (!p.faces.includes(f)) {
+  } else if (!p.faces.includes(f) && !candidate?.faces?.includes(f)) {
     const near = { excited: "smile", smug: "smile", wink: "smile", evil: "serious", thinking: "serious", intense: "serious" }[f];
-    f = near && p.faces.includes(near) ? near : "normal";
+    const costumeNormal = f.includes("_") ? `${f.slice(0, f.lastIndexOf("_") + 1)}normal` : "normal";
+    if (near && p.faces.includes(near)) f = near;
+    else if (!candidate?.faces?.includes(costumeNormal)) f = "normal";
   }
   // 一部の表情だけ旧絵に戻ると、衣装・口具・顔が突然変わる。
   // 同じ衣装群に通常があればその絵を保持。衣装群自体が未導入なら現行を使う。
-  const candidate = ["new", "nanami"].includes(style) ? DB.manifest.portraitVariants?.[style]?.[folder] : null;
   const costume = f.includes("_") ? f.slice(0, f.lastIndexOf("_") + 1) : "";
   const normal = `${costume}normal`;
   const variantFace = candidate?.faces?.includes(f) ? f : candidate?.faces?.includes(normal) ? normal : null;
