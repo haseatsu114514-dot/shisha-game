@@ -1043,7 +1043,7 @@ async function openSettings() {
 }
 
 /** 設定とDBG共通。会話の進行・LOG・人物の並びは変えず、表示中の画風だけ更新する。 */
-export function refreshPortraits() {
+function refreshPortraits() {
   if (!running) return;
   for (const image of dom.portraits.querySelectorAll("img")) {
     const info = portraitInfo(image.dataset.speaker, image.dataset.face);
@@ -1054,6 +1054,7 @@ export function refreshPortraits() {
 }
 
 export const isPlaying = () => !!running;
+export { refreshPortraits };
 export const backlog = () => log;
 /** タイトルからの「はじめから」「LOAD」で前の周の会話LOGを消す（#1912）。 */
 export function clearLog() { log.length = 0; }
