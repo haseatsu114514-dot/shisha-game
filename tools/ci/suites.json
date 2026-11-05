@@ -58,6 +58,12 @@
       ]
     },
     {
+      "id": "tournament-craft-runner",
+      "title": "Chapter 2/3 craft commit, milestone and failure order",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/tournament_craft_runner.mjs"]
+    },
+    {
       "id": "craft-rank-hud",
       "title": "Craft rank display-only snapshots, accessibility and lifecycle",
       "kind": "quick",

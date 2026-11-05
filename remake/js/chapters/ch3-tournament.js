@@ -1,4 +1,5 @@
 import { playEntrance } from "./tournament-entrance.js";
+import { advanceTournamentCraft } from "./tournament-craft-runner.js";
 // HAZE: NATIONAL TOKYO。四人同時の一試合を、確定した制作工程と票から再開する。
 import { createChapterActions } from "../core/chapter-actions.js";
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
@@ -439,27 +440,19 @@ async function drive(owner) {
         renderError(owner);
         return;
       }
-      if (p.step === 8 && !cs.failed) {
-        cs.tournamentStory ||= { seen: [] };
-        cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
-      }
-      finishStep(state, cs);
-      if (cs.failed) { awardTournamentExp(4, cs); save(); continue; }
-      if (MILESTONES.has(p.step)) {
-        broadcast.clearComments();
+      if (!advanceTournamentCraft({ state, progress: p, craft: cs, finishStep, milestones: MILESTONES, onMilestone: round => {
         p.craft = clone(cs);
         if (p.step === 9) p.stage = "national_craft";
         else if (p.step === 10) p.stage = "national_adjustment";
         else {
-          const round = MILESTONES.get(p.step), quality = partialQuality(cs, round);
+          const quality = partialQuality(cs, round);
           // Final scoring creates parts/total; persist them before the tasting save boundary.
           p.craft = clone(cs);
           if (!castVotes(p, round, quality, null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error("全国大会の投票地点を確認できません");
           p.stage = p.step === STEPS.length ? "tasting" : "votes";
           if (p.stage === "tasting") { const result = recordResult(state, cs.total); awardTournamentExp(result.rank, cs); }
         }
-      }
-      save();
+      } })) continue;
     } else if (p.stage === "national_craft") {
       if (!await read(owner, "national_craft")) return;
       if (!castVotes(p, 1, partialQuality(p.craft, 1), null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error("全国大会の提供後の投票地点を確認できません");
