@@ -375,19 +375,19 @@ export function openBoard({ place = null } = {}) {
     if (node.kind === "lesson") {
       if (!lessonKnown(node, g)) {
         if (node.revealFlag) return root.classList.contains("has-art") ? el("img.gb-portrait.silhouette.unknown", { src: `${ART_DIR}silhouette_unknown.webp`, alt: "" }) : null;
-        const p = portraitInfo(node.who, "normal");
+        const p = portraitInfo(node.who, "normal", "classic");
         return p ? placed(el("img.gb-portrait.silhouette", { src: p.src, alt: "", dataset: { who: node.who } }), node.who) : null;
       }
-      const p = portraitInfo(node.who, PANEL_FACE[node.id] || "smile");
+      const p = portraitInfo(node.who, PANEL_FACE[node.id] || "smile", "classic");
       return p ? placed(el("img.gb-portrait", { src: p.src, alt: "", dataset: { who: node.who, face: p.face, test: "board-portrait" } }), node.who) : null;
     }
     if (node.kind === "skill" && shown !== "hidden") {
-      const p = portraitInfo("hajime", PANEL_FACE[node.id] || "normal");
+      const p = portraitInfo("hajime", PANEL_FACE[node.id] || "normal", "classic");
       return p ? placed(el("img.gb-portrait", { src: p.src, alt: "", dataset: { who: "hajime", face: p.face, test: "board-portrait" } }), "hajime") : null;
     }
     return null;
   }
-  /** 顔の幅と目の高さがそろうように立ち絵を置く（PORTRAIT_EYES。無い人は胸から上を真ん中に） */
+  /** 現行画像で測った PORTRAIT_EYES を使うので、盤の顔アップは classic を明示する。無い人は胸から上を真ん中に。 */
   function placed(img, who) {
     const [ex, ey, fw] = PORTRAIT_EYES[who] || [448, 260, 100];
     const k = PANEL_FACE_W / fw;

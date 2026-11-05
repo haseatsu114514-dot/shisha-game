@@ -109,3 +109,39 @@ assert.equal(button(id).querySelector(".gb-node-state").textContent, "✓");
 fx.children[0].querySelector('[data-test="board-close"]').click();
 await committedDone;
 console.log(`PASS board screen: ${originalNodes.length} selections preserve DOM; pending/undo/commit/check badge; no full-board filters`);
+
+// The board's eye coordinates were measured on classic artwork, independently of VN preferences.
+const data = await import("../js/core/data.js");
+data.DB.manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url)));
+data.DB.characters = Object.fromEntries(JSON.parse(readFileSync(new URL("../../data/characters.json", import.meta.url))).map(c => [c.id, c]));
+const panelStart = source.indexOf("  function panelPortrait(");
+const panelEnd = source.indexOf("  /** 章ごとの見せ方", panelStart);
+assert(panelStart > 0 && panelEnd > panelStart);
+const constants = [source.match(/const PORTRAIT_EYES = \{[\s\S]*?\n\};/)[0],
+  source.match(/const PANEL_FACE_W = [^;]+;/)[0], source.match(/const PANEL_FACE = \{[\s\S]*?\n\};/)[0]].join("\n");
+const panelGrowth = { known: false }, cropCalls = [], panelRoot = new Element();
+const panelContext = vm.createContext({ el: util.el, g: panelGrowth, root: panelRoot, ART_DIR: "img/ui/growth_board/",
+  lessonKnown: () => panelGrowth.known,
+  portraitInfo: (...args) => { const p = data.portraitInfo(...args); cropCalls.push({ args, p }); return p; },
+});
+vm.runInContext(`${constants}\n${source.slice(panelStart, panelEnd)}\nthis.panelPortrait = panelPortrait; this.eyes = PORTRAIT_EYES;`, panelContext);
+const previousStyle = core.config.portraitStyle;
+for (const preference of ["classic", "new"]) {
+  core.config.portraitStyle = preference;
+  // Prove the new setting can resolve a different source outside the dedicated crop.
+  assert.equal(data.portraitInfo("tsumugi", "normal").style, preference);
+  for (const [node, known] of [[{ kind: "lesson", id: "M-W1", who: "tsumugi" }, false],
+    [{ kind: "lesson", id: "M-W1", who: "tsumugi" }, true], [{ kind: "skill", id: "K01" }, true]]) {
+    panelGrowth.known = known;
+    const image = panelContext.panelPortrait(node, "open"), { args, p } = cropCalls.at(-1);
+    assert.equal(args[2], "classic", `${node.kind}/${known}: explicit style is required`);
+    assert.equal(p.style, "classic"); assert.match(image.attrs.src, /sprites\/characters\//);
+    const who = node.kind === "skill" ? "hajime" : node.who, [ex, ey, fw] = panelContext.eyes[who], k = 82 / fw;
+    assert.equal(image.style.width, `${Math.round(896 * k)}px`);
+    assert.equal(image.style.marginLeft, `${Math.round(-ex * k)}px`);
+    assert.equal(image.style.top, `${Math.round(64 - ey * k)}px`);
+    assert.equal(core.config.portraitStyle, preference, "Dedicated crop must not change the saved VN setting");
+  }
+}
+core.config.portraitStyle = previousStyle;
+console.log("PASS board portraits: unknown/known lesson and skill use classic source + measured eye coordinates under both preferences");
