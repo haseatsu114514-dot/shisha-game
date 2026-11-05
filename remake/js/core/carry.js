@@ -554,6 +554,7 @@ export const FLAG_EXACT_RULES = [
 
 /** 動的生成 flag のファミリ分類: [パターン, カテゴリ]（`*` は任意の文字列）。carry 系を先に置く */
 export const FLAG_FAMILY_RULES = [
+  ["_affinity_first_meeting_pending_*", "pending"], // 未精算の初対面は周回をまたがない
   ["_motion_seen_*", "ui"],
   ["_lime_exchange_shown_*", "ui"],
   ["_flavor_*", "unlock"],

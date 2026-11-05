@@ -1,5 +1,5 @@
 // Actual state/stats/public callers; VN and presentation are controlled ports, not browser acceptance.
-// node --experimental-vm-modules remake/test/affinity_stages.mjs
+// node --experimental-vm-modules remake/test/first_meeting_affinity.mjs
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -61,15 +61,60 @@ async function fixture() {
 let failures=0,groups=0;
 async function check(name,fn){try{await fn(await fixture());groups++;console.log(`PASS ${name}`);}catch(e){failures++;console.error(`FAIL ${name}: ${e.stack}`);}}
 const done={id:'controlled-complete',visited:[]};
-// 来店の好感度（台帳 AFB01）: 段階会話 16×0.85=13.6、通い 8×0.85=6.8。端数は相手ごとに持ち越す。
-const FIRST_VISIT=13,TWO_VISITS=27,REPEAT_VISIT=6;
+// 初対面は9点・端数0。2回目以降は台帳 AFB01 の段階会話 16×0.85=13.6、通い 8×0.85=6.8。
+const FIRST_VISIT=9,TWO_VISITS=22,REPEAT_VISIT=6;
 const first=(f,id)=>{const s=f.fresh();delete s.met[id];s.story[id]=0;s.affinity[id]=0;s.flags._cafe_introduced=true;return s;};
 for(const id of ['naru','adam','minto','kuyuri','tsumugi','sumi'])await check(`${id} first complete guarantees displayed heart1 without reading next scene`,async f=>{
  const s=first(f,id);assert.equal(f.stats.affinityLevel(id),0);
  assert.equal(await f.spots.visitChar(id),true);assert.equal(f.stats.affinityLevel(id),1);
- assert.equal(s.affinity[id],FIRST_VISIT);assert(s.affinity[id]>=f.stats.AFFINITY_RANK_PTS[1]);assert.equal(s.story[id],1);assert.equal(s.met[id],true);
+ assert.equal(s.affinity[id],FIRST_VISIT);assert.equal(s.affinityCarry[id]||0,0);assert.equal(s.story[id],1);assert.equal(s.met[id],true);
  const after=JSON.parse(JSON.stringify(s)),loaded=f.roundTrip(),copy=JSON.parse(JSON.stringify(loaded));delete after.savedAt;delete copy.savedAt;assert.deepEqual(copy,after);
  assert.equal(f.stats.affinityLevel(id),1);assert.equal(loaded.story[id],1);
+});
+await check('first face meeting ignores charm, board and fortune and discards fractional visit rewards', async f=>{
+ const s=first(f,'naru');s.stats.charm=100;s.fortune={char:'naru'};
+ f.stats.setExpHooks({enabled:()=>true,perks:()=>({charm:100}),affinity(){}});
+ const levels=[];
+ await f.stats.paidAction(async()=>{
+  f.core.markMet('naru');
+  f.stats.gainAffinity('naru',12,{firstMeeting:true});
+  await f.stats.paidAction(async()=>{f.stats.gainAffinity('naru',16);});
+  f.stats.gainAffinity('naru',16);levels.push(s.affinity.naru);
+ });
+ assert.deepEqual(levels,[9]);assert.equal(s.affinity.naru,9);assert.equal(s.affinityCarry.naru,0);
+ assert.equal(s.fortune.char,'naru','first meeting does not consume a multiplier without a real gain');
+ f.tick();assert.equal(f.events.filter(event=>event.type==='affinity-gain').length,1,'dialogue and visit must share one first-meeting card');
+ await f.stats.paidAction(async()=>{f.stats.gainAffinity('naru',16);});
+ assert(s.affinity.naru>9,'second actual meeting earns normal points');assert.equal(s.fortune,undefined);
+});
+await check('already met first shop visit gains normally and does not reset old points or carry', async f=>{
+ const s=first(f,'adam');s.met.adam=true;s.affinity.adam=9;s.affinityCarry.adam=.4;
+ await f.spots.visitChar('adam');assert(s.affinity.adam>9);assert(s.affinityCarry.adam>=0);
+});
+await check('stale first action after LOAD cannot hold back a new state or replay a first reward',async f=>{
+ const s=first(f,'naru');
+ await f.stats.paidAction(async()=>{
+  f.core.markMet('naru');f.stats.gainAffinity('naru',16);assert.equal(s.affinity.naru,9);
+  const loaded=f.roundTrip();f.stats.gainAffinity('naru',16);assert.equal(loaded.affinity.naru,22);
+ });
+ assert.equal(f.core.state.affinity.naru,22);assert.equal(s.affinity.naru,9);
+});
+await check('name learned before cancelled first VN stays pending across SAVE/LOAD, then grants exactly heart1 once',async f=>{
+ let s=first(f,'adam');
+ f.setPlay(async()=>{f.core.markMet('adam');return {cancelled:true};});
+ assert.equal(await f.spots.visitChar('adam'),false);assert.equal(s.met.adam,true);assert.equal(s.affinity.adam,0);
+ assert.equal(s.flags._affinity_first_meeting_pending_adam,true);
+ s=f.roundTrip();f.setPlay(async()=>done);
+ assert.equal(await f.spots.visitChar('adam'),true);assert.equal(s.affinity.adam,9);assert.equal(s.affinityCarry.adam||0,0);
+ assert.equal(s.flags._affinity_first_meeting_pending_adam,undefined);
+ await f.spots.visitChar('adam');assert.equal(s.affinity.adam,22);
+});
+await check('LIME while a named first encounter is pending keeps its old formula and does not settle the face meeting',async f=>{
+ let s=first(f,'adam');f.core.markMet('adam');
+ f.stats.gainAffinity('adam',2,{remote:true});assert.equal(s.affinity.adam,1);assert.equal(s.flags._affinity_first_meeting_pending_adam,true);
+ f.stats.gainAffinity('adam',1,{source:'lime'});assert.equal(s.affinity.adam,1);assert.equal(s.flags._affinity_first_meeting_pending_adam,true);
+ s=f.roundTrip();f.setPlay(async()=>done);await f.spots.visitChar('adam');
+ assert.equal(s.affinity.adam,9);assert.equal(s.affinityCarry.adam,0);assert.equal(s.flags._affinity_first_meeting_pending_adam,undefined);
 });
 await check('high value is not reduced; a later visit does not repeat the first-visit floor',async f=>{
  let s=first(f,'naru');s.affinity.naru=40;await f.spots.visitChar('naru');assert(s.affinity.naru>=40);assert.equal(s.story.naru,1);
@@ -101,7 +146,7 @@ for(const outcome of ['cancel','missing','throw','abort','load'])await check(`Hi
 });
 await check('Samechan reuses existing first-encounter guarantee without another implementation',async f=>{
  const s=f.fresh();s.chapter=2;delete s.flags._samechan_first_encounter;s.affinity.samechan=0;
- assert.equal(await f.samechan.playSamechanEncounter(),true);assert.equal(f.stats.affinityLevel('samechan'),1);
+ assert.equal(await f.samechan.playSamechanEncounter(),true);assert.equal(f.stats.affinityLevel('samechan'),1);assert.equal(s.affinity.samechan,9);assert.equal(s.affinityCarry.samechan||0,0);
  const after=JSON.stringify(s);assert.equal(await f.samechan.playSamechanEncounter(),false);assert.equal(JSON.stringify(s),after);
 });
 // Current samechan ID only. The retired-name migration was removed in #2469.

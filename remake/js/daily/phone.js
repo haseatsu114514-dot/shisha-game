@@ -830,7 +830,7 @@ function readReward(m) {
     const lover = isLover(m.sender);
     bond.private = lover;
     try {
-      gainAffinity(m.sender, lover ? 3 : 2);
+      gainAffinity(m.sender, lover ? 3 : 2, { remote: true });
     } finally {
       bond.private = false;
     }

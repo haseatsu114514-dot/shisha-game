@@ -64,5 +64,5 @@ test('LIME返信の呼び出しだけが source: "lime" を付ける', () => {
   assert.match(phone, /gainAffinity\(m\.sender, points \* \(isLover\(m\.sender\) \? 3 : 1\), \{\s*source: "lime",/);
   assert.match(phone, /gainAffinity\(m\.sender, 1, \{ source: "lime" \}\)/);
   // 返信なしメッセージ（readReward）は 2。恋人の読むだけの連絡は私的な絆として 3（LM01）。source は付けない
-  assert.match(phone, /bond\.private = lover;\s*try \{\s*gainAffinity\(m\.sender, lover \? 3 : 2\);/);
+  assert.match(phone, /bond\.private = lover;\s*try \{\s*gainAffinity\(m\.sender, lover \? 3 : 2, \{ remote: true \}\);/);
 });

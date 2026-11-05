@@ -139,7 +139,9 @@ export function earnSceneCompletion(id, owner = state) {
  */
 export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 1, primary = null, consumed = () => false, exp = null } = {}) {
   const parent = earningAction;
-  const action = { owner: state, gains: {}, recipes: Object.create(null), scenes: new Set(), spent: 0 };
+  const metBefore = { ...state.met };
+  for (const key of Object.keys(state.flags)) if (key.startsWith("_affinity_first_meeting_pending_") && state.flags[key]) delete metBefore[key.slice("_affinity_first_meeting_pending_".length)];
+  const action = { owner: state, parent, metBefore, affinityBefore: { ...state.affinity }, firstAffinity: new Set(), gains: {}, recipes: Object.create(null), scenes: new Set(), spent: 0 };
   earningAction = action;
   const releaseChip = expHooks?.hold?.() || noop;
   let value;
@@ -384,8 +386,31 @@ function reportAffinityGain(opts, payload, carryBefore, carryAfter, cap) {
   } else if (payload.pts > payload.prevPts) queueAffinityGain(payload);
 }
 
+function firstMeetingAction(id) {
+  for (let action = earningAction; action; action = action.parent) {
+    if (action.owner === state && !action.metBefore[id] && !(action.affinityBefore[id] > AFFINITY_RANK_PTS[1])
+      && (state.met[id] || action.firstAffinity.has(id))) return true;
+  }
+  return false;
+}
+
 export function gainAffinity(id, pts, opts = {}) {
   if (!id || !(pts > 0)) return;
+  // 初対面の台詞・選択肢・来店精算は、まとめて♥1ちょうど。
+  // 面識済みの初入店・旧高値・恋人には通常の処理を残す。倍率や占い、端数も初回には積まない。
+  const firstAction = firstMeetingAction(id);
+  if (!(state.lovers || []).includes(id) && opts.source !== "lime" && !opts.remote && (opts.firstMeeting || firstAction || state.flags[`_affinity_first_meeting_pending_${id}`])) {
+    for (let action = earningAction; action; action = action.parent) if (action.owner === state) action.firstAffinity.add(id);
+    delete state.flags[`_affinity_first_meeting_pending_${id}`];
+    const prevPts = state.affinity[id] || 0;
+    const next = Math.max(prevPts, AFFINITY_RANK_PTS[1]);
+    state.affinityCarry ||= {};
+    if (prevPts <= AFFINITY_RANK_PTS[1]) state.affinityCarry[id] = 0;
+    if (next === prevPts) return 0;
+    state.affinity[id] = next;
+    queueAffinityGain({ id, level: affinityLevel(id), levelUp: true, prevPts, pts: next });
+    return next - prevPts;
+  }
   let mult = 1 + 0.2 * tier01("charm");
   // 旧報酬の丸めは保ち、盤の上乗せだけを端数台帳へ渡す。小さい恩恵も失わない。
   const boardRate = (growthPerks(state)?.charm || 0) / 100;

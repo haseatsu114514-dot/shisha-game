@@ -70,6 +70,7 @@ let autoMode = false;
 let skipMode = false;
 let autoFxGap = 0;
 let sequenceDepth = 0;
+let sequenceMetBefore = null;
 const SEEN_LINES_KEY = "suien_remake_seen_dialogue_lines";
 let seenLines;
 function readSeenLines() {
@@ -97,9 +98,10 @@ function insertBranch(r, key) {
 
 /** 一続きの会話（バイト開始→接客→終了）の間だけSKIPを維持。選択肢は自分で選び、行動の終わりに解除する。 */
 export async function dialogueSequence(run) {
+  if (!sequenceDepth) sequenceMetBefore = { owner: state, met: affinityMetBefore() };
   sequenceDepth++;
   try { return await run(); }
-  finally { if (--sequenceDepth === 0) setSkip(false); }
+  finally { if (--sequenceDepth === 0) { sequenceMetBefore = null; setSkip(false); } }
 }
 
 export const vnTest = { turbo: false, choose: null }; // テスト用: 瞬時表示＋自動送り・選択肢の方針
@@ -239,6 +241,12 @@ function waitSceneAssets(task, owner = running, assets = task.assetsReady || tas
  * @param opts.previewProtagonist 比較プレビューでだけ主人公の立ち絵も表示する（本編は非表示）
  * 範囲指定でも各playの終了時に台本の報酬を処理する。報酬つき台本を分割する用途には使わない。
  */
+function affinityMetBefore() {
+  const met = { ...state.met };
+  for (const key of Object.keys(state.flags)) if (key.startsWith("_affinity_first_meeting_pending_") && state.flags[key]) delete met[key.slice("_affinity_first_meeting_pending_".length)];
+  return met;
+}
+
 export function play(idOrDlg, opts = {}) {
   if (!dom) buildDom();
   const dlg = typeof idOrDlg === "string" ? DB.dialogues[idOrDlg] : idOrDlg;
@@ -252,6 +260,10 @@ export function play(idOrDlg, opts = {}) {
     layers.fx.querySelector(".vn-loading")?.remove();
     running = {
       owner: state,
+      metAtStart: { ...state.met },
+      encountered: new Set(),
+      metBefore: { ...(sequenceMetBefore?.owner === state ? sequenceMetBefore.met : affinityMetBefore()) },
+      firstAffinity: new Set(),
       id: dlg.dialogue_id || "", // 開始台本。finish() の報酬と play() の解決値はこの台本に属する（仕様・#1362）
       currentId: dlg.dialogue_id || "", // 表示中の台本。jumpTo で jump 先へ進む
       dlg,
@@ -399,6 +411,25 @@ function prefetch(dlg) {
 
 // 仕様（#1362）: 報酬（metadata / growth_stats）と解決値の id は開始台本（running.id / running.dlg）に属し、
 // jump 先の台本へは差し替えない。表示中の台本 ID は running.currentId が持つ。
+function dialogueAffinity(r, id, pts, remote = (r.currentId && r.currentId !== r.id ? DB.dialogues[r.currentId] : r.dlg)?.metadata?.contact_channel === "lime") {
+  if (!id || !(pts > 0)) return;
+  if (remote) { gainAffinity(id, pts, { remote: true }); return; }
+  // 初対面の行・選択肢の報酬は読了まで保留。中断では♥1の保証も確定しない。
+  if (!r.metBefore[id] && !(state.lovers || []).includes(id)) { r.firstAffinity.add(id); return; }
+  gainAffinity(id, pts);
+}
+
+function completeDialogueAffinity(r) {
+  if (state !== r.owner) return;
+  const meta = r.dlg.metadata || {};
+  if (meta.add_affinity) for (const [id, n] of Object.entries(meta.add_affinity)) dialogueAffinity(r, id, n * 6, meta.contact_channel === "lime");
+  if (meta.contact_channel !== "lime") {
+    for (const id of Object.keys(state.met || {})) if (state.met[id] && !r.metBefore[id] && id !== "hajime"
+      && (!r.metAtStart[id] || r.encountered.has(id))) r.firstAffinity.add(id);
+    for (const id of r.firstAffinity) gainAffinity(id, 1, { firstMeeting: true });
+  }
+}
+
 function finish(cancelled = false) {
   const r = running;
   running = null;
@@ -408,7 +439,7 @@ function finish(cancelled = false) {
   const meta = r.dlg.metadata || {};
   // metadata / growth_stats の報酬（会話の最後にまとめて付く）
   if (!cancelled && meta.add_stat) applyStats(meta.add_stat);
-  if (!cancelled && meta.add_affinity) for (const [id, n] of Object.entries(meta.add_affinity)) gainAffinity(id, n * 6);
+  if (!cancelled) completeDialogueAffinity(r);
   if (!cancelled && r.dlg.growth_stats) applyStats(r.dlg.growth_stats);
   if (!cancelled && meta.flavor_lesson) notifyMastery(learnFlavorStory(state, r.dlg, DB.flavorById));
   if (!cancelled) awardLoverSceneExp(r.id, r.owner);
@@ -602,7 +633,7 @@ function handleCondition(line) {
 function applyLine(line) {
   if (line.stats) applyStats(line.stats);
   if (line.money) addMoney(line.money);
-  if (line.affinity) for (const [id, n] of Object.entries(line.affinity)) gainAffinity(id, n * 6);
+  if (line.affinity) for (const [id, n] of Object.entries(line.affinity)) dialogueAffinity(running, id, n * 6);
 }
 
 function onNote(line) {
@@ -712,6 +743,8 @@ async function showLine(line) {
   const speaker = String(line.speaker || "");
   const face = String(line.face || "");
   r.speaker = speaker;
+  const scene = r.currentId && r.currentId !== r.id ? DB.dialogues[r.currentId] : r.dlg;
+  if (speaker && speaker !== "hajime" && scene?.metadata?.contact_channel !== "lime") r.encountered.add(speaker);
   const name = lineDisplayName(line, r);
   // A line can retain its speaker/voice while using a dedicated cut instead of a portrait.
   const entrances = [updatePortraits(line.portrait === false ? "" : speaker, face)];
@@ -791,7 +824,7 @@ function parseCue(text) {
 function applyCue(gains) {
   for (const [ja, amt] of Object.entries(gains)) {
     if (CUE_STAT[ja]) applyStats({ [CUE_STAT[ja]]: amt });
-    else if (ja === "好感度" && hooks.contextChar) gainAffinity(hooks.contextChar, amt * 3);
+    else if (ja === "好感度" && hooks.contextChar) dialogueAffinity(running, hooks.contextChar, amt * 3);
   }
 }
 

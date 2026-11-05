@@ -113,7 +113,7 @@ export async function playSamechanEncounter({ signal = null } = {}) {
     state.flags._lime_contact_samechan = true;
     // アカウントの通称を知った後の名前・旧セーブも同じ処理で揃える。
     syncSamechanKnowledge();
-    gainAffinity("samechan", 1); // 好きでも少し怖くても、手伝ってもらった親近感は同じ。
+    gainAffinity("samechan", 1, { firstMeeting: true }); // 初対面は♥1だけ。端数を次回へ持ち越さない。
     save();
     return true;
   } finally { encountersInFlight.delete(owner); }
