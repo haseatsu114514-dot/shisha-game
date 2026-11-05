@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-05 15:17 UTC",
+ "generated": "2026-11-05 20:26 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -3006,6 +3006,13 @@
   "sprites/character_variants/new/tetsuko/chr_tetsuko_sleep.png",
   "sprites/character_variants/new/tetsuko/chr_tetsuko_smile.png",
   "sprites/character_variants/new/tetsuko/chr_tetsuko_surprise.png",
+  "sprites/character_variants/new/tsumugi/chr_tsumugi_baito_bow.png",
+  "sprites/character_variants/new/tsumugi/chr_tsumugi_baito_evil.png",
+  "sprites/character_variants/new/tsumugi/chr_tsumugi_baito_normal.png",
+  "sprites/character_variants/new/tsumugi/chr_tsumugi_baito_sad.png",
+  "sprites/character_variants/new/tsumugi/chr_tsumugi_baito_serious.png",
+  "sprites/character_variants/new/tsumugi/chr_tsumugi_baito_smile.png",
+  "sprites/character_variants/new/tsumugi/chr_tsumugi_baito_surprise.png",
   "sprites/character_variants/new/tsumugi/chr_tsumugi_bow.png",
   "sprites/character_variants/new/tsumugi/chr_tsumugi_evil.png",
   "sprites/character_variants/new/tsumugi/chr_tsumugi_normal.png",
@@ -3681,6 +3688,13 @@
   "new": {
    "tsumugi": {
     "faces": [
+     "baito_bow",
+     "baito_evil",
+     "baito_normal",
+     "baito_sad",
+     "baito_serious",
+     "baito_smile",
+     "baito_surprise",
      "bow",
      "evil",
      "normal",
@@ -3689,10 +3703,11 @@
      "smile",
      "surprise"
     ],
-    "h": 0.7267,
+    "h": 0.7242,
     "b": 0.0217,
     "ax": 0.4926,
-    "aspect": 0.7467
+    "aspect": 0.7467,
+    "topOverhang": 0.0025
    },
    "sumi": {
     "faces": [
