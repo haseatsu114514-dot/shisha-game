@@ -63,6 +63,9 @@ export async function openTrpgBar({ nightBusy = () => false } = {}) {
   if (!owner.flags._intro_sai) {
     const { playIntro } = await import("../vn/intro.js");
     if (state !== owner || !host.isConnected) return { completed: false };
+    const { play } = await import("../vn/engine.js");
+    const greeting = await play({ lines: [{ speaker: "hajime", text: "こんばんは。遊べる卓を探していて" }] });
+    if (greeting?.cancelled || state !== owner || !host.isConnected) return { completed: false };
     await playIntro("sai", { override: { display_name: DB.characters.sai.display_name } });
     if (state !== owner || !host.isConnected) return { completed: false };
   }
