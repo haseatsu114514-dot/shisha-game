@@ -83,19 +83,25 @@ await suite("portrait-style", async check => {
       if (touch) await page.keyboard.press("Escape");
       await decoded(page);
     };
-    await check(`${label}-unregistered-and-persistence`, async page => {
+    await check(`${label}-registered-and-persistence`, async page => {
       assert.equal(await page.evaluate(async () => (await import("./js/core/state.js")).config.portraitStyle), "classic");
       const manifest = await page.evaluate(async () => (await import("./js/core/data.js")).DB.manifest.portraitVariants?.new || {});
-      assert.deepEqual(manifest, {}, "No candidate images are adopted by this PR");
+      assert.deepEqual(manifest.tsumugi.faces, ['bow','evil','normal','sad','serious','smile','surprise']);
       await startScene(page);
       const before = await snapshot(page), saved = await savedWithoutConfig(page);
       const srcs = await page.locator(portraits).evaluateAll(images => images.map(image => image.src));
       await settings(page);
-      await page.screenshot({ path: path.join(root, process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser", `portrait-style-${label}-settings.png`) });
+      await page.screenshot({ path: path.resolve(root, process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser", `portrait-style-${label}-settings.png`) });
       for (const value of ["new", "classic", "new", "classic", "new"]) {
         await change(page, value);
         assert.deepEqual(await snapshot(page), before, "Settings do not advance dialogue, reorder people or mutate game state");
-        assert.deepEqual(await page.locator(portraits).evaluateAll(images => images.map(image => image.src)), srcs);
+        const actual = await page.locator(portraits).evaluateAll(images => images.map(image => image.src));
+        if(value === "classic") assert.deepEqual(actual, srcs);
+        else {
+          assert.match(actual[0], /character_variants\/new\/tsumugi\/chr_tsumugi_smile/);
+          assert.equal(actual[1], srcs[1], "Unregistered Minto retains classic sad");
+        }
+        assert.equal(await page.evaluate(async () => (await import("./js/core/data.js")).portraitInfo('tsumugi','smile').scale), value === 'new' ? .9 : .88);
         assert.equal(await page.evaluate(() => JSON.parse(localStorage.suien_remake_config).portraitStyle), value);
         assert.deepEqual(await savedWithoutConfig(page), saved, "Autosave, manual slots, seen lines and other storage stay unchanged");
       }

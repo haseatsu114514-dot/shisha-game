@@ -339,7 +339,7 @@ export function portraitInfo(speaker, face, style = portraitStyle()) {
     folder, face: f, style: useNew ? "new" : "classic",
     src: img(`${base}/${folder}/chr_${folder}_${f}.png`),
     h: metrics.h || 0.85, b: useNew ? (metrics.b ?? 0.02) : (p.b || 0.02), ax: metrics.ax ?? 0.5, aspect: metrics.aspect || 0.75,
-    scale: DB.characters[folder]?.spriteScale || DB.characters[speaker]?.spriteScale || 1,
+    scale: (useNew ? DB.characters[folder]?.spriteScaleVariants?.new : null) || DB.characters[folder]?.spriteScale || DB.characters[speaker]?.spriteScale || 1,
   };
 }
 
