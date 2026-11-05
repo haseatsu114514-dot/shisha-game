@@ -32,12 +32,12 @@
 | 場所 | 中身 | 例 |
 |---|---|---|
 | `docs/` 直下 | 入口と正本 | 本書、`master_spec.md`、`owner_requests.md`、`gameplay_agent_reference.md`、`asset_ai_guidance.md`、`shisha_reference.md`、`review_scope.md` |
-| [spec/](spec/) | 機能ごとの現行仕様・決定・作業基準（実装済みと承認済み未実装を含む） | `pakki_slot_spec.md`、`axe_throw.md`、`trpg_preview.md`、`hiyori_implementation.md`、`chapter_parity_audit.md`、`open_questions_ch4_ch5.md` |
+| [spec/](spec/) | 機能ごとの現行仕様・決定・作業基準（実装済みと承認済み未実装を含む） | `pakki_slot_spec.md`、`axe_throw.md`、`trpg_preview.md`、`hiyori_implementation.md`、`chapter_parity_audit.md`、`open_questions_ch4_ch5.md`、[大会進行の共通契約](spec/tournament-common-contract-2031.md) |
 | [stat-design/](stat-design/SPEC.md) | 成長（経験値・レベル・心得の盤）の決定と仕様 | `ADDENDUM-BOARD-LAYOUT.md`、`SPEC.md` |
 | [prompts/](prompts/) | 画像・音・レビューの発注書とガイド（人やAIに渡す文面） | `asset_gen_prompts.md`、`image_generation_guide.md`、`bgm_suno_prompts.md`、`cg_production_plan.md`、`story_review_prompt.md` |
 | [marketing/](marketing/) | SNS・集客の運用ルール | `sns_operation.md` |
 | [tools/](tools/) | ツール・開発者コンソールの手引き（任意の試作ツールの説明もここ） | `text_editor_manual.md`、`dev_inspector.md`、`remake_browser_checks.md`、`sequential_merge.md` |
-| [design/](design/)・[reports/](reports/) | オーナー未決定の提案・設計案・調査（採用扱いにしない） | [大会進行の共通契約ドラフト](design/tournament-common-contract-2031.md) |
+| [design/](design/)・[reports/](reports/) | オーナー未決定の提案・設計案・調査（採用扱いにしない） | |
 | [archive/](archive/README.md) | 日付付きの引き継ぎ・計画・記録・二次資料（履歴。根拠にしない） | |
 | `qa/` | テストが読む基準ファイルだけ（検証記録は2026-11-02に削除。過去の記録はgit履歴にある） | |
 
