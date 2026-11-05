@@ -235,11 +235,11 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5.part, "aftermath");
     assert.equal(state.flags._ch5.won, true);
 
-    // 9. 後日談→フィナーレ（開始→通常→日常）。
+    // 9. 後日談→フィナーレ（開始→通常→日常→鉄仮面さんの名乗り）。
     await page.locator(dt("ch5-continue")).click();
     await page.locator(scene("ch5_return_to_tonari")).waitFor();
     await page.locator(dt("ch5-continue")).click();
-    for (const id of ["ending_start", "ending_normal", "ending_daily_smoke"]) {
+    for (const id of ["ending_start", "ending_normal", "ending_daily_smoke", "ending_salaryman_name"]) {
       await page.locator(scene(id)).waitFor();
       await page.locator(dt("ch5-continue")).click();
     }
@@ -256,7 +256,7 @@ await suite("ch5-full-flow", async check => {
       "ch5_free_tonari_practice", "ch5_unrecorded_day", "ch5_schedule_contact", "ch5_timeout",
       "ch5_match_day_arrival", "ch5_copy_first_cup", "ch5_relationship_before_second_cup",
       "ch5_second_cup_result", "ch5_second_cup_result_afterglow", "ch5_doctor_after_match",
-      "ch5_return_to_tonari", "ending_start", "ending_normal", "ending_daily_smoke"])
+      "ch5_return_to_tonari", "ending_start", "ending_normal", "ending_daily_smoke", "ending_salaryman_name"])
       assert.equal(state.flags._ch5.read[id], true, `${id} must be read`);
     // 完了後に再開しても、完了カードに戻り場面は再演されない。
     await loadSlot(page, 0);

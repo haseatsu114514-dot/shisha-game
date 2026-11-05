@@ -73,6 +73,7 @@ export const CH5_SCENE_BG = Object.freeze({
   epilogue_samechan: "bg_tonari_inside_night",       // 仮置き bg
   epilogue_hiyori: "bg_tonari_inside_night",         // 仮置き bg
   ending_daily_smoke: "bg_tonari_inside",            // 台本メタデータの指定（bg_tonari_inside）に一致
+  ending_salaryman_name: "bg_tonari_inside_night",
   // スタッフロールの後の修羅場（IR32）。台本の「後日のtonari。閉店後の店」に合わせて夜の tonari。
   shuraba_open: "bg_tonari_inside_night",
   shuraba_tsumugi: "bg_tonari_inside_night",
@@ -169,7 +170,7 @@ export const CH5_ENDING_IDS = Object.freeze([
   "ending_start", "ending_normal",
   "epilogue_tsumugi", "epilogue_minto", "epilogue_kuyuri", "epilogue_ageha",
   "epilogue_mashiro", "epilogue_samechan", "epilogue_hiyori",
-  "ending_daily_smoke",
+  "ending_daily_smoke", "ending_salaryman_name",
 ]);
 
 // スタッフロールの後（IR32）: 修羅場の開始・謝罪・話し直しの決意と、恋人ごとの反応・話し直し。
@@ -207,7 +208,7 @@ export const CH5_SCENE_FILES = Object.freeze({
 
 const PARTS = Object.freeze(["prologue", "free", "scheduled", "match", "aftermath", "finale", "cleared"]);
 const SCHEDULE_BRANCHES = Object.freeze(["decide", "defer"]);
-const FINALE_LENGTH = 3;
+const FINALE_LENGTH = 4;
 
 /**
  * スタッフロールの後の並びとして正しいか（IR32）。空（何も読まない）か、
@@ -230,11 +231,12 @@ function isValidPostEnding(post) {
   return unresolved.length === ahead.length && unresolved.every((id, index) => id === ahead[index]);
 }
 
-/** フィナーレの3場面として正しい並びか（先頭は開始、末尾は日常、全て既知の場面）。 */
+/** 旧保存の3場面も受け入れ、新規保存は本名の場面を最後に読む。 */
 function isValidFinaleScenes(scenes) {
-  return Array.isArray(scenes) && scenes.length === FINALE_LENGTH
+  return Array.isArray(scenes) && [3, FINALE_LENGTH].includes(scenes.length)
     && scenes.every(id => CH5_ENDING_IDS.includes(id))
-    && scenes[0] === "ending_start" && scenes[FINALE_LENGTH - 1] === "ending_daily_smoke";
+    && scenes[0] === "ending_start" && scenes[2] === "ending_daily_smoke"
+    && (scenes.length === 3 || scenes[3] === "ending_salaryman_name");
 }
 
 // ---- 章の入口 -----------------------------------------------------------------------
@@ -277,9 +279,9 @@ export function chapterFiveProgress(value) {
     && integer(progress.aftermath, 0, CH5_AFTERMATH.length)
     && (progress.part === "aftermath" ? progress.aftermath < CH5_AFTERMATH.length
       : !["finale", "cleared"].includes(progress.part) || progress.aftermath === CH5_AFTERMATH.length)
-    && integer(progress.finale, 0, FINALE_LENGTH)
-    && (progress.part !== "finale" || progress.finale < FINALE_LENGTH)
-    && (progress.part !== "cleared" || progress.finale === FINALE_LENGTH)
+    && integer(progress.finale, 0, progress.finaleScenes?.length ?? FINALE_LENGTH)
+    && (progress.part !== "finale" || progress.finale < (progress.finaleScenes?.length ?? FINALE_LENGTH))
+    && (progress.part !== "cleared" || progress.finale === progress.finaleScenes?.length)
     && (["prologue", "free", "scheduled", "match", "aftermath"].includes(progress.part)
       || progress.finaleScenes !== null || progress.finale === 0)
     && (progress.finaleScenes === null || isValidFinaleScenes(progress.finaleScenes))
@@ -517,7 +519,7 @@ export function chapterFiveEndingContext(routes, value) {
 }
 
 /**
- * エンディングの3場面を受け取り、finale の再生順として固定する。
+ * エンディングの再生順を固定する。旧保存の3場面も引き続き読める。
  * runner は chapterFiveEndingContext で selectStoryEnding を呼び、その結果をここへ渡す。
  * 一度固定した順は保存に残るので、恋人の状態が後から変わっても読みかけのフィナーレは差し替えない。
  */
@@ -740,7 +742,7 @@ export function completeChapterFiveScene(value, id) {
     if (!progress.finaleScenes || progress.finaleScenes[progress.finale] !== id) return false;
     progress.read[id] = true;
     progress.finale += 1;
-    if (progress.finale === FINALE_LENGTH) {
+    if (progress.finale === progress.finaleScenes.length) {
       progress.part = "cleared";
       value.flags._ch5_cleared = true;
       value.phase = "cleared";

@@ -204,7 +204,8 @@
   "ending": {
     "start": "ending_start",
     "normal": "ending_normal",
-    "daily": "ending_daily_smoke"
+    "daily": "ending_daily_smoke",
+    "salaryman_name": "ending_salaryman_name"
   },
   "location_contract": {
     "present": "その時点で同じ会場へ実際に到着している人物ID。渡航予定・好感度・同伴選択だけで加えない。",

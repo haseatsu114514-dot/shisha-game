@@ -98,7 +98,8 @@ function loadEndingRoutes() {
       if (!response.ok) throw new Error(`story_routes: HTTP ${response.status}`);
       const routes = await response.json();
       if (typeof routes.ending?.start !== "string" || typeof routes.ending?.normal !== "string"
-        || typeof routes.ending?.daily !== "string" || !Array.isArray(routes.heroine_ids)
+        || typeof routes.ending?.daily !== "string" || typeof routes.ending?.salaryman_name !== "string"
+        || !Array.isArray(routes.heroine_ids)
         || !routes.romance || typeof routes.romance !== "object"
         || typeof routes.conflict?.open !== "string" || typeof routes.conflict?.pending_ending !== "string") {
         throw new Error("story_routes: 形式を確認してください");
@@ -497,7 +498,7 @@ async function renderFinale(owner) {
     // 読み終えたらスタッフロール（renderStaffRoll）。恋人が2人以上なら、その後に修羅場と話し直し（renderPostEnding）。
     const routes = await loadEndingRoutes();
     if (!current(owner)) return;
-    const scenes = selectStoryEnding(routes, state, chapterFiveEndingContext(routes, state));
+    const scenes = [...selectStoryEnding(routes, state, chapterFiveEndingContext(routes, state)), routes.ending.salaryman_name];
     if (!beginChapterFiveFinale(state, scenes)) throw new Error("フィナーレを開始できません");
     save();
     progress = chapterFiveProgress(state);
