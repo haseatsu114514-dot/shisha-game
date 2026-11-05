@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-05 10:24 UTC",
+ "generated": "2026-11-05 11:54 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -2723,6 +2723,7 @@
   "sprites/character_variants/nanami/dr_kemuri/chr_dr_kemuri_serious.png",
   "sprites/character_variants/nanami/dr_kemuri/chr_dr_kemuri_smile.png",
   "sprites/character_variants/nanami/dr_kemuri/chr_dr_kemuri_surprise.png",
+  "sprites/character_variants/nanami/hajime/chr_hajime_excited.png",
   "sprites/character_variants/nanami/hajime/chr_hajime_normal.png",
   "sprites/character_variants/nanami/hajime/chr_hajime_sad.png",
   "sprites/character_variants/nanami/hajime/chr_hajime_serious.png",
@@ -2742,6 +2743,9 @@
   "sprites/character_variants/nanami/hiyori/chr_hiyori_surprise.png",
   "sprites/character_variants/nanami/hiyori/chr_hiyori_tears.png",
   "sprites/character_variants/nanami/khalil/chr_khalil_normal.png",
+  "sprites/character_variants/nanami/kumicho/chr_kumicho_normal.png",
+  "sprites/character_variants/nanami/kumicho/chr_kumicho_sad.png",
+  "sprites/character_variants/nanami/kumicho/chr_kumicho_smile.png",
   "sprites/character_variants/nanami/mashiro/chr_mashiro_normal.png",
   "sprites/character_variants/nanami/mashiro/chr_mashiro_sad.png",
   "sprites/character_variants/nanami/mashiro/chr_mashiro_sleep.png",
@@ -2752,13 +2756,21 @@
   "sprites/character_variants/nanami/minto/chr_minto_smile.png",
   "sprites/character_variants/nanami/minto/chr_minto_surprise.png",
   "sprites/character_variants/nanami/minto/chr_minto_wink.png",
+  "sprites/character_variants/nanami/naru/chr_naru_excited.png",
   "sprites/character_variants/nanami/naru/chr_naru_normal.png",
   "sprites/character_variants/nanami/naru/chr_naru_sad.png",
   "sprites/character_variants/nanami/naru/chr_naru_serious.png",
   "sprites/character_variants/nanami/naru/chr_naru_smile.png",
   "sprites/character_variants/nanami/naru/chr_naru_surprise.png",
+  "sprites/character_variants/nanami/rei/chr_rei_normal.png",
+  "sprites/character_variants/nanami/rei/chr_rei_sad.png",
+  "sprites/character_variants/nanami/rei/chr_rei_serious.png",
+  "sprites/character_variants/nanami/rei/chr_rei_surprise.png",
   "sprites/character_variants/nanami/sai/chr_sai_normal.png",
+  "sprites/character_variants/nanami/saku/chr_saku_nervous.png",
   "sprites/character_variants/nanami/saku/chr_saku_normal.png",
+  "sprites/character_variants/nanami/saku/chr_saku_sad.png",
+  "sprites/character_variants/nanami/saku/chr_saku_smug.png",
   "sprites/character_variants/nanami/saku/chr_saku_wild.png",
   "sprites/character_variants/nanami/samechan/chr_samechan_excited.png",
   "sprites/character_variants/nanami/samechan/chr_samechan_normal.png",
@@ -2791,10 +2803,12 @@
   "sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_serious.png",
   "sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_smile.png",
   "sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_surprise.png",
+  "sprites/character_variants/new/hajime/chr_hajime_excited.png",
   "sprites/character_variants/new/hajime/chr_hajime_normal.png",
   "sprites/character_variants/new/hajime/chr_hajime_sad.png",
   "sprites/character_variants/new/hajime/chr_hajime_serious.png",
   "sprites/character_variants/new/hajime/chr_hajime_smile.png",
+  "sprites/character_variants/new/hajime/chr_hajime_smug.png",
   "sprites/character_variants/new/hajime/chr_hajime_surprise.png",
   "sprites/character_variants/new/hiyori/chr_hiyori_axe_laugh.png",
   "sprites/character_variants/new/hiyori/chr_hiyori_axe_normal.png",
@@ -2810,22 +2824,41 @@
   "sprites/character_variants/new/hiyori/chr_hiyori_surprise.png",
   "sprites/character_variants/new/hiyori/chr_hiyori_tears.png",
   "sprites/character_variants/new/khalil/chr_khalil_normal.png",
+  "sprites/character_variants/new/kumicho/chr_kumicho_normal.png",
+  "sprites/character_variants/new/kumicho/chr_kumicho_sad.png",
+  "sprites/character_variants/new/kumicho/chr_kumicho_serious.png",
+  "sprites/character_variants/new/kumicho/chr_kumicho_smile.png",
+  "sprites/character_variants/new/kumicho/chr_kumicho_smug.png",
+  "sprites/character_variants/new/kumicho/chr_kumicho_surprise.png",
   "sprites/character_variants/new/maki/chr_maki_normal.png",
   "sprites/character_variants/new/mashiro/chr_mashiro_normal.png",
   "sprites/character_variants/new/mashiro/chr_mashiro_yawn.png",
   "sprites/character_variants/new/minto/chr_minto_normal.png",
+  "sprites/character_variants/new/naru/chr_naru_excited.png",
   "sprites/character_variants/new/naru/chr_naru_normal.png",
   "sprites/character_variants/new/naru/chr_naru_sad.png",
   "sprites/character_variants/new/naru/chr_naru_serious.png",
   "sprites/character_variants/new/naru/chr_naru_smile.png",
   "sprites/character_variants/new/naru/chr_naru_surprise.png",
   "sprites/character_variants/new/pakki/chr_pakki_angry.png",
+  "sprites/character_variants/new/pakki/chr_pakki_evil.png",
   "sprites/character_variants/new/pakki/chr_pakki_normal.png",
   "sprites/character_variants/new/pakki/chr_pakki_smile.png",
   "sprites/character_variants/new/pakki/chr_pakki_smoke.png",
   "sprites/character_variants/new/pakki/chr_pakki_surprise.png",
+  "sprites/character_variants/new/rei/chr_rei_normal.png",
+  "sprites/character_variants/new/rei/chr_rei_sad.png",
+  "sprites/character_variants/new/rei/chr_rei_serious.png",
+  "sprites/character_variants/new/rei/chr_rei_smile.png",
+  "sprites/character_variants/new/rei/chr_rei_surprise.png",
   "sprites/character_variants/new/sai/chr_sai_normal.png",
+  "sprites/character_variants/new/saku/chr_saku_nervous.png",
   "sprites/character_variants/new/saku/chr_saku_normal.png",
+  "sprites/character_variants/new/saku/chr_saku_sad.png",
+  "sprites/character_variants/new/saku/chr_saku_serious.png",
+  "sprites/character_variants/new/saku/chr_saku_smile.png",
+  "sprites/character_variants/new/saku/chr_saku_smug.png",
+  "sprites/character_variants/new/saku/chr_saku_surprise.png",
   "sprites/character_variants/new/saku/chr_saku_wild.png",
   "sprites/character_variants/new/samechan/chr_samechan_excited.png",
   "sprites/character_variants/new/samechan/chr_samechan_normal.png",
@@ -3571,10 +3604,12 @@
    },
    "hajime": {
     "faces": [
+     "excited",
      "normal",
      "sad",
      "serious",
      "smile",
+     "smug",
      "surprise"
     ],
     "h": 0.8992,
@@ -3643,6 +3678,7 @@
    },
    "naru": {
     "faces": [
+     "excited",
      "normal",
      "sad",
      "serious",
@@ -3657,6 +3693,7 @@
    "pakki": {
     "faces": [
      "angry",
+     "evil",
      "normal",
      "smile",
      "smoke",
@@ -3678,7 +3715,13 @@
    },
    "saku": {
     "faces": [
+     "nervous",
      "normal",
+     "sad",
+     "serious",
+     "smile",
+     "smug",
+     "surprise",
      "wild"
     ],
     "h": 0.9,
@@ -3748,6 +3791,33 @@
     "b": 0.0492,
     "ax": 0.5,
     "aspect": 0.7467
+   },
+   "kumicho": {
+    "faces": [
+     "normal",
+     "sad",
+     "serious",
+     "smile",
+     "smug",
+     "surprise"
+    ],
+    "h": 0.8992,
+    "b": 0.0508,
+    "ax": 0.4993,
+    "aspect": 0.7467
+   },
+   "rei": {
+    "faces": [
+     "normal",
+     "sad",
+     "serious",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.5002,
+    "aspect": 0.7467
    }
   },
   "nanami": {
@@ -3779,6 +3849,7 @@
    },
    "hajime": {
     "faces": [
+     "excited",
      "normal",
      "sad",
      "serious",
@@ -3849,6 +3920,7 @@
    },
    "naru": {
     "faces": [
+     "excited",
      "normal",
      "sad",
      "serious",
@@ -3871,7 +3943,10 @@
    },
    "saku": {
     "faces": [
+     "nervous",
      "normal",
+     "sad",
+     "smug",
      "wild"
     ],
     "h": 0.9,
@@ -3953,6 +4028,29 @@
     "h": 0.9008,
     "b": 0.05,
     "ax": 0.4999,
+    "aspect": 0.7467
+   },
+   "kumicho": {
+    "faces": [
+     "normal",
+     "sad",
+     "smile"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4999,
+    "aspect": 0.7467
+   },
+   "rei": {
+    "faces": [
+     "normal",
+     "sad",
+     "serious",
+     "surprise"
+    ],
+    "h": 0.9008,
+    "b": 0.05,
+    "ax": 0.5003,
     "aspect": 0.7467
    }
   }
