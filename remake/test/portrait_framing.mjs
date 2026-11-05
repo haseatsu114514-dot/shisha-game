@@ -20,6 +20,12 @@ const render = p => {
 };
 const manifest = JSON.parse(read('remake/data/manifest.json'));
 const chars = Object.fromEntries(JSON.parse(read('data/characters.json')).map(c => [c.id, c]));
+const samechan = JSON.parse(read('data/dialogue/samechan.json')).profile;
+if (samechan?.id) chars[samechan.id] = samechan;
+const dataSource = read('remake/js/core/data.js').replace(/^import .*;$/gm, '');
+const data = await import(`data:text/javascript;base64,${Buffer.from("const portraitStyle = () => 'classic'; const registerFortuneReadings = () => {};\n" + dataSource).toString('base64')}`);
+data.DB.manifest = manifest;
+data.DB.characters = chars;
 let checked = 0;
 for (const [style, portraits] of [['classic', manifest.portraits], ...Object.entries(manifest.portraitVariants || {})]) {
   for (const [folder, metrics] of Object.entries(portraits)) {
@@ -31,7 +37,10 @@ for (const [style, portraits] of [['classic', manifest.portraits], ...Object.ent
     assert.ok(result.top >= .03 - 1e-9, `${style}/${folder}: head clipped`);
     assert.equal(result.style['--ax'], `${-metrics.ax * 100}%`, `${style}/${folder}: horizontal anchor changed`);
     for (const face of metrics.faces) {
-      assert.deepEqual(render(p).style, result.style, `${style}/${folder}/${face}: expression shifts`);
+      const resolved = data.portraitInfo(folder, face, style);
+      assert.equal(resolved.face, face, `${style}/${folder}/${face}: expression changed`);
+      assert.equal(resolved.style, style, `${style}/${folder}/${face}: wrong artwork style`);
+      assert.deepEqual(render(resolved).style, result.style, `${style}/${folder}/${face}: resolved expression changes frame`);
       checked++;
     }
   }
@@ -50,5 +59,7 @@ assert.ok(Math.abs(plain.body - padded.body) < 1e-9 && Math.abs(plain.top - padd
 // Preserve the reporting tool's game-pixel measurements without changing icon proportions.
 const reportTarget = Number(read('tools/portrait_metrics.py').match(/FRAMING_TARGET = ([\d.]+)/)?.[1]);
 assert.equal(reportTarget, context.framing.target);
+assert.equal(Number(read('tools/portrait_metrics.py').match(/CAT_TARGET = ([\d.]+)/)?.[1]), context.framing.catTarget);
+assert.ok(read('tools/portrait_metrics.py').includes('CAT_TARGET if folder == "tetsuko"'));
 assert.ok(source.includes('Math.max(0, contentTop - 97)'), 'retain tall-head safety');
 console.log(`portrait_framing: ${checked} classic/new expression entries, reference zoom, padding, height scales and mascot placement passed`);
