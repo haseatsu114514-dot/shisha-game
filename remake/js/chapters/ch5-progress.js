@@ -263,7 +263,7 @@ export function advanceToChapterFive(value) {
   return true;
 }
 
-/** 保存の形と、part と各種フラグの整合を確認する。不正な保存は throw（状態は変更しない）。 */
+/** 章別 SAVE（part/read/secondCup）の形と確定済み進行を検証する。不正な保存は throw。 */
 export function chapterFiveProgress(value) {
   if (value?.chapter !== 5) throw new Error("第5章の保存ではありません");
   const progress = value.flags?._ch5;
@@ -289,8 +289,10 @@ export function chapterFiveProgress(value) {
     && (progress.part !== "cleared" || isValidFinaleScenes(progress.finaleScenes))
     && (progress.part !== "finale" || progress.finaleScenes !== null || progress.finale === 0)
     && (progress.won === null || progress.won === true || progress.won === false)
-    // 二本目の記録より前の保存（勝ち固定だった頃）には secondCup が無い。無い／null は未制作として読む。
+    // U5: 二本目の制作途中は保存しない。無い／null は未制作として読み、二本目の前から作り直す。
+    // 勝ち固定だった頃の旧保存にも secondCup が無い。
     && (progress.secondCup == null || isValidSecondCup(progress.secondCup))
+    // 確定済みの挙手から得る勝敗と won の食い違いだけを拒否し、読込時に票や結果を更新しない。
     && (progress.secondCup == null || progress.won === null
       || progress.won === (secondCupOutcome(progress.secondCup) === "win"))
     && (!["aftermath", "finale", "cleared"].includes(progress.part) || progress.won !== null)
@@ -414,7 +416,7 @@ export function recordChapterFiveScheduleDecision(value, branch) {
   return true;
 }
 
-/** 会場入りの確認で「向かう」が選ばれたときに runner が呼ぶ。状態遷移はここだけ。 */
+/** U1 の入場境界。会場入り確認で part=match に進める。二本目の制作開始とは別。 */
 export function beginChapterFiveMatch(value) {
   const progress = chapterFiveProgress(value);
   if (progress.part !== "scheduled") return false;
@@ -427,7 +429,7 @@ export function beginChapterFiveMatch(value) {
 // ---- 試合 ---------------------------------------------------------------------------
 // 正本（brand/story_and_structure.md「同じ葉で二本」）: 同じ観客が一本目・二本目の両方を吸い、それぞれ良かった方へ
 // 挙手する。二本の合計票で勝敗を決める。審査員の採点や恋愛人数の加点は持ち込まない。
-// 一本目は台本どおり 9000 が僅かに先取（固定）。二本目は、はじめが実際に作った一台の出来で挙手が動く。
+// 一本目は台本で確定する固定票（実制作なし）。二本目だけ、はじめが実際に作った一台の出来で挙手が動く。
 export const CH5_AUDIENCE = 40;
 export const CH5_FIRST_CUP_VOTES = Object.freeze({ hajime: 19, machine: 21 });
 // 9000 も吸う速さに合わせて調整するので、どれだけ良い一台でも二本目の挙手は一方的にならない。
@@ -465,7 +467,7 @@ function secondCupOutcome(cup) {
   return tally.hajime > tally.machine ? "win" : tally.hajime === tally.machine ? "tie" : "loss";
 }
 
-/** 二本の挙手（一本目・二本目・合計）。二本目が未制作なら null。 */
+/** 保存済みの二本の挙手（一本目・二本目・合計）を読む。二本目が未制作なら null。 */
 export function chapterFiveVoteTally(value) {
   const cup = chapterFiveProgress(value).secondCup;
   if (cup == null) return null;
@@ -473,7 +475,8 @@ export function chapterFiveVoteTally(value) {
 }
 
 /**
- * 二本目を作り終えたときに runner が呼ぶ。二本目の前の場面を読み終え、まだ記録が無い試合だけ受け付ける。
+ * 二本目の投票確定境界。制作完了後、一度だけ観客の挙手を secondCup に記録する。
+ * 二本目の前の場面を読み終え、まだ記録が無い試合だけ受け付ける。
  * total は finalize の総合、category は調整実績の区分（naruTastingCategory と同じ土台）か "failed"。
  */
 export function recordChapterFiveSecondCup(value, { total, category, failed = false, review = [] }) {

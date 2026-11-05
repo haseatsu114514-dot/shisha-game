@@ -298,6 +298,7 @@ assert.equal(value.phase, "aftermath");
 roundTrip(value);
 
 // 挙手: 一本目は台本どおり 9000 が僅かに先取。二本目は出来で動き、一方的にはならない。
+assert.deepEqual(CH5_FIRST_CUP_VOTES, { hajime: 19, machine: 21 });
 assert.equal(CH5_FIRST_CUP_VOTES.hajime + CH5_FIRST_CUP_VOTES.machine, CH5_AUDIENCE);
 assert(CH5_FIRST_CUP_VOTES.machine > CH5_FIRST_CUP_VOTES.hajime);
 for (let total = 0; total <= 100; total += 1) {
@@ -305,6 +306,39 @@ for (let total = 0; total <= 100; total += 1) {
   assert(chapterFiveSecondCupVotes(total) < CH5_AUDIENCE * 0.7, `not one-sided at ${total}`);
 }
 assert.equal(chapterFiveSecondCupVotes(100, true), chapterFiveSecondCupVotes(0));
+
+// U5: 入場後の制作途中は章別 SAVE に残らない。読込後も未制作で、二本目を記録できる。
+{
+  const enteredMatch = toBeforeSecond();
+  const resumed = JSON.parse(JSON.stringify(enteredMatch));
+  assert.equal(chapterFiveProgress(resumed).part, "match");
+  assert.equal(chapterFiveProgress(resumed).secondCup, null);
+  assert.equal(chapterFiveVoteTally(resumed), null);
+  assert.equal(chapterFiveMatchOutcome(resumed), null);
+  assert.equal(recordChapterFiveSecondCup(resumed, { total: 90, category: "steady" }), true);
+  assert.equal(chapterFiveMatchOutcome(resumed), "win");
+}
+
+// 二本目の完成後は票・結果を保存から読む。同数は勝ちにならず、敗北と同じ後日談へ進む。
+for (const [total, category, expected] of [[90, "steady", "win"], [76, "recovered", "tie"], [55, "offband", "loss"]]) {
+  const match = toBeforeSecond();
+  assert.equal(recordChapterFiveSecondCup(match, { total, category }), true);
+  const tally = chapterFiveVoteTally(match);
+  assert.equal(tally.second.hajime, chapterFiveSecondCupVotes(total));
+  assert.equal(tally.second.hajime + tally.second.machine, CH5_AUDIENCE);
+  assert.equal(tally.total.hajime, tally.first.hajime + tally.second.hajime);
+  assert.equal(tally.total.machine, tally.first.machine + tally.second.machine);
+  assert.equal(chapterFiveMatchOutcome(match), expected);
+  const result = expected === "win" ? [CH5_MATCH_SCENES.win, CH5_MATCH_SCENES.afterglow] : [CH5_MATCH_SCENES.loss];
+  for (const id of result) assert.equal(completeChapterFiveScene(match, id), true);
+  const resumed = JSON.parse(JSON.stringify(match));
+  assert.deepEqual(chapterFiveProgress(resumed), match.flags._ch5);
+  assert.deepEqual(chapterFiveVoteTally(resumed), tally);
+  assert.equal(chapterFiveMatchOutcome(resumed), expected);
+  assert.equal(resumed.flags._ch5.won, expected === "win");
+  assert.equal(resumed.flags._ch5.part, "aftermath");
+  rejects(resumed, v => recordChapterFiveSecondCup(v, { total: 10, category: "offband" }));
+}
 
 // 勝敗は二本目の出来だけで変わる。能力値・任意場面の既読は二本目の制作を通してだけ効く。
 {
