@@ -69,6 +69,8 @@ async function prepare(page, options = {}) {
 async function advanceSaiIntro(page) {
   if (await page.evaluate(() => __remake.state.flags._intro_sai)) return;
   await page.waitForFunction(() => document.querySelector("#vn.active .vn-text")?.textContent === "こんばんは。遊べる卓を探していて");
+  // VN 開始から 320ms は入力が無視される。表示だけで直ちに押すと会話が進まない。
+  await page.waitForTimeout(350);
   await page.locator("#vn.active .vn-box").click();
   await page.locator('.cutin.in[data-char="sai"]').waitFor();
   await page.locator(".cutin").waitFor({ state: "detached" });
