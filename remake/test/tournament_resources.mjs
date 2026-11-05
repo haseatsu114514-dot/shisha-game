@@ -128,8 +128,12 @@ await vm.runInContext("tournamentDay()", context);
 assert.equal(sessions[3].stamina, 52, "declining the assist keeps the entry stamina");
 assert.equal(applyAssistRecovery({ stamina: 9 }, "yes", 130), false, "only an explicit true assists");
 for (const sv of saves) assert.deepEqual(sv.tournament.entryResources, saves[0].tournament.entryResources, "recovery never writes a new entry save");
-assert.equal(notices.length, 4, "every tournamentDay run wraps the entry wait in the loading notice");
-for (const notice of notices) assert.deepEqual(notice, { label: "大会の準備をしています…" });
+assert.equal(notices.length, 8, "each tournamentDay run waits for both opening music and craft assets");
+for (let i = 0; i < 4; i++) {
+  assert.deepEqual(notices.slice(i * 2, i * 2 + 2), [
+    { label: "音楽を準備しています…" }, { label: "大会の準備をしています…" },
+  ], "every initial/retry run keeps both ordered loading gates");
+}
 const victory = source.slice(source.indexOf("async function victory(cs)"), source.indexOf('  const after = DB.dialogues.ch1_tournament_after;'));
 assert.match(victory, /^async function victory\(cs\) \{\s*const owner = state;/, "victory captures the state owner in its own scope");
 assert(victory.includes("delete owner.tournament.entryResources"), "victory clears the captured owner's retry snapshot");
@@ -161,3 +165,4 @@ assert.equal(typeof transition, "function");
 ownerContext.state = core.newState(); transition();
 assert.equal(resumed, 0, "LOAD during the wipe cannot resume the old tournament");
 console.log("PASS: absolute retry, no private lemon grant, one-time entry, schema15/16/17 migration, re-SAVE/LOAD, illness/progress/#577/Chapter2 preservation, LOAD during preload/wipe");
+
