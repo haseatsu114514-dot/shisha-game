@@ -885,11 +885,14 @@ async function endDay({ returnedToTonari = false } = {}) {
       throw new Error("夜の予定へ向かう移動が中断されました");
     }
     await bannersIdle();
+    // #2775: 夜の枠で「家（休む）」を選んだ直後は、家で横になった流れから店の場面へ飛ばさず、出かけ直す一行を挟む。
+    const restedTonight = !!state.flags._home_tonight;
     delete state.flags._home_tonight; // 休息後でも、固定イベントの場所へ出かける。
     // 配達報告の直後だけは同じ来店で話を続ける。別の目的地・後続予定の到着は残す。
     const sameVisit = returnedToTonari && ev.pin === "tonari";
     returnedToTonari = false;
     if (rested || state.restDay?.illnessHealth) await beat("今日は休んでいたが、この予定だけは外せない——");
+    else if (restedTonight) await beat("少し横になってから、もう一度出かけた——");
     if (ev.beat && !sameVisit) await beat(ev.beat);
     return sameVisit ? { returnedToTonari: true } : undefined;
   });
