@@ -1,5 +1,7 @@
 // 6人34表情を実際の会話画面で切り替える。PC／スマホでWebPの読み込み、
 // 頭の見切れ、画像端の欠け、表情変更時の配置枠の移動を確認する。
+// 表情の一覧は現行の画風（classic）の承認済みセット。既定の新版は表情が少ない人がいる（ましろは通常・あくびのみ）ので、
+// 画風を現行に固定して確かめる。新版は portrait_style・portrait_framing・portrait_variants.py が見る。
 // CHROME_BIN=/usr/bin/chromium SHOTS=/tmp/portrait-qa node remake/test/portrait_unify.mjs
 import { createRequire } from "node:module";
 import fs from "node:fs";
@@ -32,7 +34,7 @@ try {
       await page.evaluate(async ({ character, faces }) => {
         const state = await import(new URL("js/core/state.js", location.href));
         const vn = await import(new URL("js/vn/engine.js", location.href));
-        state.newGame(); state.state.met[character] = true;
+        state.newGame(); state.config.portraitStyle = "classic"; state.state.met[character] = true;
         state.state.flags["_intro_" + character] = true;
         vn.vnTest.turbo = false;
         window.__portraitUnifyTest = vn.play({

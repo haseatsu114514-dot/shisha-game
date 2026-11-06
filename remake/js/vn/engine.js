@@ -241,9 +241,11 @@ function waitSceneAssets(task, owner = running, assets = task.assetsReady || tas
  * @param opts.previewProtagonist 比較プレビューでだけ主人公の立ち絵も表示する（本編は非表示）
  * 範囲指定でも各playの終了時に台本の報酬を処理する。報酬つき台本を分割する用途には使わない。
  */
-function affinityMetBefore(known = [], before = state.met) {
+function affinityMetBefore(known = [], before = state?.met) {
   const met = { ...before };
-  for (const key of Object.keys(state.flags)) if (key.startsWith("_affinity_first_meeting_pending_") && state.flags[key]) delete met[key.slice("_affinity_first_meeting_pending_".length)];
+  // タイトル画面の検査・プレビューなどセーブの無い再生では保留も無い
+  const flags = state?.flags || {};
+  for (const key of Object.keys(flags)) if (key.startsWith("_affinity_first_meeting_pending_") && flags[key]) delete met[key.slice("_affinity_first_meeting_pending_".length)];
   for (const id of known) met[id] = true;
   return met;
 }
@@ -259,15 +261,15 @@ export function play(idOrDlg, opts = {}) {
   if (!(dlg.lines || []).length) warnVn("dialogue-empty", dlg.dialogue_id || "");
   // 章側が保証する既知の相手。表示・台詞の分岐を変えず、面識欠損の修復を初対面報酬へ混ぜない。
   const affinityKnown = new Set(opts.affinityKnown || []);
-  for (const id of affinityKnown) delete state.flags[`_affinity_first_meeting_pending_${id}`];
+  if (state) for (const id of affinityKnown) delete state.flags[`_affinity_first_meeting_pending_${id}`];
   return new Promise((resolve) => {
     layers.fx.querySelector(".vn-loading")?.remove();
     running = {
       owner: state,
-      metAtStart: { ...state.met },
+      metAtStart: { ...state?.met },
       encountered: new Set(),
       affinityKnown,
-      metBefore: affinityMetBefore(affinityKnown, sequenceMetBefore?.owner === state ? sequenceMetBefore.met : state.met),
+      metBefore: affinityMetBefore(affinityKnown, sequenceMetBefore?.owner === state ? sequenceMetBefore.met : state?.met),
       firstAffinity: new Set(),
       id: dlg.dialogue_id || "", // 開始台本。finish() の報酬と play() の解決値はこの台本に属する（仕様・#1362）
       currentId: dlg.dialogue_id || "", // 表示中の台本。jumpTo で jump 先へ進む
@@ -427,7 +429,7 @@ function dialogueAffinity(r, id, pts, remote = (r.currentId && r.currentId !== r
 }
 
 function completeDialogueAffinity(r) {
-  if (state !== r.owner) return;
+  if (!state || state !== r.owner) return;
   const meta = r.dlg.metadata || {};
   // 強制イベントでの出会いは、初対面の♥1も付けない。面識の保留はそのまま残し、次の通常の出会いで♥1にする。
   if (meta.forced_event) { r.firstAffinity.clear(); return; }

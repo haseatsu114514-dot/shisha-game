@@ -222,6 +222,7 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
 /**
  * 章の場面を替える（#2688 F2）。第1章の会話の背景替えと同じ標準の幕（一筆）で覆い、覆ったところで前の画面を片付けて開く。
  * 地図・メニューへ戻るときは map: true で短い幕。幕の要らない所（同じ部屋の昼夜差分・別の演出が覆っている間）は setBg(..., { instant: true })。
+ * 選択肢を選んで会話へ入る所は、覆うまで古いカードを残さない（押せる・同じ画面と誤認される）。先に showScreen("none") してから setBg で替える。
  */
 export async function enterScene(url, { map = false, clear = true, ...opts } = {}) {
   const task = setBg(url, { brief: map, ...opts });
