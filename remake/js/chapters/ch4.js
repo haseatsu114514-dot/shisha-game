@@ -10,6 +10,7 @@ import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { state, save } from "../core/state.js";
 import { layers, showScreen, setBg, enterScene, chapterTitle, modal, toast } from "../core/ui.js";
 import { saveFlow } from "../scenes/saves.js";
+import { planeRide } from "../core/scene-motions.js";
 import { play, hooks } from "../vn/engine.js";
 import { chapterGrowthChart } from "../daily/status.js";
 import { paidAction } from "../core/stats.js";
@@ -128,6 +129,11 @@ async function readScene(owner, id) {
   const dialogue = { ...actual, metadata: { ...source.metadata, bg: "" } };
   showScreen("none", null);
   hud();
+  // ドバイ→日本の帰国は、機窓で夕方から日本の夜の街の灯へ（#2688 A4）。読み直し（既読）では乗らない
+  if (id === "ch4_sumi_return" && !chapterFourRead(state, id)) {
+    await planeRide(() => setBg(bgUrl(CH4_SCENE_BG[id]), { instant: true }), { to: "home" });
+    if (!current(owner)) return false;
+  }
   await setBg(bgUrl(CH4_SCENE_BG[id] || camelSceneBg(id) || CH4_EVENING_BG));
   if (!current(owner)) return false;
   playBgm(CH4_SCENE_BGM[id] || CH4_DEFAULT_BGM);
@@ -206,6 +212,9 @@ async function renderPrep(owner) {
   }
   if (!departChapterFour(state)) throw new Error("ドバイへ出発できません");
   save();
+  // 日本→ドバイ。機窓の外が夜から朝焼けへ移り、砂の地平線が見えたところで空港に着く（#2688 A4）
+  await planeRide(() => setBg(bgUrl(CH4_SCENE_BG.ch4_opening), { instant: true }), { to: "dubai" });
+  if (!current(owner)) return;
   await renderStage(owner);
 }
 

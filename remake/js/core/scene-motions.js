@@ -29,6 +29,7 @@ const lime = () => import("../motions/lime.js");
 const train = () => import("../motions/train.js");
 const shinkansen = () => import("../motions/shinkansen.js");
 const purikura = () => import("../motions/purikura.js");
+const plane = () => import("../motions/plane.js");
 
 // 連絡先の交換は一度きり（交換済みの記録が先に付く）。SKIP中でも見せ、動きを減らす設定では
 // 動かないカードで見せる。省くと二度と見られない（#833）。
@@ -134,6 +135,16 @@ export async function trainRide(mid, opts = {}) {
  * opts.from/to: "home"|"tokyo"。第2章の隣町行き電車(#891 trainRide)とは別の演出。 */
 export async function shinkansenRide(mid, opts = {}) {
   await ride("shinkansen", shinkansen, mid, opts);
+}
+
+/** 飛行機に乗る（#2688 A4）。丸い機窓の外が時差の色へ移り、着く土地が見えたところで窓が広がる。opts.to: "dubai" | "home" */
+export async function planeRide(mid, opts = {}) {
+  await ride("plane", plane, mid, { ...opts, kind: "plane" });
+}
+
+/** 配送便（車）に乗る（#2688 A4）。横長の車窓の外を道路の灯が流れる。opts.to: "tokyo" | "town" */
+export async function vanRide(mid, opts = {}) {
+  await ride("van", plane, mid, { ...opts, kind: "van" });
 }
 
 /** mid(): 覆っている間に背景を替える。bgUrl はその背景の絵（線画の元） */
