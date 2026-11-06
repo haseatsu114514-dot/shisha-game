@@ -58,7 +58,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       const { play } = await import("../vn/engine.js");
       const greeting = await play({ lines: [{ speaker: "hajime", text: "あの、ここで投げてみたくて" }] }, { signal: abort.signal });
       if (greeting?.cancelled || !current()) return false;
-      await playIntro("maki", { override: { display_name: DB.characters.maki.display_name } });
+      await playIntro("maki");
       if (!current()) return false;
     }
     const mode = await new Promise(resolve => {
