@@ -155,6 +155,27 @@
         { "speaker": "uranaishi", "face": "smile", "text": "縁のある所なら、どこへでも。……理由は聞かない方がいい" },
         { "speaker": "uranaishi", "face": "normal", "text": "さて。今日は誰との縁が気になるんだい？" }
       ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_gym_day",
+      "comment": "東京に泊まっている昼の CHOI-ZAP（会員の時だけ・#2033）。無人のジムなので話す相手はいない。第3章の ch3_choizap_* とは別の、第5章の言葉にする。ましろ・綾取は出さない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "高架下のCHOI-ZAP。昼の店内に、マシンの低い音だけが続いている。" },
+        { "speaker": "hajime", "face": "normal", "text": "（屋根裏とmukaiの往復だけだと、体がなまりそうだ）" },
+        { "speaker": "", "face": "", "text": "アプリのフォーム動画を開いて、肩と背中をゆっくり伸ばした。" },
+        { "speaker": "hajime", "face": "normal", "text": "（前に東京にいた頃は、毎日が本番の前の日みたいだったな）" },
+        { "speaker": "", "face": "", "text": "汗が引くまで休んでから、高架の下をmukaiの方へ歩いた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_gym_night",
+      "comment": "東京に泊まっている夜の CHOI-ZAP。勝負の日は自由行動の間はまだ決まっていない（決めるのは地元の家の電話から）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "夜のCHOI-ZAP。誰もいない店内で、マシンの画面だけが光っている。" },
+        { "speaker": "hajime", "face": "normal", "text": "（勝負の日は、まだ決めていない。体だけは整えておこう）" },
+        { "speaker": "", "face": "", "text": "動画のカウントに合わせて、スクワットを十回ずつ三組。" },
+        { "speaker": "", "face": "", "text": "外へ出ると、高架の上を遅い電車が通っていった。" }
+      ]
     }
   ]
 }

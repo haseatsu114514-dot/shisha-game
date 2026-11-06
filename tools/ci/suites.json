@@ -1596,6 +1596,8 @@
         "data/dialogue/ch5_dubai.json",
         "data/dialogue/ending.json",
         "remake/js/daily/romance.js",
+        "remake/js/daily/dj-club.js",
+        "data/dialogue/ch3_club.json",
         "remake/test/browser/ch5_full_flow.mjs"
       ],
       "run": [
