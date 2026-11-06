@@ -65,7 +65,7 @@ for (const [id, s] of Object.entries(LOVER_CONTINUE_SCRIPTS)) {
   }
   const variant = manifest.portraitVariants.new[id], framing = manifest.continuePortraitVariants.new[id];
   const complete = [...faces].every(face => variant?.faces?.includes(face) && framing?.[face]);
-  assert.equal(complete, ["tsumugi", "minto", "samechan", "hiyori"].includes(id), `${id}: new-version coverage changed; update the expected list (framing comes from portrait_metrics styles.new)`);
+  assert.equal(complete, ["tsumugi", "minto", "rio", "samechan", "hiyori"].includes(id), `${id}: new-version coverage changed; update the expected list (framing comes from portrait_metrics styles.new)`);
 }
 assert.equal(LOVER_CONTINUE_SCRIPTS.tsumugi.cues.at(-1).face, "smile", "Tsumugi's dark last beat should smile");
 assert.equal(LOVER_CONTINUE_SCRIPTS.minto.cues[0].face, "ura_surprise", "romance Minto uses private pose");
