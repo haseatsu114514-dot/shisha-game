@@ -16,6 +16,7 @@ import { samechanMilestoneDue, playSamechanMilestone } from "./samechan-bonds.js
 import { dateScene, dateVenue, relationshipDayTotal } from "./date-scene.js";
 import { playSamechanDate, samechanDateGap, samechanDateReady } from "./samechan-date.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
+import { recordRouteLover } from "../core/gallery-progress.js";
 
 // 告白は「帰り道」の場面。背景を持たない台本は通りの絵で（前の場面の背景を引き継がない）
 const STREET = "res://assets/backgrounds/bg_street.png";
@@ -45,7 +46,10 @@ export function romanceRouteOpen(id) {
     if (!hiyoriFinaleReady() || !state.flags[route.finale?.flag]
       || ![route.question?.choice,route.finale?.question].every(key => state.romanceChoices[key]?.char === id && state.romanceChoices[key].value > 0)) return false;
   }
-  if (id === "samechan" && (!(state.chapter >= 2 && state.chapter <= 3)
+  // サメちゃんの恋愛の入口（最後の問い）は第2・3章だけ（chapter-features.js の samechanRomance）。そこで迎えた締めくくりの告白は、
+  // ほかの相手と同じく持ち越して第5章の地元の夜に届く（第3章の準備3日と東京の夜は confessionHeld が持ち越す・IR36）。
+  const samechanFinaleChapter = state.finales?.samechan?.chapter || state.chapter;
+  if (id === "samechan" && (!(samechanFinaleChapter >= 2 && samechanFinaleChapter <= 3)
     || !state.flags[questionDoneKey("samechan")]
     || state.romanceChoices?.bond_q1_samechan?.char !== id
     || state.romanceChoices?.bond_q2_samechan?.char !== id
@@ -65,6 +69,8 @@ function becomeLovers(id) {
   state.lovePts[id] = Math.max(state.lovePts[id] || 0, AFFINITY_RANK_PTS[1]);
   if (state.loverSince[id] == null) state.loverSince[id] = dayTotal();
   if (state.lovers.length >= 2) state.guilt = (state.guilt || 0) + 2; // 2人目以降＝隠しごとが増える
+  // コレクションのルート記録「恋人成立」（セーブ枠と別。実際に付き合った時だけ。読み込みでは記録しない）
+  try { recordRouteLover(id); } catch { /* 記録の失敗で交際の成立を妨げない */ }
   emit("lovers", { id });
   save();
 }

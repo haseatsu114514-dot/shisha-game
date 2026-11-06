@@ -127,7 +127,7 @@ assert.deepEqual(reception.branches.first_sight.filter(line => line.type === "co
 for (const key of ["seen_on_monitor", "heard_only"]) assert(reception.branches[key]?.length, key);
 assert(reception.branches.met_at_shop.some(line => line.speaker === "master_hookah" && /店の時/.test(line.text)), "店で会ったことに触れる");
 assert(!reception.branches.met_at_shop.some(line => /名前だけは|モニターで見た/.test(line.text || "")), "顔見知りに初対面の地の文を出さない");
-assert.deepEqual(reception.metadata, { flavor_lesson: { lychee: 1 } }, "前夜祭は今までどおり熟練度だけ（好感度なし）");
+assert.deepEqual(reception.metadata, { forced_event: true, flavor_lesson: { lychee: 1 } }, "前夜祭は今までどおり熟練度だけ（強制イベントなので好感度なし）");
 
 // ---- ドバイの地図・代金・読み込み --------------------------------------------------------------
 const daily = read("../js/chapters/ch4-dubai-daily.js");
