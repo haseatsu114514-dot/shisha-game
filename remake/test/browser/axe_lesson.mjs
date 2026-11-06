@@ -206,6 +206,8 @@ await suite("axe-lesson", async check => {
           _axe_bar_sighting_day: state.day - 1, _axe_bar_sighting_chapter: state.chapter });
         if (restriction === "played") state.visitedDay.axe_bar = state.day;
         window.lessonGuardCalls = 0; window.lessonVisitSettled = false;
+        // #2605: 初回の斧投げBARは、マキの登場カットインの前にはじめの呼びかけ1行が入る。会話は早送りで読む（状態は変えない）。
+        (await import("./js/vn/engine.js")).vnTest.turbo = true;
         window.visitPromise = (await import("./js/daily/axe-bar.js")).visitAxeBar({
           staminaGuard: async () => { window.lessonGuardCalls++; return true; },
         });

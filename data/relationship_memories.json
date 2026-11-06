@@ -317,6 +317,12 @@
       "char_id": "master_hookah",
       "dialogue_id": "ch4_wang_reception",
       "echo": "（王煙楼は、こちらの都合で待たせるのと、相手を待つのは違うと言った）"
+    },
+    {
+      "id": "noor_sand_line",
+      "char_id": "noor",
+      "dialogue_id": "ch4_noor_talk2",
+      "echo": "（砂を見て、その日の線を決める。ヌールさんの言葉が、炭の前でよみがえる）"
     }
   ]
 }

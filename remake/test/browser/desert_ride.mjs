@@ -414,6 +414,93 @@ await suite("desert-ride", async check => {
     assert.deepEqual(got.unlocked, ["noor", "naru"]);
   });
 
+  // DSR20: 段階の会話と♥3の問いを読んだ♥5の来店で、締めくくり（専用ハガル・最後の問い）。恋愛を選ぶと次の砂丘はツアー代なしで、
+  // 滑ったあと夕日の砂丘でヌールから告白され、付き合う。
+  await check("chapter-four-daily-noor-finale-then-sunset-confession", async page => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const progress = await import("./js/chapters/ch4-progress.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
+        _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
+      value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "nagumo", "dr_kemuri", "noor"]) value.flags[`_intro_${who}`] = true;
+      Object.assign(value.met, { naru: true, noor: true });
+      if (!progress.advanceToChapterFour(value)) throw new Error("Chapter boundary failed");
+      value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
+      value.flags._ch4.titleSeen = true;
+      for (const id of progress.CH4_PREP_SCENES) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);
+      value.day += 3;
+      if (!progress.departChapterFour(value)) throw new Error("Departure failed");
+      // カフェの段階を全部読み、♥3の問いに恋愛寄りで答え、砂丘へも一度行った♥5
+      value.flags._ch4_desert = { v: 2, talks: 6, chats: 0, lastTalkDay: null, outings: 1, lastOutingDay: null };
+      value.flags._noor_affinity_question_done = true;
+      value.romanceChoices = { bond_q1_noor: { char: "noor", value: 1, day: value.day } };
+      value.affinity = { ...(value.affinity || {}), noor: 66 };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      core.saveConfig(); Object.assign(core.state, value); core.save(); core.requestResumeOnBoot();
+    });
+    const arm = () => page.evaluate(async () => { const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0; });
+    await page.reload();
+    await arm();
+    for (const id of ["ch4_opening", "ch4_arrival_inn"]) {
+      await page.locator(`[data-test="ch4-scene"][data-scene="${id}"]`).waitFor({ timeout: 60000 });
+      await page.locator(t("ch4-continue")).click();
+    }
+    const dubaiMap = slot => page.waitForFunction(slot => window.__remake.state.slot === slot
+      && document.querySelector('.map:not(.done) [data-test="pin-ch4_dubai_inn"]') && !document.querySelector("#modal.show"), slot, { timeout: 60000 });
+    const go = async pin => {
+      for (let i = 0; i < 40 && !(await page.locator(t("map-go")).isVisible().catch(() => false)); i++) {
+        await page.locator(t(`pin-${pin}`)).click();
+        await page.waitForTimeout(250);
+      }
+      await page.locator(t("map-go")).click();
+    };
+    await dubaiMap(0);
+    // ♥5の来店: 締めくくり。最後の問いで「二人で」（choose=0）→ 専用ハガル、恋愛ルート。一台の代金と行動を1つ使う
+    const cafeBefore = await get(page);
+    await go("ch4_dubai_tour_desk");
+    await page.waitForFunction(() => window.__remake.state.finales?.noor);
+    await page.locator(".toast", { hasText: "次の砂丘で、ヌールが待っている" }).waitFor();
+    await dubaiMap(1);
+    let value = await get(page);
+    assert.equal(value.finales.noor.route, "romance");
+    assert.equal(value.romanceChoices.bond_q2_noor.value, 1);
+    assert(value.owned.includes("suyaki_noor"), "Noor's double apple hagal");
+    assert.equal(value.money, cafeBefore.money - 3000);
+    assert.equal(value.flags._confession_due, undefined, "no night-walk reservation");
+    // 翌日の昼、約束の砂丘（ツアー代なし）。滑らずに下りても、夕日の場面で告白され、付き合う（choose=0）
+    await go("ch4_dubai_inn");
+    await dubaiMap(0);
+    const before = await get(page);
+    await page.evaluate(() => {
+      window.__bgs = [];
+      new MutationObserver(() => { for (const node of document.querySelectorAll("#bg .bg-img")) if (!window.__bgs.includes(node.style.backgroundImage)) window.__bgs.push(node.style.backgroundImage); })
+        .observe(document.getElementById("bg"), { childList: true, subtree: true, attributes: true });
+    });
+    await go("ch4_dubai_dunes");
+    await phase(page, "menu");
+    assert.equal(await page.locator(t("desert-start-naru")).count(), 0, "a day for the two of them");
+    await page.locator(t("desert-leave")).click();
+    await page.waitForFunction(() => (window.__remake.state.lovers || []).includes("noor"));
+    await dubaiMap(1);
+    value = await get(page);
+    assert.equal(value.money, before.money, "Noor's invitation: no tour fee");
+    assert.deepEqual(value.lovers, ["noor"]);
+    assert.equal(value.loveLevel.noor, 1);
+    assert.equal(value.flags._noor_confession_other_lover, undefined, "the temporary flag is cleared");
+    assert((await page.evaluate(() => window.__bgs)).some(url => /bg_dubai_dunes_dusk/.test(url)), "the confession is on the sunset dunes");
+    // 告白は一度だけ。次の砂丘は相場のツアー代
+    await go("ch4_dubai_inn");
+    await dubaiMap(0);
+    const price = await page.evaluate(async () => {
+      const desert = await import("./js/chapters/ch4-desert-progress.js");
+      return desert.desertOutingStatus(window.__remake.state, 99).price;
+    });
+    assert.equal(price, 6000);
+  });
 });
 
 

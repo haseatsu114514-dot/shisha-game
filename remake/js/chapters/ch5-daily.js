@@ -39,6 +39,7 @@ const TONARI_SLOTS = Object.freeze({
   ch5_free_tonari_practice: [1],
 });
 const PRACTICE = "ch5_free_tonari_practice";
+const MASHIRO_VISIT = "ch5_free_mashiro_visit";
 
 /** 博士に連絡する（勝負の日を決める）。家の電話から。 */
 export const CH5_CALL_SPOT = Object.freeze({
@@ -185,6 +186,8 @@ async function performChapterFiveSpot(spot, io, options = {}) {
     if (!scene) return null; // いつもの tonari（バイト・練習）
     if (!await io.readAndCommit(scene.id)) return { used: false, exerted: false };
     if (scene.id === PRACTICE) await runPrep(io);
+    // 恋人のましろは、この訪問の後に未読の節目を一つだけ読む（#2024 A2。末尾の続きは ch5.js の readScene が足す）。
+    if (scene.id === MASHIRO_VISIT && (state.lovers || []).includes("mashiro")) await io.readLoverMilestone?.("mashiro");
     return { used: true, exerted: false };
   }
   if (spot.id === "adam" && !chapterFiveRead(state, "ch5_free_eden_adam")
