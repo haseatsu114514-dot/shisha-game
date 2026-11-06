@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-ADDRESS = re.compile(r"(?:はじめ|ハジメ|始|蒸野)(?:く[〜～ー]*ん|さん|ちゃん|君|様|さま|っち)?")
+ADDRESS = re.compile(r"(?:はじめ|ハジメ|始|逢縁)(?:く[〜～ー]*ん|さん|ちゃん|君|様|さま|っち)?")
 FIRST_PERSON = re.compile(r"うち|わたし|私")
 # These contain the same characters but are not personal pronouns or addresses.
 ORDINARY_WORDS = re.compile(r"はじめまして|はじめて|はじめに|はじめから|始ま|始め|そのうち|今のうち|知らないうち|おうち|うちわ|うちの(?:店|会社|職場)|私服|私物|私生活|私用")

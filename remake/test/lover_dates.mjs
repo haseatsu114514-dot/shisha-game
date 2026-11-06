@@ -24,7 +24,7 @@ const mashiro = data.dates.mashiro;
 const dialogue = [mashiro.arrive.text, mashiro.mid.text, mashiro.optA.line, mashiro.optB.line, mashiro.close.text].join("\n");
 assert.ok(dialogue.includes("はじめくん"));
 assert.ok(dialogue.includes("僕"));
-assert.doesNotMatch(dialogue, /わたし|私|はじめさん|蒸野くん/);
+assert.doesNotMatch(dialogue, /わたし|私|はじめさん|逢縁くん/);
 for (const field of ["optA", "optB"]) {
   assert.match(mashiro[field].text, /ましろちゃん/, `Mashiro date ${field}: Hajime uses her established name`);
   assert.doesNotMatch(mashiro[field].text, /ましろ(?!ちゃん)/, `Mashiro date ${field}: no bare name in Hajime's speech`);

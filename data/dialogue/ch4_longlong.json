@@ -198,7 +198,7 @@
         {
           "speaker": "master_hookah",
           "face": "normal",
-          "text": "火は、紙をよった火種で点けた。息を吹きかけると、小さな火が立つ"
+          "text": "火は、紙をよった火種で点ける。息を吹きかけると、小さな火が立つ"
         },
         {
           "speaker": "",
@@ -274,7 +274,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（残された時間まで、一台に入れるんだ）"
+          "text": "（残り時間まで、一台に入れるんだ）"
         }
       ]
     },
@@ -325,7 +325,7 @@
         {
           "speaker": "master_hookah",
           "face": "smile",
-          "text": "日本に帰ったら、tonariの一台も吸ってみたいね"
+          "text": "いつか日本へ寄ったら、tonariの一台も吸ってみたいね"
         }
       ]
     },

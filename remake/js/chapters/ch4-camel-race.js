@@ -51,7 +51,7 @@ export async function visitCamelRace({ read, signal = null, isCurrent = () => tr
     consumeCamelRaceDaytime(value);
     save();
     return { completed: true, ...recorded, result };
-  }, { consumed: outcome => outcome.firstClear === true, exp: { key: "camel_race", place: "camel_track", person: "suhail" } });
+  }, { consumed: outcome => outcome.firstClear === true, exp: { key: "camel_race", place: "camel_track", person: "faris" } });
   if (!outcome.completed) return { used: false, exerted: false };
   const { best } = outcome.result;
   if (outcome.firstClear) toast(`初めてレースを走り切った。${best.rank}位・スコア ${best.total}（${best.grade}）。${growthEnabled() ? "……今夜の精算で、火種がひとつ届く。" : ""}`, { kind: "good" });

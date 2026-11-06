@@ -44,6 +44,10 @@ for (const [round, quality] of [95,30,98,96].entries()) {
   p = JSON.parse(JSON.stringify(p)); s.flags._ch2_tournament = p;
 }
 for(const judge of JUDGES) assert.equal(Object.values(p.votes[judge]).reduce((a,b)=>a+b,0),10);
+assert(standings(p).every(row => row.points >= 1));
+assert.equal(standings(p).reduce((sum, row) => sum + row.points, 0), 34);
+const legacyRows = standings({ ...p, baseVotes: undefined });
+assert.deepEqual(standings(p).map(row => [row.id, row.rank]), legacyRows.map(row => [row.id, row.rank]));
 assert.throws(()=>recordResult(s,96),/2回/);
 p.craft.careHistory = [{score:91},{score:99}];
 const result = recordResult(s,96); assert.deepEqual(recordResult(s,96),result); assert.equal(p.history.length,1);

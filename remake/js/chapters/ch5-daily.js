@@ -31,14 +31,17 @@ import {
   chapterFivePrepScene, CH5_PREP_TRIALS,
 } from "./ch5-progress.js";
 
-// tonari の場面の時間帯（台本コメント: ましろの訪問は昼・初めての客は夕方・閉店後の練習は夜）。
+// tonari の場面の時間帯（台本コメント: ましろの訪問は昼・初めての客は夕方・閉店後の練習は夜・つむぎの接客は夕方・つむぎの一台は昼）。
 // 昼と夜の2枠なので、夕方の場面はどちらでも読める。
 const TONARI_SLOTS = Object.freeze({
   ch5_free_mashiro_visit: [0],
   ch5_free_first_visitor: [0, 1],
   ch5_free_tonari_practice: [1],
+  ch5_tsumugi_serving: [0, 1],      // 夕方の接客（昼と夜のどちらでも）
+  ch5_tsumugi_makes_for_hajime: [0], // 休みの日に客として行く（昼だけ）
 });
 const PRACTICE = "ch5_free_tonari_practice";
+const MASHIRO_VISIT = "ch5_free_mashiro_visit";
 
 /** 博士に連絡する（勝負の日を決める）。家の電話から。 */
 export const CH5_CALL_SPOT = Object.freeze({
@@ -79,8 +82,9 @@ export function chapterFiveDailyDefinition(io) {
     nightEvents: {},
     tournamentName: "博士との勝負",
     undatedNote: "博士との勝負の日は、まだ決まっていない",
-    // 告白は第1〜3章の物語なので、第5章では夜に告白の場面を始めない。恋人の誘いとデートは開いている（IR16）。
-    confessions: false,
+    // 夜の帰り道の告白は、第4章までに恋愛ルートに入った相手だけ（第5章で初めて届いた締めくくりでは告白しない・
+    // romance.js の romanceRouteOpen）。第3・4章の出発前と東京・ドバイで持ち越した告白が、帰郷後の地元の夜に届く
+    // （IR33・#2024。東京・ドバイへ出ている夜は romance.js の confessionHeld が持ち越す）。恋人の誘いとデートも開いている（IR16）。
     mapOptions: () => ({
       regionId: currentRegion(),
       regions: [
@@ -120,9 +124,13 @@ export async function runChapterFiveDaily(io) {
 
 const currentRegion = () => ["widehanga", TOKYO, DUBAI].includes(state.flags._ch2_region) ? state.flags._ch2_region : "home";
 
-/** 東京の行き先（スティーブ・ヴォルクの店は会ったことがあれば。帰りの配送便は昼だけ）。 */
+/**
+ * 東京の行き先（スティーブ・ヴォルクの店は会ったことがあれば。帰りの配送便は昼だけ）。
+ * CHOI-ZAP は会員の時だけ、クラブSEAM は夜だけ（第3章の東京と同じ）。クラブは店主に会う前も「地下の店」として出す（unknownLabel）。
+ */
 // 占い師は東京にも現れる（理由は語らない・台帳 URA）。
-export const chapterFiveTokyoSpots = () => [...tokyoSpotsNow().filter(spot => (!spot.charId || state.met?.[spot.charId]) && reflectable(spot)), fortuneSpot(TOKYO)].filter(Boolean);
+export const chapterFiveTokyoSpots = () => [...tokyoSpotsNow().filter(spot => (!spot.charId || spot.unknownLabel || state.met?.[spot.charId])
+  && (!spot.gym || !!state.flags._gym_member) && (!spot.night || state.slot >= 1) && reflectable(spot)), fortuneSpot(TOKYO)].filter(Boolean);
 /** ドバイの行き先（モスクは灯せる火種がある時だけ）。 */
 export const chapterFiveDubaiSpots = () => DUBAI_SPOTS.filter(reflectable);
 // 内省の場所（東京の池の弁天堂・ドバイのモスク）は、心得の盤で灯せる火種がある時だけ地図に出す（第3・4章と同じ）。
@@ -185,6 +193,8 @@ async function performChapterFiveSpot(spot, io, options = {}) {
     if (!scene) return null; // いつもの tonari（バイト・練習）
     if (!await io.readAndCommit(scene.id)) return { used: false, exerted: false };
     if (scene.id === PRACTICE) await runPrep(io);
+    // 恋人のましろは、この訪問の後に未読の節目を一つだけ読む（#2024 A2。末尾の続きは ch5.js の readScene が足す）。
+    if (scene.id === MASHIRO_VISIT && (state.lovers || []).includes("mashiro")) await io.readLoverMilestone?.("mashiro");
     return { used: true, exerted: false };
   }
   if (spot.id === "adam" && !chapterFiveRead(state, "ch5_free_eden_adam")

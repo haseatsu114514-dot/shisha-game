@@ -338,6 +338,7 @@ await suite("ch4-dubai-daily", async check => {
     assert(!lines.some(text => text.includes("店の時より")), "No shop acquaintance without a visit");
     const after = await get(page);
     assert.equal(after.met.master_hookah, true);
+    // 前夜祭や強制イベントでは好感度は上がらない。初対面の♥1（#2615）も通常の出会いだけに付く（2026-11-06 オーナー決定）。
     assert.equal(after.affinity.master_hookah || 0, 0, "The reception itself gives no affection");
   });
 

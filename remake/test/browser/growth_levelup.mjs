@@ -6,6 +6,12 @@ import { suite, baseURL, assertFits } from "./support.mjs";
 const out = process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser";
 fs.mkdirSync(out, { recursive: true });
 const t = (id) => `[data-test="${id}"]`;
+// CIでは5分枠に収めるため2つに分けて動かす（tools/ci/suites.json の growth-levelup-browser-1/2）。
+// --part=k/n で、登録順の k 番目から n 件おきのケースだけを動かす。省略時は全件。
+const partArg = process.argv.find(arg => arg.startsWith("--part="));
+const [partIndex, partCount] = partArg ? partArg.slice(7).split("/").map(Number) : [1, 1];
+if (!(Number.isInteger(partCount) && partCount >= 1 && Number.isInteger(partIndex) && partIndex >= 1 && partIndex <= partCount))
+  throw new Error(`bad ${partArg}: use --part=k/n`);
 
 async function setupDaily(page) {
   await page.evaluate(async () => {
@@ -1793,6 +1799,9 @@ await suite("growth-levelup", async (runCheck) => {
         paid: { "M-W1": {}, "M-S1": {}, B1: { any: 1 } }, learned: ["M-W1"], effective: true, beforeClose: true, afterClose: false });
     }, { viewport, ...(label === "touch" ? { isMobile: true, hasTouch: true } : {}) });
   }
+  const total=cases.length;
+  cases.splice(0,cases.length,...cases.filter((_case,index)=>index%partCount===partIndex-1));
+  if(partCount>1)console.log(`[growth-levelup] part ${partIndex}/${partCount}: ${cases.length} of ${total} cases`);
   await Promise.all(Array.from({length:2},async()=>{
     for(;;){const next=cases.shift();if(!next)return;await runCheck(...next);}
   }));

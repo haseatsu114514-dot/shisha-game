@@ -16,7 +16,7 @@ export * from "./ch4-desert-progress.js";
 import { addMoney, gainAffinity, visitAffinity } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
-import { DESERT_TALKS, DESERT_INVITE_STAGE, NOOR_QUESTION_CHOICE, DESERT_SCENES, DESERT_CAFE_PRICE, desertCafeVisit, completeDesertCafeVisit, DESERT_RACE_WIN_LINE, DESERT_NARU_LINES, DESERT_DIALOGUE_IDS, desertRivals, markNaruMet, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
+import { DESERT_TALKS, DESERT_INVITE_STAGE, NOOR_QUESTION_CHOICE, NOOR_CONFESSION, NOOR_OTHER_LOVER_FLAG, noorConfessionWaiting, DESERT_SCENES, DESERT_CAFE_PRICE, desertCafeVisit, completeDesertCafeVisit, DESERT_RACE_WIN_LINE, DESERT_NARU_LINES, DESERT_DIALOGUE_IDS, desertRivals, markNaruMet, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
   desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertProgress } from "./ch4-desert-progress.js";
 
 let dialogueTask = null;
@@ -42,11 +42,14 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
   active = true;
   const owner = state;
   const current = () => !signal?.aborted && state === owner && isCurrent();
-  const read = async (id, bg) => {
+  const prepare = async bg => {
     showScreen("none", null);
     layers.hud.replaceChildren(); layers.hud.classList.remove("show");
     if (bg) await setBg(bg, { fast: true });
-    if (!current()) return false;
+    return current();
+  };
+  const read = async (id, bg) => {
+    if (!await prepare(bg)) return false;
     const result = await play(DB.dialogues[id], { signal });
     return current() && !!result && !result.cancelled;
   };
@@ -60,6 +63,17 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
       const visit = desertCafeVisit(owner, day, { legacy });
       if (!visit) return false;
       if (paid && DESERT_CAFE_PRICE > spendableMoney(owner)) { toast(`お金が足りない（${DESERT_CAFE_PRICE.toLocaleString("ja-JP")}円）`); return false; }
+      // ♥5の締めくくり（DSR20）: 再生・ルートの記録・専用ハガルは bonds.js の playFinale。読み終えたら今日の来店として確定する
+      if (visit.kind === "finale") {
+        const { finaleDue, playFinale } = await import("../daily/bonds.js");
+        if (!current() || !finaleDue(DESERT_GUIDE) || !await prepare(bgUrl("bg_dubai_inn_day"))) return false;
+        if (!await playFinale(DESERT_GUIDE, { bg: bgUrl("bg_dubai_inn_day"), signal, deferSave: true }) || !current()) return false;
+        if (!completeDesertCafeVisit(owner, visit, day, { legacy })) return false;
+        if (paid) addMoney(-DESERT_CAFE_PRICE);
+        save(); changed = true;
+        if (noorConfessionWaiting(owner)) toast("次の砂丘で、ヌールが待っている（ツアー代はいらない）", { kind: "good" });
+        return changed;
+      }
       const id = visit.id;
       if (!await read(id, bgUrl("bg_dubai_inn_day"))) return false;
       if (!completeDesertCafeVisit(owner, visit, day, { legacy })) return false;
@@ -93,7 +107,9 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     showScreen("none", null);
     const before = desertRecords(owner);
     const name = DB.characters[DESERT_GUIDE]?.display_name || "ヌール", naruName = DB.characters.naru?.display_name || "なる";
-    const rivals = desertRivals(owner);
+    // 締めくくりで「二人で見たい」と答えた後の砂丘: 滑ったあと夕日で告白（DSR20）。この日はなるを呼ばない
+    const confessionDay = status.invited === true;
+    const rivals = confessionDay && !before.naruMet ? ["noor"] : desertRivals(owner);
     // ヌールに勝った後の最初の外出: なるが砂丘に来て勝負を持ちかける（一度だけ）
     if (rivals.includes("naru") && !before.naruMet) {
       if (!await read(DESERT_SCENES.naruArrive, bgUrl(DESERT_BG))) return changed;
@@ -126,6 +142,18 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     if (firstWin && !await read(DESERT_SCENES.raceFirstWin, bgUrl(DESERT_BG))) return changed;
     // 初めてなるに勝った日も、夕日の前に一言
     if (firstNaruWin && !await read(DESERT_SCENES.naruFirstWin, bgUrl(DESERT_BG))) return changed;
+    if (confessionDay) {
+      const { romanceRouteOpen } = await import("../daily/romance.js");
+      if (current() && romanceRouteOpen(DESERT_GUIDE)) {
+        // ほかに恋人がいれば、返事の前に一度だけ立ち止まる（台本の条件で出す一時の印）
+        owner.flags[NOOR_OTHER_LOVER_FLAG] = (owner.lovers || []).length > 0;
+        try { await read(NOOR_CONFESSION, bgUrl(DESERT_DUSK_BG)); } finally { delete owner.flags[NOOR_OTHER_LOVER_FLAG]; }
+        // 付き合うと LIME を交換する（台本の _lime_contact_noor）。以後、離れていても朝のLIMEが届く（remake/data/lover.json）
+        if (owner.flags[`_lime_contact_${DESERT_GUIDE}`] && !(owner.contacts || []).includes(DESERT_GUIDE)) (owner.contacts ||= []).push(DESERT_GUIDE);
+        if (state === owner) save();
+        return changed;
+      }
+    }
     await read(status.first ? DESERT_SCENES.sunsetFirst : DESERT_SCENES.sunsetAgain, bgUrl(DESERT_DUSK_BG));
     return changed;
   } finally { active = false; }

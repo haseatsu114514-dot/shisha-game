@@ -159,7 +159,7 @@ for(const scene of Object.values(DB.dialogues).filter(s => s.dialogue_id.startsW
 }
 for(const [id,char] of [['ch1_minto_first','minto'],['ch2_rei_first','rei'],['ch2_kumicho_first','kumicho']]) {
   for(const rows of paths(id,state(3,'daily',{[char]:true}))) {
-    assert.doesNotMatch(rows.map(r=>r.text||'').join('\n'),/はじめまして|初めまして|見ねえ顔|蒸野といいます|俺は神崎/,`${id}: already met`);
+    assert.doesNotMatch(rows.map(r=>r.text||'').join('\n'),/はじめまして|初めまして|見ねえ顔|逢縁といいます|俺は神崎/,`${id}: already met`);
   }
 }
 for(const id of ['ch1_adam_after_ch1','ch1_minto_after_ch1','ch1_naru_after_return','ch2_kumicho_after_ch2']) {

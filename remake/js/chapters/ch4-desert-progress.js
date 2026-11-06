@@ -5,10 +5,12 @@
 // 段階の会話は♥0・1・2・3で読み、♥3の誘いで砂丘へ。2回目以降の砂丘は 6,000円（相場: ガイド付きのサンドボード単体 約150ディルハム）。
 import { readResult, rankAtLeast, RANK_ORDER, RULES_VERSION } from "../minigames/desert-ride-model.js";
 import { spendableMoney } from "../core/travel-budget.js";
+import { questionDoneKey } from "../core/affinity-stages.js";
 
 export const DESERT_FLAG = "_ch4_desert";
 export const DESERT_GUIDE = "noor";
-// DSR20（ヒロイン化）の一段目: 誘いの後に♥3の問い（恋愛／友情。bond_q1_noor）と♥4の会話。♥5の締めくくり・告白は次の段で足す。
+// DSR20（ヒロイン化）: 誘いの後に♥3の問い（恋愛／友情。bond_q1_noor）と♥4の会話。段階を読み終えた♥5で締めくくり（daily/bonds.js の
+// BOND_FINALES.noor・専用ハガル）。最後の問い（bond_q2_noor）で恋愛を選ぶと、次の砂丘（ツアー代なし）の夕日で告白（confession_noor）。
 export const DESERT_TALKS = Object.freeze(["ch4_noor_meet", "ch4_noor_talk2", "ch4_noor_cafe_3", "ch4_noor_invite", "ch4_noor_bond_question", "ch4_noor_cafe_4"]);
 /** 段階の会話を読むのに要る♥（DESERT_TALKS と同じ順）。前の段階を読み、この♥に届いていれば読める。 */
 export const DESERT_TALK_HEARTS = Object.freeze([0, 1, 2, 3, 3, 4]);
@@ -16,6 +18,11 @@ export const DESERT_TALK_HEARTS = Object.freeze([0, 1, 2, 3, 3, 4]);
 export const DESERT_INVITE_STAGE = DESERT_TALKS.indexOf("ch4_noor_invite") + 1;
 /** ♥3の問い（恋愛／友情）の選択肢 id。答えは bonds.js の recordRomanceChoice が state.romanceChoices に一度だけ記録する。 */
 export const NOOR_QUESTION_CHOICE = "bond_q1_noor";
+/** ♥5の締めくくり（daily/bonds.js の BOND_FINALES.noor が再生・記録する）と、砂丘の夕日の告白。 */
+export const NOOR_FINALE = "ch4_noor_bond_finale";
+export const NOOR_CONFESSION = "confession_noor";
+/** 告白の場面で「ほかに恋人がいる」ひとことを出す一時の印（再生の直前に立て、終わったら消す）。 */
+export const NOOR_OTHER_LOVER_FLAG = "_noor_confession_other_lover";
 /** 段階の会話が無い日の、店での雑談（順に巡回）。 */
 export const DESERT_CAFE_CHATS = Object.freeze(["ch4_noor_cafe_chat_a", "ch4_noor_cafe_chat_b", "ch4_noor_cafe_chat_c"]);
 export const DESERT_CAFE_PRICE = 3000; // ドバイのカフェの一台（ch4-dubai-daily.js の中心地・路地裏のカフェと同じ）
@@ -29,7 +36,7 @@ export const DESERT_RACE_WIN_LINE = "venue_noor_race_win";
 /** なる（裏の相手）との競走のひとこと。 */
 export const DESERT_NARU_LINES = Object.freeze({ win: "venue_naru_race_win", lose: "venue_naru_race_lose" });
 export const DESERT_DIALOGUE_IDS = Object.freeze([...DESERT_TALKS, ...DESERT_CAFE_CHATS, ...Object.values(DESERT_SCENES), ...RANK_ORDER.map(rank => `venue_noor_result_${rank}`), DESERT_RACE_WIN_LINE,
-  ...Object.values(DESERT_NARU_LINES)]);
+  ...Object.values(DESERT_NARU_LINES), NOOR_FINALE, NOOR_CONFESSION, `${NOOR_CONFESSION}_accept`, `${NOOR_CONFESSION}_reject`]);
 export const DESERT_DIALOGUE_FILE = "ch4_desert";
 // 地図の位置（百分率）。ドバイの地図で HUD・案内の枠・ほかの行き先と重ならない所（デスクは宿・FESTA・店の間、砂丘は左下＝街の外）。
 export const DESERT_PLACES = Object.freeze({
@@ -66,6 +73,17 @@ export function desertProgress(value) {
 const write = (value, progress) => { value.flags[DESERT_FLAG] = { v: 2, ...progress }; return progress; };
 
 export const desertInvited = value => desertProgress(value).talks >= DESERT_INVITE_STAGE;
+/** 店の段階の会話を全部読んだか（締めくくりの前提。daily/bonds.js の storiesDone が読む）。 */
+export const noorStoriesDone = value => desertProgress(value).talks >= DESERT_TALKS.length;
+/**
+ * 締めくくりを待っているか（地図の印と来店の場面選びの目安）。実際に始めるかは bonds.js の finaleDue が確かめる。
+ * 段階の会話と♥3の問いを読み、♥5で、まだ締めくくりを読んでいない。
+ */
+export const noorFinaleWaiting = value => noorStoriesDone(value) && !value?.finales?.[DESERT_GUIDE]
+  && !!value?.flags?.[questionDoneKey(DESERT_GUIDE)] && noorHeart(value) >= 5;
+/** 締めくくりで恋愛を選び、まだ告白の返事をしていない（次の砂丘はツアー代なしで、夕日で告白）。 */
+export const noorConfessionWaiting = value => value?.finales?.[DESERT_GUIDE]?.route === "romance"
+  && !(value.lovers || []).includes(DESERT_GUIDE) && !value.flags?.[`_friend_${DESERT_GUIDE}`];
 
 // 旧カードの地図（版2より前の5日の保存）は日数が少ないので、以前と同じ3つ（名乗り・地図・誘い）で誘う。店の3つ目は飛ばす
 const LEGACY_SKIP = "ch4_noor_cafe_3";
@@ -101,12 +119,21 @@ export function desertCafeVisit(value, day, { legacy = false } = {}) {
   if (progress.lastTalkDay !== null && progress.lastTalkDay >= day) return null;
   const story = desertTalkScene(value, day, legacy ? Infinity : noorHeart(value), { legacy });
   if (story) return { id: story, kind: "story" };
+  if (!legacy && noorFinaleWaiting(value)) return { id: NOOR_FINALE, kind: "finale" };
   if (progress.talks === 0) return null; // 名乗りの前に雑談はしない（名乗りは♥0で読める）
   return { id: DESERT_CAFE_CHATS[progress.chats % DESERT_CAFE_CHATS.length], kind: "talk" };
 }
 
 /** カフェの会話の読了を確定する（段階なら進み、雑談なら数える）。 */
 export function completeDesertCafeVisit(value, visit, day, { legacy = false } = {}) {
+  // 締めくくりは bonds.js の playFinale が state.finales に記録した後に、今日の来店として確定する
+  if (visit?.kind === "finale") {
+    const progress = desertProgress(value);
+    if (!value?.flags || legacy || visit.id !== NOOR_FINALE || !value.finales?.[DESERT_GUIDE]
+      || (progress.lastTalkDay !== null && progress.lastTalkDay >= day)) return false;
+    write(value, { ...progress, lastTalkDay: day });
+    return true;
+  }
   const expected = desertCafeVisit(value, day, { legacy });
   if (!value?.flags || !visit || !expected || expected.id !== visit.id) return false;
   if (visit.kind === "story") return completeDesertTalk(value, visit.id, day, legacy ? Infinity : noorHeart(value), { legacy });
@@ -122,12 +149,14 @@ export const desertDaytime = value => (value?.slot ?? 0) === 0;
 /** 砂丘へ行けるか。誘われていて、今日まだ行っていない昼だけ。2回目からはツアー代（DESERT_RIDE_PRICE）が要る。 */
 export function desertOutingStatus(value, day) {
   const progress = desertProgress(value);
-  const first = progress.outings === 0, price = first ? 0 : DESERT_RIDE_PRICE;
-  if (progress.talks < DESERT_INVITE_STAGE) return { ok: false, why: "まだ誘われていない", first, price };
-  if (progress.lastOutingDay !== null && progress.lastOutingDay >= day) return { ok: false, why: "今日はもう砂丘へ行った", first: false, price };
-  if (!desertDaytime(value)) return { ok: false, why: "今日の昼はもう別の予定に使った", first, price };
-  if (price > spendableMoney(value)) return { ok: false, why: `お金が足りない（${price.toLocaleString("ja-JP")}円）`, first, price };
-  return { ok: true, why: "", first, price };
+  // 締めくくりで「二人で見たい」と答えた後の砂丘は、ヌールの誘い（ツアー代なし）
+  const invited = noorConfessionWaiting(value);
+  const first = progress.outings === 0, price = first || invited ? 0 : DESERT_RIDE_PRICE;
+  if (progress.talks < DESERT_INVITE_STAGE) return { ok: false, why: "まだ誘われていない", first, price, invited };
+  if (progress.lastOutingDay !== null && progress.lastOutingDay >= day) return { ok: false, why: "今日はもう砂丘へ行った", first: false, price, invited };
+  if (!desertDaytime(value)) return { ok: false, why: "今日の昼はもう別の予定に使った", first, price, invited };
+  if (price > spendableMoney(value)) return { ok: false, why: `お金が足りない（${price.toLocaleString("ja-JP")}円）`, first, price, invited };
+  return { ok: true, why: "", first, price, invited };
 }
 
 /**
@@ -248,17 +277,18 @@ export function desertDailySpots(value, day) {
     desc: first ? "宿の隣のシーシャカフェ。表に砂漠ツアーのデスクがある。一台3,000円（約70ディルハム）。"
       : "ヌールの父の店。一台頼んで、ヌールと話す。一台3,000円（約70ディルハム）。",
     unavailable: cafeWhy, unavailableTag: !visit ? "また明日" : poor ? "お金が足りない" : "",
-    hasNew: () => visit?.kind === "story" && !poor })];
+    hasNew: () => (visit?.kind === "story" || visit?.kind === "finale") && !poor })];
   if (progress.talks < DESERT_INVITE_STAGE) return spots;
   const status = desertOutingStatus(value, day);
   const best = desertRecords(value).best;
   const tag = status.ok ? "" : status.why === "今日はもう砂丘へ行った" ? "今日はもう行った" : status.why.startsWith("お金") ? "お金が足りない" : "砂丘は昼だけ";
   spots.push(dailySpot({ id: DESERT_SPOT_IDS.dunes, place: "dunes", label: "ヌールと砂丘へ", area: "街の外の砂丘",
     x: DAILY_AT.dunes[0], y: DAILY_AT.dunes[1], theme: "park", glyph: "砂", preview: "bg_dubai_dunes_day",
-    desc: status.first ? "サンドボードを教わる（初回は無料）。昼の行動を使う（滑り直しは何度でも）。"
+    desc: status.invited ? "ヌールとの約束。滑ったあと、夕日の砂丘に少しだけ残る（ツアー代はいらない）。昼の行動を使う。"
+      : status.first ? "サンドボードを教わる（初回は無料）。昼の行動を使う（滑り直しは何度でも）。"
       : `もう一度砂丘を滑る（ツアー代 6,000円・約140ディルハム）。昼の行動を使う。${best ? `自己ベスト ${best.score.toLocaleString("ja-JP")}点／${best.rank}。` : ""}`,
     unavailable: status.ok ? "" : status.why === "今日はもう砂丘へ行った" ? "今日はもう砂丘へ行った。また明日" : status.why.startsWith("お金") ? status.why : "砂丘へは昼に出かける",
-    unavailableTag: tag, hasNew: () => status.ok && status.first }));
+    unavailableTag: tag, hasNew: () => status.ok && (status.first || status.invited) }));
   return spots;
 }
 

@@ -16,7 +16,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "大きな手。でも動作は繊細で、トングを扱う精度が異常に高い。炭が一ミリもズレない。"
+          "text": "大きな手。なのにトングの先は繊細で、炭が一ミリもズレない。"
         },
         {
           "speaker": "hajime",
@@ -144,7 +144,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "はい。県大会に出ていて、この辺りのシーシャ屋を回っていたら、ここが気になって"
+            "text": "はい。県大会に出るので、この辺りのシーシャ屋を回っていて。ここが気になって"
           },
           {
             "speaker": "kumicho",
@@ -171,7 +171,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "tonariの蒸野です。この辺りのお店を回っていたら、ここが気になって"
+            "text": "tonariの逢縁です。この辺りのお店を回っていたら、ここが気になって"
           },
           {
             "speaker": "kumicho",
@@ -220,7 +220,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "『スジを通す』って言ってましたよね。シーシャに仁義、っていうのをもう少し聞かせてもらえますか"
+          "text": "前に言ってた『スジを通す』って話、もう少し聞かせてもらえますか？"
         },
         {
           "speaker": "kumicho",
@@ -526,7 +526,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "不思議な空間だ。怖いのに、シーシャを吸っていると全部忘れてしまう。"
+          "text": "不思議な店だ。怖いはずなのに、煙を吸っていると肩の力が抜けていく。"
         },
         {
           "speaker": "kumicho",
@@ -625,12 +625,12 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "閉店後だけ、……いつもこれでさ"
+          "text": "閉店後だけでさ。……吸うのは、いつもこれ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ドラゴンフルーツ"
+          "text": "……ドラゴンフルーツ、ですね"
         },
         {
           "speaker": "kumicho",
@@ -645,7 +645,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "神崎さんは自分の吸い口を外し、袋から出した新しいのを無言で差し直した。そのホースを、こちらに差し出す。"
+          "text": "神崎さんは自分の吸い口を外し、袋から出した新しいのに替えた。ホースが、こちらへ向く。"
         },
         {
           "speaker": "hajime",
@@ -655,7 +655,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "回し飲みでさ。同じ一台を回すんで。吸い口は、一人ずつ新しいのに替えやす"
+          "text": "回し飲みでさ。吸い口は、一人ずつ新しいのに替えやす"
         },
         {
           "speaker": "",
@@ -1182,103 +1182,117 @@
     },
     {
       "dialogue_id": "ch2_kumicho_after_ch2",
-      "metadata": {
-        "bg": "res://assets/backgrounds/bg_ryuji_shop.png"
-      },
+      "comment": "第2章の後日談（STP07 J-6・オーナー判断 C13 Q3=A で書き直し）。世界大会の後、第5章で神崎煙草店に初めて来た回に一度だけ読む（chapters/ch5-first-talks.js）。第5章の柚ヶ谷では第2章の物語の場面を出さない #2033 の、唯一の例外。県大会の勝ちは、手順を外さないまま持ち点の表を見て取った勝ちだったと神崎は見抜いていて、その日は言わなかった（第2章の主題。ch2_tournament の「炭は裏まで見ますぜ」「スジの通った一台でしたわ」の回収）。素性は語らない。背景・代金・能力・好感度・既読は来店の処理（chapters/ch5-shops.js）が付けるので、metadata.bg・能力の増加文・set_flag は置かない。",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "大会が終わって、神崎煙草店に立ち寄った。"
+          "text": "神崎煙草店の暖簾をくぐると、神崎さんが炭の箱から顔を上げた。"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "……おう、来なすったか。優勝おめでとさんでさ"
+          "text": "……おう、あんちゃん。世界から、よく戻りなすった"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ありがとうございます"
+          "text": "はい。ただいま戻りました"
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "大会でのあんちゃんの煙、しかと見せてもらいやした。スジが通ってた"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "神崎さんに、そう言ってもらえると……"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "負けた側がこう言うのも、おかしな話ですがね"
+          "face": "smile",
+          "text": "世界一、おめでとさんでさ。若いのが、動画を何べんも見せに来やしてね"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "神崎さんが、静かにドラゴンフルーツのセットを組み始めた。"
+          "text": "神崎さんはドラゴンフルーツの一台を組み、黙ってホースをこちらへ渡した。"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "俺はな、かつて『勝つことがスジだ』と思ってた時期がありやしてね"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "だが……あんちゃんの煙を見て、違うと思ったんでさ"
+          "text": "県大会の日、あんちゃんに『スジの通った一台』と言いやしたね"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "どういうことですか"
+          "text": "はい。覚えてます"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "スジを通すってのは、勝ち負けじゃなく、相手への誠実さのことだったんですわ"
+          "text": "あれは嘘じゃありやせん。手順は、一つも外してなかった"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "……だが、あの日のあんちゃんの目は、炭より先に持ち点の表を見てた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……気づかれてたんだ）"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "あんちゃんは、ちゃんとそれを出してた"
+          "text": "勝ちを取りにいく奴の目でさ。……昔の俺が、そうだった"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "sad",
+          "text": "勝つことがスジだと思ってた。それで、なくしたもんがありやす"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……この人から、そういう言葉をもらえるとは思っていなかった）"
+          "text": "……どうして、あの時は言わなかったんですか"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "それとな。あんちゃんはもう、俺の五厘の兄弟でさ"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "困り事があったら言いな。俺にできることなら、力になりやす"
+          "text": "言われて直る目なら、苦労はねえんでさ。自分で気づくしかねえ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（この顔で言われると迫力があるけど……頼もしい）"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "また来なせえ。縁ってもんは、一生大事にしやすわ"
+          "text": "……自分で気づくまで、ずいぶん遠回りしました"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "……【根性】が上がった。"
+          "text": "ホースが戻ってくると、神崎さんは自分の吸い口に替えて、ゆっくりと煙を吐いた。"
         },
         {
-          "type": "set_flag",
-          "flag": "ch2_kumicho_after_ch2_done"
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "スジってのは、勝ち負けじゃねえ。煙を渡す相手への、誠実さなんですわ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "世界の舞台のあんちゃんは、持ち点の表じゃなく、吸う人の顔を見てた"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "……動画越しでも、分かりやしたぜ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "次は、博士の機械と勝負するんです。ダブルアップルだけで"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "相手が機械でも、吸うのは人でさ。……その目で、行きなせえ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙の向こうで、神崎さんが一度だけ大きくうなずいた。"
         }
       ]
     },

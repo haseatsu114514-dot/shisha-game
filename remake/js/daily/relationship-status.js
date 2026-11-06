@@ -2,14 +2,15 @@
 import { DB } from "../core/data.js";
 import { state } from "../core/state.js";
 import { affinityLevel, affinityGateWaiting } from "../core/stats.js";
-import { BOND_QUESTIONS, BOND_FINALES, questionVisitDue, finaleDue, finaleHeart, settledFriend } from "./bonds.js";
-import { romanceRouteOpen } from "./romance.js";
+import { BOND_QUESTIONS, BOND_FINALES, questionVisitDue, finaleDue, finaleHeart, settledFriend, finaleReachable } from "./bonds.js";
+import { romanceRouteOpen, confessionHeld } from "./romance.js";
 import { hiyoriFinaleReady } from "../core/hiyori-route.js";
 
 const meetingPlace = {
   sumi: "tonari", tsumugi: "tonari", naru: "KEMURIKUSA", adam: "EDEN",
   rio: "夜のDr.fookahの2階", minto: "PEPPERMINT", hiyori: "tonari", samechan: "SHISHARK", ageha: "MELTY PUFF",
-  kumicho: "神崎煙草店", rei: "零-ZERO-", mashiro: "mukai", saku: "煙幕",
+  kumicho: "神崎煙草店", rei: "零-ZERO-", mashiro: "mukai", saku: "煙幕", noor: "カフェ・サーリム", steve: "Smoke & Glory",
+  volk: "鉄の煙",
 };
 const summary = (kind, label, hint) => ({ kind, label, hint });
 
@@ -21,6 +22,8 @@ function finaleHint(id) {
     if (def.invite) return "LIMEの私的な約束で、特別なイベントへ。";
     return `${def.night ? "夜、" : "次に"}${meetingPlace[id] || "いつもの場所"}で会うと、特別なイベントへ。`;
   }
+  // 綾取・スティーブ・ヴォルク（#2028）の締めくくりは第3章の東京にいる間だけ。会えなくなった後は次の節目を約束しない
+  if (!finaleReachable(id)) return "";
   if (id === "tsumugi" && state.chapter === 1 && state.day < 12 && !state.flags._tsumugi_contest_submitted) {
     return "つむぎの絵の応募を見届けよう。特別なイベントは、その後に。";
   }
@@ -52,7 +55,11 @@ export function relationshipStatus(id) {
   }
   if (romanceRouteOpen(id)) {
     if (id === "mashiro") return summary("romance", "告白を選べる", "寄り道から、休日にましろの部屋でお茶をする日へ。");
-    return summary("romance", "告白を選べる", (state.flags._confession_wait || 0) > state.day
+    if (id === "noor") return summary("romance", "告白を選べる", "次の砂丘（ツアー代なし）で、滑ったあとの夕日の時間へ。");
+    // 出発前の準備・東京・ドバイでは帰り道の告白を始めない（romance.js の confessionHeld・IR33）
+    return summary("romance", "告白を選べる", confessionHeld()
+      ? "出発前と遠出のあいだは胸にしまっておく。帰ってから、夜の帰り道で伝えられる。"
+      : (state.flags._confession_wait || 0) > state.day
       ? "今は想いを胸にしまっている。後日の夜、もう一度伝えられる。"
       : "予定の合う夜の帰り道で、想いを伝えるか選べる。");
   }

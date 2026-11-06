@@ -14,7 +14,7 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_FREE_SC
   chapterFiveLimeDue, CH5_CREDITS_FLAG, chapterFiveCreditsPending, recordChapterFiveCredits,
   chapterFiveTrueEndReached, CH5_POST_ENDING, CH5_CONFLICT_SCENES, CH5_TALK_SCENES, chapterFivePostEndingContext,
   chapterFivePostEndingPlan, chapterFivePostEndingUndecided, beginChapterFivePostEnding, chapterFivePostEndingNext,
-  chapterFivePostEndingUnresolved, completeChapterFivePostEnding } from "../js/chapters/ch5-progress.js";
+  chapterFivePostEndingUnresolved, completeChapterFivePostEnding, CH5_MASHIRO_LOVER_ECHO, chapterFiveLoverEcho } from "../js/chapters/ch5-progress.js";
 
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
 const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url)));
@@ -199,13 +199,13 @@ assert.equal(value.flags._ch5.scheduleDecision, null);
 assert.equal(completeChapterFiveScene(value, "ch5_free_tonari_practice"), true, "Free scenes are order-free");
 rejects(value, v => completeChapterFiveScene(v, "ch5_free_tonari_practice"));
 assert.deepEqual(chapterFiveFreeRemaining(value).map(scene => scene.id),
-  ["ch5_free_mashiro_visit", "ch5_free_first_visitor", "ch5_free_eden_adam"]);
+  ["ch5_free_mashiro_visit", "ch5_free_first_visitor", "ch5_tsumugi_serving", "ch5_tsumugi_makes_for_hajime", "ch5_free_eden_adam"]);
 // #1588: EDEN の任意場面も自由行動の一つとして1回だけ読める（tonari の並びとは別の入口）。
 assert.equal(CH5_FREE_SCENES.find(scene => scene.id === "ch5_free_eden_adam")?.location, "EDEN");
 assert.equal(completeChapterFiveScene(value, "ch5_free_eden_adam"), true);
 rejects(value, v => completeChapterFiveScene(v, "ch5_free_eden_adam"));
 assert.deepEqual(chapterFiveFreeRemaining(value).map(scene => scene.id),
-  ["ch5_free_mashiro_visit", "ch5_free_first_visitor"]);
+  ["ch5_free_mashiro_visit", "ch5_free_first_visitor", "ch5_tsumugi_serving", "ch5_tsumugi_makes_for_hajime"]);
 assert.equal(completeChapterFiveScene(value, "ch5_unrecorded_day"), true);
 rejects(value, v => completeChapterFiveScene(v, "ch5_unrecorded_day"));
 roundTrip(value);
@@ -850,6 +850,23 @@ for (const [base, change] of [
   }
   // 第5章の場面で会っていない相手（つむぎ・みんと・凛想など）からは届かない。朝の配信条件にも乗らない。
   assert(chapterFive.every(m => ["mashiro", "adam"].includes(m.sender)));
+}
+
+// 恋人のましろの節目は、第5章の tonari の訪問につなぐ（#2024 A2）。恋人でなければ何も足さない。
+{
+  const friend = newState(), lover = newState();
+  lover.lovers = ["mashiro"];
+  assert.deepEqual(chapterFiveLoverEcho(friend, "ch5_free_mashiro_visit", { milestoneDue: true }), []);
+  assert.deepEqual(chapterFiveLoverEcho(lover, "ch5_free_first_visitor", { milestoneDue: true }), []);
+  assert.deepEqual(chapterFiveLoverEcho(lover, "ch5_free_mashiro_visit"), [CH5_MASHIRO_LOVER_ECHO.visit]);
+  assert.deepEqual(chapterFiveLoverEcho(lover, "ch5_free_mashiro_visit", { milestoneDue: true }),
+    [CH5_MASHIRO_LOVER_ECHO.visit, CH5_MASHIRO_LOVER_ECHO.memory]);
+  const lines = id => files.ch5_main.find(row => row.dialogue_id === id).lines;
+  // 一人称は僕、台詞の文末に句点を付けない。
+  for (const id of Object.values(CH5_MASHIRO_LOVER_ECHO)) for (const line of lines(id)) {
+    if (line.speaker) assert(!/。$/.test(line.text), `${id}: ${line.text}`);
+    if (line.speaker === "mashiro") assert(!/私|あたし/.test(line.text), `${id}: ${line.text}`);
+  }
 }
 
 console.log("PASS: Chapter 5 runner state keeps the road to the SHISHA-9000 finale in order");

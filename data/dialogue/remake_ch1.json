@@ -2542,7 +2542,7 @@
         {
           "speaker": "uranaishi",
           "face": "normal",
-          "text": "次に会ったとき、いつもより素直に話せるだろうさ。……効き目は一度きりだよ"
+          "text": "{fortuneName}と次に会ったとき、いつもより素直に話せるだろうさ。……効き目は一度きりだよ"
         },
         {
           "speaker": "hajime",
@@ -2753,7 +2753,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_shuraba_rio_minto",
+      "dialogue_id": "remake_shuraba_minto_rio",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
       },
@@ -3568,7 +3568,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。tonariでバイトしている蒸野はじめです。ご注文のミントを届けに来ました"
+          "text": "はい。tonariでバイトしている逢縁はじめです。ご注文のミントを届けに来ました"
         },
         {
           "speaker": "minto",
@@ -3758,7 +3758,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "tonariでバイトしてる蒸野はじめです。大会、俺も出ます"
+            "text": "tonariでバイトしてる逢縁はじめです。大会、俺も出ます"
           },
           {
             "type": "set_flag",
