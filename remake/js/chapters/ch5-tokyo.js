@@ -44,7 +44,7 @@ export const TOKYO_SPOTS = Object.freeze([
   spot({ id: "ch5_tokyo_volk", charId: "volk", label: "鉄の煙", area: "ヴォルクの店", x: 55.9, y: 40.4, theme: "rival", glyph: "煙", face: "volk",
     preview: "bg_volk_shop", cost: TOKYO_VISIT_COST, stamina: -16, stat: "insight",
     talks: ["ch5_tokyo_volk", "ch5_tokyo_volk_b", "ch5_tokyo_volk_c"], desc: "計器の並ぶ店。測ってから、客に聞く。" }),
-  spot({ id: "ch5_tokyo_park", label: "公園", area: "池のある公園", x: 69, y: 62, theme: "park", glyph: "園", preview: "bg_street",
+  spot({ id: "ch5_tokyo_park", label: "公園", area: "池のある公園", x: 69, y: 62, theme: "park", glyph: "園", preview: "bg_tokyo_park",
     stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
   // 裏口のてつこは地図の行き先にせず、mukai のシフトの帰りに会う（VOL11）。
   spot({ id: "ch5_tokyo_shop", kind: "shop", label: "Dr.fookah 東京店", area: "駅前の店", x: 15, y: 51, theme: "shop", glyph: "卸",
@@ -150,8 +150,9 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
     return { used: true, exerted: false };
   }
   if (spot.id === "ch5_tokyo_park") {
+    // 池のある公園の絵（昼夜の差分あり）。第3章の公園と同じ（ch3-outings.js の OUTING_BG.park）
     const scene = state.slot >= 1 ? "ch3_outing_park_walk_night" : "ch5_tokyo_park_day";
-    if (!await read(scene, "bg_street", owner)) return { used: false, exerted: false };
+    if (!await read(scene, spot.preview, owner)) return { used: false, exerted: false };
     addStamina(spot.stamina);
     return { used: true, exerted: false };
   }
