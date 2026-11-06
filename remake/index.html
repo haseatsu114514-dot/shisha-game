@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b0812">
+<!-- 版の名札。公開時に remake/tools/stamp_deploy.py がコミットの短いハッシュと公開日時を書く（手元は dev） -->
+<meta name="suien-build" content="dev" data-built="">
 <title>水煙前線 -EN:CODE-</title>
 <link rel="icon" href="../icon.svg">
 <!-- 文字は同梱フォントのみ（remake/fonts/）。外部フォントは読まない＝端末で見た目が変わらない -->
@@ -119,9 +121,68 @@
   const watchdog = setTimeout(() => fail(new Error("Boot timeout"), true), 30000);
   window.addEventListener("error", (event) => fail(event.error || new Error(event.message)));
   window.addEventListener("unhandledrejection", (event) => fail(event.reason));
-  import("./js/main.js")
-    .then(({ boot }) => boot())
-    .then(() => clearTimeout(watchdog), fail);
+
+  // 公開版は、開いた版が最新かを build.json（キャッシュなし）で確かめる。古い版がキャッシュから
+  // 出ていたら、版付きの URL で読み直す＝自分で開いたリンクでも最新で遊べる（手元の dev は確かめない）
+  const BUILD = document.querySelector('meta[name="suien-build"]')?.content || "dev";
+  window.SUIEN_BUILD = BUILD; // スクリプトから差し込む CSS の版（js/core/asset-version.js）
+  const latest = async (timeoutMs) => {
+    if (BUILD === "dev") return null;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(`build.json?t=${Date.now()}`, { cache: "no-store", signal: controller.signal });
+      return res.ok ? await res.json() : null;
+    } catch {
+      return null; // 確かめられないときは今の版のまま遊ぶ
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+  const openBuild = (build) => {
+    const next = new URL(location.href);
+    next.searchParams.set("v", build);
+    location.replace(next.href);
+  };
+
+  // 遊んでいる途中で新しい版が出たら、勝手に読み直さず上に知らせるだけ（タブへ戻ったとき）
+  let lastCheck = Date.now();
+  const recheck = async (force = false) => {
+    if (BUILD === "dev" || document.hidden || document.getElementById("update-note")) return;
+    if (!force && Date.now() - lastCheck < 60000) return;
+    lastCheck = Date.now();
+    const info = await latest(8000);
+    if (!info?.build || info.build === BUILD) return;
+    const note = document.createElement("div");
+    note.id = "update-note";
+    const go = document.createElement("button");
+    go.type = "button";
+    go.className = "update-go";
+    go.dataset.test = "update-go";
+    go.textContent = "新しい版が出ています ── タップで更新（オートセーブから再開）";
+    go.addEventListener("click", () => openBuild(info.build));
+    const close = document.createElement("button");
+    close.type = "button";
+    close.className = "update-close";
+    close.setAttribute("aria-label", "閉じる");
+    close.textContent = "×";
+    close.addEventListener("click", () => note.remove());
+    note.append(go, close);
+    document.body.append(note);
+  };
+  document.addEventListener("visibilitychange", () => recheck());
+  window.addEventListener("pageshow", (event) => { if (event.persisted) recheck(true); });
+
+  (async () => {
+    const info = await latest(3000);
+    // 新しい版の URL で開き直しても古いまま（配信の切り替え待ち）なら、繰り返さずにこの版で遊ぶ
+    if (info?.build && info.build !== BUILD && new URLSearchParams(location.search).get("v") !== info.build) {
+      openBuild(info.build);
+      return;
+    }
+    const { boot } = await import("./js/main.js");
+    await boot();
+  })().then(() => clearTimeout(watchdog), fail);
 })();
 </script>
 </body>

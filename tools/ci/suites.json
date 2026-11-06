@@ -656,6 +656,12 @@
       ]
     },
     {
+      "id": "stamp-deploy",
+      "title": "Pages deploy version stamp on the real index.html and CSS",
+      "kind": "quick",
+      "run": ["node remake/test/stamp_deploy.mjs"]
+    },
+    {
       "id": "dialogue-lint",
       "title": "Dialogue lint, canon and story routes",
       "kind": "quick",

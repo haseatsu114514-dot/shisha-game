@@ -1,4 +1,5 @@
 import { el } from "../core/util.js";
+import { buildVersioned } from "../core/asset-version.js";
 import { toast } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { SE } from "../core/audio.js";
@@ -8,7 +9,7 @@ import { waterQuantity, changeWater, waterComfort, STEM_TIP } from "./water.js";
 
 function ensureStyle() {
   if (document.querySelector('link[data-craft-water]')) return;
-  const link = el("link", { rel: "stylesheet", href: new URL("../../css/craft-water.css", import.meta.url).href, "data-craft-water": "" });
+  const link = el("link", { rel: "stylesheet", href: buildVersioned(new URL("../../css/craft-water.css", import.meta.url).href), "data-craft-water": "" });
   document.head.append(link);
 }
 

@@ -17,6 +17,14 @@ import { mountTitleLayout } from "./title-layout.js";
 import { createUiThemeSelect } from "../core/ui-theme.js";
 
 let titleRevision = 0;
+
+/** 今遊んでいる版（公開時に index.html の meta へ書かれる。手元は dev）。自分のリンクが古い版か見分ける用 */
+function buildLabel() {
+  const meta = globalThis.document?.querySelector?.('meta[name="suien-build"]');
+  const build = meta?.content || "dev";
+  const built = build === "dev" ? "" : meta.dataset.built;
+  return built ? `ver. ${built} (${build})` : `ver. ${build}`;
+}
 // 直近に表示したキャラアート。メニューを閉じて再描画するだけのときは同じ絵を使い回し、
 // 読込待ちや無駄な抽選切替を起こさない。新しい絵はブート/タイトル復帰（reload）でだけ選ぶ。
 let currentArt = null;
@@ -241,6 +249,7 @@ export function showTitle(preparedArt = null) {
       menu,
     ]),
     el("div.title-foot", { text: "TAP / CLICK / ENTER ── CH.01 SMOKE CROWN CUP" }),
+    el("div.title-ver", { text: buildLabel() }),
   ]);
   showScreen("title", root);
   const brand = root.querySelector(".title-brand");
