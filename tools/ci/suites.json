@@ -3757,6 +3757,22 @@
       ]
     },
     {
+      "id": "conversation-effects-demo",
+      "title": "Conversation effects demo (#2732): 12 candidates, ON/OFF, one at a time",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 5,
+      "paths": [
+        "remake/test/conversation_effects_demo.mjs",
+        "remake/js/vn/conversation-effects-data.js",
+        "remake/js/vn/conversation-effects-demo.js",
+        "remake/conversation-effects-demo.html"
+      ],
+      "run": [
+        "node remake/test/conversation_effects_demo.mjs"
+      ]
+    },
+    {
       "id": "flavor-expression",
       "title": "Compact flavor features, forecasts and actual cup review",
       "kind": "browser",
