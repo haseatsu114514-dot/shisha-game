@@ -248,6 +248,8 @@ registerFortuneReadings(db);
 // 三日間の「赤く見える」は、選択肢の注記で光りうる相手にだけ約束する（恋愛の注記は表示が切られている間は数えない）。
 const sightLine = d => d.lines.some(l => /赤く見える/.test(l.text || ''));
 const hinted = new Set(['ageha', 'minto', 'naru', 'rio', 'sumi', 'tsumugi']);
+// 判定は注記があるかだけで、章や既読は見ない。凛想の注記は初対面の ch1_rio_first の中、スミさんは第1章DAY5の場面だけなので、
+// 第2章以降や初対面の後は、約束しても光らないことがある（既知の限界。PR本文の「残り」に記載）。
 for (const char of Object.keys(trivia.characters)) assert.equal(fortuneSightHinted(char, hints), hinted.has(char), `${char} sight hint`);
 for (const entry of all) {
   const d = db.dialogues[fortuneResultId(entry)];
@@ -259,6 +261,11 @@ for (const entry of all) {
   if (!hinted.has(char)) assert.equal(d.lines.length, base.find(x => x.dialogue_id === 'remake_fortune_result').lines.length + 1, `${entry.id} keeps the rest of the reading`);
 }
 assert.equal(fortuneSightHinted('mashiro', { ...hints, includeRomance: true }), true, 'romance hints count once romance hints are shown');
+// 相手を選ぶ前の説明は、注記の無い相手にも聞こえるので「相手によっては」と言い、全員には約束しない。
+const offerTexts = db.dialogues.remake_fortune_offer.lines.map(l => l.text || '');
+assert(offerTexts.some(t => t.includes('相手によっては三日間')), 'the offer says the sight works only for some targets');
+assert(!offerTexts.some(t => t.includes('それと三日間')), 'the offer must not promise the sight to every target');
+for (const t of offerTexts) assert(t.length <= 48, `offer line within 48 chars: ${t}`);
 assert.equal(fortuneSightHinted('steve', { ...hints, includeRomance: true }), false);
 assert.equal(fortuneSightHinted('naru', { choices: { 'x:y': { target: 'naru', kind: 'taste' } } }), false, 'taste hints never light');
 assert(db.dialogues.remake_fortune_result, 'legacy result was removed');

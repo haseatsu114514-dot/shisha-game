@@ -91,7 +91,9 @@ export function registerFortuneReadings(db) {
   }
   const offer = db.dialogues?.remake_fortune_offer;
   if (offer && offer.lines?.length) db.dialogues.remake_fortune_offer = { ...offer, lines: [offer.lines[0],
-    { speaker: 'uranaishi', face: 'normal', text: '占った相手と次に会ったときだけ、縁をひと押し。それと三日間、あの人に届く言葉が見えるおまじないだよ' }, ...offer.lines.slice(1)] };
+    { speaker: 'uranaishi', face: 'normal', text: '占った相手と次に会ったときだけ、縁をひと押し' },
+    // 届く言葉の注記がある相手は一部だけなので、相手を選ぶ前の説明では約束しきらない（結果の台詞は fortuneSightHinted で出し分け）
+    { speaker: 'uranaishi', face: 'normal', text: 'それと相手によっては三日間、あの人に届く言葉が見えるおまじないだよ' }, ...offer.lines.slice(1)] };
 }
 // Authored response hints, never a global preference for the first option.
 export function fortuneChoiceIndex(save, dialogueId, line, data) {
