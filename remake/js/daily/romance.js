@@ -98,7 +98,8 @@ const gateScene = (id) => ({
   ],
   branches: {
     go: [{ type: "set_flag", flag: "_confession_go" }],
-    wait: [{ speaker: "", text: "（大会のこと、店のこと。……今は目の前のことに集中しよう。でも、いつかきっと）" }],
+    // 第5章に大会は無い（持ち越した告白が届くのは帰郷後の第5章。目の前にあるのは博士との勝負）
+    wait: [{ speaker: "", text: `（${(state.chapter || 1) >= 5 ? "博士との勝負" : "大会"}のこと、店のこと。……今は目の前のことに集中しよう。でも、いつかきっと）` }],
   },
 });
 
@@ -126,6 +127,15 @@ const OWN_CONFESSION_SCENE = Object.freeze(["mashiro", "noor"]);
 const nightWalkConfession = (id) => !OWN_CONFESSION_SCENE.includes(id) && romanceRouteOpen(id);
 
 /**
+ * 今夜は帰り道の告白を始めない時期か（予約は残し、遠出から帰ってきてから）。
+ * - 第3・4章の出発前の準備3日（#2024 A1・IR33。第4章はドバイへ来る人がもう決まっていて、新しい恋人が来られない）
+ * - 東京・ドバイにいる夜（帰り道の告白 confession.json はどれも地元の場面）
+ * 第3章の帰郷後と第4章の帰国後は場面カードで夜の帰り道が無いので、持ち越した告白は第5章の地元の夜に届く
+ * （第5章で初めて届いた締めくくりは告白しない。romanceRouteOpen）。
+ */
+export const confessionHeld = (value = state) => !!departurePrep(value) || awayFromHome(value);
+
+/**
  * 一日の終わり（夜の行動と固定イベントの後）に呼ぶ。恋愛ルートで告白を待つ相手がいれば告白イベントを始める。
  * 予約（_confession_due）は締めくくりの直後に入るが、再生の前にもルートを確かめ直す。
  * 旧セーブに残った予約だけ（好感度MAXの自動予約）では告白しない。
@@ -136,7 +146,7 @@ const nightWalkConfession = (id) => !OWN_CONFESSION_SCENE.includes(id) && romanc
  */
 export async function maybeConfession(beat, { busyNight = false, companion = null } = {}) {
   if (state.phase !== "daily" || state.slot < 2) return false; // 昼の行動から仕事後の夜へ飛ばない
-  if (departurePrep(state)) return false; // 第3・4章の出発前は予約を残して帰郷後に回す
+  if (confessionHeld()) return false; // 出発前・東京・ドバイでは予約を残して、帰ってきてから
   let id = state.flags._confession_due;
   if (id && !nightWalkConfession(id)) { delete state.flags._confession_due; id = null; }
   // 2人目の恋愛ルートなど、予約の空きを待っていた相手を拾う（締めくくりの順）
