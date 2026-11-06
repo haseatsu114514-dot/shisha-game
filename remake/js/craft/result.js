@@ -48,8 +48,8 @@ export function interimPointTable(round) {
       : { maezono: { naru: 2, adam: 2, minto: 1, hajime: 2 }, dr_kemuri: { adam: 3, minto: 1, naru: 1, hajime: 1 }, sui: {} };
 }
 
-const totals = (table, upto = JUDGES.length) => {
-  const t = Object.fromEntries(CONTESTANTS.map((c) => [c, 0]));
+const totals = (table, upto = JUDGES.length, baseVotes = null) => {
+  const t = Object.fromEntries(CONTESTANTS.map((c) => [c, baseVotes?.[c] || 0]));
   JUDGES.slice(0, upto).forEach((j) => { for (const [c, v] of Object.entries(table[j.id] || {})) t[c] += v; });
   return t;
 };
@@ -91,10 +91,10 @@ const judgeLegend = () => legendOf(JUDGE_IDS);
  */
 export async function showStandings(round, mine, cs = null, attempt = null) {
   const owner = state;
-  // 実際に投入された持ち点だけを順位にする。制作の出来と投票を混ぜない。
+  // 審査員の投入票と、新規試合だけにある基礎票を集計する。
   if (attempt?.rulesVersion >= 2) castCh1Votes(attempt, round - 1, cs);
   const table = attempt?.rulesVersion >= 2 ? attempt.voteAttempt.votes : interimPointTable(round);
-  const values = totals(table);
+  const values = totals(table, JUDGES.length, attempt?.voteAttempt?.baseVotes);
   const feed = attempt?.rulesVersion >= 2 ? ["3人の審査員が、ここまでの工程に投票", `須井審査員長も${round}回目の配点を投入`] : round === 1
     ? [`${displayName("maezono", state)}、なるに2点・はじめに1点投入！`, "須井審査員長、まだ動かず"]
     : round === 2
@@ -107,7 +107,10 @@ export async function showStandings(round, mine, cs = null, attempt = null) {
   }, [el("span.btn-label", { text: "次へ" })]);
   next.disabled = true;
   const board = el("div.standings.tournament-board", { dataset: { test: "standings", round }, role: "status" }, [
-    header(`SMOKE CROWN CUP ／ ROUND ${round}`, "中間投票", attempt?.rulesVersion >= 2 ? "審査員3人が各10点を工程ごとに配分。須井は最後の1点を調整後に投じる。" : "審査員3人の持ち点（各10点）。須井審査員長は、まだ1点も入れていない。", true),
+    header(`SMOKE CROWN CUP ／ ROUND ${round}`, "中間投票", attempt?.voteAttempt?.baseVotes
+      ? "審査員3人が各10点を工程ごとに配分 · 全員に基礎票1点"
+      : attempt?.rulesVersion >= 2 ? "審査員3人が各10点を工程ごとに配分。須井は最後の1点を調整後に投じる。"
+        : "審査員3人の持ち点（各10点）。須井審査員長は、まだ1点も入れていない。", true),
     el("div.sd-main", [
       el("div.sd-board", [
         judgeLegend(),
@@ -264,8 +267,8 @@ async function parin(screen, disaster) {
 export async function suiCutin(rank, attempt = null) {
   const modern = attempt?.rulesVersion >= 2;
   const table = modern ? attempt.voteAttempt.votes : pointTable(rank);
-  const before = modern ? totals(attempt.voteAttempt.beforeLast) : totals(table, 2);
-  const after = totals(table);
+  const before = modern ? totals(attempt.voteAttempt.beforeLast, JUDGES.length, attempt.voteAttempt.baseVotes) : totals(table, 2);
+  const after = totals(table, JUDGES.length, modern ? attempt.voteAttempt.baseVotes : null);
   const rows = CONTESTANTS.slice().sort((a, b) => before[b] - before[a]).map((id) => el(`div.nc-row${id === "hajime" ? ".me" : ""}`, { dataset: { id } }, [
     el("span.nc-rank.rank-medal", { text: String(rankOf(id, before)) }),
     faceOf(id, ".nc-face"), el("span.nc-name", { text: nameOf(id) }),
@@ -344,12 +347,13 @@ function confetti(host) {
 export function resultTable(cs, rank, attempt = null) {
   return new Promise((resolve) => {
     const table = attempt?.rulesVersion >= 2 ? attempt.voteAttempt.votes : pointTable(rank);
-    const t = totals(table);
+    const baseVotes = attempt?.voteAttempt?.baseVotes;
+    const t = totals(table, JUDGES.length, baseVotes);
     const order = attempt?.rulesVersion >= 2 ? attempt.voteAttempt.result.rows.map(row => row.id) : ordered(t);
     const P = cs.parts || {};
     const rows = order.map((id, i) => el(`div.rt-row${id === "hajime" ? ".me" : ""}`, { style: { "--i": String(3 - i) }, dataset: { id, rank: String(attempt?.rulesVersion >= 2 ? i + 1 : rankOf(id, t)) } }, [
       el("span.rt-rank.rank-medal", { text: `${attempt?.rulesVersion >= 2 ? i + 1 : rankOf(id, t)}位` }), faceOf(id, ".rt-face"),
-      el("span.rt-name", [nameOf(id), el("small.rt-votes", { text: `上園 ${table.maezono[id] || 0} · 博士 ${table.dr_kemuri[id] || 0} · 須井 ${table.sui[id] || 0}` })]),
+      el("span.rt-name", [nameOf(id), el("small.rt-votes", { text: `上園 ${table.maezono[id] || 0} · 博士 ${table.dr_kemuri[id] || 0} · 須井 ${table.sui[id] || 0}${baseVotes?.[id] ? ` · 基礎 ${baseVotes[id]}` : ""}` })]),
       voteStack(table, id, "rt-bar"), el("span.rt-pt", { text: `${t[id]} pt` }),
     ]));
     const evaluation = (score) => {
