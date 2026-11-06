@@ -280,8 +280,8 @@ def continue_portraits(style: str = CLASSIC) -> dict:
 
 def sync_manifest() -> None:
     """manifest の顔アイコンの一覧（faceIcons・faceIconVariants）・顔の枠（faceFrames）と WebP をアイコンに合わせる。
-    WebP は毎回作り直す（2026-11-06: build_images.py は更新日時で作り直しを飛ばすので、アイコンを作り直しても
-    古い切り抜きの WebP が22人分残り、ゲームではそちらが出ていた）"""
+    WebP は毎回作り直す。ゲームは WebP を優先して読むが、build_images.py は更新日時を比べて作り直しを飛ばすことがあり、
+    PNG だけ新しくなると古い絵の WebP が出てしまう（2026-11-06 の減色の改善でも全員の WebP の作り直しが要った）"""
     sys.path.insert(0, str(REPO_ROOT / "remake" / "tools"))
     import build_images  # noqa: E402
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))

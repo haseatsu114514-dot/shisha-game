@@ -7,8 +7,8 @@ tools/make_face_icons.py は、作ったアイコンごとに元の立ち絵の 
 
 2026-11-06 追加（顔アイコンを新バージョンの立ち絵に合わせる）:
 - 新バージョンの顔アイコン（assets/ui/face_icons/new/）も同じように見る。
-- ゲームは WebP（remake/img/ui/face_icons/）を優先して読む。PNG だけ作り直して WebP が古い切り抜きのまま
-  22人分残っていたので、sources.json に残した WebP の版が今の WebP と同じかも見る。
+- ゲームは WebP（remake/img/ui/face_icons/）を優先して読む。build_images.py は更新日時を比べて作り直しを飛ばすことがあり、
+  PNG だけ作り直すと古い絵の WebP が出てしまうので、sources.json に残した WebP の版が今の WebP と同じかも見る。
 - remake/data/manifest.json の一覧に無いアイコンはゲームに出ない（ヨルが漏れていた）。一覧とファイルが合っているかも見る。
 
 直し方:  python3 tools/make_face_icons.py <キャラ>   （新バージョンは --style new。WebP と manifest も一緒に作り直す）
@@ -60,7 +60,7 @@ def main() -> int:
         if webp is None:
             problems.append(f"{icon}: ゲームが読む WebP が無い → {fix}")
         elif webp != entry.get("webp"):
-            problems.append(f"{icon}: WebP が今の PNG から作られていない（古い切り抜きが出る） → {fix}")
+            problems.append(f"{icon}: WebP が今の PNG から作られていない（ゲームには古い絵が出る） → {fix}")
     for icon in sorted(set(sources) - set(icons)):
         problems.append(f"{icon}: sources.json にあるがアイコンが無い")
     listed = set(manifest.get("faceIcons", []))
