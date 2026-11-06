@@ -168,7 +168,7 @@ async function readPlain(id, bg, owner, { growthScene = false } = {}) {
   const dialogue = typeof id === "string" ? DB.dialogues[id] : id;
   if (!dialogue?.lines?.length) return false;
   const url = bgUrl(bg);
-  await setBg(url, { instant: true });
+  await setBg(url);
   if (state !== owner) return false;
   const result = await play(dialogue, { bg: url, ...(growthScene ? { growthScene: true } : {}) });
   return state === owner && !!result && !result.cancelled;
@@ -191,7 +191,7 @@ export function chapterFourDubaiDefinition(io) {
     // 夜は宿で寝る（地元の帰り道の一言・道での出会いは出さない）。宿でも寝る前の家シーシャを選べる。
     beforeHomecoming: async () => {
       state.flags._home_tonight = true;
-      await setBg(bgUrl("bg_dubai_inn_night"), { instant: true });
+      await setBg(bgUrl("bg_dubai_inn_night"));
       return true;
     },
     beforeInvitation: () => true,

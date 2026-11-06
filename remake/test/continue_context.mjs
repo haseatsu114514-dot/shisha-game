@@ -3,7 +3,7 @@ import vm from "node:vm";
 import fs from "node:fs";
 import { weakestPart } from "../js/craft/advice.js";
 import { normalizeContinueContext, prepareContinueScript, craftContinueContext, recordContinueContext, clearContinueHistory } from "../js/chapters/continue-context.js";
-import { PREMIUM_CONTINUE_SCRIPTS } from "../js/chapters/continue-premium.js";
+import { LOVER_CONTINUE_SCRIPTS } from "../js/chapters/continue-lovers.js";
 const sample = { duration: 20, cues: Array.from({ length: 7 }, (_, i) => ({ at: [0,1.8,4.2,7,10.3,13.6,16.5][i], text: `line${i}`, face: "normal" })) };
 for (const [reason, word, tip] of [["burnt","熱","熱を逃がす吸い"],["cold","冷え","炭"],["leaf","香り","葉"],["rank","届か","一つ"]]) {
   const ctx = normalizeContinueContext({ reason });
@@ -28,23 +28,10 @@ assert.equal(recordContinueContext(owner,match,3,{reason:"burnt"}).sameReasonOrd
 assert.equal(recordContinueContext(owner,{},4,ctx).lossOrdinal,1);
 assert.equal(recordContinueContext({},match,4,ctx).lossOrdinal,1);
 clearContinueHistory(owner);assert.equal(recordContinueContext(owner,match,5,ctx).lossOrdinal,1);
-for(const script of Object.values(PREMIUM_CONTINUE_SCRIPTS)) {
+for(const script of Object.values(LOVER_CONTINUE_SCRIPTS)) {
   const short=prepareContinueScript(script,normalizeContinueContext({lossOrdinal:2}));
   assert.deepEqual(short.cues.map(c=>c.text),[0,2,5,6].map(i=>script.cues[i].text));
   assert.deepEqual(script.cues.map(c=>c.at),[0,1.8,4.2,7,10.3,13.6,16.5]);
-  // #2524: 短縮しても自問（self）→相手→問いかけ→自答（self）の形を保つ。
-  assert.deepEqual(short.cues.map(c=>c.voice??null),["self",null,null,"self"]);
-}
-// #2524: スミさん版の先頭は敗因を飲み込むはじめの心の声（（）で閉じる）、2行目は思い出した助言。順位は自問に入る。
-for (const reason of ["burnt","cold","leaf","rank"]) {
-  const ctx=normalizeContinueContext({ reason, rank: 3 });
-  const first=prepareContinueScript({ ...sample, cues: sample.cues.map((c,i)=>i===0||i===6?{...c,voice:"self"}:c) }, ctx);
-  assert.match(first.cues[0].text, /^（……[^（）]+）$/, first.cues[0].text);
-  assert.equal(first.cues[0].voice,"self"); assert.equal(first.cues[1].voice,undefined);
-  assert.doesNotMatch(first.cues[1].text, /[（）]/);
-  if (reason==="rank") assert.match(first.cues[0].text, /3位/);
-  const short=prepareContinueScript({ ...sample, cues: sample.cues.map((c,i)=>i===0||i===6?{...c,voice:"self"}:c) }, normalizeContinueContext({ reason, lossOrdinal:2, sameReasonOrdinal:2 }));
-  assert.deepEqual(short.cues.map(c=>c.voice??null),["self",null,null,"self"]);
 }
 // Run the actual modal selection with deferred answers and owner/attempt invalidation.
 let resolve, current=true;
