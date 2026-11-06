@@ -18,6 +18,9 @@ export const CH3_AFTERMATH_SCENES = Object.freeze([
  */
 export const CH3_AFTERMATH_DETOURS = Object.freeze([
   { id: "ch3_mukai_after_tournament", file: "ch3_mukai", label: "閉店前のカウンター", location: "mukai", bg: "bg_mukai_shop" },
+  // 大会前に客席の噂を聞いた保存だけ。任意場面と同じ既読フラグで LOAD・再訪時の再生を防ぐ。
+  { id: "ch3_cigarman_trace", file: "ch3_mukai", label: "大会後の客席", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_cigarman_rumor"] },
   // エミルは大会当日に名乗る審査員。体験会の台本は大会前の寄り道にもあるが、面識の条件で大会後にしか開かない。
   { id: "ch3_emil_workshop", file: "ch3_rivals", label: "エミルの体験会", location: "東京", bg: "bg_street_day", met: ["emil"] },
   // 鉄の煙の再訪（IR23）。初来店（DAY12夜）から大会までは行動が一つしかないので、大会前に読めなかった分を大会後にも順に読める。

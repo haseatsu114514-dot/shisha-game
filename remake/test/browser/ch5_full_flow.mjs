@@ -1,6 +1,7 @@
 // 第5章の通しプレイ検証（#1176）。
 // 第4章クリア済みセーブから、完了カード→「第5章へ進む」→プロローグ→自由行動→連絡（決める）→
-// 会場確認（まだ行かない→先送り→再度連絡→決める→向かう）→試合→後日談→フィナーレ→完了カードまでを、
+// 会場確認（まだ行かない→先送り→再度連絡→決める→向かう）→試合→後日談→フィナーレ→完了カード
+// →真エンドを確定するスタッフロール→タイトル復帰までを、
 // 1本のセーブで実UI・実saveだけで通す。自由行動の途中で実セーブ→リロード→再開し、進行が壊れないことも確認する。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
@@ -261,10 +262,23 @@ await suite("ch5-full-flow", async check => {
     // 完了後に再開しても、完了カードに戻り場面は再演されない。
     await loadSlot(page, 0);
     await page.locator(dt("ch5-complete")).waitFor({ timeout: 60000 });
+    assert.equal(await page.locator(dt("ch5-complete-title")).count(), 0, "初回のスタッフロールは飛ばせない");
+    await page.locator(dt("ch5-complete-credits")).click();
+    await page.locator(dt("staff-roll")).waitFor();
+    assert.equal(await page.locator(dt("staff-roll")).getAttribute("data-skippable"), "no");
+    await page.locator(dt("title-next-cycle")).waitFor({ timeout: 30000 });
+    const trueEnd = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save") || "null"));
+    assert.equal(trueEnd.flags._ch5_staff_roll_done, true);
+    assert.equal(trueEnd.flags._ch5.won, true);
+    assert.equal(trueEnd.flags._ch5.part, "cleared");
+    const cycle = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_cycle") || "null"));
+    assert.equal(cycle.unlocked, true);
+    assert.deepEqual(cycle.trueEnds.map(end => end.cycleId), [trueEnd.cycleId]);
   }, { reducedMotion: "reduce" });
 
   // 二本目の出来が足りなければ、挙手の合計で負け（同数含む）→ 敗北の場面 → 後日談へ続く（#1665）。
   // #2033: 第5章も柚ヶ谷へ電車で行ける。神崎の店は通い訪問の小会話だけ。夜は電車で地元へ帰る。
+  // 第5章の最初の来店で一度だけ読む会話（神崎・レヰ。chapters/ch5-first-talks.js）は読み終えた保存にする（ch5_home_talks が確かめる）。
   await check("chapter-five-train-to-yuzugaya-regular-visit-and-home-at-night", async page => {
     page.setDefaultTimeout(30000);
     await page.evaluate(async () => {
@@ -277,7 +291,8 @@ await suite("ch5-full-flow", async check => {
         _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
           read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
           finaleScenes: null, won: null, secondCup: null },
-        _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true };
+        _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true,
+        ch2_kumicho_after_ch2_done: true, _talk_seen_ch5_rei_shop: true };
       Object.assign(value.met, { kumicho: true, rei: true, ageha: true });
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });

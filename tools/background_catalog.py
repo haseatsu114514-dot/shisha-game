@@ -23,6 +23,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CATALOG = ROOT / "data" / "background_catalog.json"
+REMAKE_BACKGROUNDS = {"bg_dubai_map.webp", "bg_dubai_map_dusk.webp"}
 BG_DIR = ROOT / "assets" / "backgrounds"
 SHEET_DIR = ROOT / "asset_sources" / "reference-sheets" / "backgrounds"
 TIME_WORDS = ("day", "night", "dusk", "morning", "evening")
@@ -50,11 +51,18 @@ def git_blob(rel: str) -> str | None:
     return out[1] if len(out) >= 2 else None
 
 
+def background_path(name: str) -> str:
+    directory = "remake/img/backgrounds" if name in REMAKE_BACKGROUNDS else "assets/backgrounds"
+    return f"{directory}/{name}"
+
+
 def tracked() -> list[str]:
     """登録されている背景。CI の quick は画像を checkout しないので、フォルダでなく git の一覧から取る"""
     out = subprocess.run(["git", "ls-files", "--", "assets/backgrounds/*.png", "assets/backgrounds/*.webp"],
                          cwd=ROOT, capture_output=True, text=True).stdout
-    return sorted(Path(line).name for line in out.split())
+    remake = subprocess.run(["git", "ls-files", "--", *(background_path(name) for name in sorted(REMAKE_BACKGROUNDS))],
+                            cwd=ROOT, capture_output=True, text=True).stdout
+    return sorted(Path(line).name for line in (out + remake).split())
 
 
 # ---------------------------------------------------------------- 名前の分解
@@ -69,11 +77,13 @@ def parse_name(name: str) -> dict:
         time = parts.pop()
     if parts and parts[-1] == "overcast":
         weather = parts.pop()
+    if name == "bg_dubai_map.webp":
+        time = "day"
     return {"place": "_".join(parts) or stem, "time": time, "weather": weather}
 
 
 def measure(name: str) -> dict | None:
-    path = BG_DIR / name
+    path = ROOT / background_path(name)
     if not path.exists() or path.stat().st_size < 400:
         return None  # LFS のポインタだけ・未取得
     from PIL import Image
@@ -118,7 +128,7 @@ def cmd_check() -> int:
         if not e:
             errors.append(f"{name}: 台帳に無い → python3 tools/background_catalog.py sync")
             continue
-        now = git_blob(f"assets/backgrounds/{name}")
+        now = git_blob(background_path(name))
         if now and e.get("blob") != now:
             errors.append(f"{name}: 画像が差し替わったのに台帳が古い → python3 tools/background_catalog.py sync")
             continue
@@ -150,7 +160,7 @@ def cmd_sync() -> int:
             added += 1
         e.update(parse_name(name))
         m = measure(name)
-        blob = git_blob(f"assets/backgrounds/{name}")
+        blob = git_blob(background_path(name))
         if m is None:
             skipped += 1
             if not e.get("size"):

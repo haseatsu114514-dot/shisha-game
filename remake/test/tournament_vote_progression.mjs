@@ -22,7 +22,7 @@ function interim(round){
 }
 const clone=v=>JSON.parse(JSON.stringify(v));
 // #1282（オーナー決定 2026-10-28）: 第1章の逆転優勝を廃止。はじめは上園・博士からも点が入り票前から首位で競り、
-// 須井の10点は最後の一票。凍結値はこの形に合わせて更新した（須井の10点配分自体は不変）。
+// 伏見の10点は最後の一票。凍結値はこの形に合わせて更新した（伏見の10点配分自体は不変）。
 const frozenFinal={
   1:{maezono:{hajime:4,naru:2,adam:2,minto:2},dr_kemuri:{hajime:3,adam:3,naru:3,minto:1},sui:{hajime:10}},
   3:{maezono:{naru:4,adam:3,hajime:2,minto:1},dr_kemuri:{adam:5,minto:2,hajime:2,naru:1},sui:{naru:10}},
