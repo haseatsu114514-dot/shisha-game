@@ -275,6 +275,19 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     panel = el("aside.axe-panel", [matchScore, goals, companionCard, matchRecords, status, calls, steps, note, liveScore, resultCard, timing, feedback, steadiness, stability, action, keyhint, controls, retry]);
   const body = el("div.axe-body", [boardPane, panel]);
   root.append(heading, scoreboard, body, announcement);
+  // #2718: 始まった瞬間の切り替えの幕。見た目だけ（文字はCSSで描き、読み上げ・入力・時計・判定には触れない）。動きを減らす設定では出さない。
+  if (!reducedMotion) {
+    const label = tutorial ? "マキの無料1投レッスン" : versus ? "ひよりと対戦" : mode === "league" ? "10投ゲーム" : "3投の練習";
+    const cutin = el("div.axe-cutin", { "aria-hidden": "true", dataset: { test: "axe-cutin" } }, [
+      el("span.axe-cutin-top"), el("span.axe-cutin-bottom"), el("span.axe-cutin-slash"),
+      el("span.axe-cutin-card", [el("span.axe-cutin-tag", { dataset: { text: "MINI GAME" } }),
+        el("span.axe-cutin-title", { dataset: { text: tutorial ? "AXE LESSON" : "AXE THROW" } }), el("span.axe-cutin-label", { dataset: { text: label } })]),
+    ]);
+    const dismiss = () => cutin.remove(), timer = setTimeout(dismiss, 1500);
+    cutin.addEventListener("animationend", event => { if (event.target === cutin) dismiss(); }, { signal: lifetime.signal });
+    lifetime.signal.addEventListener("abort", () => clearTimeout(timer), { once: true });
+    root.append(cutin);
+  }
   host.append(root); root.focus();
   root.addEventListener("keydown", key, { signal: lifetime.signal });
   root.addEventListener("pointerup", event => event.stopPropagation(), { signal: lifetime.signal });

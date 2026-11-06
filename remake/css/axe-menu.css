@@ -323,8 +323,35 @@
   .axe-setup h2 { font-size: 18px; }
   .axe-setup-note { font-size: 12px; }
 }
-html:root[data-ui-theme="paper"] .axe-setup { background: #1e1429dc; }
-html:root[data-ui-theme="paper"] .axe-setup-card { color: var(--paper-ink); background: var(--paper); border-color: var(--paper-line); border-image: var(--paper-art) 72 fill / 18px / 0 stretch; }
-html:root[data-ui-theme="paper"] .axe-setup h2 { color: var(--lavender); }
-html:root[data-ui-theme="paper"] :is(.axe-setup-group legend, .axe-setup-note) { color: var(--paper-muted); }
-html:root[data-ui-theme="paper"] .axe-setup .axe-button[aria-pressed="true"] { color: #fff; background: var(--lavender); border-color: var(--lavender); }
+
+/* #2718 斧投げ専用テーマ「レーン」（色の定義は axe-throw.css）。木の看板の素材はそのまま、札の面を黒板に、差し色を安全オレンジに。
+   寸法・タップ領域（44px以上）・11個の操作は変えない。 */
+.axe-intro.axe-menu { --menu-amber: var(--lane-orange-hi); --menu-line: #c9875052; color: var(--lane-chalk); }
+.axe-intro.axe-menu::after { content: ""; position: fixed; inset: 0 0 auto; height: 5px; background: var(--lane-tape); pointer-events: none; }
+.axe-menu h1 { color: var(--lane-chalk); text-shadow: 3px 3px 0 var(--lane-orange-deep), 0 4px 8px #000000b3; }
+.axe-menu .axe-menu-mode { border-color: var(--lane-wood); background: var(--lane-slate); box-shadow: inset 0 0 0 4px #0b0f0e, inset 0 0 0 5px #6b4527, 0 5px 14px #00000073; }
+.axe-menu .axe-menu-mode[data-kind="practice"] { border-color: var(--lane-orange); background: linear-gradient(135deg, #47270f, #1a2220 70%); }
+.axe-menu .axe-menu-mode-title { color: var(--lane-chalk); }
+.axe-menu .axe-menu-mode-description { color: var(--lane-chalk-dim); }
+.axe-menu .axe-menu-mode-action { border-color: #8a5a3299; background: #00000047; color: var(--lane-orange-hi); }
+.axe-menu .axe-menu-guide li strong, .axe-menu .axe-menu-message { color: var(--lane-chalk); }
+.axe-menu :is(.axe-menu-guide-label, .axe-menu-setting-label, .axe-menu-tip) { color: var(--lane-chalk-dim); }
+.axe-menu .axe-menu-options .axe-button, .axe-menu .axe-menu-rules, .axe-menu .axe-back { border-color: #f4f0e642; background-color: var(--lane-board-2); color: var(--lane-chalk); }
+.axe-menu .axe-menu-options .axe-button[aria-pressed="true"] { border-color: var(--lane-orange-hi); background: var(--lane-orange); color: var(--lane-orange-ink); font-weight: 900;
+  box-shadow: inset 0 0 0 2px #00000026, inset 0 -3px 0 var(--lane-orange-deep); }
+.axe-menu .axe-menu-lesson { border-color: var(--lane-orange); background: #5a2c0e; color: #ffe1c4; }
+@media (hover: hover) {
+  .axe-menu .axe-menu-mode:hover:not(:disabled) { border-color: var(--lane-orange-hi); background: linear-gradient(135deg, #3a2a1c, #22302c 70%); }
+  .axe-menu .axe-menu-options .axe-button:hover, .axe-menu .axe-menu-rules:hover, .axe-menu .axe-menu-lesson:hover { border-color: var(--lane-orange); color: var(--lane-orange-hi); }
+  .axe-menu .axe-menu-options .axe-button[aria-pressed="true"]:hover { color: var(--lane-orange-ink); }
+  .axe-menu .axe-back:hover { color: var(--lane-orange-hi); }
+}
+.axe-setup { background: #08100ee0; }
+.axe-setup .axe-setup-card { position: relative; border: 1px solid var(--lane-wood-dark); background: var(--lane-slate); color: var(--lane-chalk); box-shadow: var(--lane-frame), 0 20px 64px #000000b3; }
+.axe-setup .axe-setup-card::before { content: ""; position: absolute; left: 3px; right: 3px; top: 3px; height: 5px; border-radius: 8px 8px 0 0; background: var(--lane-tape); pointer-events: none; }
+.axe-setup h2 { color: var(--lane-chalk); }
+.axe-setup .axe-setup-group legend { color: var(--lane-orange-hi); }
+.axe-setup .axe-setup-note { color: var(--lane-chalk-dim); }
+@container (max-width: 600px) and (min-height: 501px) {
+  .axe-menu .axe-menu-mode-action { background: none; }
+}
