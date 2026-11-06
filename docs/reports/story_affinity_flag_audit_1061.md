@@ -27,7 +27,7 @@
 
 - **対象HEAD**: `359d80d3`
 - **ファイル/行**: `data/dialogue/ch3_rivals.json:4-238`（特に共通lines `13-221`）／比較対象として `data/dialogue/ch3_deliveries.json:30-80`（配達シーン）、呼び出し元 `remake/js/chapters/ch3-deliveries.js`
-- **到達条件**: 第3章のMukaiアルバイト配達 `ch3_delivery_kuze` を完読（このとき `data/dialogue/ch3_deliveries.json:65-71` ``branches.new`` で「綾取朔。大会の間、ここを借りてる」「逢縁はじめです。mukaiで働き始めました」と**すでに名乗り合っている**。配達完読で `_ch3_delivery_kuze` フラグも立つ、`remake/js/chapters/ch3-deliveries.js` 内で確認）。その後、第3章の自主来店イベント `ch3_kuze_first` に進む。
+- **到達条件**: 第3章のMukaiアルバイト配達 `ch3_delivery_kuze` を完読（このとき `data/dialogue/ch3_deliveries.json:65-71` ``branches.new`` で「綾取陣。大会の間、ここを借りてる」「逢縁はじめです。mukaiで働き始めました」と**すでに名乗り合っている**。配達完読で `_ch3_delivery_kuze` フラグも立つ、`remake/js/chapters/ch3-deliveries.js` 内で確認）。その後、第3章の自主来店イベント `ch3_kuze_first` に進む。
 - **期待**: 同ファイル内の正しい実装例 `ch3_volk_first`（`data/dialogue/ch3_volk.json:12-15` と `:49-52` の2箇所で `_ch3_delivery_volk` フラグ分岐し、冒頭の名乗りだけでなく中盤の「認識」部分まで会話内容を配達済み/未配達で切り替えている）と同様に、配達済みなら自己紹介・初対面の驚きの演出を再生しない、または再会トーンの短い差し替えにするべき。
 - **実際**: `ch3_kuze_first`（`ch3_rivals.json:4-11`）は `_ch3_delivery_kuze` で `delivery_known_open` / `delivery_new_open` の2分岐を用意しているが、分岐先（`ch3_rivals.json:224-237`）は「ましろへの前置き」1行だけで、直後に続く共通lines（`13-221`、計約200行）は両分岐で完全に同一。この共通部分で綾取が「いらっしゃい。東京の煙を裏から動かす男、って聞いたことある？」「僕。噂を流したのも僕だけどね。がっかりした？」（`ch3_rivals.json:48-60`）と、配達時にすでに自己紹介済みであることを無視した初対面的なやり取りをそのまま行う。`condition_type: "met"` によるガードは一切使われていない。
 - **影響**: 配達で名乗り合った綾取に対し、数日後の自主来店で再び「何者だ」的な探り合いの初対面シーンを見せてしまい、面識の一貫性が崩れる。`docs/gameplay_agent_reference.md:389`「配達・偵察・強制の顔合わせ等で既に会っていれば…初対面の挨拶を繰り返さない」に反する。

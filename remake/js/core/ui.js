@@ -178,7 +178,7 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
   if (key === bgNow) {
     refreshWeather();
     const assetsReady = Promise.all([bgAssetsReady, ...ready.map((u) => imageReady(u, 15000))]);
-    return Object.assign(Promise.all([bgTask, assetsReady]), { assetsReady });
+    return Object.assign(Promise.all([bgTask, assetsReady]), { assetsReady, covered: activeCurtain?.covered || Promise.resolve() });
   }
   const coveredElsewhere = layers.wipe?.classList.contains("black") || layers.wipe?.classList.contains("cover") || isCovering();
   const curtain = !instant && bgNow && !coveredElsewhere ? createSceneCurtain(layers.fx, { fast: brief || document.body.classList.contains("vn-skip"), sceneArrival }) : null;
@@ -212,7 +212,20 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
       finally { if (activeCurtain === curtain) activeCurtain = null; }
     }
   });
-  return Object.assign(bgTask, { assetsReady: bgAssetsReady });
+  return Object.assign(bgTask, { assetsReady: bgAssetsReady, covered: curtain?.covered || Promise.resolve() });
+}
+
+/**
+ * 章の場面を替える（#2688 F2）。第1章の会話の背景替えと同じ標準の幕（一筆）で覆い、覆ったところで前の画面を片付けて開く。
+ * 地図・メニューへ戻るときは map: true で短い幕。幕の要らない所（同じ部屋の昼夜差分・別の演出が覆っている間）は setBg(..., { instant: true })。
+ */
+export async function enterScene(url, { map = false, clear = true, ...opts } = {}) {
+  const task = setBg(url, { brief: map, ...opts });
+  if (clear) {
+    await task.covered;
+    showScreen("none", null);
+  }
+  return task;
 }
 
 /** 背景だけに雨を重ねる。窓は1280×720の背景座標に限定する。 */

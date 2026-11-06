@@ -80,7 +80,7 @@ export function warmGameOver() {
     const faces = [...script.cues.map(cue => cue.face),
       ...Object.values(script.reactions).flatMap(reaction => reaction.faces)];
     for (const face of faces) {
-      const url = portraitInfo(script.speaker || "sumi", face)?.src;
+      const url = portraitInfo(script.speaker || "sumi", face, "classic")?.src;
       if (url) urls.add(url);
     }
   }
@@ -96,7 +96,7 @@ let nextScript = 0;
 let previousContinueSpeaker = null;
 // 初回はカウント演出だけを見せ、選択期限を設けない。再挑戦以降は20秒で終了する。
 export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRetry, onTitle,
-  soundEffects = true, reducedMotion = false, layout = "neon", background = "stage", context = null } = {}) {
+  soundEffects = true, reducedMotion = false, layout = "inner", background = "stage", context = null } = {}) {
   const standard = SUMI_CONTINUE_SCRIPTS[Number.isInteger(variant) && variant >= 0
     ? variant % SUMI_CONTINUE_SCRIPTS.length : nextScript++ % SUMI_CONTINUE_SCRIPTS.length];
   const forced = typeof variant === "string" && variant.startsWith("premium:")

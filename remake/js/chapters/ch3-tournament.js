@@ -7,7 +7,7 @@ import { difficultyEvidence } from "../core/cycle-start.js";
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, loadTournamentCraftDialogue } from "../core/data.js";
 import { el, yen } from "../core/util.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { layers, showScreen, setBg, modal, loadingNotice } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, modal, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -209,7 +209,7 @@ export async function runChapterThreeTournament() {
     Object.assign(DB.dialogues, Object.fromEntries(REQUIRED.map(key => [key, dialogues[key]])));
     recoverStep(state);
     save();
-    await setBg(bgUrl("bg_tournament_stage", "day"), { instant: true });
+    await enterScene(bgUrl("bg_tournament_stage", "day"));
     if (live(owner)) await drive(owner);
   });
 }

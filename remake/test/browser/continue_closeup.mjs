@@ -38,7 +38,7 @@ try {
       mount(speaker, face) {
         const view = createContinueView({
           script: speaker === 'sumi' ? SUMI_CONTINUE_SCRIPTS[0] : PREMIUM_CONTINUE_SCRIPTS[speaker],
-          speaker, character: speaker, premium: speaker !== 'sumi',
+          speaker, character: speaker, premium: speaker !== 'sumi', layout: 'neon',
         });
         document.querySelector('#screen').replaceChildren(view.root);
         this.view = view;
@@ -52,7 +52,8 @@ try {
         const view = this.mount(speaker, face);
         await Promise.all([...view.root.querySelectorAll('img')].map(i => i.decode()));
         await document.fonts.ready;
-        const info = portraitInfo(speaker, face), f = DB.manifest.continuePortraits[info.folder][info.face];
+        const info = portraitInfo(speaker, face, "classic"), f = DB.manifest.continuePortraits[info.folder][info.face];
+        if(view.root.querySelector(".go-sumi-img").getAttribute("src") !== info.src) throw Error("CONTINUE must use the measured classic artwork");
         const stage = document.querySelector('#stage').getBoundingClientRect(), scale = stage.width / 1280;
         const box = element => {
           const r = element.getBoundingClientRect();

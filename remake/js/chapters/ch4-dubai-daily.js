@@ -11,7 +11,7 @@
 //     オーナー「カフェで吸えたりとかにしよう」）。ドバイで一台吸う来店は現地の相場をきりよく（2026-11-02 オーナー「シーシャは6000 カフェは3000 できりよくいく」）:
 //     専門店（FESTA）6,000円・カフェ（中心地・路地裏）3,000円。調べた相場（1ディルハム≒43.5円）は
 //     専門のラウンジ 100〜150ディルハム、モール・中心地のカフェ 65〜75ディルハム、下町の小さなカフェ 30〜70ディルハム
-//   - ラクダレース（任意・ch4-camel-race.js）: 店先でスハイルと知り合う→誘い→昼にレース場。行き先は段階で変わる
+//   - ラクダレース（任意・ch4-camel-race.js）: 店先でファーリスと知り合う→誘い→昼にレース場。行き先は段階で変わる
 //   - 街の手触り（ch4-dubai-local.js。2026-11-02 オーナー「2以外は採用」）: 昼の屋外（スーク・クリーク沿い）は暑さで体力を多めに
 //     使い、カフェ・専門店は夜がにぎわう（夜の一行。初めての夜は短い場面）。スークの後に屋台で軽く買える（体力が少し戻る）。
 //     ドバイの値段には約何ディルハムかを添える
@@ -168,7 +168,7 @@ async function readPlain(id, bg, owner, { growthScene = false } = {}) {
   const dialogue = typeof id === "string" ? DB.dialogues[id] : id;
   if (!dialogue?.lines?.length) return false;
   const url = bgUrl(bg);
-  await setBg(url, { instant: true });
+  await setBg(url);
   if (state !== owner) return false;
   const result = await play(dialogue, { bg: url, ...(growthScene ? { growthScene: true } : {}) });
   return state === owner && !!result && !result.cancelled;
@@ -191,7 +191,7 @@ export function chapterFourDubaiDefinition(io) {
     // 夜は宿で寝る（地元の帰り道の一言・道での出会いは出さない）。宿でも寝る前の家シーシャを選べる。
     beforeHomecoming: async () => {
       state.flags._home_tonight = true;
-      await setBg(bgUrl("bg_dubai_inn_night"), { instant: true });
+      await setBg(bgUrl("bg_dubai_inn_night"));
       return true;
     },
     beforeInvitation: () => true,

@@ -14,13 +14,19 @@ const HEAD_PADDING = 24;
 const NEON_FACE_PX = 524.8;
 const NEON_FACE_CENTER_Y = 273;
 
-export function createContinueView({ script, speaker, character, premium, layout = "neon", background = "stage", onType = null }) {
+export function createContinueView({ script, speaker, character, premium, layout = "inner", background = "stage", onType = null }) {
   const neon = layout === "neon";
+  // #2524 「記憶の暗室」（layout:"inner"）。2026-11-06 オーナー決定で本編の既定（#2713）。
+  // 筆文字・円形HUD・鋭角ボタンを使わず、細い活字・上端の時計バー・文字だけの2択で構成する。
+  // 顔の大きさと中心（524.8px・Y273）は採用Cを共有し、中心Xだけ左（400）へ寄せる。
+  const inner = layout === "inner";
+  const bigFace = neon || inner;
   const classicBack = neon || layout === "bottom-back-count";
   const backCount = layout === "back-count" || classicBack;
   const topActions = layout === "top" || layout === "back-count";
   const art = name => img(`ui/continue/${name}.png`);
-  const portrait = portraitInfo(speaker, script.cues[0].face);
+  // CONTINUE専用の顔bboxは現行画像で計測済み。会話の画風を流用しない。
+  const portrait = portraitInfo(speaker, script.cues[0].face, "classic");
   const image = portrait
     ? el("img.go-sumi-img", { src: portrait.src, alt: character, draggable: "false" })
     : el("div.go-sumi-fallback", { text: character });
@@ -30,10 +36,10 @@ export function createContinueView({ script, speaker, character, premium, layout
     // 新バージョンの立ち絵を出している時は、新バージョンの絵で測った枠（continuePortraitVariants）。現行の枠では顔がずれる
     const framing = (info.style && info.style !== "classic" ? DB.manifest.continuePortraitVariants?.[info.style] : DB.manifest.continuePortraits)?.[info.folder]?.[info.face];
     const faceSize = framing?.size || info.h * .2;
-    const height = (neon ? NEON_FACE_PX : FACE_PX) / faceSize, width = height * info.aspect;
-    // neonは顔bbox中心を固定。比較用レイアウトは従来の頭上端基準を保つ。
+    const height = (bigFace ? NEON_FACE_PX : FACE_PX) / faceSize, width = height * info.aspect;
+    // neon・innerは顔bbox中心を固定。比較用レイアウトは従来の頭上端基準を保つ。
     const top = 1 - info.h - info.b;
-    const imageTop = neon ? NEON_FACE_CENTER_Y - ((framing?.top ?? top) + faceSize / 2) * height
+    const imageTop = bigFace ? NEON_FACE_CENTER_Y - ((framing?.top ?? top) + faceSize / 2) * height
       : HEAD_PADDING - top * height;
     Object.assign(image.style, { height: `${height}px`, width: `${width}px`,
       left: `calc(50% + ${(0.5 - (framing?.cx ?? .5)) * width}px)`, top: `${imageTop}px` });
@@ -46,6 +52,7 @@ export function createContinueView({ script, speaker, character, premium, layout
   const dialogue = el("button.go-dialogue", { type: "button", "aria-label": "台詞を送る", dataset: { test: "continue-caption" } }, [caption]);
   const count = el("span.go-count", { text: "20" });
   const hud = neon ? createNeonClock(count) : null;
+  const bar = inner ? el("i.go-inner-bar", { "aria-hidden": "true" }) : null;
   const clock = hud?.clock || el("span.go-clock", { "aria-hidden": "true" }, [count]);
   const echo = backCount ? el("span.go-count-echo", { text: "20" }) : null;
   const echoLayer = backCount ? el("div.go-count-back", { "aria-hidden": "true" }, [echo]) : null;
@@ -68,19 +75,21 @@ export function createContinueView({ script, speaker, character, premium, layout
   retry.setAttribute("aria-describedby", "continue-return");
   quit.setAttribute("aria-describedby", "continue-return");
   const effectWord = el("span.go-effect-word", { "aria-hidden": "true" });
-  const heading = neon ? "コンティニューする？" : "コンティニュー？";
+  const heading = neon || inner ? "コンティニューする？" : "コンティニュー？";
   const titleLabel = el("span.go-title-label", { text: heading });
   // 終了ロゴも開始時に読み込み、0秒で画像取得を待たない。
   const finalImage = el("img.go-title-art", { src: art(neon ? "neon_game_over" : "game_over_title"), alt: "", "aria-hidden": "true", hidden: true, draggable: "false" });
   const titleImage = neon ? el("img.go-neon-title", { src: art("neon_title"), alt: "", "aria-hidden": "true", draggable: "false" }) : null;
-  const title = el("h1.go-title", { "aria-label": heading }, [titleLabel, ...(titleImage ? [titleImage] : []), finalImage]);
+  const subLabel = inner ? el("span.go-inner-sub", { text: "CONTINUE?", "aria-hidden": "true" }) : null;
+  const title = el("h1.go-title", { "aria-label": heading }, [...(subLabel ? [subLabel] : []), titleLabel, ...(titleImage ? [titleImage] : []), finalImage]);
   const root = el("div.end-screen.gameover", { role: "region", "aria-label": "大会のコンティニュー",
     dataset: { test: "game-over", variant: script.id, speaker, premium: String(premium),
-      layout: neon ? "neon" : classicBack ? "bottom-back-count" : backCount ? "back-count" : topActions ? "top" : "bottom",
+      layout: neon ? "neon" : inner ? "inner" : classicBack ? "bottom-back-count" : backCount ? "back-count" : topActions ? "top" : "bottom",
       background: background === "stage" ? "stage" : "purple", phase: "speaking",
       voice: script.cues[0]?.voice === "self" ? "self" : "other" } }, [
     el("div.go-veil", { "aria-hidden": "true" }),
-    ...(neon ? createNeonAtmosphere() : []),
+    ...(neon || inner ? createNeonAtmosphere() : []),
+    ...(bar ? [bar] : []),
     ...(echoLayer ? [echoLayer] : []),
     el("header.go-heading", [title, clock, ...(topActions ? [actions] : [])]),
     el("p.go-limit-note", { text: "初回は時間制限なし（カウントは演出です）", "aria-hidden": "true" }),
@@ -109,6 +118,7 @@ export function createContinueView({ script, speaker, character, premium, layout
     }
     const elapsed = Math.min(1, Math.max(0, progress));
     hud?.setProgress(elapsed);
+    if (bar) root.style.setProperty("--go-progress", String(elapsed));
     if (echo) {
       if (echo.textContent !== text) echo.textContent = text;
       // 台詞送りとは独立した実際の残り時間に合わせる。停止中も拡大しない。
@@ -145,7 +155,7 @@ export function createContinueView({ script, speaker, character, premium, layout
     if (root.dataset.voice !== value) root.dataset.voice = value;
   }
   function face(name, beat = true) {
-    const info = portraitInfo(speaker, name);
+    const info = portraitInfo(speaker, name, "classic");
     if (info && portrait && image.getAttribute("src") !== info.src) { image.src = info.src; framePortrait(info); }
     root.dataset.emotion = name;
     if (beat) {
@@ -162,19 +172,22 @@ export function createContinueView({ script, speaker, character, premium, layout
       ? ({ cheer: "っしゃあ！", shark: "ジャバーン！", scan: "再計測" }[data.effect] || "") : "";
     [retry, quit, next, dialogue].forEach(button => { button.disabled = true; });
     next.hidden = true;
-    if (!neon) showProceed();
+    if (!neon && !inner) showProceed();
   }
   function showProceed() {
     if (!proceed.hidden) return;
-    if (neon) actions.hidden = true;
+    if (neon || inner) actions.hidden = true;
     proceed.hidden = false;
     proceed.focus({ preventScroll: true });
   }
   function gameOver() {
     titleLabel.textContent = "GAME OVER";
-    titleLabel.hidden = true;
+    // innerはロゴ画像を使わず、同じ活字でGAME OVERを出す。
+    titleLabel.hidden = !inner;
+    if (subLabel) subLabel.hidden = true;
     title.setAttribute("aria-label", "GAME OVER");
-    finalImage.hidden = false;
+    finalImage.hidden = inner;
+    if (bar) bar.hidden = true;
     if (titleImage) titleImage.hidden = true;
     clock.hidden = actions.hidden = true;
     if (echoLayer) echoLayer.hidden = true;

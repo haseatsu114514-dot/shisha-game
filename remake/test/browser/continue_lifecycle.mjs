@@ -79,7 +79,7 @@ try {
         window.__go?.cleanupContinue();
         const { buildGameOver } = await import("./js/chapters/gameover.js");
         window.__calls = []; window.__notes = [];
-        window.__go = buildGameOver({ variant: 0, ...options,
+        window.__go = buildGameOver({ variant: 0, layout: "neon", ...options,
           onRetry: () => window.__calls.push("retry"), onTitle: () => window.__calls.push("title") });
         document.querySelector("#screen").replaceChildren(window.__go);
       }, options);
@@ -191,7 +191,7 @@ try {
         for (const el of __go.querySelectorAll(".go-left,.go-sumi-img"))
           for (const a of el.getAnimations()) a.finish();
         const { DB, portraitInfo } = await import("./js/core/data.js");
-        const info = portraitInfo(__go.dataset.speaker, __go.dataset.emotion);
+        const info = portraitInfo(__go.dataset.speaker, __go.dataset.emotion, "classic");
         const f = DB.manifest.continuePortraits[info.folder][info.face];
         const s = document.querySelector("#stage").getBoundingClientRect(), k = s.width / 1280;
         const r = __go.querySelector(".go-sumi-img").getBoundingClientRect();

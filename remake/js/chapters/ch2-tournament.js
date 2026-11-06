@@ -7,7 +7,7 @@ import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, CHAPTER_DIALOGUE_FIL
 import { el, yen } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { layers, showScreen, setBg, modal, imageReady, loadingNotice } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, modal, imageReady, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { maxStamina } from "../core/stats.js";
@@ -144,7 +144,7 @@ export async function runChapterTwoTournament() {
     Object.assign(DB.dialogues, Object.fromEntries(REQUIRED.map(key => [key, dialogues[key]])));
     recoverStep(state);
     save();
-    await setBg(bgUrl("bg_tournament_stage", "day"), { instant: true });
+    await enterScene(bgUrl("bg_tournament_stage", "day"));
     if (live(owner)) await drive(owner);
   });
 }
@@ -389,7 +389,7 @@ async function drive(owner) {
       // 完了カードも閉店後のMELTY PUFFのまま出す（昼の大会ステージへ戻さない）。
       const closedRoom = bgUrl(CH2_SCENE_BACKGROUNDS.agehaClosed);
       if (!await imageReady(closedRoom, 15000)) throw new Error("閉店後のMELTY PUFFを読み込めませんでした");
-      await setBg(closedRoom, { instant: true });
+      await enterScene(closedRoom);
       if (!state.flags._ch2_read_ch2_tournament_ageha_heart) {
         if (!await read(owner, "ageha_heart")) return;
         state.flags._ch2_read_ch2_tournament_ageha_heart = true; save();

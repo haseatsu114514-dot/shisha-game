@@ -8,7 +8,7 @@ import { createChapterCard } from "../core/chapter-card.js";
 import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { state, save } from "../core/state.js";
-import { layers, showScreen, setBg, chapterTitle, modal, toast } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, chapterTitle, modal, toast } from "../core/ui.js";
 import { saveFlow } from "../scenes/saves.js";
 import { play, hooks } from "../vn/engine.js";
 import { chapterGrowthChart } from "../daily/status.js";
@@ -126,9 +126,8 @@ async function readScene(owner, id) {
   const actual = id === "ch4_final" && craft ? chapterFourFinalDialogue(source, state, craft)
     : id === "ch4_defeat" && craft ? chapterFourDefeatDialogue(source, state, craft) : source;
   const dialogue = { ...actual, metadata: { ...source.metadata, bg: "" } };
-  showScreen("none", null);
   hud();
-  await setBg(bgUrl(CH4_SCENE_BG[id] || camelSceneBg(id) || CH4_EVENING_BG), { instant: true });
+  await enterScene(bgUrl(CH4_SCENE_BG[id] || camelSceneBg(id) || CH4_EVENING_BG));
   if (!current(owner)) return false;
   playBgm(CH4_SCENE_BGM[id] || CH4_DEFAULT_BGM);
   // 読了のcheckpointまで保存を出さない。会話中のMENUは置かない。
@@ -211,7 +210,7 @@ async function renderPrep(owner) {
 
 /** 出発前の同行選択。恋人1名か「同行なし」。選ぶと保存し、他の恋人は別便の応援として扱う（好感度は変えない）。 */
 async function renderCompanionChoice(owner) {
-  await setBg(bgUrl(CH4_SCENE_BG[CH4_PROLOGUE[0].id]), { instant: true });
+  await enterScene(bgUrl(CH4_SCENE_BG[CH4_PROLOGUE[0].id]));
   if (!current(owner)) return;
   const choose = id => async () => {
     if (!chooseOverseasCompanion(state, id)) return;
@@ -230,7 +229,7 @@ async function renderCompanionChoice(owner) {
 const LESSON_AFTER_SCENE = Object.freeze({ ch4_result: "master_hookah" });
 
 async function renderScene(owner, scene, dayLabel) {
-  await setBg(bgUrl(CH4_SCENE_BG[scene.id]), { instant: true });
+  await enterScene(bgUrl(CH4_SCENE_BG[scene.id]));
   const lover = scene.location === "tonari" ? await loverActions(owner, { home: true }) : [];
   if (!current(owner)) return;
   card(owner, "scene", `${dayLabel ? `${dayLabel}・` : ""}${scene.label}`, `${scene.location}で、次の話を読む。`, [
@@ -285,7 +284,7 @@ async function loverActions(owner, { home = false } = {}) {
 
 async function renderFree(owner) {
   const model = chapterFourMapModel(state, { canReflect: canReflect() });
-  await setBg(bgUrl(model.background), { instant: true });
+  await enterScene(bgUrl(model.background));
   const lover = await loverActions(owner);
   if (!current(owner)) return;
   card(owner, "free", `DAY ${model.day}・自由行動`, `ドバイの街を歩く。大会まであと${model.daysLeft}日。`,
@@ -400,7 +399,7 @@ async function renderEve(owner) {
   }
   // 到着した恋人と過ごす夕方（任意で一度・IR18）。前夜祭が始まると、もう出ない。
   const evenings = chapterFourArrivalEveningsDue(state);
-  await setBg(bgUrl(CH4_SCENE_BG[next.lead || next.id]), { instant: true });
+  await enterScene(bgUrl(CH4_SCENE_BG[next.lead || next.id]));
   if (!current(owner)) return;
   card(owner, "eve", `DAY ${chapterFourEveDay(state)}・${evenings.length ? "前夜祭の日" : "前夜"}`,
     evenings.length ? "夕方になった。前夜祭の前に、少し時間がある。" : "夜になった。大会の前に、済ませておくことが残っている。", [
@@ -424,7 +423,7 @@ async function renderEve(owner) {
  * 2人目からは「もう一人」の文にして、同じカードが繰り返されたように見せない。
  */
 async function renderArrival(owner, arrival) {
-  await setBg(bgUrl(CH4_SCENE_BG[arrival.scene]), { instant: true });
+  await enterScene(bgUrl(CH4_SCENE_BG[arrival.scene]));
   if (!current(owner)) return;
   const another = [...Object.values(CH4_ARRIVAL_SCENES), ...Object.values(CH4_FRIEND_ARRIVAL_SCENES)]
     .some(id => chapterFourRead(state, id));
@@ -459,7 +458,7 @@ async function renderEvening(owner) {
   const partner = chapterFourEveningPartner(routes, state);
   if (result.kind !== "rest" || !partner) { await settle(result); return; }
   const name = displayName(partner, state, { context: "private" });
-  await setBg(bgUrl(CH4_EVENING_BG), { instant: true });
+  await enterScene(bgUrl(CH4_EVENING_BG));
   if (!current(owner)) return;
   card(owner, "evening", `DAY ${chapterFourEveDay(state)}・前夜`, `大会前夜。${name}と過ごす時間がある。`, [
     button(owner, `${name}と過ごす`, "evening-date",
@@ -472,7 +471,7 @@ async function renderTournament(owner) {
   const progress = chapterFourProgress(state);
   // 敗北の場面を読み終え、まだ再挑戦を選んでいない保存はCONTINUE画面から再開する（第2・3章と同じ）。
   if (chapterFourTournamentOutcome(state) === "loss" && progress.read[CH4_TOURNAMENT_SCENES.loss]) return renderDefeat(owner);
-  await setBg(bgUrl(CH4_SCENE_BG[CH4_TOURNAMENT_SCENES.start]), { instant: true });
+  await enterScene(bgUrl(CH4_SCENE_BG[CH4_TOURNAMENT_SCENES.start]));
   if (!current(owner)) return;
   card(owner, "tournament", `DAY ${chapterFourTournamentDay(state)}・大会当日`, "会場へ向かう。",
     [button(owner, "大会へ", "start", () => runTournament(owner), true)],
