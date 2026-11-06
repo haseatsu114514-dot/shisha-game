@@ -8,7 +8,7 @@ export const COURSE = Object.freeze({ length: 1700, practiceLength: 640, laneHal
 export const PLAYER = Object.freeze({ half: 0.1 });
 export const EDGE = 0.86;
 export const SPEED = Object.freeze({ start: 15, min: 8, max: 34, boost: 46, boostAccel: 26, overDecay: 12, accel: 1.5, fallFactor: 0.42, edgeDrag: 7, landingBoost: 3.5, plainLanding: 0.94, bounceLoss: 0.9 });
-export const JUMP = Object.freeze({ bigAir: 1.15, hopAir: 0.5, bounceAir: 0.26, landingWindow: 0.3, goodWindow: 0.6, bumpWindow: 0.36, bumpGrace: 0.14, steerInAir: 0.55 });
+export const JUMP = Object.freeze({ bigAir: 1.22, hopAir: 0.53, bounceAir: 0.26, landingWindow: 0.3, goodWindow: 0.6, bumpWindow: 0.36, bumpGrace: 0.14, steerInAir: 0.55 });
 export const FALL = Object.freeze({ recover: 1.1, points: -150 });
 export const STEER = Object.freeze({ accel: 4.6, damping: 4.0, curveDrift: 0.28 });
 export const SCORE = Object.freeze({ finish: 1200, timePar: 72, timeBonusPerSec: 30, perfect: 250, good: 120, nearMiss: 60, comboStep: 0.15, comboMax: 3,
@@ -22,7 +22,7 @@ export const RIVALS = Object.freeze({
 // 着地の瞬間に半回転の区切りから tolerance（回転）以上ずれていると転倒。points は半回転の数ごとの得点（180, 360, 540 …）。
 // 跳んだ瞬間から押していた向きは、一度離すまで回転に使わない（よけながら跳んだだけで回り出さないように）。
 export const SPIN = Object.freeze({ rate: 1.7, finishRate: 3.2, tolerance: 0.1, points: Object.freeze([0, 150, 400, 700, 1100, 1500, 2000, 2600, 3300]) });
-// ブースト: かすめ・大ジャンプの着地・トリックでゲージ（0〜1）が貯まり、満タンで発動できる。duration 秒のあいだ速度の上限が SPEED.boost になり、
+// ブースト: かすめ・大ジャンプの着地・トリックでゲージ（0〜1）が貯まり、残量に比例した時間だけ発動できる。duration 秒のあいだ速度の上限が SPEED.boost になり、
 // 当たった岩は砕ける（転倒しない）。転倒するとゲージが fallLoss 減る。
 export const BOOST = Object.freeze({ duration: 3, near: 0.12, land: 0.05, perfect: 0.22, good: 0.1, trickPerHalf: 0.1, fallLoss: 0.3 });
 // 本編のコースは1本（DEFAULT_SEED）。評価の境目はそのコースで、空中で回って着地も決める＝S、回らないが着地を決めてブーストも使う＝A、
@@ -150,11 +150,11 @@ export function chargeBoost(game, amount) {
   return game.gauge;
 }
 
-/** ブースト（↓ ／ BOOST ボタン）。ゲージが満タンで、転んでいなければ発動する。 */
+/** ブースト（↓ ／ BOOST ボタン）。残量を使い切り、その割合だけ加速時間を得る。 */
 export function boost(game) {
-  if (game.finished || game.fallT > 0 || game.boostT > 0 || game.gauge < 1) return null;
+  if (game.finished || game.gauge <= 0) return null;
+  game.boostT = Math.min(BOOST.duration, game.boostT + BOOST.duration * game.gauge);
   game.gauge = 0;
-  game.boostT = BOOST.duration;
   game.stats.boosts += 1;
   game.events.push({ kind: "boost", t: game.t });
   return "boost";

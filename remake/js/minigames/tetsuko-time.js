@@ -125,6 +125,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
   if (signal?.aborted || !isCurrent()) return idle;
   const { layers, showScreen } = ui;
   const SE = audio.SE || {};
+  const bgmBefore = audio.currentBgm();
   const reduced = !!kit.reducedMotion?.();
   const session = createSession(value, { visitKey });
   const name = id => data.displayName?.(id, value) || (id === "mukai_master" ? "ムカイさん" : id);
@@ -583,6 +584,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       window.removeEventListener("keydown", onKey);
       signal?.removeEventListener?.("abort", abort);
       if (layers.screen?.firstElementChild === host) showScreen("none", null);
+      if (audio.currentBgm() === "bgm_tetsuko_time") audio.playBgm(bgmBefore);
       resolve(aborted || !isCurrent() ? idle : sessionResult(session));
     }
     const abort = () => finish(true);
@@ -593,6 +595,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     // 開いた時の居場所・表情を先に決めてから出す（ベンチから滑ってこない）。
     show(openingReaction(session));
     showScreen("tetsuko-time", host);
+    audio.playBgm("bgm_tetsuko_time");
     schedule();
   });
 }

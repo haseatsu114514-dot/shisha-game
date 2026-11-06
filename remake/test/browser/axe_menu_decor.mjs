@@ -15,8 +15,8 @@ async function entrance(page) {
 }
 async function reachableControls(page) {
   const menu = page.locator(".axe-menu");
-  // The entrance keeps eleven controls; the division and match length live on the setup sheet of the competitive modes.
-  assert.equal(await menu.locator("button, a").count(), 11);
+  // The rival picker adds one control; division and match length remain on the competitive setup sheet.
+  assert.equal(await menu.locator("button, a").count(), 12);
   assert.deepEqual(await menu.locator(".axe-menu-mode").evaluateAll(nodes => nodes.map(n => n.dataset.kind)), ["practice", "league", "versus"]);
   assert.equal(await menu.locator("h1").textContent(), "AXE THROW");
   assert.equal(await menu.locator("img, canvas").count(), 0, "Menu content is live text DOM, not a screenshot click surface");

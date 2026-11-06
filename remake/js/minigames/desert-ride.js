@@ -6,7 +6,7 @@
 // 着地の輪・得点の浮き出し・トリックのスロー・ブーストの残像。動き軽減ではカメラの動き・揺れ・スロー・閃光・速度線を止める。
 // 本番はスタートの合図のあと、ヌール（rivalRun）が横で滑る。
 import { el } from "../core/util.js";
-import { SE, unlockAudio } from "../core/audio.js";
+import { SE, unlockAudio, currentBgm, playBgm } from "../core/audio.js";
 import { COURSE, EDGE, SPEED, SPIN, DEFAULT_SEED, generateCourse, practiceCourse, createGame, step, press, boost, chargeBoost, summary, curveAt, botControl,
   rivalRun, rivalAt, RULES_VERSION } from "./desert-ride-model.js";
 import { DESERT_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
@@ -31,6 +31,7 @@ const RIVAL_LOOKS = Object.freeze({
 const SEG = 6;                   // 描く路面の1区間（m）
 const DRAW_DIST = 380;           // 前方に描く距離（m）
 const active = new WeakMap();
+const RIDE_BGM = Object.freeze({ practice: "bgm_ethnic12", noor: "bgm_ethnic08", naru: "bgm_ethnic05" });
 
 // ---- 砂の地面（2026-11-02 オーナー「砂漠をリアルに。今なんか見た目安っぽい」）--------------------------
 // 風紋のある砂の模様を一度だけ作り、1行ずつ遠近をつけて貼る（奥ほど細かく流れ、速さが足元から伝わる）。
@@ -92,7 +93,7 @@ const TUTORIAL = {
   trickLetGo: "離すと回り切る。着地より前に離そう",
   trickDone: "回った！ 回るほど点が大きい",
   trickFall: "回りかけで着地すると転ぶ。もう少し早く離そう",
-  boost: "ゲージが満タン。↓（BOOST）で超加速 ── 岩も砕ける",
+  boost: "溜まったゲージで↓（BOOST）を押すと超加速 ── 岩も砕ける",
   boostGo: "そのまま、岩へ突っ込め！",
   finish: "いい感じ。あとは、滑るだけ",
 };
@@ -110,6 +111,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
   reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = null, speedUp = 1 } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
+  const bgmBefore = currentBgm();
+  let rideBgm = null;
+  const restoreBgm = () => { if (rideBgm && currentBgm() === rideBgm) playBgm(bgmBefore); };
   const art = loadDesertArt();
   const promise = new Promise(resolve => {
     const results = [];
@@ -147,6 +151,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       signal?.removeEventListener("abort", finish);
       root.remove();
       delete window.__desertRide;
+      restoreBgm();
       resolve({ results, practiced });
     };
     if (signal?.aborted) { finish(); return; }
@@ -221,6 +226,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     }
     function startRun(kind, who = raceWith) {
       raceWith = rivals.includes(who) ? who : "noor";
+      rideBgm = RIDE_BGM[kind === "practice" ? "practice" : raceWith];
+      playBgm(rideBgm);
       mode = kind;
       panel.replaceChildren();
       const course = kind === "practice" ? practiceCourse() : generateCourse(seed);
@@ -302,11 +309,11 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       hudNodes.time.textContent = game.t.toFixed(1);
       hudNodes.kmh.textContent = String(Math.round(game.speed * 3.6));
       hudNodes.kmh.dataset.fast = game.boostT > 0 ? "boost" : game.speed > SPEED.max * 0.85 ? "fast" : "";
-      const full = game.gauge >= 1, boosting = game.boostT > 0;
+      const ready = game.gauge > 0, boosting = game.boostT > 0;
       hudNodes.gauge.style.width = `${Math.round(100 * (boosting ? game.boostT / 3 : game.gauge))}%`;
-      hudNodes.gaugeLabel.textContent = boosting ? "BOOST!!" : `BOOST ${Math.round(game.gauge * 100)}%`;
-      hudNodes.gaugeBox.dataset.state = boosting ? "boost" : full ? "full" : "";
-      root.dataset.gauge = boosting ? "boost" : full ? "full" : "";
+      hudNodes.gaugeLabel.textContent = boosting ? `BOOST!!${ready ? ` +${Math.round(game.gauge * 100)}%` : ""}` : `BOOST ${Math.round(game.gauge * 100)}%`;
+      hudNodes.gaugeBox.dataset.state = boosting ? "boost" : ready ? "full" : "";
+      root.dataset.gauge = boosting ? "boost" : ready ? "full" : "";
       const progress = z => `${(100 * Math.min(1, z / game.course.length)).toFixed(1)}%`;
       hudNodes.progress.style.width = progress(game.z);
       hudNodes.you.style.left = progress(game.z);
@@ -1105,6 +1112,16 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const unit = p.scale * (H / 2);
       const airT = noor.air > 0 && noor.airTotal ? 1 - noor.air / noor.airTotal : 0;
       const height = noor.air > 0 ? Math.sin(airT * Math.PI) * (noor.airKind === "big" ? 1.9 : noor.airKind === "hop" ? 0.9 : 0.5) : 0;
+      const player = placeAt(game.z, game.x);
+      const playerUnit = player?.scale * (H / 2);
+      const playerAirT = game.air > 0 ? 1 - game.air / game.airTotal : 0;
+      const playerHeight = game.air > 0 ? Math.sin(playerAirT * Math.PI) * (game.airKind === "big" ? 1.9 : game.airKind === "hop" ? 0.9 : 0.5) : 0;
+      const rivalBaseY = p.y - height * unit * 0.9;
+      const playerBaseY = player?.y - playerHeight * playerUnit * 0.9;
+      const overlapsPlayer = player && Math.abs(p.x - player.x) < (unit + playerUnit) * 0.7
+        && rivalBaseY > playerBaseY - playerUnit * 2.45 && playerBaseY > rivalBaseY - unit * 2.45;
+      ctx.save();
+      if (overlapsPlayer) ctx.globalAlpha = 0.5;
       softShadow(p.x, p.y, unit * 0.56, unit * 0.15, 0.36 - height * 0.1);
       const lean = Math.max(-0.5, Math.min(0.5, noor.vx * 0.35));
       const bob = noor.air <= 0 && noor.fallT <= 0 ? Math.sin(noor.t * 13 + 1) * unit * 0.02 : 0;
@@ -1119,6 +1136,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         if (noor.fallT > 0) ctx.rotate((noor.x > 0 ? 1 : -1) * 0.25 * (noor.fallT / 1.1));
         else ctx.rotate(lean * (noorPose === "noorRider" ? 0.45 : 0.12));
         ctx.drawImage(noorArt, -def.anchor.x * dw, -def.anchor.y * dh, dw, dh);
+        ctx.restore();
         ctx.restore();
         if (p.dz < 70) drawRivalName(name, look, p, height, unit);
         return;
@@ -1190,6 +1208,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         ctx.fillStyle = "#2a2430"; ctx.strokeStyle = "#e3b23c"; ctx.lineWidth = Math.max(1, 0.03 * u);
         for (const sx of [-0.09, 0.09]) { ctx.beginPath(); ctx.ellipse(sx * u, (headY - 0.17) * u, 0.075 * u, 0.045 * u, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
       }
+      ctx.restore();
       ctx.restore();
       if (p.dz < 70) drawRivalName(name, look, p, height, unit);
     }

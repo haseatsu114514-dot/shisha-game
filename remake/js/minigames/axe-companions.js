@@ -1,6 +1,9 @@
-// Practice dialogue only. No romance, real-self reveal or character progression.
+// 練習用の相棒と対戦用の立ち絵。物語や関係の進行は扱わない。
+import { suddenDeathWinner } from "./axe-match.js";
 // Lists are picked by throw number, so a line never flickers between frames.
 export const COMPANIONS = {
+  adam: { name: "アダム", portraitKey: "adam", faces: ["normal", "smile", "intense"],
+    focus: { normal: [448, 330], smile: [448, 330], intense: [448, 330] } },
   // focus: face center per expression, in the 896x1200 sprite. The poses lean, so one crop would jump.
   hiyori: { name: "ひより", portraitKey: "hiyori", faces: ["axe_normal", "axe_laugh", "axe_shout"],
     focus: { axe_normal: [432, 322], axe_laugh: [372, 322], axe_shout: [380, 322] },
@@ -70,15 +73,19 @@ export function matchReaction(lines, phase, match, actor, pending, called, conte
   const p = match.player.reduce((sum, shot) => sum + shot.score, 0);
   const o = match.opponent.reduce((sum, shot) => sum + shot.score, 0);
   let key;
-  if (phase === "summary") key = p === o ? "draw" : p > o ? "player" : "opponent";
+  if (phase === "summary") key = p === o ? ({ player: "player", opponent: "opponent" }[suddenDeathWinner(match.suddenDeath || [])] || "draw") : p > o ? "player" : "opponent";
   else if (actor === "opponent") key = context.suddenDeath ? (phase === "result" ? (pending?.score ? "sudden-hit" : "sudden-miss") : "sudden-call")
     : phase === "result" ? match.opponent.at(-1)?.outcome
     : pending?.called ? "call" : match.opponent.length === 9 ? "last" : "before";
   else if (context.suddenDeath) key = phase === "result" ? (match.suddenDeath.at(-1)?.player?.score ? "sudden-player-hit" : "sudden-player-miss") : "sudden";
-  else if (phase === "result" || called) return reaction("hiyori", phase, match.player, called, context);
+  else if (phase === "result" || called) {
+    if (!context.versusOnly) return reaction("hiyori", phase, match.player, called, context);
+    key = phase === "result" ? "player-" + (match.player.at(-1)?.outcome || "miss") : "player-call";
+  }
   else if (match.player.length === 9) key = "player-last";
   else if (context.switching) key = "switch";
   else key = p === o ? "level" : p - o >= 10 ? "big-behind" : o - p >= 10 ? "big-ahead" : p > o ? "behind" : "ahead";
+  const faces = context.faces || ["axe_normal", "axe_laugh", "axe_shout"];
   return { text: lines[key] || lines.before,
-    face: ["killshot", "sudden-hit"].includes(key) ? "axe_shout" : ["bull", "player", "opponent", "draw", "big-ahead", "sudden-player-hit"].includes(key) ? "axe_laugh" : "axe_normal" };
+    face: ["killshot", "sudden-hit"].includes(key) ? faces[2] : ["bull", "player", "opponent", "draw", "big-ahead", "sudden-player-hit"].includes(key) ? faces[1] : faces[0] };
 }
