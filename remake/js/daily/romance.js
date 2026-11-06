@@ -45,7 +45,10 @@ export function romanceRouteOpen(id) {
     if (!hiyoriFinaleReady() || !state.flags[route.finale?.flag]
       || ![route.question?.choice,route.finale?.question].every(key => state.romanceChoices[key]?.char === id && state.romanceChoices[key].value > 0)) return false;
   }
-  if (id === "samechan" && (!(state.chapter >= 2 && state.chapter <= 3)
+  // サメちゃんの恋愛の入口（最後の問い）は第2・3章だけ（chapter-features.js の samechanRomance）。そこで迎えた締めくくりの告白は、
+  // ほかの相手と同じく持ち越して第5章の地元の夜に届く（第3章の準備3日と東京の夜は confessionHeld が持ち越す・IR36）。
+  const samechanFinaleChapter = state.finales?.samechan?.chapter || state.chapter;
+  if (id === "samechan" && (!(samechanFinaleChapter >= 2 && samechanFinaleChapter <= 3)
     || !state.flags[questionDoneKey("samechan")]
     || state.romanceChoices?.bond_q1_samechan?.char !== id
     || state.romanceChoices?.bond_q2_samechan?.char !== id
