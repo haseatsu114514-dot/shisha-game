@@ -42,20 +42,33 @@ export const PROPS = Object.freeze([
 const PROP = Object.fromEntries(PROPS.map(prop => [prop.id, prop]));
 
 // しぐさ図鑑（12件・並びが図鑑の番号）。発見は自動で記録し、写真を撮らなくても失わない。
-// face は図鑑・アルバムで見せる表情（既存の5表情のどれか）。
+// face は図鑑・アルバムで見せる表情（既存の5表情のどれか）、art は届いたら使うしぐさの絵（tetsuko-art.js）。
+// memo は手帳の「てつこメモ」（見つけた後に読める一言。地の文）。
 export const MOMENTS = Object.freeze([
-  { id: "first_paw", name: "はじめて前足が出た", hint: "猫じゃらしを、何度か振ってみると……", face: "surprise" },
-  { id: "hug_toy", name: "じゃらしを抱える", hint: "少し慣れてから、じゃらしを止めてみると……", face: "smile" },
-  { id: "brush_bliss", name: "ブラシでうっとり", hint: "ブラシを借りられるようになったら……", face: "smile" },
-  { id: "waiting", name: "こちらを待っていた", hint: "何度か通ううちに……", face: "normal" },
-  { id: "first_rub", name: "初めてすりすり", hint: "すっかり気を許したら、なでてみると……", face: "smile" },
-  { id: "box_peek", name: "箱から顔だけ", hint: "箱があると……", face: "normal" },
-  { id: "ball_watch", name: "ボールを見送る", hint: "床にボールがあると……", face: "surprise" },
-  { id: "paws_together", name: "前足をそろえる", hint: "そっと見守っていると……", face: "normal" },
-  { id: "odd_sleep", name: "変な寝相", hint: "眠そうな日や、座布団の上だと……", face: "sleep" },
-  { id: "lap_nap", name: "膝で寝る", hint: "すっかり気を許したら、そっと見守ると……", face: "sleep" },
-  { id: "box_over_bed", name: "新しいベッドより箱", hint: "新しいベッドの近くに箱があると……", face: "normal" },
-  { id: "see_off", name: "帰りの見送り", hint: "すっかり気を許したら、帰るときに……", face: "smile" },
+  { id: "first_paw", name: "はじめて前足が出た", hint: "猫じゃらしを、何度か振ってみると……", face: "surprise", art: "reach",
+    memo: "最初は見ているだけ。三回目くらいで、前足が出る。" },
+  { id: "hug_toy", name: "じゃらしを抱える", hint: "少し慣れてから、じゃらしを止めてみると……", face: "smile", art: "hug",
+    memo: "じゃらしは、止まった瞬間に取りにくる。" },
+  { id: "brush_bliss", name: "ブラシでうっとり", hint: "ブラシを借りられるようになったら……", face: "smile", art: "loaf",
+    memo: "ブラシは背中から。途中でやめると、しっぽで続けろと言う。" },
+  { id: "waiting", name: "こちらを待っていた", hint: "何度か通ううちに……", face: "normal", art: "lookback",
+    memo: "戸の開く音を、もう覚えているらしい。" },
+  { id: "first_rub", name: "初めてすりすり", hint: "すっかり気を許したら、なでてみると……", face: "smile", art: "rub",
+    memo: "すねに頭をこすりつけるのが、てつこの挨拶。" },
+  { id: "box_peek", name: "箱から顔だけ", hint: "箱があると……", face: "normal", art: null,
+    memo: "箱があると、とりあえず入る。" },
+  { id: "ball_watch", name: "ボールを見送る", hint: "床にボールがあると……", face: "surprise", art: "crouch",
+    memo: "ボールは追わない。見送る派。" },
+  { id: "paws_together", name: "前足をそろえる", hint: "そっと見守っていると……", face: "normal", art: null,
+    memo: "隣に座ると、前足をそろえて座り直す。" },
+  { id: "odd_sleep", name: "変な寝相", hint: "眠そうな日や、座布団の上だと……", face: "sleep", art: "belly",
+    memo: "眠い日は、寝相がひどい。" },
+  { id: "lap_nap", name: "膝で寝る", hint: "すっかり気を許したら、そっと見守ると……", face: "sleep", art: null,
+    memo: "膝に乗ると、しばらく降りない。" },
+  { id: "box_over_bed", name: "新しいベッドより箱", hint: "新しいベッドの近くに箱があると……", face: "normal", art: null,
+    memo: "新しいベッドより、その箱。ムカイさんは少し寂しそうだった。" },
+  { id: "see_off", name: "帰りの見送り", hint: "すっかり気を許したら、帰るときに……", face: "smile", art: "rub",
+    memo: "帰りは、戸の前まで見送ってくれる。" },
 ].map(Object.freeze));
 const MOMENT_IDS = MOMENTS.map(moment => moment.id);
 
@@ -149,7 +162,7 @@ export function createSession(value, { visitKey = null } = {}) {
     newProps: unlockedProps(stage, metMashiro).filter(prop => !before.has(prop.id)).map(prop => prop.id),
     meaningful: false,
     // 画面に出ている猫: 居場所・姿勢・表情。今見えているしぐさ（写真に撮れる瞬間）
-    cat: { spot: stage >= 3 ? "front" : "bench", pose: "sit", face: stage === 0 ? "serious" : "normal", flip: false },
+    cat: { spot: stage >= 3 ? "front" : "bench", pose: "sit", face: stage === 0 ? "serious" : "normal", flip: false, inside: null, art: null },
     moment: null,
     last: null, lastAuto: null, autoTicks: 0,
     petStreak: 0, swings: 0, watches: 0, brushes: 0,
@@ -171,7 +184,7 @@ export function placeProp(session, slot, id) {
   for (const other of SLOTS) if (session.props[other] === id) session.props[other] = null;
   session.props[slot] = id;
   // 中に入っていた物が片付いたら、てつこは外へ出てくる。
-  if (session.cat.inside && !has(session, session.cat.inside)) session.cat = { ...session.cat, inside: null, pose: "sit", spot: "floor" };
+  if (session.cat.inside && !has(session, session.cat.inside)) session.cat = { ...session.cat, inside: null, pose: "sit", spot: "floor", art: null };
   return true;
 }
 
@@ -183,14 +196,15 @@ function discover(session, id) {
 }
 
 /** 反応を確定して画面用の形にする。moment は写真に撮れる瞬間、found は今回初めて見つけたしぐさ。 */
-function react(session, kind, { text, face = "normal", pose = "sit", spot = session.cat.spot, fx = null, moment = null, inside = null, flip = false, line = null }) {
-  session.cat = { spot, pose, face, flip, inside };
+function react(session, kind, { text, face = "normal", pose = "sit", spot = session.cat.spot, fx = null, moment = null, inside = null, flip = false, line = null, art = null }) {
+  // art: しぐさの絵が届いていれば使う名前（tetsuko-art.js）。無ければ face と pose（CSS）で見せる。
+  session.cat = { spot, pose, face, flip, inside, art };
   session.moment = moment;
   const found = moment ? discover(session, moment) : null;
   // 人物の一言は、名乗りを受けた相手だけ・その訪問で一度だけ（長い会話は挟まない）。
   const known = line && (line.speaker !== "mukai_master" || session.metMukai);
   const said = known && !session.said.includes(line.id) ? (session.said.push(line.id), line) : null;
-  return { kind, text, face, pose, spot, fx, moment, found, line: said ? { speaker: said.speaker, text: said.text } : null };
+  return { kind, text, face, pose, spot, fx, moment, found, art, line: said ? { speaker: said.speaker, text: said.text } : null };
 }
 
 /** 画面を開いたとき（入口の段階会話の後）。段階2以上なら「こちらを待っていた」。 */
@@ -231,7 +245,7 @@ const ACTIONS = {
     if (session.cat.pose === "lap")
       return react(session, "pet", { text: "膝の上で、低く喉を鳴らしている。", face: "sleep", pose: "lap", spot: "lap", fx: "heart" });
     if (session.stage >= 3)
-      return react(session, "pet", { text: "てつこがすり寄ってきて、低く喉を鳴らした。", face: "smile", spot: "front", fx: "heart", moment: "first_rub" });
+      return react(session, "pet", { text: "てつこがすり寄ってきて、低く喉を鳴らした。", face: "smile", spot: "front", fx: "heart", moment: "first_rub", art: "rub" });
     if (session.stage === 2) return react(session, "pet", { text: "てつこが、手のひらに頭を寄せてきた。", face: "smile", ...away, fx: "heart" });
     if (session.stage === 1) return react(session, "pet", { text: "喉元をなでると、てつこが目を細めた。", face: "smile", ...away, fx: "heart" });
     return react(session, "pet", { text: "てつこは目を閉じて、されるがままになっている。", face: "serious", ...away });
@@ -240,8 +254,8 @@ const ACTIONS = {
     session.swings += 1;
     if (session.swings >= PLAY_AUTO_CATCH) return ACTIONS.catch(session, { auto: true });
     if (session.swings === 1) return react(session, "play", { text: "猫じゃらしを小さく振る。てつこの目が、先を追った。", spot: "floor", fx: "toy" });
-    if (session.swings === 2) return react(session, "play", { text: "てつこが身を低くした。狙っている。", face: "serious", pose: "low", spot: "floor", fx: "toy" });
-    return react(session, "play", { text: "前足が、さっと伸びた。", face: "surprise", pose: "paw", spot: "floor", fx: "toy", moment: "first_paw" });
+    if (session.swings === 2) return react(session, "play", { text: "てつこが身を低くした。狙っている。", face: "serious", pose: "low", spot: "floor", fx: "toy", art: "crouch" });
+    return react(session, "play", { text: "前足が、さっと伸びた。", face: "surprise", pose: "paw", spot: "floor", fx: "toy", moment: "first_paw", art: "reach" });
   },
   catch(session, { auto = false } = {}) {
     session.swings = 0;
@@ -249,14 +263,14 @@ const ACTIONS = {
       return react(session, "catch", { text: auto ? "てつこが前足で押さえて、すぐに離した。" : "じゃらしを止めると、前足で押さえて、すぐに離した。",
         face: "serious", spot: "floor", fx: "toy" });
     return react(session, "catch", { text: auto ? "てつこが飛びついて、じゃらしを抱えこんだ。" : "じゃらしを止めると、てつこが抱えこんで離さない。",
-      face: "smile", pose: "hug", spot: "floor", fx: "toy-held", moment: "hug_toy" });
+      face: "smile", pose: "hug", spot: "floor", fx: "toy-held", moment: "hug_toy", art: "hug" });
   },
   brush(session) {
     session.brushes += 1;
     const spot = session.cat.inside || session.cat.spot === "lap" ? "bench" : session.cat.spot;
     if (session.brushes === 1)
       return react(session, "brush", { text: "背中にブラシを当てる。てつこの体から、力が抜けていく。", face: "smile", spot, fx: "fur", moment: "brush_bliss" });
-    return react(session, "brush", { text: "ブラシを止めると、前足が手を追ってきた。", face: "normal", pose: "paw", spot, fx: "fur" });
+    return react(session, "brush", { text: "ブラシを止めると、前足が手を追ってきた。", face: "normal", pose: "paw", spot, fx: "fur", art: "reach" });
   },
   // 一日一回の小さな楽しみ（店の人が用意した猫用のおやつ）。なくても関係は進む。
   // steps は画面が順に見せる途中の様子（匂いを確かめる→食べる）。最後が反応の本体（顔を洗う）。
@@ -264,10 +278,10 @@ const ACTIONS = {
     session.treatDay = session.day;
     const steps = [
       { text: "ムカイさんが置いている猫用のおやつを、小皿に少しだけ出す。", face: "normal", pose: "sit", spot: session.cat.inside ? "bench" : session.cat.spot, fx: "treat" },
-      { text: "てつこが近づいてきて、匂いを確かめている。", face: "serious", pose: "low", spot: "floor", fx: "treat" },
-      { text: "てつこは、ゆっくり食べはじめた。", face: "smile", pose: "low", spot: "floor", fx: "treat" },
+      { text: "てつこが近づいてきて、匂いを確かめている。", face: "serious", pose: "low", spot: "floor", fx: "treat", art: "crouch" },
+      { text: "てつこは、ゆっくり食べはじめた。", face: "smile", pose: "low", spot: "floor", fx: "treat", art: "crouch" },
     ];
-    return { ...react(session, "treat", { text: "食べ終わると、前足で顔を洗いはじめた。", face: "smile", spot: "floor", fx: "treat-done" }), steps };
+    return { ...react(session, "treat", { text: "食べ終わると、前足で顔を洗いはじめた。", face: "smile", spot: "floor", fx: "treat-done", art: "groom" }), steps };
   },
   watch(session) {
     session.watches += 1;
@@ -287,13 +301,13 @@ const ACTIONS = {
 // weight は気分で変える（{ 気分: 倍率 }）。moment があれば図鑑のしぐさ。
 const AUTO = [
   { id: "yawn", when: () => true, weight: { calm: 1.4, sleepy: 1.6 },
-    react: s => ({ text: "てつこが大きなあくびをした。", face: "surprise" }) },
+    react: s => ({ text: "てつこが大きなあくびをした。", face: "surprise", art: "yawn" }) },
   { id: "groom", when: () => true, weight: { calm: 1.4 },
-    react: s => ({ text: "てつこが前足をなめて、顔を洗っている。", face: "smile" }) },
+    react: s => ({ text: "てつこが前足をなめて、顔を洗っている。", face: "smile", art: "groom" }) },
   { id: "lean", when: () => true, weight: { calm: 1.2 },
-    react: s => ({ text: "てつこが壁にもたれて、どっしり座りこんだ。", face: "serious", spot: "bench" }) },
+    react: s => ({ text: "てつこが壁にもたれて、どっしり座りこんだ。", face: "serious", spot: "bench", art: "loaf" }) },
   { id: "door", when: () => true, weight: { clingy: 1.4 },
-    react: s => ({ text: "てつこが、裏口の戸のほうを見ている。", flip: true }) },
+    react: s => ({ text: "てつこが、裏口の戸のほうを見ている。", flip: true, art: "lookback" }) },
   { id: "tail", when: () => true, weight: { playful: 1.2 },
     react: s => ({ text: "しっぽの先が、ゆっくり揺れている。", fx: "tail" }) },
   { id: "doze", when: s => s.mood === "sleepy", weight: { sleepy: 2 },
@@ -305,11 +319,11 @@ const AUTO = [
   { id: "box_peek", when: s => has(s, "box"), moment: "box_peek", weight: { playful: 1.2 },
     react: s => ({ text: "箱のふちから、顔だけ出している。", spot: slotOf(s, "box"), pose: "peek", inside: "box" }) },
   { id: "ball_paw", when: s => has(s, "ball"), weight: { playful: 1.6 },
-    react: s => ({ text: "前足で、ボールをちょいと転がした。", face: "serious", pose: "paw", spot: "floor", inside: "ball", fx: "ball-roll" }) },
+    react: s => ({ text: "前足で、ボールをちょいと転がした。", face: "serious", pose: "paw", spot: "floor", inside: "ball", fx: "ball-roll", art: "reach" }) },
   { id: "ball_watch", when: s => has(s, "ball"), moment: "ball_watch", weight: { playful: 1.2 },
     react: s => ({ text: "転がっていくボールを、目だけで見送った。", face: "surprise", spot: "floor", inside: "ball", fx: "ball-away" }) },
   { id: "scratch", when: s => has(s, "scratcher"), weight: { playful: 1.4 },
-    react: s => ({ text: "てつこが爪とぎで、がりがりと爪をといでいる。", face: "serious", pose: "paw", spot: "floor", inside: "scratcher" }) },
+    react: s => ({ text: "てつこが爪とぎで、がりがりと爪をといでいる。", face: "serious", pose: "paw", spot: "floor", inside: "scratcher", art: "stretch" }) },
   { id: "cushion", when: s => has(s, "cushion"), weight: { sleepy: 1.6, calm: 1.2 },
     react: s => ({ text: "座布団の上で、てつこが丸くなった。", face: "sleep", pose: "curl", spot: slotOf(s, "cushion"), inside: "cushion" }) },
   { id: "bed_sleep", when: s => has(s, "bed"), weight: { sleepy: 1.6 },
@@ -317,7 +331,7 @@ const AUTO = [
   { id: "odd_sleep", when: s => s.stage >= 1 && (s.mood === "sleepy" || has(s, "cushion") || has(s, "bed")), moment: "odd_sleep", weight: { sleepy: 1.6 },
     react: s => {
       const on = has(s, "bed") ? "bed" : has(s, "cushion") ? "cushion" : null;
-      return { text: "ひっくり返ったような格好で、てつこが寝ている。", face: "sleep", pose: "odd", spot: on ? slotOf(s, on) : "bench", inside: on };
+      return { text: "ひっくり返ったような格好で、てつこが寝ている。", face: "sleep", pose: "odd", spot: on ? slotOf(s, on) : "bench", inside: on, art: "belly" };
     } },
   { id: "box_over_bed", when: s => has(s, "bed") && has(s, "box"), moment: "box_over_bed", weight: {},
     react: s => ({ text: "新しいベッドには見向きもせず、てつこは箱に入った。", spot: slotOf(s, "box"), pose: "box", inside: "box",
@@ -325,7 +339,7 @@ const AUTO = [
   { id: "tunnel", when: s => has(s, "tunnel"), weight: { playful: 1.4 },
     react: s => ({ text: "トンネルから、しっぽだけが出ている。", spot: "floor", pose: "tunnel", inside: "tunnel" }) },
   { id: "mashiro", when: s => s.metMashiro && s.stage >= 1 && !s.mashiroPassed, weight: { calm: 0.6, sleepy: 0.6, playful: 0.6, clingy: 0.6 },
-    react: s => { s.mashiroPassed = true; return { text: "戸の向こうを、ましろちゃんが通った。てつこの耳が、すぐそっちを向く。", face: "surprise", flip: true }; } },
+    react: s => { s.mashiroPassed = true; return { text: "戸の向こうを、ましろちゃんが通った。てつこの耳が、すぐそっちを向く。", face: "surprise", flip: true, art: "lookback" }; } },
 ];
 export const AUTO_IDS = Object.freeze(AUTO.map(item => item.id));
 
@@ -380,7 +394,7 @@ export function takePhoto(session) {
 /** 帰るとき。気を許した段階で、ふれあいの後なら見送ってくれる（図鑑⑫）。 */
 export function farewell(session) {
   if (session.stage < 3 || !session.meaningful) return null;
-  return react(session, "leave", { text: "帰ろうとすると、てつこが戸の前までついてきた。", face: "smile", spot: "front", moment: "see_off" });
+  return react(session, "leave", { text: "帰ろうとすると、てつこが戸の前までついてきた。", face: "smile", spot: "front", moment: "see_off", art: "rub" });
 }
 
 /** 確定に渡す結果（settleTetsukoTime の result）。 */

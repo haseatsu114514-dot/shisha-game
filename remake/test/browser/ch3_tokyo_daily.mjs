@@ -197,6 +197,55 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(mid.flags._ch3_outings.tetsuko, 4);
   });
 
+  // #2454 UI v2: 道具箱から箱を選んで床に置く／猫じゃらしを指で動かすと前足が出る／てつこ手帳に残る。
+  // 帰ると配置と発見が _tetsuko_time に残り、回復・来訪は一度だけ。
+  await check("tetsuko-time-toolbox-toy-drag-and-notebook", async page => {
+    await seed(page, { _ch3_outings: { tetsuko: 5 } });
+    await loadSlot(page, 0);
+    await page.locator(dt("rule-sheet")).waitFor({ timeout: 60000 });
+    await page.locator(dt("rule-sheet-close")).click();
+    await tokyoMap(page, { day: 33, slot: 1 });
+    await go(page, "ch3_tokyo_mukai");
+    const help = page.locator(`#modal.show button`, { hasText: "シフトに入る" });
+    await help.waitFor();
+    await help.click();
+    await page.locator(dt("mukai-order-0")).waitFor({ timeout: 60000 });
+    await page.locator(dt("mukai-order-0")).click();
+    await page.locator(dt("tokyo-tetsuko-game")).click({ timeout: 60000 });
+    const screen = page.locator(dt("tetsuko-time-screen"));
+    await screen.waitFor({ timeout: 60000 });
+    // もようがえ: 箱を選ぶと置ける場所が光り、床をタップすると置ける。
+    await page.locator(dt("tetsuko-decor")).click();
+    await page.locator(dt("tetsuko-decor-panel")).waitFor();
+    await page.locator(dt("tetsuko-item-box")).click();
+    assert.equal(await page.locator(dt("tetsuko-slot-floor")).getAttribute("data-allowed"), "true", "The floor lights up for the box");
+    await page.locator(dt("tetsuko-slot-floor")).click();
+    assert.equal(await page.locator('.tt-slot[data-slot="floor"]').getAttribute("data-prop"), "box", "The box is on the floor");
+    await page.locator(dt("tetsuko-panel-close")).click();
+    // 猫じゃらし: 持ち替えて、先を指（マウス）で動かす。動かすたびに振ったことになり、3回目で前足が出る。
+    await page.locator(dt("tetsuko-play")).click();
+    assert.equal(await screen.getAttribute("data-tool"), "toy");
+    const box = await screen.boundingBox();
+    const at = (x, y) => [box.x + x * box.width / 1280, box.y + y * box.height / 720];
+    for (const [x, y] of [[700, 380], [880, 300], [620, 280], [860, 420], [600, 360], [820, 300]]) {
+      await page.mouse.move(...at(x, y), { steps: 5 });
+      await page.waitForTimeout(520);
+    }
+    await page.waitForFunction(() => document.querySelector('[data-test="tetsuko-caption"]')?.textContent.length > 0);
+    // てつこ手帳: 見つけたしぐさが記録されている。
+    await page.locator(dt("tetsuko-book")).click();
+    await page.locator(dt("tetsuko-book-panel")).waitFor();
+    assert.equal(await page.locator(dt("tetsuko-book-first_paw")).getAttribute("data-found"), "true", "The first paw is in the notebook");
+    await page.locator(dt("tetsuko-panel-close")).click();
+    await page.locator(dt("tetsuko-time-back")).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch3_outings?.tetsuko === 6, null, { timeout: 30000 });
+    const after = await get(page);
+    assert.equal(after.flags._tetsuko_time.props.floor, "box", "The box stays where it was put");
+    assert(after.flags._tetsuko_time.found.includes("first_paw"), "Dragging the toy found the first paw");
+    await tokyoMap(page, { day: 34, slot: 1 });
+    assert.equal((await get(page)).flags._ch3_outings.tetsuko, 6, "Counted once");
+  });
+
   // VOL10: 東京にいる間、LIMEを交換したムカイさんから、最後のシフトから3日あいた日にシフトの誘いが届く。
   await check("mukai-invites-a-shift-by-lime-in-tokyo", async page => {
     await seed(page);

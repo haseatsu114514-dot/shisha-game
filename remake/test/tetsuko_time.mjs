@@ -389,4 +389,29 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   assert.deepEqual([...new Set(writes)].sort(), ["OUTINGS_FLAG", "TETSUKO_TIME_FLAG"], "確定点が書くのは2つの記録だけ");
 }
 
+// てつこメモ（手帳の一言）と、絵の差し替え表（tetsuko-art.js）。
+{
+  for (const moment of MOMENTS) {
+    assert(/。$/.test(moment.memo) && [...moment.memo].length <= 48, `てつこメモは地の文・48字以内: ${moment.memo}`);
+    assert(!/テツコ|ヤニネコ/.test(moment.memo));
+  }
+  const POSES = ["loaf", "crouch", "reach", "hug", "groom", "yawn", "belly", "rub", "walk_a", "walk_b", "lookback", "stretch"];
+  const hints = new Set(MOMENTS.map(moment => moment.art).filter(Boolean));
+  for (const kind of ["pet", "play", "play", "play", "catch", "brush", "brush", "treat", "watch"]) {
+    const reaction = act(createSession(save({ count: 4 })), kind);
+    if (reaction?.art) hints.add(reaction.art);
+  }
+  const session = createSession(save({ count: 4, day: 7 }));
+  for (const slot of SLOTS) for (const prop of PROPS) placeProp(session, slot, prop.id);
+  for (let i = 0; i < 60; i += 1) { const reaction = autonomous(session); if (reaction.art) hints.add(reaction.art); }
+  for (const hint of hints) assert(POSES.includes(hint), `しぐさの絵の名前は依頼した12枚のどれか: ${hint}`);
+  const { ART_READY, artAttrs } = await import("../js/minigames/tetsuko-art.js");
+  const exists = rel => fs.existsSync(new URL(`../img/ui/tetsuko/${rel}`, import.meta.url));
+  for (const pose of ART_READY.poses) { assert(POSES.includes(pose)); assert(exists(`cat_${pose}.webp`), `届いたしぐさの絵がある: cat_${pose}.webp`); }
+  for (const prop of ART_READY.props) assert(exists(`prop_${prop === "plate" ? "plate_full" : prop === "teaser" ? "teaser_tip" : prop}.webp`), `届いた小物の絵がある: ${prop}`);
+  for (const part of ART_READY.ui) assert(exists(`ui_${part}.webp`), `届いたUIの絵がある: ui_${part}.webp`);
+  if (ART_READY.background) assert(fs.existsSync(new URL("../img/backgrounds/bg_mukai_backdoor_day.webp", import.meta.url)), "裏口の絵がある");
+  assert.deepEqual(Object.keys(artAttrs()).sort(), ["artBg", "artProps", "artUi"]);
+}
+
 console.log("tetsuko time model and settle: ok");

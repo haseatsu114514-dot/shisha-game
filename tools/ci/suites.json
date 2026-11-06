@@ -1702,6 +1702,7 @@
         "data/dialogue/ch3_tokyo_daily.json",
         "remake/js/minigames/tetsuko-time.js",
         "remake/js/minigames/tetsuko-model.js",
+        "remake/js/minigames/tetsuko-art.js",
         "remake/css/tetsuko-time.css",
         "remake/test/browser/ch3_tokyo_daily.mjs"
       ],
