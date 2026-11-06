@@ -121,7 +121,7 @@ export const EQUIP_WIDTH_FACTORS = Object.freeze({
     suyaki_sumi: 0.90, suyaki_tsumugi: 0.90, suyaki_rio: 0.90, suyaki_hiyori: 0.90, suyaki_samechan: 0.90,
     suyaki_ageha: 0.90,
     suyaki_kumicho: 0.90, suyaki_rei: 0.90,
-    suyaki_mashiro: 0.90, suyaki_saku: 0.90, suyaki_noor: 0.90, suyaki_steve: 0.90,
+    suyaki_mashiro: 0.90, suyaki_saku: 0.90, suyaki_noor: 0.90, suyaki_steve: 0.90, suyaki_volk: 0.90,
   }),
   hms: Object.freeze({
     lotos_hagal: 1.00, tanukish_lid: 1.08, winkwink_hagal: 1.05, amaburst_hms: 0.88, lotos_plus: 1.04,

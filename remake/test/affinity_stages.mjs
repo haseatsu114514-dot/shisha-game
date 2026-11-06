@@ -711,7 +711,9 @@ await check('Steve (#2028): ♥5 finale after the LIME detour and the timer outi
   s.flags._ch3_aftermath.stage += 1;
   assert.equal(f.bonds.finaleDue('steve'), false, 'from the cleanup morning he cannot be met');
   assert.equal(f.bonds.finaleReachable('steve'), false);
-  assert.equal(f.bonds.finaleReachable('saku'), true, 'only Steve has this window');
+  // 綾取も同じ窓（煙幕の片づけの朝からは店を畳む）。ヴォルクだけは鉄の煙の寄り道と同じく、片づけの朝まで会える。
+  assert.equal(f.bonds.finaleReachable('saku'), false, 'Ayatori shares the window: packing the shop that morning');
+  assert.equal(f.bonds.finaleReachable('volk'), true, 'Volk can still be met at Iron Smoke on the cleanup morning');
   delete s.flags._ch3_aftermath;
   s.flags._ch3_cleared = true; assert.equal(f.bonds.finaleDue('steve'), false); delete s.flags._ch3_cleared;
   for (const chapter of [1, 2, 4, 5, '3']) {
@@ -736,6 +738,102 @@ await check('Steve (#2028): ♥5 finale after the LIME detour and the timer outi
   const lime = f.bonds.friendMessages({ sceneChapter: true });
   assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['steve', 'chat']], 'chat only on the scene-card chapters');
   assert.deepEqual(clone(lime[0].messages), f.db.friends.friends.steve.chats[0].m);
+});
+await check('Volk (#2028): ♥5 finale after the three Iron Smoke visits and the LIME detour, until the cleanup morning, hagal once, then friend LIME', async f => {
+  const volk = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_volk.json', import.meta.url))).dialogues;
+  for (const d of volk) f.db.dialogues[d.dialogue_id] = d;
+  const gear = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json', import.meta.url))).equipment.find(e => e.id === 'suyaki_volk');
+  assert.deepEqual([gear.gift.from, gear.gift.flavor, gear.gift.leaf_grams, gear.type, gear.not_for_sale, gear.chapter_min],
+    ['volk', 'nightside_blast_mint', 50, 'bowl', true, 99]);
+  f.db.equipById.suyaki_volk = gear;
+  f.db.flavorById.nightside_blast_mint = { id: 'nightside_blast_mint' };
+  f.db.friends = JSON.parse(fs.readFileSync(new URL('../data/friends.json', import.meta.url)));
+  assert.equal(f.bonds.BOND_FINALES.volk.gift, 'suyaki_volk');
+  assert.equal(f.bonds.finaleHeart('volk'), 5, 'the same ♥5 gate as Ayatori and Steve');
+  const s = f.core.state; s.chapter = 3; s.met.volk = true; s.affinity.volk = 66;
+  assert.equal(f.bonds.finaleDue('volk'), false, 'affinity alone does not open the finale');
+  s.flags._lime_contact_volk = true; s.flags._ch3_read_ch3_volk_lime = true;
+  for (const scene of ['ch3_volk_second', 'ch3_volk_third', 'ch3_volk_fourth']) {
+    assert.equal(f.bonds.finaleDue('volk'), false, `${scene} comes first`);
+    s.flags[`_ch3_read_${scene}`] = true;
+  }
+  delete s.flags._lime_contact_volk;
+  assert.equal(f.bonds.finaleDue('volk'), false, 'the LIME exchange comes first');
+  s.flags._lime_contact_volk = true;
+  for (const pts of [9, 33, 48, 65]) {
+    s.affinity.volk = pts;
+    assert.equal(f.bonds.finaleDue('volk'), false, `${pts}pt (below ♥5) keeps the finale closed`);
+  }
+  s.affinity.volk = 66; assert.equal(f.bonds.finaleAtVisit('volk'), true, '♥5 opens it on the next visit, day or night');
+  assert.equal(f.bonds.finaleReachable('volk'), true);
+  s.flags._ch3_prep = { departed: false };
+  assert.equal(f.bonds.finaleDue('volk'), false, 'not before leaving for Tokyo');
+  s.flags._ch3_prep.departed = true;
+  // 大会後: なるへの報告の夜（ピザとシーシャの夜を開く時は寄り道が無い）を除き、煙幕の片づけの朝まで。
+  s.flags._ch3_aftermath = { version: 3, winDay: 40, stage: 1 };
+  assert.equal(f.bonds.finaleDue('volk'), true, 'the day after the win');
+  s.flags._ch3_aftermath.stage = 2; s.flags._ch3_naru_party_ready = true;
+  assert.equal(f.bonds.finaleDue('volk'), false, 'the party night has no detour to Iron Smoke');
+  assert.equal(f.bonds.finaleReachable('volk'), false);
+  s.flags._ch3_aftermath.stage = f.bonds.VOLK_LAST_AFTERMATH_STAGE;
+  assert.equal(f.bonds.finaleDue('volk'), true, 'the cleanup morning after the party night: Iron Smoke is open again');
+  delete s.flags._ch3_naru_party_ready;
+  s.flags._ch3_aftermath.stage += 1;
+  assert.equal(f.bonds.finaleDue('volk'), false, 'back home from that night');
+  assert.equal(f.bonds.finaleReachable('volk'), false, 'the MENU does not promise a visit that cannot happen');
+  delete s.flags._ch3_aftermath;
+  s.flags._ch3_cleared = true; assert.equal(f.bonds.finaleDue('volk'), false); delete s.flags._ch3_cleared;
+  for (const chapter of [1, 2, 4, 5, '3']) {
+    s.chapter = chapter;
+    assert.equal(f.bonds.finaleDue('volk'), false, `chapter ${chapter}`);
+    assert.equal(f.bonds.finaleReachable('volk'), false);
+  }
+  assert.equal(await f.bonds.playFinale('volk'), false); s.chapter = 3;
+  f.setPlay(async () => ({ cancelled: true }));
+  assert.equal(await f.bonds.playFinale('volk'), false, 'cancel records nothing');
+  assert(!s.finales?.volk); assert(!s.owned.includes('suyaki_volk'));
+  f.setPlay(async () => done);
+  assert.equal(await f.bonds.playFinale('volk'), true);
+  const after = f.roundTrip();
+  assert.equal(after.finales.volk.route, 'friend');
+  assert.equal(after.flags._confession_due, undefined);
+  assert.equal(after.owned.filter(id => id === 'suyaki_volk').length, 1);
+  assert.equal(after.flavorStock.nightside_blast_mint, 50);
+  assert.equal(await f.bonds.playFinale('volk'), false, 'once');
+  assert.equal(f.bonds.settledFriend('volk'), true);
+  after.day += 10;
+  const lime = f.bonds.friendMessages({ sceneChapter: true });
+  assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['volk', 'chat']], 'chat only on the scene-card chapters');
+  assert.deepEqual(clone(lime[0].messages), f.db.friends.friends.volk.chats[0].m);
+});
+await check('Ayatori (#2028): the finale and the MENU promise only while 煙幕 can be visited', async f => {
+  const rivals = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_rivals.json', import.meta.url))).dialogues;
+  for (const d of rivals) f.db.dialogues[d.dialogue_id] = d;
+  const s = f.core.state; s.chapter = 3; s.met.saku = true; s.affinity.saku = 66;
+  Object.assign(s.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_outings: { enmaku_answer: 1 } });
+  assert.equal(f.bonds.finaleDue('saku'), true);
+  assert.equal(f.bonds.finaleReachable('saku'), true);
+  s.flags._ch3_prep = { departed: false };
+  assert.equal(f.bonds.finaleDue('saku'), false, 'not before leaving for Tokyo');
+  s.flags._ch3_prep.departed = true;
+  s.flags._ch3_aftermath = { version: 3, winDay: 40, stage: f.bonds.SAKU_LAST_AFTERMATH_STAGE };
+  assert.equal(f.bonds.finaleDue('saku'), true, 'the day after the win');
+  s.flags._ch3_naru_party_ready = true;
+  assert.equal(f.bonds.finaleDue('saku'), false, 'the party night has no detour');
+  delete s.flags._ch3_naru_party_ready;
+  s.flags._ch3_aftermath.stage += 1;
+  assert.equal(f.bonds.finaleDue('saku'), false, 'the cleanup morning: packing the shop');
+  assert.equal(f.bonds.finaleReachable('saku'), false);
+  delete s.flags._ch3_aftermath;
+  for (const chapter of [4, 5]) {
+    s.chapter = chapter;
+    assert.equal(f.bonds.finaleReachable('saku'), false, `chapter ${chapter}: no MENU promise of 煙幕`);
+  }
+  // 日常ループでは昼にも夜にも読むので、LIME交換と締めくくりの入りで時間帯を言わない。
+  const texts = ['ch3_saku_lime', 'ch3_saku_bond_finale'].flatMap(id => {
+    const d = f.db.dialogues[id]; return [...d.lines, ...Object.values(d.branches || {}).flat()];
+  }).map(line => line.text || '').join('\n');
+  assert.doesNotMatch(texts, /今夜|閉店後の煙幕/, 'no time of day in the openings');
 });
 await check('Noor (DSR20): chapter 4 cafe finale after the cafe stages and the ♥3 question, then her own sunset confession', async f => {
   const desert = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch4_desert.json', import.meta.url))).dialogues;

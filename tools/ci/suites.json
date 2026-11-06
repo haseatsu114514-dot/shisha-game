@@ -1764,6 +1764,7 @@
         "remake/js/daily/hud.js",
         "data/dialogue/ch3_tokyo_daily.json",
         "data/dialogue/ch3_rivals.json",
+        "data/dialogue/ch3_volk.json",
         "remake/js/minigames/tetsuko-time.js",
         "remake/test/browser/ch3_tokyo_daily.mjs"
       ],

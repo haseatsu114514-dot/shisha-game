@@ -24,6 +24,10 @@ async function openAftermath(page, { stage, lit, extra = "" }) {
     // 綾取の締めくくりの前提（LIME交換の寄り道・答えを返しに行く外出）を大会前に済ませた保存（IR22）
     if (extra === "saku-finale") Object.assign(s.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_outings: { enmaku_answer: 1 } });
     if (extra === "volk-low") s.affinity.volk = 0;
+    // ヴォルクの締めくくりの前提（鉄の煙の再訪三つとLIME交換の寄り道）を済ませた保存（#2028）
+    if (extra === "volk-finale") for (const id of ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_lime"]) {
+      s.flags[`_ch3_read_${id}`] = true; s.flags._lime_contact_volk = true;
+    }
     growth.setGrowthPreview(true);
     Object.assign(growth.ensureGrowth(), { nodes: [...lit], learned: [] });
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
@@ -178,11 +182,33 @@ await suite("lesson-consult-coverage", async (check) => {
     assert.equal(s.finales.saku.route, "friend");
     assert.equal(s.owned.filter((id) => id === "suyaki_saku").length, 1);
     const backlog = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map((row) => row.text).join("\n"));
-    assert.match(backlog, /今夜の議題は、勝ち負けとは別の話/, "read after the tournament: the after-tournament branch");
-    assert.doesNotMatch(backlog, /勝負の話は、今夜はなし/);
+    assert.match(backlog, /今日の議題は、勝ち負けとは別の話/, "read after the tournament: the after-tournament branch");
+    assert.doesNotMatch(backlog, /勝負の話は、今日はなし/);
     await page.locator(t("ch3-aftermath-detour-open")).click();
     await page.locator(t("ch3-aftermath-detour")).waitFor();
     assert.equal(await page.locator(t("ch3-aftermath-finale-saku")).count(), 0, "the finale is read once");
+  }, { viewport: { width: 1331, height: 760 } });
+
+  // (d2) #2028: ヴォルクの締めくくり（♥5）は、鉄の煙の寄り道と同じく煙幕の片づけの朝まで（綾取・スティーブの窓は閉じた後）
+  await check("ch3-aftermath-volk-heart5-finale-on-the-cleanup-morning", async (page) => {
+    await openAftermath(page, { stage: 3, lit: [], extra: "volk-finale" });
+    const before = await unchanged(page);
+    await page.locator(t("ch3-aftermath-detour-open")).click();
+    await page.locator(t("ch3-aftermath-detour")).waitFor();
+    assert.match(await page.locator(t("ch3-aftermath-finale-volk")).innerText(), /ヴォルクに呼ばれる（鉄の煙）/);
+    await page.locator(t("ch3-aftermath-finale-volk")).click();
+    await page.waitForFunction(() => !!window.__remake.state.finales?.volk, null, { timeout: 30000 });
+    await page.locator(t("ch3-aftermath-scene")).waitFor({ timeout: 30000 });
+    assert.deepEqual(await unchanged(page), before, "the finale does not spend time or money, nor advance the aftermath");
+    const s = await page.evaluate(() => structuredClone(window.__remake.state));
+    assert.equal(s.finales.volk.route, "friend");
+    assert.equal(s.owned.filter((id) => id === "suyaki_volk").length, 1);
+    const backlog = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map((row) => row.text).join("\n"));
+    assert.match(backlog, /大会の日から、計器より先に客の息を聞いている/, "read after the tournament: the after-tournament branch");
+    assert.match(backlog, /友人と過ごした時間は、書かなくても覚えている/);
+    await page.locator(t("ch3-aftermath-detour-open")).click();
+    await page.locator(t("ch3-aftermath-detour")).waitFor();
+    assert.equal(await page.locator(t("ch3-aftermath-finale-volk")).count(), 0, "the finale is read once");
   }, { viewport: { width: 1331, height: 760 } });
 
   // (e) IR23: 大会前に読めなかった鉄の煙の再訪を、大会後に順に読める。任意の場面なので台本の報酬で好感度が上がる

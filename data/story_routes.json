@@ -136,7 +136,8 @@
         "ch3_tsumugi_slump",
         "ch3_volk_second",
         "ch3_volk_third",
-        "ch3_volk_fourth"
+        "ch3_volk_fourth",
+        "ch3_volk_lime"
       ],
       "after_eve": [
         "ch3_tournament_day",
@@ -333,6 +334,12 @@
         "ch3_volk_third"
       ],
       "comment": "#2026: 「三回分、同じだった」。三度目の来店の後。"
+    },
+    "ch3_volk_lime": {
+      "seen": [
+        "ch3_volk_fourth"
+      ],
+      "comment": "#2028: ヴォルクとLIMEを交換する。四度目の来店の「次は、俺のメモも持ってきます」を受ける。面識と♥2の条件は場面カードの置き方（ch3-story-wiring.js の met・heart）。大会後は ch3-aftermath-progress.js の寄り道から。"
     }
   },
   "near_conflict": {

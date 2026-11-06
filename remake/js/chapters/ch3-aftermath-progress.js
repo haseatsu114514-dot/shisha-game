@@ -29,7 +29,15 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
   { id: "ch3_volk_third", file: "ch3_volk", label: "七年分の記録", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"], after: ["ch3_volk_second"] },
   { id: "ch3_volk_fourth", file: "ch3_volk", label: "頷く順番", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"], after: ["ch3_volk_third"] },
   { id: "ch3_volk_after_ch3", file: "ch3_volk", label: "大会のあとの記録", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
+  // ヴォルクとLIMEを交換する（#2028）。大会前の寄り道と同じく、四度目の来店の後・♥2で（ヴォルクの締めくくりの条件）。
+  { id: "ch3_volk_lime", file: "ch3_volk", label: "持ってきたメモ", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"],
+    after: ["ch3_volk_fourth"], heart: { volk: 2 } },
 ]);
+/**
+ * 好感度の段階（♥）の下限。core/stats.js の AFFINITY_RANK_PTS の写し（vm で読む試験の依存を増やさない。ch3_aftermath.mjs で照合）。
+ * heart=その人物の通常好感度がこの段階以上の時だけ出す（大会前の寄り道 ch3-story-wiring.js の heart と同じ）。
+ */
+export const AFTERMATH_HEART_PTS = Object.freeze([0, 9, 20, 33, 48, 66]);
 const DETOUR_FIRST = CH3_AFTERMATH_SCENES.findIndex(scene => scene.id === "ch3_mashiro_recovery");
 const DETOUR_LAST = CH3_AFTERMATH_SCENES.findIndex(scene => scene.id === "ch3_enmaku_cleanup");
 const detourReadFlag = id => `_ch3_read_${id}`;
@@ -41,7 +49,8 @@ export function availableAftermathDetours(value) {
   if (!Number.isInteger(stage) || stage < DETOUR_FIRST || stage > DETOUR_LAST) return [];
   return CH3_AFTERMATH_DETOURS.filter(scene => !value.flags[detourReadFlag(scene.id)]
     && (scene.met || []).every(who => value.met?.[who])
-    && (scene.after || []).every(id => value.flags[detourReadFlag(id)]));
+    && (scene.after || []).every(id => value.flags[detourReadFlag(id)])
+    && Object.entries(scene.heart || {}).every(([who, level]) => (value.affinity?.[who] || 0) >= AFTERMATH_HEART_PTS[level]));
 }
 
 /**
@@ -75,8 +84,9 @@ export function availableAftermathLessons(value, ready) {
 
 /**
  * 大会後の東京で読める締めくくり（IR22・#2028）。♥5に届いた次の来店が大会の後になった時も、帰る前に一度だけ読める
- * （台本は大会の前後で分かれる）。窓は二人の授業と同じく、煙幕の片づけ（店を畳む朝・その夜に地元へ帰る）の前まで。
- * スティーブの窓の終わりは daily/bonds.js の STEVE_LAST_AFTERMATH_STAGE に写してある（ch3_aftermath.mjs で照合）。
+ * （台本は大会の前後で分かれる）。窓はそれぞれの授業と同じく、綾取・スティーブは煙幕の片づけ（店を畳む朝・その夜に
+ * 地元へ帰る）の前まで、ヴォルクは片づけの朝まで。窓の終わりは daily/bonds.js の *_LAST_AFTERMATH_STAGE に写してある
+ * （ch3_aftermath.mjs で照合）。
  * due(who) は daily/bonds.js の finaleDue（♥5・前提の場面・既読）。寄り道と同じく stage・日時は進めず、保存は変更しない。
  */
 export const CH3_AFTERMATH_FINALES = Object.freeze([
@@ -84,6 +94,9 @@ export const CH3_AFTERMATH_FINALES = Object.freeze([
     from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },
   { who: "steve", file: "ch3_rivals", dialogue: "ch3_steve_bond_finale", label: "スティーブに呼ばれる", place: "Smoke & Glory",
     bg: "bg_steve_shop", from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },
+  // ヴォルク（#2028）の窓は、鉄の煙の寄り道・授業と同じく煙幕の片づけの朝まで（daily/bonds.js の VOLK_LAST_AFTERMATH_STAGE）。
+  { who: "volk", file: "ch3_volk", dialogue: "ch3_volk_bond_finale", label: "ヴォルクに呼ばれる", place: "鉄の煙",
+    bg: "bg_volk_shop", from: "ch3_mashiro_recovery", to: "ch3_enmaku_cleanup" },
 ]);
 export function availableAftermathFinales(value, due) {
   if (!canRunChapterThreeAftermath(value) || value.flags._ch3_cleared) return [];
