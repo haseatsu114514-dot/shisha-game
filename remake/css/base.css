@@ -337,7 +337,8 @@ body.vn-open .weather-sheet.outdoor {
   opacity: 0;
   transform: translateY(-8px);
   transition: opacity 0.3s, transform 0.3s var(--ease-out);
-  max-width: 900px;
+  max-width: min(900px, calc(100% - 24px));
+  overflow-wrap: anywhere;
   text-align: center;
 }
 .toast.show { opacity: 1; transform: none; }
