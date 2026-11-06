@@ -30,12 +30,30 @@ for (const [id, s] of Object.entries(PREMIUM_CONTINUE_SCRIPTS)) {
 }
 assert.equal(PREMIUM_CONTINUE_SCRIPTS.tsumugi.cues.at(-1).face, "smile", "Tsumugi's dark last beat should smile");
 assert.equal(PREMIUM_CONTINUE_SCRIPTS.minto.cues[0].face, "ura_surprise", "romance Minto uses private pose");
+// #2524 (2026-11-06): 頭の中の呼びかけ。先頭と末尾がはじめの心の声（voice:"self"・（）で閉じる）、間の5行が浮かんだ相手の声。
+// 本人の来場・同行・新しい約束に読める文（隣にいる／一緒に帰る／約束／見てた）は置かない。短縮 [0,2,5,6] でも自問→相手→問いかけ→自答が残る。
+const presence = /隣|一緒に帰|約束|ここにいる|見てた|帰ろ[うっ]?/;
+for (const [id, s] of Object.entries(PREMIUM_CONTINUE_SCRIPTS)) {
+  assert.deepEqual(s.cues.map(c => c.voice ?? null), ["self", null, null, null, null, null, "self"], `${id}: self voice brackets the imagined caller`);
+  for (const cue of s.cues) {
+    if (cue.voice === "self") assert.match(cue.text, /^（……[^（）]+）$/, `${id}: inner voice is a closed thought: ${cue.text}`);
+    else assert.doesNotMatch(cue.text, /[（）]/, `${id}: the imagined caller speaks plainly: ${cue.text}`);
+    assert.doesNotMatch(cue.text, /。$/, `${id}: no sentence-final 。 in speech: ${cue.text}`);
+    assert.doesNotMatch(cue.text, presence, `${id}: the caller is imagined, not present: ${cue.text}`);
+  }
+  for (const reaction of Object.values(s.reactions)) for (const text of reaction.text) {
+    assert.doesNotMatch(text, /。$/, `${id}: ${text}`);
+    assert.doesNotMatch(text, presence, `${id}: reaction must not imply presence: ${text}`);
+  }
+  assert.match(s.cues[5].text, /(？|\?|ですか|どうしたい|作る|やる)$/, `${id}: the caller hands the decision back as a question before Hajime answers himself`);
+}
 // #2025: Hiyori joins the same lottery; existing six scripts stay byte-for-byte equivalent.
 // #2528 (2026-11-06): 凛想の正式名・呼称と内部IDを更新したため、凍結ハッシュを更新。
 // #2474: ageha's name became 「あげは」 (hiragana; only that field changed; verified the old name reproduces the previous hash 1273dc9d…).
+// #2524 (2026-11-06): 7人全員を「頭の中の呼びかけ」へ書き直したため凍結ハッシュを更新（旧 2565a39b…）。抽選条件・20%・7行・反応1行は変えていない。
 const existingIds = ["tsumugi", "minto", "rio", "ageha", "samechan", "mashiro"];
 assert.equal(createHash("sha256").update(JSON.stringify(Object.fromEntries(existingIds.map(id => [id, PREMIUM_CONTINUE_SCRIPTS[id]])))).digest("hex"),
-  "2565a39be9dd57aad11445bc4c438d921070daa7d64fe1524a4c1b4348ec43e9");
+  "185cf3c68df5361bc8fee7bd9f636500e94a4e8e81076fdfbb3741edf92da123");
 assert.deepEqual(Object.keys(PREMIUM_CONTINUE_SCRIPTS), [...existingIds, "hiyori"]);
 const hiyori = PREMIUM_CONTINUE_SCRIPTS.hiyori;
 const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8"));
