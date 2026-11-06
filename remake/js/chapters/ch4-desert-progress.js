@@ -11,6 +11,8 @@ export const DESERT_FLAG = "_ch4_desert";
 export const DESERT_GUIDE = "noor";
 // DSR20（ヒロイン化）: 誘いの後に♥3の問い（恋愛／友情。bond_q1_noor）と♥4の会話。段階を読み終えた♥5で締めくくり（daily/bonds.js の
 // BOND_FINALES.noor・専用ハガル）。最後の問い（bond_q2_noor）で恋愛を選ぶと、次の砂丘（ツアー代なし）の夕日で告白（confession_noor）。
+// 締めくくりのあと砂丘へ行けないまま帰国した時は、第5章のドバイの最初の砂丘が約束の日（chapters/ch5-dubai.js）。同じ告白を、
+// 帰国した後の言い方（台本の tournament_finished の分岐）で読む。
 export const DESERT_TALKS = Object.freeze(["ch4_noor_meet", "ch4_noor_talk2", "ch4_noor_cafe_3", "ch4_noor_invite", "ch4_noor_bond_question", "ch4_noor_cafe_4"]);
 /** 段階の会話を読むのに要る♥（DESERT_TALKS と同じ順）。前の段階を読み、この♥に届いていれば読める。 */
 export const DESERT_TALK_HEARTS = Object.freeze([0, 1, 2, 3, 3, 4]);

@@ -802,6 +802,91 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5.part, "free", "The Dubai outings do not move the Chapter 5 story");
   });
 
+  // 第4章のヌールの締めくくりで「二人で見たい」と答えたまま、砂丘へ行けずに帰国した（告白を待たれている）。
+  // 第5章の最初の砂丘が約束の日: 再会は約束の続き、ツアー代なし、滑ったあとの夕日で告白（帰国した後の言い方）。
+  await check("chapter-five-dubai-dunes-keep-noor-s-chapter-four-promise", async page => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 5, day: 60, slot: 0, phase: "daily", money: 50000, stamina: 100,
+        weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
+        _ch4_sheikh_revealed: true, _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
+        _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
+          read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
+          finaleScenes: null, won: null, secondCup: null },
+        _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true,
+        _ch5_region_started: true, _ch2_region: "dubai", _ch5_dubai_guest: true, _ch5_dubai_letter: true, _ch5_dubai_letters: 1,
+        _ch5_dubai_flights: 1, _ch5_dubai_ticket: false,
+        _ch4_desert: { v: 2, talks: 6, chats: 0, lastTalkDay: 12, outings: 1, lastOutingDay: 5 } };
+      value.desert = { runs: 1, bestRank: "B", firstClear: { chapter: 4, day: 5 }, rewarded: true, wins: 0, naruMet: false, naruWins: 0 };
+      Object.assign(value.met, { sheikh: true, noor: true, naru: true });
+      value.affinity = { ...(value.affinity || {}), noor: 70 };
+      value.finales = { ...(value.finales || {}), noor: { route: "romance", chapter: 4, day: 12 } };
+      value.romanceChoices = { ...(value.romanceChoices || {}),
+        bond_q1_noor: { char: "noor", value: 1 }, bond_q2_noor: { char: "noor", value: 1 } };
+      value.flags[(await import("./js/core/affinity-stages.js")).questionDoneKey("noor")] = true;
+      for (const who of ["noor", "naru", "sheikh"]) value.flags[`_intro_${who}`] = true;
+      value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      const fortunePlan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter: 5 });
+      value.flags._fortune_wander = { chapter: 5, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
+      core.saveConfig(); core.save();
+    });
+    await loadSlot(page, 0); // 選択肢は先頭（告白には「好きです」と答える）
+    await page.waitForFunction(() => document.querySelector('.map:not(.done):not([data-revealing="true"])[data-region="dubai"] [data-test=pin-ch5_dubai_sheikh]')
+      && !document.querySelector("#modal.show"), null, { timeout: 60000 });
+    const promise = await page.evaluate(async () => {
+      const ch5 = await import("./js/chapters/ch5-dubai.js");
+      return ch5.chapterFiveDubaiLeisureSpots().find(spot => spot.id === "ch4_dubai_dunes")?.desc || "";
+    });
+    assert.match(promise, /ヌールとの約束.*ツアー代はいらない/, promise);
+    // 読んだ会話と、吹き出しに出た言い回しを集める（どの分岐を読んだか）
+    await page.evaluate(async () => {
+      const vn = await import("./js/vn/engine.js");
+      window.__ch5Entered = [];
+      const previous = vn.hooks.onEnter;
+      vn.hooks.onEnter = (id, dlg) => { window.__ch5Entered.push(id); previous?.(id, dlg); };
+      window.__ch5Text = new Set();
+      const phrases = ["予定表につけた丸", "久しぶり", "画面の外", "ハジメが日本に帰ってから", "いつか日本に帰る", "言わないまま見送ったら"];
+      new MutationObserver(() => {
+        const text = [...document.querySelectorAll(".vn-text")].map(node => node.dataset.raw || node.textContent).join("\n");
+        for (const phrase of phrases) if (text.includes(phrase)) window.__ch5Text.add(phrase);
+      }).observe(document.body, { subtree: true, childList: true, characterData: true });
+    });
+    const before = await get(page);
+    for (let i = 0; i < 40 && !(await page.locator(dt("map-go")).isVisible().catch(() => false)); i++) {
+      await page.locator(dt("pin-ch4_dubai_dunes")).click();
+      await page.waitForTimeout(250);
+    }
+    await page.locator(dt("map-go")).click();
+    await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === "menu", null, { timeout: 90000 });
+    await page.locator(dt("desert-start")).click();
+    await page.evaluate(() => { window.__desertRide.autoplay("perfect"); window.__desertRide.setSpeedUp(8); });
+    await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === "result", null, { timeout: 90000 });
+    await page.locator(dt("desert-leave")).click();
+    await page.waitForFunction(() => {
+      const s = window.__remake?.state;
+      return s && s.day === 60 && s.slot === 1 && document.querySelector('.map:not(.done):not([data-revealing="true"])[data-region="dubai"] [data-test=pin-ch5_dubai_sheikh]')
+        && !document.querySelector("#modal.show");
+    }, null, { timeout: 90000 });
+    const state = await get(page);
+    const ids = await page.evaluate(() => window.__ch5Entered.slice());
+    const said = await page.evaluate(() => [...window.__ch5Text]);
+    for (const id of ["ch5_dubai_dunes_again", "ch4_desert_again", "confession_noor", "confession_noor_accept"]) assert(ids.includes(id), `${id}: ${ids.join(",")}`);
+    assert(!ids.includes("ch4_desert_sunset_again"), "The confession takes the place of the usual sunset");
+    assert.deepEqual(said.sort(), ["ハジメが日本に帰ってから", "予定表につけた丸"].sort(),
+      `the promise reunion and the after-returning confession lines, not the Chapter 4 ones: ${said.join(" / ")}`);
+    assert.deepEqual(state.lovers, ["noor"], "Accepting makes Noor a lover");
+    assert(state.contacts.includes("noor"), "They swap LIME at the confession");
+    assert.equal(state.money, before.money, "The promised trip is free");
+    assert.equal(state.flags._ch4_desert.outings, 2);
+    assert.equal(state.flags._ch5_dubai_dunes_again, true);
+    assert.equal(state.flags._noor_ch5_promise, undefined, "The promise mark only lives while the reunion is read");
+    assert.equal(state.desert.naruMet, false, "Naru never comes to the Chapter 5 dunes");
+  });
+
   await check("chapter-five-weak-second-cup-loses-on-votes-and-continues", async page => {
     page.setDefaultTimeout(30000);
     await page.evaluate(async () => {

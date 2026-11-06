@@ -1595,6 +1595,8 @@
         "remake/js/chapters/ch4-camel-race.js",
         "remake/js/chapters/ch4-desert-progress.js",
         "remake/js/chapters/ch4-desert.js",
+        "data/dialogue/ch4_camel_race.json",
+        "data/dialogue/ch4_desert.json",
         "data/dialogue/ch5_main.json",
         "data/dialogue/ch5_tokyo.json",
         "data/dialogue/ch5_dubai.json",

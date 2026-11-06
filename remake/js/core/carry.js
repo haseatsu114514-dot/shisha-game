@@ -408,6 +408,7 @@ export const FLAG_EXACT_RULES = [
   ["_motion_seen_", "progression"],
   ["_naru_venue_invited", "person"],
   ["_night_event_day", "progression"],
+  ["_noor_ch5_promise", "person"], // 第5章の砂丘の再会で、告白を待つ約束の続きを出す一時の印（chapters/ch5-dubai.js。再生の前に立て、後で消す）
   ["_noor_confession_other_lover", "person"], // DSR20 告白の場面の一時の印（再生の前に立て、後で消す）
   ["_oneesan_id_checked", "progression"],
   ["_op_praise_report", "progression"],

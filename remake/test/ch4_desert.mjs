@@ -9,6 +9,7 @@ import { DESERT_FLAG, DESERT_TALKS, DESERT_TALK_HEARTS, DESERT_INVITE_STAGE, NOO
   DESERT_SPOT_IDS, desertDailySpots, desertDailySpotById, NOOR_FINALE, NOOR_CONFESSION, NOOR_OTHER_LOVER_FLAG, noorStoriesDone, noorFinaleWaiting,
   noorConfessionWaiting, desertRevisitSpots } from "../js/chapters/ch4-desert-progress.js";
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
+import { tournamentFinished } from "../js/core/story-context.js";
 import { readFileSync } from "node:fs";
 
 const fresh = () => ({ chapter: 4, day: 46, flags: {}, money: 50000, affinity: {} });
@@ -348,7 +349,7 @@ test("Noor's finale, confession and gift data line up with bonds.js / romance.js
   assert.deepEqual(choice.choices.map(c => c.next_id), [`${NOOR_CONFESSION}_accept`, `${NOOR_CONFESSION}_reject`]);
   assert.equal(scene(`${NOOR_CONFESSION}_accept`).metadata.set_romance, "noor");
   // ほかに恋人がいれば、返事の前に一度だけ立ち止まる（一時の印は再生の前に立て、後で消す）
-  const aside = scene(NOOR_CONFESSION).lines.find(line => line.type === "condition");
+  const aside = scene(NOOR_CONFESSION).lines.find(line => line.type === "condition" && line.condition_type === "flag");
   assert.deepEqual([aside.condition_type, aside.flag], ["flag", NOOR_OTHER_LOVER_FLAG]);
   assert(scene(NOOR_CONFESSION).branches[aside.next_true]?.length);
   // 締めくくり・告白は大会に触れない（大会の前後どちらで読んでも成り立つ）
@@ -399,10 +400,28 @@ test("chapter 5 Dubai offers only the dunes, and only to players who went at lea
   assert.deepEqual([branch.condition_type, branch.char_id], ["lover", "noor"]);
   for (const key of [branch.next_true, branch.next_false]) assert(reunion.branches[key]?.length, key);
   assert.doesNotMatch(JSON.stringify([reunion.lines, reunion.branches]), /大会|王者|優勝|世界一|味|ツアー代|円/, "the reunion stays off the tournament, taste and the fee");
+  // 恋人でなければ、第4章の締めくくりの約束（告白を待っている）かどうかで分かれる。印は ch5-dubai.js が読む間だけ立てる
+  const promise = reunion.branches[branch.next_false].find(line => line.type === "condition");
+  assert.deepEqual([promise.condition_type, promise.flag], ["flag", "_noor_ch5_promise"]);
+  for (const key of [promise.next_true, promise.next_false]) assert(reunion.branches[key]?.length, key);
+  assert.match(JSON.stringify(reunion.branches[promise.next_true]), /約束/, "the promise branch picks up the date she circled");
+  assert.doesNotMatch(JSON.stringify(reunion.branches[promise.next_true]), /久しぶり/, "she was waiting for him, so no casual hello");
+  // 告白（confession_noor）は第5章でも読む。帰国を見送った後なので「いつか日本に帰る」の行は大会の後かどうかで分ける
+  const ch4 = JSON.parse(readFileSync(new URL("../../data/dialogue/ch4_desert.json", import.meta.url), "utf8"));
+  const confession = ch4.dialogues.find(d => d.dialogue_id === NOOR_CONFESSION);
+  const after = confession.lines.find(line => line.type === "condition" && line.condition_type === "tournament_finished");
+  assert.equal(after.tournament_chapter, 4);
+  assert.match(JSON.stringify(confession.branches[after.next_false]), /いつか日本に帰る/, "Chapter 4 keeps the original lines");
+  assert.match(JSON.stringify(confession.branches[after.next_true]), /日本に帰ってから/, "Chapter 5 speaks after he went home");
+  assert.doesNotMatch(JSON.stringify([confession.lines, confession.branches[after.next_true]]), /いつか日本に帰る|見送ったら/);
+  assert.equal(tournamentFinished({ chapter: 4, phase: "daily" }, 4), false, "the Chapter 4 Dubai days are before the tournament");
+  assert.equal(tournamentFinished({ chapter: 5, phase: "daily" }, 4), true);
   // 第5章の砂丘は ch5-dubai.js から performDesertSpot を通算の日で呼び、なる（地元の KEMURIKUSA にいる）を呼ばない
   const ch5Dubai = readFileSync(new URL("../js/chapters/ch5-dubai.js", import.meta.url), "utf8");
   assert.match(ch5Dubai, /performDesertSpot\(spot, \{ day: state\.day, showHud, naru: false \}\)/);
   assert.match(ch5Dubai, /desertRevisitSpots\(value, value\.day\)/);
+  assert.match(ch5Dubai, /owner\.flags\[NOOR_PROMISE_FLAG\] = noorConfessionWaiting\(owner\) && romance\.romanceRouteOpen\(DESERT_GUIDE\)/);
+  assert.match(ch5Dubai, /finally \{ delete owner\.flags\[NOOR_PROMISE_FLAG\]; \}/);
   const desert = readFileSync(new URL("../js/chapters/ch4-desert.js", import.meta.url), "utf8");
   assert.match(desert, /const rivals = !naru \|\| \(confessionDay && !before\.naruMet\) \? \["noor"\] : desertRivals\(owner\)/);
   assert.match(desert, /visitDesert\(\{ kind: cafe \? "desert_talk" : "desert", ok: true \}, \{ day, paid: cafe, naru \}\)/);

@@ -14,7 +14,7 @@ import { DB, sceneBg } from "../core/data.js";
 import { modal, setBg, toast, layers } from "../core/ui.js";
 import { showHud } from "../daily/hud.js";
 import { CAMEL_DAILY_SPOT_ID, CAMEL_SCENES, CH4_CAMEL_SCENE_FILES, camelDailySpot, camelSceneBg } from "./ch4-camel-progress.js";
-import { DESERT_SPOT_IDS, desertRevisitSpots } from "./ch4-desert-progress.js";
+import { DESERT_GUIDE, DESERT_SPOT_IDS, desertRevisitSpots, noorConfessionWaiting } from "./ch4-desert-progress.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { addMoney, addStamina, earnStat, gainAffinity, visitAffinity } from "../core/stats.js";
@@ -84,6 +84,8 @@ export const inDubai = (value = state) => value?.flags?._ch2_region === DUBAI;
 // 第5章で最初に行った日だけ、再会の場面を読む（新着の印も、その一度だけ出す）。
 const CAMEL_AGAIN = Object.freeze({ scene: "ch5_dubai_camel_again", flag: "_ch5_dubai_camel_again" });
 const DUNES_AGAIN = Object.freeze({ scene: "ch5_dubai_dunes_again", flag: "_ch5_dubai_dunes_again" });
+// 再会の場面を読む間だけ立てる印: 第4章の締めくくりのあと砂丘へ行けずに帰国し、ヌールが告白を待っている（台本の promise の分岐）
+const NOOR_PROMISE_FLAG = "_noor_ch5_promise";
 const reunionOf = entry => entry.id === CAMEL_DAILY_SPOT_ID ? CAMEL_AGAIN : DUNES_AGAIN;
 
 /** 今のドバイの地図に足す行き先（ラクダレース場・ヌールと砂丘へ）。第4章で遊んでいなければ空。 */
@@ -271,20 +273,28 @@ async function readCamelScene(id, owner) {
 /**
  * ヌールと砂丘へ（第4章で一度でも出かけた人だけ）。外出・ツアー代・1日1回・記録・報酬は第4章と同じ（ch4-desert.js の performDesertSpot）。
  * 第5章で最初の日は、カフェ・サーリムの表のデスクで再会の場面を読んでから出かける。なるは地元にいるので砂丘に来ない（naru: false）。
- * day は通算の日（ch4-desert-progress.js の desertRevisitSpots）。
+ * 第4章の締めくくりで「二人で見たい」と答えたまま砂丘へ行けずに帰国した人は、告白を待たれている（ツアー代なし）。
+ * 再会は約束の続きの言い方（台本の条件で出す一時の印 NOOR_PROMISE_FLAG）にし、滑ったあとの夕日で confession_noor を読む
+ * （帰国した後の言い方は台本の tournament_finished の分岐）。day は通算の日（ch4-desert-progress.js の desertRevisitSpots）。
  */
 async function visitDunes(spot, owner) {
-  if (!state.flags[DUNES_AGAIN.flag]) {
-    if (!await read(DUNES_AGAIN.scene, "bg_dubai_inn_day", owner)) return unused;
-    state.flags[DUNES_AGAIN.flag] = true;
-    save();
-  }
-  let desert;
-  try { desert = await import("./ch4-desert.js"); } catch {
+  let desert, romance;
+  try {
+    [desert, romance] = await Promise.all([import("./ch4-desert.js"), import("../daily/romance.js")]);
+    await desert.loadDesertDialogues(); // 告白を待たれているか（romanceRouteOpen）は、告白の台本を読み込んだ後に分かる
+  } catch {
     toast(LOAD_FAILED);
     return unused;
   }
   if (state !== owner) return unused;
+  if (!state.flags[DUNES_AGAIN.flag]) {
+    owner.flags[NOOR_PROMISE_FLAG] = noorConfessionWaiting(owner) && romance.romanceRouteOpen(DESERT_GUIDE);
+    let done = false;
+    try { done = await read(DUNES_AGAIN.scene, "bg_dubai_inn_day", owner); } finally { delete owner.flags[NOOR_PROMISE_FLAG]; }
+    if (!done) return unused;
+    state.flags[DUNES_AGAIN.flag] = true;
+    save();
+  }
   return desert.performDesertSpot(spot, { day: state.day, showHud, naru: false });
 }
 
