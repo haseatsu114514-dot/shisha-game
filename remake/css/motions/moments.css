@@ -11,3 +11,4 @@
 .mo-scan-bar { position: absolute; left: 0; right: 0; height: 10%; background: linear-gradient(transparent, #9fd8ff55, transparent); }
 .mo-scan-label { position: absolute; left: 50%; top: 24%; transform: translate(-50%, -50%); color: #fff; font-size: 40px; font-weight: 900; letter-spacing: .2em; text-shadow: 0 2px 0 #150f26; }
 .mo-mixed-dark { position: absolute; inset: 0; background: #0b0814; opacity: 0; }
+.mo-seats-dim { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 70%, #0b0814aa, #0b0814e0 80%); }

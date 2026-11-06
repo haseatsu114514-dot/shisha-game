@@ -175,7 +175,7 @@ export async function seatLights(tally) {
     svg("rect", { x: cx - 330, y: 560, width: 220, height: 26, rx: 13, fill: COLOR.lav, opacity: 0.85 }),
     svg("rect", { x: cx + 110, y: 560, width: 220, height: 26, rx: 13, fill: "#9fb8ff", opacity: 0.85 }),
   ];
-  node.append(stageSvg([...tables, ...dots, ...rings]));
+  node.append(el("div.mo-seats-dim"), stageSvg([...tables, ...dots, ...rings]));
   await covering(node, async () => {
     await move(node, [{ opacity: 0 }, { opacity: 1 }], 260);
     const first = sides(tally.first), second = sides(tally.second);
