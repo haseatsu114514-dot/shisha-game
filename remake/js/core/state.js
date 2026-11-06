@@ -590,12 +590,17 @@ export const anySlotSaved = () => SAVE_SLOTS.some((s) => readSlot(s.key));
 
 /** 今の状態を手動の枠に書く（オートセーブも同時に更新） */
 export function saveToSlot(key) {
-  const { raw } = writeSave();
+  return saveToSlotResult(key).manualSaved;
+}
+
+/** 手動枠と AUTO それぞれの実際の書き込み結果。既存の保存順序は維持する。 */
+export function saveToSlotResult(key) {
+  const { raw, saved: autoSaved } = writeSave();
   try {
     localStorage.setItem(key, raw === null ? JSON.stringify(state) : raw);
-    return true;
+    return { autoSaved, manualSaved: true };
   } catch {
-    return false;
+    return { autoSaved, manualSaved: false };
   }
 }
 

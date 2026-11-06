@@ -5,13 +5,13 @@ import { DB, bgUrl } from "../core/data.js";
 import { readGalleryProgress } from "../core/gallery-progress.js";
 import { galleryEntries, galleryStats } from "../core/gallery-catalog.js";
 import { layers, showScreen, setBg, smokeWipe, modal } from "../core/ui.js";
-import { peekSave, newGame, wipeSave, config, saveConfig, anySlotSaved, loadFromSlot, readSlot, SAVE_SLOTS } from "../core/state.js";
+import { peekSave, newGame, wipeSave, config, saveConfig, anySlotSaved, readSlot, SAVE_SLOTS } from "../core/state.js";
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
 import { playBgm, stopBgm, SE, applyVolumes } from "../core/audio.js";
 import { startNewGame, resumeGame } from "../chapters/ch1.js";
 import { clearLog } from "../vn/engine.js";
 import { openGallery } from "./gallery.js";
-import { loadFlow } from "./saves.js";
+import { loadWithRecovery } from "./saves.js";
 import { pickTitleArt, prepareTitleArt } from "./title-art.js";
 import { mountTitleLayout } from "./title-layout.js";
 import { createUiThemeSelect } from "../core/ui-theme.js";
@@ -223,9 +223,9 @@ export function showTitle(preparedArt = null) {
       smokeWipe(() => { stopBgm(0); startNewGame(); }, { color: "dark" });
     }, "title-next-cycle")] : []),
     item("LOAD", "つづきから", async () => {
-      const key = await loadFlow();
+      const loaded = await loadWithRecovery();
       if (!current()) return;
-      if (!key || !loadFromSlot(key)) { refresh(); return; }
+      if (!loaded) { refresh(); return; }
       clearLog();
       leaving = true;
       smokeWipe(() => { stopBgm(0); resumeGame(); }, { color: "dark" });

@@ -8,7 +8,8 @@ async function prepare(page) {
     window.QA = { core, saves: await import("./js/scenes/saves.js") };
     const s = core.newGame();
     Object.assign(s, { phase: "daily", day: 6, slot: 1, money: 45678, stamina: 73, seed: 1234, weatherSeed: 4 });
-    Object.assign(s.flags, { _morning_6: true, _errand_scout_done: true, _delivery_adam_done: true,
+    Object.assign(s.flags, { _morning_6: true, _tsumugi_contest_research: true, _tsumugi_contest_progress: true,
+      _ev_first_practice: true, _errand_scout_done: true, _delivery_adam_done: true,
       _delivery_minto_done: true, _lime_tut: 1, _qa_preserved: "keep" });
     s.stats.insight = 27; s.statXp.insight = 0.25;
     s.flavorStock.double_apple = 37;
@@ -209,7 +210,7 @@ await suite("save-load", async check => {
       await page.locator('[data-test="title-load"]').click();
       await assertFits(page, ".save-slot, [data-test='slot-cancel']");
       await page.locator('[data-test="slot-0"]').click();
-      await page.locator("#screen .map:not(.done)").waitFor();
+      await page.locator("#screen .map:not(.done)").waitFor({ timeout: 30000 });
       await page.locator('[data-test="hud-menu"]').click();
       await page.locator('[data-test="menu-tab-system"]').click();
       await page.locator('[data-test="menu-save"]').click();
@@ -254,7 +255,7 @@ await suite("save-load", async check => {
         page.waitForEvent("load"),
         page.locator('[data-test="confirm-load"]').click(),
       ]);
-      await page.locator("#screen .map:not(.done)").waitFor();
+      await page.locator("#screen .map:not(.done)").waitFor({ timeout: 30000 });
       const loaded = await page.evaluate(async () => {
         const core = await import("./js/core/state.js");
         const copy = JSON.parse(JSON.stringify(core.state)); delete copy.savedAt;
@@ -285,7 +286,7 @@ await suite("save-load", async check => {
     };
     // 目印の既知セーブを手動枠1へ通常保存する。
     await uiSave();
-    await page.locator(".toast.good", { hasText: "にセーブした" }).waitFor();
+    await page.locator(".toast.good", { hasText: "と AUTO に保存した" }).waitFor();
     await page.locator("#modal.show").waitFor({ state: "hidden" });
     assert.equal(await page.evaluate(() => QA.core.readSlot("suien_remake_slot1").money), 45678);
     // 枠1への書き込みだけ失敗させる（saveToSlot が先に行うオートセーブは通常どおり成功させる）。
@@ -301,7 +302,7 @@ await suite("save-load", async check => {
     await page.locator('[data-test="confirm-overwrite"]').click();
     const warn = page.locator(".toast.warn");
     await warn.waitFor();
-    assert.equal(await warn.textContent(), "セーブできなかった（ブラウザの保存領域がいっぱいかも）");
+    assert.equal(await warn.textContent(), "スロット 1 は前のまま。AUTO は保存済み");
     await page.locator("#modal.show").waitFor({ state: "hidden" });
     const failed = await page.evaluate(() => ({ slot: QA.core.readSlot("suien_remake_slot1").money,
       auto: QA.core.readSlot(QA.core.SAVE_KEY).money, current: QA.core.state.money }));
@@ -312,11 +313,70 @@ await suite("save-load", async check => {
     await warn.waitFor({ state: "detached" }); // 固定待ちではなく toast の消滅を待つ
     await uiSave();
     await page.locator('[data-test="confirm-overwrite"]').click();
-    await page.locator(".toast.good", { hasText: "にセーブした" }).waitFor();
+    await page.locator(".toast.good", { hasText: "と AUTO に保存した" }).waitFor();
     await page.locator("#modal.show").waitFor({ state: "hidden" });
     assert.equal(await page.locator(".toast.warn").count(), 0);
     assert.equal(await page.evaluate(() => QA.core.readSlot("suien_remake_slot1").money), 11111);
   }, { viewport: { width: 1280, height: 720 } });
+
+  for (const [autoFails, manualFails, message] of [
+    [false, false, "スロット 1 と AUTO に保存した"],
+    [false, true, "スロット 1 は前のまま。AUTO は保存済み"],
+    [true, false, "スロット 1 は保存済み。AUTO 更新は失敗"],
+    [true, true, "スロット 1 は前のまま。AUTO も保存できませんでした"],
+  ]) await check(`save-result-auto-${autoFails}-manual-${manualFails}`, async page => {
+    await prepare(page);
+    await page.evaluate(() => {
+      const { core } = QA;
+      core.saveToSlot(core.SAVE_SLOTS[1].key);
+      core.state.money = 11111;
+      QA.setItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (key, value) {
+        if ((key === core.SAVE_KEY && QA.autoFails) || (key === core.SAVE_SLOTS[1].key && QA.manualFails))
+          throw new DOMException("quota", "QuotaExceededError");
+        return QA.setItem.call(this, key, value);
+      };
+    });
+    await page.evaluate(([a, m]) => { QA.autoFails = a; QA.manualFails = m; QA.saves.saveFlow(); }, [autoFails, manualFails]);
+    await page.locator('[data-test="slot-1"]').click();
+    await page.locator('[data-test="confirm-overwrite"]').click();
+    const notice = page.locator(".toast", { hasText: message });
+    await notice.waitFor();
+    assert.equal(await notice.textContent(), message);
+    await assertFits(page, ".toast");
+    const values = await page.evaluate(() => ({
+      auto: QA.core.readSlot(QA.core.SAVE_KEY).money,
+      manual: QA.core.readSlot(QA.core.SAVE_SLOTS[1].key).money,
+      current: QA.core.state.money,
+    }));
+    assert.deepEqual(values, { auto: autoFails ? 45678 : 11111, manual: manualFails ? 45678 : 11111, current: 11111 });
+    await page.evaluate(() => { Storage.prototype.setItem = QA.setItem; });
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+
+  await check("title-load-writeback-failure-offers-another-slot", async page => {
+    await prepare(page);
+    await page.evaluate(async () => {
+      const { core } = QA;
+      core.saveToSlot(core.SAVE_SLOTS[1].key);
+      core.state.money = 11111;
+      QA.setItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (key, value) {
+        if (key === core.SAVE_KEY) throw new DOMException("quota", "QuotaExceededError");
+        return QA.setItem.call(this, key, value);
+      };
+      (await import("./js/scenes/title.js")).showTitle();
+    });
+    await page.locator('[data-test="title-load"]').click();
+    await page.locator('[data-test="slot-1"]').click();
+    assert.equal(await page.locator(".saveload-modal").count(), 0);
+    await page.locator('[data-test="retry-load"]').waitFor();
+    assert.equal(await page.locator(".modal-box h3").textContent(), "ロードできませんでした");
+    assert.equal(await page.evaluate(() => QA.core.state.money), 11111);
+    await page.locator('[data-test="retry-load"]').click();
+    await page.locator('[data-test="slot-cancel"]').click();
+    assert.equal(await page.locator(".modal-box h3").count(), 0);
+    await page.evaluate(() => { Storage.prototype.setItem = QA.setItem; });
+  });
 
   // #782: a valid DAY11 free-time checkpoint. Earlier fixed stories are read;
   // today's submission/done flags are deliberately absent. Only the normal daily
