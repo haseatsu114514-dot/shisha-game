@@ -357,9 +357,10 @@ async function readScene(owner, scene) {
   const dialogue = { ...source, metadata: { ...source.metadata, bg: "" } };
   const restoreMeeting = meetingCheckpoint(dialogue);
   const background = bgUrl(scene.bg);
-  // 前のカードは幕が覆ったところで外す（背景待ちを同じ自由時間と誤認させない）。
+  // 行き先を決めた時点で前のカードを外し、背景待ちを同じ自由時間と誤認させない（背景は標準の幕で替える）。
+  showScreen("none", null);
   hud(owner);
-  await withScenePreparation(enterScene(background));
+  await withScenePreparation(setBg(background));
   if (!current(owner)) return false;
   // 名乗りの制御行などは読了時のcheckpointまで未確定。会話中の保存を避ける。
   hud(owner);
@@ -509,8 +510,8 @@ function readyVolkLessons() {
 async function consultVolk(owner) {
   if (!current(owner) || !readyVolkLessons().length) return;
   const background = bgUrl("bg_volk_shop");
-  hud(owner);
-  await withScenePreparation(enterScene(background));
+  showScreen("none", null); hud(owner);
+  await withScenePreparation(setBg(background));
   if (!current(owner)) return;
   const controller = owner.controller = new AbortController();
   try { await consultLessons("volk", { bg: background, signal: controller.signal }); }
@@ -569,8 +570,9 @@ function bondActions(owner) {
 async function readBond(owner, kind, id = "mashiro") {
   if (!current(owner)) return;
   const background = bgUrl({ saku: "bg_yohaku_shop", steve: "bg_steve_shop", volk: "bg_volk_shop" }[id] || "bg_mukai_shop");
+  showScreen("none", null);
   hud(owner);
-  await withScenePreparation(enterScene(background));
+  await withScenePreparation(setBg(background));
   if (!current(owner)) return;
   const controller = owner.controller = new AbortController();
   // 第3章から読み込んだ保存でも、恋愛／友情の実回答と lover・romance_open の分岐を読めるようにする。
