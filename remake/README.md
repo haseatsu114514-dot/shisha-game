@@ -262,6 +262,12 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
 
 確認: `node remake/test/browser/shop_ui.mjs`（PC／横持ちタッチ、全18品、混在購入、経費、売却、くじ、実日常ループ、入店演出、別セーブの境界）。採用原画は `asset_sources/shop-ui-issue505/`、実画面は `docs/qa/shop-ui-issue505/`。
 
+## 公開版の版（GitHub Pages）
+
+公開時に `tools/stamp_deploy.py` が版の名札を付ける（本体JSを `js-<版>/` へ、CSS に `?v=<版>`、`build.json` に版と公開日時）。
+起動時に `build.json` をキャッシュなしで読み、古い版が出ていたら新しい版の URL で開き直す。遊んでいる途中にタブへ戻って新版があれば、上に更新の知らせを出すだけ。
+今の版はタイトル右下の `ver. 公開日時 (コミット)`（手元は `ver. dev`）。画像・音の URL は変えない。確認は `node remake/test/stamp_deploy.mjs`。
+
 ## セーブ
 
 - 行動のたびにオートセーブ（`suien_remake_save`）。ほかに手動の3枠（`suien_remake_slot1〜3`）

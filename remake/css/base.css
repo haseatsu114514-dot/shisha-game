@@ -692,6 +692,24 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .boot-msg { max-width: 900px; font-size: 15px; color: var(--text-dim); letter-spacing: 0.04em; text-align: center; line-height: 1.8; }
 .boot-retry[hidden] { display: none; }
 
+/* 遊んでいる途中に新しい版が公開されたときの知らせ（index.html の起動スクリプトが出す） */
+#update-note {
+  position: fixed;
+  top: max(10px, env(safe-area-inset-top));
+  left: 50%;
+  z-index: 998;
+  display: flex;
+  max-width: calc(100vw - 32px);
+  transform: translateX(-50%);
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  background: rgba(7, 5, 12, 0.94);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+}
+#update-note button { min-height: 44px; border: 0; background: none; color: var(--text); font: inherit; font-size: 14px; cursor: pointer; }
+#update-note .update-go { padding: 8px 14px; color: var(--gold-hi); letter-spacing: 0.04em; text-align: left; }
+#update-note .update-close { min-width: 44px; border-left: 1px solid rgba(255, 255, 255, 0.15); color: var(--text-dim); font-size: 18px; }
+
 #rotate-hint {
   position: fixed;
   inset: 0;

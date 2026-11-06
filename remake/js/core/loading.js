@@ -1,4 +1,5 @@
 import { el } from "./util.js";
+import { buildVersioned } from "./asset-version.js";
 import { prepareImage } from "./loading-prefetch.js";
 import { LOADING_COMICS, eligibleLoadingComics } from "./loading-comics.js";
 
@@ -6,7 +7,7 @@ let active = false, previousComic = null;
 let stylesheet;
 function loadStyle() {
   if (!stylesheet) stylesheet = new Promise((resolve, reject) => {
-    const link = el("link", { rel: "stylesheet", href: new URL("../../css/loading.css", import.meta.url).href });
+    const link = el("link", { rel: "stylesheet", href: buildVersioned(new URL("../../css/loading.css", import.meta.url).href) });
     link.onload = resolve;
     link.onerror = () => { link.remove(); stylesheet = null; reject(new Error("Loading stylesheet failed")); };
     document.head.append(link);
