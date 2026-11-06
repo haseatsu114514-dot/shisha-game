@@ -139,6 +139,51 @@
           "text": "はじめは、ひとりで静かな場所へ向かった。"
         }
       ]
+    },
+    {
+      "dialogue_id": "reflect_eve_home",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（明日は大会か……）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（火種がまだ残ってる。寝る前に、ここまでの自分を確かめに行こう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "上着を羽織って、はじめはもう一度だけ家を出た。向かうのは、近所の観音堂だ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "reflect_eve_slept",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜中に、ふと目が覚めた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（明日は大会か……）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（火種がまだ残ってる。眠り直す前に、ここまでの自分を確かめに行こう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "上着を羽織って、はじめはそっと家を出た。向かうのは、近所の観音堂だ。"
+        }
+      ]
     }
   ]
 }
