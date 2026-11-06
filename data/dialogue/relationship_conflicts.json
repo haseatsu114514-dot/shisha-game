@@ -423,6 +423,57 @@
       ]
     },
     {
+      "dialogue_id": "shuraba_noor",
+      "comment": "DSR20 ヌールの修羅場の反応。ヌールはドバイにいるので、テレビ電話で加わる（オーナー「修羅場イベントではテレビ電話で参戦」）。第5章の打ち上げ（ch5-party-plan.js）とスタッフロールの後（ch5-progress.js）の両方で読む。許し・別れは決めない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターに立てかけたスマホの画面に、ヌールさんが映っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "テレビ電話は、つながったままだった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……聞こえてたよ、ハジメ。ドバイまで、ちゃんと"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "こっちは、まだ夕方。……さっきまで、砂がきれいに見えてたのに"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "遠いから、隠せると思った？ それとも、遠いから、言わなくていいと思った？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……どっちも、です。ごめんなさい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面の中で、ヌールさんは膝を抱えていた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……今日は、切るね。顔を見てると、うまく話せないから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。話せる時まで、待ってます"
+        }
+      ]
+    },
+    {
       "dialogue_id": "shuraba_talk_minto",
       "lines": [
         {
@@ -885,6 +936,67 @@
         }
       ],
       "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"
+    },
+    {
+      "dialogue_id": "shuraba_talk_noor",
+      "comment": "DSR20 ending_relationship_pending の後、本人が決めた日に一人ずつ話し直す場面のヌール版。ドバイとのテレビ電話（時差五時間）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "約束の夜。部屋でノートパソコンを開くと、時間どおりにヌールさんから着信があった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……こんばんは、ハジメ。こっちは、まだ明るいよ"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "先に言うね。今日は、怒るためにかけたんじゃない"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "砂丘で言ったこと、私は本気だった。ハジメは？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "本気でした。だから、ほかの人のことも言えなかった。それは、俺の逃げです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "遠いのを、言わない理由にしてました。ごめんなさい"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……うん。ちゃんと聞いた"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "遠いのは、ハジメのせいじゃない。でも、黙ってたのは、ハジメが決めたこと"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "許すかどうかは、まだ決めない。砂を見るみたいに、もう少し時間をかけたいの"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "次にかけるのは、私から。……それまで、待ってて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話が切れた画面に、自分の顔だけが映っていた。"
+        }
+      ]
     }
   ]
 }

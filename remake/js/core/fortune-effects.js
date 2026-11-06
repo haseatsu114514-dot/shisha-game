@@ -12,8 +12,11 @@ export function naruRiftActive(save) {
     || flags?._ch2_naru_hurt
   );
 }
+// 占い師本人は相手に選べない（初対面の♥1で好感度の欄ができても、好感度のある人物ではない。台帳 URA07）
+const NOT_FORTUNE_TARGETS = new Set(['hajime', 'uranaishi']);
 export function isFortuneTargetAvailable(save, charId) {
-  return typeof charId === 'string' && charId.length > 0 && !(charId === 'naru' && naruRiftActive(save));
+  return typeof charId === 'string' && charId.length > 0 && !NOT_FORTUNE_TARGETS.has(charId)
+    && !(charId === 'naru' && naruRiftActive(save));
 }
 export function fortuneTargets(save, characters = {}) {
   return Object.keys(save?.affinity || {}).filter(
@@ -88,7 +91,7 @@ export function registerFortuneReadings(db) {
   }
   const offer = db.dialogues?.remake_fortune_offer;
   if (offer && offer.lines?.length) db.dialogues.remake_fortune_offer = { ...offer, lines: [offer.lines[0],
-    { speaker: 'uranaishi', face: 'normal', text: '次に会うときの縁をひと押し。それと三日間、あの人に届く言葉が見えるおまじないだよ' }, ...offer.lines.slice(1)] };
+    { speaker: 'uranaishi', face: 'normal', text: '占った相手と次に会ったときだけ、縁をひと押し。それと三日間、あの人に届く言葉が見えるおまじないだよ' }, ...offer.lines.slice(1)] };
 }
 // Authored response hints, never a global preference for the first option.
 export function fortuneChoiceIndex(save, dialogueId, line, data) {

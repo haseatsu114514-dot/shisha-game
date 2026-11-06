@@ -80,8 +80,9 @@ export function chapterFiveDailyDefinition(io) {
     nightEvents: {},
     tournamentName: "博士との勝負",
     undatedNote: "博士との勝負の日は、まだ決まっていない",
-    // 告白は第1〜3章の物語なので、第5章では夜に告白の場面を始めない。恋人の誘いとデートは開いている（IR16）。
-    confessions: false,
+    // 夜の帰り道の告白は、第4章までに恋愛ルートに入った相手だけ（第5章で初めて届いた締めくくりでは告白しない・
+    // romance.js の romanceRouteOpen）。第3・4章の出発前と東京・ドバイで持ち越した告白が、帰郷後の地元の夜に届く
+    // （IR33・#2024。東京・ドバイへ出ている夜は romance.js の confessionHeld が持ち越す）。恋人の誘いとデートも開いている（IR16）。
     mapOptions: () => ({
       regionId: currentRegion(),
       regions: [

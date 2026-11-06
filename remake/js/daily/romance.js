@@ -101,7 +101,8 @@ const gateScene = (id) => ({
   ],
   branches: {
     go: [{ type: "set_flag", flag: "_confession_go" }],
-    wait: [{ speaker: "", text: "（大会のこと、店のこと。……今は目の前のことに集中しよう。でも、いつかきっと）" }],
+    // 第5章に大会は無い（持ち越した告白が届くのは帰郷後の第5章。目の前にあるのは博士との勝負）
+    wait: [{ speaker: "", text: `（${(state.chapter || 1) >= 5 ? "博士との勝負" : "大会"}のこと、店のこと。……今は目の前のことに集中しよう。でも、いつかきっと）` }],
   },
 });
 
@@ -124,8 +125,18 @@ const cheatScene = (id) => ({
 
 // 告白の台本が自分の場面を持つ相手（daily/bonds.js の BOND_FINALES.ownConfession）。夜の帰り道では始めない。
 // ましろは第3章の寄り道（休日の部屋。chapters/ch3-story-wiring.js の confession_mashiro・IR20）だけで告白する。
-const OWN_CONFESSION_SCENE = Object.freeze(["mashiro"]);
+// ヌールは第4章ドバイの砂丘の夕日（chapters/ch4-desert.js の confession_noor・DSR20）だけで告白する。
+const OWN_CONFESSION_SCENE = Object.freeze(["mashiro", "noor"]);
 const nightWalkConfession = (id) => !OWN_CONFESSION_SCENE.includes(id) && romanceRouteOpen(id);
+
+/**
+ * 今夜は帰り道の告白を始めない時期か（予約は残し、遠出から帰ってきてから）。
+ * - 第3・4章の出発前の準備3日（#2024 A1・IR33。第4章はドバイへ来る人がもう決まっていて、新しい恋人が来られない）
+ * - 東京・ドバイにいる夜（帰り道の告白 confession.json はどれも地元の場面）
+ * 第3章の帰郷後と第4章の帰国後は場面カードで夜の帰り道が無いので、持ち越した告白は第5章の地元の夜に届く
+ * （第5章で初めて届いた締めくくりは告白しない。romanceRouteOpen）。
+ */
+export const confessionHeld = (value = state) => !!departurePrep(value) || awayFromHome(value);
 
 /**
  * 一日の終わり（夜の行動と固定イベントの後）に呼ぶ。恋愛ルートで告白を待つ相手がいれば告白イベントを始める。
@@ -138,7 +149,7 @@ const nightWalkConfession = (id) => !OWN_CONFESSION_SCENE.includes(id) && romanc
  */
 export async function maybeConfession(beat, { busyNight = false, companion = null } = {}) {
   if (state.phase !== "daily" || state.slot < 2) return false; // 昼の行動から仕事後の夜へ飛ばない
-  if (departurePrep(state)) return false; // 第3・4章の出発前は予約を残して帰郷後に回す
+  if (confessionHeld()) return false; // 出発前・東京・ドバイでは予約を残して、帰ってきてから
   let id = state.flags._confession_due;
   if (id && !nightWalkConfession(id)) { delete state.flags._confession_due; id = null; }
   // 2人目の恋愛ルートなど、予約の空きを待っていた相手を拾う（締めくくりの順）
@@ -196,8 +207,13 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
 
 let milestonePlaying = false;
 
-/** 現在の絆Lvまでの最初の未読場面。LIMEや旧セーブで先に進んでも、未読の前段を飛ばさない。 */
-export function loverMilestoneDue(id) {
+/**
+ * 現在の絆Lvまでの最初の未読場面。LIMEや旧セーブで先に進んでも、未読の前段を飛ばさない。
+ * 地元が舞台の節目（lover_events.json の metadata.hometown: tsumugi の部屋・tonari、栞さんの部屋・PEPPERMINT など）は、
+ * はじめが東京・ドバイにいる間（第3章の東京へ会いに来た恋人とのデートなど）は読まず、地元に帰ってから読む（#2024）。
+ * @param opts.home はじめが地元にいるか。省略時は現在地（flags._ch2_region）から。場面カードの章は呼び出し側が渡す
+ */
+export function loverMilestoneDue(id, { home = !awayFromHome() } = {}) {
   if (id === "samechan") return samechanMilestoneDue();
   if (!isLover(id)) return null;
   const seen = state.loverEventsSeen || [];
@@ -209,6 +225,7 @@ export function loverMilestoneDue(id) {
       if ((eventId !== base && !scene) || seen.includes(eventId)) continue;
       // 通常台本が欠けた時や、未完成の追加台本がある時は後段へ進まない。
       if (!scene?.lines?.length || (scene.metadata?.min_chapter || 1) > (state.chapter || 1)) return null;
+      if (scene.metadata?.hometown && !home) return null; // 地元の場面は、帰ってから（後段へは飛ばない）
       return eventId;
     }
   }
@@ -216,10 +233,10 @@ export function loverMilestoneDue(id) {
 }
 
 /** 実際に会った私的な場面の読了後、未読の節目を一つだけ読む。読了前の保存では未読のまま。 */
-export async function playLoverMilestone(id, { signal = null } = {}) {
+export async function playLoverMilestone(id, { signal = null, home } = {}) {
   if (milestonePlaying || isPlaying()) return false;
   if (id === "samechan") return playSamechanMilestone({ signal });
-  const eventId = loverMilestoneDue(id);
+  const eventId = loverMilestoneDue(id, { home });
   if (!eventId) return false;
   const owner = state, restorePrivate = privateBondScope();
   milestonePlaying = true;
@@ -279,11 +296,13 @@ export function dateSchedule(id, { day = state.day, fixedNight = () => false, al
 // （第4章の地元で、ましろの節目を出さないのと同じ。chapters/ch3-story-wiring.js の TOKYO_RESIDENT_IDS）。
 const AWAY_REGIONS = Object.freeze(["tokyo", "dubai"]);
 const TOKYO_LOVERS = Object.freeze(["mashiro"]);
+// ドバイに住む恋人（ヌール・DSR20）は、地元のデートに誘ってこない。会えるのはドバイにいる間だけで、離れている間は朝のLIMEとテレビ電話。
+const DUBAI_LOVERS = Object.freeze(["noor"]);
 /** はじめが地元から離れた街（東京・ドバイ）にいるか。現在地は第2章からの flags._ch2_region。 */
 const awayFromHome = (value = state) => AWAY_REGIONS.includes(value?.flags?._ch2_region);
 /** この恋人と、今、地元のデートの約束ができるか（ましろが東京に住むのは、出会う第3章から）。 */
 export const hometownDateOpen = (id, value = state) => !awayFromHome(value)
-  && !(TOKYO_LOVERS.includes(id) && (value?.chapter || 1) >= 3);
+  && !(TOKYO_LOVERS.includes(id) && (value?.chapter || 1) >= 3) && !DUBAI_LOVERS.includes(id);
 
 // 恋人の連絡の塩梅（2026-10-31 オーナー「恋人とかはたまに連絡きて欲しい」「ストレスになるレベルで連絡きてる」LM01〜03）
 // - 朝のひとことは3日おき・返事なし（読むだけ）。恋人が何人いても朝に1通まで（長く届いていない恋人から）
@@ -292,6 +311,18 @@ export const hometownDateOpen = (id, value = state) => !awayFromHome(value)
 export const LOVER_MORNING_GAP = 3;
 export const LOVER_INVITE_GAP = 4;
 const lastInboxDay = (match) => Math.max(-99, ...(state.inbox || []).filter(match).map((i) => i.day ?? -99));
+/** 東京への訪問で、今その恋人が東京に来ているか（core/tokyo-visits.js の visitingTokyo と同じ判定。読むだけ）。 */
+const visitingTokyo = (id, value = state) => (value?.tokyoVisits?.plans || []).some(plan => plan.characterId === id
+  && ["arrived", "staying"].includes(plan.status) && value.day >= plan.arrivalDay && value.day < plan.returnDay);
+/**
+ * はじめとこの恋人が離れた街にいるか（朝のひとことの morning_away を混ぜる・#2024）。
+ * 地元の恋人: はじめが東京・ドバイにいて、恋人が東京へ会いに来ていない。
+ * 東京に住むましろ（第3章から）: はじめが東京にいない（地元か、ドバイ）。場面カードで home を渡さない東京は、東京として読む
+ */
+function apartFrom(id, home, value = state) {
+  if (TOKYO_LOVERS.includes(id) && (value?.chapter || 1) >= 3) return home || value?.flags?._ch2_region === "dubai";
+  return !home && !visitingTokyo(id, value);
+}
 
 /**
  * 今朝届く恋人からの LIME（記念日・デートの誘い・朝のひとこと・試合の朝）。
@@ -365,9 +396,11 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false,
       } });
     }
     // 朝のひとこと（3日おき・キャラごとに位相をずらす・返事なし）。誘いの枠を取れなかった恋人もこちらへ
-    // 地元で会う前提のひとこと（hometown）は、はじめが地元にいる朝だけ
+    // 地元で会う前提のひとこと（hometown）は、はじめが地元にいる朝だけ。離れた街にいる朝は、離れている前提の
+    // ひとこと（morning_away）も混ぜる（東京へ会いに来ている恋人には混ぜない）
     const turn = state.day + (phase[id] || 0);
-    const pool = ((L().morning || {})[id] || []).filter((v) => home || !v.hometown);
+    const pool = [...((L().morning || {})[id] || []).filter((v) => home || !v.hometown),
+      ...(apartFrom(id, home) ? (L().morning_away || {})[id] || [] : [])];
     const msgId = `_lover_morning_${id}${chapterKey}_d${state.day}`;
     if (pool?.length && turn % LOVER_MORNING_GAP === 0 && !read(msgId)) {
       const k = Math.floor(turn / LOVER_MORNING_GAP);
