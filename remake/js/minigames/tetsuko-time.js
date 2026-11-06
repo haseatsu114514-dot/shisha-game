@@ -21,6 +21,7 @@ import {
   MOMENTS, PROPS, SLOTS, SLOT_NAMES,
 } from "./tetsuko-model.js";
 import { ART_READY, hasPose, poseUrl, artAttrs } from "./tetsuko-art.js";
+import { tetsukoTheme } from "./tetsuko-theme.js";
 
 export const TETSUKO_TIME = Object.freeze({
   id: "tetsuko_time",
@@ -186,13 +187,14 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     const tools = el("div.tt-tools", [decorButton, bookButton, photoButton, backButton]);
     const drawer = el("div.tt-drawer", { hidden: true, dataset: { test: "tetsuko-decor-panel" } });
     const book = el("div.tt-book", { hidden: true, dataset: { test: "tetsuko-book-panel" }, role: "dialog", "aria-label": "てつこ手帳" });
-
+    // 専用テーマの飾り（#2717）: 段ボールの外枠・左上の題・入った時に箱が開く演出。操作は止めない。
+    const theme = tetsukoTheme({ el, title: TETSUKO_TIME.title, roman: TETSUKO_TIME.roman, reduced, SE });
 
     const host = el("section.tetsuko-time", {
       dataset: { test: "tetsuko-time-screen", stage: String(session.stage), mood: session.mood, tod, tool, reduced: String(reduced), ...artAttrs(),
-        artBg: String(!!backdoor?.url) },
+        artBg: String(!!backdoor?.url), ...theme.attrs },
       "aria-label": TETSUKO_TIME.title,
-    }, [yard, memo, tools, caption, dock, drawer, book]);
+    }, [yard, memo, tools, caption, dock, drawer, book, ...theme.nodes]);
 
     // -- 表示の更新
     const slotOf = id => SLOTS.find(slot => session.props[slot] === id) || null;
@@ -579,6 +581,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       done = true;
       for (const t of [timer, stepTimer, fxTimer, purrTimer, walkTimer, stillTimer, heldTimer, flashTimer]) clearTimeout(t);
       clearInterval(stepFrames);
+      theme.stop();
       window.removeEventListener("pagehide", abort);
       window.removeEventListener("keydown", onKey);
       signal?.removeEventListener?.("abort", abort);
@@ -593,6 +596,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     // 開いた時の居場所・表情を先に決めてから出す（ベンチから滑ってこない）。
     show(openingReaction(session));
     showScreen("tetsuko-time", host);
+    theme.start(host);
     schedule();
   });
 }

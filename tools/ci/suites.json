@@ -1703,10 +1703,27 @@
         "remake/js/minigames/tetsuko-time.js",
         "remake/js/minigames/tetsuko-model.js",
         "remake/js/minigames/tetsuko-art.js",
+        "remake/js/minigames/tetsuko-theme.js",
         "remake/css/tetsuko-time.css",
+        "remake/css/tetsuko-theme.css",
         "remake/test/browser/ch3_tokyo_daily.mjs"
       ],
       "run": ["node remake/test/browser/ch3_tokyo_daily.mjs"]
+    },
+    {
+      "id": "tetsuko-theme",
+      "title": "Tetsuko Time dedicated theme: box-opening intro never blocks taps, HUD hidden then back, no lavender (#2717)",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 4,
+      "paths": [
+        "remake/js/minigames/tetsuko-theme.js",
+        "remake/js/minigames/tetsuko-time.js",
+        "remake/css/tetsuko-theme.css",
+        "remake/css/tetsuko-time.css",
+        "remake/test/browser/tetsuko_theme.mjs"
+      ],
+      "run": ["node remake/test/browser/tetsuko_theme.mjs"]
     },
     {
       "id": "ch3-full-flow",

@@ -1,0 +1,170 @@
+/* てつこといっしょの専用テーマ「茶トラと段ボール」（#2717・docs/spec/tetsuko_time.md §7）。
+   tetsuko-time.css の後に読み、色・面・縁・飾りだけを上書きする（猫・小物・当たり判定の座標は変えない）。
+   日常の紙×ラベンダーは使わない。色はてつこ本人（茶トラの橙・胸の白・輪郭の焦げ茶・鼻の桃色）と段ボール、
+   差し色に mukai の裏口の戸の青灰。部品は太い焦げ茶の線と下に落ちる影の「押せる札」にそろえる。
+   この画面では日常の HUD を隠し、全画面を段ボールの窓（.tt-frame）で囲み、左上に題の札（.tt-logo）を置く。
+   入った時は閉じた箱が開く（.tt-intro。tetsuko-theme.js）。演出は pointer-events を持たず、操作を止めない。 */
+.tetsuko-time {
+  --tk-cream: #fff5e4; --tk-cream-2: #fbe7c8; --tk-ink: #3b2416; --tk-ink-2: #6e4325;
+  --tk-tabby: #f08a2e; --tk-tabby-deep: #c25e1c; --tk-tabby-text: #a24a12; --tk-pink: #f39aa6;
+  --tk-kraft: #c9965c; --tk-kraft-hi: #e3bb84; --tk-door: #4e6b78;
+  --tk-drop: 0 4px 0 var(--tk-ink); --tk-drop-low: 0 1px 0 var(--tk-ink); --tk-lift: 0 10px 18px rgba(32, 16, 6, .3);
+  --tk-paw: var(--tk-tabby-deep);
+  /* 土台（tetsuko-time.css）の変数を新しい色へ付け替える（ラベンダーの所は焦げ茶・琥珀の所は茶トラの橙） */
+  --tt-paper: var(--tk-cream); --tt-paper-2: var(--tk-cream-2); --tt-ink: var(--tk-ink); --tt-lav: var(--tk-ink-2);
+  --tt-lav-soft: var(--tk-kraft-hi); --tt-amber: var(--tk-tabby); --tt-kraft: var(--tk-kraft);
+}
+/* 肉球の形（色は --tk-paw）。判・題の札・手帳で使う */
+.tetsuko-time .tt-stamp, .tt-logo-paw {
+  background: radial-gradient(circle at 50% 66%, var(--tk-paw) 0 30%, transparent 32%), radial-gradient(circle at 22% 38%, var(--tk-paw) 0 11%, transparent 13%),
+    radial-gradient(circle at 40% 20%, var(--tk-paw) 0 11%, transparent 13%), radial-gradient(circle at 62% 20%, var(--tk-paw) 0 11%, transparent 13%),
+    radial-gradient(circle at 80% 38%, var(--tk-paw) 0 11%, transparent 13%);
+}
+
+/* ---- この画面では日常の HUD（紙×ラベンダー）を隠す。押せない・読み上げない（作業台と同じ扱い） */
+body[data-screen="tetsuko-time"] .hud { opacity: 0; visibility: hidden; pointer-events: none; }
+body[data-screen="tetsuko-time"] .hud-right { pointer-events: none; }
+
+/* ---- 全画面の外枠: 段ボールを切り抜いた窓（SVG は tetsuko-theme.js）。いちばん手前（写真の光と入る演出の下） */
+.tt-frame { position: absolute; inset: 0; z-index: 27; pointer-events: none; }
+.tt-frame-svg { display: block; width: 100%; height: 100%; filter: drop-shadow(0 0 6px rgba(28, 14, 4, .5)); }
+/* 窓の内側を少し落として、外枠の奥に裏口がある奥行きにする（猫・小物・部品は暗くしない） */
+.tt-yard::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; box-shadow: inset 0 0 54px 18px rgba(36, 18, 6, .42); }
+
+/* ---- 左上の題（てつこの小さな折れ耳の付いた札。下の縁は茶トラのしま） */
+.tt-logo { position: absolute; left: 30px; top: 42px; z-index: 21; display: grid; grid-template-columns: auto auto; align-items: center; column-gap: 12px;
+  padding: 8px 24px 12px 12px; border: 3px solid var(--tk-ink); border-radius: 22px; pointer-events: none;
+  background: linear-gradient(0deg, transparent 6px, var(--tk-cream) 6px),
+    repeating-linear-gradient(90deg, var(--tk-tabby) 0 14px, var(--tk-tabby-deep) 14px 22px);
+  box-shadow: 0 5px 0 var(--tk-ink), var(--tk-lift); }
+.tt-logo-ear { position: absolute; top: -17px; width: 34px; height: 17px; border: 3px solid var(--tk-ink); border-bottom: 0; border-radius: 18px 18px 0 0; background: var(--tk-tabby); }
+.tt-logo-ear.l { left: 26px; transform: rotate(-9deg); transform-origin: 50% 100%; }
+.tt-logo-ear.r { right: 26px; transform: rotate(9deg); transform-origin: 50% 100%; }
+.tt-logo-paw { --tk-paw: var(--tk-cream); grid-row: 1 / 3; width: 52px; height: 52px; border: 3px solid var(--tk-ink); border-radius: 50%; background-color: var(--tk-tabby);
+  background-size: 34px 34px; background-position: center; background-repeat: no-repeat; }
+.tt-logo-title { font-size: 30px; font-weight: 900; line-height: 1.08; letter-spacing: .05em; color: var(--tk-ink); white-space: nowrap; }
+.tt-logo-roman { font-size: 14px; font-weight: 800; line-height: 1.15; letter-spacing: .28em; color: var(--tk-tabby-text); white-space: nowrap; }
+
+/* ---- 今日のてつこ: 題の札から出る吹き出し（題そのものは札にあるので、紙片の題は読み上げだけ残す） */
+.tetsuko-time .tt-memo { left: 34px; right: auto; top: 130px; max-width: 470px; padding: 7px 18px 8px; border: 2.5px solid var(--tk-ink); border-radius: 14px;
+  background: var(--tk-cream); transform: none; box-shadow: 0 3px 0 var(--tk-ink), 0 8px 14px rgba(32, 16, 6, .28); }
+.tetsuko-time .tt-memo::before { content: ""; position: absolute; left: 34px; top: -9px; width: 14px; height: 14px; background: var(--tk-cream);
+  border-left: 2.5px solid var(--tk-ink); border-top: 2.5px solid var(--tk-ink); transform: rotate(45deg); }
+.tetsuko-time .tt-memo-tape { display: none; }
+.tetsuko-time .tt-memo-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.tetsuko-time .tt-mood { margin: 0; font-size: 18px; color: var(--tk-ink); }
+
+/* ---- 押せる札（右上の道具・右下の手元の道具・パネルのボタン）: 生成りに焦げ茶の太い線、下に落ちる影 */
+.tetsuko-time .tt-tools { top: 34px; right: 30px; gap: 10px; }
+.tetsuko-time .tt-tool { border: 3px solid var(--tk-ink); border-radius: 16px; background: var(--tk-cream); color: var(--tk-ink-2); box-shadow: var(--tk-drop), var(--tk-lift); }
+.tetsuko-time .tt-tool:active:not(:disabled) { transform: translateY(3px); box-shadow: var(--tk-drop-low), 0 4px 8px rgba(32, 16, 6, .25); }
+.tetsuko-time .tt-tool:disabled { opacity: .55; box-shadow: 0 2px 0 rgba(59, 36, 22, .5); }
+.tetsuko-time .tt-tool-label { color: var(--tk-ink); font-weight: 800; }
+/* 帰る＝裏口の戸の色 */
+.tetsuko-time .tt-tool[data-test="tetsuko-time-back"] { background: var(--tk-door); color: var(--tk-cream); }
+.tetsuko-time .tt-tool[data-test="tetsuko-time-back"] .tt-tool-label { color: var(--tk-cream); }
+.tetsuko-time .tt-tool.new::after, .tetsuko-time .tt-new { border: 2px solid var(--tk-ink); background: var(--tk-pink); color: var(--tk-ink); }
+.tetsuko-time :is(.tt-tool, .tt-act, .tt-item, .tt-card, .tt-slot-hit):focus-visible { outline: 3px solid var(--tk-door); outline-offset: 3px; }
+
+/* 手元の道具: 丸い札。持っている道具は茶トラの橙になり、折れ耳が付く（てつこの顔の形） */
+.tetsuko-time .tt-dock { right: 26px; bottom: 26px; gap: 4px; }
+.tetsuko-time .tt-act-token { position: relative; border: 3px solid var(--tk-ink); background: var(--tk-cream); color: var(--tk-ink-2); box-shadow: var(--tk-drop), var(--tk-lift); }
+.tetsuko-time .tt-act:active:not(:disabled) .tt-act-token { box-shadow: var(--tk-drop-low), 0 4px 8px rgba(32, 16, 6, .25); }
+.tetsuko-time .tt-act.active .tt-act-token { background: var(--tk-tabby); color: var(--tk-ink); box-shadow: var(--tk-drop), 0 0 0 5px rgba(255, 214, 160, .55), var(--tk-lift); }
+.tetsuko-time .tt-act.active .tt-act-token::before, .tetsuko-time .tt-act.active .tt-act-token::after { content: ""; position: absolute; top: -9px; width: 22px; height: 14px;
+  border: 3px solid var(--tk-ink); border-bottom: 0; border-radius: 12px 12px 0 0; background: var(--tk-tabby); }
+.tetsuko-time .tt-act.active .tt-act-token::before { left: 6px; transform: rotate(-32deg); }
+.tetsuko-time .tt-act.active .tt-act-token::after { right: 6px; transform: rotate(32deg); }
+.tetsuko-time .tt-act[data-kind="catch"] .tt-act-token { background: var(--tk-pink); color: var(--tk-ink); border-color: var(--tk-ink); }
+.tetsuko-time .tt-act:disabled .tt-act-token { opacity: .5; box-shadow: 0 2px 0 rgba(59, 36, 22, .5); }
+.tetsuko-time .tt-act-label { border: 2px solid var(--tk-ink); border-radius: 10px; background: var(--tk-cream); color: var(--tk-ink); font-weight: 800; }
+
+/* パネルのボタン（おわる・閉じる）。日常のテーマの .btn（html:root[data-ui-theme] …）より強く当てる */
+:root .tetsuko-time .btn.small:is(.tt-drawer-close, .tt-book-close) { padding: 8px 18px; border: 3px solid var(--tk-ink); border-radius: 14px; background: var(--tk-cream);
+  color: var(--tk-ink); font-weight: 800; box-shadow: var(--tk-drop); clip-path: none; filter: none; text-shadow: none; }
+:root .tetsuko-time .btn.small:is(.tt-drawer-close, .tt-book-close):is(:hover, :focus-visible) { background: var(--tk-tabby); color: var(--tk-ink); border-color: var(--tk-ink); box-shadow: var(--tk-drop); }
+:root .tetsuko-time .btn.small:is(.tt-drawer-close, .tt-book-close):focus-visible { outline: 3px solid var(--tk-door); outline-offset: 3px; }
+:root .tetsuko-time .btn.small:is(.tt-drawer-close, .tt-book-close):active { transform: translateY(3px); box-shadow: var(--tk-drop-low); }
+
+/* ---- 反応の帯（左下）: 角の丸い札。左の端は茶トラのしま */
+.tetsuko-time .tt-caption { left: 30px; bottom: 26px; width: 596px; min-height: 86px; padding: 11px 24px 11px 36px; border: 3px solid var(--tk-ink); border-radius: 18px;
+  background: var(--tk-cream); clip-path: none; filter: none; box-shadow: 0 5px 0 var(--tk-ink), 0 12px 22px rgba(32, 16, 6, .3); }
+.tetsuko-time .tt-caption::before { left: 0; right: auto; top: 0; bottom: 0; width: 14px; height: auto; border-right: 2.5px solid var(--tk-ink); border-radius: 15px 0 0 15px;
+  background: repeating-linear-gradient(180deg, var(--tk-tabby) 0 10px, var(--tk-tabby-deep) 10px 16px); }
+.tetsuko-time .tt-line { color: var(--tk-ink-2); }
+.tetsuko-time .tt-line-name { border: 2px solid var(--tk-ink); background: var(--tk-tabby); color: var(--tk-ink); font-weight: 800; }
+.tetsuko-time .tt-toast { border: 2px solid var(--tk-ink); background: var(--tk-cream-2); }
+.tetsuko-time .tt-toast small { color: var(--tk-tabby-text); }
+.tetsuko-time .tt-toast .tt-thumb { border: 2px solid var(--tk-ink); }
+.tetsuko-time .tt-thumb.unknown { border: 2px dashed rgba(110, 67, 37, .35); color: rgba(110, 67, 37, .5); }
+
+/* ---- もようがえ: 段ボールのトレー */
+.tetsuko-time .tt-drawer { left: 30px; right: 30px; bottom: 26px; border: 3px solid var(--tk-ink); border-radius: 18px;
+  background: repeating-linear-gradient(90deg, rgba(90, 52, 20, .07) 0 3px, transparent 3px 9px), linear-gradient(#d8a76b, #c08b51);
+  box-shadow: inset 0 0 0 4px rgba(255, 232, 196, .28), inset 0 10px 16px rgba(60, 30, 8, .22), 0 5px 0 var(--tk-ink), 0 12px 22px rgba(32, 16, 6, .32); }
+.tetsuko-time .tt-drawer-head { border: 2.5px solid var(--tk-ink); border-radius: 12px; background: var(--tk-cream); }
+.tetsuko-time .tt-drawer-head b { color: var(--tk-tabby-text); }
+.tetsuko-time .tt-item { border: 2.5px solid var(--tk-ink); border-radius: 14px; background: var(--tk-cream); box-shadow: 0 3px 0 var(--tk-ink); }
+.tetsuko-time .tt-item[aria-pressed="true"] { border-color: var(--tk-ink); background: #ffe4c2; box-shadow: 0 3px 0 var(--tk-ink), 0 0 0 4px var(--tk-tabby); }
+.tetsuko-time .tt-item small { color: var(--tk-ink-2); }
+.tetsuko-time .tt-slot-hit[data-allowed="true"] { border-color: var(--tk-tabby); background: rgba(255, 214, 160, .24); }
+.tetsuko-time .tt-slot-label { border: 2px solid var(--tk-ink); background: var(--tk-cream); color: var(--tk-ink); }
+
+/* ---- てつこ手帳: 段ボールの表紙に生成りの中紙、真ん中に茶トラのしまの背 */
+.tetsuko-time .tt-book { left: 44px; right: 44px; top: 124px; bottom: 26px; }
+.tetsuko-time[data-panel="book"] .tt-memo { visibility: hidden; }
+.tetsuko-time .tt-book-spread { border: 3px solid var(--tk-ink); border-radius: 18px;
+  background: repeating-linear-gradient(90deg, rgba(90, 52, 20, .07) 0 3px, transparent 3px 9px), linear-gradient(160deg, #d6a36a, #bb854f);
+  box-shadow: 0 6px 0 var(--tk-ink), 0 16px 30px rgba(20, 10, 4, .45); }
+.tetsuko-time .tt-book-spread::after { content: ""; position: absolute; left: 50%; top: 12px; bottom: 12px; width: 12px; margin-left: -6px; border: 2px solid var(--tk-ink); border-radius: 6px;
+  background: repeating-linear-gradient(180deg, var(--tk-tabby) 0 12px, var(--tk-tabby-deep) 12px 19px); }
+.tetsuko-time .tt-page { border: 2px solid rgba(59, 36, 22, .55); background-color: var(--tk-cream);
+  background-image: repeating-linear-gradient(180deg, transparent 0 33px, rgba(194, 94, 28, .13) 33px 34px); }
+.tetsuko-time .tt-page h3 { display: inline-block; padding-bottom: 2px; border-bottom: 3px dotted var(--tk-tabby); color: var(--tk-ink); }
+.tetsuko-time .tt-card { border: 2px solid rgba(59, 36, 22, .2); border-radius: 10px; background: rgba(255, 255, 255, .6); }
+.tetsuko-time .tt-card[aria-pressed="true"] { border-color: var(--tk-ink); background: #fff; box-shadow: 0 0 0 3px var(--tk-tabby); }
+.tetsuko-time .tt-card[data-photo="true"] { background: #fff; }
+.tetsuko-time .tt-card-no { color: var(--tk-tabby-text); }
+.tetsuko-time .tt-tape { background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .14) 0 2px, transparent 2px 7px), rgba(184, 132, 74, .86); }
+.tetsuko-time .tt-detail-hint { color: var(--tk-tabby-text); }
+/* 座布団の仮の絵（素材が届くまで）は紫をやめ、依頼どおりのくすんだからし色に（絵が届けば土台の [data-art-props] が勝つ） */
+.tetsuko-time .tt-prop[data-prop="cushion"] .tt-prop-back { background: radial-gradient(circle at 50% 50%, #7a5a1e 0 5px, transparent 6px), linear-gradient(#cda24a, #a57f2c); }
+.tetsuko-time .tt-prop[data-prop="cushion"] .tt-prop-back::before, .tetsuko-time .tt-prop[data-prop="cushion"] .tt-prop-back::after { background: #7a5a1e; }
+/* 撮った写真が飛ぶ先＝右上の「てつこ手帳」（道具を上へ詰めた分） */
+.tetsuko-time .tt-fly.go { top: 69px !important; left: 1000px !important; }
+/* ブラシの形のカーソルも焦げ茶の線に */
+.tetsuko-time[data-tool="brush"] .tt-cat { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='%23fff5e4' stroke='%233b2416' stroke-width='1.8'%3E%3Crect x='3.5' y='4.5' width='11' height='7' rx='2'/%3E%3Cpath d='M12.8 7.2 20.5 18.6a1.6 1.6 0 0 1-2.7 1.7L10.6 9'/%3E%3C/svg%3E") 6 6, pointer; }
+
+/* ---- 入った時: 閉じた箱のテープがはがれ、ふたが手前へ開き、真ん中の題が左上の札へ収まる（1.2秒）。
+   何も無い状態（演出の層が無い・動きを止めた）でも画面はそのまま遊べる。演出は操作を受けない */
+.tt-intro { position: absolute; inset: 0; z-index: 40; overflow: hidden; pointer-events: none; perspective: 1700px; visibility: hidden; }
+.tetsuko-time[data-intro="1"] .tt-intro { visibility: visible; }
+.tt-intro-flap { --tk-flap-ink: rgba(74, 45, 23, .2); position: absolute; top: -2px; bottom: -2px; width: 50.3%; backface-visibility: hidden;
+  background-image: radial-gradient(circle at 50% 66%, var(--tk-flap-ink) 0 30%, transparent 32%), radial-gradient(circle at 22% 38%, var(--tk-flap-ink) 0 11%, transparent 13%),
+    radial-gradient(circle at 40% 20%, var(--tk-flap-ink) 0 11%, transparent 13%), radial-gradient(circle at 62% 20%, var(--tk-flap-ink) 0 11%, transparent 13%),
+    radial-gradient(circle at 80% 38%, var(--tk-flap-ink) 0 11%, transparent 13%),
+    repeating-linear-gradient(90deg, rgba(90, 52, 20, .07) 0 3px, transparent 3px 9px), linear-gradient(160deg, #dba96d, #bd8750);
+  background-size: 170px 170px, 170px 170px, 170px 170px, 170px 170px, 170px 170px, auto, auto; background-repeat: no-repeat;
+  background-position: var(--paw-at), var(--paw-at), var(--paw-at), var(--paw-at), var(--paw-at), 0 0, 0 0;
+  box-shadow: inset 0 0 0 3px rgba(74, 45, 23, .5), inset 0 0 60px rgba(74, 45, 23, .28); }
+.tt-intro-flap.l { --paw-at: 22% 78%; left: 0; transform-origin: 0 50%; animation: tt-flap-l 1.2s cubic-bezier(.55, 0, .3, 1) both; }
+.tt-intro-flap.r { --paw-at: 80% 16%; right: 0; transform-origin: 100% 50%; animation: tt-flap-r 1.2s cubic-bezier(.55, 0, .3, 1) both; }
+@keyframes tt-flap-l { 0%, 38% { transform: rotateY(0); } 100% { transform: rotateY(-104deg); } }
+@keyframes tt-flap-r { 0%, 38% { transform: rotateY(0); } 100% { transform: rotateY(104deg); } }
+.tt-intro-tape { position: absolute; left: 50%; top: -24px; bottom: -24px; width: 124px; margin-left: -62px; z-index: 2;
+  background: repeating-linear-gradient(180deg, rgba(255, 255, 255, .1) 0 2px, transparent 2px 9px),
+    linear-gradient(90deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, 0) 30% 70%, rgba(255, 255, 255, .18)), rgba(170, 118, 62, .9);
+  box-shadow: 0 0 0 1px rgba(74, 45, 23, .3); animation: tt-tape 1.2s ease-in both; }
+@keyframes tt-tape { 0%, 18% { transform: none; opacity: 1; } 38% { transform: translateY(-106%) rotate(-4deg); opacity: 1; } 39%, 100% { transform: translateY(-106%); opacity: 0; } }
+.tt-intro-card { --tt-to-x: -430px; --tt-to-y: -270px; position: absolute; left: 50%; top: 46%; z-index: 3; animation: tt-intro-card 1.2s cubic-bezier(.3, .7, .3, 1) both; }
+.tt-intro-card .tt-logo { position: relative; left: auto; top: auto; }
+@keyframes tt-intro-card {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.6) rotate(-5deg); }
+  12% { opacity: 1; transform: translate(-50%, -50%) scale(1.78) rotate(2deg); }
+  20%, 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.62) rotate(0); }
+  86% { opacity: 1; transform: translate(calc(-50% + var(--tt-to-x)), calc(-50% + var(--tt-to-y))) scale(1); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--tt-to-x)), calc(-50% + var(--tt-to-y))) scale(1); }
+}
+/* 左上の札は、真ん中の題が収まる時に現れる */
+.tetsuko-time[data-intro="1"] > .tt-logo { animation: tt-logo-in .24s ease-out .9s both; }
+@keyframes tt-logo-in { from { opacity: 0; } }
