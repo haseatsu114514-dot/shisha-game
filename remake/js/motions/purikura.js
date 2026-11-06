@@ -23,7 +23,8 @@ export const PURIKURA_STRIP = "cg_ch2_ageha_purikura_strip";
 // 印刷したシールの大きさ（場面の座標）。1列分×2、4コマ（960×1440）、代用は写真の2×2
 const SHEET = { strip: { w: 616, h: 520, top: 100 }, cg: { w: 374, h: 560, top: 80 }, sprites: { w: 534, h: 480, top: 120 } };
 const PW = 640, PH = 480; // 写真の大きさ（落書きの座標もこの画素）
-// 立ち絵（896×1200）を写真に置く位置（%）。はじめの頭は(205,175)、あげはの頭は(440,190)あたり
+// 旧版の立ち絵（896×1200）で測った写真の位置（%）。撮影・先読みにも同じ版を使う。
+// はじめの頭は(205,175)、あげはの頭は(440,190)あたり
 const SPRITE = {
   hajime: { left: "-45.6%", top: "-10%" },
   ageha: { left: "-0.9%", top: "-21.5%" },
@@ -49,7 +50,7 @@ const at = (node, frames, ms, delay, { fill = "both", easing = E.out } = {}) => 
 const swap = (node, from, to, t) => at(node, [{ opacity: from }, { opacity: to }], 1, t, { easing: "linear" });
 
 function spriteImg(id, face, lean) {
-  const src = portraitInfo(id, face)?.src;
+  const src = portraitInfo(id, face, "classic")?.src;
   return el(`img.mo-pk-sprite.${id}${lean && id === "ageha" ? ".lean" : ""}`, { src, alt: "", style: SPRITE[id] });
 }
 
@@ -355,7 +356,7 @@ export async function shoot(variant = "a") {
   const strip = cgUrl(PURIKURA_STRIP);
   const sheetCg = strip ? null : cgUrl(PURIKURA_CG);
   const art = strip ? { kind: "strip", url: strip } : sheetCg ? { kind: "cg", url: sheetCg } : { kind: "sprites", url: null };
-  const urls = [...new Set([...POSES.flatMap((p) => [portraitInfo("hajime", p.hajime)?.src, portraitInfo("ageha", p.ageha)?.src]), art.url].filter(Boolean))];
+  const urls = [...new Set([...POSES.flatMap((p) => [portraitInfo("hajime", p.hajime, "classic")?.src, portraitInfo("ageha", p.ageha, "classic")?.src]), art.url].filter(Boolean))];
   // 画像と並行して用意する。取得に失敗しても撮影を止めない。
   void preloadBgm(music);
   const ready = await Promise.all(urls.map((u) => imageReady(u, 3000)));

@@ -66,7 +66,8 @@ await suite("debug-tools", async check => {
       const before = await snapshot();
       await openPanel(page);
       const select = page.locator(t("debug-portrait-style"));
-      for (const style of ["new", "nanami", "classic", "nanami", "new"]) {
+      assert.deepEqual(await select.locator("option").evaluateAll(options => options.map(option => option.value)), ["new", "classic"]);
+      for (const style of ["classic", "new", "classic", "new"]) {
         await select.selectOption(style);
         await page.waitForFunction(() => [...document.querySelectorAll(".vn-portraits img")].every(i => i.complete && i.naturalWidth > 0));
         const actual = await page.locator('.vn-portraits img[data-speaker="minto"]').getAttribute("src");
@@ -82,7 +83,7 @@ await suite("debug-tools", async check => {
       await page.locator(t("cfg-close")).click();
       await openPanel(page);
       assert.equal(await select.inputValue(), "classic", "DBG syncs changes from normal CONFIG");
-      await select.selectOption("nanami");
+      await select.selectOption("classic");
       await page.locator(t("debug-toggle")).click();
       await page.waitForTimeout(350);
       await page.locator(".vn-text").click();
@@ -326,3 +327,4 @@ await suite("debug-tools", async check => {
     assert.equal(saved.flags._ch2_day1.stage, "departure");
   });
 }, { entry: `${baseURL}?debug=1` });
+

@@ -47,7 +47,8 @@ for (const [name, lines] of Object.entries(firstShop.branches)) {
 }
 assert.deepEqual(JSON.parse(JSON.stringify(data.DB.lime)),lime.messages);assert(data.DB.dialogues.samechan_first_encounter);
 assert.equal(data.displayName('samechan',state),'？？？');
-for(const face of ['normal','smile','surprise','serious'])assert.equal(data.portraitInfo('samechan',face).src,`img/sprites/characters/samechan/chr_samechan_${face}.webp`);
+for(const face of ['normal','smile','surprise','serious'])assert.equal(data.portraitInfo('samechan',face,'classic').src,`img/sprites/characters/samechan/chr_samechan_${face}.webp`);
+assert.equal(data.portraitInfo('samechan','normal').src,'img/sprites/character_variants/new/samechan/chr_samechan_normal.webp');
 assert.equal(data.sceneBg('bg_shishark_preparing_night','night').tint,null);
 assert.equal(data.sceneBg('bg_shishark_preparing_night','night').url,'img/backgrounds/bg_shishark_preparing_night.webp');
 assert.equal(data.sceneBg('bg_shishark','night').tint,'night');
