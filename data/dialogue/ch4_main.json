@@ -546,6 +546,7 @@
     {
       "dialogue_id": "ch4_wang_reception",
       "metadata": {
+        "forced_event": true,
         "flavor_lesson": {
           "lychee": 1
         }
@@ -2028,6 +2029,9 @@
     },
     {
       "dialogue_id": "ch4_wang_reception_forced_in",
+      "metadata": {
+        "forced_event": true
+      },
       "lines": [
         {
           "speaker": "",
