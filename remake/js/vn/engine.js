@@ -523,7 +523,9 @@ function next() {
     // 一度きりのモーショングラフィックス（core/scene-motions.js）。終わるまで次の行へ進まない
     if (type === "motion") {
       if (vnTest.turbo) continue;
-      const run = { tarot: () => tarotFlip(), lime: () => limeExchange(line.char_id, line.context), purikura: () => purikuraShot() }[line.id];
+      const run = { tarot: () => tarotFlip(), lime: () => limeExchange(line.char_id, line.context), purikura: () => purikuraShot(),
+        // 大会の視点を移す小さな横帯（#2688 A20・motions/tournament.js）
+        focus: () => import("../motions/tournament.js").then(m => m.focusBand(line.char_id)) }[line.id];
       if (!run) continue;
       if (line.id === "lime") {
         const key = `_lime_exchange_shown_${line.char_id}_${line.context || "work"}`;

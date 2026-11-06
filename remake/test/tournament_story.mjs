@@ -159,7 +159,9 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
  const naruTop=/なる(選手)?が、?(先頭|トップ|リード|前)|先頭(は|に並ぶのは)、?なる|先頭に、?なる/,sole=/なる選手が先頭|先頭は、なる/,tie=/先頭に並/;
  for (const [event,context] of events) {
   const d=say(event,context),text=d.lines.map(l=>l.text).join('\n');
-  assert(d.lines.length>=4&&d.lines.length<=7,`chapter4 ${event} line count`);
+  // 視点を移す横帯（#2688 A20）の motion 行は読む行に数えない。
+  const readable=d.lines.filter(l=>typeof l.text==='string');
+  assert(readable.length>=4&&readable.length<=7,`chapter4 ${event} line count`);
   assert(!d.lines.some(l=>others.includes(l.speaker)),`chapter4 ${event} used another chapter's cast`);
   // 点数や数字は言わない（配合カードのg数だけは読む）。
   assert.doesNotMatch(text.replace(/\d+g/g,''),/\d|点|一位/,`chapter4 ${event} must not state scores`);
@@ -198,7 +200,9 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
  for (const r of [0,.34,.99]) {
   const d=tournamentStoryDialogue(c4,'waiting',()=>r),text=d.lines.map(l=>l.text).join('\n');
   assert(d.lines.some(l=>l.speaker==='naru')&&d.lines.some(l=>l.speaker==='master_hookah'),'chapter4 waiting shows naru and the master');
-  assert.match(text,/シェイク/);assert(d.lines.length<=7);
+  assert.match(text,/シェイク/);assert(d.lines.filter(l=>typeof l.text==='string').length<=7);
+  // 視点が移る前に、名前と二つ名の横帯（#2688 A20）を なる → 王煙楼 → シェイク の順で一度ずつ。
+  assert.deepEqual(d.lines.filter(l=>l.type==='motion').map(l=>`${l.id}:${l.char_id}`),['focus:naru','focus:master_hookah','focus:sheikh']);
  }
  // 提供後の掛け合いは、はじめの実際の順位で先頭か追う側かを分ける。順位が無ければ追う側。
  assert.notEqual(lines('interlude1',{rank:1}),lines('interlude1',{rank:3}));

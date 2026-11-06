@@ -46,6 +46,8 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
     benchRoot: () => ({ querySelector: () => ({ append: () => trace.push("menu") }) }),
     showChapterFourStandings: async p => { trace.push(`standings:${p.voted}`); shown.push(match.chapterFourStandings(p)); },
     retireScreen: () => trace.push("retire"), playBgm() {}, clearComments() {}, block() {},
+    // ROUND の横帯（#2688 A16）は演出だけ。工程の順を変えないので trace には足さない。
+    tournamentRound: async () => true,
     play: async dialogue => { trace.push(dialogue.dialogue_id); return {}; },
     modal: async options => { trace.push(options.title);
       if (options.title === "コンティニュー") { if (assistInvalidate) current = false; return assistChoice; }

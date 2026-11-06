@@ -326,6 +326,8 @@ export async function suiCutin(rank, attempt = null) {
     SE.stamp();
   }
   await sleep(fast ? 100 : 1500);
+  // 優勝は紙吹雪の前に、煙の輪を3つ中心から抜く（#2688 A18）
+  if (rank === 1) await (await import("../motions/tournament.js")).victoryRings(ov);
   if (rank === 1) confetti(ov);
   await sleep(fast ? 100 : 1600);
   ov.classList.add("out");

@@ -496,6 +496,9 @@ async function showChapterFourCommittedResult(result) {
 async function runTournament(owner) {
   const { start, win, loss } = CH4_TOURNAMENT_SCENES;
   if (!chapterFourProgress(state).read[start]) {
+    // 会場へ入る暗い煙ワイプ（第1章と同じ・#2688 A16）
+    await (await import("../motions/tournament.js")).venueWipe();
+    if (!current(owner)) return;
     // 読み始める時点でシェイクの正体を明かす（DRAFT §3）。
     revealChapterFourSheikh(state);
     if (!await readAndCommit(owner, start)) return;

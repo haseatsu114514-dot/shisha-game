@@ -1069,6 +1069,11 @@
           "text": "蒸らしの時間！ さあ、ほかの三人はこの間に何をしているのかーッ！？"
         },
         {
+          "type": "motion",
+          "id": "focus",
+          "char_id": "naru"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "なるは台から半歩下がり、立ちのぼる匂いの変わり目を待っていた。"
@@ -1079,9 +1084,19 @@
           "text": "借りた台で、何度も待った。……甘さは、急かすと重くなるんだよ"
         },
         {
+          "type": "motion",
+          "id": "focus",
+          "char_id": "master_hookah"
+        },
+        {
           "speaker": "master_hookah",
           "face": "normal",
           "text": "私は時計より、待っている客の肩を見るよ"
+        },
+        {
+          "type": "motion",
+          "id": "focus",
+          "char_id": "sheikh"
         },
         {
           "speaker": "",

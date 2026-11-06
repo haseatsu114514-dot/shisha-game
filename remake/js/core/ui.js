@@ -634,14 +634,14 @@ export async function dayCard(title, sub, { ms = 1900, weather = null, forecast 
   card.remove();
 }
 
-/** 中央の見出し帯（「ROUND 2」など） */
-export async function roundCut(text, sub = "") {
+/** 中央の見出し帯（「ROUND 2」など）。hold は帯を見せる時間（自動進行では短く渡す） */
+export async function roundCut(text, sub = "", { hold = 1300 } = {}) {
   const c = el("div.round-cut", [el("b", { text }), sub ? el("small", { text: sub }) : null]);
   layers.fx.append(c);
   SE.whoosh();
   await nextFrame();
   c.classList.add("show");
-  await sleep(1300);
+  await sleep(hold);
   c.classList.add("out");
   await sleep(450);
   c.remove();

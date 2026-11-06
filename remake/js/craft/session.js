@@ -39,6 +39,7 @@ import { mountCraftRank, craftRankProgress } from "./rank-hud.js";
 import { CRAFT_RANK_THRESHOLDS } from "./common.js";
 import { provisionalCraftScore } from "./score.js";
 import { demoFor, openDemoSheet } from "./demo.js";
+import { stepStroke } from "../motions/step-stroke.js";
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -296,7 +297,10 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.audience?.setStep(coaching, id);
   // 吸い出しの情報欄へ移した葉を、工程を消す前に作業風景へ戻す。
   b.worker.footer.append(b.leaf.root);
+  // 前の工程から替わるときだけ、操作欄を細い一筆が横切る（#2688 A17）
+  const switched = !!b.panel.dataset.step && b.panel.dataset.step !== id;
   b.panel.replaceChildren();
+  if (switched) stepStroke(b.panel.closest(".bench-right"));
   b.panel.dataset.step = id;
   b.root.dataset.step = id;
   b.worker.setStep(id);

@@ -2523,6 +2523,26 @@
       ]
     },
     {
+      "id": "tournament-motions",
+      "title": "Tournament round bands, venue wipe, craft step stroke, victory rings and chapter 4 focus bands (#2688 A16-A18, A20)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 8,
+      "paths": [
+        "remake/js/motions/tournament.js",
+        "remake/js/motions/step-stroke.js",
+        "remake/css/motions/tournament.css",
+        "remake/js/core/ui.js",
+        "remake/js/craft/session.js",
+        "remake/js/craft/result.js",
+        "remake/js/craft/tournament-story-data.js",
+        "remake/js/vn/engine.js",
+        "data/dialogue/tournament_craft.json",
+        "remake/test/browser/tournament_motions.mjs"
+      ],
+      "run": ["node remake/test/browser/tournament_motions.mjs"]
+    },
+    {
       "id": "text-editor",
       "title": "Text editor, wrapping, notifications and rewards",
       "kind": "browser",

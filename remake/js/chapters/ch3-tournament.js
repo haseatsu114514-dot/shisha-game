@@ -1,5 +1,6 @@
 import { playEntrance } from "./tournament-entrance.js";
 import { advanceTournamentCraft } from "./tournament-craft-runner.js";
+import { tournamentRound, venueWipe } from "../motions/tournament.js";
 // HAZE: NATIONAL TOKYO。四人同時の一試合を、確定した制作工程と票から再開する。
 import { createChapterActions } from "../core/chapter-actions.js";
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
@@ -420,6 +421,9 @@ async function drive(owner) {
       return;
     }
     if (p.stage === "opening") {
+      // 会場へ入る暗い煙ワイプ（第1章と同じ・#2688 A16）
+      await venueWipe();
+      if (!live(owner)) return;
       if (!await read(owner, "tournament_day")) return;
       await playEntrance(3);
       if (!live(owner)) return;
@@ -432,6 +436,9 @@ async function drive(owner) {
       // 投票の後、調整に入る合間の掛け合い（#1290）。見た目は commentary と同じ経路で一度だけ。
       const interlude = p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
       if (interlude && !await commentary(owner, interlude)) return;
+      // 区切りの工程の前に第1章と同じ ROUND の横帯（#2688 A16）
+      await tournamentRound(p.step);
+      if (!live(owner)) return;
       const event = TOURNAMENT_STORY_STEPS.get(p.step);
       if (event && !await commentary(owner, event)) return;
       hud(owner);

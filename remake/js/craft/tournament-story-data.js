@@ -100,7 +100,8 @@ export function tournamentStoryDialogue(cs, event, random = Math.random, context
       const scene = DB.dialogues[`tournament_craft_${sceneId}`];
       if (!scene) throw new Error(`大会演出の台本がありません: ${id}`);
       const named = id.startsWith("aroma_") ? aromaFlavors : flavors;
-      return scene.lines.map(line => ({ ...line, text: line.text
+      // 文のない行（視点を移す motion など）はそのまま渡す。
+      return scene.lines.map(line => typeof line.text !== "string" ? line : ({ ...line, text: line.text
         .replaceAll("{flavors}", named).replaceAll("{packing}", PACKING[cs.pack] || PACKING.normal) }));
     }),
   };

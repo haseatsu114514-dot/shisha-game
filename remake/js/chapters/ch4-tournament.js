@@ -21,6 +21,7 @@ import { block, clearComments } from "../craft/broadcast.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { showChapterFourStandings } from "./ch4-standings.js";
+import { tournamentRound } from "../motions/tournament.js";
 import { chapterFourMatch, startChapterFourCraft, recoverChapterFourStep, chapterFourRetryContext,
   beginChapterFourStep, finishChapterFourStep, chapterFourStandings } from "./ch4-tournament-state.js";
 import { chapterFourCraftAdvice, chapterFourCustomerLines } from "./ch4-verdict.js";
@@ -55,6 +56,9 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
   }
   while (live() && !p.result) {
     playBgm("bgm_tournament_craft");
+    // 区切りの工程の前に第1章と同じ ROUND の横帯（#2688 A16）
+    await tournamentRound(p.step);
+    requireCurrent();
     // 制作中の掛け合い（#2031）。工程の前に一度だけ読み、既読は制作保存に残す（再挑戦では最初から）。
     const event = p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : TOURNAMENT_STORY_STEPS.get(p.step);
     if (event && !p.craft.tournamentStory?.seen?.includes(event)) {
