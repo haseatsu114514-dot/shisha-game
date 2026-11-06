@@ -594,6 +594,31 @@
           "speaker": "",
           "face": "",
           "text": "つむぎは色の名前を決めず、コップをこちらへ寄せた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん、いつも言ってますよね。客の顔を見るって"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "今日は、私が、はじめさんの顔を見てました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……俺の？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はい。……お水が要る顔でした"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受け取ったコップは、少しだけ冷たかった。言い返す言葉は、見つからなかった。"
         }
       ]
     }

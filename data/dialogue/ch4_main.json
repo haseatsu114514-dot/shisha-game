@@ -1532,6 +1532,134 @@
           "speaker": "",
           "face": "",
           "text": "翌月の休業日も決めることになった。優勝の写真を飾る場所は、そのあとで探した。"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "数日後の開店前。スミさんが、カウンターに一枚の紙を置いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "『スタッフ募集』。スミさんの、角ばった手書きの字だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "人、入れるんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "お前がドバイに行ってる間、一人で回して分かった"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "お前が休めねえ店じゃ、次の店の話もできねえ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "明日、面接だ。お前がやれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺がですか？ スミさんじゃなくて"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "採るのは、お前の下で働くやつだ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "……お前が店長だ。店はお前が回せ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……っ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（店長……。tonariの）"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "自分の店を持つなら、人を見る目も、休みの回し方もいる"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "ここで覚えろ。お前の店の、最初の仕事だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "……はい。やります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（いつかの店が、一歩だけ近くなった。そう思ったら、指先が熱くなった）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その夜、募集の紙を入口に貼った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "翌日。約束の時間ちょうどに、ドアベルが鳴った。"
+        },
+        {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "入口に立っていたのは、見慣れた紫のパーカーだった。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……あの。面接、ここで合ってますか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "つむぎちゃん？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "胸に抱えたいつものタブレットに、履歴書の封筒が一枚、重ねてあった。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "serious",
+          "text": "……募集の紙、見ました。作るほうも、やってみたいんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……座って。今、お水出すね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつもの奥の席ではなく、カウンターの前の椅子。つむぎは、そこに座った。"
         }
       ]
     },
