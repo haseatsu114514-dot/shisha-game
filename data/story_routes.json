@@ -1,7 +1,7 @@
 {
   "version": 2,
   "status": "partially_connected",
-  "comment": "第3章の必須本編は東京到着から全国大会・帰郷まで接続。第3章の任意場面（大会前に読める6件）・前夜デート・前夜の修羅場未遂も接続済み（remake/js/chapters/ch3-story-wiring.js）。ch3_emil_workshopは大会後の寄り道（remake/js/chapters/ch3-aftermath-progress.js）で接続済み。ch3_cigarman_traceは大会後の面が要り未接続。第4章の前夜（同行者・到着済みの恋人とのデート／重なった予定の保留）はremake/js/chapters/ch4-story-wiring.jsで接続済み。第4章の到着場面（別便の恋人・ましろの友人版）は前夜祭の日に接続済み（remake/js/chapters/ch4.js の renderEve）。到着したサメちゃん・ひよりとの夕方（ch4_*_dubai_evening）は、到着の後・前夜祭の前に任意で一度（remake/js/chapters/ch4-progress.js の chapterFourArrivalEveningsDue）。正式ヒロイン一覧・再生順・恋愛場面の条件の正本。実行順はremake/js/chaptersが正。",
+  "comment": "第3章の必須本編は東京到着から全国大会・帰郷まで接続。第3章の任意場面（大会前に読める6件）・前夜デート・前夜の修羅場未遂も接続済み（remake/js/chapters/ch3-story-wiring.js）。ch3_emil_workshopは大会後の寄り道（remake/js/chapters/ch3-aftermath-progress.js）で接続済み。ch3_cigarman_traceは大会後の面が要り未接続。第4章の前夜（同行者・到着済みの恋人とのデート／重なった予定の保留）はremake/js/chapters/ch4-story-wiring.jsで接続済み。第4章の到着場面（別便の恋人・ましろの友人版）は前夜祭の日に接続済み（remake/js/chapters/ch4.js の renderEve）。到着したサメちゃん・ひよりとの夕方（ch4_*_dubai_evening）は、到着の後・前夜祭の前に任意で一度（remake/js/chapters/ch4-progress.js の chapterFourArrivalEveningsDue）。正式ヒロイン一覧・再生順・恋愛場面の条件の正本。実行順はremake/js/chaptersが正。ヌール（DSR20）は第4章のドバイで出会うヒロインで、ドバイに住む（romance.noor.resident）。到着場面は無く（arrival: null）、恋人ならドバイの前夜は同じ街にいる。第5章の打ち上げ・スタッフロール後の修羅場にはテレビ電話で加わり、席には座らない。",
   "heroine_ids": [
     "tsumugi",
     "minto",
@@ -9,7 +9,8 @@
     "ageha",
     "mashiro",
     "samechan",
-    "hiyori"
+    "hiyori",
+    "noor"
   ],
   "romance": {
     "tsumugi": {
@@ -73,6 +74,15 @@
       "arrival": "ch4_hiyori_dubai_girlfriend",
       "near_conflict": "ch3_shuraba_hiyori",
       "talk": "shuraba_talk_hiyori"
+    },
+    "noor": {
+      "date": "tournament_date_noor",
+      "conflict": "shuraba_noor",
+      "epilogue": "epilogue_noor",
+      "date_min_chapter": 4,
+      "arrival": null,
+      "resident": "dubai",
+      "talk": "shuraba_talk_noor"
     }
   },
   "conflict": {

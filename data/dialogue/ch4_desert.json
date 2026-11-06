@@ -1024,7 +1024,7 @@
     },
     {
       "dialogue_id": "confession_noor_accept",
-      "comment": "DSR20 告白を受ける。テレビ電話の約束は、のちの修羅場（テレビ電話で参戦）と恋人のLIMEの前振り。",
+      "comment": "DSR20 告白を受ける。ここで LIME を交換する（_lime_contact_noor）。テレビ電話の約束は、のちの修羅場（テレビ電話で参戦）と恋人のLIMEの前振り。",
       "metadata": {
         "set_romance": "noor",
         "bg": "res://assets/backgrounds/bg_dubai_dunes_dusk.png",
@@ -1070,6 +1070,20 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "毎日、待ってます"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "……あ。その前に、LIMEの交換。まだだった"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_noor"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕日の中で、二人のスマホが小さく鳴った。"
         },
         {
           "speaker": "",

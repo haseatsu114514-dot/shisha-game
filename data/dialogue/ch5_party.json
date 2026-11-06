@@ -44,6 +44,17 @@
       ]
     },
     {
+      "dialogue_id": "ch5_party_noor_call",
+      "comment": "DSR20 打ち上げの途中、ドバイのヌールからお祝いのテレビ電話（恋人が遠くに住むヌールの時。席には座らない）。ヌールと別の恋人がいれば修羅場（shuraba_noor もテレビ電話）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ポケットのスマホが震えた。画面には、ドバイの夕方と、ヌールさんの顔。" },
+        { "speaker": "noor", "face": "smile", "text": "ハジメ、おめでとう！ ……あ、うるさいところにかけちゃった？" },
+        { "speaker": "hajime", "face": "smile", "text": "大丈夫です。みんなに、見せてもいいですか" },
+        { "speaker": "noor", "face": "surprise", "text": "……え、待って、髪、今……" },
+        { "speaker": "", "face": "", "text": "画面を店の中へ向けると、誰かが手を振り、ヌールさんも慌てて手を振り返した。" }
+      ]
+    },
+    {
       "dialogue_id": "ch5_party_shuraba_open",
       "lines": [
         { "speaker": "", "face": "", "text": "隣に座った、その時だった。グラスを置く音が、いくつも重なった。" },
