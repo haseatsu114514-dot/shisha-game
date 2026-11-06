@@ -338,7 +338,9 @@ await suite("ch4-dubai-daily", async check => {
     assert(!lines.some(text => text.includes("店の時より")), "No shop acquaintance without a visit");
     const after = await get(page);
     assert.equal(after.met.master_hookah, true);
-    assert.equal(after.affinity.master_hookah || 0, 0, "The reception itself gives no affection");
+    // 初対面は♥1ちょうど（786fb334）。前夜祭の場面自体は、それ以上の好感度を足さない。
+    assert.equal(after.affinity.master_hookah || 0, 9, "The first sight at the reception gives exactly the initial heart");
+    assert.equal(after.flags._affinity_first_meeting_pending_master_hookah, undefined, "The initial heart is settled exactly once");
   });
 
   // DAY12 の宿の前日リハーサルを受ける側: 本番と同じ一台（調整2回）を作って講評まで読むと記録が残り、
