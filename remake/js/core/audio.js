@@ -395,6 +395,11 @@ export const SE = {
     noise({ dur: sec, vol: 0.09, filter: 900, q: 0.5, sweepTo: 1500 });
     tone({ freq: 150, to: 105, type: "sine", dur: sec, vol: 0.07 });
   },
+  // 飛行機の機窓（motions/flight.js, #2733）: 低く平らな機内のうなり。継ぎ目の音は鳴らさない。
+  flight: (sec = 2.8) => {
+    noise({ dur: sec, vol: 0.08, filter: 320, q: 0.4 });
+    tone({ freq: 92, to: 86, type: "sine", dur: sec, vol: 0.06 });
+  },
   freezeBoom: () => { tone({ freq: 60, to: 30, type: "sine", dur: 0.6, vol: 0.4 }); noise({ dur: 0.5, vol: 0.2, filter: 700, sweepTo: 3000 }); },
 };
 

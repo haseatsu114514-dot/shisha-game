@@ -156,7 +156,7 @@ window.__remake = {
       return Object.fromEntries(Object.keys(kit.ADOPTED_VARIANT).map((k) => [k, kit.motionVariant(k)]));
     },
     // 場面ごとのモーショングラフィックスを本来の背景・会話つきで見る（cheki / tarot / gift / shift / shark / sketch）。
-    // 夜明けの天気は dawn-sun / dawn-cloud / dawn-rain / dawn-sick（DAY3→4）。くじのガラガラは garagara-S / -A / -B / -C、ラストワン賞は garagara-LAST（C賞のあとに続けて見るなら garagara-C+LAST）。章題は chapter-1 / -2 / -4 / -5。※今のセーブを上書きする
+    // 夜明けの天気は dawn-sun / dawn-cloud / dawn-rain / dawn-sick（DAY3→4）。くじのガラガラは garagara-S / -A / -B / -C、ラストワン賞は garagara-LAST（C賞のあとに続けて見るなら garagara-C+LAST）。章題は chapter-1 / -2 / -4 / -5。飛行機の機窓は flight / flight-home。※今のセーブを上書きする
     async motion(name = "cheki") {
       const core = await import("./core/state.js");
       const { play } = await import("./vn/engine.js");
@@ -214,6 +214,13 @@ window.__remake = {
         await setBg(bgUrl(destination === "home" ? "bg_mukai_shop" : "bg_tonari_inside", "day"));
         return motions.shinkansenRide(() => setBg(bgUrl(destination === "home" ? "bg_tonari_inside" : "bg_ch3_train_arrival"), { instant: true }),
           { from: destination === "home" ? "tokyo" : "home", to: destination });
+      }
+      if (name.startsWith("flight")) {
+        // 飛行機の機窓（#2733）: motion("flight") でドバイ行き、motion("flight-home") で帰りの便。
+        const destination = name.split("-")[1] === "home" ? "home" : "dubai";
+        await setBg(bgUrl(destination === "home" ? "bg_dubai_airport_day" : "bg_tonari_inside", "day"));
+        return motions.flightRide(() => setBg(bgUrl(destination === "home" ? "bg_home" : "bg_dubai_airport_day"), { instant: true }),
+          { from: destination === "home" ? "dubai" : "home", to: destination });
       }
       if (name === "shark") {
         await setBg(bgUrl("bg_street", "night"));

@@ -12,6 +12,7 @@
 import { state, save, timeOfDay, markMet } from "../core/state.js";
 import { DB, sceneBg } from "../core/data.js";
 import { modal, setBg, toast, layers } from "../core/ui.js";
+import { flightRide } from "../core/scene-motions.js";
 import { showHud } from "../daily/hud.js";
 import { CAMEL_DAILY_SPOT_ID, CAMEL_SCENES, CH4_CAMEL_SCENE_FILES, camelDailySpot, camelSceneBg } from "./ch4-camel-progress.js";
 import { DESERT_GUIDE, DESERT_SPOT_IDS, desertRevisitSpots, noorConfessionWaiting } from "./ch4-desert-progress.js";
@@ -113,6 +114,9 @@ async function loadDubaiScenes() {
 }
 
 const showBg = (ref, tod) => { const { url, tint } = sceneBg(ref, tod); return setBg(url, { tint }); };
+/** 日本⇄ドバイの便（#2688 A4・#2733）。機窓が覆っている間に、次に読む場面と同じ背景へ替える（同じ絵なので幕を重ねない）。 */
+const fly = (to, ref) => flightRide(() => { const { url, tint } = sceneBg(ref, timeOfDay()); return setBg(url, { tint, instant: true }); },
+  { from: to === "home" ? "dubai" : "home", to });
 
 /** 読み終えたら true。中断・LOADは false（代金・体力・既読を残さない）。 */
 async function read(id, bg, owner) {
@@ -203,6 +207,8 @@ async function goToDubai(owner) {
     ],
   });
   if (go !== "go" || state !== owner) return unused;
+  await fly("dubai", "bg_dubai_airport_day");
+  if (state !== owner) return unused;
   if (!await read("ch5_dubai_go", "bg_dubai_airport_day", owner)) return unused;
   useDubaiTicket(state);
   state.flags._ch2_region = DUBAI;
@@ -216,6 +222,9 @@ async function goToDubai(owner) {
 
 async function goHome(owner) {
   if (!await read("ch5_dubai_back", "bg_dubai_airport_day", owner)) return unused;
+  // 帰りの便の機窓は、ドバイの空港の場面を読んでから見せ、地元の部屋へ着く（往路と向きを逆にする）。
+  await fly("home", "bg_home");
+  if (state !== owner) return unused;
   // 帰りの便は往復の切符に入っている（ここでは払わない）。次の切符入りの手紙は、この日から数えて届く。
   recordDubaiReturn(state);
   state.flags._ch2_region = "home";

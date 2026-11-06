@@ -9,6 +9,7 @@ import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { state, save } from "../core/state.js";
 import { layers, showScreen, setBg, enterScene, chapterTitle, modal, toast } from "../core/ui.js";
+import { flightRide } from "../core/scene-motions.js";
 import { saveFlow } from "../scenes/saves.js";
 import { play, hooks } from "../vn/engine.js";
 import { chapterGrowthChart } from "../daily/status.js";
@@ -205,6 +206,9 @@ async function renderPrep(owner) {
   }
   if (!departChapterFour(state)) throw new Error("ドバイへ出発できません");
   save();
+  // 日本→ドバイの便。機窓が覆っている間に到着の空港の背景へ替える（#2688 A4・#2733）。出発は保存済みなので、LOADで戻っても重ねて見せない。
+  await flightRide(() => setBg(bgUrl(CH4_SCENE_BG.ch4_opening), { instant: true }), { from: "home", to: "dubai" });
+  if (!current(owner)) return;
   await renderStage(owner);
 }
 

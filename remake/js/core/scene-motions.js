@@ -27,6 +27,7 @@ const sketch = () => import("../motions/sketch.js");
 const lime = () => import("../motions/lime.js");
 const train = () => import("../motions/train.js");
 const shinkansen = () => import("../motions/shinkansen.js");
+const flight = () => import("../motions/flight.js");
 const purikura = () => import("../motions/purikura.js");
 
 // 連絡先の交換は一度きり（交換済みの記録が先に付く）。SKIP中でも見せ、動きを減らす設定では
@@ -119,5 +120,14 @@ export async function shinkansenRide(mid, opts = {}) {
 export async function sketchIn(mid, bgUrl) {
   const run = omitMotion() || !bgUrl ? null : await variant("sketch", sketch);
   if (run) await run(mid, bgUrl);
+  else await mid?.();
+}
+
+/** 飛行機に乗る（#2688 A4・Issue #2733）。mid(): 機窓が覆っている間に次の背景へ替える。opts.from/to: "home"|"dubai"。
+ * 電車・新幹線と同じく覆う間は入力を止める。SKIP中は短い版、動きを減らす設定では動かない窓のフェードだけ、テストの高速送りでは省く。 */
+export async function flightRide(mid, opts = {}) {
+  const mod = window.__remake?.vnTest?.turbo ? null : await flight().catch((e) => { console.error(e); return null; });
+  const mode = reducedMotion() ? "still" : document.body.classList.contains("vn-skip") ? "brief" : "full";
+  if (mod) await mod.a(mid, { ...opts, mode });
   else await mid?.();
 }

@@ -2671,6 +2671,24 @@
       }
     },
     {
+      "id": "flight-motion-2733",
+      "title": "Flight window motion for chapters 4 and 5 (#2733)",
+      "kind": "browser",
+      "weight": 0.6,
+      "timeout": 10,
+      "paths": [
+        "remake/js/motions/flight.js",
+        "remake/js/motions/stage.js",
+        "remake/js/core/scene-motions.js",
+        "remake/js/chapters/ch4.js",
+        "remake/js/chapters/ch5-dubai.js",
+        "remake/test/flight_motion_2733.mjs"
+      ],
+      "run": [
+        "node remake/test/flight_motion_2733.mjs"
+      ]
+    },
+    {
       "id": "recorded-se",
       "title": "Recorded sound effects in the browser",
       "kind": "browser",
