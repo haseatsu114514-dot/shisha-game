@@ -2,7 +2,7 @@
 import { DB, bgUrl } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { addStamina, earnStat, paidAction, earnSceneCompletion } from "../core/stats.js";
-import { layers, showScreen, setBg, toast } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { facilityGrowth } from "../daily/spots.js";
 import { readDialogues } from "../core/chapter-data.js";
@@ -40,7 +40,7 @@ export async function visitChapterThreeGym(windowId, { signal = null, isCurrent 
     const eligible = chapterThreeGymAvailability(state, windowId);
     if (!eligible.ok) return false;
     const id = eligible.window.slot ? "ch3_choizap_night" : "ch3_choizap_day";
-    await setBg(bgUrl("bg_choizap", eligible.window.slot ? "night" : "day"), { instant: true });
+    await enterScene(bgUrl("bg_choizap", eligible.window.slot ? "night" : "day"));
     if (!current()) return false;
     showScreen("none", null);
     layers.hud.replaceChildren();

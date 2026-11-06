@@ -44,7 +44,10 @@ export async function boot() {
   window.visualViewport?.addEventListener("resize", fitStage);
   initLayers();
   initGameLayout();
-  applyUiTheme(loadConfig().uiTheme);
+  const cfg = loadConfig();
+  applyUiTheme(cfg.uiTheme);
+  // 設定「揺れ・閃光を減らす」を CSS からも見えるようにする（場面の演出の閃光を省く・#2688 F11）
+  document.body.classList.toggle("reduce-shake", !!cfg.reduceShake);
   const growthParam = new URLSearchParams(location.search).get("growth");
   if (growthParam === "1" || growthParam === "0") setGrowthPreview(growthParam === "1");
   // 自動再生制限: 最初の操作で音を解禁（以後も操作のたびに保険で呼ぶ・軽い）

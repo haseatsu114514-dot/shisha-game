@@ -53,7 +53,7 @@ export async function runAfterParty() {
   }
   if (state !== owner) return false;
   const { url, tint } = sceneBg(BG, "night");
-  await setBg(url, { instant: true, tint });
+  await setBg(url, { tint });
   const read = async id => {
     if (state !== owner) return false;
     const result = await play(id);

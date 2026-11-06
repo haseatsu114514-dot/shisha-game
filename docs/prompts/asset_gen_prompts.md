@@ -16,6 +16,8 @@
 
 この指示はCI30・CI58など過去の「画面左＝緑・右＝赤」の指定より優先する。以下の制作記録と `asset_sources/` 内の当時の生成指示は履歴として保持する。
 
+> 2026-11-06 CV52（#2524）: CONTINUEで新版立ち絵を全員に使うための[新版表情10点（あげは4・ましろ3・凛想3）と新案「記憶の暗室」の背景のCodex用プロンプト](../../asset_sources/ui/continue-v5-20261106/prompts.md)。立ち絵は規格（docs/portrait_standard.md）の英文と4枚の参照を役割付きで渡し、1回1表情。未生成。
+
 > 2026-11-02 CR08: ラクダレースのレース画面のUI素材（調教師のリモコンのボタン・SUVの計器板・掲示板の札・出走表のカード・メダル・判子・遊び方の絵）の[Codex用依頼文](../../asset_sources/ch4-camel-race/ui-request.md)。九分割の縁と透過、文字を描かない条件つき。未生成。
 
 > 2026-11-02 CR06: 第4章ドバイのラクダレース（CAMEL RACE）の[Codex用指示書（背景・ファーリス／ハリールの立ち絵・ラクダとロボット騎手・SUV・砂煙とゲート）](../../asset_sources/ch4-camel-race/README.md)。背景の英文は `tools/bg_prompts.txt` の CR01。未生成。届くまで Canvas 描写で代用中。

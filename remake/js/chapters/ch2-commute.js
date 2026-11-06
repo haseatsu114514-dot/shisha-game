@@ -49,7 +49,7 @@ export async function returnCityHome() {
     const result = await play({ dialogue_id: "__ch2_return_train", lines: [{ speaker: "", face: "", text: `${CH2_CITY_NAME}の駅で、${HOME_CITY_NAME}へ戻る片道切符を200円で買った。` }, { speaker: "hajime", face: "normal", text: "今日もいろいろあったな。家に帰ろう" }] });
     if (state !== owner || !result || result.cancelled) return false;
   }
-  await setBg(bgUrl("bg_home", "night"), { instant: true });
+  await setBg(bgUrl("bg_home", "night"));
   return state === owner;
 }
 

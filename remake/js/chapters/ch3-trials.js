@@ -58,14 +58,14 @@ export async function runChapterThreeTrial(id, { signal = null, isCurrent = () =
   try {
     await loadChapterThreeTrials();
     requireCurrent();
-    await setBg(bgUrl(BG), { instant: true });
+    await setBg(bgUrl(BG));
     if (!trialRecord(owner, id)?.practiceDone) {
       if (!await read(DB.dialogues[trial.intro])) return false;
       const result = await makeTrial(trial, requireCurrent);
       if (!recordTrialPractice(owner, id, result)) return false;
       save();
       requireCurrent();
-      await setBg(bgUrl(BG), { instant: true });
+      await setBg(bgUrl(BG));
     }
     const record = trialRecord(owner, id);
     if (!await read(trialFeedbackDialogue(DB.dialogues[trial.end], record.result))) return false;

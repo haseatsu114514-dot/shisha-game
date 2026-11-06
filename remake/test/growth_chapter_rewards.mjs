@@ -27,7 +27,7 @@ async function runner(name,progress,exposed){
     chapterFourMapModel:map4.chapterFourMapModel,canReflect:()=>false,loverMilestonesDue:()=>[],readLoverMilestone:async()=>false,paidAction:stats.paidAction,
     chapterDay:()=>core.state.day,chapterGrowthNight:async()=>true,createChapterActions:opts=>actions.createChapterActions(opts),
     layers:{hud:{replaceChildren:noop,classList:{remove:noop}}},showScreen:(_id,n)=>{screen=n;},
-    setBg:async()=>{},playBgm:noop,toast:noop,hooks:{},
+    setBg:async()=>{},enterScene:async()=>{},playBgm:noop,toast:noop,hooks:{},
     save:()=>{snapshots.push(JSON.parse(JSON.stringify(core.state)));if(pauseAtSave)owner.active=false;},
     presentNight:async()=>{nightBefore=JSON.parse(JSON.stringify(core.state));growth.settleGrowth();},
     play:async()=>{if(swap){core.newGame();syncBindings();replacement=JSON.stringify(core.state);}return {id:"fixture",visited:[],cancelled:cancel};},
