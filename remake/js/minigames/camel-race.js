@@ -10,6 +10,8 @@ import { el } from "../core/util.js";
 import { SE } from "../core/audio.js";
 import { imgFileUrl } from "../core/img-file.js";
 import { faceIconUrl } from "../core/data.js";
+import { portraitStyle } from "../core/portrait-style.js";
+import { portraitAsset } from "../core/portrait-resolver.js";
 import { RACE, CUE, PLAYER, WHIP, CAMEL_CUPS, camelCup, camelCupQualified, camelMastered, camelExpert, rng, createRace, stepRace, pressVoice, setWhip, whipReady, activeCue, inSpurt, standings, scoreRace,
   POLICIES, PLAYER_CAMEL, RIVAL_PROFILES } from "./camel-race-model.js";
 
@@ -94,10 +96,19 @@ export function loadCamelArt() {
   const load = rel => { const image = new Image(); image.decoding = "async"; image.src = imgFileUrl(rel); return image.decode().then(() => image); };
   // はじめの立ち絵は読めなくてもレースの絵は使う（窓に人を描かないだけ）。
   // 表情は1枚ずつ読み、読めなかった表情は通常の顔で代わりにする（通常も読めなければ窓に人を描かない）。
-  const hajime = Promise.all(HAJIME_FACES.map(face => load(`sprites/characters/hajime/chr_hajime_${face}.webp`).catch(() => null)))
-    .then(images => images[0] ? Object.fromEntries(HAJIME_FACES.map((face, i) => [face, images[i] || images[0]])) : null);
+  const hajime = fetch(new URL("../../data/manifest.json", import.meta.url), { cache: "no-cache" })
+    .then(response => response.ok ? response.json() : null)
+    .then(manifest => {
+      if (!manifest) return null;
+      const portraits = HAJIME_FACES.map(face => portraitAsset(manifest, "hajime", face, portraitStyle()));
+      return Promise.all(portraits.map(portrait => portrait ? loadPortrait(portrait.src).catch(() => null) : null))
+        .then(images => images[0] ? { faces: Object.fromEntries(HAJIME_FACES.map((face, i) => [face, images[i] || images[0]])),
+          metrics: portraits[0] } : null);
+    }).catch(() => null);
+  const loadPortrait = url => { const image = new Image(); image.decoding = "async"; image.src = url; return image.decode().then(() => image); };
   artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), hajime])
-    .then(([camel, jockey, suv, wheel, track, faces]) => ({ camel, jockey, suv, wheel, track, hajime: faces, ground: groundTiles(), skins: camelSkins(camel) }))
+    .then(([camel, jockey, suv, wheel, track, portrait]) => ({ camel, jockey, suv, wheel, track,
+      hajime: portrait?.faces, hajimeMetrics: portrait?.metrics, ground: groundTiles(), skins: camelSkins(camel) }))
     .catch(() => null);
   return artTask;
 }
@@ -1013,9 +1024,15 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   function drawHajime(dx, dy, k) {
     const image = art?.hajime?.[hajimeFace] || art?.hajime?.normal;
     if (!image) return;
+    const metrics = art.hajimeMetrics;
+    const crop = metrics?.style === "new" ? {
+      x: Math.max(0, Math.min(image.width - HAJIME_CROP.w, metrics.ax * image.width - HAJIME_CROP.w / 2)),
+      y: Math.max(0, Math.min(image.height - HAJIME_CROP.h, (1 - metrics.h - metrics.b) * image.height - 21)),
+      w: HAJIME_CROP.w, h: HAJIME_CROP.h,
+    } : HAJIME_CROP;
     const t = (race?.t || 0) + afterGoal();
-    const f = (HAJIME_AT.height * k) / HAJIME_CROP.h;
-    const w = HAJIME_CROP.w * f, h = HAJIME_CROP.h * f;
+    const f = (HAJIME_AT.height * k) / crop.h;
+    const w = crop.w * f, h = crop.h * f;
     // 押している間は前へ乗り出す。走る揺れで少し上下する。
     const lean = race?.player.whipping ? 6 * k : 0;
     const bob = reducedMotion ? 0 : Math.sin(t * 9) * 1.2;
@@ -1023,7 +1040,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     const [left, right, sill] = HAJIME_AT.clip;
     ctx.save();
     ctx.beginPath(); ctx.rect(dx + left * k, dy - 200, (right - left) * k, sill * k + 200); ctx.clip();
-    ctx.drawImage(image, HAJIME_CROP.x, HAJIME_CROP.y, HAJIME_CROP.w, HAJIME_CROP.h, hx, hy, w, h);
+    ctx.drawImage(image, crop.x, crop.y, crop.w, crop.h, hx, hy, w, h);
     ctx.restore();
     // 窓枠に掛けた手のリモコン（アンテナの灯: 声で緑、ムチの間は赤く点滅）。
     const [rx, ry] = HAJIME_AT.remote;

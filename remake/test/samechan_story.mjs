@@ -23,6 +23,11 @@ const context=vm.createContext({AbortController,setTimeout,clearTimeout,Promise,
   }})});
 const dataModule=new vm.SourceTextModule(await read('js/core/data.js'),{context});
 await dataModule.link(async spec => {
+  if (spec === './portrait-resolver.js') {
+    const module = new vm.SourceTextModule(await read('js/core/portrait-resolver.js'), { context });
+    await module.link(() => { throw Error('unexpected portrait-resolver import'); });
+    return module;
+  }
   if (spec === './portrait-style.js') {
     const module = new vm.SourceTextModule(await read('js/core/portrait-style.js'), { context });
     await module.link(() => { throw Error('unexpected portrait-style import'); });

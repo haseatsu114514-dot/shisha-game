@@ -14,7 +14,7 @@ async function module(path) {
   modules.set(path,m);
   await m.link(async (specifier, parent) => {
     const target = new URL(specifier, `file:///${parent.identifier}`).pathname.slice(1);
-    if (target === 'js/core/portrait-style.js') return module(target);
+    if (target === 'js/core/portrait-style.js' || target === 'js/core/portrait-resolver.js') return module(target);
     const source = await read(parent.identifier);
     const statement = source.split('\n').find(line => line.includes(`from "${specifier}"`));
     const exports = statement.match(/\{([^}]+)\}/)[1].split(',').map(s => s.trim().split(/\s+as\s+/)[0]);
@@ -25,6 +25,7 @@ async function module(path) {
 const state = (await module('js/core/state.js')).namespace;
 const data = (await module('js/core/data.js')).namespace;
 const style = (await module('js/core/portrait-style.js')).namespace;
+const resolver = (await module('js/core/portrait-resolver.js')).namespace;
 let passed = 0;
 function test(name, fn) { fn(); passed++; console.log(`PASS ${name}`); }
 const legacy = {faces:['normal','smile','serious','ura_normal','ura_smile'],h:.8,b:0,ax:.4,aspect:.75};
@@ -87,6 +88,16 @@ test('new-only costume keeps same-costume expressions and missing-face fallback'
  assert.equal(data.portraitInfo('tsumugi','baito_smile','classic').face,'normal');
 });
 test('missing variant manifest is backward compatible', () => {delete data.DB.manifest.portraitVariants;state.config.portraitStyle='new';assert.equal(data.portraitInfo('tsumugi','normal').style,'classic');});
+test('mini-game portraits adopt future Noor and Rio manifest entries without file paths', () => {
+ const manifest = {portraits:{noor:legacy,rio:legacy},portraitVariants:{new:{
+  noor:{faces:['normal','smile'],h:.9,b:.05,ax:.51,aspect:.75},
+  rio:{faces:['normal','smile'],h:.88,b:.06,ax:.49,aspect:.75}}}};
+ for(const id of ['noor','rio']) {
+  assert.equal(resolver.resolvePortrait(manifest,id,'smile','new').style,'new');
+  assert.match(resolver.resolvePortrait(manifest,id,'smile','new').rel,/character_variants\/new/);
+  assert.equal(resolver.resolvePortrait(manifest,id,'smile','classic').style,'classic');
+ }
+});
 // 2026-11-06 顔アイコンも会話の立ち絵と同じ画風にする（新バージョンの顔アイコンがある人だけ新バージョン）。
 test('face icons follow the selected portrait style', () => {
  data.DB.manifest.faceIcons=['face_tsumugi.png','face_rio.png','face_minto.png','face_minto_private.png'];

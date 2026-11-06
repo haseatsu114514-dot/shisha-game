@@ -162,7 +162,7 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 .axe-coach-card { display: grid; grid-template-rows: auto minmax(0,1fr) auto; width: min(760px,100%); max-height: 100%; min-height: 0; gap: 16px; padding: 22px; border: 1px solid #b99760; border-radius: 16px; background: linear-gradient(145deg,#26312b,#151e19); box-shadow: 0 18px 70px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.06); }
 .axe-coach-header { display: flex; align-items: center; gap: 13px; min-width: 0; }
 .axe-coach-portrait-frame { position: relative; flex: 0 0 62px; width: 62px; height: 62px; overflow: hidden; border: 1px solid #9c8158; border-radius: 50%; background: #3c4132; }
-.axe-coach-portrait { position: absolute; left: 50%; top: 0; width: 260px; max-width: none; height: auto; transform: translateX(-48.61%); }
+.axe-coach-portrait { --portrait-width: 260px; position: absolute; left: 50%; top: calc(5px - var(--head-ratio) * var(--portrait-width)); width: var(--portrait-width); max-width: none; height: auto; transform: translateX(calc(-1 * var(--portrait-ax))); }
 .axe-coach-identity { min-width: 0; }
 .axe-coach-identity small, .axe-coach-identity strong { display: block; }
 .axe-coach-identity small { margin-bottom: 3px; color: #baa783; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
@@ -255,7 +255,7 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
   .axe-coach-card { padding: 16px; gap: 13px; border-radius: 13px; }
   .axe-coach-header { gap: 10px; }
   .axe-coach-portrait-frame { flex-basis: 52px; width: 52px; height: 52px; }
-  .axe-coach-portrait { width: 220px; }
+  .axe-coach-portrait { --portrait-width: 220px; }
   .axe-coach-identity strong { font-size: 16px; }
   .axe-coach-progress { font-size: 12px; font-weight: 700; }
   .axe-coach-title { font-size: 19px; }
@@ -350,7 +350,7 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
   .axe-coach-card { width: min(760px,100%); padding: 12px 16px; gap: 8px; border-radius: 12px; }
   .axe-coach-header { gap: 10px; }
   .axe-coach-portrait-frame { flex-basis: 42px; width: 42px; height: 42px; }
-  .axe-coach-portrait { width: 180px; }
+  .axe-coach-portrait { --portrait-width: 180px; }
   .axe-coach-identity small { font-size: 12px; font-weight: 700; }
   .axe-coach-identity strong { font-size: 15px; }
   .axe-coach-progress { font-size: 12px; font-weight: 700; }

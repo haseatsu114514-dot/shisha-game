@@ -1,6 +1,8 @@
 // Caller awaits preceding VN. Practice never reads or writes story/save state.
 import { el } from "../core/util.js";
 import { imgFileUrl } from "../core/img-file.js";
+import { portraitStyle } from "../core/portrait-style.js";
+import { portraitAsset } from "../core/portrait-resolver.js";
 import { svg } from "../core/transition-kit.js";
 import { SE, unlockAudio } from "../core/audio.js";
 import { RINGS, KILLS, CLUSTERS, LINE, BLADE, POWER, SWAY, MODES, DIVISIONS, BOARD, RULESET, gaugeAt, axisAt, releaseAimAt, resolveThrow, totalOf, gradeOf, killState, canCall, closuresOf, halfOf } from "./axe-model.js";
@@ -25,7 +27,6 @@ function decodeArt(url) {
 const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_c_800.webp") };
 // Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
 if (typeof Image !== "undefined") decodeArt(ART.board).catch(() => {});
-const faceArt = (id, face) => imgFileUrl("sprites/characters/" + id + "/chr_" + id + "_" + face + ".webp");
 const { x: CX, y: CY, radius: R } = TARGET;
 // Solid plank edges inside the 1254px artwork (alpha 250+, asset_sources/ui/axe-watl-20261101/adoption.json); the transparent margin is not wood.
 const OPAQUE = { left: 69 / 1254, right: 1185 / 1254, top: 61 / 1254, bottom: 1190 / 1254 };
@@ -78,6 +79,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   let shots = match?.player || [], pending = null, called = null, lastAction = -Infinity;
   let actor = "player", matchLines = null, gameRecorded = false;
   let portraitKey = null;
+  let portraitManifest = null;
+  const faceArt = (id, face) => portraitAsset(portraitManifest, id, face, portraitStyle());
   let declareTimer = 0, declareNode = null, declareMarker = null, clearedGoals = new Set();
   let held = 0, focusUntil = -1, focusUsed = false, helpPanel = null, coachPanel = null, coachLines = null, quiver = null;
   const taught = new Set();
@@ -298,11 +301,13 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   window.addEventListener("pagehide", () => cleanup(false), { signal: lifetime.signal });
   loadArt(); frame = requestAnimationFrame(tick); return promise;
   function showFace(face) {
-    const url = faceArt(portraitKey, face);
-    if (portrait.src === url) return;
-    const focus = portraitFocus(opponent, face);
+    const art = faceArt(portraitKey, face);
+    if (portrait.src === art.src) return;
+    const focus = art.style === "new"
+      ? { x: art.ax, y: 1 - art.h - art.b + art.h * 0.16 }
+      : portraitFocus(opponent, face);
     portrait.style.setProperty("--focus-x", focus.x); portrait.style.setProperty("--focus-y", focus.y);
-    portrait.src = url;
+    portrait.src = art.src;
   }
   function openRules() {
     if (helpPanel || coachPanel || phase === "closed") return;
@@ -325,6 +330,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       stamp = null; render(); root.focus();
     };
     coachPanel = coachDialog({ text, title: titles[id], step: ids.indexOf(id) + 1, total: ids.length, kind: id, context: lessonContext,
+      portrait: faceArt("maki", "normal"),
       onNext: () => { close(); if (id === "welcome") teach("target"); else if (id === "finish") cleanup(true); },
       onSkip: () => cleanup(false) });
     coachPanel.dataset.lesson = id;
@@ -340,10 +346,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       .then(response => { if (!response.ok) throw new Error("Axe artwork catalogue unavailable"); return response.json(); })
       .then(manifest => {
         if (phase === "closed") return;
+        portraitManifest = manifest;
         const lessonArt = [];
         if (tutorial) {
           if (!manifest.portraits?.maki?.faces?.includes("normal")) throw new Error("Teacher artwork missing from catalogue");
-          lessonArt.push(decodeArt(faceArt("maki", "normal")),
+          lessonArt.push(decodeArt(faceArt("maki", "normal").src),
             fetch(new URL("../../../data/dialogue/axe_tutorial.json", import.meta.url), { signal: AbortSignal.any([lifetime.signal, timeout.signal]) })
               .then(response => { if (!response.ok) throw new Error("Axe lesson unavailable"); return response.json(); })
               .then(data => {
@@ -359,7 +366,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
           throw new Error("Companion artwork missing from catalogue");
         showFace(companion.faces[0]);
         return Promise.all([
-          ...[...Object.values(ART), ...companion.faces.map(face => faceArt(portraitKey, face))].map(decodeArt),
+          ...[...Object.values(ART), ...companion.faces.map(face => faceArt(portraitKey, face).src)].map(decodeArt),
           ...(versus ? [fetch(new URL("../../../data/dialogue/axe_versus.json", import.meta.url), { signal: AbortSignal.any([lifetime.signal, timeout.signal]) })
             .then(response => { if (!response.ok) throw new Error("Axe match dialogue unavailable"); return response.json(); })
             .then(data => {
