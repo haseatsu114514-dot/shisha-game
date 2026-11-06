@@ -340,10 +340,23 @@ await check('in Tokyo/Dubai, lover notes do not assume hajime is in town; the an
   same(f.entry.pendingLoverLime({ home: false }), [], 'Read once, whichever text it was');
 });
 
+await check('non-lovers and cancelled milestones stay unread', async f => {
+  const s = f.chapterThree([]);
+  same(f.entry.pendingLoverLime(), []);
+  same(f.entry.loverMilestonesDue(['mashiro']), []);
+  assert.equal(await f.entry.readLoverMilestone('mashiro'), false);
+  s.lovers.push('mashiro'); s.loveLevel.mashiro = 1;
+  const controller = new AbortController(); controller.abort();
+  assert.equal(await f.entry.readLoverMilestone('mashiro', { signal: controller.signal }), false);
+  same(s.loverEventsSeen, []);
+});
+
 await check('apart mornings mix in morning_away: not at home, not in Tokyo for Mashiro, not for a lover visiting Tokyo (#2024)', async f => {
   const lines = v => JSON.stringify(v.m);
-  // 文面の決まり: 朝のひとことのある恋人は全員、離れている朝の一言を持つ。地元で会う前提の語を入れない。
-  same(Object.keys(lover.morning_away).filter(id => !id.startsWith('_')).sort(), Object.keys(lover.morning).sort());
+  // 文面の決まり: 地元・東京に住む恋人は全員、離れている朝の一言を持つ。地元で会う前提の語を入れない。
+  // （ドバイに住むヌールの遠距離の文は、地元にいる朝だけの hometown で持つ・DSR20）
+  for (const id of ['tsumugi', 'minto', 'rio', 'ageha', 'mashiro', 'hiyori', 'samechan']) assert(lover.morning_away[id]?.length, id);
+  for (const id of Object.keys(lover.morning_away).filter(id => !id.startsWith('_'))) assert(lover.morning[id], `${id}: has usual mornings`);
   for (const [id, pool] of Object.entries(lover.morning_away)) {
     if (id.startsWith('_')) continue;
     for (const v of pool) {
@@ -445,17 +458,6 @@ await check('a hometown milestone waits while hajime is in Tokyo/Dubai and is re
   const ch4 = fs.readFileSync(path.join(root, 'chapters/ch4.js'), 'utf8');
   assert.match(ch4, /lover\.loverMilestonesDue\([^;]*, \{ home \}\)/);
   assert.match(ch4, /lover\.readLoverMilestone\(id, \{ signal: controller\.signal, home \}\)/);
-});
-
-await check('non-lovers and cancelled milestones stay unread', async f => {
-  const s = f.chapterThree([]);
-  same(f.entry.pendingLoverLime(), []);
-  same(f.entry.loverMilestonesDue(['mashiro']), []);
-  assert.equal(await f.entry.readLoverMilestone('mashiro'), false);
-  s.lovers.push('mashiro'); s.loveLevel.mashiro = 1;
-  const controller = new AbortController(); controller.abort();
-  assert.equal(await f.entry.readLoverMilestone('mashiro', { signal: controller.signal }), false);
-  same(s.loverEventsSeen, []);
 });
 
 await check('chapter runners call the shared entry (no duplicated lover logic)', async () => {

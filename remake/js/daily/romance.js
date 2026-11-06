@@ -287,6 +287,14 @@ const awayFromHome = (value = state) => AWAY_REGIONS.includes(value?.flags?._ch2
 /** この恋人と、今、地元のデートの約束ができるか（ましろが東京に住むのは、出会う第3章から）。 */
 export const hometownDateOpen = (id, value = state) => !awayFromHome(value)
   && !(TOKYO_LOVERS.includes(id) && (value?.chapter || 1) >= 3);
+
+// 恋人の連絡の塩梅（2026-10-31 オーナー「恋人とかはたまに連絡きて欲しい」「ストレスになるレベルで連絡きてる」LM01〜03）
+// - 朝のひとことは3日おき・返事なし（読むだけ）。恋人が何人いても朝に1通まで（長く届いていない恋人から）
+// - デートの誘いは恋人全員あわせて LOVER_INVITE_GAP 日に1回まで（長く会っていない恋人から）
+// - 朝のひとことの2回に1回は、短い一言とスタンプ（lover.json の morningStamp）
+export const LOVER_MORNING_GAP = 3;
+export const LOVER_INVITE_GAP = 4;
+const lastInboxDay = (match) => Math.max(-99, ...(state.inbox || []).filter(match).map((i) => i.day ?? -99));
 /** 東京への訪問で、今その恋人が東京に来ているか（core/tokyo-visits.js の visitingTokyo と同じ判定。読むだけ）。 */
 const visitingTokyo = (id, value = state) => (value?.tokyoVisits?.plans || []).some(plan => plan.characterId === id
   && ["arrived", "staying"].includes(plan.status) && value.day >= plan.arrivalDay && value.day < plan.returnDay);
@@ -299,14 +307,6 @@ function apartFrom(id, home, value = state) {
   if (TOKYO_LOVERS.includes(id) && (value?.chapter || 1) >= 3) return home || value?.flags?._ch2_region === "dubai";
   return !home && !visitingTokyo(id, value);
 }
-
-// 恋人の連絡の塩梅（2026-10-31 オーナー「恋人とかはたまに連絡きて欲しい」「ストレスになるレベルで連絡きてる」LM01〜03）
-// - 朝のひとことは3日おき・返事なし（読むだけ）。恋人が何人いても朝に1通まで（長く届いていない恋人から）
-// - デートの誘いは恋人全員あわせて LOVER_INVITE_GAP 日に1回まで（長く会っていない恋人から）
-// - 朝のひとことの2回に1回は、短い一言とスタンプ（lover.json の morningStamp）
-export const LOVER_MORNING_GAP = 3;
-export const LOVER_INVITE_GAP = 4;
-const lastInboxDay = (match) => Math.max(-99, ...(state.inbox || []).filter(match).map((i) => i.day ?? -99));
 
 /**
  * 今朝届く恋人からの LIME（記念日・デートの誘い・朝のひとこと・試合の朝）。
