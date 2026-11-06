@@ -64,7 +64,8 @@ await suite('minto-delivery',async check=>{
     await page.waitForTimeout(mode==='auto'?400:80);
    }
    await page.waitForFunction(()=>D.core.state.flags._delivery_minto_done);
-   const result=await page.evaluate(()=>({s:D.core.state,before:D.before,trace:D.trace,frames:D.frames,mutations:D.mutations,saved:JSON.parse(localStorage.getItem(D.core.SAVE_KEY))}));
+   const result=await page.evaluate(async()=>({s:D.core.state,before:D.before,trace:D.trace,frames:D.frames,mutations:D.mutations,saved:JSON.parse(localStorage.getItem(D.core.SAVE_KEY)),
+    firstMeetingPts:(await import('./js/core/stats.js')).AFFINITY_RANK_PTS[1]}));
    assert.equal(result.trace[0].speaker,'minto');
    assert(result.frames.length>0,'No rendered frames recorded');
    fs.writeFileSync(`${shots}/${device}-${mode}-${legacy?'legacy':'new'}-frames.json`,JSON.stringify({frames:result.frames,mutations:result.mutations,trace:result.trace},null,2));
@@ -75,7 +76,9 @@ await suite('minto-delivery',async check=>{
    assert(result.trace.some(l=>l.text?.includes('カウンター脇')));
    // 手当はバイト代への上乗せで残る。帰り道の配達は体力を使わない（帰宅後の睡眠回復は増える側だけ）。
    assert.equal(result.s.money,12000); assert(result.s.stamina>=80,`delivery spent stamina: ${result.s.stamina}`);
-   for(const key of ['stats','statXp','affinity','story']) assert.deepEqual(result.s[key],result.before[key],key);
+   for(const key of ['stats','statXp','story']) assert.deepEqual(result.s[key],result.before[key],key);
+   // 配達はみんととの初対面なので、読了で♥1ちょうどになる（786fb334・初対面の好感度は♥1で固定）。ほかの相手は変わらない
+   assert.deepEqual(result.s.affinity,{...result.before.affinity,minto:Math.max(result.before.affinity.minto||0,result.firstMeetingPts)},'affinity');
    assert.equal(result.s.met.minto,true); assert.equal(result.s.flags.known_name_minto,true);
    assert(!result.s.flags._minto_identity_revealed && !result.s.flags._minto_name_known);
    assert.equal(result.saved.flags._delivery_minto_done,true);
