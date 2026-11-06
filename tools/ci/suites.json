@@ -1524,6 +1524,8 @@
         "remake/js/chapters/ch4-dubai-daily.js",
         "remake/js/core/growth.js",
         "data/dialogue/growth_lessons.json",
+        "data/dialogue/ch3_volk.json",
+        "data/dialogue/ch3_rivals.json",
         "remake/test/browser/lesson_consult_coverage.mjs"
       ],
       "run": [
@@ -1602,6 +1604,10 @@
         "data/dialogue/ch5_dubai.json",
         "data/dialogue/ending.json",
         "remake/js/daily/romance.js",
+        "remake/js/daily/dj-club.js",
+        "remake/js/daily/hud.js",
+        "remake/js/minigames/dj.js",
+        "data/dialogue/ch3_club.json",
         "remake/test/browser/ch5_full_flow.mjs"
       ],
       "run": [
@@ -1770,6 +1776,7 @@
         "remake/js/daily/hud.js",
         "data/dialogue/ch3_tokyo_daily.json",
         "data/dialogue/ch3_rivals.json",
+        "data/dialogue/ch3_volk.json",
         "remake/js/minigames/tetsuko-time.js",
         "remake/test/browser/ch3_tokyo_daily.mjs"
       ],

@@ -379,6 +379,8 @@ await suite("ch5-full-flow", async check => {
     for (const pin of ["ch5_tokyo_steve", "ch5_tokyo_volk", "ch5_tokyo_park", "ch5_tokyo_attic", "ch5_tokyo_home", "ch5_tokyo_shop"])
       assert.equal(await page.locator(dt(`pin-${pin}`)).count(), 1, `${pin} is on the Chapter 5 Tokyo map`);
     assert.equal(await page.locator(dt("pin-ch5_call")).count(), 0, "The doctor is called from home");
+    assert.equal(await page.locator(dt("pin-ch5_tokyo_club")).count(), 0, "Club SEAM opens only at night");
+    assert.equal(await page.locator(dt("pin-ch5_tokyo_gym")).count(), 0, "The Tokyo CHOI-ZAP is for members only");
     assert.match(await page.locator(".hud").innerText(), /TOKYO|東京/);
     // 昼: スティーブの店（東京のシーシャ屋は4,000円。帰りの分は取り置かない）。
     await go(page, "ch5_tokyo_steve");
@@ -386,6 +388,10 @@ await suite("ch5-full-flow", async check => {
     state = await get(page);
     assert.equal(state.money, 60000 - 4000, "A Tokyo shisha shop is 4,000 yen (TKP01)");
     assert.equal(state.flags._ch5_tokyo_talks?.ch5_tokyo_steve, 1);
+    // 夜は路地の地下のクラブも出る。店主の針間ヨルに会うまでは名前を伏せた「地下の店」。
+    const club = page.locator(dt("pin-ch5_tokyo_club"));
+    assert.equal(await club.count(), 1, "Club SEAM is on the night map");
+    assert.match(await club.innerText(), /地下の店/); assert.doesNotMatch(await club.innerText(), /SEAM/);
     // 夜: 帰りの配送便は昼だけ（押せない）→ 屋根裏で休んで、翌朝も東京。
     await page.locator(dt("pin-ch5_tokyo_home")).click();
     assert.match(await page.locator(".mi-no").innerText(), /配送便は昼に出る/);
@@ -402,6 +408,65 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.visitedDay?.ch5_tokyo_home, 53, "The van home used the whole day 53");
     assert.equal(state.money, 60000 - 4000, "The van home is free too");
     assert.equal(state.flags._ch5.part, "free", "The Tokyo stay does not move the Chapter 5 story");
+  });
+
+  // #2033: 東京に泊まっている間も、第3章の東京と同じ CHOI-ZAP（会員なら・3日間風邪をひきにくい）とクラブSEAM（夜・時間は使わない）。
+  await check("chapter-five-tokyo-choizap-and-club-seam", async page => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 5, day: 51, slot: 0, phase: "daily", money: 30000, stamina: 100,
+        weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
+        _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1, _gym_member: true,
+        _ch5_region_started: true, _ch2_region: "tokyo", _ch5_tokyo_van: true, _ch5_tokyo_attic: true,
+        _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
+          read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
+          finaleScenes: null, won: null, secondCup: null },
+        _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true };
+      Object.assign(value.met, { mukai_master: true });
+      value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      const fortunePlan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter: 5 });
+      value.flags._fortune_wander = { chapter: 5, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
+      core.saveConfig(); core.save();
+    });
+    await loadSlot(page, 0);
+    const tokyoMap = (day, slot) => page.waitForFunction(([day, slot]) => {
+      const s = window.__remake?.state;
+      return s && s.day === day && s.slot === slot && document.querySelector('.map:not(.done):not([data-revealing="true"])[data-region="tokyo"] [data-test=pin-ch5_tokyo_mukai]')
+        && !document.querySelector("#modal.show");
+    }, [day, slot], { timeout: 60000 });
+    await tokyoMap(51, 0);
+    // 昼: 会員なので東京の CHOI-ZAP に入れる（行動を一つ・体力を使う）。3日間は風邪をひきにくい。
+    const before = await get(page);
+    await go(page, "ch5_tokyo_gym");
+    await tokyoMap(51, 1);
+    let state = await get(page);
+    assert.ok(state.stamina < before.stamina, "The gym uses stamina");
+    assert.deepEqual(state.flags._fit_since, { chapter: 5, day: 51 }, "The Tokyo CHOI-ZAP grants the FIT days in Chapter 5 too");
+    assert.equal(state.visitedDay?.ch5_tokyo_gym, 51);
+    assert.equal(state.money, before.money, "Members pay nothing more");
+    if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled()))
+      assert.ok((state.growth?.xp || 0) > (before.growth?.xp || 0), "A tiring visit earns EXP");
+    // 夜: 地下の店（クラブSEAM）。初めての夜は針間ヨルに会い、メニューから戻っても時間・お金・体力は変わらない。
+    const club = page.locator(dt("pin-ch5_tokyo_club"));
+    assert.match(await club.innerText(), /地下の店/);
+    const night = await get(page);
+    await go(page, "ch5_tokyo_club");
+    await page.locator(dt("dj-club-menu")).waitFor({ timeout: 60000 });
+    state = await get(page);
+    assert.equal(state.met.yoru, true, "Yoru names herself on the first night");
+    assert.equal(state.flags._club_yoru_first_done, true);
+    await page.locator(dt("dj-club-back")).click();
+    await tokyoMap(51, 1);
+    state = await get(page);
+    for (const key of ["day", "slot", "money", "stamina", "chapter", "phase"]) assert.deepEqual(state[key], night[key], key);
+    assert.equal(state.flags._ch2_region, "tokyo");
+    assert.equal(state.flags._ch5.part, "free", "The club does not move the Chapter 5 story");
+    await page.waitForFunction(() => /TOKYO|東京/.test(document.querySelector("#hud.show")?.textContent || ""), null, { timeout: 10000 });
+    assert.match(await page.locator(dt("pin-ch5_tokyo_club")).innerText(), /クラブSEAM/, "Named once Yoru is met");
   });
 
   // IR16・IR17: 第5章は帰郷後なので、第1・2章と同じく恋人のLIMEの誘い→デート（絆が深まる）→節目（lover_events）。
