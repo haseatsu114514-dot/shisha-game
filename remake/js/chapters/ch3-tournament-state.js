@@ -24,7 +24,7 @@ function rivalQuality(p) {
   return version === 1 ? LEGACY_RIVAL_QUALITY : RIVAL_QUALITY;
 }
 
-// 柑橘への好みと、直後の一口との比較は別。須井は台本どおり水を飲む。
+// 柑橘への好みと、直後の一口との比較は別。伏見は台本どおり水を飲む。
 export const JUDGE_PROFILES = Object.freeze({
   emil: Object.freeze({ prefWeight: 0.20, citrus: -1, contrast: -2, waterChance: 0.25 }),
   dr_kemuri: Object.freeze({ prefWeight: 0.15, citrus: 2, contrast: 2, waterChance: 0.50 }),

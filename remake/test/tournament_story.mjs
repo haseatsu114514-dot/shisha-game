@@ -141,7 +141,7 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
   assert.equal(tournamentStoryLeadIn({...base,chapter},event),null,`chapter${chapter} keeps its own round-end scenes`);
  assert.equal(JSON.stringify(c2),before,'Round-end call must not alter craft/results');
 }
-// #2031: 第4章（世界大会）の制作中の掛け合い。審査員は須井・エミル・太陽、対戦相手はなる・王煙楼・シェイク。
+// #2031: 第4章（世界大会）の制作中の掛け合い。審査員は伏見・エミル・太陽、対戦相手はなる・王煙楼・シェイク。
 {
  const c4={...cs,chapter:4},before=JSON.stringify(c4);
  const say=(event,context,c=c4)=>tournamentStoryDialogue(c,event,()=>0,context);
@@ -154,7 +154,7 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
  const events=[['opening'],['packed'],['waiting'],['interlude1',{rank:1,leader:'hajime'}],['interlude1',{rank:3,leader:'sheikh'}],
   ['interlude1',naruLead],['interlude1',naruTieMe],['interlude1',naruTieOther],['interlude1',{rank:3}],['interlude1'],['interlude2'],
   ['interlude2',{rank:1,leader:'hajime'}],['interlude2',naruLead],['interlude2',naruTieMe],['interlude2',naruTieOther],['interlude2',{rank:2,leader:'sheikh'}]];
- // なるが先頭だと言う行。言ってよいのは、直前の途中順位で本当になるが先頭のときだけ（2026-11-02 なるを強くする）。
+ // なるが先頭だと言う行。言ってよながは、直前の途中順位で本当になるが先頭のときだけ（2026-11-02 なるを強くする）。
  // 持ち点が同じなら「先頭に並んだ」とだけ言い、単独の先頭とは言わない（盤には同じ持ち点が並んで見える）。
  const naruTop=/なる(選手)?が、?(先頭|トップ|リード|前)|先頭(は|に並ぶのは)、?なる|先頭に、?なる/,sole=/なる選手が先頭|先頭は、なる/,tie=/先頭に並/;
  for (const [event,context] of events) {

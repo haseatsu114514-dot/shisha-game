@@ -360,8 +360,8 @@ export const LOADING_COMICS = [
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2374:allcast-sui-stamp-card）",
     caption: "C.STATIONは、誰でも入りやすい店です。",
     panels: [
-      { src: imgFileUrl("loading/sui-stamp-card-1.webp"), alt: "黒いスーツの須井が、名刺のような紙を差し出して「須井だ。」。はじめは緊張して受け取り「会長さん……」。" },
-      { src: imgFileUrl("loading/sui-stamp-card-2.webp"), alt: "はじめが受け取った紙は、マスが並んだスタンプカード。須井は真顔のまま。はじめ「スタンプカードだ。」。" },
+      { src: imgFileUrl("loading/sui-stamp-card-1.webp"), alt: "黒いスーツの伏見が、名刺のような紙を差し出して「伏見だ。」。はじめは緊張して受け取り「会長さん……」。" },
+      { src: imgFileUrl("loading/sui-stamp-card-2.webp"), alt: "はじめが受け取った紙は、マスが並んだスタンプカード。伏見は真顔のまま。はじめ「スタンプカードだ。」。" },
     ],
   },
   {
@@ -397,10 +397,10 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2399:allcast-sui-long-review）",
-    caption: "審査員長の須井会長は、口数より感想が多い人。",
+    caption: "審査員長の伏見会長は、口数より感想が多い人。",
     panels: [
-      { src: imgFileUrl("loading/sui-long-review-1.webp"), alt: "店のカウンターで、はじめが紅茶とお菓子を前に「感想、ください。」。腕を組んだ須井が「一言で済む。」。" },
-      { src: imgFileUrl("loading/sui-long-review-2.webp"), alt: "須井が巻物を広げると、講評の紙が店の奥まで長く続き、はじめはその紙にぐるぐる巻きにされている。はじめ「一言じゃない。」。" },
+      { src: imgFileUrl("loading/sui-long-review-1.webp"), alt: "店のカウンターで、はじめが紅茶とお菓子を前に「感想、ください。」。腕を組んだ伏見が「一言で済む。」。" },
+      { src: imgFileUrl("loading/sui-long-review-2.webp"), alt: "伏見が巻物を広げると、講評の紙が店の奥まで長く続き、はじめはその紙にぐるぐる巻きにされている。はじめ「一言じゃない。」。" },
     ],
   },
   {
@@ -451,7 +451,7 @@ export const LOADING_COMICS = [
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2399:allcast-samechan-watermelon-bite）",
     caption: "サメちゃんは、笑うとギザ歯が見える店主です。",
     panels: [
-      { src: imgFileUrl("loading/samechan-watermelon-bite-1.webp"), alt: "海辺の店で、はじめが丸ごとのスイカを抱えて「スイカ、切ります？」。サメのパペットを持ったサメちゃんが「そのままでよいのじゃ。」。" },
+      { src: imgFileUrl("loading/samechan-watermelon-bite-1.webp"), alt: "海辺の店で、はじめが丸ごとのスイカを抱えて「スイカ、切ります？」。サメのパペットを持ったサメちゃんが「そのままでよながじゃ。」。" },
       { src: imgFileUrl("loading/samechan-watermelon-bite-2.webp"), alt: "スイカにサメの歯型そのままのギザギザの大きなかじり跡。サメちゃんは満足げにもぐもぐしている。はじめ「歯型がサメだ。」。" },
     ],
   },

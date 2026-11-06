@@ -18,7 +18,7 @@ export const RIVAL_QUALITY = { ageha: 77, kumicho: 80, rei: 78 };
 // maxPrefDelta は設定パラメータではなく、BASE_PREF_SCALE * prefWeight から一意に導出する。
 export const BASE_PREF_SCALE = 20;
 export const JUDGE_PROFILES = Object.freeze({
-  sui: Object.freeze({ id: "sui", label: "須井", qualityWeight: 0.90, prefWeight: 0.10 }),
+  sui: Object.freeze({ id: "sui", label: "伏見", qualityWeight: 0.90, prefWeight: 0.10 }),
   dr_kemuri: Object.freeze({ id: "dr_kemuri", label: "チャコール博士", qualityWeight: 0.85, prefWeight: 0.15 }),
   maezono: Object.freeze({ id: "maezono", label: "上園", qualityWeight: 0.78, prefWeight: 0.22 }),
 });
