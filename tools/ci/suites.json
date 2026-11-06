@@ -2733,8 +2733,8 @@
       ]
     },
     {
-      "id": "portrait-shop-fallback",
-      "title": "縦持ちDS風の章カード・レモン仕入れ・ショップ入口",
+      "id": "portrait-shop-rotate-guard",
+      "title": "縦持ちDS風の章カード・ショップ・ショップ入口の回転ガード",
       "kind": "browser",
       "weight": 1,
       "timeout": 5,

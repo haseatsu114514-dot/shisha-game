@@ -47,12 +47,9 @@ export function initGameLayout() {
     const ready = getComputedStyle(document.documentElement).getPropertyValue("--game-layout-ready").trim() === "1";
     tried ||= inGame && mode === "ds";
     const active = inGame && mode === "ds" && ready && !!view;
-    // 未対応画面のうち実測された導線だけ、縦持ちでも通常画面を操作できるようにする。
-    const fallback = inGame && mode === "ds" && ready && !view && ["none", "shop", "shop-entry"].includes(screen);
     const wasActive = body.classList.contains("game-ds");
     const previousView = body.dataset.dsView;
     body.classList.toggle("game-ds", active);
-    body.classList.toggle("game-ds-fallback", fallback);
     if (wasActive !== active || active && previousView !== view) {
       stage.scrollTop = stage.scrollLeft = 0;
       viewport.scrollTop = viewport.scrollLeft = 0;
