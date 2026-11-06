@@ -294,6 +294,10 @@
             "text": "ようこそ、迷える旅人。俺はアダム。エデンの園の主にして、禁断の果実（ダブルアップル）の守護者だ"
           },
           {
+            "type": "set_flag",
+            "flag": "known_name_adam"
+          },
+          {
             "speaker": "adam",
             "face": "normal",
             "text": "……お前も、甘き誘惑に囚われに来たか？"
