@@ -46,7 +46,7 @@
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……今日のこと、ノートに描きます。……２人の、いちばん最初のページに"
+          "text": "……今日のこと、ノートに描きます。……ふたりの、いちばん最初のページに"
         },
         {
           "speaker": "hajime",
@@ -69,7 +69,8 @@
       "dialogue_id": "lover_tsumugi_lv2",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_home.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -118,7 +119,8 @@
       "dialogue_id": "lover_tsumugi_lv3",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -208,7 +210,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "つむぎちゃんも、俺を見てるよ、……俺まで、照れる"
+          "text": "つむぎちゃんだって、俺を見てるよ。……こっちまで、照れる"
         },
         {
           "speaker": "tsumugi",
@@ -247,7 +249,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "画面の中で、２つの煙がほどけきらずに混ざり合っていた。水色に、淡いオレンジが少し。"
+          "text": "画面の中で、二つの煙がほどけきらずに混ざり合っていた。水色に、淡いオレンジが少し。"
         },
         {
           "speaker": "tsumugi",
@@ -306,7 +308,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も、つなぐタイミングばっかり考えてました"
+          "text": "俺も、つなぐタイミングばっかり考えてた"
         },
         {
           "speaker": "minto",
@@ -329,7 +331,8 @@
       "dialogue_id": "lover_minto_lv2",
       "metadata": {
         "bg": "res://assets/backgrounds/peppermint.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -378,7 +381,8 @@
       "dialogue_id": "lover_minto_lv3",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_home.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -422,7 +426,8 @@
       "dialogue_id": "lover_minto_lv4",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_home.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -461,7 +466,8 @@
       "dialogue_id": "lover_minto_lv5",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_home.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -477,7 +483,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……うん。こうして２人でぼーっとしてる時間、好きだな"
+          "text": "……うん。こうして二人でぼーっとしてる時間、好きだな"
         },
         {
           "speaker": "minto",
@@ -505,7 +511,8 @@
       "dialogue_id": "lover_rio_lv1",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_cafe.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -1430,7 +1437,8 @@
       "dialogue_id": "lover_hiyori_lv1",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_axe_lounge_night.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -1506,7 +1514,8 @@
       "dialogue_id": "lover_hiyori_lv2",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -1757,7 +1766,8 @@
       "dialogue_id": "lover_hiyori_lv5",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_home_night.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {

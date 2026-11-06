@@ -39,6 +39,7 @@ const TONARI_SLOTS = Object.freeze({
   ch5_free_tonari_practice: [1],
 });
 const PRACTICE = "ch5_free_tonari_practice";
+const MASHIRO_VISIT = "ch5_free_mashiro_visit";
 
 /** 博士に連絡する（勝負の日を決める）。家の電話から。 */
 export const CH5_CALL_SPOT = Object.freeze({
@@ -79,8 +80,9 @@ export function chapterFiveDailyDefinition(io) {
     nightEvents: {},
     tournamentName: "博士との勝負",
     undatedNote: "博士との勝負の日は、まだ決まっていない",
-    // 告白は第1〜3章の物語なので、第5章では夜に告白の場面を始めない。恋人の誘いとデートは開いている（IR16）。
-    confessions: false,
+    // 夜の帰り道の告白は、第4章までに恋愛ルートに入った相手だけ（第5章で初めて届いた締めくくりでは告白しない・
+    // romance.js の romanceRouteOpen）。第3・4章の出発前と東京・ドバイで持ち越した告白が、帰郷後の地元の夜に届く
+    // （IR33・#2024。東京・ドバイへ出ている夜は romance.js の confessionHeld が持ち越す）。恋人の誘いとデートも開いている（IR16）。
     mapOptions: () => ({
       regionId: currentRegion(),
       regions: [
@@ -185,6 +187,8 @@ async function performChapterFiveSpot(spot, io, options = {}) {
     if (!scene) return null; // いつもの tonari（バイト・練習）
     if (!await io.readAndCommit(scene.id)) return { used: false, exerted: false };
     if (scene.id === PRACTICE) await runPrep(io);
+    // 恋人のましろは、この訪問の後に未読の節目を一つだけ読む（#2024 A2。末尾の続きは ch5.js の readScene が足す）。
+    if (scene.id === MASHIRO_VISIT && (state.lovers || []).includes("mashiro")) await io.readLoverMilestone?.("mashiro");
     return { used: true, exerted: false };
   }
   if (spot.id === "adam" && !chapterFiveRead(state, "ch5_free_eden_adam")

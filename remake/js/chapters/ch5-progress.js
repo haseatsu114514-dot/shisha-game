@@ -33,6 +33,8 @@ export const CH5_SCENE_BG = Object.freeze({
   ch5_free_mashiro_visit: "bg_tonari_inside_day",    // 仮置き bg（台本コメント: tonari・昼）
   ch5_free_first_visitor: "bg_tonari_inside",        // 仮置き bg（台本コメント: tonari・夕）
   ch5_free_tonari_practice: "bg_tonari_inside_night", // 仮置き bg（台本コメント: tonari・夜）
+  ch5_free_mashiro_visit_lover: "bg_tonari_inside_day",        // ましろの訪問の末尾に続く（表示は親場面の bg）
+  ch5_free_mashiro_visit_lover_memory: "bg_tonari_inside_day",
   ch5_free_eden_adam: "bg_eden_shop",                // #1588 EDENの任意場面（第1・2章のEDENと同じ背景）
   ch5_prep_trial_heat: "bg_tonari_inside_night",     // 仮置き bg（閉店後の試作。以下 ch5_prep_* も同じ）
   ch5_prep_trial_pack: "bg_tonari_inside_night",
@@ -72,6 +74,7 @@ export const CH5_SCENE_BG = Object.freeze({
   epilogue_mashiro: "bg_tonari_inside_night",        // 仮置き bg
   epilogue_samechan: "bg_tonari_inside_night",       // 仮置き bg
   epilogue_hiyori: "bg_tonari_inside_night",         // 仮置き bg
+  epilogue_noor: "bg_tonari_inside",                 // 台本の「夕方のtonari」
   ending_daily_smoke: "bg_tonari_inside",            // 台本メタデータの指定（bg_tonari_inside）に一致
   ending_salaryman_name: "bg_tonari_inside_night",
   // スタッフロールの後の修羅場（IR32）。台本の「後日のtonari。閉店後の店」に合わせて夜の tonari。
@@ -83,6 +86,7 @@ export const CH5_SCENE_BG = Object.freeze({
   shuraba_mashiro: "bg_tonari_inside_night",
   shuraba_samechan: "bg_tonari_inside_night",
   shuraba_hiyori: "bg_tonari_inside_night",
+  shuraba_noor: "bg_tonari_inside_night",            // ヌールはテレビ電話で加わる（店のカウンターのスマホ）
   shuraba_accountability: "bg_tonari_inside_night",
   ending_relationship_pending: "bg_tonari_inside_night",
   // 一人ずつの話し直し。台本の書き出しの場所に近い既存 bg（専用素材が無いものは仮置き）。
@@ -93,6 +97,7 @@ export const CH5_SCENE_BG = Object.freeze({
   shuraba_talk_mashiro: "bg_cafe_day",               // 仮置き bg（お茶を頼んで待つ席）
   shuraba_talk_samechan: "bg_street_night",          // 仮置き bg（閉めた後の店先）
   shuraba_talk_hiyori: "bg_street_night",            // 仮置き bg（仕事帰り）
+  shuraba_talk_noor: "bg_home_night",                // 部屋からドバイへのテレビ電話
 });
 
 // ---- BGM の対応表（節目だけ切り替える。無い場面は tonari）---------------------------
@@ -109,9 +114,9 @@ export const CH5_SCENE_BGM = Object.freeze({
   // スタッフロールの後の修羅場と話し直し（IR32）は、店の曲を流さず沈んだ既存曲（仮置き）。
   ...Object.fromEntries([
     "shuraba_open", "shuraba_tsumugi", "shuraba_minto", "shuraba_rio", "shuraba_ageha", "shuraba_mashiro",
-    "shuraba_samechan", "shuraba_hiyori", "shuraba_accountability", "ending_relationship_pending",
+    "shuraba_samechan", "shuraba_hiyori", "shuraba_noor", "shuraba_accountability", "ending_relationship_pending",
     "shuraba_talk_tsumugi", "shuraba_talk_minto", "shuraba_talk_rio", "shuraba_talk_ageha", "shuraba_talk_mashiro",
-    "shuraba_talk_samechan", "shuraba_talk_hiyori",
+    "shuraba_talk_samechan", "shuraba_talk_hiyori", "shuraba_talk_noor",
   ].map(id => [id, "bgm_taste_distant"])),
 });
 
@@ -131,6 +136,12 @@ export const CH5_FREE_SCENES = Object.freeze([
   { id: "ch5_free_tonari_practice", label: "閉店後の練習", location: "tonari" },
   { id: "ch5_free_eden_adam", label: "二つのダブルアップル", location: "EDEN" },
 ].map(scene => Object.freeze(scene)));
+
+// 恋人のましろの来訪で、訪問の末尾に続ける台本（#2024 A2。使い方は下の chapterFiveLoverEcho）。
+export const CH5_MASHIRO_LOVER_ECHO = Object.freeze({
+  visit: "ch5_free_mashiro_visit_lover",
+  memory: "ch5_free_mashiro_visit_lover_memory",
+});
 
 // 閉店後の試作（#1666）。「閉店後の練習」を読んだあと、何を試すか→スミさんが吸って返す→
 // 直すか、そのまま手に覚えさせるかを選ぶ。能力値・日・体力は動かさない（成長は自由行動のみ。
@@ -169,7 +180,7 @@ export const CH5_AFTERMATH = Object.freeze([
 export const CH5_ENDING_IDS = Object.freeze([
   "ending_start", "ending_normal",
   "epilogue_tsumugi", "epilogue_minto", "epilogue_rio", "epilogue_ageha",
-  "epilogue_mashiro", "epilogue_samechan", "epilogue_hiyori",
+  "epilogue_mashiro", "epilogue_samechan", "epilogue_hiyori", "epilogue_noor",
   "ending_daily_smoke", "ending_salaryman_name",
 ]);
 
@@ -181,10 +192,12 @@ export const CH5_POST_ENDING = Object.freeze({
 export const CH5_CONFLICT_SCENES = Object.freeze({
   tsumugi: "shuraba_tsumugi", minto: "shuraba_minto", rio: "shuraba_rio", ageha: "shuraba_ageha",
   mashiro: "shuraba_mashiro", samechan: "shuraba_samechan", hiyori: "shuraba_hiyori",
+  noor: "shuraba_noor", // ドバイからテレビ電話で（DSR20）
 });
 export const CH5_TALK_SCENES = Object.freeze({
   tsumugi: "shuraba_talk_tsumugi", minto: "shuraba_talk_minto", rio: "shuraba_talk_rio", ageha: "shuraba_talk_ageha",
   mashiro: "shuraba_talk_mashiro", samechan: "shuraba_talk_samechan", hiyori: "shuraba_talk_hiyori",
+  noor: "shuraba_talk_noor",
 });
 const TALK_OWNER = Object.freeze(Object.fromEntries(Object.entries(CH5_TALK_SCENES).map(([id, scene]) => [scene, id])));
 const CONFLICT_REACTIONS = Object.values(CH5_CONFLICT_SCENES);
@@ -197,6 +210,7 @@ export const CH5_SCENE_FILES = Object.freeze({
     ...CH5_FREE_SCENES.map(scene => scene.id),
     ...PREP_TRIAL_IDS.flatMap(trial => [chapterFivePrepScene("trial", trial), chapterFivePrepScene("adjust", trial)]),
     chapterFivePrepScene("keep"), ...PREP_ECHO_IDS,
+    ...Object.values(CH5_MASHIRO_LOVER_ECHO),
     "ch5_schedule_contact", "ch5_timeout",
     ...Object.values(CH5_MATCH_SCENES),
     ...CH5_AFTERMATH.map(scene => scene.id),
@@ -367,6 +381,17 @@ export function chapterFivePrepEcho(value, id) {
   if (id === CH5_MATCH_SCENES.beforeSecond) return [prepEchoId("recall", prep)];
   if (id === CH5_AFTERMATH[CH5_AFTERMATH.length - 1].id) return [prepEchoId("answer", prep)];
   return [];
+}
+
+// ---- 恋人のましろの来訪（#2024 A2・2026-11-05 オーナー決定 (B)）---------------------------
+// ましろは東京に住むので第5章の地元のデートに誘わず、第5章の東京にも出ない（FIN10）。恋人の節目（lover_events の
+// lover_mashiro_lv*）は、第5章で一度だけ会える tonari の訪問（ch5_free_mashiro_visit）につなぐ。
+// 恋人のときだけ訪問の末尾に続きを読み（読了の確定は親場面と一緒）、未読の節目があれば思い出す一拍を足す。
+// 節目そのものは読了・確定の後に ch5-daily.js が readLoverMilestone で一つだけ読む。フラグ・保存項目は増やさない。
+/** 場面の末尾に続ける恋人の台本。milestoneDue＝ましろに未読の節目がある（romance.js の loverMilestoneDue）。 */
+export function chapterFiveLoverEcho(value, id, { milestoneDue = false } = {}) {
+  if (id !== "ch5_free_mashiro_visit" || !(value?.lovers || []).includes("mashiro")) return [];
+  return milestoneDue ? [CH5_MASHIRO_LOVER_ECHO.visit, CH5_MASHIRO_LOVER_ECHO.memory] : [CH5_MASHIRO_LOVER_ECHO.visit];
 }
 
 // ---- 節目の LIME（#1668 2-8）--------------------------------------------------------

@@ -1808,6 +1808,7 @@
         "remake/js/core/ui.js",
         "remake/js/core/chapter-title-art.js",
         "remake/css/base.css",
+        "remake/css/motions/chapter-title.css",
         "remake/img/ui/chapters/**",
         "remake/chapter-titles-preview.html",
         "remake/test/browser/chapter_titles.mjs"
