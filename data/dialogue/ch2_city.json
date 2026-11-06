@@ -761,7 +761,7 @@
         {
           "speaker": "staff_choizap",
           "face": "",
-          "text": "本番は十三日後。当日の競技は、四名が同時に作る一回の勝負です"
+          "text": "本番まで、あと{daysLeft}日です。当日の競技は、四名が同時に作る一回の勝負です"
         },
         {
           "speaker": "staff_choizap",

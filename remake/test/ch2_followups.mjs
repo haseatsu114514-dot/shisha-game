@@ -120,6 +120,13 @@ for (const id of ids) {
         heartLevel = entry.heart - 1; await visit(id);
         assert(isRepeat(id, played.at(-1)), `${entry.scene} waits for ♥${entry.heart}`);
         assert.equal(ch2VisitDone(state.flags, id, entry), false);
+        if (entry.after) {
+          // #2720: ♥が届いても、前提の出来事（組長♥3はDAY5夜の味の不調）を読むまではrepeat
+          heartLevel = entry.heart; await visit(id);
+          assert(isRepeat(id, played.at(-1)), `${entry.scene} waits for ${entry.after}`);
+          assert.equal(ch2VisitDone(state.flags, id, entry), false);
+          state.flags[entry.after] = true;
+        }
         heartLevel = entry.heart; const money = state.money; await visit(id);
         assert.equal(played.at(-1), entry.scene); assert.equal(ch2VisitDone(state.flags, id, entry), true);
         assert.equal(state.money, money - 3000);
@@ -256,6 +263,7 @@ assert(loaderDB.dialogues.remake_ch2_kumicho_sento);
 for (const id of ["kumicho", "rei"]) {
   await setup(); DB.dialogues = { ...loaderDB.dialogues }; heartLevel = 5;
   state.money += 60000;
+  for (const entry of CH2_VISIT_STORIES[id]) if (entry.after) state.flags[entry.after] = true;
   const before = structuredClone(state);
   const sequence = [...CH2_VISIT_STORIES[id].map(entry => entry.scene), "repeat", "repeat"];
   for (const scene of sequence) {
@@ -273,6 +281,24 @@ for (const id of ["kumicho", "rei"]) {
 }
 console.log("PASS: actual preparation/loader, three owners, old saves, once-only followups, cancellation/LOAD, atomic preflight");
 
+// #2720: 組長♥3（「味は遠い」）は味の不調の後だけ。フラグの無い旧セーブもDAY6以降は待たせない（締めくくりへ届く）。
+{
+  const list = CH2_VISIT_STORIES.kumicho, at = list.findIndex(entry => entry.after);
+  assert.equal(list[at]?.scene, "ch2_kumicho_fourth"); assert.equal(list[at].after, "_ch2_taste_distant");
+  assert.equal(CH2_VISIT_STORIES.rei.some(entry => entry.after), false, "rei keeps heart-only stages");
+  const spot = module.namespace.PREPARATION_SPOTS.find(s => s.charId === "kumicho");
+  for (const [chapterDay, expected] of [[4, "repeat"], [5, "repeat"], [6, list[at].scene]]) {
+    await setup(); state.money += 60000; heartLevel = 5; played = [];
+    for (const entry of list.slice(0, at)) {
+      if (entry.done) (state.flags[entry.done] ||= {}).kumicho = true;
+      else state.flags[`_ch2_read_${entry.scene}`] = true;
+    }
+    state.day = 15 + chapterDay - 1; assert.notEqual(state.day % 7, spot.closedOn, "pick open days");
+    assert.equal((await visit("kumicho")).used, true, `DAY${chapterDay}`);
+    if (expected === "repeat") assert(isRepeat("kumicho", played.at(-1)), `DAY${chapterDay}: ${played.at(-1)}`);
+    else assert.equal(played.at(-1), expected, `DAY${chapterDay}`);
+  }
+}
 // #2027: 神崎・レヰの小会話は4種を巡回し、その前だけ昼夜の店のあいさつ。訪問列を読み終えた♥5で締めくくり、定休日は入れない。
 const allStoriesRead = id => { for (const entry of CH2_VISIT_STORIES[id]) {
   if (entry.done) (state.flags[entry.done] ||= {})[id] = true; else state.flags[`_ch2_read_${entry.scene}`] = true;
