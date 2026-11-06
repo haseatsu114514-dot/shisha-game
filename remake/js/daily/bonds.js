@@ -261,10 +261,13 @@ const beforeTokyoDeparture = () => state.chapter === 3 && !!state.flags?._ch3_pr
  * スティーブ（#2028）に Smoke & Glory で会える間か。第3章の東京に着いてから、大会後の後日談でなるへの報告を読み終えるまで
  * （ch3-aftermath-progress.js の CH3_AFTERMATH_FINALES と同じ窓。煙幕の片づけの朝からは帰り支度で、その夜に地元へ帰る）。
  * 段階の番号は CH3_AFTERMATH_SCENES の ch3_naru_reconcile の写し（vm で読む試験の依存を増やさない。ch3_aftermath.mjs で照合）。
+ * なるへの報告の後にピザとシーシャの夜が開く時（_ch3_naru_party_ready）は、その夜の画面に寄り道が無いので会えない扱い
+ * （スティーブの授業の窓 CH3_AFTERMATH_LESSONS と同じ）。
  */
 export const STEVE_LAST_AFTERMATH_STAGE = 2;
 const steveInReach = () => {
   if (!chapterFeatureEnabled(state.chapter, "steveBond") || beforeTokyoDeparture() || state.flags._ch3_cleared) return false;
+  if (state.flags._ch3_naru_party_ready) return false;
   const stage = state.flags._ch3_aftermath?.stage;
   return stage === undefined || Number.isInteger(stage) && stage <= STEVE_LAST_AFTERMATH_STAGE;
 };

@@ -703,6 +703,11 @@ await check('Steve (#2028): ♥5 finale after the LIME detour and the timer outi
   assert.equal(f.bonds.finaleDue('steve'), true);
   s.flags._ch3_aftermath = { version: 3, winDay: 40, stage: f.bonds.STEVE_LAST_AFTERMATH_STAGE };
   assert.equal(f.bonds.finaleDue('steve'), true, 'the day after the win, before the cleanup morning');
+  // なるへの報告の後にピザとシーシャの夜が開く時、その夜の画面には寄り道が無いので、締めくくりも MENU の約束も出さない。
+  s.flags._ch3_naru_party_ready = true;
+  assert.equal(f.bonds.finaleDue('steve'), false, 'the party night has no detour to Smoke & Glory');
+  assert.equal(f.bonds.finaleReachable('steve'), false);
+  delete s.flags._ch3_naru_party_ready;
   s.flags._ch3_aftermath.stage += 1;
   assert.equal(f.bonds.finaleDue('steve'), false, 'from the cleanup morning he cannot be met');
   assert.equal(f.bonds.finaleReachable('steve'), false);

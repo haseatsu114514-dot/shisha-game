@@ -23,6 +23,8 @@ export const optionalReadFlag = id => `_ch3_read_${id}`;
 // unsettled=その人物との関係が告白の返事でまだ着地していない間だけ出す（恋人・友達のままなら出さない）。
 // heart=その人物の通常好感度がこの段階（♥）以上の時だけ出す。恋人の絆は数えない。
 // host=寄り道の相手（行動の経験値の鍵）。省略時はその場所の主（ch3-tokyo-daily.js の OPTIONAL_HOST）。
+// outings=その外出（ch3-outing-progress.js の TOKYO_OUTINGS）をこの回数以上済ませた時だけ出す。
+// outingsUntil の必須場面を読んだ後は、その外出が終わるので回数を問わない。
 export const CH3_OPTIONAL_SCENES = Object.freeze({
   ch3_minto_small_lies: { file: "ch3_double_apple", label: "みんとからの夜の通話", location: "mukaiの裏口", bg: "bg_street_night" },
   // ましろの名乗りはむかい到着の場面。到着前に、彼女の出る噂話を置かない。
@@ -51,8 +53,10 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
     after: ["ch3_saku_advice"], heart: { saku: 1 } },
   // スティーブとLIMEを交換する（#2028）。客として来るmukaiで、♥2になってから（mukaiの店番の通い1回で♥1なので一段上）。
   // Smoke & Glory は低温の話（DAY11の夜）の後にしか開かず空き時間が少ないので、mukaiに置く。締めくくり（daily/bonds.js）の条件。
-  ch3_steve_lime: { file: "ch3_rivals", label: "何分目の顔", location: "mukai", bg: "bg_mukai_shop",
-    met: ["steve"], heart: { steve: 2 }, host: "steve" },
+  // はじめが客の顔を読むと知る店番の3回目（ch3_outing_mukai_steve_c）の後に開く。先に読むと、頼みごとの後で顔読みに驚く順になる。
+  // 低温の話の後は店番の通いが終わるので、♥2だけで開く（顔の話はもう後から来ない）。
+  ch3_steve_lime: { file: "ch3_rivals", label: "スティーブの頼みごと", location: "mukai", bg: "bg_mukai_shop",
+    met: ["steve"], heart: { steve: 2 }, outings: { mukai_steve: 3 }, outingsUntil: "ch3_steve_low_heat", host: "steve" },
   // ひよりルートの tokyo_contact（#1434 決定B）。route.events と同じ条件に、mukai到着後・東京滞在中でないことを足す。
   // ましろの告白（#1930・台本は IR20 の正式原稿）。任意4場面を読み終えた後の休日に、彼女の部屋で。返事が交際／友人の着地になる。
   confession_mashiro: { file: "confession", label: "ましろちゃんの部屋でお茶", location: "ましろの部屋", bg: "bg_home_day",
@@ -123,7 +127,10 @@ export function availableOptionalScenes(routes, value) {
       && (place.met || []).every(who => value.met?.[who])
       && (place.away || []).every(who => characterRegion(value, { characters: {} }, who) !== "tokyo")
       && (place.unsettled || []).every(who => !confessionLanded(value, who))
-      && Object.entries(place.heart || {}).every(([who, level]) => (value.affinity?.[who] || 0) >= AFFINITY_RANK_PTS[level]);
+      && Object.entries(place.heart || {}).every(([who, level]) => (value.affinity?.[who] || 0) >= AFFINITY_RANK_PTS[level])
+      // 外出の回数は ch3-outing-progress.js の OUTINGS_FLAG（"_ch3_outings"）。この試験用アダプタの依存は増やさない。
+      && (completedScenes.includes(place.outingsUntil)
+        || Object.entries(place.outings || {}).every(([outing, count]) => (value.flags._ch3_outings?.[outing] || 0) >= count));
   }).map(id => ({ id, ...CH3_OPTIONAL_SCENES[id] }));
 }
 

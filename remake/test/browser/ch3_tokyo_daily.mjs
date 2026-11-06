@@ -278,13 +278,20 @@ await suite("ch3-tokyo-daily", async check => {
     const finale = page.locator(dt("tokyo-steve-0"));
     await finale.waitFor();
     assert.equal((await finale.innerText()).trim(), "スティーブに呼ばれる", "the finale comes first at Smoke & Glory");
-    await finale.click();
+    await page.locator(dt("tokyo-visit-cancel")).click();
+    // 締めくくりは代金がかからないので、4,000円に足りない日でも利用料なしで入って呼ばれる（客の一台の外出は出さない）。
+    await tokyoMap(page, { day: 44, slot: 1 });
+    await page.evaluate(() => { window.__remake.state.money = 1000; });
+    await page.locator(dt("pin-ch3_tokyo_mukai")).click();
+    await page.locator(dt("pin-ch3_tokyo_steve")).click();
+    assert.equal(await page.locator(".mi-no", { hasText: "お金が足りない" }).count(), 0, "the finale is not blocked by the shop fee");
+    await page.locator(dt("map-go")).click();
     await page.waitForFunction(() => !!window.__remake?.state?.finales?.steve, null, { timeout: 60000 });
     const state = await get(page);
     assert.equal(state.finales.steve.route, "friend");
     assert.equal(state.owned.filter(id => id === "suyaki_steve").length, 1);
     assert.equal(state.flavorStock.mountain_mist, 50, "a box of Mountain Mist comes with the hagal");
-    assert.equal(state.money, 10000, "being called by Steve costs nothing");
+    assert.equal(state.money, 1000, "being called by Steve costs nothing, even short of the shop fee");
     const backlog = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map(row => row.text).join("\n"));
     assert.match(backlog, /今日は客でも偵察でもなくていい/, "read before the tournament: the before-tournament branch");
     assert.doesNotMatch(backlog, /大会の日から/);

@@ -272,8 +272,9 @@ function nextWindow(value) {
   }
 }
 
-// スティーブのLIME交換（#2028）: 配達で面識があり、♥2になった時だけ mukai の寄り道に出る（締めくくりの前提）。
-// mukai の店番の通いは1回目で♥1、2回目で♥2。好感度は任意の場面だけで付き、必須の低温の話では付かない。
+// スティーブのLIME交換（#2028）: 配達で面識があり、♥2で、mukai の店番の3回目（客の顔の回 _c）の後に mukai の寄り道に出る
+// （締めくくりの前提）。店番の通いは1回目で♥1、2回目で♥2。顔の回より先に頼みごとを読むと、話の順が逆になる。
+// 低温の話の後は店番の通いが終わるので、♥2だけで開く。好感度は任意の場面だけで付き、必須の低温の話では付かない。
 {
   const routes = JSON.parse(fs.readFileSync(new URL("../../data/story_routes.json", import.meta.url)));
   const read = name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))).dialogues;
@@ -289,11 +290,32 @@ function nextWindow(value) {
   assert(!offered(value).includes("ch3_steve_lime"), "Steve's LIME below ♥2");
   value.affinity.steve += outingAffinity({ ...value, flags: { ...value.flags, [OUTINGS_FLAG]: { mukai_steve: 1 } } }, visits).steve;
   assert(value.affinity.steve >= AFFINITY_RANK_PTS[2], "the second customer visit reaches ♥2");
+  value.flags[OUTINGS_FLAG] = { mukai_steve: 2 };
+  assert(!offered(value).includes("ch3_steve_lime"), "Steve's LIME before the face-reading visit");
+  assert.equal(outingDialogueId(value, visits), "ch3_outing_mukai_steve_c", "the third visit is the face-reading talk");
+  value.flags[OUTINGS_FLAG] = { mukai_steve: 3 };
   const entry = availableOptionalScenes(routes, value).find(item => item.id === "ch3_steve_lime");
-  assert(entry, "Steve's LIME opens at ♥2");
+  assert(entry, "Steve's LIME opens at ♥2 after the face-reading visit");
+  assert.equal(entry.label, "スティーブの頼みごと", "the mukai entry names Steve");
   assert.deepEqual([entry.location, entry.host], ["mukai", "steve"], "read at mukai, the action's person is Steve");
   commitOptionalRead(value, "ch3_steve_lime");
   assert(!offered(value).includes("ch3_steve_lime"), "Steve's LIME read twice");
+  // 低温の話の後は店番の通い（mukai_steve）が出ないので、回数を問わず♥2で開く（Smoke & Glory の通いでも♥は上がる）。
+  {
+    const late = departure();
+    const stop = chapterThreeScenes(late).findIndex(item => item.id === "ch3_steve_low_heat");
+    for (let guard = 0; late.flags._ch3_intro.stage <= stop && guard < 80; guard++) {
+      const window = chapterThreeFreeTime(late);
+      if (window) { assert(completeChapterThreeFreeTime(late, window.id)); continue; }
+      assert(completeChapterThreeScene(late, chapterThreeScenes(late)[late.flags._ch3_intro.stage].id));
+    }
+    late.met.steve = true;
+    late.affinity.steve = AFFINITY_RANK_PTS[2];
+    assert(!chapterThreeOutingCandidates(late).some(item => item.id === "mukai_steve"), "the customer visits end at the low-heat talk");
+    assert(offered(late).includes("ch3_steve_lime"), "after the low-heat talk, ♥2 alone opens Steve's LIME");
+    late.affinity.steve = AFFINITY_RANK_PTS[2] - 1;
+    assert(!offered(late).includes("ch3_steve_lime"), "still ♥2 after the low-heat talk");
+  }
   const lime = scene("ch3_steve_lime").lines;
   assert(lime.some(line => line.type === "set_flag" && line.flag === "_lime_contact_steve"));
   assert.deepEqual(lime.filter(line => line.type === "apply").map(line => line.affinity), [{ steve: 2 }]);
