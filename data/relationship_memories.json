@@ -103,34 +103,34 @@
       "echo": "（つむぎちゃんは、見てきたものが混ざって、今の自分の絵になると言った）"
     },
     {
-      "id": "kuyuri_feedback",
-      "char_id": "kuyuri",
-      "dialogue_id": "ch1_kuyuri_first",
-      "echo": "（くゆりさんは、俺が試した感想も次の仕事に持っていく）"
+      "id": "rio_feedback",
+      "char_id": "rio",
+      "dialogue_id": "ch1_rio_first",
+      "echo": "（凛想さんは、俺が試した感想も次の仕事に持っていく）"
     },
     {
-      "id": "kuyuri_sample",
-      "char_id": "kuyuri",
-      "dialogue_id": "ch1_kuyuri_third",
-      "echo": "（くゆりさんから受け取った袋に、まだ会ったことのない人の仕事もある）"
+      "id": "rio_sample",
+      "char_id": "rio",
+      "dialogue_id": "ch1_rio_third",
+      "echo": "（凛想さんから受け取った袋に、まだ会ったことのない人の仕事もある）"
     },
     {
-      "id": "kuyuri_face",
-      "char_id": "kuyuri",
-      "dialogue_id": "ch1_kuyuri_fourth",
-      "echo": "（くゆりさんに、吸っていた人の顔を持って帰る約束をした）"
+      "id": "rio_face",
+      "char_id": "rio",
+      "dialogue_id": "ch1_rio_fourth",
+      "echo": "（凛想さんに、吸っていた人の顔を持って帰る約束をした）"
     },
     {
-      "id": "kuyuri_notebook",
-      "char_id": "kuyuri",
-      "dialogue_id": "ch1_kuyuri_fifth",
-      "echo": "（くゆりさんは、俺が持ってきた客の顔を、誰にも出さない手帳に書いている）"
+      "id": "rio_notebook",
+      "char_id": "rio",
+      "dialogue_id": "ch1_rio_fifth",
+      "echo": "（凛想さんは、俺が持ってきた客の顔を、誰にも出さない手帳に書いている）"
     },
     {
-      "id": "kuyuri_window",
-      "char_id": "kuyuri",
-      "dialogue_id": "ch1_kuyuri_sixth",
-      "echo": "（くゆりさんの窓からは、袋しか見えない。顔は、俺が下から持っていく）"
+      "id": "rio_window",
+      "char_id": "rio",
+      "dialogue_id": "ch1_rio_sixth",
+      "echo": "（凛想さんの窓からは、袋しか見えない。顔は、俺が下から持っていく）"
     },
     {
       "id": "ageha_today",

@@ -87,8 +87,8 @@
   "sprite": "assets/sprites/characters/rei/chr_rei_normal.png",
   "blob": "bfa4805f8e5ebc7fa730b3fed2ea64fce25291b2"
  },
- "face_kuyuri.png": {
-  "sprite": "assets/sprites/characters/kuyuri/chr_kuyuri_normal.png",
+ "face_rio.png": {
+  "sprite": "assets/sprites/characters/rio/chr_rio_normal.png",
   "blob": "f92f3650ff5b3cfcf0985e53142e3025581f3c7c"
  },
  "face_sai.png": {

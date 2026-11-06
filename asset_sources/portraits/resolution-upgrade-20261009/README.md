@@ -34,7 +34,7 @@ CHROME_BIN=/usr/bin/chromium SHOTS=/tmp/portrait-qa node remake/test/portrait_un
 - つむぎはPU05により頭身変更を撤回。元の大きめの丸い頭、小柄な体格、短い胴と脚へ戻し、解像度と画風だけをそろえる。参照②にも元の通常絵を使い、体格を変えた候補から再生成を重ねない。
 - ましろはPU04により少し大きめの丸い顔・ふっくらした頬・眠そうな可愛さを優先。以前の8%縮小は強制しない。
 - 色は常に各表情の元のランタイム画像を基準にする。生成候補を色の基準にして、繰り返すたびに薄くしない。採用原画への後付けの彩度・明度加工は行わない。
-- 実際に使った参照の役割は `generation.json` が正本。女性はみんと・あげは、男性はアダム・みんとを参照する。旧調査・旧ひな形にあるくゆり参照や±10%判定より、PU04・PU05と実行記録を優先する。
+- 実際に使った参照の役割は `generation.json` が正本。女性はみんと・あげは、男性はアダム・みんとを参照する。旧調査・旧ひな形にある凛想参照や±10%判定より、PU04・PU05と実行記録を優先する。
 
 以下は依頼を作成した2026-10-09時点の調査とひな形。原画の旧解像度や旧目標は履歴として残す。
 
@@ -44,11 +44,11 @@ CHROME_BIN=/usr/bin/chromium SHOTS=/tmp/portrait-qa node remake/test/portrait_un
 表示倍率は全員ほぼ同じ（はじめ＝1.00 に対して 0.90〜1.03）なので、差の原因は**生成した原画の解像度**。
 
 - 5表情を**横1枚のシート**で作ったキャラは、人物1人が高さ約800〜880pxしかない。それをゲーム用の896×1200へ**1.2〜1.4倍に引き伸ばした**ため、線が太めで少しぼやける。
-- **1人ずつ縦長**で作ったキャラ（くゆり・サメちゃん）や、引き伸ばしの少ないキャラ（つむぎ・みんと）はくっきりしている。
+- **1人ずつ縦長**で作ったキャラ（凛想・サメちゃん）や、引き伸ばしの少ないキャラ（つむぎ・みんと）はくっきりしている。
 
 | キャラ | 原画の人物の高さ | ゲーム用の高さ | 引き伸ばし | 表示1単位あたりの原画の細かさ（大きいほど精細） | 判定 |
 |---|---|---|---|---|---|
-| くゆり | 1407px（1人ずつ縦長） | 1004px | 0.71倍（縮小） | 1450 | 基準より精細 |
+| 凛想 | 1407px（1人ずつ縦長） | 1004px | 0.71倍（縮小） | 1450 | 基準より精細 |
 | サメちゃん | 925px | 913px | 0.99倍 | 1016 | 基準 |
 | つむぎ | 886px | 878px | 0.99倍 | 1007 | 基準 |
 | みんと（私服） | 887px | 948px | 1.07倍 | 975 | 基準 |
@@ -81,7 +81,7 @@ CHROME_BIN=/usr/bin/chromium SHOTS=/tmp/portrait-qa node remake/test/portrait_un
 |---|---|---|
 | 1 | 対象の表情の現行PNG `assets/sprites/characters/<id>/chr_<id>_<face>.png` | **最優先。** 人物・表情・ポーズ・衣装・頭身をこのとおりに |
 | 2 | 同じキャラの通常 `chr_<id>_normal.png` | 顔の同一性の補助（通常の依頼では1と同じなので省略可） |
-| 3 | くゆり `assets/sprites/characters/rin/chr_rin_normal.png` | **画質・線の細かさだけ**の参照（1人ずつ高解像度で作った例） |
+| 3 | 凛想 `assets/sprites/characters/rin/chr_rin_normal.png` | **画質・線の細かさだけ**の参照（1人ずつ高解像度で作った例） |
 | 4 | みんと `assets/sprites/characters/minto/chr_minto_normal.png` | **画質・陰影の段階だけ**の参照（採用済みの基準） |
 
 3・4の顔・髪・体型・衣装は写さない。
@@ -96,7 +96,7 @@ Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-reso
 Character: <CHARACTER LINE>
 Expression to keep exactly as image 1: <EXPRESSION LINE>
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Kuyuri sprite and (4) approved Minto sprite: ONLY the target rendering quality — fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Rio sprite and (4) approved Minto sprite: ONLY the target rendering quality — fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from hair top to shoe bottom. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background (also between limbs). No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
@@ -126,7 +126,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 - [ ] 原画の人物の高さが1300px以上。透過がきれい（手足の間も）
 - [ ] 現行画像と並べて、顔・表情・手と肩の位置・衣装・小物・頭身が変わっていない（重ねて見比べる）
-- [ ] 線が細くくっきりし、ぼやけ・のっぺり・粗いドット・AI的な艶が出ていない（くゆり・みんとと原寸で比べる）
+- [ ] 線が細くくっきりし、ぼやけ・のっぺり・粗いドット・AI的な艶が出ていない（凛想・みんとと原寸で比べる）
 - [ ] 1キャラの5枚が同じ人物に見える
 
 ## 受け取った後（こちら側）

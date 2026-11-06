@@ -22,15 +22,15 @@
       "preferred": "nose_wow",
       "reason": "作り方への興味を言葉で伝える"
     },
-    "ch1_kuyuri_first:kuyuri_first_pen": {
-      "target": "kuyuri",
+    "ch1_rio_first:rio_first_pen": {
+      "target": "rio",
       "kind": "conversation",
       "options": [
         "pen_rush",
         "pen_watch"
       ],
       "preferred": "pen_watch",
-      "reason": "丁寧な仕事を見抜いた返答をくゆりが明確に気に入る"
+      "reason": "丁寧な仕事を見抜いた返答を凛想が明確に気に入る"
     },
     "ch1_tsumugi_first:tsumugi_first_serve": {
       "target": "tsumugi",
@@ -112,8 +112,8 @@
       "preferred": "meet",
       "reason": "個人的に会いたいと伝える"
     },
-    "ch1_kuyuri_bond_question:bond_q1_kuyuri": {
-      "target": "kuyuri",
+    "ch1_rio_bond_question:bond_q1_rio": {
+      "target": "rio",
       "kind": "romance",
       "options": [
         "personal",

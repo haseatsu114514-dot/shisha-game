@@ -1,7 +1,7 @@
 {
   "episode": 38,
   "title": "月曜の香り",
-  "cast": "くゆり・はじめ",
+  "cast": "凛想・はじめ",
   "theme": "旧・暴走編（復刻）",
   "status": "adopted-registered-20261102",
   "registered": true,
@@ -24,14 +24,14 @@
   ],
   "tasks": [
     {
-      "script": "LEFT ①: languid Kuyuri (dark long wolf cut/white shirt/black slacks) teasingly offers Hajime a tiny plain PERFUME TEST STRIP, asking 「何の香り？」 No tobacco or smoking involved. RIGHT ②: a surreal miniature GRAY OFFICE MONDAY has erupted like a cartoon sensory vision around the strip: tiny cubicles, alarm clocks, mountains of paperwork, giant calendar tile 「月」; Hajime stares with exaggerated emotional recognition and says 「月曜。」 Kuyuri calmly checks her clipboard, says 「正解。」 Funny recognizable impossible fragrance, not a toxic chemical or medical event, no real company logos.",
+      "script": "LEFT ①: languid Rio (dark long wolf cut/white shirt/black slacks) teasingly offers Hajime a tiny plain PERFUME TEST STRIP, asking 「何の香り？」 No tobacco or smoking involved. RIGHT ②: a surreal miniature GRAY OFFICE MONDAY has erupted like a cartoon sensory vision around the strip: tiny cubicles, alarm clocks, mountains of paperwork, giant calendar tile 「月」; Hajime stares with exaggerated emotional recognition and says 「月曜。」 Rio calmly checks her clipboard, says 「正解。」 Funny recognizable impossible fragrance, not a toxic chemical or medical event, no real company logos.",
       "dialogue_original": [
         "何の香り？",
         "月",
         "月曜。",
         "正解。"
       ],
-      "prompt": "旧漫画のサイズと読む順を統一する編集です。添付1の原画シートから指定した話1本だけを、添付2の下敷きへ再構成する。元のネタ・衣装・顔・小物・台詞を保つ。別の話を混ぜず、新しいギャグは足さない。出力1536x1024、左x36 y272幅720高さ480、右x780 y272幅720高さ480、横長3:2。上下272pxの紙余白、枠はy752で終わる。枠を縦に広げない。絵は枠内だけ。セーフマージン29px。左コマを導入、右コマをオチに並べ替え、絵や文字の左右反転は禁止。元絵の台詞は横書きの読みやすい太い日本語ゴシック。題名・話数・シリーズ名・読む順の番号・署名は消す。2.5頭身の太線セル塗りと紙質、原画の本人性を維持。台詞が多くても枠を拡げず人物を胸上で構成する。文字・顔・重要な小物を欠かさない。元々3人の話は物語を勝手に改変せず3人を維持してよい（旧話の復刻である）。シーシャ器具は指定された話以外描かない。写真は構造参照で、製品ロゴや写真の実在人物は模写しない。最終配置について、次の台本のLEFTは完成版の左、RIGHTは完成版の右です。元シートの左右位置を真似しない。上の大きな余白を残す下敷き画像が寸法の正本。出力は必ず1536x1024（2:1や横長帯は禁止）。下敷きは添付1。添付2のシートの第38話「月曜の香り」だけ。完成版の台本: LEFT ①: languid Kuyuri (dark long wolf cut/white shirt/black slacks) teasingly offers Hajime a tiny plain PERFUME TEST STRIP, asking 「何の香り？」 No tobacco or smoking involved. RIGHT ②: a surreal miniature GRAY OFFICE MONDAY has erupted like a cartoon sensory vision around the strip: tiny cubicles, alarm clocks, mountains of paperwork, giant calendar tile 「月」; Hajime stares with exaggerated emotional recognition and says 「月曜。」 Kuyuri calmly checks her clipboard, says 「正解。」 Funny recognizable impossible fragrance, not a toxic chemical or medical event, no real company logos.。元のギャグの誇張は復刻として保つ。シーシャの実物・ホース・炭・喫煙・武器は描かない。煙が物質化する第34話は空想の黒灰色の雲ブロックで、機材からの煙は描かない。第31話はあげはの髪・顔・クマ髪飾り・豹柄とピンク服を正式立ち絵に合わせる。",
+      "prompt": "旧漫画のサイズと読む順を統一する編集です。添付1の原画シートから指定した話1本だけを、添付2の下敷きへ再構成する。元のネタ・衣装・顔・小物・台詞を保つ。別の話を混ぜず、新しいギャグは足さない。出力1536x1024、左x36 y272幅720高さ480、右x780 y272幅720高さ480、横長3:2。上下272pxの紙余白、枠はy752で終わる。枠を縦に広げない。絵は枠内だけ。セーフマージン29px。左コマを導入、右コマをオチに並べ替え、絵や文字の左右反転は禁止。元絵の台詞は横書きの読みやすい太い日本語ゴシック。題名・話数・シリーズ名・読む順の番号・署名は消す。2.5頭身の太線セル塗りと紙質、原画の本人性を維持。台詞が多くても枠を拡げず人物を胸上で構成する。文字・顔・重要な小物を欠かさない。元々3人の話は物語を勝手に改変せず3人を維持してよい（旧話の復刻である）。シーシャ器具は指定された話以外描かない。写真は構造参照で、製品ロゴや写真の実在人物は模写しない。最終配置について、次の台本のLEFTは完成版の左、RIGHTは完成版の右です。元シートの左右位置を真似しない。上の大きな余白を残す下敷き画像が寸法の正本。出力は必ず1536x1024（2:1や横長帯は禁止）。下敷きは添付1。添付2のシートの第38話「月曜の香り」だけ。完成版の台本: LEFT ①: languid Rio (dark long wolf cut/white shirt/black slacks) teasingly offers Hajime a tiny plain PERFUME TEST STRIP, asking 「何の香り？」 No tobacco or smoking involved. RIGHT ②: a surreal miniature GRAY OFFICE MONDAY has erupted like a cartoon sensory vision around the strip: tiny cubicles, alarm clocks, mountains of paperwork, giant calendar tile 「月」; Hajime stares with exaggerated emotional recognition and says 「月曜。」 Rio calmly checks her clipboard, says 「正解。」 Funny recognizable impossible fragrance, not a toxic chemical or medical event, no real company logos.。元のギャグの誇張は復刻として保つ。シーシャの実物・ホース・炭・喫煙・武器は描かない。煙が物質化する第34話は空想の黒灰色の雲ブロックで、機材からの煙は描かない。第31話はあげはの髪・顔・クマ髪飾り・豹柄とピンク服を正式立ち絵に合わせる。",
       "reference_images": [
         "/workspace/shisha-game/asset_sources/loading-comics/template/2koma_template_1536x1024.png",
         "/workspace/shisha-game/asset_sources/short-comics-unhinged-ltr-20261025/37-40-chaos-ltr.png",

@@ -20,7 +20,7 @@ const CUSTOM_LIME_ICONS = {
   naru: "naru-private.png", // 私服案をお仕事用アカウントに使う（なるに私用アカウントは無い）
   pakki: "pakki-a.png",
   rei: "rei-b.png",
-  kuyuri: "kuyuri-a.png",
+  rio: "rio-a.png",
   samechan: "samechan-koro.png",
   sumi: "sumi-b.png",
   uranaishi: "uranaishi-b.png",

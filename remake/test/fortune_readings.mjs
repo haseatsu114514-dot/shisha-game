@@ -33,7 +33,7 @@ const expectedIds = {
   adam: ['adam_2', 'adam_4', 'adam_5', 'adam_13', 'adam_14'],
   minto: ['minto_2', 'minto_3', 'minto_4', 'minto_5', 'minto_6', 'minto_10', 'minto_13', 'minto_15'],
   tsumugi: ['tsumugi_1', 'tsumugi_2', 'tsumugi_3', 'tsumugi_5', 'tsumugi_6', 'tsumugi_9', 'tsumugi_13', 'tsumugi_15'],
-  kuyuri: ['kuyuri_1', 'kuyuri_2', 'kuyuri_3', 'kuyuri_5', 'kuyuri_6', 'kuyuri_11', 'kuyuri_14'],
+  rio: ['rio_1', 'rio_2', 'rio_3', 'rio_5', 'rio_6', 'rio_11', 'rio_14'],
   hiyori: ['hiyori_1', 'hiyori_2', 'hiyori_3', 'hiyori_6', 'hiyori_8'],
   samechan: ['samechan_1', 'samechan_2', 'samechan_3', 'samechan_5', 'samechan_6', 'samechan_9'],
   ageha: ['ageha_1', 'ageha_2', 'ageha_3', 'ageha_4', 'ageha_5', 'ageha_6'],
@@ -47,7 +47,7 @@ const excludedIds = [
   'adam_1', 'adam_3', 'adam_6', 'adam_7', 'adam_8', 'adam_9', 'adam_10', 'adam_11', 'adam_12', 'adam_15',
   'minto_1', 'minto_7', 'minto_8', 'minto_9', 'minto_11', 'minto_12', 'minto_14',
   'tsumugi_4', 'tsumugi_7', 'tsumugi_8', 'tsumugi_10', 'tsumugi_11', 'tsumugi_12', 'tsumugi_14',
-  'kuyuri_4', 'kuyuri_7', 'kuyuri_8', 'kuyuri_9', 'kuyuri_10', 'kuyuri_12', 'kuyuri_13', 'kuyuri_15',
+  'rio_4', 'rio_7', 'rio_8', 'rio_9', 'rio_10', 'rio_12', 'rio_13', 'rio_15',
   'hiyori_4', 'hiyori_5', 'hiyori_7', 'hiyori_9', 'hiyori_10', 'hiyori_11', 'hiyori_12', 'hiyori_13', 'hiyori_14', 'hiyori_15',
   'samechan_4', 'samechan_7', 'samechan_8', 'samechan_10', 'samechan_11', 'samechan_12', 'samechan_13', 'samechan_14', 'samechan_15',
 ];
@@ -139,12 +139,12 @@ for (const [char, entries] of Object.entries(trivia.characters)) {
   const remainingReordered = Array.from({ length: 3 }, () => grantFortuneReading(withDeletedHistory, 'adam', reordered).id);
   assert.deepEqual([...remainingReordered].sort(), ['adam_13', 'adam_4', 'adam_5']);
 
-  // Character independence: reading sumi does not alter kuyuri's unseen pool.
+  // Character independence: reading sumi does not alter rio's unseen pool.
   const indep = { chapter: 1, day: 3, seed: 11, flags: {}, fortune: null };
   grantFortuneReading(indep, 'sumi', trivia);
-  grantFortuneReading(indep, 'kuyuri', trivia);
+  grantFortuneReading(indep, 'rio', trivia);
   assert.equal(indep.flags._fortune_trivia_seen_sumi.length, 1);
-  assert.equal(indep.flags._fortune_trivia_seen_kuyuri.length, 1);
+  assert.equal(indep.flags._fortune_trivia_seen_rio.length, 1);
 }
 
 // Naru rift state exclusion: tied to actual rift flags in Ch2+, not raw calendar day.
@@ -196,11 +196,11 @@ assert.equal(fortuneChoiceIndex(save, 'ch1_naru_first', { ...line, choices: [...
 const before = JSON.stringify(save);
 fortuneChoiceIndex(save, 'ch1_naru_first', line, hints);
 assert.equal(JSON.stringify(save), before);
-grantFortuneReading(save, 'kuyuri', trivia);
+grantFortuneReading(save, 'rio', trivia);
 assert.equal(fortuneChoiceIndex(save, 'ch1_naru_first', line, hints), -1);
-const romance = { id: 'bond_q1_kuyuri', choices: [{ next: 'personal' }, { next: 'work' }] };
-assert.equal(fortuneChoiceIndex(save, 'ch1_kuyuri_bond_question', romance, { ...hints, includeRomance: false }), -1);
-assert.equal(fortuneChoiceIndex(save, 'ch1_kuyuri_bond_question', romance, { ...hints, includeRomance: true }), 0);
+const romance = { id: 'bond_q1_rio', choices: [{ next: 'personal' }, { next: 'work' }] };
+assert.equal(fortuneChoiceIndex(save, 'ch1_rio_bond_question', romance, { ...hints, includeRomance: false }), -1);
+assert.equal(fortuneChoiceIndex(save, 'ch1_rio_bond_question', romance, { ...hints, includeRomance: true }), 0);
 // ましろの♥3の質問も他のヒロインと同じ恋愛の注記。恋愛の表示が切られている間は示さない。
 {
   const mashiroSave = { chapter: 3, day: 20, seed: 1, flags: {}, money: 90000 };

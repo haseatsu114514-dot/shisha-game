@@ -60,7 +60,7 @@ function el(tag, { dataset = {}, ...props } = {}, children = []) {
   return node;
 }
 const SLOT = ["昼", "夜", "就寝"];
-const CHAR_LABELS = { tsumugi: "つむぎ", minto: "みんと", kuyuri: "くゆり", ageha: "あげは", mashiro: "ましろ", hiyori: "ひより", samechan: "サメちゃん" };
+const CHAR_LABELS = { tsumugi: "つむぎ", minto: "みんと", rio: "凛想", ageha: "あげは", mashiro: "ましろ", hiyori: "ひより", samechan: "サメちゃん" };
 
 // 画面で走っている旧ループを破棄するため、保存後は既存のブート再開経路へ戻す。
 function resumeSaved() {

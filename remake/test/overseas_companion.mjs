@@ -62,7 +62,7 @@ const kept = value => Object.fromEntries(keptKeys.map(key => [key, structuredClo
   const value = atDeparture(["tsumugi", "minto"]);
   value.tokyoVisits.plans.push({ id: "tokyo.minto.41", characterId: "minto", arrivalDay: 41, returnDay: 44, status: "booked",
     meetup: { id: "m", day: 41, slot: 0 }, date: { id: "d", day: 42, slot: 0 }, met: false, dateDone: false });
-  value.tokyoVisits.offers.kuyuri = { day: 41 };
+  value.tokyoVisits.offers.rio = { day: 41 };
   const before = kept(value), offers = structuredClone(value.tokyoVisits.offers);
   assert(chooseOverseasCompanion(value, "tsumugi"));
   assert(value.tokyoVisits.plans.every(plan => plan.status === "returned"));
@@ -71,7 +71,7 @@ const kept = value => Object.fromEntries(keptKeys.map(key => [key, structuredClo
   assert.deepEqual(kept(value), before);
 }
 // 壊れた保存値は未選択に戻る（同行者が応援に重複・不正IDなど）。
-for (const raw of [{ decided: true, companion: "x", supports: [] }, { decided: true, companion: "kuyuri", supports: ["kuyuri"] },
+for (const raw of [{ decided: true, companion: "x", supports: [] }, { decided: true, companion: "rio", supports: ["rio"] },
   { decided: true, companion: null, supports: "mashiro" }, "bad", null]) {
   const value = atDeparture([]);
   value.flags._overseas_companion = raw;

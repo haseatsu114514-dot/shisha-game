@@ -172,14 +172,14 @@ export const LOADING_COMICS = [
   {
     id: "restored-12",
     title: "香りの感想",
-    cast: ["kuyuri"],
+    cast: ["rio"],
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-12）",
     caption: "香りの感想を言葉にするのは、意外とむずかしい。",
     panels: [
-      { src: imgFileUrl("loading/restored-12-1.webp"), alt: "くゆりがクリップボードとペンを差し出して「正直に書いてね。」。はじめは真剣に考えている。" },
-      { src: imgFileUrl("loading/restored-12-2.webp"), alt: "はじめが見せた紙には大きく「いい匂い」の一言。くゆりが頬杖をついて「語彙も貸そうか。」。" },
+      { src: imgFileUrl("loading/restored-12-1.webp"), alt: "凛想がクリップボードとペンを差し出して「正直に書いてね。」。はじめは真剣に考えている。" },
+      { src: imgFileUrl("loading/restored-12-2.webp"), alt: "はじめが見せた紙には大きく「いい匂い」の一言。凛想が頬杖をついて「語彙も貸そうか。」。" },
     ],
   },
   {
@@ -315,14 +315,14 @@ export const LOADING_COMICS = [
   {
     id: "restored-38",
     title: "月曜の香り",
-    cast: ["kuyuri"],
+    cast: ["rio"],
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-38）",
-    caption: "くゆりの香りの問題は、ときどき意地悪です。",
+    caption: "凛想の香りの問題は、ときどき意地悪です。",
     panels: [
-      { src: imgFileUrl("loading/restored-38-1.webp"), alt: "くゆりが細い試香紙を差し出して「何の香り？」。はじめは香りを確かめている。" },
-      { src: imgFileUrl("loading/restored-38-2.webp"), alt: "香りから月曜の会社の景色が浮かぶ。はじめ「月曜。」。くゆり「正解。」。" },
+      { src: imgFileUrl("loading/restored-38-1.webp"), alt: "凛想が細い試香紙を差し出して「何の香り？」。はじめは香りを確かめている。" },
+      { src: imgFileUrl("loading/restored-38-2.webp"), alt: "香りから月曜の会社の景色が浮かぶ。はじめ「月曜。」。凛想「正解。」。" },
     ],
   },
   {

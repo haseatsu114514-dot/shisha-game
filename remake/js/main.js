@@ -94,7 +94,7 @@ async function warmUp() {
   // 店ロゴはマップまで要らないので、タイトル直後の帯域を空けるためアイドル時に回す（ui.js 側）。
   await Promise.all([warmUiArt({ deferStores: true }), ...["bg_osu_map_day", "bg_osu_map_night"].map((bg) => imageReady(bgUrl(bg), 8000, { keep: true }))]);
   const bgs = ["bg_osu_map_day", "bg_osu_map_night", "bg_tonari_inside_day", "bg_tonari_inside_night", "bg_home_day", "bg_home_night", "bg_shop"];
-  const faces = [["sumi", "normal"], ["tsumugi", "normal"], ["naru", "normal"], ["adam", "normal"], ["minto", "normal"], ["kuyuri", "normal"], ["pakki", "normal"]];
+  const faces = [["sumi", "normal"], ["tsumugi", "normal"], ["naru", "normal"], ["adam", "normal"], ["minto", "normal"], ["rio", "normal"], ["pakki", "normal"]];
   const urls = [
     ...bgs.map((b) => bgUrl(b)),
     ...faces.map(([c, f]) => portraitInfo(c, f)?.src),
@@ -164,7 +164,7 @@ window.__remake = {
       core.newGame();
       const state = core.state; // newGame() で作り直した状態
       Object.assign(state, { phase: "daily", day: 12, slot: 1 });
-      for (const id of ["sumi", "tsumugi", "naru", "minto", "adam", "kuyuri"]) state.met[id] = true;
+      for (const id of ["sumi", "tsumugi", "naru", "minto", "adam", "rio"]) state.met[id] = true;
       document.getElementById("screen").replaceChildren();
       const tonariNight = "res://assets/backgrounds/bg_tonari_inside_night.png";
       if (name === "cheki") {

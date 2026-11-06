@@ -18,11 +18,11 @@ await suite("hiyori-axe-assets", async check => {
       const framing = await page.evaluate(async () => {
         const { portraitInfo } = await import("./js/core/data.js");
         const hiyori = portraitInfo("hiyori", "normal");
-        const kuyuri = portraitInfo("kuyuri", "normal");
-        return { sourceHeight: hiyori.h * 1200, visibleRatio: hiyori.scale / kuyuri.scale };
+        const rio = portraitInfo("rio", "normal");
+        return { sourceHeight: hiyori.h * 1200, visibleRatio: hiyori.scale / rio.scale };
       });
       assert(Math.abs(framing.sourceHeight - 1000) <= 1, "Hiyori's exported figure must be 1000px tall");
-      assert(Math.abs(framing.visibleRatio - 1) <= 0.05, "Hiyori and Kuyuri must appear at similar height");
+      assert(Math.abs(framing.visibleRatio - 1) <= 0.05, "Hiyori and Rio must appear at similar height");
       for (const face of faces) {
         await page.evaluate(face => {
           K.flow = K.vn.play({ metadata: { bg: "res://assets/backgrounds/bg_axe_lounge_night.png" }, lines: [

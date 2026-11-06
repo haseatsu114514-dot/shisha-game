@@ -34,12 +34,12 @@ try {
     reel.onAction();
     forced.sameReel = forced.before === JSON.stringify(core.state.reel); delete forced.before;
     const cases = [];
-    let kuyuriRefusal = null;
+    let rioRefusal = null;
     for (const [name, run] of [
       ["naru", () => spots.visitRival(spots.spotById("naru"))],
       ["adam", () => spots.visitRival(spots.spotById("adam"))],
       ["minto", () => spots.visitRival(spots.spotById("minto"))],
-      ["kuyuri", () => shop.visitKuyuri()], ["tsumugi", () => tonari.tonariCustomer()],
+      ["rio", () => shop.visitRio()], ["tsumugi", () => tonari.tonariCustomer()],
       ["choizap", () => spots.visitSpot(spots.spotById("choizap"))],
       ["c_station", () => spots.visitSpot(spots.spotById("c_station"))],
       ["cafe", () => spots.visitSpot(spots.spotById("cafe"))],
@@ -56,14 +56,14 @@ try {
       const earned = xp(); reel.onAction({ spent });
       cases.push({ name, spent, earned, perStat, spins: core.state.reel.count });
       if (spent > 0) {
-        if (name === "kuyuri") {
+        if (name === "rio") {
           const snapshot = JSON.stringify(core.state), count = core.state.reel.count;
           const refused = await stats.paidAction(run);
           reel.onAction({ spent: refused.spent });
-          kuyuriRefusal = { spent: refused.spent, unchanged: snapshot === JSON.stringify(core.state), spins: core.state.reel.count - count };
+          rioRefusal = { spent: refused.spent, unchanged: snapshot === JSON.stringify(core.state), spins: core.state.reel.count - count };
           // 同日再訪の拒否を確認し、既存の再訪報酬assertは次の営業夜で実行する。
-          for (let i = 0; i < 7 && hours.kuyuriUnavailable(core.state); i++) core.state.day++;
-          if (hours.kuyuriUnavailable(core.state)) throw new Error("No available Kuyuri night in the next week");
+          for (let i = 0; i < 7 && hours.rioUnavailable(core.state); i++) core.state.day++;
+          if (hours.rioUnavailable(core.state)) throw new Error("No available Rio night in the next week");
         }
         const before = xp();
         const previous = { ...core.state.stats };
@@ -112,12 +112,12 @@ try {
       text: vn.backlog().slice(-2).map(l => l.text).join(" ") };
     // 既存セーブの残高を初期金額で置き換えない。
     reset(); core.state.money = 12345; core.save(); core.newGame(); core.load();
-    return { money, forced, cases, kuyuriRefusal, carrySaved, invitationSpent: invitation.spent, invitationXp, zeroXp, zeroSpins, smallXp, mixed,
+    return { money, forced, cases, rioRefusal, carrySaved, invitationSpent: invitation.spent, invitationXp, zeroXp, zeroSpins, smallXp, mixed,
       restoredMoney: core.state.money };
   });
   assert.equal(report.money, 30000); assert.equal(report.restoredMoney, 12345);
   assert.deepEqual(report.forced, { xp: 0, sameReel: true });
-  assert.deepEqual(report.kuyuriRefusal, { spent: 0, unchanged: true, spins: 0 });
+  assert.deepEqual(report.rioRefusal, { spent: 0, unchanged: true, spins: 0 });
   for (const entry of report.cases) {
     const recovery = entry.name === "rest";
     assert.equal(entry.spins > 0, !recovery, JSON.stringify(entry));

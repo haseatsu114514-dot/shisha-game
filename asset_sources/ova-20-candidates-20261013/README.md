@@ -22,7 +22,7 @@ KITE（1998）とBASTARD!!の旧OVA（1992）を参考に、正規キャラと�
 | 02 | ひより・BASTARD寄りの立ち絵 | [![02](images/02.png)](images/02.png) |
 | 03 | みんと・小悪魔の立ち絵 | [![03](images/03.png)](images/03.png) |
 | 04 | あげは・明るいOVA立ち絵 | [![04](images/04.png)](images/04.png) |
-| 05 | くゆり・都会的なOVA立ち絵 | [![05](images/05.png)](images/05.png) |
+| 05 | 凛想・都会的なOVA立ち絵 | [![05](images/05.png)](images/05.png) |
 | 06 | つむぎ・柔らかなOVA立ち絵 | [![06](images/06.png)](images/06.png) |
 | 07 | tonari・夜の背景 | [![07](images/07.png)](images/07.png) |
 | 08 | tonari・曇り昼の背景 | [![08](images/08.png)](images/08.png) |
@@ -34,7 +34,7 @@ KITE（1998）とBASTARD!!の旧OVA（1992）を参考に、正規キャラと�
 | 14 | みんと・素顔の帰り道 | [![14](images/14.png)](images/14.png) |
 | 15 | つむぎ・タブレットの猫スケッチ | [![15](images/15.png)](images/15.png) |
 | 16 | ましろ・mukaiの静かな一息 | [![16](images/16.png)](images/16.png) |
-| 17 | くゆり・雨の日の仕事顔 | [![17](images/17.png)](images/17.png) |
+| 17 | 凛想・雨の日の仕事顔 | [![17](images/17.png)](images/17.png) |
 | 18 | スミさんとはじめ・師弟のカウンター | [![18](images/18.png)](images/18.png) |
 | 19 | なるとはじめ・好敵手の会話 | [![19](images/19.png)](images/19.png) |
 | 20 | アダム・EDENのダブルアップル談義 | [![20](images/20.png)](images/20.png) |

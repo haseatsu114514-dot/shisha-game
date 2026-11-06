@@ -30,7 +30,7 @@ ${strip(stats.match(/export function addMoney\(n\) \{[\s\S]*?\n\}/)[0])}
 const DB = {kuji:${data}}, displayName = () => 'リン';
 const layers = {screen:document.querySelector('#screen'), modal:document.querySelector('#modal')};
 const toast = () => {}, SE = {select(){},click(){},stamp(){},fanfare(){}};
-const vnTest = {turbo:true}, FLAVOR_BOX_GRAMS = 50, KUYURI_AWAY_DAY = 3;
+const vnTest = {turbo:true}, FLAVOR_BOX_GRAMS = 50, RIO_AWAY_DAY = 3;
 function addFlavorStock(id, grams) {
   flavorGrants++;
   state.flavorStock[id] = (state.flavorStock[id] || 0) + grams;

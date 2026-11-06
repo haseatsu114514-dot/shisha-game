@@ -510,9 +510,9 @@
         }
       ]
     },
-    "kuyuri": {
+    "rio": {
       "stat": "sense",
-      "call": "くゆりさん",
+      "call": "凛想さん",
       "place": "閉店後のショールーム",
       "bg": "bg_fookah_showroom.png",
       "invite": {

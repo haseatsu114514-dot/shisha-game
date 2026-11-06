@@ -17,11 +17,11 @@ await suite("debug-tools", async check => {
         const { markIntroSeen } = await import("./js/vn/intro.js");
         core.newGame(); core.save(); core.saveToSlot(core.SAVE_SLOTS[1].key);
         core.config.textSpeed = 4;
-        for (const id of ["minto", "kuyuri"]) markIntroSeen(id);
+        for (const id of ["minto", "rio"]) markIntroSeen(id);
         clearLog();
         void play({ dialogue_id: "debug-portrait-style-fixture", lines: [
           { speaker: "minto", face: "normal", text: "画風を比べます" },
-          { speaker: "kuyuri", face: "normal", text: "進行は変えません" },
+          { speaker: "rio", face: "normal", text: "進行は変えません" },
         ] });
       });
       await page.locator(".vn-next.show").waitFor();
@@ -59,10 +59,10 @@ await suite("debug-tools", async check => {
       await page.waitForFunction(() => document.querySelector(".vn-text").textContent === "進行は変えません");
       await page.waitForFunction(() => [...document.querySelectorAll(".vn-portraits img")].every(i => i.complete && i.naturalWidth > 0));
       const fallbackBefore = await snapshot();
-      const oldSrc = await page.locator('.vn-portraits img[data-speaker="kuyuri"]').getAttribute("src");
+      const oldSrc = await page.locator('.vn-portraits img[data-speaker="rio"]').getAttribute("src");
       await openPanel(page);
       await select.selectOption("new");
-      assert.equal(await page.locator('.vn-portraits img[data-speaker="kuyuri"]').getAttribute("src"), oldSrc, "Unregistered art keeps the classic portrait");
+      assert.equal(await page.locator('.vn-portraits img[data-speaker="rio"]').getAttribute("src"), oldSrc, "Unregistered art keeps the classic portrait");
       assert.deepEqual(await snapshot(), fallbackBefore);
       const bounds = await select.boundingBox();
       const panel = await page.locator(t("debug-panel")).boundingBox();

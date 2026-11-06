@@ -57,7 +57,7 @@ def encode(src: Path, rel: str) -> bytes:
             or rel.startswith("sprites/characters/hiyori/")
             or rel.startswith("sprites/characters/ageha/")
             or rel.startswith("sprites/characters/minto/")
-            or rel.startswith("sprites/characters/kuyuri/")
+            or rel.startswith("sprites/characters/rio/")
             or rel.startswith("sprites/characters/tsumugi/")
             or rel.startswith("sprites/characters/sumi/")
             or rel.startswith("sprites/characters/mashiro/")

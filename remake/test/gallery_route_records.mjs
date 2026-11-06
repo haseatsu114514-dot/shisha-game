@@ -115,7 +115,7 @@ storage.set(g.GALLERY_PROGRESS_KEY, JSON.stringify({ routeRecords: {
     trueEndAsLover: 1 },
   ageha: { becameLover: 1, eventsSeen: "2", trueEndAsLover: true },
   naru: { becameLover: "true", eventsSeen: [null, ""], trueEndAsLover: false },
-  kuyuri: {}, mashiro: [], tsumugi: null, other: "bad",
+  rio: {}, mashiro: [], tsumugi: null, other: "bad",
   "Bad-ID": { becameLover: true },
 } }));
 assert.deepEqual(routes(), {

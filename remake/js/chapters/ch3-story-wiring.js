@@ -79,9 +79,9 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   // 返事の場面は告白の選択肢の next_id で入る（ch3_read_confession_mashiro は返事まで読んだ時だけ立つ）。
   confession: ["confession_mashiro", "confession_mashiro_accept", "confession_mashiro_reject"],
   // 第3章で再生しうるのは date_min_chapter が3以下の恋人だけ（あげはは第4章から）。
-  tournament_dates: ["tournament_date_tsumugi", "tournament_date_minto", "tournament_date_kuyuri",
+  tournament_dates: ["tournament_date_tsumugi", "tournament_date_minto", "tournament_date_rio",
     "tournament_date_mashiro", "tournament_date_samechan", "tournament_date_hiyori"],
-  relationship_conflicts: ["ch3_shuraba_open", "ch3_shuraba_tsumugi", "ch3_shuraba_minto", "ch3_shuraba_kuyuri",
+  relationship_conflicts: ["ch3_shuraba_open", "ch3_shuraba_tsumugi", "ch3_shuraba_minto", "ch3_shuraba_rio",
     "ch3_shuraba_mashiro", "ch3_shuraba_samechan", "ch3_shuraba_hiyori", "ch3_shuraba_steve", "tournament_evening_overlap"],
 });
 

@@ -93,7 +93,7 @@ core.state.growth.nodes=[nodeFor("tongue").id];
 gainFlavorExperience(core.state,{ lemon:12 },10);
 assert(core.state.flavorMastery.lemon>10);
 // 旧セーブの不足補完は、今の盤の熟練度倍率で過去の報酬を増やさない。
-core.state.schema=23; core.state.story.kuyuri=4;
+core.state.schema=23; core.state.story.rio=4;
 core.save(); core.load();
 assert.equal(core.state.flavorMastery.rose,6); assert.equal(core.state.flavorMastery.lychee,6);
 assert.equal(core.state.flavorMastery.blueberry,12);

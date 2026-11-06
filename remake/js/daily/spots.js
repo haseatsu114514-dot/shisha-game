@@ -23,7 +23,7 @@ import { trpgSpot, maybeRecruitTrpgMember } from "./trpg.js";
 import { AXE_BAR } from "./axe-bar-data.js";
 import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { fortuneHere, fortunePosition } from "./fortune-schedule.js";
-import { openingStatus, kuyuriUnavailable } from "./spot-hours.js";
+import { openingStatus, rioUnavailable } from "./spot-hours.js";
 
 import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
 
@@ -33,22 +33,22 @@ export const VISIT_COST = 3000;
 export const TOKYO_VISIT_COST = 4000;
 
 // キャラ別の「通うと伸びる」主要ステ（ch1の6人で5種を一通りカバー）
-export const CHAR_STAT = { sumi: "technique", tsumugi: "sense", naru: "insight", adam: "guts", minto: "charm", kuyuri: "sense" };
+export const CHAR_STAT = { sumi: "technique", tsumugi: "sense", naru: "insight", adam: "guts", minto: "charm", rio: "sense" };
 
 // 固有会話の順番。特別回（常連回・総督回など）は関係ができた頃合いに一度だけ挟む
 export { VISIT_SEQ } from "../core/affinity-stages.js";
 import { VISIT_SEQ, visitStorySkipped } from "../core/affinity-stages.js";
 const REPEAT_POOL = {
-  kuyuri: ["ch1_kuyuri_repeat", "ch1_kuyuri_repeat_b", "ch1_kuyuri_repeat_c"],
+  rio: ["ch1_rio_repeat", "ch1_rio_repeat_b", "ch1_rio_repeat_c"],
 };
 // 固有会話をいくつ見たら LIME を交換済みとみなすか（交換シーンは固有会話の中にある）
 // アダムは総督回を挟むので、交換の場面（ch1_adam_third）は4本目
-const LIME_EXCHANGE = { naru: 2, adam: 4, minto: 1, tsumugi: 2, sumi: 1, kuyuri: 2 };
+const LIME_EXCHANGE = { naru: 2, adam: 4, minto: 1, tsumugi: 2, sumi: 1, rio: 2 };
 
 // 背景（訪問先）
 export const VISIT_BG = {
   sumi: "bg_tonari_inside", tsumugi: "bg_tonari_inside",
-  naru: "kemurikusa", adam: "bg_eden_shop", minto: "peppermint", kuyuri: "bg_fookah_showroom",
+  naru: "kemurikusa", adam: "bg_eden_shop", minto: "peppermint", rio: "bg_fookah_showroom",
 };
 
 /**
@@ -157,10 +157,10 @@ function storyOpenByHeart(id) {
 export const mintoIdentityRevealDue = () => !state.flags._minto_identity_revealed
   && storyCount("minto") >= 2 && affinityLevel("minto") >= 3;
 /** 夜の2階で試作品を確かめる一度きりの回（#1696）。固有会話3本目の後、新しい話が無い来店で読む。 */
-const KUYURI_PROTOTYPE = "ch1_kuyuri_prototype_night";
-const KUYURI_PROTOTYPE_SEEN = `_spot_seen_${KUYURI_PROTOTYPE}`;
-export const kuyuriPrototypeDue = () => !state.flags[KUYURI_PROTOTYPE_SEEN]
-  && storyCount("kuyuri") >= 3 && !!DB.dialogues[KUYURI_PROTOTYPE]?.lines?.length;
+const RIO_PROTOTYPE = "ch1_rio_prototype_night";
+const RIO_PROTOTYPE_SEEN = `_spot_seen_${RIO_PROTOTYPE}`;
+export const rioPrototypeDue = () => !state.flags[RIO_PROTOTYPE_SEEN]
+  && storyCount("rio") >= 3 && !!DB.dialogues[RIO_PROTOTYPE]?.lines?.length;
 /**
  * 章が明けて最初の来店で一度だけ読む後日談（#2026）。第1章で実際に通った店主だけ（regulars は
  * 章の切り替え時の記録。ch2-progress.js）。既読は台本末尾の set_flag。第2章の地元の地図だけが入口。
@@ -180,16 +180,16 @@ export function afterChapterVisitDue(charId, s = state) {
     && DB.dialogues[entry.scene]?.lines?.length ? entry.scene : null;
 }
 /**
- * その章の間だけ店で読める短い会話（第2章のくゆり・VOL13）。段階会話より先に、一来店に一本ずつ・一度だけ。
+ * その章の間だけ店で読める短い会話（第2章の凛想・VOL13）。段階会話より先に、一来店に一本ずつ・一度だけ。
  * flag は読める時期（味の不調の後など）。台本は章の準備期間に読み込む（data/dialogue/ch2_home.json）ので、未読込なら出さない。
  * 初対面の固有会話（VISIT_SEQ の1本目）を読んだ相手だけ（呼び名・面識を前提にするため）。
  * 既読は `_talk_seen_<scene>`。好感度は通い訪問と同じ+5。
  */
 export const CHAPTER_TALKS = Object.freeze({
-  kuyuri: Object.freeze([
-    // 「……君、今日は煙の褒め方が嘘だね」（characters.json のくゆり）。味の不調に誰より早く気づく
-    { chapter: 2, scene: "ch2_kuyuri_taste", flag: "_ch2_taste_distant" },
-    { chapter: 2, scene: "ch2_kuyuri_strawberry" },
+  rio: Object.freeze([
+    // 「……君、今日は煙の褒め方が嘘だね」（characters.json の凛想）。味の不調に誰より早く気づく
+    { chapter: 2, scene: "ch2_rio_taste", flag: "_ch2_taste_distant" },
+    { chapter: 2, scene: "ch2_rio_strawberry" },
   ]),
 });
 export function chapterTalkDue(charId, s = state) {
@@ -210,7 +210,7 @@ export function hasNewStory(charId) {
   if (afterChapterVisitDue(charId)) return true;
   if (charId === "minto" && mintoIdentityRevealDue()) return true;
   if (questionVisitDue(charId)) return true;
-  if (charId === "kuyuri" && kuyuriPrototypeDue()) return true;
+  if (charId === "rio" && rioPrototypeDue()) return true;
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
   if (id && !visitStorySkipped(state, charId, id)) return storyAvailable(id);
   return questionVisitDue(charId) || finaleAtVisit(charId);
@@ -263,7 +263,7 @@ export function hasNewEvent(spot) {
   if (typeof spot.hasNew === "function") return !!spot.hasNew();
   if (spot.kind === "tonari") return state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi")
     || state.visitedDay.tonari_customer !== state.day && tsumugiAtTonari(state) && hasNewStory("tsumugi");
-  if (spot.kind === "shop") return !kuyuriUnavailable(state) && hasNewStory("kuyuri");
+  if (spot.kind === "shop") return !rioUnavailable(state) && hasNewStory("rio");
   if (spot.charId === "samechan") {
     const scene = samechanVisitDialogue();
     return !!scene && !scene.startsWith("samechan_shop_repeat_") && !!DB.dialogues[scene]?.lines?.length;
@@ -396,7 +396,7 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx]) && !visitStorySkipped(state, charId, seq[idx])) {
       const opts = DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg };
       // 試供品は完読で受領する。SKIPでは進行を確定せず、次回読み直せるようにする。
-      if (charId === "kuyuri" && seq[idx] === "ch1_kuyuri_third") opts.cancelOnSkip = true;
+      if (charId === "rio" && seq[idx] === "ch1_rio_third") opts.cancelOnSkip = true;
       if (!await read(seq[idx], opts)) return false;
       state.story[charId] = idx + 1;
       gainAffinity(charId, visitAffinity("story"), affinityOptions);
@@ -406,9 +406,9 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     } else if (finaleAtVisit(charId)) {
       if (!await playFinale(charId, { bg, signal, deferSave: true }) || !live()) return false;
       gainAffinity(charId, visitAffinity("story"), affinityOptions);
-    } else if (charId === "kuyuri" && kuyuriPrototypeDue()) {
-      if (!await read(KUYURI_PROTOTYPE, {})) return false;
-      state.flags[KUYURI_PROTOTYPE_SEEN] = true;
+    } else if (charId === "rio" && rioPrototypeDue()) {
+      if (!await read(RIO_PROTOTYPE, {})) return false;
+      state.flags[RIO_PROTOTYPE_SEEN] = true;
       gainAffinity(charId, visitAffinity("talk"), affinityOptions);
     } else {
       const rainy = isRainy();

@@ -73,13 +73,13 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "日本の窓口はくゆりに任せている。あいつの上司だ"
+          "text": "日本の窓口は凛想に任せている。あいつの上司だ"
         },
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_ev_kuyuri_monitor",
-          "next_true": "kuyuri_report",
+          "flag": "_ev_rio_monitor",
+          "next_true": "rio_report",
           "next_false": ""
         },
         {
@@ -95,7 +95,7 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "……くゆりは、日本の店を一人で回っている"
+          "text": "……凛想は、日本の店を一人で回っている"
         },
         {
           "speaker": "volk",
@@ -243,7 +243,7 @@
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_kuyuri_sample_received",
+          "flag": "_rio_sample_received",
           "next_true": "nightside_sample_owned",
           "next_false": "nightside_sample_none"
         },
@@ -309,18 +309,18 @@
         }
       ],
       "branches": {
-        "kuyuri_report": [
+        "rio_report": [
           {
             "type": "condition",
             "condition_type": "lover",
-            "char_id": "kuyuri",
-            "next_true": "kuyuri_report_lover",
-            "next_false": "kuyuri_report_plain"
+            "char_id": "rio",
+            "next_true": "rio_report_lover",
+            "next_false": "rio_report_plain"
           },
           {
             "speaker": "volk",
             "face": "normal",
-            "text": "くゆりの報告に、名前を伏せたモニターがいた。舌が素直だ、と書いてあった"
+            "text": "凛想の報告に、名前を伏せたモニターがいた。舌が素直だ、と書いてあった"
           },
           {
             "speaker": "volk",
@@ -328,18 +328,18 @@
             "text": "……県大会で、それらしい手を見ていた"
           }
         ],
-        "kuyuri_report_plain": [
+        "rio_report_plain": [
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "くゆりさんの……？"
+            "text": "凛想さんの……？"
           }
         ],
-        "kuyuri_report_lover": [
+        "rio_report_lover": [
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "……くゆりさんから、聞いてます"
+            "text": "……凛想さんから、聞いてます"
           }
         ],
         "unseen": [
@@ -509,7 +509,7 @@
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "このアールグレイ……前にくゆりさんから、黒い袋の試作をもらいました"
+            "text": "このアールグレイ……前に凛想さんから、黒い袋の試作をもらいました"
           },
           {
             "speaker": "volk",
@@ -531,7 +531,7 @@
           {
             "speaker": "volk",
             "face": "normal",
-            "text": "これまでは、くゆりが試作を店で試してもらう段階だった。試供品は練習用だ"
+            "text": "これまでは、凛想が試作を店で試してもらう段階だった。試供品は練習用だ"
           },
           {
             "speaker": "volk",

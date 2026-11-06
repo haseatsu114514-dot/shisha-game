@@ -5,7 +5,7 @@
   "heroine_ids": [
     "tsumugi",
     "minto",
-    "kuyuri",
+    "rio",
     "ageha",
     "mashiro",
     "samechan",
@@ -30,14 +30,14 @@
       "near_conflict": "ch3_shuraba_minto",
       "talk": "shuraba_talk_minto"
     },
-    "kuyuri": {
-      "date": "tournament_date_kuyuri",
-      "conflict": "shuraba_kuyuri",
-      "epilogue": "epilogue_kuyuri",
+    "rio": {
+      "date": "tournament_date_rio",
+      "conflict": "shuraba_rio",
+      "epilogue": "epilogue_rio",
       "date_min_chapter": 3,
-      "arrival": "ch4_kuyuri_dubai_girlfriend",
-      "near_conflict": "ch3_shuraba_kuyuri",
-      "talk": "shuraba_talk_kuyuri"
+      "arrival": "ch4_rio_dubai_girlfriend",
+      "near_conflict": "ch3_shuraba_rio",
+      "talk": "shuraba_talk_rio"
     },
     "ageha": {
       "date": "tournament_date_ageha",
@@ -330,11 +330,11 @@
     "flag": "_shuraba_ch1",
     "scenes": [
       "remake_shuraba_minto_tsumugi",
-      "remake_shuraba_kuyuri_tsumugi",
-      "remake_shuraba_kuyuri_minto",
+      "remake_shuraba_rio_tsumugi",
+      "remake_shuraba_rio_minto",
       "remake_shuraba_all",
       "remake_shuraba_hiyori_minto",
-      "remake_shuraba_hiyori_kuyuri",
+      "remake_shuraba_hiyori_rio",
       "remake_shuraba_hiyori_tsumugi",
       "remake_shuraba_all_hiyori"
     ],
@@ -342,10 +342,10 @@
     "recall": {
       "minto": "ch1_tournament_after",
       "tsumugi": "ch1_tournament_after",
-      "kuyuri": "interval_day1_morning_win",
+      "rio": "interval_day1_morning_win",
       "hiyori": "interval_day1_morning_win",
       "defeat": "remake_defeat_follow"
     },
-    "comment": "#2089: 第1章の大会当日、控室入場前の鉢合わせ。第3章の茶化しと同じく謝罪・破局・和解を確定せず保留する。大会後は居合わせた恋人が「朝の話」を一言だけ返す（優勝: ロビーのみんと・tonariのつむぎ・翌朝のくゆりとひよりのLIME／敗北: remake_defeat_follow）。#2025: ひよりも対象。ひよりを含む2人は組ごとの台本、3人以上は居合わせた恋人の行だけを出す remake_shuraba_all_hiyori。"
+    "comment": "#2089: 第1章の大会当日、控室入場前の鉢合わせ。第3章の茶化しと同じく謝罪・破局・和解を確定せず保留する。大会後は居合わせた恋人が「朝の話」を一言だけ返す（優勝: ロビーのみんと・tonariのつむぎ・翌朝の凛想とひよりのLIME／敗北: remake_defeat_follow）。#2025: ひよりも対象。ひよりを含む2人は組ごとの台本、3人以上は居合わせた恋人の行だけを出す remake_shuraba_all_hiyori。"
   }
 }

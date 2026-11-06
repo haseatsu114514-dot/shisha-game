@@ -45,7 +45,7 @@ export const DB = {
 
 const DIALOGUE_FILES = [
   "ch1_main", "ch1_tournament", "ch1_sumi", "ch1_naru", "ch1_adam", "ch1_minto",
-  "ch1_tsumugi", "ch1_kuyuri", "ch1_ageha", "ch1_spots", "ch1_events", "ch1_incognito",
+  "ch1_tsumugi", "ch1_rio", "ch1_ageha", "ch1_spots", "ch1_events", "ch1_incognito",
   "confession", "lover_events", // 告白・恋人の節目イベント（正本は旧版と共通）
   "remake_ch1", // リメイク版の進行で使う短い場面（旧版 web/ は読まない）
   "ch1_interval",

@@ -346,7 +346,7 @@ for (;;) {
       await click('[data-test="pin-tonari"]'); await click('[data-test="map-go"]');
       await page.waitForSelector('[data-test="tonari-baito"]', { timeout: 5000 }).catch(() => {});
       await click(kind === "baito" ? '[data-test="tonari-baito"]' : '[data-test="tonari-customer"]');
-    } else if (kind === "shop" || kind === "kuyuri") {
+    } else if (kind === "shop" || kind === "rio") {
       pendingShopBuy = kind === "shop" ? arg : "__upstairs";
       log("shopping-plan", JSON.stringify({ planIdx, pendingShopBuy, state: await shoppingSnapshot() }));
       await shoppingRequired('[data-test="pin-shop"]');

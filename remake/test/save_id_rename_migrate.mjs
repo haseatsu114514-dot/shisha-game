@@ -1,5 +1,5 @@
 // スキーマ26（IDREN01）: キャラID改名の旧セーブ付け替えテスト。
-// 旧ID（nagumo/rin/kuze/saif/rashid）で保存されたデータが、新ID（sui/kuyuri/saku/suhail/khalil）で復元されること。
+// 旧ID（nagumo/rin/kuze/saif/rashid）で保存されたデータが、新ID（sui/rio/saku/suhail/khalil）で復元されること。
 // 付け替え先に既存値がある場合は新ID側を優先する。
 // node --experimental-vm-modules remake/test/save_id_rename_migrate.mjs
 import assert from "node:assert/strict";
@@ -76,70 +76,70 @@ function loadSave(save) {
   });
   assert.equal(s.schema, 26);
   // キーの付け替え（好感度・面識・固有会話・絆）
-  assert.equal(s.affinity.kuyuri, 40);
+  assert.equal(s.affinity.rio, 40);
   assert.equal(s.affinity.sui, 10);
   assert.equal(s.affinity.saku, 5);
   assert.equal(s.affinity.suhail, 3);
   assert.equal(s.affinity.khalil, 2);
   assert.equal(s.affinity.sumi, 7);
   for (const old of ["nagumo", "rin", "kuze", "saif", "rashid"]) assert(!(old in s.affinity), old + " が残らない");
-  assert.equal(s.met.kuyuri, true);
-  assert.equal(s.story.kuyuri, 2);
-  assert.equal(s.affinityCarry.kuyuri, 0.5);
+  assert.equal(s.met.rio, true);
+  assert.equal(s.story.rio, 2);
+  assert.equal(s.affinityCarry.rio, 0.5);
   assert.equal(s.loveCarry.saku, 0.25);
-  assert.equal(s.loveLevel.kuyuri, 2);
-  assert.equal(s.lovePts.kuyuri, 30);
-  assert.equal(s.loverSince.kuyuri, 5);
-  assert.equal(s.lastDate.kuyuri, 6);
-  assert.equal(s.romance.kuyuri, 1);
+  assert.equal(s.loveLevel.rio, 2);
+  assert.equal(s.lovePts.rio, 30);
+  assert.equal(s.loverSince.rio, 5);
+  assert.equal(s.lastDate.rio, 6);
+  assert.equal(s.romance.rio, 1);
   assert.equal(s.finales.saku.route, "friend");
   assert.equal(s.friendHangouts.sui, 1);
-  // フラグキーと、_kuyuri_sample を見る既存補完（フレーバー在庫）が新IDで効く
-  assert.equal(s.flags._kuyuri_sample, true);
-  assert.equal(s.flags._read_ch1_kuyuri_first, true);
+  // フラグキーと、_rio_sample を見る既存補完（フレーバー在庫）が新IDで効く
+  assert.equal(s.flags._rio_sample, true);
+  assert.equal(s.flags._read_ch1_rio_first, true);
   assert.equal(s.flavorStock.nightside_earlgrey, 50);
   // 配列・値側のID
-  assert.deepEqual(s.contacts, ["sumi", "kuyuri", "saku"]);
-  assert.deepEqual(s.lovers, ["kuyuri"]);
-  assert.equal(s.romanceChoices.q1.char, "kuyuri");
-  assert.deepEqual(s.limeRead, ["kuyuri_1", "sumi_2"]);
-  assert.deepEqual(s.flavorLessons, ["ch1_kuyuri_first"]);
-  assert.deepEqual(s.relationshipMemories, ["kuyuri_memory_1"]);
-  assert.deepEqual(s.loverEventsSeen, ["kuyuri_date_1"]);
-  assert.deepEqual(s.usedBaito, ["baito_kuyuri_day"]);
-  assert.deepEqual(s.baitoRecent[0].customers, ["kuyuri", "minto"]);
+  assert.deepEqual(s.contacts, ["sumi", "rio", "saku"]);
+  assert.deepEqual(s.lovers, ["rio"]);
+  assert.equal(s.romanceChoices.q1.char, "rio");
+  assert.deepEqual(s.limeRead, ["rio_1", "sumi_2"]);
+  assert.deepEqual(s.flavorLessons, ["ch1_rio_first"]);
+  assert.deepEqual(s.relationshipMemories, ["rio_memory_1"]);
+  assert.deepEqual(s.loverEventsSeen, ["rio_date_1"]);
+  assert.deepEqual(s.usedBaito, ["baito_rio_day"]);
+  assert.deepEqual(s.baitoRecent[0].customers, ["rio", "minto"]);
   // LIME受信箱・予約
-  assert.equal(s.inbox[0].id, "kuyuri_invite_1");
-  assert.equal(s.inbox[0].msg.sender, "kuyuri");
-  assert.equal(s.inbox[0].msg.accept_event, "outing_kuyuri_1");
+  assert.equal(s.inbox[0].id, "rio_invite_1");
+  assert.equal(s.inbox[0].msg.sender, "rio");
+  assert.equal(s.inbox[0].msg.accept_event, "outing_rio_1");
   assert.equal(s.pendingInvite.sender, "sui");
   // TRPG・東京訪問
   assert.equal(s.trpg.cleared.t1.gm, "suhail");
-  assert.deepEqual(s.trpg.cleared.t1.participants, ["kuyuri", "sai"]);
-  assert.deepEqual(Object.keys(s.trpg.club.members), ["kuyuri"]);
+  assert.deepEqual(s.trpg.cleared.t1.participants, ["rio", "sai"]);
+  assert.deepEqual(Object.keys(s.trpg.club.members), ["rio"]);
   assert.equal(s.tokyoVisits.plans[0].characterId, "khalil");
   assert.equal(s.tokyoVisits.offers.khalil.characterId, "khalil");
 }
 
 // --- 付け替え先に既存値がある場合は新ID側を優先する ---
 {
-  const s = loadSave({ schema: 25, day: 1, affinity: { rin: 40, kuyuri: 99 }, lovers: ["rin", "kuyuri"] });
-  assert.equal(s.affinity.kuyuri, 99);
+  const s = loadSave({ schema: 25, day: 1, affinity: { rin: 40, rio: 99 }, lovers: ["rin", "rio"] });
+  assert.equal(s.affinity.rio, 99);
   assert(!("rin" in s.affinity));
-  assert.deepEqual(s.lovers, ["kuyuri"]);
+  assert.deepEqual(s.lovers, ["rio"]);
 }
 
 // --- schema 23 の旧セーブ: 後段の移行（第4回の味の話）も新IDで効く ---
 {
   const s = loadSave({ schema: 23, day: 2, story: { rin: 4 } });
-  assert.equal(s.story.kuyuri, 4);
-  assert(s.flavorLessons.includes("ch1_kuyuri_fourth"), "ch1_kuyuri_fourth が補われる");
+  assert.equal(s.story.rio, 4);
+  assert(s.flavorLessons.includes("ch1_rio_fourth"), "ch1_rio_fourth が補われる");
 }
 
 // --- 現行スキーマのセーブはそのまま ---
 {
-  const s = loadSave({ schema: 26, day: 1, affinity: { sui: 5, kuyuri: 3 } });
-  assert.deepEqual(s.affinity, { sui: 5, kuyuri: 3 });
+  const s = loadSave({ schema: 26, day: 1, affinity: { sui: 5, rio: 3 } });
+  assert.deepEqual(s.affinity, { sui: 5, rio: 3 });
 }
 
 console.log("save id rename migrate: PASS (all structures renamed, new-key priority, legacy lesson backfill, current schema untouched)");

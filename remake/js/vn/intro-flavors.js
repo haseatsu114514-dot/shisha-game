@@ -6,7 +6,7 @@
 const flavors = {
   sumi: "カルダモン", naru: "バニラ", adam: "ダブルアップル", minto: "ミント",
   rei: "ローズ", tsumugi: "ラベンダー",
-  kuyuri: "ブルーベリー", ageha: "ホワイトグミベア／レッドグミベア",
+  rio: "ブルーベリー", ageha: "ホワイトグミベア／レッドグミベア",
   kumicho: "ドラゴンフルーツ", dr_kemuri: "コーラ", pakki: "ガムシナモン",
   emil: "ピスタチオ", da_silva: "アサイー",
   mashiro: "ブラックティー",

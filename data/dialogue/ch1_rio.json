@@ -1,7 +1,7 @@
 {
   "dialogues": [
     {
-      "dialogue_id": "ch1_kuyuri_first",
+      "dialogue_id": "ch1_rio_first",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
         "topic": "出会い"
@@ -23,7 +23,7 @@
           "text": "会計を待っていると、店の奥の暗がり、階段の上から声が降ってきた。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "そこの君。……うん、君だよ。いい顔してる、吸い慣れた顔だ"
         },
@@ -43,12 +43,12 @@
           "text": "抱えたクリップボードに細い試香紙が何本も挟んであって、煙とは違う、複雑な香りがした。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "毎日シーシャを吸ってる顔だよ。それも、遊びじゃなくて仕事でね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "……tonariの子だね。前掛けの折り目でわかっちゃう"
         },
@@ -63,21 +63,21 @@
           "text": "は、はい。tonariでバイトしてる、蒸野です"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
-          "text": "香坂くゆり。この店の2階で、海外メーカーNIGHTSIDEの代理店デスクをやってる。……聞いたこと、ない？"
+          "text": "円頓寺凛想。この店の2階で、海外メーカーNIGHTSIDEの代理店デスクをやってる。……聞いたこと、ない？"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "まあ、いいよ。せっかく来たんだ、歓迎くらいするよ"
         },
         {
           "type": "set_flag",
-          "flag": "_met_kuyuri"
+          "flag": "_met_rio"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "ねえ、君。ひとつ、私と取引しない？ ……モルモットくん"
         },
@@ -97,22 +97,22 @@
           "text": "窓は黒いフィルムで塞がれている。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "未発売のサンプルを吸って、正直な感想をちょうだい。報酬は後日、次のサンプルで現物支給ね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "日本でまだ誰も吸ってない煙だよ、……ねえ、気にならない？"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "はい、これ同意書。ちゃんと読んで。読み終わったら、ペンはこっちね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "早く吸ってみたい顔してる。……訊きたいことがあるなら、今のうちだよ"
         },
@@ -123,7 +123,7 @@
         },
         {
           "type": "choice",
-          "id": "kuyuri_first_pen",
+          "id": "rio_first_pen",
           "choices": [
             {
               "text": "（流されるな、俺……！）",
@@ -136,12 +136,12 @@
           ]
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "言っとくけど、危ない橋は渡らせないよ。サンプルは全部、先に私が吸って確かめてる"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……それが、代理店の仕事だからね"
         },
@@ -156,9 +156,9 @@
           "text": "もう一度同意書に目を通してから、自分でペンを取り、名前を書いた。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
-          "text": "くゆりでいいよ、モルモットくん。じゃあ、契約成立。……さっそく最初のサンプル、試してみようか"
+          "text": "凛想でいいよ、モルモットくん。じゃあ、契約成立。……さっそく最初のサンプル、試してみようか"
         },
         {
           "speaker": "",
@@ -166,18 +166,18 @@
           "text": "棚の袋が気になる。自分の知らない香りを、ここで確かめてみたくなった。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "次は、吸った感想を聞かせて。売るだけの私には、見えないものがあるからさ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（俺が吸った感想が、くゆりさんの仕事に戻っていく。……そう思うと、悪くない）"
+          "text": "（俺が吸った感想が、凛想さんの仕事に戻っていく。……そう思うと、悪くない）"
         },
         {
           "type": "remember",
-          "memory_id": "kuyuri_feedback"
+          "memory_id": "rio_feedback"
         },
         {
           "speaker": "",
@@ -198,7 +198,7 @@
             "text": "待ってください。サインの前に、中身を読ませてもらっても？"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "smug",
             "text": "どうぞ。そんなに急かしてないでしょ、モルモットくん"
           },
@@ -208,7 +208,7 @@
             "text": "途中で合わないと思ったら、やめてもいいんですか？"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "もちろん。口に合わないものの感想を、無理にもらっても困るしね"
           }
@@ -225,7 +225,7 @@
             "text": "（それに、日本にまだ無い煙って……正直、めちゃくちゃ気になる）"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "……ふぅん。ちゃんと見るとこ見るんだ。はじめくん、ますます気に入ったよ"
           },
@@ -235,7 +235,7 @@
             "text": "このサンプル、店のお客さんにも出すんですか？"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "serious",
             "text": "まだ出さない。君に渡す分も、まずは君の肺で確かめてからね"
           },
@@ -248,14 +248,14 @@
       }
     },
     {
-      "dialogue_id": "ch1_kuyuri_second",
+      "dialogue_id": "ch1_rio_second",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
         "topic": "試香モニター"
       },
       "lines": [
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "お、来たね、モルモットくん。ちょうど今日の便で、新しいサンプルが届いたとこ"
         },
@@ -267,10 +267,10 @@
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりさんは慣れた手つきで炭を整えて、ホースをこちらへ差し出した。"
+          "text": "凛想さんは慣れた手つきで炭を整えて、ホースをこちらへ差し出した。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "ロットB-7。まず一口、いってみて。考えるのは、吐いてからでいい"
         },
@@ -281,7 +281,7 @@
         },
         {
           "type": "choice",
-          "id": "kuyuri_monitor_1",
+          "id": "rio_monitor_1",
           "choices": [
             {
               "text": "「甘さの後ろに、冷たい金属みたいな香りが残ります」",
@@ -298,62 +298,62 @@
           ]
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "ふうん、……君の舌、正直だね。嘘がない"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "宣伝文句を通さないで、思ったまま言う。それ、この業界だと結構めずらしいんだよ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりさんはペンを走らせながら、口の端だけで笑った。笑うと、目尻がやわらぐ人だ。"
+          "text": "凛想さんはペンを走らせながら、口の端だけで笑った。笑うと、目尻がやわらぐ人だ。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "本国へのレポート、君の言葉そのまま訳して載せるよ。……名前は伏せといてあげるから"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "怖いでしょ、知らないとこで海外デビュー"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "報酬のサンプルは次の便で。今日はおまけに、いい組み合わせを一つ。ローズに、ライチ"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "香水みたいに、後を引くよ。……どっちも1階に置いてる。買っていきなね"
         },
         {
           "type": "note",
           "note_id": "recipe_hint_perfume",
-          "label": "くゆりさん仕込み ローズ×ライチ"
+          "label": "凛想さん仕込み ローズ×ライチ"
         },
         {
           "type": "set_flag",
-          "flag": "_ev_kuyuri_monitor"
+          "flag": "_ev_rio_monitor"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "本国の反応が返ってきたら、連絡する。……LIME、こっちで登録しとくね"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "こうして、くゆりさんとLIMEを交換した。"
+          "text": "こうして、凛想さんとLIMEを交換した。"
         },
         {
           "type": "set_flag",
-          "flag": "_lime_contact_kuyuri"
+          "flag": "_lime_contact_rio"
         },
         {
           "speaker": "",
@@ -369,26 +369,26 @@
       "branches": {
         "r_sharp": [
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "surprise",
             "text": "へえ。それ、ベルガモットの裏にメンソールを薄く忍ばせてるの、……普通は気づかないよ"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "（小声）……いいモルモット拾ったかも"
           }
         ],
         "r_market": [
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "市場目線。毎日店に立ってる人間の感想だ。そういうのが一番高く売れるんだよ、実はね"
           }
         ],
         "r_more": [
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "……ふふ。いいよ、どうぞ。確かめてから喋る子は、信用できる"
           },
@@ -401,14 +401,14 @@
       }
     },
     {
-      "dialogue_id": "ch1_kuyuri_third",
+      "dialogue_id": "ch1_rio_third",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
         "topic": "夜の側のサンプル"
       },
       "lines": [
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "ん、今日はモニターじゃないよ。……これ、持っていきな"
         },
@@ -420,7 +420,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "NIGHTSIDEのロゴの下に、くゆりさんの手で『EARL GREY — PROTO』。"
+          "text": "NIGHTSIDEのロゴの下に、凛想さんの手で『EARL GREY — PROTO』。"
         },
         {
           "speaker": "hajime",
@@ -428,12 +428,12 @@
           "text": "え、未発売のサンプルって、店の外に出しちゃだめなんじゃ……"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "だめだよ。だから、あげるんじゃなくて『フィールドテストの委託』。書類はもう作ってある"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……ね、悪い大人でしょ"
         },
@@ -455,12 +455,12 @@
           "next_false": "sample_before"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "未発売だから、大会と店では絶対に出さないで。あくまで練習専用ね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "作った人、運んだ人、先に試した人。ひと袋にも、案外いろんな手が入ってる"
         },
@@ -470,17 +470,17 @@
           "text": "ここから先は、俺が試して返すんですね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "そう。私の好きな味に、無理に寄せなくていいからね"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "袋を受け取るとき、くゆりさんがふと、こちらへ少しだけ顔を寄せた。香りを確かめるように。"
+          "text": "袋を受け取るとき、凛想さんがふと、こちらへ少しだけ顔を寄せた。香りを確かめるように。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……君、いい匂いがするね。煙と、炭と、ほんのりスパイス。これ、tonariの匂いだ"
         },
@@ -490,18 +490,18 @@
           "text": "……っ、そ、そうですか。自分じゃ、もう分からなくて"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "長く店に立ち続けた人間だけの匂いだよ。私は、それを信用することにしてる"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……はい、業務連絡はこれでおしまい。ほら、帰った帰った"
         },
         {
           "type": "set_flag",
-          "flag": "_kuyuri_sample"
+          "flag": "_rio_sample"
         },
         {
           "speaker": "",
@@ -520,7 +520,7 @@
         },
         {
           "type": "remember",
-          "memory_id": "kuyuri_sample"
+          "memory_id": "rio_sample"
         },
         {
           "speaker": "",
@@ -531,14 +531,14 @@
       "branches": {
         "sample_before": [
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "君の大会、見に行けないからさ。代わりに練習で、私の仕事を確かめてよ"
           }
         ],
         "sample_after": [
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "君の手で、どんな香りに化けるのか知りたい。練習で、私の仕事を確かめて"
           }
@@ -546,7 +546,7 @@
       }
     },
     {
-      "dialogue_id": "ch1_kuyuri_fourth",
+      "dialogue_id": "ch1_rio_fourth",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
         "topic": "客の顔",
@@ -568,7 +568,7 @@
           "text": "「二階の魔女、また読めない袋を仕入れたってさ」「でも、あの人の選ぶのは外れないんだよな」"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smug",
           "text": "聞こえた？　魔女だってさ。ただ、鼻で選んでるだけなのにね"
         },
@@ -578,12 +578,12 @@
           "text": "魔女なんて呼ばれて、嫌じゃないんですか"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "便利だよ。怪しく見える人のとこには、怪しくて面白い話が先に集まるの"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "で、今日はどうしたの。言っとくけど、サンプル便はないよ"
         },
@@ -593,7 +593,7 @@
           "text": "この前のローズとライチ、tonariの常連さんに作って出してみたんです"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "surprise",
           "text": "……え。もう、出したの？"
         },
@@ -605,10 +605,10 @@
         {
           "speaker": "",
           "face": "",
-          "text": "クリップボードの上で、くゆりさんのペンが止まった。"
+          "text": "クリップボードの上で、凛想さんのペンが止まった。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "……それ、どんな顔して吸ってた？"
         },
@@ -618,12 +618,12 @@
           "text": "帰りぎわ、ホースをそっと置いて、少しだけ目を閉じてました"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "ふうん。……私さ、そういう顔、一度も見たことないんだよね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "入った数も、売れた数も、本国の評価も知ってる。吸ってる人の顔だけ、知らない"
         },
@@ -633,43 +633,43 @@
           "text": "じゃあ、また持って帰ってきますよ。お客さんが、どんな顔で吸ってたか"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "じゃあ、次の課題ね。ローズとライチの組み合わせ、君の手で続けてみて"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "ブルーベリーも足してみて。香りがどう化けるか、また聞かせて"
         },
         {
           "type": "condition",
           "condition_type": "lover",
-          "char_id": "kuyuri",
+          "char_id": "rio",
           "next_true": "face_lover",
           "next_false": "face_plain"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりさんは今の話を、クリップボードの一番上に書いた。数字の欄ではなく、余白に。"
+          "text": "凛想さんは今の話を、クリップボードの一番上に書いた。数字の欄ではなく、余白に。"
         },
         {
           "type": "remember",
-          "memory_id": "kuyuri_face"
+          "memory_id": "rio_face"
         }
       ],
       "branches": {
         "face_plain": [
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "smile",
             "text": "……モルモットくんの次は、運び屋くんか。これは報酬、上げなきゃね"
           }
         ],
         "face_lover": [
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "smile",
             "text": "……恋人に運ばせるのも、悪くないね。報酬は、二人で後で考えよ"
           }
@@ -677,8 +677,8 @@
       }
     },
     {
-      "dialogue_id": "ch1_kuyuri_fifth",
-      "comment": "#2025 ♥4。客の顔の課題（ch1_kuyuri_fourth）の続き。余白のメモを私物の手帳へ移したことを見せる。分岐は♥3の答え（romance_open）。着地済みの旧セーブには出さない（affinity-stages.js）。",
+      "dialogue_id": "ch1_rio_fifth",
+      "comment": "#2025 ♥4。客の顔の課題（ch1_rio_fourth）の続き。余白のメモを私物の手帳へ移したことを見せる。分岐は♥3の答え（romance_open）。着地済みの旧セーブには出さない（affinity-stages.js）。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
         "topic": "余白の手帳"
@@ -687,7 +687,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "夜の2階。くゆりさんは作業台ではなく、奥のデスクで何かを読み返していた。"
+          "text": "夜の2階。凛想さんは作業台ではなく、奥のデスクで何かを読み返していた。"
         },
         {
           "speaker": "",
@@ -695,7 +695,7 @@
           "text": "クリップボードではない。角のすり切れた、黒い手帳だ。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……あ、モルモットくん。ちょうど今、君の話を読み返してたとこ"
         },
@@ -705,12 +705,12 @@
           "text": "俺の、話ですか？"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "本国から、この前のレポートが戻ってきてね。余白に、赤を入れられてた"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smug",
           "text": "「数字以外の記述は別紙にまとめよ」だって、……ずいぶんお行儀のいい返事だよね"
         },
@@ -720,7 +720,7 @@
           "text": "余白って……常連さんの顔を、書いてくれたとこですよね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "そう。だから、言われたとおり別紙に移したの。ほら、これ"
         },
@@ -745,18 +745,18 @@
           "text": "……これ、全部俺が持ってきた話だ"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "売れた数は、会社が勝手に覚えてる。でもこっちは、私しか覚えてないからさ"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "どこにも提出しない。これは仕事の書類じゃなくて、私の私物だから"
         },
         {
           "type": "choice",
-          "id": "kuyuri_fifth_note",
+          "id": "rio_fifth_note",
           "choices": [
             {
               "text": "「俺の話、ほかにも書いていいですよ」",
@@ -771,18 +771,18 @@
         {
           "type": "condition",
           "condition_type": "romance_open",
-          "char_id": "kuyuri",
+          "char_id": "rio",
           "next_true": "note_romance",
           "next_false": "note_friend"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりさんは手帳を閉じて、デスクの引き出しではなく、鞄の内ポケットにしまった。"
+          "text": "凛想さんは手帳を閉じて、デスクの引き出しではなく、鞄の内ポケットにしまった。"
         },
         {
           "type": "remember",
-          "memory_id": "kuyuri_notebook"
+          "memory_id": "rio_notebook"
         }
       ],
       "branches": {
@@ -793,7 +793,7 @@
             "text": "天気の話でも、まかないの話でも"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "smile",
             "text": "……それ、どの欄に書けばいいの"
           },
@@ -803,19 +803,19 @@
             "text": "余白で"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "余白だらけの手帳になっちゃうね、……まあ、それも悪くないか"
           }
         ],
         "note_face": [
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "いい顔じゃなくていいよ。退屈そうな顔も、思いきりむせた顔も"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "serious",
             "text": "本当にそういう顔だったなら、全部持ってきて"
           },
@@ -827,12 +827,12 @@
         ],
         "note_romance": [
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "……この手帳の最後のページ、まだ真っ白でしょ"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "smile",
             "text": "そこは、君の顔用に取ってある。……まだ、何も書いてないけどね"
           },
@@ -842,14 +842,14 @@
             "text": "……え"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "今のは、完全に業務外。書くかどうかは、……そのうち私が決める"
           }
         ],
         "note_friend": [
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "共同研究ってことにしよう。著者は、モルモットくんと、私"
           },
@@ -859,7 +859,7 @@
             "text": "それ、本国に俺の名前が出ちゃうじゃないですか"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "smug",
             "text": "この手帳の中だけの話ね。本物の海外デビューは、また今度"
           }
@@ -867,8 +867,8 @@
       }
     },
     {
-      "dialogue_id": "ch1_kuyuri_sixth",
-      "comment": "#2025 ♥5。締めくくり（ch1_kuyuri_bond_finale）の前。客の顔を知らない側にいるくゆりが、ロットを選ぶ基準の変化を自分から話す（characters.json の growth_stats.notes）。分岐は♥3の答え（romance_open）。",
+      "dialogue_id": "ch1_rio_sixth",
+      "comment": "#2025 ♥5。締めくくり（ch1_rio_bond_finale）の前。客の顔を知らない側にいる凛想が、ロットを選ぶ基準の変化を自分から話す（characters.json の growth_stats.notes）。分岐は♥3の答え（romance_open）。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
         "topic": "窓の下"
@@ -880,12 +880,12 @@
           "text": "夜の2階。黒いフィルムで塞がれた窓が、一枚だけ細く開いていた。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "来たね。……ああ、窓。夜は湿気が少ないから、少しだけ空気を入れ替えてるの"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "昼に開けると、日に焼けて葉が傷むからね。この窓は、夜しか開けないの"
         },
@@ -900,12 +900,12 @@
           "text": "提げている紙袋には、見覚えのあるロゴがあった。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "あの袋、1階のだね。……ここから見るとさ、袋しか見えないの"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "見えるのは、頭のてっぺんと、袋だけ。顔は、一度も見たことがない"
         },
@@ -915,13 +915,13 @@
           "text": "上からだと、そうなりますね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "うん。……たぶん私、ずっとこういう高い場所に立ってるんだと思う"
         },
         {
           "type": "choice",
-          "id": "kuyuri_sixth_window",
+          "id": "rio_sixth_window",
           "choices": [
             {
               "text": "（窓に顔を寄せて、下をのぞく）",
@@ -936,43 +936,43 @@
         {
           "speaker": "",
           "face": "",
-          "text": "紙袋の人は角を曲がって、見えなくなった。くゆりさんはしばらく、窓の外を見ていた。"
+          "text": "紙袋の人は角を曲がって、見えなくなった。凛想さんはしばらく、窓の外を見ていた。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……ねえ、モルモットくん。今日は、私から一つ報告してもいい？"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "最近ね、ロットを選ぶとき、つい考えちゃう。これ、tonariでどんな顔で吸われるかなって"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "前は、本国の評価と、並んだ数字しか見てなかったのにね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smug",
           "text": "……ぜんぶ、君のせいだよ"
         },
         {
           "type": "condition",
           "condition_type": "romance_open",
-          "char_id": "kuyuri",
+          "char_id": "rio",
           "next_true": "window_romance",
           "next_false": "window_friend"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "階段を降りて、さっきの通りを今度は下から歩いた。くゆりさんの窓は、もう黒く閉じていた。"
+          "text": "階段を降りて、さっきの通りを今度は下から歩いた。凛想さんの窓は、もう黒く閉じていた。"
         },
         {
           "type": "remember",
-          "memory_id": "kuyuri_window"
+          "memory_id": "rio_window"
         }
       ],
       "branches": {
@@ -988,7 +988,7 @@
             "text": "あの人、信号待ちのあいだに袋の口を少し開けて、こっそり匂いをかいでました"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "surprise",
             "text": "……ふっ、そんなこと、するんだ"
           },
@@ -998,7 +998,7 @@
             "text": "家まで待てなかったんだと思います。tonariでも、よく見る顔ですよ"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "smile",
             "text": "ふふ。……今の、手帳に書いとくね。窓の下、記念すべき一人目"
           }
@@ -1010,7 +1010,7 @@
             "text": "ここから顔が見えないなら、俺が下で見て、ここまで持って上がります"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "……それ、もう契約書の、どこにも書いてない仕事だよ"
           },
@@ -1020,7 +1020,7 @@
             "text": "契約になくても、持ってきます"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "smile",
             "text": "……君は、同意書のいらない人だね"
           }
@@ -1032,19 +1032,19 @@
             "text": "……俺のせいなら、うれしいです"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "surprise",
             "text": "……ふっ、そう返してくるんだ、君は"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "じゃあ、ちゃんと責任とってね。……今のは、半分くらい業務外だから"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "くゆりさんは窓を閉めた。黒いフィルムの向こうで、通りの灯りがにじんで消えた。"
+            "text": "凛想さんは窓を閉めた。黒いフィルムの向こうで、通りの灯りがにじんで消えた。"
           }
         ],
         "window_friend": [
@@ -1054,26 +1054,26 @@
             "text": "それって、いいモニターになれた、ってことですか"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "そう、最高のモルモットくんだよ。……代わりなんて、もう探さないからね"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "くゆりさんは窓を閉めて、いつものクリップボードを手に取った。"
+            "text": "凛想さんは窓を閉めて、いつものクリップボードを手に取った。"
           }
         ]
       }
     },
     {
-      "dialogue_id": "ch1_kuyuri_repeat",
+      "dialogue_id": "ch1_rio_repeat",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
       },
       "lines": [
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "ん、モルモットくん。今日はサンプル便なしだよ。……ちょうど、私物を吸ってたとこ"
         },
@@ -1088,19 +1088,19 @@
           "text": "それ……ブルーベリー、ですか。意外と、普通のを吸うんですね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "ふふ。仕事柄、世界中の限定品が吸えるのにね。結局いつも、これに帰ってくる"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……なんでだろうね。結局これが、一番落ち着くんだ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ショールームの隅で、くゆりさんの仕事を眺めながら少しだけ話した。"
+          "text": "ショールームの隅で、凛想さんの仕事を眺めながら少しだけ話した。"
         },
         {
           "speaker": "",
@@ -1116,25 +1116,25 @@
       ]
     },
     {
-      "dialogue_id": "ch1_kuyuri_repeat_b",
+      "dialogue_id": "ch1_rio_repeat_b",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
       },
       "lines": [
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "お、ちょうどいいとこに来たね、モルモットくん"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "ロットB-12。税関を抜けたばっかりの、ほやほやの新入りだよ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "銀色の袋。日本語表記はどこにもない。くゆりさんは袋の口を開け、指先で葉をほぐして汁気を確かめた。"
+          "text": "銀色の袋。日本語表記はどこにもない。凛想さんは袋の口を開け、指先で葉をほぐして汁気を確かめた。"
         },
         {
           "speaker": "",
@@ -1142,12 +1142,12 @@
           "text": "それから先に、確かめるように一口吸う。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……うん、線は越えてない。はい、君の番。考えるのは、吐いてからね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smug",
           "text": "あ、吸い口はちゃんと替えといたよ、……そんな顔しないの"
         },
@@ -1162,14 +1162,14 @@
           "text": "花っぽいのに、後味だけちょっと苦い……。これ、緑茶みたいな？"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "ふうん、緑茶ね。その言い回し、本国の連中には絶対出せない、……もらった"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "メモを取るくゆりさんの横顔は、少し楽しそうだった。"
+          "text": "メモを取る凛想さんの横顔は、少し楽しそうだった。"
         },
         {
           "type": "apply",
@@ -1180,7 +1180,7 @@
       ]
     },
     {
-      "dialogue_id": "ch1_kuyuri_repeat_c",
+      "dialogue_id": "ch1_rio_repeat_c",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
       },
@@ -1188,35 +1188,35 @@
         {
           "speaker": "",
           "face": "",
-          "text": "2階に上がると、くゆりさんは電話中だった。目で「座ってて」と合図される。"
+          "text": "2階に上がると、凛想さんは電話中だった。目で「座ってて」と合図される。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "だから、ロットが違うって言ってるの。控えの書類と、一本ずつ突き合わせて"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "……ええ。そこが揃わないうちは、一箱たりとも店には流しません"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "電話を切って、くゆりさんは小さく息を吐いた。"
+          "text": "電話を切って、凛想さんは小さく息を吐いた。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "お待たせ、モルモットくん。……ごめんね、かっこ悪いとこ見せちゃった"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "いえ。……なんというか、くゆりさん、筋が通ってるんですね"
+          "text": "いえ。……なんというか、凛想さん、筋が通ってるんですね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "グレーに見える商売ほど、線引きだけは白黒はっきりさせるの。それだけだよ"
         },
@@ -1234,7 +1234,7 @@
       ]
     },
     {
-      "dialogue_id": "ch1_kuyuri_prototype_night",
+      "dialogue_id": "ch1_rio_prototype_night",
       "comment": "#1696 オーナー決定: 夜の2階のデスクで試作品を試す一度きりの回。固有会話3本目の後、新しい話の無い来店で spots.js が一度だけ再生する。大会前後どちらでも読める内容にする。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
@@ -1243,25 +1243,25 @@
         {
           "speaker": "",
           "face": "",
-          "text": "夜の2階。ショールームの奥、くゆりさんのデスクだけにスタンドの明かりが点いていた。"
+          "text": "夜の2階。ショールームの奥、凛想さんのデスクだけにスタンドの明かりが点いていた。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "黒縁の眼鏡をかけたくゆりさんが、書類の山の横で小さな一台を組んでいる。"
+          "text": "黒縁の眼鏡をかけた凛想さんが、書類の山の横で小さな一台を組んでいる。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……あ、モルモットくん。ごめんね、今日は眼鏡のままで"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "くゆりさん、眼鏡、かけるんですね"
+          "text": "凛想さん、眼鏡、かけるんですね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "夜だけね。この時間になると、コンタクトが乾いちゃうから"
         },
@@ -1271,22 +1271,22 @@
           "text": "デスクの上に、番号だけ手書きされた白い袋。NIGHTSIDEの印も、まだない。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "本国から届いた試作品でね、名前すらまだ無い。先に私が吸うから、待ってて"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりさんは一口吸って、しばらく黙った。二口、三口。眉が、わずかに寄る。"
+          "text": "凛想さんは一口吸って、しばらく黙った。二口、三口。眉が、わずかに寄る。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "……三口目で、喉に引っかかるね。炭の熱が上がると、もっと出る"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "線は越えてない。でも、店に出すかは別の話。……はい、君も確かめて"
         },
@@ -1301,22 +1301,22 @@
           "text": "一口目は、すごくいいです。だからこそ、三口目でがっかりする"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "そう、それだよ。一口目で売れて、三口目で嫌われる葉。いちばん、たちが悪い"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "店で、ずっと低い熱のまま吸ってもらえるとは限らないからね。このロットは、止める"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりさんは報告書の欄に、短く「見送り」と書いた。それから眼鏡を外して、目をこする。"
+          "text": "凛想さんは報告書の欄に、短く「見送り」と書いた。それから眼鏡を外して、目をこする。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……昼の私より、ずっと地味でしょ。夜はだいたい、こんな仕事ばっかり"
         },
@@ -1326,7 +1326,7 @@
           "text": "……三口目まで、ちゃんと待つ人の方が、俺は信用できます"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "ふふ。……今の君の顔は、レポートには書かないでおいてあげる"
         },

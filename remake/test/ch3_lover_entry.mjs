@@ -125,17 +125,17 @@ await check('chapter 3 and 4 departure preparation closes invitations and night 
       ? { _ch3_intro: { startDay: 69 } } : { _ch4: { startDay: 69 } } });
     const key = `_ch${chapter}_prep`;
     assert.equal(invites().length, 1, `chapter ${chapter} outside preparation`);
-    f.db.dialogues.confession_kuyuri = { dialogue_id: 'confession_kuyuri', lines: [] };
-    s.romanceChoices = { bond_q_kuyuri: { char: 'kuyuri', value: 1 } };
-    s.finales = { kuyuri: { day: 60, chapter: 2, route: 'romance' } };
+    f.db.dialogues.confession_rio = { dialogue_id: 'confession_rio', lines: [] };
+    s.romanceChoices = { bond_q_rio: { char: 'rio', value: 1 } };
+    s.finales = { rio: { day: 60, chapter: 2, route: 'romance' } };
     s.slot = 2;
-    s.flags._confession_due = 'kuyuri';
+    s.flags._confession_due = 'rio';
     s.flags[key] = { startDay: 70, days: 3, step: 0, departed: false };
     for (let day = 70; day < 73; day++) {
       s.day = day;
       assert.equal(invites().length, 0, `chapter ${chapter} prep day ${day} invitation`);
       assert.equal(await f.romance.maybeConfession(async () => {}), false, `chapter ${chapter} prep day ${day} confession`);
-      assert.equal(s.flags._confession_due, 'kuyuri', 'reserved confession remains due');
+      assert.equal(s.flags._confession_due, 'rio', 'reserved confession remains due');
     }
     s.flags[key].departed = true;
     assert.equal(invites().length, 1, `chapter ${chapter} after departure`);

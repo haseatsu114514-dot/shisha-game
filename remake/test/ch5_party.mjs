@@ -19,13 +19,13 @@ assert.deepEqual(partyScenes(routes, save(["tsumugi"]), "tsumugi").scenes, ["ch5
 assert.deepEqual(partyScenes(routes, save(["tsumugi"]), "sumi").scenes, ["ch5_party_seat_sumi", "ch5_party_close"]);
 
 // 恋人が1人: その人の隣なら穏やかに。別の人の隣なら視線だけ（修羅場にしない）。
-assert.deepEqual(partyScenes(routes, save(["tsumugi", "kuyuri"], ["kuyuri"]), "kuyuri"),
+assert.deepEqual(partyScenes(routes, save(["tsumugi", "rio"], ["rio"]), "rio"),
   { kind: "lover", participants: [], scenes: ["ch5_party_seat_lover", "ch5_party_close"] });
-assert.deepEqual(partyScenes(routes, save(["tsumugi", "kuyuri"], ["kuyuri"]), "tsumugi").scenes,
+assert.deepEqual(partyScenes(routes, save(["tsumugi", "rio"], ["rio"]), "tsumugi").scenes,
   ["ch5_party_seat_friend", "ch5_party_seat_away", "ch5_party_close"]);
 
 // 恋人が2人以上その場にいる: どの席でも修羅場。恋人ごとの反応と謝罪（未解決の印）へ。会っていない恋人は数えない。
-const two = partyScenes(routes, save(["tsumugi", "minto", "kuyuri"], ["tsumugi", "minto"]), "minto");
+const two = partyScenes(routes, save(["tsumugi", "minto", "rio"], ["tsumugi", "minto"]), "minto");
 assert.equal(two.kind, "conflict");
 assert.deepEqual(two.participants, ["tsumugi", "minto"]);
 assert.deepEqual(two.scenes, ["ch5_party_shuraba_open", "shuraba_tsumugi", "shuraba_minto", "shuraba_accountability", "ch5_party_shuraba_close"]);

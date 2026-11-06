@@ -16,7 +16,7 @@ const mocks = {
   "vn/engine.js": { play: async id => played.push(id), isPlaying: () => false },
   "daily/bonds.js": { afterStory: async () => {}, hiyoriQuestionReady: () => false, playHiyoriQuestion: async () => false, finaleAtVisit: () => false, playFinale: async () => false },
   "daily/spots.js": { allSpots: () => shops, isClosed: spot => spot.closedOn === state.day % 7, isUnlocked: spot => !spot.locked, shortNormalVisit: () => false },
-  "daily/spot-hours.js": { kuyuriUnavailable: () => state.slot === 1 ? "" : "夜から" },
+  "daily/spot-hours.js": { rioUnavailable: () => state.slot === 1 ? "" : "夜から" },
   "daily/hiyori-axe.js": { hiyoriAxeAffordable: () => false, playHiyoriAxeSequence: async () => false },
 };
 const modules = new Map();
