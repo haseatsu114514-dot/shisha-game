@@ -66,7 +66,9 @@ def without_link_only(text: str, keys: set) -> str:
 def served_texts(site: Path):
     for path in sorted(site.rglob("*")):
         rel = path.relative_to(site).as_posix()
-        if path.is_file() and path.suffix in TEXT_SUFFIXES and rel not in SKIP_TEXT and not rel.startswith("assets/"):
+        if rel.startswith("assets/") or any(rel.startswith(d + "/") for d in DEV_ONLY):
+            continue  # 開発用フォルダの中の assets/ の書き方は「直接の参照」に数えない
+        if path.is_file() and path.suffix in TEXT_SUFFIXES and rel not in SKIP_TEXT:
             text = path.read_text(encoding="utf-8", errors="replace")
             yield rel, without_link_only(text, LINK_ONLY_KEYS[rel]) if rel in LINK_ONLY_KEYS else text
 
@@ -95,7 +97,6 @@ def direct_reference_patterns(site: Path) -> list:
 def slim(site: Path) -> dict:
     manifest = json.loads((site / "remake/data/manifest.json").read_text(encoding="utf-8"))
     size = 0
-    # 開発用フォルダを先に外す（テストの中の assets/ の書き方を「直接の参照」に数えない）
     for rel in DEV_ONLY:
         target = site / rel
         if target.is_dir():
@@ -117,12 +118,25 @@ def slim(site: Path) -> dict:
     return {"removed": removed, "kept": kept, "bytes": size}
 
 
+def report(site: Path) -> dict:
+    """ファイルを消さずに、WebP 一覧のうち外せるもの／直接の参照で残すものを返す（確認・テスト用）"""
+    manifest = json.loads((site / "remake/data/manifest.json").read_text(encoding="utf-8"))
+    patterns = direct_reference_patterns(site)
+    listed = sorted(manifest.get("webp", []))
+    kept = [rel for rel in listed if any(p.match(rel) for p in patterns)]
+    return {"kept": kept, "removable": [rel for rel in listed if rel not in set(kept)]}
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("site", type=Path, help="公開用に組んだフォルダ（_site）")
+    ap.add_argument("--report", action="store_true", help="消さずに、外せる／残す一覧を JSON で出す")
     args = ap.parse_args()
     if not (args.site / "remake/data/manifest.json").is_file():
         sys.exit(f"slim_deploy: {args.site}/remake/data/manifest.json が無い")
+    if args.report:
+        print(json.dumps(report(args.site), ensure_ascii=False))
+        return
     result = slim(args.site)
     total = sum(p.stat().st_size for p in args.site.rglob("*") if p.is_file())
     print(f"slim_deploy: 元PNG {len(result['removed'])} 件と開発用フォルダを外した（{result['bytes'] / 1e6:.0f} MB）。"
