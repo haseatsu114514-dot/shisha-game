@@ -339,7 +339,7 @@ export async function openConfig(opts = {}) {
   }));
   const reduceShake = el("input", {
     type: "checkbox", dataset: { test: "cfg-reduce-shake" },
-    onchange: (e) => { config.reduceShake = e.target.checked; persist(); opts.onChange?.("reduceShake", config.reduceShake); },
+    onchange: (e) => { config.reduceShake = e.target.checked; document.body.classList.toggle("reduce-shake", config.reduceShake); persist(); opts.onChange?.("reduceShake", config.reduceShake); },
   });
   reduceShake.checked = !!config.reduceShake;
   const blip = el("input", {

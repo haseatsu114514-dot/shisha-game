@@ -97,7 +97,7 @@ async function loadTokyoScenes() {
 }
 
 // 夜は外光のある場所に既存の夜の暗転（tint）を掛ける。屋根裏の絵は昼の光なので、tint を落とさない。
-const showBg = (ref, tod) => { const { url, tint } = sceneBg(ref, tod); return setBg(url, { instant: true, tint }); };
+const showBg = (ref, tod) => { const { url, tint } = sceneBg(ref, tod); return setBg(url, { tint }); };
 
 /** 読み終えたら true。中断・LOADは false（代金・体力・既読を残さない）。tod は背景の時間帯（配送便で着く夜など）。 */
 async function read(id, bg, owner, tod = timeOfDay()) {

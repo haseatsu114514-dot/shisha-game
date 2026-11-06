@@ -49,7 +49,7 @@ export async function openTrpgBar({ nightBusy = () => false } = {}) {
   const owner = state;
   if (!knowsTrpgBar(owner) || owner.phase !== "daily") return { completed: false };
   const { save } = await import("../core/state.js");
-  const [{ el }, { layers, showScreen, setBg }, { playBgm }, { mountTrpgCampaign }, { showHud }, { on }] = await Promise.all([
+  const [{ el }, { layers, showScreen, enterScene }, { playBgm }, { mountTrpgCampaign }, { showHud }, { on }] = await Promise.all([
     import("../core/util.js"), import("../core/ui.js"), import("../core/audio.js"),
     import("../trpg/campaign-view.js"), import("./hud.js"), import("../core/bus.js"),
   ]);
@@ -57,7 +57,7 @@ export async function openTrpgBar({ nightBusy = () => false } = {}) {
   const host = el("section.trpg-screen", { "aria-label": "ボドゲカフェのシナリオ棚" });
   const hadHud = document.getElementById("hud")?.classList.contains("show");
   showHud(false);
-  await setBg(CITY_BACKGROUNDS.trpg, { instant: true });
+  await enterScene(CITY_BACKGROUNDS.trpg);
   if (state !== owner) return { completed: false };
   showScreen("trpg", host); playBgm("bgm_trpg"); // #788 採用曲。倍率は既定1.0（asset_sources/music/adopted-minigame-bgm-20261020.md）
   if (!owner.flags._intro_sai) {

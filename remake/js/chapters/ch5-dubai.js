@@ -86,7 +86,7 @@ async function loadDubaiScenes() {
   await loading;
 }
 
-const showBg = (ref, tod) => { const { url, tint } = sceneBg(ref, tod); return setBg(url, { instant: true, tint }); };
+const showBg = (ref, tod) => { const { url, tint } = sceneBg(ref, tod); return setBg(url, { tint }); };
 
 /** 読み終えたら true。中断・LOADは false（代金・体力・既読を残さない）。 */
 async function read(id, bg, owner) {

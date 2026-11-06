@@ -1,5 +1,5 @@
-// 背景の読み込みを覆う、夜の藍・琥珀・煙のモーショングラフィックス。
-// 場面の意味ごとの型: 就寝から翌朝（CI102）／マップから場所への移動（transition-moves.js・CI103）。
+// 背景の読み込みを覆う、夜の紫とラベンダーのモーショングラフィックス。
+// 場面の意味ごとの型: 標準の切り替え＝一筆（#2688 F1）／就寝から翌朝＝波＋めくり（CI102）／マップから場所への移動（transition-moves.js・CI103）。
 // 型の一覧と残りの場面の案は asset_sources/transitions/scene-plan-20261009/README.md。
 import { el, sleep, nextFrame } from "./util.js";
 import { SE } from "./audio.js";
@@ -8,9 +8,6 @@ import { moveCurtain, moveStyle } from "./transition-moves.js";
 import { state } from "./state.js";
 import { createEntrySound } from "./entry-sound.js";
 import { withStoreArrival } from "./store-arrival.js";
-
-let serial = 0;
-const STYLES = ["diagonal", "smoke", "iris"];
 
 // 全面を覆う型の数。覆っている間の背景切り替えは、別の幕を出さずに差し替える（ui.setBg）
 let covering = 0;
@@ -46,36 +43,70 @@ export function takeSceneArrival() {
   return { cued, commitArrival: createEntrySound(cued?.kind === "place" ? cued.opts : null, state?.chapter, () => SE.doorbell()) };
 }
 
+// ---------------------------------------------------------------- 一筆: 指定のない背景の切り替え（標準の幕）
+
+// S字の縁を持つ帯（ローカル座標: x方向に波打ち、y方向に進む）。scene-plan-20261009 の一筆を1280×720へ縮めた形
+function sBand(y0, y1, amp = 136, w = 1240) {
+  return `M ${-w} ${y0} C ${-w / 2} ${y0 - amp}, ${-w / 5} ${y0 - amp}, 0 ${y0} S ${w / 2} ${y0 + amp}, ${w} ${y0} ` +
+    `L ${w} ${y1} C ${w / 2} ${y1 + amp}, ${w / 5} ${y1 + amp}, 0 ${y1} S ${-w / 2} ${y1 - amp}, ${-w} ${y1} Z`;
+}
+// 帯の進み: 画面の外（右下）→ 画面を覆う → 画面の外（左上）。帯の長さ2000、画面の対角の半分は約734
+export const STROKE = { from: 900, cover: -900, to: -3000, angle: -32 };
+
+/** 紫の一筆の帯。先頭と後尾にラベンダーの縁、中ほどに細い筋が一本 */
+export function strokeBand({ angle = STROKE.angle, fill = COLOR.purple, edge = COLOR.lav } = {}) {
+  const mov = svg("g", {}, [
+    svg("path", { d: sBand(0, 56), fill: edge }),
+    svg("path", { d: sBand(56, 1944), fill }),
+    svg("path", { d: sBand(884, 916), fill: edge, "fill-opacity": ".55" }),
+    svg("path", { d: sBand(1944, 2000), fill: edge }),
+  ]);
+  mov.style.transform = `translateY(${STROKE.from}px)`;
+  const art = svg("svg", { viewBox: `0 0 ${W} ${H}`, class: "tr-svg", preserveAspectRatio: "xMidYMid slice" }, [
+    svg("g", { transform: `translate(${W / 2} ${H / 2}) rotate(${angle})` }, [mov]),
+  ]);
+  return { art, mov };
+}
+
+/**
+ * 背景を替えるときの標準の幕（CI101 の「一筆」・#2688 F1）。紫の帯が右下から一筆で画面を覆い、左上へ抜けて次の場面が出る。
+ * 通常 約0.75秒、SKIP中・短い幕（brief）は 約0.35秒、動きを減らす設定では短いフェード。
+ * 覆っている間は Enter・Space を受け付けない。素材の読み込みを待つ間は覆ったまま待つ（ui.setBg）。
+ */
 export function createSceneCurtain(host, { fast = false, sceneArrival = takeSceneArrival() } = {}) {
   const reduced = reducedMotion();
   const { cued, commitArrival: entry } = sceneArrival;
   const arrival = (curtain) => Object.assign(curtain, { commitArrival: entry });
   if (cued?.kind === "place" && !fast && !reduced) return arrival(withStoreArrival(host, moveCurtain(host, moveStyle(cued.opts), cued.opts), cued.opts, { fast, reduced }));
-  const ms = reduced ? 45 : fast ? 140 : 260;
-  const variant = STYLES[serial++ % STYLES.length];
-  const node = el(`div.scene-curtain.${variant}`, { "aria-hidden": "true", style: { "--st-ms": `${ms}ms` }, dataset: { transition: variant } }, [
-    el("div.st-field"),
-    el("div.st-lines", [el("b"), el("b"), el("b")]),
-    el("div.st-orbit", [el("b"), el("b")]),
-    el("div.st-sign", [el("span", { text: "水煙前線" }), el("small", { text: "SUIEN ZENSEN" })]),
-  ]);
+  const coverMs = reduced ? 90 : fast ? 150 : 340;
+  const revealMs = reduced ? 90 : fast ? 170 : 400;
+  const node = el("div.scene-curtain.stroke", { "aria-hidden": "true", style: { "--st-ms": `${coverMs}ms` }, dataset: { transition: reduced ? "fade" : "stroke" } });
+  const band = reduced ? null : strokeBand();
+  if (band) node.append(band.art);
+  else node.classList.add("veil");
   const unhold = holdKeys();
   host.append(node);
-  let coveredAt = 0;
-  const covered = (async () => { await nextFrame(); node.classList.add("cover"); await sleep(ms); coveredAt = performance.now(); })();
+  const covered = (async () => {
+    await nextFrame();
+    node.classList.add("cover");
+    if (band) await move(band.mov, [{ transform: `translateY(${STROKE.from}px)` }, { transform: `translateY(${STROKE.cover}px)` }], coverMs, { easing: EASE.in });
+    else await move(node, [{ opacity: 0 }, { opacity: 1 }], coverMs, { easing: "ease" });
+  })();
   let released = false;
   const curtain = { covered, async release() {
     if (released) return;
     released = true;
-    await covered;
-    // 通常の場面転換ではロゴを読む時間を確保。素材待ちの時間もこの表示時間へ含める。
-    if (!fast && !reduced) await sleep(Math.max(0, 650 - (performance.now() - coveredAt)));
-    // 次の背景・画面・台詞を幕の内側で描いてから開く。
-    await nextFrame(); await nextFrame();
-    node.classList.add("reveal");
-    await sleep(ms + 30);
-    node.remove();
-    unhold();
+    try {
+      await covered;
+      // 次の背景・画面・台詞を幕の内側で描いてから開く。
+      await nextFrame(); await nextFrame();
+      node.classList.add("reveal");
+      if (band) await move(band.mov, [{ transform: `translateY(${STROKE.cover}px)` }, { transform: `translateY(${STROKE.to}px)` }], revealMs, { easing: EASE.out });
+      else await move(node, [{ opacity: 1 }, { opacity: 0 }], revealMs, { easing: "ease" });
+    } finally {
+      node.remove();
+      unhold();
+    }
   } };
   return arrival(cued?.kind === "place" ? withStoreArrival(host, curtain, cued.opts, { fast, reduced }) : curtain);
 }
