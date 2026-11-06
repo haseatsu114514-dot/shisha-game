@@ -48,7 +48,7 @@ def parse_profiles() -> dict:
 
 
 NAME_TO_ID = {
-    "蒸野 はじめ": "hajime",
+    "逢縁 はじめ": "hajime",
     "はじめ": "hajime",
     "墨田 丈一郎": "sumi",
     "スミさん": "sumi",
@@ -60,11 +60,11 @@ NAME_TO_ID = {
     "みんと": "minto",
     "つむぎ": "tsumugi",
     "猫柳 つむぎ": "tsumugi",
-    "香坂 くゆり": "kuyuri",
-    "くゆり": "kuyuri",
-    "あげは（宵野 葉子 / よいの ようこ）": "ageha",
+    "円頓寺 凛想": "rio",
+    "凛想": "rio",
+    "あげは（宵永 千代子 / よなが ちよこ）": "ageha",
     "あげは": "ageha",
-    "宵野 葉子": "ageha",
+    "宵永 千代子": "ageha",
     "神崎 竜二": "kumicho",
     "神崎竜二": "kumicho",
     "田中 健太": "rei",
@@ -77,8 +77,8 @@ NAME_TO_ID = {
     "ムカイさん / 向井 玄": "mukai_master",
     "向井 玄": "mukai_master",
     "ムカイさん": "mukai_master",
-    "須井 修二": "sui",
-    "須井修二": "sui",
+    "伏見 豪": "sui",
+    "伏見豪": "sui",
     "上園 文太郎": "maezono",
     "パッキー": "pakki",
     "エミル": "emil",
@@ -93,7 +93,7 @@ NAME_TO_ID = {
     "SHISHA-9000": "shisha_9000",
     "ダ・シルヴァ太陽": "da_silva",
     "綾取 朔": "saku",
-    "スティーブ・ライマン": "steve",
+    "スティーブ・A・アッシュ": "steve",
     "ヴォルク・イヴァノフ": "volk",
 }
 

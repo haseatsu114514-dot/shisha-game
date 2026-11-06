@@ -73,13 +73,13 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "日本の窓口はくゆりに任せている。あいつの上司だ"
+          "text": "日本の窓口は凛想に任せている。俺は、あいつの上司だ"
         },
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_ev_kuyuri_monitor",
-          "next_true": "kuyuri_report",
+          "flag": "_ev_rio_monitor",
+          "next_true": "rio_report",
           "next_false": ""
         },
         {
@@ -90,12 +90,12 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "同じ袋でも、器具と客の吸う間隔が違う。卸した先も確かめて、次のロットを決める"
+          "text": "同じ袋でも、店の器具と客の吸い方で味は変わる。卸した先を見て、次のロットを決める"
         },
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "……くゆりは、日本の店を一人で回っている"
+          "text": "……凛想は、日本の店を一人で回っている"
         },
         {
           "speaker": "volk",
@@ -105,7 +105,7 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "今のは、本人には言うな。あいつの報告、睡眠の時間まで正確でな"
+          "text": "今のは、本人には言うな。送信の時刻を見れば、寝た時間はだいたい分かる"
         },
         {
           "type": "set_flag",
@@ -193,7 +193,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "はじめが水を飲むと、ヴォルクは入力を止めた。トングを置き、顔を見る。"
+          "text": "俺が水を飲むと、ヴォルクは入力を止めた。トングを置き、こちらの顔を見る。"
         },
         {
           "speaker": "volk",
@@ -213,12 +213,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "計器へ戻しかけた手で、グラスをはじめの近くへ寄せる。メモには先に「休憩」と書いた。"
+          "text": "計器へ戻しかけた手で、グラスを俺の近くへ寄せる。メモには先に「休憩」と書いた。"
         },
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "数値が合っていても、客を帰したくはない。袋を売った先でも同じだ"
+          "text": "数値が合っていても、客を疲れさせて帰したくはない。袋を売った先でも同じだ"
         },
         {
           "speaker": "hajime",
@@ -243,7 +243,7 @@
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_kuyuri_sample_received",
+          "flag": "_rio_sample_received",
           "next_true": "nightside_sample_owned",
           "next_false": "nightside_sample_none"
         },
@@ -309,18 +309,18 @@
         }
       ],
       "branches": {
-        "kuyuri_report": [
+        "rio_report": [
           {
             "type": "condition",
             "condition_type": "lover",
-            "char_id": "kuyuri",
-            "next_true": "kuyuri_report_lover",
-            "next_false": "kuyuri_report_plain"
+            "char_id": "rio",
+            "next_true": "rio_report_lover",
+            "next_false": "rio_report_plain"
           },
           {
             "speaker": "volk",
             "face": "normal",
-            "text": "くゆりの報告に、名前を伏せたモニターがいた。舌が素直だ、と書いてあった"
+            "text": "凛想の報告に、名前を伏せたモニターがいた。舌が素直だ、と書いてあった"
           },
           {
             "speaker": "volk",
@@ -328,18 +328,18 @@
             "text": "……県大会で、それらしい手を見ていた"
           }
         ],
-        "kuyuri_report_plain": [
+        "rio_report_plain": [
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "くゆりさんの……？"
+            "text": "凛想さんの……？"
           }
         ],
-        "kuyuri_report_lover": [
+        "rio_report_lover": [
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "……くゆりさんから、聞いてます"
+            "text": "……凛想さんから、聞いてます"
           }
         ],
         "unseen": [
@@ -492,7 +492,7 @@
           {
             "speaker": "volk",
             "face": "serious",
-            "text": "気づいたか。偵察だ。軍にいた頃に叩き込まれた。県大会の優勝者は、見ておく"
+            "text": "気づいたか。偵察は、軍で叩き込まれた。県大会の優勝者は、見ておく"
           },
           {
             "speaker": "volk",
@@ -509,7 +509,7 @@
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "このアールグレイ……前にくゆりさんから、黒い袋の試作をもらいました"
+            "text": "このアールグレイ……前に凛想さんから、黒い袋の試作をもらいました"
           },
           {
             "speaker": "volk",
@@ -531,7 +531,7 @@
           {
             "speaker": "volk",
             "face": "normal",
-            "text": "これまでは、くゆりが試作を店で試してもらう段階だった。試供品は練習用だ"
+            "text": "これまでは、凛想が試作を店で試してもらう段階だった。試供品は練習用だ"
           },
           {
             "speaker": "volk",
@@ -717,7 +717,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "え！？ 俺のことを！？"
+          "text": "え、俺のことを！？"
         },
         {
           "speaker": "volk",
@@ -727,7 +727,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（何かの被験体みたいだ）"
+          "text": "（……俺、何かの被験体なのか？）"
         },
         {
           "speaker": "",
@@ -981,6 +981,315 @@
         }
       ],
       "comment": "旧ID互換。DAY2配達・DAY12初来店を無視した初対面版は使わず、通常の後日談へ進む。"
+    },
+    {
+      "dialogue_id": "ch3_volk_lime",
+      "comment": "#2028 ヴォルクとLIMEを交換する任意場面。四度目の来店（ch3_volk_fourth の「次は、俺のメモも持ってきます」）の後、♥2で鉄の煙に開く。持ってきたメモを見せると、地元の店（tonari）の記録は自分では取れないので、書いたら送れと頼まれる（市場調査）。版3の日常ループでは初来店（DAY12夜）から大会まで行動が一つしかないので、実際は大会後の寄り道（ch3-aftermath-progress.js）から読む。大会の前後どちらでも成り立ち、大会に触れない。昼にも夜にも読めるので時間帯を言わない。好感度は任意場面だけで付ける。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉄の煙のカウンターに、持ってきたメモを広げた。温度より先に、客の言葉と時間を書いてある。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……見せろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクは一行ずつ指でなぞり、自分のノートの同じ日と並べた。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "客の言葉が、温度より先にある。俺の列とは、順番が逆だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "読みにくいですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "いや。比べられる"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "……お前は、いずれ東京を発つ。地元の店の記録は、俺には取れない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "tonariの記録、ですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "同じ袋でも、店と客で届き方が変わる。東京の数字だけでは足りない"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "書いたら、送れ。LIMEでいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。交換しましょう"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_volk"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクは画面を確かめると、すぐに一行目を送ってきた。「室温23度、湿度51」。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ、今の鉄の煙ですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "最初の行は、俺が書く。お前の店の数字は、その隣に並べる"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "書くのは日付、室温、湿度。それから、客が何口目で休んだか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "湿度計、うちの店にはないですよ"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……なら、窓が曇っていたかでいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（急に、ずいぶん大ざっぱになった）"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "測っていないものを、測ったように書くな。それが一番、記録を狂わせる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（東京の店と地元の店の数字が、同じ画面に並んでいくんだ）"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "volk": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_volk_bond_finale",
+      "comment": "#2028 ヴォルクの好感度の締めくくり（友情のみ・ヴォルクは恋愛対象外）。四度目の来店とLIME交換（ch3_volk_lime）の後、♥5で一度だけ（daily/bonds.js）。入口は版3の東京の日常ループの鉄の煙と、優勝の翌日の後日談の寄り道（煙幕の片づけの朝まで）。旧行程は場面カード。ブラストミントの試作で火の強さを測ってきた素焼きを、先に頷いてから吸うはじめに預ける。初来店の祖母のジャム（測らないもの）と、三度目の「記録しないことは、忘れることと同じ」を受けて、友人と過ごした時間は書かずに覚えておくと着地する。大会前は精度のまま（揺らぎのある精度は大会の後）。大会後の分岐は、計器を先に見る順番は変えず、その隣で客の息の間も聞くようにしたとだけ言い、結果には触れない（第5章の「測る。それから、客に聞く」と同じ順番。精度は捨てない）。大会後の寄り道では、大会後に初めて鉄の煙へ寄る場面（ch3_volk_after_ch3）を読んだ後に出す（ch3-aftermath-progress.js の after）。昼にも夜にも読めるので時間帯を言わない。",
+      "metadata": {
+        "bond_finale": "volk"
+      },
+      "branches": {
+        "before_tournament": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "鉄の煙。壁のパネルの数字が、消えていた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ヴォルクはカウンターに、布の包みを一つ置いて待っていた。"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "来たか。座れ"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "……この時間は、測らない"
+          }
+        ],
+        "after_tournament": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "鉄の煙。壁のパネルの数字が、消えていた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ヴォルクはカウンターに、布の包みを一つ置いて待っていた。"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "来たか。座れ"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "……この時間は、測らない"
+          },
+          {
+            "speaker": "volk",
+            "face": "serious",
+            "text": "計器は、今も先に見る。……その隣で、客の息の間も聞くようにした"
+          }
+        ]
+      },
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 3,
+          "next_true": "after_tournament",
+          "next_false": "before_tournament"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "包みの中は、使い込んだ素焼きのハガルだった。外側に、細い刻みが何本も並んでいる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "素焼きですか。ヴォルクさんの台は、金属のボウルですよね"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "店ではな。これは、ブラストミントの試作に使っていた"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "発売の前、配合を変えるたびに、これで火の強さを測った"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鼻を近づけると、冷たいミントの香りが土の奥から立った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この刻みは、温度ですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "配合を変えた回数だ。……数えるな。多い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（数えるなと言われると、数えたくなる）"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "数字が揃うまで、これで吸った。だが、客がホースを置く理由までは知らない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……向こうのお店で、二口で帰ったお客さんの話ですね"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "そうだ。だから、お前に渡す"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "お前は先に頷いて、それから吸う。その吸い方の記録は、こいつにまだ無い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "試作の道具を、俺にですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "棚に置いても、記録は増えない"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "葉も付ける。……強い葉だ。冷たいからといって、火を雑にするな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい、大事に使います"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクは紅茶を二杯注ぎ、ジャムの小皿を二人の間に置いた。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "紅茶とジャムは、測らない。祖母の決まりだ"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……この時間のことも、書かない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "書かないんですか？　記録しないことは、忘れることと同じだって"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "客の時間は書く。友人と過ごした時間は、書かなくても覚えている"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、俺も今は、メモを出しません"
+        },
+        {
+          "speaker": "volk",
+          "face": "smile",
+          "text": "……それでいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクは計器を見ないまま、ジャムを舐めた。俺も、同じようにした。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "technique": 2
+          }
+        }
+      ]
     }
   ]
 }

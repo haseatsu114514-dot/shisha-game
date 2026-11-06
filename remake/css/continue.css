@@ -13,7 +13,7 @@
 }
 .gameover[data-speaker="tsumugi"] { --go-accent: #efa9d5; --go-glow: #ef73ba25; }
 .gameover[data-speaker="minto"] { --go-accent: #ffca9c; --go-glow: #f5a16a25; }
-.gameover[data-speaker="kuyuri"] { --go-accent: #a9d7fd; --go-glow: #66b9ed25; }
+.gameover[data-speaker="rio"] { --go-accent: #a9d7fd; --go-glow: #66b9ed25; }
 .gameover[data-speaker="ageha"] { --go-accent: #ff89b0; --go-glow: #f56f9425; }
 .gameover[data-speaker="mashiro"] { --go-accent: #c5bbf7; --go-glow: #a798e625; }
 .gameover[data-speaker="samechan"] { --go-accent: #7ee0ec; --go-glow: #4eabda30; }
@@ -39,12 +39,19 @@
 .gameover .go-title-art { display: block; width: 920px; height: 100%; object-fit: contain; margin: auto; }
 .gameover .go-title-art[hidden] { display: none; }
 .gameover .go-left { position: absolute; left: 170px; top: 94px; width: 940px; height: 626px; z-index: 2; }
+/* #2524: 人物は会場に来た実体ではなく、はじめの頭の中に浮かぶ像。入場は靄の中から浮かび上がる（位置・大きさは変えない）。 */
 .gameover .go-portrait { position: absolute; inset: 0; overflow: hidden;
-  mask-image: linear-gradient(#000 0%, #000 98%, transparent 100%); }
+  mask-image: linear-gradient(#000 0%, #000 98%, transparent 100%);
+  animation: go-portrait-surface .55s .25s var(--ease-out) both; }
 .gameover .go-sumi-img {
   position: absolute; left: 50%; translate: -50% 0; object-fit: contain;
-  filter: drop-shadow(5px 4px 0 #050a1f99); animation: go-portrait-enter .55s .25s var(--ease-out) both;
+  filter: drop-shadow(5px 4px 0 #050a1f99);
+  transition: opacity .42s var(--ease-out), filter .42s var(--ease-out);
 }
+/* 心の声の行: 浮かんだ像が霞み、色が抜ける。相手の声の行: はっきり浮かぶ。 */
+.gameover[data-voice="self"] .go-sumi-img { opacity: .46; filter: grayscale(.55) blur(2.5px) drop-shadow(5px 4px 0 #050a1f66); }
+/* 心の声の文字は白のまま（#454/#466の白テロップを維持）。字間と太さだけ落として、相手の声と区別する。 */
+.gameover[data-voice="self"][data-phase="speaking"] .go-speech-text { letter-spacing: .07em; font-weight: 700; }
 .gameover .go-sumi-fallback { margin: 70px 40px; font-size: 50px; text-align: center; }
 .gameover .go-right { position: absolute; left: 80px; right: 80px; top: 560px; bottom: 0; z-index: 3; }
 .gameover .go-dialogue { position: absolute; left: 0; right: 0; top: 0; height: 54px;
@@ -180,6 +187,7 @@
 
 @keyframes go-title-enter { from { opacity: 0; transform: scale(1.18) translateY(-12px); } }
 @keyframes go-portrait-enter { from { opacity: 0; transform: scale(.94) translateY(10px); } }
+@keyframes go-portrait-surface { from { opacity: 0; filter: blur(14px); } 60% { filter: blur(3px); } to { opacity: 1; filter: none; } }
 @keyframes go-portrait-beat { 0% { transform: translateY(10px); } 45% { transform: translateY(-3px); } 100% { transform: none; } }
 @keyframes go-stamp { from { opacity: 0; scale: 1.7; } }
 @keyframes go-pencil { from { opacity: 0; clip-path: inset(0 100% 0 0); } to { opacity: .55; clip-path: inset(0); } }
@@ -190,13 +198,13 @@
 @keyframes go-stars { from { opacity: 0; translate: 0 10px; } 35% { opacity: .8; } to { opacity: 0; translate: 0 -25px; } }
 @keyframes go-fade-away { to { opacity: 0; scale: 1 .05; } }
 
-.gameover[data-reduced-motion="true"] *, .gameover[data-reduced-motion="true"] *::after {
+.gameover[data-reduced-motion="true"] *, .gameover[data-reduced-motion="true"] *::before, .gameover[data-reduced-motion="true"] *::after {
   animation: none !important; transition: none !important;
 }
 .gameover[data-reduced-motion="true"] .go-effect i { display: none; }
 .gameover[data-reduced-motion="true"] .go-count-echo { transform: none; }
 @media (prefers-reduced-motion: reduce) {
-  .gameover *, .gameover *::after { animation: none !important; transition: none !important; }
+  .gameover *, .gameover *::before, .gameover *::after { animation: none !important; transition: none !important; }
   .gameover .go-effect i { display: none; }
   .gameover .go-count-echo { transform: none; }
 }

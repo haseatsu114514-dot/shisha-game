@@ -7235,7 +7235,7 @@
   ],
   "held_downloaded": [
     {
-      "character_id": "kuyuri",
+      "character_id": "rio",
       "historical_id": "rin",
       "expression": "sad",
       "style": "new",
@@ -7265,7 +7265,7 @@
       "native_height": 1313
     },
     {
-      "character_id": "kuyuri",
+      "character_id": "rio",
       "historical_id": "rin",
       "expression": "serious",
       "style": "new",
@@ -7295,7 +7295,7 @@
       "native_height": 1339
     },
     {
-      "character_id": "kuyuri",
+      "character_id": "rio",
       "historical_id": "rin",
       "expression": "smile",
       "style": "new",
@@ -7325,7 +7325,7 @@
       "native_height": 1301
     },
     {
-      "character_id": "kuyuri",
+      "character_id": "rio",
       "historical_id": "rin",
       "expression": "surprise",
       "style": "new",
@@ -7355,7 +7355,7 @@
       "native_height": 1352
     },
     {
-      "character_id": "kuyuri",
+      "character_id": "rio",
       "historical_id": "rin",
       "expression": "shock",
       "style": "new",
@@ -7565,7 +7565,7 @@
       "native_height": 1360
     },
     {
-      "character_id": "kuyuri",
+      "character_id": "rio",
       "historical_id": "rin",
       "expression": "shock",
       "style": "nanami",
@@ -7595,13 +7595,13 @@
       "native_height": 1347
     },
     {
-      "character_id": "kuyuri",
+      "character_id": "rio",
       "historical_id": "rin",
       "expression": "sad",
       "style": "nanami",
       "library_file_id": "libfile_8a0d5bf892d88191bfdda8912f49f9e3",
       "file_id": "file_0000000007b482308ab455a0383083bf",
-      "producer_filename": "kuyuri-sad-nanami-v1.png",
+      "producer_filename": "rio-sad-nanami-v1.png",
       "sha256": "f25f69702cff5a1b94b6a8b2ef2b43d6b74fc621d418ec872cfdc80c926dc3c9",
       "size_bytes": 1557552,
       "pixels": [
@@ -7666,7 +7666,7 @@
           "bottom": 28
         }
       },
-      "manifest": "integrate-portrait-styles/remaining-production/kuyuri-nanami/mergeable-index.json",
+      "manifest": "integrate-portrait-styles/remaining-production/rio-nanami/mergeable-index.json",
       "game_adopted": false,
       "note": "Raw candidate only. Fit/export/common normal-based anchors and real game QA pending. Retain classic art and previous versions.",
       "independent_review": "passed candidate review; fit/export/runtime pending",
@@ -7688,13 +7688,13 @@
       "native_height": 1394
     },
     {
-      "character_id": "kuyuri",
+      "character_id": "rio",
       "historical_id": "rin",
       "expression": "smile",
       "style": "nanami",
       "library_file_id": "libfile_0c45c6dbadcc81919caa9c680511889a",
       "file_id": "file_000000009c5881f595f00c9e02b0411b",
-      "producer_filename": "kuyuri-smile-nanami-v1.png",
+      "producer_filename": "rio-smile-nanami-v1.png",
       "sha256": "e653b22c4b0980c74ffc487c34900d3395bfd6e97da1351cd958a0384ae83de2",
       "size_bytes": 1661046,
       "pixels": [
@@ -7759,7 +7759,7 @@
           "bottom": 33
         }
       },
-      "manifest": "integrate-portrait-styles/remaining-production/kuyuri-nanami/mergeable-index.json",
+      "manifest": "integrate-portrait-styles/remaining-production/rio-nanami/mergeable-index.json",
       "game_adopted": false,
       "note": "Raw candidate only. Fit/export/common normal-based anchors and real game QA pending. Retain classic art and previous versions.",
       "independent_review": "passed candidate review; fit/export/runtime pending",
@@ -7781,13 +7781,13 @@
       "native_height": 1402
     },
     {
-      "character_id": "kuyuri",
+      "character_id": "rio",
       "historical_id": "rin",
       "expression": "surprise",
       "style": "nanami",
       "library_file_id": "libfile_194ad846cd6c81918e743a3478cb4900",
       "file_id": "file_000000007b7081f58905141a3d9a6c76",
-      "producer_filename": "kuyuri-surprise-nanami-v1.png",
+      "producer_filename": "rio-surprise-nanami-v1.png",
       "sha256": "5dd9dd1eba04c0f0417bd220ec792cfd5fbfb2198e78484f091aa66e454721b3",
       "size_bytes": 1606522,
       "pixels": [
@@ -7852,7 +7852,7 @@
           "bottom": 33
         }
       },
-      "manifest": "integrate-portrait-styles/remaining-production/kuyuri-nanami/mergeable-index.json",
+      "manifest": "integrate-portrait-styles/remaining-production/rio-nanami/mergeable-index.json",
       "game_adopted": false,
       "note": "Raw candidate only. Fit/export/common normal-based anchors and real game QA pending. Retain classic art and previous versions.",
       "independent_review": "passed candidate review; fit/export/runtime pending",
@@ -8623,7 +8623,7 @@
       "host": "sdmntprnortheu.oaiusercontent.com"
     },
     {
-      "character_id": "kuyuri",
+      "character_id": "rio",
       "historical_id": "rin",
       "expression": "normal",
       "style": "new",
@@ -8638,13 +8638,13 @@
       "host": "sdmntprnorthcentralus.oaiusercontent.com"
     },
     {
-      "character_id": "kuyuri",
+      "character_id": "rio",
       "historical_id": "rin",
       "expression": "normal",
       "style": "nanami",
       "library_file_id": "libfile_90600193cef48191b009be2772b40683",
       "file_id": "file_00000000b0b4822fb86e16d3fdfb84dd",
-      "producer_filename": "kuyuri-normal-nanami-v4.png",
+      "producer_filename": "rio-normal-nanami-v4.png",
       "sha256": "16d3dddff2ab4db354be740d69b96b10baab004e4132b440d8b999eff8fe2253",
       "size_bytes": 1619103,
       "pixels": [
@@ -8709,7 +8709,7 @@
           "bottom": 34
         }
       },
-      "manifest": "integrate-portrait-styles/remaining-production/kuyuri-nanami/mergeable-index.json",
+      "manifest": "integrate-portrait-styles/remaining-production/rio-nanami/mergeable-index.json",
       "game_adopted": false,
       "note": "Raw candidate only. Fit/export/common normal-based anchors and real game QA pending. Retain classic art and previous versions.",
       "independent_review": "passed candidate review; fit/export/runtime pending",
@@ -8804,13 +8804,13 @@
       "host": "sdmntpreastus3.oaiusercontent.com"
     },
     {
-      "character_id": "kuyuri",
+      "character_id": "rio",
       "historical_id": "rin",
       "expression": "serious",
       "style": "nanami",
       "library_file_id": "libfile_a9a92cf6a44c8191b1bd071424eb81be",
       "file_id": "file_000000007b7c820ea7c10a1986c08b92",
-      "producer_filename": "kuyuri-serious-nanami-v1.png",
+      "producer_filename": "rio-serious-nanami-v1.png",
       "sha256": "3d21d84e1bc2bc77b957761fa7d72896a02221727788287fa103f5e47b9726fc",
       "size_bytes": 1627182,
       "pixels": [
@@ -8875,7 +8875,7 @@
           "bottom": 41
         }
       },
-      "manifest": "integrate-portrait-styles/remaining-production/kuyuri-nanami/mergeable-index.json",
+      "manifest": "integrate-portrait-styles/remaining-production/rio-nanami/mergeable-index.json",
       "game_adopted": false,
       "note": "Raw candidate only. Fit/export/common normal-based anchors and real game QA pending. Retain classic art and previous versions.",
       "independent_review": "passed candidate review; fit/export/runtime pending",

@@ -80,8 +80,21 @@ await check('actual script branches keep delivery and later customer introductio
  const volk=load('ch3_volk').dialogues.find(s=>s.dialogue_id==='ch3_volk_first');
  const known=expand(volk,{met:{volk:true},flags:{_ch3_delivery_volk:true}}).map(l=>l.text||'').join('\n');
  assert(!known.includes('初めて見る顔'));assert(!known.includes('名前を聞いても'));
- assert(known.includes('ナイトサイド')&&known.includes('くゆり'),'Approved parent characterization retained after delivery');
+ assert(known.includes('ナイトサイド')&&known.includes('凛想'),'Approved parent characterization retained after delivery');
  const saku=load('ch3_rivals').dialogues.find(s=>s.dialogue_id==='ch3_saku_first');
  assert(expand(saku,{met:{saku:true},flags:{_ch3_delivery_saku:true}})[0].text.includes('配達で会った'));
+});
+await check('mashiro requests and receives the delivery report; rivals are met in a fixed main-line order (#2682)',async()=>{
+ const deliveries=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_deliveries.json',import.meta.url),'utf8'));
+ const scene=id=>deliveries.dialogues.find(s=>s.dialogue_id===id);
+ assert.deepEqual(Array.from(steps,s=>s.id),['ch3_mukai_intro','ch3_delivery_offer','ch3_delivery_saku','ch3_delivery_steve','ch3_delivery_volk','ch3_delivery_return']);
+ assert.deepEqual(Array.from(steps.filter(s=>s.person),s=>s.person),['saku','steve','volk']);
+ for(const id of ['ch3_delivery_offer','ch3_delivery_return']){
+  const lines=scene(id).lines;
+  const speakers=new Set(lines.map(l=>l.speaker).filter(Boolean));
+  assert(speakers.has('mashiro'),id+' is spoken with mashiro');assert(!speakers.has('mukai_master'),id+' requester is mashiro, not the manager');
+  assert(!lines.some(l=>l.type),id+' has no branch, flag or reward that could skip or pay out');
+  for(const l of lines)if(l.speaker)assert(!l.text.endsWith('。'),'dialogue line ends without a period: '+l.text);
+ }
 });
 console.log(`Mukai delivery: ${count} controlled groups PASS; real AUTO/SKIP/LOAD not run`);

@@ -37,7 +37,7 @@ async function setup(page) {
     core.newGame();
     Object.assign(core.state, { phase: 'daily', day: 4, slot: 0, money: 30000, weatherSeed: 2 });
     Object.assign(core.config, { bgmVolume: 0, seVolume: 0, voiceBlip: false, textSpeed: 4 });
-    for (const id of ['adam', 'hajime', 'naru', 'minto', 'kuyuri', 'sumi', 'tsumugi', 'pakki']) {
+    for (const id of ['adam', 'hajime', 'naru', 'minto', 'rio', 'sumi', 'tsumugi', 'pakki']) {
       core.state.met[id] = true; core.state.flags['_intro_' + id] = true;
     }
     vn.vnTest.turbo = false;

@@ -8,6 +8,7 @@ import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardChapterClearExp, awardTournamentExp, awardSceneExp, presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
 import { canReflect } from "../daily/reflection.js";
+import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
 import { state, save } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
 import { saveFlow } from "../scenes/saves.js";
@@ -32,7 +33,7 @@ import { craftReviewLines } from "../craft/advice.js";
 import { craftReviewBlock } from "../craft/tournament-graphics.js";
 import { naruTastingCategory } from "../craft/naru-tasting.js";
 import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_AFTERMATH, CH5_SCENE_FILES, CH5_PREP_TRIALS,
-  chapterFivePrepScene, chapterFivePreparation, chapterFivePrepPending, chapterFivePrepEcho,
+  chapterFivePrepScene, chapterFivePreparation, chapterFivePrepPending, chapterFivePrepEcho, chapterFiveLoverEcho,
   recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
   canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress, chapterFiveRead,
   chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
@@ -164,7 +165,9 @@ async function readScene(owner, id, { keepHud = false } = {}) {
   // 二本目の調整の行は、制作の後で実績に合わせて読む（ここでは外す）。
   const lines = id === CH5_MATCH_SCENES.beforeSecond ? source.lines.filter(line => line.cue !== ADJUST_CUE) : source.lines;
   // 試作の返り（#1666）は同じ場面の末尾に続けて読み、読了の確定も親場面と一緒にする。
-  const echo = chapterFivePrepEcho(state, id).map(echoId => {
+  // 恋人のましろの訪問（#2024 A2）も同じく末尾に続け、親場面と一緒に確定する。
+  const loverEcho = chapterFiveLoverEcho(state, id, { milestoneDue: loverMilestonesDue(["mashiro"]).length > 0 });
+  const echo = [...chapterFivePrepEcho(state, id), ...loverEcho].map(echoId => {
     if (!DB.dialogues[echoId]) throw new Error(`台本がありません: ${echoId}`);
     return DB.dialogues[echoId].lines;
   });
@@ -197,6 +200,17 @@ async function readScene(owner, id, { keepHud = false } = {}) {
     if (choiceHook && hooks.onChoice === choiceHook) hooks.onChoice = previousOnChoice;
     if (owner.controller === controller) owner.controller = null;
   }
+}
+
+/**
+ * 会えた恋人の未読の節目（lover_events.json）を一つだけ読む（#2024 A2。第3章の readLoverMilestoneAt と同じ形）。
+ * 読了と既読の保存は romance.js が持つ。中断すれば未読のまま残る。
+ */
+async function readLoverMilestoneAt(owner, id) {
+  if (!current(owner) || !loverMilestonesDue([id]).length) return false;
+  const controller = owner.controller = new AbortController();
+  try { return await readLoverMilestone(id, { signal: controller.signal }); }
+  finally { if (owner.controller === controller) owner.controller = null; }
 }
 
 // 節目の LIME の画面表記（#1668 2-8）。
@@ -343,7 +357,8 @@ async function renderFree(owner) {
   if (!current(owner)) return;
   await runAfterParty();
   if (!current(owner)) return;
-  const io = { readAndCommit: id => readAndCommit(owner, id, { keepHud: true }), readScene: id => readScene(owner, id, { keepHud: true }) };
+  const io = { readAndCommit: id => readAndCommit(owner, id, { keepHud: true }), readScene: id => readScene(owner, id, { keepHud: true }),
+    readLoverMilestone: id => readLoverMilestoneAt(owner, id) };
   await runChapterFiveDaily(io);
   if (!current(owner)) return;
   hud();

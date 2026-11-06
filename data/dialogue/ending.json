@@ -16,7 +16,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "tonariの閉店後。スミさんが、洗い終えたグラスを伏せる。"
+          "text": "tonariの閉店後。顔を出したスミさんが、洗い終えたグラスを勝手に伏せていく。"
         },
         {
           "speaker": "sumi",
@@ -26,7 +26,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。今日は俺も作ります"
+          "text": "はい。今日は俺が作ります"
         },
         {
           "type": "hide_cg"
@@ -44,12 +44,12 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "明日、仕込み頼めるか"
+          "text": "来週の仕込みは、もう決めたのか"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。買い足すもの、書いておきます"
+          "text": "はい。つむぎのシフトに合わせて、買い足すものも"
         },
         {
           "speaker": "",
@@ -63,23 +63,23 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
-          "text": "明日から、店はお前が回せ"
+          "face": "smile",
+          "text": "店はもう、お前が回してる。俺が言うことも、だいぶ減ったな"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "tonariを任せる。お前の店の名前は、その先まで取っとけ"
+          "text": "tonariは任せた。お前の店の名前は、その先まで取っとけ"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "……はい"
+          "face": "smile",
+          "text": "はい。いつか、ちゃんと看板にします"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "店を出る前に、明日のシフトを確かめる。"
+          "text": "店を出る前に、明日のシフトを確かめる。俺の名前の隣に、つむぎの名前が並んでいた。"
         }
       ]
     },
@@ -153,7 +153,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎのスケッチブックに、新しい猫が増えていた。"
+          "text": "シフト明け。つむぎのスケッチブックに、新しい猫が増えていた。"
         },
         {
           "speaker": "hajime",
@@ -226,7 +226,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "好きだよ。……急に照れるな"
+          "text": "好きだよ、……急に照れるな"
         },
         {
           "speaker": "ageha",
@@ -312,12 +312,12 @@
       }
     },
     {
-      "dialogue_id": "epilogue_kuyuri",
+      "dialogue_id": "epilogue_rio",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "ショールームを閉めたあと、くゆりさんが小さな紙を差し出した。"
+          "text": "ショールームを閉めたあと、凛想さんが小さな紙を差し出した。"
         },
         {
           "speaker": "hajime",
@@ -325,7 +325,7 @@
           "text": "今日も同意書ですか"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "違う。指輪のサイズ、測ってきた"
         },
@@ -335,7 +335,7 @@
           "text": "……俺、何て返せばいいんだろう"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "今決めなくていい。渡したかっただけ"
         },
@@ -347,20 +347,20 @@
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりさんは予定表を開き、ひとつの午後を指した。"
+          "text": "凛想さんは予定表を開き、ひとつの午後を指した。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "ここ。仕事は入れない"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も、店に話しておきます"
+          "text": "俺も、その日はシフトを空けておきます"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……うん。楽しみにしてる"
         }
@@ -483,6 +483,65 @@
       }
     },
     {
+      "dialogue_id": "epilogue_noor",
+      "comment": "DSR20 ヌールの後日談。恋人がヌール一人の時だけ（selectStoryEnding）。ヌールが日本へ来て、今度ははじめがガイドをする（ch4_noor_cafe_4 の約束）。大会の結果には触れない。能力値は上げない。",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕方のtonari。扉が開いて、大きなスーツケースが先に入ってきた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ハジメ！ 来ちゃった。……ほんとに来ちゃった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "いらっしゃい、ヌールさん。長旅、お疲れさまでした"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "約束、覚えてる？ 今度は、ハジメがガイドの番"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "もちろん。行きたい場所のリスト、全部回りましょう"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "全部は無理。……一日一か所にして、何回も来るから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの奥で、スミさんが黙って炭を起こし始めた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "……ここが、ハジメの煙の始まりの場所？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。今日は、俺が一台作ります。ダブルアップルで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "もらった素焼きのハガルを出すと、ヌールさんは小さく笑って、俺の手を握った。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ending_daily_smoke",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside.png",
@@ -506,6 +565,11 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "いらっしゃいませ。お好きな席へどうぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言い終わる前に、つむぎが水のグラスを二つ運んでいった。"
         },
         {
           "speaker": "",

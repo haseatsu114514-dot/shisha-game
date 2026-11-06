@@ -1,5 +1,5 @@
 // #2035 slice A: bonds.js / phone.js の章番号決め打ちを chapterFeatureEnabled へ寄せても、
-// 章ごとの開放（綾取の締めくくり・くゆりの地元外出・つむぎの応募ゲート）は変えない。
+// 章ごとの開放（綾取の締めくくり・凛想の地元外出・つむぎの応募ゲート）は変えない。
 // 旧式と新式のブロック判定が、照合しうる章の値で一致することを確かめる（挙動不変）。
 import assert from "node:assert/strict";
 import { chapterFeatureEnabled } from "../js/core/chapter-features.js";
@@ -12,9 +12,13 @@ for (const ch of CHAPTERS) {
 
   // 綾取の締めくくり（bonds.finaleDue）: 旧 `state.chapter !== 3` と同じブロック判定を保つ。
   assert.equal(!chapterFeatureEnabled(ch, "sakuBond"), ch !== 3, `saku: ${label}`);
+  // スティーブの締めくくり（#2028・Smoke & Glory）も第3章だけ（東京にいる間の窓は bonds.js が別に見る）。
+  assert.equal(chapterFeatureEnabled(ch, "steveBond"), ch === 3, `steve: ${label}`);
+  // ヴォルクの締めくくり（#2028・鉄の煙）も第3章だけ（大会後の窓は bonds.js が別に見る）。
+  assert.equal(chapterFeatureEnabled(ch, "volkBond"), ch === 3, `volk: ${label}`);
 
-  // くゆりの♥3の外出（phone.eligible, lime_outing_kuyuri_1）: 旧 `state.chapter > 2` と同じブロック判定を保つ。
-  assert.equal(!chapterFeatureEnabled(ch || 1, "kuyuriHomeOuting"), ch > 2, `kuyuri: ${label}`);
+  // 凛想の♥3の外出（phone.eligible, lime_outing_rio_1）: 旧 `state.chapter > 2` と同じブロック判定を保つ。
+  assert.equal(!chapterFeatureEnabled(ch || 1, "rioHomeOuting"), ch > 2, `rio: ${label}`);
 
   // つむぎの締めくくりを本筋の応募前に待たせるゲート（bonds.finaleDue）: 旧 `(state.chapter || 1) === 1` と同じ。
   assert.equal(chapterFeatureEnabled(ch || 1, "tsumugiContestGate"), (ch || 1) === 1, `tsumugi: ${label}`);
@@ -22,12 +26,14 @@ for (const ch of CHAPTERS) {
 
 // 文字列や未定義の章を開放しない（開くのは限定した章だけ）。
 assert.equal(chapterFeatureEnabled("3", "sakuBond"), false);
-assert.equal(chapterFeatureEnabled("1", "kuyuriHomeOuting"), false);
+assert.equal(chapterFeatureEnabled("1", "rioHomeOuting"), false);
 assert.equal(chapterFeatureEnabled("1", "tsumugiContestGate"), false);
 assert.equal(chapterFeatureEnabled(3, "sakuBond"), true);
-assert.equal(chapterFeatureEnabled(1, "kuyuriHomeOuting"), true);
-assert.equal(chapterFeatureEnabled(2, "kuyuriHomeOuting"), true);
-assert.equal(chapterFeatureEnabled(3, "kuyuriHomeOuting"), false);
+assert.equal(chapterFeatureEnabled("3", "steveBond"), false);
+assert.equal(chapterFeatureEnabled("3", "volkBond"), false);
+assert.equal(chapterFeatureEnabled(1, "rioHomeOuting"), true);
+assert.equal(chapterFeatureEnabled(2, "rioHomeOuting"), true);
+assert.equal(chapterFeatureEnabled(3, "rioHomeOuting"), false);
 assert.equal(chapterFeatureEnabled(1, "tsumugiContestGate"), true);
 assert.equal(chapterFeatureEnabled(2, "tsumugiContestGate"), false);
 

@@ -40,6 +40,7 @@ def targets(m):
     rel += ["ui/chapters/ch1_keyart.png"]
     rel += [f"ui/continue/{name}" for name in m.get("continueUI", [])]
     rel += [f"ui/face_icons/{name}" for name in m.get("faceIcons", [])]
+    rel += [f"ui/face_icons/{style}/{name}" for style, names in m.get("faceIconVariants", {}).items() for name in names]
     return [r for r in rel if (ASSETS / r).exists()]
 
 
@@ -57,7 +58,7 @@ def encode(src: Path, rel: str) -> bytes:
             or rel.startswith("sprites/characters/hiyori/")
             or rel.startswith("sprites/characters/ageha/")
             or rel.startswith("sprites/characters/minto/")
-            or rel.startswith("sprites/characters/kuyuri/")
+            or rel.startswith("sprites/characters/rio/")
             or rel.startswith("sprites/characters/tsumugi/")
             or rel.startswith("sprites/characters/sumi/")
             or rel.startswith("sprites/characters/mashiro/")

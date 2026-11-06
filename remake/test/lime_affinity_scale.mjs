@@ -6,7 +6,7 @@ import test from 'node:test';
 
 const phone = await fs.readFile(new URL('../js/daily/phone.js', import.meta.url), 'utf8');
 
-test('盤なしでは従来の整数丸め・LIME倍率・端数・占い消費を実処理で保つ', async () => {
+test('盤なしでは従来の整数丸め・LIME倍率・端数と、会ったときだけの占い消費を実処理で保つ', async () => {
   const storage = new Map();
   globalThis.localStorage = { getItem:k=>storage.get(k)??null, setItem:(k,v)=>storage.set(k,String(v)), removeItem:k=>storage.delete(k) };
   globalThis.document ||= { addEventListener() {} }; globalThis.window ||= {};
@@ -21,12 +21,14 @@ test('盤なしでは従来の整数丸め・LIME倍率・端数・占い消費�
     const tier=(Math.max(1,Math.min(10,Math.ceil(raw/10)))-1)/9;
     let expected=0;
     for (let i=0;i<24;i++) {
-      const points=1+i%3, multiplier=(1+.2*tier)*(fortune&&i===0?1.5:1);
+      // 占いは会ったとき（LIME以外）だけ ×FORTUNE_AFFINITY_MULT。LIMEでは倍にせず消費もしない（台帳 URA07）
+      const points=1+i%3, multiplier=(1+.2*tier)*(fortune&&i===0&&source!=='lime'?statApi.FORTUNE_AFFINITY_MULT:1);
       expected+=Math.round(points*multiplier)*.85*(source==='lime'?.25:1);
       statApi.gainAffinity('adam',points,source==='lime'?{source:'lime',onGain(){}}:{});
       const actual=(s.affinity.adam||0)+(s.affinityCarry.adam||0);
       assert(Math.abs(actual-expected)<1e-9,`${raw}/${source}/${fortune}/${i}: ${actual} vs ${expected}`);
-      assert.equal(s.fortune,undefined,'占いは最初の獲得時だけ消費する');
+      if (fortune && source==='lime') assert.deepEqual(s.fortune,{char:'adam'},'LIMEでは占いを消費しない');
+      else assert.equal(s.fortune,undefined,'占いは会って最初に獲得したときだけ消費する');
     }
     assert.equal(s.growth,undefined,'盤なしでは旧成長の保存形を変えない');
   }

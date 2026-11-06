@@ -46,7 +46,7 @@
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……今日のこと、ノートに描きます。……２人の、いちばん最初のページに"
+          "text": "……今日のこと、ノートに描きます。……ふたりの、いちばん最初のページに"
         },
         {
           "speaker": "hajime",
@@ -69,7 +69,8 @@
       "dialogue_id": "lover_tsumugi_lv2",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_home.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -118,7 +119,8 @@
       "dialogue_id": "lover_tsumugi_lv3",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -208,7 +210,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "つむぎちゃんも、俺を見てるよ、……俺まで、照れる"
+          "text": "つむぎちゃんだって、俺を見てるよ。……こっちまで、照れる"
         },
         {
           "speaker": "tsumugi",
@@ -247,7 +249,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "画面の中で、２つの煙がほどけきらずに混ざり合っていた。水色に、淡いオレンジが少し。"
+          "text": "画面の中で、二つの煙がほどけきらずに混ざり合っていた。水色に、淡いオレンジが少し。"
         },
         {
           "speaker": "tsumugi",
@@ -306,7 +308,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も、つなぐタイミングばっかり考えてました"
+          "text": "俺も、つなぐタイミングばっかり考えてた"
         },
         {
           "speaker": "minto",
@@ -329,7 +331,8 @@
       "dialogue_id": "lover_minto_lv2",
       "metadata": {
         "bg": "res://assets/backgrounds/peppermint.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -378,7 +381,8 @@
       "dialogue_id": "lover_minto_lv3",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_home.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -422,7 +426,8 @@
       "dialogue_id": "lover_minto_lv4",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_home.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -461,7 +466,8 @@
       "dialogue_id": "lover_minto_lv5",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_home.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -477,7 +483,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……うん。こうして２人でぼーっとしてる時間、好きだな"
+          "text": "……うん。こうして二人でぼーっとしてる時間、好きだな"
         },
         {
           "speaker": "minto",
@@ -502,59 +508,60 @@
       ]
     },
     {
-      "dialogue_id": "lover_kuyuri_lv1",
+      "dialogue_id": "lover_rio_lv1",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_cafe.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりさん行きつけの夕飯の店。店員さんがいつもの皿を指すと、彼女は首を振って鞄を置いた。"
+          "text": "凛想さん行きつけの夕飯の店。店員さんがいつもの皿を指すと、彼女は首を振って鞄を置いた。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "今日は、別のにする。向かいに君がいるから、……君は、何にする？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "甘いのがいいです。くゆりさんは？"
+          "text": "甘いのがいいです。凛想さんは？"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "私も。仕事中は、眠くならないように苦いのばっかりだから"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "食後に運ばれたカップから、同じミルクの匂いがした。くゆりさんは砂糖を足して、こちらの顔を見る。"
+          "text": "食後に運ばれたカップから、同じミルクの匂いがした。凛想さんは砂糖を足して、こちらの顔を見る。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……そこ、意外そうな顔しない"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "くゆりさんのこと、また一つ知れたなって"
+          "text": "凛想さんのこと、また一つ知れたなって"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "私も。君が甘いものを選ぶ顔、仕事じゃ見たことなかった"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "机の上で触れた指を、くゆりさんがそっと裏返した。掌を合わせる。"
+          "text": "机の上で触れた指を、凛想さんがそっと裏返した。掌を合わせる。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "今日は、感想の提出はなし"
         },
@@ -564,7 +571,7 @@
           "text": "でも、一つだけ言わせてください。会えて、うれしいです"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "……それは、もう一回聞かせて"
         }
@@ -572,7 +579,7 @@
       "comment": "既存の絆読了・報酬を維持。営業中の接客とは分けた私的な時間として、二人の希望と距離を具体的に描く。"
     },
     {
-      "dialogue_id": "lover_kuyuri_lv2",
+      "dialogue_id": "lover_rio_lv2",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
         "private_scene": true
@@ -581,10 +588,10 @@
         {
           "speaker": "",
           "face": "",
-          "text": "約束した夜。駅へ来たくゆりさんのスマホが、続けて二度鳴った。"
+          "text": "約束した夜。駅へ来た凛想さんのスマホが、続けて二度鳴った。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "ごめん。一件だけ、返していい？"
         },
@@ -596,10 +603,10 @@
         {
           "speaker": "",
           "face": "",
-          "text": "返信を終えると、くゆりさんはスマホを鞄へしまった。"
+          "text": "返信を終えると、凛想さんはスマホを鞄へしまった。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "待たせたね。私、会えてるだけで十分だと思ってたのかも"
         },
@@ -609,7 +616,7 @@
           "text": "一緒にいるのに、ずっと待ってるのは、少し寂しいです"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……うん。言ってくれて、よかった"
         },
@@ -619,7 +626,7 @@
           "text": "少し迷ってから、彼女の方から俺の手を取った。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "急ぎの仕事が入ったら、先に連絡する。会うって決めた時間は、ちゃんと空ける"
         },
@@ -629,7 +636,7 @@
           "text": "俺も。無理して大丈夫って言って、後で黙り込むの、やめます"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "いいね、それ。お互い、分かったふりは禁止"
         },
@@ -642,7 +649,7 @@
       "comment": "既存の絆読了・報酬を維持。営業中の接客とは分けた私的な時間として、二人の希望と距離を具体的に描く。"
     },
     {
-      "dialogue_id": "lover_kuyuri_lv3",
+      "dialogue_id": "lover_rio_lv3",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
         "private_scene": true
@@ -651,10 +658,10 @@
         {
           "speaker": "",
           "face": "",
-          "text": "来週の出張日を教わって、くゆりさんとカレンダーを見比べた。"
+          "text": "来週の出張日を教わって、凛想さんとカレンダーを見比べた。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "向こうの朝だと、こっちは夕方か。君、仕込み中だね"
         },
@@ -664,22 +671,22 @@
           "text": "その時間なら、短いメッセージは返せます。電話は遅番がない日に"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "毎日じゃなくても、寂しくない？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "寂しい日は、寂しいって送ります。くゆりさんも、返せない日は先に教えてください"
+          "text": "寂しい日は、寂しいって送ります。凛想さんも、返せない日は先に教えてください"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりさんは予定を二つ消し、空いている夜だけ丸で囲んだ。"
+          "text": "凛想さんは予定を二つ消し、空いている夜だけ丸で囲んだ。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "私、連絡を義務にして、そのうち嫌われるほうを想像してた"
         },
@@ -689,7 +696,7 @@
           "text": "話したいから話すんです。疲れた日は、おやすみだけでも"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "じゃあ、帰ってきた日は空けといて。たぶん、声だけじゃ足りなくなるから"
         },
@@ -699,20 +706,20 @@
           "text": "迎えに行きます"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "人混みでも平気。tonariの匂いで、君を見つけられるから"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "別れる前、くゆりさんが俺の袖を引いた。短い抱擁のあとも、指がしばらく離れなかった。"
+          "text": "別れる前、凛想さんが俺の袖を引いた。短い抱擁のあとも、指がしばらく離れなかった。"
         }
       ],
       "comment": "既存の絆読了・報酬を維持。営業中の接客とは分けた私的な時間として、二人の希望と距離を具体的に描く。"
     },
     {
-      "dialogue_id": "lover_kuyuri_lv4",
+      "dialogue_id": "lover_rio_lv4",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
         "private_scene": true
@@ -721,20 +728,20 @@
         {
           "speaker": "",
           "face": "",
-          "text": "出張の話の続きで、本社勤務の打診も来ていると聞いた。帰り道のベンチで、くゆりさんが鞄を置く。"
+          "text": "出張の話の続きで、本社勤務の打診も来ていると聞いた。帰り道のベンチで、凛想さんが鞄を置く。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "まだ返事してない。君に黙って決めて、平気な顔をするのは違うと思って"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "くゆりさんは、どんなふうに働きたいですか"
+          "text": "凛想さんは、どんなふうに働きたいですか"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "私が選んだ葉を、日本で誰が吸うのか、もう少し見ていたい。本社も気になるけど"
         },
@@ -744,14 +751,14 @@
           "text": "俺のために、どっちかを諦めてほしいとは思わないです"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "うん。でも、君に会いたいのも私の希望。そこを勝手に勘定から外さないで"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりさんは俺の肩に、自分の肩を軽くぶつけた。"
+          "text": "凛想さんは俺の肩に、自分の肩を軽くぶつけた。"
         },
         {
           "speaker": "hajime",
@@ -759,7 +766,7 @@
           "text": "……はい。俺の予定も、ちゃんと話します"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "日本の担当を続けて、必要な時に向こうへ行く。まずは、その形で相談してみる"
         },
@@ -769,7 +776,7 @@
           "text": "決まったら、二人の時間のことも考えましょう"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "決まる前から考えて。私だって、君に相談してるんだから"
         },
@@ -782,7 +789,7 @@
       "comment": "既存の絆読了・報酬を維持。営業中の接客とは分けた私的な時間として、二人の希望と距離を具体的に描く。"
     },
     {
-      "dialogue_id": "lover_kuyuri_lv5",
+      "dialogue_id": "lover_rio_lv5",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
         "private_scene": true
@@ -791,10 +798,10 @@
         {
           "speaker": "",
           "face": "",
-          "text": "仕事帰りの待ち合わせで、くゆりさんが小さな試香紙を二枚差し出した。"
+          "text": "仕事帰りの待ち合わせで、凛想さんが小さな試香紙を二枚差し出した。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "売り物じゃないよ。私たちの好きな匂い、少しずつ合わせてみた"
         },
@@ -804,7 +811,7 @@
           "text": "こっちは、ブルーベリーですね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "もう片方は、君が前に好きって言ったほう。どっちかを消すの、もったいないでしょ"
         },
@@ -819,7 +826,7 @@
           "text": "名前は、まだないんですね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "私ひとりの名前には、したくなかった。二人で決めたいの"
         },
@@ -829,7 +836,7 @@
           "text": "名前が決まる前に、これで一台組ませてください"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "……いいね。紙の上じゃ、煙になった時の顔までは分からないから"
         },
@@ -839,17 +846,17 @@
           "text": "じゃあ、急がずに考えましょう。この先の約束も、一緒に"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "……はじめくん。そういうの、さらっと言うんだね"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりさんが一歩近づく。触れた手を握ると、彼女の方から頬へ短くキスをした。"
+          "text": "凛想さんが一歩近づく。触れた手を握ると、彼女の方から頬へ短くキスをした。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "今のは記録しなくていい。次に会った時も、またするから"
         },
@@ -859,7 +866,7 @@
           "text": "俺からも、していいですか。……同意書、いりますか"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "……いらない。いいよ、はじめ"
         },
@@ -1430,7 +1437,8 @@
       "dialogue_id": "lover_hiyori_lv1",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_axe_lounge_night.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -1506,7 +1514,8 @@
       "dialogue_id": "lover_hiyori_lv2",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -1757,7 +1766,8 @@
       "dialogue_id": "lover_hiyori_lv5",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_home_night.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {

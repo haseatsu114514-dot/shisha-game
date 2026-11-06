@@ -10,7 +10,7 @@ import { recordGalleryProgress } from "./gallery-progress.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 26; // 26: キャラID改名（IDREN01）の旧セーブ付け替え / 25: 盤のデンスパック制限から旧セーブの選択肢を保護 / 24: くゆりの味の話を第4回へ移し、旧セーブの不足分を補う / 23: 味の話を第4回へ移し、読了済みセーブの不足分を補う / 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 26; // 26: キャラID改名（IDREN01）の旧セーブ付け替え / 25: 盤のデンスパック制限から旧セーブの選択肢を保護 / 24: 凛想の味の話を第4回へ移し、旧セーブの不足分を補う / 23: 味の話を第4回へ移し、読了済みセーブの不足分を補う / 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -116,7 +116,7 @@ export function newState() {
 
 // スキーマ26（IDREN01・2026-11-05 オーナー決定）: キャラIDを現名に合わせて改名。
 // 旧IDで保存されたセーブは、読み込み時にここで新IDへ付け替える（移行処理以外では旧IDを使わない）。
-export const CHAR_ID_RENAMES = { nagumo: "sui", rin: "kuyuri", kuze: "saku", saif: "faris", rashid: "khalil" };
+export const CHAR_ID_RENAMES = { nagumo: "sui", rin: "rio", kuze: "saku", saif: "faris", rashid: "khalil" };
 const CHAR_ID_TOKEN = /(?<![A-Za-z0-9])(nagumo|rin|kuze|saif|rashid)(?![A-Za-z0-9])/g;
 const renameIdToken = (v) => (typeof v === "string" ? v.replace(CHAR_ID_TOKEN, (m) => CHAR_ID_RENAMES[m]) : v);
 const renameExactId = (v) => (typeof v === "string" && CHAR_ID_RENAMES[v] ? CHAR_ID_RENAMES[v] : v);
@@ -144,7 +144,7 @@ function renameCharIdsInSave(s) {
     "loveLevel", "lovePts", "loverSince", "lastDate", "romance", "finales", "friendHangouts"]) {
     if (s[k] && typeof s[k] === "object") s[k] = renameIdKeys(s[k]);
   }
-  // フラグはキーにキャラID・台詞IDを含む（例: _kuyuri_sample）。値には触れない
+  // フラグはキーにキャラID・台詞IDを含む（例: _rio_sample）。値には触れない
   if (s.flags && typeof s.flags === "object") s.flags = renameIdKeys(s.flags);
   // キャラIDそのものの配列（LIME連絡先・恋人）
   s.contacts = renameIdList(s.contacts);
@@ -346,7 +346,7 @@ function migrate(s) {
   // グラム在庫の導入前のセーブ: 持っていたフレーバーは1箱（50g）ぶんとして引き継ぐ
   if (!s.flavorStock) {
     s.flavorStock = Object.fromEntries((s.flavors || ["double_apple"]).map((id) => [id, 50]));
-    if (s.flags?._kuyuri_sample) s.flavorStock.nightside_earlgrey = 50;
+    if (s.flags?._rio_sample) s.flavorStock.nightside_earlgrey = 50;
   }
   // スキーマ14。旧無料プレビューの試遊から購入・クリアを推測しない。
   const trpg = record(s.trpg);
@@ -432,9 +432,9 @@ function migrate(s) {
     }
   }
   // 第4回読了済みの旧セーブは再生できない。第2回・反復回で受け取った分を除き、未取得分だけ補う。
-  if (oldSchema < 24 && (s.story?.kuyuri || 0) >= 4) {
+  if (oldSchema < 24 && (s.story?.rio || 0) >= 4) {
     learnFlavorStory(s, {
-      dialogue_id: "ch1_kuyuri_fourth",
+      dialogue_id: "ch1_rio_fourth",
       metadata: { flavor_lesson: { rose: 1, lychee: 1, blueberry: 1 } },
     }, {}, { growth: false });
   }

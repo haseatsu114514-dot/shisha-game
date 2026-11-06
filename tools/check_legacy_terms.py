@@ -47,8 +47,8 @@ LEGACY_ERROR = {
     "ドクター・ケムリ": "チャコール博士（dr_kemuri）に統一",
     "シーシャ・ステーション": "C.STATION に統一",
     "シーシャステーション": "C.STATION に統一",
-    "蒸野 始": "蒸野 はじめ に統一（2026-10-16 オーナー指定: 主人公の表記は平仮名の「はじめ」）",
-    "蒸野始": "蒸野はじめ に統一（2026-10-16 オーナー指定）",
+    "逢縁 始": "逢縁 はじめ に統一（主人公の表記は平仮名の「はじめ」）",
+    "逢縁始": "逢縁はじめ に統一",
     "ましろさん": "ましろちゃん に統一",
     "筋肉の記憶": "「体で覚えた手つき」等に言い換え（2026-07-20オーナー指定・禁止）",
 }
@@ -57,6 +57,17 @@ LEGACY_ERROR = {
 LEGACY_ERROR_CURRENT = {
     "スハイル": "ファーリス（faris）に統一",
     "suhail": "faris に統一",
+    "宵野": "宵永 千代子（よなが ちよこ）に統一",
+    "葉子": "あげはの本名は宵永 千代子（よなが ちよこ）に統一",
+    "須井": "伏見 豪（ふしみ ごう）に統一",
+    "修二": "会長の本名は伏見 豪（ふしみ ごう）に統一",
+    "ライマン": "スティーブの旧姓。スティーブ・A・アッシュに統一",
+    "Steve Lyman": "Steve A. Ash に統一",
+    "蒸野": "逢縁 はじめ（あいえん はじめ）に統一",
+    "香坂 くゆり": "円頓寺 凛想（えんどうじ りお）に統一",
+    "香坂": "円頓寺 凛想（えんどうじ りお）に統一",
+    "くゆり": "凛想（rio）に統一",
+    "kuyuri": "rio に統一",
     "スナック＆シーシャ": "みんとの店はコンセプトカフェ「ぺぱーみんと／PEPPERMINT」（旧設定資料集の誤り・2026-11-02削除）",
     "オーナーママ": "みんとはオーナー兼キャスト（スナックのママではない）",
     "炭場 創": "チャコール博士の本名は火浦 理一",
@@ -105,13 +116,13 @@ IDENTITY_TEXT_EXTENSIONS = EXTENSIONS | {".mjs", ".cjs", ".html", ".css", ".yml"
 # 2026-11-03 改名（#2474）。旧名は履歴・素材メモを含む全追跡ファイルで禁止する（「凛とした」等の一般語は許す）。
 # 2026-11-04 追加（#2528）: kuyuri の姓「匂坂（さぎさか）」→「香坂（こうさか）」、suhail の「サイーフ」→「スハイル」。同じく全追跡ファイルで禁止。
 # 同日追加: saku / rei / hiyori の改名。店名「零-ZERO-」と国名「朝霧の王国」、小文字の内部ID・保存キーは維持する。
-RENAMED_CHARACTER_RE = re.compile(r"久世|くぜ さく|朝霧 ?ひより|あさぎり ひより|零-REI-|匂坂|さぎさか|サギサカ|\bSagisaka\b|サイーフ|\bSaif\b|凛(?!とし|々|然|冽)|水瀬|白木 ?つむぎ|さぎさか りん|南雲|なぐも しゅうじ|デイビス|Steve Davis|波多野|ラシード|\bRashid\b|アゲハ(?!蝶|チョウ)|路上占い師|\bPak(?:i|ie)\b|サラリーマンさん")
-RENAMED_CHARACTER_FIX = "旧キャラ名 → 綾取 朔（saku）／鴉葬レヰ（rei・本名と店名は維持）／薄羽ひより（hiyori・国名の朝霧は維持）／香坂 くゆり（kuyuri）／猫柳 つむぎ（tsumugi）／黒葉 ましろ（mashiro）／須井 修二（sui）／スティーブ・ライマン（steve）／汐見 なぎさ（samechan）／ハリール（khalil）／あげは（ageha）／辻占のオババ（uranaishi）／Packy（pakki）／鉄仮面さん（salaryman）／ファーリス（faris）に統一（#2474・#2528）"
+RENAMED_CHARACTER_RE = re.compile(r"久世|くぜ さく|朝霧 ?ひより|あさぎり ひより|零-REI-|匂坂|さぎさか|サギサカ|\bSagisaka\b|サイーフ|\bSaif\b|凛(?!とし|々|然|冽|想)|水瀬|白木 ?つむぎ|さぎさか りん|南雲|なぐも しゅうじ|デイビス|Steve Davis|波多野|ラシード|\bRashid\b|アゲハ(?!蝶|チョウ)|路上占い師|\bPak(?:i|ie)\b|サラリーマンさん")
+RENAMED_CHARACTER_FIX = "旧キャラ名 → 綾取 朔（saku）／鴉葬レヰ（rei・本名と店名は維持）／薄羽ひより（hiyori・国名の朝霧は維持）／円頓寺 凛想（rio）／猫柳 つむぎ（tsumugi）／黒葉 ましろ（mashiro）／伏見 豪（sui）／スティーブ・A・アッシュ（steve）／汐見 なぎさ（samechan）／ハリール（khalil）／あげは（ageha）／辻占のオババ（uranaishi）／Packy（pakki）／鉄仮面さん（salaryman）／ファーリス（faris）に統一（#2474・#2528）"
 MINTO_HAIR_RE = re.compile(r"(?:mint|light)[ -]green (?:hair|twin)|black twin[ -]?tails|ミント(?:グリーン|色)のツイン|黒髪ツインテール|角ツインテール", re.IGNORECASE)
 # 2026-11-04 追加（#2528 残骸チェック）: 改名済みキャラの旧ローマ字。英字は前後が英数字でない時だけ検出する
 # （内部ID kuyuri / sui / maezono / samechan / dr_kemuri の小文字表記・ファイル名は対象外）。
 RENAMED_ROMAJI_RE = re.compile(r"(?<![A-Za-z0-9_])(?:Kuze|KUZE|Asagiri|ASAGIRI|REI|Rin|RIN|Nagumo|NAGUMO|Maezono|MAEZONO|Hatano|HATANO)(?![A-Za-z0-9_])|Dr\.? ?Kemuri")
-RENAMED_ROMAJI_FIX = "旧キャラ名（英字・旧表記） → Ayatori（saku）／Usuba（hiyori）／鴉葬レヰ（rei）／Kuyuri（kuyuri）／Sui（sui）／Uezono（maezono）／Shiomi（samechan）／Dr. Charcoal（dr_kemuri）に統一（#2528）"
+RENAMED_ROMAJI_FIX = "旧キャラ名（英字・旧表記） → Ayatori（saku）／Usuba（hiyori）／鴉葬レヰ（rei）／Rio（rio）／Sui（sui）／Uezono（maezono）／Shiomi（samechan）／Dr. Charcoal（dr_kemuri）に統一（#2528）"
 
 
 JSON_STRING_RE = re.compile(r'"(?:[^"\\]|\\.)*"')

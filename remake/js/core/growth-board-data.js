@@ -224,9 +224,9 @@ export const LESSONS = [
     text: "雨・湿気・気温による温まり方の違いを読み切り、天気で熱が狂いにくくなる", scene: "lesson_volk_precision" },
   // 追加の6人（2026-10-30 オーナーが推しの案を全部採用。SBD57）。会って相談する場面は growth_lessons.json（SBD70）
   // ひよりの授業は斧投げを明かした後（_hiyori_real_self_known）だけ分かる（2026-10-31 オーナー「斧投げ明かした後で」SBD71）
-  { id: "M-S6", cell: "3,-1", board: "sense", who: "kuyuri", need: 5, ring: 1, sig: true, reward: "special", name: "ブルーベリーに帰る",
-    hint: "くゆりと仲良くなると、迷った時に帰る葉を教えてもらえそう",
-    text: "配合にブルーベリーを2割以上入れると、どんな葉と合わせても香りがまとまり、配合の点が上がる", scene: "lesson_kuyuri_blueberry" },
+  { id: "M-S6", cell: "3,-1", board: "sense", who: "rio", need: 5, ring: 1, sig: true, reward: "special", name: "ブルーベリーに帰る",
+    hint: "凛想と仲良くなると、迷った時に帰る葉を教えてもらえそう",
+    text: "配合にブルーベリーを2割以上入れると、どんな葉と合わせても香りがまとまり、配合の点が上がる", scene: "lesson_rio_blueberry" },
   { id: "M-B4", cell: "1,-2", board: "body", who: "hiyori", need: 5, ring: 1, sig: true, revealFlag: "_hiyori_real_self_known", reward: "special", name: "ラーメンと斧で元気",
     hint: "ひよりと仲良くなると、元気でいるコツを教えてもらえそう",
     text: "最大体力が大きく増える", scene: "lesson_hiyori_genki" },
@@ -257,7 +257,7 @@ export const REWARD_JA = { skill: "スキル", special: "特殊な技", stat: "�
 /** キャラのタイプ（2.7）: ♥5でくれる色つきの火種の色だけを決める */
 export const CHAR_TYPE = {
   minto: "body", adam: "sense", naru: "wisdom",
-  kuyuri: "sense", hiyori: "body", samechan: "wisdom", mashiro: "body", sheikh: "wisdom", da_silva: "body",
+  rio: "sense", hiyori: "body", samechan: "wisdom", mashiro: "body", sheikh: "wisdom", da_silva: "body",
   master_hookah: "sense", // 龍龍水煙所のドバイの店で♥5（DBS05）。授業 M-S7 と同じ感覚盤
   rei: "body", ageha: "sense", kumicho: "wisdom",
   saku: "body", steve: "sense", volk: "wisdom",

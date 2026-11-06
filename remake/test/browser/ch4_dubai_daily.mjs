@@ -338,6 +338,7 @@ await suite("ch4-dubai-daily", async check => {
     assert(!lines.some(text => text.includes("店の時より")), "No shop acquaintance without a visit");
     const after = await get(page);
     assert.equal(after.met.master_hookah, true);
+    // 前夜祭や強制イベントでは好感度は上がらない。初対面の♥1（#2615）も通常の出会いだけに付く（2026-11-06 オーナー決定）。
     assert.equal(after.affinity.master_hookah || 0, 0, "The reception itself gives no affection");
   });
 
@@ -449,8 +450,8 @@ await suite("ch4-dubai-daily", async check => {
     assert.equal(state.flags._ch4.read.ch4_wang_reception, true);
   });
 
-  // 同行なしで、くゆり（恋人）とましろ（第3章クリア）が別便で応援に来る。前夜祭の日にくゆり→ましろちゃんの到着を読み、
-  // 前夜祭の後、到着したくゆりを前夜に誘える。到着の場面を読む途中でロードしても、同じ到着から読み直し二重に確定しない。
+  // 同行なしで、凛想（恋人）とましろ（第3章クリア）が別便で応援に来る。前夜祭の日に凛想→ましろちゃんの到着を読み、
+  // 前夜祭の後、到着した凛想を前夜に誘える。到着の場面を読む途中でロードしても、同じ到着から読み直し二重に確定しない。
   // 2人目の到着カードは「もう一人」の文になる。
   await check("a-separate-flight-lover-arrives-on-the-festival-day-and-can-be-invited", async page => {
     await seed(page, (value, progress) => {
@@ -459,8 +460,8 @@ await suite("ch4-dubai-daily", async check => {
       for (const id of ["ch4_dubai_souq", "ch4_stranger_first", "ch4_festa", "ch4_inn_tool_care", "ch4_stranger_second"]) p.read[id] = true;
       p.firstDay = 1;
       value.day = p.startDay + 11; value.slot = 1; p.day = 12;
-      value.lovers = ["kuyuri"]; value.met.kuyuri = true; value.contacts.push("kuyuri");
-      value.flags._overseas_companion = { decided: true, companion: null, supports: ["kuyuri", "mashiro"] };
+      value.lovers = ["rio"]; value.met.rio = true; value.contacts.push("rio");
+      value.flags._overseas_companion = { decided: true, companion: null, supports: ["rio", "mashiro"] };
     });
     await loadSlot(page, 0);
     await dubaiMap(page, { day: 60, slot: 1 });
@@ -469,7 +470,7 @@ await suite("ch4-dubai-daily", async check => {
     await page.locator(dt("ch4-rehearsal-rest")).waitFor();
     await page.locator(dt("ch4-rehearsal-rest")).click();
     const arrival = id => `${dt("ch4-arrival")}[data-scene="${id}"]`;
-    await page.locator(arrival("ch4_kuyuri_dubai_girlfriend")).waitFor({ timeout: 60000 });
+    await page.locator(arrival("ch4_rio_dubai_girlfriend")).waitFor({ timeout: 60000 });
     assert.match(await page.locator(dt("ch4-arrival")).innerText(), /DAY 13・前夜祭の日/);
     assert.match(await page.locator(dt("ch4-arrival")).innerText(), /ドバイに着いたらしい/);
     assert.equal((await get(page)).flags._ch4.part, "eve");
@@ -478,11 +479,11 @@ await suite("ch4-dubai-daily", async check => {
     await page.locator(dt("ch4-continue")).click();
     await page.locator("#vn.active").waitFor();
     await loadSlot(page, 0);
-    await page.locator(arrival("ch4_kuyuri_dubai_girlfriend")).waitFor({ timeout: 60000 });
-    assert.equal((await get(page)).flags._ch4.read.ch4_kuyuri_dubai_girlfriend, undefined, "A read cut off by LOAD commits nothing");
+    await page.locator(arrival("ch4_rio_dubai_girlfriend")).waitFor({ timeout: 60000 });
+    assert.equal((await get(page)).flags._ch4.read.ch4_rio_dubai_girlfriend, undefined, "A read cut off by LOAD commits nothing");
     await page.locator(dt("ch4-continue")).click();
     await page.locator(arrival("ch4_mashiro_dubai_friend")).waitFor();
-    assert.equal((await get(page)).flags._ch4.read.ch4_kuyuri_dubai_girlfriend, true);
+    assert.equal((await get(page)).flags._ch4.read.ch4_rio_dubai_girlfriend, true);
     assert.match(await page.locator(dt("ch4-arrival")).innerText(), /もう一人着いたらしい/);
     await page.locator(dt("ch4-continue")).click();
     for (const id of ["ch4_wang_reception", "ch4_stranger_third"]) {
@@ -494,7 +495,7 @@ await suite("ch4-dubai-daily", async check => {
     await page.locator(dt("ch4-evening-date")).click();
     await page.waitForFunction(() => !!window.__remake.state.flags._ch4_evening, null, { timeout: 60000 });
     const state = await get(page);
-    assert.deepEqual(state.flags._ch4_evening, { kind: "date", participants: ["kuyuri"] });
+    assert.deepEqual(state.flags._ch4_evening, { kind: "date", participants: ["rio"] });
     assert.equal(state.flags._ch4.read.ch4_mashiro_dubai_friend, true);
   });
 

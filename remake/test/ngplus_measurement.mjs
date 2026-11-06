@@ -43,7 +43,7 @@ for (const row of strong) {
   equal(row.p, 0);
   equal(row.rivalSamples.length, 12); // 相手3人×4ラウンド
   ok(row.rivalSamples.every(s => s.rival === s.lifted && s.chapter === 3)); // P=0 なら無変化
-  equal(Object.values(row.votes).reduce((sum, v) => sum + v, 0), 30); // SPEND合計10×審査員3人
+  equal(Object.values(row.votes).reduce((sum, v) => sum + v, 0), 34); // 審査員30票＋出場者4人の基礎票
 }
 const direct = { chapter: 3, day: 42, weatherSeed: 7, flags: {} };
 const directProgress = tournament.startAttempt(direct, { careHistory: [] });

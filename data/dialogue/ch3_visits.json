@@ -20,7 +20,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "来てくれて、ありがとう。人が多いから、はぐれないように行こう"
+          "text": "来てくれてありがとう。はぐれないように、一緒に行こう"
         },
         {
           "speaker": "",
@@ -124,7 +124,7 @@
       ]
     },
     {
-      "dialogue_id": "ch3_visit_kuyuri_meetup",
+      "dialogue_id": "ch3_visit_rio_meetup",
       "metadata": {
         "private_scene": true
       },
@@ -135,7 +135,7 @@
           "text": "約束の時間に、東京駅で待ち合わせた。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……顔を見たら、ほっとした。移動中、少しだけ緊張してたんだよね"
         },
@@ -152,7 +152,7 @@
       ]
     },
     {
-      "dialogue_id": "ch3_visit_kuyuri_date",
+      "dialogue_id": "ch3_visit_rio_date",
       "metadata": {
         "private_scene": true
       },
@@ -163,17 +163,17 @@
           "text": "約束した自由時間。東京駅の外で落ち合い、街路樹の続く道を二人で歩いた。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
-          "text": "いつもなら、この時間は店の連絡を確認してるんだけど。今日は、もう少ししまっておく"
+          "text": "いつもなら、この時間は店の連絡を見てるんだけど。今日は、スマホはしまっておく"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も。今日は目の前の人と話したいです"
+          "text": "俺もです。今日は、ちゃんと隣で話していたいです"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……うん。そう言ってもらえると、休暇を取ってよかったって思える"
         },
@@ -287,7 +287,7 @@
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "知らない道を歩いてるのに、隣にいると落ち着くね。今日は帰ってからの仕事、考えずにいられそう"
+          "text": "知らない道なのに、隣にいると落ち着くね。今日は仕事のこと、考えずにいられそう"
         },
         {
           "speaker": "hajime",

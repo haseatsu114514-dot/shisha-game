@@ -12,12 +12,12 @@ async function setup(page) {
     G.ch1.setupHooks(); G.vn.vnTest.turbo = true;
     G.fresh = () => {
       const s = G.core.newGame(); Object.assign(s, { phase: "daily", day: 8, slot: 1 });
-      for (const id of ["tsumugi", "minto", "kuyuri"]) {
+      for (const id of ["tsumugi", "minto", "rio"]) {
         s.met[id] = true; s.flags[`_intro_${id}`] = true;
       }
       s.flags._minto_identity_revealed = true;
       // #814: 固有会話を読み終えた状態から始め、♥3の質問ゲートだけを確かめる（最古未読/ハート解放は別のテスト）。
-      Object.assign(s.story, { tsumugi: 6, minto: 5, kuyuri: 3 }); // みんとは最後の1本を残し、早すぎる締めくくりを確かめる
+      Object.assign(s.story, { tsumugi: 6, minto: 5, rio: 3 }); // みんとは最後の1本を残し、早すぎる締めくくりを確かめる
       return s;
     };
     G.readGate = async id => {
@@ -84,7 +84,7 @@ await suite("affinity-gates", async check => {
       await setup(page);
       const rows = await page.evaluate(async () => {
         const out = [];
-        for (const id of ["tsumugi", "minto", "kuyuri"]) for (const value of [0, 1]) {
+        for (const id of ["tsumugi", "minto", "rio"]) for (const value of [0, 1]) {
           let s = G.fresh(); s.story[id] = id === "minto" ? 4 : 3;
           s.affinity[id] = 30; s.fortune = { char: id };
           for (let i = 0; i < 20; i++) G.stats.gainAffinity(id, 10);
@@ -98,7 +98,7 @@ await suite("affinity-gates", async check => {
             waiting: G.stats.affinityGateWaiting(id), rescued: s.flags[`_${id}_affinity_stage_released_pts`] || 0,
             answer: s.romanceChoices[G.stats.AFFINITY_GATE_CHOICES[id]], due: s.flags._confession_due ?? null };
           const pts = s.affinity[id], romance = G.bonds.romanceValue(id);
-          if (id === "kuyuri") await G.bonds.playQuestionVisit(id);
+          if (id === "rio") await G.bonds.playQuestionVisit(id);
           else await G.bonds.afterStory(G.bonds.BOND_QUESTIONS[id].host);
           const duplicate = { points: s.affinity[id], romance: G.bonds.romanceValue(id),
             release: G.stats.releaseAffinity(id) };
@@ -133,7 +133,7 @@ await suite("affinity-gates", async check => {
         assert.equal(r.opened.answer.value, r.value); assert.equal(r.opened.due, null);
         assert.equal(r.duplicate.points, r.pts); assert.equal(r.duplicate.romance, r.romance);
         assert.equal(r.duplicate.release, 0); assert.equal(r.saved.points, r.pts); assert.equal(r.saved.again, 0);
-        // 質問の直後はどの相手も締めくくりにならない。くゆりも #1752 で4つ目の固有会話が質問の後に入った。
+        // 質問の直後はどの相手も締めくくりにならない。凛想も #1752 で4つ目の固有会話が質問の後に入った。
         assert.equal(r.earlyFinale, false, JSON.stringify({ id: r.id, value: r.value, ...r.earlyWhy })); assert(r.ready); assert.equal(r.finale.route, r.value ? "romance" : "friend");
         assert.equal(r.finale.due, r.value ? r.id : null); assert.equal(r.finale.open, !!r.value);
         assert.equal(r.finale.giftCount, 1); assert(!r.replay && r.stable); assert.equal(r.held,0);
@@ -144,9 +144,9 @@ await suite("affinity-gates", async check => {
       await setup(page);
       const rows = await page.evaluate(async () => {
         const out = [];
-        for (const id of ["tsumugi", "minto", "kuyuri"]) {
+        for (const id of ["tsumugi", "minto", "rio"]) {
           const s = G.fresh(); s.affinity[id] = 20;
-          s.story[id] = id === "kuyuri" ? 3 : 4;
+          s.story[id] = id === "rio" ? 3 : 4;
 
           if (id === "minto") Object.assign(s.flags, { _minto_private_done: true, _minto_name_known: true });
           await G.bonds.afterStory(G.bonds.BOND_QUESTIONS[id].host);
@@ -172,7 +172,7 @@ await suite("affinity-gates", async check => {
       await setup(page);
       const result = await page.evaluate(async () => {
         const legacy = [];
-        for (const id of ["tsumugi", "minto", "kuyuri"]) for (const points of [33, 47, 66]) {
+        for (const id of ["tsumugi", "minto", "rio"]) for (const points of [33, 47, 66]) {
           let s = G.fresh(); s.affinity[id] = points; s.affinityCarry[id] = 0.7; s.stats.charm = 100;
           G.stats.gainAffinity(id, 10);
           const held = s.flags[`_${id}_affinity_waiting_pts`] || 0;
@@ -183,15 +183,15 @@ await suite("affinity-gates", async check => {
           const rescued = G.stats.releaseAffinity(id);
           legacy.push({ id, points, unchanged, carry, held, rescued, after: s.affinity[id], level: G.stats.affinityLevel(id) });
         }
-        let s = G.fresh(); s.story.kuyuri = 0; s.affinity.kuyuri = 66; s.flags._friend_kuyuri = true;
-        G.stats.gainAffinity("kuyuri", 10); G.core.save(); G.core.load();
-        const oldFriend = { points: G.core.state.affinity.kuyuri, friend: G.core.state.flags._friend_kuyuri,
-          waiting: G.stats.affinityGateWaiting("kuyuri"), answer: G.core.state.romanceChoices.bond_q1_kuyuri ?? null };
+        let s = G.fresh(); s.story.rio = 0; s.affinity.rio = 66; s.flags._friend_rio = true;
+        G.stats.gainAffinity("rio", 10); G.core.save(); G.core.load();
+        const oldFriend = { points: G.core.state.affinity.rio, friend: G.core.state.flags._friend_rio,
+          waiting: G.stats.affinityGateWaiting("rio"), answer: G.core.state.romanceChoices.bond_q1_rio ?? null };
         s = G.fresh(); s.story.minto = 0; G.stats.ensureAffinityLevel("minto", 5);
         const guarantee = s.flags._minto_affinity_waiting_pts || 0;
         G.stats.ensureAffinityLevel("minto", 5);
         const guaranteed = { points: s.affinity.minto, guarantee, second: s.flags._minto_affinity_waiting_pts || 0 };
-        s.lovers = ["tsumugi", "kuyuri"]; s.lovePts = { tsumugi: 9, kuyuri: 20 }; s.loveLevel = { tsumugi: 1, kuyuri: 2 };
+        s.lovers = ["tsumugi", "rio"]; s.lovePts = { tsumugi: 9, rio: 20 }; s.loveLevel = { tsumugi: 1, rio: 2 };
         G.stats.gainAffinity("tsumugi", 10); const publicBond = s.lovePts.tsumugi;
         G.stats.bond.private = true; G.stats.gainAffinity("tsumugi", 10); G.stats.bond.private = false;
         s.affinity.minto = 66; s.flags._minto_name_known = true;
@@ -214,10 +214,10 @@ await suite("affinity-gates", async check => {
       assert.deepEqual(result.guaranteed, { points: 66, guarantee: 0, second: 0 });
       assert.deepEqual(result.oldFriend, { points: 74, friend: true, waiting: false, answer: null });
       assert.equal(result.publicBond, 9); assert.equal(result.saved.lovePts.tsumugi, 14);
-      assert.deepEqual(result.saved.lovers, ["tsumugi", "kuyuri"]); assert.equal(result.saved.lovePts.kuyuri, 20);
+      assert.deepEqual(result.saved.lovers, ["tsumugi", "rio"]); assert.equal(result.saved.lovePts.rio, 20);
       assert.equal(result.saved.flags._confession_due, "minto"); assert.equal(result.saved.flags._confession_wait, 11);
       assert(!result.skipped); assert(!result.saved.romanceChoices.bond_q1_minto);
-      assert(result.confessed); assert.deepEqual(result.accepted, ["tsumugi", "kuyuri", "minto"]);
+      assert(result.confessed); assert.deepEqual(result.accepted, ["tsumugi", "rio", "minto"]);
       assert.equal(result.pending, null);
       await page.evaluate(() => {
         G.fresh().affinity.minto = 33; G.stats.gainAffinity("minto", 10); G.status.openStatus();
@@ -228,7 +228,7 @@ await suite("affinity-gates", async check => {
     }, { ...options, reducedMotion: "reduce" });
     await check(`${label}-friend-status`, async page => {
       await setup(page);
-      const ids = ["sumi", "naru", "adam", "tsumugi", "minto", "kuyuri", "hiyori"];
+      const ids = ["sumi", "naru", "adam", "tsumugi", "minto", "rio", "hiyori"];
       await page.evaluate(ids => {
         const s = G.fresh();
         for (const id of ids) {
@@ -236,7 +236,7 @@ await suite("affinity-gates", async check => {
           s.finales[id] = { route: "friend", day: 7, chapter: 1 };
         }
         // A pre-schema-8 save keeps recorded finales, legacy flags and acquired rewards.
-        s.schema = 7; s.flags._friend_kuyuri = true;
+        s.schema = 7; s.flags._friend_rio = true;
         s.flags._hiyori_tonari_return_done = true;
         s.owned.push("suyaki_sumi", "suyaki_naru", "suyaki_adam");
         G.core.save(); G.core.load();
@@ -261,7 +261,7 @@ await suite("affinity-gates", async check => {
       const preserved = await page.evaluate(() => ({
         state: JSON.stringify(G.core.state) === G.beforeStatus,
         save: localStorage.getItem(G.core.SAVE_KEY) === G.beforeSave,
-        legacy: G.core.state.flags._friend_kuyuri,
+        legacy: G.core.state.flags._friend_rio,
         gifts: G.core.state.owned.filter(id => ["suyaki_sumi", "suyaki_naru", "suyaki_adam"].includes(id)),
       }));
       assert(preserved.state && preserved.save && preserved.legacy);
@@ -277,21 +277,21 @@ await suite("affinity-gates", async check => {
       ]) {
         await page.evaluate(({ route, flag, lover, registered }) => {
           const s = G.fresh();
-          s.affinity.kuyuri = 66;
-          if (route) s.finales.kuyuri = { route, day: 7, chapter: 1 };
-          if (flag) s.flags._friend_kuyuri = true;
-          if (lover) { s.lovers = ["kuyuri"]; s.loveLevel.kuyuri = 2; s.lovePts.kuyuri = 20; }
-          G.friendData = window.__remake.DB.friends.friends.kuyuri;
-          if (!registered) delete window.__remake.DB.friends.friends.kuyuri;
+          s.affinity.rio = 66;
+          if (route) s.finales.rio = { route, day: 7, chapter: 1 };
+          if (flag) s.flags._friend_rio = true;
+          if (lover) { s.lovers = ["rio"]; s.loveLevel.rio = 2; s.lovePts.rio = 20; }
+          G.friendData = window.__remake.DB.friends.friends.rio;
+          if (!registered) delete window.__remake.DB.friends.friends.rio;
           G.beforeStatus = JSON.stringify(s);
           G.status.openStatus();
         }, { route, flag, lover, registered });
         await page.locator('[data-tab="people"]').click();
         const result = await page.evaluate(() => {
-          const row = [...document.querySelectorAll(".pp-row")].find(n => n.querySelector(".pp-name").textContent === "くゆり");
+          const row = [...document.querySelectorAll(".pp-row")].find(n => n.querySelector(".pp-name").textContent === "凛想");
           return {
             friend: [...row.querySelectorAll(".pp-relation")].some(n => n.textContent === "友達"),
-            settled: G.bonds.settledFriend("kuyuri"),
+            settled: G.bonds.settledFriend("rio"),
             lover: row.classList.contains("lover"),
             unchanged: JSON.stringify(G.core.state) === G.beforeStatus,
           };
@@ -301,7 +301,7 @@ await suite("affinity-gates", async check => {
         assert.equal(result.lover, lover, label);
         assert(result.unchanged, label);
         await page.locator('[data-test="status-close"]').click();
-        await page.evaluate(() => { window.__remake.DB.friends.friends.kuyuri = G.friendData; });
+        await page.evaluate(() => { window.__remake.DB.friends.friends.rio = G.friendData; });
       }
     }, { ...options, reducedMotion: "reduce" });
 

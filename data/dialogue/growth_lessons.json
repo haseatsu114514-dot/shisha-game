@@ -983,20 +983,20 @@
       ]
     },
     {
-      "dialogue_id": "lesson_kuyuri_blueberry",
+      "dialogue_id": "lesson_rio_blueberry",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "Dr.fookahの2階。黒いフィルム越しの薄明かりの中、くゆりがクリップボードをめくっている。"
+          "text": "Dr.fookahの2階。黒いフィルム越しの薄明かりの中、凛想がクリップボードをめくっている。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "くゆりさん、今日はモニターじゃなくて、相談があって来ました"
+          "text": "凛想さん、今日はモニターじゃなくて、相談があって来ました"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "へえ、モルモットくんから相談。珍しいね。いいよ、聞かせて"
         },
@@ -1011,32 +1011,32 @@
           "text": "でも、足すほど香りが散らばって、何の一台か分からなくなって"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "ふふ。君だけじゃないよ。この棚の前に立つ人は、みんな一度そうなる"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりは棚の端から、見慣れたブルーベリーの袋を取り出した。"
+          "text": "凛想は棚の端から、見慣れたブルーベリーの袋を取り出した。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "私は世界中の限定品が吸えるのに、結局ここに帰ってくるの"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "ブルーベリーは、甘さも酸味も真ん中にある。花にもお茶にも寄っていける"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "迷ったら、全体の2割以上入れてみて。1割だと、隠し味で終わるから"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "2割あれば、散らばった香りが、ちゃんと同じ場所に集まる"
         },
@@ -1046,7 +1046,7 @@
           "text": "12グラムのボウルなら、2グラムちょっと……思ったより多いですね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "主役を食うほどじゃない。でも、帰る場所にはなる量だよ"
         },
@@ -1061,7 +1061,7 @@
           "text": "次の試作、ブルーベリーを軸にして組んでみます"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "うん。……どんな顔で吸われたか、ちゃんと持って帰ってきてね"
         }

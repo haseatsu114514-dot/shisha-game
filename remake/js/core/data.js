@@ -45,7 +45,7 @@ export const DB = {
 
 const DIALOGUE_FILES = [
   "ch1_main", "ch1_tournament", "ch1_sumi", "ch1_naru", "ch1_adam", "ch1_minto",
-  "ch1_tsumugi", "ch1_kuyuri", "ch1_ageha", "ch1_spots", "ch1_events", "ch1_incognito",
+  "ch1_tsumugi", "ch1_rio", "ch1_ageha", "ch1_spots", "ch1_events", "ch1_incognito",
   "confession", "lover_events", // 告白・恋人の節目イベント（正本は旧版と共通）
   "remake_ch1", // リメイク版の進行で使う短い場面（旧版 web/ は読まない）
   "ch1_interval",
@@ -363,17 +363,34 @@ export function cgThumbUrl(id) {
  * 顔ドット絵アイコン。名前欄と同じ条件で、本名を聞いた後の私的な場面のみんと（栞）は私服の顔
  * （face_minto_private）。私服の「お姉さん」も、営業姿の顔で正体が見た目に出ないよう私服の顔にする
  */
-export function faceIconUrl(id, state = null, { context = null } = {}) {
-  const icons = DB.manifest.faceIcons || [];
+export function faceIconUrl(id, state = null, { context = null, style = portraitStyle() } = {}) {
   const privateMinto = id === "oneesan" || (id === "minto" && context === "private" && state?.flags?._minto_name_known);
-  if (privateMinto) return icons.includes("face_minto_private.png") ? img("ui/face_icons/face_minto_private.png") : null;
   const folder = SPEAKER_ALIAS[id] || id;
-  return icons.includes(`face_${folder}.png`) ? img(`ui/face_icons/face_${folder}.png`) : null;
+  const rel = faceIconRel(privateMinto ? "face_minto_private.png" : `face_${folder}.png`, style);
+  return rel ? img(rel) : null;
 }
 
-/** 顔アイコンの全URL（起動時の先読み用） */
-export function allFaceIconUrls() {
-  return (DB.manifest.faceIcons || []).map((f) => img(`ui/face_icons/${f}`));
+/**
+ * 設定の「会話の立ち絵」の画風に合わせた顔アイコン（assets/ からの相対パス）。
+ * 新バージョンを選んでいて、その人の新バージョンの顔アイコンがあればそれ（立ち絵と同じ絵から作ったもの）。
+ * 無い人（新バージョンの立ち絵が無い人）は、会話でも現行の絵になるので現行の顔アイコン（2026-11-06）
+ */
+function faceIconRel(name, style) {
+  if (style !== "classic" && (DB.manifest.faceIconVariants?.[style] || []).includes(name)) return `ui/face_icons/${style}/${name}`;
+  return (DB.manifest.faceIcons || []).includes(name) ? `ui/face_icons/${name}` : null;
+}
+
+/**
+ * 顔アイコンと同じ顔の枠（tools/make_face_icons.py の frames()。立ち絵 896×1200 の画素）。
+ * { box: [x0, y0, 辺], eye: [頬の中央 x, 目の高さ y], unit: 顔の大きさ }。その画風で測っていなければ null
+ */
+export function faceFrame(folder, style = "classic") {
+  return DB.manifest.faceFrames?.[style]?.[folder] || null;
+}
+
+/** 顔アイコンの全URL（起動時の先読み用）。今の画風で出すものを読む */
+export function allFaceIconUrls(style = portraitStyle()) {
+  return (DB.manifest.faceIcons || []).map((f) => img(faceIconRel(f, style)));
 }
 
 export function makingUrl(name) {

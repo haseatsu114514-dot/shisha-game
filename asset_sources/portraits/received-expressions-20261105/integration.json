@@ -959,7 +959,7 @@
       ]
     },
     {
-      "character_id": "kuyuri",
+      "character_id": "rio",
       "expression": "smug",
       "style": "nanami",
       "library_file_id": "libfile_253b0c6fde788191a1c2682814a3bba4",
@@ -987,7 +987,7 @@
       "hold_reason": "Normal family not introduced; no obsolete normal/other style substitution.",
       "producer_source_sha256": "a105be0ff835561336f9968234ceacc115caa5a96ee216de231506253cd37f94",
       "original_expression_source": {
-        "current_repository_path": "assets/sprites/characters/kuyuri/chr_kuyuri_smug.png",
+        "current_repository_path": "assets/sprites/characters/rio/chr_rio_smug.png",
         "sha256": "a105be0ff835561336f9968234ceacc115caa5a96ee216de231506253cd37f94",
         "size_bytes": 377491
       },
@@ -995,7 +995,7 @@
       "normal_reference": []
     },
     {
-      "character_id": "kuyuri",
+      "character_id": "rio",
       "expression": "smug",
       "style": "new",
       "library_file_id": "libfile_fe45780d463c819198cfe29fd2a983fc",
@@ -1023,7 +1023,7 @@
       "hold_reason": "Normal family not introduced; no obsolete normal/other style substitution.",
       "producer_source_sha256": "a105be0ff835561336f9968234ceacc115caa5a96ee216de231506253cd37f94",
       "original_expression_source": {
-        "current_repository_path": "assets/sprites/characters/kuyuri/chr_kuyuri_smug.png",
+        "current_repository_path": "assets/sprites/characters/rio/chr_rio_smug.png",
         "sha256": "a105be0ff835561336f9968234ceacc115caa5a96ee216de231506253cd37f94",
         "size_bytes": 377491
       },

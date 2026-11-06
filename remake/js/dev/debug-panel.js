@@ -18,6 +18,7 @@ import { growthEnabled, gainExp, ensureGrowth } from "../core/growth.js";
 import { emit } from "../core/bus.js";
 import { refreshPortraits } from "../vn/engine.js";
 import { installTimeWarp, setSpeed, getSpeed, SPEEDS, realTime } from "./time-warp.js";
+import { createBackgroundPreview } from "./background-preview.js";
 
 const SPEED_KEY = "suien_debug_speed";
 const CRAFT_KEY = "suien_debug_craft";
@@ -50,6 +51,10 @@ const STYLE = `
 .dbg-panel .dbg-row{align-items:center}
 .dbg-state{font:12px/1.5 ui-monospace,monospace;color:#cfc6b6;white-space:pre-wrap}
 .dbg-note{font-size:11px;color:#9d93a8;margin-top:6px}
+.dbg-preview-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1000;pointer-events:none}
+.dbg-preview-image[hidden],.dbg-preview-close[hidden]{display:none}
+.dbg-preview-close{position:fixed;right:8px;bottom:8px;z-index:2147483000;font:600 12px system-ui,sans-serif;padding:8px 10px;
+  border:1px solid #f5c26b;border-radius:8px;background:rgba(20,16,30,.9);color:#f5c26b;cursor:pointer}
 `;
 
 function el(tag, { dataset = {}, ...props } = {}, children = []) {
@@ -60,7 +65,7 @@ function el(tag, { dataset = {}, ...props } = {}, children = []) {
   return node;
 }
 const SLOT = ["昼", "夜", "就寝"];
-const CHAR_LABELS = { tsumugi: "つむぎ", minto: "みんと", kuyuri: "くゆり", ageha: "あげは", mashiro: "ましろ", hiyori: "ひより", samechan: "サメちゃん" };
+const CHAR_LABELS = { tsumugi: "つむぎ", minto: "みんと", rio: "凛想", ageha: "あげは", mashiro: "ましろ", hiyori: "ひより", samechan: "サメちゃん" };
 
 // 画面で走っている旧ループを破棄するため、保存後は既存のブート再開経路へ戻す。
 function resumeSaved() {
@@ -166,6 +171,7 @@ export function mountDebugPanel() {
   const syncPortraitStyle = () => { portraitSelect.value = ["new", "nanami"].includes(config.portraitStyle) ? config.portraitStyle : "classic"; };
   syncPortraitStyle();
   const portraitRow = el("div", { className: "dbg-row" }, [portraitSelect]);
+  const backgroundPreview = createBackgroundPreview();
   const action = (label, test, run) => el("button", { type: "button", textContent: label, dataset: { test },
     onclick: () => { if (!state) return; run(); emit("hud"); status.textContent = stateText(); } });
   const tools = el("div", { className: "dbg-row" }, [
@@ -244,6 +250,8 @@ export function mountDebugPanel() {
     el("h4", { textContent: "シーシャ作り" }), craftRow,
     el("h4", { textContent: "会話の立ち絵" }), portraitRow,
     el("div", { className: "dbg-note", textContent: "通常の設定と共通。未導入の人物・衣装は現行、未導入の表情は同じ画風の通常絵。進行・セーブは変えない。" }),
+    el("h4", { textContent: "背景プレビュー" }), backgroundPreview.row,
+    el("div", { className: "dbg-note", textContent: "一覧には既存の時間帯・状態差分も含む。表示だけを重ね、進行とセーブは変えない。" }),
     el("h4", { textContent: "便利" }), tools,
     el("h4", { textContent: "日付・時間帯" }), warpRow,
     el("h4", { textContent: "章・場面ジャンプ" }), chapterRow,
@@ -253,7 +261,7 @@ export function mountDebugPanel() {
     el("div", { className: "dbg-note", textContent: "会話の早送りは、会話の SKIP。経験値は寝ると精算される。" }),
     el("div", { className: "dbg-note", textContent: "この道具を消す: URL に ?debug=0。リリース前には remake/js/dev/ を消す。" }),
   );
-  const open = show => { panel.hidden = !show; if (show) { syncPortraitStyle(); status.textContent = stateText(); if (state) syncRelationship(); } };
+  const open = show => { panel.hidden = !show; if (show) { backgroundPreview.refresh(); syncPortraitStyle(); status.textContent = stateText(); if (state) syncRelationship(); } };
   toggle.addEventListener("click", () => open(panel.hidden));
   document.addEventListener("keydown", event => {
     if (event.key === "`" && !event.repeat && !/^(INPUT|TEXTAREA|SELECT)$/.test(event.target?.tagName || "")) open(panel.hidden);

@@ -62,7 +62,7 @@ export const CH4_SCENE_BG = Object.freeze({
   // 別便の応援の到着（前夜祭の日）。宿のロビーで迎える。
   ch4_tsumugi_dubai_girlfriend: "bg_dubai_inn_day",
   ch4_minto_dubai_girlfriend: "bg_dubai_inn_day",
-  ch4_kuyuri_dubai_girlfriend: "bg_dubai_inn_day",
+  ch4_rio_dubai_girlfriend: "bg_dubai_inn_day",
   ch4_ageha_dubai_girlfriend: "bg_dubai_inn_day",
   ch4_mashiro_dubai_girlfriend: "bg_dubai_inn_day",
   ch4_samechan_dubai_girlfriend: "bg_dubai_inn_day",
@@ -121,9 +121,7 @@ export const CH4_MANDATORY = Object.freeze([
   { id: "ch4_stranger_third", lead: null },
 ].map(entry => Object.freeze(entry)));
 
-// 勝ち側の本線。story_routes の on_win は result → ending → sui_old_rival → sumi_return → two_tables だが、
-// CH4-CONNECTION-DESIGN 要点3「須井は屋敷・帰国より前」に従い sui_old_rival を ending の前に置く。
-// （story_routes.json は編集しない。食い違いは PR 報告に明記）
+// 勝ち側の本線。story_routes の on_win と同じく、結果 → 会長 → 屋敷 → 帰国 → 二卓の順に再生する。
 export const CH4_RESOLUTION = Object.freeze([
   { id: "ch4_result", label: "結果発表", location: "大会会場" },
   { id: "ch4_sui_old_rival", label: "審査席から", location: "大会会場" },
@@ -172,14 +170,14 @@ export const CH4_VISITOR_SCENE_FILES = Object.freeze({
   ch4_visitors: Object.freeze(["ch4_samechan_dubai_girlfriend", "ch4_hiyori_dubai_girlfriend"]),
   ch4_tsumugi_dubai: Object.freeze(["ch4_tsumugi_dubai_girlfriend"]),
   ch4_minto_dubai: Object.freeze(["ch4_minto_dubai_girlfriend"]),
-  ch4_kuyuri_dubai: Object.freeze(["ch4_kuyuri_dubai_girlfriend"]),
+  ch4_rio_dubai: Object.freeze(["ch4_rio_dubai_girlfriend"]),
   ch4_ageha_dubai: Object.freeze(["ch4_ageha_dubai_girlfriend"]),
 });
 
 // 別便の応援の到着場面。恋人は data/story_routes.json の romance[id].arrival と同じ（ch4_progress.mjs が一致を確認）。
 // 恋人でないましろ（第3章クリアで来る）は友人版。同行者は同じ便なので到着場面を持たない。
 export const CH4_ARRIVAL_SCENES = Object.freeze({
-  tsumugi: "ch4_tsumugi_dubai_girlfriend", minto: "ch4_minto_dubai_girlfriend", kuyuri: "ch4_kuyuri_dubai_girlfriend",
+  tsumugi: "ch4_tsumugi_dubai_girlfriend", minto: "ch4_minto_dubai_girlfriend", rio: "ch4_rio_dubai_girlfriend",
   ageha: "ch4_ageha_dubai_girlfriend", mashiro: "ch4_mashiro_dubai_girlfriend",
   samechan: "ch4_samechan_dubai_girlfriend", hiyori: "ch4_hiyori_dubai_girlfriend",
 });

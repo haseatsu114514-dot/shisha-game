@@ -11,7 +11,7 @@ export const JUDGE_LOOK = {
   maezono: { short: "上園", color: "#ff8db4" },
   emil: { short: "エミル", color: "#8fb2ff" },
   dr_kemuri: { short: "博士", color: "#5fe2cf" },
-  sui: { short: "須井", color: "#f6c95e" },
+  sui: { short: "伏見", color: "#f6c95e" },
 };
 export const VOTE_SCALE = 20; // 帯の全幅＝20点（2人分の満票）
 const look = (judge) => JUDGE_LOOK[judge] || { short: displayName(judge, state), color: "#c9bcd8" };

@@ -422,7 +422,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "駅までの道を、つむぎの歩幅で歩いた。改札の前で手を離すと、つむぎは小さく手を振って、一度だけ振り返った。"
+          "text": "駅までの道を、つむぎの歩幅で歩いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "改札の前で手を離すと、つむぎは小さく手を振って、一度だけ振り返った。"
         },
         {
           "type": "hide_cg"
@@ -936,7 +941,7 @@
       ]
     },
     {
-      "dialogue_id": "confession_kuyuri",
+      "dialogue_id": "confession_rio",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png"
       },
@@ -944,10 +949,10 @@
         {
           "speaker": "",
           "face": "",
-          "text": "それぞれの仕事を終えた帰り道。くゆりさんは駅を通り過ぎ、川沿いの少し静かな道を選んだ。"
+          "text": "それぞれの仕事を終えた帰り道。凛想さんは駅を通り過ぎ、川沿いの少し静かな道を選んだ。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "今日でモニターの一区切り。本国から、受領の返事が来てた"
         },
@@ -957,22 +962,22 @@
           "text": "じゃあ、次は仕事じゃない日に"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……覚えてたんだ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "くゆりさんが予定、空けてくれたでしょう"
+          "text": "凛想さんが予定、空けてくれたでしょう"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "街灯の下で立ち止まる。くゆりさんは鞄から出しかけた試香紙を、使わずに戻した。"
+          "text": "街灯の下で立ち止まる。凛想さんは鞄から出しかけた試香紙を、使わずに戻した。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "会う理由がなくなるの、少し怖かった。……私から誘って、断られるのも、ね"
         },
@@ -982,58 +987,58 @@
           "text": "仕事の話なら、いくらでもできるんですけどね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "今日は、試香紙はいらない。君の言葉で、確かめたいから"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "試すような笑い方ではなかった。くゆりさんが俺の返事を待っていた。"
+          "text": "試すような笑い方ではなかった。凛想さんが俺の返事を待っていた。"
         },
         {
           "type": "choice",
           "choices": [
             {
-              "text": "「くゆりさんに会いに行く。それが理由です」と踏み込む",
-              "next_id": "confession_kuyuri_accept"
+              "text": "「凛想さんに会いに行く。それが理由です」と踏み込む",
+              "next_id": "confession_rio_accept"
             },
             {
               "text": "「友達として、これからも顔を出します」と返す",
-              "next_id": "confession_kuyuri_reject"
+              "next_id": "confession_rio_reject"
             }
           ]
         }
       ]
     },
     {
-      "dialogue_id": "confession_kuyuri_accept",
+      "dialogue_id": "confession_rio_accept",
       "metadata": {
-        "set_romance": "kuyuri",
+        "set_romance": "rio",
         "bg": "res://assets/backgrounds/bg_street_night.png"
       },
       "lines": [
         {
           "type": "show_cg",
-          "cg_id": "cg_kuyuri_confession"
+          "cg_id": "cg_rio_confession"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "くゆりさんが好きです。俺と付き合ってください"
+          "text": "会いに行く理由は、凛想さんが好きだからです。俺と付き合ってください"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "surprise",
           "text": "……うん"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりさんは小さく息を吐いてから、もう一度うなずいた。"
+          "text": "凛想さんは小さく息を吐いてから、もう一度うなずいた。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "私も、君が好き。……試香が終わっても帰らないで、って。ずっと言えずにいた"
         },
@@ -1043,17 +1048,17 @@
           "text": "これからは、会いたいって言います"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "私も。……用件に紛れ込ませて誘うの、今日でおしまい"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりさんの手が、鞄の持ち手から離れる。差し出された指を、俺から握った。"
+          "text": "凛想さんの手が、鞄の持ち手から離れる。差し出された指を、俺から握った。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……冷たい？"
         },
@@ -1063,17 +1068,17 @@
           "text": "少し。でも、このままがいいです"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "じゃあ、駅まではこのまま"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "歩き出しても、指は離れなかった。くゆりさんの袖から、ブルーベリーがかすかに香った。"
+          "text": "歩き出しても、指は離れなかった。凛想さんの袖から、ブルーベリーがかすかに香った。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "それと、今日は名前で呼んでいい？"
         },
@@ -1083,7 +1088,7 @@
           "text": "はい"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "はじめくん。……明日も、用もないのに連絡して"
         },
@@ -1094,7 +1099,7 @@
       "comment": "主人公が好きだと伝え、本人も明言して受け入れる。サンプル・在庫という比喩だけで恋人成立を済ませない。"
     },
     {
-      "dialogue_id": "confession_kuyuri_reject",
+      "dialogue_id": "confession_rio_reject",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png"
       },
@@ -1105,22 +1110,22 @@
           "text": "……友達として、これからも顔を出します。サンプルがなくても"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……うん。私も、友人として会いたい。ちょっと、時間は欲しいけど"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……今日は、ここで帰るね"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりさんは数歩歩いてから、振り返った。笑おうとして、少しだけ口元がほどける。"
+          "text": "凛想さんは数歩歩いてから、振り返った。笑おうとして、少しだけ口元がほどける。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "次は、コーヒーの話でもしよう。サンプルがなくても"
         }
@@ -1164,7 +1169,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "……わしも、お主が来る時刻を、何度も時計で見ておった"
+          "text": "……わしも、お主が来る時刻ばかり、何度も時計で確かめておった"
         },
         {
           "speaker": "",

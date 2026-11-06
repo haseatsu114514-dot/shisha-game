@@ -419,6 +419,30 @@
    "blob": "0fbe041523cc173801af98823d1bd80ba0afeb37",
    "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
   },
+  "bg_dubai_map.webp": {
+   "place": "dubai_map",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 161,
+   "blob": "7d43b0640a64f7d41cdc7f8e46e1c6d981dcd51a",
+   "accepted": "2026-11-06 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_dubai_map_dusk.webp": {
+   "place": "dubai_map",
+   "time": "dusk",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 101,
+   "blob": "0f4cf2889f655db641e405e6bb2c608918f9c134",
+   "accepted": "2026-11-06 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
   "bg_dubai_sheikh_residence.png": {
    "place": "dubai_sheikh_residence",
    "time": "",

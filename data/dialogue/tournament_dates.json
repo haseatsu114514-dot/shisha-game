@@ -277,7 +277,7 @@
       }
     },
     {
-      "dialogue_id": "tournament_date_kuyuri",
+      "dialogue_id": "tournament_date_rio",
       "lines": [
         {
           "type": "condition",
@@ -288,7 +288,7 @@
         },
         {
           "type": "choice",
-          "id": "tournament_date_choice_kuyuri",
+          "id": "tournament_date_choice_rio",
           "choices": [
             {
               "text": "もう少し一緒にいよう",
@@ -309,10 +309,10 @@
           {
             "speaker": "",
             "face": "",
-            "text": "くゆりさんは買い物袋を下げていた。中身は新商品のサンプルではなかった。"
+            "text": "凛想さんは買い物袋を下げていた。中身は新商品のサンプルではなかった。"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "足、痛くない？　絆創膏。あと水"
           },
@@ -322,7 +322,7 @@
             "text": "品質管理ですか"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "そういう口実も、今日は休み"
           },
@@ -332,53 +332,53 @@
             "text": "じゃあ、少し手をつないで歩きませんか"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "……申請が遅い"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "差し出した手を取ってから、くゆりさんが笑った。"
+            "text": "差し出した手を取ってから、凛想さんが笑った。"
           }
         ],
         "eve_dubai": [
           {
             "speaker": "",
             "face": "",
-            "text": "くゆりさんは、宿の売店の袋を下げていた。中身は水と、のど飴だった。"
+            "text": "凛想さんは、宿の売店の袋を下げていた。中身は水と、のど飴だった。"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "こっちは乾くから、喉からやられるよ。明日、声が出ないと困るでしょ"
           },
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "くゆりさんこそ、昼はずっと香水の店を見てましたね"
+            "text": "凛想さんこそ、昼はずっと香水の店を見てましたね"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "仕入れの下見。……って言うつもりだったけど、今日は嘘"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "smile",
             "text": "君の隣で、知らない匂いを嗅ぎたかっただけ"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "歩き出すと、くゆりさんの方から指を絡めてきた。"
+            "text": "歩き出すと、凛想さんの方から指を絡めてきた。"
           }
         ],
         "stay": [
           {
             "speaker": "",
             "face": "",
-            "text": "くゆりさんが買ってきた水を、二人で半分ずつ飲んだ。"
+            "text": "凛想さんが買ってきた水を、二人で半分ずつ飲んだ。"
           },
           {
             "type": "condition",
@@ -934,6 +934,104 @@
             "speaker": "",
             "face": "",
             "text": "約束した時間に、宿のロビーまで二人で歩いた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "tournament_date_noor",
+      "comment": "DSR20 第4章ドバイの前夜デート。ヌールはドバイに住む恋人なので、到着場面なしで前夜の街にいる（ch4-story-wiring.js）。大会の中身には踏み込まず、説教もしない。能力値は上げない。",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前夜の街。カフェ・サーリムの裏口で、ヌールさんがミントティーを二つ持って待っていた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "お疲れさま、ハジメ。今日は店、父に任せてきた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いいんですか、抜けてきて"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "いいの。父も「今夜は行ってこい」って。バレてるみたい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で、夜の路地をゆっくり歩く。昼の砂ぼこりが、うそみたいに静かだ。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "明日のこと、聞かない方がいい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……少しだけなら"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "じゃあ、少しだけ。私は、ハジメの煙がもう好き。それは明日も変わらないよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（それだけで、肩の力が抜けた）"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "もう少し一緒にいよう",
+              "next": "stay"
+            },
+            {
+              "text": "明日のために、そろそろ帰ろう",
+              "next": "home"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "stay": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "広場のベンチで、ぬるくなったミントティーを最後まで分け合った。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、宿のロビーまで二人で戻った。"
+          }
+        ],
+        "home": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "会えてよかった。ミントティー、ごちそうさまです"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "どういたしまして。おやすみ、ハジメ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "宿の前で手を振ると、ヌールさんは路地の角で二回振り返った。"
           }
         ]
       }

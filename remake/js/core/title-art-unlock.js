@@ -3,13 +3,13 @@
 
 /**
  * 表示対象の母集合 = 好感度の仕組みがあるキャラ全員。ゲーム内の既存ロスターの union:
- * - core/stats.js の ROMANCEABLE: tsumugi, minto, kuyuri, ageha, mashiro, hiyori, samechan
- * - daily/bonds.js の BOND_FINALES（好感度MAXの締めくくり）: sumi, naru, adam, tsumugi, minto, kuyuri, samechan, hiyori
- * - data/story_routes.json の heroine_ids: tsumugi, minto, kuyuri, ageha, mashiro, samechan, hiyori
+ * - core/stats.js の ROMANCEABLE: tsumugi, minto, rio, ageha, mashiro, hiyori, samechan
+ * - daily/bonds.js の BOND_FINALES（好感度MAXの締めくくり）: sumi, naru, adam, tsumugi, minto, rio, samechan, hiyori
+ * - data/story_routes.json の heroine_ids: tsumugi, minto, rio, ageha, mashiro, samechan, hiyori
  * 並びは manifest の titleArts のキャラ順に合わせる。
  */
 export const TITLE_ART_CHARACTERS = [
-  "ageha", "hiyori", "samechan", "mashiro", "minto", "kuyuri", "tsumugi",
+  "ageha", "hiyori", "samechan", "mashiro", "minto", "rio", "tsumugi",
   "sumi", "naru", "adam",
 ];
 
@@ -26,7 +26,7 @@ export const TITLE_KEY_VISUALS = {
   samechan: "title_art_samechan_04_throne_pose.png",
   mashiro: "title_art_mashiro_05_rooftop_dusk_yawn.png",
   minto: "title_art_minto_05_mint_cloud.png",
-  kuyuri: "title_art_kuyuri_04_rainy_neon_umbrella.png",
+  rio: "title_art_rio_04_rainy_neon_umbrella.png",
   tsumugi: "title_art_tsumugi_04_painting_studio.png",
   sumi: "title_art_sumi_01_own_clay_bowl.png",
   naru: "title_art_naru_01_bakery_morning.png",
