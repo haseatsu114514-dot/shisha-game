@@ -120,7 +120,8 @@ for (const rm of ["no-preference", "reduce"]) {
     const session = await import("./js/craft/session.js");
     const cs = session.newSession("practice");
     const bench = session.openBench(cs, { steps: [["setup", "準備"], ["mix", "配合"]] });
-    await bench.ready;
+    // 見るのは操作欄の DOM だけ。素材の読み込み待ち（CI では長いことがある）には上限を付ける。
+    await Promise.race([bench.ready, new Promise(r => setTimeout(r, 8000))]);
     const right = document.querySelector(".bench-right");
     session.stepPanel("setup", "準備");
     const first = right.querySelectorAll(".tm-stroke-clip").length;

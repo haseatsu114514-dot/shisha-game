@@ -1,6 +1,6 @@
 import { playEntrance } from "./tournament-entrance.js";
 import { advanceTournamentCraft } from "./tournament-craft-runner.js";
-import { tournamentRound, venueWipe } from "../motions/tournament.js";
+import { tournamentRound, roundForStep, venueWipe } from "../motions/tournament.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 // HAZE: OPEN CLOUD。一試合の制作と、各工程の確定済み状態だけを保存する。
@@ -333,7 +333,8 @@ async function drive(owner) {
       // 1回目の票の後は、提供前の4人の心の声（第2章だけ）。
       const interlude = p.step === 8 ? "interlude_pull" : p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
       if (interlude && !await commentary(owner, interlude)) return;
-      // 区切りの工程の前に第1章と同じ ROUND の横帯（#2688 A16）
+      // 区切りの工程の前に第1章と同じ ROUND の横帯（#2688 A16）。前の票の画面は残さず、舞台の上に出す。
+      if (roundForStep(p.step)) showScreen("none", null);
       await tournamentRound(p.step);
       if (!live(owner)) return;
       const event = TOURNAMENT_STORY_STEPS.get(p.step);
