@@ -34,9 +34,9 @@ assert.equal(carry.flagVerdict("seenDemo"), "carry");
 const root = new URL("../../", import.meta.url);
 const copy = (v) => JSON.parse(JSON.stringify(v));
 
-// ---------------------------------------------------------------- A. SCHEMA 26 と後方互換
+// ---------------------------------------------------------------- A. SCHEMA 27 と後方互換
 {
-  assert.equal(SCHEMA, 26);
+  assert.equal(SCHEMA, 27);
   const fresh = newState();
   assert.equal(fresh.cycle, 1);
   assert.equal(typeof fresh.cycleId, "string");
@@ -73,7 +73,7 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
     return s;
   };
   const checkMigrated = (s) => {
-    assert.equal(s.schema, 26);
+    assert.equal(s.schema, SCHEMA);
     assert.equal(s.cycle, 1);
     assert.ok(typeof s.cycleId === "string" && s.cycleId.length > 0);
     assert.deepEqual(s.cycleStartStats, { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 });
@@ -81,7 +81,7 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
     assert.equal(s.money, 12345);
     assert.equal(s.stats.technique, 42);
     assert.equal(s.flags._ch1_mid, true);
-    assert.deepEqual(s.affinity, { minto: 7 });
+    assert.deepEqual(s.affinity, { minto: 7, sumi: 9, tsumugi: 9 });
     assert.deepEqual(s.lovers, ["minto"]);
     assert.equal(s.chapter, 2);
     assert.equal(s.day, 5);
@@ -116,7 +116,7 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
   prior.flavorMastery = { vanilla: 12 };
   localStorage.setItem(SAVE_KEY, JSON.stringify(prior));
   const upgraded = load();
-  assert.equal(upgraded.schema, 26);
+  assert.equal(upgraded.schema, SCHEMA);
   assert.equal(upgraded.cycle, 2);
   assert.equal(upgraded.cycleId, "kept-cycle-2");
   assert.equal(upgraded.cycleStartStats.technique, 19);

@@ -317,6 +317,7 @@ export const FLAG_EXACT_RULES = [
   ["_flavor_sakura", "unlock"],
   ["_flavor_violet_rose", "unlock"],
   ["_flavor_white_rose", "unlock"],
+  ["_fortune_choice_sight", "pending"],
   ["_fortune_wander", "progression"],
   ["_fortune_go", "progression"],
   ["_fortune_met", "progression"],

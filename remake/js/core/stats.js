@@ -1,7 +1,7 @@
 // ステータス・好感度・体力・所持金。成長量は通知にPで出し、現在の強さは段で表す。
 import { MAX_MONEY } from "./rules.js";
 import { GUTS_STAMINA_BONUS } from "./stat-step-tables.js";
-import { state, STAT_KEYS, STAT_JA } from "./state.js";
+import { state, STAT_KEYS, STAT_JA, hasAffinity } from "./state.js";
 import { DB } from "./data.js";
 import { pendingLoveStage, questionComplete } from "./affinity-stages.js";
 import { emit } from "./bus.js";
@@ -206,6 +206,7 @@ export function setStoryAffinityCap(fn) { storyAffinityCap = typeof fn === "func
 export function releaseStoryAffinity(id) { return releaseAffinity(id); }
 
 export function affinityLevel(id) {
+  if (!hasAffinity(id)) return 0;
   if ((state.lovers || []).includes(id)) return 5; // 恋人は好感度MAX扱い（段階は絆Lvで別に持つ）
   const pts = state.affinity[id] || 0;
   let lv = 0;
@@ -224,7 +225,7 @@ const releasedPoints = id => (Number(state.flags[`_${id}_affinity_released_pts`]
 /** 読み終えた物語の最低値保証。既存846の呼出し・端数・恋人の絆はそのまま。 */
 export function ensureAffinityLevel(id, level) {
   const target = Number.isInteger(level) ? AFFINITY_RANK_PTS[level] : undefined;
-  if (!id || !(target > 0) || (state.lovers || []).includes(id)) return 0;
+  if (!hasAffinity(id) || !(target > 0) || (state.lovers || []).includes(id)) return 0;
   releaseAffinity(id);
   const before = affinityLevel(id), prevPts = state.affinity[id] || 0;
   const next = Math.max(prevPts, Math.min(target, affinityPointCap(id)));
@@ -240,6 +241,7 @@ export function ensureAffinityLevel(id, level) {
 
 /** 元の獲得履歴と旧救済量を保持し、未消費分だけ解放。倍率・占い・端数は再適用しない。 */
 export function releaseAffinity(id) {
+  if (!hasAffinity(id)) return 0;
   const legacyKey = `_${id}_story_waiting_pts`;
   const legacy = Math.max(0, Number(state.flags[legacyKey]) || 0);
   if (legacy) {
@@ -397,7 +399,7 @@ function firstMeetingAction(id) {
 }
 
 export function gainAffinity(id, pts, opts = {}) {
-  if (!id || !(pts > 0)) return;
+  if (!hasAffinity(id) || !(pts > 0)) return;
   // 初対面の台詞・選択肢・来店精算は、まとめて♥1ちょうど。
   // 面識済みの初入店・旧高値・恋人には通常の処理を残す。倍率や占い、端数も初回には積まない。
   const firstAction = firstMeetingAction(id);

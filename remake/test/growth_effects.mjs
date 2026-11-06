@@ -237,7 +237,7 @@ growth.ensureGrowth().nodes=["K18"];assert(effects.densePackAvailable(core.state
 core.newGame();const oldDense=core.newState();oldDense.schema=24;
 for(const key of core.STAT_KEYS) oldDense.stats[key]=100;
 stored.set(core.SAVE_KEY,JSON.stringify(oldDense));core.load();
-assert.equal(core.state.schema,26);assert(effects.densePackAvailable(core.state));
+assert.equal(core.state.schema,core.SCHEMA);assert(effects.densePackAvailable(core.state));
 core.save();core.load();assert(effects.densePackAvailable(core.state));
 for(const key of core.STAT_KEYS) assert.equal(core.state.stats[key],100);
 assert.equal(buildCarryPackage(core.state).flags._dense_pack_legacy,true);
