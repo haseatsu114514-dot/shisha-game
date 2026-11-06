@@ -926,7 +926,7 @@
     },
     {
       "dialogue_id": "confession_noor",
-      "comment": "DSR20 ヌールの告白（ドバイで告白まで・2026-11-02 オーナー）。締めくくりの最後の問いで恋愛を選んだ後の、次の砂丘（ツアー代なし）の滑走のあと、夕日の砂丘で。ヌールから想いを伝え、はじめが答える。返事は選択肢の next_id（romance.js の onDialogueEnter が付き合う／友達のままを記録する）。大会に触れない。",
+      "comment": "DSR20 ヌールの告白（ドバイで告白まで・2026-11-02 オーナー）。締めくくりの最後の問いで恋愛を選んだ後の、次の砂丘（ツアー代なし）の滑走のあと、夕日の砂丘で。ヌールから想いを伝え、はじめが答える。返事は選択肢の next_id（romance.js の onDialogueEnter が付き合う／友達のままを記録する）。大会に触れない。第4章で締めくくりのあと砂丘へ行けないまま帰国した人は、第5章のドバイの砂丘で読む（chapters/ch5-dubai.js）。その時は帰国した後の言い方に替える（came_back。tournament_finished で分ける）。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_dubai_dunes_dusk.png",
         "private_scene": true
@@ -968,14 +968,11 @@
           "text": "ヌールさんは膝を抱えて、沈んでいく太陽から目をそらさずに続けた。"
         },
         {
-          "speaker": "noor",
-          "face": "normal",
-          "text": "ハジメは、いつか日本に帰る。分かってる。だから、言わないでおこうと思ってた"
-        },
-        {
-          "speaker": "noor",
-          "face": "normal",
-          "text": "でも、言わないまま見送ったら、きっと毎日ここで後悔する"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 4,
+          "next_true": "came_back",
+          "next_false": "before_leave"
         },
         {
           "speaker": "noor",
@@ -1013,6 +1010,30 @@
         }
       ],
       "branches": {
+        "before_leave": [
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "ハジメは、いつか日本に帰る。分かってる。だから、言わないでおこうと思ってた"
+          },
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "でも、言わないまま見送ったら、きっと毎日ここで後悔する"
+          }
+        ],
+        "came_back": [
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "ハジメが日本に帰ってから、毎日ここで後悔してた"
+          },
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "言わないまま、行かせちゃったって。……だから、今日は言う"
+          }
+        ],
         "other_lover": [
           {
             "speaker": "hajime",
