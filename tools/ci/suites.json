@@ -1701,9 +1701,24 @@
         "remake/js/daily/hud.js",
         "data/dialogue/ch3_tokyo_daily.json",
         "remake/js/minigames/tetsuko-time.js",
+        "remake/js/minigames/tetsuko-model.js",
         "remake/test/browser/ch3_tokyo_daily.mjs"
       ],
       "run": ["node remake/test/browser/ch3_tokyo_daily.mjs"]
+    },
+    {
+      "id": "tetsuko-time-browser",
+      "title": "Tetsuko time: play, mail order, arrange and fit on PC and landscape touch (#2454)",
+      "kind": "browser",
+      "weight": 0.4,
+      "timeout": 3,
+      "paths": [
+        "remake/js/minigames/tetsuko-time.js",
+        "remake/js/minigames/tetsuko-model.js",
+        "remake/css/tetsuko-time.css",
+        "remake/test/browser/tetsuko_time.mjs"
+      ],
+      "run": ["node remake/test/browser/tetsuko_time.mjs"]
     },
     {
       "id": "ch3-full-flow",

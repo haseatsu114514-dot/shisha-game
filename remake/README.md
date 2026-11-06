@@ -35,6 +35,8 @@
 
 mukaiの看板猫てつこ（#1993）は、到着の場面で裏口に登場し、以後の空き時間に地図のmukaiから「裏口のてつこに会う」を選べます。撫でるか餌をあげるかを選び、正常読了後だけ体力12が戻ります（能力・お金・好感度は増えません。毎回選べる一行動）。飼い主はムカイさんですが懐くのはましろだけで、ムカイさんには普通の距離感です。確認は `node remake/test/ch3_outings.mjs` と `node remake/test/browser/ch3_outings.mjs`。
 
+mukaiで行動した帰りの裏口からは「てつこといっしょ」（#2454）も選べます。てつこを撫でる・猫じゃらしで遊ぶ・見守るなどして過ごし、置いた物に応じててつこが自分で過ごします。おやつと小物はスマホの通販で頼み、次の日にmukaiへ届きます。しぐさ図鑑とアルバムもあります。意味のあるふれあいで帰ると体力12と来訪1回が一度だけ付きます（能力・好感度は増えず、関係は下がりません）。仕様は [docs/spec/tetsuko_time.md](../docs/spec/tetsuko_time.md)、確認は `node remake/test/tetsuko_time.mjs` と `node remake/test/browser/tetsuko_time.mjs`。
+
 動物園と池は景観ランドマークです。ジム以外の東京の任意スポット・専用の大会前夜デート台本は未接続（第4章以降の本編は `chapters/ch4.js`・`ch5.js` で接続済み）。[東京地図の制作・検証](../asset_sources/ch3-tokyo-map/README.md)。確認は `node remake/test/browser/ch3_map_activities.mjs`。
 
 第2章の最初の試遊は `http://127.0.0.1:8123/remake/chapter2-preview.html`。
