@@ -338,6 +338,40 @@ await check('in Tokyo/Dubai, lover notes do not assume hajime is in town; the an
   same(f.entry.pendingLoverLime({ home: false }), [], 'Read once, whichever text it was');
 });
 
+// DSR20: ヌールはドバイに住む恋人。地元のデートには誘ってこない（会えるのはドバイにいる間だけ）。朝のLIMEはどこでも届き、
+// 時差やテレビ電話の文（hometown）は、はじめが地元にいる朝だけ。告白は砂丘の夕日の場面だけで、夜の帰り道には出ない。
+await check('Noor lives in Dubai: no hometown dates, morning LIME everywhere, long-distance notes only at home (DSR20)', async f => {
+  const pool = lover.morning.noor;
+  assert(pool.some(v => !v.hometown) && pool.some(v => v.hometown), 'both kinds of morning notes');
+  for (const v of pool.filter(v => v.hometown)) assert.match(JSON.stringify(v.m), /三時|ツアー|砂丘|テレビ電話|時差/);
+  const s = f.chapterAt(5, ['noor'], { day: 70, flags: { _ch5: { startDay: 60, stage: 2, part: 'free' }, _ch2_region: 'home' } });
+  s.lastDate.noor = 0;
+  assert.equal(f.romance.hometownDateOpen('noor'), false);
+  assert.equal(f.romance.loverMessages().some(m => m.type === 'invitation'), false, 'no hometown date invitation from Dubai');
+  const morning = () => f.romance.loverMessages({ invitations: false, home: s.flags._ch2_region === 'home' }).find(m => m.id.startsWith('_lover_morning_noor'));
+  const seen = { home: new Set(), dubai: new Set() };
+  for (const region of ['home', 'dubai']) {
+    s.flags._ch2_region = region;
+    for (let day = 70; day < 130; day++) {
+      s.day = day; s.loverSince.noor = day - 7;
+      const note = morning();
+      if (note) seen[region].add(JSON.stringify(note.messages));
+    }
+  }
+  const lines = kind => pool.filter(v => !!v.hometown === kind).map(v => JSON.stringify(v.m));
+  assert(seen.home.size > 0 && seen.dubai.size > 0, 'morning notes arrive in both places');
+  for (const text of seen.dubai) assert(lines(false).includes(text), 'in Dubai, only notes that do not assume the distance');
+  assert([...seen.home].some(text => lines(true).includes(text)), 'at home, the long-distance notes arrive too');
+  // 記念日（10日ごと）。離れた街の差し替えは無く、いつもの文面（ヌールとはドバイで会える）
+  assert.equal(lover.anniversary_away.noor, undefined);
+  s.day = 80; s.loverSince.noor = 70;
+  const anniversary = f.romance.loverMessages({ invitations: false }).find(m => m.id === '_lover_anniv_noor_n10');
+  assert(anniversary, 'the ten-day anniversary');
+  assert.match(JSON.stringify(anniversary.messages), /10日目/);
+  assert.equal(anniversary.replies.length, 2);
+  assert.match(fs.readFileSync(path.join(root, 'daily/romance.js'), 'utf8'), /const OWN_CONFESSION_SCENE = Object\.freeze\(\["mashiro", "noor"\]\)/);
+});
+
 await check('non-lovers and cancelled milestones stay unread', async f => {
   const s = f.chapterThree([]);
   same(f.entry.pendingLoverLime(), []);
