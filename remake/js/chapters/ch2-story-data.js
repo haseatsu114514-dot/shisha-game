@@ -30,6 +30,9 @@ export const CH2_NIGHTS = [
     { id: "ch2_slump_taste", file: "ch2_main", flag: "_ch2_taste_distant" },
   ] },
   { day: 6, schedule: "preparation", deadline: 7, pin: "tonari", label: "残る匂い", beat: "夜。残る匂いのことが気になって、tonariへ──", prerequisites: ["_ch2_read_ch2_sofa_burn"], steps: [
+    // #1652: 事故と味の不調が続いたあと、閉店前の炭替えを二人でやり遂げる短い成果。読了フラグは場面ごとの既定だけで、
+    // 新しい進行フラグは足さない。DAY6の夜をすでに読み終えた保存は夜ごと完了済みなので読まない。
+    { id: "ch2_coal_together", file: "ch2_main" },
     { id: "ch2_lingering_smell", file: "ch2_main" },
   ] },
   // EDENは章内DAY12が定休日（通算26日）。訪ねられるのはDAY7〜11で、DAY12の夜に救済する。
