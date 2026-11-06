@@ -146,6 +146,54 @@ await check('chapter 3 and 4 departure preparation closes invitations and night 
   assert.equal(invites().length, 1, 'chapter 2 invitation stays open');
 });
 
+await check('a confession held over the departure prep and Tokyo/Dubai nights reaches a hometown night in chapter 5 (IR33)', async f => {
+  f.db.dialogues.confession_rio = { dialogue_id: 'confession_rio', lines: [{ speaker: '', text: '…' }] };
+  // 第2章の締めくくりで恋愛ルートに入り、告白を持ち越している（予約は締めくくりの直後に入る）。
+  const at = (chapter, flags) => {
+    const s = f.chapterAt(chapter, [], { day: 80, flags });
+    s.romanceChoices = { bond_q_rio: { char: 'rio', value: 1 } };
+    s.finales = { rio: { day: 60, chapter: 2, route: 'romance' } };
+    s.slot = 2;
+    s.flags._confession_due = 'rio';
+    return s;
+  };
+  const held = async (s, label) => {
+    assert.equal(f.romance.confessionHeld(), true, `${label}: held`);
+    assert.equal(await f.romance.maybeConfession(async () => {}), false, `${label}: no night-walk confession`);
+    assert.equal(s.flags._confession_due, 'rio', `${label}: the reservation stays`);
+    assert.equal(f.romance.romanceRouteOpen('rio'), true, `${label}: the route stays open`);
+  };
+  // 第4章: ドバイへ来る人は出発前に決まっている。準備3日の地元でも、ドバイでも告白しない。
+  await held(at(4, { _ch4: { startDay: 79 }, _ch4_prep: { startDay: 80, days: 3, step: 0, departed: false }, _ch2_region: 'home' }), 'chapter 4 prep');
+  await held(at(4, { _ch4: { startDay: 79 }, _ch4_prep: { startDay: 70, days: 3, step: 1, departed: true }, _ch2_region: 'dubai' }), 'chapter 4 Dubai');
+  // 第3章の東京の夜も、帰り道の告白（地元の場面）を始めない。
+  await held(at(3, { _ch3_intro: { startDay: 79 }, _ch3_prep: { startDay: 70, days: 3, step: 1, departed: true }, _ch2_region: 'tokyo' }), 'chapter 3 Tokyo');
+  // 第5章: 東京・ドバイへ出ている夜は持ち越し、地元の夜に告白へ（主人公が踏み出すかどうかから）。
+  for (const region of ['tokyo', 'dubai']) await held(at(5, { _ch5: { startDay: 65, part: 'free' }, _ch2_region: region }), `chapter 5 in ${region}`);
+  for (const region of ['home', 'widehanga']) {
+    const s = at(5, { _ch5: { startDay: 65, part: 'free' }, _ch2_region: region });
+    f.plays.length = 0;
+    assert.equal(f.romance.confessionHeld(), false, `chapter 5 ${region}: not held`);
+    assert.equal(await f.romance.maybeConfession(async () => {}), true, `chapter 5 ${region}: the confession comes back`);
+    same(f.plays, ['remake_confession_gate_rio'], `chapter 5 ${region}: the usual gate first`);
+    // 「まだ胸にしまっておく」を選んでも、予約は残って後日の夜にもう一度
+    assert.equal(s.flags._confession_due, 'rio');
+    assert.equal(s.flags._confession_wait, 82);
+  }
+  // 第2章（地元）は今までどおり
+  at(2, { _ch2_day1: { startDay: 69 }, _ch2_region: 'home' });
+  assert.equal(f.romance.confessionHeld(), false, 'chapter 2 at home');
+  // ドバイに住むヌールの告白は砂丘の夕日だけ（DSR20）。第5章の地元の夜の帰り道には出さない。
+  f.db.dialogues.confession_noor = { dialogue_id: 'confession_noor', lines: [{ speaker: '', text: '…' }] };
+  const n = f.chapterAt(5, [], { day: 80, flags: { _ch5: { startDay: 65, part: 'free' }, _ch2_region: 'home' } });
+  n.romanceChoices = { bond_q2_noor: { char: 'noor', value: 1 } };
+  n.finales = { noor: { day: 60, chapter: 4, route: 'romance' } };
+  n.slot = 2;
+  f.plays.length = 0;
+  assert.equal(await f.romance.maybeConfession(async () => {}), false, 'no night-walk confession for Noor');
+  same(f.plays, []);
+});
+
 await check('samechan date gap counts elapsed days on _elapsed_calendar saves; legacy chapter-local saves keep the 14-day offset', async f => {
   // 通算日の保存: 第2章の通算40日にデート → 第3章の通算45日。間は5日（旧式は 45-(14+40) = -9 で誘いが止まっていた）
   const s = f.chapterAt(3, ['samechan'], { day: 45, flags: { _ch3_intro: { startDay: 44 } } });
@@ -338,6 +386,40 @@ await check('in Tokyo/Dubai, lover notes do not assume hajime is in town; the an
   same(f.entry.pendingLoverLime({ home: false }), [], 'Read once, whichever text it was');
 });
 
+// DSR20: ヌールはドバイに住む恋人。地元のデートには誘ってこない（会えるのはドバイにいる間だけ）。朝のLIMEはどこでも届き、
+// 時差やテレビ電話の文（hometown）は、はじめが地元にいる朝だけ。告白は砂丘の夕日の場面だけで、夜の帰り道には出ない。
+await check('Noor lives in Dubai: no hometown dates, morning LIME everywhere, long-distance notes only at home (DSR20)', async f => {
+  const pool = lover.morning.noor;
+  assert(pool.some(v => !v.hometown) && pool.some(v => v.hometown), 'both kinds of morning notes');
+  for (const v of pool.filter(v => v.hometown)) assert.match(JSON.stringify(v.m), /三時|ツアー|砂丘|テレビ電話|時差/);
+  const s = f.chapterAt(5, ['noor'], { day: 70, flags: { _ch5: { startDay: 60, stage: 2, part: 'free' }, _ch2_region: 'home' } });
+  s.lastDate.noor = 0;
+  assert.equal(f.romance.hometownDateOpen('noor'), false);
+  assert.equal(f.romance.loverMessages().some(m => m.type === 'invitation'), false, 'no hometown date invitation from Dubai');
+  const morning = () => f.romance.loverMessages({ invitations: false, home: s.flags._ch2_region === 'home' }).find(m => m.id.startsWith('_lover_morning_noor'));
+  const seen = { home: new Set(), dubai: new Set() };
+  for (const region of ['home', 'dubai']) {
+    s.flags._ch2_region = region;
+    for (let day = 70; day < 130; day++) {
+      s.day = day; s.loverSince.noor = day - 7;
+      const note = morning();
+      if (note) seen[region].add(JSON.stringify(note.messages));
+    }
+  }
+  const lines = kind => pool.filter(v => !!v.hometown === kind).map(v => JSON.stringify(v.m));
+  assert(seen.home.size > 0 && seen.dubai.size > 0, 'morning notes arrive in both places');
+  for (const text of seen.dubai) assert(lines(false).includes(text), 'in Dubai, only notes that do not assume the distance');
+  assert([...seen.home].some(text => lines(true).includes(text)), 'at home, the long-distance notes arrive too');
+  // 記念日（10日ごと）。離れた街の差し替えは無く、いつもの文面（ヌールとはドバイで会える）
+  assert.equal(lover.anniversary_away.noor, undefined);
+  s.day = 80; s.loverSince.noor = 70;
+  const anniversary = f.romance.loverMessages({ invitations: false }).find(m => m.id === '_lover_anniv_noor_n10');
+  assert(anniversary, 'the ten-day anniversary');
+  assert.match(JSON.stringify(anniversary.messages), /10日目/);
+  assert.equal(anniversary.replies.length, 2);
+  assert.match(fs.readFileSync(path.join(root, 'daily/romance.js'), 'utf8'), /const OWN_CONFESSION_SCENE = Object\.freeze\(\["mashiro", "noor"\]\)/);
+});
+
 await check('non-lovers and cancelled milestones stay unread', async f => {
   const s = f.chapterThree([]);
   same(f.entry.pendingLoverLime(), []);
@@ -354,11 +436,12 @@ await check('chapter runners call the shared entry (no duplicated lover logic)',
   assert.match(src('chapters/ch3-social.js'), /from "\.\/lover-entry\.js"/);
   assert.match(src('chapters/ch3.js'), /if \(kind === "date"\) await readLoverMilestoneAt\(owner, id\)/);
   assert.match(src('chapters/ch4.js'), /import\("\.\/lover-entry\.js"\)/);
-  // 第5章の自由行動は日常ループ（#2033）。帰郷後なので、恋人の誘い・デート・節目は第1・2章と同じ（IR16・IR17）。告白は出さない。
+  // 第5章の自由行動は日常ループ（#2033）。帰郷後なので、恋人の誘い・デート・節目は第1・2章と同じ（IR16・IR17）。
+  // 夜の告白も閉じない（第4章までに入った恋愛ルートの持ち越しだけ。第5章で初めての締めくくりは romanceRouteOpen が閉じる・IR33）。
   const ch5Daily = src('chapters/ch5-daily.js');
   assert.match(ch5Daily, /runDaily\(/);
   assert.doesNotMatch(ch5Daily, /dateInvitations:\s*false/);
-  assert.match(ch5Daily, /confessions:\s*false/);
+  assert.doesNotMatch(ch5Daily, /confessions:\s*false/);
   // 第3章の東京・第4章のドバイは誘いを閉じたまま（IR16）。ドバイでは節目を出さず、同行者はLIMEを送ってこない（IR17）。
   assert.match(src('chapters/ch3-tokyo-daily.js'), /dateInvitations:\s*false/);
   const ch4Daily = src('chapters/ch4-dubai-daily.js');

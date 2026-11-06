@@ -14,7 +14,7 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_FREE_SC
   chapterFiveLimeDue, CH5_CREDITS_FLAG, chapterFiveCreditsPending, recordChapterFiveCredits,
   chapterFiveTrueEndReached, CH5_POST_ENDING, CH5_CONFLICT_SCENES, CH5_TALK_SCENES, chapterFivePostEndingContext,
   chapterFivePostEndingPlan, chapterFivePostEndingUndecided, beginChapterFivePostEnding, chapterFivePostEndingNext,
-  chapterFivePostEndingUnresolved, completeChapterFivePostEnding } from "../js/chapters/ch5-progress.js";
+  chapterFivePostEndingUnresolved, completeChapterFivePostEnding, CH5_MASHIRO_LOVER_ECHO, chapterFiveLoverEcho } from "../js/chapters/ch5-progress.js";
 
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
 const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url)));
@@ -850,6 +850,23 @@ for (const [base, change] of [
   }
   // 第5章の場面で会っていない相手（つむぎ・みんと・凛想など）からは届かない。朝の配信条件にも乗らない。
   assert(chapterFive.every(m => ["mashiro", "adam"].includes(m.sender)));
+}
+
+// 恋人のましろの節目は、第5章の tonari の訪問につなぐ（#2024 A2）。恋人でなければ何も足さない。
+{
+  const friend = newState(), lover = newState();
+  lover.lovers = ["mashiro"];
+  assert.deepEqual(chapterFiveLoverEcho(friend, "ch5_free_mashiro_visit", { milestoneDue: true }), []);
+  assert.deepEqual(chapterFiveLoverEcho(lover, "ch5_free_first_visitor", { milestoneDue: true }), []);
+  assert.deepEqual(chapterFiveLoverEcho(lover, "ch5_free_mashiro_visit"), [CH5_MASHIRO_LOVER_ECHO.visit]);
+  assert.deepEqual(chapterFiveLoverEcho(lover, "ch5_free_mashiro_visit", { milestoneDue: true }),
+    [CH5_MASHIRO_LOVER_ECHO.visit, CH5_MASHIRO_LOVER_ECHO.memory]);
+  const lines = id => files.ch5_main.find(row => row.dialogue_id === id).lines;
+  // 一人称は僕、台詞の文末に句点を付けない。
+  for (const id of Object.values(CH5_MASHIRO_LOVER_ECHO)) for (const line of lines(id)) {
+    if (line.speaker) assert(!/。$/.test(line.text), `${id}: ${line.text}`);
+    if (line.speaker === "mashiro") assert(!/私|あたし/.test(line.text), `${id}: ${line.text}`);
+  }
 }
 
 console.log("PASS: Chapter 5 runner state keeps the road to the SHISHA-9000 finale in order");
