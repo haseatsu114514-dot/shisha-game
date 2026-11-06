@@ -43,12 +43,15 @@ export async function readTournamentCheers({ away = [], time = "AM 7:40" } = {})
   return true;
 }
 
-/** 節目を読める恋人。ids=その場で会える恋人に絞る（遠くにいる恋人の節目は、会えた時まで待つ）。 */
-export const loverMilestonesDue = (ids = state.lovers || []) =>
-  [...new Set(ids)].filter(id => (state.lovers || []).includes(id) && !!loverMilestoneDue(id));
+/**
+ * 節目を読める恋人。ids=その場で会える恋人に絞る（遠くにいる恋人の節目は、会えた時まで待つ）。
+ * @param opts.home はじめが地元にいるか。地元が舞台の節目は、東京・ドバイでは読まない（#2024）。省略時は現在地の印から
+ */
+export const loverMilestonesDue = (ids = state.lovers || [], { home } = {}) =>
+  [...new Set(ids)].filter(id => (state.lovers || []).includes(id) && !!loverMilestoneDue(id, { home }));
 
 /** 会えた恋人の未読の節目を一つだけ読む。読了と既読は romance.js が保存する。 */
-export async function readLoverMilestone(id, { signal = null } = {}) {
-  if (!loverMilestonesDue([id]).length) return false;
-  return playLoverMilestone(id, { signal });
+export async function readLoverMilestone(id, { signal = null, home } = {}) {
+  if (!loverMilestonesDue([id], { home }).length) return false;
+  return playLoverMilestone(id, { signal, home });
 }

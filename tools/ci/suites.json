@@ -294,11 +294,11 @@
       "run": ["node remake/test/kuji_tiers.mjs"]
     },
     {
-      "id": "growth-levelup-browser",
-      "title": "Growth HUD gauge, EXP chip, night level-up and hidane badge (?growth=1)",
+      "id": "growth-levelup-browser-1",
+      "title": "Growth HUD gauge, EXP chip, night level-up and hidane badge (?growth=1), part 1/2",
       "kind": "browser",
-      "weight": 1,
-      "timeout": 8,
+      "weight": 2.5,
+      "timeout": 5,
       "paths": [
         "remake/js/core/growth.js",
         "remake/js/core/growth-mode.js",
@@ -326,7 +326,43 @@
         "remake/test/browser/growth_levelup.mjs"
       ],
       "run": [
-        "node remake/test/browser/growth_levelup.mjs"
+        "node remake/test/browser/growth_levelup.mjs --part=1/2"
+      ]
+    },
+    {
+      "id": "growth-levelup-browser-2",
+      "title": "Growth HUD gauge, EXP chip, night level-up and hidane badge (?growth=1), part 2/2",
+      "kind": "browser",
+      "weight": 2.5,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/growth.js",
+        "remake/js/core/growth-mode.js",
+        "remake/js/core/growth-respec.js",
+        "remake/js/core/growth-effects.js",
+        "remake/js/core/growth-board-layout.js",
+        "remake/js/daily/levelup.js",
+        "remake/js/core/growth-board.js",
+        "remake/js/core/growth-board-data.js",
+        "remake/js/daily/growth-board-screen.js",
+        "remake/js/daily/reflection.js",
+        "remake/js/daily/spots.js",
+        "remake/js/daily/map.js",
+        "remake/js/daily/map-reveals.js",
+        "data/dialogue/growth_reflection.json",
+        "data/dialogue/growth_lessons.json",
+        "remake/js/daily/tonari.js",
+        "remake/js/daily/hud.js",
+        "remake/css/daily.css",
+        "remake/js/chapters/ch3-tokyo-daily.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
+        "remake/js/chapters/ch5-tokyo.js",
+        "remake/js/chapters/ch5-dubai.js",
+        "remake/js/chapters/ch5-daily.js",
+        "remake/test/browser/growth_levelup.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/growth_levelup.mjs --part=2/2"
       ]
     },
     {
@@ -676,6 +712,7 @@
         "node --experimental-vm-modules remake/test/after_shift_b05_b06.mjs",
         "node --experimental-vm-modules remake/test/naru_chapter_context.mjs",
         "node remake/test/story_context.mjs",
+        "node remake/test/ch5_first_talks.mjs",
         "node --experimental-vm-modules remake/test/early_deliveries.mjs",
         "node --experimental-vm-modules remake/test/delivery_night_plan.mjs",
         "node --experimental-vm-modules remake/test/tonari_fixed_event_782.mjs",
@@ -735,6 +772,12 @@
       "title": "Chapter 2 home talks: facility encounters, Rio's chapter talks, Ageha's four small talks and greetings, aquarium revisits (VOL13)",
       "kind": "quick",
       "run": ["node --experimental-vm-modules remake/test/ch2_home_talks.mjs"]
+    },
+    {
+      "id": "departure-home-talks",
+      "title": "Chapter 3/4 prep days at home: one send-off talk each from Adam, Minto, Rio and Samechan, read once on a prep-day visit (N3a)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/departure_home_talks.mjs"]
     },
     {
       "id": "ch2-story-visits",
@@ -1583,6 +1626,23 @@
       ]
     },
     {
+      "id": "ch5-home-talks",
+      "title": "Chapter 5 one-time talks at Adam's, Rei's and Kanzaki's shops (Kanzaki's rewritten Chapter 2 aftermath) on the real map, then the usual visits",
+      "kind": "browser",
+      "weight": 0.4,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/ch5*.js",
+        "remake/js/chapters/ch2-preparation.js",
+        "data/dialogue/ch5_shops.json",
+        "data/dialogue/ch2_kumicho.json",
+        "remake/test/browser/ch5_home_talks.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch5_home_talks.mjs"
+      ]
+    },
+    {
       "id": "ch3-map-activities",
       "title": "Tokyo map and nationwide gym membership",
       "kind": "browser",
@@ -1681,6 +1741,9 @@
         "remake/js/daily/calendar.js",
         "remake/js/daily/hud.js",
         "data/dialogue/ch3_departure.json",
+        "data/dialogue/ch3_ch4_home.json",
+        "remake/js/daily/spots.js",
+        "remake/js/daily/samechan.js",
         "remake/test/browser/ch3_departure_prep.mjs"
       ],
       "run": ["node remake/test/browser/ch3_departure_prep.mjs"]

@@ -62,6 +62,8 @@ export const PREPARATION_SPOTS = STOPS.filter(stop => ROOMS[stop.id]).map(stop =
 // 第5章は、神崎・レヰの店に「昼夜のあいさつ＋通い訪問の小会話」だけで通える。
 // 第2章の段階会話・続編・締めくくり・あげはの通う回・プリクラ・質問は出さない（第2章の物語のため）。
 // あげはの店（ヒロイン）は、第5章の通いの小会話として chapters/ch5-shops.js が出す。
+// 神崎・レヰも第5章の最初の来店だけは、一度だけの会話を chapters/ch5-shops.js が先に出す（ch5-first-talks.js）。
+// 神崎のその会話は第2章の後日談 ch2_kumicho_after_ch2 を世界大会の後の場面に書き直したもので、上の決まりの唯一の例外。
 export const CITY_REGULARS = Object.freeze(["kumicho", "rei"]);
 /** 第5章の柚ヶ谷に出す店（会ったことのある神崎・レヰだけ）。 */
 export const cityRegularSpots = (value = state) => PREPARATION_SPOTS.filter(spot => CITY_REGULARS.includes(spot.charId) && value.met?.[spot.charId]);

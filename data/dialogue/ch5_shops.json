@@ -1,5 +1,5 @@
 {
-  "comment": "第5章の地元の店（#2033 F）。なるはKEMURIKUSAを再開している（第4章 ch4_naru_dubai_3）。はじめは第4章の世界大会の後の新しい王者。C.STATIONの常連（old_man）は第1章の cs_regular_chat の人。ヒロインの店（PEPPERMINT・SHISHARK・MELTY PUFF）は、恋人でも友人でも不自然にならない店での会話にする（オーナー指定 2026-11-02）。好感度・代金・体力は台詞に書かず、chapters/ch5-shops.js が付ける。",
+  "comment": "第5章の地元の店（#2033 F）。なるはKEMURIKUSAを再開している（第4章 ch4_naru_dubai_3）。はじめは第4章の世界大会の後の新しい王者。C.STATIONの常連（old_man）は第1章の cs_regular_chat の人。ヒロインの店（PEPPERMINT・SHISHARK・MELTY PUFF）は、恋人でも友人でも不自然にならない店での会話にする（オーナー指定 2026-11-02）。アダム（EDEN）とレヰ（零-ZERO-）の ch5_adam_shop・ch5_rei_shop は、通い店ではない常連の店で第5章に一度だけ読む会話（chapters/ch5-first-talks.js）。好感度・代金・体力は台詞に書かず、chapters/ch5-shops.js が付ける。",
   "dialogues": [
     {
       "dialogue_id": "ch5_naru_shop",
@@ -156,6 +156,46 @@
         { "speaker": "hajime", "face": "smile", "text": "みんな、楽しそうだね" },
         { "speaker": "ageha", "face": "normal", "text": "それが一番。カワイイは最強、楽しいはもっと最強" },
         { "speaker": "ageha", "face": "smile", "text": "ハジメっちも、楽しい顔して帰ってよね" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_adam_shop",
+      "comment": "第5章の一度だけの会話（N3・chapters/ch5-first-talks.js）。EDENの最初の来店は任意場面 ch5_free_eden_adam（二つのダブルアップル）なので、その次の来店で読む。世界大会の後・博士との勝負の前。葉の今日に加えて、吸う客の今日にも合わせるようになったアダム（characters.json の growth_stats）。札は表向きの品書きで、勧めるのは結局ダブルアップル（EDENの営業設定）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "EDENの壁に、新しい札が一枚増えていた。『本日のおすすめ　ダブルアップル』。" },
+        { "speaker": "hajime", "face": "normal", "text": "……いつもと、同じですよね" },
+        { "speaker": "adam", "face": "serious", "text": "下を読め" },
+        { "speaker": "", "face": "", "text": "札の隅に、小さな字で『世界一の同志も吸った林檎』と書き足してあった。" },
+        { "speaker": "hajime", "face": "surprise", "text": "……俺のこと、勝手に看板にしてません？" },
+        { "speaker": "adam", "face": "normal", "text": "名前は書いていない。同志と書いた" },
+        { "speaker": "hajime", "face": "normal", "text": "同じことだと思います" },
+        { "speaker": "", "face": "", "text": "常連らしい客が入ってくると、アダムはタッパーに手を伸ばす前に、その顔をのぞき込んだ。" },
+        { "speaker": "adam", "face": "normal", "text": "……寝不足だな。今日は、アニスを控えめにしておく" },
+        { "speaker": "hajime", "face": "surprise", "text": "（葉を選ぶ前に、客の顔を見てる）" },
+        { "speaker": "adam", "face": "smile", "text": "葉の今日は、ずっと見てきた。……近ごろは、吸う奴の今日も見る" },
+        { "speaker": "adam", "face": "serious", "text": "言っておくが、お前の真似ではない" },
+        { "speaker": "hajime", "face": "smile", "text": "分かってます" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_rei_shop",
+      "comment": "第5章の一度だけの会話（N3・chapters/ch5-first-talks.js）。零-ZERO-の第5章の最初の来店で読む。世界大会の後・博士との勝負の前。レヰは客と自分から曲の話をするようになっている（characters.json の growth_stats）。『終わったあとの三秒』は第2章の大会（ch2_tournament）でレヰが言った言葉。博士は第2章の大会の審査員。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "零-ZERO-のカウンターで、レヰが常連の客にCDのジャケットを見せていた。" },
+        { "speaker": "rei", "face": "normal", "text": "……この曲、二番のあとで音が全部止まる。そこが、好きで" },
+        { "speaker": "customer", "face": "normal", "text": "分かります、あそこ。息止めて聴いちゃう" },
+        { "speaker": "rei", "face": "smile", "text": "……うん。俺も" },
+        { "speaker": "", "face": "", "text": "客が席へ戻るのを待って、レヰがこちらに気づいた。耳が、少し赤い。" },
+        { "speaker": "hajime", "face": "smile", "text": "レヰさん、お客さんと曲の話をしてましたね" },
+        { "speaker": "rei", "face": "normal", "text": "……前より、少しだけ出る。言葉が" },
+        { "speaker": "rei", "face": "normal", "text": "世界大会の動画、店で流した。常連と、黙って観た" },
+        { "speaker": "rei", "face": "normal", "text": "最後の調整のあと、お前が手を離してから三秒。……誰も、しゃべらなかった" },
+        { "speaker": "hajime", "face": "surprise", "text": "（終わったあとの三秒。レヰさんが、県大会の日に言ってた）" },
+        { "speaker": "rei", "face": "smile", "text": "……いい終わり方だった。曲みたいに" },
+        { "speaker": "hajime", "face": "normal", "text": "次の相手は、博士の作った機械なんです。ダブルアップルで勝負します" },
+        { "speaker": "rei", "face": "normal", "text": "……県大会の、審査員の人か" },
+        { "speaker": "rei", "face": "normal", "text": "終わったら、また来て。どんな音だったか、聞かせて" },
+        { "speaker": "rei", "face": "smile", "text": "感想は、急がなくていい" }
       ]
     }
   ]

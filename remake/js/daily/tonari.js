@@ -179,15 +179,18 @@ async function afterShiftErrand() {
   await setBg(bgUrl(TONARI_BG, timeOfDay()), { fast: true });
 }
 
-// home-shisha.js の tasteDistant と同じ条件。shop.js などを連れてくるので import せずに複製する。
-const ch2TasteAway = () => state.chapter === 2 && !!state.flags?._ch2_taste_distant;
+// home-shisha.js の tasteDistant と同じ時期（第2章DAY5〜第3章の東京で味が戻るまで）。shop.js などを連れてくるので
+// import せずに複製する。tonari に立てるのは地元にいる間だけなので、第3章は東京へ発つ前の準備の3日
+// （ch3_prep_opening「無理に吸って確かめるな」）。味が戻るのは発った後の東京。
+const tasteAway = () => !!state.flags?._ch2_taste_distant && (state.chapter === 2
+  || state.chapter === 3 && !!state.flags._ch3_prep && !state.flags._ch3_prep.departed);
 
 /** 台本の条件は、初回でも再来店でも守る。名前を知る条件には旧セーブの進行も使う */
 function customerEligible(event, rainy) {
   if (event.chapter && event.chapter !== state.chapter) return false;
-  // 第2章の味の不調中は、はじめが自分で吸って味を確かめる回（self_taste）を出さない（ch2_lingering_smell「吸って確かめ続けるのはやめた」）。
+  // 味の不調中は、はじめが自分で吸って味を確かめる回（self_taste）を出さない（ch2_lingering_smell「吸って確かめ続けるのはやめた」）。
   // 吸っても味を判じない回（煙の輪など）は対象外。
-  if (event.self_taste && ch2TasteAway()) return false;
+  if (event.self_taste && tasteAway()) return false;
   if ((customerFamilies(event).includes("tsumugi") || event.id.startsWith("baito_tsumugi_"))
     && !tsumugiAtTonari(state)) return false;
   const flagKnown = (flag) => flag === "ch1_tsumugi_regular"
