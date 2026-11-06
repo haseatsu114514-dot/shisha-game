@@ -1,0 +1,17 @@
+[
+  {
+    "id": "da_silva",
+    "kind": "portrait",
+    "source": "da_silva.png",
+    "applied": true,
+    "background_color": [
+      251,
+      9,
+      251
+    ],
+    "top": 19,
+    "left": 39,
+    "right": 33,
+    "warnings": []
+  }
+]

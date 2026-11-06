@@ -184,17 +184,39 @@ export function afterChapterVisitDue(charId, s = state) {
  * flag は読める時期（味の不調の後など）。台本は章の準備期間に読み込む（data/dialogue/ch2_home.json）ので、未読込なら出さない。
  * 初対面の固有会話（VISIT_SEQ の1本目）を読んだ相手だけ（呼び名・面識を前提にするため）。
  * 既読は `_talk_seen_<scene>`。好感度は通い訪問と同じ+5。
+ * prep は、東京・ドバイへ発つ前の地元の準備3日（chapters/departure-prep.js）だけ読む送り出しの会話（第3・4章・N3a）。
+ * 出発後（その章の大会の前後とも）には出ないので、大会後の分岐は持たない。台本は data/dialogue/ch3_ch4_home.json を準備期間に読み込む。
+ * サメちゃんの店（SHISHARK）は来店の処理が別なので、同じ扱いの会話を daily/samechan.js の SAMECHAN_PREP_TALKS に持つ。
  */
 export const CHAPTER_TALKS = Object.freeze({
   rio: Object.freeze([
     // 「……君、今日は煙の褒め方が嘘だね」（characters.json の凛想）。味の不調に誰より早く気づく
     { chapter: 2, scene: "ch2_rio_taste", flag: "_ch2_taste_distant" },
     { chapter: 2, scene: "ch2_rio_strawberry" },
+    { chapter: 3, scene: "ch3_prep_rio", prep: true },
+    { chapter: 4, scene: "ch4_prep_rio", prep: true },
+  ]),
+  adam: Object.freeze([
+    { chapter: 3, scene: "ch3_prep_adam", prep: true },
+    { chapter: 4, scene: "ch4_prep_adam", prep: true },
+  ]),
+  minto: Object.freeze([
+    { chapter: 3, scene: "ch3_prep_minto", prep: true },
+    { chapter: 4, scene: "ch4_prep_minto", prep: true },
   ]),
 });
+/**
+ * 出発前の地元の準備期間か。判定は core/chapter-clock.js の departurePrep と同じ
+ * （この画面を単体で読み込むテストが多いので import しない。core/travel-budget.js と同じ扱い）。
+ */
+const inDeparturePrep = (s = state) => {
+  const prep = s?.chapter === 3 ? s.flags?._ch3_prep : s?.chapter === 4 ? s.flags?._ch4_prep : null;
+  return !!prep && !prep.departed && Number.isInteger(prep.startDay);
+};
 export function chapterTalkDue(charId, s = state) {
   if (!((s?.story?.[charId] || 0) >= 1)) return null;
   return (CHAPTER_TALKS[charId] || []).find(talk => (s?.chapter || 1) === talk.chapter && s.phase === "daily"
+    && (!talk.prep || inDeparturePrep(s))
     && !s.flags?.[`_talk_seen_${talk.scene}`] && (!talk.flag || s.flags?.[talk.flag])
     && DB.dialogues[talk.scene]?.lines?.length)?.scene || null;
 }
@@ -371,16 +393,18 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     const followup = spotFollowupDue(charId, state, DB.dialogues);
     if (followup && !await read(followup, { bg })) return false;
     const afterChapter = afterChapterVisitDue(charId);
-    const chapterTalk = afterChapter ? null : chapterTalkDue(charId);
-    // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。章明けの再訪は自前の来店描写があるので挨拶を挟まない。
-    if (welcome && state === owner && idx > 0 && !afterChapter && DB.dialogues[welcome]) {
+    // 正体がつながる回・途中の質問を読む来店では、章の間だけの会話は次の来店へ残す（下の分岐の順と同じ）。
+    const mintoReveal = charId === "minto" && mintoIdentityRevealDue() && !!DB.dialogues.ch1_minto_identity_reveal;
+    const chapterTalk = afterChapter || mintoReveal || questionVisitDue(charId) ? null : chapterTalkDue(charId);
+    // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。章明けの再訪・章の間だけの会話は自前の来店描写があるので挨拶を挟まない。
+    if (welcome && state === owner && idx > 0 && !afterChapter && !chapterTalk && DB.dialogues[welcome]) {
       if (!await read(welcome, { bg })) return false;
     }
     if (afterChapter) {
       // 既読フラグは台本末尾の set_flag。中断では立たず、次の来店で読み直せる。
       if (!await read(afterChapter, DB.dialogues[afterChapter].metadata?.bg ? {} : { bg })) return false;
       gainAffinity(charId, visitAffinity("talk"), affinityOptions);
-    } else if (charId === "minto" && mintoIdentityRevealDue() && DB.dialogues.ch1_minto_identity_reveal) {
+    } else if (mintoReveal) {
       // 正体がつながる日の照れた接客を最後まで見せ、通常回は次の来店へ残す。
       if (!await read("ch1_minto_identity_reveal")) return false;
       gainAffinity(charId, visitAffinity("story"), affinityOptions);

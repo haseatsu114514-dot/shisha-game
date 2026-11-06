@@ -128,3 +128,33 @@
 @keyframes ch1-fx-vignette { to { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) { .ch1-title-fx { display: none; } }
+
+/* 章タイトルコールの出現（#2611）。採用画像1枚のまま、煙が晴れるように浮かび上がる。
+   画像は位置・大きさを動かさない（transformなし）。ぼかし・明るさ・不透明度と、上に重ねた薄いもやだけ。
+   共通章題（ui.js chapterTitle）と第1章（ch1-title-motion.js）の両方が .ct-reveal を付ける。 */
+.ct-reveal { --ct-veil: 30, 24, 42; --ct-dim: .72; overflow: hidden; }
+.ct-reveal[data-tone="light"] { --ct-veil: 246, 244, 248; --ct-dim: 1; }
+.ct-reveal > img { animation: ct-reveal-art 1500ms cubic-bezier(.22, .61, .36, 1) 120ms both; }
+@keyframes ct-reveal-art {
+  0% { opacity: 0; filter: blur(6px) brightness(var(--ct-dim)); }
+  45% { opacity: 1; }
+  100% { opacity: 1; filter: none; }
+}
+/* 下ほど濃いもや。少しだけ上へ流れながら消える（絵の手前・入力は通さない） */
+.ct-reveal::after {
+  content: ""; position: absolute; left: 0; right: 0; top: -12%; bottom: -12%; z-index: 1; pointer-events: none;
+  background:
+    radial-gradient(60% 42% at 24% 88%, rgba(var(--ct-veil), .75), rgba(var(--ct-veil), 0) 70%),
+    radial-gradient(56% 40% at 76% 92%, rgba(var(--ct-veil), .7), rgba(var(--ct-veil), 0) 70%),
+    linear-gradient(180deg, rgba(var(--ct-veil), .2) 0%, rgba(var(--ct-veil), .55) 70%, rgba(var(--ct-veil), .7) 100%);
+  opacity: 0; will-change: transform, opacity;
+  animation: ct-reveal-veil 2100ms cubic-bezier(.4, 0, .2, 1) both;
+}
+@keyframes ct-reveal-veil {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-9%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ct-reveal > img, .ct-reveal::after { animation: none; }
+  .ct-reveal::after { content: none; }
+}

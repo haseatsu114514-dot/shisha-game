@@ -168,77 +168,18 @@ def title_arts():
     return sorted(out, key=lambda art: (rank.get(art["character"], len(rank)), art["file"]))
 
 
-def continue_portraits():
-    """正規立ち絵の顔を中央に寄せる。顔アイコンと同じ測定値を元画像の比で記録。"""
+def continue_portraits(style="classic"):
+    """正規立ち絵の顔を中央に寄せる。顔アイコンと同じ測定値を元画像の比で記録（tools/make_face_icons.py）。"""
     sys.path.insert(0, str(ROOT / "tools"))
-    from make_face_icons import face_box
-    out = {}
-    for character in ("sumi", "tsumugi", "minto", "rio", "ageha", "mashiro", "samechan", "hiyori"):
-        faces = {}
-        for path in sorted((ASSETS / "sprites/characters" / character).glob(f"chr_{character}_*.png")):
-            image = Image.open(path).convert("RGBA")
-            box = face_box(character, image)
-            if box:
-                x, y, side = box
-                face = path.stem.removeprefix(f"chr_{character}_")
-                faces[face] = {"cx": round((x + side / 2) / image.width, 5),
-                               "top": round(y / image.height, 5), "size": round(side / image.height, 5)}
-        out[character] = faces
-    return out
+    from make_face_icons import continue_portraits as measure_continue
+    return measure_continue(style)
 
 
-CONTINUE_CHARACTERS = ("sumi", "tsumugi", "minto", "rio", "ageha", "mashiro", "samechan", "hiyori")
-
-
-def continue_portrait_variants(styles=("new",), character_ids=None):
-    """新版などの別画風（assets/sprites/character_variants/<style>/）の顔の枠。#2524。
-
-    data/portrait_metrics.json は現行画像の測定値なので新版には使えない。ここでは make_face_icons.face_box の
-    測定値なし（TUNE）の経路＝頭部のアルファ重心と本体高の比から顔の枠を推定し、CONTINUE_VARIANT_TUNE で人物ごとに補正する。
-    値は現行の continuePortraits と同じ cx / top / size（元画像の比）。
-    """
+def face_frames():
+    """顔アイコンと同じ顔の枠（作業台の審査員・心得の盤が使う）。tools/make_face_icons.py の frames()"""
     sys.path.insert(0, str(ROOT / "tools"))
-    import make_face_icons as icons
-    out = {}
-    for style in styles:
-        styled = {}
-        for character in CONTINUE_CHARACTERS:
-            if character_ids is not None and character not in character_ids:
-                continue
-            faces = {}
-            folder = ASSETS / "sprites/character_variants" / style / character
-            for path in sorted(folder.glob(f"chr_{character}_*.png")):
-                image = Image.open(path).convert("RGBA")
-                # allow_cut: 顔アイコン用の「頭のてっぺんを入れる」補正を使わない（CONTINUEは採用Cと同じく髪・帽子の見切れを許す）。
-                tune = {"f": 0.20, "dx": 0.0, "dy": 0.0, "allow_cut": True, **CONTINUE_VARIANT_TUNE.get(style, {}).get(character, {})}
-                saved = icons.TUNE.get(character)
-                icons.TUNE[character] = tune
-                try:
-                    box = icons.face_box(character, image)
-                finally:
-                    if saved is None:
-                        icons.TUNE.pop(character, None)
-                    else:
-                        icons.TUNE[character] = saved
-                if box:
-                    x, y, side = box
-                    face = path.stem.removeprefix(f"chr_{character}_")
-                    faces[face] = {"cx": round((x + side / 2) / image.width, 5),
-                                   "top": round(y / image.height, 5), "size": round(side / image.height, 5)}
-            if faces:
-                styled[character] = faces
-        out[style] = styled
-    return out
-
-
-# 新版の顔の枠の人物ごとの補正（make_face_icons.TUNE と同じ f / dx / dy。CONTINUEの実画面で目〜口が中央に来るように決める）。
-# 2026-11-06 #2524: 1280×720の実画面で目が y≈270〜300、口が y≈360〜400 に来るように目視で決めた。
-CONTINUE_VARIANT_TUNE = {"new": {
-    "tsumugi": {"dy": 0.28, "f": 0.235},
-    "minto": {"dy": 0.10, "f": 0.21},
-    "samechan": {"dy": 0.30, "f": 0.26},
-    "hiyori": {"dy": 0.25, "f": 0.22},
-}}
+    from make_face_icons import frames
+    return frames()
 
 
 def intro_art(character_ids=None):
@@ -337,10 +278,6 @@ def main():
             parser.error("新立ち絵の通常PNG・有効な透過領域がありません")
         manifest = json.loads(OUT.read_text(encoding="utf-8"))
         manifest.setdefault("portraitVariants", {}).setdefault(style, {}).update(entries)
-        # CONTINUEの顔の枠（#2524）。CONTINUEに出る人物だけ、同じ画風の枠を測り直す。
-        framing = continue_portrait_variants((style,), ids).get(style, {})
-        if framing:
-            manifest.setdefault("continuePortraitVariants", {}).setdefault(style, {}).update(framing)
         webp = set(manifest.get("webp", []))
         for cid, entry in entries.items():
             for face in entry["faces"]:
@@ -524,11 +461,16 @@ def main():
         # 仮置きCG（文字だけの画像）は載せない＝場面では飛ばし、ギャラリーにも出さない
         "cgs": [f for f in listing("cgs") if not is_placeholder(ASSETS / "cgs" / f)],
         "faceIcons": listing("ui/face_icons"),
+        # 画風ごとの顔アイコン（assets/ui/face_icons/<画風>/）と顔の枠は tools/make_face_icons.py が作る
+        "faceIconVariants": {d.name: listing(f"ui/face_icons/{d.name}") for d in sorted((ASSETS / "ui/face_icons").iterdir())
+                             if d.is_dir() and listing(f"ui/face_icons/{d.name}")},
+        "faceFrames": face_frames(),
         "making": listing("ui/making"),
         "sceneProps": listing("ui/scene_props"),
         "continueUI": listing("ui/continue"),
         "continuePortraits": continue_portraits(),
-        "continuePortraitVariants": continue_portrait_variants(),
+        "continuePortraitVariants": {style: continue_portraits(style) for style in ("new", "nanami")
+                                     if (ROOT / "assets/ui/face_icons" / style).is_dir()},
         "introArt": intro_art(),
         "titleArts": title_arts(),
         "makingBox": making_boxes(),

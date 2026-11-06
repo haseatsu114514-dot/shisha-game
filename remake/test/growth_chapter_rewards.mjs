@@ -24,7 +24,7 @@ async function runner(name,progress,exposed){
   let owner,screen,cancel=false,swap=false,craft,snapshots=[],replacement,nightBefore,pauseAtSave=true;
   const noop=()=>{};
   const ports={createChapterMenu: () => () => {}, ...progress,...growth,el:node,DB:{dialogues},bgUrl:x=>x,
-    chapterFourMapModel:map4.chapterFourMapModel,canReflect:()=>false,paidAction:stats.paidAction,
+    chapterFourMapModel:map4.chapterFourMapModel,canReflect:()=>false,loverMilestonesDue:()=>[],readLoverMilestone:async()=>false,paidAction:stats.paidAction,
     chapterDay:()=>core.state.day,chapterGrowthNight:async()=>true,createChapterActions:opts=>actions.createChapterActions(opts),
     layers:{hud:{replaceChildren:noop,classList:{remove:noop}}},showScreen:(_id,n)=>{screen=n;},
     setBg:async()=>{},playBgm:noop,toast:noop,hooks:{},

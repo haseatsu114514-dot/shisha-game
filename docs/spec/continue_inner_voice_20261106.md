@@ -82,7 +82,7 @@ cue 0: 焦げ「……熱が入りすぎたな」／冷え「……冷え切っ�
 
 ## 5. 立ち絵（新版）と新案配置
 
-- **新版立ち絵**: `continuePortraitStyle(speaker, faces)` が、台本の全表情が `portraitVariants.new` にあり、顔の枠 `continuePortraitVariants.new` も測ってある人物だけ新版を返す。2026-11-06はスミさん・つむぎ・栞・サメちゃん・ひよりが新版、あげは・ましろ・凛想は現行（不足分のCodexプロンプトを制作記録に用意）。顔の枠は `build_manifest.py` の `continue_portrait_variants()`（顔の測定値のない新版画像は頭部のアルファ重心と本体高から推定し、`CONTINUE_VARIANT_TUNE` で人物ごとに補正）。顔の大きさ524.8px・中心(640,273)の契約と57表情の検証は、枠を画風別に引くだけで不変。
+- **新版立ち絵**: `continuePortraitStyle(speaker, faces)` が、台本の全表情が `portraitVariants.new` にあり、顔の枠 `continuePortraitVariants.new` も測ってある人物だけ新版を返す。2026-11-06はスミさん・つむぎ・栞・サメちゃん・ひよりが新版、あげは・ましろ・凛想は現行（不足分のCodexプロンプトを制作記録に用意）。顔の枠は `data/portrait_metrics.json` の `styles.new`（新版の絵で測った目・あご・頬。main の FIC01〜07）から `tools/make_face_icons.py` の `continue_portraits(style)` が出す `continuePortraitVariants.new`。顔の大きさ524.8px・中心(640,273)の契約と57表情の検証は、枠を画風別に引くだけで不変。
 - **新案「記憶の暗室」（`layout:"inner"`）**: 既存UIと違う見た目として追加。筆文字・円形HUD・鋭角ボタンを使わず、細い活字の見出し（コンティニューする？／CONTINUE?）、上端の時計バー、文字だけの縦積み2択（▸と差し色の下線）。人物は顔中心X=400で左へ寄せ、縁を暗がりへ溶かす。台詞は左寄せ1行、左端に差し色の縦線。GAME OVERは同じ活字。新規素材なし。`continue-preview.html?layout=inner`。**本編の既定は neon のまま**（採用はオーナー判断。採用時の手順は制作記録のREADME）。
 
 ## 6. 残した要素／変えた要素／必要素材・リスク
@@ -93,7 +93,7 @@ cue 0: 焦げ「……熱が入りすぎたな」／冷え「……冷え切っ�
 
 **必要素材**: 本編には新規素材なし。新版を全員に広げるなら表情10点（制作記録 prompts.md A）。新案に専用背景を作るなら1枚（同 B）。
 
-**リスク・確認項目**: 2択文言から「最初から」が見える文からは消えた（aria-labelと説明文で補う。戻すなら `continue-view.js` の `go-choice-label` 2箇所）。新版の顔の枠は目視調整なので、実機で目の位置（y≈270〜300）を確認。#2613（新版立ち絵の正式採用）はCONTINUEを現行固定にしているため、同時に取り込むときは `continuePortraitStyle` を優先し、固定を外す。
+**リスク・確認項目**: 2択文言から「最初から」が見える文からは消えた（aria-labelと説明文で補う。戻すなら `continue-view.js` の `go-choice-label` 2箇所）。新版の顔の枠は測定値から出るが、実機で目の位置（y≈270〜300）を確認。#2613（新版立ち絵の正式採用）はCONTINUEを現行固定にしているため、同時に取り込むときは `continuePortraitStyle` を優先し、固定を外す。
 
 ## 7. 契約の変更と、止めた箇所
 

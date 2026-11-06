@@ -33,6 +33,10 @@ const naruRiftActive = (save) => (save?.chapter || 1) >= 2 && !!(save?.flags?._c
 // IR16: 恋人のデートは地元の店で会う約束。はじめが東京・ドバイにいる間は乗れない。
 // romance.js の awayFromHome と同じ条件（試験の依存を増やさないため写し）
 const awayFromHome = (save) => ["tokyo", "dubai"].includes(save?.flags?._ch2_region);
+// 物語のLIMEの region（#2024）: home＝地元（柚ヶ谷を含む）／away＝東京かドバイ／tokyo／dubai。
+// 章内日が同じでも、出発前に地元で過ごす3日と、東京・ドバイの日を分ける。
+const regionMatches = (save, region) => region === "home" ? !awayFromHome(save)
+  : region === "away" ? awayFromHome(save) : save?.flags?._ch2_region === region;
 
 // C03: 初回受信から返信を待つ目安。再案内の日付では数え直さない。
 const LIME_REPLY_NUDGE_DAYS = 3;
@@ -54,8 +58,10 @@ function invitationAvailable(m, { fixedNight = () => false } = {}) {
   if (m.closed_on != null && state.day % 7 !== m.closed_on) return false;
   if (m.exclude_closed_on != null && state.day % 7 === m.exclude_closed_on) return false;
   if (m.time_slot === "night" && fixedNight(state.day)) return false;
-  // 恋人のデートは地元で会う約束。東京・ドバイにいる間は乗れない（IR16）
-  if (m.lover && m.type === "invitation" && awayFromHome(state)) return false;
+  // 誘い（恋人のデート・外出・交友のお誘い）は地元で会う約束。東京・ドバイにいる間は乗れず、帰ってから届く
+  // （IR16・#2024）。東京にいる間のムカイさんのシフトの誘いだけは、その街の仕事の連絡なので届く。雑談・噂は止めない
+  if (m.type === "invitation" && awayFromHome(state)
+    && !(m.accept_event === "__mukai_baito__" && state.flags?._ch2_region === "tokyo")) return false;
   return true;
 }
 
@@ -209,6 +215,7 @@ export function expireInvitations(opts = {}) {
 function eligible(m, { tournamentDay = false } = {}) {
   if (state.limeRead.includes(m.id) && !importantInvite(m) && !needsResend(m.id)) return false;
   if (m.chapter && m.chapter !== state.chapter) return false;
+  if (m.region && !regionMatches(state, m.region)) return false; // 届く街（出発前の地元の日と、遠征先の日を分ける）
   if (m.sender === "ageha" && state.chapter === 1) return false; // 第1章では連絡先を知らない
   if (m.sender === "naru" && naruRiftActive(state)) return false; // #2090 決裂・休業中のなるからは何も届かない
   const cond = m.trigger_condition;
@@ -250,7 +257,9 @@ export function morningMessages(opts = {}) {
   const inbox = state.inbox || [];
   const delivered = new Set(inbox.map((i) => i.id));
   // 未読が残っている相手からは重ねて届かない（読むまで溜まっていく一方にしない）
-  const senders = new Set(opts.tournamentDay ? [] : inbox.filter((i) => !i.read && !canRetry(i)).map((i) => i.msg.sender));
+  // 今いっしょにいる人（opts.exclude・第4章のドバイの同行者）からは、恋人のLIMEも物語のLIMEも届かない（#2024）
+  const senders = new Set([...(opts.tournamentDay ? [] : inbox.filter((i) => !i.read && !canRetry(i)).map((i) => i.msg.sender)),
+    ...(opts.exclude || [])]);
   for (const m of loverMessages(opts)) {
     // 初めての私服の約束など、まだ見ていない大事な話題を同じ相手の定期LIMEで押し流さない。
     const storyInvite = DB.lime.some((candidate) => candidate.sender === m.sender && candidate.priority > 0
