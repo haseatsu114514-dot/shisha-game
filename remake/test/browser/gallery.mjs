@@ -327,7 +327,7 @@ try {
     await page.locator(t("gallery-viewer-close")).click();
     await page.locator(t("gal-purikura-2-18-1-guest-hajime-samechan")).click();
     assert.match(await page.locator(".gal-viewer .purikura-caption").textContent(), /サメちゃん/);
-    assert(!(await page.locator(".gal-viewer").textContent()).includes("汐見"), "photo replay must not disclose her unlearned full name");
+    assert(!(await page.locator(".gal-viewer").textContent()).includes("熱海"), "photo replay must not disclose her unlearned full name");
     await page.locator(t("gallery-viewer-close")).click();
     await close(page);
     assert.deepEqual(await snapshot(page), before, "collecting legacy evidence does not load or rewrite the save slots");

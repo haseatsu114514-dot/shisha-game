@@ -56,7 +56,7 @@ NAME_TO_ID = {
     "なる": "naru",
     "吾妻 大夢": "adam",
     "アダム": "adam",
-    "緑川 栞": "minto",
+    "木成頼 栞": "minto",
     "みんと": "minto",
     "つむぎ": "tsumugi",
     "猫柳 つむぎ": "tsumugi",

@@ -95,7 +95,7 @@ await suite("samechan-confession", async check => {
         assert.deepEqual(r.loaded.lovers, r.final.lovers);
         assert.deepEqual(r.loaded.finales, r.final.finales);
         assert.deepEqual(r.loaded.romanceChoices, r.final.romanceChoices);
-        assert(!/汐見|泳/.test(r.log)); assert(!r.final.flags._samechan_name_known);
+        assert(!/熱海|泳/.test(r.log)); assert(!r.final.flags._samechan_name_known);
       }, options);
     }
 

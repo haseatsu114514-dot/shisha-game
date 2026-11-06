@@ -102,8 +102,8 @@ for (const id of ["baito_tsumugi_01", "baito_minto_romance", "baito_ageha_romanc
   assert(!all.DB.baito.some(event => event.id === id), `未接続の物語イベントを一括解放しない: ${id}`);
 }
 assert(Array.isArray(all.DB.gallery.items), "the approved gallery catalog is loaded from real data");
-assert.equal(all.DB.characters.hiyori.name, "薄羽ひより");
-assert.equal(all.DB.characters.hiyori.reading, "うすば ひより");
+assert.equal(all.DB.characters.hiyori.name, "泡沫ひより");
+assert.equal(all.DB.characters.hiyori.reading, "うたかた ひより");
 assert.equal(all.DB.characters.saku.name, "綾取 朔（あやとり さく）");
 assert.equal(all.DB.characters.rei.reading, "あそう れい");
 assert.equal(all.realName("saku"), "綾取朔");
