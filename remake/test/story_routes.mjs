@@ -499,4 +499,4 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   }
 }
 
-console.log('OK: seven routes, 0–7 lovers, Tokyo near-conflict, post-ending conflict, location, old saves, chapter 3 optional/eve wiring, chapter 4 eve wiring, chapter 1 shuraba recall');
+console.log('OK: eight routes, 0–8 lovers, Tokyo near-conflict, post-ending conflict, location, old saves, chapter 3 optional/eve wiring, chapter 4 eve wiring, chapter 1 shuraba recall');
