@@ -3557,7 +3557,8 @@
     {
       "dialogue_id": "remake_delivery_minto_handoff",
       "metadata": {
-        "bg": "res://assets/backgrounds/peppermint.png"
+        "bg": "res://assets/backgrounds/peppermint.png",
+        "forced_event": true
       },
       "lines": [
         {
