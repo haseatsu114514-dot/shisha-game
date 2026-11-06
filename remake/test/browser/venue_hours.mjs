@@ -57,8 +57,8 @@ await suite("venue-hours", async runCheck => {
       await page.evaluate(async () => { void (await import("./js/daily/map.js")).chooseSpot(); });
       await hit(page, "pin-axe_bar");
       assert.equal(await page.locator(t("map-go")).count(), 0);
-      assert.match(await page.locator(".mi-no").innerText(), /夜/);
-      await assertFits(page, ".mi-no");
+      assert.match(await page.locator(".map-info").getAttribute("aria-label"), /夜/);
+      await assertFits(page, ".map-info");
     }, options);
 
     await check(label + "-night-maki-and-day-cafe-closed", async page => {

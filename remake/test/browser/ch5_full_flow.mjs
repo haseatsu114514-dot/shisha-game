@@ -360,8 +360,8 @@ await suite("ch5-full-flow", async check => {
     const toTokyo = dt("pin-ch5_to_tokyo");
     assert.equal(await page.locator(`${toTokyo} .facility-icon, ${toTokyo} .store-logo`).count(), 0, "The van pin is a plain shield");
     await page.locator(toTokyo).click();
-    assert.match(await page.locator(".mi-desc").innerText(), /運賃はかからない.*昼と夜の2行動/);
-    assert.equal(await page.locator(`${dt("map-go")} .mi-note`).innerText(), "無料");
+    assert.equal(await page.locator(".map-info .mi-desc").count(), 0);
+    assert(await page.locator(dt("map-go")).isVisible());
     // 昼: 配送便で東京へ → 最初は Dr.fookah の店員に乗せてもらう話 → 夜に着いてムカイさんに屋根裏を借りる → 屋根裏で寝る。
     await page.locator(dt("map-go")).click();
     const tokyoMap = (day, slot) => page.waitForFunction(([day, slot]) => {
@@ -394,7 +394,7 @@ await suite("ch5-full-flow", async check => {
     assert.match(await club.innerText(), /地下の店/); assert.doesNotMatch(await club.innerText(), /SEAM/);
     // 夜: 帰りの配送便は昼だけ（押せない）→ 屋根裏で休んで、翌朝も東京。
     await page.locator(dt("pin-ch5_tokyo_home")).click();
-    assert.match(await page.locator(".mi-no").innerText(), /配送便は昼に出る/);
+    assert.match(await page.locator(".map-info").getAttribute("aria-label"), /配送便は昼に出る/);
     assert.equal(await page.locator(dt("map-go")).count(), 0, "No van at night");
     await go(page, "ch5_tokyo_attic");
     await tokyoMap(53, 0);
@@ -513,7 +513,7 @@ await suite("ch5-full-flow", async check => {
     });
     // 配送便は今夜の約束を優先し、出発ボタン自体を出さない。約束・行動・お金も保持。
     await page.locator(dt("pin-ch5_to_tokyo")).click();
-    assert.match(await page.locator(".mi-no").innerText(), /今夜はLIMEの約束/);
+    assert.match(await page.locator(".map-info").getAttribute("aria-label"), /今夜はLIMEの約束/);
     assert.equal(await page.locator(dt("map-go")).count(), 0, "Tonight's appointment blocks the Tokyo van");
     assert.deepEqual(unchangedAppointment(await get(page)), unchangedAppointment(beforeTravel));
     // ドバイは出発前に約束を確認する。「やめる」なら手紙・切符も消費せず地元に残る。
@@ -726,7 +726,7 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5.part, "free", "The Dubai stay does not move the Chapter 5 story");
     // 夜: 次の手紙はまだ（帰ってから2日後の朝に届く）。「ドバイへ」は理由を出して押せない。
     await page.locator(dt("pin-ch5_to_dubai")).click();
-    assert.match(await page.locator(".mi-no").innerText(), /シェイクの次の手紙は、まだ届いていない（あと2日）/);
+    assert.match(await page.locator(".map-info").getAttribute("aria-label"), /シェイクの次の手紙は、まだ届いていない（あと2日）/);
     assert.equal(await page.locator(dt("map-go")).count(), 0, "No flight without a ticket");
     // 家で休んで2日を過ごす（夜→翌日の昼→夜）。
     for (const [day, slot] of [[53, 0], [53, 1], [54, 0]]) {
@@ -835,7 +835,7 @@ await suite("ch5-full-flow", async check => {
     assert(await page.locator(".hud").isVisible(), "The daily HUD comes back after the race");
     // 夜は走れない（理由を出して押せない）。客間で寝て翌朝もドバイ
     await page.locator(dt("pin-ch4_dubai_camel")).click();
-    await page.locator(".mi-no").filter({ hasText: /今日はもう走った|レースは朝/ }).waitFor();
+    await page.locator('.map-info[aria-label*="今日はもう走った"], .map-info[aria-label*="レースは朝"]').waitFor();
     assert.equal(await page.locator(dt("map-go")).count(), 0, "No race at night");
     await visit("ch5_dubai_guest");
     await dubaiMap(61, 0);

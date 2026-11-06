@@ -62,6 +62,10 @@ async function go(page, id, touch = false) {
   if(touch) await pin.tap(); else await pin.click();
   await settled(page);
   const button=page.locator(t('map-go'));
+  if (touch) {
+    assert(await page.locator('.map-info.spot-selected .mi-preview').isVisible());
+    assert.equal(await page.locator('.map-info .mi-desc, .map-info .mi-go').count(), 0);
+  }
   if(touch) await button.tap(); else await button.click();
 }
 async function act(page,id,{touch=false}={}) {
@@ -128,8 +132,8 @@ await suite('ch2-daily',async check=>{
     assert(await preview.isVisible());
     assert.doesNotMatch(await page.locator('.map-info').innerText(), /画像を表示できませんでした|読込失敗|読み込みに失敗/);
     if (failImage) {
-      assert.equal(await preview.innerText(), `${spot.label} — ${spot.area}`);
-      assert.match(await preview.getAttribute('aria-label'), /詳細と入店条件/);
+      assert.equal(await preview.innerText(), '');
+      assert.match(await preview.getAttribute('aria-label'), /写真を表示できませんでした/);
       assert.equal(await preview.evaluate(node => getComputedStyle(node).backgroundImage), 'none');
     } else {
       assert.equal(await preview.innerText(), '');
@@ -139,8 +143,8 @@ await suite('ch2-daily',async check=>{
         await image.decode(); return image.naturalWidth > 0;
       }, spot.previewUrl));
     }
-    assert.equal(await page.locator('.map-info .mi-desc').innerText(), spot.desc);
-    assert.match(await page.locator('.map-info [data-test="spot-note"]').innerText(), /入店・部活設立は無料/);
+    assert.equal(await page.locator('.map-info .mi-banner').innerText(), spot.label);
+    assert.equal(await page.locator('.map-info .mi-desc, .map-info .mi-go, .map-info .mi-note').count(), 0);
     assert.equal(await page.evaluate(() => JSON.stringify(window.__remake.state)), await page.evaluate(() => __b02.before));
     const enter = page.locator(t('map-go'));
     assert(await enter.isVisible() && await enter.isEnabled());
@@ -239,7 +243,7 @@ await suite('ch2-daily',async check=>{
     const board=await page.evaluate(async()=>(await import('./js/core/growth-mode.js')).growthEnabled());
     if(board){assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),155);assert((v.growth?.xp||0)>0,'The paid talk earns EXP');}
     else assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),157); // 2 normal points, not old 4-point amounts
-    await settled(page);await page.locator(t('pin-ch2_ageha')).click();assert.match(await page.locator('.mi-no').textContent(),/今日はもう行った/);
+    await settled(page);await page.locator(t('pin-ch2_ageha')).click();assert.match(await page.locator('.map-info').getAttribute('aria-label'),/今日はもう行った/);
     assert.equal(await page.locator(t('map-go')).count(),0);
     await travelToCity(page,'home');await act(page,'rest');
     v=await value(page);assert.equal(v.day,17);assert.equal(v.slot,0);
@@ -303,7 +307,8 @@ await suite('ch2-daily',async check=>{
   });
   await check('unaffordable-city-visit-spends-nothing',async page=>{
     await setup(page,{money:2000});await begin(page);await wide(page);await settled(page);await page.locator(t('pin-ch2_rei')).click();
-    assert.match(await page.locator('.mi-no').textContent(),/お金が足りない/);assert.equal(await page.locator(t('map-go')).count(),0);
+    assert.match(await page.locator('.map-info').getAttribute('aria-label'),/お金が足りない/);assert.equal(await page.locator(t('map-go')).count(),0);
+    const before = await value(page); await page.locator('.map-info').click(); assert.deepEqual(await value(page), before);
     const v=await value(page);assert.equal(v.money,2000-stationFares(page));assert.equal(v.slot,0);assert(Object.values(v.stats).every(n=>n===31));
   });
   await check('room-image-failure-preserves-cost-and-action',async page=>{

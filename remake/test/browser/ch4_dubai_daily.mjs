@@ -255,11 +255,11 @@ await suite("ch4-dubai-daily", async check => {
     });
     await loadSlot(page, 0);
     await dubaiMap(page, { day: 51, slot: 0 });
-    const desc = async pin => { await page.locator(dt(`pin-${pin}`)).click(); return page.locator(".mi-desc").first().innerText(); };
-    assert.match(await desc("ch4_dubai_souq"), /屋台で軽いものも買える。昼は暑く、いつもより体力を使う。/);
-    assert.match(await desc("ch4_dubai_creek"), /昼は日差しが強く、夜ほどは休まらない。/);
-    assert.match(await desc("ch4_dubai_festa"), /一台6,000円（約140ディルハム）。夜がにぎわう。/);
-    assert.match(await desc("ch4_dubai_cafe"), /一台3,000円（約70ディルハム）。夜がにぎわう。/);
+    for (const pin of ["ch4_dubai_souq", "ch4_dubai_creek", "ch4_dubai_festa", "ch4_dubai_cafe"]) {
+      await page.locator(dt(`pin-${pin}`)).click();
+      assert.equal(await page.locator(".map-info .mi-desc").count(), 0);
+      assert(await page.locator(".map-info .mi-banner").isVisible());
+    }
     let state = await get(page);
     const money = state.money;
     // 昼のスーク → 屋台
