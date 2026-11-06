@@ -84,7 +84,7 @@ async function normalGeometry(p) {
 }
 async function check(name, options, run, setup) {
   if (process.env.CASE_FILTER && name !== process.env.CASE_FILTER) return;
-  // Isolate device emulation/input as well as storage between landscape/portrait fixtures.
+  // Isolate device emulation/input as well as storage between PC/touch fixtures.
   const browser=await chromium.launch(browserOptions);
   const context=await browser.newContext(options), p=await context.newPage(); const errors=[];
   await p.addInitScript(()=>{
@@ -109,8 +109,8 @@ try {
   for (const touch of [false,true]) {
     for (const mode of ["normal","ds"]) {
       const device=touch?"touch":"pc", name=`${device}-${mode}-shared-practice-save-load`;
-      const options={viewport:touch?(mode==="ds"?{width:390,height:844}:{width:844,height:390}):{width:1280,height:720}, ...(touch?{isMobile:true,hasTouch:true}:{}),
-        ...(touch&&mode==="ds"?{recordVideo:{dir:path.join(dir,"video"),size:{width:390,height:844}}}:{})};
+      const options={viewport:touch?{width:844,height:390}:{width:1280,height:720}, ...(touch?{isMobile:true,hasTouch:true}:{}),
+        ...(touch&&mode==="ds"?{recordVideo:{dir:path.join(dir,"video"),size:{width:844,height:390}}}:{})};
       await check(name,options,async p=>{
         await p.evaluate(async()=>{
           const core=await import("./js/core/state.js"), s=core.newState();
@@ -138,11 +138,9 @@ try {
           const raw=await p.evaluate(()=>JSON.stringify(__remake.state));
           await activate(p,"game-layout-normal",touch);
           await p.waitForFunction(()=>!document.body.classList.contains("game-ds"));await normalGeometry(p);
-          if(touch)await p.setViewportSize({width:844,height:390});
           await activate(p,"hud-menu",touch);
           await p.getByRole("button",{name:"閉じる",exact:true}).click();
           assert.equal(await p.evaluate(()=>JSON.stringify(__remake.state)),raw);
-          if(touch)await p.setViewportSize({width:390,height:844});
           await activate(p,"game-layout-ds",touch);await dsGeometry(p);
           assert.equal(await p.evaluate(()=>JSON.stringify(__remake.state)),raw);
         }
@@ -189,7 +187,7 @@ try {
         }
       });
     }
-    await check(`${touch?"touch":"pc"}-dialogue-choice-geometry`,{viewport:touch?{width:390,height:844}:{width:1280,height:720},...(touch?{isMobile:true,hasTouch:true}:{})},async p=>{
+    await check(`${touch?"touch":"pc"}-dialogue-choice-geometry`,{viewport:touch?{width:844,height:390}:{width:1280,height:720},...(touch?{isMobile:true,hasTouch:true}:{})},async p=>{
       await activate(p,"title-layout-ds",touch);
       await p.evaluate(async()=>{
         const {play}=await import("./js/vn/engine.js");const core=await import("./js/core/state.js");
@@ -201,7 +199,7 @@ try {
       await advanceUntil(p,()=>!!document.querySelector(".vn-choices.show"),touch);await dsGeometry(p);
       for(const theme of ["paper","smoke","smoke-purple","cut-paper","amber","tissue","classic"]){
         await p.evaluate(async id=>(await import("./js/core/ui-theme.js")).applyUiTheme(id),theme);
-        // 2026-10-30: 縦持ちの見直しで、AUTO/SKIP/LOG/用語/設定 は下画面（触る画面）の下端のタッチバーへ移した。
+        // AUTO/SKIP/LOG/用語/設定 は下画面（触る画面）の下端のタッチバーに置く。
         // 上画面の立ち絵の顔を覆わず、本文・選択肢とも交差しない。
         const toolbar=await p.evaluate(()=>{
           const visual=document.querySelector(".game-ds-visual").getBoundingClientRect();
@@ -241,7 +239,7 @@ try {
       await p.evaluate(()=>window.layoutChoice);
     });
   }
-  await check("small-phone-scroll-choice-and-return",{viewport:{width:320,height:568},isMobile:true,hasTouch:true},async p=>{
+  await check("small-phone-scroll-choice-and-return",{viewport:{width:568,height:320},isMobile:true,hasTouch:true},async p=>{
     await activate(p,"title-layout-ds",true);
     await p.evaluate(async()=>{
       const core=await import("./js/core/state.js"), {play}=await import("./js/vn/engine.js");
@@ -258,7 +256,7 @@ try {
     await normalGeometry(p);
     assert.deepEqual(await p.locator("#stage").evaluate(n=>[n.scrollLeft,n.scrollTop]),[0,0]);
   });
-  await check("small-phone-station-arrival-shows-map-top",{viewport:{width:320,height:568},isMobile:true,hasTouch:true},async p=>{
+  await check("small-phone-station-arrival-shows-map-top",{viewport:{width:568,height:320},isMobile:true,hasTouch:true},async p=>{
     await activate(p,"title-layout-ds",true);
     await p.evaluate(async()=>{
       const core=await import("./js/core/state.js"),s=core.newGame();
@@ -298,7 +296,7 @@ try {
     assert.equal(layout.region,"widehanga");assert(layout.visible,"Station arrival left the HUD offscreen");
     await p.screenshot({path:path.join(dir,"small-phone-station-arrival.png")});
   });
-  await check("old-auto-load-ds-conversation",{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async p=>{
+  await check("old-auto-load-ds-conversation",{viewport:{width:844,height:390},isMobile:true,hasTouch:true},async p=>{
     await activate(p,"title-layout-ds",true);
     await p.evaluate(async()=>{
       const core=await import("./js/core/state.js"),s=core.newState();
