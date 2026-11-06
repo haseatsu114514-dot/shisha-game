@@ -46,6 +46,16 @@ body[data-game-layout="ds"][data-screen="title"]:has(.title[data-layout="ds"]) #
 body[data-game-layout="ds"][data-screen="title"]:has(.title[data-layout="ds"]) #rotate-hint { display: none !important; }
 body.game-ds #rotate-hint { display: none !important; }
 
+/* DS風未対応の章タイトル・ショップは通常画面をスクロールして操作する。 */
+@media (orientation: portrait) and (max-width: 760px) and (hover: none) and (pointer: coarse) {
+  body.game-ds-fallback #rotate-hint { display: none !important; }
+  body.game-ds-fallback #viewport { overflow: auto; }
+  body.game-ds-fallback #stage {
+    left: 0; top: 0; transform: scale(.8); transform-origin: top left;
+  }
+  body.game-ds-fallback .game-layout-toolbar:not([open]) summary::after { content: "・左右にスクロール"; }
+}
+
 /* 2つの画面。上は額縁だけ（中身の上に重ねる）、下は面の色（中身の後ろに敷く）。 */
 body.game-ds #stage > .game-ds-panel { position: absolute; right: auto; bottom: auto; pointer-events: none; border-radius: 7px; }
 body.game-ds #stage > .game-ds-visual {

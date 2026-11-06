@@ -2733,6 +2733,15 @@
       ]
     },
     {
+      "id": "portrait-shop-fallback",
+      "title": "縦持ちDS風の章カード・レモン仕入れ・ショップ入口",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/scenes/game-layout.js", "remake/css/game-ds.css", "remake/test/browser/portrait_shop_fallback.mjs"],
+      "run": ["node remake/test/browser/portrait_shop_fallback.mjs"]
+    },
+    {
       "id": "adam-eden",
       "title": "Adam and EDEN adopted art",
       "kind": "browser",
