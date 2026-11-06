@@ -17,7 +17,7 @@ async function mount(options = {}) {
     const { buildGameOver } = await import("./js/chapters/gameover.js");
     const { showScreen } = await import("./js/core/ui.js");
     window.__decisions = [];
-    showScreen("end", buildGameOver({ variant: "premium:ageha", soundEffects: false, ...options,
+    showScreen("end", buildGameOver({ variant: "lover:ageha", soundEffects: false, ...options,
       onRetry: () => window.__decisions.push("retry"), onTitle: () => window.__decisions.push("title") }));
   }, options);
   await page.clock.runFor(50);
@@ -53,8 +53,9 @@ try {
       const k = stage.width / 1280, image = root.querySelector(".go-sumi-img");
       for (const animation of image.getAnimations()) animation.finish();
       const { DB, portraitInfo } = await import("./js/core/data.js");
-      const info = portraitInfo(root.dataset.speaker, root.dataset.emotion);
-      const framing = DB.manifest.continuePortraits[info.folder][info.face], r = image.getBoundingClientRect();
+      const { continueFraming } = await import("./js/chapters/continue-view.js");
+      const info = portraitInfo(root.dataset.speaker, root.dataset.emotion, root.dataset.portraitStyle);
+      const framing = continueFraming(info), r = image.getBoundingClientRect();
       const size = r.height / k * framing.size;
       const cx = (r.left - stage.left + r.width * framing.cx) / k;
       const cy = (r.top - stage.top + r.height * (framing.top + framing.size / 2)) / k;

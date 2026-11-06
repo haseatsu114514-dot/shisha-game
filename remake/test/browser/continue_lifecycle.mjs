@@ -191,8 +191,9 @@ try {
         for (const el of __go.querySelectorAll(".go-left,.go-sumi-img"))
           for (const a of el.getAnimations()) a.finish();
         const { DB, portraitInfo } = await import("./js/core/data.js");
-        const info = portraitInfo(__go.dataset.speaker, __go.dataset.emotion);
-        const f = DB.manifest.continuePortraits[info.folder][info.face];
+        const { continueFraming } = await import("./js/chapters/continue-view.js");
+        const info = portraitInfo(__go.dataset.speaker, __go.dataset.emotion, __go.dataset.portraitStyle);
+        const f = continueFraming(info);
         const s = document.querySelector("#stage").getBoundingClientRect(), k = s.width / 1280;
         const r = __go.querySelector(".go-sumi-img").getBoundingClientRect();
         return { size: r.height * f.size / k, x: (r.left + r.width * f.cx - s.left) / k,

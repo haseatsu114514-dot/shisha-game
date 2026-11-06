@@ -822,7 +822,7 @@
         "node --experimental-vm-modules remake/test/ch1_eve_setup.mjs",
         "node --experimental-vm-modules remake/test/ch1_eve_cancel.mjs",
         "node remake/test/coal_training.mjs",
-        "node remake/test/continue_premium.mjs",
+        "node remake/test/continue_lovers.mjs",
         "node --experimental-vm-modules remake/test/craft_keys_focus.mjs",
         "node remake/test/craft_scoring_spec.mjs",
         "node remake/test/foil_skip.mjs",

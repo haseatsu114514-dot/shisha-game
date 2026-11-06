@@ -46,12 +46,8 @@
 .gameover .go-sumi-img {
   position: absolute; left: 50%; translate: -50% 0; object-fit: contain;
   filter: drop-shadow(5px 4px 0 #050a1f99);
-  transition: opacity .42s var(--ease-out), filter .42s var(--ease-out);
 }
-/* 心の声の行: 浮かんだ像が霞み、色が抜ける。相手の声の行: はっきり浮かぶ。 */
-.gameover[data-voice="self"] .go-sumi-img { opacity: .46; filter: grayscale(.55) blur(2.5px) drop-shadow(5px 4px 0 #050a1f66); }
-/* 心の声の文字は白のまま（#454/#466の白テロップを維持）。字間と太さだけ落として、相手の声と区別する。 */
-.gameover[data-voice="self"][data-phase="speaking"] .go-speech-text { letter-spacing: .07em; font-weight: 700; }
+
 .gameover .go-sumi-fallback { margin: 70px 40px; font-size: 50px; text-align: center; }
 .gameover .go-right { position: absolute; left: 80px; right: 80px; top: 560px; bottom: 0; z-index: 3; }
 .gameover .go-dialogue { position: absolute; left: 0; right: 0; top: 0; height: 54px;
@@ -208,3 +204,125 @@
   .gameover .go-effect i { display: none; }
   .gameover .go-count-echo { transform: none; }
 }
+
+/* ================================================================
+   #2524 新案「記憶の暗室」（data-layout="inner"）。2026-11-06。
+   既存の筆文字・円形HUD・鋭角ボタンを使わず、細い活字と上端の時計バー、文字だけの2択で組む。
+   人物は左へ寄せ、縁を暗がりへ溶かして「頭の中に浮かぶ像」にする。顔の大きさは採用Cと同じ。
+   本編の既定は neon のまま。プレビュー `continue-preview.html?layout=inner` で比較する。
+   ================================================================ */
+.gameover[data-layout="inner"] { background-color: #05060c; animation: go-neon-enter .65s ease-out both; }
+.gameover[data-layout="inner"] .go-veil {
+  background: linear-gradient(90deg, #05060c2e 0%, #05060c00 28%, #05060c8c 60%, #05060cf2 100%),
+    linear-gradient(0deg, #05060cd0, transparent 28%),
+    radial-gradient(ellipse 40% 55% at 31% 40%, #ffffff12, transparent 70%);
+}
+.gameover[data-layout="inner"] .go-veil::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 31% 42%, transparent 30%, #05060c66 62%, #05060ce6 100%);
+  animation: go-inner-breathe 5.2s ease-in-out infinite alternate;
+}
+.gameover[data-layout="inner"] :is(.go-spotlight, .go-title-slash) { display: none; }
+.gameover[data-layout="inner"] .go-smoke { opacity: .14; }
+.gameover[data-layout="inner"] .go-smoke-right { opacity: .09; }
+.gameover[data-layout="inner"] .go-dust { opacity: .3; }
+/* 上端の時計バー: 残り時間に沿って右から縮む。残り5秒は桃色。 */
+.gameover[data-layout="inner"] .go-inner-bar {
+  position: absolute; z-index: 5; left: 0; top: 0; height: 4px; width: calc(100% * (1 - var(--go-progress, 0)));
+  background: linear-gradient(90deg, #cbbcff, #f1edff); box-shadow: 0 0 10px #b7a3ff80; pointer-events: none;
+  transition: width .07s linear;
+}
+.gameover[data-layout="inner"].go-urgent .go-inner-bar { background: linear-gradient(90deg, #ff9ccc, #ffd6ea); box-shadow: 0 0 12px #ff8cc080; }
+.gameover[data-layout="inner"] .go-inner-bar[hidden] { display: none; }
+.gameover[data-layout="inner"] .go-heading {
+  top: 44px; left: 64px; right: 64px; height: auto; display: block; text-align: left; animation: go-title-enter .5s var(--ease-out) both;
+}
+.gameover[data-layout="inner"] .go-title { display: block; height: auto; }
+.gameover[data-layout="inner"] .go-inner-sub {
+  display: block; margin-bottom: 8px; font: 500 13px / 1 var(--font); letter-spacing: .42em; color: #9fa7c4;
+}
+.gameover[data-layout="inner"] .go-title-label {
+  display: inline-block; padding-bottom: 10px; border-bottom: 1px solid #8e93b566;
+  font-size: 40px; font-weight: 500; letter-spacing: .18em; color: #f2f3fa;
+  -webkit-text-stroke: 0; text-shadow: 0 2px 12px #000c;
+}
+.gameover[data-layout="inner"] .go-clock {
+  position: absolute; top: -6px; right: 0; height: auto; display: block; color: #e9ebf5;
+}
+.gameover[data-layout="inner"] .go-count {
+  width: auto; min-width: 2ch; font-size: 64px; font-weight: 300; line-height: 1; letter-spacing: -.02em; text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.gameover[data-layout="inner"].go-urgent .go-clock { color: #ffb3d8; }
+.gameover[data-layout="inner"] .go-limit-note {
+  top: 118px; right: 64px; width: auto; padding: 0; border: 0; background: none;
+  font-size: 18px; line-height: 1.5; color: #9fa7c4; text-align: right;
+}
+/* 人物: 顔中心X=400（.go-left の中央）。縁を暗がりへ溶かす。 */
+.gameover[data-layout="inner"] .go-left { left: -70px; top: 0; width: 940px; height: 720px; }
+.gameover[data-layout="inner"] .go-portrait {
+  mask-image: radial-gradient(ellipse 58% 72% at 50% 44%, #000 52%, #0008 76%, transparent 100%);
+}
+.gameover[data-layout="inner"] .go-sumi-img { filter: saturate(.88) drop-shadow(0 0 24px #0008); }
+/* 文字列: 左寄せ・左端に差し色の縦線。1行のまま。 */
+.gameover[data-layout="inner"] .go-right { left: 0; right: 0; top: 0; bottom: 0; }
+.gameover[data-layout="inner"] .go-dialogue {
+  left: 64px; right: 430px; top: 556px; height: 64px; justify-content: flex-start; padding-left: 22px;
+  border-left: 4px solid var(--go-accent); text-align: left;
+}
+.gameover[data-layout="inner"] .go-speech-text {
+  font-size: 32px; font-weight: 700; letter-spacing: .04em; text-align: left;
+  -webkit-text-stroke: 0; text-shadow: 0 2px 10px #000d, 0 0 20px #05060c;
+}
+.gameover[data-layout="inner"] mark.go-letter { font-size: 1.08em; color: #fff3d6; }
+/* 2択: 右に縦積みの文字だけ。選ぶと差し色の下線と▸。 */
+.gameover[data-layout="inner"] .end-actions { top: 388px; left: 820px; right: 64px; flex-direction: column; gap: 16px; }
+.gameover[data-layout="inner"] .go-choice {
+  justify-content: flex-start; min-height: 66px; padding: 10px 0 10px 30px; border: 0; border-bottom: 1px solid #7e84a455; border-radius: 0;
+  background: none; box-shadow: none; font-size: 32px; font-weight: 700; color: #c9cde0; text-shadow: 0 2px 8px #000c;
+  transition: color .16s, border-color .16s;
+}
+.gameover[data-layout="inner"] .go-choice::before {
+  content: ""; position: absolute; left: 4px; top: 50%; width: 13px; height: 15px; translate: 0 -50%;
+  background: var(--go-choice-arrow); clip-path: polygon(0 0, 100% 50%, 0 100%); opacity: var(--go-frame-selected);
+  filter: drop-shadow(0 0 6px var(--go-choice-arrow)); transition: opacity .16s;
+}
+.gameover[data-layout="inner"] .go-choice:not(:disabled):is(:focus-visible, :active),
+.gameover[data-layout="inner"][data-choice="retry"] .go-retry,
+.gameover[data-layout="inner"][data-choice="quit"] .go-quit { color: #fff; border-bottom-color: var(--go-accent); }
+@media (hover: hover) {
+  .gameover[data-layout="inner"] .end-actions:not(:has(.go-choice:focus-visible)) .go-choice:not(:disabled):hover { color: #fff; border-bottom-color: var(--go-accent); }
+}
+.gameover[data-layout="inner"] .go-choice:not(:disabled):hover { filter: none; transform: none; }
+/* フォーカスの印は差し色の下線と▸（:focus-visible で選択色になる）。枠線は出さない。 */
+.gameover[data-layout="inner"] .go-choice:focus-visible { outline: none; }
+.gameover[data-layout="inner"] .go-inner-sub[hidden] { display: none; }
+.gameover[data-layout="inner"] .end-actions[hidden] { display: none; }
+.gameover[data-layout="inner"] .go-playback { top: auto; bottom: 64px; left: 820px; right: 64px; }
+.gameover[data-layout="inner"] .go-caption-controls { justify-content: flex-start; }
+.gameover[data-layout="inner"] .go-next { display: none; }
+.gameover[data-layout="inner"] .go-proceed {
+  position: relative; width: 100%; min-height: 66px; padding: 10px 0 10px 30px; border: 0; border-bottom: 1px solid var(--go-accent);
+  border-radius: 0; background: none; color: #fff; font-size: 32px; font-weight: 700; text-align: left;
+}
+.gameover[data-layout="inner"] .go-proceed::before {
+  content: ""; position: absolute; left: 4px; top: 50%; width: 13px; height: 15px; translate: 0 -50%;
+  background: #ffe5a0; clip-path: polygon(0 0, 100% 50%, 0 100%); filter: drop-shadow(0 0 6px #ffe5a0);
+}
+.gameover[data-layout="inner"][data-choice] .go-title { opacity: .55; }
+.gameover[data-layout="inner"][data-phase="reaction"] .go-clock { opacity: .3; }
+/* GAME OVER: 同じ活字を中央に大きく。 */
+.gameover[data-layout="inner"][data-timed-out="true"] .go-heading {
+  top: 0; left: 0; right: 0; bottom: 0; height: auto; display: grid; place-items: center; animation: go-neon-final .5s ease-out both;
+}
+.gameover[data-layout="inner"][data-timed-out="true"] .go-title-label {
+  padding: 0 0 0 .3em; border: 0; font-size: 112px; font-weight: 400; letter-spacing: .3em; color: #fff;
+  text-shadow: 0 0 28px #8f7cff88, 0 4px 18px #000c;
+}
+.gameover[data-layout="inner"][data-timed-out="true"] :is(.go-clock, .go-left, .go-right, .go-effect) { opacity: 0; pointer-events: none; }
+.gameover[data-layout="inner"][data-timed-out="true"] .go-atmosphere { opacity: .45; transition: opacity .4s; }
+.gameover[data-layout="inner"][data-paused="true"] *,
+.gameover[data-layout="inner"][data-paused="true"] *::before,
+.gameover[data-layout="inner"][data-paused="true"] *::after { animation-play-state: paused !important; }
+.gameover[data-layout="inner"][data-reduced-motion="true"] { animation: none; }
+@media (prefers-reduced-motion: reduce) { .gameover[data-layout="inner"] { animation: none; } }

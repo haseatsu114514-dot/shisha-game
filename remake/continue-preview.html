@@ -28,17 +28,18 @@
  <option value="0" selected>スミさん① 共同責任</option>
  <option value="1">スミさん② 世界の終わり</option>
  <option value="2">スミさん③ 反対多数</option>
- <option value="premium:tsumugi">つむぎ（プレミア）</option>
- <option value="premium:minto">栞／みんと（第2章以降）</option>
- <option value="premium:hiyori">ひより（プレミア）</option>
- <option value="premium:rio">凛想（プレミア）</option>
- <option value="premium:ageha">あげは（プレミア）</option>
- <option value="premium:mashiro">ましろ（プレミア）</option>
- <option value="premium:samechan">サメちゃん（プレミア）</option>
+ <option value="lover:tsumugi">つむぎ（恋人）</option>
+ <option value="lover:minto">栞／みんと（第2章以降）</option>
+ <option value="lover:hiyori">ひより（恋人）</option>
+ <option value="lover:rio">凛想（恋人）</option>
+ <option value="lover:ageha">あげは（恋人）</option>
+ <option value="lover:mashiro">ましろ（恋人）</option>
+ <option value="lover:samechan">サメちゃん（恋人）</option>
  </select>
  <label for="preview-layout">配置</label>
  <select id="preview-layout" aria-label="コンティニューの配置">
  <option value="neon" selected>筆文字・円形HUD（採用中）</option>
+ <option value="inner">記憶の暗室・新案（#2524）</option>
  <option value="bottom">王道・下にボタン（比較）</option>
  <option value="bottom-back-count">王道＋迫る背面カウント（実験）</option>
  <option value="top">上にボタン（実験）</option>
@@ -77,7 +78,7 @@ const stage = document.getElementById("stage"), screen = document.getElementById
   motion = document.getElementById("preview-motion"), retry = document.getElementById("preview-retry"),
   quit = document.getElementById("preview-quit");
 const params = new URLSearchParams(location.search);
-if (["neon", "bottom", "top", "back-count", "bottom-back-count"].includes(params.get("layout"))) layout.value = params.get("layout");
+if (["neon", "inner", "bottom", "top", "back-count", "bottom-back-count"].includes(params.get("layout"))) layout.value = params.get("layout");
 if (["purple", "stage"].includes(params.get("background"))) background.value = params.get("background");
 function fit() {
  const top = tools.offsetHeight + 22;
@@ -106,7 +107,7 @@ function show() {
      rank: Number(document.getElementById("rank").value), lossOrdinal: Number(document.getElementById("loss").value),
      sameReasonOrdinal: Number(document.getElementById("loss").value),
      parts: { [document.getElementById("weak").value]: 40 }, completedParts: [document.getElementById("weak").value] },
-   variant:val.startsWith("premium:")?val:Number(val),
+   variant:val.startsWith("lover:")?val:Number(val),
    soundEffects:se.checked, reducedMotion:motion.checked, layout:layout.value, background:background.value,
    onRetry:()=>complete("retry"), onTitle:()=>complete("quit")
  });
