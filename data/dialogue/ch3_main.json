@@ -639,6 +639,9 @@
     },
     {
       "dialogue_id": "ch3_tournament_day",
+      "metadata": {
+        "forced_event": true
+      },
       "lines": [
         {
           "speaker": "",

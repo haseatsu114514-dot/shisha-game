@@ -79,6 +79,9 @@
     },
     {
       "dialogue_id": "ch2_tournament_entrance",
+      "metadata": {
+        "forced_event": true
+      },
       "lines": [
         {
           "speaker": "pakki",
