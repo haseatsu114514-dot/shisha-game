@@ -72,12 +72,13 @@ function menu(result = null) {
       for (const b of picker.children) b.setAttribute("aria-pressed", String(b.dataset.companion === id));
     } })));
   const message = el("p.axe-menu-message", { "aria-live": "polite", text: result?.completed ? (result.match ? (result.series?.bestOf > 1 ? "マッチ " + result.series.wins.player + "-" + result.series.wins.opponent + " · " : "") + ({player:"あなたの勝ち", opponent:"ひよりの勝ち", draw:"引き分け"})[result.match.winner] + (result.match.suddenDeath ? "（サドンデス" + result.match.suddenDeath.rounds + "本）" : "") + " · " + result.match.playerTotal + " 対 " + result.match.opponentTotal + " / 前回の記録 " : "前回の記録  ") + result.total + " / " + result.maximum + "点 · 平均 " + result.stats.average.toFixed(2) : "狙いを定めて、気持ちいい一投を。" });
-  const rules = el("button.axe-button.axe-menu-rules", { type: "button", text: "遊び方・得点ルール", dataset: { test: "axe-menu-rules" }, onclick: () => {
+  // 操作・遊び方の説明は常に出さず「？」から開く（#2718 のUI方針）。
+  const rules = el("button.axe-button.axe-menu-rules.axe-help", { type: "button", title: "遊び方・得点ルール", dataset: { test: "axe-menu-rules" }, onclick: () => {
     if (busy() || intro.inert) return;
     intro.inert = true;
     const panel = axeRules(() => { panel.remove(); intro.inert = false; rules.focus(); });
     host.append(panel); panel.querySelector("button").focus();
-  } });
+  } }, [el("span", { "aria-hidden": "true", text: "？" }), el("span.axe-quiet", { text: "遊び方・得点ルール" })]);
   const lesson = el("button.axe-button.axe-menu-lesson", { type: "button", text: "マキの無料1投レッスン", dataset: { test: "axe-menu-lesson" }, onclick: async () => {
     if (busy() || intro.inert || !intro.isConnected) return;
     lessonOpen = true; intro.inert = true;
@@ -94,12 +95,6 @@ function menu(result = null) {
       el("span.axe-menu-lounge", { text: "NIGHT LOUNGE" }),
     ]),
     el("h1#axe-menu-title", { text: "AXE THROW" }), message,
-    el("div.axe-menu-guide", [
-      el("span.axe-menu-guide-label", { text: "ボタン / Spaceで、順番に止める" }),
-      el("ol", [["01", "横"], ["02", "縦"], ["03", "回転"]].map(([step, label]) => el("li", [
-        el("span", { text: step }), el("strong", { text: label }),
-      ]))),
-    ]),
     el("div.axe-menu-modes", { role: "group", "aria-label": "遊ぶモードを選ぶ" }, [start, league, versus]),
     el("div.axe-menu-settings", [
       el("div.axe-menu-setting", [el("span.axe-menu-setting-label", { text: "練習を見守る相手" }), picker]),
@@ -107,7 +102,7 @@ function menu(result = null) {
     ]),
     el("footer.axe-menu-footer", [
       el("a.axe-back", { href: "./", text: "← 本編へ" }),
-      el("span.axe-menu-tip", { text: "回転は緑の帯で放す。白い刃先が触れた最高点が入る。" }), lesson, rules,
+      lesson, rules,
     ]),
   ]);
   host.replaceChildren(intro);
