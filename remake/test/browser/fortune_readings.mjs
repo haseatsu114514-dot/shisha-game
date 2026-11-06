@@ -60,7 +60,7 @@ try{
   const second=await choices(3,'rio','ch1_rio_first');assert(second.some(x=>!x.marked[0]&&x.marked[1]),'hint blindly favors first option');
   const riftAndTrivia=await page.evaluate(async()=>{
    const snap=JSON.stringify(Q.core.state);
-   // Legacy mask 31 on naru draws from the newly added readings (naru_9 / naru_12 / naru_15) in live doFortune.
+   // Legacy mask 31 on naru draws from readings added after the 5-bit mask (naru_9 onward, incl. the 2026-11-06 naru_16-20) in live doFortune.
    Object.assign(Q.core.state,{chapter:1,day:6,slot:0,fortuneDay:0,money:13000,met:{naru:true},affinity:{naru:10}});
    Q.core.state.flags._fortune_trivia_seen_naru=31;Q.here();
    const newDone=await Q.fortune.doFortune();
@@ -110,7 +110,7 @@ try{
    };
   });
   assert(riftAndTrivia.newDone);
-  assert(riftAndTrivia.newMatched.some(id=>['naru_9','naru_12','naru_15'].includes(id)),'legacy mask 31 did not advance to new naru trivia');
+  assert(riftAndTrivia.newMatched.some(id=>['naru_9','naru_12','naru_15','naru_16','naru_17','naru_18','naru_19','naru_20'].includes(id)),'legacy mask 31 did not advance to new naru trivia');
   assert(riftAndTrivia.beforeRiftOpen);
   assert.equal(riftAndTrivia.beforeRiftHoliday,'本日定休日');
   assert(riftAndTrivia.midTransitionSafe,'mid-selection rift transition charged or granted reading');

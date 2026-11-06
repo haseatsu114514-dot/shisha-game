@@ -1,9 +1,12 @@
 // CONTINUEの描画。台本・抽選・遷移から独立させ、1行のテロップを文字ごとに出す。
+// #2524: data-voice="self" ははじめの心の声（人物は霞む）、"other" は頭の中に浮かんだ相手の声（人物が浮かび上がる）。
 import { el } from "../core/util.js";
 import { createNeonClock, createNeonAtmosphere } from "./continue-neon.js";
 import { DB, img, portraitInfo } from "../core/data.js";
 
-const EMPHASIS = ["俺たち全員", "俺たちはまだやれる", "断固反対", "カルダモンが絶滅", "まだ終わってねえ", "お前と勝ちてえ", "勝手に", "ちょっと待て", "ずっと、見てますから", "何枚も何枚も", "もう一回だけ", "ぎゅってする", "次の香り", "ワンチャン", "コンティニュー", "王命じゃ", "もう一度見たい", "もう一台", "はじめのシーシャ", "諦める"];
+const EMPHASIS = ["一人で背負う", "お前だけの負け", "お前と勝ちてえ", "カルダモンが絶滅", "悔しいのは本当", "緊急会議", "まだやれるか", "返事、聞かせろ",
+  "消さなくていい", "次の線", "私は知ってるよ", "条件を変えて", "一個だけ変えて", "王命である", "次を見たい", "作れない日", "お茶にしよ", "君の一台", "応援してる",
+  "どうする", "どうしたい", "もう一度", "もう一回", "もう一台", "もっかい", "コンティニュー"];
 // 顔の高さ(px)。テロップを1行にした分、人物を大きく映す（2026-10-10）。
 const FACE_PX = 256;
 const HEAD_PADDING = 24;
@@ -49,12 +52,14 @@ export function createContinueView({ script, speaker, character, premium, layout
   const next = el("button.go-next", { type: "button", text: "›", "aria-label": "台詞を送る", dataset: { test: "continue-next" } });
   const proceed = el("button.go-proceed", { type: "button", text: "進む →", hidden: true, dataset: { test: "continue-proceed" } });
   // セリフと区別できる2択ボタン。見た目はCSS、文言は実テキストで表示する。
-  const retry = el("button.go-choice.go-retry", { type: "button", "aria-label": "最初から再挑戦", dataset: { test: "retry" } },
+  // #2524: 2択は頭の中の問いかけへの、はじめ自身の答え。遷移（大会の最初から／タイトルへ）は変えない。
+  // aria-label と説明文で実際の遷移を伝え、見える文言だけを一人称の答えにする。
+  const retry = el("button.go-choice.go-retry", { type: "button", "aria-label": "もう一台、作る（最初から再挑戦）", dataset: { test: "retry" } },
     [...(neon ? choiceFrames() : []),
-      el("span.go-choice-label", { text: topActions ? "する" : "最初から再挑戦" })]);
-  const quit = el("button.go-choice.go-quit", { type: "button", "aria-label": "諦める・タイトルへ戻る", dataset: { test: "game-over-title" } },
+      el("span.go-choice-label", { text: topActions ? "する" : "もう一台、作る" })]);
+  const quit = el("button.go-choice.go-quit", { type: "button", "aria-label": "今日は、ここまで（諦めてタイトルへ戻る）", dataset: { test: "game-over-title" } },
     [...(neon ? choiceFrames() : []),
-      el("span.go-choice-label", { text: "諦める" })]);
+      el("span.go-choice-label", { text: topActions ? "諦める" : "今日は、ここまで" })]); // 比較用の上段配置は「コンティニュー？ ［する］［諦める］」のまま。
   function choiceFrames() {
     return [el("img.go-choice-frame", { src: art("neon_quit_frame"), alt: "", "aria-hidden": "true", draggable: "false" }),
       el("img.go-choice-frame.go-choice-frame-selected", { src: art("neon_retry_frame"), alt: "", "aria-hidden": "true", draggable: "false" })];
@@ -72,7 +77,8 @@ export function createContinueView({ script, speaker, character, premium, layout
   const root = el("div.end-screen.gameover", { role: "region", "aria-label": "大会のコンティニュー",
     dataset: { test: "game-over", variant: script.id, speaker, premium: String(premium),
       layout: neon ? "neon" : classicBack ? "bottom-back-count" : backCount ? "back-count" : topActions ? "top" : "bottom",
-      background: background === "stage" ? "stage" : "purple", phase: "speaking" } }, [
+      background: background === "stage" ? "stage" : "purple", phase: "speaking",
+      voice: script.cues[0]?.voice === "self" ? "self" : "other" } }, [
     el("div.go-veil", { "aria-hidden": "true" }),
     ...(neon ? createNeonAtmosphere() : []),
     ...(echoLayer ? [echoLayer] : []),
@@ -133,6 +139,11 @@ export function createContinueView({ script, speaker, character, premium, layout
     if (typed && Math.floor(n / 2) > Math.floor(shown / 2)) onType?.();
     shown = n;
   }
+  // 心の声（self）と浮かんだ相手の声（other）の切替。人物の霞み・テロップの色はCSSが data-voice で変える。
+  function setVoice(voice) {
+    const value = voice === "self" ? "self" : "other";
+    if (root.dataset.voice !== value) root.dataset.voice = value;
+  }
   function face(name, beat = true) {
     const info = portraitInfo(speaker, name);
     if (info && portrait && image.getAttribute("src") !== info.src) { image.src = info.src; framePortrait(info); }
@@ -174,5 +185,5 @@ export function createContinueView({ script, speaker, character, premium, layout
   // 読み上げ支援には文字ごとでなく、台詞のまとまりを一度だけ通知する。
   const announce = text => { live.textContent = text; };
   return { root, caption, dialogue, count, next, proceed, retry, quit,
-    announceTime: text => { timerLive.textContent = text; }, setCaption, reveal, face, reaction, showProceed, gameOver, announce, setCount, isRevealed: () => shown >= letters.length };
+    announceTime: text => { timerLive.textContent = text; }, setCaption, reveal, face, setVoice, reaction, showProceed, gameOver, announce, setCount, isRevealed: () => shown >= letters.length };
 }

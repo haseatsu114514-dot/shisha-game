@@ -937,6 +937,104 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "tournament_date_noor",
+      "comment": "DSR20 第4章ドバイの前夜デート。ヌールはドバイに住む恋人なので、到着場面なしで前夜の街にいる（ch4-story-wiring.js）。大会の中身には踏み込まず、説教もしない。能力値は上げない。",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前夜の街。カフェ・サーリムの裏口で、ヌールさんがミントティーを二つ持って待っていた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "お疲れさま、ハジメ。今日は店、父に任せてきた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いいんですか、抜けてきて"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "いいの。父も「今夜は行ってこい」って。バレてるみたい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で、夜の路地をゆっくり歩く。昼の砂ぼこりが、うそみたいに静かだ。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "明日のこと、聞かない方がいい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……少しだけなら"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "じゃあ、少しだけ。私は、ハジメの煙がもう好き。それは明日も変わらないよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（それだけで、肩の力が抜けた）"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "もう少し一緒にいよう",
+              "next": "stay"
+            },
+            {
+              "text": "明日のために、そろそろ帰ろう",
+              "next": "home"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "stay": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "広場のベンチで、ぬるくなったミントティーを最後まで分け合った。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、宿のロビーまで二人で戻った。"
+          }
+        ],
+        "home": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "会えてよかった。ミントティー、ごちそうさまです"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "どういたしまして。おやすみ、ハジメ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "宿の前で手を振ると、ヌールさんは路地の角で二回振り返った。"
+          }
+        ]
+      }
     }
   ]
 }
