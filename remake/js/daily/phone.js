@@ -400,9 +400,11 @@ function sumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
   // DAY3・DAY8 の固定の誘いは台本の一部なので残す
   if (!fixed && fixedNight?.(state.day)) return null;
   // 毎回同じ理由にならないよう日付で選ぶ（固定のDAY3とDAY8は別の理由になる）
-  const { reasons, ...template } = DB.limeTemplates.sumi_baito;
+  const { reasons, repeat_messages: repeatMessages, ...template } = DB.limeTemplates.sumi_baito;
+  // 以前にも同じ誘いが届いているなら、前回と同じ文面の再送に見えないよう言い回しを変える
+  const resent = repeatMessages && (state.inbox || []).some(i => i.msg?.accept_event === "__sumi_baito__" && i.msg?.id !== id);
   return { ...template, id,
-    messages: template.messages.map(text => text === "{reason}" ? reasons[state.day % reasons.length] : text),
+    messages: (resent ? repeatMessages : template.messages).map(text => text === "{reason}" ? reasons[state.day % reasons.length] : text),
     accept_reply: { ...template.accept_reply },
     decline_response: { ...template.decline_response } };
 }
