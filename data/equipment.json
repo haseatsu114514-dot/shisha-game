@@ -523,6 +523,30 @@
       }
     },
     {
+      "id": "suyaki_steve",
+      "type": "bowl",
+      "name": "スティーブが育てたマウンテンミスト専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_steve",
+      "description": "スティーブが急いで柑橘を飛ばした日から、マウンテンミストを低い熱で待つ練習に使い込んだ素焼き。縁が少し欠け、レモンとライムの香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "steve",
+        "reason": "待つ練習台を、顔を見る手に",
+        "flavor": "mountain_mist",
+        "leaf_grams": 50,
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
       "id": "kumogama_phunnel",
       "type": "bowl",
       "name": "雲窯ファンネルハガル",

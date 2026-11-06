@@ -130,6 +130,7 @@
         "ch3_saku_mashiro_tea_tin",
         "ch3_saku_mashiro_soon_back",
         "ch3_saku_lime",
+        "ch3_steve_lime",
         "confession_mashiro",
         "hiyori_tokyo_contact",
         "ch3_tsumugi_slump",
@@ -277,6 +278,12 @@
         "ch3_saku_advice"
       ],
       "comment": "#2028: 綾取とLIMEを交換する。助言の後。♥1（煙幕への再訪で付く好感度）の条件は場面カードの置き方（ch3-story-wiring.js の heart）。"
+    },
+    "ch3_steve_lime": {
+      "seen": [
+        "ch3_mukai_intro"
+      ],
+      "comment": "#2028: スティーブとLIMEを交換する。配達で会った後、客として来るmukaiで。面識と♥2の条件は場面カードの置き方（ch3-story-wiring.js の met・heart）。"
     },
     "ch3_mashiro_play_3": {
       "seen": [

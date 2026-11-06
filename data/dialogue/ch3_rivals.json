@@ -1030,6 +1030,297 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch3_steve_lime",
+      "comment": "#2028 スティーブとLIMEを交換する任意場面。客としてmukaiに寄ったスティーブが、タイマーから目を離せない自分の代わりに、はじめが見た客の顔の「山」を知らせてほしいと頼む。面識と♥2で、mukaiの店番の3回目（はじめが客の顔を読むと知る ch3_outing_mukai_steve_c）の後に、mukaiで開く。低温の話の後は♥2だけで開く（ch3-story-wiring.js）。味の言葉は使わない（味覚が戻る前でも読める）。Smoke & Gloryでの低温の話（ch3_steve_low_heat）を読む前後どちらでも成り立ち、大会の前後を前提にしない。昼にも夜にも読めるので時間帯を言わない。好感度は任意場面だけで付ける。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "mukaiの客席の端で、スティーブがレシピカードの束をめくっていた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "ヘイ、ハジメ。少しいいか。頼みがある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺にですか？"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "俺はタイマーを見てると、客の顔を見落とす。知ってるだろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……鳴るまで、目が離れないんですよね"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "そう。だから、ハジメの目を借りたい"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "ここで客の顔が一番ゆるんだら、知らせてくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "知らせるって、Smoke & Gloryまで走るんですか？"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ノー、ノー。LIMEでいい。何分目で、どんな顔だったか、一行で"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "俺のカードの秒数と並べる。どこで山を見送ってるのか、自分じゃ分からないんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "顔と、煙の量くらいしか書けませんよ"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "それがいい。俺のカードに一番足りないのが、それだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、交換しましょう"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_steve"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブは画面を確かめると、レシピカードを一枚、裏返した。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "こっちは俺の分。届いた時刻を、ここに並べる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "毎日は送れませんよ。店が混んだら、見る余裕もないですし"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "オーケー。気づいた日だけでいい、……俺も急かさない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（待つのが苦手な人に、待つって言われた）"
+        },
+        {
+          "speaker": "steve",
+          "face": "surprise",
+          "text": "……今、ちょっと笑ったな。何分目だ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "数えてませんでした"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "だろ。数えてると、見逃すんだ"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "steve": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_steve_bond_finale",
+      "comment": "#2028 スティーブの好感度の締めくくり（友情のみ・スティーブは恋愛対象外）。LIME交換（ch3_steve_lime）と味の会話（予備のタイマーを借りる外出 ch3_outing_steve_timer）の後、♥5で一度だけ（daily/bonds.js）。入口は版3の東京の日常ループのSmoke & Glory（大会前）と、優勝の翌日の後日談の寄り道（煙幕の片づけの朝より前）。旧行程は場面カード。熱を急いで柑橘を飛ばした日から使ってきた練習用の素焼きを、客の顔から先に見るはじめに預ける。大会前はまだタイマー頼み（成長は大会で）。大会後の分岐は二口目も見るようになったとだけ言い、結果には触れない。昼にも夜にも読めるので時間帯を言わない。ピザの夜（lesson_steve_pizza）とは別の場面。",
+      "metadata": {
+        "bond_finale": "steve"
+      },
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 3,
+          "next_true": "after_tournament",
+          "next_false": "before_tournament"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブは棚の一番上から、小さな紙袋を下ろした。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "ずっと練習に使ってきた、俺のハガルだ"
+        },
+        {
+          "speaker": "",
+          "text": "袋の中は、縁の欠けた素焼きのハガルだった。内側の土が、うっすら黄色く染まっている。"
+        },
+        {
+          "speaker": "",
+          "text": "鼻を近づけると、レモンのあとから、ライムが追ってきた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ、マウンテンミスト……ですよね"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "イエス。こいつで、何百回も待った"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "前に、熱を急いでライムまで飛ばした話をしたろ。あの日も、こいつだった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そんな大事なものを"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "急ぎそうになったら、こいつを見る。それで、ずっと棚に置いてた"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "でも、こいつを見てると、待つことしか考えなくなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……客の顔より、先に"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "イエス。だから、俺の棚から出す。ハジメに預けたい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺が使っていいんですか？"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "ハジメは、客の顔から先に見る。こいつに足りないのは、それだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "でも、スティーブさんが急ぎそうになったら、どうするんですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "タイマーがある。……それと、ハジメのLIME"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そうだ。前に借りた予備のタイマーも、返さないと"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "そいつも、そのまま持ってろ。ハガルとセットだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……じゃあ、両方お借りします"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "ノー、ノー。返しに来なくていい。……でも、顔の知らせは続けてくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "それは送ります。気づいた日だけ"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "オーケー。その一行が、一番の礼だ"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブはマウンテンミストの箱を一つ、紙袋に足した。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "葉もつけとく。最初は、俺の秒数で一度吸ってみろ。外すのは、それからだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（待ち方を教わったんじゃない。外していいって、言われたんだ）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "technique": 2
+          }
+        }
+      ],
+      "branches": {
+        "before_tournament": [
+          {
+            "speaker": "",
+            "text": "Smoke & Glory。カウンターの端で、スティーブがレシピカードを束ねていた。"
+          },
+          {
+            "speaker": "steve",
+            "face": "smile",
+            "text": "ヘイ、ハジメ。来たか。今日は客でも偵察でもなくていい"
+          }
+        ],
+        "after_tournament": [
+          {
+            "speaker": "",
+            "text": "Smoke & Glory。カウンターの端で、スティーブがレシピカードを束ねていた。"
+          },
+          {
+            "speaker": "steve",
+            "face": "smile",
+            "text": "ヘイ、ハジメ。来たか。今日は客でも、大会の相手でもなくていい"
+          },
+          {
+            "speaker": "steve",
+            "face": "normal",
+            "text": "大会の日から、タイマーと一緒に客の二口目も見てる、……まだ少しだけな"
+          }
+        ]
+      }
     }
   ]
 }
