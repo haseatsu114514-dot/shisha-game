@@ -88,6 +88,22 @@ check("flag_count: 通常の閾値比較は変えない", () => {
   vnState.flags = { f: 1 };
   assert.equal(condition({ condition_type: "flag_count", flag: "f", threshold: 2, next_true: "yes", next_false: "no" }).queue[0]?.text, "NO");
 });
+check("contact: 連絡先（配列／フラグ／固有会話の消化数）を読むだけで判定し、保存値は書き換えない（#2818）", () => {
+  const line = { condition_type: "contact", char_id: "minto", threshold: 1, next_true: "yes", next_false: "no" };
+  const saved = { flags: vnState.flags, contacts: vnState.contacts, story: vnState.story };
+  vnState.flags = {}; vnState.contacts = []; vnState.story = {};
+  assert.equal(condition(line).queue[0]?.text, "NO");
+  vnState.story = { minto: 1 };
+  assert.equal(condition(line).queue[0]?.text, "YES");
+  vnState.story = {}; vnState.flags = { _lime_contact_minto: true };
+  assert.equal(condition(line).queue[0]?.text, "YES");
+  vnState.flags = {}; vnState.contacts = ["minto"];
+  assert.equal(condition(line).queue[0]?.text, "YES");
+  vnState.contacts = ["naru"];
+  assert.equal(condition(line).queue[0]?.text, "NO");
+  assert.deepEqual(vnState.contacts, ["naru"]);
+  Object.assign(vnState, saved);
+});
 check("未知の条件タイプ（フックなし）は false 扱い＋警告を集約する", () => {
   port.clearVnWarnings();
   const line = { condition_type: "mystery_kind", next_true: "yes", next_false: "no" };
