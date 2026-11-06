@@ -451,7 +451,7 @@ export const LOADING_COMICS = [
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2399:allcast-samechan-watermelon-bite）",
     caption: "サメちゃんは、笑うとギザ歯が見える店主です。",
     panels: [
-      { src: imgFileUrl("loading/samechan-watermelon-bite-1.webp"), alt: "海辺の店で、はじめが丸ごとのスイカを抱えて「スイカ、切ります？」。サメのパペットを持ったサメちゃんが「そのままでよながじゃ。」。" },
+      { src: imgFileUrl("loading/samechan-watermelon-bite-1.webp"), alt: "海辺の店で、はじめが丸ごとのスイカを抱えて「スイカ、切ります？」。サメのパペットを持ったサメちゃんが「そのままでよいのじゃ。」。" },
       { src: imgFileUrl("loading/samechan-watermelon-bite-2.webp"), alt: "スイカにサメの歯型そのままのギザギザの大きなかじり跡。サメちゃんは満足げにもぐもぐしている。はじめ「歯型がサメだ。」。" },
     ],
   },
