@@ -10,7 +10,7 @@ import { gainSeenKey, bannerHold } from "./gain-notice.js";
 import { nextStepProgress } from "./stat-progress.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
-import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival } from "./transitions.js";
+import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival, takeParkedCover } from "./transitions.js";
 import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
 import { uiThemeFrame } from "./ui-theme.js";
@@ -175,10 +175,13 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
   const art = { homeRigs };
   const key = `${url}|${tint || ""}|${sceneArtUrls(url, art).join("|")}`;
   const sceneArrival = takeSceneArrival(); // consume even on redraw; never carry an entry into a later scene
+  // 時間が過ぎる波（transitions.waveBeat）が覆ったまま預けた幕。新しい背景を描いてから開く（#2688 A9）
+  const handoff = takeParkedCover();
   if (key === bgNow) {
     refreshWeather();
     const assetsReady = Promise.all([bgAssetsReady, ...ready.map((u) => imageReady(u, 15000))]);
-    return Object.assign(Promise.all([bgTask, assetsReady]), { assetsReady, covered: activeCurtain?.covered || Promise.resolve() });
+    const same = Promise.all([bgTask, assetsReady]).then(async (values) => { if (handoff) await handoff(); return values; });
+    return Object.assign(same, { assetsReady, covered: activeCurtain?.covered || Promise.resolve() });
   }
   const coveredElsewhere = layers.wipe?.classList.contains("black") || layers.wipe?.classList.contains("cover") || isCovering();
   const curtain = !instant && bgNow && !coveredElsewhere ? createSceneCurtain(layers.fx, { fast: brief || document.body.classList.contains("vn-skip"), sceneArrival }) : null;
@@ -211,6 +214,7 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
       try { await curtain.release(); }
       finally { if (activeCurtain === curtain) activeCurtain = null; }
     }
+    if (handoff) await handoff();
   });
   return Object.assign(bgTask, { assetsReady: bgAssetsReady, covered: curtain?.covered || Promise.resolve() });
 }
@@ -477,6 +481,24 @@ export async function bannersIdle() {
 // ---------------------------------------------------------------- モーダル
 
 /** 選択肢つきのモーダル。options: [{label, value, primary, test}] */
+/**
+ * 閉じた画面を、操作も検査もできない写しとして短く残して消す（#2688 F5）。本物の層はすぐ空にするので、
+ * 次の画面・入力・テストの判定は今までどおり。写しは #modal の一つ下に置き、続けて開いた画面より前へ出ない。
+ */
+export function ghostOut(nodes, frames, ms = 180) {
+  const host = layers.modal?.parentElement;
+  // 2画面（DS）表示は #modal の位置と寸法に合わせた規則が多いので、写しを作らずに閉じる
+  const dsLayout = document.body.classList.contains("game-ds") || !!document.querySelector('.title[data-layout="ds"]');
+  if (!host || reducedMotion() || dsLayout || !nodes.length) return;
+  const ghost = el("div.modal-ghost", { "aria-hidden": "true" });
+  ghost.inert = true;
+  ghost.append(...nodes);
+  ghost.querySelectorAll("[data-test], [id]").forEach((n) => { n.removeAttribute("data-test"); n.removeAttribute("id"); });
+  host.append(ghost);
+  ghost.animate(frames, { duration: ms, easing: "cubic-bezier(.55,0,.85,.35)", fill: "forwards" }).finished
+    .catch(() => {}).finally(() => ghost.remove());
+}
+
 export function modal({ title = "", body = "", options = [{ label: "OK", value: true, primary: true }], className = "" }) {
   return new Promise((resolve) => {
     const previousFocus = document.activeElement;
@@ -493,8 +515,11 @@ export function modal({ title = "", body = "", options = [{ label: "OK", value: 
     ]);
     const close = () => {
       window.removeEventListener("keydown", onKeyDown);
+      const closing = [...layers.modal.childNodes];
       layers.modal.classList.remove("show");
       layers.modal.replaceChildren();
+      // 開くときの pop-in の逆。少し縮みながら消える（#2688 F5）
+      ghostOut(closing, [{ opacity: 1 }, { opacity: 0 }], 160);
       if (previousFocus?.isConnected) previousFocus.focus();
     };
     const buttons = [...box.querySelectorAll(".modal-actions button")];

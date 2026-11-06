@@ -3,7 +3,7 @@
 // 書き換えるのはシステムタブの操作（セーブ・ロード・タイトルへ戻る）だけ。
 // 日常パート（calendar.js の runDaily）の HUD の MENU から開く。章別のMENUもここへ寄せていく。
 import { el, yen } from "../core/util.js";
-import { layers, modal, toast, heartRow, statBadge } from "../core/ui.js";
+import { layers, modal, toast, heartRow, statBadge, ghostOut } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { DB, displayName, faceIconUrl, cgUrl } from "../core/data.js";
 import { state, save, loadFromSlot, requestResumeOnBoot, STAT_KEYS, STAT_JA } from "../core/state.js";
@@ -78,6 +78,16 @@ async function runAction(action, { canSave, leave }) {
   if (action === "title") { if (canSave()) save(); leave(); location.reload(); }
 }
 
+/** MENUボタンの中心（#modal の座標）。開閉の小さな開口の起点（#2688 A13）。ボタンが見えない画面では null */
+function menuOrigin() {
+  const button = layers.hud?.querySelector(".hud-menu"), host = layers.modal;
+  if (!button || !host?.offsetWidth) return null;
+  const b = button.getBoundingClientRect(), h = host.getBoundingClientRect();
+  if (!b.width || !h.width) return null;
+  const k = h.width / host.offsetWidth;
+  return { x: Math.round((b.left + b.width / 2 - h.left) / k), y: Math.round((b.top + b.height / 2 - h.top) / k) };
+}
+
 function showMenu(initial, { saveOk }) {
   return new Promise((resolve) => {
     const previousFocus = document.activeElement;
@@ -88,8 +98,12 @@ function showMenu(initial, { saveOk }) {
 
     const finish = (value) => {
       window.removeEventListener("keydown", onKey, true);
+      const closing = [...layers.modal.childNodes], origin = menuOrigin();
       layers.modal.classList.remove("show");
       layers.modal.replaceChildren();
+      // 閉じるときは、MENUボタンへ縮みながら消える（開いたときの逆）。ボタンが無い画面ではふつうに消える
+      if (origin) closing.forEach((n) => { if (n.style) n.style.transformOrigin = `${origin.x}px ${origin.y}px`; });
+      ghostOut(closing, origin ? [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(.82)" }] : [{ opacity: 1 }, { opacity: 0 }], origin ? 200 : 160);
       if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
       resolve(value);
     };
@@ -188,6 +202,16 @@ function showMenu(initial, { saveOk }) {
     );
     layers.modal.replaceChildren(root);
     layers.modal.classList.add("show");
+    // MENUボタンの位置から広がって開く（#2688 A13）。押し判定と見た目がずれないよう、切り抜きではなく拡大で見せる。
+    // 動きを減らす設定・2画面表示では、紙のシートの短いフェード（css/daily-menu.css）だけ
+    const origin = menuOrigin();
+    const sheet = root.querySelector(".dm-sheet");
+    if (origin && sheet && !matchMedia("(prefers-reduced-motion: reduce)").matches && !document.body.classList.contains("game-ds")) {
+      // 起点はシートの座標に直す（#modal 全体の座標 − シートの位置）
+      const host = layers.modal.getBoundingClientRect(), box = sheet.getBoundingClientRect(), k = host.width / layers.modal.offsetWidth || 1;
+      sheet.style.transformOrigin = `${origin.x - (box.left - host.left) / k}px ${origin.y - (box.top - host.top) / k}px`;
+      sheet.animate([{ opacity: 0, transform: "scale(.82)" }, { opacity: 1, transform: "none" }], { duration: 240, easing: "cubic-bezier(.16,1,.3,1)" });
+    }
     window.addEventListener("keydown", onKey, true);
     show(initial, { focus: true });
   });

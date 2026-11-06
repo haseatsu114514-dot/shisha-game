@@ -994,7 +994,7 @@ function showChoices(line) {
     disabled: c.condition_type === "money" && state.money < Number(c.threshold || 0),
     style: { animationDelay: `${i * 80}ms` },
     dataset: { test: `choice-${i}` },
-    onclick: (e) => { e.stopPropagation(); pickChoice(line, c); },
+    onclick: (e) => { e.stopPropagation(); ghostChoice(e.currentTarget); pickChoice(line, c); },
   }));
   dom.choices.replaceChildren(...buttons);
   dom.choices.classList.add("show");
@@ -1010,6 +1010,28 @@ function autoChoose() {
   const btns = [...dom.choices.querySelectorAll(".vn-choice")];
   const idx = vnTest.choose ? vnTest.choose(r.id, btns.map((b) => b.textContent)) : 0;
   btns[Math.max(0, Math.min(btns.length - 1, idx | 0))]?.click();
+}
+
+/**
+ * 選んだ選択肢だけを、操作できない写しとして同じ位置に短く残し、右へ流して消す（#2688 F5）。
+ * 本物の選択肢はすぐ片付けるので、進行と検査は今までどおり。SKIP・高速送り・動きを減らす設定では出さない。
+ */
+function ghostChoice(button) {
+  const host = layers.vn;
+  if (!button?.isConnected || !host?.offsetWidth || skipMode || vnTest.turbo || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const b = button.getBoundingClientRect(), h = host.getBoundingClientRect();
+  const k = h.width / host.offsetWidth;
+  if (!b.width || !k) return;
+  const ghost = button.cloneNode(true);
+  ghost.removeAttribute("data-test");
+  ghost.disabled = true;
+  ghost.tabIndex = -1;
+  ghost.setAttribute("aria-hidden", "true");
+  ghost.classList.add("vn-choice-ghost");
+  Object.assign(ghost.style, { left: `${(b.left - h.left) / k}px`, top: `${(b.top - h.top) / k}px`, width: `${b.width / k}px`, height: `${b.height / k}px`, animation: "none" });
+  host.append(ghost);
+  ghost.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateX(18px)" }], { duration: 280, easing: "cubic-bezier(.55,0,.85,.35)", fill: "forwards" })
+    .finished.catch(() => {}).finally(() => ghost.remove());
 }
 
 function pickChoice(line, c) {
