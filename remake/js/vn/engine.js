@@ -418,6 +418,8 @@ function prefetch(dlg) {
 // jump 先の台本へは差し替えない。表示中の台本 ID は running.currentId が持つ。
 function dialogueAffinity(r, id, pts, remote = (r.currentId && r.currentId !== r.id ? DB.dialogues[r.currentId] : r.dlg)?.metadata?.contact_channel === "lime") {
   if (!id || !(pts > 0)) return;
+  // 強制イベント（前夜祭など）では好感度を上げない（2026-11-06 オーナー決定）。
+  if (r.dlg?.metadata?.forced_event) return;
   if (remote) { gainAffinity(id, pts, { remote: true }); return; }
   // 初対面の行・選択肢の報酬は読了まで保留。中断では♥1の保証も確定しない。
   if (!r.metBefore[id] && !(state.lovers || []).includes(id)) { r.firstAffinity.add(id); return; }
@@ -427,6 +429,8 @@ function dialogueAffinity(r, id, pts, remote = (r.currentId && r.currentId !== r
 function completeDialogueAffinity(r) {
   if (state !== r.owner) return;
   const meta = r.dlg.metadata || {};
+  // 強制イベントでの出会いは、初対面の♥1も付けない。面識の保留はそのまま残し、次の通常の出会いで♥1にする。
+  if (meta.forced_event) { r.firstAffinity.clear(); return; }
   if (meta.add_affinity) for (const [id, n] of Object.entries(meta.add_affinity)) dialogueAffinity(r, id, n * 6, meta.contact_channel === "lime");
   if (meta.contact_channel !== "lime") {
     for (const id of Object.keys(state.met || {})) if (state.met[id] && !r.metBefore[id] && id !== "hajime"
