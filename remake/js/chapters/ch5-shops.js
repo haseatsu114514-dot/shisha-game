@@ -5,6 +5,7 @@
 //   PEPPERMINT（みんと）・SHISHARK（サメちゃん）・MELTY PUFF（あげは・柚ヶ谷）: ヒロインの店。恋人でも友人でも
 //     不自然にならない、店での会話にする（オーナー指定 2026-11-02）。恋人の好感度は店では深まらない（core/stats.js）。
 // 代金・体力・能力は元の店の来店と同じ。好感度は第5章の通いの +5。台詞は data/dialogue/ch5_shops.json。
+// 通い店でない常連（アダム・レヰ・神崎）の、第5章の最初の来店で一度だけ読む会話も、ここで同じ精算で出す（ch5-first-talks.js）。
 import { state, timeOfDay, markMet } from "../core/state.js";
 import { DB, sceneBg } from "../core/data.js";
 import { setBg, toast } from "../core/ui.js";
@@ -12,9 +13,10 @@ import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
-import { SPOTS, CHAR_STAT, VISIT_BG } from "../daily/spots.js";
+import { SPOTS, CHAR_STAT, VISIT_BG, isClosed } from "../daily/spots.js";
 import { PREPARATION_SPOTS } from "./ch2-preparation.js";
 import { consultLessons } from "../core/growth.js";
+import { CH5_FIRST_TALKS, chapterFiveFirstTalkDue, chapterFiveFirstTalkSeenFlag } from "./ch5-first-talks.js";
 
 const TALKS_FLAG = "_ch5_shop_talks"; // 小会話の巡回の回数（店ごと）
 
@@ -49,34 +51,69 @@ const allShops = () => [...CH5_SHOPS, samechanShop(), agehaShop()].filter(Boolea
 /** spotById 用（地図の外から id で引く）。 */
 export const chapterFiveShopById = id => allShops().find(entry => entry.id === id) || null;
 
-let loading = null;
-async function loadShopScenes() {
-  const scenes = allShops().flatMap(entry => entry.talks);
-  if (scenes.every(id => DB.dialogues[id]?.lines?.length)) return;
-  loading ||= readDialogues("ch5_shops", scenes).then(found => { Object.assign(DB.dialogues, found); })
-    .catch(error => { loading = null; throw error; });
-  await loading;
+/**
+ * 第5章の最初の来店で一度だけ読む会話がある常連の店（ch5-first-talks.js）。通い店と同じ精算で、いつもの会話の代わりに読む。
+ * 無ければ null（いつもの来店へ。EDEN は日常ループの来店、柚ヶ谷の神崎・レヰは ch2-preparation.js の visitCityRegular）。
+ */
+function firstTalkShop(spot) {
+  const id = spot?.charId, talk = id ? chapterFiveFirstTalkDue(id, state) : null;
+  if (!talk || (spot.region || "home") !== talk.region) return null;
+  return Object.freeze({ ...spot, talkWith: id, stat: talk.stat, affinity: 5, talks: [talk.scene], firstTalk: talk,
+    ...(spot.previewUrl ? { bgUrl: spot.previewUrl } : { bg: VISIT_BG[id] }) });
+}
+
+// 台本ファイルごとに、要る場面だけを読み込む（失敗したら次の来店で読み直す）。readDialogues はファイルの全場面を返すが、
+// 第2章の台本（ch2_kumicho）の段階会話などは第5章の DB に入れない（来店の判定が台本の有無を見るため）。
+const loading = new Map();
+function loadScenes(file, scenes) {
+  if (scenes.every(id => DB.dialogues[id]?.lines?.length)) return Promise.resolve();
+  const key = `${file}:${scenes.join(",")}`;
+  if (!loading.has(key)) loading.set(key, readDialogues(file, scenes)
+    .then(found => { for (const id of scenes) DB.dialogues[id] = found[id]; })
+    .catch(error => { loading.delete(key); throw error; }));
+  return loading.get(key);
+}
+async function loadShopScenes(entry) {
+  const firstTalks = Object.values(CH5_FIRST_TALKS);
+  await loadScenes("ch5_shops", [...allShops().flatMap(shop => shop.talks),
+    ...firstTalks.filter(talk => talk.file === "ch5_shops").map(talk => talk.scene)]);
+  const talk = entry.firstTalk;
+  if (talk && talk.file !== "ch5_shops") await loadScenes(talk.file, [talk.scene]);
+}
+
+/** 一度だけの会話を読み終えた来店の記録。既読と、元の店のいつもの来店と同じ回数・印。 */
+function recordFirstTalk(entry) {
+  const id = entry.talkWith;
+  state.flags[chapterFiveFirstTalkSeenFlag(entry.firstTalk)] = true;
+  state.visits[id] = (state.visits[id] || 0) + 1;
+  if (entry.firstTalk.region === "widehanga") {
+    // 柚ヶ谷の通い訪問の回数（ch2-preparation.js の小会話の巡回）にも数える
+    const regular = state.flags._ch2_talks ||= {};
+    regular[id] = (regular[id] || 0) + 1;
+  } else state.flags[`_spot_guide_${id}`] = true; // 自主来店を終えた印（daily/spots.js の visitRival と同じ）
 }
 
 const unused = { used: false, exerted: false };
 
 /** 通い店の来店。対象外は null（日常ループの通常の処理へ）。中断・LOADでは代金・体力・回数を残さない。 */
 export async function performChapterFiveShop(spot, { staminaGuard } = {}) {
-  const entry = spot?.ch5Shop ? chapterFiveShopById(spot.id) : null;
-  if (!entry || state?.chapter !== 5) return null;
+  if (state?.chapter !== 5) return null;
+  const entry = spot?.ch5Shop ? chapterFiveShopById(spot.id) : firstTalkShop(spot);
+  if (!entry) return null;
   const owner = state;
-  try { await loadShopScenes(); } catch {
+  try { await loadShopScenes(entry); } catch {
     toast("会話を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます");
     return unused;
   }
   if (state !== owner) return unused;
+  if (entry.firstTalk && isClosed(spot)) return unused;
   if ((entry.cost || 0) > spendableMoney(state)) {
     toast("お金が足りない");
     return unused;
   }
   if (staminaGuard && !(await staminaGuard(entry.stamina))) return unused;
   const talks = state.flags[TALKS_FLAG] ||= {};
-  const scene = entry.talks[(talks[entry.id] || 0) % entry.talks.length];
+  const scene = entry.firstTalk ? entry.firstTalk.scene : entry.talks[(talks[entry.id] || 0) % entry.talks.length];
   if (entry.bgUrl) await setBg(entry.bgUrl, { instant: true });
   else {
     const { url, tint } = sceneBg(entry.bg, timeOfDay());
@@ -87,10 +124,12 @@ export async function performChapterFiveShop(spot, { staminaGuard } = {}) {
   if (state !== owner || !result || result.cancelled) return unused;
   if (entry.cost) addMoney(-entry.cost);
   addStamina(entry.stamina || -16);
-  talks[entry.id] = (talks[entry.id] || 0) + 1;
+  if (entry.firstTalk) recordFirstTalk(entry);
+  else talks[entry.id] = (talks[entry.id] || 0) + 1;
   if (entry.talkWith) { gainAffinity(entry.talkWith, entry.affinity || 5); markMet(entry.talkWith); }
   if (entry.stat) earnStat(entry.stat, 4);
-  // 心得の盤の授業（SPEC 2.6・SBD61）: 通い店で会った人に、灯した授業があれば相談する（なる・みんと・サメちゃん・あげは）
+  // 心得の盤の授業（SPEC 2.6・SBD61）: 通い店で会った人に、灯した授業があれば相談する（なる・みんと・サメちゃん・あげは。
+  // 一度だけの会話を読んだアダム・レヰ・神崎も、いつもの来店と同じく相談する）
   if (entry.talkWith && state === owner) await consultLessons(entry.talkWith, { bg: entry.bgUrl || sceneBg(entry.bg, timeOfDay()).url });
   return { used: true, exerted: true };
 }

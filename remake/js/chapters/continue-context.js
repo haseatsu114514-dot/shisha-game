@@ -1,10 +1,12 @@
 import { ADVICE_PARTS, weakestPart } from "../craft/advice.js";
 
+// #2524: 先頭はスミさんの言葉ではなく、はじめ自身が敗因を飲み込む心の声（voice:"self"）。
+// 2行目以降は、頭の中に浮かんだスミさんの助言。lines[2] は同じ敗因の繰り返し用。
 const REASONS = {
-  burnt: ["……熱が入りすぎたな", "次は『熱を逃がす吸い』で冷ますぞ", "次は上げる前に、煙の色と舌を確かめよう"],
-  cold: ["……冷え切っちまったか", "次は冷える前に、炭を替えよう", "炭を替えるタイミングを早めよう"],
-  leaf: ["……香りが抜けちまったな", "次は吸う前に、葉の残りを見ろ", "次は吸い直す前に、葉を見よう"],
-  rank: ["……届かなかったか", "なら、次は一つだけ変えてみよう", "変えるのは一つでいい。比べてみよう"],
+  burnt: ["（……熱が、入りすぎた）", "次は『熱を逃がす吸い』で冷ますぞ", "次は上げる前に、煙の色と舌を確かめよう"],
+  cold: ["（……冷え切ってた）", "次は冷える前に、炭を替えよう", "炭を替えるタイミングを早めよう"],
+  leaf: ["（……香りが、抜けてた）", "次は吸う前に、葉の残りを見ろ", "次は吸い直す前に、葉を見よう"],
+  rank: ["（……届かなかった）", "なら、次は一つだけ変えてみよう", "変えるのは一つでいい。比べてみよう"],
 };
 const TIPS = {
   holes: "次は、目印に合わせて穴を開けよう", heat: "次は、炭の全面が赤くなる頃合いを見ろ",
@@ -55,7 +57,7 @@ export function prepareContinueScript(script, context) {
   let cues = script.cues.map(cue => ({ ...cue }));
   if (!script.speaker) {
     const lines = REASONS[context.reason];
-    cues[0].text = context.reason === "rank" && context.rank ? `……${context.rank}位か。悔しいな` : lines[0];
+    cues[0].text = context.reason === "rank" && context.rank ? `（……${context.rank}位。届かなかった）` : lines[0];
     cues[1].text = context.sameReasonOrdinal >= 2 ? lines[2]
       : context.reason === "rank" ? TIPS[weakestPart(context.parts, context.completedParts)] || lines[1] : lines[1];
   }

@@ -2,27 +2,40 @@
 import { selectPostEndingConflict } from "../core/story-routes.js";
 
 // はじめの呼び方（台本での呼び方に合わせる。店の外の打ち上げでも、みんとは「みんと」）
+// ヌールはドバイに住むので席には座らない（打ち上げにはテレビ電話で加わる・DSR20）。名前の表として持つ。
 export const SEAT_LABELS = Object.freeze({ tsumugi: "つむぎちゃん", minto: "みんと", rio: "凛想さん", ageha: "あげはさん",
-  mashiro: "ましろちゃん", samechan: "サメちゃん", hiyori: "ひよりさん" });
+  mashiro: "ましろちゃん", samechan: "サメちゃん", hiyori: "ひよりさん", noor: "ヌールさん" });
 
-/** 打ち上げにいるヒロイン（会ったことのある人）と、その中の恋人。 */
+/** 遠くに住むヒロイン（data/story_routes.json の romance[id].resident）。打ち上げの席にはいない。 */
+const livesAway = (routes, id) => !!routes?.romance?.[id]?.resident;
+
+/**
+ * 打ち上げにいるヒロイン（会ったことのある人）と、その中の恋人。
+ * remote は遠くに住む恋人（ヌール）で、席には座らずテレビ電話で加わる（オーナー「修羅場イベントではテレビ電話で参戦」）。
+ */
 export function partyGuests(routes, value) {
-  const present = (routes?.heroine_ids || []).filter(id => !!value?.met?.[id]);
-  const lovers = [...new Set(value?.lovers || [])].filter(id => present.includes(id));
-  return { present, lovers };
+  const met = (routes?.heroine_ids || []).filter(id => !!value?.met?.[id]);
+  const present = met.filter(id => !livesAway(routes, id));
+  const ordered = [...new Set(value?.lovers || [])];
+  const lovers = ordered.filter(id => present.includes(id));
+  const remote = ordered.filter(id => met.includes(id) && livesAway(routes, id));
+  return { present, lovers, remote };
 }
 
 /** 席を選んだ後に読む場面（純粋。テスト用に公開）。 */
 export function partyScenes(routes, value, seat) {
-  const { present, lovers } = partyGuests(routes, value);
-  if (lovers.length >= (routes.conflict?.minimum_present_lovers || 2)) {
-    const conflict = selectPostEndingConflict(routes, value, { present });
+  const { present, lovers, remote } = partyGuests(routes, value);
+  // テレビ電話の恋人も数える（席にいる恋人と合わせて2人以上で修羅場）
+  if (lovers.length + remote.length >= (routes.conflict?.minimum_present_lovers || 2)) {
+    const conflict = selectPostEndingConflict(routes, value, { present: [...present, ...remote] });
     return { kind: "conflict", participants: conflict.participants,
       scenes: ["ch5_party_shuraba_open", ...conflict.participants.map(id => routes.romance[id].conflict),
         routes.conflict.close, "ch5_party_shuraba_close"] };
   }
   const seatScene = seat === "sumi" ? "ch5_party_seat_sumi" : lovers.includes(seat) ? "ch5_party_seat_lover" : "ch5_party_seat_friend";
   const away = lovers.length === 1 && seat !== lovers[0] ? ["ch5_party_seat_away"] : [];
-  return { kind: lovers.length ? "lover" : "none", participants: [], scenes: [seatScene, ...away, "ch5_party_close"] };
+  // 恋人が遠くにいるだけなら、途中でお祝いのテレビ電話が来る
+  const calls = remote.map(id => `ch5_party_${id}_call`);
+  return { kind: lovers.length || remote.length ? "lover" : "none", participants: [], scenes: [seatScene, ...away, ...calls, "ch5_party_close"] };
 }
 

@@ -27,7 +27,7 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   // ましろの名乗りはむかい到着の場面。到着前に、彼女の出る噂話を置かない。
   ch3_cigarman_rumor: { file: "ch3_mukai", label: "客席の噂話", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_mukai_arrival"] },
-  // 台本が「大会後」。大会後のmukaiは ch3-aftermath.js 側の面で、今のカードからは出ない（GAP 3-C）。
+  // 台本が「大会後」。大会前のカードには出ず、勝利後は ch3-aftermath-progress.js の寄り道から読む。
   ch3_cigarman_trace: { file: "ch3_mukai", label: "大会後の客席", location: "mukai", bg: "bg_mukai_shop" },
   // エミルは大会当日に初めて名乗る審査員。面識ができる前に体験会を置かない。大会後の入口は
   // ch3-aftermath-progress.js の寄り道（#2028）。既読フラグは同じ _ch3_read_ch3_emil_workshop。

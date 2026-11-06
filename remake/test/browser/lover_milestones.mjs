@@ -147,6 +147,38 @@ await suite("lover-milestones", async check => {
     assert.equal(result.legacy, 0); assert.equal(result.stale, 0);
   }, { reducedMotion: "reduce" });
 
+  // 地元が舞台の節目（PEPPERMINT・栞さんの部屋など）は、東京・ドバイでは読まずに地元へ帰ってから（#2024）。
+  await check("hometown-milestone-waits-until-home", async page => {
+    await setup(page);
+    const result = await page.evaluate(async () => {
+      const s = M.fresh("minto"); s.chapter = 3; s.loveLevel.minto = 2; s.lovePts.minto = 24;
+      s.loverEventsSeen = ["lover_minto_lv1"];
+      const away = {};
+      for (const region of ["tokyo", "dubai"]) {
+        s.flags._ch2_region = region; M.events.length = 0;
+        away[region] = { due: M.romance.loverMilestoneDue("minto"), played: await M.romance.playLoverMilestone("minto"),
+          events: [...M.events] };
+      }
+      M.core.save(); M.core.load();
+      const kept = M.snap().loverEventsSeen;
+      M.core.state.flags._ch2_region = "home"; M.events.length = 0;
+      const due = M.romance.loverMilestoneDue("minto"), played = await M.romance.playLoverMilestone("minto");
+      M.core.load();
+      return { away, kept, due, played, events: M.events, after: M.snap().loverEventsSeen,
+        again: await M.romance.playLoverMilestone("minto") };
+    });
+    for (const region of ["tokyo", "dubai"]) {
+      assert.equal(result.away[region].due, null, region);
+      assert.equal(result.away[region].played, false, region);
+      assert.deepEqual(result.away[region].events, [], region);
+    }
+    assert.deepEqual(result.kept, ["lover_minto_lv1"], "Nothing is marked read while away");
+    assert.equal(result.due, "lover_minto_lv2");
+    assert(result.played && !result.again);
+    assert.deepEqual(result.events, ["lover_minto_lv2"]);
+    assert.deepEqual(result.after, ["lover_minto_lv1", "lover_minto_lv2"]);
+  }, { reducedMotion: "reduce" });
+
   for (const [mode, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
     const opts = { ...options, reducedMotion: "reduce" };
     const press = (page, selector) => options.hasTouch ? page.locator(selector).tap() : page.locator(selector).click();
