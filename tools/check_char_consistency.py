@@ -50,7 +50,7 @@ def parse_profiles() -> dict:
 NAME_TO_ID = {
     "逢縁 はじめ": "hajime",
     "はじめ": "hajime",
-    "墨田 丈一郎": "sumi",
+    "炭吉 丈一郎": "sumi",
     "スミさん": "sumi",
     "鳴切 亮太": "naru",
     "なる": "naru",
@@ -59,7 +59,7 @@ NAME_TO_ID = {
     "緑川 栞": "minto",
     "みんと": "minto",
     "つむぎ": "tsumugi",
-    "猫柳 つむぎ": "tsumugi",
+    "猫洞 つむぎ": "tsumugi",
     "円頓寺 凛想": "rio",
     "凛想": "rio",
     "あげは（宵永 千代子 / よなが ちよこ）": "ageha",
