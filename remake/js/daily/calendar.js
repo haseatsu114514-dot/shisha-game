@@ -1,7 +1,8 @@
 import { spendableMoney } from "../core/travel-budget.js";
 // 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep, yen } from "../core/util.js";
-import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg, refreshWeather, dropRetired } from "../core/ui.js";
+import { layers, dayCard, dayTurn, modal, toast, bannersIdle, setBg, refreshWeather, dropRetired } from "../core/ui.js";
+import { waveBeat } from "../core/transitions.js";
 import { state, save, markMet } from "../core/state.js";
 import { openMenu as openFullMenu } from "./menu.js";
 import { addMoney, addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina, currentCondition } from "../core/stats.js";
@@ -573,8 +574,8 @@ async function takeAction() {
   });
   if (!used) return;
   state.visitedDay[spot.id] = state.day;
-  // チョコザップ: その日から数日、風邪をひきにくい
-  if (spot.id === "choizap" && state.flags._gym_member) {
+  // チョコザップ（地元の店と、spot.gym の付いた東京の店＝第3章・第5章）: その日から数日、風邪をひきにくい
+  if ((spot.id === "choizap" || spot.gym) && state.flags._gym_member) {
     state.flags._fit_since = { chapter: state.chapter, day: state.day };
     toast(`体が整った。${FIT_DAYS}日間は風邪をひきにくい`, { kind: "good" });
   }
@@ -759,6 +760,10 @@ function invitationSourceMessage(inv) {
 }
 
 // 移動が終わるまで約束・面会費用・行動報酬は確定しない。
+// 人に会いに行く夜の入り（#2688 A11）。演出の部品は使うときに読む（読めなければ演出なしで会う）
+const meetOpen = (id, opts) => import("../motions/meet.js").then((m) => m.meetOpen(id, opts), () => {});
+const WORK_CALLS = new Set(["__sumi_baito__", "__mukai_baito__"]);
+
 async function travelToInvitation(inv) {
   const owner = state, day = state.day, slot = state.slot;
   const id = invitationVisitSpot(inv, invitationSourceMessage(inv));
@@ -772,6 +777,11 @@ async function travelToInvitation(inv) {
 async function meetInvitation(inv) {
   if (postponeUnaffordableInvitation(inv)) return false;
   const owner = state;
+  // 人に会いに行く約束は、葉の窓がすぼまって相手の名前を読ませてから会う（#2688 A11）。シフトの呼び出しは仕事なので除く
+  if (!WORK_CALLS.has(inv.event)) {
+    await meetOpen(inv.sender, { label: "約束", private: /^date_/.test(inv.event) || isFinaleEvent(inv.event) });
+    if (state !== owner) return false;
+  }
   const destination = invitationVisitSpot(inv, invitationSourceMessage(inv));
   let result;
   const cost = invitationCost(inv.event);
@@ -857,17 +867,12 @@ async function afterAction({ exerted = false, spent = 0 } = {}) {
 
 // ---------------------------------------------------------------- 夜・翌朝
 
-/** 場面のつなぎの一行（「夜、tonariに顔を出す──」など）。前の場面の絵はここで暗転させる */
+/**
+ * 場面のつなぎの一行（「夜、tonariに顔を出す──」など）。夕方のピンクを先頭にした丸い波が覆い、一行が波に乗る（#2688 A9）。
+ * 前の場面の絵は波が覆っている間に片付け、波は次の場面の背景が出たところで抜ける（transitions.waveBeat）。
+ */
 async function beat(text) {
-  setBg(null);
-  const b = el("div.beat", { text });
-  layers.fx.append(b);
-  await sleep(20);
-  b.classList.add("show");
-  await sleep(1500);
-  b.classList.remove("show");
-  await sleep(400);
-  b.remove();
+  await waveBeat(layers.fx, text, () => setBg(null, { instant: true }));
 }
 
 async function endDay({ returnedToTonari = false } = {}) {
@@ -880,11 +885,14 @@ async function endDay({ returnedToTonari = false } = {}) {
       throw new Error("夜の予定へ向かう移動が中断されました");
     }
     await bannersIdle();
+    // #2775: 夜の枠で「家（休む）」を選んだ直後は、家で横になった流れから店の場面へ飛ばさず、出かけ直す一行を挟む。
+    const restedTonight = !!state.flags._home_tonight;
     delete state.flags._home_tonight; // 休息後でも、固定イベントの場所へ出かける。
     // 配達報告の直後だけは同じ来店で話を続ける。別の目的地・後続予定の到着は残す。
     const sameVisit = returnedToTonari && ev.pin === "tonari";
     returnedToTonari = false;
     if (rested || state.restDay?.illnessHealth) await beat("今日は休んでいたが、この予定だけは外せない——");
+    else if (restedTonight) await beat("少し横になってから、もう一度出かけた——");
     if (ev.beat && !sameVisit) await beat(ev.beat);
     return sameVisit ? { returnedToTonari: true } : undefined;
   });
@@ -986,7 +994,10 @@ async function advanceDay() {
       return { fromDay, day: chapterDay(state), fromLeft, left: daysLeft(), rain: isRainy(), weather: weatherOf(), forecast: tomorrowForecast(), sick: exhausted, tournamentName: chapterDef?.tournamentName, undatedNote: chapterDef?.undatedNote, dayLabel: chapterDef?.dayLabel };
     });
     dawnShownDay = state.day;
-  } else await fadeBlack(wake, 500);
+  } else {
+    // 大会・勝負の前夜: 夜明けの幕の当日版（日付はめくらず、地平線が遅く昇る）。当日のDAYは当日の場面が出す（#2688 A10）
+    await dayTurn(async () => { wake(); return { eve: true }; });
+  }
   await presentSleepRecovery({ before: sleepBefore, after: state.stamina });
   if (!exhausted) return;
   // 遠出の出発の朝は、熱っぽさを持ち越さずに発つ（大会の朝の場面は使わない）。

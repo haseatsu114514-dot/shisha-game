@@ -83,19 +83,42 @@ await suite("portrait-style", async check => {
       if (touch) await page.keyboard.press("Escape");
       await decoded(page);
     };
+    await check(`${label}-retired-settings-migrate-once`, async page => {
+      for (const portraitStyle of ["classic", "nanami"]) {
+        await page.evaluate(portraitStyle => localStorage.setItem("suien_remake_config", JSON.stringify({
+          portraitStyle, mute: true, textSpeed: 4, reduceShake: true, introArtStyle: "classic",
+        })), portraitStyle);
+        const saved = await savedWithoutConfig(page);
+        await page.reload({ waitUntil: "load" });
+        await page.locator('[data-test="title-new"]').waitFor();
+        assert.equal(await page.evaluate(async () => (await import("./js/core/state.js")).config.portraitStyle), "new");
+        assert.deepEqual(await savedWithoutConfig(page), saved);
+        await activate(page.locator('[data-test="title-config"]'));
+        assert.equal(await page.locator(selector).inputValue(), "new");
+        await page.locator(selector).selectOption("classic");
+        await close(page);
+        await page.reload({ waitUntil: "load" });
+        await page.locator('[data-test="title-new"]').waitFor();
+        assert.equal(await page.evaluate(async () => (await import("./js/core/state.js")).config.portraitStyle), "classic");
+        assert.deepEqual(await savedWithoutConfig(page), saved);
+      }
+    }, options);
     await check(`${label}-registered-and-persistence`, async page => {
-      assert.equal(await page.evaluate(async () => (await import("./js/core/state.js")).config.portraitStyle), "classic");
+      assert.equal(await page.evaluate(async () => (await import("./js/core/state.js")).config.portraitStyle), "new");
       const manifest = await page.evaluate(async () => (await import("./js/core/data.js")).DB.manifest.portraitVariants?.new || {});
       assert.deepEqual(manifest.tsumugi.faces, [
         'baito_bow','baito_evil','baito_normal','baito_sad','baito_serious','baito_smile','baito_surprise',
         'bow','evil','normal','sad','serious','smile','surprise',
       ]);
       await startScene(page);
+      await page.evaluate(async () => { (await import("./js/core/state.js")).config.portraitStyle = "classic"; (await import("./js/vn/engine.js")).refreshPortraits(); });
+      await decoded(page);
       const before = await snapshot(page), saved = await savedWithoutConfig(page);
       const srcs = await page.locator(portraits).evaluateAll(images => images.map(image => image.src));
       await settings(page);
+      assert.deepEqual(await page.locator(selector + " option").evaluateAll(options => options.map(option => option.value)), ["new", "classic"]);
       await page.screenshot({ path: path.resolve(root, process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser", `portrait-style-${label}-settings.png`) });
-      for (const value of ["new", "classic", "nanami", "new", "classic", "new"]) {
+      for (const value of ["new", "classic", "new", "classic", "new"]) {
         await change(page, value);
         assert.deepEqual(await snapshot(page), before, "Settings do not advance dialogue, reorder people or mutate game state");
         const actual = await page.locator(portraits).evaluateAll(images => images.map(image => image.src));
@@ -103,9 +126,6 @@ await suite("portrait-style", async check => {
         else if(value === "new") {
           assert.match(actual[0], /character_variants\/new\/tsumugi\/chr_tsumugi_smile/);
           assert.match(actual[1], /character_variants\/new\/minto\/chr_minto_normal/, "Missing new Minto sad retains the same-style normal");
-        } else {
-          assert.equal(actual[0], srcs[0], "Unregistered Nanami Tsumugi retains classic smile");
-          assert.match(actual[1], /character_variants\/nanami\/minto\/chr_minto_sad/);
         }
         assert.equal(await page.evaluate(async () => (await import("./js/core/data.js")).portraitInfo('tsumugi','smile').scale), value === 'new' ? .9 : .88);
         assert.equal(await page.evaluate(() => JSON.parse(localStorage.suien_remake_config).portraitStyle), value);
@@ -148,6 +168,8 @@ await suite("portrait-style", async check => {
       });
       await startScene(page);
       const before = await snapshot(page), saved = await savedWithoutConfig(page);
+      await page.evaluate(async () => { (await import("./js/core/state.js")).config.portraitStyle = "classic"; (await import("./js/vn/engine.js")).refreshPortraits(); });
+      await decoded(page);
       const original = await page.locator(portraits).evaluateAll(images => images.map(image => ({ src: image.src, style: image.style.cssText })));
       // On the second line tsumugi is silent, so this catches stale companion images.
       await settings(page);
@@ -193,3 +215,4 @@ await suite("portrait-style", async check => {
   // Deliberately old settings, without portraitStyle. Seed only on first load.
   if (!localStorage.getItem("suien_remake_config")) localStorage.setItem("suien_remake_config", JSON.stringify({ mute: true, textSpeed: 4, reduceShake: true, introArtStyle: "classic" }));
 } });
+

@@ -309,7 +309,7 @@ await suite("axe-throw", async run => {
         entry.character=key; entry.file=entry.file.replace("title_art_" + sourceKey + "_","title_art_" + key + "_");
       }
       await page.route("**/remake/data/manifest.json",route=>route.fulfill({json:catalogue}));
-      if(key!==sourceKey) await page.route("**/img/sprites/characters/" + key + "/*",async route=>{
+      if(key!==sourceKey) await page.route("**/sprites/characters/" + key + "/*",async route=>{
         const url=route.request().url().replace("/" + key + "/chr_" + key + "_","/" + sourceKey + "/chr_" + sourceKey + "_");
         await route.fulfill({response:await route.fetch({url})});
       });

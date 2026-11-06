@@ -14,12 +14,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "つむぎちゃん。どうしたの？"
+          "text": "つむぎちゃん。こんな時間に、どうしたの？"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……絵の続きを描いてて。煙の色が、見たくなったんです"
+          "text": "……絵の続きを描いてて。はじめさんの煙の色が、見たくなったんです"
         },
         {
           "speaker": "",
@@ -34,7 +34,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……やっぱり、変なのかな"
+          "text": "……やっぱり、変かな。自分じゃ分からなくて"
         },
         {
           "speaker": "tsumugi",
@@ -49,7 +49,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "煙の線の横に、葉のない耳の猫が寝ていた。"
+          "text": "煙の線の横で、葉の耳の猫が丸くなって寝ていた。"
         },
         {
           "speaker": "tsumugi",
@@ -64,7 +64,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……はい。前に見た景色も、今日の景色も、同じ一枚に"
+          "text": "……はい。前に見た煙も、今日の煙も、同じ一枚に描きました"
         },
         {
           "speaker": "hajime",
@@ -74,7 +74,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……今日はもう、少しだけ休みませんか"
+          "text": "……今日はもう、少しだけ休みませんか。煙の色、また見せてください"
         },
         {
           "speaker": "",

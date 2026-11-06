@@ -24,7 +24,7 @@ assert.deepEqual(Object.entries(FACILITY_ICONS).map(([id, { label }]) => [id, la
     ['dubai_inn', '旧市街の宿'], ['dubai_inn_lobby', '宿のロビー'], ['dubai_practice_hall', '公式練習会場'],
     // MPI07: 後から入ったドバイの行き先
     ['desert_tour_desk', '砂漠ツアーのデスク'], ['desert_dunes', '砂丘'], ['camel_race_track', 'ラクダレース場']]);
-for (const id of ['kannon', 'rest', 'cafe', 'rojiura_cinema', 'axe_bar', 'choizap', 'fortune', 'trpg_bar', 'ch3_tokyo_gym',
+for (const id of ['kannon', 'rest', 'cafe', 'rojiura_cinema', 'axe_bar', 'choizap', 'fortune', 'trpg_bar', 'ch3_tokyo_gym', 'ch5_tokyo_gym',
   'ch3_tokyo_park', 'ch5_tokyo_park', 'ch3_tokyo_room', 'ch5_tokyo_attic', 'ch5_call',
   'ch4_dubai_souq', 'ch4_dubai_creek', 'ch4_dubai_mosque', 'ch4_dubai_inn', 'ch4_dubai_naru', 'ch4_dubai_practice', 'ch4_dubai_tour_desk', 'ch4_dubai_dunes', 'ch4_dubai_camel',
   'ch5_dubai_souq', 'ch5_dubai_creek', 'ch5_dubai_mosque']) assert(hasFacilityIcon(id), id);

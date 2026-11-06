@@ -81,7 +81,7 @@ export const STATE_KEY_RULES = {
 // 分類網羅テストが data 側と一致するか照合する。
 export const GIFT_EQUIPMENT_IDS = [
   "suyaki_adam", "suyaki_ageha", "suyaki_hiyori", "suyaki_kumicho", "suyaki_saku", "suyaki_mashiro", "suyaki_minto", "suyaki_naru", "suyaki_noor",
-  "suyaki_rei", "suyaki_rio", "suyaki_samechan", "suyaki_sumi", "suyaki_tsumugi",
+  "suyaki_rei", "suyaki_rio", "suyaki_samechan", "suyaki_steve", "suyaki_sumi", "suyaki_tsumugi", "suyaki_volk",
 ];
 
 // 記念品の由来分類（core/keepsakes.js の KEEPSAKES と対応）。
@@ -161,6 +161,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_read_ch2_kumicho_sixth", "person"],
   ["_ch2_read_ch2_kumicho_third", "person"],
   ["_ch2_read_ch2_lingering_smell", "progression"], // スミさんの飯の接客回（baito_ch2_staff_meal）の条件
+  ["_ch2_read_ch2_naru_window", "person"], // 前夜の振り返りで、休みの店の前に送ったLIMEの返事を待つか（#2720）
   ["_ch2_read_ch2_pre_tournament_realisation", "progression"],
   ["_ch2_read_ch2_rei_fifth", "person"],
   ["_ch2_read_ch2_rei_fourth", "person"],
@@ -211,6 +212,8 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_prep_farewell", "progression"],
   ["_ch3_preview_seen", "progression"],
   ["_ch3_read_ch3_saku_lime", "progression"],
+  ["_ch3_read_ch3_steve_lime", "progression"],
+  ["_ch3_read_ch3_volk_lime", "progression"],
   ["_ch3_read_ch3_minto_small_lies", "progression"],
   ["_ch3_read_hiyori_tokyo_contact", "progression"],
   ["_ch3_registration_read", "progression"],
@@ -247,6 +250,8 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_dubai_guest", "progression"],
   ["_ch5_dubai_talks", "progression"],
   ["_ch5_dubai_flights", "progression"],
+  ["_ch5_dubai_camel_again", "progression"], // 第5章のラクダレース場の再会を読んだ（chapters/ch5-dubai.js）
+  ["_ch5_dubai_dunes_again", "progression"], // 第5章の砂丘の前の再会を読んだ
   ["_ch5_after_party", "progression"],
   ["_ch5_party_seat", "progression"],
   ["_ch5_shop_talks", "progression"],
@@ -313,6 +318,7 @@ export const FLAG_EXACT_RULES = [
   ["_flavor_sakura", "unlock"],
   ["_flavor_violet_rose", "unlock"],
   ["_flavor_white_rose", "unlock"],
+  ["_fortune_choice_sight", "pending"],
   ["_fortune_wander", "progression"],
   ["_fortune_go", "progression"],
   ["_fortune_met", "progression"],
@@ -362,10 +368,13 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_mashiro", "person"],
   ["_lime_contact_minto", "person"],
   ["_lime_contact_naru", "person"],
+  ["_lime_contact_noor", "person"],
   ["_lime_contact_rei", "person"],
   ["_lime_contact_rio", "person"],
   ["_lime_contact_samechan", "person"],
+  ["_lime_contact_steve", "person"],
   ["_lime_contact_tsumugi", "person"],
+  ["_lime_contact_volk", "person"],
   ["_lime_opened", "ui"],
   ["_lime_tut", "ui"],
   ["_lotos_vent_hint", "ui"],
@@ -389,7 +398,7 @@ export const FLAG_EXACT_RULES = [
   ["_met_rio", "person"],
   ["_met_samechan", "person"],
   ["_met_khalil", "person"],
-  ["_met_suhail", "person"],
+  ["_met_faris", "person"],
   ["_met_sheikh", "person"],
   ["_met_steve", "person"],
   ["_met_tsumugi", "person"],
@@ -404,6 +413,7 @@ export const FLAG_EXACT_RULES = [
   ["_motion_seen_", "progression"],
   ["_naru_venue_invited", "person"],
   ["_night_event_day", "progression"],
+  ["_noor_ch5_promise", "person"], // 第5章の砂丘の再会で、告白を待つ約束の続きを出す一時の印（chapters/ch5-dubai.js。再生の前に立て、後で消す）
   ["_noor_confession_other_lover", "person"], // DSR20 告白の場面の一時の印（再生の前に立て、後で消す）
   ["_oneesan_id_checked", "progression"],
   ["_op_praise_report", "progression"],
@@ -476,6 +486,10 @@ export const FLAG_EXACT_RULES = [
   ["_sumi_double_apple_received", "person"],
   ["_sumi_rig_home_seen", "progression"],
   ["_sumi_rig_received_day", "progression"],
+  // 凛想が味の不調に気づいた回（第2章）を読んだか。第3・4章の出発前の凛想の会話が分岐に使う（data/dialogue/ch3_ch4_home.json）
+  ["_talk_seen_ch2_rio_taste", "person"],
+  // 第3章の出発前に凛想から「向こうの顔」を頼まれたか。第4章の出発前の凛想の会話が、その報告の分岐に使う
+  ["_talk_seen_ch3_prep_rio", "person"],
   ["_tsumugi_contest_art_seen", "person"],
   ["_tsumugi_contest_draft_hands", "person"],
   ["_tsumugi_contest_draft_window", "person"],

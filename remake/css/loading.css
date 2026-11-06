@@ -200,3 +200,8 @@
   .loading-emblem .emblem-glow, .loading-gate.is-ready .emblem-glow { animation: none; opacity: .7; }
   .loading-gate.is-ready .loading-proceed { opacity: .92; }
 }
+
+/* ロード画面の出口（core/loading.js leaveLoading・#2688 A14）。同じ下地と背景の絵の面が、もやの晴れるように薄れる */
+.loading-exit-haze { position: absolute; inset: 0; z-index: 110; pointer-events: none;
+  background: radial-gradient(ellipse 70% 60% at 50% 70%, #dcd1f433, transparent 70%), url("../img/ui/loading/loading_bg.webp") center / cover no-repeat, #100b18; }
+.loading-exit-haze.is-viewport { position: fixed; z-index: 900; }

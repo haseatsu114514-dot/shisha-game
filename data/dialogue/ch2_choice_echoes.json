@@ -40,7 +40,33 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（お母さんの誕生日の話は、最後まで聞けた。返事はまだない。……明日が終わったら、もう一度送ろう）"
+            "text": "（お母さんの誕生日の話は、最後まで聞けた）"
+          },
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_read_ch2_naru_window",
+            "next_true": "listened_sent",
+            "next_false": "listened_promise"
+          }
+        ],
+        "listened_sent": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（閉まった店の前で送った『今どこにいますか』に、なるさんの返事はまだない）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……明日が終わったら、もう一度送ろう）"
+          }
+        ],
+        "listened_promise": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（明日が終わったら、俺から連絡する。そう約束したんだ）"
           }
         ],
         "check_hurt": [

@@ -384,7 +384,7 @@ await suite("save-load", async check => {
       assert.equal(await shop.locator(".pin-person").count(), 0, "all people are hidden");
       assert.doesNotMatch(await shop.getAttribute("aria-label"), /在店：/);
       await pin("tonari");
-      assert.match(await page.locator(".mi-no").textContent(), /この後もtonari.*別のところ/);
+      assert.match(await page.locator(".map-info").getAttribute("aria-label"), /この後もtonari.*別のところ/);
       assert.equal(await page.locator('[data-test="map-go"]').count(), 0, "no earlier paid visit can start");
       assert.deepEqual(await progress(), before, "blocked selection must not charge or consume time/visits");
       await pin("rest");
@@ -431,7 +431,7 @@ await suite("save-load", async check => {
     });
     assert(finished.sketch && finished.submitted, "DAY11 fixed submission must actually finish");
     await pin("tonari");
-    assert.equal(await page.locator(".mi-no").count(), 0, "completed event must not permanently suppress visits");
+    assert.equal(await page.locator(".map-info[aria-label*='この後もtonari']").count(), 0, "completed event must not permanently suppress visits");
     assert(await page.locator('[data-test="map-go"]').isEnabled());
   }, options);
 

@@ -17,6 +17,14 @@ import { mountTitleLayout } from "./title-layout.js";
 import { createUiThemeSelect } from "../core/ui-theme.js";
 
 let titleRevision = 0;
+
+/** 今遊んでいる版（公開時に index.html の meta へ書かれる。手元は dev）。自分のリンクが古い版か見分ける用 */
+function buildLabel() {
+  const meta = globalThis.document?.querySelector?.('meta[name="suien-build"]');
+  const build = meta?.content || "dev";
+  const built = build === "dev" ? "" : meta.dataset.built;
+  return built ? `ver. ${built} (${build})` : `ver. ${build}`;
+}
 // 直近に表示したキャラアート。メニューを閉じて再描画するだけのときは同じ絵を使い回し、
 // 読込待ちや無駄な抽選切替を起こさない。新しい絵はブート/タイトル復帰（reload）でだけ選ぶ。
 let currentArt = null;
@@ -241,6 +249,7 @@ export function showTitle(preparedArt = null) {
       menu,
     ]),
     el("div.title-foot", { text: "TAP / CLICK / ENTER ── CH.01 SMOKE CROWN CUP" }),
+    el("div.title-ver", { text: buildLabel() }),
   ]);
   showScreen("title", root);
   const brand = root.querySelector(".title-brand");
@@ -315,9 +324,9 @@ export async function openConfig(opts = {}) {
   const portraits = el("select", {
     dataset: { test: "cfg-portrait-style" },
     onchange: (e) => { config.portraitStyle = e.target.value; persist(); opts.onChange?.("portraitStyle", config.portraitStyle); },
-  }, [["classic", "現行"], ["new", "新バージョン（仮採用）"], ["nanami", "七海風（仮採用・未導入は現行）"]].map(([v, t]) => {
+  }, [["new", "新バージョン"], ["classic", "現行"]].map(([v, t]) => {
     const o = el("option", { value: v, text: t });
-    if (v === (["new", "nanami"].includes(config.portraitStyle) ? config.portraitStyle : "classic")) o.selected = true;
+    if (v === (config.portraitStyle === "classic" ? "classic" : "new")) o.selected = true;
     return o;
   }));
   const introArt = el("select", {
@@ -339,7 +348,7 @@ export async function openConfig(opts = {}) {
   }));
   const reduceShake = el("input", {
     type: "checkbox", dataset: { test: "cfg-reduce-shake" },
-    onchange: (e) => { config.reduceShake = e.target.checked; persist(); opts.onChange?.("reduceShake", config.reduceShake); },
+    onchange: (e) => { config.reduceShake = e.target.checked; document.body.classList.toggle("reduce-shake", config.reduceShake); persist(); opts.onChange?.("reduceShake", config.reduceShake); },
   });
   reduceShake.checked = !!config.reduceShake;
   const blip = el("input", {
@@ -385,3 +394,4 @@ export async function openConfig(opts = {}) {
     options: [{ label: "閉じる", value: true, primary: true, test: "cfg-close" }],
   });
 }
+

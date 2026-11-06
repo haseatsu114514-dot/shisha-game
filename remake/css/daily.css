@@ -26,7 +26,7 @@
   border-radius: 50%;
   background: radial-gradient(ellipse, rgba(240, 230, 250, 0.16), transparent 70%);
   filter: blur(30px);
-  animation: drift 18s ease-in-out infinite alternate;
+  animation: smoke-drift 18s ease-in-out infinite alternate;
   pointer-events: none;
 }
 .title-smoke i:nth-child(1) { left: -200px; bottom: -120px; }
@@ -105,6 +105,7 @@
 .title-item:hover:not(:disabled), .title-item:focus-visible { color: var(--gold-hi); transform: translateX(10px); outline: none; }
 .title-item:hover:not(:disabled) .ti-en::before { content: "◆ "; font-size: 18px; color: var(--gold); }
 .title-foot { position: absolute; left: 0; right: 0; bottom: 22px; text-align: center; font-size: 14px; letter-spacing: 0.04em; color: rgba(255, 255, 255, 0.75); pointer-events: none; }
+.title-ver { position: absolute; right: 20px; bottom: 20px; z-index: 2; font-size: 13px; letter-spacing: 0.02em; color: rgba(255, 255, 255, 0.55); text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85); pointer-events: none; }
 .cfg { display: flex; flex-direction: column; gap: 14px; min-width: 420px; }
 .cfg-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
 .cfg-row input[type="range"] { width: 220px; accent-color: var(--gold); }
@@ -472,9 +473,10 @@ body.game-ds .pin-station .pin-symbol { color: #29485d; }
 .map-info::before { top: -3px; left: -3px; border-right: none; border-bottom: none; }
 .map-info::after { bottom: -3px; right: -3px; border-left: none; border-top: none; }
 .map-info { right: 16px; bottom: 16px; z-index: 7; width: 270px; padding: 9px 12px 11px; transition: opacity 0.2s, transform 0.2s; }
-/* 行き先パネルは見た目だけ前面に置き、裏に隠れる行き先ピン（右下の「家に帰る」等）の操作を奪わない。
-   クリックはパネル内のボタン（ここへ行く・乗車確認など）だけが受け取り、余白は背後のピンへ素通りさせる。 */
+/* 未選択時の余白は背後のピンへ通す。スポット選択中は写真を含むパネル全体で移動する。 */
 .map-info { pointer-events: none; }
+.map-info.spot-selected { pointer-events: auto; cursor: pointer; }
+.map-info.spot-selected:focus-visible { outline: 3px solid var(--gold-hi); outline-offset: 3px; }
 .map-info button { pointer-events: auto; }
 .map-info.leaving { opacity: 0; transform: translateY(8px); }
 .mi-banner {
@@ -710,9 +712,6 @@ p.gear-offer.owned b { color: var(--gold); }
 .lime-face.sm { width: 28px; height: 28px; border-width: 1px; font-size: 12px; }
 .lime-face.gap { visibility: hidden; }
 .lime-face.custom { image-rendering: auto; }
-/* 左寄りの元絵だけ、円枠を動かさず右側を少し切り詰めて顔を中央へ。 */
-img.lime-face[src$="/face_hiyori.png"] { box-sizing: border-box; padding-left: 3px; object-position: left center; }
-.lcr-face img.lime-face[src$="/face_hiyori.png"] { padding-left: 4px; }
 .lime-chat {
   flex: 1;
   min-height: 0;
@@ -859,6 +858,11 @@ img.lime-face[src$="/face_hiyori.png"] { box-sizing: border-box; padding-left: 3
 .lime-reply.disabled, .lime-reply:disabled { color: #9aa4b2; border-color: #cfd5dc; background: #f4f6f8; cursor: default; }
 
 /* 朝のプッシュ通知（スマホの通知バナー風に上から降りてくる） */
+/* LIMEの着信: 画面の縁が一度だけ淡く脈打つ（#2688 A12） */
+.lime-edge-pulse { position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  box-shadow: inset 0 0 0 3px #dcd1f4cc, inset 0 0 70px 14px #6b4fb066; animation: lime-edge-pulse 600ms ease-out both; }
+@keyframes lime-edge-pulse { 35% { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .lime-edge-pulse { display: none; } }
 .lime-push {
   appearance: none;
   border: 0;
@@ -1704,8 +1708,7 @@ body:not(.game-ds) #hud .hud-card .hud-stamina .gauge-track { position: absolute
 body:not(.game-ds) #hud .hud-card .hud-stamina .hud-bar b { border-radius: 4px; }
 body:not(.game-ds) #hud .hud-card .hud-exp { height: 25px; padding: 0; }
 
-/* 地図の案内パネル（2026-10-31 DUI14・DUI16）: 右下の家・喫茶の看板に届かない高さ（約255px）に収める。
-   行き先を選んだら16:9の写真を見せ、店名と人の名前は写真の上に重ねる。タグは置かず、料金は行くボタンに一言だけ。 */
+/* 地図の案内パネル: 選んだスポットの写真と名前だけを表示する。 */
 body:not(.game-ds) .map .map-info {
   display: grid; grid-template-columns: minmax(0, 1fr); width: 312px; padding: 6px 8px 8px;
 }

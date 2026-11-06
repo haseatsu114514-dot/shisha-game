@@ -20,7 +20,7 @@ import { dayOneProgress, recordCityVisit } from "./ch2-progress.js";
 import { chapterTwoNights, storyVisitDue, readStoryVisit } from "./ch2-story.js";
 import { craftPrepDue, offerCraftPrep } from "./ch2-craft-prep.js";
 import { agehaStoryScene, syncAgehaVibes } from "./ch2-story-data.js";
-import { CH2_VISIT_STORIES, ch2VisitDone } from "../core/affinity-stages.js";
+import { CH2_VISIT_STORIES, ch2VisitDone, ch2VisitReady } from "../core/affinity-stages.js";
 import { BOND_QUESTIONS, BOND_FINALES, playQuestionVisit, questionVisitDue, finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { consultLessons } from "../core/growth.js";
 import { readDialogues } from "../core/chapter-data.js";
@@ -62,6 +62,8 @@ export const PREPARATION_SPOTS = STOPS.filter(stop => ROOMS[stop.id]).map(stop =
 // 第5章は、神崎・レヰの店に「昼夜のあいさつ＋通い訪問の小会話」だけで通える。
 // 第2章の段階会話・続編・締めくくり・あげはの通う回・プリクラ・質問は出さない（第2章の物語のため）。
 // あげはの店（ヒロイン）は、第5章の通いの小会話として chapters/ch5-shops.js が出す。
+// 神崎・レヰも第5章の最初の来店だけは、一度だけの会話を chapters/ch5-shops.js が先に出す（ch5-first-talks.js）。
+// 神崎のその会話は第2章の後日談 ch2_kumicho_after_ch2 を世界大会の後の場面に書き直したもので、上の決まりの唯一の例外。
 export const CITY_REGULARS = Object.freeze(["kumicho", "rei"]);
 /** 第5章の柚ヶ谷に出す店（会ったことのある神崎・レヰだけ）。 */
 export const cityRegularSpots = (value = state) => PREPARATION_SPOTS.filter(spot => CITY_REGULARS.includes(spot.charId) && value.met?.[spot.charId]);
@@ -90,7 +92,7 @@ export async function visitCityRegular(spot, { staminaGuard }) {
     toast("室内を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます");
     return { used: false, exerted: false };
   }
-  await withScenePreparation(setBg(ROOMS[id], { instant: true }));
+  await withScenePreparation(setBg(ROOMS[id]));
   if (state !== owner) return { used: false, exerted: false };
   const welcome = `venue_${id}_${timeOfDay()}`;
   if (DB.dialogues[welcome]?.lines?.length) {
@@ -169,13 +171,14 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   const stages = CH2_VISIT_STORIES[id];
   // 神崎・レヰは訪問列の最古の未読を、必要ハートに届いた時だけ読む。届くまではrepeat（#1648）。
   const pendingStage = !first && stages ? stages.find(entry => !ch2VisitDone(state.flags, id, entry)) : null;
-  const stage = pendingStage && affinityLevel(id) >= pendingStage.heart ? pendingStage : null;
+  const chapterDayNow = state.day - dayOneProgress(state).startDay + 1;
+  // 物語の出来事が前提の段階（組長の♥3「味は遠い」）は、その出来事の後まで待つ（#2720）。
+  const stage = pendingStage && affinityLevel(id) >= pendingStage.heart && ch2VisitReady(state.flags, pendingStage, chapterDayNow) ? pendingStage : null;
   const pendingFollowup = !first && !stages && !state.flags._ch2_followup_done?.[id];
   const followup = pendingFollowup && affinityLevel(id) >= 1;
   // 訪問列を読み終えた♥5の次の来店で、締めくくりを一度だけ（#2027）。
   let finale = !first && stages && !pendingStage && finaleAtVisit(id);
   // あげはは続編のあと、店に通う回（ギャル友・初めての客・雑誌取材・ダメな日）を一度ずつ読む（#626）
-  const chapterDayNow = state.day - dayOneProgress(state).startDay + 1;
   const story = id === "ageha" && !first && !pendingFollowup ? agehaStoryScene(state, chapterDayNow, DB.dialogues) : null;
   // あげは: 店に通う回と♥3の質問を読み終えた♥5の次の来店は、いつもの会話の代わりに締めくくり（#2023・一度だけ）。
   if (!finale && id === "ageha" && !first && !pendingFollowup && !story) finale = finaleAtVisit("ageha");
@@ -195,14 +198,14 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   if (state !== owner) return { used: false, exerted: false };
   // 未訪問なら先に実際の名乗りを読む。見学・顔合わせだけで交流回数を増やさない。
   if (!state.met[id]) {
-    await withScenePreparation(setBg(MAP[timeOfDay()], { instant: true }));
+    await withScenePreparation(setBg(MAP[timeOfDay()]));
     const result = await play(`ch2_city_${id}`);
     if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
     recordCityVisit(state, id);
   }
   // 続編・再訪・段階会話は、正常終端まで請求と既読を保留する。
   // cancelled/途中LOAD/例外で、追加の街紹介の前に費用だけが残らない。
-  await withScenePreparation(setBg(ROOMS[id], { instant: true }));
+  await withScenePreparation(setBg(ROOMS[id]));
   if (state !== owner) return { used: false, exerted: false };
   // 通い訪問の小会話の前だけ、昼夜の店のあいさつを挟む（段階会話・締めくくりは自前の導入がある）。
   const welcome = repeat && REPEAT_POOL[id] ? `venue_${id}_${timeOfDay()}` : null;

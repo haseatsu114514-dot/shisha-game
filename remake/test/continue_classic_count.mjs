@@ -68,7 +68,7 @@ try {
     assert.equal(await page.locator(".gameover").getAttribute("data-layout"), layout);
     assert.equal(await page.locator(".go-retry").textContent(), "する");
   }
-  const variants = [0, 1, 2, ...["tsumugi", "minto", "rio", "ageha", "mashiro", "samechan"].map(id => `premium:${id}`)];
+  const variants = [0, 1, 2, ...["tsumugi", "minto", "rio", "ageha", "mashiro", "samechan"].map(id => `lover:${id}`)];
   for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }]) {
     await page.setViewportSize(viewport);
     for (const [index, variant] of variants.entries()) {
@@ -90,17 +90,17 @@ try {
   }
   console.log("PASS: classic composition and bottom spacing, all 9 portraits on PC/phone, reactions unchanged");
   await page.setViewportSize({ width: 1280, height: 720 });
-  await mount("premium:ageha", { layout: "bottom-back-count", background: "stage", context: { lossOrdinal: 1 } });
+  await mount("lover:ageha", { layout: "bottom-back-count", background: "stage", context: { lossOrdinal: 1 } });
   await page.clock.runFor(22000);
   assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "speaking");
   assert.equal((await measurements()).count, "∞");
   assert(await page.locator(".go-retry,.go-quit").evaluateAll(els => els.every(el => !el.disabled)));
   await page.locator(".go-quit").click();
   assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "reaction");
-  await mount("premium:ageha", { layout: "back-count", background: "stage" });
+  await mount("lover:ageha", { layout: "back-count", background: "stage" });
   await page.clock.runFor(5200);
   const top = await measurements();
-  await mount("premium:ageha", { layout: "bottom-back-count", background: "stage", context: { lossOrdinal: 2 } });
+  await mount("lover:ageha", { layout: "bottom-back-count", background: "stage", context: { lossOrdinal: 2 } });
   const twenty = await measurements(); checkClassic(twenty);
   await page.clock.runFor(5200);
   const fifteen = await measurements(); checkClassic(fifteen);

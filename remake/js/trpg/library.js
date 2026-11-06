@@ -1,5 +1,13 @@
 import { el } from "../core/util.js";
-import { displayName, portraitUrl, portraitTop, sceneArt } from "./presentation.js";
+import { displayName, portraitUrl, portraitAx, portraitTop, sceneArt } from "./presentation.js";
+import { shelfHelpButton } from "./shelf-help.js";
+
+// 操作と遊び方は画面に常に出さず、右上の「？」で読む（#2719・ミニゲーム共通のUI方針）。
+const LIBRARY_HELP = [
+  ["物語を選ぶ", "作中の作者が書いた短編を、キャラたちがGMとプレイヤーとして遊びます。本を選んで「この物語を開く」。"],
+  ["操作", "クリック・タップで選びます。会話は Enter／Space でも進みます。"],
+  ["卓の中", "卓を囲んでいる間は、右上の「？」でいつでも遊び方を確認できます。"],
+];
 
 export function mountTrpgLibrary(host, { scenarios, characters, manifest, audio, onChoose, onClose = null, closeLabel = "閉じる" }) {
   const root = el("section.trpg-root.trpg-library", { tabindex: "-1", dataset: { phase: "library", many: String(scenarios.length > 2) } });
@@ -12,6 +20,7 @@ export function mountTrpgLibrary(host, { scenarios, characters, manifest, audio,
     el("div", [el("span.trpg-kicker", { text: "水煙前線 -EN:CODE- / TABLETOP COLLECTION" }),
       el("h1", { text: "ひと息、物語の中へ。" })]),
     el("div.trpg-library-meta", [el("span", { text: String(scenarios.length).padStart(2, "0") + " STORIES" }), sound,
+      shelfHelpButton(() => root, { title: "この本棚の遊び方", sections: LIBRARY_HELP, test: "trpg-library-help" }),
       ...(onClose ? [el("button.trpg-button.small", { type: "button", text: closeLabel,
         dataset: { test: "trpg-collection-close" }, onclick: () => { if (!disposed) onClose(); } })] : [])]),
   ]), el("p.trpg-library-intro", { text: "いつもの仲間と、小さな卓を囲む。今夜は、どの物語にする？" }));
@@ -21,7 +30,7 @@ export function mountTrpgLibrary(host, { scenarios, characters, manifest, audio,
     const cast = el("div.trpg-library-cast", s.cast.map(c => el("div", [
       el("span.trpg-library-face", { style: { "--person-color": c.color } },
         el("img", { src: portraitUrl(manifest, c.id), alt: "", style: { top: portraitTop(manifest, c.id, 140, 7),
-          transform: "translateX(-" + (manifest.portraits[c.id].ax * 100) + "%)" } })),
+          transform: "translateX(-" + (portraitAx(manifest, c.id) * 100) + "%)" } })),
       el("span", { text: displayName(characters, c.id) }),
     ])));
     books.append(el("article.trpg-library-book", { dataset: { theme: p.theme } }, [
@@ -39,10 +48,7 @@ export function mountTrpgLibrary(host, { scenarios, characters, manifest, audio,
       ]),
     ]));
   }
-  root.append(books, el("footer.trpg-library-footer", [
-    el("span", { text: "作中の作者が書いた短編を、キャラたちがGMとプレイヤーとして遊びます。" }),
-    el("span", { text: "クリック / タップ · 会話は Enter / Space" }),
-  ]));
+  root.append(books);
   host.replaceChildren(root); root.focus({ preventScroll: true });
   audio.setTheme("harbor");
   return { destroy() { disposed = true; root.remove(); }, snapshot: () => ({ phase: "library" }) };

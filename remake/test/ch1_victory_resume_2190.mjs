@@ -102,6 +102,7 @@ async function harness({ step = 0, paid = true, revealed = true, snapshot = null
       awards.push({ stat, amount }); current().stats[stat] += amount; observe("ability", { stat, amount });
     },
     suiCutin: async rank => { cutins.push(rank); observe("cutin", { rank }); await pause("cutin"); },
+    sceneMoment: async () => {}, // 章の要所の一度きりの演出（#2688 A1・A6）。見た目だけなので進行には関わらない
     openPhone: async (messages, options) => {
       assert.equal(titlePresent, false, "LOAD's title screen must be removed before phone content appears");
       observe("phone", { title: options.title, ids: messages.map(message => message.id) });
@@ -260,7 +261,7 @@ for (let step = 0; step <= 10; step++) {
 }
 
 const sentenceCases = [
-  ["ch1_tournament_judging", "チャコール博士も、", "チャコール博士も、炭の出来と調整後の味を見て票を投じる。はじめは、スクリーンに並ぶ4台の票を見つめた。"],
+  ["ch1_tournament_judging", "チャコール博士も、", "チャコール博士も、炭の出来と調整後の味を見て票を投じる。スクリーンに並ぶ4台の票を見つめた。"],
   ["interval_day2_adam_lime", "アダムからはそれきりで、", "アダムからはそれきりで、こちらの返信にも既読がつかなかった。……何か、大きなことが動いている気がする。"],
 ];
 for (const [id, start, original] of sentenceCases) {

@@ -2,7 +2,7 @@
 import { DB, bgUrl } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { addStamina, addMoney, earnStat, gainAffinity, paidAction, earnSceneCompletion } from "../core/stats.js";
-import { layers, showScreen, setBg, toast } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { OUTING_DIALOGUE_IDS, chapterThreeOutings, claimChapterThreeOuting, outingDialogueId, outingAffinity } from "./ch3-outing-progress.js";
@@ -49,7 +49,7 @@ export async function visitChapterThreeOuting(windowId, id, { signal = null, isC
     const night = !!outing.window.slot;
     const bg = outing.bg || OUTING_BG[outing.place];
     const bgRef = bg === "bg_street" ? bgUrl(night ? "bg_street_night" : "bg_street_day") : bgUrl(bg, night ? "night" : "day");
-    await setBg(bgRef, { instant: true });
+    await enterScene(bgRef);
     if (!current()) return false;
     showScreen("none", null);
     layers.hud.replaceChildren();

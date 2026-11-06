@@ -6,7 +6,8 @@ import { createChapterActions } from "../core/chapter-actions.js";
 import { storeLogo } from "../core/store-logos.js";
 import { state, save, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
-import { layers, showScreen, setBg, imageReady, chapterTitle, toast, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, imageReady, chapterTitle, toast, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { chapterTitleEntry } from "../core/chapter-title-art.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { showHud } from "../daily/hud.js";
 import { openMenu } from "../daily/menu.js";
@@ -109,7 +110,7 @@ async function scene(id, background, dialogue = id, place = null) {
   owner.scene = id;
   if (background) {
     if (place) cueTransition("place", { spotId: place.id, label: place.name, area: CH2_CITY_NAME });
-    await withScenePreparation(setBg(background, { instant: !place }));
+    await withScenePreparation(enterScene(background));
   }
   if (!current(owner)) return false;
   playBgm(background?.includes("bg_tonari_inside") ? "tonari" : CITY_BGM);
@@ -130,7 +131,7 @@ async function mapBackground() {
   const ready = await withScenePreparation(imageReady(MAP.day, 15000));
   if (!current(owner)) return false;
   owner.mapAvailable = ready;
-  await withScenePreparation(setBg(ready ? MAP.day : null, { instant: true }));
+  await withScenePreparation(setBg(ready ? MAP.day : null, { brief: true }));
   if (!current(owner)) return false;
   playBgm(CITY_BGM);
   return true;
@@ -144,7 +145,7 @@ async function continueDayOne() {
     if (stage === "departure") {
       if (!progress().titleSeen) {
         await setBg(bgUrl("bg_tonari_inside", "day"), { instant: true });
-        await chapterTitle({ no: "第二章", name: "才能の壁", read: "ホロウ・クラウン ── Hollow Crown", sub: "HAZE: OPEN CLOUD 編" });
+        await chapterTitle(chapterTitleEntry(2)); // 登録済みの章題（#2688 F6）
         if (!current(owner)) return;
         progress().titleSeen = true;
         save();

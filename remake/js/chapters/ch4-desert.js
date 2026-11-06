@@ -6,6 +6,7 @@
 // Aランク以上で寝る前の「遊びのご褒美」（growth-board-data.js の PLAY_REWARDS "desert-a"）。能力値の直接加算はしない。
 // ゲーム本体は minigames/desert-ride.js（保存を読まない）。台詞は data/dialogue/ch4_desert.json。
 import { state, save, config } from "../core/state.js";
+import { seated } from "../core/game-seat.js"; // ミニゲームの入口と出口（#2688 F13）
 import { DB } from "../core/data.js";
 import { showScreen, setBg, layers, toast } from "../core/ui.js";
 import { readDialogues } from "../core/chapter-data.js";
@@ -37,7 +38,7 @@ let active = false;
  * 読了・完走の確定と保存はここで行う。中断（signal・LOAD・タイトル）は確定済みの分だけ残す。
  * 戻り値: 何かを確定したら true。
  */
-export async function visitDesert(destination, { day, isCurrent = () => true, signal = null, host = null, paid = false } = {}) {
+export async function visitDesert(destination, { day, isCurrent = () => true, signal = null, host = null, paid = false, naru = true } = {}) {
   if (active || !state || !destination || destination.ok === false || signal?.aborted || !isCurrent()) return false;
   active = true;
   const owner = state;
@@ -109,7 +110,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     const name = DB.characters[DESERT_GUIDE]?.display_name || "ヌール", naruName = DB.characters.naru?.display_name || "なる";
     // 締めくくりで「二人で見たい」と答えた後の砂丘: 滑ったあと夕日で告白（DSR20）。この日はなるを呼ばない
     const confessionDay = status.invited === true;
-    const rivals = confessionDay && !before.naruMet ? ["noor"] : desertRivals(owner);
+    // 第5章（帰国後にまたドバイへ来た日・naru: false）は、なるは地元の KEMURIKUSA にいるので砂丘に来ない。ヌールとだけ滑る
+    const rivals = !naru || (confessionDay && !before.naruMet) ? ["noor"] : desertRivals(owner);
     // ヌールに勝った後の最初の外出: なるが砂丘に来て勝負を持ちかける（一度だけ）
     if (rivals.includes("naru") && !before.naruMet) {
       if (!await read(DESERT_SCENES.naruArrive, bgUrl(DESERT_BG))) return changed;
@@ -117,7 +119,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
       showScreen("none", null);
     }
     let firstWin = false, firstNaruWin = false;
-    const { results } = await runDesertRide({
+    const { results } = await seated("DESERT RIDE", () => runDesertRide({
       host: host || document.getElementById("stage") || layers.screen, signal, tutorial: status.first,
       best: before.best, legacyBest: before.legacyBest,
       reducedMotion: (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches) || !!config.reduceShake,
@@ -134,7 +136,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
         else toast(`${name}「${firstLine(saved.won ? DESERT_RACE_WIN_LINE : `venue_noor_result_${result.rank}`)}」${best}`, { kind: "good" });
         if (saved.firstClear) toast("初めての完走。砂丘の写真を、ヌールが撮ってくれた", { kind: "good" });
       },
-    });
+    }));
     if (!current()) return changed;
     // 夕日の砂丘で話す（完走の有無にかかわらず、下りてきたら）。中断しても外出の記録は残っている。
     void results;
@@ -148,6 +150,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
         // ほかに恋人がいれば、返事の前に一度だけ立ち止まる（台本の条件で出す一時の印）
         owner.flags[NOOR_OTHER_LOVER_FLAG] = (owner.lovers || []).length > 0;
         try { await read(NOOR_CONFESSION, bgUrl(DESERT_DUSK_BG)); } finally { delete owner.flags[NOOR_OTHER_LOVER_FLAG]; }
+        // 付き合うと LIME を交換する（台本の _lime_contact_noor）。以後、離れていても朝のLIMEが届く（remake/data/lover.json）
+        if (owner.flags[`_lime_contact_${DESERT_GUIDE}`] && !(owner.contacts || []).includes(DESERT_GUIDE)) (owner.contacts ||= []).push(DESERT_GUIDE);
         if (state === owner) save();
         return changed;
       }
@@ -161,15 +165,16 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
  * 日常ループ（版2）の行き先の処理。戻り値は calendar の performSpot の形 { used, exerted, slotsUsed }。
  * デスクの会話は時間を使わない（used: false）。砂丘は visitDesert の中で昼の行動（slot）を使い済みなので slotsUsed: 0。
  * 体力は使わない（砂丘は気分転換。日常ループが外出のたびに経験値を足さないようにし、育成は初回完走の分だけにする）。
+ * naru: false は第5章（なるを砂丘に呼ばない）。
  */
-export async function performDesertSpot(entry, { day, showHud = null } = {}) {
+export async function performDesertSpot(entry, { day, showHud = null, naru = true } = {}) {
   const owner = state;
   const cafe = entry.place === "tour_desk";
   const before = desertProgress(owner);
   const hudRoot = layers.hud.firstElementChild;
   let changed = false;
   try {
-    changed = await visitDesert({ kind: cafe ? "desert_talk" : "desert", ok: true }, { day, paid: cafe });
+    changed = await visitDesert({ kind: cafe ? "desert_talk" : "desert", ok: true }, { day, paid: cafe, naru });
   } finally {
     if (hudRoot && !hudRoot.isConnected) layers.hud.replaceChildren(hudRoot);
     showHud?.(true);

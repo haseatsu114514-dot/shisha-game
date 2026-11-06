@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
+import { hasAffinity } from "../js/core/state.js";
 import { coldRisk, catchesCold, fitActive, FIT_DAYS, FIT_RISK } from "../js/core/illness.js";
 const risks = [0.25, 0.2, 0.1, 0.01, 0].map(coldRisk);
 assert(risks.every((value, i) => !i || value > risks[i - 1]));
@@ -35,14 +36,14 @@ const values = {
   "roamers.js": { roamerAt: () => null, meetRoamer: async () => false }, // よその店に居合わせる人。この検査では居合わせない
   "hiyori.js": { hiyoriShopEncounterDue: () => false, visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
   "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
-  "state.js": { state, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending,
+  "state.js": { state, hasAffinity, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending,
     visitedDay: { ...state.visitedDay }, stamina: state.stamina, rest: state.restDay ? { ...state.restDay } : null,
     queue: JSON.parse(JSON.stringify(state.deferredNightEvents || [])), appointment: state.pendingInvite ? { ...state.pendingInvite } : null }),
     STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"], STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" },
     markMet: (id) => state.met[id] = true, loadFromSlot: () => false, requestResumeOnBoot: noop },
   "ui.js": { withScenePreparation: task => task, imageReady: async () => false, layers: { fx: { append: noop }, modal: elem() }, dropRetired: noop, dayCard: async () => {}, modal: async (opts) => { guards.push(state.stamina); guardBodies.push(opts.body); return decisions.length ? decisions.shift() : true; },
     toast: noop, fadeBlack: async (mid) => mid?.(), dayTurn: async (mid) => { const info = await mid?.(); dawns.push({ ...info, absoluteDay: state.day, hudLeft: values["hud.js"].daysLeft() }); }, bannersIdle: async () => {}, setBg: noop, refreshWeather: noop },
-  "transitions.js": { refreshPlaceCue: noop },
+  "transitions.js": { refreshPlaceCue: noop, waveBeat: async (_host, _text, mid) => mid?.() },
   "data.js": { sceneBg: () => ({}), DB: db, loadCinemaDialogue: async () => db, bgUrl: (ref) => ref, displayName: id => id }, "saves.js": { saveFlow: async () => {}, loadFlow: async () => {} },
   "audio.js": { SE: { select: noop, cancel: noop }, playBgm: noop },
   "engine.js": { isPlaying: () => false, play: async (id) => played.push(id) }, "glossary.js": { glossaryPanel: () => "" },
@@ -220,8 +221,12 @@ for (const scenario of [
   assert.equal(dawns[0].day, 7);
   assert.equal(dawns[0].left, 7);
   assert.equal(dawns[0].absoluteDay, scenario.day + 1);
-  assert(dawns.every(info => info.left === info.hudLeft));
-  assert(dawns.every(info => info.day < 14), "大会当日は通常の夜明けカードを出さない");
+  // 大会前夜は夜明けの当日版（#2688 A10）。日付も残り日数もめくらないので、通常の朝とは分けて数える
+  const normal = dawns.filter(info => !info.eve);
+  assert(normal.every(info => info.left === info.hudLeft));
+  assert(normal.every(info => info.day < 14), "大会当日は通常の夜明けカードを出さない");
+  assert.equal(dawns.filter(info => info.eve).length, 1, "大会前夜は当日版の夜明けを一度だけ");
+  assert(dawns.filter(info => info.eve).every(info => info.day === undefined && info.left === undefined), "当日版は日付をめくらない");
   assert.equal(state.day, scenario.untilDay);
 }
 

@@ -40,7 +40,9 @@ await suite("desert-ride", async check => {
     // Codex の採用画像（遠景の空・陸、主人公の背面、岩、旗、ゴール、砂煙）を読み込んで描いている
     const loaded = await page.evaluate(() => performance.getEntriesByType("resource").map(entry => entry.name).filter(name => name.includes("/img/ui/desert_ride/")).map(name => name.split("/").pop()).sort());
     assert.deepEqual(loaded, ["backdrop_day_land.webp", "backdrop_day_sky.webp", "backdrop_dusk_land.webp", "backdrop_dusk_sky.webp", "flag_pole.webp", "goal_banner.webp",
-      "rider_brace.webp", "rider_fall.webp", "rider_jump.webp", "rider_lean_left.webp", "rider_lean_right.webp", "rider_ride.webp", "rock_large.webp", "rock_small.webp", "sand_puff.webp"]);
+      "rider_brace.webp", "rider_fall.webp", "rider_jump.webp", "rider_lean_left.webp", "rider_lean_right.webp",
+      "rider_noor_brace.webp", "rider_noor_fall.webp", "rider_noor_jump.webp", "rider_noor_lean_left.webp", "rider_noor_lean_right.webp", "rider_noor_ride.webp",
+      "rider_ride.webp", "rock_large.webp", "rock_small.webp", "sand_puff.webp"]);
     // 空中トリックとブーストを使う理想の滑り: S、ヌールに勝つ。360 以上を決めるとカットインが走る
     await page.evaluate(() => {
       window.__cutins = [];
@@ -120,13 +122,15 @@ await suite("desert-ride", async check => {
     await press(jump, 60);
     g = await game(page);
     assert(g.hops + g.bigJumps >= 1, "the jump button jumps");
-    // BOOST ボタン: ゲージが空の間は効かず、満タンなら押すと超加速
+    // BOOST ボタン: ゲージが空の間は効かず、ストックがあれば部分ゲージでも超加速
     await press(boostButton, 60);
     assert.equal(await page.evaluate(() => window.__desertRide.game.stats.boosts), 0, "an empty gauge does not boost");
-    await page.evaluate(async () => { const { chargeBoost } = await import("./js/minigames/desert-ride-model.js"); chargeBoost(window.__desertRide.game, 1); });
+    await page.evaluate(async () => { const { chargeBoost } = await import("./js/minigames/desert-ride-model.js"); chargeBoost(window.__desertRide.game, 0.4); });
     await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]').dataset.gauge === "full");
     await press(boostButton, 60);
-    assert.equal(await page.evaluate(() => window.__desertRide.game.stats.boosts), 1, "the BOOST button boosts when the gauge is full");
+    assert.equal(await page.evaluate(() => window.__desertRide.game.stats.boosts), 1, "the BOOST button spends a partial gauge");
+    assert.equal(await page.evaluate(() => window.__desertRide.game.gauge), 0, "the BOOST button consumes the stocked gauge");
+    assert(await page.evaluate(() => window.__desertRide.game.boostT > 0), "the partial gauge gives boost time");
     // 練習は説明つきで（回転・ブーストまで）、終わると本番へ進むカード
     await page.evaluate(() => {
       window.__captions = [];
@@ -137,7 +141,7 @@ await suite("desert-ride", async check => {
     await phase(page, "practiced");
     const captions = await page.evaluate(() => window.__captions);
     assert(captions.some(text => /空中で ← か → を押し続けて回ろう/.test(text)), `the lesson teaches the spin (${captions.join(" / ")})`);
-    assert(captions.some(text => /ゲージが満タン/.test(text)), "the lesson hands over a full gauge for the boost");
+    assert(captions.some(text => /溜まったゲージで↓（BOOST）を押すと超加速/.test(text)), `the lesson explains stocked boost (${captions.join(" / ")})`);
     assert.match(await page.locator(t("desert-practiced")).innerText(), /練習おわり/);
     await page.locator(t("desert-start")).tap();
     await phase(page, "run");
@@ -490,6 +494,7 @@ await suite("desert-ride", async check => {
     assert.equal(value.money, before.money, "Noor's invitation: no tour fee");
     assert.deepEqual(value.lovers, ["noor"]);
     assert.equal(value.loveLevel.noor, 1);
+    assert(value.flags._lime_contact_noor && value.contacts.includes("noor"), "they exchange LIME when they start dating");
     assert.equal(value.flags._noor_confession_other_lover, undefined, "the temporary flag is cleared");
     assert((await page.evaluate(() => window.__bgs)).some(url => /bg_dubai_dunes_dusk/.test(url)), "the confession is on the sunset dunes");
     // 告白は一度だけ。次の砂丘は相場のツアー代

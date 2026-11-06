@@ -479,8 +479,6 @@ export function createContinueAudio({ enabled = true } = {}) {
     start() { if (!alive) return; playBgm("bgm_continue_urgent"); pulse(() => { note(85, { to: 32, dur: .28, vol: .32 }); air(.26, .06, 650); }); },
     title() { pulse(() => { note(830, { to: 380, dur: .12, type: "triangle", vol: .09 }); note(1220, { dur: .07, vol: .035 }); }); },
     beat() { pulse(() => note(105, { to: 65, dur: .08, vol: .15 })); },
-    // #2524: 心の声の行へ戻る区切り。拍を打たず、息のような薄いノイズだけを置く。
-    inner() { pulse(() => air(.22, .028, 520)); },
     // 日常の会話と同じ文字送りの声。BGMは下げず、離脱時は他のSEと一緒に止める。
     voice(speaker) {
       if (!instrument()) return;

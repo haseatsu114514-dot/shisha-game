@@ -144,9 +144,9 @@
           "text": "昼のKEMURIKUSA。なるが、メモとボウルを交互に見ている。"
         },
         {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "ちょうど調整してた。気になるところ、見てけよ"
+          "speaker": "",
+          "face": "",
+          "text": "なるはこちらに気づくと、手を止めて顔を上げた。"
         }
       ]
     },
@@ -156,7 +156,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "夜のKEMURIKUSA。常連がカウンター越しになるへ手を振った。"
+          "text": "夜のKEMURIKUSA。常連がカウンター越しに、なるへ手を振った。"
         },
         {
           "speaker": "naru",

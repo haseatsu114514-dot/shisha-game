@@ -18,9 +18,11 @@
 
 > 2026-11-06 TKT01: 第3章「てつこといっしょ」（#2454）のふれあい画面の素材（mukai の裏口の背景2枚・てつこのしぐさ12枚・小物10点・紙×ラベンダーのUI部品8点）の[Codex用依頼文](../../asset_sources/tetsuko-care/README.md)。背景の英文は `tools/bg_prompts.txt` の TK01・TK02。猫は既存の立ち絵と同じ猫・同じ描き手で、1回に1しぐさ・マゼンタ背景。文字・数字・シーシャ機材は描かない。未生成。届くまで CSS の絵で代用中。
 
+> 2026-11-06 CV52（#2524）: CONTINUEで新版立ち絵を全員に使うための[新版表情10点（あげは4・ましろ3・凛想3）と新案「記憶の暗室」の背景のCodex用プロンプト](../../asset_sources/ui/continue-v5-20261106/prompts.md)。立ち絵は規格（docs/portrait_standard.md）の英文と4枚の参照を役割付きで渡し、1回1表情。未生成。
+
 > 2026-11-02 CR08: ラクダレースのレース画面のUI素材（調教師のリモコンのボタン・SUVの計器板・掲示板の札・出走表のカード・メダル・判子・遊び方の絵）の[Codex用依頼文](../../asset_sources/ch4-camel-race/ui-request.md)。九分割の縁と透過、文字を描かない条件つき。未生成。
 
-> 2026-11-02 CR06: 第4章ドバイのラクダレース（CAMEL RACE）の[Codex用指示書（背景・スハイル／ハリールの立ち絵・ラクダとロボット騎手・SUV・砂煙とゲート）](../../asset_sources/ch4-camel-race/README.md)。背景の英文は `tools/bg_prompts.txt` の CR01。未生成。届くまで Canvas 描写で代用中。
+> 2026-11-02 CR06: 第4章ドバイのラクダレース（CAMEL RACE）の[Codex用指示書（背景・ファーリス／ハリールの立ち絵・ラクダとロボット騎手・SUV・砂煙とゲート）](../../asset_sources/ch4-camel-race/README.md)。背景の英文は `tools/bg_prompts.txt` の CR01。未生成。届くまで Canvas 描写で代用中。
 
 > 2026-11-01 TRB05・TRB08・TRB12: TRPGの「キャラクターを作る」の見た目8点（通常編4・サメ編4）と仲間のPC似顔絵9点（各仲間の2案）の[Codex用指示書（保存先・サイズ・プロンプト・組み込み手順）](../../asset_sources/trpg-sheets/README.md)。未生成。シルエットと本人の立ち絵で代用中。
 

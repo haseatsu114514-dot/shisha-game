@@ -22,12 +22,11 @@ const manifest = JSON.parse(read('remake/data/manifest.json'));
 const chars = Object.fromEntries(JSON.parse(read('data/characters.json')).map(c => [c.id, c]));
 const samechan = JSON.parse(read('data/dialogue/samechan.json')).profile;
 if (samechan?.id) chars[samechan.id] = samechan;
-const dataSource = read('remake/js/core/data.js').replace(/^import .*;$/gm, '');
-const data = await import(`data:text/javascript;base64,${Buffer.from("const portraitStyle = () => 'classic'; const registerFortuneReadings = () => {};\n" + dataSource).toString('base64')}`);
+const data = await import('../js/core/data.js');
 data.DB.manifest = manifest;
 data.DB.characters = chars;
 let checked = 0;
-for (const [style, portraits] of [['classic', manifest.portraits], ...Object.entries(manifest.portraitVariants || {})]) {
+for (const [style, portraits] of [['classic', manifest.portraits], ['new', manifest.portraitVariants?.new || {}]]) {
   for (const [folder, metrics] of Object.entries(portraits)) {
     const scale = chars[folder]?.spriteScaleVariants?.[style] || chars[folder]?.spriteScale || 1;
     const p = { ...metrics, folder, scale };
@@ -69,3 +68,4 @@ assert.equal(Number(read('tools/portrait_metrics.py').match(/CAT_TARGET = ([\d.]
 assert.ok(read('tools/portrait_metrics.py').includes('CAT_TARGET if folder == "tetsuko"'));
 assert.ok(source.includes('Math.max(0, contentTop - 97)'), 'retain tall-head safety');
 console.log(`portrait_framing: ${checked} classic/new expression entries, reference zoom, padding, height scales and mascot placement passed`);
+

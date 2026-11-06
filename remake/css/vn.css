@@ -77,10 +77,10 @@
     radial-gradient(ellipse 40% 50% at 30% 80%, rgba(240, 236, 248, 0.22), transparent 70%),
     radial-gradient(ellipse 35% 45% at 70% 70%, rgba(240, 236, 248, 0.18), transparent 70%);
   filter: blur(20px);
-  animation: drift 14s ease-in-out infinite alternate;
+  animation: smoke-drift 14s ease-in-out infinite alternate;
 }
 .vn-effect[data-effect="smoke"]::after { animation-duration: 19s; animation-direction: alternate-reverse; opacity: 0.7; }
-@keyframes drift {
+@keyframes smoke-drift {
   from { transform: translateX(-6%) translateY(0); }
   to { transform: translateX(6%) translateY(-6%); }
 }
@@ -272,6 +272,22 @@ body.in-vn:has(#vn.flashback) #bg { filter: grayscale(1) contrast(.92); }
 .vn-choices.show { display: flex; }
 /* 2択は質問・操作札から離して上へ寄せる。 */
 .vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: 338px; }
+/* 6択以上は画面上端と操作欄の間でスクロールさせる。短い選択肢の配置は維持する。 */
+body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(6)) {
+  top: 16px;
+  left: 50%;
+  right: auto;
+  width: 760px;
+  max-width: 100%;
+  transform: translateX(-50%);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  padding: 2px 12px;
+}
+body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(6)) > .vn-choice {
+  flex-shrink: 0;
+}
 .vn-choice {
   width: 720px;
   padding: 16px 30px;
@@ -395,3 +411,5 @@ body.in-vn:has(#vn.flashback) #bg { filter: grayscale(1) contrast(.92); }
  .cutin .ci-left-field {clip-path:polygon(0 0,558px 0,410px 720px,0 720px)!important;}
 }
 .vn-choice:disabled { opacity: .38; cursor: default; }
+/* 選んだ選択肢の写し（vn/engine.js ghostChoice・#2688 F5）。同じ見た目のまま右へ流れて消える */
+.vn-choice.vn-choice-ghost, .vn-choice.vn-choice-ghost:disabled { position: absolute; margin: 0; opacity: 1; pointer-events: none; z-index: 6; }

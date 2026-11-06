@@ -15,7 +15,7 @@ export const INTRO_MS = 1400;
 const INTRO_FALLBACK_MS = 4000;
 /** 今日の様子の吹き出しを見せておく長さ（入った時から）。 */
 export const MEMO_MS = 6000;
-const TAPE_SE_MS = 260, OPEN_SE_MS = 480;
+const TAPE_SE_MS = 260;
 
 // 角を丸めた長方形（inset i・半径 r）のパス
 const rounded = (i, r) => `M${i + r} ${i}H${W - i - r}A${r} ${r} 0 0 1 ${W - i} ${i + r}V${H - i - r}A${r} ${r} 0 0 1 ${W - i - r} ${H - i}`
@@ -49,7 +49,7 @@ function frameSvg() {
  * @param {string} p.title 題（てつこといっしょ）
  * @param {string} p.roman 英字の題（TETSUKO TIME）
  * @param {boolean} [p.reduced] 動きを減らす設定（演出を出さない）
- * @param {object} [p.SE] 効果音（audio.js の SE。テープの音は pour、開く時は jingle）
+ * @param {object} [p.SE] 効果音（audio.js の SE。テープの音は pour。始まりの曲は画面の専用 BGM（bgm_tetsuko_time）に任せ、ジングルは重ねない）
  */
 export function tetsukoTheme({ el, title, roman, reduced = false, SE = {} }) {
   const plate = (extra = "") => el(`div.tt-logo${extra}`, { "aria-hidden": "true" }, [
@@ -92,7 +92,7 @@ export function tetsukoTheme({ el, title, roman, reduced = false, SE = {} }) {
       // 箱の音は演出が実際に始まってから（幕の後ろで待たされた時に先に鳴らない）。
       card.addEventListener("animationstart", () => {
         aim();
-        timers.push(setTimeout(() => SE.pour?.(), TAPE_SE_MS), setTimeout(() => SE.jingle?.(), OPEN_SE_MS), setTimeout(end, INTRO_MS));
+        timers.push(setTimeout(() => SE.pour?.(), TAPE_SE_MS), setTimeout(end, INTRO_MS));
       }, { once: true });
       card.addEventListener("animationend", end, { once: true });
       timers.push(setTimeout(end, INTRO_FALLBACK_MS));

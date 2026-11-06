@@ -39,5 +39,6 @@
 .axe-bar-menu .axe-bar-records { margin-top: 8px; padding-top: 8px; }
 .axe-bar-menu .axe-bar-career { color: #ffe1a7; }
 html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-divisions .btn[aria-pressed="true"] { color: #fff; background: var(--lavender); border-color: var(--lavender); }
+html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-division-label { color: var(--lavender); }
 html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-division-note { color: var(--paper-muted); }
 html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-career { color: var(--lavender); }

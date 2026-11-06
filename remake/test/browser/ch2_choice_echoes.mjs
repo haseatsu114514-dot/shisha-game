@@ -67,6 +67,8 @@ await suite("ch2-choice-echoes", async check => {
         assert.equal(row.entries.filter(id => id === "remake_ch2_eve_choices").length, 1, "再開で繰り返さない");
         if (row.kind === "half-listen") {
           assert.match(text, /約束をした/); assert.doesNotMatch(text, /謝ったまま/);
+          // 休みの店の前のLIME（ch2_naru_window）を読んでいない進行は、送っていない返事を待たない（#2720）
+          assert.match(text, /俺から連絡する/); assert.doesNotMatch(text, /今どこにいますか|返事/);
           assert(row.flags._ch2_no_audience);
         } else {
           assert.match(text, /謝ったまま/); assert.doesNotMatch(text, /約束をした/);

@@ -5,13 +5,14 @@ import { createChapterActions } from "../core/chapter-actions.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardSceneExp, consultLessons, readyLessons } from "../core/growth.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { layers, showScreen, setBg, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { chapterTitleEntry } from "../core/chapter-title-art.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { play, hooks } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
-import { shinkansenRide } from "../core/scene-motions.js";
+import { shinkansenRide, sceneMoment } from "../core/scene-motions.js";
 import { onDialogueEnter } from "../daily/romance.js";
 import { pendingFriendLime, readFriendLime } from "./friend-entry.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale, recordRomanceChoice, bondCondition } from "../daily/bonds.js";
@@ -22,7 +23,7 @@ import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, ch
   completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime,
   chapterThreePrepPending, departChapterThree, chapterThreeDaily } from "./ch3-progress.js";
 import { CH3_PREP_SCENES, chapterThreePrepEvents } from "./ch3-prep.js";
-import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts } from "../core/tokyo-visits.js";
+import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts, playerRegion } from "../core/tokyo-visits.js";
 
 import { createChapterThreeWayfinding } from "./ch3-wayfinding.js";
 import { availableChapterThreeTrials } from "./ch3-trial-progress.js";
@@ -226,8 +227,7 @@ async function openChapter(advance) {
     if (!progress.titleSeen) {
       await setBg(bgUrl("bg_street_day"), { instant: true });
       if (!current(owner)) return;
-      await chapterTitle({ no: "第三章", name: "嘘つきたちの夜", read: "SMOKE AND MIRRORS",
-        sub: "HAZE: NATIONAL TOKYO 編" });
+      await chapterTitle(chapterTitleEntry(3)); // 登録済みの章題（第4・5章と同じ・#2688 F6）
       if (!current(owner)) return;
       progress.titleSeen = true;
       save();
@@ -236,9 +236,12 @@ async function openChapter(advance) {
   });
 }
 
+/** 公園の回想 → 現在（綾取の調べもの）。落ち葉の波が覆っている間に背景を替える（#2688 A3） */
+const leavesToPresent = () => sceneMoment("leafWave", () => setBg(bgUrl("bg_ch3_saku_video"), { instant: true }));
+
 async function readPrologue(owner, id, bg, ride = null) {
   if (ride) await ride();
-  else await setBg(bg ? bgUrl(bg) : null, { instant: true });
+  else await enterScene(bg ? bgUrl(bg) : null);
   if (!current(owner)) return false;
   showScreen("none", null);
   hud(owner);
@@ -254,6 +257,7 @@ async function readPrologue(owner, id, bg, ride = null) {
 async function renderPrologue(owner) {
   if (!current(owner)) return;
   const progress = chapterThreeProgress(state);
+  const fromChildhood = progress.prologueStep === 0; // この流れで公園の回想を読んだときだけ、現在へ戻る落ち葉の波
   if (progress.prologueStep === 0) {
     // 旧行程は東京へ向かう列車の中から始まる（列車の4行は ch3_departure.json へ移した）。
     if (!await readPrologue(owner, "ch3_train_departure", null)) return;
@@ -262,13 +266,13 @@ async function renderPrologue(owner) {
     save();
   }
   if (progress.prologueStep === 1) {
-    if (!await readPrologue(owner, "ch3_saku_research", "bg_ch3_saku_video")) return;
+    // 色の抜けた公園の回想から、葉の形の面が流れて現在へ（#2688 A3）
+    if (!await readPrologue(owner, "ch3_saku_research", "bg_ch3_saku_video", fromChildhood ? leavesToPresent : null)) return;
     progress.prologueStep = 2;
     save();
   }
   if (progress.prologueStep === 2) {
-    await chapterTitle({ no: "第三章", name: "嘘つきたちの夜", read: "SMOKE AND MIRRORS",
-      sub: "HAZE: NATIONAL TOKYO 編" });
+    await chapterTitle(chapterTitleEntry(3)); // 登録済みの章題（第4・5章と同じ・#2688 F6）
     if (!current(owner)) return;
     progress.titleSeen = true;
     progress.prologueStep = 3;
@@ -295,19 +299,20 @@ async function renderPrep(owner) {
   if (!current(owner)) return;
   const prep = state.flags._ch3_prep;
   const progress = chapterThreeProgress(state);
+  const fromChildhood = prep.step === 0; // この流れで公園の回想を読んだときだけ、現在へ戻る落ち葉の波
   if (prep.step === 0) {
     if (!await readPrologue(owner, "ch3_childhood_opening", null)) return;
     prep.step = 1;
     save();
   }
   if (prep.step === 1) {
-    if (!await readPrologue(owner, "ch3_saku_research", "bg_ch3_saku_video")) return;
+    // 色の抜けた公園の回想から、葉の形の面が流れて現在へ（#2688 A3）
+    if (!await readPrologue(owner, "ch3_saku_research", "bg_ch3_saku_video", fromChildhood ? leavesToPresent : null)) return;
     prep.step = 2;
     save();
   }
   if (prep.step === 2) {
-    await chapterTitle({ no: "第三章", name: "嘘つきたちの夜", read: "SMOKE AND MIRRORS",
-      sub: "HAZE: NATIONAL TOKYO 編" });
+    await chapterTitle(chapterTitleEntry(3)); // 登録済みの章題（第4・5章と同じ・#2688 F6）
     if (!current(owner)) return;
     progress.titleSeen = true;
     prep.step = 3;
@@ -357,10 +362,10 @@ async function readScene(owner, scene) {
   const dialogue = { ...source, metadata: { ...source.metadata, bg: "" } };
   const restoreMeeting = meetingCheckpoint(dialogue);
   const background = bgUrl(scene.bg);
-  // 行き先を決めた時点で前のカードを外し、背景待ちを同じ自由時間と誤認させない。
+  // 行き先を決めた時点で前のカードを外し、背景待ちを同じ自由時間と誤認させない（背景は標準の幕で替える）。
   showScreen("none", null);
   hud(owner);
-  await withScenePreparation(setBg(background, { instant: true }));
+  await withScenePreparation(setBg(background));
   if (!current(owner)) return false;
   // 名乗りの制御行などは読了時のcheckpointまで未確定。会話中の保存を避ける。
   hud(owner);
@@ -424,7 +429,7 @@ async function renderStage(owner) {
     return;
   }
   if (scene.id === "ch3_opening" && state.flags._ch3_opening_read) {
-    await withScenePreparation(setBg(bgUrl("bg_tournament_stage"), { instant: true }));
+    await withScenePreparation(enterScene(bgUrl("bg_tournament_stage")));
     if (!current(owner)) return;
     card(owner, "scene", "DAY 1・全国大会の参加登録", "東京駅から会場へ。受付で出場手続きを済ませ、競技規則を受け取る。", [
       button(owner, state.flags._ch3_rules_read ? "mukaiへ向かう"
@@ -448,7 +453,7 @@ async function renderStage(owner) {
     return;
   }
   const background = bgUrl(scene.bg);
-  await withScenePreparation(setBg(background, { instant: true }));
+  await withScenePreparation(enterScene(background));
   if (!current(owner)) return;
   card(owner, "scene", `DAY ${scene.day}・${scene.label}`, `${scene.location}へ向かう。`, [
     button(owner, "続きを読む", "continue", async () => {
@@ -511,7 +516,7 @@ async function consultVolk(owner) {
   if (!current(owner) || !readyVolkLessons().length) return;
   const background = bgUrl("bg_volk_shop");
   showScreen("none", null); hud(owner);
-  await withScenePreparation(setBg(background, { instant: true }));
+  await withScenePreparation(setBg(background));
   if (!current(owner)) return;
   const controller = owner.controller = new AbortController();
   try { await consultLessons("volk", { bg: background, signal: controller.signal }); }
@@ -555,18 +560,24 @@ function bondActions(owner) {
   return [
     ...kind ? [button(owner, kind === "question" ? "ましろちゃんと話す（mukai）" : "ましろちゃんに呼ばれる（mukai）",
       `bond-${kind}`, () => readBond(owner, kind))] : [],
-    // 綾取の締めくくり（#2028）。条件は daily/bonds.js（LIME交換の寄り道と答えを返す外出の後）。友情の着地だけ。
+    // 綾取・スティーブ・ヴォルクの締めくくり（#2028）。条件は daily/bonds.js（LIME交換の寄り道と、答えを返す／タイマーを借りる外出・
+    // 鉄の煙の四度目の後・♥5）。
+    // 友情の着地だけ。版3の東京は日常ループの店（ch3-tokyo-daily.js）から読むので、ここは旧行程の保存のため。
     ...finaleAtVisit("saku") ? [button(owner, "綾取に呼ばれる（煙幕）", "bond-saku-finale",
       () => readBond(owner, "finale", "saku"))] : [],
+    ...finaleAtVisit("steve") ? [button(owner, "スティーブに呼ばれる（Smoke & Glory）", "bond-steve-finale",
+      () => readBond(owner, "finale", "steve"))] : [],
+    ...finaleAtVisit("volk") ? [button(owner, "ヴォルクに呼ばれる（鉄の煙）", "bond-volk-finale",
+      () => readBond(owner, "finale", "volk"))] : [],
   ];
 }
 
 async function readBond(owner, kind, id = "mashiro") {
   if (!current(owner)) return;
-  const background = bgUrl(id === "saku" ? "bg_yohaku_shop" : "bg_mukai_shop");
+  const background = bgUrl({ saku: "bg_yohaku_shop", steve: "bg_steve_shop", volk: "bg_volk_shop" }[id] || "bg_mukai_shop");
   showScreen("none", null);
   hud(owner);
-  await withScenePreparation(setBg(background, { instant: true }));
+  await withScenePreparation(setBg(background));
   if (!current(owner)) return;
   const controller = owner.controller = new AbortController();
   // 第3章から読み込んだ保存でも、恋愛／友情の実回答と lover・romance_open の分岐を読めるようにする。
@@ -591,7 +602,7 @@ async function renderTrials(owner) {
   if (!current(owner)) return;
   const trials = availableChapterThreeTrials(state);
   if (!trials.length) { await renderStage(owner); return; }
-  await withScenePreparation(setBg(bgUrl("bg_mukai_shop"), { instant: true }));
+  await withScenePreparation(enterScene(bgUrl("bg_mukai_shop")));
   if (!current(owner)) return;
   card(owner, "trial", "mukaiの作業台", "聞いたことを、自分の一台で確かめる。作っても、予定は進まない。", [
     ...trials.map(trial => button(owner, trial.label, `trial-${trial.id}`, () => runTrial(owner, trial.id))),
@@ -659,11 +670,13 @@ async function playEvening(owner, result, { plan = null, window = null, definiti
  * 絆は足さない（東京の訪問デートは絆・能力を動かさない）。中断しても未読のまま次に会えた時へ回る。
  */
 async function readLoverMilestoneAt(owner, id) {
-  if (!current(owner) || !loverMilestonesDue([id]).length) return;
+  // 場面カードの東京では現在地の印が地元のまま。地元が舞台の節目は帰郷してから（#2024）
+  const home = playerRegion(state) === "home";
+  if (!current(owner) || !loverMilestonesDue([id], { home }).length) return;
   showScreen("none", null);
   hud(owner);
   const controller = owner.controller = new AbortController();
-  try { await readLoverMilestone(id, { signal: controller.signal }); }
+  try { await readLoverMilestone(id, { signal: controller.signal, home }); }
   finally { if (owner.controller === controller) owner.controller = null; }
 }
 
@@ -693,7 +706,7 @@ async function renderFreeTime(owner, window) {
     ? selectChapterThreeEvening(routes, state, definitions, window) : null;
   const eveningNow = evening?.kind === "rest" ? null : evening;
   const gym = chapterThreeGymAvailability(state, window.id);
-  await setBg(bgUrl(window.slot ? "bg_tokyo_map_night" : "bg_tokyo_map_day"), { instant: true });
+  await enterScene(bgUrl(window.slot ? "bg_tokyo_map_night" : "bg_tokyo_map_day"), { map: true });
   if (!current(owner)) return;
   card(owner, "free", `DAY ${window.day - state.flags._ch3_intro.startDay + 1}・${window.slot ? "夜" : "昼"}${plan ? "の約束" : "の自由時間"}`,
     eveningNow ? eveningNow.kind === "date" ? `大会前夜。${name}と過ごす時間になった。`

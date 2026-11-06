@@ -30,7 +30,7 @@ function loadRoutes() {
 }
 
 const PARTY_SCENES = ["ch5_party_open", "ch5_party_seat_sumi", "ch5_party_seat_friend", "ch5_party_seat_lover",
-  "ch5_party_seat_away", "ch5_party_shuraba_open", "ch5_party_shuraba_close", "ch5_party_close"];
+  "ch5_party_seat_away", "ch5_party_noor_call", "ch5_party_shuraba_open", "ch5_party_shuraba_close", "ch5_party_close"];
 async function loadScenes(routes) {
   const conflicts = [routes.conflict.close, ...Object.values(routes.romance).map(entry => entry.conflict)].filter(Boolean);
   const missing = [...PARTY_SCENES, ...conflicts].filter(id => !DB.dialogues[id]?.lines?.length);
@@ -53,7 +53,7 @@ export async function runAfterParty() {
   }
   if (state !== owner) return false;
   const { url, tint } = sceneBg(BG, "night");
-  await setBg(url, { instant: true, tint });
+  await setBg(url, { tint });
   const read = async id => {
     if (state !== owner) return false;
     const result = await play(id);

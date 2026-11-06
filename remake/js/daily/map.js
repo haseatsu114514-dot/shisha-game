@@ -1,7 +1,7 @@
 // マップ画面。ピンを選んで「行く」を押すと、その行き先で解決する Promise を返す。
 // 見た目は旧版を踏襲: 橙須の街マップ／看板型のピン（面識のある相手は顔ドット絵）／右下の墨×金パネル。
 import { el, yen } from "../core/util.js";
-import { bgUrl, sceneBg, faceIconUrl, displayName } from "../core/data.js";
+import { bgUrl, sceneBg, faceIconUrl } from "../core/data.js";
 import { showScreen, setBg, retire, uiArtReady, storeLogosReady, imageReady, layers, toast } from "../core/ui.js";
 import { cueTransition } from "../core/transitions.js";
 import { trainRide } from "../core/scene-motions.js";
@@ -10,7 +10,6 @@ import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
 import { state, save, timeOfDay } from "../core/state.js";
 import { growthEnabled, hidaneTotal } from "../core/growth.js";
 import { SE } from "../core/audio.js";
-import { STAMINA_LOW } from "../core/stats.js";
 import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent, spotDetailLabel } from "./spots.js";
 import { updateHud } from "./hud.js";
 import { mountReel } from "./reel.js";
@@ -111,6 +110,7 @@ function cueMove(shield, spot) {
     glyph: known ? spot.glyph || "" : "？",
     // 名前を伏せた行き先（会う前のクラブSEAM＝「地下の店」）では、到着時に店のロゴを見せない。
     anonymous: !known && !!spot.unknownLabel,
+    rain: isRainy(), // 雨の日の外出は傘の型（#2688 A15）
   });
 }
 
@@ -147,7 +147,17 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
 
     const movesLeft = () => (state.slot >= 1 ? "夜 ── 今日はあと1回動ける" : "昼 ── 今日はあと2回動ける")
       + (tomorrowForecast() ? ` ／ 明日は${tomorrowForecast()}` : "");
+    const clearSpotInfo = () => {
+      info.classList.remove("spot-selected");
+      info.removeAttribute("role");
+      info.removeAttribute("tabindex");
+      info.removeAttribute("aria-label");
+      delete info.dataset.test;
+      info.onclick = null;
+      info.onkeydown = null;
+    };
     const idleInfo = () => {
+      clearSpotInfo();
       if (guide) {
         info.replaceChildren(
           el("div.mi-banner", { text: guide.title || "スミさんの頼み" }),
@@ -165,51 +175,44 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
 
     const renderInfo = (s) => {
       const av = availability(s);
-      if (av.why === "locked") {
-        info.replaceChildren(
-          el("div.mi-banner", { text: "？？？" }),
-          el("p.mi-desc", { text: "まだ知らない場所。誰かと知り合えば、教えてもらえるかもしれない。" }),
-          el("div.mi-foot", { text: movesLeft() }),
-        );
-        return;
-      }
       const known = knowsOwner(s);
-      const charName = s.charId && known ? displayName(s.charId, state) : null;
-      const warn = s.stamina < 0 && state.stamina + s.stamina < STAMINA_LOW;
+      const label = av.why === "locked" ? "？？？" : known ? spotDetailLabel(s) : s.unknownLabel || s.label;
+      info.classList.add("spot-selected");
+      info.setAttribute("role", "button");
+      info.setAttribute("tabindex", "0");
+      info.setAttribute("aria-label", `${label}${av.ok ? "へ行く" : `・${av.why}`}`);
+      if (av.ok) info.dataset.test = "map-go";
+      else delete info.dataset.test;
+      info.onclick = () => go(s);
+      info.onkeydown = (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        go(s);
+      };
       const previewId = s.preview || SPOT_PREVIEW[s.id];
-      const pv = s.previewUrl ? { url: s.previewUrl, tint: null } : previewId ? sceneBg(previewId, tod) : null;
+      const pv = av.why === "locked" ? null : s.previewUrl ? { url: s.previewUrl, tint: null } : previewId ? sceneBg(previewId, tod) : null;
       const preview = pv?.url ? el("div.mi-preview", { dataset: { tint: pv.tint || "" } }) : null;
       if (preview) {
         preview.classList.add("loading");
         preview.setAttribute("role", "status");
-        preview.textContent = "画像を読み込んでいます…";
+        preview.setAttribute("aria-label", `${label}の写真を読み込んでいます`);
         Promise.all(sceneArtUrls(pv.url).map((url) => imageReady(url, 15000))).then((loaded) => {
           if (!info.contains(preview)) return;
           preview.classList.remove("loading");
           if (!loaded.every(Boolean)) {
-            preview.textContent = `${s.label} — ${s.area || "行き先"}`;
-            preview.setAttribute("aria-label", `${s.label}の案内。詳細と入店条件は下に表示しています`);
+            preview.replaceChildren();
+            preview.setAttribute("aria-label", `${label}の写真を表示できませんでした`);
             return;
           }
           preview.replaceChildren();
           preview.removeAttribute("role");
+          preview.removeAttribute("aria-label");
           renderSceneArt(preview, pv.url);
         });
       }
-      // 料金や注意はタグに並べず、行くボタンの右に一言だけ添える（DUI16）。
-      const note = s.id === "choizap" && !state.flags?._gym_member ? `初回 入会費${yen(4000)}`
-        : s.playCost ? `プレイ ${yen(s.playCost)}` : s.cost && !freeGuide(s) ? yen(s.cost)
-        : freeGuide(s) ? guide.free : s.kind === "trpg" ? "入店・部活設立は無料"
-        : s.kind === "shop" || s.kind === "fortune" ? "時間を使わない" : s.kind === "rest" ? "" : "無料";
       info.replaceChildren(...[
-        el("div.mi-banner", { text: known ? spotDetailLabel(s) : s.unknownLabel || s.label }),
+        el("div.mi-banner", { text: label }),
         preview,
-        charName ? el("div.mi-area", { text: charName }) : null,
-        el("p.mi-desc", { text: av.desc || (known ? s.desc : s.unknownDesc || s.desc) }),
-        av.ok
-          ? el("button.mi-go", { dataset: { test: "map-go" }, onclick: () => go(s) }, [el("span", { text: s.kind === "rest" ? "家に帰る" : "ここへ行く" }),
-            note || warn ? el(`small.mi-note${warn ? ".warn" : ""}`, { text: [note, warn ? "体力が心配" : ""].filter(Boolean).join("・"), dataset: { test: "spot-note" } }) : null])
-          : el("div.mi-no", { text: av.why }),
       ].filter(child => child != null));
     };
 
@@ -227,6 +230,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     const stationActive = () => state === owner && root.isConnected && !root.classList.contains("done") && !document.hidden;
     const openStation = () => {
       if (moving || revealing || !stationActive() || !stationDestinations(state, regions || [], region?.id).length) return;
+      clearSpotInfo();
       stationTrip?.cancel(); stationTrip = null; selected = null;
       pins.querySelectorAll(".spot-pin").forEach(p => p.classList.remove("sel"));
       markSelected(null);

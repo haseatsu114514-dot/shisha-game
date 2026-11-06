@@ -255,11 +255,11 @@ await suite("ch4-dubai-daily", async check => {
     });
     await loadSlot(page, 0);
     await dubaiMap(page, { day: 51, slot: 0 });
-    const desc = async pin => { await page.locator(dt(`pin-${pin}`)).click(); return page.locator(".mi-desc").first().innerText(); };
-    assert.match(await desc("ch4_dubai_souq"), /屋台で軽いものも買える。昼は暑く、いつもより体力を使う。/);
-    assert.match(await desc("ch4_dubai_creek"), /昼は日差しが強く、夜ほどは休まらない。/);
-    assert.match(await desc("ch4_dubai_festa"), /一台6,000円（約140ディルハム）。夜がにぎわう。/);
-    assert.match(await desc("ch4_dubai_cafe"), /一台3,000円（約70ディルハム）。夜がにぎわう。/);
+    for (const pin of ["ch4_dubai_souq", "ch4_dubai_creek", "ch4_dubai_festa", "ch4_dubai_cafe"]) {
+      await page.locator(dt(`pin-${pin}`)).click();
+      assert.equal(await page.locator(".map-info .mi-desc").count(), 0);
+      assert(await page.locator(".map-info .mi-banner").isVisible());
+    }
     let state = await get(page);
     const money = state.money;
     // 昼のスーク → 屋台
@@ -338,8 +338,8 @@ await suite("ch4-dubai-daily", async check => {
     assert(!lines.some(text => text.includes("店の時より")), "No shop acquaintance without a visit");
     const after = await get(page);
     assert.equal(after.met.master_hookah, true);
-    // 初対面は♥1ちょうど（#2615・初対面の好感度を♥1で固定）。前夜祭の場面そのものは、それ以上の好感度を足さない。
-    assert.equal(after.affinity.master_hookah || 0, 9, "The first meeting at the reception gives exactly one heart, nothing more");
+    // 前夜祭や強制イベントでは好感度は上がらない。初対面の♥1（#2615）も通常の出会いだけに付く（2026-11-06 オーナー決定）。
+    assert.equal(after.affinity.master_hookah || 0, 0, "The reception itself gives no affection");
   });
 
   // DAY12 の宿の前日リハーサルを受ける側: 本番と同じ一台（調整2回）を作って講評まで読むと記録が残り、

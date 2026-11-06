@@ -2,7 +2,6 @@ import { el } from "../core/util.js";
 import { svg } from "../core/transition-kit.js";
 import { BULLS, RINGS } from "./axe-model.js";
 
-const portrait = new URL("../../img/sprites/characters/maki/chr_maki_normal.webp", import.meta.url).href;
 let dialogCount = 0;
 
 /** A compact scoring comparison shared by the lesson and the rules panel. */
@@ -29,7 +28,7 @@ export function scoringGuide() {
 }
 
 /** The caller owns mounting, pausing the game and removing the dialog. */
-export function coachDialog({ text, title, step = 1, total = 7, kind = "welcome", context = null, onNext, onSkip }) {
+export function coachDialog({ text, title, step = 1, total = 7, kind = "welcome", context = null, portrait, onNext, onSkip }) {
   const lineId = "axe-coach-line-" + ++dialogCount;
   // Before a real game the last button leads on into it, and skipping goes straight there too.
   const ahead = context === "first" ? "本番へ" : context === "event" ? "投げに行く" : null;
@@ -39,7 +38,10 @@ export function coachDialog({ text, title, step = 1, total = 7, kind = "welcome"
   const panel = el("section.axe-coach", { role: "dialog", "aria-modal": "true", "aria-label": title, "aria-describedby": lineId,
     dataset: { test: "axe-coach", kind } }, [
     el("div.axe-coach-card", [
-      el("header.axe-coach-header", [el("div.axe-coach-portrait-frame", [el("img.axe-coach-portrait", { src: portrait, alt: "斧崎マキ" })]),
+      el("header.axe-coach-header", [el("div.axe-coach-portrait-frame", [el("img.axe-coach-portrait", {
+        src: portrait.src, alt: "斧崎マキ", style: { "--portrait-ax": `${portrait.ax * 100}%`,
+          "--head-ratio": (1 - portrait.h - portrait.b) / portrait.aspect },
+      })]),
         el("div.axe-coach-identity", [el("small", { text: "斧投げBar店員" }), el("strong", { text: "斧崎マキ" })]),
         el("span.axe-coach-progress", { text: step + " / " + total, "aria-label": "レッスン " + step + " / " + total })]),
       el("div.axe-coach-scroll", { tabindex: "0" }, [el("h2.axe-coach-title", { text: title }),

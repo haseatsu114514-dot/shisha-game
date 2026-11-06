@@ -69,11 +69,11 @@ await suite("ch4-camel-race", async check => {
     state = await get(page);
     assert.equal(state.flags._ch4_camel.meetDay, startDay);
     assert.equal(state.slot, 0, "a conversation does not spend the daytime slot");
-    assert.equal(state.met.suhail, true);
+    assert.equal(state.met.faris, true);
     await assert.rejects(() => camel.click({ timeout: 1500 }), /not enabled|disabled|Timeout/i, "no second talk on the same day");
     // DAY2: 誘われる。レースは翌朝なのでまだ行けない。
     await endDay(page, 2);
-    await expectLabel(camel, /スハイルとまた話す/);
+    await expectLabel(camel, /ファーリスとまた話す/);
     await camel.click();
     await page.waitForFunction(() => window.__remake.state.flags._ch4_camel?.stage === 2);
     await page.locator(dt("ch4-free")).waitFor();
@@ -219,7 +219,7 @@ await suite("ch4-camel-race-daily", async check => {
     await dubaiMap(page, { day, slot: 0 });
     state = await get(page);
     assert.deepEqual({ stamina: state.stamina, money: state.money, slot: state.slot }, before);
-    assert.equal(state.met.suhail, true);
+    assert.equal(state.met.faris, true);
     assert.equal(state.visitedDay.ch4_dubai_camel, undefined, "a conversation is not a visit");
   });
 
@@ -248,7 +248,7 @@ await suite("ch4-camel-race-daily", async check => {
     assert.equal(state.met.khalil, true);
     // 夜はレースへ行けない（案内に理由を出し、「ここへ行く」は出さない）。
     await page.locator(dt("pin-ch4_dubai_camel")).click();
-    await page.locator(".mi-no").filter({ hasText: /今日はもう走った|レースは昼だけ|今日はもう行った/ }).waitFor();
+    await page.locator('.map-info[aria-label*="今日はもう走った"], .map-info[aria-label*="レースは昼だけ"], .map-info[aria-label*="今日はもう行った"]').waitFor();
     assert.equal(await page.locator(dt("map-go")).count(), 0, "no race at night");
   });
 });

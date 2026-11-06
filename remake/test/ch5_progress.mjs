@@ -199,13 +199,13 @@ assert.equal(value.flags._ch5.scheduleDecision, null);
 assert.equal(completeChapterFiveScene(value, "ch5_free_tonari_practice"), true, "Free scenes are order-free");
 rejects(value, v => completeChapterFiveScene(v, "ch5_free_tonari_practice"));
 assert.deepEqual(chapterFiveFreeRemaining(value).map(scene => scene.id),
-  ["ch5_free_mashiro_visit", "ch5_free_first_visitor", "ch5_free_eden_adam"]);
+  ["ch5_free_mashiro_visit", "ch5_free_first_visitor", "ch5_tsumugi_serving", "ch5_tsumugi_makes_for_hajime", "ch5_tsumugi_busy_night", "ch5_tsumugi_little_notes", "ch5_tsumugi_counsel", "ch5_tsumugi_menu_board", "ch5_free_eden_adam"]);
 // #1588: EDEN の任意場面も自由行動の一つとして1回だけ読める（tonari の並びとは別の入口）。
 assert.equal(CH5_FREE_SCENES.find(scene => scene.id === "ch5_free_eden_adam")?.location, "EDEN");
 assert.equal(completeChapterFiveScene(value, "ch5_free_eden_adam"), true);
 rejects(value, v => completeChapterFiveScene(v, "ch5_free_eden_adam"));
 assert.deepEqual(chapterFiveFreeRemaining(value).map(scene => scene.id),
-  ["ch5_free_mashiro_visit", "ch5_free_first_visitor"]);
+  ["ch5_free_mashiro_visit", "ch5_free_first_visitor", "ch5_tsumugi_serving", "ch5_tsumugi_makes_for_hajime", "ch5_tsumugi_busy_night", "ch5_tsumugi_little_notes", "ch5_tsumugi_counsel", "ch5_tsumugi_menu_board"]);
 assert.equal(completeChapterFiveScene(value, "ch5_unrecorded_day"), true);
 rejects(value, v => completeChapterFiveScene(v, "ch5_unrecorded_day"));
 roundTrip(value);

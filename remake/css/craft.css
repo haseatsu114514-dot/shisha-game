@@ -613,7 +613,7 @@
 @keyframes fade-in { from { opacity: 0; } }
 .rc-over { position: absolute; left: 0; right: 0; top: 44%; text-align: center; font-size: 72px; font-weight: 800; color: #ff4a4a; text-shadow: 0 0 30px #f00; z-index: 5; animation: rc-pop 0.5s var(--ease-out); }
 
-/* ---------------------------------------------------------------- 須井カットイン */
+/* ---------------------------------------------------------------- 伏見カットイン */
 .sui-cut { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: rgba(0, 0, 0, 0.9); opacity: 0; transition: opacity 0.4s; pointer-events: none; }
 .sui-cut.show { opacity: 1; }
 .sui-cut.out { opacity: 0; }
@@ -632,6 +632,10 @@
 .nc-cut small { font-size: 14px; letter-spacing: 0.2em; }
 .nc-cut b { display: block; font-size: 30px; letter-spacing: 0.1em; }
 .nc-cut-pt { font-size: 18px; font-weight: 700; }
+/* 優勝の煙の輪（craft/result.js smokeRings・#2688 A18）と、第2〜4章の結果の紙吹雪の層（celebrate） */
+.rc-smoke-ring { position: absolute; left: 50%; top: 52%; width: 300px; height: 160px; border-radius: 50%; pointer-events: none; z-index: 6;
+  border: 30px solid #f4eefccc; filter: blur(6px); box-shadow: 0 0 40px #ffffff88, inset 0 0 30px #ffffff66; }
+.rc-celebrate { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 60; }
 .confetti { position: absolute; top: -20px; width: 10px; height: 16px; animation: confetti 2.8s ease-in forwards; }
 @keyframes confetti { to { transform: translate(var(--x), 780px) rotate(var(--r)); } }
 

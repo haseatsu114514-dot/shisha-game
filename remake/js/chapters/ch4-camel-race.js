@@ -1,6 +1,7 @@
 // 第4章ドバイ編・任意イベント「ラクダレース」（CAMEL RACE）の訪問の流れ（会話→レース→結果の会話・保存・報酬）。
 // 進み具合・行き先・記録の純粋関数は ch4-camel-progress.js（地図の計算が DOM 無しで読めるように分けた）。遊びの本体は minigames/camel-race.js。
 import { state, save } from "../core/state.js";
+import { seated } from "../core/game-seat.js"; // ミニゲームの入口と出口（#2688 F13）
 import { paidAction } from "../core/stats.js";
 import { toast } from "../core/ui.js";
 import { growthEnabled } from "../core/growth.js";
@@ -38,8 +39,8 @@ export async function visitCamelRace({ read, signal = null, isCurrent = () => tr
   beforeRace();
   const test = typeof window !== "undefined" ? window.__remake?.camelTest : null;
   const { value: outcome } = await paidAction(async () => {
-    const result = await runCamelRace({ host, signal, tutorial: camel.plays === 0, best: camel.best, allowRetry: true,
-      cups: availableCamelCups(value), cupRecords: camel.cups, pilot: test?.pilot ?? null, timeScale: test?.timeScale ?? 1, ...(options || {}) });
+    const result = await seated("CAMEL RACE", () => runCamelRace({ host, signal, tutorial: camel.plays === 0, best: camel.best, allowRetry: true,
+      cups: availableCamelCups(value), cupRecords: camel.cups, pilot: test?.pilot ?? null, timeScale: test?.timeScale ?? 1, ...(options || {}) }));
     if (!result.completed || !result.best || !isCurrent() || state !== value) return { completed: false };
     // 総合最高点だけでなく、全完走を順に確定。大会ごとの認定を取り落とさない。
     let recorded = null;
@@ -51,7 +52,7 @@ export async function visitCamelRace({ read, signal = null, isCurrent = () => tr
     consumeCamelRaceDaytime(value);
     save();
     return { completed: true, ...recorded, result };
-  }, { consumed: outcome => outcome.firstClear === true, exp: { key: "camel_race", place: "camel_track", person: "suhail" } });
+  }, { consumed: outcome => outcome.firstClear === true, exp: { key: "camel_race", place: "camel_track", person: "faris" } });
   if (!outcome.completed) return { used: false, exerted: false };
   const { best } = outcome.result;
   if (outcome.firstClear) toast(`初めてレースを走り切った。${best.rank}位・スコア ${best.total}（${best.grade}）。${growthEnabled() ? "……今夜の精算で、火種がひとつ届く。" : ""}`, { kind: "good" });

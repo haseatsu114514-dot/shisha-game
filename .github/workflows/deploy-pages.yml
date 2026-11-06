@@ -88,6 +88,9 @@ jobs:
           # 現行版は共有JSONを直接読む
           cp -r remake _site/remake
           cp -r data _site/data
+          # 公開のたびに版の名札を付け替える（JSフォルダ名・CSSの ?v=・build.json・タイトル右下の ver.）。
+          # 名札が同じだとブラウザが古い版をキャッシュから出し続ける（自分で開いたリンクだけ古い）
+          python3 remake/tools/stamp_deploy.py _site --build "${GITHUB_SHA::7}"
           # 外観の正本メタデータだけ公開。原画・写真・生成指示は配信しない。
           appearance_source=asset_sources/shisha-hardware-reference/skin-candidates-issue374
           mkdir -p "_site/$appearance_source"

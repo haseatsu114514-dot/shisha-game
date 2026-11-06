@@ -1,6 +1,6 @@
 import { DB, bgUrl } from "../core/data.js";
 import { state, save } from "../core/state.js";
-import { modal, setBg, showScreen, layers } from "../core/ui.js";
+import { modal, setBg, enterScene, showScreen, layers } from "../core/ui.js";
 import { gainAffinity, paidAction, earnSceneCompletion } from "../core/stats.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { play } from "../vn/engine.js";
@@ -34,7 +34,7 @@ export async function openChapterThreeParty({ signal, isCurrent = () => true } =
       ? `${name(id)}が好きなのは、${DB.characters[id].favorite_flavor}。` : "").filter(Boolean).join("\n");
     const scene = { ...source, lines: source.lines.map(line => ({ ...line,
       text: line.text?.replace("{guests}", [...selected].map(name).join("、")).replace("{favorites}", favorites || "好きな味の話を、次に一緒に吸う日のために覚えておく。") })) };
-    await setBg(bgUrl("bg_steve_shop", "night"), { instant: true });
+    await enterScene(bgUrl("bg_steve_shop", "night"));
     if (!current()) return false;
     showScreen("none", null); layers.hud.replaceChildren(); layers.hud.classList.remove("show");
     const result = await play(scene, { signal });

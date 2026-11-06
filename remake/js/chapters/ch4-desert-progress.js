@@ -11,6 +11,8 @@ export const DESERT_FLAG = "_ch4_desert";
 export const DESERT_GUIDE = "noor";
 // DSR20（ヒロイン化）: 誘いの後に♥3の問い（恋愛／友情。bond_q1_noor）と♥4の会話。段階を読み終えた♥5で締めくくり（daily/bonds.js の
 // BOND_FINALES.noor・専用ハガル）。最後の問い（bond_q2_noor）で恋愛を選ぶと、次の砂丘（ツアー代なし）の夕日で告白（confession_noor）。
+// 締めくくりのあと砂丘へ行けないまま帰国した時は、第5章のドバイの最初の砂丘が約束の日（chapters/ch5-dubai.js）。同じ告白を、
+// 帰国した後の言い方（台本の tournament_finished の分岐）で読む。
 export const DESERT_TALKS = Object.freeze(["ch4_noor_meet", "ch4_noor_talk2", "ch4_noor_cafe_3", "ch4_noor_invite", "ch4_noor_bond_question", "ch4_noor_cafe_4"]);
 /** 段階の会話を読むのに要る♥（DESERT_TALKS と同じ順）。前の段階を読み、この♥に届いていれば読める。 */
 export const DESERT_TALK_HEARTS = Object.freeze([0, 1, 2, 3, 3, 4]);
@@ -294,4 +296,12 @@ export function desertDailySpots(value, day) {
 
 /** 地図で選んだ行き先を、今行ける時だけ返す（行けない行き先は処理しない）。 */
 export const desertDailySpotById = (value, day, id) => desertDailySpots(value, day).find(entry => entry.id === id && !entry.unavailable) || null;
+
+/**
+ * 第5章でドバイへ来た日の砂丘（chapters/ch5-dubai.js）。第4章で一度でも砂丘へ出かけた人だけ「ヌールと砂丘へ」を出す。
+ * カフェ・サーリムの段階の会話・締めくくりは第4章だけなので、デスクは出さない（初めての砂丘・最初の夕日の場面も第5章では読まない）。
+ * day は通算の日。第4章は章内の日（14まで）で記録したが、第5章の通算の日は必ずそれより大きいので、1日1回の判定は崩れない。
+ */
+export const desertRevisitSpots = (value, day) => desertProgress(value).outings > 0
+  ? desertDailySpots(value, day).filter(entry => entry.id === DESERT_SPOT_IDS.dunes) : [];
 

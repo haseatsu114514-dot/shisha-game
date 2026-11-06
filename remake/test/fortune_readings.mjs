@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { AFFINITY_CHARACTERS, KNOWN_AT_START, FIRST_HEART_POINTS, hasAffinity, newState } from '../js/core/state.js';
 import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import {
@@ -7,6 +8,7 @@ import {
   fortuneChoiceIndex,
   fortuneResultId,
   registerFortuneReadings,
+  fortuneSightHinted,
   naruRiftActive,
   isFortuneTargetAvailable,
   fortuneTargets,
@@ -39,11 +41,11 @@ const expectedIds = {
   ageha: ['ageha_1', 'ageha_2', 'ageha_3', 'ageha_4', 'ageha_5', 'ageha_6'],
 };
 // 2026-11-02: 第2〜5章で占い師が選べるのに読み物の無かった9人へ5本ずつ（第3・5章は東京にも出る）。
-const castIds = ['kumicho', 'rei', 'saku', 'steve', 'volk', 'mashiro', 'mukai_master', 'da_silva', 'sheikh'];
+const castIds = ['kumicho', 'rei', 'saku', 'steve', 'volk', 'mashiro', 'da_silva', 'sheikh'];
 for (const char of castIds) expectedIds[char] = [1, 2, 3, 4, 5].map(n => `${char}_${n}`);
-// 2026-11-06: 好感度のある20人へ各5本（王煙楼・ヌールは初）。欠番は使わず、続きの番号から振る。
+// 2026-11-06: 好感度のある19人へ各5本（王煙楼・ヌールは初）。欠番は使わず、続きの番号から振る。
 const addedFrom = { sumi: 16, naru: 16, adam: 16, minto: 16, tsumugi: 16, rio: 16, hiyori: 16, samechan: 16, ageha: 7,
-  kumicho: 6, rei: 6, saku: 6, steve: 6, volk: 6, mashiro: 6, mukai_master: 6, da_silva: 6, sheikh: 6, master_hookah: 1, noor: 1 };
+  kumicho: 6, rei: 6, saku: 6, steve: 6, volk: 6, mashiro: 6, da_silva: 6, sheikh: 6, master_hookah: 1, noor: 1 };
 const addedIds = [];
 for (const [char, from] of Object.entries(addedFrom)) {
   const ids = [0, 1, 2, 3, 4].map(n => `${char}_${from + n}`);
@@ -62,10 +64,17 @@ const excludedIds = [
 ];
 
 assert.equal(trivia.draft, true);
-assert.equal(Object.keys(trivia.characters).length, 20);
+assert.equal(Object.keys(trivia.characters).length, 19);
 const all = Object.values(trivia.characters).flat();
-assert.equal(all.length, 207);
-assert.equal(new Set(all.map(x => x.id)).size, 207);
+assert.deepEqual(new Set(Object.keys(trivia.characters)), new Set(AFFINITY_CHARACTERS));
+assert.deepEqual(KNOWN_AT_START, ['sumi', 'tsumugi']);
+const opening = newState();
+for (const id of KNOWN_AT_START) { assert.equal(opening.met[id], true); assert.equal(opening.affinity[id], FIRST_HEART_POINTS); }
+for (const id of ['sui', 'maezono', 'dr_kemuri', 'emil', 'mukai_master', 'uranaishi']) assert.equal(hasAffinity(id), false);
+assert.equal(hasAffinity('hiyori'), true);
+
+assert.equal(all.length, 197);
+assert.equal(new Set(all.map(x => x.id)).size, 197);
 // 追加分は吹き出し1枚に収め、本名や正体を先出ししない（レヰの本名・ましろの噂の正体・組長の過去）。
 for (const char of castIds) for (const entry of trivia.characters[char]) {
   for (const text of [entry.teller, entry.reaction]) {
@@ -184,11 +193,12 @@ for (const [char, entries] of Object.entries(trivia.characters)) {
   assert.equal(naruRiftActive(baseCh2), false);
   assert.equal(isFortuneTargetAvailable(baseCh2, 'naru'), true);
   assert.deepEqual(fortuneTargets(baseCh2, characters), ['naru', 'adam', 'samechan']);
-  // 占い師本人は初対面の♥1で好感度の欄があっても選べない（2026-11-06 台帳 URA07）
+  // 名簿外の人物は旧セーブに好感度が残っていても選べない。
   {
     const withTeller = JSON.parse(JSON.stringify(baseCh2));
     withTeller.met.uranaishi = true; withTeller.affinity.uranaishi = 1;
-    assert.deepEqual(fortuneTargets(withTeller, { ...characters, uranaishi: {} }), ['naru', 'adam', 'samechan']);
+    withTeller.met.mukai_master = true; withTeller.affinity.mukai_master = 20;
+    assert.deepEqual(fortuneTargets(withTeller, { ...characters, uranaishi: {}, mukai_master: {} }), ['naru', 'adam', 'samechan']);
     assert.equal(grantFortuneReading(withTeller, 'uranaishi', trivia), null);
   }
   assert(grantFortuneReading(baseCh2, 'naru', trivia));
@@ -242,14 +252,34 @@ assert.equal(fortuneChoiceIndex(save, 'ch1_rio_bond_question', romance, { ...hin
 assert.equal(activeFortuneSight({ chapter: 1, day: 3, flags: { _fortune_choice_sight: { char: 'naru', chapter: 1, from: 3, until: 999 } } }), null);
 
 const base = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/remake_ch1.json', import.meta.url))).dialogues;
-const db = { dialogues: Object.fromEntries(base.map(d => [d.dialogue_id, d])), fortuneTrivia: trivia };
+const db = { dialogues: Object.fromEntries(base.map(d => [d.dialogue_id, d])), fortuneTrivia: trivia, fortuneHints: hints };
 registerFortuneReadings(db);
+// 三日間の「赤く見える」は、選択肢の注記で光りうる相手にだけ約束する（恋愛の注記は表示が切られている間は数えない）。
+const sightLine = d => d.lines.some(l => /赤く見える/.test(l.text || ''));
+// 第2〜5章の場面の注記で、レヰ・サメちゃん・ましろも加わった（#2704）。
+const hinted = new Set(['ageha', 'mashiro', 'minto', 'naru', 'rei', 'rio', 'samechan', 'sumi', 'tsumugi']);
+// 判定は注記があるかだけで、章や既読は見ない。凛想の注記は初対面の ch1_rio_first の中、スミさんは第1章DAY5の場面だけなので、
+// 第2章以降や初対面の後は、約束しても光らないことがある（既知の限界。#2704 のPR本文の「残り」に記載）。
+for (const char of Object.keys(trivia.characters)) assert.equal(fortuneSightHinted(char, hints), hinted.has(char), `${char} sight hint`);
 for (const entry of all) {
   const d = db.dialogues[fortuneResultId(entry)];
   assert(d);
   assert(d.lines.some(l => l.text === entry.teller));
   assert(d.lines.some(l => l.type === 'motion' && l.id === 'tarot'));
+  const char = Object.keys(trivia.characters).find(id => trivia.characters[id].includes(entry));
+  assert.equal(sightLine(d), hinted.has(char), `${entry.id}: the three-day sight is promised only when ${char} has a usable choice hint`);
+  if (!hinted.has(char)) assert.equal(d.lines.length, base.find(x => x.dialogue_id === 'remake_fortune_result').lines.length + 1, `${entry.id} keeps the rest of the reading`);
 }
+// ひよりの注記は恋愛の質問だけなので、恋愛の注記を表示する時だけ数える。
+assert.equal(fortuneSightHinted('hiyori', hints), false);
+assert.equal(fortuneSightHinted('hiyori', { ...hints, includeRomance: true }), true, 'romance hints count once romance hints are shown');
+// 相手を選ぶ前の説明は、注記の無い相手にも聞こえるので「相手によっては」と言い、全員には約束しない。
+const offerTexts = db.dialogues.remake_fortune_offer.lines.map(l => l.text || '');
+assert(offerTexts.some(t => t.includes('相手によっては三日間')), 'the offer says the sight works only for some targets');
+assert(!offerTexts.some(t => t.includes('それと三日間')), 'the offer must not promise the sight to every target');
+for (const t of offerTexts) assert(t.length <= 48, `offer line within 48 chars: ${t}`);
+assert.equal(fortuneSightHinted('steve', { ...hints, includeRomance: true }), false);
+assert.equal(fortuneSightHinted('naru', { choices: { 'x:y': { target: 'naru', kind: 'taste' } } }), false, 'taste hints never light');
 assert(db.dialogues.remake_fortune_result, 'legacy result was removed');
 // 占い師は昼にも夜にも現れる（2026-11-02 台帳 URA）。営業時間の門と「昼のみ営業」の札は無い。
 for (const slot of [0, 1]) assert.equal(openingStatus({ kind: 'fortune' }, { slot }).ok, true);
@@ -285,7 +315,7 @@ w=Image.open(root/'remake/img/sprites/characters/uranaishi/chr_uranaishi_normal.
 m=json.loads((root/'remake/data/manifest.json').read_text());assert m['portraits']['uranaishi']['faces']==['normal','sad','serious','smile','surprise']
 `, new URL('../../', import.meta.url).pathname], { encoding: 'utf8' });
 assert.equal(art.status, 0, art.stderr);
-console.log('PASS fortune: 207 readings (62 approved + 45 for the Chapter 2-5 cast + 100 for the 20 affinity characters), 2-cycle nonrepeat, legacy mask migration, Naru rift exclusion, save/RNG, inclusive three days, independent bonus, guarded choice hints, daylight hours and authored annotations');
+console.log('PASS fortune: 197 readings (62 approved + 40 for the Chapter 2-5 cast + 95 for the 19 affinity characters), 2-cycle nonrepeat, legacy mask migration, Naru rift exclusion, save/RNG, inclusive three days, independent bonus, guarded choice hints, daylight hours and authored annotations');
 
 // 第1章は噂を読むまで出ない（#780 の噂の門は第1章だけ残す）。出方は章で1〜2回・予定の無い昼か夜（2026-11-02 台帳 URA）。
 {

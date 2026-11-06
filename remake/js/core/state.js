@@ -10,7 +10,20 @@ import { recordGalleryProgress } from "./gallery-progress.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 26; // 26: キャラID改名（IDREN01）の旧セーブ付け替え / 25: 盤のデンスパック制限から旧セーブの選択肢を保護 / 24: 凛想の味の話を第4回へ移し、旧セーブの不足分を補う / 23: 味の話を第4回へ移し、読了済みセーブの不足分を補う / 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 27; // 27: 好感度名簿と既知キャラの初期♥1 / 26: キャラID改名（IDREN01）の旧セーブ付け替え / 25: 盤のデンスパック制限から旧セーブの選択肢を保護 / 24: 凛想の味の話を第4回へ移し、旧セーブの不足分を補う / 23: 味の話を第4回へ移し、読了済みセーブの不足分を補う / 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+
+// 実際の任意交流で好感度を育てられる人物。占い・STATUS・初対面報酬で共用する。
+// ひよりは交流機会が少なくても対象に残す（Issue #2750）。
+export const AFFINITY_CHARACTERS = Object.freeze([
+  "sumi", "tsumugi", "naru", "adam", "minto", "rio", "hiyori", "samechan",
+  "ageha", "kumicho", "rei", "mashiro", "saku", "steve", "volk",
+  "da_silva", "master_hookah", "sheikh", "noor",
+]);
+const affinitySet = new Set(AFFINITY_CHARACTERS);
+export const hasAffinity = id => affinitySet.has(id);
+// 開始時点でスミさんは上司、つむぎは顔見知り。初対面報酬を出さない。
+export const KNOWN_AT_START = Object.freeze(["sumi", "tsumugi"]);
+export const FIRST_HEART_POINTS = 9;
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -46,11 +59,12 @@ export function newState() {
     flags: {},
     restDay: null,             // {chapter, day, fullDay, illnessHealth}: 発病日の状態は当日だけ維持
     deferredNightEvents: [],   // {id, chapter, originalDay, deferredOn, reason, prerequisites, doneKeys}
-    met: {},                   // 名乗りを受けたキャラ（名前表示の解禁）
+    met: Object.fromEntries(KNOWN_AT_START.map(id => [id, true])), // 開始時から知る相手
+    // 名乗りを受けたキャラ（名前表示の解禁）
     affinityCarry: {}, // 普通の好感度の小数分。既存ポイントは減らさない
     loveCarry: {}, // 恋人の絆の半ポイントを持ち越す
     baitoRecent: [], // 直近4回の接客の客・日付
-    affinity: {},              // キャラ -> 好感度ポイント（段階は stats.js で換算）
+    affinity: Object.fromEntries(KNOWN_AT_START.map(id => [id, FIRST_HEART_POINTS])), // キャラ -> 好感度ポイント（段階は stats.js で換算）
     story: {},                 // キャラ -> 固有会話の消化数
     visits: {},                // スポット -> 訪問回数
     visitedDay: {},            // スポット -> 最後に訪れた日（同じ店は1日1回）
@@ -116,7 +130,7 @@ export function newState() {
 
 // スキーマ26（IDREN01・2026-11-05 オーナー決定）: キャラIDを現名に合わせて改名。
 // 旧IDで保存されたセーブは、読み込み時にここで新IDへ付け替える（移行処理以外では旧IDを使わない）。
-export const CHAR_ID_RENAMES = { nagumo: "sui", rin: "rio", kuze: "saku", saif: "suhail", rashid: "khalil" };
+export const CHAR_ID_RENAMES = { nagumo: "sui", rin: "rio", kuze: "saku", saif: "faris", rashid: "khalil" };
 const CHAR_ID_TOKEN = /(?<![A-Za-z0-9])(nagumo|rin|kuze|saif|rashid)(?![A-Za-z0-9])/g;
 const renameIdToken = (v) => (typeof v === "string" ? v.replace(CHAR_ID_TOKEN, (m) => CHAR_ID_RENAMES[m]) : v);
 const renameExactId = (v) => (typeof v === "string" && CHAR_ID_RENAMES[v] ? CHAR_ID_RENAMES[v] : v);
@@ -250,6 +264,25 @@ function migrate(s) {
   }
   // スキーマ26: キャラID改名（IDREN01）。後段の移行処理が新IDで読めるよう、最初に付け替える。
   if (oldSchema < 26) renameCharIdsInSave(s);
+  if (oldSchema < 27) {
+    s.met ||= {};
+    s.affinity ||= {};
+    for (const id of KNOWN_AT_START) {
+      s.met[id] = true;
+      s.affinity[id] = Math.max(Number(s.affinity[id]) || 0, FIRST_HEART_POINTS);
+      delete s.flags?.[`_affinity_first_meeting_pending_${id}`];
+    }
+    for (const id of Object.keys(s.affinity)) if (!hasAffinity(id)) delete s.affinity[id];
+    for (const id of Object.keys(s.affinityCarry || {})) if (!hasAffinity(id)) delete s.affinityCarry[id];
+    if (s.fortune && !hasAffinity(s.fortune.char)) delete s.fortune;
+    if (s.flags) {
+      if (!hasAffinity(s.flags._fortune_choice_sight?.char)) delete s.flags._fortune_choice_sight;
+      for (const key of Object.keys(s.flags)) {
+        const pending = key.match(/^_affinity_first_meeting_pending_(.+)$/);
+        if (pending && !hasAffinity(pending[1])) delete s.flags[key];
+      }
+    }
+  }
   if (oldSchema < 9) {
     // 以前の経験値は★帯のコストを割って、次の1Pまでの進捗率として引き継ぐ。
     // 能力の現在値は減らさず、ロードだけで増やさない。旧端数が通常1Pを膨らませない。
@@ -604,7 +637,8 @@ export function wipeSave() {
 
 // ---------------------------------------------------------------- 設定（セーブとは別）
 export const config = {
-  portraitStyle: "classic", // 現行を既定に保ち、新絵は任意で比較する端末設定
+  portraitStyle: "new", // 採用済みの新版が既定。現行も設定で選べる
+  portraitStyleVersion: 1, // 旧版の既定値・廃止画風を一度だけ新版へ移行
   uiTheme: "paper",    // 会話枠と共通UI。ゲームの進行とは別の端末設定（既定は紙とラベンダー・DUI08）。
   mute: false,       // すべての音を一時的に消す（旧キー muted は読み込み時に mute へ統一）
   bgmVolume: 0.5,
@@ -626,11 +660,15 @@ export const config = {
 setPortraitStyleSource(() => config.portraitStyle);
 
 export function loadConfig() {
+  let savedPortraitVersion;
   try {
-    Object.assign(config, JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}"));
+    const saved = JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}");
+    Object.assign(config, saved);
+    savedPortraitVersion = saved?.portraitStyleVersion;
   } catch { /* noop */ }
   if ("muted" in config) { config.mute = !!(config.mute || config.muted); delete config.muted; }
-  if (!["classic", "new", "nanami"].includes(config.portraitStyle)) config.portraitStyle = "classic";
+  if (savedPortraitVersion !== 1 || config.portraitStyle !== "classic") config.portraitStyle = "new";
+  config.portraitStyleVersion = 1;
   return config;
 }
 
@@ -647,7 +685,7 @@ export const markMet = (id, { known = false } = {}) => {
   // 名乗りの直後に中断しても、再開した初対面で♥1の精算を失わない。
   // 既に読んだ会話・来店のある旧セーブは、面識の欠損だけで初対面へ戻さない。
   if (known) delete state.flags[pending];
-  else if (id !== "hajime" && !state.met[id] && !state.story[id] && !state.visits[id]) {
+  else if (hasAffinity(id) && !state.met[id] && !state.story[id] && !state.visits[id]) {
     state.flags[pending] = true;
   }
   state.met[id] = true;
@@ -688,3 +726,4 @@ function restoreTokyoVisits(raw) {
   }
   return restored;
 }
+

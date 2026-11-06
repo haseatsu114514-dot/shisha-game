@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-05 20:26 UTC",
+ "generated": "2026-11-06 20:28 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -451,7 +451,7 @@
    "ax": 0.5001,
    "aspect": 0.7467
   },
-  "suhail": {
+  "faris": {
    "faces": [
     "normal"
    ],
@@ -617,39 +617,40 @@
  "faceIcons": [
   "face_adam.png",
   "face_ageha.png",
+  "face_da_silva.png",
   "face_dr_kemuri.png",
+  "face_emil.png",
+  "face_faris.png",
   "face_hajime.png",
   "face_hiyori.png",
-  "face_samechan.png",
+  "face_khalil.png",
+  "face_kumicho.png",
   "face_maezono.png",
+  "face_maki.png",
   "face_mashiro.png",
+  "face_master_hookah.png",
   "face_minto.png",
   "face_minto_private.png",
-  "face_sui.png",
-  "face_naru.png",
-  "face_pakki.png",
-  "face_rio.png",
-  "face_sumi.png",
-  "face_tsumugi.png",
-  "face_kumicho.png",
-  "face_rei.png",
-  "face_uranaishi.png",
-  "face_volk.png",
-  "face_sai.png",
-  "face_emil.png",
-  "face_da_silva.png",
-  "face_master_hookah.png",
-  "face_sheikh.png",
   "face_mukai_master.png",
+  "face_naru.png",
+  "face_noor.png",
+  "face_pakki.png",
+  "face_rei.png",
+  "face_rio.png",
+  "face_sai.png",
+  "face_saku.png",
+  "face_salaryman.png",
+  "face_samechan.png",
+  "face_sheikh.png",
   "face_shisha_9000.png",
   "face_steve.png",
-  "face_saku.png",
-  "face_maki.png",
-  "face_salaryman.png",
-  "face_noor.png",
-  "face_suhail.png",
-  "face_khalil.png",
-  "face_tetsuko.png"
+  "face_sui.png",
+  "face_sumi.png",
+  "face_tetsuko.png",
+  "face_tsumugi.png",
+  "face_uranaishi.png",
+  "face_volk.png",
+  "face_yoru.png"
  ],
  "making": [
   "bench_base.png",
@@ -2567,11 +2568,16 @@
   "bgm_aftermath.bgm",
   "bgm_axe.bgm",
   "bgm_continue_urgent.mp3",
+  "bgm_ethnic05.bgm",
+  "bgm_ethnic08.bgm",
+  "bgm_ethnic09.bgm",
+  "bgm_ethnic12.bgm",
   "bgm_judging.bgm",
   "bgm_purikura.bgm",
   "bgm_purikura_b.bgm",
   "bgm_purikura_d.bgm",
   "bgm_taste_distant.bgm",
+  "bgm_tetsuko_time.bgm",
   "bgm_tournament_craft.bgm",
   "bgm_tournament_edm.bgm",
   "bgm_tournament_wait.mp3",
@@ -2697,7 +2703,6 @@
   "cgs/cg_ch5_shisha_9000.png",
   "cgs/cg_ending_tonari_night.png",
   "cgs/cg_hiyori_confession.png",
-  "cgs/cg_rio_confession.png",
   "cgs/cg_mashiro_confession.png",
   "cgs/cg_mashiro_double_apple.png",
   "cgs/cg_minto_casual.png",
@@ -2708,6 +2713,7 @@
   "cgs/cg_naru_last_chance.png",
   "cgs/cg_naru_next_entry.png",
   "cgs/cg_oneesan_first_smoke.png",
+  "cgs/cg_rio_confession.png",
   "cgs/cg_ryuji_purikura.png",
   "cgs/cg_saku_mashiro_childhood.png",
   "cgs/cg_samechan_confession.png",
@@ -2733,6 +2739,7 @@
   "sprites/character_variants/nanami/emil/chr_emil_smile.png",
   "sprites/character_variants/nanami/emil/chr_emil_surprise.png",
   "sprites/character_variants/nanami/emil/chr_emil_thinking.png",
+  "sprites/character_variants/nanami/faris/chr_faris_normal.png",
   "sprites/character_variants/nanami/hajime/chr_hajime_excited.png",
   "sprites/character_variants/nanami/hajime/chr_hajime_normal.png",
   "sprites/character_variants/nanami/hajime/chr_hajime_sad.png",
@@ -2799,6 +2806,9 @@
   "sprites/character_variants/nanami/naru/chr_naru_serious.png",
   "sprites/character_variants/nanami/naru/chr_naru_smile.png",
   "sprites/character_variants/nanami/naru/chr_naru_surprise.png",
+  "sprites/character_variants/nanami/noor/chr_noor_normal.png",
+  "sprites/character_variants/nanami/noor/chr_noor_smile.png",
+  "sprites/character_variants/nanami/noor/chr_noor_surprise.png",
   "sprites/character_variants/nanami/rei/chr_rei_normal.png",
   "sprites/character_variants/nanami/rei/chr_rei_sad.png",
   "sprites/character_variants/nanami/rei/chr_rei_serious.png",
@@ -2832,7 +2842,6 @@
   "sprites/character_variants/nanami/steve/chr_steve_serious.png",
   "sprites/character_variants/nanami/steve/chr_steve_smile.png",
   "sprites/character_variants/nanami/steve/chr_steve_surprise.png",
-  "sprites/character_variants/nanami/suhail/chr_suhail_normal.png",
   "sprites/character_variants/nanami/sui/chr_sui_normal.png",
   "sprites/character_variants/nanami/sui/chr_sui_serious.png",
   "sprites/character_variants/nanami/sui/chr_sui_smile.png",
@@ -2884,6 +2893,7 @@
   "sprites/character_variants/new/emil/chr_emil_smile.png",
   "sprites/character_variants/new/emil/chr_emil_surprise.png",
   "sprites/character_variants/new/emil/chr_emil_thinking.png",
+  "sprites/character_variants/new/faris/chr_faris_normal.png",
   "sprites/character_variants/new/hajime/chr_hajime_excited.png",
   "sprites/character_variants/new/hajime/chr_hajime_normal.png",
   "sprites/character_variants/new/hajime/chr_hajime_sad.png",
@@ -2947,6 +2957,9 @@
   "sprites/character_variants/new/naru/chr_naru_serious.png",
   "sprites/character_variants/new/naru/chr_naru_smile.png",
   "sprites/character_variants/new/naru/chr_naru_surprise.png",
+  "sprites/character_variants/new/noor/chr_noor_normal.png",
+  "sprites/character_variants/new/noor/chr_noor_smile.png",
+  "sprites/character_variants/new/noor/chr_noor_surprise.png",
   "sprites/character_variants/new/pakki/chr_pakki_angry.png",
   "sprites/character_variants/new/pakki/chr_pakki_evil.png",
   "sprites/character_variants/new/pakki/chr_pakki_normal.png",
@@ -2990,7 +3003,6 @@
   "sprites/character_variants/new/steve/chr_steve_serious.png",
   "sprites/character_variants/new/steve/chr_steve_smile.png",
   "sprites/character_variants/new/steve/chr_steve_surprise.png",
-  "sprites/character_variants/new/suhail/chr_suhail_normal.png",
   "sprites/character_variants/new/sui/chr_sui_normal.png",
   "sprites/character_variants/new/sui/chr_sui_serious.png",
   "sprites/character_variants/new/sui/chr_sui_smile.png",
@@ -3060,6 +3072,7 @@
   "sprites/characters/emil/chr_emil_smile.png",
   "sprites/characters/emil/chr_emil_surprise.png",
   "sprites/characters/emil/chr_emil_thinking.png",
+  "sprites/characters/faris/chr_faris_normal.png",
   "sprites/characters/hajime/chr_hajime_excited.png",
   "sprites/characters/hajime/chr_hajime_normal.png",
   "sprites/characters/hajime/chr_hajime_sad.png",
@@ -3087,13 +3100,6 @@
   "sprites/characters/kumicho/chr_kumicho_smile.png",
   "sprites/characters/kumicho/chr_kumicho_smug.png",
   "sprites/characters/kumicho/chr_kumicho_surprise.png",
-  "sprites/characters/rio/chr_rio_normal.png",
-  "sprites/characters/rio/chr_rio_sad.png",
-  "sprites/characters/rio/chr_rio_serious.png",
-  "sprites/characters/rio/chr_rio_shock.png",
-  "sprites/characters/rio/chr_rio_smile.png",
-  "sprites/characters/rio/chr_rio_smug.png",
-  "sprites/characters/rio/chr_rio_surprise.png",
   "sprites/characters/maezono/chr_maezono_excited.png",
   "sprites/characters/maezono/chr_maezono_normal.png",
   "sprites/characters/maezono/chr_maezono_serious.png",
@@ -3154,6 +3160,13 @@
   "sprites/characters/rei/chr_rei_serious.png",
   "sprites/characters/rei/chr_rei_smile.png",
   "sprites/characters/rei/chr_rei_surprise.png",
+  "sprites/characters/rio/chr_rio_normal.png",
+  "sprites/characters/rio/chr_rio_sad.png",
+  "sprites/characters/rio/chr_rio_serious.png",
+  "sprites/characters/rio/chr_rio_shock.png",
+  "sprites/characters/rio/chr_rio_smile.png",
+  "sprites/characters/rio/chr_rio_smug.png",
+  "sprites/characters/rio/chr_rio_surprise.png",
   "sprites/characters/sai/chr_sai_normal.png",
   "sprites/characters/sai/chr_sai_serious.png",
   "sprites/characters/sai/chr_sai_smile.png",
@@ -3186,7 +3199,6 @@
   "sprites/characters/steve/chr_steve_serious.png",
   "sprites/characters/steve/chr_steve_smile.png",
   "sprites/characters/steve/chr_steve_surprise.png",
-  "sprites/characters/suhail/chr_suhail_normal.png",
   "sprites/characters/sui/chr_sui_normal.png",
   "sprites/characters/sui/chr_sui_serious.png",
   "sprites/characters/sui/chr_sui_smile.png",
@@ -3233,7 +3245,6 @@
   "ui/character_intros/hajime.png",
   "ui/character_intros/hiyori.png",
   "ui/character_intros/kumicho.png",
-  "ui/character_intros/rio.png",
   "ui/character_intros/maezono.png",
   "ui/character_intros/maki.png",
   "ui/character_intros/mashiro.png",
@@ -3245,6 +3256,7 @@
   "ui/character_intros/oneesan.png",
   "ui/character_intros/pakki.png",
   "ui/character_intros/rei.png",
+  "ui/character_intros/rio.png",
   "ui/character_intros/sai.png",
   "ui/character_intros/saku.png",
   "ui/character_intros/samechan.png",
@@ -3268,26 +3280,74 @@
   "ui/continue/neon_title.png",
   "ui/face_icons/face_adam.png",
   "ui/face_icons/face_ageha.png",
+  "ui/face_icons/face_da_silva.png",
   "ui/face_icons/face_dr_kemuri.png",
+  "ui/face_icons/face_emil.png",
+  "ui/face_icons/face_faris.png",
   "ui/face_icons/face_hajime.png",
   "ui/face_icons/face_hiyori.png",
+  "ui/face_icons/face_khalil.png",
   "ui/face_icons/face_kumicho.png",
-  "ui/face_icons/face_rio.png",
   "ui/face_icons/face_maezono.png",
+  "ui/face_icons/face_maki.png",
   "ui/face_icons/face_mashiro.png",
+  "ui/face_icons/face_master_hookah.png",
   "ui/face_icons/face_minto.png",
   "ui/face_icons/face_minto_private.png",
+  "ui/face_icons/face_mukai_master.png",
   "ui/face_icons/face_naru.png",
   "ui/face_icons/face_noor.png",
   "ui/face_icons/face_pakki.png",
   "ui/face_icons/face_rei.png",
+  "ui/face_icons/face_rio.png",
+  "ui/face_icons/face_sai.png",
+  "ui/face_icons/face_saku.png",
+  "ui/face_icons/face_salaryman.png",
   "ui/face_icons/face_samechan.png",
+  "ui/face_icons/face_sheikh.png",
+  "ui/face_icons/face_shisha_9000.png",
+  "ui/face_icons/face_steve.png",
   "ui/face_icons/face_sui.png",
   "ui/face_icons/face_sumi.png",
   "ui/face_icons/face_tetsuko.png",
   "ui/face_icons/face_tsumugi.png",
   "ui/face_icons/face_uranaishi.png",
   "ui/face_icons/face_volk.png",
+  "ui/face_icons/face_yoru.png",
+  "ui/face_icons/new/face_adam.png",
+  "ui/face_icons/new/face_ageha.png",
+  "ui/face_icons/new/face_da_silva.png",
+  "ui/face_icons/new/face_dr_kemuri.png",
+  "ui/face_icons/new/face_emil.png",
+  "ui/face_icons/new/face_faris.png",
+  "ui/face_icons/new/face_hajime.png",
+  "ui/face_icons/new/face_hiyori.png",
+  "ui/face_icons/new/face_khalil.png",
+  "ui/face_icons/new/face_kumicho.png",
+  "ui/face_icons/new/face_maezono.png",
+  "ui/face_icons/new/face_maki.png",
+  "ui/face_icons/new/face_mashiro.png",
+  "ui/face_icons/new/face_master_hookah.png",
+  "ui/face_icons/new/face_minto.png",
+  "ui/face_icons/new/face_minto_private.png",
+  "ui/face_icons/new/face_mukai_master.png",
+  "ui/face_icons/new/face_naru.png",
+  "ui/face_icons/new/face_pakki.png",
+  "ui/face_icons/new/face_rei.png",
+  "ui/face_icons/new/face_sai.png",
+  "ui/face_icons/new/face_saku.png",
+  "ui/face_icons/new/face_salaryman.png",
+  "ui/face_icons/new/face_samechan.png",
+  "ui/face_icons/new/face_sheikh.png",
+  "ui/face_icons/new/face_shisha_9000.png",
+  "ui/face_icons/new/face_steve.png",
+  "ui/face_icons/new/face_sui.png",
+  "ui/face_icons/new/face_sumi.png",
+  "ui/face_icons/new/face_tetsuko.png",
+  "ui/face_icons/new/face_tsumugi.png",
+  "ui/face_icons/new/face_uranaishi.png",
+  "ui/face_icons/new/face_volk.png",
+  "ui/face_icons/new/face_yoru.png",
   "ui/making/bench_base.png",
   "ui/making/bowl_empty_clay.png",
   "ui/making/bowl_empty_hiyori.png",
@@ -3360,10 +3420,6 @@
   "ui/title_arts/title_art_hiyori_05_ramen_break.png",
   "ui/title_arts/title_art_hiyori_06_riverside_hoodie.png",
   "ui/title_arts/title_art_keyvisual_01.png",
-  "ui/title_arts/title_art_rio_01_night_tasting.png",
-  "ui/title_arts/title_art_rio_03_late_coffee.png",
-  "ui/title_arts/title_art_rio_04_rainy_neon_umbrella.png",
-  "ui/title_arts/title_art_rio_05_blend_library_command.png",
   "ui/title_arts/title_art_mashiro_01_heavy_smoke.png",
   "ui/title_arts/title_art_mashiro_02_tea_break.png",
   "ui/title_arts/title_art_mashiro_03_after_rain.png",
@@ -3377,6 +3433,10 @@
   "ui/title_arts/title_art_minto_06_after_hours_glasscare.png",
   "ui/title_arts/title_art_minto_07_balcony_mint.png",
   "ui/title_arts/title_art_naru_01_bakery_morning.png",
+  "ui/title_arts/title_art_rio_01_night_tasting.png",
+  "ui/title_arts/title_art_rio_03_late_coffee.png",
+  "ui/title_arts/title_art_rio_04_rainy_neon_umbrella.png",
+  "ui/title_arts/title_art_rio_05_blend_library_command.png",
   "ui/title_arts/title_art_samechan_01_shishark_test_run.png",
   "ui/title_arts/title_art_samechan_02_shark_movie.png",
   "ui/title_arts/title_art_samechan_03_aquarium.png",
@@ -3925,7 +3985,7 @@
     "ax": 0.4999,
     "aspect": 0.7467
    },
-   "suhail": {
+   "faris": {
     "faces": [
      "normal"
     ],
@@ -4126,6 +4186,18 @@
     "ax": 0.4996,
     "aspect": 0.7467,
     "topOverhang": 0.0025
+   },
+   "noor": {
+    "faces": [
+     "normal",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4741,
+    "aspect": 0.7467,
+    "anchor": "head"
    }
   },
   "nanami": {
@@ -4298,7 +4370,7 @@
     "ax": 0.4997,
     "aspect": 0.7467
    },
-   "suhail": {
+   "faris": {
     "faces": [
      "normal"
     ],
@@ -4521,6 +4593,1121 @@
     "ax": 0.4999,
     "aspect": 0.7467,
     "topOverhang": 0.0033
+   },
+   "noor": {
+    "faces": [
+     "normal",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4791,
+    "aspect": 0.7467,
+    "anchor": "head"
+   }
+  }
+ },
+ "faceIconVariants": {
+  "new": [
+   "face_adam.png",
+   "face_ageha.png",
+   "face_da_silva.png",
+   "face_dr_kemuri.png",
+   "face_emil.png",
+   "face_faris.png",
+   "face_hajime.png",
+   "face_hiyori.png",
+   "face_khalil.png",
+   "face_kumicho.png",
+   "face_maezono.png",
+   "face_maki.png",
+   "face_mashiro.png",
+   "face_master_hookah.png",
+   "face_minto.png",
+   "face_minto_private.png",
+   "face_mukai_master.png",
+   "face_naru.png",
+   "face_pakki.png",
+   "face_rei.png",
+   "face_sai.png",
+   "face_saku.png",
+   "face_salaryman.png",
+   "face_samechan.png",
+   "face_sheikh.png",
+   "face_shisha_9000.png",
+   "face_steve.png",
+   "face_sui.png",
+   "face_sumi.png",
+   "face_tetsuko.png",
+   "face_tsumugi.png",
+   "face_uranaishi.png",
+   "face_volk.png",
+   "face_yoru.png"
+  ]
+ },
+ "faceFrames": {
+  "classic": {
+   "adam": {
+    "box": [
+     333,
+     109,
+     199
+    ],
+    "eye": [
+     432,
+     220
+    ],
+    "unit": 115.4
+   },
+   "ageha": {
+    "box": [
+     375,
+     197,
+     208
+    ],
+    "eye": [
+     479,
+     336
+    ],
+    "unit": 120.7
+   },
+   "da_silva": {
+    "box": [
+     387,
+     4,
+     208
+    ],
+    "eye": [
+     490,
+     113
+    ],
+    "unit": 120.5
+   },
+   "dr_kemuri": {
+    "box": [
+     317,
+     81,
+     192
+    ],
+    "eye": [
+     413,
+     196
+    ],
+    "unit": 111.3
+   },
+   "emil": {
+    "box": [
+     359,
+     8,
+     199
+    ],
+    "eye": [
+     458,
+     108
+    ],
+    "unit": 115.5
+   },
+   "faris": {
+    "box": [
+     319,
+     49,
+     219
+    ],
+    "eye": [
+     428,
+     162
+    ],
+    "unit": 126.8
+   },
+   "hajime": {
+    "box": [
+     429,
+     155,
+     204
+    ],
+    "eye": [
+     531,
+     273
+    ],
+    "unit": 118.4
+   },
+   "hiyori": {
+    "box": [
+     331,
+     168,
+     194
+    ],
+    "eye": [
+     428,
+     312
+    ],
+    "unit": 112.2
+   },
+   "khalil": {
+    "box": [
+     321,
+     54,
+     203
+    ],
+    "eye": [
+     422,
+     164
+    ],
+    "unit": 117.8
+   },
+   "kumicho": {
+    "box": [
+     359,
+     10,
+     212
+    ],
+    "eye": [
+     465,
+     126
+    ],
+    "unit": 123.2
+   },
+   "maezono": {
+    "box": [
+     305,
+     35,
+     240
+    ],
+    "eye": [
+     424,
+     157
+    ],
+    "unit": 139.0
+   },
+   "maki": {
+    "box": [
+     362,
+     -10,
+     211
+    ],
+    "eye": [
+     468,
+     108
+    ],
+    "unit": 122.3
+   },
+   "mashiro": {
+    "box": [
+     347,
+     281,
+     199
+    ],
+    "eye": [
+     447,
+     405
+    ],
+    "unit": 115.7
+   },
+   "master_hookah": {
+    "box": [
+     329,
+     2,
+     184
+    ],
+    "eye": [
+     421,
+     102
+    ],
+    "unit": 106.5
+   },
+   "minto": {
+    "box": [
+     399,
+     235,
+     186
+    ],
+    "eye": [
+     492,
+     354
+    ],
+    "unit": 108.1
+   },
+   "mukai_master": {
+    "box": [
+     328,
+     3,
+     198
+    ],
+    "eye": [
+     428,
+     115
+    ],
+    "unit": 115.0
+   },
+   "naru": {
+    "box": [
+     365,
+     128,
+     193
+    ],
+    "eye": [
+     462,
+     238
+    ],
+    "unit": 111.8
+   },
+   "noor": {
+    "box": [
+     317,
+     12,
+     187
+    ],
+    "eye": [
+     410,
+     134
+    ],
+    "unit": 108.3
+   },
+   "pakki": {
+    "box": [
+     153,
+     190,
+     674
+    ]
+   },
+   "rei": {
+    "box": [
+     350,
+     -11,
+     210
+    ],
+    "eye": [
+     455,
+     108
+    ],
+    "unit": 121.9
+   },
+   "rio": {
+    "box": [
+     315,
+     159,
+     194
+    ],
+    "eye": [
+     412,
+     280
+    ],
+    "unit": 112.7
+   },
+   "sai": {
+    "box": [
+     357,
+     -9,
+     199
+    ],
+    "eye": [
+     456,
+     103
+    ],
+    "unit": 115.4
+   },
+   "saku": {
+    "box": [
+     322,
+     2,
+     202
+    ],
+    "eye": [
+     424,
+     136
+    ],
+    "unit": 117.2
+   },
+   "salaryman": {
+    "box": [
+     333,
+     67,
+     208
+    ],
+    "eye": [
+     438,
+     183
+    ],
+    "unit": 120.8
+   },
+   "samechan": {
+    "box": [
+     368,
+     260,
+     205
+    ],
+    "eye": [
+     470,
+     396
+    ],
+    "unit": 118.8
+   },
+   "sheikh": {
+    "box": [
+     348,
+     9,
+     180
+    ],
+    "eye": [
+     438,
+     94
+    ],
+    "unit": 104.5
+   },
+   "shisha_9000": {
+    "box": [
+     343,
+     0,
+     213
+    ],
+    "eye": [
+     450,
+     125
+    ],
+    "unit": 123.7
+   },
+   "steve": {
+    "box": [
+     359,
+     -19,
+     233
+    ],
+    "eye": [
+     476,
+     97
+    ],
+    "unit": 135.3
+   },
+   "sui": {
+    "box": [
+     313,
+     45,
+     207
+    ],
+    "eye": [
+     416,
+     157
+    ],
+    "unit": 120.0
+   },
+   "sumi": {
+    "box": [
+     344,
+     98,
+     192
+    ],
+    "eye": [
+     440,
+     198
+    ],
+    "unit": 111.4
+   },
+   "tetsuko": {
+    "box": [
+     359,
+     750,
+     225
+    ],
+    "eye": [
+     472,
+     860
+    ],
+    "unit": 130.8
+   },
+   "tsumugi": {
+    "box": [
+     322,
+     283,
+     220
+    ],
+    "eye": [
+     432,
+     420
+    ],
+    "unit": 127.7
+   },
+   "uranaishi": {
+    "box": [
+     295,
+     2,
+     241
+    ],
+    "eye": [
+     416,
+     144
+    ],
+    "unit": 107.7
+   },
+   "volk": {
+    "box": [
+     372,
+     4,
+     190
+    ],
+    "eye": [
+     468,
+     103
+    ],
+    "unit": 110.5
+   },
+   "yoru": {
+    "box": [
+     324,
+     7,
+     201
+    ],
+    "eye": [
+     425,
+     125
+    ],
+    "unit": 116.8
+   }
+  },
+  "new": {
+   "adam": {
+    "box": [
+     329,
+     48,
+     208
+    ],
+    "eye": [
+     432,
+     170
+    ],
+    "unit": 120.5
+   },
+   "ageha": {
+    "box": [
+     380,
+     197,
+     208
+    ],
+    "eye": [
+     484,
+     338
+    ],
+    "unit": 120.4
+   },
+   "da_silva": {
+    "box": [
+     397,
+     49,
+     199
+    ],
+    "eye": [
+     496,
+     157
+    ],
+    "unit": 115.4
+   },
+   "dr_kemuri": {
+    "box": [
+     294,
+     55,
+     196
+    ],
+    "eye": [
+     392,
+     172
+    ],
+    "unit": 113.4
+   },
+   "emil": {
+    "box": [
+     366,
+     43,
+     198
+    ],
+    "eye": [
+     464,
+     144
+    ],
+    "unit": 114.6
+   },
+   "faris": {
+    "box": [
+     285,
+     47,
+     215
+    ],
+    "eye": [
+     392,
+     164
+    ],
+    "unit": 125.0
+   },
+   "hajime": {
+    "box": [
+     370,
+     54,
+     216
+    ],
+    "eye": [
+     478,
+     186
+    ],
+    "unit": 125.1
+   },
+   "hiyori": {
+    "box": [
+     414,
+     134,
+     198
+    ],
+    "eye": [
+     513,
+     282
+    ],
+    "unit": 108.8
+   },
+   "khalil": {
+    "box": [
+     323,
+     55,
+     201
+    ],
+    "eye": [
+     424,
+     161
+    ],
+    "unit": 116.8
+   },
+   "kumicho": {
+    "box": [
+     346,
+     39,
+     216
+    ],
+    "eye": [
+     454,
+     153
+    ],
+    "unit": 125.1
+   },
+   "maezono": {
+    "box": [
+     296,
+     34,
+     241
+    ],
+    "eye": [
+     416,
+     164
+    ],
+    "unit": 139.8
+   },
+   "maki": {
+    "box": [
+     364,
+     43,
+     204
+    ],
+    "eye": [
+     466,
+     158
+    ],
+    "unit": 118.2
+   },
+   "mashiro": {
+    "box": [
+     313,
+     37,
+     259
+    ],
+    "eye": [
+     442,
+     202
+    ],
+    "unit": 150.0
+   },
+   "master_hookah": {
+    "box": [
+     328,
+     40,
+     192
+    ],
+    "eye": [
+     424,
+     144
+    ],
+    "unit": 111.4
+   },
+   "minto": {
+    "box": [
+     314,
+     55,
+     212
+    ],
+    "eye": [
+     420,
+     198
+    ],
+    "unit": 123.1
+   },
+   "mukai_master": {
+    "box": [
+     300,
+     56,
+     187
+    ],
+    "eye": [
+     394,
+     166
+    ],
+    "unit": 108.6
+   },
+   "naru": {
+    "box": [
+     338,
+     46,
+     200
+    ],
+    "eye": [
+     438,
+     168
+    ],
+    "unit": 115.9
+   },
+   "pakki": {
+    "box": [
+     180,
+     222,
+     632
+    ]
+   },
+   "rei": {
+    "box": [
+     360,
+     43,
+     206
+    ],
+    "eye": [
+     463,
+     162
+    ],
+    "unit": 119.8
+   },
+   "sai": {
+    "box": [
+     384,
+     48,
+     180
+    ],
+    "eye": [
+     474,
+     148
+    ],
+    "unit": 104.3
+   },
+   "saku": {
+    "box": [
+     315,
+     54,
+     204
+    ],
+    "eye": [
+     417,
+     188
+    ],
+    "unit": 118.5
+   },
+   "salaryman": {
+    "box": [
+     319,
+     53,
+     199
+    ],
+    "eye": [
+     418,
+     166
+    ],
+    "unit": 115.3
+   },
+   "samechan": {
+    "box": [
+     338,
+     54,
+     246
+    ],
+    "eye": [
+     462,
+     221
+    ],
+    "unit": 142.7
+   },
+   "sheikh": {
+    "box": [
+     323,
+     57,
+     165
+    ],
+    "eye": [
+     406,
+     136
+    ],
+    "unit": 95.8
+   },
+   "shisha_9000": {
+    "box": [
+     347,
+     53,
+     195
+    ],
+    "eye": [
+     444,
+     166
+    ],
+    "unit": 113.2
+   },
+   "steve": {
+    "box": [
+     354,
+     38,
+     211
+    ],
+    "eye": [
+     460,
+     148
+    ],
+    "unit": 122.5
+   },
+   "sui": {
+    "box": [
+     310,
+     48,
+     198
+    ],
+    "eye": [
+     409,
+     156
+    ],
+    "unit": 114.9
+   },
+   "sumi": {
+    "box": [
+     321,
+     55,
+     199
+    ],
+    "eye": [
+     421,
+     162
+    ],
+    "unit": 115.5
+   },
+   "tetsuko": {
+    "box": [
+     356,
+     748,
+     227
+    ],
+    "eye": [
+     470,
+     866
+    ],
+    "unit": 131.8
+   },
+   "tsumugi": {
+    "box": [
+     333,
+     284,
+     212
+    ],
+    "eye": [
+     439,
+     417
+    ],
+    "unit": 122.8
+   },
+   "uranaishi": {
+    "box": [
+     274,
+     52,
+     237
+    ],
+    "eye": [
+     394,
+     193
+    ],
+    "unit": 99.8
+   },
+   "volk": {
+    "box": [
+     381,
+     47,
+     178
+    ],
+    "eye": [
+     470,
+     140
+    ],
+    "unit": 103.0
+   },
+   "yoru": {
+    "box": [
+     324,
+     46,
+     192
+    ],
+    "eye": [
+     420,
+     164
+    ],
+    "unit": 111.3
+   }
+  }
+ },
+ "continuePortraitVariants": {
+  "new": {
+   "sumi": {
+    "normal": {
+     "cx": 0.46931,
+     "top": 0.04583,
+     "size": 0.16583
+    },
+    "serious": {
+     "cx": 0.46931,
+     "top": 0.04583,
+     "size": 0.16583
+    },
+    "smile": {
+     "cx": 0.46931,
+     "top": 0.04583,
+     "size": 0.16583
+    },
+    "surprise": {
+     "cx": 0.46931,
+     "top": 0.04583,
+     "size": 0.16583
+    },
+    "thinking": {
+     "cx": 0.46931,
+     "top": 0.04583,
+     "size": 0.16583
+    }
+   },
+   "tsumugi": {
+    "baito_bow": {
+     "cx": 0.48996,
+     "top": 0.23667,
+     "size": 0.17667
+    },
+    "baito_evil": {
+     "cx": 0.48996,
+     "top": 0.23667,
+     "size": 0.17667
+    },
+    "baito_normal": {
+     "cx": 0.48996,
+     "top": 0.23667,
+     "size": 0.17667
+    },
+    "baito_sad": {
+     "cx": 0.48996,
+     "top": 0.23667,
+     "size": 0.17667
+    },
+    "baito_serious": {
+     "cx": 0.48996,
+     "top": 0.23667,
+     "size": 0.17667
+    },
+    "baito_smile": {
+     "cx": 0.48996,
+     "top": 0.23667,
+     "size": 0.17667
+    },
+    "baito_surprise": {
+     "cx": 0.48996,
+     "top": 0.23667,
+     "size": 0.17667
+    },
+    "bow": {
+     "cx": 0.48996,
+     "top": 0.23667,
+     "size": 0.17667
+    },
+    "evil": {
+     "cx": 0.48996,
+     "top": 0.23667,
+     "size": 0.17667
+    },
+    "normal": {
+     "cx": 0.48996,
+     "top": 0.23667,
+     "size": 0.17667
+    },
+    "sad": {
+     "cx": 0.48996,
+     "top": 0.23667,
+     "size": 0.17667
+    },
+    "serious": {
+     "cx": 0.48996,
+     "top": 0.23667,
+     "size": 0.17667
+    },
+    "smile": {
+     "cx": 0.48996,
+     "top": 0.23667,
+     "size": 0.17667
+    },
+    "surprise": {
+     "cx": 0.48996,
+     "top": 0.23667,
+     "size": 0.17667
+    }
+   },
+   "minto": {
+    "normal": {
+     "cx": 0.46875,
+     "top": 0.04583,
+     "size": 0.17667
+    },
+    "ura_normal": {
+     "cx": 0.46875,
+     "top": 0.05333,
+     "size": 0.17667
+    },
+    "ura_sad": {
+     "cx": 0.46875,
+     "top": 0.05333,
+     "size": 0.17667
+    },
+    "ura_smile": {
+     "cx": 0.46875,
+     "top": 0.05333,
+     "size": 0.17667
+    },
+    "ura_smug": {
+     "cx": 0.46875,
+     "top": 0.05333,
+     "size": 0.17667
+    },
+    "ura_surprise": {
+     "cx": 0.46875,
+     "top": 0.05333,
+     "size": 0.17667
+    }
+   },
+   "ageha": {
+    "normal": {
+     "cx": 0.54018,
+     "top": 0.16417,
+     "size": 0.17333
+    }
+   },
+   "mashiro": {
+    "normal": {
+     "cx": 0.49386,
+     "top": 0.03083,
+     "size": 0.21583
+    },
+    "yawn": {
+     "cx": 0.49386,
+     "top": 0.03083,
+     "size": 0.21583
+    }
+   },
+   "samechan": {
+    "excited": {
+     "cx": 0.51451,
+     "top": 0.04417,
+     "size": 0.205
+    },
+    "normal": {
+     "cx": 0.51451,
+     "top": 0.045,
+     "size": 0.205
+    },
+    "serious": {
+     "cx": 0.51451,
+     "top": 0.04417,
+     "size": 0.205
+    },
+    "smile": {
+     "cx": 0.51451,
+     "top": 0.04417,
+     "size": 0.205
+    },
+    "surprise": {
+     "cx": 0.51451,
+     "top": 0.04417,
+     "size": 0.205
+    },
+    "ventriloquism": {
+     "cx": 0.51451,
+     "top": 0.04333,
+     "size": 0.205
+    }
+   },
+   "hiyori": {
+    "axe_laugh": {
+     "cx": 0.57254,
+     "top": 0.11167,
+     "size": 0.165
+    },
+    "axe_normal": {
+     "cx": 0.57254,
+     "top": 0.1125,
+     "size": 0.16333
+    },
+    "axe_shout": {
+     "cx": 0.57254,
+     "top": 0.11167,
+     "size": 0.165
+    },
+    "axe_throw": {
+     "cx": 0.57199,
+     "top": 0.10917,
+     "size": 0.16917
+    },
+    "love_blush": {
+     "cx": 0.57254,
+     "top": 0.1125,
+     "size": 0.16333
+    },
+    "normal": {
+     "cx": 0.57254,
+     "top": 0.11167,
+     "size": 0.165
+    },
+    "office_mukii": {
+     "cx": 0.57254,
+     "top": 0.1125,
+     "size": 0.16333
+    },
+    "sad": {
+     "cx": 0.57254,
+     "top": 0.11167,
+     "size": 0.165
+    },
+    "serious": {
+     "cx": 0.57254,
+     "top": 0.11167,
+     "size": 0.165
+    },
+    "smile": {
+     "cx": 0.57254,
+     "top": 0.1125,
+     "size": 0.16333
+    },
+    "student_smile": {
+     "cx": 0.57254,
+     "top": 0.11167,
+     "size": 0.165
+    },
+    "surprise": {
+     "cx": 0.57254,
+     "top": 0.11167,
+     "size": 0.165
+    },
+    "tears": {
+     "cx": 0.57254,
+     "top": 0.1125,
+     "size": 0.16333
+    }
    }
   }
  }

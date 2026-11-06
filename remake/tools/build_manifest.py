@@ -168,23 +168,18 @@ def title_arts():
     return sorted(out, key=lambda art: (rank.get(art["character"], len(rank)), art["file"]))
 
 
-def continue_portraits():
-    """正規立ち絵の顔を中央に寄せる。顔アイコンと同じ測定値を元画像の比で記録。"""
+def continue_portraits(style="classic"):
+    """正規立ち絵の顔を中央に寄せる。顔アイコンと同じ測定値を元画像の比で記録（tools/make_face_icons.py）。"""
     sys.path.insert(0, str(ROOT / "tools"))
-    from make_face_icons import face_box
-    out = {}
-    for character in ("sumi", "tsumugi", "minto", "rio", "ageha", "mashiro", "samechan", "hiyori"):
-        faces = {}
-        for path in sorted((ASSETS / "sprites/characters" / character).glob(f"chr_{character}_*.png")):
-            image = Image.open(path).convert("RGBA")
-            box = face_box(character, image)
-            if box:
-                x, y, side = box
-                face = path.stem.removeprefix(f"chr_{character}_")
-                faces[face] = {"cx": round((x + side / 2) / image.width, 5),
-                               "top": round(y / image.height, 5), "size": round(side / image.height, 5)}
-        out[character] = faces
-    return out
+    from make_face_icons import continue_portraits as measure_continue
+    return measure_continue(style)
+
+
+def face_frames():
+    """顔アイコンと同じ顔の枠（作業台の審査員・心得の盤が使う）。tools/make_face_icons.py の frames()"""
+    sys.path.insert(0, str(ROOT / "tools"))
+    from make_face_icons import frames
+    return frames()
 
 
 def intro_art(character_ids=None):
@@ -466,10 +461,16 @@ def main():
         # 仮置きCG（文字だけの画像）は載せない＝場面では飛ばし、ギャラリーにも出さない
         "cgs": [f for f in listing("cgs") if not is_placeholder(ASSETS / "cgs" / f)],
         "faceIcons": listing("ui/face_icons"),
+        # 画風ごとの顔アイコン（assets/ui/face_icons/<画風>/）と顔の枠は tools/make_face_icons.py が作る
+        "faceIconVariants": {d.name: listing(f"ui/face_icons/{d.name}") for d in sorted((ASSETS / "ui/face_icons").iterdir())
+                             if d.is_dir() and listing(f"ui/face_icons/{d.name}")},
+        "faceFrames": face_frames(),
         "making": listing("ui/making"),
         "sceneProps": listing("ui/scene_props"),
         "continueUI": listing("ui/continue"),
         "continuePortraits": continue_portraits(),
+        "continuePortraitVariants": {style: continue_portraits(style) for style in ("new", "nanami")
+                                     if (ROOT / "assets/ui/face_icons" / style).is_dir()},
         "introArt": intro_art(),
         "titleArts": title_arts(),
         "makingBox": making_boxes(),

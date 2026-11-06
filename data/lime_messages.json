@@ -22,6 +22,11 @@
         "{reason}",
         "……代わりと言っちゃなんだが、給料は弾むぞ"
       ],
+      "repeat_messages": [
+        "またで悪い。今日の昼、入れるか？",
+        "{reason}",
+        "前に頼んだ分も含めて、きっちり色はつける"
+      ],
       "decline_response": {
         "text": "……そうか。なら、こっちで回す"
       },
@@ -2632,6 +2637,351 @@
         {
           "text": "今日もおつかれさまです",
           "response": "ありがとう。……今日は、消えずに定時で帰るね",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_ch3_sumi_tokyo_settle",
+      "sender": "sumi",
+      "chapter": 3,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 2,
+      "region": "tokyo",
+      "priority": 1,
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "ムカイから、着いたって聞いた"
+        },
+        {
+          "sender": "sumi",
+          "text": "向こうの飯は食えてるか。寝る時間だけは削るなよ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ちゃんと食べてます",
+          "response": "おう。それならいい",
+          "affinity": 1
+        },
+        {
+          "text": "ムカイさん、よくしてくれてます",
+          "response": "あいつは面倒見がいい。甘えすぎるなよ",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_sumi_settle",
+      "sender": "sumi",
+      "chapter": 4,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 2,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "そっちは暑いだろ。水は多めに持って歩け"
+        },
+        {
+          "sender": "sumi",
+          "text": "時差で眠れなくても、横にはなっとけ"
+        },
+        {
+          "sender": "sumi",
+          "text": "店のことは気にすんな。こっちは回ってる"
+        }
+      ],
+      "replies": [
+        {
+          "text": "水、多めに持ち歩きます",
+          "response": "おう。喉が渇く前に飲めよ",
+          "affinity": 1
+        },
+        {
+          "text": "スミさんも、無理しないでください",
+          "response": "俺の心配はいらん。お前は自分の台のことだけ考えろ",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_tsumugi_counter",
+      "sender": "tsumugi",
+      "chapter": 4,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 3,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "……おはようございます。昨日も、tonariのカウンターにいました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "ほかの常連さんに、はじめさんはいつ帰ってくるのか聞かれました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……世界大会が終わったら、と答えておきました"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ちゃんと帰るって伝えて",
+          "response": "……はい。お土産話も付きます、と言っておきます",
+          "affinity": 2
+        },
+        {
+          "text": "スミさん、一人で大変そう？",
+          "response": "……いえ。いつもどおり、静かな色の煙です",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_mashiro_mukai",
+      "sender": "mashiro",
+      "chapter": 4,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 5,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mashiro",
+          "text": "はじめくん、おはよぉ。こっちは、もうお昼過ぎだよぉ"
+        },
+        {
+          "sender": "mashiro",
+          "text": "ムカイさんが新しい豆を試してて、お店じゅうコーヒーの匂い。僕は、いつもの紅茶"
+        },
+        {
+          "sender": "mashiro",
+          "text": "……応援してるよぉ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ムカイさんらしいね",
+          "response": "うん。最後は甘いラテにしてたぁ",
+          "affinity": 1
+        },
+        {
+          "text": "ましろちゃんも、無理しないでね",
+          "response": "ふふ。はじめくんこそ、だよぉ",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_ageha_melty",
+      "sender": "ageha",
+      "chapter": 4,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 7,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "ハジメっち〜！ ドバイどう？ 暑すぎて溶けてない？笑"
+        },
+        {
+          "sender": "ageha",
+          "text": "ギャル友と、向こうのシーシャ屋の動画見てた。お客さん、みんなゆったり吸ってて、いいな〜って"
+        },
+        {
+          "sender": "ageha",
+          "text": "空の写真、撮れたら送って！ うちの待ち受けにする笑"
+        }
+      ],
+      "replies": [
+        {
+          "text": "撮れたら送ります",
+          "response": "やった！ 一番きれいなやつね",
+          "affinity": 1
+        },
+        {
+          "text": "帰ったら、向こうの話をします",
+          "response": "絶対ね！ 白いクマの席、空けとくから",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_saku_stream",
+      "sender": "saku",
+      "chapter": 4,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 9,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "世界大会の配信、福岡で見るよ"
+        },
+        {
+          "sender": "saku",
+          "text": "僕が言うのも変だけど、隣の台の香りが強い時は、確かめる前に水を一口"
+        },
+        {
+          "sender": "saku",
+          "text": "鼻が前の香りに慣れたままだと、自分の台を読み違えるから"
+        }
+      ],
+      "replies": [
+        {
+          "text": "水、用意しておきます",
+          "response": "うん。それだけで、少し戻るから",
+          "affinity": 1
+        },
+        {
+          "text": "綾取さんが言うと、重みが違いますね",
+          "response": "でしょ。仕掛けた側だからね",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_sumi_eve",
+      "sender": "sumi",
+      "chapter": 4,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 11,
+      "region": "dubai",
+      "priority": 1,
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "そろそろ本番だな"
+        },
+        {
+          "sender": "sumi",
+          "text": "出発前に言ったこと、覚えてるか。葉より先に、顔を見ろ"
+        },
+        {
+          "sender": "sumi",
+          "text": "誰に出す一台か、答えは当日の台で見せればいい"
+        }
+      ],
+      "replies": [
+        {
+          "text": "はい、当日の台で見せます",
+          "response": "おう。こっちは店で見てる",
+          "affinity": 2
+        },
+        {
+          "text": "顔を見るの、忘れません",
+          "response": "それでいい。あとは、よく寝ろ",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_saku_title",
+      "sender": "saku",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 2,
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "福岡の店で、決勝の配信を見てたよ"
+        },
+        {
+          "sender": "saku",
+          "text": "最後の調整、君が自分で決めたのが、画面越しでも分かった"
+        },
+        {
+          "sender": "saku",
+          "text": "優勝おめでとう。こっちも、熱の順番を一から見直してる"
+        }
+      ],
+      "replies": [
+        {
+          "text": "見ててくれたんですね",
+          "response": "うん。閉店後に、もう一回見た",
+          "affinity": 1
+        },
+        {
+          "text": "今度、福岡の店に行かせてください",
+          "response": "いいよ。伏せたままの一台、用意しとく",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_kumicho_title",
+      "sender": "kumicho",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 3,
+      "region": "home",
+      "exclude_flag": "ch2_kumicho_after_ch2_done",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "kumicho",
+          "text": "あんちゃん、世界一の知らせ、こっちにも届いてやすぜ"
+        },
+        {
+          "sender": "kumicho",
+          "text": "店の前を通る連中まで、あんちゃんの名を口にしてやしてね"
+        },
+        {
+          "sender": "kumicho",
+          "text": "柚ヶ谷に来るついでがありゃ、一服つけていきなせえ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "近いうちに伺います",
+          "response": "おう。炭を起こして待ってやす",
+          "affinity": 2
+        },
+        {
+          "text": "なんだか照れますね",
+          "response": "照れるこたぁねえ。胸を張りなせえ",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_rei_title",
+      "sender": "rei",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 5,
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "rei",
+          "text": "……世界大会、おめでとう"
+        },
+        {
+          "sender": "rei",
+          "text": "何て送るか、ずっと考えてた。……短いのしか、残らなかった"
+        }
+      ],
+      "replies": [
+        {
+          "text": "十分、伝わりました",
+          "response": "……そう。なら、よかった",
+          "affinity": 2
+        },
+        {
+          "text": "今度、お店に行きます",
+          "response": "……うん。流す曲、選んどく",
           "affinity": 1
         }
       ]

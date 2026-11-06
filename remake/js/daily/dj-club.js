@@ -1,9 +1,12 @@
-// 東京の路地の地下のクラブ「SEAM」（第3章の夜の自由時間・DJS10/DJS12）。店主は針間ヨル（characters.json の yoru）。
+// 東京の路地の地下のクラブ「SEAM」（第3章の夜の自由時間・DJS10/DJS12。第5章の東京に泊まっている夜も同じ・#2033）。店主は針間ヨル（characters.json の yoru）。
 // 初めて入る夜だけ出会いの場面（ch3_club_first → 登場カットイン → ch3_club_first_after）、初めてAランク以上を出した夜だけヨルとの会話（ch3_club_a_talk）を流す。
 // ミニゲームなので時間・お金・体力・好感度は変えない（#2113）。記録（state.dj）と既読フラグだけを保存する。
 // お金が動くのは、メニューでモニターヘッドホン（VOL07）を買うときだけ。
-// 入口は chapters/ch3.js の freeTimeChoices（djNightChoices）と openTokyoMap（action.dj → visitDjClub）。
+// 入口は chapters/ch3.js の freeTimeChoices（djNightChoices）と openTokyoMap（action.dj → visitDjClub）、
+// 日常ループの東京の地図（第3章 ch3-tokyo-daily.js・第5章 ch5-tokyo.js の「地下の店」）。
+// 第3章で会っていなくても、第5章で初めて入る夜は同じ出会いの場面（ヨルは mukai の常連で、はじめは第5章も mukai を手伝う）。
 import { state, save, config } from "../core/state.js";
+import { seated } from "../core/game-seat.js"; // ミニゲームの入口と出口（#2688 F13）
 import { el } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
 import { layers, showScreen, setBg, toast } from "../core/ui.js";
@@ -42,7 +45,7 @@ const bestText = (s, id) => {
 
 /** 入ってセットを選ぶ。戻ると false を返す（遊んでも行動は進まないので常に false）。 */
 export async function visitDjClub({ isCurrent = () => true, signal = null } = {}) {
-  if (active || !state || state.chapter !== 3 || signal?.aborted || !isCurrent()) return false;
+  if (active || !state || ![3, 5].includes(state.chapter) || signal?.aborted || !isCurrent()) return false;
   active = true;
   const owner = state, controller = new AbortController();
   const current = () => !controller.signal.aborted && state === owner && isCurrent();
@@ -95,7 +98,7 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
       if (!pick || !current()) break;
       host.hidden = true;
       stopBgm(0.4);
-      const { results } = await runDjSet({ host: document.getElementById("stage") || layers.screen, set: pick, signal: controller.signal,
+      const { results } = await seated("DJ SET", () => runDjSet({ host: document.getElementById("stage") || layers.screen, set: pick, signal: controller.signal,
         muted: !!config.mute, volume: config.bgmVolume, phones: ownsGear(owner, "gear_headphones"),
         onResult: result => {
           if (!current()) return;
@@ -103,7 +106,7 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
           if (!saved) return;
           save();
           if (saved.newBest) toast(`${DJ_SETS[result.set - 1].name} 自己ベスト ${result.rank}・${result.total}点`, { kind: "good" });
-        } });
+        } }));
       if (!current()) break;
       if (bgmBefore) playBgm(bgmBefore);
       const last = results.at(-1);

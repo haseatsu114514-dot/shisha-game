@@ -135,7 +135,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "うん。どっちの話も聞きたいです"
+          "text": "うん。どっちの話も聞きたい"
         },
         {
           "speaker": "minto",
@@ -226,7 +226,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "好きだよ、……急に照れるな"
+          "text": "好きだよ。……口にすると、照れるもんだな"
         },
         {
           "speaker": "ageha",
@@ -294,7 +294,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も。次は一緒に何も作らなくてもいいね"
+          "text": "俺も。次も、二人で何も作らない日にしよう"
         },
         {
           "speaker": "mashiro",
@@ -483,6 +483,65 @@
       }
     },
     {
+      "dialogue_id": "epilogue_noor",
+      "comment": "DSR20 ヌールの後日談。恋人がヌール一人の時だけ（selectStoryEnding）。ヌールが日本へ来て、今度ははじめがガイドをする（ch4_noor_cafe_4 の約束）。大会の結果には触れない。能力値は上げない。",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕方のtonari。扉が開いて、大きなスーツケースが先に入ってきた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ハジメ！ 来ちゃった。……ほんとに来ちゃった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "いらっしゃい、ヌールさん。長旅、お疲れさまでした"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "約束、覚えてる？ 今度は、ハジメがガイドの番"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "もちろん。行きたい場所のリスト、全部回りましょう"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "全部は無理。……一日一か所にして、何回も来るから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの奥で、スミさんが黙って炭を起こし始めた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "……ここが、ハジメの煙の始まりの場所？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。今日は、俺が一台作ります。ダブルアップルで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "もらった素焼きのハガルを出すと、ヌールさんは小さく笑って、俺の手を握った。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ending_daily_smoke",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside.png",
@@ -600,6 +659,25 @@
         {
           "speaker": "",
           "face": "",
+          "text": "博士は胸ポケットへ手をやりかけて、やめた。ペンは、白衣に挿したままだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を遠めに置いた一台を出す。博士は一口吸って、ホースを膝に置いた。"
+        },
+        {
+          "type": "sfx",
+          "id": "bubbling"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "泡の音と、グラスの触れる音。博士はしばらく、何もせずに聞いていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "優勝の写真は、カウンターの端に飾ってある。"
         },
         {
@@ -610,7 +688,7 @@
         {
           "speaker": "customer",
           "face": "normal",
-          "text": "はじめくん、あとで友達が来るんだけど、もう一台お願いしてもいい？"
+          "text": "はじめさん、あとでもう一人来るんですけど、もう一台お願いできますか？"
         },
         {
           "speaker": "hajime",

@@ -32,13 +32,13 @@ try {
     const { config } = await import('./js/core/state.js');
     const { createContinueView } = await import('./js/chapters/continue-view.js');
     const { SUMI_CONTINUE_SCRIPTS } = await import('./js/chapters/gameover.js');
-    const { PREMIUM_CONTINUE_SCRIPTS } = await import('./js/chapters/continue-premium.js');
+    const { LOVER_CONTINUE_SCRIPTS } = await import('./js/chapters/continue-lovers.js');
     config.bgmVolume = config.seVolume = 0;
     window.closeupQA = {
       mount(speaker, face) {
         const view = createContinueView({
-          script: speaker === 'sumi' ? SUMI_CONTINUE_SCRIPTS[0] : PREMIUM_CONTINUE_SCRIPTS[speaker],
-          speaker, character: speaker, premium: speaker !== 'sumi',
+          script: speaker === 'sumi' ? SUMI_CONTINUE_SCRIPTS[0] : LOVER_CONTINUE_SCRIPTS[speaker],
+          speaker, character: speaker, lover: speaker !== 'sumi', layout: 'neon',
         });
         document.querySelector('#screen').replaceChildren(view.root);
         this.view = view;
@@ -52,7 +52,8 @@ try {
         const view = this.mount(speaker, face);
         await Promise.all([...view.root.querySelectorAll('img')].map(i => i.decode()));
         await document.fonts.ready;
-        const info = portraitInfo(speaker, face), f = DB.manifest.continuePortraits[info.folder][info.face];
+        const { continueFraming } = await import('./js/chapters/continue-view.js');
+        const info = portraitInfo(speaker, face, view.root.dataset.portraitStyle), f = continueFraming(info);
         const stage = document.querySelector('#stage').getBoundingClientRect(), scale = stage.width / 1280;
         const box = element => {
           const r = element.getBoundingClientRect();
@@ -72,7 +73,8 @@ try {
         view.face(face, false);
         const image = view.root.querySelector('.go-sumi-img');
         await image.decode();
-        const f = DB.manifest.continuePortraits[speaker][face], before = image.style.cssText;
+        const { continueFraming } = await import('./js/chapters/continue-view.js');
+        const f = continueFraming(portraitInfo(speaker, face, view.root.dataset.portraitStyle)), before = image.style.cssText;
         view.setCaption('台詞送りで構図を変えない');
         view.reveal(.2);
         view.reveal();

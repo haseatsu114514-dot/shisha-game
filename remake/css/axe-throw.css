@@ -162,7 +162,7 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 .axe-coach-card { display: grid; grid-template-rows: auto minmax(0,1fr) auto; width: min(760px,100%); max-height: 100%; min-height: 0; gap: 16px; padding: 22px; border: 1px solid #b99760; border-radius: 16px; background: linear-gradient(145deg,#26312b,#151e19); box-shadow: 0 18px 70px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.06); }
 .axe-coach-header { display: flex; align-items: center; gap: 13px; min-width: 0; }
 .axe-coach-portrait-frame { position: relative; flex: 0 0 62px; width: 62px; height: 62px; overflow: hidden; border: 1px solid #9c8158; border-radius: 50%; background: #3c4132; }
-.axe-coach-portrait { position: absolute; left: 50%; top: 0; width: 260px; max-width: none; height: auto; transform: translateX(-48.61%); }
+.axe-coach-portrait { --portrait-width: 260px; position: absolute; left: 50%; top: calc(5px - var(--head-ratio) * var(--portrait-width)); width: var(--portrait-width); max-width: none; height: auto; transform: translateX(calc(-1 * var(--portrait-ax))); }
 .axe-coach-identity { min-width: 0; }
 .axe-coach-identity small, .axe-coach-identity strong { display: block; }
 .axe-coach-identity small { margin-bottom: 3px; color: #baa783; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
@@ -255,7 +255,7 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
   .axe-coach-card { padding: 16px; gap: 13px; border-radius: 13px; }
   .axe-coach-header { gap: 10px; }
   .axe-coach-portrait-frame { flex-basis: 52px; width: 52px; height: 52px; }
-  .axe-coach-portrait { width: 220px; }
+  .axe-coach-portrait { --portrait-width: 220px; }
   .axe-coach-identity strong { font-size: 16px; }
   .axe-coach-progress { font-size: 12px; font-weight: 700; }
   .axe-coach-title { font-size: 19px; }
@@ -350,7 +350,7 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
   .axe-coach-card { width: min(760px,100%); padding: 12px 16px; gap: 8px; border-radius: 12px; }
   .axe-coach-header { gap: 10px; }
   .axe-coach-portrait-frame { flex-basis: 42px; width: 42px; height: 42px; }
-  .axe-coach-portrait { width: 180px; }
+  .axe-coach-portrait { --portrait-width: 180px; }
   .axe-coach-identity small { font-size: 12px; font-weight: 700; }
   .axe-coach-identity strong { font-size: 15px; }
   .axe-coach-progress { font-size: 12px; font-weight: 700; }
@@ -494,85 +494,6 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 /* Secondary readouts kept for screen readers only; the board, gauge and result card show the same thing. */
 .axe-game .axe-quiet { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
 
-/* 第1〜2章の斧投げ。紙テーマの面・文字・状態色だけを差し替える。
-   的・照準・力の意味色と寸法は axe-throw.css、旧テーマは既存のまま。 */
-html:root[data-ui-theme="paper"] .axe-game {
-  --axe-amber: var(--amber-ink); --axe-line: var(--paper-line); --axe-muted: var(--paper-muted);
-}
-html:root[data-ui-theme="paper"] :is(.axe-header, .axe-panel, .axe-rules-card, .axe-coach-card) {
-  color: var(--paper-ink); background: var(--paper);
-  border-color: var(--paper-line); box-shadow: 0 8px 24px #110a2233;
-  border-image: var(--paper-art) 72 fill / 18px / 0 stretch; text-shadow: none;
-}
-html:root[data-ui-theme="paper"] .axe-header { border-radius: 6px; }
-html:root[data-ui-theme="paper"] :is(.axe-header h1, .axe-total strong, .axe-round, .axe-live-score strong, .axe-rank strong, .axe-rank span, .axe-match-records strong, .axe-coach-title, .axe-rules h2, .axe-rules h3) { color: var(--lavender); text-shadow: none; }
-html:root[data-ui-theme="paper"] :is(.axe-total small, .axe-total > span, .axe-header p, .axe-result-tip, .axe-keyhint, .axe-steps span, .axe-steps [data-state="waiting"] strong, .axe-live-label, .axe-live-reason, .axe-coach-progress, .axe-coach-identity small) { color: var(--paper-muted); }
-html:root[data-ui-theme="paper"] :is(.axe-total, .axe-live-score, .axe-scores > span, .axe-steps li, .axe-result-card, .axe-match-score, .axe-coach-diagram > section) {
-  color: var(--paper-ink); border-color: var(--paper-line); background: var(--paper-card); box-shadow: none;
-}
-html:root[data-ui-theme="paper"] :is(.axe-scores i, .axe-scores strong) { color: var(--paper-muted); }
-html:root[data-ui-theme="paper"] .axe-scores [data-filled="true"] strong { color: var(--paper-ink); }
-html:root[data-ui-theme="paper"] .axe-scores [data-current="true"],
-html:root[data-ui-theme="paper"] .axe-steps [data-state="live"] { border-color: var(--lavender); background: var(--lavender-soft); box-shadow: inset 0 2px var(--lavender); }
-html:root[data-ui-theme="paper"] :is(.axe-scores [data-current="true"] i, .axe-steps [data-state="live"] span) { color: var(--lavender); }
-html:root[data-ui-theme="paper"] :is(.axe-scores [data-outcome="bull"] strong, .axe-scores [data-outcome="killshot"] strong) { color: var(--amber-ink); }
-html:root[data-ui-theme="paper"] :is(.axe-scores [data-outcome="drop"] strong, .axe-scores [data-outcome="miss"] strong, .axe-scores [data-outcome="killshot-miss"] strong) { color: #a33f44; }
-html:root[data-ui-theme="paper"] :is(.axe-steps [data-state="locked"] strong, .axe-feedback, .axe-steadiness) { color: #30664b; }
-html:root[data-ui-theme="paper"] :is(.axe-button, .axe-header .axe-button) {
-  color: var(--lavender); background: var(--paper-card); border-color: var(--lavender-line);
-  border-image: none; box-shadow: none; text-shadow: none;
-}
-html:root[data-ui-theme="paper"] .axe-button:hover:not(:disabled) { color: var(--lavender); background: var(--lavender-soft); border-color: var(--lavender); }
-html:root[data-ui-theme="paper"] .axe-button[aria-pressed="true"] {
-  color: #fff; background: var(--lavender-art) center / 256px repeat, var(--lavender); border-color: var(--lavender); box-shadow: inset 0 -3px #c3a9d5;
-}
-html:root[data-ui-theme="paper"] .axe-button.axe-primary,
-html:root[data-ui-theme="paper"] .axe-button.axe-primary:hover:not(:disabled) { color: #fff; background: var(--lavender-art) center / 256px repeat, var(--lavender); border-color: var(--lavender); }
-html:root[data-ui-theme="paper"] :is(.axe-button, .axe-menu a):focus-visible { outline-color: var(--amber-ink); }
-html:root[data-ui-theme="paper"] :is(.axe-call-status, .axe-live-score strong) { color: #286282; }
-html:root[data-ui-theme="paper"] .axe-companion { background: var(--lavender-soft); border-color: var(--paper-line); }
-html:root[data-ui-theme="paper"] .axe-companion strong { color: var(--lavender); }
-html:root[data-ui-theme="paper"] .axe-comment { color: var(--paper-ink); }
-html:root[data-ui-theme="paper"] :is(.axe-result-label, .axe-result-value) { color: var(--lavender); text-shadow: none; }
-html:root[data-ui-theme="paper"] .axe-game[data-outcome="killshot"] .axe-result-card { border-color: #286282; background: #e8f2f6; }
-html:root[data-ui-theme="paper"] .axe-game[data-outcome="killshot"] :is(.axe-result-label, .axe-result-value) { color: #286282; }
-html:root[data-ui-theme="paper"] .axe-game:is([data-outcome="miss"], [data-outcome="drop"], [data-outcome="killshot-miss"]) .axe-result-value { color: #a33f44; }
-html:root[data-ui-theme="paper"] .axe-game[data-phase="result"][data-special="true"] .axe-result-card { box-shadow: 0 0 0 2px var(--amber); }
-html:root[data-ui-theme="paper"] .axe-game[data-phase="result"][data-special="true"] :is(.axe-result-label, .axe-result-value) { color: var(--amber-ink); text-shadow: none; }
-html:root[data-ui-theme="paper"] .axe-challenges li { color: var(--paper-muted); border-color: var(--paper-line); background: var(--paper-card); }
-html:root[data-ui-theme="paper"] .axe-challenges li[data-state="done"] { color: #30664b; border-color: #78a58a; background: #e2efe6; }
-html:root[data-ui-theme="paper"] .axe-challenges li[data-state="failed"] { color: #a33f44; border-color: #d79ea3; background: #fbe6e6; }
-html:root[data-ui-theme="paper"] :is(.axe-challenges i, .axe-challenges small, .axe-rank small) { color: var(--paper-muted); }
-html:root[data-ui-theme="paper"] .axe-challenges [data-state="done"] i { color: #30664b; }
-html:root[data-ui-theme="paper"] .axe-power-readout { color: #a33f44; }
-html:root[data-ui-theme="paper"] .axe-timing[data-quality="sweet"] .axe-power-readout { color: #30664b; }
-html:root[data-ui-theme="paper"] .axe-game[data-phase="power"]:has(.axe-timing[data-quality="sweet"]) .axe-primary { background: #d9ebda; color: #235335; border-color: #568763; box-shadow: inset 0 0 0 1px #568763; }
-html:root[data-ui-theme="paper"] .axe-note { color: var(--paper-ink); }
-html:root[data-ui-theme="paper"] .axe-heat { color: var(--amber-ink); background: #fbe9cf; border-color: var(--amber); box-shadow: none; }
-html:root[data-ui-theme="paper"] .axe-game:not([data-heat="0"]):not([data-heat="1"]) .axe-total strong { color: var(--amber-ink); text-shadow: none; }
-html:root[data-ui-theme="paper"] :is(.axe-coach-line, .axe-coach-diagram p, .axe-rules p, .axe-rules li, .axe-rules td) { color: var(--paper-ink); }
-html:root[data-ui-theme="paper"] :is(.axe-coach-identity strong, .axe-coach-diagram strong, .axe-coach-diagram small, .axe-rules th) { color: var(--lavender); }
-html:root[data-ui-theme="paper"] :is(.axe-rules, .axe-coach) { background: #1e1429dc; }
-
-/* 単独の練習入口も、本編と同じ紙とラベンダーへ。 */
-html:root[data-ui-theme="paper"] .axe-intro.axe-menu {
-  --menu-line: var(--paper-line); --menu-amber: var(--amber-ink);
-  color: var(--paper-ink);
-  background: linear-gradient(90deg, #f7f3edf5, #f7f3edeb 58%, #e9dfeee8), var(--axe-bg) center / cover;
-}
-html:root[data-ui-theme="paper"] :is(.axe-menu-masthead, .axe-menu h1, .axe-menu .axe-menu-mode, .axe-menu-mode-top, .axe-menu-mode-action) {
-  color: var(--paper-ink); background: var(--paper-card); border-color: var(--paper-line); box-shadow: none; text-shadow: none;
-}
-html:root[data-ui-theme="paper"] .axe-intro.axe-menu h1 { color: var(--lavender); }
-html:root[data-ui-theme="paper"] .axe-menu-mode::before { border-color: var(--paper-line); border-image: var(--paper-art) 72 / 10px / 0 stretch; }
-html:root[data-ui-theme="paper"] .axe-menu .axe-menu-mode[data-kind="practice"] { border-color: var(--lavender-line); background: var(--lavender-soft); }
-html:root[data-ui-theme="paper"] .axe-menu .axe-menu-mode:hover:not(:disabled) { border-color: var(--lavender); background: var(--lavender-soft); }
-html:root[data-ui-theme="paper"] :is(.axe-menu .axe-eyebrow, .axe-menu-lounge, .axe-menu-guide-label, .axe-menu-count, .axe-menu-tag, .axe-menu-mode[data-kind="practice"] .axe-menu-tag, .axe-menu-mode-description, .axe-menu-setting-label, .axe-menu-tip) { color: var(--paper-muted); }
-html:root[data-ui-theme="paper"] .axe-menu .axe-menu-message { color: var(--paper-ink); }
-html:root[data-ui-theme="paper"] .axe-menu :is(.axe-button, .axe-back) { color: var(--lavender); background: var(--paper-card); border-color: var(--lavender-line); box-shadow: none; }
-html:root[data-ui-theme="paper"] .axe-menu .axe-menu-options .axe-button[aria-pressed="true"] { color: #fff; background: var(--lavender); border-color: var(--lavender); box-shadow: inset 0 -3px #c3a9d5; }
-html:root[data-ui-theme="paper"] .axe-menu-mark { box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5px var(--menu-amber); }
-
 /* 本編の案内役と無料レッスンも、明るい紙の上で読める墨色に。 */
 html:root[data-ui-theme="paper"] .axe-bar-menu .venue-host { color: var(--paper-ink); background: var(--lavender-soft); border-color: var(--paper-line); }
 html:root[data-ui-theme="paper"] .axe-bar-menu .venue-host-copy small { color: var(--paper-muted); }
@@ -659,22 +580,6 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
   .axe-score-total { font-size: 14px; }
   .axe-calls .axe-button { min-height: 32px; }
 }
-html:root[data-ui-theme="paper"] .axe-scoreboard { color: var(--paper-ink); background: var(--paper); border-color: var(--paper-line); border-image: var(--paper-art) 72 fill / 18px / 0 stretch; }
-html:root[data-ui-theme="paper"] .axe-tile { border-color: var(--paper-line); background: var(--paper-card); }
-html:root[data-ui-theme="paper"] :is(.axe-tile i, .axe-tile strong, .axe-score-name) { color: var(--paper-muted); }
-html:root[data-ui-theme="paper"] .axe-tile[data-filled="true"] strong { color: var(--paper-ink); }
-html:root[data-ui-theme="paper"] .axe-tile[data-current="true"] { border-color: var(--lavender); background: var(--lavender-soft); box-shadow: inset 0 2px var(--lavender); }
-html:root[data-ui-theme="paper"] .axe-tile[data-current="true"] i { color: var(--lavender); }
-html:root[data-ui-theme="paper"] :is(.axe-tile[data-outcome="bull"] strong, .axe-tile[data-outcome="killshot"] strong, .axe-tile em) { color: var(--amber-ink); }
-html:root[data-ui-theme="paper"] .axe-tile[data-outcome="killshot"] em { color: #286282; }
-html:root[data-ui-theme="paper"] .axe-tile:is([data-outcome="drop"],[data-outcome="miss"],[data-outcome="killshot-miss"]) strong { color: #a33f44; }
-html:root[data-ui-theme="paper"] .axe-tile-sd { border-color: #286282; background: #e8f2f6; }
-html:root[data-ui-theme="paper"] .axe-score-row[data-active="true"] .axe-score-name, html:root[data-ui-theme="paper"] .axe-score-total { color: var(--lavender); }
-html:root[data-ui-theme="paper"] .axe-division { color: var(--lavender); background: var(--paper-card); border-color: var(--lavender-line); }
-html:root[data-ui-theme="paper"] .axe-tile[data-half="0"] + .axe-tile[data-half="1"]::before { border-color: var(--lavender-line); }
-html:root[data-ui-theme="paper"] .axe-calls [data-call]:not([data-call="normal"]) { color: #286282; border-color: #9cc3d6; }
-html:root[data-ui-theme="paper"] .axe-calls [data-call]:not([data-call="normal"])[aria-pressed="true"] { color: #fff; background: #2f7fc1; border-color: #2f7fc1; }
-html:root[data-ui-theme="paper"] .axe-game[data-sudden-death="true"] .axe-total strong { color: #286282; }
 /* Versus summary on a phone: the scoreboard already shows every throw, so the chips and the comment give way to the board. */
 @container (max-width: 650px) and (min-height: 501px) {
   .axe-game[data-mode="versus"][data-phase="summary"] :is(.axe-challenges, .axe-companion) { display: none; }
@@ -720,7 +625,166 @@ html:root[data-ui-theme="paper"] .axe-game[data-sudden-death="true"] .axe-total 
   .axe-zoom figcaption { padding: 1px 6px; }
   .axe-zoom figcaption strong { font-size: 14px; }
 }
-html:root[data-ui-theme="paper"] .axe-zoom figcaption { background: var(--paper); color: var(--paper-ink); border: 1px solid var(--paper-line); }
-html:root[data-ui-theme="paper"] .axe-zoom figcaption strong { color: var(--lavender); }
-html:root[data-ui-theme="paper"] .axe-zoom[data-scored="false"] figcaption strong { color: #a33f44; }
-html:root[data-ui-theme="paper"] .axe-zoom-view { border-color: var(--paper); }
+
+/* #2718 斧投げ専用テーマ「レーン」: 黒板の面・木の枠・チョークの文字・安全オレンジ。
+   どのUIテーマ設定でも同じ見た目にし、日常の紙×ラベンダーは使わない（入った瞬間に別の遊びだと分かるように）。
+   寸法・当たり判定と、意味の色（赤のブル・青のキルショット・緑の適正帯・赤茶の落下）は変えない。 */
+:is(.axe-game, .axe-rules, .axe-coach, .axe-setup, .axe-intro) {
+  --lane-board: #17201e; --lane-board-2: #1f2b28; --lane-board-3: #2a3935;
+  --lane-wood: #8a5a32; --lane-wood-dark: #2e1c10;
+  --lane-chalk: #f4f0e6; --lane-chalk-dim: #bcc5bd; --lane-chalk-faint: #8e9b94; --lane-line: #f4f0e62b;
+  --lane-orange: #ff8c3a; --lane-orange-hi: #ffad66; --lane-orange-deep: #b4500f; --lane-orange-ink: #2a1205;
+  --lane-slate: linear-gradient(180deg, #ffffff09, transparent 40%), radial-gradient(ellipse at 20% 0%, #ffffff0c, transparent 60%), #17211e;
+  --lane-frame: inset 0 0 0 2px var(--lane-wood), inset 0 0 0 3px #0000008c;
+  --lane-tape: repeating-linear-gradient(-45deg, var(--lane-orange) 0 10px, #1a120c 10px 20px);
+}
+.axe-game { --axe-amber: var(--lane-orange-hi); --axe-line: var(--lane-line); --axe-muted: var(--lane-chalk-dim);
+  color: var(--lane-chalk); background: linear-gradient(90deg, #0a1211d4 36%, #0a1110f2 80%), var(--axe-bg) center / cover; }
+.axe-game::before { background: radial-gradient(ellipse at 30% 46%, #ff8c3a17, transparent 56%); }
+.axe-game::after { content: ""; position: absolute; inset: 0 0 auto; height: 5px; background: var(--lane-tape); pointer-events: none; }
+
+/* 看板（上の帯）と各投の黒板。枠は内側の影で描き、寸法は変えない。 */
+.axe-game :is(.axe-header, .axe-scoreboard, .axe-panel) { border: 1px solid var(--lane-wood-dark); background: var(--lane-slate);
+  box-shadow: var(--lane-frame), 0 12px 30px #00000080; }
+.axe-game .axe-header { padding: 5px 8px 5px 14px; border-radius: 10px; }
+.axe-game .axe-scoreboard, .axe-game .axe-panel { border-radius: 10px; }
+.axe-game .axe-header h1 { color: var(--lane-chalk); font-style: italic; letter-spacing: .1em; text-shadow: 2px 2px 0 var(--lane-orange-deep); }
+.axe-game .axe-header p { color: var(--lane-chalk-dim); }
+.axe-game .axe-round { color: var(--lane-orange-hi); border-left-color: var(--lane-line); }
+.axe-game .axe-division { border-color: var(--lane-orange); background: #0000004d; color: var(--lane-orange-hi); }
+.axe-game .axe-total { border-color: var(--lane-line); border-left-color: var(--lane-orange); background: #0a100fe6; box-shadow: inset 0 2px 6px #0009, 0 0 calc(var(--score-glow,0) * 30px) #ff8c3a59; }
+.axe-game .axe-total small, .axe-game .axe-total > span { color: var(--lane-chalk-dim); }
+.axe-game .axe-total strong { color: var(--lane-chalk); }
+.axe-game .axe-score-name { color: var(--lane-chalk-dim); }
+.axe-game .axe-score-row[data-active="true"] .axe-score-name { color: var(--lane-orange-hi); }
+.axe-game .axe-score-total { color: var(--lane-chalk); }
+.axe-game .axe-tile { border-color: var(--lane-line); background: #0000002e; }
+.axe-game .axe-tile i { color: var(--lane-chalk-faint); }
+.axe-game .axe-tile strong { color: #6e7b75; }
+.axe-game .axe-tile[data-filled="true"] strong { color: var(--lane-chalk); }
+.axe-game .axe-tile:is([data-outcome="bull"],[data-outcome="killshot"]) strong { color: #ffc46e; }
+.axe-game .axe-tile:is([data-outcome="drop"],[data-outcome="miss"],[data-outcome="killshot-miss"]) strong { color: #c9a493; }
+.axe-game .axe-tile[data-current="true"] { border-color: var(--lane-orange); background: #ff8c3a26; box-shadow: inset 0 3px var(--lane-orange); }
+.axe-game .axe-tile[data-current="true"] i { color: var(--lane-orange-hi); }
+.axe-game .axe-tile-sd { border-color: #4f8aa8; background: #2a6e9633; }
+.axe-game .axe-tile[data-half="0"] + .axe-tile[data-half="1"]::before { border-left-color: var(--lane-chalk-faint); }
+.axe-game .axe-legend { border-color: var(--lane-line); background: #0b1211e0; color: var(--lane-chalk-dim); }
+
+/* 操作欄の中身 */
+.axe-game .axe-challenges li { border-color: var(--lane-line); background: #00000033; color: var(--lane-chalk-dim); }
+.axe-game .axe-challenges i { color: var(--lane-orange-hi); }
+.axe-game .axe-challenges small { color: var(--lane-chalk-faint); }
+.axe-game .axe-challenges [data-state="done"] { border-color: #8fd3a0; background: #4c966038; color: #dff5e2; }
+.axe-game .axe-challenges [data-state="done"] i { color: #9be7ad; }
+.axe-game .axe-companion { border-top-color: var(--lane-line); background: #0000004d; }
+.axe-game .axe-companion strong { color: var(--lane-orange-hi); }
+.axe-game .axe-comment, .axe-game .axe-note { color: var(--lane-chalk); }
+.axe-game .axe-portrait-frame { border-color: var(--lane-orange); background: #2a3532; }
+.axe-game .axe-steps li { border-color: var(--lane-line); background: #0000002e; }
+.axe-game .axe-steps span { color: var(--lane-chalk-dim); }
+.axe-game .axe-steps [data-state="live"] { border-color: var(--lane-orange); background: #ff8c3a26; box-shadow: inset 0 2px var(--lane-orange); }
+.axe-game .axe-steps [data-state="live"] span { color: var(--lane-orange-hi); }
+.axe-game .axe-steps [data-state="locked"] strong { color: var(--lane-chalk); }
+.axe-game .axe-steps [data-state="waiting"] strong { color: var(--lane-chalk-faint); }
+.axe-game .axe-live-score { border-bottom-color: var(--lane-line); }
+.axe-game .axe-live-label { color: var(--lane-chalk-dim); }
+.axe-game .axe-live-score strong { color: var(--lane-orange-hi); }
+.axe-game .axe-gauge { border-color: #f4f0e64d; }
+.axe-game .axe-timing > span:not(.axe-power-readout), .axe-game .axe-keyhint { color: var(--lane-chalk-faint); }
+.axe-game .axe-keyhint kbd { border-color: var(--lane-line); color: var(--lane-chalk-dim); }
+.axe-game .axe-stability-meter { background: #f4f0e61a; }
+.axe-game .axe-result-card { border-left: 3px solid var(--lane-orange); background: linear-gradient(90deg, #ff8c3a14, transparent 70%); }
+.axe-game .axe-result-label { color: var(--lane-orange-hi); }
+.axe-game .axe-result-value { color: #fff7e8; text-shadow: 3px 3px 0 #00000059; }
+.axe-game .axe-result-tip { color: var(--lane-chalk-dim); }
+.axe-game .axe-rank small, .axe-game .axe-rank span { color: var(--lane-chalk-dim); }
+.axe-game .axe-match-score { border-color: var(--lane-line); background: #00000033; color: var(--lane-chalk); }
+.axe-game .axe-match-records strong { color: var(--lane-orange-hi); }
+.axe-game .axe-zoom-view { border-color: var(--lane-chalk); }
+.axe-game .axe-zoom figcaption { border: 1px solid var(--lane-line); background: #0b1211e6; color: var(--lane-chalk); }
+.axe-game .axe-zoom figcaption strong { color: var(--lane-orange-hi); }
+
+/* ボタン: 黒板の札。押した札と決定ボタンは安全オレンジ。青の宣言と緑の「いま放す」は既存の意味色が勝つ
+   （決定ボタンの指定は .axe-primary 単独にして、適正帯の緑 .axe-game[data-phase="power"]:has(...) .axe-primary より弱く保つ。ホバー中も緑）。 */
+:is(.axe-game, .axe-rules, .axe-coach, .axe-setup) .axe-button { border-color: #f4f0e642; background: var(--lane-board-2); color: var(--lane-chalk); box-shadow: inset 0 -2px #00000066; }
+:is(.axe-game, .axe-rules, .axe-coach, .axe-setup) .axe-button:hover:not(:disabled) { border-color: var(--lane-orange); background: var(--lane-board-3); }
+:is(.axe-game, .axe-rules, .axe-coach, .axe-setup) .axe-button[aria-pressed="true"] { border-color: var(--lane-orange-hi); background: var(--lane-orange); color: var(--lane-orange-ink); font-weight: 900; box-shadow: inset 0 -3px var(--lane-orange-deep); }
+:is(.axe-game, .axe-rules, .axe-coach, .axe-setup) .axe-primary { border-color: #ffd3aa; background: linear-gradient(180deg, var(--lane-orange-hi), var(--lane-orange) 60%, #f27a24);
+  color: var(--lane-orange-ink); letter-spacing: .08em; box-shadow: 0 3px 0 var(--lane-orange-deep), 0 8px 18px #00000073, inset 0 1px #ffffff66; }
+:is(.axe-game, .axe-rules, .axe-coach, .axe-setup) .axe-primary:hover:not(:disabled) { border-color: #ffe4c8; background: linear-gradient(180deg, #ffc690, var(--lane-orange-hi) 60%, var(--lane-orange)); }
+:is(.axe-game, .axe-rules, .axe-coach, .axe-setup) .axe-primary:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 var(--lane-orange-deep), 0 4px 10px #00000073; }
+:is(.axe-game, .axe-rules, .axe-coach, .axe-setup) .axe-button:focus-visible { outline-color: #fff2c2; }
+.axe-game .axe-close, .axe-coach .axe-coach-skip { color: var(--lane-chalk-dim); }
+
+/* ルール・レッスン: 同じ黒板と木の枠。上にレーンのテープ。 */
+.axe-rules { background: #08100ef2; color: var(--lane-chalk); }
+.axe-coach { background: linear-gradient(180deg, #060b0a4d, #060b0ad1); }
+:is(.axe-rules-card, .axe-coach-card) { position: relative; border: 1px solid var(--lane-wood-dark); background: var(--lane-slate); box-shadow: var(--lane-frame), 0 20px 64px #000000b3; }
+:is(.axe-rules-card, .axe-coach-card)::before { content: ""; position: absolute; left: 3px; right: 3px; top: 3px; height: 5px; border-radius: 8px 8px 0 0; background: var(--lane-tape); pointer-events: none; }
+.axe-rules h2, .axe-coach .axe-coach-title, .axe-coach .axe-coach-identity strong { color: var(--lane-chalk); }
+.axe-rules h3, .axe-coach .axe-coach-identity small { color: var(--lane-orange-hi); }
+.axe-rules li::marker { color: var(--lane-orange); }
+.axe-coach .axe-coach-line { color: #ebe7dc; }
+.axe-coach .axe-coach-progress { color: var(--lane-chalk-dim); }
+.axe-coach .axe-coach-portrait-frame { border-color: var(--lane-orange); background: #2a3532; }
+.axe-coach .axe-coach-actions { border-top-color: var(--lane-line); }
+:is(.axe-rules, .axe-coach) .axe-coach-diagram > section { border-color: var(--lane-line); background: #00000033; }
+:is(.axe-rules, .axe-coach) .axe-coach-diagram strong { color: var(--lane-orange-hi); }
+:is(.axe-rules, .axe-coach) .axe-coach-score-kill { border-color: #82bedb4d; }
+:is(.axe-rules, .axe-coach) .axe-coach-score-kill strong { color: #b6e0ee; }
+:is(.axe-rules, .axe-coach) .axe-coach-diagram p { color: var(--lane-chalk); }
+:is(.axe-rules, .axe-coach) .axe-coach-diagram small { color: var(--lane-chalk-dim); }
+
+/* #2718 UI方針（ミニゲーム共通・オーナー指示）: 文字を詰めない／遊び方・操作は「？」から開く／基本画面は必要なUIだけ。
+   画面から外すだけで、読み上げ用の文字は残す（.axe-quiet と同じ隠し方）。中身はすべて「？」のルールに書いてある。 */
+.axe-game .axe-legend { display: none; }
+.axe-game :is(.axe-header p, .axe-steps, .axe-power-readout) { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important;
+  overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
+.axe-game:not([data-phase="horizontal"]) .axe-gauge-label[data-gauge="horizontal"],
+.axe-game:not([data-phase="vertical"]) .axe-gauge-label[data-gauge="vertical"] { display: none; }
+.axe-help { position: relative; }
+.axe-game .axe-header .axe-help { width: 44px; min-width: 44px; height: 44px; padding: 0; border-radius: 50%; font-size: 20px; font-weight: 900; line-height: 1; }
+@container (max-height: 500px) {
+  .axe-game .axe-header .axe-help { width: 36px; min-width: 36px; height: 36px; font-size: 18px; }
+}
+
+/* 入った瞬間の幕（#2718）: 黒板の幕に斜めの一閃、題字を押してから上下へ割れる。約1秒。
+   入力は素通し（pointer-events: none）で、説明やレッスンで時計が止まっても幕だけは最後まで進む。 */
+.axe-game .axe-cutin { position: absolute; inset: 0; z-index: 120; overflow: hidden; pointer-events: none; contain: layout paint; container-type: size;
+  animation: axe-cutin-life 1s linear both; }
+.axe-cutin :is(.axe-cutin-top, .axe-cutin-bottom) { position: absolute; inset: 0;
+  background: repeating-linear-gradient(-45deg, #ffffff06 0 2px, transparent 2px 16px), radial-gradient(ellipse at 50% 50%, #263634, #0e1614 72%); }
+.axe-cutin .axe-cutin-top { clip-path: polygon(0 0, 100% 0, 100% 40%, 0 60%); animation: axe-cutin-top .38s cubic-bezier(.55,0,.85,.35) .62s both; }
+.axe-cutin .axe-cutin-bottom { clip-path: polygon(0 60%, 100% 40%, 100% 100%, 0 100%); animation: axe-cutin-bottom .38s cubic-bezier(.55,0,.85,.35) .62s both; }
+.axe-cutin .axe-cutin-slash { position: absolute; inset: 0; background: linear-gradient(90deg, #ffe0bd, var(--lane-orange) 45%, #ff6a1a);
+  clip-path: polygon(0 58.5%, 100% 38.5%, 100% 41.5%, 0 61.5%); animation: axe-cutin-slash .2s cubic-bezier(.2,.8,.2,1) .04s both, axe-cutin-fade .12s ease-in .62s forwards; }
+.axe-cutin .axe-cutin-card { position: absolute; left: 50%; top: 50%; display: flex; flex-direction: column; align-items: center; gap: 1.2cqh; translate: -50% -50%; white-space: nowrap;
+  animation: axe-cutin-stamp .26s cubic-bezier(.2,.9,.3,1.3) .12s both, axe-cutin-fade .14s ease-in .56s forwards; }
+.axe-cutin [data-text]::before { content: attr(data-text); }
+.axe-cutin .axe-cutin-tag { padding: 3px 12px; background: var(--lane-orange); color: var(--lane-orange-ink); font-size: clamp(14px, 1.6cqw, 18px); font-weight: 900; letter-spacing: .32em; transform: skewX(-12deg); }
+.axe-cutin .axe-cutin-title { color: var(--lane-chalk); font-size: clamp(40px, 11cqw, 112px); font-weight: 900; font-style: italic; line-height: 1.05; letter-spacing: .05em;
+  text-shadow: .05em .05em 0 var(--lane-orange-deep), 0 0 .4em #000000d9; }
+.axe-cutin .axe-cutin-label { padding: 4px 16px; border-top: 2px solid var(--lane-orange); background: #000000a6; color: var(--lane-chalk); font-size: clamp(14px, 2.1cqw, 22px); font-weight: 700; letter-spacing: .12em; }
+@keyframes axe-cutin-life { 0%, 99.9% { visibility: visible; } 100% { visibility: hidden; } }
+@keyframes axe-cutin-top { to { transform: translate(-4%, -64%); } }
+@keyframes axe-cutin-bottom { to { transform: translate(4%, 64%); } }
+@keyframes axe-cutin-slash { from { clip-path: polygon(0 58.5%, 0 58.5%, 0 61.5%, 0 61.5%); } }
+@keyframes axe-cutin-stamp { from { opacity: 0; scale: 1.4; } to { opacity: 1; scale: 1; } }
+@keyframes axe-cutin-fade { to { opacity: 0; } }
+.axe-game[data-paused="true"] :is(.axe-cutin, .axe-cutin *), .axe-game[data-paused="true"] .axe-cutin [data-text]::before { animation-play-state: running !important; }
+.axe-game[data-reduced-motion="true"] .axe-cutin { display: none !important; }
+@media (prefers-reduced-motion: reduce) { .axe-game .axe-cutin { display: none !important; } }
+
+/* 狭い画面: 看板の余白だけ詰め、文字と操作の大きさは従来のまま。
+   PC表示の最も狭い幅（651〜760px）は対戦の「あなた 1 / 10 投 · 前半」と合計点で看板が溢れていた（#2718 以前から）ので、回数を2行まで折り返し、余白を詰める。 */
+@container (min-width: 651px) and (max-width: 760px) and (min-height: 501px) {
+  .axe-game .axe-header { padding-inline: 8px 4px; gap: 8px; }
+  .axe-game .axe-round { max-width: 7.5em; padding-inline: 8px; white-space: normal; line-height: 1.35; text-align: center; }
+  .axe-game .axe-total { padding-inline: 10px; }
+}
+@container (max-width: 650px) and (min-height: 501px) {
+  .axe-game .axe-header { padding: 4px 6px 4px 10px; }
+}
+@container (max-height: 500px) {
+  .axe-game .axe-header { padding: 3px 6px 3px 10px; }
+}

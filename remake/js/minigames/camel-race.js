@@ -7,8 +7,11 @@
 // ラクダ・ロボット騎手・SUV・車輪は Codex の絵（assets/ui/camel_race・2026-11-02 採用。原画は asset_sources/ch4-camel-race）。
 // 絵が読めない環境では Canvas の描画に戻す。砂漠・柵・砂煙・合図の輪・HUD は Canvas で描く。
 import { el } from "../core/util.js";
-import { SE } from "../core/audio.js";
+import { SE, currentBgm, playBgm } from "../core/audio.js";
 import { imgFileUrl } from "../core/img-file.js";
+import { faceIconUrl } from "../core/data.js";
+import { portraitStyle } from "../core/portrait-style.js";
+import { portraitAsset } from "../core/portrait-resolver.js";
 import { RACE, CUE, PLAYER, WHIP, CAMEL_CUPS, camelCup, camelCupQualified, camelMastered, camelExpert, rng, createRace, stepRace, pressVoice, setWhip, whipReady, activeCue, inSpurt, standings, scoreRace,
   POLICIES, PLAYER_CAMEL, RIVAL_PROFILES } from "./camel-race-model.js";
 
@@ -38,8 +41,9 @@ const HAJIME_AT = Object.freeze({ cx: 284, bottom: 150, height: 165, clip: [206,
 // 声かけの輪は自分のラクダの背のロボット騎手（声はその小さなスピーカーへ届く）を囲む。
 // 奥の列のラクダと重なっても、どのラクダの輪か迷わない位置（列の y からの差）。
 const CUE_AT = Object.freeze({ dx: -22, dy: -64 });
-const SUHAIL_ICON = new URL("../../../assets/ui/face_icons/face_suhail.png", import.meta.url).href;
-// 助手席のスハイルの声（実況の代わり）。一人称は俺、はじめは「ハジメ」。台詞の末尾に「。」を付けない（text-style）。
+// 顔アイコンは設定の立ち絵の画風に合わせる（faceIconUrl）。目録の読み込み前だけ現行の PNG
+const FARIS_ICON = new URL("../../../assets/ui/face_icons/face_faris.png", import.meta.url).href;
+// 助手席のファーリスの声（実況の代わり）。一人称は俺、はじめは「ハジメ」。台詞の末尾に「。」を付けない（text-style）。
 const CALLS = Object.freeze({
   intro: "ハジメ、手前の金のゼッケンがハビーバだ！",
   go: "出た！ 輪が出たら声だぞ！",
@@ -92,10 +96,19 @@ export function loadCamelArt() {
   const load = rel => { const image = new Image(); image.decoding = "async"; image.src = imgFileUrl(rel); return image.decode().then(() => image); };
   // はじめの立ち絵は読めなくてもレースの絵は使う（窓に人を描かないだけ）。
   // 表情は1枚ずつ読み、読めなかった表情は通常の顔で代わりにする（通常も読めなければ窓に人を描かない）。
-  const hajime = Promise.all(HAJIME_FACES.map(face => load(`sprites/characters/hajime/chr_hajime_${face}.webp`).catch(() => null)))
-    .then(images => images[0] ? Object.fromEntries(HAJIME_FACES.map((face, i) => [face, images[i] || images[0]])) : null);
+  const hajime = fetch(new URL("../../data/manifest.json", import.meta.url), { cache: "no-cache" })
+    .then(response => response.ok ? response.json() : null)
+    .then(manifest => {
+      if (!manifest) return null;
+      const portraits = HAJIME_FACES.map(face => portraitAsset(manifest, "hajime", face, portraitStyle()));
+      return Promise.all(portraits.map(portrait => portrait ? loadPortrait(portrait.src).catch(() => null) : null))
+        .then(images => images[0] ? { faces: Object.fromEntries(HAJIME_FACES.map((face, i) => [face, images[i] || images[0]])),
+          metrics: portraits[0] } : null);
+    }).catch(() => null);
+  const loadPortrait = url => { const image = new Image(); image.decoding = "async"; image.src = url; return image.decode().then(() => image); };
   artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), hajime])
-    .then(([camel, jockey, suv, wheel, track, faces]) => ({ camel, jockey, suv, wheel, track, hajime: faces, ground: groundTiles(), skins: camelSkins(camel) }))
+    .then(([camel, jockey, suv, wheel, track, portrait]) => ({ camel, jockey, suv, wheel, track,
+      hajime: portrait?.faces, hajimeMetrics: portrait?.metrics, ground: groundTiles(), skins: camelSkins(camel) }))
     .catch(() => null);
   return artTask;
 }
@@ -208,6 +221,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   pilot = null, timeScale = 1, best = null, cups = null, cupRecords = {}, reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
+  const bgmBefore = currentBgm();
   const runs = [];
   const unlocked = new Set(cups || ["practice", "rookie"]);
   let selectedCup = "practice";
@@ -266,10 +280,10 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     el("kbd", { text: "X" })]);
   const controls = el("div.camel-controls", [voiceButton, signalButton]);
   const closeButton = el("button.camel-close", { type: "button", text: "やめる", dataset: { test: "camel-close" } });
-  // 助手席のスハイルの声（上の中央、進み具合の下）。顔のアイコンが読めなければ名前だけ。
+  // 助手席のファーリスの声（上の中央、進み具合の下）。顔のアイコンが読めなければ名前だけ。
   const callText = el("span.camel-call-text");
-  const callIcon = el("img.camel-call-icon", { src: SUHAIL_ICON, alt: "", onerror: event => { event.currentTarget.hidden = true; } });
-  const callNode = el("div.camel-call", { "aria-hidden": "true", dataset: { test: "camel-call" } }, [callIcon, el("span.camel-call-body", [el("b", { text: "スハイル" }), callText])]);
+  const callIcon = el("img.camel-call-icon", { src: faceIconUrl("faris") || FARIS_ICON, alt: "", onerror: event => { event.currentTarget.hidden = true; } });
+  const callNode = el("div.camel-call", { "aria-hidden": "true", dataset: { test: "camel-call" } }, [callIcon, el("span.camel-call-body", [el("b", { text: "ファーリス" }), callText])]);
   const flashNode = el("div.camel-flash", { "aria-hidden": "true" });
   const stageNode = el("div.camel-stage", [canvas, flashNode, hudNode, callNode, feedback, banner, countdownNode, controls, closeButton]);
   const sheet = el("div.camel-sheet", { hidden: true });
@@ -286,7 +300,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   });
   let race = null, phase = "loading", raf = 0, last = null, goalAt = 0, feedbackTimer = 0, bannerTimer = 0, countdownLeft = 0, countdownShown = -1;
   let standingsStamp = 0, whip = 0, done = false, spurtShown = false, settleTimer = 0;
-  // 演出: 画面の揺れ・ゴールのスロー・GO の柵・連続成功・スハイルの声・抜いた／抜かれた。
+  // 演出: 画面の揺れ・ゴールのスロー・GO の柵・連続成功・ファーリスの声・抜いた／抜かれた。
   let shake = 0, slow = 0, goTime = -1, combo = 0, callTimer = 0, lastCallAt = -9, spurtTint = 0;
   // カメラは自分のラクダを少し遅れて追う: 伸びた瞬間はラクダが画面の前へ出て、カメラが追いつく（camShift px）。
   let camShift = 0, camAt = 0, lastStride = -1;
@@ -321,7 +335,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     feedback.dataset.kind = kind; feedback.classList.remove("show");
     void feedback.offsetWidth; feedback.classList.add("show"); feedbackTimer = 0.75;
   };
-  /** スハイルの声。force でなければ前の声から少し空ける（大事な声が流れないように）。 */
+  /** ファーリスの声。force でなければ前の声から少し空ける（大事な声が流れないように）。 */
   const say = (text, force = false) => {
     if (!race || (!force && race.t - lastCallAt < 2.2)) return;
     lastCallAt = race?.t ?? 0;
@@ -429,6 +443,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     signal?.removeEventListener("abort", abort);
     root.remove();
     active.delete(host);
+    if (currentBgm() === "bgm_ethnic12") playBgm(bgmBefore);
     try { previousFocus?.focus?.(); } catch { /* 元の要素が無い */ }
     finish(summary(completed));
   };
@@ -479,6 +494,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     sheet.querySelector("button:not(:disabled)")?.focus();
   }
   function startRace() {
+    playBgm("bgm_ethnic12");
     sheet.hidden = true; sheet.replaceChildren();
     race = createRace({ seed: rivalSeed(), cup: selectedCup });
     clockNode.querySelector(".camel-clock-sub").textContent = `${camelCup(selectedCup).name} ${race.length.toLocaleString("ja-JP")}m・4頭`;
@@ -576,7 +592,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     }
     race.events.length = 0;
   }
-  /** 順位の入れ替わり・先頭の交代・半分と残り100mを見て、スハイルの声と「抜いた」の文字を出す。 */
+  /** 順位の入れ替わり・先頭の交代・半分と残り100mを見て、ファーリスの声と「抜いた」の文字を出す。 */
   function watchRace() {
     const rows = standings(race);
     const me = rows.find(row => row.id === "player");
@@ -1011,9 +1027,15 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   function drawHajime(dx, dy, k) {
     const image = art?.hajime?.[hajimeFace] || art?.hajime?.normal;
     if (!image) return;
+    const metrics = art.hajimeMetrics;
+    const crop = metrics?.style === "new" ? {
+      x: Math.max(0, Math.min(image.width - HAJIME_CROP.w, metrics.ax * image.width - HAJIME_CROP.w / 2)),
+      y: Math.max(0, Math.min(image.height - HAJIME_CROP.h, (1 - metrics.h - metrics.b) * image.height - 21)),
+      w: HAJIME_CROP.w, h: HAJIME_CROP.h,
+    } : HAJIME_CROP;
     const t = (race?.t || 0) + afterGoal();
-    const f = (HAJIME_AT.height * k) / HAJIME_CROP.h;
-    const w = HAJIME_CROP.w * f, h = HAJIME_CROP.h * f;
+    const f = (HAJIME_AT.height * k) / crop.h;
+    const w = crop.w * f, h = crop.h * f;
     // 押している間は前へ乗り出す。走る揺れで少し上下する。
     const lean = race?.player.whipping ? 6 * k : 0;
     const bob = reducedMotion ? 0 : Math.sin(t * 9) * 1.2;
@@ -1021,7 +1043,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     const [left, right, sill] = HAJIME_AT.clip;
     ctx.save();
     ctx.beginPath(); ctx.rect(dx + left * k, dy - 200, (right - left) * k, sill * k + 200); ctx.clip();
-    ctx.drawImage(image, HAJIME_CROP.x, HAJIME_CROP.y, HAJIME_CROP.w, HAJIME_CROP.h, hx, hy, w, h);
+    ctx.drawImage(image, crop.x, crop.y, crop.w, crop.h, hx, hy, w, h);
     ctx.restore();
     // 窓枠に掛けた手のリモコン（アンテナの灯: 声で緑、ムチの間は赤く点滅）。
     const [rx, ry] = HAJIME_AT.remote;
