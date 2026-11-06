@@ -55,6 +55,9 @@ export const BOND_FINALES = {
   // ヌール（DSR20）: 第4章ドバイのカフェ・サーリムで（chapters/ch4-desert.js）。店の段階の会話と♥3の問いを読んだ♥5で一度だけ。
   // 告白は次の砂丘（ツアー代なし）の夕日の場面 confession_noor が担うので、夜の帰り道には予約しない。
   noor: { dialogue: "ch4_noor_bond_finale", gift: "suyaki_noor", question: "bond_q2_noor", ownConfession: true },
+  // スティーブ（#2028）: 綾取と同じく第3章の東京で、Smoke & Glory への来店（ch3-tokyo-daily.js）・旧行程の場面カード
+  // （chapters/ch3.js）・大会後の寄り道（ch3-aftermath.js）から。恋愛対象外なので友情の着地だけ。条件は♥5。
+  steve: { dialogue: "ch3_steve_bond_finale", gift: "suyaki_steve" },
   hiyori: {
     get dialogue() { return hiyoriRoute().finale?.dialogue || ""; },
     get gift() { return hiyoriRoute().finale?.gift || null; },
@@ -240,6 +243,9 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
   : id === "saku" ? !!state.flags._ch3_read_ch3_saku_lime && !!state.flags._lime_contact_saku
     && (state.flags._ch3_outings?.enmaku_answer || 0) > 0
   : id === "noor" ? noorStoriesDone(state) && questionComplete(state, id)
+  // スティーブ: LIME交換の寄り道と、味の会話（予備のタイマーを借りる外出）の両方。締めくくりはそのタイマーを受ける
+  : id === "steve" ? !!state.flags._ch3_read_ch3_steve_lime && !!state.flags._lime_contact_steve
+    && (state.flags._ch3_outings?.steve_timer || 0) > 0
   : id === "ageha" ? AGEHA_AFFINITY_VISITS.every((scene) => !!state.flags[`_ch2_read_${scene}`]) && questionComplete(state, id)
   : CH2_VISIT_STORIES[id] ? ch2VisitStoriesDone(state.flags, id)
   : storyCount(id) >= (VISIT_SEQ[id] || []).length
@@ -251,6 +257,19 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
  */
 /** 第3章の東京へ発つ前の準備期間か（core/chapter-clock.js の departurePrep と同じ判定）。 */
 const beforeTokyoDeparture = () => state.chapter === 3 && !!state.flags?._ch3_prep && !state.flags._ch3_prep.departed;
+/**
+ * スティーブ（#2028）に Smoke & Glory で会える間か。第3章の東京に着いてから、大会後の後日談でなるへの報告を読み終えるまで
+ * （ch3-aftermath-progress.js の CH3_AFTERMATH_FINALES と同じ窓。煙幕の片づけの朝からは帰り支度で、その夜に地元へ帰る）。
+ * 段階の番号は CH3_AFTERMATH_SCENES の ch3_naru_reconcile の写し（vm で読む試験の依存を増やさない。ch3_aftermath.mjs で照合）。
+ */
+export const STEVE_LAST_AFTERMATH_STAGE = 2;
+const steveInReach = () => {
+  if (!chapterFeatureEnabled(state.chapter, "steveBond") || beforeTokyoDeparture() || state.flags._ch3_cleared) return false;
+  const stage = state.flags._ch3_aftermath?.stage;
+  return stage === undefined || Number.isInteger(stage) && stage <= STEVE_LAST_AFTERMATH_STAGE;
+};
+/** 締めくくりの相手に、今の章・時点で会いに行けるか（MENU の「次に会うと」を、会えない間に約束しない）。 */
+export const finaleReachable = (id) => id !== "steve" || steveInReach();
 
 export function finaleDue(id) {
   if (id === "hiyori" && !hiyoriFinaleReady()) return false;
@@ -260,6 +279,7 @@ export function finaleDue(id) {
   if (id === "mashiro" && !chapterFeatureEnabled(state.chapter, "mashiroBond")) return false;
   if (id === "saku" && !chapterFeatureEnabled(state.chapter, "sakuBond")) return false; // 煙幕は第3章の東京にだけある
   if (id === "noor" && state.chapter !== 4) return false; // カフェ・サーリムは第4章のドバイにだけある
+  if (id === "steve" && !steveInReach()) return false;
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue] || !storiesDone(id)) return false;
   if (affinityLevel(id) < finaleHeart(id) || questionVisitDue(id)) return false;
@@ -276,7 +296,7 @@ export const isFinaleEvent = (dialogueId) => Object.values(BOND_FINALES).some((d
 
 /** 締めくくりを再生し、ルート（恋人／恋愛／友情）を記録して専用ハガルを渡す。一度だけ */
 export async function playFinale(id, { bg = null, deferSave = false, signal = null } = {}) {
-  if (["hiyori", "samechan", "mashiro", "saku", "noor"].includes(id) && !finaleDue(id)) return false;
+  if (["hiyori", "samechan", "mashiro", "saku", "noor", "steve"].includes(id) && !finaleDue(id)) return false;
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue]) return false;
   const owner = state;
@@ -404,7 +424,7 @@ export function friendMessages({ tournamentDay = false, sceneChapter = false } =
     const chats = sent.filter((i) => i.msg.type === "chat").length;
     // 出来事前提の雑談は、前提が揃うまで chats[0] へ退避（TL-01: 素焼き贈呈・正体開示は締めくくりで保証される前提だが、旧セーブ等でも先出ししない防御）
     let pick = f.chats?.length ? chats % f.chats.length : 0;
-    if ((pick === 2 && ["minto", "tsumugi", "rio", "kumicho", "rei", "mashiro", "samechan", "saku"].includes(id) && !state.owned.includes(`suyaki_${id}`))
+    if ((pick === 2 && ["minto", "tsumugi", "rio", "kumicho", "rei", "mashiro", "samechan", "saku", "steve"].includes(id) && !state.owned.includes(`suyaki_${id}`))
       || (pick === 1 && id === "adam" && !state.owned.includes("suyaki_adam"))
       || (pick === 1 && id === "minto" && !state.flags._minto_identity_revealed)) pick = 0;
     const chat = f.chats?.length ? { id: `${FRIEND_PREFIX}chat_${id}_d${state.day}`, sender: id, type: "chat", friend: true,

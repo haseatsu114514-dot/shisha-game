@@ -71,13 +71,16 @@ export function availableAftermathLessons(value, ready) {
 }
 
 /**
- * 大会後の東京で読める締めくくり（IR22）。♥5に届いた次の来店が大会の後になった時も、帰る前に一度だけ読める
- * （台本は大会の前後で分かれる）。窓は綾取の授業と同じく、煙幕の片づけ（店を畳む朝）の前まで。
+ * 大会後の東京で読める締めくくり（IR22・#2028）。♥5に届いた次の来店が大会の後になった時も、帰る前に一度だけ読める
+ * （台本は大会の前後で分かれる）。窓は二人の授業と同じく、煙幕の片づけ（店を畳む朝・その夜に地元へ帰る）の前まで。
+ * スティーブの窓の終わりは daily/bonds.js の STEVE_LAST_AFTERMATH_STAGE に写してある（ch3_aftermath.mjs で照合）。
  * due(who) は daily/bonds.js の finaleDue（♥5・前提の場面・既読）。寄り道と同じく stage・日時は進めず、保存は変更しない。
  */
 export const CH3_AFTERMATH_FINALES = Object.freeze([
   { who: "saku", file: "ch3_rivals", dialogue: "ch3_saku_bond_finale", label: "綾取に呼ばれる", place: "煙幕", bg: "bg_yohaku_shop",
     from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },
+  { who: "steve", file: "ch3_rivals", dialogue: "ch3_steve_bond_finale", label: "スティーブに呼ばれる", place: "Smoke & Glory",
+    bg: "bg_steve_shop", from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },
 ]);
 export function availableAftermathFinales(value, due) {
   if (!canRunChapterThreeAftermath(value) || value.flags._ch3_cleared) return [];

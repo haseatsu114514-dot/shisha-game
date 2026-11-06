@@ -81,7 +81,7 @@ export const STATE_KEY_RULES = {
 // 分類網羅テストが data 側と一致するか照合する。
 export const GIFT_EQUIPMENT_IDS = [
   "suyaki_adam", "suyaki_ageha", "suyaki_hiyori", "suyaki_kumicho", "suyaki_saku", "suyaki_mashiro", "suyaki_minto", "suyaki_naru", "suyaki_noor",
-  "suyaki_rei", "suyaki_rio", "suyaki_samechan", "suyaki_sumi", "suyaki_tsumugi",
+  "suyaki_rei", "suyaki_rio", "suyaki_samechan", "suyaki_steve", "suyaki_sumi", "suyaki_tsumugi",
 ];
 
 // 記念品の由来分類（core/keepsakes.js の KEEPSAKES と対応）。
@@ -210,6 +210,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_prep_farewell", "progression"],
   ["_ch3_preview_seen", "progression"],
   ["_ch3_read_ch3_saku_lime", "progression"],
+  ["_ch3_read_ch3_steve_lime", "progression"],
   ["_ch3_read_ch3_minto_small_lies", "progression"],
   ["_ch3_read_hiyori_tokyo_contact", "progression"],
   ["_ch3_registration_read", "progression"],
@@ -364,6 +365,7 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_rei", "person"],
   ["_lime_contact_rio", "person"],
   ["_lime_contact_samechan", "person"],
+  ["_lime_contact_steve", "person"],
   ["_lime_contact_tsumugi", "person"],
   ["_lime_opened", "ui"],
   ["_lime_tut", "ui"],

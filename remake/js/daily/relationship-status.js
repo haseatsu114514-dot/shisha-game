@@ -2,14 +2,14 @@
 import { DB } from "../core/data.js";
 import { state } from "../core/state.js";
 import { affinityLevel, affinityGateWaiting } from "../core/stats.js";
-import { BOND_QUESTIONS, BOND_FINALES, questionVisitDue, finaleDue, finaleHeart, settledFriend } from "./bonds.js";
+import { BOND_QUESTIONS, BOND_FINALES, questionVisitDue, finaleDue, finaleHeart, settledFriend, finaleReachable } from "./bonds.js";
 import { romanceRouteOpen } from "./romance.js";
 import { hiyoriFinaleReady } from "../core/hiyori-route.js";
 
 const meetingPlace = {
   sumi: "tonari", tsumugi: "tonari", naru: "KEMURIKUSA", adam: "EDEN",
   rio: "夜のDr.fookahの2階", minto: "PEPPERMINT", hiyori: "tonari", samechan: "SHISHARK", ageha: "MELTY PUFF",
-  kumicho: "神崎煙草店", rei: "零-ZERO-", mashiro: "mukai", saku: "煙幕", noor: "カフェ・サーリム",
+  kumicho: "神崎煙草店", rei: "零-ZERO-", mashiro: "mukai", saku: "煙幕", noor: "カフェ・サーリム", steve: "Smoke & Glory",
 };
 const summary = (kind, label, hint) => ({ kind, label, hint });
 
@@ -21,6 +21,8 @@ function finaleHint(id) {
     if (def.invite) return "LIMEの私的な約束で、特別なイベントへ。";
     return `${def.night ? "夜、" : "次に"}${meetingPlace[id] || "いつもの場所"}で会うと、特別なイベントへ。`;
   }
+  // スティーブ（#2028）の締めくくりは第3章の東京にいる間だけ。会えなくなった後は次の節目を約束しない
+  if (!finaleReachable(id)) return "";
   if (id === "tsumugi" && state.chapter === 1 && state.day < 12 && !state.flags._tsumugi_contest_submitted) {
     return "つむぎの絵の応募を見届けよう。特別なイベントは、その後に。";
   }

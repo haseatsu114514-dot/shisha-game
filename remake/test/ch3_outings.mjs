@@ -272,5 +272,46 @@ function nextWindow(value) {
   }
 }
 
+// スティーブのLIME交換（#2028）: 配達で面識があり、♥2になった時だけ mukai の寄り道に出る（締めくくりの前提）。
+// mukai の店番の通いは1回目で♥1、2回目で♥2。好感度は任意の場面だけで付き、必須の低温の話では付かない。
+{
+  const routes = JSON.parse(fs.readFileSync(new URL("../../data/story_routes.json", import.meta.url)));
+  const read = name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))).dialogues;
+  const scene = id => read("ch3_rivals").find(dialogue => dialogue.dialogue_id === id);
+  const offered = value => availableOptionalScenes(routes, value).map(item => item.id);
+  const { value } = at("d8-night");
+  value.affinity.steve = AFFINITY_RANK_PTS[5];
+  assert(!offered(value).includes("ch3_steve_lime"), "Steve's LIME before meeting him");
+  value.met.steve = true;
+  const visits = TOKYO_OUTINGS.find(item => item.id === "mukai_steve");
+  value.affinity.steve = outingAffinity(newState(), visits).steve;
+  assert(value.affinity.steve < AFFINITY_RANK_PTS[2], "one customer visit is ♥1");
+  assert(!offered(value).includes("ch3_steve_lime"), "Steve's LIME below ♥2");
+  value.affinity.steve += outingAffinity({ ...value, flags: { ...value.flags, [OUTINGS_FLAG]: { mukai_steve: 1 } } }, visits).steve;
+  assert(value.affinity.steve >= AFFINITY_RANK_PTS[2], "the second customer visit reaches ♥2");
+  const entry = availableOptionalScenes(routes, value).find(item => item.id === "ch3_steve_lime");
+  assert(entry, "Steve's LIME opens at ♥2");
+  assert.deepEqual([entry.location, entry.host], ["mukai", "steve"], "read at mukai, the action's person is Steve");
+  commitOptionalRead(value, "ch3_steve_lime");
+  assert(!offered(value).includes("ch3_steve_lime"), "Steve's LIME read twice");
+  const lime = scene("ch3_steve_lime").lines;
+  assert(lime.some(line => line.type === "set_flag" && line.flag === "_lime_contact_steve"));
+  assert.deepEqual(lime.filter(line => line.type === "apply").map(line => line.affinity), [{ steve: 2 }]);
+  assert.equal(classifyFlag("_lime_contact_steve"), "person");
+  assert.equal(classifyFlag("_ch3_read_ch3_steve_lime"), "progression");
+  const low = scene("ch3_steve_low_heat");
+  assert(!low.metadata?.add_affinity && !low.lines.some(line => line.affinity?.steve), "the mandatory low-heat scene gives no affinity");
+  // 日常ループでは昼にも夜にも読むので、時間帯を言わない（締めくくりも同じ）。
+  const finale = scene("ch3_steve_bond_finale");
+  const texts = [...lime, ...finale.lines, ...Object.values(finale.branches).flat()].map(line => line.text || "").join("\n");
+  assert.doesNotMatch(texts, /今夜|閉店後|昼の/, "no time of day in Steve's LIME and finale");
+  const spriteDir = new URL("../img/sprites/characters/steve/", import.meta.url);
+  if (fs.existsSync(spriteDir)) {
+    const faces = new Set(fs.readdirSync(spriteDir).map(name => name.replace(/^chr_steve_|\.webp$/g, "")));
+    for (const line of [...lime, ...finale.lines, ...Object.values(finale.branches).flat()])
+      if (line.speaker === "steve") assert(faces.has(line.face), line.face);
+  }
+}
+
 assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
 console.log("ch3 outings: ok");
