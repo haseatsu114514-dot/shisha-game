@@ -2,6 +2,7 @@ import { loadTrpgLibrary, mountTrpg } from "./index.js";
 import { mountTrpgLibrary } from "./library.js";
 import { createTrpgAudio } from "./audio.js";
 import { el } from "../core/util.js";
+import { playTrpgEntrance } from "./entrance.js";
 
 function fontsReady(signal) {
   return new Promise(resolve => {
@@ -19,20 +20,25 @@ export function mountTrpgCollection(host, {
   closeLabel = "閉じる", closable = false, onScenarioChange = () => {},
 } = {}) {
   let controller = null, resources = null, request = null, generation = 0;
-  let disposed = false, phase = "loading";
+  let disposed = false, phase = "loading", entrance = null;
   const audio = createTrpgAudio();
   let resolve;
   const finished = new Promise(r => { resolve = r; });
 
   function destroy() {
     if (disposed) return;
-    disposed = true; generation++; request?.abort();
+    disposed = true; generation++; request?.abort(); entrance?.cancel();
     controller?.destroy(); audio.destroy(); resources = null;
     host.replaceChildren(); signal?.removeEventListener("abort", destroy);
     resolve({ closed: true });
   }
+  // 読み込みが済んで最初の画面を出す時だけ、開幕を一度（#2719・見た目だけ）。
+  function enter() {
+    if (!entrance && !disposed) entrance = playTrpgEntrance(host, { foot: "物語の本棚へ" });
+  }
   function library() {
     if (disposed) return;
+    enter();
     generation++; controller?.destroy(); phase = "library";
     onScenarioChange(null);
     controller = mountTrpgLibrary(host, { ...resources, audio, onChoose: open,
@@ -42,6 +48,7 @@ export function mountTrpgCollection(host, {
     if (disposed) return;
     const scenario = resources.scenarios.find(s => s.id === id);
     if (!scenario) { library(); return; }
+    enter();
     const ticket = ++generation;
     controller?.destroy(); phase = "session"; onScenarioChange(id);
     const mounted = mountTrpg(host, { scenario, characters: resources.characters, manifest: resources.manifest, tableTalk: resources.tableTalk, audio,

@@ -3,6 +3,7 @@ import { TrpgSession, HEAT, heatTier, DICE, STATS, PLAYER_SEAT, approachesOf, ap
 import { displayName, portraitUrl, portraitTop as topFor, sceneUrl } from "./presentation.js";
 import { createTrpgAudio } from "./audio.js";
 import { checkForecast, rerollOdds } from "./feedback.js";
+import { playTrpgEntrance } from "./entrance.js";
 
 const LABELS = { success: "うまくいった", mixed: "ひと手間かかる", trouble: "思わぬ出来事" };
 const SPECIALS = { critical: "クリティカル！", fumble: "ファンブル……", double: "ゾロ目！" };
@@ -101,6 +102,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("strong", { text: scenario.title }), teamwork, heatMeter]), tools,
   ]), progress, table, content, dock, tableStatus);
   host.replaceChildren(root);
+  // 卓を始めた瞬間に、フェルトの幕が短く上下に開く（#2719・見た目だけ）。本棚の開幕が出ている間は重ねない。
+  const entrance = playTrpgEntrance(host, { variant: "open" });
 
   function button(label, test, action, attrs = {}) {
     return el("button.trpg-button", { type: "button", text: label, dataset: { test },
@@ -1098,6 +1101,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function dispose() {
     if (disposed) return;
     disposed = true;
+    entrance.cancel();
     if (timer) clearTimeout(timer);
     if (rollTicker) clearInterval(rollTicker);
     if (providedAudio) audio.silence(); else audio.destroy();

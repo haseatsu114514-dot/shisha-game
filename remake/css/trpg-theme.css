@@ -1,0 +1,250 @@
+/* TRPG専用テーマ「夜の卓」（#2719・2026-11-06 オーナー指示）。
+   日常の紙×ラベンダーとは別の遊びだと一目で分かるよう、TRPGの画面一式（本棚・部活・勧誘・卓・判定・記録）を
+   ボドゲカフェの卓の素材でそろえる: 深緑のフェルト、ウォルナットの縁、真鍮の札と線、生成りのシナリオ紙、象牙のダイス。
+   UIデザインの設定（data-ui-theme）には依存しない。色・面・縁と開幕の演出だけで、寸法・座標・当たり判定・進行は変えない。
+   素材は既存の remake/img/ui/trpg/（deep-teal-felt・walnut-brass-frame）を再利用し、新しい画像は追加しない。
+   html:root を前に付け、trpg.css 本体（読み込み順では後）や trpg-stage.css の同じ選択子より確実に勝たせる。 */
+:is(.trpg-screen, #trpg-app, .trpg-root, .trpg-club-dialog, .trpg-entrance, #trpg-rotate) {
+  --tt-felt: #0e2c2d; --tt-felt-deep: #081d1f; --tt-felt-lift: #1b4442;
+  --tt-walnut: #2f1c10; --tt-walnut-mid: #4a2e1a; --tt-walnut-hi: #7a5232;
+  --tt-brass: #d2ae66; --tt-brass-hi: #f4dda4; --tt-brass-deep: #8c6a30; --tt-brass-line: #d2ae6680;
+  --tt-garnet: #8e2a2f; --tt-garnet-hi: #b8454a;
+  --tt-paper: #f2e8cf; --tt-paper-deep: #e3d3ae; --tt-ink: #2a2117; --tt-ink-soft: #5d4f3d;
+  --tt-text: #f4ecd8; --tt-text-soft: #cfd6c9;
+  --tt-felt-art: url("../img/ui/trpg/deep-teal-felt.webp");
+  --tt-frame-art: url("../img/ui/trpg/walnut-brass-frame.webp");
+  --tt-felt-ground: radial-gradient(ellipse 75% 60% at 50% -8%, #3f6f6340, transparent 72%),
+    radial-gradient(ellipse at 50% 125%, #00000080, transparent 62%),
+    linear-gradient(#0a2123c7, #061517e0), var(--tt-felt-art) center / 512px, var(--tt-felt);
+  --tt-button: linear-gradient(180deg, #1e4544, #122f30);
+  --tt-button-hover: linear-gradient(180deg, #2a5856, #173c3c);
+  --tt-brass-plate: linear-gradient(180deg, #f6e3ad 0%, #dcb86e 50%, #b98e44 100%);
+  --tt-brass-plate-hover: linear-gradient(180deg, #fff0c6 0%, #e8c780 50%, #c79c52 100%);
+  --tt-brass-shadow: inset 0 1px 0 #fff8e0, inset 0 -2px 0 #8c6a30, 0 3px 0 #1a0f0799;
+}
+
+/* ---------------------------------------------------------------- 卓の地: フェルトとウォルナットの額 */
+html:root :is(.trpg-screen, #trpg-app) { background: var(--tt-felt-ground); }
+html:root .trpg-root:not(.trpg-cinematic) { color: var(--tt-text); background: var(--tt-felt-ground); }
+/* 本棚と店の画面は、卓の縁（ウォルナット×真鍮）で囲む。中身がスクロールしても縁は動かない。 */
+html:root .trpg-root:is(.trpg-library, .trpg-campaign)::after {
+  content: ""; position: fixed; inset: 0; z-index: 30; pointer-events: none;
+  border-image: var(--tt-frame-art) 145 / 30px / 0 stretch;
+}
+html:root .trpg-loading { color: var(--tt-brass-hi); }
+html:root .trpg-loading small { color: var(--tt-text-soft); }
+html:root :is(.trpg-root, .trpg-club-dialog) .trpg-kicker { color: var(--tt-brass); }
+html:root :is(.trpg-root, .trpg-loading, .trpg-club-dialog) button:focus-visible { outline-color: var(--tt-brass-hi); }
+
+/* ---------------------------------------------------------------- 札（ボタン）: フェルトの札と、決定の真鍮の札
+   :where() で詳しさを抑え、場面ごとに決めた札（選択カード・宣言・調査地点・道具）はそれぞれの規則に任せる。 */
+html:root :where(.trpg-root, .trpg-loading, .trpg-club-dialog) .trpg-button {
+  color: var(--tt-text); border-color: var(--tt-brass-line); background: var(--tt-button);
+  box-shadow: inset 0 1px 0 #ffffff14, 0 2px 0 #00000059; text-shadow: none;
+}
+html:root :where(.trpg-root, .trpg-loading, .trpg-club-dialog) .trpg-button:hover:not(:disabled) { color: #fff6df; border-color: var(--tt-brass-hi); background: var(--tt-button-hover); }
+html:root :where(.trpg-root, .trpg-loading, .trpg-club-dialog) .trpg-button.primary {
+  color: #2a1b0c; border-color: #fbecc2; background: var(--tt-brass-plate); box-shadow: var(--tt-brass-shadow); text-shadow: 0 1px 0 #fff3cf99;
+}
+html:root :where(.trpg-root, .trpg-loading, .trpg-club-dialog) .trpg-button.primary:hover:not(:disabled) { color: #2a1b0c; background: var(--tt-brass-plate-hover); }
+html:root :where(.trpg-root, .trpg-loading, .trpg-club-dialog) .trpg-button:disabled { filter: saturate(.5); }
+
+/* ---------------------------------------------------------------- 試遊の本棚（library） */
+html:root .trpg-library-header h1 { color: #fff3d6; text-shadow: 0 2px 10px #000a; }
+html:root .trpg-library-meta, html:root .trpg-library-intro { color: var(--tt-text-soft); }
+html:root .trpg-library-book, html:root .trpg-library-book[data-theme="shark"] {
+  border-color: #b48f4f99; background: linear-gradient(165deg, #183b3b, #0c2425);
+  box-shadow: inset 0 1px 0 #f4dda41f, 0 0 0 1px #2f1c10, 0 14px 28px #0007;
+}
+html:root .trpg-library-genre { color: var(--tt-brass-hi); background: #2f1c10e0; border-color: #d2ae6699; }
+html:root .trpg-library-number { color: var(--tt-brass-hi); }
+html:root .trpg-library-copy h2 { color: #fff1d2; }
+html:root :is(.trpg-library-byline, .trpg-library-details, .trpg-library-cast > div, .trpg-library-copy > p) { color: var(--tt-text-soft); }
+html:root .trpg-library-details > span + span { border-color: #d2ae6655; }
+html:root .trpg-library-footer { color: #b9c6bb; }
+
+/* ---------------------------------------------------------------- ボドゲカフェの本棚（campaign） */
+html:root .trpg-campaign-header h1 { color: #fff3d6; text-shadow: 0 2px 10px #000a; }
+html:root .trpg-campaign-meta { color: var(--tt-brass-hi); }
+/* ロゴ画像が読めない時の店名も、フェルトの上で読める色に。 */
+html:root .trpg-campaign-header .store-logo.missing { color: var(--tt-brass-hi); }
+html:root .trpg-campaign .venue-host {
+  color: var(--tt-text); border-color: #b48f4faa;
+  background: linear-gradient(110deg, #4a2e1af2, #24160cf2);
+  box-shadow: inset 0 1px 0 #f4dda433, 0 6px 16px #0006;
+}
+html:root .trpg-campaign .venue-host-copy small { color: #d9bf8a; }
+html:root .trpg-campaign .venue-host-copy strong { color: var(--tt-brass-hi); }
+html:root .trpg-campaign-notice { color: var(--tt-text); border-color: var(--tt-brass); }
+html:root .trpg-campaign-person { color: var(--tt-text); border-color: #b48f4f66; background: linear-gradient(170deg, #173a3a, #0e2627); }
+html:root .trpg-campaign-person[data-available="false"] { color: #b4bab2; border-color: #5d635a66; background: #1a2526; }
+html:root .trpg-campaign-person small { color: var(--tt-text-soft); }
+html:root .trpg-campaign-book, html:root .trpg-campaign-book[data-theme="shark"] {
+  border-color: #b48f4f99; background: linear-gradient(165deg, #173939, #0b2223);
+  box-shadow: inset 0 1px 0 #f4dda41f, 0 0 0 1px #2f1c10, 0 12px 26px #0007;
+}
+html:root .trpg-campaign-book-badge { color: var(--tt-brass-hi); background: #2f1c10e8; border-color: #d2ae66aa; }
+html:root .trpg-campaign-book-copy h2 { color: #fff1d2; }
+html:root .trpg-campaign-book-copy small { color: #d0c3a4; }
+html:root .trpg-campaign-memory { color: var(--tt-text); border-color: var(--tt-brass); background: #2f1c10a6; }
+html:root .trpg-campaign-memory strong { color: var(--tt-brass-hi); }
+html:root .trpg-campaign-footer { color: #b9c6bb; }
+html:root .trpg-club-proposal, html:root .trpg-day-trial {
+  color: var(--tt-text); border-color: #b48f4fb3; background: linear-gradient(150deg, #1c4140, #0d2627);
+  box-shadow: inset 0 1px 0 #f4dda424, 0 0 0 1px #2f1c10, 0 16px 40px #0007;
+}
+html:root :is(.trpg-club-proposal h2, .trpg-day-trial h2) { color: #fff1d2; }
+html:root .trpg-club-line small { color: #d9bf8a; }
+html:root .trpg-trial-score { color: var(--tt-brass-hi); }
+
+/* ---------------------------------------------------------------- 対面の勧誘 */
+html:root .trpg-club-dialog { background: #04100fd9; color: var(--tt-text); }
+html:root .trpg-club-dialog-card {
+  position: relative; border-color: transparent; background: linear-gradient(160deg, #1c4140, #0c2526);
+  box-shadow: 0 24px 90px #000a;
+}
+html:root .trpg-club-dialog-card::before {
+  content: ""; position: absolute; inset: -12px; pointer-events: none;
+  border-image: var(--tt-frame-art) 145 / 34px / 0 stretch;
+}
+html:root .trpg-club-dialog h2 { color: #fff1d2; }
+html:root .trpg-club-conversation small { color: var(--tt-brass); }
+html:root .trpg-club-portrait { background: radial-gradient(circle at 50% 30%, #3d6a63, #163233); }
+
+/* ---------------------------------------------------------------- 卓（セッション）: 上の真鍮のレール */
+html:root .trpg-root.trpg-cinematic .trpg-header::before {
+  content: ""; position: absolute; z-index: -1; left: -14px; right: -14px; top: 50%; height: 48px; transform: translateY(-50%);
+  border-radius: 6px; pointer-events: none;
+  background: linear-gradient(180deg, #3d2615eb, #22140aeb);
+  box-shadow: inset 0 1px 0 #f4dda44d, inset 0 -1px 0 #00000080, 0 0 0 1px #8c6a30cc, 0 6px 18px #0009;
+}
+html:root .trpg-root.trpg-cinematic .trpg-heading > small { color: var(--tt-brass-hi); }
+html:root .trpg-root.trpg-cinematic .trpg-heading > strong { color: #fff3d6; }
+html:root .trpg-root.trpg-cinematic .trpg-teamwork span { color: #ead9b2; }
+html:root .trpg-root.trpg-cinematic .trpg-tool-symbol { color: var(--tt-brass-hi); }
+@media not all and (pointer: coarse) {
+  html:root .trpg-root.trpg-cinematic .trpg-tools .trpg-button { border-color: #d2ae6680; background: #2f1c1066; }
+  html:root .trpg-root.trpg-cinematic .trpg-tools .trpg-button:hover:not(:disabled) { border-color: var(--tt-brass-hi); background: #7a523266; }
+}
+@media (pointer: coarse) {
+  html:root .trpg-root.trpg-cinematic .trpg-tool-symbol { border-color: #d2ae6680; background: #2f1c1066; }
+}
+html:root .trpg-root.trpg-cinematic .trpg-tools .trpg-button:is(:hover, :focus-visible) .trpg-tool-label { color: var(--tt-text); background: #2f1c10f0; box-shadow: 0 0 0 1px #8c6a30; }
+html:root .trpg-root.trpg-cinematic .trpg-table-status { color: var(--tt-text); border-left-color: var(--tt-brass); background: #2f1c10c7; }
+
+/* 目当てと決定の札 */
+html:root .trpg-root.trpg-cinematic .trpg-stage-cue .trpg-kicker { color: var(--tt-brass-hi); }
+html:root .trpg-root.trpg-cinematic .trpg-stage-action .trpg-button {
+  color: var(--tt-text); border-color: #d2ae6699; background: linear-gradient(180deg, #1e4544e6, #112d2ee6);
+  box-shadow: inset 0 1px 0 #ffffff14, 0 4px 18px #0005;
+}
+html:root .trpg-root.trpg-cinematic .trpg-stage-action .trpg-button:hover:not(:disabled) { color: #fff6df; border-color: var(--tt-brass-hi); background: linear-gradient(180deg, #2a5856f0, #173c3cf0); }
+html:root .trpg-root.trpg-cinematic :is(.trpg-stage-action, .trpg-cover-copy .trpg-cover-actions, .trpg-modal-actions) .trpg-button.primary {
+  color: #2a1b0c; border-color: #fbecc2; background: var(--tt-brass-plate); box-shadow: var(--tt-brass-shadow); text-shadow: 0 1px 0 #fff3cf99; font-weight: 700;
+}
+html:root .trpg-root.trpg-cinematic :is(.trpg-stage-action, .trpg-cover-copy .trpg-cover-actions, .trpg-modal-actions) .trpg-button.primary:hover:not(:disabled) { color: #2a1b0c; background: var(--tt-brass-plate-hover); border-color: #fff4d6; }
+html:root .trpg-root.trpg-cinematic .trpg-cover-copy .trpg-cover-actions .trpg-button:not(.primary) { color: var(--tt-text); border-color: #d2ae6699; background: linear-gradient(180deg, #1e4544d9, #112d2ee0); }
+html:root .trpg-root.trpg-cinematic .trpg-cover-copy .trpg-kicker { color: var(--tt-brass-hi); }
+html:root .trpg-root.trpg-cinematic .trpg-cover-pc { border-color: #d2ae6680; background: #0b2224b3; }
+
+/* 台詞の窓: フェルトの面に、ウォルナットと真鍮の縁。文字は暗い面の上で読む。 */
+html:root .trpg-root.trpg-cinematic .trpg-dock {
+  background: linear-gradient(180deg, #0d2a2cf0, #071a1cf7), var(--tt-felt-art) center / 512px, var(--tt-felt-deep);
+  box-shadow: inset 0 3px 0 var(--tt-walnut), inset 0 4px 0 #b48f4f, inset 0 5px 0 #f4dda433, 0 -14px 30px #00000073;
+}
+html:root .trpg-root.trpg-cinematic .trpg-speaker-label strong { color: var(--tt-brass-hi); }
+html:root .trpg-root.trpg-cinematic .trpg-speaker-label span { color: var(--tt-text-soft); }
+html:root .trpg-root.trpg-cinematic .trpg-next { color: var(--tt-brass-hi); border-color: #d2ae66aa; background: #d2ae661c; }
+html:root .trpg-root.trpg-cinematic .trpg-next:hover:not(:disabled) { color: #2a1b0c; border-color: #fbecc2; background: var(--tt-brass-plate); }
+/* 座席の帯は卓の縁。 */
+html:root .trpg-root.trpg-cinematic .trpg-table { border-color: #b48f4f; border-bottom-color: var(--tt-walnut-mid); background: linear-gradient(#173b3af0, #0e2829f2); }
+html:root .trpg-root.trpg-cinematic .trpg-table-person.active { border-color: var(--tt-brass-hi); background: #d2ae6624; }
+
+/* 選択の札・聞き込み・宣言のカード: 縁を真鍮に。 */
+html:root .trpg-root.trpg-cinematic :is(.trpg-topic, .trpg-approach) { border-color: #d2ae6666; }
+html:root .trpg-root.trpg-cinematic :is(.trpg-topic, .trpg-approach):hover:not(:disabled) { border-color: var(--tt-brass-hi); }
+html:root .trpg-root.trpg-cinematic .trpg-topic.selected { border-color: var(--tt-brass); }
+html:root .trpg-root.trpg-cinematic .trpg-tutorial-panel { border-color: #d2ae6699; background: linear-gradient(170deg, #173b3bf0, #0b2224f5); box-shadow: inset 0 1px 0 #f4dda424, 0 0 0 1px #2f1c10, 0 18px 40px #0008; }
+
+/* ---------------------------------------------------------------- 卓の上の紙（遊び方・ログ・メモ・記録・確認）
+   生成りの紙を、ウォルナット×真鍮の額に入れる。判定・相談・宣言・シート・キャラ作りはそれぞれの舞台のまま。 */
+html:root .trpg-root .trpg-overlay { background-color: #03100fc4; }
+html:root .trpg-root .trpg-modal:not(:is(.trpg-roll-stage, .trpg-hypothesis-stage, .trpg-declare-stage, .trpg-sheet-stage, .trpg-builder-stage)) {
+  color: var(--tt-ink); border-color: transparent; border-radius: 4px;
+  background: radial-gradient(ellipse at 20% 0%, #fffaf0, transparent 60%), linear-gradient(170deg, var(--tt-paper), var(--tt-paper-deep));
+  box-shadow: inset 0 0 0 1px #fff9, inset 0 0 40px #b8955a33, 0 22px 60px #000a;
+}
+html:root .trpg-root .trpg-modal:not(:is(.trpg-roll-stage, .trpg-hypothesis-stage, .trpg-declare-stage, .trpg-sheet-stage, .trpg-builder-stage))::before {
+  content: ""; position: absolute; inset: -12px; pointer-events: none;
+  border-image: var(--tt-frame-art) 145 / 34px / 0 stretch;
+}
+html:root .trpg-root .trpg-modal:not(:is(.trpg-roll-stage, .trpg-hypothesis-stage, .trpg-declare-stage, .trpg-sheet-stage, .trpg-builder-stage)) > h2 {
+  color: var(--tt-walnut-mid); background: linear-gradient(90deg, #b48f4f, #b48f4f33) left bottom / 100% 1px no-repeat;
+}
+html:root .trpg-root .trpg-modal :is(.trpg-log-line strong, .trpg-note-head, .trpg-recap-heading small) { color: #7a5a2c; }
+html:root .trpg-root .trpg-modal :is(.trpg-log-line, .trpg-note-text) { border-color: #c6ad7c88; }
+html:root .trpg-root .trpg-modal .trpg-note-card { border-color: #b8a07466; border-left-color: #a07c42; background: #fffaf080; }
+html:root .trpg-root .trpg-modal .trpg-note-card h3 { color: #3d2c18; }
+html:root .trpg-root .trpg-modal .trpg-recap-heading h3 { color: #3d2c18; }
+html:root .trpg-root .trpg-modal .trpg-modal-body { scrollbar-color: #a88a58 transparent; }
+
+/* 判定の舞台はフェルトと額のまま。決定以外の札はフェルトに真鍮の縁。 */
+html:root .trpg-root.trpg-cinematic :is(.trpg-roll-stage, .trpg-hypothesis-stage, .trpg-declare-stage, .trpg-builder-stage, .trpg-sheet-stage) .trpg-modal-actions .trpg-button:not(.primary) {
+  color: var(--tt-text); border-color: #d2ae6699; background: linear-gradient(180deg, #1e4544d9, #112d2ee0);
+}
+html:root .trpg-root.trpg-cinematic :is(.trpg-roll-stage, .trpg-hypothesis-stage, .trpg-declare-stage, .trpg-builder-stage, .trpg-sheet-stage) .trpg-modal-actions .trpg-button:not(.primary):hover:not(:disabled) { border-color: var(--tt-brass-hi); background: linear-gradient(180deg, #2a5856e6, #173c3ce6); }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice { border-color: #d2ae6680; background: #2f1c1052; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice:hover:not(:disabled) { border-color: var(--tt-brass-hi); background: #7a523252; }
+
+/* ---------------------------------------------------------------- 旧 trpg-paper.css から、テーマに関係なく効かせていた分（そのまま） */
+/* 結末: 絵の上の文字に、左から薄い夜の下地を敷く（物語の部屋は見えたまま）。 */
+.trpg-root.trpg-cinematic .trpg-ending::before {
+  content: ""; position: absolute; z-index: -1; inset: -48px -120px -40px -70px; pointer-events: none;
+  background: linear-gradient(90deg, #0a0d18d9 0%, #0a0d18b3 48%, #0a0d1840 78%, transparent 100%);
+}
+.trpg-root.trpg-cinematic .trpg-ending :is(.trpg-ending-rating small, .trpg-ending-heat span) { color: #e6dfcd; }
+/* 絵のない本の場所名は、調査地点や本文に重ならない右上の小さな札に。 */
+.trpg-root.trpg-cinematic .trpg-scene-fallback-title { position: absolute; top: 84px; right: 44px; margin: 0; font-size: 14px; letter-spacing: .24em; color: #ffffff66; }
+.trpg-library .trpg-scene-fallback-title, .trpg-campaign .trpg-scene-fallback-title { position: relative; top: auto; right: auto; color: #ffffffa6; }
+/* メモのふせんは番号だけを大きく（題は調査メモで読む）。 */
+.trpg-root.trpg-cinematic .trpg-stage-pockets .trpg-table-clue { display: grid; place-items: center; font-size: 18px; line-height: 1; background: repeating-linear-gradient(180deg, transparent 0 9px, #b9a77e55 9px 10px), #efe3c4; }
+
+/* ---------------------------------------------------------------- 横向きの案内（試遊ページ） */
+html:root #trpg-rotate { color: var(--tt-brass-hi); background: var(--tt-felt-ground); }
+
+/* ---------------------------------------------------------------- 開幕（js/trpg/entrance.js）
+   深緑のフェルトの幕が閉じた状態で始まり、真鍮の札と象牙のダイスが置かれてから、幕が上下に開く。操作は塞がない。 */
+.trpg-entrance { position: absolute; inset: 0; z-index: 60; overflow: hidden; pointer-events: none; contain: strict; }
+.trpg-entrance-felt { position: absolute; left: 0; right: 0; height: 50.5%; background: var(--tt-felt-ground); will-change: transform; }
+.trpg-entrance-felt.top { top: 0; box-shadow: inset 0 -3px 0 var(--tt-walnut), 0 10px 30px #0009; }
+.trpg-entrance-felt.bottom { bottom: 0; box-shadow: inset 0 3px 0 var(--tt-walnut), 0 -10px 30px #0009; }
+.trpg-entrance-seam {
+  position: absolute; left: 0; right: 0; top: calc(50% - 3px); height: 6px;
+  background: linear-gradient(#f4dda4, #b48f4f 45%, #6e4a2c); box-shadow: 0 0 18px #f4dda466;
+}
+.trpg-entrance-plate {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 560px; padding: 40px 64px 36px;
+  text-align: center; font-family: var(--font); color: var(--tt-text);
+  background: linear-gradient(170deg, #1d4645, #0c2526); box-shadow: inset 0 1px 0 #f4dda433, 0 26px 60px #000b;
+}
+.trpg-entrance-plate::before {
+  content: ""; position: absolute; inset: -16px; pointer-events: none;
+  border-image: var(--tt-frame-art) 145 / 44px / 0 stretch;
+}
+/* 見出しの帯と、ダイスの色はボドゲカフェの看板（真鍮・ガーネット・生成り）に合わせる。 */
+.trpg-entrance-kicker {
+  padding: 4px 18px 4px calc(18px + .42em); font-size: 15px; font-weight: 700; letter-spacing: .42em; color: #fbe9c2;
+  background: linear-gradient(180deg, var(--tt-garnet-hi), var(--tt-garnet)); box-shadow: inset 0 0 0 1px #e8c77f, 0 2px 0 #3a1012;
+}
+.trpg-entrance-title { font-size: 52px; font-weight: 900; line-height: 1.25; letter-spacing: .14em; padding-left: .14em; color: #fff3d6; text-shadow: 0 3px 14px #000c; }
+.trpg-entrance-foot { padding-top: 10px; border-top: 1px solid #d2ae6680; font-size: 17px; letter-spacing: .2em; padding-left: .2em; color: var(--tt-text-soft); }
+.trpg-entrance-die { position: absolute; left: calc(50% + 300px); top: calc(50% + 36px); width: 92px; height: 92px; display: grid; place-items: center; filter: drop-shadow(4px 8px 6px #000a); }
+.trpg-entrance-die svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.trpg-entrance-die polygon { fill: var(--tt-garnet); stroke: #e8c77f; stroke-width: 3; }
+.trpg-entrance-die path { fill: none; stroke: #e8c77f; stroke-width: 1.6; }
+.trpg-entrance-die b { position: relative; font-family: var(--font); font-size: 30px; font-weight: 900; color: #fbe9c2; text-shadow: 0 1px 2px #3a1012; }
+.trpg-entrance[data-variant="open"] .trpg-entrance-seam { height: 4px; top: calc(50% - 2px); }
+@media (prefers-reduced-motion: reduce) {
+  .trpg-entrance-felt, .trpg-entrance-seam, .trpg-entrance-plate, .trpg-entrance-die { animation: none; transition: none; }
+}

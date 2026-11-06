@@ -6,6 +6,7 @@ import { venueHost } from "../core/venue-host.js";
 import { gearOffer, ownsGear } from "../core/hobby-gear.js";
 import { newDayTrial, rollDayTrial, stopDayTrial } from "./day-trial.js";
 import { loadTrpgLibrary, preloadTrpgAssets, runTrpg } from "./index.js";
+import { playTrpgEntrance } from "./entrance.js";
 import { displayName, portraitUrl, portraitTop, sceneArt } from "./presentation.js";
 import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable } from "./campaign.js";
 
@@ -19,7 +20,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
   let reflection = null;
   let justFounded = false; // 設立した直後だけ、気づけば部長になっていた場面を出す
   let foundingChoice = null;
-  let disposed = false, resources = null, busy = false, completed = false, root = null;
+  let disposed = false, resources = null, busy = false, completed = false, root = null, entrance = null;
   let resolveFinished;
   const finished = new Promise(r => { resolveFinished = r; });
   const button = (text, test, action, disabled = false) => el("button.trpg-button", {
@@ -30,7 +31,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
   });
   function close() {
     if (disposed) return;
-    disposed = true; abort.abort(); root?.remove();
+    disposed = true; abort.abort(); root?.remove(); entrance?.cancel();
     signal?.removeEventListener("abort", close);
     resolveFinished({ completed });
   }
@@ -249,5 +250,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     }
   }
   const ready = load();
+  // 店の本棚に入った瞬間の開幕（#2719）。見た目だけで、読み込みや操作は待たせない。
+  if (!disposed) entrance = playTrpgEntrance(host, { foot: readOnly ? "みんなと遊んだ本棚へ" : "ボドゲカフェの本棚へ" });
   return { ready, finished, destroy: close, get disposed() { return disposed; } };
 }
