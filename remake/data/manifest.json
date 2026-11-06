@@ -3336,6 +3336,7 @@
   "ui/face_icons/new/face_naru.png",
   "ui/face_icons/new/face_pakki.png",
   "ui/face_icons/new/face_rei.png",
+  "ui/face_icons/new/face_rio.png",
   "ui/face_icons/new/face_sai.png",
   "ui/face_icons/new/face_saku.png",
   "ui/face_icons/new/face_salaryman.png",
@@ -4640,6 +4641,7 @@
    "face_naru.png",
    "face_pakki.png",
    "face_rei.png",
+   "face_rio.png",
    "face_sai.png",
    "face_saku.png",
    "face_salaryman.png",
@@ -5466,6 +5468,18 @@
      164
     ],
     "unit": 111.3
+   },
+   "rio": {
+    "box": [
+     315,
+     37,
+     196
+    ],
+    "eye": [
+     412,
+     157
+    ],
+    "unit": 113.7
    }
   }
  },
@@ -5717,6 +5731,43 @@
     "tears": {
      "cx": 0.57254,
      "top": 0.1125,
+     "size": 0.16333
+    }
+   },
+   "rio": {
+    "normal": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "sad": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "serious": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "shock": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "smile": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "smug": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "surprise": {
+     "cx": 0.46094,
+     "top": 0.03083,
      "size": 0.16333
     }
    }

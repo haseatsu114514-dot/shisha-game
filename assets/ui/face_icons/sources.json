@@ -274,6 +274,11 @@
   "blob": "996ec0582fa1c15ddd827f5e3839066a60771dd3",
   "webp": "a390a2210af98ec83b02a438025926d952822d43"
  },
+ "new/face_rio.png": {
+  "sprite": "assets/sprites/character_variants/new/rio/chr_rio_normal.png",
+  "blob": "f6028ae66b460e8f53ecb0cf3eb9bbbef4c33cc9",
+  "webp": "3d22b1c10d4bdbe21d4d81e31239cb0df01fd776"
+ },
  "new/face_sai.png": {
   "sprite": "assets/sprites/character_variants/new/sai/chr_sai_normal.png",
   "blob": "fe64402d0d95d2f98d4b1dec306eefc267e695dd",
