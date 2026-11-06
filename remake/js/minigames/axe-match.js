@@ -5,6 +5,7 @@ export const DIFFICULTIES = {
   easy: { name: "やさしい", aim: .38, kill: .14, power: [.38, .86] },
   normal: { name: "ふつう", aim: .22, kill: .09, power: [.46, .78] },
   hard: { name: "むずかしい", aim: .10, kill: .05, power: [.54, .70] },
+  secret: { name: "裏ボス", aim: .085, kill: .045, power: [.54, .70] },
 };
 export const MATCH_THROWS = MODES.league.throws;
 /** From the third sudden-death attempt on, a double miss is measured. */

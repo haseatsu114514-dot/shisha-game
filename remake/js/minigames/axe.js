@@ -47,9 +47,12 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   const versus = mode === "versus";
-  if (typeof tutorial !== "boolean" || tutorial && (mode !== "practice" || opponent !== null) || (!versus && !Object.hasOwn(MODES, mode)) || versus && (opponent !== "hiyori" || !Object.hasOwn(DIFFICULTIES, difficulty)) || opponent !== null && !Object.hasOwn(COMPANIONS, opponent)
+  if (typeof tutorial !== "boolean" || tutorial && (mode !== "practice" || opponent !== null) || (!versus && !Object.hasOwn(MODES, mode))
+    || versus && !(opponent === "hiyori" && difficulty !== "secret" || opponent === "adam" && difficulty === "secret")
+    || opponent === "adam" && !versus || opponent !== null && !Object.hasOwn(COMPANIONS, opponent)
     || !Object.hasOwn(DIVISIONS, division) || !SERIES.includes(bestOf) || !Number.isFinite(steady) || steady < .5 || steady > 1
     || lessonContext !== null && (!tutorial || !LESSON_CONTEXTS.includes(lessonContext))) return Promise.reject(new RangeError("Unknown axe mode, division, lesson or companion"));
+  const rivalName = opponent === "adam" ? "アダム" : "ひより";
   const rules = tutorial ? { throws: 1, max: 8, half: 0 } : MODES[versus ? "league" : mode], companion = COMPANIONS[opponent];
   const baseSeed = (seed ?? crypto.getRandomValues(new Uint32Array(1))[0]) >>> 0;
   const gameSeed = index => (baseSeed + index * 7919) >>> 0;
@@ -66,7 +69,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     title: completed && !tutorial ? titleOf(shots, rules.max) : null, stats: sessionStats(shots),
     ...(tutorial ? { tutorial: true, lessonContext } : {}),
     ...(versus ? { match: { ...matchResult(match), winner: completed ? matchResult(match).winner : null,
-      player: structuredClone(match.player), opponent: structuredClone(match.opponent), suddenDeath: structuredClone(match.suddenDeath), difficulty, division, seed: match.seed },
+      player: structuredClone(match.player), opponent: structuredClone(match.opponent), suddenDeathThrows: structuredClone(match.suddenDeath), difficulty, division, seed: match.seed },
       series: { bestOf, games: structuredClone(series.games), wins: { ...series.wins }, winner: completed ? seriesWinner() : null } } : {}) });
   if (signal?.aborted) return Promise.resolve(result(false, []));
   let finish;
@@ -105,7 +108,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   // 遊び方・操作は常に出さず「？」から開く（#2718 のUI方針）。名前は読み上げ用の文字で付ける。
   const rulesButton = el("button.axe-button.axe-rules-button.axe-help", { type: "button", title: "遊び方・ルール", dataset: { test: "axe-rules" }, onclick: openRules },
     [el("span", { "aria-hidden": "true", text: "？" }), el("span.axe-quiet", { text: "遊び方・ルール" })]);
-  const subtitle = tutorial ? "マキの無料1投レッスン" : versus ? "ひよりと10投対戦 · " + DIFFICULTIES[difficulty].name + (bestOf > 1 ? " · " + bestOf + "本マッチ" : "") : mode === "league" ? "10投ゲーム · 5投で的を交代" : "3投の練習";
+  const subtitle = tutorial ? "マキの無料1投レッスン" : versus ? rivalName + "と10投対戦 · " + DIFFICULTIES[difficulty].name + (bestOf > 1 ? " · " + bestOf + "本マッチ" : "") : mode === "league" ? "10投ゲーム · 5投で的を交代" : "3投の練習";
   const heading = el("header.axe-header", [el("div", [el("h1", { text: tutorial ? "AXE LESSON" : "AXE THROW" }),
     el("p", { text: subtitle + (tutorial ? "" : " · " + DIVISIONS[division].name) })]), round, rulesButton,
     el("button.axe-button.axe-close", { text: "やめる", dataset: { test: "axe-cancel" }, onclick: () => cleanup(false) })]);
@@ -282,7 +285,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   root.append(heading, scoreboard, body, announcement);
   // #2718: 始まった瞬間の切り替えの幕。見た目だけ（文字はCSSで描き、読み上げ・入力・時計・判定には触れない）。動きを減らす設定では出さない。
   if (!reducedMotion) {
-    const label = tutorial ? "マキの無料1投レッスン" : versus ? "ひよりと対戦" : mode === "league" ? "10投ゲーム" : "3投の練習";
+    const label = tutorial ? "マキの無料1投レッスン" : versus ? rivalName + "と対戦" : mode === "league" ? "10投ゲーム" : "3投の練習";
     const cutin = el("div.axe-cutin", { "aria-hidden": "true", dataset: { test: "axe-cutin" } }, [
       el("span.axe-cutin-top"), el("span.axe-cutin-bottom"), el("span.axe-cutin-slash"),
       el("span.axe-cutin-card", [el("span.axe-cutin-tag", { dataset: { text: "MINI GAME" } }),
@@ -370,7 +373,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
           ...(versus ? [fetch(new URL("../../../data/dialogue/axe_versus.json", import.meta.url), { signal: AbortSignal.any([lifetime.signal, timeout.signal]) })
             .then(response => { if (!response.ok) throw new Error("Axe match dialogue unavailable"); return response.json(); })
             .then(data => {
-              matchLines = Object.fromEntries(data.axe_versus.lines.map(line => [line.id, line.text]));
+              matchLines = Object.fromEntries((opponent === "adam" ? data.axe_versus.adam.lines : data.axe_versus.lines).map(line => [line.id, line.text]));
               if (!["before", "call", "hit", "bull", "killshot", "killshot-miss", "miss", "drop", "ahead", "behind", "level", "player", "opponent", "draw", "switch", "sudden", "sudden-call", "sudden-hit", "sudden-miss"].every(key => typeof matchLines[key] === "string"))
                 throw new Error("Axe match dialogue incomplete");
             })] : []),
@@ -553,8 +556,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     timing.hidden = !moving && !displayedShot;
     timing.dataset.active = String(powerActive); feedback.hidden = ["loading", "failed", "summary"].includes(phase);
     const sdRound = versus ? match.suddenDeath.length : 0;
-    round.textContent = sd ? (versus ? (actor === "player" ? "あなた " : "ひより ") : "") + "サドンデス " + Math.max(1, sdRound + (phase === "choice" && actor === "player" ? 1 : 0))
-      : (versus ? (actor === "player" ? "あなた " : "ひより ") : "") + Math.min(currentShots.length + (["result", "summary"].includes(phase) ? 0 : 1), rules.throws) + " / " + rules.throws + " 投"
+    round.textContent = sd ? (versus ? (actor === "player" ? "あなた " : rivalName + " ") : "") + "サドンデス " + Math.max(1, sdRound + (phase === "choice" && actor === "player" ? 1 : 0))
+      : (versus ? (actor === "player" ? "あなた " : rivalName + " ") : "") + Math.min(currentShots.length + (["result", "summary"].includes(phase) ? 0 : 1), rules.throws) + " / " + rules.throws + " 投"
       + (rules.half ? (currentHalf ? " · 後半" : " · 前半") : "") + (series && bestOf > 1 ? " · G" + (gameIndex + 1) : "");
     totalValue.textContent = String(totalOf(shots));
     const heatValue = actor === "player" && !tutorial ? heatOf(shots) : 0;
@@ -591,7 +594,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
         const sdTiles = (match?.suddenDeath || []).map((r, i) => el("span.axe-tile.axe-tile-sd", { dataset: { outcome: r[id]?.outcome || "", filled: String(Boolean(r[id])), current: String(mine && sd && !r[id]) },
           "aria-label": "サドンデス" + (i + 1) + " " + (r[id] ? r[id].score + "点" : "未投擲") }, [el("i", { text: "SD" + (i + 1) }), el("strong", { text: r[id] ? String(r[id].score) : "—" }), el("em", { text: tileMark(r[id]) })]));
         return el("div.axe-score-row", { role: "row", dataset: { thrower: id, active: String(mine) } }, [
-          el("span.axe-score-name", { text: versus ? (id === "player" ? "あなた" : "ひより") : "各投" }),
+          el("span.axe-score-name", { text: versus ? (id === "player" ? "あなた" : rivalName) : "各投" }),
           el("div.axe-score-tiles", [...tiles, ...sdTiles]),
           el("span.axe-score-calls", { title: "キルショットの宣言 残り" + ks.remaining + "回", "aria-label": "宣言 残り" + ks.remaining + "回" },
             Array.from({ length: Math.max(ks.remaining, 0) }, () => el("i", { text: "K" }))),
@@ -601,12 +604,12 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     }
     if (versus) {
       const totals = matchResult(match);
-      matchScore.textContent = "あなた " + totals.playerTotal + " — " + totals.opponentTotal + " ひより" + (sd && sdRound ? " · SD " + sdRound : "") + (bestOf > 1 ? " · " + series.wins.player + "勝" + series.wins.opponent + "敗" : "");
+      matchScore.textContent = "あなた " + totals.playerTotal + " — " + totals.opponentTotal + " " + rivalName + (sd && sdRound ? " · SD " + sdRound : "") + (bestOf > 1 ? " · " + series.wins.player + "勝" + series.wins.opponent + "敗" : "");
       matchRecords.hidden = phase !== "summary";
       if (phase === "summary" && matchRecords.dataset.record !== JSON.stringify(match)) {
         matchRecords.dataset.record = JSON.stringify(match);
         matchRecords.replaceChildren(...["player", "opponent"].map(id => el("div", [
-          el("strong", { text: id === "player" ? "あなた" : "ひより" }),
+          el("strong", { text: id === "player" ? "あなた" : rivalName }),
           el("p", { text: match[id].map((shot, i) => (i + 1) + ":" + shot.score).join(" · ") + (match.suddenDeath.length ? " · SD " + match.suddenDeath.map(r => r[id]?.score ?? "-").join("/") : "") }),
         ])), ...(bestOf > 1 ? [el("div.axe-series-line", [el("strong", { text: "マッチ" }), el("p", { text: series.games.map(g => "G" + g.game + " " + g.playerTotal + "-" + g.opponentTotal).join(" · ") })])] : []));
       }
@@ -656,7 +659,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       const bonusEarned = shots.length > 0 && killState(shots, rules.throws).bonus > killState(shots.slice(0, -1), rules.throws).bonus;
       const context = { heat: heatOf(shots), last: shots.length === rules.throws - 1, grade: phase === "summary" ? gradeOf(totalOf(shots), rules.max) : null,
         switching: phase === "choice" && switching(), bonus: bonusEarned, suddenDeath: sd };
-      const line = versus && matchLines ? matchReaction(matchLines, phase, match, actor, pending, called, context) : reaction(opponent, phase, shots, called, context);
+      const line = versus && matchLines ? matchReaction(matchLines, phase, match, actor, pending, called, { ...context, faces: companion.faces, versusOnly: opponent === "adam" }) : reaction(opponent, phase, shots, called, context);
       if (comment.textContent !== line.text) comment.textContent = line.text;
       if (portraitKey) showFace(line.face);
     }
@@ -714,7 +717,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     reaim.disabled = retry.disabled = isPaused() || performance.now() - lastAction < 250;
     action.disabled = isPaused() || ["loading", "flight", "opponent-ready"].includes(phase) || cycles[phase] && elapsed < 250 || performance.now() - lastAction < 250;
     const nextAction = { loading: "読み込み中…", failed: "もう一度読み込む", choice: "構える", horizontal: "横を止める", vertical: "縦を止める", power: strength === "適正" ? "いま放す！" : "緑の帯で放す",
-      "opponent-ready": "ひよりが構えています…", flight: "飛んでいく…", result: versus ? turnOf(match) === "opponent" ? "ひよりの番へ" : turnOf(match) === null ? "結果を見る" : "あなたの番へ" : shots.length === rules.throws ? "結果を見る" : "次の投へ",
+      "opponent-ready": rivalName + "が構えています…", flight: "飛んでいく…", result: versus ? turnOf(match) === "opponent" ? rivalName + "の番へ" : turnOf(match) === null ? "結果を見る" : "あなたの番へ" : shots.length === rules.throws ? "結果を見る" : "次の投へ",
       summary: series && !seriesWinner() ? "第" + (gameIndex + 2) + "ゲームへ" : "終了" }[phase] || "";
     if (action.textContent !== nextAction) action.textContent = nextAction;
     const last = shown;
@@ -736,17 +739,17 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
         const feedbackText = shotFeedback(last);
         resultLabel.textContent = sd ? (last.score ? "SUDDEN DEATH HIT" : "SUDDEN DEATH MISS") : feedbackText.label;
         resultNumber.textContent = "+" + last.score; resultUnit.textContent = "PTS";
-        resultTip.textContent = actor === "player" ? feedbackText.tip : "ひよりの一投 · 回転 " + Math.round(last.power * 100) + "%" + (last.zone?.cluster ? " · " + clusterPlaces[last.zone.cluster] + "の赤" : "");
+        resultTip.textContent = actor === "player" ? feedbackText.tip : rivalName + "の一投 · 回転 " + Math.round(last.power * 100) + "%" + (last.zone?.cluster ? " · " + clusterPlaces[last.zone.cluster] + "の赤" : "");
       }
     }
     drawImpact(displayedShot);
     const nextNote = document.hidden ? "一時停止中" : phase === "loading" ? "準備しています…" : phase === "failed" ? "画像を読み込めませんでした。もう一度お試しください。"
       : phase === "choice" ? sd ? "サドンデス。" + killPlaces[called] + "の青へ、1本。" : switching() ? "後半5投。的を交代。赤と5の閉鎖は開き直す。" : !tutorial && rules.throws > 1 && shots.length === rules.throws - 1 ? lastNote() : "狙いを決めて、構える。" : phase === "horizontal" ? "① 横の位置を止めよう" : phase === "vertical" ? "② 縦の位置を止めよう"
-      : phase === "opponent-ready" ? sd ? "ひよりのサドンデス" : called ? "ひよりがキルショットを宣言" : "ひよりの投擲を見よう" : phase === "power" ? "③ 白い刃先＋緑の回転で放す" : phase === "flight" ? "それっ！"
+      : phase === "opponent-ready" ? sd ? rivalName + "のサドンデス" : called ? rivalName + "がキルショットを宣言" : rivalName + "の投擲を見よう" : phase === "power" ? "③ 白い刃先＋緑の回転で放す" : phase === "flight" ? "それっ！"
       : phase === "result" ? !last ? "" : last.outcome === "drop" ? (last.dropReason === "weak" ? "柄から当たって落下 · 0点" : "回りすぎて落下 · 0点") : last.outcome === "killshot" ? "キルショット！ " + last.score + "点"
       : last.outcome === "killshot-miss" ? (last.stuck ? "宣言した青い的から外れた · 0点" : "板の外 · 0点") : last.score ? (last.outcome === "bull" ? "ど真ん中！ " : "命中！ ") + last.score + "点" : last.zone?.kind === "closed" ? "閉じた円に触れた · 0点" : "的の外 · 0点"
       : "合計 " + totalOf(shots) + " / " + rules.max + "点";
-    const finalNote = versus && phase === "summary" ? ({ player: "あなたの勝ち", opponent: "ひよりの勝ち", draw: "引き分け" })[matchResult(match).winner] + (matchResult(match).suddenDeath ? " · サドンデス" + matchResult(match).suddenDeath.rounds + "本" : "") + (bestOf > 1 ? " · マッチ " + series.wins.player + "-" + series.wins.opponent : "") : nextNote;
+    const finalNote = versus && phase === "summary" ? ({ player: "あなたの勝ち", opponent: rivalName + "の勝ち", draw: "引き分け" })[matchResult(match).winner] + (matchResult(match).suddenDeath ? " · サドンデス" + matchResult(match).suddenDeath.rounds + "本" : "") + (bestOf > 1 ? " · マッチ " + series.wins.player + "-" + series.wins.opponent : "") : nextNote;
     if (note.textContent !== finalNote) note.textContent = finalNote;
     if (announcement.textContent !== finalNote) announcement.textContent = finalNote;
     // Disabling a focused native button otherwise sends Space/Enter to the VN below.
@@ -755,7 +758,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   function lastNote() {
     if (!versus) return "ラスト1投。いま合計" + totalOf(shots) + "点。";
     const { playerTotal: p, opponentTotal: o } = matchResult(match);
-    return "ラスト1投。" + (p > o ? p - o + "点リード、ひよりの最後の一投が残る。" : p < o ? o - p + "点差。ここで詰めたい。" : "同点。この一投が流れを決める。");
+    return "ラスト1投。" + (p > o ? p - o + "点リード、" + rivalName + "の最後の一投が残る。" : p < o ? o - p + "点差。ここで詰めたい。" : "同点。この一投が流れを決める。");
   }
   function drawImpact(shot) {
     const effect = impactFeedback(shot);
