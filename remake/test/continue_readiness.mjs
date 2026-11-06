@@ -45,7 +45,7 @@ await suite("continue-readiness", async check => {
     }, { viewport });
   }
 
-  await check("warm-premium", async page => {
+  await check("warm-lover", async page => {
     await page.route("**/assets/audio/bgm/bgm_continue_urgent.mp3", route => route.fulfill({ status: 200, contentType: "audio/mpeg", body: "invalid-audio" }));
     await page.evaluate(async () => {
       // 新しい本編モジュールで既定250件を超える。先読みを欠落した計測で判定しない。
@@ -57,7 +57,7 @@ await suite("continue-readiness", async check => {
     assert(await page.evaluate(() => preparedContinue.slice(1).every(Boolean)), "Continue images must actually decode before the timer starts");
     const before = await page.evaluate(() => performance.getEntriesByType("resource").filter(entry => /chr_ageha_/.test(entry.name)).length);
     assert.ok(before >= 3, "Premium expressions were not prepared during the tournament");
-    await page.evaluate(() => { window.opening = __remake.dev.gameOver("rank", "premium:ageha"); });
+    await page.evaluate(() => { window.opening = __remake.dev.gameOver("rank", "lover:ageha"); });
     await page.locator(".gameover").waitFor();
     assert.equal(await page.locator(".gameover").getAttribute("data-speaker"), "ageha");
     assert.equal(await page.locator(".go-count").textContent(), "20");

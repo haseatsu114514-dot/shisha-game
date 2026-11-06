@@ -155,7 +155,7 @@ async function keepDailyHud(task) {
 
 /** 読み終えたら true。中断・LOADは false（代金・体力・既読を残さない）。 */
 async function readPlain(id, bg, owner) {
-  if (bg) await setBg(BG(bg), { instant: true });
+  if (bg) await setBg(BG(bg));
   if (state !== owner) return false;
   const result = await play(DB.dialogues[id], bg ? { bg: BG(bg) } : {});
   return state === owner && !!result && !result.cancelled;
@@ -183,7 +183,7 @@ export function chapterThreeTokyoDefinition(io) {
     // 東京でも寝る前の家シーシャを選べる（荷物に詰めてきた台・VOL12）。
     beforeHomecoming: async () => {
       state.flags._home_tonight = true;
-      await setBg(BG("bg_mukai_shop"), { instant: true });
+      await setBg(BG("bg_mukai_shop"));
       return true;
     },
     beforeInvitation: () => true,
@@ -524,7 +524,7 @@ async function visitRivalShop(entry, io, staminaGuard, owner) {
 async function readRivalFinale(who, place, staminaGuard, owner) {
   if (!(await staminaGuard(-10))) return unused;
   const bg = BG(visitBg[place]);
-  await setBg(bg, { instant: true });
+  await setBg(bg);
   if (!await playFinale(who, { bg }) || state !== owner) return unused;
   addStamina(-10);
   return { used: true, exerted: true, exp: personExp(who) };
@@ -583,7 +583,7 @@ async function mukaiShift(owner, { called = false } = {}) {
 async function readMashiroBond(kind, staminaGuard, owner) {
   if (!(await staminaGuard(-10))) return unused;
   const bg = BG("bg_mukai_shop");
-  await setBg(bg, { instant: true });
+  await setBg(bg);
   let done = false;
   if (kind === "lover") done = await readLoverMilestone("mashiro");
   else if (kind === "question") done = await playQuestionVisit("mashiro", { bg });

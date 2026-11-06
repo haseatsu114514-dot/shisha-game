@@ -159,25 +159,43 @@ const vnContext=vm.createContext({SE:{select(){}},clearTimeout(){},autoTimer:nul
 vm.runInContext(engineSource.slice(start,end)+';globalThis.openSettings=openSettings;',vnContext);
 await vnContext.openSettings();
 test('VN refresh updates speaker and silent companion in place',()=>{assert.equal(resolved,2);assert.equal(framed,2);assert.equal(images[0].src,'new-tsumugi-smile');assert.equal(images[1].src,'new-minto-serious');assert.equal(kicked,1);assert.equal(vnContext.vnModalOpen,0);});
-// CONTINUE uses its own measured classic close-up, independently of the new conversation default.
+// CONTINUE picks its portrait style by coverage (#2524): the new version only when every face of the script has
+// new-version art AND a measured close-up frame (continuePortraitVariants); otherwise the measured classic art.
 const continueSource=await read('js/chapters/continue-view.js');
-const continueCalls=[];
-const continueCtx=vm.createContext({script:{cues:[{face:'normal'}]},speaker:'sumi',portraitInfo(...args){continueCalls.push(args);return null;},root:{dataset:{}}});
-const initialStart=continueSource.indexOf('  const portrait = portraitInfo');
+const styleStart=continueSource.indexOf('export function continuePortraitStyle(');
+const styleEnd=continueSource.indexOf('export function continueFraming(',styleStart);
+const styleSource=continueSource.slice(styleStart,styleEnd).replace('export function','function')+';globalThis.continuePortraitStyle=continuePortraitStyle;';
+const initialStart=continueSource.indexOf('  const faces = [...new Set(');
 const initialEnd=continueSource.indexOf('  const image =',initialStart);
-vm.runInContext(continueSource.slice(initialStart,initialEnd),continueCtx);
 const faceStart=continueSource.indexOf('  function face(');
 const faceEnd=continueSource.indexOf('  function reaction(',faceStart);
-vm.runInContext(continueSource.slice(faceStart,faceEnd)+';face("smile",false);',continueCtx);
-test('CONTINUE initial art and cue changes use measured classic art',()=>assert.deepEqual(continueCalls,[['sumi','normal','classic'],['sumi','smile','classic']]));
+function runContinue(manifest){
+ const calls=[];
+ const ctx=vm.createContext({script:{cues:[{face:'normal'}],reactions:{retry:{faces:['smile']}}},speaker:'sumi',DB:{manifest},portraitInfo(...args){calls.push(args);return null;},root:{dataset:{}}});
+ vm.runInContext(styleSource,ctx);
+ vm.runInContext(continueSource.slice(initialStart,initialEnd),ctx);
+ vm.runInContext(continueSource.slice(faceStart,faceEnd)+';face("smile",false);',ctx);
+ return calls;
+}
+const fullNew={portraitVariants:{new:{sumi:{faces:['normal','smile']}}},continuePortraitVariants:{new:{sumi:{normal:{cx:.5,top:.1,size:.2},smile:{cx:.5,top:.1,size:.2}}}}};
+test('CONTINUE uses the new version only when every face and its measured frame exist',()=>{
+ assert.deepEqual(runContinue(fullNew),[['sumi','normal','new'],['sumi','smile','new']]);
+ assert.deepEqual(runContinue({portraitVariants:{new:{sumi:{faces:['normal']}}},continuePortraitVariants:{new:{sumi:{normal:{}}}}}),[['sumi','normal','classic'],['sumi','smile','classic']],'a missing expression keeps the whole screen classic');
+ assert.deepEqual(runContinue({portraitVariants:{new:{sumi:{faces:['normal','smile']}}},continuePortraitVariants:{new:{}}}),[['sumi','normal','classic'],['sumi','smile','classic']],'a missing measured frame keeps the whole screen classic');
+ assert.deepEqual(runContinue({}),[['sumi','normal','classic'],['sumi','smile','classic']]);
+});
 const gameoverSource=await read('js/chapters/gameover.js');
 const warmStart=gameoverSource.indexOf('export function warmGameOver()');
 const warmEnd=gameoverSource.indexOf('\n//',warmStart);
-const warmCalls=[];
-const warmCtx=vm.createContext({SUMI_CONTINUE_SCRIPTS:[{cues:[{face:'normal'}],reactions:{retry:{faces:['smile']}}}],state:{lovers:[]},DB:{manifest:{}},portraitInfo(...args){warmCalls.push(args);return {src:'classic-image'};},preloadBgm:async()=>{},imageReady:async()=>{}});
-vm.runInContext(gameoverSource.slice(warmStart,warmEnd).replace('export function','function')+';this.warm=warmGameOver;',warmCtx);
-await warmCtx.warm();
-test('CONTINUE warmup matches its measured artwork',()=>assert.deepEqual(warmCalls,[['sumi','normal','classic'],['sumi','smile','classic']]));
+for(const [style,expected] of [['classic','classic'],['new','new']]){
+ const warmCalls=[];
+ const warmCtx=vm.createContext({SUMI_CONTINUE_SCRIPTS:[{cues:[{face:'normal'}],reactions:{retry:{faces:['smile']}}}],LOVER_CONTINUE_SCRIPTS:{},state:{lovers:[]},DB:{manifest:{}},
+  scriptFaces:script=>[...new Set([...script.cues.map(c=>c.face),...Object.values(script.reactions).flatMap(r=>r.faces)])],continuePortraitStyle:()=>style,
+  portraitInfo(...args){warmCalls.push(args);return {src:`${style}-image`};},preloadBgm:async()=>{},imageReady:async()=>{}});
+ vm.runInContext(gameoverSource.slice(warmStart,warmEnd).replace('export function','function')+';this.warm=warmGameOver;',warmCtx);
+ await warmCtx.warm();
+ test(`CONTINUE warmup preloads the same ${expected} artwork the screen will show`,()=>assert.deepEqual(warmCalls,[['sumi','normal',expected],['sumi','smile',expected]]));
+}
 // The standing image in an intro morph is the current VN portrait, not always classic.
 const transitionSource=await read('js/vn/intro-transition.js');
 const metricStart=transitionSource.indexOf('const STANDING_FACE_X =');

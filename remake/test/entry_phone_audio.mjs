@@ -75,6 +75,8 @@ const transitions = await load(await read('../js/core/transitions.js'), {
   SE: { doorbell: () => transitionRings++ }, reducedMotion: () => reduced,
   moveCurtain: curtain, moveStyle: () => 'pin', withStoreArrival: (_host, c) => c,
   el: node, holdKeys: () => () => {}, nextFrame: async () => {}, sleep: async () => {},
+  // 一筆の幕（#2688 F1）が描く SVG とアニメーションも DOM の境界として差し替える
+  svg: () => ({ ...node(), style: {}, setAttribute() {} }), move: async () => {},
 }, { performance: { now: () => now } });
 for (const fast of [false, true]) for (const reducedSetting of [false, true]) {
   reduced = reducedSetting;

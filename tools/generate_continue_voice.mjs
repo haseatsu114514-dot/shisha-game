@@ -2,7 +2,7 @@
 // Claude Code / Mac 用: VOICEVOX ENGINE(127.0.0.1:50021) からコンティニュー音声を作る。
 // 追加のnpm依存なし。Node 20+, ffmpeg, ffprobe, VOICEVOX ENGINE が必要。
 // 例: node tools/generate_continue_voice.mjs --target sumi
-//     node tools/generate_continue_voice.mjs --target premium_tsumugi --speaker 8
+//     node tools/generate_continue_voice.mjs --target lover_tsumugi --speaker 8
 //     node tools/generate_continue_voice.mjs --list
 import fs from "node:fs";
 import path from "node:path";
@@ -52,10 +52,10 @@ function expressionFrom(file, name) {
 }
 function scripts() {
   const sumi = vm.runInNewContext("(" + expressionFrom("remake/js/chapters/gameover.js", "SUMI_CONTINUE_SCRIPTS") + ")");
-  const premium = vm.runInNewContext("(" + expressionFrom("remake/js/chapters/continue-premium.js", "PREMIUM_CONTINUE_SCRIPTS") + ")");
-  return [...sumi, ...Object.values(premium)];
+  const lovers = vm.runInNewContext("(" + expressionFrom("remake/js/chapters/continue-lovers.js", "LOVER_CONTINUE_SCRIPTS") + ")");
+  return [...sumi, ...Object.values(lovers)];
 }
-const selected = scripts().filter(x => target === "all" || target === "sumi" && x.id.startsWith("premium_") === false || x.id === target);
+const selected = scripts().filter(x => target === "all" || target === "sumi" && x.id.startsWith("lover_") === false || x.id === target);
 if (target !== "all" && !selected.length) throw new Error("対象がありません: " + target);
 if (dryRun) {
   for (const s of selected) console.log(`${s.id} — ${s.cues.length}行 / ${s.duration}秒予定`);
@@ -129,7 +129,7 @@ try {
     }
     const chain = s.cues.map((_, i) => `[v${i}]`).join("");
     parts.push(`${chain}concat=n=${s.cues.length}:v=0:a=1[out]`);
-    const basename = s.id.startsWith("premium_") ? s.id : "sumi_" + s.id;
+    const basename = s.id.startsWith("lover_") ? s.id : "sumi_" + s.id;
     const output = path.join(outDir, basename + ".mp3");
     command("ffmpeg", ["-y", "-loglevel", "error", ...inputs, "-filter_complex", parts.join(";"), "-map", "[out]", "-c:a", "libmp3lame", "-b:a", "160k", output]);
     console.log(`完成: ${path.relative(repo, output)} (${duration(output).toFixed(2)}s)`);

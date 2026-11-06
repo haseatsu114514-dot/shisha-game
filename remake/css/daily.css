@@ -26,7 +26,7 @@
   border-radius: 50%;
   background: radial-gradient(ellipse, rgba(240, 230, 250, 0.16), transparent 70%);
   filter: blur(30px);
-  animation: drift 18s ease-in-out infinite alternate;
+  animation: smoke-drift 18s ease-in-out infinite alternate;
   pointer-events: none;
 }
 .title-smoke i:nth-child(1) { left: -200px; bottom: -120px; }

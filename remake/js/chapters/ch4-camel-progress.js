@@ -65,9 +65,15 @@ function ensureRecord(value) {
   return value.flags[CAMEL_FLAG];
 }
 
-/** 第4章ドバイの自由行動の最中か。14日化後も「ドバイ滞在中の daily」であれば同じ条件で開く。 */
+/**
+ * 第5章でドバイにいる日（chapters/ch5-dubai.js）。第4章で一度でも走った人だけ、練習レースへまた通える。
+ * 店先の出会い・誘い・本番の見学（「大会の人だ」「宿の前に迎えに行く」）は第4章の話なので、第5章では始めない。
+ */
+const chapterFiveCamelOpen = value => value?.chapter === 5 && value.phase === "daily" && value.flags?._ch2_region === "dubai"
+  && camelRaceRecord(value).stage >= CAMEL_STAGES.unlocked;
+/** 第4章ドバイの自由行動の最中か。14日化後も「ドバイ滞在中の daily」であれば同じ条件で開く。第5章のドバイは上の条件。 */
 export const camelRaceOpen = value => value?.chapter === 4 && value.phase === "daily"
-  && (value.flags?._ch4?.part === undefined || value.flags._ch4.part === "free");
+  && (value.flags?._ch4?.part === undefined || value.flags._ch4.part === "free") || chapterFiveCamelOpen(value);
 export const isDaytime = value => (value?.slot ?? 0) === 0;
 
 /**
