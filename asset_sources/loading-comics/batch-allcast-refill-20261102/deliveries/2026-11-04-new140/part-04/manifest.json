@@ -1,0 +1,448 @@
+{
+  "schema": "shisha-composition-independent-zip-v1",
+  "part": 4,
+  "totalParts": 7,
+  "episodeCount": 30,
+  "originalImages": 37,
+  "originalBytesUnmodified": true,
+  "sourceZipSHA256": "8a2b1815e7b8fed73e04f078afcfdfe152f1afb32c3ecff1742dedb89ad49aca",
+  "old45ImageBytesIncluded": false,
+  "formalNormalTemplateBytesIncluded": false,
+  "adopted": false,
+  "gameRegistered": false,
+  "files": [
+    {
+      "path": "images/emil-evil-eye/sheet.png",
+      "bytes": 1841166,
+      "sha256": "76803b2bbe525d3b4af38a9a2fb46549257cde6df7252e019d19eb13609b5e79",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/emil-evil-eye/comics.json",
+      "bytes": 6094,
+      "sha256": "5ca3c3f70086bcae9517d1f206cb11c2be4222a3a5594c3d50de1ee94e723b8c",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/emil-copy-look/sheet.png",
+      "bytes": 1748377,
+      "sha256": "2a4a91da72dd29cd31c58b1cb811bd728a90d149f906a0a9932516fe709cae22",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/emil-copy-look/comics.json",
+      "bytes": 6054,
+      "sha256": "ab4ded2dc2f2ca8402a9365ae4a79e8ea4cfc195e58430524dada34c385e58cf",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/emil-chopstick-ship/sheet.png",
+      "bytes": 1854611,
+      "sha256": "f9a9ed878e0452d0ef2b89737f6181fefeacff7cf7d10af2d4dd70352edf38c0",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/emil-chopstick-ship/comics.json",
+      "bytes": 5848,
+      "sha256": "f06694c30ed7d798bd0755b0489f4a540d6d619669577ed33f1eb05df1f56f1f",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maezono-plain-water/sheet.png",
+      "bytes": 1990205,
+      "sha256": "bde0281e46136758ac6a5a52dd986509712c61854d2359a758400ee0ad2cf64c",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maezono-plain-water/comics.json",
+      "bytes": 5438,
+      "sha256": "ae3e4eec45720089b12abf0f709475b2cae9c2fc32c80ac98a0725d536fc2f89",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maezono-photo-first/sheet.png",
+      "bytes": 1741117,
+      "sha256": "d4ad23df6ac1efd7008fffadcc8cbc310dc528cdb4239ebe083962aff8bf0095",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maezono-photo-first/comics.json",
+      "bytes": 5466,
+      "sha256": "9c9712ef4c968bdbfdee8991cb81fe196a2c341f5f31e250de49a4a9ad05b075",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maezono-pen-lining/sheet.png",
+      "bytes": 1735467,
+      "sha256": "83c16c3667917a1a27d44258b6e5a50b9c1e598e0cf70cbc27afdb272e9406e2",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maezono-pen-lining/comics.json",
+      "bytes": 5990,
+      "sha256": "887f1ab77ba9bed45ddca13165f173936859e69bb3773948bde89e1bfb6d56c3",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maezono-lemon/sheet.png",
+      "bytes": 1681379,
+      "sha256": "a7aea4be141b8d6b5346862cb4211c52c18a6675940bc2307e3a48309cea4c1b",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maezono-lemon/comics.json",
+      "bytes": 5842,
+      "sha256": "3cbf74a790d1ef6567dd670550116357e8d72452f69859aeb8d6a8107fa47fdd",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maezono-food-sample/sheet.png",
+      "bytes": 1715089,
+      "sha256": "abdef3172169a92df252d4ee855a667ab5e2e981c6f0edd9c11f4fed012ec360",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maezono-food-sample/comics.json",
+      "bytes": 5935,
+      "sha256": "b1d5e2477e7566ab2cfa2b8f3020636bf0d28f72ee6dc0a967034a7e76ddf4cf",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maezono-notifications/sheet.png",
+      "bytes": 1750548,
+      "sha256": "71c8c895f851d280af1d30df166443f3d05a267d11f47211b16476c4884724d8",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maezono-notifications/comics.json",
+      "bytes": 6269,
+      "sha256": "4d4f59de2470dab4e3639c623876673b25ae7548564fea4b9413d569bcf6a16e",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maezono-good-smell/sheet.png",
+      "bytes": 1864166,
+      "sha256": "7868fd2f77335340fe3cf4b09c8ac850f65fe1fd7d934bf91910b9f39fbfc662",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maezono-good-smell/comics.json",
+      "bytes": 6146,
+      "sha256": "8f79dfd43758b3f8b208f65e97ff447ecbb7ffd5aef118985054efc8834c5e37",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maezono-big-plate/sheet.png",
+      "bytes": 1773821,
+      "sha256": "b761a52ad75e4cf43d67a43e4900aec04e10dfb67e34e2e46d104e6a862039f8",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maezono-big-plate/comics.json",
+      "bytes": 5922,
+      "sha256": "d20542ced10008105bac12aeabf3c765963f55f8fab17617c874b31c692076b1",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maezono-give-all/sheet.png",
+      "bytes": 1734998,
+      "sha256": "09cf7448c65912a5120ecd60dd7109c777c4bfe90eaf354e2d774c0654b490bb",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maezono-give-all/comics.json",
+      "bytes": 6085,
+      "sha256": "c40ac2723757c1535fa872dd1dd8f217ef42fd1d04bab13f520cc5e3325a8544",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maezono-dream-feast/sheet.png",
+      "bytes": 1867182,
+      "sha256": "50cecfc032a4fb243863f5006d44d9773482f564f0b46a088c3b11a441ac24c3",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maezono-dream-feast/comics.json",
+      "bytes": 5463,
+      "sha256": "e15180551ee762ecfb0dc52ed6cc394c1eb1480b93ff717bb7f5202a8c3d160d",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/dasilva-blackout-smile/sheet.png",
+      "bytes": 1638016,
+      "sha256": "8828f1b9b461ec920fe4d49689e1f1187056243bb59491a2dcf66271449aaee2",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/dasilva-blackout-smile/comics.json",
+      "bytes": 6107,
+      "sha256": "8a9af13adcbc1f8bbf6bf8c8accc9c769fdfbb65a2c9193be31696700b30cbd0",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/dasilva-flashy-tea/sheet.png",
+      "bytes": 1961927,
+      "sha256": "9afae2e7d407ad3ebc5719e8eb3630fc23a537cca5a0a4830f0d5b0b08c2c93d",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/dasilva-flashy-tea/comics.json",
+      "bytes": 6276,
+      "sha256": "482f47b3e79a912a54725fd28ed74bc0c219b4e9b8f5913216f0e9c619f2c668",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/dasilva-snow-day/sheet.png",
+      "bytes": 2035180,
+      "sha256": "d76d801f3c02f318ee7c244c2eb6d2392e54bae112cd7f59e7d53108545a2f29",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/dasilva-snow-day/comics.json",
+      "bytes": 5528,
+      "sha256": "04e73d9cb99e8c3ed942f2905424ad26daf5159b74eb7801394c1ab360bc4b2b",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/dasilva-big-present/sheet.png",
+      "bytes": 1959163,
+      "sha256": "acdfccba4a7cf371fbb7e1ca04249c1b4ac620a7a76dbb16a7fcaed2afee1a42",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/dasilva-big-present/comics.json",
+      "bytes": 6377,
+      "sha256": "9316f350ba03d7fb85a7adf1e11370a4dc0877b52e70a8d82919ce784d554e35",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/dasilva-sunscreen/sheet.png",
+      "bytes": 1791215,
+      "sha256": "beb64877e13a686319684aa88f4c6c9f1a9ffb676e0d99277b1e33f5beda732c",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/dasilva-sunscreen/comics.json",
+      "bytes": 6257,
+      "sha256": "6d636eae9e4464e5cd68e789bfb4471ef879cf2b6330370cd6c8b82c2dd9a973",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maki-ring-toss/sheet.png",
+      "bytes": 1921582,
+      "sha256": "0d8f259ad81373ad2de7e084282398dfd13df258f52aac97e096f44e8aa98d49",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maki-ring-toss/comics.json",
+      "bytes": 5249,
+      "sha256": "54247b36fdd77a9fa08136ceea3a6e7d27b2640772ff2bd7d09c720c87d72d9f",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maki-carry-all/sheet.png",
+      "bytes": 2260637,
+      "sha256": "17ffca4f744fcedbc26e0a587e9026066fb29dc9147f00cfc44ce7f25a133c79",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maki-carry-all/comics.json",
+      "bytes": 5311,
+      "sha256": "9a84c9a0d320cb6ac7d1f7b3e46554c837bb880af79d3c4b56017dbe7391bfff",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maki-warm-up/panel1.png",
+      "bytes": 2829445,
+      "sha256": "7de4a2ebebb86ac50b19eb9d523e75cc834a8b302c824774e628daa4df64a102",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/maki-warm-up/panel2.png",
+      "bytes": 2680248,
+      "sha256": "b33b15297f3e6d9f42c586575195c5ba56c99a3942de904e86f4154a71491448",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maki-warm-up/comics.json",
+      "bytes": 9256,
+      "sha256": "71b5d4ea7d988c710a7e1b92aa428396cee82c14eabf867a4f43a7b0e3dc1611",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maki-home-target/panel1.png",
+      "bytes": 2417289,
+      "sha256": "2e6e1f6200adddcfe18631a2397660a42341640b282dfd0b23477ac72107c018",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/maki-home-target/panel2.png",
+      "bytes": 2611529,
+      "sha256": "5f03f535955d34208a1a5fdc4bc96bb4b041f4fba34449a414a1c80f40d7a048",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maki-home-target/comics.json",
+      "bytes": 8013,
+      "sha256": "8f0680475db22c58fb18a86b9e4466d329844c156d113da01f5f3dab5c227704",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maki-tea-ceremony/panel1.png",
+      "bytes": 2709765,
+      "sha256": "33ca05ea0f2779eacb10fbe933e6f8a7a3db5c1d72bfad84e72a1d4df728c573",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/maki-tea-ceremony/panel2.png",
+      "bytes": 2523789,
+      "sha256": "54fa4b80b7573660bbe411e7781de7f1dbd2bbd1ece7d229f15628271767584b",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maki-tea-ceremony/comics.json",
+      "bytes": 9047,
+      "sha256": "a802fac29e881b71406228e2a83cee8b6f50c87579f9eb8a046014fb6c7fc591",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maki-cheer-squad/sheet.png",
+      "bytes": 1885956,
+      "sha256": "8639ff9c9e5f80d5a2a7f51b9a37d99eaf48467e6355487242f6f10d4ee6d22f",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maki-cheer-squad/comics.json",
+      "bytes": 5743,
+      "sha256": "5280c25dc610ded862c220c1f4990eadbb8cd2372f52c693fc8ac36f364e0483",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maki-hot-takoyaki/panel1.png",
+      "bytes": 2695497,
+      "sha256": "c53ae77726e76cae789c786955c4d134126c31755c368bcd6bec6e651263a40e",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/maki-hot-takoyaki/panel2.png",
+      "bytes": 2653845,
+      "sha256": "1cddcc85a0993948f820248b3cbf56584794762f42b81ccdde59480aabf6935b",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maki-hot-takoyaki/comics.json",
+      "bytes": 8850,
+      "sha256": "76d20bac4a99e181ab7f078d53a9c573109b4f0ab06f06d8e32d72e24f675f99",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maki-relax-shoulders/panel1.png",
+      "bytes": 2867539,
+      "sha256": "f41354e9a7b3f30c807538d0527ca80d217ebdbef5ccd9fe8eaa6a84289435a3",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/maki-relax-shoulders/panel2.png",
+      "bytes": 2571182,
+      "sha256": "6ac4a45ef7e4dafae14619e44182150bcfaa3c37bd8593d9badaa88b74b56364",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maki-relax-shoulders/comics.json",
+      "bytes": 7862,
+      "sha256": "17ca246a95a4392bbab0be100b59372e711b164b2656410b701b93ba1e09fcb8",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maki-target-pizza/sheet.png",
+      "bytes": 1850058,
+      "sha256": "3e51590a79dd6039c9e1582c479053920dc4b9a0a5cbb6020d19fcd04f110857",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maki-target-pizza/comics.json",
+      "bytes": 5623,
+      "sha256": "3a582b6d35da46bca005b78db76d11f730beffb8eab1cd5fd0ac03257817bfa3",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/maki-tuck-targets/panel1.png",
+      "bytes": 2841683,
+      "sha256": "2588ceaded05cec65cb29c4d783c296c01d8c52aa1947d41f445a36c9e9ecdd7",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/maki-tuck-targets/panel2.png",
+      "bytes": 2848780,
+      "sha256": "da25678732cdebf6eb6293799916ea1975a13935b690adaa33fc45125216b224",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/maki-tuck-targets/comics.json",
+      "bytes": 7296,
+      "sha256": "5d5069fb8fec85f2aebf2d8351b9ab6cce5190578b413e6259069e2dd94c8656",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/yoru-club-mode/panel1.png",
+      "bytes": 2509174,
+      "sha256": "8f90e7e3fccdb8e53b3ae1c114aac2e8988e12e5aadeaba41dec106664c4752a",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/yoru-club-mode/panel2.png",
+      "bytes": 2425448,
+      "sha256": "4e07d2374e3f1f7e6d10c3a530900be50d1c20c13dcf6fb595fea78b572622ef",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/yoru-club-mode/comics.json",
+      "bytes": 8831,
+      "sha256": "5be4ed19954b8989c117a2c24dab853d848c6c6ae5a905952c385e7bb66e0808",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/yoru-record-room/sheet.png",
+      "bytes": 1855088,
+      "sha256": "06e12d521e1c3639e6612b476b9e6a184f94e3ed8b5e7f253a8f7056d168d104",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/yoru-record-room/comics.json",
+      "bytes": 6260,
+      "sha256": "2abadae79f012bfc0ef3692ce1668ec49cec2742c9c5cbeb48a29c27706571a4",
+      "kind": "metadata"
+    },
+    {
+      "path": "selection-data.json",
+      "bytes": 61235,
+      "sha256": "a2946bb1aa19ef67ae8533fbd6e850f1cd48e5a5a4fc10353492600b11f35919",
+      "kind": "metadata"
+    },
+    {
+      "path": "PARTS_INDEX.json",
+      "bytes": 7248,
+      "sha256": "a1ed96d99db8b3d4e65a1927eb09782ef3e724906a84b77b2ef169c857af57cc",
+      "kind": "metadata"
+    },
+    {
+      "path": "selection-template.csv",
+      "bytes": 1537,
+      "sha256": "47503a064e1dfbe0583671620d8d36194f2e7e117dbad48f78af49822d3bd67a",
+      "kind": "metadata"
+    },
+    {
+      "path": "README_IMPORT_JA.md",
+      "bytes": 2228,
+      "sha256": "deecff823559cca70e5302bcaa4ec37c52e59086646f198f706d067ddda9abd1",
+      "kind": "metadata"
+    },
+    {
+      "path": "IMPORT_FOR_CLAUDE.txt",
+      "bytes": 2228,
+      "sha256": "deecff823559cca70e5302bcaa4ec37c52e59086646f198f706d067ddda9abd1",
+      "kind": "metadata"
+    }
+  ],
+  "hashCoverage": "SHA256SUMS covers all entries except itself; this manifest lists all entries except itself and SHA256SUMS."
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "shisha-composition-independent-zip-v1",
+  "part": 7,
+  "totalParts": 7,
+  "episodeCount": 3,
+  "originalImages": 3,
+  "originalBytesUnmodified": true,
+  "sourceZipSHA256": "8a2b1815e7b8fed73e04f078afcfdfe152f1afb32c3ecff1742dedb89ad49aca",
+  "old45ImageBytesIncluded": false,
+  "formalNormalTemplateBytesIncluded": false,
+  "adopted": false,
+  "gameRegistered": false,
+  "files": [
+    {
+      "path": "images/hiyori-rain-puddle/sheet.png",
+      "bytes": 2227548,
+      "sha256": "dfd50b9c5795f447f221e6438dd57d9e8072a5a9fe7d6d1bf8d3bf3730f029f3",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/hiyori-rain-puddle/comics.json",
+      "bytes": 5638,
+      "sha256": "24cf8f2a7c02ffeb5b4317788467936f34ecf8b6489ac7a4f9203da5227f53d0",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/hiyori-far-away/sheet.png",
+      "bytes": 1970141,
+      "sha256": "dcbe3e065f736caef4ba3bdd0517b5cf3913bc5b8e0378f5acf2cc8d768319fa",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/hiyori-far-away/comics.json",
+      "bytes": 6036,
+      "sha256": "4788429a823b6918a6b48dcff8ab1efc42b9c8847da94e7db2be31002f556945",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/hiyori-box-tower/sheet.png",
+      "bytes": 1789048,
+      "sha256": "34fa088c4b15975f95cd5be3ace83f0f83dacb34c77957e7810a2efa473a4d52",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/hiyori-box-tower/comics.json",
+      "bytes": 5364,
+      "sha256": "e3cefa7011a042a3aca7639e10a0777c60025577f0395a16322b1df6dfbccbea",
+      "kind": "metadata"
+    },
+    {
+      "path": "selection-data.json",
+      "bytes": 7077,
+      "sha256": "6027f537e0a6e7060b4e87e9777b8fe687f266b58cbbbd2a96d97c86293f09a8",
+      "kind": "metadata"
+    },
+    {
+      "path": "PARTS_INDEX.json",
+      "bytes": 7248,
+      "sha256": "a1ed96d99db8b3d4e65a1927eb09782ef3e724906a84b77b2ef169c857af57cc",
+      "kind": "metadata"
+    },
+    {
+      "path": "selection-template.csv",
+      "bytes": 197,
+      "sha256": "4032287788a53cbcb5c0212ad233aaa492111c45f1f2e4a23bbf7383a7fa0bc7",
+      "kind": "metadata"
+    },
+    {
+      "path": "README_IMPORT_JA.md",
+      "bytes": 2226,
+      "sha256": "45a7ef8c9cee50b59ae3fd775c1af5179b08e4ba4b825aceb08347a1fc7b9a3d",
+      "kind": "metadata"
+    },
+    {
+      "path": "IMPORT_FOR_CLAUDE.txt",
+      "bytes": 2226,
+      "sha256": "45a7ef8c9cee50b59ae3fd775c1af5179b08e4ba4b825aceb08347a1fc7b9a3d",
+      "kind": "metadata"
+    }
+  ],
+  "hashCoverage": "SHA256SUMS covers all entries except itself; this manifest lists all entries except itself and SHA256SUMS."
+}

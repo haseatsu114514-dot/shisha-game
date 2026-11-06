@@ -1,0 +1,346 @@
+{
+  "schema": "shisha-composition-independent-zip-v1",
+  "part": 2,
+  "totalParts": 7,
+  "episodeCount": 18,
+  "originalImages": 32,
+  "originalBytesUnmodified": true,
+  "sourceZipSHA256": "8a2b1815e7b8fed73e04f078afcfdfe152f1afb32c3ecff1742dedb89ad49aca",
+  "old45ImageBytesIncluded": false,
+  "formalNormalTemplateBytesIncluded": false,
+  "adopted": false,
+  "gameRegistered": false,
+  "files": [
+    {
+      "path": "images/salaryman-deep-bow/sheet.png",
+      "bytes": 1950854,
+      "sha256": "b44feb23ad5d63f64a2eb821c3b32d4bbe39524e83ad4343692ccd2d6886c392",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/salaryman-deep-bow/comics.json",
+      "bytes": 5142,
+      "sha256": "ca19158378face4f9f0f35bccaf6540df79c1af8bc27686584ee0b2545aad123",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/salaryman-briefcase/sheet.png",
+      "bytes": 1993823,
+      "sha256": "de0b3c7c345847b62c0876372883924d40e03387225ea688e4bba96d86d389e1",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/salaryman-briefcase/comics.json",
+      "bytes": 5353,
+      "sha256": "af863b359ffaab6898adc149d5a015b8135c0faba045828c4a63df0219e5c880",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/salaryman-fast-fingers/panel1.png",
+      "bytes": 2230453,
+      "sha256": "5eb9d86b3d3f9d4562e5a754ce205f52b5ebdd5ddad9e808ec73cc3d4c317d25",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/salaryman-fast-fingers/panel2.png",
+      "bytes": 2355451,
+      "sha256": "2e5043cf2e5a8286308dac2fc22aaeb28f7ff902f3f2037d2b36729be0d01df6",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/salaryman-fast-fingers/comics.json",
+      "bytes": 9947,
+      "sha256": "ec9c02ae454125cf4ff2e720bbe7d672148382ea6d1083c8816e590e6555f39a",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/salaryman-typhoon/sheet.png",
+      "bytes": 2211329,
+      "sha256": "d01cc91bfd1b6f1f7c5a27931c80795cc4bfa95898aaba9a5885d8427f79617d",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/salaryman-typhoon/comics.json",
+      "bytes": 5372,
+      "sha256": "e67de4ca188daed8a6601c866883f21b11459c8c838c35ffcda45b80d8166b28",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/salaryman-ladybug/panel1.png",
+      "bytes": 1915036,
+      "sha256": "47d783e836d8ff4ccead69d357859d2161c3afae6f6a89a51b5ad00bc308de29",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/salaryman-ladybug/panel2.png",
+      "bytes": 2014616,
+      "sha256": "7b8f178593a5b49733cb0a9a3740318c22ee615234ab757c3bf70a0ac69a0f14",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/salaryman-ladybug/comics.json",
+      "bytes": 10107,
+      "sha256": "5fafc111bc0b6ea9090f6c9239e84344e1c5befb623e77033a85732fe8b1cc5c",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/salaryman-cat-bench/sheet.png",
+      "bytes": 2049945,
+      "sha256": "65d2e2f0b2b3535ecf9853ba4df0174e83a0235d6ba46689361282d09239b19b",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/salaryman-cat-bench/comics.json",
+      "bytes": 5225,
+      "sha256": "3894f771d4fa7a3a4a536b233ae0df40b2116addfc5874e096429387028d5293",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/salaryman-make-laugh/panel1.png",
+      "bytes": 2237846,
+      "sha256": "af5ac9a413c1d44f8bbbec8f319a9dd4ba026e799ec4a2264542deb8fcb3d571",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/salaryman-make-laugh/panel2.png",
+      "bytes": 2310088,
+      "sha256": "4ef5eb3b638c78bc3edb0cecef3c7a65154341979ebb8d944c1ce90daea12fe7",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/salaryman-make-laugh/comics.json",
+      "bytes": 9238,
+      "sha256": "854e7e7f88b9bc93196436d80acbeb45563b485ce8b6c6616879888447626108",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/salaryman-earl-grey/panel1.png",
+      "bytes": 2108694,
+      "sha256": "0e135ef3a3c5564cfbe5ceb9886c339c4f85205154167a073548cecea72f93d3",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/salaryman-earl-grey/panel2.png",
+      "bytes": 2208977,
+      "sha256": "0865538eb48dec88f00f4c7bafd489306b475d43d25ae78d35d5d409825fb144",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/salaryman-earl-grey/comics.json",
+      "bytes": 10140,
+      "sha256": "7cafa86d1aff96d7dbb5c79edd1df9099c4ade08ef39b4992634507d129c9188",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/kemuri-jar-machine/panel1.png",
+      "bytes": 2498507,
+      "sha256": "115c1af69cbfd19562f85afb31fcfdcdcb78747363690b20a30dce34521843a2",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/kemuri-jar-machine/panel2.png",
+      "bytes": 2580386,
+      "sha256": "f60c424f0507ede5dd07b49414d59f1f640eee66f97637617bd4c8f72afd4edb",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/kemuri-jar-machine/comics.json",
+      "bytes": 9315,
+      "sha256": "d0d2838442950921cba64814924237ff5eaeceaa51657b9db9aa70839d68b9e1",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/kemuri-snow-sandals/panel1.png",
+      "bytes": 2513972,
+      "sha256": "8e7e7dd3757250816cfde4995d8e5a71c69118db7cb755600073f593eeb5fbdc",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/kemuri-snow-sandals/panel2.png",
+      "bytes": 2561661,
+      "sha256": "cda0878b899058a8906482ea1ebc8c8876fa814d5dbf6b78744b5d1e4e36bfea",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/kemuri-snow-sandals/comics.json",
+      "bytes": 8213,
+      "sha256": "9077eb2bc58029edcca2fe9b7f96b08d231d0dda770250cb318fdb4ebcd15cc7",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/kemuri-flatpack/panel1.png",
+      "bytes": 2386593,
+      "sha256": "c8ceab1edb97c0047927528a5b84bbeedfe2be240708d54aee055ba2d712832a",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/kemuri-flatpack/panel2.png",
+      "bytes": 2468585,
+      "sha256": "5c613ce5de71660c287725473b28d95e7353aa4e70da626c6e55c006fe349e1c",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/kemuri-flatpack/comics.json",
+      "bytes": 7667,
+      "sha256": "79ce6cefa95bcfb1ef7b5bb7d8b0aacb05df01cbe384b43d5aefcb86b2d1065d",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/kemuri-beach-coat/panel1.png",
+      "bytes": 2316316,
+      "sha256": "33da3c724a7c37c738c252788fd85cbf26e99ba5e58acbabcd02c8088e95d055",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/kemuri-beach-coat/panel2.png",
+      "bytes": 2413290,
+      "sha256": "cc561d9bc00543860fbfea0dd217c1150783c892ce1a02a97b4a1509e3851464",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/kemuri-beach-coat/comics.json",
+      "bytes": 9054,
+      "sha256": "7051d508238967c913db95a13396cd14039797c3f4b5aebe73a73784f4b113c8",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/kemuri-giant-lemon/panel1.png",
+      "bytes": 2670346,
+      "sha256": "dc947cdf7b6f766c78f06d29954db0679fd21f280fdb7462a70cebec16d1ab4e",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/kemuri-giant-lemon/panel2.png",
+      "bytes": 2504563,
+      "sha256": "2b37c7ea98d67d8779af0f95c58ef2757ef26c41e75d5267c123767bc8fc5af8",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/kemuri-giant-lemon/comics.json",
+      "bytes": 7915,
+      "sha256": "50019fc7f8c11e8fd164f116d6a4e9fe0619fcbc42e02c0bb1967d48ac8f4f0b",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/kemuri-coat-stains/panel1.png",
+      "bytes": 2234264,
+      "sha256": "ac4681b4bcf5aac6262b3502255d8c0d4b311cb7ae013301c7913d01f021c7cf",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/kemuri-coat-stains/panel2.png",
+      "bytes": 2426456,
+      "sha256": "426ef5775d0713a2a11e3733979ae253e961d232c13f6579e90048a1fffac2ee",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/kemuri-coat-stains/comics.json",
+      "bytes": 8858,
+      "sha256": "4687361b2af3615f8f38a23a98b0403a72effe5bdc5d7b2119da7cc1cd4828cf",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/kemuri-parts-box/panel1.png",
+      "bytes": 2456395,
+      "sha256": "6ca97fcb1997ff7d9fbc18cad2c5bd9894f28dbb4d009c367d907974159357f2",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/kemuri-parts-box/panel2.png",
+      "bytes": 2493220,
+      "sha256": "0ddfe2208e16b50e7367b42b5e5c33bed0c6c43efddf09b155ff7ce12f7a9245",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/kemuri-parts-box/comics.json",
+      "bytes": 9303,
+      "sha256": "e92fdfa61f8bf6ff12f20f312971a6722ca614abdf98a6f2e0654a814943fb65",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/kemuri-heart-chip/panel1.png",
+      "bytes": 2473638,
+      "sha256": "89698cab8fa3e0890a3ece3661319d9d5aac95e765f5a3e913a9d412973449f0",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/kemuri-heart-chip/panel2.png",
+      "bytes": 2605473,
+      "sha256": "278c0d922b6b34c3e0ed1f595e78473555b33cb0aad369e0517d569bd03fc0bf",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/kemuri-heart-chip/comics.json",
+      "bytes": 8980,
+      "sha256": "91a5b0e3f090c5074cd38c8b8c2d9b3e7109919dcae0fcaad8d0aa2140a6792f",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/kemuri-crayon-plan/panel1.png",
+      "bytes": 2452069,
+      "sha256": "c3f68506bf652d70ae88c496df00ef1bad9807eb841d267003857ef57f3a7d83",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/kemuri-crayon-plan/panel2.png",
+      "bytes": 2563561,
+      "sha256": "df52b89aa82137577f94fb6261f4baac39b01265bef3a39787b47492fdaea3ba",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/kemuri-crayon-plan/comics.json",
+      "bytes": 8871,
+      "sha256": "d9b9742c63a4bcbabea806442086c6b18355911483b75ba09ddd1eb3b3c51991",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/kemuri-goldfish/panel1.png",
+      "bytes": 2411109,
+      "sha256": "47cff945c440b9f7dab4145cbebaa1a121c6ac9f8195a56d5e962ecdb07bce49",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/kemuri-goldfish/panel2.png",
+      "bytes": 2568850,
+      "sha256": "888342a79bcc67f6075c8aaf10e327f0303a82840268aa3a783a389a8666d4aa",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/kemuri-goldfish/comics.json",
+      "bytes": 9083,
+      "sha256": "ffc27b3e2ebb5d620d597e8165168cbd79eb6c7742a2b58c23556d45fd075e15",
+      "kind": "metadata"
+    },
+    {
+      "path": "selection-data.json",
+      "bytes": 38416,
+      "sha256": "eccfcd1e257a01e02c7da9ffcd4c2402d28edf219ef7f9238338582e4d31ce8b",
+      "kind": "metadata"
+    },
+    {
+      "path": "PARTS_INDEX.json",
+      "bytes": 7248,
+      "sha256": "a1ed96d99db8b3d4e65a1927eb09782ef3e724906a84b77b2ef169c857af57cc",
+      "kind": "metadata"
+    },
+    {
+      "path": "selection-template.csv",
+      "bytes": 959,
+      "sha256": "fdf03e65ea68929cc6f45ee04b29c8806d2be2608f353f0332d9d39a8f844083",
+      "kind": "metadata"
+    },
+    {
+      "path": "README_IMPORT_JA.md",
+      "bytes": 2228,
+      "sha256": "41ba2ede28ce4f471aabedf213d9b54220071d8440d0fb30cf160c3acf382243",
+      "kind": "metadata"
+    },
+    {
+      "path": "IMPORT_FOR_CLAUDE.txt",
+      "bytes": 2228,
+      "sha256": "41ba2ede28ce4f471aabedf213d9b54220071d8440d0fb30cf160c3acf382243",
+      "kind": "metadata"
+    }
+  ],
+  "hashCoverage": "SHA256SUMS covers all entries except itself; this manifest lists all entries except itself and SHA256SUMS."
+}

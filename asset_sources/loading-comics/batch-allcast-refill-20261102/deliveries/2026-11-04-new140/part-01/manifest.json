@@ -1,0 +1,436 @@
+{
+  "schema": "shisha-composition-independent-zip-v1",
+  "part": 1,
+  "totalParts": 7,
+  "episodeCount": 27,
+  "originalImages": 38,
+  "originalBytesUnmodified": true,
+  "sourceZipSHA256": "8a2b1815e7b8fed73e04f078afcfdfe152f1afb32c3ecff1742dedb89ad49aca",
+  "old45ImageBytesIncluded": false,
+  "formalNormalTemplateBytesIncluded": false,
+  "adopted": false,
+  "gameRegistered": false,
+  "files": [
+    {
+      "path": "images/rei-cd-choice/sheet.png",
+      "bytes": 1889209,
+      "sha256": "21515c7cd5c009c0653825fb77de1b1083933747dee93b656949789c0b49e022",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/rei-cd-choice/comics.json",
+      "bytes": 5900,
+      "sha256": "d3cd22223cc9eaf075d7b1800249a942ae8b5f6d05a35e90fb19d13ae22fb02c",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/rei-cheer-goods/sheet.png",
+      "bytes": 1928173,
+      "sha256": "81ea3d49bbbf639e21eacbfeaca69dbb1dae55b656fc49a5bb05a3ea69247b4d",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/rei-cheer-goods/comics.json",
+      "bytes": 5964,
+      "sha256": "d44c293f25840657b0101298d7352fd7913f9be04f1a90fe9d2d09a318be930e",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/rei-castle-cake/sheet.png",
+      "bytes": 1974426,
+      "sha256": "8b2e79bb7fe5b714c3a61830107d6f233e0dcdf48b8813637b0ce0460e701ac0",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/rei-castle-cake/comics.json",
+      "bytes": 5966,
+      "sha256": "922cfce60aa98c564cc2f2e3d16a338106f03d616d0bd799bf0fd37ad6edfbd6",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/rei-own-night/sheet.png",
+      "bytes": 2015025,
+      "sha256": "bdca21f851e95dc9e705b78b6dc7a2b814eb98cdc5871f2efa11cdf411fb2d84",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/rei-own-night/comics.json",
+      "bytes": 5841,
+      "sha256": "c45bd58c5d2b5094ef1c56a5d793098b3a2e8e51158bdbf6ae2670b748fb21f1",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/rei-mamachari/sheet.png",
+      "bytes": 1917354,
+      "sha256": "43fa9ecaac0a29b6fc666bcb09e223f0dd6b26690fff545affdea101a791d59e",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/rei-mamachari/comics.json",
+      "bytes": 5845,
+      "sha256": "86fe7d187232736210c2ab0abaff84dc58428c91c36a77a2ce4309acab536433",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/rei-whisk-rhythm/sheet.png",
+      "bytes": 1912739,
+      "sha256": "f367cf1cf95a4cce0f486be5f9b6febd603874402cf2e9fb1ea2a1ee37480725",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/rei-whisk-rhythm/comics.json",
+      "bytes": 5919,
+      "sha256": "c77d931f30c3f36914a5358f97fccf7aecac4c75c66a138fb4b3583dae8be9a6",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/rei-makeover/sheet.png",
+      "bytes": 2111006,
+      "sha256": "4bbd5f8a9cb71a6d9d013ad1067b99edcad4f2ad334fb5b1972f62349062fb46",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/rei-makeover/comics.json",
+      "bytes": 5092,
+      "sha256": "a2e75c9ab9a44ec5494fcf3bc4b416fec6370a783aa60cb8ab4b54de6ece640a",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/rei-water-care/sheet.png",
+      "bytes": 1815031,
+      "sha256": "b0a213c81e36b991f7146c8f56a5727b8e8d4f97488697a0114cad285324a3e3",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/rei-water-care/comics.json",
+      "bytes": 5671,
+      "sha256": "7553db8225fa0afb8dec2b2ea93a7740b53f60cf4f0f977c68b1e6e4432d2f4e",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/rei-phone-seal/sheet.png",
+      "bytes": 1972952,
+      "sha256": "959523f8cd548aeddaae4788343b0b8ec879c6e8bce9393c123deae9b9f84aee",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/rei-phone-seal/comics.json",
+      "bytes": 5429,
+      "sha256": "087e335cf7249a0d0f519f8035d341064e25630f22573450c48de8e33ff4a5be",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/rei-game-master/sheet.png",
+      "bytes": 2152540,
+      "sha256": "e16f3be25a03f093b6d24d07fb2413d6079278960a087a9178638316a3928a29",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/rei-game-master/comics.json",
+      "bytes": 5057,
+      "sha256": "5339b71e186bfa86c2f5f4f4ce3382d2491c6f0ca267d3c393e82014dc1cdfd5",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/steve-timer-count/sheet.png",
+      "bytes": 1813689,
+      "sha256": "c582cbd9e8ecec52784b65bc4f2a4c200e2156b201aefa099cbf235182a21dc2",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/steve-timer-count/comics.json",
+      "bytes": 6247,
+      "sha256": "8965aef0af730e68c3bd6dd56b7c8ae8e03efde01ecdd04deaa84b31ade14a96",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/steve-card-tower/panel1.png",
+      "bytes": 2010786,
+      "sha256": "b79bfbfcdf5e26f6b3afb7f9cb7f5e54b32c45319e056f4a9c65db0512a73106",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/steve-card-tower/panel2.png",
+      "bytes": 2077252,
+      "sha256": "2ec67d37bf939269316ef3e3e366bf2c765673d1750db184acf79c4350d3974b",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/steve-card-tower/comics.json",
+      "bytes": 9827,
+      "sha256": "69c7daee5a1e74062b715f5bf0e15a4e766b7dcbccbfbd1781d4895b927c207c",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/steve-lemon-tree/panel1.png",
+      "bytes": 1975659,
+      "sha256": "f423bf3fb1040e2da83ff09ebd5b87cd2e07eb1c6aaa02d14439f37c38d6f6e0",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/steve-lemon-tree/panel2.png",
+      "bytes": 2369130,
+      "sha256": "01a7433b6aee7e93d12a20c5a1b1d4453040dcb27104c085d4fd4025e1b4986c",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/steve-lemon-tree/comics.json",
+      "bytes": 8265,
+      "sha256": "80742fc5303cde283b06d82740d6a013eba7278926ed88440a42766af5033039",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/steve-magnifier/panel1.png",
+      "bytes": 2167895,
+      "sha256": "db4ea49d294d19dc1124785bd96c5bbed404a68b84f665daec976d2164d0610c",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/steve-magnifier/panel2.png",
+      "bytes": 2234517,
+      "sha256": "6d3f2eb91b20fa497c9767581dc5afd9939bea89e2166b46af812b110c9ddaa4",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/steve-magnifier/comics.json",
+      "bytes": 9586,
+      "sha256": "6acc6ad2bfa8ecbb897f8a0861945d65e76272fa1022f8cbe6474de9f7643a96",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/steve-gentle-catch/sheet.png",
+      "bytes": 1952265,
+      "sha256": "ebded2aeb2f745af94ed229d73f162d3af52ab12696825ce2357b3a0f0036994",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/steve-gentle-catch/comics.json",
+      "bytes": 5742,
+      "sha256": "a3e19327eb795fa852a642838103a28b21c1cd5795a7964942999808b142ebbe",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/steve-dont-rush/panel1.png",
+      "bytes": 1956027,
+      "sha256": "c7494e7bc306a023c588db2012d19a615661b65505fe9739c3158673e172a60f",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/steve-dont-rush/panel2.png",
+      "bytes": 2130542,
+      "sha256": "f4ad14f194ad531bbea27a451d14dcc6f9342b7041b1b26f7d97ca22b4cdc03a",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/steve-dont-rush/comics.json",
+      "bytes": 9007,
+      "sha256": "6b5e40baba4c46b6dc5cb95a71a04613952d4db1622552eed4e5aebecf1df4d0",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/steve-glasses-off/panel1.png",
+      "bytes": 1975535,
+      "sha256": "3818ff7ae80801ae2eb54abadd5c69035a76bf8d61c1db711eddff2ec76b51a4",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/steve-glasses-off/panel2.png",
+      "bytes": 2169995,
+      "sha256": "bb68dd2ad39ab8d3806a5c39a1abbcf0211cb21086ae3a7ed0879f6fb8167230",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/steve-glasses-off/comics.json",
+      "bytes": 8413,
+      "sha256": "a7cd2e183a4582808af84ca42654db51501cfb2d7d8ea7e8f3b57fc389a7d9cf",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/steve-second-bite/panel1.png",
+      "bytes": 2045502,
+      "sha256": "1d33bbbc8a6bd14ae955e7fe3eb4a14afac06cc0ff6ae917d8be0142ce550bc0",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/steve-second-bite/panel2.png",
+      "bytes": 2110576,
+      "sha256": "15e090e2a9c38700de0ff7345c6d86ebe63fee08005e9b331e6768292f4142bc",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/steve-second-bite/comics.json",
+      "bytes": 10000,
+      "sha256": "4ff0e2d9354b3e9bf1bc7c4f9ad0c9195dc48ab87d74feec75856f159223736c",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/steve-guest-today/panel1.png",
+      "bytes": 2766573,
+      "sha256": "61db893d5e7fb02075c92f9da59f8eab4a47ac5be25f6024bd8be8a2524ff31f",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/steve-guest-today/panel2.png",
+      "bytes": 2924089,
+      "sha256": "e947e36c675491bea93d0977709213a3488c60980f07f6260703a0390cad66f8",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/steve-guest-today/comics.json",
+      "bytes": 7848,
+      "sha256": "3d4b39e91ed49f29a18a72f94e3aeaa8890692bd1b9b50897320b24057e5feb3",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/steve-partner/panel1.png",
+      "bytes": 2050931,
+      "sha256": "d275e1205b494d86a4a2d8f10c53203ed5824bb554ce9161f1a4c7b6371281d7",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/steve-partner/panel2.png",
+      "bytes": 2092513,
+      "sha256": "e8bfe0734dde0622bc77896b4a872fa85868d69bafb9d1c7fcf2ab614ffb2651",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/steve-partner/comics.json",
+      "bytes": 9935,
+      "sha256": "8cdf7781af1c844fce3a2d52f39d5879cfb629bb091be9193b8befc7e94dc6f9",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/volk-kitten/sheet.png",
+      "bytes": 1937880,
+      "sha256": "5a68dabd62a40b2b4a0bb43fb0affd107c777b8738179a5c4cd5c163fd8b7b1e",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/volk-kitten/comics.json",
+      "bytes": 5410,
+      "sha256": "448eff34b886572376f12fb085703d351d30eb748f510da5b8d8402952e12000",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/volk-hammock/sheet.png",
+      "bytes": 2176177,
+      "sha256": "71559b0228e042d41f41521069b7c3e8d0864126b190edd5e0a94526d7898986",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/volk-hammock/comics.json",
+      "bytes": 5133,
+      "sha256": "79d809a2e3051a57ed249349c47c935489e6e7c3bba68645fdb233e14b2b892b",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/volk-blueprint/panel1.png",
+      "bytes": 2483794,
+      "sha256": "8d6a6c0812c67643cef1218c2982dcb4c7fa86f870d4c0fc4bb5c9ef1647ed08",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/volk-blueprint/panel2.png",
+      "bytes": 2515402,
+      "sha256": "ff2574bc26c1663573900b2a157752d9b8b1ce0748b509e97918a4ed5de71e5d",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/volk-blueprint/comics.json",
+      "bytes": 7604,
+      "sha256": "913553d9839292c2a145ddbf954a60c5b5dae34480435495d406f905ea08c8ef",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/volk-cold-stare/sheet.png",
+      "bytes": 2080983,
+      "sha256": "1f9872dabe3fdd160421b7fc91f83f398b40c4b11e2dd3cf0298d1bd59925120",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/volk-cold-stare/comics.json",
+      "bytes": 5461,
+      "sha256": "c34fd8e2cbcef9539fd699a2f1a248b1a769e35f6b9ffac75d2c21be00b0f117",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/volk-same-shirts/sheet.png",
+      "bytes": 1849333,
+      "sha256": "fd44a1f813165aba142c33ae4d3ee9ae73497be0e76a8b919aead739ef05ffdc",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/volk-same-shirts/comics.json",
+      "bytes": 5502,
+      "sha256": "efc1b85e18b8377e3621d5f5a184a4168c9519d96e5e4aa2b1ba34ea30ee4028",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/salaryman-shadow-dance/panel1.png",
+      "bytes": 1939578,
+      "sha256": "c040e4f6e559aab2c1090f554aed599d1c4788c9212be1aa56f8bc968b40b23a",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/salaryman-shadow-dance/panel2.png",
+      "bytes": 1907084,
+      "sha256": "afa2d9baf6b9ef14935a0c4d3226bbad2a2f1557f4b4cee0510634540d64776a",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/salaryman-shadow-dance/comics.json",
+      "bytes": 8520,
+      "sha256": "c7894b068c1683d904d8487393e641350acb38ff2af4a1009e22e5551d0cf0b8",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/salaryman-rare-smile/panel1.png",
+      "bytes": 1842732,
+      "sha256": "14c7d2913300812fcfd85865f83b6a86d6a1e970486bc3afd8fc877b26c85de7",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/salaryman-rare-smile/panel2.png",
+      "bytes": 2214189,
+      "sha256": "f9a4964b172a496c77dcbb65223f7657900773e4f4c2a6b35d87ef31b0e0cc9b",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/salaryman-rare-smile/comics.json",
+      "bytes": 8507,
+      "sha256": "9a3d6e8645fe8c3c21908a0baf724949cddee26b66ca23abfb074be250bfe0b8",
+      "kind": "metadata"
+    },
+    {
+      "path": "selection-data.json",
+      "bytes": 56539,
+      "sha256": "4c6739301b6c9a5151fc314e2a94775973dec0780d74112181f128450b2df5f4",
+      "kind": "metadata"
+    },
+    {
+      "path": "PARTS_INDEX.json",
+      "bytes": 7248,
+      "sha256": "a1ed96d99db8b3d4e65a1927eb09782ef3e724906a84b77b2ef169c857af57cc",
+      "kind": "metadata"
+    },
+    {
+      "path": "selection-template.csv",
+      "bytes": 1336,
+      "sha256": "2be54ee8820e3360de11e24495499226c5827aa6a21ad87ff5a949edbc4dae46",
+      "kind": "metadata"
+    },
+    {
+      "path": "README_IMPORT_JA.md",
+      "bytes": 2228,
+      "sha256": "a2b8ff6d2c7234f3c5c3a8e8c0117b24c014bafe9613b1f3207f9185e0b3d29c",
+      "kind": "metadata"
+    },
+    {
+      "path": "IMPORT_FOR_CLAUDE.txt",
+      "bytes": 2228,
+      "sha256": "a2b8ff6d2c7234f3c5c3a8e8c0117b24c014bafe9613b1f3207f9185e0b3d29c",
+      "kind": "metadata"
+    }
+  ],
+  "hashCoverage": "SHA256SUMS covers all entries except itself; this manifest lists all entries except itself and SHA256SUMS."
+}

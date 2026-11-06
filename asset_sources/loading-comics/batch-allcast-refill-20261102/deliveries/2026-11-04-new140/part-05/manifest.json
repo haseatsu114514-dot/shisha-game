@@ -1,0 +1,400 @@
+{
+  "schema": "shisha-composition-independent-zip-v1",
+  "part": 5,
+  "totalParts": 7,
+  "episodeCount": 25,
+  "originalImages": 34,
+  "originalBytesUnmodified": true,
+  "sourceZipSHA256": "8a2b1815e7b8fed73e04f078afcfdfe152f1afb32c3ecff1742dedb89ad49aca",
+  "old45ImageBytesIncluded": false,
+  "formalNormalTemplateBytesIncluded": false,
+  "adopted": false,
+  "gameRegistered": false,
+  "files": [
+    {
+      "path": "images/yoru-morning-walk/sheet.png",
+      "bytes": 1936951,
+      "sha256": "ede70263e4527aa6d5fec0f505bbb1aef821e6bc0148625bfac9f208c8166dc3",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/yoru-morning-walk/comics.json",
+      "bytes": 6313,
+      "sha256": "1d1c0c8d4899e8bec1af19c268020da91f2cad3ced6d3daaf834d78dff55582a",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/yoru-vip-seat/sheet.png",
+      "bytes": 1788055,
+      "sha256": "2cfc9fbe7961c5c4cab751bbdabd33f51d71999d4fc25b35acd9ba88bf902f7e",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/yoru-vip-seat/comics.json",
+      "bytes": 6431,
+      "sha256": "512c47cd4aa2089dd572c3b17c5780a01ac189234727bb30224a856adae4d023",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/yoru-secret-dance/panel1.png",
+      "bytes": 2758879,
+      "sha256": "0932fb551d0066cd32f002c3e26d9e98706dbf816cdf1cecd6f47b5a29216a0b",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/yoru-secret-dance/panel2.png",
+      "bytes": 2796763,
+      "sha256": "a72eb02e1380a0664fca159349c21b5625a2ac679e1003e3b32b81d8aeefc955",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/yoru-secret-dance/comics.json",
+      "bytes": 8293,
+      "sha256": "219f4f3db8e321f00b78f200c056372917c48c1623d8bde0bf0b2b5bf4dad74c",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/yoru-tablecloth/panel1.png",
+      "bytes": 2404514,
+      "sha256": "f17b6425a5ffa71de8d48eb14bb024a9d3eb74de7fe424b65b578238c84668ce",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/yoru-tablecloth/panel2.png",
+      "bytes": 2343999,
+      "sha256": "1fbe1d5be4f69aa3fb900626d1634c50040caafd8f4aa5c45a15ddc93624778a",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/yoru-tablecloth/comics.json",
+      "bytes": 8297,
+      "sha256": "d9acd483d700ce21a531aa7c2d9c6c615975784549682674b625bee1e5fa4e07",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/yoru-watermelon/sheet.png",
+      "bytes": 2166547,
+      "sha256": "26be74a2a618f16a7ce30a1c64ebf85bdb6d177f72b0c724078d512c04c99bb2",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/yoru-watermelon/comics.json",
+      "bytes": 5650,
+      "sha256": "fe3398e1fc4ce20d516e5e0a4d60dcec71e492cbe13295f7c4ed7c407938432c",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/yoru-old-photo/sheet.png",
+      "bytes": 1872806,
+      "sha256": "331fc98c1ed66ed11650820b2e8127ac8008b7372d08fd3bf2ee266416b75857",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/yoru-old-photo/comics.json",
+      "bytes": 5640,
+      "sha256": "7474165f2b10d4d6252c6f88c67dc1b56f74adfd95eaaf1497609cbaa238f9d4",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/yoru-deep-stairs/panel1.png",
+      "bytes": 3191818,
+      "sha256": "0bc1cb53a423f35ef6c2798440c8c40b56b8d3bfffcd4e2392bf6c1f8f3a928d",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/yoru-deep-stairs/panel2.png",
+      "bytes": 3220049,
+      "sha256": "b990d862041c24fef9b285568aa59b6223a1d5db3a336ae20fa8bf5613df7fe2",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/yoru-deep-stairs/comics.json",
+      "bytes": 8445,
+      "sha256": "5fe68c61026c6548900a8cb40f44acae8f6d550b4684b38d7d554e7db399ce4a",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/yoru-big-jacket/sheet.png",
+      "bytes": 2002808,
+      "sha256": "820130d5853cbbf70ef937aeb3721599c5dda206f7422c6979d6c483ca023339",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/yoru-big-jacket/comics.json",
+      "bytes": 6293,
+      "sha256": "6c9bd8401240ebce1022f909930f4fb9d7f0863e537851b976f7fcb44ed1d340",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/sai-tiny-box/panel1.png",
+      "bytes": 2778144,
+      "sha256": "d82dd11c151ff9e45695578328a1a769f43bac15358677b70aacde230fdece16",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/sai-tiny-box/panel2.png",
+      "bytes": 3083963,
+      "sha256": "5fb2b737dd3f698c85ed04d224533c3eed6c63b6ab0d765b15eaae1cd172786b",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/sai-tiny-box/comics.json",
+      "bytes": 7436,
+      "sha256": "d74fb98bb6104967f859e2c24e08b31e72903820e5126e7917546f907250e4ee",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/sai-dice-tower/panel1.png",
+      "bytes": 2771675,
+      "sha256": "419d06e2a7167695e8c5916ff9f019d910864c2d4abea3008d7112ff0d8fea59",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/sai-dice-tower/panel2.png",
+      "bytes": 2650230,
+      "sha256": "4d6063630c141a6e49ce8323f7d6e3ad11d96672aa5d8114b8f2f6ba89e9513e",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/sai-dice-tower/comics.json",
+      "bytes": 9001,
+      "sha256": "94092d064a5b8796973e4cf09f3143aae418e6c0baf98f308393efdde14d86dc",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/sai-domino/panel1.png",
+      "bytes": 2684143,
+      "sha256": "8bfe8ee6653f7e1f6f8c60175a37b723d323673ee28581583c8b15464eeb794f",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/sai-domino/panel2.png",
+      "bytes": 2870658,
+      "sha256": "81a6f4f0cbb1992fb389830f33d7062c0634fd477de019314880f944a7ee244b",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/sai-domino/comics.json",
+      "bytes": 8844,
+      "sha256": "c9aabdbb751983f2b03a27549e94a64334ac35fa1c2d2e9a6a7b7e05d2a782ac",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/sai-cleaning-game/panel1.png",
+      "bytes": 2972009,
+      "sha256": "5b1ecf7ff42437d59a35ba8e35df8768b195ff951680902dd3fcba6f0ed7031a",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/sai-cleaning-game/panel2.png",
+      "bytes": 2978881,
+      "sha256": "86e78d39190d7503aa6fca0e6131896cd19c6c1213bd24ebbbfd7a72b71628bd",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/sai-cleaning-game/comics.json",
+      "bytes": 8060,
+      "sha256": "53846ae778fa35ca2f39f8817d1bade19f098821d2a9e0d3eaaf8a994ec6f11e",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/sai-rules-retell/panel1.png",
+      "bytes": 2463686,
+      "sha256": "1ef351420db0813e7b2deebcb87cee6b0a6aa777558b3a6a4c78dbef15e3bd0a",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/sai-rules-retell/panel2.png",
+      "bytes": 2526531,
+      "sha256": "d9f3f5ac06753d20f6720a00a465837d0db09fcf7f5d501511db089aa5cb017f",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/sai-rules-retell/comics.json",
+      "bytes": 8505,
+      "sha256": "15a70d83ec76c12ba630035ea5329bc2c2976f0ea375b976ca7881cd28a1f126",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/nine-thousand-cake-slice/sheet.png",
+      "bytes": 1840867,
+      "sha256": "9ea0baedef51b043d78e44110b70793b1a7db5a13a3768bd3f1c8aeb5b7b202d",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/nine-thousand-cake-slice/comics.json",
+      "bytes": 7256,
+      "sha256": "396c47890bf57dd6663c5f1c341692527d31f32ee10990983052ff22845d41f1",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/nine-thousand-copy-outfit/sheet.png",
+      "bytes": 1728022,
+      "sha256": "17e40df664201062cbf783f718f424f95d76d167dc06839bde80c234115dfdcc",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/nine-thousand-copy-outfit/comics.json",
+      "bytes": 7143,
+      "sha256": "0ab06a1f834aaeabe688251d53c0c12013cb1b589f71015b7ca2b44b1360b237",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/nine-thousand-walk-gear/sheet.png",
+      "bytes": 1809076,
+      "sha256": "d0b293f1bf2ff4e5fbc5346e03c65514f04a888a0b9e499550080df9542584f9",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/nine-thousand-walk-gear/comics.json",
+      "bytes": 7129,
+      "sha256": "68c220b02764d781ff820a375639d91fc3e3a70cab03b2a077b0d1925db3bdc5",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/nine-thousand-new-feature/sheet.png",
+      "bytes": 1758468,
+      "sha256": "c1c21b5f33412d7942407922debf8bc62da101b5efa160eafdc7ff763c9d06f6",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/nine-thousand-new-feature/comics.json",
+      "bytes": 7054,
+      "sha256": "a597bdee52d1b30800b1d6b8403b25a1144631ed20edff93abb845c446538937",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/nine-thousand-lend-hand/sheet.png",
+      "bytes": 1990063,
+      "sha256": "701b33f2ba564672a3e5952a7f1435849ea80f53a021e7ac4e2c13ad81a15e50",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/nine-thousand-lend-hand/comics.json",
+      "bytes": 6031,
+      "sha256": "b49d0a14e819ddb2dc6d758742e0662d8d65054289c61d4fde2f64583e69878c",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/nine-thousand-seesaw/sheet.png",
+      "bytes": 1894695,
+      "sha256": "5fc0066a1575319ac9fd1a5e2e7a175f4135510154af438ddbd0295172b3a349",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/nine-thousand-seesaw/comics.json",
+      "bytes": 5932,
+      "sha256": "1ec3ce404fe239cdae63f11b6c48ab6c5ebd42a16a2ef800844a6867829fa0a9",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/nine-thousand-humidity/sheet.png",
+      "bytes": 1770324,
+      "sha256": "894e01a3de4d8dbe9b7d4dbffc90c432864266fc1691d9503a51354b4459ca52",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/nine-thousand-humidity/comics.json",
+      "bytes": 6092,
+      "sha256": "7878a8a889b5623835b4814a3e6b5e9aa7bd24650ff78dbf95824edab28d2156",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/nine-thousand-pancake/sheet.png",
+      "bytes": 1805752,
+      "sha256": "4f0ee7a78a54d945b839e37864c2a89955ffc840791f59422c1b418f907826c1",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/nine-thousand-pancake/comics.json",
+      "bytes": 6132,
+      "sha256": "e01943771978827c99d487b71c12fdf882f0c366fb3510a40df8dfe94bc92db7",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/nine-thousand-smile-sign/sheet.png",
+      "bytes": 1703655,
+      "sha256": "3adf83063584493a5edfc1a379d8a9a611a9a7aebdd439ef32027ed75f800be6",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/nine-thousand-smile-sign/comics.json",
+      "bytes": 6244,
+      "sha256": "4e1bfccc94fc117be743590f672327f1d94486ca81d8f4ecbaf2b1c7bab2fb17",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/nine-thousand-janken/sheet.png",
+      "bytes": 1722395,
+      "sha256": "2d30e961fcfef56e265682f708c5b4c8cc440739f058b48ceb0705550e1bc2fe",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/nine-thousand-janken/comics.json",
+      "bytes": 5840,
+      "sha256": "7016742034fe7a1b4bdd4a7b8128f3a025c7d122cff6660b2ba8a6f4e58f6ab0",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/noor-soft-sand/panel1.png",
+      "bytes": 2556543,
+      "sha256": "f44d0e5d9f6d1a1b0d2d4b14eae8fbdb10010c135b757598dfbc64a1ab53976b",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/noor-soft-sand/panel2.png",
+      "bytes": 2548266,
+      "sha256": "e5de9bb8b927d1c249a2996cba955b21f65dec3e613e84f4961c2fd970dfee74",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/noor-soft-sand/comics.json",
+      "bytes": 8153,
+      "sha256": "806a4b3ee2083427f96d9b890a068aa5adaeb4b087d4548dea1897ae175cd24b",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/noor-slow-drive/sheet.png",
+      "bytes": 1785160,
+      "sha256": "441c2286bf47892c5d65400b609cf23941073d073a96d8798af85fb637927926",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/noor-slow-drive/comics.json",
+      "bytes": 7203,
+      "sha256": "dad7936e57edeea9a800958c28619cd46a6612b9197c3abeb493ee9c9eb9d27f",
+      "kind": "metadata"
+    },
+    {
+      "path": "selection-data.json",
+      "bytes": 53992,
+      "sha256": "a1602a65ca148d1e102e6895055d7dda975c1441117d4ef58aaee1339374b7dd",
+      "kind": "metadata"
+    },
+    {
+      "path": "PARTS_INDEX.json",
+      "bytes": 7248,
+      "sha256": "a1ed96d99db8b3d4e65a1927eb09782ef3e724906a84b77b2ef169c857af57cc",
+      "kind": "metadata"
+    },
+    {
+      "path": "selection-template.csv",
+      "bytes": 1334,
+      "sha256": "7ab9bd1c2f7ffb257c537cb1d7ce83e5bffdbb7216d614e26a355491d60d139c",
+      "kind": "metadata"
+    },
+    {
+      "path": "README_IMPORT_JA.md",
+      "bytes": 2228,
+      "sha256": "0473b283bba1d39685f608c8996efa4c65f3de338eb3111470814d6064afcc2e",
+      "kind": "metadata"
+    },
+    {
+      "path": "IMPORT_FOR_CLAUDE.txt",
+      "bytes": 2228,
+      "sha256": "0473b283bba1d39685f608c8996efa4c65f3de338eb3111470814d6064afcc2e",
+      "kind": "metadata"
+    }
+  ],
+  "hashCoverage": "SHA256SUMS covers all entries except itself; this manifest lists all entries except itself and SHA256SUMS."
+}
