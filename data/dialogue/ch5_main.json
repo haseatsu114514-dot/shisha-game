@@ -1962,7 +1962,7 @@
     },
     {
       "dialogue_id": "ch5_tsumugi_serving",
-      "comment": "#2606 (c)。未接続。第4章ラストの面接から時間が経ち、つむぎは後輩スタッフとして在籍・育った状態。成長過程は描かない。勤務時はバイト姿（私服＋ビブエプロン、PR #2608 案B、face baito_*）。接続先・発生条件は未定（tonari・日程決定前の自由時間が候補）。",
+      "comment": "#2606 (c)。第4章ラストの面接から時間が経ち、つむぎは後輩スタッフとして在籍・育った状態。成長過程は描かない。勤務時はバイト姿（私服＋ビブエプロン、PR #2608 案B、face baito_*）。自由行動の tonari で、閉店後の練習の後に1回（ch5-progress.js CH5_FREE_SCENES）。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside.png"
       },
@@ -2080,9 +2080,9 @@
     },
     {
       "dialogue_id": "ch5_tsumugi_makes_for_hajime",
-      "comment": "#2606 (d)。未接続。ch5_tsumugi_servingの後を想定。はじめが休みの日に客として来店し、つむぎが作る（役割の逆転・台詞の引き継ぎ）。接続先・発生条件は未定。",
+      "comment": "#2606 (d)。ch5_tsumugi_servingの後、昼の tonari で1回。はじめが休みの日に客として来店し、つむぎが作る（役割の逆転・台詞の引き継ぎ）。",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside_day.png"
       },
       "lines": [
         {

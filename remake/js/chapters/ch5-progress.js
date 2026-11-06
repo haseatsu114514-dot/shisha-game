@@ -33,6 +33,8 @@ export const CH5_SCENE_BG = Object.freeze({
   ch5_free_mashiro_visit: "bg_tonari_inside_day",    // 仮置き bg（台本コメント: tonari・昼）
   ch5_free_first_visitor: "bg_tonari_inside",        // 仮置き bg（台本コメント: tonari・夕）
   ch5_free_tonari_practice: "bg_tonari_inside_night", // 仮置き bg（台本コメント: tonari・夜）
+  ch5_tsumugi_serving: "bg_tonari_inside",           // #2606 つむぎの接客（tonari・夕）
+  ch5_tsumugi_makes_for_hajime: "bg_tonari_inside_day", // #2606 休みの日に客として来店（tonari・昼）
   ch5_free_eden_adam: "bg_eden_shop",                // #1588 EDENの任意場面（第1・2章のEDENと同じ背景）
   ch5_prep_trial_heat: "bg_tonari_inside_night",     // 仮置き bg（閉店後の試作。以下 ch5_prep_* も同じ）
   ch5_prep_trial_pack: "bg_tonari_inside_night",
@@ -124,11 +126,15 @@ export const CH5_PROLOGUE = Object.freeze([
 ].map(scene => Object.freeze(scene)));
 
 // 自由行動で再生する場面。tonari の3件は昼→夕→夜の順に1回ずつ（台本コメントの時間帯に合わせる）。
+// そのあと、後輩スタッフのつむぎの2場面（接客→はじめに作る）を順に1回ずつ（#2606）。
+// 閉店後の練習（試作）より後に置き、勝負までの流れを遅らせない。
 // EDEN の任意場面（#1588）は tonari の並びとは別の入口から、いつでも1回だけ読める。
 export const CH5_FREE_SCENES = Object.freeze([
   { id: "ch5_free_mashiro_visit", label: "ましろの訪問", location: "tonari" },
   { id: "ch5_free_first_visitor", label: "初めての客", location: "tonari" },
   { id: "ch5_free_tonari_practice", label: "閉店後の練習", location: "tonari" },
+  { id: "ch5_tsumugi_serving", label: "つむぎの接客", location: "tonari" },
+  { id: "ch5_tsumugi_makes_for_hajime", label: "つむぎの一台", location: "tonari" },
   { id: "ch5_free_eden_adam", label: "二つのダブルアップル", location: "EDEN" },
 ].map(scene => Object.freeze(scene)));
 
