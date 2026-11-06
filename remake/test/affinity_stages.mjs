@@ -173,9 +173,14 @@ await check('LIME .25/carry crosses unread hearts; old credit releases once with
   f.tick();assert.equal(f.events.filter(e=>e.type==='affinity-gain').length,1);
   s.flags._naru_affinity_waiting_pts=1;s.fortune={char:'naru'};
   assert.equal(f.stats.releaseAffinity('naru'),1);assert(s.fortune);assert.equal(f.stats.releaseAffinity('naru'),0);
-  f.stats.gainAffinity('naru',2,{source:'lime'});assert.equal(s.fortune,undefined);assert.equal(s.affinity.naru,10);
-  // 占いの相手は ×2（2026-11-02 台帳 URA。旧 ×1.5 の .7 から）: round(2×2)×.25×.85 + .0625
-  close(s.affinityCarry.naru,.9125);assert.equal(s.story.naru,0);
+  // 占いは会ったときだけ（台帳 URA07）。LIMEの返信・読むだけの連絡では倍にならず、効果も残る: round(2)×.25×.85 + .0625
+  f.stats.gainAffinity('naru',2,{source:'lime'});assert.deepEqual(s.fortune,{char:'naru'});assert.equal(s.affinity.naru,10);
+  close(s.affinityCarry.naru,.4875);
+  f.stats.gainAffinity('naru',2,{remote:true});assert.deepEqual(s.fortune,{char:'naru'},'read-only LIME consumed the fortune');
+  s.affinityCarry.naru=0;const metBefore=s.affinity.naru;
+  // 占いの相手は ×2（2026-11-02 台帳 URA。旧 ×1.5 から）: 会って +5 → round(10)×.85 = 8.5
+  f.stats.gainAffinity('naru',5);assert.equal(s.fortune,undefined);assert.equal(s.affinity.naru,metBefore+8);close(s.affinityCarry.naru,.5);
+  assert.equal(s.story.naru,0);
 });
 await check('LIME reply feedback follows actual fractional progress without ordinary story caps, SAVE/LOAD and integer rollover', async f => {
   let s = f.core.state; s.story.naru = 1; s.affinity.naru = 9;

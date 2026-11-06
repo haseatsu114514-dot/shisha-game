@@ -77,7 +77,7 @@ export function registerFortuneReadings(db) {
   }
   const offer = db.dialogues?.remake_fortune_offer;
   if (offer && offer.lines?.length) db.dialogues.remake_fortune_offer = { ...offer, lines: [offer.lines[0],
-    { speaker: 'uranaishi', face: 'normal', text: '次に会うときの縁をひと押し。それと三日間、あの人に届く言葉が見えるおまじないだよ' }, ...offer.lines.slice(1)] };
+    { speaker: 'uranaishi', face: 'normal', text: '占った相手と次に会ったときだけ、縁をひと押し。それと三日間、あの人に届く言葉が見えるおまじないだよ' }, ...offer.lines.slice(1)] };
 }
 // Authored response hints, never a global preference for the first option.
 export function fortuneChoiceIndex(save, dialogueId, line, data) {
