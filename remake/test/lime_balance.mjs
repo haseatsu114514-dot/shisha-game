@@ -154,7 +154,7 @@ function deliver(msgs) {
 {
   reset({ lovers: ["tsumugi"], loverSince: { tsumugi: 0 }, loveLevel: { tsumugi: 1 } });
   const src = await fs.readFile(new URL("js/daily/phone.js", root), "utf8");
-  assert.match(src, /bond\.private = lover;\s*try \{\s*gainAffinity\(m\.sender, lover \? 3 : 2\);/);
+  assert.match(src, /bond\.private = lover;\s*try \{\s*gainAffinity\(m\.sender, lover \? 3 : 2, \{ remote: true \}\);/);
   console.log("[LM01] PASS read-only lover notes deepen the bond on read");
 }
 

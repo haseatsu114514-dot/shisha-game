@@ -24,7 +24,7 @@ async function setup(page, { load = false } = {}) {
         affinity: { naru: 20, adam: 20, minto: 30 }, romance: { minto: 1 },
         story: { naru: 6, adam: 6, minto: 6 }, contacts: [], ...over });
       for (const id of ["naru", "adam", "minto", "sumi"]) {
-        E.core.markMet(id); E.intro.markIntroSeen(id);
+        E.core.markMet(id, { known: true }); E.intro.markIntroSeen(id);
       }
       Object.assign(s.flags, { _gym_member: true, _morning_8: true, _lime_tut: true,
         _errand_scout_done: true, _delivery_adam_done: true, _delivery_minto_done: true,
@@ -76,12 +76,16 @@ await suite("spot-encounters", async check => {
         E.clear(); const money = E.core.state.money, stats = { ...E.core.state.stats }, xp = E.core.state.growth?.xp || 0; await E.facility("cafe");
         const grown = Object.entries(E.core.state.stats).filter(([key, value]) => value > stats[key])
           .map(([key, value]) => [key, value - stats[key]]);
-        rows.push({ trace: E.trace, lines: E.lines(), cost: money - E.core.state.money, grown, xp: (E.core.state.growth?.xp || 0) - xp });
+        rows.push({ trace: E.trace, lines: E.lines(), cost: money - E.core.state.money, grown, xp: (E.core.state.growth?.xp || 0) - xp,
+          firstAffinity: E.core.state.affinity.maezono || 0 });
       }
-      return { rows, board: (await import("./js/core/growth-mode.js")).growthEnabled(), unchanged: before === E.relationship(), met: E.core.state.met.maezono,
+      const expected = JSON.parse(before);
+      expected[0].maezono = 9; expected[1].maezono = 0;
+      return { rows, board: (await import("./js/core/growth-mode.js")).growthEnabled(), unchanged: JSON.stringify(expected) === E.relationship(), met: E.core.state.met.maezono,
         seen: E.core.state.flags._spot_seen_cafe_maezono_break };
     });
     assert(r.unchanged && r.met && r.seen);
+    assert.deepEqual(r.rows.map(row => row.firstAffinity), [0, 0, 0, 9, 9, 9, 9, 9], 'The completed first meeting earns exactly heart1; facility repeats add no extra affinity');
     assert.equal(r.rows[0].trace[0], "ch1_cafe_visit");
     assert.equal(r.rows[1].trace[0], "cafe_naru_break");
     assert.equal(r.rows[3].trace[0], "cafe_maezono_break");

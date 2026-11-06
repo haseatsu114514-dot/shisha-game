@@ -56,7 +56,7 @@ export async function playHiyoriEvent(id, options = {}) {
     if (id === "tonari_return") releaseHiyoriAffinity();
     if (hiyoriHasContact() && !state.contacts.includes("hiyori")) state.contacts.push("hiyori");
     if (hiyoriRoute().storyEvents.includes(id)) state.story.hiyori = (state.story.hiyori || 0) + 1;
-    if (event.affinity) gainAffinity("hiyori", event.affinity);
+    if (event.affinity) gainAffinity("hiyori", event.affinity, { firstMeeting: id === "meeting" });
     // 面識・読了と同じ確定境界。後続の勧誘待ちでLOADされても保証を取り残さない。
     if (id === "meeting") ensureAffinityLevel("hiyori", 1);
     await afterStory(event.dialogue, { signal: lifetime?.signal, deferSave: id === "work_talk" });

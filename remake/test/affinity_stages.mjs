@@ -126,10 +126,10 @@ await check('visitChar normal completion, same-owner concurrent entry and heart 
   f.setPlay(() => new Promise(r=>resolve=r));
   const pending=f.spots.visitChar('naru'); assert.equal(await f.spots.visitChar('naru'),false);
   assert.equal(s.story.naru||0,0); resolve(done); assert.equal(await pending,true);
-  assert.equal(s.story.naru,1); assert.equal(s.visits.naru,1); assert.equal(s.affinity.naru,13); // 来店の段階会話 16×0.85（AFB01）
+  assert.equal(s.story.naru,1); assert.equal(s.visits.naru,1); assert.equal(s.affinity.naru,9);assert.equal(s.affinityCarry.naru||0,0); // 初対面は♥1ちょうど
   assert.equal(f.stats.affinityLevel('naru'),1); assert.equal(f.spots.hasNewStory('naru'),true);
   f.setPlay(async()=>done); await f.spots.visitChar('naru'); // next visit reads only the newly eligible second scene
-  assert.equal(s.story.naru,2); assert.equal(s.affinity.naru,27); assert.equal(f.stats.affinityLevel('naru'),2); assert.equal(f.spots.hasNewStory('naru'),true); // ♥2で3本目が開く
+  assert.equal(s.story.naru,2); assert.equal(s.affinity.naru,22); assert.equal(f.stats.affinityLevel('naru'),2); assert.equal(f.spots.hasNewStory('naru'),true); // ♥2で3本目が開く
 });
 await check('question selected then cancelled: retain answer, resume reaction and complete once', async f => {
   const s=f.core.state; s.story.kuyuri=3; s.affinity.kuyuri=33;

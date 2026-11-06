@@ -1728,12 +1728,16 @@ await suite("growth-levelup", async (runCheck) => {
         xp: s.growth?.xp || 0, fresh: structuredClone(s.growth?.fresh || {}), affinity: s.affinity.da_silva || 0 };
     });
     const before = await snapshot();
+    assert.equal(before.affinity, 0, 'The fixture starts before the first FESTA meeting');
+    assert(!await page.evaluate(() => festaCore.state.met.da_silva));
     for (let visit = 0; visit < 3; visit++) {
       await page.locator(t("ch4-go-festa")).click();
       const scene = visit ? "ch4_festa_revisit" : "ch4_festa";
       await page.waitForFunction(id => festaCore.state.flags._ch4.read[id] === true, scene);
       await page.locator(t("ch4-go-festa") + ":not(:disabled)").waitFor();
-      assert.deepEqual(await snapshot(), before, "無料のFESTA再訪ではX1・新鮮さ・資源を変えない");
+      assert.deepEqual(await snapshot(), { ...before, affinity: 9 }, "初対面だけ♥1ちょうど。無料のFESTA再訪では好感度・X1・新鮮さ・資源を増やさない");
+      assert.equal(await page.evaluate(() => festaCore.state.affinityCarry.da_silva), 0);
+      assert.equal(await page.evaluate(() => festaCore.state.flags._affinity_first_meeting_pending_da_silva), undefined);
     }
     assert.equal(await page.evaluate(() => festaCore.state.met.da_silva), true);
   });
