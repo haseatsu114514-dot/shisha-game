@@ -1,7 +1,7 @@
 {
   "version": 2,
   "status": "partially_connected",
-  "comment": "第3章の必須本編は東京到着から全国大会・帰郷まで接続。第3章の任意場面（大会前に読める6件）・前夜デート・前夜の修羅場未遂も接続済み（remake/js/chapters/ch3-story-wiring.js）。ch3_emil_workshopは大会後の寄り道（remake/js/chapters/ch3-aftermath-progress.js）で接続済み。ch3_cigarman_traceは大会前の噂を読んだ保存に限り、大会後のmukai寄り道（remake/js/chapters/ch3-aftermath-progress.js）から一度だけ読める。第4章の前夜（同行者・到着済みの恋人とのデート／重なった予定の保留）はremake/js/chapters/ch4-story-wiring.jsで接続済み。第4章の到着場面（別便の恋人・ましろの友人版）は前夜祭の日に接続済み（remake/js/chapters/ch4.js の renderEve）。到着したサメちゃん・ひよりとの夕方（ch4_*_dubai_evening）は、到着の後・前夜祭の前に任意で一度（remake/js/chapters/ch4-progress.js の chapterFourArrivalEveningsDue）。正式ヒロイン一覧・再生順・恋愛場面の条件の正本。実行順はremake/js/chaptersが正。ヌール（DSR20）は第4章のドバイで出会うヒロインで、ドバイに住む（romance.noor.resident）。到着場面は無く（arrival: null）、恋人ならドバイの前夜は同じ街にいる。第5章の打ち上げ・スタッフロール後の修羅場にはテレビ電話で加わり、席には座らない。",
+  "comment": "第3章の必須本編は東京到着から全国大会・帰郷まで接続。第3章の任意場面（大会前に読める6件）・前夜デート・前夜の修羅場未遂も接続済み（remake/js/chapters/ch3-story-wiring.js）。ch3_emil_workshopは大会後の寄り道（remake/js/chapters/ch3-aftermath-progress.js）で接続済み。ch3_cigarman_traceは大会前の噂を読んだ保存に限り、大会後のmukai寄り道（remake/js/chapters/ch3-aftermath-progress.js）から一度だけ読める。第4章の前夜（同行者・到着済みの恋人とのデート／重なった予定の保留）はremake/js/chapters/ch4-story-wiring.jsで接続済み。第4章の到着場面（別便の恋人・ましろの友人版）は前夜祭の日に接続済み（remake/js/chapters/ch4.js の renderEve）。到着したサメちゃん・ひよりとの夕方（ch4_*_dubai_evening）は、到着の後・前夜祭の前に任意で一度（remake/js/chapters/ch4-progress.js の chapterFourArrivalEveningsDue）。正式ヒロイン一覧・再生順・恋愛場面の条件の正本。実行順はremake/js/chaptersが正。第4章勝利後の再生順の正本は結果 → 会長 → 屋敷 → 帰国 → 二卓。実行側のCH4_RESOLUTIONもこの順。ヌール（DSR20）は第4章のドバイで出会うヒロインで、ドバイに住む（romance.noor.resident）。到着場面は無く（arrival: null）、恋人ならドバイの前夜は同じ街にいる。第5章の打ち上げ・スタッフロール後の修羅場にはテレビ電話で加わり、席には座らない。",
   "heroine_ids": [
     "tsumugi",
     "minto",
@@ -130,6 +130,7 @@
         "ch3_saku_mashiro_tea_tin",
         "ch3_saku_mashiro_soon_back",
         "ch3_saku_lime",
+        "ch3_steve_lime",
         "confession_mashiro",
         "hiyori_tokyo_contact",
         "ch3_tsumugi_slump",
@@ -173,8 +174,8 @@
       ],
       "on_win": [
         "ch4_result",
-        "ch4_ending",
         "ch4_sui_old_rival",
+        "ch4_ending",
         "ch4_sumi_return",
         "ch4_two_tables"
       ],
@@ -277,6 +278,12 @@
         "ch3_saku_advice"
       ],
       "comment": "#2028: 綾取とLIMEを交換する。助言の後。♥1（煙幕への再訪で付く好感度）の条件は場面カードの置き方（ch3-story-wiring.js の heart）。"
+    },
+    "ch3_steve_lime": {
+      "seen": [
+        "ch3_mukai_intro"
+      ],
+      "comment": "#2028: スティーブとLIMEを交換する。配達で会った後、客として来るmukaiで。面識と♥2の条件は場面カードの置き方（ch3-story-wiring.js の met・heart）。"
     },
     "ch3_mashiro_play_3": {
       "seen": [

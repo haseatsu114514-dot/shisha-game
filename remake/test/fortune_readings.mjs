@@ -7,6 +7,7 @@ import {
   fortuneChoiceIndex,
   fortuneResultId,
   registerFortuneReadings,
+  fortuneSightHinted,
   naruRiftActive,
   isFortuneTargetAvailable,
   fortuneTargets,
@@ -242,14 +243,31 @@ assert.equal(fortuneChoiceIndex(save, 'ch1_rio_bond_question', romance, { ...hin
 assert.equal(activeFortuneSight({ chapter: 1, day: 3, flags: { _fortune_choice_sight: { char: 'naru', chapter: 1, from: 3, until: 999 } } }), null);
 
 const base = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/remake_ch1.json', import.meta.url))).dialogues;
-const db = { dialogues: Object.fromEntries(base.map(d => [d.dialogue_id, d])), fortuneTrivia: trivia };
+const db = { dialogues: Object.fromEntries(base.map(d => [d.dialogue_id, d])), fortuneTrivia: trivia, fortuneHints: hints };
 registerFortuneReadings(db);
+// 三日間の「赤く見える」は、選択肢の注記で光りうる相手にだけ約束する（恋愛の注記は表示が切られている間は数えない）。
+const sightLine = d => d.lines.some(l => /赤く見える/.test(l.text || ''));
+const hinted = new Set(['ageha', 'minto', 'naru', 'rio', 'sumi', 'tsumugi']);
+// 判定は注記があるかだけで、章や既読は見ない。凛想の注記は初対面の ch1_rio_first の中、スミさんは第1章DAY5の場面だけなので、
+// 第2章以降や初対面の後は、約束しても光らないことがある（既知の限界。PR本文の「残り」に記載）。
+for (const char of Object.keys(trivia.characters)) assert.equal(fortuneSightHinted(char, hints), hinted.has(char), `${char} sight hint`);
 for (const entry of all) {
   const d = db.dialogues[fortuneResultId(entry)];
   assert(d);
   assert(d.lines.some(l => l.text === entry.teller));
   assert(d.lines.some(l => l.type === 'motion' && l.id === 'tarot'));
+  const char = Object.keys(trivia.characters).find(id => trivia.characters[id].includes(entry));
+  assert.equal(sightLine(d), hinted.has(char), `${entry.id}: the three-day sight is promised only when ${char} has a usable choice hint`);
+  if (!hinted.has(char)) assert.equal(d.lines.length, base.find(x => x.dialogue_id === 'remake_fortune_result').lines.length + 1, `${entry.id} keeps the rest of the reading`);
 }
+assert.equal(fortuneSightHinted('mashiro', { ...hints, includeRomance: true }), true, 'romance hints count once romance hints are shown');
+// 相手を選ぶ前の説明は、注記の無い相手にも聞こえるので「相手によっては」と言い、全員には約束しない。
+const offerTexts = db.dialogues.remake_fortune_offer.lines.map(l => l.text || '');
+assert(offerTexts.some(t => t.includes('相手によっては三日間')), 'the offer says the sight works only for some targets');
+assert(!offerTexts.some(t => t.includes('それと三日間')), 'the offer must not promise the sight to every target');
+for (const t of offerTexts) assert(t.length <= 48, `offer line within 48 chars: ${t}`);
+assert.equal(fortuneSightHinted('steve', { ...hints, includeRomance: true }), false);
+assert.equal(fortuneSightHinted('naru', { choices: { 'x:y': { target: 'naru', kind: 'taste' } } }), false, 'taste hints never light');
 assert(db.dialogues.remake_fortune_result, 'legacy result was removed');
 // 占い師は昼にも夜にも現れる（2026-11-02 台帳 URA）。営業時間の門と「昼のみ営業」の札は無い。
 for (const slot of [0, 1]) assert.equal(openingStatus({ kind: 'fortune' }, { slot }).ok, true);
