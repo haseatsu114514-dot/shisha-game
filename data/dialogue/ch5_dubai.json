@@ -168,6 +168,37 @@
         { "speaker": "da_silva", "face": "normal", "text": "ハジメ、お前の店もそういう店にしろよ。誰が来ても、ただの客でいられる店" },
         { "speaker": "hajime", "face": "normal", "text": "（ただの客で、いられる店）" }
       ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_camel_again",
+      "comment": "第5章でドバイへ来て、最初にラクダレース場へ行った日だけ、練習レースの前の会話（ch4_camel_replay）の代わりに読む。第4章で一度でも走った人だけ（chapters/ch5-dubai.js）。大会・シェイクの正体には触れない。名前の表記が揺れているので、地の文でスハイルの名前を出さない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "朝のレース場。ハリールの白い車の横で、見覚えのある顔が両手を大きく振った。" },
+        { "speaker": "suhail", "face": "excited", "text": "ハジメ！　日本に帰ったんじゃなかったの？" },
+        { "speaker": "hajime", "face": "smile", "text": "また来ました。……ハビーバに、会いたくなって" },
+        { "speaker": "khalil", "face": "normal", "text": "……来たか。あいつは、お前の声を覚えている" },
+        { "speaker": "suhail", "face": "smile", "text": "今日も連打しないでよ。リモコン、はい" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_dunes_again",
+      "comment": "第5章でドバイへ来て、最初に「ヌールと砂丘へ」を選んだ日だけ、出かける前（ch4_desert_again の前）に読む。第4章で一度でも砂丘へ出かけた人だけ（chapters/ch5-dubai.js）。恋人なら最初の一言が変わる。大会・王者・味覚には触れない。ツアー代の話はしない（告白を待つ日はツアー代がかからないため）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "カフェ・サーリムの表のデスク。ヌールさんが、地図から顔を上げた。" },
+        { "type": "condition", "condition_type": "lover", "char_id": "noor", "next_true": "lover", "next_false": "friend" },
+        { "speaker": "hajime", "face": "normal", "text": "……また、砂丘へ連れて行ってもらえますか" },
+        { "speaker": "noor", "face": "smile", "text": "もちろん！ ハジメの板、ずっと倉庫で待ってたんだから" }
+      ],
+      "branches": {
+        "lover": [
+          { "speaker": "noor", "face": "smile", "text": "ハジメ！ ……やっと、画面の向こうじゃないハジメだ" },
+          { "speaker": "hajime", "face": "smile", "text": "少しだけですけど、会いに来ました" }
+        ],
+        "friend": [
+          { "speaker": "noor", "face": "surprise", "text": "ハジメ！ 久しぶり！ またドバイに来てくれたんだ" },
+          { "speaker": "hajime", "face": "smile", "text": "はい、また少しだけ" }
+        ]
+      }
     }
   ]
 }

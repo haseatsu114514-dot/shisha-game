@@ -247,6 +247,8 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_dubai_guest", "progression"],
   ["_ch5_dubai_talks", "progression"],
   ["_ch5_dubai_flights", "progression"],
+  ["_ch5_dubai_camel_again", "progression"], // 第5章のラクダレース場の再会を読んだ（chapters/ch5-dubai.js）
+  ["_ch5_dubai_dunes_again", "progression"], // 第5章の砂丘の前の再会を読んだ
   ["_ch5_after_party", "progression"],
   ["_ch5_party_seat", "progression"],
   ["_ch5_shop_talks", "progression"],

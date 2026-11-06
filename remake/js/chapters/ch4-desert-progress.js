@@ -295,3 +295,11 @@ export function desertDailySpots(value, day) {
 /** 地図で選んだ行き先を、今行ける時だけ返す（行けない行き先は処理しない）。 */
 export const desertDailySpotById = (value, day, id) => desertDailySpots(value, day).find(entry => entry.id === id && !entry.unavailable) || null;
 
+/**
+ * 第5章でドバイへ来た日の砂丘（chapters/ch5-dubai.js）。第4章で一度でも砂丘へ出かけた人だけ「ヌールと砂丘へ」を出す。
+ * カフェ・サーリムの段階の会話・締めくくりは第4章だけなので、デスクは出さない（初めての砂丘・最初の夕日の場面も第5章では読まない）。
+ * day は通算の日。第4章は章内の日（14まで）で記録したが、第5章の通算の日は必ずそれより大きいので、1日1回の判定は崩れない。
+ */
+export const desertRevisitSpots = (value, day) => desertProgress(value).outings > 0
+  ? desertDailySpots(value, day).filter(entry => entry.id === DESERT_SPOT_IDS.dunes) : [];
+

@@ -7,7 +7,7 @@ import { DESERT_FLAG, DESERT_TALKS, DESERT_TALK_HEARTS, DESERT_INVITE_STAGE, NOO
   desertRivals, markNaruMet, desertProgress, desertInvited, desertTalkScene, completeDesertTalk, desertCafeVisit, completeDesertCafeVisit, noorHeart,
   desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertRankAtLeast, desertDestinations,
   DESERT_SPOT_IDS, desertDailySpots, desertDailySpotById, NOOR_FINALE, NOOR_CONFESSION, NOOR_OTHER_LOVER_FLAG, noorStoriesDone, noorFinaleWaiting,
-  noorConfessionWaiting } from "../js/chapters/ch4-desert-progress.js";
+  noorConfessionWaiting, desertRevisitSpots } from "../js/chapters/ch4-desert-progress.js";
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
 import { readFileSync } from "node:fs";
 
@@ -364,4 +364,46 @@ test("Noor's finale, confession and gift data line up with bonds.js / romance.js
   assert.match(desert, /romanceRouteOpen\(DESERT_GUIDE\)/);
   assert.match(desert, /read\(NOOR_CONFESSION, bgUrl\(DESERT_DUSK_BG\)\)/);
   assert.match(desert, /delete owner\.flags\[NOOR_OTHER_LOVER_FLAG\]/);
+});
+
+test("chapter 5 Dubai offers only the dunes, and only to players who went at least once in chapter 4; Naru stays home", () => {
+  // 第4章で一度も砂丘へ出かけていない（カフェで話しただけ・誘われただけ）なら、第5章のドバイには何も出さない
+  const value = fresh();
+  Object.assign(value, { chapter: 5, slot: 0 });
+  assert.deepEqual(desertRevisitSpots(value, 60), []);
+  value.flags[DESERT_FLAG] = { v: 2, talks: 3, chats: 2, lastTalkDay: 9, outings: 0, lastOutingDay: null };
+  assert.deepEqual(desertRevisitSpots(value, 60), [], "café talks only: nothing in Chapter 5");
+  invite(value);
+  assert.deepEqual(desertRevisitSpots(value, 60), [], "invited but never went: nothing in Chapter 5 (no first-time arrival or first sunset)");
+  // 第4章で一度出かけた（章内の日 5 で記録）→ 第5章では砂丘だけ。カフェ・サーリムの段階の会話・締めくくりは第4章だけ
+  value.flags[DESERT_FLAG] = { ...value.flags[DESERT_FLAG], outings: 1, lastOutingDay: 5 };
+  let [dunes, ...rest] = desertRevisitSpots(value, 60);
+  assert.deepEqual(rest, [], "the café desk never appears in Chapter 5");
+  assert.deepEqual([dunes.id, dunes.place, dunes.region, dunes.kind, dunes.unavailable], [DESERT_SPOT_IDS.dunes, "dunes", "dubai", "ch4_desert", ""]);
+  assert.match(dunes.desc, /6,000円/, "later trips cost the usual tour fee");
+  assert.equal(dunes.hasNew(), false);
+  // 1日1回・昼だけ。第5章では通算の日で記録する（第4章の章内の日より必ず大きいので、最初の日から行ける）
+  assert(beginDesertOuting(value, 60));
+  assert.equal(desertProgress(value).lastOutingDay, 60);
+  value.slot = 0;
+  assert.equal(desertRevisitSpots(value, 60)[0].unavailableTag, "今日はもう行った");
+  assert.equal(desertRevisitSpots(value, 61)[0].unavailable, "");
+  value.slot = 1;
+  assert.equal(desertRevisitSpots(value, 61)[0].unavailableTag, "砂丘は昼だけ");
+  value.slot = 0; value.money = 5000;
+  assert.equal(desertRevisitSpots(value, 61)[0].unavailableTag, "お金が足りない");
+  // 第5章の再会の場面（ch5_dubai.json）: 恋人なら最初の一言が変わる。大会・王者・味覚・ツアー代には触れない
+  const ch5 = JSON.parse(readFileSync(new URL("../../data/dialogue/ch5_dubai.json", import.meta.url), "utf8"));
+  const reunion = ch5.dialogues.find(d => d.dialogue_id === "ch5_dubai_dunes_again");
+  const branch = reunion.lines.find(line => line.type === "condition");
+  assert.deepEqual([branch.condition_type, branch.char_id], ["lover", "noor"]);
+  for (const key of [branch.next_true, branch.next_false]) assert(reunion.branches[key]?.length, key);
+  assert.doesNotMatch(JSON.stringify([reunion.lines, reunion.branches]), /大会|王者|優勝|世界一|味|ツアー代|円/, "the reunion stays off the tournament, taste and the fee");
+  // 第5章の砂丘は ch5-dubai.js から performDesertSpot を通算の日で呼び、なる（地元の KEMURIKUSA にいる）を呼ばない
+  const ch5Dubai = readFileSync(new URL("../js/chapters/ch5-dubai.js", import.meta.url), "utf8");
+  assert.match(ch5Dubai, /performDesertSpot\(spot, \{ day: state\.day, showHud, naru: false \}\)/);
+  assert.match(ch5Dubai, /desertRevisitSpots\(value, value\.day\)/);
+  const desert = readFileSync(new URL("../js/chapters/ch4-desert.js", import.meta.url), "utf8");
+  assert.match(desert, /const rivals = !naru \|\| \(confessionDay && !before\.naruMet\) \? \["noor"\] : desertRivals\(owner\)/);
+  assert.match(desert, /visitDesert\(\{ kind: cafe \? "desert_talk" : "desert", ok: true \}, \{ day, paid: cafe, naru \}\)/);
 });

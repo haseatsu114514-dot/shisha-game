@@ -8,9 +8,13 @@
 // 地図と座標は第4章の日常ループ（ch4-dubai-daily.js）と同じ。FESTAは大会の出張ブースだったので出さず、太陽は休暇で
 // シェイクの屋敷に遊びに来ている（2026-11-02 オーナー「任せる」）。心得の盤の授業（シェイク・太陽）は、ここで会った時に相談する（SBD52）。
 // 台詞は data/dialogue/ch5_dubai.json（クリーク沿いは第4章の場面を使う）。現在地は flags._ch2_region = "dubai"。
+// 第4章で遊んだ人だけ、ラクダレース場と「ヌールと砂丘へ」にも行ける（chapterFiveDubaiLeisureSpots。出会い・誘いは第4章だけ）。
 import { state, save, timeOfDay, markMet } from "../core/state.js";
 import { DB, sceneBg } from "../core/data.js";
-import { modal, setBg, toast } from "../core/ui.js";
+import { modal, setBg, toast, layers } from "../core/ui.js";
+import { showHud } from "../daily/hud.js";
+import { CAMEL_DAILY_SPOT_ID, CAMEL_SCENES, CH4_CAMEL_SCENE_FILES, camelDailySpot, camelSceneBg } from "./ch4-camel-progress.js";
+import { DESERT_SPOT_IDS, desertRevisitSpots } from "./ch4-desert-progress.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { addMoney, addStamina, earnStat, gainAffinity, visitAffinity } from "../core/stats.js";
@@ -73,8 +77,28 @@ export function chapterFiveDubaiPin(value = state) {
 }
 
 export const inDubai = (value = state) => value?.flags?._ch2_region === DUBAI;
+
+// ---- 第4章で遊んだ人だけの行き先（ラクダレース場・ヌールと砂丘へ） ------------------------------
+// 地図の id・位置・アイコン・押せない理由・記録・報酬は第4章と同じ（ch4-camel-progress.js・ch4-desert-progress.js）。
+// 第4章で一度でも走った／砂丘へ出かけた人だけ出す（出会い・誘い・初回の場面は大会の頃の話なので、第5章では始めない）。
+// 第5章で最初に行った日だけ、再会の場面を読む（新着の印も、その一度だけ出す）。
+const CAMEL_AGAIN = Object.freeze({ scene: "ch5_dubai_camel_again", flag: "_ch5_dubai_camel_again" });
+const DUNES_AGAIN = Object.freeze({ scene: "ch5_dubai_dunes_again", flag: "_ch5_dubai_dunes_again" });
+const reunionOf = entry => entry.id === CAMEL_DAILY_SPOT_ID ? CAMEL_AGAIN : DUNES_AGAIN;
+
+/** 今のドバイの地図に足す行き先（ラクダレース場・ヌールと砂丘へ）。第4章で遊んでいなければ空。 */
+export function chapterFiveDubaiLeisureSpots(value = state) {
+  if (value?.chapter !== 5 || !inDubai(value)) return [];
+  return [camelDailySpot(value, { region: DUBAI, kind: "ch5_dubai", stamina: 0 }), ...desertRevisitSpots(value, value.day)]
+    .filter(Boolean)
+    .map(entry => entry.unavailable || value.flags?.[reunionOf(entry).flag] ? entry : Object.freeze({ ...entry, hasNew: () => true }));
+}
+/** 地図で選んだ行き先を、今行ける時だけ返す（行けない行き先は処理しない）。 */
+export const chapterFiveDubaiLeisureById = id => chapterFiveDubaiLeisureSpots().find(entry => entry.id === id && !entry.unavailable) || null;
+
 const SCENES = DUBAI_SPOTS.flatMap(entry => entry.talks || [])
-  .concat(["ch5_dubai_letter", ...DUBAI_LETTER_AGAIN, "ch5_dubai_go", "ch5_dubai_back", "ch5_dubai_arrival", "ch5_dubai_guest_rest"]);
+  .concat(["ch5_dubai_letter", ...DUBAI_LETTER_AGAIN, "ch5_dubai_go", "ch5_dubai_back", "ch5_dubai_arrival", "ch5_dubai_guest_rest",
+    CAMEL_AGAIN.scene, DUNES_AGAIN.scene]);
 const CH4_SCENES = ["ch4_creek_walk_day", "ch4_creek_walk_night"];
 
 let loading = null;
@@ -97,18 +121,21 @@ async function read(id, bg, owner) {
 }
 
 const unused = { used: false, exerted: false };
+const LOAD_FAILED = "会話を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます";
 
 /** ドバイの行き先と「ドバイへ」の処理。対象外の行き先は null（日常ループの通常の処理へ）。 */
 export async function performDubaiSpot(spot, { staminaGuard } = {}) {
   if (spot.id !== TO_DUBAI_SPOT.id && spot.region !== DUBAI) return null;
   const owner = state;
   try { await loadDubaiScenes(); } catch {
-    toast("会話を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます");
+    toast(LOAD_FAILED);
     return unused;
   }
   if (state !== owner) return unused;
   if (spot.id === TO_DUBAI_SPOT.id) return goToDubai(owner);
   if (spot.id === "ch5_dubai_home") return goHome(owner);
+  if (spot.id === CAMEL_DAILY_SPOT_ID) return visitCamelTrack(owner);
+  if (spot.id === DESERT_SPOT_IDS.dunes) return visitDunes(spot, owner);
   if (spot.reflect) {
     const hours = openingStatus(MOSQUE_VISITING_HOURS, state);
     if (!hours.ok) { toast(hours.why || "今は見学の時間ではない"); return unused; }
@@ -192,6 +219,73 @@ async function goHome(owner) {
   state.flags._ch2_region = "home";
   save();
   return { used: true, exerted: false };
+}
+
+/** 章の側の読み方やミニゲームは HUD を差し替えるので、終わったら日常ループの HUD を戻す（ch4-dubai-daily.js と同じ形）。 */
+async function keepDailyHud(task) {
+  const root = layers.hud.firstElementChild;
+  try { return await task(); }
+  finally {
+    if (root && !root.isConnected) layers.hud.replaceChildren(root);
+    showHud(true);
+  }
+}
+
+let camelLoading = null;
+/** ラクダレースの会話（第4章の台本 ch4_camel_race）は、レース場へ行く時だけ読み込む。 */
+async function loadCamelScenes() {
+  const ids = CH4_CAMEL_SCENE_FILES.ch4_camel_race;
+  if (ids.every(id => DB.dialogues[id]?.lines?.length)) return;
+  camelLoading ||= readDialogues("ch4_camel_race", ids).then(rows => { Object.assign(DB.dialogues, rows); })
+    .catch(error => { camelLoading = null; throw error; });
+  await camelLoading;
+}
+
+/**
+ * ラクダレース場（第4章で一度でも走った人だけ）。練習レースの流れ・記録・報酬は第4章と同じ（ch4-camel-race.js。報酬は初めての完走だけ）。
+ * 第5章で最初に来た日は、レース前の会話（ch4_camel_replay）を再会の場面に替える。昼の枠は ch4-camel-race.js が完走の時だけ
+ * 記録と一緒に進めて保存するので、日常ループには slotsUsed: 0 を返す（二重に進めない。第4章と同じ）。体力・お金は使わない。
+ */
+async function visitCamelTrack(owner) {
+  let race;
+  try { [race] = await Promise.all([import("./ch4-camel-race.js"), loadCamelScenes()]); } catch {
+    toast(LOAD_FAILED);
+    return unused;
+  }
+  if (state !== owner) return unused;
+  const result = await keepDailyHud(() => race.visitCamelRace({
+    read: id => readCamelScene(id, owner),
+    isCurrent: () => state === owner,
+    beforeRace: () => showHud(false),
+  }));
+  return result.used && state === owner ? { used: true, exerted: false, slotsUsed: 0 } : unused;
+}
+
+async function readCamelScene(id, owner) {
+  const reunion = id === CAMEL_SCENES.replay && !state.flags[CAMEL_AGAIN.flag];
+  if (!await read(reunion ? CAMEL_AGAIN.scene : id, camelSceneBg(id), owner)) return false;
+  if (reunion) { state.flags[CAMEL_AGAIN.flag] = true; save(); }
+  return true;
+}
+
+/**
+ * ヌールと砂丘へ（第4章で一度でも出かけた人だけ）。外出・ツアー代・1日1回・記録・報酬は第4章と同じ（ch4-desert.js の performDesertSpot）。
+ * 第5章で最初の日は、カフェ・サーリムの表のデスクで再会の場面を読んでから出かける。なるは地元にいるので砂丘に来ない（naru: false）。
+ * day は通算の日（ch4-desert-progress.js の desertRevisitSpots）。
+ */
+async function visitDunes(spot, owner) {
+  if (!state.flags[DUNES_AGAIN.flag]) {
+    if (!await read(DUNES_AGAIN.scene, "bg_dubai_inn_day", owner)) return unused;
+    state.flags[DUNES_AGAIN.flag] = true;
+    save();
+  }
+  let desert;
+  try { desert = await import("./ch4-desert.js"); } catch {
+    toast(LOAD_FAILED);
+    return unused;
+  }
+  if (state !== owner) return unused;
+  return desert.performDesertSpot(spot, { day: state.day, showHud, naru: false });
 }
 
 /** 夜: ドバイにいれば屋敷の客間で寝る（帰らない）。 */
