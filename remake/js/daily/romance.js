@@ -204,8 +204,13 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
 
 let milestonePlaying = false;
 
-/** 現在の絆Lvまでの最初の未読場面。LIMEや旧セーブで先に進んでも、未読の前段を飛ばさない。 */
-export function loverMilestoneDue(id) {
+/**
+ * 現在の絆Lvまでの最初の未読場面。LIMEや旧セーブで先に進んでも、未読の前段を飛ばさない。
+ * 地元が舞台の節目（lover_events.json の metadata.hometown: tsumugi の部屋・tonari、栞さんの部屋・PEPPERMINT など）は、
+ * はじめが東京・ドバイにいる間（第3章の東京へ会いに来た恋人とのデートなど）は読まず、地元に帰ってから読む（#2024）。
+ * @param opts.home はじめが地元にいるか。省略時は現在地（flags._ch2_region）から。場面カードの章は呼び出し側が渡す
+ */
+export function loverMilestoneDue(id, { home = !awayFromHome() } = {}) {
   if (id === "samechan") return samechanMilestoneDue();
   if (!isLover(id)) return null;
   const seen = state.loverEventsSeen || [];
@@ -217,6 +222,7 @@ export function loverMilestoneDue(id) {
       if ((eventId !== base && !scene) || seen.includes(eventId)) continue;
       // 通常台本が欠けた時や、未完成の追加台本がある時は後段へ進まない。
       if (!scene?.lines?.length || (scene.metadata?.min_chapter || 1) > (state.chapter || 1)) return null;
+      if (scene.metadata?.hometown && !home) return null; // 地元の場面は、帰ってから（後段へは飛ばない）
       return eventId;
     }
   }
@@ -224,10 +230,10 @@ export function loverMilestoneDue(id) {
 }
 
 /** 実際に会った私的な場面の読了後、未読の節目を一つだけ読む。読了前の保存では未読のまま。 */
-export async function playLoverMilestone(id, { signal = null } = {}) {
+export async function playLoverMilestone(id, { signal = null, home } = {}) {
   if (milestonePlaying || isPlaying()) return false;
   if (id === "samechan") return playSamechanMilestone({ signal });
-  const eventId = loverMilestoneDue(id);
+  const eventId = loverMilestoneDue(id, { home });
   if (!eventId) return false;
   const owner = state, restorePrivate = privateBondScope();
   milestonePlaying = true;
@@ -302,6 +308,18 @@ export const hometownDateOpen = (id, value = state) => !awayFromHome(value)
 export const LOVER_MORNING_GAP = 3;
 export const LOVER_INVITE_GAP = 4;
 const lastInboxDay = (match) => Math.max(-99, ...(state.inbox || []).filter(match).map((i) => i.day ?? -99));
+/** 東京への訪問で、今その恋人が東京に来ているか（core/tokyo-visits.js の visitingTokyo と同じ判定。読むだけ）。 */
+const visitingTokyo = (id, value = state) => (value?.tokyoVisits?.plans || []).some(plan => plan.characterId === id
+  && ["arrived", "staying"].includes(plan.status) && value.day >= plan.arrivalDay && value.day < plan.returnDay);
+/**
+ * はじめとこの恋人が離れた街にいるか（朝のひとことの morning_away を混ぜる・#2024）。
+ * 地元の恋人: はじめが東京・ドバイにいて、恋人が東京へ会いに来ていない。
+ * 東京に住むましろ（第3章から）: はじめが東京にいない（地元か、ドバイ）。場面カードで home を渡さない東京は、東京として読む
+ */
+function apartFrom(id, home, value = state) {
+  if (TOKYO_LOVERS.includes(id) && (value?.chapter || 1) >= 3) return home || value?.flags?._ch2_region === "dubai";
+  return !home && !visitingTokyo(id, value);
+}
 
 /**
  * 今朝届く恋人からの LIME（記念日・デートの誘い・朝のひとこと・試合の朝）。
@@ -375,9 +393,11 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false,
       } });
     }
     // 朝のひとこと（3日おき・キャラごとに位相をずらす・返事なし）。誘いの枠を取れなかった恋人もこちらへ
-    // 地元で会う前提のひとこと（hometown）は、はじめが地元にいる朝だけ
+    // 地元で会う前提のひとこと（hometown）は、はじめが地元にいる朝だけ。離れた街にいる朝は、離れている前提の
+    // ひとこと（morning_away）も混ぜる（東京へ会いに来ている恋人には混ぜない）
     const turn = state.day + (phase[id] || 0);
-    const pool = ((L().morning || {})[id] || []).filter((v) => home || !v.hometown);
+    const pool = [...((L().morning || {})[id] || []).filter((v) => home || !v.hometown),
+      ...(apartFrom(id, home) ? (L().morning_away || {})[id] || [] : [])];
     const msgId = `_lover_morning_${id}${chapterKey}_d${state.day}`;
     if (pool?.length && turn % LOVER_MORNING_GAP === 0 && !read(msgId)) {
       const k = Math.floor(turn / LOVER_MORNING_GAP);

@@ -61,6 +61,7 @@ async function fixture() {
     Object.assign(s, { chapter: 3, phase: 'daily', day, slot: 1, lovers: [...lovers], contacts: ['sumi', ...lovers] });
     s.flags._elapsed_calendar = true;
     s.flags._ch3_intro = { startDay: day - 1, stage: 3, titleSeen: true, prologueStep: 4 };
+    s.flags._ch2_region = 'tokyo'; // 東京の日常ループの現在地
     for (const id of lovers) { s.loveLevel[id] = 1; s.lovePts[id] = 9; s.loverSince[id] = day; }
     return s;
   };
@@ -340,7 +341,8 @@ await check('in Tokyo/Dubai, lover notes do not assume hajime is in town; the an
     s.flags._ch2_region = region;
     const note = morning();
     assert.equal(note?.id, '_lover_morning_tsumugi_d12', `${region}: the morning note still arrives`);
-    assert(lover.morning.tsumugi.some(v => !v.hometown && JSON.stringify(v.m) === text(note)), `${region}: an away-safe note`);
+    assert([...lover.morning.tsumugi.filter(v => !v.hometown), ...lover.morning_away.tsumugi].some(v => JSON.stringify(v.m) === text(note)),
+      `${region}: an away-safe note`);
   }
   // 3日おきの朝を120日分たどっても、地元にいる時だけ届く（記念日に当たらない日で見る）。
   for (const region of ['home', 'widehanga', 'tokyo', 'dubai']) {
@@ -429,6 +431,115 @@ await check('non-lovers and cancelled milestones stay unread', async f => {
   const controller = new AbortController(); controller.abort();
   assert.equal(await f.entry.readLoverMilestone('mashiro', { signal: controller.signal }), false);
   same(s.loverEventsSeen, []);
+});
+
+await check('apart mornings mix in morning_away: not at home, not in Tokyo for Mashiro, not for a lover visiting Tokyo (#2024)', async f => {
+  const lines = v => JSON.stringify(v.m);
+  // 文面の決まり: 地元・東京に住む恋人は全員、離れている朝の一言を持つ。地元で会う前提の語を入れない。
+  // （ドバイに住むヌールの遠距離の文は、地元にいる朝だけの hometown で持つ・DSR20）
+  for (const id of ['tsumugi', 'minto', 'rio', 'ageha', 'mashiro', 'hiyori', 'samechan']) assert(lover.morning_away[id]?.length, id);
+  for (const id of Object.keys(lover.morning_away).filter(id => !id.startsWith('_'))) assert(lover.morning[id], `${id}: has usual mornings`);
+  for (const [id, pool] of Object.entries(lover.morning_away)) {
+    if (id.startsWith('_')) continue;
+    for (const v of pool) {
+      assert(!v.hometown && !v.r, `${id}: away notes are read-only and never hometown`);
+      assert.doesNotMatch(lines(v), /tonari|閉店後|今夜|お祝い|行きます/, `${id}: no same-day hometown plan`);
+      for (const t of v.m) assert(!/。$/.test(t) && t.length <= 30, `${id}: ${t}`);
+    }
+  }
+  const away = id => new Set(lover.morning_away[id].map(lines));
+  const hometown = id => new Set(lover.morning[id].filter(v => v.hometown).map(lines));
+  // 3日おきの朝を120日分たどり、届いた文のうち離れている朝の一言・地元前提の一言を数える（記念日に当たらない日で見る）。
+  const tally = (s, id) => {
+    const out = { away: 0, hometown: 0, notes: 0 };
+    for (let day = 3; day <= 120; day++) {
+      Object.assign(s, { day }); s.loverSince[id] = day - 7;
+      const note = f.romance.loverMessages({ invitations: false }).find(m => m.id.startsWith(`_lover_morning_${id}`));
+      if (!note) continue;
+      out.notes++;
+      const text = JSON.stringify(note.messages);
+      if (away(id).has(text)) out.away++;
+      if (hometown(id).has(text)) out.hometown++;
+    }
+    return out;
+  };
+  // 地元の恋人（つむぎ）: 地元・柚ヶ谷では混ぜない。東京・ドバイでは混ぜ、地元前提の一言は出さない。
+  const s = f.chapterAt(4, ['tsumugi'], { day: 3, flags: { _ch2_region: 'home' } });
+  for (const region of ['home', 'widehanga']) {
+    s.flags._ch2_region = region;
+    const t = tally(s, 'tsumugi');
+    assert(t.notes > 0 && t.away === 0 && t.hometown > 0, `${region}: ${JSON.stringify(t)}`);
+  }
+  for (const region of ['tokyo', 'dubai']) {
+    s.flags._ch2_region = region;
+    const t = tally(s, 'tsumugi');
+    assert(t.away > 0 && t.hometown === 0, `${region}: ${JSON.stringify(t)}`);
+  }
+  // 東京へ会いに来ている間（第3章の訪問。到着〜帰る日の前日）は一緒にいるので、離れている一言も地元前提の一言も無い。
+  s.flags._ch2_region = 'tokyo';
+  s.tokyoVisits = { plans: [{ characterId: 'tsumugi', status: 'staying', arrivalDay: 1, returnDay: 200 }], offers: {}, closedSlots: [] };
+  const visiting = tally(s, 'tsumugi');
+  assert(visiting.notes > 0 && visiting.away === 0 && visiting.hometown === 0, `visiting: ${JSON.stringify(visiting)}`);
+  s.tokyoVisits.plans[0].status = 'returned';
+  assert(tally(s, 'tsumugi').away > 0, 'After the visit she is far away again');
+
+  // 東京に住むましろ: はじめが地元・ドバイにいる朝は離れている。東京にいる朝（第3章・第5章の東京）は同じ街。
+  const m = f.chapterAt(4, ['mashiro'], { day: 3, flags: { _ch2_region: 'home' } });
+  for (const region of ['home', 'dubai']) {
+    m.flags._ch2_region = region;
+    assert(tally(m, 'mashiro').away > 0, `mashiro while hajime is in ${region}`);
+  }
+  for (const chapter of [3, 5]) {
+    Object.assign(m, { chapter }); m.flags._ch2_region = 'tokyo';
+    assert.equal(tally(m, 'mashiro').away, 0, `mashiro is local in chapter ${chapter} Tokyo`);
+  }
+  // 場面カードの帰国後の tonari（印はドバイのまま・home を渡す）でも、ましろとは離れている。
+  Object.assign(m, { chapter: 4, day: 30 }); m.flags._ch2_region = 'dubai'; m.loverSince.mashiro = 23;
+  let found = false;
+  for (let day = 3; day <= 120 && !found; day++) {
+    Object.assign(m, { day }); m.loverSince.mashiro = day - 7;
+    const note = f.romance.loverMessages({ invitations: false, home: true }).find(x => x.id.startsWith('_lover_morning_mashiro'));
+    found = !!note && away('mashiro').has(JSON.stringify(note.messages));
+  }
+  assert(found, 'home: true reads Mashiro as far away');
+});
+
+await check('a hometown milestone waits while hajime is in Tokyo/Dubai and is read once he is home; others are not skipped (#2024)', async f => {
+  const tagged = Object.values(f.db.dialogues).filter(d => /^lover_\w+_lv\d$/.test(d.dialogue_id) && d.metadata?.hometown).map(d => d.dialogue_id).sort();
+  same(tagged, ['lover_hiyori_lv1', 'lover_hiyori_lv2', 'lover_hiyori_lv5', 'lover_minto_lv2', 'lover_minto_lv3', 'lover_minto_lv4',
+    'lover_minto_lv5', 'lover_rio_lv1', 'lover_tsumugi_lv2', 'lover_tsumugi_lv3']);
+  // ましろの節目は東京（mukai）が舞台。東京では同じ街なので印を付けない（第5章は tonari で思い出す形・#2024 A2）。
+  assert(!tagged.some(id => id.includes('mashiro')));
+  // 第3章の東京: つむぎが会いに来た日のデート。lv1 は駅までの帰り道なので東京でも読める。
+  const s = f.chapterThree(['tsumugi']);
+  s.flags._ch2_region = 'tokyo';
+  s.loveLevel.tsumugi = 3;
+  same(f.entry.loverMilestonesDue(['tsumugi']), ['tsumugi']);
+  assert.equal(await f.entry.readLoverMilestone('tsumugi'), true);
+  same(f.plays, ['lover_tsumugi_lv1']);
+  // lv2（はじめの部屋）・lv3（閉店後の tonari）は東京では読まない。lv3 へ飛ばして先に読むこともしない。
+  assert.equal(f.romance.loverMilestoneDue('tsumugi'), null);
+  same(f.entry.loverMilestonesDue(['tsumugi']), []);
+  assert.equal(await f.entry.readLoverMilestone('tsumugi'), false);
+  for (const region of ['dubai']) { s.flags._ch2_region = region; assert.equal(f.romance.loverMilestoneDue('tsumugi'), null, region); }
+  // 場面カードの東京（印は地元のまま）は呼び出し側の home: false が勝つ。
+  s.flags._ch2_region = 'home';
+  same(f.entry.loverMilestonesDue(['tsumugi'], { home: false }), []);
+  assert.equal(await f.entry.readLoverMilestone('tsumugi', { home: false }), false);
+  same(f.plays, ['lover_tsumugi_lv1'], 'Nothing was read in Tokyo');
+  // 帰ってから: lv2 → lv3 の順に読める。
+  assert.equal(f.romance.loverMilestoneDue('tsumugi'), 'lover_tsumugi_lv2');
+  assert.equal(await f.entry.readLoverMilestone('tsumugi'), true);
+  s.flags._ch2_region = 'widehanga';
+  assert.equal(f.romance.loverMilestoneDue('tsumugi'), 'lover_tsumugi_lv3');
+  same(f.plays, ['lover_tsumugi_lv1', 'lover_tsumugi_lv2']);
+  // 第3章の場面カード（chapters/ch3.js）は東京にいるかを playerRegion で渡す。
+  assert.match(fs.readFileSync(path.join(root, 'chapters/ch3.js'), 'utf8'),
+    /const home = playerRegion\(state\) === "home";[\s\S]*?loverMilestonesDue\(\[id\], \{ home \}\)[\s\S]*?readLoverMilestone\(id, \{ signal: controller\.signal, home \}\)/);
+  // 第4章の帰国後の tonari は印がドバイのまま。場面の home を節目にも渡す。
+  const ch4 = fs.readFileSync(path.join(root, 'chapters/ch4.js'), 'utf8');
+  assert.match(ch4, /lover\.loverMilestonesDue\([^;]*, \{ home \}\)/);
+  assert.match(ch4, /lover\.readLoverMilestone\(id, \{ signal: controller\.signal, home \}\)/);
 });
 
 await check('chapter runners call the shared entry (no duplicated lover logic)', async () => {
