@@ -920,6 +920,58 @@
       "comment": "出典: NEW-TEXT.md §3。未接続。背景tonari昼は※仮置き、入口の鈴はSE想定。日程決定前のtonari来客として1回という再生条件は※仮置き。ch5_unrecorded_day前後どちらでも読める想定。関係状態を確定せず、関係フラグは参照しない。素材で呼び方未確認のため呼びかけなし。一人称は僕。日数・行動回数消費は①待ち（Q11）。博士と9000に関するましろの知識を決めず、作らない日の椅子を言語化しない。"
     },
     {
+      "dialogue_id": "ch5_free_mashiro_visit_lover",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鈴の音が消えてから、紙袋の底に、小さな紙が入っているのに気づいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "丸い字で、二行だけ書いてある。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "『用事のついで、って言ったけど、ほんとは逆。顔を見るのが用事で、用事のほうがついで』"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "『お茶を淹れたら、僕のこと、ちょっとだけ思い出してねぇ』"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（……ずるいな。勝負の前なのに、顔がゆるむ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙をたたんで、エプロンのポケットにしまった。"
+        }
+      ],
+      "comment": "#2024 A2（2026-11-05 オーナー決定 (B)）。ましろが恋人のときだけ、ch5_free_mashiro_visit の末尾に続けて読む（ch5.js の readScene・ch5-progress.js の chapterFiveLoverEcho）。読了の確定は親場面と一緒。関係フラグは増やさず state.lovers だけを見る。お茶は「勝負のない日用」（lime_ch5_prep_mashiro）なので、一緒に飲む約束はしない。FIN10に合わせ、東京で会う約束もしない。一人称は僕。"
+    },
+    {
+      "dialogue_id": "ch5_free_mashiro_visit_lover_memory",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "たたんだ紙から、指先にお茶の匂いが移っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……ましろちゃんと過ごした夜のことを、思い出した）"
+        }
+      ],
+      "comment": "#2024 A2。恋人のましろに未読の節目（lover_mashiro_lv*）があるときだけ、ch5_free_mashiro_visit_lover の後に続けて読む。このあと ch5-daily.js が readLoverMilestone('mashiro') で節目を一つだけ再生する。節目の台本は東京（mukai）が舞台なので、第5章の東京にましろを出さない FIN10 と食い違わないよう、tonari で思い出す形でつなぐ（節目の本文・背景は変えない）。"
+    },
+    {
       "dialogue_id": "ch5_free_first_visitor",
       "lines": [
         {
