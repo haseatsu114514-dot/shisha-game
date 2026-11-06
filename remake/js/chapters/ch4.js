@@ -126,8 +126,9 @@ async function readScene(owner, id) {
   const actual = id === "ch4_final" && craft ? chapterFourFinalDialogue(source, state, craft)
     : id === "ch4_defeat" && craft ? chapterFourDefeatDialogue(source, state, craft) : source;
   const dialogue = { ...actual, metadata: { ...source.metadata, bg: "" } };
+  showScreen("none", null);
   hud();
-  await enterScene(bgUrl(CH4_SCENE_BG[id] || camelSceneBg(id) || CH4_EVENING_BG));
+  await setBg(bgUrl(CH4_SCENE_BG[id] || camelSceneBg(id) || CH4_EVENING_BG));
   if (!current(owner)) return false;
   playBgm(CH4_SCENE_BGM[id] || CH4_DEFAULT_BGM);
   // 読了のcheckpointまで保存を出さない。会話中のMENUは置かない。

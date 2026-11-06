@@ -454,6 +454,9 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 
 /* ---------------------------------------------------------------- モーダル */
 .modal-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(3px); }
+/* 閉じた画面の写し（#2688 F5）。#modal の一つ下に重ね、操作は受けない */
+.modal-ghost { position: absolute; inset: 0; z-index: 89; pointer-events: none; }
+.modal-ghost-box { position: absolute; box-sizing: border-box; pointer-events: none; }
 .modal-box {
   position: absolute;
   left: 50%;
@@ -595,6 +598,12 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .tr-dawn-rain { position: absolute; inset: 0; }
 .tr-dawn-rain i { position: absolute; top: -30%; width: 1.5px; background: linear-gradient(transparent, #dcd1f4aa); transform: rotate(18deg); }
 .tr-dawn-horizon { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: #dcd1f4; box-shadow: 0 0 18px 6px #dcd1f488; }
+/* 波: 時間が過ぎる（つなぎの一行・#2688 A9）。一行は波の上を左から滑ってくる */
+.tr-wave { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; }
+.tr-wave.veil { background: #34246a; opacity: 0; }
+.tr-wave-line { position: absolute; left: 0; right: 0; top: 320px; text-align: center; font-family: var(--font); font-size: 30px; font-weight: 700; letter-spacing: 0.14em; color: #fff; text-shadow: 0 2px 0 #34246a, 0 0 24px #1a1238; }
+/* 大会前夜の当日版: 地平線を金に寄せ、ゆっくり昇らせる（#2688 A10） */
+.tr-dawn-horizon.eve { height: 4px; background: #f6dcaf; box-shadow: 0 0 24px 10px #f5d99d77; }
 .tr-dawn-glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 110%, #fff3d6cc, transparent 60%); pointer-events: none; }
 
 /* マップ→場所の「移動」の型（core/transition-moves.js・CI103） */
@@ -612,6 +621,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .tr-noren-crest b { width: 190px; height: 190px; border-radius: 50%; border: 8px solid #dcd1f4; display: flex; align-items: center; justify-content: center; font-size: 104px; font-weight: 900; color: #dcd1f4; }
 .tr-noren-crest small { font-size: 30px; font-weight: 900; letter-spacing: 0.2em; padding-left: 0.2em; color: #dcd1f4; }
 .tr-walkdoor-leaf { transform-box: fill-box; transform-origin: left center; }
+.tr-umbrella-fold { position: absolute; inset: 0; background: #6b4fb0; }
 .tr-walkdoor-flood { position: absolute; inset: 0; background: radial-gradient(circle, #fffaf0, #fff1d2 60%, #f3d9a8); }
 
 .day-card {

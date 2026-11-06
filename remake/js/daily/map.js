@@ -111,6 +111,7 @@ function cueMove(shield, spot) {
     glyph: known ? spot.glyph || "" : "？",
     // 名前を伏せた行き先（会う前のクラブSEAM＝「地下の店」）では、到着時に店のロゴを見せない。
     anonymous: !known && !!spot.unknownLabel,
+    rain: isRainy(), // 雨の日の外出は傘の型（#2688 A15）
   });
 }
 

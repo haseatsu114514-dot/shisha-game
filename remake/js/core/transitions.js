@@ -5,7 +5,7 @@ import { el, sleep, nextFrame } from "./util.js";
 import { SE } from "./audio.js";
 import { W, H, COLOR, EASE, reducedMotion, svg, move, holdKeys } from "./transition-kit.js";
 import { moveCurtain, moveStyle } from "./transition-moves.js";
-import { state } from "./state.js";
+import { state, config } from "./state.js";
 import { createEntrySound } from "./entry-sound.js";
 import { withStoreArrival } from "./store-arrival.js";
 
@@ -43,6 +43,14 @@ export function takeSceneArrival() {
   return { cued, commitArrival: createEntrySound(cued?.kind === "place" ? cued.opts : null, state?.chapter, () => SE.doorbell()) };
 }
 
+// 「見た演出を短く」の記録。毎日見る幕（帰宅の扉・夜明け）は端末に残し、セーブの状態は変えない（scene-motions.js の乗り物と同じ）
+const DEVICE_SEEN = "suien_motion_seen";
+const deviceSeen = () => { try { return JSON.parse(localStorage.getItem(DEVICE_SEEN) || "{}") || {}; } catch { return {}; } };
+const motionSeen = (key) => !!deviceSeen()[key];
+const markMotionSeen = (key) => {
+  try { const seen = deviceSeen(); if (seen[key]) return; seen[key] = true; localStorage.setItem(DEVICE_SEEN, JSON.stringify(seen)); } catch { /* 保存できない環境では毎回フル */ }
+};
+
 // ---------------------------------------------------------------- 一筆: 指定のない背景の切り替え（標準の幕）
 
 // S字の縁を持つ帯（ローカル座標: x方向に波打ち、y方向に進む）。scene-plan-20261009 の一筆を1280×720へ縮めた形
@@ -77,7 +85,15 @@ export function createSceneCurtain(host, { fast = false, sceneArrival = takeScen
   const reduced = reducedMotion();
   const { cued, commitArrival: entry } = sceneArrival;
   const arrival = (curtain) => Object.assign(curtain, { commitArrival: entry });
-  if (cued?.kind === "place" && !fast && !reduced) return arrival(withStoreArrival(host, moveCurtain(host, moveStyle(cued.opts), cued.opts), cued.opts, { fast, reduced }));
+  if (cued?.kind === "place" && !fast && !reduced) {
+    let style = moveStyle(cued.opts);
+    // 「見た演出を短く」（config.shortSeen）: 2回目以降の帰宅は扉の代わりにピンの短い型（#2688 F9）。初回は必ず扉
+    if (style === "door") {
+      if (config.shortSeen && motionSeen("door")) style = "pin";
+      else markMotionSeen("door");
+    }
+    return arrival(withStoreArrival(host, moveCurtain(host, style, cued.opts), cued.opts, { fast, reduced }));
+  }
   const coverMs = reduced ? 90 : fast ? 150 : 340;
   const revealMs = reduced ? 90 : fast ? 170 : 400;
   const node = el("div.scene-curtain.stroke", { "aria-hidden": "true", style: { "--st-ms": `${coverMs}ms` }, dataset: { transition: reduced ? "fade" : "stroke" } });
@@ -109,6 +125,102 @@ export function createSceneCurtain(host, { fast = false, sceneArrival = takeScen
     }
   } };
   return arrival(cued?.kind === "place" ? withStoreArrival(host, curtain, cued.opts, { fast, reduced }) : curtain);
+}
+
+/** 短い一筆で覆って mid() を行い、開く。乗り物の演出を「見た演出を短く」で省くときなどに使う（#2688 F9） */
+export async function briefCover(mid, host = document.getElementById("fx")) {
+  const curtain = createSceneCurtain(host, { fast: true, sceneArrival: { cued: null, commitArrival: () => {} } });
+  try {
+    await curtain.covered;
+    return await mid?.();
+  } finally { await curtain.release(); }
+}
+
+// ---------------------------------------------------------------- 覆ったまま次の場面へ渡す
+
+// 時間が過ぎる波などが画面を覆ったまま、次の背景が出るまで待つ（#2688 A9）。次の ui.setBg がこの幕を受け取り、
+// 新しい背景を描いてから開く。次の背景が来なければ、受け取り待ちの上限で自分から開く。
+let parked = null;
+export function parkCover(release, { maxMs = 1500 } = {}) {
+  takeParkedCover()?.();
+  let done = false;
+  const once = async () => { if (done) return; done = true; clearTimeout(timer); if (parked === once) parked = null; await release(); };
+  const timer = setTimeout(once, maxMs);
+  parked = once;
+}
+/** 受け取る側（ui.setBg）。預かっている幕があれば、その開く関数を返して預かりを空にする。 */
+export function takeParkedCover() {
+  const release = parked;
+  parked = null;
+  return release;
+}
+
+// ---------------------------------------------------------------- 波: 時間が過ぎる（つなぎの一行・CI101）
+
+// 右の縁が3つの丸いこぶで膨らむ帯。左へ幅 w だけ伸びる（1280×720 の座標）
+function bumpBand(w = 2100, bulge = 190) {
+  const n = 3, step = 800 / n;
+  let d = `M ${-w} -40 L 0 -40 `;
+  for (let i = 0; i < n; i++) {
+    const y = -40 + i * step;
+    d += `C ${bulge} ${y}, ${bulge} ${y + step}, 0 ${y + step} `;
+  }
+  d += `L ${-w} 760 `;
+  for (let i = n - 1; i >= 0; i--) {
+    const y = -40 + i * step;
+    d += `C ${-w + bulge} ${y + step}, ${-w + bulge} ${y}, ${-w} ${y} `;
+  }
+  return d + "Z";
+}
+const WAVE = { from: -300, cover: 1320, to: 3480 };
+
+/**
+ * つなぎの一行（「夜、tonariに顔を出す──」など）を、丸い波に乗せて見せる（#2688 A9）。
+ * 夕方のピンクを先頭にした波が左から流れて画面を覆い、一行が波の上を滑ってくる。読み終えたら波は覆ったまま
+ * 次の場面へ預ける（parkCover）。dusk: false で夜の帰り道の色（ピンクなし・ゆっくり）。
+ * 戻り値は覆っている間に呼ぶ mid() の結果。動きを減らす設定では、紫の面と一行のフェード。
+ */
+export async function waveBeat(host, text, mid = null, { dusk = true } = {}) {
+  const reduced = reducedMotion();
+  const unhold = holdCover();
+  const node = el("div.tr-wave", { "aria-hidden": "true", dataset: { transition: "wave" } });
+  const line = el("div.tr-wave-line", { text, dataset: { test: "beat-line" } });
+  host.append(node);
+  let release = null;
+  try {
+    let mov = null;
+    if (reduced) {
+      node.classList.add("veil");
+      await move(node, [{ opacity: 0 }, { opacity: 1 }], 200, { easing: "ease" });
+    } else {
+      mov = svg("g", {}, [
+        svg("g", { transform: "translate(90 0)" }, [svg("path", { d: bumpBand(), fill: dusk ? COLOR.dusk : COLOR.lav })]),
+        svg("path", { d: bumpBand(), fill: dusk ? COLOR.purple : COLOR.deep }),
+      ]);
+      mov.style.transform = `translateX(${WAVE.from}px)`;
+      node.append(svg("svg", { viewBox: `0 0 ${W} ${H}`, class: "tr-svg", preserveAspectRatio: "xMidYMid slice" }, [mov]));
+      await nextFrame();
+      await move(mov, [{ transform: `translateX(${WAVE.from}px)` }, { transform: `translateX(${WAVE.cover}px)` }], dusk ? 480 : 620, { easing: EASE.in });
+    }
+    const result = mid ? await mid() : undefined;
+    node.append(line);
+    await move(line, [{ opacity: 0, transform: "translateX(-24px)" }, { opacity: 1, transform: "none" }], reduced ? 200 : 380, { easing: EASE.out });
+    await sleep(reduced ? 1100 : 950);
+    await move(line, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: reduced ? "none" : "translateX(40px)" }], 260, { easing: EASE.in });
+    line.remove();
+    release = async () => {
+      try {
+        await nextFrame(); await nextFrame();
+        if (mov) await move(mov, [{ transform: `translateX(${WAVE.cover}px)` }, { transform: `translateX(${WAVE.to}px)` }], dusk ? 560 : 700, { easing: EASE.out });
+        else await move(node, [{ opacity: 1 }, { opacity: 0 }], 200, { easing: "ease" });
+      } finally { node.remove(); unhold(); }
+    };
+    parkCover(release);
+    return result;
+  } finally {
+    // 途中で例外が出た場合だけ、ここで片付ける（通常は預けた幕が開くときに片付く）
+    if (!release) { node.remove(); unhold(); }
+  }
 }
 
 // ---------------------------------------------------------------- 波＋めくり: 就寝 → 翌朝
@@ -167,6 +279,26 @@ export async function nightToMorning(host, mid) {
     }
     const info = await mid();
     if (!info) return;
+    if (info.eve) {
+      // 大会・勝負の前夜（#2688 A10）: 日付はめくらず、長い夜のあと地平線がいつもより遅く昇る。DAYは当日の場面が出す。
+      if (reduced) {
+        await sleep(700);
+        await move(node, [{ opacity: 1 }, { opacity: 0 }], 400, { easing: "ease" });
+        return;
+      }
+      await sleep(900);
+      const horizon = el("div.tr-dawn-horizon.eve");
+      const glow = el("div.tr-dawn-glow");
+      node.append(horizon, glow);
+      move(glow, [{ opacity: 0 }, { opacity: 1, offset: 0.6 }, { opacity: 0 }], 1500, { easing: "ease-out" });
+      move(horizon, [{ bottom: "0%", opacity: 1 }, { bottom: "100%", opacity: 0.4 }], 1250, { easing: EASE.inOut });
+      await move(veil, [{ clipPath: "inset(0 0 0% 0)" }, { clipPath: "inset(0 0 100% 0)" }], 1250, { easing: EASE.inOut });
+      node.style.pointerEvents = "none";
+      return;
+    }
+    // 「見た演出を短く」（config.shortSeen）: 2回目以降の朝はめくりと間を詰める（#2688 F9）。初回は必ずフル。
+    const brief = !!config.shortSeen && motionSeen("dawn");
+    markMotionSeen("dawn");
     const dayFlip = flipNumber(info.day);
     // 最終日が決まっていない章（第5章の日程未定）は残り日数をめくらず、章の一言だけ出す。
     const leftFlip = info.left === null || info.left === undefined ? null : flipNumber(info.left);
@@ -192,7 +324,7 @@ export async function nightToMorning(host, mid) {
       await move(node, [{ opacity: 1 }, { opacity: 0 }], 300, { easing: "ease" });
       return;
     }
-    await move(card, [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], 320, { easing: EASE.out });
+    await move(card, [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], brief ? 200 : 320, { easing: EASE.out });
     if (info.sick) {
       card.animate([
         { transform: "skewX(0deg) scale(1)", filter: "blur(0)" },
@@ -201,13 +333,19 @@ export async function nightToMorning(host, mid) {
         { transform: "skewX(0deg) scale(1)", filter: "blur(0)" },
       ], { duration: 900, iterations: Infinity, easing: "ease-in-out" });
     }
-    await sleep(220);
-    SE.tick();
-    await Promise.all([flip(dayFlip), info.sick || !leftFlip ? null : sleep(90).then(() => flip(leftFlip))]);
-    await sleep(info.sick ? 1100 : 650);
+    if (brief && !info.sick) {
+      // めくらずに朝の数字だけを見せる
+      [dayFlip, leftFlip].filter(Boolean).forEach((s) => { s.firstChild.remove(); s.firstChild.style.transform = ""; s.firstChild.style.opacity = ""; });
+      await sleep(700);
+    } else {
+      await sleep(220);
+      SE.tick();
+      await Promise.all([flip(dayFlip), info.sick || !leftFlip ? null : sleep(90).then(() => flip(leftFlip))]);
+      await sleep(info.sick ? 1100 : 650);
+    }
     const horizon = el("div.tr-dawn-horizon");
     node.append(horizon);
-    const up = 760;
+    const up = brief && !info.sick ? 520 : 760;
     move(card, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-18px)" }], 300, { easing: EASE.in });
     wx?.fadeOut(up);
     move(horizon, [{ bottom: "0%", opacity: 1 }, { bottom: "100%", opacity: 0.5 }], up);

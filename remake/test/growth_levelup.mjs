@@ -19,7 +19,8 @@ assert.match(calendarSource, /\bconst\s+finalEve\s*=\s*\(\s*\)\s*=>\s*state\.day
 assert.match(nightFlow.slice(settlementAt, advanceAt), /\bawait\s+presentNight\s*\(\s*\{\s*evePlace\s*:\s*eve\s*\?[^;]*:\s*null\s*\}\s*\)/, "#1690: 大会前夜だけ内省場所evePlaceを精算へ渡す");
 assert.doesNotMatch(advanceDayBody, /\bpresentNight(?:Growth)?\s*\(/, "#1690: advanceDay内で精算せず、夜明けより前に済ませる");
 assert.match(advanceDayBody, /\bawait\s+dayTurn\s*\(/, "#1690: 精算後のadvanceDayで通常日の夜明けを演出する");
-assert.match(advanceDayBody, /\bawait\s+fadeBlack\s*\(/, "#1690: 精算後のadvanceDayで大会当日の暗転を行う");
+// #2688 A10: 大会・勝負の前夜は暗転ではなく、夜明けの幕の当日版（日付はめくらない）
+assert.match(advanceDayBody, /\bawait\s+dayTurn\s*\(\s*async\s*\(\)\s*=>\s*\{\s*wake\(\);\s*return\s*\{\s*eve:\s*true\s*\}/, "#1690: 精算後のadvanceDayで大会前夜の夜明け（当日版）を行う");
 
 globalThis.document ||= { addEventListener() {} };
 globalThis.window ||= {};

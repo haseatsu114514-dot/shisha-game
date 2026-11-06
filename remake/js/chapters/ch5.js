@@ -172,8 +172,9 @@ async function readScene(owner, id, { keepHud = false } = {}) {
     return DB.dialogues[echoId].lines;
   });
   const dialogue = { ...source, lines: [...lines, ...echo.flat()], metadata: { ...source.metadata, bg: "" } };
+  showScreen("none", null);
   if (!keepHud) hud(); // 日常ループ（#2033）の途中では、日常のHUDを消さない
-  await enterScene(bgUrl(CH5_SCENE_BG[id]));
+  await setBg(bgUrl(CH5_SCENE_BG[id]));
   if (!current(owner)) return false;
   // 節目だけ既存曲へ切り替える（#1668 2-7）。表に無い場面は tonari。
   playBgm(CH5_SCENE_BGM[id] || CH5_DEFAULT_BGM);
@@ -495,8 +496,9 @@ async function craftSecondCup(owner) {
 /** 場面として保存しない短い地の文（制作の合間）を読む。 */
 async function playLines(owner, id, lines) {
   if (!current(owner)) return false;
+  showScreen("none", null);
   hud();
-  await enterScene(bgUrl(CH5_SCENE_BG[CH5_MATCH_SCENES.beforeSecond]));
+  await setBg(bgUrl(CH5_SCENE_BG[CH5_MATCH_SCENES.beforeSecond]));
   if (!current(owner)) return false;
   const controller = new AbortController();
   owner.controller = controller;
