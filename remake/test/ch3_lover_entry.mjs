@@ -183,6 +183,15 @@ await check('a confession held over the departure prep and Tokyo/Dubai nights re
   // 第2章（地元）は今までどおり
   at(2, { _ch2_day1: { startDay: 69 }, _ch2_region: 'home' });
   assert.equal(f.romance.confessionHeld(), false, 'chapter 2 at home');
+  // ドバイに住むヌールの告白は砂丘の夕日だけ（DSR20）。第5章の地元の夜の帰り道には出さない。
+  f.db.dialogues.confession_noor = { dialogue_id: 'confession_noor', lines: [{ speaker: '', text: '…' }] };
+  const n = f.chapterAt(5, [], { day: 80, flags: { _ch5: { startDay: 65, part: 'free' }, _ch2_region: 'home' } });
+  n.romanceChoices = { bond_q2_noor: { char: 'noor', value: 1 } };
+  n.finales = { noor: { day: 60, chapter: 4, route: 'romance' } };
+  n.slot = 2;
+  f.plays.length = 0;
+  assert.equal(await f.romance.maybeConfession(async () => {}), false, 'no night-walk confession for Noor');
+  same(f.plays, []);
 });
 
 await check('samechan date gap counts elapsed days on _elapsed_calendar saves; legacy chapter-local saves keep the 14-day offset', async f => {

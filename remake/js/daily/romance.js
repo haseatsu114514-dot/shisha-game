@@ -122,7 +122,8 @@ const cheatScene = (id) => ({
 
 // 告白の台本が自分の場面を持つ相手（daily/bonds.js の BOND_FINALES.ownConfession）。夜の帰り道では始めない。
 // ましろは第3章の寄り道（休日の部屋。chapters/ch3-story-wiring.js の confession_mashiro・IR20）だけで告白する。
-const OWN_CONFESSION_SCENE = Object.freeze(["mashiro"]);
+// ヌールは第4章ドバイの砂丘の夕日（chapters/ch4-desert.js の confession_noor・DSR20）だけで告白する。
+const OWN_CONFESSION_SCENE = Object.freeze(["mashiro", "noor"]);
 const nightWalkConfession = (id) => !OWN_CONFESSION_SCENE.includes(id) && romanceRouteOpen(id);
 
 /**

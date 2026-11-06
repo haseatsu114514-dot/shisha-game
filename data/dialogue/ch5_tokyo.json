@@ -35,7 +35,7 @@
       "lines": [
         { "speaker": "", "face": "", "text": "東京店で箱を降ろし終えて、高架下のmukaiの戸を開けた。コーヒーの匂いがする。" },
         { "speaker": "mukai_master", "face": "normal", "text": "はじめくん。久しぶりだな" },
-        { "speaker": "hajime", "face": "smile", "text": "ご無沙汰してます。しばらく、こっちの店も見て回りたくて" },
+        { "speaker": "hajime", "face": "smile", "text": "ご無沙汰してます。店を後輩に任せて、こっちの店も見て回りたくて" },
         { "speaker": "mukai_master", "face": "normal", "text": "泊まる所は決めてるのか" },
         { "speaker": "hajime", "face": "normal", "text": "まだです。これから探そうかと" },
         { "speaker": "mukai_master", "face": "smile", "text": "上の屋根裏が空いてる。好きなだけ使えばいい" },

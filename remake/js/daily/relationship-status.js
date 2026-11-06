@@ -9,7 +9,7 @@ import { hiyoriFinaleReady } from "../core/hiyori-route.js";
 const meetingPlace = {
   sumi: "tonari", tsumugi: "tonari", naru: "KEMURIKUSA", adam: "EDEN",
   rio: "夜のDr.fookahの2階", minto: "PEPPERMINT", hiyori: "tonari", samechan: "SHISHARK", ageha: "MELTY PUFF",
-  kumicho: "神崎煙草店", rei: "零-ZERO-", mashiro: "mukai", saku: "煙幕",
+  kumicho: "神崎煙草店", rei: "零-ZERO-", mashiro: "mukai", saku: "煙幕", noor: "カフェ・サーリム",
 };
 const summary = (kind, label, hint) => ({ kind, label, hint });
 
@@ -52,6 +52,7 @@ export function relationshipStatus(id) {
   }
   if (romanceRouteOpen(id)) {
     if (id === "mashiro") return summary("romance", "告白を選べる", "寄り道から、休日にましろの部屋でお茶をする日へ。");
+    if (id === "noor") return summary("romance", "告白を選べる", "次の砂丘（ツアー代なし）で、滑ったあとの夕日の時間へ。");
     // 出発前の準備・東京・ドバイでは帰り道の告白を始めない（romance.js の confessionHeld・IR33）
     return summary("romance", "告白を選べる", confessionHeld()
       ? "出発前と遠出のあいだは胸にしまっておく。帰ってから、夜の帰り道で伝えられる。"
