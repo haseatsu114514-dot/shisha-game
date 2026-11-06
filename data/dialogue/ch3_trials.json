@@ -4,7 +4,7 @@
       "dialogue_id": "ch3_trial_saku_intro",
       "lines": [
         { "speaker": "", "text": "mukaiの作業台。営業前の店は、まだ炭の匂いも薄い。" },
-        { "speaker": "mashiro", "face": "normal", "text": "はじめくん、朔の店で言ってたよね。自分の台で、もう一度確かめるって" },
+        { "speaker": "mashiro", "face": "normal", "text": "はじめくん、陣の店で言ってたよね。自分の台で、もう一度確かめるって" },
         { "speaker": "hajime", "face": "normal", "text": "うん。炭の順番で、思い出すものが変わるって話" },
         { "speaker": "hajime", "face": "serious", "text": "聞いただけだと、まだ自分の手の話になってない気がする" },
         { "speaker": "mashiro", "face": "smile", "text": "じゃあ、一台作ってみよ。僕、後半まで吸って確かめるねぇ" },
@@ -31,7 +31,7 @@
           { "speaker": "hajime", "face": "serious", "text": "後半、急いだかも。どこで変わったか、覚えとく" }
         ],
         "failed": [
-          { "speaker": "", "text": "客席へ出す前に、ましろちゃんが一口確かめた。" },
+          { "speaker": "", "text": "客席へ出す前に、ましろが一口確かめた。" },
           { "speaker": "mashiro", "face": "sad", "text": "これは、まだお客さんには出せないねぇ" },
           { "speaker": "hajime", "face": "sad", "text": "……うん。どこで崩れたか、分かる気はする" },
           { "speaker": "mashiro", "face": "normal", "text": "分かるなら、今日作った意味はあったよ" }
