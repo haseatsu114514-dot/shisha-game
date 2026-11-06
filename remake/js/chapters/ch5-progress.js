@@ -72,7 +72,7 @@ export const CH5_SCENE_BG = Object.freeze({
   epilogue_mashiro: "bg_tonari_inside_night",        // 仮置き bg
   epilogue_samechan: "bg_tonari_inside_night",       // 仮置き bg
   epilogue_hiyori: "bg_tonari_inside_night",         // 仮置き bg
-  epilogue_noor: "bg_tonari_inside",                 // 台本の「別の日の夕方。tonari」
+  epilogue_noor: "bg_tonari_inside",                 // 台本の「夕方のtonari」
   ending_daily_smoke: "bg_tonari_inside",            // 台本メタデータの指定（bg_tonari_inside）に一致
   ending_salaryman_name: "bg_tonari_inside_night",
   // スタッフロールの後の修羅場（IR32）。台本の「後日のtonari。閉店後の店」に合わせて夜の tonari。
