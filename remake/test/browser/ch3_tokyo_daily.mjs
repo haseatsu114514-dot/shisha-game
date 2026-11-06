@@ -1,5 +1,6 @@
 // 第3章の東京14日を日常ループで遊ぶ（VOL03・版3）。出発の朝（東京DAY1）から、
-// DAY1の受付→mukaiの扉（昼・夜の行動を使う本筋）→ DAY2の初出勤（昼）→ 夜の行動で mukai へ（手伝い→帰りに裏口のてつこ）
+// DAY1の受付→mukaiの扉（昼・夜の行動を使う本筋）→ DAY2の初出勤（昼）→ 夜の行動で mukai へ（手伝い→帰りに裏口のてつこ。
+// てつこといっしょ（#2454）の画面と、短い「少し構っていく」の両方）
 // → 夜の本筋（肩に残る勝利）→ 奥の部屋で寝る → DAY3 の朝、を実UIで通す。途中で保存→リロードし、同じ時間帯から再開する。
 // HUD は TOKYO、地図は東京。帰り道の地元向けの一言は出ない。
 import assert from "node:assert/strict";
@@ -27,9 +28,9 @@ async function loadSlot(page, slot = 0) {
   await page.locator(dt(`slot-${slot}`)).click();
 }
 
-async function seed(page) {
+async function seed(page, extraFlags = {}) {
   page.setDefaultTimeout(30000);
-  await page.evaluate(async () => {
+  await page.evaluate(async extraFlags => {
     const core = await import("./js/core/state.js");
     const progress = await import("./js/chapters/ch3-progress.js");
     const value = core.newGame();
@@ -44,6 +45,7 @@ async function seed(page) {
     value.day += 3;
     if (!progress.departChapterThree(value)) throw new Error("Departure failed");
     value.flags._ch3_intro.titleSeen = true;
+    Object.assign(value.flags, extraFlags);
     // 辻占のオババ（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、この章の出現は済んだことにする。
     const fortune = await import("./js/daily/fortune-schedule.js");
     const fortunePlan = fortune.fortunePlan({ seed: value.seed, chapter: 3 });
@@ -52,7 +54,7 @@ async function seed(page) {
     core.saveConfig();
     Object.assign(core.state, value);
     core.save();
-  });
+  }, extraFlags);
 }
 
 await suite("ch3-tokyo-daily", async check => {
@@ -114,17 +116,16 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(state.flags._ch2_region, "tokyo", "The night is spent in Tokyo");
   });
 
-  // #2454: 裏口の選択に「てつこといっしょ」がある。選ぶと準備中の画面が出て、「帰る」で日常ループへ戻る。
-  // 入口の土台なので何も確定しない: 回復・来訪・好感度・フラグ・時間は動かず、既存の「少し構っていく」
-  // （回復+12・来訪加算）とは別物。シフトの報酬だけが残る（二重回復・二重来訪は起きない）。
-  await check("tetsuko-time-entry-opens-a-placeholder-and-grants-nothing", async page => {
+  // #2454 てつこといっしょ: 裏口の選択の先頭。初めてなら既存の段階会話（初回）を読んでから、ふれあいの画面へ。
+  // なでる・見守るをして「帰る」と、同じ処理の中で回復12・来訪1回・_tetsuko_time を確定する（二重にならない）。
+  // 好感度・能力・お金・時間は動かさない（お金はシフトの日当だけ）。
+  await check("tetsuko-time-first-visit-reads-the-stage-scene-and-settles-once", async page => {
     await seed(page);
     await loadSlot(page, 0);
     await page.locator(dt("rule-sheet")).waitFor({ timeout: 60000 });
     await page.locator(dt("rule-sheet-close")).click();
     await tokyoMap(page, { day: 33, slot: 1 });
     const before = await get(page);
-    // 夜: mukai で手伝う → 帰りの裏口で「てつこといっしょ」を選ぶ。
     await go(page, "ch3_tokyo_mukai");
     const help = page.locator(`#modal.show button`, { hasText: "シフトに入る" });
     await help.waitFor();
@@ -132,26 +133,117 @@ await suite("ch3-tokyo-daily", async check => {
     await page.locator(dt("mukai-order-0")).waitFor({ timeout: 60000 });
     await page.locator(dt("mukai-order-0")).click();
     await page.locator(dt("tokyo-tetsuko-game")).waitFor({ timeout: 60000 });
-    // 選択肢のラベルにも準備中であることを出す（オーナー判断 2026-11-04）。
-    assert.equal((await page.locator(dt("tokyo-tetsuko-game")).innerText()).trim(), "てつこといっしょ（準備中）",
-      "The choice label says the game is in preparation");
+    assert.equal((await page.locator(dt("tokyo-tetsuko-game")).innerText()).trim(), "てつこといっしょ", "The game is no longer marked as in preparation");
+    assert.equal((await page.locator(dt("tokyo-tetsuko-yes")).innerText()).trim(), "少し構っていく（短く）", "The short care path stays");
+    const mid = await get(page);
     await page.locator(dt("tokyo-tetsuko-game")).click();
-    // 準備中の画面（タイトル・準備中の表示・帰るボタン）。
+    // 初回の段階会話（撫でる／餌の選択は先頭を選ぶ）→ ふれあいの画面。
     const screen = page.locator(dt("tetsuko-time-screen"));
     await screen.waitFor({ timeout: 60000 });
-    const text = await screen.innerText();
-    assert.match(text, /てつこといっしょ/, "The placeholder shows the title");
-    assert.match(text, /準備中/, "The placeholder tells the player it is in preparation");
-    assert.equal(await page.locator(dt("tetsuko-time-back")).count(), 1, "There is a back button");
-    // 帰る → 日常ループに戻り、夜の本筋 → DAY3 → 夜の地図へ、普段どおり続く。
+    assert.equal(await screen.getAttribute("data-stage"), "0", "First visit: still keeping her distance");
+    assert.match(await page.locator(dt("tetsuko-mood")).innerText(), /今日は/);
+    assert((await page.locator(dt("tetsuko-caption")).innerText()).trim().length > 0, "She reacts as soon as the screen opens");
+    assert.equal(await page.locator(dt("tetsuko-brush")).isDisabled(), true, "The brush waits until Mukai's brush scene");
+    assert.equal((await get(page)).flags._ch3_outings.tetsuko, undefined, "Nothing is settled while the screen is open");
+    await page.locator(dt("tetsuko-pet")).click();
+    await page.locator(dt("tetsuko-watch")).click();
+    await page.locator(dt("tetsuko-note")).filter({ hasText: "前足をそろえる" }).waitFor();
+    // 二重押ししても確定は一度だけ。
+    await page.locator(dt("tetsuko-time-back")).click();
+    await page.locator(dt("tetsuko-time-back")).click({ timeout: 500 }).catch(() => {});
+    await page.waitForFunction(() => window.__remake.state.flags._ch3_outings?.tetsuko === 1, null, { timeout: 30000 });
+    const settled = await get(page);
+    const maximum = await page.evaluate(async () => (await import("./js/core/stats.js")).maxStamina());
+    assert.equal(settled.stamina, Math.min(maximum, mid.stamina + 12), "Stamina comes back by 12 (within the cap)");
+    const record = settled.flags._tetsuko_time;
+    assert(record.found.includes("paws_together"), "The moment is kept in the book without a photo");
+    assert.equal(record.sessions, 1);
+    assert.equal(record.lastKey, `3:33:1:0`, "The visit key comes from the mukai visit");
+    assert.deepEqual(settled.affinity, mid.affinity, "No affinity from the cat");
+    assert.deepEqual(settled.stats, mid.stats, "No stats from the cat");
+    assert.equal(settled.money, mid.money, "No money from the cat");
+    await tokyoMap(page, { day: 34, slot: 1 });
+    const after = await get(page);
+    assert.equal(after.flags._ch3_outings.tetsuko, 1, "Counted once");
+    assert.equal(after.flags._ch3_outings.mukai_help, 1, "The shift still counted exactly once");
+    assert.equal(after.money, before.money + 6000, "Only the shift pay changed money");
+    assert.equal(await page.locator(dt("tetsuko-time-screen")).count(), 0, "The screen is gone after returning");
+  });
+
+  // 懐いた後（来訪4回以上）は会話を挟まずに画面へ。何もせず「帰る」と、何も確定しない（回復・来訪・記録なし）。
+  await check("tetsuko-time-leaving-without-touching-commits-nothing", async page => {
+    await seed(page, { _ch3_outings: { tetsuko: 4 } });
+    await loadSlot(page, 0);
+    await page.locator(dt("rule-sheet")).waitFor({ timeout: 60000 });
+    await page.locator(dt("rule-sheet-close")).click();
+    await tokyoMap(page, { day: 33, slot: 1 });
+    await go(page, "ch3_tokyo_mukai");
+    const help = page.locator(`#modal.show button`, { hasText: "シフトに入る" });
+    await help.waitFor();
+    await help.click();
+    await page.locator(dt("mukai-order-0")).waitFor({ timeout: 60000 });
+    await page.locator(dt("mukai-order-0")).click();
+    await page.locator(dt("tokyo-tetsuko-game")).click({ timeout: 60000 });
+    const screen = page.locator(dt("tetsuko-time-screen"));
+    await screen.waitFor({ timeout: 60000 });
+    assert.equal(await page.locator("#vn.show, body.vn-open").count(), 0, "No stage scene after she already trusts you");
+    assert.equal(await screen.getAttribute("data-stage"), "3", "An old save that reached her lap starts close");
+    const mid = await get(page);
     await page.locator(dt("tetsuko-time-back")).click();
     await tokyoMap(page, { day: 34, slot: 1 });
     const after = await get(page);
-    assert.equal(after.flags._ch3_outings.tetsuko, undefined, "The game option counts no tetsuko visit");
-    assert.equal(after.flags._ch3_outings.mukai_help, 1, "The shift still counted exactly once");
-    assert.equal(after.money, before.money + 6000, "Only the shift pay changed money; the game adds nothing");
-    assert.equal(await page.locator(dt("tetsuko-time-screen")).count(), 0, "The placeholder is gone after returning");
-    assert.equal(await page.locator('.map:not(.done) [data-test="pin-ch3_tokyo_mukai"]').count(), 1, "The Tokyo map is back");
+    assert.equal(after.flags._ch3_outings.tetsuko, 4, "No visit is counted");
+    assert.equal(after.flags._tetsuko_time, undefined, "Nothing is written");
+    assert.equal(mid.flags._ch3_outings.tetsuko, 4);
+  });
+
+  // #2454 UI v2: 道具箱から箱を選んで床に置く／猫じゃらしを指で動かすと前足が出る／てつこ手帳に残る。
+  // 帰ると配置と発見が _tetsuko_time に残り、回復・来訪は一度だけ。
+  await check("tetsuko-time-toolbox-toy-drag-and-notebook", async page => {
+    await seed(page, { _ch3_outings: { tetsuko: 5 } });
+    await loadSlot(page, 0);
+    await page.locator(dt("rule-sheet")).waitFor({ timeout: 60000 });
+    await page.locator(dt("rule-sheet-close")).click();
+    await tokyoMap(page, { day: 33, slot: 1 });
+    await go(page, "ch3_tokyo_mukai");
+    const help = page.locator(`#modal.show button`, { hasText: "シフトに入る" });
+    await help.waitFor();
+    await help.click();
+    await page.locator(dt("mukai-order-0")).waitFor({ timeout: 60000 });
+    await page.locator(dt("mukai-order-0")).click();
+    await page.locator(dt("tokyo-tetsuko-game")).click({ timeout: 60000 });
+    const screen = page.locator(dt("tetsuko-time-screen"));
+    await screen.waitFor({ timeout: 60000 });
+    // もようがえ: 箱を選ぶと置ける場所が光り、床をタップすると置ける。
+    await page.locator(dt("tetsuko-decor")).click();
+    await page.locator(dt("tetsuko-decor-panel")).waitFor();
+    await page.locator(dt("tetsuko-item-box")).click();
+    assert.equal(await page.locator(dt("tetsuko-slot-floor")).getAttribute("data-allowed"), "true", "The floor lights up for the box");
+    await page.locator(dt("tetsuko-slot-floor")).click();
+    assert.equal(await page.locator('.tt-slot[data-slot="floor"]').getAttribute("data-prop"), "box", "The box is on the floor");
+    await page.locator(dt("tetsuko-panel-close")).click();
+    // 猫じゃらし: 持ち替えて、先を指（マウス）で動かす。動かすたびに振ったことになり、3回目で前足が出る。
+    await page.locator(dt("tetsuko-play")).click();
+    assert.equal(await screen.getAttribute("data-tool"), "toy");
+    const box = await screen.boundingBox();
+    const at = (x, y) => [box.x + x * box.width / 1280, box.y + y * box.height / 720];
+    for (const [x, y] of [[700, 380], [880, 300], [620, 280], [860, 420], [600, 360], [820, 300]]) {
+      await page.mouse.move(...at(x, y), { steps: 5 });
+      await page.waitForTimeout(520);
+    }
+    await page.waitForFunction(() => document.querySelector('[data-test="tetsuko-caption"]')?.textContent.length > 0);
+    // てつこ手帳: 見つけたしぐさが記録されている。
+    await page.locator(dt("tetsuko-book")).click();
+    await page.locator(dt("tetsuko-book-panel")).waitFor();
+    assert.equal(await page.locator(dt("tetsuko-book-first_paw")).getAttribute("data-found"), "true", "The first paw is in the notebook");
+    await page.locator(dt("tetsuko-panel-close")).click();
+    await page.locator(dt("tetsuko-time-back")).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch3_outings?.tetsuko === 6, null, { timeout: 30000 });
+    const after = await get(page);
+    assert.equal(after.flags._tetsuko_time.props.floor, "box", "The box stays where it was put");
+    assert(after.flags._tetsuko_time.found.includes("first_paw"), "Dragging the toy found the first paw");
+    await tokyoMap(page, { day: 34, slot: 1 });
+    assert.equal((await get(page)).flags._ch3_outings.tetsuko, 6, "Counted once");
   });
 
   // VOL10: 東京にいる間、LIMEを交換したムカイさんから、最後のシフトから3日あいた日にシフトの誘いが届く。

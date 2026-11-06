@@ -34,6 +34,7 @@ import { loverMilestonesDue, readLoverMilestone, pendingLoverLime } from "./love
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { runMukaiShift, loadMukaiShift, MUKAI_PAY, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
 import { addRoamerSpots } from "../daily/roamers.js";
+import { openTetsukoTime, settleTetsukoTime, tetsukoVisitKey } from "../minigames/tetsuko-time.js";
 
 export const TOKYO = "tokyo";
 const BG = name => bgUrl(name, timeOfDay());
@@ -594,31 +595,45 @@ async function readMashiroBond(kind, staminaGuard, owner) {
 }
 
 /**
- * 帰りに裏口のてつこへ（行動を使わない）。会うかどうか・どう過ごすかを選べる。
- * 「少し構っていく」は既存のまま（4段階＋巡回の会話・回復+12・来訪加算。#1993）。
- * 「てつこといっしょ」は新しいミニゲームの入口の土台（#2454）。いまは準備中の画面を見せるだけで、
- * 回復・来訪・好感度・フラグ・時間は一切動かさない（正ゲームは別途実装）。
+ * 帰りに裏口のてつこへ（行動を使わない）。会うかどうか・どう過ごすかを選べる（#2454 実装計画 §1）。
+ * 「てつこといっしょ」: 来訪4回未満なら既存の段階会話を先に読み（関係進展の正本）、ふれあいの画面へ。
+ * 「少し構っていく（短く）」: これまでどおり台本だけ読む（懐いた後の巡回3本もこちらで読める）。
+ * どちらも同じ確定点 settleTetsukoTime を通る（回復12・来訪+1・_tetsuko_time）。同じ mukai 訪問で裏口は一度しか
+ * のぞかないうえ、訪問キーで二重の確定を止める。好感度・能力・お金・時間は動かさない。
  */
 async function offerTetsuko(owner) {
   const outing = outingById("tetsuko");
   if (!outing) return;
   const pick = await modal({ title: "裏口のてつこ", body: "帰りに裏口をのぞくと、看板猫のてつこがベンチで丸くなっている。",
     options: [
-      { label: "少し構っていく", value: "care", test: "tokyo-tetsuko-yes", primary: true },
-      { label: "てつこといっしょ（準備中）", value: "game", test: "tokyo-tetsuko-game" },
+      { label: "てつこといっしょ", value: "game", test: "tokyo-tetsuko-game", primary: true },
+      { label: "少し構っていく（短く）", value: "care", test: "tokyo-tetsuko-yes" },
       { label: "今日はそっとしておく", value: null, test: "tokyo-tetsuko-no" },
     ] });
   if (!pick || state !== owner) return;
-  // てつこといっしょ（#2454）: ミニゲームの入口の土台。準備中の画面を見せて帰るだけ。保存は変えない。
-  if (pick === "game") { await playTetsukoTime(owner); return; }
+  const visitKey = tetsukoVisitKey(state);
+  if (pick === "game") { await playTetsukoTime(outing, visitKey, owner); return; }
   if (!await readPlain(outingDialogueId(state, outing), outing.bg || "bg_street", owner)) return;
-  addStamina(outing.stamina);
-  state.flags[OUTINGS_FLAG] = { ...outingCounts(state), tetsuko: (outingCounts(state).tetsuko || 0) + 1 };
-  toast(outing.toast || "てつこに、少し元気をもらった", { kind: "good" });
+  settleTetsukoVisit(outing, { meaningful: true, visitKey });
 }
 
-/** 「てつこといっしょ」を開く（#2454・ミニゲームの入口の土台）。準備中の画面を見せるだけで保存は変えない。 */
-async function playTetsukoTime(owner) {
-  const { openTetsukoTime } = await import("../minigames/tetsuko-time.js");
-  await openTetsukoTime({ isCurrent: () => state === owner });
+/** 「てつこといっしょ」（#2454）: 段階会話（来訪4回未満だけ）→ ふれあいの画面 → 確定。 */
+async function playTetsukoTime(outing, visitKey, owner) {
+  const bg = outing.bg || "bg_street";
+  const stageRead = (outingCounts(state).tetsuko || 0) < outing.stages.length;
+  if (stageRead && !await readPlain(outingDialogueId(state, outing), bg, owner)) return;
+  if (state !== owner) return;
+  const result = await openTetsukoTime({ value: state, visitKey, bg: BG(bg), isCurrent: () => state === owner });
+  if (state !== owner) return;
+  // 段階会話を読み終えていれば、画面ですぐ帰っても会話の分は確定する（「少し構っていく」と同じ）。
+  settleTetsukoVisit(outing, { ...result, visitKey, meaningful: stageRead || !!result?.meaningful });
+}
+
+/** 確定と回復を同じ処理の中で行う（確定しなければ何も変えない）。 */
+function settleTetsukoVisit(outing, result) {
+  const settled = settleTetsukoTime(state, result);
+  if (!settled.committed) return false;
+  addStamina(settled.stamina);
+  toast(outing.toast || "てつこに、少し元気をもらった", { kind: "good" });
+  return true;
 }
