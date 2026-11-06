@@ -7,7 +7,7 @@ import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../js/', import.meta.url));
 const sourceRoot = process.env.AFFINITY_SOURCE_ROOT || root;
-const realPaths = ['core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/phone.js','daily/invitations.js','core/chapter-clock.js','core/chapter-features.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
+const realPaths = ['core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/phone.js','daily/invitations.js','core/chapter-clock.js','core/chapter-features.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js','chapters/ch4-desert-progress.js','minigames/desert-ride-model.js'];
 const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rio','ch1_bonds','samechan','hiyori','lover_events','confession','cinema'];
 const data = scripts.map(name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))));
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -670,6 +670,53 @@ await check('Ayatori (#2028): chapter 3 finale after the LIME detour and the ans
   after.day += 10;
   const lime = f.bonds.friendMessages({ sceneChapter: true });
   assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['saku', 'chat']], 'chat only on the scene-card chapters');
+});
+await check('Noor (DSR20): chapter 4 cafe finale after the cafe stages and the ♥3 question, then her own sunset confession', async f => {
+  const desert = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch4_desert.json', import.meta.url))).dialogues;
+  for (const d of desert) f.db.dialogues[d.dialogue_id] = d;
+  const gear = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json', import.meta.url))).equipment.find(e => e.id === 'suyaki_noor');
+  assert.equal(gear.gift.from, 'noor');
+  assert.equal(gear.gift.flavor, 'double_apple');
+  f.db.equipById.suyaki_noor = gear;
+  f.db.flavorById.double_apple = { id: 'double_apple' };
+  const { bonds, romance } = f;
+  assert.equal(bonds.BOND_FINALES.noor.gift, 'suyaki_noor');
+  assert.equal(bonds.BOND_FINALES.noor.question, 'bond_q2_noor');
+  assert.equal(bonds.BOND_FINALES.noor.ownConfession, true);
+  const s = f.core.state; s.chapter = 4; s.met.noor = true; s.affinity.noor = 66;
+  assert.equal(bonds.finaleDue('noor'), false, 'the cafe stages come first');
+  s.flags._ch4_desert = { v: 2, talks: 6, chats: 0, lastTalkDay: 3, outings: 1, lastOutingDay: 2 };
+  assert.equal(bonds.finaleDue('noor'), false, 'the ♥3 question comes first');
+  s.romanceChoices.bond_q1_noor = { char: 'noor', value: 1, day: 3 };
+  s.flags._noor_affinity_question_done = true;
+  s.affinity.noor = 65; assert.equal(bonds.finaleDue('noor'), false, 'needs ♥5');
+  s.affinity.noor = 66; assert.equal(bonds.finaleDue('noor'), true);
+  s.chapter = 5; assert.equal(bonds.finaleDue('noor'), false, 'Cafe Salim is only on the chapter 4 map');
+  assert.equal(await bonds.playFinale('noor'), false); s.chapter = 4;
+  assert.equal(bonds.romanceOpen('noor'), true, 'the last question is asked only while every answer leans romantic');
+  // 最後の問いで「二人で」を選ぶ（engine の onChoice → recordRomanceChoice）
+  f.setPlay(async () => { bonds.recordRomanceChoice({ id: 'bond_q2_noor', romance_char: 'noor' }, { romance: 1 }); return done; });
+  assert.equal(await bonds.playFinale('noor'), true);
+  assert.equal(s.finales.noor.route, 'romance');
+  assert.equal(s.flags._confession_due, undefined, 'no night-walk reservation: the sunset dunes carry the confession');
+  assert.equal(s.owned.filter(id => id === 'suyaki_noor').length, 1);
+  assert.equal(romance.romanceRouteOpen('noor'), true);
+  // 告白の返事は選択肢の next_id で入る場面（romance.js の onDialogueEnter が confession_<id>_accept で付き合う）
+  const choice = f.db.dialogues.confession_noor.lines.find(line => line.type === 'choice');
+  assert.deepEqual(clone(choice.choices.map(c => c.next_id)), ['confession_noor_accept', 'confession_noor_reject']);
+  assert.equal(f.db.dialogues.confession_noor_accept.metadata.set_romance, 'noor');
+  s.lovers.push('noor');
+  assert.equal(romance.romanceRouteOpen('noor'), false);
+  assert.equal(await bonds.playFinale('noor'), false, 'once');
+  // 友情寄りに答えた相手は、最後の問いを出さず友人の着地
+  const g = f.fresh(); g.chapter = 4; g.affinity.noor = 66;
+  g.flags._ch4_desert = { v: 2, talks: 6, chats: 0, lastTalkDay: 3, outings: 0, lastOutingDay: null };
+  g.romanceChoices.bond_q1_noor = { char: 'noor', value: 0, day: 3 }; g.flags._noor_affinity_question_done = true;
+  assert.equal(bonds.romanceOpen('noor'), false);
+  f.setPlay(async () => done);
+  assert.equal(await bonds.playFinale('noor'), true);
+  assert.equal(g.finales.noor.route, 'friend');
+  assert.equal(romance.romanceRouteOpen('noor'), false);
 });
 
 // IR23: ヴォルク・シェイク・太陽も通って♥5に届く（授業 M-W5・M-W8・M-B6 の♥5は下げない）。値は各行き先と同じ
