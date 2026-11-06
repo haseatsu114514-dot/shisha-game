@@ -1,7 +1,7 @@
 import { spendableMoney } from "../core/travel-budget.js";
 // 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep, yen } from "../core/util.js";
-import { layers, dayCard, dayTurn, modal, toast, bannersIdle, setBg, refreshWeather, dropRetired } from "../core/ui.js";
+import { layers, dayCard, dayTurn, modal, toast, bannersIdle, setBg, refreshWeather, dropRetired, gainCard } from "../core/ui.js";
 import { waveBeat } from "../core/transitions.js";
 import { state, save, markMet } from "../core/state.js";
 import { openMenu as openFullMenu } from "./menu.js";
@@ -39,6 +39,7 @@ import { roamerAt, meetRoamer } from "./roamers.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
 import { presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
+import { takeChapterBoardNotice, chapterBoardCards, respecMapNotice } from "../core/growth-chapter-notice.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -100,6 +101,8 @@ export async function runDaily(def) {
       await morning();
       save();
     }
+    // 章が変わって最初の日常の朝: 盤に増えたスキルと、組み直せることを知らせる（SPEC 6.3・11章。章・周回ごとに一度）
+    announceChapterBoard();
     if (state.chapter === 1 && state.day === 1 && state.slot === 0 && !state.flags._errand_scout_done) {
       await day1Errands();
       save();
@@ -168,6 +171,13 @@ function countdownText() {
   const left = daysLeft();
   if (left === null) return chapterDef?.undatedNote || "";
   return `${chapterDef?.tournamentName || "SMOKE CROWN CUP"} まで あと${left}日`;
+}
+
+function announceChapterBoard() {
+  const cards = chapterBoardCards(takeChapterBoardNotice(state));
+  if (!cards.length) return;
+  for (const card of cards) gainCard(card);
+  save();
 }
 
 async function morning() {
@@ -548,8 +558,10 @@ async function takeAction() {
   const visitBlock = spot => fixedNightVisitBlock(chapterDef.nightEvents, spot);
   const ev = nightPlan(chapterDef.nightEvents)[0];
   syncSamechanKnowledge();
+  const mapOptions = chapterDef.mapOptions?.() || {};
   const spotId = await chooseSpot({
-    ...chapterDef.mapOptions?.(),
+    ...mapOptions,
+    reminder: mapOptions.reminder || respecMapNotice(state), // 組み直しが開いている間の一言（SPEC 5.2。上の帯はピンと重なるので右下の案内に添える）
     visitBlock,
     eventPin: ev && !ev.done?.() ? ev.pin : null,
     onShown: () => {

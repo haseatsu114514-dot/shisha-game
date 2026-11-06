@@ -101,6 +101,7 @@ export function newGrowth() {
     boardVersion: BOARD_VERSION, // 盤の型の版（v2→v3 で灯し方を返す）
     respec: null,            // 実際の章／周回の変更後、最初の日常だけの組み直し機会
     chapterStart: null,      // その章で最初に読んだ時の盤（章末の「この章で伸びたもの」の淡い面。SBD97）
+    chapterNotice: null,     // 章はじめの盤の知らせを出した章 { key: 周回:章, ring }（growth-chapter-notice.js。C10）
   };
 }
 
