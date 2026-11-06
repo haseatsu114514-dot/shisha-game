@@ -25,7 +25,7 @@ const STANDING_FACE_X = {
   adam: 430.5, ageha: 477.5, da_silva: 504.5, dr_kemuri: 398, emil: 474,
   hajime: 544.5, hiyori: 419, kumicho: 482.5, saku: 421.5, maezono: 413,
   maki: 479, mashiro: 443, master_hookah: 413.5, minto: 485, mukai_master: 410.5,
-  sui: 407, naru: 450.5, noor: 400.5, pakki: 488, rei: 465, kuyuri: 404, sai: 466.5,
+  sui: 407, naru: 450.5, noor: 400.5, pakki: 488, rei: 465, rio: 404, sai: 466.5,
   samechan: 460.5, sheikh: 426, steve: 493.5, sumi: 432, tsumugi: 428,
   uranaishi: 406.5, volk: 478, yoru: 411.5,
 };
@@ -37,7 +37,7 @@ const GRAPHIC_FACE_X = {
   hajime: 576, hiyori: 400, kumicho: 512, saku: 528, maezono: 496,
   maki: 528, mashiro: 496, master_hookah: 500, minto: 512, mukai_master: 535,
   sui: 448, naru: 464, noor: 470, oneesan: 480, pakki: 520, rei: 496,
-  kuyuri: 512, sai: 512, samechan: 528, sheikh: 505, steve: 560, sumi: 480,
+  rio: 512, sai: 512, samechan: 528, sheikh: 505, steve: 560, sumi: 480,
   tsumugi: 512, uranaishi: 480, volk: 544, yoru: 520,
 };
 const targetFaceX = (id, frame) => frame.left + frame.width * (GRAPHIC_FACE_X[id] ?? 512) / 1024;

@@ -37,7 +37,7 @@ export const BOND_FINALES = {
   adam: { dialogue: "ch1_adam_bond_finale", gift: "suyaki_adam" },
   tsumugi: { dialogue: "ch1_tsumugi_bond_finale", gift: "suyaki_tsumugi", night: true, question: "bond_q2_tsumugi" },
   minto: { dialogue: "ch1_minto_bond_finale", gift: "suyaki_minto", invite: "lime_minto_bond_finale", question: "bond_q2_minto" },
-  kuyuri: { dialogue: "ch1_kuyuri_bond_finale", gift: "suyaki_kuyuri", question: "bond_q2_kuyuri" },
+  rio: { dialogue: "ch1_rio_bond_finale", gift: "suyaki_rio", question: "bond_q2_rio" },
   // 第2章の店（柚ヶ谷）で会う。訪問列（CH2_VISIT_STORIES）を読み終えた♥5の次の来店で一度だけ（#2027）
   kumicho: { dialogue: "ch2_kumicho_bond_finale", gift: "suyaki_kumicho" },
   rei: { dialogue: "ch2_rei_bond_finale", gift: "suyaki_rei" },
@@ -67,7 +67,7 @@ export const BOND_FINALES = {
 export const BOND_QUESTIONS = {
   tsumugi: { dialogue: "ch1_tsumugi_bond_question", choice: AFFINITY_GATE_CHOICES.tsumugi, host: "ch1_tsumugi_fourth", when: "after" },
   minto: { dialogue: "ch1_minto_bond_question", choice: AFFINITY_GATE_CHOICES.minto, host: "ch1_minto_private_1", alsoAfter: ["ch1_minto_fifth"], when: "after" },
-  kuyuri: { dialogue: "ch1_kuyuri_bond_question", choice: AFFINITY_GATE_CHOICES.kuyuri, host: "ch1_kuyuri_third", when: "visit" },
+  rio: { dialogue: "ch1_rio_bond_question", choice: AFFINITY_GATE_CHOICES.rio, host: "ch1_rio_third", when: "visit" },
   // あげは（#1988）: 第2章の店に通う回「初めての客」（♥3）を読んだ直後。第3章の帰郷後の告白はこの答えが恋愛寄りで♥5のときだけ。
   ageha: { dialogue: "ch2_ageha_bond_question", choice: AFFINITY_GATE_CHOICES.ageha, host: "remake_ch2_ageha_newcomer", when: "after" },
   // ましろ（#2022）: 第3章の寄り道「閉店後の練習」を読んだ後、♥3で場面カードから。
@@ -398,7 +398,7 @@ export function friendMessages({ tournamentDay = false, sceneChapter = false } =
     const chats = sent.filter((i) => i.msg.type === "chat").length;
     // 出来事前提の雑談は、前提が揃うまで chats[0] へ退避（TL-01: 素焼き贈呈・正体開示は締めくくりで保証される前提だが、旧セーブ等でも先出ししない防御）
     let pick = f.chats?.length ? chats % f.chats.length : 0;
-    if ((pick === 2 && ["minto", "tsumugi", "kuyuri", "kumicho", "rei", "mashiro", "samechan", "saku"].includes(id) && !state.owned.includes(`suyaki_${id}`))
+    if ((pick === 2 && ["minto", "tsumugi", "rio", "kumicho", "rei", "mashiro", "samechan", "saku"].includes(id) && !state.owned.includes(`suyaki_${id}`))
       || (pick === 1 && id === "adam" && !state.owned.includes("suyaki_adam"))
       || (pick === 1 && id === "minto" && !state.flags._minto_identity_revealed)) pick = 0;
     const chat = f.chats?.length ? { id: `${FRIEND_PREFIX}chat_${id}_d${state.day}`, sender: id, type: "chat", friend: true,

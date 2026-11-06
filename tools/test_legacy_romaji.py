@@ -20,7 +20,7 @@ class LegacyRomajiTests(unittest.TestCase):
         self.assertTrue(has_renamed_romaji(escaped, json_strings=True))
 
     def test_internal_ids_stay_allowed(self):
-        for value in ("chr_kuyuri_normal.webp", "kuyuri", "sui", "maezono", "RIN_LATE", "xRIN", "RIN2"):
+        for value in ("chr_rio_normal.webp", "rio", "sui", "maezono", "RIN_LATE", "xRIN", "RIN2"):
             with self.subTest(value=value):
                 self.assertFalse(has_renamed_romaji(value))
                 self.assertFalse(has_renamed_romaji(json.dumps({"prompt": "\n" + value}), json_strings=True))

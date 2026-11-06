@@ -14,7 +14,7 @@ try {
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto(`${base}/remake/intro-transition-preview.html?character=naru`);
   await page.waitForFunction(() => !document.getElementById("play").disabled);
-  const cases = [["morph", "naru"], ["card", "sui"], ["slash", "kuyuri"], ["morph", "pakki"], ["none", "naru"]];
+  const cases = [["morph", "naru"], ["card", "sui"], ["slash", "rio"], ["morph", "pakki"], ["none", "naru"]];
   for (const [variant, id] of cases) {
     await page.selectOption("#variant", variant);
     await page.selectOption("#character", id);

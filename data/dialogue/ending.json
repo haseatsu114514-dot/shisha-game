@@ -312,12 +312,12 @@
       }
     },
     {
-      "dialogue_id": "epilogue_kuyuri",
+      "dialogue_id": "epilogue_rio",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "ショールームを閉めたあと、くゆりさんが小さな紙を差し出した。"
+          "text": "ショールームを閉めたあと、凛想さんが小さな紙を差し出した。"
         },
         {
           "speaker": "hajime",
@@ -325,7 +325,7 @@
           "text": "今日も同意書ですか"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "違う。指輪のサイズ、測ってきた"
         },
@@ -335,7 +335,7 @@
           "text": "……俺、何て返せばいいんだろう"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "今決めなくていい。渡したかっただけ"
         },
@@ -347,10 +347,10 @@
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりさんは予定表を開き、ひとつの午後を指した。"
+          "text": "凛想さんは予定表を開き、ひとつの午後を指した。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "ここ。仕事は入れない"
         },
@@ -360,7 +360,7 @@
           "text": "俺も、店に話しておきます"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……うん。楽しみにしてる"
         }

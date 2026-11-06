@@ -33,7 +33,7 @@ await suite("lover-date-route", async check => {
   check = (...args) => !process.env.TEST_CASES || args[0].includes(process.env.TEST_CASES) ? run(...args) : Promise.resolve();
   for (const [mode, options] of modes) {
     const press = (page, selector) => options.hasTouch ? page.locator(selector).tap() : page.locator(selector).click();
-    for (const id of ["mashiro", "tsumugi", "minto", "kuyuri", "ageha", "hiyori"]) {
+    for (const id of ["mashiro", "tsumugi", "minto", "rio", "ageha", "hiyori"]) {
       await check(`${mode}-${id}-saved-lover-ui`, async page => {
         await prepare(page, id, id === "mashiro");
         await page.evaluate(() => {

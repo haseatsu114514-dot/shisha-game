@@ -9,8 +9,8 @@ globalThis.localStorage = { getItem: k => storage.get(k) ?? null, setItem: (k, v
 const { TITLE_ART_CHARACTERS, TITLE_KEY_VISUALS, titleArtCharacters, titleArtDisplayCharacters } = await import("../js/core/title-art-unlock.js");
 const { peekLatestSave, SAVE_KEY } = await import("../js/core/state.js");
 
-const ROSTER = ["ageha", "hiyori", "samechan", "mashiro", "minto", "kuyuri", "tsumugi", "sumi", "naru", "adam"];
-const MAPPED = ["ageha", "hiyori", "samechan", "mashiro", "minto", "kuyuri", "tsumugi", "sumi", "naru", "adam"];
+const ROSTER = ["ageha", "hiyori", "samechan", "mashiro", "minto", "rio", "tsumugi", "sumi", "naru", "adam"];
+const MAPPED = ["ageha", "hiyori", "samechan", "mashiro", "minto", "rio", "tsumugi", "sumi", "naru", "adam"];
 const sv = (extra = {}) => ({ day: 3, met: {}, flags: {}, contacts: [], story: {}, ...extra });
 const sorted = a => [...a].sort();
 let count = 0;
@@ -26,7 +26,7 @@ check("met minto only", () => {
   assert.deepEqual(titleArtDisplayCharacters(sv({ met: { minto: true } })), ["minto"]);
 });
 check("multiple met matches the set (non-roster and false are ignored)", () =>
-  assert.deepEqual(sorted(titleArtCharacters(sv({ met: { kuyuri: true, ageha: true, kumicho: true, mashiro: false } }), TITLE_ART_CHARACTERS)), ["ageha", "kuyuri"]));
+  assert.deepEqual(sorted(titleArtCharacters(sv({ met: { rio: true, ageha: true, kumicho: true, mashiro: false } }), TITLE_ART_CHARACTERS)), ["ageha", "rio"]));
 check("auxiliary signals unlock", () => {
   assert.deepEqual(titleArtCharacters(sv({ flags: { _hiyori_meeting_done: true } }), TITLE_ART_CHARACTERS), ["hiyori"]);
   assert.deepEqual(titleArtCharacters(sv({ contacts: ["samechan"] }), TITLE_ART_CHARACTERS), ["samechan"]);
@@ -58,11 +58,11 @@ check("key visual table matches the roster and the real manifest", () => {
 check("latest save selection", () => {
   const slot = "suien_remake_slot2";
   localStorage.setItem(SAVE_KEY, JSON.stringify(sv({ savedAt: 100, met: { minto: true } })));
-  localStorage.setItem(slot, JSON.stringify(sv({ savedAt: 200, met: { kuyuri: true } })));
-  assert.deepEqual(peekLatestSave().met, { kuyuri: true }, "手動枠が新しい");
-  localStorage.setItem(slot, JSON.stringify(sv({ savedAt: 50, met: { kuyuri: true } })));
+  localStorage.setItem(slot, JSON.stringify(sv({ savedAt: 200, met: { rio: true } })));
+  assert.deepEqual(peekLatestSave().met, { rio: true }, "手動枠が新しい");
+  localStorage.setItem(slot, JSON.stringify(sv({ savedAt: 50, met: { rio: true } })));
   assert.deepEqual(peekLatestSave().met, { minto: true }, "オートが新しい");
-  localStorage.setItem(slot, JSON.stringify(sv({ met: { kuyuri: true } })));
+  localStorage.setItem(slot, JSON.stringify(sv({ met: { rio: true } })));
   assert.deepEqual(peekLatestSave().met, { minto: true }, "欠落はオート優先");
 });
 check("pure: input save is not mutated", () => {

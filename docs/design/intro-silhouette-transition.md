@@ -105,7 +105,7 @@
 
 ## 6. 進め方
 
-1. 試作: `character-intros-preview.html` で、なる（sharp）・くゆり（soft）・須井（still）・パッキー（bounce）の4人を再生できるようにし、連続画像と動画でオーナーに見せる。
+1. 試作: `character-intros-preview.html` で、なる（sharp）・凛想（soft）・須井（still）・パッキー（bounce）の4人を再生できるようにし、連続画像と動画でオーナーに見せる。
 2. 採用後に本実装とテスト。1つのPRにまとめる（`intro-transition.js`・`intro.js`・`intro.css`・テスト）。
 
 ## 7. 未決事項（オーナー確認）

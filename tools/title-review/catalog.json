@@ -6,7 +6,7 @@
     "samechan": "サメちゃん／汐見なぎさ",
     "mashiro": "ましろ",
     "minto": "みんと",
-    "kuyuri": "くゆり",
+    "rio": "凛想",
     "tsumugi": "つむぎ",
     "sumi": "スミ",
     "naru": "なる",
@@ -346,14 +346,14 @@
     {
       "id": "308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18",
       "sha256": "308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18",
-      "character": "kuyuri",
-      "label": "title_art_kuyuri_04_rainy_neon_umbrella",
+      "character": "rio",
+      "label": "title_art_rio_04_rainy_neon_umbrella",
       "size": [
         1024,
         1536
       ],
       "sources": [
-        "assets/ui/title_arts/title_art_kuyuri_04_rainy_neon_umbrella.png"
+        "assets/ui/title_arts/title_art_rio_04_rainy_neon_umbrella.png"
       ],
       "groups": [
         "正式タイトル"
@@ -370,14 +370,14 @@
     {
       "id": "952c856b89c0bd39413d5692dfe2a8b52f1afbad46457778a7531769c84ff73f",
       "sha256": "952c856b89c0bd39413d5692dfe2a8b52f1afbad46457778a7531769c84ff73f",
-      "character": "kuyuri",
-      "label": "title_art_kuyuri_05_blend_library_command",
+      "character": "rio",
+      "label": "title_art_rio_05_blend_library_command",
       "size": [
         1024,
         1536
       ],
       "sources": [
-        "assets/ui/title_arts/title_art_kuyuri_05_blend_library_command.png"
+        "assets/ui/title_arts/title_art_rio_05_blend_library_command.png"
       ],
       "groups": [
         "正式タイトル"
@@ -394,14 +394,14 @@
     {
       "id": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
       "sha256": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
-      "character": "kuyuri",
+      "character": "rio",
       "label": "深夜の窓辺",
       "size": [
         1024,
         1536
       ],
       "sources": [
-        "assets/ui/title_arts/title_art_kuyuri_03_late_coffee.png",
+        "assets/ui/title_arts/title_art_rio_03_late_coffee.png",
         "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/03-late-coffee.png"
       ],
       "groups": [
@@ -425,14 +425,14 @@
     {
       "id": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
       "sha256": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
-      "character": "kuyuri",
+      "character": "rio",
       "label": "黒い試香室",
       "size": [
         1024,
         1536
       ],
       "sources": [
-        "assets/ui/title_arts/title_art_kuyuri_01_night_tasting.png",
+        "assets/ui/title_arts/title_art_rio_01_night_tasting.png",
         "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting.png"
       ],
       "groups": [
@@ -1490,7 +1490,7 @@
     {
       "id": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
       "sha256": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
-      "character": "kuyuri",
+      "character": "rio",
       "label": "01-night-tasting-first",
       "size": [
         1024,
@@ -1515,7 +1515,7 @@
     {
       "id": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
       "sha256": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
-      "character": "kuyuri",
+      "character": "rio",
       "label": "01-night-tasting-revision-1",
       "size": [
         1024,
@@ -1540,7 +1540,7 @@
     {
       "id": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
       "sha256": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
-      "character": "kuyuri",
+      "character": "rio",
       "label": "01-night-tasting-revision-2",
       "size": [
         1024,
@@ -2052,7 +2052,7 @@
         "別タイトル候補"
       ],
       "history": [
-        "要修正：v2ではホースは側面ポート→一つのたるみ→硬質ハンドルでY字なし。顔・営業衣装の同一性は維持。奥の室内鉢植えはCI97に照らして除去候補。短いボウル脚は具体モデルとの再照合を承認前に行う（くゆりNGと同一とは断定しない）。"
+        "要修正：v2ではホースは側面ポート→一つのたるみ→硬質ハンドルでY字なし。顔・営業衣装の同一性は維持。奥の室内鉢植えはCI97に照らして除去候補。短いボウル脚は具体モデルとの再照合を承認前に行う（凛想NGと同一とは断定しない）。"
       ],
       "prompts": [
         "asset_sources/heroine-title-candidates-20261009/minto/minto_01_afterhours_smoke.prompt.txt"
@@ -2519,7 +2519,7 @@
         "別タイトル候補"
       ],
       "history": [
-        "候補保存のみ：長いウルフ・半目・白シャツ・フープ・無色爪を維持。鼻へ近づける缶と机上のボウルは別小物。炭・完成台なし。正式系のくゆり02（葉の色修正待ち）とは別ファイル。"
+        "候補保存のみ：長いウルフ・半目・白シャツ・フープ・無色爪を維持。鼻へ近づける缶と机上のボウルは別小物。炭・完成台なし。正式系の凛想02（葉の色修正待ち）とは別ファイル。"
       ],
       "prompts": [
         "asset_sources/heroine-title-candidates-20261009/rin/title_art_rin_02_aroma_blend.prompt.txt"
@@ -3102,16 +3102,16 @@
         "url": "../../assets/sprites/characters/minto/chr_minto_ura_normal.png"
       }
     ],
-    "kuyuri": [
+    "rio": [
       {
-        "path": "assets/sprites/characters/kuyuri/chr_kuyuri_normal.png",
+        "path": "assets/sprites/characters/rio/chr_rio_normal.png",
         "label": "正式立ち絵",
-        "url": "../../assets/sprites/characters/kuyuri/chr_kuyuri_normal.png"
+        "url": "../../assets/sprites/characters/rio/chr_rio_normal.png"
       },
       {
-        "path": "assets/ui/face_icons/face_kuyuri.png",
+        "path": "assets/ui/face_icons/face_rio.png",
         "label": "正式顔",
-        "url": "../../assets/ui/face_icons/face_kuyuri.png"
+        "url": "../../assets/ui/face_icons/face_rio.png"
       }
     ],
     "tsumugi": [

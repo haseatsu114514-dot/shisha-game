@@ -700,24 +700,24 @@
       }
     },
     {
-      "dialogue_id": "outing_kuyuri_1",
+      "dialogue_id": "outing_rio_1",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_day.png",
         "add_affinity": {
-          "kuyuri": 1
+          "rio": 1
         },
         "add_stat": {
           "sense": 2
         },
         "topic": "豆の仕入れ",
         "private_scene": true,
-        "setting": "♥3の外出（lime_outing_kuyuri_1 の承諾）。昼、問屋街の外れの焙煎所で、ショールームに置くコーヒー豆の仕入れにつき合う。試香の合間に豆で鼻を戻すくゆりの習慣と、誰にも言っていない行きつけを見せる。大会の前後どちらでも読める内容にする。"
+        "setting": "♥3の外出（lime_outing_rio_1 の承諾）。昼、問屋街の外れの焙煎所で、ショールームに置くコーヒー豆の仕入れにつき合う。試香の合間に豆で鼻を戻す凛想の習慣と、誰にも言っていない行きつけを見せる。大会の前後どちらでも読める内容にする。"
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "昼。問屋街の外れ、ガラス戸の奥で焙煎機が回っている小さな豆屋の前で、くゆりさんが待っていた。"
+          "text": "昼。問屋街の外れ、ガラス戸の奥で焙煎機が回っている小さな豆屋の前で、凛想さんが待っていた。"
         },
         {
           "speaker": "",
@@ -725,7 +725,7 @@
           "text": "薄暗いショールームの外で見ると、白シャツの袖まくりも、少しだけ別の人みたいだった。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "来たね、モルモットくん。今日は試香じゃなくて、荷物持ち"
         },
@@ -735,12 +735,12 @@
           "text": "コーヒー豆って、ショールームのどこで使うんですか"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "試香の合間に嗅ぐの。鼻が同じ香りに慣れたら、豆で一回、元に戻す"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "香水の売り場にも置いてあるでしょ。あれ。うちのは、私の好みで選んでるけど"
         },
@@ -752,44 +752,44 @@
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりさんは瓶を一つずつ開けて、鼻を近づけては閉じる。ショールームで黒い袋を開けるときと、同じ手つきだった。"
+          "text": "凛想さんは瓶を一つずつ開けて、鼻を近づけては閉じる。ショールームで黒い袋を開けるときと、同じ手つきだった。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "……これは浅すぎる。こっちは、焼いた日が古い"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "カウンターの奥で、店主のおじさんが笑った。「香坂さん、また全部開けてる」"
+          "text": "カウンターの奥で、店主のおじさんが笑った。「円頓寺さん、また全部開けてる」"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smug",
           "text": "開けないと分からないでしょ。……ね、悪い客"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "くゆりさん、ここの常連なんですね"
+          "text": "凛想さん、ここの常連なんですね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "出張から戻った日は、まずここ。……誰にも言ってないけどね"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "で、君はどれがいい？ 鼻をもう一つ借りるって、言ったでしょ"
         },
         {
           "type": "choice",
-          "id": "kuyuri_outing_beans",
+          "id": "rio_outing_beans",
           "choices": [
             {
-              "text": "くゆりさんが最初に手を止めた瓶",
+              "text": "凛想さんが最初に手を止めた瓶",
               "next": "watched"
             },
             {
@@ -801,15 +801,15 @@
         {
           "speaker": "",
           "face": "",
-          "text": "結局、紙袋は二つになった。片方はショールームの分。もう片方を、くゆりさんは黙って押しつけた。"
+          "text": "結局、紙袋は二つになった。片方はショールームの分。もう片方を、凛想さんは黙って押しつけた。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "そっちは君の分。家で飲むなり、休憩のときに嗅ぐなり、好きにしなよ"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smug",
           "text": "報酬じゃないよ。……これは業務外"
         },
@@ -821,10 +821,10 @@
         {
           "speaker": "",
           "face": "",
-          "text": "店を出ると、くゆりさんは昼の光に少しだけ目を細めた。"
+          "text": "店を出ると、凛想さんは昼の光に少しだけ目を細めた。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "smile",
           "text": "昼に外を歩くの、久しぶり。……君といると、夜の側から出てくる口実ができるね"
         },
@@ -844,15 +844,15 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "くゆりさんが最初に、二回嗅いだ瓶です"
+            "text": "凛想さんが最初に、二回嗅いだ瓶です"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "surprise",
             "text": "……見てたの。豆じゃなくて、私を"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "smile",
             "text": "……正解。モルモットくんに観察されるとは、思わなかった"
           }
@@ -864,12 +864,12 @@
             "text": "正直、どれもいい匂いで……まだ、違いが分からないです"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "smile",
             "text": "それでいい。分からないって言える鼻の方が、私は信用できる"
           },
           {
-            "speaker": "kuyuri",
+            "speaker": "rio",
             "face": "normal",
             "text": "じゃあ、今日のは私が選ぶ。次に来たとき、違いを当ててみて"
           }

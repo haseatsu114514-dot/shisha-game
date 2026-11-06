@@ -10,7 +10,7 @@ async function prepare(page, { id, chapter = 1, day = 5, met = true } = {}) {
     const engine = await import("./js/vn/engine.js"), data = await import("./js/core/data.js");
     const value = core.newGame();
     Object.assign(value, { chapter, phase: "daily", day, slot: 0, money: 20000, stamina: 90 });
-    for (const who of ["naru", "adam", "minto", "kuyuri", "samechan"]) value.met[who] = true;
+    for (const who of ["naru", "adam", "minto", "rio", "samechan"]) value.met[who] = true;
     if (met) for (const who of ["maezono", "dr_kemuri", "sui"]) value.met[who] = true;
     value.flags._met_tsumugi = true;
     value.flags._cafe_introduced = true;
@@ -88,15 +88,15 @@ await suite("roamers", async check => {
   });
 
   await check("friends-only-after-meeting-and-gain-affinity", async page => {
-    await prepare(page, { id: "kuyuri" });
+    await prepare(page, { id: "rio" });
     const result = await page.evaluate(async () => {
       const plan = R.roamers.roamerPlan(), spot = R.spots.spotById(plan.spotId);
-      const before = R.core.state.affinity.kuyuri || 0;
+      const before = R.core.state.affinity.rio || 0;
       const ok = await R.roamers.meetRoamer(spot, plan);
-      const after = R.core.state.affinity.kuyuri || 0;
+      const after = R.core.state.affinity.rio || 0;
       // 会っていない人は出ない
       const value = R.core.state;
-      value.met.kuyuri = false; value.met.adam = false; delete value.flags._met_tsumugi;
+      value.met.rio = false; value.met.adam = false; delete value.flags._met_tsumugi;
       const seen = new Set();
       for (let day = 4; day < 14; day++) for (let slot = 0; slot <= 1; slot++) for (let seed = 1; seed < 60; seed++) {
         Object.assign(value, { day, slot, seed });
@@ -107,7 +107,7 @@ await suite("roamers", async check => {
     });
     assert.equal(result.ok, true);
     assert(result.gained > 0, "友人・ライバルは好感度が少し上がる");
-    for (const id of ["kuyuri", "adam", "tsumugi"]) assert(!result.seen.includes(id), `${id} は会う前には居合わせない`);
+    for (const id of ["rio", "adam", "tsumugi"]) assert(!result.seen.includes(id), `${id} は会う前には居合わせない`);
   });
 
   await check("never-at-busy-own-or-closed-shops-and-everyone-appears", async page => {
@@ -133,7 +133,7 @@ await suite("roamers", async check => {
     });
     assert.deepEqual(result.bad, []);
     assert(result.rate > 0.15 && result.rate < 0.35, `居合わせる割合（4回に1回ほど） ${result.rate}`);
-    for (const id of ["maezono", "dr_kemuri", "sui", "adam", "kuyuri", "tsumugi"]) assert(result.counts[id] > 0, `${id} が一度も出ない`);
+    for (const id of ["maezono", "dr_kemuri", "sui", "adam", "rio", "tsumugi"]) assert(result.counts[id] > 0, `${id} が一度も出ない`);
   });
 
   await check("owner-not-double-listed-while-roaming-away-2444", async page => {

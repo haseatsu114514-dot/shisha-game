@@ -37,10 +37,10 @@
       ]
     },
     {
-      "dialogue_id": "ch3_shuraba_kuyuri",
+      "dialogue_id": "ch3_shuraba_rio",
       "lines": [
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "はじめくん。……私にも、紹介してくれる？"
         }
@@ -266,25 +266,25 @@
       ]
     },
     {
-      "dialogue_id": "shuraba_kuyuri",
+      "dialogue_id": "shuraba_rio",
       "lines": [
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "違う店の香りがしたから、気にはなってた"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "でも、香りだけじゃ決めない。今、本人の口から聞いた"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "私たちに黙っていたこと、ちゃんと説明して"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "試す相手を取り替えるみたいに、扱わないで"
         },
@@ -565,20 +565,20 @@
       "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"
     },
     {
-      "dialogue_id": "shuraba_talk_kuyuri",
+      "dialogue_id": "shuraba_talk_rio",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "くゆりさんが指定したのは、Dr.fookahの2階。試香の時間は、もう終わっていた。"
+          "text": "凛想さんが指定したのは、Dr.fookahの2階。試香の時間は、もう終わっていた。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "座って。今日は、モニターの話じゃない"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "説明して、って言ったよね。聞く準備は、してきた"
         },
@@ -590,15 +590,15 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "くゆりさんがどう思うか、聞こうともしませんでした"
+          "text": "凛想さんがどう思うか、聞こうともしませんでした"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "サンプルなら、並べて確かめることもあるよ"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "serious",
           "text": "でも、私はサンプルじゃない。君の恋人のつもりだった"
         },
@@ -608,24 +608,24 @@
           "text": "……俺が、黙って選べることじゃなかった。ごめんなさい"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "うん。聞いた。……今日は、それしか返せない"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "次に会うかは、私から連絡する。少し、考えさせて"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……名前で呼ぶのは、その時にする"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "試香紙は、最後まで鞄から出てこなかった。返事を決めるのは、くゆりさんだった。"
+          "text": "試香紙は、最後まで鞄から出てこなかった。返事を決めるのは、凛想さんだった。"
         }
       ],
       "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"

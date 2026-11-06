@@ -124,7 +124,7 @@
       ]
     },
     {
-      "dialogue_id": "ch3_visit_kuyuri_meetup",
+      "dialogue_id": "ch3_visit_rio_meetup",
       "metadata": {
         "private_scene": true
       },
@@ -135,7 +135,7 @@
           "text": "約束の時間に、東京駅で待ち合わせた。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……顔を見たら、ほっとした。移動中、少しだけ緊張してたんだよね"
         },
@@ -152,7 +152,7 @@
       ]
     },
     {
-      "dialogue_id": "ch3_visit_kuyuri_date",
+      "dialogue_id": "ch3_visit_rio_date",
       "metadata": {
         "private_scene": true
       },
@@ -163,7 +163,7 @@
           "text": "約束した自由時間。東京駅の外で落ち合い、街路樹の続く道を二人で歩いた。"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "いつもなら、この時間は店の連絡を確認してるんだけど。今日は、もう少ししまっておく"
         },
@@ -173,7 +173,7 @@
           "text": "俺も。今日は目の前の人と話したいです"
         },
         {
-          "speaker": "kuyuri",
+          "speaker": "rio",
           "face": "normal",
           "text": "……うん。そう言ってもらえると、休暇を取ってよかったって思える"
         },

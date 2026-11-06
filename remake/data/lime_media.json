@@ -41,10 +41,10 @@
     "preview": "［画像］月の写真",
     "allowed_accounts": null
   },
-  "im_kuyuri_stock": {
+  "im_rio_stock": {
     "kind": "image",
-    "owner": "kuyuri",
-    "src": "img/ui/lime/images/im_kuyuri_stock.webp",
+    "owner": "rio",
+    "src": "img/ui/lime/images/im_rio_stock.webp",
     "width": 960,
     "height": 720,
     "alt": "棚に並ぶ新しい小袋",
@@ -91,10 +91,10 @@
     "preview": "［スタンプ］がんばれ♪",
     "allowed_accounts": null
   },
-  "st_kuyuri_smug": {
+  "st_rio_smug": {
     "kind": "stamp",
-    "owner": "kuyuri",
-    "src": "img/ui/lime/stamps/st_kuyuri_smug.png",
+    "owner": "rio",
+    "src": "img/ui/lime/stamps/st_rio_smug.png",
     "width": 320,
     "height": 320,
     "alt": "試料袋。ふふ",

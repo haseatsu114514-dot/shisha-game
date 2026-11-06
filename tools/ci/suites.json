@@ -732,7 +732,7 @@
     },
     {
       "id": "ch2-home-talks",
-      "title": "Chapter 2 home talks: facility encounters, Kuyuri's chapter talks, Ageha's four small talks and greetings, aquarium revisits (VOL13)",
+      "title": "Chapter 2 home talks: facility encounters, Rio's chapter talks, Ageha's four small talks and greetings, aquarium revisits (VOL13)",
       "kind": "quick",
       "run": ["node --experimental-vm-modules remake/test/ch2_home_talks.mjs"]
     },
@@ -766,7 +766,7 @@
         "node remake/test/friend_lime_scene_chapters.mjs",
         "node remake/test/chapter_feature_gates_2035.mjs",
         "node remake/test/tournament_entrance.mjs",
-        "node --experimental-vm-modules remake/test/kuyuri_sample.mjs",
+        "node --experimental-vm-modules remake/test/rio_sample.mjs",
         "node --experimental-vm-modules remake/test/invites_781.mjs",
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",
         "node --experimental-vm-modules remake/test/lime_consistency.mjs",
@@ -2299,14 +2299,14 @@
         "remake/test/browser/conversation_ui.mjs",
         "remake/test/browser/regular_service_response.mjs",
         "remake/test/portrait_unify.mjs",
-        "remake/test/kuyuri_portraits.mjs"
+        "remake/test/rio_portraits.mjs"
       ],
       "run": [
         "node remake/test/browser/issue508_theme.mjs",
         "node remake/test/browser/conversation_ui.mjs",
         "node remake/test/browser/regular_service_response.mjs",
         "node remake/test/portrait_unify.mjs",
-        "node remake/test/kuyuri_portraits.mjs"
+        "node remake/test/rio_portraits.mjs"
       ],
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/remake-browser/issue508-theme"

@@ -7,7 +7,7 @@ import { chapterFourProgress } from "./ch4-progress.js";
 // loadDialogues が読む追加分（ファイル→場面ID）。第4章で再生しうる前夜デート（全員）と、重なった予定の保留。
 // 第3章のスティーブの茶化し（near_conflict）は第4章では選ばれないので読まない。
 export const CH4_EVENING_DIALOGUE_FILES = Object.freeze({
-  tournament_dates: Object.freeze(["tournament_date_tsumugi", "tournament_date_minto", "tournament_date_kuyuri",
+  tournament_dates: Object.freeze(["tournament_date_tsumugi", "tournament_date_minto", "tournament_date_rio",
     "tournament_date_ageha", "tournament_date_mashiro", "tournament_date_samechan", "tournament_date_hiyori"]),
   relationship_conflicts: Object.freeze(["tournament_evening_overlap"]),
 });

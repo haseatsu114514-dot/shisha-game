@@ -648,21 +648,21 @@
       ]
     },
     {
-      "id": "encourage_kuyuri",
-      "sender": "kuyuri",
+      "id": "encourage_rio",
+      "sender": "rio",
       "trigger_condition": "tournament_day",
       "type": "chat",
       "messages": [
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "おはよ、モルモットくん。今日が本番でしょ"
         },
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "会場には行けない。こっちは朝から入荷の検品"
         },
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "……いつもの舌と、いつもの手で作りなさい。結果は、あとで2階で聞く"
         }
       ]
@@ -1794,29 +1794,29 @@
       ]
     },
     {
-      "id": "lime_kuyuri_report",
-      "sender": "kuyuri",
+      "id": "lime_rio_report",
+      "sender": "rio",
       "trigger_condition": "flag",
-      "trigger_flag": "_ev_kuyuri_monitor",
+      "trigger_flag": "_ev_rio_monitor",
       "type": "chat",
       "messages": [
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "おはよ、モルモットくん。昨日のB-7、本国がレポート気に入ったって"
         },
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "『日本の若い舌は正直だ』だってさ。ふふ、私の見立て通り"
         },
         {
-          "sender": "kuyuri",
-          "stamp": "st_kuyuri_smug",
+          "sender": "rio",
+          "stamp": "st_rio_smug",
           "media_chapters": [
             1
           ]
         },
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "次の便も近いうちに入る。……気が向いたら2階においで"
         }
       ],
@@ -1832,7 +1832,7 @@
           "affinity": 2
         },
         {
-          "text": "くゆりさんの見立て、外れないんですね",
+          "text": "凛想さんの見立て、外れないんですね",
           "response": "外すよ、たまに。……君のことは、外してない気がするけど。さ、業務連絡おわり",
           "affinity": 2
         }
@@ -2012,32 +2012,32 @@
     },
     {
       "id": "lime_fookah_promo_1",
-      "sender": "kuyuri",
+      "sender": "rio",
       "trigger_condition": "lime_exchanged",
       "trigger_day": 4,
       "type": "chat",
       "messages": [
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "【Dr.fookah 入荷情報】新しいロット、棚に並べたよ"
         },
         {
-          "sender": "kuyuri",
-          "image": "im_kuyuri_stock",
+          "sender": "rio",
+          "image": "im_rio_stock",
           "media_chapters": [
             1
           ]
         },
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "今期のイチ推しは『AF グレープ』。素直に旨い、迷ったらこれ。くじにも何袋か紛れてるらしい"
         },
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "同じグレープでも、今回のロットは汁気が多め"
         },
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "……モルモットくんの舌なら、違いが分かるでしょ。2階の試香、いつでもどうぞ"
         }
       ],
@@ -2056,21 +2056,21 @@
     },
     {
       "id": "lime_fookah_promo_2",
-      "sender": "kuyuri",
+      "sender": "rio",
       "trigger_condition": "lime_exchanged",
       "trigger_day": 9,
       "type": "chat",
       "messages": [
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "モルモットくん、今いい？ これは業務連絡じゃないやつ"
         },
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "昨日の昼も、結局ブルーベリーを吸ってた。限定品の試香で鼻を使い切った日は、ここに帰ってくるんだよね"
         },
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "……で、ふと思った。これ、君の吸い方で一回吸ってみてほしい。仕事抜きで。感想もレポートにはしないから"
         }
       ],
@@ -2501,48 +2501,48 @@
       ]
     },
     {
-      "id": "lime_outing_kuyuri_1",
+      "id": "lime_outing_rio_1",
       "important": true,
-      "sender": "kuyuri",
+      "sender": "rio",
       "trigger_condition": "affinity_level",
       "trigger_value": 3,
       "type": "invitation",
       "time_slot": "noon",
       "messages": [
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "おはよ、モルモットくん。今日のお昼、少し借りていい？"
         },
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "豆の仕入れ。ショールームに置いてるコーヒー豆、切らしちゃってさ"
         },
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "荷物持ちと、鼻がもう一つ要る。……業務、ってことにしとく"
         }
       ],
-      "accept_event": "outing_kuyuri_1",
+      "accept_event": "outing_rio_1",
       "accept_text": "お昼、行きます",
       "decline_response": {
-        "sender": "kuyuri",
+        "sender": "rio",
         "text": "了解。豆は一人で嗅いでくる。君の鼻は、また借りにいくね"
       },
       "reminder_text": "この前の仕入れの話、まだ有効。豆屋は逃げないけど、私の昼休みは逃げる"
     },
     {
-      "id": "lime_after_outing_kuyuri",
-      "sender": "kuyuri",
+      "id": "lime_after_outing_rio",
+      "sender": "rio",
       "trigger_condition": "flag",
-      "trigger_flag": "_outing_done_kuyuri",
+      "trigger_flag": "_outing_done_rio",
       "type": "chat",
       "messages": [
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "おはよ。この前の豆、もう半分減った"
         },
         {
-          "sender": "kuyuri",
+          "sender": "rio",
           "text": "試香の合間に嗅ぐたび、豆屋での君の顔を思い出す。……仕事の邪魔なんだけど"
         }
       ],

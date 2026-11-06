@@ -179,7 +179,7 @@
    "ax": 0.5007,
    "aspect": 0.7467
   },
-  "kuyuri": {
+  "rio": {
    "faces": [
     "normal",
     "sad",
@@ -608,7 +608,7 @@
   "cg_naru_last_chance.png",
   "cg_naru_next_entry.png",
   "cg_oneesan_first_smoke.png",
-  "cg_kuyuri_confession.png",
+  "cg_rio_confession.png",
   "cg_ryuji_purikura.png",
   "cg_samechan_confession.png",
   "cg_tsumugi_confession.png",
@@ -628,7 +628,7 @@
   "face_sui.png",
   "face_naru.png",
   "face_pakki.png",
-  "face_kuyuri.png",
+  "face_rio.png",
   "face_sumi.png",
   "face_tsumugi.png",
   "face_kumicho.png",
@@ -842,7 +842,7 @@
     "size": 0.16583
    }
   },
-  "kuyuri": {
+  "rio": {
    "normal": {
     "cx": 0.46094,
     "top": 0.15417,
@@ -1295,11 +1295,11 @@
     }
    }
   },
-  "kuyuri": {
+  "rio": {
    "color": "#5a60b6",
    "secondary": "#cfd5ff",
    "shadow": "#131746",
-   "background": "ui/character_intros/kuyuri.png",
+   "background": "ui/character_intros/rio.png",
    "frames": {
     "smile": {
      "width": 1023.487,
@@ -2106,20 +2106,20 @@
    "file": "title_art_minto_07_balcony_mint.png"
   },
   {
-   "character": "kuyuri",
-   "file": "title_art_kuyuri_01_night_tasting.png"
+   "character": "rio",
+   "file": "title_art_rio_01_night_tasting.png"
   },
   {
-   "character": "kuyuri",
-   "file": "title_art_kuyuri_03_late_coffee.png"
+   "character": "rio",
+   "file": "title_art_rio_03_late_coffee.png"
   },
   {
-   "character": "kuyuri",
-   "file": "title_art_kuyuri_04_rainy_neon_umbrella.png"
+   "character": "rio",
+   "file": "title_art_rio_04_rainy_neon_umbrella.png"
   },
   {
-   "character": "kuyuri",
-   "file": "title_art_kuyuri_05_blend_library_command.png"
+   "character": "rio",
+   "file": "title_art_rio_05_blend_library_command.png"
   },
   {
    "character": "tsumugi",
@@ -2697,7 +2697,7 @@
   "cgs/cg_ch5_shisha_9000.png",
   "cgs/cg_ending_tonari_night.png",
   "cgs/cg_hiyori_confession.png",
-  "cgs/cg_kuyuri_confession.png",
+  "cgs/cg_rio_confession.png",
   "cgs/cg_mashiro_confession.png",
   "cgs/cg_mashiro_double_apple.png",
   "cgs/cg_minto_casual.png",
@@ -3087,13 +3087,13 @@
   "sprites/characters/kumicho/chr_kumicho_smile.png",
   "sprites/characters/kumicho/chr_kumicho_smug.png",
   "sprites/characters/kumicho/chr_kumicho_surprise.png",
-  "sprites/characters/kuyuri/chr_kuyuri_normal.png",
-  "sprites/characters/kuyuri/chr_kuyuri_sad.png",
-  "sprites/characters/kuyuri/chr_kuyuri_serious.png",
-  "sprites/characters/kuyuri/chr_kuyuri_shock.png",
-  "sprites/characters/kuyuri/chr_kuyuri_smile.png",
-  "sprites/characters/kuyuri/chr_kuyuri_smug.png",
-  "sprites/characters/kuyuri/chr_kuyuri_surprise.png",
+  "sprites/characters/rio/chr_rio_normal.png",
+  "sprites/characters/rio/chr_rio_sad.png",
+  "sprites/characters/rio/chr_rio_serious.png",
+  "sprites/characters/rio/chr_rio_shock.png",
+  "sprites/characters/rio/chr_rio_smile.png",
+  "sprites/characters/rio/chr_rio_smug.png",
+  "sprites/characters/rio/chr_rio_surprise.png",
   "sprites/characters/maezono/chr_maezono_excited.png",
   "sprites/characters/maezono/chr_maezono_normal.png",
   "sprites/characters/maezono/chr_maezono_serious.png",
@@ -3233,7 +3233,7 @@
   "ui/character_intros/hajime.png",
   "ui/character_intros/hiyori.png",
   "ui/character_intros/kumicho.png",
-  "ui/character_intros/kuyuri.png",
+  "ui/character_intros/rio.png",
   "ui/character_intros/maezono.png",
   "ui/character_intros/maki.png",
   "ui/character_intros/mashiro.png",
@@ -3272,7 +3272,7 @@
   "ui/face_icons/face_hajime.png",
   "ui/face_icons/face_hiyori.png",
   "ui/face_icons/face_kumicho.png",
-  "ui/face_icons/face_kuyuri.png",
+  "ui/face_icons/face_rio.png",
   "ui/face_icons/face_maezono.png",
   "ui/face_icons/face_mashiro.png",
   "ui/face_icons/face_minto.png",
@@ -3360,10 +3360,10 @@
   "ui/title_arts/title_art_hiyori_05_ramen_break.png",
   "ui/title_arts/title_art_hiyori_06_riverside_hoodie.png",
   "ui/title_arts/title_art_keyvisual_01.png",
-  "ui/title_arts/title_art_kuyuri_01_night_tasting.png",
-  "ui/title_arts/title_art_kuyuri_03_late_coffee.png",
-  "ui/title_arts/title_art_kuyuri_04_rainy_neon_umbrella.png",
-  "ui/title_arts/title_art_kuyuri_05_blend_library_command.png",
+  "ui/title_arts/title_art_rio_01_night_tasting.png",
+  "ui/title_arts/title_art_rio_03_late_coffee.png",
+  "ui/title_arts/title_art_rio_04_rainy_neon_umbrella.png",
+  "ui/title_arts/title_art_rio_05_blend_library_command.png",
   "ui/title_arts/title_art_mashiro_01_heavy_smoke.png",
   "ui/title_arts/title_art_mashiro_02_tea_break.png",
   "ui/title_arts/title_art_mashiro_03_after_rain.png",
@@ -3433,10 +3433,10 @@
    "preview": "［画像］月の写真",
    "allowed_accounts": null
   },
-  "im_kuyuri_stock": {
+  "im_rio_stock": {
    "kind": "image",
-   "owner": "kuyuri",
-   "src": "img/ui/lime/images/im_kuyuri_stock.webp",
+   "owner": "rio",
+   "src": "img/ui/lime/images/im_rio_stock.webp",
    "width": 960,
    "height": 720,
    "alt": "棚に並ぶ新しい小袋",
@@ -3483,10 +3483,10 @@
    "preview": "［スタンプ］がんばれ♪",
    "allowed_accounts": null
   },
-  "st_kuyuri_smug": {
+  "st_rio_smug": {
    "kind": "stamp",
-   "owner": "kuyuri",
-   "src": "img/ui/lime/stamps/st_kuyuri_smug.png",
+   "owner": "rio",
+   "src": "img/ui/lime/stamps/st_rio_smug.png",
    "width": 320,
    "height": 320,
    "alt": "試料袋。ふふ",
