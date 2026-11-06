@@ -55,7 +55,8 @@ export function openGallery() {
     const routes = recordedRoutes.length ? el("section.gal-route-records", { "aria-label": "ルート記録" }, [
       el("h3", { text: "ルート記録" }),
       ...recordedRoutes.map(([char, record]) => el("div.gal-route-record", [
-        el("strong", { text: Object.hasOwn(CHAR_LABELS, char) ? CHAR_LABELS[char] : char }),
+        // 収集率の行に無い恋人（ひより・サメちゃん・ヌール等）も、内部IDではなく名前で出す
+        el("strong", { text: Object.hasOwn(CHAR_LABELS, char) ? CHAR_LABELS[char] : photoName(char) }),
         record.becameLover ? el("p", { text: "恋人成立" }) : null,
         record.eventsSeen.length ? el("p", { text: `閲覧した段階・派生：${record.eventsSeen.join("、")}` }) : null,
         record.trueEndAsLover ? el("p", { text: "真エンド同行" }) : null,
