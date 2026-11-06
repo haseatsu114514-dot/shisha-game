@@ -116,7 +116,7 @@ export function newState() {
 
 // スキーマ26（IDREN01・2026-11-05 オーナー決定）: キャラIDを現名に合わせて改名。
 // 旧IDで保存されたセーブは、読み込み時にここで新IDへ付け替える（移行処理以外では旧IDを使わない）。
-export const CHAR_ID_RENAMES = { nagumo: "sui", rin: "rio", kuze: "saku", saif: "suhail", rashid: "khalil" };
+export const CHAR_ID_RENAMES = { nagumo: "sui", rin: "rio", kuze: "saku", saif: "faris", rashid: "khalil" };
 const CHAR_ID_TOKEN = /(?<![A-Za-z0-9])(nagumo|rin|kuze|saif|rashid)(?![A-Za-z0-9])/g;
 const renameIdToken = (v) => (typeof v === "string" ? v.replace(CHAR_ID_TOKEN, (m) => CHAR_ID_RENAMES[m]) : v);
 const renameExactId = (v) => (typeof v === "string" && CHAR_ID_RENAMES[v] ? CHAR_ID_RENAMES[v] : v);

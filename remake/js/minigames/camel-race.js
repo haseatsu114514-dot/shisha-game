@@ -40,8 +40,8 @@ const HAJIME_AT = Object.freeze({ cx: 284, bottom: 150, height: 165, clip: [206,
 // 奥の列のラクダと重なっても、どのラクダの輪か迷わない位置（列の y からの差）。
 const CUE_AT = Object.freeze({ dx: -22, dy: -64 });
 // 顔アイコンは設定の立ち絵の画風に合わせる（faceIconUrl）。目録の読み込み前だけ現行の PNG
-const SUHAIL_ICON = new URL("../../../assets/ui/face_icons/face_suhail.png", import.meta.url).href;
-// 助手席のスハイルの声（実況の代わり）。一人称は俺、はじめは「ハジメ」。台詞の末尾に「。」を付けない（text-style）。
+const FARIS_ICON = new URL("../../../assets/ui/face_icons/face_faris.png", import.meta.url).href;
+// 助手席のファーリスの声（実況の代わり）。一人称は俺、はじめは「ハジメ」。台詞の末尾に「。」を付けない（text-style）。
 const CALLS = Object.freeze({
   intro: "ハジメ、手前の金のゼッケンがハビーバだ！",
   go: "出た！ 輪が出たら声だぞ！",
@@ -268,10 +268,10 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     el("kbd", { text: "X" })]);
   const controls = el("div.camel-controls", [voiceButton, signalButton]);
   const closeButton = el("button.camel-close", { type: "button", text: "やめる", dataset: { test: "camel-close" } });
-  // 助手席のスハイルの声（上の中央、進み具合の下）。顔のアイコンが読めなければ名前だけ。
+  // 助手席のファーリスの声（上の中央、進み具合の下）。顔のアイコンが読めなければ名前だけ。
   const callText = el("span.camel-call-text");
-  const callIcon = el("img.camel-call-icon", { src: faceIconUrl("suhail") || SUHAIL_ICON, alt: "", onerror: event => { event.currentTarget.hidden = true; } });
-  const callNode = el("div.camel-call", { "aria-hidden": "true", dataset: { test: "camel-call" } }, [callIcon, el("span.camel-call-body", [el("b", { text: "スハイル" }), callText])]);
+  const callIcon = el("img.camel-call-icon", { src: faceIconUrl("faris") || FARIS_ICON, alt: "", onerror: event => { event.currentTarget.hidden = true; } });
+  const callNode = el("div.camel-call", { "aria-hidden": "true", dataset: { test: "camel-call" } }, [callIcon, el("span.camel-call-body", [el("b", { text: "ファーリス" }), callText])]);
   const flashNode = el("div.camel-flash", { "aria-hidden": "true" });
   const stageNode = el("div.camel-stage", [canvas, flashNode, hudNode, callNode, feedback, banner, countdownNode, controls, closeButton]);
   const sheet = el("div.camel-sheet", { hidden: true });
@@ -288,7 +288,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   });
   let race = null, phase = "loading", raf = 0, last = null, goalAt = 0, feedbackTimer = 0, bannerTimer = 0, countdownLeft = 0, countdownShown = -1;
   let standingsStamp = 0, whip = 0, done = false, spurtShown = false, settleTimer = 0;
-  // 演出: 画面の揺れ・ゴールのスロー・GO の柵・連続成功・スハイルの声・抜いた／抜かれた。
+  // 演出: 画面の揺れ・ゴールのスロー・GO の柵・連続成功・ファーリスの声・抜いた／抜かれた。
   let shake = 0, slow = 0, goTime = -1, combo = 0, callTimer = 0, lastCallAt = -9, spurtTint = 0;
   // カメラは自分のラクダを少し遅れて追う: 伸びた瞬間はラクダが画面の前へ出て、カメラが追いつく（camShift px）。
   let camShift = 0, camAt = 0, lastStride = -1;
@@ -323,7 +323,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     feedback.dataset.kind = kind; feedback.classList.remove("show");
     void feedback.offsetWidth; feedback.classList.add("show"); feedbackTimer = 0.75;
   };
-  /** スハイルの声。force でなければ前の声から少し空ける（大事な声が流れないように）。 */
+  /** ファーリスの声。force でなければ前の声から少し空ける（大事な声が流れないように）。 */
   const say = (text, force = false) => {
     if (!race || (!force && race.t - lastCallAt < 2.2)) return;
     lastCallAt = race?.t ?? 0;
@@ -578,7 +578,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     }
     race.events.length = 0;
   }
-  /** 順位の入れ替わり・先頭の交代・半分と残り100mを見て、スハイルの声と「抜いた」の文字を出す。 */
+  /** 順位の入れ替わり・先頭の交代・半分と残り100mを見て、ファーリスの声と「抜いた」の文字を出す。 */
   function watchRace() {
     const rows = standings(race);
     const me = rows.find(row => row.id === "player");
