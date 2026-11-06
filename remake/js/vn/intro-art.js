@@ -1,7 +1,6 @@
 // PR226の採用組版。文言・表情は正本から受け取り、配色と人物配置は目録から読む。
 import { el } from "../core/util.js";
 import { introFlavor } from "./intro-flavors.js";
-import { DB } from "../core/data.js";
 
 export function flavorTag(flavor) {
   if (!flavor) return null;
@@ -14,13 +13,32 @@ export function flavorTag(flavor) {
   ]);
 }
 
-/** 苗字と名前の区切り。正本の名前（例「綾取 陣（あやとり じん）」）に、表示名を空白で分けた形があれば [苗字, 名前] */
-export function nameParts(id, main) {
-  const full = String(DB.characters?.[id]?.name || "");
-  for (const m of full.matchAll(/([^\s/（）()・]+)[ 　]([^\s/（）()・]+)/g)) {
-    if (m[1] + m[2] === main) return [m[1], m[2]];
+/**
+ * カットインの名前の書き方（intro_cutin.display_name）を読む。NAMES-1106「カットインの名前表示ルール」（2026-11-06）
+ *   「漢字《よみ》」で直前の漢字にふりがな、「｜かな《よみ》」で｜から《までにふりがな、半角空白は苗字と名前の小さな空き。
+ * 戻り値は { text, ruby } と { gap: true } の並び
+ */
+export function nameParts(source = "") {
+  const parts = [];
+  for (const m of String(source).matchAll(/｜([^｜《]+)《([^》]+)》|([\p{Script=Han}々]+)《([^》]+)》| +|[^｜《 \p{Script=Han}々]+|[\p{Script=Han}々]+/gu)) {
+    if (m[1] || m[3]) parts.push({ text: m[1] || m[3], ruby: m[2] || m[4] });
+    else if (!m[0].trim()) parts.push({ gap: true });
+    else parts.push({ text: m[0] });
   }
-  return null;
+  return parts;
+}
+
+/** ふりがなと空きを除いた、読み上げ・字の読み込み用の名前 */
+export const plainName = (source = "") => nameParts(source).map((part) => part.text || "").join("");
+
+/** 名前の欄。漢字の上に小さいふりがな（data-ruby を CSS で描くので、本文は名前だけ）、苗字と名前のあいだに小さな空き */
+export function nameNode(tag, source, attrs = {}) {
+  const parts = nameParts(source);
+  const node = el(tag, { "aria-label": plainName(source), ...attrs }, parts.map((part) => part.gap
+    ? el("span.ci-name-gap", { "aria-hidden": "true" })
+    : el(part.ruby ? "span.ci-ruby" : "span", { text: part.text, dataset: part.ruby ? { ruby: part.ruby } : undefined })));
+  node.classList.toggle("has-ruby", parts.some((part) => part.ruby));
+  return node;
 }
 
 /** 一言の改行位置の指定「／」を除いた本文 */
@@ -54,7 +72,7 @@ export function illustratedIntro(id, variant, intro, main, portrait, art, backgr
   return el("div.cutin.art-intro", {
     dataset: { char: id, variant, motion: motionOf(intro) },
     style: `--accent:${art.color};--secondary:${art.secondary};--portrait-bg:${art.shadow};--ci:${art.color}`,
-    role: "dialog", "aria-label": `${main}の紹介`,
+    role: "dialog", "aria-label": `${plainName(main)}の紹介`,
   }, [
     el("img.ci-art-background", { src: background, alt: "", draggable: "false" }),
     el("div.ci-art-veil", { "aria-hidden": "true" }),
@@ -63,9 +81,7 @@ export function illustratedIntro(id, variant, intro, main, portrait, art, backgr
     el("div.ci-ribbon", [
       el("div.ci-art-meta", [
         el("div.ci-title", { text: intro.title || "" }),
-        el("div.ci-name-line", [nameParts(id, main)
-          ? el("span.ci-name", { "aria-label": main }, nameParts(id, main).flatMap((part, i) => [...(i ? [el("span.ci-name-gap", { "aria-hidden": "true" })] : []), el("span", { text: part })]))
-          : el("span.ci-name", { text: main })]),
+        el("div.ci-name-line", [nameNode("span.ci-name", main)]),
       ]),
     ]),
     el("img.ci-portrait", {
@@ -101,7 +117,8 @@ export function layoutIntro(host, id, variant, intro) {
   // グラフィック絵柄は人物が大きいので、名前の欄を右へ寄せたぶん幅を詰める（intro.css と同じ値）
   const shift = host.dataset.art === "graphic" ? GRAPHIC_META_SHIFT : 0;
   const name = host.querySelector(".ci-name");
-  fitWidth(name, .86, 150, 40, 596 - shift);
+  // ふりがなの分だけ上に空けるので、帯（高さ148px）に収まるよう最大の字を小さくする
+  fitWidth(name, .86, name.classList.contains("has-ruby") ? 116 : 150, 40, 596 - shift);
   const title = host.querySelector(".ci-title");
   title.style.fontSize = "28px";
   if (title.scrollWidth > 580 - shift) fitWidth(title, 1, 27, 20, 580 - shift);

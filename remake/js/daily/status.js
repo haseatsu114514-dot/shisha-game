@@ -3,7 +3,7 @@ import { masteryLabel } from "../core/flavor-mastery.js";
 import { el, yen } from "../core/util.js";
 import { DB, displayName, faceIconUrl, cgUrl } from "../core/data.js";
 import { modal, heartRow, statBadge, layers } from "../core/ui.js";
-import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
+import { state, STAT_KEYS, STAT_JA, AFFINITY_CHARACTERS } from "../core/state.js";
 import { cycleBadgeText } from "../core/cycle-display.js";
 import { step, RANK_LABELS, affinityLevel, currentCondition } from "../core/stats.js";
 import { nextStepProgress, stepOfValue } from "../core/stat-progress.js";
@@ -201,9 +201,7 @@ function meTab() {
   ]);
 }
 
-// ヌール（DSR20）は第4章ドバイのヒロイン。会った後は♥と関係の案内を出す（カフェ・サーリムの締めくくり・砂丘の告白）
-// 綾取・スティーブ・ヴォルク（#2028）も♥5の締めくくりがあるので、会った後は♥と案内を出す（第3章の東京で会える間だけ「次に会うと」を出す）
-const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "rio", "hiyori", "samechan", "ageha", "kumicho", "rei", "mashiro", "saku", "steve", "volk", "noor"];
+const PEOPLE = AFFINITY_CHARACTERS;
 function peopleTab() {
   const rows = PEOPLE.filter((id) => state.met[id] || id === "sumi").map((id) => {
     const lv = affinityLevel(id);

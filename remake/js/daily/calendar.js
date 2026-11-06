@@ -760,6 +760,10 @@ function invitationSourceMessage(inv) {
 }
 
 // 移動が終わるまで約束・面会費用・行動報酬は確定しない。
+// 人に会いに行く夜の入り（#2688 A11）。演出の部品は使うときに読む（読めなければ演出なしで会う）
+const meetOpen = (id, opts) => import("../motions/meet.js").then((m) => m.meetOpen(id, opts), () => {});
+const WORK_CALLS = new Set(["__sumi_baito__", "__mukai_baito__"]);
+
 async function travelToInvitation(inv) {
   const owner = state, day = state.day, slot = state.slot;
   const id = invitationVisitSpot(inv, invitationSourceMessage(inv));
@@ -773,6 +777,11 @@ async function travelToInvitation(inv) {
 async function meetInvitation(inv) {
   if (postponeUnaffordableInvitation(inv)) return false;
   const owner = state;
+  // 人に会いに行く約束は、葉の窓がすぼまって相手の名前を読ませてから会う（#2688 A11）。シフトの呼び出しは仕事なので除く
+  if (!WORK_CALLS.has(inv.event)) {
+    await meetOpen(inv.sender, { label: "約束", private: /^date_/.test(inv.event) || isFinaleEvent(inv.event) });
+    if (state !== owner) return false;
+  }
   const destination = invitationVisitSpot(inv, invitationSourceMessage(inv));
   let result;
   const cost = invitationCost(inv.event);
@@ -876,11 +885,14 @@ async function endDay({ returnedToTonari = false } = {}) {
       throw new Error("夜の予定へ向かう移動が中断されました");
     }
     await bannersIdle();
+    // #2775: 夜の枠で「家（休む）」を選んだ直後は、家で横になった流れから店の場面へ飛ばさず、出かけ直す一行を挟む。
+    const restedTonight = !!state.flags._home_tonight;
     delete state.flags._home_tonight; // 休息後でも、固定イベントの場所へ出かける。
     // 配達報告の直後だけは同じ来店で話を続ける。別の目的地・後続予定の到着は残す。
     const sameVisit = returnedToTonari && ev.pin === "tonari";
     returnedToTonari = false;
     if (rested || state.restDay?.illnessHealth) await beat("今日は休んでいたが、この予定だけは外せない——");
+    else if (restedTonight) await beat("少し横になってから、もう一度出かけた——");
     if (ev.beat && !sameVisit) await beat(ev.beat);
     return sameVisit ? { returnedToTonari: true } : undefined;
   });

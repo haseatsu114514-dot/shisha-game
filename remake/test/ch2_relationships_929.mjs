@@ -28,6 +28,13 @@ assert.match(naru.branches.listen.map((l) => l.text).join("\n"), /もう一回�
 assert.match(naru.branches.push.map((l) => l.text).join("\n"), /勝ち負けの話はしてない[\s\S]*帰れ[\s\S]*返事は来なかった/);
 assert.doesNotMatch(naru.branches.listen.map((l) => l.text).join("\n"), /勝ったのは/, "選んでいない強気の発言を足さない");
 assert.match(echoes.remake_ch2_eve_choices.branches.hurt.map((l) => l.text).join("\n"), /既読/);
+// #2720: 「返事はまだない」は、DAY12に休みの店の前で送ったLIMEを読んだ時だけ。送っていなければ約束だけを思い出す
+const listened = echoes.remake_ch2_eve_choices.branches;
+const sentCheck = listened.listened.find((l) => l.type === "condition");
+assert.deepEqual([sentCheck.flag, sentCheck.next_true, sentCheck.next_false], ["_ch2_read_ch2_naru_window", "listened_sent", "listened_promise"]);
+assert.match(listened.listened_sent.map((l) => l.text).join("\n"), /今どこにいますか[\s\S]*返事はまだない/);
+assert.doesNotMatch(listened.listened_promise.map((l) => l.text).join("\n"), /返事|送った/);
+assert.doesNotMatch(listened.listened.map((l) => l.text || "").join("\n"), /返事/);
 
 // 謙虚・休養を選んだ進行にも、一律の傲慢な独白を押し付けない
 assert.doesNotMatch(text(main.ch2_sumi_silence), /勝てば、全部正しくなる/);

@@ -283,6 +283,21 @@ test("boost: the gauge fills from near misses, successful big landings and spins
   assert(Math.abs(fill.gauge - BOOST.land - BOOST.perfect) < 1e-9);
 });
 
+test("boost spends any stocked gauge proportionally, even during recovery or an active boost", () => {
+  const game = createGame(generateCourse(DEFAULT_SEED));
+  chargeBoost(game, 0.4);
+  game.fallT = 0.5;
+  assert.equal(boost(game), "boost");
+  assert.equal(game.gauge, 0);
+  assert(Math.abs(game.boostT - BOOST.duration * 0.4) < 1e-9);
+  game.fallT = 0;
+  chargeBoost(game, 0.2);
+  assert.equal(boost(game), "boost");
+  assert(Math.abs(game.boostT - BOOST.duration * 0.6) < 1e-9);
+  assert.equal(game.stats.boosts, 2);
+  assert.equal(boost(game), null, "spent stock cannot be used again");
+});
+
 test("race: Noor runs the same course deterministically; finishing first wins a bonus; the result keeps the gap", () => {
   const course = generateCourse(DEFAULT_SEED);
   const a = rivalRun(course), b = rivalRun(course);

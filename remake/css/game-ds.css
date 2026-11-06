@@ -46,6 +46,11 @@ body[data-game-layout="ds"][data-screen="title"]:has(.title[data-layout="ds"]) #
 body[data-game-layout="ds"][data-screen="title"]:has(.title[data-layout="ds"]) #rotate-hint { display: none !important; }
 body.game-ds #rotate-hint { display: none !important; }
 
+@media (orientation: portrait) and (max-width: 760px) and (hover: none) and (pointer: coarse) {
+  /* DS風の画面と表示切替も全面ガードで覆う。 */
+  body[data-game-layout="ds"]:not([data-screen="title"]) #rotate-hint { display: grid !important; z-index: 1200; }
+}
+
 /* 2つの画面。上は額縁だけ（中身の上に重ねる）、下は面の色（中身の後ろに敷く）。 */
 body.game-ds #stage > .game-ds-panel { position: absolute; right: auto; bottom: auto; pointer-events: none; border-radius: 7px; }
 body.game-ds #stage > .game-ds-visual {
@@ -207,7 +212,7 @@ body.game-ds .map-info {
   left: calc(var(--ds-cx) + 8px); top: calc(var(--ds-cy) + var(--ds-ch) - var(--ds-touchbar) - 120px); right: auto; bottom: auto;
   width: calc(var(--ds-cw) - 16px); height: 114px; overflow: auto; touch-action: pan-y; padding: 6px 10px; transform: none;
 }
-body.game-ds .mi-preview { display: none; }
+body.game-ds .map-info.spot-selected .mi-preview { display: block; aspect-ratio: 16 / 9; }
 body.game-ds .mi-banner { font-size: 15px; }
 body.game-ds :is(.mi-desc, .mi-foot) { font-size: 13px; line-height: 1.45; }
 body.game-ds .mi-go { min-height: 44px; font-size: 17px; }

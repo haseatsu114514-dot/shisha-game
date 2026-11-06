@@ -1,3 +1,4 @@
+import { hasAffinity } from "./state.js";
 // Fortune's one-visit affinity bonus remains in state.fortune. Sight has its own lifetime.
 import { relationshipElapsedDay } from "./chapter-clock.js";
 
@@ -12,10 +13,8 @@ export function naruRiftActive(save) {
     || flags?._ch2_naru_hurt
   );
 }
-// 占い師本人は相手に選べない（初対面の♥1で好感度の欄ができても、好感度のある人物ではない。台帳 URA07）
-const NOT_FORTUNE_TARGETS = new Set(['hajime', 'uranaishi']);
 export function isFortuneTargetAvailable(save, charId) {
-  return typeof charId === 'string' && charId.length > 0 && !NOT_FORTUNE_TARGETS.has(charId)
+  return typeof charId === 'string' && charId.length > 0 && hasAffinity(charId)
     && !(charId === 'naru' && naruRiftActive(save));
 }
 export function fortuneTargets(save, characters = {}) {

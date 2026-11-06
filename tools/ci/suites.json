@@ -656,6 +656,12 @@
       ]
     },
     {
+      "id": "stamp-deploy",
+      "title": "Pages deploy version stamp on the real index.html and CSS",
+      "kind": "quick",
+      "run": ["node remake/test/stamp_deploy.mjs"]
+    },
+    {
       "id": "dialogue-lint",
       "title": "Dialogue lint, canon and story routes",
       "kind": "quick",
@@ -1780,10 +1786,29 @@
         "remake/js/minigames/tetsuko-time.js",
         "remake/js/minigames/tetsuko-model.js",
         "remake/js/minigames/tetsuko-art.js",
+        "remake/js/minigames/tetsuko-theme.js",
+        "remake/js/minigames/tetsuko-help.js",
         "remake/css/tetsuko-time.css",
+        "remake/css/tetsuko-theme.css",
         "remake/test/browser/ch3_tokyo_daily.mjs"
       ],
       "run": ["node remake/test/browser/ch3_tokyo_daily.mjs"]
+    },
+    {
+      "id": "tetsuko-theme",
+      "title": "Tetsuko Time dedicated theme: box-opening intro never blocks taps, HUD hidden then back, no lavender, help behind ? and a clean base screen (#2717)",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 4,
+      "paths": [
+        "remake/js/minigames/tetsuko-theme.js",
+        "remake/js/minigames/tetsuko-help.js",
+        "remake/js/minigames/tetsuko-time.js",
+        "remake/css/tetsuko-theme.css",
+        "remake/css/tetsuko-time.css",
+        "remake/test/browser/tetsuko_theme.mjs"
+      ],
+      "run": ["node remake/test/browser/tetsuko_theme.mjs"]
     },
     {
       "id": "ch3-full-flow",
@@ -2727,6 +2752,15 @@
       ]
     },
     {
+      "id": "portrait-shop-rotate-guard",
+      "title": "縦持ちDS風の章カード・ショップ・ショップ入口の回転ガード",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/scenes/game-layout.js", "remake/css/game-ds.css", "remake/test/browser/portrait_shop_fallback.mjs"],
+      "run": ["node remake/test/browser/portrait_shop_fallback.mjs"]
+    },
+    {
       "id": "adam-eden",
       "title": "Adam and EDEN adopted art",
       "kind": "browser",
@@ -3163,6 +3197,7 @@
         "remake/js/daily/fortune*.js",
         "remake/js/core/fortune-effects.js",
         "remake/data/fortune-trivia.json",
+        "remake/data/fortune-trivia-selection.json",
         "remake/data/fortune-choice-hints.json",
         "docs/qa/hud-fortune-682/trivia-draft.md",
         "remake/js/core/chapter-features.js",
@@ -3720,6 +3755,22 @@
       ],
       "run": [
         "node remake/test/intro_transition.mjs"
+      ]
+    },
+    {
+      "id": "conversation-effects-demo",
+      "title": "Conversation effects demo (#2732): 12 candidates, ON/OFF, one at a time",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 5,
+      "paths": [
+        "remake/test/conversation_effects_demo.mjs",
+        "remake/js/vn/conversation-effects-data.js",
+        "remake/js/vn/conversation-effects-demo.js",
+        "remake/conversation-effects-demo.html"
+      ],
+      "run": [
+        "node remake/test/conversation_effects_demo.mjs"
       ]
     },
     {

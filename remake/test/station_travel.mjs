@@ -23,6 +23,7 @@ class Element {
   append(...children) { for (const c of children.filter(x => x != null)) { this.children.push(c); if (typeof c === "object") c.parent = this; } }
   replaceChildren(...children) { this.children.forEach(c => { if (typeof c === "object") c.parent = null; }); this.children = []; this.textContent = ""; this.append(...children); }
   setAttribute(k, v) { this.attributes[k] = v; }
+  removeAttribute(k) { delete this.attributes[k]; }
   querySelectorAll(sel) {
     const match = n => sel.startsWith(".") ? n.classes.has(sel.slice(1))
       : sel.startsWith("[data-test=") ? n.dataset.test === sel.slice(11, -1).replaceAll('"', "") : false;

@@ -161,7 +161,7 @@
         },
         {
           "type": "fx",
-          "id": "cutin"
+          "id": "gold"
         },
         {
           "speaker": "sumi",
@@ -1633,7 +1633,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "なるさんのノートには、配合の数字と試した味がびっしり並んでいる。"
+          "text": "なるのノートには、配合の数字と試した味がびっしり並んでいる。"
         },
         {
           "speaker": "adam",
@@ -2242,7 +2242,6 @@
             "type": "intro",
             "char_id": "tsumugi",
             "intro": {
-              "display_name": "つむぎ",
               "title": "tonariで煙を描く常連",
               "line": "……",
               "face": "normal"

@@ -1,6 +1,7 @@
 // #1898: 回想の対象と後日談・敗北台本の文言を、データだけで確認する（ブラウザ不要）。
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { AFFINITY_CHARACTERS } from '../js/core/state.js';
 const root = new URL('../../', import.meta.url);
 const readJson = (path) => JSON.parse(fs.readFileSync(new URL(path, root), 'utf8'));
 const memories = readJson('data/relationship_memories.json').memories;
@@ -73,10 +74,7 @@ for (const [, scene] of scenes) {
   }
 }
 // 第5章の回想は、交流した相手（人物タブの顔ぶれ）だけ。未交流でもスミさんで成立する（正本: 第5章「回想は本当にプレイした交流だけ」）。
-const statusSource = fs.readFileSync(new URL('remake/js/daily/status.js', root), 'utf8');
-const peopleMatch = statusSource.match(/^const PEOPLE = (\[[^\]]*\]);/m);
-assert(peopleMatch, 'status.js PEOPLE not found (keep it a one-line array)');
-const people = JSON.parse(peopleMatch[1]);
+const people = AFFINITY_CHARACTERS;
 const ch5Reflection = reflections(scenes.get(eveScenes[5]))[0];
 // 人物タブに出ても、第3・4章の前夜に浮かんだ大会の相手は第5章で繰り返さない（ch5_main.json の reflection の comment）。
 // スティーブ（#2028）は♥5の締めくくりがあるので人物タブに出るが、記憶は第3章の前夜に浮かぶ低温の話だけ。

@@ -7,7 +7,7 @@
 // ラクダ・ロボット騎手・SUV・車輪は Codex の絵（assets/ui/camel_race・2026-11-02 採用。原画は asset_sources/ch4-camel-race）。
 // 絵が読めない環境では Canvas の描画に戻す。砂漠・柵・砂煙・合図の輪・HUD は Canvas で描く。
 import { el } from "../core/util.js";
-import { SE } from "../core/audio.js";
+import { SE, currentBgm, playBgm } from "../core/audio.js";
 import { imgFileUrl } from "../core/img-file.js";
 import { faceIconUrl } from "../core/data.js";
 import { portraitStyle } from "../core/portrait-style.js";
@@ -221,6 +221,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   pilot = null, timeScale = 1, best = null, cups = null, cupRecords = {}, reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
+  const bgmBefore = currentBgm();
   const runs = [];
   const unlocked = new Set(cups || ["practice", "rookie"]);
   let selectedCup = "practice";
@@ -442,6 +443,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     signal?.removeEventListener("abort", abort);
     root.remove();
     active.delete(host);
+    if (currentBgm() === "bgm_ethnic12") playBgm(bgmBefore);
     try { previousFocus?.focus?.(); } catch { /* 元の要素が無い */ }
     finish(summary(completed));
   };
@@ -492,6 +494,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     sheet.querySelector("button:not(:disabled)")?.focus();
   }
   function startRace() {
+    playBgm("bgm_ethnic12");
     sheet.hidden = true; sheet.replaceChildren();
     race = createRace({ seed: rivalSeed(), cup: selectedCup });
     clockNode.querySelector(".camel-clock-sub").textContent = `${camelCup(selectedCup).name} ${race.length.toLocaleString("ja-JP")}m・4頭`;

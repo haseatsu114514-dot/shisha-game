@@ -164,3 +164,4 @@ assert.equal(rioPanel.style.top, `${Math.round(64 - frames.new.rio.eye[1] * 82 /
 assert.equal(panelContext.boardFaceUrl("pakki"), null, "people without a card face use the face icon");
 core.config.portraitStyle = previousStyle;
 console.log("PASS board portraits: lesson cards and the panel use the selected style's art + that style's measured eye coordinates (classic for people without new art)");
+

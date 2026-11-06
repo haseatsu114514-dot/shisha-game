@@ -4,6 +4,7 @@ import fs from "node:fs";
 import { createMatch, turnOf, takeTurn, planOpponent, matchResult, resolveTurn, inSuddenDeath, suddenDeathWinner, suddenDeathTarget, openAim, DIFFICULTIES, MEASURE_FROM } from "../js/minigames/axe-match.js";
 import { resolveThrow, KILLS, KILL_ROTATION, CLUSTERS, killState, closuresOf } from "../js/minigames/axe-model.js";
 import { matchReaction } from "../js/minigames/axe-companions.js";
+import { adamUnlocked, recordAdamUnlock } from "../js/minigames/axe-secret-boss.js";
 const center = { x: 0, y: 0, power: .62 }, drop = { x: 0, y: 0, power: .1 };
 const kill = id => { const k = KILLS.find(k => k.id === id); return { x: k.x, y: k.y, power: .62 }; };
 function play(seed, difficulty, playerInput = center, division = "rec") {
@@ -165,7 +166,35 @@ test("fixed seeds 0..9999 give ordered difficulty distributions, legal calls and
   assert(stats.easy.dropRate > .1 && stats.easy.dropRate < .2);
   assert.equal(stats.normal.dropRate, 0); assert.equal(stats.hard.dropRate, 0);
   assert(stats.hard.killRate > stats.normal.killRate && stats.normal.killRate > stats.easy.killRate);
+  assert(stats.secret.mean > stats.hard.mean && stats.secret.mean < 61, "アダムは最強だが高得点で勝てる");
+  assert(stats.secret.p10 > stats.hard.p10);
+  assert(stats.secret.p90 < 64, "十分に高い得点なら大半の試合で勝てる");
   console.log("Opponent distributions (10000 games each): " + JSON.stringify(stats));
+});
+test("裏ボス解放はひよりの最高難度の勝利だけで記録し、本編セーブを変更しない", () => {
+  const values = new Map([["suien_remake_save", "story-unchanged"]]);
+  const storage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
+  const result = { completed: true, opponent: "hiyori", match: { difficulty: "hard", winner: "player" }, series: { winner: "player" } };
+  assert.equal(adamUnlocked(storage), false);
+  for (const wrong of [{ ...result, completed: false }, { ...result, opponent: "adam" },
+    { ...result, match: { ...result.match, difficulty: "normal" } }, { ...result, series: { winner: "opponent" } }]) {
+    assert.equal(recordAdamUnlock(wrong, storage), false);
+    assert.equal(adamUnlocked(storage), false);
+  }
+  assert.equal(recordAdamUnlock(result, storage), true);
+  assert.equal(adamUnlocked(storage), true);
+  assert.equal(values.get("suien_remake_save"), "story-unchanged");
+});
+test("アダムの対戦台詞は全フェイズを覆い、専用立ち絵の表情を使う", () => {
+  const data = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/axe_versus.json", import.meta.url)));
+  const lines = Object.fromEntries(data.axe_versus.adam.lines.map(line => [line.id, line.text]));
+  for (const line of data.axe_versus.adam.lines) { assert.equal(line.speaker, "adam"); assert(line.text.length <= 48); }
+  for (const line of data.axe_versus.lines) assert(lines[line.id], line.id);
+  let match = takeTurn(createMatch("secret"), "player", center);
+  assert.equal(matchReaction(lines, "opponent-ready", match, "opponent", null, null, { faces: ["normal", "smile", "intense"] }).face, "normal");
+  match = { ...match, opponent: [{ score: 8, outcome: "killshot" }] };
+  assert.equal(matchReaction(lines, "result", match, "opponent", null, null, { faces: ["normal", "smile", "intense"] }).face, "intense");
+  assert.equal(matchReaction(lines, "result", match, "player", null, null, { versusOnly: true }).text, lines["player-bull"]);
 });
 test("canonical match lines cover opponent outcomes, point gaps, calls, halves, sudden death and final results", () => {
   const data = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/axe_versus.json", import.meta.url)));

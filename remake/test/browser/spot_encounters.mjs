@@ -79,13 +79,11 @@ await suite("spot-encounters", async check => {
         rows.push({ trace: E.trace, lines: E.lines(), cost: money - E.core.state.money, grown, xp: (E.core.state.growth?.xp || 0) - xp,
           firstAffinity: E.core.state.affinity.maezono || 0 });
       }
-      const expected = JSON.parse(before);
-      expected[0].maezono = 9; expected[1].maezono = 0;
-      return { rows, board: (await import("./js/core/growth-mode.js")).growthEnabled(), unchanged: JSON.stringify(expected) === E.relationship(), met: E.core.state.met.maezono,
+      return { rows, board: (await import("./js/core/growth-mode.js")).growthEnabled(), unchanged: before === E.relationship(), met: E.core.state.met.maezono,
         seen: E.core.state.flags._spot_seen_cafe_maezono_break };
     });
     assert(r.unchanged && r.met && r.seen);
-    assert.deepEqual(r.rows.map(row => row.firstAffinity), [0, 0, 0, 9, 9, 9, 9, 9], 'The completed first meeting earns exactly heart1; facility repeats add no extra affinity');
+    assert.deepEqual(r.rows.map(row => row.firstAffinity), [0, 0, 0, 0, 0, 0, 0, 0], '会長と同じく、上園との施設遭遇では好感度を付けない');
     assert.equal(r.rows[0].trace[0], "ch1_cafe_visit");
     assert.equal(r.rows[1].trace[0], "cafe_naru_break");
     assert.equal(r.rows[3].trace[0], "cafe_maezono_break");

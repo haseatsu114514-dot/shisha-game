@@ -6,6 +6,7 @@ import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardSceneExp, consultLessons, readyLessons } from "../core/growth.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, enterScene, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { chapterTitleEntry } from "../core/chapter-title-art.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
@@ -226,8 +227,7 @@ async function openChapter(advance) {
     if (!progress.titleSeen) {
       await setBg(bgUrl("bg_street_day"), { instant: true });
       if (!current(owner)) return;
-      await chapterTitle({ no: "第三章", name: "嘘つきたちの夜", read: "SMOKE AND MIRRORS",
-        sub: "HAZE: NATIONAL TOKYO 編" });
+      await chapterTitle(chapterTitleEntry(3)); // 登録済みの章題（第4・5章と同じ・#2688 F6）
       if (!current(owner)) return;
       progress.titleSeen = true;
       save();
@@ -272,8 +272,7 @@ async function renderPrologue(owner) {
     save();
   }
   if (progress.prologueStep === 2) {
-    await chapterTitle({ no: "第三章", name: "嘘つきたちの夜", read: "SMOKE AND MIRRORS",
-      sub: "HAZE: NATIONAL TOKYO 編" });
+    await chapterTitle(chapterTitleEntry(3)); // 登録済みの章題（第4・5章と同じ・#2688 F6）
     if (!current(owner)) return;
     progress.titleSeen = true;
     progress.prologueStep = 3;
@@ -313,8 +312,7 @@ async function renderPrep(owner) {
     save();
   }
   if (prep.step === 2) {
-    await chapterTitle({ no: "第三章", name: "嘘つきたちの夜", read: "SMOKE AND MIRRORS",
-      sub: "HAZE: NATIONAL TOKYO 編" });
+    await chapterTitle(chapterTitleEntry(3)); // 登録済みの章題（第4・5章と同じ・#2688 F6）
     if (!current(owner)) return;
     progress.titleSeen = true;
     prep.step = 3;

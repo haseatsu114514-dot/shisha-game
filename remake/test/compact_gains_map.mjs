@@ -148,7 +148,7 @@ try {
   assert.equal(await page.locator('[data-test="pin-naru"] .sub-label').textContent(),"KEMURIKUSAへ行く");
   assert.equal(await page.locator('[data-test="pin-naru"] .pin-status').textContent(),"本日臨時休業");
   await page.locator('[data-test="pin-naru"]').click();
-  assert.equal(await page.locator(".mi-no").textContent(),"本日臨時休業");
+  assert.match(await page.locator(".map-info").getAttribute("aria-label"), /本日臨時休業/);
   assert.equal(await page.locator('[data-test="map-go"]').count(),0);
   await page.evaluate(async () => { T.core.state.day=5; await T.openMap(); });
   await page.waitForSelector('[data-test="pin-naru"]');

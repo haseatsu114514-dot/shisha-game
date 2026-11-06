@@ -108,6 +108,7 @@ synthetic("ui.js", {
 synthetic("audio.js", { SE: new Proxy({}, { get: () => () => {} }), playBgm() {}, currentBgm: () => null });
 synthetic("bus.js", { on: () => () => {} });
 synthetic("axe.js", { runAxeThrow: async () => {} });
+synthetic("game-seat.js", { seated: (_label, run) => run() }); // ミニゲームの入口と出口（#2688 F13）はこの検査では素通し
 synthetic("engine.js", {
   play: async (scene) => {
     const id = typeof scene === "string" ? scene : scene?.dialogue_id || scene?.id;

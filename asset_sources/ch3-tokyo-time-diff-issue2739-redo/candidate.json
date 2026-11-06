@@ -1,0 +1,19 @@
+{
+  "issue": 2739,
+  "status": "第2ラウンド・採用判断用候補・未採用",
+  "catalog_candidate": {
+    "key": "bg_mukai_shop_day.webp",
+    "place": "mukai_shop",
+    "time": "day",
+    "weather": "",
+    "size": [1920, 1080]
+  },
+  "existing_background": "remake/img/backgrounds/bg_mukai_shop.webp",
+  "rejected_previous_candidate": "asset_sources/ch3-tokyo-time-diff-issue2739/bg_mukai_shop_day_original.png",
+  "original": "bg_mukai_shop_day_redo_original.png",
+  "preview": "bg_mukai_shop_day_redo_preview.webp",
+  "sha256": {
+    "original": "53d2e10dfc22e5886855203341a83ab6c1ffa60ada8da77e24c749cba99044ff",
+    "preview": "c5345c2580ba36ba4ba490150cf0faa8158fda74ae9be188e9790e941e5d412c"
+  }
+}

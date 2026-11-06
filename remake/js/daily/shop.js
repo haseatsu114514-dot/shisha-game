@@ -13,7 +13,7 @@ import { growthSkill, SKILL_TUNING } from "../core/growth-effects.js";
 import { cueTransition, refreshPlaceCue, cancelPlaceCue } from "../core/transitions.js";
 import { artImg } from "../craft/art.js";
 import { addMoney, addStamina } from "../core/stats.js";
-import { SE, playBgm } from "../core/audio.js";
+import { SE, playBgm, currentBgm } from "../core/audio.js";
 import { visitChar } from "./spots.js";
 import { RIO_AWAY_DAY } from "../core/rules.js";
 import { rioUnavailable as rioVisitReason } from "./spot-hours.js";
@@ -205,6 +205,11 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
   return new Promise((resolve) => {
     const session = state;
     let finished = false, confirming = false, tab = "flavor", category = "all";
+    let kujiBgmBefore = null, kujiBgmActive = false;
+    const restoreKujiBgm = () => {
+      if (kujiBgmActive && currentBgm() === "bgm_ethnic09") playBgm(kujiBgmBefore);
+      kujiBgmBefore = null; kujiBgmActive = false;
+    };
     const cart = new Map();
     const firstErrand = ["mint", "lemon"].includes(errand) && expense && ["_errand_mint_expensed", "_errand_lemon_expensed"].includes(expenseFlag) && !session.flags._errand_shop_done;
     setBg(background || bgUrl("bg_shop"), { fast: true, ready: [FLAVOR_ART, ...Object.values(SHOP_ART).map(art => art.url), ...new Set(Object.values(CHARACTER_FLAVOR_ART).map(art => art.url))] });
@@ -394,7 +399,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const leave = async () => {
       if (!live() || confirming) return;
       if (errand && flavorStock(errand) < minStock) {
-        SE.error(); tab = "flavor"; category = "all"; render();
+        SE.error(); restoreKujiBgm(); tab = "flavor"; category = "all"; render();
         body.querySelector(".errand")?.scrollIntoView({ block: "nearest" });
         toast(`${errandName}を購入してから戻ろう`, { kind: "warn" }); return;
       }
@@ -406,10 +411,16 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
         confirming = false;
         if (!ok || !live()) return;
       }
+      restoreKujiBgm();
       finished = true; SE.cancel(); retire(root); resolve(null);
     };
     for (const [id, label] of [["flavor", "フレーバー"], ["equip", "機材"], ...(kuji ? [["kuji", "シーシャくじ"]] : []), ["sell", "売却"]]) {
-      tabs.append(el("button.shop-tab", { text: label, dataset: { tab: id }, onclick: () => { if (!live()) return; tab = id; body.scrollTop = 0; SE.click(); render(); } }));
+      tabs.append(el("button.shop-tab", { text: label, dataset: { tab: id }, onclick: () => {
+        if (!live()) return;
+        if (tab !== "kuji" && id === "kuji") { kujiBgmBefore = currentBgm(); kujiBgmActive = true; playBgm("bgm_ethnic09"); }
+        else if (tab === "kuji" && id !== "kuji") restoreKujiBgm();
+        tab = id; body.scrollTop = 0; SE.click(); render();
+      } }));
     }
     for (const [id, label] of [["all", "すべて"], ["cooling", "清涼"], ["fruit", "フルーツ"], ["sweet", "スイート"], ["spice", "スパイス"], ["floral", "フローラル"]]) {
       filters.append(el("button.shop-filter", { text: label, dataset: { category: id }, onclick: () => { if (!live()) return; category = id; body.scrollTop = 0; SE.click(); render(); } }));

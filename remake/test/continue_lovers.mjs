@@ -75,3 +75,4 @@ for (const face of new Set([...LOVER_CONTINUE_SCRIPTS.hiyori.cues.map(c => c.fac
   assert.equal(execFileSync("git", ["ls-files", "--error-unmatch", "--", asset], { cwd: new URL("../../", import.meta.url), encoding: "utf8" }).trim(), asset);
 }
 console.log("PASS: Sumi-or-lover selection (even share, no repeats, no chapter-one Minto, no strangers), seven imagined-voice lines, faces and framing present");
+

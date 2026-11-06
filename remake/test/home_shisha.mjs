@@ -59,7 +59,7 @@ assert.equal(kuji.prizes.find((p) => p.rank === "S").equipId, rig.PRO_RIG);
 const sumiScene = read("../../data/dialogue/ch1_sumi.json").dialogues.find((d) => d.dialogue_id === rig.RIG_SCENE);
 assert(sumiScene?.lines.some((l) => l.text?.includes("ミャア")), "スミさんがミャアの卓上台を譲る場面");
 assert.equal(sumiScene.lines.find((l) => l.speaker === "sumi").text, "これやる", "スミさんの最初の一言は「これやる」");
-assert.match(sumiScene.lines.map(l => l.text || "").join(" "), /一酸化炭素.*中毒.*命.*室内で炭を焚くな.*窓を開けても、安全とは言えない/);
+assert.match(sumiScene.lines.map(l => l.text || "").join(" "), /一酸化炭素.*中毒.*命.*窓は少し開けとけ.*閉め切った部屋で炭を焚くと、頭が痛くなる/);
 // 中盤の修行（DAY7 の中間準備）の最後に渡す
 const ch1Source = fs.readFileSync(new URL("../js/chapters/ch1.js", import.meta.url), "utf8");
 const midPrep = ch1Source.slice(ch1Source.indexOf("async function midPreparation"), ch1Source.indexOf("async function rehearsal"));
@@ -195,6 +195,7 @@ for (const schema of [14, SCHEMA]) for (const [label, patch, grant] of [
   store.set(key, original);
   const expected = JSON.parse(original);
   expected.schema = SCHEMA;
+  if (schema < 27) expected.affinity.sumi = Math.max(expected.affinity.sumi || 0, 9);
   if (schema < 19) expected.flags._sumi_double_apple_received = true;
   if (schema < 16) expected.flags._axe_bar_legacy_access = true; // #577の旧保存互換だけを追加。資源の厳密比較は維持
   if (schema < 25) expected.flags._dense_pack_legacy = true;

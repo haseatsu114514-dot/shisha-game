@@ -47,8 +47,10 @@
   letter-spacing: 0.02em;
 }
 .staff-roll-music { display: flex; flex-direction: column; align-items: center; gap: 28px; }
+.staff-roll .staff-roll-source { font-size: 24px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-dim); }
 .staff-roll-song-title { font-size: 32px; font-weight: 700; letter-spacing: 0.02em; }
 .staff-roll .staff-roll-song-credit { margin-top: 6px; font-size: 24px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-dim); }
+.staff-roll-sound p { font-size: 24px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-dim); overflow-wrap: anywhere; }
 .staff-roll-closing p {
   font-size: 40px;
   font-weight: 700;

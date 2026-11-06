@@ -1,5 +1,6 @@
 // 正式な前後の会話と実プレイをつなぐ。得点・練習だけでは読了にしない。
 import { state } from "../core/state.js";
+import { seated } from "../core/game-seat.js"; // ミニゲームの入口と出口（#2688 F13）
 import { on } from "../core/bus.js";
 import { hiyoriRoute, hiyoriEventStatus, hiyoriEventPrereqsMet } from "../core/hiyori-route.js";
 import { play } from "../vn/engine.js";
@@ -38,14 +39,15 @@ export async function playHiyoriAxeSequence(event, { signal } = {}) {
     const bgmBefore = currentBgm() || "tonari"; playBgm("bgm_axe"); // #788 実プレイ中だけ斧投げ曲。終了・中断でtonariの曲へ
     const restoreBgm = () => { if (state === owner && currentBgm() === "bgm_axe") playBgm(bgmBefore); };
     // 台本の「スタッフの説明を聞いて」の所で、店主マキの1投レッスン。面識がある時だけ（初対面の紹介はBarの来店が担う）。
-    if (!owner.flags._axe_lesson_done && owner.flags._intro_maki) {
-      await runAxeThrow({ host: document.getElementById("stage"), signal: abort.signal, tutorial: true, opponent: null,
-        lessonContext: "event", allowRetry: false }).catch(error => { restoreBgm(); throw error; });
+    const lessonFirst = !owner.flags._axe_lesson_done && owner.flags._intro_maki;
+    if (lessonFirst) {
+      await seated("AXE THROW", () => runAxeThrow({ host: document.getElementById("stage"), signal: abort.signal, tutorial: true, opponent: null,
+        lessonContext: "event", allowRetry: false }), { exit: false }).catch(error => { restoreBgm(); throw error; });
       if (!current()) { restoreBgm(); return false; }
       owner.flags._axe_lesson_done = true;
     }
-    const game = await runAxeThrow({ host: document.getElementById("stage"), signal: abort.signal,
-      mode: "practice", opponent: "hiyori" }).finally(restoreBgm);
+    const game = await seated("AXE THROW", () => runAxeThrow({ host: document.getElementById("stage"), signal: abort.signal,
+      mode: "practice", opponent: "hiyori" }), { enter: !lessonFirst }).finally(restoreBgm);
     if (!current() || !game.completed) return false;
     const ending = await play(event.outro, { signal: abort.signal });
     return current() && ending?.id === event.outro;

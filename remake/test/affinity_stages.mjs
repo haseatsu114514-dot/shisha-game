@@ -378,7 +378,7 @@ await check('lover points wait for both connected scripts; private scale/carry a
   f.setPlay(async()=>done);assert.equal(await f.romance.playLoverMilestone('tsumugi'),true);
   assert.equal(s.lovePts.tsumugi,19);assert.equal(f.romance.loverMilestoneDue('tsumugi'),'lover_tsumugi_lv1_b');
   assert.equal(await f.romance.playLoverMilestone('tsumugi'),true);assert.equal(s.lovePts.tsumugi,32);assert.equal(s.loveLevel.tsumugi,2);
-  assert.equal(f.stats.affinityLevel('tsumugi'),5);assert.equal(s.affinity.tsumugi||0,0);
+  assert.equal(f.stats.affinityLevel('tsumugi'),5);assert.equal(s.affinity.tsumugi,9);
   f.roundTrip();assert.equal(f.stats.releaseLoveAffinity('tsumugi'),0);assert.equal(f.core.state.lovePts.tsumugi,32);
 });
 await check('all romanceable casts: unread lover stage holds next level; normal completion releases to that next stage', async f => {
@@ -995,6 +995,55 @@ await check('Rio #2025: heart4/5 branch on the ♥3 answer and carry no new roma
     assert(rows.filter(l => l.type === 'choice').every(l => !l.romance_char && l.choices.every(c => c.romance === undefined)));
     assert(!rows.some(l => l.type === 'set_flag'), 'read state stays in the story counter');
   }
+});
+
+
+await check('Issue #2750: known characters begin at ♥1 and excluded characters never earn hearts', async f => {
+  const s = f.core.newGame();
+  for (const id of ['sumi', 'tsumugi']) {
+    assert.equal(s.met[id], true);
+    assert.equal(s.affinity[id], 9);
+    assert.equal(f.stats.affinityLevel(id), 1);
+  }
+  const before = f.events.filter(event => event.type === 'affinity-gain').length;
+  for (const id of ['sui', 'maezono', 'dr_kemuri', 'emil', 'mukai_master', 'uranaishi']) {
+    f.core.markMet(id);
+    assert.equal(f.stats.gainAffinity(id, 100, { firstMeeting: true }), undefined);
+    assert.equal(f.stats.ensureAffinityLevel(id, 5), 0);
+    assert.equal(f.stats.affinityLevel(id), 0);
+    assert.equal(s.affinity[id], undefined);
+  }
+  assert.equal(f.events.filter(event => event.type === 'affinity-gain').length, before);
+  assert.equal(f.stats.affinityLevel('hiyori'), 0);
+  assert.equal(f.stats.gainAffinity('hiyori', 1, { firstMeeting: true }), 9);
+  assert.equal(f.stats.affinityLevel('hiyori'), 1);
+});
+
+await check('Issue #2750: schema 26 save migrates without losing earned hearts', async f => {
+  const old = f.core.newGame();
+  old.schema = 26;
+  old.met = { sui: true, mukai_master: true, hiyori: true };
+  old.affinity = { sumi: 48, sui: 33, mukai_master: 20, hiyori: 9 };
+  old.affinityCarry = { sui: 0.5, hiyori: 0.25 };
+  old.flags._affinity_first_meeting_pending_tsumugi = true;
+  old.flags._affinity_first_meeting_pending_sui = true;
+  old.flags._fortune_choice_sight = { char: 'sui', chapter: 1, from: 1, until: 3 };
+  old.fortune = { char: 'sui' };
+  f.memory.set(f.core.SAVE_KEY, JSON.stringify(old));
+  assert(f.core.load());
+  const s = f.core.state;
+  assert.equal(s.affinity.sumi, 48);
+  assert.equal(s.affinity.tsumugi, 9);
+  assert.equal(s.affinity.hiyori, 9);
+  assert.equal(s.affinity.sui, undefined);
+  assert.equal(s.affinity.mukai_master, undefined);
+  assert.equal(s.affinityCarry.sui, undefined);
+  assert.equal(s.affinityCarry.hiyori, 0.25);
+  assert.equal(s.met.tsumugi, true);
+  assert.equal(s.flags._affinity_first_meeting_pending_tsumugi, undefined);
+  assert.equal(s.flags._affinity_first_meeting_pending_sui, undefined);
+  assert.equal(s.flags._fortune_choice_sight, undefined);
+  assert.equal(s.fortune, undefined);
 });
 
 console.log(`affinity stages: ${count} PASS; browser/real LOAD not executed`);

@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-06 10:57 UTC",
+ "generated": "2026-11-06 20:28 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -713,7 +713,9 @@
  ],
  "sceneProps": [
   "shisha_home_pro.png",
-  "shisha_home_tabletop.png"
+  "shisha_home_tabletop.png",
+  "shisha_home_stand_walnut.png",
+  "shisha_home_stand_custom.png"
  ],
  "continueUI": [
   "approval_stamp.png",
@@ -2568,11 +2570,16 @@
   "bgm_aftermath.bgm",
   "bgm_axe.bgm",
   "bgm_continue_urgent.mp3",
+  "bgm_ethnic05.bgm",
+  "bgm_ethnic08.bgm",
+  "bgm_ethnic09.bgm",
+  "bgm_ethnic12.bgm",
   "bgm_judging.bgm",
   "bgm_purikura.bgm",
   "bgm_purikura_b.bgm",
   "bgm_purikura_d.bgm",
   "bgm_taste_distant.bgm",
+  "bgm_tetsuko_time.bgm",
   "bgm_tournament_craft.bgm",
   "bgm_tournament_edm.bgm",
   "bgm_tournament_wait.mp3",
@@ -2801,6 +2808,9 @@
   "sprites/character_variants/nanami/naru/chr_naru_serious.png",
   "sprites/character_variants/nanami/naru/chr_naru_smile.png",
   "sprites/character_variants/nanami/naru/chr_naru_surprise.png",
+  "sprites/character_variants/nanami/noor/chr_noor_normal.png",
+  "sprites/character_variants/nanami/noor/chr_noor_smile.png",
+  "sprites/character_variants/nanami/noor/chr_noor_surprise.png",
   "sprites/character_variants/nanami/rei/chr_rei_normal.png",
   "sprites/character_variants/nanami/rei/chr_rei_sad.png",
   "sprites/character_variants/nanami/rei/chr_rei_serious.png",
@@ -2956,6 +2966,9 @@
   "sprites/character_variants/new/naru/chr_naru_serious.png",
   "sprites/character_variants/new/naru/chr_naru_smile.png",
   "sprites/character_variants/new/naru/chr_naru_surprise.png",
+  "sprites/character_variants/new/noor/chr_noor_normal.png",
+  "sprites/character_variants/new/noor/chr_noor_smile.png",
+  "sprites/character_variants/new/noor/chr_noor_surprise.png",
   "sprites/character_variants/new/pakki/chr_pakki_angry.png",
   "sprites/character_variants/new/pakki/chr_pakki_evil.png",
   "sprites/character_variants/new/pakki/chr_pakki_normal.png",
@@ -3411,6 +3424,8 @@
   "ui/making/ui_temperature_frame.png",
   "ui/scene_props/shisha_home_pro.png",
   "ui/scene_props/shisha_home_tabletop.png",
+  "ui/scene_props/shisha_home_stand_walnut.png",
+  "ui/scene_props/shisha_home_stand_custom.png",
   "ui/title_arts/title_art_adam_01_sunset_proclamation.png",
   "ui/title_arts/title_art_adam_02_twin_apple_throne.png",
   "ui/title_arts/title_art_ageha_01_professional_taste.png",
@@ -4191,6 +4206,18 @@
     "aspect": 0.7467,
     "topOverhang": 0.0025
    },
+   "noor": {
+    "faces": [
+     "normal",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4741,
+    "aspect": 0.7467,
+    "anchor": "head"
+   },
    "rio": {
     "faces": [
      "normal",
@@ -4601,6 +4628,18 @@
     "ax": 0.4999,
     "aspect": 0.7467,
     "topOverhang": 0.0033
+   },
+   "noor": {
+    "faces": [
+     "normal",
+     "smile",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4791,
+    "aspect": 0.7467,
+    "anchor": "head"
    },
    "rio": {
     "faces": [

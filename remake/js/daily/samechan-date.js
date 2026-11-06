@@ -27,6 +27,9 @@ export function samechanDateGap() {
 }
 
 /** inviteなしは共通playDateの実モジュール検証口。通常ゲームはcalendarからinvite/costを渡す。 */
+// 人に会いに行く夜の入り（#2688 A11）。演出の部品は使うときに読む（読めなければ演出なしで会う）
+const meetOpen = (id, opts) => import("../motions/meet.js").then((m) => m.meetOpen(id, opts), () => {});
+
 export async function playSamechanDate({ invite = null, cost = 0, advanceSlot = false } = {}) {
   const no = { done: false, spent: 0 };
   if (!samechanDateReady() || playing || isPlaying()
@@ -47,6 +50,8 @@ export async function playSamechanDate({ invite = null, cost = 0, advanceSlot = 
     if (invite) state.pendingInvite = invite; // 中断保存は予約あり・未払い。calendarは同じ場面へ戻れる。
     state.flags._samechan_date = { stamp, venue: venue.id, complete: false };
     save();
+    await meetOpen("samechan", { label: "約束", private: true });
+    if (state !== owner) return no;
     await play(dateScene("samechan", venue, { choice, choiceFlags, growth: false }), { growthScene: true });
     if (state !== owner) return no;
     const selected = state.flags[choiceFlags.a] ? "optA" : state.flags[choiceFlags.b] ? "optB" : null;

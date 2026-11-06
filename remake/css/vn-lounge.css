@@ -116,7 +116,8 @@
 /* DS表示でも同じ素材。本文と選択肢の領域・44pxの操作範囲を維持。 */
 body.game-ds .vn-box { --vn-frame-overhang: 20px; overflow: visible; border-image: none; }
 body.game-ds .vn-box .vn-name {
-  left: 3%; top: -13px; width: 21%; height: 22px; line-height: 22px;
+  left: 3%; top: -13px; width: max-content; height: auto; min-height: 26px;
+  padding: 3px 14px; line-height: 1.4;
   font-size: clamp(10px, calc((var(--ds-cw) - 16px) * .18 / var(--vn-name-length, 4)), 16px);
 }
 /* 2画面表示では操作バーを下画面のタッチバー（会話中は空いている帯）へ置き、上画面の立ち絵の顔を覆わない。
