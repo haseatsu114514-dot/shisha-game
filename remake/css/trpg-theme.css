@@ -255,6 +255,20 @@ html:root .trpg-root .trpg-shelf-help-item p { margin: 0; color: var(--tt-ink); 
 html:root .trpg-root .trpg-help-head { margin-top: 18px; }
 html:root .trpg-root .trpg-modal-body > .trpg-help-head:first-child { margin-top: 0; }
 
+/* ---------------------------------------------------------------- 旧 trpg-paper.css の読みやすさの直し（色以外）。紙テーマの時だけ効いていたのを、どのテーマでも効かせる。 */
+/* 2d20の数字は旧ドット用の3列ではなく1列にして、ダイスの面の真ん中へ。 */
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-die.trpg-d20 { grid-template-columns: 1fr; grid-template-rows: 1fr; filter: drop-shadow(3px 5px 3px #00171899); }
+/* 縦持ちのダイス窓でも、1280px舞台の縮小で結果を極小にしない。 */
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-d20-value { font-size: max(32px, calc(18 * var(--roll-unit))); }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > p.trpg-roll-instruction { font-size: max(16px, calc(12 * var(--roll-unit))); }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total > strong { font-size: max(33px, calc(20 * var(--roll-unit))); }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total .trpg-dice-grade { font-size: max(18px, calc(14 * var(--roll-unit))); }
+/* スクロールの端でボタンが欠けない余白。 */
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body { scroll-padding-block: calc(4 * var(--roll-unit)); padding-bottom: calc(4 * var(--roll-unit)); }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body button { scroll-margin-block: calc(4 * var(--roll-unit)); }
+/* 押せない決定ボタンも、何が書いてあるかは読める濃さに。 */
+html:root .trpg-root.trpg-cinematic .trpg-stage-action .trpg-button:disabled { opacity: .78; filter: saturate(.35); }
+
 /* ---------------------------------------------------------------- 旧 trpg-paper.css から、テーマに関係なく効かせていた分（そのまま） */
 /* 結末: 絵の上の文字に、左から薄い夜の下地を敷く（物語の部屋は見えたまま）。 */
 .trpg-root.trpg-cinematic .trpg-ending::before {
