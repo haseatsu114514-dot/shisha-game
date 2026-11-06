@@ -3178,6 +3178,7 @@
         "remake/js/daily/fortune*.js",
         "remake/js/core/fortune-effects.js",
         "remake/data/fortune-trivia.json",
+        "remake/data/fortune-trivia-selection.json",
         "remake/data/fortune-choice-hints.json",
         "docs/qa/hud-fortune-682/trivia-draft.md",
         "remake/js/core/chapter-features.js",

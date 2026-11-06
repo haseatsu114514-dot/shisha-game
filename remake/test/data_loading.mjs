@@ -129,14 +129,16 @@ assert(all.faceIconUrl("hiyori"));
 assert.equal(all.DB.relationshipMemories.tsumugi_creature.char_id, "tsumugi");
 assert(all.DB.dialogues.ch1_tsumugi_third);
 assert(all.DB.dialogues.remake_midcheck);
-assert.equal(Object.values(all.DB.fortuneTrivia.characters).flat().length, 197);
+assert.equal(Object.values(all.DB.fortuneTrivia.characters).flat().length, 93);
 assert(all.DB.dialogues.remake_fortune_trivia_naru_1, "fortune results were not registered after loading");
 assert(all.DB.dialogues.remake_fortune_trivia_sumi_13, "added fortune readings were not registered after loading");
-assert(all.DB.dialogues.remake_fortune_trivia_kumicho_1 && all.DB.dialogues.remake_fortune_trivia_sheikh_5, "Chapter 2-5 cast readings were not registered after loading");
+assert(all.DB.dialogues.remake_fortune_trivia_kumicho_2 && all.DB.dialogues.remake_fortune_trivia_sheikh_5, "Chapter 2-5 cast readings were not registered after loading");
 assert(!all.DB.dialogues.remake_fortune_trivia_adam_1, "excluded fortune readings must not be registered");
+// #2805 の決定ルールで削除した読み（見た目の言い当てなど）も登録しない。
+assert(!all.DB.dialogues.remake_fortune_trivia_kumicho_1 && !all.DB.dialogues.remake_fortune_trivia_sumi_17, "readings removed by the #2805 rules must not be registered");
 // 読み込み後の本物の順でも、三日間の「赤く見える」は注記のある相手（なる）だけに約束し、注記の無い相手（組長）には言わない。
 const fortuneSight = id => all.DB.dialogues[id].lines.some(l => /赤く見える/.test(l.text || ""));
-assert(fortuneSight("remake_fortune_trivia_naru_1") && !fortuneSight("remake_fortune_trivia_kumicho_1"), "fortune sight promise must follow the loaded choice hints");
+assert(fortuneSight("remake_fortune_trivia_naru_1") && !fortuneSight("remake_fortune_trivia_kumicho_2"), "fortune sight promise must follow the loaded choice hints");
 assert.equal(all.DB.dialogues.craft_inner_heat_watch.lines[0].speaker, "hajime");
 assert(all.DB.dialogues.craft_inner_heat_watch.lines[0].text);
 assert.equal(all.DB.dialogues.tournament_craft_packed_intro, undefined);
