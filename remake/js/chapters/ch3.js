@@ -22,7 +22,7 @@ import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, ch
   completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime,
   chapterThreePrepPending, departChapterThree, chapterThreeDaily } from "./ch3-progress.js";
 import { CH3_PREP_SCENES, chapterThreePrepEvents } from "./ch3-prep.js";
-import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts } from "../core/tokyo-visits.js";
+import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts, playerRegion } from "../core/tokyo-visits.js";
 
 import { createChapterThreeWayfinding } from "./ch3-wayfinding.js";
 import { availableChapterThreeTrials } from "./ch3-trial-progress.js";
@@ -662,11 +662,13 @@ async function playEvening(owner, result, { plan = null, window = null, definiti
  * 絆は足さない（東京の訪問デートは絆・能力を動かさない）。中断しても未読のまま次に会えた時へ回る。
  */
 async function readLoverMilestoneAt(owner, id) {
-  if (!current(owner) || !loverMilestonesDue([id]).length) return;
+  // 場面カードの東京では現在地の印が地元のまま。地元が舞台の節目は帰郷してから（#2024）
+  const home = playerRegion(state) === "home";
+  if (!current(owner) || !loverMilestonesDue([id], { home }).length) return;
   showScreen("none", null);
   hud(owner);
   const controller = owner.controller = new AbortController();
-  try { await readLoverMilestone(id, { signal: controller.signal }); }
+  try { await readLoverMilestone(id, { signal: controller.signal, home }); }
   finally { if (owner.controller === controller) owner.controller = null; }
 }
 

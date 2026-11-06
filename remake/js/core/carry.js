@@ -362,6 +362,7 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_mashiro", "person"],
   ["_lime_contact_minto", "person"],
   ["_lime_contact_naru", "person"],
+  ["_lime_contact_noor", "person"],
   ["_lime_contact_rei", "person"],
   ["_lime_contact_rio", "person"],
   ["_lime_contact_samechan", "person"],

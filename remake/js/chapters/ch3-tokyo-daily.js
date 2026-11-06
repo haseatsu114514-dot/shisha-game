@@ -93,7 +93,7 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
   spot({ id: "ch3_tokyo_volk", place: "volk", label: "鉄の煙", area: "ヴォルクの店", x: 55.9, y: 40.4, theme: "rival", glyph: "煙",
     face: "volk", preview: "bg_volk_shop", cost: TOKYO_VISIT_COST, desc: "計器の並ぶ店。", met: "volk" }),
   spot({ id: "ch3_tokyo_park", place: "park", label: "公園", area: "池のある公園", x: 69, y: 62, theme: "park", glyph: "園",
-    preview: "bg_street", stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
+    preview: "bg_tokyo_park", stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
   spot({ id: "ch3_tokyo_shop", place: "shop", label: "Dr.fookah 東京店", area: "駅前の店", x: 15, y: 51, theme: "shop", glyph: "卸",
     preview: "bg_fookah_showroom", desc: "東京の店。葉を買える（時間は使わない）。" }),
   spot({ id: "ch3_tokyo_gym", place: "gym", label: "CHOI-ZAP", area: "高架下のジム", x: 34.9, y: 75.9, theme: "gym", glyph: "体",
