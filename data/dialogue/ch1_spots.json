@@ -472,7 +472,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "蒸野はじめです。なるさんに教えてもらって来ました"
+            "text": "逢縁はじめです。なるさんに教えてもらって来ました"
           },
           {
             "speaker": "sui",
@@ -993,7 +993,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "は、はい。tonariの蒸野です"
+            "text": "は、はい。tonariの逢縁です"
           },
           {
             "speaker": "dr_kemuri",
@@ -1005,7 +1005,7 @@
           {
             "speaker": "dr_kemuri",
             "face": "normal",
-            "text": "おや、蒸野くん。優勝の一台のデータ、なかなか興味深かったよ"
+            "text": "おや、逢縁くん。優勝の一台のデータ、なかなか興味深かったよ"
           },
           {
             "speaker": "hajime",
@@ -1140,7 +1140,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "は、はい。蒸野です"
+            "text": "は、はい。逢縁です"
           }
         ],
         "notice_after": [
@@ -2389,7 +2389,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "蒸野です。tonariでバイトしてます"
+            "text": "逢縁です。tonariでバイトしてます"
           }
         ],
         "known": [

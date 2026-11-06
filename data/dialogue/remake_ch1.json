@@ -3568,7 +3568,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。tonariでバイトしている蒸野はじめです。ご注文のミントを届けに来ました"
+          "text": "はい。tonariでバイトしている逢縁はじめです。ご注文のミントを届けに来ました"
         },
         {
           "speaker": "minto",
@@ -3758,7 +3758,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "tonariでバイトしてる蒸野はじめです。大会、俺も出ます"
+            "text": "tonariでバイトしてる逢縁はじめです。大会、俺も出ます"
           },
           {
             "type": "set_flag",
