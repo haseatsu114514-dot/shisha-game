@@ -49,11 +49,12 @@ async function seed(page, { regulars = false } = {}) {
     for (const who of ["ageha", "kumicho", "rei", "hajime", "sumi"]) value.flags[`_intro_${who}`] = true;
     Object.assign(value.met, { ageha: true, kumicho: true, rei: true });
     // 地元の常連（N3a）: 第1章でEDENに一度通った保存（初対面の固有会話の後。LIMEの交換前なので誘いは来ない）。
+    // 好感度は2本目の段階会話（♥1）に届かない値にし、地図の「！」が送り出しの会話だけから付くようにする。
     if (regulars) {
       Object.assign(value.met, { adam: true });
       Object.assign(value.story, { adam: 1 });
       Object.assign(value.visits, { adam: 1 });
-      value.affinity.adam = 12;
+      value.affinity.adam = 4;
       value.flags._spot_guide_adam = true;
     }
     if (!progress.advanceToChapterThree(value)) throw new Error("Chapter boundary failed");

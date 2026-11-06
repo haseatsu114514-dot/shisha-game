@@ -476,6 +476,8 @@ export const FLAG_EXACT_RULES = [
   ["_sumi_rig_received_day", "progression"],
   // 凛想が味の不調に気づいた回（第2章）を読んだか。第3・4章の出発前の凛想の会話が分岐に使う（data/dialogue/ch3_ch4_home.json）
   ["_talk_seen_ch2_rio_taste", "person"],
+  // 第3章の出発前に凛想から「向こうの顔」を頼まれたか。第4章の出発前の凛想の会話が、その報告の分岐に使う
+  ["_talk_seen_ch3_prep_rio", "person"],
   ["_tsumugi_contest_art_seen", "person"],
   ["_tsumugi_contest_draft_hands", "person"],
   ["_tsumugi_contest_draft_window", "person"],

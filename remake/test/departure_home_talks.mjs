@@ -82,13 +82,22 @@ for (const dialogue of talks) {
 // 第3章は味がまだ遠い。第4章で「分かる」と言えるのは、ダブルアップルの判別（ch3_taste_return）の後だから
 assert(!/(アニス|リコリス).*(分かる|残ります)/.test(textOf(all.ch3_prep_adam)), "chapter 3: Hajime does not name flavours yet");
 assert(/アニス/.test(textOf(all.ch4_prep_adam)) && /リコリス/.test(textOf(all.ch4_prep_adam)));
+// 第2章「また分かる日に吸え」の回収は第5章の ch5_free_eden_adam（#1588 オーナー決定）。第4章のアダムは先取りしない
+assert(!/分かる日が来た|遅くなりました|好きです|点より先/.test(textOf(all.ch4_prep_adam)), "chapter 4 Adam stops short of the chapter 5 EDEN payoff");
+// 第4章の出発前は全国大会から日がたっている。同行の恋人にも不自然にならないよう、優勝を初耳の知らせにしない
+for (const id of ["ch4_prep_minto", "ch4_prep_rio"]) assert(!/全国優勝|おめでと|結果見た/.test(textOf(all[id])), `${id}: not fresh news`);
+// 第3章で凛想に頼まれた「向こうの顔」は、第4章で報告を返す（第3章の会話を読んだ時だけ）
+assert(all.ch4_prep_rio.lines.some(line => line.type === "condition" && line.flag === "_talk_seen_ch3_prep_rio" && line.next_true === "faces"));
+assert(/顔/.test(all.ch4_prep_rio.branches.faces.map(line => line.text).join("\n")), "ch4 Rio: Hajime brings back a face");
+// 来店の書き出しを同じ型（「〜へ発つ前に、〜へ寄った。」）にそろえない
+assert(talks.every(d => !/発つ前に、.+へ寄った/.test(d.lines[0].text || "")), "the openings are not one template");
 // 凛想が「吸ってる人の顔を見たことがない」と明かすのは固有会話 ch1_rio_fourth。読む前の分岐では理由を明かさない
 assert(!/見たことがない|見たことない/.test(all.ch3_prep_rio.branches.face_new.map(line => line.text).join("\n")), "ch3 Rio: the secret stays for ch1_rio_fourth");
 // 凛想の分岐は既存の記録だけを見る（新しい保存フラグを作らない）
 const conditions = talks.flatMap(d => [d.lines, ...Object.values(d.branches || {})].flat()).filter(line => line.type === "condition");
 for (const line of conditions) {
   assert(["flag", "story_seen"].includes(line.condition_type), line.condition_type);
-  if (line.condition_type === "flag") assert(["_talk_seen_ch2_rio_taste", "_met_volk"].includes(line.flag), line.flag);
+  if (line.condition_type === "flag") assert(["_talk_seen_ch2_rio_taste", "_talk_seen_ch3_prep_rio", "_met_volk"].includes(line.flag), line.flag);
   if (line.condition_type === "story_seen") assert.equal(line.dialogue, "ch1_rio_fourth");
 }
 

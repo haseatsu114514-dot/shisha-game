@@ -1,5 +1,5 @@
 {
-  "comment": "第3・4章の出発前の準備3日（VOL02）に、地元の常連が準備期間の来店で一度だけ話す送り出しの会話（N3a）。第3章は県大会の後に東京へ発つまで、第4章は全国大会の後にドバイへ発つまで。アダム・みんと・凛想は daily/spots.js の CHAPTER_TALKS（prep）、サメちゃんは daily/samechan.js の SAMECHAN_PREP_TALKS が出し、chapters/departure-prep.js が準備期間に読み込む。出発後は出ないので、その章の大会後の分岐は持たない。恋人でも友人でも、ドバイへ同行・別便で応援する恋人でも不自然にならない店の会話にし、同行・見送り・応援には触れない。味覚は第3章では原因を断定せず遠いまま、第4章はダブルアップルの判別（ch3_taste_return）の後の「少し戻った」まで（回復しきったとは書かない）。能力・好感度の伸びは来店の処理が付けるので、台本に報酬の文は書かない。",
+  "comment": "第3・4章の出発前の準備3日（VOL02）に、地元の常連が準備期間の来店で一度だけ話す送り出しの会話（N3a）。第3章は県大会の後に東京へ発つまで、第4章は全国大会の後にドバイへ発つまで。アダム・みんと・凛想は daily/spots.js の CHAPTER_TALKS（prep）、サメちゃんは daily/samechan.js の SAMECHAN_PREP_TALKS が出し、chapters/departure-prep.js が準備期間に読み込む。出発後は出ないので、その章の大会後の分岐は持たない。恋人でも友人でも、ドバイへ同行・別便で応援する恋人でも不自然にならない店の会話にし、同行・見送り・応援には触れない。味覚は第3章では原因を断定せず遠いまま、第4章はダブルアップルの判別（ch3_taste_return）の後の「少し戻った」まで（回復しきったとは書かない）。アダムの第4章は、第5章の ch5_free_eden_adam（#1588）の「分かる日が来たな」を先取りしない（作り手の違いまで分かったら聞かせろ、で止める）。凛想の第4章は、第3章で頼まれた「向こうの顔」の報告を既読の分岐で返す。第4章の出発前は全国大会から日がたっているので、優勝を初耳の知らせとしては扱わない。能力・好感度の伸びは来店の処理が付けるので、台本に報酬の文は書かない。",
   "dialogues": [
     {
       "dialogue_id": "ch3_prep_adam",
@@ -10,7 +10,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "東京へ発つ前に、EDENへ寄った。アダムはカウンターで林檎を剥いていた。"
+          "text": "扉を開けると、アダムは林檎を剥く手を止めずに、こちらを見た。"
         },
         {
           "speaker": "adam",
@@ -50,7 +50,7 @@
         {
           "speaker": "adam",
           "face": "serious",
-          "text": "分かったら、向こうの一台の話を持って帰ってこい"
+          "text": "分からん日は、分からんと言え。林檎は逃げん"
         },
         {
           "speaker": "",
@@ -68,7 +68,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "東京へ発つ前に、PEPPERMINTへ寄った。"
+          "text": "PEPPERMINTの扉を開けると、ミントの煙と一緒に、明るい声が飛んできた。"
         },
         {
           "speaker": "minto",
@@ -228,7 +228,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "東京へ発つ前に、SHISHARKへ寄った。"
+          "text": "SHISHARKの扉を開けると、サメちゃんがカウンターの奥で、コロちゃんの王冠を直していた。"
         },
         {
           "speaker": "samechan",
@@ -273,7 +273,7 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "土産は要らぬ。話だけ持って帰れ"
+          "text": "側近よ、勇者の席の札は、余が書いておくのである"
         }
       ]
     },
@@ -286,7 +286,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ドバイへ発つ前に、EDENへ寄った。"
+          "text": "EDENの棚に、ラベルの違うタッパーが並んでいた。中身は、どれもダブルアップルだ。"
         },
         {
           "speaker": "adam",
@@ -294,39 +294,44 @@
           "text": "来たか、全国の王よ。……いや、今日はただの客の顔だな"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "アダムは何も聞かず、ダブルアップルの台を置いた。"
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ドバイへ発つ前に、一台お願いします"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "甘い煙の奥で、アニスとリコリスが重なった。"
+          "text": "アダムは棚からタッパーを一つ選んで、台を作った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "甘い煙の奥に、アニスとリコリスがある。東京で、分かったふりをした頃とは違う。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（分かる。東京で、分かったふりをした時とは違う）"
+          "text": "……ダブルアップルの味が、ちゃんとします"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "それは、林檎を林檎と呼んだだけだ"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "棚のは、全部ダブルアップルだ。作り手が違えば、甘さもアニスの長さも違う"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "その違いまで分かったら、聞かせろ。今はまだ、熟す前だ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "アニスが先に来て、吐いたあとにリコリスが残ります。……俺、この味が好きです"
-        },
-        {
-          "speaker": "adam",
-          "face": "surprise",
-          "text": "……そうか"
-        },
-        {
-          "speaker": "adam",
-          "face": "smile",
-          "text": "点より先に、それが聞きたかった"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "世界の卓でも、その言い方でいい。行ってこい"
+          "text": "……はい。行ってきます"
         },
         {
           "speaker": "",
@@ -344,12 +349,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ドバイへ発つ前に、PEPPERMINTへ寄った。"
+          "text": "カウンターの奥で、みんとが新しいメニュー表に、ペンでハートを描き足していた。"
         },
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "はじめくん、全国優勝おめでと〜♡　次は世界って、すごすぎない？"
+          "text": "あ、はじめくん！　世界大会、もうすぐでしょ？　すごすぎない？"
         },
         {
           "speaker": "hajime",
@@ -397,12 +402,12 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "お、モルモットくん。全国優勝、結果見たよ。次は世界だってね"
+          "text": "お、モルモットくん。そろそろでしょ、ドバイ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。あっという間でした"
+          "text": "はい。あと何日かです"
         },
         {
           "type": "condition",
@@ -414,19 +419,21 @@
         {
           "type": "condition",
           "condition_type": "flag",
+          "flag": "_talk_seen_ch3_prep_rio",
+          "next_true": "faces",
+          "next_false": ""
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
           "flag": "_talk_seen_ch2_rio_taste",
           "next_true": "promise",
-          "next_false": "fresh"
+          "next_false": ""
         },
         {
           "speaker": "",
           "face": "",
           "text": "凛想さんは袋を一つ開けて、先に自分で一口吸ってから、ホースをこちらへ向けた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "熟れた果実の香りのあとに、紅茶に似た渋みが、少し遅れて来た。"
         },
         {
           "speaker": "hajime",
@@ -457,6 +464,23 @@
             "text": "ふうん。それだけって顔じゃないけど、まあいいや"
           }
         ],
+        "faces": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "頼まれてた、東京の顔の話です"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ナイトサイドを吸ってた人が、一口目のあと、少し笑ってました"
+          },
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "……そっか。笑ってたんだ"
+          }
+        ],
         "promise": [
           {
             "speaker": "hajime",
@@ -467,13 +491,6 @@
             "speaker": "rio",
             "face": "smile",
             "text": "……そう。じゃあ約束どおり、一番に吸わせてあげる"
-          }
-        ],
-        "fresh": [
-          {
-            "speaker": "rio",
-            "face": "normal",
-            "text": "発つ前に、新しいロットを一口どう？　感想は吐いてから"
           }
         ]
       }
@@ -489,7 +506,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ドバイへ発つ前に、SHISHARKへ寄った。"
+          "text": "SHISHARKのカウンターに、砂漠の写真の載った旅行雑誌が、開いたまま置いてあった。"
         },
         {
           "speaker": "samechan",

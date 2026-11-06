@@ -1688,6 +1688,8 @@
         "remake/js/daily/hud.js",
         "data/dialogue/ch3_departure.json",
         "data/dialogue/ch3_ch4_home.json",
+        "remake/js/daily/spots.js",
+        "remake/js/daily/samechan.js",
         "remake/test/browser/ch3_departure_prep.mjs"
       ],
       "run": ["node remake/test/browser/ch3_departure_prep.mjs"]
