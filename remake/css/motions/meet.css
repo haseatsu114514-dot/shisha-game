@@ -1,0 +1,8 @@
+/* 人に会いに行く夜の入り（motions/meet.js・#2688 A11「ゆっくり開口」）。葉の窓の上に、相手の呼び名を一行 */
+.meet-open { position: absolute; inset: 0; overflow: hidden; z-index: 120; pointer-events: auto; }
+.meet-open.veil { background: #34246a; }
+.meet-open-line { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 10px;
+  color: #fff; font-family: var(--font); text-shadow: 0 2px 0 #150f26; white-space: nowrap; pointer-events: none; }
+.meet-open-line small { font-size: 22px; font-weight: 700; letter-spacing: .4em; padding-left: .4em; color: #dcd1f4; }
+.meet-open-line strong { font-size: 54px; font-weight: 900; letter-spacing: .12em; padding: 0 .2em 8px calc(.2em + .12em);
+  border-bottom: 4px solid var(--meet-color, #dcd1f4); }

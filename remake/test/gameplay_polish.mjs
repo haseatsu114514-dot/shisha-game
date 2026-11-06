@@ -50,7 +50,8 @@ try {
   const cameo = await page.evaluate(() => ({ met: !!T.core.state.met.tsumugi,
     named: document.querySelector('.vn-name').classList.contains('show'),
     intros: !!T.core.state.flags._intro_tsumugi }));
-  assert.deepEqual(cameo, { met: false, named: false, intros: false });
+  // つむぎは開始時から顔見知り（#2765 KNOWN_AT_START）。一瞬の登場では名前もカットインも出さない
+  assert.deepEqual(cameo, { met: true, named: false, intros: false });
   if (shots) await page.screenshot({ path: `${shots}/tsumugi-bow.png` });
   await page.evaluate(() => { __remake.vnTest.turbo = true; });
   await page.keyboard.press('Enter'); await page.keyboard.press('Enter');
