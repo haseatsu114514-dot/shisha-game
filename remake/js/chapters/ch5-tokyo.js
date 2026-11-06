@@ -23,6 +23,7 @@ import { reflectAt } from "../daily/reflection.js";
 import { TOKYO_OUTINGS, outingDialogueId, outingCounts, OUTINGS_FLAG } from "./ch3-outing-progress.js";
 import { consultLessons } from "../core/growth.js";
 import { keepDailyHud } from "../daily/hud.js";
+import { finaleAtVisit, playFinale } from "../daily/bonds.js";
 
 export const TOKYO = "tokyo";
 const ATTIC_FLAG = "_ch5_tokyo_attic"; // ムカイさんに屋根裏を貸してもらった（最初の到着の場面を読んだ）
@@ -43,7 +44,7 @@ export const TOKYO_SPOTS = Object.freeze([
   spot({ id: "ch5_tokyo_volk", charId: "volk", label: "鉄の煙", area: "ヴォルクの店", x: 55.9, y: 40.4, theme: "rival", glyph: "煙", face: "volk",
     preview: "bg_volk_shop", cost: TOKYO_VISIT_COST, stamina: -16, stat: "insight",
     talks: ["ch5_tokyo_volk", "ch5_tokyo_volk_b", "ch5_tokyo_volk_c"], desc: "計器の並ぶ店。測ってから、客に聞く。" }),
-  spot({ id: "ch5_tokyo_park", label: "公園", area: "池のある公園", x: 69, y: 62, theme: "park", glyph: "園", preview: "bg_street",
+  spot({ id: "ch5_tokyo_park", label: "公園", area: "池のある公園", x: 69, y: 62, theme: "park", glyph: "園", preview: "bg_tokyo_park",
     stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
   // 裏口のてつこは地図の行き先にせず、mukai のシフトの帰りに会う（VOL11）。
   spot({ id: "ch5_tokyo_shop", kind: "shop", label: "Dr.fookah 東京店", area: "駅前の店", x: 15, y: 51, theme: "shop", glyph: "卸",
@@ -88,7 +89,7 @@ export const tokyoSpotsNow = (value = state) => TOKYO_SPOTS.map(entry => entry.i
 
 export const inTokyo = (value = state) => value?.flags?._ch2_region === TOKYO;
 const SCENES = TOKYO_SPOTS.flatMap(entry => entry.talks || []).concat(["ch5_tokyo_van_first", "ch5_tokyo_go", "ch5_tokyo_back", "ch5_tokyo_arrival", "ch5_tokyo_park_day", "ch5_tokyo_attic_rest", "ch5_tokyo_fortune",
-  "ch5_tokyo_gym_day", "ch5_tokyo_gym_night"]);
+  "ch5_tokyo_gym_day", "ch5_tokyo_gym_night", "ch5_steve_bond_finale"]);
 // てつこのお世話は第3章の続き（通うほど懐いていく。回数も第3章と同じ記録。ch3-outing-progress.js の stages・loop）
 const TETSUKO = TOKYO_OUTINGS.find(outing => outing.id === "tetsuko");
 const CH3_SCENES = ["ch3_outing_park_walk_night", ...TETSUKO.stages, ...TETSUKO.loop];
@@ -149,8 +150,9 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
     return { used: true, exerted: false };
   }
   if (spot.id === "ch5_tokyo_park") {
+    // 池のある公園の絵（昼夜の差分あり）。第3章の公園と同じ（ch3-outings.js の OUTING_BG.park）
     const scene = state.slot >= 1 ? "ch3_outing_park_walk_night" : "ch5_tokyo_park_day";
-    if (!await read(scene, "bg_street", owner)) return { used: false, exerted: false };
+    if (!await read(scene, spot.preview, owner)) return { used: false, exerted: false };
     addStamina(spot.stamina);
     return { used: true, exerted: false };
   }
@@ -188,6 +190,15 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
     return { used: false, exerted: false };
   }
   if (staminaGuard && !(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
+  // スティーブの♥5の締めくくり（#2705）: 第3章で見ていない人は、Smoke & Glory に通って♥5になった次の来店で一度だけ。
+  // 小会話の巡回は進めず、好感度も足さない（締めくくりは bonds.js の playFinale が記録・専用ハガルを渡す）。
+  if (spot.charId === "steve" && finaleAtVisit("steve")) {
+    const bg = sceneBg(spot.preview, timeOfDay()).url;
+    await showBg(spot.preview, timeOfDay());
+    if (state !== owner || !await playFinale("steve", { bg })) return { used: false, exerted: false };
+    addStamina(spot.stamina);
+    return { used: true, exerted: true };
+  }
   const talks = state.flags[TALKS_FLAG] ||= {};
   const visits = talks[spot.id] || 0;
   const scene = spot.talks[visits % spot.talks.length];
