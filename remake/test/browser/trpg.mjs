@@ -190,10 +190,14 @@ async function run(label, params, options, body, beforeLoad = null) {
 try {
   await run("cover-pc", { seed: "9", traveler: "quiet" }, {}, async page => {
     await fits(page);
-    // 遊び方は表紙の札ではなく、右上の「？」で開く（#2719）。
+    // 遊び方は表紙の札ではなく、右上の「？」で開く（#2719）。押した後の指は、道具の名札が出ない所へ離す。
     await page.locator('[data-test="trpg-help"]').click();
+    await page.mouse.move(2, 2);
     await fits(page); await page.keyboard.press("Escape");
     assert.equal(await page.locator(".trpg-overlay").count(), 0);
+    // 閉じたら焦点は「？」へ戻る。名札の吹き出しが出たままにならないよう、確かめた後は卓へ焦点を戻す。
+    assert.equal(await page.evaluate(() => document.activeElement?.dataset.test), "trpg-help", "Escape returns focus to the help button");
+    await page.locator(".trpg-root").focus();
   });
   await run("quiet-pc-keyboard", { seed: "9", traveler: "quiet" }, {}, async page => {
     await begin(page, true);
