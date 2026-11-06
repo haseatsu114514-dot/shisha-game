@@ -79,7 +79,7 @@ try {
         window.__go?.cleanupContinue();
         const { buildGameOver } = await import("./js/chapters/gameover.js");
         window.__calls = []; window.__notes = [];
-        window.__go = buildGameOver({ variant: 0, ...options,
+        window.__go = buildGameOver({ variant: 0, layout: "neon", ...options,
           onRetry: () => window.__calls.push("retry"), onTitle: () => window.__calls.push("title") });
         document.querySelector("#screen").replaceChildren(window.__go);
       }, options);
