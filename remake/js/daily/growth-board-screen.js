@@ -11,7 +11,8 @@ import { canRespec, prepareRespec, commitRespec } from "../core/growth-respec.js
 import { growthEnabled } from "../core/growth-mode.js";
 import { grantStarterHidane, tutorialPending, startBoardTutorial, TUTORIAL_FLAG } from "./growth-board-tutorial.js";
 import { LESSON_TUNING } from "../core/growth-effects.js";
-import { displayName, faceIconUrl, portraitInfo } from "../core/data.js";
+import { displayName, faceIconUrl, portraitInfo, faceFrame } from "../core/data.js";
+import { portraitStyle } from "../core/portrait-style.js";
 import { affinityLevel } from "../core/stats.js";
 import { ensureGrowth, gaugeInfo, HIDANE_KEYS, lessonLearned, readyLessons } from "../core/growth.js";
 import {
@@ -51,16 +52,25 @@ const ART_DIR = "img/ui/growth_board/";
 const iconOf = (node) => node.kind === "stat" ? (node.peak ? "peak" : node.perk ? `perk_${node.perk}` : null)
   : node.kind === "skill" ? `skill_${node.id}` : node.kind === "gate" ? "gate" : null;
 /**
- * 立ち絵（896×1200）の上での [目の真ん中 x, 目の高さ y, 頬から頬の幅]。札の顔の切り出し（asset_sources/ui/growth-board-20261030/faces/make_faces.py の EYES と同じ値）と、
- * 右のパネルで顔の大きさと高さをそろえて立ち絵を置くのに使う（SBD81・SBD82）
+ * 札の顔（faces/<人>.webp）がある人。asset_sources/ui/growth-board-20261030/faces/make_faces.py の WHO と同じ。
+ * 札の顔と右のパネルの立ち絵は、顔アイコンと同じ顔の位置の記録（manifest の faceFrames。立ち絵ごとに測った目の高さ・顔の大きさ）で
+ * 顔の大きさと高さをそろえる（SBD81・SBD82）。2026-11-06 設定で新バージョンの立ち絵を選んでいる時は、新バージョンの絵とその絵で測った記録
+ * （faces/new/<人>.webp）。新バージョンの絵が無い人は、会話と同じく現行の絵
  */
-const PORTRAIT_EYES = {
-  sumi: [442, 198, 99], minto: [492, 375, 99], adam: [436, 218, 102], tsumugi: [423, 433, 95], naru: [454, 239, 90], rei: [440, 97, 99],
-  ageha: [472, 341, 99], kumicho: [479, 136, 122], saku: [409, 145, 95], steve: [481, 100, 122], volk: [459, 109, 88], rio: [397, 290, 99],
-  hiyori: [426, 299, 104], samechan: [448, 397, 104], mashiro: [439, 404, 104], sheikh: [447, 89, 98], da_silva: [453, 80, 99], hajime: [528, 263, 90],
-  master_hookah: [415, 100, 95], dr_kemuri: [400, 196, 94],
-};
-const BOARD_FACES = new Set(Object.keys(PORTRAIT_EYES));
+const BOARD_FACES = new Set(["sumi", "minto", "adam", "tsumugi", "naru", "rei", "ageha", "kumicho", "saku", "steve", "volk", "rio",
+  "hiyori", "samechan", "mashiro", "sheikh", "da_silva", "hajime", "master_hookah", "dr_kemuri"]);
+/** 顔の幅 ÷ 顔の大きさ（make_faces.py の FACE_PER_UNIT と同じ） */
+const BOARD_FACE_PER_UNIT = 0.87;
+/** 立ち絵（896×1200）の上での [顔の中央 x, 目の高さ y, 顔の幅]。その画風で測っていなければ null */
+function portraitEyes(who, style) {
+  const f = faceFrame(who, style);
+  return f?.eye && f.unit ? [f.eye[0], f.eye[1], f.unit * BOARD_FACE_PER_UNIT] : null;
+}
+/** 札の顔の画像。今の画風で測った人はその画風の顔、ほかは現行の顔 */
+function boardFaceUrl(who, style = portraitStyle()) {
+  if (!BOARD_FACES.has(who)) return null;
+  return style !== "classic" && portraitEyes(who, style) ? `${ART_DIR}faces/${style}/${who}.webp` : `${ART_DIR}faces/${who}.webp`;
+}
 /** 右のパネルの立ち絵: 顔の幅をこの px に、目をパネルの上からこの px に */
 const PANEL_FACE_W = 82, PANEL_EYE_Y = 64;
 /** 右のパネルの立ち絵の表情（SBD82）。授業は教える人、スキルははじめ。無い表情は portraitInfo が近いものに */
@@ -357,7 +367,7 @@ export function openBoard({ place = null } = {}) {
     // まだ分からない授業はその人の影絵（2026-10-31 オーナー「まだ先のキャラもシルエットだけ出したい」SBD75）。
     // 正体を伏せる授業（revealFlag）と顔の無い人は、誰でもない影絵（画像がある時だけ）
     // 札の顔は立ち絵から目の高さと顔の大きさをそろえて切り出したもの（SBD81。faces/<人>.webp）。無い人は顔アイコン
-    const face = BOARD_FACES.has(node.who) ? `${ART_DIR}faces/${node.who}.webp` : faceIconUrl(node.who, state);
+    const face = boardFaceUrl(node.who) || faceIconUrl(node.who, state);
     const secret = !known && (node.revealFlag || !face);
     const url = secret ? (root.classList.contains("has-art") ? `${ART_DIR}silhouette_unknown.webp` : null) : face;
     if (!url) return null;
@@ -375,21 +385,21 @@ export function openBoard({ place = null } = {}) {
     if (node.kind === "lesson") {
       if (!lessonKnown(node, g)) {
         if (node.revealFlag) return root.classList.contains("has-art") ? el("img.gb-portrait.silhouette.unknown", { src: `${ART_DIR}silhouette_unknown.webp`, alt: "" }) : null;
-        const p = portraitInfo(node.who, "normal", "classic");
-        return p ? placed(el("img.gb-portrait.silhouette", { src: p.src, alt: "", dataset: { who: node.who } }), node.who) : null;
+        const p = portraitInfo(node.who, "normal");
+        return p ? placed(el("img.gb-portrait.silhouette", { src: p.src, alt: "", dataset: { who: node.who } }), node.who, p.style) : null;
       }
-      const p = portraitInfo(node.who, PANEL_FACE[node.id] || "smile", "classic");
-      return p ? placed(el("img.gb-portrait", { src: p.src, alt: "", dataset: { who: node.who, face: p.face, test: "board-portrait" } }), node.who) : null;
+      const p = portraitInfo(node.who, PANEL_FACE[node.id] || "smile");
+      return p ? placed(el("img.gb-portrait", { src: p.src, alt: "", dataset: { who: node.who, face: p.face, test: "board-portrait" } }), node.who, p.style) : null;
     }
     if (node.kind === "skill" && shown !== "hidden") {
-      const p = portraitInfo("hajime", PANEL_FACE[node.id] || "normal", "classic");
-      return p ? placed(el("img.gb-portrait", { src: p.src, alt: "", dataset: { who: "hajime", face: p.face, test: "board-portrait" } }), "hajime") : null;
+      const p = portraitInfo("hajime", PANEL_FACE[node.id] || "normal");
+      return p ? placed(el("img.gb-portrait", { src: p.src, alt: "", dataset: { who: "hajime", face: p.face, test: "board-portrait" } }), "hajime", p.style) : null;
     }
     return null;
   }
-  /** 現行画像で測った PORTRAIT_EYES を使うので、盤の顔アップは classic を明示する。無い人は胸から上を真ん中に。 */
-  function placed(img, who) {
-    const [ex, ey, fw] = PORTRAIT_EYES[who] || [448, 260, 100];
+  /** 出した立ち絵と同じ画風で測った目の高さ・顔の大きさで置く。測っていない人は胸から上を真ん中に。 */
+  function placed(img, who, style = "classic") {
+    const [ex, ey, fw] = portraitEyes(who, style) || [448, 260, 100];
     const k = PANEL_FACE_W / fw;
     Object.assign(img.style, { width: `${Math.round(896 * k)}px`, marginLeft: `${Math.round(-ex * k)}px`, top: `${Math.round(PANEL_EYE_Y - ey * k)}px` });
     return img;

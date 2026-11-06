@@ -40,6 +40,7 @@ def targets(m):
     rel += ["ui/chapters/ch1_keyart.png"]
     rel += [f"ui/continue/{name}" for name in m.get("continueUI", [])]
     rel += [f"ui/face_icons/{name}" for name in m.get("faceIcons", [])]
+    rel += [f"ui/face_icons/{style}/{name}" for style, names in m.get("faceIconVariants", {}).items() for name in names]
     return [r for r in rel if (ASSETS / r).exists()]
 
 
