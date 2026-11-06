@@ -6,7 +6,8 @@
 // 動線: mukai で行動 → 帰りに裏口をのぞく（ch3-tokyo-daily.js の offerTetsuko）→
 //       「てつこといっしょ」を選ぶ → この準備中の画面 → 「帰る」で日常ループへ戻る。
 //
-// この足場は保存を一切変えない: 回復・来訪回数・好感度・火種・経験値・フラグ・日付や時間を動かさない。
+// 準備中の画面は保存を一切変えない: 回復・来訪回数・好感度・火種・経験値・フラグ・日付や時間を動かさない。
+// 確定点 settleTetsukoTime とモデル（tetsuko-model.js）は実装計画 §3〜§4 の本物。画面と入口は次の段で差し替える。
 // 既存の「少し構っていく」（4段階＋巡回の会話・回復+12・来訪加算。#1993）はそのまま温存する。
 //
 // 画像: 既存のてつこの顔アイコン（face_tetsuko）を仮のアイコンに流用する。正式なふれあい用の
@@ -15,6 +16,9 @@
 //
 // DOM 依存（ui.js / util.js / audio.js / data.js）は openTetsukoTime の中で遅延 import する。
 // これにより本ファイルの top-level は DOM 非依存で、Node のテストからそのまま import できる。
+
+import { TOKYO_OUTINGS } from "../chapters/ch3-outing-progress.js";
+import { OUTINGS_FLAG, TETSUKO_TIME_FLAG, readTetsukoRecord, tetsukoVisits } from "./tetsuko-model.js";
 
 export const TETSUKO_TIME = Object.freeze({
   id: "tetsuko_time",
@@ -36,19 +40,40 @@ export const TETSUKO_TIME = Object.freeze({
 // 受け入れ条件・ゆるさの指針・保存するもの／しないものは Issue #2454 本文（§3〜§13）を正とする。
 // ─────────────────────────────────────────────────────────────────────────────
 
+/** 有効なふれあい1回で戻る体力。「少し構っていく」と同じ内部値（正本は TOKYO_OUTINGS.tetsuko.stamina = 12）。 */
+export const TETSUKO_STAMINA = TOKYO_OUTINGS.find(outing => outing.id === "tetsuko")?.stamina ?? 12;
+
 /**
- * 本編アダプターの確定点（#2454 §10-4）。
- * 足場の現状: 何も確定しない（回復なし・来訪なし・フラグなし・時間なし）。{ committed:false } を返すだけ。
- * 正ゲーム実装時は、意味のあるふれあいを終えた時だけ、親の mukai 訪問から渡す安定した訪問キーを使って
- * 回復(12)／来訪加算／発見の記録を「一つの保存境界」でここに書く。何もせず閉じた場合は追加報酬なし。
- * @param {object} [state] 現在のセーブ（足場では参照しない）
- * @param {object} [result] 画面からの結果（足場では未使用）
- * @returns {{ committed: boolean }}
+ * 本編アダプターの確定点（#2454 §10-4・実装計画 §3）。DOM を持たない同期の純関数。
+ * 意味のあるふれあい（result.meaningful）で、まだ確定していない訪問キー（result.visitKey）のときだけ、
+ * この一回の処理の中で (a) 来訪記録 _ch3_outings.tetsuko を +1、(b) _tetsuko_time に小物の配置・発見・
+ * アルバム・おやつの日・訪問キーを書き、{ committed:true, stamina:12 } を返す。呼び出し側が同じ処理の中で
+ * addStamina(12) と toast を出す。それ以外は { committed:false } で、保存には一切触らない。
+ * 増やさないもの: 経験値・能力・火種・好感度・お金・日付・時間帯（ここでは書けない API しか使わない）。
+ * 「少し構っていく」（台本だけ読む短い経路）も同じ確定点を通る（result に小物・発見が無ければ記録を保つ）。
+ * @param {object} value 現在のセーブ
+ * @param {{ meaningful?: boolean, visitKey?: string, props?: object, found?: string[], album?: object[], treatDay?: number|null }} [result]
+ * @returns {{ committed: boolean, stamina?: number }}
  */
-export function settleTetsukoTime(state, result) {
-  // 足場は閲覧専用。保存は一切変えない。
-  return { committed: false };
+export function settleTetsukoTime(value, result) {
+  if (!value?.flags || !result?.meaningful || typeof result.visitKey !== "string" || !result.visitKey) return { committed: false };
+  const record = readTetsukoRecord(value);
+  if (record.lastKey === result.visitKey) return { committed: false };
+  const counts = value.flags[OUTINGS_FLAG] && typeof value.flags[OUTINGS_FLAG] === "object" ? value.flags[OUTINGS_FLAG] : {};
+  value.flags[OUTINGS_FLAG] = { ...counts, tetsuko: tetsukoVisits(value) + 1 };
+  // 新しい記録は正規化してから書く（壊れた値・未知の id・同じ瞬間の重複を残さない）。
+  const next = readTetsukoRecord({ flags: { [TETSUKO_TIME_FLAG]: {
+    props: result.props || record.props,
+    found: [...record.found, ...(Array.isArray(result.found) ? result.found : [])],
+    album: Array.isArray(result.album) ? result.album : record.album,
+    treatDay: result.treatDay === undefined ? record.treatDay : result.treatDay,
+  } } });
+  value.flags[TETSUKO_TIME_FLAG] = { ...next, sessions: record.sessions + 1, lastKey: result.visitKey };
+  return { committed: true, stamina: TETSUKO_STAMINA };
 }
+
+/** 親の mukai 訪問から作る、安定した訪問キー（同じ訪問の再確定・二重押しを止める）。 */
+export const tetsukoVisitKey = value => `${value?.chapter ?? 0}:${value?.day ?? 0}:${value?.slot ?? 0}:${tetsukoVisits(value)}`;
 
 /**
  * 「てつこといっしょ」を開く（#2454 §10-2 画面の入口）。いまは準備中の画面を見せて、「帰る」で戻るだけ。

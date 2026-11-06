@@ -202,6 +202,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_mukai_work_intro_read", "person"],
   ["_ch3_opening_read", "progression"],
   ["_ch3_outings", "progression"],
+  ["_tetsuko_time", "progression"], // てつこといっしょ（#2454）: 小物の配置・しぐさ図鑑・アルバム。来訪記録 _ch3_outings と同じく周回で持ち越さない
   ["_ch3_naru_party_ready", "progression"],
   ["_ch3_pizza_party", "progression"],
   ["_minto_calling_paid", "progression"],
