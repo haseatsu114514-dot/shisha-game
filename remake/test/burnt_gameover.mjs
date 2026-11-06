@@ -67,7 +67,7 @@ try {
   assert.equal(await page.locator('[data-test="game-over"]').getAttribute('data-phase'), 'reaction');
   assert.equal(await page.evaluate(() => window.__remake.state.tournament.attempts), 1, 'reaction plays before rewinding the tournament');
   // 読み上げ領域は台詞の live だけを見る（残り時間・戻り先の説明も .go-a11y）。読み上げるのは retry 反応の text。
-  assert.match(await page.locator('.go-a11y[aria-live]:not(.go-time-announcement)').textContent(), /一緒に戻るぞ|絶滅回避|俺たちの大会へ/);
+  assert.match(await page.locator('.go-a11y[aria-live]:not(.go-time-announcement)').textContent(), /次の一台だ|絶滅回避|作ってこい/);
   await page.waitForFunction(() => window.__remake.state.tournament.attempts === 2, null, { timeout: 30000 });
   console.log('PASS: tournament burn → immediate GAME OVER (no judging) → retry from the tournament start');
   await page.close();

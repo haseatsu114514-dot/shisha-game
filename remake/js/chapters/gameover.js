@@ -1,5 +1,6 @@
-// 大会コンティニュー: スミさんがプレイヤーに直接語りかける。
-// タイムラインと音声を分離し、後から録音音声・口パク素材に差し替えられる。
+// 大会コンティニュー: 敗北の瞬間、はじめの頭の中に出会ってきた人の声が浮かぶ（#2524・2026-11-06）。
+// 人物は会場に来ているのではなく、はじめの想像。cue.voice が "self" の行ははじめ自身の心の声（（）で閉じる）、
+// それ以外の行は頭の中に浮かんだ相手の声。タイムラインと音声を分離し、後から録音音声・口パク素材に差し替えられる。
 import { prepareContinueScript, normalizeContinueContext } from "./continue-context.js";
 import { state } from "../core/state.js";
 import { on } from "../core/bus.js";
@@ -11,59 +12,64 @@ import { createContinueView } from "./continue-view.js";
 
 
 // at = 開始からの秒数。全体の台詞表示は約20秒。テロップは1キュー1行（全角22字以内）に小分けする。
-// reactions の text も1行ずつの配列で、順に表示する。
+// cues[0]・cues[1] は敗因・順位・弱点で差し替わる（continue-context.js）。cues[0] ははじめの自問、cues[1] は思い出したスミさんの助言。
+// cues[6] は自答。連敗の短縮 [0,1,5,6] でも「自問→助言→問いかけ→自答」が残る。
+// reactions の text も1行ずつの配列で、順に表示する（頭の中のスミさんの返事）。
 // audio: 完成した合成音声を置く場合だけ ../assets/audio/voice/continue/... を指定。
 // cues のタイミングは完成音声の実測に合わせて調整可能。
 export const SUMI_CONTINUE_SCRIPTS = [
   {
     id: "together", title: "共同責任", duration: 20, audio: null,
     reactions: {
-      retry: { text: ["よし。トング持て。一緒に戻るぞ！"], faces: ["surprise", "smile"], effect: "rally", word: "最後まで付き合うぞ！" },
+      retry: { text: ["よし。トング持て。次の一台だ"], faces: ["surprise", "smile"], effect: "rally", word: "次の一台" },
       quit: { text: ["……おう。今日はここまでだ。お疲れ"], faces: ["surprise", "normal"], effect: "farewell", word: "お疲れ" },
     },
     cues: [
-      {"at": 0, "face": "serious", "text": "……届かなかったか"},
+      {"at": 0, "face": "serious", "voice": "self", "text": "（……届かなかった）"},
       {"at": 1.8, "face": "serious", "text": "なら、次は一つだけ変えてみよう"},
-      {"at": 4.2, "face": "surprise", "text": "ちょっと待て！ 俺もまだ帰らねえぞ！"},
+      {"at": 4.2, "face": "surprise", "text": "おい。一人で背負う顔すんな"},
       {"at": 7.0, "face": "serious", "text": "お前だけの負けにすんな"},
       {"at": 10.3, "face": "normal", "text": "俺は、お前と勝ちてえんだよ"},
-      {"at": 13.6, "face": "normal", "text": "トングはまだ、ここにある"},
-      {"at": 16.5, "face": "normal", "text": "……どうする、はじめ？"},
+      {"at": 13.6, "face": "normal", "text": "……どうする、はじめ？"},
+      {"at": 16.5, "face": "normal", "voice": "self", "text": "（……決めるのは、俺だ）"},
     ],
   },
   {
     id: "disaster", title: "世界の終わり", duration: 20, audio: null,
     reactions: {
       retry: { text: ["よし、カルダモン絶滅回避だ！"], faces: ["surprise", "smile"], effect: "rally", word: "カルダモン絶滅回避！" },
-      quit: { text: ["……新聞は休刊だ。よくやったな"], faces: ["surprise", "normal"], effect: "farewell", word: "よく頑張ったな" },
+      quit: { text: ["……新聞は休刊だ。よくやったな"], faces: ["surprise", "normal"], effect: "farewell", word: "よくやったな" },
     },
     cues: [
-      {"at": 0, "face": "serious", "text": "……届かなかったか"},
+      {"at": 0, "face": "serious", "voice": "self", "text": "（……届かなかった）"},
       {"at": 1.8, "face": "serious", "text": "なら、次は一つだけ変えてみよう"},
       {"at": 4.2, "face": "surprise", "text": "このままじゃ、カルダモンが絶滅だ！"},
       {"at": 7.0, "face": "normal", "text": "……するわけねえだろ"},
       {"at": 10.3, "face": "normal", "text": "だが、悔しいのは本当だ"},
-      {"at": 13.6, "face": "normal", "text": "次の一台も、俺に見せてくれ"},
-      {"at": 16.5, "face": "normal", "text": "……もう一度、やるか？"},
+      {"at": 13.6, "face": "normal", "text": "……もう一度、やるか？"},
+      {"at": 16.5, "face": "normal", "voice": "self", "text": "（……頭の中でも、スミさんはスミさんだ）"},
     ],
   },
   {
     id: "meeting", title: "反対多数", duration: 20, audio: null,
     reactions: {
-      retry: { text: ["可決ッ！ では、俺たちの大会へ！"], faces: ["surprise", "smile"], effect: "vote", word: "全会一致ッ！！" },
+      retry: { text: ["可決ッ！ 次の一台、作ってこい！"], faces: ["surprise", "smile"], effect: "vote", word: "可決ッ！" },
       quit: { text: ["……本日は閉会。お疲れ、はじめ"], faces: ["surprise", "normal"], effect: "farewell", word: "お疲れ、はじめ" },
     },
     cues: [
-      {"at": 0, "face": "serious", "text": "……届かなかったか"},
+      {"at": 0, "face": "serious", "voice": "self", "text": "（……届かなかった）"},
       {"at": 1.8, "face": "serious", "text": "なら、次は一つだけ変えてみよう"},
       {"at": 4.2, "face": "surprise", "text": "では、緊急会議を始める！"},
       {"at": 7.0, "face": "serious", "text": "議題は『俺たちは、まだやれるか』"},
       {"at": 10.3, "face": "normal", "text": "俺は賛成だ。お前はどうだ？"},
-      {"at": 13.6, "face": "normal", "text": "勝手に一人で、終わらせんな"},
-      {"at": 16.5, "face": "normal", "text": "……返事、聞かせろ"},
+      {"at": 13.6, "face": "normal", "text": "……返事、聞かせろ"},
+      {"at": 16.5, "face": "normal", "voice": "self", "text": "（……会議室は、俺の頭の中らしい）"},
     ],
   },
 ];
+
+/** はじめの心の声か（（）で閉じた自問・自答）。相手の声は voice なし。 */
+export const isSelfCue = cue => cue?.voice === "self";
 
 /** 大会中に準備。抽選やセーブを動かさず、登場し得る相手の全表情とUIをデコードする。 */
 export function warmGameOver() {
@@ -106,9 +112,11 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   const audio = createContinueAudio({ enabled: soundEffects });
   let active = true, started = false;
   let pauseReasons = new Set(["not-connected"]);
+  // 文字送りの声: 心の声の行ははじめ、相手の声の行はその人物の会話音を使う。
+  let voice = isSelfCue(script.cues[0]) ? "self" : "other";
   const view = createContinueView({ script, speaker, character: script.name || "スミさん",
     premium: speaker !== "sumi", layout, background,
-    onType: () => { if (active && started && !pauseReasons.size) audio.voice(speaker); } });
+    onType: () => { if (active && started && !pauseReasons.size) audio.voice(voice === "self" ? "hajime" : speaker); } });
   const { root } = view;
   const owner = state;
   root.continueVariant = speaker === "sumi" ? SUMI_CONTINUE_SCRIPTS.indexOf(baseScript) : `premium:${speaker}`;
@@ -199,15 +207,24 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     const cue = script.cues[index];
     if (index !== cueIndex) {
       // 表情が変わる区切りだけ人物を弾ませ、低い拍を鳴らす。小分けの行送りでは鳴らさない。
-      const turn = index === 0 || cue.face !== script.cues[cueIndex]?.face;
+      // 心の声（self）の行では人物を霞ませて弾ませず、相手の声が浮かぶ瞬間（self→other）だけ拍を打つ。
+      const previous = script.cues[cueIndex];
+      const next = isSelfCue(cue) ? "self" : "other";
+      const surfaced = next === "other" && (cueIndex < 0 || isSelfCue(previous));
+      const turn = next === "other" && (index === 0 || surfaced || cue.face !== previous?.face);
       cueIndex = index;
       currentInstant = false;
+      voice = next;
       root.dataset.cue = String(index);
       root.dataset.lastCue = String(index === script.cues.length - 1);
+      view.setVoice(voice);
       view.setCaption(cue.text, cue.emphasis);
       view.announce(cue.text);
       view.face(cue.face, turn && !reduce && !(detail.lossOrdinal >= 3 && index === 0));
-      if (sound && index > 0 && turn) audio.beat();
+      if (sound && index > 0) {
+        if (next === "self") audio.inner();
+        else if (turn) audio.beat();
+      }
     }
     if (elapsed >= 10.3 && root.dataset.quiet !== "true") {
       root.dataset.quiet = "true";
@@ -339,6 +356,8 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     clearTimeout(entry); clearTimeout(deadline); clearTimeout(boundary); clearInterval(ticker);
     root.dataset.phase = "reaction";
     root.classList.remove("go-urgent", "go-done");
+    voice = "other"; // 返事は頭の中の相手の声。
+    view.setVoice(voice);
     view.reaction(script.reactions[value], value);
     view.proceed.textContent = value === "retry" ? "大会へ進む" : "タイトルへ";
     view.proceed.setAttribute("aria-disabled", "true");
@@ -416,6 +435,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     else if (reactionLine < lines.length - 1) showReactionLine(reactionLine + 1);
     else finish();
   });
+  view.setVoice(voice);
   view.setCaption(script.cues[0].text);
   view.reveal(reduce ? 1 : 0);
   // 幕の終わりまでshowScreenが挿入を待つ場合にも、実際に表示されてから20秒。

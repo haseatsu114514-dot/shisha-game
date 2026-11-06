@@ -7,8 +7,11 @@ import { OVERSEAS_HEROINES, overseasCompanion, overseasCompanionCandidates, over
 
 const memory = new Map();
 globalThis.localStorage = { getItem: key => memory.get(key) ?? null, setItem: (key, value) => memory.set(key, String(value)) };
-const heroineIds = JSON.parse(readFileSync(new URL("../../data/story_routes.json", import.meta.url))).heroine_ids;
+const storyRoutes = JSON.parse(readFileSync(new URL("../../data/story_routes.json", import.meta.url)));
+// 渡航できるのは日本に住むヒロインだけ（ドバイに住むヌールは resident・DSR20）
+const heroineIds = storyRoutes.heroine_ids.filter(id => !storyRoutes.romance[id].resident);
 assert.deepEqual([...OVERSEAS_HEROINES], heroineIds);
+assert.deepEqual(storyRoutes.heroine_ids.filter(id => storyRoutes.romance[id].resident), ["noor"]);
 
 function atDeparture(lovers) {
   const value = newState();
