@@ -142,7 +142,7 @@ test("companion reacts to actual result, with canonical voice and distinct expre
     assert.match(reaction(id, "result", [{ outcome: "drop" }], null, { bonus: true }).text, /宣言|青/);
   }
   assert.match(reaction("shark", "summary", [], null).text, /お主/);
-  assert.doesNotMatch(reaction("shark", "summary", [], null).text, /熱海|なぎさ|泳/);
+  assert.doesNotMatch(reaction("shark", "summary", [], null).text, /暑海|なぎさ|泳/);
 });
 test("invalid input cannot produce NaN or illegally call a closed target", () => {
   for (const input of [{ x: NaN, y: 0, power: .6 }, { x: 0, y: Infinity, power: .6 }, { x: 0, y: 0, power: 2 }, { x: 2, y: 0, power: .6 }, { x: 0, y: 0, power: .6, called: "fake" }])
