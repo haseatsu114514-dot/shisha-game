@@ -30,6 +30,21 @@ export function needsIntro(id) {
   return displayName(id, state) !== "？？？";
 }
 
+/** 同じ人物の紹介をもう見たか（未知版など別の版を含む） */
+export function introSeenBefore(id) {
+  const prefix = "intro_cutin";
+  return Object.keys(DB.characters[id] || {}).filter((key) => key === prefix || key.startsWith(`${prefix}_`))
+    .some((key) => state.flags[introSeenKey(id, key.slice(prefix.length + 1))]);
+}
+
+// #2688 F10: 同じ人物の2回目以降は、変身（morph 約1.2秒）を一閃（slash 約0.7秒）に落とす。表示時間（hold）は変えない。
+// 初回と同じ変身へ戻すときは null にする。台本の intro.transition で明示した型はそのまま使う。
+export const REPEAT_INTRO_TRANSITION = "slash";
+export function introTransitionFor(override = {}, repeat = false) {
+  const chosen = override.transition ?? config.introTransition ?? "none";
+  return !override.transition && repeat && chosen === "morph" && REPEAT_INTRO_TRANSITION ? REPEAT_INTRO_TRANSITION : chosen;
+}
+
 /** 出さずに「見た」ことにする（テストの高速送り用） */
 export function markIntroSeen(id, variant = "") {
   if (introOf(id, variant)) state.flags[introSeenKey(id, variant)] = true;
@@ -62,6 +77,7 @@ function framePortrait(img, p) {
 export async function playIntro(id, { onAppear = null, override = {}, variant = "" } = {}) {
   const intro = { ...introOf(id, variant), ...override };
   if (!introOf(id, variant)) return;
+  const repeat = introSeenBefore(id);
   if (variant !== "unknown") markMet(id);
   markIntroSeen(id, variant);
   const main = intro.display_name || introName(id).main;
@@ -87,7 +103,7 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
     const motion = motionOf(intro);
     // 立ち絵からの「変身」のつなぎ（グラフィック絵柄のときだけ。既定 none は今まで通り）
     const standingRect = graphic ? measureStanding(id, layers.fx) : null;
-    const transition = createTransition(graphic ? (override.transition ?? config.introTransition ?? "none") : "none", {
+    const transition = createTransition(graphic ? introTransitionFor(override, repeat) : "none", {
       id, fx: layers.fx, host, frame: graphic?.frame, config,
       standing: standingRect && standingInfo ? { rect: standingRect, p: standingInfo } : null,
       colors: { color: art.color, secondary: art.secondary, shadow: art.shadow },

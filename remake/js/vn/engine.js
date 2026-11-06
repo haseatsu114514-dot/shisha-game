@@ -657,7 +657,8 @@ function runFx(line) {
   autoFxGap = 6;
   if (id === "shake") { shake(); SE.hit(); }
   else if (id === "flash" || id === "imp") flash(id === "imp" ? "gold" : "white");
-  else if (id === "cutin") { flash("gold"); SE.just(); }
+  // 金の閃光＋決めの音。#2688 F8 で旧名 cutin から改名（cutin は登場カットインの名前）
+  else if (id === "gold") { flash("gold"); SE.just(); }
   else if (id === "sepia") layers.vn.classList.add("sepia");
   else if (id === "sepia_off") layers.vn.classList.remove("sepia");
   else if (id === "flashback") layers.vn.classList.add("flashback");
