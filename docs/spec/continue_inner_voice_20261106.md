@@ -111,3 +111,11 @@ A を採用。B の「複数人物」は候補拡張の契約変更（§7）と�
 | 第4・5章、練習・ミニゲーム | 同じ画面の適用 | 章側の入口接続 | **対象外**（Issueの方針どおり） |
 | 音声 | 録音音声・口パク | `audio` の指定と `at` の実測 | **据え置き**（`audio: null`） |
 | 2択文言 | 「もう一台、作る／今日は、ここまで」（本編のneon配置と比較用の下段配置）。比較用の上段配置（top／back-count）は「コンティニュー？ ［する］［諦める］」のまま | 契約ではなく表現。遷移・aria-labelの意味は不変 | **適用済み**。要望があれば従来文言へ戻せる |
+
+## 8. 本編の既定を「記憶の暗室」（inner）へ（#2713・2026-11-06 オーナー決定）
+
+- PR #2654 の第2弾コミット（`b3a1eea`）はマージ後に積まれたため main に入っておらず、inner 配置は main に無かった。#2713 では第2弾のうち **inner 配置の描画とCSSだけ** を移植し、`buildGameOver`／`createContinueView` の `layout` 既定を `"neon"` → `"inner"` にした。章側の入口（`ch1.js`・`ch2-tournament.js`・`ch3-tournament.js`・`ch4.js`）は `layout` を渡さないため、全章の大会コンティニューが inner になる。
+- inner の構成: 細い活字の見出し（副題 `CONTINUE?` は `aria-hidden`）、上端の時計バー（`--go-progress`）、文字だけの縦積み2択、顔の大きさ524.8px・中心Y273は採用Cと共通で中心Xだけ400、GAME OVERはロゴ画像を使わず同じ活字。
+- 移植していないもの（第2弾の残り）: 自問の削除と台本差し替え、恋人の同確率化（`continue-lovers.js`）、新版立ち絵（`continuePortraitStyle`・`continuePortraitVariants.new`）、Codexプロンプト。台詞は変えていないため、心の声（`data-voice="self"`）の霞みは inner でも従来どおり効く。
+- 旧既定の neon は残し、`continue-preview.html?layout=neon` と `layout: "neon"` の明示で使える。neon の見た目を測るテスト（`continue_neon`・`continue_screen`・`continue_typing`・`browser/continue_closeup`・`continue_lifecycle`・`continue_output`・`gameover_title_center`）は `layout: "neon"` を明示し、実画面の通し（`burnt_gameover`）は inner を確認する。
+- 専用画像（#2712: 表情10点・背景1枚）は未投入。inner は既存の立ち絵（`portraitInfo`）と stage 背景だけを使い、新しい画像パスを直書きしていない。届いたら既存の `portraitVariants`／`continueUI` の参照方式で差し替える。

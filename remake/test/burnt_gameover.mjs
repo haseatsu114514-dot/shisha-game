@@ -37,7 +37,9 @@ try {
   await page.clock.pauseAt(new Date(Date.now() + 1000));
   await page.evaluate(() => window.__remake.dev.gameOver('rank', 0));
   await page.clock.runFor(1000);
-  assert.equal(await page.locator('.go-title').textContent(), 'コンティニューする？');
+  // #2713: 本編の既定は「記憶の暗室」（inner）。見出しは aria-hidden の英字の副題を伴うため、読み上げ名で照合する。
+  assert.equal(await page.locator('.gameover').getAttribute('data-layout'), 'inner');
+  assert.equal(await page.locator('.go-title').getAttribute('aria-label'), 'コンティニューする？');
   await page.clock.runFor(19050);
   assert.equal(await page.locator('.gameover').getAttribute('data-phase'), 'speaking');
   assert.equal(await page.locator('.go-count').textContent(), '∞');
@@ -52,7 +54,7 @@ try {
   await page.evaluate(() => { window.__remake.craftTest.auto = 'burn'; window.__run = window.__remake.dev.tournament(); });
   await page.waitForSelector('.bench[data-thermal-band="burnt"]', { timeout: 240000 });
   await page.waitForSelector('.end-screen.gameover', { timeout: 60000 });
-  assert.equal(await page.locator('.end-screen.gameover .go-title').textContent(), 'コンティニューする？');
+  assert.equal(await page.locator('.end-screen.gameover .go-title').getAttribute('aria-label'), 'コンティニューする？');
   assert.equal(await page.locator('.end-screen.gameover img[src*="bg_game_over"]').count(), 0, 'GAME OVER is drawn without an image');
   assert.equal(await page.locator('.end-screen.gameover .go-sumi-img').count(), 1, 'Sumi uses the canon portrait');
   assert.equal(await page.locator('[data-test="continue-caption"]').count(), 1);
