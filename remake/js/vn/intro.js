@@ -63,8 +63,6 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
   const intro = { ...introOf(id, variant), ...override };
   if (!introOf(id, variant)) return;
   if (variant !== "unknown") markMet(id);
-  // 同じ人物の2回目以降（名前を伏せた版の後の正体・章をまたいだ再登場）は、変身のつなぎを一閃に短くする（#2688 F10）。表示時間は変えない
-  const seenBefore = !!(state.flags[introSeenKey(id)] || state.flags[introSeenKey(id, "unknown")]);
   markIntroSeen(id, variant);
   const main = intro.display_name || introName(id).main;
   const standingInfo = portraitInfo(id, intro.face || "normal");
@@ -89,8 +87,7 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
     const motion = motionOf(intro);
     // 立ち絵からの「変身」のつなぎ（グラフィック絵柄のときだけ。既定 none は今まで通り）
     const standingRect = graphic ? measureStanding(id, layers.fx) : null;
-    const chosen = graphic ? (override.transition ?? config.introTransition ?? "none") : "none";
-    const transition = createTransition(seenBefore && !override.transition && chosen === "morph" ? "slash" : chosen, {
+    const transition = createTransition(graphic ? (override.transition ?? config.introTransition ?? "none") : "none", {
       id, fx: layers.fx, host, frame: graphic?.frame, config,
       standing: standingRect && standingInfo ? { rect: standingRect, p: standingInfo } : null,
       colors: { color: art.color, secondary: art.secondary, shadow: art.shadow },

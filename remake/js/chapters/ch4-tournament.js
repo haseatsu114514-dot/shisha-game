@@ -24,7 +24,6 @@ import { showChapterFourStandings } from "./ch4-standings.js";
 import { chapterFourMatch, startChapterFourCraft, recoverChapterFourStep, chapterFourRetryContext,
   beginChapterFourStep, finishChapterFourStep, chapterFourStandings } from "./ch4-tournament-state.js";
 import { chapterFourCraftAdvice, chapterFourCustomerLines } from "./ch4-verdict.js";
-import { roundBandAt, focusBand, focusRival } from "./tournament-moments.js";
 
 const setup = async cs => { await stepSetup(cs); await stepWater(cs); };
 const STEPS = [setup, stepMix, stepPack, runHoles, stepPlace, runHeat, stepSteamTime, runSteamDodge,
@@ -54,7 +53,6 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
     if (!startChapterFourCraft(state, cs)) throw new Error("世界大会の開始地点を確認できません");
     save();
   }
-  const rounds = new Set(), focused = new Set();
   while (live() && !p.result) {
     playBgm("bgm_tournament_craft");
     // 制作中の掛け合い（#2031）。工程の前に一度だけ読み、既読は制作保存に残す（再挑戦では最初から）。
@@ -65,11 +63,7 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
       const me = rows.find(row => row.id === "hajime"), top = rows[0];
       const context = { rank: me?.rank ?? null, leader: top?.id ?? null,
         tied: rows[1]?.points === top?.points, level: me?.points === top?.points };
-      // 四人が同時に作る世界大会。掛け合いに初めて出てくるライバルへ視線が移るとき、名前と二つ名の帯を流す（#2688 A20）
-      const told = await playTournamentEvent(p.craft, event, { context, onDialogue: async (dialogue) => {
-        const focus = focusRival(dialogue, ["naru", "master_hookah", "sheikh"].filter((id) => !focused.has(id)));
-        if (focus) { focused.add(focus); await focusBand(focus, 4); }
-      } });
+      const told = await playTournamentEvent(p.craft, event, { context });
       requireCurrent();
       if (!told) return false;
       save();
@@ -104,9 +98,6 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
       p.craft.ch4AdviceSeen[adviceKey] = true;
       save();
     }
-    // 工程の区切りに第1章と同じ ROUND の横帯（#2688 A16）
-    await roundBandAt(p.step, rounds);
-    requireCurrent();
     const cs = beginChapterFourStep(state);
     save();
     openBench(cs, { steps: CRAFT_STEPS });
