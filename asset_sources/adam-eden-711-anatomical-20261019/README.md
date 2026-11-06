@@ -40,7 +40,7 @@
 
 EDEN背景は `assets/backgrounds/{bg_eden_shop,eden}.png` の同一画像別名。両PNGと両WebPはそれぞれ同一bytesを保つ。ロゴは1960×802の採用シートから `[36,53,605,719]` を表示する。[採用台帳](https://github.com/haseatsu114514-dot/shisha-game/blob/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d/asset_sources/store-logos/ch1-issue470/adopted.json) と原画を照合し、後の別候補で上書きしていない。
 
-章題レイヤーの名前と中身の入れ替わりは2026-11-06に修正済み（PR #TBD）。`adam.png` は現行服装のAdam、`naru.png` は現行服装のNaruを、採用一枚絵の候補Bから切り出した。共通章題・プレビューの位置と足元の影も人物に合わせた。通常の本編第1章開始 `ch1.js → ch1-title-motion.js` は個別レイヤーを使わず、採用一枚絵 `remake/img/ui/chapters/ch1-title.webp` を表示する。採用原画は `asset_sources/chapter-title/ch1-white-walk-385-20261013/remake-b-20261106/title.png`。
+章題レイヤーの名前と中身の入れ替わりは2026-11-06に修正済み（PR #2619）。`adam.png` は現行服装のAdam、`naru.png` は現行服装のNaruを、採用一枚絵の候補Bから切り出した。共通章題・プレビューの位置と足元の影も人物に合わせた。通常の本編第1章開始 `ch1.js → ch1-title-motion.js` は個別レイヤーを使わず、採用一枚絵 `remake/img/ui/chapters/ch1-title.webp` を表示する。採用原画は `asset_sources/chapter-title/ch1-white-walk-385-20261013/remake-b-20261106/title.png`。
 
 現行CG11件と台本のshow_cgを照合した。大会3CGは表示用実画像まで確認した。他の8CGはスミ／はじめの練習、みんと・つむぎの場面として目録・台本から除外した範囲で、全8枚の背景人物を目視したとは報告しない。titleArts 23件はヒロインに紐づく目録上の範囲確認。`shisha_eden.png` は現行manifest.scenePropsに存在せず表示対象外。未採用候補・旧生成指示は履歴として保持する。
 
