@@ -52,7 +52,7 @@ try {
     const pin = page.locator(`[data-test="pin-${id}"]`);
     assert.match(await pin.textContent(), /本日臨時休業/);
     await pin.click();
-    assert.match(await page.locator(".mi-no").textContent(), /本日臨時休業/);
+    assert.match(await page.locator(".map-info").getAttribute("aria-label"), /本日臨時休業/);
     assert.equal(await page.locator('[data-test="map-go"]').count(), 0);
     const expires = await page.evaluate((id) => {
       const spot = T.spots.SPOTS.find((s) => s.charId === id);

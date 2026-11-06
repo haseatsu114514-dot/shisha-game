@@ -473,9 +473,10 @@ body.game-ds .pin-station .pin-symbol { color: #29485d; }
 .map-info::before { top: -3px; left: -3px; border-right: none; border-bottom: none; }
 .map-info::after { bottom: -3px; right: -3px; border-left: none; border-top: none; }
 .map-info { right: 16px; bottom: 16px; z-index: 7; width: 270px; padding: 9px 12px 11px; transition: opacity 0.2s, transform 0.2s; }
-/* 行き先パネルは見た目だけ前面に置き、裏に隠れる行き先ピン（右下の「家に帰る」等）の操作を奪わない。
-   クリックはパネル内のボタン（ここへ行く・乗車確認など）だけが受け取り、余白は背後のピンへ素通りさせる。 */
+/* 未選択時の余白は背後のピンへ通す。スポット選択中は写真を含むパネル全体で移動する。 */
 .map-info { pointer-events: none; }
+.map-info.spot-selected { pointer-events: auto; cursor: pointer; }
+.map-info.spot-selected:focus-visible { outline: 3px solid var(--gold-hi); outline-offset: 3px; }
 .map-info button { pointer-events: auto; }
 .map-info.leaving { opacity: 0; transform: translateY(8px); }
 .mi-banner {
@@ -1707,8 +1708,7 @@ body:not(.game-ds) #hud .hud-card .hud-stamina .gauge-track { position: absolute
 body:not(.game-ds) #hud .hud-card .hud-stamina .hud-bar b { border-radius: 4px; }
 body:not(.game-ds) #hud .hud-card .hud-exp { height: 25px; padding: 0; }
 
-/* 地図の案内パネル（2026-10-31 DUI14・DUI16）: 右下の家・喫茶の看板に届かない高さ（約255px）に収める。
-   行き先を選んだら16:9の写真を見せ、店名と人の名前は写真の上に重ねる。タグは置かず、料金は行くボタンに一言だけ。 */
+/* 地図の案内パネル: 選んだスポットの写真と名前だけを表示する。 */
 body:not(.game-ds) .map .map-info {
   display: grid; grid-template-columns: minmax(0, 1fr); width: 312px; padding: 6px 8px 8px;
 }

@@ -248,7 +248,7 @@ await suite("ch4-camel-race-daily", async check => {
     assert.equal(state.met.khalil, true);
     // 夜はレースへ行けない（案内に理由を出し、「ここへ行く」は出さない）。
     await page.locator(dt("pin-ch4_dubai_camel")).click();
-    await page.locator(".mi-no").filter({ hasText: /今日はもう走った|レースは昼だけ|今日はもう行った/ }).waitFor();
+    await page.locator('.map-info[aria-label*="今日はもう走った"], .map-info[aria-label*="レースは昼だけ"], .map-info[aria-label*="今日はもう行った"]').waitFor();
     assert.equal(await page.locator(dt("map-go")).count(), 0, "no race at night");
   });
 });

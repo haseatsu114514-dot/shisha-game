@@ -294,7 +294,7 @@ await suite("ch3-tokyo-daily", async check => {
     await loadSlot(page, 0);
     await tokyoMap(page, { day: 44, slot: 1 });
     await page.locator(dt("pin-ch3_tokyo_enmaku")).click();
-    await page.locator(".mi-no", { hasText: "お金が足りない" }).waitFor();
+    await page.locator('.map-info[aria-label*="お金が足りない"]').waitFor();
     assert.equal(await page.locator(dt("map-go")).count(), 0, "Without 4,000 yen Ayatori's shop can't be entered");
     let state = await get(page);
     assert.equal(state.slot, 1);
@@ -302,7 +302,7 @@ await suite("ch3-tokyo-daily", async check => {
     await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.state.money = 10000; });
     await page.locator(dt("pin-ch3_tokyo_mukai")).click();
     await page.locator(dt("pin-ch3_tokyo_enmaku")).click();
-    await page.locator(dt("spot-note"), { hasText: "4,000" }).waitFor();
+    await page.locator(dt("pin-ch3_tokyo_enmaku")).locator(".pin-cost", { hasText: "4,000" }).waitFor();
     await page.locator(dt("map-go")).click();
     const pick = page.locator(dt("tokyo-enmaku-0"));
     await pick.or(page.locator(".vn")).first().waitFor();
@@ -376,7 +376,7 @@ await suite("ch3-tokyo-daily", async check => {
     await page.evaluate(() => { window.__remake.state.money = 1000; });
     await page.locator(dt("pin-ch3_tokyo_mukai")).click();
     await page.locator(dt("pin-ch3_tokyo_steve")).click();
-    assert.equal(await page.locator(".mi-no", { hasText: "お金が足りない" }).count(), 0, "the finale is not blocked by the shop fee");
+    assert.equal(await page.locator('.map-info[aria-label*="お金が足りない"]').count(), 0, "the finale is not blocked by the shop fee");
     await page.locator(dt("map-go")).click();
     await page.waitForFunction(() => !!window.__remake?.state?.finales?.steve, null, { timeout: 60000 });
     const state = await get(page);
@@ -413,7 +413,7 @@ await suite("ch3-tokyo-daily", async check => {
     await tokyoMap(page, { day: 44, slot: 1 });
     await page.locator(dt("pin-ch3_tokyo_mukai")).click();
     await page.locator(dt("pin-ch3_tokyo_volk")).click();
-    assert.equal(await page.locator(".mi-no", { hasText: "お金が足りない" }).count(), 0, "the finale is not blocked by the shop fee");
+    assert.equal(await page.locator('.map-info[aria-label*="お金が足りない"]').count(), 0, "the finale is not blocked by the shop fee");
     await page.locator(dt("map-go")).click();
     await page.waitForFunction(() => !!window.__remake?.state?.finales?.volk, null, { timeout: 60000 });
     const state = await get(page);

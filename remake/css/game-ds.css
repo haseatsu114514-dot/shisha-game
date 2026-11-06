@@ -217,7 +217,7 @@ body.game-ds .map-info {
   left: calc(var(--ds-cx) + 8px); top: calc(var(--ds-cy) + var(--ds-ch) - var(--ds-touchbar) - 120px); right: auto; bottom: auto;
   width: calc(var(--ds-cw) - 16px); height: 114px; overflow: auto; touch-action: pan-y; padding: 6px 10px; transform: none;
 }
-body.game-ds .mi-preview { display: none; }
+body.game-ds .map-info.spot-selected .mi-preview { display: block; aspect-ratio: 16 / 9; }
 body.game-ds .mi-banner { font-size: 15px; }
 body.game-ds :is(.mi-desc, .mi-foot) { font-size: 13px; line-height: 1.45; }
 body.game-ds .mi-go { min-height: 44px; font-size: 17px; }
