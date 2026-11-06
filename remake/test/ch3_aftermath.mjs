@@ -313,10 +313,22 @@ console.log("PASS: Chapter 3 aftermath offers Steve's ♥5 finale with the same 
     ["tournament_finished", 3, "after_tournament", "before_tournament"], "the finale reads after the tournament too");
   assert(!JSON.stringify(finale.branches.before_tournament).match(/大会/), "no after-tournament wording before it");
   assert(!JSON.stringify(finale.lines).match(/大会|本番|明日/), "the shared lines assume no tournament result");
+  // 第5章（ch5_tokyo_volk「測る。それから、客に聞く。順番は変えない」）と同じ順番。大会後も計器を先に見る
+  assert(!JSON.stringify(finale).match(/計器より先/), "Volk never puts the customer before the gauges (characters.json, ch5)");
+  assert.match(JSON.stringify(finale.branches.after_tournament), /計器は、今も先に見る/);
+  assert.deepEqual(entry.after, ["ch3_volk_after_ch3"], "after the first post-tournament visit to Iron Smoke");
   const window = winningSave(), open = value => availableAftermathFinales(value, who => who === "volk").map(item => item.who);
   beginChapterThreeAftermath(window);
   assert.deepEqual(open(window), [], "the victory night has no finale");
-  for (const id of ["ch3_abyss_hotel", "ch3_mashiro_recovery", "ch3_naru_reconcile"]) {
+  completeChapterThreeAftermathScene(window, "ch3_abyss_hotel");
+  assert.deepEqual(open(window), [], "not before 大会のあとの記録 (ch3_volk_after_ch3) is read");
+  window.met = { ...window.met, volk: true };
+  const before = structuredClone(window);
+  open(window);
+  assert.deepEqual(window, before, "reading the finale list never changes the save");
+  assert.equal(completeAftermathDetour(window, "ch3_volk_after_ch3"), true);
+  assert.deepEqual(open(window), ["volk"], "then it opens in the same sitting");
+  for (const id of ["ch3_mashiro_recovery", "ch3_naru_reconcile"]) {
     completeChapterThreeAftermathScene(window, id);
     assert.deepEqual(open(window), ["volk"], `open after ${id}`);
   }

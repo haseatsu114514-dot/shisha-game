@@ -1524,6 +1524,8 @@
         "remake/js/chapters/ch4-dubai-daily.js",
         "remake/js/core/growth.js",
         "data/dialogue/growth_lessons.json",
+        "data/dialogue/ch3_volk.json",
+        "data/dialogue/ch3_rivals.json",
         "remake/test/browser/lesson_consult_coverage.mjs"
       ],
       "run": [

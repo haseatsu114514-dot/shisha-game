@@ -330,8 +330,8 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(state.flavorStock.nightside_blast_mint, before + 50, "a box of Blast Mint comes with the hagal");
     assert.equal(state.money, 1000, "being called by Volk costs nothing, even short of the shop fee");
     const backlog = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map(row => row.text).join("\n"));
-    assert.match(backlog, /今日は、測らない/);
-    assert.doesNotMatch(backlog, /大会の日から/, "read before the tournament: the before-tournament branch");
+    assert.match(backlog, /この時間は、測らない/);
+    assert.doesNotMatch(backlog, /客の息の間も聞くようにした/, "read before the tournament: the before-tournament branch");
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
     assert.equal(saved.finales?.volk?.route, "friend", "the finale is saved");
   });

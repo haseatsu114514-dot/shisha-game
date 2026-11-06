@@ -24,8 +24,8 @@ async function openAftermath(page, { stage, lit, extra = "" }) {
     // 綾取の締めくくりの前提（LIME交換の寄り道・答えを返しに行く外出）を大会前に済ませた保存（IR22）
     if (extra === "saku-finale") Object.assign(s.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_outings: { enmaku_answer: 1 } });
     if (extra === "volk-low") s.affinity.volk = 0;
-    // ヴォルクの締めくくりの前提（鉄の煙の再訪三つとLIME交換の寄り道）を済ませた保存（#2028）
-    if (extra === "volk-finale") for (const id of ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_lime"]) {
+    // ヴォルクの締めくくりの前提（鉄の煙の再訪三つとLIME交換の寄り道）と、大会後に初めて鉄の煙へ寄る場面を済ませた保存（#2028）
+    if (extra === "volk-finale") for (const id of ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_lime", "ch3_volk_after_ch3"]) {
       s.flags[`_ch3_read_${id}`] = true; s.flags._lime_contact_volk = true;
     }
     growth.setGrowthPreview(true);
@@ -204,7 +204,7 @@ await suite("lesson-consult-coverage", async (check) => {
     assert.equal(s.finales.volk.route, "friend");
     assert.equal(s.owned.filter((id) => id === "suyaki_volk").length, 1);
     const backlog = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map((row) => row.text).join("\n"));
-    assert.match(backlog, /大会の日から、計器より先に客の息を聞いている/, "read after the tournament: the after-tournament branch");
+    assert.match(backlog, /計器は、今も先に見る。……その隣で、客の息の間も聞くようにした/, "read after the tournament: the after-tournament branch");
     assert.match(backlog, /友人と過ごした時間は、書かなくても覚えている/);
     await page.locator(t("ch3-aftermath-detour-open")).click();
     await page.locator(t("ch3-aftermath-detour")).waitFor();

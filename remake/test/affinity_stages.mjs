@@ -903,6 +903,36 @@ await check('IR23: Volk, the Sheikh and Taiyo reach ♥5 by visiting, with the s
   s.chapter = 5; assert.equal(visitsTo5('volk'), 5, 'then 5 visits to Iron Smoke in chapter 5');
 });
 
+// #2028: 第3章のヴォルクのLIME交換（♥2）と締めくくり（♥5）に、実際の報酬で届くか。好感度を直接書かず、初対面の♥1、
+// 台本の報酬（apply の volk×6。vn/engine.js と同じ）、居合わせる会話（visitAffinity('talk')）、ピザの夜で数える。魅力は最低。
+// 鉄の煙の場面をすべて読むだけでは♥4で止まる（PRのオーナー判断）。居合わせる会話1回か、ピザの夜で♥5に届く。
+await check('#2028: Volk reaches the LIME scene (♥2) and the finale (♥5) in chapter 3 with the real rewards', async f => {
+  const { gainAffinity, visitAffinity, affinityLevel } = f.stats;
+  const engine = fs.readFileSync(path.join(root, 'vn/engine.js'), 'utf8');
+  assert.match(engine, /if \(line\.affinity\) for \(const \[id, n\] of Object\.entries\(line\.affinity\)\) dialogueAffinity\(running, id, n \* 6\)/);
+  const party = Number(fs.readFileSync(path.join(root, 'chapters/ch3-party-progress.js'), 'utf8').match(/PARTY_AFFINITY = (\d+);/)?.[1]);
+  const scripts = Object.fromEntries(JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_volk.json', import.meta.url))).dialogues
+    .map(d => [d.dialogue_id, d]));
+  const reward = id => scripts[id].lines.filter(line => line.type === 'apply' && line.affinity?.volk)
+    .reduce((sum, line) => sum + line.affinity.volk * 6, 0);
+  const run = ({ roams = 0, withParty = false } = {}) => {
+    const g = f.fresh(); g.chapter = 3; g.stats.charm = 0;
+    gainAffinity('volk', 1, { firstMeeting: true });
+    assert.equal(affinityLevel('volk'), 1, 'the first visit to Iron Smoke is exactly ♥1');
+    for (let i = 0; i < roams; i++) gainAffinity('volk', visitAffinity('talk'));
+    for (const id of ['ch3_volk_second', 'ch3_volk_third', 'ch3_volk_fourth']) gainAffinity('volk', reward(id));
+    const atLime = affinityLevel('volk');
+    for (const id of ['ch3_volk_lime', 'ch3_volk_after_ch3']) gainAffinity('volk', reward(id));
+    if (withParty) gainAffinity('volk', party);
+    return { atLime, end: affinityLevel('volk'), pts: f.core.state.affinity.volk };
+  };
+  const alone = run();
+  assert(alone.atLime >= 2, `the LIME scene (♥2) opens right after the fourth visit (♥${alone.atLime})`);
+  assert.equal(alone.end, 4, `every Iron Smoke scene alone stops at ♥4 at the lowest charm (${alone.pts}pt)`);
+  assert.equal(run({ roams: 1 }).end, 5, 'one roaming talk with Volk closes the gap');
+  assert.equal(run({ withParty: true }).end, 5, 'so does the pizza night');
+});
+
 // #2025: 凛想の♥4・♥5。既存4本の後ろに足し、♥3の質問の後・締めくくりの前に一本ずつ読む。
 const RIO_LATE = ['ch1_rio_fifth', 'ch1_rio_sixth'];
 const rioAt = (f, story, heart = 5) => {

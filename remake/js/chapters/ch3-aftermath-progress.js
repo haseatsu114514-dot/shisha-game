@@ -95,14 +95,16 @@ export const CH3_AFTERMATH_FINALES = Object.freeze([
   { who: "steve", file: "ch3_rivals", dialogue: "ch3_steve_bond_finale", label: "スティーブに呼ばれる", place: "Smoke & Glory",
     bg: "bg_steve_shop", from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },
   // ヴォルク（#2028）の窓は、鉄の煙の寄り道・授業と同じく煙幕の片づけの朝まで（daily/bonds.js の VOLK_LAST_AFTERMATH_STAGE）。
+  // after＝先に読む寄り道。大会後に初めて鉄の煙へ寄る場面（「大会、お疲れ様でした」）より先に締めくくりを出さない。
   { who: "volk", file: "ch3_volk", dialogue: "ch3_volk_bond_finale", label: "ヴォルクに呼ばれる", place: "鉄の煙",
-    bg: "bg_volk_shop", from: "ch3_mashiro_recovery", to: "ch3_enmaku_cleanup" },
+    bg: "bg_volk_shop", from: "ch3_mashiro_recovery", to: "ch3_enmaku_cleanup", after: ["ch3_volk_after_ch3"] },
 ]);
 export function availableAftermathFinales(value, due) {
   if (!canRunChapterThreeAftermath(value) || value.flags._ch3_cleared) return [];
   const stage = value.flags._ch3_aftermath?.stage;
   if (!Number.isInteger(stage)) return [];
-  return CH3_AFTERMATH_FINALES.filter(entry => stage >= sceneIndex(entry.from) && stage <= sceneIndex(entry.to) && !!due(entry.who));
+  return CH3_AFTERMATH_FINALES.filter(entry => stage >= sceneIndex(entry.from) && stage <= sceneIndex(entry.to)
+    && (entry.after || []).every(id => value.flags[detourReadFlag(id)]) && !!due(entry.who));
 }
 
 /** 寄り道を最後まで読んだ時だけ既読にする。本筋の進行には触れない。 */
