@@ -481,25 +481,61 @@ export async function bannersIdle() {
 
 // ---------------------------------------------------------------- モーダル
 
-/** 選択肢つきのモーダル。options: [{label, value, primary, test}] */
 /**
- * 閉じた画面を、操作も検査もできない写しとして短く残して消す（#2688 F5）。本物の層はすぐ空にするので、
- * 次の画面・入力・テストの判定は今までどおり。写しは #modal の一つ下に置き、続けて開いた画面より前へ出ない。
+ * 閉じた画面の出口（#2688 F5）。閉じる箱と同じ位置・形・紙の色の面だけを短く残して薄れさせる。
+ * 文字・ボタン・クラス名は写さないので、次の画面・入力・テストの判定は本物だけを見る。
+ * 箱がまだ見えている間（#modal を空にする前）に呼ぶ。面は #modal の一つ下に置き、続けて開いた画面より前へ出ない。
+ * origin: 縮む起点（#modal 内の座標）。box: 面にする箱のセレクタ（省略時は一番大きく塗られた箱）。
+ * 2画面（DS）表示・動きを減らす設定では何も出さずに閉じる。
  */
-export function ghostOut(nodes, frames, ms = 180) {
-  const host = layers.modal?.parentElement;
-  // 2画面（DS）表示は #modal の位置と寸法に合わせた規則が多いので、写しを作らずに閉じる
+export function ghostOut(nodes, frames, ms = 180, { origin = null, box: pick = null } = {}) {
+  const frame = layers.modal, host = frame?.parentElement;
   const dsLayout = document.body.classList.contains("game-ds") || !!document.querySelector('.title[data-layout="ds"]');
-  if (!host || reducedMotion() || dsLayout || !nodes.length) return;
-  const ghost = el("div.modal-ghost", { "aria-hidden": "true" });
+  if (!host || !frame.offsetWidth || reducedMotion() || dsLayout || !nodes.length) return;
+  const f = frame.getBoundingClientRect(), k = f.width / frame.offsetWidth;
+  if (!k) return;
+  const shapes = [];
+  for (const node of nodes) {
+    const box = !(node instanceof Element) ? null : pick ? (node.matches(pick) ? node : node.querySelector(pick)) : paintedBox(node);
+    const r = box?.getBoundingClientRect();
+    if (!r?.width || !r.height) continue;
+    const cs = getComputedStyle(box), left = (r.left - f.left) / k, top = (r.top - f.top) / k;
+    const shape = el("div.modal-ghost-box");
+    Object.assign(shape.style, {
+      left: `${left}px`, top: `${top}px`, width: `${r.width / k}px`, height: `${r.height / k}px`,
+      backgroundColor: cs.backgroundColor, backgroundImage: cs.backgroundImage, backgroundSize: cs.backgroundSize,
+      backgroundPosition: cs.backgroundPosition, backgroundRepeat: cs.backgroundRepeat,
+      borderStyle: cs.borderStyle, borderWidth: cs.borderWidth, borderColor: cs.borderColor, borderRadius: cs.borderRadius,
+      borderImageSource: cs.borderImageSource, borderImageSlice: cs.borderImageSlice, borderImageWidth: cs.borderImageWidth,
+      borderImageOutset: cs.borderImageOutset, borderImageRepeat: cs.borderImageRepeat,
+      boxShadow: cs.boxShadow, transformOrigin: origin ? `${origin.x - left}px ${origin.y - top}px` : "50% 50%",
+    });
+    shapes.push(shape);
+  }
+  if (!shapes.length) return;
+  const ghost = el("div.modal-ghost", { "aria-hidden": "true" }, shapes);
   ghost.inert = true;
-  ghost.append(...nodes);
-  ghost.querySelectorAll("[data-test], [id]").forEach((n) => { n.removeAttribute("data-test"); n.removeAttribute("id"); });
   host.append(ghost);
-  ghost.animate(frames, { duration: ms, easing: "cubic-bezier(.55,0,.85,.35)", fill: "forwards" }).finished
+  Promise.all(shapes.map((shape) => shape.animate(frames, { duration: ms, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" }).finished))
     .catch(() => {}).finally(() => ghost.remove());
 }
 
+/** 見た目の紙・枠を持つ箱（自分が塗られていなければ、中で一番大きく塗られた箱） */
+function paintedBox(node) {
+  const painted = (n) => {
+    const cs = getComputedStyle(n);
+    return cs.backgroundImage !== "none" || cs.borderImageSource !== "none" || !/^(transparent|rgba\(0, 0, 0, 0\))$/.test(cs.backgroundColor);
+  };
+  if (painted(node)) return node;
+  let best = null, area = 0;
+  for (const n of [...node.querySelectorAll("*")].slice(0, 60)) {
+    const r = n.getBoundingClientRect(), a = r.width * r.height;
+    if (a > area && painted(n)) { best = n; area = a; }
+  }
+  return best;
+}
+
+/** 選択肢つきのモーダル。options: [{label, value, primary, test}] */
 export function modal({ title = "", body = "", options = [{ label: "OK", value: true, primary: true }], className = "" }) {
   return new Promise((resolve) => {
     const previousFocus = document.activeElement;
@@ -516,11 +552,10 @@ export function modal({ title = "", body = "", options = [{ label: "OK", value: 
     ]);
     const close = () => {
       window.removeEventListener("keydown", onKeyDown);
-      const closing = [...layers.modal.childNodes];
+      // 開くときの pop-in の逆。紙の面が少し縮みながら薄れる（#2688 F5）。箱が見えている間に測ってから外す
+      ghostOut([...layers.modal.childNodes], [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(.97)" }], 160);
       layers.modal.classList.remove("show");
       layers.modal.replaceChildren();
-      // 開くときの pop-in の逆。少し縮みながら消える（#2688 F5）
-      ghostOut(closing, [{ opacity: 1 }, { opacity: 0 }], 160);
       if (previousFocus?.isConnected) previousFocus.focus();
     };
     const buttons = [...box.querySelectorAll(".modal-actions button")];

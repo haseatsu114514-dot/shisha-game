@@ -3,8 +3,7 @@
    通常表示は 1280×720 の舞台に 1232×672 の紙を置く。左の帯（タブ）と枠線の位置は絵に合わせてある。
    DS風は絵を引き伸ばさず、上下2画面ぶんの紙と線で描き、タブは下の帯に並べる。 */
 
-/* 閉じるときの写し（core/ui.js ghostOut）にも同じ紙の色を効かせる */
-:is(#modal, .modal-ghost) > .dmenu {
+#modal > .dmenu {
   --dm-paper: #f7f3ed; --dm-card: #fffcf8; --dm-line: #d5c8dc; --dm-ink: #38283f; --dm-muted: #76667e;
   --dm-lav: #69497e; --dm-lav-ink: #58386c; --dm-lav-soft: #e9dfef; --dm-lav-line: #9676a8; --dm-band: #efe9f0;
   --dm-amber: #d8963f; --dm-amber-ink: #b8651f; --dm-hover: #f4eef6;

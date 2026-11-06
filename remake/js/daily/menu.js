@@ -98,12 +98,11 @@ function showMenu(initial, { saveOk }) {
 
     const finish = (value) => {
       window.removeEventListener("keydown", onKey, true);
-      const closing = [...layers.modal.childNodes], origin = menuOrigin();
+      // 閉じるときは、紙の面がMENUボタンへ縮みながら消える（開いたときの逆）。ボタンが無い画面ではふつうに消える
+      const origin = menuOrigin();
+      ghostOut([...layers.modal.childNodes], origin ? [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(.82)" }] : [{ opacity: 1 }, { opacity: 0 }], origin ? 200 : 160, { origin, box: ".dm-sheet" });
       layers.modal.classList.remove("show");
       layers.modal.replaceChildren();
-      // 閉じるときは、MENUボタンへ縮みながら消える（開いたときの逆）。ボタンが無い画面ではふつうに消える
-      if (origin) closing.forEach((n) => { if (n.style) n.style.transformOrigin = `${origin.x}px ${origin.y}px`; });
-      ghostOut(closing, origin ? [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(.82)" }] : [{ opacity: 1 }, { opacity: 0 }], origin ? 200 : 160);
       if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
       resolve(value);
     };

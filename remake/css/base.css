@@ -456,6 +456,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .modal-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(3px); }
 /* 閉じた画面の写し（#2688 F5）。#modal の一つ下に重ね、操作は受けない */
 .modal-ghost { position: absolute; inset: 0; z-index: 89; pointer-events: none; }
+.modal-ghost-box { position: absolute; box-sizing: border-box; pointer-events: none; }
 .modal-box {
   position: absolute;
   left: 50%;
