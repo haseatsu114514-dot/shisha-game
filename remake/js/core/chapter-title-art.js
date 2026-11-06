@@ -9,3 +9,5 @@ export const CHAPTER_TITLE_ART = Object.freeze([
 ].map(entry => Object.freeze(entry)));
 
 export const chapterTitleArt = no => CHAPTER_TITLE_ART.find(entry => entry.no === no)?.url || null;
+/** 章の番号から登録済みの章題（第2・3章の呼び出し元が使う・#2688 F6） */
+export const chapterTitleEntry = chapter => CHAPTER_TITLE_ART.find(entry => entry.chapter === chapter) || null;
