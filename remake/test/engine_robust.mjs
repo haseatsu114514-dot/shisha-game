@@ -50,11 +50,11 @@ export const robustPort = { handleCondition, jumpTo, lineDisplayName, getVnWarni
 `, { gainAffinity: (...args) => affinityCalls.push(args), state: vnState, DB: vnDb, config: {}, displayName: nameData.displayName, STAT_EN: {}, affinityLevel: () => 0, tournamentFinished: () => false, basicsExperienced: () => false });
 const port = vn.robustPort;
 
-function fakeRunning() {
+function fakeRunning(known = []) {
   return {
     id: "root_dlg", currentId: "root_dlg",
     dlg: { dialogue_id: "root_dlg", lines: [], branches: {}, metadata: {} },
-    owner: vnState, metAtStart: { ...vnState.met }, metBefore: port.affinityMetBefore(), encountered: new Set(), firstAffinity: new Set(),
+    owner: vnState, metAtStart: { ...vnState.met }, metBefore: port.affinityMetBefore(known), affinityKnown: new Set(known), encountered: new Set(), firstAffinity: new Set(),
     queue: [], branches: { yes: [{ text: "YES" }], no: [{ text: "NO" }] },
     visited: ["root_dlg"], slots: {}, context: null,
   };
@@ -183,6 +183,18 @@ check("中断した初対面pendingは無関係な相手の会話では精算せ
   assert.equal(affinityCalls.length,1);assert.equal(affinityCalls[0][0],'naru');assert.equal(affinityCalls[0][2].firstMeeting,true);
   affinityCalls.length=0;r.dlg.metadata.contact_channel='lime';r.dlg.metadata.add_affinity={naru:1};
   port.completeDialogueAffinity(r);assert.equal(affinityCalls.length,1);assert.equal(affinityCalls[0][1],6);assert.equal(affinityCalls[0][2].remote,true);
+  vnState.flags={};
+});
+
+check("章で保証された既知は台詞分岐を変えず、面識欠損の修復を初対面へ戻さない", () => {
+  affinityCalls.length=0;vnState.met={};vnState.flags={_affinity_first_meeting_pending_dr_kemuri:true};
+  const r=fakeRunning(['dr_kemuri']);
+  assert.equal(vnState.met.dr_kemuri,undefined,'the existing doctor_first recognition branch stays available');
+  assert.equal(r.metBefore.dr_kemuri,true);vnState.met.dr_kemuri=true;r.encountered.add('dr_kemuri');
+  port.completeDialogueAffinity(r);assert.equal(affinityCalls.length,0);
+  const unrelated=fakeRunning();unrelated.encountered.add('sumi');port.completeDialogueAffinity(unrelated);
+  assert.equal(affinityCalls.length,0);
+  assert.match(engineSource,/markMet\(m\[1\], \{ known: r\.affinityKnown\.has\(m\[1\]\) \}\)/);
   vnState.flags={};
 });
 

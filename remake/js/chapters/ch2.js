@@ -117,7 +117,8 @@ async function scene(id, background, dialogue = id, place = null) {
   layers.hud.replaceChildren();
   const controller = new AbortController();
   owner.controller = controller;
-  const result = await play(dialogue, { signal: controller.signal });
+  const affinityKnown = id === "ch2_city_arrival" && state.flags._ch1_cleared ? ["dr_kemuri"] : [];
+  const result = await play(dialogue, { signal: controller.signal, affinityKnown });
   if (owner.controller === controller) owner.controller = null;
   if (!current(owner)) return false;
   layers.hud.replaceChildren();

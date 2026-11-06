@@ -62,7 +62,7 @@ async function setup(page, { knownDoctor = true, knownRei = false, legacy = fals
   return { value: before, storage: await storageSnapshot(page) };
 }
 
-async function preserved(page, before, { loaded = false } = {}) {
+async function preserved(page, before, { loaded = false, firstMeetings = [] } = {}) {
   const value = await page.evaluate(() => structuredClone(window.__remake.state));
   for (const key of preservedKeys) {
     if (value.day > 15 && key === 'stamina') {
@@ -75,8 +75,17 @@ async function preserved(page, before, { loaded = false } = {}) {
       continue;
     }
     if (!loaded) {
-      const expected = key === 'keepsakes' && value.flags._ageha_first_purikura
+      let expected = key === 'keepsakes' && value.flags._ageha_first_purikura
         ? [...new Set([...before.value[key], 'ageha_first_purikura'])] : before.value[key];
+      if (key === 'affinity' || key === 'affinityCarry') {
+        expected = { ...expected };
+        for (const id of firstMeetings) {
+          assert.equal(before.value.met[id] || false, false, `${id}: the fixture really starts before the first meeting`);
+          assert.equal(value.met[id], true, `${id}: only completed introductions earn the initial heart`);
+          expected[id] = key === 'affinity' ? 9 : 0;
+          assert.equal(value.flags[`_affinity_first_meeting_pending_${id}`], undefined, `${id}: initial heart is settled exactly once`);
+        }
+      }
       assert.deepEqual(value[key], expected, `Initial city story changed ${key}`);
     }
   }
@@ -227,12 +236,12 @@ await suite('ch2-main', async check => {
     for (const id of ['ageha', 'rei', 'kumicho']) assert.equal(value.flags[`_ch2_city_inside_${id}`], true);
     assert.equal(await page.locator(test('next-day')).count(), 0);
     await screenshot(page, 'touch-first-day-complete.png');
-    await preserved(page, before);
+    await preserved(page, before, { firstMeetings: ['ageha', 'rei', 'kumicho'] });
     await reloadSaved(page);
     await page.locator('[data-test="ch2-morning-home"]').waitFor();
     assert.equal(await musicOf(page), 'kansetsu_shomei_to_black_coffee', 'LOAD after sleep restores morning music');
     assert.equal(await page.evaluate(() => window.__remake.state.day), 16, 'Loading completion advanced the date again');
-    await preserved(page, before);
+    await preserved(page, before, { firstMeetings: ['ageha', 'rei', 'kumicho'] });
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
 
   await check('autosave-resumes-partial-city-without-replaying-opening', async page => {
@@ -244,7 +253,7 @@ await suite('ch2-main', async check => {
     assert.equal(await page.locator('#vn.active').count(), 0);
     assert.equal(await page.evaluate(() => window.__remake.state.day), 15);
     assert.equal(await page.evaluate(() => window.__remake.state.flags._ch2_city_inside_rei), true);
-    await preserved(page, before);
+    await preserved(page, before, { firstMeetings: ['rei'] });
   });
 
   await check('manual-save-caption-and-loading-earlier-city-point', async page => {
@@ -305,6 +314,7 @@ await suite('ch2-main', async check => {
     assert(!text.includes('どうして俺の名前を'));
     assert.equal(await page.evaluate(() => window.__remake.state.met.dr_kemuri), true);
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('suien_remake_save')).met.dr_kemuri), true);
+    assert.equal(await page.evaluate(() => window.__remake.state.flags._affinity_first_meeting_pending_dr_kemuri), undefined);
     await preserved(page, before);
   });
 
@@ -330,7 +340,7 @@ await suite('ch2-main', async check => {
     assert.equal(await page.evaluate(() => window.__remake.state.met.rei), true, '完読した顔合わせの面識は残る');
     assert.equal(await page.locator(test('pin-rei')).getAttribute('data-read'), 'true');
     assert.equal(await page.locator(test('pin-rei')).locator('.pin-status').textContent(), 'お届け済み');
-    await preserved(page, before);
+    await preserved(page, before, { firstMeetings: ['rei'] });
   });
 
   await check('legacy-cleared-save-can-enter-day-one', async page => {

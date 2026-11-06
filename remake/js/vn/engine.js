@@ -241,9 +241,10 @@ function waitSceneAssets(task, owner = running, assets = task.assetsReady || tas
  * @param opts.previewProtagonist 比較プレビューでだけ主人公の立ち絵も表示する（本編は非表示）
  * 範囲指定でも各playの終了時に台本の報酬を処理する。報酬つき台本を分割する用途には使わない。
  */
-function affinityMetBefore() {
-  const met = { ...state.met };
+function affinityMetBefore(known = [], before = state.met) {
+  const met = { ...before };
   for (const key of Object.keys(state.flags)) if (key.startsWith("_affinity_first_meeting_pending_") && state.flags[key]) delete met[key.slice("_affinity_first_meeting_pending_".length)];
+  for (const id of known) met[id] = true;
   return met;
 }
 
@@ -256,13 +257,17 @@ export function play(idOrDlg, opts = {}) {
     return Promise.resolve();
   }
   if (!(dlg.lines || []).length) warnVn("dialogue-empty", dlg.dialogue_id || "");
+  // 章側が保証する既知の相手。表示・台詞の分岐を変えず、面識欠損の修復を初対面報酬へ混ぜない。
+  const affinityKnown = new Set(opts.affinityKnown || []);
+  for (const id of affinityKnown) delete state.flags[`_affinity_first_meeting_pending_${id}`];
   return new Promise((resolve) => {
     layers.fx.querySelector(".vn-loading")?.remove();
     running = {
       owner: state,
       metAtStart: { ...state.met },
       encountered: new Set(),
-      metBefore: { ...(sequenceMetBefore?.owner === state ? sequenceMetBefore.met : affinityMetBefore()) },
+      affinityKnown,
+      metBefore: affinityMetBefore(affinityKnown, sequenceMetBefore?.owner === state ? sequenceMetBefore.met : state.met),
       firstAffinity: new Set(),
       id: dlg.dialogue_id || "", // 開始台本。finish() の報酬と play() の解決値はこの台本に属する（仕様・#1362）
       currentId: dlg.dialogue_id || "", // 表示中の台本。jumpTo で jump 先へ進む
@@ -491,7 +496,7 @@ function next() {
       state.flags[line.flag] = true;
       const m = /^_met_(.+)$/.exec(line.flag || "");
       if (m) {
-        markMet(m[1]);
+        markMet(m[1], { known: r.affinityKnown.has(m[1]) });
         if (needsIntro(m[1])) queueIntro({ id: m[1] });
       }
       if (contact && !alreadyConnected && !vnTest.turbo) {

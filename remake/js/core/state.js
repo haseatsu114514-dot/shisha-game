@@ -641,12 +641,14 @@ export function saveConfig() {
 // ---------------------------------------------------------------- 小さな共通操作
 export const flag = (name) => !!(state && state.flags[name]);
 export const setFlag = (name, v = true) => { if (state) state.flags[name] = v; };
-export const markMet = (id) => {
+export const markMet = (id, { known = false } = {}) => {
   if (!state || !id) return;
+  const pending = `_affinity_first_meeting_pending_${id}`;
   // 名乗りの直後に中断しても、再開した初対面で♥1の精算を失わない。
   // 既に読んだ会話・来店のある旧セーブは、面識の欠損だけで初対面へ戻さない。
-  if (id !== "hajime" && !state.met[id] && !state.story[id] && !state.visits[id]) {
-    state.flags[`_affinity_first_meeting_pending_${id}`] = true;
+  if (known) delete state.flags[pending];
+  else if (id !== "hajime" && !state.met[id] && !state.story[id] && !state.visits[id]) {
+    state.flags[pending] = true;
   }
   state.met[id] = true;
 };

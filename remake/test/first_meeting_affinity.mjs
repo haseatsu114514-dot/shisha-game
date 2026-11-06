@@ -64,6 +64,12 @@ const done={id:'controlled-complete',visited:[]};
 // 初対面は9点・端数0。2回目以降は台帳 AFB01 の段階会話 16×0.85=13.6、通い 8×0.85=6.8。
 const FIRST_VISIT=9,TWO_VISITS=22,REPEAT_VISIT=6;
 const first=(f,id)=>{const s=f.fresh();delete s.met[id];s.story[id]=0;s.affinity[id]=0;s.flags._cafe_introduced=true;return s;};
+await check('known legacy identity repair never creates or keeps first-meeting pending',async f=>{
+ const s=first(f,'dr_kemuri');s.affinityCarry.dr_kemuri=.25;s.flags._affinity_first_meeting_pending_dr_kemuri=true;
+ f.core.markMet('dr_kemuri',{known:true});assert.equal(s.met.dr_kemuri,true);
+ assert.equal(s.flags._affinity_first_meeting_pending_dr_kemuri,undefined);assert.equal(s.affinity.dr_kemuri,0);assert.equal(s.affinityCarry.dr_kemuri,.25);
+ const loaded=f.roundTrip();assert.equal(loaded.flags._affinity_first_meeting_pending_dr_kemuri,undefined);assert.equal(loaded.affinity.dr_kemuri,0);assert.equal(loaded.affinityCarry.dr_kemuri,.25);
+});
 for(const id of ['naru','adam','minto','kuyuri','tsumugi','sumi'])await check(`${id} first complete guarantees displayed heart1 without reading next scene`,async f=>{
  const s=first(f,id);assert.equal(f.stats.affinityLevel(id),0);
  assert.equal(await f.spots.visitChar(id),true);assert.equal(f.stats.affinityLevel(id),1);
