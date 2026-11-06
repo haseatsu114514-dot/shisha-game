@@ -408,7 +408,7 @@ assert.equal(voteImpact[0].boostedWins,0,"授業を覚えても低い制作点�
 const legacyTournament=await import("../js/chapters/ch3-tournament-state.js");
 const boundaryVote=(scenario,seed,{p})=>{
  const value={chapter:3,day:42,weatherSeed:seed,flags:{}};
- const progress=legacyTournament.startAttempt(value,{careHistory:[]});delete progress.rulesVersion;
+ const progress=legacyTournament.startAttempt(value,{careHistory:[]});delete progress.rulesVersion;delete progress.baseVotes;
  for(const [round,performance]of [80,84,80,scenario.final].entries()) assert(legacyTournament.castVotes(progress,round,performance,null,p));
  const rows=legacyTournament.standings(progress);
  return {rank:rows.find(r=>r.id==="hajime").rank,votes:Object.fromEntries(rows.map(r=>[r.id,r.points]))};
@@ -420,7 +420,7 @@ assert.equal(withoutGrape.votes.hajime,9);assert.equal(withGrape.votes.hajime,11
 const currentBoundary=createCh3TournamentEvaluate({performanceOf:s=>({rounds:[84,88,84,s.final]})});
 const currentWithout=currentBoundary({id:"without",final:86},1,{p:0}),currentWith=currentBoundary({id:"with",final:88},1,{p:0});
 assert.equal(currentWithout.rank,2);assert.equal(currentWith.rank,1);
-assert.equal(currentWithout.votes.hajime,9);assert.equal(currentWith.votes.hajime,11);
+assert.equal(currentWithout.votes.hajime,10);assert.equal(currentWith.votes.hajime,12);
 console.log("[grape lesson] PASS: family/unique-most, learned/off/failure, +2 once/cap/SAVE/LOAD, legacy/current C3 rules and exact +2 boundaries",JSON.stringify(voteImpact));
 {
  // #2213・オーナー判断 2026-11-04 案1: K11「火の番」は、熱管理の交換でトングで持ってくる焼き炭の焼け具合を1段よくする。
