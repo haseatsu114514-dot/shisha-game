@@ -1,6 +1,7 @@
 // 第5章の通しプレイ検証（#1176）。
 // 第4章クリア済みセーブから、完了カード→「第5章へ進む」→プロローグ→自由行動→連絡（決める）→
-// 会場確認（まだ行かない→先送り→再度連絡→決める→向かう）→試合→後日談→フィナーレ→完了カードまでを、
+// 会場確認（まだ行かない→先送り→再度連絡→決める→向かう）→試合→後日談→フィナーレ→完了カード
+// →真エンドを確定するスタッフロール→タイトル復帰までを、
 // 1本のセーブで実UI・実saveだけで通す。自由行動の途中で実セーブ→リロード→再開し、進行が壊れないことも確認する。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
@@ -261,6 +262,18 @@ await suite("ch5-full-flow", async check => {
     // 完了後に再開しても、完了カードに戻り場面は再演されない。
     await loadSlot(page, 0);
     await page.locator(dt("ch5-complete")).waitFor({ timeout: 60000 });
+    assert.equal(await page.locator(dt("ch5-complete-title")).count(), 0, "初回のスタッフロールは飛ばせない");
+    await page.locator(dt("ch5-complete-credits")).click();
+    await page.locator(dt("staff-roll")).waitFor();
+    assert.equal(await page.locator(dt("staff-roll")).getAttribute("data-skippable"), "no");
+    await page.locator(dt("title-next-cycle")).waitFor({ timeout: 30000 });
+    const trueEnd = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save") || "null"));
+    assert.equal(trueEnd.flags._ch5_staff_roll_done, true);
+    assert.equal(trueEnd.flags._ch5.won, true);
+    assert.equal(trueEnd.flags._ch5.part, "cleared");
+    const cycle = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_cycle") || "null"));
+    assert.equal(cycle.unlocked, true);
+    assert.deepEqual(cycle.trueEnds.map(end => end.cycleId), [trueEnd.cycleId]);
   }, { reducedMotion: "reduce" });
 
   // 二本目の出来が足りなければ、挙手の合計で負け（同数含む）→ 敗北の場面 → 後日談へ続く（#1665）。
