@@ -277,3 +277,6 @@ test('craft readiness warms the same measured worker artwork',()=>{
 });
 console.log(`FINAL ${passed}/${passed} passed`);
 
+
+// Selected protagonist reply compositions share the portrait style resolver.
+await import("./reply_cutin.mjs");

@@ -108,3 +108,6 @@ await suite("vn-speaker-atomic-2190", async check => {
     assert.equal(await page.locator("#vn.active").count(), 0);
   }, { viewport: { width: 1180, height: 740 } });
 });
+
+// Exercise selected protagonist reply compositions against real canonical assets.
+await import("./reply_cutin.mjs");
