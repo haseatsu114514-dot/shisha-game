@@ -2537,10 +2537,8 @@
         "remake/js/daily/romance.js",
         "remake/js/daily/axe-bar.js",
         "remake/js/daily/hiyori-axe.js",
-        "remake/js/daily/dj-club.js",
         "remake/js/chapters/ch4-camel-race.js",
         "remake/js/chapters/ch4-desert.js",
-        "remake/js/trpg/campaign-view.js",
         "remake/test/table_seat_meet_leaf.mjs"
       ],
       "run": [

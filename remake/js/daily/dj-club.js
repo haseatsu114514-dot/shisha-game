@@ -14,10 +14,7 @@ import { venueHost } from "../core/venue-host.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { play } from "../vn/engine.js";
 import { playIntro } from "../vn/intro.js";
-import { CLUB_MET_FLAG, DJ_SETS, djRecords, djSetOpen, recordDjResult, runDjSet as runDjGame } from "../minigames/dj.js";
-import { seated } from "../motions/table-seat.js";
-// 入口・出口の幕「卓へ座る」（#2688 F13）。外すときはこの行を消して import の別名を戻す
-const runDjSet = seated("DJ SET", runDjGame);
+import { CLUB_MET_FLAG, DJ_SETS, djRecords, djSetOpen, recordDjResult, runDjSet } from "../minigames/dj.js";
 import { gearOffer, ownsGear } from "../core/hobby-gear.js";
 
 export { DJ_NIGHT, DJ_NIGHT_FIRST, djNightChoices, clubKnown } from "../minigames/dj.js";
