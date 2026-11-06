@@ -740,8 +740,8 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-game .axe-legend { display: none; }
 .axe-game :is(.axe-header p, .axe-steps, .axe-power-readout) { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important;
   overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
-.axe-game:not([data-phase="horizontal"]) .axe-gauge-label[data-step="horizontal"],
-.axe-game:not([data-phase="vertical"]) .axe-gauge-label[data-step="vertical"] { display: none; }
+.axe-game:not([data-phase="horizontal"]) .axe-gauge-label[data-gauge="horizontal"],
+.axe-game:not([data-phase="vertical"]) .axe-gauge-label[data-gauge="vertical"] { display: none; }
 .axe-help { position: relative; }
 .axe-game .axe-header .axe-help { width: 44px; min-width: 44px; height: 44px; padding: 0; border-radius: 50%; font-size: 20px; font-weight: 900; line-height: 1; }
 @container (max-height: 500px) {
@@ -761,7 +761,7 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-cutin .axe-cutin-card { position: absolute; left: 50%; top: 50%; display: flex; flex-direction: column; align-items: center; gap: 1.2cqh; translate: -50% -50%; white-space: nowrap;
   animation: axe-cutin-stamp .26s cubic-bezier(.2,.9,.3,1.3) .12s both, axe-cutin-fade .14s ease-in .56s forwards; }
 .axe-cutin [data-text]::before { content: attr(data-text); }
-.axe-cutin .axe-cutin-tag { padding: 3px 12px; background: var(--lane-orange); color: var(--lane-orange-ink); font-size: clamp(12px, 1.6cqw, 18px); font-weight: 900; letter-spacing: .32em; transform: skewX(-12deg); }
+.axe-cutin .axe-cutin-tag { padding: 3px 12px; background: var(--lane-orange); color: var(--lane-orange-ink); font-size: clamp(14px, 1.6cqw, 18px); font-weight: 900; letter-spacing: .32em; transform: skewX(-12deg); }
 .axe-cutin .axe-cutin-title { color: var(--lane-chalk); font-size: clamp(40px, 11cqw, 112px); font-weight: 900; font-style: italic; line-height: 1.05; letter-spacing: .05em;
   text-shadow: .05em .05em 0 var(--lane-orange-deep), 0 0 .4em #000000d9; }
 .axe-cutin .axe-cutin-label { padding: 4px 16px; border-top: 2px solid var(--lane-orange); background: #000000a6; color: var(--lane-chalk); font-size: clamp(14px, 2.1cqw, 22px); font-weight: 700; letter-spacing: .12em; }

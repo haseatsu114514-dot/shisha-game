@@ -209,7 +209,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const xNeedle = svg("path", { class: "axe-x-needle", d: `M0 ${PLANK.top - 6}V${PLANK.bottom + 6}`, stroke: "#91cfe6", "stroke-width": 2.5 });
   const yNeedle = svg("path", { class: "axe-y-needle", d: `M${PLANK.left - 6} 0H${PLANK.right + 6}`, stroke: "#e5bd70", "stroke-width": 2.5 });
   const sdBadge = svg("text", { class: "axe-sd-badge", x: CX, y: VIEW.y + 26, "text-anchor": "middle", fill: "#9cecff", "font-size": 15, "font-weight": 900, opacity: 0 }, ["SUDDEN DEATH"]);
-  const gaugeLabel = (x, y, text, fill, anchor, step) => svg("text", { class: "axe-gauge-label", "data-step": step, x, y, "text-anchor": anchor, fill, "font-size": 16, "font-weight": 900,
+  const gaugeLabel = (x, y, text, fill, anchor, step) => svg("text", { class: "axe-gauge-label", "data-gauge": step, x, y, "text-anchor": anchor, fill, "font-size": 16, "font-weight": 900,
     "paint-order": "stroke", stroke: "#140d08", "stroke-width": 4 }, [text]);
   board.append(zoneHalo, powerShift, releaseDot, contactShadow, impacts, impactMark, trail, ...ghosts, flying, fixedAim, crosshair, impactFx,
     gaugeLabel(CX, VIEW.y + VIEW.size - 10, "① 横", "#a9dcef", "middle", "horizontal"), gaugeLabel(VIEW.x + VIEW.size - 8, CY - 10, "② 縦", "#f1c983", "end", "vertical"), xNeedle, yNeedle, sdBadge);
