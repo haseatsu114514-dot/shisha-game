@@ -3,7 +3,7 @@
 // 型の一覧と残りの場面の案は asset_sources/transitions/scene-plan-20261009/README.md。
 import { el, sleep, nextFrame } from "./util.js";
 import { SE } from "./audio.js";
-import { W, H, COLOR, EASE, reducedMotion, svg, move, holdKeys } from "./transition-kit.js";
+import { W, H, COLOR, EASE, reducedMotion, svg, stageSvg, move, holdKeys } from "./transition-kit.js";
 import { moveCurtain, moveStyle } from "./transition-moves.js";
 import { state, config } from "./state.js";
 import { createEntrySound } from "./entry-sound.js";
@@ -221,6 +221,52 @@ export async function waveBeat(host, text, mid = null, { dusk = true } = {}) {
     // 途中で例外が出た場合だけ、ここで片付ける（通常は預けた幕が開くときに片付く）
     if (!release) { node.remove(); unhold(); }
   }
+}
+
+// ---------------------------------------------------------------- 敗北: 色が抜けて一筋の煙が途切れる（#2688 A19）
+
+/**
+ * 大会の敗北から GAME OVER へ入る手前。画面の中心から色が抜けて灰色になり、一筋の煙が細くなって途切れる（約2秒）。
+ * 覆ったまま返すので、後ろに GAME OVER の画面を出してから、戻り値の関数で灰色を薄れさせる。動きを減らす設定では何もしない。
+ */
+export async function defeatFade(host = document.getElementById("fx")) {
+  if (!host || reducedMotion()) return async () => {};
+  const unhold = holdCover();
+  const node = el("div.tr-defeat", { "aria-hidden": "true", dataset: { transition: "defeat" } });
+  const gray = el("div.tr-defeat-gray");
+  const smoke = svg("path", { d: "M 640 760 C 600 660, 690 580, 640 480 S 600 330, 650 240", fill: "none", stroke: COLOR.lav,
+    "stroke-width": 9, "stroke-linecap": "round", "stroke-dasharray": 640, "stroke-dashoffset": 640 });
+  node.append(gray, stageSvg([smoke]));
+  host.append(node);
+  try {
+    await move(smoke, [{ strokeDashoffset: 640 }, { strokeDashoffset: 0 }], 600, { easing: EASE.out });
+    move(gray, [{ clipPath: "circle(0% at 50% 55%)" }, { clipPath: "circle(80% at 50% 55%)" }], 1000, { easing: EASE.snap });
+    await sleep(300);
+    await move(smoke, [
+      { strokeWidth: 9, opacity: 1, strokeDasharray: "640 0" },
+      { strokeWidth: 3, opacity: 0.8, strokeDasharray: "260 50 120 400" },
+      { strokeWidth: 1, opacity: 0, strokeDasharray: "140 120 40 400" },
+    ], 1000, { easing: "ease-in" });
+  } catch (error) { node.remove(); unhold(); throw error; }
+  return async () => {
+    try { await move(node, [{ opacity: 1 }, { opacity: 0 }], 420, { easing: "ease" }); }
+    finally { node.remove(); unhold(); }
+  };
+}
+
+/** 再挑戦: 一筆の帯を逆向き（左上から右下）に流して色を戻し、覆っている間に mid() で大会の頭へ戻す（#2688 A19・F4） */
+export async function retryStroke(mid, host = document.getElementById("fx")) {
+  if (!host || reducedMotion()) { await mid?.(); return; }
+  const unhold = holdCover();
+  const band = strokeBand({ angle: STROKE.angle + 180 });
+  const node = el("div.scene-curtain.stroke.retry", { "aria-hidden": "true", dataset: { transition: "retry" } }, [band.art]);
+  host.append(node);
+  try {
+    await move(band.mov, [{ transform: `translateY(${STROKE.from}px)` }, { transform: `translateY(${STROKE.cover}px)` }], 380, { easing: EASE.in });
+    await mid?.();
+    await nextFrame(); await nextFrame();
+    await move(band.mov, [{ transform: `translateY(${STROKE.cover}px)` }, { transform: `translateY(${STROKE.to}px)` }], 440, { easing: EASE.out });
+  } finally { node.remove(); unhold(); }
 }
 
 // ---------------------------------------------------------------- 波＋めくり: 就寝 → 翌朝

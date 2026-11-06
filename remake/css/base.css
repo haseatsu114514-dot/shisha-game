@@ -583,6 +583,9 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .scene-curtain.veil { background: #34246a; opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .chapter-card { transition: none; } .cc-name { animation: none; } }
 
+/* 敗北→GAME OVER の入り（core/transitions.js defeatFade・#2688 A19）。中心から色が抜けて灰色になる */
+.tr-defeat { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; }
+.tr-defeat-gray { position: absolute; inset: 0; clip-path: circle(0% at 50% 55%); backdrop-filter: grayscale(1) brightness(.62); -webkit-backdrop-filter: grayscale(1) brightness(.62); background: #0b081433; }
 /* 場面の意味ごとの型（core/transitions.js・CI102）。紫と淡いラベンダーの図形だけで描く */
 .tr-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
 .tr-scale { transform-box: fill-box; transform-origin: center; }
@@ -661,6 +664,11 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
   transition: transform 0.35s var(--ease-snap), opacity 0.4s;
 }
 .round-cut.show { transform: scaleY(1); }
+/* 第4章の視点の帯（chapters/tournament-moments.js focusBand・#2688 A20）。ROUNDの横帯の小型版で、横へ流れて入る */
+.round-cut.focus { top: 116px; height: 86px; transform: translateX(-100%); transition: transform 0.4s var(--ease-snap), opacity 0.3s; border-top-color: #dcd1f4; border-bottom-color: #6b4fb0; }
+.round-cut.focus.show { transform: none; }
+.round-cut.focus b { font-size: 38px; letter-spacing: 0.16em; text-shadow: 0 0 16px #6b4fb0; }
+.round-cut.focus small { font-size: 15px; color: #dcd1f4; }
 .round-cut.out { opacity: 0; }
 .round-cut b { font-family: var(--font); font-size: 64px; font-weight: 700; letter-spacing: 0.2em; color: #fff; text-shadow: 0 0 20px var(--neon-pink); }
 .round-cut small { font-size: 18px; letter-spacing: 0.3em; color: var(--neon-cyan); }

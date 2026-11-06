@@ -593,3 +593,7 @@ html .bench[data-mode] .bench-worker:is([data-draw], [data-art-fallback="true"])
 html .bench[data-mode] .bench-worker,
 html .bench[data-mode][data-art-skin] .bench-worker,
 html .bench[data-mode].thermal-active .bench-worker { box-shadow: none; }
+
+/* 工程の切り替え（craft/session.js stepSweep・#2688 A17）。操作欄の上を細い一筆の帯が一度だけ横切る */
+.cp-step-sweep { position: absolute; overflow: hidden; pointer-events: none; z-index: 30; }
+.cp-step-sweep i { position: absolute; top: -10%; bottom: -10%; left: 0; width: 38%; background: linear-gradient(90deg, #dcd1f400, #dcd1f4 30%, #6b4fb0 60%, #6b4fb000); opacity: .85; }

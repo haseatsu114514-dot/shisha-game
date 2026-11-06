@@ -11,6 +11,7 @@ import { state, save } from "../core/state.js";
 import { layers, showScreen, setBg, enterScene, chapterTitle, modal, toast } from "../core/ui.js";
 import { saveFlow } from "../scenes/saves.js";
 import { planeRide } from "../core/scene-motions.js";
+import { defeatFade } from "../core/transitions.js";
 import { play, hooks } from "../vn/engine.js";
 import { chapterGrowthChart } from "../daily/status.js";
 import { paidAction } from "../core/stats.js";
@@ -510,14 +511,21 @@ async function runTournament(owner) {
     revealChapterFourSheikh(state);
     if (!await readAndCommit(owner, start)) return;
   }
-  const [{ runChapterFourCraft }, { playEntrance }] = await Promise.all([import("./ch4-tournament.js"), import("./tournament-entrance.js")]);
+  const [{ runChapterFourCraft }, { playEntrance }, moments] = await Promise.all([import("./ch4-tournament.js"), import("./tournament-entrance.js"), import("./tournament-moments.js")]);
   if (!current(owner)) return;
-  // 入場カットインは一度だけ（制作の途中から再開したときは出さない）。
-  if (!chapterFourProgress(state).match?.craft) { await playEntrance(4); if (!current(owner)) return; }
+  // 入場カットインは一度だけ（制作の途中から再開したときは出さない）。会場へは第1章と同じ暗い煙ワイプで入る（#2688 A16）
+  if (!chapterFourProgress(state).match?.craft) {
+    await moments.tournamentArrival({ bgm: "bgm_tournament_edm" });
+    if (!current(owner)) return;
+    await playEntrance(4); if (!current(owner)) return;
+  }
   const result = await runChapterFourCraft({ isCurrent: () => current(owner), menuButton: () => menuButton(owner) });
   if (!current(owner)) return;
   if (!result) { await renderTournament(owner); return; }
-  // 最終票は result.rows / result.votes から表示する。勝敗の台本はこの後に読む。
+  // 結果の前に、第1章と同じ10カウント（#2688 A16）。最終票は result.rows / result.votes から表示する。勝敗の台本はこの後に読む。
+  const craft = chapterFourProgress(state).match?.craft;
+  if (craft && result.rank) await moments.resultMoment(craft, result.rank, { contestants: ["naru", "master_hookah", "sheikh", "hajime"], eyebrow: "HAZE: GRAND SMOKE / FINAL JUDGING" });
+  if (!current(owner)) return;
   await showChapterFourCommittedResult(result);
   if (!current(owner)) return;
   if (chapterFourTournamentOutcome(state) === "win") {
@@ -527,14 +535,14 @@ async function runTournament(owner) {
   } else {
     if (!await readAndCommit(owner, loss)) return;
     // 2026-11-02 オーナー決定: 第1〜3章と同じ20秒のCONTINUE画面を出す（#1909）。再挑戦は大会の最初から（Q5）。
-    await renderDefeat(owner);
+    await renderDefeat(owner, null, { fresh: true });
     return;
   }
   await renderStage(owner);
 }
 
 /** 世界大会の敗北後のCONTINUE画面。「もう一度」で大会の最初へ戻し、タイトルへは保存してから戻る。 */
-async function renderDefeat(owner, variant = null) {
+async function renderDefeat(owner, variant = null, { fresh = false } = {}) {
   if (!current(owner)) return;
   const progress = chapterFourProgress(state);
   const result = progress.match?.result;
@@ -562,7 +570,11 @@ async function renderDefeat(owner, variant = null) {
   owner.continueRoot = root;
   root.dataset.test = test("defeat");
   root.querySelector(".go-retry").dataset.test = test("continue-retry");
+  // 世界大会の負けを読んだ直後だけ、色が抜けて煙が途切れる入り（#2688 A19）
+  const fade = (fresh && await defeatFade()) || (async () => {});
+  if (!current(owner)) { await fade(); return; }
   showScreen("end", root);
+  await fade();
 }
 
 const RECAP_STRATEGY = Object.freeze({

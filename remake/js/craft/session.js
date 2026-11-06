@@ -296,7 +296,10 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.audience?.setStep(coaching, id);
   // 吸い出しの情報欄へ移した葉を、工程を消す前に作業風景へ戻す。
   b.worker.footer.append(b.leaf.root);
+  const previousStep = b.panel.dataset.step;
   b.panel.replaceChildren();
+  // 工程が替わったときだけ、操作欄を細い一筆の帯が横切る（#2688 A17。3・2・1 より前に終わる約0.35秒）
+  if (previousStep && previousStep !== id) stepSweep(b);
   b.panel.dataset.step = id;
   b.root.dataset.step = id;
   b.worker.setStep(id);
@@ -309,6 +312,21 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   if (id === "steam") b.thermal.update(temperatureAfterSteam(b.cs, 0));
   if (["pull", "care"].includes(id)) b.thermal.update(b.cs.care?.temp ?? b.cs.pull?.temp ?? b.cs.steam?.temp ?? 0);
   return b.panel;
+}
+
+/** 操作欄の上を、ラベンダーから紫へ抜ける細い帯が一度だけ横切る。高速送り・動きを減らす設定・2画面表示では出さない */
+function stepSweep(b) {
+  if (craftTest.auto || matchMedia("(prefers-reduced-motion: reduce)").matches || document.body.classList.contains("game-ds")) return;
+  const root = b.root, panel = b.panel;
+  if (!root?.isConnected || !panel?.isConnected || !root.offsetWidth) return;
+  const r = root.getBoundingClientRect(), p = panel.getBoundingClientRect(), k = r.width / root.offsetWidth;
+  if (!p.width || !k) return;
+  const band = el("i");
+  const box = el("div.cp-step-sweep", { "aria-hidden": "true", style: {
+    left: `${(p.left - r.left) / k}px`, top: `${(p.top - r.top) / k}px`, width: `${p.width / k}px`, height: `${p.height / k}px` } }, [band]);
+  root.append(box);
+  band.animate([{ transform: "translateX(-140%) skewX(-18deg)" }, { transform: "translateX(330%) skewX(-18deg)" }],
+    { duration: 360, easing: "cubic-bezier(.7,0,.2,1)" }).finished.catch(() => {}).finally(() => box.remove());
 }
 
 /** 初回レッスンの工程だけ、操作開始前にお手本を一度見せる。 */
