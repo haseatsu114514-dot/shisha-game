@@ -37,6 +37,7 @@ import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { chapterTwoCheers, chapterTwoCongratulations, recordSentLime } from "./ch2-lime.js";
 import { CH2_SCENE_BACKGROUNDS } from "../core/city-locations.js";
+import { lightsOut } from "../core/story-motions.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
   startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult, CH2_PRIZE } from "./ch2-tournament-state.js";
 
@@ -391,6 +392,8 @@ async function drive(owner) {
       if (!await imageReady(closedRoom, 15000)) throw new Error("閉店後のMELTY PUFFを読み込めませんでした");
       await enterScene(closedRoom);
       if (!state.flags._ch2_read_ch2_tournament_ageha_heart) {
+        await lightsOut(); // 店の照明が落ち、あげはの灯りだけが残ってから独白へ（#2688 A2）
+        if (!live(owner)) return;
         if (!await read(owner, "ageha_heart")) return;
         state.flags._ch2_read_ch2_tournament_ageha_heart = true; save();
       }

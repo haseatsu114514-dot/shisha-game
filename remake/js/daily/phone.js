@@ -1193,6 +1193,8 @@ export async function openPhone(messages, { title = null, time = "朝" } = {}) {
       el("div.lime-peer", [avatar(accountOf(item)), el("span.lime-name", { text: limeName(accountOf(item)) })]),
       el("span.lime-unread", { text: left ? `未読 ${left}` : "" }),
     );
+    // 正体不明の相手の見出しだけ走査する（#2688 A6・第1章 優勝の夜）。使うときだけ読む
+    if (m.scan) import("../core/story-motions.js").then((mod) => mod.scanHeader(ui.header)).catch((e) => console.error(e));
     await runItem(item, ui, accepted, { forced: true });
     if (!ui.live(ui.gen)) return accepted;
     item.done = true;

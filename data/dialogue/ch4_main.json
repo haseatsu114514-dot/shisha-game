@@ -651,6 +651,11 @@
             "text": "長い呼吸から、龍のような煙が立ち上がる。店で炭を並べていた手が、今は客席ごと煙で包んでいた。"
           },
           {
+            "type": "motion",
+            "id": "dragon_smoke",
+            "comment": "#2688 A5 龍の煙。core/story-motions.js"
+          },
+          {
             "speaker": "hajime",
             "face": "surprise",
             "text": "（店で見た静かな手と、同じ人なんだ）"
@@ -687,6 +692,11 @@
             "text": "長い呼吸から、龍のような煙が立ち上がる。県大会のモニターで見た技だった。"
           },
           {
+            "type": "motion",
+            "id": "dragon_smoke",
+            "comment": "#2688 A5 龍の煙。core/story-motions.js"
+          },
+          {
             "speaker": "hajime",
             "face": "normal",
             "text": "……あの人だ"
@@ -702,6 +712,11 @@
             "speaker": "",
             "face": "",
             "text": "長い呼吸から、龍のような煙が立ち上がる。名前だけは、聞いたことがあった。"
+          },
+          {
+            "type": "motion",
+            "id": "dragon_smoke",
+            "comment": "#2688 A5 龍の煙。core/story-motions.js"
           },
           {
             "speaker": "master_hookah",

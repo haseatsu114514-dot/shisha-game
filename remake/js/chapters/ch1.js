@@ -55,6 +55,7 @@ import { giveSumiRig, giveEarlyHomeRig } from "../daily/home-rig.js";
 import { judgeNaruMatch, naruMatchReviewLines } from "./naru-match.js";
 import { configureFirstBrew, firstBrewOrder, rememberFirstBrew, serveFirstBrew } from "./first-brew.js";
 import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
+import { smokeThread } from "../core/story-motions.js";
 
 const BG = (name) => `res://assets/backgrounds/${name}.png`;
 const TONARI = BG("bg_tonari_inside");
@@ -154,7 +155,8 @@ async function openingPart() {
     const co = DB.dialogues.ch1_cold_open;
     await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
     scene.stop();
-    await sleep(600);
+    // 会場の煙が一筋になって上へ抜け、章題の白いもやへつながる（#2688 A1）。間は従来どおり最短0.6秒
+    await Promise.all([sleep(600), smokeThread()]);
     const titleResult = await playCh1Title();
     if (titleResult.cancelled || state !== owner) return false;
     playBgm("tonari");
@@ -827,7 +829,7 @@ async function victory(cs) {
     // 優勝の夜。記録を続ける博士の伏線へ。
     inScene(TONARI_N, () => openPhone([
       {
-        id: "_sys_unknown_recorded", sender: "???", messages: [
+        id: "_sys_unknown_recorded", sender: "???", scan: true, messages: [
           "本日のあなたの試合データは、すべて記録させていただきました。",
         ], close_label: "……誰？",
       },

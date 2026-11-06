@@ -47,6 +47,12 @@
           "text": "土台は、世界中の名手の記録と、熱の計算です。その上に、君を重ねました"
         },
         {
+          "type": "motion",
+          "id": "scan",
+          "label": "SHISHA-9000",
+          "comment": "#2688 A6 走査。第1章 優勝の夜の LIME「？？？」の見出しと対になる。core/story-motions.js"
+        },
+        {
           "speaker": "dr_kemuri",
           "face": "smile",
           "text": "SHISHA-9000。誰でも失敗を怖がらずに作れる、そのための装置です"

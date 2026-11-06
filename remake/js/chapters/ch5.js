@@ -43,6 +43,7 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_S
   chapterFivePostEndingPlan, chapterFivePostEndingUndecided, beginChapterFivePostEnding, chapterFivePostEndingNext,
   completeChapterFivePostEnding } from "./ch5-progress.js";
 import { readCycleMeta, recordTrueEndForRun } from "../core/cycle-meta.js";
+import { seatLights, mixingSmoke } from "../core/story-motions.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -421,6 +422,12 @@ async function renderMatch(owner) {
   const tally = chapterFiveVoteTally(state);
   card(owner, "match", "二台分の挙手", "同じ観客が、二台とも吸った。合計で決まる。", [
     button(owner, "結果を聞く", "continue", async () => {
+      // 結果をまだ聞いていなければ、客席の灯りで二本分の挙手を見せる（#2688 A7・数字は出さない）
+      if (tally && !chapterFiveRead(state, sequence[0])) {
+        showScreen("none", null);
+        await seatLights(tally);
+        if (!current(owner)) return;
+      }
       for (const id of sequence) {
         if (chapterFiveRead(state, id)) continue;
         if (!await readAndCommit(owner, id)) return;
@@ -529,6 +536,25 @@ async function renderFinale(owner) {
   ], "", scene.id);
 }
 
+/** 出会った人の登場カットインの色（会った順・同じ色は一つ・緑は除く）。A8 の煙の色 */
+function metColors() {
+  const colors = [];
+  for (const id of Object.keys(state.met || {})) {
+    const color = DB.characters[id]?.intro_cutin?.color;
+    if (!/^#[0-9a-f]{6}$/i.test(color || "") || colors.includes(color.toLowerCase()) || greenish(color)) continue;
+    colors.push(color.toLowerCase());
+  }
+  return colors;
+}
+/** 緑の色相（およそ75〜170度）か。演出に緑は使わない */
+function greenish(hex) {
+  const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255);
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  if (max - min < 0.12 || max !== g) return false;
+  const hue = 60 * (((b - r) / (max - min)) + 2);
+  return hue >= 75 && hue <= 170;
+}
+
 /** タイトル画面へ戻る（起動し直してタイトルを出す）。 */
 function backToTitle() {
   save();
@@ -543,6 +569,12 @@ function backToTitle() {
 async function renderStaffRoll(owner) {
   const first = chapterFiveCreditsPending(state);
   hud();
+  // 初めて流すときだけ、出会った人の色の煙が一本の紫になってからスタッフロールへ（#2688 A8）
+  if (first) {
+    showScreen("none", null);
+    await mixingSmoke(metColors());
+    if (!current(owner)) return;
+  }
   await playStaffRoll({ ...(first ? {} : { skippable: true }), ...(vnTest.turbo ? { durationMs: 1500 } : {}) });
   if (!current(owner)) return;
   if (!first) return renderComplete(owner);

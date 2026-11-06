@@ -12,6 +12,7 @@ import { glossaryPanel } from "../vn/glossary.js";
 import { play, hooks } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { shinkansenRide } from "../core/scene-motions.js";
+import { leafWave } from "../core/story-motions.js";
 import { onDialogueEnter } from "../daily/romance.js";
 import { pendingFriendLime, readFriendLime } from "./friend-entry.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale, recordRomanceChoice, bondCondition } from "../daily/bonds.js";
@@ -251,18 +252,23 @@ async function readPrologue(owner, id, bg, ride = null) {
   }
 }
 
+/** 章頭の公園の回想 → 綾取の調べもの（現在）。落ち葉の波が覆っている間に背景を替える（#2688 A3）。LOADで途中から読むときは出さない */
+const childhoodToNow = () => leafWave(async () => { await setBg(bgUrl("bg_ch3_saku_video"), { instant: true }); });
+
 async function renderPrologue(owner) {
   if (!current(owner)) return;
   const progress = chapterThreeProgress(state);
+  let fromChildhood = false;
   if (progress.prologueStep === 0) {
     // 旧行程は東京へ向かう列車の中から始まる（列車の4行は ch3_departure.json へ移した）。
     if (!await readPrologue(owner, "ch3_train_departure", null)) return;
     if (!await readPrologue(owner, "ch3_childhood_opening", null)) return;
     progress.prologueStep = 1;
     save();
+    fromChildhood = true;
   }
   if (progress.prologueStep === 1) {
-    if (!await readPrologue(owner, "ch3_saku_research", "bg_ch3_saku_video")) return;
+    if (!await readPrologue(owner, "ch3_saku_research", "bg_ch3_saku_video", fromChildhood ? childhoodToNow : null)) return;
     progress.prologueStep = 2;
     save();
   }
@@ -295,13 +301,15 @@ async function renderPrep(owner) {
   if (!current(owner)) return;
   const prep = state.flags._ch3_prep;
   const progress = chapterThreeProgress(state);
+  let fromChildhood = false;
   if (prep.step === 0) {
     if (!await readPrologue(owner, "ch3_childhood_opening", null)) return;
     prep.step = 1;
     save();
+    fromChildhood = true;
   }
   if (prep.step === 1) {
-    if (!await readPrologue(owner, "ch3_saku_research", "bg_ch3_saku_video")) return;
+    if (!await readPrologue(owner, "ch3_saku_research", "bg_ch3_saku_video", fromChildhood ? childhoodToNow : null)) return;
     prep.step = 2;
     save();
   }

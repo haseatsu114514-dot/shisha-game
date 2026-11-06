@@ -25,6 +25,7 @@ import { rememberRelationship, relationshipReflectionLines } from "../core/relat
 import { needsIntro, playIntro, markIntroSeen, introSeenKey } from "./intro.js";
 import { buyKeepsake } from "../core/keepsakes.js";
 import { chekiShot, tarotFlip, limeExchange, purikuraShot } from "../core/scene-motions.js";
+import { dragonSmoke, scanName } from "../core/story-motions.js";
 import { showShishaDiagram, hideShishaDiagram } from "./shisha-diagram.js";
 import { reducedMotion } from "../core/transition-kit.js";
 
@@ -523,7 +524,8 @@ function next() {
     // 一度きりのモーショングラフィックス（core/scene-motions.js）。終わるまで次の行へ進まない
     if (type === "motion") {
       if (vnTest.turbo) continue;
-      const run = { tarot: () => tarotFlip(), lime: () => limeExchange(line.char_id, line.context), purikura: () => purikuraShot() }[line.id];
+      const run = { tarot: () => tarotFlip(), lime: () => limeExchange(line.char_id, line.context), purikura: () => purikuraShot(),
+        dragon_smoke: () => dragonSmoke(), scan: () => scanName(line.label || "") }[line.id];
       if (!run) continue;
       if (line.id === "lime") {
         const key = `_lime_exchange_shown_${line.char_id}_${line.context || "work"}`;

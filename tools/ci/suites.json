@@ -2480,6 +2480,33 @@
       "chrome": "playwright"
     },
     {
+      "id": "story-motions",
+      "title": "Chapter entries and story beats one-time motions (#2688 A1-A8)",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 10,
+      "paths": [
+        "remake/js/core/story-motions.js",
+        "remake/js/motions/smoke-thread.js",
+        "remake/js/motions/lights-out.js",
+        "remake/js/motions/leaf-wave.js",
+        "remake/js/motions/dragon-smoke.js",
+        "remake/js/motions/scan.js",
+        "remake/js/motions/seat-lights.js",
+        "remake/js/motions/mixing-smoke.js",
+        "remake/js/motions/stage.js",
+        "remake/js/core/transition-kit.js",
+        "remake/js/core/mg-kit.js",
+        "remake/js/vn/engine.js",
+        "data/dialogue/ch4_main.json",
+        "data/dialogue/ch5_main.json",
+        "remake/test/browser/story_motions.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/story_motions.mjs"
+      ]
+    },
+    {
       "id": "motion-endings",
       "title": "Motion endings and transitions",
       "kind": "browser",
