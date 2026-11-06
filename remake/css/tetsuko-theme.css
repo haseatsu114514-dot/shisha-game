@@ -3,7 +3,9 @@
    日常の紙×ラベンダーは使わない。色はてつこ本人（茶トラの橙・胸の白・輪郭の焦げ茶・鼻の桃色）と段ボール、
    差し色に mukai の裏口の戸の青灰。部品は太い焦げ茶の線と下に落ちる影の「押せる札」にそろえる。
    この画面では日常の HUD を隠し、全画面を段ボールの窓（.tt-frame）で囲み、左上に題の札（.tt-logo）を置く。
-   入った時は閉じた箱が開く（.tt-intro。tetsuko-theme.js）。演出は pointer-events を持たず、操作を止めない。 */
+   入った時は閉じた箱が開く（.tt-intro。tetsuko-theme.js）。演出は pointer-events を持たず、操作を止めない。
+   ミニゲーム共通の方針（オーナー・2026-11-06）: 文字を密集させない／操作や遊び方は「？」を開いて見る（.tt-help。常時表示しない）／
+   基本画面は必要なUIだけ。常に見える文字は、題の札・反応の帯・道具の名前だけにする（今日の様子は入った時だけ）。 */
 .tetsuko-time {
   --tk-cream: #fff5e4; --tk-cream-2: #fbe7c8; --tk-ink: #3b2416; --tk-ink-2: #6e4325;
   --tk-tabby: #f08a2e; --tk-tabby-deep: #c25e1c; --tk-tabby-text: #a24a12; --tk-pink: #f39aa6;
@@ -33,26 +35,29 @@ body[data-screen="tetsuko-time"] .hud-right { pointer-events: none; }
 
 /* ---- 左上の題（てつこの小さな折れ耳の付いた札。下の縁は茶トラのしま） */
 .tt-logo { position: absolute; left: 30px; top: 42px; z-index: 21; display: grid; grid-template-columns: auto auto; align-items: center; column-gap: 12px;
-  padding: 8px 24px 12px 12px; border: 3px solid var(--tk-ink); border-radius: 22px; pointer-events: none;
+  padding: 7px 22px 11px 10px; border: 3px solid var(--tk-ink); border-radius: 20px; pointer-events: none;
   background: linear-gradient(0deg, transparent 6px, var(--tk-cream) 6px),
     repeating-linear-gradient(90deg, var(--tk-tabby) 0 14px, var(--tk-tabby-deep) 14px 22px);
   box-shadow: 0 5px 0 var(--tk-ink), var(--tk-lift); }
 .tt-logo-ear { position: absolute; top: -17px; width: 34px; height: 17px; border: 3px solid var(--tk-ink); border-bottom: 0; border-radius: 18px 18px 0 0; background: var(--tk-tabby); }
 .tt-logo-ear.l { left: 26px; transform: rotate(-9deg); transform-origin: 50% 100%; }
 .tt-logo-ear.r { right: 26px; transform: rotate(9deg); transform-origin: 50% 100%; }
-.tt-logo-paw { --tk-paw: var(--tk-cream); grid-row: 1 / 3; width: 52px; height: 52px; border: 3px solid var(--tk-ink); border-radius: 50%; background-color: var(--tk-tabby);
-  background-size: 34px 34px; background-position: center; background-repeat: no-repeat; }
-.tt-logo-title { font-size: 30px; font-weight: 900; line-height: 1.08; letter-spacing: .05em; color: var(--tk-ink); white-space: nowrap; }
+.tt-logo-paw { --tk-paw: var(--tk-cream); grid-row: 1 / 3; width: 46px; height: 46px; border: 3px solid var(--tk-ink); border-radius: 50%; background-color: var(--tk-tabby);
+  background-size: 30px 30px; background-position: center; background-repeat: no-repeat; }
+.tt-logo-title { font-size: 27px; font-weight: 900; line-height: 1.08; letter-spacing: .05em; color: var(--tk-ink); white-space: nowrap; }
 .tt-logo-roman { font-size: 14px; font-weight: 800; line-height: 1.15; letter-spacing: .28em; color: var(--tk-tabby-text); white-space: nowrap; }
 
 /* ---- 今日のてつこ: 題の札から出る吹き出し（題そのものは札にあるので、紙片の題は読み上げだけ残す） */
-.tetsuko-time .tt-memo { left: 34px; right: auto; top: 130px; max-width: 470px; padding: 7px 18px 8px; border: 2.5px solid var(--tk-ink); border-radius: 14px;
+.tetsuko-time .tt-memo { left: 34px; right: auto; top: 124px; max-width: 470px; padding: 7px 18px 8px; border: 2.5px solid var(--tk-ink); border-radius: 14px;
   background: var(--tk-cream); transform: none; box-shadow: 0 3px 0 var(--tk-ink), 0 8px 14px rgba(32, 16, 6, .28); }
 .tetsuko-time .tt-memo::before { content: ""; position: absolute; left: 34px; top: -9px; width: 14px; height: 14px; background: var(--tk-cream);
   border-left: 2.5px solid var(--tk-ink); border-top: 2.5px solid var(--tk-ink); transform: rotate(45deg); }
 .tetsuko-time .tt-memo-tape { display: none; }
 .tetsuko-time .tt-memo-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .tetsuko-time .tt-mood { margin: 0; font-size: 18px; color: var(--tk-ink); }
+/* 入った時だけ見せ、少しで消す（tetsuko-theme.js の MEMO_MS。「？」の中でも読める） */
+.tetsuko-time .tt-memo { transition: opacity .6s ease; }
+.tetsuko-time[data-memo="off"] .tt-memo { opacity: 0; }
 
 /* ---- 押せる札（右上の道具・右下の手元の道具・パネルのボタン）: 生成りに焦げ茶の太い線、下に落ちる影 */
 .tetsuko-time .tt-tools { top: 34px; right: 30px; gap: 10px; }
@@ -63,6 +68,8 @@ body[data-screen="tetsuko-time"] .hud-right { pointer-events: none; }
 /* 帰る＝裏口の戸の色 */
 .tetsuko-time .tt-tool[data-test="tetsuko-time-back"] { background: var(--tk-door); color: var(--tk-cream); }
 .tetsuko-time .tt-tool[data-test="tetsuko-time-back"] .tt-tool-label { color: var(--tk-cream); }
+.tetsuko-time .tt-help-btn { width: 58px; padding: 0; border-radius: 50%; height: 58px; align-self: center; }
+.tt-help-q { font-size: 32px; font-weight: 900; line-height: 1; color: var(--tk-ink); }
 .tetsuko-time .tt-tool.new::after, .tetsuko-time .tt-new { border: 2px solid var(--tk-ink); background: var(--tk-pink); color: var(--tk-ink); }
 .tetsuko-time :is(.tt-tool, .tt-act, .tt-item, .tt-card, .tt-slot-hit):focus-visible { outline: 3px solid var(--tk-door); outline-offset: 3px; }
 
@@ -80,11 +87,11 @@ body[data-screen="tetsuko-time"] .hud-right { pointer-events: none; }
 .tetsuko-time .tt-act-label { border: 2px solid var(--tk-ink); border-radius: 10px; background: var(--tk-cream); color: var(--tk-ink); font-weight: 800; }
 
 /* パネルのボタン（おわる・閉じる）。日常のテーマの .btn（html:root[data-ui-theme] …）より強く当てる */
-:root .tetsuko-time .btn.small:is(.tt-drawer-close, .tt-book-close) { padding: 8px 18px; border: 3px solid var(--tk-ink); border-radius: 14px; background: var(--tk-cream);
+:root .tetsuko-time .btn.small:is(.tt-drawer-close, .tt-book-close, .tt-help-close) { padding: 8px 18px; border: 3px solid var(--tk-ink); border-radius: 14px; background: var(--tk-cream);
   color: var(--tk-ink); font-weight: 800; box-shadow: var(--tk-drop); clip-path: none; filter: none; text-shadow: none; }
-:root .tetsuko-time .btn.small:is(.tt-drawer-close, .tt-book-close):is(:hover, :focus-visible) { background: var(--tk-tabby); color: var(--tk-ink); border-color: var(--tk-ink); box-shadow: var(--tk-drop); }
-:root .tetsuko-time .btn.small:is(.tt-drawer-close, .tt-book-close):focus-visible { outline: 3px solid var(--tk-door); outline-offset: 3px; }
-:root .tetsuko-time .btn.small:is(.tt-drawer-close, .tt-book-close):active { transform: translateY(3px); box-shadow: var(--tk-drop-low); }
+:root .tetsuko-time .btn.small:is(.tt-drawer-close, .tt-book-close, .tt-help-close):is(:hover, :focus-visible) { background: var(--tk-tabby); color: var(--tk-ink); border-color: var(--tk-ink); box-shadow: var(--tk-drop); }
+:root .tetsuko-time .btn.small:is(.tt-drawer-close, .tt-book-close, .tt-help-close):focus-visible { outline: 3px solid var(--tk-door); outline-offset: 3px; }
+:root .tetsuko-time .btn.small:is(.tt-drawer-close, .tt-book-close, .tt-help-close):active { transform: translateY(3px); box-shadow: var(--tk-drop-low); }
 
 /* ---- 反応の帯（左下）: 角の丸い札。左の端は茶トラのしま */
 .tetsuko-time .tt-caption { left: 30px; bottom: 26px; width: 596px; min-height: 86px; padding: 11px 24px 11px 36px; border: 3px solid var(--tk-ink); border-radius: 18px;
@@ -106,7 +113,9 @@ body[data-screen="tetsuko-time"] .hud-right { pointer-events: none; }
 .tetsuko-time .tt-drawer-head b { color: var(--tk-tabby-text); }
 .tetsuko-time .tt-item { border: 2.5px solid var(--tk-ink); border-radius: 14px; background: var(--tk-cream); box-shadow: 0 3px 0 var(--tk-ink); }
 .tetsuko-time .tt-item[aria-pressed="true"] { border-color: var(--tk-ink); background: #ffe4c2; box-shadow: 0 3px 0 var(--tk-ink), 0 0 0 4px var(--tk-tabby); }
-.tetsuko-time .tt-item small { color: var(--tk-ink-2); }
+.tetsuko-time .tt-item { justify-content: center; }
+.tt-item-at { position: absolute; left: 6px; top: 6px; min-height: 0; padding: 0 7px; border: 2px solid var(--tk-ink); border-radius: 9px; background: var(--tk-tabby);
+  color: var(--tk-ink); font-size: 14px; font-weight: 800; line-height: 1.35; }
 .tetsuko-time .tt-slot-hit[data-allowed="true"] { border-color: var(--tk-tabby); background: rgba(255, 214, 160, .24); }
 .tetsuko-time .tt-slot-label { border: 2px solid var(--tk-ink); background: var(--tk-cream); color: var(--tk-ink); }
 
@@ -130,6 +139,26 @@ body[data-screen="tetsuko-time"] .hud-right { pointer-events: none; }
 /* 座布団の仮の絵（素材が届くまで）は紫をやめ、依頼どおりのくすんだからし色に（絵が届けば土台の [data-art-props] が勝つ） */
 .tetsuko-time .tt-prop[data-prop="cushion"] .tt-prop-back { background: radial-gradient(circle at 50% 50%, #7a5a1e 0 5px, transparent 6px), linear-gradient(#cda24a, #a57f2c); }
 .tetsuko-time .tt-prop[data-prop="cushion"] .tt-prop-back::before, .tetsuko-time .tt-prop[data-prop="cushion"] .tt-prop-back::after { background: #7a5a1e; }
+/* ---- あそびかた（「？」を開いた時だけ）: 手元の道具と上の道具を、アイコン・名前・短い一文で並べる */
+.tt-help { position: absolute; left: 96px; right: 96px; top: 116px; bottom: 34px; z-index: 24; display: grid; place-items: center; }
+.tt-help[hidden] { display: none; }
+.tetsuko-time[data-panel="help"] :is(.tt-dock, .tt-caption, .tt-memo) { visibility: hidden; }
+.tt-help-card { position: relative; width: 100%; padding: 22px 34px 20px; border: 3px solid var(--tk-ink); border-radius: 20px; background: var(--tk-cream);
+  box-shadow: 0 6px 0 var(--tk-ink), 0 16px 30px rgba(20, 10, 4, .45); }
+.tt-help-head { display: flex; align-items: baseline; gap: 18px; margin-bottom: 14px; }
+.tt-help-head h3 { margin: 0; padding-bottom: 2px; border-bottom: 3px dotted var(--tk-tabby); font-size: 24px; color: var(--tk-ink); letter-spacing: .06em; }
+.tt-help-mood { margin: 0; font-size: 16px; color: var(--tk-ink-2); }
+.tt-help-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.tt-help-group h4 { margin: 0 0 8px; font-size: 15px; font-weight: 800; color: var(--tk-tabby-text); letter-spacing: .04em; }
+.tt-help-rows { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+.tt-help-row { display: grid; grid-template-columns: 38px 104px 1fr; align-items: center; column-gap: 10px; }
+.tt-help-ico { display: grid; place-items: center; width: 38px; height: 38px; border: 2px solid var(--tk-ink); border-radius: 50%; background: var(--tk-cream-2); color: var(--tk-ink-2); }
+.tt-help-ico .tt-ico { width: 24px; height: 24px; }
+.tt-help-name { font-size: 16px; font-weight: 800; color: var(--tk-ink); white-space: nowrap; }
+.tt-help-text { font-size: 16px; line-height: 1.45; color: var(--tk-ink); word-break: auto-phrase; }
+.tt-help-note { display: flex; align-items: center; gap: 10px; margin: 16px 0 0; padding-top: 12px; border-top: 2px dashed rgba(110, 67, 37, .3); font-size: 16px; color: var(--tk-ink-2); }
+.tt-help-note .tt-stamp { width: 24px; height: 24px; flex: none; }
+.tt-help-close { position: absolute; right: 22px; bottom: 16px; min-width: 110px; min-height: 48px; }
 /* 撮った写真が飛ぶ先＝右上の「てつこ手帳」（道具を上へ詰めた分） */
 .tetsuko-time .tt-fly.go { top: 69px !important; left: 1000px !important; }
 /* ブラシの形のカーソルも焦げ茶の線に */

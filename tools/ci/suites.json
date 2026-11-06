@@ -1704,6 +1704,7 @@
         "remake/js/minigames/tetsuko-model.js",
         "remake/js/minigames/tetsuko-art.js",
         "remake/js/minigames/tetsuko-theme.js",
+        "remake/js/minigames/tetsuko-help.js",
         "remake/css/tetsuko-time.css",
         "remake/css/tetsuko-theme.css",
         "remake/test/browser/ch3_tokyo_daily.mjs"
@@ -1712,12 +1713,13 @@
     },
     {
       "id": "tetsuko-theme",
-      "title": "Tetsuko Time dedicated theme: box-opening intro never blocks taps, HUD hidden then back, no lavender (#2717)",
+      "title": "Tetsuko Time dedicated theme: box-opening intro never blocks taps, HUD hidden then back, no lavender, help behind ? and a clean base screen (#2717)",
       "kind": "browser",
       "weight": 0.3,
       "timeout": 4,
       "paths": [
         "remake/js/minigames/tetsuko-theme.js",
+        "remake/js/minigames/tetsuko-help.js",
         "remake/js/minigames/tetsuko-time.js",
         "remake/css/tetsuko-theme.css",
         "remake/css/tetsuko-time.css",

@@ -3,6 +3,8 @@
 // - 演出は終わると外れる。日常の HUD（紙×ラベンダー）は画面の間だけ隠れ、帰ると戻る
 // - 部品にラベンダー・旧い紙の色が残っていない
 // - 動きを減らす設定では演出を出さず、題の札はすぐ見える
+// - ミニゲーム共通の方針（オーナー・2026-11-06）: 基本画面に常に見える文字は題・反応の帯・道具の名前だけ。
+//   今日の様子は入った時だけ。操作と遊び方は「？」を開いた時だけ見え、画面の道具がすべて載っている
 // 遊び・確定（回復12・来訪1回）は ch3_tokyo_daily.mjs と tetsuko_time.mjs が見る。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
@@ -53,7 +55,7 @@ async function seed(page) {
 async function openTetsuko(page) {
   await page.evaluate(() => {
     window.__tetsukoTheme = null;
-    const names = ["tetsuko-pet", "tetsuko-time-back", "tetsuko-book"];
+    const names = ["tetsuko-pet", "tetsuko-time-back", "tetsuko-book", "tetsuko-help"];
     const measure = (host, first, frames = 0) => {
       const top = names.map(name => {
         const node = host.querySelector(`[data-test="${name}"]`);
@@ -88,6 +90,28 @@ async function openTetsuko(page) {
 }
 
 const hudVisibility = page => page.evaluate(() => getComputedStyle(document.querySelector(".hud")).visibility);
+// 基本画面で手元の道具が出ている時の道具の名前（「？」は記号だけ）。止めるは振っている間だけ出る。
+const CONTROLS = ["？", "もようがえ", "てつこ手帳", "写真", "帰る", "なでる", "あそぶ", "ブラシ", "おやつ", "そっと見守る"];
+// 画面の中で見えている文字（題の札・反応の帯・演出は除く）。読み上げ専用の文字・透明の文字は数えない。
+function visibleTexts() {
+  const host = document.querySelector('[data-test="tetsuko-time-screen"]');
+  const skip = node => node.closest(".tt-logo, .tt-caption, .tt-intro, .tt-memo-title");
+  const seen = node => {
+    for (let at = node; at && at !== host.parentElement; at = at.parentElement) {
+      const css = getComputedStyle(at);
+      if (css.display === "none" || css.visibility === "hidden" || Number(css.opacity) === 0) return false;
+    }
+    const r = node.getBoundingClientRect();
+    return r.width > 0 && r.height > 0;
+  };
+  const walker = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
+  const out = [];
+  for (let text = walker.nextNode(); text; text = walker.nextNode()) {
+    const value = text.textContent.trim();
+    if (value && !skip(text.parentElement) && seen(text.parentElement)) out.push(value);
+  }
+  return out;
+}
 
 await suite("tetsuko-theme", async check => {
   await check("tetsuko-theme-opens-like-a-new-game-and-never-blocks-taps", async page => {
@@ -98,7 +122,7 @@ await suite("tetsuko-theme", async check => {
     assert.equal(probe.hasIntro, true, "The box-opening intro starts with the screen");
     assert.equal(probe.intro, "1");
     assert.equal(probe.introWhileMeasured, "1", "The taps were measured while the intro was still on screen");
-    assert.deepEqual(probe.hits, { "tetsuko-pet": true, "tetsuko-time-back": true, "tetsuko-book": true },
+    assert.deepEqual(probe.hits, { "tetsuko-pet": true, "tetsuko-time-back": true, "tetsuko-book": true, "tetsuko-help": true },
       "The intro, the frame and the title plate never take a tap");
     assert.equal(await hudVisibility(page), "hidden", "The daily HUD is hidden while playing with her");
     // 演出は終わると外れる。
@@ -119,6 +143,30 @@ await suite("tetsuko-theme", async check => {
     assert.equal(look.logoOpacity, "1");
     assert.equal(look.frame, true, "The cardboard frame surrounds the screen");
     for (const color of LAVENDER) assert(!look.colors.includes(color), `No daily lavender paper left (${color})`);
+    // 基本画面: 今日の様子は少しで消え、常に見える文字は道具の名前だけ（題の札・反応の帯は別に数える）。
+    await page.waitForFunction(() => document.querySelector('[data-test="tetsuko-time-screen"]')?.dataset.memo === "off", null, { timeout: 15000 });
+    await page.waitForFunction(() => getComputedStyle(document.querySelector(".tt-memo")).opacity === "0", null, { timeout: 5000 });
+    const shown = await page.evaluate(visibleTexts);
+    assert.deepEqual(shown.sort(), [...CONTROLS].sort(), "Only the names of the controls stay on the base screen");
+    // 「？」: 開くと遊び方が出て、画面の道具がすべて載っている。開いている間は下の帯と道具が隠れる。Esc で閉じる。
+    await page.locator(dt("tetsuko-help")).click();
+    const panel = page.locator(dt("tetsuko-help-panel"));
+    await panel.waitFor();
+    const help = await page.evaluate(() => ({
+      names: [...document.querySelectorAll(".tt-help-name")].map(node => node.textContent),
+      texts: [...document.querySelectorAll(".tt-help-text")].map(node => node.textContent),
+      mood: document.querySelector('[data-test="tetsuko-help-mood"]')?.textContent || "",
+      dock: getComputedStyle(document.querySelector(".tt-dock")).visibility,
+    }));
+    for (const name of CONTROLS.filter(name => name !== "？")) assert(help.names.includes(name), `The help explains ${name}`);
+    for (const text of help.texts) {
+      assert.match(text, /。$/, `Help lines end with 。 (${text})`);
+      assert(!text.includes("\n") && text.length <= 30, `Help lines stay short (${text})`);
+    }
+    assert.match(help.mood, /今日は/, "Today's mood can be read again in the help");
+    assert.equal(help.dock, "hidden", "The tools step aside while reading");
+    await page.keyboard.press("Escape");
+    await panel.waitFor({ state: "hidden" });
     // 遊べることは変わらない。帰ると HUD が戻る。
     await page.locator(dt("tetsuko-pet")).click();
     await page.locator(dt("tetsuko-time-back")).click();
