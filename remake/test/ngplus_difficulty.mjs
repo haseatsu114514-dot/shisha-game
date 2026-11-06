@@ -38,6 +38,7 @@ for (const seed of [1, 7, 42, 7317, 0xffffffff]) {
       const value = { chapter: 3, day: 42, weatherSeed: seed, flags: {} };
       const progress = tournament.startAttempt(value, { careHistory: [] });
       delete progress.rulesVersion; // 版のない旧保存。新規挑戦の版2と混ぜない。
+      delete progress.baseVotes; // 旧保存には基礎票も無い。
       for (let round = 0; round < 4; round++) {
         tournament.castVotes(progress, round, performance, { emil: -1, dr_kemuri: .5, sui: 1 }, p);
         if (p === 0) digest.update(JSON.stringify([progress.votes, progress.lastVotes, progress.quality, tournament.standings(progress)]));
@@ -68,7 +69,7 @@ for (const seed of [1, 7, 42, 7317, 0xffffffff]) {
     }
   }
 }
-equal(currentDigest.digest("hex"), "65d52b8a8aedb8803383d0ae30e449096d84424a86f5c752b1f139a9c29db052");
+equal(currentDigest.digest("hex"), "3e62874a792458d11a0b31ac51b201884d65c6edbc2e9a73224868b908fb1053");
 equal(currentEvents.length, events.length);
 assert(currentEvents.every(e => Object.isFrozen(e) && e.lifted === liftRivalScore(e.rival, e.p, e.chapter) && e.chapter === 3)); checks++;
 assert(currentEvents.filter(e => e.p === 0).every(e => Object.is(e.rival, e.lifted))); checks++;

@@ -45,8 +45,9 @@ try {
     assert.equal(await page.locator(".gameover").getAttribute("data-layout"), "neon");
     assert.equal(await page.locator(".gameover").getAttribute("data-background"), "stage");
     assert.equal(await page.locator(".go-title").getAttribute("aria-label"), "コンティニューする？");
-    assert.equal(await page.locator(".go-retry").textContent(), "最初から再挑戦");
-    assert.equal(await page.locator(".go-quit").textContent(), "諦める");
+    assert.equal(await page.locator(".go-retry").textContent(), "もう一台、作る"); // #2524: 心の声への一人称の答え。遷移は従来どおり。
+    assert.equal(await page.locator(".go-quit").textContent(), "今日は、ここまで");
+    assert.equal(await page.locator(".go-retry").getAttribute("aria-label"), "もう一台、作る（最初から再挑戦）");
     const safe = await page.evaluate(async () => {
       const root = document.querySelector(".gameover"), stage = document.querySelector("#stage").getBoundingClientRect();
       const k = stage.width / 1280, image = root.querySelector(".go-sumi-img");

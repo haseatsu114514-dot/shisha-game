@@ -216,12 +216,16 @@ await suite("samechan-confession", async check => {
         s.lovers = []; s.flags._friend_samechan = true;
         K.romance.onDialogueEnter("confession_samechan_accept", K.data.DB.dialogues.confession_samechan_accept);
         const friend = K.snap(); delete s.flags._friend_samechan;
-        s.chapter = 4; const tooLate = K.romance.romanceRouteOpen("samechan");
+        // IR36: 第2・3章で迎えた締めくくりの告白は持ち越す。判断は締めくくりの章で、第4章以降に初めて迎えた分は閉じる
+        s.chapter = 4; const heldLater = K.romance.romanceRouteOpen("samechan");
+        const finale = s.finales.samechan; s.finales.samechan = { ...finale, chapter: 4 };
+        const tooLate = K.romance.romanceRouteOpen("samechan"); s.finales.samechan = finale;
         s.chapter = 2; delete s.romanceChoices.bond_q1_samechan;
         const fabricated = K.romance.romanceRouteOpen("samechan");
-        return { chapter1, unread, missing, before, sharkLime, otherLime, friend, tooLate, fabricated };
+        return { chapter1, unread, missing, before, sharkLime, otherLime, friend, heldLater, finaleChapter: finale?.chapter, tooLate, fabricated };
       });
       assert(!r.chapter1 && !r.unread && !r.missing && !r.tooLate && !r.fabricated);
+      assert.equal(r.finaleChapter, 2); assert(r.heldLater, "第2章で迎えた締めくくりの告白は第4章でも持ち越す（IR36）");
       assert.deepEqual(r.before.lovers, ["samechan"]);
       assert.equal(r.sharkLime.length, 1); assert.equal(r.sharkLime[0].id, "_lover_private_account_samechan");
       assert(r.otherLime.some(m => m.accept_event === "date_mashiro"));

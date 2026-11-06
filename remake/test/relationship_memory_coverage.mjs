@@ -78,7 +78,11 @@ const peopleMatch = statusSource.match(/^const PEOPLE = (\[[^\]]*\]);/m);
 assert(peopleMatch, 'status.js PEOPLE not found (keep it a one-line array)');
 const people = JSON.parse(peopleMatch[1]);
 const ch5Reflection = reflections(scenes.get(eveScenes[5]))[0];
-assert.deepEqual(ch5Reflection.chars, people, 'ch5 reflection must recall the People tab cast (status.js PEOPLE)');
+// 人物タブに出ても、第3・4章の前夜に浮かんだ大会の相手は第5章で繰り返さない（ch5_main.json の reflection の comment）。
+// スティーブ（#2028）は♥5の締めくくりがあるので人物タブに出るが、記憶は第3章の前夜に浮かぶ低温の話だけ。
+const eveRivals = ['saku', 'steve', 'volk', 'da_silva', 'sheikh', 'master_hookah'];
+assert.deepEqual(ch5Reflection.chars, people.filter((id) => !eveRivals.includes(id)),
+  'ch5 reflection must recall the People tab cast (status.js PEOPLE) except the chapter 3/4 eve rivals');
 assert(people.includes('sumi'), 'ch5 reflection falls back to Sumi');
 const routes = readJson('data/story_routes.json').chapters;
 const chapterCast = {

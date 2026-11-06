@@ -424,10 +424,18 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.deepEqual(result, {kind: 'date', participants: ['ageha'], scenes: ['tournament_date_ageha']});
   assert.deepEqual(ch4.chapterFourEveningRecord(result), {kind: 'date', participants: ['ageha']});
   for (const id of all) {
-    value = dubaiEve([id], id);
+    // ドバイに住むヌール（resident）は同行を選ばない。恋人なら前夜も同じ街にいる（DSR20）
+    value = dubaiEve([id], routes.romance[id].resident ? null : id);
     assert.equal(ch4.chapterFourEveningPartner(routes, value), id, `${id} can be invited in Dubai`);
     assert.deepEqual(ch4.selectChapterFourEvening(routes, value, id).scenes, [routes.romance[id].date]);
   }
+  // ヌールと同行の恋人がどちらもいれば、重なった予定の保留。恋人でなければ前夜にはいない
+  value = dubaiEve(['noor', 'tsumugi'], 'tsumugi');
+  assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, ['tsumugi', 'noor']);
+  assert.equal(ch4.selectChapterFourEvening(routes, value).kind, 'overlap');
+  assert.equal(ch4.chapterFourEveningPartner(routes, value), null);
+  value = dubaiEve(['tsumugi'], 'tsumugi');
+  assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, ['tsumugi'], 'Noor is not on the eve unless she is a lover');
   // 同行なし: 別便の恋人も、到着の記録が無ければその場にいない。到着場面を読み終えた人だけ。
   value = dubaiEve(['minto'], null);
   assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, []);
@@ -499,4 +507,4 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   }
 }
 
-console.log('OK: seven routes, 0–7 lovers, Tokyo near-conflict, post-ending conflict, location, old saves, chapter 3 optional/eve wiring, chapter 4 eve wiring, chapter 1 shuraba recall');
+console.log('OK: eight routes, 0–8 lovers, Tokyo near-conflict, post-ending conflict, location, old saves, chapter 3 optional/eve wiring, chapter 4 eve wiring, chapter 1 shuraba recall');

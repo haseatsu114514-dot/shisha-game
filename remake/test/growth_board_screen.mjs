@@ -57,7 +57,8 @@ const modules = {
   "../core/growth-mode.js": { growthEnabled: () => true },
   "./growth-board-tutorial.js": { grantStarterHidane() {}, tutorialPending: () => false, startBoardTutorial() {}, TUTORIAL_FLAG: "_tutorial" },
   "../core/growth-effects.js": { LESSON_TUNING: {} },
-  "../core/data.js": { displayName: id => id, faceIconUrl: () => null, portraitInfo: () => null },
+  "../core/data.js": { displayName: id => id, faceIconUrl: () => null, portraitInfo: () => null, faceFrame: () => null },
+  "../core/portrait-style.js": { portraitStyle: () => "classic" },
   "../core/stats.js": { affinityLevel: () => 0 }, "../core/growth.js": growth, "../core/growth-board.js": board,
 };
 const context = vm.createContext({ document, Node: Element, console, setTimeout, requestAnimationFrame: fn => fn(),
@@ -110,38 +111,56 @@ fx.children[0].querySelector('[data-test="board-close"]').click();
 await committedDone;
 console.log(`PASS board screen: ${originalNodes.length} selections preserve DOM; pending/undo/commit/check badge; no full-board filters`);
 
-// The board's eye coordinates were measured on classic artwork, independently of VN preferences.
+// The board's eye coordinates come from the same per-style face measurements as the face icons (manifest faceFrames, 2026-11-06).
+// The lesson cards and the right panel follow the VN portrait setting; people without new artwork keep the classic art and coordinates.
 const data = await import("../js/core/data.js");
 data.DB.manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url)));
 data.DB.characters = Object.fromEntries(JSON.parse(readFileSync(new URL("../../data/characters.json", import.meta.url))).map(c => [c.id, c]));
 const panelStart = source.indexOf("  function panelPortrait(");
 const panelEnd = source.indexOf("  /** 章ごとの見せ方", panelStart);
 assert(panelStart > 0 && panelEnd > panelStart);
-const constants = [source.match(/const PORTRAIT_EYES = \{[\s\S]*?\n\};/)[0],
+const constants = [source.match(/const BOARD_FACES = new Set\(\[[\s\S]*?\]\);/)[0], source.match(/const BOARD_FACE_PER_UNIT = [^;]+;/)[0],
+  source.match(/function portraitEyes\([\s\S]*?\n\}/)[0], source.match(/function boardFaceUrl\([\s\S]*?\n\}/)[0],
   source.match(/const PANEL_FACE_W = [^;]+;/)[0], source.match(/const PANEL_FACE = \{[\s\S]*?\n\};/)[0]].join("\n");
 const panelGrowth = { known: false }, cropCalls = [], panelRoot = new Element();
 const panelContext = vm.createContext({ el: util.el, g: panelGrowth, root: panelRoot, ART_DIR: "img/ui/growth_board/",
-  lessonKnown: () => panelGrowth.known,
+  lessonKnown: () => panelGrowth.known, faceFrame: data.faceFrame, portraitStyle: () => core.config.portraitStyle,
   portraitInfo: (...args) => { const p = data.portraitInfo(...args); cropCalls.push({ args, p }); return p; },
 });
-vm.runInContext(`${constants}\n${source.slice(panelStart, panelEnd)}\nthis.panelPortrait = panelPortrait; this.eyes = PORTRAIT_EYES;`, panelContext);
+vm.runInContext(`${constants}\n${source.slice(panelStart, panelEnd)}\nthis.panelPortrait = panelPortrait; this.boardFaceUrl = boardFaceUrl; this.teachers = [...BOARD_FACES]; this.perUnit = BOARD_FACE_PER_UNIT;`, panelContext);
+const frames = data.DB.manifest.faceFrames;
+for (const who of panelContext.teachers) {
+  assert(frames.classic[who]?.eye && frames.classic[who].unit, `${who}: classic face measurement exists`);
+  if (data.DB.manifest.portraitVariants.new[who]) assert(frames.new?.[who]?.eye && frames.new[who].unit, `${who}: new artwork is measured too`);
+}
 const previousStyle = core.config.portraitStyle;
 for (const preference of ["classic", "new"]) {
   core.config.portraitStyle = preference;
-  // Prove the new setting can resolve a different source outside the dedicated crop.
   assert.equal(data.portraitInfo("tsumugi", "normal").style, preference);
   for (const [node, known] of [[{ kind: "lesson", id: "M-W1", who: "tsumugi" }, false],
     [{ kind: "lesson", id: "M-W1", who: "tsumugi" }, true], [{ kind: "skill", id: "K01" }, true]]) {
     panelGrowth.known = known;
     const image = panelContext.panelPortrait(node, "open"), { args, p } = cropCalls.at(-1);
-    assert.equal(args[2], "classic", `${node.kind}/${known}: explicit style is required`);
-    assert.equal(p.style, "classic"); assert.match(image.attrs.src, /sprites\/characters\//);
-    const who = node.kind === "skill" ? "hajime" : node.who, [ex, ey, fw] = panelContext.eyes[who], k = 82 / fw;
+    assert.equal(args[2], undefined, `${node.kind}/${known}: the board follows the VN setting`);
+    assert.equal(p.style, preference);
+    assert.match(image.attrs.src, preference === "new" ? /sprites\/character_variants\/new\// : /sprites\/characters\//);
+    const who = node.kind === "skill" ? "hajime" : node.who, frame = frames[preference][who];
+    const [ex, ey] = frame.eye, k = 82 / (frame.unit * panelContext.perUnit);
     assert.equal(image.style.width, `${Math.round(896 * k)}px`);
     assert.equal(image.style.marginLeft, `${Math.round(-ex * k)}px`);
     assert.equal(image.style.top, `${Math.round(64 - ey * k)}px`);
-    assert.equal(core.config.portraitStyle, preference, "Dedicated crop must not change the saved VN setting");
+    assert.equal(core.config.portraitStyle, preference, "Showing the board must not change the saved VN setting");
   }
+  assert.equal(panelContext.boardFaceUrl("tsumugi"), preference === "new" ? "img/ui/growth_board/faces/new/tsumugi.webp" : "img/ui/growth_board/faces/tsumugi.webp");
 }
+assert.notDeepEqual(frames.new.tsumugi.eye, frames.classic.tsumugi.eye, "new artwork uses its own coordinates");
+core.config.portraitStyle = "new";
+assert.equal(data.portraitInfo("rio", "normal").style, "classic", "Rio has no new artwork");
+assert.equal(panelContext.boardFaceUrl("rio"), "img/ui/growth_board/faces/rio.webp", "no new artwork: classic card face");
+panelGrowth.known = true;
+const rioPanel = panelContext.panelPortrait({ kind: "lesson", id: "M-W1", who: "rio" }, "open");
+assert.match(rioPanel.attrs.src, /sprites\/characters\/rio\//);
+assert.equal(rioPanel.style.top, `${Math.round(64 - frames.classic.rio.eye[1] * 82 / (frames.classic.rio.unit * panelContext.perUnit))}px`);
+assert.equal(panelContext.boardFaceUrl("pakki"), null, "people without a card face use the face icon");
 core.config.portraitStyle = previousStyle;
-console.log("PASS board portraits: unknown/known lesson and skill use classic source + measured eye coordinates under both preferences");
+console.log("PASS board portraits: lesson cards and the panel use the selected style's art + that style's measured eye coordinates (classic for people without new art)");

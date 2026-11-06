@@ -2,36 +2,47 @@
 """心得の盤の授業の札の顔（SBD81「キャラアイコンの拡大率がバラバラで整えたい」）。
 
 顔アイコン（ui/face_icons）は人ごとに顔の大きさ・高さが違い、札の中で拡大率がそろわなかった。
-立ち絵（chr_<人>_normal）から、目の高さと顔の幅をそろえて正方形に切り出す。
-EYES は立ち絵（896×1200）の上での [目の真ん中 x, 目の高さ y, 頬から頬の幅]。目で測った値。
+立ち絵（chr_<人>_normal）から、目の高さと顔の大きさをそろえて正方形に切り出す。
+
+2026-11-06（顔アイコンを新バージョンの立ち絵に合わせる）: 目で測った値の表（EYES）をやめ、顔アイコンと同じ
+data/portrait_metrics.json の記録（目・あご・頭頂・頬）から切り出す。表の値は描き直し前の立ち絵で測ったままの人
+（みんと・レヰ・組長・スティーブ・ヴォルク・ダ・シルヴァ）がいて、旧デザインの顔が残っていた。顔の幅の取り方も
+人ごとに頬の幅の0.93〜1.24倍とばらばらだった。顔の大きさは顔アイコンと同じ √(頭の高さ×頬の幅) で決め、
+FACE_PER_UNIT は以前の表の平均（オーナー確認済みの寄り具合 SBD87・SBD88 を保つ）。
+新バージョンの立ち絵を測った人は、その絵からも作る（faces/new/<人>.webp。盤は設定の画風に合わせて出す）。
 
   python3 asset_sources/ui/growth-board-20261030/faces/make_faces.py [--sheet]
-  → remake/img/ui/growth_board/faces/<人>.webp（160×160）
+  → remake/img/ui/growth_board/faces/<人>.webp と faces/new/<人>.webp（160×160）
 """
+import json
 import sys
 from pathlib import Path
 from PIL import Image, ImageDraw
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
-SRC = ROOT / "remake" / "img" / "sprites" / "characters"
+METRICS = ROOT / "data" / "portrait_metrics.json"
 OUT = ROOT / "remake" / "img" / "ui" / "growth_board" / "faces"
 SIZE = 160
 SIDE_PER_FACE = 2.0   # 切り出す正方形の一辺 ÷ 顔の幅（SBD87 で 2.6→1.75、SBD88「アダムとかは拡大しすぎ」で 2.0）
+FACE_PER_UNIT = 0.87  # 顔の幅 ÷ 顔の大きさ √(頭の高さ×頬の幅)（remake/js/daily/growth-board-screen.js の BOARD_FACE_PER_UNIT と同じ）
 EYE_AT = 0.44         # 切り出した正方形の上から目の高さまでの割合（ふつう）
 EYE_AT_MAX = 0.5      # 頭を入れるために目を下げてよい上限
 HEAD_ROOM = 0.02      # 頭のてっぺん（髪・角・帽子）の上に残す余白（一辺に対する比）
 # 札では金の枠が顔の上に重なるので（SBD87）、髪の先が枠の下に隠れるのは切れて見えない。目は下げすぎない（SBD84 の頭切れは EYE_AT_MAX までで受ける）
 
-EYES = {
-    "sumi": (442, 198, 99), "minto": (492, 375, 99), "adam": (436, 218, 102), "tsumugi": (423, 433, 95),
-    "naru": (454, 239, 90), "rei": (440, 97, 99), "ageha": (472, 341, 99), "kumicho": (479, 136, 122),
-    "kuze": (409, 145, 95), "steve": (481, 100, 122), "volk": (459, 109, 88), "rin": (397, 290, 99),
-    "hiyori": (426, 299, 104), "samechan": (448, 397, 104), "mashiro": (439, 404, 104), "sheikh": (447, 89, 98),
-    "da_silva": (453, 80, 99), "hajime": (528, 263, 90),
-    # 2026-11-02 第4章以降の授業（SBD91）
-    "master_hookah": (415, 100, 95), "dr_kemuri": (400, 196, 94),
-}
+# 授業を教える人（growth-board-screen.js の BOARD_FACES と同じ）
+WHO = ("sumi", "minto", "adam", "tsumugi", "naru", "rei", "ageha", "kumicho", "saku", "steve", "volk", "rio",
+       "hiyori", "samechan", "mashiro", "sheikh", "da_silva", "hajime", "master_hookah", "dr_kemuri")
+SPRITES = {"classic": ROOT / "assets" / "sprites" / "characters", "new": ROOT / "assets" / "sprites" / "character_variants" / "new"}
+
+
+def eyes(entry):
+    """[顔の中央 x（頬の中央）, 目の高さ y, 顔の幅]。立ち絵（896×1200）の画素"""
+    (lx, ly), (rx, ry) = entry["eyes"]
+    head = entry["chin"][1] - entry["crown"][1]
+    cheek = entry["cheeks"][1] - entry["cheeks"][0]
+    return (entry["cheeks"][0] + entry["cheeks"][1]) / 2, (ly + ry) / 2, (head * cheek) ** 0.5 * FACE_PER_UNIT
 
 
 def head_top(im, ex, ey, fw):
@@ -44,9 +55,8 @@ def head_top(im, ex, ey, fw):
     return 0
 
 
-def crop(who):
-    ex, ey, fw = EYES[who]
-    im = Image.open(SRC / who / f"chr_{who}_normal.webp").convert("RGBA")
+def crop(im, entry):
+    ex, ey, fw = eyes(entry)
     side = round(fw * SIDE_PER_FACE)
     top = head_top(im, ex, ey, fw)
     eye_at = min(EYE_AT_MAX, max(EYE_AT, (ey - top) / side + HEAD_ROOM))
@@ -57,18 +67,30 @@ def crop(who):
 
 
 def main():
-    OUT.mkdir(parents=True, exist_ok=True)
+    metrics = json.loads(METRICS.read_text(encoding="utf-8"))
     done = []
-    for who in EYES:
-        im = crop(who)
-        im.save(OUT / f"{who}.webp", "WEBP", quality=88, method=6)
-        done.append((who, im))
-    print(f"{len(done)} faces, total {sum((OUT / f'{w}.webp').stat().st_size for w, _ in done) // 1024}KB")
+    for style, root in SPRITES.items():
+        found = metrics["characters"] if style == "classic" else metrics.get("styles", {}).get(style, {})
+        out = OUT if style == "classic" else OUT / style
+        out.mkdir(parents=True, exist_ok=True)
+        for who in WHO:
+            entry, src = found.get(who), root / who / f"chr_{who}_normal.png"
+            if not entry or "eyes" not in entry or not src.exists():
+                if style == "classic":
+                    sys.exit(f"{who}: 現行の立ち絵か顔の位置の記録が無い")
+                continue      # 新バージョンの立ち絵が無い・測っていない人は、盤でも現行の顔を出す
+            if src.read_bytes()[:7] == b"version":
+                sys.exit(f"{src.relative_to(ROOT)} は Git LFS のポインタ。git lfs pull --include=\"{src.relative_to(ROOT)}\" で実体を取る")
+            im = crop(Image.open(src).convert("RGBA"), entry)
+            dest = out / f"{who}.webp"
+            im.save(dest, "WEBP", quality=88, method=6)
+            done.append((f"{style}/{who}", im, dest))
+    print(f"{len(done)} faces, total {sum(d.stat().st_size for _, _, d in done) // 1024}KB")
     if "--sheet" in sys.argv:
-        cols, cell = 6, SIZE + 10
+        cols, cell = 8, SIZE + 10
         sheet = Image.new("RGB", (cols * cell, ((len(done) + cols - 1) // cols) * (cell + 14)), (28, 22, 36))
         d = ImageDraw.Draw(sheet)
-        for i, (who, im) in enumerate(done):
+        for i, (who, im, _) in enumerate(done):
             x, y = (i % cols) * cell, (i // cols) * (cell + 14)
             sheet.paste(im, (x, y), im)
             d.text((x + 2, y + SIZE + 1), who, fill=(244, 210, 122))
