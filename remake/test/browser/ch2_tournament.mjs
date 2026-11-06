@@ -191,7 +191,12 @@ await suite('ch2-tournament',async check=>{
     await page.clock.pauseAt(new Date(Date.now() + 100));
     await seed(page, { stage: 'defeat', auto: null,
       progress: { attempts: 2, losses: 1, lastLossAttempt: 1, failure: 'cold' } });
-    await page.locator(t('defeat')).waitFor();
+    // 大会へ入る場面の幕（#2688 F1・enterScene）は時計で進むので、止めた時計を少しずつ進めて負けの画面を待つ
+    const defeat = page.locator(t('defeat'));
+    for (let ms = 0; !await defeat.isVisible(); ms += 50) {
+      assert(ms < 30000, 'defeat screen did not appear');
+      await page.clock.runFor(50);
+    }
     await page.clock.runFor(1500);
     await page.evaluate(async () => {
       const core = await import('./js/core/state.js');

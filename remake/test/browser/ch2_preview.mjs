@@ -333,7 +333,7 @@ await suite("ch2-preview", async check => {
 
   await check("return-remembers-only-completed-visits", async page => {
     const before = await seedAndOpen(page);
-    const people = { ageha: 'あげはさん', kumicho: '神崎さん', rei: 'レヰさん', volk: 'ヴォルクさん' };
+    const people = { ageha: 'あげは', kumicho: '神崎さん', rei: 'レヰ', volk: 'ヴォルクさん' };
     for (const itinerary of [[], ['c_station'], ['ageha']]) {
       await launch(page);
       for (const id of itinerary) await visit(page, id);

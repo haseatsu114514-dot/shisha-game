@@ -20,7 +20,8 @@ export const CH2_VISIT_STORIES = {
     ch2Story("ch2_kumicho", "ch2_kumicho_second", 1),
     { scene: "remake_ch2_kumicho_revisit", heart: 2, done: "_ch2_revisit_done" },
     ch2Story("ch2_kumicho", "ch2_kumicho_third", 2),
-    ch2Story("ch2_kumicho", "ch2_kumicho_fourth", 3),
+    // 「味は遠い」はDAY5夜の味の不調（_ch2_taste_distant）が前提。♥3が先に届いても、その後まではrepeat（#2720）。
+    { ...ch2Story("ch2_kumicho", "ch2_kumicho_fourth", 3), after: "_ch2_taste_distant" },
     ch2Story("ch2_kumicho", "ch2_kumicho_fifth", 4),
     ch2Story("ch2_kumicho", "ch2_kumicho_sixth", 5),
   ],
@@ -41,6 +42,8 @@ export const CH2_VISIT_STORIES = {
 /** 第2章の訪問列をすべて読んだか（締めくくりの前提）。 */
 export const ch2VisitStoriesDone = (flags, id) => !!CH2_VISIT_STORIES[id]?.every(entry => ch2VisitDone(flags, id, entry));
 export const ch2VisitDone = (flags, id, entry) => entry.done ? !!flags?.[entry.done]?.[id] : !!flags?.[`_ch2_read_${entry.scene}`];
+/** 段階の前提になる物語の出来事（after）を読んだか。DAY6以降はフラグの無い旧セーブでも通す。 */
+export const ch2VisitReady = (flags, entry, chapterDay) => !entry.after || !!flags?.[entry.after] || chapterDay > 5;
 // 第3章のましろ（#2022）。mukaiの寄り道（任意場面）を選んで読んだ分だけ段階にする。
 // 既読は ch3-story-wiring.js の optionalReadFlag（`_ch3_read_<scene>`）。♥3の質問は練習の後、締めくくりは全段階の後。
 export const MASHIRO_AFFINITY_SCENES = ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_practice", "ch3_mashiro_play_3", "ch3_mashiro_black_tea"];

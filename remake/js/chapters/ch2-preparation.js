@@ -20,7 +20,7 @@ import { dayOneProgress, recordCityVisit } from "./ch2-progress.js";
 import { chapterTwoNights, storyVisitDue, readStoryVisit } from "./ch2-story.js";
 import { craftPrepDue, offerCraftPrep } from "./ch2-craft-prep.js";
 import { agehaStoryScene, syncAgehaVibes } from "./ch2-story-data.js";
-import { CH2_VISIT_STORIES, ch2VisitDone } from "../core/affinity-stages.js";
+import { CH2_VISIT_STORIES, ch2VisitDone, ch2VisitReady } from "../core/affinity-stages.js";
 import { BOND_QUESTIONS, BOND_FINALES, playQuestionVisit, questionVisitDue, finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { consultLessons } from "../core/growth.js";
 import { readDialogues } from "../core/chapter-data.js";
@@ -171,13 +171,14 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   const stages = CH2_VISIT_STORIES[id];
   // 神崎・レヰは訪問列の最古の未読を、必要ハートに届いた時だけ読む。届くまではrepeat（#1648）。
   const pendingStage = !first && stages ? stages.find(entry => !ch2VisitDone(state.flags, id, entry)) : null;
-  const stage = pendingStage && affinityLevel(id) >= pendingStage.heart ? pendingStage : null;
+  const chapterDayNow = state.day - dayOneProgress(state).startDay + 1;
+  // 物語の出来事が前提の段階（組長の♥3「味は遠い」）は、その出来事の後まで待つ（#2720）。
+  const stage = pendingStage && affinityLevel(id) >= pendingStage.heart && ch2VisitReady(state.flags, pendingStage, chapterDayNow) ? pendingStage : null;
   const pendingFollowup = !first && !stages && !state.flags._ch2_followup_done?.[id];
   const followup = pendingFollowup && affinityLevel(id) >= 1;
   // 訪問列を読み終えた♥5の次の来店で、締めくくりを一度だけ（#2027）。
   let finale = !first && stages && !pendingStage && finaleAtVisit(id);
   // あげはは続編のあと、店に通う回（ギャル友・初めての客・雑誌取材・ダメな日）を一度ずつ読む（#626）
-  const chapterDayNow = state.day - dayOneProgress(state).startDay + 1;
   const story = id === "ageha" && !first && !pendingFollowup ? agehaStoryScene(state, chapterDayNow, DB.dialogues) : null;
   // あげは: 店に通う回と♥3の質問を読み終えた♥5の次の来店は、いつもの会話の代わりに締めくくり（#2023・一度だけ）。
   if (!finale && id === "ageha" && !first && !pendingFollowup && !story) finale = finaleAtVisit("ageha");
