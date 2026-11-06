@@ -156,12 +156,8 @@ async function openingPart() {
     const co = DB.dialogues.ch1_cold_open;
     await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
     scene.stop();
-    // 1年後の会場の煙が一筋に細くなり、章題の白い紙へつながる（#2688 A1）。白い面は章題が出始めてから薄れる
-    const bridge = await sceneMoment("coldOpenBridge");
-    if (!bridge) await sleep(600);
-    const titleRun = playCh1Title();
-    if (bridge) setTimeout(() => bridge.release(), 420);
-    const titleResult = await titleRun;
+    await sleep(600);
+    const titleResult = await playCh1Title();
     if (titleResult.cancelled || state !== owner) return false;
     playBgm("tonari");
     await playTonariOpening();

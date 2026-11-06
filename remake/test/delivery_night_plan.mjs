@@ -44,8 +44,6 @@ const overrides = {
     if (selector === 'div.beat') calls.push({ type: 'beat', text: attrs.text, day: state.day });
     return { classList: { add: noop, remove: noop }, remove: noop };
   },
-  // つなぎの一行は波（transitions.waveBeat・#2688 A9）。一行の文字と日付を数える
-  waveBeat: async (_host, text, mid) => { calls.push({ type: 'beat', text, day: state.day }); await mid?.(); },
   sleep: asyncNoop, layers: { fx: { append: noop }, modal: { classList: { contains: () => false } } },
   dayTurn: async fn => fn(), fadeBlack: async fn => fn?.(),
   chapterDay: () => state.day, daysLeft: () => 14 - state.day, TOURNAMENT_DAY: 14, atChapterFinalDay: () => state.day >= 14,
