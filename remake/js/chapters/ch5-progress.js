@@ -84,6 +84,7 @@ export const CH5_SCENE_BG = Object.freeze({
   ending_daily_smoke: "bg_tonari_inside",            // 台本メタデータの指定（bg_tonari_inside）に一致
   ending_salaryman_name: "bg_tonari_inside_night",
   // スタッフロールの後の修羅場（IR32）。台本の「後日のtonari。閉店後の店」に合わせて夜の tonari。
+  shuraba_noor_call: "bg_tonari_inside_night",       // 店に入る前に、ドバイのヌールからテレビ電話（#2815）
   shuraba_open: "bg_tonari_inside_night",
   shuraba_tsumugi: "bg_tonari_inside_night",
   shuraba_minto: "bg_tonari_inside_night",
@@ -119,7 +120,7 @@ export const CH5_SCENE_BGM = Object.freeze({
   ch5_doctor_after_match: "bgm_aftermath",
   // スタッフロールの後の修羅場と話し直し（IR32）は、店の曲を流さず沈んだ既存曲（仮置き）。
   ...Object.fromEntries([
-    "shuraba_open", "shuraba_tsumugi", "shuraba_minto", "shuraba_rio", "shuraba_ageha", "shuraba_mashiro",
+    "shuraba_noor_call", "shuraba_open", "shuraba_tsumugi", "shuraba_minto", "shuraba_rio", "shuraba_ageha", "shuraba_mashiro",
     "shuraba_samechan", "shuraba_hiyori", "shuraba_noor", "shuraba_accountability", "ending_relationship_pending",
     "shuraba_talk_tsumugi", "shuraba_talk_minto", "shuraba_talk_rio", "shuraba_talk_ageha", "shuraba_talk_mashiro",
     "shuraba_talk_samechan", "shuraba_talk_hiyori", "shuraba_talk_noor",
@@ -213,8 +214,13 @@ export const CH5_TALK_SCENES = Object.freeze({
   mashiro: "shuraba_talk_mashiro", samechan: "shuraba_talk_samechan", hiyori: "shuraba_talk_hiyori",
   noor: "shuraba_talk_noor",
 });
+// 遠くに住む恋人（ドバイのヌール）が修羅場に加わる時、開始より前に読むテレビ電話の接続（#2815）。
+// 反応（shuraba_noor）は「つながったまま」「聞こえてた」と、はじめの打ち明けを聞いていた前提で書かれている。
+// 打ち上げ（ch5-party.js）は、お祝いの着信 ch5_party_noor_call を席を選ぶ前に読む。
+export const CH5_CALL_SCENES = Object.freeze({ noor: "shuraba_noor_call" });
 const TALK_OWNER = Object.freeze(Object.fromEntries(Object.entries(CH5_TALK_SCENES).map(([id, scene]) => [scene, id])));
 const CONFLICT_REACTIONS = Object.values(CH5_CONFLICT_SCENES);
+const CONFLICT_CALLS = Object.values(CH5_CALL_SCENES);
 
 // 台本の読み込み対象（ch5.js が FILES に使う）。夢の2場面とテスト専用場面は接続しない。
 export const CH5_SCENE_FILES = Object.freeze({
@@ -230,7 +236,7 @@ export const CH5_SCENE_FILES = Object.freeze({
     ...CH5_AFTERMATH.map(scene => scene.id),
   ].filter((id, index, all) => all.indexOf(id) === index)),
   ending: Object.freeze([...CH5_ENDING_IDS, CH5_POST_ENDING.pending]),
-  relationship_conflicts: Object.freeze([CH5_POST_ENDING.open, ...CONFLICT_REACTIONS, CH5_POST_ENDING.close,
+  relationship_conflicts: Object.freeze([...CONFLICT_CALLS, CH5_POST_ENDING.open, ...CONFLICT_REACTIONS, CH5_POST_ENDING.close,
     ...Object.values(CH5_TALK_SCENES)]),
 });
 
@@ -240,7 +246,7 @@ const FINALE_LENGTH = 4;
 
 /**
  * スタッフロールの後の並びとして正しいか（IR32）。空（何も読まない）か、
- * ［開始→反応2人以上→謝罪］（打ち上げで済んでいれば無し）→ 話し直しの決意 → 話し直し1人以上。
+ * ［（遠くの恋人のテレビ電話の接続）→開始→反応2人以上→謝罪］（打ち上げで済んでいれば無し）→ 話し直しの決意 → 話し直し1人以上。
  * unresolved は、まだ読んでいない話し直しの本人と同じ順（話し直しを読み終えた人から外れる）。
  */
 function isValidPostEnding(post) {
@@ -250,7 +256,8 @@ function isValidPostEnding(post) {
     || step < 0 || step > scenes.length || new Set(scenes).size !== scenes.length) return false;
   if (!scenes.length) return step === 0 && !unresolved.length;
   const at = scenes.indexOf(CH5_POST_ENDING.pending);
-  const head = scenes.slice(0, Math.max(at, 0));
+  const calls = scenes.slice(0, Math.max(at, 0)).findIndex(id => !CONFLICT_CALLS.includes(id));
+  const head = scenes.slice(Math.max(calls, 0), Math.max(at, 0));
   const talks = scenes.slice(at + 1);
   const conflict = !head.length || (head[0] === CH5_POST_ENDING.open && head.at(-1) === CH5_POST_ENDING.close
     && head.length >= 4 && head.slice(1, -1).every(id => CONFLICT_REACTIONS.includes(id)));
@@ -598,23 +605,33 @@ export function recordChapterFiveCredits(value) {
 // 許した・別れたことにはしない（台本どおり返事は本人に残る）。一人の甘い後日談（epilogue_*）へは進まない。
 // 並びはスタッフロールを流し終えた後に一度だけ保存へ固定する（postEnding）。読んでいる途中のLOADは同じ場面から。
 const PARTY_DONE_FLAG = "_ch5_after_party"; // ch5-party.js の PARTY_FLAG（打ち上げを読み終えた）
+const PARTY_CONFLICT_FLAG = "_ch5_party_conflict"; // ch5-party.js の PARTY_CONFLICT_FLAG（打ち上げで反応まで読んだ恋人）
 
 /**
  * スタッフロールの後の context。第5章は全員が帰郷後なので、恋人は全員「後日のtonari」に来られる（chapterFiveEndingContext と同じ）。
- * 打ち上げ（ch5-party.js）で修羅場が起きていれば、恋人はその席で全員聞いている（会ったヒロインは全員出席。PTY03）。
- * その時は修羅場を二度起こさず（PTY04）、全員を未解決として話し直しだけへ進む。
+ * 打ち上げ（ch5-party.js）で修羅場が起きていれば、その席で反応まで読んだ恋人は、修羅場を二度起こさず（PTY04）
+ * 未解決として話し直しだけへ進む。打ち上げの後に恋人になった相手（持ち越しの告白・IR33）は反応を読んでいないので
+ * 反応済みにはせず、ふつうのスタッフロールの後と同じく「その場の恋人」として数える（#2815。2人以上なら修羅場から、
+ * 1人なら反応も話し直しも読まない＝読んでいない反応を話し直しで引用しない）。
+ * 旧保存（反応まで読んだ恋人の記録 _ch5_party_conflict が無い打ち上げ済みの修羅場）は区別できないので、
+ * 従来どおり現在の恋人全員を反応済みとする（反応を二度読ませない側に倒す）。
  */
 export function chapterFivePostEndingContext(routes, value) {
   const lovers = [...new Set(value.lovers || [])].filter(id => routes.heroine_ids.includes(id));
   const confronted = value.flags?.[PARTY_DONE_FLAG] === true && value.flags?._story_shuraba_unresolved === true;
-  return confronted ? { present: [], unresolved: lovers } : { present: lovers, unresolved: [] };
+  if (!confronted) return { present: lovers, unresolved: [] };
+  const record = value.flags?.[PARTY_CONFLICT_FLAG];
+  const reacted = Array.isArray(record) ? new Set(record) : new Set(lovers);
+  return { present: lovers.filter(id => !reacted.has(id)), unresolved: lovers.filter(id => reacted.has(id)) };
 }
 
 /** スタッフロールの後に読む並び（{ kind, scenes, unresolved }）。話し直す相手がいなければ空（kind "none"）。 */
 export function chapterFivePostEndingPlan(routes, value) {
   const result = selectPostEndingConflict(routes, value, chapterFivePostEndingContext(routes, value));
   if (!result.talks?.length) return { kind: "none", scenes: [], unresolved: [] };
-  return { kind: result.kind, scenes: [...result.scenes, ...result.talks], unresolved: [...result.unresolved] };
+  // 遠くの恋人は、修羅場の開始（はじめの打ち明け）より前にテレビ電話をつなぐ（反応が「聞こえてた」と受ける）
+  const calls = result.kind === "conflict" ? result.participants.map(id => CH5_CALL_SCENES[id]).filter(Boolean) : [];
+  return { kind: result.kind, scenes: [...calls, ...result.scenes, ...result.talks], unresolved: [...result.unresolved] };
 }
 
 /** スタッフロールを流し終え、スタッフロールの後の並びをまだ決めていないか。 */

@@ -607,11 +607,50 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5_after_party, true);
     assert.equal(state.flags._ch5_party_seat, "minto");
     assert.equal(state.flags._story_shuraba_unresolved, true, "Two lovers at the party: the affair comes out and stays unresolved");
+    assert.deepEqual(state.flags._ch5_party_conflict, ["tsumugi", "minto"], "Those who reacted at the party are recorded (#2815)");
     assert.equal(state.slot, 0, "The party does not use a free action");
     // もう一度入っても打ち上げは繰り返さない。
     await loadSlot(page, 0);
     await mapReady(page, { day: 51, slot: 0 });
     assert.equal(await page.locator('[data-test^="party-seat-"]').count(), 0, "The party happens once");
+  });
+
+  // #2815: ドバイのヌール（テレビ電話）と地元の恋人の修羅場。ヌールは席に座らず、席を選ぶ前に着信がつながってから打ち明け→反応。
+  await check("chapter-five-after-party-noor-call-before-shuraba", async page => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 5, day: 51, slot: 0, phase: "daily", money: 30000, stamina: 100,
+        weatherSeed: 5, lovers: ["noor", "tsumugi"], loveLevel: { noor: 1, tsumugi: 1 }, contacts: ["sumi", "tsumugi", "noor"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
+        _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
+        _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
+          read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
+          finaleScenes: null, won: null, secondCup: null },
+        _ch5_match_scheduled: false, _ch5_match_started: false };
+      Object.assign(value.met, { tsumugi: true, noor: true, naru: true });
+      value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      core.saveConfig(); core.save();
+    });
+    await loadSlot(page, 0);
+    const texts = () => page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map(row => row.text));
+    await page.locator(dt("party-seat-tsumugi")).waitFor({ timeout: 60000 });
+    assert.equal(await page.locator('[data-test^="party-seat-"]').count(), 2, "Noor has no seat: Tsumugi and Sumi");
+    let read = await texts();
+    assert(read.some(text => text.includes("ドバイの夕方と、ヌールさんの顔")), "The call connects before the seat");
+    assert(!read.some(text => text.includes("聞こえてた")), "No reaction before the confession");
+    await page.locator(dt("party-seat-tsumugi")).click();
+    await mapReady(page, { day: 51, slot: 0 });
+    const state = await get(page);
+    assert.equal(state.flags._story_shuraba_unresolved, true);
+    assert.deepEqual(state.flags._ch5_party_conflict, ["noor", "tsumugi"]);
+    read = await texts();
+    const at = needle => read.findIndex(text => text.includes(needle));
+    assert(at("ドバイの夕方と、ヌールさんの顔") < at("一人だけじゃ、ありません"), "Call before the confession");
+    assert(at("一人だけじゃ、ありません") < at("聞こえてたよ"), "Noor reacts to what she heard on the call");
+    assert.equal(read.filter(text => text.includes("ドバイの夕方と、ヌールさんの顔")).length, 1, "The call is read once");
   });
 
   // #2033 F: KEMURIKUSA（なる）と C.STATION は第5章の通いの小会話。代金・体力・好感度（なるだけ +5）が付き、会話は巡回する。
