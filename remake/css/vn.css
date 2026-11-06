@@ -272,6 +272,22 @@ body.in-vn:has(#vn.flashback) #bg { filter: grayscale(1) contrast(.92); }
 .vn-choices.show { display: flex; }
 /* 2択は質問・操作札から離して上へ寄せる。 */
 .vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: 338px; }
+/* 6択以上は画面上端と操作欄の間でスクロールさせる。短い選択肢の配置は維持する。 */
+body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(6)) {
+  top: 16px;
+  left: 50%;
+  right: auto;
+  width: 760px;
+  max-width: 100%;
+  transform: translateX(-50%);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  padding: 2px 12px;
+}
+body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(6)) > .vn-choice {
+  flex-shrink: 0;
+}
 .vn-choice {
   width: 720px;
   padding: 16px 30px;
