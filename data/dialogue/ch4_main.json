@@ -646,6 +646,10 @@
       "branches": {
         "met_at_shop": [
           {
+            "type": "motion",
+            "id": "dragon"
+          },
+          {
             "speaker": "",
             "face": "",
             "text": "長い呼吸から、龍のような煙が立ち上がる。店で炭を並べていた手が、今は客席ごと煙で包んでいた。"
@@ -682,6 +686,10 @@
         ],
         "seen_on_monitor": [
           {
+            "type": "motion",
+            "id": "dragon"
+          },
+          {
             "speaker": "",
             "face": "",
             "text": "長い呼吸から、龍のような煙が立ち上がる。県大会のモニターで見た技だった。"
@@ -698,6 +706,10 @@
           }
         ],
         "heard_only": [
+          {
+            "type": "motion",
+            "id": "dragon"
+          },
           {
             "speaker": "",
             "face": "",

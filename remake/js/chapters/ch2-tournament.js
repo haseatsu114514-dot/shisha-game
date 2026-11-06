@@ -11,6 +11,7 @@ import { el, yen } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, enterScene, modal, imageReady, loadingNotice } from "../core/ui.js";
+import { sceneMoment } from "../core/scene-motions.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { maxStamina } from "../core/stats.js";
@@ -412,6 +413,9 @@ async function drive(owner) {
       if (!await imageReady(closedRoom, 15000)) throw new Error("閉店後のMELTY PUFFを読み込めませんでした");
       await enterScene(closedRoom);
       if (!state.flags._ch2_read_ch2_tournament_ageha_heart) {
+        // 消灯: 店の照明が一本ずつ落ち、あげはの立つ所にだけ灯りが残ってから心の声へ（#2688 A2）
+        await sceneMoment("closingLights");
+        if (!live(owner)) return;
         if (!await read(owner, "ageha_heart")) return;
         state.flags._ch2_read_ch2_tournament_ageha_heart = true; save();
       }

@@ -1,0 +1,13 @@
+/* 章の要所の演出（motions/moments.js・#2688 A1〜A3・A5〜A8） */
+.mo-moment { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; font-family: var(--font); }
+.mo-bridge-white { position: absolute; inset: 0; background: rgb(254, 254, 254); opacity: 0; }
+.mo-lights-dark { position: absolute; inset: 0; background: #0b0814; opacity: 0; }
+.mo-lights-strip { position: absolute; left: 6%; right: 6%; height: 6px; border-radius: 6px; background: #fff1d2; box-shadow: 0 0 26px 8px #fff1d288; opacity: 0; }
+.mo-lights-glow { position: absolute; left: 36%; top: 34%; width: 280px; height: 280px; border-radius: 50%; background: radial-gradient(circle, #fff1d2cc, #f6dcaf55 45%, transparent 70%); opacity: 0; }
+.mo-leaves-cover { position: absolute; inset: 0; background: #34246a; }
+.mo-dragon-dim { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 55%, transparent 30%, #0b081499 100%); }
+.mo-scan-slice { position: absolute; left: 0; right: 0; background: #dcd1f41a; mix-blend-mode: screen; }
+.mo-scan-lines { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, #0000 0 3px, #dcd1f41f 3px 4px); mix-blend-mode: screen; }
+.mo-scan-bar { position: absolute; left: 0; right: 0; height: 10%; background: linear-gradient(transparent, #9fd8ff55, transparent); }
+.mo-scan-label { position: absolute; left: 50%; top: 24%; transform: translate(-50%, -50%); color: #fff; font-size: 40px; font-weight: 900; letter-spacing: .2em; text-shadow: 0 2px 0 #150f26; }
+.mo-mixed-dark { position: absolute; inset: 0; background: #0b0814; opacity: 0; }
