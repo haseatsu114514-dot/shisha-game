@@ -1597,6 +1597,8 @@
         "data/dialogue/ending.json",
         "remake/js/daily/romance.js",
         "remake/js/daily/dj-club.js",
+        "remake/js/daily/hud.js",
+        "remake/js/minigames/dj.js",
         "data/dialogue/ch3_club.json",
         "remake/test/browser/ch5_full_flow.mjs"
       ],
