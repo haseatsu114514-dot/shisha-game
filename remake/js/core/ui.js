@@ -582,7 +582,7 @@ export async function chapterTitle({ no, name, read, sub }) {
       // 採用画像1枚のみ。旧演出の表示時間は保ち、分割・寄り・光の追加画像は読まない。
       if (!reducedMotion()) hold = no === "第一章" ? 5800 : 4400;
     } else if (!reducedMotion()) {
-      // 第3章など採用画像のない章は、既存の文字フォールバックを静止表示する。
+      // 採用画像のない章は、既存の文字フォールバックを静止表示する。
       hold = 3600;
     }
     shield.append(card);

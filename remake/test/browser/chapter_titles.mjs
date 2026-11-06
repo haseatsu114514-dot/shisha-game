@@ -1,4 +1,4 @@
-// 実描画・自然な章入口・保存不変・遅延/失敗を確認。第3章は保留。
+// 実描画・自然な章入口・保存不変・遅延/失敗を確認。第3章E「交わらない視線」を含む。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -112,9 +112,9 @@ await suite('chapter-titles', async check => {
   for (const [label, options] of [
     ['pc', {}], ['touch', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
   ]) {
-    await check(`${label}-four-approved-images`, async page => {
+    await check(`${label}-five-approved-images`, async page => {
       const selected = await entries(page);
-      assert.deepEqual(selected.map(x => x.chapter), [1, 2, 4, 5]);
+      assert.deepEqual(selected.map(x => x.chapter), [1, 2, 3, 4, 5]);
       await page.evaluate(async () => {
         const core = await import('./js/core/state.js'); core.newGame(); core.save();
         localStorage.setItem('suien_remake_slot1', 'preserve-manual');
@@ -177,9 +177,9 @@ await suite('chapter-titles', async check => {
     await done(page); assert.deepEqual(await storageSnapshot(page), before);
   });
 
-  await check('chapter-three-remains-text-only', async page => {
+  await check('unregistered-chapter-remains-text-only', async page => {
     const before = await storageSnapshot(page);
-    await start(page, { no: '第三章', name: '章題の確認用テキスト', read: 'TITLE TEST' });
+    await start(page, { no: '第六章', name: '章題の確認用テキスト', read: 'TITLE TEST' });
     const card = page.locator('.chapter-card.show'); await card.waitFor();
     assert.equal(await card.getAttribute('data-art'), 'text');
     assert.equal(await card.locator('img').count(), 0);
@@ -373,7 +373,7 @@ await suite('chapter-titles', async check => {
     await done(page); assert.deepEqual(await storageSnapshot(page), before);
   });
 
-  await check('preview-four-chapters-without-saving', async page => {
+  await check('preview-five-chapters-without-saving', async page => {
     await page.evaluate(() => {
       localStorage.setItem('suien_remake_save', 'preserve-original');
       localStorage.setItem('suien_remake_slot1', 'preserve-manual');
@@ -383,7 +383,7 @@ await suite('chapter-titles', async check => {
     });
     const before = await storageSnapshot(page);
     await page.goto(new URL('chapter-titles-preview.html', page.url()).href);
-    assert.deepEqual(await page.locator('#chapter option').evaluateAll(nodes => nodes.map(n => n.value)), ['1', '2', '4', '5']);
+    assert.deepEqual(await page.locator('#chapter option').evaluateAll(nodes => nodes.map(n => n.value)), ['1', '2', '3', '4', '5']);
     await page.locator('#chapter').selectOption('4'); await page.locator('#play').click();
     await page.locator('.chapter-card.show').waitFor();
     assert.match(await page.locator('.cc-art').getAttribute('src'), /ch4-title\.webp$/);
