@@ -35,6 +35,7 @@ export const STAFF_MUSIC = Object.freeze([
   { title: "Mind Duel", composer: "shimtone", source: "OpenTracks" },
   { title: "おいしいお菓子を捧げよ！", composer: "Napi", source: "M-ART" },
 ].map(song => Object.freeze(song)));
+export const STAFF_SOUND_CREDIT = "効果音：ポケットサウンド – https://pocket-se.info/";
 export const STAFF_ROLL_CLOSING = "Thank you for playing";
 
 const reducedMotion = () => !!window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
@@ -56,6 +57,7 @@ function sections() {
         el("p.staff-roll-song-credit", { text: `作曲 ${composer}（${source}）` }),
       ])),
     ]) : null,
+    el("section.staff-roll-sound", [el("p", { text: STAFF_SOUND_CREDIT })]),
     el("section.staff-roll-closing", [el("p", { text: STAFF_ROLL_CLOSING })]),
   ].filter(Boolean);
 }

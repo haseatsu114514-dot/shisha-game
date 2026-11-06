@@ -46,7 +46,8 @@ function loadSeBuffer(file) {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 5000);
       try {
-        const response = await fetch(SE_ROOT + file, { signal: controller.signal });
+        const url = SE_ROOT + file;
+        const response = await fetch(file.endsWith(".bgm") ? await bgmSource(url) : url, { signal: controller.signal });
         if (!response.ok) throw new Error(`SE HTTP ${response.status}`);
         const buffer = await ctx.decodeAudioData(await response.arrayBuffer());
         seBuffers.set(file, buffer);
@@ -103,6 +104,49 @@ function recordedSe(id) {
   lastVariant.set(id, file);
   recordedVoice(file, { gain });
   return true;
+}
+
+// 砂漠ライド専用の採用音。共通の SE 音量・ミュート・表示状態を使い、画面を閉じたらループを止める。
+const DESERT_SE = Object.freeze({
+  slide: "slide_snowboard_pocket", wind: "wind_hyoo_lab", jump: "jump_anime_lab",
+  land: "landing_soft_lab", boost: "boost_dash_lab", carve: "carve_sand-dash_lab",
+  countdown: "countdown_electronic_lab", goal: "goal_fanfare_lab", fall: "fall_thud_lab",
+  decide: "ui_decide1_lab", cursor: "ui_cursor1_lab",
+});
+export function createDesertRideSe() {
+  let alive = true;
+  const loops = new Map();
+  const file = id => `desert_ride/${DESERT_SE[id]}.bgm`;
+  const ready = () => Promise.all(Object.values(DESERT_SE).map(name => loadSeBuffer(`desert_ride/${name}.bgm`)));
+  function play(id, gain = 0.65) {
+    if (!alive || !DESERT_SE[id]) return;
+    const name = file(id);
+    if (seBuffers.has(name)) recordedVoice(name, { gain });
+  }
+  function loop(id, gain, rate = 1) {
+    const voice = loops.get(id);
+    if (!alive || !seEnabled() || gain <= 0.005) {
+      voice?.stop(0.12);
+      loops.delete(id);
+      return;
+    }
+    if (!voice || !seVoices.has(voice)) {
+      if (!seBuffers.has(file(id))) return;
+      loops.set(id, recordedVoice(file(id), { loop: true, gain, rate }));
+    } else {
+      voice.source.playbackRate.setTargetAtTime(rate, ctx.currentTime, 0.12);
+      voice.output.gain.setTargetAtTime(gain, ctx.currentTime, 0.12);
+    }
+  }
+  function motion({ speed = 0, carve = 0, grounded = false } = {}) {
+    const moving = grounded && speed > 0.1;
+    loop("slide", moving ? 0.34 * speed : 0, 0.82 + 0.25 * speed);
+    loop("wind", speed > 0.1 ? 0.14 * Math.max(0, (speed - 0.35) / 0.65) : 0, 0.9 + 0.2 * speed);
+    loop("carve", moving ? 0.18 * Math.min(1, carve) : 0);
+  }
+  function stop() { for (const voice of loops.values()) voice?.stop(0.12); loops.clear(); }
+  function dispose() { alive = false; stop(); }
+  return { ready, play, motion, stop, dispose };
 }
 
 function syncPulls() { activePulls.forEach(pull => pull.sync()); }

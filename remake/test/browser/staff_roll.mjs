@@ -236,6 +236,7 @@ await suite("staff-roll", async check => {
     assert.equal(await page.locator(".staff-roll-music .staff-roll-role").textContent(), "使用楽曲");
     assert.deepEqual(await page.locator(".staff-roll-song-credit").allTextContents(),
       ["作曲 秋山裕和（H/MIX GALLERY）", "作曲 shimtone（OpenTracks）", "作曲 Napi（M-ART）"]);
+    assert.equal(await page.locator(".staff-roll-sound").textContent(), "効果音：ポケットサウンド – https://pocket-se.info/");
     assert(!text.includes("間接照明とブラックコーヒー"), "A song without a recorded source is not credited yet");
     for (const key of ["Escape", "Enter", " "]) await page.keyboard.press(key);
     await page.locator(dt("staff-roll")).click({ position: { x: 640, y: 360 } });
