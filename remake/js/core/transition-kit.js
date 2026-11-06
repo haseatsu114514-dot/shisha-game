@@ -8,6 +8,8 @@ export const NS = "http://www.w3.org/2000/svg";
 export const COLOR = { purple: "#6b4fb0", deep: "#34246a", lav: "#dcd1f4", pink: "#f06aae", ink: "#0b0814", shadow: "#150f26", warm: "#fff1d2" };
 export const EASE = { in: "cubic-bezier(.55,0,.85,.35)", out: "cubic-bezier(.16,1,.3,1)", snap: "cubic-bezier(.7,0,.2,1)" };
 export const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+/** 画面全体の閃光・揺れを省くか。端末の「動きを減らす」か、設定「揺れ・閃光を減らす」（config.reduceShake → body.reduce-shake）。#2688 F11 */
+export const calmFlash = () => reducedMotion() || !!document.body?.classList.contains("reduce-shake");
 
 export function svg(tag, attrs = {}, kids = []) {
   const node = document.createElementNS(NS, tag);

@@ -114,10 +114,10 @@ export async function performChapterFiveShop(spot, { staminaGuard } = {}) {
   if (staminaGuard && !(await staminaGuard(entry.stamina))) return unused;
   const talks = state.flags[TALKS_FLAG] ||= {};
   const scene = entry.firstTalk ? entry.firstTalk.scene : entry.talks[(talks[entry.id] || 0) % entry.talks.length];
-  if (entry.bgUrl) await setBg(entry.bgUrl, { instant: true });
+  if (entry.bgUrl) await setBg(entry.bgUrl);
   else {
     const { url, tint } = sceneBg(entry.bg, timeOfDay());
-    await setBg(url, { instant: true, tint });
+    await setBg(url, { tint });
   }
   if (state !== owner) return unused;
   const result = await play(scene);

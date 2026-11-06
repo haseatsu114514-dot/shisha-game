@@ -209,7 +209,7 @@
    #2524 新案「記憶の暗室」（data-layout="inner"）。2026-11-06。
    既存の筆文字・円形HUD・鋭角ボタンを使わず、細い活字と上端の時計バー、文字だけの2択で組む。
    人物は左へ寄せ、縁を暗がりへ溶かして「頭の中に浮かぶ像」にする。顔の大きさは採用Cと同じ。
-   本編の既定は neon のまま。プレビュー `continue-preview.html?layout=inner` で比較する。
+   2026-11-06 オーナー決定で本編の既定（#2713）。旧既定の neon はプレビュー `continue-preview.html?layout=neon` で比較できる。
    ================================================================ */
 .gameover[data-layout="inner"] { background-color: #05060c; animation: go-neon-enter .65s ease-out both; }
 .gameover[data-layout="inner"] .go-veil {

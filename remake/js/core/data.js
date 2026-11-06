@@ -317,10 +317,11 @@ export function sceneBg(ref, timeOfDay = "day") {
 export const bgUrl = (ref, timeOfDay = "day") => sceneBg(ref, timeOfDay).url;
 
 export function portraitInfo(speaker, face, style = portraitStyle()) {
+  style = style === "classic" ? "classic" : "new";
   const folder = SPEAKER_ALIAS[speaker] || speaker;
   const p = DB.manifest.portraits[folder];
   if (!p) return null;
-  const candidate = ["new", "nanami"].includes(style) ? DB.manifest.portraitVariants?.[style]?.[folder] : null;
+  const candidate = style === "new" ? DB.manifest.portraitVariants?.new?.[folder] : null;
   let f = face || "normal";
   if (speaker === "oneesan") {
     // 私服のみんと＝ura_* 差分。通常差分で代用すると正体が見た目でバレるので、無ければ出さない

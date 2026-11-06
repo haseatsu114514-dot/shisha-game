@@ -32,9 +32,10 @@ const HEAD_PADDING = 24;
 const NEON_FACE_PX = 524.8;
 const NEON_FACE_CENTER_Y = 273;
 
-export function createContinueView({ script, speaker, character, lover = speaker !== "sumi", layout = "neon", background = "stage", onType = null }) {
+export function createContinueView({ script, speaker, character, lover = speaker !== "sumi", layout = "inner", background = "stage", onType = null }) {
   const neon = layout === "neon";
-  // #2524 新案「記憶の暗室」: 筆文字・円形HUD・鋭角ボタンを使わず、細い活字・上端の時計バー・文字だけの2択で構成する別の見た目。
+  // #2524 「記憶の暗室」（layout:"inner"）。2026-11-06 オーナー決定で本編の既定（#2713）。
+  // 筆文字・円形HUD・鋭角ボタンを使わず、細い活字・上端の時計バー・文字だけの2択で構成する。
   // 顔の大きさと中心（524.8px・Y273）は採用Cを共有し、中心Xだけ左（400）へ寄せる。
   const inner = layout === "inner";
   const bigFace = neon || inner;

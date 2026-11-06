@@ -17,7 +17,7 @@ async function mount(options = {}) {
     const { buildGameOver } = await import("./js/chapters/gameover.js");
     const { showScreen } = await import("./js/core/ui.js");
     window.__decisions = [];
-    showScreen("end", buildGameOver({ variant: "lover:ageha", soundEffects: false, ...options,
+    showScreen("end", buildGameOver({ variant: "lover:ageha", soundEffects: false, layout: "neon", ...options,
       onRetry: () => window.__decisions.push("retry"), onTitle: () => window.__decisions.push("title") }));
   }, options);
   await page.clock.runFor(50);
@@ -209,7 +209,7 @@ try {
   await page.evaluate(async () => {
     const { buildGameOver } = await import("./js/chapters/gameover.js");
     const { showScreen } = await import("./js/core/ui.js");
-    const root = buildGameOver({ variant: 0, soundEffects: false }); root.id = "continue-delayed";
+    const root = buildGameOver({ variant: 0, soundEffects: false, layout: "neon" }); root.id = "continue-delayed";
     window.setTimeout(() => showScreen("end", root), 500);
   });
   await page.clock.runFor(700);

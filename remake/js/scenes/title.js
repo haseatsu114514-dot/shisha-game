@@ -315,9 +315,9 @@ export async function openConfig(opts = {}) {
   const portraits = el("select", {
     dataset: { test: "cfg-portrait-style" },
     onchange: (e) => { config.portraitStyle = e.target.value; persist(); opts.onChange?.("portraitStyle", config.portraitStyle); },
-  }, [["classic", "現行"], ["new", "新バージョン（仮採用）"], ["nanami", "七海風（仮採用・未導入は現行）"]].map(([v, t]) => {
+  }, [["new", "新バージョン"], ["classic", "現行"]].map(([v, t]) => {
     const o = el("option", { value: v, text: t });
-    if (v === (["new", "nanami"].includes(config.portraitStyle) ? config.portraitStyle : "classic")) o.selected = true;
+    if (v === (config.portraitStyle === "classic" ? "classic" : "new")) o.selected = true;
     return o;
   }));
   const introArt = el("select", {
@@ -339,7 +339,7 @@ export async function openConfig(opts = {}) {
   }));
   const reduceShake = el("input", {
     type: "checkbox", dataset: { test: "cfg-reduce-shake" },
-    onchange: (e) => { config.reduceShake = e.target.checked; persist(); opts.onChange?.("reduceShake", config.reduceShake); },
+    onchange: (e) => { config.reduceShake = e.target.checked; document.body.classList.toggle("reduce-shake", config.reduceShake); persist(); opts.onChange?.("reduceShake", config.reduceShake); },
   });
   reduceShake.checked = !!config.reduceShake;
   const blip = el("input", {
@@ -385,3 +385,4 @@ export async function openConfig(opts = {}) {
     options: [{ label: "閉じる", value: true, primary: true, test: "cfg-close" }],
   });
 }
+

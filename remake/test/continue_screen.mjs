@@ -16,7 +16,7 @@ async function mount(variant = 0, options = {}) {
     const { buildGameOver } = await import("./js/chapters/gameover.js");
     const { showScreen } = await import("./js/core/ui.js");
     window.__decisions = [];
-    window.__continue = buildGameOver({ reason: "burnt", variant, ...options,
+    window.__continue = buildGameOver({ reason: "burnt", variant, layout: "neon", ...options,
       onRetry: () => window.__decisions.push("retry"), onTitle: () => window.__decisions.push("quit") });
     showScreen("end", window.__continue);
   }, { variant, options });

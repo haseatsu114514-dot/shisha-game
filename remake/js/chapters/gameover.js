@@ -97,7 +97,7 @@ let nextScript = 0;
 let previousContinueSpeaker = null;
 // 初回はカウント演出だけを見せ、選択期限を設けない。再挑戦以降は20秒で終了する。
 export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRetry, onTitle,
-  soundEffects = true, reducedMotion = false, layout = "neon", background = "stage", context = null } = {}) {
+  soundEffects = true, reducedMotion = false, layout = "inner", background = "stage", context = null } = {}) {
   // variant: 整数=スミさんの台本番号、"lover:<id>"=その恋人、null=通常（スミさんか恋人を同じ確率で選ぶ）。
   const forced = typeof variant === "string" && variant.startsWith("lover:") ? LOVER_CONTINUE_SCRIPTS[variant.slice(6)] : null;
   const chosen = !forced && variant == null

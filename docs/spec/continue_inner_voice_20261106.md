@@ -35,7 +35,7 @@
 
 ## 3. 採用した流れ（敗北直後 → 内面 → 呼びかけ → 選択 → 再挑戦／終了）
 
-| 時刻 | 画面（neon配置） | テロップ | 音・動き |
+| 時刻 | 画面（neon配置での説明。既定の inner でも流れ・時刻・音は同じで、見た目だけ §5 の構成） | テロップ | 音・動き |
 |---|---|---|---|
 | 敗北直後 | 従来どおり `SE.miss`、BGM停止、暗転して neon ステージ。四隅が落ちた暗がりがゆっくり呼吸（5.2秒・動き軽減では停止） | — | 低音とノイズ（従来の `start()`） |
 | 0s | 像が**靄から浮かび上がる**（opacity 0・blur 14px → 鮮明。.55秒）。顔の中心から薄い輪が一度広がる（3敗目以降の入場省略では出さない） | 相手の声1行目。スミさんは敗因の受け止め「……熱が入りすぎたな」「……3位か。悔しいな」 | 相手の会話音でタイプ |
@@ -83,7 +83,7 @@ cue 0: 焦げ「……熱が入りすぎたな」／冷え「……冷え切っ�
 ## 5. 立ち絵（新版）と新案配置
 
 - **新版立ち絵**: `continuePortraitStyle(speaker, faces)` が、台本の全表情が `portraitVariants.new` にあり、顔の枠 `continuePortraitVariants.new` も測ってある人物だけ新版を返す。2026-11-06はスミさん・つむぎ・栞・サメちゃん・ひよりが新版、あげは・ましろ・凛想は現行（不足分のCodexプロンプトを制作記録に用意）。顔の枠は `data/portrait_metrics.json` の `styles.new`（新版の絵で測った目・あご・頬。main の FIC01〜07）から `tools/make_face_icons.py` の `continue_portraits(style)` が出す `continuePortraitVariants.new`。顔の大きさ524.8px・中心(640,273)の契約と57表情の検証は、枠を画風別に引くだけで不変。
-- **新案「記憶の暗室」（`layout:"inner"`）**: 既存UIと違う見た目として追加。筆文字・円形HUD・鋭角ボタンを使わず、細い活字の見出し（コンティニューする？／CONTINUE?）、上端の時計バー、文字だけの縦積み2択（▸と差し色の下線）。人物は顔中心X=400で左へ寄せ、縁を暗がりへ溶かす。台詞は左寄せ1行、左端に差し色の縦線。GAME OVERは同じ活字。新規素材なし。`continue-preview.html?layout=inner`。**本編の既定は neon のまま**（採用はオーナー判断。採用時の手順は制作記録のREADME）。
+- **新案「記憶の暗室」（`layout:"inner"`）**: 既存UIと違う見た目として追加。筆文字・円形HUD・鋭角ボタンを使わず、細い活字の見出し（コンティニューする？／CONTINUE?）、上端の時計バー、文字だけの縦積み2択（▸と差し色の下線）。人物は顔中心X=400で左へ寄せ、縁を暗がりへ溶かす。台詞は左寄せ1行、左端に差し色の縦線。GAME OVERは同じ活字。新規素材なし。2026-11-06 オーナー決定で**本編の既定**（#2713・PR #2722。§8）。旧既定の neon は `continue-preview.html?layout=neon`。
 
 ## 6. 残した要素／変えた要素／必要素材・リスク
 
@@ -104,4 +104,11 @@ cue 0: 焦げ「……熱が入りすぎたな」／冷え「……冷え切っ�
 | 候補拡張 | 恋人以外（なる・つむぎ非恋人等）が浮かぶ | **未実装**。面識フラグ参照・ネタバレ回避・抽選率の再設計が必要。オーナー判断待ち |
 | 恋人版の敗因反映 | 恋人台本でも先頭を敗因別にする | **未実装**（`prepareContinueScript` の speaker 分岐と短縮一致テストの契約） |
 | 時間制限・台本量・第4/5章・録音音声 | — | **変更なし** |
-| 新案配置の採用 | inner を本編の既定にする | **保留**（オーナー判断。採用時はneon前提のブラウザテスト5本を更新） |
+| 新案配置の採用 | inner を本編の既定にする | **既定化済み**（#2713・PR #2722 が第2弾の inner 描画とCSSだけを先に移植して既定を切り替えた。本PRで台本・恋人の通常枠・新版立ち絵を合流） |
+
+## 8. 本編の既定を「記憶の暗室」（inner）へ（#2713・2026-11-06 オーナー決定）
+
+- PR #2654 の第2弾コミット（`b3a1eea`）はマージ後に積まれたため main に入っておらず、PR #2722（#2713）が第2弾のうち **inner 配置の描画とCSSだけ** を移植して `buildGameOver` / `createContinueView` の `layout` 既定を `"inner"` にした。章側の入口は layout を渡さないので、第1〜3章の大会コンティニューはすべて inner。
+- 第2弾の残り（自問の削除と台本差し替え、恋人の同確率化 `continue-lovers.js`、新版立ち絵 `continuePortraitStyle`、Codexプロンプト）は PR #2725 で合流した。inner でも新版立ち絵が使える人物は新版（顔の枠は `continuePortraitVariants.new`、中心Xだけ400）。
+- 旧既定の neon は残し、`continue-preview.html?layout=neon` と `layout: "neon"` の明示で使える。neon の見た目を測るテスト（`continue_neon`・`continue_screen`・`continue_typing`・`browser/continue_closeup`・`browser/continue_lifecycle`・`browser/continue_output`・`browser/gameover_title_center`）は `layout: "neon"` を明示。実画面の通し `burnt_gameover` は inner で確認する。
+- 専用画像（#2712: 表情10点・背景1枚）は未投入。inner は既存の立ち絵と stage 背景だけを使い、新しい画像パスを直書きしていない。

@@ -37,7 +37,7 @@ let active = false;
  * 読了・完走の確定と保存はここで行う。中断（signal・LOAD・タイトル）は確定済みの分だけ残す。
  * 戻り値: 何かを確定したら true。
  */
-export async function visitDesert(destination, { day, isCurrent = () => true, signal = null, host = null, paid = false } = {}) {
+export async function visitDesert(destination, { day, isCurrent = () => true, signal = null, host = null, paid = false, naru = true } = {}) {
   if (active || !state || !destination || destination.ok === false || signal?.aborted || !isCurrent()) return false;
   active = true;
   const owner = state;
@@ -109,7 +109,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     const name = DB.characters[DESERT_GUIDE]?.display_name || "ヌール", naruName = DB.characters.naru?.display_name || "なる";
     // 締めくくりで「二人で見たい」と答えた後の砂丘: 滑ったあと夕日で告白（DSR20）。この日はなるを呼ばない
     const confessionDay = status.invited === true;
-    const rivals = confessionDay && !before.naruMet ? ["noor"] : desertRivals(owner);
+    // 第5章（帰国後にまたドバイへ来た日・naru: false）は、なるは地元の KEMURIKUSA にいるので砂丘に来ない。ヌールとだけ滑る
+    const rivals = !naru || (confessionDay && !before.naruMet) ? ["noor"] : desertRivals(owner);
     // ヌールに勝った後の最初の外出: なるが砂丘に来て勝負を持ちかける（一度だけ）
     if (rivals.includes("naru") && !before.naruMet) {
       if (!await read(DESERT_SCENES.naruArrive, bgUrl(DESERT_BG))) return changed;
@@ -163,15 +164,16 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
  * 日常ループ（版2）の行き先の処理。戻り値は calendar の performSpot の形 { used, exerted, slotsUsed }。
  * デスクの会話は時間を使わない（used: false）。砂丘は visitDesert の中で昼の行動（slot）を使い済みなので slotsUsed: 0。
  * 体力は使わない（砂丘は気分転換。日常ループが外出のたびに経験値を足さないようにし、育成は初回完走の分だけにする）。
+ * naru: false は第5章（なるを砂丘に呼ばない）。
  */
-export async function performDesertSpot(entry, { day, showHud = null } = {}) {
+export async function performDesertSpot(entry, { day, showHud = null, naru = true } = {}) {
   const owner = state;
   const cafe = entry.place === "tour_desk";
   const before = desertProgress(owner);
   const hudRoot = layers.hud.firstElementChild;
   let changed = false;
   try {
-    changed = await visitDesert({ kind: cafe ? "desert_talk" : "desert", ok: true }, { day, paid: cafe });
+    changed = await visitDesert({ kind: cafe ? "desert_talk" : "desert", ok: true }, { day, paid: cafe, naru });
   } finally {
     if (hudRoot && !hudRoot.isConnected) layers.hud.replaceChildren(hudRoot);
     showHud?.(true);

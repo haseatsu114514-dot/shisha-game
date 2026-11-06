@@ -7,7 +7,7 @@
 - [prompts.md](prompts.md): Codex用プロンプト。A = 新版に足りない表情10点（あげは4・ましろ3・凛想3）、B = 新案専用の背景（任意）。
 - `screens/`: 実画面の確認用スクリーンショット（1280×720・横持ちスマホ844×390）。
   - `neon-new-sumi.jpg` / `neon-new-tsumugi.jpg` / `neon-new-samechan.jpg`: 採用中のneon配置で新版立ち絵を使った状態。
-  - `inner-pc-sumi.jpg` / `inner-pc-hiyori.jpg` / `inner-pc-retry.jpg` / `inner-pc-gameover.jpg` / `inner-phone-sumi.jpg`: 新案「記憶の暗室」。
+  - `inner-pc-sumi.jpg` / `inner-pc-tsumugi.jpg` / `inner-pc-samechan.jpg` / `inner-pc-hiyori.jpg`: 既定の「記憶の暗室」（inner）で新版立ち絵を使った状態。`inner-pc-retry.jpg` / `inner-pc-gameover.jpg` / `inner-phone-sumi.jpg`: 反応・時間切れ・スマホ横持ち（現行立ち絵で撮影した初回の記録）。
 
 ## 新版立ち絵の使い分け
 
@@ -28,7 +28,7 @@
 
 ## 新案「記憶の暗室」（`data-layout="inner"`）
 
-`continue-preview.html?layout=inner` で見られる。本編の既定は従来の neon のまま（採用はオーナー判断）。採用するときは `buildGameOver` の `layout` 既定値を `"inner"` にし、neon前提のブラウザテスト（`continue_neon` / `continue_closeup` / `continue_keyboard` / `continue_lifecycle` / `gameover_title_center`）を inner の座標へ更新する。
+2026-11-06 オーナー決定で本編の既定（#2713・PR #2722）。旧既定の neon は `continue-preview.html?layout=neon` で比較できる。neon の見た目を測るテストは `layout: "neon"` を明示し、実画面の通し（`burnt_gameover`）は inner で確認する。
 
 - 筆文字・円形HUD・鋭角ボタンを使わず、細い活字の見出し（コンティニューする？／CONTINUE?）、上端の時計バー、文字だけの縦積み2択（▸と差し色の下線）。
 - 人物は顔中心 X=400 で左へ寄せ、縁を暗がりへ溶かす（頭の中に浮かぶ像）。顔の大きさ・中心Yは採用Cと同じ。
