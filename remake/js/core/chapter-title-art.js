@@ -1,8 +1,9 @@
-// 採用済みの静止画。第3章はオーナー指定で保留し、従来の文字表示を維持する。
+// 採用済みの静止画。第3章は2026-11-06にE「交わらない視線」を正式採用。
 const art = file => new URL(`../../img/ui/chapters/${file}.webp`, import.meta.url).href;
 export const CHAPTER_TITLE_ART = Object.freeze([
   { chapter: 1, no: "第一章", name: "煙がつなぐ街", read: "スモーク・アンド・タイズ ── Smoke & Ties", sub: "SMOKE CROWN CUP 編", url: art("ch1-title") },
   { chapter: 2, no: "第二章", name: "才能の壁", read: "ホロウ・クラウン ── Hollow Crown", sub: "HAZE: OPEN CLOUD 編", url: art("ch2-title") },
+  { chapter: 3, no: "第三章", name: "嘘つきたちの夜", read: "スモーク・アンド・ミラーズ ── Smoke and Mirrors", url: art("ch3-title") },
   { chapter: 4, no: "第四章", name: "継承の煙", read: "レガシー・スモーク ── Legacy Smoke", url: art("ch4-title") },
   { chapter: 5, no: "第五章", name: "機械仕掛けの神", read: "デウス・エクス・マキナ ── Deus Ex Machina", url: art("ch5-title") },
 ].map(entry => Object.freeze(entry)));
