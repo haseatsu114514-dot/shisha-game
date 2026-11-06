@@ -195,6 +195,7 @@ for (const schema of [14, SCHEMA]) for (const [label, patch, grant] of [
   store.set(key, original);
   const expected = JSON.parse(original);
   expected.schema = SCHEMA;
+  if (schema < 27) expected.affinity.sumi = Math.max(expected.affinity.sumi || 0, 9);
   if (schema < 19) expected.flags._sumi_double_apple_received = true;
   if (schema < 16) expected.flags._axe_bar_legacy_access = true; // #577の旧保存互換だけを追加。資源の厳密比較は維持
   if (schema < 25) expected.flags._dense_pack_legacy = true;

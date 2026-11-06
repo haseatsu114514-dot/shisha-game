@@ -5,7 +5,7 @@ import fs from "node:fs/promises";
 import vm from "node:vm";
 import { clamp } from "../js/core/util.js";
 import { MAX_MONEY } from "../js/core/rules.js";
-import { STAT_JA } from "../js/core/state.js";
+import { STAT_JA, hasAffinity } from "../js/core/state.js";
 import { chapterDay, chapterDaysLeft, departurePrep, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 import { chapterFeatureEnabled } from "../js/core/chapter-features.js";
 const root = new URL("../", import.meta.url);
@@ -71,7 +71,7 @@ const values = {
   "util.js": { el, clamp, sleep: async () => {}, fitOneLine: () => {}, yen: (n) => `¥${Number(n).toLocaleString("ja-JP")}` },
   "data.js": { DB: db, displayName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
   "lime-icons.js": { customLimeIconUrl: () => null },
-  "ui.js": { layers, toast: (text) => nudges.push(text) }, "state.js": { state, save: noop, STAT_JA, STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"] },
+  "ui.js": { layers, toast: (text) => nudges.push(text) }, "state.js": { state, save: noop, STAT_JA, hasAffinity, STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"] },
   "stats.js": { setStoryAffinityCap() {}, affinityGateWaiting: () => false, gainStat: noop, addMoney: noop, gainAffinity: (id, pts) => gains.push({ id, pts }), affinityLevel: () => 5, applyStats: (stats) => statGains.push(stats), bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
 
   "audio.js": { SE: { phone: noop, phoneReceive: noop, phoneSend: noop, select: noop, click: noop, cancel: noop } },

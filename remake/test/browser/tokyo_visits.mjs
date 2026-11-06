@@ -241,7 +241,7 @@ await suite("tokyo-visits", async check => {
     assert.equal(await page.locator(".lime-chat-row").count(), 0);
     const value = await get(page);
     assert.deepEqual(value.tokyoVisits.plans, []);
-    assert.equal(value.schema, 26); // 旧セーブは現在のSCHEMAへ移行される（25: #2166 のデンスパック保護 / 26: ID改名移行 IDREN01）
+    assert.equal(value.schema, 27); // 旧セーブは現在のSCHEMAへ移行される（25: #2166 のデンスパック保護 / 26: ID改名移行 IDREN01）
     await page.locator(t("phone-close")).click();
   });
 });

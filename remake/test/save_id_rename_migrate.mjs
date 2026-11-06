@@ -74,14 +74,15 @@ function loadSave(save) {
       },
     },
   });
-  assert.equal(s.schema, 26);
+  assert.equal(s.schema, core.SCHEMA);
   // キーの付け替え（好感度・面識・固有会話・絆）
   assert.equal(s.affinity.rio, 40);
-  assert.equal(s.affinity.sui, 10);
+  assert.equal(s.affinity.sui, undefined);
   assert.equal(s.affinity.saku, 5);
-  assert.equal(s.affinity.faris, 3);
-  assert.equal(s.affinity.khalil, 2);
-  assert.equal(s.affinity.sumi, 7);
+  assert.equal(s.affinity.faris, undefined);
+  assert.equal(s.affinity.khalil, undefined);
+  assert.equal(s.affinity.sumi, 9);
+  assert.equal(s.affinity.tsumugi, 9);
   for (const old of ["nagumo", "rin", "kuze", "saif", "rashid"]) assert(!(old in s.affinity), old + " が残らない");
   assert.equal(s.met.rio, true);
   assert.equal(s.story.rio, 2);
@@ -138,8 +139,8 @@ function loadSave(save) {
 
 // --- 現行スキーマのセーブはそのまま ---
 {
-  const s = loadSave({ schema: 26, day: 1, affinity: { sui: 5, rio: 3 } });
-  assert.deepEqual(s.affinity, { sui: 5, rio: 3 });
+  const s = loadSave({ schema: core.SCHEMA, day: 1, affinity: { sumi: 9, tsumugi: 9, rio: 3 } });
+  assert.deepEqual(s.affinity, { sumi: 9, tsumugi: 9, rio: 3 });
 }
 
 console.log("save id rename migrate: PASS (all structures renamed, new-key priority, legacy lesson backfill, current schema untouched)");
