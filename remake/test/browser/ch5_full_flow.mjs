@@ -278,6 +278,7 @@ await suite("ch5-full-flow", async check => {
 
   // 二本目の出来が足りなければ、挙手の合計で負け（同数含む）→ 敗北の場面 → 後日談へ続く（#1665）。
   // #2033: 第5章も柚ヶ谷へ電車で行ける。神崎の店は通い訪問の小会話だけ。夜は電車で地元へ帰る。
+  // 第5章の最初の来店で一度だけ読む会話（神崎・レヰ。chapters/ch5-first-talks.js）は読み終えた保存にする（ch5_home_talks が確かめる）。
   await check("chapter-five-train-to-yuzugaya-regular-visit-and-home-at-night", async page => {
     page.setDefaultTimeout(30000);
     await page.evaluate(async () => {
@@ -290,7 +291,8 @@ await suite("ch5-full-flow", async check => {
         _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
           read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
           finaleScenes: null, won: null, secondCup: null },
-        _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true };
+        _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true,
+        ch2_kumicho_after_ch2_done: true, _talk_seen_ch5_rei_shop: true };
       Object.assign(value.met, { kumicho: true, rei: true, ageha: true });
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
