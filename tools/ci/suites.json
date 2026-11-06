@@ -676,6 +676,7 @@
         "node --experimental-vm-modules remake/test/after_shift_b05_b06.mjs",
         "node --experimental-vm-modules remake/test/naru_chapter_context.mjs",
         "node remake/test/story_context.mjs",
+        "node remake/test/ch5_first_talks.mjs",
         "node --experimental-vm-modules remake/test/early_deliveries.mjs",
         "node --experimental-vm-modules remake/test/delivery_night_plan.mjs",
         "node --experimental-vm-modules remake/test/tonari_fixed_event_782.mjs",
@@ -1580,6 +1581,23 @@
       ],
       "run": [
         "node remake/test/browser/staff_roll.mjs"
+      ]
+    },
+    {
+      "id": "ch5-home-talks",
+      "title": "Chapter 5 one-time talks at Adam's, Rei's and Kanzaki's shops (Kanzaki's rewritten Chapter 2 aftermath) on the real map, then the usual visits",
+      "kind": "browser",
+      "weight": 0.4,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/ch5*.js",
+        "remake/js/chapters/ch2-preparation.js",
+        "data/dialogue/ch5_shops.json",
+        "data/dialogue/ch2_kumicho.json",
+        "remake/test/browser/ch5_home_talks.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch5_home_talks.mjs"
       ]
     },
     {
