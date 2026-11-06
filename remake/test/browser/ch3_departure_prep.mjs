@@ -35,9 +35,9 @@ async function loadSlot(page, slot = 0) {
   await page.locator(dt(`slot-${slot}`)).click();
 }
 
-async function seed(page) {
+async function seed(page, { regulars = false } = {}) {
   page.setDefaultTimeout(30000);
-  await page.evaluate(async () => {
+  await page.evaluate(async regulars => {
     const core = await import("./js/core/state.js");
     const progress = await import("./js/chapters/ch3-progress.js");
     const value = core.newGame();
@@ -48,6 +48,14 @@ async function seed(page) {
       _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
     for (const who of ["ageha", "kumicho", "rei", "hajime", "sumi"]) value.flags[`_intro_${who}`] = true;
     Object.assign(value.met, { ageha: true, kumicho: true, rei: true });
+    // 地元の常連（N3a）: 第1章でEDENに一度通った保存（初対面の固有会話の後。LIMEの交換前なので誘いは来ない）。
+    if (regulars) {
+      Object.assign(value.met, { adam: true });
+      Object.assign(value.story, { adam: 1 });
+      Object.assign(value.visits, { adam: 1 });
+      value.affinity.adam = 12;
+      value.flags._spot_guide_adam = true;
+    }
     if (!progress.advanceToChapterThree(value)) throw new Error("Chapter boundary failed");
     // 辻占のオババ（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、この章の出現は済んだことにする。
     const fortune = await import("./js/daily/fortune-schedule.js");
@@ -62,7 +70,7 @@ async function seed(page) {
     core.saveConfig();
     Object.assign(core.state, value);
     core.save();
-  });
+  }, regulars);
 }
 
 await suite("ch3-departure-prep", async check => {
@@ -114,5 +122,30 @@ await suite("ch3-departure-prep", async check => {
     assert.equal(state.flags._ch3_intro.stage, 0);
     assert.equal(state.flags._ch2_region, "home");
     assert.match(await page.locator('[data-test="ch3-intro-scene"]').innerText(), /DAY 1/);
+  });
+
+  // N3a: 準備期間の来店で、地元の常連が一度だけ送り出しの会話をする（2回目はいつもの来店）。
+  await check("hometown-regular-send-off-talk-once", async page => {
+    await seed(page, { regulars: true });
+    await loadSlot(page, 0);
+    await mapReady(page, { day: 29, slot: 0 });
+    await recordEntered(page);
+    assert.equal(await page.locator(`${dt("pin-adam")} .evt-badge.story`).count(), 1, "EDEN shows that there is something new");
+    await go(page, "adam");
+    await mapReady(page, { day: 29, slot: 1 });
+    let state = await get(page);
+    assert.equal(state.flags._talk_seen_ch3_prep_adam, true);
+    assert((await entered(page)).includes("ch3_prep_adam"), "EDEN: the send-off talk");
+    assert(!(await entered(page)).includes("venue_adam_day"), "The talk has its own arrival, so no shop greeting first");
+    assert.equal(state.visits.adam, 2, "an ordinary paid visit");
+    assert.equal(state.money, 30000 - 3000);
+    // 一店に一日一回。次の日にもう一度通うと、送り出しの会話は読み直さない（段階会話などいつもの来店）。
+    await go(page, "rest");
+    await mapReady(page, { day: 30, slot: 0 });
+    await go(page, "adam");
+    await mapReady(page, { day: 30, slot: 1 });
+    state = await get(page);
+    assert.equal((await entered(page)).filter(id => id === "ch3_prep_adam").length, 1, "read once");
+    assert.equal(state.visits.adam, 3);
   });
 });

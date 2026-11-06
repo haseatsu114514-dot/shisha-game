@@ -737,6 +737,12 @@
       "run": ["node --experimental-vm-modules remake/test/ch2_home_talks.mjs"]
     },
     {
+      "id": "departure-home-talks",
+      "title": "Chapter 3/4 prep days at home: one send-off talk each from Adam, Minto, Rio and Samechan, read once on a prep-day visit (N3a)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/departure_home_talks.mjs"]
+    },
+    {
       "id": "ch2-story-visits",
       "title": "Chapter 2 story visits: Adam at EDEN and Minto's night at PEPPERMINT read on the map, rescued on the deadline night (VOL13)",
       "kind": "quick",
@@ -1681,6 +1687,7 @@
         "remake/js/daily/calendar.js",
         "remake/js/daily/hud.js",
         "data/dialogue/ch3_departure.json",
+        "data/dialogue/ch3_ch4_home.json",
         "remake/test/browser/ch3_departure_prep.mjs"
       ],
       "run": ["node remake/test/browser/ch3_departure_prep.mjs"]
