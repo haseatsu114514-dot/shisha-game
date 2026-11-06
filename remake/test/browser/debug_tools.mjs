@@ -9,6 +9,36 @@ const openPanel = async page => {
 };
 
 await suite("debug-tools", async check => {
+  await check("background-preview-switches-variants-without-saving", async page => {
+    await page.locator(t("title-new")).waitFor();
+    const before = await page.evaluate(async () => {
+      const { state } = await import("./js/core/state.js");
+      return { state: JSON.stringify(state), storage: JSON.stringify(localStorage) };
+    });
+    await openPanel(page);
+    const select = page.locator(t("debug-background-select"));
+    const options = await select.locator("option").evaluateAll(nodes => nodes.map(node => node.value));
+    const manifest = await page.evaluate(async () => (await import("./js/core/data.js")).DB.manifest.backgrounds);
+    assert.deepEqual(options, manifest);
+    for (const name of ["bg_tonari_inside_day.png", "bg_tonari_inside_night.png", "bg_tonari_inside_overcast_day.png"]) {
+      await select.selectOption(name);
+      await page.locator(t("debug-background-show")).click();
+      const image = page.locator(t("debug-background-image"));
+      await image.waitFor({ state: "visible" });
+      await page.waitForFunction(() => document.querySelector('[data-test="debug-background-image"]')?.naturalWidth > 0);
+      const expected = await page.evaluate(async selected => (await import("./js/core/data.js")).img(`backgrounds/${selected}`), name);
+      assert.equal(await image.getAttribute("src"), expected);
+      assert.equal(await image.evaluate(node => node.parentElement.id), "stage");
+    }
+    await page.locator(t("debug-background-close")).click();
+    assert.equal(await page.locator(t("debug-background-image")).isVisible(), false);
+    const after = await page.evaluate(async () => {
+      const { state } = await import("./js/core/state.js");
+      return { state: JSON.stringify(state), storage: JSON.stringify(localStorage) };
+    });
+    assert.deepEqual(after, before);
+  });
+
   for (const touch of [false, true]) {
     await check(`portrait-style-shares-config-without-changing-progress-${touch ? "touch" : "desktop"}`, async page => {
       await page.evaluate(async () => {
