@@ -70,6 +70,10 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   ch3_volk_second: { file: "ch3_volk", label: "鉄の煙の二度目", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
   ch3_volk_third: { file: "ch3_volk", label: "七年分の記録", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
   ch3_volk_fourth: { file: "ch3_volk", label: "頷く順番", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
+  // ヴォルクとLIMEを交換する（#2028）。四度目の来店の後（routes の seen）、♥2で。締めくくり（daily/bonds.js）の条件。
+  // 版3の日常ループでは大会までに読む枠が無いので、実際は大会後の寄り道（ch3-aftermath-progress.js）から読む。
+  ch3_volk_lime: { file: "ch3_volk", label: "持ってきたメモ", location: "鉄の煙", bg: "bg_volk_shop",
+    met: ["volk"], heart: { volk: 2 } },
 });
 
 // loadIntroDialogues が読む追加分（ファイル→場面ID）。routes の全任意場面・前夜場面と一致させる（story_routes.mjs で照合）。
@@ -85,7 +89,8 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_saku_mashiro: ["ch3_saku_mashiro_tea_tin", "ch3_saku_mashiro_soon_back"],
   hiyori: ["hiyori_tokyo_contact"],
   ch3_tsumugi: ["ch3_tsumugi_slump"],
-  ch3_volk: ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth"],
+  // ヴォルクの締めくくり（#2028）も寄り道ではなく、鉄の煙を訪ねた時の「ヴォルクに呼ばれる」から（綾取・スティーブと同じ）。
+  ch3_volk: ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_lime", "ch3_volk_bond_finale"],
   // 返事の場面は告白の選択肢の next_id で入る（ch3_read_confession_mashiro は返事まで読んだ時だけ立つ）。
   confession: ["confession_mashiro", "confession_mashiro_accept", "confession_mashiro_reject"],
   // 第3章で再生しうるのは date_min_chapter が3以下の恋人だけ（あげはは第4章から）。

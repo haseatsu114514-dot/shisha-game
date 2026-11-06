@@ -249,8 +249,8 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(state.owned.filter(id => id === "suyaki_saku").length, 1);
     assert.equal(state.money, 10000, "being called after closing costs nothing");
     const backlog = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map(row => row.text).join("\n"));
-    assert.match(backlog, /勝負の話は、今夜はなし/, "read before the tournament: the before-tournament branch");
-    assert.doesNotMatch(backlog, /今夜の議題は、勝ち負けとは別の話/);
+    assert.match(backlog, /勝負の話は、今日はなし/, "read before the tournament: the before-tournament branch");
+    assert.doesNotMatch(backlog, /今日の議題は、勝ち負けとは別の話/);
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
     assert.equal(saved.finales?.saku?.route, "friend", "the finale is saved");
   });
@@ -297,6 +297,43 @@ await suite("ch3-tokyo-daily", async check => {
     assert.doesNotMatch(backlog, /大会の日から/);
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
     assert.equal(saved.finales?.steve?.route, "friend", "the finale is saved");
+  });
+
+  // #2028: ヴォルクの締めくくり（♥5・鉄の煙の再訪三つとLIME交換の後）も、日常ループの鉄の煙の来店から読める。
+  // 寄り道を読み終えた後も、締めくくりが来ていれば地図に鉄の煙が出る。代金は払わず（4,000円に足りなくても入れる）、行動を一つ使う。
+  await check("volk-heart5-finale-is-reached-from-iron-smoke-on-the-daily-loop", async page => {
+    await seed(page);
+    const before = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const progress = await import("./js/chapters/ch3-progress.js");
+      const value = core.state, intro = value.flags._ch3_intro;
+      intro.stage = progress.CH3_INTRO_SCENES.findIndex(scene => scene.id === "ch3_strategy");
+      value.day = intro.startDay + 12; value.slot = 0; value.phase = "daily";
+      Object.assign(value.met, { saku: true, steve: true, volk: true, mashiro: true, mukai_master: true });
+      value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
+      for (const id of ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_lime"]) value.flags[`_ch3_read_${id}`] = true;
+      value.flags._lime_contact_volk = true;
+      value.affinity.volk = 66; value.money = 1000;
+      core.save();
+      return value.flavorStock?.nightside_blast_mint || 0;
+    });
+    await loadSlot(page, 0);
+    await tokyoMap(page, { day: 44, slot: 1 });
+    await page.locator(dt("pin-ch3_tokyo_mukai")).click();
+    await page.locator(dt("pin-ch3_tokyo_volk")).click();
+    assert.equal(await page.locator(".mi-no", { hasText: "お金が足りない" }).count(), 0, "the finale is not blocked by the shop fee");
+    await page.locator(dt("map-go")).click();
+    await page.waitForFunction(() => !!window.__remake?.state?.finales?.volk, null, { timeout: 60000 });
+    const state = await get(page);
+    assert.equal(state.finales.volk.route, "friend");
+    assert.equal(state.owned.filter(id => id === "suyaki_volk").length, 1);
+    assert.equal(state.flavorStock.nightside_blast_mint, before + 50, "a box of Blast Mint comes with the hagal");
+    assert.equal(state.money, 1000, "being called by Volk costs nothing, even short of the shop fee");
+    const backlog = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map(row => row.text).join("\n"));
+    assert.match(backlog, /この時間は、測らない/);
+    assert.doesNotMatch(backlog, /客の息の間も聞くようにした/, "read before the tournament: the before-tournament branch");
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
+    assert.equal(saved.finales?.volk?.route, "friend", "the finale is saved");
   });
 
   await check("tournament-eve-then-the-national-morning-card", async page => {

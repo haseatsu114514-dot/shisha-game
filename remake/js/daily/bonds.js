@@ -58,6 +58,10 @@ export const BOND_FINALES = {
   // スティーブ（#2028）: 綾取と同じく第3章の東京で、Smoke & Glory への来店（ch3-tokyo-daily.js）・旧行程の場面カード
   // （chapters/ch3.js）・大会後の寄り道（ch3-aftermath.js）から。恋愛対象外なので友情の着地だけ。条件は♥5。
   steve: { dialogue: "ch3_steve_bond_finale", gift: "suyaki_steve" },
+  // ヴォルク（#2028）: 綾取・スティーブと同じく第3章の東京で、鉄の煙への来店（ch3-tokyo-daily.js）・旧行程の場面カード
+  // （chapters/ch3.js）・大会後の寄り道（ch3-aftermath.js）から。恋愛対象外なので友情の着地だけ。条件は♥5。
+  // 鉄の煙は初来店（DAY12夜）から大会まで行動が一つしかないので、実際は大会後の寄り道で読むことが多い。
+  volk: { dialogue: "ch3_volk_bond_finale", gift: "suyaki_volk" },
   hiyori: {
     get dialogue() { return hiyoriRoute().finale?.dialogue || ""; },
     get gift() { return hiyoriRoute().finale?.gift || null; },
@@ -232,6 +236,8 @@ export async function playQuestionVisit(id, { bg = null, signal = null, deferSav
 export const finaleSeen = (id) => !!state.finales?.[id];
 /** 締めくくりに要る好感度の段階（既定は♥5＝MAX。heart を持つ相手だけ別） */
 export const finaleHeart = (id) => BOND_FINALES[id]?.heart || 5;
+/** 鉄の煙の再訪三つ（chapters/ch3-story-wiring.js の任意場面。既読は _ch3_read_<id>）。 */
+const VOLK_VISITS = Object.freeze(["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth"]);
 const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
   : id === "mashiro" ? mashiroScenesRead(state.flags) && questionComplete(state, id)
   : id === "samechan"
@@ -246,6 +252,9 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
   // スティーブ: LIME交換の寄り道と、味の会話（予備のタイマーを借りる外出）の両方。締めくくりはそのタイマーを受ける
   : id === "steve" ? !!state.flags._ch3_read_ch3_steve_lime && !!state.flags._lime_contact_steve
     && (state.flags._ch3_outings?.steve_timer || 0) > 0
+  // ヴォルク: 鉄の煙の再訪三つ（味の会話・七年分の記録・頷く順番）と、その後のLIME交換の寄り道。締めくくりは三つすべてを受ける
+  : id === "volk" ? VOLK_VISITS.every((scene) => !!state.flags[`_ch3_read_${scene}`])
+    && !!state.flags._ch3_read_ch3_volk_lime && !!state.flags._lime_contact_volk
   : id === "ageha" ? AGEHA_AFFINITY_VISITS.every((scene) => !!state.flags[`_ch2_read_${scene}`]) && questionComplete(state, id)
   : CH2_VISIT_STORIES[id] ? ch2VisitStoriesDone(state.flags, id)
   : storyCount(id) >= (VISIT_SEQ[id] || []).length
@@ -258,21 +267,31 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
 /** 第3章の東京へ発つ前の準備期間か（core/chapter-clock.js の departurePrep と同じ判定）。 */
 const beforeTokyoDeparture = () => state.chapter === 3 && !!state.flags?._ch3_prep && !state.flags._ch3_prep.departed;
 /**
- * スティーブ（#2028）に Smoke & Glory で会える間か。第3章の東京に着いてから、大会後の後日談でなるへの報告を読み終えるまで
- * （ch3-aftermath-progress.js の CH3_AFTERMATH_FINALES と同じ窓。煙幕の片づけの朝からは帰り支度で、その夜に地元へ帰る）。
- * 段階の番号は CH3_AFTERMATH_SCENES の ch3_naru_reconcile の写し（vm で読む試験の依存を増やさない。ch3_aftermath.mjs で照合）。
+ * 第3章の東京の店で、その店主に会える間か（#2028）。東京に着いてから、大会後の後日談でその人の窓が閉じるまで
+ * （ch3-aftermath-progress.js の CH3_AFTERMATH_FINALES と同じ窓）。綾取・スティーブはなるへの報告まで（煙幕の片づけの朝からは
+ * 帰り支度で、その夜に地元へ帰る）、ヴォルクは鉄の煙の寄り道・授業と同じく片づけの朝まで。
+ * 段階の番号は CH3_AFTERMATH_SCENES の写し（vm で読む試験の依存を増やさない。ch3_aftermath.mjs で照合）。
  * なるへの報告の後にピザとシーシャの夜が開く時（_ch3_naru_party_ready）は、その夜の画面に寄り道が無いので会えない扱い
- * （スティーブの授業の窓 CH3_AFTERMATH_LESSONS と同じ）。
+ * （スティーブの授業の窓 CH3_AFTERMATH_LESSONS と同じ）。翌朝（片づけの朝）からは、ヴォルクにはまた会える。
  */
+const NARU_RECONCILE_STAGE = 2;
+export const SAKU_LAST_AFTERMATH_STAGE = 2;
 export const STEVE_LAST_AFTERMATH_STAGE = 2;
-const steveInReach = () => {
-  if (!chapterFeatureEnabled(state.chapter, "steveBond") || beforeTokyoDeparture() || state.flags._ch3_cleared) return false;
-  if (state.flags._ch3_naru_party_ready) return false;
+export const VOLK_LAST_AFTERMATH_STAGE = 3;
+const tokyoShopInReach = (feature, lastStage) => {
+  if (!chapterFeatureEnabled(state.chapter, feature) || beforeTokyoDeparture() || state.flags._ch3_cleared) return false;
   const stage = state.flags._ch3_aftermath?.stage;
-  return stage === undefined || Number.isInteger(stage) && stage <= STEVE_LAST_AFTERMATH_STAGE;
+  if (stage === undefined) return true;
+  if (!Number.isInteger(stage) || stage > lastStage) return false;
+  return !(state.flags._ch3_naru_party_ready && stage === NARU_RECONCILE_STAGE);
 };
+const TOKYO_SHOP_REACH = Object.freeze({
+  saku: () => tokyoShopInReach("sakuBond", SAKU_LAST_AFTERMATH_STAGE),
+  steve: () => tokyoShopInReach("steveBond", STEVE_LAST_AFTERMATH_STAGE),
+  volk: () => tokyoShopInReach("volkBond", VOLK_LAST_AFTERMATH_STAGE),
+});
 /** 締めくくりの相手に、今の章・時点で会いに行けるか（MENU の「次に会うと」を、会えない間に約束しない）。 */
-export const finaleReachable = (id) => id !== "steve" || steveInReach();
+export const finaleReachable = (id) => !TOKYO_SHOP_REACH[id] || TOKYO_SHOP_REACH[id]();
 
 export function finaleDue(id) {
   if (id === "hiyori" && !hiyoriFinaleReady()) return false;
@@ -280,9 +299,10 @@ export function finaleDue(id) {
   // MELTY PUFFに通えるのは第2章と、第3章の東京へ発つ前の準備3日だけ（VOL02。東京にいる間は店が地図に無い）
   if (id === "ageha" && !chapterFeatureEnabled(state.chapter, "agehaVisit") && !beforeTokyoDeparture()) return false;
   if (id === "mashiro" && !chapterFeatureEnabled(state.chapter, "mashiroBond")) return false;
-  if (id === "saku" && !chapterFeatureEnabled(state.chapter, "sakuBond")) return false; // 煙幕は第3章の東京にだけある
+  if (id === "saku" && !TOKYO_SHOP_REACH.saku()) return false; // 煙幕は第3章の東京にだけある
   if (id === "noor" && state.chapter !== 4) return false; // カフェ・サーリムは第4章のドバイにだけある
-  if (id === "steve" && !steveInReach()) return false;
+  if (id === "steve" && !TOKYO_SHOP_REACH.steve()) return false;
+  if (id === "volk" && !TOKYO_SHOP_REACH.volk()) return false;
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue] || !storiesDone(id)) return false;
   if (affinityLevel(id) < finaleHeart(id) || questionVisitDue(id)) return false;
@@ -299,7 +319,7 @@ export const isFinaleEvent = (dialogueId) => Object.values(BOND_FINALES).some((d
 
 /** 締めくくりを再生し、ルート（恋人／恋愛／友情）を記録して専用ハガルを渡す。一度だけ */
 export async function playFinale(id, { bg = null, deferSave = false, signal = null } = {}) {
-  if (["hiyori", "samechan", "mashiro", "saku", "noor", "steve"].includes(id) && !finaleDue(id)) return false;
+  if (["hiyori", "samechan", "mashiro", "saku", "noor", "steve", "volk"].includes(id) && !finaleDue(id)) return false;
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue]) return false;
   const owner = state;
@@ -427,7 +447,7 @@ export function friendMessages({ tournamentDay = false, sceneChapter = false } =
     const chats = sent.filter((i) => i.msg.type === "chat").length;
     // 出来事前提の雑談は、前提が揃うまで chats[0] へ退避（TL-01: 素焼き贈呈・正体開示は締めくくりで保証される前提だが、旧セーブ等でも先出ししない防御）
     let pick = f.chats?.length ? chats % f.chats.length : 0;
-    if ((pick === 2 && ["minto", "tsumugi", "rio", "kumicho", "rei", "mashiro", "samechan", "saku", "steve"].includes(id) && !state.owned.includes(`suyaki_${id}`))
+    if ((pick === 2 && ["minto", "tsumugi", "rio", "kumicho", "rei", "mashiro", "samechan", "saku", "steve", "volk"].includes(id) && !state.owned.includes(`suyaki_${id}`))
       || (pick === 1 && id === "adam" && !state.owned.includes("suyaki_adam"))
       || (pick === 1 && id === "minto" && !state.flags._minto_identity_revealed)) pick = 0;
     const chat = f.chats?.length ? { id: `${FRIEND_PREFIX}chat_${id}_d${state.day}`, sender: id, type: "chat", friend: true,

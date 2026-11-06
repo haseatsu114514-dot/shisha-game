@@ -115,7 +115,7 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
 
 function spotHasNew(entry) {
   if (["mukai", "enmaku", "volk"].includes(entry.place) && optionalAt(entry.place).length) return true;
-  if (rivalFinaleAt(entry.place)) return true; // 綾取・スティーブの締めくくり（IR22・#2028）
+  if (rivalFinaleAt(entry.place)) return true; // 綾取・スティーブ・ヴォルクの締めくくり（IR22・#2028）
   if (entry.place === "mukai") return mukaiBondDue() || outingsAt("mukai").some(outing => !outing.repeat);
   return outingsAt(entry.place).some(outing => !outing.repeat);
 }
@@ -482,17 +482,18 @@ async function readOptionalHere(io, scene, staminaGuard, owner, stamina = -10) {
   return { used: true, exerted: true, exp: personExp(scene.host || OPTIONAL_HOST[optionalPlace(scene)]) };
 }
 
-/** 店で迎える♥5の締めくくり（daily/bonds.js の条件）。煙幕は綾取（IR22）、Smoke & Glory はスティーブ（#2028）。 */
+/** 店で迎える♥5の締めくくり（daily/bonds.js の条件）。煙幕は綾取（IR22）、Smoke & Glory はスティーブ、鉄の煙はヴォルク（#2028）。 */
 const RIVAL_FINALES = Object.freeze({
   enmaku: Object.freeze({ who: "saku", label: "綾取に呼ばれる" }),
   steve: Object.freeze({ who: "steve", label: "スティーブに呼ばれる" }),
+  volk: Object.freeze({ who: "volk", label: "ヴォルクに呼ばれる" }),
 });
 const rivalFinaleAt = place => RIVAL_FINALES[place] && finaleAtVisit(RIVAL_FINALES[place].who) ? RIVAL_FINALES[place] : null;
 
 /**
  * 煙幕・Smoke & Glory・鉄の煙: 寄り道があればそれ、無ければその店の外出（#1655）。
  * 東京のシーシャ屋は一台4,000円（TOKYO_VISIT_COST）。読み終えた時だけ払う。本筋の場面（日程の枠で読む）は払わない。
- * 煙幕・Smoke & Glory では、その店主の締めくくり（♥5）が来ていれば「〜に呼ばれる」を先頭に出す（客の一台ではないので払わない）。
+ * 締めくくり（♥5）が来ていれば、その店主の「〜に呼ばれる」を先頭に出す（客の一台ではないので払わない）。
  */
 async function visitRivalShop(entry, io, staminaGuard, owner) {
   const finale = rivalFinaleAt(entry.place);
@@ -518,7 +519,7 @@ async function visitRivalShop(entry, io, staminaGuard, owner) {
   return result;
 }
 
-/** 綾取・スティーブの締めくくり（daily/bonds.js の条件・一度だけ）。ましろちゃんの節目と同じく行動を一つ使う。 */
+/** 綾取・スティーブ・ヴォルクの締めくくり（daily/bonds.js の条件・一度だけ）。ましろちゃんの節目と同じく行動を一つ使う。 */
 async function readRivalFinale(who, place, staminaGuard, owner) {
   if (!(await staminaGuard(-10))) return unused;
   const bg = BG(visitBg[place]);
