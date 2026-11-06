@@ -204,7 +204,10 @@ await suite("tsumugi-draft-response", async check => {
         if (version === "current") assertResponse(art.lines, answer);
         counts[version] = { draftClicks: draft.clicks, choices: draft.choices, artClicks: art.clicks };
       }
-      assert.deepEqual(counts.current, counts.baseline, "Dialogue click count changed");
+      // #2534 EMO04: the completed-art scene gains three lines after "応募完了"
+      // (reopening the screen, Sumi keeping the sign on, Tsumugi sitting back down).
+      assert.deepEqual(counts.current, { ...counts.baseline, artClicks: counts.baseline.artClicks + 3 },
+        "Dialogue click count changed");
       console.log(`${label}/${answer ?? "legacy"} clicks: ${JSON.stringify(counts)}`);
 
       // Production SKIP stops at the existing two choices; it never supplies an answer.

@@ -539,17 +539,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "その瞬間、ほんの少しだけ、肩の力が抜けたように見えた。"
+          "text": "その瞬間、肩の力が少しだけ抜けた。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
           "text": "（この人、いつも何も言わないけど……）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（ここに来ると、ちょっとだけ楽になるのかな）"
         },
         {
           "speaker": "",
@@ -1799,6 +1794,11 @@
         {
           "speaker": "",
           "face": "",
+          "text": "鉄仮面さんが自分から注文を変えたのは、初めてだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "スマホの画面を伏せて置いて、煙を長く、深く吐く。吸っている間、肩の力は抜けなかった。"
         },
         {
@@ -2070,6 +2070,11 @@
           "flag": "_tsumugi_contest_art_seen"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは画面を一度閉じて、また開いた。「応募完了」は、まだそこにあった。"
+        },
+        {
           "speaker": "tsumugi",
           "face": "smile",
           "text": "……出せました"
@@ -2077,7 +2082,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "お疲れさま。ずっと描いてたもんね"
+          "text": "出せたね。おめでとう"
         },
         {
           "speaker": "tsumugi",
@@ -2093,6 +2098,16 @@
           "speaker": "tsumugi",
           "face": "normal",
           "text": "はい。……今度は、私が見てます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "看板、あと一服ぶん点けとくか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎはタブレットを抱えたまま、カウンターの椅子に座り直した。"
         },
         {
           "type": "hide_cg"
