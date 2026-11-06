@@ -20,7 +20,7 @@ let titleRevision = 0;
 
 /** 今遊んでいる版（公開時に index.html の meta へ書かれる。手元は dev）。自分のリンクが古い版か見分ける用 */
 function buildLabel() {
-  const meta = document.querySelector('meta[name="suien-build"]');
+  const meta = globalThis.document?.querySelector?.('meta[name="suien-build"]');
   const build = meta?.content || "dev";
   const built = build === "dev" ? "" : meta.dataset.built;
   return built ? `ver. ${built} (${build})` : `ver. ${build}`;
@@ -249,7 +249,7 @@ export function showTitle(preparedArt = null) {
       menu,
     ]),
     el("div.title-foot", { text: "TAP / CLICK / ENTER ── CH.01 SMOKE CROWN CUP" }),
-    el("div.title-ver", { text: buildLabel(), dataset: { test: "title-ver" } }),
+    el("div.title-ver", { text: buildLabel() }),
   ]);
   showScreen("title", root);
   const brand = root.querySelector(".title-brand");
