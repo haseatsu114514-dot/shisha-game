@@ -98,7 +98,8 @@ const gateScene = (id) => ({
   ],
   branches: {
     go: [{ type: "set_flag", flag: "_confession_go" }],
-    wait: [{ speaker: "", text: "（大会のこと、店のこと。……今は目の前のことに集中しよう。でも、いつかきっと）" }],
+    // 第5章に大会は無い（持ち越した告白が届くのは帰郷後の第5章。目の前にあるのは博士との勝負）
+    wait: [{ speaker: "", text: `（${(state.chapter || 1) >= 5 ? "博士との勝負" : "大会"}のこと、店のこと。……今は目の前のことに集中しよう。でも、いつかきっと）` }],
   },
 });
 
@@ -121,8 +122,18 @@ const cheatScene = (id) => ({
 
 // 告白の台本が自分の場面を持つ相手（daily/bonds.js の BOND_FINALES.ownConfession）。夜の帰り道では始めない。
 // ましろは第3章の寄り道（休日の部屋。chapters/ch3-story-wiring.js の confession_mashiro・IR20）だけで告白する。
-const OWN_CONFESSION_SCENE = Object.freeze(["mashiro"]);
+// ヌールは第4章ドバイの砂丘の夕日（chapters/ch4-desert.js の confession_noor・DSR20）だけで告白する。
+const OWN_CONFESSION_SCENE = Object.freeze(["mashiro", "noor"]);
 const nightWalkConfession = (id) => !OWN_CONFESSION_SCENE.includes(id) && romanceRouteOpen(id);
+
+/**
+ * 今夜は帰り道の告白を始めない時期か（予約は残し、遠出から帰ってきてから）。
+ * - 第3・4章の出発前の準備3日（#2024 A1・IR33。第4章はドバイへ来る人がもう決まっていて、新しい恋人が来られない）
+ * - 東京・ドバイにいる夜（帰り道の告白 confession.json はどれも地元の場面）
+ * 第3章の帰郷後と第4章の帰国後は場面カードで夜の帰り道が無いので、持ち越した告白は第5章の地元の夜に届く
+ * （第5章で初めて届いた締めくくりは告白しない。romanceRouteOpen）。
+ */
+export const confessionHeld = (value = state) => !!departurePrep(value) || awayFromHome(value);
 
 /**
  * 一日の終わり（夜の行動と固定イベントの後）に呼ぶ。恋愛ルートで告白を待つ相手がいれば告白イベントを始める。
@@ -135,7 +146,7 @@ const nightWalkConfession = (id) => !OWN_CONFESSION_SCENE.includes(id) && romanc
  */
 export async function maybeConfession(beat, { busyNight = false, companion = null } = {}) {
   if (state.phase !== "daily" || state.slot < 2) return false; // 昼の行動から仕事後の夜へ飛ばない
-  if (departurePrep(state)) return false; // 第3・4章の出発前は予約を残して帰郷後に回す
+  if (confessionHeld()) return false; // 出発前・東京・ドバイでは予約を残して、帰ってきてから
   let id = state.flags._confession_due;
   if (id && !nightWalkConfession(id)) { delete state.flags._confession_due; id = null; }
   // 2人目の恋愛ルートなど、予約の空きを待っていた相手を拾う（締めくくりの順）
@@ -276,11 +287,13 @@ export function dateSchedule(id, { day = state.day, fixedNight = () => false, al
 // （第4章の地元で、ましろの節目を出さないのと同じ。chapters/ch3-story-wiring.js の TOKYO_RESIDENT_IDS）。
 const AWAY_REGIONS = Object.freeze(["tokyo", "dubai"]);
 const TOKYO_LOVERS = Object.freeze(["mashiro"]);
+// ドバイに住む恋人（ヌール・DSR20）は、地元のデートに誘ってこない。会えるのはドバイにいる間だけで、離れている間は朝のLIMEとテレビ電話。
+const DUBAI_LOVERS = Object.freeze(["noor"]);
 /** はじめが地元から離れた街（東京・ドバイ）にいるか。現在地は第2章からの flags._ch2_region。 */
 const awayFromHome = (value = state) => AWAY_REGIONS.includes(value?.flags?._ch2_region);
 /** この恋人と、今、地元のデートの約束ができるか（ましろが東京に住むのは、出会う第3章から）。 */
 export const hometownDateOpen = (id, value = state) => !awayFromHome(value)
-  && !(TOKYO_LOVERS.includes(id) && (value?.chapter || 1) >= 3);
+  && !(TOKYO_LOVERS.includes(id) && (value?.chapter || 1) >= 3) && !DUBAI_LOVERS.includes(id);
 
 // 恋人の連絡の塩梅（2026-10-31 オーナー「恋人とかはたまに連絡きて欲しい」「ストレスになるレベルで連絡きてる」LM01〜03）
 // - 朝のひとことは3日おき・返事なし（読むだけ）。恋人が何人いても朝に1通まで（長く届いていない恋人から）

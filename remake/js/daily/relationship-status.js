@@ -3,7 +3,7 @@ import { DB } from "../core/data.js";
 import { state } from "../core/state.js";
 import { affinityLevel, affinityGateWaiting } from "../core/stats.js";
 import { BOND_QUESTIONS, BOND_FINALES, questionVisitDue, finaleDue, finaleHeart, settledFriend } from "./bonds.js";
-import { romanceRouteOpen } from "./romance.js";
+import { romanceRouteOpen, confessionHeld } from "./romance.js";
 import { hiyoriFinaleReady } from "../core/hiyori-route.js";
 
 const meetingPlace = {
@@ -53,7 +53,10 @@ export function relationshipStatus(id) {
   if (romanceRouteOpen(id)) {
     if (id === "mashiro") return summary("romance", "告白を選べる", "寄り道から、休日にましろの部屋でお茶をする日へ。");
     if (id === "noor") return summary("romance", "告白を選べる", "次の砂丘（ツアー代なし）で、滑ったあとの夕日の時間へ。");
-    return summary("romance", "告白を選べる", (state.flags._confession_wait || 0) > state.day
+    // 出発前の準備・東京・ドバイでは帰り道の告白を始めない（romance.js の confessionHeld・IR33）
+    return summary("romance", "告白を選べる", confessionHeld()
+      ? "出発前と遠出のあいだは胸にしまっておく。帰ってから、夜の帰り道で伝えられる。"
+      : (state.flags._confession_wait || 0) > state.day
       ? "今は想いを胸にしまっている。後日の夜、もう一度伝えられる。"
       : "予定の合う夜の帰り道で、想いを伝えるか選べる。");
   }

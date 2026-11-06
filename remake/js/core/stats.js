@@ -361,8 +361,10 @@ function flushAffinityBatch() {
 
 /** 占い師に見てもらった相手と次に会ったときだけ ×2（一度きり。2026-11-02 オーナー指定で1.5倍から・台帳 URA） */
 export const FORTUNE_AFFINITY_MULT = 2;
-function fortuneMult(id) {
-  if (state.fortune?.char !== id) return 1;
+/** 会って話した加算か。LIME・読むだけの連絡（remote）は会っていないので、占いの効果を使わず残す（台帳 URA07） */
+export const fortuneInPerson = (opts = {}) => opts.source !== "lime" && !opts.remote;
+function fortuneMult(id, opts = {}) {
+  if (state.fortune?.char !== id || !fortuneInPerson(opts)) return 1;
   delete state.fortune;
   setTimeout(() => emit("notice", { text: "（占いの効果もあってか、いつもより仲良くなれた気がする）" }), 1400);
   return FORTUNE_AFFINITY_MULT;
@@ -417,7 +419,7 @@ export function gainAffinity(id, pts, opts = {}) {
   if ((state.lovers || []).includes(id)) {
     if (!bond.private) return;
     releaseLoveAffinity(id);
-    const fortune = fortuneMult(id);
+    const fortune = fortuneMult(id, opts);
     mult *= fortune;
     const prevPts = state.lovePts[id] || 0;
     // 元の加算量の半分。1ポイントの会話も2回で1となり、切り捨てて失わない。
@@ -440,7 +442,7 @@ export function gainAffinity(id, pts, opts = {}) {
     return applied;
   }
   releaseAffinity(id);
-  const fortune = fortuneMult(id);
+  const fortune = fortuneMult(id, opts);
   mult *= fortune;
   const before = affinityLevel(id);
   const prevPts = state.affinity[id] || 0;

@@ -3,7 +3,7 @@
 // 好感度・恋人状態・複数交際は一切変更しない。辞退・連絡不足・遠距離による好感度低下や破局は起こさない。
 import { tokyoVisitState, syncTokyoVisits } from "./tokyo-visits.js";
 
-// data/story_routes.json の heroine_ids と同じ順（テストで一致を確認）。
+// data/story_routes.json の heroine_ids と同じ順（テストで一致を確認）。ドバイに住むヌール（romance.noor.resident）は渡航しないので含めない。
 export const OVERSEAS_HEROINES = Object.freeze(["tsumugi", "minto", "rio", "ageha", "mashiro", "samechan", "hiyori"]);
 // 恋愛状態に関係なくドバイへ来る唯一のキャラ（第3章クリアが条件。gameplay_agent_reference.md の登場条件表）。
 const ALWAYS_SUPPORT = "mashiro";

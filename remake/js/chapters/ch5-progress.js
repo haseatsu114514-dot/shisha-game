@@ -74,6 +74,7 @@ export const CH5_SCENE_BG = Object.freeze({
   epilogue_mashiro: "bg_tonari_inside_night",        // 仮置き bg
   epilogue_samechan: "bg_tonari_inside_night",       // 仮置き bg
   epilogue_hiyori: "bg_tonari_inside_night",         // 仮置き bg
+  epilogue_noor: "bg_tonari_inside",                 // 台本の「夕方のtonari」
   ending_daily_smoke: "bg_tonari_inside",            // 台本メタデータの指定（bg_tonari_inside）に一致
   ending_salaryman_name: "bg_tonari_inside_night",
   // スタッフロールの後の修羅場（IR32）。台本の「後日のtonari。閉店後の店」に合わせて夜の tonari。
@@ -85,6 +86,7 @@ export const CH5_SCENE_BG = Object.freeze({
   shuraba_mashiro: "bg_tonari_inside_night",
   shuraba_samechan: "bg_tonari_inside_night",
   shuraba_hiyori: "bg_tonari_inside_night",
+  shuraba_noor: "bg_tonari_inside_night",            // ヌールはテレビ電話で加わる（店のカウンターのスマホ）
   shuraba_accountability: "bg_tonari_inside_night",
   ending_relationship_pending: "bg_tonari_inside_night",
   // 一人ずつの話し直し。台本の書き出しの場所に近い既存 bg（専用素材が無いものは仮置き）。
@@ -95,6 +97,7 @@ export const CH5_SCENE_BG = Object.freeze({
   shuraba_talk_mashiro: "bg_cafe_day",               // 仮置き bg（お茶を頼んで待つ席）
   shuraba_talk_samechan: "bg_street_night",          // 仮置き bg（閉めた後の店先）
   shuraba_talk_hiyori: "bg_street_night",            // 仮置き bg（仕事帰り）
+  shuraba_talk_noor: "bg_home_night",                // 部屋からドバイへのテレビ電話
 });
 
 // ---- BGM の対応表（節目だけ切り替える。無い場面は tonari）---------------------------
@@ -111,9 +114,9 @@ export const CH5_SCENE_BGM = Object.freeze({
   // スタッフロールの後の修羅場と話し直し（IR32）は、店の曲を流さず沈んだ既存曲（仮置き）。
   ...Object.fromEntries([
     "shuraba_open", "shuraba_tsumugi", "shuraba_minto", "shuraba_rio", "shuraba_ageha", "shuraba_mashiro",
-    "shuraba_samechan", "shuraba_hiyori", "shuraba_accountability", "ending_relationship_pending",
+    "shuraba_samechan", "shuraba_hiyori", "shuraba_noor", "shuraba_accountability", "ending_relationship_pending",
     "shuraba_talk_tsumugi", "shuraba_talk_minto", "shuraba_talk_rio", "shuraba_talk_ageha", "shuraba_talk_mashiro",
-    "shuraba_talk_samechan", "shuraba_talk_hiyori",
+    "shuraba_talk_samechan", "shuraba_talk_hiyori", "shuraba_talk_noor",
   ].map(id => [id, "bgm_taste_distant"])),
 });
 
@@ -177,7 +180,7 @@ export const CH5_AFTERMATH = Object.freeze([
 export const CH5_ENDING_IDS = Object.freeze([
   "ending_start", "ending_normal",
   "epilogue_tsumugi", "epilogue_minto", "epilogue_rio", "epilogue_ageha",
-  "epilogue_mashiro", "epilogue_samechan", "epilogue_hiyori",
+  "epilogue_mashiro", "epilogue_samechan", "epilogue_hiyori", "epilogue_noor",
   "ending_daily_smoke", "ending_salaryman_name",
 ]);
 
@@ -189,10 +192,12 @@ export const CH5_POST_ENDING = Object.freeze({
 export const CH5_CONFLICT_SCENES = Object.freeze({
   tsumugi: "shuraba_tsumugi", minto: "shuraba_minto", rio: "shuraba_rio", ageha: "shuraba_ageha",
   mashiro: "shuraba_mashiro", samechan: "shuraba_samechan", hiyori: "shuraba_hiyori",
+  noor: "shuraba_noor", // ドバイからテレビ電話で（DSR20）
 });
 export const CH5_TALK_SCENES = Object.freeze({
   tsumugi: "shuraba_talk_tsumugi", minto: "shuraba_talk_minto", rio: "shuraba_talk_rio", ageha: "shuraba_talk_ageha",
   mashiro: "shuraba_talk_mashiro", samechan: "shuraba_talk_samechan", hiyori: "shuraba_talk_hiyori",
+  noor: "shuraba_talk_noor",
 });
 const TALK_OWNER = Object.freeze(Object.fromEntries(Object.entries(CH5_TALK_SCENES).map(([id, scene]) => [scene, id])));
 const CONFLICT_REACTIONS = Object.values(CH5_CONFLICT_SCENES);
