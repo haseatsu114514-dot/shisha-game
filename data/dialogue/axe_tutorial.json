@@ -272,7 +272,7 @@
           "id": "first_finish_2",
           "speaker": "maki",
           "face": "normal",
-          "text": "10投のゲームは5投で的を交代する。迷ったら「ルール」を開きな"
+          "text": "10投のゲームは5投で的を交代する。迷ったら「？」を開きな"
         },
         {
           "id": "first_finish_3",
@@ -298,7 +298,7 @@
           "id": "event_finish_2",
           "speaker": "maki",
           "face": "normal",
-          "text": "迷ったら「ルール」を開きな。いい夜を！"
+          "text": "迷ったら「？」を開きな。いい夜を！"
         }
       ]
     }
