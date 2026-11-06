@@ -6,6 +6,7 @@
 // 日常ループの東京の地図（第3章 ch3-tokyo-daily.js・第5章 ch5-tokyo.js の「地下の店」）。
 // 第3章で会っていなくても、第5章で初めて入る夜は同じ出会いの場面（ヨルは mukai の常連で、はじめは第5章も mukai を手伝う）。
 import { state, save, config } from "../core/state.js";
+import { seated } from "../core/game-seat.js"; // ミニゲームの入口と出口（#2688 F13）
 import { el } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
 import { layers, showScreen, setBg, toast } from "../core/ui.js";
@@ -97,7 +98,7 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
       if (!pick || !current()) break;
       host.hidden = true;
       stopBgm(0.4);
-      const { results } = await runDjSet({ host: document.getElementById("stage") || layers.screen, set: pick, signal: controller.signal,
+      const { results } = await seated("DJ SET", () => runDjSet({ host: document.getElementById("stage") || layers.screen, set: pick, signal: controller.signal,
         muted: !!config.mute, volume: config.bgmVolume, phones: ownsGear(owner, "gear_headphones"),
         onResult: result => {
           if (!current()) return;
@@ -105,7 +106,7 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
           if (!saved) return;
           save();
           if (saved.newBest) toast(`${DJ_SETS[result.set - 1].name} 自己ベスト ${result.rank}・${result.total}点`, { kind: "good" });
-        } });
+        } }));
       if (!current()) break;
       if (bgmBefore) playBgm(bgmBefore);
       const last = results.at(-1);

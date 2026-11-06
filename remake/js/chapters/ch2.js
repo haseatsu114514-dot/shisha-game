@@ -7,6 +7,7 @@ import { storeLogo } from "../core/store-logos.js";
 import { state, save, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
 import { layers, showScreen, setBg, enterScene, imageReady, chapterTitle, toast, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { showHud } from "../daily/hud.js";
 import { openMenu } from "../daily/menu.js";
@@ -144,7 +145,7 @@ async function continueDayOne() {
     if (stage === "departure") {
       if (!progress().titleSeen) {
         await setBg(bgUrl("bg_tonari_inside", "day"), { instant: true });
-        await chapterTitle({ no: "第二章", name: "才能の壁", read: "ホロウ・クラウン ── Hollow Crown", sub: "HAZE: OPEN CLOUD 編" });
+        await chapterTitle(CHAPTER_TITLE_ART.find(entry => entry.chapter === 2)); // 登録済みの絵の項目（#2688 F6）
         if (!current(owner)) return;
         progress().titleSeen = true;
         save();

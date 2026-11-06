@@ -658,7 +658,8 @@ function runFx(line) {
   autoFxGap = 6;
   if (id === "shake") { shake(); SE.hit(); }
   else if (id === "flash" || id === "imp") flash(id === "imp" ? "gold" : "white");
-  else if (id === "cutin") { flash("gold"); SE.just(); }
+  // 金の閃光＋決めの音。旧名 cutin は登場カットインと紛らわしいので gold に改めた（#2688 F8。古い台本の cutin も同じ動き）
+  else if (id === "gold" || id === "cutin") { flash("gold"); SE.just(); }
   else if (id === "sepia") layers.vn.classList.add("sepia");
   else if (id === "sepia_off") layers.vn.classList.remove("sepia");
   else if (id === "flashback") layers.vn.classList.add("flashback");
