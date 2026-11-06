@@ -195,6 +195,45 @@ await check('a confession held over the departure prep and Tokyo/Dubai nights re
   same(f.plays, []);
 });
 
+await check('samechan: a confession held from a chapter 3 finale reaches a chapter 5 hometown night; the route still starts only in chapters 2-3 (IR36)', async f => {
+  f.db.dialogues.confession_samechan = { dialogue_id: 'confession_samechan', lines: [{ speaker: '', text: '…' }] };
+  // 第3章の出発前の準備3日に締めくくりを迎え、告白を持ち越している（サメちゃんの恋愛の入口は第2・3章）。
+  const at = (chapter, flags, finaleChapter = 3) => {
+    const s = f.chapterAt(chapter, [], { day: 80, flags: { _samechan_bond_question_done: true, ...flags } });
+    s.romanceChoices = { bond_q1_samechan: { char: 'samechan', value: 1 }, bond_q2_samechan: { char: 'samechan', value: 1 } };
+    s.finales = { samechan: { day: 60, chapter: finaleChapter, route: 'romance' } };
+    s.slot = 2;
+    s.flags._confession_due = 'samechan';
+    return s;
+  };
+  // 第3章の準備3日・東京、第4章のあいだは持ち越す（予約もルートも残る）
+  for (const [label, make] of [
+    ['chapter 3 prep', () => at(3, { _ch3_intro: { startDay: 79 }, _ch3_prep: { startDay: 80, days: 3, step: 0, departed: false }, _ch2_region: 'home' })],
+    ['chapter 3 Tokyo', () => at(3, { _ch3_intro: { startDay: 79 }, _ch3_prep: { startDay: 70, days: 3, step: 1, departed: true }, _ch2_region: 'tokyo' })],
+    ['chapter 4 Dubai', () => at(4, { _ch4: { startDay: 79 }, _ch4_prep: { startDay: 70, days: 3, step: 1, departed: true }, _ch2_region: 'dubai' })],
+  ]) {
+    const s = make(); // at() で今の state が切り替わるので、1つずつ作る
+    assert.equal(f.romance.confessionHeld(), true, `${label}: held`);
+    assert.equal(await f.romance.maybeConfession(async () => {}), false, `${label}: no night-walk confession`);
+    assert.equal(s.flags._confession_due, 'samechan', `${label}: the reservation stays`);
+    assert.equal(f.romance.romanceRouteOpen('samechan'), true, `${label}: the route stays open`);
+  }
+  // 第5章の地元の夜に届く（踏み出すかどうかから）
+  const s = at(5, { _ch5: { startDay: 65, part: 'free' }, _ch2_region: 'home' });
+  f.plays.length = 0;
+  assert.equal(f.romance.romanceRouteOpen('samechan'), true, 'chapter 5: a chapter 3 finale keeps its route');
+  assert.equal(await f.romance.maybeConfession(async () => {}), true, 'chapter 5 home: the confession comes back');
+  same(f.plays, ['remake_confession_gate_samechan']);
+  assert.equal(s.flags._confession_due, 'samechan');
+  // 第4章以降に記録された締めくくり（入口の外）は恋愛ルートにしない
+  at(5, { _ch5: { startDay: 65, part: 'free' }, _ch2_region: 'home' }, 4);
+  assert.equal(f.romance.romanceRouteOpen('samechan'), false, 'a finale outside chapters 2-3 is not a romance route');
+  // 締めくくりの章の記録がない旧セーブは、今の章で判断する（今までどおり）
+  const legacy = at(5, { _ch5: { startDay: 65, part: 'free' }, _ch2_region: 'home' });
+  delete legacy.finales.samechan.chapter;
+  assert.equal(f.romance.romanceRouteOpen('samechan'), false, 'legacy save without the finale chapter');
+});
+
 await check('samechan date gap counts elapsed days on _elapsed_calendar saves; legacy chapter-local saves keep the 14-day offset', async f => {
   // 通算日の保存: 第2章の通算40日にデート → 第3章の通算45日。間は5日（旧式は 45-(14+40) = -9 で誘いが止まっていた）
   const s = f.chapterAt(3, ['samechan'], { day: 45, flags: { _ch3_intro: { startDay: 44 } } });

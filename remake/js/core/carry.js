@@ -81,7 +81,7 @@ export const STATE_KEY_RULES = {
 // 分類網羅テストが data 側と一致するか照合する。
 export const GIFT_EQUIPMENT_IDS = [
   "suyaki_adam", "suyaki_ageha", "suyaki_hiyori", "suyaki_kumicho", "suyaki_saku", "suyaki_mashiro", "suyaki_minto", "suyaki_naru", "suyaki_noor",
-  "suyaki_rei", "suyaki_rio", "suyaki_samechan", "suyaki_sumi", "suyaki_tsumugi",
+  "suyaki_rei", "suyaki_rio", "suyaki_samechan", "suyaki_steve", "suyaki_sumi", "suyaki_tsumugi",
 ];
 
 // 記念品の由来分類（core/keepsakes.js の KEEPSAKES と対応）。
@@ -210,6 +210,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_prep_farewell", "progression"],
   ["_ch3_preview_seen", "progression"],
   ["_ch3_read_ch3_saku_lime", "progression"],
+  ["_ch3_read_ch3_steve_lime", "progression"],
   ["_ch3_read_ch3_minto_small_lies", "progression"],
   ["_ch3_read_hiyori_tokyo_contact", "progression"],
   ["_ch3_registration_read", "progression"],
@@ -365,6 +366,7 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_rei", "person"],
   ["_lime_contact_rio", "person"],
   ["_lime_contact_samechan", "person"],
+  ["_lime_contact_steve", "person"],
   ["_lime_contact_tsumugi", "person"],
   ["_lime_opened", "ui"],
   ["_lime_tut", "ui"],
@@ -476,6 +478,10 @@ export const FLAG_EXACT_RULES = [
   ["_sumi_double_apple_received", "person"],
   ["_sumi_rig_home_seen", "progression"],
   ["_sumi_rig_received_day", "progression"],
+  // 凛想が味の不調に気づいた回（第2章）を読んだか。第3・4章の出発前の凛想の会話が分岐に使う（data/dialogue/ch3_ch4_home.json）
+  ["_talk_seen_ch2_rio_taste", "person"],
+  // 第3章の出発前に凛想から「向こうの顔」を頼まれたか。第4章の出発前の凛想の会話が、その報告の分岐に使う
+  ["_talk_seen_ch3_prep_rio", "person"],
   ["_tsumugi_contest_art_seen", "person"],
   ["_tsumugi_contest_draft_hands", "person"],
   ["_tsumugi_contest_draft_window", "person"],
