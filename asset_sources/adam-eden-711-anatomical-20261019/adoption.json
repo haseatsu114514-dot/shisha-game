@@ -287,19 +287,19 @@
     },
     {
       "id": "chapter_actual_adam",
-      "original": "assets/ui/chapters/ch1_layers/naru.png",
-      "runtime": [
-        "remake/img/ui/chapters/ch1/naru.webp"
-      ],
-      "status": "preserve_correct"
-    },
-    {
-      "id": "chapter_layer_named_adam",
       "original": "assets/ui/chapters/ch1_layers/adam.png",
       "runtime": [
         "remake/img/ui/chapters/ch1/adam.webp"
       ],
-      "status": "preserve_unrelated"
+      "status": "updated_2026-11-06_pr_pending"
+    },
+    {
+      "id": "chapter_actual_naru",
+      "original": "assets/ui/chapters/ch1_layers/naru.png",
+      "runtime": [
+        "remake/img/ui/chapters/ch1/naru.webp"
+      ],
+      "status": "updated_2026-11-06_pr_pending"
     },
     {
       "id": "chapter_full_title",

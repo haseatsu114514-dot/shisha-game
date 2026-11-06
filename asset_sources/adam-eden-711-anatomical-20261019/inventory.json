@@ -542,53 +542,50 @@
       "kind": "chapter_character_layer",
       "character": "adam",
       "adoption": "current_generic_chapter_animation",
-      "original": "assets/ui/chapters/ch1_layers/naru.png",
-      "runtime": [
-        "remake/img/ui/chapters/ch1/naru.webp"
-      ],
-      "sources": [
-        "asset_sources/chapter-title/ch1-white-walk-385-20261013/selected-D/D-title.png"
-      ],
-      "source_relation": "layer used in the selected composition; exact extraction metadata is assets/ui/chapters/ch1_layers/layers.json",
-      "related_shadows": [
-        "assets/ui/chapters/ch1_layers/naru-shadow.png",
-        "remake/img/ui/chapters/ch1/naru-shadow.webp"
-      ],
-      "status": "preserve_correct",
-      "visual_evidence": {
-        "path": "assets/ui/chapters/ch1_layers/naru.png",
-        "kind": "raw_png_viewed",
-        "orientation": "walking toward screen right",
-        "observed_visible_near_anatomical_left": "green",
-        "observed_far_anatomical_right": "red",
-        "finding": "anatomical rule is satisfied; screen halves are not a valid test for this side view"
-      },
-      "filename_warning": "The file is named naru.png but depicts Adam. Do not recolor or rename by filename.",
-      "production_change_at_checkpoint": false
-    },
-    {
-      "id": "chapter_layer_named_adam",
-      "kind": "chapter_character_layer",
-      "character": "naru",
-      "adoption": "current_generic_chapter_animation",
       "original": "assets/ui/chapters/ch1_layers/adam.png",
       "runtime": [
         "remake/img/ui/chapters/ch1/adam.webp"
       ],
       "sources": [
-        "asset_sources/chapter-title/ch1-white-walk-385-20261013/selected-D/D-title.png"
+        "asset_sources/chapter-title/ch1-white-walk-385-20261013/remake-b-20261106/title.png"
       ],
+      "source_relation": "extracted from approved candidate B at the matching character slot on 2026-11-06",
       "related_shadows": [
         "assets/ui/chapters/ch1_layers/adam-shadow.png",
         "remake/img/ui/chapters/ch1/adam-shadow.webp"
       ],
-      "status": "preserve_unrelated",
+      "status": "updated_2026-11-06_pr_pending",
       "visual_evidence": {
         "path": "assets/ui/chapters/ch1_layers/adam.png",
         "kind": "raw_png_viewed",
-        "finding": "silver-haired Naru; not Adam"
+        "finding": "adam in current approved clothing; filename and character match"
       },
-      "production_change_at_checkpoint": false
+      "production_change_at_checkpoint": true
+    },
+    {
+      "id": "chapter_actual_naru",
+      "kind": "chapter_character_layer",
+      "character": "naru",
+      "adoption": "current_generic_chapter_animation",
+      "original": "assets/ui/chapters/ch1_layers/naru.png",
+      "runtime": [
+        "remake/img/ui/chapters/ch1/naru.webp"
+      ],
+      "sources": [
+        "asset_sources/chapter-title/ch1-white-walk-385-20261013/remake-b-20261106/title.png"
+      ],
+      "related_shadows": [
+        "assets/ui/chapters/ch1_layers/naru-shadow.png",
+        "remake/img/ui/chapters/ch1/naru-shadow.webp"
+      ],
+      "status": "updated_2026-11-06_pr_pending",
+      "visual_evidence": {
+        "path": "assets/ui/chapters/ch1_layers/naru.png",
+        "kind": "raw_png_viewed",
+        "finding": "naru in current approved clothing; filename and character match"
+      },
+      "production_change_at_checkpoint": true,
+      "source_relation": "extracted from approved candidate B at the matching character slot on 2026-11-06"
     },
     {
       "id": "chapter_full_title",
@@ -948,42 +945,44 @@
       "raw_bytes_locally_available": false
     },
     "assets/ui/chapters/ch1_layers/adam-shadow.png": {
-      "bytes": 6944,
-      "git_blob_sha1": "8ba8a2fdadb06e590a6f5fcd1fcd155cd0084649",
-      "sha256": null,
-      "hash_basis": "verified_main_tree_or_adoption_record",
-      "raw_bytes_locally_available": false
-    },
-    "assets/ui/chapters/ch1_layers/adam.png": {
-      "bytes": 74170,
-      "git_blob_sha1": "36b4060564ef6524f1a26136078bbc0fd557c951",
-      "sha256": "3c75fea752697d2c0b32b3124fc1d133ef396edf137dd330e8d82cc05c85c191",
-      "hash_basis": "locally_available_file_bytes",
-      "dimensions": [
-        208,
-        358
-      ],
-      "mode": "RGBA",
-      "format": "PNG"
-    },
-    "assets/ui/chapters/ch1_layers/naru-shadow.png": {
       "bytes": 5829,
       "git_blob_sha1": "c3349380dc608aebfe26a85236d2cd0f147f1884",
-      "sha256": null,
-      "hash_basis": "verified_main_tree_or_adoption_record",
-      "raw_bytes_locally_available": false
+      "sha256": "66126b20099260829b7cb24673db4fcad5bb85d99d5b44600609ed9289b8d977",
+      "hash_basis": "locally_available_file_bytes",
+      "raw_bytes_locally_available": true
     },
-    "assets/ui/chapters/ch1_layers/naru.png": {
-      "bytes": 68789,
-      "git_blob_sha1": "d6be6da2f8ad908390615f32d7294b3fed1c4692",
-      "sha256": "152b69c761f5c291eb640ee00eec300eeb16783bf703e8052ed3c4d937f57747",
+    "assets/ui/chapters/ch1_layers/adam.png": {
+      "bytes": 77003,
+      "git_blob_sha1": "030927a782f2d3fe0904cff08abd9dbc33dad037",
+      "sha256": "e10dcee449f488262f850b821db413e4ec563ffb10d8f672c3c92b7fc5da5d23",
       "hash_basis": "locally_available_file_bytes",
       "dimensions": [
         211,
         364
       ],
       "mode": "RGBA",
-      "format": "PNG"
+      "format": "PNG",
+      "raw_bytes_locally_available": true
+    },
+    "assets/ui/chapters/ch1_layers/naru-shadow.png": {
+      "bytes": 6944,
+      "git_blob_sha1": "8ba8a2fdadb06e590a6f5fcd1fcd155cd0084649",
+      "sha256": "82ad87b45111c5a106875d6a55a03594d8c4d61cb18a9f03528a12b5a683174f",
+      "hash_basis": "locally_available_file_bytes",
+      "raw_bytes_locally_available": true
+    },
+    "assets/ui/chapters/ch1_layers/naru.png": {
+      "bytes": 89659,
+      "git_blob_sha1": "8aba15bc97140332c8217553b48fbc36bd2daa86",
+      "sha256": "23554a4ee8479e32ded2aa12428cb2c353a0c475cf1558d98f8cbd15b884ea72",
+      "hash_basis": "locally_available_file_bytes",
+      "dimensions": [
+        208,
+        358
+      ],
+      "mode": "RGBA",
+      "format": "PNG",
+      "raw_bytes_locally_available": true
     },
     "assets/ui/character_intros/adam.png": {
       "bytes": 3336242,
@@ -1122,31 +1121,31 @@
     },
     "remake/img/ui/chapters/ch1/adam-shadow.webp": {
       "bytes": 456,
-      "git_blob_sha1": "6f7f06497b5f1e406ea5f7d6e8883543fe0d35d9",
-      "sha256": null,
-      "hash_basis": "verified_main_tree_or_adoption_record",
-      "raw_bytes_locally_available": false
+      "git_blob_sha1": "920525fdb131137763db2f1be233b0b0ea215db4",
+      "sha256": "73be6194403b11e4726c52ba61d628e3ceef5e24514904d5b2c9638c6e2c7177",
+      "hash_basis": "locally_available_file_bytes",
+      "raw_bytes_locally_available": true
     },
     "remake/img/ui/chapters/ch1/adam.webp": {
-      "bytes": 45580,
-      "git_blob_sha1": "e0429b0453a22bc77f88e728df2490e32f542091",
-      "sha256": null,
-      "hash_basis": "verified_main_tree_or_adoption_record",
-      "raw_bytes_locally_available": false
+      "bytes": 49966,
+      "git_blob_sha1": "78a9b1de39a848fd052def7769728246dd79b7aa",
+      "sha256": "55e8203996037d2f3f0c0ec85161497648e1002160126068ed1fecfdc1efd253",
+      "hash_basis": "locally_available_file_bytes",
+      "raw_bytes_locally_available": true
     },
     "remake/img/ui/chapters/ch1/naru-shadow.webp": {
       "bytes": 456,
-      "git_blob_sha1": "920525fdb131137763db2f1be233b0b0ea215db4",
-      "sha256": null,
-      "hash_basis": "verified_main_tree_or_adoption_record",
-      "raw_bytes_locally_available": false
+      "git_blob_sha1": "6f7f06497b5f1e406ea5f7d6e8883543fe0d35d9",
+      "sha256": "a65b300dc28bf07841f3b5f391e5a48f40e47392a74e32cf3f874922151f14d3",
+      "hash_basis": "locally_available_file_bytes",
+      "raw_bytes_locally_available": true
     },
     "remake/img/ui/chapters/ch1/naru.webp": {
-      "bytes": 43958,
-      "git_blob_sha1": "cac43b5c086525570cea56b3bf2e5053b208a13d",
-      "sha256": null,
-      "hash_basis": "verified_main_tree_or_adoption_record",
-      "raw_bytes_locally_available": false
+      "bytes": 56338,
+      "git_blob_sha1": "c6ef22f979d2dda2a5c349e573a9ae7374152c80",
+      "sha256": "43d8400e770450e4e1d77e85ab893341d5bbfe887f7b85dd84464b1a1dd58d42",
+      "hash_basis": "locally_available_file_bytes",
+      "raw_bytes_locally_available": true
     },
     "remake/img/ui/chapters/ch1_keyart.webp": {
       "bytes": 261058,
