@@ -28,7 +28,7 @@ const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.jso
     const text = row.lines.map(line => line.text || "").join("");
     assert(!/明日の大会|本番よろしく|いよいよ|優勝おめでとう|負けた/.test(text), `${row.dialogue_id} assumes a tournament timeline`);
   }
-  assert(characters.has("suhail") && characters.has("khalil"));
+  assert(characters.has("faris") && characters.has("khalil"));
   assert.equal(camelSceneBg(CAMEL_SCENES.meet), CAMEL_SHOP_BG);
   assert.equal(camelSceneBg(CAMEL_SCENES.watch), CAMEL_TRACK_BG);
   assert.equal(camelSceneBg("ch4_festa"), null);
@@ -68,7 +68,7 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   assert(!advanceCamelRaceStage(value, CAMEL_SCENES.watch), "cannot skip to the track");
   assert.equal(endChapterFourDay(value), "next_day");
   camel = camelOf(value);
-  assert.equal(camel.ok, true); assert.match(camel.label, /スハイルとまた話す/); assert.equal(camel.consumes, false);
+  assert.equal(camel.ok, true); assert.match(camel.label, /ファーリスとまた話す/); assert.equal(camel.consumes, false);
   assert(advanceCamelRaceStage(value, CAMEL_SCENES.invite));
   assert.equal(camelRaceRecord(value).stage, CAMEL_STAGES.invited);
   // 誘われた日はまだ行けない（レースは翌朝）。翌日の昼に行ける。夜（slot 1）は行けない。
@@ -268,7 +268,7 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   const characters = new Set(readData("characters").map(c => c.id));
   const reunion = readData("dialogue/ch5_dubai").dialogues.find(row => row.dialogue_id === "ch5_dubai_camel_again");
   assert(reunion?.lines.length >= 3, "ch5_dubai_camel_again exists");
-  assert.deepEqual([...new Set(reunion.lines.map(line => line.speaker).filter(Boolean))].sort(), ["hajime", "khalil", "suhail"]);
+  assert.deepEqual([...new Set(reunion.lines.map(line => line.speaker).filter(Boolean))].sort(), ["faris", "hajime", "khalil"]);
   for (const line of reunion.lines) if (line.speaker) assert(characters.has(line.speaker), line.speaker);
   assert.doesNotMatch(reunion.lines.map(line => line.text).join(""), /大会|王者|優勝|世界一|シェイク|宿/, "the reunion stays off the tournament and the inn");
 }

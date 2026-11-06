@@ -766,9 +766,9 @@ await suite("ch5-full-flow", async check => {
         _ch4_camel: camel, _ch4_desert: desert };
       // 第4章の砂丘でヌールに一度勝った（第4章なら次の外出でなるが来る）が、なるはまだ来ていない
       value.desert = { runs: 1, bestRank: "B", firstClear: { chapter: 4, day: 5 }, rewarded: true, wins: 1, naruMet: false, naruWins: 0 };
-      Object.assign(value.met, { sheikh: true, suhail: true, khalil: true, noor: true, naru: true });
+      Object.assign(value.met, { sheikh: true, faris: true, khalil: true, noor: true, naru: true });
       value.affinity = { ...(value.affinity || {}), noor: 33 };
-      for (const who of ["noor", "naru", "suhail", "khalil", "sheikh"]) value.flags[`_intro_${who}`] = true;
+      for (const who of ["noor", "naru", "faris", "khalil", "sheikh"]) value.flags[`_intro_${who}`] = true;
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
       const fortunePlan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter: 5 });

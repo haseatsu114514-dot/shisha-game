@@ -395,7 +395,7 @@ export const FLAG_EXACT_RULES = [
   ["_met_rio", "person"],
   ["_met_samechan", "person"],
   ["_met_khalil", "person"],
-  ["_met_suhail", "person"],
+  ["_met_faris", "person"],
   ["_met_sheikh", "person"],
   ["_met_steve", "person"],
   ["_met_tsumugi", "person"],

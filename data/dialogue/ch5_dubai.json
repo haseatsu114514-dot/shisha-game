@@ -171,13 +171,13 @@
     },
     {
       "dialogue_id": "ch5_dubai_camel_again",
-      "comment": "第5章でドバイへ来て、最初にラクダレース場へ行った日だけ、練習レースの前の会話（ch4_camel_replay）の代わりに読む。第4章で一度でも走った人だけ（chapters/ch5-dubai.js）。大会・シェイクの正体には触れない。名前の表記が揺れているので、地の文でスハイルの名前を出さない。",
+      "comment": "第5章でドバイへ来て、最初にラクダレース場へ行った日だけ、練習レースの前の会話（ch4_camel_replay）の代わりに読む。第4章で一度でも走った人だけ（chapters/ch5-dubai.js）。大会・シェイクの正体には触れない。",
       "lines": [
         { "speaker": "", "face": "", "text": "朝のレース場。ハリールの白い車の横で、見覚えのある顔が両手を大きく振った。" },
-        { "speaker": "suhail", "face": "excited", "text": "ハジメ！　日本に帰ったんじゃなかったの？" },
+        { "speaker": "faris", "face": "excited", "text": "ハジメ！　日本に帰ったんじゃなかったの？" },
         { "speaker": "hajime", "face": "smile", "text": "また来ました。……ハビーバに、会いたくなって" },
         { "speaker": "khalil", "face": "normal", "text": "……戻ったか。乗りなさい。ハビーバが待っている" },
-        { "speaker": "suhail", "face": "smile", "text": "今日も連打しないでよ。リモコン、はい" }
+        { "speaker": "faris", "face": "smile", "text": "今日も連打しないでよ。リモコン、はい" }
       ]
     },
     {
