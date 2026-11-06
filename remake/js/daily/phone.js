@@ -621,6 +621,10 @@ export function pushNotice(count, { onOpen = null } = {}) {
     ]),
     el("div.lp-faces", senders.map((s) => avatar(s, true))),
   ]);
+  // 届いた合図: 画面の縁が一度だけ淡く脈打つ（#2688 A12。動きを減らす設定ではCSSで出さない）
+  const edge = el("div.lime-edge-pulse", { "aria-hidden": "true" });
+  layers.fx.append(edge);
+  setTimeout(() => edge.remove(), 700);
   layers.toasts.append(card);
   SE.phoneReceive();
   requestAnimationFrame(() => card.classList.add("show"));

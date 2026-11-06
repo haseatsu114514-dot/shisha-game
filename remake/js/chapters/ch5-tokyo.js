@@ -10,6 +10,7 @@
 import { state, save, timeOfDay, markMet } from "../core/state.js";
 import { DB, sceneBg } from "../core/data.js";
 import { setBg, toast } from "../core/ui.js";
+import { vanRide } from "../core/scene-motions.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { addMoney, addStamina, earnStat, gainAffinity, visitAffinity, earnSceneCompletion } from "../core/stats.js";
@@ -227,6 +228,9 @@ async function goToTokyo(owner) {
   if (!await read("ch5_tokyo_go", "bg_street", owner)) return { used: false, exerted: false };
   state.flags._ch2_region = TOKYO;
   save();
+  // 配送便の車窓。道路の灯が流れて、夜の東京に着く（#2688 A4）
+  await vanRide(() => showBg(state.flags[ATTIC_FLAG] ? "bg_tokyo_map_night" : "bg_mukai_shop", "night"), { to: "tokyo" });
+  if (state !== owner) return { used: false, exerted: false };
   // 第5章で初めて着いた夜は、ムカイさんに屋根裏を貸してもらう。
   if (!state.flags[ATTIC_FLAG]) {
     if (await read("ch5_tokyo_arrival", "bg_mukai_shop", owner, "night")) { state.flags[ATTIC_FLAG] = true; markMet("mukai_master"); save(); }
@@ -239,6 +243,8 @@ async function goHome(owner) {
   if (!await read("ch5_tokyo_back", "bg_street", owner)) return { used: false, exerted: false };
   state.flags._ch2_region = "home";
   save();
+  // 配送便の車窓で地元の夜へ（#2688 A4）
+  await vanRide(() => showBg("bg_osu_map_night", "night"), { to: "town" });
   return { used: true, exerted: false, slotsUsed: TOKYO_VAN_SLOTS };
 }
 

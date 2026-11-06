@@ -395,3 +395,5 @@ body.in-vn:has(#vn.flashback) #bg { filter: grayscale(1) contrast(.92); }
  .cutin .ci-left-field {clip-path:polygon(0 0,558px 0,410px 720px,0 720px)!important;}
 }
 .vn-choice:disabled { opacity: .38; cursor: default; }
+/* 選んだ選択肢の写し（vn/engine.js ghostChoice・#2688 F5）。同じ見た目のまま右へ流れて消える */
+.vn-choice.vn-choice-ghost, .vn-choice.vn-choice-ghost:disabled { position: absolute; margin: 0; opacity: 1; pointer-events: none; z-index: 6; }
