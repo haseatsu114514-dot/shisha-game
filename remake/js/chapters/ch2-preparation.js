@@ -92,7 +92,7 @@ export async function visitCityRegular(spot, { staminaGuard }) {
     toast("室内を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます");
     return { used: false, exerted: false };
   }
-  await withScenePreparation(setBg(ROOMS[id], { instant: true }));
+  await withScenePreparation(setBg(ROOMS[id]));
   if (state !== owner) return { used: false, exerted: false };
   const welcome = `venue_${id}_${timeOfDay()}`;
   if (DB.dialogues[welcome]?.lines?.length) {
@@ -197,14 +197,14 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   if (state !== owner) return { used: false, exerted: false };
   // 未訪問なら先に実際の名乗りを読む。見学・顔合わせだけで交流回数を増やさない。
   if (!state.met[id]) {
-    await withScenePreparation(setBg(MAP[timeOfDay()], { instant: true }));
+    await withScenePreparation(setBg(MAP[timeOfDay()]));
     const result = await play(`ch2_city_${id}`);
     if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
     recordCityVisit(state, id);
   }
   // 続編・再訪・段階会話は、正常終端まで請求と既読を保留する。
   // cancelled/途中LOAD/例外で、追加の街紹介の前に費用だけが残らない。
-  await withScenePreparation(setBg(ROOMS[id], { instant: true }));
+  await withScenePreparation(setBg(ROOMS[id]));
   if (state !== owner) return { used: false, exerted: false };
   // 通い訪問の小会話の前だけ、昼夜の店のあいさつを挟む（段階会話・締めくくりは自前の導入がある）。
   const welcome = repeat && REPEAT_POOL[id] ? `venue_${id}_${timeOfDay()}` : null;

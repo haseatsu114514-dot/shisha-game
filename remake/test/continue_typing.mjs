@@ -76,7 +76,7 @@ async function prepare(options) {
 async function mount(page, variant = 0, reducedMotion = false, context = null) {
   await page.evaluate(({ variant, reducedMotion, context }) => {
     C.decisions = [];
-    C.ui.showScreen("end", C.go.buildGameOver({ variant, context, soundEffects: false, reducedMotion,
+    C.ui.showScreen("end", C.go.buildGameOver({ variant, context, soundEffects: false, reducedMotion, layout: "neon",
       onRetry: () => C.decisions.push("retry"), onTitle: () => C.decisions.push("quit") }));
   }, { variant, reducedMotion, context });
   await page.locator(".go-sumi-img").evaluate(image => image.decode());

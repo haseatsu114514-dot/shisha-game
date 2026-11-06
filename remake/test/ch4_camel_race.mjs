@@ -220,5 +220,57 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   assert.deepEqual(capped.parts, [], "at the cap mastery is recorded without a false +1");
   assert.equal(cap.rewards["camel-master"], true);
 }
+// 第5章でドバイにいる日（chapters/ch5-dubai.js）: 第4章で一度でも走った人だけ、練習レースへまた通える。
+// 店先の出会い・誘い・本番の見学（「大会の人だ」「宿の前に迎えに行く」）は第4章の話なので、第5章では始めない。日付は通算の value.day。
+{
+  const fields = { region: "dubai", kind: "ch5_dubai", stamina: 0 };
+  const raced = { stage: CAMEL_STAGES.unlocked, meetDay: 47, inviteDay: 48, watched: true, plays: 1, lastPlayDay: 49,
+    best: { total: 61, rank: 3, grade: "B", time: 53.2, chapter: 4, day: 49 } };
+  const chapterFive = (camel, region = "dubai") => {
+    const value = newState();
+    Object.assign(value, { chapter: 5, phase: "daily", day: 60, slot: 0 });
+    value.flags._ch2_region = region;
+    if (camel) value.flags[CAMEL_FLAG] = structuredClone(camel);
+    return value;
+  };
+  let value = chapterFive(raced);
+  const before = structuredClone(value);
+  assert(camelRaceOpen(value));
+  const destination = camelRaceDestination(value);
+  assert.deepEqual([destination.ok, destination.consumes, destination.label], [true, true, "ラクダレース場で練習レース"]);
+  let spot = camelDailySpot(value, fields);
+  assert.deepEqual(value, before, "Building the Chapter 5 spot mutated the save");
+  assert.deepEqual([spot.id, spot.kind, spot.region, spot.place, spot.label, spot.preview, spot.unavailable, spot.hasNew()],
+    [CAMEL_DAILY_SPOT_ID, "ch5_dubai", "dubai", "camel", "ラクダレース場", CAMEL_TRACK_BG, "", false]);
+  assert.match(spot.desc, /自己ベスト 61/);
+  assert.doesNotMatch(spot.desc, /宿/, "Hajime stays at the Sheikh's residence in Chapter 5, not the inn");
+  // 1日1回・昼だけ（第5章の通算の日で比べる。第4章の記録日 49 より後なので、最初の日から走れる）
+  recordCamelRaceResult(value, { total: 70, rank: 2, grade: "A", time: 52 });
+  spot = camelDailySpot(value, fields);
+  assert.deepEqual([spot.unavailableTag, camelRaceRecord(value).lastPlayDay, camelRaceRecord(value).best.chapter], ["今日はもう走った", 60, 5]);
+  value.day += 1;
+  assert.equal(camelDailySpot(value, fields).unavailable, "");
+  value.slot = 1;
+  assert.equal(camelDailySpot(value, fields).unavailableTag, "レースは昼だけ");
+  // 第4章で走っていない人（知らない・知り合っただけ・誘われただけ・本番を見ただけ）には、第5章で出ない
+  for (const camel of [null, { stage: 0 }, { stage: 1, meetDay: 47 }, { stage: 2, inviteDay: 48 }, { stage: 2, inviteDay: 48, watched: true }]) {
+    value = chapterFive(camel);
+    assert.equal(camelRaceOpen(value), false, JSON.stringify(camel));
+    assert.equal(camelRaceDestination(value), null, JSON.stringify(camel));
+    assert.equal(camelDailySpot(value, fields), null, JSON.stringify(camel));
+  }
+  // 第5章でも、ドバイ以外（地元・隣町・東京）や自由行動の外では出ない。ほかの章の値でも開かない
+  for (const region of ["home", "widehanga", "tokyo", null]) assert.equal(camelDailySpot(chapterFive(raced, region), fields), null, String(region));
+  value = chapterFive(raced); value.phase = "tournament";
+  assert.equal(camelRaceDestination(value), null, "not on the match day");
+  for (const chapter of [3, 6]) { value = chapterFive(raced); value.chapter = chapter; assert.equal(camelRaceOpen(value), false, `chapter ${chapter}`); }
+  // 第5章の再会の場面（ch5_dubai.json）: 話者は characters.json に居る。大会・王者・シェイクの正体・宿には触れない
+  const characters = new Set(readData("characters").map(c => c.id));
+  const reunion = readData("dialogue/ch5_dubai").dialogues.find(row => row.dialogue_id === "ch5_dubai_camel_again");
+  assert(reunion?.lines.length >= 3, "ch5_dubai_camel_again exists");
+  assert.deepEqual([...new Set(reunion.lines.map(line => line.speaker).filter(Boolean))].sort(), ["faris", "hajime", "khalil"]);
+  for (const line of reunion.lines) if (line.speaker) assert(characters.has(line.speaker), line.speaker);
+  assert.doesNotMatch(reunion.lines.map(line => line.text).join(""), /大会|王者|優勝|世界一|シェイク|宿/, "the reunion stays off the tournament and the inn");
+}
 console.log("ch4_camel_race: ok");
 

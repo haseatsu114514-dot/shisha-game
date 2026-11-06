@@ -38,7 +38,7 @@ try {
       mount(speaker, face) {
         const view = createContinueView({
           script: speaker === 'sumi' ? SUMI_CONTINUE_SCRIPTS[0] : PREMIUM_CONTINUE_SCRIPTS[speaker],
-          speaker, character: speaker, premium: speaker !== 'sumi',
+          speaker, character: speaker, premium: speaker !== 'sumi', layout: 'neon',
         });
         document.querySelector('#screen').replaceChildren(view.root);
         this.view = view;
