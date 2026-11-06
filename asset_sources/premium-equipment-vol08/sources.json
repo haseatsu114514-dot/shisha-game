@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "id": "kumogama_phunnel",
+      "source": "asset_sources/premium-equipment-vol08/kumogama_phunnel.png",
+      "delivery": "remake/img/shop/equipment-v2/kumogama_phunnel.webp",
+      "sha256": "ecf3aa94e7f227d8b48e0257414750f8db47b8e218beea6b9f7ade80380facb9"
+    },
+    {
+      "id": "lotos_plus",
+      "source": "asset_sources/premium-equipment-vol08/lotos_plus.png",
+      "delivery": "remake/img/shop/equipment-v2/lotos_plus.webp",
+      "sha256": "33642080f520c8eb121bbe71f322a649103764f8854b011ef00cf7ad99fa8090"
+    },
+    {
+      "id": "stand_walnut",
+      "source": "asset_sources/premium-equipment-vol08/stand_walnut.png",
+      "delivery": "remake/img/shop/equipment-v2/stand_walnut.webp",
+      "sha256": "47d07def3aeb0463121f458118c0d5a7f51fe3f7462f6856a79a6afbda904cb4"
+    },
+    {
+      "id": "stand_custom",
+      "source": "asset_sources/premium-equipment-vol08/stand_custom.png",
+      "delivery": "remake/img/shop/equipment-v2/stand_custom.webp",
+      "sha256": "73139c6d659bf2aaaf35ec939c88c5e4338293ece8a8ba81771e141e60b0d679"
+    }
+  ]
+}
