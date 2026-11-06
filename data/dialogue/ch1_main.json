@@ -2242,7 +2242,6 @@
             "type": "intro",
             "char_id": "tsumugi",
             "intro": {
-              "display_name": "つむぎ",
               "title": "tonariで煙を描く常連",
               "line": "……",
               "face": "normal"

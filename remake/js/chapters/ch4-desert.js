@@ -85,7 +85,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
       // 初対面の登場カットイン（名乗った後に一度だけ。立ち絵が無い間も名前と一言は出す）
       if (id === DESERT_TALKS[0] && !owner.flags._intro_noor) {
         const { playIntro } = await import("../vn/intro.js");
-        if (current()) await playIntro(DESERT_GUIDE, { override: { display_name: DB.characters[DESERT_GUIDE]?.display_name } });
+        if (current()) await playIntro(DESERT_GUIDE);
       }
       if (id === DESERT_TALKS[DESERT_INVITE_STAGE - 1] && current()) toast("昼の行き先に「ヌールと砂丘へ」が加わった", { kind: "good" });
       return changed;

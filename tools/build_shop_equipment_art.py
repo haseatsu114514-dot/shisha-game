@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Encode three new shop illustrations, preserving their native PNG originals."""
+"""Encode approved shop illustrations, preserving their native PNG originals."""
 import argparse
 import hashlib
 import io
@@ -10,15 +10,20 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 RECORDS = ROOT / 'asset_sources/shop-art-issue586/equipment-followup'
+PREMIUM_RECORDS = ROOT / 'asset_sources/premium-equipment-vol08'
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check', action='store_true')
     args = parser.parse_args()
-    items = json.loads((RECORDS / 'sources.json').read_text())['items']
-    if [item['id'] for item in items] != ['lotos_hagal', 'flat_charcoal', 'cube_charcoal']:
-        raise ValueError('Only the new lotos illustration and two coals are selected')
+    original_items = json.loads((RECORDS / 'sources.json').read_text())['items']
+    premium_items = json.loads((PREMIUM_RECORDS / 'sources.json').read_text())['items']
+    if [item['id'] for item in original_items] != ['lotos_hagal', 'flat_charcoal', 'cube_charcoal']:
+        raise ValueError('Unexpected original shop illustration IDs')
+    if [item['id'] for item in premium_items] != ['kumogama_phunnel', 'lotos_plus', 'stand_walnut', 'stand_custom']:
+        raise ValueError('Only the four approved premium illustrations are selected')
+    items = original_items + premium_items
     mappings, report = [], []
     for item in items:
         source, delivery = ROOT / item['source'], ROOT / item['delivery']
@@ -36,12 +41,14 @@ def main():
             encoded = io.BytesIO()
             canvas.save(encoded, format='WEBP', quality=88, method=6, exact=True)
             data = encoded.getvalue()
-            if args.check:
-                if delivery.read_bytes() != data:
-                    raise ValueError(f'Delivery mismatch: {delivery}')
-            else:
-                delivery.parent.mkdir(parents=True, exist_ok=True)
-                delivery.write_bytes(data)
+            # Legacy deliveries remain byte-for-byte unchanged; encoder versions differ.
+            if item in premium_items:
+                if args.check:
+                    if delivery.read_bytes() != data:
+                        raise ValueError(f'Delivery mismatch: {delivery}')
+                else:
+                    delivery.parent.mkdir(parents=True, exist_ok=True)
+                    delivery.write_bytes(data)
         with Image.open(delivery) as image:
             image.load()
             alpha = image.getchannel('A')
@@ -64,8 +71,8 @@ def main():
         if source.read_bytes() != raw:
             raise ValueError(f'Original was modified: {source}')
     outputs = {
-        ROOT / 'remake/js/daily/shop-equipment-art.js': '// Derived by tools/build_shop_equipment_art.py; held HMD candidates are excluded.\nexport const SHOP_EQUIPMENT_ART = {\n' + '\n'.join(mappings) + '\n};\n',
-        RECORDS / 'validation.json': json.dumps(dict(items=report), indent=2) + '\n',
+        ROOT / 'remake/js/daily/shop-equipment-art.js': '// Derived by tools/build_shop_equipment_art.py; pending candidates are excluded.\nexport const SHOP_EQUIPMENT_ART = {\n' + '\n'.join(mappings) + '\n};\n',
+        PREMIUM_RECORDS / 'validation.json': json.dumps(dict(items=report[len(original_items):]), indent=2) + '\n',
     }
     for path, content in outputs.items():
         if args.check:
@@ -73,7 +80,7 @@ def main():
                 raise ValueError(f'Derived file mismatch: {path}')
         else:
             path.write_text(content)
-    print('PASS: three shop illustrations decoded; margins checked; originals unchanged')
+    print(f'PASS: {len(items)} shop illustrations decoded; margins checked; originals unchanged')
 
 
 if __name__ == '__main__':

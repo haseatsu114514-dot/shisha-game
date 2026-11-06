@@ -579,7 +579,7 @@
       "sell_price": 4900,
       "price": 9800,
       "value": "kumogama_phunnel",
-      "art": "hagal_80beat",
+      "art": "kumogama_phunnel",
       "capacity": 16,
       "description": "窯元が一つずつ挽いた釉薬のファンネル。中央の筒が高く、シロップが葉の下へ落ちにくい。容量16g。"
     },
@@ -592,7 +592,7 @@
       "sell_price": 7000,
       "price": 14000,
       "value": "lotos_plus",
-      "art": "lotos_hagal",
+      "art": "lotos_plus",
       "description": "ロートスHMDの上位モデル。ボウルに直接のせて使い、アルミは張らない。厚い蓋で熱がぶれにくい。"
     },
     {
@@ -628,6 +628,7 @@
       "sell_price": 50000,
       "price": 100000,
       "value": "stand_walnut",
+      "art": "stand_walnut",
       "home_xp": 8,
       "description": "真鍮のステムをくるみ材で包み、厚いガラスのベースに差した台。煙がなめらかに通り、香りの違いを確かめやすい。"
     },
@@ -640,6 +641,7 @@
       "sell_price": 150000,
       "price": 300000,
       "value": "stand_custom",
+      "art": "stand_custom",
       "home_xp": 9,
       "description": "職人が一台ずつ仕立てる真鍮のステムと、手吹きガラスのベース。受け皿の高さやホースポートの向きまで手に合わせてある。"
     }

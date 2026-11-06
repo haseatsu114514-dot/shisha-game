@@ -3197,6 +3197,7 @@
         "remake/js/daily/fortune*.js",
         "remake/js/core/fortune-effects.js",
         "remake/data/fortune-trivia.json",
+        "remake/data/fortune-trivia-selection.json",
         "remake/data/fortune-choice-hints.json",
         "docs/qa/hud-fortune-682/trivia-draft.md",
         "remake/js/core/chapter-features.js",
@@ -3754,6 +3755,22 @@
       ],
       "run": [
         "node remake/test/intro_transition.mjs"
+      ]
+    },
+    {
+      "id": "conversation-effects-demo",
+      "title": "Conversation effects demo (#2732): 12 candidates, ON/OFF, one at a time",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 5,
+      "paths": [
+        "remake/test/conversation_effects_demo.mjs",
+        "remake/js/vn/conversation-effects-data.js",
+        "remake/js/vn/conversation-effects-demo.js",
+        "remake/conversation-effects-demo.html"
+      ],
+      "run": [
+        "node remake/test/conversation_effects_demo.mjs"
       ]
     },
     {

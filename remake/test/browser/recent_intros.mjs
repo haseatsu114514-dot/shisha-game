@@ -33,7 +33,6 @@ try {
       const c = T.data.DB.characters[id];
       return {
         name: host.querySelector(".ci-name").textContent,
-        expectedName: T.data.realName(id),
         title: host.querySelector(".ci-title").textContent,
         quote: host.querySelector(".ci-line").textContent,
         expectedTitle: c.intro_cutin.title, expectedQuote: `「${c.intro_cutin.line.replaceAll("／", "")}」`,
@@ -48,7 +47,9 @@ try {
         }),
       };
     }, id);
-    assert.equal(result.name, result.expectedName);
+    // NAMES-1106「カットインの名前表示ルール」: 本名タイプはフルネーム、占い師は「占いオババ」
+    assert.equal(result.name, { saku: "綾取陣", steve: "スティーブ・A・アッシュ", volk: "ヴォルク・イヴァノフ", mashiro: "黒葉ましろ",
+      maki: "斧崎マキ", sai: "六角サイ", uranaishi: "占いオババ" }[id]);
     assert.equal(result.title, result.expectedTitle);
     assert.equal(result.quote, result.expectedQuote);
     assert(result.images && result.fits, `${id}: 画像未読込または文字のはみ出し ${result.images} ${result.boxes.join(" / ")}`);

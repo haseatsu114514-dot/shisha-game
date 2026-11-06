@@ -14,6 +14,10 @@
 /* 一言とフレーバーは下端を基準に積む。1行／2行・フレーバー有無で上へ伸びる（2026-10-31） */
 /* 苗字と名前のあいだの小さな空き（綾取 陣・神崎 竜二など） */
 .art-intro .ci-name-gap { display:inline-block; width:.22em; }
+/* 漢字の上の小さいふりがな（NAMES-1106・全員共通）。ふりがなのある名前は上に読みの分だけ空けて、帯の中に収める */
+.cutin .ci-name.has-ruby { padding-top:.26em; }
+.cutin .ci-ruby { position:relative; display:inline-block; }
+.cutin .ci-ruby::before { content:attr(data-ruby); position:absolute; left:50%; bottom:calc(100% - .02em); translate:-50% 0; font-size:max(.2em,13px); font-weight:700; line-height:1; letter-spacing:.04em; white-space:nowrap; }
 .art-intro .ci-quote-area { position:absolute; left:634px; bottom:80px; width:580px; z-index:5; display:flex; flex-direction:column; align-items:flex-start; }
 .art-intro .ci-quote-area.has-flavor { bottom:34px; }
 /* グラフィック絵柄（人物が大きい一枚絵）: 名前の欄と一言・好きなフレーバーを右へ寄せ、人物に重ねない。名前の幅は intro-art.js の GRAPHIC_META_SHIFT と合わせる */

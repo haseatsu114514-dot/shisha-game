@@ -87,12 +87,25 @@ try {
     assert.equal(await page.locator(".cutin").count(), 0, `${id}: 自動で閉じない`);
   }
 
-  // 1a) 苗字と名前のあいだの小さな空き（正本の名前に空白がある人だけ）
+  // 1a) 名前の書き方: 「漢字《よみ》」でふりがな、「｜」で範囲を明示、半角空白は苗字と名前のあいだの小さな空き
   const split = await page.evaluate(async () => {
-    const { nameParts } = await import("./js/vn/intro-art.js");
-    return { saku: nameParts("saku", "綾取陣"), maki: nameParts("maki", "斧崎マキ"), naru: nameParts("naru", "なる"), hiyori: nameParts("hiyori", "ひより") };
+    const { nameParts, plainName } = await import("./js/vn/intro-art.js");
+    const cases = ["綾取《あやとり》 陣《じん》", "神崎《かんざき》 竜二《りゅうじ》（組長《くみちょう》）", "鴉葬《あそう》｜レヰ《れい》", "占《うらな》いオババ", "あげは"];
+    return cases.map((text) => ({ parts: nameParts(text), plain: plainName(text) }));
   });
-  assert.deepEqual(split, { saku: ["綾取", "陣"], maki: ["斧崎", "マキ"], naru: null, hiyori: null }, "苗字と名前の区切り");
+  assert.deepEqual(split, [
+    { parts: [{ text: "綾取", ruby: "あやとり" }, { gap: true }, { text: "陣", ruby: "じん" }], plain: "綾取陣" },
+    { parts: [{ text: "神崎", ruby: "かんざき" }, { gap: true }, { text: "竜二", ruby: "りゅうじ" }, { text: "（" }, { text: "組長", ruby: "くみちょう" }, { text: "）" }], plain: "神崎竜二（組長）" },
+    { parts: [{ text: "鴉葬", ruby: "あそう" }, { text: "レヰ", ruby: "れい" }], plain: "鴉葬レヰ" },
+    { parts: [{ text: "占", ruby: "うらな" }, { text: "いオババ" }], plain: "占いオババ" },
+    { parts: [{ text: "あげは" }], plain: "あげは" },
+  ], "名前の書き方の読み取り");
+  // ふりがなは全員共通（2026-11-06）: 名前に漢字がある人は、全ての漢字にふりがなを付ける
+  const unruby = await page.evaluate(async (ids) => {
+    const { nameParts } = await import("./js/vn/intro-art.js");
+    return ids.flatMap((id) => nameParts(T.intro.introName(id).source).filter((part) => !part.ruby && /\p{Script=Han}/u.test(part.text || "")).map((part) => `${id}: ${part.text}`));
+  }, ids);
+  assert.deepEqual(unruby, [], "ふりがなの無い漢字がある");
 
   // 1b) 絵柄の切り替え: 既定は新しいグラフィック絵柄、設定 classic で旧の立ち絵へ戻る（2026-10-31）
   const artFor = async (id, style) => {
@@ -124,13 +137,46 @@ try {
   }
   await page.evaluate(() => { T.core.config.introArtStyle = "graphic"; });
 
-  // 2) 名前の出し方: 全員で呼び名のみ、本名の括弧を廃止。物語の名乗りは残す
-  const rule = await page.evaluate(() => Object.fromEntries(["naru", "sumi", "tsumugi", "sui", "minto"].map((id) => [id, T.intro.introName(id)])));
-  assert.deepEqual(rule.naru, { main: "なる", full: "" });
-  assert.deepEqual(rule.sumi, { main: "スミさん", full: "" });
-  assert.deepEqual(rule.tsumugi, { main: "つむぎ", full: "" }, "フルネームの無いキャラに（）が付く");
-  assert.equal(rule.sui.full, "", "呼び名とフルネームが同じなら（）を付けない");
-  assert.deepEqual(rule.minto, { main: "みんと", full: "" });
+  // 2) 名前の出し方（NAMES-1106「カットインの名前表示ルール」2026-11-06）
+  //    本名タイプはフルネーム（あだ名がある人は「本名（あだ名）」）、通り名タイプは通り名。外国人は本名タイプで短縮あり
+  const rule = await page.evaluate(() => Object.fromEntries(Object.keys(T.DB.characters).filter((id) => T.DB.characters[id].intro_cutin)
+    .map((id) => [id, T.intro.introName(id).main])));
+  assert.deepEqual(rule, {
+    hajime: "逢縁はじめ", sumi: "炭吉丈一郎", naru: "鳴切亮太（なる）", adam: "アダム", minto: "みんと", shisha_9000: "SHISHA-9000",
+    saku: "綾取陣", steve: "スティーブ・A・アッシュ", volk: "ヴォルク・イヴァノフ", rei: "鴉葬レヰ", master_hookah: "王煙楼",
+    tsumugi: "猫洞つむぎ", rio: "円頓寺凛想", ageha: "あげは", kumicho: "神崎竜二（組長）", dr_kemuri: "チャコール博士", pakki: "パッキー",
+    sui: "伏見豪", emil: "エミル・ユルマズ", sheikh: "シェイク・ナジュム", da_silva: "ダ・シルヴァ・太陽", mashiro: "黒葉ましろ",
+    uranaishi: "占いオババ", mukai_master: "向井然", maezono: "上園文太郎", oneesan: "お姉さん", hiyori: "泡沫ひより",
+    maki: "斧崎マキ", sai: "六角サイ", yoru: "針間ヨル", noor: "ヌール・サーリム", samechan: "サメちゃん",
+  });
+  // 肩書きは別欄: スミは「はじめの師匠」、王煙楼は「マスターフーカー」。名前にはふりがなだけを付ける
+  const titled = await page.evaluate(() => ["sumi", "master_hookah"].map((id) => [T.DB.characters[id].intro_cutin.title, T.intro.introName(id).source]));
+  assert.deepEqual(titled, [["はじめの師匠", "炭吉《すみよし》 丈一郎《じょういちろう》"], ["マスターフーカー", "王煙楼《ワン・イェンロウ》"]]);
+  // みんとは段階型: 本名を本人から聞いた後（_minto_name_known）は木成頼栞
+  const staged = await page.evaluate(() => {
+    const before = [T.intro.introName("minto").main, T.intro.introName("oneesan").main];
+    T.core.state.flags._minto_name_known = true;
+    const after = [T.intro.introName("minto").main, T.intro.introName("oneesan").main];
+    delete T.core.state.flags._minto_name_known;
+    return { before, after };
+  });
+  assert.deepEqual(staged, { before: ["みんと", "お姉さん"], after: ["木成頼栞", "木成頼栞"] });
+  // 画面では漢字の上に小さいふりがな（本文は名前だけ・読みは data-ruby）
+  const ruby = await page.evaluate(async () => {
+    T.core.state.flags._intro_kumicho = false;
+    const p = T.intro.playIntro("kumicho");
+    await new Promise((r) => setTimeout(r, 900));
+    const name = document.querySelector(".cutin .ci-name"), ribbon = document.querySelector(".cutin .ci-ribbon")?.getBoundingClientRect();
+    const out = {
+      text: name.textContent, label: name.getAttribute("aria-label"),
+      ruby: [...name.querySelectorAll(".ci-ruby")].map((n) => [n.textContent, n.dataset.ruby, getComputedStyle(n, "::before").content]),
+      small: [...name.querySelectorAll(".ci-ruby")].every((n) => parseFloat(getComputedStyle(n, "::before").fontSize) < parseFloat(getComputedStyle(n).fontSize) / 3),
+    };
+    await p;
+    return out;
+  });
+  assert.deepEqual(ruby, { text: "神崎竜二（組長）", label: "神崎竜二（組長）", small: true,
+    ruby: [["神崎", "かんざき", '"かんざき"'], ["竜二", "りゅうじ", '"りゅうじ"'], ["組長", "くみちょう", '"くみちょう"']] });
   const hidden = await page.evaluate(async () => {
     const out = {};
     for (const id of ["minto", "rei"]) {

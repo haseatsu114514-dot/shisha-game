@@ -8,6 +8,8 @@ import { on } from "./bus.js";
 const HOME_SCENE_PROPS = [
   { owned: "home_rig_set", file: "shisha_home_tabletop.png", x: 563, y: 552, h: 126, ratio: 648 / 1048, crop: [286, 181, 648, 1048], size: [1222, 1287] },
   { owned: "home_rig_pro", file: "shisha_home_pro.png", x: 914, y: 563, h: 236, ratio: 464 / 1489, crop: [280, 21, 464, 1489], size: [1024, 1536] },
+  { owned: "stand_walnut", file: "shisha_home_stand_walnut.png", x: 760, y: 563, h: 236, ratio: 1024 / 1536, crop: [0, 0, 1024, 1536], size: [1024, 1536] },
+  { owned: "stand_custom", file: "shisha_home_stand_custom.png", x: 1090, y: 563, h: 236, ratio: 1024 / 1536, crop: [0, 0, 1024, 1536], size: [1024, 1536] },
 ];
 const isHome = (url) => /^bg_home(?:_(?:overcast_)?(?:day|night))?\.png$/.test(sceneFile(url));
 

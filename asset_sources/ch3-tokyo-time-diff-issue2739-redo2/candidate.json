@@ -1,0 +1,19 @@
+{
+  "issue": 2739,
+  "status": "第3ラウンド・採用判断用候補・未採用",
+  "catalog_candidate": {
+    "key": "bg_mukai_shop_day.webp",
+    "place": "mukai_shop",
+    "time": "day",
+    "weather": "",
+    "size": [1920, 1080]
+  },
+  "existing_background": "assets/backgrounds/bg_mukai_shop.png",
+  "rejected_previous_candidate": "asset_sources/ch3-tokyo-time-diff-issue2739-redo/bg_mukai_shop_day_redo_original.png",
+  "original": "bg_mukai_shop_day_redo2_original.png",
+  "preview": "bg_mukai_shop_day_redo2_preview.webp",
+  "sha256": {
+    "original": "dcc707b438f762acfc4d2ca8363dbe66f163e14c88767f42d8f59cbdac70346a",
+    "preview": "e3e438d6ff9c32477a27cfa93fc658b6ff287f91f2ddab2a0fc7fa61a6af6b79"
+  }
+}

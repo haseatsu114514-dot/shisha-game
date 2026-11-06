@@ -713,7 +713,9 @@
  ],
  "sceneProps": [
   "shisha_home_pro.png",
-  "shisha_home_tabletop.png"
+  "shisha_home_tabletop.png",
+  "shisha_home_stand_walnut.png",
+  "shisha_home_stand_custom.png"
  ],
  "continueUI": [
   "approval_stamp.png",
@@ -3407,6 +3409,8 @@
   "ui/making/ui_temperature_frame.png",
   "ui/scene_props/shisha_home_pro.png",
   "ui/scene_props/shisha_home_tabletop.png",
+  "ui/scene_props/shisha_home_stand_walnut.png",
+  "ui/scene_props/shisha_home_stand_custom.png",
   "ui/title_arts/title_art_adam_01_sunset_proclamation.png",
   "ui/title_arts/title_art_adam_02_twin_apple_throne.png",
   "ui/title_arts/title_art_ageha_01_professional_taste.png",

@@ -52,7 +52,22 @@ for (const [char, from] of Object.entries(addedFrom)) {
   expectedIds[char] = [...(expectedIds[char] || []), ...ids];
   addedIds.push(...ids);
 }
+// 2026-11-07（#2805）: 占い師は相手に会ったことがないので、見た目・持ち物・私生活の具体・過去の出来事を
+// 言い当てる候補（伝聞・言い切りを含む）と秘密に近い候補を削除した。欠番として残し、再利用しない。
+const removed2805 = {
+  sumi: [6, 7, 17, 18, 20], tsumugi: [15], naru: [2, 12, 18], adam: [2, 5, 14, 17, 19],
+  minto: [2, 3, 5, 6, 10, 13, 17, 18, 19], rio: [14, 16, 17, 18, 19, 20], hiyori: [3, 16, 17, 19],
+  samechan: [1, 5, 16, 17], ageha: [1, 2, 5, 8, 9, 11], kumicho: [1, 4, 5, 6, 7, 8], rei: [1, 2, 3, 5, 6, 7, 9, 10],
+  saku: [1, 4, 5, 6, 7, 8, 9], steve: [2, 3, 5, 6, 7, 9], volk: [1, 2, 3, 4, 5, 8, 9, 10],
+  mashiro: [1, 3, 4, 5, 6, 7, 8, 10], da_silva: [5, 6, 7, 8, 9], sheikh: [1, 2, 6, 7, 9],
+  master_hookah: [1, 2, 3, 4, 5, 7, 9], noor: [1, 3, 5, 6, 9],
+};
+const removedIds = Object.entries(removed2805).flatMap(([char, ns]) => ns.map(n => `${char}_${n}`));
+for (const char of Object.keys(expectedIds)) expectedIds[char] = expectedIds[char].filter(id => !removedIds.includes(id));
+const SECRET_WORDS = /健太|田中|シガーマン|若い?衆|抗争|ファヴェーラ|スラム|軍で|15年前|レモンケーキ/;
+const OLD_NAMES = /蒸野|墨田|猫柳|薄羽|汐見|宵野|緑川|綾取朔|向井玄|須井|香坂|くゆり|スハイル/;
 const excludedIds = [
+  ...removedIds,
   'sumi_8', 'sumi_10', 'sumi_12', 'sumi_14', 'sumi_15',
   'naru_3', 'naru_6', 'naru_7', 'naru_8', 'naru_10', 'naru_11', 'naru_13', 'naru_14',
   'adam_1', 'adam_3', 'adam_6', 'adam_7', 'adam_8', 'adam_9', 'adam_10', 'adam_11', 'adam_12', 'adam_15',
@@ -73,14 +88,14 @@ for (const id of KNOWN_AT_START) { assert.equal(opening.met[id], true); assert.e
 for (const id of ['sui', 'maezono', 'dr_kemuri', 'emil', 'mukai_master', 'uranaishi']) assert.equal(hasAffinity(id), false);
 assert.equal(hasAffinity('hiyori'), true);
 
-assert.equal(all.length, 197);
-assert.equal(new Set(all.map(x => x.id)).size, 197);
+assert.equal(all.length, 93);
+assert.equal(new Set(all.map(x => x.id)).size, 93);
 // 追加分は吹き出し1枚に収め、本名や正体を先出ししない（レヰの本名・ましろの噂の正体・組長の過去）。
 for (const char of castIds) for (const entry of trivia.characters[char]) {
   for (const text of [entry.teller, entry.reaction]) {
     assert.equal(paginate(text).length, 1, `${entry.id} spills onto a second page: ${text}`);
     assert(!/。$/.test(text) && !/。）$/.test(text), `${entry.id} ends a spoken line with 。`);
-    assert(!/健太|田中|シガーマン|若い?衆|抗争|ファヴェーラ|スラム|軍で|15年前|レモンケーキ/.test(text), `${entry.id} reveals a secret: ${text}`);
+    assert(!SECRET_WORDS.test(text), `${entry.id} reveals a secret: ${text}`);
   }
   assert(/^（.+）$/.test(entry.reaction), `${entry.id} reaction must be Hajime's inner voice`);
 }
@@ -89,14 +104,59 @@ for (const entry of all.filter(x => addedIds.includes(x.id))) {
   for (const text of [entry.teller, entry.reaction]) {
     assert.equal(paginate(text).length, 1, `${entry.id} spills onto a second page: ${text}`);
     assert(!/。$/.test(text) && !/。）$/.test(text), `${entry.id} ends a spoken line with 。`);
-    assert(!/健太|田中|シガーマン|若い?衆|抗争|ファヴェーラ|スラム|軍で|15年前|レモンケーキ/.test(text), `${entry.id} reveals a secret: ${text}`);
-    assert(!/蒸野|墨田|猫柳|薄羽|汐見|宵野|緑川|綾取朔|向井玄|須井|香坂|くゆり|スハイル/.test(text), `${entry.id} uses an old name: ${text}`);
+    assert(!SECRET_WORDS.test(text), `${entry.id} reveals a secret: ${text}`);
+    assert(!OLD_NAMES.test(text), `${entry.id} uses an old name: ${text}`);
   }
   assert(/^（.+）$/.test(entry.reaction), `${entry.id} reaction must be Hajime's inner voice`);
 }
 for (const ex of excludedIds) {
   assert(!all.some(x => x.id === ex), `excluded id ${ex} must not be present`);
   assert(!draftMd.includes(`\`${ex}\`:`), `excluded id ${ex} must not appear in trivia-draft.md`);
+}
+
+// 選別用の在庫（#2749・#2805）: 本編に未登録の追加候補と、全候補の系統（4系統）・AI一次選別。最終の5本はオーナーが選ぶ。
+{
+  const selectionPath = new URL('../data/fortune-trivia-selection.json', import.meta.url);
+  const selection = JSON.parse(fs.readFileSync(selectionPath, 'utf8'));
+  const check = spawnSync(process.execPath, [new URL('../../tools/check_fortune_trivia.cjs', import.meta.url).pathname, selectionPath.pathname], { encoding: 'utf8' });
+  assert.equal(check.status, 0, check.stderr);
+  const FORMS = ['性格論', '出来事の推測', '言いそうなこと', '攻略法'];
+  assert.equal(selection.draft, true);
+  assert.deepEqual(selection.forms, FORMS);
+  assert.deepEqual(new Set(Object.keys(selection.characters)), new Set(AFFINITY_CHARACTERS));
+  assert.deepEqual(new Set(Object.keys(selection.picks)), new Set(AFFINITY_CHARACTERS));
+  const extraEntries = Object.values(selection.characters).flat();
+  for (const entry of extraEntries) {
+    assert(!all.some(x => x.id === entry.id), `${entry.id} is registered in the game and also waits in the selection pool`);
+    assert(!excludedIds.includes(entry.id), `removed id ${entry.id} must not come back`);
+    for (const text of [entry.teller, entry.reaction]) {
+      assert.equal(paginate(text).length, 1, `${entry.id} spills onto a second page: ${text}`);
+      assert(!/。$/.test(text) && !/。）$/.test(text), `${entry.id} ends a spoken line with 。`);
+      assert(!SECRET_WORDS.test(text), `${entry.id} reveals a secret: ${text}`);
+      assert(!OLD_NAMES.test(text), `${entry.id} uses an old name: ${text}`);
+    }
+    assert(/^（.+）$/.test(entry.reaction), `${entry.id} reaction must be Hajime's inner voice`);
+    // 占い師は会ったことのない相手の出来事を、伝聞や過去の言い切りで言い当てない（推測・性格の読みで語る）
+    assert(!/(た|とる|てる)そうだ(よ|ね)?$|んだと$|(た|だ)ことがある/.test(entry.teller), `${entry.id} states hearsay or a past event as fact: ${entry.teller}`);
+  }
+  const pool = Object.fromEntries(AFFINITY_CHARACTERS.map(char => [char, [...trivia.characters[char], ...selection.characters[char]]]));
+  assert.deepEqual(new Set(Object.keys(selection.review)), new Set(Object.values(pool).flat().map(x => x.id)), 'every candidate has one review entry');
+  for (const [char, entries] of Object.entries(pool)) {
+    assert(entries.length >= 12, `${char}: enough rule-compliant candidates to choose the final five`);
+    for (const entry of entries) {
+      assert(entry.id.startsWith(`${char}_`), `${entry.id} is filed under ${char}`);
+      const review = selection.review[entry.id];
+      assert(FORMS.includes(review.form), `${entry.id} has one of the four forms`);
+      for (const old of review.rewriteOf || []) assert(removedIds.includes(old) && old.startsWith(`${char}_`), `${entry.id} rewrites a removed candidate of ${char}: ${old}`);
+    }
+    for (const form of FORMS) assert(entries.some(entry => selection.review[entry.id].form === form), `${char} has a ${form} candidate`);
+    const { recommended, runnersUp } = selection.picks[char];
+    assert.equal(recommended.length, 5, `${char}: five AI picks`);
+    assert(runnersUp.length >= 3, `${char}: runners-up remain after the five picks`);
+    assert.equal(new Set([...recommended, ...runnersUp]).size, recommended.length + runnersUp.length, `${char}: picks repeat`);
+    for (const id of [...recommended, ...runnersUp]) assert(entries.some(entry => entry.id === id), `${char}: pick ${id} is not a candidate`);
+    assert(recommended.some(id => selection.review[id].form === '攻略法'), `${char}: the AI picks include an advice reading`);
+  }
 }
 
 for (const [char, entries] of Object.entries(trivia.characters)) {
@@ -123,6 +183,12 @@ for (const [char, entries] of Object.entries(trivia.characters)) {
   }
   assert.equal(new Set(cycle2).size, count, `${char}: repeat before all ${count} have been read in cycle 2`);
   assert.equal(s.seed, beforeSeed, 'fortune advances gameplay RNG');
+  // 本編の読みが0本の相手（#2805 で王煙楼の5本がすべて決定ルールに反した）は、オーナーの選定後の登録まで結果の台詞だけで終わる。
+  if (!count) {
+    assert.equal(char, 'master_hookah', `${char} lost every reading`);
+    assert.equal(grantFortuneReading(s, char, trivia), null);
+    assert.equal(s.fortune.char, char, 'the affinity bonus is still promised without a reading');
+  }
   assert.equal(activeFortuneSight(s).char, char);
   s.fortune = null;
   assert(activeFortuneSight(s), 'one-visit affinity consumption removed three-day sight');
@@ -138,15 +204,15 @@ for (const [char, entries] of Object.entries(trivia.characters)) {
   const seenZero = Array.from({ length: expectedIds.adam.length }, () => grantFortuneReading(maskZero, 'adam', trivia).id);
   assert.equal(new Set(seenZero).size, expectedIds.adam.length);
 
-  // For adam, old bit 0 = adam_1 (removed), bit 1 = adam_2 (kept), bit 2 = adam_3 (removed).
-  const maskPartial = { chapter: 1, day: 3, seed: 19, flags: { _fortune_trivia_seen_adam: 0b00111 }, fortune: null };
+  // For adam, old bits 0-2 = adam_1..adam_3 (all removed; adam_2 in #2805), bit 3 = adam_4 (kept).
+  const maskPartial = { chapter: 1, day: 3, seed: 19, flags: { _fortune_trivia_seen_adam: 0b01111 }, fortune: null };
   const restAdam = Array.from({ length: expectedIds.adam.length - 1 }, () => grantFortuneReading(maskPartial, 'adam', trivia).id);
-  assert(!restAdam.includes('adam_2'), 'surviving legacy seen item adam_2 repeated in same cycle');
-  assert.deepEqual([...restAdam, 'adam_2'].sort(), [...expectedIds.adam].sort());
+  assert(!restAdam.includes('adam_4'), 'surviving legacy seen item adam_4 repeated in same cycle');
+  assert.deepEqual([...restAdam, 'adam_4'].sort(), [...expectedIds.adam].sort());
 
   // When legacy mask is 31, surviving old IDs (1..5) stay seen while newly added IDs are drawn first.
   const mask31 = { chapter: 1, day: 3, seed: 23, flags: { _fortune_trivia_seen_naru: 31 }, fortune: null };
-  const legacyNaru = ['naru_1', 'naru_2', 'naru_4', 'naru_5'];
+  const legacyNaru = ['naru_1', 'naru_4', 'naru_5']; // naru_2 は #2805 で削除
   const unseenNaru = expectedIds.naru.filter(id => !legacyNaru.includes(id));
   const newNaru = Array.from({ length: unseenNaru.length }, () => grantFortuneReading(mask31, 'naru', trivia).id);
   assert.deepEqual([...newNaru].sort(), [...unseenNaru].sort());
@@ -163,10 +229,11 @@ for (const [char, entries] of Object.entries(trivia.characters)) {
     chapter: 1,
     day: 3,
     seed: 7,
-    flags: { _fortune_trivia_seen_adam: ['adam_1', 'adam_3', 'adam_11', 'adam_2', 'adam_14'] },
+    // adam_2・adam_14 も #2805 で削除済み。残る adam_4・adam_16 だけが既読として効く。
+    flags: { _fortune_trivia_seen_adam: ['adam_1', 'adam_3', 'adam_11', 'adam_2', 'adam_14', 'adam_4', 'adam_16'] },
     fortune: null,
   };
-  const unseenAdam = expectedIds.adam.filter(id => !['adam_2', 'adam_14'].includes(id));
+  const unseenAdam = expectedIds.adam.filter(id => !['adam_4', 'adam_16'].includes(id));
   const remainingReordered = Array.from({ length: unseenAdam.length }, () => grantFortuneReading(withDeletedHistory, 'adam', reordered).id);
   assert.deepEqual([...remainingReordered].sort(), [...unseenAdam].sort());
 
@@ -315,7 +382,7 @@ w=Image.open(root/'remake/img/sprites/characters/uranaishi/chr_uranaishi_normal.
 m=json.loads((root/'remake/data/manifest.json').read_text());assert m['portraits']['uranaishi']['faces']==['normal','sad','serious','smile','surprise']
 `, new URL('../../', import.meta.url).pathname], { encoding: 'utf8' });
 assert.equal(art.status, 0, art.stderr);
-console.log('PASS fortune: 197 readings (62 approved + 40 for the Chapter 2-5 cast + 95 for the 19 affinity characters), 2-cycle nonrepeat, legacy mask migration, Naru rift exclusion, save/RNG, inclusive three days, independent bonus, guarded choice hints, daylight hours and authored annotations');
+console.log('PASS fortune: 93 readings after the #2805 rule cleanup (41 approved + 15 for the Chapter 2-5 cast + 37 for the 19 affinity characters; Wang has none until the owner picks), selection pool with four forms and AI picks, 2-cycle nonrepeat, legacy mask migration, Naru rift exclusion, save/RNG, inclusive three days, independent bonus, guarded choice hints, daylight hours and authored annotations');
 
 // 第1章は噂を読むまで出ない（#780 の噂の門は第1章だけ残す）。出方は章で1〜2回・予定の無い昼か夜（2026-11-02 台帳 URA）。
 {
