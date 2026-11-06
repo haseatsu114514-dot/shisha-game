@@ -27,7 +27,8 @@ export function createContinueView({ script, speaker, character, premium, layout
   function framePortrait(info) {
     if (!info) return;
     // 正規画像の顔の範囲を計測し、画像全体を拡大・配置する。画像や色は加工しない。
-    const framing = DB.manifest.continuePortraits?.[info.folder]?.[info.face];
+    // 新バージョンの立ち絵を出している時は、新バージョンの絵で測った枠（continuePortraitVariants）。現行の枠では顔がずれる
+    const framing = (info.style && info.style !== "classic" ? DB.manifest.continuePortraitVariants?.[info.style] : DB.manifest.continuePortraits)?.[info.folder]?.[info.face];
     const faceSize = framing?.size || info.h * .2;
     const height = (neon ? NEON_FACE_PX : FACE_PX) / faceSize, width = height * info.aspect;
     // neonは顔bbox中心を固定。比較用レイアウトは従来の頭上端基準を保つ。

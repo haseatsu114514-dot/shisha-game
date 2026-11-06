@@ -333,9 +333,13 @@ await suite("ch4-full-flow", async check => {
     await observeTournament(page);
     await page.locator(dt("ch4-start")).click();
     // 焦げる工程より前に票が動いた場合だけ、途中順位を送る（#2031）。
-    const verdictOrStandings = page.locator(`${dt("ch4-verdict-continue")}, ${dt("ch4-standings-continue")}`);
-    for (let i = 0; i < 4; i++) {
+    // 蒸らしの揺らぎ（steamVariation）が冷たい側だと、吸う工程の5回では焦げきらず、調整の工程で焦げる。
+    // そのときは調整前の問い（吸い心地を聞くか）に、温度を見る方で答えて進める。
+    const ask = dt("ch4-customer-temperature");
+    const verdictOrStandings = page.locator(`${dt("ch4-verdict-continue")}, ${dt("ch4-standings-continue")}, ${ask}`);
+    for (let i = 0; i < 6; i++) {
       await verdictOrStandings.first().waitFor({ timeout: 180000 });
+      if (await page.locator(ask).count()) { await page.locator(ask).click(); continue; }
       if (!await page.locator(dt("ch4-standings-continue")).count()) break;
       await page.locator(dt("ch4-standings-continue")).click();
     }

@@ -676,6 +676,67 @@ await check('Ayatori (#2028): chapter 3 finale after the LIME detour and the ans
   const lime = f.bonds.friendMessages({ sceneChapter: true });
   assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['saku', 'chat']], 'chat only on the scene-card chapters');
 });
+await check('Steve (#2028): ♥5 finale after the LIME detour and the timer outing, only while he can be met in Tokyo, hagal once, then friend LIME', async f => {
+  const rivals = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_rivals.json', import.meta.url))).dialogues;
+  for (const d of rivals) f.db.dialogues[d.dialogue_id] = d;
+  const gear = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json', import.meta.url))).equipment.find(e => e.id === 'suyaki_steve');
+  assert.deepEqual([gear.gift.from, gear.gift.flavor, gear.type, gear.not_for_sale], ['steve', 'mountain_mist', 'bowl', true]);
+  f.db.equipById.suyaki_steve = gear;
+  f.db.flavorById.mountain_mist = { id: 'mountain_mist' };
+  f.db.friends = JSON.parse(fs.readFileSync(new URL('../data/friends.json', import.meta.url)));
+  assert.equal(f.bonds.BOND_FINALES.steve.gift, 'suyaki_steve');
+  assert.equal(f.bonds.finaleHeart('steve'), 5, 'the same ♥5 gate as Ayatori');
+  const s = f.core.state; s.chapter = 3; s.met.steve = true; s.affinity.steve = 66;
+  assert.equal(f.bonds.finaleDue('steve'), false, 'affinity alone does not open the finale');
+  s.flags._lime_contact_steve = true; s.flags._ch3_read_ch3_steve_lime = true;
+  assert.equal(f.bonds.finaleDue('steve'), false, 'the timer outing comes first');
+  s.flags._ch3_outings = { steve_timer: 1 };
+  for (const pts of [9, 33, 48, 65]) {
+    s.affinity.steve = pts;
+    assert.equal(f.bonds.finaleDue('steve'), false, `${pts}pt (below ♥5) keeps the finale closed`);
+  }
+  s.affinity.steve = 66; assert.equal(f.bonds.finaleAtVisit('steve'), true, '♥5 opens it on the next visit, day or night');
+  // Smoke & Glory で会える間だけ: 東京へ発つ前・後日談で東京を発つ支度の朝から・第3章の後は開かず、MENU も約束しない。
+  s.flags._ch3_prep = { departed: false };
+  assert.equal(f.bonds.finaleDue('steve'), false, 'not before leaving for Tokyo');
+  s.flags._ch3_prep.departed = true;
+  assert.equal(f.bonds.finaleDue('steve'), true);
+  s.flags._ch3_aftermath = { version: 3, winDay: 40, stage: f.bonds.STEVE_LAST_AFTERMATH_STAGE };
+  assert.equal(f.bonds.finaleDue('steve'), true, 'the day after the win, before the cleanup morning');
+  // なるへの報告の後にピザとシーシャの夜が開く時、その夜の画面には寄り道が無いので、締めくくりも MENU の約束も出さない。
+  s.flags._ch3_naru_party_ready = true;
+  assert.equal(f.bonds.finaleDue('steve'), false, 'the party night has no detour to Smoke & Glory');
+  assert.equal(f.bonds.finaleReachable('steve'), false);
+  delete s.flags._ch3_naru_party_ready;
+  s.flags._ch3_aftermath.stage += 1;
+  assert.equal(f.bonds.finaleDue('steve'), false, 'from the cleanup morning he cannot be met');
+  assert.equal(f.bonds.finaleReachable('steve'), false);
+  assert.equal(f.bonds.finaleReachable('saku'), true, 'only Steve has this window');
+  delete s.flags._ch3_aftermath;
+  s.flags._ch3_cleared = true; assert.equal(f.bonds.finaleDue('steve'), false); delete s.flags._ch3_cleared;
+  for (const chapter of [1, 2, 4, 5, '3']) {
+    s.chapter = chapter;
+    assert.equal(f.bonds.finaleDue('steve'), false, `chapter ${chapter}`);
+    assert.equal(f.bonds.finaleReachable('steve'), false);
+  }
+  assert.equal(await f.bonds.playFinale('steve'), false); s.chapter = 3;
+  f.setPlay(async () => ({ cancelled: true }));
+  assert.equal(await f.bonds.playFinale('steve'), false, 'cancel records nothing');
+  assert(!s.finales?.steve); assert(!s.owned.includes('suyaki_steve'));
+  f.setPlay(async () => done);
+  assert.equal(await f.bonds.playFinale('steve'), true);
+  const after = f.roundTrip();
+  assert.equal(after.finales.steve.route, 'friend');
+  assert.equal(after.flags._confession_due, undefined);
+  assert.equal(after.owned.filter(id => id === 'suyaki_steve').length, 1);
+  assert.equal(after.flavorStock.mountain_mist, 50);
+  assert.equal(await f.bonds.playFinale('steve'), false, 'once');
+  assert.equal(f.bonds.settledFriend('steve'), true);
+  after.day += 10;
+  const lime = f.bonds.friendMessages({ sceneChapter: true });
+  assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['steve', 'chat']], 'chat only on the scene-card chapters');
+  assert.deepEqual(clone(lime[0].messages), f.db.friends.friends.steve.chats[0].m);
+});
 await check('Noor (DSR20): chapter 4 cafe finale after the cafe stages and the ♥3 question, then her own sunset confession', async f => {
   const desert = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch4_desert.json', import.meta.url))).dialogues;
   for (const d of desert) f.db.dialogues[d.dialogue_id] = d;

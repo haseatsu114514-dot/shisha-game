@@ -31,12 +31,14 @@ import {
   chapterFivePrepScene, CH5_PREP_TRIALS,
 } from "./ch5-progress.js";
 
-// tonari の場面の時間帯（台本コメント: ましろの訪問は昼・初めての客は夕方・閉店後の練習は夜）。
+// tonari の場面の時間帯（台本コメント: ましろの訪問は昼・初めての客は夕方・閉店後の練習は夜・つむぎの接客は夕方・つむぎの一台は昼）。
 // 昼と夜の2枠なので、夕方の場面はどちらでも読める。
 const TONARI_SLOTS = Object.freeze({
   ch5_free_mashiro_visit: [0],
   ch5_free_first_visitor: [0, 1],
   ch5_free_tonari_practice: [1],
+  ch5_tsumugi_serving: [0, 1],      // 夕方の接客（昼と夜のどちらでも）
+  ch5_tsumugi_makes_for_hajime: [0], // 休みの日に客として行く（昼だけ）
 });
 const PRACTICE = "ch5_free_tonari_practice";
 const MASHIRO_VISIT = "ch5_free_mashiro_visit";

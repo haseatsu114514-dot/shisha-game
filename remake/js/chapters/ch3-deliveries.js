@@ -1,4 +1,5 @@
 // Mukai勤務の顔合わせ。既存DAY2内で、配達と自主来店の読了を分ける。
+// 依頼と報告の相手はバイトのましろ（#2682）。本筋 ch3_mukai_intro はこの固定順序を読み切るまで完了しない。
 export const MUKAI_DELIVERY_STEPS = Object.freeze([
   { id: "ch3_mukai_intro", flag: "_ch3_mukai_work_intro_read", bg: "bg_mukai_shop" },
   { id: "ch3_delivery_offer", flag: "_ch3_delivery_offer", bg: "bg_mukai_shop" },
