@@ -12,6 +12,7 @@
 import { state, save, timeOfDay, markMet } from "../core/state.js";
 import { DB, sceneBg } from "../core/data.js";
 import { modal, setBg, toast, layers } from "../core/ui.js";
+import { planeRide } from "../core/scene-motions.js";
 import { showHud } from "../daily/hud.js";
 import { CAMEL_DAILY_SPOT_ID, CAMEL_SCENES, CH4_CAMEL_SCENE_FILES, camelDailySpot, camelSceneBg } from "./ch4-camel-progress.js";
 import { DESERT_GUIDE, DESERT_SPOT_IDS, desertRevisitSpots, noorConfessionWaiting } from "./ch4-desert-progress.js";
@@ -207,6 +208,9 @@ async function goToDubai(owner) {
   useDubaiTicket(state);
   state.flags._ch2_region = DUBAI;
   save();
+  // 機窓で日本の夜からドバイの朝焼けへ（#2688 A4）。着いた先は屋敷（初めて）か空港
+  await planeRide(() => showBg(state.flags[GUEST_FLAG] ? "bg_dubai_airport_day" : RESIDENCE_BG, state.flags[GUEST_FLAG] ? "day" : timeOfDay()), { to: "dubai" });
+  if (state !== owner) return unused;
   // 第5章で初めて着いた日は、シェイクに迎えられて客間へ案内される。
   if (!state.flags[GUEST_FLAG]) {
     if (await read("ch5_dubai_arrival", RESIDENCE_BG, owner)) { state.flags[GUEST_FLAG] = true; markMet("sheikh"); save(); }
@@ -220,6 +224,8 @@ async function goHome(owner) {
   recordDubaiReturn(state);
   state.flags._ch2_region = "home";
   save();
+  // 機窓で夕方から日本の夜の街の灯へ（#2688 A4）
+  await planeRide(() => showBg(`bg_osu_map_${timeOfDay()}`, timeOfDay()), { to: "home" });
   return { used: true, exerted: false };
 }
 

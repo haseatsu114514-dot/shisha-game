@@ -29,6 +29,8 @@ const lime = () => import("../motions/lime.js");
 const train = () => import("../motions/train.js");
 const shinkansen = () => import("../motions/shinkansen.js");
 const purikura = () => import("../motions/purikura.js");
+const plane = () => import("../motions/plane.js");
+const moments = () => import("../motions/moments.js");
 
 // 連絡先の交換は一度きり（交換済みの記録が先に付く）。SKIP中でも見せ、動きを減らす設定では
 // 動かないカードで見せる。省くと二度と見られない（#833）。
@@ -136,9 +138,35 @@ export async function shinkansenRide(mid, opts = {}) {
   await ride("shinkansen", shinkansen, mid, opts);
 }
 
+/** 飛行機に乗る（#2688 A4）。丸い機窓の外が時差の色へ移り、着く土地が見えたところで窓が広がる。opts.to: "dubai" | "home" */
+export async function planeRide(mid, opts = {}) {
+  await ride("plane", plane, mid, { ...opts, kind: "plane" });
+}
+
+/** 配送便（車）に乗る（#2688 A4）。横長の車窓の外を道路の灯が流れる。opts.to: "tokyo" | "town" */
+export async function vanRide(mid, opts = {}) {
+  await ride("van", plane, mid, { ...opts, kind: "van" });
+}
+
 /** mid(): 覆っている間に背景を替える。bgUrl はその背景の絵（線画の元） */
 export async function sketchIn(mid, bgUrl) {
   const run = omitMotion() || !bgUrl ? null : await variant("sketch", sketch);
   if (run) await run(mid, bgUrl);
   else await mid?.();
+}
+
+/**
+ * 章の要所の一度きりの演出（motions/moments.js・#2688 A1〜A3・A5〜A8）。name は moments.js の関数名、args はその引数。
+ * 動きを減らす設定・高速送りの判断は moments.js 側。読み込めなかったときは、引数の関数（覆っている間の mid）だけ行う。
+ */
+export async function sceneMoment(name, ...args) {
+  const owner = state;
+  const mod = await withLoadingNotice(moments(), { ...loadingNotice("演出を準備しています…"), delayMs: 500 })
+    .catch((e) => { console.error(e); return null; });
+  if (state !== owner) return null; // 読み込み中のLOADから、前のセーブの演出を始めない
+  const run = mod?.[name];
+  if (run) return run(...args);
+  const mid = args.find((arg) => typeof arg === "function");
+  if (mid) await mid();
+  return null;
 }

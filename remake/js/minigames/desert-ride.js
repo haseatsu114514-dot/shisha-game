@@ -4,7 +4,7 @@
 // 起伏・路面・太陽・夕方の色は Canvas で描く。左右・ジャンプ・着地・転倒の姿勢は第4弾の差分の絵（riderPose）。
 // 2026-11-02 オーナー「もっとスピード感やエフェクトを派手に」: 速さで広がる視界（人物の大きさは保つ）・傾くカメラ・強いスピード線・砂しぶき・
 // 着地の輪・得点の浮き出し・トリックのスロー・ブーストの残像。動き軽減ではカメラの動き・揺れ・スロー・閃光・速度線を止める。
-// 本番はスタートの合図のあと、ヌール（rivalRun）が横で滑る。ヌールの滑る絵はまだ無いので図形で描く（Codex に依頼）。
+// 本番はスタートの合図のあと、ヌール（rivalRun）が横で滑る。
 import { el } from "../core/util.js";
 import { SE, unlockAudio } from "../core/audio.js";
 import { COURSE, EDGE, SPEED, SPIN, DEFAULT_SEED, generateCourse, practiceCourse, createGame, step, press, boost, chargeBoost, summary, curveAt, botControl,
@@ -20,7 +20,7 @@ const CAM = { depth: 1.5, height: 2.0, back: 4.5, meterPerLane: 1.6 }; // 疑似
 const COUNTDOWN = 2.4;           // 本番のスタートの合図（3・2・1・GO）の秒数
 const SPEED_FULL = SPEED.boost;  // 演出の「最速」（ブースト）
 const RIVAL_NAMES = Object.freeze({ noor: "ヌール", naru: "なる" });
-// 競走相手の図形の色（滑る絵が届くまで）。ヌール: 青緑の板・オリーブのシャツ・ベージュのスカーフ・束ねた黒髪・頭のサングラス。
+// 画像が読み込めない場合の競走相手の図形色。ヌール: 青緑の板・オリーブのシャツ・ベージュのスカーフ・束ねた黒髪・頭のサングラス。
 // なる: クリーム色の板・白い袖の黒いボンバー・黒いカーゴ・白いスニーカー・銀灰色の短い髪
 const RIVAL_LOOKS = Object.freeze({
   noor: { board: [[34, 168, 156], [44, 140, 132]], pants: [[168, 146, 108], [160, 124, 98]], shoes: "#3a2c22", shirt: [[110, 118, 62], [116, 100, 66]],
@@ -1097,10 +1097,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       });
       ctx.restore();
     }
-    /**
-     * ヌール（本番の競走相手）。滑る絵はまだ無いので、図形で描く: 青緑の板・オリーブのシャツ・ベージュのスカーフ・
-     * 後ろで束ねた黒髪・頭のサングラス。近い時だけ名前の札を出す。
-     */
+    /** 本番の競走相手。ヌールは専用画像、なると画像未読込時は図形を使う。 */
     function drawRival(noor, dusk) {
       const look = RIVAL_LOOKS[raceWith] || RIVAL_LOOKS.noor, name = RIVAL_NAMES[raceWith];
       const p = placeAt(noor.z, noor.x);
@@ -1113,6 +1110,19 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const bob = noor.air <= 0 && noor.fallT <= 0 ? Math.sin(noor.t * 13 + 1) * unit * 0.02 : 0;
       ctx.save();
       ctx.translate(p.x, p.y - height * unit * 0.9 + bob);
+      const noorPose = raceWith === "noor" ? `noor${riderPose(noor).replace(/^rider/, "Rider")}` : null;
+      const noorArt = noorPose && art.get(noorPose);
+      if (noorArt) {
+        const def = DESERT_ART[noorPose];
+        const dh = unit * 2.45 * 0.86 * noorArt.naturalHeight / DESERT_ART.noorRider.size[1];
+        const dw = dh * noorArt.naturalWidth / noorArt.naturalHeight;
+        if (noor.fallT > 0) ctx.rotate((noor.x > 0 ? 1 : -1) * 0.25 * (noor.fallT / 1.1));
+        else ctx.rotate(lean * (noorPose === "noorRider" ? 0.45 : 0.12));
+        ctx.drawImage(noorArt, -def.anchor.x * dw, -def.anchor.y * dh, dw, dh);
+        ctx.restore();
+        if (p.dz < 70) drawRivalName(name, look, p, height, unit);
+        return;
+      }
       if (noor.fallT > 0) ctx.rotate((noor.x > 0 ? 1 : -1) * 1.1 * (noor.fallT / 1.1));
       else ctx.rotate(lean * 0.8);
       ctx.scale(0.86, 0.86); // 主人公の背面の絵と同じくらいの背丈に
@@ -1181,17 +1191,18 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         for (const sx of [-0.09, 0.09]) { ctx.beginPath(); ctx.ellipse(sx * u, (headY - 0.17) * u, 0.075 * u, 0.045 * u, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
       }
       ctx.restore();
-      if (p.dz < 70) {
-        const tagY = Math.max(150, p.y - height * unit * 0.9 - unit * 2.45);
-        ctx.save();
-        ctx.globalAlpha = Math.min(1, (70 - p.dz) / 25);
-        ctx.font = `800 ${Math.round(Math.max(16, Math.min(24, unit * 0.32)))}px ${fontFamily()}`;
-        ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        const w = ctx.measureText(name).width + 20;
-        ctx.fillStyle = look.tag; ctx.beginPath(); ctx.roundRect?.(p.x - w / 2, tagY - 15, w, 30, 15); ctx.fill();
-        ctx.fillStyle = "#f6ecd2"; ctx.fillText(name, p.x, tagY);
-        ctx.restore();
-      }
+      if (p.dz < 70) drawRivalName(name, look, p, height, unit);
+    }
+    function drawRivalName(name, look, p, height, unit) {
+      const tagY = Math.max(150, p.y - height * unit * 0.9 - unit * 2.45);
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, (70 - p.dz) / 25);
+      ctx.font = `800 ${Math.round(Math.max(16, Math.min(24, unit * 0.32)))}px ${fontFamily()}`;
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      const w = ctx.measureText(name).width + 20;
+      ctx.fillStyle = look.tag; ctx.beginPath(); ctx.roundRect?.(p.x - w / 2, tagY - 15, w, 30, 15); ctx.fill();
+      ctx.fillStyle = "#f6ecd2"; ctx.fillText(name, p.x, tagY);
+      ctx.restore();
     }
 
     // 検証・デモ用の手がかり（保存に触れない）

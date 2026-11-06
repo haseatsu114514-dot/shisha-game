@@ -1778,6 +1778,9 @@
         "data/dialogue/ch3_rivals.json",
         "data/dialogue/ch3_volk.json",
         "remake/js/minigames/tetsuko-time.js",
+        "remake/js/minigames/tetsuko-model.js",
+        "remake/js/minigames/tetsuko-art.js",
+        "remake/css/tetsuko-time.css",
         "remake/test/browser/ch3_tokyo_daily.mjs"
       ],
       "run": ["node remake/test/browser/ch3_tokyo_daily.mjs"]

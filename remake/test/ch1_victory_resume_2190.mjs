@@ -102,6 +102,7 @@ async function harness({ step = 0, paid = true, revealed = true, snapshot = null
       awards.push({ stat, amount }); current().stats[stat] += amount; observe("ability", { stat, amount });
     },
     suiCutin: async rank => { cutins.push(rank); observe("cutin", { rank }); await pause("cutin"); },
+    sceneMoment: async () => {}, // 章の要所の一度きりの演出（#2688 A1・A6）。見た目だけなので進行には関わらない
     openPhone: async (messages, options) => {
       assert.equal(titlePresent, false, "LOAD's title screen must be removed before phone content appears");
       observe("phone", { title: options.title, ids: messages.map(message => message.id) });

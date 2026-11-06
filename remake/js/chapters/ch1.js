@@ -8,6 +8,8 @@ import { DB, bgUrl, faceIconUrl, realName, displayName, loadTournamentCraftDialo
 import { mountColdOpen } from "../scenes/coldopen.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen, loadingNotice } from "../core/ui.js";
+import { sceneMoment } from "../core/scene-motions.js";
+import { defeatFade, retryStroke } from "../core/transitions.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { state, save, markMet, setFlag, flag, requestResumeOnBoot } from "../core/state.js";
 import { addMoney, maxStamina, addStamina, gainStat } from "../core/stats.js";
@@ -154,8 +156,12 @@ async function openingPart() {
     const co = DB.dialogues.ch1_cold_open;
     await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
     scene.stop();
-    await sleep(600);
-    const titleResult = await playCh1Title();
+    // 1年後の会場の煙が一筋に細くなり、章題の白い紙へつながる（#2688 A1）。白い面は章題が出始めてから薄れる
+    const bridge = await sceneMoment("coldOpenBridge");
+    if (!bridge) await sleep(600);
+    const titleRun = playCh1Title();
+    if (bridge) setTimeout(() => bridge.release(), 420);
+    const titleResult = await titleRun;
     if (titleResult.cancelled || state !== owner) return false;
     playBgm("tonari");
     await playTonariOpening();
@@ -825,13 +831,14 @@ async function victory(cs) {
     inScene(TONARI_N, () => play("interval_day1_naru_lime")),
     inScene(TONARI_N, () => gainStat("guts", 1)),
     // 優勝の夜。記録を続ける博士の伏線へ。
-    inScene(TONARI_N, () => openPhone([
+    // 横線のノイズで見出しが「???」に置き換わってから文面が出る（#2688 A6。第5章の挑戦状と9000の伏線）
+    inScene(TONARI_N, async () => { await sceneMoment("scanGlitch", { from: "LIME", to: "???" }); return openPhone([
       {
         id: "_sys_unknown_recorded", sender: "???", messages: [
           "本日のあなたの試合データは、すべて記録させていただきました。",
         ], close_label: "……誰？",
       },
-    ], { time: "PM 11:47", title: "優勝の夜" })),
+    ], { time: "PM 11:47", title: "優勝の夜" }); }),
     inScene(BG("bg_home_day"), () => play("interval_day1_morning_win")),
     inScene(BG("kemurikusa"), () => play("ch1_naru_promise")),
     inScene(BG("kemurikusa"), () => play("interval_day2_adam_lime")),
@@ -926,7 +933,8 @@ async function failedOut(reason, cs) {
   bc.clearComments();
   awardTournamentExp(4, cs);
   save();
-  await smokeWipe(() => showGameOver({ reason, cs }), { color: "dark" });
+  // 色が抜けて一筋の煙が途切れる入り（showGameOver・#2688 A19）。暗い煙ワイプはタイトル→開始と会場入りだけ（F4）
+  await showGameOver({ reason, cs });
 }
 
 /**
@@ -957,11 +965,16 @@ async function showGameOver({ rank = 0, reason = "rank", variant = null, cs = nu
       if (state !== owner || !root.isConnected) return;
       save();
       retire(root);
-      smokeWipe(() => { if (state === owner) tournamentDay(); }, { color: "dark" });
+      // 再挑戦は、一筆を逆向きに流して色を戻す（#2688 A19・F4。暗い煙ワイプはタイトル→開始と会場入りだけ）
+      retryStroke(() => { if (state === owner) tournamentDay(); });
     },
     onTitle: () => location.reload(),
   });
+  // 敗北から GAME OVER へ: 中心から色が抜けて一筋の煙が途切れ、灰色が晴れると画面が出ている（#2688 A19）
+  const fade = (!preview && await defeatFade()) || (async () => {});
+  if (state !== owner) { await fade(); return; }
   showScreen("end", root);
+  await fade();
 }
 
 /** 開発用: 大会当日から始める（__remake.dev.tournament()） */

@@ -204,7 +204,8 @@ PCの似顔絵は未生成で、プレイヤー本人の立ち絵を丸窓に入
 - `remake/js/trpg/audio.js`: 外部音源を使わない独自WebAudioの雨・波・卓の効果音。
 - `assets/backgrounds/trpg_*_room.png`: 生成背景2枚の原画。画面では同寸法のWebPを使用。
   生成指示・原画と配信画像のハッシュ・目視QAは `asset_sources/trpg-duo/generation.json`。
-- `remake/css/trpg.css`: 1280×720ステージ内に限定した表示。
+- `remake/css/trpg.css`: 1280×720ステージ内に限定した表示。配色・枠は専用テーマ `remake/css/trpg-theme.css`（#2719・UIデザインの設定に依存しない）。
+- `remake/js/trpg/entrance.js`: 本棚に入った時と卓を始めた時の開幕（見た目だけ・操作は塞がない）。
 
 人物設定と採用済み立ち絵の正本を直接参照。顔位置は既存manifestのh/b/aspectで合わせる。
 本編キャラ設定・立ち絵・BGMを置換していない。短編の作者・港町・役名は作品固有設定。

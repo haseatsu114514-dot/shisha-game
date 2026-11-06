@@ -11,6 +11,7 @@ import { canReflect } from "../daily/reflection.js";
 import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
 import { state, save } from "../core/state.js";
 import { layers, showScreen, setBg, enterScene, chapterTitle, modal } from "../core/ui.js";
+import { sceneMoment } from "../core/scene-motions.js";
 import { saveFlow } from "../scenes/saves.js";
 import { play, hooks, vnTest } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
@@ -175,6 +176,9 @@ async function readScene(owner, id, { keepHud = false } = {}) {
   showScreen("none", null);
   if (!keepHud) hud(); // 日常ループ（#2033）の途中では、日常のHUDを消さない
   await setBg(bgUrl(CH5_SCENE_BG[id]));
+  // 挑戦状と9000の登場は、第1章の優勝の夜の「???」と同じ横線のノイズで見出しが置き換わる（#2688 A6）。初めて読むときだけ
+  const scan = SCAN_SCENES[id];
+  if (scan && !chapterFiveRead(state, id)) { await sceneMoment("scanGlitch", scan); if (!current(owner)) return false; }
   if (!current(owner)) return false;
   // 節目だけ既存曲へ切り替える（#1668 2-7）。表に無い場面は tonari。
   playBgm(CH5_SCENE_BGM[id] || CH5_DEFAULT_BGM);
@@ -302,6 +306,16 @@ async function renderScene(owner, scene, dayLabel) {
   ], "", scene.id);
 }
 
+// 走査の見出し（#2688 A6）
+const SCAN_SCENES = Object.freeze({ ch5_opening: { from: "???", to: "挑戦状" }, [CH5_MATCH_SCENES.arrival]: { from: "???", to: "SHISHA-9000" } });
+
+/** これまでに会った人の登場カットインの色（スタッフロール前の煙・#2688 A8）。主な人から最大8色 */
+function metColors() {
+  const art = DB.manifest?.introArt || {};
+  const order = ["sumi", "naru", "tsumugi", "minto", "adam", "ageha", "mashiro", "saku", "hiyori", "samechan", "noor", "sheikh", "dr_kemuri"];
+  return order.filter(id => state.met?.[id] && art[id]?.color).map(id => art[id].color).slice(0, 8);
+}
+
 /** 先送りを選んだ直後の復帰先。timeout を読むまで自由行動のカードは出さない。 */
 async function renderTimeoutCard(owner) {
   await enterScene(bgUrl(CH5_SCENE_BG.ch5_timeout));
@@ -420,6 +434,8 @@ async function renderMatch(owner) {
   await enterScene(bgUrl(CH5_SCENE_BG[first]));
   if (!current(owner)) return;
   const tally = chapterFiveVoteTally(state);
+  // 二台分の挙手を、席ごとの灯りで見せる（数字は出さない・#2688 A7）。この場で決まった時に一度だけ
+  if (tally && !owner.votesLit) { owner.votesLit = true; await sceneMoment("seatLights", tally); if (!current(owner)) return; }
   card(owner, "match", "二台分の挙手", "同じ観客が、二台とも吸った。合計で決まる。", [
     button(owner, "結果を聞く", "continue", async () => {
       for (const id of sequence) {
@@ -545,6 +561,8 @@ function backToTitle() {
 async function renderStaffRoll(owner) {
   const first = chapterFiveCreditsPending(state);
   hud();
+  // 出会った人の色の煙が絡んで一本になり、スタッフロールへ（#2688 A8）。初めて流すときだけ
+  if (first) { await sceneMoment("mixedSmoke", metColors()); if (!current(owner)) return; }
   await playStaffRoll({ ...(first ? {} : { skippable: true }), ...(vnTest.turbo ? { durationMs: 1500 } : {}) });
   if (!current(owner)) return;
   if (!first) return renderComplete(owner);
