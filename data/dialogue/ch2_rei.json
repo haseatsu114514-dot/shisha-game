@@ -158,14 +158,14 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "あの、tonariというシーシャ屋から来た蒸野といいます。大会前に他のお店を勉強させてもらおうかと……"
+            "text": "あの、tonariというシーシャ屋から来た逢縁といいます。大会前に他のお店を勉強させてもらおうかと……"
           }
         ],
         "visit_after": [
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "あの、tonariの蒸野です。今日はお店の煙を勉強させてもらおうかと……"
+            "text": "あの、tonariの逢縁です。今日はお店の煙を勉強させてもらおうかと……"
           }
         ],
         "already_met": [

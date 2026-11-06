@@ -48,7 +48,7 @@ def parse_profiles() -> dict:
 
 
 NAME_TO_ID = {
-    "蒸野 はじめ": "hajime",
+    "逢縁 はじめ": "hajime",
     "はじめ": "hajime",
     "墨田 丈一郎": "sumi",
     "スミさん": "sumi",
