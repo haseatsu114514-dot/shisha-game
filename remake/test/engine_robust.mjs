@@ -255,7 +255,7 @@ check("みんとの名乗りは正体の既読に依存せず、名前欄は本�
   }
   for (const known of [false, true]) for (const checked of [false, true]) {
     const seen = readScene("ch1_minto_fifth", { _minto_identity_revealed: known, _oneesan_id_checked: checked });
-    const intro = seen.findIndex(line => line.text.includes("名前は、緑川栞"));
+    const intro = seen.findIndex(line => line.text.includes("名前は、木成頼栞"));
     assert(intro >= 0);
     assert(seen.slice(0, intro + 1).every(line => !line.name?.includes("栞")));
     assert(!seen.some(line => /身分証で|名前は、あの時見てた/.test(line.text)));
@@ -264,7 +264,7 @@ check("みんとの名乗りは正体の既読に依存せず、名前欄は本�
   }
   for (const known of [false, true]) {
     const seen = readScene("ch1_minto_private_1", { _minto_name_known: known });
-    assert.equal(seen.some(line => line.text.includes("私、緑川栞")), !known);
+    assert.equal(seen.some(line => line.text.includes("私、木成頼栞")), !known);
     assert.equal(vnState.flags._minto_name_known, true);
   }
 });

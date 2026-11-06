@@ -145,7 +145,7 @@ try {
     }
     return out;
   });
-  assert(!/栞|緑川/.test(hidden.minto), `みんとのカットインに本名が出ている: ${hidden.minto}`);
+  assert(!/栞|木成頼/.test(hidden.minto), `みんとのカットインに本名が出ている: ${hidden.minto}`);
   assert(!/田中|健太/.test(hidden.rei), `鴉葬レヰのカットインに本名が出ている: ${hidden.rei}`);
   assert(hidden.rei.includes("鴉葬レヰ"), "活動名を紹介に出す");
 

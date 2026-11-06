@@ -3,7 +3,7 @@
   "characters": {
     "ageha": "あげは",
     "hiyori": "ひより",
-    "samechan": "サメちゃん／汐見なぎさ",
+    "samechan": "サメちゃん／熱海なぎさ",
     "mashiro": "ましろ",
     "minto": "みんと",
     "rio": "凛想",
@@ -342,120 +342,6 @@
       ],
       "image": "media/2d855e34efdc803f88bb04d06b89f8f5c6e2c3e38359910c61ee3454e1c72cd6.webp",
       "thumbnail": "media/2d855e34efdc803f88bb04d06b89f8f5c6e2c3e38359910c61ee3454e1c72cd6-thumb.webp"
-    },
-    {
-      "id": "308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18",
-      "sha256": "308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18",
-      "character": "rio",
-      "label": "title_art_rio_04_rainy_neon_umbrella",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "assets/ui/title_arts/title_art_rio_04_rainy_neon_umbrella.png"
-      ],
-      "groups": [
-        "正式タイトル"
-      ],
-      "history": [
-        "現在の本編タイトルで使用中"
-      ],
-      "prompts": [],
-      "current": true,
-      "related": [],
-      "image": "media/308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18.webp",
-      "thumbnail": "media/308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18-thumb.webp"
-    },
-    {
-      "id": "952c856b89c0bd39413d5692dfe2a8b52f1afbad46457778a7531769c84ff73f",
-      "sha256": "952c856b89c0bd39413d5692dfe2a8b52f1afbad46457778a7531769c84ff73f",
-      "character": "rio",
-      "label": "title_art_rio_05_blend_library_command",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "assets/ui/title_arts/title_art_rio_05_blend_library_command.png"
-      ],
-      "groups": [
-        "正式タイトル"
-      ],
-      "history": [
-        "現在の本編タイトルで使用中"
-      ],
-      "prompts": [],
-      "current": true,
-      "related": [],
-      "image": "media/952c856b89c0bd39413d5692dfe2a8b52f1afbad46457778a7531769c84ff73f.webp",
-      "thumbnail": "media/952c856b89c0bd39413d5692dfe2a8b52f1afbad46457778a7531769c84ff73f-thumb.webp"
-    },
-    {
-      "id": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
-      "sha256": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
-      "character": "rio",
-      "label": "深夜の窓辺",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "assets/ui/title_arts/title_art_rio_03_late_coffee.png",
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/03-late-coffee.png"
-      ],
-      "groups": [
-        "正式タイトル",
-        "新版19案"
-      ],
-      "history": [
-        "現在の本編タイトルで使用中",
-        "adopted-title"
-      ],
-      "prompts": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/03-late-coffee.prompt.txt"
-      ],
-      "current": true,
-      "related": [
-        "a4a542ac461374247f54df7a71f8772b17b820cef8a7516df14124a65d03b553"
-      ],
-      "image": "media/905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea.webp",
-      "thumbnail": "media/905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea-thumb.webp"
-    },
-    {
-      "id": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
-      "sha256": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
-      "character": "rio",
-      "label": "黒い試香室",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "assets/ui/title_arts/title_art_rio_01_night_tasting.png",
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting.png"
-      ],
-      "groups": [
-        "正式タイトル",
-        "新版19案"
-      ],
-      "history": [
-        "現在の本編タイトルで使用中",
-        "adopted-title"
-      ],
-      "prompts": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting.revision-3.prompt.txt",
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting.prompt.txt"
-      ],
-      "current": true,
-      "related": [
-        "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
-        "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
-        "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
-        "9953652335cb661fceb0863e95871fde01777185d395d68d454b440844c8f0c0"
-      ],
-      "image": "media/bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19.webp",
-      "thumbnail": "media/bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19-thumb.webp"
     },
     {
       "id": "3d1be37becf76aaeda73578ff5e8c17bc8092cc0ff7b5f654e4eb169cb7b623b",
@@ -819,6 +705,120 @@
       "related": [],
       "image": "media/a3c087dcbaceb7dbc4f619efc4a3ed1180d2b03661ae1f5f77bae6d73e164a12.webp",
       "thumbnail": "media/a3c087dcbaceb7dbc4f619efc4a3ed1180d2b03661ae1f5f77bae6d73e164a12-thumb.webp"
+    },
+    {
+      "id": "308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18",
+      "sha256": "308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18",
+      "character": "rio",
+      "label": "title_art_rio_04_rainy_neon_umbrella",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_rio_04_rainy_neon_umbrella.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18.webp",
+      "thumbnail": "media/308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18-thumb.webp"
+    },
+    {
+      "id": "952c856b89c0bd39413d5692dfe2a8b52f1afbad46457778a7531769c84ff73f",
+      "sha256": "952c856b89c0bd39413d5692dfe2a8b52f1afbad46457778a7531769c84ff73f",
+      "character": "rio",
+      "label": "title_art_rio_05_blend_library_command",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_rio_05_blend_library_command.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/952c856b89c0bd39413d5692dfe2a8b52f1afbad46457778a7531769c84ff73f.webp",
+      "thumbnail": "media/952c856b89c0bd39413d5692dfe2a8b52f1afbad46457778a7531769c84ff73f-thumb.webp"
+    },
+    {
+      "id": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
+      "sha256": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
+      "character": "rio",
+      "label": "深夜の窓辺",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_rio_03_late_coffee.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/03-late-coffee.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/03-late-coffee.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "a4a542ac461374247f54df7a71f8772b17b820cef8a7516df14124a65d03b553"
+      ],
+      "image": "media/905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea.webp",
+      "thumbnail": "media/905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea-thumb.webp"
+    },
+    {
+      "id": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
+      "sha256": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
+      "character": "rio",
+      "label": "黒い試香室",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_rio_01_night_tasting.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting.revision-3.prompt.txt",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
+        "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
+        "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
+        "9953652335cb661fceb0863e95871fde01777185d395d68d454b440844c8f0c0"
+      ],
+      "image": "media/bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19.webp",
+      "thumbnail": "media/bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19-thumb.webp"
     },
     {
       "id": "68069f432237be2a9e40d209fbc71aefbf6f7d8ee874ed0ec80e60412f26c802",
@@ -1486,81 +1486,6 @@
       ],
       "image": "media/1a1c3b096e68446bf092f08a38838a75ecb2ef004c11e310f9cf6acc0872361f.webp",
       "thumbnail": "media/1a1c3b096e68446bf092f08a38838a75ecb2ef004c11e310f9cf6acc0872361f-thumb.webp"
-    },
-    {
-      "id": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
-      "sha256": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
-      "character": "rio",
-      "label": "01-night-tasting-first",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-first.png"
-      ],
-      "groups": [
-        "新版19案",
-        "途中履歴"
-      ],
-      "history": [],
-      "prompts": [],
-      "current": false,
-      "related": [
-        "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19"
-      ],
-      "image": "media/7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360.webp",
-      "thumbnail": "media/7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360-thumb.webp"
-    },
-    {
-      "id": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
-      "sha256": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
-      "character": "rio",
-      "label": "01-night-tasting-revision-1",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-revision-1.png"
-      ],
-      "groups": [
-        "新版19案",
-        "途中履歴"
-      ],
-      "history": [],
-      "prompts": [],
-      "current": false,
-      "related": [
-        "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19"
-      ],
-      "image": "media/519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4.webp",
-      "thumbnail": "media/519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4-thumb.webp"
-    },
-    {
-      "id": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
-      "sha256": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
-      "character": "rio",
-      "label": "01-night-tasting-revision-2",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-revision-2.png"
-      ],
-      "groups": [
-        "新版19案",
-        "途中履歴"
-      ],
-      "history": [],
-      "prompts": [],
-      "current": false,
-      "related": [
-        "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19"
-      ],
-      "image": "media/7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20.webp",
-      "thumbnail": "media/7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20-thumb.webp"
     },
     {
       "id": "7c13a175d094aab0b117afa566fb917f5d1f9be900e8897dd90738de6f377bed",
@@ -2642,6 +2567,81 @@
       ],
       "image": "media/a4a542ac461374247f54df7a71f8772b17b820cef8a7516df14124a65d03b553.webp",
       "thumbnail": "media/a4a542ac461374247f54df7a71f8772b17b820cef8a7516df14124a65d03b553-thumb.webp"
+    },
+    {
+      "id": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
+      "sha256": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
+      "character": "rio",
+      "label": "01-night-tasting-first",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-first.png"
+      ],
+      "groups": [
+        "新版19案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19"
+      ],
+      "image": "media/7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360.webp",
+      "thumbnail": "media/7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360-thumb.webp"
+    },
+    {
+      "id": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
+      "sha256": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
+      "character": "rio",
+      "label": "01-night-tasting-revision-1",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-revision-1.png"
+      ],
+      "groups": [
+        "新版19案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19"
+      ],
+      "image": "media/519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4.webp",
+      "thumbnail": "media/519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4-thumb.webp"
+    },
+    {
+      "id": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
+      "sha256": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
+      "character": "rio",
+      "label": "01-night-tasting-revision-2",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-revision-2.png"
+      ],
+      "groups": [
+        "新版19案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19"
+      ],
+      "image": "media/7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20.webp",
+      "thumbnail": "media/7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20-thumb.webp"
     },
     {
       "id": "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",

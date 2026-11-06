@@ -124,7 +124,7 @@ for(const id of ['samechan_shop_heart4','samechan_shop_heart5']){const scene=sto
  const rows=[...scene.lines,...Object.values(scene.branches).flat()];
  assert(!rows.some(r=>r.type==='choice'&&r.romance_char),`${id}: 隠し恋愛値を増やす新しい問いは置かない`);
  assert(!JSON.stringify(scene).includes(story.profile.full_name)&&!JSON.stringify(scene).includes('なぎさ'),`${id}: 本名は恋人絆Lv4まで伏せる`);}
-state.flags._samechan_name_known=true;assert.equal(data.displayName('samechan',state),'汐見なぎさ');
+state.flags._samechan_name_known=true;assert.equal(data.displayName('samechan',state),'熱海なぎさ');
 // 表示名は台詞の正本を参照し、名乗る前に本名を漏らさない。
 const encounter=story.dialogues.find(d=>d.dialogue_id==='samechan_first_encounter');
 const aliasAt=encounter.lines.findIndex(l=>l.text==='強いていうなら、サメちゃんと呼ばれておる');
