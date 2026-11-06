@@ -500,6 +500,29 @@
       }
     },
     {
+      "id": "suyaki_noor",
+      "type": "bowl",
+      "name": "ヌールが育てたダブルアップル専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_noor",
+      "description": "ヌールが十四歳で父に一台を教わってから、ダブルアップルだけを詰めてきた素焼き。りんごとアニスの甘い香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "noor",
+        "reason": "ドバイを思い出すための宝物",
+        "flavor": "double_apple",
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
       "id": "kumogama_phunnel",
       "type": "bowl",
       "name": "雲窯ファンネルハガル",
