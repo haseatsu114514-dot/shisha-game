@@ -121,9 +121,7 @@ export const CH4_MANDATORY = Object.freeze([
   { id: "ch4_stranger_third", lead: null },
 ].map(entry => Object.freeze(entry)));
 
-// 勝ち側の本線。story_routes の on_win は result → ending → sui_old_rival → sumi_return → two_tables だが、
-// CH4-CONNECTION-DESIGN 要点3「須井は屋敷・帰国より前」に従い sui_old_rival を ending の前に置く。
-// （story_routes.json は編集しない。食い違いは PR 報告に明記）
+// 勝ち側の本線。story_routes の on_win と同じく、結果 → 会長 → 屋敷 → 帰国 → 二卓の順に再生する。
 export const CH4_RESOLUTION = Object.freeze([
   { id: "ch4_result", label: "結果発表", location: "大会会場" },
   { id: "ch4_sui_old_rival", label: "審査席から", location: "大会会場" },

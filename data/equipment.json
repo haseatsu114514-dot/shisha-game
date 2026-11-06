@@ -500,6 +500,77 @@
       }
     },
     {
+      "id": "suyaki_noor",
+      "type": "bowl",
+      "name": "ヌールが育てたダブルアップル専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_noor",
+      "description": "ヌールが十四歳で父に一台を教わってから、ダブルアップルだけを詰めてきた素焼き。りんごとアニスの甘い香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "noor",
+        "reason": "ドバイを思い出すための宝物",
+        "flavor": "double_apple",
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
+      "id": "suyaki_steve",
+      "type": "bowl",
+      "name": "スティーブが育てたマウンテンミスト専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_steve",
+      "description": "スティーブが急いで柑橘を飛ばした日から、マウンテンミストを低い熱で待つ練習に使い込んだ素焼き。縁が少し欠け、レモンとライムの香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "steve",
+        "reason": "待つ練習台を、顔を見る手に",
+        "flavor": "mountain_mist",
+        "leaf_grams": 50,
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
+      "id": "suyaki_volk",
+      "type": "bowl",
+      "name": "ヴォルクが育てたブラストミント専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_volk",
+      "description": "ヴォルクがナイトサイド ブラストミントの発売前、配合を変えるたびに火の強さを測った素焼き。外側に配合を変えた回数の刻みが並び、冷たいミントの香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "volk",
+        "reason": "測ってきた火を、頷く手に",
+        "flavor": "nightside_blast_mint",
+        "leaf_grams": 50,
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
       "id": "kumogama_phunnel",
       "type": "bowl",
       "name": "雲窯ファンネルハガル",

@@ -90,10 +90,13 @@ for (const ev of ch2Events) {
   reset({ chapter: 2, slot }); unlock(); db.baito = [ev]; await tonari.doBaito(); assert.equal(selected(), `baito_${ev.id}`, `${ev.id} が第2章に出ない`);
 }
 // #2032: 第2章の味の不調中は、自分で吸って味を確かめる閉店後の一服を出さない。不調の記録が残る第4章では出す。
-for (const [chapter, distant, shown] of [[2, true, false], [2, false, true], [4, true, true]]) {
+// 第3章の東京へ発つ前の3日も不調のまま（ch3_prep_opening「無理に吸って確かめるな」。味が戻るのは東京）。
+for (const [chapter, distant, shown, prep] of [[2, true, false], [2, false, true], [4, true, true],
+  [3, true, false, { departed: false }], [3, false, true, { departed: false }]]) {
   reset({ chapter, slot: 1 }); if (distant) state.flags._ch2_taste_distant = true;
+  if (prep) state.flags._ch3_prep = { startDay: 8, days: 3, step: 0, ...prep };
   db.baito = [byid.baito_closing_smoke]; await tonari.doBaito();
-  assert.equal(selected(), shown ? "baito_baito_closing_smoke" : undefined, `閉店後の一服 chapter=${chapter} distant=${distant}`);
+  assert.equal(selected(), shown ? "baito_baito_closing_smoke" : undefined, `閉店後の一服 chapter=${chapter} distant=${distant} prep=${JSON.stringify(prep)}`);
 }
 // #2032: スミさんの飯は「残る匂い」（しばらく飯はうちで食ってけ）を読んだ第2章だけ。昼夜どちらのシフトでも出る。
 const staffMeal = byid.baito_ch2_staff_meal;

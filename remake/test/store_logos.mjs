@@ -145,7 +145,7 @@ try {
   }
   await page.emulateMedia({reducedMotion:"no-preference"});
   // 東京の地図の行き先 id も元の店のロゴで迎える。名前を伏せた「地下の店」（会う前のクラブSEAM）ではロゴを出さない（2026-11-02 MPI02）。
-  for(const [spotId,anonymous] of [["ch3_tokyo_club",true],["ch3_tokyo_club",false],["ch3_tokyo_mukai",false]]){
+  for(const [spotId,anonymous] of [["ch3_tokyo_club",true],["ch3_tokyo_club",false],["ch5_tokyo_club",true],["ch5_tokyo_club",false],["ch3_tokyo_mukai",false]]){
     const shown=await page.evaluate(async([spotId,anonymous])=>{
       T.transitions.cueTransition("place",{spotId,area:"東京",anonymous});
       const c=T.transitions.createSceneCurtain(T.ui.layers.fx,{fast:true});

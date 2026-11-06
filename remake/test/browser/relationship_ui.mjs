@@ -225,6 +225,8 @@ await suite("relationship-ui", async check => {
         ["unanswered-old-finale", { points: 66, finale: "romance" }, "交流の節目", /見届けた/],
         ["legacy-final-answer", { points: 66, finalAnswer: 1, finale: "romance" }, "告白を選べる", /帰り道/],
         ["held-confession", { points: 66, answer: 1, finalAnswer: 1, finale: "romance", wait: true }, "告白を選べる", /後日の夜/],
+        // 東京・ドバイにいる間は帰り道の告白を始めない（IR33）。帰ってからだと案内する
+        ["away-confession", { points: 66, answer: 1, finalAnswer: 1, finale: "romance", region: "tokyo" }, "告白を選べる", /帰ってから、夜の帰り道/],
       ]) {
         await page.evaluate(f => {
           const s = R.fresh(); s.met.rio = true; s.affinity.rio = f.points; s.story.rio = 6; // 固有会話6本を読了（#1696で4本目、#2025で♥4・♥5の5・6本目を追加）
@@ -234,6 +236,7 @@ await suite("relationship-ui", async check => {
           if (f.finale) s.finales.rio = { route: f.finale, chapter: 1, day: 8 };
           if (f.friendFlag) s.flags._friend_rio = true;
           if (f.wait) s.flags._confession_wait = 14;
+          if (f.region) s.flags._ch2_region = f.region;
           if (f.hiddenRomance) s.romance.rio = f.hiddenRomance;
           R.core.save(); R.core.load();
         }, fixture);
@@ -327,6 +330,86 @@ await suite("relationship-ui", async check => {
       assert.equal(await page.locator('[data-person="hiyori"] .pp-memory').count(), 0);
       await assertFits(page, ".pp-guide, .pp-row, .pp-heading, .pp-memory, .pp-next");
       await closeStatus(page);
+    }, { ...options, reducedMotion: "reduce" });
+
+    // #2028: スティーブは♥5の締めくくりがあるので、会った後は人間関係に出る（STATUS_PEOPLE）。
+    // 「次にSmoke & Gloryで会うと」は第3章の東京で会える間だけ。東京を離れた後・第5章では約束しない。
+    if (device === "pc") await check("pc-steve-row-promises-only-while-he-can-be-met", async page => {
+      await setup(page);
+      await page.evaluate(async () => {
+        const city = await import("./js/chapters/ch2-city-data.js");
+        Object.assign(R.data.DB.dialogues, await city.readDialogues("ch3_rivals", ["ch3_steve_bond_finale"]));
+        const s = R.fresh(); s.chapter = 3;
+        s.met.steve = true; s.affinity.steve = 66; s.contacts.push("steve");
+        Object.assign(s.flags, { _lime_contact_steve: true, _ch3_read_ch3_steve_lime: true, _ch3_outings: { steve_timer: 1 } });
+        R.core.save();
+      });
+      await status(page);
+      const row = page.locator('[data-person="steve"]');
+      assert.equal(await row.count(), 1, "Steve is listed once met");
+      assert.equal(await row.locator(".pp-relation").textContent(), "交流中");
+      assert.equal(await row.locator(".pp-next").textContent(), "次にSmoke & Gloryで会うと、特別なイベントへ。");
+      assert.equal(await row.locator(".ui-heart").evaluateAll(hearts => hearts.filter(h => h.style.getPropertyValue("--fill") === "100%").length), 5);
+      await row.scrollIntoViewIfNeeded();
+      await assertFits(page, '[data-person="steve"], [data-person="steve"] .pp-next');
+      await closeStatus(page);
+      for (const later of [
+        s => { s.flags._ch3_aftermath = { version: 3, winDay: 40, stage: R.bonds.STEVE_LAST_AFTERMATH_STAGE + 1 }; },
+        s => { s.chapter = 5; delete s.flags._ch3_aftermath; },
+      ]) {
+        await page.evaluate(src => { (0, eval)(src)(R.core.state); R.core.save(); }, later.toString());
+        await status(page);
+        assert.equal(await row.count(), 1, "still listed after Tokyo");
+        assert.equal(await row.locator(".pp-next").count(), 0, "no promise once he cannot be met");
+        await closeStatus(page);
+      }
+      await page.evaluate(() => {
+        const s = R.core.state; s.chapter = 3;
+        s.finales.steve = { route: "friend", day: 40, chapter: 3 }; s.owned.push("suyaki_steve"); R.core.save();
+      });
+      await status(page);
+      assert.equal(await row.locator(".pp-relation").textContent(), "友達", "after the finale he is a settled friend");
+      await closeStatus(page);
+    }, { ...options, reducedMotion: "reduce" });
+
+    // #2028: 綾取・ヴォルクも♥5の締めくくりがあるので人間関係に出る。「次に〜で会うと」は東京の店に会える間だけ。
+    // 綾取は大会後の煙幕の片づけの朝から（店を畳む）、ヴォルクは帰郷の夜から（鉄の煙の寄り道と同じ）約束しない。
+    // 第3章の後に♥5へ届いた時も、もう会えない店の「話を進めると、特別なイベントへ」は出さない。
+    if (device === "pc") await check("pc-saku-and-volk-rows-promise-only-while-they-can-be-met", async page => {
+      await setup(page);
+      await page.evaluate(async () => {
+        const city = await import("./js/chapters/ch2-city-data.js");
+        Object.assign(R.data.DB.dialogues, await city.readDialogues("ch3_rivals", ["ch3_saku_bond_finale"]),
+          await city.readDialogues("ch3_volk", ["ch3_volk_bond_finale"]));
+        const s = R.fresh(); s.chapter = 3;
+        for (const id of ["saku", "volk"]) { s.met[id] = true; s.affinity[id] = 66; s.contacts.push(id); }
+        Object.assign(s.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_outings: { enmaku_answer: 1 },
+          _lime_contact_volk: true, _ch3_read_ch3_volk_lime: true, _ch3_read_ch3_volk_second: true,
+          _ch3_read_ch3_volk_third: true, _ch3_read_ch3_volk_fourth: true });
+        R.core.save();
+      });
+      const next = async id => {
+        const row = page.locator(`[data-person="${id}"]`);
+        assert.equal(await row.count(), 1, `${id} is listed once met`);
+        return await row.locator(".pp-next").count() ? await row.locator(".pp-next").textContent() : null;
+      };
+      await status(page);
+      assert.equal(await next("saku"), "次に煙幕で会うと、特別なイベントへ。");
+      assert.equal(await next("volk"), "次に鉄の煙で会うと、特別なイベントへ。");
+      await page.locator('[data-person="volk"]').scrollIntoViewIfNeeded();
+      await assertFits(page, '[data-person="saku"] .pp-next, [data-person="volk"] .pp-next');
+      await closeStatus(page);
+      for (const [later, saku, volk] of [
+        [s => { s.flags._ch3_aftermath = { version: 3, winDay: 40, stage: R.bonds.VOLK_LAST_AFTERMATH_STAGE }; }, null, "次に鉄の煙で会うと、特別なイベントへ。"],
+        [s => { s.flags._ch3_aftermath.stage += 1; }, null, null],
+        [s => { s.chapter = 5; delete s.flags._ch3_aftermath; delete s.flags._lime_contact_volk; }, null, null],
+      ]) {
+        await page.evaluate(src => { (0, eval)(src)(R.core.state); R.core.save(); }, later.toString());
+        await status(page);
+        assert.equal(await next("saku"), saku, later.toString());
+        assert.equal(await next("volk"), volk, later.toString());
+        await closeStatus(page);
+      }
     }, { ...options, reducedMotion: "reduce" });
 
     await check(`${device}-final-choices-and-ordinary-dialogue`, async page => {
