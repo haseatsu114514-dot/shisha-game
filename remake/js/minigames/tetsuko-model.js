@@ -130,12 +130,13 @@ export function createSession(value, { visitKey = null } = {}) {
   const count = tetsukoVisits(value);
   const stage = sessionStage(count);
   const metMashiro = !!value?.met?.mashiro;
+  const metMukai = !!value?.met?.mukai_master;
   const record = readTetsukoRecord(value);
   const props = { ...record.props };
   for (const slot of SLOTS) if (props[slot] && !propUnlocked(PROP[props[slot]], stage, metMashiro)) props[slot] = null;
   const before = new Set(unlockedProps(count ? relationStage(count) : -1, metMashiro).map(prop => prop.id));
   return {
-    day, count, stage, metMashiro, visitKey,
+    day, count, stage, metMashiro, metMukai, visitKey,
     mood: moodOf(day).id,
     random: rng(day * 31 + count),
     timing: rng(day * 31 + count + 7),
@@ -186,7 +187,9 @@ function react(session, kind, { text, face = "normal", pose = "sit", spot = sess
   session.cat = { spot, pose, face, flip, inside };
   session.moment = moment;
   const found = moment ? discover(session, moment) : null;
-  const said = line && !session.said.includes(line.id) ? (session.said.push(line.id), line) : null;
+  // 人物の一言は、名乗りを受けた相手だけ・その訪問で一度だけ（長い会話は挟まない）。
+  const known = line && (line.speaker !== "mukai_master" || session.metMukai);
+  const said = known && !session.said.includes(line.id) ? (session.said.push(line.id), line) : null;
   return { kind, text, face, pose, spot, fx, moment, found, line: said ? { speaker: said.speaker, text: said.text } : null };
 }
 
@@ -302,11 +305,11 @@ const AUTO = [
   { id: "box_peek", when: s => has(s, "box"), moment: "box_peek", weight: { playful: 1.2 },
     react: s => ({ text: "箱のふちから、顔だけ出している。", spot: slotOf(s, "box"), pose: "peek", inside: "box" }) },
   { id: "ball_paw", when: s => has(s, "ball"), weight: { playful: 1.6 },
-    react: s => ({ text: "前足で、ボールをちょいと転がした。", face: "serious", pose: "paw", spot: "floor", fx: "ball-roll" }) },
+    react: s => ({ text: "前足で、ボールをちょいと転がした。", face: "serious", pose: "paw", spot: "floor", inside: "ball", fx: "ball-roll" }) },
   { id: "ball_watch", when: s => has(s, "ball"), moment: "ball_watch", weight: { playful: 1.2 },
-    react: s => ({ text: "転がっていくボールを、目だけで見送った。", face: "surprise", spot: "floor", fx: "ball-away" }) },
+    react: s => ({ text: "転がっていくボールを、目だけで見送った。", face: "surprise", spot: "floor", inside: "ball", fx: "ball-away" }) },
   { id: "scratch", when: s => has(s, "scratcher"), weight: { playful: 1.4 },
-    react: s => ({ text: "てつこが爪とぎで、がりがりと爪をといでいる。", face: "serious", pose: "paw", spot: "floor" }) },
+    react: s => ({ text: "てつこが爪とぎで、がりがりと爪をといでいる。", face: "serious", pose: "paw", spot: "floor", inside: "scratcher" }) },
   { id: "cushion", when: s => has(s, "cushion"), weight: { sleepy: 1.6, calm: 1.2 },
     react: s => ({ text: "座布団の上で、てつこが丸くなった。", face: "sleep", pose: "curl", spot: slotOf(s, "cushion"), inside: "cushion" }) },
   { id: "bed_sleep", when: s => has(s, "bed"), weight: { sleepy: 1.6 },
