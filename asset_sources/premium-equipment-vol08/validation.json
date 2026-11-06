@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "id": "kumogama_phunnel",
+      "source": "asset_sources/premium-equipment-vol08/kumogama_phunnel.png",
+      "delivery": "remake/img/shop/equipment-v2/kumogama_phunnel.webp",
+      "sha256": "ecf3aa94e7f227d8b48e0257414750f8db47b8e218beea6b9f7ade80380facb9",
+      "delivery_sha256": "a18a2220016e8fb5e60df80e9617c30c7fad69b57c297e98d2a5128738caea15",
+      "size": [
+        512,
+        512
+      ],
+      "box": [
+        135,
+        85,
+        243,
+        341
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "lotos_plus",
+      "source": "asset_sources/premium-equipment-vol08/lotos_plus.png",
+      "delivery": "remake/img/shop/equipment-v2/lotos_plus.webp",
+      "sha256": "33642080f520c8eb121bbe71f322a649103764f8854b011ef00cf7ad99fa8090",
+      "delivery_sha256": "975cd8fbbfb03ffae925e7255b781e652bafd8bfd931da30d4286b8c2ed61624",
+      "size": [
+        512,
+        512
+      ],
+      "box": [
+        118,
+        139,
+        311,
+        252
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "stand_walnut",
+      "source": "asset_sources/premium-equipment-vol08/stand_walnut.png",
+      "delivery": "remake/img/shop/equipment-v2/stand_walnut.webp",
+      "sha256": "47d07def3aeb0463121f458118c0d5a7f51fe3f7462f6856a79a6afbda904cb4",
+      "delivery_sha256": "eb76354c3cc3f58d1264cd3ffc0d74bce617d560a0f9d9da1fa690b59710084d",
+      "size": [
+        512,
+        512
+      ],
+      "box": [
+        183,
+        75,
+        146,
+        354
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "stand_custom",
+      "source": "asset_sources/premium-equipment-vol08/stand_custom.png",
+      "delivery": "remake/img/shop/equipment-v2/stand_custom.webp",
+      "sha256": "73139c6d659bf2aaaf35ec939c88c5e4338293ece8a8ba81771e141e60b0d679",
+      "delivery_sha256": "a6b300a384e97e568ab1d122143f740086dc0688d219b3e44ba316f801106e7c",
+      "size": [
+        512,
+        512
+      ],
+      "box": [
+        188,
+        96,
+        148,
+        326
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    }
+  ]
+}
