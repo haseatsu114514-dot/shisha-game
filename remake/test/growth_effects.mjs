@@ -76,14 +76,19 @@ core.state.growth.nodes=[nodeFor("gauge").id]; assert(skill.slow({})>1.18);
 core.state.growth.nodes=[nodeFor("heat").id]; assert(skill.window({})>1.45);
 core.state.growth.nodes=[nodeFor("dodge").id]; assert(steamHeartRadius()<3.2);
 core.state.growth.nodes=["B4"]; core.state.fortune={char:"adam"};
-stats.gainAffinity("adam",1,{source:"lime",onGain(){}});
 const totalAffinity = () => (core.state.affinity.adam||0)+(core.state.affinityCarry.adam||0);
-// 占いの倍率は本体の値を読む（2026-11-02 に ×1.5 → ×2）。旧報酬は丸めた2、盤の人柄1%に占いを一度だけ掛ける
-const F=stats.FORTUNE_AFFINITY_MULT, legacyFortune=Math.round(1*1.2*F);
-assert(Math.abs(totalAffinity()-(legacyFortune+.01*F)*.85*.25)<1e-10,"旧報酬と盤の端数へ占いを一度だけ適用");
-assert.equal(core.state.fortune,undefined);
+// LIMEは会っていないので占いを使わない（台帳 URA07）。倍にならず、効果も残る
 stats.gainAffinity("adam",1,{source:"lime",onGain(){}});
-assert(Math.abs(totalAffinity()-((legacyFortune+.01*F)+(1+.01))*.85*.25)<1e-10);
+const limeOnly=(1+.01)*.85*.25;
+assert(Math.abs(totalAffinity()-limeOnly)<1e-10,"LIMEで占いが発動した");
+assert.deepEqual(core.state.fortune,{char:"adam"});
+// 占いの倍率は本体の値を読む（2026-11-02 に ×1.5 → ×2）。会ったとき、旧報酬は丸めた2、盤の人柄1%に占いを一度だけ掛ける
+const F=stats.FORTUNE_AFFINITY_MULT, legacyFortune=Math.round(1*1.2*F);
+stats.gainAffinity("adam",1);
+assert(Math.abs(totalAffinity()-limeOnly-(legacyFortune+.01*F)*.85)<1e-10,"旧報酬と盤の端数へ占いを一度だけ適用");
+assert.equal(core.state.fortune,undefined);
+stats.gainAffinity("adam",1);
+assert(Math.abs(totalAffinity()-limeOnly-((legacyFortune+.01*F)+(1+.01))*.85)<1e-10);
 core.newGame(); growth.ensureGrowth();
 const cs={ mix:{ lemon:12 },steamSeconds:360 };
 const baseDamage=leafDamagePerPull(cs,{ lemon:{mix_life:1} });
