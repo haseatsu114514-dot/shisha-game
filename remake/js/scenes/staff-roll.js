@@ -34,6 +34,11 @@ export const STAFF_MUSIC = Object.freeze([
   { title: "Overture!", composer: "秋山裕和", source: "H/MIX GALLERY" },
   { title: "Mind Duel", composer: "shimtone", source: "OpenTracks" },
   { title: "おいしいお菓子を捧げよ！", composer: "Napi", source: "M-ART" },
+  { title: "民族12 アラブの商人", composer: "魔王魂", source: "魔王魂" },
+  { title: "民族08 ピラミッド アレンジ版", composer: "魔王魂", source: "魔王魂" },
+  { title: "民族05", composer: "魔王魂", source: "魔王魂" },
+  { title: "民族09 揺れる提灯", composer: "魔王魂", source: "魔王魂" },
+  { title: "月明かりの灯台", composer: "甘茶", source: "甘茶の音楽工房" },
 ].map(song => Object.freeze(song)));
 export const STAFF_SOUND_CREDIT = "効果音：ポケットサウンド – https://pocket-se.info/";
 export const STAFF_ROLL_CLOSING = "Thank you for playing";
@@ -52,6 +57,8 @@ function sections() {
     ])),
     STAFF_MUSIC.length ? el("section.staff-roll-music", [
       el("p.staff-roll-role", { text: "使用楽曲" }),
+      el("p.staff-roll-source", { text: "音楽：魔王魂" }),
+      el("p.staff-roll-source", { text: "音楽：甘茶の音楽工房" }),
       ...STAFF_MUSIC.map(({ title, composer, source }) => el("div.staff-roll-song", [
         el("p.staff-roll-song-title", { text: `「${title}」` }),
         el("p.staff-roll-song-credit", { text: `作曲 ${composer}（${source}）` }),

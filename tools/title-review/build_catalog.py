@@ -9,7 +9,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = Path(__file__).resolve().parent
-CHARACTERS = {'ageha': 'あげは', 'hiyori': 'ひより', 'samechan': 'サメちゃん／熱海なぎさ', 'mashiro': 'ましろ', 'minto': 'みんと', 'rio': '凛想', 'tsumugi': 'つむぎ', 'sumi': 'スミ', 'naru': 'なる', 'adam': 'アダム', 'other': 'その他'}
+CHARACTERS = {'ageha': 'あげは', 'hiyori': 'ひより', 'samechan': 'サメちゃん／暑海なぎさ', 'mashiro': 'ましろ', 'minto': 'みんと', 'rio': '凛想', 'tsumugi': 'つむぎ', 'sumi': 'スミ', 'naru': 'なる', 'adam': 'アダム', 'other': 'その他'}
 # IDREN01: asset_sources は改名対象外で旧ID名のフォルダが残る。概念画の原画走査で取りこぼさないための対応表。
 LEGACY_SOURCE_DIRS = {'rio': ['rin']}
 V1 = 'asset_sources/title-art/heroine-concepts-v1-20261008'

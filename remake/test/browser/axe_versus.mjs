@@ -266,4 +266,33 @@ await suite("axe-versus", async check => {
     });
     assert(invalid.result.cancelled && invalid.result.match.player.length === 0); assert(invalid.rejected.every(Boolean));
   });
+  await check("adam-secret-boss-full-match", async page => {
+    await page.goto(new URL("axe-throw.html", page.url()).href);
+    assert.equal(await page.locator('[data-rival="adam"]').count(), 0, "解放前は一覧に出さない");
+    await page.evaluate(async () => {
+      const { recordAdamUnlock } = await import("./js/minigames/axe-secret-boss.js");
+      recordAdamUnlock({ completed: true, opponent: "hiyori", match: { difficulty: "hard", winner: "player" }, series: { winner: "player" } });
+    });
+    await page.reload();
+    await page.locator('[data-rival="adam"]').click();
+    assert.match(await page.locator('[data-test="axe-versus"]').textContent(), /アダムと対戦/);
+    await page.locator('[data-test="axe-versus"]').click();
+    assert.match(await page.locator('[data-test="axe-setup"]').textContent(), /手加減はしない/);
+    await page.locator('[data-test="axe-setup-start"]').click();
+    await phase(page, "choice");
+    assert.match(await page.locator('.axe-header').textContent(), /アダムと10投対戦/);
+    assert.match(await page.locator('[data-test="axe-portrait"]').getAttribute('src'), /adam/);
+    for (let i = 1; i <= 10; i++) {
+      await shoot(page);
+      await press(page); await phase(page, "opponent-ready"); await phase(page, "result");
+      await press(page);
+      await page.waitForFunction(() => ["choice", "summary"].includes(document.querySelector('[data-test="axe-game"]')?.dataset.phase));
+    }
+    await phase(page, "summary");
+    assert.match(await page.locator('[data-test="axe-note"]').textContent(), /勝ち|引き分け/);
+    await press(page);
+    await page.locator('[data-test="axe-versus"]').waitFor();
+    assert.doesNotMatch(await page.locator('.axe-menu-message').textContent(), /undefined/);
+    assert.equal(await page.evaluate(() => localStorage.getItem("shisha_axe_adam_unlocked")), "1");
+  });
 });

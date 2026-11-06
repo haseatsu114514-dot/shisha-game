@@ -129,6 +129,173 @@
         "speaker": "hiyori",
         "text": "……惜しい。次は私の番"
       }
-    ]
+    ],
+    "adam": {
+      "metadata": {
+        "description": "アダムの裏ボス対戦。物語や関係の進行を行わない。"
+      },
+      "lines": [
+        {
+          "id": "before",
+          "speaker": "adam",
+          "text": "俺の番だ。的の中心を見てろ"
+        },
+        {
+          "id": "call",
+          "speaker": "adam",
+          "text": "キルショットを宣言する。青を狙う"
+        },
+        {
+          "id": "hit",
+          "speaker": "adam",
+          "text": "刺さった。だが、まだ中心じゃない"
+        },
+        {
+          "id": "bull",
+          "speaker": "adam",
+          "text": "中心だ。狙った通りに刺さった"
+        },
+        {
+          "id": "killshot",
+          "speaker": "adam",
+          "text": "青に入った。次も同じだ"
+        },
+        {
+          "id": "killshot-miss",
+          "speaker": "adam",
+          "text": "青を外した。次は修正する"
+        },
+        {
+          "id": "miss",
+          "speaker": "adam",
+          "text": "外したか。軸がずれたな"
+        },
+        {
+          "id": "drop",
+          "speaker": "adam",
+          "text": "落ちた。回転を合わせ直す"
+        },
+        {
+          "id": "ahead",
+          "speaker": "adam",
+          "text": "俺が前だ。最後まで緩めない"
+        },
+        {
+          "id": "behind",
+          "speaker": "adam",
+          "text": "点差は見えてる。一本ずつ戻す"
+        },
+        {
+          "id": "level",
+          "speaker": "adam",
+          "text": "同点だ。次の一本で変わる"
+        },
+        {
+          "id": "player",
+          "speaker": "adam",
+          "text": "お前の勝ちだ。いい投げ方だった。またやろう"
+        },
+        {
+          "id": "opponent",
+          "speaker": "adam",
+          "text": "俺の勝ちだ。次はもっと詰めてこい"
+        },
+        {
+          "id": "draw",
+          "speaker": "adam",
+          "text": "同点か。決着がつくまで投げよう"
+        },
+        {
+          "id": "last",
+          "speaker": "adam",
+          "text": "最後の一本だ。ここで決める"
+        },
+        {
+          "id": "player-last",
+          "speaker": "adam",
+          "text": "最後の一本だな。狙いを見せてみろ"
+        },
+        {
+          "id": "big-ahead",
+          "speaker": "adam",
+          "text": "まだ差はある。油断はしない"
+        },
+        {
+          "id": "big-behind",
+          "speaker": "adam",
+          "text": "差が開いたな。ここから追う"
+        },
+        {
+          "id": "switch",
+          "speaker": "adam",
+          "text": "後半だ。木目が変わっても狙いは同じ"
+        },
+        {
+          "id": "sudden",
+          "speaker": "adam",
+          "text": "同点か。青で決めよう"
+        },
+        {
+          "id": "sudden-call",
+          "speaker": "adam",
+          "text": "サドンデスの青だ。集中する"
+        },
+        {
+          "id": "sudden-hit",
+          "speaker": "adam",
+          "text": "入った。今度はお前の番だ"
+        },
+        {
+          "id": "sudden-miss",
+          "speaker": "adam",
+          "text": "外した。まだ終わってない"
+        },
+        {
+          "id": "sudden-player-hit",
+          "speaker": "adam",
+          "text": "青に入れたか。やるな"
+        },
+        {
+          "id": "sudden-player-miss",
+          "speaker": "adam",
+          "text": "惜しいな。次は俺が投げる"
+        },
+        {
+          "id": "player-call",
+          "speaker": "adam",
+          "text": "青を狙うのか。いい判断だ"
+        },
+        {
+          "id": "player-hit",
+          "speaker": "adam",
+          "text": "刺さったな。次も見せてみろ"
+        },
+        {
+          "id": "player-bull",
+          "speaker": "adam",
+          "text": "中心だ。お前もやるな"
+        },
+        {
+          "id": "player-killshot",
+          "speaker": "adam",
+          "text": "青に当てたか。見事だ"
+        },
+        {
+          "id": "player-killshot-miss",
+          "speaker": "adam",
+          "text": "青を外したな。次で取り返せ"
+        },
+        {
+          "id": "player-miss",
+          "speaker": "adam",
+          "text": "外れたか。まだ次がある"
+        },
+        {
+          "id": "player-drop",
+          "speaker": "adam",
+          "text": "落ちたな。回転を整えろ"
+        }
+      ]
+    }
   }
 }
