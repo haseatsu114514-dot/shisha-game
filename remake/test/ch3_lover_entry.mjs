@@ -146,6 +146,45 @@ await check('chapter 3 and 4 departure preparation closes invitations and night 
   assert.equal(invites().length, 1, 'chapter 2 invitation stays open');
 });
 
+await check('a confession held over the departure prep and Tokyo/Dubai nights reaches a hometown night in chapter 5 (IR33)', async f => {
+  f.db.dialogues.confession_rio = { dialogue_id: 'confession_rio', lines: [{ speaker: '', text: '…' }] };
+  // 第2章の締めくくりで恋愛ルートに入り、告白を持ち越している（予約は締めくくりの直後に入る）。
+  const at = (chapter, flags) => {
+    const s = f.chapterAt(chapter, [], { day: 80, flags });
+    s.romanceChoices = { bond_q_rio: { char: 'rio', value: 1 } };
+    s.finales = { rio: { day: 60, chapter: 2, route: 'romance' } };
+    s.slot = 2;
+    s.flags._confession_due = 'rio';
+    return s;
+  };
+  const held = async (s, label) => {
+    assert.equal(f.romance.confessionHeld(), true, `${label}: held`);
+    assert.equal(await f.romance.maybeConfession(async () => {}), false, `${label}: no night-walk confession`);
+    assert.equal(s.flags._confession_due, 'rio', `${label}: the reservation stays`);
+    assert.equal(f.romance.romanceRouteOpen('rio'), true, `${label}: the route stays open`);
+  };
+  // 第4章: ドバイへ来る人は出発前に決まっている。準備3日の地元でも、ドバイでも告白しない。
+  await held(at(4, { _ch4: { startDay: 79 }, _ch4_prep: { startDay: 80, days: 3, step: 0, departed: false }, _ch2_region: 'home' }), 'chapter 4 prep');
+  await held(at(4, { _ch4: { startDay: 79 }, _ch4_prep: { startDay: 70, days: 3, step: 1, departed: true }, _ch2_region: 'dubai' }), 'chapter 4 Dubai');
+  // 第3章の東京の夜も、帰り道の告白（地元の場面）を始めない。
+  await held(at(3, { _ch3_intro: { startDay: 79 }, _ch3_prep: { startDay: 70, days: 3, step: 1, departed: true }, _ch2_region: 'tokyo' }), 'chapter 3 Tokyo');
+  // 第5章: 東京・ドバイへ出ている夜は持ち越し、地元の夜に告白へ（主人公が踏み出すかどうかから）。
+  for (const region of ['tokyo', 'dubai']) await held(at(5, { _ch5: { startDay: 65, part: 'free' }, _ch2_region: region }), `chapter 5 in ${region}`);
+  for (const region of ['home', 'widehanga']) {
+    const s = at(5, { _ch5: { startDay: 65, part: 'free' }, _ch2_region: region });
+    f.plays.length = 0;
+    assert.equal(f.romance.confessionHeld(), false, `chapter 5 ${region}: not held`);
+    assert.equal(await f.romance.maybeConfession(async () => {}), true, `chapter 5 ${region}: the confession comes back`);
+    same(f.plays, ['remake_confession_gate_rio'], `chapter 5 ${region}: the usual gate first`);
+    // 「まだ胸にしまっておく」を選んでも、予約は残って後日の夜にもう一度
+    assert.equal(s.flags._confession_due, 'rio');
+    assert.equal(s.flags._confession_wait, 82);
+  }
+  // 第2章（地元）は今までどおり
+  at(2, { _ch2_day1: { startDay: 69 }, _ch2_region: 'home' });
+  assert.equal(f.romance.confessionHeld(), false, 'chapter 2 at home');
+});
+
 await check('samechan date gap counts elapsed days on _elapsed_calendar saves; legacy chapter-local saves keep the 14-day offset', async f => {
   // 通算日の保存: 第2章の通算40日にデート → 第3章の通算45日。間は5日（旧式は 45-(14+40) = -9 で誘いが止まっていた）
   const s = f.chapterAt(3, ['samechan'], { day: 45, flags: { _ch3_intro: { startDay: 44 } } });
@@ -354,11 +393,12 @@ await check('chapter runners call the shared entry (no duplicated lover logic)',
   assert.match(src('chapters/ch3-social.js'), /from "\.\/lover-entry\.js"/);
   assert.match(src('chapters/ch3.js'), /if \(kind === "date"\) await readLoverMilestoneAt\(owner, id\)/);
   assert.match(src('chapters/ch4.js'), /import\("\.\/lover-entry\.js"\)/);
-  // 第5章の自由行動は日常ループ（#2033）。帰郷後なので、恋人の誘い・デート・節目は第1・2章と同じ（IR16・IR17）。告白は出さない。
+  // 第5章の自由行動は日常ループ（#2033）。帰郷後なので、恋人の誘い・デート・節目は第1・2章と同じ（IR16・IR17）。
+  // 夜の告白も閉じない（第4章までに入った恋愛ルートの持ち越しだけ。第5章で初めての締めくくりは romanceRouteOpen が閉じる・IR33）。
   const ch5Daily = src('chapters/ch5-daily.js');
   assert.match(ch5Daily, /runDaily\(/);
   assert.doesNotMatch(ch5Daily, /dateInvitations:\s*false/);
-  assert.match(ch5Daily, /confessions:\s*false/);
+  assert.doesNotMatch(ch5Daily, /confessions:\s*false/);
   // 第3章の東京・第4章のドバイは誘いを閉じたまま（IR16）。ドバイでは節目を出さず、同行者はLIMEを送ってこない（IR17）。
   assert.match(src('chapters/ch3-tokyo-daily.js'), /dateInvitations:\s*false/);
   const ch4Daily = src('chapters/ch4-dubai-daily.js');
