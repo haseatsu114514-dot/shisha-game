@@ -2,8 +2,8 @@
   "profile": {
     "id": "samechan",
     "birthday": "06-20",
-    "name": "熱海なぎさ",
-    "full_name": "熱海なぎさ",
+    "name": "暑海なぎさ",
+    "full_name": "暑海なぎさ",
     "display_name": "サメちゃん",
     "speech_style": {
       "samechan": "一人称は「わし」、はじめへの呼びかけは「お主」。親しみのある「〜じゃ」「〜のじゃ」「〜じゃぞ」で話し、照れたり慌てたりすると言いよどむ。",
@@ -1804,7 +1804,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "……熱海なぎさ、じゃ。よいか、一度しか言わんぞ"
+          "text": "……暑海なぎさ、じゃ。よいか、一度しか言わんぞ"
         },
         {
           "type": "set_flag",
@@ -1859,7 +1859,7 @@
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "熱海、じゃからの。泳ぐより、岸から海を見ておるほうが得意じゃ"
+          "text": "暑海、じゃからの。泳ぐより、岸から海を見ておるほうが得意じゃ"
         },
         {
           "speaker": "samechan",
