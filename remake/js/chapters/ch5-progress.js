@@ -35,6 +35,10 @@ export const CH5_SCENE_BG = Object.freeze({
   ch5_free_tonari_practice: "bg_tonari_inside_night", // 仮置き bg（台本コメント: tonari・夜）
   ch5_tsumugi_serving: "bg_tonari_inside",           // #2606 つむぎの接客（tonari・夕）
   ch5_tsumugi_makes_for_hajime: "bg_tonari_inside_day", // #2606 休みの日に客として来店（tonari・昼）
+  ch5_tsumugi_busy_night: "bg_tonari_inside_night",  // #2606 満席の夜に働くつむぎ（tonari・夜）
+  ch5_tsumugi_little_notes: "bg_tonari_inside_day",  // #2606 開店前のあいさつの練習（tonari・昼）
+  ch5_tsumugi_counsel: "bg_tonari_inside_night",     // #2606 客の相談に乗る（tonari・夜）
+  ch5_tsumugi_menu_board: "bg_tonari_inside_night",  // #2606 店先の黒板の相談（閉店後→翌朝は台本の bg 行）
   ch5_free_mashiro_visit_lover: "bg_tonari_inside_day",        // ましろの訪問の末尾に続く（表示は親場面の bg）
   ch5_free_mashiro_visit_lover_memory: "bg_tonari_inside_day",
   ch5_free_eden_adam: "bg_eden_shop",                // #1588 EDENの任意場面（第1・2章のEDENと同じ背景）
@@ -131,7 +135,7 @@ export const CH5_PROLOGUE = Object.freeze([
 ].map(scene => Object.freeze(scene)));
 
 // 自由行動で再生する場面。tonari の3件は昼→夕→夜の順に1回ずつ（台本コメントの時間帯に合わせる）。
-// そのあと、後輩スタッフのつむぎの2場面（接客→はじめに作る）を順に1回ずつ（#2606）。
+// そのあと、後輩スタッフのつむぎの6場面（接客→はじめに作る→満席の夜→開店前の練習→相談相手→店先の黒板）を順に1回ずつ（#2606）。
 // 閉店後の練習（試作）より後に置き、勝負までの流れを遅らせない。
 // EDEN の任意場面（#1588）は tonari の並びとは別の入口から、いつでも1回だけ読める。
 export const CH5_FREE_SCENES = Object.freeze([
@@ -140,6 +144,10 @@ export const CH5_FREE_SCENES = Object.freeze([
   { id: "ch5_free_tonari_practice", label: "閉店後の練習", location: "tonari" },
   { id: "ch5_tsumugi_serving", label: "つむぎの接客", location: "tonari" },
   { id: "ch5_tsumugi_makes_for_hajime", label: "つむぎの一台", location: "tonari" },
+  { id: "ch5_tsumugi_busy_night", label: "満席の夜", location: "tonari" },
+  { id: "ch5_tsumugi_little_notes", label: "開店前の練習", location: "tonari" },
+  { id: "ch5_tsumugi_counsel", label: "つむぎの相談相手", location: "tonari" },
+  { id: "ch5_tsumugi_menu_board", label: "店先の黒板", location: "tonari" },
   { id: "ch5_free_eden_adam", label: "二つのダブルアップル", location: "EDEN" },
 ].map(scene => Object.freeze(scene)));
 

@@ -39,6 +39,10 @@ const TONARI_SLOTS = Object.freeze({
   ch5_free_tonari_practice: [1],
   ch5_tsumugi_serving: [0, 1],      // 夕方の接客（昼と夜のどちらでも）
   ch5_tsumugi_makes_for_hajime: [0], // 休みの日に客として行く（昼だけ）
+  ch5_tsumugi_busy_night: [1],      // 満席の夜（夜だけ）
+  ch5_tsumugi_little_notes: [0],    // 開店前（昼だけ）
+  ch5_tsumugi_counsel: [1],         // 夜のカウンター（夜だけ）
+  ch5_tsumugi_menu_board: [1],      // 閉店後に始まる（夜だけ）
 });
 const PRACTICE = "ch5_free_tonari_practice";
 const MASHIRO_VISIT = "ch5_free_mashiro_visit";
