@@ -16,7 +16,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "tonariの閉店後。スミさんが、洗い終えたグラスを伏せる。"
+          "text": "tonariの閉店後。顔を出したスミさんが、洗い終えたグラスを勝手に伏せていく。"
         },
         {
           "speaker": "sumi",
@@ -26,7 +26,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。今日は俺も作ります"
+          "text": "はい。今日は俺が作ります"
         },
         {
           "type": "hide_cg"
@@ -44,12 +44,12 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "明日、仕込み頼めるか"
+          "text": "来週の仕込みは、もう決めたのか"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。買い足すもの、書いておきます"
+          "text": "はい。つむぎのシフトに合わせて、買い足すものも"
         },
         {
           "speaker": "",
@@ -63,23 +63,23 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
-          "text": "明日から、店はお前が回せ"
+          "face": "smile",
+          "text": "店はもう、お前が回してる。俺が言うことも、だいぶ減ったな"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "tonariを任せる。お前の店の名前は、その先まで取っとけ"
+          "text": "tonariは任せた。お前の店の名前は、その先まで取っとけ"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "……はい"
+          "face": "smile",
+          "text": "はい。いつか、ちゃんと看板にします"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "店を出る前に、明日のシフトを確かめる。"
+          "text": "店を出る前に、明日のシフトを確かめる。俺の名前の隣に、つむぎの名前が並んでいた。"
         }
       ]
     },
@@ -153,7 +153,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎのスケッチブックに、新しい猫が増えていた。"
+          "text": "シフト明け。つむぎのスケッチブックに、新しい猫が増えていた。"
         },
         {
           "speaker": "hajime",
@@ -226,7 +226,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "好きだよ。……急に照れるな"
+          "text": "好きだよ、……急に照れるな"
         },
         {
           "speaker": "ageha",
@@ -357,7 +357,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も、店に話しておきます"
+          "text": "俺も、その日はシフトを空けておきます"
         },
         {
           "speaker": "rio",
@@ -506,6 +506,11 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "いらっしゃいませ。お好きな席へどうぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言い終わる前に、つむぎが水のグラスを二つ運んでいった。"
         },
         {
           "speaker": "",
