@@ -90,9 +90,9 @@ try {
   // 1a) 苗字と名前のあいだの小さな空き（正本の名前に空白がある人だけ）
   const split = await page.evaluate(async () => {
     const { nameParts } = await import("./js/vn/intro-art.js");
-    return { saku: nameParts("saku", "綾取朔"), maki: nameParts("maki", "斧崎マキ"), naru: nameParts("naru", "なる"), hiyori: nameParts("hiyori", "ひより") };
+    return { saku: nameParts("saku", "綾取陣"), maki: nameParts("maki", "斧崎マキ"), naru: nameParts("naru", "なる"), hiyori: nameParts("hiyori", "ひより") };
   });
-  assert.deepEqual(split, { saku: ["綾取", "朔"], maki: ["斧崎", "マキ"], naru: null, hiyori: null }, "苗字と名前の区切り");
+  assert.deepEqual(split, { saku: ["綾取", "陣"], maki: ["斧崎", "マキ"], naru: null, hiyori: null }, "苗字と名前の区切り");
 
   // 1b) 絵柄の切り替え: 既定は新しいグラフィック絵柄、設定 classic で旧の立ち絵へ戻る（2026-10-31）
   const artFor = async (id, style) => {
@@ -145,7 +145,7 @@ try {
     }
     return out;
   });
-  assert(!/栞|緑川/.test(hidden.minto), `みんとのカットインに本名が出ている: ${hidden.minto}`);
+  assert(!/栞|木成頼/.test(hidden.minto), `みんとのカットインに本名が出ている: ${hidden.minto}`);
   assert(!/田中|健太/.test(hidden.rei), `鴉葬レヰのカットインに本名が出ている: ${hidden.rei}`);
   assert(hidden.rei.includes("鴉葬レヰ"), "活動名を紹介に出す");
 

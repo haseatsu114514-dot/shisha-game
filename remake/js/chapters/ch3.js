@@ -5,7 +5,7 @@ import { createChapterActions } from "../core/chapter-actions.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardSceneExp, consultLessons, readyLessons } from "../core/growth.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { layers, showScreen, setBg, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
@@ -238,7 +238,7 @@ async function openChapter(advance) {
 
 async function readPrologue(owner, id, bg, ride = null) {
   if (ride) await ride();
-  else await setBg(bg ? bgUrl(bg) : null, { instant: true });
+  else await enterScene(bg ? bgUrl(bg) : null);
   if (!current(owner)) return false;
   showScreen("none", null);
   hud(owner);
@@ -357,10 +357,10 @@ async function readScene(owner, scene) {
   const dialogue = { ...source, metadata: { ...source.metadata, bg: "" } };
   const restoreMeeting = meetingCheckpoint(dialogue);
   const background = bgUrl(scene.bg);
-  // 行き先を決めた時点で前のカードを外し、背景待ちを同じ自由時間と誤認させない。
+  // 行き先を決めた時点で前のカードを外し、背景待ちを同じ自由時間と誤認させない（背景は標準の幕で替える）。
   showScreen("none", null);
   hud(owner);
-  await withScenePreparation(setBg(background, { instant: true }));
+  await withScenePreparation(setBg(background));
   if (!current(owner)) return false;
   // 名乗りの制御行などは読了時のcheckpointまで未確定。会話中の保存を避ける。
   hud(owner);
@@ -424,7 +424,7 @@ async function renderStage(owner) {
     return;
   }
   if (scene.id === "ch3_opening" && state.flags._ch3_opening_read) {
-    await withScenePreparation(setBg(bgUrl("bg_tournament_stage"), { instant: true }));
+    await withScenePreparation(enterScene(bgUrl("bg_tournament_stage")));
     if (!current(owner)) return;
     card(owner, "scene", "DAY 1・全国大会の参加登録", "東京駅から会場へ。受付で出場手続きを済ませ、競技規則を受け取る。", [
       button(owner, state.flags._ch3_rules_read ? "mukaiへ向かう"
@@ -448,7 +448,7 @@ async function renderStage(owner) {
     return;
   }
   const background = bgUrl(scene.bg);
-  await withScenePreparation(setBg(background, { instant: true }));
+  await withScenePreparation(enterScene(background));
   if (!current(owner)) return;
   card(owner, "scene", `DAY ${scene.day}・${scene.label}`, `${scene.location}へ向かう。`, [
     button(owner, "続きを読む", "continue", async () => {
@@ -511,7 +511,7 @@ async function consultVolk(owner) {
   if (!current(owner) || !readyVolkLessons().length) return;
   const background = bgUrl("bg_volk_shop");
   showScreen("none", null); hud(owner);
-  await withScenePreparation(setBg(background, { instant: true }));
+  await withScenePreparation(setBg(background));
   if (!current(owner)) return;
   const controller = owner.controller = new AbortController();
   try { await consultLessons("volk", { bg: background, signal: controller.signal }); }
@@ -572,7 +572,7 @@ async function readBond(owner, kind, id = "mashiro") {
   const background = bgUrl({ saku: "bg_yohaku_shop", steve: "bg_steve_shop", volk: "bg_volk_shop" }[id] || "bg_mukai_shop");
   showScreen("none", null);
   hud(owner);
-  await withScenePreparation(setBg(background, { instant: true }));
+  await withScenePreparation(setBg(background));
   if (!current(owner)) return;
   const controller = owner.controller = new AbortController();
   // 第3章から読み込んだ保存でも、恋愛／友情の実回答と lover・romance_open の分岐を読めるようにする。
@@ -597,7 +597,7 @@ async function renderTrials(owner) {
   if (!current(owner)) return;
   const trials = availableChapterThreeTrials(state);
   if (!trials.length) { await renderStage(owner); return; }
-  await withScenePreparation(setBg(bgUrl("bg_mukai_shop"), { instant: true }));
+  await withScenePreparation(enterScene(bgUrl("bg_mukai_shop")));
   if (!current(owner)) return;
   card(owner, "trial", "mukaiの作業台", "聞いたことを、自分の一台で確かめる。作っても、予定は進まない。", [
     ...trials.map(trial => button(owner, trial.label, `trial-${trial.id}`, () => runTrial(owner, trial.id))),
@@ -701,7 +701,7 @@ async function renderFreeTime(owner, window) {
     ? selectChapterThreeEvening(routes, state, definitions, window) : null;
   const eveningNow = evening?.kind === "rest" ? null : evening;
   const gym = chapterThreeGymAvailability(state, window.id);
-  await setBg(bgUrl(window.slot ? "bg_tokyo_map_night" : "bg_tokyo_map_day"), { instant: true });
+  await enterScene(bgUrl(window.slot ? "bg_tokyo_map_night" : "bg_tokyo_map_day"), { map: true });
   if (!current(owner)) return;
   card(owner, "free", `DAY ${window.day - state.flags._ch3_intro.startDay + 1}・${window.slot ? "夜" : "昼"}${plan ? "の約束" : "の自由時間"}`,
     eveningNow ? eveningNow.kind === "date" ? `大会前夜。${name}と過ごす時間になった。`

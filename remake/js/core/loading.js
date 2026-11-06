@@ -195,7 +195,7 @@ export async function withLoading(prepare, {
     settled = true; clearTimeout(timer); controller.abort();
     void comicReady;
     portraitMq?.removeEventListener?.("change", onOrient);
-    overlay.remove();
+    leaveLoading(overlay, { cancelled: !!signal?.aborted });
     signal?.removeEventListener("abort", abort);
     window.removeEventListener("keydown", guard, true);
     window.removeEventListener("keyup", guard, true);
@@ -205,4 +205,19 @@ export async function withLoading(prepare, {
     active = false;
     if (focus?.isConnected) focus.focus();
   }
+}
+
+/**
+ * ロード画面の出口（#2688 A14）。本物はすぐ外し、同じ色の霞の面（背景の絵つき）を残して、もやが晴れるように上へ薄れさせる。
+ * 表示していなかった・中断された・動きを減らす設定では、今までどおりそのまま外す。
+ */
+function leaveLoading(overlay, { cancelled = false } = {}) {
+  const parent = overlay.parentNode;
+  const visible = !!parent && !cancelled && typeof matchMedia === "function" && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!visible) { overlay.remove(); return; }
+  const haze = el("div.loading-exit-haze", { "aria-hidden": "true" });
+  if (overlay.classList.contains("is-viewport")) haze.classList.add("is-viewport");
+  overlay.replaceWith(haze);
+  haze.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-3%)" }],
+    { duration: 300, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" }).finished.catch(() => {}).finally(() => haze.remove());
 }

@@ -12,6 +12,7 @@ import { loadingNotice } from "./ui.js";
 // A10後半: 「見た演出を短く」設定（config.shortSeen、既定オフ）。初回は必ずフルで見せ、見た記録を
 // state.flags._motion_seen_<key> に付ける。2回目以降は設定がオンのときだけ短縮する。記録は設定と
 // 独立に付く（後で設定をオンにしても過去に見た演出は短くなる）。くじ・チェキ・MG(#1081 H05)は対象外。
+// 対象は連絡先交換・シフト終了・電車・新幹線・機窓、帰宅の扉と夜明け（transitions.js）。#2688 F9
 // 記録は演出を見せ終えてから付ける（途中でLOADされた演出はセーブを書き換えない）。
 const seenFlag = (key) => `_motion_seen_${key}`;
 const shortenSeen = (key) => !!(state && state.flags[seenFlag(key)]) && !!config.shortSeen;
@@ -99,20 +100,40 @@ export async function sharkSwim(mid) {
   else await mid?.();
 }
 
+/**
+ * 乗り物の演出の共通の入口。テストの高速送り・動きを減らす設定では省いて mid() だけ（engine の vnTest は window.__remake 経由で見る）。
+ * 「見た演出を短く」（config.shortSeen）の2回目以降は、短い一筆の幕の内側で mid() を行う（#2688 F9）。初回は必ずフル。
+ */
+// 乗り物の「見た」記録は端末に残す（セーブの状態は変えない。設定「見た演出を短く」と同じく端末ごと）
+const DEVICE_SEEN = "suien_motion_seen";
+const deviceSeen = () => { try { return JSON.parse(localStorage.getItem(DEVICE_SEEN) || "{}") || {}; } catch { return {}; } };
+const seenOnDevice = (key) => !!deviceSeen()[key];
+const markSeenOnDevice = (key) => {
+  try { const seen = deviceSeen(); if (seen[key]) return; seen[key] = true; localStorage.setItem(DEVICE_SEEN, JSON.stringify(seen)); } catch { /* 保存できない環境では毎回フル */ }
+};
+
+async function ride(key, load, mid, opts) {
+  if (omitMotion() || window.__remake?.vnTest?.turbo) { await mid?.(); return; }
+  if (config.shortSeen && seenOnDevice(key)) {
+    const { briefCover } = await import("./transitions.js"); // 使うときだけ読む（ほかの場面の読み込みを増やさない）
+    await briefCover(mid);
+    return;
+  }
+  const mod = await load().catch((e) => { console.error(e); return null; });
+  if (!mod) { await mid?.(); return; }
+  await mod.a(mid, opts);
+  markSeenOnDevice(key); // 見せ終えてから記録
+}
+
 /** 電車に乗る（Issue #891）。mid(): 車内の絵が覆っている間に次の背景へ替える。tone: "day"|"night"（省略で今の時間帯） */
 export async function trainRide(mid, opts = {}) {
-  // テストの高速送りでも省く（engine の vnTest は window.__remake 経由で見る。循環 import を避ける）
-  const mod = omitMotion() || window.__remake?.vnTest?.turbo ? null : await train().catch((e) => { console.error(e); return null; });
-  if (mod) await mod.a(mid, opts);
-  else await mid?.();
+  await ride("train", train, mid, opts);
 }
 
 /** 新幹線に乗る（Issue #1059）。mid(): 車窓が覆っている間に次の背景へ替える。
  * opts.from/to: "home"|"tokyo"。第2章の隣町行き電車(#891 trainRide)とは別の演出。 */
 export async function shinkansenRide(mid, opts = {}) {
-  const mod = omitMotion() || window.__remake?.vnTest?.turbo ? null : await shinkansen().catch((e) => { console.error(e); return null; });
-  if (mod) await mod.a(mid, opts);
-  else await mid?.();
+  await ride("shinkansen", shinkansen, mid, opts);
 }
 
 /** mid(): 覆っている間に背景を替える。bgUrl はその背景の絵（線画の元） */

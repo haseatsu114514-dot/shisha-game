@@ -84,12 +84,12 @@ await suite('portrait-framing',async check=>{
       await page.waitForFunction(()=>document.querySelector('.vn-text')?.textContent==='__default_protagonist');
       assert.equal(await page.locator('.vn-portraits img').count(),0,'normal gameplay must keep protagonist off screen');
       const inventory=await page.evaluate(async()=>{const {DB}=await import('./js/core/data.js');
-        return {classic:Object.keys(DB.manifest.portraits),variants:DB.manifest.portraitVariants||{}};
+        return {classic:Object.keys(DB.manifest.portraits),variants:{new:DB.manifest.portraitVariants?.new||{}}};
       });
       if(!process.argv.includes('--cutins-only')){
       for(const id of inventory.classic){const tag=await scene(page,[id],'classic');await inspect(page,label,tag);}
       for(const [style,portraits] of Object.entries(inventory.variants))for(const [id,p] of Object.entries(portraits))for(const face of p.faces){const tag=await scene(page,[id],style,face);await inspect(page,label,tag);}
-      for(const style of ['classic','new','nanami'])for(const ids of [['sumi','tsumugi'],['kumicho','mashiro'],['sumi','minto'],['naru','tsumugi'],['hiyori','adam']]){
+      for(const style of ['classic','new'])for(const ids of [['sumi','tsumugi'],['kumicho','mashiro'],['sumi','minto'],['naru','tsumugi'],['hiyori','adam']]){
         const tag=await scene(page,ids,style);await inspect(page,label,tag);
       }
       }
@@ -129,3 +129,4 @@ await suite('portrait-framing',async check=>{
   }
 },{initScript:()=>localStorage.setItem('suien_remake_config',JSON.stringify({mute:true,textSpeed:4,reduceShake:true,introArtStyle:'classic'}))});
 fs.writeFileSync(path.join(out,'portrait-framing-measurements.json'),JSON.stringify(measurements,null,2)+'\n');
+

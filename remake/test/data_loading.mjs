@@ -63,13 +63,18 @@ assert(vanillaReward.name.startsWith(vanilla.short_name));
 for (const id of ["minto", "ageha"]) {
   for (const face of all.DB.manifest.portraits[id].faces) {
     const version = id === "ageha" || face === "normal" ? "?v=portrait-standard-20261102" : "";
-    assert.equal(all.portraitInfo(id, face).src, `img/sprites/characters/${id}/chr_${id}_${face}.webp${version}`);
+    assert.equal(all.portraitInfo(id, face, "classic").src, `img/sprites/characters/${id}/chr_${id}_${face}.webp${version}`);
   }
-  assert.equal(all.faceIconUrl(id), `img/ui/face_icons/face_${id}.webp?v=portrait-standard-20261102`);
-  assert(all.allFaceIconUrls().includes(all.faceIconUrl(id)), "preload and display use the same revised icon URL");
+  // 顔アイコンは会話の立ち絵と同じ画風（#2680）。現行の版は改訂の版数付き、既定は採用済みの新版。
+  assert.equal(all.faceIconUrl(id, null, { style: "classic" }), `img/ui/face_icons/face_${id}.webp?v=portrait-standard-20261102`);
+  assert.equal(all.faceIconUrl(id), `img/ui/face_icons/new/face_${id}.webp`);
+  assert(all.allFaceIconUrls().includes(all.faceIconUrl(id)), "preload and display use the same icon URL");
 }
+assert.equal(all.portraitInfo("minto", "normal").style, "new");
+assert.equal(all.portraitInfo("minto", "normal").src, "img/sprites/character_variants/new/minto/chr_minto_normal.webp");
 assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/bg_tonari_inside_day.webp");
-assert.equal(all.faceIconUrl("oneesan"), "img/ui/face_icons/face_minto_private.webp");
+assert.equal(all.faceIconUrl("oneesan", null, { style: "classic" }), "img/ui/face_icons/face_minto_private.webp");
+assert.equal(all.faceIconUrl("oneesan"), "img/ui/face_icons/new/face_minto_private.webp");
 assert.equal(all.portraitInfo("oneesan", "normal").face, "ura_normal");
 assert.equal(requests.length, 42);
 assert.equal(new Set(requests).size, 42);
@@ -108,11 +113,11 @@ for (const id of ["baito_tsumugi_01", "baito_minto_romance", "baito_ageha_romanc
   assert(!all.DB.baito.some(event => event.id === id), `未接続の物語イベントを一括解放しない: ${id}`);
 }
 assert(Array.isArray(all.DB.gallery.items), "the approved gallery catalog is loaded from real data");
-assert.equal(all.DB.characters.hiyori.name, "薄羽ひより");
-assert.equal(all.DB.characters.hiyori.reading, "うすば ひより");
-assert.equal(all.DB.characters.saku.name, "綾取 朔（あやとり さく）");
+assert.equal(all.DB.characters.hiyori.name, "泡沫ひより");
+assert.equal(all.DB.characters.hiyori.reading, "うたかた ひより");
+assert.equal(all.DB.characters.saku.name, "綾取 陣（あやとり じん）");
 assert.equal(all.DB.characters.rei.reading, "あそう れい");
-assert.equal(all.realName("saku"), "綾取朔");
+assert.equal(all.realName("saku"), "綾取陣");
 assert.equal(all.realName("rei"), "鴉葬レヰ");
 assert.equal(all.realName("hiyori"), "ひより");
 assert.equal(all.DB.characters.hiyori.age, 25);

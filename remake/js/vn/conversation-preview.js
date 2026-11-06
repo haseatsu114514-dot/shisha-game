@@ -40,10 +40,10 @@ themeSelect.after(characterSelect);
 const portraitStyleSelect=document.createElement("select");
 portraitStyleSelect.id="preview-portrait-style";
 portraitStyleSelect.setAttribute("aria-label","立ち絵の画風");
-for(const [value,label] of [["classic","現行"],["new","新バージョン"],["nanami","七海風"]]) {
+for(const [value,label] of [["new","新バージョン"],["classic","現行"]]) {
   const option=document.createElement("option");option.value=value;option.textContent=label;portraitStyleSelect.append(option);
 }
-portraitStyleSelect.value=["new","nanami"].includes(previewQuery.get("portraitStyle"))?previewQuery.get("portraitStyle"):"classic";
+portraitStyleSelect.value=previewQuery.get("portraitStyle")==="classic"?"classic":"new";
 portraitStyleSelect.disabled=true;
 portraitStyleSelect.addEventListener("change",start);
 characterSelect.after(portraitStyleSelect);
@@ -142,7 +142,7 @@ async function start() {
   Object.assign(config, { textSpeed: 4, mute: true, portraitStyle: portraitStyleSelect.value });
   faceSelect.hidden=selector.value!=="characters";
   const info=portraitInfo(characterSelect.value,faceSelect.value);
-  artworkStatus.textContent=selector.value!=="characters"?"":info?.style==="classic"&&config.portraitStyle!=="classic"?"この衣装・人物は未導入：現行を表示":info?.face!==faceSelect.value?"この表情は未制作：同画風の通常を表示":config.portraitStyle==="classic"?"現行":characterSelect.value==="ageha"?"仮採用・通常1枚／原画人物高1185px":"仮採用";
+  artworkStatus.textContent=selector.value!=="characters"?"":info?.style==="classic"&&config.portraitStyle!=="classic"?"この衣装・人物は未導入：現行を表示":info?.face!==faceSelect.value?"この表情は未制作：同画風の通常を表示":config.portraitStyle==="classic"?"現行":characterSelect.value==="ageha"?"新バージョン・通常1枚／原画人物高1185px":"新バージョン";
   characterSelect.hidden=selector.value!=="characters";
   const characterLines = {
     hiyori:{speaker:"hiyori",face:"smile",text:"今日はここで、ゆっくりしていってね。\nお茶も用意するから、少しだけ待っていてね。"},
@@ -202,3 +202,4 @@ try {
   status.textContent = "読み込みに失敗しました。再読み込みしてください。";
   console.error(error);
 }
+

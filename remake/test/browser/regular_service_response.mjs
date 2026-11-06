@@ -194,11 +194,13 @@ await suite("regular-service-response", async check => {
         if (version === "current") response(later.lines, answer);
         counts[version] = { first: first.clicks, choices: first.choices, later: later.clicks };
       }
-      // The new mouthpiece explanation adds one line to the current first visit.
-      assert.equal(counts.current.first, counts.baseline.first + (answer === null ? 0 : 1));
+      // The new mouthpiece explanation adds one line to the current first visit,
+      // and #2534 EMO04 removes one monologue that re-explained the loosened shoulders (net 0).
+      assert.equal(counts.current.first, counts.baseline.first + (answer === null ? 0 : 1 - 1));
       assert.equal(counts.current.choices, answer === null ? 0 : 1);
       // #2606: the later scene gains Tsumugi's five-line foreshadowing after the salaryman leaves.
-      assert.equal(counts.baseline.choices, 0); assert.equal(counts.current.later, counts.baseline.later + 5);
+      // #2534 EMO04: plus one line noting he changed his own order for the first time.
+      assert.equal(counts.baseline.choices, 0); assert.equal(counts.current.later, counts.baseline.later + 5 + 1);
       console.log(`${label}/${answer ?? "legacy"} clicks ${JSON.stringify(counts)}`);
       await page.evaluate(() => { T.fresh(); });
       if (answer !== null) {

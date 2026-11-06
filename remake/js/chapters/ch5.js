@@ -10,7 +10,7 @@ import { awardChapterClearExp, awardTournamentExp, awardSceneExp, presentNight, 
 import { canReflect } from "../daily/reflection.js";
 import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
 import { state, save } from "../core/state.js";
-import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, chapterTitle, modal } from "../core/ui.js";
 import { saveFlow } from "../scenes/saves.js";
 import { play, hooks, vnTest } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
@@ -174,7 +174,7 @@ async function readScene(owner, id, { keepHud = false } = {}) {
   const dialogue = { ...source, lines: [...lines, ...echo.flat()], metadata: { ...source.metadata, bg: "" } };
   showScreen("none", null);
   if (!keepHud) hud(); // 日常ループ（#2033）の途中では、日常のHUDを消さない
-  await setBg(bgUrl(CH5_SCENE_BG[id]), { instant: true });
+  await setBg(bgUrl(CH5_SCENE_BG[id]));
   if (!current(owner)) return false;
   // 節目だけ既存曲へ切り替える（#1668 2-7）。表に無い場面は tonari。
   playBgm(CH5_SCENE_BGM[id] || CH5_DEFAULT_BGM);
@@ -288,7 +288,7 @@ async function renderStage(owner) {
 const LESSON_AFTER_SCENE = Object.freeze({ ch5_doctor_after_match: "dr_kemuri" });
 
 async function renderScene(owner, scene, dayLabel) {
-  await setBg(bgUrl(CH5_SCENE_BG[scene.id]), { instant: true });
+  await enterScene(bgUrl(CH5_SCENE_BG[scene.id]));
   if (!current(owner)) return;
   card(owner, "scene", `${dayLabel ? `${dayLabel}・` : ""}${scene.label}`, `${scene.location}で、次の話を読む。`, [
     button(owner, "続きを読む", "continue", async () => {
@@ -304,7 +304,7 @@ async function renderScene(owner, scene, dayLabel) {
 
 /** 先送りを選んだ直後の復帰先。timeout を読むまで自由行動のカードは出さない。 */
 async function renderTimeoutCard(owner) {
-  await setBg(bgUrl(CH5_SCENE_BG.ch5_timeout), { instant: true });
+  await enterScene(bgUrl(CH5_SCENE_BG.ch5_timeout));
   if (!current(owner)) return;
   card(owner, "scene", "日程は先送り", "tonariで、次の話を読む。", [
     button(owner, "続きを読む", "continue", async () => {
@@ -316,7 +316,7 @@ async function renderTimeoutCard(owner) {
 
 /** 閉店後の試作（#1666）: 何を試すか → スミさんが吸って返す → 直すか、そのまま覚えるか。 */
 async function renderPrep(owner) {
-  await setBg(bgUrl(CH5_SCENE_BG.ch5_free_tonari_practice), { instant: true });
+  await enterScene(bgUrl(CH5_SCENE_BG.ch5_free_tonari_practice));
   if (!current(owner)) return;
   const prep = chapterFivePreparation(state);
   if (!prep) {
@@ -366,7 +366,7 @@ async function renderFree(owner) {
 }
 
 async function renderScheduled(owner) {
-  await setBg(bgUrl(CH5_SCENE_BG.ch5_schedule_contact), { instant: true });
+  await enterScene(bgUrl(CH5_SCENE_BG.ch5_schedule_contact));
   if (!current(owner) || !await deliverLime(owner, CH5_LIME_MILESTONES.prep)) return;
   card(owner, "scheduled", "勝負の日程が決まった", "店の休業日。博士との勝負は、その日になった。", [
     button(owner, "会場へ行く", "go-venue", async () => {
@@ -396,7 +396,7 @@ async function renderMatch(owner) {
   if (key) {
     const id = CH5_MATCH_SCENES[key];
     const text = MATCH_CARDS[key];
-    await setBg(bgUrl(CH5_SCENE_BG[id]), { instant: true });
+    await enterScene(bgUrl(CH5_SCENE_BG[id]));
     if (!current(owner)) return;
     card(owner, "match", text.title, text.description, [
       button(owner, "続きを読む", "continue", async () => {
@@ -417,7 +417,7 @@ async function renderMatch(owner) {
   const sequence = outcome === "win"
     ? [CH5_MATCH_SCENES.win, CH5_MATCH_SCENES.afterglow] : [CH5_MATCH_SCENES.loss];
   const first = sequence.find(id => !chapterFiveRead(state, id)) ?? sequence[0];
-  await setBg(bgUrl(CH5_SCENE_BG[first]), { instant: true });
+  await enterScene(bgUrl(CH5_SCENE_BG[first]));
   if (!current(owner)) return;
   const tally = chapterFiveVoteTally(state);
   card(owner, "match", "二台分の挙手", "同じ観客が、二台とも吸った。合計で決まる。", [
@@ -440,7 +440,7 @@ function voteNote(tally) {
 }
 
 async function renderSecondCupReady(owner) {
-  await setBg(bgUrl(CH5_SCENE_BG[CH5_MATCH_SCENES.beforeSecond]), { instant: true });
+  await enterScene(bgUrl(CH5_SCENE_BG[CH5_MATCH_SCENES.beforeSecond]));
   if (!current(owner)) return;
   const tally = `一台目の挙手は はじめ ${CH5_FIRST_CUP_VOTES.hajime}／9000 ${CH5_FIRST_CUP_VOTES.machine}。`;
   card(owner, "second-cup", "二台目", "同じダブルアップル12g。今度は、目の前の客を待つ一台を作る。", [
@@ -498,7 +498,7 @@ async function playLines(owner, id, lines) {
   if (!current(owner)) return false;
   showScreen("none", null);
   hud();
-  await setBg(bgUrl(CH5_SCENE_BG[CH5_MATCH_SCENES.beforeSecond]), { instant: true });
+  await setBg(bgUrl(CH5_SCENE_BG[CH5_MATCH_SCENES.beforeSecond]));
   if (!current(owner)) return false;
   const controller = new AbortController();
   owner.controller = controller;
@@ -521,7 +521,7 @@ async function renderFinale(owner) {
     progress = chapterFiveProgress(state);
   }
   const scene = { id: progress.finaleScenes[progress.finale], label: "フィナーレ", location: "tonari" };
-  await setBg(bgUrl(CH5_SCENE_BG[scene.id]), { instant: true });
+  await enterScene(bgUrl(CH5_SCENE_BG[scene.id]));
   if (!current(owner)) return;
   card(owner, "scene", scene.label, "物語の締めくくりを読む。", [
     button(owner, "続きを読む", "continue", async () => {
@@ -582,7 +582,7 @@ async function preparePostEnding(owner) {
 async function renderPostEnding(owner) {
   const next = chapterFivePostEndingNext(state);
   if (!next) return renderComplete(owner);
-  await setBg(bgUrl(CH5_SCENE_BG[next.id]), { instant: true });
+  await enterScene(bgUrl(CH5_SCENE_BG[next.id]));
   if (!current(owner)) return;
   const [title, description, note] = next.talk
     ? ["話し直し", "本人が決めた日に、一人ずつ会って話す。", `${next.index}人目／${next.total}人`]
