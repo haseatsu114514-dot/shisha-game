@@ -972,13 +972,20 @@ await suite("ch5-full-flow", async check => {
     });
     await loadSlot(page, 0);
     await page.locator(dt("ch5-second-cup")).waitFor({ timeout: 60000 });
-    await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = "bad"; });
+    // 「下手に作る」自動操作（craftTest.auto = "bad"）は吸う位置を乱数で選び、温度を見ない。蒸らしの揺らぎ（session.js の
+    // steamVariation）も乱数なので、冷たい側に振れると適温に入って二台目が勝つことがあった（CI で 22対18・合計41対39）。
+    // 乱数を高い側に固定して、蒸らしは熱く・吸いは強くし、仕上がった弱い一台にする（総合67前後・17票）。
+    await page.evaluate(async () => {
+      (await import("./js/craft/session.js")).craftTest.auto = "bad";
+      window.__realRandom = Math.random; Math.random = () => .9;
+    });
     await page.locator(dt("ch5-second-cup-start")).click();
     await page.locator(matchScene("ch5_second_cup_defeat")).waitFor({ timeout: 180000 });
     let state = await get(page);
     const cup = state.flags._ch5.secondCup;
-    assert(19 + cup.votes.hajime <= 21 + cup.votes.machine, `A weak cup does not win: ${JSON.stringify(cup)}`);
-    await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = null; });
+    assert.notEqual(cup.category, "failed", `The weak cup is finished, not failed: ${JSON.stringify(cup)}`);
+    assert(19 + cup.votes.hajime < 21 + cup.votes.machine, `A weak cup loses on the votes: ${JSON.stringify(cup)}`);
+    await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = null; Math.random = window.__realRandom; });
     await page.locator(dt("ch5-continue")).click();
     await page.locator(scene("ch5_doctor_after_match")).waitFor();
     state = await get(page);
