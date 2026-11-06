@@ -7,6 +7,7 @@ import {
   fortuneChoiceIndex,
   fortuneResultId,
   registerFortuneReadings,
+  fortuneSightHinted,
   naruRiftActive,
   isFortuneTargetAvailable,
   fortuneTargets,
@@ -213,14 +214,24 @@ assert.equal(fortuneChoiceIndex(save, 'ch1_rio_bond_question', romance, { ...hin
 assert.equal(activeFortuneSight({ chapter: 1, day: 3, flags: { _fortune_choice_sight: { char: 'naru', chapter: 1, from: 3, until: 999 } } }), null);
 
 const base = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/remake_ch1.json', import.meta.url))).dialogues;
-const db = { dialogues: Object.fromEntries(base.map(d => [d.dialogue_id, d])), fortuneTrivia: trivia };
+const db = { dialogues: Object.fromEntries(base.map(d => [d.dialogue_id, d])), fortuneTrivia: trivia, fortuneHints: hints };
 registerFortuneReadings(db);
+// 三日間の「赤く見える」は、選択肢の注記で光りうる相手にだけ約束する（恋愛の注記は表示が切られている間は数えない）。
+const sightLine = d => d.lines.some(l => /赤く見える/.test(l.text || ''));
+const hinted = new Set(['ageha', 'minto', 'naru', 'rio', 'sumi', 'tsumugi']);
+for (const char of Object.keys(trivia.characters)) assert.equal(fortuneSightHinted(char, hints), hinted.has(char), `${char} sight hint`);
 for (const entry of all) {
   const d = db.dialogues[fortuneResultId(entry)];
   assert(d);
   assert(d.lines.some(l => l.text === entry.teller));
   assert(d.lines.some(l => l.type === 'motion' && l.id === 'tarot'));
+  const char = Object.keys(trivia.characters).find(id => trivia.characters[id].includes(entry));
+  assert.equal(sightLine(d), hinted.has(char), `${entry.id}: the three-day sight is promised only when ${char} has a usable choice hint`);
+  if (!hinted.has(char)) assert.equal(d.lines.length, base.find(x => x.dialogue_id === 'remake_fortune_result').lines.length + 1, `${entry.id} keeps the rest of the reading`);
 }
+assert.equal(fortuneSightHinted('mashiro', { ...hints, includeRomance: true }), true, 'romance hints count once romance hints are shown');
+assert.equal(fortuneSightHinted('steve', { ...hints, includeRomance: true }), false);
+assert.equal(fortuneSightHinted('naru', { choices: { 'x:y': { target: 'naru', kind: 'taste' } } }), false, 'taste hints never light');
 assert(db.dialogues.remake_fortune_result, 'legacy result was removed');
 // 占い師は昼にも夜にも現れる（2026-11-02 台帳 URA）。営業時間の門と「昼のみ営業」の札は無い。
 for (const slot of [0, 1]) assert.equal(openingStatus({ kind: 'fortune' }, { slot }).ok, true);

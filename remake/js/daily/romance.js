@@ -16,6 +16,7 @@ import { samechanMilestoneDue, playSamechanMilestone } from "./samechan-bonds.js
 import { dateScene, dateVenue, relationshipDayTotal } from "./date-scene.js";
 import { playSamechanDate, samechanDateGap, samechanDateReady } from "./samechan-date.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
+import { recordRouteLover } from "../core/gallery-progress.js";
 
 // 告白は「帰り道」の場面。背景を持たない台本は通りの絵で（前の場面の背景を引き継がない）
 const STREET = "res://assets/backgrounds/bg_street.png";
@@ -65,6 +66,8 @@ function becomeLovers(id) {
   state.lovePts[id] = Math.max(state.lovePts[id] || 0, AFFINITY_RANK_PTS[1]);
   if (state.loverSince[id] == null) state.loverSince[id] = dayTotal();
   if (state.lovers.length >= 2) state.guilt = (state.guilt || 0) + 2; // 2人目以降＝隠しごとが増える
+  // コレクションのルート記録「恋人成立」（セーブ枠と別。実際に付き合った時だけ。読み込みでは記録しない）
+  try { recordRouteLover(id); } catch { /* 記録の失敗で交際の成立を妨げない */ }
   emit("lovers", { id });
   save();
 }

@@ -123,6 +123,9 @@ assert(all.DB.dialogues.remake_fortune_trivia_naru_1, "fortune results were not 
 assert(all.DB.dialogues.remake_fortune_trivia_sumi_13, "added fortune readings were not registered after loading");
 assert(all.DB.dialogues.remake_fortune_trivia_kumicho_1 && all.DB.dialogues.remake_fortune_trivia_sheikh_5, "Chapter 2-5 cast readings were not registered after loading");
 assert(!all.DB.dialogues.remake_fortune_trivia_adam_1, "excluded fortune readings must not be registered");
+// 読み込み後の本物の順でも、三日間の「赤く見える」は注記のある相手（なる）だけに約束し、注記の無い相手（組長）には言わない。
+const fortuneSight = id => all.DB.dialogues[id].lines.some(l => /赤く見える/.test(l.text || ""));
+assert(fortuneSight("remake_fortune_trivia_naru_1") && !fortuneSight("remake_fortune_trivia_kumicho_1"), "fortune sight promise must follow the loaded choice hints");
 assert.equal(all.DB.dialogues.craft_inner_heat_watch.lines[0].speaker, "hajime");
 assert(all.DB.dialogues.craft_inner_heat_watch.lines[0].text);
 assert.equal(all.DB.dialogues.tournament_craft_packed_intro, undefined);
