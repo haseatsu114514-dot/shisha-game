@@ -372,6 +372,46 @@ await suite("relationship-ui", async check => {
       await closeStatus(page);
     }, { ...options, reducedMotion: "reduce" });
 
+    // #2028: 綾取・ヴォルクも♥5の締めくくりがあるので人間関係に出る。「次に〜で会うと」は東京の店に会える間だけ。
+    // 綾取は大会後の煙幕の片づけの朝から（店を畳む）、ヴォルクは帰郷の夜から（鉄の煙の寄り道と同じ）約束しない。
+    // 第3章の後に♥5へ届いた時も、もう会えない店の「話を進めると、特別なイベントへ」は出さない。
+    if (device === "pc") await check("pc-saku-and-volk-rows-promise-only-while-they-can-be-met", async page => {
+      await setup(page);
+      await page.evaluate(async () => {
+        const city = await import("./js/chapters/ch2-city-data.js");
+        Object.assign(R.data.DB.dialogues, await city.readDialogues("ch3_rivals", ["ch3_saku_bond_finale"]),
+          await city.readDialogues("ch3_volk", ["ch3_volk_bond_finale"]));
+        const s = R.fresh(); s.chapter = 3;
+        for (const id of ["saku", "volk"]) { s.met[id] = true; s.affinity[id] = 66; s.contacts.push(id); }
+        Object.assign(s.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_outings: { enmaku_answer: 1 },
+          _lime_contact_volk: true, _ch3_read_ch3_volk_lime: true, _ch3_read_ch3_volk_second: true,
+          _ch3_read_ch3_volk_third: true, _ch3_read_ch3_volk_fourth: true });
+        R.core.save();
+      });
+      const next = async id => {
+        const row = page.locator(`[data-person="${id}"]`);
+        assert.equal(await row.count(), 1, `${id} is listed once met`);
+        return await row.locator(".pp-next").count() ? await row.locator(".pp-next").textContent() : null;
+      };
+      await status(page);
+      assert.equal(await next("saku"), "次に煙幕で会うと、特別なイベントへ。");
+      assert.equal(await next("volk"), "次に鉄の煙で会うと、特別なイベントへ。");
+      await page.locator('[data-person="volk"]').scrollIntoViewIfNeeded();
+      await assertFits(page, '[data-person="saku"] .pp-next, [data-person="volk"] .pp-next');
+      await closeStatus(page);
+      for (const [later, saku, volk] of [
+        [s => { s.flags._ch3_aftermath = { version: 3, winDay: 40, stage: R.bonds.VOLK_LAST_AFTERMATH_STAGE }; }, null, "次に鉄の煙で会うと、特別なイベントへ。"],
+        [s => { s.flags._ch3_aftermath.stage += 1; }, null, null],
+        [s => { s.chapter = 5; delete s.flags._ch3_aftermath; delete s.flags._lime_contact_volk; }, null, null],
+      ]) {
+        await page.evaluate(src => { (0, eval)(src)(R.core.state); R.core.save(); }, later.toString());
+        await status(page);
+        assert.equal(await next("saku"), saku, later.toString());
+        assert.equal(await next("volk"), volk, later.toString());
+        await closeStatus(page);
+      }
+    }, { ...options, reducedMotion: "reduce" });
+
     await check(`${device}-final-choices-and-ordinary-dialogue`, async page => {
       await setup(page);
       for (const id of ["tsumugi", "minto", "rio", "samechan", "hiyori"]) {

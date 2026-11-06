@@ -187,6 +187,19 @@ export function showHud(v = true) {
   if (v) updateHud();
 }
 
+/**
+ * 章の側の読み方やミニゲーム（クラブSEAM の DJ など）は HUD を差し替えるので、終わったら日常ループの HUD を戻す。
+ * 第3章・第4章の日常ループにある同じ形の関数と同じ動き（第5章の東京で使う）。
+ */
+export async function keepDailyHud(task) {
+  const root = layers.hud.firstElementChild;
+  try { return await task(); }
+  finally {
+    if (root && !root.isConnected) layers.hud.replaceChildren(root);
+    showHud(true);
+  }
+}
+
 export function updateHud() {
   if (!dom || !state) return;
   // 今いる街（第2章・第5章は flags._ch2_region。第5章は東京にも泊まれる・#2033。第3章の東京も同じ印・VOL03）

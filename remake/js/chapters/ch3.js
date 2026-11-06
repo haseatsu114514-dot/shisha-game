@@ -554,18 +554,21 @@ function bondActions(owner) {
   return [
     ...kind ? [button(owner, kind === "question" ? "ましろちゃんと話す（mukai）" : "ましろちゃんに呼ばれる（mukai）",
       `bond-${kind}`, () => readBond(owner, kind))] : [],
-    // 綾取・スティーブの締めくくり（#2028）。条件は daily/bonds.js（LIME交換の寄り道と、答えを返す／タイマーを借りる外出の後・♥5）。
+    // 綾取・スティーブ・ヴォルクの締めくくり（#2028）。条件は daily/bonds.js（LIME交換の寄り道と、答えを返す／タイマーを借りる外出・
+    // 鉄の煙の四度目の後・♥5）。
     // 友情の着地だけ。版3の東京は日常ループの店（ch3-tokyo-daily.js）から読むので、ここは旧行程の保存のため。
     ...finaleAtVisit("saku") ? [button(owner, "綾取に呼ばれる（煙幕）", "bond-saku-finale",
       () => readBond(owner, "finale", "saku"))] : [],
     ...finaleAtVisit("steve") ? [button(owner, "スティーブに呼ばれる（Smoke & Glory）", "bond-steve-finale",
       () => readBond(owner, "finale", "steve"))] : [],
+    ...finaleAtVisit("volk") ? [button(owner, "ヴォルクに呼ばれる（鉄の煙）", "bond-volk-finale",
+      () => readBond(owner, "finale", "volk"))] : [],
   ];
 }
 
 async function readBond(owner, kind, id = "mashiro") {
   if (!current(owner)) return;
-  const background = bgUrl(id === "saku" ? "bg_yohaku_shop" : id === "steve" ? "bg_steve_shop" : "bg_mukai_shop");
+  const background = bgUrl({ saku: "bg_yohaku_shop", steve: "bg_steve_shop", volk: "bg_volk_shop" }[id] || "bg_mukai_shop");
   hud(owner);
   await withScenePreparation(enterScene(background));
   if (!current(owner)) return;
