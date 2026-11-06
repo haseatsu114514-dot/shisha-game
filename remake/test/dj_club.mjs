@@ -103,6 +103,9 @@ check("Chapter 5 Tokyo (#2033) has the same club SEAM and CHOI-ZAP as chapter 3:
     assert.equal(ch5.region, "tokyo"); assert.equal(ch5.kind, "ch5_tokyo");
   }
   assert.equal(CH3_TOKYO_SPOTS.find(item => item.place === "gym").gym, true, "the chapter 3 Tokyo gym also grants the FIT days (daily/calendar.js spot.gym)");
+  const park3 = CH3_TOKYO_SPOTS.find(item => item.place === "park"), park5 = CH5_TOKYO_SPOTS.find(item => item.id === "ch5_tokyo_park");
+  assert.equal(park5.preview, "bg_tokyo_park", "the chapter 5 Tokyo park shows the pond park, not the street (ch5-tokyo.js reads the scene on spot.preview)");
+  assert.equal(park5.preview, park3.preview, "same park picture as chapter 3");
   const ids = () => chapterFiveTokyoSpots().map(item => item.id);
   core.setState(core.newState());
   Object.assign(core.state, { chapter: 5, day: 60, slot: 0, phase: "daily" });
