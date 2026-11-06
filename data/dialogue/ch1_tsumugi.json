@@ -1562,6 +1562,26 @@
           "text": "ペンを持つ指が、少しだけ強く曲がった。"
         },
         {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……あの。作ってるところも、見てていいですか"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "煙になる前を、まだ知らないので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "いいよ。炭を置くとこなんて、地味だけど"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……地味なところが、たぶん大事なので"
+        },
+        {
           "type": "condition",
           "condition_type": "flag",
           "flag": "_lime_contact_tsumugi",

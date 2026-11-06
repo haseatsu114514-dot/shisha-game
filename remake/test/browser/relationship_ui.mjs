@@ -332,6 +332,46 @@ await suite("relationship-ui", async check => {
       await closeStatus(page);
     }, { ...options, reducedMotion: "reduce" });
 
+    // #2028: スティーブは♥5の締めくくりがあるので、会った後は人間関係に出る（STATUS_PEOPLE）。
+    // 「次にSmoke & Gloryで会うと」は第3章の東京で会える間だけ。東京を離れた後・第5章では約束しない。
+    if (device === "pc") await check("pc-steve-row-promises-only-while-he-can-be-met", async page => {
+      await setup(page);
+      await page.evaluate(async () => {
+        const city = await import("./js/chapters/ch2-city-data.js");
+        Object.assign(R.data.DB.dialogues, await city.readDialogues("ch3_rivals", ["ch3_steve_bond_finale"]));
+        const s = R.fresh(); s.chapter = 3;
+        s.met.steve = true; s.affinity.steve = 66; s.contacts.push("steve");
+        Object.assign(s.flags, { _lime_contact_steve: true, _ch3_read_ch3_steve_lime: true, _ch3_outings: { steve_timer: 1 } });
+        R.core.save();
+      });
+      await status(page);
+      const row = page.locator('[data-person="steve"]');
+      assert.equal(await row.count(), 1, "Steve is listed once met");
+      assert.equal(await row.locator(".pp-relation").textContent(), "交流中");
+      assert.equal(await row.locator(".pp-next").textContent(), "次にSmoke & Gloryで会うと、特別なイベントへ。");
+      assert.equal(await row.locator(".ui-heart").evaluateAll(hearts => hearts.filter(h => h.style.getPropertyValue("--fill") === "100%").length), 5);
+      await row.scrollIntoViewIfNeeded();
+      await assertFits(page, '[data-person="steve"], [data-person="steve"] .pp-next');
+      await closeStatus(page);
+      for (const later of [
+        s => { s.flags._ch3_aftermath = { version: 3, winDay: 40, stage: R.bonds.STEVE_LAST_AFTERMATH_STAGE + 1 }; },
+        s => { s.chapter = 5; delete s.flags._ch3_aftermath; },
+      ]) {
+        await page.evaluate(src => { (0, eval)(src)(R.core.state); R.core.save(); }, later.toString());
+        await status(page);
+        assert.equal(await row.count(), 1, "still listed after Tokyo");
+        assert.equal(await row.locator(".pp-next").count(), 0, "no promise once he cannot be met");
+        await closeStatus(page);
+      }
+      await page.evaluate(() => {
+        const s = R.core.state; s.chapter = 3;
+        s.finales.steve = { route: "friend", day: 40, chapter: 3 }; s.owned.push("suyaki_steve"); R.core.save();
+      });
+      await status(page);
+      assert.equal(await row.locator(".pp-relation").textContent(), "友達", "after the finale he is a settled friend");
+      await closeStatus(page);
+    }, { ...options, reducedMotion: "reduce" });
+
     await check(`${device}-final-choices-and-ordinary-dialogue`, async page => {
       await setup(page);
       for (const id of ["tsumugi", "minto", "rio", "samechan", "hiyori"]) {
