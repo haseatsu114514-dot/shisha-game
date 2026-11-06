@@ -103,7 +103,9 @@ await suite('portrait-framing',async check=>{
           const vn=document.querySelector('#vn');
           const observer=new MutationObserver(()=>{if(vn.classList.contains('intro-morph-dialog-hidden'))window.framingMorphSeen=true;});
           observer.observe(vn,{attributes:true,attributeFilter:['class']});
-          const {playIntro}=await import('./js/vn/intro.js');
+          const {playIntro,introSeenKey}=await import('./js/vn/intro.js');
+          // 毎回を初登場として流す（2回目以降は変身のつなぎを一閃に短くする・#2688 F10）
+          delete core.state.flags[introSeenKey('sumi')];delete core.state.flags[introSeenKey('sumi','unknown')];
           window.framingIntro=playIntro('sumi').finally(()=>observer.disconnect());
         },art);
         await page.locator('.cutin.in').waitFor();
