@@ -128,7 +128,7 @@ try {
       const s = T.fresh(); s.day = 12;
       await T.story.playTsumugiStory(12); T.vn.backlog().length = 0;
       T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex(l => friend
-        ? /ゆっくり|思い出ごと|友達/.test(l) : /会いたい|２人|想いを伝え|付き合/.test(l)));
+        ? /ゆっくり|思い出ごと|友達/.test(l) : /会いたい|2人|想いを伝え|付き合/.test(l)));
       // #814: k本目は♥k で開く。各回の前にそのハートへ届いた状態を作る（読む順と内容を検査する）。
       for (let i = 0; i < 6; i++) {
         s.affinity.tsumugi = Math.max(s.affinity.tsumugi || 0, T.stats.AFFINITY_RANK_PTS[Math.min(5, s.story.tsumugi || 0)]);
@@ -146,7 +146,7 @@ try {
     assert(!route.visits.some(t => t.includes("ああ、つむぎか") || t.includes("QRコード")));
     assert(route.visits.some(t => /約[5５]万/.test(t)), "Optional SNS scene became inaccessible");
     assert(route.visits.some(t => t.includes("応募の夜に見せてもらった絵")));
-    assert(route.lines.some(t => t.includes("別の１枚")));
+    assert(route.lines.some(t => t.includes("別の1枚")));
     assert.equal(route.q1, friend ? 0 : 1); assert.equal(route.finale, friend ? "friend" : "romance");
     assert.equal(route.confessed, !friend); assert.deepEqual(route.lovers, friend ? [] : ["tsumugi"]);
   }
