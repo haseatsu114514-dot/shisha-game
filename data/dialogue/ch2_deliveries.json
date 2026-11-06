@@ -666,8 +666,7 @@
         },
         {
           "type": "show_cg",
-          "cg_id": "cg_ageha_first_purikura",
-          "effect": "cheki"
+          "cg_id": "cg_ageha_first_purikura"
         },
         {
           "speaker": "",

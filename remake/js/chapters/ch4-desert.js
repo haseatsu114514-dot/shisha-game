@@ -6,6 +6,7 @@
 // Aランク以上で寝る前の「遊びのご褒美」（growth-board-data.js の PLAY_REWARDS "desert-a"）。能力値の直接加算はしない。
 // ゲーム本体は minigames/desert-ride.js（保存を読まない）。台詞は data/dialogue/ch4_desert.json。
 import { state, save, config } from "../core/state.js";
+import { seated } from "../core/game-seat.js"; // ミニゲームの入口と出口（#2688 F13）
 import { DB } from "../core/data.js";
 import { showScreen, setBg, layers, toast } from "../core/ui.js";
 import { readDialogues } from "../core/chapter-data.js";
@@ -118,7 +119,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
       showScreen("none", null);
     }
     let firstWin = false, firstNaruWin = false;
-    const { results } = await runDesertRide({
+    const { results } = await seated("DESERT RIDE", () => runDesertRide({
       host: host || document.getElementById("stage") || layers.screen, signal, tutorial: status.first,
       best: before.best, legacyBest: before.legacyBest,
       reducedMotion: (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches) || !!config.reduceShake,
@@ -135,7 +136,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
         else toast(`${name}「${firstLine(saved.won ? DESERT_RACE_WIN_LINE : `venue_noor_result_${result.rank}`)}」${best}`, { kind: "good" });
         if (saved.firstClear) toast("初めての完走。砂丘の写真を、ヌールが撮ってくれた", { kind: "good" });
       },
-    });
+    }));
     if (!current()) return changed;
     // 夕日の砂丘で話す（完走の有無にかかわらず、下りてきたら）。中断しても外出の記録は残っている。
     void results;
