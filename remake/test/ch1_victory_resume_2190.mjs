@@ -261,7 +261,7 @@ for (let step = 0; step <= 10; step++) {
 }
 
 const sentenceCases = [
-  ["ch1_tournament_judging", "チャコール博士も、", "チャコール博士も、炭の出来と調整後の味を見て票を投じる。はじめは、スクリーンに並ぶ4台の票を見つめた。"],
+  ["ch1_tournament_judging", "チャコール博士も、", "チャコール博士も、炭の出来と調整後の味を見て票を投じる。スクリーンに並ぶ4台の票を見つめた。"],
   ["interval_day2_adam_lime", "アダムからはそれきりで、", "アダムからはそれきりで、こちらの返信にも既読がつかなかった。……何か、大きなことが動いている気がする。"],
 ];
 for (const [id, start, original] of sentenceCases) {
