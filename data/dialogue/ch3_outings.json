@@ -30,7 +30,7 @@
       "lines": [
         { "speaker": "", "text": "路地の「煙幕」。開店前の店で、綾取がノートをめくっていた。" },
         { "speaker": "saku", "face": "smile", "text": "あれ、来てくれたんだ。今日は吸う？　休む？" },
-        { "speaker": "hajime", "face": "normal", "text": "今日は話だけ。綾取さんのノート、何を書いてるのか気になって" },
+        { "speaker": "hajime", "face": "normal", "text": "今日は話だけです。綾取さんのノート、何が書いてあるのか気になって" },
         { "speaker": "saku", "face": "normal", "text": "葉と炭の位置。それから、客が何の味だと言ったか" },
         { "speaker": "saku", "face": "normal", "text": "同じ一台でも、答えはばらばら。外れた答えの方が、面白いことも多いよ" },
         { "speaker": "hajime", "face": "normal", "text": "外れた答えも、消さないんですね" },
@@ -82,7 +82,7 @@
       "lines": [
         { "speaker": "", "text": "Smoke & Glory。昼の店に、ピザの箱が積んである。" },
         { "speaker": "steve", "face": "smile", "text": "ヘイ、ハジメ。今日は客？　それとも偵察？" },
-        { "speaker": "hajime", "face": "normal", "text": "タイマーの置き場所を、もう一度見たくて" },
+        { "speaker": "hajime", "face": "normal", "text": "客です。……それと、タイマーの置き場所をもう一度見たくて" },
         { "speaker": "steve", "face": "normal", "text": "オーケー。炭の横じゃない。客のホースが見える所に置く" },
         { "speaker": "steve", "face": "serious", "text": "時間だけ見てると、客の二口目を見落とす。だから両方が目に入る場所" },
         { "speaker": "hajime", "face": "normal", "text": "待つための道具なのに、見るのは客なんですね" },
@@ -94,7 +94,7 @@
         { "speaker": "hajime", "face": "surprise", "text": "……順番に来る。レモンの後から、ライムが" },
         { "speaker": "steve", "face": "smile", "text": "イエス。低い熱で待つと、二つが一列に並ぶ。それが俺の一台" },
         { "speaker": "hajime", "face": "normal", "text": "（待った分だけ、柑橘が残るんだ）" },
-        { "speaker": "", "text": "スティーブはキッチンタイマーを一つ、はじめの手に載せた。" },
+        { "speaker": "", "text": "スティーブはキッチンタイマーを一つ、俺の手に載せた。" },
         { "speaker": "steve", "face": "smile", "text": "予備。大会で鳴らしたら、俺のせいにしていい" },
         { "speaker": "hajime", "face": "smile", "text": "……ありがとうございます。借ります" }
       ]
@@ -113,15 +113,15 @@
         { "speaker": "mashiro", "face": "normal", "text": "……今、一番香ってたねぇ" },
         { "speaker": "", "text": "スティーブはまだ数字を見ている。タイマーが鳴ってから、ようやく一口吸った。" },
         { "speaker": "steve", "face": "serious", "text": "……ノー、ノー。山はもう過ぎてた。また数字の後ろで見送った" },
-        { "speaker": "hajime", "face": "normal", "text": "鳴るまで、待たなくてもいいんじゃ……" },
-        { "speaker": "steve", "face": "normal", "text": "前に急いで、柑橘を飛ばした。それから、鳴るまで手を出せない" },
+        { "speaker": "hajime", "face": "normal", "text": "今の、鳴るまで待たなくてもよかったんじゃ……" },
+        { "speaker": "steve", "face": "normal", "text": "前に急いで、柑橘を飛ばしたことがある。それから、鳴るまで手が出せない" },
         { "speaker": "steve", "face": "normal", "text": "俺の店の常連は優しい。山を逃しても「今日もうまい」と言ってくれる" },
         { "speaker": "steve", "face": "serious", "text": "それに甘えたら、タイマーが俺の正解になる。だから知らない客ばかりの全国に来た" },
-        { "speaker": "hajime", "face": "normal", "text": "知らない人の一口で、確かめるために" },
+        { "speaker": "hajime", "face": "normal", "text": "知らない人の一口で、確かめるためにですか" },
         { "speaker": "steve", "face": "smile", "text": "イエス。負けるのは怖いけどな。怖い日は、ピザで忘れる" },
         { "speaker": "mashiro", "face": "smile", "text": "じゃあ次の一口は、僕が合図するねぇ" },
         { "speaker": "", "text": "スティーブはレシピカードの余白に、ましろちゃんの一言を書き足した。" },
-        { "speaker": "hajime", "face": "normal", "text": "（数字と、目の前の煙。どっちも見ないといけないんだ）" },
+        { "speaker": "hajime", "face": "normal", "text": "（数字だけでも、目の前の煙だけでもだめなんだ）" },
         { "speaker": "", "text": "閉店まで店番を続け、ムカイさんから半日分の日当を受け取った。" }
       ]
     },
@@ -311,7 +311,7 @@
         { "speaker": "steve", "face": "serious", "text": "俺はタイマーに夢中で、そこを見てなかった" },
         { "speaker": "", "text": "スティーブはレシピカードの余白に、「窓際　二口目　眉」と書き足した。" },
         { "speaker": "steve", "face": "smile", "text": "次は、俺も顔を見てみる。……タイマーも見るけどな" },
-        { "speaker": "hajime", "face": "smile", "text": "（数字と顔。両方見るのは、きっと難しい）" },
+        { "speaker": "hajime", "face": "smile", "text": "（数字と顔、両方。言うのは簡単だけど、きっと難しい）" },
         { "speaker": "", "text": "閉店まで店番を続け、ムカイさんから半日分の日当を受け取った。" }
       ]
     },

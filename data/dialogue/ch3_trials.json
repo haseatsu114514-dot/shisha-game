@@ -14,7 +14,7 @@
     {
       "dialogue_id": "ch3_trial_saku_end",
       "lines": [
-        { "speaker": "hajime", "face": "normal", "text": "聞いた話を、自分の手で一回通せた" },
+        { "speaker": "hajime", "face": "normal", "text": "聞いた話、ちゃんと自分の手で一回通せた" },
         { "speaker": "mashiro", "face": "normal", "text": "大会で、どこを残すか。今日の一台も材料にしよ" }
       ],
       "branches": {
@@ -22,13 +22,13 @@
           { "speaker": "", "text": "開店してすぐの客に、試作の一台をそのまま出した。" },
           { "speaker": "customer", "text": "最初は軽いのに、あとから甘いのが来るね" },
           { "speaker": "mashiro", "face": "smile", "text": "僕も同じ。後半も、まだ吸っていたいなぁ" },
-          { "speaker": "hajime", "face": "smile", "text": "炭を急がなかった分、後ろに残ったのかも" }
+          { "speaker": "hajime", "face": "smile", "text": "炭を急がなかった分、後半まで甘さが残ったのかも" }
         ],
         "rough": [
           { "speaker": "", "text": "開店してすぐの客に、試作の一台を出した。" },
           { "speaker": "customer", "text": "香りはいいけど、途中で少し重くなるかな" },
           { "speaker": "mashiro", "face": "normal", "text": "僕もそこ。始まりは良かったよ" },
-          { "speaker": "hajime", "face": "serious", "text": "後半を急いだかもしれない。どこで変わったか、覚えておく" }
+          { "speaker": "hajime", "face": "serious", "text": "後半、急いだかも。どこで変わったか、覚えとく" }
         ],
         "failed": [
           { "speaker": "", "text": "客席へ出す前に、ましろちゃんが一口確かめた。" },
@@ -52,7 +52,7 @@
     {
       "dialogue_id": "ch3_trial_steve_end",
       "lines": [
-        { "speaker": "hajime", "face": "normal", "text": "待つのも、手を動かすのと同じくらい難しい" },
+        { "speaker": "hajime", "face": "normal", "text": "待つのって、手を動かすのと同じくらい難しいな" },
         { "speaker": "mashiro", "face": "normal", "text": "でも、今日は待つところまで自分で決めたよ" }
       ],
       "branches": {
@@ -68,8 +68,8 @@
         ],
         "failed": [
           { "speaker": "customer", "text": "ごめん、今日はここまでにしておくよ" },
-          { "speaker": "mashiro", "face": "sad", "text": "戻しきれなかったねぇ。お客さん、無理させちゃった" },
-          { "speaker": "hajime", "face": "sad", "text": "……待つ前に、足しすぎた。次は先に止まる" }
+          { "speaker": "mashiro", "face": "sad", "text": "戻しきれなかったねぇ。お客さんに、無理させちゃった" },
+          { "speaker": "hajime", "face": "sad", "text": "……待つ前に足しすぎた。次は、足す前に一回止まる" }
         ]
       }
     }
