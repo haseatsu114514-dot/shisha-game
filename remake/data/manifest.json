@@ -451,7 +451,7 @@
    "ax": 0.5001,
    "aspect": 0.7467
   },
-  "suhail": {
+  "faris": {
    "faces": [
     "normal"
    ],
@@ -620,6 +620,7 @@
   "face_da_silva.png",
   "face_dr_kemuri.png",
   "face_emil.png",
+  "face_faris.png",
   "face_hajime.png",
   "face_hiyori.png",
   "face_khalil.png",
@@ -643,7 +644,6 @@
   "face_sheikh.png",
   "face_shisha_9000.png",
   "face_steve.png",
-  "face_suhail.png",
   "face_sui.png",
   "face_sumi.png",
   "face_tetsuko.png",
@@ -2734,6 +2734,7 @@
   "sprites/character_variants/nanami/emil/chr_emil_smile.png",
   "sprites/character_variants/nanami/emil/chr_emil_surprise.png",
   "sprites/character_variants/nanami/emil/chr_emil_thinking.png",
+  "sprites/character_variants/nanami/faris/chr_faris_normal.png",
   "sprites/character_variants/nanami/hajime/chr_hajime_excited.png",
   "sprites/character_variants/nanami/hajime/chr_hajime_normal.png",
   "sprites/character_variants/nanami/hajime/chr_hajime_sad.png",
@@ -2840,7 +2841,6 @@
   "sprites/character_variants/nanami/steve/chr_steve_serious.png",
   "sprites/character_variants/nanami/steve/chr_steve_smile.png",
   "sprites/character_variants/nanami/steve/chr_steve_surprise.png",
-  "sprites/character_variants/nanami/suhail/chr_suhail_normal.png",
   "sprites/character_variants/nanami/sui/chr_sui_normal.png",
   "sprites/character_variants/nanami/sui/chr_sui_serious.png",
   "sprites/character_variants/nanami/sui/chr_sui_smile.png",
@@ -2892,6 +2892,7 @@
   "sprites/character_variants/new/emil/chr_emil_smile.png",
   "sprites/character_variants/new/emil/chr_emil_surprise.png",
   "sprites/character_variants/new/emil/chr_emil_thinking.png",
+  "sprites/character_variants/new/faris/chr_faris_normal.png",
   "sprites/character_variants/new/hajime/chr_hajime_excited.png",
   "sprites/character_variants/new/hajime/chr_hajime_normal.png",
   "sprites/character_variants/new/hajime/chr_hajime_sad.png",
@@ -3005,7 +3006,6 @@
   "sprites/character_variants/new/steve/chr_steve_serious.png",
   "sprites/character_variants/new/steve/chr_steve_smile.png",
   "sprites/character_variants/new/steve/chr_steve_surprise.png",
-  "sprites/character_variants/new/suhail/chr_suhail_normal.png",
   "sprites/character_variants/new/sui/chr_sui_normal.png",
   "sprites/character_variants/new/sui/chr_sui_serious.png",
   "sprites/character_variants/new/sui/chr_sui_smile.png",
@@ -3075,6 +3075,7 @@
   "sprites/characters/emil/chr_emil_smile.png",
   "sprites/characters/emil/chr_emil_surprise.png",
   "sprites/characters/emil/chr_emil_thinking.png",
+  "sprites/characters/faris/chr_faris_normal.png",
   "sprites/characters/hajime/chr_hajime_excited.png",
   "sprites/characters/hajime/chr_hajime_normal.png",
   "sprites/characters/hajime/chr_hajime_sad.png",
@@ -3201,7 +3202,6 @@
   "sprites/characters/steve/chr_steve_serious.png",
   "sprites/characters/steve/chr_steve_smile.png",
   "sprites/characters/steve/chr_steve_surprise.png",
-  "sprites/characters/suhail/chr_suhail_normal.png",
   "sprites/characters/sui/chr_sui_normal.png",
   "sprites/characters/sui/chr_sui_serious.png",
   "sprites/characters/sui/chr_sui_smile.png",
@@ -3286,6 +3286,7 @@
   "ui/face_icons/face_da_silva.png",
   "ui/face_icons/face_dr_kemuri.png",
   "ui/face_icons/face_emil.png",
+  "ui/face_icons/face_faris.png",
   "ui/face_icons/face_hajime.png",
   "ui/face_icons/face_hiyori.png",
   "ui/face_icons/face_khalil.png",
@@ -3309,7 +3310,6 @@
   "ui/face_icons/face_sheikh.png",
   "ui/face_icons/face_shisha_9000.png",
   "ui/face_icons/face_steve.png",
-  "ui/face_icons/face_suhail.png",
   "ui/face_icons/face_sui.png",
   "ui/face_icons/face_sumi.png",
   "ui/face_icons/face_tetsuko.png",
@@ -3322,6 +3322,7 @@
   "ui/face_icons/new/face_da_silva.png",
   "ui/face_icons/new/face_dr_kemuri.png",
   "ui/face_icons/new/face_emil.png",
+  "ui/face_icons/new/face_faris.png",
   "ui/face_icons/new/face_hajime.png",
   "ui/face_icons/new/face_hiyori.png",
   "ui/face_icons/new/face_khalil.png",
@@ -3344,7 +3345,6 @@
   "ui/face_icons/new/face_sheikh.png",
   "ui/face_icons/new/face_shisha_9000.png",
   "ui/face_icons/new/face_steve.png",
-  "ui/face_icons/new/face_suhail.png",
   "ui/face_icons/new/face_sui.png",
   "ui/face_icons/new/face_sumi.png",
   "ui/face_icons/new/face_tetsuko.png",
@@ -3989,7 +3989,7 @@
     "ax": 0.4999,
     "aspect": 0.7467
    },
-   "suhail": {
+   "faris": {
     "faces": [
      "normal"
     ],
@@ -4378,7 +4378,7 @@
     "ax": 0.4997,
     "aspect": 0.7467
    },
-   "suhail": {
+   "faris": {
     "faces": [
      "normal"
     ],
@@ -4627,6 +4627,7 @@
    "face_da_silva.png",
    "face_dr_kemuri.png",
    "face_emil.png",
+   "face_faris.png",
    "face_hajime.png",
    "face_hiyori.png",
    "face_khalil.png",
@@ -4649,7 +4650,6 @@
    "face_sheikh.png",
    "face_shisha_9000.png",
    "face_steve.png",
-   "face_suhail.png",
    "face_sui.png",
    "face_sumi.png",
    "face_tetsuko.png",
@@ -4720,6 +4720,18 @@
      108
     ],
     "unit": 115.5
+   },
+   "faris": {
+    "box": [
+     319,
+     49,
+     219
+    ],
+    "eye": [
+     428,
+     162
+    ],
+    "unit": 126.8
    },
    "hajime": {
     "box": [
@@ -4980,18 +4992,6 @@
     ],
     "unit": 135.3
    },
-   "suhail": {
-    "box": [
-     319,
-     49,
-     219
-    ],
-    "eye": [
-     428,
-     162
-    ],
-    "unit": 126.8
-   },
    "sui": {
     "box": [
      313,
@@ -5137,6 +5137,18 @@
      144
     ],
     "unit": 114.6
+   },
+   "faris": {
+    "box": [
+     285,
+     47,
+     215
+    ],
+    "eye": [
+     392,
+     164
+    ],
+    "unit": 125.0
    },
    "hajime": {
     "box": [
@@ -5372,18 +5384,6 @@
      148
     ],
     "unit": 122.5
-   },
-   "suhail": {
-    "box": [
-     285,
-     47,
-     215
-    ],
-    "eye": [
-     392,
-     164
-    ],
-    "unit": 125.0
    },
    "sui": {
     "box": [

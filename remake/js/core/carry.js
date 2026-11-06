@@ -81,7 +81,7 @@ export const STATE_KEY_RULES = {
 // 分類網羅テストが data 側と一致するか照合する。
 export const GIFT_EQUIPMENT_IDS = [
   "suyaki_adam", "suyaki_ageha", "suyaki_hiyori", "suyaki_kumicho", "suyaki_saku", "suyaki_mashiro", "suyaki_minto", "suyaki_naru", "suyaki_noor",
-  "suyaki_rei", "suyaki_rio", "suyaki_samechan", "suyaki_steve", "suyaki_sumi", "suyaki_tsumugi",
+  "suyaki_rei", "suyaki_rio", "suyaki_samechan", "suyaki_steve", "suyaki_sumi", "suyaki_tsumugi", "suyaki_volk",
 ];
 
 // 記念品の由来分類（core/keepsakes.js の KEEPSAKES と対応）。
@@ -202,6 +202,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_mukai_work_intro_read", "person"],
   ["_ch3_opening_read", "progression"],
   ["_ch3_outings", "progression"],
+  ["_tetsuko_time", "progression"], // てつこといっしょ（#2454）: 小物の配置・しぐさ図鑑・アルバム。来訪記録 _ch3_outings と同じく周回で持ち越さない
   ["_ch3_naru_party_ready", "progression"],
   ["_ch3_pizza_party", "progression"],
   ["_minto_calling_paid", "progression"],
@@ -211,6 +212,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_preview_seen", "progression"],
   ["_ch3_read_ch3_saku_lime", "progression"],
   ["_ch3_read_ch3_steve_lime", "progression"],
+  ["_ch3_read_ch3_volk_lime", "progression"],
   ["_ch3_read_ch3_minto_small_lies", "progression"],
   ["_ch3_read_hiyori_tokyo_contact", "progression"],
   ["_ch3_registration_read", "progression"],
@@ -247,6 +249,8 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_dubai_guest", "progression"],
   ["_ch5_dubai_talks", "progression"],
   ["_ch5_dubai_flights", "progression"],
+  ["_ch5_dubai_camel_again", "progression"], // 第5章のラクダレース場の再会を読んだ（chapters/ch5-dubai.js）
+  ["_ch5_dubai_dunes_again", "progression"], // 第5章の砂丘の前の再会を読んだ
   ["_ch5_after_party", "progression"],
   ["_ch5_party_seat", "progression"],
   ["_ch5_shop_talks", "progression"],
@@ -368,6 +372,7 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_samechan", "person"],
   ["_lime_contact_steve", "person"],
   ["_lime_contact_tsumugi", "person"],
+  ["_lime_contact_volk", "person"],
   ["_lime_opened", "ui"],
   ["_lime_tut", "ui"],
   ["_lotos_vent_hint", "ui"],
@@ -391,7 +396,7 @@ export const FLAG_EXACT_RULES = [
   ["_met_rio", "person"],
   ["_met_samechan", "person"],
   ["_met_khalil", "person"],
-  ["_met_suhail", "person"],
+  ["_met_faris", "person"],
   ["_met_sheikh", "person"],
   ["_met_steve", "person"],
   ["_met_tsumugi", "person"],
@@ -406,6 +411,7 @@ export const FLAG_EXACT_RULES = [
   ["_motion_seen_", "progression"],
   ["_naru_venue_invited", "person"],
   ["_night_event_day", "progression"],
+  ["_noor_ch5_promise", "person"], // 第5章の砂丘の再会で、告白を待つ約束の続きを出す一時の印（chapters/ch5-dubai.js。再生の前に立て、後で消す）
   ["_noor_confession_other_lover", "person"], // DSR20 告白の場面の一時の印（再生の前に立て、後で消す）
   ["_oneesan_id_checked", "progression"],
   ["_op_praise_report", "progression"],

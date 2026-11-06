@@ -186,9 +186,9 @@ const synthetic = (names, values) => new vm.SyntheticModule(names, function () {
 }, { context });
 const stateModule = synthetic(["state", "save"], { state: null, save: () => { saves++; } });
 const dataModule = synthetic(["DB", "bgUrl"], { DB: { dialogues: {} }, bgUrl: id => id });
-const uiModule = synthetic(["layers", "showScreen", "setBg", "toast"], {
+const uiModule = synthetic(["layers", "showScreen", "setBg", "enterScene", "toast"], {
   layers: { hud: { replaceChildren() {}, classList: { remove() {} } } },
-  showScreen() {}, setBg: async () => {}, toast() {},
+  showScreen() {}, setBg: async () => {}, enterScene: async () => {}, toast() {},
 });
 const vnModule = synthetic(["play"], { play: (_dialogue, { signal }) => {
   playCalls++;

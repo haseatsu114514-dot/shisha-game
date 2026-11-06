@@ -116,7 +116,7 @@ export function newState() {
 
 // スキーマ26（IDREN01・2026-11-05 オーナー決定）: キャラIDを現名に合わせて改名。
 // 旧IDで保存されたセーブは、読み込み時にここで新IDへ付け替える（移行処理以外では旧IDを使わない）。
-export const CHAR_ID_RENAMES = { nagumo: "sui", rin: "rio", kuze: "saku", saif: "suhail", rashid: "khalil" };
+export const CHAR_ID_RENAMES = { nagumo: "sui", rin: "rio", kuze: "saku", saif: "faris", rashid: "khalil" };
 const CHAR_ID_TOKEN = /(?<![A-Za-z0-9])(nagumo|rin|kuze|saif|rashid)(?![A-Za-z0-9])/g;
 const renameIdToken = (v) => (typeof v === "string" ? v.replace(CHAR_ID_TOKEN, (m) => CHAR_ID_RENAMES[m]) : v);
 const renameExactId = (v) => (typeof v === "string" && CHAR_ID_RENAMES[v] ? CHAR_ID_RENAMES[v] : v);
@@ -604,7 +604,8 @@ export function wipeSave() {
 
 // ---------------------------------------------------------------- 設定（セーブとは別）
 export const config = {
-  portraitStyle: "classic", // 現行を既定に保ち、新絵は任意で比較する端末設定
+  portraitStyle: "new", // 採用済みの新版が既定。現行も設定で選べる
+  portraitStyleVersion: 1, // 旧版の既定値・廃止画風を一度だけ新版へ移行
   uiTheme: "paper",    // 会話枠と共通UI。ゲームの進行とは別の端末設定（既定は紙とラベンダー・DUI08）。
   mute: false,       // すべての音を一時的に消す（旧キー muted は読み込み時に mute へ統一）
   bgmVolume: 0.5,
@@ -626,11 +627,15 @@ export const config = {
 setPortraitStyleSource(() => config.portraitStyle);
 
 export function loadConfig() {
+  let savedPortraitVersion;
   try {
-    Object.assign(config, JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}"));
+    const saved = JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}");
+    Object.assign(config, saved);
+    savedPortraitVersion = saved?.portraitStyleVersion;
   } catch { /* noop */ }
   if ("muted" in config) { config.mute = !!(config.mute || config.muted); delete config.muted; }
-  if (!["classic", "new", "nanami"].includes(config.portraitStyle)) config.portraitStyle = "classic";
+  if (savedPortraitVersion !== 1 || config.portraitStyle !== "classic") config.portraitStyle = "new";
+  config.portraitStyleVersion = 1;
   return config;
 }
 
@@ -688,3 +693,4 @@ function restoreTokyoVisits(raw) {
   }
   return restored;
 }
+

@@ -34,6 +34,7 @@ import { loverMilestonesDue, readLoverMilestone, pendingLoverLime } from "./love
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { runMukaiShift, loadMukaiShift, MUKAI_PAY, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
 import { addRoamerSpots } from "../daily/roamers.js";
+import { openTetsukoTime, settleTetsukoTime, tetsukoVisitKey } from "../minigames/tetsuko-time.js";
 
 export const TOKYO = "tokyo";
 const BG = name => bgUrl(name, timeOfDay());
@@ -97,7 +98,7 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
   spot({ id: "ch3_tokyo_shop", place: "shop", label: "Dr.fookah 東京店", area: "駅前の店", x: 15, y: 51, theme: "shop", glyph: "卸",
     preview: "bg_fookah_showroom", desc: "東京の店。葉を買える（時間は使わない）。" }),
   spot({ id: "ch3_tokyo_gym", place: "gym", label: "CHOI-ZAP", area: "高架下のジム", x: 34.9, y: 75.9, theme: "gym", glyph: "体",
-    preview: "bg_choizap", stamina: -8, stat: "charm", desc: "全国の店で使える会員証で、体を動かす。" }),
+    preview: "bg_choizap", stamina: -8, stat: "charm", gym: true, desc: "全国の店で使える会員証で、体を動かす。" }),
   // 心得の盤の内省。公園の池に浮かぶお堂（IR26・SBD98）。id は仮置きの「路地裏の神社」の時のまま（互換）
   spot({ id: "ch3_tokyo_shrine", place: "shrine", label: "池の弁天堂", area: "公園の池", x: 91, y: 73, theme: "rest", glyph: "弁",
     preview: "bg_tokyo_park", desc: "池に浮かぶ小さなお堂。学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
@@ -115,7 +116,7 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
 
 function spotHasNew(entry) {
   if (["mukai", "enmaku", "volk"].includes(entry.place) && optionalAt(entry.place).length) return true;
-  if (rivalFinaleAt(entry.place)) return true; // 綾取・スティーブの締めくくり（IR22・#2028）
+  if (rivalFinaleAt(entry.place)) return true; // 綾取・スティーブ・ヴォルクの締めくくり（IR22・#2028）
   if (entry.place === "mukai") return mukaiBondDue() || outingsAt("mukai").some(outing => !outing.repeat);
   return outingsAt(entry.place).some(outing => !outing.repeat);
 }
@@ -154,7 +155,7 @@ async function keepDailyHud(task) {
 
 /** 読み終えたら true。中断・LOADは false（代金・体力・既読を残さない）。 */
 async function readPlain(id, bg, owner) {
-  if (bg) await setBg(BG(bg), { instant: true });
+  if (bg) await setBg(BG(bg));
   if (state !== owner) return false;
   const result = await play(DB.dialogues[id], bg ? { bg: BG(bg) } : {});
   return state === owner && !!result && !result.cancelled;
@@ -182,7 +183,7 @@ export function chapterThreeTokyoDefinition(io) {
     // 東京でも寝る前の家シーシャを選べる（荷物に詰めてきた台・VOL12）。
     beforeHomecoming: async () => {
       state.flags._home_tonight = true;
-      await setBg(BG("bg_mukai_shop"), { instant: true });
+      await setBg(BG("bg_mukai_shop"));
       return true;
     },
     beforeInvitation: () => true,
@@ -482,17 +483,18 @@ async function readOptionalHere(io, scene, staminaGuard, owner, stamina = -10) {
   return { used: true, exerted: true, exp: personExp(scene.host || OPTIONAL_HOST[optionalPlace(scene)]) };
 }
 
-/** 店で迎える♥5の締めくくり（daily/bonds.js の条件）。煙幕は綾取（IR22）、Smoke & Glory はスティーブ（#2028）。 */
+/** 店で迎える♥5の締めくくり（daily/bonds.js の条件）。煙幕は綾取（IR22）、Smoke & Glory はスティーブ、鉄の煙はヴォルク（#2028）。 */
 const RIVAL_FINALES = Object.freeze({
   enmaku: Object.freeze({ who: "saku", label: "綾取に呼ばれる" }),
   steve: Object.freeze({ who: "steve", label: "スティーブに呼ばれる" }),
+  volk: Object.freeze({ who: "volk", label: "ヴォルクに呼ばれる" }),
 });
 const rivalFinaleAt = place => RIVAL_FINALES[place] && finaleAtVisit(RIVAL_FINALES[place].who) ? RIVAL_FINALES[place] : null;
 
 /**
  * 煙幕・Smoke & Glory・鉄の煙: 寄り道があればそれ、無ければその店の外出（#1655）。
  * 東京のシーシャ屋は一台4,000円（TOKYO_VISIT_COST）。読み終えた時だけ払う。本筋の場面（日程の枠で読む）は払わない。
- * 煙幕・Smoke & Glory では、その店主の締めくくり（♥5）が来ていれば「〜に呼ばれる」を先頭に出す（客の一台ではないので払わない）。
+ * 締めくくり（♥5）が来ていれば、その店主の「〜に呼ばれる」を先頭に出す（客の一台ではないので払わない）。
  */
 async function visitRivalShop(entry, io, staminaGuard, owner) {
   const finale = rivalFinaleAt(entry.place);
@@ -518,11 +520,11 @@ async function visitRivalShop(entry, io, staminaGuard, owner) {
   return result;
 }
 
-/** 綾取・スティーブの締めくくり（daily/bonds.js の条件・一度だけ）。ましろちゃんの節目と同じく行動を一つ使う。 */
+/** 綾取・スティーブ・ヴォルクの締めくくり（daily/bonds.js の条件・一度だけ）。ましろちゃんの節目と同じく行動を一つ使う。 */
 async function readRivalFinale(who, place, staminaGuard, owner) {
   if (!(await staminaGuard(-10))) return unused;
   const bg = BG(visitBg[place]);
-  await setBg(bg, { instant: true });
+  await setBg(bg);
   if (!await playFinale(who, { bg }) || state !== owner) return unused;
   addStamina(-10);
   return { used: true, exerted: true, exp: personExp(who) };
@@ -581,7 +583,7 @@ async function mukaiShift(owner, { called = false } = {}) {
 async function readMashiroBond(kind, staminaGuard, owner) {
   if (!(await staminaGuard(-10))) return unused;
   const bg = BG("bg_mukai_shop");
-  await setBg(bg, { instant: true });
+  await setBg(bg);
   let done = false;
   if (kind === "lover") done = await readLoverMilestone("mashiro");
   else if (kind === "question") done = await playQuestionVisit("mashiro", { bg });
@@ -593,31 +595,45 @@ async function readMashiroBond(kind, staminaGuard, owner) {
 }
 
 /**
- * 帰りに裏口のてつこへ（行動を使わない）。会うかどうか・どう過ごすかを選べる。
- * 「少し構っていく」は既存のまま（4段階＋巡回の会話・回復+12・来訪加算。#1993）。
- * 「てつこといっしょ」は新しいミニゲームの入口の土台（#2454）。いまは準備中の画面を見せるだけで、
- * 回復・来訪・好感度・フラグ・時間は一切動かさない（正ゲームは別途実装）。
+ * 帰りに裏口のてつこへ（行動を使わない）。会うかどうか・どう過ごすかを選べる（#2454 実装計画 §1）。
+ * 「てつこといっしょ」: 来訪4回未満なら既存の段階会話を先に読み（関係進展の正本）、ふれあいの画面へ。
+ * 「少し構っていく（短く）」: これまでどおり台本だけ読む（懐いた後の巡回3本もこちらで読める）。
+ * どちらも同じ確定点 settleTetsukoTime を通る（回復12・来訪+1・_tetsuko_time）。同じ mukai 訪問で裏口は一度しか
+ * のぞかないうえ、訪問キーで二重の確定を止める。好感度・能力・お金・時間は動かさない。
  */
 async function offerTetsuko(owner) {
   const outing = outingById("tetsuko");
   if (!outing) return;
   const pick = await modal({ title: "裏口のてつこ", body: "帰りに裏口をのぞくと、看板猫のてつこがベンチで丸くなっている。",
     options: [
-      { label: "少し構っていく", value: "care", test: "tokyo-tetsuko-yes", primary: true },
-      { label: "てつこといっしょ（準備中）", value: "game", test: "tokyo-tetsuko-game" },
+      { label: "てつこといっしょ", value: "game", test: "tokyo-tetsuko-game", primary: true },
+      { label: "少し構っていく（短く）", value: "care", test: "tokyo-tetsuko-yes" },
       { label: "今日はそっとしておく", value: null, test: "tokyo-tetsuko-no" },
     ] });
   if (!pick || state !== owner) return;
-  // てつこといっしょ（#2454）: ミニゲームの入口の土台。準備中の画面を見せて帰るだけ。保存は変えない。
-  if (pick === "game") { await playTetsukoTime(owner); return; }
+  const visitKey = tetsukoVisitKey(state);
+  if (pick === "game") { await playTetsukoTime(outing, visitKey, owner); return; }
   if (!await readPlain(outingDialogueId(state, outing), outing.bg || "bg_street", owner)) return;
-  addStamina(outing.stamina);
-  state.flags[OUTINGS_FLAG] = { ...outingCounts(state), tetsuko: (outingCounts(state).tetsuko || 0) + 1 };
-  toast(outing.toast || "てつこに、少し元気をもらった", { kind: "good" });
+  settleTetsukoVisit(outing, { meaningful: true, visitKey });
 }
 
-/** 「てつこといっしょ」を開く（#2454・ミニゲームの入口の土台）。準備中の画面を見せるだけで保存は変えない。 */
-async function playTetsukoTime(owner) {
-  const { openTetsukoTime } = await import("../minigames/tetsuko-time.js");
-  await openTetsukoTime({ isCurrent: () => state === owner });
+/** 「てつこといっしょ」（#2454）: 段階会話（来訪4回未満だけ）→ ふれあいの画面 → 確定。 */
+async function playTetsukoTime(outing, visitKey, owner) {
+  const bg = outing.bg || "bg_street";
+  const stageRead = (outingCounts(state).tetsuko || 0) < outing.stages.length;
+  if (stageRead && !await readPlain(outingDialogueId(state, outing), bg, owner)) return;
+  if (state !== owner) return;
+  const result = await openTetsukoTime({ value: state, visitKey, bg: BG(bg), isCurrent: () => state === owner });
+  if (state !== owner) return;
+  // 段階会話を読み終えていれば、画面ですぐ帰っても会話の分は確定する（「少し構っていく」と同じ）。
+  settleTetsukoVisit(outing, { ...result, visitKey, meaningful: stageRead || !!result?.meaningful });
+}
+
+/** 確定と回復を同じ処理の中で行う（確定しなければ何も変えない）。 */
+function settleTetsukoVisit(outing, result) {
+  const settled = settleTetsukoTime(state, result);
+  if (!settled.committed) return false;
+  addStamina(settled.stamina);
+  toast(outing.toast || "てつこに、少し元気をもらった", { kind: "good" });
+  return true;
 }

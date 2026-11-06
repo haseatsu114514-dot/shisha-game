@@ -1,7 +1,8 @@
 import { spendableMoney } from "../core/travel-budget.js";
 // 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep, yen } from "../core/util.js";
-import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg, refreshWeather, dropRetired } from "../core/ui.js";
+import { layers, dayCard, dayTurn, modal, toast, bannersIdle, setBg, refreshWeather, dropRetired } from "../core/ui.js";
+import { waveBeat } from "../core/transitions.js";
 import { state, save, markMet } from "../core/state.js";
 import { openMenu as openFullMenu } from "./menu.js";
 import { addMoney, addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina, currentCondition } from "../core/stats.js";
@@ -573,8 +574,8 @@ async function takeAction() {
   });
   if (!used) return;
   state.visitedDay[spot.id] = state.day;
-  // チョコザップ: その日から数日、風邪をひきにくい
-  if (spot.id === "choizap" && state.flags._gym_member) {
+  // チョコザップ（地元の店と、spot.gym の付いた東京の店＝第3章・第5章）: その日から数日、風邪をひきにくい
+  if ((spot.id === "choizap" || spot.gym) && state.flags._gym_member) {
     state.flags._fit_since = { chapter: state.chapter, day: state.day };
     toast(`体が整った。${FIT_DAYS}日間は風邪をひきにくい`, { kind: "good" });
   }
@@ -857,17 +858,12 @@ async function afterAction({ exerted = false, spent = 0 } = {}) {
 
 // ---------------------------------------------------------------- 夜・翌朝
 
-/** 場面のつなぎの一行（「夜、tonariに顔を出す──」など）。前の場面の絵はここで暗転させる */
+/**
+ * 場面のつなぎの一行（「夜、tonariに顔を出す──」など）。夕方のピンクを先頭にした丸い波が覆い、一行が波に乗る（#2688 A9）。
+ * 前の場面の絵は波が覆っている間に片付け、波は次の場面の背景が出たところで抜ける（transitions.waveBeat）。
+ */
 async function beat(text) {
-  setBg(null);
-  const b = el("div.beat", { text });
-  layers.fx.append(b);
-  await sleep(20);
-  b.classList.add("show");
-  await sleep(1500);
-  b.classList.remove("show");
-  await sleep(400);
-  b.remove();
+  await waveBeat(layers.fx, text, () => setBg(null, { instant: true }));
 }
 
 async function endDay({ returnedToTonari = false } = {}) {
@@ -986,7 +982,10 @@ async function advanceDay() {
       return { fromDay, day: chapterDay(state), fromLeft, left: daysLeft(), rain: isRainy(), weather: weatherOf(), forecast: tomorrowForecast(), sick: exhausted, tournamentName: chapterDef?.tournamentName, undatedNote: chapterDef?.undatedNote, dayLabel: chapterDef?.dayLabel };
     });
     dawnShownDay = state.day;
-  } else await fadeBlack(wake, 500);
+  } else {
+    // 大会・勝負の前夜: 夜明けの幕の当日版（日付はめくらず、地平線が遅く昇る）。当日のDAYは当日の場面が出す（#2688 A10）
+    await dayTurn(async () => { wake(); return { eve: true }; });
+  }
   await presentSleepRecovery({ before: sleepBefore, after: state.stamina });
   if (!exhausted) return;
   // 遠出の出発の朝は、熱っぽさを持ち越さずに発つ（大会の朝の場面は使わない）。

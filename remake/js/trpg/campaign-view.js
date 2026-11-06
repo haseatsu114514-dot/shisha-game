@@ -6,8 +6,18 @@ import { venueHost } from "../core/venue-host.js";
 import { gearOffer, ownsGear } from "../core/hobby-gear.js";
 import { newDayTrial, rollDayTrial, stopDayTrial } from "./day-trial.js";
 import { loadTrpgLibrary, preloadTrpgAssets, runTrpg } from "./index.js";
-import { displayName, portraitUrl, portraitTop, sceneArt } from "./presentation.js";
+import { playTrpgEntrance } from "./entrance.js";
+import { shelfHelpButton } from "./shelf-help.js";
+import { displayName, portraitUrl, portraitAx, portraitTop, sceneArt } from "./presentation.js";
 import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable } from "./campaign.js";
+
+// 店の決まりは画面に常に出さず、右上の「？」で読む（#2719・ミニゲーム共通のUI方針）。
+const SHOP_HELP = [
+  ["夜の卓", "営業が終わるまで待ってから、空いている部員と集まって遊びます（夜の1枠）。中断した本は、また遊べます。結末を迎えた本は一度きりです。"],
+  ["本を買う", "入荷したシナリオ本を本棚に加えると、仲間と遊べます。買い物は時間を使いません。"],
+  ["部活と勧誘", "好感度MAXの友人も恋人も、興味があれば入部します。仲のいい相手と対面した時に誘えます。勧誘に追加の時間はかかりません。"],
+  ["昼の試遊（七つの灯り）", "サイコロの合計を7に近づけます。振り足すか、止めるか。7を超えると失敗です。無料で、時間も使いません。"],
+];
 
 /** Owns a shop/table screen. Only the supplied state and save callback may change. */
 export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy = () => false,
@@ -19,7 +29,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
   let reflection = null;
   let justFounded = false; // 設立した直後だけ、気づけば部長になっていた場面を出す
   let foundingChoice = null;
-  let disposed = false, resources = null, busy = false, completed = false, root = null;
+  let disposed = false, resources = null, busy = false, completed = false, root = null, entrance = null;
   let resolveFinished;
   const finished = new Promise(r => { resolveFinished = r; });
   const button = (text, test, action, disabled = false) => el("button.trpg-button", {
@@ -30,7 +40,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
   });
   function close() {
     if (disposed) return;
-    disposed = true; abort.abort(); root?.remove();
+    disposed = true; abort.abort(); root?.remove(); entrance?.cancel();
     signal?.removeEventListener("abort", close);
     resolveFinished({ completed });
   }
@@ -55,6 +65,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       el("div", [!readOnly ? storeLogo("trpg_bar", { width: 130, height: 72 }) : null, el("span.trpg-kicker", { text: readOnly ? "TABLETOP MEMORIES" : "ボドゲカフェ / TABLETOP CAFE" }),
         el("h1", { text: readOnly ? "みんなと遊んだ、本の棚。" : completed ? "この夜の物語が、本棚に残った。" : daytime ? "昼の一卓、本棚の一冊。" : "今夜、誰と物語を囲む？" })]),
       el("div.trpg-campaign-meta", [el("span", { text: state ? `CH.${state.chapter} · DAY ${chapterDay(state)} · ${yen(state.money)}` : "まだ本棚は空です" }),
+        shelfHelpButton(() => root, { title: "ボドゲカフェの遊び方", sections: SHOP_HELP, test: "trpg-campaign-help" }),
         button(closeLabel, "trpg-campaign-close", close)]),
     ]));
     if (!readOnly) root.append(venueHost("sai", hostLine(completed ? reflection || "after_table" : trial
@@ -77,7 +88,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       const act = update => { if (!canTry()) { trial = null; render(); return; } trial = update(); render(); };
       const panel = el("section.trpg-day-trial", { dataset: { test: "trpg-day-trial" } }, [
         el("h2", { text: "店長と試遊 · 七つの灯り" }),
-        el("p", { text: "サイコロの合計を7に近づけよう。振り足すか、止めるか。7を超えると失敗。無料・時間消費なし。" }),
+        el("p", { text: "サイコロの合計を7に近づけよう。" }),
       ]);
       if (trial) {
         panel.append(el("div.trpg-trial-score", { "aria-live": "polite" }, [
@@ -107,7 +118,6 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
           if (foundTrpgClub(getState(), catalog)) { save(); foundingChoice = choice; justFounded = true; render("「" + catalog.club.name + "」の部長になりました（いつの間にか）。仲のいい相手と対面した時に、部活へ誘ってみよう。"); }
         }, state.phase !== "daily")),
       ]));
-      root.append(el("p", { text: "好感度MAXの友人も恋人も、興味があれば入部。勧誘に追加の時間はかかりません。本の購入も時間を使いません。" }));
       host.replaceChildren(root); root.focus({ preventScroll: true }); return;
     }
     if (justFounded && club.branches.founded) {
@@ -122,7 +132,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       const recruitment = recruitmentStatus(state, person, catalog);
       party.append(el("div.trpg-campaign-person", { dataset: { test: "trpg-person-" + person.id, available: status.ok } }, [
         el("span.trpg-campaign-face", el("img", { src: portraitUrl(manifest, person.id), alt: "",
-          style: { top: portraitTop(manifest, person.id, 180, 4), transform: "translateX(-" + manifest.portraits[person.id].ax * 100 + "%)" } })),
+          style: { top: portraitTop(manifest, person.id, 180, 4), transform: "translateX(-" + portraitAx(manifest, person.id) * 100 + "%)" } })),
         el("div", [el("strong", { text: name(person.id) + (member ? " · 部員" : "") }),
           el("small", { text: member ? status.reason : recruitment.reason }),
           !member && el("small", { text: person.interestHint })]),
@@ -180,19 +190,18 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       } else if (!stocked && !owned) {
         copy.append(el("p", { text: "入荷のきっかけ：" + book.stockRequires.map(name).join("・") + "が部活に入る" }));
       } else if (!owned) {
-        copy.append(el("p", { text: `シナリオ本 ${yen(book.price)} · 買い物は時間を使いません` }),
-          button("本棚に加える · " + yen(book.price), "trpg-buy-" + book.id, () => {
+        copy.append(button("本棚に加える · " + yen(book.price), "trpg-buy-" + book.id, () => {
             if (buyTrpgBook(getState(), catalog, book.id)) { save(); warmOwnedScenarios(); render("新しいTRPGが、本棚に加わりました。"); }
             else render("本棚に加えられませんでした。所持金と入荷状況を確認してください。");
           }, readOnly || spendableMoney(state) < book.price));
       } else {
         copy.append(el("p", { text: cast.ok ? "今夜の卓：" + cast.participants.map(name).join("・") : cast.reason }),
-          el("small", { text: scenario.duration + " · 夜の1枠 · 結末を迎えた本は一度きり" }),
+          el("small", { text: scenario.duration }),
           button("この仲間で遊ぶ", "trpg-play-" + book.id, () => play(scenario), readOnly || !cast.ok));
       }
       card.append(copy); books.append(card);
     }
-    root.append(books, el("footer.trpg-campaign-footer", { text: "営業が終わるまで待ってから、空いている部員と集まる。中断した本は、また遊べます。" }));
+    root.append(books);
     host.replaceChildren(root); root.focus({ preventScroll: true });
   }
 
@@ -249,5 +258,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     }
   }
   const ready = load();
+  // 店の本棚に入った瞬間の開幕（#2719）。見た目だけで、読み込みや操作は待たせない。
+  if (!disposed) entrance = playTrpgEntrance(host, { foot: readOnly ? "みんなと遊んだ本棚へ" : "ボドゲカフェの本棚へ" });
   return { ready, finished, destroy: close, get disposed() { return disposed; } };
 }

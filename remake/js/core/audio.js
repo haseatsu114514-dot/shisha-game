@@ -396,6 +396,9 @@ export const SE = {
     tone({ freq: 150, to: 105, type: "sine", dur: sec, vol: 0.07 });
   },
   freezeBoom: () => { tone({ freq: 60, to: 30, type: "sine", dur: 0.6, vol: 0.4 }); noise({ dur: 0.5, vol: 0.2, filter: 700, sweepTo: 3000 }); },
+  // てつこといっしょ（#2454）: 喉を鳴らす低いゴロゴロ（約1.2秒。録音なし・合成）と、写真のシャッター。
+  purr: () => { for (let i = 0; i < 26; i++) noise({ dur: 0.04, vol: 0.05 * Math.min(1, (i + 1) / 4, (26 - i) / 4), filter: 160 + Math.random() * 50, q: 1.1, type: "lowpass", delay: i * 0.046 }); },
+  shutter: () => { noise({ dur: 0.04, vol: 0.12, filter: 3200 }); tone({ freq: 1800, to: 900, type: "square", dur: 0.03, vol: 0.03, delay: 0.01 }); noise({ dur: 0.05, vol: 0.09, filter: 2200, delay: 0.09 }); },
 };
 
 for (const id of Object.keys(RECORDED_SE)) {
@@ -476,8 +479,6 @@ export function createContinueAudio({ enabled = true } = {}) {
     start() { if (!alive) return; playBgm("bgm_continue_urgent"); pulse(() => { note(85, { to: 32, dur: .28, vol: .32 }); air(.26, .06, 650); }); },
     title() { pulse(() => { note(830, { to: 380, dur: .12, type: "triangle", vol: .09 }); note(1220, { dur: .07, vol: .035 }); }); },
     beat() { pulse(() => note(105, { to: 65, dur: .08, vol: .15 })); },
-    // #2524: 心の声の行へ戻る区切り。拍を打たず、息のような薄いノイズだけを置く。
-    inner() { pulse(() => air(.22, .028, 520)); },
     // 日常の会話と同じ文字送りの声。BGMは下げず、離脱時は他のSEと一緒に止める。
     voice(speaker) {
       if (!instrument()) return;

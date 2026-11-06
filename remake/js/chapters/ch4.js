@@ -8,8 +8,10 @@ import { createChapterCard } from "../core/chapter-card.js";
 import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { state, save } from "../core/state.js";
-import { layers, showScreen, setBg, chapterTitle, modal, toast } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, chapterTitle, modal, toast } from "../core/ui.js";
 import { saveFlow } from "../scenes/saves.js";
+import { planeRide } from "../core/scene-motions.js";
+import { defeatFade } from "../core/transitions.js";
 import { play, hooks } from "../vn/engine.js";
 import { chapterGrowthChart } from "../daily/status.js";
 import { paidAction } from "../core/stats.js";
@@ -128,7 +130,12 @@ async function readScene(owner, id) {
   const dialogue = { ...actual, metadata: { ...source.metadata, bg: "" } };
   showScreen("none", null);
   hud();
-  await setBg(bgUrl(CH4_SCENE_BG[id] || camelSceneBg(id) || CH4_EVENING_BG), { instant: true });
+  // ドバイ→日本の帰国は、機窓で夕方から日本の夜の街の灯へ（#2688 A4）。読み直し（既読）では乗らない
+  if (id === "ch4_sumi_return" && !chapterFourRead(state, id)) {
+    await planeRide(() => setBg(bgUrl(CH4_SCENE_BG[id]), { instant: true }), { to: "home" });
+    if (!current(owner)) return false;
+  }
+  await setBg(bgUrl(CH4_SCENE_BG[id] || camelSceneBg(id) || CH4_EVENING_BG));
   if (!current(owner)) return false;
   playBgm(CH4_SCENE_BGM[id] || CH4_DEFAULT_BGM);
   // 読了のcheckpointまで保存を出さない。会話中のMENUは置かない。
@@ -206,12 +213,15 @@ async function renderPrep(owner) {
   }
   if (!departChapterFour(state)) throw new Error("ドバイへ出発できません");
   save();
+  // 日本→ドバイ。機窓の外が夜から朝焼けへ移り、砂の地平線が見えたところで空港に着く（#2688 A4）
+  await planeRide(() => setBg(bgUrl(CH4_SCENE_BG.ch4_opening), { instant: true }), { to: "dubai" });
+  if (!current(owner)) return;
   await renderStage(owner);
 }
 
 /** 出発前の同行選択。恋人1名か「同行なし」。選ぶと保存し、他の恋人は別便の応援として扱う（好感度は変えない）。 */
 async function renderCompanionChoice(owner) {
-  await setBg(bgUrl(CH4_SCENE_BG[CH4_PROLOGUE[0].id]), { instant: true });
+  await enterScene(bgUrl(CH4_SCENE_BG[CH4_PROLOGUE[0].id]));
   if (!current(owner)) return;
   const choose = id => async () => {
     if (!chooseOverseasCompanion(state, id)) return;
@@ -230,7 +240,7 @@ async function renderCompanionChoice(owner) {
 const LESSON_AFTER_SCENE = Object.freeze({ ch4_result: "master_hookah" });
 
 async function renderScene(owner, scene, dayLabel) {
-  await setBg(bgUrl(CH4_SCENE_BG[scene.id]), { instant: true });
+  await enterScene(bgUrl(CH4_SCENE_BG[scene.id]));
   const lover = scene.location === "tonari" ? await loverActions(owner, { home: true }) : [];
   if (!current(owner)) return;
   card(owner, "scene", `${dayLabel ? `${dayLabel}・` : ""}${scene.label}`, `${scene.location}で、次の話を読む。`, [
@@ -285,7 +295,7 @@ async function loverActions(owner, { home = false } = {}) {
 
 async function renderFree(owner) {
   const model = chapterFourMapModel(state, { canReflect: canReflect() });
-  await setBg(bgUrl(model.background), { instant: true });
+  await enterScene(bgUrl(model.background));
   const lover = await loverActions(owner);
   if (!current(owner)) return;
   card(owner, "free", `DAY ${model.day}・自由行動`, `ドバイの街を歩く。大会まであと${model.daysLeft}日。`,
@@ -400,7 +410,7 @@ async function renderEve(owner) {
   }
   // 到着した恋人と過ごす夕方（任意で一度・IR18）。前夜祭が始まると、もう出ない。
   const evenings = chapterFourArrivalEveningsDue(state);
-  await setBg(bgUrl(CH4_SCENE_BG[next.lead || next.id]), { instant: true });
+  await enterScene(bgUrl(CH4_SCENE_BG[next.lead || next.id]));
   if (!current(owner)) return;
   card(owner, "eve", `DAY ${chapterFourEveDay(state)}・${evenings.length ? "前夜祭の日" : "前夜"}`,
     evenings.length ? "夕方になった。前夜祭の前に、少し時間がある。" : "夜になった。大会の前に、済ませておくことが残っている。", [
@@ -424,7 +434,7 @@ async function renderEve(owner) {
  * 2人目からは「もう一人」の文にして、同じカードが繰り返されたように見せない。
  */
 async function renderArrival(owner, arrival) {
-  await setBg(bgUrl(CH4_SCENE_BG[arrival.scene]), { instant: true });
+  await enterScene(bgUrl(CH4_SCENE_BG[arrival.scene]));
   if (!current(owner)) return;
   const another = [...Object.values(CH4_ARRIVAL_SCENES), ...Object.values(CH4_FRIEND_ARRIVAL_SCENES)]
     .some(id => chapterFourRead(state, id));
@@ -459,7 +469,7 @@ async function renderEvening(owner) {
   const partner = chapterFourEveningPartner(routes, state);
   if (result.kind !== "rest" || !partner) { await settle(result); return; }
   const name = displayName(partner, state, { context: "private" });
-  await setBg(bgUrl(CH4_EVENING_BG), { instant: true });
+  await enterScene(bgUrl(CH4_EVENING_BG));
   if (!current(owner)) return;
   card(owner, "evening", `DAY ${chapterFourEveDay(state)}・前夜`, `大会前夜。${name}と過ごす時間がある。`, [
     button(owner, `${name}と過ごす`, "evening-date",
@@ -472,7 +482,7 @@ async function renderTournament(owner) {
   const progress = chapterFourProgress(state);
   // 敗北の場面を読み終え、まだ再挑戦を選んでいない保存はCONTINUE画面から再開する（第2・3章と同じ）。
   if (chapterFourTournamentOutcome(state) === "loss" && progress.read[CH4_TOURNAMENT_SCENES.loss]) return renderDefeat(owner);
-  await setBg(bgUrl(CH4_SCENE_BG[CH4_TOURNAMENT_SCENES.start]), { instant: true });
+  await enterScene(bgUrl(CH4_SCENE_BG[CH4_TOURNAMENT_SCENES.start]));
   if (!current(owner)) return;
   card(owner, "tournament", `DAY ${chapterFourTournamentDay(state)}・大会当日`, "会場へ向かう。",
     [button(owner, "大会へ", "start", () => runTournament(owner), true)],
@@ -501,14 +511,21 @@ async function runTournament(owner) {
     revealChapterFourSheikh(state);
     if (!await readAndCommit(owner, start)) return;
   }
-  const [{ runChapterFourCraft }, { playEntrance }] = await Promise.all([import("./ch4-tournament.js"), import("./tournament-entrance.js")]);
+  const [{ runChapterFourCraft }, { playEntrance }, moments] = await Promise.all([import("./ch4-tournament.js"), import("./tournament-entrance.js"), import("./tournament-moments.js")]);
   if (!current(owner)) return;
-  // 入場カットインは一度だけ（制作の途中から再開したときは出さない）。
-  if (!chapterFourProgress(state).match?.craft) { await playEntrance(4); if (!current(owner)) return; }
+  // 入場カットインは一度だけ（制作の途中から再開したときは出さない）。会場へは第1章と同じ暗い煙ワイプで入る（#2688 A16）
+  if (!chapterFourProgress(state).match?.craft) {
+    await moments.tournamentArrival({ bgm: "bgm_tournament_edm" });
+    if (!current(owner)) return;
+    await playEntrance(4); if (!current(owner)) return;
+  }
   const result = await runChapterFourCraft({ isCurrent: () => current(owner), menuButton: () => menuButton(owner) });
   if (!current(owner)) return;
   if (!result) { await renderTournament(owner); return; }
-  // 最終票は result.rows / result.votes から表示する。勝敗の台本はこの後に読む。
+  // 結果の前に、第1章と同じ10カウント（#2688 A16）。最終票は result.rows / result.votes から表示する。勝敗の台本はこの後に読む。
+  const craft = chapterFourProgress(state).match?.craft;
+  if (craft && result.rank) await moments.resultMoment(craft, result.rank, { contestants: ["naru", "master_hookah", "sheikh", "hajime"], eyebrow: "HAZE: GRAND SMOKE / FINAL JUDGING" });
+  if (!current(owner)) return;
   await showChapterFourCommittedResult(result);
   if (!current(owner)) return;
   if (chapterFourTournamentOutcome(state) === "win") {
@@ -518,14 +535,14 @@ async function runTournament(owner) {
   } else {
     if (!await readAndCommit(owner, loss)) return;
     // 2026-11-02 オーナー決定: 第1〜3章と同じ20秒のCONTINUE画面を出す（#1909）。再挑戦は大会の最初から（Q5）。
-    await renderDefeat(owner);
+    await renderDefeat(owner, null, { fresh: true });
     return;
   }
   await renderStage(owner);
 }
 
 /** 世界大会の敗北後のCONTINUE画面。「もう一度」で大会の最初へ戻し、タイトルへは保存してから戻る。 */
-async function renderDefeat(owner, variant = null) {
+async function renderDefeat(owner, variant = null, { fresh = false } = {}) {
   if (!current(owner)) return;
   const progress = chapterFourProgress(state);
   const result = progress.match?.result;
@@ -553,7 +570,11 @@ async function renderDefeat(owner, variant = null) {
   owner.continueRoot = root;
   root.dataset.test = test("defeat");
   root.querySelector(".go-retry").dataset.test = test("continue-retry");
+  // 世界大会の負けを読んだ直後だけ、色が抜けて煙が途切れる入り（#2688 A19）
+  const fade = (fresh && await defeatFade()) || (async () => {});
+  if (!current(owner)) { await fade(); return; }
   showScreen("end", root);
+  await fade();
 }
 
 const RECAP_STRATEGY = Object.freeze({

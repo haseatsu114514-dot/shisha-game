@@ -15,12 +15,12 @@ async function readStep(step) {
   if (!DB.dialogues[step.id]) throw new Error(`台本がありません: ${step.id}`);
   if (!step.bg && ["remake_ch2_eve_arrival", "remake_ch2_eve_rei", "ch2_pre_tournament_realisation"].includes(step.id)) {
     if (!await imageReady(MAP.night, 15000)) throw new Error("大会前夜の街を読み込めませんでした");
-    await setBg(MAP.night, { instant: true });
+    await setBg(MAP.night);
   }
   const place = (step.bg && (bgUrl(step.bg) || step.bg)) || (step.room && ROOMS[step.room]);
   if (place) {
     if (!await imageReady(place, 15000)) throw new Error(`場面の背景を読み込めませんでした: ${step.bg || step.room}`);
-    await setBg(place, { instant: true });
+    await setBg(place);
   }
   syncAgehaVibes(owner.flags);
   const result = await play(step.id);

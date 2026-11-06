@@ -10,15 +10,13 @@
   background: radial-gradient(ellipse at 50% 42%, transparent 38%, #03020b55 68%, #03020bcc 100%);
   animation: go-inner-breathe 5.2s ease-in-out infinite alternate;
 }
-/* 相手の声が浮かぶ瞬間、顔の中心（640,273）から薄い輪が一度だけ広がる。 */
+/* 像が浮かぶ瞬間（入場）、顔の中心（640,273）から薄い輪が一度だけ広がる。3敗目以降の入場省略では出さない。 */
 .gameover[data-layout="neon"] .go-left::before {
   content: ""; position: absolute; left: 470px; top: 273px; width: 560px; height: 560px; margin: -280px 0 0 -280px;
   border: 1px solid #d9ccff; border-radius: 50%; opacity: 0; pointer-events: none;
+  animation: go-inner-ripple .95s .3s ease-out both;
 }
-.gameover[data-layout="neon"][data-voice="other"][data-phase="speaking"] .go-left::before { animation: go-inner-ripple .95s ease-out both; }
-.gameover[data-layout="neon"][data-skip-entry="true"][data-cue="0"] .go-left::before { animation: none; }
-.gameover[data-layout="neon"][data-voice="self"] .go-dialogue::before,
-.gameover[data-layout="neon"][data-voice="self"] .go-dialogue::after { opacity: .45; }
+.gameover[data-layout="neon"][data-skip-entry="true"] .go-left::before { animation: none; }
 .gameover[data-layout="neon"] .go-heading {
   top: 12px; left: 138px; right: auto; width: 1050px; height: 214px;
   display: block; text-align: left; animation: none; pointer-events: none;

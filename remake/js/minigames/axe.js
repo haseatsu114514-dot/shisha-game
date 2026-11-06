@@ -1,6 +1,8 @@
 // Caller awaits preceding VN. Practice never reads or writes story/save state.
 import { el } from "../core/util.js";
 import { imgFileUrl } from "../core/img-file.js";
+import { portraitStyle } from "../core/portrait-style.js";
+import { portraitAsset } from "../core/portrait-resolver.js";
 import { svg } from "../core/transition-kit.js";
 import { SE, unlockAudio } from "../core/audio.js";
 import { RINGS, KILLS, CLUSTERS, LINE, BLADE, POWER, SWAY, MODES, DIVISIONS, BOARD, RULESET, gaugeAt, axisAt, releaseAimAt, resolveThrow, totalOf, gradeOf, killState, canCall, closuresOf, halfOf } from "./axe-model.js";
@@ -25,7 +27,6 @@ function decodeArt(url) {
 const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_c_800.webp") };
 // Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
 if (typeof Image !== "undefined") decodeArt(ART.board).catch(() => {});
-const faceArt = (id, face) => imgFileUrl("sprites/characters/" + id + "/chr_" + id + "_" + face + ".webp");
 const { x: CX, y: CY, radius: R } = TARGET;
 // Solid plank edges inside the 1254px artwork (alpha 250+, asset_sources/ui/axe-watl-20261101/adoption.json); the transparent margin is not wood.
 const OPAQUE = { left: 69 / 1254, right: 1185 / 1254, top: 61 / 1254, bottom: 1190 / 1254 };
@@ -78,6 +79,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   let shots = match?.player || [], pending = null, called = null, lastAction = -Infinity;
   let actor = "player", matchLines = null, gameRecorded = false;
   let portraitKey = null;
+  let portraitManifest = null;
+  const faceArt = (id, face) => portraitAsset(portraitManifest, id, face, portraitStyle());
   let declareTimer = 0, declareNode = null, declareMarker = null, clearedGoals = new Set();
   let held = 0, focusUntil = -1, focusUsed = false, helpPanel = null, coachPanel = null, coachLines = null, quiver = null;
   const taught = new Set();
@@ -99,7 +102,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   root.dataset.reducedMotion = String(reducedMotion);
   if (host.id === "stage") root.classList.add("axe-in-stage");
   const round = el("span.axe-round", { dataset: { test: "axe-round" } });
-  const rulesButton = el("button.axe-button.axe-rules-button", { text: "ルール", dataset: { test: "axe-rules" }, onclick: openRules });
+  // 遊び方・操作は常に出さず「？」から開く（#2718 のUI方針）。名前は読み上げ用の文字で付ける。
+  const rulesButton = el("button.axe-button.axe-rules-button.axe-help", { type: "button", title: "遊び方・ルール", dataset: { test: "axe-rules" }, onclick: openRules },
+    [el("span", { "aria-hidden": "true", text: "？" }), el("span.axe-quiet", { text: "遊び方・ルール" })]);
   const subtitle = tutorial ? "マキの無料1投レッスン" : versus ? "ひよりと10投対戦 · " + DIFFICULTIES[difficulty].name + (bestOf > 1 ? " · " + bestOf + "本マッチ" : "") : mode === "league" ? "10投ゲーム · 5投で的を交代" : "3投の練習";
   const heading = el("header.axe-header", [el("div", [el("h1", { text: tutorial ? "AXE LESSON" : "AXE THROW" }),
     el("p", { text: subtitle + (tutorial ? "" : " · " + DIVISIONS[division].name) })]), round, rulesButton,
@@ -207,10 +212,10 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const xNeedle = svg("path", { class: "axe-x-needle", d: `M0 ${PLANK.top - 6}V${PLANK.bottom + 6}`, stroke: "#91cfe6", "stroke-width": 2.5 });
   const yNeedle = svg("path", { class: "axe-y-needle", d: `M${PLANK.left - 6} 0H${PLANK.right + 6}`, stroke: "#e5bd70", "stroke-width": 2.5 });
   const sdBadge = svg("text", { class: "axe-sd-badge", x: CX, y: VIEW.y + 26, "text-anchor": "middle", fill: "#9cecff", "font-size": 15, "font-weight": 900, opacity: 0 }, ["SUDDEN DEATH"]);
-  const gaugeLabel = (x, y, text, fill, anchor) => svg("text", { class: "axe-gauge-label", x, y, "text-anchor": anchor, fill, "font-size": 16, "font-weight": 900,
+  const gaugeLabel = (x, y, text, fill, anchor, step) => svg("text", { class: "axe-gauge-label", "data-gauge": step, x, y, "text-anchor": anchor, fill, "font-size": 16, "font-weight": 900,
     "paint-order": "stroke", stroke: "#140d08", "stroke-width": 4 }, [text]);
   board.append(zoneHalo, powerShift, releaseDot, contactShadow, impacts, impactMark, trail, ...ghosts, flying, fixedAim, crosshair, impactFx,
-    gaugeLabel(CX, VIEW.y + VIEW.size - 10, "① 横", "#a9dcef", "middle"), gaugeLabel(VIEW.x + VIEW.size - 8, CY - 10, "② 縦", "#f1c983", "end"), xNeedle, yNeedle, sdBadge);
+    gaugeLabel(CX, VIEW.y + VIEW.size - 10, "① 横", "#a9dcef", "middle", "horizontal"), gaugeLabel(VIEW.x + VIEW.size - 8, CY - 10, "② 縦", "#f1c983", "end", "vertical"), xNeedle, yNeedle, sdBadge);
   const note = el("p.axe-note", { dataset: { test: "axe-note" } });
   const announcement = el("p.axe-announcement", { "aria-live": "polite", "aria-atomic": "true" });
   const resultLabel = el("span.axe-result-label"), resultNumber = el("span"), resultUnit = el("small", { text: "PTS" });
@@ -275,6 +280,19 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     panel = el("aside.axe-panel", [matchScore, goals, companionCard, matchRecords, status, calls, steps, note, liveScore, resultCard, timing, feedback, steadiness, stability, action, keyhint, controls, retry]);
   const body = el("div.axe-body", [boardPane, panel]);
   root.append(heading, scoreboard, body, announcement);
+  // #2718: 始まった瞬間の切り替えの幕。見た目だけ（文字はCSSで描き、読み上げ・入力・時計・判定には触れない）。動きを減らす設定では出さない。
+  if (!reducedMotion) {
+    const label = tutorial ? "マキの無料1投レッスン" : versus ? "ひよりと対戦" : mode === "league" ? "10投ゲーム" : "3投の練習";
+    const cutin = el("div.axe-cutin", { "aria-hidden": "true", dataset: { test: "axe-cutin" } }, [
+      el("span.axe-cutin-top"), el("span.axe-cutin-bottom"), el("span.axe-cutin-slash"),
+      el("span.axe-cutin-card", [el("span.axe-cutin-tag", { dataset: { text: "MINI GAME" } }),
+        el("span.axe-cutin-title", { dataset: { text: tutorial ? "AXE LESSON" : "AXE THROW" } }), el("span.axe-cutin-label", { dataset: { text: label } })]),
+    ]);
+    const dismiss = () => cutin.remove(), timer = setTimeout(dismiss, 1500);
+    cutin.addEventListener("animationend", event => { if (event.target === cutin) dismiss(); }, { signal: lifetime.signal });
+    lifetime.signal.addEventListener("abort", () => clearTimeout(timer), { once: true });
+    root.append(cutin);
+  }
   host.append(root); root.focus();
   root.addEventListener("keydown", key, { signal: lifetime.signal });
   root.addEventListener("pointerup", event => event.stopPropagation(), { signal: lifetime.signal });
@@ -283,11 +301,13 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   window.addEventListener("pagehide", () => cleanup(false), { signal: lifetime.signal });
   loadArt(); frame = requestAnimationFrame(tick); return promise;
   function showFace(face) {
-    const url = faceArt(portraitKey, face);
-    if (portrait.src === url) return;
-    const focus = portraitFocus(opponent, face);
+    const art = faceArt(portraitKey, face);
+    if (portrait.src === art.src) return;
+    const focus = art.style === "new"
+      ? { x: art.ax, y: 1 - art.h - art.b + art.h * 0.16 }
+      : portraitFocus(opponent, face);
     portrait.style.setProperty("--focus-x", focus.x); portrait.style.setProperty("--focus-y", focus.y);
-    portrait.src = url;
+    portrait.src = art.src;
   }
   function openRules() {
     if (helpPanel || coachPanel || phase === "closed") return;
@@ -310,6 +330,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       stamp = null; render(); root.focus();
     };
     coachPanel = coachDialog({ text, title: titles[id], step: ids.indexOf(id) + 1, total: ids.length, kind: id, context: lessonContext,
+      portrait: faceArt("maki", "normal"),
       onNext: () => { close(); if (id === "welcome") teach("target"); else if (id === "finish") cleanup(true); },
       onSkip: () => cleanup(false) });
     coachPanel.dataset.lesson = id;
@@ -325,10 +346,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       .then(response => { if (!response.ok) throw new Error("Axe artwork catalogue unavailable"); return response.json(); })
       .then(manifest => {
         if (phase === "closed") return;
+        portraitManifest = manifest;
         const lessonArt = [];
         if (tutorial) {
           if (!manifest.portraits?.maki?.faces?.includes("normal")) throw new Error("Teacher artwork missing from catalogue");
-          lessonArt.push(decodeArt(faceArt("maki", "normal")),
+          lessonArt.push(decodeArt(faceArt("maki", "normal").src),
             fetch(new URL("../../../data/dialogue/axe_tutorial.json", import.meta.url), { signal: AbortSignal.any([lifetime.signal, timeout.signal]) })
               .then(response => { if (!response.ok) throw new Error("Axe lesson unavailable"); return response.json(); })
               .then(data => {
@@ -344,7 +366,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
           throw new Error("Companion artwork missing from catalogue");
         showFace(companion.faces[0]);
         return Promise.all([
-          ...[...Object.values(ART), ...companion.faces.map(face => faceArt(portraitKey, face))].map(decodeArt),
+          ...[...Object.values(ART), ...companion.faces.map(face => faceArt(portraitKey, face).src)].map(decodeArt),
           ...(versus ? [fetch(new URL("../../../data/dialogue/axe_versus.json", import.meta.url), { signal: AbortSignal.any([lifetime.signal, timeout.signal]) })
             .then(response => { if (!response.ok) throw new Error("Axe match dialogue unavailable"); return response.json(); })
             .then(data => {
@@ -591,7 +613,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     }
     const ks = killState(currentShots, rules.throws);
     status.textContent = sd ? "サドンデス：" + killPlaces[called] + "の青 · 刃が触れれば勝ち" : called ? "宣言中：" + killPlaces[called] + "の青 · 青以外0点"
-      : "キルショット（青 7／8点） · 残り" + ks.remaining + "回" + (ks.bonus ? "（落下で+" + ks.bonus + "）" : "") + (ks.mustRow ? " · " + (ks.mustRow === "upper" ? "上" : "下") + "の青だけ" : "");
+      : "キルショット 残り" + ks.remaining + "回" + (ks.bonus ? "（落下で+" + ks.bonus + "）" : "") + (ks.mustRow ? " · " + (ks.mustRow === "upper" ? "上" : "下") + "の青だけ" : "");
     for (const button of calls.children) {
       const id = button.dataset.call;
       button.disabled = isPaused() || performance.now() - lastAction < 250 || phase !== "choice" || sd || id !== "normal" && !canCall(id, shots, rules.throws);

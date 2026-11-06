@@ -4,6 +4,7 @@
 // ページは remake/index.html なので、リポジトリ直下は "../"。
 
 import { portraitStyle } from "./portrait-style.js";
+import { resolvePortrait } from "./portrait-resolver.js";
 import { registerFortuneReadings } from "./fortune-effects.js";
 
 const ROOT = "../";
@@ -277,7 +278,7 @@ const BG_ALIASES = {
 };
 
 // 昼夜の差分がある場所（無印・_day は時間帯で切り替える。明示の _night は演出なのでそのまま）
-const BG_TIME_BASE = new Set(["bg_tonari_inside", "bg_tonari_outside", "bg_home", "bg_c_station", "bg_cafe", "bg_street", "bg_kannon", "bg_choizap", "bg_tokyo_park"]);
+const BG_TIME_BASE = new Set(["bg_tonari_inside", "bg_tonari_outside", "bg_home", "bg_c_station", "bg_cafe", "bg_street", "bg_kannon", "bg_choizap", "bg_tokyo_park", "bg_mukai_backdoor"]); // bg_mukai_backdoor: てつこといっしょの裏口（TKT01・未着。届くまでは sceneBg が null を返し、画面は bg_street に戻る）
 // 窓の無い店内は外光が入らない＝夜も昼の絵のまま（オーナー指定・旧版と同じ）
 const BG_NO_NIGHT_TINT = new Set([
   "bg_rojiura_cinema.png",
@@ -317,36 +318,13 @@ export function sceneBg(ref, timeOfDay = "day") {
 export const bgUrl = (ref, timeOfDay = "day") => sceneBg(ref, timeOfDay).url;
 
 export function portraitInfo(speaker, face, style = portraitStyle()) {
-  const folder = SPEAKER_ALIAS[speaker] || speaker;
-  const p = DB.manifest.portraits[folder];
-  if (!p) return null;
-  const candidate = ["new", "nanami"].includes(style) ? DB.manifest.portraitVariants?.[style]?.[folder] : null;
-  let f = face || "normal";
-  if (speaker === "oneesan") {
-    // 私服のみんと＝ura_* 差分。通常差分で代用すると正体が見た目でバレるので、無ければ出さない
-    f = f.startsWith("ura_") ? f : `ura_${f}`;
-    if (!p.faces.includes(f)) f = "ura_normal";
-    if (!p.faces.includes(f)) return null;
-  } else if (!p.faces.includes(f) && !candidate?.faces?.includes(f)) {
-    const near = { excited: "smile", smug: "smile", wink: "smile", evil: "serious", thinking: "serious", intense: "serious" }[f];
-    const costumeNormal = f.includes("_") ? `${f.slice(0, f.lastIndexOf("_") + 1)}normal` : "normal";
-    if (near && p.faces.includes(near)) f = near;
-    else if (!candidate?.faces?.includes(costumeNormal)) f = "normal";
-  }
-  // 一部の表情だけ旧絵に戻ると、衣装・口具・顔が突然変わる。
-  // 同じ衣装群に通常があればその絵を保持。衣装群自体が未導入なら現行を使う。
-  const costume = f.includes("_") ? f.slice(0, f.lastIndexOf("_") + 1) : "";
-  const normal = `${costume}normal`;
-  const variantFace = candidate?.faces?.includes(f) ? f : candidate?.faces?.includes(normal) ? normal : null;
-  const useVariant = variantFace !== null;
-  const metrics = useVariant ? candidate : p;
-  const base = useVariant ? `sprites/character_variants/${style}` : "sprites/characters";
+  const resolved = resolvePortrait(DB.manifest, speaker, face, style);
+  if (!resolved) return null;
+  const { folder } = resolved;
   return {
-    folder, face: useVariant ? variantFace : f, style: useVariant ? style : "classic",
-    src: img(`${base}/${folder}/chr_${folder}_${useVariant ? variantFace : f}.png`),
-    h: metrics.h || 0.85, b: useVariant ? (metrics.b ?? 0.02) : (p.b || 0.02), ax: metrics.ax ?? 0.5, aspect: metrics.aspect || 0.75,
-    topOverhang: metrics.topOverhang || 0,
-    scale: (useVariant ? DB.characters[folder]?.spriteScaleVariants?.[style] : null) || DB.characters[folder]?.spriteScale || DB.characters[speaker]?.spriteScale || 1,
+    ...resolved, src: img(resolved.rel),
+    scale: (resolved.style === "new" ? DB.characters[folder]?.spriteScaleVariants?.new : null)
+      || DB.characters[folder]?.spriteScale || DB.characters[speaker]?.spriteScale || 1,
   };
 }
 

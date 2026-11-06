@@ -35,6 +35,7 @@ const LOGO_ALIASES = Object.freeze({
   ch3_tokyo_mukai: "ch3_mukai", ch3_tokyo_enmaku: "ch3_enmaku", ch3_tokyo_steve: "ch3_steve",
   ch3_tokyo_volk: "ch3_volk", ch3_tokyo_club: "ch3_club", ch3_tokyo_shop: "shop",
   ch5_tokyo_mukai: "ch3_mukai", ch5_tokyo_steve: "ch3_steve", ch5_tokyo_volk: "ch3_volk", ch5_tokyo_shop: "shop",
+  ch5_tokyo_club: "ch3_club", // 第5章の東京の夜のクラブSEAM（第3章と同じ店）
   ch4_dubai_festa: "ch4_festa", ch4_dubai_shop: "shop",
   ch5_dubai_shop: "shop", // 第5章のドバイの Dr.fookah ドバイ店（SLG04）
 });

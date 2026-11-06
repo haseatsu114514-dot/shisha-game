@@ -5765,7 +5765,7 @@
       "adoption": "provisional_comparison_variant"
     },
     {
-      "character_id": "suhail",
+      "character_id": "faris",
       "historical_id": "saif",
       "expression": "normal",
       "style": "new",
@@ -5793,8 +5793,8 @@
       "actual_sha256": "dd93570e72cd6dc8d7b32df7442c38dc74858fc95685abf1c7436c333847fc9a",
       "verified": true,
       "native_height": 1453,
-      "source": "asset_sources/portraits/library-candidates-20261105/new/suhail/normal-source.png",
-      "runtime": "assets/sprites/character_variants/new/suhail/chr_suhail_normal.png",
+      "source": "asset_sources/portraits/library-candidates-20261105/new/faris/normal-source.png",
+      "runtime": "assets/sprites/character_variants/new/faris/chr_faris_normal.png",
       "runtime_sha256": "a4c150ba92b36894f586033b0836a1a15463bcba906d42caff45fd0ac4bdb357",
       "export_scale": 0.7432897453544391,
       "export_offset": [
@@ -5811,7 +5811,7 @@
       "adoption": "provisional_comparison_variant"
     },
     {
-      "character_id": "suhail",
+      "character_id": "faris",
       "historical_id": "saif",
       "expression": "normal",
       "style": "nanami",
@@ -5839,8 +5839,8 @@
       "actual_sha256": "86ea9df5802f02aadae592b081dbc4c85211355d12947212c30126419c63677a",
       "verified": true,
       "native_height": 1439,
-      "source": "asset_sources/portraits/library-candidates-20261105/nanami/suhail/normal-source.png",
-      "runtime": "assets/sprites/character_variants/nanami/suhail/chr_suhail_normal.png",
+      "source": "asset_sources/portraits/library-candidates-20261105/nanami/faris/normal-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/faris/chr_faris_normal.png",
       "runtime_sha256": "dd558e5bf543c8a2c62f7ccfe4f9c07c164ca5c20c9e71606e0c7bd6f74b34f9",
       "export_scale": 0.7505211952744962,
       "export_offset": [
@@ -8921,7 +8921,7 @@
         6.6,
         6.6
       ],
-      "suhail": [
+      "faris": [
         6.8,
         6.8
       ],

@@ -24,6 +24,11 @@
   "blob": "d67632456082ac718ec768130162f0388ad17310",
   "webp": "9cdc0b961f993ac55356a61db56e2f0ee7dd105d"
  },
+ "face_faris.png": {
+  "sprite": "assets/sprites/characters/faris/chr_faris_normal.png",
+  "blob": "ec60aafb94c1f7e35bce48b8f2c82294d7633448",
+  "webp": "eb5adee8fb89bbbc508fb38d803dc1f9d58e8674"
+ },
  "face_hajime.png": {
   "sprite": "assets/sprites/characters/hajime/chr_hajime_normal.png",
   "blob": "c641dc297e7bf7c9c9df01ba4e117be79e92319b",
@@ -139,11 +144,6 @@
   "blob": "8908ea0951f173ed7492d567d629030cefb0bda0",
   "webp": "0ba8615ee42dc7d3f8dc8556dd20c813c517f32a"
  },
- "face_suhail.png": {
-  "sprite": "assets/sprites/characters/suhail/chr_suhail_normal.png",
-  "blob": "ec60aafb94c1f7e35bce48b8f2c82294d7633448",
-  "webp": "eb5adee8fb89bbbc508fb38d803dc1f9d58e8674"
- },
  "face_sui.png": {
   "sprite": "assets/sprites/characters/sui/chr_sui_normal.png",
   "blob": "37be28dcaf26b22dc17a43c55b983ef2382eece9",
@@ -203,6 +203,11 @@
   "sprite": "assets/sprites/character_variants/new/emil/chr_emil_normal.png",
   "blob": "0527ccae2f75d674764795b91413ab8390f59926",
   "webp": "940ff62e94f407c325fd586ccb183adc764f17e2"
+ },
+ "new/face_faris.png": {
+  "sprite": "assets/sprites/character_variants/new/faris/chr_faris_normal.png",
+  "blob": "614cd5951a6b525aba3e5e2b1fbb09b107c17e5f",
+  "webp": "6a7dac09346584efc297771050fe3ea5bde3c1ae"
  },
  "new/face_hajime.png": {
   "sprite": "assets/sprites/character_variants/new/hajime/chr_hajime_normal.png",
@@ -313,11 +318,6 @@
   "sprite": "assets/sprites/character_variants/new/steve/chr_steve_normal.png",
   "blob": "cdbe98cc701a1a552e02641c7a5f14635d0bbadd",
   "webp": "ea20a338ac5d1cedeead5814ab78ede8252fbf0b"
- },
- "new/face_suhail.png": {
-  "sprite": "assets/sprites/character_variants/new/suhail/chr_suhail_normal.png",
-  "blob": "614cd5951a6b525aba3e5e2b1fbb09b107c17e5f",
-  "webp": "6a7dac09346584efc297771050fe3ea5bde3c1ae"
  },
  "new/face_sui.png": {
   "sprite": "assets/sprites/character_variants/new/sui/chr_sui_normal.png",

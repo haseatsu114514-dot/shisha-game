@@ -125,8 +125,8 @@
 .nc-cut-text b { display: block; font-size: 30px; letter-spacing: .1em; }
 .nc-cut-pt { display: flex; align-items: baseline; gap: 10px; margin-top: 2px; font-size: 15px; font-weight: 700; color: #f6d68e; }
 .nc-cut-pt strong { font-size: 64px; line-height: .9; font-style: italic; font-weight: 900; background: linear-gradient(180deg, #fff6dc, #f6c95e 55%, #b07a20); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 3px 0 #000a); }
-.nc-stamp { position: absolute; left: 30%; top: 15%; z-index: 5; padding: 6px 30px; border: 5px solid #ff4d6d; border-radius: 10px; color: #ff4d6d; font-size: 72px; font-weight: 900; letter-spacing: .14em; transform: translate(-50%, -50%) rotate(-10deg); background: #12081099; text-shadow: 0 0 20px #ff4d6d88; animation: stamp-in .4s cubic-bezier(.2, 1.4, .3, 1) backwards; pointer-events: none; }
-@keyframes stamp-in { from { opacity: 0; transform: translate(-50%, -50%) rotate(-10deg) scale(2.4); } }
+.nc-stamp { position: absolute; left: 30%; top: 15%; z-index: 5; padding: 6px 30px; border: 5px solid #ff4d6d; border-radius: 10px; color: #ff4d6d; font-size: 72px; font-weight: 900; letter-spacing: .14em; transform: translate(-50%, -50%) rotate(-10deg); background: #12081099; text-shadow: 0 0 20px #ff4d6d88; animation: nc-stamp-in .4s cubic-bezier(.2, 1.4, .3, 1) backwards; pointer-events: none; }
+@keyframes nc-stamp-in { from { opacity: 0; transform: translate(-50%, -50%) rotate(-10deg) scale(2.4); } }
 
 /* ---- 最終結果 */
 .result-table { padding: 26px 44px 24px; display: grid; grid-template-rows: 128px minmax(0, 1fr) 54px; gap: 16px; align-items: stretch; justify-content: stretch; overflow: hidden; }

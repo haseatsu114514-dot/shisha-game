@@ -26,7 +26,7 @@
   border-radius: 50%;
   background: radial-gradient(ellipse, rgba(240, 230, 250, 0.16), transparent 70%);
   filter: blur(30px);
-  animation: drift 18s ease-in-out infinite alternate;
+  animation: smoke-drift 18s ease-in-out infinite alternate;
   pointer-events: none;
 }
 .title-smoke i:nth-child(1) { left: -200px; bottom: -120px; }
@@ -856,6 +856,11 @@ p.gear-offer.owned b { color: var(--gold); }
 .lime-reply.disabled, .lime-reply:disabled { color: #9aa4b2; border-color: #cfd5dc; background: #f4f6f8; cursor: default; }
 
 /* 朝のプッシュ通知（スマホの通知バナー風に上から降りてくる） */
+/* LIMEの着信: 画面の縁が一度だけ淡く脈打つ（#2688 A12） */
+.lime-edge-pulse { position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  box-shadow: inset 0 0 0 3px #dcd1f4cc, inset 0 0 70px 14px #6b4fb066; animation: lime-edge-pulse 600ms ease-out both; }
+@keyframes lime-edge-pulse { 35% { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .lime-edge-pulse { display: none; } }
 .lime-push {
   appearance: none;
   border: 0;

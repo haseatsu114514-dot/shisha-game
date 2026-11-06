@@ -10,7 +10,7 @@ import { gainSeenKey, bannerHold } from "./gain-notice.js";
 import { nextStepProgress } from "./stat-progress.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
-import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival } from "./transitions.js";
+import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival, takeParkedCover } from "./transitions.js";
 import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
 import { uiThemeFrame } from "./ui-theme.js";
@@ -175,10 +175,13 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
   const art = { homeRigs };
   const key = `${url}|${tint || ""}|${sceneArtUrls(url, art).join("|")}`;
   const sceneArrival = takeSceneArrival(); // consume even on redraw; never carry an entry into a later scene
+  // 時間が過ぎる波（transitions.waveBeat）が覆ったまま預けた幕。新しい背景を描いてから開く（#2688 A9）
+  const handoff = takeParkedCover();
   if (key === bgNow) {
     refreshWeather();
     const assetsReady = Promise.all([bgAssetsReady, ...ready.map((u) => imageReady(u, 15000))]);
-    return Object.assign(Promise.all([bgTask, assetsReady]), { assetsReady });
+    const same = Promise.all([bgTask, assetsReady]).then(async (values) => { if (handoff) await handoff(); return values; });
+    return Object.assign(same, { assetsReady, covered: activeCurtain?.covered || Promise.resolve() });
   }
   const coveredElsewhere = layers.wipe?.classList.contains("black") || layers.wipe?.classList.contains("cover") || isCovering();
   const curtain = !instant && bgNow && !coveredElsewhere ? createSceneCurtain(layers.fx, { fast: brief || document.body.classList.contains("vn-skip"), sceneArrival }) : null;
@@ -211,8 +214,23 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
       try { await curtain.release(); }
       finally { if (activeCurtain === curtain) activeCurtain = null; }
     }
+    if (handoff) await handoff();
   });
-  return Object.assign(bgTask, { assetsReady: bgAssetsReady });
+  return Object.assign(bgTask, { assetsReady: bgAssetsReady, covered: curtain?.covered || Promise.resolve() });
+}
+
+/**
+ * 章の場面を替える（#2688 F2）。第1章の会話の背景替えと同じ標準の幕（一筆）で覆い、覆ったところで前の画面を片付けて開く。
+ * 地図・メニューへ戻るときは map: true で短い幕。幕の要らない所（同じ部屋の昼夜差分・別の演出が覆っている間）は setBg(..., { instant: true })。
+ * 選択肢を選んで会話へ入る所は、覆うまで古いカードを残さない（押せる・同じ画面と誤認される）。先に showScreen("none") してから setBg で替える。
+ */
+export async function enterScene(url, { map = false, clear = true, ...opts } = {}) {
+  const task = setBg(url, { brief: map, ...opts });
+  if (clear) {
+    await task.covered;
+    showScreen("none", null);
+  }
+  return task;
 }
 
 /** 背景だけに雨を重ねる。窓は1280×720の背景座標に限定する。 */
@@ -463,6 +481,60 @@ export async function bannersIdle() {
 
 // ---------------------------------------------------------------- モーダル
 
+/**
+ * 閉じた画面の出口（#2688 F5）。閉じる箱と同じ位置・形・紙の色の面だけを短く残して薄れさせる。
+ * 文字・ボタン・クラス名は写さないので、次の画面・入力・テストの判定は本物だけを見る。
+ * 箱がまだ見えている間（#modal を空にする前）に呼ぶ。面は #modal の一つ下に置き、続けて開いた画面より前へ出ない。
+ * origin: 縮む起点（#modal 内の座標）。box: 面にする箱のセレクタ（省略時は一番大きく塗られた箱）。
+ * 2画面（DS）表示・動きを減らす設定では何も出さずに閉じる。
+ */
+export function ghostOut(nodes, frames, ms = 180, { origin = null, box: pick = null } = {}) {
+  const frame = layers.modal, host = frame?.parentElement;
+  const dsLayout = document.body.classList.contains("game-ds") || !!document.querySelector('.title[data-layout="ds"]');
+  if (!host || !frame.offsetWidth || reducedMotion() || dsLayout || !nodes.length) return;
+  const f = frame.getBoundingClientRect(), k = f.width / frame.offsetWidth;
+  if (!k) return;
+  const shapes = [];
+  for (const node of nodes) {
+    const box = !(node instanceof Element) ? null : pick ? (node.matches(pick) ? node : node.querySelector(pick)) : paintedBox(node);
+    const r = box?.getBoundingClientRect();
+    if (!r?.width || !r.height) continue;
+    const cs = getComputedStyle(box), left = (r.left - f.left) / k, top = (r.top - f.top) / k;
+    const shape = el("div.modal-ghost-box");
+    Object.assign(shape.style, {
+      left: `${left}px`, top: `${top}px`, width: `${r.width / k}px`, height: `${r.height / k}px`,
+      backgroundColor: cs.backgroundColor, backgroundImage: cs.backgroundImage, backgroundSize: cs.backgroundSize,
+      backgroundPosition: cs.backgroundPosition, backgroundRepeat: cs.backgroundRepeat,
+      borderStyle: cs.borderStyle, borderWidth: cs.borderWidth, borderColor: cs.borderColor, borderRadius: cs.borderRadius,
+      borderImageSource: cs.borderImageSource, borderImageSlice: cs.borderImageSlice, borderImageWidth: cs.borderImageWidth,
+      borderImageOutset: cs.borderImageOutset, borderImageRepeat: cs.borderImageRepeat,
+      boxShadow: cs.boxShadow, transformOrigin: origin ? `${origin.x - left}px ${origin.y - top}px` : "50% 50%",
+    });
+    shapes.push(shape);
+  }
+  if (!shapes.length) return;
+  const ghost = el("div.modal-ghost", { "aria-hidden": "true" }, shapes);
+  ghost.inert = true;
+  host.append(ghost);
+  Promise.all(shapes.map((shape) => shape.animate(frames, { duration: ms, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" }).finished))
+    .catch(() => {}).finally(() => ghost.remove());
+}
+
+/** 見た目の紙・枠を持つ箱（自分が塗られていなければ、中で一番大きく塗られた箱） */
+function paintedBox(node) {
+  const painted = (n) => {
+    const cs = getComputedStyle(n);
+    return cs.backgroundImage !== "none" || cs.borderImageSource !== "none" || !/^(transparent|rgba\(0, 0, 0, 0\))$/.test(cs.backgroundColor);
+  };
+  if (painted(node)) return node;
+  let best = null, area = 0;
+  for (const n of [...node.querySelectorAll("*")].slice(0, 60)) {
+    const r = n.getBoundingClientRect(), a = r.width * r.height;
+    if (a > area && painted(n)) { best = n; area = a; }
+  }
+  return best;
+}
+
 /** 選択肢つきのモーダル。options: [{label, value, primary, test}] */
 export function modal({ title = "", body = "", options = [{ label: "OK", value: true, primary: true }], className = "" }) {
   return new Promise((resolve) => {
@@ -480,6 +552,8 @@ export function modal({ title = "", body = "", options = [{ label: "OK", value: 
     ]);
     const close = () => {
       window.removeEventListener("keydown", onKeyDown);
+      // 開くときの pop-in の逆。紙の面が少し縮みながら薄れる（#2688 F5）。箱が見えている間に測ってから外す
+      ghostOut([...layers.modal.childNodes], [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(.97)" }], 160);
       layers.modal.classList.remove("show");
       layers.modal.replaceChildren();
       if (previousFocus?.isConnected) previousFocus.focus();

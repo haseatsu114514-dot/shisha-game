@@ -168,6 +168,48 @@
         { "speaker": "da_silva", "face": "normal", "text": "ハジメ、お前の店もそういう店にしろよ。誰が来ても、ただの客でいられる店" },
         { "speaker": "hajime", "face": "normal", "text": "（ただの客で、いられる店）" }
       ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_camel_again",
+      "comment": "第5章でドバイへ来て、最初にラクダレース場へ行った日だけ、練習レースの前の会話（ch4_camel_replay）の代わりに読む。第4章で一度でも走った人だけ（chapters/ch5-dubai.js）。大会・シェイクの正体には触れない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "朝のレース場。ハリールの白い車の横で、見覚えのある顔が両手を大きく振った。" },
+        { "speaker": "faris", "face": "excited", "text": "ハジメ！　日本に帰ったんじゃなかったの？" },
+        { "speaker": "hajime", "face": "smile", "text": "また来ました。……ハビーバに、会いたくなって" },
+        { "speaker": "khalil", "face": "normal", "text": "……戻ったか。乗りなさい。ハビーバが待っている" },
+        { "speaker": "faris", "face": "smile", "text": "今日も連打しないでよ。リモコン、はい" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_dunes_again",
+      "comment": "第5章でドバイへ来て、最初に「ヌールと砂丘へ」を選んだ日だけ、出かける前（ch4_desert_again の前）に読む。第4章で一度でも砂丘へ出かけた人だけ（chapters/ch5-dubai.js）。恋人なら最初の一言が変わる。第4章の締めくくりで「二人で見たい」と答えたまま砂丘へ行けずに帰国した人（告白を待っている）は、約束の続き（promise。ch5-dubai.js が読む間だけ立てる _noor_ch5_promise）。この日の夕日で confession_noor を読む。大会・王者・味覚には触れない。ツアー代の話はしない（告白を待つ日はツアー代がかからないため）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "カフェ・サーリムの表のデスク。ヌールさんが、地図から顔を上げた。" },
+        { "type": "condition", "condition_type": "lover", "char_id": "noor", "next_true": "lover", "next_false": "not_lover" }
+      ],
+      "branches": {
+        "lover": [
+          { "speaker": "noor", "face": "smile", "text": "ハジメ！ ……やっと、画面の外のハジメだ" },
+          { "speaker": "hajime", "face": "smile", "text": "少しだけですけど、会いに来ました" },
+          { "speaker": "hajime", "face": "normal", "text": "……砂丘へ、連れて行ってもらえますか" },
+          { "speaker": "noor", "face": "smile", "text": "もちろん！ ハジメの板、ずっと倉庫で待ってたんだから" }
+        ],
+        "not_lover": [
+          { "type": "condition", "condition_type": "flag", "flag": "_noor_ch5_promise", "next_true": "promise", "next_false": "friend" }
+        ],
+        "promise": [
+          { "speaker": "noor", "face": "surprise", "text": "ハジメ！ ……ほんとに、来てくれた" },
+          { "speaker": "noor", "face": "normal", "text": "予定表につけた丸、まだ消せてないんだ" },
+          { "speaker": "hajime", "face": "normal", "text": "……あの約束、まだ間に合いますか" },
+          { "speaker": "noor", "face": "smile", "text": "うん。今日は、ガイドじゃなくて私が誘う日" }
+        ],
+        "friend": [
+          { "speaker": "noor", "face": "surprise", "text": "ハジメ！ 久しぶり！ またドバイに来てくれたんだ" },
+          { "speaker": "hajime", "face": "smile", "text": "はい。少しだけ、遊びに来ました" },
+          { "speaker": "hajime", "face": "normal", "text": "……砂丘へ、連れて行ってもらえますか" },
+          { "speaker": "noor", "face": "smile", "text": "もちろん！ ハジメの板、ずっと倉庫で待ってたんだから" }
+        ]
+      }
     }
   ]
 }
