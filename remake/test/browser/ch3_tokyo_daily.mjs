@@ -478,6 +478,13 @@ await suite("ch3-tokyo-daily", async check => {
     });
     await loadSlot(page, 0);
     await tokyoMap(page, { day, slot: 0 });
+    // #2765 からスミさん・つむぎも最初から占いの相手に並ぶ。この検査は東京で会ったなるを占う
+    await page.evaluate(async () => {
+      const vn = await import("./js/vn/engine.js");
+      const { displayName } = await import("./js/core/data.js");
+      const naru = displayName("naru", window.__remake.state);
+      vn.vnTest.choose = (_id, texts) => Math.max(0, texts.indexOf(naru));
+    });
     assert.equal(await page.locator(dt("pin-fortune")).count(), 1, "The fortune teller is on the Tokyo map");
     const before = await get(page);
     await go(page, "fortune");
