@@ -23,6 +23,7 @@
     ],
     "intro_cutin": {
       "title": "tonariの見習い",
+      "display_name": "逢縁《あいえん》 はじめ",
       "line": "いつか自分の店を持ちたい",
       "face": "normal",
       "color": "#eee0bd",
@@ -57,6 +58,7 @@
     "spriteScale": 1.05,
     "intro_cutin": {
       "title": "はじめの師匠",
+      "display_name": "炭吉《すみよし》 丈一郎《じょういちろう》",
       "line": "客が満足したなら、／それでいい",
       "face": "normal",
       "color": "#e0843e",
@@ -92,6 +94,7 @@
     "spriteScale": 1.02,
     "intro_cutin": {
       "title": "お菓子系の理論派店主",
+      "display_name": "鳴切《なるぎれ》 亮太《りょうた》（なる）",
       "line": "俺の台は／丸見えだ",
       "face": "smile",
       "color": "#f0d8a0",
@@ -123,6 +126,7 @@
     "spriteScale": 1.03,
     "intro_cutin": {
       "title": "ダブルアップルの伝道師",
+      "display_name": "アダム",
       "line": "煙は二種類。／ダブルアップルと、それ以外だ",
       "face": "intense",
       "color": "#c9463a",
@@ -169,11 +173,16 @@
     "spriteScale": 0.91,
     "intro_cutin": {
       "title": "PEPPERMINT人気No.1キャスト",
+      "display_name": "みんと",
       "line": "みんとでーす♪／全員まとめてライバルね？",
       "face": "wink",
       "color": "#7fe0c2",
       "name": "alias",
-      "motion": "bounce"
+      "motion": "bounce",
+      "display_name_after": {
+        "flag": "_minto_name_known",
+        "display_name": "木成頼《きなりせ》 栞《しおり》"
+      }
     },
     "spriteScaleVariants": {
       "new": 0.931564,
@@ -235,6 +244,7 @@
     "spriteScale": 0.99,
     "intro_cutin": {
       "title": "噂を自分で流す店主",
+      "display_name": "綾取《あやとり》 陣《じん》",
       "line": "噂を流したのも僕だけどね。／がっかりした？",
       "face": "normal",
       "color": "#8c7564",
@@ -273,6 +283,7 @@
     },
     "intro_cutin": {
       "title": "柑橘の研究家",
+      "display_name": "スティーブ・A・アッシュ",
       "line": "熱を急ぐと、／後のライムが消える",
       "face": "normal",
       "color": "#f07a3a",
@@ -303,6 +314,7 @@
     ],
     "intro_cutin": {
       "title": "誤差ゼロの職人",
+      "display_name": "ヴォルク・イヴァノフ",
       "line": "ブレは、許さない",
       "face": "normal",
       "color": "#8fb4d8",
@@ -360,6 +372,7 @@
     ],
     "intro_cutin": {
       "title": "余韻に耳を澄ます店長",
+      "display_name": "鴉葬《あそう》｜レヰ《れい》",
       "line": "……一曲だけ、聴く？",
       "face": "normal",
       "color": "#b0102a",
@@ -392,6 +405,7 @@
     "spriteScale": 0.96,
     "intro_cutin": {
       "title": "マスターフーカー",
+      "display_name": "王煙楼《ワン・イェンロウ》",
       "line": "観客が息を止めると、／煙がよく見える",
       "face": "normal",
       "color": "#3fbf7f",
@@ -437,6 +451,7 @@
     },
     "intro_cutin": {
       "title": "窓際席の絵描き",
+      "display_name": "猫洞《ねこがほら》 つむぎ",
       "line": "……煙って、形がないから",
       "face": "normal",
       "color": "#b9a4e8",
@@ -483,6 +498,7 @@
     "spriteAnchor": "head",
     "intro_cutin": {
       "title": "問屋街の魔女",
+      "display_name": "円頓寺《えんどうじ》 凛想《りお》",
       "line": "ようこそ、夜の側へ",
       "face": "smile",
       "color": "#9b6cf2",
@@ -515,6 +531,7 @@
     "spriteScale": 0.93,
     "intro_cutin": {
       "title": "バイブスの天才",
+      "display_name": "あげは",
       "line": "うち超感覚派なんだよね〜",
       "face": "normal",
       "color": "#ff8fc8",
@@ -586,6 +603,7 @@
     "spriteScale": 1.06,
     "intro_cutin": {
       "title": "水煙の龍",
+      "display_name": "神崎《かんざき》 竜二《りゅうじ》（組長《くみちょう》）",
       "line": "火の前じゃ、／礼儀が先ですわ",
       "face": "normal",
       "color": "#b6a4cf",
@@ -623,6 +641,7 @@
     "spriteScale": 1.02,
     "intro_cutin": {
       "title": "データの鬼",
+      "display_name": "チャコール博士《はかせ》",
       "line": "それ作ったの、俺だもん",
       "face": "smile",
       "color": "#38f0ff",
@@ -689,6 +708,7 @@
     "spriteScale": 1.03,
     "intro_cutin": {
       "title": "C.STATION会長・審査員長",
+      "display_name": "伏見《ふしみ》 豪《ごう》",
       "line": "吸えば分かる",
       "face": "serious",
       "color": "#cfd6e6",
@@ -719,6 +739,7 @@
     ],
     "intro_cutin": {
       "title": "トプハーネの元職人",
+      "display_name": "エミル・ユルマズ",
       "line": "新しいだけでは、／本物ではない",
       "face": "normal",
       "color": "#4a8be0",
@@ -750,6 +771,7 @@
     "spriteScale": 1.06,
     "intro_cutin": {
       "title": "砂漠の現王者",
+      "display_name": "シェイク・ナジュム",
       "line": "全部、受け止めよう",
       "face": "normal",
       "color": "#f5c542",
@@ -780,6 +802,7 @@
     ],
     "intro_cutin": {
       "title": "祭りの審査員",
+      "display_name": "ダ・シルヴァ・太陽《たいよう》",
       "line": "楽しくなけりゃ、／意味がねぇ！",
       "face": "normal",
       "color": "#2fd27a",
@@ -811,6 +834,7 @@
     "spriteScale": 0.9,
     "intro_cutin": {
       "title": "mukaiの眠たげな店員",
+      "display_name": "黒葉《くろは》 ましろ",
       "line": "僕も、ここで働いてるの。／よろしくねぇ",
       "face": "normal",
       "color": "#e8eef6",
@@ -844,6 +868,7 @@
     ],
     "intro_cutin": {
       "title": "路地裏の縁を読む老婆",
+      "display_name": "占《うらな》いオババ",
       "line": "縁があれば、／また会える",
       "face": "normal",
       "color": "#aa83c7",
@@ -897,6 +922,7 @@
     ],
     "intro_cutin": {
       "title": "mukaiの店長",
+      "display_name": "向井《むかい》 然《しかり》",
       "line": "まあ、／コーヒーでも飲んでいけ",
       "face": "normal",
       "color": "#b08a5e",
@@ -932,6 +958,7 @@
     "spriteScale": 0.98,
     "intro_cutin": {
       "title": "HOOKAH PRESS編集長",
+      "display_name": "上園《うえぞの》 文太郎《ぶんたろう》",
       "line": "シーシャはおいしいねえ",
       "face": "excited",
       "color": "#ffb84a",
@@ -945,11 +972,16 @@
     "description": "みんとの私服姿",
     "intro_cutin": {
       "title": "静かな煙を楽しむ常連",
+      "display_name": "お姉《ねえ》さん",
       "line": "……お任せで、一台",
       "face": "ura_normal",
       "color": "#c4b69d",
       "name": "alias",
-      "motion": "soft"
+      "motion": "soft",
+      "display_name_after": {
+        "flag": "_minto_name_known",
+        "display_name": "木成頼《きなりせ》 栞《しおり》"
+      }
     }
   },
   {
@@ -1073,6 +1105,7 @@
     "spriteScale": 0.94,
     "intro_cutin": {
       "title": "儚げな元スタッフ",
+      "display_name": "泡沫《うたかた》 ひより",
       "line": "……煙みたいに、／もう遠い昔だけどね",
       "face": "normal",
       "color": "#cc8fa7",
@@ -1096,6 +1129,7 @@
     "spriteScale": 1.035,
     "intro_cutin": {
       "title": "斧投げBarの店主",
+      "display_name": "斧崎《おのざき》 マキ",
       "line": "斧に仕事をさせな",
       "face": "normal",
       "color": "#bd6547",
@@ -1119,6 +1153,7 @@
     "spriteScale": 1.035,
     "intro_cutin": {
       "title": "笑顔のボドゲカフェ店長",
+      "display_name": "六角《ろっかく》 サイ",
       "line": "では、その選択で",
       "face": "normal",
       "color": "#589579",
@@ -1141,6 +1176,7 @@
     ],
     "intro_cutin": {
       "title": "クラブSEAMのオーナーDJ",
+      "display_name": "針間《はりま》 ヨル",
       "line": "次の頭で、／入れよう",
       "face": "normal",
       "color": "#8f6cf0",
@@ -1219,6 +1255,7 @@
     "spriteScale": 0.977,
     "intro_cutin": {
       "title": "シーシャカフェと砂漠ガイド",
+      "display_name": "ヌール・サーリム",
       "line": "砂の上なら、／負けないよ？",
       "face": "normal",
       "color": "#e39a48",

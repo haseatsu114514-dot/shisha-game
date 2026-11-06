@@ -60,7 +60,7 @@ await suite("hiyori-intro", async (check) => {
       });
       assert.equal(cutin.canonical, "泡沫ひより"); assert.equal(cutin.reading, "うたかた ひより");
       assert(cutin.known && cutin.flag && cutin.loaded && cutin.fits);
-      assert.equal(cutin.name, "ひより"); assert.equal(cutin.title, "儚げな元スタッフ");
+      assert.equal(cutin.name, "泡沫ひより"); assert.equal(cutin.title, "儚げな元スタッフ");
       assert.equal(cutin.quote, "「……煙みたいに、もう遠い昔だけどね」");
       assert(cutin.background.endsWith("/img/ui/character_intros/graphic/bg_hiyori.webp"));
       assert(cutin.portrait.endsWith("/img/ui/character_intros/graphic/hiyori.webp"));
