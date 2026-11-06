@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-06 10:41 UTC",
+ "generated": "2026-11-06 20:28 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -2568,11 +2568,16 @@
   "bgm_aftermath.bgm",
   "bgm_axe.bgm",
   "bgm_continue_urgent.mp3",
+  "bgm_ethnic05.bgm",
+  "bgm_ethnic08.bgm",
+  "bgm_ethnic09.bgm",
+  "bgm_ethnic12.bgm",
   "bgm_judging.bgm",
   "bgm_purikura.bgm",
   "bgm_purikura_b.bgm",
   "bgm_purikura_d.bgm",
   "bgm_taste_distant.bgm",
+  "bgm_tetsuko_time.bgm",
   "bgm_tournament_craft.bgm",
   "bgm_tournament_edm.bgm",
   "bgm_tournament_wait.mp3",

@@ -32,7 +32,8 @@ const context = vm.createContext({ Audio, window: { AudioContext }, document: { 
   performance: { now: () => now }, requestAnimationFrame: (fn) => frames.push(fn),
 });
 const module = new vm.SourceTextModule(await fs.readFile(new URL("../js/core/audio.js", import.meta.url), "utf8"), { context });
-const PACKED = new Set(["bgm_tournament_edm", "bgm_tournament_craft", "bgm_trpg", "bgm_axe", "bgm_purikura", "bgm_purikura_b", "bgm_purikura_d"]);
+const PACKED = new Set(["bgm_tournament_edm", "bgm_tournament_craft", "bgm_trpg", "bgm_axe", "bgm_purikura", "bgm_purikura_b", "bgm_purikura_d",
+  "bgm_ethnic05", "bgm_ethnic08", "bgm_ethnic09", "bgm_ethnic12", "bgm_tetsuko_time"]);
 const urlFor = (key) => `/assets/audio/bgm/${key}.${PACKED.has(key) ? "bgm" : "mp3"}`;
 await module.link((s) => {
   const exports = s.endsWith("state.js") ? { config } : { bgmUrl: urlFor };
@@ -90,6 +91,12 @@ const adopted = [
   ["bgm_trpg", 1, "802704c66066d7fa02d6f3ccdbb140ed07d05267c97692835765bb5c8853786f"],
   // #788 斧投げ（Aiming groove）。tonari と同程度の音量にそろえる倍率0.79。
   ["bgm_axe", .79, "39dbd283e0a5711a62e382d3e347e6b08612e8d60c10cda9cc12963f559f9b53"],
+  // #2796 ミニゲーム採用曲。元MP3のハッシュで .bgm の復元内容を確認する。
+  ["bgm_ethnic05", 1, "a7c17f0b8bcdc3b3ce8447b71723448c8a2f79cd8f2bee15a0495c811835d88a"],
+  ["bgm_ethnic08", 1, "becd8d9a282dbb985cbc4b2d47b468d9042cfa6ec6d8515354ad715b023599e3"],
+  ["bgm_ethnic09", 1, "606275a23856d2a5f06623a8582e67faefe4ed4f2790cc4652bab17b67c84bc1"],
+  ["bgm_ethnic12", 1, "9f19dd609e993f3c53834e6d7b3d12b1fc0f262e797a71fe12a83fd789fd88c6"],
+  ["bgm_tetsuko_time", 1, "918781b114652c043c1180ed3cb84ab05f46684dca9b28597e08eb911e200bff"],
 ];
 for (const [key, gain, expectedHash] of adopted) {
   assert(await audio.preloadBgm(key));
@@ -154,6 +161,8 @@ assert.equal(fading.paused, true);
   audio.stopBgm(0); await flush();
   audio.playBgm("kansetsu_shomei_to_black_coffee"); step(1500);
   const map = elements.at(-1);
+  // 採用曲が増えてキャッシュから外れた場合も、再取得の完了を待ってから音量を見る。
+  assert(await audio.preloadBgm("bgm_axe"));
   audio.playBgm("bgm_axe"); await flush(); step(1500); await flush();
   const axe = elements.at(-1);
   assert.equal(audio.currentBgm(), "bgm_axe");

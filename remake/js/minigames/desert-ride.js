@@ -6,7 +6,7 @@
 // 着地の輪・得点の浮き出し・トリックのスロー・ブーストの残像。動き軽減ではカメラの動き・揺れ・スロー・閃光・速度線を止める。
 // 本番はスタートの合図のあと、ヌール（rivalRun）が横で滑る。
 import { el } from "../core/util.js";
-import { SE, unlockAudio } from "../core/audio.js";
+import { SE, unlockAudio, currentBgm, playBgm } from "../core/audio.js";
 import { COURSE, EDGE, SPEED, SPIN, DEFAULT_SEED, generateCourse, practiceCourse, createGame, step, press, boost, chargeBoost, summary, curveAt, botControl,
   rivalRun, rivalAt, RULES_VERSION } from "./desert-ride-model.js";
 import { DESERT_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
@@ -31,6 +31,7 @@ const RIVAL_LOOKS = Object.freeze({
 const SEG = 6;                   // 描く路面の1区間（m）
 const DRAW_DIST = 380;           // 前方に描く距離（m）
 const active = new WeakMap();
+const RIDE_BGM = Object.freeze({ practice: "bgm_ethnic12", noor: "bgm_ethnic08", naru: "bgm_ethnic05" });
 
 // ---- 砂の地面（2026-11-02 オーナー「砂漠をリアルに。今なんか見た目安っぽい」）--------------------------
 // 風紋のある砂の模様を一度だけ作り、1行ずつ遠近をつけて貼る（奥ほど細かく流れ、速さが足元から伝わる）。
@@ -110,6 +111,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
   reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = null, speedUp = 1 } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
+  const bgmBefore = currentBgm();
+  let rideBgm = null;
+  const restoreBgm = () => { if (rideBgm && currentBgm() === rideBgm) playBgm(bgmBefore); };
   const art = loadDesertArt();
   const promise = new Promise(resolve => {
     const results = [];
@@ -147,6 +151,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       signal?.removeEventListener("abort", finish);
       root.remove();
       delete window.__desertRide;
+      restoreBgm();
       resolve({ results, practiced });
     };
     if (signal?.aborted) { finish(); return; }
@@ -221,6 +226,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     }
     function startRun(kind, who = raceWith) {
       raceWith = rivals.includes(who) ? who : "noor";
+      rideBgm = RIDE_BGM[kind === "practice" ? "practice" : raceWith];
+      playBgm(rideBgm);
       mode = kind;
       panel.replaceChildren();
       const course = kind === "practice" ? practiceCourse() : generateCourse(seed);
