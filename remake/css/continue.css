@@ -46,12 +46,8 @@
 .gameover .go-sumi-img {
   position: absolute; left: 50%; translate: -50% 0; object-fit: contain;
   filter: drop-shadow(5px 4px 0 #050a1f99);
-  transition: opacity .42s var(--ease-out), filter .42s var(--ease-out);
 }
-/* 心の声の行: 浮かんだ像が霞み、色が抜ける。相手の声の行: はっきり浮かぶ。 */
-.gameover[data-voice="self"] .go-sumi-img { opacity: .46; filter: grayscale(.55) blur(2.5px) drop-shadow(5px 4px 0 #050a1f66); }
-/* 心の声の文字は白のまま（#454/#466の白テロップを維持）。字間と太さだけ落として、相手の声と区別する。 */
-.gameover[data-voice="self"][data-phase="speaking"] .go-speech-text { letter-spacing: .07em; font-weight: 700; }
+
 .gameover .go-sumi-fallback { margin: 70px 40px; font-size: 50px; text-align: center; }
 .gameover .go-right { position: absolute; left: 80px; right: 80px; top: 560px; bottom: 0; z-index: 3; }
 .gameover .go-dialogue { position: absolute; left: 0; right: 0; top: 0; height: 54px;

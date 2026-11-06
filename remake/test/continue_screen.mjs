@@ -76,9 +76,9 @@ try {
   // 全台本・全反応の1行が、全角22字以内に収まる。
   const tooLong = await page.evaluate(async () => {
     const { SUMI_CONTINUE_SCRIPTS } = await import("./js/chapters/gameover.js");
-    const { PREMIUM_CONTINUE_SCRIPTS } = await import("./js/chapters/continue-premium.js");
+    const { LOVER_CONTINUE_SCRIPTS } = await import("./js/chapters/continue-lovers.js");
     const width = t => [...t].reduce((n, c) => n + (/[\x20-\x7e]/.test(c) ? .5 : 1), 0);
-    return [...SUMI_CONTINUE_SCRIPTS, ...Object.values(PREMIUM_CONTINUE_SCRIPTS)].flatMap(s =>
+    return [...SUMI_CONTINUE_SCRIPTS, ...Object.values(LOVER_CONTINUE_SCRIPTS)].flatMap(s =>
       [...s.cues.map(c => c.text), ...s.reactions.retry.text, ...s.reactions.quit.text]).filter(t => width(t) > 22);
   });
   assert.deepEqual(tooLong, []);
@@ -108,7 +108,7 @@ try {
   await page.locator('[data-test="retry"]').click();
   assert(await page.locator(".go-approval").isVisible(), "generated approval stamp appears on meeting retry");
   console.log("PASS: GAME OVER / approval assets load; stamp appears");
-  const variants = [0, 1, 2, ...["tsumugi", "minto", "rio", "ageha", "mashiro", "samechan", "hiyori"].map(id => `premium:${id}`)];
+  const variants = [0, 1, 2, ...["tsumugi", "minto", "rio", "ageha", "mashiro", "samechan", "hiyori"].map(id => `lover:${id}`)];
   for (const variant of variants) {
     for (const choice of ["retry", "quit"]) {
       await mount(variant);
@@ -136,8 +136,8 @@ try {
       assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "reaction");
       const expected = await page.evaluate(async ({ variant, choice }) => {
         const { SUMI_CONTINUE_SCRIPTS } = await import("./js/chapters/gameover.js");
-        const { PREMIUM_CONTINUE_SCRIPTS } = await import("./js/chapters/continue-premium.js");
-        const script = typeof variant === "number" ? SUMI_CONTINUE_SCRIPTS[variant] : PREMIUM_CONTINUE_SCRIPTS[variant.slice(8)];
+        const { LOVER_CONTINUE_SCRIPTS } = await import("./js/chapters/continue-lovers.js");
+        const script = typeof variant === "number" ? SUMI_CONTINUE_SCRIPTS[variant] : LOVER_CONTINUE_SCRIPTS[variant.slice(6)];
         return script.reactions[choice];
       }, { variant, choice });
       assert.equal(await page.locator(".go-a11y[aria-live]:not(.go-time-announcement)").textContent(), expected.text.join(""));
