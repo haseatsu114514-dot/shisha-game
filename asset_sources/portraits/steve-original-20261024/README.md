@@ -1,4 +1,4 @@
-# Steve Lyman normal portrait
+# Steve A. Ash normal portrait
 
 Prepared for Chapter 3. The game-sized portrait is at `assets/sprites/characters/steve/chr_steve_normal.png`.
 

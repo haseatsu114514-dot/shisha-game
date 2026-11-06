@@ -142,7 +142,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "tonariの蒸野はじめです。県大会に出ます"
+            "text": "tonariの逢縁はじめです。県大会に出ます"
           },
           {
             "speaker": "ageha",
@@ -1742,7 +1742,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "tonariの蒸野はじめです。よろしくお願いします"
+            "text": "tonariの逢縁はじめです。よろしくお願いします"
           }
         ],
         "rei_known": [
@@ -1862,7 +1862,7 @@
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "あ、あの時の……。tonariの蒸野はじめです"
+            "text": "あ、あの時の……。tonariの逢縁はじめです"
           }
         ],
         "ageha_first_new": [
@@ -1874,7 +1874,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "tonariの蒸野はじめです。はじめまして"
+            "text": "tonariの逢縁はじめです。はじめまして"
           }
         ]
       }

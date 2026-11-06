@@ -1,6 +1,7 @@
 // GRAND SMOKE: 一試合・一台。工程確定前の消費と確定済みの実績を分けて保存する。
 import { difficultyForRun, liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
 import { difficultyEvidence } from "../core/cycle-start.js";
+import { initialBaseVotes, baseVoteOf } from "./tournament-base-votes.js";
 
 export const CH4_CONTESTANTS = Object.freeze(["hajime", "naru", "master_hookah", "sheikh"]);
 export const CH4_JUDGES = Object.freeze(["sui", "da_silva", "emil"]);
@@ -68,6 +69,7 @@ export function startChapterFourCraft(value, craft) {
   if (p.craft) return p;
   p.entry ||= resources(value);
   p.rulesVersion = CH4_RULES_VERSION;
+  p.baseVotes = initialBaseVotes(CH4_CONTESTANTS);
   p.craft = clone(craft);
   return p;
 }
@@ -126,7 +128,7 @@ export function chapterFourJudgeQuality(craft, round, judge) {
 
 export function chapterFourStandings(p) {
   const points = Object.fromEntries(CH4_CONTESTANTS.map(id => [id,
-    CH4_JUDGES.reduce((sum, judge) => sum + p.votes[judge][id], 0)]));
+    baseVoteOf(p, id) + CH4_JUDGES.reduce((sum, judge) => sum + p.votes[judge][id], 0)]));
   return [...CH4_CONTESTANTS].sort((a, b) => points[b] - points[a]
     || (p.quality?.[b] || 0) - (p.quality?.[a] || 0) || byTie(a, b))
     .map((id, index) => ({ id, rank: index + 1, points: points[id] }));
@@ -148,7 +150,8 @@ function commitChapterFourResult(p, craft) {
   const rows = chapterFourStandings(p);
   const rank = craft.failed ? 4 : rows.find(row => row.id === "hajime").rank;
   p.result = { rulesVersion: rulesVersion(p), win: !craft.failed && rank === 1, rank, total: craft.total, failure: craft.failed || null,
-    rows, votes: clone(p.votes), parts: clone(craft.parts || {}), careHistory: clone(craft.careHistory || []) };
+    rows, votes: clone(p.votes), baseVotes: clone(p.baseVotes || {}),
+    parts: clone(craft.parts || {}), careHistory: clone(craft.careHistory || []) };
   p.history.push(clone(p.result));
 }
 
@@ -195,6 +198,7 @@ export function resetChapterFourCraft(value) {
   const p = chapterFourMatch(value);
   if (!p.result || p.result.win) return false;
   if (p.entry) restore(value, p.entry);
-  Object.assign(p, { rulesVersion: CH4_RULES_VERSION, step: 0, craft: null, rollback: null, result: null, voted: 0, votes: emptyVotes(), quality: null });
+  Object.assign(p, { rulesVersion: CH4_RULES_VERSION, step: 0, craft: null, rollback: null, result: null,
+    voted: 0, votes: emptyVotes(), baseVotes: initialBaseVotes(CH4_CONTESTANTS), quality: null });
   return true;
 }

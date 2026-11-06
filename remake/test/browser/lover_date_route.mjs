@@ -104,7 +104,7 @@ await suite("lover-date-route", async check => {
         } else assert(result.stats[stat] >= result.beforeStats[stat] + 2, "Paid date reward missing");
         if (id === "mashiro") {
           assert(result.lines.some(t => t.includes("僕"))); assert(result.lines.some(t => t.includes("はじめくん")));
-          assert(!result.lines.some(t => /はじめさん|蒸野くん/.test(t)));
+          assert(!result.lines.some(t => /はじめさん|逢縁くん/.test(t)));
           await page.reload();
           await page.locator('[data-test="title-load"]:not([disabled])').waitFor();
           await page.evaluate(() => { window.__remake.vnTest.turbo = true; window.__remake.craftTest.auto = "good"; });

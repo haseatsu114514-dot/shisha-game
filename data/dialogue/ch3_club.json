@@ -17,7 +17,7 @@
     {
       "dialogue_id": "ch3_club_first_after",
       "lines": [
-        { "speaker": "hajime", "face": "normal", "text": "蒸野はじめです。えっと……クラブって、踊るところですよね" },
+        { "speaker": "hajime", "face": "normal", "text": "逢縁はじめです。えっと……クラブって、踊るところですよね" },
         { "speaker": "yoru", "face": "smile", "text": "踊ってもいいし、聴いてるだけでもいい。今夜はオープンデッキの日" },
         { "speaker": "yoru", "face": "normal", "text": "誰が回してもいい夜。はじめくんも、一回やっていきなよ" },
         { "speaker": "hajime", "face": "surprise", "text": "DJですか？　俺、やったことないです" },

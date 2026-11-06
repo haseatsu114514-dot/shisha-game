@@ -1,4 +1,5 @@
 // 第1章の新規試合。票は各工程の確定時に一度だけ記録し、結果表にも同じ記録を使う。
+import { initialBaseVotes, baseVoteOf } from "../chapters/tournament-base-votes.js";
 export const CH1_VOTE_VERSION = 2;
 export const CH1_CONTESTANTS = ["naru", "adam", "minto", "hajime"];
 export const CH1_JUDGES = ["maezono", "dr_kemuri", "sui"];
@@ -18,7 +19,8 @@ const emptyVotes = () => Object.fromEntries(CH1_JUDGES.map(j => [j,
 const byId = (a, b) => CH1_CONTESTANTS.indexOf(a) - CH1_CONTESTANTS.indexOf(b);
 export function beginCh1Votes(attempt) {
   if (attempt.voteAttempt) return attempt.voteAttempt;
-  return attempt.voteAttempt = { rulesVersion: CH1_VOTE_VERSION, voted: 0, votes: emptyVotes(), finalVotes: null, result: null };
+  return attempt.voteAttempt = { rulesVersion: CH1_VOTE_VERSION, voted: 0, votes: emptyVotes(),
+    baseVotes: initialBaseVotes(CH1_CONTESTANTS), finalVotes: null, result: null };
 }
 export function ch1Parts(cs, round) {
   const parts = [cs.holes?.skipped ? null : cs.holes?.score, cs.heat?.score,
@@ -74,10 +76,11 @@ export function castCh1Votes(attempt, round, cs) {
 export function ch1Standings(p, mineTotal) {
   const quality = Object.fromEntries(CH1_CONTESTANTS.map(id => [id, id === "hajime" ? mineTotal
     : CH1_RIVALS[id].reduce((a, b) => a + b, 0) / 5]));
-  const points = id => CH1_JUDGES.reduce((n, j) => n + p.votes[j][id], 0);
+  const points = id => baseVoteOf(p, id) + CH1_JUDGES.reduce((n, j) => n + p.votes[j][id], 0);
   const last = id => CH1_JUDGES.reduce((n, j) => n + (p.finalVotes?.[j]?.[id] || 0), 0);
   const rows = CH1_CONTESTANTS.slice().sort((a, b) => points(b) - points(a)
     || quality[b] - quality[a] || last(b) - last(a) || byId(a, b))
     .map((id, index) => ({ id, rank: index + 1, points: points(id) }));
-  return { rank: rows.find(row => row.id === "hajime").rank, rows, votes: structuredClone(p.votes), lastPoint: p.lastPoint };
+  return { rank: rows.find(row => row.id === "hajime").rank, rows, votes: structuredClone(p.votes),
+    baseVotes: structuredClone(p.baseVotes || {}), lastPoint: p.lastPoint };
 }
