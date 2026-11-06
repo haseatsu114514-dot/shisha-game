@@ -760,6 +760,10 @@ function invitationSourceMessage(inv) {
 }
 
 // 移動が終わるまで約束・面会費用・行動報酬は確定しない。
+// 人に会いに行く夜の入り（#2688 A11）。演出の部品は使うときに読む（読めなければ演出なしで会う）
+const meetOpen = (id, opts) => import("../motions/meet.js").then((m) => m.meetOpen(id, opts), () => {});
+const WORK_CALLS = new Set(["__sumi_baito__", "__mukai_baito__"]);
+
 async function travelToInvitation(inv) {
   const owner = state, day = state.day, slot = state.slot;
   const id = invitationVisitSpot(inv, invitationSourceMessage(inv));
@@ -773,6 +777,11 @@ async function travelToInvitation(inv) {
 async function meetInvitation(inv) {
   if (postponeUnaffordableInvitation(inv)) return false;
   const owner = state;
+  // 人に会いに行く約束は、葉の窓がすぼまって相手の名前を読ませてから会う（#2688 A11）。シフトの呼び出しは仕事なので除く
+  if (!WORK_CALLS.has(inv.event)) {
+    await meetOpen(inv.sender, { label: "約束", private: /^date_/.test(inv.event) || isFinaleEvent(inv.event) });
+    if (state !== owner) return false;
+  }
   const destination = invitationVisitSpot(inv, invitationSourceMessage(inv));
   let result;
   const cost = invitationCost(inv.event);
