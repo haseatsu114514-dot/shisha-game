@@ -99,7 +99,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   root.dataset.reducedMotion = String(reducedMotion);
   if (host.id === "stage") root.classList.add("axe-in-stage");
   const round = el("span.axe-round", { dataset: { test: "axe-round" } });
-  const rulesButton = el("button.axe-button.axe-rules-button", { text: "ルール", dataset: { test: "axe-rules" }, onclick: openRules });
+  // 遊び方・操作は常に出さず「？」から開く（#2718 のUI方針）。名前は読み上げ用の文字で付ける。
+  const rulesButton = el("button.axe-button.axe-rules-button.axe-help", { type: "button", title: "遊び方・ルール", dataset: { test: "axe-rules" }, onclick: openRules },
+    [el("span", { "aria-hidden": "true", text: "？" }), el("span.axe-quiet", { text: "遊び方・ルール" })]);
   const subtitle = tutorial ? "マキの無料1投レッスン" : versus ? "ひよりと10投対戦 · " + DIFFICULTIES[difficulty].name + (bestOf > 1 ? " · " + bestOf + "本マッチ" : "") : mode === "league" ? "10投ゲーム · 5投で的を交代" : "3投の練習";
   const heading = el("header.axe-header", [el("div", [el("h1", { text: tutorial ? "AXE LESSON" : "AXE THROW" }),
     el("p", { text: subtitle + (tutorial ? "" : " · " + DIVISIONS[division].name) })]), round, rulesButton,
@@ -207,10 +209,10 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const xNeedle = svg("path", { class: "axe-x-needle", d: `M0 ${PLANK.top - 6}V${PLANK.bottom + 6}`, stroke: "#91cfe6", "stroke-width": 2.5 });
   const yNeedle = svg("path", { class: "axe-y-needle", d: `M${PLANK.left - 6} 0H${PLANK.right + 6}`, stroke: "#e5bd70", "stroke-width": 2.5 });
   const sdBadge = svg("text", { class: "axe-sd-badge", x: CX, y: VIEW.y + 26, "text-anchor": "middle", fill: "#9cecff", "font-size": 15, "font-weight": 900, opacity: 0 }, ["SUDDEN DEATH"]);
-  const gaugeLabel = (x, y, text, fill, anchor) => svg("text", { class: "axe-gauge-label", x, y, "text-anchor": anchor, fill, "font-size": 16, "font-weight": 900,
+  const gaugeLabel = (x, y, text, fill, anchor, step) => svg("text", { class: "axe-gauge-label", "data-step": step, x, y, "text-anchor": anchor, fill, "font-size": 16, "font-weight": 900,
     "paint-order": "stroke", stroke: "#140d08", "stroke-width": 4 }, [text]);
   board.append(zoneHalo, powerShift, releaseDot, contactShadow, impacts, impactMark, trail, ...ghosts, flying, fixedAim, crosshair, impactFx,
-    gaugeLabel(CX, VIEW.y + VIEW.size - 10, "① 横", "#a9dcef", "middle"), gaugeLabel(VIEW.x + VIEW.size - 8, CY - 10, "② 縦", "#f1c983", "end"), xNeedle, yNeedle, sdBadge);
+    gaugeLabel(CX, VIEW.y + VIEW.size - 10, "① 横", "#a9dcef", "middle", "horizontal"), gaugeLabel(VIEW.x + VIEW.size - 8, CY - 10, "② 縦", "#f1c983", "end", "vertical"), xNeedle, yNeedle, sdBadge);
   const note = el("p.axe-note", { dataset: { test: "axe-note" } });
   const announcement = el("p.axe-announcement", { "aria-live": "polite", "aria-atomic": "true" });
   const resultLabel = el("span.axe-result-label"), resultNumber = el("span"), resultUnit = el("small", { text: "PTS" });
@@ -604,7 +606,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     }
     const ks = killState(currentShots, rules.throws);
     status.textContent = sd ? "サドンデス：" + killPlaces[called] + "の青 · 刃が触れれば勝ち" : called ? "宣言中：" + killPlaces[called] + "の青 · 青以外0点"
-      : "キルショット（青 7／8点） · 残り" + ks.remaining + "回" + (ks.bonus ? "（落下で+" + ks.bonus + "）" : "") + (ks.mustRow ? " · " + (ks.mustRow === "upper" ? "上" : "下") + "の青だけ" : "");
+      : "キルショット 残り" + ks.remaining + "回" + (ks.bonus ? "（落下で+" + ks.bonus + "）" : "") + (ks.mustRow ? " · " + (ks.mustRow === "upper" ? "上" : "下") + "の青だけ" : "");
     for (const button of calls.children) {
       const id = button.dataset.call;
       button.disabled = isPaused() || performance.now() - lastAction < 250 || phase !== "choice" || sd || id !== "normal" && !canCall(id, shots, rules.throws);

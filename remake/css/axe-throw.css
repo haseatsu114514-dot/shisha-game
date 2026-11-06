@@ -649,8 +649,6 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-game .axe-header { padding: 5px 8px 5px 14px; border-radius: 10px; }
 .axe-game .axe-scoreboard, .axe-game .axe-panel { border-radius: 10px; }
 .axe-game .axe-header h1 { color: var(--lane-chalk); font-style: italic; letter-spacing: .1em; text-shadow: 2px 2px 0 var(--lane-orange-deep); }
-.axe-game .axe-header h1::before { content: "MINI GAME"; display: inline-block; margin-right: .7em; padding: 2px 8px; vertical-align: .35em;
-  background: var(--lane-orange); color: var(--lane-orange-ink); font-size: 12px; font-style: normal; font-weight: 900; letter-spacing: .16em; line-height: 1.4; text-shadow: none; transform: skewX(-12deg); }
 .axe-game .axe-header p { color: var(--lane-chalk-dim); }
 .axe-game .axe-round { color: var(--lane-orange-hi); border-left-color: var(--lane-line); }
 .axe-game .axe-division { border-color: var(--lane-orange); background: #0000004d; color: var(--lane-orange-hi); }
@@ -737,6 +735,19 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 :is(.axe-rules, .axe-coach) .axe-coach-diagram p { color: var(--lane-chalk); }
 :is(.axe-rules, .axe-coach) .axe-coach-diagram small { color: var(--lane-chalk-dim); }
 
+/* #2718 UI方針（ミニゲーム共通・オーナー指示）: 文字を詰めない／遊び方・操作は「？」から開く／基本画面は必要なUIだけ。
+   画面から外すだけで、読み上げ用の文字は残す（.axe-quiet と同じ隠し方）。中身はすべて「？」のルールに書いてある。 */
+.axe-game .axe-legend { display: none; }
+.axe-game :is(.axe-header p, .axe-steps, .axe-power-readout) { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important;
+  overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
+.axe-game:not([data-phase="horizontal"]) .axe-gauge-label[data-step="horizontal"],
+.axe-game:not([data-phase="vertical"]) .axe-gauge-label[data-step="vertical"] { display: none; }
+.axe-help { position: relative; }
+.axe-game .axe-header .axe-help { width: 44px; min-width: 44px; height: 44px; padding: 0; border-radius: 50%; font-size: 20px; font-weight: 900; line-height: 1; }
+@container (max-height: 500px) {
+  .axe-game .axe-header .axe-help { width: 36px; min-width: 36px; height: 36px; font-size: 18px; }
+}
+
 /* 入った瞬間の幕（#2718）: 黒板の幕に斜めの一閃、題字を押してから上下へ割れる。約1秒。
    入力は素通し（pointer-events: none）で、説明やレッスンで時計が止まっても幕だけは最後まで進む。 */
 .axe-game .axe-cutin { position: absolute; inset: 0; z-index: 120; overflow: hidden; pointer-events: none; contain: layout paint; container-type: size;
@@ -764,19 +775,16 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-game[data-reduced-motion="true"] .axe-cutin { display: none !important; }
 @media (prefers-reduced-motion: reduce) { .axe-game .axe-cutin { display: none !important; } }
 
-/* 狭い画面: 看板の札を外し、文字と操作の大きさは従来のまま。
+/* 狭い画面: 看板の余白だけ詰め、文字と操作の大きさは従来のまま。
    PC表示の最も狭い幅（651〜760px）は対戦の「あなた 1 / 10 投 · 前半」と合計点で看板が溢れていた（#2718 以前から）ので、回数を2行まで折り返し、余白を詰める。 */
 @container (min-width: 651px) and (max-width: 760px) and (min-height: 501px) {
   .axe-game .axe-header { padding-inline: 8px 4px; gap: 8px; }
-  .axe-game .axe-header h1::before { display: none; }
   .axe-game .axe-round { max-width: 7.5em; padding-inline: 8px; white-space: normal; line-height: 1.35; text-align: center; }
   .axe-game .axe-total { padding-inline: 10px; }
 }
 @container (max-width: 650px) and (min-height: 501px) {
   .axe-game .axe-header { padding: 4px 6px 4px 10px; }
-  .axe-game .axe-header h1::before { display: none; }
 }
 @container (max-height: 500px) {
   .axe-game .axe-header { padding: 3px 6px 3px 10px; }
-  .axe-game .axe-header h1::before { display: none; }
 }
