@@ -225,6 +225,8 @@ await suite("relationship-ui", async check => {
         ["unanswered-old-finale", { points: 66, finale: "romance" }, "交流の節目", /見届けた/],
         ["legacy-final-answer", { points: 66, finalAnswer: 1, finale: "romance" }, "告白を選べる", /帰り道/],
         ["held-confession", { points: 66, answer: 1, finalAnswer: 1, finale: "romance", wait: true }, "告白を選べる", /後日の夜/],
+        // 東京・ドバイにいる間は帰り道の告白を始めない（IR33）。帰ってからだと案内する
+        ["away-confession", { points: 66, answer: 1, finalAnswer: 1, finale: "romance", region: "tokyo" }, "告白を選べる", /帰ってから、夜の帰り道/],
       ]) {
         await page.evaluate(f => {
           const s = R.fresh(); s.met.rio = true; s.affinity.rio = f.points; s.story.rio = 6; // 固有会話6本を読了（#1696で4本目、#2025で♥4・♥5の5・6本目を追加）
@@ -234,6 +236,7 @@ await suite("relationship-ui", async check => {
           if (f.finale) s.finales.rio = { route: f.finale, chapter: 1, day: 8 };
           if (f.friendFlag) s.flags._friend_rio = true;
           if (f.wait) s.flags._confession_wait = 14;
+          if (f.region) s.flags._ch2_region = f.region;
           if (f.hiddenRomance) s.romance.rio = f.hiddenRomance;
           R.core.save(); R.core.load();
         }, fixture);

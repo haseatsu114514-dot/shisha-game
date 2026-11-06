@@ -55,6 +55,10 @@ LEGACY_ERROR = {
 
 # 2026-11-02 追加。過去の記録（要望台帳・archive・検証記録）には当時の名前が残るので、それ以外だけを見る。
 LEGACY_ERROR_CURRENT = {
+    "宵野": "宵永 千代子（よなが ちよこ）に統一",
+    "葉子": "あげはの本名は宵永 千代子（よなが ちよこ）に統一",
+    "須井": "伏見 豪（ふしみ ごう）に統一",
+    "修二": "会長の本名は伏見 豪（ふしみ ごう）に統一",
     "ライマン": "スティーブの旧姓。スティーブ・A・アッシュに統一",
     "Steve Lyman": "Steve A. Ash に統一",
     "蒸野": "逢縁 はじめ（あいえん はじめ）に統一",
@@ -111,7 +115,7 @@ IDENTITY_TEXT_EXTENSIONS = EXTENSIONS | {".mjs", ".cjs", ".html", ".css", ".yml"
 # 2026-11-04 追加（#2528）: kuyuri の姓「匂坂（さぎさか）」→「香坂（こうさか）」、suhail の「サイーフ」→「スハイル」。同じく全追跡ファイルで禁止。
 # 同日追加: saku / rei / hiyori の改名。店名「零-ZERO-」と国名「朝霧の王国」、小文字の内部ID・保存キーは維持する。
 RENAMED_CHARACTER_RE = re.compile(r"久世|くぜ さく|朝霧 ?ひより|あさぎり ひより|零-REI-|匂坂|さぎさか|サギサカ|\bSagisaka\b|サイーフ|\bSaif\b|凛(?!とし|々|然|冽|想)|水瀬|白木 ?つむぎ|さぎさか りん|南雲|なぐも しゅうじ|デイビス|Steve Davis|波多野|ラシード|\bRashid\b|アゲハ(?!蝶|チョウ)|路上占い師|\bPak(?:i|ie)\b|サラリーマンさん")
-RENAMED_CHARACTER_FIX = "旧キャラ名 → 綾取 朔（saku）／鴉葬レヰ（rei・本名と店名は維持）／薄羽ひより（hiyori・国名の朝霧は維持）／円頓寺 凛想（rio）／猫柳 つむぎ（tsumugi）／黒葉 ましろ（mashiro）／須井 修二（sui）／スティーブ・A・アッシュ（steve）／汐見 なぎさ（samechan）／ハリール（khalil）／あげは（ageha）／辻占のオババ（uranaishi）／Packy（pakki）／鉄仮面さん（salaryman）／スハイル（suhail）に統一（#2474・#2528）"
+RENAMED_CHARACTER_FIX = "旧キャラ名 → 綾取 朔（saku）／鴉葬レヰ（rei・本名と店名は維持）／薄羽ひより（hiyori・国名の朝霧は維持）／円頓寺 凛想（rio）／猫柳 つむぎ（tsumugi）／黒葉 ましろ（mashiro）／伏見 豪（sui）／スティーブ・A・アッシュ（steve）／汐見 なぎさ（samechan）／ハリール（khalil）／あげは（ageha）／辻占のオババ（uranaishi）／Packy（pakki）／鉄仮面さん（salaryman）／スハイル（suhail）に統一（#2474・#2528）"
 MINTO_HAIR_RE = re.compile(r"(?:mint|light)[ -]green (?:hair|twin)|black twin[ -]?tails|ミント(?:グリーン|色)のツイン|黒髪ツインテール|角ツインテール", re.IGNORECASE)
 # 2026-11-04 追加（#2528 残骸チェック）: 改名済みキャラの旧ローマ字。英字は前後が英数字でない時だけ検出する
 # （内部ID kuyuri / sui / maezono / samechan / dr_kemuri の小文字表記・ファイル名は対象外）。

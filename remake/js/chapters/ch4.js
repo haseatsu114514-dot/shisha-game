@@ -271,12 +271,12 @@ async function loverActions(owner, { home = false } = {}) {
     await friend.readFriendLime({ exclude });
     if (current(owner)) await renderStage(owner);
   }));
-  const [id] = home ? lover.loverMilestonesDue((state.lovers || []).filter(who => !TOKYO_RESIDENT_IDS.includes(who))) : [];
+  const [id] = home ? lover.loverMilestonesDue((state.lovers || []).filter(who => !TOKYO_RESIDENT_IDS.includes(who)), { home }) : [];
   if (id) actions.push(button(owner, `${displayName(id, state, { context: "private" })}と過ごす`, "lover-milestone", async () => {
     showScreen("none", null);
     hud();
     const controller = owner.controller = new AbortController();
-    try { await lover.readLoverMilestone(id, { signal: controller.signal }); }
+    try { await lover.readLoverMilestone(id, { signal: controller.signal, home }); }
     finally { if (owner.controller === controller) owner.controller = null; }
     if (current(owner)) await renderStage(owner);
   }));

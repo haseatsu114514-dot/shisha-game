@@ -48,7 +48,9 @@ for (const [file, ids] of Object.entries(CH4_VISITOR_SCENE_FILES)) {
 {
   const romance = readData("story_routes").romance;
   assert.deepEqual(Object.keys(CH4_ARRIVAL_SCENES), OVERSEAS_HEROINES);
-  for (const id of readData("story_routes").heroine_ids) assert.equal(CH4_ARRIVAL_SCENES[id], romance[id].arrival, id);
+  // ドバイに住むヌール（resident・DSR20）は渡航しないので到着場面を持たない
+  for (const id of readData("story_routes").heroine_ids) assert.equal(CH4_ARRIVAL_SCENES[id], romance[id].resident ? undefined : romance[id].arrival, id);
+  assert.equal(romance.noor.resident, "dubai"); assert.equal(romance.noor.arrival, null);
   assert.deepEqual([...Object.values(CH4_ARRIVAL_SCENES), ...Object.values(CH4_FRIEND_ARRIVAL_SCENES)].sort(),
     Object.values(CH4_VISITOR_SCENE_FILES).flat().sort());
   for (const scene of [...Object.values(CH4_ARRIVAL_SCENES), ...Object.values(CH4_FRIEND_ARRIVAL_SCENES)])
@@ -342,7 +344,7 @@ assert.equal(value.flags._ch4.part, "resolution");
 assert.equal(value.phase, "aftermath");
 assert.equal(value.flags._ch4_cleared, undefined);
 
-// 勝ち側の本線: 須井 → 屋敷 → 帰国の順。順番違いは確定しない。
+// 勝ち側の本線: 伏見 → 屋敷 → 帰国の順。順番違いは確定しない。
 for (const [index, scene] of CH4_RESOLUTION.entries()) {
   assert.equal(value.flags._ch4.resolution, index);
   const wrong = CH4_RESOLUTION[(index + 1) % CH4_RESOLUTION.length].id;

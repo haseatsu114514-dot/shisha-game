@@ -33,7 +33,7 @@ FADE = 14       # 絵の下端が画面の下に届かないとき、下から�
 RIGHT_EDGE = 640  # 人物はこの線より右に出さない（名前・一言の側）
 SKIP = {"pakki"}  # マスコットは全身で見せるので、共通の配置のまま
 SAFE_TOP_IDS = {"master_hookah", "emil", "da_silva", "yoru", "sheikh", "mukai_master"}
-MAX_FRAME_WIDTH = {"emil": 1024, "mukai_master": 1024}
+MAX_FRAME_WIDTH = {"da_silva": 900, "emil": 1024, "mukai_master": 1024}
 SAFE_HAND_LEFT = {"adam": -110, "emil": -170, "mukai_master": -200}
 
 
@@ -98,7 +98,7 @@ def main():
     if args.check:
         print("OK: 全員の頭の位置がある")
         return 0
-    frames = {pid: frame_for(pid, *heads[pid]) for pid in sorted(heads)}
+    frames = {pid: frame_for(pid, *heads[pid]) for pid in sorted(heads) if (ART / f"{pid}.webp").exists()}
     lines = ["// FRAMES:BEGIN tools/intro_graphic_frames.py が heads.json から書き出す（手で直さない）"]
     lines.append("const FRAME_OVERRIDES = {")
     for pid, f in frames.items():

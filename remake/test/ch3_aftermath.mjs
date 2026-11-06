@@ -117,7 +117,7 @@ assert.deepEqual(availableAftermathDetours(value), [], "no detours once chapter 
 // #2028 残件3: 大会後の寄り道（ムカイさん・エミルの体験会・ヴォルクの後日談）。東京にいる間だけ、一度ずつ。
 // IR23: 大会前に読めなかった鉄の煙の再訪（二度目→七年分→頷く順番）も、大会後に順に読める。
 const VOLK_VISITS = ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth"];
-const detourIds = ["ch3_mukai_after_tournament", "ch3_emil_workshop", ...VOLK_VISITS, "ch3_volk_after_ch3"];
+const detourIds = ["ch3_mukai_after_tournament", "ch3_cigarman_trace", "ch3_emil_workshop", ...VOLK_VISITS, "ch3_volk_after_ch3"];
 const openFirst = ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_second", "ch3_volk_after_ch3"];
 assert.deepEqual(CH3_AFTERMATH_DETOURS.map(scene => scene.id), detourIds);
 for (const scene of CH3_AFTERMATH_DETOURS) {
@@ -127,6 +127,35 @@ for (const scene of CH3_AFTERMATH_DETOURS) {
 const mukaiAfter = readData("dialogue/ch3_mukai").dialogues.find(dialogue => dialogue.dialogue_id === "ch3_mukai_after_tournament");
 assert(mukaiAfter.lines.some(line => line.speaker === "mukai_master"));
 assert(!mukaiAfter.lines.some(line => /屋根裏|鍵/.test(line.text || "")), "the attic/key offer belongs to chapter 5");
+// #2658: 噂を読んだ優勝保存だけが大会後のmukaiで追跡を一度読む。読了後の既読は SAVE/LOAD を越える。
+{
+  const trace = winningSave();
+  trace.flags._ch3_read_ch3_cigarman_rumor = true;
+  assert.deepEqual(availableAftermathDetours(trace), [], "no detours before the aftermath checkpoint");
+  const beforeWin = structuredClone(trace);
+  beforeWin.flags._ch3_tournament_won = false;
+  assert.deepEqual(availableAftermathDetours(beforeWin), [], "the pre-win save cannot offer the trace");
+  const lost = structuredClone(trace);
+  lost.flags._ch3_tournament.result = { rank: 4, win: false };
+  assert.deepEqual(availableAftermathDetours(lost), [], "a loss cannot offer the trace");
+  beginChapterThreeAftermath(trace);
+  assert(!availableAftermathDetours(trace).some(scene => scene.id === "ch3_cigarman_trace"), "victory night has no detours");
+  completeChapterThreeAftermathScene(trace, "ch3_abyss_hotel");
+  assert(availableAftermathDetours(trace).some(scene => scene.id === "ch3_cigarman_trace"));
+  const lostAfterLoad = structuredClone(trace);
+  lostAfterLoad.flags._ch3_tournament.result = { rank: 4, win: false };
+  assert(!availableAftermathDetours(lostAfterLoad).some(scene => scene.id === "ch3_cigarman_trace"), "a lost save with a stale checkpoint stays closed");
+  const unreadRumor = structuredClone(trace);
+  delete unreadRumor.flags._ch3_read_ch3_cigarman_rumor;
+  assert(!availableAftermathDetours(unreadRumor).some(scene => scene.id === "ch3_cigarman_trace"), "the rumor is required");
+  const checkpoint = structuredClone(trace.flags._ch3_aftermath);
+  assert.equal(completeAftermathDetour(trace, "ch3_cigarman_trace"), true);
+  assert.equal(trace.flags._ch3_read_ch3_cigarman_trace, true);
+  assert.deepEqual(trace.flags._ch3_aftermath, checkpoint, "the detour cannot advance the chapter");
+  assert.equal(completeAftermathDetour(trace, "ch3_cigarman_trace"), false, "a read scene cannot replay");
+  const loaded = JSON.parse(JSON.stringify(trace));
+  assert(!availableAftermathDetours(loaded).some(scene => scene.id === "ch3_cigarman_trace"), "LOAD retains the read flag");
+}
 {
   const detour = winningSave();
   detour.met = { ...detour.met, emil: true, volk: true };
@@ -248,6 +277,7 @@ console.log("PASS: Chapter 3 aftermath offers Ayatori's ♥5 finale until the cl
   assert.deepEqual(who(lessonSave), ["volk"], "the cleanup morning: Ayatori is packing the shop, only Volk is left");
   // 寄り道を全部読んでも、授業だけで寄り道の入口が開く（ch3-aftermath.js は寄り道と授業の合計で入口を出す）
   lessonSave.met = { ...lessonSave.met, emil: true, volk: true };
+  lessonSave.flags._ch3_read_ch3_cigarman_rumor = true;
   for (const id of detourIds) assert.equal(completeAftermathDetour(lessonSave, id), true);
   assert.deepEqual(availableAftermathDetours(lessonSave), []);
   assert.deepEqual(who(lessonSave), ["volk"], "lessons stay open after every detour is read");
