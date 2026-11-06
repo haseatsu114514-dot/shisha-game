@@ -638,6 +638,134 @@
       }
     },
     {
+      "dialogue_id": "ch2_coal_together",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店の少し前。ドアベルが鳴った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉄仮面さんだった。あの夜のあと、初めて見る顔だ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつもの席に座り、無言でメニューを指差す。いつもの一台。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（……来てくれたんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが葉を詰め、俺は炭の前に立った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "炭替えは、二人でやる。決めたとおりだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "コンロの上で、炭を一つずつ返す。裏も、側面も。黒いところが消えるまで待つ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが、金属の皿を俺の手の下に構えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（見るのは、トングの先だけ。採点表じゃない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一つ。二つ。三つ。HMDの中に三角に置いて、蓋を閉める。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭は、どこにも落ちなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉄仮面さんは一口吸って、長く吐いた。それから、いつもの顔で煙を見ていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "途中の炭替えも、二人でやった。二回目は、皿の位置を見ずに手が動いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会計のとき、鉄仮面さんがレシートを受け取りながら、ポツリと。"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "……炭、きれいだった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それだけ言って、鉄仮面さんはドアの向こうへ消えた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "聞いたか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。聞きました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "味は俺が見る。炭の色は、お前の目で見える。今日はそれで足りる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "甘さはまだ遠い。それでも、炭が赤いかどうかは、目で分かる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートの端に、数字じゃない一行を書いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「炭替え、二人で。落とさなかった」"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch2_lingering_smell",
       "comment": "全編モチーフ「店の匂い」のch2配置（各章一度だけ・説明しない）。DAY4の炭落とし事故の匂いが店に残る。ch1のなる「店の匂いは畳んでも消えない」の反転——はじめが初めて“悪い匂い”を店に刻む",
       "metadata": {

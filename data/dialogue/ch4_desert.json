@@ -150,6 +150,10 @@
           "text": "（スミさんの炭の話に、少し似てる）"
         },
         {
+          "type": "remember",
+          "memory_id": "noor_sand_line"
+        },
+        {
           "type": "condition",
           "condition_type": "tournament_finished",
           "tournament_chapter": 4,
@@ -702,6 +706,435 @@
           "speaker": "noor",
           "face": "smile",
           "text": "今度、その子にも会いに行こうよ。まつ毛もすっごく長いんだから"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_bond_finale",
+      "comment": "DSR20 交友の締めくくり（♥5）。店の段階の会話（ch4_noor_*）と♥3の問いを読んだ後、カフェ・サーリムで一度だけ。終わりに専用ハガル suyaki_noor（ダブルアップル）。恋人／恋愛の答えを重ねた相手（最後の問い bond_q2_noor）／友人で分岐する。恋愛寄りなら次の砂丘（ツアー代なし）の夕日で告白 confession_noor。大会に触れない。",
+      "metadata": {
+        "bond_finale": "noor"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼下がりのカフェ・サーリム。ヌールさんが、店の奥から布に包んだものを持ってきた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ハジメ、手、出して。……目は閉じなくていいよ。そういうのは、まだ早い"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "包みをほどくと、黒ずんだ素焼きのハガルだった。りんごとアニスの甘い香りがする。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ……ダブルアップルの？"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。十四歳の時、父に初めて一台を教わったハガル。それから、ずっとこれ"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ダブルアップルしか詰めてないから、土までりんごの匂い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そんな大事なもの、もらえませんよ"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "もらって。大事だから、ハジメに持っててほしいの"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "それにね。ハジメの煙、最初の日から、父のと少し似た匂いがするの"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "……あ、褒めてるからね？ 父の煙、この街でいちばん好きだから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ヌールさんのお父さんの煙と、似てる……）"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "日本に帰っても、これで一台作って。で、たまにはドバイのこと思い出して"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "思い出さなかったら、怒るからね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "毎回、思い出しますよ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "noor",
+          "next_true": "lover",
+          "next_false": "check"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "包みを抱えて店を出る。乾いた風に、りんごの甘い香りが混じっていた。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 2
+          }
+        }
+      ],
+      "branches": {
+        "check": [
+          {
+            "type": "condition",
+            "condition_type": "romance_open",
+            "char_id": "noor",
+            "next_true": "ask",
+            "next_false": "friend"
+          }
+        ],
+        "lover": [
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "恋人に渡すの、ちょっと照れるね。……でも、渡すならハジメって決めてた"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "大事にします。ずっと"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "ずっと、ね。その言葉、覚えとく"
+          }
+        ],
+        "ask": [
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "……ねえ、ハジメ。次に砂丘に行ったら、滑ったあと、少しだけ残ってくれる？"
+          },
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "ガイドの仕事じゃなくて。……私が、ハジメと見たい景色があるの"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（仕事じゃない時間の、ヌールさん。……俺は、どう答えたいんだろう）"
+          },
+          {
+            "type": "choice",
+            "id": "bond_q2_noor",
+            "romance_char": "noor",
+            "choices": [
+              {
+                "text": "「残ります。二人で見たいです」",
+                "next": "close",
+                "romance": 1
+              },
+              {
+                "text": "「ツアーのみんなとも見たいですね」",
+                "next": "ask_friend",
+                "romance": 0
+              }
+            ]
+          }
+        ],
+        "close": [
+          {
+            "speaker": "noor",
+            "face": "surprise",
+            "text": "……二人で、って言った"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "じゃあ、次のツアー代はいらない。ガイドじゃなくて、私が誘うから"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "約束ね。……今度のは、仕事の約束じゃないよ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ヌールさんはツアーの予定表を開いて、次の空いた昼に小さく丸をつけた。"
+          }
+        ],
+        "ask_friend": [
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "みんなと、かぁ。……うん、ハジメらしい"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "じゃあ次のツアーは、夕日がいちばんきれいな場所、ハジメの分も取っとく"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ヌールさんは笑って、ツアーデスクの予約表に「ハジメ 特等席」と書き足した。"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "ありがとうございます。大事に使います"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "うん。友だちからのプレゼント。ハジメのお店ができたら、それで一台作ってね"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ヌールさんは笑って、空いたカップを二つ重ねた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "confession_noor",
+      "comment": "DSR20 ヌールの告白（ドバイで告白まで・2026-11-02 オーナー）。締めくくりの最後の問いで恋愛を選んだ後の、次の砂丘（ツアー代なし）の滑走のあと、夕日の砂丘で。ヌールから想いを伝え、はじめが答える。返事は選択肢の next_id（romance.js の onDialogueEnter が付き合う／友達のままを記録する）。大会に触れない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_dunes_dusk.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "滑り終えたあと、ツアーの車には戻らず、ヌールさんと砂丘の上に残った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "日が沈みかけて、砂の稜線が赤から紫へ変わっていく。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ここ。子どもの頃から、嬉しい日も悲しい日も、ここに座ってた"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "お客さんには教えない、私だけの特等席。……連れてきたの、ハジメが初めて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "見たい景色って、これですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "半分正解。……景色はね、隣に誰がいるかで変わるの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんは膝を抱えて、沈んでいく太陽から目をそらさずに続けた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ハジメは、いつか日本に帰る。分かってる。だから、言わないでおこうと思ってた"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "でも、言わないまま見送ったら、きっと毎日ここで後悔する"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ハジメ。私、ハジメが好き。……お客さんとしてじゃなくて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "砂の上に置いた手の、小指だけが、こちらへ少し寄ってきた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（約束の時と同じ小指。でも今日は、少し震えている）"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_noor_confession_other_lover",
+          "next_true": "other_lover"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "「俺も、ヌールさんが好きです」と伝える",
+              "next_id": "confession_noor_accept"
+            },
+            {
+              "text": "「大事な友だちでいてほしい」と答える",
+              "next_id": "confession_noor_reject"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "other_lover": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……日本には、待っている人がいる。この小指に応えたら、隠しごとがひとつ増える）"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "confession_noor_accept",
+      "comment": "DSR20 告白を受ける。テレビ電話の約束は、のちの修羅場（テレビ電話で参戦）と恋人のLIMEの前振り。",
+      "metadata": {
+        "set_romance": "noor",
+        "bg": "res://assets/backgrounds/bg_dubai_dunes_dusk.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、ヌールさんが好きです。……日本に帰っても、終わりにしたくない"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "……ほんと？ ……ごめん、うれしすぎて、言葉が出てこない"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "……うん。うん、私も"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "二回言ったから、もう取り消しできないよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "取り消しません"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "日本とドバイの時差は、五時間。ずっと前から、調べてた"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "おはようとおやすみ、ずれちゃうけど。……テレビ電話、毎日かけていい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "毎日、待ってます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "小指が、今度は迷わずに絡んだ。そのまま、手のひらごと握られる。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "指切りじゃなくて、こっち。……今日から、恋人だから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "太陽が砂の向こうに沈みきるまで、二人とも手を離さなかった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "……あ、今の顔、写真に撮ればよかった"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ま、いっか。次は、恋人の写真"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_noor_reject",
+      "comment": "DSR20 告白に友だちで答える（以後、告白は出ない。romance.js が _friend_noor を付ける）。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_dunes_dusk.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ヌールさんには、大事な友だちでいてほしいです"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……そっか。うん。ちゃんと言ってくれて、ありがと"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "言わないで終わるより、ずっといい。強がりじゃなくて、本当だよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんは膝の砂を払って立ち上がり、いつものガイドの顔で笑った。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "帰りの運転は、ガイドにお任せ。友だち価格で、ね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りの車の中、ヌールさんはラジオに合わせて、いつもより大きな声で歌っていた。"
         }
       ]
     },

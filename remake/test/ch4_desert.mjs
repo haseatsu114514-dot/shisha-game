@@ -6,7 +6,8 @@ import test from "node:test";
 import { DESERT_FLAG, DESERT_TALKS, DESERT_TALK_HEARTS, DESERT_INVITE_STAGE, NOOR_QUESTION_CHOICE, DESERT_CAFE_CHATS, DESERT_CAFE_PRICE, DESERT_RIDE_PRICE, DESERT_SCENES, DESERT_DIALOGUE_IDS,
   desertRivals, markNaruMet, desertProgress, desertInvited, desertTalkScene, completeDesertTalk, desertCafeVisit, completeDesertCafeVisit, noorHeart,
   desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertRankAtLeast, desertDestinations,
-  DESERT_SPOT_IDS, desertDailySpots, desertDailySpotById } from "../js/chapters/ch4-desert-progress.js";
+  DESERT_SPOT_IDS, desertDailySpots, desertDailySpotById, NOOR_FINALE, NOOR_CONFESSION, NOOR_OTHER_LOVER_FLAG, noorStoriesDone, noorFinaleWaiting,
+  noorConfessionWaiting } from "../js/chapters/ch4-desert-progress.js";
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
 import { readFileSync } from "node:fs";
 
@@ -43,7 +44,7 @@ test("café visits: one a day, the next stage when Noor's heart allows it, a cha
   completeDesertCafeVisit(value, desertCafeVisit(value, 3), 3);
   value.affinity.noor = 20; completeDesertCafeVisit(value, desertCafeVisit(value, 4), 4);
   assert.equal(desertInvited(value), false);
-  assert.deepEqual(desertOutingStatus(value, 5), { ok: false, why: "まだ誘われていない", first: true, price: 0 });
+  assert.deepEqual(desertOutingStatus(value, 5), { ok: false, why: "まだ誘われていない", first: true, price: 0, invited: false });
   assert.equal(beginDesertOuting(value, 5), false);
   assert.deepEqual(desertCafeVisit(value, 5), { id: DESERT_CAFE_CHATS[1], kind: "talk" }, "the invitation waits for ♥3");
   value.affinity.noor = 33;
@@ -87,22 +88,22 @@ test("old saves: the three desk talks (meeting, map, invitation) keep the invita
 test("the outing uses the day once and costs nothing the first time, then the tour fee; retries inside the trip cost nothing", () => {
   const value = invite(fresh());
   assert.equal(DESERT_RIDE_PRICE, 6000); assert.equal(DESERT_CAFE_PRICE, 3000);
-  assert.deepEqual(desertOutingStatus(value, 4), { ok: true, why: "", first: true, price: 0 }, "the first trip is on Noor");
+  assert.deepEqual(desertOutingStatus(value, 4), { ok: true, why: "", first: true, price: 0, invited: false }, "the first trip is on Noor");
   assert.equal(beginDesertOuting(value, 4), true);
   assert.equal(value.slot, 1, "the outing spends the daytime action (the same slot as the camel race)");
-  assert.deepEqual(desertOutingStatus(value, 4), { ok: false, why: "今日はもう砂丘へ行った", first: false, price: DESERT_RIDE_PRICE });
+  assert.deepEqual(desertOutingStatus(value, 4), { ok: false, why: "今日はもう砂丘へ行った", first: false, price: DESERT_RIDE_PRICE, invited: false });
   assert.equal(beginDesertOuting(value, 4), false, "no second outing on the same day");
   value.slot = 0; // 宿で日を終えると昼に戻る（endChapterFourDay）
   recordDesertResult(value, result(3000, "C")); recordDesertResult(value, result(5000, "B"));
   assert.equal(desertProgress(value).outings, 1);
-  assert.deepEqual(desertOutingStatus(value, 5), { ok: true, why: "", first: false, price: DESERT_RIDE_PRICE });
+  assert.deepEqual(desertOutingStatus(value, 5), { ok: true, why: "", first: false, price: DESERT_RIDE_PRICE, invited: false });
   value.money = 5999;
-  assert.deepEqual(desertOutingStatus(value, 5), { ok: false, why: "お金が足りない（6,000円）", first: false, price: DESERT_RIDE_PRICE });
+  assert.deepEqual(desertOutingStatus(value, 5), { ok: false, why: "お金が足りない（6,000円）", first: false, price: DESERT_RIDE_PRICE, invited: false });
   value.money = 50000;
   assert.equal(beginDesertOuting(value, 5), true);
   assert.equal(desertProgress(value).outings, 2);
   value.slot = 1;
-  assert.deepEqual(desertOutingStatus(value, 6), { ok: false, why: "今日の昼はもう別の予定に使った", first: false, price: DESERT_RIDE_PRICE });
+  assert.deepEqual(desertOutingStatus(value, 6), { ok: false, why: "今日の昼はもう別の予定に使った", first: false, price: DESERT_RIDE_PRICE, invited: false });
   assert.equal(beginDesertOuting(value, 6), false);
   value.slot = 0;
   assert.equal(desertOutingStatus(value, 6).ok, true);
@@ -285,4 +286,82 @@ test("v2 keeps old scores separately and preserves highest earned rank, rewards 
   assert.equal(recordDesertResult(loaded, old), null, "a delayed old-version result cannot replace current records");
   assert.deepEqual(loaded.desert.legacyBest, previous);
   assert.equal(loaded.desert.bestRank, "S");
+});
+
+// DSR20: 店の段階の会話と♥3の問いを読んだ♥5の来店が締めくくり（daily/bonds.js の playFinale が記録）。
+// 最後の問いで恋愛を選んだ後の砂丘はヌールの誘い（ツアー代なし）で、滑ったあと夕日で告白（confession_noor）。
+test("the ♥5 café visit is Noor's finale; a romantic answer makes the next dunes free and ends them with her confession", () => {
+  const value = fresh();
+  value.slot = 0;
+  invite(value);
+  let day = desertProgress(value).lastTalkDay + 1;
+  for (let index = DESERT_INVITE_STAGE; index < DESERT_TALKS.length; index++, day++) {
+    value.affinity.noor = HEART[DESERT_TALK_HEARTS[index]];
+    assert.equal(completeDesertTalk(value, DESERT_TALKS[index], day, noorHeart(value)), true, DESERT_TALKS[index]);
+  }
+  assert.equal(noorStoriesDone(value), true);
+  value.flags[DESERT_FLAG].outings = 1; // 砂丘へは一度行った（次からは相場のツアー代）
+  value.affinity.noor = HEART[5];
+  assert.equal(desertCafeVisit(value, day).kind, "talk", "the ♥3 answer comes before the finale");
+  value.flags._noor_affinity_question_done = true;
+  value.affinity.noor = HEART[4];
+  assert.equal(noorFinaleWaiting(value), false, "needs ♥5");
+  value.affinity.noor = HEART[5];
+  assert.deepEqual(desertCafeVisit(value, day), { id: NOOR_FINALE, kind: "finale" });
+  assert.equal(desertCafeVisit(value, day, { legacy: true }).kind, "talk", "not on the old 5-day card map");
+  assert.equal(desertDailySpots(value, day)[0].hasNew(), true, "the café is marked new");
+  const visit = desertCafeVisit(value, day);
+  assert.equal(completeDesertCafeVisit(value, visit, day), false, "only after bonds.js recorded the finale");
+  value.finales = { noor: { day, chapter: 4, route: "romance" } };
+  assert.equal(completeDesertCafeVisit(value, visit, day), true);
+  assert.equal(completeDesertCafeVisit(value, visit, day), false, "once a day");
+  assert.equal(desertCafeVisit(value, day), null);
+  assert.equal(desertCafeVisit(value, day + 1).kind, "talk", "chats after the finale");
+  // 告白待ち: 次の砂丘はツアー代なし（2回目以降でも）。地図にも印
+  assert.equal(noorConfessionWaiting(value), true);
+  value.money = 0;
+  let status = desertOutingStatus(value, day + 1);
+  assert.deepEqual([status.ok, status.price, status.invited], [true, 0, true]);
+  const dunes = desertDailySpots(value, day + 1)[1];
+  assert.match(dunes.desc, /ヌールとの約束/); assert.match(dunes.desc, /ツアー代はいらない/);
+  assert.equal(dunes.hasNew(), true);
+  // 付き合う（恋人）／友達のまま、どちらでも告白は終わり、次からは相場のツアー代
+  value.lovers = ["noor"];
+  assert.equal(noorConfessionWaiting(value), false);
+  status = desertOutingStatus(value, day + 1);
+  assert.deepEqual([status.price, status.invited, status.ok], [DESERT_RIDE_PRICE, false, false]);
+  value.lovers = []; value.flags._friend_noor = true;
+  assert.equal(noorConfessionWaiting(value), false);
+  value.flags._friend_noor = false; value.finales.noor.route = "friend";
+  assert.equal(noorConfessionWaiting(value), false, "a friendship finale has no confession");
+});
+
+test("Noor's finale, confession and gift data line up with bonds.js / romance.js", () => {
+  const data = JSON.parse(readFileSync(new URL("../../data/dialogue/ch4_desert.json", import.meta.url), "utf8"));
+  const scene = id => data.dialogues.find(d => d.dialogue_id === id);
+  const finale = scene(NOOR_FINALE);
+  assert.equal(finale.metadata.bond_finale, "noor");
+  const ask = finale.branches.ask.find(line => line.type === "choice");
+  assert.deepEqual([ask.id, ask.romance_char, ask.choices.map(c => c.romance)], ["bond_q2_noor", "noor", [1, 0]]);
+  for (const key of ["lover", "check", "ask", "close", "ask_friend", "friend"]) assert(finale.branches[key]?.length, key);
+  const choice = scene(NOOR_CONFESSION).lines.find(line => line.type === "choice");
+  assert.deepEqual(choice.choices.map(c => c.next_id), [`${NOOR_CONFESSION}_accept`, `${NOOR_CONFESSION}_reject`]);
+  assert.equal(scene(`${NOOR_CONFESSION}_accept`).metadata.set_romance, "noor");
+  // ほかに恋人がいれば、返事の前に一度だけ立ち止まる（一時の印は再生の前に立て、後で消す）
+  const aside = scene(NOOR_CONFESSION).lines.find(line => line.type === "condition");
+  assert.deepEqual([aside.condition_type, aside.flag], ["flag", NOOR_OTHER_LOVER_FLAG]);
+  assert(scene(NOOR_CONFESSION).branches[aside.next_true]?.length);
+  // 締めくくり・告白は大会に触れない（大会の前後どちらで読んでも成り立つ）
+  for (const id of [NOOR_FINALE, NOOR_CONFESSION, `${NOOR_CONFESSION}_accept`, `${NOOR_CONFESSION}_reject`]) {
+    assert.doesNotMatch(JSON.stringify([scene(id).lines, scene(id).branches || {}]), /大会|本番/, id);
+  }
+  const gear = JSON.parse(readFileSync(new URL("../../data/equipment.json", import.meta.url), "utf8")).equipment.find(e => e.id === "suyaki_noor");
+  assert.deepEqual([gear.type, gear.art, gear.gift.from, gear.gift.flavor, gear.not_for_sale], ["bowl", "suyaki_hagal", "noor", "double_apple", true]);
+  const bonds = readFileSync(new URL("../js/daily/bonds.js", import.meta.url), "utf8");
+  assert.match(bonds, /noor: \{ dialogue: "ch4_noor_bond_finale", gift: "suyaki_noor", question: "bond_q2_noor", ownConfession: true \}/);
+  const desert = readFileSync(new URL("../js/chapters/ch4-desert.js", import.meta.url), "utf8");
+  assert.match(desert, /playFinale\(DESERT_GUIDE/);
+  assert.match(desert, /romanceRouteOpen\(DESERT_GUIDE\)/);
+  assert.match(desert, /read\(NOOR_CONFESSION, bgUrl\(DESERT_DUSK_BG\)\)/);
+  assert.match(desert, /delete owner\.flags\[NOOR_OTHER_LOVER_FLAG\]/);
 });
