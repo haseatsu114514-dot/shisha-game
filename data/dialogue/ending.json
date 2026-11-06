@@ -135,7 +135,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "うん。どっちの話も聞きたいです"
+          "text": "うん。どっちの話も聞きたい"
         },
         {
           "speaker": "minto",
@@ -226,7 +226,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "好きだよ。……急に照れるな"
+          "text": "好きだよ。……口にすると、照れるもんだな"
         },
         {
           "speaker": "ageha",
@@ -294,7 +294,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も。次は一緒に何も作らなくてもいいね"
+          "text": "俺も。次も、二人で何も作らない日にしよう"
         },
         {
           "speaker": "mashiro",
@@ -605,7 +605,7 @@
         {
           "speaker": "customer",
           "face": "normal",
-          "text": "はじめくん、あとで友達が来るんだけど、もう一台お願いしてもいい？"
+          "text": "はじめさん、あとでもう一人来るんですけど、もう一台お願いできますか？"
         },
         {
           "speaker": "hajime",
