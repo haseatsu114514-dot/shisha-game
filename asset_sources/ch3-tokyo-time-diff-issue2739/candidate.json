@@ -1,0 +1,19 @@
+{
+  "issue": 2739,
+  "status": "採用判断用候補・未採用",
+  "catalog_candidate": {
+    "key": "bg_mukai_shop_day.webp",
+    "place": "mukai_shop",
+    "time": "day",
+    "weather": "",
+    "size": [1920, 1080],
+    "luma": 107
+  },
+  "existing_background": "remake/img/backgrounds/bg_mukai_shop.webp",
+  "original": "bg_mukai_shop_day_original.png",
+  "preview": "bg_mukai_shop_day_preview.webp",
+  "sha256": {
+    "original": "29914857e6767806b19707b4ce2abb7e57038d88dc9c5f3b2005d46aeedcabf3",
+    "preview": "10c5686e12ef94107aafcbbf7d93fdeb26bd2dc9ed01cd7af475ed9154352f66"
+  }
+}
