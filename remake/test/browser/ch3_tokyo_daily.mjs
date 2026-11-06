@@ -400,4 +400,29 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(state.tokyoVisits.offers.tsumugi, undefined, "The answered proposal is closed");
     assert.equal(state.slot, 0, "Answering the LIME uses no time");
   });
+
+  // 日常ループの東京の CHOI-ZAP も、旧行程（ch3-activity-progress.js）と同じく3日間「風邪をひきにくい」を付ける（spot.gym・daily/calendar.js）。
+  await check("the-tokyo-choizap-grants-the-fit-days", async page => {
+    await seed(page);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const progress = await import("./js/chapters/ch3-progress.js");
+      const value = core.state, intro = value.flags._ch3_intro;
+      intro.stage = progress.CH3_INTRO_SCENES.findIndex(scene => scene.id === "ch3_strategy");
+      value.day = intro.startDay + 12; value.slot = 0; value.phase = "daily";
+      Object.assign(value.met, { saku: true, steve: true, volk: true, mashiro: true, mukai_master: true });
+      value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
+      value.flags._gym_member = true;
+      core.save();
+    });
+    await loadSlot(page, 0);
+    await tokyoMap(page, { day: 44, slot: 1 });
+    const before = await get(page);
+    assert.equal(before.flags._fit_since, undefined);
+    await go(page, "ch3_tokyo_gym");
+    await page.waitForFunction(() => !!window.__remake?.state?.flags?._fit_since, null, { timeout: 60000 });
+    const state = await get(page);
+    assert.deepEqual(state.flags._fit_since, { chapter: 3, day: 44 });
+    assert.equal(state.visitedDay?.ch3_tokyo_gym, 44);
+  });
 });
