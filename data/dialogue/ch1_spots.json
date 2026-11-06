@@ -383,7 +383,7 @@
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "（もう１人は……須井会長？）"
+            "text": "（もう１人は……伏見会長？）"
           },
           {
             "type": "set_flag",
@@ -472,7 +472,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "蒸野はじめです。なるさんに教えてもらって来ました"
+            "text": "逢縁はじめです。なるさんに教えてもらって来ました"
           },
           {
             "speaker": "sui",
@@ -712,7 +712,7 @@
         {
           "type": "note",
           "note_id": "sui_style",
-          "label": "須井会長は別枠の10点を持ち、基準を超えた1人にだけ入れる"
+          "label": "伏見会長は別枠の10点を持ち、基準を超えた1人にだけ入れる"
         },
         {
           "type": "condition",
@@ -752,7 +752,7 @@
           {
             "speaker": "staff_choizap",
             "face": "",
-            "text": "審査席は正面。須井会長がいつも一番端。会長の10点は別枠で、基準に届かなければ誰にも入らないんですよ"
+            "text": "審査席は正面。伏見会長がいつも一番端。会長の10点は別枠で、基準に届かなければ誰にも入らないんですよ"
           },
           {
             "speaker": "hajime",
@@ -779,7 +779,7 @@
           {
             "speaker": "staff_choizap",
             "face": "",
-            "text": "須井会長の10点は別枠なんです。基準を超えた1人にしか入らないんですよ"
+            "text": "伏見会長の10点は別枠なんです。基準を超えた1人にしか入らないんですよ"
           }
         ],
         "closing_before": [
@@ -883,7 +883,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "須井会長。１人で静かにシーシャを吸っている。"
+          "text": "伏見会長。１人で静かにシーシャを吸っている。"
         },
         {
           "speaker": "",
@@ -993,7 +993,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "は、はい。tonariの蒸野です"
+            "text": "は、はい。tonariの逢縁です"
           },
           {
             "speaker": "dr_kemuri",
@@ -1005,7 +1005,7 @@
           {
             "speaker": "dr_kemuri",
             "face": "normal",
-            "text": "おや、蒸野くん。優勝の一台のデータ、なかなか興味深かったよ"
+            "text": "おや、逢縁くん。優勝の一台のデータ、なかなか興味深かったよ"
           },
           {
             "speaker": "hajime",
@@ -1140,7 +1140,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "は、はい。蒸野です"
+            "text": "は、はい。逢縁です"
           }
         ],
         "notice_after": [
@@ -2389,7 +2389,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "蒸野です。tonariでバイトしてます"
+            "text": "逢縁です。tonariでバイトしてます"
           }
         ],
         "known": [

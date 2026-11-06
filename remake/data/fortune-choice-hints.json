@@ -22,15 +22,15 @@
       "preferred": "nose_wow",
       "reason": "作り方への興味を言葉で伝える"
     },
-    "ch1_kuyuri_first:kuyuri_first_pen": {
-      "target": "kuyuri",
+    "ch1_rio_first:rio_first_pen": {
+      "target": "rio",
       "kind": "conversation",
       "options": [
         "pen_rush",
         "pen_watch"
       ],
       "preferred": "pen_watch",
-      "reason": "丁寧な仕事を見抜いた返答をくゆりが明確に気に入る"
+      "reason": "丁寧な仕事を見抜いた返答を凛想が明確に気に入る"
     },
     "ch1_tsumugi_first:tsumugi_first_serve": {
       "target": "tsumugi",
@@ -112,8 +112,8 @@
       "preferred": "meet",
       "reason": "個人的に会いたいと伝える"
     },
-    "ch1_kuyuri_bond_question:bond_q1_kuyuri": {
-      "target": "kuyuri",
+    "ch1_rio_bond_question:bond_q1_rio": {
+      "target": "rio",
       "kind": "romance",
       "options": [
         "personal",
@@ -172,6 +172,46 @@
       "preferred": "wait",
       "reason": "「なんで」と急がせず、本人が言葉にするのを待つ"
     },
+    "remake_ch2_rei_chat:ch2_rei_first_chat": {
+      "target": "rei",
+      "kind": "conversation",
+      "options": [
+        "a",
+        "b"
+      ],
+      "preferred": "a",
+      "reason": "知らなくても来ていいと受け取ると、レヰが自分も最初は知らなかったと話してくれる"
+    },
+    "ch2_naru_confrontation:ch2_naru_response": {
+      "target": "naru",
+      "kind": "conversation",
+      "options": [
+        "listen",
+        "push"
+      ],
+      "preferred": "listen",
+      "reason": "言い返さず、スマホを伏せてなるの話を最後まで聞く"
+    },
+    "samechan_shop_quiet_seat:samechan_quiet_seat_light": {
+      "target": "samechan",
+      "kind": "conversation",
+      "options": [
+        "settled",
+        "softer"
+      ],
+      "preferred": "settled",
+      "reason": "客の目で落ち着くと伝えると、サメちゃんがその向きに決める"
+    },
+    "outing_samechan_1:samechan_outing_cover": {
+      "target": "samechan",
+      "kind": "conversation",
+      "options": [
+        "quiet",
+        "ask"
+      ],
+      "preferred": "quiet",
+      "reason": "怖がっているのを指摘せず、黙って隣に寄る"
+    },
     "ch2_ageha_bond_question:bond_q1_ageha": {
       "target": "ageha",
       "kind": "romance",
@@ -191,6 +231,16 @@
       ],
       "preferred": "personal",
       "reason": "同僚の分ではなく、ましろちゃんと飲むお茶だと伝える"
+    },
+    "ch3_mashiro_recovery:mashiro_recovery_tea": {
+      "target": "mashiro",
+      "kind": "conversation",
+      "options": [
+        "tea_ask",
+        "tea_quiet"
+      ],
+      "preferred": "tea_ask",
+      "reason": "いつもましろが聞く「お茶、飲む？」を今度ははじめから返す"
     }
   }
 }

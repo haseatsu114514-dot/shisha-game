@@ -87,6 +87,37 @@ test('new-only costume keeps same-costume expressions and missing-face fallback'
  assert.equal(data.portraitInfo('tsumugi','baito_smile','classic').face,'normal');
 });
 test('missing variant manifest is backward compatible', () => {delete data.DB.manifest.portraitVariants;state.config.portraitStyle='new';assert.equal(data.portraitInfo('tsumugi','normal').style,'classic');});
+// 2026-11-06 顔アイコンも会話の立ち絵と同じ画風にする（新バージョンの顔アイコンがある人だけ新バージョン）。
+test('face icons follow the selected portrait style', () => {
+ data.DB.manifest.faceIcons=['face_tsumugi.png','face_rio.png','face_minto.png','face_minto_private.png'];
+ data.DB.manifest.faceIconVariants={new:['face_tsumugi.png','face_minto.png','face_minto_private.png']};
+ const classic=name=>`../assets/ui/face_icons/${name}`, fresh=name=>`../assets/ui/face_icons/new/${name}`;
+ state.config.portraitStyle='classic';
+ assert.equal(data.faceIconUrl('tsumugi'),classic('face_tsumugi.png'));
+ assert.equal(data.faceIconUrl('oneesan'),classic('face_minto_private.png'));
+ state.config.portraitStyle='new';
+ assert.equal(data.faceIconUrl('tsumugi'),fresh('face_tsumugi.png'));
+ assert.equal(data.faceIconUrl('tumugi'),fresh('face_tsumugi.png'),'speaker alias');
+ assert.equal(data.faceIconUrl('oneesan'),fresh('face_minto_private.png'),'private Minto uses the new private face');
+ assert.equal(data.faceIconUrl('minto',{flags:{_minto_name_known:true}},{context:'private'}),fresh('face_minto_private.png'));
+ assert.equal(data.faceIconUrl('minto'),fresh('face_minto.png'),'public Minto keeps the public face');
+ assert.equal(data.faceIconUrl('rio'),classic('face_rio.png'),'no new portrait: classic face, same as the conversation');
+ assert.equal(data.faceIconUrl('missing'),null);
+ assert.equal(data.faceIconUrl('tsumugi',null,{style:'classic'}),classic('face_tsumugi.png'),'explicit style wins');
+ assert.deepEqual(data.allFaceIconUrls(),[fresh('face_tsumugi.png'),classic('face_rio.png'),fresh('face_minto.png'),fresh('face_minto_private.png')]);
+ state.config.portraitStyle='nanami';
+ assert.equal(data.faceIconUrl('tsumugi'),fresh('face_tsumugi.png'),'retired Nanami preference is normalized to the new style');
+ delete data.DB.manifest.faceIconVariants;state.config.portraitStyle='new';
+ assert.equal(data.faceIconUrl('tsumugi'),classic('face_tsumugi.png'),'manifest without variants is backward compatible');
+ state.config.portraitStyle='classic';
+});
+test('face frames are looked up per portrait style', () => {
+ data.DB.manifest.faceFrames={classic:{sui:{box:[1,2,3]}},new:{sui:{box:[4,5,6],eye:[7,8],unit:9}}};
+ assert.deepEqual(data.faceFrame('sui').box,[1,2,3]);
+ assert.deepEqual(data.faceFrame('sui','new').box,[4,5,6]);
+ assert.equal(data.faceFrame('sui','nanami'),null);
+ assert.equal(data.faceFrame('missing','new'),null);
+});
 // Execute production openConfig with a tiny DOM adapter, without importing unrelated scenes.
 const titleSource = await read('js/scenes/title.js');
 let modalArgs, saves=0, changed;
@@ -158,13 +189,15 @@ vm.runInContext(transitionSource.slice(metricStart,metricEnd)+'\n'+transitionSou
 const manifest=JSON.parse(await read('data/manifest.json'));
 data.DB.manifest.portraits=manifest.portraits;
 data.DB.manifest.portraitVariants=manifest.portraitVariants;
-test('intro morph uses classic eye measurements only with classic art',()=>{
+data.DB.manifest.faceFrames=manifest.faceFrames;
+test('intro morph uses the eye measurements of the displayed style',()=>{
  const rect={left:100,top:20,width:448,height:600,img:{naturalWidth:896}};
  for(const choice of ['new','classic']) {
   state.config.portraitStyle=choice;
   const p=data.portraitInfo('hajime','normal');
   const head=headCtx.head(rect,p);
-  assert.equal(head.x,100+448*(choice==='classic'?544.5/896:p.ax));
+  assert.equal(p.style,choice);
+  assert.equal(head.x,100+448*((choice==='classic'?544.5:483.5)/896));
   assert.equal(head.top,20+(1-p.b-p.h)*600);
   assert.equal(head.height,p.h*600*.16);
   assert.equal(state.config.portraitStyle,choice,'Measuring the transition never changes the preference');
@@ -185,14 +218,17 @@ for(const choice of ['new','classic']) {
  const calls=[],loaded=[],nodes=[];
  const layoutEl=(...args)=>{const n=layoutNode(...args);nodes.push(n);return n;};
  const ctx=vm.createContext({el:layoutEl,state:{chapter:1},performance:{now:()=>0},getComputedStyle:()=>({fontSize:'16px'}),
-  displayName:id=>id,portraitInfo:(...args)=>{calls.push(args);return data.portraitInfo(...args);},faceIconUrl:()=>null,
+  displayName:id=>id,portraitInfo:(...args)=>{calls.push(args);return data.portraitInfo(...args);},faceIconUrl:()=>null,faceFrame:data.faceFrame,
   imageReady:async url=>loaded.push(url),growthSkill:()=>false,innerVoiceLine:()=>'',watchLine:()=>'',autoWrap:text=>text});
- vm.runInContext(executable(audienceSource)+';this.api={buildAudience,FACE_CROPS};',ctx);
+ vm.runInContext(executable(audienceSource)+';this.api={buildAudience,faceCrop};',ctx);
  for(const id of ['hajime','sumi','sui','maezono','dr_kemuri','emil','pakki','da_silva']) {
   ctx.api.buildAudience({mode:'tutorial',audienceIds:[id]});
-  const image=nodes.filter(n=>n.selector==='img').at(-1),p=data.portraitInfo(id,id==='sui'?'serious':'normal','classic');
+  // #2680: 審査員の顔は設定中の画風の絵を、その画風の絵で測った枠で出す（新版が無い人は現行）。
+  const image=nodes.filter(n=>n.selector==='img').at(-1),p=data.portraitInfo(id,id==='sui'?'serious':'normal');
   assert.equal(image.src,p.src);
-  const crop=ctx.api.FACE_CROPS[p.folder];
+  if(choice==='classic') assert.equal(p.style,'classic');
+  const crop=ctx.api.faceCrop(p);
+  if(!['da_silva'].includes(id)) assert(crop,`${id}: measured face crop for ${p.style}`);
   if(crop) {
    assert.equal(image.style.width,`${80/crop[2]}px`);
    assert.equal(image.style.left,`${-crop[0]*(80/crop[2])}px`);
@@ -200,8 +236,8 @@ for(const choice of ['new','classic']) {
   }
   assert(loaded.includes(image.src),'Displayed audience expression is preloaded');
  }
- test(`craft audience ${choice} setting keeps fixed crops on measured art`,()=>{
-  assert(calls.length>8 && calls.every(args=>args[2]==='classic'));
+ test(`craft audience ${choice} setting shows the selected style with its measured crop`,()=>{
+  assert(calls.length>8 && calls.every(args=>args[2]===undefined));
   assert.equal(state.config.portraitStyle,choice);
  });
 }

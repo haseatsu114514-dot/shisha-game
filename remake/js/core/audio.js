@@ -311,7 +311,7 @@ export function startBubbling({ strength = 1 } = {}) {
 
 // キャラ別の文字送りボイス（低い=スミさん、高い=みんと 等）
 const BLIP = {
-  hajime: 440, sumi: 300, naru: 420, adam: 330, minto: 1350, oneesan: 980, tsumugi: 1100, kuyuri: 760,
+  hajime: 440, sumi: 300, naru: 420, adam: 330, minto: 1350, oneesan: 980, tsumugi: 1100, rio: 760,
   pakki: 900, sui: 280, maezono: 380, dr_kemuri: 520, salaryman: 360, ageha: 1200,
   mashiro: 880, samechan: 1250,
 };
@@ -476,6 +476,8 @@ export function createContinueAudio({ enabled = true } = {}) {
     start() { if (!alive) return; playBgm("bgm_continue_urgent"); pulse(() => { note(85, { to: 32, dur: .28, vol: .32 }); air(.26, .06, 650); }); },
     title() { pulse(() => { note(830, { to: 380, dur: .12, type: "triangle", vol: .09 }); note(1220, { dur: .07, vol: .035 }); }); },
     beat() { pulse(() => note(105, { to: 65, dur: .08, vol: .15 })); },
+    // #2524: 心の声の行へ戻る区切り。拍を打たず、息のような薄いノイズだけを置く。
+    inner() { pulse(() => air(.22, .028, 520)); },
     // 日常の会話と同じ文字送りの声。BGMは下げず、離脱時は他のSEと一緒に止める。
     voice(speaker) {
       if (!instrument()) return;

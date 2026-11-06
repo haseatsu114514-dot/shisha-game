@@ -20,6 +20,7 @@ export const STORE_LOGOS = Object.freeze({ ...BASE_LOGOS,
   ch2_sento: { name: "銭湯・サウナ", file: "ch2-sento", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   trpg_bar: { name: "ボドゲカフェ / TRPG BAR", file: "trpg-bar", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch4_festa: { name: "FESTA", file: "ch4-festa", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
+  ch4_dubai_longlong: { name: "龍龍水煙所", file: "ch4-longlong", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   // 第3章・東京（#2034）。キーは ch3-map-model.js の地点 id に ch3_ を付けたもの。
   ch3_enmaku: { name: "煙幕", file: "ch3-enmaku", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch3_steve: { name: "Smoke & Glory", file: "ch3-smoke-and-glory", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
@@ -34,6 +35,7 @@ const LOGO_ALIASES = Object.freeze({
   ch3_tokyo_mukai: "ch3_mukai", ch3_tokyo_enmaku: "ch3_enmaku", ch3_tokyo_steve: "ch3_steve",
   ch3_tokyo_volk: "ch3_volk", ch3_tokyo_club: "ch3_club", ch3_tokyo_shop: "shop",
   ch5_tokyo_mukai: "ch3_mukai", ch5_tokyo_steve: "ch3_steve", ch5_tokyo_volk: "ch3_volk", ch5_tokyo_shop: "shop",
+  ch5_tokyo_club: "ch3_club", // 第5章の東京の夜のクラブSEAM（第3章と同じ店）
   ch4_dubai_festa: "ch4_festa", ch4_dubai_shop: "shop",
   ch5_dubai_shop: "shop", // 第5章のドバイの Dr.fookah ドバイ店（SLG04）
 });

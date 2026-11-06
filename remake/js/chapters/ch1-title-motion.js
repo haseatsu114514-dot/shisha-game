@@ -110,6 +110,8 @@ export function playCh1Title({ signal } = {}) {
         // 最新方針: 人物の切り分けや装飾は使わず、採用済み画像をそのまま1枚表示する。
         image.alt = ""; image.setAttribute("aria-hidden", "true");
         Object.assign(image.style, { width: "100%", height: "100%", objectFit: "contain" });
+        // 共通章題と同じ出現（.ct-reveal）。第1章の絵は白地なので、もやも白で重ねる。
+        card.classList.add("ct-reveal"); card.dataset.tone = "light";
         card.append(image);
       } else {
         shield.dataset.art = "text";

@@ -1,146 +1,352 @@
 {
  "face_adam.png": {
   "sprite": "assets/sprites/characters/adam/chr_adam_normal.png",
-  "blob": "9ee76e3d2713b15022dfb78b4528a416ec64a6da"
+  "blob": "9ee76e3d2713b15022dfb78b4528a416ec64a6da",
+  "webp": "98f9e1e0cc311ad3eb3637462c25f3c6087d84df"
  },
  "face_ageha.png": {
   "sprite": "assets/sprites/characters/ageha/chr_ageha_normal.png",
-  "blob": "70c28dec704ad0396116057c8d4cf3816769f098"
+  "blob": "70c28dec704ad0396116057c8d4cf3816769f098",
+  "webp": "eb635ab58a257107a5506c2526093a992934d22f"
  },
  "face_da_silva.png": {
   "sprite": "assets/sprites/characters/da_silva/chr_da_silva_normal.png",
-  "blob": "c2eb40f661332c37e7ac27c4ff1279c9da4c9674"
+  "blob": "c2eb40f661332c37e7ac27c4ff1279c9da4c9674",
+  "webp": "0a5d2dc72385369fbe8c2b30d31a7561ffbb78ec"
  },
  "face_dr_kemuri.png": {
   "sprite": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png",
-  "blob": "374243115385298f34ea59843817e728b5f92e0f"
+  "blob": "374243115385298f34ea59843817e728b5f92e0f",
+  "webp": "a7f37369193b1a164036f2b8d3a404432e823521"
  },
  "face_emil.png": {
   "sprite": "assets/sprites/characters/emil/chr_emil_normal.png",
-  "blob": "d67632456082ac718ec768130162f0388ad17310"
+  "blob": "d67632456082ac718ec768130162f0388ad17310",
+  "webp": "9cdc0b961f993ac55356a61db56e2f0ee7dd105d"
  },
  "face_hajime.png": {
   "sprite": "assets/sprites/characters/hajime/chr_hajime_normal.png",
-  "blob": "c641dc297e7bf7c9c9df01ba4e117be79e92319b"
+  "blob": "c641dc297e7bf7c9c9df01ba4e117be79e92319b",
+  "webp": "12034a99d892af65784407ec84b3dfec5ea2c5f6"
  },
  "face_hiyori.png": {
   "sprite": "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
-  "blob": "f8b98f6bca9263402491b3f13650e4eb44a7cd4d"
- },
- "face_kumicho.png": {
-  "sprite": "assets/sprites/characters/kumicho/chr_kumicho_normal.png",
-  "blob": "6a165f7b76fc95ef85074b39598afe49961c785e"
- },
- "face_saku.png": {
-  "sprite": "assets/sprites/characters/saku/chr_saku_normal.png",
-  "blob": "fce3c4e1484d3a786020d1028844b037a2d3c7ae"
- },
- "face_maezono.png": {
-  "sprite": "assets/sprites/characters/maezono/chr_maezono_normal.png",
-  "blob": "a6edd59479a9d683cfcce4933f041777091ef2de"
- },
- "face_maki.png": {
-  "sprite": "assets/sprites/characters/maki/chr_maki_normal.png",
-  "blob": "0e8ba2816b49322ef54492fea16f4059aa6b1355"
- },
- "face_mashiro.png": {
-  "sprite": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
-  "blob": "e4ce6e0e6a36dcb25aa7752100b0c487a3084595"
- },
- "face_master_hookah.png": {
-  "sprite": "assets/sprites/characters/master_hookah/chr_master_hookah_normal.png",
-  "blob": "60d6fc8316c951a093fb97340da52171fd79e9ef"
- },
- "face_minto.png": {
-  "sprite": "assets/sprites/characters/minto/chr_minto_normal.png",
-  "blob": "d594d172388b89e981ed6fadab5a931507a618f8"
- },
- "face_minto_private.png": {
-  "sprite": "assets/sprites/characters/minto/chr_minto_ura_normal.png",
-  "blob": "f8aaf07f55d3f1bf62f864d416b7b68dd226dcca"
- },
- "face_mukai_master.png": {
-  "sprite": "assets/sprites/characters/mukai_master/chr_mukai_master_normal.png",
-  "blob": "8e56659563233116ffeb5b7356e7808d433c63fd"
- },
- "face_sui.png": {
-  "sprite": "assets/sprites/characters/sui/chr_sui_normal.png",
-  "blob": "37be28dcaf26b22dc17a43c55b983ef2382eece9"
- },
- "face_naru.png": {
-  "sprite": "assets/sprites/characters/naru/chr_naru_normal.png",
-  "blob": "63e6c74e86544b8a1eb4e3a6d2a0946c830cf787"
- },
- "face_noor.png": {
-  "sprite": "assets/sprites/characters/noor/chr_noor_normal.png",
-  "blob": "7b3b57f00a130a434b4c698360ca820440acd56f"
- },
- "face_pakki.png": {
-  "sprite": "assets/sprites/characters/pakki/chr_pakki_normal.png",
-  "blob": "416a8717cc7ca68f30cfe615c24a42a3906b0800"
+  "blob": "f8b98f6bca9263402491b3f13650e4eb44a7cd4d",
+  "webp": "378af90fb732fe5d59a1b4e36cd1fdb851316d10"
  },
  "face_khalil.png": {
   "sprite": "assets/sprites/characters/khalil/chr_khalil_normal.png",
-  "blob": "1a32bc251a516e8fe52284e86848bbe613e4ef3a"
+  "blob": "1a32bc251a516e8fe52284e86848bbe613e4ef3a",
+  "webp": "983829564e33922da8c873f7569a8fa64e3d10f6"
+ },
+ "face_kumicho.png": {
+  "sprite": "assets/sprites/characters/kumicho/chr_kumicho_normal.png",
+  "blob": "6a165f7b76fc95ef85074b39598afe49961c785e",
+  "webp": "69cd96e86f2b8652756f2ddc82bdffbfdc900d14"
+ },
+ "face_maezono.png": {
+  "sprite": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+  "blob": "a6edd59479a9d683cfcce4933f041777091ef2de",
+  "webp": "ece2eb58f06a58ad79c301a79f74c0c6e230aa51"
+ },
+ "face_maki.png": {
+  "sprite": "assets/sprites/characters/maki/chr_maki_normal.png",
+  "blob": "0e8ba2816b49322ef54492fea16f4059aa6b1355",
+  "webp": "ce4f0bcba56ac73c63f5ee5689eb2e35b1c1b714"
+ },
+ "face_mashiro.png": {
+  "sprite": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+  "blob": "e4ce6e0e6a36dcb25aa7752100b0c487a3084595",
+  "webp": "caeed19b7035a57763771ed673e0e2a4f7bff331"
+ },
+ "face_master_hookah.png": {
+  "sprite": "assets/sprites/characters/master_hookah/chr_master_hookah_normal.png",
+  "blob": "60d6fc8316c951a093fb97340da52171fd79e9ef",
+  "webp": "7ee9fec1338e71a4576f62d69705f4cca4f841cd"
+ },
+ "face_minto.png": {
+  "sprite": "assets/sprites/characters/minto/chr_minto_normal.png",
+  "blob": "d594d172388b89e981ed6fadab5a931507a618f8",
+  "webp": "77e4e5fff24b1bf4a923e07b8c4851743acbb2b9"
+ },
+ "face_minto_private.png": {
+  "sprite": "assets/sprites/characters/minto/chr_minto_ura_normal.png",
+  "blob": "f8aaf07f55d3f1bf62f864d416b7b68dd226dcca",
+  "webp": "cec42ed06fee651cc58d04bf7735bc81e5e600bb"
+ },
+ "face_mukai_master.png": {
+  "sprite": "assets/sprites/characters/mukai_master/chr_mukai_master_normal.png",
+  "blob": "8e56659563233116ffeb5b7356e7808d433c63fd",
+  "webp": "dce831d4366748d9c0a2119bf8a3fded1a5cc92b"
+ },
+ "face_naru.png": {
+  "sprite": "assets/sprites/characters/naru/chr_naru_normal.png",
+  "blob": "63e6c74e86544b8a1eb4e3a6d2a0946c830cf787",
+  "webp": "e251724679b2c5c815db8143342b6099898e40e1"
+ },
+ "face_noor.png": {
+  "sprite": "assets/sprites/characters/noor/chr_noor_normal.png",
+  "blob": "7b3b57f00a130a434b4c698360ca820440acd56f",
+  "webp": "548847c3a0e8f92d2420033fd171dfdb8351774b"
+ },
+ "face_pakki.png": {
+  "sprite": "assets/sprites/characters/pakki/chr_pakki_normal.png",
+  "blob": "416a8717cc7ca68f30cfe615c24a42a3906b0800",
+  "webp": "1e2f8b111e221e51afa308a2a7339c1c520999c6"
  },
  "face_rei.png": {
   "sprite": "assets/sprites/characters/rei/chr_rei_normal.png",
-  "blob": "bfa4805f8e5ebc7fa730b3fed2ea64fce25291b2"
+  "blob": "bfa4805f8e5ebc7fa730b3fed2ea64fce25291b2",
+  "webp": "def616801e35a3858c15295932e5c48b3aaa2484"
  },
- "face_kuyuri.png": {
-  "sprite": "assets/sprites/characters/kuyuri/chr_kuyuri_normal.png",
-  "blob": "f92f3650ff5b3cfcf0985e53142e3025581f3c7c"
+ "face_rio.png": {
+  "sprite": "assets/sprites/characters/rio/chr_rio_normal.png",
+  "blob": "f92f3650ff5b3cfcf0985e53142e3025581f3c7c",
+  "webp": "8a7833c80328cbb2429f06efbf7e13b21e3df5bd"
  },
  "face_sai.png": {
   "sprite": "assets/sprites/characters/sai/chr_sai_normal.png",
-  "blob": "18de5eb6068be272bc779eb220c1a03f102fe672"
+  "blob": "18de5eb6068be272bc779eb220c1a03f102fe672",
+  "webp": "679d8a900134586a0d78395306832531c953ee65"
  },
- "face_suhail.png": {
-  "sprite": "assets/sprites/characters/suhail/chr_suhail_normal.png",
-  "blob": "ec60aafb94c1f7e35bce48b8f2c82294d7633448"
+ "face_saku.png": {
+  "sprite": "assets/sprites/characters/saku/chr_saku_normal.png",
+  "blob": "fce3c4e1484d3a786020d1028844b037a2d3c7ae",
+  "webp": "7cd770caddc8884f67394a578e93ee2aba6b299d"
  },
  "face_salaryman.png": {
   "sprite": "assets/sprites/characters/salaryman/chr_salaryman_normal.png",
-  "blob": "d10bd4ab59c9b2ec7b768002a15df24e0a7023d7"
+  "blob": "d10bd4ab59c9b2ec7b768002a15df24e0a7023d7",
+  "webp": "1abef387c1a0b4f1139902cb5146803f66d57b16"
  },
  "face_samechan.png": {
   "sprite": "assets/sprites/characters/samechan/chr_samechan_normal.png",
-  "blob": "22768d83367e0560e4576a1d15f2010008dc2076"
+  "blob": "22768d83367e0560e4576a1d15f2010008dc2076",
+  "webp": "7c7c6d78bdf191e69f09d7a15875eaf3696f41c7"
  },
  "face_sheikh.png": {
   "sprite": "assets/sprites/characters/sheikh/chr_sheikh_normal.png",
-  "blob": "63e7d7cb01be0ea81ab831743ab7292295a78008"
+  "blob": "63e7d7cb01be0ea81ab831743ab7292295a78008",
+  "webp": "dd966dec1394c0e6003c6592e134af211e5b98c8"
  },
  "face_shisha_9000.png": {
   "sprite": "assets/sprites/characters/shisha_9000/chr_shisha_9000_normal.png",
-  "blob": "4e3baa273978e1a1e1eec688084b0d69638617a2"
+  "blob": "4e3baa273978e1a1e1eec688084b0d69638617a2",
+  "webp": "7f08db070f4ca8ff5682de0c8beb8d6fa46c9ade"
  },
  "face_steve.png": {
   "sprite": "assets/sprites/characters/steve/chr_steve_normal.png",
-  "blob": "8908ea0951f173ed7492d567d629030cefb0bda0"
+  "blob": "8908ea0951f173ed7492d567d629030cefb0bda0",
+  "webp": "0ba8615ee42dc7d3f8dc8556dd20c813c517f32a"
+ },
+ "face_suhail.png": {
+  "sprite": "assets/sprites/characters/suhail/chr_suhail_normal.png",
+  "blob": "ec60aafb94c1f7e35bce48b8f2c82294d7633448",
+  "webp": "eb5adee8fb89bbbc508fb38d803dc1f9d58e8674"
+ },
+ "face_sui.png": {
+  "sprite": "assets/sprites/characters/sui/chr_sui_normal.png",
+  "blob": "37be28dcaf26b22dc17a43c55b983ef2382eece9",
+  "webp": "4e8c42ce4586d3a639aa3bfae54414288425afa6"
  },
  "face_sumi.png": {
   "sprite": "assets/sprites/characters/sumi/chr_sumi_normal.png",
-  "blob": "b16b085ff96c47fbef9d8561ebd26cbbc87b4d49"
+  "blob": "b16b085ff96c47fbef9d8561ebd26cbbc87b4d49",
+  "webp": "871e1d225e858ba88fccb096c47c605f2cd609ed"
  },
  "face_tetsuko.png": {
   "sprite": "assets/sprites/characters/tetsuko/chr_tetsuko_normal.png",
-  "blob": "6f8d6f539b2524af6f08aa17073e5f02cd95952e"
+  "blob": "6f8d6f539b2524af6f08aa17073e5f02cd95952e",
+  "webp": "9792cabf0f0123a9749f653222a49cb3ff4a691c"
  },
  "face_tsumugi.png": {
   "sprite": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
-  "blob": "67fff31bea79471dab2b63f89fcd8ea5c94165e0"
+  "blob": "67fff31bea79471dab2b63f89fcd8ea5c94165e0",
+  "webp": "540baf74f379a8ff14e6b2519d8b9bb7003281dd"
  },
  "face_uranaishi.png": {
   "sprite": "assets/sprites/characters/uranaishi/chr_uranaishi_normal.png",
-  "blob": "1ac3c3696e9f82faee6b60a097f2fded11ebbb8c"
+  "blob": "1ac3c3696e9f82faee6b60a097f2fded11ebbb8c",
+  "webp": "4c2b41245b84cc27055bf78f67b48b13fc866f64"
  },
  "face_volk.png": {
   "sprite": "assets/sprites/characters/volk/chr_volk_normal.png",
-  "blob": "d451f0bf01f91983422754ad8d56b621fabdd654"
+  "blob": "d451f0bf01f91983422754ad8d56b621fabdd654",
+  "webp": "3080913f04d46d38e96daa15157d7a4a6b246ef7"
  },
  "face_yoru.png": {
   "sprite": "assets/sprites/characters/yoru/chr_yoru_normal.png",
-  "blob": "0fe19a8d04a4640f80a974451adf13342754ddc3"
+  "blob": "0fe19a8d04a4640f80a974451adf13342754ddc3",
+  "webp": "88fa514e620d7cf0eecfb7e3f6d3625f8fb2abf9"
+ },
+ "new/face_adam.png": {
+  "sprite": "assets/sprites/character_variants/new/adam/chr_adam_normal.png",
+  "blob": "32012e56671572421ae85917cda6290f29782589",
+  "webp": "bd878b4d294b6671d5f2c75809806ae6b169492c"
+ },
+ "new/face_ageha.png": {
+  "sprite": "assets/sprites/character_variants/new/ageha/chr_ageha_normal.png",
+  "blob": "ecc4ed7b407812efbdfc7ed7629d63a30b0258ea",
+  "webp": "5ba8c6d2aaee48b3ea4540289982eb6435a84cda"
+ },
+ "new/face_da_silva.png": {
+  "sprite": "assets/sprites/character_variants/new/da_silva/chr_da_silva_normal.png",
+  "blob": "6d062256769ff32c49de888398012ec0f522e259",
+  "webp": "f358c5e2443e0cf2a31e1854454026b11284f081"
+ },
+ "new/face_dr_kemuri.png": {
+  "sprite": "assets/sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_normal.png",
+  "blob": "fe2ff829ce8e5d0439d2abed57b726d7ad462b43",
+  "webp": "2e57a13783f76f1bfa07cdabedaba77435834a4d"
+ },
+ "new/face_emil.png": {
+  "sprite": "assets/sprites/character_variants/new/emil/chr_emil_normal.png",
+  "blob": "0527ccae2f75d674764795b91413ab8390f59926",
+  "webp": "940ff62e94f407c325fd586ccb183adc764f17e2"
+ },
+ "new/face_hajime.png": {
+  "sprite": "assets/sprites/character_variants/new/hajime/chr_hajime_normal.png",
+  "blob": "9487a4a472586646fbbbcad729a5bdeae4708baa",
+  "webp": "94ef16b4431a6a477fe770b8ce1d5f9f1345c92a"
+ },
+ "new/face_hiyori.png": {
+  "sprite": "assets/sprites/character_variants/new/hiyori/chr_hiyori_normal.png",
+  "blob": "82e5a5c77d2a215aebb66fa0876d12fe12a1b3be",
+  "webp": "b84ce8dfb638903aa598fd6496eea3d091a16f7f"
+ },
+ "new/face_khalil.png": {
+  "sprite": "assets/sprites/character_variants/new/khalil/chr_khalil_normal.png",
+  "blob": "7420138dd1b1e90f62e798fb2ef04d5e36b481fb",
+  "webp": "532f1e55007687a512994702912462a48c1d7d8f"
+ },
+ "new/face_kumicho.png": {
+  "sprite": "assets/sprites/character_variants/new/kumicho/chr_kumicho_normal.png",
+  "blob": "85593ceb691c050bb3e0bd8084d0ab016c8479cd",
+  "webp": "8b621ffb12290499751ecacf663646046116a361"
+ },
+ "new/face_maezono.png": {
+  "sprite": "assets/sprites/character_variants/new/maezono/chr_maezono_normal.png",
+  "blob": "d8255c6c7080e54b6df42c5514bf39130fbda8cf",
+  "webp": "23d4a4835158af26ccbd37e02347d29dd29bd605"
+ },
+ "new/face_maki.png": {
+  "sprite": "assets/sprites/character_variants/new/maki/chr_maki_normal.png",
+  "blob": "363a9b4b297a45cd775f8ed794b90b5a27795dbe",
+  "webp": "02304e639e7b0d224771c4653259ad8832ffbdbd"
+ },
+ "new/face_mashiro.png": {
+  "sprite": "assets/sprites/character_variants/new/mashiro/chr_mashiro_normal.png",
+  "blob": "542f65e0568d6dea06128d411c9ca7b81051feb9",
+  "webp": "407101b9e5f2950a3ed836a8fadd7ca445d91a80"
+ },
+ "new/face_master_hookah.png": {
+  "sprite": "assets/sprites/character_variants/new/master_hookah/chr_master_hookah_normal.png",
+  "blob": "f923baf288644faf606b7fb8a98101b69ddfb43f",
+  "webp": "e6f4402efc010e560fadc46dd5d0982538648cc4"
+ },
+ "new/face_minto.png": {
+  "sprite": "assets/sprites/character_variants/new/minto/chr_minto_normal.png",
+  "blob": "30cd0daf1178f60cf5a7a38ea824ebf13b23ce59",
+  "webp": "76b374e312469e1a38f69aa12c0ece897ae260e0"
+ },
+ "new/face_minto_private.png": {
+  "sprite": "assets/sprites/character_variants/new/minto/chr_minto_ura_normal.png",
+  "blob": "c33c32e6f9d2f430142f58cd9b47ccfdb5322af2",
+  "webp": "4bda22a2405d2c81f35f48c10d6ef81c9e0f4f1c"
+ },
+ "new/face_mukai_master.png": {
+  "sprite": "assets/sprites/character_variants/new/mukai_master/chr_mukai_master_normal.png",
+  "blob": "63c14f3f15ca43adf87dcc4396e888767965f058",
+  "webp": "0d452d3660e52cbdc3db4a1fc60deaff4bfa4257"
+ },
+ "new/face_naru.png": {
+  "sprite": "assets/sprites/character_variants/new/naru/chr_naru_normal.png",
+  "blob": "5e34448631fba6f4f281c0051811d4c30743cc49",
+  "webp": "e721482fe5026926f1224e61177975ebda44f79e"
+ },
+ "new/face_pakki.png": {
+  "sprite": "assets/sprites/character_variants/new/pakki/chr_pakki_normal.png",
+  "blob": "57c129021c0a30eaa78582cf9a3f65839ea243c5",
+  "webp": "43ef313b0ebaecacda7d31567f3e57e8072fed18"
+ },
+ "new/face_rei.png": {
+  "sprite": "assets/sprites/character_variants/new/rei/chr_rei_normal.png",
+  "blob": "996ec0582fa1c15ddd827f5e3839066a60771dd3",
+  "webp": "a390a2210af98ec83b02a438025926d952822d43"
+ },
+ "new/face_sai.png": {
+  "sprite": "assets/sprites/character_variants/new/sai/chr_sai_normal.png",
+  "blob": "fe64402d0d95d2f98d4b1dec306eefc267e695dd",
+  "webp": "e4974df6ed6f34d91a2744077d0d171b597d2473"
+ },
+ "new/face_saku.png": {
+  "sprite": "assets/sprites/character_variants/new/saku/chr_saku_normal.png",
+  "blob": "b9d8a05789ac500b6f82ac0b300c9200e6b1e2f5",
+  "webp": "ef2422a793db300ecfeb3aed66eea0cf3ad62d6d"
+ },
+ "new/face_salaryman.png": {
+  "sprite": "assets/sprites/character_variants/new/salaryman/chr_salaryman_normal.png",
+  "blob": "7a6ead94f475b24f820eaaa93bf763e2e9524d06",
+  "webp": "a28f22977a4a8071810610f2816862d183da900e"
+ },
+ "new/face_samechan.png": {
+  "sprite": "assets/sprites/character_variants/new/samechan/chr_samechan_normal.png",
+  "blob": "efc988e9462ef27737c99fdd46f724c12bb49793",
+  "webp": "2b7f20557cd8aec113dab2333df9d80aa09d9b9e"
+ },
+ "new/face_sheikh.png": {
+  "sprite": "assets/sprites/character_variants/new/sheikh/chr_sheikh_normal.png",
+  "blob": "f70381821116bc9787420d199a93e67eeeae680e",
+  "webp": "1cecdc23247897cc6ff187cad6dc6f0713b660c1"
+ },
+ "new/face_shisha_9000.png": {
+  "sprite": "assets/sprites/character_variants/new/shisha_9000/chr_shisha_9000_normal.png",
+  "blob": "060e34b0191c7924b9a1978ea18b43481c8d4a7f",
+  "webp": "e9f2447865941bc88d320c9de0cc8d0ff1a493ae"
+ },
+ "new/face_steve.png": {
+  "sprite": "assets/sprites/character_variants/new/steve/chr_steve_normal.png",
+  "blob": "cdbe98cc701a1a552e02641c7a5f14635d0bbadd",
+  "webp": "ea20a338ac5d1cedeead5814ab78ede8252fbf0b"
+ },
+ "new/face_suhail.png": {
+  "sprite": "assets/sprites/character_variants/new/suhail/chr_suhail_normal.png",
+  "blob": "614cd5951a6b525aba3e5e2b1fbb09b107c17e5f",
+  "webp": "6a7dac09346584efc297771050fe3ea5bde3c1ae"
+ },
+ "new/face_sui.png": {
+  "sprite": "assets/sprites/character_variants/new/sui/chr_sui_normal.png",
+  "blob": "ec52eb0486cd6d85a7750748c8688ee4424baf7f",
+  "webp": "2c9815136f7eb493574abc04904d10451be98115"
+ },
+ "new/face_sumi.png": {
+  "sprite": "assets/sprites/character_variants/new/sumi/chr_sumi_normal.png",
+  "blob": "070ec182c3b3699fa9cc5ccdfbe557ea941e1ba0",
+  "webp": "3ffcd22a8c34f7ac7fbb7202fc3ac81077b3a38e"
+ },
+ "new/face_tetsuko.png": {
+  "sprite": "assets/sprites/character_variants/new/tetsuko/chr_tetsuko_normal.png",
+  "blob": "ed311b145d57fc7b6ea8e26bcd953a0e0b99ab86",
+  "webp": "1405c195114c938fd9676c354cd3e47db8e86c68"
+ },
+ "new/face_tsumugi.png": {
+  "sprite": "assets/sprites/character_variants/new/tsumugi/chr_tsumugi_normal.png",
+  "blob": "b761f4f547db0010fecc91cd28aa85af45c9608f",
+  "webp": "8eab6fb93f10e6f7c327e7432a8169c8e5654688"
+ },
+ "new/face_uranaishi.png": {
+  "sprite": "assets/sprites/character_variants/new/uranaishi/chr_uranaishi_normal.png",
+  "blob": "667611dd4e96224297dbcbb5eec8c95e732425a9",
+  "webp": "1094a7535130093f18c27bf1f0a38f37d83556a5"
+ },
+ "new/face_volk.png": {
+  "sprite": "assets/sprites/character_variants/new/volk/chr_volk_normal.png",
+  "blob": "3fe92cea06acbd24dbdfe8e17ab06cc421d141cf",
+  "webp": "816c54d3942d7dd25b6dad5f5a9cecf67a98ccf7"
+ },
+ "new/face_yoru.png": {
+  "sprite": "assets/sprites/character_variants/new/yoru/chr_yoru_normal.png",
+  "blob": "5edf17b268713794db659accaf818a130e3ecff1",
+  "webp": "72255ec49d1df6b3790998cc3de3fb6f8a47ccb6"
  }
 }

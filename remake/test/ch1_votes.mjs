@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { beginCh1Votes, castCh1Votes, CH1_JUDGES } from "../js/craft/ch1-votes.js";
+import { beginCh1Votes, castCh1Votes, ch1Standings, CH1_JUDGES, CH1_CONTESTANTS } from "../js/craft/ch1-votes.js";
 
 const craft = parts => ({ holes: { score: parts[0] }, heat: { score: parts[1] },
   stats: { craftQuality: parts[2] }, careHistory: [{ score: parts[3] }, { score: parts[4] }],
@@ -18,8 +18,18 @@ for (const score of [60, 70, 80, 82, 84, 85, 86, 88, 90, 100]) {
   const p = match([score, score, score, score, score]);
   assert.deepEqual(p, match([score, score, score, score, score]), "同じ制作は同じ票");
   for (const judge of CH1_JUDGES) assert.equal(Object.values(p.votes[judge]).reduce((a, b) => a + b, 0), 10);
-  assert.equal(p.result.rows.reduce((a, b) => a + b.points, 0), 30);
+  assert.equal(p.result.rows.reduce((a, b) => a + b.points, 0), 34);
+  assert(p.result.rows.every(row => row.points >= 1), "全員に最低1票");
+  const old = structuredClone(p);
+  delete old.baseVotes;
+  const oldRows = ch1Standings(old, score).rows;
+  assert.deepEqual(p.result.rows.map(row => [row.id, row.rank]), oldRows.map(row => [row.id, row.rank]), "基礎票は順位を変えない");
+  assert(p.result.rows.every(row => row.points === oldRows.find(previous => previous.id === row.id).points + 1));
 }
+const mint = match([90, 90, 90, 90, 90]);
+assert.equal(CH1_JUDGES.reduce((sum, judge) => sum + mint.votes[judge].minto, 0), 0, "旧方式のみんと0票を再現");
+assert.equal(mint.result.rows.find(row => row.id === "minto").points, 1);
+assert.equal(CH1_CONTESTANTS.length, 4);
 assert.equal(match([80, 80, 80, 80, 80]).result.rank, 4);
 assert.equal(match([90, 90, 90, 90, 90]).result.rank, 1);
 const close = match([84, 87, 86, 86, 86]);

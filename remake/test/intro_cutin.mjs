@@ -110,9 +110,9 @@ try {
   const graphicMaki = await artFor("maki", "graphic");
   assert.match(graphicMaki.portrait, /character_intros\/graphic\/maki\.webp$/, "既定は新しい絵柄の人物");
   assert.match(graphicMaki.background, /character_intros\/graphic\/bg_maki\.webp$/, "描き直した背景を使う");
-  const graphicKuyuri = await artFor("kuyuri", "graphic");
-  assert.match(graphicKuyuri.portrait, /graphic\/kuyuri\.webp$/);
-  assert.match(graphicKuyuri.background, /graphic\/bg_kuyuri\.webp$/, "全員の背景を新しい絵柄に描き直した（2026-10-31）");
+  const graphicRio = await artFor("rio", "graphic");
+  assert.match(graphicRio.portrait, /graphic\/rio\.webp$/);
+  assert.match(graphicRio.background, /graphic\/bg_rio\.webp$/, "全員の背景を新しい絵柄に描き直した（2026-10-31）");
   const classicMaki = await artFor("maki", "classic");
   assert.match(classicMaki.portrait, /sprites\/characters\/maki\//, "classic で旧の立ち絵に戻る");
   assert.doesNotMatch(classicMaki.background, /graphic\//, "classic で旧の背景に戻る");

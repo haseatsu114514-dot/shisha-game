@@ -4,7 +4,7 @@ const STORE_EVENTS = new Set(["interaction_naru_night_01", "interaction_minto_no
 export function invitationCost(event) {
   if (event === "ch1_minto_fifth") return 800;
   if (STORE_EVENTS.has(event) || event === "__hiyori_shop__" || /^date_/.test(event)) return STORE_INVITE_COST;
-  if (/^friend_/.test(event) && !["friend_sumi", "friend_kuyuri"].includes(event)) return STORE_INVITE_COST;
+  if (/^friend_/.test(event) && !["friend_sumi", "friend_rio"].includes(event)) return STORE_INVITE_COST;
   return 0;
 }
 export const invitationGrowth = (event) => event === "__sumi_baito__" || event === "__mukai_baito__" ? { points: 1 } : { budget: 1, points: 2 };

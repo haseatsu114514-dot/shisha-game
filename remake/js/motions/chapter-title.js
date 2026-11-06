@@ -29,8 +29,8 @@ const CH1_PEOPLE = [
   { id: "hajime", x: 1061, y: 287, sx: 1067 },
   { id: "sumi", x: 845, y: 262, sx: 850 },
   { id: "tsumugi", x: 663, y: 330, sx: 666 },
-  { id: "adam", x: 440, y: 285, sx: 446 },
-  { id: "naru", x: 216, y: 279, sx: 221 },
+  { id: "naru", x: 440, y: 285, sx: 446 },
+  { id: "adam", x: 216, y: 279, sx: 221 },
   { id: "minto", x: 43, y: 319, sx: 43 },
 ].map((p, i) => ({ ...p, at: 250 + i * 240, ms: 1900 }));
 const CH1_SHADOW_Y = 618;

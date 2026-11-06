@@ -161,6 +161,27 @@ for (let stage = 0; stage < CH3_AFTERMATH_SCENES.length; stage++) {
 }
 assert.equal(h.calls.errors.length, 0);
 assert.equal(continuous.flags._ch3_cleared, true);
+// #2658: LOADから大会後のmukai寄り道を開き、完読後は保存して再訪で消える。
+{
+  const trace = winningSave();
+  trace.flags._ch3_read_ch3_cigarman_rumor = true;
+  beginChapterThreeAftermath(trace);
+  completeChapterThreeAftermathScene(trace, "ch3_abyss_hotel");
+  const loadedState = clone(trace), loaded = await harness("ch3-aftermath", loadedState);
+  assert.equal(await loaded.api.runChapterThreeAftermath(), true);
+  const action = name => loaded.calls.screens.at(-1).root.children.at(-1).children
+    .find(node => node.props.dataset?.test === `ch3-aftermath-${name}`);
+  assert(action("detour-open"), "LOAD offers the detour entrance");
+  await action("detour-open").props.onclick();
+  assert(action("detour-ch3_cigarman_trace"), "the mukai trace is selectable");
+  await action("detour-ch3_cigarman_trace").props.onclick();
+  assert.equal(loaded.calls.errors.length, 0);
+  assert.equal(loaded.calls.saves, 1, "the completed detour is saved once");
+  assert.equal(loadedState.flags._ch3_read_ch3_cigarman_trace, true);
+  assert.equal(await loaded.api.runChapterThreeAftermath(), true);
+  await action("detour-open").props.onclick();
+  assert(!action("detour-ch3_cigarman_trace"), "the read detour does not replay after resume");
+}
 const complete = winningSave(), tournament = await harness("ch3-tournament", complete);
 await tournament.api.drive(tournament.api.menuOwner());
 assert.equal(tournament.bgm(), "bgm_aftermath", "Winning tournament complete card restores victory BGM");

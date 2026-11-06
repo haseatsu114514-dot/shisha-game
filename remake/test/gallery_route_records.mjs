@@ -115,7 +115,7 @@ storage.set(g.GALLERY_PROGRESS_KEY, JSON.stringify({ routeRecords: {
     trueEndAsLover: 1 },
   ageha: { becameLover: 1, eventsSeen: "2", trueEndAsLover: true },
   naru: { becameLover: "true", eventsSeen: [null, ""], trueEndAsLover: false },
-  kuyuri: {}, mashiro: [], tsumugi: null, other: "bad",
+  rio: {}, mashiro: [], tsumugi: null, other: "bad",
   "Bad-ID": { becameLover: true },
 } }));
 assert.deepEqual(routes(), {
@@ -140,3 +140,42 @@ for (const notify of [
 ]) assert.doesNotThrow(notify);
 assert.equal(storage.has(g.GALLERY_PROGRESS_KEY), false);
 console.log("PASS: explicit route records, strict stage identity, normalization, preservation and storage failure");
+
+// 「恋人成立」は告白が実際に成立した時（romance.js の becomeLovers）だけ記録する。断り・同じ相手の再読・
+// セーブの取り込み（読み込みや枠の走査）では記録せず、記録の保存に失敗しても交際は成立する。
+{
+  failWrites = false; storage.clear();
+  const save = { lovers: [], loveLevel: {}, lovePts: {}, loverSince: {}, flags: {}, guilt: 0 };
+  const known = {
+    "../core/state.js": { state: save, save() {} },
+    "../core/stats.js": { AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
+    "../core/bus.js": { emit() {} },
+    "./date-scene.js": { relationshipDayTotal: () => 12 },
+  };
+  const romanceSource = fs.readFileSync(new URL("../daily/romance.js", root), "utf8");
+  const imports = new Map([...romanceSource.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)]
+    .map(([, names, spec]) => [spec, names.split(",").map(name => name.trim()).filter(Boolean)]));
+  const romanceModule = new vm.SourceTextModule(romanceSource, { context, identifier: "romance.js" });
+  await romanceModule.link(spec => spec === "../core/gallery-progress.js" ? mod
+    : new vm.SyntheticModule(imports.get(spec), function () {
+      for (const name of imports.get(spec)) this.setExport(name, Object.hasOwn(known[spec] || {}, name)
+        ? known[spec][name] : () => { throw Error(`Unexpected port ${spec}:${name}`); });
+    }, { context, identifier: spec }));
+  await romanceModule.evaluate();
+  const romance = romanceModule.namespace;
+  unchanged(() => romance.onDialogueEnter("confession_rio_reject"));
+  romance.onDialogueEnter("confession_minto_accept");
+  assert.deepEqual(copy(save.lovers), ["minto"]);
+  assert.deepEqual(routes(), { minto: record({ becameLover: true }) });
+  unchanged(() => romance.onDialogueEnter("confession_minto_accept"));
+  romance.onDialogueEnter("ch3_ageha_answer", { metadata: { set_romance: "ageha" } });
+  assert.deepEqual(routes(), { minto: record({ becameLover: true }), ageha: record({ becameLover: true }) });
+  storage.clear();
+  g.recordGalleryProgress(save);
+  assert.deepEqual(routes(), {}, "importing a save with lovers does not record 恋人成立");
+  failWrites = true;
+  assert.doesNotThrow(() => romance.onDialogueEnter("confession_tsumugi_accept"));
+  assert(save.lovers.includes("tsumugi"), "a failed gallery write must not undo the relationship");
+  failWrites = false;
+  console.log("PASS: 恋人成立 is recorded once when a confession succeeds, never from declines, re-reads or save imports");
+}

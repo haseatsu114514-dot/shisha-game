@@ -68,7 +68,7 @@ try {
     assert.equal(await page.locator(".gameover").getAttribute("data-layout"), layout);
     assert.equal(await page.locator(".go-retry").textContent(), "する");
   }
-  const variants = [0, 1, 2, ...["tsumugi", "minto", "kuyuri", "ageha", "mashiro", "samechan"].map(id => `premium:${id}`)];
+  const variants = [0, 1, 2, ...["tsumugi", "minto", "rio", "ageha", "mashiro", "samechan"].map(id => `premium:${id}`)];
   for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }]) {
     await page.setViewportSize(viewport);
     for (const [index, variant] of variants.entries()) {
@@ -81,7 +81,7 @@ try {
       const g = await measurements(); checkClassic(g);
       assert.equal(g.count, "20", "caption advance must not shorten classic deadline");
       assert.equal(g.echo.fontSize, 1000);
-      assert.equal(await page.locator(".go-retry").textContent(), "最初から再挑戦");
+      assert.equal(await page.locator(".go-retry").textContent(), "もう一台、作る");
       const choice = index % 2 ? "quit" : "retry";
       await page.locator(choice === "retry" ? ".go-retry" : ".go-quit").click();
       await page.clock.runFor(8000);

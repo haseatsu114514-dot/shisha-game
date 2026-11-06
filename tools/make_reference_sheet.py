@@ -12,7 +12,7 @@
 
 使い方:
     python3 tools/make_reference_sheet.py            # 全キャラ
-    python3 tools/make_reference_sheet.py minto kuyuri  # 指定キャラ
+    python3 tools/make_reference_sheet.py minto rio  # 指定キャラ
     python3 tools/make_reference_sheet.py lineup     # 背比べ図
     python3 tools/make_reference_sheet.py facesize   # ゲーム画面での顔の大きさの比較図（tools/portrait_metrics.py sheet と同じ）
 出力: asset_sources/reference-sheets/<id>/<id>-reference-sheet.png
@@ -139,7 +139,7 @@ CHARS = {
             "人物ではなくマスコット。他キャラの頭身は当てはめない。顔アップは目・口・蝶ネクタイまでの寄り",
         ],
     },
-    "kuyuri": {
+    "rio": {
         "points": [
             "青みがかった暗い長髪。年上らしい落ち着いた半目と控えめな微笑み",
             "襟元をゆるめた白シャツに黒のスラックス、ヒール。片手に書類やノートを持つ",
@@ -535,7 +535,7 @@ PAKKI_RATIO = 0.94 / 1.36  # remake/js/vn/engine.js の FRAMING（pakkiTarget / 
 HEIGHT_CM = {
     "hajime": 172, "sumi": 182, "naru": 176, "adam": 178, "minto": 156, "ageha": 160,
     "sui": 178, "dr_kemuri": 175, "mashiro": 155, "samechan": 156,
-    "tsumugi": None, "kuyuri": None, "maezono": None, "pakki": None,
+    "tsumugi": None, "rio": None, "maezono": None, "pakki": None,
 }
 BASE_CM = 172  # spriteScale 1.0 ＝ はじめの身長
 
@@ -554,7 +554,7 @@ def sheet_height(o, cid):
 
 def body_scale(chars):
     """全シート共通の全身の縮尺 REF（ゲーム内の高さ1.0を何pxで描くか）。
-    1枚ずつ枠に合わせると、横に広い立ち絵（くゆり）が小さく写り、身長の比較ができなくなるため、
+    1枚ずつ枠に合わせると、横に広い立ち絵（凛想）が小さく写り、身長の比較ができなくなるため、
     ゲームと同じく spriteScale に比例した高さで描き、いちばん大きい立ち絵が枠に収まる値にする。"""
     global _body_k
     if _body_k is None:

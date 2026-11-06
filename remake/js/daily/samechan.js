@@ -26,12 +26,28 @@ const cinemaImpressionDue = () => (state.spotVisits?.rojiura_cinema || 0) >= 1 &
 // 体力が少ない日の来店で一度だけ、腹話術をしまって本人の声で叱る。ほかの来店イベントは押しのけない。
 const unwellVisit = { dialogue: "samechan_shop_unwell", flag: "_samechan_unwell_done" };
 const unwellVisitDue = () => state.stamina < STAMINA_LOW && !state.flags[unwellVisit.flag];
+// 東京・ドバイへ発つ前の地元の準備3日（chapters/departure-prep.js）だけ、その章の送り出しの会話を一度（N3a。daily/spots.js の
+// CHAPTER_TALKS の prep と同じ扱い。来店の処理が別なのでここに持つ）。初来店の後の来店で、ほかの来店イベントより先に読む。
+// 台本は data/dialogue/ch3_ch4_home.json を準備期間に読み込むので、未読込なら出さない。既読は `_talk_seen_<scene>`。
+export const SAMECHAN_PREP_TALKS = Object.freeze({ 3: "ch3_prep_samechan", 4: "ch4_prep_samechan" });
+// 判定は core/chapter-clock.js の departurePrep と同じ（単体で読み込むテストがあるので import しない）。
+const inDeparturePrep = value => {
+  const prep = value?.chapter === 3 ? value.flags?._ch3_prep : value?.chapter === 4 ? value.flags?._ch4_prep : null;
+  return !!prep && !prep.departed && Number.isInteger(prep.startDay);
+};
+export function samechanPrepTalkDue(value = state) {
+  const scene = inDeparturePrep(value) && value.phase === "daily" ? SAMECHAN_PREP_TALKS[value.chapter] : null;
+  return scene && !value.flags?.[`_talk_seen_${scene}`] && DB.dialogues[scene]?.lines?.length ? scene : null;
+}
+const isPrepTalk = id => Object.values(SAMECHAN_PREP_TALKS).includes(id);
 
 /** 旧訪問回数は既存会話にだけ使う。新しい交流と問いかけの既読を推測しない。 */
 export function samechanVisitDialogue() {
   if (!state || (state.chapter || 1) < 2) return null;
   const count = state.story.samechan || 0;
   if (count === 0) return "samechan_shop_first";
+  const prepTalk = samechanPrepTalkDue();
+  if (prepTalk) return prepTalk;
   if (count >= 3) {
     for (const event of entryEvents) {
       if (state.flags[event.flag]) continue;
@@ -113,7 +129,7 @@ export async function playSamechanEncounter({ signal = null } = {}) {
     state.flags._lime_contact_samechan = true;
     // アカウントの通称を知った後の名前・旧セーブも同じ処理で揃える。
     syncSamechanKnowledge();
-    gainAffinity("samechan", 1); // 好きでも少し怖くても、手伝ってもらった親近感は同じ。
+    gainAffinity("samechan", 1, { firstMeeting: true }); // 初対面は♥1だけ。端数を次回へ持ち越さない。
     save();
     return true;
   } finally { encountersInFlight.delete(owner); }
@@ -172,6 +188,7 @@ export async function visitSamechan(spot, { signal = null } = {}) {
     addStamina(spot.stamina || 0);
     const event = [...entryEvents, ...SAMECHAN_HEART_EVENTS, cinemaImpression, unwellVisit].find(e => e.dialogue === dialogue);
     if (event) state.flags[event.flag] = true;
+    if (isPrepTalk(dialogue)) state.flags[`_talk_seen_${dialogue}`] = true;
     if (dialogue === "samechan_shop_bond_question") {
       state.flags[questionDoneKey("samechan")] = true;
       releaseAffinity("samechan");

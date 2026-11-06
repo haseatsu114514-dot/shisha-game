@@ -6,6 +6,12 @@ import { suite, baseURL, assertFits } from "./support.mjs";
 const out = process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser";
 fs.mkdirSync(out, { recursive: true });
 const t = (id) => `[data-test="${id}"]`;
+// CIでは5分枠に収めるため2つに分けて動かす（tools/ci/suites.json の growth-levelup-browser-1/2）。
+// --part=k/n で、登録順の k 番目から n 件おきのケースだけを動かす。省略時は全件。
+const partArg = process.argv.find(arg => arg.startsWith("--part="));
+const [partIndex, partCount] = partArg ? partArg.slice(7).split("/").map(Number) : [1, 1];
+if (!(Number.isInteger(partCount) && partCount >= 1 && Number.isInteger(partIndex) && partIndex >= 1 && partIndex <= partCount))
+  throw new Error(`bad ${partArg}: use --part=k/n`);
 
 async function setupDaily(page) {
   await page.evaluate(async () => {
@@ -1728,12 +1734,16 @@ await suite("growth-levelup", async (runCheck) => {
         xp: s.growth?.xp || 0, fresh: structuredClone(s.growth?.fresh || {}), affinity: s.affinity.da_silva || 0 };
     });
     const before = await snapshot();
+    assert.equal(before.affinity, 0, 'The fixture starts before the first FESTA meeting');
+    assert(!await page.evaluate(() => festaCore.state.met.da_silva));
     for (let visit = 0; visit < 3; visit++) {
       await page.locator(t("ch4-go-festa")).click();
       const scene = visit ? "ch4_festa_revisit" : "ch4_festa";
       await page.waitForFunction(id => festaCore.state.flags._ch4.read[id] === true, scene);
       await page.locator(t("ch4-go-festa") + ":not(:disabled)").waitFor();
-      assert.deepEqual(await snapshot(), before, "無料のFESTA再訪ではX1・新鮮さ・資源を変えない");
+      assert.deepEqual(await snapshot(), { ...before, affinity: 9 }, "初対面だけ♥1ちょうど。無料のFESTA再訪では好感度・X1・新鮮さ・資源を増やさない");
+      assert.equal(await page.evaluate(() => festaCore.state.affinityCarry.da_silva), 0);
+      assert.equal(await page.evaluate(() => festaCore.state.flags._affinity_first_meeting_pending_da_silva), undefined);
     }
     assert.equal(await page.evaluate(() => festaCore.state.met.da_silva), true);
   });
@@ -1789,6 +1799,9 @@ await suite("growth-levelup", async (runCheck) => {
         paid: { "M-W1": {}, "M-S1": {}, B1: { any: 1 } }, learned: ["M-W1"], effective: true, beforeClose: true, afterClose: false });
     }, { viewport, ...(label === "touch" ? { isMobile: true, hasTouch: true } : {}) });
   }
+  const total=cases.length;
+  cases.splice(0,cases.length,...cases.filter((_case,index)=>index%partCount===partIndex-1));
+  if(partCount>1)console.log(`[growth-levelup] part ${partIndex}/${partCount}: ${cases.length} of ${total} cases`);
   await Promise.all(Array.from({length:2},async()=>{
     for(;;){const next=cases.shift();if(!next)return;await runCheck(...next);}
   }));

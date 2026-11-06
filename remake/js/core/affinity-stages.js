@@ -5,7 +5,7 @@ export const VISIT_SEQ = {
   naru: ["ch1_naru_first", "ch1_naru_second", "ch1_naru_third", "ch1_naru_group_regulars", "ch1_naru_fourth", "ch1_naru_fifth"],
   adam: ["ch1_adam_first", "ch1_adam_second", "ch1_adam_group_soutoku", "ch1_adam_third", "ch1_adam_fourth", "ch1_adam_fifth"],
   minto: ["ch1_minto_first", "ch1_minto_second", "ch1_minto_third", "ch1_minto_group_regulars", "ch1_minto_fourth", "ch1_minto_phantom_smell"],
-  kuyuri: ["ch1_kuyuri_first", "ch1_kuyuri_second", "ch1_kuyuri_third", "ch1_kuyuri_fourth", "ch1_kuyuri_fifth", "ch1_kuyuri_sixth"],
+  rio: ["ch1_rio_first", "ch1_rio_second", "ch1_rio_third", "ch1_rio_fourth", "ch1_rio_fifth", "ch1_rio_sixth"],
 };
 
 // ♥2〜♥5。最後の白・赤のグミベアの試作（#2023）は味の会話を兼ねる。
@@ -69,9 +69,9 @@ export const SAMECHAN_HEART_EVENTS = [
 ];
 export const samechanHeartEventDone = (s, event) => settled(s, "samechan") || !!s.flags?.[event.flag];
 export const samechanHeartEventsDone = s => SAMECHAN_HEART_EVENTS.every(event => samechanHeartEventDone(s, event));
-// くゆりの♥4・♥5（#2025）。後から足した段階なので、締めくくり・友人・恋人へ着地済みの旧セーブには出さず、読んだものとして扱う。
-export const KUYURI_LATE_STORIES = ["ch1_kuyuri_fifth", "ch1_kuyuri_sixth"];
-export const visitStorySkipped = (s, id, scene) => id === "kuyuri" && KUYURI_LATE_STORIES.includes(scene) && settled(s, id);
+// 凛想の♥4・♥5（#2025）。後から足した段階なので、締めくくり・友人・恋人へ着地済みの旧セーブには出さず、読んだものとして扱う。
+export const RIO_LATE_STORIES = ["ch1_rio_fifth", "ch1_rio_sixth"];
+export const visitStorySkipped = (s, id, scene) => id === "rio" && RIO_LATE_STORIES.includes(scene) && settled(s, id);
 export function questionComplete(s, id) {
   return settled(s, id) || !!s.flags?.[questionDoneKey(id)];
 }
@@ -82,7 +82,7 @@ export function pendingAffinityStage(s, id, db = {}) {
   const flags = s.flags || {};
   const seq = id === "sumi" ? null : VISIT_SEQ[id];
   if (seq) seq.forEach((scene, level) => stages.push({ level, scene, done: (s.story?.[id] || 0) > level || visitStorySkipped(s, id, scene) }));
-  if (["tsumugi", "minto", "kuyuri"].includes(id)) stages.push({ level: 3, scene: `ch1_${id}_bond_question`, done: questionComplete(s, id) });
+  if (["tsumugi", "minto", "rio"].includes(id)) stages.push({ level: 3, scene: `ch1_${id}_bond_question`, done: questionComplete(s, id) });
   if (id === "samechan") stages.push(
     { level: 0, done: !!flags._samechan_first_encounter },
     { level: 1, done: (s.story?.samechan || 0) > 0 },

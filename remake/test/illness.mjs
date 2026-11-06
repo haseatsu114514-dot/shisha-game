@@ -53,7 +53,7 @@ const values = {
   // 家シーシャ（#638）: 寝る前の一服はこのテストの対象外（home_shisha.mjs で確かめる）
   "home-shisha.js": { runHomeShisha: async () => false },
   "home-rig.js": { showSumiRigAtHome: async () => false },
-  "shop.js": { openShop: async () => null, visitKuyuri: async () => {}, ownsFlavor: () => true },
+  "shop.js": { openShop: async () => null, visitRio: async () => {}, ownsFlavor: () => true },
   "fortune.js": { doFortune: async () => {} },
   "phone.js": { deliverMorning: () => 0, pushNotice: noop, hasUnread: () => false, unreadCount: () => 0,
     actionInviteNeedingReply: () => null, openLime: async () => {}, limeCoach: noop, expireInvitations: noop,

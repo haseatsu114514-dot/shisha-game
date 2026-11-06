@@ -67,7 +67,7 @@ try {
   // 現在遊べる第1章の6人。誰か一人だけを選んでも、その相手の記憶が戻る。
   const firstScenes = {
     sumi: "ch1_sumi_basics", naru: "ch1_naru_first", adam: "ch1_adam_first",
-    minto: "ch1_minto_first", tsumugi: "ch1_tsumugi_first", kuyuri: "ch1_kuyuri_first",
+    minto: "ch1_minto_first", tsumugi: "ch1_tsumugi_first", rio: "ch1_rio_first",
   };
   for (const [character, scene] of Object.entries(firstScenes)) {
     const result = await page.evaluate(async ({ scene }) => {

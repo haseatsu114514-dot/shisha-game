@@ -79,6 +79,10 @@ function drive(value, cs, { failAt = -1, failureKind = "burnt" } = {}) {
   assert.equal(p.voted, 4);
   assert.equal(p.result.careHistory.length, 2);
   for (const judge of CH4_JUDGES) assert.equal(CH4_CONTESTANTS.reduce((sum, id) => sum + p.votes[judge][id], 0), 10);
+  assert(p.result.rows.every(row => row.points >= 1));
+  assert.equal(p.result.rows.reduce((sum, row) => sum + row.points, 0), 34);
+  assert.deepEqual(p.result.rows.map(row => [row.id, row.rank]),
+    chapterFourStandings({ ...p, baseVotes: undefined }).map(row => [row.id, row.rank]));
   assert.equal(chapterFourTournamentOutcome(value), "win");
   assert.equal(completeChapterFourScene(value, "ch4_defeat"), false);
   assert.equal(completeChapterFourScene(value, "ch4_final"), true);
@@ -297,11 +301,11 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   assert.equal(average.p.result.win, true);
   assert.equal(average.p.result.rows[1].id, "naru", "Naru competes to the end");
   // その先頭は、はじめと同じ持ち点（6対6、9対9）で、その回の出来の差で上に出ている（台本は「先頭に並んだ」と言う）。
-  assert.deepEqual(average.rounds.slice(1, 3).map(r => r.top), [["naru:6", "hajime:6"], ["naru:9", "hajime:9"]]);
+  assert.deepEqual(average.rounds.slice(1, 3).map(r => r.top), [["naru:7", "hajime:7"], ["naru:10", "hajime:10"]]);
   // 制作後の票を逃し（王煙楼87に届かない）、提供後に2位まで上げた一台では、なるが持ち点でも単独の先頭になる。
   const late = byRound(entry(), { ...craft(89), holes: craft(86).holes, heat: craft(86).heat, servedQuality: 96 });
   assert.deepEqual(late.rounds[0].got, { hajime: 0, naru: 0, master_hookah: 3, sheikh: 3 });
-  assert.deepEqual(late.rounds[1].top, ["naru:6", "hajime:3"]);
+  assert.deepEqual(late.rounds[1].top, ["naru:7", "hajime:4"]);
   // 最後の総合がシェイクに届かない一台（全工程87）: 最後の票の1位はシェイク、2位はなる。シェイクが勝つ。
   const short = byRound(entry(), craft(87));
   assert.equal(short.rounds[3].got.sheikh, 6);
@@ -407,7 +411,7 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   assert.equal(pressured.p.result.rows[0].id, "naru");
   const short = run(entry(), craft(85));
   assert.equal(short.p.result.rows[0].id, "sheikh", "Sheikh can take the title on the final poll");
-  assert.equal(short.rounds[0].rows.find(row => row.id === "master_hookah").points, 3,
+  assert.equal(short.rounds[0].rows.find(row => row.id === "master_hookah").points, 4,
     "The steady master can receive early support; no rival is forced to zero votes");
   const comeback = craft(100);
   comeback.holes = craft(89).holes; comeback.heat = craft(89).heat; comeback.servedQuality = 96;
@@ -418,6 +422,7 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   let old = entry(), cs = craft(89);
   startChapterFourCraft(old, cs);
   delete chapterFourMatch(old).rulesVersion;
+  delete chapterFourMatch(old).baseVotes;
   for (let step = 0; step < 9; step++) { beginChapterFourStep(old); finishChapterFourStep(old, cs); }
   const committed = structuredClone(chapterFourMatch(old).votes);
   beginChapterFourStep(old);
@@ -439,6 +444,7 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
       const value = entry(); startChapterFourCraft(value, craft(89));
       chapterFourMatch(value).rulesVersion = 2;
       if (version === 1) delete chapterFourMatch(value).rulesVersion;
+      delete chapterFourMatch(value).baseVotes;
       return value;
     };
     const advance = (value, until) => {

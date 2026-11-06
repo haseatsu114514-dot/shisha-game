@@ -76,14 +76,19 @@ core.state.growth.nodes=[nodeFor("gauge").id]; assert(skill.slow({})>1.18);
 core.state.growth.nodes=[nodeFor("heat").id]; assert(skill.window({})>1.45);
 core.state.growth.nodes=[nodeFor("dodge").id]; assert(steamHeartRadius()<3.2);
 core.state.growth.nodes=["B4"]; core.state.fortune={char:"adam"};
-stats.gainAffinity("adam",1,{source:"lime",onGain(){}});
 const totalAffinity = () => (core.state.affinity.adam||0)+(core.state.affinityCarry.adam||0);
-// 占いの倍率は本体の値を読む（2026-11-02 に ×1.5 → ×2）。旧報酬は丸めた2、盤の人柄1%に占いを一度だけ掛ける
-const F=stats.FORTUNE_AFFINITY_MULT, legacyFortune=Math.round(1*1.2*F);
-assert(Math.abs(totalAffinity()-(legacyFortune+.01*F)*.85*.25)<1e-10,"旧報酬と盤の端数へ占いを一度だけ適用");
-assert.equal(core.state.fortune,undefined);
+// LIMEは会っていないので占いを使わない（台帳 URA07）。倍にならず、効果も残る
 stats.gainAffinity("adam",1,{source:"lime",onGain(){}});
-assert(Math.abs(totalAffinity()-((legacyFortune+.01*F)+(1+.01))*.85*.25)<1e-10);
+const limeOnly=(1+.01)*.85*.25;
+assert(Math.abs(totalAffinity()-limeOnly)<1e-10,"LIMEで占いが発動した");
+assert.deepEqual(core.state.fortune,{char:"adam"});
+// 占いの倍率は本体の値を読む（2026-11-02 に ×1.5 → ×2）。会ったとき、旧報酬は丸めた2、盤の人柄1%に占いを一度だけ掛ける
+const F=stats.FORTUNE_AFFINITY_MULT, legacyFortune=Math.round(1*1.2*F);
+stats.gainAffinity("adam",1);
+assert(Math.abs(totalAffinity()-limeOnly-(legacyFortune+.01*F)*.85)<1e-10,"旧報酬と盤の端数へ占いを一度だけ適用");
+assert.equal(core.state.fortune,undefined);
+stats.gainAffinity("adam",1);
+assert(Math.abs(totalAffinity()-limeOnly-((legacyFortune+.01*F)+(1+.01))*.85)<1e-10);
 core.newGame(); growth.ensureGrowth();
 const cs={ mix:{ lemon:12 },steamSeconds:360 };
 const baseDamage=leafDamagePerPull(cs,{ lemon:{mix_life:1} });
@@ -93,7 +98,7 @@ core.state.growth.nodes=[nodeFor("tongue").id];
 gainFlavorExperience(core.state,{ lemon:12 },10);
 assert(core.state.flavorMastery.lemon>10);
 // 旧セーブの不足補完は、今の盤の熟練度倍率で過去の報酬を増やさない。
-core.state.schema=23; core.state.story.kuyuri=4;
+core.state.schema=23; core.state.story.rio=4;
 core.save(); core.load();
 assert.equal(core.state.flavorMastery.rose,6); assert.equal(core.state.flavorMastery.lychee,6);
 assert.equal(core.state.flavorMastery.blueberry,12);
@@ -408,7 +413,7 @@ assert.equal(voteImpact[0].boostedWins,0,"授業を覚えても低い制作点�
 const legacyTournament=await import("../js/chapters/ch3-tournament-state.js");
 const boundaryVote=(scenario,seed,{p})=>{
  const value={chapter:3,day:42,weatherSeed:seed,flags:{}};
- const progress=legacyTournament.startAttempt(value,{careHistory:[]});delete progress.rulesVersion;
+ const progress=legacyTournament.startAttempt(value,{careHistory:[]});delete progress.rulesVersion;delete progress.baseVotes;
  for(const [round,performance]of [80,84,80,scenario.final].entries()) assert(legacyTournament.castVotes(progress,round,performance,null,p));
  const rows=legacyTournament.standings(progress);
  return {rank:rows.find(r=>r.id==="hajime").rank,votes:Object.fromEntries(rows.map(r=>[r.id,r.points]))};
@@ -420,7 +425,7 @@ assert.equal(withoutGrape.votes.hajime,9);assert.equal(withGrape.votes.hajime,11
 const currentBoundary=createCh3TournamentEvaluate({performanceOf:s=>({rounds:[84,88,84,s.final]})});
 const currentWithout=currentBoundary({id:"without",final:86},1,{p:0}),currentWith=currentBoundary({id:"with",final:88},1,{p:0});
 assert.equal(currentWithout.rank,2);assert.equal(currentWith.rank,1);
-assert.equal(currentWithout.votes.hajime,9);assert.equal(currentWith.votes.hajime,11);
+assert.equal(currentWithout.votes.hajime,10);assert.equal(currentWith.votes.hajime,12);
 console.log("[grape lesson] PASS: family/unique-most, learned/off/failure, +2 once/cap/SAVE/LOAD, legacy/current C3 rules and exact +2 boundaries",JSON.stringify(voteImpact));
 {
  // #2213・オーナー判断 2026-11-04 案1: K11「火の番」は、熱管理の交換でトングで持ってくる焼き炭の焼け具合を1段よくする。

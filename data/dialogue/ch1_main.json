@@ -1597,7 +1597,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "tonariの蒸野はじめです。よろしくお願いします"
+          "text": "tonariの逢縁はじめです。よろしくお願いします"
         },
         {
           "type": "condition",
@@ -1883,6 +1883,31 @@
           "speaker": "",
           "face": "",
           "text": "つむぎは、空いた席とテーブルの間に短い線を足した。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん。あの人、今日はミント多めでしたね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。頭冷やしたいって言ってたから、炭も少し離した"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "スミさんの受け売りだよ。客の顔を見て、必要な熱だけ入れろって"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……顔を、見て"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは小さく繰り返して、さっき足した線の横に、何か短く書き込んだ。"
         }
       ],
       "branches": {

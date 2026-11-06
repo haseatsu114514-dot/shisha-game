@@ -1,6 +1,6 @@
 // 審査員・大会実況・自主練の心の声を、いま話す一人だけ左下に表示する。
 import { el } from "../core/util.js";
-import { displayName, portraitInfo, faceIconUrl } from "../core/data.js";
+import { displayName, portraitInfo, faceIconUrl, faceFrame } from "../core/data.js";
 import { state } from "../core/state.js";
 import { evaluationOf, feedbackLine, commentaryLine, tutorialGuide, innerVoiceLine, watchLine } from "./feedback.js";
 import { autoWrap } from "../vn/text.js";
@@ -40,16 +40,21 @@ const STEP_JUDGE_CH3 = { ...STEP_JUDGE, mix: "emil", steam: "emil", pull: "emil"
 // 第4章 GRAND SMOKE: 博士の席（手元の技術）をゲスト審査員ダ・シルヴァが見る。
 const STEP_JUDGE_CH4 = { ...STEP_JUDGE_CH3, setup: "da_silva", pack: "da_silva", holes: "da_silva", heat: "da_silva", place: "da_silva" };
 const MOODS = { watch: "手元を見守る", nod: "小さくうなずく", concern: "手元を気にかける", think: "静かに考える" };
-// 採用済みの顔アイコンと同じ頭部の切り取り（tools/make_face_icons.py の face_box）。
-// 旧版通常絵の x / y / 辺を画像幅で正規化。表示と先読みも同じ版の表情差分を使う。
+// 採用済みの顔アイコンと同じ頭部の切り取り（tools/make_face_icons.py の face_box → manifest の faceFrames）。
+// 通常絵の x / y / 辺を画像幅で正規化。胴体の中心へ寄せず、表情差分の原画をこの枠へ表示する。
 // 2026-11-02 立ち絵の規格（docs/portrait_standard.md）で顔の大きさを測った枠にそろえ、エミルも加えた。
+// 2026-11-06 設定で新バージョンの立ち絵を選んでいる時は、新バージョンの絵で測った枠を使う（現行の枠のままだと顔が枠からずれた）。
 // 太陽は通常だけ腕を上げていて表情ごとに頭の位置が違うので、ここには入れず本体から枠を決める。
-const FACE_CROPS = {
-  hajime: [.47879, .17299, .22768], sumi: [.38393, .10938, .21429],
-  sui: [.34933, .05022, .23103], maezono: [.3404, .03906, .26786],
-  dr_kemuri: [.35379, .0904, .21429], emil: [.40067, .00893, .2221],
-  pakki: [.23549, .40848, .62388],
-};
+// パッキーだけは実況の顔として巻き毛・目・口・蝶ネクタイに寄せた手調整（画風ごと。新バージョンは本体の外枠の比で写した値）。
+const BODY_FRAMED = new Set(["da_silva"]);
+const MASCOT_CROPS = { classic: { pakki: [.23549, .40848, .62388] }, new: { pakki: [.24679, .4304, .58246] } };
+function faceCrop(portrait) {
+  const style = portrait.style || "classic";
+  const mascot = MASCOT_CROPS[style]?.[portrait.folder];
+  if (mascot) return mascot;
+  const box = !BODY_FRAMED.has(portrait.folder) && faceFrame(portrait.folder, style)?.box;
+  return box ? box.map((v) => v / 896) : null;
+}
 const faceFor = (id, mood, kind) => id === "sui" ? mood === "think" ? "thinking" : "serious"
   : mood === "nod" ? id === "maezono" && ["perfect", "just"].includes(kind) ? "excited" : id === "dr_kemuri" ? "normal" : "smile"
     : mood === "concern" || mood === "think" ? "serious" : "normal";
@@ -60,7 +65,7 @@ export function audienceAssetUrls(cs) {
   if (!ids.length) return [];
   return [...new Set([...ids, ...(cs.mode === "tournament" ? ["pakki"] : [])].flatMap(id =>
     ["watch", "nod", "concern", "think"].flatMap(mood => ["just", "good"].map(kind =>
-      portraitInfo(id, faceFor(id, mood, kind), "classic")?.src))).filter(Boolean))];
+      portraitInfo(id, faceFor(id, mood, kind))?.src))).filter(Boolean))];
 }
 
 export function buildAudience(cs) {
@@ -88,14 +93,14 @@ export function buildAudience(cs) {
   let primary = ids[0], active = primary, step = "", current = "", changedAt = -Infinity;
   const showPerson = (id, mood, kind = "") => {
     active = id; current = mood; changedAt = performance.now();
-    const label = displayName(id, state), portrait = portraitInfo(id, faceFor(id, mood, kind), "classic");
+    const label = displayName(id, state), portrait = portraitInfo(id, faceFor(id, mood, kind));
     name.textContent = speaker.textContent = label; person.dataset.person = id; person.dataset.mood = mood; root.dataset.speaker = id;
     root.dataset.voice = id === "hajime" ? "inner" : id === "pakki" ? "mc" : "audience";
     person.title = `${label}：${MOODS[mood]}`; person.setAttribute("aria-label", person.title);
     if (portrait) {
       fallbackName.hidden = true;
       image.hidden = false; image.classList.remove("audience-icon"); image.src = portrait.src;
-      const crop = FACE_CROPS[portrait.folder];
+      const crop = faceCrop(portrait);
       const width = crop ? 80 / crop[2] : 380;
       image.style.width = `${width}px`;
       image.style.left = crop ? `${-crop[0] * width}px` : `calc(50% - ${portrait.ax * width}px)`;

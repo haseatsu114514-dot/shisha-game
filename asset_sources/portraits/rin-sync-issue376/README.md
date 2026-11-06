@@ -1,4 +1,4 @@
-# Issue #376：くゆりv12の立ち絵・顔アイコン同期検品
+# Issue #376：凛想v12の立ち絵・顔アイコン同期検品
 
 作業者E `codex-e-visual-20261011-01`、予約成功 [run 38180374973](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38180374973)。基準main `73cd85e0c2f40f18361a6174b9cb9c1064eaab56`。
 
@@ -6,8 +6,8 @@
 
 ## 採用履歴・画素の証拠
 
-- [PR #195](https://github.com/haseatsu114514-dot/shisha-game/pull/195)：くゆりv12の5表情・自然な腰の姿勢・頭部中央アンカー。merge `9d60247f285dd9da150703dcb2be4db4b9e315b2`。
-- [PR #194](https://github.com/haseatsu114514-dot/shisha-game/pull/194)：上記を取り込み、PRT50でくゆりv12から顔アイコンを再制作。merge `67a31860198e41161913d08a514606f753dfab05`。
+- [PR #195](https://github.com/haseatsu114514-dot/shisha-game/pull/195)：凛想v12の5表情・自然な腰の姿勢・頭部中央アンカー。merge `9d60247f285dd9da150703dcb2be4db4b9e315b2`。
+- [PR #194](https://github.com/haseatsu114514-dot/shisha-game/pull/194)：上記を取り込み、PRT50で凛想v12から顔アイコンを再制作。merge `67a31860198e41161913d08a514606f753dfab05`。
 - 採用指示はPRT45、制作・当時の停止・保存指示はPRT46／47。後続のマージ事実とPRT50を優先して現行を照合した。生成記録の古い `main_merge_on_hold` は当時の記録であり、現在のmain未採用を意味しない。
 - 元原画：`.claude/skills/character-portrait-remaster/references/rin-v12-{normal,smile,serious,surprise,sad}.png`。5点の原画SHA256と現行PNGのSHA256は `rin-v12-integration.json` の各記録に一致。
 - 現行5PNGと5lossless WebPの全RGBA画素が一致。顔アイコンは現行 `chr_rin_normal.png` と `tools/make_face_icons.py.make_icon('rin', …)` をメモリ内で計算したRGBA画素に一致。書き戻しや一括生成はしていない。
@@ -38,4 +38,4 @@
 - 採用原画と現在の5PNGハッシュ、PNG/WebP画素、アイコン再計算画素、manifestの5表情・頭部アンカーはPASS。台詞のfaceキーは変えない。
 - Git Safety／diff check／資料リンク検査。`assets/`・`data/`・`remake/`差分なし。セーブ仕様も変えず、旧セーブ・全枠は同じmainのIssue #374検証6ケースで確認済み（本PRで通しプレイを重複実施していない）。
 
-本編の同期実装について新たな承認待ちはない。本PRは台帳・引き継ぎの古い待ち表示と検品証拠の更新。くゆり02タイトルの葉の色修正、別候補CGの選定は本Issueの完了とは分けて保留する。
+本編の同期実装について新たな承認待ちはない。本PRは台帳・引き継ぎの古い待ち表示と検品証拠の更新。凛想02タイトルの葉の色修正、別候補CGの選定は本Issueの完了とは分けて保留する。

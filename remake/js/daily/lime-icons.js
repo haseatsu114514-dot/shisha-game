@@ -20,10 +20,9 @@ const CUSTOM_LIME_ICONS = {
   naru: "naru-private.png", // 私服案をお仕事用アカウントに使う（なるに私用アカウントは無い）
   pakki: "pakki-a.png",
   rei: "rei-b.png",
-  kuyuri: "kuyuri-a.png",
+  rio: "rio-a.png",
   samechan: "samechan-koro.png",
   sumi: "sumi-b.png",
-  uranaishi: "uranaishi-b.png",
   volk: "volk-a.png", // 2026-10-31 補充分から採用（ロシアンティー）
   hajime: "hajime-b.png", // 主人公。今は自分のアイコンを出す画面が無いので表示されない
 };

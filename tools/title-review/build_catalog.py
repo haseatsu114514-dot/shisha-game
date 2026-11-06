@@ -9,9 +9,9 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = Path(__file__).resolve().parent
-CHARACTERS = {'ageha': 'あげは', 'hiyori': 'ひより', 'samechan': 'サメちゃん／汐見なぎさ', 'mashiro': 'ましろ', 'minto': 'みんと', 'kuyuri': 'くゆり', 'tsumugi': 'つむぎ', 'sumi': 'スミ', 'naru': 'なる', 'adam': 'アダム', 'other': 'その他'}
+CHARACTERS = {'ageha': 'あげは', 'hiyori': 'ひより', 'samechan': 'サメちゃん／汐見なぎさ', 'mashiro': 'ましろ', 'minto': 'みんと', 'rio': '凛想', 'tsumugi': 'つむぎ', 'sumi': 'スミ', 'naru': 'なる', 'adam': 'アダム', 'other': 'その他'}
 # IDREN01: asset_sources は改名対象外で旧ID名のフォルダが残る。概念画の原画走査で取りこぼさないための対応表。
-LEGACY_SOURCE_DIRS = {'kuyuri': ['rin']}
+LEGACY_SOURCE_DIRS = {'rio': ['rin']}
 V1 = 'asset_sources/title-art/heroine-concepts-v1-20261008'
 V2 = 'asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008'
 DAILY = 'asset_sources/heroine-title-candidates-20261009'
@@ -74,7 +74,7 @@ def build(check=False):
 
     inventory = read(DAILY + '/review-issue375/inventory.json')
     for c in inventory['candidates']:
-        add(c['path'], c['character'], '別タイトル候補', label={'ageha_c_backstage_selfie':'楽屋のセルフィー','title_art_ageha_02_bowl_wash':'閉店後のボウル洗い','title_art_mashiro_01_window_smoke':'窓際の一服','title_art_mashiro_02_dark_leaf_prep':'ダークリーフの準備','title_art_mashiro_03_tetsuko':'猫のてつこと休憩','minto_01_afterhours_smoke':'閉店後の一服','minto_03_private_parfait':'私服でパフェ','title_art_minto_02_opening_prep':'開店前の準備','kuyuri_c_midnight_coffee':'深夜のコーヒー','title_art_kuyuri_02_aroma_blend':'香りのブレンド','title_art_tsumugi_02_bowl_prep':'ボウルの準備','title_art_tsumugi_03_rain_drawing':'雨の日の絵描き'}.get(Path(c['path']).stem), history=c['status'] + '：' + c.get('visual_review', ''), prompt=c.get('prompt'))
+        add(c['path'], c['character'], '別タイトル候補', label={'ageha_c_backstage_selfie':'楽屋のセルフィー','title_art_ageha_02_bowl_wash':'閉店後のボウル洗い','title_art_mashiro_01_window_smoke':'窓際の一服','title_art_mashiro_02_dark_leaf_prep':'ダークリーフの準備','title_art_mashiro_03_tetsuko':'猫のてつこと休憩','minto_01_afterhours_smoke':'閉店後の一服','minto_03_private_parfait':'私服でパフェ','title_art_minto_02_opening_prep':'開店前の準備','rio_c_midnight_coffee':'深夜のコーヒー','title_art_rio_02_aroma_blend':'香りのブレンド','title_art_tsumugi_02_bowl_prep':'ボウルの準備','title_art_tsumugi_03_rain_drawing':'雨の日の絵描き'}.get(Path(c['path']).stem), history=c['status'] + '：' + c.get('visual_review', ''), prompt=c.get('prompt'))
     revision = inventory['revision']
     add(revision['path'], 'minto', 'みんと修正', '私服パフェ・植物修正', revision['status'] + '：' + revision['qa'], revision.get('prompt'), revision['before'])
     for c in inventory['missing_slots']:

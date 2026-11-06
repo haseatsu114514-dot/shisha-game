@@ -1,15 +1,16 @@
 {
   "version": 2,
   "status": "partially_connected",
-  "comment": "第3章の必須本編は東京到着から全国大会・帰郷まで接続。第3章の任意場面（大会前に読める6件）・前夜デート・前夜の修羅場未遂も接続済み（remake/js/chapters/ch3-story-wiring.js）。ch3_emil_workshopは大会後の寄り道（remake/js/chapters/ch3-aftermath-progress.js）で接続済み。ch3_cigarman_traceは大会後の面が要り未接続。第4章の前夜（同行者・到着済みの恋人とのデート／重なった予定の保留）はremake/js/chapters/ch4-story-wiring.jsで接続済み。第4章の到着場面（別便の恋人・ましろの友人版）は前夜祭の日に接続済み（remake/js/chapters/ch4.js の renderEve）。到着したサメちゃん・ひよりとの夕方（ch4_*_dubai_evening）は、到着の後・前夜祭の前に任意で一度（remake/js/chapters/ch4-progress.js の chapterFourArrivalEveningsDue）。正式ヒロイン一覧・再生順・恋愛場面の条件の正本。実行順はremake/js/chaptersが正。",
+  "comment": "第3章の必須本編は東京到着から全国大会・帰郷まで接続。第3章の任意場面（大会前に読める6件）・前夜デート・前夜の修羅場未遂も接続済み（remake/js/chapters/ch3-story-wiring.js）。ch3_emil_workshopは大会後の寄り道（remake/js/chapters/ch3-aftermath-progress.js）で接続済み。ch3_cigarman_traceは大会前の噂を読んだ保存に限り、大会後のmukai寄り道（remake/js/chapters/ch3-aftermath-progress.js）から一度だけ読める。第4章の前夜（同行者・到着済みの恋人とのデート／重なった予定の保留）はremake/js/chapters/ch4-story-wiring.jsで接続済み。第4章の到着場面（別便の恋人・ましろの友人版）は前夜祭の日に接続済み（remake/js/chapters/ch4.js の renderEve）。到着したサメちゃん・ひよりとの夕方（ch4_*_dubai_evening）は、到着の後・前夜祭の前に任意で一度（remake/js/chapters/ch4-progress.js の chapterFourArrivalEveningsDue）。正式ヒロイン一覧・再生順・恋愛場面の条件の正本。実行順はremake/js/chaptersが正。第4章勝利後の再生順の正本は結果 → 会長 → 屋敷 → 帰国 → 二卓。実行側のCH4_RESOLUTIONもこの順。ヌール（DSR20）は第4章のドバイで出会うヒロインで、ドバイに住む（romance.noor.resident）。到着場面は無く（arrival: null）、恋人ならドバイの前夜は同じ街にいる。第5章の打ち上げ・スタッフロール後の修羅場にはテレビ電話で加わり、席には座らない。",
   "heroine_ids": [
     "tsumugi",
     "minto",
-    "kuyuri",
+    "rio",
     "ageha",
     "mashiro",
     "samechan",
-    "hiyori"
+    "hiyori",
+    "noor"
   ],
   "romance": {
     "tsumugi": {
@@ -30,14 +31,14 @@
       "near_conflict": "ch3_shuraba_minto",
       "talk": "shuraba_talk_minto"
     },
-    "kuyuri": {
-      "date": "tournament_date_kuyuri",
-      "conflict": "shuraba_kuyuri",
-      "epilogue": "epilogue_kuyuri",
+    "rio": {
+      "date": "tournament_date_rio",
+      "conflict": "shuraba_rio",
+      "epilogue": "epilogue_rio",
       "date_min_chapter": 3,
-      "arrival": "ch4_kuyuri_dubai_girlfriend",
-      "near_conflict": "ch3_shuraba_kuyuri",
-      "talk": "shuraba_talk_kuyuri"
+      "arrival": "ch4_rio_dubai_girlfriend",
+      "near_conflict": "ch3_shuraba_rio",
+      "talk": "shuraba_talk_rio"
     },
     "ageha": {
       "date": "tournament_date_ageha",
@@ -73,6 +74,15 @@
       "arrival": "ch4_hiyori_dubai_girlfriend",
       "near_conflict": "ch3_shuraba_hiyori",
       "talk": "shuraba_talk_hiyori"
+    },
+    "noor": {
+      "date": "tournament_date_noor",
+      "conflict": "shuraba_noor",
+      "epilogue": "epilogue_noor",
+      "date_min_chapter": 4,
+      "arrival": null,
+      "resident": "dubai",
+      "talk": "shuraba_talk_noor"
     }
   },
   "conflict": {
@@ -120,12 +130,14 @@
         "ch3_saku_mashiro_tea_tin",
         "ch3_saku_mashiro_soon_back",
         "ch3_saku_lime",
+        "ch3_steve_lime",
         "confession_mashiro",
         "hiyori_tokyo_contact",
         "ch3_tsumugi_slump",
         "ch3_volk_second",
         "ch3_volk_third",
-        "ch3_volk_fourth"
+        "ch3_volk_fourth",
+        "ch3_volk_lime"
       ],
       "after_eve": [
         "ch3_tournament_day",
@@ -163,8 +175,8 @@
       ],
       "on_win": [
         "ch4_result",
-        "ch4_ending",
         "ch4_sui_old_rival",
+        "ch4_ending",
         "ch4_sumi_return",
         "ch4_two_tables"
       ],
@@ -268,6 +280,12 @@
       ],
       "comment": "#2028: 綾取とLIMEを交換する。助言の後。♥1（煙幕への再訪で付く好感度）の条件は場面カードの置き方（ch3-story-wiring.js の heart）。"
     },
+    "ch3_steve_lime": {
+      "seen": [
+        "ch3_mukai_intro"
+      ],
+      "comment": "#2028: スティーブとLIMEを交換する。配達で会った後、客として来るmukaiで。面識と♥2の条件は場面カードの置き方（ch3-story-wiring.js の met・heart）。"
+    },
     "ch3_mashiro_play_3": {
       "seen": [
         "ch3_mashiro_play_2"
@@ -316,6 +334,12 @@
         "ch3_volk_third"
       ],
       "comment": "#2026: 「三回分、同じだった」。三度目の来店の後。"
+    },
+    "ch3_volk_lime": {
+      "seen": [
+        "ch3_volk_fourth"
+      ],
+      "comment": "#2028: ヴォルクとLIMEを交換する。四度目の来店の「次は、俺のメモも持ってきます」を受ける。面識と♥2の条件は場面カードの置き方（ch3-story-wiring.js の met・heart）。大会後は ch3-aftermath-progress.js の寄り道から。"
     }
   },
   "near_conflict": {
@@ -330,11 +354,11 @@
     "flag": "_shuraba_ch1",
     "scenes": [
       "remake_shuraba_minto_tsumugi",
-      "remake_shuraba_kuyuri_tsumugi",
-      "remake_shuraba_kuyuri_minto",
+      "remake_shuraba_rio_tsumugi",
+      "remake_shuraba_minto_rio",
       "remake_shuraba_all",
       "remake_shuraba_hiyori_minto",
-      "remake_shuraba_hiyori_kuyuri",
+      "remake_shuraba_hiyori_rio",
       "remake_shuraba_hiyori_tsumugi",
       "remake_shuraba_all_hiyori"
     ],
@@ -342,10 +366,10 @@
     "recall": {
       "minto": "ch1_tournament_after",
       "tsumugi": "ch1_tournament_after",
-      "kuyuri": "interval_day1_morning_win",
+      "rio": "interval_day1_morning_win",
       "hiyori": "interval_day1_morning_win",
       "defeat": "remake_defeat_follow"
     },
-    "comment": "#2089: 第1章の大会当日、控室入場前の鉢合わせ。第3章の茶化しと同じく謝罪・破局・和解を確定せず保留する。大会後は居合わせた恋人が「朝の話」を一言だけ返す（優勝: ロビーのみんと・tonariのつむぎ・翌朝のくゆりとひよりのLIME／敗北: remake_defeat_follow）。#2025: ひよりも対象。ひよりを含む2人は組ごとの台本、3人以上は居合わせた恋人の行だけを出す remake_shuraba_all_hiyori。"
+    "comment": "#2089: 第1章の大会当日、控室入場前の鉢合わせ。第3章の茶化しと同じく謝罪・破局・和解を確定せず保留する。大会後は居合わせた恋人が「朝の話」を一言だけ返す（優勝: ロビーのみんと・tonariのつむぎ・翌朝の凛想とひよりのLIME／敗北: remake_defeat_follow）。#2025: ひよりも対象。ひよりを含む2人は組ごとの台本、3人以上は居合わせた恋人の行だけを出す remake_shuraba_all_hiyori。"
   }
 }

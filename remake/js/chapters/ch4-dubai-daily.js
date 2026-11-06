@@ -106,10 +106,9 @@ export const CH4_DUBAI_SPOTS = Object.freeze([
 ].map(entry => Object.freeze({ ...entry, hasNew: () => spotHasNew(entry) })));
 
 function spotHasNew(entry) {
-  if (entry.place === "souq") return !read("ch4_dubai_souq") || !read("ch4_stranger_first");
-  if (entry.place === "festa") return !read("ch4_festa");
-  if (entry.place === "center_cafe") return !read("ch4_dubai_cafe");
-  if (entry.place === "alley_cafe") return !read("ch4_stranger_second") || !read("ch4_alley_cafe_quiet");
+  // 訪問時と同じ初回条件・巡回記録を見る。一巡後は会話を続けても新着にはしない。
+  if (["souq", "festa", "center_cafe", "alley_cafe"].includes(entry.place))
+    return firstScenes(entry.place).length > 0 || nextTalk(entry.place, { once: true }) !== null;
   if (entry.place === "naru") return nextTalk("naru", { once: true }) !== null;
   if (entry.place === "practice") return nextTalk("practice", { once: true }) !== null;
   if (entry.place === "longlong") return longlongHasNew(state, affinityLevel(LONGLONG_CHAR));

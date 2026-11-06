@@ -47,11 +47,11 @@ await suite("venue-hours", async runCheck => {
       await setup(page); const before = await snapshot(page);
       const blocked = await page.evaluate(async () => ({
         axe: await (await import("./js/daily/axe-bar.js")).visitAxeBar(),
-        kuyuri: await V.shop.visitKuyuri(),
+        rio: await V.shop.visitRio(),
         axeMap: V.access.spotAvailability(V.spots.spotById("axe_bar")),
         cafe: V.access.spotAvailability(V.spots.spotById("cafe")),
       }));
-      assert.equal(blocked.axe, false); assert.equal(blocked.kuyuri, false);
+      assert.equal(blocked.axe, false); assert.equal(blocked.rio, false);
       assert(!blocked.axeMap.ok && blocked.cafe.ok); assert.match(blocked.axeMap.why, /夜/);
       assert.equal(await snapshot(page), before);
       await page.evaluate(async () => { void (await import("./js/daily/map.js")).chooseSpot(); });
@@ -97,7 +97,7 @@ await suite("venue-hours", async runCheck => {
     }, options);
   }
 
-  await check("kuyuri-night-floor-and-day-shopping", async page => {
+  await check("rio-night-floor-and-day-shopping", async page => {
     await setup(page);
     await page.evaluate(() => { V.shop.openShop().then(r => { V.destination = r; }); });
     assert(await page.locator(t("shop-upstairs")).isDisabled());
@@ -107,11 +107,11 @@ await suite("venue-hours", async runCheck => {
     await hit(page, "shop-leave"); assert.equal(await snapshot(page), before);
     await page.evaluate(() => { V.core.state.slot = 1; V.destination = null; V.shop.openShop().then(r => { V.destination = r; }); });
     assert(!await page.locator(t("shop-upstairs")).isDisabled());
-    await hit(page, "shop-upstairs"); await page.waitForFunction(() => V.destination === "kuyuri");
-    assert(await page.evaluate(() => V.shop.visitKuyuri()));
+    await hit(page, "shop-upstairs"); await page.waitForFunction(() => V.destination === "rio");
+    assert(await page.evaluate(() => V.shop.visitRio()));
     assert.equal(await page.evaluate(() => V.core.state.stamina), 66);
     const after = await snapshot(page);
-    assert.equal(await page.evaluate(() => V.shop.visitKuyuri()), false);
+    assert.equal(await page.evaluate(() => V.shop.visitRio()), false);
     assert.equal(await snapshot(page), after);
   });
 

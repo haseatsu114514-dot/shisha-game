@@ -80,8 +80,8 @@ export const STATE_KEY_RULES = {
 // data/equipment.json の gift フィールドが付いた装備 = キャラから贈られた専用ハガル。
 // 分類網羅テストが data 側と一致するか照合する。
 export const GIFT_EQUIPMENT_IDS = [
-  "suyaki_adam", "suyaki_ageha", "suyaki_hiyori", "suyaki_kumicho", "suyaki_saku", "suyaki_mashiro", "suyaki_minto", "suyaki_naru",
-  "suyaki_rei", "suyaki_kuyuri", "suyaki_samechan", "suyaki_sumi", "suyaki_tsumugi",
+  "suyaki_adam", "suyaki_ageha", "suyaki_hiyori", "suyaki_kumicho", "suyaki_saku", "suyaki_mashiro", "suyaki_minto", "suyaki_naru", "suyaki_noor",
+  "suyaki_rei", "suyaki_rio", "suyaki_samechan", "suyaki_steve", "suyaki_sumi", "suyaki_tsumugi", "suyaki_volk",
 ];
 
 // 記念品の由来分類（core/keepsakes.js の KEEPSAKES と対応）。
@@ -210,6 +210,8 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_prep_farewell", "progression"],
   ["_ch3_preview_seen", "progression"],
   ["_ch3_read_ch3_saku_lime", "progression"],
+  ["_ch3_read_ch3_steve_lime", "progression"],
+  ["_ch3_read_ch3_volk_lime", "progression"],
   ["_ch3_read_ch3_minto_small_lies", "progression"],
   ["_ch3_read_hiyori_tokyo_contact", "progression"],
   ["_ch3_registration_read", "progression"],
@@ -281,7 +283,7 @@ export const FLAG_EXACT_RULES = [
   ["_ev_rei_cameo", "person"],
   ["_ev_reviewer_cameo", "progression"],
   ["_ev_reviewer_payoff", "progression"],
-  ["_ev_kuyuri_monitor", "person"],
+  ["_ev_rio_monitor", "person"],
   ["_ev_salaryman", "progression"],
   ["_ev_tsumugi_sketch", "person"],
   ["_eve_slept", "progression"], // #2088 前夜の早寝（その夜の告白を後回し）
@@ -361,10 +363,13 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_mashiro", "person"],
   ["_lime_contact_minto", "person"],
   ["_lime_contact_naru", "person"],
+  ["_lime_contact_noor", "person"],
   ["_lime_contact_rei", "person"],
-  ["_lime_contact_kuyuri", "person"],
+  ["_lime_contact_rio", "person"],
   ["_lime_contact_samechan", "person"],
+  ["_lime_contact_steve", "person"],
   ["_lime_contact_tsumugi", "person"],
+  ["_lime_contact_volk", "person"],
   ["_lime_opened", "ui"],
   ["_lime_tut", "ui"],
   ["_lotos_vent_hint", "ui"],
@@ -385,7 +390,7 @@ export const FLAG_EXACT_RULES = [
   ["_met_noor", "person"],
   ["_met_naru", "person"],
   ["_met_rei", "person"],
-  ["_met_kuyuri", "person"],
+  ["_met_rio", "person"],
   ["_met_samechan", "person"],
   ["_met_khalil", "person"],
   ["_met_suhail", "person"],
@@ -403,6 +408,7 @@ export const FLAG_EXACT_RULES = [
   ["_motion_seen_", "progression"],
   ["_naru_venue_invited", "person"],
   ["_night_event_day", "progression"],
+  ["_noor_confession_other_lover", "person"], // DSR20 告白の場面の一時の印（再生の前に立て、後で消す）
   ["_oneesan_id_checked", "progression"],
   ["_op_praise_report", "progression"],
   ["_op_praise_talent", "progression"],
@@ -411,7 +417,7 @@ export const FLAG_EXACT_RULES = [
   ["_outing_done_hiyori", "person"],
   ["_outing_done_minto", "person"],
   ["_outing_done_naru", "person"],
-  ["_outing_done_kuyuri", "person"],
+  ["_outing_done_rio", "person"],
   ["_outing_done_samechan", "person"],
   ["_outing_done_tsumugi", "person"],
   ["_overwork", "progression"],
@@ -423,8 +429,8 @@ export const FLAG_EXACT_RULES = [
   ["_private_night_day", "progression"],
   ["_rei_trpg_introduced", "person"],
   ["_rest_after_tournament", "progression"],
-  ["_kuyuri_sample", "person"],
-  ["_kuyuri_sample_received", "person"],
+  ["_rio_sample", "person"],
+  ["_rio_sample_received", "person"],
   ["_roam_day", "progression"],
   ["_roam_seen_dr_kemuri", "person"], // 第5章の ch5_opening が読む（よその店で博士に居合わせた回数）
   ["_ryuji_melty_greeting", "person"],
@@ -474,6 +480,10 @@ export const FLAG_EXACT_RULES = [
   ["_sumi_double_apple_received", "person"],
   ["_sumi_rig_home_seen", "progression"],
   ["_sumi_rig_received_day", "progression"],
+  // 凛想が味の不調に気づいた回（第2章）を読んだか。第3・4章の出発前の凛想の会話が分岐に使う（data/dialogue/ch3_ch4_home.json）
+  ["_talk_seen_ch2_rio_taste", "person"],
+  // 第3章の出発前に凛想から「向こうの顔」を頼まれたか。第4章の出発前の凛想の会話が、その報告の分岐に使う
+  ["_talk_seen_ch3_prep_rio", "person"],
   ["_tsumugi_contest_art_seen", "person"],
   ["_tsumugi_contest_draft_hands", "person"],
   ["_tsumugi_contest_draft_window", "person"],
@@ -554,6 +564,7 @@ export const FLAG_EXACT_RULES = [
 
 /** 動的生成 flag のファミリ分類: [パターン, カテゴリ]（`*` は任意の文字列）。carry 系を先に置く */
 export const FLAG_FAMILY_RULES = [
+  ["_affinity_first_meeting_pending_*", "pending"], // 未精算の初対面は周回をまたがない
   ["_motion_seen_*", "ui"],
   ["_lime_exchange_shown_*", "ui"],
   ["_flavor_*", "unlock"],
@@ -592,7 +603,7 @@ export const FLAG_FAMILY_RULES = [
   ["_shift_mix_*", "progression"],
   ["_shift_order_*", "progression"],
   ["_spot_*", "progression"],
-  ["_talk_seen_*", "person"], // 章の間だけ店で読む会話（第2章のくゆり・daily/spots.js の CHAPTER_TALKS）
+  ["_talk_seen_*", "person"], // 章の間だけ店で読む会話（第2章の凛想・daily/spots.js の CHAPTER_TALKS）
   ["_sumi_baito_inv_*", "pending"],
   ["_mukai_baito_inv_*", "pending"],
   ["_temporary_closed_*", "progression"],

@@ -139,7 +139,13 @@ await suite('ch2-story', async check => {
     await page.locator(end).waitFor(); const s = await state(page);
     assert.equal(s.day, 28); assert.equal(s.slot, 0); assert.equal(s.chapter, 2);
     assert.equal(s.money, before.money); assert.deepEqual(s.stats, before.stats); assert.equal(s.reel.count, before.reel.count);
-    for (const key of ['lovers','loverSince','lastDate','affinity','keepsakes','relationshipMemories']) assert.deepEqual(s[key], before[key], key);
+    for (const key of ['lovers','loverSince','lastDate','keepsakes','relationshipMemories']) assert.deepEqual(s[key], before[key], key);
+    assert.deepEqual(s.affinity, { ...before.affinity, ageha: 9, kumicho: 9, rei: 9 }, 'Only the three completed first meetings earn exactly heart1');
+    assert.deepEqual(s.affinityCarry, { ...before.affinityCarry, ageha: 0, kumicho: 0, rei: 0 }, 'No first-meeting reward leaks fractional carry');
+    for (const id of ['ageha', 'kumicho', 'rei']) {
+      assert(!before.met[id]); assert.equal(s.met[id], true);
+      assert.equal(s.flags[`_affinity_first_meeting_pending_${id}`], undefined);
+    }
     assert.deepEqual(s.flavorStock, withStrawberrySample(before.flavorStock), 'flavorStock');
     assert(s.flags._ch2_taste_distant); assert(s.flags._ch2_eve_done); assert(!s.flags.ch2_taste_recovered);
     assert(s.met.ageha); assert(!s.contacts.includes('ageha')); assert(!s.visits.ageha); assert(!s.met.volk);

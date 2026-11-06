@@ -34,6 +34,7 @@ async function loadModule(source, portSource, overrides) {
 }
 
 // ---------------- VNエンジン（#1362） ----------------
+const affinityCalls = [];
 const vnState = { stats: {}, money: 0, flags: {}, met: {}, contacts: [] };
 const vnDb = {
   dialogues: {
@@ -44,15 +45,16 @@ const vnDb = {
 const nameData = await import("../js/core/data.js");
 nameData.DB.characters = Object.fromEntries(JSON.parse(readFileSync(new URL("../../data/characters.json", import.meta.url), "utf8")).map(c => [c.id, c]));
 const vn = await loadModule(engineSource, `
-export const robustPort = { handleCondition, jumpTo, lineDisplayName, getVnWarnings, clearVnWarnings, hooks,
+export const robustPort = { handleCondition, jumpTo, lineDisplayName, getVnWarnings, clearVnWarnings, hooks, dialogueAffinity, completeDialogueAffinity, affinityMetBefore, applyLine, applyCue,
   setRunning: (r) => { running = r; }, getRunning: () => running };
-`, { state: vnState, DB: vnDb, config: {}, displayName: nameData.displayName, STAT_EN: {}, affinityLevel: () => 0, tournamentFinished: () => false, basicsExperienced: () => false });
+`, { gainAffinity: (...args) => affinityCalls.push(args), state: vnState, DB: vnDb, config: {}, displayName: nameData.displayName, STAT_EN: {}, affinityLevel: () => 0, tournamentFinished: () => false, basicsExperienced: () => false });
 const port = vn.robustPort;
 
-function fakeRunning() {
+function fakeRunning(known = []) {
   return {
     id: "root_dlg", currentId: "root_dlg",
     dlg: { dialogue_id: "root_dlg", lines: [], branches: {}, metadata: {} },
+    owner: vnState, metAtStart: { ...vnState.met }, metBefore: port.affinityMetBefore(known), affinityKnown: new Set(known), encountered: new Set(), firstAffinity: new Set(),
     queue: [], branches: { yes: [{ text: "YES" }], no: [{ text: "NO" }] },
     visited: ["root_dlg"], slots: {}, context: null,
   };
@@ -149,6 +151,51 @@ check("LIMEの名前表示: jump先のmetadataへ切り替わり、対面へ持�
   vnDb.dialogues.jump_target.metadata.contact_channel = "lime";
   assert.equal(port.lineDisplayName({ speaker: "naru" }, r), "なる（LIME）");
   delete vnDb.dialogues.jump_target.metadata.contact_channel;
+});
+
+check("初対面: 行・選択肢・好感度キュー・metadataは読了時の♥1一回へ集約", () => {
+  affinityCalls.length=0;vnState.met={};const r=fakeRunning();port.setRunning(r);
+  port.applyLine({affinity:{naru:2}});port.hooks.contextChar='naru';port.applyCue({'好感度':3});
+  r.dlg.metadata.add_affinity={naru:2};vnState.met.naru=true;
+  assert.equal(affinityCalls.length,0,'initial line/choice cannot commit before completion');
+  port.completeDialogueAffinity(r);
+  assert.equal(affinityCalls.length,1);assert.deepEqual(affinityCalls[0].slice(0,2),['naru',1]);assert.equal(affinityCalls[0][2].firstMeeting,true);
+});
+check("初対面: 名乗りのみでも♥1、主人公は対象外、既知の同席者には通常報酬", () => {
+  affinityCalls.length=0;vnState.met={adam:true};const r=fakeRunning();port.setRunning(r);
+  vnState.met.minto=true;vnState.met.hajime=true;r.dlg.metadata.add_affinity={adam:1};
+  port.completeDialogueAffinity(r);
+  assert.equal(affinityCalls.length,2);assert.deepEqual(affinityCalls[0],['adam',6]);assert.equal(affinityCalls[1][0],'minto');
+});
+check("対面以外のLIME・恋人の私的報酬・旧stateの読了を初対面報酬へ変換しない", () => {
+  affinityCalls.length=0;vnState.met={};const r=fakeRunning();r.dlg.metadata.contact_channel='lime';r.dlg.metadata.add_affinity={naru:1};
+  port.completeDialogueAffinity(r);assert.equal(affinityCalls[0][0],'naru');assert.equal(affinityCalls[0][1],6);assert.equal(affinityCalls[0][2].remote,true);
+  affinityCalls.length=0;delete r.dlg.metadata.contact_channel;vnState.lovers=['naru'];
+  port.completeDialogueAffinity(r);assert.deepEqual(affinityCalls,[['naru',6]]);vnState.lovers=[];
+  affinityCalls.length=0;r.owner={};port.completeDialogueAffinity(r);assert.equal(affinityCalls.length,0);
+});
+
+check("中断した初対面pendingは無関係な相手の会話では精算せず、本人と再開した時だけ精算", () => {
+  affinityCalls.length=0;vnState.met={naru:true,sumi:true};vnState.flags={_affinity_first_meeting_pending_naru:true};
+  const r=fakeRunning();r.encountered.add('sumi');port.completeDialogueAffinity(r);
+  assert.equal(affinityCalls.length,0);assert.equal(vnState.flags._affinity_first_meeting_pending_naru,true);
+  r.encountered.add('naru');port.completeDialogueAffinity(r);
+  assert.equal(affinityCalls.length,1);assert.equal(affinityCalls[0][0],'naru');assert.equal(affinityCalls[0][2].firstMeeting,true);
+  affinityCalls.length=0;r.dlg.metadata.contact_channel='lime';r.dlg.metadata.add_affinity={naru:1};
+  port.completeDialogueAffinity(r);assert.equal(affinityCalls.length,1);assert.equal(affinityCalls[0][1],6);assert.equal(affinityCalls[0][2].remote,true);
+  vnState.flags={};
+});
+
+check("章で保証された既知は台詞分岐を変えず、面識欠損の修復を初対面へ戻さない", () => {
+  affinityCalls.length=0;vnState.met={};vnState.flags={_affinity_first_meeting_pending_dr_kemuri:true};
+  const r=fakeRunning(['dr_kemuri']);
+  assert.equal(vnState.met.dr_kemuri,undefined,'the existing doctor_first recognition branch stays available');
+  assert.equal(r.metBefore.dr_kemuri,true);vnState.met.dr_kemuri=true;r.encountered.add('dr_kemuri');
+  port.completeDialogueAffinity(r);assert.equal(affinityCalls.length,0);
+  const unrelated=fakeRunning();unrelated.encountered.add('sumi');port.completeDialogueAffinity(unrelated);
+  assert.equal(affinityCalls.length,0);
+  assert.match(engineSource,/markMet\(m\[1\], \{ known: r\.affinityKnown\.has\(m\[1\]\) \}\)/);
+  vnState.flags={};
 });
 
 // ---------------- scoreStep（#1364） ----------------

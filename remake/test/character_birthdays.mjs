@@ -12,7 +12,7 @@ const expected = {
   hajime: "04-08", sumi: "12-22", naru: "01-15", adam: "11-05",
   minto: "03-10", ageha: "08-01", kumicho: "10-02", rei: "05-20",
   saku: "02-01", steve: "08-20", volk: "02-09", master_hookah: "07-03",
-  sheikh: "09-15", shisha_9000: "01-12", dr_kemuri: "05-08", kuyuri: "02-26",
+  sheikh: "09-15", shisha_9000: "01-12", dr_kemuri: "05-08", rio: "02-26",
   tsumugi: "07-12", mashiro: "12-07", hiyori: "11-01", samechan: "06-20",
   pakki: "10-10", sui: "12-16", emil: "08-25", da_silva: "06-24",
   maezono: "03-04", mukai_master: "04-13", tetsuko: "02-22", salaryman: "12-01",

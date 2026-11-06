@@ -18,16 +18,26 @@ import { prepareShapeMorph } from "./intro-shape-morph.js";
 export const TRANSITIONS = ["none", "morph", "card", "slash"];
 /** tools/intro_graphic_frames.py と同じ、画面上の頭の位置（グラフィック絵柄の人物） */
 const HEAD = { top: 16, height: 280, faceX: 268 };
-// data/portrait_metrics.json の通常立ち絵 (896px) における両目の中心。
-// 配置用の ax は顔の中心とは限らず、これを顔として合わせるとキャラごとに影が横へずれる。
-// oneesan は同じ minto の立ち絵を使う。pakki はマスコットの両目の中点を画像で測った。
+// data/portrait_metrics.json の通常立ち絵 (896px) における両目の中心。画風ごとに、その画風の絵で測った値を使う
+// （classic は characters、new は styles.new。カットインのある人だけ）。旧版の値を新版の絵に流用すると、顔が横へずれる。
+// 配置用の ax は顔の中心とは限らず、これを顔として合わせるとキャラごとに影が横へずれる。表に無い人だけ ax を使う。
+// oneesan は同じ minto の立ち絵を使う。pakki はマスコットの両目の中点を画像で測った（旧版）。
 const STANDING_FACE_X = {
-  adam: 430.5, ageha: 477.5, da_silva: 504.5, dr_kemuri: 398, emil: 474,
-  hajime: 544.5, hiyori: 419, kumicho: 482.5, saku: 421.5, maezono: 413,
-  maki: 479, mashiro: 443, master_hookah: 413.5, minto: 485, mukai_master: 410.5,
-  sui: 407, naru: 450.5, noor: 400.5, pakki: 488, rei: 465, kuyuri: 404, sai: 466.5,
-  samechan: 460.5, sheikh: 426, steve: 493.5, sumi: 432, tsumugi: 428,
-  uranaishi: 406.5, volk: 478, yoru: 411.5,
+  classic: {
+    adam: 430.5, ageha: 477.5, da_silva: 504.5, dr_kemuri: 398, emil: 474,
+    hajime: 544.5, hiyori: 419, kumicho: 482.5, saku: 421.5, maezono: 413,
+    maki: 479, mashiro: 443, master_hookah: 413.5, minto: 485, mukai_master: 410.5,
+    sui: 407, naru: 450.5, noor: 400.5, pakki: 488, rei: 465, rio: 404, sai: 466.5,
+    samechan: 460.5, sheikh: 426, steve: 493.5, sumi: 432, tsumugi: 428,
+    uranaishi: 406.5, volk: 478, yoru: 411.5,
+  },
+  new: {
+    adam: 429, ageha: 480, da_silva: 503, dr_kemuri: 385, emil: 476.5, hajime: 483.5,
+    hiyori: 502, kumicho: 471.5, saku: 419.5, maezono: 408, maki: 479, mashiro: 444,
+    master_hookah: 410, minto: 419, mukai_master: 384, sui: 402.5, naru: 430, rei: 471,
+    sai: 480.5, samechan: 458.5, sheikh: 397, steve: 474.5, sumi: 417, tsumugi: 435,
+    uranaishi: 384.5, volk: 485, yoru: 417,
+  },
 };
 // asset_sources/character-intros/graphic-20261031/heads.json の顔中心 (1024px)。
 // 完成絵の frame に当てはめて着地点を出す。個別の安全余白で顔が右へずれる絵にも追従する。
@@ -37,7 +47,7 @@ const GRAPHIC_FACE_X = {
   hajime: 576, hiyori: 400, kumicho: 512, saku: 528, maezono: 496,
   maki: 528, mashiro: 496, master_hookah: 500, minto: 512, mukai_master: 535,
   sui: 448, naru: 464, noor: 470, oneesan: 480, pakki: 520, rei: 496,
-  kuyuri: 512, sai: 512, samechan: 528, sheikh: 505, steve: 560, sumi: 480,
+  rio: 512, sai: 512, samechan: 528, sheikh: 505, steve: 560, sumi: 480,
   tsumugi: 512, uranaishi: 480, volk: 544, yoru: 520,
 };
 const targetFaceX = (id, frame) => frame.left + frame.width * (GRAPHIC_FACE_X[id] ?? 512) / 1024;
@@ -78,8 +88,8 @@ function stageBox(fx) {
 function headOf(rect, p) {
   const bodyTop = rect.top + (1 - p.b - p.h) * rect.height;
   const headH = p.h * rect.height * 0.16;
-  // 両目の測定値は旧版専用。新版の実画像には新版の配置基準を使う。
-  const face = p.style === "classic" ? STANDING_FACE_X[p.folder] : null;
+  // 実際に表示している画風の絵で測った両目の中心を使う（旧版の値を新版の絵に流用しない）。
+  const face = STANDING_FACE_X[p.style === "new" ? "new" : "classic"][p.folder];
   const anchor = face == null ? p.ax : face / rect.img.naturalWidth;
   return { top: bodyTop, height: headH, x: rect.left + anchor * rect.width };
 }

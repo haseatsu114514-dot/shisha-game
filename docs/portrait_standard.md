@@ -29,7 +29,7 @@ CONTINUEの顔アップ、制作中の作業窓・審査員の顔、プリクラ
 | 頭身 | **標準 6.4〜7.7（目安7.0）**、**小柄 5.4〜6.2（目安5.8）** | `python3 tools/portrait_metrics.py check` |
 | 同じ人物の衣装違い | 会話画面での頭の大きさの差が5%以内 | 同上（`same_person`） |
 | 表情差分 | 通常と同じ頭の大きさ・位置。表情に伴う小さな首の傾きだけ許す | 通常と重ねて見る（`fit_portrait.py` の比較画像） |
-| 顔アイコン | 手で拡大率を決めない。顔の大きさが枠の0.58倍、頭の上下の中央が上から0.48の位置、頬の中央が枠の中央になるよう自動で切り抜く | `python3 tools/make_face_icons.py <id>` |
+| 顔アイコン | 手で拡大率を決めない。顔の大きさが枠の0.58倍、頭の上下の中央が上から0.48の位置、頬の中央が枠の中央になるよう自動で切り抜く。新バージョンの立ち絵からも同じ枠で作り、ゲームは会話の立ち絵の設定と同じ画風の顔を出す | `python3 tools/make_face_icons.py <id>`（新バージョンは `--style new`） |
 | 原画 | 1回の生成で1人・1表情、人物の高さ1300px以上。ゲーム用へは縮小だけで配置する | 2026-10-09 の解像度調査 |
 
 頭身は「頭頂〜靴底」÷「頭頂〜あご」。頭頂は髪の上端で、帽子・フード・角・髪飾り・アホ毛は含めない（隠れているときは推定する）。
@@ -69,10 +69,11 @@ python3 tools/portrait_metrics.py faces <id>                    # 表情差分�
 - 頬は目の少し下の高さで、耳・横の髪を含めない顔の肌の左右の端。耳や髪まで含めると、顔アイコンの顔が片側へ寄る（2026-11-02 綾取・王煙楼で起きた）。ロボは耳の部品の内側まで。逆に、髪で頬が隠れているときは、見えている肌だけで測ると狭すぎて顔アイコンが寄りすぎる（2026-11-02 レヰで起きた）。隠れている側は、目の外側と輪郭から髪の下の頬の線を推定する。頬の幅は頭の高さのおよそ0.5〜0.6倍になる。
 - 位置ずらしだけ（`align_sprite_anchor.py` で数px動かした等）なら、`overlay` で点が合っていることを見てから `stamp <id>` で版だけ記録してよい。見ていないのに `stamp` しない。
 - 新しいキャラは区分（`class`）も書く。同じ人物の別衣装は `sprite`・`folder`・`label`・`same_person` を書く（`minto_private` が例）。
+- 新バージョンの立ち絵（`assets/sprites/character_variants/new/`）は、どのコマンドにも `--style new` を付けて同じように測る。記録は `data/portrait_metrics.json` の `styles.new`。新バージョンの通常絵を足した・差し替えたのに測っていないと、`check` が止まる。
 
 ## 3. 画風の規格
 
-基準は採用済みの**みんと（営業姿の通常）・あげは・くゆり**。同じ作品の同じ描き手に見えることを優先し、次の点で「AIっぽさ」を減らす。
+基準は採用済みの**みんと（営業姿の通常）・あげは・凛想**。同じ作品の同じ描き手に見えることを優先し、次の点で「AIっぽさ」を減らす。
 
 - **線**：濃い色のはっきりした輪郭線。外側の輪郭はやや太く、内側の線は細く。全部同じ太さの線にしない。
 - **影**：形のはっきりした2〜3段の影で塗る。エアブラシのぼかし・リムライト・グロー・肌のテカりを入れない。
@@ -87,7 +88,7 @@ python3 tools/portrait_metrics.py faces <id>                    # 表情差分�
 生成のプロンプトには、次の英文をそのまま足す（キャラの説明・表情・参照画像の役割は別に書く）。
 
 ```
-STYLE STANDARD (shisha-game cast): draw this character in the same artist's hand as the approved Minto, Ageha and Kuyuri sprites. Japanese 2D visual-novel game art; confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two to three clearly shaped cel-shadow steps; highlights only as a few deliberate bands on the hair and small catchlights in the eyes. No skin gloss, no airbrush gradients, no rim light or glow, no photographic texture, no pore or fabric micro-detail, no dense ornamental noise, no hundreds of thin hair strands. Limited palette: hair and skin plus three or four main colors. Keep this character's own eye, brow, nose and mouth shapes and natural age and gender differences; do not drift toward a generic AI pretty face.
+STYLE STANDARD (shisha-game cast): draw this character in the same artist's hand as the approved Minto, Ageha and Rio sprites. Japanese 2D visual-novel game art; confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two to three clearly shaped cel-shadow steps; highlights only as a few deliberate bands on the hair and small catchlights in the eyes. No skin gloss, no airbrush gradients, no rim light or glow, no photographic texture, no pore or fabric micro-detail, no dense ornamental noise, no hundreds of thin hair strands. Limited palette: hair and skin plus three or four main colors. Keep this character's own eye, brow, nose and mouth shapes and natural age and gender differences; do not drift toward a generic AI pretty face.
 HEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoods or ornaments) to the chin must be about one seventh of the full height from the top of the hair to the shoe soles (about 7 heads tall). For the petite cast (Tsumugi, Mashiro, Ageha, Same-chan) it is about 5.8 heads tall instead.
 ```
 
@@ -97,7 +98,7 @@ HEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoo
 
 | 判定 | キャラ |
 |---|---|
-| 規格内 | はじめ・スミさん・なる・アダム・みんと（営業姿・私服）・くゆり・ひより・須井・博士・サラリーマン・綾取・ヨル・ムカイさん・エミル、小柄のつむぎ・ましろ・あげは・サメちゃん |
+| 規格内 | はじめ・スミさん・なる・アダム・みんと（営業姿・私服）・凛想・ひより・伏見・博士・サラリーマン・綾取・ヨル・ムカイさん・エミル、小柄のつむぎ・ましろ・あげは・サメちゃん |
 | 頭が大きい | 組長 6.29頭身（165px）、上園 6.38頭身（149px。測定の誤差±0.1の範囲で境目） |
 | 頭が小さい | スティーブ 8.04、サイ 8.39、レヰ 8.67、マキ 8.74、辻占のオババ 8.78、シェイク 8.88、王煙楼 8.98、ヴォルク 9.04、太陽 9.08（同日後から追加：スハイル 8.62、ハリール 9.75。作り直しは進捗表の段階2.5） |
 | 同じ人物で差がある | みんとの私服は営業姿より頭が12%大きい（6.41頭身と7.00頭身） |
@@ -106,7 +107,7 @@ HEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoo
 
 ## 5. 新しいキャラ・描き直しのときの手順
 
-1. 参照画像に、同じ区分の規格内のキャラを「頭身の目標」として1枚入れる（標準ならアダム・須井・はじめ、小柄ならましろ）。
+1. 参照画像に、同じ区分の規格内のキャラを「頭身の目標」として1枚入れる（標準ならアダム・伏見・はじめ、小柄ならましろ）。
 2. 3節の英文を足して生成し、原画を `asset_sources/portraits/<フォルダ>/` に保存する。
 3. `fit_portrait.py` 等で896×1200へ縮小・配置し、表情差分は通常の足元・頭の位置に合わせる。
 4. 2節の手順で測り、`check` で規格内か見る。外れたら頭の大きさの指定を直して作り直す。
@@ -119,7 +120,7 @@ HEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoo
 | 役割 | 渡すもの | 標準 | 小柄 |
 |---|---|---|---|
 | ① 本人（顔・髪・衣装・色・ポーズ） | その表情の現行立ち絵 `assets/sprites/characters/<id>/chr_<id>_<face>.png`。表情差分では合格済みの新しい通常の原画も | 共通 | 共通 |
-| ② 頭身の目標（同じ区分・同じ性別） | 規格内のキャラの通常 | 男性は須井（6.93）、女性はくゆり（6.53） | ましろ（5.76） |
+| ② 頭身の目標（同じ区分・同じ性別） | 規格内のキャラの通常 | 男性は伏見（6.93）、女性は凛想（6.53） | ましろ（5.76） |
 | ③④ 画風の目標 | みんと営業姿の通常 と あげはの通常 | 共通 | 共通 |
 
 プロンプトには 3節の英文と、②の役割を「頭身の目標だけ。顔・髪・体格・衣装は写さない」と明記する（完成した書き方は [prompts.md](../asset_sources/portraits/standard-20261102/prompts.md) の各ブロック）。新しいキャラの初回も同じ4枚で、①の代わりに `brand/character_profiles.md` の容姿の文を使う。
@@ -132,7 +133,7 @@ HEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoo
 |---|---|---|
 | 足元の基線・余白 | 表情を切り替えると上下に動く、足が浮く | `tools/fit_portrait.py` で通常と同じ足元に合わせる。`python3 tools/portrait_metrics.py faces <id>` で差を見る |
 | 左右の重心 | 表情で左右に跳ぶ | 同上。`align_sprite_anchor.py` で数px動かした後は `overlay` で点を見てから `stamp` |
-| 会話画面の天井 | `spriteScale` が約1.02以上のキャラは、頭が画面の上端97%を越えないように会話エンジンが下へ沈める（`remake/js/vn/engine.js` の `frame()`）。2026-11-02 時点で組長・シェイク・スミさん・スハイル・サイ・マキ・アダム・須井・博士・なるの10人が当たっていて、背の高い人ほど沈むので身長差が画面では潰れる | 絵では直らない。`FRAMING.target`（1.36）を下げるか天井を上げるかはコード側の判断で、オーナーの依頼があるときだけ変える |
+| 会話画面の天井 | `spriteScale` が約1.02以上のキャラは、頭が画面の上端97%を越えないように会話エンジンが下へ沈める（`remake/js/vn/engine.js` の `frame()`）。2026-11-02 時点で組長・シェイク・スミさん・スハイル・サイ・マキ・アダム・伏見・博士・なるの10人が当たっていて、背の高い人ほど沈むので身長差が画面では潰れる | 絵では直らない。`FRAMING.target`（1.36）を下げるか天井を上げるかはコード側の判断で、オーナーの依頼があるときだけ変える |
 
 PRでは次の2枚を作り直して貼る。
 
@@ -166,7 +167,17 @@ python3 tools/make_reference_sheet.py lineup              # asset_sources/refere
 
 `remake/conversation-preview.html?character=ageha&portraitStyle=new` は本編と同じ会話エンジン・ウインドウで全登録人物と衣装・表情を比較でき、未導入と通常保持を明示する。実行画面の確認と静止試算を区別する。
 
-正本21表情を基に制作した両画風42表情と七海風通常2枚、了承済み新版通常2枚の最終46参照から、正式取得・SHA照合・通常絵との整合を確認した33枚を追加。[正本・正式取得・書き出し記録](../asset_sources/portraits/received-expressions-20261105/integration.json)を参照。はじめ3・なる2・ぱっきー1・レヰ9・組長9・綾取9枚。レヰ・組長は頭を5%大きくした了承済み新版通常と、それを基準にした七海風通常を各表情と組にする。既存の通常原画も制作側の参照SHAと一致する組だけ、通常の人物高・足元アンカーへ合わせる。はじめの口具・首紐・飾りは再出現させず、なるはD上着・灰色ズボン・裸耳を維持する。綾取新版は既存normal/wildと合わせて8表情、七海風は5表情。未許可配信先の10枚は取得未試行、通常絵未導入のくゆり両画風・ぱっきー七海風の3枚は受領済み保留。制作完了と本編採用を区別し、未導入表情は同じ画風・衣装の通常絵を保持する。現行絵・初期設定・表示倍率・登場カットインは維持する。
+### 顔アイコンも同じ画風にする（2026-11-06）
+
+オーナー「顔アイコンを新バージョンの立ち絵に合わせる」。それまでの顔アイコンは全員現行の立ち絵から作っていて、新バージョンを選ぶと会話の立ち絵とLIME・地図・名前欄・絆・作業台の審査員・心得の盤の顔が別の絵（服・髪・画風・顔の位置）になっていた。
+
+- 新バージョンの通常絵33人（＋みんとの私服）の顔の位置を測り（`styles.new`）、`tools/make_face_icons.py` が `assets/ui/face_icons/new/face_<id>.png` と WebP を作る。枠の決め方は現行と同じ（パッキーだけ手調整の `TUNE`）。
+- ゲームは `faceIconUrl()` で設定の画風を見て、新バージョンの顔アイコンがある人はそれを出す。新バージョンの立ち絵が無い人（凛想・ヌール）は会話でも現行の絵なので、顔アイコンも現行。七海風は顔の位置を測るまで現行の顔アイコンのまま。
+- 作業台の審査員の顔・心得の盤の札の顔と右のパネル・コンティニューの顔のアップも、出している立ち絵と同じ画風で測った枠（manifest の `faceFrames`・`continuePortraitVariants`）で置く。盤の札の顔は `asset_sources/ui/growth-board-20261030/faces/make_faces.py` が同じ記録から作る。
+- ゲームは顔アイコンの WebP を優先して読む。`make_face_icons.py` は PNG と一緒に WebP と manifest の一覧も毎回作り直し、`tools/check_face_icons_fresh.py`（CI の quick）が PNG・WebP・一覧の食い違いを止める。
+- 確認用の比較シートは `python3 tools/make_face_icons.py --compare`（`asset_sources/reference-sheets/face-icons-by-style.png`）。
+
+正本21表情を基に制作した両画風42表情と七海風通常2枚、了承済み新版通常2枚の最終46参照から、正式取得・SHA照合・通常絵との整合を確認した33枚を追加。[正本・正式取得・書き出し記録](../asset_sources/portraits/received-expressions-20261105/integration.json)を参照。はじめ3・なる2・ぱっきー1・レヰ9・組長9・綾取9枚。レヰ・組長は頭を5%大きくした了承済み新版通常と、それを基準にした七海風通常を各表情と組にする。既存の通常原画も制作側の参照SHAと一致する組だけ、通常の人物高・足元アンカーへ合わせる。はじめの口具・首紐・飾りは再出現させず、なるはD上着・灰色ズボン・裸耳を維持する。綾取新版は既存normal/wildと合わせて8表情、七海風は5表情。未許可配信先の10枚は取得未試行、通常絵未導入の凛想両画風・ぱっきー七海風の3枚は受領済み保留。制作完了と本編採用を区別し、未導入表情は同じ画風・衣装の通常絵を保持する。現行絵・初期設定・表示倍率・登場カットインは維持する。
 
 綾取（`saku`）の豹変後は、右側候補として選ばれた七海風の悪顔修正版を `nanami/wild` に採用する。[受領・配置記録](../asset_sources/portraits/saku-nanami-wild-20261105/integration.json)に原画ID・SHAと通常基準のfitを保存。原画1036×1518 RGBA・人物高1368pxを、顔や頭身を編集せず既存通常と同じ896×1200・人物高1080px・足元y1140へ縮小する。現行・新版wild、七海風通常、共通配置値は変えない。旧七海風wild原画は以前の出典フォルダに保持する。他方の画風も同じ表情にする指示は推測しない。
 

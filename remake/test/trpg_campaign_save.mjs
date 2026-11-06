@@ -103,7 +103,7 @@ for (const value of [undefined, null, "broken", {}, { chapter: 1, day: 3 },
 cases.push({ name: "membership before founding rejected, same day/later chapter retained", trpg: {
   club: { founded, members: {
     hiyori: { chapter: 2, day: 3 }, samechan: { chapter: 3, day: 1 },
-    kuyuri: { chapter: 2, day: 2 }, ageha: { chapter: 1, day: 99 },
+    rio: { chapter: 2, day: 2 }, ageha: { chapter: 1, day: 99 },
     tsumugi: { chapter: "2", day: 4 }, minto: { chapter: 2, day: 0 }, adam: null,
   } },
 }, expected: { ...emptyTrpg, club: { founded, members: {

@@ -66,7 +66,7 @@ async function shoot(page, { touch = false, x = 0, y = 0, power = .62, keyboard 
 }
 async function standalone(page, { touch = false, keyboard = false, league = false, opponent = "hiyori" } = {}) {
   await page.evaluate(() => {
-    localStorage.setItem("suien_remake_save", JSON.stringify({ schema:5, money:45678, stamina:71, lovers:["kuyuri"], flags:{_friend_hiyori:true},
+    localStorage.setItem("suien_remake_save", JSON.stringify({ schema:5, money:45678, stamina:71, lovers:["rio"], flags:{_friend_hiyori:true},
       inbox:[{id:"keep",read:true}], pendingInvite:{sender:"hiyori",day:10,slot:1}, affinity:{hiyori:66} }));
     localStorage.setItem("unrelated","keep"); sessionStorage.setItem("unrelated","keep");
   });
@@ -334,7 +334,7 @@ await suite("axe-throw", async run => {
       if (relationship === "friend-legacy") { s.schema = 5; s.flags._friend_hiyori = true; s.affinity.hiyori = 66; }
       else if (relationship === "friend") { s.met.hiyori = true; s.flags._friend_hiyori = true;
         s.finales.hiyori = { route: "friend", chapter: 1, day: 4 }; s.affinity.hiyori = 66; }
-      else { s.lovers = ["hiyori","kuyuri"]; s.lovePts.hiyori = 12; s.loveLevel.hiyori = 2; }
+      else { s.lovers = ["hiyori","rio"]; s.lovePts.hiyori = 12; s.loveLevel.hiyori = 2; }
       localStorage.setItem(core.SAVE_KEY, JSON.stringify(s)); core.load();
       A.before = JSON.stringify(core.state); A.abort = new AbortController();
       A.flow = A.mini.runAxeThrow({ signal: A.abort.signal });

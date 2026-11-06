@@ -104,11 +104,11 @@ gainFlavorExperience(s,{lemon:12},7.5,DB.flavorById);assert.equal(masteryLevel(s
  s=core.newGame();
 }
 {
- // くゆりの3つの味は第4回で一度だけ受け取る。旧第2回・反復回の受領分は差し引く。
- const kuyuri=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch1_kuyuri.json',import.meta.url))).dialogues;
- const second=kuyuri.find(d=>d.dialogue_id==='ch1_kuyuri_second');
- const repeat=kuyuri.find(d=>d.dialogue_id==='ch1_kuyuri_repeat');
- const fourth=kuyuri.find(d=>d.dialogue_id==='ch1_kuyuri_fourth');
+ // 凛想の3つの味は第4回で一度だけ受け取る。旧第2回・反復回の受領分は差し引く。
+ const rio=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch1_rio.json',import.meta.url))).dialogues;
+ const second=rio.find(d=>d.dialogue_id==='ch1_rio_second');
+ const repeat=rio.find(d=>d.dialogue_id==='ch1_rio_repeat');
+ const fourth=rio.find(d=>d.dialogue_id==='ch1_rio_fourth');
  assert.equal(second.metadata?.flavor_lesson,undefined);
  assert.equal(repeat.metadata?.flavor_lesson,undefined);
  assert.deepEqual(fourth.metadata.flavor_lesson,{rose:1,lychee:1,blueberry:1});
@@ -124,18 +124,18 @@ gainFlavorExperience(s,{lemon:12},7.5,DB.flavorById);assert.equal(masteryLevel(s
   storage.set(core.SAVE_KEY,JSON.stringify({...core.newGame(),schema:23,...changes}));
   return core.load();
  };
- let unread=loadOld({story:{kuyuri:3},flavorLessons:['ch1_kuyuri_second'],flavorMastery:{rose:6,lychee:6}});
+ let unread=loadOld({story:{rio:3},flavorLessons:['ch1_rio_second'],flavorMastery:{rose:6,lychee:6}});
  assert.deepEqual(unread.flavorMastery,{rose:6,lychee:6});
  learnFlavorStory(unread,fourth,DB.flavorById);
  assert.deepEqual(unread.flavorMastery,{rose:6,lychee:6,blueberry:12});
- let read=loadOld({story:{kuyuri:4},flavorLessons:['ch1_kuyuri_second'],flavorMastery:{rose:6,lychee:6}});
+ let read=loadOld({story:{rio:4},flavorLessons:['ch1_rio_second'],flavorMastery:{rose:6,lychee:6}});
  assert.deepEqual(read.flavorMastery,{rose:6,lychee:6,blueberry:12});
- assert(read.flavorLessons.includes('ch1_kuyuri_fourth'));
+ assert(read.flavorLessons.includes('ch1_rio_fourth'));
  core.save();read=core.load();
  assert.deepEqual(read.flavorMastery,{rose:6,lychee:6,blueberry:12});
- read=loadOld({story:{kuyuri:4},flavorLessons:['ch1_kuyuri_second','ch1_kuyuri_repeat'],flavorMastery:{rose:6,lychee:6,blueberry:12}});
+ read=loadOld({story:{rio:4},flavorLessons:['ch1_rio_second','ch1_rio_repeat'],flavorMastery:{rose:6,lychee:6,blueberry:12}});
  assert.deepEqual(read.flavorMastery,{rose:6,lychee:6,blueberry:12});
- read=loadOld({story:{kuyuri:4},flavorLessons:[],flavorMastery:{}});
+ read=loadOld({story:{rio:4},flavorLessons:[],flavorMastery:{}});
  assert.deepEqual(read.flavorMastery,{rose:6,lychee:6,blueberry:12});
  s=core.newGame();
 }

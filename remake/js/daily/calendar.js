@@ -22,7 +22,7 @@ import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, isUnl
 import { doFortune } from "./fortune.js";
 import { syncFortune } from "./fortune-schedule.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
-import { openShop, visitKuyuri, ownsFlavor } from "./shop.js";
+import { openShop, visitRio, ownsFlavor } from "./shop.js";
 import { openingStatus } from "./spot-hours.js";
 import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation, invitationReadBeforeMeeting } from "./phone.js";
 import { onAction as spinReel, presentNow as showReelNow, installReel } from "./reel.js";
@@ -573,8 +573,8 @@ async function takeAction() {
   });
   if (!used) return;
   state.visitedDay[spot.id] = state.day;
-  // チョコザップ: その日から数日、風邪をひきにくい
-  if (spot.id === "choizap" && state.flags._gym_member) {
+  // チョコザップ（地元の店と、spot.gym の付いた東京の店＝第3章・第5章）: その日から数日、風邪をひきにくい
+  if ((spot.id === "choizap" || spot.gym) && state.flags._gym_member) {
     state.flags._fit_since = { chapter: state.chapter, day: state.day };
     toast(`体が整った。${FIT_DAYS}日間は風邪をひきにくい`, { kind: "good" });
   }
@@ -659,9 +659,9 @@ async function performSpotAction(spot) {
     exerted = used;
   } else if (spot.kind === "shop") {
     const r = await openShop();
-    if (r !== "kuyuri") used = false;
+    if (r !== "rio") used = false;
     else if (!(await confirmLimeReminder(spot))) used = false;
-    else if (await staminaGuard(-14)) { used = await visitKuyuri(); exerted = used; if (used) await consultLessons("kuyuri"); }
+    else if (await staminaGuard(-14)) { used = await visitRio(); exerted = used; if (used) await consultLessons("rio"); }
     else used = false;
   } else if (spot.kind === "spot") {
     // 観音堂で内省（心得の盤 SPEC 2.8）: 火種を灯す。時間も体力も使わない。true=行動にしない
@@ -728,7 +728,7 @@ export function evePlaceFor(s) {
 }
 
 function spotExpTarget(spot) {
-  if (spot.kind === "shop") return { key: "kuyuri", person: "kuyuri" };
+  if (spot.kind === "shop") return { key: "rio", person: "rio" };
   if (spot.charId && ["rival", "samechan"].includes(spot.kind)) return { key: spot.charId, person: spot.charId };
   if (spot.kind === "samechan") return { key: "samechan", person: "samechan" };
   if (spot.kind === "rest" || spot.kind === "fortune") return null; // 休養・占いは学びにしない
