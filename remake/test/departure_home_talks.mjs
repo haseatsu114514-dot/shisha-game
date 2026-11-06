@@ -72,8 +72,7 @@ for (const dialogue of talks) {
   // 味の不調の原因を決めつけない（物語の正本「味の不調と受診」）。第4章でも回復しきったとは書かない（回復は続いていく）
   assert(!/心因|気のせい|ストレス/.test(text), `${id}: no diagnosis`);
   assert(!/すっかり|完全に|元通り|治っ/.test(text), `${id}: the recovery is still going on`);
-  // 現在の正本の呼び名（data/characters.json の凛想。旧名「凛」を使わない）
-  assert(!/凛さん|凛は|凛が/.test(text), `${id}: Rio is 凛想`);
+  // 呼び名は data/characters.json の現在の正本（凛想・みんと・サメちゃん）。旧名は tools/check_legacy_terms.py が全ファイルで止める
   // コロちゃん（腹話術）は「余」「勇者はじめ」で、サメちゃん本人の「じゃ」「のう」「おる」を使わない（samechan.json の speech_style）
   for (const line of lines.filter(line => line.face === "ventriloquism")) {
     assert(!/じゃ|のう|おる/.test(line.text), `${id}: Korochan speaks like a king: ${line.text}`);
