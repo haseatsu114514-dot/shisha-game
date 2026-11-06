@@ -163,7 +163,7 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
   if (id === "minto" && !(state.flags._minto_name_known || state.flags._minto_identity_revealed)) return false;
   if ((state.flags._confession_wait || 0) > state.day || busyNight && companion !== id) return false;
   delete state.flags._confession_due;
-  await beat(companion === id ? "——別れ際、もう少しだけ話したくなった。" : id === "ageha" ? "——と、そのとき。" : `（……${privateCall(id)}の顔が、ふと浮かんだ）`);
+  await beat(companion === id ? "——別れ際、もう少しだけ話したくなった。" : id === "ageha" ? "——と、そのとき。" : `（……${privateCall(id)}の顔が、ふと浮かんだ）`, { who: id }); // 相手で開く（#2688 A11）
   // すでに恋人がいるなら、応える前に一度立ち止まる
   if (state.lovers.length) {
     delete state.flags._cheat_go;

@@ -3,7 +3,10 @@ import { state } from "../core/state.js";
 import { on } from "../core/bus.js";
 import { hiyoriRoute, hiyoriEventStatus, hiyoriEventPrereqsMet } from "../core/hiyori-route.js";
 import { play } from "../vn/engine.js";
-import { runAxeThrow } from "../minigames/axe.js";
+import { runAxeThrow as runAxeGame } from "../minigames/axe.js";
+import { seated } from "../motions/table-seat.js";
+// 入口・出口の幕「卓へ座る」（#2688 F13）。外すときはこの行を消して import の別名を戻す
+const runAxeThrow = seated("AXE THROW", runAxeGame);
 import { bgUrl } from "../core/data.js";
 import { setBg } from "../core/ui.js";
 import { playBgm, currentBgm } from "../core/audio.js";

@@ -16,6 +16,7 @@ export * from "./ch4-desert-progress.js";
 import { addMoney, gainAffinity, visitAffinity } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
+import { seated } from "../motions/table-seat.js";
 import { DESERT_TALKS, DESERT_INVITE_STAGE, NOOR_QUESTION_CHOICE, NOOR_CONFESSION, NOOR_OTHER_LOVER_FLAG, noorConfessionWaiting, DESERT_SCENES, DESERT_CAFE_PRICE, desertCafeVisit, completeDesertCafeVisit, DESERT_RACE_WIN_LINE, DESERT_NARU_LINES, DESERT_DIALOGUE_IDS, desertRivals, markNaruMet, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
   desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertProgress } from "./ch4-desert-progress.js";
 
@@ -118,7 +119,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
       showScreen("none", null);
     }
     let firstWin = false, firstNaruWin = false;
-    const { results } = await runDesertRide({
+    // 入口・出口の幕「卓へ座る」（#2688 F13）。外すときは seated(...) を外して runDesertRide({ に戻す
+    const { results } = await seated("DESERT RIDE", runDesertRide)({
       host: host || document.getElementById("stage") || layers.screen, signal, tutorial: status.first,
       best: before.best, legacyBest: before.legacyBest,
       reducedMotion: (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches) || !!config.reduceShake,

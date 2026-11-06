@@ -759,6 +759,17 @@ function invitationSourceMessage(inv) {
 }
 
 // 移動が終わるまで約束・面会費用・行動報酬は確定しない。
+/**
+ * 人に会いに行く夜のつなぎの一行（約束・デート・告白）。葉の窓がゆっくり閉じて一行を読ませ、相手のテーマ色で開く（#2688 A11）。
+ * 演出を読めないとき・DOMのない検査では、ふつうのつなぎ（beat）に戻る。外すときは呼び出しを beat に戻す。
+ */
+async function meetBeat(text, who) {
+  if (typeof Element === "undefined" || !(layers.fx instanceof Element)) return beat(text);
+  const mod = await import("../motions/meet-leaf.js").catch((e) => { console.error(e); return null; });
+  if (!mod) return beat(text);
+  await mod.meetLeaf(layers.fx, text, { who, clear: () => setBg(null, { instant: true }) });
+}
+
 async function travelToInvitation(inv) {
   const owner = state, day = state.day, slot = state.slot;
   const id = invitationVisitSpot(inv, invitationSourceMessage(inv));
@@ -907,8 +918,8 @@ async function endDay({ returnedToTonari = false } = {}) {
     await travelToInvitation(appointment);
     if (appointment.event !== "date_samechan") state.pendingInvite = null;
     delete state.flags._home_tonight;
-    await beat(appointment.afterClose ? "——店の営業が終わってから、約束の場所へ。"
-      : rested ? "休養のあと、LIMEで約束した場所へ——" : "仕事を終え、LIMEで約束した場所へ。");
+    await meetBeat(appointment.afterClose ? "——店の営業が終わってから、約束の場所へ。"
+      : rested ? "休養のあと、LIMEで約束した場所へ——" : "仕事を終え、LIMEで約束した場所へ。", appointment.sender);
     if (appointment.event === "date_samechan") {
       if (!samechanDateReady()) cancelSamechanAppointment(appointment);
       else {
@@ -931,7 +942,7 @@ async function endDay({ returnedToTonari = false } = {}) {
   // 別の約束で人と会った夜に告白は重ねない（予約は残り、落ち着いた夜に回る）
   // 告白は第1〜3章の物語。第5章（confessions: false）では夜に告白の場面を始めない。
   const confessed = chapterDef.confessions === false ? false
-    : await maybeConfession(beat, { busyNight: metTonight || rested || state.flags._eve_slept === state.day, companion });
+    : await maybeConfession((text, opts) => opts?.who ? meetBeat(text, opts.who) : beat(text), { busyNight: metTonight || rested || state.flags._eve_slept === state.day, companion });
   if (confessed) { delete state.flags._home_tonight; await bannersIdle(); }
   await chapterDef.beforeHomecoming?.();
   const athome = !!state.flags._home_tonight;

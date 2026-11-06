@@ -8,7 +8,10 @@ import { venueHost } from "../core/venue-host.js";
 import { addMoney, addStamina, earnStat } from "../core/stats.js";
 import { showHud } from "./hud.js";
 import { AXE_BAR } from "./axe-bar-data.js";
-import { runAxeThrow } from "../minigames/axe.js";
+import { runAxeThrow as runAxeGame } from "../minigames/axe.js";
+import { seated } from "../motions/table-seat.js";
+// 入口・出口の幕「卓へ座る」（#2688 F13）。外すときはこの行を消して import の別名を戻す
+const runAxeThrow = seated("AXE THROW", runAxeGame);
 import { DIVISIONS } from "../minigames/axe-model.js";
 import { axeBarDiscovered, axeBarSightingDue } from "../core/axe-bar-discovery.js";
 import { playAxeBarSighting } from "./axe-bar-discovery.js";

@@ -4,7 +4,10 @@ import { state, save } from "../core/state.js";
 import { paidAction } from "../core/stats.js";
 import { toast } from "../core/ui.js";
 import { growthEnabled } from "../core/growth.js";
-import { runCamelRace } from "../minigames/camel-race.js";
+import { runCamelRace as runCamelGame } from "../minigames/camel-race.js";
+import { seated } from "../motions/table-seat.js";
+// 入口・出口の幕「卓へ座る」（#2688 F13）。外すときはこの行を消して import の別名を戻す
+const runCamelRace = seated("CAMEL RACE", runCamelGame);
 import { CAMEL_SCENES, CAMEL_STAGES, camelRaceRecord, camelRaceDestination, recordCamelRaceResult, consumeCamelRaceDaytime,
   advanceCamelRaceStage, resultSceneFor, availableCamelCups } from "./ch4-camel-progress.js";
 export * from "./ch4-camel-progress.js";

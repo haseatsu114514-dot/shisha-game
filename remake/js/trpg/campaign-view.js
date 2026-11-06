@@ -5,7 +5,10 @@ import { chapterDay } from "../core/chapter-clock.js";
 import { venueHost } from "../core/venue-host.js";
 import { gearOffer, ownsGear } from "../core/hobby-gear.js";
 import { newDayTrial, rollDayTrial, stopDayTrial } from "./day-trial.js";
-import { loadTrpgLibrary, preloadTrpgAssets, runTrpg } from "./index.js";
+import { loadTrpgLibrary, preloadTrpgAssets, runTrpg as runTrpgGame } from "./index.js";
+import { seated } from "../motions/table-seat.js";
+// 入口・出口の幕「卓へ座る」（#2688 F13）。外すときはこの行を消して import の別名を戻す
+const runTrpg = seated("TRPG", runTrpgGame);
 import { displayName, portraitUrl, portraitTop, sceneArt } from "./presentation.js";
 import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable } from "./campaign.js";
 

@@ -2523,6 +2523,31 @@
       ]
     },
     {
+      "id": "table-seat-meet-leaf",
+      "title": "Minigame entry/exit curtain and slow leaf opening for meetings",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 10,
+      "paths": [
+        "remake/js/motions/table-seat*.js",
+        "remake/js/motions/meet-leaf.js",
+        "remake/js/core/transition-kit.js",
+        "remake/js/core/transitions.js",
+        "remake/js/daily/calendar.js",
+        "remake/js/daily/romance.js",
+        "remake/js/daily/axe-bar.js",
+        "remake/js/daily/hiyori-axe.js",
+        "remake/js/daily/dj-club.js",
+        "remake/js/chapters/ch4-camel-race.js",
+        "remake/js/chapters/ch4-desert.js",
+        "remake/js/trpg/campaign-view.js",
+        "remake/test/table_seat_meet_leaf.mjs"
+      ],
+      "run": [
+        "node remake/test/table_seat_meet_leaf.mjs"
+      ]
+    },
+    {
       "id": "text-editor",
       "title": "Text editor, wrapping, notifications and rewards",
       "kind": "browser",
