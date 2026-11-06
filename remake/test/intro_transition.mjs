@@ -49,7 +49,7 @@ try {
     assert.deepEqual(left, { transition: 0, cutin: 0, surface: 0, portraitOpacity: "1", dialogueHidden: false }, `${variant}/${id}: 終わった後に部品が残る・立ち絵が戻らない ${JSON.stringify(left)}`);
     assert(elapsed > 4000, `${variant}/${id}: 短縮されている（${elapsed}ms）`);
   }
-  // #2688 F10: 同じ人物の2回目以降（既読あり）は、変身（影）を作らず一閃に落とす。読む時間は削らない。
+  // #2688 F10: 同じ人物の2回目以降（既読あり）は、変身を一閃に落とす。読む時間は削らない。
   // 台本で型を明示した紹介はそのまま。未知版を見た後の本来の紹介も「2回目」に数える。
   assert.deepEqual(await page.evaluate(async () => {
     const intro = await import("./js/vn/intro.js"), { state, config } = await import("./js/core/state.js");
@@ -65,23 +65,26 @@ try {
   }), { before: false, afterUnknown: true, first: "morph", repeat: "slash", explicit: "morph", repeatNone: "none" });
   await page.selectOption("#variant", "morph"); await page.selectOption("#character", "naru");
   await page.waitForTimeout(400);
-  await page.evaluate(() => { window.__seen = { silhouette: 0, edge: 0, cutin: 0 };
-    window.__obs?.disconnect();
+  // 一閃も本人が一瞬光る影（.ci-tr-sil）を使うので、変身だけが行う「会話ウィンドウの退避」で見分ける。
+  await page.evaluate(() => { window.__seen = { morphDialog: 0, edge: 0, cutin: 0 };
+    window.__obs?.disconnect(); window.__vnObs?.disconnect();
     window.__obs = new MutationObserver((rs) => rs.forEach((r) => r.addedNodes.forEach((n) => {
-      if (n.querySelector?.(".ci-tr-sil") || n.classList?.contains("ci-tr-sil")) __seen.silhouette++;
       if (n.querySelector?.(".ci-tr-edge") || n.classList?.contains("ci-tr-edge")) __seen.edge++;
       if (n.classList?.contains("cutin")) __seen.cutin++;
     })));
-    __obs.observe(document.getElementById("fx"), { childList: true, subtree: true }); });
+    __obs.observe(document.getElementById("fx"), { childList: true, subtree: true });
+    const vn = document.getElementById("vn");
+    window.__vnObs = new MutationObserver(() => { if (vn.classList.contains("intro-morph-dialog-hidden")) __seen.morphDialog++; });
+    __vnObs.observe(vn, { attributes: true, attributeFilter: ["class"] }); });
   const repeatStarted = Date.now();
   const repeatElapsed = await page.evaluate(async () => {
     const intro = await import("./js/vn/intro.js"), { state, config } = await import("./js/core/state.js");
     config.introTransition = "morph"; state.flags._intro_naru = true;
     const t = performance.now(); await intro.playIntro("naru"); return performance.now() - t;
   });
-  const repeatSeen = await page.evaluate(() => __seen);
+  const repeatSeen = await page.evaluate(() => { window.__vnObs?.disconnect(); return __seen; });
   assert.equal(repeatSeen.cutin, 1, "再登場: カットインが一度だけ出る");
-  assert.equal(repeatSeen.silhouette, 0, "再登場で変身の影を作った");
+  assert.equal(repeatSeen.morphDialog, 0, "再登場で変身（会話ウィンドウの退避）が出た");
   assert(repeatSeen.edge > 0, "再登場で一閃が出ない");
   assert(repeatElapsed > 4000 && Date.now() - repeatStarted > 4000, `再登場で読む時間まで短縮された（${repeatElapsed}ms）`);
   // 動きを減らす設定: 影も一閃も作らず、暗転とフェードだけ

@@ -99,6 +99,8 @@ await suite('portrait-framing',async check=>{
         await page.evaluate(async art=>{
           const core=await import('./js/core/state.js');
           core.config.introArtStyle=art;core.config.introTransition='morph';core.config.reduceShake=art==='classic';
+          // 毎回初対面として流す（#2688 F10: 同じ人物の2回目以降は変身を一閃に落とすため）
+          delete core.state.flags._intro_sumi;
           window.framingMorphSeen=false;
           const vn=document.querySelector('#vn');
           const observer=new MutationObserver(()=>{if(vn.classList.contains('intro-morph-dialog-hidden'))window.framingMorphSeen=true;});
