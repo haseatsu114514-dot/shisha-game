@@ -148,6 +148,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
         // ほかに恋人がいれば、返事の前に一度だけ立ち止まる（台本の条件で出す一時の印）
         owner.flags[NOOR_OTHER_LOVER_FLAG] = (owner.lovers || []).length > 0;
         try { await read(NOOR_CONFESSION, bgUrl(DESERT_DUSK_BG)); } finally { delete owner.flags[NOOR_OTHER_LOVER_FLAG]; }
+        // 付き合うと LIME を交換する（台本の _lime_contact_noor）。以後、離れていても朝のLIMEが届く（remake/data/lover.json）
+        if (owner.flags[`_lime_contact_${DESERT_GUIDE}`] && !(owner.contacts || []).includes(DESERT_GUIDE)) (owner.contacts ||= []).push(DESERT_GUIDE);
         if (state === owner) save();
         return changed;
       }

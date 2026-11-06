@@ -31,16 +31,60 @@
     },
     {
       "dialogue_id": "ch5_party_seat_lover",
+      "comment": "その場の恋人がちょうど1人で、その人の隣に座った時（ch5-party-plan.js）。恋人ごとの席は branches に書き、まだ無い人は default。みんと（#2665）: 恋人なら面識・本名・『お姉さん』の正体は確定している（bonds.js の締めくくり条件）。ドバイへ同行したかどうかに触れない。",
       "lines": [
-        { "speaker": "", "face": "", "text": "隣に座ると、グラスが小さく触れ合った。" },
-        { "speaker": "", "face": "", "text": "何も言わなくても、今日はそれで十分だった。" }
-      ]
+        { "type": "condition", "condition_type": "met", "char_id": "minto", "next_true": "check_minto", "next_false": "default" }
+      ],
+      "branches": {
+        "check_minto": [
+          { "type": "condition", "condition_type": "lover", "char_id": "minto", "next_true": "minto", "next_false": "default" }
+        ],
+        "minto": [
+          { "speaker": "", "face": "", "text": "栞さんが座っていたのは、カウンターのいちばん端の席だった。" },
+          { "speaker": "minto", "face": "ura_smile", "text": "……主役がこっちに来ちゃって、いいの？" },
+          { "speaker": "hajime", "face": "normal", "text": "ここがいい" },
+          { "speaker": "minto", "face": "ura_normal", "text": "……この席ね、私の指定席だったの。誰にも言ってないけど" },
+          { "speaker": "", "face": "", "text": "知っている。tonariの隅で、静かに一台を吸っていた『お姉さん』の席だ。" },
+          { "speaker": "hajime", "face": "normal", "text": "俺が、初めて栞さんに一台出した席だ" },
+          { "speaker": "minto", "face": "ura_smug", "text": "偵察のつもりで座ったのにね。……その新人くんが、世界一だって" },
+          { "speaker": "minto", "face": "ura_smile", "text": "おめでとう、はじめくん。……これは、ここで言いたかったの" },
+          { "speaker": "", "face": "", "text": "向こうのテーブルから、「みんとちゃん、乾杯の写真！」と声が飛んだ。" },
+          { "speaker": "minto", "face": "ura_smile", "text": "はーい♡ かわいく撮ってねー" },
+          { "speaker": "", "face": "", "text": "店の声で手を振ってから、栞さんはこっちへ向き直った。声が、すっと小さくなる。" },
+          { "speaker": "minto", "face": "ura_normal", "text": "……前はね、ここから見てるだけだったの。はじめくんが、誰かに一台出すとこ" },
+          { "speaker": "minto", "face": "ura_normal", "text": "今日は、隣に座っていいんだよね" },
+          { "speaker": "hajime", "face": "normal", "text": "うん。……今日だけじゃなくて" },
+          { "speaker": "minto", "face": "ura_surprise", "text": "……っ。そういうの、みんながいるとこで言わないで" },
+          { "speaker": "", "face": "", "text": "栞さんはグラスで顔を半分隠した。耳まで赤いのは、照明のせいじゃなさそうだった。" },
+          { "speaker": "", "face": "", "text": "スミさんが通りがかりに、ミントの一台をカウンターの端へ置いていった。何も言わずに。" },
+          { "speaker": "minto", "face": "ura_smug", "text": "……スミさん、全部お見通しだね" },
+          { "speaker": "hajime", "face": "smile", "text": "昔から、ああいう人だから" },
+          { "speaker": "", "face": "", "text": "一本のホースを、二人で回した。ミントの煙が、カウンターの端でゆっくりほどけていく。" },
+          { "speaker": "minto", "face": "ura_smile", "text": "……また、ここで一台作ってね。この席、空けとくから" },
+          { "speaker": "hajime", "face": "smile", "text": "うん。いつでも" }
+        ],
+        "default": [
+          { "speaker": "", "face": "", "text": "隣に座ると、グラスが小さく触れ合った。" },
+          { "speaker": "", "face": "", "text": "何も言わなくても、今日はそれで十分だった。" }
+        ]
+      }
     },
     {
       "dialogue_id": "ch5_party_seat_away",
       "lines": [
         { "speaker": "", "face": "", "text": "少し離れた席から、視線を感じた。" },
         { "speaker": "hajime", "face": "normal", "text": "（……あとで、ちゃんと話そう）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_party_noor_call",
+      "comment": "DSR20 打ち上げの途中、ドバイのヌールからお祝いのテレビ電話（恋人が遠くに住むヌールの時。席には座らない）。ヌールと別の恋人がいれば修羅場（shuraba_noor もテレビ電話）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ポケットのスマホが震えた。画面には、ドバイの夕方と、ヌールさんの顔。" },
+        { "speaker": "noor", "face": "smile", "text": "ハジメ、おめでとう！ ……あ、うるさいところにかけちゃった？" },
+        { "speaker": "hajime", "face": "smile", "text": "大丈夫です。みんなに、見せてもいいですか" },
+        { "speaker": "noor", "face": "surprise", "text": "……え、待って、髪、今……" },
+        { "speaker": "", "face": "", "text": "画面を店の中へ向けると、誰かが手を振り、ヌールさんも慌てて手を振り返した。" }
       ]
     },
     {

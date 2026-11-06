@@ -202,7 +202,8 @@ function meTab() {
 }
 
 // ヌール（DSR20）は第4章ドバイのヒロイン。会った後は♥と関係の案内を出す（カフェ・サーリムの締めくくり・砂丘の告白）
-const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "rio", "hiyori", "samechan", "ageha", "kumicho", "rei", "mashiro", "noor"];
+// 綾取・スティーブ・ヴォルク（#2028）も♥5の締めくくりがあるので、会った後は♥と案内を出す（第3章の東京で会える間だけ「次に会うと」を出す）
+const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "rio", "hiyori", "samechan", "ageha", "kumicho", "rei", "mashiro", "saku", "steve", "volk", "noor"];
 function peopleTab() {
   const rows = PEOPLE.filter((id) => state.met[id] || id === "sumi").map((id) => {
     const lv = affinityLevel(id);

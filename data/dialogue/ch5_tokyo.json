@@ -103,6 +103,35 @@
       ]
     },
     {
+      "dialogue_id": "ch5_steve_bond_finale",
+      "comment": "#2705 スティーブの好感度の締めくくり（第5章の東京版・友情のみ）。第3章の ch3_steve_bond_finale と同じ節目で、第3章で♥5に届かず見逃した人が Smoke & Glory で受け直す（daily/bonds.js の BOND_FINALES.steve.tokyoDialogue）。第3章で見た人は finales.steve で二度は出ない。第3章の外出・LIMEの記憶を前提にしない（見ていない人も読める）。世界を回って帰ったはじめに、練習に使ってきた素焼きを預ける。報酬（専用ハガル）は playFinale が渡す。昼にも夜にも読めるので時間帯を言わない。",
+      "metadata": { "bond_finale": "steve" },
+      "lines": [
+        { "speaker": "", "text": "Smoke & Glory。スティーブは棚の一番上から、小さな紙袋を下ろした。" },
+        { "speaker": "steve", "face": "normal", "text": "ずっと練習に使ってきた、俺のハガルだ" },
+        { "speaker": "", "text": "袋の中は、縁の欠けた素焼きのハガルだった。内側の土が、うっすら黄色く染まっている。" },
+        { "speaker": "", "text": "鼻を近づけると、レモンのあとから、ライムが追ってきた。" },
+        { "speaker": "hajime", "face": "surprise", "text": "これ、マウンテンミスト……ですよね" },
+        { "speaker": "steve", "face": "smile", "text": "イエス。こいつで、何百回も待った" },
+        { "speaker": "steve", "face": "serious", "text": "待つ練習には、いい相棒だった。でも、客の顔を見る練習には、ならなかった" },
+        { "speaker": "hajime", "face": "normal", "text": "そんな大事なものを" },
+        { "speaker": "steve", "face": "normal", "text": "世界から帰ってきたハジメは、一台の前で、顔から先に見る" },
+        { "speaker": "steve", "face": "smile", "text": "だから、俺の棚から出す。預けたい" },
+        { "speaker": "hajime", "face": "surprise", "text": "俺が使っていいんですか？" },
+        { "speaker": "steve", "face": "normal", "text": "使え。タイマーで待てる奴は多い。待ちながら顔を見る奴は、少ない" },
+        { "speaker": "hajime", "face": "normal", "text": "スティーブさんは、どうするんですか" },
+        { "speaker": "steve", "face": "smile", "text": "もう一個、焼いてもらう。新しいのは、客の言葉を聞きながら育てる" },
+        { "speaker": "hajime", "face": "smile", "text": "……じゃあ、お借りします" },
+        { "speaker": "steve", "face": "normal", "text": "ノー、ノー。借りるじゃない。ハジメのだ。……たまに、顔の知らせをくれ" },
+        { "speaker": "hajime", "face": "smile", "text": "送ります。気づいた日だけ" },
+        { "speaker": "steve", "face": "smile", "text": "オーケー。その一行が、一番の礼だ" },
+        { "speaker": "", "text": "スティーブはマウンテンミストの箱を一つ、紙袋に足した。" },
+        { "speaker": "steve", "face": "normal", "text": "葉もつけとく。最初は、俺の秒数で一度吸ってみろ。外すのは、それからだ" },
+        { "speaker": "hajime", "face": "normal", "text": "（待ち方を教わったんじゃない。外していいって、言われたんだ）" },
+        { "type": "apply", "stats": { "technique": 2 } }
+      ]
+    },
+    {
       "dialogue_id": "ch5_tokyo_volk",
       "lines": [
         { "speaker": "", "face": "", "text": "鉄の煙。計器の並ぶカウンターで、ヴォルクが手帳に何かを書いていた。" },
@@ -154,6 +183,27 @@
         { "speaker": "hajime", "face": "surprise", "text": "東京にも、出るんですか？" },
         { "speaker": "uranaishi", "face": "smile", "text": "縁のある所なら、どこへでも。……理由は聞かない方がいい" },
         { "speaker": "uranaishi", "face": "normal", "text": "さて。今日は誰との縁が気になるんだい？" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_gym_day",
+      "comment": "東京に泊まっている昼の CHOI-ZAP（会員の時だけ・#2033）。無人のジムなので話す相手はいない。第3章の ch3_choizap_* とは別の、第5章の言葉にする。ましろ・綾取は出さない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "高架下のCHOI-ZAP。昼の店内に、マシンの低い音だけが続いている。" },
+        { "speaker": "hajime", "face": "normal", "text": "（屋根裏とmukaiの往復だけだと、体がなまりそうだ）" },
+        { "speaker": "", "face": "", "text": "アプリのフォーム動画を見ながら、マシンで肩と背中を動かした。" },
+        { "speaker": "hajime", "face": "normal", "text": "（前に東京にいた頃は、毎日が本番の前の日みたいだったな）" },
+        { "speaker": "", "face": "", "text": "汗が引くまで休んでから、高架の下をmukaiの方へ歩いた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_gym_night",
+      "comment": "東京に泊まっている夜の CHOI-ZAP。勝負の日は自由行動の間はまだ決まっていない（決めるのは地元の家の電話から）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "夜のCHOI-ZAP。誰もいない店内で、マシンの画面だけが光っている。" },
+        { "speaker": "hajime", "face": "normal", "text": "（勝負の日は、まだ決めていない。体だけは整えておこう）" },
+        { "speaker": "", "face": "", "text": "動画のカウントに合わせて、スクワットを十回ずつ三組。" },
+        { "speaker": "", "face": "", "text": "外へ出ると、高架の上を遅い電車が通っていった。" }
       ]
     }
   ]

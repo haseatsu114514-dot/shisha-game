@@ -490,6 +490,7 @@ await suite("desert-ride", async check => {
     assert.equal(value.money, before.money, "Noor's invitation: no tour fee");
     assert.deepEqual(value.lovers, ["noor"]);
     assert.equal(value.loveLevel.noor, 1);
+    assert(value.flags._lime_contact_noor && value.contacts.includes("noor"), "they exchange LIME when they start dating");
     assert.equal(value.flags._noor_confession_other_lover, undefined, "the temporary flag is cleared");
     assert((await page.evaluate(() => window.__bgs)).some(url => /bg_dubai_dunes_dusk/.test(url)), "the confession is on the sunset dunes");
     // 告白は一度だけ。次の砂丘は相場のツアー代

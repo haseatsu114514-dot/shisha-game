@@ -20,14 +20,16 @@ export function createContinueView({ script, speaker, character, premium, layout
   const backCount = layout === "back-count" || classicBack;
   const topActions = layout === "top" || layout === "back-count";
   const art = name => img(`ui/continue/${name}.png`);
-  const portrait = portraitInfo(speaker, script.cues[0].face);
+  // CONTINUE専用の顔bboxは現行画像で計測済み。会話の画風を流用しない。
+  const portrait = portraitInfo(speaker, script.cues[0].face, "classic");
   const image = portrait
     ? el("img.go-sumi-img", { src: portrait.src, alt: character, draggable: "false" })
     : el("div.go-sumi-fallback", { text: character });
   function framePortrait(info) {
     if (!info) return;
     // 正規画像の顔の範囲を計測し、画像全体を拡大・配置する。画像や色は加工しない。
-    const framing = DB.manifest.continuePortraits?.[info.folder]?.[info.face];
+    // 新バージョンの立ち絵を出している時は、新バージョンの絵で測った枠（continuePortraitVariants）。現行の枠では顔がずれる
+    const framing = (info.style && info.style !== "classic" ? DB.manifest.continuePortraitVariants?.[info.style] : DB.manifest.continuePortraits)?.[info.folder]?.[info.face];
     const faceSize = framing?.size || info.h * .2;
     const height = (neon ? NEON_FACE_PX : FACE_PX) / faceSize, width = height * info.aspect;
     // neonは顔bbox中心を固定。比較用レイアウトは従来の頭上端基準を保つ。
@@ -144,7 +146,7 @@ export function createContinueView({ script, speaker, character, premium, layout
     if (root.dataset.voice !== value) root.dataset.voice = value;
   }
   function face(name, beat = true) {
-    const info = portraitInfo(speaker, name);
+    const info = portraitInfo(speaker, name, "classic");
     if (info && portrait && image.getAttribute("src") !== info.src) { image.src = info.src; framePortrait(info); }
     root.dataset.emotion = name;
     if (beat) {

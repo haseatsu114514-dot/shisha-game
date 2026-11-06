@@ -573,8 +573,8 @@ async function takeAction() {
   });
   if (!used) return;
   state.visitedDay[spot.id] = state.day;
-  // チョコザップ: その日から数日、風邪をひきにくい
-  if (spot.id === "choizap" && state.flags._gym_member) {
+  // チョコザップ（地元の店と、spot.gym の付いた東京の店＝第3章・第5章）: その日から数日、風邪をひきにくい
+  if ((spot.id === "choizap" || spot.gym) && state.flags._gym_member) {
     state.flags._fit_since = { chapter: state.chapter, day: state.day };
     toast(`体が整った。${FIT_DAYS}日間は風邪をひきにくい`, { kind: "good" });
   }

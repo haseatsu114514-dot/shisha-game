@@ -63,13 +63,18 @@ assert(vanillaReward.name.startsWith(vanilla.short_name));
 for (const id of ["minto", "ageha"]) {
   for (const face of all.DB.manifest.portraits[id].faces) {
     const version = id === "ageha" || face === "normal" ? "?v=portrait-standard-20261102" : "";
-    assert.equal(all.portraitInfo(id, face).src, `img/sprites/characters/${id}/chr_${id}_${face}.webp${version}`);
+    assert.equal(all.portraitInfo(id, face, "classic").src, `img/sprites/characters/${id}/chr_${id}_${face}.webp${version}`);
   }
-  assert.equal(all.faceIconUrl(id), `img/ui/face_icons/face_${id}.webp?v=portrait-standard-20261102`);
-  assert(all.allFaceIconUrls().includes(all.faceIconUrl(id)), "preload and display use the same revised icon URL");
+  // 顔アイコンは会話の立ち絵と同じ画風（#2680）。現行の版は改訂の版数付き、既定は採用済みの新版。
+  assert.equal(all.faceIconUrl(id, null, { style: "classic" }), `img/ui/face_icons/face_${id}.webp?v=portrait-standard-20261102`);
+  assert.equal(all.faceIconUrl(id), `img/ui/face_icons/new/face_${id}.webp`);
+  assert(all.allFaceIconUrls().includes(all.faceIconUrl(id)), "preload and display use the same icon URL");
 }
+assert.equal(all.portraitInfo("minto", "normal").style, "new");
+assert.equal(all.portraitInfo("minto", "normal").src, "img/sprites/character_variants/new/minto/chr_minto_normal.webp");
 assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/bg_tonari_inside_day.webp");
-assert.equal(all.faceIconUrl("oneesan"), "img/ui/face_icons/face_minto_private.webp");
+assert.equal(all.faceIconUrl("oneesan", null, { style: "classic" }), "img/ui/face_icons/face_minto_private.webp");
+assert.equal(all.faceIconUrl("oneesan"), "img/ui/face_icons/new/face_minto_private.webp");
 assert.equal(all.portraitInfo("oneesan", "normal").face, "ura_normal");
 assert.equal(requests.length, 42);
 assert.equal(new Set(requests).size, 42);
@@ -87,13 +92,19 @@ assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
 const limeMessages = realJSON("../data/lime_messages.json").messages;
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.lime)), limeMessages);
 assert.equal(new Set(all.DB.lime.map(m => m.id)).size, all.DB.lime.length);
-assert.deepEqual(Array.from(all.DB.lime.slice(-9), m => m.id), [
+assert.deepEqual(Array.from(all.DB.lime.slice(-19, -10), m => m.id), [
   "lime_naru_samechan_nickname", "lime_samechan_preparing_thanks", "lime_samechan_opening",
   "lime_outing_samechan_1", "lime_after_outing_samechan", "lime_outing_rio_1", "lime_after_outing_rio",
   "lime_outing_hiyori_1", "lime_after_outing_hiyori",
 ]);
+// 第3〜5章の物語のLIME（東京・ドバイ・帰郷後。#2024）は末尾に足した
+assert.deepEqual(Array.from(all.DB.lime.slice(-10), m => m.id), [
+  "lime_ch3_sumi_tokyo_settle", "lime_ch4_sumi_settle", "lime_ch4_tsumugi_counter", "lime_ch4_mashiro_mukai",
+  "lime_ch4_ageha_melty", "lime_ch4_saku_stream", "lime_ch4_sumi_eve", "lime_ch5_saku_title", "lime_ch5_kumicho_title",
+  "lime_ch5_rei_title",
+]);
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.limeTemplates)), realJSON("../data/lime_messages.json").templates);
-assert.equal(all.DB.lime.length, 79);
+assert.equal(all.DB.lime.length, 89);
 assert(!all.DB.lime.some(m => m.accept_event === "__hiyori_shop__"));
 assert.equal(all.DB.samechan.lime, undefined);
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
@@ -102,11 +113,11 @@ for (const id of ["baito_tsumugi_01", "baito_minto_romance", "baito_ageha_romanc
   assert(!all.DB.baito.some(event => event.id === id), `未接続の物語イベントを一括解放しない: ${id}`);
 }
 assert(Array.isArray(all.DB.gallery.items), "the approved gallery catalog is loaded from real data");
-assert.equal(all.DB.characters.hiyori.name, "薄羽ひより");
-assert.equal(all.DB.characters.hiyori.reading, "うすば ひより");
-assert.equal(all.DB.characters.saku.name, "綾取 朔（あやとり さく）");
+assert.equal(all.DB.characters.hiyori.name, "泡沫ひより");
+assert.equal(all.DB.characters.hiyori.reading, "うたかた ひより");
+assert.equal(all.DB.characters.saku.name, "綾取 陣（あやとり じん）");
 assert.equal(all.DB.characters.rei.reading, "あそう れい");
-assert.equal(all.realName("saku"), "綾取朔");
+assert.equal(all.realName("saku"), "綾取陣");
 assert.equal(all.realName("rei"), "鴉葬レヰ");
 assert.equal(all.realName("hiyori"), "ひより");
 assert.equal(all.DB.characters.hiyori.age, 25);
@@ -123,6 +134,9 @@ assert(all.DB.dialogues.remake_fortune_trivia_naru_1, "fortune results were not 
 assert(all.DB.dialogues.remake_fortune_trivia_sumi_13, "added fortune readings were not registered after loading");
 assert(all.DB.dialogues.remake_fortune_trivia_kumicho_1 && all.DB.dialogues.remake_fortune_trivia_sheikh_5, "Chapter 2-5 cast readings were not registered after loading");
 assert(!all.DB.dialogues.remake_fortune_trivia_adam_1, "excluded fortune readings must not be registered");
+// 読み込み後の本物の順でも、三日間の「赤く見える」は注記のある相手（なる）だけに約束し、注記の無い相手（組長）には言わない。
+const fortuneSight = id => all.DB.dialogues[id].lines.some(l => /赤く見える/.test(l.text || ""));
+assert(fortuneSight("remake_fortune_trivia_naru_1") && !fortuneSight("remake_fortune_trivia_kumicho_1"), "fortune sight promise must follow the loaded choice hints");
 assert.equal(all.DB.dialogues.craft_inner_heat_watch.lines[0].speaker, "hajime");
 assert(all.DB.dialogues.craft_inner_heat_watch.lines[0].text);
 assert.equal(all.DB.dialogues.tournament_craft_packed_intro, undefined);

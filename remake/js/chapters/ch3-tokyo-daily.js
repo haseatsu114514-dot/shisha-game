@@ -88,17 +88,17 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
   spot({ id: "ch3_tokyo_mukai", place: "mukai", label: "mukai", area: "高架下の商店街", x: 29.6, y: 62.7, theme: "baito", glyph: "店",
     face: "mukai_master", preview: "bg_mukai_shop", desc: "働かせてもらっている店。手伝い、ましろちゃんとの時間、作業台。帰りに裏口のてつこにも会える。" }),
   spot({ id: "ch3_tokyo_enmaku", place: "enmaku", label: "煙幕", area: "綾取の店", x: 45.3, y: 49.7, theme: "rival", glyph: "煙",
-    face: "saku", preview: "bg_yohaku_shop", cost: TOKYO_VISIT_COST, desc: "綾取の店。お茶と、ノートの続き。", met: "saku" }),
+    face: "saku", preview: "bg_yohaku_shop", fee: TOKYO_VISIT_COST, desc: "綾取の店。お茶と、ノートの続き。", met: "saku" }),
   spot({ id: "ch3_tokyo_steve", place: "steve", label: "Smoke & Glory", area: "スティーブの店", x: 23.3, y: 36.1, theme: "rival", glyph: "煙",
-    face: "steve", preview: "bg_steve_shop", cost: TOKYO_VISIT_COST, desc: "タイマーの並ぶ店。", met: "steve" }),
+    face: "steve", preview: "bg_steve_shop", fee: TOKYO_VISIT_COST, desc: "タイマーの並ぶ店。", met: "steve" }),
   spot({ id: "ch3_tokyo_volk", place: "volk", label: "鉄の煙", area: "ヴォルクの店", x: 55.9, y: 40.4, theme: "rival", glyph: "煙",
-    face: "volk", preview: "bg_volk_shop", cost: TOKYO_VISIT_COST, desc: "計器の並ぶ店。", met: "volk" }),
+    face: "volk", preview: "bg_volk_shop", fee: TOKYO_VISIT_COST, desc: "計器の並ぶ店。", met: "volk" }),
   spot({ id: "ch3_tokyo_park", place: "park", label: "公園", area: "池のある公園", x: 69, y: 62, theme: "park", glyph: "園",
-    preview: "bg_street", stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
+    preview: "bg_tokyo_park", stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
   spot({ id: "ch3_tokyo_shop", place: "shop", label: "Dr.fookah 東京店", area: "駅前の店", x: 15, y: 51, theme: "shop", glyph: "卸",
     preview: "bg_fookah_showroom", desc: "東京の店。葉を買える（時間は使わない）。" }),
   spot({ id: "ch3_tokyo_gym", place: "gym", label: "CHOI-ZAP", area: "高架下のジム", x: 34.9, y: 75.9, theme: "gym", glyph: "体",
-    preview: "bg_choizap", stamina: -8, stat: "charm", desc: "全国の店で使える会員証で、体を動かす。" }),
+    preview: "bg_choizap", stamina: -8, stat: "charm", gym: true, desc: "全国の店で使える会員証で、体を動かす。" }),
   // 心得の盤の内省。公園の池に浮かぶお堂（IR26・SBD98）。id は仮置きの「路地裏の神社」の時のまま（互換）
   spot({ id: "ch3_tokyo_shrine", place: "shrine", label: "池の弁天堂", area: "公園の池", x: 91, y: 73, theme: "rest", glyph: "弁",
     preview: "bg_tokyo_park", desc: "池に浮かぶ小さなお堂。学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
@@ -108,11 +108,15 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
     preview: "bg_club_seam_entrance", desc: "セットを選んで曲をつなぐ（時間は使わない）。" }),
   spot({ id: "ch3_tokyo_room", place: "room", label: "mukaiの奥の部屋", area: "店の奥", x: 45, y: 63, theme: "rest", glyph: "休",
     preview: "bg_mukai_shop", stamina: 55, desc: "寝泊まりしている部屋で休む。体力が大きく戻る。" }),
-].map(entry => Object.freeze({ ...entry, hasNew: () => spotHasNew(entry) })));
+].map(entry => Object.freeze(Object.defineProperties({ ...entry, hasNew: () => spotHasNew(entry) }, entry.fee ? {
+  // 地図の利用料（daily/spot-access.js・map.js が読む）。締めくくり（♥5）は客の一台ではなく代金がかからないので、
+  // 一台分のお金が無い日は利用料なしで入れて、締めくくりだけを選べる（visitRivalShop は fee で払えるかを見る）。
+  cost: { enumerable: true, get: () => rivalFinaleAt(entry.place) && spendableMoney(state) < entry.fee ? 0 : entry.fee },
+} : {}))));
 
 function spotHasNew(entry) {
   if (["mukai", "enmaku", "volk"].includes(entry.place) && optionalAt(entry.place).length) return true;
-  if (entry.place === "enmaku" && finaleAtVisit("saku")) return true; // 綾取の締めくくり（IR22）
+  if (rivalFinaleAt(entry.place)) return true; // 綾取・スティーブ・ヴォルクの締めくくり（IR22・#2028）
   if (entry.place === "mukai") return mukaiBondDue() || outingsAt("mukai").some(outing => !outing.repeat);
   return outingsAt(entry.place).some(outing => !outing.repeat);
 }
@@ -127,7 +131,7 @@ export function chapterThreeTokyoSpots() {
   const night = state.slot >= 1;
   return CH3_TOKYO_SPOTS.filter(entry => {
     if (entry.met && !state.met?.[entry.met]) return false;
-    if (["enmaku", "steve", "volk"].includes(entry.place)) return optionalAt(entry.place).length > 0 || outingsAt(entry.place).length > 0;
+    if (["enmaku", "steve", "volk"].includes(entry.place)) return !!rivalFinaleAt(entry.place) || optionalAt(entry.place).length > 0 || outingsAt(entry.place).length > 0;
     if (entry.place === "gym") return !!state.flags._gym_member;
     if (entry.place === "shrine") return canReflect(state);
     if (entry.place === "club") return night;
@@ -476,44 +480,54 @@ async function readOptionalHere(io, scene, staminaGuard, owner, stamina = -10) {
   addStamina(stamina);
   earnSceneCompletion(scene.id, owner);
   await refreshOptional();
-  return { used: true, exerted: true, exp: personExp(OPTIONAL_HOST[optionalPlace(scene)]) };
+  return { used: true, exerted: true, exp: personExp(scene.host || OPTIONAL_HOST[optionalPlace(scene)]) };
 }
+
+/** 店で迎える♥5の締めくくり（daily/bonds.js の条件）。煙幕は綾取（IR22）、Smoke & Glory はスティーブ、鉄の煙はヴォルク（#2028）。 */
+const RIVAL_FINALES = Object.freeze({
+  enmaku: Object.freeze({ who: "saku", label: "綾取に呼ばれる" }),
+  steve: Object.freeze({ who: "steve", label: "スティーブに呼ばれる" }),
+  volk: Object.freeze({ who: "volk", label: "ヴォルクに呼ばれる" }),
+});
+const rivalFinaleAt = place => RIVAL_FINALES[place] && finaleAtVisit(RIVAL_FINALES[place].who) ? RIVAL_FINALES[place] : null;
 
 /**
  * 煙幕・Smoke & Glory・鉄の煙: 寄り道があればそれ、無ければその店の外出（#1655）。
  * 東京のシーシャ屋は一台4,000円（TOKYO_VISIT_COST）。読み終えた時だけ払う。本筋の場面（日程の枠で読む）は払わない。
- * 煙幕では、綾取の締めくくり（♥5・IR22）が来ていれば「綾取に呼ばれる」を先頭に出す（閉店後に呼ばれるので払わない）。
+ * 締めくくり（♥5）が来ていれば、その店主の「〜に呼ばれる」を先頭に出す（客の一台ではないので払わない）。
  */
 async function visitRivalShop(entry, io, staminaGuard, owner) {
-  const finale = entry.place === "enmaku" && finaleAtVisit("saku");
-  const choices = [
-    ...finale ? [{ label: "綾取に呼ばれる", value: "finale:saku" }] : [],
+  const finale = rivalFinaleAt(entry.place);
+  const paid = [
     ...optionalAt(entry.place).map(scene => ({ label: scene.label, value: `scene:${scene.id}` })),
     ...outingsAt(entry.place).map(outing => ({ label: `${outing.label.replace(/\s*に(顔を出す|寄る)$/, "")}：${outingReason(state, outing)}`, value: `outing:${outing.id}` })),
   ];
-  if (!choices.length) { toast("今日は、話すことが思いつかない"); return unused; }
-  const cost = entry.cost || 0;
-  if (cost > spendableMoney(state)) { toast(`お金が足りない（${cost.toLocaleString("ja-JP")}円）`); return unused; }
+  if (!finale && !paid.length) { toast("今日は、話すことが思いつかない"); return unused; }
+  const cost = entry.fee || 0;
+  // 締めくくりは代金がかからないので、お金が足りない日もそれだけは選べる（客の一台の寄り道・外出は出さない）
+  const short = cost > spendableMoney(state);
+  if (short && !finale) { toast(`お金が足りない（${cost.toLocaleString("ja-JP")}円）`); return unused; }
+  const choices = [...finale ? [{ label: finale.label, value: `finale:${finale.who}` }] : [], ...short ? [] : paid];
   const pick = choices.length === 1 ? choices[0].value : await modal({ title: entry.label, className: "tokyo-visit-choice",
     body: "何をしに行こう。", options: [...choices.map((choice, index) => ({ ...choice, test: `tokyo-${entry.place}-${index}` })),
       { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
   if (!pick || state !== owner) return unused;
   const [kind, id] = pick.split(":");
-  if (kind === "finale") return readSakuFinale(staminaGuard, owner);
+  if (kind === "finale") return readRivalFinale(id, entry.place, staminaGuard, owner);
   const result = kind === "scene" ? await readOptionalHere(io, optional.find(scene => scene.id === id), staminaGuard, owner)
     : await goOuting(outingById(id), staminaGuard, owner);
   if (result?.used && state === owner && cost) addMoney(-cost);
   return result;
 }
 
-/** 綾取の締めくくり（daily/bonds.js の条件・一度だけ）。ましろちゃんの節目と同じく行動を一つ使う。 */
-async function readSakuFinale(staminaGuard, owner) {
+/** 綾取・スティーブ・ヴォルクの締めくくり（daily/bonds.js の条件・一度だけ）。ましろちゃんの節目と同じく行動を一つ使う。 */
+async function readRivalFinale(who, place, staminaGuard, owner) {
   if (!(await staminaGuard(-10))) return unused;
-  const bg = BG(visitBg.enmaku);
+  const bg = BG(visitBg[place]);
   await setBg(bg, { instant: true });
-  if (!await playFinale("saku", { bg }) || state !== owner) return unused;
+  if (!await playFinale(who, { bg }) || state !== owner) return unused;
   addStamina(-10);
-  return { used: true, exerted: true, exp: personExp("saku") };
+  return { used: true, exerted: true, exp: personExp(who) };
 }
 
 /**

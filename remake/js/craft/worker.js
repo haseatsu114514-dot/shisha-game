@@ -36,7 +36,8 @@ export function buildHookahRig(cls) {
 }
 
 export function buildWorkerScene(cs) {
-  const portrait = portraitInfo("hajime", "serious");
+  // 固定CSSの顔位置・汗・息と蒸らし専用絵は旧版で配置済み。同じ版を保つ。
+  const portrait = portraitInfo("hajime", "serious", "classic");
   const actor = portrait ? el("img.worker-actor", { src: portrait.src, alt: "", draggable: false }) : null;
   const caption = el("span.bench-worker-caption", { text: "一台を仕上げる" });
   const actions = buildWorkerActions();
@@ -95,7 +96,7 @@ export function buildWorkerScene(cs) {
   let facesChecked = false;
   const usableFaces = new Set();
   const faceUrls = [...new Set([
-    ...["serious", "normal", "sad", "surprise"].map(face => portraitInfo("hajime", face)?.src),
+    ...["serious", "normal", "sad", "surprise"].map(face => portraitInfo("hajime", face, "classic")?.src),
   ].filter(Boolean))];
   const warmFaces = Promise.all(faceUrls.map(async url => {
     if (await imageReady(url, 15000, { keep: true })) usableFaces.add(url);
@@ -104,7 +105,7 @@ export function buildWorkerScene(cs) {
   const applyFace = () => {
     const waiting = root.dataset.step === "steam";
     const face = mental === "shaken" ? "surprise" : mental === "unsteady" ? "sad" : ["serious", "normal", "sad"][fatigue] || "serious";
-    const p = portraitInfo("hajime", face);
+    const p = portraitInfo("hajime", face, "classic");
     const calmUrl = makingUrl("hajime_steam_wait.png");
     const settled = mental === "steady" || mental === "clear"; // 無心（#2519）も目を閉じた集中の絵
     const calm = waiting && settled && fatigue < 2 && usable(calmUrl) && calmUrl;

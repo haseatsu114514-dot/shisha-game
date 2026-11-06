@@ -22,7 +22,7 @@ import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, ch
   completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime,
   chapterThreePrepPending, departChapterThree, chapterThreeDaily } from "./ch3-progress.js";
 import { CH3_PREP_SCENES, chapterThreePrepEvents } from "./ch3-prep.js";
-import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts } from "../core/tokyo-visits.js";
+import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts, playerRegion } from "../core/tokyo-visits.js";
 
 import { createChapterThreeWayfinding } from "./ch3-wayfinding.js";
 import { availableChapterThreeTrials } from "./ch3-trial-progress.js";
@@ -555,15 +555,21 @@ function bondActions(owner) {
   return [
     ...kind ? [button(owner, kind === "question" ? "ましろちゃんと話す（mukai）" : "ましろちゃんに呼ばれる（mukai）",
       `bond-${kind}`, () => readBond(owner, kind))] : [],
-    // 綾取の締めくくり（#2028）。条件は daily/bonds.js（LIME交換の寄り道と答えを返す外出の後）。友情の着地だけ。
+    // 綾取・スティーブ・ヴォルクの締めくくり（#2028）。条件は daily/bonds.js（LIME交換の寄り道と、答えを返す／タイマーを借りる外出・
+    // 鉄の煙の四度目の後・♥5）。
+    // 友情の着地だけ。版3の東京は日常ループの店（ch3-tokyo-daily.js）から読むので、ここは旧行程の保存のため。
     ...finaleAtVisit("saku") ? [button(owner, "綾取に呼ばれる（煙幕）", "bond-saku-finale",
       () => readBond(owner, "finale", "saku"))] : [],
+    ...finaleAtVisit("steve") ? [button(owner, "スティーブに呼ばれる（Smoke & Glory）", "bond-steve-finale",
+      () => readBond(owner, "finale", "steve"))] : [],
+    ...finaleAtVisit("volk") ? [button(owner, "ヴォルクに呼ばれる（鉄の煙）", "bond-volk-finale",
+      () => readBond(owner, "finale", "volk"))] : [],
   ];
 }
 
 async function readBond(owner, kind, id = "mashiro") {
   if (!current(owner)) return;
-  const background = bgUrl(id === "saku" ? "bg_yohaku_shop" : "bg_mukai_shop");
+  const background = bgUrl({ saku: "bg_yohaku_shop", steve: "bg_steve_shop", volk: "bg_volk_shop" }[id] || "bg_mukai_shop");
   showScreen("none", null);
   hud(owner);
   await withScenePreparation(setBg(background, { instant: true }));
@@ -659,11 +665,13 @@ async function playEvening(owner, result, { plan = null, window = null, definiti
  * 絆は足さない（東京の訪問デートは絆・能力を動かさない）。中断しても未読のまま次に会えた時へ回る。
  */
 async function readLoverMilestoneAt(owner, id) {
-  if (!current(owner) || !loverMilestonesDue([id]).length) return;
+  // 場面カードの東京では現在地の印が地元のまま。地元が舞台の節目は帰郷してから（#2024）
+  const home = playerRegion(state) === "home";
+  if (!current(owner) || !loverMilestonesDue([id], { home }).length) return;
   showScreen("none", null);
   hud(owner);
   const controller = owner.controller = new AbortController();
-  try { await readLoverMilestone(id, { signal: controller.signal }); }
+  try { await readLoverMilestone(id, { signal: controller.signal, home }); }
   finally { if (owner.controller === controller) owner.controller = null; }
 }
 

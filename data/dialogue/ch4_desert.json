@@ -12,7 +12,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "中で一台頼むと、運んできた女の人が、はじめの顔をのぞきこんだ。"
+          "text": "中で一台頼むと、運んできた女の人が、俺の顔をのぞきこんだ。"
         },
         {
           "speaker": "noor",
@@ -86,7 +86,7 @@
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "父も毎晩、奥の席で吸ってるけど、いつものんびりしてるから"
+          "text": "父も毎晩、奥の席で吸ってるけど、いつものんびりしてるもん"
         },
         {
           "speaker": "noor",
@@ -127,7 +127,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "アツイです。……それ、どこの地図ですか"
+          "text": "暑いですね。……それ、どこの地図ですか"
         },
         {
           "speaker": "noor",
@@ -196,7 +196,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "準備は、しています。……正直、少し緊張してます"
+            "text": "準備はしてます。……正直、ちょっと緊張してます"
           },
           {
             "speaker": "noor",
@@ -243,12 +243,12 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "ヌールさんも、大会に出てたんですか？"
+            "text": "ヌールさんは、会場に来てたんですか？"
           },
           {
             "speaker": "noor",
             "face": "normal",
-            "text": "私は出てないよ。昼はガイドで、夜はここの手伝い"
+            "text": "ううん、行けなかった。昼はガイドで、夜はここの手伝い"
           },
           {
             "speaker": "noor",
@@ -391,7 +391,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "微妙に違います"
+          "text": "……それ、答えになってます？"
         },
         {
           "speaker": "noor",
@@ -577,7 +577,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ヌールさんが差し出した小指に、はじめも自分の指を重ねた。"
+          "text": "ヌールさんが差し出した小指に、俺も自分の指を重ねた。"
         },
         {
           "speaker": "hajime",
@@ -1024,7 +1024,7 @@
     },
     {
       "dialogue_id": "confession_noor_accept",
-      "comment": "DSR20 告白を受ける。テレビ電話の約束は、のちの修羅場（テレビ電話で参戦）と恋人のLIMEの前振り。",
+      "comment": "DSR20 告白を受ける。ここで LIME を交換する（_lime_contact_noor）。テレビ電話の約束は、のちの修羅場（テレビ電話で参戦）と恋人のLIMEの前振り。",
       "metadata": {
         "set_romance": "noor",
         "bg": "res://assets/backgrounds/bg_dubai_dunes_dusk.png",
@@ -1070,6 +1070,20 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "毎日、待ってます"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "……あ。その前に、LIMEの交換。まだだった"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_noor"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕日の中で、二人のスマホが小さく鳴った。"
         },
         {
           "speaker": "",
@@ -1311,7 +1325,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ヌールさんが手を伸ばして、はじめの髪についた砂を払った。"
+          "text": "ヌールさんが手を伸ばして、俺の髪についた砂を払った。"
         },
         {
           "speaker": "noor",

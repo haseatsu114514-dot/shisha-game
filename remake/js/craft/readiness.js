@@ -35,7 +35,7 @@ export function craftAssetUrls(mode = "tournament", { step = "setup", cs = null,
   return [...new Set([
     ...files.map(makingUrl),
     bgUrl(cs ? benchBgRef(cs) : mode === "tournament" ? "bg_tournament_stage" : "bg_tonari_inside"), // 家の練習は自宅（#638）
-    portraitInfo("hajime", "serious")?.src,
+    portraitInfo("hajime", "serious", "classic")?.src, // 作業窓の固定配置と同じ版
     ...people.map(faceIconUrl),
     ...audienceAssetUrls(cs || { mode, audienceIds: people }),
   ].filter(Boolean))];

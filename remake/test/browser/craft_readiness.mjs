@@ -28,7 +28,7 @@ await suite("craft-readiness", async check => {
       window.cs = T.session.newSession("tournament");
       const current = T.readiness.craftAssetUrls(cs.mode, { step: "heat", cs });
       const allowed = new Set([...current, ...T.readiness.craftAssetUrls(cs.mode, { cs }),
-        ...["normal", "sad", "surprise"].map(face => portraitInfo("hajime", face)?.src)]);
+        ...["normal", "sad", "surprise"].map(face => portraitInfo("hajime", face, "classic")?.src)]);
       const people = ["hajime", "pakki", "sui", "maezono", "dr_kemuri", "naru", "adam", "minto"];
       const oldMaking = DB.manifest.making.filter(name => !/^(heat_|hajime_heat_scene)/.test(name));
       const previous = [...new Set([
