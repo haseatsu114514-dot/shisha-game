@@ -1,5 +1,5 @@
 // スキーマ26（IDREN01）: キャラID改名の旧セーブ付け替えテスト。
-// 旧ID（nagumo/rin/kuze/saif/rashid）で保存されたデータが、新ID（sui/kuyuri/saku/suhail/khalil）で復元されること。
+// 旧ID（nagumo/rin/kuze/saif/rashid）で保存されたデータが、新ID（sui/kuyuri/saku/faris/khalil）で復元されること。
 // 付け替え先に既存値がある場合は新ID側を優先する。
 // node --experimental-vm-modules remake/test/save_id_rename_migrate.mjs
 import assert from "node:assert/strict";
@@ -79,7 +79,7 @@ function loadSave(save) {
   assert.equal(s.affinity.kuyuri, 40);
   assert.equal(s.affinity.sui, 10);
   assert.equal(s.affinity.saku, 5);
-  assert.equal(s.affinity.suhail, 3);
+  assert.equal(s.affinity.faris, 3);
   assert.equal(s.affinity.khalil, 2);
   assert.equal(s.affinity.sumi, 7);
   for (const old of ["nagumo", "rin", "kuze", "saif", "rashid"]) assert(!(old in s.affinity), old + " が残らない");
@@ -114,7 +114,7 @@ function loadSave(save) {
   assert.equal(s.inbox[0].msg.accept_event, "outing_kuyuri_1");
   assert.equal(s.pendingInvite.sender, "sui");
   // TRPG・東京訪問
-  assert.equal(s.trpg.cleared.t1.gm, "suhail");
+  assert.equal(s.trpg.cleared.t1.gm, "faris");
   assert.deepEqual(s.trpg.cleared.t1.participants, ["kuyuri", "sai"]);
   assert.deepEqual(Object.keys(s.trpg.club.members), ["kuyuri"]);
   assert.equal(s.tokyoVisits.plans[0].characterId, "khalil");

@@ -451,7 +451,7 @@
    "ax": 0.5001,
    "aspect": 0.7467
   },
-  "suhail": {
+  "faris": {
    "faces": [
     "normal"
    ],
@@ -647,7 +647,7 @@
   "face_maki.png",
   "face_salaryman.png",
   "face_noor.png",
-  "face_suhail.png",
+  "face_faris.png",
   "face_khalil.png",
   "face_tetsuko.png"
  ],
@@ -2832,7 +2832,7 @@
   "sprites/character_variants/nanami/steve/chr_steve_serious.png",
   "sprites/character_variants/nanami/steve/chr_steve_smile.png",
   "sprites/character_variants/nanami/steve/chr_steve_surprise.png",
-  "sprites/character_variants/nanami/suhail/chr_suhail_normal.png",
+  "sprites/character_variants/nanami/faris/chr_faris_normal.png",
   "sprites/character_variants/nanami/sui/chr_sui_normal.png",
   "sprites/character_variants/nanami/sui/chr_sui_serious.png",
   "sprites/character_variants/nanami/sui/chr_sui_smile.png",
@@ -2990,7 +2990,7 @@
   "sprites/character_variants/new/steve/chr_steve_serious.png",
   "sprites/character_variants/new/steve/chr_steve_smile.png",
   "sprites/character_variants/new/steve/chr_steve_surprise.png",
-  "sprites/character_variants/new/suhail/chr_suhail_normal.png",
+  "sprites/character_variants/new/faris/chr_faris_normal.png",
   "sprites/character_variants/new/sui/chr_sui_normal.png",
   "sprites/character_variants/new/sui/chr_sui_serious.png",
   "sprites/character_variants/new/sui/chr_sui_smile.png",
@@ -3186,7 +3186,7 @@
   "sprites/characters/steve/chr_steve_serious.png",
   "sprites/characters/steve/chr_steve_smile.png",
   "sprites/characters/steve/chr_steve_surprise.png",
-  "sprites/characters/suhail/chr_suhail_normal.png",
+  "sprites/characters/faris/chr_faris_normal.png",
   "sprites/characters/sui/chr_sui_normal.png",
   "sprites/characters/sui/chr_sui_serious.png",
   "sprites/characters/sui/chr_sui_smile.png",
@@ -3925,7 +3925,7 @@
     "ax": 0.4999,
     "aspect": 0.7467
    },
-   "suhail": {
+   "faris": {
     "faces": [
      "normal"
     ],
@@ -4298,7 +4298,7 @@
     "ax": 0.4997,
     "aspect": 0.7467
    },
-   "suhail": {
+   "faris": {
     "faces": [
      "normal"
     ],
