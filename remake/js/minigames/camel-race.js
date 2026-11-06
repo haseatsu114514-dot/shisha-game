@@ -9,6 +9,7 @@
 import { el } from "../core/util.js";
 import { SE } from "../core/audio.js";
 import { imgFileUrl } from "../core/img-file.js";
+import { faceIconUrl } from "../core/data.js";
 import { RACE, CUE, PLAYER, WHIP, CAMEL_CUPS, camelCup, camelCupQualified, camelMastered, camelExpert, rng, createRace, stepRace, pressVoice, setWhip, whipReady, activeCue, inSpurt, standings, scoreRace,
   POLICIES, PLAYER_CAMEL, RIVAL_PROFILES } from "./camel-race-model.js";
 
@@ -38,6 +39,7 @@ const HAJIME_AT = Object.freeze({ cx: 284, bottom: 150, height: 165, clip: [206,
 // 声かけの輪は自分のラクダの背のロボット騎手（声はその小さなスピーカーへ届く）を囲む。
 // 奥の列のラクダと重なっても、どのラクダの輪か迷わない位置（列の y からの差）。
 const CUE_AT = Object.freeze({ dx: -22, dy: -64 });
+// 顔アイコンは設定の立ち絵の画風に合わせる（faceIconUrl）。目録の読み込み前だけ現行の PNG
 const SUHAIL_ICON = new URL("../../../assets/ui/face_icons/face_suhail.png", import.meta.url).href;
 // 助手席のスハイルの声（実況の代わり）。一人称は俺、はじめは「ハジメ」。台詞の末尾に「。」を付けない（text-style）。
 const CALLS = Object.freeze({
@@ -268,7 +270,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   const closeButton = el("button.camel-close", { type: "button", text: "やめる", dataset: { test: "camel-close" } });
   // 助手席のスハイルの声（上の中央、進み具合の下）。顔のアイコンが読めなければ名前だけ。
   const callText = el("span.camel-call-text");
-  const callIcon = el("img.camel-call-icon", { src: SUHAIL_ICON, alt: "", onerror: event => { event.currentTarget.hidden = true; } });
+  const callIcon = el("img.camel-call-icon", { src: faceIconUrl("suhail") || SUHAIL_ICON, alt: "", onerror: event => { event.currentTarget.hidden = true; } });
   const callNode = el("div.camel-call", { "aria-hidden": "true", dataset: { test: "camel-call" } }, [callIcon, el("span.camel-call-body", [el("b", { text: "スハイル" }), callText])]);
   const flashNode = el("div.camel-flash", { "aria-hidden": "true" });
   const stageNode = el("div.camel-stage", [canvas, flashNode, hudNode, callNode, feedback, banner, countdownNode, controls, closeButton]);
