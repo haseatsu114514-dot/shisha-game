@@ -62,10 +62,11 @@ try {
   await page.waitForFunction(() => document.getElementById("status").textContent.startsWith("再生終了"), null, { timeout: 20000 });
   assert.equal(await page.evaluate(() => __seen.silhouette), 0, "動きを減らす設定で影や一閃を作った");
   // 外側のステージも縮む画面で、影と最終カットインの実際の顔位置が一致する。
+  // 立ち絵の両目の中心は画風ごとの測定値（data/portrait_metrics.json の characters と styles.new）。表示中の絵の画風で選ぶ。
   await page.emulateMedia({ reducedMotion: "no-preference" });
   for (const { id, viewport, standingFace, graphicFace } of [
-    { id: "naru", viewport: { width: 844, height: 474 }, standingFace: 450.5, graphicFace: 464 },
-    { id: "saku", viewport: { width: 390, height: 844 }, standingFace: 421.5, graphicFace: 528 },
+    { id: "naru", viewport: { width: 844, height: 474 }, standingFace: { classic: 450.5, new: 430 }, graphicFace: 464 },
+    { id: "saku", viewport: { width: 390, height: 844 }, standingFace: { classic: 421.5, new: 419.5 }, graphicFace: 528 },
   ]) {
     await page.setViewportSize(viewport);
     await page.selectOption("#variant", "morph");
@@ -73,12 +74,14 @@ try {
     await page.waitForTimeout(400);
     await page.click("#play");
     await page.waitForSelector(`.cutin.in[data-char="${id}"]`);
-    const faceGap = await page.evaluate(({ standingFace, graphicFace }) => {
+    const faceGap = await page.evaluate(({ id, standingFace, graphicFace }) => {
+      const portrait = document.querySelector(`.vn-portraits img.portrait[data-speaker="${id}"]`);
+      const style = /\/character_variants\/new\//.test(portrait.currentSrc || portrait.src) ? "new" : "classic";
       const standing = document.querySelector(".ci-tr-sil").getBoundingClientRect();
       const graphic = document.querySelector(".cutin .ci-portrait").getBoundingClientRect();
-      return standing.left + standing.width * standingFace / 896
+      return standing.left + standing.width * standingFace[style] / 896
         - graphic.left - graphic.width * graphicFace / 1024;
-    }, { standingFace, graphicFace });
+    }, { id, standingFace, graphicFace });
     assert(Math.abs(faceGap) < 2, `${id}/${viewport.width}: 影とカットインの顔がずれる（${faceGap}px）`);
     await page.waitForFunction(() => document.getElementById("status").textContent.startsWith("再生終了"), null, { timeout: 20000 });
   }

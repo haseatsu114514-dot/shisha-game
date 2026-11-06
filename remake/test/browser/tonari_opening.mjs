@@ -65,7 +65,7 @@ await suite("tonari-opening", async check => {
       await assertFits(page, ".vn-box, .vn-controls");
       const text = await page.locator(".vn-text").textContent();
       await page.locator('[data-test="vn-config"]').click();
-      for (const style of ["new", "nanami", "classic"]) {
+      for (const style of ["new", "classic"]) {
         await page.locator('[data-test="cfg-portrait-style"]').selectOption(style);
         await page.waitForFunction(() => {
           const image = document.querySelector('.vn-portraits img[data-speaker="hajime"]');

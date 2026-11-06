@@ -41,7 +41,7 @@ async function prepare(options) {
       }
       const imageBox = image.getBoundingClientRect(), clip = image.parentElement.getBoundingClientRect();
       const { DB, portraitInfo } = await import("./js/core/data.js");
-      const info = portraitInfo(root.dataset.speaker, root.dataset.emotion);
+      const info = portraitInfo(root.dataset.speaker, root.dataset.emotion, "classic");
       const framing = DB.manifest.continuePortraits[info.folder][info.face];
       const imageHeight = parseFloat(image.style.height), imageWidth = parseFloat(image.style.width);
       const faceSize = imageHeight * framing.size;

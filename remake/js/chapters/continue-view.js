@@ -20,7 +20,8 @@ export function createContinueView({ script, speaker, character, premium, layout
   const backCount = layout === "back-count" || classicBack;
   const topActions = layout === "top" || layout === "back-count";
   const art = name => img(`ui/continue/${name}.png`);
-  const portrait = portraitInfo(speaker, script.cues[0].face);
+  // CONTINUE専用の顔bboxは現行画像で計測済み。会話の画風を流用しない。
+  const portrait = portraitInfo(speaker, script.cues[0].face, "classic");
   const image = portrait
     ? el("img.go-sumi-img", { src: portrait.src, alt: character, draggable: "false" })
     : el("div.go-sumi-fallback", { text: character });
@@ -145,7 +146,7 @@ export function createContinueView({ script, speaker, character, premium, layout
     if (root.dataset.voice !== value) root.dataset.voice = value;
   }
   function face(name, beat = true) {
-    const info = portraitInfo(speaker, name);
+    const info = portraitInfo(speaker, name, "classic");
     if (info && portrait && image.getAttribute("src") !== info.src) { image.src = info.src; framePortrait(info); }
     root.dataset.emotion = name;
     if (beat) {

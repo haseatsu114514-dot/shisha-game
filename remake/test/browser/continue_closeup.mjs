@@ -52,7 +52,8 @@ try {
         const view = this.mount(speaker, face);
         await Promise.all([...view.root.querySelectorAll('img')].map(i => i.decode()));
         await document.fonts.ready;
-        const info = portraitInfo(speaker, face), f = DB.manifest.continuePortraits[info.folder][info.face];
+        const info = portraitInfo(speaker, face, "classic"), f = DB.manifest.continuePortraits[info.folder][info.face];
+        if(view.root.querySelector(".go-sumi-img").getAttribute("src") !== info.src) throw Error("CONTINUE must use the measured classic artwork");
         const stage = document.querySelector('#stage').getBoundingClientRect(), scale = stage.width / 1280;
         const box = element => {
           const r = element.getBoundingClientRect();
