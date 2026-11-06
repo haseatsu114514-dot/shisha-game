@@ -196,6 +196,65 @@ html:root .trpg-root.trpg-cinematic :is(.trpg-roll-stage, .trpg-hypothesis-stage
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice { border-color: #d2ae6680; background: #2f1c1052; }
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice:hover:not(:disabled) { border-color: var(--tt-brass-hi); background: #7a523252; }
 
+/* ---------------------------------------------------------------- 必要なUIだけ（#2719・ミニゲーム共通のUI方針）
+   文字を詰めない。決まりや操作の説明は「？」を開いた時だけ。基本の画面は遊ぶのに要る札だけにする。 */
+/* 進行は上のレールの小札（今の段）だけ。判定の回数・連携札の内訳は判定の舞台とログで読む。 */
+html:root .trpg-root.trpg-cinematic .trpg-table-status { display: none; }
+/* 座席の帯は「誰が話しているか」だけ。能力値と切り札の残りはキャラクターシートで見る。 */
+html:root .trpg-root.trpg-cinematic .trpg-table :is(.trpg-seat-stats, .trpg-seat-ability) { display: none; }
+/* シートの前置き（判定の決まり）は遊び方に書いてある。 */
+html:root .trpg-root.trpg-cinematic .trpg-sheet-stage .trpg-modal-intro { display: none; }
+/* キャラ作りの能力の説明・計算の一言は「？」で開く。 */
+html:root .trpg-root.trpg-cinematic .trpg-builder[data-help="closed"] :is(.trpg-builder-stat-help, .trpg-builder-hint, .trpg-builder-easy) { display: none; }
+html:root .trpg-root.trpg-cinematic .trpg-builder-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+
+/* 「？」の札: 真鍮の縁の丸。開いている間は真鍮の面。 */
+html:root .trpg-root .trpg-button.trpg-help-button {
+  display: inline-grid; place-items: center; flex-shrink: 0; width: 44px; min-width: 44px; height: 44px; min-height: 44px;
+  padding: 0; border-radius: 50%; color: var(--tt-brass-hi); border-color: #d2ae66b3; background: #2f1c1080;
+  font-size: 20px; font-weight: 700; line-height: 1;
+}
+html:root .trpg-root .trpg-button.trpg-help-button:hover:not(:disabled) { color: #fff6df; border-color: var(--tt-brass-hi); background: #7a523280; }
+html:root .trpg-root .trpg-button.trpg-help-button[aria-pressed="true"] { color: #2a1b0c; border-color: #fbecc2; background: var(--tt-brass-plate); box-shadow: var(--tt-brass-shadow); }
+/* 見出しが隠れる舞台の「？」。押すと、すぐ下に短い説明の札が重なる（下の札の位置は動かさない）。 */
+html:root .trpg-root .trpg-declare-prompt { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 12px; }
+html:root .trpg-root .trpg-inline-help { position: relative; }
+html:root .trpg-root .trpg-inline-help > summary {
+  display: grid; place-items: center; width: 44px; height: 44px; list-style: none; cursor: pointer;
+  border: 1px solid #d2ae66b3; border-radius: 50%; color: var(--tt-brass-hi); background: #2f1c1080;
+  font-size: 20px; font-weight: 700; line-height: 1;
+}
+html:root .trpg-root .trpg-inline-help > summary::-webkit-details-marker { display: none; }
+html:root .trpg-root .trpg-inline-help > summary > span { color: inherit; font-size: inherit; }
+html:root .trpg-root .trpg-inline-help > summary:hover { border-color: var(--tt-brass-hi); }
+html:root .trpg-root .trpg-inline-help > summary:focus-visible { outline: 3px solid var(--tt-brass-hi); outline-offset: 3px; }
+html:root .trpg-root .trpg-inline-help[open] > summary { color: #2a1b0c; border-color: #fbecc2; background: var(--tt-brass-plate); }
+html:root .trpg-root .trpg-inline-help-body {
+  position: absolute; z-index: 8; top: calc(100% + 10px); left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; gap: 6px; width: 560px; padding: 14px 20px;
+  border: 1px solid #b48f4f; border-radius: 6px; text-align: left; white-space: normal;
+  color: var(--tt-text); background: linear-gradient(170deg, #2f1c10f7, #1d1109f7); box-shadow: 0 14px 32px #000a;
+}
+html:root .trpg-root .trpg-inline-help-body span { font-size: 15px; line-height: 1.7; color: var(--tt-text); }
+html:root .trpg-root .trpg-inline-help-body .trpg-declare-rule { margin: 0; font-size: 14px; font-weight: 700; text-align: left; color: var(--tt-brass-hi); }
+@media (pointer: coarse) {
+  html:root .trpg-root .trpg-inline-help > summary { width: 64px; height: 64px; }
+  html:root .trpg-root .trpg-button.trpg-help-button { width: 56px; min-width: 56px; height: 56px; min-height: 56px; }
+}
+
+/* 本棚・店の「？」で開く紙。中身がスクロールしても、紙は舞台の真ん中に出る。 */
+html:root .trpg-root .trpg-overlay.trpg-shelf-help { position: fixed; inset: 0; z-index: 50; padding: 60px; }
+html:root .trpg-root .trpg-modal.trpg-shelf-help-card { width: 760px; max-height: 600px; }
+html:root .trpg-root .trpg-shelf-help-card .trpg-modal-body { font-size: 17px; line-height: 1.75; }
+html:root .trpg-root .trpg-shelf-help-item + .trpg-shelf-help-item { margin-top: 16px; }
+html:root .trpg-root :is(.trpg-shelf-help-item h3, .trpg-help-head) {
+  margin: 0 0 4px; padding-left: 9px; border-left: 3px solid #b48f4f; font-size: 16px; font-weight: 700; letter-spacing: .06em; color: #7a5a2c;
+}
+html:root .trpg-root .trpg-shelf-help-item p { margin: 0; color: var(--tt-ink); }
+/* 遊び方は短い見出しで区切って読む。 */
+html:root .trpg-root .trpg-help-head { margin-top: 18px; }
+html:root .trpg-root .trpg-modal-body > .trpg-help-head:first-child { margin-top: 0; }
+
 /* ---------------------------------------------------------------- 旧 trpg-paper.css から、テーマに関係なく効かせていた分（そのまま） */
 /* 結末: 絵の上の文字に、左から薄い夜の下地を敷く（物語の部屋は見えたまま）。 */
 .trpg-root.trpg-cinematic .trpg-ending::before {

@@ -190,7 +190,8 @@ async function run(label, params, options, body, beforeLoad = null) {
 try {
   await run("cover-pc", { seed: "9", traveler: "quiet" }, {}, async page => {
     await fits(page);
-    await page.locator('[data-test="trpg-cover-help"]').click();
+    // 遊び方は表紙の札ではなく、右上の「？」で開く（#2719）。
+    await page.locator('[data-test="trpg-help"]').click();
     await fits(page); await page.keyboard.press("Escape");
     assert.equal(await page.locator(".trpg-overlay").count(), 0);
   });
