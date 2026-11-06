@@ -197,7 +197,8 @@ await suite("regular-service-response", async check => {
       // The new mouthpiece explanation adds one line to the current first visit.
       assert.equal(counts.current.first, counts.baseline.first + (answer === null ? 0 : 1));
       assert.equal(counts.current.choices, answer === null ? 0 : 1);
-      assert.equal(counts.baseline.choices, 0); assert.equal(counts.current.later, counts.baseline.later);
+      // #2606: the later scene gains Tsumugi's five-line foreshadowing after the salaryman leaves.
+      assert.equal(counts.baseline.choices, 0); assert.equal(counts.current.later, counts.baseline.later + 5);
       console.log(`${label}/${answer ?? "legacy"} clicks ${JSON.stringify(counts)}`);
       await page.evaluate(() => { T.fresh(); });
       if (answer !== null) {
