@@ -1,6 +1,6 @@
 import { el } from "../core/util.js";
 import { TrpgSession, HEAT, heatTier, DICE, STATS, PLAYER_SEAT, approachesOf, approachBase, buildPc, randomPc, phasesOf, checkKindsOf } from "./session.js";
-import { displayName, portraitUrl, portraitTop as topFor, sceneUrl } from "./presentation.js";
+import { displayName, portraitUrl, portraitAx, portraitTop as topFor, sceneUrl } from "./presentation.js";
 import { createTrpgAudio } from "./audio.js";
 import { checkForecast, rerollOdds } from "./feedback.js";
 import { playTrpgEntrance } from "./entrance.js";
@@ -41,7 +41,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const sheet = sheets[seat];
     if (sheet?.portrait) return el("img.trpg-pc-art", { src: new URL(sheet.portrait, import.meta.url).href, alt: "" });
     if (sheet?.color) return bust(sheet);
-    return el("img", { src: portrait(playerId), alt: "", style: { top: portraitTop(playerId, 150, 6) } });
+    return el("img", { src: portrait(playerId), alt: "", style: portraitFrame(playerId, 150, 6) });
   }
   function bust({ color, accent, name }) {
     return el("span.trpg-pc-bust", { style: { "--bust": color, "--bust-accent": accent || "#e9d9b5" }, html: BUST, title: name || "" });
@@ -140,8 +140,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function portrait(id, face = "normal") {
     return portraitUrl(manifest, id, face);
   }
-  function portraitTop(id, width, headY) {
-    return topFor(manifest, id, width, headY);
+  function portraitFrame(id, width, headY) {
+    return { top: topFor(manifest, id, width, headY), transform: `translateX(-${portraitAx(manifest, id) * 100}%)` };
   }
   // The same seat mark follows a participant from the table to a spent ability.
   function seatMark(id) {
@@ -268,7 +268,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (!frame) { finishTalk(); return; }
     const person = cast[frame.speaker];
     art.replaceChildren(el("img", { src: portrait(frame.speaker, frame.face), alt: name(frame.speaker),
-      style: { top: portraitTop(frame.speaker, 410, 16) } }));
+      style: portraitFrame(frame.speaker, 410, 16) }));
     art.style.backgroundColor = person?.color || "#566053";
     speaker.textContent = name(frame.speaker);
     role.textContent = pcText(frame.role) || (person?.part === "GM" ? "GM／卓の会話" : "PL／卓の会話");
@@ -296,7 +296,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function idle(text) {
     if (busy) return;
     art.replaceChildren(el("img", { src: portrait(gm), alt: name(gm),
-      style: { top: portraitTop(gm, 410, 16) } }));
+      style: portraitFrame(gm, 410, 16) }));
     art.style.backgroundColor = cast[gm].color;
     speaker.textContent = name(gm); role.textContent = "GM／卓の会話"; speech.textContent = text;
     dock.dataset.layer = "table";
@@ -411,7 +411,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         const node = button("", "trpg-consult-" + id, () => consult(id), {
           class: "trpg-companion", disabled: busy, "aria-label": name(id) + "に相談する。何度でも相談できます", title: name(id) + "に相談",
         });
-        node.append(el("span.trpg-companion-face", el("img", { src: portrait(id), alt: "", style: { top: portraitTop(id, 150, 6) } })),
+        node.append(el("span.trpg-companion-face", el("img", { src: portrait(id), alt: "", style: portraitFrame(id, 150, 6) })),
           el("span", { text: name(id) + "に相談" }));
         return node;
       }));
@@ -478,7 +478,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         el("small.trpg-cover-author", { text: "作 · " + scenario.author }),
       ].filter(Boolean)),
       el("div.trpg-cover-party", scenario.cast.map(c => el("div.trpg-cover-person", [
-        el("span.trpg-cover-person-art", el("img", { src: portrait(c.id), alt: "", style: { top: portraitTop(c.id, 150, 6) } })),
+        el("span.trpg-cover-person-art", el("img", { src: portrait(c.id), alt: "", style: portraitFrame(c.id, 150, 6) })),
         el("strong", { text: name(c.id) }), el("small", { text: c.part === "GM" ? "GM" : (pcOf(c.id) ? "PC " + pcOf(c.id).name : pcText(c.role).split("／")[0]) }),
       ]))),
     ]));
@@ -694,7 +694,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const support = helper && !session.snapshot().used[helper] && session.snapshot().teamwork > 0
       ? el("input", { type: "checkbox", dataset: { test: "trpg-support-" + helper } }) : null;
     if (support) body.append(el("label.trpg-aid", [support, seatMark(helper),
-      el("span.trpg-aid-art", { "aria-hidden": "true" }, el("img", { src: portrait(helper), alt: "", style: { top: portraitTop(helper, 150, 6) } })), el("span", [
+      el("span.trpg-aid-art", { "aria-hidden": "true" }, el("img", { src: portrait(helper), alt: "", style: portraitFrame(helper, 150, 6) })), el("span", [
       el("strong", { text: name(helper) + "の「" + cast[helper].ability + "」を借りる" }),
       el("small", { text: "判定＋7 · 連携札1枚を使う · この切り札は一度だけ" }),
     ])]));
@@ -917,7 +917,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     welcome: () => [el("strong.trpg-tutorial-big", { text: "TRPG" }), el("span", { text: "＝ みんなで物語を作る、ルールのあるごっこ遊び" }),
       el("div.trpg-tutorial-row", [el("i", { text: "話す" }), el("i", { text: "選ぶ" }), el("i", { text: "サイコロ" }), el("i", { text: "物語が進む" })])],
     table: () => [el("div.trpg-tutorial-seats", scenario.cast.map(c => el("div", { dataset: { part: c.part === "GM" ? "gm" : "pl" } }, [
-      el("span.trpg-tutorial-face", el("img", { src: portrait(c.id), alt: "", style: { top: portraitTop(c.id, 150, 6) } })),
+      el("span.trpg-tutorial-face", el("img", { src: portrait(c.id), alt: "", style: portraitFrame(c.id, 150, 6) })),
       el("b", { text: c.part === "GM" ? "GM" : "PL" }), el("small", { text: name(c.id) })]))),
       el("p", { text: "GM＝お話を進める語り手 · PL＝役を演じて遊ぶ人" })],
     sheet: () => {

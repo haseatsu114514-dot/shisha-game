@@ -8,7 +8,7 @@ import { newDayTrial, rollDayTrial, stopDayTrial } from "./day-trial.js";
 import { loadTrpgLibrary, preloadTrpgAssets, runTrpg } from "./index.js";
 import { playTrpgEntrance } from "./entrance.js";
 import { shelfHelpButton } from "./shelf-help.js";
-import { displayName, portraitUrl, portraitTop, sceneArt } from "./presentation.js";
+import { displayName, portraitUrl, portraitAx, portraitTop, sceneArt } from "./presentation.js";
 import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable } from "./campaign.js";
 
 // 店の決まりは画面に常に出さず、右上の「？」で読む（#2719・ミニゲーム共通のUI方針）。
@@ -132,7 +132,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       const recruitment = recruitmentStatus(state, person, catalog);
       party.append(el("div.trpg-campaign-person", { dataset: { test: "trpg-person-" + person.id, available: status.ok } }, [
         el("span.trpg-campaign-face", el("img", { src: portraitUrl(manifest, person.id), alt: "",
-          style: { top: portraitTop(manifest, person.id, 180, 4), transform: "translateX(-" + manifest.portraits[person.id].ax * 100 + "%)" } })),
+          style: { top: portraitTop(manifest, person.id, 180, 4), transform: "translateX(-" + portraitAx(manifest, person.id) * 100 + "%)" } })),
         el("div", [el("strong", { text: name(person.id) + (member ? " · 部員" : "") }),
           el("small", { text: member ? status.reason : recruitment.reason }),
           !member && el("small", { text: person.interestHint })]),
