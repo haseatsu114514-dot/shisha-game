@@ -297,9 +297,19 @@ const limeById = (id) => allMessages.find((m) => m.id === id);
     contacts: ["mukai_master"] });
   db.limeTemplates = JSON.parse(await fs.readFile(new URL("data/lime_messages.json", dataRoot), "utf8")).templates;
   try {
-    assert(phone.morningMessages({ fixedNight: () => false }).some((m) => m.accept_event === "__mukai_baito__"), "東京ではムカイさんのシフトの誘いが届く");
+    const mukai = phone.morningMessages({ fixedNight: () => false }).find((m) => m.accept_event === "__mukai_baito__");
+    assert(mukai, "東京ではムカイさんのシフトの誘いが届く");
+    // 届いた誘いに東京で返事でき、受けたシフトもそのまま残る（地元の誘いのように期限切れ・日の改めにならない）
+    state.inbox.push({ id: mukai.id, originId: mukai.id, day: state.day, chapter: 3, msg: { ...mukai }, read: true, done: false, replyState: "waiting", log: [] });
+    phone.expireInvitations({ fixedNight: () => false });
+    assert(!state.inbox[0].done && state.inbox[0].result !== "expired", "東京のムカイさんの誘いは、返事を待つ間に期限切れにならない");
+    Object.assign(state.inbox[0], { done: true, result: "accepted" });
+    state.pendingInvite = { event: "__mukai_baito__", sender: "mukai_master", day: state.day, slot: 0, originId: mukai.id };
+    phone.expireInvitations({ fixedNight: () => false });
+    assert.equal(state.pendingInvite?.event, "__mukai_baito__", "受けた東京のシフトは、別の日に改めない");
+    assert.equal(state.inbox[0].result, "accepted", "受けたシフトは受けたまま");
   } finally { delete db.limeTemplates; }
-  console.log("[#2024] PASS mukai shift invitation still arrives in Tokyo");
+  console.log("[#2024] PASS mukai shift invitation still arrives in Tokyo, stays open to reply, and an accepted shift is kept");
 }
 
 // ドバイ: 物語のLIMEはドバイの日だけ・窓の中で一度ずつ（出発前の地元の同じ章内日には届かない）。
