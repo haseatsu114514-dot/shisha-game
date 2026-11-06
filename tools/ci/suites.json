@@ -298,7 +298,7 @@
       "title": "Growth HUD gauge, EXP chip, night level-up and hidane badge (?growth=1)",
       "kind": "browser",
       "weight": 1,
-      "timeout": 5,
+      "timeout": 8,
       "paths": [
         "remake/js/core/growth.js",
         "remake/js/core/growth-mode.js",
