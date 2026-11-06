@@ -628,6 +628,12 @@ function handleCondition(line) {
     ok = (Number(state.flags[line.flag]) || 0) >= Number(line.threshold === 0 ? 0 : (line.threshold || 1)); // 数値0だけ既定1に化かさない（文字列 "0" と結果をそろえる。#1362）
   } else if (kind === "met") {
     ok = !!state.met[line.char_id];
+  } else if (kind === "contact") {
+    // 連絡先を交換済みか。spots.js の hasContact と同じ判定を、保存値を書き換えずに読むだけ（旧セーブ互換）。
+    // threshold は LIME_EXCHANGE と同じ「固有会話の消化数」。
+    const id = line.char_id;
+    ok = (state.contacts || []).includes(id) || !!state.flags[`_lime_contact_${id}`]
+      || (!!line.threshold && (state.story?.[id] || 0) >= Number(line.threshold));
   } else if (kind === "affinity") {
     ok = affinityLevel(line.char_id) >= Number(line.threshold || 0);
   } else {
