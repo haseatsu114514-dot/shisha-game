@@ -49,16 +49,16 @@
 
 | 順 | キャラ | 表情 | 状態 | メモ |
 |---|---|---|---|---|
-| 11 | スハイル（`saif`） | normal | 組み込み済み（7.08頭身） | 8.62→目標7.0頭身。①は `asset_sources/ch4-camel-race/originals/saif-normal-A-v2.png` |
+| 11 | ファーリス（`saif`） | normal | 組み込み済み（7.08頭身） | 8.62→目標7.0頭身。①は `asset_sources/ch4-camel-race/originals/saif-normal-A-v2.png` |
 | 12 | ハリール（`rashid`） | normal | 組み込み済み（7.48頭身） | 9.75→目標約7頭身。グトラで頭頂が隠れるので目〜あごで測る。①は `asset_sources/ch4-camel-race/originals/rashid-normal-B.png` |
 
 2026-11-02 TS13：Codex が2人の通常を作り直し、ZIP（SHA256 `843eba1d…`）で届いた。原画を `saif-remaster-v2/normal-source.png`・`rashid-remaster-v2/normal-source.png` に保存し、`fit_portrait.py` で確認用の画像（`normal-preview.png`・`normal-compare.png`）を作った。ゲームの素材は触っていない。
 
 - 顔・ひげ・目の色・服・持ち物・ポーズ・色は前の絵のまま。頭だけが大きくなった。身長と足元の位置も前と同じ。
-- 頭身は Codex の測定でスハイル 6.61・ハリール 6.85、Claude の測定で 7.24・7.68。頭頂とあごの読み方の差で、どちらも規格（6.4〜7.7）内。前は 8.62・9.75。
-- 2026-11-02 オーナー「おーけー」で採用し、組み込んだ。顔の位置を測り直し（スハイル 7.08・ハリール 7.48頭身、会話画面の頭 143px・128px）、顔アイコンを作り直した。2人の顔アイコンは画像があるのに manifest の `faceIcons` から漏れていて、ゲームで出ていなかったので足した（ヨルも同じく漏れている。別件）。
+- 頭身は Codex の測定でファーリス 6.61・ハリール 6.85、Claude の測定で 7.24・7.68。頭頂とあごの読み方の差で、どちらも規格（6.4〜7.7）内。前は 8.62・9.75。
+- 2026-11-02 オーナー「おーけー」で採用し、組み込んだ。顔の位置を測り直し（ファーリス 7.08・ハリール 7.48頭身、会話画面の頭 143px・128px）、顔アイコンを作り直した。2人の顔アイコンは画像があるのに manifest の `faceIcons` から漏れていて、ゲームで出ていなかったので足した（ヨルも同じく漏れている。別件）。
 - 会話画面で PC（1280×720）とスマホ（591×1280）に表示し、読み込み・頭の見切れ・画像端の欠けが無いことを確かめた。
-- **次は prompts.md の TS13「表情差分」**（スハイル：smile・surprise・excited・wink、ハリール：smile の5枚）。①は合格した `asset_sources/portraits/<id>-remaster-v2/normal-source.png`。台詞はこの5種類を指定していて、今は全部通常の顔で代用されている。
+- **次は prompts.md の TS13「表情差分」**（ファーリス：smile・surprise・excited・wink、ハリール：smile の5枚）。①は合格した `asset_sources/portraits/<id>-remaster-v2/normal-source.png`。台詞はこの5種類を指定していて、今は全部通常の顔で代用されている。
 
 ヌール（`noor`、7.96頭身）は上限7.7をわずかに超えるだけなので、今のまま残す案を推奨（オーナー未回答）。
 
@@ -78,7 +78,7 @@
 | シェイク（`sheikh`） | smile・serious・surprise・smug | 未着手 |
 | 王煙楼（`master_hookah`） | smile・serious・surprise・sad・angry・laugh | 未着手 |
 | ダ・シルヴァ太陽（`da_silva`） | smile・serious・surprise・excited | 組み込み済み |
-| スハイル（`saif`） | smile・surprise・excited・wink（新規。今は通常だけ） | 依頼文あり（prompts.md の TS13）・通常の合格待ち |
+| ファーリス（`saif`） | smile・surprise・excited・wink（新規。今は通常だけ） | 依頼文あり（prompts.md の TS13）・通常の合格待ち |
 | ハリール（`rashid`） | smile（新規。今は通常だけ） | 依頼文あり（prompts.md の TS13）・通常の合格待ち |
 
 2026-11-02 TS09：Codex の候補（組長15・スティーブ12・ヴォルク12・みんと15＋旧案）から、新しい通常と会話画面での頭の大きさが最も近い案を選んで組み込んだ。選んだ案と全候補の値は各 `<id>-remaster-v2/generation.json`。
@@ -108,4 +108,4 @@
 | 7人の通常（TS10） | 推奨のまま → サイB・レヰC-v2・マキB・太陽Bを合格、辻占のオババ・シェイク・王煙楼は作り直し |
 | あげは・サメちゃんの区分 | 可愛い方 → 小柄枠のまま |
 | 作り直しの範囲と変えてよいもの | 「全キャラ作り直しは勘弁、一部ならいい」「作り直して良い　見た目は今のがいいけど」「頭身とかはいじってもいい」→ 作り直すのは規格外の一部だけ。頭身・頭の大きさは変えてよく、顔・衣装・色・ポーズは今の絵のまま |
-| スハイル・ハリール（ラクダレース） | 任せる → 表情差分の前に通常を約7頭身で作り直す（段階2.5・TS13） |
+| ファーリス・ハリール（ラクダレース） | 任せる → 表情差分の前に通常を約7頭身で作り直す（段階2.5・TS13） |

@@ -1,6 +1,7 @@
 import { finishTournamentStep } from "./tournament-finish-step.js";
 import { tournamentResources, restoreTournamentResources, recoverTournamentResources } from "./tournament-resource-snapshot.js";
 import { tournamentStandings } from "./tournament-standings.js";
+import { initialBaseVotes } from "./tournament-base-votes.js";
 import { payTournamentPrize } from "./tournament-prize.js";
 import { liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
 
@@ -24,7 +25,7 @@ function rivalQuality(p) {
   return version === 1 ? LEGACY_RIVAL_QUALITY : RIVAL_QUALITY;
 }
 
-// 柑橘への好みと、直後の一口との比較は別。須井は台本どおり水を飲む。
+// 柑橘への好みと、直後の一口との比較は別。伏見は台本どおり水を飲む。
 export const JUDGE_PROFILES = Object.freeze({
   emil: Object.freeze({ prefWeight: 0.20, citrus: -1, contrast: -2, waterChance: 0.25 }),
   dr_kemuri: Object.freeze({ prefWeight: 0.15, citrus: 2, contrast: 2, waterChance: 0.50 }),
@@ -100,7 +101,7 @@ export function startAttempt(value, craft) {
     ^ Math.imul(p.attempts, 0x85ebca6b)) >>> 0;
   Object.assign(p, {
     rulesVersion: TOURNAMENT_RULES_VERSION, stage: "craft", step: 0, craft: copy(craft), rollback: null,
-    votes: initialVotes(), voted: 0, lastVotes: null, result: null, failure: null, defeatRead: false,
+    votes: initialVotes(), baseVotes: initialBaseVotes(CONTESTANTS), voted: 0, lastVotes: null, result: null, failure: null, defeatRead: false,
     tastingSeed: seed, tastingPlan: buildTastingPlan(seed),
   });
   value.phase = "tournament";
@@ -195,7 +196,7 @@ export function recordResult(value, total) {
   if (!Number.isFinite(total) || total < 0 || total > 100) throw new Error("全国大会の総合成績を確認できません");
   const rows = standings(p), rank = rows.find(row => row.id === "hajime").rank;
   p.result = { attempt: p.attempts, rulesVersion: rulesVersion(p), total, rank, win: rank === 1,
-    rows, votes: copy(p.votes), careHistory: copy(p.craft.careHistory),
+    rows, votes: copy(p.votes), baseVotes: copy(p.baseVotes || {}), careHistory: copy(p.craft.careHistory),
     tastingPlan: copy(p.tastingPlan) };
   // 賞金は優勝の確定と同じ更新で一度だけ渡す（再挑戦・LOADで二重に付けない）。
   payTournamentPrize(value, p, rank, CH3_PRIZE);

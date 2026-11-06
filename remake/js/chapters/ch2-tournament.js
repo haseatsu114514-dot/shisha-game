@@ -237,6 +237,7 @@ function renderVotes(owner, final = false) {
         checkpoint(final ? p.result.rank === 1 ? "farewell" : "defeat" : "craft"); await drive(owner);
       }, true),
     ], [reason ? el("div.ch2-contest-reason", { dataset: { test: id("vote-reason") } }, [el("b.ch2-contest-reason-tag", { text: "解説" }), ...reason.map(text => el("p", { text }))]) : null, review,
+      p.baseVotes ? el("p.ch2-contest-note", { text: "全出場者に基礎票1点" }) : null,
       el("section.ch2-contest-board", [judgeLegend(JUDGES), el("ol.ch2-contest-ranking", rows.map(row))]), judges,
       el("p.ch2-contest-note", { text: "投入された点は戻りません。同点の場合は一台の出来栄えで順位を決めます。" })]);
 }

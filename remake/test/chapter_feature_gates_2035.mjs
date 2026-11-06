@@ -12,6 +12,10 @@ for (const ch of CHAPTERS) {
 
   // 綾取の締めくくり（bonds.finaleDue）: 旧 `state.chapter !== 3` と同じブロック判定を保つ。
   assert.equal(!chapterFeatureEnabled(ch, "sakuBond"), ch !== 3, `saku: ${label}`);
+  // スティーブの締めくくり（#2028・Smoke & Glory）も第3章だけ（東京にいる間の窓は bonds.js が別に見る）。
+  assert.equal(chapterFeatureEnabled(ch, "steveBond"), ch === 3, `steve: ${label}`);
+  // ヴォルクの締めくくり（#2028・鉄の煙）も第3章だけ（大会後の窓は bonds.js が別に見る）。
+  assert.equal(chapterFeatureEnabled(ch, "volkBond"), ch === 3, `volk: ${label}`);
 
   // 凛想の♥3の外出（phone.eligible, lime_outing_rio_1）: 旧 `state.chapter > 2` と同じブロック判定を保つ。
   assert.equal(!chapterFeatureEnabled(ch || 1, "rioHomeOuting"), ch > 2, `rio: ${label}`);
@@ -25,6 +29,8 @@ assert.equal(chapterFeatureEnabled("3", "sakuBond"), false);
 assert.equal(chapterFeatureEnabled("1", "rioHomeOuting"), false);
 assert.equal(chapterFeatureEnabled("1", "tsumugiContestGate"), false);
 assert.equal(chapterFeatureEnabled(3, "sakuBond"), true);
+assert.equal(chapterFeatureEnabled("3", "steveBond"), false);
+assert.equal(chapterFeatureEnabled("3", "volkBond"), false);
 assert.equal(chapterFeatureEnabled(1, "rioHomeOuting"), true);
 assert.equal(chapterFeatureEnabled(2, "rioHomeOuting"), true);
 assert.equal(chapterFeatureEnabled(3, "rioHomeOuting"), false);

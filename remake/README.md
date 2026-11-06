@@ -11,7 +11,7 @@
 - 共通ロード画面と２コマ漫画: [docs/spec/loading_screen_and_comics.md](../docs/spec/loading_screen_and_comics.md)
 - 章タイトルコール・章末と次回予告: [docs/spec/chapter_previews.md](../docs/spec/chapter_previews.md)
 - 第4章ドバイのラクダレース（CAMEL RACE・任意ミニゲーム）: [docs/spec/camel_race.md](../docs/spec/camel_race.md)
-- CONTINUE演出とプレビュー: [docs/spec/continue_button_reactions_sfx_20261010.md](../docs/spec/continue_button_reactions_sfx_20261010.md)
+- CONTINUE演出とプレビュー: [docs/spec/continue_button_reactions_sfx_20261010.md](../docs/spec/continue_button_reactions_sfx_20261010.md)、頭の中の呼びかけ（V5）: [docs/spec/continue_inner_voice_20261106.md](../docs/spec/continue_inner_voice_20261106.md)
 - 作り直しの経緯・2026-10-01 改稿取り込み・2026-10-17 実プレイ修正（履歴）: [docs/archive/remake_history_2026-10.md](../docs/archive/remake_history_2026-10.md)
 
 ## 遊び方（ローカル）
@@ -55,7 +55,7 @@ mukaiの看板猫てつこ（#1993）は、到着の場面で裏口に登場し�
 回帰テストは `node remake/test/browser/craft_materials.mjs`（PC／横持ちタッチ）と `node --experimental-vm-modules remake/test/foil_holes.mjs`。
 
 ラクダレース（第4章ドバイの任意ミニゲーム）の試遊は `http://127.0.0.1:8123/remake/camel-race.html`。
-ラクダは自分で走り、車のリモコンから「声」（Space／左ボタン。頭上の輪が重なる瞬間）と「合図」（X／右ボタン。終盤ほど効く）を送るだけ。4頭・1,000m・約50〜60秒、順位＋声かけ＋スタミナで0〜100点とS/A/B/C。`?pilot=perfect&speed=6` で自動操作のデモ。本編ではドバイの自由行動の地図から、Dr.fookah ドバイ店のスハイルと知り合い→誘い→朝の見学の順に解放し、レースは昼の行動を使う。本編セーブは読み書きしない。[仕様・接続・素材依頼](../docs/spec/camel_race.md)。
+ラクダは自分で走り、車のリモコンから「声」（Space／左ボタン。頭上の輪が重なる瞬間）と「合図」（X／右ボタン。終盤ほど効く）を送るだけ。4頭・1,000m・約50〜60秒、順位＋声かけ＋スタミナで0〜100点とS/A/B/C。`?pilot=perfect&speed=6` で自動操作のデモ。本編ではドバイの自由行動の地図から、Dr.fookah ドバイ店のファーリスと知り合い→誘い→朝の見学の順に解放し、レースは昼の行動を使う。本編セーブは読み書きしない。[仕様・接続・素材依頼](../docs/spec/camel_race.md)。
 サンドボード DESERT RIDE（第4章ドバイの昼の寄り道）は `http://127.0.0.1:8123/remake/desert-ride.html` で単体でも遊べる。本番はヌールと競走し、空中トリック（大ジャンプ中に ← →）とブースト（↓）がある。
 後方視点の疑似3Dで砂丘を自動滑走し、← →（スマホは左右ボタン）で岩をよけ、起伏の手前で Space（ジャンプ）、着地の直前にもう一度 Space で姿勢を整える。転倒しても起き上がる。S／A／B／Cの評価と自己ベスト、練習（チュートリアル）、動き軽減に対応。
 本編では宿の隣のカフェ・サーリム（ヌールの父の店）で一台頼んでヌールと話し（3,000円・行動1つ）、♥3で誘われると「ヌールと砂丘へ」が出る（昼の行動1つ・初回は無料・2回目から6,000円・滑り直しは無料・初回完走だけ経験値）。[仕様・操作・Codex向け素材依頼](../docs/spec/desert_ride.md)。検証は `node --test remake/test/desert_ride.mjs remake/test/ch4_desert.mjs` と `node remake/test/browser/desert_ride.mjs`。
@@ -79,6 +79,7 @@ python3 remake/tools/serve_preview.py --port 8123
 台詞をタップすると全文表示、もう一度タップすると次へ。円形HUDの数字とリングは20秒の期限に連動。残り5秒はピンクの光を強め、GAME OVER時はHUD・背面数字・2択を消して青紫の筆文字ロゴだけを中央へ表示する。
 20秒でGAME OVERを表示してタイトルへ戻り、期限内の「大会に戻る」は反応後に大会冒頭へ戻る。字幕送りは期限に影響しない。
 プレビューはセーブに書き込まない。[V4仕様と検証](../docs/spec/continue_button_reactions_sfx_20261010.md)。
+2026-11-06（#2524）: 人物は会場に来た実体ではなく、はじめの頭の中に浮かぶ像として描く。先頭と末尾がはじめの心の声（（）付き・像は霞む）、間が浮かんだ相手の声（像が靄から浮かび、顔の中心から薄い輪が広がる）。2択の見える文言は「もう一台、作る」「今日は、ここまで」で、遷移・20秒・抽選は従来どおり。[V5仕様](../docs/spec/continue_inner_voice_20261106.md)。
 
 プレビューの既定は「筆文字・円形HUD（採用中）」と「暗いステージ（採用中）」。過去の王道／王道＋迫る数字／上段ボタン／上段ボタン＋背面カウントも比較用に保持する。
 実験版は「コンティニュー？ 15 ［する］［諦める］」を上部へ集め、下のセリフを大きくする。背面カウント版は人物の後ろの薄い数字が残り時間に沿って拡大する。動き軽減ではサイズを固定。「背景」で紫の煙と、添付画像を参考に生成した暗いステージを切り替えられる。
@@ -249,7 +250,7 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
    - R2 吸い出し・提供（温度合わせ）／R3 調整1回目／R4 調整2回目
    - 生放送レイヤー（`craft/broadcast.js`・旧版 #24/#20/#26）: 工程の頭でパッキーが前振り＋ライバルの進行実況、
      出来に応じてニコ動風のコメントが流れる。点数は作業台右上の SCORE（全モード共通・工程ごとに加算・結果表にも載る）に一本化（TH42）。文面は `remake/data/broadcast.json`
-   - 審査 → RESULT 10 COUNT（プチュン＝1位確定／パリン＝敗北）→ 須井の持ち点10一括投入
+   - 審査 → RESULT 10 COUNT（プチュン＝1位確定／パリン＝敗北）→ 伏見の持ち点10一括投入
    - 優勝: 表彰 → `ch1_tournament_after`（会場まで） → スミさんの祝福LIME → `ch1_tournament_after`（閉店後のtonariの祝杯・採点表の走り書き） → なるのLIME・「???」の記録LIME → `ch1_naru_promise` → 採点表を気にし始める章末 → 90年代風の次回予告 → 第1章クリア
    - 敗北: `ch1_tournament_defeat` → GAME OVER（大会の頭から再挑戦／タイトルへ）
 

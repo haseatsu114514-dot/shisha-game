@@ -116,7 +116,7 @@ try {
   assert(!romance.outing.some((t) => t.includes("お姉、さん") || t.includes("ばれた")), "Already-known identity was revealed again");
   assert.equal(romance.q1.value, 1);
   assert.equal(romance.answerCount, 1, "The private follow-up asked the relationship question twice");
-  assert(!romance.secondOuting.some((t) => t.includes("あらためて。私、緑川栞")), "Already-known real name was introduced again");
+  assert(!romance.secondOuting.some((t) => t.includes("あらためて。私、木成頼栞")), "Already-known real name was introduced again");
   assert.deepEqual(romance.finaleInvite, { slot: "night", after: true });
   assert.deepEqual(romance.holidayFinale, { slot: "noon", after: false });
   assert.equal(romance.before, "romance");

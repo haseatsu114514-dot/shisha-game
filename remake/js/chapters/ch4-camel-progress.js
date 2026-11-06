@@ -4,7 +4,7 @@ import { CAMEL_CUPS, camelCupQualified, camelMastered, camelExpert } from "../mi
 //
 // 設計（#2273 の14日化と整合させるための独立モジュール）:
 // - 進み具合は flags._ch4_camel に持つ。日付は通算の value.day で相対に比べる（章内 DAY の決め打ちをしない）。
-//   stage 0: Dr.fookah ドバイ店の店先でスハイルと知り合う（時間を使わない会話）
+//   stage 0: Dr.fookah ドバイ店の店先でファーリスと知り合う（時間を使わない会話）
 //   stage 1: 翌日以降、店でまた話して、ラクダレースに誘われる（時間を使わない会話）
 //   stage 2: その翌日以降の昼、レース場で本番を見てから練習レースのリモコンを借りる（昼の行動を使う）
 //   stage 3: 以後、昼に練習レースへ通える（昼の行動を使う・1日1回・自己ベストを保存）
@@ -85,7 +85,7 @@ export function camelRaceDestination(value) {
   }
   if (camel.stage === CAMEL_STAGES.met) {
     const ready = camel.meetDay === null || day > camel.meetDay;
-    return { ...base, label: "Dr.fookah ドバイ店で、スハイルとまた話す", description: "昼に見せたいものがあると言っていた。", consumes: false,
+    return { ...base, label: "Dr.fookah ドバイ店で、ファーリスとまた話す", description: "昼に見せたいものがあると言っていた。", consumes: false,
       ok: ready, why: ready ? "" : "今日はもう話した。また明日、店に顔を出そう",
       purpose: ready ? "「昼に見せたいもの」の続きを聞く。時間は使わない。" : "今日はもう話した。また明日、店に顔を出そう。" };
   }
@@ -93,7 +93,7 @@ export function camelRaceDestination(value) {
   if (camel.stage === CAMEL_STAGES.invited) {
     const tomorrow = camel.inviteDay !== null && day <= camel.inviteDay;
     const ok = !tomorrow && isDaytime(value);
-    return { ...track, label: "ラクダレース場へ（スハイルと）", description: "朝のレースを見に行く約束。",
+    return { ...track, label: "ラクダレース場へ（ファーリスと）", description: "朝のレースを見に行く約束。",
       ok, why: tomorrow ? "レースは明日の朝。宿の前で迎えに来てくれる" : ok ? "" : "レースは朝。明日の昼に行こう",
       purpose: ok ? "朝のレースを見てから、練習レースのリモコンを借りる。昼の行動を使う。" : tomorrow ? "レースは明日の朝。宿の前で迎えに来てくれる。" : "レースは朝。明日の昼に行こう。" };
   }

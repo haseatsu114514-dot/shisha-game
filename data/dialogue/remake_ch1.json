@@ -2542,7 +2542,7 @@
         {
           "speaker": "uranaishi",
           "face": "normal",
-          "text": "次に会ったとき、いつもより素直に話せるだろうさ。……効き目は一度きりだよ"
+          "text": "{fortuneName}と次に会ったとき、いつもより素直に話せるだろうさ。……効き目は一度きりだよ"
         },
         {
           "speaker": "hajime",
@@ -2753,7 +2753,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_shuraba_rio_minto",
+      "dialogue_id": "remake_shuraba_minto_rio",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
       },
@@ -2970,7 +2970,7 @@
         {
           "speaker": "hiyori",
           "face": "sad",
-          "text": "……薄羽ひより。はじめくんとは、煙の中で出会ったの",
+          "text": "……泡沫ひより。はじめくんとは、煙の中で出会ったの",
           "inner": "誰！？ 距離近くない！？ 出場者の子！？"
         },
         {
@@ -3068,7 +3068,7 @@
         {
           "speaker": "hiyori",
           "face": "sad",
-          "text": "……薄羽ひより。はじめくんとは、ただの、煙の縁……"
+          "text": "……泡沫ひより。はじめくんとは、ただの、煙の縁……"
         },
         {
           "speaker": "rio",

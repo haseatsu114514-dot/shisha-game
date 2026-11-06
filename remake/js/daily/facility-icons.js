@@ -40,6 +40,7 @@ const SPOT_ICONS = Object.freeze({ kannon: 'kannondo', rest: 'home', cafe: 'koha
   rojiura_cinema: 'rojiura_cinema',
   axe_bar: 'axe_bar', choizap: 'choizap', fortune: 'fortune', trpg_bar: 'trpg_bar',
   ch3_tokyo_gym: 'choizap', // 第3章の東京のCHOI-ZAP（同じチェーンの高架下の店）
+  ch5_tokyo_gym: 'choizap', // 第5章の東京でも同じ店（会員の時だけ地図に出る）
   // MPI: 東京・ドバイ・第5章の行き先。路地裏の神社は場所の決定待ち（#2166）
   ch3_tokyo_park: 'tokyo_park', ch5_tokyo_park: 'tokyo_park', ch3_tokyo_room: 'mukai_back_room', ch5_tokyo_attic: 'mukai_attic',
   ch5_call: 'smartphone', // 第3章の「地元と連絡」は地図から外し、右上の LIME の一番上の行に（オーナー決定 2026-11-02）

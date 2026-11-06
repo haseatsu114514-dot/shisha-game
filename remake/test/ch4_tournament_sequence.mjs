@@ -202,7 +202,7 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   // ふつうの一台では、なるは提供後・調整1回目の票の1位を取って、はじめと同じ持ち点に並ぶ（盤の上はその回の出来の差）。
   // 台本には「並んだ」と渡し、単独の先頭とは言わせない。
   assert.deepEqual(average.shown.slice(1).map(rows => rows.slice(0, 2).map(row => `${row.id}:${row.points}`)),
-    [["naru:6", "hajime:6"], ["naru:9", "hajime:9"]]);
+    [["naru:7", "hajime:7"], ["naru:10", "hajime:10"]]);
   assert.equal(told(average, "interlude1").tied, true);
   assert.equal(told(average, "interlude1").level, true);
   assert.equal(told(legacyStrong, "interlude1").leader, "hajime");

@@ -546,7 +546,7 @@ export function shake(target = document.getElementById("stage"), ms = 380) {
   setTimeout(() => target.classList.remove("shake"), ms);
 }
 
-/** 章タイトル（採用画像1枚。表示時間・送り入力ガードは維持） */
+/** 章タイトル（採用画像1枚＋共通の出現演出。表示時間・送り入力ガードは維持） */
 export async function chapterTitle({ no, name, read, sub }) {
   // 読込中も前場面を見せたまま、クリック・タップ・会話送りキーを吸収する。
   const swallow = event => { event.preventDefault(); event.stopPropagation(); };
@@ -575,7 +575,8 @@ export async function chapterTitle({ no, name, read, sub }) {
     // 失敗・タイムアウト時は既存の文字表示で章進行を続ける。
     if (art && await imageReady(art, 15000)) {
       copy.hidden = true; // 章名は採用画像に含まれているため重ねて描かない。
-      card.classList.add("illustrated");
+      // 出現は共通の .ct-reveal（css/motions/chapter-title.css）。画像は動かさず、もやが晴れて現れる。
+      card.classList.add("illustrated", "ct-reveal");
       card.dataset.art = "ready";
       const full = el("img.cc-art", { src: art, alt: [no, name, read, sub].filter(Boolean).join("　") });
       card.append(full);

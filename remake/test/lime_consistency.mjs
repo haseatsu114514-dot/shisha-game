@@ -83,6 +83,7 @@ const values = {
   "story-knowledge.js": { syncMintoKnowledge: () => {} },
   // サメちゃんのデート（samechan-date.js）が読む心得の盤。LIMEの検査なので旧しくみ（盤は無効）の代役にする
   "growth.js": { growthEnabled: () => false, awardActionExp: () => 0 },
+  "gallery-progress.js": { recordRouteLover: noop }, // コレクションの「恋人成立」は remake/test/gallery_route_records.mjs
 };
 // 同じVM stateに実statsを接続。新しいexportを空の成功stubで埋めない。
 const coreFiles = { "stat-step-tables.js": "stat-step-tables.js", "production-stats.js": "stats.js", "condition.js": "condition.js", "affinity-stages.js": "affinity-stages.js", "travel-budget.js": "travel-budget.js" };
@@ -354,7 +355,7 @@ for (const pts of [0, 1, 2]) {
 reset({ lovers: ["minto"] }); state.inbox.push(item({ id: "loverchat", sender: "minto", type: "chat", messages: ["おはよう"], replies: [{ text: "おはよう", affinity: 1 }] }));
 session = phone.openLime({ sender: "minto" }); await click("reply-0"); await closeThread(session); assert.equal(gains[0].pts, 3);
 
-// 五つの噂も返信可能（須井は連絡先を交換しないため噂LIMEなし・#2026）。全選択肢が自然な文面/反応/小さい点数を持ち、洞察報酬は読む時に一度だけ。
+// 五つの噂も返信可能（伏見は連絡先を交換しないため噂LIMEなし・#2026）。全選択肢が自然な文面/反応/小さい点数を持ち、洞察報酬は読む時に一度だけ。
 const rumors = allMessages.filter((m) => m.type === "rumor"); assert.equal(rumors.length, 5);
 for (const rumor of rumors) {
   assert(rumor.replies.length >= 2); assert(rumor.replies.some((r) => r.affinity === 0));
@@ -436,7 +437,7 @@ for (const known of [false, true]) {
   assert(confessionIndex > 0); assert(state.flags._minto_name_known);
   if (known) assert.equal(introIndex, -1);
   else { assert(introIndex > 0 && introIndex < confessionIndex); const lines = plays[introIndex][0].lines;
-    assert(lines.some((line) => line.speaker === "minto" && /緑川栞.*２人の時/.test(line.text)));
+    assert(lines.some((line) => line.speaker === "minto" && /木成頼栞.*２人の時/.test(line.text)));
     assert(lines.some((line) => line.speaker === "hajime" && line.text.startsWith("栞さん")));
   }
 }

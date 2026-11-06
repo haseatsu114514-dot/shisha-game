@@ -92,6 +92,10 @@ for (const [round, quality] of [95, 40, 97, 95].entries()) {
   prior = copy(p.votes);
 }
 for (const judge of JUDGES) assert.equal(CONTESTANTS.reduce((sum, id) => sum + p.votes[judge][id], 0), 10);
+assert(standings(p).every(row => row.points >= 1));
+assert.equal(standings(p).reduce((sum, row) => sum + row.points, 0), 34);
+assert.deepEqual(standings(p).map(row => [row.id, row.rank]),
+  standings({ ...p, baseVotes: undefined }).map(row => [row.id, row.rank]));
 
 // 不正な持ち点でも全審査員を一部だけ確定しない。
 const bad = startAttempt(makeState(), craft);
