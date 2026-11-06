@@ -1959,6 +1959,267 @@
           "text": "……そうか。直さずに帰った晩も、無駄じゃなかったな"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch5_tsumugi_serving",
+      "comment": "#2606 (c)。未接続。第4章ラストの面接から時間が経ち、つむぎは後輩スタッフとして在籍・育った状態。成長過程は描かない。勤務時はバイト姿（私服＋ビブエプロン、PR #2608 案B、face baito_*）。接続先・発生条件は未定（tonari・日程決定前の自由時間が候補）。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕方のtonari。カウンターの内側で、つむぎがエプロンの紐を結び直した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "私服の上に、店のビブエプロン。タブレットは、奥の棚にしまってある。"
+        },
+        {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ドアベルが鳴った。初めて見る、二人連れの客だった。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "いらっしゃいませ。お二人ですか"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "はい。あの、初めてで……何を頼めばいいか"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "大丈夫です。甘いのと、すっきりしたの、どっちが好きですか"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "甘いの、かな。でも、むせたら恥ずかしくて"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "じゃあ、軽めに作ります。最初は、ゆっくり吸ってください"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎがボウルに葉を詰める。指先に、迷いがない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を置く前に、一度だけ客席を振り返った。二人の肩の高さを、確かめるみたいに。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……顔、見てる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙が出ると、二人は顔を見合わせて笑った。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……おいしい。甘いのに、喉が痛くない"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_bow",
+          "text": "よかったです。熱かったら、すぐ呼んでください"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターに戻ってきたつむぎに、小声で聞いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭、一つ離して置いてたね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……初めての人は、緊張して強く吸うので。最初だけ、少し弱く"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "客の顔を見て、必要な熱だけ入れる。……はじめさんの、受け売りです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺のも、スミさんの受け売りだよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "テーブル席で帳面をつけていたスミさんが、小さく鼻を鳴らした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前は、奥の席で画面だけを見ていた子だ。今は、知らない客に自分から声をかけている。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tsumugi_makes_for_hajime",
+      "comment": "#2606 (d)。未接続。ch5_tsumugi_servingの後を想定。はじめが休みの日に客として来店し、つむぎが作る（役割の逆転・台詞の引き継ぎ）。接続先・発生条件は未定。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "休みの日。客として、tonariのドアを開けた。"
+        },
+        {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "いらっしゃいませ……あ、はじめさん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "今日は客で来た。一台、お願いできる？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_surprise",
+          "text": "……私が、ですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。つむぎちゃんのが吸いたい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（つむぎちゃんが入ってから、休みの日ができた。こうして、客の席にも座れる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは一度だけ深呼吸して、エプロンの紐を握った。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_serious",
+          "text": "……ご注文は"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "おまかせで。今日の俺に、合うやつ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎが、じっとこちらを見る。顔を、見られている。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……寝不足ですね。目の下、ちょっと暗いです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……ばれた"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "じゃあ、ラベンダーにします。少しだけ、ミントを足して"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席に座る。いつも、つむぎが絵を描いていた席だ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの向こうで、つむぎが炭の向きを確かめている。その手つきは、どこかスミさんに似ていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……いや。少しは、俺にも似ているのかもしれない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "キッチンタイマーが鳴った。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "お待たせしました。最初は、ゆっくりどうぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口吸う。やわらかい煙が、喉の奥でほどけた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……うまい。熱が、ちょうどいい"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "『燃やす』んじゃなくて、『蒸らす』。……スミさんに、何回も言われました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺も、最初の日に言われた"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "……じゃあ、私で三人目ですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "作る側と、吸う側。座る席が入れ替わっただけで、店の見え方が少し変わった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（スミさんに教わったことが、ちゃんと次の手に渡っている）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（……自分の店を持ったら、こういう日を何度も作りたい）"
+        }
+      ]
     }
   ]
 }

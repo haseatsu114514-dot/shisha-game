@@ -63,23 +63,23 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
-          "text": "明日から、店はお前が回せ"
+          "face": "smile",
+          "text": "店長が、まだ自分の店の名前で迷ってんのか"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "tonariを任せる。お前の店の名前は、その先まで取っとけ"
+          "text": "tonariを回した日は、全部お前の店の分になる。名前は、その時まで取っとけ"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "……はい"
+          "face": "smile",
+          "text": "……はい。その時まで、ここで回します"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "店を出る前に、明日のシフトを確かめる。"
+          "text": "店を出る前に、つむぎと分けた明日のシフトを確かめる。"
         }
       ]
     },
