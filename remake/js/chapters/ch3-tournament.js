@@ -1,4 +1,7 @@
 import { playEntrance } from "./tournament-entrance.js";
+import { tournamentArrival, tournamentDayCard, roundBandAt, resultMoment } from "./tournament-moments.js";
+import { defeatFade } from "../core/transitions.js";
+const TITLE = "HAZE: NATIONAL TOKYO";
 import { advanceTournamentCraft } from "./tournament-craft-runner.js";
 // HAZE: NATIONAL TOKYO。四人同時の一試合を、確定した制作工程と票から再開する。
 import { createChapterActions } from "../core/chapter-actions.js";
@@ -383,7 +386,11 @@ async function renderDefeat(owner, variant = null) {
   owner.continueRoot = root;
   root.dataset.test = id("defeat");
   root.querySelector(".go-retry").dataset.test = id("retry");
+  // この場で負けが決まった時だけ、色が抜けて煙が途切れる入り（#2688 A19）。再表示・LOAD後は出さない
+  const fade = (owner.resultShown && !owner.defeatFaded && (owner.defeatFaded = true) && await defeatFade()) || (async () => {});
+  if (!live(owner)) { await fade(); return; }
   showScreen("end", root);
+  await fade();
 }
 
 function renderComplete(owner) {
@@ -415,11 +422,16 @@ async function drive(owner) {
   while (live(owner)) {
     const p = progress();
     if (p.stage === "entry") {
+      // 大会当日の入り（第1章と同じ DAYカード → 応援のLIME・#2688 A16）
+      if (!owner.dayShown) { owner.dayShown = true; await tournamentDayCard(TITLE); if (!live(owner)) return; }
       if (!await morningCheers(owner)) return;
       renderEntry(owner);
       return;
     }
     if (p.stage === "opening") {
+      // 暗い煙ワイプで会場へ（第1章の会場入りと同じ）
+      await tournamentArrival();
+      if (!live(owner)) return;
       if (!await read(owner, "tournament_day")) return;
       await playEntrance(3);
       if (!live(owner)) return;
@@ -432,6 +444,9 @@ async function drive(owner) {
       // 投票の後、調整に入る合間の掛け合い（#1290）。見た目は commentary と同じ経路で一度だけ。
       const interlude = p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
       if (interlude && !await commentary(owner, interlude)) return;
+      // 工程の区切りに第1章と同じ ROUND の横帯（#2688 A16）
+      await roundBandAt(p.step, owner.rounds ||= new Set());
+      if (!live(owner)) return;
       const event = TOURNAMENT_STORY_STEPS.get(p.step);
       if (event && !await commentary(owner, event)) return;
       hud(owner);
@@ -480,7 +495,15 @@ async function drive(owner) {
       if (!await commentary(owner, "tasting")) return;
       checkpoint("result");
     } else if (p.stage === "votes") { renderVotes(owner); return; }
-    else if (p.stage === "result") { playBgm("bgm_judging"); renderVotes(owner, true); return; }
+    else if (p.stage === "result") {
+      // 結果カードの前に、第1章と同じ10カウント（#2688 A16）
+      if (!owner.resultShown && p.result) {
+        owner.resultShown = true;
+        await resultMoment(owner.cs || clone(p.craft), p.result.rank, { contestants: CONTESTANTS, eyebrow: `${TITLE} / FINAL JUDGING` });
+        if (!live(owner)) return;
+      }
+      playBgm("bgm_judging"); renderVotes(owner, true); return;
+    }
     else if (p.stage === "defeat") { await renderDefeat(owner); return; }
     else if (p.stage === "victory") {
       if (p.result?.rank !== 1) throw new Error("全国大会の結果と勝利場面が一致しません");

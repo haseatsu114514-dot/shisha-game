@@ -151,7 +151,8 @@ const ownerContext = vm.createContext({
   showHud: stub, stopBgm: stub, SE: { miss: stub }, location: { reload: stub },
   buildGameOver: options => { retryOptions = options; return { isConnected: true }; },
   showScreen: () => opened++, chooseRetryAssist: async () => {}, retire: stub,
-  smokeWipe: callback => { transition = callback; }, tournamentDay: () => resumed++,
+  // 再挑戦は一筆を逆向きに流す幕（#2688 A19・F4）。幕の内側で呼ぶ関数を受け取る。敗北の入りの灰色はこの検査では出さない
+  retryStroke: callback => { transition = callback; }, defeatFade: async () => null, tournamentDay: () => resumed++,
 });
 vm.runInContext(source.slice(gameOverStart, gameOverEnd), ownerContext);
 const waiting = vm.runInContext("showGameOver()", ownerContext);

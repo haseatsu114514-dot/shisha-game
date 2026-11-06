@@ -1,8 +1,11 @@
 import { playEntrance } from "./tournament-entrance.js";
+import { tournamentArrival, tournamentDayCard, roundBandAt, resultMoment } from "./tournament-moments.js";
+import { defeatFade } from "../core/transitions.js";
 import { advanceTournamentCraft } from "./tournament-craft-runner.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 // HAZE: OPEN CLOUD。一試合の制作と、各工程の確定済み状態だけを保存する。
+const TITLE = "HAZE: OPEN CLOUD";
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, CHAPTER_DIALOGUE_FILES, loadTournamentCraftDialogue } from "../core/data.js";
 import { el, yen } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
@@ -264,7 +267,11 @@ async function renderDefeat(owner, variant = null) {
   owner.continueRoot = root;
   root.dataset.test = id("defeat");
   root.querySelector(".go-retry").dataset.test = id("retry");
+  // この場で負けが決まった時だけ、色が抜けて煙が途切れる入り（#2688 A19）。再表示・LOAD後は出さない
+  const fade = (owner.resultShown && !owner.defeatFaded && (owner.defeatFaded = true) && await defeatFade()) || (async () => {});
+  if (!live(owner)) { await fade(); return; }
   showScreen("end", root);
+  await fade();
 }
 function renderComplete(owner) {
   const next = button(owner, "第三章・東京へ", "chapter-three", async () => {
@@ -297,13 +304,16 @@ async function drive(owner) {
     const p = progress();
     if (p.stage === "entry") { renderEntry(owner); return; }
     if (p.stage === "morning") {
+      // 大会当日の入り（第1章と同じ DAYカード → 応援のLIME → 暗い煙ワイプで会場へ・#2688 A16）
+      if (!owner.dayShown) { owner.dayShown = true; await tournamentDayCard(TITLE); if (!live(owner)) return; }
       if (!await message(owner, "morning", [
         state.flags._ch2_no_audience ? "今日は来ないでくれ、って話は聞いた。店で見てる" : "応援は届いてる。返事は終わってからでいい",
         "手順を確かめろ。無理なら止めていい。帰ったら飯にするぞ",
       ], chapterTwoCheers)) { if (live(owner)) renderEntry(owner); return; }
       checkpoint("lobby");
     } else if (p.stage === "lobby") {
-      playBgm("bgm_tournament_wait");
+      await tournamentArrival();
+      if (!live(owner)) return;
       if (!await read(owner, "lobby")) return;
       markMet("ageha"); checkpoint("entrance");
     } else if (p.stage === "entrance") {
@@ -330,6 +340,9 @@ async function drive(owner) {
       // 1回目の票の後は、提供前の4人の心の声（第2章だけ）。
       const interlude = p.step === 8 ? "interlude_pull" : p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
       if (interlude && !await commentary(owner, interlude)) return;
+      // 工程の区切りに第1章と同じ ROUND の横帯（#2688 A16）
+      await roundBandAt(p.step, owner.rounds ||= new Set());
+      if (!live(owner)) return;
       const event = TOURNAMENT_STORY_STEPS.get(p.step);
       if (event && !await commentary(owner, event)) return;
       hud(owner); openBench(cs, { steps: CRAFT_STEPS }); await waitBenchReady(cs);
@@ -365,7 +378,15 @@ async function drive(owner) {
       if (p.result?.rank === 1 && !await read(owner, "verdict")) return;
       checkpoint("result");
     } else if (p.stage === "votes") { renderVotes(owner); return; }
-    else if (p.stage === "result") { playBgm("bgm_judging"); renderVotes(owner, true); return; }
+    else if (p.stage === "result") {
+      // 結果カードの前に、第1章と同じ10カウント（1位はプチュン→煙の輪→紙吹雪、それ以外はパリン）・#2688 A16
+      if (!owner.resultShown && p.result) {
+        owner.resultShown = true;
+        await resultMoment(owner.cs || clone(p.craft), p.result.rank, { contestants: CONTESTANTS, eyebrow: `${TITLE} / FINAL JUDGING` });
+        if (!live(owner)) return;
+      }
+      playBgm("bgm_judging"); renderVotes(owner, true); return;
+    }
     else if (p.stage === "defeat") { await renderDefeat(owner); return; }
     else if (p.stage === "farewell") {
       playBgm("bgm_aftermath");
