@@ -5,6 +5,9 @@ import { suite, storageSnapshot, assertFits } from "./support.mjs";
 
 const root = fileURLToPath(new URL("../../../", import.meta.url));
 const selector = '[data-test="cfg-portrait-style"]';
+// 設定の段ボタン（#2857）。押された段の value が保存値。
+const choice = (page, value) => page.locator(`${selector} button[value="${value}"]`);
+const chosen = page => page.locator(`${selector} [aria-checked="true"]`).getAttribute("value");
 const portraits = ".vn-portraits img";
 const savedWithoutConfig = async page => {
   const snapshot = await storageSnapshot(page);
@@ -77,10 +80,7 @@ await suite("portrait-style", async check => {
       await page.locator("#modal.show").waitFor({ state: "hidden" });
     };
     const change = async (page, value) => {
-      if (touch) await page.locator(selector).tap();
-      else await page.locator(selector).focus();
-      await page.locator(selector).selectOption(value);
-      if (touch) await page.keyboard.press("Escape");
+      await activate(choice(page, value));
       await decoded(page);
     };
     await check(`${label}-retired-settings-migrate-once`, async page => {
@@ -94,8 +94,8 @@ await suite("portrait-style", async check => {
         assert.equal(await page.evaluate(async () => (await import("./js/core/state.js")).config.portraitStyle), "new");
         assert.deepEqual(await savedWithoutConfig(page), saved);
         await activate(page.locator('[data-test="title-config"]'));
-        assert.equal(await page.locator(selector).inputValue(), "new");
-        await page.locator(selector).selectOption("classic");
+        assert.equal(await chosen(page), "new");
+        await choice(page, "classic").click();
         await close(page);
         await page.reload({ waitUntil: "load" });
         await page.locator('[data-test="title-new"]').waitFor();
@@ -116,7 +116,7 @@ await suite("portrait-style", async check => {
       const before = await snapshot(page), saved = await savedWithoutConfig(page);
       const srcs = await page.locator(portraits).evaluateAll(images => images.map(image => image.src));
       await settings(page);
-      assert.deepEqual(await page.locator(selector + " option").evaluateAll(options => options.map(option => option.value)), ["new", "classic"]);
+      assert.deepEqual(await page.locator(selector + " button").evaluateAll(options => options.map(option => option.value)), ["classic", "new"]);
       await page.screenshot({ path: path.resolve(root, process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser", `portrait-style-${label}-settings.png`) });
       for (const value of ["new", "classic", "new", "classic", "new"]) {
         await change(page, value);
@@ -134,7 +134,7 @@ await suite("portrait-style", async check => {
       await close(page);
       assert.deepEqual(await snapshot(page), before);
       await settings(page);
-      assert.equal(await page.locator(selector).inputValue(), "new");
+      assert.equal(await chosen(page), "new");
       await close(page);
       await activate(page.locator('[data-test="vn-log"]'));
       assert.equal(await page.locator(".log-row").count(), 2, "Switching never duplicates log entries");

@@ -35,15 +35,24 @@ const ATTIC_BG = "bg_mukai_attic"; // ムカイさんの店の上の屋根裏（
 
 // 座標は東京の地図（bg_tokyo_map_*）に対する百分率。第3章の TOKYO_MAP_PLACES と同じ位置。
 const spot = fields => Object.freeze({ region: TOKYO, kind: "ch5_tokyo", ...fields });
+/** 第5章の東京の店で迎える♥5の締めくくり（スティーブ #2705・ヴォルク 2026-11-07 オーナー指示「スティーブと揃える」）。 */
+const TOKYO_FINALES = Object.freeze(["steve", "volk"]);
+/** この来店が♥5の締めくくりになるか（performTokyoSpot の分岐と、地図の利用料 cost の両方がこれを見る）。 */
+const finaleVisit = entry => TOKYO_FINALES.includes(entry.charId) && finaleAtVisit(entry.charId);
+// スティーブ・ヴォルクの店。第5章の締めくくりの来店はいつも代金を取らないので、その間は地図の利用料も0にして、4,000円に
+// 足りない日でも入れる（第3章の ch3-tokyo-daily.js の cost と同じ考え方。第3章は払える日に一台も選べるので、足りない日だけ0）。
+// ふだんの来店は TOKYO_VISIT_COST。
+const rivalSpot = fields => Object.freeze(Object.defineProperty({ region: TOKYO, kind: "ch5_tokyo", ...fields }, "cost", {
+  enumerable: true, get: () => finaleVisit(fields) ? 0 : TOKYO_VISIT_COST }));
 export const TOKYO_SPOTS = Object.freeze([
   spot({ id: "ch5_tokyo_mukai", label: "mukai", area: "高架下の商店街", x: 29.6, y: 62.7, theme: "baito", glyph: "店", face: "mukai_master",
     preview: "bg_mukai_shop", stamina: MUKAI_SHIFT_STAMINA, shift: true, talks: ["ch5_tokyo_mukai_help", "ch5_tokyo_mukai_help_b", "ch5_tokyo_mukai_help_c"],
     desc: "ムカイさんの店のシフト（日当6,000円）。帰りに裏口のてつこにも会える。" }),
-  spot({ id: "ch5_tokyo_steve", charId: "steve", label: "Smoke & Glory", area: "スティーブの店", x: 23.3, y: 36.1, theme: "rival", glyph: "煙", face: "steve",
-    preview: "bg_steve_shop", cost: TOKYO_VISIT_COST, stamina: -16, stat: "technique",
+  rivalSpot({ id: "ch5_tokyo_steve", charId: "steve", label: "Smoke & Glory", area: "スティーブの店", x: 23.3, y: 36.1, theme: "rival", glyph: "煙", face: "steve",
+    preview: "bg_steve_shop", stamina: -16, stat: "technique",
     talks: ["ch5_tokyo_steve", "ch5_tokyo_steve_b", "ch5_tokyo_steve_c"], desc: "タイマーの並ぶ店。二口目までの一台。" }),
-  spot({ id: "ch5_tokyo_volk", charId: "volk", label: "鉄の煙", area: "ヴォルクの店", x: 55.9, y: 40.4, theme: "rival", glyph: "煙", face: "volk",
-    preview: "bg_volk_shop", cost: TOKYO_VISIT_COST, stamina: -16, stat: "insight",
+  rivalSpot({ id: "ch5_tokyo_volk", charId: "volk", label: "鉄の煙", area: "ヴォルクの店", x: 55.9, y: 40.4, theme: "rival", glyph: "煙", face: "volk",
+    preview: "bg_volk_shop", stamina: -16, stat: "insight",
     talks: ["ch5_tokyo_volk", "ch5_tokyo_volk_b", "ch5_tokyo_volk_c"], desc: "計器の並ぶ店。測ってから、客に聞く。" }),
   spot({ id: "ch5_tokyo_park", label: "公園", area: "池のある公園", x: 69, y: 62, theme: "park", glyph: "園", preview: "bg_tokyo_park",
     stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
@@ -90,7 +99,7 @@ export const tokyoSpotsNow = (value = state) => TOKYO_SPOTS.map(entry => entry.i
 
 export const inTokyo = (value = state) => value?.flags?._ch2_region === TOKYO;
 const SCENES = TOKYO_SPOTS.flatMap(entry => entry.talks || []).concat(["ch5_tokyo_van_first", "ch5_tokyo_go", "ch5_tokyo_back", "ch5_tokyo_arrival", "ch5_tokyo_park_day", "ch5_tokyo_attic_rest", "ch5_tokyo_fortune",
-  "ch5_tokyo_gym_day", "ch5_tokyo_gym_night", "ch5_steve_bond_finale"]);
+  "ch5_tokyo_gym_day", "ch5_tokyo_gym_night", "ch5_steve_bond_finale", "ch5_volk_bond_finale"]);
 // てつこのお世話は第3章の続き（通うほど懐いていく。回数も第3章と同じ記録。ch3-outing-progress.js の stages・loop）
 const TETSUKO = TOKYO_OUTINGS.find(outing => outing.id === "tetsuko");
 const CH3_SCENES = ["ch3_outing_park_walk_night", ...TETSUKO.stages, ...TETSUKO.loop];
@@ -107,6 +116,16 @@ async function loadTokyoScenes() {
     .then(([tokyo, ch3]) => { Object.assign(DB.dialogues, tokyo, ch3); })
     .catch(error => { loading = null; throw error; });
   await loading;
+}
+
+/**
+ * 東京にいる保存を再開・LOAD した時は、最初の行動の前に東京の台詞を読んでおく。地図の「!」と MENU の「次に会うと」は
+ * 締めくくりの台詞が読み込まれているかを見る（daily/bonds.js の finaleDue）ので、読む前は出なかった。
+ * 読めなくても地図は開く（行き先を選んだ時に読み直し、失敗ならそこで知らせる）。
+ */
+export async function preloadTokyoScenes(value = state) {
+  if (!inTokyo(value)) return;
+  try { await loadTokyoScenes(); } catch { /* 行き先を選んだ時の読み込みで知らせる */ }
 }
 
 // 夜は外光のある場所に既存の夜の暗転（tint）を掛ける。屋根裏の絵は昼の光なので、tint を落とさない。
@@ -185,18 +204,21 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
     await offerTetsuko(owner);
     return { used: true, exerted: true };
   }
-  // スティーブ・ヴォルク: 小会話を巡回して読む。
-  if ((spot.cost || 0) > spendableMoney(state)) {
+  // スティーブ・ヴォルク: 小会話を巡回して読む。代金は地図の利用料と同じ決まり（締めくくりの来店は0円・rivalSpot の cost）。
+  const finale = finaleVisit(spot);
+  const fee = spot.cost || 0;
+  if (fee > spendableMoney(state)) {
     toast("お金が足りない");
     return { used: false, exerted: false };
   }
   if (staminaGuard && !(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
-  // スティーブの♥5の締めくくり（#2705）: 第3章で見ていない人は、Smoke & Glory に通って♥5になった次の来店で一度だけ。
-  // 小会話の巡回は進めず、好感度も足さない（締めくくりは bonds.js の playFinale が記録・専用ハガルを渡す）。
-  if (spot.charId === "steve" && finaleAtVisit("steve")) {
+  // スティーブ・ヴォルクの♥5の締めくくり（#2705・2026-11-07）: 第3章で見ていない人は、店に通って♥5になった次の来店で一度だけ。
+  // 小会話の巡回は進めず、好感度は足さず、代金も取らない（締めくくりは bonds.js の playFinale が記録・専用ハガルを渡す）。
+  // ヴォルクの授業の相談（TOKYO_TEACHERS）はこの来店では出さず、次の来店で（締めくくりと授業を一度に重ねない）。
+  if (finale) {
     const bg = sceneBg(spot.preview, timeOfDay()).url;
     await showBg(spot.preview, timeOfDay());
-    if (state !== owner || !await playFinale("steve", { bg })) return { used: false, exerted: false };
+    if (state !== owner || !await playFinale(spot.charId, { bg })) return { used: false, exerted: false };
     addStamina(spot.stamina);
     return { used: true, exerted: true };
   }
@@ -204,7 +226,7 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   const visits = talks[spot.id] || 0;
   const scene = spot.talks[visits % spot.talks.length];
   if (!await read(scene, spot.preview, owner)) return { used: false, exerted: false };
-  if (spot.cost) addMoney(-spot.cost);
+  if (fee) addMoney(-fee);
   if (spot.pay) addMoney(spot.pay);
   addStamina(spot.stamina);
   talks[spot.id] = visits + 1;

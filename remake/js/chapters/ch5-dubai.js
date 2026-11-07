@@ -8,14 +8,17 @@
 // 地図と座標は第4章の日常ループ（ch4-dubai-daily.js）と同じ。FESTAは大会の出張ブースだったので出さず、太陽は休暇で
 // シェイクの屋敷に遊びに来ている（2026-11-02 オーナー「任せる」）。心得の盤の授業（シェイク・太陽）は、ここで会った時に相談する（SBD52）。
 // 台詞は data/dialogue/ch5_dubai.json（クリーク沿いは第4章の場面を使う）。現在地は flags._ch2_region = "dubai"。
-// 第4章で遊んだ人だけ、ラクダレース場と「ヌールと砂丘へ」にも行ける（chapterFiveDubaiLeisureSpots。出会い・誘いは第4章だけ）。
+// ラクダレース（第4章で走っていなければ店先の出会いから）・カフェ・サーリム（ヌールの締めくくりまで）・「ヌールと砂丘へ」（誘われていれば）にも
+// 行ける（chapterFiveDubaiLeisureSpots。2026-11-07 オーナー決定「第4章を飛ばしたプレイヤーも、第5章側で前提を補ってルートに入れる」）。
 import { state, save, timeOfDay, markMet } from "../core/state.js";
 import { DB, sceneBg } from "../core/data.js";
 import { modal, setBg, toast, layers } from "../core/ui.js";
 import { planeRide } from "../core/scene-motions.js";
 import { showHud } from "../daily/hud.js";
-import { CAMEL_DAILY_SPOT_ID, CAMEL_SCENES, CH4_CAMEL_SCENE_FILES, camelDailySpot, camelSceneBg } from "./ch4-camel-progress.js";
-import { DESERT_GUIDE, DESERT_SPOT_IDS, desertRevisitSpots, noorConfessionWaiting } from "./ch4-desert-progress.js";
+import { CAMEL_DAILY_SPOT_ID, CAMEL_SCENES, CAMEL_STAGES, CH4_CAMEL_SCENE_FILES, CH5_CAMEL_MEET, camelDailySpot, camelRaceRecord, camelSceneBg,
+  chapterFiveCamelMeetDue, advanceChapterFiveCamelMeet } from "./ch4-camel-progress.js";
+import { DESERT_CAFE_PRICE, DESERT_GUIDE, DESERT_SPOT_IDS, completeDesertReunion, desertChapterFiveSpots, desertProgress, noorConfessionWaiting } from "./ch4-desert-progress.js";
+import { spendableMoney } from "../core/travel-budget.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { addMoney, addStamina, earnStat, gainAffinity, visitAffinity } from "../core/stats.js";
@@ -79,20 +82,34 @@ export function chapterFiveDubaiPin(value = state) {
 
 export const inDubai = (value = state) => value?.flags?._ch2_region === DUBAI;
 
-// ---- 第4章で遊んだ人だけの行き先（ラクダレース場・ヌールと砂丘へ） ------------------------------
-// 地図の id・位置・アイコン・押せない理由・記録・報酬は第4章と同じ（ch4-camel-progress.js・ch4-desert-progress.js）。
-// 第4章で一度でも走った／砂丘へ出かけた人だけ出す（出会い・誘い・初回の場面は大会の頃の話なので、第5章では始めない）。
+// ---- ラクダレース・カフェ・サーリム・ヌールと砂丘へ ------------------------------------------------
+// 地図の id・アイコン・押せない理由・記録・報酬は第4章と同じ（ch4-camel-progress.js・ch4-desert-progress.js）。
+// 2026-11-07 オーナー決定（「第4章のラクダレース／砂丘を飛ばしたプレイヤーも、第5章側で前提を補ってルートに入れる（完全な締め出しにはしない）」
+// 「ノールの告白は第5章でも可能にする」）で、#2708 の「第4章で遊んだ人だけ」をやめた。第4章で走っていない人は Dr.fookah の店先で
+// ファーリスと出会い（会い直し）、ヌールに会っていない人はカフェ・サーリムで出会う（どちらも第5章の場面。大会・宿の頃の話はしない）。
 // 第5章で最初に行った日だけ、再会の場面を読む（新着の印も、その一度だけ出す）。
 const CAMEL_AGAIN = Object.freeze({ scene: "ch5_dubai_camel_again", flag: "_ch5_dubai_camel_again" });
+// DUNES_AGAIN は「第5章でヌールと会い直した」印も兼ねる: 第5章のカフェ・サーリムで出会った・再会した時にも立て、砂丘の前の再会を重ねない。
 const DUNES_AGAIN = Object.freeze({ scene: "ch5_dubai_dunes_again", flag: "_ch5_dubai_dunes_again" });
 // 再会の場面を読む間だけ立てる印: 第4章の締めくくりのあと砂丘へ行けずに帰国し、ヌールが告白を待っている（台本の promise の分岐）
 const NOOR_PROMISE_FLAG = "_noor_ch5_promise";
+// 店先の場面を読む間だけ立てる印: 第4章のラクダレースの段階（0 会っていない・1 知り合った／誘われた・2 本番を見た。台本の分岐）
+const CH5_CAMEL_KNOWN = "_ch5_camel_known";
+// 第4章でカフェ・サーリムに通っていた（締めくくりはまだ）人の、第5章で最初の来店（再会だけを今日の来店にする）。
+const NOOR_CAFE_AGAIN = "ch5_noor_cafe_again";
+// 第5章で読む書き出しの差し替え（第4章の宿・大会の前を前提にする言い方を使わない）。段階の数え方・報酬は元の id のまま（ch4-desert.js）。
+const CH5_NOOR_SCENES = Object.freeze({ ch4_noor_meet: "ch5_noor_meet", ch4_noor_cafe_4: "ch5_noor_cafe_4", ch4_desert_sunset_first: "ch5_noor_sunset_first" });
+const chapterFiveNoorScene = id => CH5_NOOR_SCENES[id] || id;
 const reunionOf = entry => entry.id === CAMEL_DAILY_SPOT_ID ? CAMEL_AGAIN : DUNES_AGAIN;
 
-/** 今のドバイの地図に足す行き先（ラクダレース場・ヌールと砂丘へ）。第4章で遊んでいなければ空。 */
+// 店先の段階の位置。第5章の地図では Dr.fookah ドバイ店（40,50）の札に重なるので、右上へずらす（画面で確認。第4章の位置は変えない）
+const CH5_CAMEL_SHOP_AT = Object.freeze({ x: 48, y: 36 });
+
+/** 今のドバイの地図に足す行き先（ラクダレース場か店先・カフェ・サーリム・ヌールと砂丘へ）。 */
 export function chapterFiveDubaiLeisureSpots(value = state) {
   if (value?.chapter !== 5 || !inDubai(value)) return [];
-  return [camelDailySpot(value, { region: DUBAI, kind: "ch5_dubai", stamina: 0 }), ...desertRevisitSpots(value, value.day)]
+  const camel = camelDailySpot(value, { region: DUBAI, kind: "ch5_dubai", stamina: 0 });
+  return [camel && chapterFiveCamelMeetDue(value) ? Object.freeze({ ...camel, ...CH5_CAMEL_SHOP_AT }) : camel, ...desertChapterFiveSpots(value, value.day)]
     .filter(Boolean)
     .map(entry => entry.unavailable || value.flags?.[reunionOf(entry).flag] ? entry : Object.freeze({ ...entry, hasNew: () => true }));
 }
@@ -101,7 +118,7 @@ export const chapterFiveDubaiLeisureById = id => chapterFiveDubaiLeisureSpots().
 
 const SCENES = DUBAI_SPOTS.flatMap(entry => entry.talks || [])
   .concat(["ch5_dubai_letter", ...DUBAI_LETTER_AGAIN, "ch5_dubai_go", "ch5_dubai_back", "ch5_dubai_arrival", "ch5_dubai_guest_rest",
-    CAMEL_AGAIN.scene, DUNES_AGAIN.scene]);
+    CAMEL_AGAIN.scene, DUNES_AGAIN.scene, CH5_CAMEL_MEET.scene, NOOR_CAFE_AGAIN, ...Object.values(CH5_NOOR_SCENES)]);
 const CH4_SCENES = ["ch4_creek_walk_day", "ch4_creek_walk_night"];
 
 let loading = null;
@@ -139,6 +156,7 @@ export async function performDubaiSpot(spot, { staminaGuard } = {}) {
   if (spot.id === "ch5_dubai_home") return goHome(owner);
   if (spot.id === CAMEL_DAILY_SPOT_ID) return visitCamelTrack(owner);
   if (spot.id === DESERT_SPOT_IDS.dunes) return visitDunes(spot, owner);
+  if (spot.id === DESERT_SPOT_IDS.desk) return visitNoorCafe(spot, owner);
   if (spot.reflect) {
     const hours = openingStatus(MOSQUE_VISITING_HOURS, state);
     if (!hours.ok) { toast(hours.why || "今は見学の時間ではない"); return unused; }
@@ -250,11 +268,14 @@ async function loadCamelScenes() {
 }
 
 /**
- * ラクダレース場（第4章で一度でも走った人だけ）。練習レースの流れ・記録・報酬は第4章と同じ（ch4-camel-race.js。報酬は初めての完走だけ）。
- * 第5章で最初に来た日は、レース前の会話（ch4_camel_replay）を再会の場面に替える。昼の枠は ch4-camel-race.js が完走の時だけ
+ * ラクダレース場。練習レースの流れ・記録・報酬は第4章と同じ（ch4-camel-race.js。報酬は初めての完走だけ）。
+ * 第4章で走っていない人の最初の一回は、Dr.fookah ドバイ店の店先で出会い（再会）と誘いの場面（時間・お金は使わない。第4章の店先と同じ）。
+ * 翌日以降の昼にレース場で、本番を見ていなければ見学（ch4_camel_watch）から。
+ * 第4章で走った人が第5章で最初に来た日は、レース前の会話（ch4_camel_replay）を再会の場面に替える。昼の枠は ch4-camel-race.js が完走の時だけ
  * 記録と一緒に進めて保存するので、日常ループには slotsUsed: 0 を返す（二重に進めない。第4章と同じ）。体力・お金は使わない。
  */
 async function visitCamelTrack(owner) {
+  if (chapterFiveCamelMeetDue(owner)) return meetFarisAtShop(owner);
   let race;
   try { [race] = await Promise.all([import("./ch4-camel-race.js"), loadCamelScenes()]); } catch {
     toast(LOAD_FAILED);
@@ -269,6 +290,19 @@ async function visitCamelTrack(owner) {
   return result.used && state === owner ? { used: true, exerted: false, slotsUsed: 0 } : unused;
 }
 
+/** 第5章の店先の場面（2026-11-07 オーナー決定）。第4章の段階で出会い・知り合いの再会・本番を見た人の再会を出し分け、誘われた段階へ進める。 */
+async function meetFarisAtShop(owner) {
+  const camel = camelRaceRecord(owner);
+  owner.flags[CH5_CAMEL_KNOWN] = camel.stage === CAMEL_STAGES.unknown ? 0 : camel.watched ? 2 : 1;
+  let done = false;
+  try { done = await read(CH5_CAMEL_MEET.scene, camelSceneBg(CAMEL_SCENES.meet), owner); } finally { delete owner.flags[CH5_CAMEL_KNOWN]; }
+  if (!done || !advanceChapterFiveCamelMeet(owner)) return unused;
+  owner.flags[CAMEL_AGAIN.flag] = true; // 第5章で会い直したので、レース場の前の再会（日本に帰ったんじゃ…）は読まない
+  save();
+  toast("明日の昼から、ラクダレース場へ行ける", { kind: "good" });
+  return unused;
+}
+
 async function readCamelScene(id, owner) {
   const reunion = id === CAMEL_SCENES.replay && !state.flags[CAMEL_AGAIN.flag];
   if (!await read(reunion ? CAMEL_AGAIN.scene : id, camelSceneBg(id), owner)) return false;
@@ -277,11 +311,13 @@ async function readCamelScene(id, owner) {
 }
 
 /**
- * ヌールと砂丘へ（第4章で一度でも出かけた人だけ）。外出・ツアー代・1日1回・記録・報酬は第4章と同じ（ch4-desert.js の performDesertSpot）。
- * 第5章で最初の日は、カフェ・サーリムの表のデスクで再会の場面を読んでから出かける。なるは地元にいるので砂丘に来ない（naru: false）。
+ * ヌールと砂丘へ（誘われていれば）。外出・ツアー代・1日1回・記録・報酬は第4章と同じ（ch4-desert.js の performDesertSpot）。
+ * 第5章でまだヌールに会い直していなければ、カフェ・サーリムの表のデスクで再会の場面を読んでから出かける。なるは地元にいるので砂丘に来ない（naru: false）。
+ * 初めての砂丘の夕日は第5章の言い方（CH5_NOOR_SCENES）。
  * 第4章の締めくくりで「二人で見たい」と答えたまま砂丘へ行けずに帰国した人は、告白を待たれている（ツアー代なし）。
  * 再会は約束の続きの言い方（台本の条件で出す一時の印 NOOR_PROMISE_FLAG）にし、滑ったあとの夕日で confession_noor を読む
- * （帰国した後の言い方は台本の tournament_finished の分岐）。day は通算の日（ch4-desert-progress.js の desertRevisitSpots）。
+ * （帰国した後の言い方は台本の tournament_finished の分岐。第5章で締めくくりを迎えた人は visiting の分岐）。
+ * day は通算の日（ch4-desert-progress.js の desertChapterFiveSpots）。
  */
 async function visitDunes(spot, owner) {
   let desert, romance;
@@ -301,7 +337,34 @@ async function visitDunes(spot, owner) {
     state.flags[DUNES_AGAIN.flag] = true;
     save();
   }
-  return desert.performDesertSpot(spot, { day: state.day, showHud, naru: false });
+  return desert.performDesertSpot(spot, { day: state.day, showHud, naru: false, scene: chapterFiveNoorScene });
+}
+
+/**
+ * カフェ・サーリム（第5章・締めくくりを迎えるまで。2026-11-07 オーナー決定）。一台の代金・1日1回・段階の会話・♥3の問い・♥5の締めくくり・
+ * 好感度（第5章の通いの値）は第4章と同じ（ch4-desert.js の performDesertSpot）。第4章の宿や大会の前を前提にする書き出しだけ第5章の場面に替える。
+ * 第4章で通っていた人の、第5章で最初の来店は再会の場面だけを今日の来店にする（雑談と同じ一台・好感度。段階の会話は次の来店から）。
+ */
+async function visitNoorCafe(spot, owner) {
+  let desert;
+  try { desert = await import("./ch4-desert.js"); await desert.loadDesertDialogues(); } catch {
+    toast(LOAD_FAILED);
+    return unused;
+  }
+  if (state !== owner) return unused;
+  if (!owner.flags[DUNES_AGAIN.flag] && desertProgress(owner).talks > 0) {
+    if (DESERT_CAFE_PRICE > spendableMoney(owner)) { toast(`お金が足りない（${DESERT_CAFE_PRICE.toLocaleString("ja-JP")}円）`); return unused; }
+    if (!await read(NOOR_CAFE_AGAIN, "bg_dubai_inn_day", owner) || !completeDesertReunion(owner, owner.day)) return unused;
+    addMoney(-DESERT_CAFE_PRICE);
+    gainAffinity(DESERT_GUIDE, visitAffinity("talk"));
+    owner.flags[DUNES_AGAIN.flag] = true;
+    save();
+    return { used: true, exerted: false };
+  }
+  const result = await desert.performDesertSpot(spot, { day: state.day, showHud, naru: false, scene: chapterFiveNoorScene });
+  // 第5章で出会いを読み終えたら、砂丘の前の再会（久しぶり）は読まない
+  if (state === owner && desertProgress(owner).talks > 0 && !owner.flags[DUNES_AGAIN.flag]) { owner.flags[DUNES_AGAIN.flag] = true; save(); }
+  return result;
 }
 
 /** 夜: ドバイにいれば屋敷の客間で寝る（帰らない）。 */

@@ -96,6 +96,7 @@ html:root[data-ui-theme="paper"] .vn-box .tx-hint { color: #2f6f99; }
 html:root[data-ui-theme="paper"] .vn-box :is(.tx-warn, .tx-red) { color: #b83a3a; }
 html:root[data-ui-theme="paper"] .vn-box .tx-blue { color: #3b5ea8; }
 html:root[data-ui-theme="paper"] .vn-box .tx-sub { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] .vn-box .tx-voice { color: #6f6a80; }
 html:root[data-ui-theme="paper"] .vn-log .log-row b { color: var(--lavender); }
 /* 2画面表示は窓の大きさが違うので、原画を引き伸ばさず紙の面と線で描く。 */
 html:root[data-ui-theme="paper"] body.game-ds .vn-box::before,

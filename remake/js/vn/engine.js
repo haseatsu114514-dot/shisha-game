@@ -16,8 +16,8 @@ import { loadVnFonts } from "../core/vn-fonts.js";
 import { state, markMet, STAT_EN, timeOfDay, config } from "../core/state.js";
 import { applyStats, gainAffinity, addMoney, affinityLevel, earnSceneCompletion } from "../core/stats.js";
 import { setBg, layers, toast, flash, shake, modal, dropRetired, imageReady } from "../core/ui.js";
-import { SE, playSe, playBgm, preloadBgm, currentBgm } from "../core/audio.js";
-import { formatHtml, sliceHtml, visibleLength, stripTags } from "./text.js";
+import { SE, playSe, playBgm, preloadBgm, currentBgm, duckBgm } from "../core/audio.js";
+import { formatHtml, sliceHtml, visibleLength, stripTags, pausePoints } from "./text.js";
 import { playerInner } from "./inner.js";
 import { dialoguePages } from "./layout.js";
 import { glossaryPanel } from "./glossary.js";
@@ -463,6 +463,7 @@ function finish(cancelled = false) {
   dom.effect.dataset.effect = "";
   layers.vn.classList.remove("sepia", "flashback");
   if (!sequenceDepth) setSkip(false);
+  releaseDuck(r);
   if (r.bgmSwitched) playBgm(r.bgmBefore);
   r.resolve({ id: r.id, visited: r.visited, ...(cancelled ? { cancelled: true } : {}) });
 }
@@ -483,6 +484,8 @@ function next() {
   if (!r) return;
   if (!skipMode && !vnTest.turbo) markSeenLine(r.activeSeenKey);
   r.activeSeenKey = null;
+  // BGMの息継ぎは、その行を読み終えて次へ進むところで戻す。すぐ次の台詞行も duck なら下げたまま渡す（戻して下げ直すと音量が波打つ）。
+  if (!r.queue[0]?.duck || r.queue[0].type) releaseDuck(r);
   // 読み終えた行の合図を、次の行の画像待ち・制御行へ持ち越さない。
   dom.next.classList.remove("show");
   r.pages = null;
@@ -778,6 +781,10 @@ async function showLine(line) {
   // 行付き演出（"fx":"shake" 等）／自動の軽演出（驚き・叫び）
   if (line.fx) runFx({ id: line.fx });
   else autoFx(line);
+  // BGMの息継ぎ（#2828 採用29）: duck の行だけ今の曲を約 −6dB へ落とす。SKIP中・高速送りでは省く。
+  if (line.duck && !skipMode && !vnTest.turbo) { r.ducked = true; duckBgm(DUCK_LEVEL, DUCK_IN_MS); }
+  else releaseDuck(r);
+  r.beat = beatMs(line.beat);
   // シーシャの仕組み解説の図解（#1128）。段階は絶対指定なのでSKIP・連打・LOADでも重ならない。
   if (line.diagram) showShishaDiagram(line.diagram, { still: reducedMotion() || skipMode || vnTest.turbo });
   let text = String(line.text || "");
@@ -816,6 +823,8 @@ async function showLine(line) {
   }
   dom.box.classList.toggle("narration", !speaker);
   dom.box.classList.toggle("thought", speaker === "hajime" && /^（/.test(line.text || ""));
+  // 心の声の薄墨（#2828 採用7）: 「（」で始まる行は誰の行でも薄墨・少し小さく出し、文字送りの音を鳴らさない。
+  r.innerVoice = /^（/.test(stripTags(text));
   dom.box.classList.toggle("has-inner", !!inner);
   r.pages = dialoguePages(text, inner, dom.text, dom.inner);
   r.pageIdx = 0;
@@ -859,15 +868,32 @@ function autoFx(line) {
   else shake(document.getElementById("stage"), 300);
 }
 
+// 会話演出（#2828。#2732 の選別で採用）。どれも台本の印がある行だけで動き、SKIP・高速送り・瞬間表示では省く。
+const PAUSE_MS = 400;                                  // [pause] で止まる長さ
+const DUCK_LEVEL = 0.5, DUCK_IN_MS = 150, DUCK_OUT_MS = 400; // duck: 約 −6dB へ0.15秒で落とし、0.4秒で戻す
+/** beat: true は0.5秒。数値（ms）は0.3〜0.8秒に収める */
+function beatMs(beat) {
+  if (beat === true) return 500;
+  const ms = Number(beat);
+  return Number.isFinite(ms) && ms > 0 ? Math.min(800, Math.max(300, ms)) : 0;
+}
+function releaseDuck(r) {
+  if (!r?.ducked) return;
+  r.ducked = false;
+  duckBgm(1, DUCK_OUT_MS);
+}
+
 function renderPage() {
   const r = running;
   const page = r.pages[r.pageIdx];
   const raw = page.text;
-  r.fullHtml = formatHtml(raw);
+  r.fullHtml = r.innerVoice ? `<span class="tx-voice">${formatHtml(raw)}</span>` : formatHtml(raw);
   r.fullInnerHtml = page.inner ? formatHtml(page.inner) : "";
   r.spokenLength = visibleLength(r.fullHtml);
   const total = r.spokenLength + visibleLength(r.fullInnerHtml);
   r.totalLength = total;
+  // 文中ポーズ（#2828 採用3）: [pause] の位置で文字送りを止める。続きのページは発言を出し終えた所から始まる。
+  r.pauses = page.continuation ? [] : pausePoints(raw).filter((at) => at > 0 && at < r.spokenLength);
   clearInterval(r.typeTimer);
   clearTimeout(r.typeTimer);
   dom.next.classList.remove("show");
@@ -880,8 +906,8 @@ function renderPage() {
     kickAuto();
     return;
   }
-  // 重要行（[imp]）は一拍の「溜め」を置いてから出す
-  const hold = raw.includes("[imp]") && r.pageIdx === 0 ? 380 : 0;
+  // 重要行（[imp]）は一拍の「溜め」を置いてから出す。beat の行（#2828 採用1）は台詞欄を空けたまま長めに溜める。
+  const hold = r.pageIdx === 0 ? Math.max(raw.includes("[imp]") ? 380 : 0, r.beat || 0) : 0;
   r.typing = true;
   r.shown = page.continuation ? r.spokenLength : 0;
   renderTyped(r.shown);
@@ -903,10 +929,17 @@ function startTypingInterval(r = running) {
   const total = r.totalLength ?? (r.spokenLength + visibleLength(r.fullInnerHtml));
   const step = Math.max(1, Math.round(total / 90));
   r.typeTimer = setInterval(() => {
-    r.shown = (r.shown || 0) + step;
+    const from = r.shown || 0;
+    const pause = r.pauses?.find((at) => at > from && at <= from + step);
+    r.shown = pause ?? from + step;
     renderTyped(r.shown);
-    if (r.shown <= r.spokenLength && r.shown % 3 < step) SE.blip(r.speaker);
-    if (r.shown >= total) completeTyping();
+    if (r.shown <= r.spokenLength && r.shown % 3 < step && !r.innerVoice) SE.blip(r.speaker);
+    if (r.shown >= total) return completeTyping();
+    // ▼は出さずに一拍止まり、続きを送る。止まっている間のクリックは本文を最後まで出す（typing のまま）。
+    if (pause !== undefined) {
+      clearInterval(r.typeTimer);
+      r.typeTimer = setTimeout(() => startTypingInterval(r), PAUSE_MS);
+    }
   }, interval);
 }
 

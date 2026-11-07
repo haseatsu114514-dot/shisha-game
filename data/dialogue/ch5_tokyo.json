@@ -104,7 +104,7 @@
     },
     {
       "dialogue_id": "ch5_steve_bond_finale",
-      "comment": "#2705 スティーブの好感度の締めくくり（第5章の東京版・友情のみ）。第3章の ch3_steve_bond_finale と同じ節目で、第3章で♥5に届かず見逃した人が Smoke & Glory で受け直す（daily/bonds.js の BOND_FINALES.steve.tokyoDialogue）。第3章で見た人は finales.steve で二度は出ない。第3章の外出・LIMEの記憶を前提にしない（見ていない人も読める）。世界を回って帰ったはじめに、練習に使ってきた素焼きを預ける。報酬（専用ハガル）は playFinale が渡す。昼にも夜にも読めるので時間帯を言わない。",
+      "comment": "#2705 スティーブの好感度の締めくくり（第5章の東京版・友情のみ）。第3章の ch3_steve_bond_finale と同じ節目で、第3章で♥5に届かず見逃した人が Smoke & Glory で受け直す（daily/bonds.js の BOND_FINALES.steve.tokyoDialogue）。第3章で見た人は finales.steve で二度は出ない。第3章の外出・LIMEの記憶を前提にしない（見ていない人も読める）。第5章では第3章のLIME交換の寄り道を前提にしないので、まだ交換していない人は「顔の知らせ」を頼まれたその場で交換する（contact の分岐 lime_exchange。第3章の ch3_steve_lime と同じ set_flag で、交換後は友人のLIME remake/data/friends.json が届く）。交換済みの人は分岐を通らない。世界を回って帰ったはじめに、練習に使ってきた素焼きを預ける。報酬（専用ハガル）は playFinale が渡す。昼にも夜にも読めるので時間帯を言わない。",
       "metadata": { "bond_finale": "steve" },
       "lines": [
         { "speaker": "", "text": "Smoke & Glory。スティーブは棚の一番上から、小さな紙袋を下ろした。" },
@@ -123,13 +123,22 @@
         { "speaker": "steve", "face": "smile", "text": "もう一個、焼いてもらう。新しいのは、客の言葉を聞きながら育てる" },
         { "speaker": "hajime", "face": "smile", "text": "……じゃあ、お借りします" },
         { "speaker": "steve", "face": "normal", "text": "ノー、ノー。借りるじゃない。ハジメのだ。……たまに、顔の知らせをくれ" },
+        { "type": "condition", "condition_type": "contact", "char_id": "steve", "next_false": "lime_exchange" },
         { "speaker": "hajime", "face": "smile", "text": "送ります。気づいた日だけ" },
         { "speaker": "steve", "face": "smile", "text": "オーケー。その一行が、一番の礼だ" },
         { "speaker": "", "text": "スティーブはマウンテンミストの箱を一つ、紙袋に足した。" },
         { "speaker": "steve", "face": "normal", "text": "葉もつけとく。最初は、俺の秒数で一度吸ってみろ。外すのは、それからだ" },
         { "speaker": "hajime", "face": "normal", "text": "（待ち方を教わったんじゃない。外していいって、言われたんだ）" },
         { "type": "apply", "stats": { "technique": 2 } }
-      ]
+      ],
+      "branches": {
+        "lime_exchange": [
+          { "speaker": "hajime", "face": "normal", "text": "知らせるなら、LIMEを交換しておきませんか" },
+          { "speaker": "steve", "face": "smile", "text": "イエス。何分目で、どんな顔だったか。一行でいい" },
+          { "type": "set_flag", "flag": "_lime_contact_steve" },
+          { "speaker": "", "text": "連絡先を交換した。スティーブは画面を確かめて、小さくうなずいた。" }
+        ]
+      }
     },
     {
       "dialogue_id": "ch5_tokyo_volk",
@@ -158,6 +167,43 @@
         { "speaker": "volk", "face": "normal", "text": "祖母のやり方だ。量は測らない" },
         { "speaker": "hajime", "face": "smile", "text": "計器だらけの店なのに" },
         { "speaker": "volk", "face": "smile", "text": "ここだけは、数字を持たない。……飲め。冷める" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_volk_bond_finale",
+      "comment": "ヴォルクの好感度の締めくくり（第5章の東京版・友情のみ）。2026-11-07 オーナー指示「ヴォルク♥5エンディングも第5章東京『鉄の煙』で出す（スティーブと揃える）」。第3章の ch3_volk_bond_finale と同じ節目で、第3章で見逃した人が鉄の煙で受け取る（daily/bonds.js の BOND_FINALES.volk.tokyoDialogue）。第3章で見た人は finales.volk で二度は出ない。必須の初来店（ch3_volk_first の紅茶とジャム・卸した先を見る仕事）だけを前提にし、第3章の再訪・LIME交換・大会後の寄り道は前提にしない。刻みの「数えるな」は、素焼きを持つと届く友人LIMEの三通目（remake/data/friends.json の「だから、数えるなと言った」）の前提なので外さない。LIMEを交換していない人もいるので連絡は約束せず、店にまた来る約束で着地する。世界大会の後・博士との勝負の前にだけ読む。昼にも夜にも読めるので時間帯を言わない。精度は捨てない（温度の隣に、客が何口目で休んだかを書く。ヴォルク自身の「温度の隣に客の時間」「何口目で休む」の言い方で、スティーブの「顔」とは重ねない）。はじめの「先に頷いて」は、専用ハガルの贈り物の理由「頷く手に」（data/equipment.json）を第3章の任意の場面を読んでいない人にも通じさせるために置く。専用ハガルと葉は playFinale が渡す。",
+      "metadata": { "bond_finale": "volk" },
+      "lines": [
+        { "speaker": "", "text": "鉄の煙。ヴォルクは手帳を閉じると、カウンターの下から木箱を出した。" },
+        { "speaker": "volk", "face": "normal", "text": "座れ。世界大会の記録は、読んだ。手に入る数字は、全部" },
+        { "speaker": "hajime", "face": "surprise", "text": "そこまで、調べたんですか" },
+        { "speaker": "volk", "face": "serious", "text": "数字では、お前の一台までは分からない" },
+        { "speaker": "volk", "face": "normal", "text": "……ドバイの店は、どうだった" },
+        { "speaker": "hajime", "face": "normal", "text": "どこも冷房が強くて、空気が乾いてました。炭が、tonariより早く白くなって" },
+        { "speaker": "volk", "face": "normal", "text": "乾いた部屋か、……書いておく" },
+        { "speaker": "", "text": "ヴォルクは手帳に一行足してから、木箱のふたを開けた。" },
+        { "speaker": "", "text": "中には、素焼きのハガルが一つ。胴に、短い線が何十本も刻んである。" },
+        { "speaker": "hajime", "face": "surprise", "text": "こんなに、線が……何本あるんですか" },
+        { "speaker": "volk", "face": "normal", "text": "数えるな。ブラストミントを作り直すたびに、一本ずつ刻んだ" },
+        { "speaker": "volk", "face": "normal", "text": "発売までの火は、これで決めた" },
+        { "speaker": "volk", "face": "serious", "text": "だが、線は発売の日で止まっている" },
+        { "speaker": "volk", "face": "normal", "text": "売った先の客がどう吸ったかは、この土には残せない" },
+        { "speaker": "hajime", "face": "normal", "text": "それで、卸した先のお店まで、見に来てるんですね" },
+        { "speaker": "volk", "face": "normal", "text": "そうだ。……お前は、海の向こうの客まで見てきた" },
+        { "speaker": "volk", "face": "normal", "text": "持っていけ。次の一本は、お前の客で刻め" },
+        { "speaker": "hajime", "face": "surprise", "text": "そんな大事な記録を、俺が？" },
+        { "speaker": "volk", "face": "normal", "text": "俺の手元では、線はもう増えない。お前の手でなら、増える" },
+        { "speaker": "", "text": "ヴォルクはナイトサイドの黒い袋を一つ、木箱の隣に置いた。ブラストミントだ。" },
+        { "speaker": "volk", "face": "serious", "text": "強い冷たさは、火の乱れを隠す。客が何口目で休んだかを、温度の隣に書け" },
+        { "speaker": "hajime", "face": "smile", "text": "はい。俺は先にお客さんに頷いて、それから書きます" },
+        { "speaker": "volk", "face": "normal", "text": "……順番は違っても、両方を書くなら構わない" },
+        { "speaker": "", "text": "紅茶のカップが二つ、カウンターに並んだ。小皿のジャムは、測らずにすくってある。" },
+        { "speaker": "hajime", "face": "normal", "text": "これも、測らないんですよね" },
+        { "speaker": "volk", "face": "normal", "text": "祖母に言われたことは、国を出ても、店を開いても変えていない" },
+        { "speaker": "volk", "face": "smile", "text": "……お前のページは、まだ余っている。また来い" },
+        { "speaker": "hajime", "face": "smile", "text": "来ます。次は、俺のお客さんの話も持ってきます" },
+        { "speaker": "hajime", "face": "normal", "text": "（測り続けてきた人から、続きを刻む役をもらったんだ）" },
+        { "type": "apply", "stats": { "technique": 2 } }
       ]
     },
     {
