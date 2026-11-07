@@ -1,0 +1,65 @@
+/* ワイドステージ（#2861）でメニュー・タイトル等を横幅いっぱいまで使う（オーナー指示 2026-11-08「メニューとかタイトルとか諸々もワイドモードへ」）。
+   #screen・#modal・#fx は base.css で中央1280（inset: 0 var(--stage-gutter)）に置かれている。ここでは画面ごとに根元の要素を
+   左右へ --stage-gutter ずつ広げ、端の部品はノッチ等を避けて --stage-safe-l/r だけ内側へ寄せる。
+   広がらない画面（PC の 1280×720 など）は --stage-gutter が 0・#stage[data-wide] も無いので見た目は変わらない。
+   DS風（body.game-ds・DS風のタイトル）はワイドステージを使わないので対象外。街マップ・LIME・会話・ミニゲームはここで扱わない。
+   会話ウインドウ（.vn-box）は広げない: 台詞の改行・改ページは今の幅で整えてあり、1行が長くなると読みにくくなる。 */
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] {
+  --wide-l: calc(-1 * var(--stage-gutter));                 /* 根元の要素を左端まで出す量 */
+  --wide-edge-l: calc(24px + var(--stage-safe-l));          /* 広げた紙・パネルの外側の余白（ノッチを避ける） */
+  --wide-edge-r: calc(24px + var(--stage-safe-r));
+  /* 中央に置く紙・パネルを左右対称に広げる量（ノッチが片側だけでも中央を保つ） */
+  --wide-grow: calc(2 * var(--stage-gutter) - 2 * max(var(--stage-safe-l), var(--stage-safe-r)));
+}
+
+/* ---------------------------------------------------------------- タイトル（通常版） */
+/* 絵と左の帯をステージの両端まで出す。メニューとロゴは左端（ノッチの内側）から同じ 70px、版表示は右下の端へ */
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .title:not([data-layout="ds"]) { inset: 0 var(--wide-l); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .title:not([data-layout="ds"]) .title-left { left: calc(70px + var(--stage-safe-l)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .title:not([data-layout="ds"]) .title-left::before { left: calc(-70px - var(--stage-safe-l)); width: calc(700px + var(--stage-safe-l) + var(--stage-gutter) / 2); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .title:not([data-layout="ds"]) .title-art { right: calc(-40px + var(--stage-safe-r)); width: calc(560px + var(--stage-gutter)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .title:not([data-layout="ds"]) .title-ver { right: calc(20px + var(--stage-safe-r)); }
+
+/* ---------------------------------------------------------------- MENU（ステータス・人間関係・持ち物・システム） */
+/* 紙を左右いっぱいに広げ、中身（右の面）が広がった分を使う。「閉じる」は紙の右上の端へ寄る。
+   紙の絵（menu-bg.webp・1536×838）は左の帯（シーシャの絵つき）と右端の枠線を伸ばさず、無地の中ほどだけを横に伸ばす（9分割）。
+   切り分けは原画の px: 左 300（帯の右の線は 290 付近）・右 64（二重の枠線は端から 2%）。表示は 1232/1536 倍で 240.6px・51.3px。
+   絵が読めないときは下の帯と紙の色（daily-menu.css と同じ）で開く */
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] #modal > .dmenu { inset: 0 var(--wide-l); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .dmenu .dm-sheet {
+  left: var(--wide-edge-l); right: var(--wide-edge-r); width: auto;
+  background: linear-gradient(90deg, transparent 38px, var(--dm-band) 38px 233px, transparent 233px), var(--dm-paper);
+  border: 0 solid transparent;
+  border-image: url("../img/ui/paper/menu-bg.webp") 0 64 0 300 fill / 0 51.33px 0 240.63px / 0 stretch;
+}
+
+/* ---------------------------------------------------------------- 設定（タイトル・MENU 共通） */
+/* 縦1列で長くスクロールしていた行を、広げた枠の2段組みにする（上から下へ読み、右の段へ続く） */
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .modal-box.cfg-modal { width: calc(1180px + var(--wide-grow)); max-width: calc(1232px + var(--wide-grow)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .cfg-modal .cfg { display: block; columns: 2; column-gap: 56px; column-rule: 1px solid var(--lavender-line, var(--panel-edge)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .cfg-modal .cfg > * { break-inside: avoid; margin-bottom: 10px; }
+
+/* ---------------------------------------------------------------- セーブ／ロード */
+/* 枠を広げ、文字と顔を一段大きく（スマホでは実寸の下限を保つ） */
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal { width: calc(620px + var(--wide-grow)); max-width: calc(1232px + var(--wide-grow)); }
+
+/* ---------------------------------------------------------------- 店の入口・1F ショップ（Dr.fookah） */
+/* パネルを左右対称に広げる。広げると右上の LIME・MENU（黒帯側の端・上から 12px）の真下に来るので、
+   スマホ規格で大きくなったボタン（--phone-tap）の下から始め、下の余白を 24→16px に詰めて高さの減りを抑える。
+   PC の横長（スマホ規格なし・ボタン 48px）は従来どおり上から 72px */
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] :is(.shop-entry, .shop.shop-paper) {
+  --shop-top: max(72px, calc(24px + var(--phone-tap, 48px)));
+  top: var(--shop-top); height: calc(704px - var(--shop-top)); width: calc(1200px + var(--wide-grow));
+}
+
+/* ---------------------------------------------------------------- ギャラリー */
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] #modal > .gal-overlay { inset: 0 var(--wide-l); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gal-overlay > .gal { width: calc(1040px + var(--wide-grow)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gal-overlay > .gal-viewer { padding-inline: var(--stage-safe-l) var(--stage-safe-r); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gal-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
+/* ---------------------------------------------------------------- 心得の盤 */
+/* 盤（のぞき窓）を広がった分だけ横に広げる。右の説明の面はそのまま。黒帯側の HUD の上も覆う */
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] #fx > .gboard { inset: 0 var(--wide-l); padding-inline: var(--stage-safe-l) var(--stage-safe-r); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gboard .gb-main { grid-template-columns: calc(760px + var(--wide-grow)) 1fr; }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gboard .gb-board { width: calc(760px + var(--wide-grow)); }
