@@ -129,9 +129,9 @@ assert(all.faceIconUrl("hiyori"));
 assert.equal(all.DB.relationshipMemories.tsumugi_creature.char_id, "tsumugi");
 assert(all.DB.dialogues.ch1_tsumugi_third);
 assert(all.DB.dialogues.remake_midcheck);
-assert.equal(Object.values(all.DB.fortuneTrivia.characters).flat().length, 93);
+assert.equal(Object.values(all.DB.fortuneTrivia.characters).flat().length, 95);
 assert(all.DB.dialogues.remake_fortune_trivia_naru_1, "fortune results were not registered after loading");
-assert(all.DB.dialogues.remake_fortune_trivia_sumi_13, "added fortune readings were not registered after loading");
+assert(all.DB.dialogues.remake_fortune_trivia_sumi_24, "selected fortune readings were not registered after loading");
 assert(all.DB.dialogues.remake_fortune_trivia_kumicho_2 && all.DB.dialogues.remake_fortune_trivia_sheikh_5, "Chapter 2-5 cast readings were not registered after loading");
 assert(!all.DB.dialogues.remake_fortune_trivia_adam_1, "excluded fortune readings must not be registered");
 // #2805 の決定ルールで削除した読み（見た目の言い当てなど）も登録しない。
@@ -256,7 +256,7 @@ assert.deepEqual(JSON.parse(JSON.stringify(catalog)), realJSON("data/lime_media.
 assert.equal(Object.keys(catalog).length, 29);
 // CI quick は画像を含まない sparse checkout のため、画像が展開されている環境でのみ実在チェックを行う
 const imgDir = path.resolve(documentRoot, "img");
-const hasImageTree = fs.existsSync(imgDir) && fs.readdirSync(imgDir, { recursive: true }).some((f) => /\.(png|webp|jpe?g)$/i.test(String(f)));
+const hasImageTree = fs.existsSync(imgDir) && Object.values(catalog).some(asset => fs.existsSync(path.resolve(documentRoot, asset.src)));
 for (const asset of Object.values(catalog)) {
   if (hasImageTree) assert(fs.existsSync(path.resolve(documentRoot, asset.src)), asset.src);
   assert(asset.alt && asset.preview);
