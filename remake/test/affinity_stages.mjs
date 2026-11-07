@@ -922,7 +922,8 @@ await check('Noor (DSR20): chapter 4 cafe finale after the cafe stages and the �
   s.flags._noor_affinity_question_done = true;
   s.affinity.noor = 65; assert.equal(bonds.finaleDue('noor'), false, 'needs ♥5');
   s.affinity.noor = 66; assert.equal(bonds.finaleDue('noor'), true);
-  s.chapter = 5; assert.equal(bonds.finaleDue('noor'), false, 'Cafe Salim is only on the chapter 4 map');
+  s.chapter = 5; assert.equal(bonds.finaleDue('noor'), true, 'Cafe Salim is on the chapter 5 Dubai map too (owner 2026-11-07)');
+  s.chapter = 3; assert.equal(bonds.finaleDue('noor'), false, 'no Cafe Salim outside chapters 4-5');
   assert.equal(await bonds.playFinale('noor'), false); s.chapter = 4;
   assert.equal(bonds.romanceOpen('noor'), true, 'the last question is asked only while every answer leans romantic');
   // 最後の問いで「二人で」を選ぶ（engine の onChoice → recordRomanceChoice）

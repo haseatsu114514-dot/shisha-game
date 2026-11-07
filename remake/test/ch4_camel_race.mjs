@@ -6,7 +6,7 @@ import { advanceToChapterFour, completeChapterFourScene, endChapterFourDay, CH4_
 import { chapterFourMapModel } from "../js/chapters/ch4-map-model.js";
 import { CAMEL_FLAG, CAMEL_SCENES, CH4_CAMEL_SCENE_FILES, CAMEL_STAGES, camelRaceRecord, camelRaceDestination, camelRaceOpen,
   recordCamelRaceResult, consumeCamelRaceDaytime, advanceCamelRaceStage, resultSceneFor, camelSceneBg, CAMEL_TRACK_BG, CAMEL_SHOP_BG,
-  CAMEL_DAILY_SPOT_ID, camelDailySpot, availableCamelCups } from "../js/chapters/ch4-camel-progress.js";
+  CAMEL_DAILY_SPOT_ID, camelDailySpot, availableCamelCups, CH5_CAMEL_MEET, chapterFiveCamelMeetDue, advanceChapterFiveCamelMeet } from "../js/chapters/ch4-camel-progress.js";
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
 import { newGrowth, claimPlayRewards } from "../js/core/growth.js";
 import { simulateRace, camelMastered, camelExpert, CAMEL_CUPS } from "../js/minigames/camel-race-model.js";
@@ -220,8 +220,8 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   assert.deepEqual(capped.parts, [], "at the cap mastery is recorded without a false +1");
   assert.equal(cap.rewards["camel-master"], true);
 }
-// 第5章でドバイにいる日（chapters/ch5-dubai.js）: 第4章で一度でも走った人だけ、練習レースへまた通える。
-// 店先の出会い・誘い・本番の見学（「大会の人だ」「宿の前に迎えに行く」）は第4章の話なので、第5章では始めない。日付は通算の value.day。
+// 第5章でドバイにいる日（chapters/ch5-dubai.js）: 第4章で一度でも走った人は、練習レースへまた通える。走っていない人は第5章の店先から
+// （2026-11-07 オーナー決定）。第4章の店先の場面（「大会の人だ」「宿の前に迎えに行く」）は第5章では読まない。日付は通算の value.day。
 {
   const fields = { region: "dubai", kind: "ch5_dubai", stamina: 0 };
   const raced = { stage: CAMEL_STAGES.unlocked, meetDay: 47, inviteDay: 48, watched: true, plays: 1, lastPlayDay: 49,
@@ -252,15 +252,44 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   assert.equal(camelDailySpot(value, fields).unavailable, "");
   value.slot = 1;
   assert.equal(camelDailySpot(value, fields).unavailableTag, "レースは昼だけ");
-  // 第4章で走っていない人（知らない・知り合っただけ・誘われただけ・本番を見ただけ）には、第5章で出ない
-  for (const camel of [null, { stage: 0 }, { stage: 1, meetDay: 47 }, { stage: 2, inviteDay: 48 }, { stage: 2, inviteDay: 48, watched: true }]) {
+  assert.equal(chapterFiveCamelMeetDue(value), false, "a Chapter 4 racer needs no shop-front meeting");
+  // 2026-11-07 オーナー決定「第4章のラクダレースを飛ばしたプレイヤーも、第5章側で前提を補ってルートに入れる」:
+  // 第4章で走っていない人（知らない・知り合っただけ・誘われただけ・本番を見ただけ）は、第5章では店先の場面（時間は使わない）から。
+  // 読み終えると誘われた段階になり、翌日以降の昼にレース場（宿ではなく店の前で待ち合わせ）。本番を見た記録は残す。
+  for (const camel of [null, { stage: 0 }, { stage: 1, meetDay: 47 }, { stage: 2, meetDay: 47, inviteDay: 48 }, { stage: 2, meetDay: 47, inviteDay: 48, watched: true }]) {
+    const label = JSON.stringify(camel);
     value = chapterFive(camel);
-    assert.equal(camelRaceOpen(value), false, JSON.stringify(camel));
-    assert.equal(camelRaceDestination(value), null, JSON.stringify(camel));
-    assert.equal(camelDailySpot(value, fields), null, JSON.stringify(camel));
+    assert(camelRaceOpen(value), label);
+    assert(chapterFiveCamelMeetDue(value), label);
+    const meet = camelRaceDestination(value);
+    assert.deepEqual([meet.ok, meet.consumes, meet.label], [true, false,
+      (camel?.stage || 0) === 0 ? "Dr.fookah ドバイ店の店先で、店員と話す" : "Dr.fookah ドバイ店で、ファーリスに顔を出す"], label);
+    spot = camelDailySpot(value, fields);
+    assert.deepEqual([spot.label, spot.x, spot.y, spot.preview, spot.unavailable, spot.hasNew()], ["Dr.fookah の店先", 46, 42, CAMEL_SHOP_BG, "", true], label);
+    assert.doesNotMatch(spot.desc, /宿|大会/, label);
+    assert.equal(advanceChapterFiveCamelMeet(value), true, label);
+    assert.equal(advanceChapterFiveCamelMeet(value), false, `${label}: only once`);
+    const after = camelRaceRecord(value);
+    assert.deepEqual([after.stage, after.inviteDay, after.watched, after.meetDay], [CAMEL_STAGES.invited, 60, camel?.watched === true, camel?.meetDay ?? 60], label);
+    assert.equal(value.flags[CH5_CAMEL_MEET.flag], true, label);
+    assert.equal(chapterFiveCamelMeetDue(value), false, label);
+    spot = camelDailySpot(value, fields);
+    assert.deepEqual([spot.label, spot.unavailable, spot.unavailableTag], ["ラクダレース場", "レースは明日の朝。六時に店の前で待ち合わせ", "レースは明日の朝"], label);
+    value.day = 61;
+    const race = camelRaceDestination(value);
+    assert.deepEqual([race.ok, race.consumes], [true, true], `${label}: the next daytime goes to the track`);
+    assert.equal(camelDailySpot(value, fields).hasNew(), true, label);
   }
+  // 第4章は今までどおり（宿の前で迎えに来てくれる）。第5章の店先の判定は第4章では立たない
+  value = newState();
+  Object.assign(value, { chapter: 4, phase: "daily", day: 48, slot: 0 });
+  value.flags[CAMEL_FLAG] = { stage: CAMEL_STAGES.invited, meetDay: 47, inviteDay: 48 };
+  assert.equal(camelRaceDestination(value).why, "レースは明日の朝。宿の前で迎えに来てくれる", "Chapter 4 keeps the inn pick-up line");
+  assert.equal(chapterFiveCamelMeetDue(value), false);
+  assert.equal(advanceChapterFiveCamelMeet(value), false, "the Chapter 5 meeting never advances a Chapter 4 save");
   // 第5章でも、ドバイ以外（地元・隣町・東京）や自由行動の外では出ない。ほかの章の値でも開かない
   for (const region of ["home", "widehanga", "tokyo", null]) assert.equal(camelDailySpot(chapterFive(raced, region), fields), null, String(region));
+  for (const region of ["home", "widehanga", "tokyo", null]) assert.equal(camelDailySpot(chapterFive(null, region), fields), null, `never raced, ${region}`);
   value = chapterFive(raced); value.phase = "tournament";
   assert.equal(camelRaceDestination(value), null, "not on the match day");
   for (const chapter of [3, 6]) { value = chapterFive(raced); value.chapter = chapter; assert.equal(camelRaceOpen(value), false, `chapter ${chapter}`); }
@@ -271,6 +300,30 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   assert.deepEqual([...new Set(reunion.lines.map(line => line.speaker).filter(Boolean))].sort(), ["faris", "hajime", "khalil"]);
   for (const line of reunion.lines) if (line.speaker) assert(characters.has(line.speaker), line.speaker);
   assert.doesNotMatch(reunion.lines.map(line => line.text).join(""), /大会|王者|優勝|世界一|シェイク|宿/, "the reunion stays off the tournament and the inn");
+  // 第5章の店先の場面: 第4章の段階（一時の印 _ch5_camel_known。0 会っていない・1 知り合った／誘われた・2 本番を見た）で分ける
+  const shop = readData("dialogue/ch5_dubai").dialogues.find(row => row.dialogue_id === CH5_CAMEL_MEET.scene);
+  assert(shop, "ch5_dubai_camel_meet exists");
+  const known = shop.lines[0];
+  assert.deepEqual([known.type, known.condition_type, known.flag, known.threshold, known.next_true, known.next_false],
+    ["condition", "flag_count", "_ch5_camel_known", 1, "again", "first"]);
+  for (const key of ["first", "again"]) assert(shop.branches[key]?.length >= 3, key);
+  assert(shop.branches.first.some(line => line.type === "set_flag" && line.flag === "_met_faris"), "the first meeting introduces Faris");
+  const watched = shop.branches.again.find(line => line.type === "condition");
+  assert.deepEqual([watched.condition_type, watched.flag, watched.threshold], ["flag_count", "_ch5_camel_known", 2]);
+  for (const key of [watched.next_true, watched.next_false]) assert(shop.branches[key]?.length, key);
+  assert.match(JSON.stringify(shop.branches[watched.next_false]), /ロボット/, "players who never saw a race hear about the robot jockeys");
+  assert.match(JSON.stringify(shop.branches[watched.next_true]), /理解の早い子/, "players who saw the race are remembered by Khalil");
+  const shopRows = [shop.lines, ...Object.values(shop.branches)].flat();
+  assert.deepEqual([...new Set(shopRows.map(line => line.speaker).filter(Boolean))].sort(), ["faris", "hajime"]);
+  assert.doesNotMatch(JSON.stringify(shopRows), /大会|王者|優勝|世界一|シェイク|宿/, "the Chapter 5 shop front stays off the tournament and the inn");
+  assert.equal(classifyFlag(CH5_CAMEL_MEET.flag), "progression");
+  assert.equal(classifyFlag("_ch5_camel_known"), "progression");
+  // ch5-dubai.js: 店先の場面は一時の印を立てて読み、後で消す。会い直したので、レース場の前の再会（日本に帰ったんじゃ…）は読まない
+  const ch5Dubai = readFileSync(new URL("../js/chapters/ch5-dubai.js", import.meta.url), "utf8");
+  assert.match(ch5Dubai, /if \(chapterFiveCamelMeetDue\(owner\)\) return meetFarisAtShop\(owner\)/);
+  assert.match(ch5Dubai, /owner\.flags\[CH5_CAMEL_KNOWN\] = camel\.stage === CAMEL_STAGES\.unknown \? 0 : camel\.watched \? 2 : 1/);
+  assert.match(ch5Dubai, /delete owner\.flags\[CH5_CAMEL_KNOWN\]/);
+  assert.match(ch5Dubai, /owner\.flags\[CAMEL_AGAIN\.flag\] = true/);
 }
 console.log("ch4_camel_race: ok");
 
