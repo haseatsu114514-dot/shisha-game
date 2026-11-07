@@ -1,16 +1,17 @@
 // 巻頭ポエム（序詩＋第1〜5章）の台本と接続点の検査。ブラウザ不要。
-//  1) data/dialogue/chapter_poems.json の形・組版（1ページ1視覚行）・使ってはいけない記法と語
+//  1) data/dialogue/chapter_poems.json の形（1行 = 詩の1行・連の切れ目 gap）・縦書きの1列に収まる長さ・ふりがな記法・使ってはいけない語
 //  2) brand/chant_poems.md の詩と台本が（空白を除いて）一致している＝文書と本編がずれない
-//  3) 各章の章タイトルの直後に詩が置かれ、データローダに登録されている
+//  3) 各章の章タイトルの直前に詩が置かれ、データローダ・スタイルシートに登録されている
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { autoWrap, paginate } from "../js/vn/text.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
 const squash = (text) => text.replace(/\s+/g, "");
+const RUBY = /([\p{Script=Han}々]+)《([^》]+)》/gu;
+const plain = (text) => text.replace(RUBY, "$1");
 
 const EXPECTED = [
   ["poem_prologue", "### 序詩「煙前口上」"],
@@ -20,8 +21,10 @@ const EXPECTED = [
   ["poem_ch4", "### 第4章「継承の煙」"],
   ["poem_ch5", "### 第5章「機械仕掛けの神」"],
 ];
+// 縦書きの1列（高さ720pxの画面の78%・30px・字間.16em）に入る字数。空白（拍）は半角で0.5字。
+const MAX_COLUMN = 16;
 
-// 1) 台本の形と組版 --------------------------------------------------------
+// 1) 台本の形 --------------------------------------------------------------
 const data = JSON.parse(read("data/dialogue/chapter_poems.json"));
 assert.deepEqual(data.dialogues.map((d) => d.dialogue_id), EXPECTED.map(([id]) => id), "台詞IDと順序");
 
@@ -31,16 +34,22 @@ const FROM_ORIGINAL = ["万象", "灰燼", "君臨者", "卍解", "斬魄", "鬼
 const RESERVED = ["混ざったままで", "EN:CODE", "ENCODE"];
 
 for (const dialogue of data.dialogues) {
-  assert.ok(dialogue.lines.length >= 6 && dialogue.lines.length <= 14, `${dialogue.dialogue_id}: ページ数 ${dialogue.lines.length}`);
+  const id = dialogue.dialogue_id;
+  assert.ok(dialogue.lines.length >= 5 && dialogue.lines.length <= 8, `${id}: 行数 ${dialogue.lines.length}（5〜8行。長くしない）`);
+  assert.equal(dialogue.lines[0].gap, undefined, `${id}: 最初の行に gap は付けない`);
+  assert.ok(dialogue.lines.some((line) => line.gap === true), `${id}: 連の切れ目が1つ以上ある`);
   for (const [index, line] of dialogue.lines.entries()) {
-    const where = `${dialogue.dialogue_id}[${index}]`;
+    const where = `${id}[${index}]`;
     assert.equal(line.speaker, "", `${where}: 地の文（話者なし）`);
     assert.ok(line.text.trim() && line.text === line.text.trim(), `${where}: 空・前後の空白`);
-    assert.ok(!line.text.includes("\n"), `${where}: 手動改行を入れない`);
-    assert.ok(!/[《》｜]/.test(line.text), `${where}: ふりがな記法は台詞では描画されない`);
-    assert.ok(!/[。]$/.test(line.text), `${where}: 詩は句点で終えない`);
-    assert.equal(paginate(line.text).length, 1, `${where}: 1ページに収める`);
-    assert.ok(!autoWrap(line.text).includes("\n"), `${where}: 1行に収める（折れると語の途中で割れる）: ${line.text}`);
+    assert.ok(!line.text.includes("\n"), `${where}: 行の中に改行を入れない（1行 = 1要素）`);
+    assert.ok(!/。$/.test(line.text), `${where}: 詩は句点で終えない`);
+    assert.ok(line.gap === undefined || line.gap === true, `${where}: gap は true だけ`);
+    // ふりがな記法は「漢字《よみ》」だけ。壊れた《》を残さない。
+    assert.equal((line.text.match(/《/g) || []).length, [...line.text.matchAll(RUBY)].length, `${where}: ふりがな記法が壊れている`);
+    assert.ok(!/[｜》]/.test(plain(line.text)) && !/《/.test(plain(line.text)), `${where}: 記法の取り残し`);
+    const width = [...plain(line.text)].reduce((n, ch) => n + (ch === " " ? 0.5 : 1), 0);
+    assert.ok(width <= MAX_COLUMN, `${where}: 縦書きの1列に収まらない（${width}字）: ${line.text}`);
     for (const word of [...FROM_ORIGINAL, ...RESERVED]) assert.ok(!line.text.includes(word), `${where}: 使わない語「${word}」`);
   }
 }
@@ -54,6 +63,9 @@ for (const [id, heading] of EXPECTED) {
   assert.ok(block, `文書に詩のブロックがない: ${heading}`);
   const dialogue = data.dialogues.find((d) => d.dialogue_id === id);
   assert.equal(squash(dialogue.lines.map((l) => l.text).join("")), squash(block[1]), `${id}: 台本と文書の詩がずれている`);
+  // 連の切れ目も文書の空行と一致
+  const gaps = block[1].split("\n\n").length - 1;
+  assert.equal(dialogue.lines.filter((l) => l.gap).length, gaps, `${id}: 連の切れ目が文書の空行とずれている`);
 }
 // 技型（煙道・起動句）は削除済み。巻頭ポエムに一本化（ミューズ判断 2026-11-08）
 for (const word of ["## 5. 煙道", "## 6. 起動句"]) assert.ok(!doc.includes(word), `文書に技型が残っている: ${word}`);
@@ -64,9 +76,12 @@ assert.equal((narration.match(/^\d+\. /gm) || []).length, 10, "一行ナレー�
 
 // 3) 接続点 ----------------------------------------------------------------
 assert.match(read("remake/js/core/data.js"), /DIALOGUE_FILES = \[[\s\S]*"chapter_poems"[\s\S]*?\];/, "データローダに chapter_poems がない");
-
-const ids = fs.readFileSync(path.join(root, "remake/js/scenes/chapter-poem.js"), "utf8");
-for (const [id] of EXPECTED) assert.ok(ids.includes(`"${id}"`), `chapter-poem.js に ${id} がない`);
+assert.match(read("remake/index.html"), /<link rel="stylesheet" href="css\/motions\/chapter-poem\.css">/, "index.html にスタイルシートがない");
+assert.ok(fs.existsSync(path.join(root, "remake/css/motions/chapter-poem.css")), "スタイルシートがない");
+const module = read("remake/js/scenes/chapter-poem.js");
+for (const [id] of EXPECTED) assert.ok(module.includes(`"${id}"`), `chapter-poem.js に ${id} がない`);
+assert.match(module, /vnTest\.turbo/, "テストの自動送り（vnTest.turbo）に従う");
+assert.match(module, /reducedMotion\(\)/, "動き軽減に従う");
 
 function indexesOf(source, needle) {
   const found = [];
@@ -88,16 +103,17 @@ for (const [file, titleCall, poemCall, count] of WIRING) {
   const poems = indexesOf(source, poemCall);
   assert.equal(titles.length, count, `${file}: 章タイトルの呼び出し数`);
   assert.equal(poems.length, count, `${file}: 詩の呼び出し数`);
-  // 詩は、その直前にある章タイトルより後で、次の titleSeen / 進行保存より前に置く（再開時に繰り返さない）
+  // 詩は、対応する章タイトルの直前（前の章タイトルより後）に置き、titleSeen を立てる前に読み終える（再開時に繰り返さない）
   for (const [i, title] of titles.entries()) {
-    assert.ok(poems[i] > title, `${file}: 詩は章タイトルの後（${i + 1}つ目）`);
+    assert.ok(poems[i] < title, `${file}: 詩は章タイトルの前（${i + 1}つ目）`);
+    assert.ok(i === 0 || poems[i] > titles[i - 1], `${file}: 詩は前の章タイトルより後（${i + 1}つ目）`);
     const seen = source.indexOf("titleSeen = true", title);
     assert.ok(seen < 0 || poems[i] < seen, `${file}: 詩は titleSeen を立てる前（${i + 1}つ目）`);
   }
 }
-// 序詩は第1章のコールドオープンの前、章タイトルの前
+// 第1章: 序詩 → コールドオープン → 第1章の詩 → 章タイトル
 const ch1 = read("remake/js/chapters/ch1.js");
-const prologue = ch1.indexOf('playChapterPoem("prologue")');
-assert.ok(prologue > 0 && prologue < ch1.indexOf("mountColdOpen()") && prologue < ch1.indexOf("playCh1Title()"), "序詩はコールドオープンの前");
+const order = ['playChapterPoem("prologue")', "mountColdOpen()", "playChapterPoem(1)", "playCh1Title()"].map((needle) => ch1.indexOf(needle));
+assert.ok(order.every((at) => at > 0) && order.every((at, i) => i === 0 || at > order[i - 1]), `第1章の順序が違う: ${order}`);
 
-console.log("chapter_poems OK: 6本 / %d ページ", data.dialogues.reduce((n, d) => n + d.lines.length, 0));
+console.log("chapter_poems OK: 6本 / %d 行", data.dialogues.reduce((n, d) => n + d.lines.length, 0));

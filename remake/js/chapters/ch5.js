@@ -151,9 +151,9 @@ async function openChapter(advance) {
     if (progress.part === "prologue" && !progress.titleSeen) {
       await setBg(bgUrl(CH5_SCENE_BG[CH5_PROLOGUE[0].id]), { instant: true });
       if (!current(owner)) return;
+      if (!await playChapterPoem(5, { owner, current })) return; // 章タイトルの前の巻頭ポエム
       await chapterTitle(CHAPTER_TITLE_ART.find(entry => entry.chapter === 5));
       if (!current(owner)) return;
-      if (!await playChapterPoem(5, { owner, current })) return; // 章タイトルの直後の巻頭ポエム
       progress.titleSeen = true;
       save();
     }

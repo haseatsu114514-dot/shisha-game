@@ -31,7 +31,7 @@ await suite("ch1-preview",async check=>{
       }}).observe(document.getElementById('fx'),{childList:true,subtree:true});
       await(await import('./js/chapters/ch1.js')).showClear();
     });
-    // 章タイトルの直後に第2章の巻頭ポエム（poem_ch2）が続くので、会話は自動送りにして titleSeen まで進める。
+    // 章タイトルの直前に第2章の巻頭ポエム（poem_ch2）が出る。自動送り（turbo）では演出を飛ばし、titleSeen まで進める。
     await page.evaluate(async()=>{(await import('./js/vn/engine.js')).vnTest.turbo=true;});
     await page.locator('[data-test="end-chapter2"]').click();
     const title=page.locator('.chapter-card.show[data-chapter="第二章"]');await title.waitFor({timeout:30000});

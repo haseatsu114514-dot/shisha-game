@@ -228,9 +228,9 @@ async function openChapter(advance) {
     if (!progress.titleSeen) {
       await setBg(bgUrl("bg_street_day"), { instant: true });
       if (!current(owner)) return;
+      if (!await playChapterPoem(3, { owner, current })) return; // 章タイトルの前の巻頭ポエム
       await chapterTitle(chapterTitleEntry(3)); // 登録済みの章題（第4・5章と同じ・#2688 F6）
       if (!current(owner)) return;
-      if (!await playChapterPoem(3, { owner, current })) return; // 章タイトルの直後の巻頭ポエム
       progress.titleSeen = true;
       save();
     }
@@ -274,9 +274,9 @@ async function renderPrologue(owner) {
     save();
   }
   if (progress.prologueStep === 2) {
+    if (!await playChapterPoem(3, { owner, current })) return; // 章タイトルの前の巻頭ポエム
     await chapterTitle(chapterTitleEntry(3)); // 登録済みの章題（第4・5章と同じ・#2688 F6）
     if (!current(owner)) return;
-    if (!await playChapterPoem(3, { owner, current })) return; // 章タイトルの直後の巻頭ポエム
     progress.titleSeen = true;
     progress.prologueStep = 3;
     save();
@@ -315,9 +315,9 @@ async function renderPrep(owner) {
     save();
   }
   if (prep.step === 2) {
+    if (!await playChapterPoem(3, { owner, current })) return; // 章タイトルの前の巻頭ポエム
     await chapterTitle(chapterTitleEntry(3)); // 登録済みの章題（第4・5章と同じ・#2688 F6）
     if (!current(owner)) return;
-    if (!await playChapterPoem(3, { owner, current })) return; // 章タイトルの直後の巻頭ポエム
     progress.titleSeen = true;
     prep.step = 3;
     save();

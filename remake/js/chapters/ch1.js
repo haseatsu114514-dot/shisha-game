@@ -160,9 +160,9 @@ async function openingPart() {
     await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
     scene.stop();
     await sleep(600);
+    if (!await playChapterPoem(1) || state !== owner) return false; // 章タイトルの前の巻頭ポエム
     const titleResult = await playCh1Title();
     if (titleResult.cancelled || state !== owner) return false;
-    if (!await playChapterPoem(1) || state !== owner) return false; // 章タイトルの直後の巻頭ポエム
     playBgm("tonari");
     await playTonariOpening();
     progress.introDone = true;

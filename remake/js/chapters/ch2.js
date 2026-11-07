@@ -146,9 +146,9 @@ async function continueDayOne() {
     if (stage === "departure") {
       if (!progress().titleSeen) {
         await setBg(bgUrl("bg_tonari_inside", "day"), { instant: true });
+        if (!await playChapterPoem(2, { owner, current })) return; // 章タイトルの前の巻頭ポエム
         await chapterTitle(chapterTitleEntry(2)); // 登録済みの章題（#2688 F6）
         if (!current(owner)) return;
-        if (!await playChapterPoem(2, { owner, current })) return; // 章タイトルの直後の巻頭ポエム
         progress().titleSeen = true;
         save();
       }
