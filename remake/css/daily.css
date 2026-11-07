@@ -1757,6 +1757,10 @@ body:not(.game-ds) #hud .dc-row.money::before {
 body:not(.game-ds) #hud .dc-row:not(.money) { --hud-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 2h12v2h4v3a5 5 0 0 1-4.6 5A6 6 0 0 1 13 15.9V19h4v3H7v-3h4v-3.1A6 6 0 0 1 6.6 12 5 5 0 0 1 2 7V4h4V2Zm0 4H4v1a3 3 0 0 0 2.2 2.9A6 6 0 0 1 6 9V6Zm12 0v3a6 6 0 0 1-.2.9A3 3 0 0 0 20 7V6h-2Z'/%3E%3C/svg%3E"); }
 body:not(.game-ds) #hud .hud-card .hud-stamina { --hud-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21.4 10.6 20C5.4 15.4 2 12.3 2 8.5 2 5.4 4.4 3 7.5 3c1.7 0 3.4.8 4.5 2.1A6 6 0 0 1 16.5 3C19.6 3 22 5.4 22 8.5c0 3.8-3.4 6.9-8.6 11.5L12 21.4Z'/%3E%3C/svg%3E"); }
 body:not(.game-ds) #hud .hud-card .hud-stamina::before { color: #d9586a; }
+/* ハートの印は「Lv.1」のラベルと同じ幅の箱に左寄せで置き、体力と経験値のゲージの始まりをそろえる（#2917 の規則・オーナー指示 2026-11-08）。
+   スマホ規格では「Lv.1」が 2.9em（--phone-sub）になるので、印の箱もそれに合わせる。 */
+body:not(.game-ds) #hud .hud-card .hud-stamina::before { width: 40px; -webkit-mask-position: left center; mask-position: left center; }
+html:root[data-density="phone"] body:not(.game-ds) #hud .hud-card .hud-stamina::before { width: calc(var(--phone-sub) * 2.9); height: var(--phone-sub); }
 body:not(.game-ds) #hud :is(.dc-row.money, .dc-row:not(.money)) b { font-size: max(24px, var(--mui-text)); line-height: 1; }
 /* 日付の列は幅を固定（中身で札が動かない）。スマホは「☀残り2」が下限の文字で収まる幅まで広げる。 */
 body:not(.game-ds) #hud .dc-main { width: max(58px, var(--mui-text) * 4); }
