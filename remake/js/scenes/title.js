@@ -15,6 +15,7 @@ import { loadWithRecovery } from "./saves.js";
 import { pickTitleArt, prepareTitleArt } from "./title-art.js";
 import { mountTitleLayout, createTitleLayoutSettings } from "./title-layout.js";
 import { createUiThemeSelect } from "../core/ui-theme.js";
+import { fullscreenButton, saveTransferRow } from "./save-transfer.js";
 
 let titleRevision = 0;
 
@@ -357,6 +358,7 @@ export async function openConfig(opts = {}) {
   });
   // タイトルの見た目（通常版／DS風）。タイトル画面から開いたときだけ出す（#2863: 右上の「表示設定」から移した）。
   const titleLayout = createTitleLayoutSettings();
+  const fullscreen = fullscreenButton();
   return modal({
     title: "設定",
     body: el("div.cfg", [
@@ -375,6 +377,8 @@ export async function openConfig(opts = {}) {
       row("文字送りの声", blip),
       row("見た演出を短く", shortSeen),
       row("能力の効き目を色で表示", effectColors),
+      ...(fullscreen ? [el("div.cfg-row", [el("span", { text: "全画面" }), fullscreen])] : []),
+      saveTransferRow(),
     ]),
     options: [{ label: "閉じる", value: true, primary: true, test: "cfg-close" }],
     className: "cfg-modal",

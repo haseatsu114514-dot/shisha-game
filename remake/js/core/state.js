@@ -575,6 +575,10 @@ export function readSlot(key) {
     return null;
   }
 }
+/** 外から受け取ったセーブが、読み込みと同じ移行を通せるか（保存はしない。形式は変えない） */
+export function isLoadableSave(s) {
+  try { return !!migrate(s); } catch { return false; }
+}
 /** 全枠のうち savedAt が最新のセーブ（同点・欠落は SAVE_SLOTS 順で先のもの）。無ければ null */
 export function peekLatestSave() {
   let best = null, bestAt = -Infinity;

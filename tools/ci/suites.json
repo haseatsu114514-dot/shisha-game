@@ -665,6 +665,12 @@
       ]
     },
     {
+      "id": "slim-deploy",
+      "title": "Pages deploy drops only originals shown as WebP and dev folders",
+      "kind": "quick",
+      "run": ["node remake/test/slim_deploy.mjs"]
+    },
+    {
       "id": "stamp-deploy",
       "title": "Pages deploy version stamp on the real index.html and CSS",
       "kind": "quick",
@@ -3010,11 +3016,14 @@
         "remake/test/browser/hiyori_axe_natural.mjs",
         "tools/check_legacy_terms.py",
         "remake/test/browser/save_load.mjs",
+        "remake/js/scenes/save-transfer.js",
+        "remake/test/browser/save_transfer.mjs",
         "remake/js/chapters/ch2*.js",
         "remake/js/chapters/ch3*.js"
       ],
       "run": [
-        "node remake/test/browser/save_load.mjs"
+        "node remake/test/browser/save_load.mjs",
+        "node remake/test/browser/save_transfer.mjs"
       ]
     },
     {

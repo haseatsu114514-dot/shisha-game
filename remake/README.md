@@ -269,6 +269,7 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
 公開時に `tools/stamp_deploy.py` が版の名札を付ける（本体JSを `js-<版>/` へ、CSS に `?v=<版>`、`build.json` に版と公開日時）。
 起動時に `build.json` をキャッシュなしで読み、古い版が出ていたら新しい版の URL で開き直す。遊んでいる途中にタブへ戻って新版があれば、上に更新の知らせを出すだけ。
 今の版はタイトル右下の `ver. 公開日時 (コミット)`（手元は `ver. dev`）。画像・音の URL は変えない。確認は `node remake/test/stamp_deploy.mjs`。
+公開物は配備の最後に `tools/slim_deploy.py` が軽くする（WebP 版で表示している元PNGと `test/`・`tools/` を外す。`assets/` を直接書いている画像は残す）。確認は `node remake/test/slim_deploy.mjs`。
 
 ## セーブ
 

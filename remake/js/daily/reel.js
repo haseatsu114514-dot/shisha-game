@@ -534,10 +534,7 @@ function cabinetParts(lamp, machine) {
 }
 
 function buildWidget() {
-  const lamp = el("button.rw-lamp", { title: "MOKUMOKUパッキー（タップでスロットノート）", dataset: { test: "reel-lamp" }, onclick: () => {
-    if (bonusWait) settleBonus(bonusWait, false);
-    else if (!busy) openNote();
-  } }, [pakkiFace()]);
+  const lamp = el("button.rw-lamp", { title: "MOKUMOKUパッキー（タップでスロットノート）", dataset: { test: "reel-lamp" } }, [pakkiFace()]);
   const machine = el("div.rw-machine");
   machine.innerHTML = STRIPS.map((strip) =>
     `<div class="rw-reel"><div class="rw-strip" style="--loop:${-CELL * strip.length}px">${strip.concat(strip, strip).map((s) => `<div class="rw-cell">${SYM[s]()}</div>`).join("")}</div></div>`).join("");
@@ -545,6 +542,11 @@ function buildWidget() {
     ...cabinetParts(lamp, machine),
     el("div.rw-bubble"),
   ]);
+  // 押せる範囲はランプの外側まで広げる（スマホ横持ちで実寸44px・#2840）。ランプ本体のタップもここへ届く
+  w.querySelector(".rw-lamp-wrap").onclick = () => {
+    if (bonusWait) settleBonus(bonusWait, false);
+    else if (!busy) openNote();
+  };
   return w;
 }
 const strips = () => [...widget.querySelectorAll(".rw-strip")];
@@ -776,10 +778,10 @@ function benefitLine(r) {
   // xp=0 の上限到達時も経験値の結果。表示時のモードで保存済みの報酬を読み替えない。
   if (typeof r.xp === "number") {
     if (!(r.xp > 0)) return "経験値はもう上限だよ！";
-    return r.xp >= 200 ? "経験値がどーんと入ったよ！" : r.xp >= 90 ? "経験値がぐーんと入ったよ！" : "経験値がちょっと入ったよ！";
+    return r.xp >= 200 ? "経験値がどーん！" : r.xp >= 90 ? "経験値がぐーん！" : "経験値がちょっと！";
   }
   const amt = r.exp >= 6 ? "ぐーんと" : r.exp >= 4 ? "かなり" : r.exp >= 2 ? "ちょっと" : "少し";
-  return r.target ? `【${STAT_JA[r.target]}】が${amt}上がったよ！` : `${amt}上がったよ！`;
+  return r.target ? `【${STAT_JA[r.target]}】が${amt}上がった！` : `${amt}上がった！`;
 }
 const CEILING_HINTS = {
   far: ["……近いかも？", "そろそろ？", "む、来そう", "気配がする……", "んん？", "ボクの勘が……"],
@@ -819,7 +821,7 @@ async function afterStop(r, fast, pres = null) {
           const reel = state.reel, host = widget;
           if (alive() && !reel.learned?.ceiling) {
             await sleep(1500);
-            await learnOnce("ceiling", "こんな気配のあとは、近々かならず光るよ！", reel, host);
+            await learnOnce("ceiling", "この気配のあとは必ず光るよ！", reel, host);
           }
         } else if (Math.random() < 0.04) bubble(pick(RARE_MISS), 2200);
         else bubble(pick(FUN_MISS), 1400);
@@ -843,7 +845,7 @@ async function afterStop(r, fast, pres = null) {
         return;
       }
       await sleep(fast ? 0 : 600);
-      return peka(r, fast, false, "えっ、チェリーと一緒に光った！？");
+      return peka(r, fast, false, "チェリーで光った！？");
     case "bell":
       SE.reelWin();
       if (!fast) { bubble("パインッ！", 800); setTimeout(() => bubble(benefitLine(r), 1500), 850); }
@@ -867,7 +869,7 @@ async function afterStop(r, fast, pres = null) {
 async function presentPreAnnounce(r) {
   lampOn(false);
   SE.puka();
-  bubble("先ペカッ！ このまま7を狙って！", 0);
+  bubble("先ペカッ！ 7を狙って！", 0);
   await sleep(900);
   await new Promise((resolve) => settleBonus({ ...r, done: resolve }, false, "pre"));
 }
@@ -916,7 +918,7 @@ function settleBonus(b, fast, mode = "post") {
         // 揃え・報酬表示と設定示唆が終わってから。次の演出も補足の終了を待つ。
         if (b.zone && state.reel === reel && widget === host && alive() && !reel.learned?.zone) {
           await sleep(learningDelay);
-          await learnOnce("zone", "パッキータイムのあいだは、当たりが近づきやすいよ！", reel, host);
+          await learnOnce("zone", "パッキータイムは当たりが近いよ！", reel, host);
         }
       }
     } catch (e) {
@@ -1093,7 +1095,7 @@ async function presentFreeze(r) {
   await sleep(2400);
   cut.remove();
   lampOff();
-  bubble("殿堂入り！スロットノートに刻まれた", 3000);
+  bubble("殿堂入り！ ノートに刻んだよ", 3000);
   announce(r);
 }
 
@@ -1204,34 +1206,24 @@ export function openNote() {
       el("tr", [el("th", { text: "現在のハマり" }), el("td", { text: `${s.current}G` }), el("td")]),
       el("tr", [el("th", { text: "最大ハマり" }), el("td", { text: `${s.maxGap}G` }), el("td")]),
     ]);
+    // 連チャンは何連目かの数字だけ（×3）。履歴は新しい順なので、古い側へ続く連の数を数える
+    const renCount = (i) => { let n = 1; while (s.history[i]?.ren) { n += 1; i += 1; } return n; };
     const history = s.history.length
-      ? el("ol.rn-history", s.history.map((h) => el(`li.k-${h.kind.toLowerCase()}`, [
-        el("b", [h.kind, h.ren ? el("span.rn-ren", { text: "連" }) : null]),
+      ? el("ol.rn-history", s.history.map((h, i) => el(`li.k-${h.kind.toLowerCase()}`, [
+        el("b", [h.kind, h.ren ? el("span.rn-ren", { text: `×${renCount(i)}`, title: `${renCount(i)}連` }) : null]),
         el("span", { text: `${h.games}G` }), el("small", { text: `第${h.chapter}章 DAY${h.day}` }),
       ])))
       : el("p.rn-empty", { text: "まだ当たりはないよ。光るのを待とう！" });
     const hall = s.freezeLog.length
       ? el("ul.rn-hall", s.freezeLog.map((f) => el("li", { text: `FREEZE　第${f.chapter}章 DAY${f.day}・${f.spin}回転目` })))
       : el("p.rn-empty.rn-secret", { text: "？？？　まだ見ぬ伝説" });
+    // 1ページ目は記録だけを1段で（縦スクロール）。設定の説明とヒントは遊び方の詳しい説明へ置く
     const panel = el("div.rn-panel", [
       el("div.ri-head", [pakkiFace(".big"), el("span.ri-app", { text: "パッキースロットノート" })]),
       el("div.rn-cols", [
         el("section", [el("h3", { text: "データ" }), table]),
-        el("section", [
-          el("h3", { text: "当たり履歴（新しい順）" }), history,
-          el("h3", { text: "フリーズ殿堂入り" }), hall,
-          el("h3", { text: "設定" }),
-          el("p.rn-setting", { text: `今の設定は？？？。${s.settingChanges ? `これまでに${s.settingChanges}回変わったよ。` : ""}前回の抽選から7日たつか、章が変わると選び直されるよ` }),
-          s.periodStats.current ? el("p.rn-setting", { text: periodLine("今の設定のあいだ", s.periodStats.current) }) : null,
-          s.periodStats.past.length ? el("p.rn-setting", [el("small", { text: periodLine("前の設定のあいだ", s.periodStats.past[0]) })]) : null,
-          el("h4.rn-hint-head", { text: s.settingSince ? `今の設定のヒント（第${s.settingSince.chapter}章 DAY${s.settingSince.day}から）` : "今の設定のヒント" }),
-          s.currentHints.length
-            ? el("ul.rn-hints", s.currentHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${h.day}「${h.text}」` })))
-            : el("p.rn-empty", { text: "まだないよ。設定が変わったときや、ボーナスのあとに出ることがあるよ" }),
-          s.pastHints.length ? el("h4.rn-hint-head.past", { text: "前の設定のヒント（今の設定とは関係ないよ）" }) : null,
-          s.pastHints.length ? el("ul.rn-hints.past", s.pastHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${h.day}「${h.text}」` }))) : null,
-          el("p.rn-empty", { text: "偶数・奇数や高い・低いのヒントは確定ではないよ" }),
-        ]),
+        el("section", [el("h3", { text: "当たり履歴（新しい順）" }), history]),
+        el("section", [el("h3", { text: "フリーズ殿堂入り" }), hall]),
       ]),
       el("span.ri-next", { text: "▼ タップで遊び方" }),
     ]);
@@ -1241,10 +1233,23 @@ export function openNote() {
       guideCard(),
       el("span.ri-next", { text: "▼ タップで詳しい説明" }),
     ]);
-    // 3ページ目: 気になったときに読む詳しい説明
+    // 3ページ目: 気になったときに読む詳しい説明と、設定・ヒントの記録
     const details = el("div.rn-panel.rn-guide", [
       el("div.ri-head", [pakkiFace(".big"), el("span.ri-app", { text: "パッキースロットの詳しい説明" })]),
       guideCard(DETAIL_GUIDE),
+      el("section.rn-setting-box", [
+        el("h3", { text: "設定" }),
+        el("p.rn-setting", { text: `今の設定は？？？。${s.settingChanges ? `これまでに${s.settingChanges}回変わったよ。` : ""}前回の抽選から7日たつか、章が変わると選び直されるよ` }),
+        s.periodStats.current ? el("p.rn-setting", { text: periodLine("今の設定のあいだ", s.periodStats.current) }) : null,
+        s.periodStats.past.length ? el("p.rn-setting", [el("small", { text: periodLine("前の設定のあいだ", s.periodStats.past[0]) })]) : null,
+        el("h4.rn-hint-head", { text: s.settingSince ? `今の設定のヒント（第${s.settingSince.chapter}章 DAY${s.settingSince.day}から）` : "今の設定のヒント" }),
+        s.currentHints.length
+          ? el("ul.rn-hints", s.currentHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${h.day}「${h.text}」` })))
+          : el("p.rn-empty", { text: "まだないよ。設定が変わったときや、ボーナスのあとに出ることがあるよ" }),
+        s.pastHints.length ? el("h4.rn-hint-head.past", { text: "前の設定のヒント（今の設定とは関係ないよ）" }) : null,
+        s.pastHints.length ? el("ul.rn-hints.past", s.pastHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${h.day}「${h.text}」` }))) : null,
+        el("p.rn-empty", { text: "偶数・奇数や高い・低いのヒントは確定ではないよ" }),
+      ]),
       el("span.ri-next", { text: "▼ タップで閉じる" }),
     ]);
     const box = el("div.reel-intro.reel-note", { role: "dialog", "aria-label": "パッキースロットノート", dataset: { test: "reel-note" } }, [panel]);
