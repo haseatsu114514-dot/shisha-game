@@ -332,7 +332,8 @@ try {
         assert.equal(await p.locator(".title-item").count(), 5);
       }
       const m = await p.evaluate(() => {
-        const stage = document.querySelector("#stage").getBoundingClientRect(), k = stage.width / 1280;
+        // 縮み率は高さで測る（ワイドステージ #2861 では幅が1280より広がるが、高さは720のまま）
+        const stage = document.querySelector("#stage").getBoundingClientRect(), k = stage.height / 720;
         const items = [...document.querySelectorAll(".title-item")].map(n => n.getBoundingClientRect());
         const shown = n => { const r = n.getBoundingClientRect(), s = getComputedStyle(n); return r.width > 2 && r.height > 2 && s.visibility !== "hidden" && !s.clipPath.includes("inset(50%)"); };
         const texts = [...document.querySelectorAll(".title *")].filter(n => [...n.childNodes].some(c => c.nodeType === 3 && c.textContent.trim()) && shown(n))
@@ -359,7 +360,7 @@ try {
     await p.locator("#modal.show .modal-box").evaluate(n => Promise.all(n.getAnimations({ subtree: true })
       .filter(a => a.effect?.getComputedTiming().endTime !== Infinity).map(a => a.finished)));
     const row = await p.locator(".cfg-title-layout").evaluate(n => {
-      const k = document.querySelector("#stage").getBoundingClientRect().width / 1280;
+      const k = document.querySelector("#stage").getBoundingClientRect().height / 720;
       return [...n.querySelectorAll("button,a,span")].filter(e => e.getBoundingClientRect().width > 0)
         .map(e => ({ tag: e.tagName, h: e.getBoundingClientRect().height, px: parseFloat(getComputedStyle(e).fontSize) * k }));
     });
