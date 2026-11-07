@@ -1,19 +1,25 @@
 /* 試作タイトルだけのテーマ。通常版のdaily.cssは保持する。 */
 :root { --title-layout-ready: 1; }
-.title-layout-toolbar {
-  position: absolute; top: max(8px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right));
-  z-index: 110;
-  max-width: calc(100% - 20px); padding: 4px; border: 1px solid #b68d53; border-radius: 5px;
-  background: #1b1023f2; color: #f6dfaf; font-size: 14px;
+/* 「表示設定（タイトル）」は CONFIG の中の1行（#2863）。通常版／DS風の切替と、通常版で開き直すリンク。 */
+.cfg-title-layout { flex-wrap: wrap; }
+.title-layout-options { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.title-layout-options button, .title-layout-options a {
+  display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box;
+  padding: 8px 14px; border: 1px solid #b68d53; border-radius: 4px; background: transparent;
+  color: inherit; font: inherit; cursor: pointer; text-decoration: none;
 }
-.title-layout-toolbar summary { font-size: 13px; }
-.title-layout-options { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: flex-end; max-width: 300px; }
-body[data-screen="title"]:has(#modal.show) .title-layout-toolbar { visibility: hidden; }
-.title-layout-toolbar button, .title-layout-toolbar a { padding: 10px 12px; min-height: 40px; background: transparent; border: 0; color: inherit; cursor: pointer; text-decoration: none; }
-.title-layout-toolbar button[aria-pressed="true"] { background: #67422d; border-radius: 3px; }
-.title-layout-toolbar :focus-visible { outline: 2px solid #ffe3a7; outline-offset: -2px; }
+.title-layout-options a { border-color: transparent; text-decoration: underline; }
+.title-layout-options button[aria-pressed="true"] { background: #67422d; color: #fff3dc; }
+.title-layout-options :focus-visible { outline: 2px solid #ffe3a7; outline-offset: 2px; }
 .title-layout-note:empty { display: none; }
 .title-layout-note { flex-basis: 100%; padding: 2px 8px; font-size: 12px; }
+/* 通常版は1280×720を縮めて映すので、スマホ横持ちの実寸でも文字11px・押す所38px以上を保つ。
+   DS風は等倍で描くので下限を掛けない（--k は縮小前の値のまま残っている）。 */
+body:not(:has(.title[data-layout="ds"])) .title-layout-options :is(button, a) {
+  min-height: max(44px, calc(38px / var(--k, 1))) !important; font-size: max(16px, calc(12px / var(--k, 1)));
+}
+body:not(:has(.title[data-layout="ds"])) :is(.cfg-title-layout > span, .title-layout-note) { font-size: max(14px, calc(12px / var(--k, 1))); }
+.title[data-layout="ds"] .title-ver { font-size: 13px; }
 .title-logo-fallback { position: absolute; top: 90px; font-size: 36px; color: #f5d79f; }
 .title-ds-panel[hidden], .title-logo[hidden], .title-logo-fallback[hidden] { display: none; }
 
@@ -29,7 +35,7 @@ body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #rotate-hi
   padding: 66px max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom));
   background: #100b19; overflow: auto;
 }
-.title[data-layout="ds"] > .title-left, .title[data-layout="ds"] > .title-smoke, .title[data-layout="ds"] > .title-foot { display: none; }
+.title[data-layout="ds"] > .title-left, .title[data-layout="ds"] > .title-smoke { display: none; }
 .title[data-layout="ds"] .title-ds-panel {
   position: relative; min-height: 0; overflow: hidden; border: 1px solid var(--ds-gold); border-radius: 2px;
   background-color: var(--ds-ink); color: var(--ds-text);
@@ -102,13 +108,11 @@ body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .ga
   .title[data-layout="ds"] .ti-en { display: none; }
   .title[data-layout="ds"] .ti-ja { font-size: 19px; }
   .title[data-layout="ds"] .title-ds-caption { margin-top: 16px; font-size: 14px; }
-  .title-layout-toolbar { font-size: 12px; }
-  .title-layout-toolbar button, .title-layout-toolbar a { min-height: 44px; padding: 10px; }
 }
 
 /* ================================================================ 2026-10-30 縦持ちの見直し
    タイトル原画は縦長（2:3）なので、上画面いっぱいに置いて（顔側を残して上下を少し切る）、
-   ロゴは左上の暗い帯に重ね、同じ絵のぼかしを後ろに敷かない。設定の入口はヒンジ（本編の「表示」と同じ場所）。 */
+   ロゴは左上の暗い帯に重ね、同じ絵のぼかしを後ろに敷かない。見た目の切替は CONFIG の中（#2863）。 */
 .title[data-layout="ds"] .title-ds-visual { background: #100b19; }
 .title[data-layout="ds"] .title-art {
   inset: 0; width: 100%; height: 100%; background-size: cover; background-position: center 28%;
@@ -119,16 +123,6 @@ body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .ga
 }
 .title[data-layout="ds"] .title-brand { z-index: 2; inset: 8px auto auto 12px; width: min(56%, 230px); }
 .title[data-layout="ds"] .title-logo-fallback { font-size: clamp(20px, 6vw, 32px); }
-:root[data-ds-layout="stacked"] .title[data-layout="ds"] ~ .title-layout-toolbar,
-:root[data-ds-layout="stacked"] body:has(.title[data-layout="ds"]) .title-layout-toolbar {
-  top: calc(var(--ds-cy) - var(--ds-hinge) / 2 - 11px) !important; right: 10px !important;
-  padding: 0; border-radius: 11px; background: #0b0812e6 !important; border-color: #e8c27a77;
-}
-:root[data-ds-layout="stacked"] body:has(.title[data-layout="ds"]) .title-layout-toolbar:not([open]) summary {
-  min-height: 22px !important; padding: 2px 8px !important; font-size: 12px; font-weight: 700; line-height: 16px;
-}
-:root[data-ds-layout="stacked"] body:has(.title[data-layout="ds"]) .title-layout-toolbar[open] { top: calc(var(--ds-cy) + 6px) !important; }
-.title[data-layout="ds"] .title-layout-options { padding: 2px 4px 4px; }
 /* 下画面が低い端末（320×568 など）では章名の行を詰め、4項目が切れない。 */
 @media (max-height: 640px) {
   .title[data-layout="ds"] .title-ds-controls::before { height: 26px; margin-bottom: 10px; font-size: 12px; }

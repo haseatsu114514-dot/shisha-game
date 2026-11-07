@@ -441,8 +441,9 @@ await suite('ch2-main', async check => {
 
   await check('ds-small-city-map-and-stop-controls', async page => {
     await page.setViewportSize({ width: 844, height: 390 });
-    await page.locator('[data-test="title-layout-settings"]').tap();
+    await page.locator('[data-test="title-config"]').tap(); // タイトルの見た目は CONFIG の中（#2863）
     await page.locator('[data-test="title-layout-ds"]').tap();
+    await page.locator('[data-test="cfg-close"]').tap();
     await setup(page, { knownTrpg: false });
     await begin(page);
     await page.setViewportSize({ width: 320, height: 568 });
