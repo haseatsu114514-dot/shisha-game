@@ -3,6 +3,7 @@
 // PC・スマホ横で文字が画面の外へはみ出さない、を実UIと実saveで確かめる。
 // 初回を流し終えたら真エンドとして周回（NEXT CYCLE）が開く（#1228）。勝敗は問わず、流す前は開かない。
 // 恋人が2人以上なら、スタッフロールの後に修羅場→一人ずつの話し直しを読んでからタイトルへ（IR32）。途中のLOAD・旧保存も確かめる。
+// 締め（初回のスタッフロールの直後か、話し直しを全部読んだ後）と見直しの後にはリザルト（#2902）を一度出す。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
@@ -18,8 +19,8 @@ const arm = (page, turbo = true) => page.evaluate(async turbo => {
  * フィナーレを読み終えた（cleared）第5章の保存を作る。seen は端末で一度最後まで見たか。won は9000との勝敗。
  * lovers は恋人（会っていて連絡先もある）、flags は足す保存フラグ、post はスタッフロールの後の並び（postEnding）。
  */
-async function seed(page, { seen = false, done = false, won = true, lovers = [], flags = {}, post } = {}) {
-  await page.evaluate(async ({ seen, done, won, lovers, flags, post }) => {
+async function seed(page, { seen = false, done = false, won = true, lovers = [], flags = {}, post, playMs = PLAY_MS } = {}) {
+  await page.evaluate(async ({ seen, done, won, lovers, flags, post, playMs }) => {
     const core = await import("./js/core/state.js");
     const value = core.newGame();
     const match = won ? ["ch5_second_cup_result", "ch5_second_cup_result_afterglow"] : ["ch5_second_cup_defeat"];
@@ -28,7 +29,7 @@ async function seed(page, { seen = false, done = false, won = true, lovers = [],
       "ch5_doctor_after_match", "ch5_return_to_tonari",
       "ending_start", "ending_normal", "ending_daily_smoke"].map(id => [id, true]));
     Object.assign(value, { chapter: 5, day: 60, slot: 1, phase: "cleared", money: 50000, stamina: 100,
-      weatherSeed: 5, lovers: [...lovers], contacts: ["sumi", ...lovers] });
+      weatherSeed: 5, lovers: [...lovers], contacts: ["sumi", ...lovers], playMs });
     for (const id of lovers) value.met[id] = true;
     value.stats = { technique: 72, sense: 66, guts: 61, charm: 70, insight: 64 };
     value.statsAtChapterStart = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
@@ -40,8 +41,14 @@ async function seed(page, { seen = false, done = false, won = true, lovers = [],
         secondCup: null, ...(post ? { postEnding: post } : {}) }, ...flags };
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false, staffRollSeen: seen });
     core.saveConfig(); core.save();
-  }, { seen, done, won, lovers, flags, post });
+  }, { seen, done, won, lovers, flags, post, playMs });
 }
+const PLAY_MS = (3 * 60 + 25) * 60000; // 3時間25分
+
+/** リザルト（#2902）の各項目を読む */
+const readResult = page => page.evaluate(() => Object.fromEntries([...document.querySelectorAll('[data-test="result"] [data-test^="result-"]')]
+  .filter(node => node.dataset.test !== "result-next")
+  .map(node => [node.dataset.test.slice(7), node.querySelector(".result-value, .result-hero-value")?.textContent])));
 
 async function openSlot(page, turbo = true) {
   await page.reload();
@@ -78,7 +85,16 @@ await suite("staff-roll", async check => {
       skip: document.querySelectorAll('[data-test="staff-roll-skip"]').length,
     }));
     assert.deepEqual(shown, { skippable: "no", skip: 0 });
-    // 流し終えたらタイトルへ戻る。保存と端末の両方に「見た」が残り、真エンドとして次の周回が開く。
+    // 流し終えたらリザルト。プレイ時間（保存の playMs に、開いてからの分が足される）と保存済みの記録だけを出す。
+    await page.locator(dt("result")).waitFor({ timeout: 30000 });
+    const result = await readResult(page);
+    assert.match(result.playtime, /^3時間 2[5-9]分$/, result.playtime);
+    assert.deepEqual({ ...result, playtime: undefined }, { playtime: undefined, match: "勝利", maxed: "0人", lovers: "なし", money: "50,000円" });
+    assert.equal(await page.locator(`${dt("result")} .result-sub`).count(), 0, "A run counted from the start has no footnote");
+    assert.equal(await page.locator(dt("result-next")).textContent(), "タイトルへ");
+    assert.equal((await get(page)).flags._ch5_staff_roll_done, true, "The roll is recorded before the result");
+    // リザルトからタイトルへ戻る。保存と端末の両方に「見た」が残り、真エンドとして次の周回が開く。
+    await page.locator(dt("result-next")).click();
     await page.locator(dt("title-new")).waitFor({ timeout: 30000 });
     await page.locator(dt("title-next-cycle")).waitFor();
     const saved = await get(page);
@@ -91,6 +107,7 @@ await suite("staff-roll", async check => {
     assert.deepEqual(cycle.trueEnds.map(end => end.cycleId), [saved.cycleId]);
     assert.equal(cycle.carryPackage.fromCycleId, saved.cycleId);
     assert.equal(cycle.carryPackage.fromCycle, 1);
+    assert(saved.playMs >= PLAY_MS && saved.playMs < PLAY_MS + 10 * 60000, `Play time keeps counting: ${saved.playMs}`);
     // 見終えた保存を開くと、完了カードから見直せる（いつでも飛ばせて、カードへ戻る）。
     await loadSlot(page, false);
     await page.locator(dt("ch5-complete-title")).waitFor();
@@ -99,6 +116,10 @@ await suite("staff-roll", async check => {
     assert.equal((await cycleMeta(page)).trueEnds.length, 1, "Reopening the same run does not add a true end");
     await page.locator(dt("ch5-complete-credits")).click();
     await page.locator(dt("staff-roll-skip")).click();
+    // 見直しの後もリザルトを出し、「もどる」で完了カードへ。
+    await page.locator(dt("result")).waitFor({ timeout: 10000 });
+    assert.equal(await page.locator(dt("result-next")).textContent(), "もどる");
+    await page.locator(dt("result-next")).click();
     await page.locator(dt("ch5-complete")).waitFor({ timeout: 10000 });
   });
 
@@ -109,6 +130,9 @@ await suite("staff-roll", async check => {
     assert(!note.includes("NEXT CYCLE"), note);
     assert.equal(await cycleMeta(page), null);
     await page.locator(dt("ch5-complete-credits")).click();
+    await page.locator(dt("result")).waitFor({ timeout: 30000 });
+    assert.equal((await readResult(page)).match, "敗北");
+    await page.locator(dt("result-next")).click();
     await page.locator(dt("title-next-cycle")).waitFor({ timeout: 30000 });
     const saved = await get(page);
     assert.equal(saved.flags._ch5.won, false);
@@ -176,6 +200,12 @@ await suite("staff-roll", async check => {
     assert.match(await page.locator(dt("ch5-scene")).innerText(), /2人目／2人/);
     assert.deepEqual((await get(page)).flags._ch5.postEnding.unresolved, ["tsumugi"]);
     await page.locator(dt("ch5-continue")).click();
+    // 話し直しまで読み終えた締めでリザルト。恋人は二人とも残る。
+    await page.locator(dt("result")).waitFor({ timeout: 30000 });
+    const result = await readResult(page);
+    assert.equal(result.maxed, "2人");
+    assert.equal(result.lovers.split("・").length, 2, result.lovers);
+    await page.locator(dt("result-next")).click();
     await page.locator(dt("title-new")).waitFor({ timeout: 30000 });
     saved = await get(page);
     assert.equal(saved.flags._ch5.postEnding.step, 7);
@@ -273,6 +303,7 @@ await suite("staff-roll", async check => {
     await page.locator(dt("ch5-complete-credits")).click();
     assert.equal(await page.locator(dt("staff-roll")).getAttribute("data-skippable"), "yes");
     await page.keyboard.press("Escape");
+    await page.locator(dt("result-next")).click({ timeout: 30000 });
     await page.locator(dt("title-new")).waitFor({ timeout: 30000 });
     assert.equal((await get(page)).flags._ch5_staff_roll_done, true, "A skipped roll still counts as watched");
   });
@@ -314,6 +345,37 @@ await suite("staff-roll", async check => {
       assert.equal(layout.overflow, false);
       assert.deepEqual(layout.outside, []);
       assert(layout.smallest >= 24, `Credits stay large on the 1280x720 stage: ${layout.smallest}px`);
+      assert.deepEqual([layout.width, layout.height], [1280, 720]);
+    }, { viewport, ...(label === "pc" ? {} : { hasTouch: true, isMobile: true }) });
+
+    // リザルト（#2902）も一番項目が多い形（2周目・恋人3人・数え始める前の保存）で、ステージの中に収まる。
+    await check(`result-fits-the-stage-${label}`, async page => {
+      await seed(page, { lovers: ["minto", "tsumugi", "hiyori"] });
+      const layout = await page.evaluate(async () => {
+        const core = await import("./js/core/state.js");
+        Object.assign(core.state, { cycle: 2, playMsFull: false, playMs: 123 * 3600000 + 4 * 60000, money: 1234567 });
+        const { playResult } = await import("./js/scenes/result.js");
+        void playResult(core.state, { match: { won: false, tally: { hajime: 14, machine: 16 } } });
+        await new Promise(requestAnimationFrame);
+        await new Promise(requestAnimationFrame);
+        const host = document.querySelector('[data-test="result"]');
+        const rect = host.getBoundingClientRect();
+        const items = [...host.querySelectorAll("h1, p, button")];
+        return {
+          outside: items.filter(node => {
+            const r = node.getBoundingClientRect();
+            return r.left < rect.left - 1 || r.right > rect.right + 1 || r.top < rect.top - 1 || r.bottom > rect.bottom + 1;
+          }).map(node => node.textContent),
+          smallest: Math.min(...items.map(node => parseFloat(getComputedStyle(node).fontSize))),
+          text: host.innerText,
+          width: host.offsetWidth, height: host.offsetHeight,
+        };
+      });
+      assert.deepEqual(layout.outside, []);
+      assert(layout.smallest >= 16, `Result text stays readable: ${layout.smallest}px`);
+      for (const part of ["2周目", "123時間 04分", "記録を始める前の分は含みません", "敗北", "挙手 14 対 16", "3人", "1,234,567円"]) {
+        assert(layout.text.includes(part), `${part} in ${layout.text}`);
+      }
       assert.deepEqual([layout.width, layout.height], [1280, 720]);
     }, { viewport, ...(label === "pc" ? {} : { hasTouch: true, isMobile: true }) });
   }

@@ -3,6 +3,7 @@ import { loadAll } from "../core/data.js";
 import { newGame } from "../core/state.js";
 import { initLayers, layers } from "../core/ui.js";
 import { unlockAudio, SE } from "../core/audio.js";
+import { installRotateGuard } from "../core/rotate-guard.js";
 import { el } from "../core/util.js";
 import { newSession, openBench, stepPanel } from "./session.js";
 import { stepPack } from "./steps.js";
@@ -23,6 +24,7 @@ function activeStep(step) {
 export async function boot() {
   fit(); window.addEventListener("resize", fit); window.visualViewport?.addEventListener("resize", fit);
   window.addEventListener("pointerdown", unlockAudio); window.addEventListener("keydown", unlockAudio);
+  installRotateGuard(); // 縦持ちの回転ガード中は、制作の時計と音を止める（#2941）
   initLayers();
   await Promise.all([loadAll(), document.fonts.ready]);
   newGame(); // メモリ上の一台だけ。load / save / 設定の読込は呼ばない。

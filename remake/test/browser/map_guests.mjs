@@ -82,7 +82,7 @@ await suite("map-guests", async check => {
     assert.equal(await page.locator("#rotate-hint").isVisible(), false);
   };
   // #2730: 移動ボタンは写真とスポット名だけのパネル全体。通常版はパネルごと画面に収まる。
-  // DS風のパネルは従来どおり高さ固定で、中身をパネル内でスクロールする（overflow: auto）。
+  // DS風のパネルは高さ固定のまま、写真を名前と横に並べて全体を見せる（#2939）。
   // 旧検査（ボタンをスクロールして表示→収まる）と同じく、パネルが画面内にあり行き先の名前が切れずに読めることを確かめる。
   const assertGoFits = async (page, device) => {
     await page.locator('[data-test="map-go"]').scrollIntoViewIfNeeded();
@@ -93,6 +93,14 @@ await suite("map-guests", async check => {
         && r.bottom <= stage.bottom + 1 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1;
     }), "DS風の移動パネルが画面からはみ出す");
     await assertFits(page, '[data-test="map-go"] .mi-banner');
+    // #2939: 写真（16:9）がパネルの中に全体で収まり、判別できる大きさ（幅100px以上）で、名前と重ならない。
+    assert(await page.locator('[data-test="map-go"]').evaluate(node => {
+      const panel = node.getBoundingClientRect(), photo = node.querySelector(".mi-preview")?.getBoundingClientRect(),
+        name = node.querySelector(".mi-banner").getBoundingClientRect();
+      return !!photo && photo.width >= 100 && Math.abs(photo.width / photo.height - 16 / 9) < .05
+        && photo.left >= panel.left - 1 && photo.right <= panel.right + 1 && photo.top >= panel.top - 1 && photo.bottom <= panel.bottom + 1
+        && photo.right <= name.left + 1;
+    }), "DS風の行き先の写真が全体で見えない");
   };
   for (const [device, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
     ["touch-ds", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {

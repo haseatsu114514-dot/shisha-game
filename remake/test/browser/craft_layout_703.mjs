@@ -93,6 +93,11 @@ await suite('craft-layout-703', async check => {
       await page.screenshot({path:path.join(shots,`${name}-pull.png`)});
       await test(page,'pull-stop').waitFor({state:'visible'});
       await page.waitForFunction(()=>!document.querySelector('[data-test="pull-stop"]').disabled);
+      // #2941: 吸い出しの針が動いている最中に縦へ回すと、ガードの間は針（時間で進む工程）が止まり、横へ戻すと動き出す。
+      if(portrait)await rotateThroughGuard(page,{portrait,landscape:options.viewport,label:`${name}/pull`,
+        targets:[test(page,'pull-stop')],ticking:{selector:'[data-test="pull-needle"]',attr:'data-pos'},
+        state:()=>page.evaluate(()=>({step:document.querySelector('.bench')?.dataset.step??null,
+          pulls:document.querySelector('[data-pulls]')?.dataset.pulls??null,draw:document.querySelector('.bench-worker')?.dataset.draw??null}))});
       if(options.hasTouch)await test(page,'pull-stop').tap();else await test(page,'pull-stop').click();
       await page.waitForFunction(()=>!!document.querySelector('.bench-worker').dataset.draw);
       await fullRig(page);

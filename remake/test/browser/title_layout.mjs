@@ -61,8 +61,10 @@ async function layout(p, mode) {
   assert.equal(await p.locator(".title").getAttribute("data-layout"), mode);
 }
 async function stageIsOriginal(p) {
-  const size = await p.locator("#stage").evaluate(n => [n.offsetWidth, n.offsetHeight]);
-  assert.deepEqual(size, [1280, 720], "normal/unsupported screen must retain original sizing");
+  // 通常表示は高さ720のまま。横長の画面だけワイドステージ（#2861）で幅が clamp(1280, 画面比×720, 1600) に広がる
+  const [size, wide] = await p.locator("#stage").evaluate(n => [[n.offsetWidth, n.offsetHeight],
+    Math.min(1600, Math.max(1280, Math.floor(innerWidth / innerHeight * 720)))]);
+  assert.deepEqual(size, [wide, 720], "normal/unsupported screen must retain original sizing");
 }
 async function stageMatchesTitleLayout(p, mode) {
   assert.equal(await p.locator("body").getAttribute("data-screen"), "title");

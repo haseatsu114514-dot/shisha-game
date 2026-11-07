@@ -249,6 +249,12 @@ await suite("shop-ui", async check => {
       await page.locator('.shop-floor img').first().waitFor();
       await page.waitForFunction(() => [...document.querySelectorAll('.shop-floor img')].every(n => n.complete && n.naturalWidth > 0));
       await assertFits(page, '.shop-floor, .shop-back');
+      if (platform === 'touch') {
+        // スマホ横持ちでは写真がカードの縦いっぱいに出て、細い帯にならない（#2858 の追加・オーナー指示）。
+        const cards = await page.locator('.shop-floor').evaluateAll(nodes => nodes.map(n => ({
+          card: n.getBoundingClientRect().height, picture: n.querySelector('.shop-floor-picture').getBoundingClientRect().height })));
+        for (const { card, picture } of cards) assert(picture >= 100 && picture >= card * .9, `phone entry photo is tall: ${picture}/${card}`);
+      }
       assert.equal(await page.locator('.shop-tabs').count(), 0);
       await tap(page, 'shop-entry-back');
       assert.equal(await page.evaluate(() => S.result), null);
@@ -490,6 +496,70 @@ await suite("shop-ui", async check => {
       assert.equal(saved.money, 490000 - 10000 + 7000);
       assert.equal(saved.owned.filter(id => id === "lotos_plus").length, 1, "同じ機材を二つ持たない");
       await capture(page, `kuji-tiers-${platform}`);
+    }, options);
+  }
+  // KJ05: 第5章だけ限定台くじ（1回20,000円）とくじ券の行が並ぶ。行は横にはみ出さず、持っている限定の台はくじ券に替わり、くじ券で1回引ける。
+  for (const [platform, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await run(`${platform}-kuji-limited-ch5`, async page => {
+      const labels = () => page.locator('.kuji-row b').allTextContents();
+      const savedState = () => page.evaluate(() => JSON.parse(localStorage.getItem(S.core.SAVE_KEY)));
+      await setup(page, { chapter: 4, money: 500000 }); await open(page);
+      await page.locator('[data-tab="kuji"]').click();
+      assert.equal((await labels()).length, 5);
+      assert.equal(await page.locator('[data-test="kuji-g20000"], .kuji-ticket-row').count(), 0, "第4章には限定台くじもくじ券の行も無い");
+      await page.locator('[data-test="shop-leave"]').click();
+      await page.evaluate(() => { Object.assign(S.core.state, { chapter: 5, money: 500000, kujiTickets: 0 }); S.open(); });
+      await page.locator('[data-test="shop-enter"]').click();
+      await page.locator('.shop-tabs').waitFor(); await page.locator('[data-tab="kuji"]').click();
+      assert.deepEqual(await labels(), ["シーシャくじ（1回500円）", "プレミアムくじ（1回1,000円）", "機材くじ（1回3,000円）",
+        "上級機材くじ（1回5,000円）", "特注台くじ（1回10,000円）", "限定台くじ（1回20,000円）"]);
+      const row = page.locator('[data-test="kuji-row-g20000"]');
+      const ticketRow = page.locator('[data-test="kuji-ticket-row-g20000"]');
+      const ticket = page.locator('[data-test="kuji-g20000-ticket"]');
+      assert.match(await row.innerText(), /のこり 30 \/ 30 枚 ・ S賞: くじ限定の台3種/);
+      assert.match(await ticketRow.innerText(), /くじ券 0枚/);
+      assert.equal(await ticket.innerText(), "くじ券で引く（残り0枚）");
+      assert(await ticket.isDisabled(), "0枚では押せない");
+      await ticketRow.scrollIntoViewIfNeeded();
+      assert.equal(await page.locator('.kuji-row, .kuji-ticket-row').evaluateAll(rows => rows.filter(r => r.scrollWidth > r.clientWidth + 1).length), 0, "行が横にはみ出さない");
+      await assertFits(page, '[data-test="kuji-ticket-row-g20000"] .btn');
+      await assertFits(page, '[data-test="kuji-row-g20000"] .kuji-actions .btn');
+      await capture(page, `kuji-limited-row-${platform}`);
+      // 行を押すと、S賞の限定の台3種の名前とくじ券の決まりが読める。
+      await row.locator('.shop-main').click();
+      const detail = await page.locator('.modal-box.shop-dialog').innerText();
+      assert.match(detail, /MELTY PUFF柄の特注台・橙須限定色の特注台・名入れの特注台（逢縁）/);
+      assert.match(detail, /くじ券1枚に替わる/);
+      await tap(page, 'kuji-detail-close');
+      // 箱の先頭を限定の台にして、それを持っておく → お金ではなくくじ券1枚。
+      await page.evaluate(() => {
+        const s = S.core.state, box = s.kuji.g20000;
+        const first = box.prizes.findIndex(p => p.equipId === "stand_custom_melty");
+        const rest = [...box.order]; rest.splice(rest.indexOf(first), 1);
+        box.order = [first, ...rest]; s.owned.push("stand_custom_melty");
+      });
+      await page.locator('[data-tab="sell"]').click();
+      assert.match(await page.locator('[data-test="sell-locked-stand_custom_melty"]').locator('..').innerText(), /くじ限定の台なので売れない/);
+      await page.locator('[data-tab="kuji"]').click();
+      await row.locator('[data-test="kuji-g20000"]').scrollIntoViewIfNeeded(); await tap(page, 'kuji-g20000');
+      await page.locator('.kuji-card.reveal').waitFor();
+      assert.match(await page.locator('.kuji-card.reveal').innerText(), /S賞[\s\S]*MELTY PUFF柄の特注台/);
+      assert.match(await page.locator('.kuji-card.reveal .kuji-dupe').innerText(), /持っているので、くじ券を1枚受け取った/);
+      await capture(page, `kuji-limited-dupe-${platform}`);
+      await tap(page, 'kuji-reveal');
+      let saved = await savedState();
+      assert.equal(saved.money, 480000, "1回分だけ払い、買い取りのお金は無い");
+      assert.equal(saved.kujiTickets, 1);
+      assert.equal(saved.owned.filter(id => id === "stand_custom_melty").length, 1);
+      assert.equal(await ticket.innerText(), "くじ券で引く（残り1枚）");
+      await ticket.scrollIntoViewIfNeeded(); await ticket.click();
+      await page.locator('.kuji-card.reveal').waitFor(); await tap(page, 'kuji-reveal');
+      saved = await savedState();
+      assert.equal(saved.money, 480000, "くじ券で引くとお金は使わない");
+      assert.equal(saved.kujiTickets, 0);
+      assert.equal(saved.kuji.g20000.drawn, 2);
+      assert(await ticket.isDisabled());
+      await capture(page, `kuji-limited-${platform}`);
     }, options);
   }
   await run('shortfall-scroll-discard-stale-state', async page => {

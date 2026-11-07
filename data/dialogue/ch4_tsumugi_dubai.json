@@ -1,5 +1,5 @@
 {
-  "comment": "来訪予定が確定し、実際に到着した恋人用。同行者の決定だけで再生しない。",
+  "comment": "来訪予定が確定し、実際に到着した恋人用。同行者の決定だけで再生しない。前夜祭の日の昼、前夜祭より前に読む。前夜の過ごし方（誘う・ひとりで休む・重なった予定の保留）のどれにもつながるよう、夜の約束はしない。前夜デート（tournament_date_tsumugi の eve_dubai）の「知らない木」とは別の話題にする。",
   "dialogues": [
     {
       "dialogue_id": "ch4_tsumugi_dubai_girlfriend",
@@ -15,9 +15,19 @@
           "text": "描きかけのページに、もう窓の外の空が入っている。"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お待たせ、つむぎちゃん。もう描いてるんだね"
+        },
+        {
           "speaker": "tsumugi",
           "face": "normal",
           "text": "……着きました。写真で見るより、空が広いです"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "窓から見える分だけ、先に描いておきたくて"
         },
         {
           "speaker": "hajime",
@@ -30,9 +40,84 @@
           "text": "はい。……はじめさんなら、遠くからでも分かります"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎが、ページの隅を指でたどる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "空の下に、階段を下りてくる小さな人影が描き足してあった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ、俺？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……はい。下りてくる途中から、描いてました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "近くのテーブルで、誰かのお茶が湯気を立てていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎの目が、そちらへ流れる。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……こっちの湯気は、少し金色です。乾いてるから、かな"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も。荷物、持つよ"
+          "text": "日本で見るのとは、違う？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "違います。……でも、きれいな違い方です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今夜、大会の前夜祭があるんだ。少し顔を出してくる"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。私は、窓の外を描いてます。夜の空の色も、見ておきたいので"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "明日は、はじめさんの煙が何色か、ちゃんと見てます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "何色でも、あとで教えてね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……はい。いちばんに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "荷物、持つよ。部屋まで送る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは少し迷ってから、鞄の持ち手を俺に預けた。"
         }
       ]
     }

@@ -132,8 +132,9 @@
 body[data-screen="boot"] #hud, body[data-screen="title"] #hud { display: none; }
 .hud {
   position: absolute;
-  left: 0;
-  right: 0;
+  /* ワイドステージ（#2861）では左上の札と右上の LIME・MENU を黒帯側（safe-area の内側）まで出す。広がらない画面では 0 */
+  left: calc(var(--stage-safe-l, 0px) - var(--stage-gutter, 0px));
+  right: calc(var(--stage-safe-r, 0px) - var(--stage-gutter, 0px));
   top: 0;
   display: flex;
   justify-content: space-between;

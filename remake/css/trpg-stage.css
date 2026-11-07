@@ -1080,3 +1080,14 @@
 }
 .trpg-root.trpg-cinematic .trpg-choice-tabs .trpg-choice-token { min-height: 30px; padding: 4px 14px; border-radius: 999px; background: #0b1420c2; border-bottom: 0; color: #efe8d6; }
 .trpg-root.trpg-cinematic .trpg-interview-prompt { width: max-content; max-width: 900px; margin-left: auto; margin-right: auto; padding: 3px 16px; border-radius: 999px; background: #0b1420c2; color: #efe8d6; text-shadow: none; }
+/* 準備の画面: 見出しの札（「1 / 2」つき）とタブが重ならないよう、見出しを少し上げてタブを下げ、タブにも暗い札を敷く。 */
+.trpg-root.trpg-cinematic[data-phase="prepare"] .trpg-selection-title { top: 108px; }
+.trpg-root.trpg-cinematic[data-phase="prepare"] .trpg-choice-tabs { top: 207px; }
+.trpg-root.trpg-cinematic .trpg-choice-tabs button.trpg-choice-tab { padding: 4px 16px 6px; border-radius: 12px; background: #0b1420c2; }
+.trpg-root.trpg-cinematic .trpg-choice-tabs button.trpg-choice-tab:is(:hover, :focus-visible, .selected, [aria-selected="true"], [aria-pressed="true"]):not(:disabled) { background: #0b1420d9; }
+/* 選択肢の絵に薄い暗い光彩を足し、霧・白壁など明るい背景でも物の輪郭が溶けないように。 */
+.trpg-root.trpg-cinematic .trpg-object-art { filter: drop-shadow(0 0 6px #0b1420b0) drop-shadow(0 13px 12px #0005); }
+.trpg-root.trpg-cinematic .trpg-object-choice:focus-visible .trpg-object-art { filter: drop-shadow(0 0 6px #0b1420b0) drop-shadow(0 0 18px #f2dba270) drop-shadow(0 13px 12px #0005); }
+.trpg-root.trpg-cinematic .trpg-object-choice:is(.selected, [aria-pressed="true"]) .trpg-object-art { filter: drop-shadow(0 0 6px #0b1420b0) drop-shadow(0 0 17px #ead49e5e) drop-shadow(0 10px 10px #0005); }
+/* タッチ操作の配置では、タブの下線が2行目の文字を横切って取り消し線に見えていたので、札の下端へ。 */
+@media (pointer: coarse) { .trpg-root.trpg-cinematic .trpg-choice-tabs button.trpg-choice-tab::after { bottom: 3px; } }

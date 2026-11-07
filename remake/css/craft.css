@@ -372,6 +372,20 @@
 .foil-cursor { position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; border: 3px solid #c5fcff; outline: 2px solid #132f40; background: transparent; box-shadow: inset 0 0 0 1px #132f40, 0 0 12px #52d9ed99; pointer-events: none; }
 .foil-cursor.technique-visible { box-shadow: inset 0 0 0 1px #132f40, 0 0 12px #52d9ed99, -7px 0 10px var(--stat-technique); }
 .foil-cursor::after { content: ""; position: absolute; inset: -7px; border: 2px solid #132f40; clip-path: polygon(40% 0, 60% 0, 60% 40%, 100% 40%, 100% 60%, 60% 60%, 60% 100%, 40% 100%, 40% 60%, 0 60%, 0 40%, 40% 40%); }
+/* #2937: 針は目印の近くだけを動く。押している間は沈み込み、アルミが小さくへこむ。押しすぎると色で知らせる。 */
+.foil-dents { position: absolute; inset: 0; pointer-events: none; }
+.foil-cursor { transition: opacity .12s; }
+.foil-cursor.resting { opacity: .4; }
+.foil-cursor.pressing { transform: scale(calc(1 - var(--press, 0) * .3)); }
+.foil-cursor::before { content: ""; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; box-shadow: inset 1px -1px 2px #13101a88, 0 0 0 1px #fff7; opacity: 0; }
+.foil-cursor.pressing::before { opacity: 1; transform: scale(calc(1 + var(--press, 0) * 2)); }
+.foil-cursor[data-depth="wide"] { border-color: #ffd27a; }
+.foil-cursor[data-depth="large"] { border-color: #ff9a76; }
+.foil-hole.wide { width: 12px; height: 12px; margin: -6px 0 0 -6px; }
+.foil-hole.large { width: 15px; height: 15px; margin: -7.5px 0 0 -7.5px; }
+.foil-dent { position: absolute; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; box-shadow: inset 1px -1px 2px #13101a66, 0 0 0 1px #fff8; animation: foil-dent-fade 1.6s ease-out forwards; }
+@keyframes foil-dent-fade { 60% { opacity: .8; } to { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .foil-dent { animation: none; opacity: .4; } }
 .foil-legend { display: flex; justify-content: center; gap: 27px; margin-top: 26px; padding: 6px 8px; color: #e8dac7; font-size: 14px; }
 .foil-legend span { display: flex; align-items: center; gap: 12px; }
 .foil-legend i { position: relative; display: inline-block; left: auto; top: auto; margin: 0; flex: none; animation: none; }

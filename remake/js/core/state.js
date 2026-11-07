@@ -3,7 +3,7 @@
 // 状態の形を変えたら SCHEMA を上げ、migrate() に1段足す（互換コードはここだけに置く）。
 
 import { setPortraitStyleSource } from "./portrait-style.js";
-import { MAX_MONEY, TOURNAMENT_DAY } from "./rules.js";
+import { MAX_MONEY, TOURNAMENT_DAY, KUJI_TICKET_MAX } from "./rules.js";
 import { MASTERY_THRESHOLDS, learnFlavorStory } from "./flavor-mastery.js";
 import { emit } from "./bus.js";
 import { recordGalleryProgress } from "./gallery-progress.js";
@@ -109,6 +109,7 @@ export function newState() {
       settingGuideDone: false, // 設定のシステム説明を見た（新規は初回説明の中、旧セーブは一度だけの通知）
     },
     kuji: {},                  // くじの箱（grade -> {order, drawn, emptyDay}）
+    kujiTickets: 0,            // くじ券（KJ05）。第5章の限定台くじを1枚で1回引ける。周回には持ち越さない
     goods: [],                 // くじ等で得た売れる小物 [{name, sell}]
     // 恋人（master_spec #24）: 好感度MAX→告白→付き合う/友達のまま。恋人の絆はデート等でだけ深まる
     lovers: [],
@@ -124,7 +125,8 @@ export function newState() {
     finales: {},               // 読んだ好感度MAXの締めくくり（キャラ -> {day, chapter, route: lover|romance|friend}）
     friendHangouts: {},        // 友人とのシーシャのお誘いに乗った回数（キャラ -> 回数）
     seed: Math.floor(Math.random() * 1e6),
-    playMs: 0,
+    playMs: 0,                 // この周回のプレイ時間（画面が見えている間だけ数え、保存のたびに足し込む。#2902）
+    playMsFull: true,          // playMs を周回の最初から数えているか（記録を始める前の保存は false）
   };
 }
 
@@ -491,12 +493,36 @@ function migrate(s) {
     s.cycleStartStats = Object.fromEntries(STAT_KEYS.map((k) => [k, 10]));
   }
   if (s.carryOptions !== null && (typeof s.carryOptions !== "object" || Array.isArray(s.carryOptions))) s.carryOptions = null;
+  // くじ券（KJ05）。無い・壊れた・負の値は0、上限より多い分は捨てる（スキーマは変えない。欠けていれば0から）。
+  s.kujiTickets = Number.isInteger(s.kujiTickets) && s.kujiTickets > 0 ? Math.min(KUJI_TICKET_MAX, s.kujiTickets) : 0;
+  // プレイ時間（#2902）。数え始める前の保存は 0 から数え、最初からの時間ではないことを残す。
+  if (!Number.isFinite(s.playMs) || s.playMs < 0) s.playMs = 0;
+  if (s.playMsFull !== true) s.playMsFull = false;
   s.schema = SCHEMA;
   return s;
 }
 
+// ---------------------------------------------------------------- プレイ時間（#2902）
+// タイトルにいる間と、タブが隠れている間は数えない。保存の直前に、前に数えた時刻からの分を playMs へ足す。
+let playClockAt = null;
+// 実際のブラウザで表示中のときだけ数える（document の無い・表示状態を持たない node の検査では数えない）。
+const pageVisible = () => typeof document !== "undefined" && document.visibilityState === "visible";
+/** タブの表示が切り替わったら呼ぶ（main.js の起動で visibilitychange に登録する）。隠れている間の時間は数えない */
+export function tickPlayTime() {
+  const now = Date.now();
+  if (state && playClockAt !== null && now > playClockAt) state.playMs = (Number.isFinite(state.playMs) ? state.playMs : 0) + now - playClockAt;
+  playClockAt = state && pageVisible() ? now : null;
+}
+
+/** いまのプレイ時間（ms）。まだ保存していない分も含める */
+export function playTimeMs(value = state) {
+  const saved = Number.isFinite(value?.playMs) ? value.playMs : 0;
+  return value === state && playClockAt !== null ? saved + Math.max(0, Date.now() - playClockAt) : saved;
+}
+
 export function setState(s) {
   state = s;
+  playClockAt = s && pageVisible() ? Date.now() : null;
   emit("hud"); // ロード・はじめからでも、前の残量と通知を画面に持ち越さない。
   return state;
 }
@@ -519,6 +545,7 @@ function writeSave(target = state) {
     }
   } catch { /* 旧記録の補完失敗で現在の保存を妨げない */ }
   recordGalleryProgress(target);
+  if (target === state) tickPlayTime();
   target.savedAt = Date.now();
   let raw = null;
   try {
