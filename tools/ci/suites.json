@@ -2994,11 +2994,14 @@
         "remake/test/browser/hiyori_axe_natural.mjs",
         "tools/check_legacy_terms.py",
         "remake/test/browser/save_load.mjs",
+        "remake/js/scenes/save-transfer.js",
+        "remake/test/browser/save_transfer.mjs",
         "remake/js/chapters/ch2*.js",
         "remake/js/chapters/ch3*.js"
       ],
       "run": [
-        "node remake/test/browser/save_load.mjs"
+        "node remake/test/browser/save_load.mjs",
+        "node remake/test/browser/save_transfer.mjs"
       ]
     },
     {
