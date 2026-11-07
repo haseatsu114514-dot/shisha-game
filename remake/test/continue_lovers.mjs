@@ -35,9 +35,8 @@ assert.equal(chooseContinueSpeaker(["minto"], 1, () => 0, "sumi"), "sumi", "chap
   for (const id of Object.keys(counts)) assert(counts[id] > 800 && counts[id] < 1200, `even share: ${JSON.stringify(counts)}`);
 }
 
-// 台本の形: 7行・各行1行（全角22字以内）・反応1行・先頭0秒。全部が相手の声で、はじめの自問（（））は置かない。
-// 本人の来場・同行・新しい約束に読める文（隣にいる／一緒に帰る／約束／ここにいる／見てた／帰ろう）は置かない。
-const presence = /隣|一緒に帰|約束|ここにいる|見てた|帰ろ[うっ]?/;
+// 台本の形: 7行・各行1行（全角22字以内）・反応1行・先頭0秒。台本は前バージョン（2026-11-07 オーナー決定）で、
+// 恋人がプレイヤーへ直接語りかける。はじめの自問（（））は置かない。
 const width = text => [...text].reduce((n, c) => n + (/[\x20-\x7e]/.test(c) ? .5 : 1), 0);
 const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8"));
 assert.deepEqual(Object.keys(LOVER_CONTINUE_SCRIPTS), ["tsumugi", "minto", "rio", "ageha", "samechan", "mashiro", "hiyori"]);
@@ -49,7 +48,6 @@ for (const [id, s] of Object.entries(LOVER_CONTINUE_SCRIPTS)) {
     assert(width(text) <= 22, `${id}: one line: ${text}`);
     assert.doesNotMatch(text, /[（）]/, `${id}: no inner monologue: ${text}`);
     assert.doesNotMatch(text, /。$/, `${id}: no sentence-final 。: ${text}`);
-    assert.doesNotMatch(text, presence, `${id}: the caller is imagined, not present: ${text}`);
   }
   assert.match(s.cues.at(-1).text, /(？|\?|ですか)$/, `${id}: the last line hands the decision back`);
   // 連敗の短縮 [0,2,5,6] でも単独で読める行だけが残る（index 2・5 は前の行を受けない）。
@@ -74,5 +72,5 @@ for (const face of new Set([...LOVER_CONTINUE_SCRIPTS.hiyori.cues.map(c => c.fac
   const asset = `remake/img/sprites/characters/hiyori/chr_hiyori_${face}.webp`;
   assert.equal(execFileSync("git", ["ls-files", "--error-unmatch", "--", asset], { cwd: new URL("../../", import.meta.url), encoding: "utf8" }).trim(), asset);
 }
-console.log("PASS: Sumi-or-lover selection (even share, no repeats, no chapter-one Minto, no strangers), seven imagined-voice lines, faces and framing present");
+console.log("PASS: Sumi-or-lover selection (even share, no repeats, no chapter-one Minto, no strangers), seven lines (previous-version scripts), faces and framing present");
 
