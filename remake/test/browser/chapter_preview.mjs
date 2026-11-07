@@ -1,31 +1,9 @@
-// 予告を廃止した章末導線と、旧URLのタイトルコールだけの表示を検証する。
+// 予告を廃止した章末導線（第2〜4章末→次章のタイトルコールだけ）を検証する。旧予告の既読フラグは無視して保全する。
+// 章タイトル自体の描画・入力・画像遅延/失敗は chapter_titles.mjs が担う。
 import assert from "node:assert/strict";
 import { suite, assertFits, storageSnapshot } from "./support.mjs";
 const preview = '[data-test="chapter-preview"]';
 await suite("chapter-preview", async check => {
-  for (const ch of [2,3,4,5]) for (const touch of [false,true]) {
-    await check(`title-only-ch${ch}-${touch ? "touch" : "pc"}`, async page => {
-      const requests = [];
-      page.on("request", r => { if (/chapter_previews|cgs\/ch[2-5]_preview/.test(r.url())) requests.push(r.url()); });
-      const before = await storageSnapshot(page);
-      await page.goto(new URL(`chapter-preview.html?ch=ch${ch}`,page.url()).href);
-      const card = page.locator(".chapter-card.show");
-      await card.waitFor();
-      assert.equal(await card.getAttribute("data-chapter"), ["","","第二章","第三章","第四章","第五章"][ch]);
-      assert.equal(await page.locator(preview).count(),0);
-      await assertFits(page, (await card.locator('.cc-art').count()) ? '.chapter-card .cc-art' : '.chapter-card .cc-copy');
-      await page.keyboard.press("Enter"); await page.keyboard.press("Space");
-      await page.keyboard.down("Control"); await page.keyboard.up("Control");
-      await page.locator('[data-test="preview-ended"]').waitFor({timeout:12000});
-      assert.deepEqual(await storageSnapshot(page),before);
-      assert.deepEqual(requests,[],"旧予告の台本・CGを読み込まない");
-      await page.locator('[data-test="preview-start"]').click();
-      await card.waitFor();
-      assert.equal(await page.locator(preview).count(),0);
-      await page.locator('[data-test="preview-ended"]').waitFor({timeout:12000});
-      assert.deepEqual(await storageSnapshot(page),before);
-    },touch?{viewport:{width:844,height:390},hasTouch:true,isMobile:true}:{});
-  }
   for (const seen of [undefined,false,true]) await check("ch2-clear-title-only-"+String(seen), async page => {
     page.setDefaultTimeout(30000);
     await page.evaluate(async () => {

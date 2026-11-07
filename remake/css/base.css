@@ -8,6 +8,8 @@
 @font-face { font-family: "Suien Gothic"; src: url("../fonts/ZenKakuGothicNew-Medium.woff2") format("woff2"); font-weight: 100 599; font-display: block; }
 @font-face { font-family: "Suien Gothic"; src: url("../fonts/ZenKakuGothicNew-Bold.woff2") format("woff2"); font-weight: 600 799; font-display: block; }
 @font-face { font-family: "Suien Gothic"; src: url("../fonts/ZenKakuGothicNew-Black.woff2") format("woff2"); font-weight: 800 900; font-display: block; }
+/* HUDの日付・時間帯などのドット書体（DotGothic16・SIL OFL）。廃止した予告のCSSから移した。 */
+@font-face { font-family: "Suien Dot"; src: url("../../assets/fonts/DotGothic16-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: block; }
 
 :root {
   /* 日常パート: 閉店後のtonariの色（夜の藍・琥珀の灯り） */
@@ -35,7 +37,7 @@
   --stat-charm: #b49aef;
   --stat-insight: #65c9bb;
   --font: "Suien Gothic", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
-  --font-dot: "Chapter Preview Dot", var(--font);
+  --font-dot: "Suien Dot", var(--font);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-snap: cubic-bezier(0.7, 0, 0.2, 1);
 }
