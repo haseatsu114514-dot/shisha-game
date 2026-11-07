@@ -412,7 +412,7 @@ export async function runSteamDodge(cs) {
             wordsCut = 0;
             slashFeedback.textContent = "被弾。コンボが途切れた";
             slashLabel();
-            setPlayerMental(cs, mental.hit(time, hits));
+            setPlayerMental(cs, cs.dragonCalm ? mental.update(time, hits) : mental.hit(time, hits)); // 龍の煙(M-S7)の後は心が乱れない
             reactAudience(cs, "miss");
             heart.classList.remove("hit"); void heart.offsetWidth; heart.classList.add("hit");
             SE.hit(); shake(box, 180);

@@ -511,6 +511,21 @@ await suite("growth-levelup", async (runCheck) => {
     assert.equal(rings.justs,3);assert.equal(rings.bonus,1);
   });
 
+  await check("lesson-ms7-dragon-calm",async(page)=>{
+    await setupDaily(page);
+    const run=async(nodes,learned)=>page.evaluate(async({nodes,learned})=>{
+      const growth=await import("./js/core/growth.js");growth.setGrowthPreview(true);const g=growth.ensureGrowth();g.nodes=nodes;g.learned=learned;
+      const session=await import("./js/craft/session.js");session.craftTest.auto="good";
+      const cs=session.newSession("tournament");cs.steam={score:100,temp:(await import("./js/craft/temperature-model.js")).temperatureBands(cs).center};session.openBench(cs);
+      await (await import("./js/craft/pull.js")).runPull(cs);
+      return {calm:cs.dragonCalm===true,streak:cs.dragonStreak,justs:cs.pull.justs};
+    },{nodes,learned});
+    const on=await run(["K15","K21","M-S7"],["M-S7"]);
+    assert.equal(on.calm,true);assert.ok(on.streak>=3);
+    assert.equal((await run(["K15","K21","M-S7"],[])).calm,false,"相談前は発動しない");
+    assert.equal((await run(["K15","M-S7"],["M-S7"])).calm,false,"スモークリング(K21)が要る");
+  });
+
   await check("dense-pack-new-and-legacy",async(page)=>{
     await setupDaily(page);
     for(const kind of ["new","learned","legacy","old-mode"]) {
