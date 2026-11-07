@@ -1,17 +1,14 @@
 import { playEntrance } from "./tournament-entrance.js";
-import { tournamentArrival, tournamentDayCard, roundBandAt, resultMoment } from "./tournament-moments.js";
 import { defeatFade } from "../core/transitions.js";
 import { advanceTournamentCraft } from "./tournament-craft-runner.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 // HAZE: OPEN CLOUD。一試合の制作と、各工程の確定済み状態だけを保存する。
-const TITLE = "HAZE: OPEN CLOUD";
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, CHAPTER_DIALOGUE_FILES, loadTournamentCraftDialogue } from "../core/data.js";
 import { el, yen } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, enterScene, modal, imageReady, loadingNotice } from "../core/ui.js";
-import { sceneMoment } from "../core/scene-motions.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { maxStamina } from "../core/stats.js";
@@ -305,16 +302,13 @@ async function drive(owner) {
     const p = progress();
     if (p.stage === "entry") { renderEntry(owner); return; }
     if (p.stage === "morning") {
-      // 大会当日の入り（第1章と同じ DAYカード → 応援のLIME → 暗い煙ワイプで会場へ・#2688 A16）
-      if (!owner.dayShown) { owner.dayShown = true; await tournamentDayCard(TITLE); if (!live(owner)) return; }
       if (!await message(owner, "morning", [
         state.flags._ch2_no_audience ? "今日は来ないでくれ、って話は聞いた。店で見てる" : "応援は届いてる。返事は終わってからでいい",
         "手順を確かめろ。無理なら止めていい。帰ったら飯にするぞ",
       ], chapterTwoCheers)) { if (live(owner)) renderEntry(owner); return; }
       checkpoint("lobby");
     } else if (p.stage === "lobby") {
-      await tournamentArrival();
-      if (!live(owner)) return;
+      playBgm("bgm_tournament_wait");
       if (!await read(owner, "lobby")) return;
       markMet("ageha"); checkpoint("entrance");
     } else if (p.stage === "entrance") {
@@ -341,9 +335,6 @@ async function drive(owner) {
       // 1回目の票の後は、提供前の4人の心の声（第2章だけ）。
       const interlude = p.step === 8 ? "interlude_pull" : p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
       if (interlude && !await commentary(owner, interlude)) return;
-      // 工程の区切りに第1章と同じ ROUND の横帯（#2688 A16）
-      await roundBandAt(p.step, owner.rounds ||= new Set());
-      if (!live(owner)) return;
       const event = TOURNAMENT_STORY_STEPS.get(p.step);
       if (event && !await commentary(owner, event)) return;
       hud(owner); openBench(cs, { steps: CRAFT_STEPS }); await waitBenchReady(cs);
@@ -380,12 +371,8 @@ async function drive(owner) {
       checkpoint("result");
     } else if (p.stage === "votes") { renderVotes(owner); return; }
     else if (p.stage === "result") {
-      // 結果カードの前に、第1章と同じ10カウント（1位はプチュン→煙の輪→紙吹雪、それ以外はパリン）・#2688 A16
-      if (!owner.resultShown && p.result) {
-        owner.resultShown = true;
-        await resultMoment(owner.cs || clone(p.craft), p.result.rank, { contestants: CONTESTANTS, eyebrow: `${TITLE} / FINAL JUDGING` });
-        if (!live(owner)) return;
-      }
+      // この場で結果を出したことを覚える。敗北の入り（#2688 A19）は、この場で負けが決まった時だけ出す
+      if (p.result) owner.resultShown = true;
       playBgm("bgm_judging"); renderVotes(owner, true); return;
     }
     else if (p.stage === "defeat") { await renderDefeat(owner); return; }
@@ -413,9 +400,6 @@ async function drive(owner) {
       if (!await imageReady(closedRoom, 15000)) throw new Error("閉店後のMELTY PUFFを読み込めませんでした");
       await enterScene(closedRoom);
       if (!state.flags._ch2_read_ch2_tournament_ageha_heart) {
-        // 消灯: 店の照明が一本ずつ落ち、あげはの立つ所にだけ灯りが残ってから心の声へ（#2688 A2）
-        await sceneMoment("closingLights");
-        if (!live(owner)) return;
         if (!await read(owner, "ageha_heart")) return;
         state.flags._ch2_read_ch2_tournament_ageha_heart = true; save();
       }

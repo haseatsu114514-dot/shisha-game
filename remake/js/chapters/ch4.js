@@ -511,21 +511,14 @@ async function runTournament(owner) {
     revealChapterFourSheikh(state);
     if (!await readAndCommit(owner, start)) return;
   }
-  const [{ runChapterFourCraft }, { playEntrance }, moments] = await Promise.all([import("./ch4-tournament.js"), import("./tournament-entrance.js"), import("./tournament-moments.js")]);
+  const [{ runChapterFourCraft }, { playEntrance }] = await Promise.all([import("./ch4-tournament.js"), import("./tournament-entrance.js")]);
   if (!current(owner)) return;
-  // 入場カットインは一度だけ（制作の途中から再開したときは出さない）。会場へは第1章と同じ暗い煙ワイプで入る（#2688 A16）
-  if (!chapterFourProgress(state).match?.craft) {
-    await moments.tournamentArrival({ bgm: "bgm_tournament_edm" });
-    if (!current(owner)) return;
-    await playEntrance(4); if (!current(owner)) return;
-  }
+  // 入場カットインは一度だけ（制作の途中から再開したときは出さない）。
+  if (!chapterFourProgress(state).match?.craft) { await playEntrance(4); if (!current(owner)) return; }
   const result = await runChapterFourCraft({ isCurrent: () => current(owner), menuButton: () => menuButton(owner) });
   if (!current(owner)) return;
   if (!result) { await renderTournament(owner); return; }
-  // 結果の前に、第1章と同じ10カウント（#2688 A16）。最終票は result.rows / result.votes から表示する。勝敗の台本はこの後に読む。
-  const craft = chapterFourProgress(state).match?.craft;
-  if (craft && result.rank) await moments.resultMoment(craft, result.rank, { contestants: ["naru", "master_hookah", "sheikh", "hajime"], eyebrow: "HAZE: GRAND SMOKE / FINAL JUDGING" });
-  if (!current(owner)) return;
+  // 最終票は result.rows / result.votes から表示する。勝敗の台本はこの後に読む。
   await showChapterFourCommittedResult(result);
   if (!current(owner)) return;
   if (chapterFourTournamentOutcome(state) === "win") {

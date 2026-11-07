@@ -150,9 +150,6 @@ export const confessionHeld = (value = state) => !!departurePrep(value) || awayF
  * @param opts.companion 今夜会った相手。同じ相手への告白は帰り道に続け、別の相手なら後日に回す
  * @returns 何か起きたか
  */
-// 人に会いに行く夜の入り（#2688 A11）。演出の部品は使うときに読む（読めなければ演出なしで会う）
-const meetOpen = (id, opts) => import("../motions/meet.js").then((m) => m.meetOpen(id, opts), () => {});
-
 export async function maybeConfession(beat, { busyNight = false, companion = null } = {}) {
   if (state.phase !== "daily" || state.slot < 2) return false; // 昼の行動から仕事後の夜へ飛ばない
   if (confessionHeld()) return false; // 出発前・東京・ドバイでは予約を残して、帰ってきてから
@@ -203,8 +200,6 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
     state.flags._minto_name_known = true;
     save();
   }
-  // 告白の場面の入りも、葉の窓がすぼまって相手の名前を読ませてから（#2688 A11）
-  await meetOpen(id, { private: true });
   await play(`confession_${id}`, DB.dialogues[`confession_${id}`]?.metadata?.bg ? {} : { bg: STREET });
   if (id === "samechan" && isLover(id)) await playSamechanMilestone();
   save();

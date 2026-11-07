@@ -49,7 +49,7 @@ async function checkDawn(info, { reduced = false, cancel = false, failMid = fals
     "util.js": { el, sleep: async () => sample(), nextFrame: async () => sample() },
     "audio.js": { SE: { tick() {} } },
     "transition-moves.js": { moveCurtain() {}, moveStyle() {} },
-    "state.js": { state: {}, config: {} }, "entry-sound.js": { createEntrySound() {} }, "store-arrival.js": { withStoreArrival() {} },
+    "state.js": { state: {} }, "entry-sound.js": { createEntrySound() {} }, "store-arrival.js": { withStoreArrival() {} },
   };
   const modules = new Map();
   async function load(name) {

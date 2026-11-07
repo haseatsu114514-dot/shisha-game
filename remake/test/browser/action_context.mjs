@@ -35,8 +35,7 @@ async function setup(page, day = 4, slot = 1) {
     };
     new MutationObserver(records => {
       for (const r of records) for (const n of r.addedNodes) {
-        // 昼→夜の一行は波の上に出る（transitions.waveBeat・#2688 A9）。旧来の .beat も数える
-        if (n.classList?.contains('beat') || n.dataset?.test === 'beat-line') C.beats.push(n.textContent);
+        if (n.classList?.contains('beat')) C.beats.push(n.textContent);
       }
     }).observe(document.getElementById('fx'), { childList: true, subtree: true });
     C.afterTimer = setInterval(() => {
