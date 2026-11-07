@@ -908,7 +908,8 @@
         "node --experimental-vm-modules remake/test/lime_save_774.mjs",
         "node --experimental-vm-modules remake/test/purikura_motion.mjs",
         "node remake/test/text_wrap.mjs --fixed-only",
-        "node remake/test/natural_wrap.mjs"
+        "node remake/test/natural_wrap.mjs",
+        "node remake/test/conversation_effects_marks.mjs"
       ]
     },
     {
@@ -3773,6 +3774,15 @@
       "run": [
         "node remake/test/conversation_effects_demo.mjs"
       ]
+    },
+    {
+      "id": "conversation-effects",
+      "title": "Conversation effects in the main VN engine (#2828): beat, BGM duck, [pause], inner voice, [shiver]",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 4,
+      "paths": ["remake/js/vn/engine.js", "remake/js/vn/text.js", "remake/js/core/audio.js", "remake/css/vn.css", "remake/test/browser/conversation_effects_2828.mjs"],
+      "run": ["node remake/test/browser/conversation_effects_2828.mjs"]
     },
     {
       "id": "flavor-expression",

@@ -220,6 +220,13 @@ body.in-vn:has(#vn.flashback) #bg { filter: grayscale(1) contrast(.92); }
 .tx-red { color: #ff7a7a; }
 .tx-blue { color: #8fb8ff; }
 .tx-sub { font-size: 0.8em; color: var(--text-dim); }
+/* 会話演出（#2828）: 「（」で始まる心の声は薄墨・少し小さく。震え文字は行ごとに小刻みに揺らし、
+   設定「揺れ・閃光を減らす」・端末の「動きを減らす」・SKIP中は止める。 */
+.tx-voice { color: #9aa0b8; font-size: 0.9em; text-shadow: none; }
+.tx-shiver { display: inline-block; animation: tx-shiver 0.08s steps(2) infinite; }
+@keyframes tx-shiver { 0% { translate: -1px 0; } 50% { translate: 1px 1px; } 100% { translate: 0 -1px; } }
+body:is(.reduce-shake, .vn-skip) .tx-shiver { animation: none; }
+@media (prefers-reduced-motion: reduce) { .tx-shiver { animation: none; } }
 .vn-next {
   position: absolute;
   right: 34px;
