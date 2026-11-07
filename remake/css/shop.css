@@ -6,7 +6,10 @@
   border: 1px solid #ded3dc; border-image: none; border-radius: 4px;
   box-shadow: 0 16px 54px #110a2255; text-shadow: none;
 }
-.shop.shop-paper { top: 126px; width: 1152px; height: 568px; padding: 0; }
+.shop.shop-paper { top: 72px; width: 1200px; height: 624px; padding: 0; }
+/* 店の入口と1Fショップでは左上の HUD の札を隠し、空いた分だけ店のパネルを中央で広げる（所持金は店のヘッダーに出す）。
+   右上の LIME・MENU はセーブや連絡に使うので残し、パネルはその下（top 72px）から置く。PC・スマホ共通（#2958・オーナー指示） */
+body[data-screen="shop"] #hud .hud-card, body[data-screen="shop-entry"] #hud .hud-card { visibility: hidden; }
 .shop-paper button { font: inherit; cursor: pointer; touch-action: manipulation; }
 .shop-paper button:disabled { cursor: default; }
 .shop-paper button:focus-visible { outline: 3px solid #9470ad; outline-offset: 2px; }
@@ -75,20 +78,22 @@
 .shop-paper .kuji-row .btn { flex: none; min-width: 150px; min-height: 64px; font-size: 22px; }
 .shop-paper .kuji-row .shop-main small { font-size: 18px; }
 .shop-paper .kuji-actions { display: flex; flex-direction: row; flex: none; gap: 16px; }
-.kuji-help-row { flex: none; display: flex; justify-content: flex-end; padding: 6px 0 2px; }
-.kuji-help { width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 2px solid #9676a8; background: #fffcf8; color: #58386c; font-size: 22px !important; font-weight: 700; }
+.shop-paper .kuji-title { display: flex; align-items: center; gap: 12px; min-width: 0; }
+/* くじの「?」: 見た目は文字ほどの小さな丸。押せる範囲は透明な ::before で 72px 四方に広げる（#2958・オーナー指示） */
+.shop-paper .kuji-help { --help-size: 30px; --help-hit: 72px; position: relative; flex: none; width: var(--help-size); height: var(--help-size); padding: 0; border-radius: 50%; border: 1.5px solid #9676a8; background: #fffcf8; color: #58386c; font-size: 18px !important; font-weight: 700; line-height: 1; }
+.shop-paper .kuji-help::before { content: ""; position: absolute; left: 50%; top: 50%; width: var(--help-hit); height: var(--help-hit); transform: translate(-50%, -50%); border-radius: 50%; }
 .shop-paper .kuji-row { cursor: pointer; }
 .shop-paper .kuji-cat { font-size: 26px; border: 0; }
 .shop-badge { align-self: flex-start; padding: 2px 12px; border: 1px solid currentColor; border-radius: 14px; font-size: 20px !important; }
-.shop-entry { position: absolute; left: 50%; top: 150px; transform: translateX(-50%); width: 960px; height: 528px; padding: 24px 30px; display: flex; flex-direction: column; }
+.shop-entry { position: absolute; left: 50%; top: 72px; transform: translateX(-50%); width: 1200px; height: 624px; padding: 24px 30px; display: flex; flex-direction: column; }
 .shop-entry .shop-head { padding: 0 0 18px; height: 60px; }
 .shop-entry > h3 { font-size: 24px; font-weight: 500; letter-spacing: .08em; margin: 18px 0; }
 .shop-floors { display: flex; gap: 22px; flex: 1; min-height: 0; }
 .shop-floor { position: relative; width: 50%; min-width: 0; padding: 0; border: 1px solid #c7b6d1; border-radius: 5px; overflow: hidden; text-align: left; display: flex; flex-direction: column; background: #f3edf4; color: var(--shop-ink); }
-.shop-floor-picture { display: block; position: relative; height: 128px; flex: none; width: 100%; overflow: hidden; }
+.shop-floor-picture { display: block; position: relative; flex: 1 1 auto; min-height: 128px; width: 100%; overflow: hidden; }
 .shop-floor-picture img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .shop-floor-number { position: absolute; top: 12px; left: 12px; padding: 8px 12px; background: #fbf4f4ec; color: #5a3c6b; border: 1px solid #c6b1d1; border-radius: 3px; font: 28px var(--font); }
-.shop-floor-caption { position: relative; display: flex; flex-direction: column; flex: 1; justify-content: center; gap: 8px; width: 100%; padding: 10px 24px; }
+.shop-floor-caption { position: relative; display: flex; flex-direction: column; flex: none; justify-content: center; gap: 8px; width: 100%; padding: 14px 24px 16px; }
 .shop-floor-caption b { font-size: 23px; font-weight: 500; letter-spacing: .06em; }
 .shop-floor-caption small { font-size: 16px; color: #72557f; }
 .shop-floor-arrow { position: absolute; bottom: 22px; right: 22px; font-size: 27px; color: #9976ab; }
@@ -124,7 +129,7 @@
   .shop-paper .shop-row .btn, .shop-paper .shop-checkout { min-height: var(--shop-tap); font-size: var(--shop-label) !important; }
   .shop-paper .kuji-row, .shop-paper .kuji-actions { gap: 16px; }
   .shop-paper .kuji-row .btn { min-width: 150px; }
-  .shop-paper .kuji-help { width: var(--shop-tap); height: var(--shop-tap); font-size: var(--shop-label) !important; }
+  .shop-paper .kuji-help { --help-size: max(30px, calc(16px / var(--k, 1))); --help-hit: max(72px, calc(40px / var(--k, 1))); font-size: max(18px, calc(11px / var(--k, 1))) !important; }
   .shop-paper .shop-foot { height: auto; min-height: 92px; }
   .shop-paper .shop-summary { min-height: var(--shop-tap); }
   .shop-paper .shop-back, .shop-entry .shop-back { min-height: max(72px, calc(40px / var(--k, 1))); font-size: var(--shop-label) !important; }

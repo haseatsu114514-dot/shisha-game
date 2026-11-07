@@ -88,10 +88,11 @@ export function kujiRows(rerender) {
   state.flags._kuji_seen = true;
   // 初回にリオが居る時のひと言は台詞なのでそのまま出し、棚の案内は「?」を押して開く。
   if (firstSeen && staffed) rows.push(el("p.kuji-note", { text: `${displayName("rio", state)}「これ、実は在庫しょぶ……なんでもない。引きは引き。直感で行きなさい」` }));
-  rows.push(el("div.kuji-help-row", [el("button.kuji-help", {
+  // 「?」は専用の行を作らず、最初のくじの見出しの横に小さく置く（行を押した時の詳細は開かない）。
+  let help = el("button.kuji-help", {
     text: "?", "aria-label": "くじの案内", dataset: { test: "kuji-help" },
-    onclick: () => { SE.select(); modal({ title: "くじの案内", className: "shop-dialog", body: guide, options: [{ label: "閉じる", value: null, primary: true, test: "kuji-help-close" }] }); },
-  })]));
+    onclick: (event) => { event.stopPropagation(); SE.select(); modal({ title: "くじの案内", className: "shop-dialog", body: guide, options: [{ label: "閉じる", value: null, primary: true, test: "kuji-help-close" }] }); },
+  });
   const refill = DB.kuji.meta?.refillDays || 3;
   for (const g of list) {
     const box = boxOf(g);
@@ -138,7 +139,7 @@ export function kujiRows(rerender) {
     rows.push(el("div.shop-row.kuji-row", { dataset: { test: `kuji-row-${g.id}` }, onclick: (e) => { if (!e.target.closest(".kuji-actions")) openDetail(); } }, [
       el("span.shop-cat.kuji-cat", { text: "🎫", "aria-label": "くじ" }),
       el("div.shop-main", [
-        el("b", { text: g.label }),
+        help ? el("span.kuji-title", [el("b", { text: g.label }), help]) : el("b", { text: g.label }),
         el("small", { text: empty
           ? `売り切れ（あと${Math.max(0, refill - (state.day - box.emptyDay))}日で新しい箱）`
           : `のこり ${left} / ${size} 枚 ・ S賞: ${top}${size !== g.boxSize ? `（旧箱・次回は${g.boxSize}枚）` : ""}` }),
@@ -146,6 +147,7 @@ export function kujiRows(rerender) {
       ]),
       el("div.kuji-actions", actions),
     ]));
+    help = null;
   }
   return rows;
 }
