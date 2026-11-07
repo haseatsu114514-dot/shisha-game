@@ -593,6 +593,8 @@ const SYNTH_FALLBACK = {
 
 /** 今鳴っている曲のキー（自動再生待ちの間は null） */
 export const currentBgm = () => currentKey;
+/** 今のBGMの寄せ（1＝そのまま。会話の duck 中は0.5）。テスト・診断用 */
+export const bgmDuckLevel = () => bgmDuck;
 
 // 新規大会曲は約 -14 LUFS にそろえる。設定変更・フェード中も曲ごとの倍率を保つ。
 const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournament_craft: 0.67, bgm_continue_urgent: 0.68, bgm_axe: 0.79 };
@@ -849,6 +851,22 @@ export function playBgm(key) {
     } else start();
   } else if (SYNTH_FALLBACK[key]) {
     synthStop = startSynth(SYNTH_FALLBACK[key]);
+  }
+}
+
+/**
+ * 会話の「BGMの息継ぎ」（#2828）: 今の曲だけを level 倍へ ms かけて寄せる（0.5 ≒ −6dB、1 で戻す）。
+ * 音量設定・曲ごとの補正は保ち、曲を替えると stopBgm が元の音量へ戻す。
+ */
+export function duckBgm(level = 1, ms = 150) {
+  if (bgmDuck === level) return;
+  bgmDuck = level;
+  if (currentEl) fadeEl(currentEl, () => bgmLevel(currentKey), ms);
+  if (bgmBus) {
+    const target = config.mute || config.muted || bgmPaused ? 0 : config.bgmVolume * level;
+    bgmBus.gain.cancelScheduledValues?.(ctx.currentTime);
+    if (bgmBus.gain.setTargetAtTime) bgmBus.gain.setTargetAtTime(target, ctx.currentTime, Math.max(.01, ms / 3000));
+    else bgmBus.gain.value = target;
   }
 }
 
