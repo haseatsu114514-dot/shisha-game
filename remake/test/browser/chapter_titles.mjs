@@ -145,7 +145,7 @@ await suite('chapter-titles', async check => {
     await page.screenshot({ path: path.join(out, 'portrait-ds-chapter-1.png') });
     await done(page);
     assert.deepEqual(await storageSnapshot(page), before);
-  }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
 
   await check('delayed-image-waits-before-visible-time', async page => {
     let release;

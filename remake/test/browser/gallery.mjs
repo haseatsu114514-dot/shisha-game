@@ -310,7 +310,6 @@ try {
   await initialLegacyLoad("first-load-raw-auto-pc", { viewport: { width: 1280, height: 720 } }, false);
   await initialLegacyLoad("first-load-malformed-auto-touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true);
   for (const [name, options] of Object.entries({ pc: { viewport: { width: 1280, height: 720 } },
-    touch: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true },
     landscape: { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true },
   }).filter(([name]) => !process.env.GALLERY_DEVICE || process.env.GALLERY_DEVICE === name)) {
     const context = await browser.newContext(options), page = await context.newPage(), errors = [], requests = [];

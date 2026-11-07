@@ -43,13 +43,6 @@ body.game-ds #viewport, body[data-game-layout="ds"].vn-open #viewport {
 body.game-ds #stage { left: 0; top: 0; width: 100%; height: 100%; transform: none; --stage-gutter: 0px; --stage-safe-l: 0px; --stage-safe-r: 0px; overflow: clip; background: transparent; isolation: isolate; }
 /* LOAD直後、会話開始のMutationObserverが反映されるまで従来寸法へ一瞬戻さない。 */
 body[data-game-layout="ds"][data-screen="title"]:has(.title[data-layout="ds"]) #stage { left: 0; top: 0; width: 100%; height: 100%; transform: none; --stage-gutter: 0px; --stage-safe-l: 0px; --stage-safe-r: 0px; }
-body[data-game-layout="ds"][data-screen="title"]:has(.title[data-layout="ds"]) #rotate-hint { display: none !important; }
-body.game-ds #rotate-hint { display: none !important; }
-
-@media (orientation: portrait) and (max-width: 760px) and (hover: none) and (pointer: coarse) {
-  /* DS風の画面と表示切替も全面ガードで覆う。 */
-  body[data-game-layout="ds"]:not([data-screen="title"]) #rotate-hint { display: grid !important; z-index: 1200; }
-}
 
 /* 2つの画面。上は額縁だけ（中身の上に重ねる）、下は面の色（中身の後ろに敷く）。 */
 body.game-ds #stage > .game-ds-panel { position: absolute; right: auto; bottom: auto; pointer-events: none; border-radius: 7px; }

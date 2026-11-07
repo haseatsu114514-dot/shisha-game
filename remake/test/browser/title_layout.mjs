@@ -82,7 +82,7 @@ async function check(name, options, run, setup = null) {
     await p.screenshot({ path: path.join(dir, `${name}-failed.png`) }).catch(() => {});
   } finally { await context.close(); }
 }
-const sizes = { pc: { viewport: { width: 1280, height: 720 } }, phone: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } };
+const sizes = { pc: { viewport: { width: 1280, height: 720 } }, phone: { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } };
 try {
   for (const [device, options] of Object.entries(sizes)) {
     for (const mode of ["normal", "ds"]) {
@@ -105,15 +105,17 @@ try {
           // 縦長の画面は上下（端末を縦に持つ形）、背の低い横長だけ左右に並ぶ。
           const stacked = await p.evaluate(() => document.documentElement.dataset.dsLayout === "stacked");
           assert(stacked ? rects[1].y > rects[0].y + rects[0].h : rects[1].x > rects[0].x + rects[0].w);
-          if (device === "phone") assert(stacked, "phone portrait must stack the two screens");
           for (const size of await p.locator(".title-item").evaluateAll(ns => ns.map(n => n.getBoundingClientRect().height))) assert(size >= 44);
         }
         await p.reload(); await ready(p);
         assert.equal(await p.locator(".title").getAttribute("data-layout"), mode);
         assert.deepEqual(await snapshot(p), before, "display/reload changed game data");
-        // 通常版の縦持ち案内を保持する。既存メニューは従来どおり横持ちで操作。
-        if (device === "phone" && mode === "normal") {
-          assert.equal(await p.locator("#rotate-hint").isVisible(), true);
+        // 縦持ちはタイトル（通常版・DS風とも）から回転案内だけを出す（#2826）。横に戻せば操作できる。
+        if (device === "phone") {
+          assert.equal(await p.locator("#rotate-hint").isVisible(), false, "landscape: no guard");
+          await p.setViewportSize({ width: 390, height: 844 });
+          assert.equal(await p.locator("#rotate-hint").isVisible(), true, `${mode}: portrait title shows only the guard`);
+          assert.equal(await p.evaluate(() => { const g = document.querySelector("#rotate-hint"); const h = document.elementFromPoint(innerWidth / 2, innerHeight / 2); return g === h || g.contains(h); }), true);
           await p.setViewportSize({ width: 844, height: 390 });
         }
         // Native keyboard activation remains available in both modes.
@@ -147,7 +149,6 @@ try {
       });
       await check(`${device}-${mode}-legacy-continue`, options, async p => {
         await seed(p); await layout(p, mode);
-        if (device === "phone" && mode === "normal") await p.setViewportSize({ width: 844, height: 390 });
         await button(p, "title-load").click(); await button(p, "slot-1").click();
         await p.locator("body.vn-open").waitFor();
         if (mode === "ds") await gameIsDS(p); else await stageIsOriginal(p);
@@ -163,11 +164,11 @@ try {
   for (const [device, options] of Object.entries({
     landscape: { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true },
     portrait: sizes.phone,
-    small: { viewport: { width: 320, height: 568 }, isMobile: true, hasTouch: true },
+    small: { viewport: { width: 320, height: 568 } }, // 縦の小画面は狭いウィンドウ（タッチ縦持ちは回転案内）
   })) {
     await check(`ds-gallery-${device}`, options, async p => {
       await layout(p, "ds");
-      await button(p, "title-gallery").tap();
+      await button(p, "title-gallery").click();
       const geometry = await p.evaluate(() => {
         const box = document.querySelector(".gal").getBoundingClientRect();
         const note = document.querySelector(".gal-note").getBoundingClientRect();
@@ -182,7 +183,7 @@ try {
       });
       assert.deepEqual(geometry, { fits: true, countFits: true, closeHit: true });
       await p.screenshot({ path: path.join(dir, `ds-gallery-${device}-open.png`) });
-      await button(p, "gallery-close").tap();
+      await button(p, "gallery-close").click();
     });
   }
   await check("forced-normal-and-save-preservation", sizes.phone, async p => {
@@ -233,8 +234,7 @@ try {
     await openLayoutControls(p); await button(p, "title-layout-recover").click(); await ready(p);
   }, p => p.route("**/css/title-ds.css", r => r.fulfill({ status: 200, contentType: "text/css", body: "" })));
   for (const [name, options] of Object.entries({
-    "320x480-touch": { viewport: { width: 320, height: 480 }, isMobile: true, hasTouch: true },
-    "320x568-touch": { viewport: { width: 320, height: 568 }, isMobile: true, hasTouch: true },
+    // 縦持ちのタッチ端末は回転案内で覆う（#2826）ため、縦の小画面はマウス（狭いウィンドウ）だけ検査する。
     // ページ拡大でCSS viewportが縮んだ場合の寸法。DPR変更とピンチは別に検査する。
     "320x480-mouse-dpr2": { viewport: { width: 320, height: 480 }, deviceScaleFactor: 2 },
   })) await check(`small-phone-equal-panels-and-scroll-${name}`, options, async p => {
@@ -263,7 +263,7 @@ try {
     await layout(p, "normal");
     assert.deepEqual(await snapshot(p), before, "small-screen inputs changed save data");
   });
-  await check("ds-portrait-pinch-safe-area-and-rotation", sizes.phone, async p => {
+  await check("ds-portrait-pinch-safe-area-and-rotation", { viewport: { width: 390, height: 844 } }, async p => {
     await seed(p);
     await layout(p, "ds");
     const cdp = await p.context().newCDPSession(p);
@@ -284,11 +284,11 @@ try {
     const safe = await geometry();
     assert.equal(safe.layout, "stacked"); assert.equal(safe.vy, 32);
     assert.equal(safe.cy + safe.ch, 452, "bottom safe area was ignored");
-    await button(p, "title-new").tap(); await button(p, "cancel-new").tap();
+    await button(p, "title-new").click(); await button(p, "cancel-new").click();
     await p.setViewportSize({ width: 844, height: 390 });
     assert.equal((await geometry()).layout, "side");
-    await button(p, "title-config").tap(); await p.locator("#modal.show .cfg").waitFor();
-    await p.locator("#modal.show .modal-actions button").tap();
+    await button(p, "title-config").click(); await p.locator("#modal.show .cfg").waitFor();
+    await p.locator("#modal.show .modal-actions button").click();
     await p.setViewportSize({ width: 390, height: 844 });
     assert.equal((await geometry()).layout, "stacked");
     assert.deepEqual(await snapshot(p), before, "pinch/rotation changed save data");
