@@ -77,6 +77,11 @@ body[data-screen="shop"] #hud .hud-card, body[data-screen="shop-entry"] #hud .hu
 .shop-paper .kuji-row .shop-main { gap: 6px; }
 .shop-paper .kuji-row .btn { flex: none; min-width: 150px; min-height: 64px; font-size: 22px; }
 .shop-paper .kuji-row .shop-main small { font-size: 18px; }
+/* くじ券（KJ05）: 限定台くじの行の下の1行。行そのものは押せない */
+.shop-paper .kuji-ticket-row { padding-top: 10px; padding-bottom: 10px; background: #f1eaf3; }
+.shop-paper .kuji-ticket-row .shop-main { gap: 4px; }
+.shop-paper .kuji-ticket-row .btn { flex: none; min-width: 150px; min-height: 64px; font-size: 22px; }
+.shop-paper .kuji-ticket-row .shop-main small { font-size: 18px; }
 .shop-paper .kuji-actions { display: flex; flex-direction: row; flex: none; gap: 16px; }
 .shop-paper .kuji-title { display: flex; align-items: center; gap: 12px; min-width: 0; }
 /* くじの「?」: 見た目は文字ほどの小さな丸。押せる範囲は透明な ::before で 72px 四方に広げる（#2958・オーナー指示） */
@@ -119,7 +124,7 @@ body[data-screen="shop"] #hud .hud-card, body[data-screen="shop-entry"] #hud .hu
   .shop-paper { --shop-text: max(18px, calc(11.5px / var(--k, 1))); --shop-tap: max(64px, calc(40px / var(--k, 1))); --shop-label: max(22px, calc(12px / var(--k, 1))); }
   .shop-paper .shop-head { height: auto; min-height: 70px; }
   .shop-paper .shop-sub, .shop-paper .shop-money small, .shop-paper .shop-stock small, .shop-paper .shop-summary small, .shop-paper .shop-summary span, .shop-paper .shop-owned, .shop-price.expense, .shop-filters > span,
-  .shop-paper .shop-main small, .shop-paper .shop-main .shop-feature-tags.shop-feature-tags, .shop-paper .kuji-row .shop-main small, .shop-paper .shop-stock, .shop-paper .shop-stock span, .shop-type-mark, .shop-quantity output { font-size: var(--shop-text); }
+  .shop-paper .shop-main small, .shop-paper .shop-main .shop-feature-tags.shop-feature-tags, .shop-paper .kuji-row .shop-main small, .shop-paper .kuji-ticket-row .shop-main small, .shop-paper .shop-stock, .shop-paper .shop-stock span, .shop-type-mark, .shop-quantity output { font-size: var(--shop-text); }
   .shop-paper .shop-tabs { height: var(--shop-tap); margin-top: 8px; }
   .shop-paper .shop-tab, .shop-paper .shop-main b { font-size: var(--shop-label); }
   .shop-paper .shop-row { min-height: var(--shop-tap); }
@@ -128,7 +133,7 @@ body[data-screen="shop"] #hud .hud-card, body[data-screen="shop-entry"] #hud .hu
   .shop-paper .shop-step { flex: none; min-width: max(52px, calc(40px / var(--k, 1))); width: max(52px, calc(40px / var(--k, 1))); height: var(--shop-tap); font-size: var(--shop-label) !important; }
   .shop-paper .shop-row .btn, .shop-paper .shop-checkout { min-height: var(--shop-tap); font-size: var(--shop-label) !important; }
   .shop-paper .kuji-row, .shop-paper .kuji-actions { gap: 16px; }
-  .shop-paper .kuji-row .btn { min-width: 150px; }
+  .shop-paper .kuji-row .btn, .shop-paper .kuji-ticket-row .btn { min-width: 150px; }
   .shop-paper .kuji-help { --help-size: max(30px, calc(16px / var(--k, 1))); --help-hit: max(72px, calc(40px / var(--k, 1))); font-size: max(18px, calc(11px / var(--k, 1))) !important; }
   .shop-paper .shop-foot { height: auto; min-height: 92px; }
   .shop-paper .shop-summary { min-height: var(--shop-tap); }

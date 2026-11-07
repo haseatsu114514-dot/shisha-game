@@ -644,6 +644,54 @@
       "art": "stand_custom",
       "home_xp": 9,
       "description": "職人が一台ずつ仕立てる真鍮のステムと、手吹きガラスのベース。受け皿の高さやホースポートの向きまで手に合わせてある。"
+    },
+    {
+      "id": "stand_custom_melty",
+      "type": "homeware",
+      "name": "MELTY PUFF柄の特注台",
+      "chapter_min": 5,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "unsellable": true,
+      "not_for_sale": true,
+      "kuji_only": true,
+      "base": "stand_custom",
+      "value": "stand_custom_melty",
+      "home_xp": 9,
+      "description": "職人仕立ての特注台を、柚ヶ谷のMELTY PUFFと同じピンクとレオパード柄に塗った台。Dr.fookahの限定台くじだけで当たる。仕立てと煙の通りは特注台と同じ。"
+    },
+    {
+      "id": "stand_custom_tosu",
+      "type": "homeware",
+      "name": "橙須限定色の特注台",
+      "chapter_min": 5,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "unsellable": true,
+      "not_for_sale": true,
+      "kuji_only": true,
+      "base": "stand_custom",
+      "value": "stand_custom_tosu",
+      "home_xp": 9,
+      "description": "地元・橙須の「橙」の色を、手吹きガラスのベースに溶かし込んだ限定色の特注台。Dr.fookahの限定台くじだけで当たる。仕立てと煙の通りは特注台と同じ。"
+    },
+    {
+      "id": "stand_custom_engraved",
+      "type": "homeware",
+      "name": "名入れの特注台（逢縁）",
+      "chapter_min": 5,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "unsellable": true,
+      "not_for_sale": true,
+      "kuji_only": true,
+      "base": "stand_custom",
+      "value": "stand_custom_engraved",
+      "home_xp": 9,
+      "description": "当たった人の名前を真鍮のステムに彫って渡す、名入れの特注台。はじめの台には「逢縁」と小さく入っている。Dr.fookahの限定台くじだけで当たる。仕立てと煙の通りは特注台と同じ。"
     }
   ]
 }

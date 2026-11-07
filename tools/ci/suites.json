@@ -294,6 +294,12 @@
       "run": ["node remake/test/kuji_tiers.mjs"]
     },
     {
+      "id": "kuji-limited-kj05",
+      "title": "Chapter-5 limited kuji tier, kuji-only stands, tickets and no hidane (KJ05, #2455)",
+      "kind": "quick",
+      "run": ["node remake/test/kuji_limited.mjs"]
+    },
+    {
       "id": "growth-levelup-browser-1",
       "title": "Growth HUD gauge, EXP chip, night level-up and hidane badge (?growth=1), part 1/2",
       "kind": "browser",
@@ -3150,6 +3156,7 @@
         "remake/js/daily/map.js",
         "remake/js/daily/shop.js",
         "remake/js/daily/kuji.js",
+        "remake/js/daily/kuji-tickets.js",
         "data/kuji.json",
         "remake/css/shop*.css",
         "remake/test/store_logos.mjs",
@@ -3925,6 +3932,7 @@
       "paths": [
         "remake/test/kuji_purchase.mjs",
         "remake/js/daily/kuji.js",
+        "remake/js/daily/kuji-tickets.js",
         "data/kuji.json"
       ],
       "run": [

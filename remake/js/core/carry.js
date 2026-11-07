@@ -2,7 +2,7 @@
 // 分類と抽出だけを持ち、周回の開始・解放の記録・難易度は持たない。
 // 引き継ぎパッケージは許可リスト方式: ここに「引き継ぐ」と書いた項目だけが入り、
 // 好感度・恋愛のキーは構造的に混入しない。
-import { MAX_MONEY } from "./rules.js";
+import { MAX_MONEY, KUJI_LIMITED_GRADES, KUJI_ONLY_EQUIPMENT } from "./rules.js";
 import { STAT_KEYS } from "./state.js";
 
 const clone = (v) => structuredClone(v);
@@ -36,7 +36,7 @@ export const STATE_KEY_RULES = {
   story: { verdict: "reset", note: "§2.4" },
   visits: { verdict: "reset", note: "§2.2" },
   visitedDay: { verdict: "reset", note: "§2.2" },
-  owned: { verdict: "conditional", note: "購入・報酬品は引き継ぐ。gift 由来の装備はリセット（§2.1）" },
+  owned: { verdict: "conditional", note: "購入・報酬品は引き継ぐ。gift 由来の装備と、くじ限定の台（KJ05）はリセット（§2.1）" },
   equip: { verdict: "conditional", note: "贈答品の枠はパッケージに入れない（§2.1）" },
   flavors: { verdict: "carry", note: "図鑑記録（§2.1）" },
   flavorMastery: { verdict: "carry", note: "系統ごとのXP（§2.1）" },
@@ -59,7 +59,8 @@ export const STATE_KEY_RULES = {
   rehearsal: { verdict: "reset", note: "§2.1" },
   tournament: { verdict: "reset", note: "§2.2。通算記録はメタ層の lifetime が担う" },
   reel: { verdict: "carry", note: "日常スロット一式（§2.1）" },
-  kuji: { verdict: "carry", note: "くじの抽選状態（§2.1）" },
+  kuji: { verdict: "conditional", note: "くじの抽選状態（§2.1）。第5章の限定台くじの箱だけはリセット（KJ05）" },
+  kujiTickets: { verdict: "reset", note: "くじ券（KJ05）。第5章の限定台くじ専用で、周回へ持ち越さない" },
   goods: { verdict: "carry", note: "売却小物（§2.1）" },
   lovers: { verdict: "reset", note: "§2.4" },
   loveLevel: { verdict: "reset", note: "§2.4" },
@@ -668,12 +669,14 @@ export function buildCarryPackage(s) {
   data.flavorLessons = clone(s?.flavorLessons ?? []);
   data.recipes = clone(s?.recipes ?? {});
   data.goods = clone(s?.goods ?? []);
-  data.kuji = clone(s?.kuji ?? {});
+  // くじ: 第5章の限定台くじ（KJ05）の箱は持ち越さない。くじ券（kujiTickets）はパッケージに入れない
+  data.kuji = clone(s?.kuji && typeof s.kuji === "object" && !Array.isArray(s.kuji) ? s.kuji : {});
+  for (const grade of KUJI_LIMITED_GRADES) delete data.kuji[grade];
   data.reel = clone(s?.reel ?? {});
   data.best = clone(s?.best ?? {});
-  // 装備: 贈答品を除いた所持だけを引き継ぐ。装備中の枠も、残った所持にあるものだけを残す
+  // 装備: 贈答品とくじ限定の台（KJ05）を除いた所持だけを引き継ぐ。装備中の枠も、残った所持にあるものだけを残す
   // （空いた枠を既定装備に戻すのは周回開始側の仕事で、ここでは枠ごと落とす）。
-  const gift = new Set(GIFT_EQUIPMENT_IDS);
+  const gift = new Set([...GIFT_EQUIPMENT_IDS, ...KUJI_ONLY_EQUIPMENT]);
   data.owned = (Array.isArray(s?.owned) ? s.owned : []).filter((id) => !gift.has(id));
   const ownedSet = new Set(data.owned);
   data.equip = Object.fromEntries(Object.entries(s?.equip ?? {}).filter(([, id]) => ownedSet.has(id)));

@@ -278,11 +278,32 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
   assert.deepEqual(s, before);
 }
 
+// ---------------------------------------------------------------- D2. くじ限定の台・限定台くじ・くじ券（KJ05）は持ち越さない
+{
+  const { KUJI_ONLY_EQUIPMENT, KUJI_LIMITED_GRADES } = await import("../js/core/rules.js");
+  const s = newState();
+  s.owned = [...s.owned, "stand_custom", ...KUJI_ONLY_EQUIPMENT];
+  s.kuji = { g10000: { order: [0, 1], drawn: 1, emptyDay: null }, g20000: { order: [0, 1, 2], drawn: 2, emptyDay: null } };
+  s.kujiTickets = 4;
+  const before = copy(s);
+  const pkg = buildCarryPackage(s);
+  for (const id of KUJI_ONLY_EQUIPMENT) assert.ok(!pkg.owned.includes(id), `${id} は持ち越さない`);
+  assert.ok(pkg.owned.includes("stand_custom"), "店で買える台は従来どおり持ち越す");
+  assert.deepEqual(Object.keys(pkg.kuji), ["g10000"]);
+  for (const grade of KUJI_LIMITED_GRADES) assert.ok(!(grade in pkg.kuji), `${grade} の箱は持ち越さない`);
+  assert.ok(!("kujiTickets" in pkg), "くじ券はパッケージに入れない");
+  assert.equal(STATE_KEY_RULES.kujiTickets.verdict, "reset");
+  assert.equal(STATE_KEY_RULES.kuji.verdict, "conditional");
+  assert.deepEqual(s, before, "抽出で元の state を変えない");
+}
+
 // ---------------------------------------------------------------- E. データとの照合
 {
   const equipment = JSON.parse(fs.readFileSync(new URL("data/equipment.json", root), "utf8")).equipment;
   const giftIds = equipment.filter((e) => e.gift).map((e) => e.id).sort();
   assert.deepEqual([...GIFT_EQUIPMENT_IDS].sort(), giftIds);
+  const { KUJI_ONLY_EQUIPMENT } = await import("../js/core/rules.js");
+  assert.deepEqual([...KUJI_ONLY_EQUIPMENT].sort(), equipment.filter((e) => e.kuji_only).map((e) => e.id).sort(), "くじ限定の台の一覧が data と一致");
 
   const src = fs.readFileSync(new URL("remake/js/core/keepsakes.js", root), "utf8");
   const ids = [...src.matchAll(/([a-z0-9_]+): \{ name:/g)].map((m) => m[1]).sort();

@@ -132,7 +132,8 @@ try {
     await page.locator('[data-test="hole-punch"]').waitFor({ state: "visible" });
     await page.waitForTimeout(4000); // countdown
     await recordStable("mini-game pointer input", () => repeat(page.locator('[data-test="hole-punch"]'), 2));
-    assert(await page.locator(".foil-holes .foil-hole").count() > 0, "real mini-game records punches");
+    // #2937: 素早い連打は浅すぎて穴にならず、へこみだけが残る。どちらも実際の入力として記録される。
+    assert(await page.locator(".foil-holes .foil-hole, .foil-dents .foil-dent").count() > 0, "real mini-game records punches");
     assert.equal(await page.locator(".foil:not(.ht-preview)").evaluate(el => getComputedStyle(el).touchAction), "none", "mini-game drag policy preserved");
     await boot(); // fresh document stops the mini-game timers, same isolated save
     assert.equal(await page.evaluate(async () => { const s = await import("./js/core/state.js"); return s.load().day; }), 4, "save survives reload");
