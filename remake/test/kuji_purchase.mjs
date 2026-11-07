@@ -9,16 +9,18 @@ import path from "node:path";
 
 const read = file => readFile(new URL(file, import.meta.url), "utf8");
 const strip = source => source.replace(/^import .*;\s*$/gm, "").replace(/\bexport /g, "");
-const [kuji, core, util, stats, data, travelBudget, galleryProgress] = await Promise.all([
+const [kuji, core, util, stats, data, travelBudget, galleryProgress, kujiTickets, equipment] = await Promise.all([
   read("../js/daily/kuji.js"), read("../js/core/state.js"), read("../js/core/util.js"),
   read("../js/core/stats.js"), read("../../data/kuji.json"), read("../js/core/travel-budget.js"),
-  read("../js/core/gallery-progress.js"),
+  read("../js/core/gallery-progress.js"), read("../js/daily/kuji-tickets.js"), read("../../data/equipment.json"),
 ]);
+// くじ限定の台（KJ05）だけ実データを渡す（重複でくじ券に替わるかの判定に使う）
+const kujiOnly = Object.fromEntries(JSON.parse(equipment).equipment.filter(e => e.kuji_only).map(e => [e.id, e]));
 const html = `<!doctype html><meta charset="utf-8"><div id="screen"></div><div id="modal"></div><script>
 ${strip(util)}
 ${strip(travelBudget)}
 let moneyEvents = 0, saves = 0, flavorGrants = 0, renders = 0, reentry = null;
-const MAX_MONEY = 999999999, TOURNAMENT_DAY = 14;
+const MAX_MONEY = 999999999, TOURNAMENT_DAY = 14, KUJI_TICKET_MAX = 99;
 const emit = event => {
   if (event === 'money') { moneyEvents++; const callback=reentry; reentry=null; callback?.(); }
 };
@@ -27,7 +29,7 @@ ${strip(galleryProgress)}
 ${strip(core).replace('function save()', 'function persistState()')}
 function save() { saves++; persistState(); }
 ${strip(stats.match(/export function addMoney\(n\) \{[\s\S]*?\n\}/)[0])}
-const DB = {kuji:${data}}, displayName = () => 'リン';
+const DB = {kuji:${data}, equipById:${JSON.stringify(kujiOnly)}}, displayName = () => 'リン';
 const layers = {screen:document.querySelector('#screen'), modal:document.querySelector('#modal')};
 const toast = () => {}, SE = {select(){},click(){},stamp(){},fanfare(){}};
 const vnTest = {turbo:true}, FLAVOR_BOX_GRAMS = 50, RIO_AWAY_DAY = 3;
@@ -36,12 +38,13 @@ function addFlavorStock(id, grams) {
   state.flavorStock[id] = (state.flavorStock[id] || 0) + grams;
   if (!state.flavors.includes(id)) state.flavors.push(id);
 }
+${strip(kujiTickets)}
 ${strip(kuji)}
-let root, old;
+let root, old, oldTicket;
 function paint() { renders++; root.replaceChildren(...kujiRows(paint)); }
 function prepare(options = {}) {
   layers.modal.replaceChildren(); layers.modal.classList.remove('show');
-  newGame(); Object.assign(state, {phase:'daily', chapter:2, day:9});
+  newGame(); Object.assign(state, {phase:'daily', chapter:options.chapter || 2, day:9});
   state.owned.push('home_rig_set'); // A valid chapter-2 save already has its home rig.
   state.flags._kuji_seen = true;
   root = el('section.shop'); layers.screen.replaceChildren(root); paint();
@@ -58,8 +61,11 @@ function prepare(options = {}) {
   if (options.remaining) box.drawn = box.order.length - options.remaining;
   if (options.empty) { box.drawn = box.order.length; box.emptyDay = state.day; }
   if (options.money != null) state.money = options.money;
+  if (options.tickets != null) state.kujiTickets = options.tickets;
+  if (options.owned) state.owned.push(...options.owned);
   paint(); saves = moneyEvents = flavorGrants = renders = 0;
   old = root.querySelector('[data-test="kuji-' + (options.grade || 'g500') + '"]');
+  oldTicket = root.querySelector('[data-test="kuji-' + (options.grade || 'g500') + '-ticket"]');
   old.focus();
   return snapshot();
 }
@@ -90,6 +96,12 @@ window.K = {prepare, snapshot, finish, forceOld:()=>force(old),
   load:()=>{load(); return snapshot();},
   abandon:()=>{layers.modal.replaceChildren(); layers.modal.classList.remove('show');},
   refill:()=>{state.day+=3;paint();return snapshot();},
+  ticket:()=>root.querySelector('[data-test="kuji-g20000-ticket"]'),
+  ticketText:()=>root.querySelector('[data-test="kuji-g20000-ticket"]')?.textContent,
+  ticketDisabled:()=>root.querySelector('[data-test="kuji-g20000-ticket"]')?.disabled,
+  ticketClick:()=>oldTicket.click(), ticketForceOld:()=>force(oldTicket),
+  ticketBurst:()=>{for(let i=0;i<5;i++) force(oldTicket);},
+  revealText:()=>layers.modal.textContent,
 };
 </script>`;
 
@@ -230,6 +242,49 @@ try {
   assert.equal(lastBatch.saves, 3);
   assert.equal((await run("K.batchResults()")).length, 4, "last-one appears beside three tickets");
   console.log("PASS 5/10 batch charge, immediate saves, last-one result and load");
+  // KJ05: 限定台くじは第5章だけ。くじ券1枚で1回（お金は使わない）、連打・古いボタンでも1枚だけ。0枚では押せない。
+  {
+    await run("K.prepare({grade:'g500',chapter:4})");
+    assert.equal(await run("K.ticket()"), null, "第4章には限定台くじもくじ券の行も無い");
+    const before = await run("K.prepare({grade:'g20000',chapter:5,tickets:1})");
+    assert.equal(await run("K.ticketText()"), "くじ券で引く（残り1枚）");
+    assert.equal(await run("K.ticketDisabled()"), false);
+    await run("K.ticketClick(); K.ticketBurst(); K.click();");
+    const used = await run("K.snapshot()");
+    assert.equal(used.state.kujiTickets, 0, "くじ券を1枚使った");
+    assert.equal(used.state.money, before.state.money, "お金は使わない");
+    assert.equal(used.state.kuji.g20000.drawn, 1, "1回だけ引いた");
+    assert(used.state.owned.includes("stand_custom_melty"), "S賞の限定の台が持ち物に入る");
+    assert.equal(used.saves, 1); assert.equal(used.moneyEvents, 0); assert.equal(used.overlays, 1);
+    await run("K.finish()");
+    const done = await run("K.snapshot()");
+    assert.equal(await run("K.ticketText()"), "くじ券で引く（残り0枚）");
+    assert.equal(await run("K.ticketDisabled()"), true, "0枚では押せない");
+    await run("K.ticketForceOld(); K.ticketForceOld()");
+    assert.deepEqual(await run("K.snapshot()"), done, "古いくじ券のボタンでは引けない");
+    assert.deepEqual((await run("K.load()")).state, used.state, "くじ券で引いた結果は SAVE/LOAD で残る");
+  }
+  {
+    // 持っている限定の台が当たったら、お金ではなくくじ券1枚。そのくじ券で次の1回を引ける。
+    const before = await run("K.prepare({grade:'g20000',chapter:5,owned:['stand_custom_melty'],money:100000})");
+    await run("K.click(); K.burst()");
+    const dupe = await run("K.snapshot()");
+    assert.equal(dupe.state.money, before.state.money - 20000, "1回20,000円だけ払い、買い取りのお金は無い");
+    assert.equal(dupe.state.kujiTickets, 1);
+    assert.equal(dupe.state.owned.filter(id => id === "stand_custom_melty").length, 1);
+    assert.match(await run("(async()=>{await sleep(500);return K.revealText();})()"), /持っているので、くじ券を1枚受け取った/, "結果のカードにくじ券と出す");
+    await run("K.finish()");
+    assert.equal(await run("K.ticketText()"), "くじ券で引く（残り1枚）");
+    await run("K.ticket().click()");
+    const second = await run("K.snapshot()");
+    assert.equal(second.state.kujiTickets, 0);
+    assert.equal(second.state.money, dupe.state.money);
+    assert.equal(second.state.kuji.g20000.drawn, 2);
+    assert(second.state.owned.includes("stand_custom_tosu"));
+    await run("K.finish()");
+    assert.deepEqual((await run("K.load()")).state, second.state, "くじ券と箱の状態は SAVE/LOAD で残る");
+  }
+  console.log("PASS ch5 limited tier: ticket draw once / no money / disabled at 0 / dupe → ticket / save-load");
   console.log("PASS kuji purchase guard (isolated real DOM; turbo reveal; actual state save/load)");
 } finally {
   clearTimeout(watchdog); child.kill(); await exited;

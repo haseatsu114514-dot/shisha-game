@@ -21,10 +21,10 @@ export const STORE_LOGOS = Object.freeze({ ...BASE_LOGOS,
   trpg_bar: { name: "ボドゲカフェ / TRPG BAR", file: "trpg-bar", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch4_festa: { name: "FESTA", file: "ch4-festa", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch4_dubai_longlong: { name: "龍龍水煙所", file: "ch4-longlong", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
-  // 2026-11-07 採用（SLG01〜SLG03。ミューズの仮判断でおすすめ案。オーナーが後から変更できる。原画は asset_sources/store-logos-missing-1102/）
-  shishark: { name: "SHISHARK", file: "shishark", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
-  ch4_dubai_cafe: { name: "中心地のカフェ", file: "ch4-dubai-center-cafe", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
-  ch4_dubai_alley: { name: "路地裏のカフェ", file: "ch4-dubai-alley-cafe", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
+  // 2026-11-07 オーナー採用（SLG01〜SLG03: 1-B、2-C、3-A）。外形に合わせた表示窓で小さな地図ピンにも収める。
+  shishark: { name: "SHISHARK", file: "shishark", ext: "webp", sheet: [768, 512], frame: [60, 9, 648, 497] },
+  ch4_dubai_cafe: { name: "中心地のカフェ", file: "ch4-dubai-center-cafe", ext: "webp", sheet: [768, 512], frame: [157, 22, 452, 468] },
+  ch4_dubai_alley: { name: "路地裏のカフェ", file: "ch4-dubai-alley-cafe", ext: "webp", sheet: [768, 512], frame: [78, 17, 595, 482] },
   // 第3章・東京（#2034）。キーは ch3-map-model.js の地点 id に ch3_ を付けたもの。
   ch3_enmaku: { name: "煙幕", file: "ch3-enmaku", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch3_steve: { name: "Smoke & Glory", file: "ch3-smoke-and-glory", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },

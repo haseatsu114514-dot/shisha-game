@@ -181,18 +181,18 @@ function chooseShopFloor() {
       retire(root); resolve(destination);
     };
     const unavailable = rioUnavailable();
-    const card = (floor, title, desc, bg, destination, disabled = false) => el(`button.shop-floor${floor === "2F" ? ".showroom" : ""}`, {
-      disabled, dataset: { test: destination === "rio" ? "shop-upstairs" : "shop-enter" }, onclick: () => finish(destination),
+    const card = (floor, title, desc, bg, destination, disabled = false, label = "") => el(`button.shop-floor${floor === "2F" ? ".showroom" : ""}`, {
+      disabled, ...(label ? { "aria-label": `${title}・${label}` } : {}), dataset: { test: destination === "rio" ? "shop-upstairs" : "shop-enter" }, onclick: () => finish(destination),
     }, [
       el("span.shop-floor-picture", [el("img", { src: bgUrl(bg), alt: "", decoding: "async" }), el("span.shop-floor-number", { text: floor })]),
-      el("span.shop-floor-caption", [el("b", { text: title }), el("small", { text: desc }), el("span.shop-floor-arrow", { text: "↗", "aria-hidden": "true" })]),
+      el("span.shop-floor-caption", [el("b", { text: title }), el("small.shop-badge", { text: desc }), el("span.shop-floor-arrow", { text: "↗", "aria-hidden": "true" })]),
     ]);
     const root = showScreen("shop-entry", el("section.shop-paper.shop-entry", { "aria-label": "Dr.fookahの行き先" }, [
-      shopHeader("卸直営店", el("div.shop-money", [el("small", { text: "所持金" }), el("span", { text: priceText(state.money) })])),
+      shopHeader("卸直営店", null),
       el("h3", { text: "今日は、どちらへ？" }),
       el("div.shop-floors", [
-        card("1F", "買い物", "時間消費なし", "bg_shop", "shop"),
-        card("2F", "夜のショールーム", unavailable || "相談受付中・1行動消費", "bg_fookah_showroom", "rio", !!unavailable),
+        card("1F", "買い物", "⏱ 0", "bg_shop", "shop", false, "時間消費なし"),
+        card("2F", "夜のショールーム", unavailable === "2階の相談は夜から" ? "🌙 夜" : unavailable || "相談受付中・1行動消費", "bg_fookah_showroom", "rio", !!unavailable, unavailable === "2階の相談は夜から" ? unavailable : ""),
       ]),
       el("footer.shop-entry-foot", [el("button.shop-back", { text: "← 街に戻る", dataset: { test: "shop-entry-back" }, onclick: () => finish(null) })]),
     ]));
@@ -314,7 +314,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const sellRows = () => {
       const rows = state.owned.map((id) => DB.equipById[id]).filter((e) => e && !Object.values(state.equip).includes(e.id)).map((e) =>
         el("div.shop-row", [productArt(e, false),
-          el("div.shop-main", [el("b", { text: e.name }), el("small", { text: e.unsellable ? "贈り物なので売れない" : "中古買い取り" })]),
+          el("div.shop-main", [el("b", { text: e.name }), el("small", { text: e.kuji_only ? "くじ限定の台なので売れない" : e.unsellable ? "贈り物なので売れない" : "中古買い取り" })]),
           e.unsellable ? el("span.shop-owned", { text: "売却不可", dataset: { test: `sell-locked-${e.id}` } }) : el("button.btn.small", {
             text: `${yen(e.sell_price)}で売る`, dataset: { test: `sell-${e.id}` }, onclick: async () => {
               if (!await confirmSale(e.name, e.sell_price)) return;

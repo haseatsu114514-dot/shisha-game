@@ -32,7 +32,7 @@ const firstLine = id => DB.dialogues[id]?.lines?.[0]?.text || "";
 let active = false;
 
 /**
- * 地図からの入口。kind "desert_talk" はカフェ・サーリムで会話を1つ読んで確定（paid なら一台の代金 3,000円）、
+ * 地図からの入口。kind "desert_talk" はカフェ・オアシスで会話を1つ読んで確定（paid なら一台の代金 3,000円）、
  * kind "desert" は砂丘へ出かけて遊ぶ（2回目からツアー代）。会話のたびにヌールの好感度が上がる（段階 +16・雑談 +8）。
  * 読了・完走の確定と保存はここで行う。中断（signal・LOAD・タイトル）は確定済みの分だけ残す。
  * scene: 読む台詞 id の差し替え（第5章の書き出し。段階の数え方・報酬は元の id のまま。第4章は渡さない）。
@@ -67,8 +67,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
       // ♥5の締めくくり（DSR20）: 再生・ルートの記録・専用ハガルは bonds.js の playFinale。読み終えたら今日の来店として確定する
       if (visit.kind === "finale") {
         const { finaleDue, playFinale } = await import("../daily/bonds.js");
-        if (!current() || !finaleDue(DESERT_GUIDE) || !await prepare(bgUrl("bg_dubai_inn_day"))) return false;
-        if (!await playFinale(DESERT_GUIDE, { bg: bgUrl("bg_dubai_inn_day"), signal, deferSave: true }) || !current()) return false;
+        if (!current() || !finaleDue(DESERT_GUIDE) || !await prepare(bgUrl("bg_dubai_cafe_salim_day"))) return false;
+        if (!await playFinale(DESERT_GUIDE, { bg: bgUrl("bg_dubai_cafe_salim_day"), signal, deferSave: true }) || !current()) return false;
         if (!completeDesertCafeVisit(owner, visit, day, { legacy })) return false;
         if (paid) addMoney(-DESERT_CAFE_PRICE);
         save(); changed = true;
@@ -76,7 +76,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
         return changed;
       }
       const id = visit.id;
-      if (!await read(scene(id), bgUrl("bg_dubai_inn_day"))) return false;
+      if (!await read(scene(id), bgUrl("bg_dubai_cafe_salim_day"))) return false;
       if (!completeDesertCafeVisit(owner, visit, day, { legacy })) return false;
       if (paid) addMoney(-DESERT_CAFE_PRICE);
       // ♥3の問いに答えた（選択は engine の onChoice → bonds.js の recordRomanceChoice が記録済み）

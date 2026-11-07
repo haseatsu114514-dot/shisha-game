@@ -46,7 +46,7 @@ async function prepare(page) {
 function assertResponse(lines, answer) {
   assert.equal(lines.includes(NEUTRAL), answer === null);
   RESPONSES.forEach((text, i) => assert.equal(lines.includes(text), answer === i));
-  assert.equal(lines.filter(text => text === "「応募完了」。短い文字を、２人で確かめた。").length, 1);
+  assert.equal(lines.filter(text => text === "「応募完了」。短い文字を、2人で確かめた。").length, 1);
 }
 
 function stateDifferences(expected, actual, path = "") {
@@ -143,6 +143,9 @@ await suite("tsumugi-draft-response", async check => {
           T.core.setState(before); T.stats.ensureAffinityLevel("tsumugi", 1);
           if (current.flags._tsumugi_story_day === undefined) delete T.core.state.flags._tsumugi_story_day;
           else T.core.state.flags._tsumugi_story_day = current.flags._tsumugi_story_day;
+          // The wrapper saves, and each save adds the elapsed play time (playMs, #2902).
+          // The raw baseline scene does not save, so mirror the clock: it is not a story effect.
+          T.core.state.playMs = current.playMs;
           const expected = T.game();
           T.core.setState(current); T.vn.backlog().length = 0; await T.story.playTsumugiStory(11);
           const repeated = T.game();

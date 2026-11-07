@@ -1,7 +1,7 @@
 // 第4章ドバイ・砂丘のサンドボード（DESERT RIDE）の進み具合と記録。純粋関数だけ（UI・保存は ch4-desert.js）。
 // 進み具合は flags._ch4_desert（店で読んだ段階の数・雑談の数・最後に寄った日・外出回数・最後に出かけた日）、記録は state.desert。
 // 2026-11-02 オーナー「ヌールはシーシャ屋もしつつガイドもしてる。シーシャの方へ行くと交流が深まり、好感度3ぐらいでサンドボードに誘われる。
-// 最初は無料、その後は相場」（DSR21）: 宿の隣のカフェ・サーリム（ヌールの父の店。表にツアーデスク）で一台頼んで話すと好感度が上がる。
+// 最初は無料、その後は相場」（DSR21）: 宿の隣のカフェ・オアシス（ヌールの父の店。表にツアーデスク）で一台頼んで話すと好感度が上がる。
 // 段階の会話は♥0・1・2・3で読み、♥3の誘いで砂丘へ。2回目以降の砂丘は 6,000円（相場: ガイド付きのサンドボード単体 約150ディルハム）。
 import { readResult, rankAtLeast, RANK_ORDER, RULES_VERSION } from "../minigames/desert-ride-model.js";
 import { spendableMoney } from "../core/travel-budget.js";
@@ -44,7 +44,7 @@ export const DESERT_DIALOGUE_IDS = Object.freeze([...DESERT_TALKS, ...DESERT_CAF
 export const DESERT_DIALOGUE_FILE = "ch4_desert";
 // 地図の位置（百分率）。ドバイの地図で HUD・案内の枠・ほかの行き先と重ならない所（デスクは宿・FESTA・店の間、砂丘は左下＝街の外）。
 export const DESERT_PLACES = Object.freeze({
-  tour_desk: Object.freeze({ id: "tour_desk", label: "カフェ・サーリム", x: 34, y: 30 }),
+  tour_desk: Object.freeze({ id: "tour_desk", label: "カフェ・オアシス", x: 34, y: 30 }),
   dunes: Object.freeze({ id: "dunes", label: "砂丘", x: 13, y: 92 }),
 });
 
@@ -115,7 +115,7 @@ export function completeDesertTalk(value, id, day, heart = Infinity, { legacy = 
 }
 
 /**
- * 今日カフェ・サーリムへ寄った時の会話: { id, kind: "story"（段階の会話）|"talk"（雑談） } か、今日はもう寄ったなら null。
+ * 今日カフェ・オアシスへ寄った時の会話: { id, kind: "story"（段階の会話）|"talk"（雑談） } か、今日はもう寄ったなら null。
  * 段階の会話が♥待ちの日・全部読んだ後は、雑談を順に読む。
  */
 export function desertCafeVisit(value, day, { legacy = false } = {}) {
@@ -232,7 +232,7 @@ export function recordDesertResult(value, data, { awardExp = null } = {}) {
 export const desertRankAtLeast = (value, need) => { const rank = desertRecords(value).bestRank; return !!rank && rankAtLeast(rank, need); };
 
 /**
- * 第4章の自由行動の地図（版2より前の5日の保存）に足す行き先。誘われるまではカフェ・サーリム（時間は使わない）、誘われたら砂丘。
+ * 第4章の自由行動の地図（版2より前の5日の保存）に足す行き先。誘われるまではカフェ・オアシス（時間は使わない）、誘われたら砂丘。
  * ほかの行き先と同じ形（id/label/x/y/scenes/purpose/kind/ok/why/unreadCount/consumes）。
  */
 export function desertDestinations(value, day) {
@@ -241,7 +241,7 @@ export function desertDestinations(value, day) {
     const visit = desertCafeVisit(value, day, { legacy: true });
     const first = progress.talks === 0;
     return [{ ...DESERT_PLACES.tour_desk, kind: "desert_talk", legacy: true, scenes: visit ? [visit.id] : [], consumes: false, ok: !!visit,
-      label: first ? "宿の隣のカフェに入る" : "カフェ・サーリムでヌールと話す", visited: !first, background: "bg_dubai_inn_day",
+      label: first ? "宿の隣のカフェに入る" : "カフェ・オアシスでヌールと話す", visited: !first, background: "bg_dubai_inn_day",
       description: "宿の隣のシーシャカフェ。表に砂漠ツアーのデスクがある。", unreadCount: visit?.kind === "story" ? 1 : 0,
       why: visit ? "" : "今日はもう寄った",
       purpose: visit ? (first ? "表のツアーデスクの写真が気になる。中で一台頼んでみる。" : "一台吸いながら、ヌールと話す。")
@@ -258,7 +258,7 @@ export function desertDestinations(value, day) {
 }
 
 // ---- 日常ループ（版2・14日のドバイ: chapters/ch4-dubai-daily.js）の地図の行き先 ----------------------------
-// カフェ・サーリムはいつも地図にあり、一台頼んで（3,000円・行動を1つ使う）ヌールと話す。誘われた後は砂丘も出る。
+// カフェ・オアシスはいつも地図にあり、一台頼んで（3,000円・行動を1つ使う）ヌールと話す。誘われた後は砂丘も出る。
 // 砂丘は昼だけ・同じ日は一度。出かけると beginDesertOuting が slot を使うので、日常ループには追加の消費をさせない。
 export const DESERT_SPOT_IDS = Object.freeze({ desk: "ch4_dubai_tour_desk", dunes: "ch4_dubai_dunes" });
 const dailySpot = fields => Object.freeze({ region: "dubai", kind: "ch4_desert", ...fields });
@@ -276,7 +276,7 @@ export function desertDailySpots(value, day) {
   const visit = desertCafeVisit(value, day), first = progress.talks === 0;
   const poor = DESERT_CAFE_PRICE > spendableMoney(value);
   const cafeWhy = !visit ? "今日はもう寄った。また明日" : poor ? `お金が足りない（${DESERT_CAFE_PRICE.toLocaleString("ja-JP")}円）` : "";
-  const spots = [dailySpot({ id: DESERT_SPOT_IDS.desk, place: "tour_desk", label: first ? "宿の隣のカフェ" : "カフェ・サーリム", area: "宿の隣",
+  const spots = [dailySpot({ id: DESERT_SPOT_IDS.desk, place: "tour_desk", label: first ? "宿の隣のカフェ" : "カフェ・オアシス", area: "宿の隣",
     x: DAILY_AT.tour_desk[0], y: DAILY_AT.tour_desk[1], theme: "store", glyph: "茶", preview: "bg_dubai_inn_day", cost: DESERT_CAFE_PRICE,
     desc: first ? "宿の隣のシーシャカフェ。表に砂漠ツアーのデスクがある。一台3,000円（約70ディルハム）。"
       : "ヌールの父の店。一台頼んで、ヌールと話す。一台3,000円（約70ディルハム）。",
@@ -301,14 +301,14 @@ export const desertDailySpotById = (value, day, id) => desertDailySpots(value, d
 
 // ---- 第5章のドバイ（chapters/ch5-dubai.js） -------------------------------------------------------------------------
 // 2026-11-07 オーナー決定「第4章のラクダレース／砂丘を飛ばしたプレイヤーも、第5章側で前提を補ってルートに入れる」「ノールの告白は第5章でも可能にする」:
-// 第5章でも、締めくくりを迎えるまではカフェ・サーリムに通える（会っていなければ第5章の出会いから。段階の会話・♥3の問い・♥5の締めくくりは
+// 第5章でも、締めくくりを迎えるまではカフェ・オアシスに通える（会っていなければ第5章の出会いから。段階の会話・♥3の問い・♥5の締めくくりは
 // 第4章と同じ順。好感度は第5章の通いの値）。誘われていれば砂丘へも行ける。締めくくりの後（恋人・友人・告白待ち）は今までどおり砂丘だけ。
 // はじめは宿ではなくシェイクの屋敷に泊まるので「宿の隣」と書かず、第5章の地図（中庭の太陽 34,32・ラクダの店先 48,36）と重ならない所に置く。
 // day は通算の日（第4章は章内の日 ≤14 で記録したので、第5章の通算の日は必ずそれより大きく、1日1回の判定は崩れない）。
 const CH5_CAFE = Object.freeze({ x: 60, y: 28, area: "旧市街の通り" });
 const CH5_CAFE_FIRST = Object.freeze({ label: "砂漠ツアーのカフェ",
   desc: `表に砂漠ツアーのデスクがあるシーシャカフェ。一台${DESERT_CAFE_PRICE.toLocaleString("ja-JP")}円（約70ディルハム）。` });
-/** 第5章でドバイへ来た日のヌールの行き先（締めくくりまではカフェ・サーリム、誘われていれば砂丘も）。 */
+/** 第5章でドバイへ来た日のヌールの行き先（締めくくりまではカフェ・オアシス、誘われていれば砂丘も）。 */
 export function desertChapterFiveSpots(value, day) {
   const spots = desertDailySpots(value, day);
   const dunes = spots.filter(entry => entry.id === DESERT_SPOT_IDS.dunes);

@@ -437,7 +437,7 @@ for (const known of [false, true]) {
   assert(confessionIndex > 0); assert(state.flags._minto_name_known);
   if (known) assert.equal(introIndex, -1);
   else { assert(introIndex > 0 && introIndex < confessionIndex); const lines = plays[introIndex][0].lines;
-    assert(lines.some((line) => line.speaker === "minto" && /木成頼栞.*２人の時/.test(line.text)));
+    assert(lines.some((line) => line.speaker === "minto" && /木成頼栞.*2人の時/.test(line.text)));
     assert(lines.some((line) => line.speaker === "hajime" && line.text.startsWith("栞さん")));
   }
 }

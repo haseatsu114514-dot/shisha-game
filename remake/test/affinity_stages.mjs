@@ -857,9 +857,9 @@ await check('Volk and Steve (#2705・2026-11-07): chapter 5 Tokyo finale on ♥5
   assert.equal(after.flavorStock.nightside_blast_mint, 50);
   assert.equal(await bonds.playFinale('volk'), false, 'once');
   assert.equal(bonds.finaleAtVisit('volk'), false);
-  // 友人のLIMEは #2705 と同じく第3章でLIMEを交換した人だけ。第5章の朝は雑談だけ
+  // 友人のLIMEは #2705 と同じくLIMEを交換した人だけ（第3章の寄り道か、第5章の締めくくりのその場で）。第5章の朝は雑談だけ
   after.day += 10; after.phase = 'daily';
-  assert.deepEqual(clone(bonds.friendMessages()), [], 'no friend LIME without the chapter 3 LIME exchange');
+  assert.deepEqual(clone(bonds.friendMessages()), [], 'no friend LIME without a LIME exchange');
   after.flags._lime_contact_volk = true;
   assert.deepEqual(clone(bonds.friendMessages().map(m => [m.sender, m.type])), [['volk', 'chat']], 'chapter 5 mornings: chats only');
   // 第3章で締めくくりを見た保存には、第5章の東京でも二度は出さない
@@ -872,20 +872,20 @@ await check('Volk and Steve (#2705・2026-11-07): chapter 5 Tokyo finale on ♥5
   assert.equal(await bonds.playFinale('steve'), true);
   assert.equal(f.plays.at(-1)[0], 'ch5_steve_bond_finale');
   assert.equal(s.finales.steve.chapter, 5);
-  // 第5章の締めくくりの文と連絡先をそろえる。第5章は第3章のLIME交換を前提にしないので、スティーブの「顔の知らせをくれ」には、
-  // まだ交換していない人だけがその場で交換してから「送ります」と答える（contact の分岐の中だけで交換を記録する）。
-  const steveScene = f.db.dialogues.ch5_steve_bond_finale;
-  const contactAt = steveScene.lines.findIndex(l => l.type === 'condition' && l.condition_type === 'contact' && l.char_id === 'steve');
-  assert(contactAt >= 0, 'Steve: the finale branches on the LIME contact');
-  assert(contactAt < steveScene.lines.findIndex(l => /送ります/.test(l.text || '')), 'the exchange comes before the promise to send');
-  assert(steveScene.branches[steveScene.lines[contactAt].next_false]?.some(l => l.type === 'set_flag' && l.flag === '_lime_contact_steve'),
-    'no LIME yet: exchange it on the spot');
-  assert.equal(steveScene.lines[contactAt].next_true, undefined, 'already exchanged: straight on');
-  assert(!steveScene.lines.some(l => l.type === 'set_flag'), 'never re-exchanged in the main text');
-  // ヴォルクの第5章の文は連絡を約束しない（また店に来る約束）ので、交換もしない
-  const volkScene = f.db.dialogues.ch5_volk_bond_finale;
-  assert(!volkScene.lines.some(l => ['set_flag', 'condition'].includes(l.type)) && !volkScene.branches);
-  assert.doesNotMatch(volkScene.lines.map(l => l.text || '').join('\n'), /LIME|連絡|送/, 'Volk promises no messages');
+  // 第5章の締めくくりの文と連絡先をそろえる。第5章は第3章のLIME交換を前提にしないので、まだ交換していない人だけがその場で交換する
+  // （contact の分岐の中だけで交換を記録する）。スティーブは「顔の知らせをくれ」に「送ります」と答える前に、ヴォルクは「書いたら、送れ」と
+  // 頼まれて「また来い」の前に（2026-11-07 オーナー判断「ヴォルクの第5章♥5エンディングでの LIME 即時交換は付与する」）。
+  for (const [id, before] of [['steve', /送ります/], ['volk', /また来い/]]) {
+    const scene = f.db.dialogues[`ch5_${id}_bond_finale`];
+    const contactAt = scene.lines.findIndex(l => l.type === 'condition' && l.condition_type === 'contact' && l.char_id === id);
+    assert(contactAt >= 0, `${id}: the finale branches on the LIME contact`);
+    assert(contactAt < scene.lines.findIndex(l => before.test(l.text || '')), `${id}: the exchange comes before ${before}`);
+    assert(scene.branches?.[scene.lines[contactAt].next_false]?.some(l => l.type === 'set_flag' && l.flag === `_lime_contact_${id}`),
+      `${id}: no LIME yet: exchange it on the spot`);
+    assert.equal(scene.lines[contactAt].next_true, undefined, `${id}: already exchanged: straight on`);
+    assert(!scene.lines.some(l => l.type === 'set_flag'), `${id}: never re-exchanged in the main text`);
+    assert.doesNotMatch(scene.lines.map(l => l.text || '').join('\n'), /LIME|連絡先/, `${id}: the main text reads the same with a chapter 3 LIME`);
+  }
   // 友人のLIMEは交換した後だけ（第5章の朝は雑談だけ）
   s.day += 10; s.phase = 'daily';
   assert.deepEqual(clone(bonds.friendMessages()), [], 'no friend LIME from Steve or Volk without a LIME contact');
@@ -941,8 +941,8 @@ await check('Noor (DSR20): chapter 4 cafe finale after the cafe stages and the �
   s.flags._noor_affinity_question_done = true;
   s.affinity.noor = 65; assert.equal(bonds.finaleDue('noor'), false, 'needs ♥5');
   s.affinity.noor = 66; assert.equal(bonds.finaleDue('noor'), true);
-  s.chapter = 5; assert.equal(bonds.finaleDue('noor'), true, 'Cafe Salim is on the chapter 5 Dubai map too (owner 2026-11-07)');
-  s.chapter = 3; assert.equal(bonds.finaleDue('noor'), false, 'no Cafe Salim outside chapters 4-5');
+  s.chapter = 5; assert.equal(bonds.finaleDue('noor'), true, 'Cafe Oasis is on the chapter 5 Dubai map too (owner 2026-11-07)');
+  s.chapter = 3; assert.equal(bonds.finaleDue('noor'), false, 'no Cafe Oasis outside chapters 4-5');
   assert.equal(await bonds.playFinale('noor'), false); s.chapter = 4;
   assert.equal(bonds.romanceOpen('noor'), true, 'the last question is asked only while every answer leans romantic');
   // 最後の問いで「二人で」を選ぶ（engine の onChoice → recordRomanceChoice）

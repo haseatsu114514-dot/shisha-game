@@ -97,6 +97,31 @@ const TUTORIAL = {
   boostGo: "そのまま、岩へ突っ込め！",
   finish: "いい感じ。あとは、滑るだけ",
 };
+// タッチ端末ではキーの名前（Space／← →／↓）を出さず、画面のボタンの名前で言う（#2838）。
+const TUTORIAL_TOUCH = {
+  move: "「左へ」「右へ」で動こう",
+  bump: "起伏の手前で「ジャンプ」── 大きく跳べる",
+  brace: "着地の直前にもう一度「ジャンプ」── 姿勢を整える",
+  trick: "次は、跳んだら空中で「左へ」か「右へ」を押し続けて回ろう",
+  boost: "溜まったゲージで「BOOST」を押すと超加速 ── 岩も砕ける",
+};
+const touchUi = () => typeof matchMedia === "function" && matchMedia("(hover: none) and (pointer: coarse)").matches;
+const tutorialText = key => (touchUi() && TUTORIAL_TOUCH[key]) || TUTORIAL[key];
+// 遊び方（メニューの「？」で開いた時だけ見せる。常時は出さない）
+const HOWTO = {
+  keys: [
+    "← → で左右。砂の上なので、少し遅れてついてくる",
+    "起伏の手前で Space で大ジャンプ。着地でブースト回復、直前にもう一度押すと加速",
+    "空中で ← → を押し続けると回転。回りかけで着地すると転ぶ",
+    "ゲージが満タンで ↓（BOOST）。超加速して、岩も砕く",
+  ],
+  touch: [
+    "「左へ」「右へ」で左右。砂の上なので、少し遅れてついてくる",
+    "起伏の手前で「ジャンプ」で大ジャンプ。着地でブースト回復、直前にもう一度押すと加速",
+    "空中で「左へ」「右へ」を押し続けると回転。回りかけで着地すると転ぶ",
+    "ゲージが溜まったら「BOOST」。超加速して、岩も砕く",
+  ],
+};
 
 /**
  * 砂丘を滑る。host（本編は #stage）の上に全画面で重ね、「砂丘を下りる」か signal の中断で閉じる。
@@ -130,7 +155,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     const cutin = el("div.dr-cutin", { "aria-hidden": "true", dataset: { test: "desert-cutin" } });
     const panel = el("div.dr-panel");
     const controls = el("div.dr-controls", { hidden: true });
-    const quit = el("button.dr-quit", { type: "button", text: "やめる", dataset: { test: "desert-quit" }, hidden: true });
+    const quit = el("button.dr-quit", { type: "button", text: "✕", title: "やめる", "aria-label": "やめる", dataset: { test: "desert-quit" }, hidden: true });
     root.append(canvas, hud, cutin, pop, caption, controls, quit, panel);
     host.append(root);
     root.focus({ preventScroll: true });
@@ -169,6 +194,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       else if ([" ", "ArrowUp", "w", "W"].includes(event.key) && mode) { if (!event.repeat) act(); event.preventDefault(); }
       else if (["ArrowDown", "Shift", "s", "S", "b", "B"].includes(event.key) && mode) { if (!event.repeat) doBoost(); event.preventDefault(); }
       else if (event.key === "Escape" && mode) { event.preventDefault(); quit.click(); }
+      else if (event.key === "Escape" && panel.querySelector(".dr-help:not([hidden])")) { event.preventDefault(); panel.querySelector(".dr-help-close").click(); }
     };
     const onKeyUp = event => {
       if (["ArrowLeft", "a", "A"].includes(event.key)) input.left = false;
@@ -213,16 +239,19 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const naruButton = rivals.includes("naru") ? el("button.btn.dr-button", { type: "button", text: "★ なると勝負（裏）", dataset: { test: "desert-start-naru" }, onclick: () => startRun("run", "naru") }) : null;
       const practice = el("button.btn.ghost.dr-button", { type: "button", text: practiced || results.length ? "練習をもう一度" : "練習から始める", dataset: { test: "desert-practice" }, onclick: () => startRun("practice") });
       const leave = el("button.btn.ghost.dr-button", { type: "button", text: "砂丘を下りる", dataset: { test: "desert-leave" }, onclick: finish });
+      // 遊び方は「？」を開いた時だけ（#2838・ミニゲーム共通の方針）。練習は「練習から始める」が説明を兼ねる。
+      const help = el("div.dr-help", { hidden: true, role: "dialog", "aria-label": "遊び方", dataset: { test: "desert-help-panel" } }, [
+        el("p.dr-help-title", { text: "遊び方" }),
+        el("ul.dr-howto", HOWTO[touchUi() ? "touch" : "keys"].map(text => el("li", { text }))),
+        el("button.btn.ghost.dr-button.dr-help-close", { type: "button", text: "閉じる", dataset: { test: "desert-help-close" }, onclick: () => { help.hidden = true; delete help.parentElement.dataset.help; helpButton.focus(); } }),
+      ]);
+      const helpButton = el("button.dr-help-btn", { type: "button", text: "？", title: "遊び方", "aria-label": "遊び方", dataset: { test: "desert-help" },
+        onclick: () => { help.hidden = false; help.parentElement.dataset.help = "open"; help.querySelector("button").focus(); } });
       panel.replaceChildren(el("div.dr-card.dr-menu", { dataset: { test: "desert-menu" } }, [
         el("p.dr-kicker", { text: "DUBAI · SAND DUNES" }),
         el("h2.dr-title", { text: "DESERT RIDE" }),
         el("p.dr-lead", { text: message || "砂丘を一気に滑り下りる。ヌールより先に、ゴールの旗へ。" }),
-        el("ul.dr-howto", [
-          el("li", { text: "← → で左右。砂の上なので、少し遅れてついてくる" }),
-          el("li", { text: "起伏の手前で Space で大ジャンプ。着地でブースト回復、直前にもう一度押すと加速" }),
-          el("li", { text: "空中で ← → を押し続けると回転。回りかけで着地すると転ぶ" }),
-          el("li", { text: "ゲージが満タンで ↓（BOOST）。超加速して、岩も砕く" }),
-        ]),
+        help, helpButton,
         oldBest ? el("p.dr-legacy-best", { text: `旧ルールの記録 ${oldBest.score.toLocaleString("ja-JP")}点 ／ ${oldBest.rank}（別記録）`, dataset: { test: "desert-legacy-best" } }) : null,
         currentBest ? el("p.dr-best", { text: `自己ベスト ${currentBest.score.toLocaleString("ja-JP")}点 ／ ${currentBest.rank}`, dataset: { test: "desert-best" } }) : null,
         el("div.dr-actions", [start, naruButton, practice, leave]),
@@ -250,7 +279,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       tut = kind === "practice" ? { step: "move", moved: false, bumpTries: 0, said: new Set() } : null;
       controls.hidden = false; quit.hidden = false;
       setPhase(kind);
-      caption.textContent = kind === "practice" ? TUTORIAL.move : "";
+      caption.textContent = kind === "practice" ? tutorialText("move") : "";
       buildHud();
       updateHud(); // 開始直後から相手名・速度・BOOSTを表示する。最初の描画フレームを待たない。
       cancelAnimationFrame(frame);
@@ -296,10 +325,11 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     function buildHud() {
       hudNodes = {
         score: el("strong.dr-score", { text: "0" }), combo: el("span.dr-combo", { text: "" }),
-        time: el("span.dr-time", { text: "0.0" }), kmh: el("strong.dr-kmh", { text: "0" }), gauge: el("i"), gaugeLabel: el("span", { text: "BOOST 0%" }), gaugeBox: null, progress: el("i"),
+        time: el("span.dr-time", { text: "0.0" }), kmh: el("strong.dr-kmh", { text: "0" }), gauge: el("i"), gaugeBox: null, progress: el("i"),
         you: el("b.dr-mark.dr-mark-you", { title: "あなた" }), noor: el(`b.dr-mark.dr-mark-${raceWith}`, { title: RIVAL_NAMES[raceWith] }), race: el("span.dr-race", { dataset: { test: "desert-race-gap" } }),
       };
-      hudNodes.gaugeBox = el("div.dr-gauge", { dataset: { test: "desert-gauge" } }, [hudNodes.gauge, hudNodes.gaugeLabel]);
+      // BOOST は ⚡ とゲージだけ（% の文字は出さない。#2838）
+      hudNodes.gaugeBox = el("div.dr-gauge", { dataset: { test: "desert-gauge" }, title: "BOOST" }, [hudNodes.gauge]);
       hud.replaceChildren(
         el("div.dr-hud-left", [el("small", { text: mode === "practice" ? "PRACTICE" : "SCORE" }), hudNodes.score, hudNodes.combo]),
         el("div.dr-hud-center", [
@@ -308,7 +338,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         ]),
         el("div.dr-hud-right", [
           el("div.dr-speedo", [hudNodes.kmh, el("small", { text: "km/h" })]),
-          hudNodes.gaugeBox,
+          el("div.dr-boost-meter", [el("b.dr-bolt", { text: "⚡" }), hudNodes.gaugeBox]),
           el("div.dr-clock", [el("small", { text: "TIME" }), hudNodes.time]),
         ]),
       );
@@ -323,7 +353,6 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       hudNodes.kmh.dataset.fast = game.boostT > 0 ? "boost" : game.speed > SPEED.max * 0.85 ? "fast" : "";
       const ready = game.gauge > 0, boosting = game.boostT > 0;
       hudNodes.gauge.style.width = `${Math.round(100 * (boosting ? game.boostT / 3 : game.gauge))}%`;
-      hudNodes.gaugeLabel.textContent = boosting ? `BOOST!!${ready ? ` +${Math.round(game.gauge * 100)}%` : ""}` : `BOOST ${Math.round(game.gauge * 100)}%`;
       hudNodes.gaugeBox.dataset.state = boosting ? "boost" : ready ? "full" : "";
       root.dataset.gauge = boosting ? "boost" : ready ? "full" : "";
       const progress = z => `${(100 * Math.min(1, z / game.course.length)).toFixed(1)}%`;
@@ -340,7 +369,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     }
 
     // ---- 練習の説明 ------------------------------------------------------------------
-    function say(key) { if (tut.said.has(key + tut.step)) return; tut.said.add(key + tut.step); caption.textContent = TUTORIAL[key]; }
+    function say(key) { if (tut.said.has(key + tut.step)) return; tut.said.add(key + tut.step); caption.textContent = tutorialText(key); }
     function updateTutorial(events) {
       if (!tut) return;
       if (tut.step === "move") {
@@ -445,7 +474,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
           if (!reducedMotion) { shakeT = 0.45; flashT = 0.18; }
         } else if (event.kind === "near") { SE.tick(); floater(`かすめ +${event.points}`, "near"); if (game.combo >= 2) showPop(`${game.combo} COMBO`, "combo"); }
         else if (event.kind === "smash") { SE.crack(); floater(`粉砕 +${event.points}`, "smash"); chips(event.size); if (!reducedMotion) shakeT = Math.max(shakeT, 0.22); }
-        else if (event.kind === "gaugeFull") { SE.slotBonus(); floater("BOOST OK ↓", "gauge"); }
+        else if (event.kind === "gaugeFull") { SE.slotBonus(); floater(touchUi() ? "BOOST OK" : "BOOST OK ↓", "gauge"); }
         else if (event.kind === "boost") {
           rideSe.play("boost", 0.6); showPop("BOOST!!", "boost"); burst(24, 1.6);
           if (!reducedMotion) { shakeT = 0.3; flashT = 0.1; view.kick = 1.4; }

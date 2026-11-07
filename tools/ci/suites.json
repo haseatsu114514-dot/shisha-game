@@ -237,7 +237,7 @@
       "id": "growth-levelup",
       "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
       "kind": "quick",
-      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs", "node --experimental-vm-modules remake/test/growth_board_screen.mjs"]
+      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs", "node --experimental-vm-modules remake/test/growth_board_screen.mjs", "node remake/test/growth_chapter_notice.mjs"]
     },
     {
       "id": "vent-lid",
@@ -292,6 +292,12 @@
       "title": "Kuji tiers by chapter, gear prizes and duplicate cash (KJ02)",
       "kind": "quick",
       "run": ["node remake/test/kuji_tiers.mjs"]
+    },
+    {
+      "id": "kuji-limited-kj05",
+      "title": "Chapter-5 limited kuji tier, kuji-only stands, tickets and no hidane (KJ05, #2455)",
+      "kind": "quick",
+      "run": ["node remake/test/kuji_limited.mjs"]
     },
     {
       "id": "growth-levelup-browser-1",
@@ -403,6 +409,15 @@
       "run": [
         "node remake/test/browser/roamers.mjs"
       ]
+    },
+    {
+      "id": "growth-chapter-notice-browser",
+      "title": "Growth board chapter-start notice: new skills, respec card and map reminder on the first daily morning (#1801 C10)",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 3,
+      "paths": ["remake/js/core/growth-chapter-notice.js", "remake/js/core/growth-respec.js", "remake/js/daily/calendar.js", "remake/js/daily/map.js", "remake/css/daily.css", "remake/test/browser/growth_chapter_notice.mjs", "remake/test/browser/support.mjs"],
+      "run": ["node remake/test/browser/growth_chapter_notice.mjs"]
     },
     {
       "id": "board-tutorial",
@@ -656,6 +671,12 @@
       ]
     },
     {
+      "id": "slim-deploy",
+      "title": "Pages deploy drops only originals shown as WebP and dev folders",
+      "kind": "quick",
+      "run": ["node remake/test/slim_deploy.mjs"]
+    },
+    {
       "id": "stamp-deploy",
       "title": "Pages deploy version stamp on the real index.html and CSS",
       "kind": "quick",
@@ -831,6 +852,7 @@
         "node remake/test/mix_recognition.mjs",
         "node --experimental-vm-modules remake/test/foil_holes.mjs",
         "node --experimental-vm-modules remake/test/craft_fx.mjs",
+        "node --experimental-vm-modules remake/test/craft_rival_windows.mjs",
         "node remake/test/mix_temperature.mjs",
         "node remake/test/steam_temperature.mjs",
         "node remake/test/flavor_life.mjs",
@@ -1627,13 +1649,15 @@
     },
     {
       "id": "staff-roll",
-      "title": "Chapter 5 end card radar, staff roll, first-time no skip, post-roll shuraba and talks, then title and NEXT CYCLE unlock",
+      "title": "Chapter 5 end card radar, staff roll, first-time no skip, post-roll shuraba and talks, result screen, then title and NEXT CYCLE unlock",
       "kind": "browser",
       "weight": 0.4,
       "timeout": 10,
       "paths": [
         "remake/js/scenes/staff-roll.js",
         "remake/css/staff-roll.css",
+        "remake/js/scenes/result.js",
+        "remake/css/result.css",
         "remake/js/chapters/ch5*.js",
         "remake/js/core/story-routes.js",
         "data/story_routes.json",
@@ -3009,11 +3033,14 @@
         "remake/test/browser/hiyori_axe_natural.mjs",
         "tools/check_legacy_terms.py",
         "remake/test/browser/save_load.mjs",
+        "remake/js/scenes/save-transfer.js",
+        "remake/test/browser/save_transfer.mjs",
         "remake/js/chapters/ch2*.js",
         "remake/js/chapters/ch3*.js"
       ],
       "run": [
-        "node remake/test/browser/save_load.mjs"
+        "node remake/test/browser/save_load.mjs",
+        "node remake/test/browser/save_transfer.mjs"
       ]
     },
     {
@@ -3138,6 +3165,7 @@
         "remake/js/daily/map.js",
         "remake/js/daily/shop.js",
         "remake/js/daily/kuji.js",
+        "remake/js/daily/kuji-tickets.js",
         "data/kuji.json",
         "remake/css/shop*.css",
         "remake/test/store_logos.mjs",
@@ -3913,6 +3941,7 @@
       "paths": [
         "remake/test/kuji_purchase.mjs",
         "remake/js/daily/kuji.js",
+        "remake/js/daily/kuji-tickets.js",
         "data/kuji.json"
       ],
       "run": [

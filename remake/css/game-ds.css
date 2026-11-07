@@ -40,9 +40,9 @@ body.game-ds #viewport, body[data-game-layout="ds"].vn-open #viewport {
   top: 0; overflow: clip;
   background: radial-gradient(120% 60% at 50% 0%, #2a2033 0%, var(--ds-shell) 55%, #0c0910 100%);
 }
-body.game-ds #stage { left: 0; top: 0; width: 100%; height: 100%; transform: none; overflow: clip; background: transparent; isolation: isolate; }
+body.game-ds #stage { left: 0; top: 0; width: 100%; height: 100%; transform: none; --stage-gutter: 0px; --stage-safe-l: 0px; --stage-safe-r: 0px; overflow: clip; background: transparent; isolation: isolate; }
 /* LOAD直後、会話開始のMutationObserverが反映されるまで従来寸法へ一瞬戻さない。 */
-body[data-game-layout="ds"][data-screen="title"]:has(.title[data-layout="ds"]) #stage { left: 0; top: 0; width: 100%; height: 100%; transform: none; }
+body[data-game-layout="ds"][data-screen="title"]:has(.title[data-layout="ds"]) #stage { left: 0; top: 0; width: 100%; height: 100%; transform: none; --stage-gutter: 0px; --stage-safe-l: 0px; --stage-safe-r: 0px; }
 
 /* 2つの画面。上は額縁だけ（中身の上に重ねる）、下は面の色（中身の後ろに敷く）。 */
 body.game-ds #stage > .game-ds-panel { position: absolute; right: auto; bottom: auto; pointer-events: none; border-radius: 7px; }
@@ -205,7 +205,10 @@ body.game-ds .map-info {
   left: calc(var(--ds-cx) + 8px); top: calc(var(--ds-cy) + var(--ds-ch) - var(--ds-touchbar) - 120px); right: auto; bottom: auto;
   width: calc(var(--ds-cw) - 16px); height: 114px; overflow: auto; touch-action: pan-y; padding: 6px 10px; transform: none;
 }
-body.game-ds .map-info.spot-selected .mi-preview { display: block; aspect-ratio: 16 / 9; }
+/* #2939: 行き先の写真は16:9のまま、名前と横に並べて全体を見せる（パネルを伸ばすと地図のピンに被るため、高さは据え置き）。 */
+body.game-ds .map-info.spot-selected { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 10px; overflow: hidden; }
+body.game-ds .map-info.spot-selected .mi-preview { display: block; grid-column: 1; grid-row: 1; aspect-ratio: 16 / 9; height: 84px; width: auto; margin: 0; }
+body.game-ds .map-info.spot-selected .mi-banner { grid-column: 2; grid-row: 1; margin: 0; white-space: normal; overflow-wrap: anywhere; }
 body.game-ds .mi-banner { font-size: 15px; }
 body.game-ds :is(.mi-desc, .mi-foot) { font-size: 13px; line-height: 1.45; }
 body.game-ds .mi-go { min-height: 44px; font-size: 17px; }
@@ -332,6 +335,14 @@ body.game-ds .status-modal .st-line { flex-wrap: wrap; gap: 4px 8px; }
 body.game-ds .status-modal .st-name { flex: none; width: 48px; }
 body.game-ds .status-modal .st-info { flex: 1; }
 body.game-ds .status-modal .st-fx { overflow-wrap: anywhere; }
+/* レシピ帳の詳細（#2938）: 横持ちの下画面は低く、見出し・余白・戻るボタンで本文が約68pxに潰れていた。詳細を開いている間は
+   STATUSの見出しと余白を畳み、本文に96px以上（#1906）を残す。戻る・閉じるは常に見える。 */
+body.game-ds .status-modal:has(.recipe-detail) { padding-block: 10px; }
+body.game-ds .status-modal:has(.recipe-detail) > h3 { display: none; }
+body.game-ds .status-modal:has(.recipe-detail) .recipe-detail h4 { margin-bottom: 4px; }
+body.game-ds .status-modal:has(.recipe-detail) .recipe-detail p { margin: 4px 0; }
+body.game-ds .status-modal:has(.recipe-detail) .recipe-detail + .btn { min-height: 44px; padding-block: 6px; margin-top: 6px; }
+body.game-ds .status-modal:has(.recipe-detail) .modal-actions { margin-top: 8px; }
 /* 通知カード・トーストは上画面に出す */
 body.game-ds :is(#toasts, #banners) { left: var(--ds-vx); top: calc(var(--ds-vy) + 36px); width: var(--ds-vw); height: calc(var(--ds-vh) - 36px); right: auto; bottom: auto; }
 /* 上画面は端末の半分の高さなので、吸い出し以降の機材の絵は常に縮めて収める（旧配置の大画面向け例外を打ち消す）。 */

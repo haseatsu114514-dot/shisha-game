@@ -292,7 +292,8 @@ await suite("home-rig-backgrounds", async check => {
       for (const [i, owned] of variants.entries()) {
         await home(page, owned, "night");
         const result = await page.evaluate(() => {
-          const c = HQ.core, original = structuredClone(c.state); c.saveToSlot("suien_remake_slot1");
+          const c = HQ.core; c.saveToSlot("suien_remake_slot1");
+          const original = structuredClone(c.state);
           const manual = localStorage.getItem("suien_remake_slot1");
           c.newGame(); c.loadFromSlot("suien_remake_slot1");
           const restored = structuredClone(c.state);
