@@ -228,7 +228,7 @@
           {
             "speaker": "noor",
             "face": "smile",
-            "text": "大会、終わったんでしょ。お疲れさま！ 父が「日本の子がすごかった」って"
+            "text": "父がね、世界大会の『日本の子』がすごかったって。……それ、ハジメでしょ？"
           },
           {
             "speaker": "hajime",
@@ -262,7 +262,7 @@
           }
         ]
       },
-      "comment": "♥1で読む（DSR21）。カフェ・サーリムで。大会前後で会話を分ける（交流の時系列ルール）。"
+      "comment": "♥1で読む（DSR21）。カフェ・サーリムで。大会前後で会話を分ける（交流の時系列ルール）。大会後の分岐は、第5章のカフェ・サーリムで初めて読む人もいる（2026-11-07。ch5_noor_meet は大会に触れないので、大会の話は父の噂として、ここで初めて出る）。"
     },
     {
       "dialogue_id": "ch4_noor_cafe_3",
@@ -926,7 +926,7 @@
     },
     {
       "dialogue_id": "confession_noor",
-      "comment": "DSR20 ヌールの告白（ドバイで告白まで・2026-11-02 オーナー）。締めくくりの最後の問いで恋愛を選んだ後の、次の砂丘（ツアー代なし）の滑走のあと、夕日の砂丘で。ヌールから想いを伝え、はじめが答える。返事は選択肢の next_id（romance.js の onDialogueEnter が付き合う／友達のままを記録する）。大会に触れない。第4章で締めくくりのあと砂丘へ行けないまま帰国した人は、第5章のドバイの砂丘で読む（chapters/ch5-dubai.js）。その時は帰国した後の言い方に替える（came_back。tournament_finished で分ける）。",
+      "comment": "DSR20 ヌールの告白（ドバイで告白まで・2026-11-02 オーナー）。締めくくりの最後の問いで恋愛を選んだ後の、次の砂丘（ツアー代なし）の滑走のあと、夕日の砂丘で。ヌールから想いを伝え、はじめが答える。返事は選択肢の next_id（romance.js の onDialogueEnter が付き合う／友達のままを記録する）。大会に触れない。第4章で締めくくりのあと砂丘へ行けないまま帰国した人は、第5章のドバイの砂丘で読む（chapters/ch5-dubai.js）。その時は帰国した後の言い方に替える（came_back。tournament_finished で分ける）。第5章で締めくくりを迎えた人（2026-11-07 オーナー決定「ノールの告白は第5章でも可能にする」）は、また日本に帰る前の言い方（visiting。ch4-desert.js が読む間だけ _noor_confession_visit を立てる）。第4章の締めくくりのあと帰国した人は came_back のまま。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_dubai_dunes_dusk.png",
         "private_scene": true
@@ -971,7 +971,7 @@
           "type": "condition",
           "condition_type": "tournament_finished",
           "tournament_chapter": 4,
-          "next_true": "came_back",
+          "next_true": "after_tournament",
           "next_false": "before_leave"
         },
         {
@@ -1032,6 +1032,27 @@
             "speaker": "noor",
             "face": "normal",
             "text": "言わないまま、行かせちゃったって。……だから、今日は言う"
+          }
+        ],
+        "after_tournament": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_noor_confession_visit",
+            "next_true": "visiting",
+            "next_false": "came_back"
+          }
+        ],
+        "visiting": [
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "ハジメは、また日本に帰る。分かってる。だから、言わないでおこうと思ってた"
+          },
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "でも、言わないまま帰したら、きっと毎日ここで後悔する"
           }
         ],
         "other_lover": [

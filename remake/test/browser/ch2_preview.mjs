@@ -343,7 +343,7 @@ await suite("ch2-preview", async check => {
       const text = await page.evaluate(async () => (await import('./js/vn/engine.js')).backlog().map(line => line.text).join('\n'));
       for (const [id, name] of Object.entries(people)) assert.equal(text.includes(name), itinerary.includes(id), `Unvisited person appeared in return: ${text}`);
       assert.equal(text.includes('会場、分かりました'), itinerary.includes('c_station'));
-      assert.equal(text.includes('入口で挨拶した'), itinerary.some(id => id !== 'c_station'));
+      assert.equal(text.includes('挨拶を交わしただけ'), itinerary.some(id => id !== 'c_station'));
       await preserved(page, before);
       await page.locator(test('restart')).click();
       await page.locator(test('start')).waitFor();

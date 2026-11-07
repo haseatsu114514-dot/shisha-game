@@ -76,6 +76,22 @@ await suite('play-feedback', async check => {
       });
       await page.locator('.map:not(.done)').waitFor();
       for (const id of ['cafe', 'kannon', 'choizap', 'c_station']) assert.equal(await page.locator(`[data-spot="${id}"]`).count(), 0);
+      // #1081 J08（699d48310）: 未選択の案内パネルは見た目だけ前面に置き、余白のクリックは背後のピンへ
+      // 素通りさせる（操作を奪わない）。ピンをパネルの余白へ重ね、実ヒットテストと実際の操作でピンが押せることを確認する。
+      const idle = await page.evaluate(() => {
+        const info = document.querySelector('.map-info'), pin = document.querySelector('[data-spot="rest"]');
+        const box = info.getBoundingClientRect();
+        const stage = document.querySelector('#stage').getBoundingClientRect();
+        const pinBefore = pin.getBoundingClientRect();
+        const x = box.x + box.width / 2, y = box.y + box.height / 2;
+        pin.style.left = `${(x - pinBefore.width / 2 - stage.x) * 1280 / stage.width}px`;
+        pin.style.top = `${(y - pinBefore.height / 2 - stage.y) * 720 / stage.height}px`;
+        const r = pin.getBoundingClientRect();
+        const atPin = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+        return { selected: info.classList.contains('spot-selected'), pinHit: !!atPin?.closest('[data-spot="rest"]'),
+          infoHit: !!atPin?.closest('.map-info') };
+      });
+      assert(!idle.selected && idle.pinHit && !idle.infoHit, '未選択のパネルの余白に重なったピンはパネル越しに押せる');
       await press(page, '[data-spot="rest"]');
       assert.equal(await page.locator('[data-test="map-home-practice"]').count(), 0);
       const geometry = await page.locator('.map-info').evaluate(n => {
@@ -86,9 +102,8 @@ await suite('play-feedback', async check => {
       });
       // DUI16 (6ed65699a84) uses a 312px guide with a 16:9 photo outside DS mode.
       assert(geometry.info > geometry.pins); assert.equal(geometry.width, 312); assert(geometry.inStage);
-      // #1081 J08（699d48310）: 説明パネルは見た目だけ前面に置き、余白のクリックは背後のピンへ
-      // 素通りさせる（操作を奪わない）。クリックを受けるのはパネル内のボタンだけ。
-      // ピンをパネルの余白へ重ね、実ヒットテストでピンが押せて、ボタンも押せることを確認する。
+      // #2730: スポット選択中は写真を含むパネル全体が移動ボタン。ピンを写真の裏へ重ねても、
+      // 実ヒットテストではピンではなくパネル（選んだスポットへ移動）がタップを受けることを確認する。
       const hit = await page.evaluate(() => {
         const info = document.querySelector('.map-info'), pin = document.querySelector('[data-spot="rest"]');
         const photo = info.querySelector('.mi-preview').getBoundingClientRect();
@@ -102,11 +117,11 @@ await suite('play-feedback', async check => {
         const goBtn = document.querySelector('[data-test="map-go"]');
         const gb = goBtn.getBoundingClientRect();
         const atGo = document.elementFromPoint(gb.x + gb.width / 2, gb.y + gb.height / 2);
-        return { pinHit: !!atPin?.closest('[data-spot="rest"]'), infoHit: !!atPin?.closest('.map-info'),
-          goHit: !!atGo?.closest('[data-test="map-go"]') };
+        return { pinHit: !!atPin?.closest('[data-spot="rest"]'), photoGo: atPin?.closest('[data-test="map-go"]') === info,
+          goIsPanel: goBtn === info && info.getAttribute('role') === 'button', goHit: atGo?.closest('[data-test="map-go"]') === goBtn };
       });
-      assert(hit.pinHit && !hit.infoHit, 'パネルの余白に重なったピンはパネル越しに押せる');
-      assert(hit.goHit, 'パネル内のボタンはクリックを受ける');
+      assert(!hit.pinHit && hit.photoGo, '選択中は写真に重なったピンではなく、パネルが移動ボタンとしてタップを受ける');
+      assert(hit.goIsPanel && hit.goHit, 'パネル全体が移動ボタンとしてクリックを受ける');
       await page.evaluate(() => { F.map.interruptMap(null); F.core.state.owned.push(F.rig.SUMI_RIG); F.openMap(); });
       await page.locator('.map:not(.done)').waitFor(); await press(page, '[data-spot="rest"]');
       assert.equal(await page.locator('[data-test="map-home-practice"]').count(), 0, '台を持っていても家練習はない');

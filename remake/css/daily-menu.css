@@ -323,3 +323,18 @@ body.game-ds .dmenu .dm-mastery { grid-area: lv; }
 :root[data-ds-layout="side"] body.game-ds .dmenu .dm-grid-2,
 :root[data-ds-layout="side"] body.game-ds .dmenu .dm-items { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 :root[data-ds-layout="side"] body.game-ds .dmenu .dm-system { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* 小さいスマホの横持ち（幅700px未満。例 568×320・667×375）は本文の幅が縦持ちの2画面とほぼ同じで、人物の行の♥・関係の札が
+   LIME に重なり、568×320 では札や持ち物の2列が横にはみ出す。縦持ちと同じく持ち物を1列にし、人物の行を2段に組む
+   （#2789 で縦持ちを封じたので、小さいスマホも横持ちで MENU を使う） */
+@media (max-width: 699px) {
+  :root[data-ds-layout="side"] body.game-ds .dmenu .dm-grid-2,
+  :root[data-ds-layout="side"] body.game-ds .dmenu .dm-items { grid-template-columns: minmax(0, 1fr); }
+  :root[data-ds-layout="side"] body.game-ds .dmenu .dm-person {
+    display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; grid-template-areas: "face name lime" "face status status";
+    gap: 4px 10px; padding: 8px 6px;
+  }
+  :root[data-ds-layout="side"] body.game-ds .dmenu .dm-person .dm-face { grid-area: face; }
+  :root[data-ds-layout="side"] body.game-ds .dmenu .dm-name { grid-area: name; width: auto; }
+  :root[data-ds-layout="side"] body.game-ds .dmenu .dm-person-status { grid-area: status; gap: 4px 10px; }
+  :root[data-ds-layout="side"] body.game-ds .dmenu .dm-person :is(.lime, .blank) { grid-area: lime; margin-left: 0; }
+}

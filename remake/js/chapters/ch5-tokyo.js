@@ -90,7 +90,7 @@ export const tokyoSpotsNow = (value = state) => TOKYO_SPOTS.map(entry => entry.i
 
 export const inTokyo = (value = state) => value?.flags?._ch2_region === TOKYO;
 const SCENES = TOKYO_SPOTS.flatMap(entry => entry.talks || []).concat(["ch5_tokyo_van_first", "ch5_tokyo_go", "ch5_tokyo_back", "ch5_tokyo_arrival", "ch5_tokyo_park_day", "ch5_tokyo_attic_rest", "ch5_tokyo_fortune",
-  "ch5_tokyo_gym_day", "ch5_tokyo_gym_night", "ch5_steve_bond_finale"]);
+  "ch5_tokyo_gym_day", "ch5_tokyo_gym_night", "ch5_steve_bond_finale", "ch5_volk_bond_finale"]);
 // てつこのお世話は第3章の続き（通うほど懐いていく。回数も第3章と同じ記録。ch3-outing-progress.js の stages・loop）
 const TETSUKO = TOKYO_OUTINGS.find(outing => outing.id === "tetsuko");
 const CH3_SCENES = ["ch3_outing_park_walk_night", ...TETSUKO.stages, ...TETSUKO.loop];
@@ -125,6 +125,8 @@ async function read(id, bg, owner, tod = timeOfDay()) {
  * スティーブの授業（ピザとシーシャの夜）は第3章の大会の翌夜にだけ開ける夜なので、第5章では相談しない（大会後の東京で相談する）。
  */
 const TOKYO_TEACHERS = Object.freeze({ ch5_tokyo_volk: "volk" });
+/** 第5章の東京の店で迎える♥5の締めくくり（スティーブ #2705・ヴォルク 2026-11-07 オーナー指示「スティーブと揃える」）。 */
+const TOKYO_FINALES = Object.freeze(["steve", "volk"]);
 
 /** 東京の行き先と「東京へ」の処理。対象外の行き先は null（日常ループの通常の処理へ）。 */
 export async function performTokyoSpot(spot, { staminaGuard } = {}) {
@@ -191,12 +193,13 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
     return { used: false, exerted: false };
   }
   if (staminaGuard && !(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
-  // スティーブの♥5の締めくくり（#2705）: 第3章で見ていない人は、Smoke & Glory に通って♥5になった次の来店で一度だけ。
-  // 小会話の巡回は進めず、好感度も足さない（締めくくりは bonds.js の playFinale が記録・専用ハガルを渡す）。
-  if (spot.charId === "steve" && finaleAtVisit("steve")) {
+  // スティーブ・ヴォルクの♥5の締めくくり（#2705・2026-11-07）: 第3章で見ていない人は、店に通って♥5になった次の来店で一度だけ。
+  // 小会話の巡回は進めず、好感度は足さず、代金も取らない（締めくくりは bonds.js の playFinale が記録・専用ハガルを渡す）。
+  // ヴォルクの授業の相談（TOKYO_TEACHERS）はこの来店では出さず、次の来店で（締めくくりと授業を一度に重ねない）。
+  if (TOKYO_FINALES.includes(spot.charId) && finaleAtVisit(spot.charId)) {
     const bg = sceneBg(spot.preview, timeOfDay()).url;
     await showBg(spot.preview, timeOfDay());
-    if (state !== owner || !await playFinale("steve", { bg })) return { used: false, exerted: false };
+    if (state !== owner || !await playFinale(spot.charId, { bg })) return { used: false, exerted: false };
     addStamina(spot.stamina);
     return { used: true, exerted: true };
   }

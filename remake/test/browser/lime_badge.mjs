@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
+import { rotateThroughGuard } from './rotate_guard.mjs';
 const { chromium } = createRequire(import.meta.url)('playwright');
 const baseline = process.env.BASELINE === '1';
 const phase = baseline ? 'before' : 'after';
@@ -110,18 +111,22 @@ try {
     });
     assert.deepEqual(counts, { unread: 1, read: 0, before: true, after: false });
     await page.evaluate(() => badgeQA.hud.setPhoneBadge(10));
-    const rotateHint = touch && device === 'portrait' && layout === 'normal';
+    // スマホの縦持ちは通常版もDS風も回転ガードで止める（#2789・#2794）。LIME・MENU を押しても届かず、
+    // 横（844×390）へ戻すと同じ地図で押せる。
+    const rotateHint = touch && device === 'portrait';
     if (rotateHint) {
-      assert(await page.locator('#rotate-hint').isVisible(), 'normal portrait keeps its existing rotation prompt');
-    } else {
-      // 五角形のステータスボタンは廃止（DUI05）。右上は LIME と MENU だけ。
-      assert.equal(await page.locator('[data-test="hud-status"]').count(), 0);
-      for (const id of ['hud-phone', 'hud-menu']) {
-        const target = page.locator(`[data-test="${id}"]`);
-        if (touch) await target.tap(); else await target.click();
-      }
-      assert.deepEqual(await page.evaluate(() => badgeQA.clicks), ['phone', 'menu']);
+      assert(await page.locator('#rotate-hint').isVisible(), `${layout} portrait shows the rotation guard`);
+      await rotateThroughGuard(page, { portrait: viewport, landscape: { width: 844, height: 390 }, label: `portrait/${layout}`,
+        targets: ['hud-phone', 'hud-menu'].map(id => page.locator(`[data-test="${id}"]`)),
+        state: () => page.evaluate(() => ({ clicks: [...badgeQA.clicks], state: JSON.stringify(badgeQA.core.state) })) });
     }
+    // 五角形のステータスボタンは廃止（DUI05）。右上は LIME と MENU だけ。
+    assert.equal(await page.locator('[data-test="hud-status"]').count(), 0);
+    for (const id of ['hud-phone', 'hud-menu']) {
+      const target = page.locator(`[data-test="${id}"]`);
+      if (touch) await target.tap(); else await target.click();
+    }
+    assert.deepEqual(await page.evaluate(() => badgeQA.clicks), ['phone', 'menu']);
     assert.deepEqual(errors, []);
     results.push({ device, viewport, layout, states, counts, rotateHint, errors });
     console.log(`PASS ${phase}: ${device}/${layout}`);

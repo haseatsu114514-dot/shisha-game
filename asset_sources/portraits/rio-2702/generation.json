@@ -1,0 +1,117 @@
+{
+  "issue": 2702,
+  "generator": "Codex built-in image generation",
+  "prompt_record": "asset_sources/portraits/rio-2702/prompts.md",
+  "pre_restart_prompts": "Exact text unavailable from checkpoint; no recorded image was regenerated.",
+  "references": {
+    "identity_expression_normal": {
+      "path": "assets/sprites/characters/rio/chr_rio_normal.png",
+      "sha256": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09"
+    },
+    "identity_expression_sad": {
+      "path": "assets/sprites/characters/rio/chr_rio_sad.png",
+      "sha256": "9343dc7df3668bf9f976cb3f5be771cd2205e2501b66f7532ee418592104cb79"
+    },
+    "identity_expression_serious": {
+      "path": "assets/sprites/characters/rio/chr_rio_serious.png",
+      "sha256": "ea0e299fa6ada5fad01c38ec64589515e7a24eb2d2da90443e21b9bdc7e0173c"
+    },
+    "identity_expression_shock": {
+      "path": "assets/sprites/characters/rio/chr_rio_shock.png",
+      "sha256": "c30f36c5b44e8335ea3b5c77f105556a8084a48f0ccef90c4a756500f9840ee2"
+    },
+    "identity_expression_smile": {
+      "path": "assets/sprites/characters/rio/chr_rio_smile.png",
+      "sha256": "f44c1306d2b6c7140b6eec8183fabe4813ea7507ed76f1b47c2b24e692d76466"
+    },
+    "identity_expression_smug": {
+      "path": "assets/sprites/characters/rio/chr_rio_smug.png",
+      "sha256": "a105be0ff835561336f9968234ceacc115caa5a96ee216de231506253cd37f94"
+    },
+    "identity_expression_surprise": {
+      "path": "assets/sprites/characters/rio/chr_rio_surprise.png",
+      "sha256": "159a9c9ede06553ab1e4fe85647f1ea3fc8fdb94f6f315782bb8077c1c4bec1c"
+    },
+    "nanami_style": {
+      "path": "assets/sprites/character_variants/nanami/minto/chr_minto_normal.png",
+      "sha256": "74fb1fbf5683b13d1ec851136300ecbfc3ca9cf6619cb522a7f82b9e3b2eb6f6"
+    },
+    "new_outline": {
+      "path": "assets/sprites/character_variants/new/tsumugi/chr_tsumugi_normal.png",
+      "sha256": "a3e91848b0bc501eb483d713fe68059717d5f676b45648c49a23cf5086e91fbd"
+    }
+  },
+  "originals": {
+    "new/normal": {
+      "path": "asset_sources/portraits/rio-2702/originals/new/chr_rio_normal.png",
+      "bytes": 595567,
+      "sha256": "0f60f47a1b4af97299264558b9834b5b404f38158449d526f5b7aae9eda0f8fb"
+    },
+    "new/sad": {
+      "path": "asset_sources/portraits/rio-2702/originals/new/chr_rio_sad.png",
+      "bytes": 636763,
+      "sha256": "65e8df29c326efbfb8388160816a2dae75fcd01282cbdc4fa5ffb45aa9f5321a"
+    },
+    "new/serious": {
+      "path": "asset_sources/portraits/rio-2702/originals/new/chr_rio_serious.png",
+      "bytes": 625127,
+      "sha256": "21d23119f672c49786626eb4ff783fbe00c690a6fa59008dd887195918323c31"
+    },
+    "new/shock": {
+      "path": "asset_sources/portraits/rio-2702/originals/new/chr_rio_shock.png",
+      "bytes": 626445,
+      "sha256": "9d71f83b65b1ace160b71b32f5c97c39565fc3ee61c0e06c35d0c955aaa7b308"
+    },
+    "new/smile": {
+      "path": "asset_sources/portraits/rio-2702/originals/new/chr_rio_smile.png",
+      "bytes": 634692,
+      "sha256": "2931f26d1b99fd1c9a2eca023b66314de74a626a0fe96eb31b4127f75210559d"
+    },
+    "new/smug": {
+      "path": "asset_sources/portraits/rio-2702/originals/new/chr_rio_smug.png",
+      "bytes": 681291,
+      "sha256": "870b2949c01d0b2f9c0a67e7b037292205a2349cbcbab9a4a76e1299bf4a005b"
+    },
+    "new/surprise": {
+      "path": "asset_sources/portraits/rio-2702/originals/new/chr_rio_surprise.png",
+      "bytes": 619173,
+      "sha256": "a7ba9b845a31baad7a274a6eb0e13263c711392d140a998c5856057f7d4fce52"
+    },
+    "nanami/normal": {
+      "path": "asset_sources/portraits/rio-2702/originals/nanami/chr_rio_normal.png",
+      "bytes": 951463,
+      "sha256": "5df6d19c66b6d4c6eb78d2daca5e1ed03ef5fe057e0c4a97af332fd5cf0bf98d"
+    },
+    "nanami/sad": {
+      "path": "asset_sources/portraits/rio-2702/originals/nanami/chr_rio_sad.png",
+      "bytes": 924514,
+      "sha256": "f62e310e9953af9836528be374ca7d509dbd7c55d4edeb6c82f45a0164150a58"
+    },
+    "nanami/serious": {
+      "path": "asset_sources/portraits/rio-2702/originals/nanami/chr_rio_serious.png",
+      "bytes": 948869,
+      "sha256": "eca532ea770d6a99234fd1eae67181e0e6323aeb06430d0514addf5dc3a8074a"
+    },
+    "nanami/shock": {
+      "path": "asset_sources/portraits/rio-2702/originals/nanami/chr_rio_shock.png",
+      "bytes": 932897,
+      "sha256": "426b711882fd70e62ef65b497d3c2b5e8d185d0232b2e5c139634ef84ab94098"
+    },
+    "nanami/smile": {
+      "path": "asset_sources/portraits/rio-2702/originals/nanami/chr_rio_smile.png",
+      "bytes": 889579,
+      "sha256": "57cf44becc3ed079136de465afb065b7078dbdd97504f6cc1315d7fd7208fd40"
+    },
+    "nanami/smug": {
+      "path": "asset_sources/portraits/rio-2702/originals/nanami/chr_rio_smug.png",
+      "bytes": 939119,
+      "sha256": "673373d3f55b1f47c08ca36a2fc5435e20bd32591e19cd4f5e0c6f68fb68f114"
+    },
+    "nanami/surprise": {
+      "path": "asset_sources/portraits/rio-2702/originals/nanami/chr_rio_surprise.png",
+      "bytes": 939169,
+      "sha256": "5fd5f9d83b90078006c872ac9337e921dc47f149564d29225ed273fafe753236"
+    }
+  },
+  "fit": "asset_sources/portraits/rio-2702/fit.py"
+}
