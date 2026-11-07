@@ -198,7 +198,12 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
     host.append(next);
     // ワイドステージの街マップで左右の余白をこの絵のぼかしで埋める（base.css・#2855）。
     // 変数に入れた url() は CSS ファイルの場所から解決されるので、ページからの絶対 URL にして渡す
-    host.style.setProperty("--bg-art", url ? `url("${new URL(url, document.baseURI).href}")` : "none");
+    // テスト用の簡易 DOM（style や baseURI を持たない）では何もしない
+    if (host.style?.setProperty) {
+      let art = "none";
+      if (url) try { art = `url("${new URL(url, document.baseURI).href}")`; } catch { art = `url("${url}")`; }
+      host.style.setProperty("--bg-art", art);
+    }
     curtain?.commitArrival?.(url);
     if (!curtain) sceneArrival.commitArrival(url);
     weatherBg = url || "";
