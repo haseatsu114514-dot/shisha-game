@@ -520,10 +520,10 @@ await suite("desert-ride", async check => {
     assert.equal(price, 6000);
   });
 
-  // ドバイの日常の保存を LOAD した直後（カフェ・サーリムにも砂丘にもまだ行っていない地図）から、MENU の人間関係がヌールの♥5の締めくくり・
+  // ドバイの日常の保存を LOAD した直後（カフェ・オアシスにも砂丘にもまだ行っていない地図）から、MENU の人間関係がヌールの♥5の締めくくり・
   // 告白を正しく案内する（締めくくり・告白の台詞は ch4_desert.json にあるので、日常へ戻る時に読んでおく。ch4-dubai-daily.js）。
   for (const [variant, expected] of [
-    ["finale", { label: "恋愛ルート", next: "次にカフェ・サーリムで会うと、特別なイベントへ。" }],
+    ["finale", { label: "恋愛ルート", next: "次にカフェ・オアシスで会うと、特別なイベントへ。" }],
     ["confession", { label: "告白を選べる", next: "次の砂丘（ツアー代なし）で、滑ったあとの夕日の時間へ。" }],
   ]) await check(`chapter-four-load-shows-noor-${variant}-menu-hint-before-any-action`, async page => {
     page.setDefaultTimeout(30000);
