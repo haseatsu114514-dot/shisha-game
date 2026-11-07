@@ -441,3 +441,50 @@ html:root .trpg-root .trpg-inline-help-body :is(span, .trpg-declare-rule) { font
 @media (pointer: coarse) { html:root .trpg-root .trpg-inline-help > summary { width: 84px; height: 84px; } }
 html:root .trpg-root .trpg-inline-help > summary { font-size: max(24px, var(--tt-min)); }
 html:root .trpg-root.trpg-cinematic .trpg-declare-stage .trpg-modal-actions .trpg-button { font-size: max(20px, var(--tt-min)); }
+
+/* ---------------------------------------------------------------- ボドゲカフェの棚（本編の campaign）: ワイドとスマホ（#2729・2026-11-08 オーナー指示「プレイしやすく」）
+   ワイドステージ（#2861）: TRPGの画面（#screen の中の .trpg-screen）をステージの左右いっぱいに広げ、左右に街の別の絵が見えないようにする。
+   棚は額縁がもともと左右の端にあるので、中身もそこまで伸ばして仲間の札と本の列を横に広げる（左右のノッチ＝safe-area は避ける）。
+   卓・表紙（cinematic）は調べる地点が絵の比率に合わせて置いてあるので中央1280のまま、左右はフェルトの地でつなぐ。
+   スマホ規格（html[data-density="phone"]・phone-density.css の変数）: 英字の飾り見出し・作者の行・店の場所の小見出しは外し、
+   本文・名前・札の文字を --phone-text / --phone-sub、押す所を --phone-tap にする。中身が増えた分は棚全体を縦スクロールにする。 */
+#stage[data-wide] .trpg-screen { inset: 0 calc(-1 * var(--stage-gutter, 0px)); }
+#stage[data-wide] .trpg-screen > .trpg-root:not(.trpg-campaign) { inset: 0 var(--stage-gutter, 0px); }
+#stage[data-wide] .trpg-root.trpg-campaign { padding-left: max(48px, calc(var(--stage-safe-l, 0px) + 24px)); padding-right: max(48px, calc(var(--stage-safe-r, 0px) + 24px)); }
+#stage[data-wide] .trpg-campaign-books[data-many="true"] { gap: 20px; }
+
+html:root[data-density="phone"] .trpg-root.trpg-campaign { gap: 12px; padding-top: 34px; padding-bottom: 34px; overflow-y: auto; overscroll-behavior: contain; }
+html:root[data-density="phone"] .trpg-root.trpg-campaign > * { flex-shrink: 0; }
+html:root[data-density="phone"] .trpg-campaign-header { align-items: center; }
+html:root[data-density="phone"] .trpg-campaign-header > div:first-child { display: flex; align-items: center; gap: 16px; min-width: 0; }
+html:root[data-density="phone"] .trpg-campaign-header .trpg-kicker { display: none; }
+html:root[data-density="phone"] .trpg-campaign-header h1 { margin: 0; font-size: 34px; }
+html:root[data-density="phone"] .trpg-campaign-meta { gap: 14px; font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-campaign-meta .trpg-button { min-height: var(--phone-tap); padding: 0 20px; font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-campaign-meta .trpg-button.trpg-help-button { width: var(--phone-tap); min-width: var(--phone-tap); height: var(--phone-tap); min-height: var(--phone-tap); padding: 0; }
+html:root[data-density="phone"] .trpg-campaign .venue-host-copy small { display: none; }
+html:root[data-density="phone"] .trpg-campaign .venue-host-copy strong { font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-campaign .venue-host-copy p { font-size: var(--phone-text); line-height: 1.45; }
+html:root[data-density="phone"] .trpg-campaign-notice { font-size: var(--phone-sub); line-height: 1.45; }
+html:root[data-density="phone"] .trpg-campaign-person { padding: 8px 14px; }
+html:root[data-density="phone"] .trpg-campaign-person strong { font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-campaign-person small { padding-top: 4px; font-size: var(--phone-sub); line-height: 1.3; }
+html:root[data-density="phone"] .trpg-campaign-person .trpg-campaign-face { width: 64px; height: 66px; }
+html:root[data-density="phone"] .trpg-campaign-party > p { font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-campaign-books { flex: none; overflow: visible; }
+html:root[data-density="phone"] .trpg-campaign-books[data-many="true"] .trpg-campaign-book-art { height: 130px; }
+html:root[data-density="phone"] .trpg-campaign-book-badge { font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-campaign-book-copy > small:first-child { display: none; }
+html:root[data-density="phone"] :is(.trpg-campaign-books, .trpg-campaign-books[data-many="true"]) .trpg-campaign-book-copy h2 { font-size: 30px; line-height: 1.25; }
+html:root[data-density="phone"] :is(.trpg-campaign-books, .trpg-campaign-books[data-many="true"]) .trpg-campaign-book-copy :is(p, small) { font-size: var(--phone-sub); line-height: 1.4; }
+html:root[data-density="phone"] .trpg-campaign-memory strong { font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-campaign-book-copy .trpg-button { min-height: var(--phone-tap); font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-campaign .trpg-trial-actions .trpg-button { min-height: var(--phone-tap); font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-day-trial :is(h2) { font-size: 32px; }
+html:root[data-density="phone"] .trpg-day-trial p { font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-club-proposal { padding: 26px 34px; }
+html:root[data-density="phone"] .trpg-club-proposal .trpg-kicker { font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-club-proposal h2 { margin: 6px 0 14px; font-size: 34px; }
+html:root[data-density="phone"] .trpg-club-proposal p.trpg-club-line { font-size: var(--phone-sub); line-height: 1.45; }
+html:root[data-density="phone"] .trpg-club-proposal p.trpg-club-line small { font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-club-proposal .trpg-button { min-height: var(--phone-tap); font-size: var(--phone-text); }
