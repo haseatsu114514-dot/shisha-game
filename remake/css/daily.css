@@ -1805,8 +1805,9 @@ body:not(.game-ds) #hud .hud-menu .hidane-badge { min-width: max(20px, var(--mui
 body:not(.game-ds) .map .spot-pin .sub-label { font-size: max(13px, var(--mui-text)); }
 body:not(.game-ds) .map .spot-pin .pin-cost { font-size: max(18px, var(--mui-text)); font-weight: 700; line-height: 1.2; }
 /* スマホ規格: 文字を下限まで大きくした分、札の余白を詰めて隣のスポットと重ならないようにする（compact_gains_map の重なりの検査） */
-html:root[data-density="phone"] body:not(.game-ds) .map .spot-pin .sub-label { padding: 2px 5px; }
+html:root[data-density="phone"] body:not(.game-ds) .map .spot-pin .sub-label { padding: 2px 5px; line-height: 1.2; }
 html:root[data-density="phone"] body:not(.game-ds) .map .spot-pin .pin-cost { margin-top: 1px; padding: 0 5px; line-height: 1.15; }
+html:root[data-density="phone"] body:not(.game-ds) .map .spot-pin .pin-status:not(.pin-closed) { margin-top: 1px; padding: 0 5px; line-height: 1.15; }
 body:not(.game-ds) .map .spot-pin .pin-status { font-size: max(14px, var(--mui-text)); }
 body:not(.game-ds) .map .spot-pin .pin-people { top: -42px; pointer-events: auto; } /* 顔の下端は今までと同じ（看板の上端から 6px）。ロゴに重ならない */
 body:not(.game-ds) .map .spot-pin .pin-person { flex-basis: 48px; width: 48px; height: 48px; }
