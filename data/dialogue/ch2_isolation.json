@@ -353,9 +353,12 @@
           "text": "ありがとうございます。本番も、絶対……"
         },
         {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "最近のLIME、何送っても『大会前なので』で返ってくるよ？"
+          "type": "condition",
+          "condition_type": "contact",
+          "char_id": "minto",
+          "threshold": 1,
+          "next_true": "lime_replies",
+          "next_false": "face_to_face"
         },
         {
           "speaker": "hajime",
@@ -397,7 +400,23 @@
           "face": "",
           "text": "突き放されなかったことが、なぜだか少しだけ、こたえた。"
         }
-      ]
+      ],
+      "branches": {
+        "lime_replies": [
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "最近のLIME、何送っても『大会前なので』で返ってくるよ？"
+          }
+        ],
+        "face_to_face": [
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "いまも、話しながら頭の中は大会のことばっかり、って顔してるよ？"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch2_naru_window",

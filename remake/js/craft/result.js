@@ -185,22 +185,19 @@ export async function showStandings(round, mine, cs = null, attempt = null) {
  * kind: premium（残り2〜3でフライングプチュン）/ win（0でプチュン）/ close（プチュ…→パリン）/ lose（即パリン）/ disaster（ヒビ→バキン）
  * カウント中の画面はクリックを吸わない（自動で進む）
  */
-export async function resultCountdown(cs, kind, attempt = null, {
-  contestants = CONTESTANTS, eyebrow = "SMOKE CROWN CUP / FINAL JUDGING",
-} = {}) {
+export async function resultCountdown(cs, kind, attempt = null) {
   stopBgm(0.4);
   const fast = !!autoSkill();
   const tick = fast ? 60 : 620;
   const num = el("div.rc-num");
   const ring = el("div.rc-ring", { "aria-hidden": "true", html: '<svg viewBox="0 0 240 240"><circle class="rc-ring-track" cx="120" cy="120" r="110"/><circle class="rc-ring-progress" cx="120" cy="120" r="110"/></svg>' });
   const cuts = el("div.rc-cuts");
-  // 出場者は章ごとに渡す（第2〜4章でも同じ10カウント・#2688 A16）。第1章は既定の4人
-  const pray = el("div.rc-pray", contestants.map((id) => el(`div.rc-card${id === "hajime" ? ".me" : ""}`, [
+  const pray = el("div.rc-pray", CONTESTANTS.map((id) => el(`div.rc-card${id === "hajime" ? ".me" : ""}`, [
     faceOf(id, ".rc-face"),
-    el("i.rc-shisha", { style: { background: id === "hajime" ? mixColor(cs.mix) : RIVAL_COLOR[id] || "#dcd1f4" } }),
+    el("i.rc-shisha", { style: { background: id === "hajime" ? mixColor(cs.mix) : RIVAL_COLOR[id] } }),
     el("span", { text: nameOf(id) }),
   ])));
-  const screen = el("div.count-screen", { dataset: { test: "result-count" } }, [header(eyebrow, "結果発表", attempt?.rulesVersion >= 2 ? "最後の調整と、残る1点の行方。" : "最後の10点が、動く。"), cuts, ring, num, pray, el("div.rc-crt")]);
+  const screen = el("div.count-screen", { dataset: { test: "result-count" } }, [header("SMOKE CROWN CUP / FINAL JUDGING", "結果発表", attempt?.rulesVersion >= 2 ? "最後の調整と、残る1点の行方。" : "最後の10点が、動く。"), cuts, ring, num, pray, el("div.rc-crt")]);
   showScreen("count", screen);
   const mainLeaf = Object.entries(cs.mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0).sort((a, b) => b[1] - a[1])[0]?.[0];
   const leafName = DB.flavorById?.[mainLeaf]?.short_name || DB.flavorById?.[mainLeaf]?.name || "葉";
@@ -244,36 +241,7 @@ async function puchun(screen, flying) {
   await sleep(700);
   screen.classList.add("smoke-white");
   flash("white", 500);
-  await sleep(500);
-  // 煙の輪が3つ、中心から続けて抜ける（#2688 A18）。勝ちの瞬間を煙でできた輪で見せる
-  await smokeRings(screen);
-  await sleep(200);
-}
-
-/** 白い煙の中心から、煙の輪が3つ続けて広がって抜ける。高速送り・動きを減らす設定では出さない */
-async function smokeRings(host) {
-  if (autoSkill() || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const rings = [0, 1, 2].map((i) => {
-    const ring = el("i.rc-smoke-ring", { "aria-hidden": "true" });
-    host.append(ring);
-    return ring.animate([
-      { transform: "translate(-50%, -50%) scale(.25)", opacity: 0 },
-      { opacity: 0.95, offset: 0.2 },
-      { transform: "translate(-50%, -64%) scale(3.4)", opacity: 0 },
-    ], { duration: 1200, delay: i * 260, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" }).finished.catch(() => {}).finally(() => ring.remove());
-  });
-  await Promise.all(rings);
-}
-
-/** 優勝の紙吹雪（第2〜4章の結果の締め・#2688 A16）。画面の上に重ね、時間が来たら片付く */
-export async function celebrate(host = layers.fx) {
-  if (!host || autoSkill()) return;
-  const layer = el("div.rc-celebrate", { "aria-hidden": "true", dataset: { test: "celebrate" } });
-  host.append(layer);
-  SE.fanfare();
-  confetti(layer);
-  await sleep(1400);
-  setTimeout(() => layer.remove(), 2000);
+  await sleep(900);
 }
 
 async function parin(screen, disaster) {

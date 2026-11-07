@@ -36,8 +36,9 @@ assert.equal(new Set(connected).size, connected.length, "A scene is listed twice
 for (const id of connected) assert(CH5_SCENE_BG[id], `bg missing for ${id}`);
 for (const bg of Object.values(CH5_SCENE_BG))
   assert(manifest.backgrounds.includes(`${bg}.png`), `unknown background ${bg}`);
-// BGM の切替表（#1668 2-7）は接続済みの場面だけを指し、実在の曲だけを使う。
-const hasBgm = key => manifest.bgm.some(file => file.replace(/\.[^.]+$/, "") === key);
+// BGM の切替表（#1668 2-7）は接続済みの場面だけを指し、登録曲か待機用の合成曲を使う。
+const hasBgm = key => key === "bgm_tournament_wait"
+  || manifest.bgm.some(file => file.replace(/\.[^.]+$/, "") === key);
 assert(hasBgm(CH5_DEFAULT_BGM), `unknown bgm ${CH5_DEFAULT_BGM}`);
 for (const [id, key] of Object.entries(CH5_SCENE_BGM)) {
   assert(connected.includes(id), `bgm for unconnected scene ${id}`);

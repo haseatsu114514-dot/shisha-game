@@ -175,7 +175,7 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
   const art = { homeRigs };
   const key = `${url}|${tint || ""}|${sceneArtUrls(url, art).join("|")}`;
   const sceneArrival = takeSceneArrival(); // consume even on redraw; never carry an entry into a later scene
-  // 時間が過ぎる波（transitions.waveBeat）が覆ったまま預けた幕。新しい背景を描いてから開く（#2688 A9）
+  // 時間が過ぎる波（transitions.waveBeat）が覆ったまま預けた幕。新しい背景を描いてから開く（#2688 F3）
   const handoff = takeParkedCover();
   if (key === bgNow) {
     refreshWeather();
@@ -482,7 +482,7 @@ export async function bannersIdle() {
 // ---------------------------------------------------------------- モーダル
 
 /**
- * 閉じた画面の出口（#2688 F5）。閉じる箱と同じ位置・形・紙の色の面だけを短く残して薄れさせる。
+ * 閉じた画面の出口（MENU の閉じ・#2688 A13）。閉じる箱と同じ位置・形・紙の色の面だけを短く残して薄れさせる。
  * 文字・ボタン・クラス名は写さないので、次の画面・入力・テストの判定は本物だけを見る。
  * 箱がまだ見えている間（#modal を空にする前）に呼ぶ。面は #modal の一つ下に置き、続けて開いた画面より前へ出ない。
  * origin: 縮む起点（#modal 内の座標）。box: 面にする箱のセレクタ（省略時は一番大きく塗られた箱）。
@@ -552,8 +552,6 @@ export function modal({ title = "", body = "", options = [{ label: "OK", value: 
     ]);
     const close = () => {
       window.removeEventListener("keydown", onKeyDown);
-      // 開くときの pop-in の逆。紙の面が少し縮みながら薄れる（#2688 F5）。箱が見えている間に測ってから外す
-      ghostOut([...layers.modal.childNodes], [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(.97)" }], 160);
       layers.modal.classList.remove("show");
       layers.modal.replaceChildren();
       if (previousFocus?.isConnected) previousFocus.focus();

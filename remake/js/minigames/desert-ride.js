@@ -6,7 +6,7 @@
 // 着地の輪・得点の浮き出し・トリックのスロー・ブーストの残像。動き軽減ではカメラの動き・揺れ・スロー・閃光・速度線を止める。
 // 本番はスタートの合図のあと、ヌール（rivalRun）が横で滑る。
 import { el } from "../core/util.js";
-import { SE, unlockAudio, currentBgm, playBgm } from "../core/audio.js";
+import { SE, unlockAudio, createDesertRideSe, currentBgm, playBgm } from "../core/audio.js";
 import { COURSE, EDGE, SPEED, SPIN, DEFAULT_SEED, generateCourse, practiceCourse, createGame, step, press, boost, chargeBoost, summary, curveAt, botControl,
   rivalRun, rivalAt, RULES_VERSION } from "./desert-ride-model.js";
 import { DESERT_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
@@ -116,8 +116,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
   const restoreBgm = () => { if (rideBgm && currentBgm() === rideBgm) playBgm(bgmBefore); };
   const art = loadDesertArt();
   const promise = new Promise(resolve => {
+    const rideSe = createDesertRideSe();
     const results = [];
-    let practiced = false, done = false, frame = 0, currentBest = best?.rulesVersion === RULES_VERSION ? best : null;
+    let practiced = false, done = false, frame = 0, runId = 0, currentBest = best?.rulesVersion === RULES_VERSION ? best : null;
     const oldBest = legacyBest || (best && best.rulesVersion !== RULES_VERSION ? best : null);
     const root = el("section.desert-ride", { dataset: { test: "desert-ride", phase: "menu", reducedMotion: String(!!reducedMotion) }, tabindex: "-1", "aria-label": "DESERT RIDE" });
     const canvas = el("canvas.dr-canvas", { width: W, height: H, "aria-hidden": "true" });
@@ -149,6 +150,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       window.removeEventListener("keydown", onKey, true);
       window.removeEventListener("keyup", onKeyUp, true);
       signal?.removeEventListener("abort", finish);
+      rideSe.dispose();
       root.remove();
       delete window.__desertRide;
       restoreBgm();
@@ -197,10 +199,13 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     // 画面の上の方をタップしてもジャンプ（ボタンの外に指が出ても続けられる）
     canvas.addEventListener("pointerdown", event => { if (mode) { event.preventDefault(); unlockAudio(); act(); } });
     quit.addEventListener("click", () => { if (!mode) return; stopRun(); showMenu(mode === "practice" ? "練習をやめた。" : "途中でやめた。記録は残らない。"); });
+    panel.addEventListener("click", event => { if (event.target.closest("button")) rideSe.play("decide", 0.35); });
+    panel.addEventListener("focusin", event => { if (event.target.matches("button")) rideSe.play("cursor", 0.25); });
 
     // ---- 進行 -------------------------------------------------------------------------
     function setPhase(name) { root.dataset.phase = name; }
     function showMenu(message = "") {
+      rideSe.stop();
       mode = null; game = null; tut = null; bot = null;
       controls.hidden = true; quit.hidden = true; caption.textContent = ""; hud.replaceChildren();
       setPhase("menu");
@@ -225,6 +230,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       (tutorial && !practiced ? practice : start).focus();
     }
     function startRun(kind, who = raceWith) {
+      const thisRun = ++runId;
+      unlockAudio();
+      rideSe.stop();
       raceWith = rivals.includes(who) ? who : "noor";
       rideBgm = RIDE_BGM[kind === "practice" ? "practice" : raceWith];
       playBgm(rideBgm);
@@ -245,14 +253,18 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       caption.textContent = kind === "practice" ? TUTORIAL.move : "";
       buildHud();
       updateHud(); // 開始直後から相手名・速度・BOOSTを表示する。最初の描画フレームを待たない。
-      last = performance.now();
       cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(tick);
+      rideSe.ready().then(() => {
+        if (done || mode !== kind || runId !== thisRun) return;
+        if (countdown > 0) rideSe.play("countdown", 0.55);
+        last = performance.now();
+        frame = requestAnimationFrame(tick);
+      });
     }
-    function stopRun() { cancelAnimationFrame(frame); mode = null; }
+    function stopRun() { ++runId; cancelAnimationFrame(frame); mode = null; rideSe.stop(); }
     function onPress(kind) {
-      if (kind === "big") { SE.whoosh(); showPop("JUMP!", "jump"); }
-      else if (kind === "hop") SE.click();
+      if (kind === "big") { rideSe.play("jump", 0.6); showPop("JUMP!", "jump"); }
+      else if (kind === "hop") rideSe.play("jump", 0.38);
     }
     let font = null;
     const fontFamily = () => (font ??= getComputedStyle(root).fontFamily || "sans-serif");
@@ -375,8 +387,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         const shown = countdown > 1.6 ? "3" : countdown > 0.8 ? "2" : countdown > 0 ? "1" : "GO!";
         if (shown !== countShown) {
           countShown = shown;
-          if (shown === "GO!") { SE.whoosh(); showPop("GO!", "go"); root.dataset.countdown = ""; if (!reducedMotion) view.kick = 1; }
-          else { SE.count(); showPop(shown, "count"); }
+          if (shown === "GO!") { showPop("GO!", "go"); root.dataset.countdown = ""; if (!reducedMotion) view.kick = 1; }
+          else showPop(shown, "count");
         }
         if (countdown > 0) { updateHud(); simulateParticles(real); draw(real); frame = requestAnimationFrame(tick); return; }
       }
@@ -402,6 +414,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       }
       const events = game.events.slice(before);
       react(events);
+      rideSe.motion({ speed: game.speed / SPEED.max, carve: Math.abs(game.vx), grounded: game.air <= 0 && game.fallT <= 0 });
       updateTutorial(events);
       updateHud();
       simulateParticles(dt);
@@ -413,6 +426,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const trick = events.find(e => e.kind === "trick");
       for (const event of events) {
         if (event.kind === "land") {
+          rideSe.play("land", 0.55);
           const big = event.grade !== "bounce" && event.grade !== "hop";
           const big360 = trick && trick.half >= 2; // 360 以上はカットイン（真ん中の文字は出さない）
           if (big360) showCutin(trick, event.grade);
@@ -427,17 +441,17 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
           SE.reelWin(); floater(`${event.degrees} +${event.points}`, "trick");
           if (event.half >= 2) { SE.just(); if (!reducedMotion) slowT = 0.5; } // カットインの間はゆっくり
         } else if (event.kind === "fall") {
-          SE.hit(); showPop(event.reason === "spin" ? "回り切れず…" : "転倒…", "fall"); burst(34, 1.6);
+          rideSe.play("fall", 0.7); showPop(event.reason === "spin" ? "回り切れず…" : "転倒…", "fall"); burst(34, 1.6);
           if (!reducedMotion) { shakeT = 0.45; flashT = 0.18; }
         } else if (event.kind === "near") { SE.tick(); floater(`かすめ +${event.points}`, "near"); if (game.combo >= 2) showPop(`${game.combo} COMBO`, "combo"); }
         else if (event.kind === "smash") { SE.crack(); floater(`粉砕 +${event.points}`, "smash"); chips(event.size); if (!reducedMotion) shakeT = Math.max(shakeT, 0.22); }
         else if (event.kind === "gaugeFull") { SE.slotBonus(); floater("BOOST OK ↓", "gauge"); }
         else if (event.kind === "boost") {
-          SE.whoosh(); SE.jingle(); showPop("BOOST!!", "boost"); burst(24, 1.6);
+          rideSe.play("boost", 0.6); showPop("BOOST!!", "boost"); burst(24, 1.6);
           if (!reducedMotion) { shakeT = 0.3; flashT = 0.1; view.kick = 1.4; }
         } else if (event.kind === "race") {
           if (event.won) { floater(`${RIVAL_NAMES[event.who] || "ヌール"}に勝利 +${event.points}`, "race"); }
-        } else if (event.kind === "finish") { SE.just(); if (game.race?.won) SE.fanfare(); }
+        } else if (event.kind === "finish") { rideSe.play("goal", 0.7); }
       }
       // 回転中は半回転ごとに角度を見せる（180 → 360 → …）
       const half = game.spinDir !== 0 ? Math.floor(Math.abs(game.rot) * 2 + 1e-6) : 0;
@@ -445,6 +459,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       halfShown = half;
     }
     function onFinished() {
+      rideSe.stop();
       controls.hidden = true; quit.hidden = true;
       if (mode === "practice") {
         practiced = true;

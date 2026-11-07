@@ -44,7 +44,7 @@ const values = {
     markMet: (id) => state.met[id] = true, loadFromSlot: () => false, requestResumeOnBoot: noop },
   "ui.js": { withScenePreparation: task => task, imageReady: async () => false, layers: { fx: { append: noop }, modal: elem() }, dropRetired: noop, gainCard: noop, dayCard: async () => {}, modal: async (opts) => { guards.push(state.stamina); guardBodies.push(opts.body); return decisions.length ? decisions.shift() : true; },
     toast: noop, fadeBlack: async (mid) => mid?.(), dayTurn: async (mid) => { const info = await mid?.(); dawns.push({ ...info, absoluteDay: state.day, hudLeft: values["hud.js"].daysLeft() }); }, bannersIdle: async () => {}, setBg: noop, refreshWeather: noop },
-  "transitions.js": { refreshPlaceCue: noop, waveBeat: async (_host, _text, mid) => mid?.() },
+  "transitions.js": { refreshPlaceCue: noop },
   "data.js": { sceneBg: () => ({}), DB: db, loadCinemaDialogue: async () => db, bgUrl: (ref) => ref, displayName: id => id }, "saves.js": { saveFlow: async () => {}, loadFlow: async () => {} },
   "audio.js": { SE: { select: noop, cancel: noop }, playBgm: noop },
   "engine.js": { isPlaying: () => false, play: async (id) => played.push(id) }, "glossary.js": { glossaryPanel: () => "" },
@@ -222,12 +222,8 @@ for (const scenario of [
   assert.equal(dawns[0].day, 7);
   assert.equal(dawns[0].left, 7);
   assert.equal(dawns[0].absoluteDay, scenario.day + 1);
-  // 大会前夜は夜明けの当日版（#2688 A10）。日付も残り日数もめくらないので、通常の朝とは分けて数える
-  const normal = dawns.filter(info => !info.eve);
-  assert(normal.every(info => info.left === info.hudLeft));
-  assert(normal.every(info => info.day < 14), "大会当日は通常の夜明けカードを出さない");
-  assert.equal(dawns.filter(info => info.eve).length, 1, "大会前夜は当日版の夜明けを一度だけ");
-  assert(dawns.filter(info => info.eve).every(info => info.day === undefined && info.left === undefined), "当日版は日付をめくらない");
+  assert(dawns.every(info => info.left === info.hudLeft));
+  assert(dawns.every(info => info.day < 14), "大会当日は通常の夜明けカードを出さない");
   assert.equal(state.day, scenario.untilDay);
 }
 

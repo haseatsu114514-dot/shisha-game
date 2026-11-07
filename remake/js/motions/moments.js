@@ -1,4 +1,4 @@
-// 章の要所の一度きりのモーショングラフィックス（#2688 A1〜A3・A5〜A8）。紫とラベンダーの面と線、画像は使わない。顔は描かない。
+// 章の要所の一度きりのモーショングラフィックス（#2688 A3・A5・A6・A8）。紫とラベンダーの面と線、画像は使わない。顔は描かない。
 // どれも見せるだけで、保存・進行・票には触れない。動きを減らす設定・テストの高速送りでは何もしない（mid() だけ行う）。
 import { el, sleep, nextFrame } from "../core/util.js";
 import { W, H, COLOR, EASE, svg, stageSvg, move, reducedMotion } from "../core/transition-kit.js";
@@ -15,51 +15,6 @@ async function covering(node, body) {
   const unhold = holdCover();
   host.append(node);
   try { return await body(node); } finally { node.remove(); unhold(); }
-}
-
-// ---------------------------------------------------------------- A1 コールドオープン → 章題（第1章）
-
-/**
- * 1年後の会場の煙が一筋に細くなって上へ抜け、白いもやになって章題の白い紙へつながる（約0.9秒）。
- * 白い面は残したまま返すので、章題が出始めてから戻り値の release() で薄れさせる。
- */
-export async function coldOpenBridge() {
-  const host = fx();
-  if (!host || skip()) return null;
-  const node = layer("mo-bridge", "cold-open");
-  const thread = svg("path", { d: "M 640 760 C 600 640, 690 540, 640 420 S 590 220, 650 -20", fill: "none", stroke: COLOR.lav,
-    "stroke-width": 7, "stroke-linecap": "round", "stroke-dasharray": 900, "stroke-dashoffset": 900 });
-  const white = el("div.mo-bridge-white");
-  node.append(stageSvg([thread]), white);
-  host.append(node);
-  await move(thread, [{ strokeDashoffset: 900, strokeWidth: 9 }, { strokeDashoffset: 0, strokeWidth: 3 }], 620, { easing: EASE.out });
-  move(thread, [{ opacity: 1 }, { opacity: 0 }], 300);
-  await move(white, [{ opacity: 0 }, { opacity: 1 }], 360, { easing: "ease-in" });
-  return { async release() { await move(node, [{ opacity: 1 }, { opacity: 0 }], 520, { easing: "ease-out" }); node.remove(); } };
-}
-
-// ---------------------------------------------------------------- A2 消灯（第2章の終幕・閉店後のMELTY PUFF）
-
-/** 店の照明が上から一本ずつ落ちて暗くなり、一人の立ち位置にだけ暖かい灯りが残ってから、暗い店の中へ戻る（約1.7秒） */
-export async function closingLights() {
-  if (skip() || !fx()) return;
-  const node = layer("mo-lights", "closing");
-  const strips = [0, 1, 2, 3].map((i) => el("i.mo-lights-strip", { style: { top: `${8 + i * 22}%` } }));
-  const dark = el("div.mo-lights-dark");
-  const glow = el("div.mo-lights-glow");
-  node.append(dark, ...strips, glow);
-  await covering(node, async () => {
-    await nextFrame();
-    for (const [i, strip] of strips.entries()) {
-      move(strip, [{ opacity: 0.9 }, { opacity: 0.2, offset: 0.4 }, { opacity: 0.7, offset: 0.55 }, { opacity: 0 }], 260, { easing: "steps(4)" });
-      move(dark, [{ opacity: i * 0.22 }, { opacity: (i + 1) * 0.22 }], 220, { easing: "ease-in" });
-      await sleep(180);
-    }
-    await move(glow, [{ opacity: 0, transform: "scale(.6)" }, { opacity: 1, transform: "scale(1)" }], 420, { easing: EASE.out });
-    await sleep(320);
-    move(glow, [{ opacity: 1 }, { opacity: 0 }], 400);
-    await move(dark, [{ opacity: 0.88 }, { opacity: 0 }], 520, { easing: "ease-out" });
-  });
 }
 
 // ---------------------------------------------------------------- A3 落ち葉の波（第3章の公園の回想 → 現在）
@@ -148,50 +103,6 @@ export async function scanGlitch({ from = "", to = "???" } = {}) {
     label.textContent = to;
     await sleep(380);
     await move(node, [{ opacity: 1 }, { opacity: 0 }], 220);
-  });
-}
-
-// ---------------------------------------------------------------- A7 席の灯り（第5章の二本勝負の票）
-
-/**
- * 客席の席ごとの小さな灯りが一つずつ点く。はじめの卓へはラベンダー、9000の卓へは淡い青。二本目は一本目の灯りの上に輪が重なる。
- * 数字は出さない（採点UIを出さない第5章の決まり）。tally = { first: {hajime, machine}, second: {hajime, machine} }
- */
-export async function seatLights(tally) {
-  if (skip() || !fx() || !tally?.first || !tally?.second) return;
-  const seats = Math.max(1, tally.first.hajime + tally.first.machine);
-  const node = layer("mo-seats", "votes");
-  const cx = W / 2, cy = 640, r = 420;
-  const spots = [...Array(seats)].map((_, i) => {
-    const a = Math.PI * (0.12 + 0.76 * (seats === 1 ? 0.5 : i / (seats - 1)));
-    return { x: cx - Math.cos(a) * r, y: cy - Math.sin(a) * r * 0.62 };
-  });
-  // 一本目・二本目それぞれ、はじめ側の席から左に、9000側を右に並べる（誰がどちらに入れたかは記録していないので並びだけ）
-  const sides = (round) => spots.map((_, i) => (i < round.hajime ? "hajime" : "machine"));
-  const color = { hajime: COLOR.lav, machine: "#9fb8ff" };
-  const dots = spots.map((p) => svg("circle", { cx: p.x, cy: p.y, r: 13, fill: "#241845", stroke: "#4b3690", "stroke-width": 3 }));
-  const rings = spots.map((p) => svg("circle", { cx: p.x, cy: p.y, r: 22, fill: "none", "stroke-width": 4, opacity: 0, class: "tr-scale" }));
-  const tables = [
-    svg("rect", { x: cx - 330, y: 560, width: 220, height: 26, rx: 13, fill: COLOR.lav, opacity: 0.85 }),
-    svg("rect", { x: cx + 110, y: 560, width: 220, height: 26, rx: 13, fill: "#9fb8ff", opacity: 0.85 }),
-  ];
-  node.append(el("div.mo-seats-dim"), stageSvg([...tables, ...dots, ...rings]));
-  await covering(node, async () => {
-    await move(node, [{ opacity: 0 }, { opacity: 1 }], 260);
-    const first = sides(tally.first), second = sides(tally.second);
-    for (const [i, dot] of dots.entries()) {
-      dot.setAttribute("fill", color[first[i]]);
-      move(dot, [{ transform: "scale(.4)", opacity: 0.3 }, { transform: "scale(1)", opacity: 1 }], 220, { easing: EASE.out });
-      await sleep(Math.max(40, 520 / seats));
-    }
-    await sleep(260);
-    for (const [i, ring] of rings.entries()) {
-      ring.setAttribute("stroke", color[second[i]]);
-      move(ring, [{ transform: "scale(.5)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }], 260, { easing: EASE.out });
-      await sleep(Math.max(40, 520 / seats));
-    }
-    await sleep(700);
-    await move(node, [{ opacity: 1 }, { opacity: 0 }], 360);
   });
 }
 

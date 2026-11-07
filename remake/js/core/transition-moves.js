@@ -7,18 +7,17 @@ import { motionVariant } from "./mg-kit.js";
 import { withLoadingNotice } from "./module-loading.js";
 import { loadingNotice } from "./ui.js";
 
-export const MOVE_STYLES = ["pin", "steps", "walk", "door", "noren", "walkdoor", "umbrella"];
+export const MOVE_STYLES = ["pin", "steps", "walk", "door", "noren", "walkdoor"];
 const STORE_KEY = "suien_move_style";
 
-export function moveStyle({ spotId, rain = false } = {}) {
+export function moveStyle({ spotId } = {}) {
   const q = new URLSearchParams(location.search).get("move");
   if (MOVE_STYLES.includes(q)) return q;
   try {
     const saved = localStorage.getItem(STORE_KEY);
     if (MOVE_STYLES.includes(saved)) return saved;
   } catch { /* 保存できない環境では既定 */ }
-  // 帰宅は扉。雨の日の外出は傘が開いて覆い、閉じると到着する（#2688 A15）。ほかはピン
-  return spotId === "rest" ? "door" : rain ? "umbrella" : "pin";
+  return spotId === "rest" ? "door" : "pin";
 }
 export function setMoveStyle(style) {
   try { localStorage.setItem(STORE_KEY, style); } catch { /* 保存できない環境 */ }
@@ -33,7 +32,7 @@ function doorMove(host, opts) {
 }
 
 export function moveCurtain(host, style, opts = {}) {
-  const make = { pin: pinMove, steps: stepsMove, walk: walkMove, door: doorMove, noren: norenMove, walkdoor: walkDoorMove, umbrella: umbrellaMove }[style] || pinMove;
+  const make = { pin: pinMove, steps: stepsMove, walk: walkMove, door: doorMove, noren: norenMove, walkdoor: walkDoorMove }[style] || pinMove;
   return make(host, opts);
 }
 
@@ -52,44 +51,6 @@ function circleCover(node, x, y, edgeColor = COLOR.lav, fillColor = COLOR.purple
 
 function pinMove(host, { x = W / 2, y = H / 2 } = {}) {
   return curtain(host, "pin", (node) => circleCover(node, x, y), openLeaf);
-}
-
-// ---------------------------------------------------------------- umbrella: 雨の日。押したピンで傘が開いて覆い、閉じると到着（#2688 A15）
-
-/** 開いた傘（真上から少し斜めに見た形）。原点が石突きの下＝ピンの位置 */
-function umbrellaShape() {
-  const dome = "M -130 0 A 130 118 0 0 1 130 0 Q 97.5 -22 65 0 Q 32.5 -22 0 0 Q -32.5 -22 -65 0 Q -97.5 -22 -130 0 Z";
-  return svg("g", {}, [
-    svg("path", { d: dome, fill: COLOR.lav }),
-    ...[-65, 0, 65].map((x) => svg("path", { d: `M 0 -118 Q ${x * 0.55} -60 ${x} 0`, fill: "none", stroke: COLOR.purple, "stroke-width": 5, "stroke-linecap": "round" })),
-    svg("path", { d: "M 0 0 L 0 74 Q 0 92 -16 92 Q -30 92 -30 78", fill: "none", stroke: COLOR.lav, "stroke-width": 9, "stroke-linecap": "round" }),
-    svg("line", { x1: 0, y1: -118, x2: 0, y2: -140, stroke: COLOR.lav, "stroke-width": 7, "stroke-linecap": "round" }),
-  ]);
-}
-
-function umbrellaMove(host, { x = W / 2, y = H / 2 } = {}) {
-  return curtain(host, "umbrella", async (node) => {
-    const canopy = umbrellaShape();
-    const r = Math.hypot(Math.max(x, W - x), Math.max(y, H - y)) + 30;
-    const fill = svg("circle", { cx: x, cy: y, r, fill: COLOR.purple, class: "tr-scale" });
-    fill.style.transform = "scale(0)";
-    canopy.style.transform = "scale(.18, .06) rotate(-24deg)";
-    node.append(stageSvg([fill, svg("g", { transform: `translate(${x} ${y})` }, [canopy])]));
-    // ぱっと開く → 開いた傘が手前へ寄って画面を覆う
-    await move(canopy, [{ transform: "scale(.18, .06) rotate(-24deg)" }, { transform: "scale(1.08) rotate(3deg)", offset: 0.7 }, { transform: "scale(1) rotate(0deg)" }], 300, { easing: EASE.out });
-    // 寄りながら傘の形は紫の面へ溶ける（覆いきった画面に柄や骨を大きく残さない）
-    move(canopy, [{ transform: "scale(1)", opacity: 1 }, { transform: "scale(3.2)", opacity: 1, offset: 0.45 }, { transform: "scale(7)", opacity: 0 }], 340, { easing: EASE.in });
-    await move(fill, [{ transform: "scale(0)" }, { transform: "scale(1)" }], 340, { easing: EASE.in, delay: 40 });
-  }, async (node) => {
-    // 傘をたたむように、覆いの面が中央の一本へすぼまって上へ抜ける
-    const fold = el("div.tr-umbrella-fold");
-    node.replaceChildren(fold);
-    await move(fold, [
-      { clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%)" },
-      { clipPath: "polygon(46% 0%, 54% 0%, 51% 100%, 50% 100%, 49% 100%)", offset: 0.7 },
-      { clipPath: "polygon(50% 0%, 50% 0%, 50% 0%, 50% 0%, 50% 0%)" },
-    ], 460, { easing: EASE.snap });
-  });
 }
 
 // ---------------------------------------------------------------- steps: 手前からピンまで足あとが続き、ピンから開く

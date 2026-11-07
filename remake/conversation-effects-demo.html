@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja" data-ui-theme="smoke">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0812">
+<title>水煙前線｜会話演出デモ（#2732）</title>
+<link rel="icon" href="../icon.svg">
+<!-- 文字は同梱フォントのみ（remake/fonts/）。外部フォントは読まない＝端末で見た目が変わらない -->
+<link rel="preload" href="fonts/ZenKakuGothicNew-Medium.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/ZenKakuGothicNew-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<!-- 名前表示の見出し明朝（Zen Old Mincho Bold。"Suien Name" として vn-lounge.css で登録・名前札へ適用）も先読みする -->
+<link rel="preload" href="fonts/ZenOldMincho-Name-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/axe-throw.css">
+<link rel="stylesheet" href="css/trpg.css">
+<link rel="stylesheet" href="css/vn.css">
+<link rel="stylesheet" href="css/intro.css">
+<link rel="stylesheet" href="css/tonari-opening.css">
+<link rel="stylesheet" href="css/daily.css">
+<link rel="stylesheet" href="css/title-ds.css">
+<link rel="stylesheet" href="css/chapter-preview.css">
+<link rel="stylesheet" href="css/ch2-preview.css">
+<link rel="stylesheet" href="css/ch2-tournament.css">
+<link rel="stylesheet" href="css/store-logos.css">
+<link rel="stylesheet" href="css/craft.css">
+<link rel="stylesheet" href="css/reel.css">
+<link rel="stylesheet" href="css/extras.css">
+<link rel="stylesheet" href="css/ui-art.css">
+<link rel="stylesheet" href="css/ui-inner.css">
+<link rel="stylesheet" href="css/shop.css">
+<link rel="stylesheet" href="css/steam.css">
+<link rel="stylesheet" href="css/worker-scenes.css">
+<link rel="stylesheet" href="css/craft-header.css">
+<link rel="stylesheet" href="css/tournament.css">
+<link rel="stylesheet" href="css/motions.css">
+<link rel="stylesheet" href="css/motions/cheki.css">
+<link rel="stylesheet" href="css/motions/tarot.css">
+<link rel="stylesheet" href="css/motions/gift.css">
+<link rel="stylesheet" href="css/motions/shift.css">
+<link rel="stylesheet" href="css/motions/shark.css">
+<link rel="stylesheet" href="css/motions/sketch.css">
+<link rel="stylesheet" href="css/motions/door.css">
+<link rel="stylesheet" href="css/motions/dawn.css">
+<link rel="stylesheet" href="css/motions/garagara.css">
+<link rel="stylesheet" href="css/motions/purikura.css">
+<link rel="stylesheet" href="css/motions/chapter-title.css">
+<link rel="stylesheet" href="css/motions/lime.css">
+<link rel="stylesheet" href="css/vn/shisha-diagram.css">
+<link rel="stylesheet" href="css/continue.css">
+<link rel="stylesheet" href="css/game-ds.css">
+<link rel="stylesheet" href="css/facility-icons.css">
+<link rel="stylesheet" href="css/vn-lounge.css">
+<link rel="stylesheet" href="css/ui-themes.css">
+<link rel="stylesheet" href="css/blue-window-preview.css">
+<link rel="stylesheet" href="css/vn-composition.css">
+<link rel="stylesheet" href="css/ui-paper.css">
+<style>
+#viewport{top:96px}
+.preview-tools{position:fixed;inset:0 0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:6px 16px;background:#15111b;color:#f4ede0;z-index:1000;font:14px var(--font)}
+.preview-tools select,.preview-tools button,.preview-tools label.chip{font:inherit;color:inherit;background:#241d2c;border:1px solid #8a7147;padding:6px 10px;border-radius:3px;min-height:34px}
+.preview-tools button:focus-visible,.preview-tools select:focus-visible,.preview-tools input:focus-visible{outline:2px solid #e8c27a;outline-offset:2px}
+.preview-tools button[aria-pressed=true],.preview-tools button.on{background:#8a7147;color:#1a1206}
+#fx-chips{display:flex;flex-wrap:wrap;gap:6px;flex-basis:100%}
+#fx-chips button{padding:4px 9px;min-height:30px;font-size:13px}
+#fx-chips button .tag{font-size:11px;margin-left:4px;color:#e8c27a}
+#fx-chips button.on .tag{color:#1a1206}
+#fx-desc{flex-basis:100%;font-size:13px;color:#d8cdbb;line-height:1.5}
+#fx-desc b{color:#e8c27a}
+.preview-tools label.chip{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+#preview-status{font-size:12px;color:#c8bdab}
+/* --- デモ専用の演出（本編のCSSには入れない） --- */
+#stage > #fx-label{position:absolute;inset:14px auto auto 18px;z-index:30;padding:6px 14px;background:#15111bcc;border:1px solid #8a7147;color:#f4ede0;font:600 20px var(--font);letter-spacing:.06em;pointer-events:none}
+#fx-label i{font-style:normal;color:#e8c27a;margin-right:8px}
+#fx-label.off{opacity:.65}
+#fx-label.off::after{content:"（OFF）";font-size:15px;margin-left:6px;color:#f09a9a}
+#stage > #demo-bgm-meter{position:absolute;inset:14px 18px auto auto;height:auto;z-index:30;width:200px;padding:6px 10px;background:#15111bcc;border:1px solid #8a7147;color:#f4ede0;font:13px var(--font);display:none}
+#stage > #demo-bgm-meter.show{display:block}
+#demo-bgm-meter .bar{height:8px;margin-top:4px;background:#3a3345}
+#demo-bgm-meter .bar b{display:block;height:100%;width:100%;background:#e8c27a;transition:width .15s linear}
+#demo-vignette{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .6s ease;background:radial-gradient(ellipse 60% 68% at 50% 44%,rgba(0,0,0,0) 30%,rgba(5,3,10,.55) 65%,rgba(5,3,10,.92) 100%)}
+#demo-vignette.on{opacity:1}
+.reduce-shake #demo-vignette,.reduce-shake #bg{transition-duration:0s!important}
+#bg{transition:filter .6s ease}
+#bg.demo-blur{filter:blur(4px)}
+.vn-text .shiver{display:inline-block;animation:demo-shiver .08s steps(2) infinite}
+@keyframes demo-shiver{0%{translate:-1px 0}50%{translate:1px 1px}100%{translate:0 -1px}}
+.reduce-shake .vn-text .shiver{animation:none}
+@media(prefers-reduced-motion:reduce){.vn-text .shiver{animation:none}}
+.vn-text.demo-inner{color:#9aa0b8;font-size:28.8px;text-shadow:none}
+.portrait.demo-dim{filter:brightness(.35) saturate(.7)!important;transition-duration:.06s}
+.vn-box .vn-name.demo-theme{box-shadow:inset 0 -5px 0 var(--demo-theme)!important}
+.vn-box .vn-next{pointer-events:none}
+#stage > #demo-end{position:absolute;inset:auto auto 250px 50%;height:auto;transform:translateX(-50%);z-index:30;padding:6px 16px;background:#15111bcc;border:1px solid #8a7147;color:#f4ede0;font:16px var(--font);display:none}
+#stage > #demo-end.show{display:block}
+</style></head><body data-screen="preview"><nav class="preview-tools" aria-label="会話演出デモ">
+<b>会話演出デモ</b>
+<label class="chip"><input type="checkbox" id="fx-on" checked> 演出 ON</label>
+<button id="fx-play">▶ 再生</button>
+<select id="fx-speed" aria-label="文字送りの速さ"><option value="1">文字送り：ゆっくり</option><option value="2" selected>文字送り：ふつう</option><option value="3">文字送り：はやい</option></select>
+<label class="chip"><input type="checkbox" id="fx-reduce"> 動きを減らす（reduceShake）</label>
+<label class="chip"><input type="checkbox" id="fx-skip"> SKIP</label>
+<label class="chip"><input type="checkbox" id="fx-auto"> 自動送り</label>
+<span id="preview-status" role="status">読み込み中…</span>
+<div id="fx-chips" role="group" aria-label="演出を選ぶ"></div>
+<div id="fx-desc"></div>
+</nav>
+<div id="viewport">
+  <div id="stage">
+    <div id="bg"></div>
+    <div id="screen"></div>
+    <div id="vn"></div>
+    <div id="hud"></div>
+    <div id="fx"></div>
+    <div id="toasts"></div>
+    <div id="banners"></div>
+    <div id="wipe"><i></i><i></i><i></i><i></i><i></i></div>
+    <div id="modal"></div>
+  </div></div><script type="module" src="js/vn/conversation-effects-demo.js"></script></body></html>

@@ -434,8 +434,6 @@ async function renderMatch(owner) {
   await enterScene(bgUrl(CH5_SCENE_BG[first]));
   if (!current(owner)) return;
   const tally = chapterFiveVoteTally(state);
-  // 二台分の挙手を、席ごとの灯りで見せる（数字は出さない・#2688 A7）。この場で決まった時に一度だけ
-  if (tally && !owner.votesLit) { owner.votesLit = true; await sceneMoment("seatLights", tally); if (!current(owner)) return; }
   card(owner, "match", "二台分の挙手", "同じ観客が、二台とも吸った。合計で決まる。", [
     button(owner, "結果を聞く", "continue", async () => {
       for (const id of sequence) {

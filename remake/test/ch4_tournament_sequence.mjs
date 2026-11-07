@@ -64,8 +64,6 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
       story.seen.push(event);
       return true;
     },
-    // 節目の演出（#2688 A16・A20）は見せるだけなので、この検査では何もしない
-    roundBandAt: async () => {}, focusBand: async () => {}, focusRival: () => null,
     stepSetup: async () => trace.push("setup"), stepWater: async () => trace.push("water"),
     stepMix: async cs => { trace.push("mix"); cs.mix = { sakura: 12 }; cs.mixInfo = { total: 12, score: 96, intensity: 5 }; },
     stepPack: async cs => { trace.push("pack"); cs.pack = "normal"; },

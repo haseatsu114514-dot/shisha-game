@@ -1,6 +1,5 @@
 // 自由来店のソロ斧投げ。正式なひよりイベントの読了・関係には触れない。
 import { state, save } from "../core/state.js";
-import { seated } from "../core/game-seat.js"; // ミニゲームの入口と出口（#2688 F13）
 import { on } from "../core/bus.js";
 import { el, yen } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
@@ -58,7 +57,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       const { play } = await import("../vn/engine.js");
       const greeting = await play({ lines: [{ speaker: "hajime", text: "あの、ここで投げてみたくて" }] }, { signal: abort.signal });
       if (greeting?.cancelled || !current()) return false;
-      await playIntro("maki", { override: { display_name: DB.characters.maki.display_name } });
+      await playIntro("maki");
       if (!current()) return false;
     }
     const mode = await new Promise(resolve => {
@@ -76,7 +75,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
         if (lessonOpen || picked || !current()) return;
         lessonOpen = true; host.hidden = true; host.inert = true;
         try {
-          const lesson = await seated("AXE THROW", () => runAxeThrow({ host: document.getElementById("stage"), tutorial: true, opponent: null, signal: abort.signal, allowRetry: true }));
+          const lesson = await runAxeThrow({ host: document.getElementById("stage"), tutorial: true, opponent: null, signal: abort.signal, allowRetry: true });
           // A finished lesson counts as the owner's first-play tutorial, so the first paid game does not repeat it.
           if (lesson.completed && current()) owner.flags._axe_lesson_done = true;
         }
@@ -115,16 +114,14 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
     if (!mode || !available() || !await staminaGuard(AXE_BAR.stamina) || !available()) return false;
     host.hidden = true;
     // The first paid throw at the bar starts with the owner's free one-throw lesson. Skipping it leads straight on.
-    const lessonFirst = !owner.flags._axe_lesson_done;
-    if (lessonFirst) {
-      // 初回のレッスンから続けて本番へ。卓に座るのは一度だけ（立つのは本番の後）
-      await seated("AXE THROW", () => runAxeThrow({ host: document.getElementById("stage"), tutorial: true, opponent: null, lessonContext: "first", allowRetry: false, signal: abort.signal }), { exit: false });
+    if (!owner.flags._axe_lesson_done) {
+      await runAxeThrow({ host: document.getElementById("stage"), tutorial: true, opponent: null, lessonContext: "first", allowRetry: false, signal: abort.signal });
       if (!current()) return false;
       owner.flags._axe_lesson_done = true;
       if (!available()) return false;
     }
-    const result = await seated("AXE THROW", () => runAxeThrow({ host: document.getElementById("stage"), mode, opponent: null, allowRetry: false, signal: abort.signal, division: mode === "league" ? division : "rec",
-      steady: ownsGear(owner, "gear_hatchet") ? AXE_STEADY : 1 }), { enter: !lessonFirst });
+    const result = await runAxeThrow({ host: document.getElementById("stage"), mode, opponent: null, allowRetry: false, signal: abort.signal, division: mode === "league" ? division : "rec",
+      steady: ownsGear(owner, "gear_hatchet") ? AXE_STEADY : 1 });
     if (!result.completed || !available()) return false;
     const records = owner.flags._axe_bar_records ||= {};
     const entry = { chapter, day, total: result.total, maximum: result.maximum, ruleset: result.ruleset, division: result.division, throws: result.throws };

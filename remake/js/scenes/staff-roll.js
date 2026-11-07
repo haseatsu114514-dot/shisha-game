@@ -40,6 +40,7 @@ export const STAFF_MUSIC = Object.freeze([
   { title: "民族09 揺れる提灯", composer: "魔王魂", source: "魔王魂" },
   { title: "月明かりの灯台", composer: "甘茶", source: "甘茶の音楽工房" },
 ].map(song => Object.freeze(song)));
+export const STAFF_SOUND_CREDIT = "効果音：ポケットサウンド – https://pocket-se.info/";
 export const STAFF_ROLL_CLOSING = "Thank you for playing";
 
 const reducedMotion = () => !!window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
@@ -63,6 +64,7 @@ function sections() {
         el("p.staff-roll-song-credit", { text: `作曲 ${composer}（${source}）` }),
       ])),
     ]) : null,
+    el("section.staff-roll-sound", [el("p", { text: STAFF_SOUND_CREDIT })]),
     el("section.staff-roll-closing", [el("p", { text: STAFF_ROLL_CLOSING })]),
   ].filter(Boolean);
 }

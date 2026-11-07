@@ -5,7 +5,7 @@ import { el, sleep, nextFrame } from "./util.js";
 import { SE } from "./audio.js";
 import { W, H, COLOR, EASE, reducedMotion, svg, stageSvg, move, holdKeys } from "./transition-kit.js";
 import { moveCurtain, moveStyle } from "./transition-moves.js";
-import { state, config } from "./state.js";
+import { state } from "./state.js";
 import { createEntrySound } from "./entry-sound.js";
 import { withStoreArrival } from "./store-arrival.js";
 
@@ -43,14 +43,6 @@ export function takeSceneArrival() {
   return { cued, commitArrival: createEntrySound(cued?.kind === "place" ? cued.opts : null, state?.chapter, () => SE.doorbell()) };
 }
 
-// 「見た演出を短く」の記録。毎日見る幕（帰宅の扉・夜明け）は端末に残し、セーブの状態は変えない（scene-motions.js の乗り物と同じ）
-const DEVICE_SEEN = "suien_motion_seen";
-const deviceSeen = () => { try { return JSON.parse(localStorage.getItem(DEVICE_SEEN) || "{}") || {}; } catch { return {}; } };
-const motionSeen = (key) => !!deviceSeen()[key];
-const markMotionSeen = (key) => {
-  try { const seen = deviceSeen(); if (seen[key]) return; seen[key] = true; localStorage.setItem(DEVICE_SEEN, JSON.stringify(seen)); } catch { /* 保存できない環境では毎回フル */ }
-};
-
 // ---------------------------------------------------------------- 一筆: 指定のない背景の切り替え（標準の幕）
 
 // S字の縁を持つ帯（ローカル座標: x方向に波打ち、y方向に進む）。scene-plan-20261009 の一筆を1280×720へ縮めた形
@@ -85,15 +77,7 @@ export function createSceneCurtain(host, { fast = false, sceneArrival = takeScen
   const reduced = reducedMotion();
   const { cued, commitArrival: entry } = sceneArrival;
   const arrival = (curtain) => Object.assign(curtain, { commitArrival: entry });
-  if (cued?.kind === "place" && !fast && !reduced) {
-    let style = moveStyle(cued.opts);
-    // 「見た演出を短く」（config.shortSeen）: 2回目以降の帰宅は扉の代わりにピンの短い型（#2688 F9）。初回は必ず扉
-    if (style === "door") {
-      if (config.shortSeen && motionSeen("door")) style = "pin";
-      else markMotionSeen("door");
-    }
-    return arrival(withStoreArrival(host, moveCurtain(host, style, cued.opts), cued.opts, { fast, reduced }));
-  }
+  if (cued?.kind === "place" && !fast && !reduced) return arrival(withStoreArrival(host, moveCurtain(host, moveStyle(cued.opts), cued.opts), cued.opts, { fast, reduced }));
   const coverMs = reduced ? 90 : fast ? 150 : 340;
   const revealMs = reduced ? 90 : fast ? 170 : 400;
   const node = el("div.scene-curtain.stroke", { "aria-hidden": "true", style: { "--st-ms": `${coverMs}ms` }, dataset: { transition: reduced ? "fade" : "stroke" } });
@@ -127,18 +111,9 @@ export function createSceneCurtain(host, { fast = false, sceneArrival = takeScen
   return arrival(cued?.kind === "place" ? withStoreArrival(host, curtain, cued.opts, { fast, reduced }) : curtain);
 }
 
-/** 短い一筆で覆って mid() を行い、開く。乗り物の演出を「見た演出を短く」で省くときなどに使う（#2688 F9） */
-export async function briefCover(mid, host = document.getElementById("fx")) {
-  const curtain = createSceneCurtain(host, { fast: true, sceneArrival: { cued: null, commitArrival: () => {} } });
-  try {
-    await curtain.covered;
-    return await mid?.();
-  } finally { await curtain.release(); }
-}
-
 // ---------------------------------------------------------------- 覆ったまま次の場面へ渡す
 
-// 時間が過ぎる波などが画面を覆ったまま、次の背景が出るまで待つ（#2688 A9）。次の ui.setBg がこの幕を受け取り、
+// 時間が過ぎる波などが画面を覆ったまま、次の背景が出るまで待つ（#2688 F3 の時間経過の型）。次の ui.setBg がこの幕を受け取り、
 // 新しい背景を描いてから開く。次の背景が来なければ、受け取り待ちの上限で自分から開く。
 let parked = null;
 export function parkCover(release, { maxMs = 1500 } = {}) {
@@ -175,7 +150,8 @@ function bumpBand(w = 2100, bulge = 190) {
 const WAVE = { from: -300, cover: 1320, to: 3480 };
 
 /**
- * つなぎの一行（「夜、tonariに顔を出す──」など）を、丸い波に乗せて見せる（#2688 A9）。
+ * つなぎの一行（「夜、tonariに顔を出す──」など）を、丸い波に乗せて見せる（#2688 F3 の時間経過の型）。
+ * 選別（#2809）で A9 のつなぎの一行への適用は外したので、今は呼び出し元がない（calendar.js の beat は暗転＋文字）。
  * 夕方のピンクを先頭にした波が左から流れて画面を覆い、一行が波の上を滑ってくる。読み終えたら波は覆ったまま
  * 次の場面へ預ける（parkCover）。dusk: false で夜の帰り道の色（ピンクなし・ゆっくり）。
  * 戻り値は覆っている間に呼ぶ mid() の結果。動きを減らす設定では、紫の面と一行のフェード。
@@ -326,7 +302,8 @@ export async function nightToMorning(host, mid) {
     const info = await mid();
     if (!info) return;
     if (info.eve) {
-      // 大会・勝負の前夜（#2688 A10）: 日付はめくらず、長い夜のあと地平線がいつもより遅く昇る。DAYは当日の場面が出す。
+      // 大会・勝負の前夜の当日版（#2688 F3 の時間経過の型）: 日付はめくらず、長い夜のあと地平線がいつもより遅く昇る。DAYは当日の場面が出す。
+      // 選別（#2809）で A10 の大会前夜への適用は外したので、今は info.eve を渡す呼び出し元がない（前夜は暗転のまま）。
       if (reduced) {
         await sleep(700);
         await move(node, [{ opacity: 1 }, { opacity: 0 }], 400, { easing: "ease" });
@@ -342,9 +319,6 @@ export async function nightToMorning(host, mid) {
       node.style.pointerEvents = "none";
       return;
     }
-    // 「見た演出を短く」（config.shortSeen）: 2回目以降の朝はめくりと間を詰める（#2688 F9）。初回は必ずフル。
-    const brief = !!config.shortSeen && motionSeen("dawn");
-    markMotionSeen("dawn");
     const dayFlip = flipNumber(info.day);
     // 最終日が決まっていない章（第5章の日程未定）は残り日数をめくらず、章の一言だけ出す。
     const leftFlip = info.left === null || info.left === undefined ? null : flipNumber(info.left);
@@ -370,7 +344,7 @@ export async function nightToMorning(host, mid) {
       await move(node, [{ opacity: 1 }, { opacity: 0 }], 300, { easing: "ease" });
       return;
     }
-    await move(card, [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], brief ? 200 : 320, { easing: EASE.out });
+    await move(card, [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], 320, { easing: EASE.out });
     if (info.sick) {
       card.animate([
         { transform: "skewX(0deg) scale(1)", filter: "blur(0)" },
@@ -379,19 +353,13 @@ export async function nightToMorning(host, mid) {
         { transform: "skewX(0deg) scale(1)", filter: "blur(0)" },
       ], { duration: 900, iterations: Infinity, easing: "ease-in-out" });
     }
-    if (brief && !info.sick) {
-      // めくらずに朝の数字だけを見せる
-      [dayFlip, leftFlip].filter(Boolean).forEach((s) => { s.firstChild.remove(); s.firstChild.style.transform = ""; s.firstChild.style.opacity = ""; });
-      await sleep(700);
-    } else {
-      await sleep(220);
-      SE.tick();
-      await Promise.all([flip(dayFlip), info.sick || !leftFlip ? null : sleep(90).then(() => flip(leftFlip))]);
-      await sleep(info.sick ? 1100 : 650);
-    }
+    await sleep(220);
+    SE.tick();
+    await Promise.all([flip(dayFlip), info.sick || !leftFlip ? null : sleep(90).then(() => flip(leftFlip))]);
+    await sleep(info.sick ? 1100 : 650);
     const horizon = el("div.tr-dawn-horizon");
     node.append(horizon);
-    const up = brief && !info.sick ? 520 : 760;
+    const up = 760;
     move(card, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-18px)" }], 300, { easing: EASE.in });
     wx?.fadeOut(up);
     move(horizon, [{ bottom: "0%", opacity: 1 }, { bottom: "100%", opacity: 0.5 }], up);

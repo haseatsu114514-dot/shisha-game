@@ -167,7 +167,7 @@ const title = await load(await read("../js/scenes/title.js"), {
   playBgm: k => events.push(k), stopBgm: fade => events.push(`stop:${fade}`),
   SE: { select() {} }, smokeWipe: fn => fn(),
   modal: options => options.title === "設定" ? new Promise(resolve => configCloses.push(resolve)) : Promise.resolve(confirm),
-  loadFlow: async () => selectedSlot, loadFromSlot: () => true,
+  loadWithRecovery: async () => !!selectedSlot,
   wipeSave: () => wipes++,
   resumeGame: () => events.push("resume"), startNewGame: () => events.push("new"),
   openGallery: () => new Promise(resolve => galleryCloses.push(resolve)),

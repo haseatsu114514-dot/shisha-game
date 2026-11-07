@@ -21,6 +21,8 @@ import {
   MOMENTS, PROPS, SLOTS, SLOT_NAMES,
 } from "./tetsuko-model.js";
 import { ART_READY, hasPose, poseUrl, artAttrs } from "./tetsuko-art.js";
+import { tetsukoTheme } from "./tetsuko-theme.js";
+import { HELP_TITLE, helpCard } from "./tetsuko-help.js";
 
 export const TETSUKO_TIME = Object.freeze({
   id: "tetsuko_time",
@@ -175,7 +177,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     // -- 手元の道具（右下）と、上の道具（右上）
     const dockButtons = Object.fromEntries(DOCK.map(item => [item.kind,
       el("button.tt-act", { type: "button", dataset: { test: `tetsuko-${item.kind}`, kind: item.kind }, onclick: () => press(item) }, [
-        el("span.tt-act-token", { html: icon(item.icon) }), el("span.tt-act-label", { text: item.label }), el("small.tt-act-sub"),
+        el("span.tt-act-token", { html: icon(item.icon) }), el("span.tt-act-label", { text: item.label }),
       ])]));
     const dock = el("nav.tt-dock", { "aria-label": "てつことのふれあい" }, Object.values(dockButtons));
     const tool_ = (id, label, ico, onclick) => el("button.tt-tool", { type: "button", dataset: { test: `tetsuko-${id}` }, onclick },
@@ -184,16 +186,21 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     const bookButton = tool_("book", "てつこ手帳", "book", () => openBook());
     const photoButton = tool_("photo", "写真", "photo", () => snap());
     const backButton = tool_("time-back", "帰る", "back", () => leave());
-    const tools = el("div.tt-tools", [decorButton, bookButton, photoButton, backButton]);
+    // 遊び方は画面に常に出さず、「？」を開いた時だけ見せる（#2717・ミニゲーム共通の方針）。
+    const helpButton = el("button.tt-tool.tt-help-btn", { type: "button", dataset: { test: "tetsuko-help" }, "aria-label": HELP_TITLE, title: HELP_TITLE,
+      onclick: () => openHelp() }, [el("span.tt-help-q", { "aria-hidden": "true", text: "？" })]);
+    const tools = el("div.tt-tools", [helpButton, decorButton, bookButton, photoButton, backButton]);
     const drawer = el("div.tt-drawer", { hidden: true, dataset: { test: "tetsuko-decor-panel" } });
     const book = el("div.tt-book", { hidden: true, dataset: { test: "tetsuko-book-panel" }, role: "dialog", "aria-label": "てつこ手帳" });
-
+    const help = el("div.tt-help", { hidden: true, dataset: { test: "tetsuko-help-panel" }, role: "dialog", "aria-label": HELP_TITLE });
+    // 専用テーマの飾り（#2717）: 段ボールの外枠・左上の題・入った時に箱が開く演出。操作は止めない。
+    const theme = tetsukoTheme({ el, title: TETSUKO_TIME.title, roman: TETSUKO_TIME.roman, reduced, SE });
 
     const host = el("section.tetsuko-time", {
       dataset: { test: "tetsuko-time-screen", stage: String(session.stage), mood: session.mood, tod, tool, reduced: String(reduced), ...artAttrs(),
-        artBg: String(!!backdoor?.url) },
+        artBg: String(!!backdoor?.url), ...theme.attrs },
       "aria-label": TETSUKO_TIME.title,
-    }, [yard, memo, tools, caption, dock, drawer, book]);
+    }, [yard, memo, tools, caption, dock, drawer, book, help, ...theme.nodes]);
 
     // -- 表示の更新
     const slotOf = id => SLOTS.find(slot => session.props[slot] === id) || null;
@@ -242,12 +249,12 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
         button.disabled = !ok || leaving || panel === "decor";
         button.classList.toggle("active", !!item.tool && item.tool === tool);
         button.querySelector(".tt-act-label").textContent = item.kind === "play" && tool === "toy" && toyOut(session) ? item.again : item.label;
-        button.querySelector(".tt-act-sub").textContent = !ok && item.locked ? item.locked : "";
+        button.title = !ok && item.locked ? item.locked : "";
       }
       photoButton.disabled = !session.moment || leaving;
       photoButton.title = session.moment ? `今のしぐさ（${momentById(session.moment)?.name}）を写真に残す` : "しぐさが見えたら撮れる";
       decorButton.classList.toggle("new", session.newProps.length > 0);
-      for (const button of [decorButton, bookButton]) button.disabled = leaving;
+      for (const button of [decorButton, bookButton, helpButton]) button.disabled = leaving;
       host.dataset.tool = tool;
       host.dataset.toy = held ? "held" : tool === "toy" ? "out" : "";
     }
@@ -439,7 +446,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       // LOAD などで画面が差し替わったら、ここで閉じる（確定しない）。
       if (host.isConnected) mounted = true;
       if (!isCurrent() || (mounted && !host.isConnected)) { finish(true); return; }
-      if (leaving || panel === "book" || held || Date.now() < quietUntil || document.hidden) { schedule(); return; }
+      if (leaving || panel === "book" || panel === "help" || held || Date.now() < quietUntil || document.hidden) { schedule(); return; }
       const reaction = autonomous(session);
       if (!reaction.quiet) show(reaction);
       schedule();
@@ -476,16 +483,14 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       const items = PROPS.filter(item => propUnlocked(item, session.stage, session.metMashiro));
       drawer.hidden = false;
       drawer.replaceChildren(
-        el("div.tt-drawer-head", [el("b", { text: "もようがえ" }), el("small", { text: selected
-          ? `${propById(selected).name}を置く場所をタップ（${propById(selected).slots.map(slot => SLOT_NAMES[slot]).join("・")}）`
-          : "置きたい物を選んで、光った場所をタップ。置いた物をタップすると片付ける。" })]),
+        el("div.tt-drawer-head", [el("b", { text: "もようがえ" })]),
         el("div.tt-drawer-items", items.map(item => {
           const at = slotOf(item.id);
           return el("button.tt-item", { type: "button", dataset: { prop: item.id, test: `tetsuko-item-${item.id}` }, "aria-pressed": String(selected === item.id),
             title: item.from, onclick: () => { SE.click?.(); selected = selected === item.id ? null : item.id; renderDrawer(); renderSlots(); } }, [
             el("span.tt-item-pic", [propNode(item.id)]),
             el("b", { text: item.name }),
-            el("small", { text: at ? `${SLOT_NAMES[at]}に置いた` : item.from }),
+            at ? el("small.tt-item-at", { text: SLOT_NAMES[at] }) : null,
             fresh.includes(item.id) ? el("i.tt-new", { text: "新" }) : null,
           ]);
         })),
@@ -543,7 +548,6 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
         ]),
         el("h4", { text: known ? pick.name : "まだ見つけていない" }),
         el("p.tt-detail-memo", { text: known ? pick.memo : pick.hint }),
-        known && !photo ? el("small.tt-detail-hint", { text: "その場でしぐさが見えたら、写真で残せる。" }) : null,
       ]);
       book.hidden = false;
       book.replaceChildren(el("div.tt-book-spread", [
@@ -552,10 +556,21 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
         el("div.tt-page.right", [detail]),
       ]), el("button.btn.small.tt-book-close", { type: "button", text: "閉じる", dataset: { test: "tetsuko-panel-close" }, onclick: () => { SE.cancel?.(); closePanel(); } }));
     }
+    // -- あそびかた（「？」）: 開いている間は自律行動を止める。Esc・閉じるで戻る。
+    function openHelp() {
+      if (done || leaving) return;
+      SE.click?.();
+      closePanelQuietly();
+      panel = "help"; host.dataset.panel = "help";
+      help.hidden = false;
+      help.replaceChildren(helpCard({ el, icon, mood: moodLabel(moodOf(session.day), session.stage), onClose: () => { SE.cancel?.(); closePanel(); } }));
+      renderButtons();
+    }
     function closePanelQuietly() {
       panel = null; host.dataset.panel = ""; selected = null;
       drawer.hidden = true; drawer.replaceChildren();
       book.hidden = true; book.replaceChildren();
+      help.hidden = true; help.replaceChildren();
       renderSlots();
     }
     function closePanel() { closePanelQuietly(); renderButtons(); schedule(); }
@@ -580,6 +595,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       done = true;
       for (const t of [timer, stepTimer, fxTimer, purrTimer, walkTimer, stillTimer, heldTimer, flashTimer]) clearTimeout(t);
       clearInterval(stepFrames);
+      theme.stop();
       window.removeEventListener("pagehide", abort);
       window.removeEventListener("keydown", onKey);
       signal?.removeEventListener?.("abort", abort);
@@ -595,6 +611,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     // 開いた時の居場所・表情を先に決めてから出す（ベンチから滑ってこない）。
     show(openingReaction(session));
     showScreen("tetsuko-time", host);
+    theme.start(host);
     audio.playBgm("bgm_tetsuko_time");
     schedule();
   });
