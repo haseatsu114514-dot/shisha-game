@@ -806,6 +806,73 @@ await check('Volk (#2028): ♥5 finale after the three Iron Smoke visits and the
   assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['volk', 'chat']], 'chat only on the scene-card chapters');
   assert.deepEqual(clone(lime[0].messages), f.db.friends.friends.volk.chats[0].m);
 });
+// 2026-11-07 オーナー指示「ヴォルク♥5エンディングも第5章東京『鉄の煙』で出す（スティーブと揃える）」。スティーブ（#2705）と同じく、
+// 第5章の東京では第3章の再訪・LIME交換を求めず♥5だけで、第5章用の書き出しを一度だけ。第3章で見た人には出さない。
+await check('Volk and Steve (#2705・2026-11-07): chapter 5 Tokyo finale on ♥5 alone, only while in Tokyo, chapter 5 text, once', async f => {
+  const scripts = name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))).dialogues;
+  for (const name of ['ch5_tokyo', 'ch3_volk', 'ch3_rivals']) for (const d of scripts(name)) f.db.dialogues[d.dialogue_id] = d;
+  const equipment = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json', import.meta.url))).equipment;
+  for (const id of ['suyaki_volk', 'suyaki_steve']) f.db.equipById[id] = equipment.find(e => e.id === id);
+  f.db.flavorById.nightside_blast_mint = { id: 'nightside_blast_mint' };
+  f.db.flavorById.mountain_mist = { id: 'mountain_mist' };
+  f.db.friends = JSON.parse(fs.readFileSync(new URL('../data/friends.json', import.meta.url)));
+  const { bonds } = f;
+  assert.equal(bonds.BOND_FINALES.volk.tokyoDialogue, 'ch5_volk_bond_finale');
+  assert.equal(bonds.isFinaleEvent('ch5_volk_bond_finale'), true);
+  assert.equal(f.db.dialogues.ch5_volk_bond_finale?.metadata?.bond_finale, 'volk');
+  // 第3章の再訪・LIME交換の寄り道を一つも読んでいない保存。東京にいない間は開かず、MENU も約束しない
+  let s = f.core.state; s.chapter = 5; s.met.volk = true; s.affinity.volk = 66;
+  for (const region of [undefined, 'home', 'dubai']) {
+    s.flags._ch2_region = region;
+    assert.equal(bonds.finaleDue('volk'), false, `not while away from Tokyo (${region})`);
+    assert.equal(bonds.finaleReachable('volk'), false, `no MENU promise of Iron Smoke (${region})`);
+  }
+  s.flags._ch2_region = 'tokyo';
+  assert.equal(bonds.finaleReachable('volk'), true);
+  for (const pts of [48, 65]) {
+    s.affinity.volk = pts;
+    assert.equal(bonds.finaleDue('volk'), false, `${pts}pt (below ♥5) keeps the finale closed`);
+  }
+  s.affinity.volk = 66;
+  for (const slot of [0, 1]) { s.slot = slot; assert.equal(bonds.finaleAtVisit('volk'), true, `slot ${slot}: day or night`); }
+  // 第5章用の台詞が読み込まれていなければ始めない
+  const tokyoScene = f.db.dialogues.ch5_volk_bond_finale;
+  delete f.db.dialogues.ch5_volk_bond_finale;
+  assert.equal(bonds.finaleDue('volk'), false, 'the chapter 5 text has to be loaded');
+  f.db.dialogues.ch5_volk_bond_finale = tokyoScene;
+  // 第3章の条件はそのまま（再訪三つとLIME交換の寄り道が要る）
+  s.chapter = 3;
+  assert.equal(bonds.finaleDue('volk'), false, 'chapter 3 still needs the three revisits and the LIME detour');
+  s.chapter = 5;
+  f.setPlay(async () => ({ cancelled: true }));
+  assert.equal(await bonds.playFinale('volk'), false, 'cancel records nothing');
+  assert(!s.finales?.volk); assert(!s.owned.includes('suyaki_volk'));
+  f.setPlay(async () => done);
+  assert.equal(await bonds.playFinale('volk'), true);
+  assert.equal(f.plays.at(-1)[0], 'ch5_volk_bond_finale', 'the chapter 5 text, not the chapter 3 one');
+  const after = f.roundTrip();
+  assert.deepEqual([after.finales.volk.chapter, after.finales.volk.route], [5, 'friend']);
+  assert.equal(after.flags._confession_due, undefined);
+  assert.equal(after.owned.filter(id => id === 'suyaki_volk').length, 1);
+  assert.equal(after.flavorStock.nightside_blast_mint, 50);
+  assert.equal(await bonds.playFinale('volk'), false, 'once');
+  assert.equal(bonds.finaleAtVisit('volk'), false);
+  // 友人のLIMEは #2705 と同じく第3章でLIMEを交換した人だけ。第5章の朝は雑談だけ
+  after.day += 10; after.phase = 'daily';
+  assert.deepEqual(clone(bonds.friendMessages()), [], 'no friend LIME without the chapter 3 LIME exchange');
+  after.flags._lime_contact_volk = true;
+  assert.deepEqual(clone(bonds.friendMessages().map(m => [m.sender, m.type])), [['volk', 'chat']], 'chapter 5 mornings: chats only');
+  // 第3章で締めくくりを見た保存には、第5章の東京でも二度は出さない
+  s = f.fresh(); s.chapter = 5; s.met.volk = true; s.affinity.volk = 66; s.flags._ch2_region = 'tokyo';
+  s.finales.volk = { day: 40, chapter: 3, route: 'friend' };
+  assert.equal(bonds.finaleAtVisit('volk'), false, 'seen in chapter 3');
+  // スティーブも同じ形のまま（ch5-tokyo.js の締めくくりの分岐を二人で共有する）
+  s.met.steve = true; s.affinity.steve = 66;
+  assert.equal(bonds.finaleAtVisit('steve'), true, 'Steve: ♥5 alone in chapter 5 Tokyo');
+  assert.equal(await bonds.playFinale('steve'), true);
+  assert.equal(f.plays.at(-1)[0], 'ch5_steve_bond_finale');
+  assert.equal(s.finales.steve.chapter, 5);
+});
 await check('Ayatori (#2028): the finale and the MENU promise only while 煙幕 can be visited', async f => {
   const rivals = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_rivals.json', import.meta.url))).dialogues;
   for (const d of rivals) f.db.dialogues[d.dialogue_id] = d;
