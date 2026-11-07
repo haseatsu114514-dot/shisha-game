@@ -40,9 +40,9 @@ body.game-ds #viewport, body[data-game-layout="ds"].vn-open #viewport {
   top: 0; overflow: clip;
   background: radial-gradient(120% 60% at 50% 0%, #2a2033 0%, var(--ds-shell) 55%, #0c0910 100%);
 }
-body.game-ds #stage { left: 0; top: 0; width: 100%; height: 100%; transform: none; overflow: clip; background: transparent; isolation: isolate; }
+body.game-ds #stage { left: 0; top: 0; width: 100%; height: 100%; transform: none; --stage-gutter: 0px; --stage-safe-l: 0px; --stage-safe-r: 0px; overflow: clip; background: transparent; isolation: isolate; }
 /* LOAD直後、会話開始のMutationObserverが反映されるまで従来寸法へ一瞬戻さない。 */
-body[data-game-layout="ds"][data-screen="title"]:has(.title[data-layout="ds"]) #stage { left: 0; top: 0; width: 100%; height: 100%; transform: none; }
+body[data-game-layout="ds"][data-screen="title"]:has(.title[data-layout="ds"]) #stage { left: 0; top: 0; width: 100%; height: 100%; transform: none; --stage-gutter: 0px; --stage-safe-l: 0px; --stage-safe-r: 0px; }
 body[data-game-layout="ds"][data-screen="title"]:has(.title[data-layout="ds"]) #rotate-hint { display: none !important; }
 body.game-ds #rotate-hint { display: none !important; }
 
