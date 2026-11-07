@@ -87,6 +87,8 @@ python3 remake/tools/serve_preview.py --port 8123
 `continue-preview.html?layout=neon&background=stage` で本編と同じ版、`?layout=top&background=purple` で上段比較版、`?layout=back-count&background=stage` で上段背面カウント版を選べる。紫背景も比較用に残す。背景タブでは時計・煙・光を停止し、動き軽減では数字の拡大と装飾アニメーションを止める。
 添付の王道構図に合わせた下段2択のまま、かなり大きい数字が迫る版は `continue-preview.html?layout=bottom-back-count&background=stage`。背面の数字は750→1800pxに拡大する。王道そのままの `?layout=bottom&background=stage` と比較できる。
 
+会話カットイン追加5案（#2845）の見比べデモは `http://127.0.0.1:8123/remake/conversation-cutin5-demo.html?cut=2a`（#2924・判断用）。`cut` は 2a・2c（「その顔」の答え合わせ）・1（聞き手の小窓）・5・5b（胸に落ちる）・4・4m（余白に沈む）・3・3m（決意の目元帯）で、ボタンは試す順 2→1→5→4→3。絵は既存の立ち絵（new）の切り抜きだけ。`&off=1` でカットインなし、`&reduce=1` で動きを減らす、`&hold=1` で 2c を消さずに止める、`&auto=1` で自動送り。台詞は実際の会話から引く。本編の会話・保存には触れない。
+
 `data/` と `assets/` を相対パス（`../data/`・`../assets/`）で直接読むので、
 **ビルド不要**。file:// では fetch が通らないため、必ずローカルサーバー越しに開く。
 開発ブランチの確認は raw.githack でも可:
