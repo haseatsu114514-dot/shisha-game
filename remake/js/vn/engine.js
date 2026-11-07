@@ -7,6 +7,7 @@ import { basicsExperienced } from "../craft/practice-history.js";
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
+import { createReplyCutin, replyCutinCue } from "./reply-cutin.js";
 import { createNameFit } from "./name-fit.js";
 import { uiThemeFrame } from "../core/ui-theme.js";
 import { fortuneChoiceIndex } from "../core/fortune-effects.js";
@@ -63,6 +64,7 @@ function warnVn(kind, detail) {
 const log = [];
 let dom = null;
 let nameFit = null;
+let replyCutin = null;
 let settingsReady = null;
 let openVnConfig = null;
 let running = null;     // 再生中の会話の状態
@@ -131,6 +133,7 @@ function buildDom() {
   dom.skipBtn.setAttribute("aria-pressed", "false");
   dom.controls.append(dom.autoBtn, dom.skipBtn, ctl("LOG", openLog, "vn-log"), ctl("用語", openGlossary, "vn-glossary"), ctl("設定", openSettings, "vn-config"));
   host.replaceChildren(dom.effect, dom.cg, dom.portraits, dom.box, dom.choices, dom.controls, dom.log);
+  replyCutin = createReplyCutin(host);
   nameFit = createNameFit(dom.name);
   host.addEventListener("pointerup", (e) => {
     if (!running || e.target.closest(".vn-ctl, .vn-choices, .vn-log")) return;
@@ -181,7 +184,7 @@ function setAuto(v) {
 function setSkip(v) {
   if (v && running?.cancelOnSkip) return finish(true);
   if (v && config.skipSeenOnly && running?.activeSeenKey && !readSeenLines().has(running.activeSeenKey)) return;
-  if (v) setAuto(false);
+  if (v) { replyCutin?.clear(); setAuto(false); }
   skipMode = v;
   document.body.classList.toggle("vn-skip", v);
   dom?.skipBtn.classList.toggle("on", v);
@@ -442,6 +445,7 @@ function completeDialogueAffinity(r) {
 }
 
 function finish(cancelled = false) {
+  replyCutin?.clear();
   const r = running;
   running = null;
   clearTimeout(autoTimer);
@@ -480,6 +484,7 @@ function advance() {
 }
 
 function next() {
+  replyCutin?.clear();
   const r = running;
   if (!r) return;
   if (!skipMode && !vnTest.turbo) markSeenLine(r.activeSeenKey);
@@ -751,6 +756,9 @@ async function showLine(line) {
   r.ready = false;
   clearTimeout(autoTimer);
   const images = linePortraits(line);
+  const replyCue = replyCutinCue(r.currentId || r.id, line);
+  const replyPortrait = replyCue ? portraitInfo("hajime", line.face) : null;
+  if (replyPortrait) images.push(replyPortrait.src);
   // 選択したUIの書体で折り返す。初回だけ代替フォントでページを決めない。
   const fontReady = Promise.all([dom.text, dom.name].map(node => {
     const type = getComputedStyle(node);
@@ -832,6 +840,14 @@ async function showLine(line) {
     r.spoken.add(speaker);
     if (needsIntro(speaker)) queueIntro({ id: speaker });
   }
+  r.replyPortrait = replyCue ? { face: line.face, cue: replyCue } : null;
+  if (replyCue && !vnTest.turbo) replyCutin?.show(replyCue, {
+    portraitCount: dom.portraits.querySelectorAll("img").length,
+    protagonistVisible: !!dom.portraits.querySelector('img[data-speaker="hajime"]'),
+    cg: dom.cg.classList.contains("show"), choices: r.waitingChoice,
+    log: dom.log.classList.contains("show"), intro: r.pendingIntros?.length > 0,
+    skip: skipMode, still: reducedMotion(),
+  }, portraitInfo("hajime", line.face));
   renderPage();
 }
 
@@ -1093,6 +1109,7 @@ function closeLog() {
 }
 
 function openLog() {
+  replyCutin?.clear();
   SE.select();
   clearTimeout(autoTimer);
   const list = el("div.log-list", log.slice(-120).map((l) => el("div.log-row", [
@@ -1110,6 +1127,7 @@ function openLog() {
 }
 
 async function openGlossary() {
+  replyCutin?.clear();
   SE.select();
   clearTimeout(autoTimer);
   vnModalOpen++;
@@ -1145,6 +1163,7 @@ async function openSettings() {
 /** 設定とDBG共通。会話の進行・LOG・人物の並びは変えず、表示中の画風だけ更新する。 */
 function refreshPortraits() {
   if (!running) return;
+  if (running.replyPortrait) replyCutin?.refresh(portraitInfo("hajime", running.replyPortrait.face), {still: reducedMotion()});
   for (const image of dom.portraits.querySelectorAll("img")) {
     const info = portraitInfo(image.dataset.speaker, image.dataset.face);
     if (!info) continue;
