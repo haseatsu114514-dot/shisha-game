@@ -45,7 +45,17 @@ try {
     });
     assert(forms.length >= 2, "config has a select to measure");
     for (const f of forms) assert(f.real >= 15.99, `${f.tag} real font ${f.real.toFixed(2)}px >= 16px at ${size.width}x${size.height}`);
-    // (2) JS 保険: 300ms 以内・30px 以内の 2 回目 touchend は preventDefault、離れた/遅い/1 回目は通す
+    // (2) JS 保険: iOS の WebKit だけに入る。Chromium（Android 相当）では入らず、本物の click をそのまま通す。
+    //     判定そのものは force で同じモジュールを入れて確かめる: 300ms 以内・30px 以内の 2 回目 touchend は
+    //     preventDefault、離れた/遅い/1 回目は通す
+    const scope = await page.evaluate(async () => {
+      const m = await import("/remake/js/core/double-tap-guard.js");
+      return { installed: Boolean(window.__suienDoubleTapGuard), needs: m.needsDoubleTapGuard(window),
+        iosLike: m.needsDoubleTapGuard({ ongesturestart: null, navigator: { maxTouchPoints: 5 } }),
+        macSafari: m.needsDoubleTapGuard({ ongesturestart: null, navigator: { maxTouchPoints: 0 } }),
+        forced: m.installDoubleTapGuard(document, { force: true }) };
+    });
+    assert.deepEqual(scope, { installed: false, needs: false, iosLike: true, macSafari: false, forced: true }, "guard scope: " + JSON.stringify(scope));
     const out = await page.evaluate(async () => {
       const el = document.createElement("div");
       el.style.cssText = "position:fixed;left:0;top:0;width:200px;height:200px;z-index:99999";
