@@ -285,7 +285,7 @@ try {
       epiHeart: /♡|みんとが|だんな様|彼女の彼女/.test(epiText), epiJump: epi.lines.at(-1),
       acceptOld: accept.includes("みんとにバレ"), rule: DB.characters.minto.appearance_rules.private_date,
       privateName: DB.characters.minto.private_name, outingExclude: outing.exclude_flag,
-      samechan: DB.samechan.profile.height_cm, samechanAge: DB.samechan.profile.age, samechanRomance: DB.samechan.profile.romance_available };
+      samechan: DB.characters.samechan.height_cm, samechanAge: DB.characters.samechan.age, samechanRomance: DB.characters.samechan.romance_available };
   });
   assert.deepEqual(shared.problems, []);
   assert(shared.epiPrivate); assert(shared.epiFaces.every((f) => f.startsWith("ura_")), shared.epiFaces.join());

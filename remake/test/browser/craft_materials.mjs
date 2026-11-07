@@ -437,13 +437,29 @@ await suite("craft-materials", async check => {
       await page.locator(step === "pack" ? '[data-test="pack-confirm"]' : step === "holes" ? '[data-test="hole-start"]' : '.heat[aria-busy="false"]').waitFor();
       if (step === "pack") {
         const paint = await page.locator('[data-test="pack-confirm"]').evaluate(n => {
-          const s = getComputedStyle(n); return { background: s.backgroundColor, image: s.borderImageSource, width: s.borderTopWidth };
+          const s = getComputedStyle(n); return { background: s.backgroundColor, clip: s.backgroundClip, image: s.borderImageSource, width: s.borderTopWidth };
         });
-        assert.deepEqual(paint, { background: "rgb(227, 189, 110)", image: paint.image, width: "14px" });
+        // 金の地は画像が読めない時の下地。透明な枠の内側だけに塗り、丸い角の外へ四角く出さない（#2359 最終QA）。
+        assert.deepEqual(paint, { background: "rgb(227, 189, 110)", clip: "padding-box", image: paint.image, width: "14px" });
         assert.match(paint.image, /button-gold\.webp/);
+        // 作業台の上の通知は日常の紙の札ではなく夜紫の窓で出す（#2359 最終QA）。
+        const note = await page.evaluate(async () => {
+          const { toast } = await import("./js/core/ui.js");
+          toast("ステムが水に届いていない。煙が冷えないぞ", { ms: 60000, kind: "warn" });
+          const n = document.querySelector("#toasts .toast.warn:last-child"), s = getComputedStyle(n);
+          return { screen: document.body.dataset.screen, image: s.backgroundImage, color: s.color, border: s.borderImageSource };
+        });
+        assert.equal(note.screen, "bench");
+        assert.match(note.image, /craft-night\/window\.webp/);
+        assert.equal(note.border, "none");
+        assert.equal(note.color, "rgb(255, 163, 172)");
       }
       if (step === "holes") {
         assert.equal(await page.locator('.ht-option[aria-pressed="true"]').evaluate(n => getComputedStyle(n).color), "rgb(46, 29, 69)");
+        // 白いボタン（選択中の型・穴あけ開始）も、地の色は透明な枠の内側だけ。
+        for (const selector of ['.ht-option[aria-pressed="true"]', '[data-test="hole-start"]']) {
+          assert.equal(await page.locator(selector).evaluate(n => getComputedStyle(n).backgroundClip), "padding-box", selector);
+        }
       }
       assert.equal(await page.locator('.bench-worker-name').evaluate(n => getComputedStyle(n).backgroundImage), "none");
       // 外部画像が全て実画像としてデコード済みであることを確認する（placeholderは不可）。

@@ -530,7 +530,7 @@ _body_k = None
 PAKKI_RATIO = 0.94 / 1.36  # remake/js/vn/engine.js の FRAMING（pakkiTarget / target）
 
 
-# 身長の設定（cm）。正本は brand/character_profiles.md（サメちゃんは data/dialogue/samechan.json の height_cm）。
+# 身長の設定（cm）。正本は data/characters.json の height_cm。
 # 設定の無いキャラは None（ゲーム内の spriteScale から換算する）。
 HEIGHT_CM = {
     "hajime": 172, "sumi": 182, "naru": 176, "adam": 178, "minto": 156, "ageha": 160,

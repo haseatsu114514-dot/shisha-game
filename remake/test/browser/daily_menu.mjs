@@ -77,6 +77,35 @@ async function assertLayout(page, label) {
   }
 }
 
+/** 体力の横の「?」（#2859・2026-11-08 オーナー指摘）: 見た目は帯の文字に合う小さな丸で、体力の文字と中心線がそろい、
+ *  帯の高さを押し広げない。押せる範囲は透明な余白で実寸 38px 以上。押すと説明が開き、もう一度で閉じる。 */
+async function assertConditionHelp(page, label, press) {
+  const help = page.locator(t("menu-condition-help"));
+  const g = await help.evaluate((node) => {
+    const k = parseFloat(getComputedStyle(document.getElementById("stage")).getPropertyValue("--k")) || 1;
+    const r = node.getBoundingClientRect(), value = node.parentElement.querySelector(":scope > b").getBoundingClientRect();
+    const hit = getComputedStyle(node, "::before"), w = parseFloat(hit.width) * k, h = parseFloat(hit.height) * k;
+    const cx = (r.left + r.right) / 2, cy = (r.top + r.bottom) / 2;
+    const reach = [[cx - w / 2 + 1, cy], [cx + w / 2 - 1, cy], [cx, cy - h / 2 + 1], [cx, cy + h / 2 - 1]]
+      .every(([x, y]) => document.elementFromPoint(x, y) === node);
+    return { stage: r.width / k, real: [w, h], dy: Math.abs(cy - (value.top + value.bottom) / 2), tallerThanValue: r.height - value.height, gap: r.left - value.right, reach };
+  });
+  assert(g.stage >= 24 && g.stage <= 32, `${label}: the ? circle should be a small 26–30px mark on the stage ${JSON.stringify(g)}`);
+  assert(g.real.every((v) => v >= 38), `${label}: the ? must stay tappable over 38px real ${JSON.stringify(g)}`);
+  assert(g.reach, `${label}: the transparent tap area reaches the button ${JSON.stringify(g)}`);
+  assert(g.dy <= 2, `${label}: the ? sits on the same centre line as the condition ${JSON.stringify(g)}`);
+  assert(g.tallerThanValue <= 0.5, `${label}: the ? must not make the summary band taller ${JSON.stringify(g)}`);
+  assert(g.gap >= 0 && g.gap <= 12, `${label}: the ? sits right after the condition ${JSON.stringify(g)}`);
+  const tip = page.locator(t("menu-condition"));
+  assert(await tip.isHidden());
+  await press(help);
+  assert(await tip.isVisible(), `${label}: the ? opens the condition note`);
+  assert.equal(await help.getAttribute("aria-expanded"), "true");
+  await press(help);
+  assert(await tip.isHidden(), `${label}: the ? closes the condition note`);
+  assert.equal(await help.getAttribute("aria-expanded"), "false");
+}
+
 async function visitTabs(page, label, press) {
   for (const tab of TABS) {
     await press(t(`menu-tab-${tab}`));
@@ -99,6 +128,7 @@ await suite("daily-menu", async (check) => {
     assert.equal(await page.locator(".dmenu").getAttribute("data-tab"), "status");
     const summary = await page.locator(t("menu-summary")).innerText();
     assert.match(summary, /DAY\s*5\s*\/14/); assert.match(summary, /あと9日/); assert.match(summary, /42,000円/);
+    await assertConditionHelp(page, "pc", (n) => n.click());
     // 盤の公開前は旧5能力の行。三角・五角形のグラフは出さない（DUI03・04）
     assert.equal(await page.locator(".dmenu .dm-stat").count(), 5);
     assert.equal(await page.locator(".dmenu svg, .dmenu .radar").count(), 0);
@@ -198,6 +228,7 @@ await suite("daily-menu", async (check) => {
     await page.locator(t("hud-menu")).tap();
     await page.locator(".dmenu").waitFor();
     await settle(page);
+    await assertConditionHelp(page, "landscape", (n) => n.tap());
     await visitTabs(page, "landscape", (sel) => page.locator(sel).tap());
     await page.getByRole("button", { name: "閉じる", exact: true }).tap();
     await page.locator(".dmenu").waitFor({ state: "detached" });
