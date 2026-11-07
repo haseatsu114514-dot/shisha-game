@@ -63,9 +63,11 @@ export function buildWorkerHoles() {
       if (root.hidden || !root.isConnected) return;
       clearTimers(); target = event.target;
       // MISS/TOO CLOSEも実際に開いた穴。同じ座標・実穴数をそのまま表示する。
-      dots.replaceChildren(...event.dots.map(([x, y]) => {
+      // 押し加減で大きくなった穴は、手元のアルミでも同じ比率で大きく見せる（#2937）。
+      dots.replaceChildren(...event.dots.map(([x, y], i) => {
         const dot = document.createElementNS(SVG_NS, "ellipse");
-        for (const [key, value] of Object.entries({ cx: FOIL_VIEW.cx + x * FOIL_VIEW.rx, cy: FOIL_VIEW.cy + y * FOIL_VIEW.ry, rx: 5, ry: 3.2 })) dot.setAttribute(key, value);
+        const size = event.sizes?.[i] || 1;
+        for (const [key, value] of Object.entries({ cx: FOIL_VIEW.cx + x * FOIL_VIEW.rx, cy: FOIL_VIEW.cy + y * FOIL_VIEW.ry, rx: 5 * size, ry: 3.2 * size })) dot.setAttribute(key, value);
         dot.dataset.x = String(x); dot.dataset.y = String(y);
         return dot;
       }));
