@@ -249,6 +249,12 @@ await suite("shop-ui", async check => {
       await page.locator('.shop-floor img').first().waitFor();
       await page.waitForFunction(() => [...document.querySelectorAll('.shop-floor img')].every(n => n.complete && n.naturalWidth > 0));
       await assertFits(page, '.shop-floor, .shop-back');
+      if (platform === 'touch') {
+        // スマホ横持ちでは写真がカードの縦いっぱいに出て、細い帯にならない（#2858 の追加・オーナー指示）。
+        const cards = await page.locator('.shop-floor').evaluateAll(nodes => nodes.map(n => ({
+          card: n.getBoundingClientRect().height, picture: n.querySelector('.shop-floor-picture').getBoundingClientRect().height })));
+        for (const { card, picture } of cards) assert(picture >= 100 && picture >= card * .9, `phone entry photo is tall: ${picture}/${card}`);
+      }
       assert.equal(await page.locator('.shop-tabs').count(), 0);
       await tap(page, 'shop-entry-back');
       assert.equal(await page.evaluate(() => S.result), null);

@@ -130,6 +130,15 @@
   .shop-paper .shop-back, .shop-entry .shop-back { min-height: max(72px, calc(40px / var(--k, 1))); font-size: var(--shop-label) !important; }
   .shop-paper .shop-badge { font-size: max(20px, calc(11.5px / var(--k, 1))) !important; }
   .shop-paper .shop-floor-caption b { font-size: var(--shop-label); }
-  .shop-entry > h3 { font-size: max(24px, calc(12px / var(--k, 1))); margin: 10px 0; }
-  .shop-floor-picture { height: 96px; }
+  .shop-entry > h3 { font-size: max(24px, calc(12px / var(--k, 1))); margin: 6px 0 8px; }
+  /* 店の入口: 写真をカード全体に広げ、文字は下端の細い帯（名前＋小さなバッジ）に重ねる。帯が2行になっても写真の上端・カードの下端は左右でそろう（#2858 の追加・オーナー指示） */
+  .shop-entry .shop-head { min-height: 0; padding-bottom: 8px; }
+  .shop-entry-foot { margin-top: 12px; }
+  .shop-floor-picture { position: absolute; inset: 0; height: auto; }
+  .shop-floor-number { top: 8px; left: 8px; padding: 4px 10px; font-size: 24px; }
+  .shop-floor-caption { position: absolute; left: 0; right: 0; bottom: 0; flex: none; flex-flow: row wrap; align-items: center; justify-content: flex-start; gap: 4px 12px; padding: 8px 52px 8px 18px; background: #f3edf4eb; }
+  .shop-floor.showroom .shop-floor-caption { background: #493353eb; }
+  .shop-floor-caption b { white-space: nowrap; }
+  .shop-paper .shop-floor .shop-badge { max-width: 100%; align-self: center; padding: 0 8px; border-radius: 10px; line-height: 1.35; font-size: max(16px, calc(11px / var(--k, 1))) !important; }
+  .shop-floor-arrow { top: 50%; bottom: auto; right: 18px; transform: translateY(-50%); font-size: 24px; }
 }
