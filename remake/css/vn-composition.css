@@ -53,14 +53,15 @@ html:root:is([data-ui-theme="cut-paper"],[data-ui-theme="amber"],[data-ui-theme=
   font-family:"Suien Blue Mincho",serif; font-weight:400; letter-spacing:.04em;
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-box.has-inner .vn-text { min-height:44px; }
-html:root[data-ui-theme] body:not(.game-ds) .vn-inner { font-size:22px; line-height:31px; margin-top:10px; }
+/* 本心はSafariのバーが出た横持ち（--k 0.47）でも実寸11px以上（#2854）。PCは22pxのまま。 */
+html:root[data-ui-theme] body:not(.game-ds) .vn-inner { font-size:max(22px, 11.5px / var(--k, 1)); line-height:31px; margin-top:10px; }
 /* 名前札を上辺へ重ねる。操作札は紙・金枠では少し離し、煙では低い輪郭へ接続する。 */
 html:root[data-ui-theme] body:not(.game-ds) .vn-box .vn-name {
   left:var(--vn-name-inset); top:var(--vn-caption-top); width:max-content; min-width:168px; max-width:272px; height:50px;
   padding:0 28px 2px; display:flex; align-items:center; justify-content:center;
   background:var(--vn-tab-face); border:1px solid var(--vn-tab-edge); box-shadow:var(--vn-tab-shadow);
   border-radius:var(--vn-tab-radius); clip-path:none; rotate:none;
-  font-size:var(--vn-name-fit-size,22px); font-weight:700; line-height:34px; letter-spacing:.08em;
+  font-size:var(--vn-name-fit-size,max(22px, 11.5px / var(--k, 1))); font-weight:700; line-height:34px; letter-spacing:.08em;
   color:var(--vn-tab-text); text-shadow:0 1px 2px #0007;
 }
 html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(.game-ds) .vn-name { font-family:var(--font); }
@@ -73,22 +74,23 @@ html:root[data-ui-theme] body:not(.game-ds) .vn-controls::before {
   content:""; position:absolute; inset:4px; border:1px solid var(--vn-tab-inner); border-radius:inherit;
   width:auto; height:auto; background:none; box-shadow:none; pointer-events:none;
 }
+/* 記号の正方形（#2854）が大きくなっても、札の中心は名前札の16px上のまま。上下へ同じだけ広げる。 */
 html:root[data-ui-theme] body:not(.game-ds) .vn-controls {
   right:calc((1280px - var(--vn-dialogue-width)) / 2 + var(--vn-command-inset));
-  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - var(--vn-caption-top) - 50px + var(--vn-command-rise));
-  width:var(--vn-command-width); height:50px; padding:2px 6px; gap:0;
-  display:grid; grid-template-columns:repeat(5,minmax(0,1fr));
+  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - var(--vn-caption-top) - 50px + var(--vn-command-rise) - (var(--vn-ctl-size) - 40px) / 2);
+  width:auto; height:calc(var(--vn-ctl-size) + 10px); padding:4px 6px; gap:var(--vn-ctl-gap);
+  display:grid; grid-template-columns:repeat(5,var(--vn-ctl-size));
   background:var(--vn-tab-face); border:1px solid var(--vn-tab-edge); box-shadow:var(--vn-tab-shadow);
   border-radius:var(--vn-tab-radius); clip-path:none;
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-controls::after { content:none; }
 html:root[data-ui-theme] body:not(.game-ds) .vn-controls .vn-ctl {
-  position:relative; min-width:0; min-height:44px; height:44px; padding:0 6px;
+  position:relative; width:var(--vn-ctl-size); min-width:0; height:var(--vn-ctl-size); min-height:var(--vn-ctl-size); padding:0;
   border:0; border-radius:8px; font-family:var(--font); font-size:17px; font-weight:500;
   line-height:1.2; letter-spacing:.035em; background:none; box-shadow:none; color:var(--vn-tab-text);
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before {
-  content:""; position:absolute; left:0; top:15px; bottom:15px; width:1px;
+  content:""; position:absolute; left:calc(var(--vn-ctl-gap) / -2); top:25%; bottom:25%; width:1px;
   background:var(--vn-tab-edge); opacity:.36;
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-controls .vn-ctl:is(:hover,:focus-visible,.on) {
@@ -105,12 +107,14 @@ html:root[data-ui-theme] body:not(.game-ds) .vn-next {
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-next.show { animation-name:vn-next-nudge; }
 @keyframes vn-next-nudge { 50% { transform:translateY(2px); } }
+/* 操作札が上へ伸びた分だけ選択肢を上げ、間隔を保つ（#2854）。--k は #stage にあるので、ここで計算する。 */
 html:root[data-ui-theme] body:not(.game-ds) .vn-choices {
-  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px);
+  --vn-ctl-rise:calc((max(64px, 39px / var(--k, 1)) - 40px) / 2);
+  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px + var(--vn-ctl-rise));
 }
 /* 全テーマ共通。2択のまとまりを32px上げる。 */
 html:root[data-ui-theme] body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
-  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 94px);
+  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 94px + var(--vn-ctl-rise));
 }
 /* 各原画の縁を窓の上辺に合わせる。中央に見出し用の空白は取らない。 */
 html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(.game-ds) .vn-box::before,

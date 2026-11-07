@@ -124,12 +124,17 @@ function buildDom() {
     controls: el("div.vn-controls"),
   };
   dom.box = el("div.vn-box", [dom.name, dom.text, dom.inner, dom.next]);
-  const ctl = (label, fn, test) => el("button.vn-ctl", { text: label, dataset: { test }, onclick: (e) => { e.stopPropagation(); fn(); } });
-  dom.autoBtn = ctl("AUTO", () => setAuto(!autoMode), "vn-auto");
-  dom.skipBtn = ctl("SKIP", () => setSkip(!skipMode), "vn-skip");
+  // 操作は記号で見せる（#2854）。元の語は aria-label・title と読み上げ用の隠し文字に残す。
+  // U+FE0E は iPhone で ▶・⚙ が絵文字にならないようにする指定。
+  const ctl = (label, icon, fn, test) => el("button.vn-ctl", {
+    title: label, "aria-label": label, dataset: { test }, onclick: (e) => { e.stopPropagation(); fn(); },
+  }, [el("span.vn-ctl-icon", { text: icon, "aria-hidden": "true" }), el("span.vn-ctl-label", { text: label })]);
+  dom.autoBtn = ctl("AUTO", "\u25B6\uFE0EA", () => setAuto(!autoMode), "vn-auto");
+  dom.skipBtn = ctl("SKIP", "\u25B6\uFE0E\u25B6\uFE0E", () => setSkip(!skipMode), "vn-skip");
   dom.autoBtn.setAttribute("aria-pressed", "false");
   dom.skipBtn.setAttribute("aria-pressed", "false");
-  dom.controls.append(dom.autoBtn, dom.skipBtn, ctl("LOG", openLog, "vn-log"), ctl("用語", openGlossary, "vn-glossary"), ctl("設定", openSettings, "vn-config"));
+  dom.controls.append(dom.autoBtn, dom.skipBtn, ctl("LOG", "\u2261", openLog, "vn-log"),
+    ctl("用語", "?", openGlossary, "vn-glossary"), ctl("設定", "\u2699\uFE0E", openSettings, "vn-config"));
   host.replaceChildren(dom.effect, dom.cg, dom.portraits, dom.box, dom.choices, dom.controls, dom.log);
   nameFit = createNameFit(dom.name);
   host.addEventListener("pointerup", (e) => {
