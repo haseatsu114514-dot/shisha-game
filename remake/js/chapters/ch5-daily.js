@@ -127,7 +127,7 @@ export async function runChapterFiveDaily(io) {
     save();
   }
   // 東京にいる保存の再開・LOAD: 最初の地図から、スティーブ・ヴォルクの締めくくりの「!」と MENU の案内を出せるよう台詞を先に読む。
-  // ヌールに会っていれば（地元でもドバイでも）、MENU の締めくくり・告白の案内のためにカフェ・サーリムの台詞も先に読む
+  // ヌールに会っていれば（地元でもドバイでも）、MENU の締めくくり・告白の案内のためにカフェ・オアシスの台詞も先に読む
   const owner = state;
   await Promise.all([preloadTokyoScenes(), preloadNoorScenes()]);
   if (state !== owner) return;
@@ -145,7 +145,7 @@ export const chapterFiveTokyoSpots = () => [...tokyoSpotsNow().filter(spot => (!
   && (!spot.gym || !!state.flags._gym_member) && (!spot.night || state.slot >= 1) && reflectable(spot)), fortuneSpot(TOKYO)].filter(Boolean);
 /** ドバイの行き先（モスクは灯せる火種がある時だけ）。 */
 export const chapterFiveDubaiSpots = () => [...DUBAI_SPOTS.filter(reflectable), ...chapterFiveDubaiLeisureSpots()];
-// ドバイにラクダレース（第4章で走っていなければ店先から）・カフェ・サーリム（締めくくりまで）・「ヌールと砂丘へ」（誘われていれば）も出す
+// ドバイにラクダレース（第4章で走っていなければ店先から）・カフェ・オアシス（締めくくりまで）・「ヌールと砂丘へ」（誘われていれば）も出す
 // （chapters/ch5-dubai.js の chapterFiveDubaiLeisureSpots）。
 // 内省の場所（東京の池の弁天堂・ドバイのモスク）は、心得の盤で灯せる火種がある時だけ地図に出す（第3・4章と同じ）。
 const reflectable = spot => !spot.reflect || canReflect(state);
