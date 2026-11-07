@@ -79,7 +79,7 @@ await suite("ch5-home-talks", async check => {
       [51, 0, undefined, undefined, undefined], "nothing was done yet");
   });
 
-  // ヌールに会った保存を LOAD した直後（カフェ・サーリムにも砂丘にもまだ行っていない地図）から、MENU の人間関係が♥5の締めくくり・
+  // ヌールに会った保存を LOAD した直後（カフェ・オアシスにも砂丘にもまだ行っていない地図）から、MENU の人間関係が♥5の締めくくり・
   // 告白を正しく案内する（締めくくり・告白の台詞は ch4_desert.json にあるので、再開の時に読んでおく。地元にいる時も同じ）。
   const noorSave = {
     met: { noor: true, sheikh: true },
@@ -107,7 +107,7 @@ await suite("ch5-home-talks", async check => {
     await check(`${region}-load-shows-noor-finale-menu-hint-before-any-action`, async page => {
       await seed(page, { region, ...noorSave });
       await (region === "dubai" ? dubaiMapReady(page) : mapReady(page, { day: 51, slot: 0 }));
-      assert.deepEqual(await noorRow(page), { label: "恋愛ルート", next: "次にカフェ・サーリムで会うと、特別なイベントへ。" },
+      assert.deepEqual(await noorRow(page), { label: "恋愛ルート", next: "次にカフェ・オアシスで会うと、特別なイベントへ。" },
         "the ♥5 finale is announced right after LOAD");
       untouched(await get(page), region);
     });

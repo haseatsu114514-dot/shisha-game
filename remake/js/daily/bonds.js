@@ -52,7 +52,7 @@ export const BOND_FINALES = {
   // 大会後の寄り道（ch3-aftermath.js）から。恋愛対象外なので友情の着地だけ。条件はほかの人物と同じ♥5（IR22）。
   // 煙幕には何度でも通えて♥5に届く（AFB02・#2347）ので、仮の♥1（#2281）は外した。
   saku: { dialogue: "ch3_saku_bond_finale", gift: "suyaki_saku" },
-  // ヌール（DSR20）: 第4章ドバイのカフェ・サーリムで（chapters/ch4-desert.js）。店の段階の会話と♥3の問いを読んだ♥5で一度だけ。
+  // ヌール（DSR20）: 第4章ドバイのカフェ・オアシスで（chapters/ch4-desert.js）。店の段階の会話と♥3の問いを読んだ♥5で一度だけ。
   // 告白は次の砂丘（ツアー代なし）の夕日の場面 confession_noor が担うので、夜の帰り道には予約しない。
   noor: { dialogue: "ch4_noor_bond_finale", gift: "suyaki_noor", question: "bond_q2_noor", ownConfession: true },
   // スティーブ（#2028）: 綾取と同じく第3章の東京で、Smoke & Glory への来店（ch3-tokyo-daily.js）・旧行程の場面カード
@@ -310,7 +310,7 @@ export function finaleDue(id) {
   if (id === "ageha" && !chapterFeatureEnabled(state.chapter, "agehaVisit") && !beforeTokyoDeparture()) return false;
   if (id === "mashiro" && !chapterFeatureEnabled(state.chapter, "mashiroBond")) return false;
   if (id === "saku" && !TOKYO_SHOP_REACH.saku()) return false; // 煙幕は第3章の東京にだけある
-  if (id === "noor" && ![4, 5].includes(state.chapter)) return false; // カフェ・サーリムは第4章と第5章のドバイ（第5章は 2026-11-07 オーナー決定）
+  if (id === "noor" && ![4, 5].includes(state.chapter)) return false; // カフェ・オアシスは第4章と第5章のドバイ（第5章は 2026-11-07 オーナー決定）
   if (id === "steve" && !TOKYO_SHOP_REACH.steve()) return false;
   if (id === "volk" && !TOKYO_SHOP_REACH.volk()) return false;
   const def = BOND_FINALES[id];

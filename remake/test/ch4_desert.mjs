@@ -1,5 +1,5 @@
 // 第4章ドバイ・砂丘のサンドボードの接続規則（chapters/ch4-desert-progress.js）:
-// カフェ・サーリム（ヌールの父の店）で一台頼んで話すと好感度が上がり、段階の会話は♥0・1・2・3で1日1つ。♥3の誘いで昼の外出、
+// カフェ・オアシス（ヌールの父の店）で一台頼んで話すと好感度が上がり、段階の会話は♥0・1・2・3で1日1つ。♥3の誘いで昼の外出、
 // 初回は無料・2回目から 6,000円、同じ日に二度は行けない、記録と初回だけの報酬、遊びのご褒美の判定。
 import assert from "node:assert/strict";
 import test from "node:test";
@@ -223,7 +223,7 @@ test("the 14-day daily map (route 2) keeps the café on the map (3,000円, one a
   assert.deepEqual([cafe.unavailable, cafe.unavailableTag, cafe.hasNew()], ["今日はもう寄った。また明日", "また明日", false], "one visit a day");
   assert.equal(desertDailySpotById(value, 1, DESERT_SPOT_IDS.desk), null, "a disabled spot is not performed");
   [cafe] = desertDailySpots(value, 2);
-  assert.equal(cafe.label, "カフェ・サーリム");
+  assert.equal(cafe.label, "カフェ・オアシス");
   assert.equal(cafe.hasNew(), false, "only a chat until ♥1");
   value.money = 2999;
   [cafe] = desertDailySpots(value, 2);
@@ -367,9 +367,9 @@ test("Noor's finale, confession and gift data line up with bonds.js / romance.js
   assert.match(desert, /delete owner\.flags\[NOOR_OTHER_LOVER_FLAG\]/);
 });
 
-test("chapter 5 Dubai: Café Salim until Noor's finale, the dunes once invited; Naru stays home (owner 2026-11-07)", () => {
+test("chapter 5 Dubai: Café Oasis until Noor's finale, the dunes once invited; Naru stays home (owner 2026-11-07)", () => {
   // 2026-11-07 オーナー決定「第4章の砂丘を飛ばしたプレイヤーも、第5章側で前提を補ってルートに入れる」「ノールの告白は第5章でも可能にする」:
-  // 会っていなければ第5章のカフェ・サーリムで出会いから。宿の隣ではなく旧市街の通り（第5章は屋敷に泊まる）
+  // 会っていなければ第5章のカフェ・オアシスで出会いから。宿の隣ではなく旧市街の通り（第5章は屋敷に泊まる）
   const value = fresh();
   Object.assign(value, { chapter: 5, slot: 0 });
   let spots = desertChapterFiveSpots(value, 60);
@@ -386,7 +386,7 @@ test("chapter 5 Dubai: Café Salim until Noor's finale, the dunes once invited; 
   assert.deepEqual([chapterFour.label, chapterFour.area, chapterFour.x, chapterFour.y], ["宿の隣のカフェ", "宿の隣", 34, 26]);
   assert(completeDesertTalk(value, DESERT_TALKS[0], 60, noorHeart(value)));
   [cafe] = desertChapterFiveSpots(value, 61);
-  assert.deepEqual([cafe.label, cafe.area, cafe.x, cafe.y], ["カフェ・サーリム", "旧市街の通り", 60, 28], "after meeting her");
+  assert.deepEqual([cafe.label, cafe.area, cafe.x, cafe.y], ["カフェ・オアシス", "旧市街の通り", 60, 28], "after meeting her");
   // 誘われた（砂丘へは一度も出かけていない）: カフェと砂丘。初めての砂丘は無料
   value.flags[DESERT_FLAG] = { v: 2, talks: 3, chats: 2, lastTalkDay: 9, outings: 0, lastOutingDay: null };
   invite(value);

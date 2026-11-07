@@ -798,7 +798,7 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5_dubai_ticket, false);
   });
 
-  // 第5章のドバイで、第4章のラクダレース場・カフェ・サーリム・砂丘の続きに入る（2026-11-07 オーナー決定「第4章を飛ばしたプレイヤーも、
+  // 第5章のドバイで、第4章のラクダレース場・カフェ・オアシス・砂丘の続きに入る（2026-11-07 オーナー決定「第4章を飛ばしたプレイヤーも、
   // 第5章側で前提を補ってルートに入れる」で、#2708 の「第4章で遊んだ人だけ」をやめた）。第4章で知り合っただけなら、店先とカフェで会い直す。
   // 最初の日だけ再会の場面を読む。記録・1日1回・昼の枠・ツアー代は第4章と同じ。なる（地元にいる）は砂丘に来ない。
   await check("chapter-five-dubai-camel-track-and-dunes-reunions-for-chapter-four-players", async page => {
@@ -861,7 +861,7 @@ await suite("ch5-full-flow", async check => {
     const said = () => page.evaluate(() => [...window.__ch5Text]);
 
     // 第4章で誘われただけ（本番は見た・砂丘は約束だけ・カフェの段階は途中）: 第5章でも続きに入れる。
-    // カフェ・サーリムは再会だけを今日の来店にし、Dr.fookah の店先でファーリスと会い直す（本番を見た人の言い方・時間は使わない）
+    // カフェ・オアシスは再会だけを今日の来店にし、Dr.fookah の店先でファーリスと会い直す（本番を見た人の言い方・時間は使わない）
     await seedDubai({ stage: 2, meetDay: 47, inviteDay: 48, watched: true, plays: 0, lastPlayDay: null, best: null },
       { v: 2, talks: 4, chats: 0, lastTalkDay: 9, outings: 0, lastOutingDay: null });
     await loadSlot(page, 0);
@@ -898,7 +898,7 @@ await suite("ch5-full-flow", async check => {
     assert(shopLines.includes("理解の早い子") && shopLines.includes("日本に帰ったんじゃ") && !shopLines.includes("見せたいもの"),
       `the reunion for players who saw the race: ${shopLines.join(" / ")}`);
 
-    // 第4章で一度走った・砂丘へ一度出かけた: 両方出る（最初の再会まで新着の印）。カフェ・サーリムは締めくくりまで出る
+    // 第4章で一度走った・砂丘へ一度出かけた: 両方出る（最初の再会まで新着の印）。カフェ・オアシスは締めくくりまで出る
     await seedDubai({ stage: 3, meetDay: 47, inviteDay: 48, watched: true, plays: 1, lastPlayDay: 49,
       best: { total: 61, rank: 3, grade: "B", time: 53.2, chapter: 4, day: 49 } },
     { v: 2, talks: 4, chats: 0, lastTalkDay: 9, outings: 1, lastOutingDay: 5 });
@@ -1101,7 +1101,7 @@ await suite("ch5-full-flow", async check => {
 
   // 2026-11-07 オーナー決定「第4章のラクダレース／砂丘を飛ばしたプレイヤーも、第5章側で前提を補ってルートに入れる」:
   // 第4章でファーリス・ヌールに会っていない人も、第5章のドバイで出会いから入れる。Dr.fookah の店先でファーリスと出会い（時間は使わない）、
-  // 翌日の昼にレース場（本番の見学 → 初めてのレース）。カフェ・サーリムでヌールと出会い（♥1ちょうど）、次の来店で♥1の会話（大会後の分岐）。
+  // 翌日の昼にレース場（本番の見学 → 初めてのレース）。カフェ・オアシスでヌールと出会い（♥1ちょうど）、次の来店で♥1の会話（大会後の分岐）。
   await check("chapter-five-dubai-first-meetings-with-faris-and-noor-without-chapter-four-history", async page => {
     page.setDefaultTimeout(30000);
     await seedChapterFiveDubai(page);
@@ -1136,7 +1136,7 @@ await suite("ch5-full-flow", async check => {
     await page.locator(dt("pin-ch4_dubai_camel")).click();
     assert.match(await page.locator(".map-info").getAttribute("aria-label"), /六時に店の前で待ち合わせ/);
     assert.equal(await page.locator(dt("map-go")).count(), 0, "The race is tomorrow morning");
-    // 昼: カフェ・サーリムでヌールと出会う（第5章の書き出し・♥1ちょうど・一台の代金）
+    // 昼: カフェ・オアシスでヌールと出会う（第5章の書き出し・♥1ちょうど・一台の代金）
     await visitPin(page, "ch4_dubai_tour_desk");
     await chapterFiveDubaiMap(page, 60, 1);
     state = await get(page);
@@ -1164,7 +1164,7 @@ await suite("ch5-full-flow", async check => {
     assert.deepEqual([state.flags._ch4_camel.stage, state.flags._ch4_camel.plays, state.flags._ch4_camel.lastPlayDay], [3, 1, 61]);
     assert.equal(state.met.khalil, true);
     assert(await page.locator(".hud").isVisible(), "The daily HUD comes back after the race");
-    // 夜: カフェ・サーリムで♥1の会話（第5章は大会の後: 父の噂の分岐。大会前の言い方は読まない）
+    // 夜: カフェ・オアシスで♥1の会話（第5章は大会の後: 父の噂の分岐。大会前の言い方は読まない）
     await visitPin(page, "ch4_dubai_tour_desk");
     await chapterFiveDubaiMap(page, 62, 0);
     state = await get(page);
@@ -1175,7 +1175,7 @@ await suite("ch5-full-flow", async check => {
     assert(said.includes("日本の子") && !said.includes("大会の準備"), `the late-read branch: ${said.join(" / ")}`);
   });
 
-  // 2026-11-07 オーナー決定「ノールの告白は第5章でも可能にする」: 第5章のカフェ・サーリムで♥5の締めくくりを迎え、「二人で見たい」と答えると、
+  // 2026-11-07 オーナー決定「ノールの告白は第5章でも可能にする」: 第5章のカフェ・オアシスで♥5の締めくくりを迎え、「二人で見たい」と答えると、
   // 次の砂丘（ツアー代なし）の夕日で告白（また日本に帰る前の言い方 visiting）→ 恋人・LIME・ギャラリーの恋人成立。夜の帰り道の予約は入れない。
   await check("chapter-five-dubai-noor-finale-and-sunset-confession-reached-in-chapter-five", async page => {
     page.setDefaultTimeout(30000);
