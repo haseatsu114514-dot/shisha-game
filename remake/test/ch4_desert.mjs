@@ -507,7 +507,7 @@ test("chapter 5 Dubai: Café Salim until Noor's finale, the dunes once invited; 
   assert.match(desert, /const rivals = !naru \|\| \(confessionDay && !before\.naruMet\) \? \["noor"\] : desertRivals\(owner\)/);
   assert.match(desert, /visitDesert\(\{ kind: cafe \? "desert_talk" : "desert", ok: true \}, \{ day, paid: cafe, naru, scene \}\)/);
   assert.match(desert, /naru = true, scene = id => id \}/, "Chapter 4 passes no scene and reads its own lines");
-  assert.match(desert, /read\(scene\(id\), bgUrl\("bg_dubai_inn_day"\)\)/);
+  assert.match(desert, /read\(scene\(id\), bgUrl\("bg_dubai_cafe_salim_day"\)\)/);
   assert.match(desert, /owner\.flags\[NOOR_VISIT_CONFESSION_FLAG\] = \(owner\.finales\?\.\[DESERT_GUIDE\]\?\.chapter \|\| 0\) >= 5/);
   assert.match(desert, /delete owner\.flags\[NOOR_VISIT_CONFESSION_FLAG\]/);
 });

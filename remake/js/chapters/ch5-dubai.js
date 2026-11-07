@@ -343,7 +343,7 @@ async function visitDunes(spot, owner) {
   if (!state.flags[DUNES_AGAIN.flag]) {
     owner.flags[NOOR_PROMISE_FLAG] = noorConfessionWaiting(owner) && romance.romanceRouteOpen(DESERT_GUIDE);
     let done = false;
-    try { done = await read(DUNES_AGAIN.scene, "bg_dubai_inn_day", owner); } finally { delete owner.flags[NOOR_PROMISE_FLAG]; }
+    try { done = await read(DUNES_AGAIN.scene, "bg_dubai_cafe_salim_day", owner); } finally { delete owner.flags[NOOR_PROMISE_FLAG]; }
     if (!done) return unused;
     state.flags[DUNES_AGAIN.flag] = true;
     save();
@@ -365,7 +365,7 @@ async function visitNoorCafe(spot, owner) {
   if (state !== owner) return unused;
   if (!owner.flags[DUNES_AGAIN.flag] && desertProgress(owner).talks > 0) {
     if (DESERT_CAFE_PRICE > spendableMoney(owner)) { toast(`お金が足りない（${DESERT_CAFE_PRICE.toLocaleString("ja-JP")}円）`); return unused; }
-    if (!await read(NOOR_CAFE_AGAIN, "bg_dubai_inn_day", owner) || !completeDesertReunion(owner, owner.day)) return unused;
+    if (!await read(NOOR_CAFE_AGAIN, "bg_dubai_cafe_salim_day", owner) || !completeDesertReunion(owner, owner.day)) return unused;
     addMoney(-DESERT_CAFE_PRICE);
     gainAffinity(DESERT_GUIDE, visitAffinity("talk"));
     owner.flags[DUNES_AGAIN.flag] = true;
