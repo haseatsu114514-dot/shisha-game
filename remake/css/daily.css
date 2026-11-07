@@ -1811,7 +1811,8 @@ body:not(.game-ds) .map .spot-pin .pin-status { font-size: max(14px, var(--mui-t
 body:not(.game-ds) .map .spot-pin .pin-people { top: -40px; pointer-events: auto; }
 body:not(.game-ds) .map .spot-pin .pin-person { flex-basis: 48px; width: 48px; height: 48px; }
 body:not(.game-ds) .map .spot-pin .pin-unknown b { font-size: max(22px, var(--mui-text)); }
-body:not(.game-ds) .map .spot-pin .pin-visual:has(.pin-person:nth-child(3)) .evt-badge { top: 16px; }
+/* 顔を 48px にした分、2人並ぶと右の顔が右上の「!」にかかる。2人からは「!」を顔の下（看板の右肩）へ下げる（3人の時と同じ位置）。 */
+body:not(.game-ds) .map .spot-pin .pin-visual:has(.pin-person:nth-child(2)) .evt-badge { top: 16px; }
 /* 「!」の丸は文字（実寸 11px 以上）に比例させ、もとの比（21px の丸に 14px・字面を上へ 2px）を保つ（字面が丸の中央からずれない）。 */
 body:not(.game-ds) .map .evt-badge {
   --evt-d: max(21px, calc(var(--mui-text) * 1.5));
@@ -1820,8 +1821,14 @@ body:not(.game-ds) .map .evt-badge {
 /* 観音堂の火種の数（.hidane-badge）は数字なので、文字は丸の大きさに比例させ（もとの 20px に 12px の比）、
    丸の大きさを下限に横は数字に合わせて伸ばす（「!」の文字の下限で数字が丸からはみ出さない）。 */
 body:not(.game-ds) .map .evt-badge.hidane-badge {
-  --hidane-d: max(21px, calc(var(--mui-text) / .6)); /* スマホでも数字が実寸 11px を割らない丸 */
-  width: auto; min-width: var(--hidane-d); height: var(--hidane-d); padding: 0 3px; font-size: calc(var(--hidane-d) * .6);
+  --evt-d: max(21px, calc(var(--mui-text) / .6)); /* スマホでも数字が実寸 11px を割らない丸 */
+  width: auto; min-width: var(--evt-d); height: var(--evt-d); padding: 0 3px; font-size: calc(var(--evt-d) * .6);
+}
+/* 施設の絵の印は、絵の輪郭の目印（--facility-badge-x/y）から丸の中心が右へ 8px・上へ 3px（facility-icons.css の 21px の丸の式）。
+   丸の大きさが変わっても中心が同じ所に来るよう、丸の半径で引く（facility_map の検査）。 */
+body:not(.game-ds) .map .spot-pin.facility-pin .evt-badge {
+  top: calc(6px + (96px - var(--facility-art-height)) / 2 + var(--facility-badge-y) - 3px - var(--evt-d) / 2);
+  left: calc(12px + (96px - var(--facility-art-width)) / 2 + var(--facility-badge-x) + 8px - var(--evt-d) / 2);
 }
 body:not(.game-ds) .map .pin-reveal-label { font-size: max(12px, var(--mui-text)); }
 /* 定休日・臨時休業: 看板をグレーにして、右上に「休」の印（札の文字は読み上げ・title 用に残す）。 */
