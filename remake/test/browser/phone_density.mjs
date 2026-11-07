@@ -34,8 +34,13 @@ async function openConversation(page) {
     ], branches: { end: [] } });
   });
   await page.locator(".vn-next.show").waitFor();
-  await page.locator(".vn-text").click();
-  await page.locator(".vn-choice").last().waitFor();
+  // 会話の開始直後 320ms はタップを受け付けない（engine.js の openLockUntil）。短い行は先に打ち終わるので、選択肢が出るまでタップし直す。
+  const choice = page.locator(".vn-choices.show .vn-choice").last();
+  for (let i = 0; i < 5 && !(await choice.isVisible()); i++) {
+    await page.locator(".vn-text").click();
+    await choice.waitFor({ timeout: 2000 }).catch(() => {});
+  }
+  await choice.waitFor();
   await page.waitForFunction(() => document.getAnimations().every(a => a.playState !== "running" || a.effect?.getComputedTiming().iterations === Infinity));
 }
 

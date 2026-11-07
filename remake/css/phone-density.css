@@ -85,3 +85,11 @@ html:root[data-density="phone"] body:not(.game-ds) .vn-choices:has(> .vn-choice:
   padding: 2px 12px;
 }
 html:root[data-density="phone"] body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(5)) > .vn-choice { flex-shrink: 0; }
+
+/* ---------------------------------------------------------------- 規格より大きく作ってある部品は縮めない */
+/* セーブの引っ越し・全画面の案内（#2856）はもともと 84px／26px。上の .btn の規格（72px）で縮めない。 */
+html:root[data-density="phone"] body:not(.game-ds) :is(.btn.xfer-btn, .xfer-box .modal-actions .btn) {
+  min-height: max(84px, var(--phone-tap));
+  font-size: max(26px, var(--phone-text));
+}
+html:root[data-density="phone"] body:not(.game-ds) .xfer-btns { gap: var(--phone-gap); }

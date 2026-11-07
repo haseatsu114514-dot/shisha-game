@@ -3195,7 +3195,6 @@
         "remake/css/ui-paper.css",
         "remake/js/main.js",
         "remake/js/daily/hud.js",
-        "remake/index.html",
         "remake/test/browser/phone_density.mjs"
       ],
       "run": ["node remake/test/browser/phone_density.mjs"],
