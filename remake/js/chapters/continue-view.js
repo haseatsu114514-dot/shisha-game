@@ -1,5 +1,5 @@
 // CONTINUEの描画。台本・抽選・遷移から独立させ、1行のテロップを文字ごとに出す。
-// #2524: 人物は会場に来た実体ではなく、はじめの頭の中に浮かぶ像。靄から浮かび上がる入場と、顔の中心から広がる輪で表す。
+// 2026-11-07 オーナー決定（#2524）: 本編の既定は前バージョンの neon（筆文字・円形HUD・鋭角ボタン）。立ち絵は continuePortraitStyle で新バージョン。
 import { el } from "../core/util.js";
 import { createNeonClock, createNeonAtmosphere } from "./continue-neon.js";
 import { DB, img, portraitInfo } from "../core/data.js";
@@ -22,9 +22,7 @@ export function continueFraming(info) {
   return table?.[info.folder]?.[info.face] || null;
 }
 
-const EMPHASIS = ["一人で背負う", "お前だけの負け", "お前と勝ちてえ", "カルダモンが絶滅", "悔しいのは本当", "緊急会議", "まだやれるか", "返事、聞かせろ",
-  "消さなくていい", "次の線", "私は知ってるよ", "条件を変えて", "一個だけ変えて", "王命である", "次を見たい", "作れない日", "お茶にしよ", "君の一台", "応援してる",
-  "どうする", "どうしたい", "もう一度", "もう一回", "もう一台", "もっかい", "コンティニュー"];
+const EMPHASIS = ["俺たち全員", "俺たちはまだやれる", "断固反対", "カルダモンが絶滅", "まだ終わってねえ", "お前と勝ちてえ", "勝手に", "ちょっと待て", "ずっと、見てますから", "何枚も何枚も", "もう一回だけ", "ぎゅってする", "次の香り", "ワンチャン", "コンティニュー", "王命じゃ", "もう一度見たい", "もう一台", "はじめのシーシャ", "諦める"];
 // 顔の高さ(px)。テロップを1行にした分、人物を大きく映す（2026-10-10）。
 const FACE_PX = 256;
 const HEAD_PADDING = 24;
@@ -32,9 +30,9 @@ const HEAD_PADDING = 24;
 const NEON_FACE_PX = 524.8;
 const NEON_FACE_CENTER_Y = 273;
 
-export function createContinueView({ script, speaker, character, lover = speaker !== "sumi", layout = "inner", background = "stage", onType = null }) {
+export function createContinueView({ script, speaker, character, lover = speaker !== "sumi", layout = "neon", background = "stage", onType = null }) {
   const neon = layout === "neon";
-  // #2524 「記憶の暗室」（layout:"inner"）。2026-11-06 オーナー決定で本編の既定（#2713）。
+  // #2524 「記憶の暗室」（layout:"inner"）。2026-11-06 に一度既定（#2713）にしたが、2026-11-07 オーナー決定で neon に戻し、比較用に残す。
   // 筆文字・円形HUD・鋭角ボタンを使わず、細い活字・上端の時計バー・文字だけの2択で構成する。
   // 顔の大きさと中心（524.8px・Y273）は採用Cを共有し、中心Xだけ左（400）へ寄せる。
   const inner = layout === "inner";
@@ -77,14 +75,13 @@ export function createContinueView({ script, speaker, character, lover = speaker
   const next = el("button.go-next", { type: "button", text: "›", "aria-label": "台詞を送る", dataset: { test: "continue-next" } });
   const proceed = el("button.go-proceed", { type: "button", text: "進む →", hidden: true, dataset: { test: "continue-proceed" } });
   // セリフと区別できる2択ボタン。見た目はCSS、文言は実テキストで表示する。
-  // #2524: 2択は頭の中の問いかけへの、はじめ自身の答え。遷移（大会の最初から／タイトルへ）は変えない。
-  // aria-label と説明文で実際の遷移を伝え、見える文言だけを一人称の答えにする。
-  const retry = el("button.go-choice.go-retry", { type: "button", "aria-label": "もう一台、作る（最初から再挑戦）", dataset: { test: "retry" } },
+  // セリフと区別できる2択ボタン。見た目はCSS、文言は実テキストで表示する。
+  const retry = el("button.go-choice.go-retry", { type: "button", "aria-label": "最初から再挑戦", dataset: { test: "retry" } },
     [...(neon ? choiceFrames() : []),
-      el("span.go-choice-label", { text: topActions ? "する" : "もう一台、作る" })]);
-  const quit = el("button.go-choice.go-quit", { type: "button", "aria-label": "今日は、ここまで（諦めてタイトルへ戻る）", dataset: { test: "game-over-title" } },
+      el("span.go-choice-label", { text: topActions ? "する" : "最初から再挑戦" })]);
+  const quit = el("button.go-choice.go-quit", { type: "button", "aria-label": "諦める・タイトルへ戻る", dataset: { test: "game-over-title" } },
     [...(neon ? choiceFrames() : []),
-      el("span.go-choice-label", { text: topActions ? "諦める" : "今日は、ここまで" })]); // 比較用の上段配置は「コンティニュー？ ［する］［諦める］」のまま。
+      el("span.go-choice-label", { text: "諦める" })]);
   function choiceFrames() {
     return [el("img.go-choice-frame", { src: art("neon_quit_frame"), alt: "", "aria-hidden": "true", draggable: "false" }),
       el("img.go-choice-frame.go-choice-frame-selected", { src: art("neon_retry_frame"), alt: "", "aria-hidden": "true", draggable: "false" })];

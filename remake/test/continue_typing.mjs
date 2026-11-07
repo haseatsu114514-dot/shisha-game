@@ -30,7 +30,8 @@ async function prepare(options) {
     C.headTops = new Map();
     C.read = async () => {
       const root = document.querySelector(".gameover"), caption = root.querySelector(".go-speech-text");
-      const box = caption.getBoundingClientRect(), stage = document.querySelector("#stage").getBoundingClientRect();
+      // #2861 のワイドステージでは #stage が1280より広がる。CONTINUE は1280×720のまま中央なので、その枠を基準に測る。
+      const box = caption.getBoundingClientRect(), stage = root.getBoundingClientRect();
       const image = root.querySelector(".go-sumi-img"); await image.decode();
       if (!C.headTops.has(image.src)) {
         const canvas = document.createElement("canvas"); canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
@@ -67,7 +68,8 @@ async function prepare(options) {
         })),
         decisions: [...C.decisions] };
     };
-    C.resources = () => JSON.stringify({ state: C.core.state, storage: { ...localStorage } });
+    // playMs はプレイ時間の記録（#2902）で、画面が見えている間は時計とともに増える。CONTINUE がゲームや保存を変えないことだけを比べる。
+    C.resources = () => JSON.stringify({ state: C.core.state, storage: { ...localStorage } }, (key, value) => key === "playMs" ? undefined : value);
     C.before = C.resources();
   });
   await page.clock.install({ time: new Date("2026-10-13T00:00:00Z") });

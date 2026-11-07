@@ -39,15 +39,12 @@
 .gameover .go-title-art { display: block; width: 920px; height: 100%; object-fit: contain; margin: auto; }
 .gameover .go-title-art[hidden] { display: none; }
 .gameover .go-left { position: absolute; left: 170px; top: 94px; width: 940px; height: 626px; z-index: 2; }
-/* #2524: 人物は会場に来た実体ではなく、はじめの頭の中に浮かぶ像。入場は靄の中から浮かび上がる（位置・大きさは変えない）。 */
 .gameover .go-portrait { position: absolute; inset: 0; overflow: hidden;
-  mask-image: linear-gradient(#000 0%, #000 98%, transparent 100%);
-  animation: go-portrait-surface .55s .25s var(--ease-out) both; }
+  mask-image: linear-gradient(#000 0%, #000 98%, transparent 100%); }
 .gameover .go-sumi-img {
   position: absolute; left: 50%; translate: -50% 0; object-fit: contain;
-  filter: drop-shadow(5px 4px 0 #050a1f99);
+  filter: drop-shadow(5px 4px 0 #050a1f99); animation: go-portrait-enter .55s .25s var(--ease-out) both;
 }
-
 .gameover .go-sumi-fallback { margin: 70px 40px; font-size: 50px; text-align: center; }
 .gameover .go-right { position: absolute; left: 80px; right: 80px; top: 560px; bottom: 0; z-index: 3; }
 .gameover .go-dialogue { position: absolute; left: 0; right: 0; top: 0; height: 54px;
@@ -183,7 +180,6 @@
 
 @keyframes go-title-enter { from { opacity: 0; transform: scale(1.18) translateY(-12px); } }
 @keyframes go-portrait-enter { from { opacity: 0; transform: scale(.94) translateY(10px); } }
-@keyframes go-portrait-surface { from { opacity: 0; filter: blur(14px); } 60% { filter: blur(3px); } to { opacity: 1; filter: none; } }
 @keyframes go-portrait-beat { 0% { transform: translateY(10px); } 45% { transform: translateY(-3px); } 100% { transform: none; } }
 @keyframes go-stamp { from { opacity: 0; scale: 1.7; } }
 @keyframes go-pencil { from { opacity: 0; clip-path: inset(0 100% 0 0); } to { opacity: .55; clip-path: inset(0); } }
