@@ -626,8 +626,9 @@ async function pullGame(cs, mode) {
     const naruFinished = recordNaruFinish(cs, bands, { automatic: !!autoSkill() });
     refreshBench();
     tickerSay(inZone ? "パッキー「きた〜！ 煙の立ち方が変わりましたよ〜♪」" : "パッキー「おっと、ちょっと温度が怪しいか〜！？」");
-    // 山場（CFX03）: 適温で提供できたら、吐いた煙が画面を満たして晴れる。最適温・会心は煙の輪も昇る
-    if (inZone) await exhale(panel.closest?.(".bench") || panel, { color: mixColor(cs.mix), grand: optimal || criticals > 0 });
+    // 山場（CFX03）: 適温で提供できたら、吐いた煙が画面を満たして晴れる。最適温・会心は煙の輪も昇る。
+    // 待たない: 結果は煙の下で出て、煙が晴れると見えてくる（重ね層は操作を通すので、結果の確認を遅らせない）
+    if (inZone) exhale(panel.closest?.(".bench") || panel, { color: mixColor(cs.mix), grand: optimal || criticals > 0 });
     await resultCard(panel, {
       title: context.title,
       summary: [context.summary],

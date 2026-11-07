@@ -36,7 +36,7 @@ async function load({ dom = true, reduced = false, calm = false, auto = null, tu
   const util = { el: (spec, a, b) => {
     const n = new Node(spec.split(".")[1] || "");
     const opts = Array.isArray(a) ? {} : a || {}, kids = Array.isArray(a) ? a : b || [];
-    Object.assign(n.dataset, opts.dataset || {}); n.text = opts.text; n.title = opts.title;
+    Object.assign(n.dataset, opts.dataset || {}); Object.assign(n.style, opts.style || {}); n.text = opts.text; n.title = opts.title;
     if (opts["aria-label"]) n.setAttribute("aria-label", opts["aria-label"]);
     n.append(...kids.filter(Boolean)); return n;
   }, rand: (a, b) => (a + b) / 2 };
@@ -115,14 +115,16 @@ for (const opts of [{ auto: "good" }, { turbo: true }, { dom: false }]) {
 {
   const h = await load();
   h.fx.exhale(h.host, { color: "rgb(12,200,255)" });
-  assert.equal(layer(h.host).children.length, 11, "a veil and ten smoke puffs");
+  const own = n => n.children.find(c => c.cls === "fx-exhale");
+  assert.equal(own(h.host).children.length, 11, "a veil and ten smoke puffs in its own clipped layer");
+  assert.equal(own(h.host).style.overflow, "hidden");
   const g = await load();
   g.fx.exhale(g.host, { grand: true });
-  assert.equal(layer(g.host).children.length, 12, "grand adds a smoke ring");
+  assert.equal(own(g.host).children.length, 12, "grand adds a smoke ring");
   for (const opts of [{ reduced: true }, { auto: "good" }]) {
     const q = await load(opts);
     assert.equal(await q.fx.exhale(q.host), false);
-    assert.equal(layer(q.host), undefined);
+    assert.equal(q.host.children.length, 0);
   }
   assert.deepEqual(["rgb(12,200,255)", "#abc", "#a1b2c3", "red"].map(h.fx.hex6), ["#0cc8ff", "#aabbcc", "#a1b2c3", "#d9d2e6"]);
 }

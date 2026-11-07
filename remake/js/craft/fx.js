@@ -163,7 +163,9 @@ export function exhale(host, { color = "#d9d2e6", grand = false } = {}) {
   color = hex6(color);
   const mode = fxMode();
   if (mode === "off" || mode === "still" || !host) return Promise.resolve(false);
-  const layer = layerOf(host);
+  // 大きな煙の塊は画面の外から立ちのぼるので、専用の層で切り抜く（はみ出しでページがスクロールしないように）
+  const layer = el("div.fx-exhale", { "aria-hidden": "true", style: { position: "absolute", inset: "0", pointerEvents: "none", overflow: "hidden", zIndex: "30" } });
+  host.append(layer);
   const puffs = [];
   const COUNT = 10, DURATION = 1600;
   // 画面ぜんたいに薄くかかる息のもや（下から満ちて引く）
@@ -202,5 +204,6 @@ export function exhale(host, { color = "#d9d2e6", grand = false } = {}) {
     puffs.push(anim.finished.then(() => ring.remove(), () => ring.remove()));
   }
   // 万一アニメが終わらない環境でも先へ進める
-  return Promise.race([Promise.all(puffs), new Promise((r) => setTimeout(r, DURATION + 1200))]).then(() => true);
+  return Promise.race([Promise.all(puffs), new Promise((r) => setTimeout(r, DURATION + 1200))])
+    .then(() => { layer.remove(); return true; });
 }
