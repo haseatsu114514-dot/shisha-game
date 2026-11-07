@@ -211,6 +211,9 @@ export function chapterFourDubaiDefinition(io) {
 export async function runChapterFourDubai(io) {
   const owner = state;
   Object.assign(DB.dialogues, await readDialogues("ch4_dubai_daily", DUBAI_DAILY_IDS), await readDialogues("ch4_longlong", LONGLONG_IDS));
+  // LOAD・再開でも最初の地図から、ヌールの MENU の案内（♥5の締めくくり・告白を選べる）を合わせる。どちらも台詞が読み込まれているかを見る
+  // （daily/bonds.js の finaleDue・daily/romance.js の romanceRouteOpen。第5章は ch5-dubai.js の preloadNoorScenes）。読めなくても地図は開く
+  if (owner.met?.noor) await import("./ch4-desert.js").then(desert => desert.loadDesertDialogues()).catch(() => {});
   if (state !== owner) return;
   state.flags._ch2_region = DUBAI;
   state.phase = "daily";
