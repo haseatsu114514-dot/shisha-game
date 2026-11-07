@@ -1,0 +1,156 @@
+{
+  "date": "2026-11-04",
+  "mode": "full-canvas panel",
+  "status": "unselected",
+  "runtime_registered": false,
+  "episodes": [
+    {
+      "id": "noor-shoe-sand",
+      "title": "靴の中の砂",
+      "cast": [
+        "noor"
+      ],
+      "status": "candidate_unselected",
+      "record": "../allcast-noor-shoe-sand/comics.json",
+      "source": [
+        "../allcast-noor-shoe-sand/panel-1-source.png",
+        "../allcast-noor-shoe-sand/panel-2-source.png"
+      ],
+      "panels": [
+        "../allcast-noor-shoe-sand/panels/noor-shoe-sand-1.webp",
+        "../allcast-noor-shoe-sand/panels/noor-shoe-sand-2.webp"
+      ],
+      "visual_note": "靴から砂山が出るオチ、片足の靴下、ヌールの笑い、人物の左右・服装・台詞順を確認。旧シートの縦長問題は全面3:2の別原画で解消。右コマのはじめの左手は外周に近く、採用前に余白の再確認が必要。",
+      "production_ready": false,
+      "review_suggestion": "priority_for_comparison",
+      "viewport_review": "PASS for rendering/readability at tested sizes; margins need revision/review"
+    },
+    {
+      "id": "saif-welcome-carpet",
+      "title": "歓迎の長さ",
+      "cast": [
+        "saif"
+      ],
+      "status": "candidate_unselected",
+      "record": "../allcast-saif-welcome-carpet/comics.json",
+      "source": [
+        "../allcast-saif-welcome-carpet/panel-1-source.png",
+        "../allcast-saif-welcome-carpet/panel-2-source.png"
+      ],
+      "panels": [
+        "../allcast-saif-welcome-carpet/panels/saif-welcome-carpet-1.webp",
+        "../allcast-saif-welcome-carpet/panels/saif-welcome-carpet-2.webp"
+      ],
+      "visual_note": "巻かれた敷物から長い道いっぱいの敷物への変化を確認。スハイルの髪・髭・黒ポロ・革紐と白い靴、はじめとの左右、3台詞が一致。",
+      "production_ready": false,
+      "review_suggestion": "priority_for_comparison",
+      "viewport_review": "PASS for rendering/readability at tested sizes; margins need revision/review"
+    },
+    {
+      "id": "saif-anime-door",
+      "title": "開く奥義",
+      "cast": [
+        "saif"
+      ],
+      "status": "candidate_unselected",
+      "record": "../allcast-saif-anime-door/comics.json",
+      "source": [
+        "../allcast-saif-anime-door/panel-1-source.png",
+        "../allcast-saif-anime-door/panel-2-source.png"
+      ],
+      "panels": [
+        "../allcast-saif-anime-door/panels/saif-anime-door-1.webp",
+        "../allcast-saif-anime-door/panels/saif-anime-door-2.webp"
+      ],
+      "visual_note": "閉じた自動ドアから開いた扉と決めポーズへの変化を確認。初稿で消えたはじめの買い物袋2つを修正し、修正前も保全。自動ドアは本編の設備の設定追加ではない番外編。",
+      "production_ready": false,
+      "review_suggestion": "priority_for_comparison",
+      "viewport_review": "PASS for rendering/readability at tested sizes; margins need revision/review"
+    },
+    {
+      "id": "saif-listen-cushions",
+      "title": "話す準備",
+      "cast": [
+        "saif"
+      ],
+      "status": "candidate_unselected",
+      "record": "../allcast-saif-listen-cushions/comics.json",
+      "source": [
+        "../allcast-saif-listen-cushions/panel-1-source.png",
+        "../allcast-saif-listen-cushions/panel-2-source.png"
+      ],
+      "panels": [
+        "../allcast-saif-listen-cushions/panels/saif-listen-cushions-1.webp",
+        "../allcast-saif-listen-cushions/panels/saif-listen-cushions-2.webp"
+      ],
+      "visual_note": "聞く姿勢から大量の毛布・クッション・水筒へ変化。眠らず目を輝かせているので、話を聞く性格を保つ。左右と3台詞が一致。",
+      "production_ready": false,
+      "review_suggestion": "reserve_for_comparison",
+      "viewport_review": "PASS for rendering/readability at tested sizes; margins need revision/review"
+    },
+    {
+      "id": "rashid-small-control",
+      "title": "小さな担当",
+      "cast": [
+        "rashid"
+      ],
+      "status": "candidate_unselected",
+      "record": "../allcast-rashid-small-control/comics.json",
+      "source": [
+        "../allcast-rashid-small-control/panel-1-source.png",
+        "../allcast-rashid-small-control/panel-2-source.png"
+      ],
+      "panels": [
+        "../allcast-rashid-small-control/panels/rashid-small-control-1.webp",
+        "../allcast-rashid-small-control/panels/rashid-small-control-2.webp"
+      ],
+      "visual_note": "小さなリモコンから大きなラクダへの対比。初稿の南京錠アイコンを無地の丸ボタン2つへ修正し、車の鍵との誤読を避けた。ボタン操作・方向操縦・騎手の追加なし。",
+      "production_ready": false,
+      "review_suggestion": "priority_for_comparison",
+      "viewport_review": "PASS for rendering/readability at tested sizes; margins need revision/review"
+    },
+    {
+      "id": "rashid-best-verdict",
+      "title": "最高の一言",
+      "cast": [
+        "rashid"
+      ],
+      "status": "candidate_unselected",
+      "record": "../allcast-rashid-best-verdict/comics.json",
+      "source": [
+        "../allcast-rashid-best-verdict/panel-1-source.png",
+        "../allcast-rashid-best-verdict/panel-2-source.png"
+      ],
+      "panels": [
+        "../allcast-rashid-best-verdict/panels/rashid-best-verdict-1.webp",
+        "../allcast-rashid-best-verdict/panels/rashid-best-verdict-2.webp"
+      ],
+      "visual_note": "落ち着いたハリールと、はじめの想像の巨大トロフィーの対比。想像枠なので大会の実際の受賞結果にしない。",
+      "production_ready": false,
+      "review_suggestion": "reserve_for_comparison",
+      "viewport_review": "PASS for rendering/readability at tested sizes; margins need revision/review"
+    },
+    {
+      "id": "rashid-camel-brush",
+      "title": "朝の身支度",
+      "cast": [
+        "rashid"
+      ],
+      "status": "candidate_unselected",
+      "record": "../allcast-rashid-camel-brush/comics.json",
+      "source": [
+        "../allcast-rashid-camel-brush/panel-1-source.png",
+        "../allcast-rashid-camel-brush/panel-2-source.png"
+      ],
+      "panels": [
+        "../allcast-rashid-camel-brush/panels/rashid-camel-brush-1.webp",
+        "../allcast-rashid-camel-brush/panels/rashid-camel-brush-2.webp"
+      ],
+      "visual_note": "はじめが帽子を外して寝ぐせが見える姿と、手入れ後のラクダの毛並みの対比を確認。動物の光は漫画の強調記号で、写実的な光沢を追加していない。",
+      "production_ready": false,
+      "review_suggestion": "priority_for_comparison",
+      "viewport_review": "PASS for rendering/readability at tested sizes; margins need revision/review"
+    }
+  ],
+  "review_note": "Suggestions only; no owner selection, registration or adoption. Native 4% margins remain a pre-adoption issue."
+}

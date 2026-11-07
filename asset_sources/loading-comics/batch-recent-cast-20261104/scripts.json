@@ -1,0 +1,155 @@
+{
+  "batch": "recent-cast-20261104",
+  "rules": "../README.md §2/§3/§10",
+  "status": "script_candidates_unselected",
+  "characters": {
+    "saif": {
+      "name": "スハイル",
+      "met": "第4章 ch4_camel_meet の _met_saif",
+      "look": "24歳のエミラティの青年。背が高く細身、浅黒い肌、短く刈った黒髪に細い整えた髭。大きな目でよく笑う。Dr.fookah のスタッフの黒いポロシャツ（胸に小さな店のロゴの位置だけ、文字は描かない）と砂色のチノパン、手首に細い革の紐。片手に葉の缶。実在の人物に似せない。",
+      "voice": "俺",
+      "reference": "assets/sprites/characters/saif/chr_saif_normal.png"
+    },
+    "rashid": {
+      "name": "ハリール",
+      "met": "第4章 ch4_camel_watch の _met_rashid",
+      "look": "56歳のエミラティの男性。日に焼けた顔に深いしわ、白いものが混じる短い髭。白いカンドゥーラの上に古い砂色のベスト、頭に白と赤の格子のグトラを無造作に巻く。片手に小さなリモコン（車のキーのような大きさ）、もう片手を車の窓枠に置く。実在の人物に似せない。",
+      "voice": "私",
+      "reference": "assets/sprites/characters/rashid/chr_rashid_normal.png"
+    }
+  },
+  "episodes": [
+    {
+      "id": "saif-welcome-carpet",
+      "title": "歓迎の長さ",
+      "cast": [
+        "saif"
+      ],
+      "minChapter": 4,
+      "dialogue": [
+        "少し寄りました。",
+        "よく来た、ハジメ！",
+        "道まで歓迎だ。"
+      ],
+      "first_speaker": "hajime",
+      "panel1": "店の入口。左のはじめが気軽に片手を上げる。右のスハイルが大きな笑顔で迎え、足元の丸めた赤い敷物に手をかける。",
+      "panel2": "同じ入口から赤い敷物が画面奥の路地いっぱいまで伸び、はじめは遠くに見える入口へ向かって歩いている。右手前のスハイルが端を持って満面の笑顔。長い赤い帯をコマ中央に大きく。",
+      "caption": "スハイルは、ドバイで出会う接客上手な友人。",
+      "note": "明るい接客を歓迎の量で誇張。店に赤い敷物が実在するという設定追加ではない。",
+      "status": "image_candidate_unselected",
+      "registered": false,
+      "num": 1,
+      "image_record": "../allcast-saif-welcome-carpet/comics.json"
+    },
+    {
+      "id": "saif-anime-door",
+      "title": "開く奥義",
+      "cast": [
+        "saif"
+      ],
+      "minChapter": 4,
+      "dialogue": [
+        "開けてくれます？",
+        "任せろ、ハジメ。",
+        "自動ドアです。"
+      ],
+      "first_speaker": "hajime",
+      "panel1": "店の入口の閉じた自動ドアの前。左のはじめは荷物を両手に持つ。右のスハイルが真剣な顔で両手の指を組む。",
+      "panel2": "スハイルが大げさなアニメ風の決めポーズで両腕を広げると、ドアが左右に開く。はじめはセンサーの真下で呆然。スハイルのポーズと開いた扉を大きく描く。光線・特殊能力は出さない。",
+      "caption": "スハイルは、ドバイで出会う接客上手な友人。",
+      "note": "アニメ好きと接客の勢いを結んだ番外編。固有作品の技・ロゴは模写しない。自動ドアはギャグの舞台装置で本編の店の設備を確定しない。",
+      "status": "image_candidate_unselected",
+      "registered": false,
+      "num": 2,
+      "image_record": "../allcast-saif-anime-door/comics.json"
+    },
+    {
+      "id": "saif-listen-cushions",
+      "title": "話す準備",
+      "cast": [
+        "saif"
+      ],
+      "minChapter": 4,
+      "dialogue": [
+        "長くなりますよ。",
+        "全部、聞くよ。",
+        "泊まる準備だ。"
+      ],
+      "first_speaker": "hajime",
+      "panel1": "テラスの無地の小さな机。左のはじめが話し始めようとする。右のスハイルが身を乗り出してにこにこ聞く。",
+      "panel2": "スハイルが自分の席を大量のクッションと毛布で巣のように囲み、特大の水筒も置いて、目を輝かせてはじめを待っている。はじめは机の反対側で驚く。寝ずに聞く準備の大きさを中央に。",
+      "caption": "スハイルは、ドバイで出会う接客上手な友人。",
+      "note": "相手の話を本気で聞く性格の誇張。夜通し起こす行為や大会に関する話題は描かない。",
+      "status": "image_candidate_unselected",
+      "registered": false,
+      "num": 3,
+      "image_record": "../allcast-saif-listen-cushions/comics.json"
+    },
+    {
+      "id": "rashid-small-control",
+      "title": "小さな担当",
+      "cast": [
+        "rashid"
+      ],
+      "minChapter": 4,
+      "dialogue": [
+        "何を持てば？",
+        "これを頼む。",
+        "相手が大きい。"
+      ],
+      "first_speaker": "hajime",
+      "panel1": "停車した車の脇。左のはじめに、右のハリールが車の鍵ほどの小さなリモコンを手渡す。はじめは小ささに安心した顔。",
+      "panel2": "はじめが小さなリモコンをつまむ手のすぐ上から、一頭の大きなラクダが首を伸ばして顔を覗き込む。ラクダの顔をコマ中央に大きく。ハリールは右で静かに見守る。ラクダには誰も乗らず、操作もしない。",
+      "caption": "ハリールは、口数の少ないラクダの調教師。",
+      "note": "本編の小さなリモコンと大きなラクダの対比。実レース・騎手・ムチ・手綱操作は描かず、リモコンで方向操縦できるようにしない。",
+      "status": "image_candidate_unselected",
+      "registered": false,
+      "num": 4,
+      "image_record": "../allcast-rashid-small-control/comics.json"
+    },
+    {
+      "id": "rashid-best-verdict",
+      "title": "最高の一言",
+      "cast": [
+        "rashid"
+      ],
+      "minChapter": 4,
+      "dialogue": [
+        "お茶、どうです？",
+        "悪くない。",
+        "それ、最高点だ。"
+      ],
+      "first_speaker": "hajime",
+      "panel1": "日よけの下。左のはじめが水出し茶のコップを差し出す。右のハリールは落ち着いた顔で一口飲む。",
+      "panel2": "ハリールは同じ顔でコップを持っているだけなのに、はじめの背後には巨大な金色のトロフィーと紙吹雪の想像図。はじめは両手を上げて満面の笑顔。トロフィーは文字なし、想像図と分かる丸い境界内に収める。",
+      "caption": "ハリールは、口数の少ないラクダの調教師。",
+      "note": "『悪くない』が最高評価という本編会話を、はじめ側の想像で見せる。実際の受賞・大会の結果・ハリールの饒舌な称賛は追加しない。",
+      "status": "image_candidate_unselected",
+      "registered": false,
+      "num": 5,
+      "image_record": "../allcast-rashid-best-verdict/comics.json"
+    },
+    {
+      "id": "rashid-camel-brush",
+      "title": "朝の身支度",
+      "cast": [
+        "rashid"
+      ],
+      "minChapter": 4,
+      "dialogue": [
+        "髪、整ってます？",
+        "まず、こっちだ。",
+        "俺よりつやつや。"
+      ],
+      "first_speaker": "hajime",
+      "panel1": "朝のレース場の休憩区画。左のはじめが帽子を持ち寝ぐせを押さえる。右のハリールが柔らかいブラシを手に、隣のラクダへ向き直る。",
+      "panel2": "ラクダが右奥から首を伸ばし、手入れの終わった毛並みが一筋の明るいハイライトで整っている。ハリールはブラシを下ろして満足げ。はじめの寝ぐせは前コマのまま。ラクダの整った顔と、はじめの髪を並べて大きく。",
+      "caption": "ハリールは、口数の少ないラクダの調教師。",
+      "note": "調教師として動物を優先する小さなギャグ。毛並みのツヤはセル塗りの一段で、全体をテカらせない。動物の世話の新規手順・本編の能力や過去は確定しない。",
+      "status": "image_candidate_unselected",
+      "registered": false,
+      "num": 6,
+      "image_record": "../allcast-rashid-camel-brush/comics.json"
+    }
+  ]
+}

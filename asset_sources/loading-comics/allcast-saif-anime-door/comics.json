@@ -1,0 +1,167 @@
+{
+  "id": "saif-anime-door",
+  "title": "開く奥義",
+  "cast": [
+    "saif"
+  ],
+  "minChapter": 4,
+  "dialogue": [
+    "開けてくれます？",
+    "任せろ、ハジメ。",
+    "自動ドアです。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "店の入口の閉じた自動ドアの前。左のはじめは荷物を両手に持つ。右のスハイルが真剣な顔で両手の指を組む。",
+  "panel2": "スハイルが大げさなアニメ風の決めポーズで両腕を広げると、ドアが左右に開く。はじめはセンサーの真下で呆然。スハイルのポーズと開いた扉を大きく描く。光線・特殊能力は出さない。",
+  "caption": "スハイルは、ドバイで出会う接客上手な友人。",
+  "note": "アニメ好きと接客の勢いを結んだ番外編。固有作品の技・ロゴは模写しない。自動ドアはギャグの舞台装置で本編の店の設備を確定しない。",
+  "status": "image_candidate_unselected",
+  "registered": false,
+  "num": 2,
+  "source": [
+    {
+      "file": "panel-1-source.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2436135,
+      "sha256": "eed93bac3bf115729aa75adc80f44201e983de23afb03baae948771f22ee3c82"
+    },
+    {
+      "file": "panel-2-source.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2159033,
+      "sha256": "7190ce69901dcc1b16e62c7fe5c4e59b8311d76e6ee62cd4c7247006adf79561"
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/saif-anime-door-1.webp",
+      "width": 1440,
+      "height": 960,
+      "mode": "RGB",
+      "bytes": 185542,
+      "sha256": "4ba87513c3b6cd8f7d289ed12ca4634a7ac6be354e35ab725a63372c75f44ddf"
+    },
+    {
+      "file": "panels/saif-anime-door-2.webp",
+      "width": 1440,
+      "height": 960,
+      "mode": "RGB",
+      "bytes": 176576,
+      "sha256": "b4c5bce4962519e1d86459120fe5fd9c4c2c08100153b8de911d7f0b89958b91"
+    }
+  ],
+  "generation": {
+    "tool": "image_gen.imagegen",
+    "model": "not exposed by tool",
+    "date": "2026-11-04",
+    "mode": "full-canvas single panel; loading_comic_cut.py panel",
+    "transparent_background": false,
+    "calls": [
+      {
+        "prompt": "panel-1-prompt.txt",
+        "references": [
+          "assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "assets/sprites/characters/saif/chr_saif_normal.png",
+          "asset_sources/loading-comics/allcast-noor-shoe-sand/allcast-noor-shoe-sand-b.png"
+        ],
+        "result": "panel-1-source.png"
+      },
+      {
+        "prompt": "panel-2-prompt.txt",
+        "references": [
+          "panel-1-source.png",
+          "assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "assets/sprites/characters/saif/chr_saif_normal.png"
+        ],
+        "result": "panel-2-source-a.png"
+      },
+      {
+        "prompt": "panel-2-revision-prompt.txt",
+        "references": [
+          "panel-2-source-a.png",
+          "panel-1-source.png"
+        ],
+        "result": "panel-2-source.png"
+      }
+    ],
+    "formal_reference_sha256": {
+      "assets/sprites/characters/hajime/chr_hajime_normal.png": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "assets/sprites/characters/saif/chr_saif_normal.png": "7f15b37d9a705696ed994878eb8a5993148445be7a91f0e30515addf1b72e78d"
+    },
+    "style_reference": {
+      "file": "asset_sources/loading-comics/allcast-noor-shoe-sand/allcast-noor-shoe-sand-b.png",
+      "sha256": "a4175e08e6addc196db2ff75fa572fb3f050e776e9d353847eec2700cd56b981"
+    },
+    "history": [
+      {
+        "file": "panel-1-source.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2436135,
+        "sha256": "eed93bac3bf115729aa75adc80f44201e983de23afb03baae948771f22ee3c82",
+        "status": "candidate"
+      },
+      {
+        "file": "panel-2-source-a.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2331632,
+        "sha256": "6cc30033debb2960a155b79daae37b6143ac4d6faa31098ad1ac3b1a5955f706",
+        "status": "superseded"
+      },
+      {
+        "file": "panel-2-source.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2159033,
+        "sha256": "7190ce69901dcc1b16e62c7fe5c4e59b8311d76e6ee62cd4c7247006adf79561",
+        "status": "candidate"
+      }
+    ]
+  },
+  "qa": {
+    "native_source_dimensions": "PASS: both unmodified PNGs 1536x1024, 3:2",
+    "delivery_dimensions": "PASS: both 1440x960 WebP, <=400KiB, quality 85, no upscaling",
+    "decode": "PASS: Pillow verify + load of current PNG/WebP and retained PNG history",
+    "ratio_tool": "PASS: panel mode ok, no force, no added paper bands, no fill/crop",
+    "visual_note": "閉じた自動ドアから開いた扉と決めポーズへの変化を確認。初稿で消えたはじめの買い物袋2つを修正し、修正前も保全。自動ドアは本編の設備の設定追加ではない番外編。",
+    "visual_checks": [
+      "正式立ち絵と髪・肌・服・年齢感の本人性を照合",
+      "両コマではじめ左・相手右、台詞3つと読む順を目視",
+      "シーシャ機材・煙・酒・武器・第三の人物・署名・題名・余計な文字なし"
+    ],
+    "pending": [
+      "オーナー選別・最終画風統一",
+      "4%安全余白の修正・厳密確認（現表示では欠けなし）",
+      "実端末・本編のキャラ面識解放との接続・タップ送りの確認"
+    ],
+    "production_ready": false,
+    "runtime_registered": false,
+    "viewport_check": {
+      "result": "PASS: 3 viewports; decode, panel bounds/ratio, ready hold and Enter proceed",
+      "evidence": "../batch-recent-cast-20261104/qa-20261104/metrics.json",
+      "phone_visual": "landscape 844x390 and portrait 390x844 screenshots viewed at native dimensions; all three dialogue strings readable, no clipped bubble/text",
+      "desktop_visual": "1280x720 metrics and screenshot recorded; no separate manual full-screen read",
+      "is_real_device": false,
+      "device_scale_factor": 1,
+      "does_not_cover": [
+        "physical phone / Safari",
+        "story flow and actual cast-unlock integration",
+        "touch proceed input"
+      ]
+    },
+    "safe_margin_review": {
+      "result": "needs_revision_or_exact_review",
+      "note": "左コマの右下吹き出し右端が約3%。右コマの主要吹き出しは近似検出で4%以上。",
+      "measurement": "read-only white-component approximation; not exact ink contour; see margins.json"
+    }
+  },
+  "review_suggestion": "priority_for_comparison"
+}

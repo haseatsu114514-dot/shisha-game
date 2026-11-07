@@ -1,0 +1,166 @@
+{
+  "id": "rashid-small-control",
+  "title": "小さな担当",
+  "cast": [
+    "rashid"
+  ],
+  "minChapter": 4,
+  "dialogue": [
+    "何を持てば？",
+    "これを頼む。",
+    "相手が大きい。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "停車した車の脇。左のはじめに、右のハリールが車の鍵ほどの小さなリモコンを手渡す。はじめは小ささに安心した顔。",
+  "panel2": "はじめが小さなリモコンをつまむ手のすぐ上から、一頭の大きなラクダが首を伸ばして顔を覗き込む。ラクダの顔をコマ中央に大きく。ハリールは右で静かに見守る。ラクダには誰も乗らず、操作もしない。",
+  "caption": "ハリールは、口数の少ないラクダの調教師。",
+  "note": "本編の小さなリモコンと大きなラクダの対比。実レース・騎手・ムチ・手綱操作は描かず、リモコンで方向操縦できるようにしない。",
+  "status": "image_candidate_unselected",
+  "registered": false,
+  "num": 4,
+  "source": [
+    {
+      "file": "panel-1-source.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2308439,
+      "sha256": "ecd84b5e63d06f4998f5f74cfcfebd7b84b7ccfd9f0e2c2d530d391850742652"
+    },
+    {
+      "file": "panel-2-source.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2614877,
+      "sha256": "af9a5adaad710bc2613b29f551c9241edb8489c6e209ed89518533201aeeb461"
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/rashid-small-control-1.webp",
+      "width": 1440,
+      "height": 960,
+      "mode": "RGB",
+      "bytes": 208868,
+      "sha256": "3ee20aad0e5fd89a63e89f2e26b29f4a5d2a4a4817a25e527d87bbba5238925b"
+    },
+    {
+      "file": "panels/rashid-small-control-2.webp",
+      "width": 1440,
+      "height": 960,
+      "mode": "RGB",
+      "bytes": 239626,
+      "sha256": "1945b6f9e06e04fb83fb94a0af2d112fa84a48078a127b7315898af93919e3aa"
+    }
+  ],
+  "generation": {
+    "tool": "image_gen.imagegen",
+    "model": "not exposed by tool",
+    "date": "2026-11-04",
+    "mode": "full-canvas single panel; loading_comic_cut.py panel",
+    "transparent_background": false,
+    "calls": [
+      {
+        "prompt": "panel-1-prompt.txt",
+        "references": [
+          "assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "assets/sprites/characters/rashid/chr_rashid_normal.png",
+          "asset_sources/loading-comics/allcast-noor-shoe-sand/allcast-noor-shoe-sand-b.png"
+        ],
+        "result": "panel-1-source-a.png"
+      },
+      {
+        "prompt": "panel-2-prompt.txt",
+        "references": [
+          "panel-1-source-a.png",
+          "assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "assets/sprites/characters/rashid/chr_rashid_normal.png"
+        ],
+        "result": "panel-2-source.png"
+      },
+      {
+        "prompt": "panel-1-revision-prompt.txt",
+        "references": [
+          "panel-1-source-a.png"
+        ],
+        "result": "panel-1-source.png"
+      }
+    ],
+    "formal_reference_sha256": {
+      "assets/sprites/characters/hajime/chr_hajime_normal.png": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "assets/sprites/characters/rashid/chr_rashid_normal.png": "1614c5f994ce82c4e5b1b60034e51bc05cfee97300a1fac211fb8d933d876155"
+    },
+    "style_reference": {
+      "file": "asset_sources/loading-comics/allcast-noor-shoe-sand/allcast-noor-shoe-sand-b.png",
+      "sha256": "a4175e08e6addc196db2ff75fa572fb3f050e776e9d353847eec2700cd56b981"
+    },
+    "history": [
+      {
+        "file": "panel-1-source-a.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2536818,
+        "sha256": "9d4d2fa48e1ce606034e9281dbb8d4b97fc67b469b098c5735d79c4897bdee29",
+        "status": "superseded"
+      },
+      {
+        "file": "panel-1-source.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2308439,
+        "sha256": "ecd84b5e63d06f4998f5f74cfcfebd7b84b7ccfd9f0e2c2d530d391850742652",
+        "status": "candidate"
+      },
+      {
+        "file": "panel-2-source.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2614877,
+        "sha256": "af9a5adaad710bc2613b29f551c9241edb8489c6e209ed89518533201aeeb461",
+        "status": "candidate"
+      }
+    ]
+  },
+  "qa": {
+    "native_source_dimensions": "PASS: both unmodified PNGs 1536x1024, 3:2",
+    "delivery_dimensions": "PASS: both 1440x960 WebP, <=400KiB, quality 85, no upscaling",
+    "decode": "PASS: Pillow verify + load of current PNG/WebP and retained PNG history",
+    "ratio_tool": "PASS: panel mode ok, no force, no added paper bands, no fill/crop",
+    "visual_note": "小さなリモコンから大きなラクダへの対比。初稿の南京錠アイコンを無地の丸ボタン2つへ修正し、車の鍵との誤読を避けた。ボタン操作・方向操縦・騎手の追加なし。",
+    "visual_checks": [
+      "正式立ち絵と髪・肌・服・年齢感の本人性を照合",
+      "両コマではじめ左・相手右、台詞3つと読む順を目視",
+      "シーシャ機材・煙・酒・武器・第三の人物・署名・題名・余計な文字なし"
+    ],
+    "pending": [
+      "オーナー選別・最終画風統一",
+      "4%安全余白の修正・厳密確認（現表示では欠けなし）",
+      "実端末・本編のキャラ面識解放との接続・タップ送りの確認"
+    ],
+    "production_ready": false,
+    "runtime_registered": false,
+    "viewport_check": {
+      "result": "PASS: 3 viewports; decode, panel bounds/ratio, ready hold and Enter proceed",
+      "evidence": "../batch-recent-cast-20261104/qa-20261104/metrics.json",
+      "phone_visual": "landscape 844x390 and portrait 390x844 screenshots viewed at native dimensions; all three dialogue strings readable, no clipped bubble/text",
+      "desktop_visual": "1280x720 metrics and screenshot recorded; no separate manual full-screen read",
+      "is_real_device": false,
+      "device_scale_factor": 1,
+      "does_not_cover": [
+        "physical phone / Safari",
+        "story flow and actual cast-unlock integration",
+        "touch proceed input"
+      ]
+    },
+    "safe_margin_review": {
+      "result": "needs_revision_or_exact_review",
+      "note": "左コマの吹き出し上端、右コマの左端が約2〜2.5%。",
+      "measurement": "read-only white-component approximation; not exact ink contour; see margins.json"
+    }
+  },
+  "review_suggestion": "priority_for_comparison"
+}

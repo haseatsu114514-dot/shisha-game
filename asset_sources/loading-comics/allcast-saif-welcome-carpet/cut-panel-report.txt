@@ -1,0 +1,54 @@
+panel-1-source.png: 全面 1536x1024 比率 1.500 → ok
+panel-2-source.png: 全面 1536x1024 比率 1.500 → ok
+コマ1: 1536x1024 (1.500) そのまま → 出力 1440x960  asset_sources/loading-comics/allcast-saif-welcome-carpet/panels/saif-welcome-carpet-1.webp (222 KiB)
+コマ2: 1536x1024 (1.500) そのまま → 出力 1440x960  asset_sources/loading-comics/allcast-saif-welcome-carpet/panels/saif-welcome-carpet-2.webp (287 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "saif-welcome-carpet",
+  "title": "歓迎の長さ",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 4,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "asset_sources/loading-comics/allcast-saif-welcome-carpet/panels/saif-welcome-carpet-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "asset_sources/loading-comics/allcast-saif-welcome-carpet/panels/saif-welcome-carpet-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "asset_sources/loading-comics/allcast-saif-welcome-carpet/panel-1-source.png",
+      "region": null
+    },
+    {
+      "file": "asset_sources/loading-comics/allcast-saif-welcome-carpet/panel-2-source.png",
+      "region": null
+    }
+  ],
+  "delivery": [
+    {
+      "file": "saif-welcome-carpet-1.webp",
+      "width": 1440,
+      "height": 960,
+      "sha256": "855c50fd53e100af97d56feeb88587230949f3633d68d21c0c28842b2f3e6a4f"
+    },
+    {
+      "file": "saif-welcome-carpet-2.webp",
+      "width": 1440,
+      "height": 960,
+      "sha256": "4d470e8a2f75d9d02f64729b4779152a0f7ec4664657336473b2a19dc896cf25"
+    }
+  ]
+}

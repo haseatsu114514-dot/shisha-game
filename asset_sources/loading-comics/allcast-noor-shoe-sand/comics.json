@@ -1,0 +1,230 @@
+{
+  "id": "noor-shoe-sand",
+  "title": "靴の中の砂",
+  "cast": [
+    "noor"
+  ],
+  "minChapter": 4,
+  "dialogue": [
+    "ハジメ、靴を脱いで。",
+    "はい……？",
+    "砂丘が出た。"
+  ],
+  "first_speaker": "noor",
+  "panel1": "砂漠ツアーから戻った車の横。右のヌールがにやにや笑って、はじめの靴を指さし「ハジメ、靴を脱いで。」（左上に高く）。左のはじめが片足立ちで靴に手をかけ、首をかしげて「はい……？」（右下）。",
+  "panel2": "はじめが逆さにした片方のスニーカーから、はじめの背丈ほどの砂の山がざあっと流れ出て、コマ中央にそびえている（砂は粒で描く）。ヌールはお腹を抱えて大笑い。はじめは目を丸くして「砂丘が出た。」。",
+  "caption": "砂丘を歩くと、靴の中は砂でいっぱいになる。",
+  "type": "量の過剰（靴から砂丘）",
+  "note": "ヌールは第4章ドバイで会う（cast で解放）。",
+  "num": 159,
+  "status": "image_candidate_unselected",
+  "registered": false,
+  "script_source": "asset_sources/loading-comics/batch-allcast-refill-20261102/scripts.json#noor-shoe-sand",
+  "source": [
+    {
+      "file": "panel-1-source.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2240734,
+      "sha256": "5f3ffcda0bfb17580686230a59bd1a5a0328c6100bbabae9356b41790cde6e37"
+    },
+    {
+      "file": "panel-2-source.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2317503,
+      "sha256": "de4dc628fb2718cba05822d9af3d2c05aa3c6c5534c1192d72d8253c80e3cd90"
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/noor-shoe-sand-1.webp",
+      "width": 1440,
+      "height": 960,
+      "mode": "RGB",
+      "bytes": 195310,
+      "sha256": "952d1a77a5504d064f2e656a6db16cd47ad1a3517339756c05dc8ec188bc0db2"
+    },
+    {
+      "file": "panels/noor-shoe-sand-2.webp",
+      "width": 1440,
+      "height": 960,
+      "mode": "RGB",
+      "bytes": 222560,
+      "sha256": "eb31f7bfae0b1cdd109cddd3f90898e8ea9d68f5619f3039e71a9c12f0a1f9c0"
+    }
+  ],
+  "generation": {
+    "tool": "image_gen.imagegen",
+    "model": "not exposed by tool",
+    "date": "2026-11-04",
+    "mode": "full-canvas single panel; loading_comic_cut.py panel",
+    "transparent_background": false,
+    "calls": [
+      {
+        "prompt": "panel-1-prompt.txt",
+        "references": [
+          "assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "assets/sprites/characters/noor/chr_noor_normal.png",
+          "asset_sources/loading-comics/allcast-noor-shoe-sand/allcast-noor-shoe-sand-b.png"
+        ],
+        "result": "panel-1-source.png"
+      },
+      {
+        "prompt": "panel-2-prompt.txt",
+        "references": [
+          "panel-1-source.png",
+          "assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "assets/sprites/characters/noor/chr_noor_normal.png"
+        ],
+        "result": "panel-2-source.png"
+      }
+    ],
+    "formal_reference_sha256": {
+      "assets/sprites/characters/hajime/chr_hajime_normal.png": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "assets/sprites/characters/noor/chr_noor_normal.png": "1374af232413652aaa6285982730e308ba47edf31305d89c3f3632b279b07266"
+    },
+    "style_reference": {
+      "file": "asset_sources/loading-comics/allcast-noor-shoe-sand/allcast-noor-shoe-sand-b.png",
+      "sha256": "a4175e08e6addc196db2ff75fa572fb3f050e776e9d353847eec2700cd56b981"
+    },
+    "history": [
+      {
+        "file": "allcast-noor-shoe-sand-a.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2048940,
+        "sha256": "21c68593aee2b5a9e370d7a71495aad47d7428ccc362c569ae335f370b3cd6ad",
+        "status": "superseded"
+      },
+      {
+        "file": "allcast-noor-shoe-sand-b.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 1832981,
+        "sha256": "a4175e08e6addc196db2ff75fa572fb3f050e776e9d353847eec2700cd56b981",
+        "status": "superseded"
+      },
+      {
+        "file": "panel-1-source.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2240734,
+        "sha256": "5f3ffcda0bfb17580686230a59bd1a5a0328c6100bbabae9356b41790cde6e37",
+        "status": "candidate"
+      },
+      {
+        "file": "panel-2-source.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2317503,
+        "sha256": "de4dc628fb2718cba05822d9af3d2c05aa3c6c5534c1192d72d8253c80e3cd90",
+        "status": "candidate"
+      }
+    ]
+  },
+  "superseded_sheet_generation": {
+    "tool": "image_gen.imagegen",
+    "model": "not exposed by tool",
+    "date": "2026-11-04",
+    "transparent_background": false,
+    "full_prompts": [
+      "exact-prompt.txt",
+      "revision-prompt.txt"
+    ],
+    "references": [
+      "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+      "assets/sprites/characters/hajime/chr_hajime_normal.png",
+      "assets/sprites/characters/noor/chr_noor_normal.png"
+    ],
+    "history": [
+      {
+        "file": "allcast-noor-shoe-sand-a.png",
+        "status": "superseded",
+        "reason": "枠が720x574で縦長。右コマの脱いだ足の描写が曖昧。",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2048940,
+        "sha256": "21c68593aee2b5a9e370d7a71495aad47d7428ccc362c569ae335f370b3cd6ad"
+      },
+      {
+        "file": "allcast-noor-shoe-sand-b.png",
+        "status": "candidate_needs_geometry_revision",
+        "reason": "片足の靴下は修正。枠の高さは規定480より大きく、紙の色も均一でない。",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 1832981,
+        "sha256": "a4175e08e6addc196db2ff75fa572fb3f050e776e9d353847eec2700cd56b981"
+      }
+    ],
+    "reference_sha256": {
+      "asset_sources/loading-comics/template/2koma_template_1536x1024.png": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "assets/sprites/characters/hajime/chr_hajime_normal.png": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "assets/sprites/characters/noor/chr_noor_normal.png": "1374af232413652aaa6285982730e308ba47edf31305d89c3f3632b279b07266"
+    }
+  },
+  "superseded_sheet_qa": {
+    "image_decode": "PASS: Pillow verify + load, both versions",
+    "canvas": "PASS: 1536x1024, both versions; unmodified PNG",
+    "visual": {
+      "characters": "はじめ左・ヌール右で両コマ一致。黒キャップ/パーカー、ヌールの髪・サングラス・スカーフ・カーキ服を正式立ち絵と照合。",
+      "dialogue": "3つの吹き出しを目視。ハジメ、靴を脱いで。→はい……？→砂丘が出た。左①はヌール左上・はじめ右下。右②ははじめに尻尾。",
+      "joke": "靴から大きな砂山、ヌールが笑う。番外編の量の誇張。右②では脱いだ側の足が靴下。",
+      "exclusions": "シーシャ機材・煙・酒・武器・署名・題名なし。",
+      "limitations": [
+        "コマ寸法は切り出しツールのwarn。規定720x480の厳密一致は未達。",
+        "紙色が単色#EEE3CFではなくグラデーション。",
+        "顔/吹き出しのセーフマージンは全箇所29x19pxを保証しない。",
+        "PC横・スマホ横のゲーム内読字QAは未実施。",
+        "最終画風統一・採否はオーナー選別待ち。"
+      ]
+    },
+    "production_ready": false
+  },
+  "qa": {
+    "native_source_dimensions": "PASS: both unmodified PNGs 1536x1024, 3:2",
+    "delivery_dimensions": "PASS: both 1440x960 WebP, <=400KiB, quality 85, no upscaling",
+    "decode": "PASS: Pillow verify + load of current PNG/WebP and retained PNG history",
+    "ratio_tool": "PASS: panel mode ok, no force, no added paper bands, no fill/crop",
+    "visual_note": "靴から砂山が出るオチ、片足の靴下、ヌールの笑い、人物の左右・服装・台詞順を確認。旧シートの縦長問題は全面3:2の別原画で解消。右コマのはじめの左手は外周に近く、採用前に余白の再確認が必要。",
+    "visual_checks": [
+      "正式立ち絵と髪・肌・服・年齢感の本人性を照合",
+      "両コマではじめ左・相手右、台詞3つと読む順を目視",
+      "シーシャ機材・煙・酒・武器・第三の人物・署名・題名・余計な文字なし"
+    ],
+    "pending": [
+      "オーナー選別・最終画風統一",
+      "4%安全余白の修正・厳密確認（現表示では欠けなし）",
+      "実端末・本編のキャラ面識解放との接続・タップ送りの確認"
+    ],
+    "production_ready": false,
+    "runtime_registered": false,
+    "viewport_check": {
+      "result": "PASS: 3 viewports; decode, panel bounds/ratio, ready hold and Enter proceed",
+      "evidence": "../batch-recent-cast-20261104/qa-20261104/metrics.json",
+      "phone_visual": "landscape 844x390 and portrait 390x844 screenshots viewed at native dimensions; all three dialogue strings readable, no clipped bubble/text",
+      "desktop_visual": "1280x720 screenshot viewed",
+      "is_real_device": false,
+      "device_scale_factor": 1,
+      "does_not_cover": [
+        "physical phone / Safari",
+        "story flow and actual cast-unlock integration",
+        "touch proceed input"
+      ]
+    },
+    "safe_margin_review": {
+      "result": "needs_revision_or_exact_review",
+      "note": "吹き出し上端が約2%前後。右コマのはじめの左手も端に近い。",
+      "measurement": "read-only white-component approximation; not exact ink contour; see margins.json"
+    }
+  },
+  "review_suggestion": "priority_for_comparison"
+}

@@ -1,0 +1,150 @@
+{
+  "id": "saif-listen-cushions",
+  "title": "話す準備",
+  "cast": [
+    "saif"
+  ],
+  "minChapter": 4,
+  "dialogue": [
+    "長くなりますよ。",
+    "全部、聞くよ。",
+    "泊まる準備だ。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "テラスの無地の小さな机。左のはじめが話し始めようとする。右のスハイルが身を乗り出してにこにこ聞く。",
+  "panel2": "スハイルが自分の席を大量のクッションと毛布で巣のように囲み、特大の水筒も置いて、目を輝かせてはじめを待っている。はじめは机の反対側で驚く。寝ずに聞く準備の大きさを中央に。",
+  "caption": "スハイルは、ドバイで出会う接客上手な友人。",
+  "note": "相手の話を本気で聞く性格の誇張。夜通し起こす行為や大会に関する話題は描かない。",
+  "status": "image_candidate_unselected",
+  "registered": false,
+  "num": 3,
+  "source": [
+    {
+      "file": "panel-1-source.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2242773,
+      "sha256": "fab49330399dce0fab00ade5a4bc038e4c6f75b806cbe14da62e574e58df602a"
+    },
+    {
+      "file": "panel-2-source.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2323210,
+      "sha256": "ec454369c1d4c6f8a86447007c576b72a4a8bf79ee516c6dc851312f0873c023"
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/saif-listen-cushions-1.webp",
+      "width": 1440,
+      "height": 960,
+      "mode": "RGB",
+      "bytes": 183520,
+      "sha256": "48d59a27f0775cf3b856ba87e705a6bae981fe5c8cb56dd7b8a9576eaebb35c0"
+    },
+    {
+      "file": "panels/saif-listen-cushions-2.webp",
+      "width": 1440,
+      "height": 960,
+      "mode": "RGB",
+      "bytes": 220414,
+      "sha256": "028c27466a4e7b9953255242f8dbd65eb9ff7fb22d16c93727d442cc7bc3b626"
+    }
+  ],
+  "generation": {
+    "tool": "image_gen.imagegen",
+    "model": "not exposed by tool",
+    "date": "2026-11-04",
+    "mode": "full-canvas single panel; loading_comic_cut.py panel",
+    "transparent_background": false,
+    "calls": [
+      {
+        "prompt": "panel-1-prompt.txt",
+        "references": [
+          "assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "assets/sprites/characters/saif/chr_saif_normal.png",
+          "asset_sources/loading-comics/allcast-noor-shoe-sand/allcast-noor-shoe-sand-b.png"
+        ],
+        "result": "panel-1-source.png"
+      },
+      {
+        "prompt": "panel-2-prompt.txt",
+        "references": [
+          "panel-1-source.png",
+          "assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "assets/sprites/characters/saif/chr_saif_normal.png"
+        ],
+        "result": "panel-2-source.png"
+      }
+    ],
+    "formal_reference_sha256": {
+      "assets/sprites/characters/hajime/chr_hajime_normal.png": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "assets/sprites/characters/saif/chr_saif_normal.png": "7f15b37d9a705696ed994878eb8a5993148445be7a91f0e30515addf1b72e78d"
+    },
+    "style_reference": {
+      "file": "asset_sources/loading-comics/allcast-noor-shoe-sand/allcast-noor-shoe-sand-b.png",
+      "sha256": "a4175e08e6addc196db2ff75fa572fb3f050e776e9d353847eec2700cd56b981"
+    },
+    "history": [
+      {
+        "file": "panel-1-source.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2242773,
+        "sha256": "fab49330399dce0fab00ade5a4bc038e4c6f75b806cbe14da62e574e58df602a",
+        "status": "candidate"
+      },
+      {
+        "file": "panel-2-source.png",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGB",
+        "bytes": 2323210,
+        "sha256": "ec454369c1d4c6f8a86447007c576b72a4a8bf79ee516c6dc851312f0873c023",
+        "status": "candidate"
+      }
+    ]
+  },
+  "qa": {
+    "native_source_dimensions": "PASS: both unmodified PNGs 1536x1024, 3:2",
+    "delivery_dimensions": "PASS: both 1440x960 WebP, <=400KiB, quality 85, no upscaling",
+    "decode": "PASS: Pillow verify + load of current PNG/WebP and retained PNG history",
+    "ratio_tool": "PASS: panel mode ok, no force, no added paper bands, no fill/crop",
+    "visual_note": "聞く姿勢から大量の毛布・クッション・水筒へ変化。眠らず目を輝かせているので、話を聞く性格を保つ。左右と3台詞が一致。",
+    "visual_checks": [
+      "正式立ち絵と髪・肌・服・年齢感の本人性を照合",
+      "両コマではじめ左・相手右、台詞3つと読む順を目視",
+      "シーシャ機材・煙・酒・武器・第三の人物・署名・題名・余計な文字なし"
+    ],
+    "pending": [
+      "オーナー選別・最終画風統一",
+      "4%安全余白の修正・厳密確認（現表示では欠けなし）",
+      "実端末・本編のキャラ面識解放との接続・タップ送りの確認"
+    ],
+    "production_ready": false,
+    "runtime_registered": false,
+    "viewport_check": {
+      "result": "PASS: 3 viewports; decode, panel bounds/ratio, ready hold and Enter proceed",
+      "evidence": "../batch-recent-cast-20261104/qa-20261104/metrics.json",
+      "phone_visual": "landscape 844x390 and portrait 390x844 screenshots viewed at native dimensions; all three dialogue strings readable, no clipped bubble/text",
+      "desktop_visual": "1280x720 metrics and screenshot recorded; no separate manual full-screen read",
+      "is_real_device": false,
+      "device_scale_factor": 1,
+      "does_not_cover": [
+        "physical phone / Safari",
+        "story flow and actual cast-unlock integration",
+        "touch proceed input"
+      ]
+    },
+    "safe_margin_review": {
+      "result": "needs_revision_or_exact_review",
+      "note": "吹き出しの上端、左コマの返事の下端が約2.5%。",
+      "measurement": "read-only white-component approximation; not exact ink contour; see margins.json"
+    }
+  },
+  "review_suggestion": "reserve_for_comparison"
+}
