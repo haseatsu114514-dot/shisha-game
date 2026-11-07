@@ -8,6 +8,14 @@
 
 /* ---- 裏口の舞台（背景の街並みは少し落とし、猫を主役にする）。裏口の絵が届いたら .tt-set を隠す */
 .tt-yard { position: absolute; inset: 0; }
+/* カメラ（TKT17）: 舞台の2枚の層（奥の飾り・手前の小物と猫）を同じだけ寄せる。寄せ方・向きは JS（TETSUKO_CAMERA）が --cam-* に入れる。
+   猫が居場所を移るのと同じ速さで追う。入った時と、動きを減らす設定では動かさずに合わせる */
+.tt-cam { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0;
+  transform: translate(var(--cam-x, 0px), var(--cam-y, 0px)) scale(var(--cam-k, 1)); transition: transform .9s ease-in-out; }
+.tt-cam-set { pointer-events: none; }
+.tt-yard[data-cam="cut"] .tt-cam, .tetsuko-time[data-reduced="true"] .tt-cam { transition: none; }
+/* 画面の周りの陰（テーマが色を付ける）。奥の飾りと手前の層の間にあり、猫・小物は暗くしない */
+.tt-vignette { position: absolute; inset: 0; pointer-events: none; }
 .tt-set { position: absolute; inset: 0; pointer-events: none; }
 .tetsuko-time[data-art-bg="true"] .tt-set { display: none; }
 .tetsuko-time[data-art-bg="true"] .tt-yard::before { background: linear-gradient(180deg, rgba(18, 12, 10, 0), rgba(18, 12, 10, .12)); }
@@ -248,14 +256,14 @@
 
 /* ---- 右上: 道具（もようがえ・てつこ手帳・写真・帰る） */
 .tt-tools { position: absolute; right: 22px; top: 72px; z-index: 20; display: flex; gap: 8px; }
-.tt-tool { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: 92px; height: 70px; padding: 4px 0 6px;
+.tt-tool { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: 82px; height: 62px; padding: 3px 0 5px;
   border: 2px solid var(--tt-lav); border-radius: 14px; background: var(--tt-paper); color: var(--tt-lav); font: inherit; cursor: pointer;
   box-shadow: 0 3px 0 rgba(105, 73, 126, .3), 0 6px 14px rgba(0, 0, 0, .2); transition: transform .12s ease, box-shadow .12s ease; }
 .tt-tool:hover:not(:disabled) { transform: translateY(-1px); }
 .tt-tool:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 rgba(105, 73, 126, .3), 0 3px 8px rgba(0, 0, 0, .2); }
 .tt-tool:disabled { opacity: .5; cursor: default; }
 .tt-tool:focus-visible, .tt-act:focus-visible, .tt-item:focus-visible, .tt-card:focus-visible, .tt-slot-hit:focus-visible { outline: 3px solid var(--tt-amber); outline-offset: 2px; }
-.tt-tool-ico .tt-ico { width: 32px; height: 32px; display: block; }
+.tt-tool-ico .tt-ico { width: 27px; height: 27px; display: block; }
 .tt-tool-label { font-size: 14px; font-weight: 700; color: var(--tt-ink); white-space: nowrap; }
 .tt-tool[data-test="tetsuko-time-back"] { background: var(--tt-lav); color: var(--tt-paper); }
 .tt-tool[data-test="tetsuko-time-back"] .tt-tool-label { color: var(--tt-paper); }
@@ -281,7 +289,7 @@
 .tetsuko-time[data-art-ui~="caption"] .tt-caption { background: none; clip-path: none; filter: none; border-style: solid; border-color: transparent; border-width: 20px 48px;
   border-image: url("../img/ui/tetsuko/ui_caption.webp") 40 96 fill / 20px 48px stretch; padding: 0 4px; }
 .tetsuko-time[data-art-ui~="caption"] .tt-caption::before { display: none; }
-.tt-text { margin: 0; font-size: 21px; line-height: 1.45; color: var(--tt-ink); }
+.tt-text { margin: 0; font-size: 20px; line-height: 1.42; color: var(--tt-ink); }
 .tt-line { margin: 4px 0 0; font-size: 19px; color: var(--tt-lav); }
 .tt-line-name { margin-right: 8px; padding: 1px 8px; border-radius: 6px; background: rgba(105, 73, 126, .12); font-size: 15px; color: var(--tt-lav); }
 .tt-chips { margin-top: 6px; min-height: 0; }
@@ -306,11 +314,11 @@
 
 /* ---- 右下: 手元の道具（なでる・あそぶ・止める・ブラシ・おやつ・そっと見守る） */
 .tt-dock { position: absolute; right: 16px; bottom: 10px; z-index: 20; display: flex; gap: 6px; }
-.tt-act { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100px; padding: 0 0 2px; border: 0; background: none; font: inherit; cursor: pointer; }
+.tt-act { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 88px; padding: 0 0 2px; border: 0; background: none; font: inherit; cursor: pointer; }
 .tt-act[hidden] { display: none; }
-.tt-act-token { display: grid; place-items: center; width: 72px; height: 72px; border-radius: 50%; border: 2px solid var(--tt-lav); background: var(--tt-paper); color: var(--tt-lav);
+.tt-act-token { display: grid; place-items: center; width: 62px; height: 62px; border-radius: 50%; border: 2px solid var(--tt-lav); background: var(--tt-paper); color: var(--tt-lav);
   box-shadow: 0 3px 0 rgba(105, 73, 126, .3), 0 8px 16px rgba(0, 0, 0, .25); transition: transform .12s ease, box-shadow .12s ease, background .2s ease; }
-.tt-act-token .tt-ico { width: 40px; height: 40px; }
+.tt-act-token .tt-ico { width: 34px; height: 34px; }
 .tt-act-label { padding: 1px 8px; border-radius: 8px; background: rgba(247, 243, 237, .92); color: var(--tt-ink); font-size: 15px; font-weight: 700; white-space: nowrap; }
 .tt-act-sub { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); padding: 0 7px; border-radius: 8px; background: var(--tt-ink); color: var(--tt-paper); font-size: 13px; font-weight: 700; white-space: nowrap; }
 .tt-act-sub:empty { display: none; }
