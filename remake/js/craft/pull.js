@@ -413,6 +413,22 @@ async function pullGame(cs, mode) {
         return;
       }
       if (isJust) justs++;
+      // 授業 M-S7「龍の煙」: スモークリング(K21)を持ち、吸い出しのジャストが3回続いたら、その一台の残りの工程はメンタルが減らない。
+      if (mode.store === "pull" && !tutorial && growthLesson(state, "M-S7") && growthSkill(state, "K21") && !cs.dragonCalm) {
+        cs.dragonStreak = isJust ? (cs.dragonStreak || 0) + 1 : 0;
+        if (cs.dragonStreak >= LESSON_TUNING.dragonStreak) {
+          cs.dragonCalm = true;
+          drawStatus.textContent = "龍が昇る。場が静まった";
+          reactAudience(cs, "good", { text: "煙の輪が龍になって昇る。見ている人が静まった", force: true });
+          // 画面を覆う motions の dragonSmoke は操作を止めるので使わず、吸い出し欄の上で金縁の大きな輪を昇らせる。
+          const dragon = el("i", { "aria-hidden": "true", dataset: { test: "pull-dragon-smoke" }, style: {
+            position: "absolute", left: "40%", top: "35%", width: "120px", height: "120px", border: "4px solid #f6dcaf", borderRadius: "50%", pointerEvents: "none", filter: "blur(1px)",
+          } });
+          play.append(dragon);
+          const calm = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+          dragon.animate(calm ? [{opacity:.9},{opacity:0}] : [{opacity:.9,transform:"scale(.5)"},{opacity:0,transform:"translateY(-120px) scale(1.8)"}], {duration:calm?400:1600}).finished.then(()=>dragon.remove(),()=>dragon.remove());
+        }
+      }
       if (critical) { criticals++; drawStatus.textContent = "会心の一服"; }
       // 狙いどおりの一吸い（芯）に手応え。会心は大きく
       if (isJust) impact(play, critical ? "big" : "perfect", { at: dial, color: "#b48cff" });
