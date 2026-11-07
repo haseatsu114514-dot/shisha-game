@@ -22,6 +22,7 @@ class Node {
   get classList() { const c = this._c; return { add: x => c.add(x), remove: x => c.delete(x), contains: x => c.has(x) }; }
   get offsetWidth() { return 0; }
   get parentElement() { return null; }
+  get firstChild() { return this.children[0] || null; }
   setAttribute() {}
   getBoundingClientRect() { return { left: 0, top: 0, width: 0, height: 0 }; }
 }
@@ -86,6 +87,10 @@ for (const opts of [{ mode: "practice" }, { mode: "rehearsal", chapter: 4 }, { c
   const h = await load();
   const w = h.m.buildRivalWindows(h.cs);
   const R = real["./ch1-votes.js"].CH1_RIVALS, tier = h.rig.recordTier;
+  const imgs = () => find(w.root, n => n.cls === "" && n.src).map(n => n.src);
+  assert.deepEqual(imgs(), [], "face icons are not requested while the bench is getting ready");
+  w.showFaces(); w.showFaces();
+  assert.deepEqual(Array.from(imgs()), ["face_naru.png", "face_adam.png", "face_minto.png"], "faces load once, later");
   w.mark("holes");
   assert.equal(tiersOf(w.root).naru.split(",")[0], "off", "rival lamps light after a short delay");
   assert.equal(h.timers.length, 3, "one delayed light per rival");
@@ -126,4 +131,4 @@ for (const opts of [{ mode: "practice" }, { mode: "rehearsal", chapter: 4 }, { c
   assert.equal(h.cheers.length, 0);
 }
 
-console.log("[craft-rival-windows] PASS: lineups match tournament data, no windows outside tournaments/ch5, delayed per-rival lighting with one cheer, ch1 per-step and care rounds, flat ch2 quality, quiet restore");
+console.log("[craft-rival-windows] PASS: lineups match tournament data, no windows outside tournaments/ch5, delayed per-rival lighting with one cheer, ch1 per-step and care rounds, flat ch2 quality, quiet restore, deferred faces");

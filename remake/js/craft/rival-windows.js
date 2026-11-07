@@ -38,13 +38,14 @@ export function buildRivalWindows(cs) {
   if (!lineup?.length) return null;
   const cards = lineup.map((rival) => {
     const lamps = new Map(STEP_IDS.map((id) => [id, el("i.rival-lamp", { dataset: { step: id, tier: "off" } })]));
-    const icon = faceIconUrl(rival.id, state);
+    // 顔は飾りなので、作業台の開始条件にしない（読み込みは showFaces まで待つ）
+    const face = el("span.rival-face");
     const card = el("div.rival-card", { dataset: { rival: rival.id, test: `rival-${rival.id}` } }, [
-      el("span.rival-face", icon ? [el("img", { src: icon, alt: "", draggable: "false" })] : []),
+      face,
       el("b.rival-name", { text: displayName(rival.id, state) }),
       el("span.rival-lamps", [...lamps.values()]),
     ]);
-    return { rival, card, lamps };
+    return { rival, card, lamps, face };
   });
   const root = el("div.rival-windows", { "aria-hidden": "true", dataset: { test: "rival-windows" } }, cards.map((c) => c.card));
   const timers = new Set();
@@ -75,6 +76,14 @@ export function buildRivalWindows(cs) {
     /** 作業台を作り直したとき、はじめが終えた工程の分だけライバルの灯も戻す */
     restore(record) {
       for (const id of STEP_IDS) if (record?.tierOf(id)) this.mark(id, { quiet: true });
+    },
+    /** 顔アイコンを読み込む。作業台の準備が済んで少し経ってから呼ぶ（工程の開始に要る画像と取り合わない） */
+    showFaces() {
+      if (!root.isConnected) return;
+      for (const c of cards) {
+        const icon = faceIconUrl(c.rival.id, state);
+        if (icon && !c.face.firstChild) c.face.append(el("img", { src: icon, alt: "", draggable: "false" }));
+      }
     },
     dispose() { for (const t of timers) clearTimeout(t); timers.clear(); },
   };

@@ -42,6 +42,9 @@ import { buildRigRecord } from "./rig-record.js";
 import { buildRivalWindows } from "./rival-windows.js";
 import { demoFor, openDemoSheet } from "./demo.js";
 
+// ライバルの顔アイコンを読むまでの間（作業台の準備が済んでから）
+const RIVAL_FACE_DELAY_MS = 1200;
+
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
  * その腕前相当の結果を出して進む（UIの流れ自体は通常どおり通る）。
@@ -199,6 +202,11 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   const preparationSteps = [background.assetsReady, warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready, entryAssets];
   const assets = Promise.all(preparationSteps);
   bench.ready = prepareBenchEntry(waitForBenchAssets(bench, Promise.all([background, assets]), assets, false), cs.chapter, preparationSteps);
+  // ライバルの顔は飾り。作業台の準備が済んでから少し間を置いて読む（工程の開始に要る画像と通信を取り合わない）
+  if (bench.rivals) {
+    const rivals = bench.rivals, later = () => setTimeout(() => rivals.showFaces(), RIVAL_FACE_DELAY_MS);
+    bench.ready.then(later, later);
+  }
   renderFatigue();
   return bench;
 }
