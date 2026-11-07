@@ -40,6 +40,19 @@ function fitStage() {
   // スマホ規格（#2851）: 横持ちスマホ（Plus/Pro Max の 0.60 も含む）で共通部品の文字・タップ部品を大きくする。css/phone-density.css
   if (k < PHONE_DENSITY_K) document.documentElement.dataset.density = "phone";
   else delete document.documentElement.dataset.density;
+  // ワイドステージ（#2861）: 横長の画面では黒帯ぶんだけステージを広げる（高さは720のまま・最大1600）。
+  // 中身の層は中央1280に置いたまま、背景と端へ出す部品だけが広がった幅を使う（base.css）。
+  const stageW = Math.min(1600, Math.max(1280, Math.floor((w / h) * 720)));
+  if (stageW > 1280) {
+    stage.style.setProperty("--stage-w", `${stageW}px`);
+    // 広げてもまだ残る黒帯（画面px）。safe-area のうち黒帯で吸収できない分だけ端の部品を内側へ寄せる
+    stage.style.setProperty("--stage-bar", `${Math.max(0, (w - stageW * k) / 2)}px`);
+    stage.dataset.wide = "";
+  } else {
+    stage.style.removeProperty("--stage-w");
+    stage.style.removeProperty("--stage-bar");
+    delete stage.dataset.wide;
+  }
 }
 
 export async function boot() {

@@ -1,6 +1,6 @@
 # 足りない店のロゴ（2026-11-02 SLG）
 
-状態: **2026-11-07 に3店とも採用・ゲームに反映**（SHISHARK は C、中心地のカフェは B、路地裏のカフェは A。おすすめ案をミューズが仮に判断。オーナーが後から別の案に替えられる: 下の「組み込み手順」3〜4 で予定ファイルを差し替えるだけ）。比較は [qa/adopted-map-frame.jpg](qa/adopted-map-frame.jpg)。以前の状態: 候補9案を保存（未採用・オーナーの選定待ち）。オーナー決定（2026-11-02）: 画像は Codex で生成する（依頼書 [codex-request.md](codex-request.md)）。
+状態: **2026-11-07 のオーナー選定をゲームに反映**。SHISHARK は **1-B**（`shishark-b.png`）、中心地のカフェは **2-C**（`dubai-center-cafe-c.png`）、路地裏のカフェは **3-A**（`dubai-alley-cafe-a.png`）。ゲーム用はそれぞれ `assets/ui/store_logos/shishark.webp`、`ch4-dubai-center-cafe.webp`、`ch4-dubai-alley-cafe.webp`。採用しなかった6案も候補として保持する。[qa/adopted-map-frame.jpg](qa/adopted-map-frame.jpg) は選定前の仮案 C/B/A の比較画像であり、現行採用の記録ではない。オーナー決定（2026-11-02）: 画像は Codex で生成する（依頼書 [codex-request.md](codex-request.md)）。
 
 Codex が 2026-11-02 に作った候補（1店3案・1536×1024 の透過 PNG）を、オーナーの指示「まず候補として保存し、採用やゲーム反映は選定後に」で無加工のまま置いた。`shishark-{a,b,c}.png`・`dubai-center-cafe-{a,b,c}.png`・`dubai-alley-cafe-{a,b,c}.png`、来歴は `generation.json`、Codex の検品メモは `QA.txt`、ハッシュは `SHA256SUMS`（受け渡し ZIP の sha256 `6717b8657aa335dc301637d412ef89e38087fcb3b25818eb59745d2aaf50d026`）。比較は Codex の [qa/candidates.jpg](qa/candidates.jpg) と、今のロゴ・暗い面・地図の札（82×46）で並べた [qa/candidates-map-frame.jpg](qa/candidates-map-frame.jpg)。（2026-11-07 に採用案を `STORE_LOGOS` へ登録した。）
 

@@ -110,7 +110,7 @@ export function initHud(h) {
   const root = el("div.hud", [
     el("div.hud-card", [
       el("div.dc-main", [dom.area, dom.day, dom.slot]),
-      el("div.dc-meta", [moneyRow, el("div.dc-row", [dom.leftLabel, dom.left]), dom.stamina, dom.exp]),
+      el("div.dc-meta", [moneyRow, el("div.dc-row.goal", { dataset: { test: "hud-goal" } }, [dom.leftLabel, dom.left]), dom.stamina, dom.exp]),
     ]),
     el("div.hud-right", [dom.phone, dom.menu]),
   ]);

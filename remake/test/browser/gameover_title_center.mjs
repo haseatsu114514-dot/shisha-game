@@ -59,7 +59,8 @@ try {
         for (const el of els) for (const animation of el.getAnimations()) animation.finish();
       });
       const final = await page.evaluate(() => {
-        const root = document.querySelector('.gameover'), stage = document.querySelector('#stage').getBoundingClientRect();
+        // ワイドステージ（#2861）では #stage が横に広がり、画面は中央1280の #screen に置かれるので、#screen を基準に測る
+        const root = document.querySelector('.gameover'), stage = document.querySelector('#screen').getBoundingClientRect();
         const title = root.querySelector('.go-title'), r = title.getBoundingClientRect(), k = stage.width / 1280, s = getComputedStyle(title);
         return { centerX: (r.x + r.width / 2 - stage.x) / k, centerY: (r.y + r.height / 2 - stage.y) / k,
           width: r.width / k, height: r.height / k, left: s.left, right: s.right, transform: s.transform,
