@@ -272,3 +272,13 @@ html[data-density=phone] .result-card table{font-size:16px}
 html[data-density=phone] .result-card thead th{font-size:16px;letter-spacing:0}
 html[data-density=phone] .energy small{font-size:16px}
 html[data-density=phone] .result-actions button{min-height:64px;font-size:18px}
+/* ── 見やすさ（#2729・2026-11-08 オーナー指示「文字は気持ち大きく」）: スマホ表示のラベルの下限を 16px → 20px（iPhone 横で実寸 約11px）。
+   ボタン 20px、ステップの番号の丸 30px（曲名は円盤の幅で切れないよう 20px のまま）。並び・つまみの大きさ・判定は変えない。 ── */
+html[data-density=phone] small,html[data-density=phone] .deck-head small,html[data-density=phone] .pitch-col small,html[data-density=phone] .energy small{font-size:20px;letter-spacing:.02em}
+html[data-density=phone] button.small,html[data-density=phone] .result-actions button{font-size:20px}
+html[data-density=phone] .set-info{font-size:20px}
+html[data-density=phone] .set-info b{font-size:22px}
+html[data-density=phone] :is(.pitch-value,.sync,.mix-label,.combo,.toast-parts,.pick-meta,.result-card table,.result-card thead th,.credits summary,.credits details){font-size:20px}
+html[data-density=phone] .bpm:after{font-size:20px}
+html[data-density=phone] .waves b{width:30px;height:30px;font-size:20px}
+html[data-density=phone] .coach{font-size:24px}
