@@ -28,6 +28,29 @@ async function start(page, lines, config = {}) {
 const text = page => page.locator(".vn-text").textContent();
 const advance = page => page.locator(".vn-box").click();
 const finished = page => page.locator(".vn-next.show").waitFor();
+/** 台詞欄が want になった瞬間に、ページの中でクリックする。外から狙うと、重い端末では短い停止を取り逃がす */
+const clickWhen = (page, want) => page.evaluate(want => {
+  const box = document.querySelector(".vn-text");
+  convfx.afterClick = null;
+  const observer = new MutationObserver(() => {
+    if (box.textContent !== want || convfx.afterClick !== null) return;
+    observer.disconnect();
+    document.querySelector(".vn-box").dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
+    convfx.afterClick = box.textContent;
+  });
+  observer.observe(box, { subtree: true, childList: true, characterData: true });
+}, want);
+const clicked = async page => {
+  await page.waitForFunction(() => convfx.afterClick !== null);
+  return page.evaluate(() => convfx.afterClick);
+};
+/** 台詞欄と▼の移り変わりを時刻つきで記録する */
+const record = page => page.evaluate(() => {
+  convfx.samples = [];
+  const box = document.querySelector(".vn-text"), next = document.querySelector(".vn-next");
+  convfx.observer = new MutationObserver(() => convfx.samples.push({ t: performance.now(), text: box.textContent, next: next.classList.contains("show") }));
+  convfx.observer.observe(document.querySelector("#vn"), { subtree: true, childList: true, characterData: true, attributes: true });
+});
 async function end(page) {
   for (let i = 0; i < 4 && !await page.locator('[data-test="choice-0"]').count(); i++) {
     await advance(page);
@@ -40,29 +63,31 @@ async function end(page) {
 await suite("conversation-effects-2828", async check => {
   await check("beat-holds-before-typing", async page => {
     await start(page, [{ text: "前の行。" }, { text: "……悪くない", beat: 800 }, { text: "次の行。", beat: 800 }, END]);
+    await record(page);
     await advance(page);
-    await page.waitForTimeout(350); // 溜めが無ければ6字は約0.16秒で出終わる
-    assert.equal(await text(page), "", "溜めの間は台詞欄が空");
-    assert.equal(await page.locator(".vn-next.show").count(), 0, "溜めの間は▼を出さない");
     await page.waitForFunction(() => document.querySelector(".vn-text").textContent === "……悪くない");
     await finished(page);
+    // 溜めは setTimeout なので、重い端末でも短くはならない（長くなる側だけに揺れる）
+    const hold = await page.evaluate(() => {
+      convfx.observer.disconnect();
+      const s = convfx.samples, at = s.findIndex(x => x.text === ""), typed = s.findIndex((x, i) => i > at && x.text !== "");
+      return { found: at >= 0 && typed > at, ms: s[typed]?.t - s[at]?.t, marker: s.slice(at, typed).some(x => x.next) };
+    });
+    assert.ok(hold.found, "溜めの間は台詞欄が空");
+    assert.ok(hold.ms >= 700, `約0.8秒溜める（${Math.round(hold.ms)}ms）`);
+    assert.equal(hold.marker, false, "溜めの間は▼を出さない");
     // 溜めの途中のクリックは本文を最後まで出すだけで、次の行へは進まない
+    await clickWhen(page, "");
     await advance(page);
-    await page.waitForTimeout(200); // 次の行の溜め（0.8秒）の途中
-    await advance(page);
-    assert.equal(await text(page), "次の行。");
+    assert.equal(await clicked(page), "次の行。");
     await finished(page);
+    assert.equal(await text(page), "次の行。");
     await end(page);
   });
 
   await check("pause-stops-without-marker", async page => {
     await start(page, [{ text: "前の行。" }, { text: "レモンは[pause]2グラム、です。" }, { text: "次の行。" }, END]);
-    await page.evaluate(() => {
-      convfx.samples = [];
-      const box = document.querySelector(".vn-text"), next = document.querySelector(".vn-next");
-      convfx.observer = new MutationObserver(() => convfx.samples.push({ t: performance.now(), text: box.textContent, next: next.classList.contains("show") }));
-      convfx.observer.observe(document.querySelector("#vn"), { subtree: true, childList: true, characterData: true, attributes: true });
-    });
+    await record(page);
     await advance(page);
     await page.waitForFunction(() => document.querySelector(".vn-text").textContent === "レモンは2グラム、です。");
     await finished(page);
@@ -82,10 +107,9 @@ await suite("conversation-effects-2828", async check => {
 
   await check("pause-click-completes-line", async page => {
     await start(page, [{ text: "前の行。" }, { text: "レモンは[pause]2グラム、です。" }, { text: "次の行。" }, END]);
+    await clickWhen(page, "レモンは");
     await advance(page);
-    await page.waitForFunction(() => document.querySelector(".vn-text").textContent === "レモンは");
-    await advance(page);
-    assert.equal(await text(page), "レモンは2グラム、です。", "止まっている間のクリックは本文を出し切る");
+    assert.equal(await clicked(page), "レモンは2グラム、です。", "止まっている間のクリックは本文を出し切る");
     await finished(page);
     await advance(page);
     await page.waitForFunction(() => document.querySelector(".vn-text").textContent === "次の行。");
@@ -164,19 +188,32 @@ await suite("conversation-effects-2828", async check => {
   });
 
   await check("skip-and-instant-drop-effects", async page => {
+    // 時間の上限ではなく、台詞欄の移り変わりで確かめる（重い端末でも揺れない）。
+    // 溜めがあれば一度空欄になり、文中ポーズがあれば「溜めて」で止まる。どちらも経ずに一度で出ること。
+    const watch = () => page.evaluate(() => {
+      convfx.texts = [];
+      const box = document.querySelector(".vn-text");
+      convfx.observer = new MutationObserver(() => convfx.texts.push(box.textContent));
+      convfx.observer.observe(box, { subtree: true, childList: true, characterData: true });
+    });
+    const seen = () => page.evaluate(() => { convfx.observer.disconnect(); return convfx.texts.filter((t, i, all) => t !== all[i - 1]); });
     // 瞬間表示: 溜め・文中ポーズを待たずに出し切る
     await start(page, [{ text: "前の行。" }, { text: "溜めて[pause]止まる行。", beat: 800, duck: true }, END], { textSpeed: 4 });
+    await watch();
     await advance(page);
-    await page.waitForFunction(() => document.querySelector(".vn-text").textContent === "溜めて止まる行。", null, { timeout: 300 });
+    await page.waitForFunction(() => document.querySelector(".vn-text").textContent === "溜めて止まる行。");
+    assert.deepEqual(await seen(), ["溜めて止まる行。"], "瞬間表示は空欄の溜めも途中表示も経ない");
     await end(page);
     // SKIP: 溜め・ポーズ・息継ぎを省いて最後まで送る
     await start(page, [{ text: "前の行。" }, { text: "溜めの行。", beat: 800, duck: true }, { text: "止まる[pause]行。", duck: true }, END]);
-    await page.evaluate(() => { convfx.levels = []; convfx.sampler = setInterval(() => convfx.levels.push(convfx.audio.bgmDuckLevel()), 4); convfx.t0 = performance.now(); });
+    await watch();
+    await page.evaluate(() => { convfx.levels = []; convfx.sampler = setInterval(() => convfx.levels.push(convfx.audio.bgmDuckLevel()), 4); });
     await page.locator('[data-test="vn-skip"]').click();
     await page.locator('[data-test="choice-0"]').waitFor();
-    const run = await page.evaluate(() => { clearInterval(convfx.sampler); return { levels: [...new Set(convfx.levels)], ms: performance.now() - convfx.t0 }; });
-    assert.deepEqual(run.levels, [1], "SKIP中は息継ぎしない");
-    assert.ok(run.ms < 1500, `SKIPは溜めを待たない（${Math.round(run.ms)}ms）`);
+    const levels = await page.evaluate(() => { clearInterval(convfx.sampler); return [...new Set(convfx.levels)]; });
+    assert.deepEqual(levels, [1], "SKIP中は息継ぎしない");
+    const texts = await seen();
+    assert.deepEqual(texts.slice(0, 2), ["溜めの行。", "止まる行。"], `SKIPは溜め・ポーズを経ずに送る（${JSON.stringify(texts)}）`);
     await end(page);
   });
 });
