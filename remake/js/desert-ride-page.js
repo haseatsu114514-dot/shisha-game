@@ -34,8 +34,9 @@ function menu(message = "狙いは、S。") {
     const last = results.at(-1);
     menu(last ? `前回 ${last.score.toLocaleString("ja-JP")}点 ／ ${last.rank}` : "狙いは、S。");
   };
-  app.replaceChildren(
-    el("p", { text: "DUBAI · SAND DUNES", style: { letterSpacing: ".4em", fontSize: "13px", color: "#8a4b22" } }),
+  // 出さない行は null。replaceChildren は null を「null」という文字で入れてしまうので、外してから並べる。
+  app.replaceChildren(...[
+    el("p.dr-page-kicker", { text: "DUBAI · SAND DUNES", style: { letterSpacing: ".4em", fontSize: "13px", color: "#8a4b22" } }),
     el("h1", { text: "DESERT RIDE" }),
     el("p", { text: message }),
     best && best.rulesVersion !== RULES_VERSION ? el("p", { text: `旧ルールの記録 ${best.score.toLocaleString("ja-JP")}点 ／ ${best.rank}（別記録）`, dataset: { test: "desert-page-legacy-best" } }) : null,
@@ -47,8 +48,9 @@ function menu(message = "狙いは、S。") {
     ]),
     el("p", { style: { marginTop: "16px" } }, [el("label", [reduceBox, el("span", { text: "動きを減らす（揺れ・閃光・速度線なし）" })])]),
     best?.beatNoor ? el("p", { text: "ヌールに勝った。なるが、砂丘で待っている。", dataset: { test: "desert-page-naru" } }) : null,
-    el("p", { text: "PC: ← → で移動（空中では回転）、Space でジャンプ／着地、↓ でブースト。スマホ: 下のボタン。", style: { fontSize: "15px", color: "#5a3a2a" } }),
-  );
+    // キーの説明は PC だけ（スマホは画面のボタンと、ゲームの中の「？」で足りる）
+    el("p.dr-page-keys", { text: "PC: ← → で移動（空中では回転）、Space でジャンプ／着地、↓ でブースト。スマホ: 下のボタン。", style: { fontSize: "15px", color: "#5a3a2a" } }),
+  ].filter(Boolean));
 }
 menu();
 
