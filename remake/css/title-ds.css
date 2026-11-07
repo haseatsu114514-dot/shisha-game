@@ -20,6 +20,7 @@ body[data-screen="title"]:has(#modal.show) .title-layout-toolbar { visibility: h
 /* 条件から外れた瞬間に元の1280x720ステージへ戻る。会話・マップ・制作には適用しない。 */
 body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #stage {
   left: 0; top: 0; width: 100%; height: 100%; transform: none;
+  --stage-gutter: 0px; --stage-safe-l: 0px; --stage-safe-r: 0px; /* DS風はワイドステージ（#2861）を使わない */
 }
 body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #rotate-hint { display: none; }
 .title[data-layout="ds"] {
