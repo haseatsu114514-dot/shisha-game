@@ -149,7 +149,7 @@ export const SKILLS = [
   { id: "K13", cell: "3,-6", board: "body", ring: 4, cost: 7, glyph: "援", name: "声援", scene: "大会の蒸らし", text: "大会の蒸らしでリフレッシュを使うと、メンタルが1段回復する" },
   // 感覚（守り・直感・技。上振れ）
   { id: "K15", cell: "-3,-1", board: "sense", ring: 1, cost: 4, glyph: "会", name: "会心の一服", scene: "炭焼き・吸い出し", text: "ジャスト帯のど真ん中で取ると「会心」。その工程の点が少し上振れする" },
-  { id: "K06", cell: "2,-1", board: "sense", ring: 1, cost: 4, glyph: "波", name: "二枚目のリフレッシュ", scene: "蒸らし", text: "蒸らしのリフレッシュを2回使える（2回目は範囲が半分）" },
+  { id: "K06", cell: "2,-1", board: "sense", ring: 1, cost: 4, glyph: "波", name: "二枚目のリフレッシュ", scene: "蒸らし", text: "蒸らしのリフレッシュが1回増える（最後の1回は範囲が半分）" },
   { id: "K10", cell: "6,-1", board: "sense", ring: 3, cost: 5, glyph: "目", name: "審査員の目", scene: "大会", text: "大会の工程ごとに、審査員の受け止めが肌で分かる" },
   { id: "K16", cell: "-2,-4", board: "sense", ring: 3, cost: 5, glyph: "勢", name: "勝負勘", scene: "大会", text: "大会で前の工程が会心・ジャストだと、次の工程の点が少し上振れする" },
   { id: "K11", cell: "6,-3", board: "sense", ring: 4, cost: 7, glyph: "火", name: "火の番", scene: "熱管理", text: "熱管理で炭を替えるとき、トングで持ってくる焼き炭が1段よく焼けている" },

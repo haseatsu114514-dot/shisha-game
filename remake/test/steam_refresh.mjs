@@ -1,4 +1,4 @@
-// 8秒リチャージ式の範囲消去、初期の回復なし、成長による範囲・1段階回復。
+// 8秒リチャージ式の範囲消去、初期の回復なし、成長による範囲・1段階回復、根性★とK06で増えるストック（SB01）。
 // PC／横持ちタッチ。BASE_URL=<プレビューURL> node remake/test/steam_refresh.mjs （SHOTS=<フォルダ>）
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -48,7 +48,14 @@ async function checkRefresh(name, viewport, mobile) {
     T.core.state.stats.guts=guts;const effect=T.steam.refreshEffect();
     return {radius:Number.isFinite(effect.radius)?effect.radius:'all',recovery:effect.mentalRecovery,stock:T.steam.refreshStock()};
   }));
-  assert.deepEqual(perks,[{radius:90,recovery:false,stock:1},{radius:120,recovery:false,stock:1},{radius:150,recovery:false,stock:1},{radius:185,recovery:false,stock:1},{radius:220,recovery:true,stock:1},{radius:265,recovery:true,stock:1},{radius:310,recovery:true,stock:1},{radius:360,recovery:true,stock:1},{radius:420,recovery:true,stock:1},{radius:'all',recovery:true,stock:1}]);
+  assert.deepEqual(perks,[{radius:90,recovery:false,stock:1},{radius:120,recovery:false,stock:1},{radius:150,recovery:false,stock:1},{radius:185,recovery:false,stock:1},{radius:220,recovery:true,stock:1},{radius:265,recovery:true,stock:1},{radius:310,recovery:true,stock:1},{radius:360,recovery:true,stock:1},{radius:420,recovery:true,stock:1},{radius:'all',recovery:true,stock:1}].map((p,i)=>({...p,stock:[1,1,1,1,1,1,2,2,3,3][i]})));
+  // SB01: 根性★4（61〜）・★5（81〜）の分と、盤のK06の1回を合算する。境界の60/61・80/81も確かめる。
+  const stocks=await page.evaluate(async()=>{
+    const growth=await import('./js/core/growth.js');growth.setGrowthPreview(true);const g=growth.ensureGrowth();
+    const at=(guts,k06)=>{g.nodes=k06?['K06']:[];g.learned=[];T.core.state.stats.guts=guts;return T.steam.refreshStock();};
+    const out=[48,60,61,80,81].map(v=>[at(v,false),at(v,true)]);g.nodes=[];growth.setGrowthPreview(false);return out;
+  });
+  assert.deepEqual(stocks,[[1,2],[1,2],[2,3],[2,3],[3,4]],`refresh stock (guts★ + K06) ${JSON.stringify(stocks)}`);
   const finish=async()=>{
     // The 20-second simulation caps RAF dt at 50ms; slow frames take longer in
     // wall time, then the result needs another 400ms and a presentation frame.
@@ -143,7 +150,13 @@ async function checkRefresh(name, viewport, mobile) {
   await page.waitForFunction(()=>enemies().length>=3);
   const full=await page.evaluate(()=>consume('x'));
   assert(full.near>=3&&full.correctlyRemoved);assert.equal(full.remaining,0);
-  assert.equal(await button.getAttribute('data-remaining'),'0');assert(await button.isDisabled());await finish();
+  // 根性★5は3回持てる。K06が無いので最後の1回も全範囲。
+  assert.equal(await button.getAttribute('data-remaining'),'2');assert(await button.isEnabled());
+  assert.match(await button.textContent(),/リフレッシュ ×2/);
+  await button.click();await button.click();
+  assert.equal(await button.getAttribute('data-remaining'),'0');assert(await button.isDisabled());
+  assert.equal(await page.locator('.dodge-refresh-fx').last().evaluate(n=>parseFloat(n.style.getPropertyValue('--reach'))),Math.hypot(784,414),'Guts-granted last refresh must keep full range');
+  await finish();
   // 実際のfocusとkeydown/keyupを使う。windowへの合成dispatchだけでは、
   // Spaceが精密ボタンの既定clickに奪われる不具合を検出できない。
   await page.evaluate(()=>startSteam(10));
@@ -170,7 +183,7 @@ async function checkRefresh(name, viewport, mobile) {
   assert.equal(focusedResult.stats.refreshesUsed,3,'Focus/native click or repeat caused duplicate/missing uses');
   console.log('[refresh] PASS: focused Space/X, Enter activation, repeat/cooldown guards and pointer recharge; exactly three uses');
   assert.deepEqual(errors,[]);
-  console.log('[refresh] PASS: one charge at a time; growth expands range, adds one-step mental recovery, and unlocks full-field clearing');
+  console.log('[refresh] PASS: one base charge, guts★4/★5 and K06 add charges; growth expands range, adds one-step mental recovery, and unlocks full-field clearing');
   await page.close();
 }
 try {
