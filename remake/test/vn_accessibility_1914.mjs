@@ -28,8 +28,8 @@ await suite("vn-accessibility-1914", async check => {
     await page.evaluate(() => { window.replay = test1914.vn.play(test1914.dlg); });
     await page.locator(".vn-next.show").waitFor();
     await page.locator('[data-test="vn-config"]').click();
-    await page.selectOption('[data-test="cfg-skip-mode"]', "seen");
-    await page.selectOption('[data-test="cfg-auto-speed"]', "3");
+    await page.locator('[data-test="cfg-skip-mode"] button[value="seen"]').click();
+    await page.locator('[data-test="cfg-auto-speed"] button[value="3"]').click();
     await page.locator('[data-test="cfg-reduce-shake"]').check();
     await page.locator('[data-test="cfg-close"]').click();
     assert.deepEqual(await page.evaluate(() => ({

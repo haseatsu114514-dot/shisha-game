@@ -291,7 +291,7 @@ await suite("ui-themes-config",async check=>{
       await assertFits(page, '.dmenu .dm-sys');
       await press('[data-test="menu-config"]');
       await page.locator("#modal.show .cfg").waitFor();
-      await page.selectOption('[data-test="cfg-text-speed"]', "1");
+      await press('[data-test="cfg-text-speed"] button[value="1"]');
       await press('[data-test="cfg-voice-blip"]');
       await page.selectOption('[data-test="ui-theme-select"]', "amber");
       const menuCfg = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_config")));
@@ -326,7 +326,7 @@ await suite("ui-themes-config",async check=>{
       await page.locator("#modal.show .cfg").waitFor();
       await page.waitForTimeout(250);
       assert.equal(await page.evaluate(() => window.__cfgVnDone), false, "AUTO must pause while config modal is open");
-      await page.selectOption('[data-test="cfg-text-speed"]', "4");
+      await press('[data-test="cfg-text-speed"] button[value="4"]');
       await page.selectOption('[data-test="ui-theme-select"]', "smoke");
       await page.locator(".vn-next.show").waitFor();
       const vnCfg = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_config")));
