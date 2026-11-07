@@ -147,14 +147,14 @@ function buildDom() {
     }
     if (e.key === "Control") { setSkip(true); return; }
     if (running.waitingChoice) {
-      const choices = [...dom.choices.querySelectorAll(".vn-choice:not(:disabled)")];
+      const choices = [...dom.choices.querySelectorAll('.vn-choice:not([aria-disabled="true"])')];
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         e.preventDefault();
         const current = choices.indexOf(document.activeElement);
         choices[(current + (e.key === "ArrowDown" ? 1 : choices.length - 1)) % choices.length]?.focus();
       } else if (/^[1-3]$/.test(e.key) && !e.repeat && !e.target?.closest?.("input, select, textarea, [contenteditable]")) {
         const choice = dom.choices.querySelectorAll(".vn-choice")[Number(e.key) - 1];
-        if (choice && !choice.disabled) { e.preventDefault(); choice.click(); }
+        if (choice && choice.getAttribute("aria-disabled") !== "true") { e.preventDefault(); choice.click(); }
       } else if (e.key === "Enter" && !e.target?.closest?.("button, a[href], input, select, textarea, [contenteditable]")) {
         e.preventDefault(); (choices.includes(document.activeElement) ? document.activeElement : choices[0])?.click();
       }
@@ -998,19 +998,32 @@ function showChoices(line) {
   // 実回答の記録はpickChoiceのフックへ。占いは対象/期限/台詞照合済みの2択だけ示す。
   const fortuneHint = fortuneChoiceIndex(state, r.id, line, DB.fortuneHints);
   const growthHint = growthChoiceIndex(state, r.currentId || r.id, line, DB.fortuneHints, r.growthScene);
-  const buttons = (line.choices || []).map((c, i) => el(`button.vn-choice${i === fortuneHint ? ".fortune-hint" : ""}${i === growthHint ? ".growth-hint" : ""}`, {
-    html: formatHtml(c.text || "……"),
-    "aria-label": i === fortuneHint ? `${c.text}（占いの予感）` : i === growthHint ? `${c.text}（会話の気配）` : null,
-    disabled: c.condition_type === "money" && state.money < Number(c.threshold || 0),
-    style: { animationDelay: `${i * 80}ms` },
-    dataset: { test: `choice-${i}` },
-    onclick: (e) => { e.stopPropagation(); pickChoice(line, c); },
-  }));
+  const reasons = [];
+  const buttons = (line.choices || []).map((c, i) => {
+    const shortfall = c.condition_type === "money" ? Number(c.threshold || 0) - state.money : 0;
+    const hint = i === fortuneHint ? "占いの予感" : i === growthHint ? "会話の気配" : null;
+    const reasonId = `vn-choice-money-reason-${i}`;
+    const button = el(`button.vn-choice${i === fortuneHint ? ".fortune-hint" : ""}${i === growthHint ? ".growth-hint" : ""}`, {
+      html: formatHtml(c.text || "……"),
+      "aria-label": shortfall > 0 ? `${c.text || "……"}${hint ? `（${hint}）` : ""}` : hint ? `${c.text}（${hint}）` : null,
+      "aria-describedby": shortfall > 0 ? reasonId : null,
+      "aria-disabled": shortfall > 0 ? "true" : null,
+      style: { animationDelay: `${i * 80}ms` },
+      dataset: { test: `choice-${i}` },
+      onclick: (e) => { e.stopPropagation(); if (shortfall <= 0) pickChoice(line, c); },
+    });
+    reasons.push(shortfall > 0 ? el("span.vn-choice-reason", { id: reasonId, text: `所持金不足（あと${shortfall.toLocaleString("ja-JP")}円）` }) : null);
+    return button;
+  });
   dom.choices.replaceChildren(...buttons);
   dom.choices.classList.add("show");
-  buttons.find((button) => !button.disabled)?.focus();
+  buttons.find((button) => button.getAttribute("aria-disabled") !== "true")?.focus();
   // 選択肢は1行（GUI22）。文言は全角26字以内で書く。差し込みで長くなったときだけ字を縮める
-  buttons.forEach((b) => fitOneLine(b, 18));
+  buttons.forEach((b, i) => {
+    // 本文だけ従来の下限で測り、補足によって本文の字が縮まないようにする。
+    fitOneLine(b, 18);
+    if (reasons[i]) b.append(reasons[i]);
+  });
   kickAuto();
 }
 
