@@ -7,6 +7,7 @@
 // 勝負の日は博士と決めるまで無い（untilDay = Infinity）。決めると翌日が勝負の日になり、その朝でループが終わる。
 // 恋人とは第1・2章と同じく、LIMEの誘い→デート（絆が深まる）→節目（lover_events）の順に進む（帰郷後なので開ける・IR16・IR17）。
 // デートは地元の店なので、東京・ドバイにいる間は誘いが届かない（daily/romance.js の hometownDateOpen）。
+// 出張シーシャの依頼（DLV）: 数日おきにスミさんのLIMEで届き、引き受けると地元の地図に「出張シーシャ」が出る（chapters/ch5-catering.js）。
 import { state, save, timeOfDay } from "../core/state.js";
 import { bgUrl, displayName } from "../core/data.js";
 import { modal, toast } from "../core/ui.js";
@@ -26,6 +27,8 @@ import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNigh
 import { DUBAI, DUBAI_SPOTS, TO_DUBAI_SPOT, performDubaiSpot, inDubai, dubaiNight, dubaiWakeBackground, chapterFiveDubaiPin,
   chapterFiveDubaiLeisureSpots, chapterFiveDubaiLeisureById, preloadNoorScenes } from "./ch5-dubai.js";
 import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop } from "./ch5-shops.js";
+import { chapterFiveCateringSpot, performCateringSpot, deliverCateringMorning } from "./ch5-catering.js";
+import { CATERING_SPOT_ID } from "./ch5-catering-model.js";
 import {
   chapterFiveProgress, chapterFiveFreeRemaining, chapterFiveRead, chapterFiveTimeoutPending,
   chapterFivePreparation, chapterFivePrepPending, recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
@@ -62,9 +65,13 @@ export const CH5_CALL_SPOT = Object.freeze({
 // 占い師は第5章にも現れる（章で1〜2回・予定の無い昼か夜。daily/fortune-schedule.js）。
 const HIDDEN_SPOTS = Object.freeze(["naru", "minto", "shishark", "c_station", "trpg_bar"]);
 
-/** 第5章の地元の行き先（東京の配送便は昼だけ・ドバイは切符入りの手紙が届いている時だけ押せる）。 */
+/**
+ * 第5章の地元の行き先（東京の配送便は昼だけ・ドバイは切符入りの手紙が届いている時だけ押せる）。
+ * 出張シーシャは、引き受けた依頼がある日だけ（昼の会・夜の会で押せる時間帯が決まっている）。
+ */
 export function chapterFiveHomeSpots() {
-  return [...allSpots().filter(spot => !HIDDEN_SPOTS.includes(spot.id)), ...chapterFiveShops(), CH5_CALL_SPOT, chapterFiveTokyoPin(), chapterFiveDubaiPin()];
+  return [...allSpots().filter(spot => !HIDDEN_SPOTS.includes(spot.id)), ...chapterFiveShops(), CH5_CALL_SPOT, chapterFiveTokyoPin(), chapterFiveDubaiPin(),
+    chapterFiveCateringSpot()].filter(Boolean);
 }
 
 /** 次に tonari で読む場面（並びの順・時間帯が合うときだけ）。無ければ null＝いつもの tonari。 */
@@ -85,6 +92,8 @@ export function chapterFiveDailyDefinition(io) {
       return Number.isInteger(match) ? match : Infinity;
     },
     nightEvents: {},
+    // 出張シーシャの依頼（スミさんのLIME）と、期限の過ぎた依頼の片付け
+    morningLime: () => deliverCateringMorning(),
     tournamentName: "博士との勝負",
     undatedNote: "博士との勝負の日は、まだ決まっていない",
     // 夜の帰り道の告白は、第4章までに恋愛ルートに入った相手だけ（第5章で初めて届いた締めくくりでは告白しない・
@@ -111,7 +120,7 @@ export function chapterFiveDailyDefinition(io) {
     // 東京の屋根裏でも寝る前の家シーシャを選べる（台を持って行く・VOL12。FIN10 の「出さない」を更新）。
     wakeBackground: () => inTokyo() ? tokyoWakeBackground() : inDubai() ? dubaiWakeBackground() : null,
     spotById: id => [CH5_CALL_SPOT, CH5_CITY_SHOP, TO_TOKYO_SPOT, ...TOKYO_SPOTS, TO_DUBAI_SPOT, ...DUBAI_SPOTS, ...cityRegularSpots()].find(spot => spot.id === id) || chapterFiveShopById(id)
-      || chapterFiveDubaiLeisureById(id),
+      || chapterFiveDubaiLeisureById(id) || (id === CATERING_SPOT_ID ? chapterFiveCateringSpot() : null),
     performSpot: (spot, options) => performChapterFiveSpot(spot, io, options),
     // ムカイさんの LIME で呼ばれたシフト（VOL10）
     mukaiShift: ({ called = false } = {}) => chapterFiveMukaiShift(state, { called }),
@@ -186,6 +195,8 @@ async function leaveDateBehind(spot) {
 
 async function performChapterFiveSpot(spot, io, options = {}) {
   if ([TO_TOKYO_SPOT.id, TO_DUBAI_SPOT.id].includes(spot.id) && !await leaveDateBehind(spot)) return { used: false, exerted: false };
+  const catering = await performCateringSpot(spot, options);
+  if (catering) return catering;
   const tokyo = await performTokyoSpot(spot, options);
   if (tokyo) return tokyo;
   const dubai = await performDubaiSpot(spot, options);
