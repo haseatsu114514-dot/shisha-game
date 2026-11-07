@@ -5,6 +5,8 @@
 // - 動きを減らす設定では演出を出さず、題の札はすぐ見える
 // - ミニゲーム共通の方針（オーナー・2026-11-06）: 基本画面に常に見える文字は題・反応の帯・道具の名前だけ。
 //   今日の様子は入った時だけ。操作と遊び方は「？」を開いた時だけ見え、画面の道具がすべて載っている
+// - スマホ横持ち（#2842）: 844×340 で、基本画面・「？」・手帳・もようがえの文字が実寸 11px 以上、押せる所が実寸 38px 以上、
+//   隣り合う道具の間が 12px（ステージ上）以上
 // 遊び・確定（回復12・来訪1回）は ch3_tokyo_daily.mjs と tetsuko_time.mjs が見る。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
@@ -113,6 +115,31 @@ function visibleTexts() {
   return out;
 }
 
+// 画面（と開いているパネル）の見えている文字の実寸と、押せる部品の実寸。読み上げ専用（1px に切り抜いた物）と演出・題の札は数えない。
+function phoneSizes() {
+  const host = document.querySelector('[data-test="tetsuko-time-screen"]');
+  const k = Number(getComputedStyle(document.getElementById("stage")).getPropertyValue("--k")) || 1;
+  const seen = node => {
+    for (let at = node; at && at !== host.parentElement; at = at.parentElement) {
+      const css = getComputedStyle(at);
+      if (css.display === "none" || css.visibility === "hidden" || Number(css.opacity) === 0) return false;
+    }
+    const r = node.getBoundingClientRect();
+    return r.width > 2 && r.height > 2;
+  };
+  const texts = [];
+  const walker = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
+  for (let text = walker.nextNode(); text; text = walker.nextNode()) {
+    const node = text.parentElement;
+    if (!text.textContent.trim() || node.closest(".tt-logo, .tt-intro, [aria-hidden='true']") || !seen(node)) continue;
+    texts.push({ text: text.textContent.trim().slice(0, 12), px: parseFloat(getComputedStyle(node).fontSize) * k });
+  }
+  const taps = [...host.querySelectorAll("button")].filter(node => seen(node) && !node.matches(".tt-cat, .tt-slot-hit"))
+    .map(node => { const r = node.getBoundingClientRect(); return { name: node.dataset.test || node.textContent.trim(), w: r.width, h: r.height }; });
+  const gapOf = selector => { const css = getComputedStyle(host.querySelector(selector)); return parseFloat(css.columnGap || css.gap); };
+  return { k, texts, taps, gaps: { tools: gapOf(".tt-tools"), dock: gapOf(".tt-dock") } };
+}
+
 await suite("tetsuko-theme", async check => {
   await check("tetsuko-theme-opens-like-a-new-game-and-never-blocks-taps", async page => {
     await seed(page);
@@ -175,6 +202,30 @@ await suite("tetsuko-theme", async check => {
     assert.equal(await page.locator(dt("tetsuko-time-screen")).count(), 0);
     assert.equal(await hudVisibility(page), "visible", "The daily HUD comes back after returning");
   });
+
+  await check("tetsuko-theme-phone-landscape-keeps-readable-text-and-tappable-parts", async page => {
+    await seed(page);
+    await openTetsuko(page);
+    const expectSizes = async where => {
+      const got = await page.evaluate(phoneSizes);
+      assert(got.k < .5, `The stage is shrunk like a phone held sideways (${got.k})`);
+      assert(got.texts.length > 0, `${where}: some text is visible`);
+      for (const text of got.texts) assert(text.px >= 11, `${where}: "${text.text}" is at least 11px on the phone (${text.px.toFixed(1)})`);
+      assert(got.taps.length > 0, `${where}: some buttons are visible`);
+      for (const tap of got.taps) assert(tap.w >= 38 && tap.h >= 38, `${where}: ${tap.name} is at least 38px on the phone (${tap.w.toFixed(1)}×${tap.h.toFixed(1)})`);
+      assert(got.gaps.tools >= 12 && got.gaps.dock >= 12, `${where}: neighbouring tools keep 12px apart`);
+    };
+    await expectSizes("base");
+    for (const [button, panel] of [["tetsuko-help", "tetsuko-help-panel"], ["tetsuko-book", "tetsuko-book-panel"], ["tetsuko-decor", "tetsuko-decor-panel"]]) {
+      await page.locator(dt(button)).click();
+      await page.locator(dt(panel)).waitFor();
+      await expectSizes(panel);
+      await page.locator(`${dt(panel)} ${dt("tetsuko-panel-close")}`).click();
+      await page.locator(dt(panel)).waitFor({ state: "hidden" });
+    }
+    await page.locator(dt("tetsuko-time-back")).click();
+    await page.waitForFunction(() => !document.querySelector('[data-test="tetsuko-time-screen"]'), null, { timeout: 30000 });
+  }, { viewport: { width: 844, height: 340 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
 
   await check("tetsuko-theme-reduced-motion-skips-the-intro", async page => {
     await seed(page);
