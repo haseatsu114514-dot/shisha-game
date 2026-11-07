@@ -885,3 +885,23 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-in-stage .axe-coach-identity strong { font-size: 28px; }
 .axe-in-stage .axe-coach-title { font-size: 30px; }
 .axe-in-stage .axe-coach-actions .axe-coach-skip { font-size: var(--axe-text); }
+
+/* ワイドステージ（#2861）と結果の詰め（#2729）。
+   - 右パネルは下寄せのまま、中身が多い時も上が切れない（溢れたら上から読めてスクロールできる）。
+   - 結果（summary）は「終了」「もう一度」を横に並べ、ボタン1段ぶん詰めて一画面に収める。
+   - ワイドでは広がった幅を右パネルへ回して文の折り返しを減らし、左右のノッチ（safe-area）にかからないよう内側へ寄せる。 */
+.axe-game .axe-panel { justify-content: safe flex-end; }
+.axe-in-stage.axe-game[data-phase="summary"] .axe-panel { display: grid; grid-template-columns: 1fr 1fr; align-content: safe end; gap: 6px 8px; padding-block: 10px; }
+.axe-in-stage.axe-game[data-phase="summary"] .axe-panel > * { grid-column: 1 / -1; }
+.axe-in-stage.axe-game[data-phase="summary"] .axe-panel:has(> .axe-retry:not([hidden])) > :is(.axe-primary, .axe-retry) { grid-column: auto; grid-row: auto; }
+#stage[data-wide] .axe-game.axe-in-stage { padding-left: max(22px, var(--stage-safe-l, 0px)); padding-right: max(22px, var(--stage-safe-r, 0px)); }
+#stage[data-wide] .axe-in-stage.axe-game .axe-body { grid-template-columns: minmax(0,1fr) min(600px, calc(430px + var(--stage-gutter, 0px))); gap: 24px; }
+/* 結果では「RANK」を点数の右に並べ、1段ぶん詰める（16:9 の画面でも「終了」「もう一度」まで一画面に収まる）。 */
+.axe-in-stage.axe-game[data-phase="summary"] .axe-result-card { display: grid; grid-template-columns: auto minmax(0,1fr); align-items: center; column-gap: 16px; padding-block: 2px; }
+.axe-in-stage.axe-game[data-phase="summary"] .axe-result-card > :not(.axe-result-value, .axe-rank) { grid-column: 1 / -1; }
+.axe-in-stage.axe-game[data-phase="summary"] .axe-rank { flex-wrap: wrap; justify-content: flex-start; align-items: baseline; column-gap: 8px; row-gap: 0; margin: 0; }
+/* 対戦の結果: 投ごとの点の一覧は上の得点表（あなた／ひよりの2段）と同じなので本編では出さない。
+   チャレンジの札も畳む（達成数は成績の行「チャレンジ n/3」に残る）。勝敗・コメント・自分の点とランク・ボタンを一画面に。 */
+.axe-in-stage.axe-game[data-mode="versus"][data-phase="summary"] :is(.axe-match-records, .axe-challenges) { display: none; }
+/* ワイドでは「？」の遊び方を横に広げ、スクロールを減らす。 */
+#stage[data-wide] .axe-in-stage .axe-rules-card { width: min(1240px, 100%); }
