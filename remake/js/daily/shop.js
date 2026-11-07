@@ -314,7 +314,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const sellRows = () => {
       const rows = state.owned.map((id) => DB.equipById[id]).filter((e) => e && !Object.values(state.equip).includes(e.id)).map((e) =>
         el("div.shop-row", [productArt(e, false),
-          el("div.shop-main", [el("b", { text: e.name }), el("small", { text: e.unsellable ? "贈り物なので売れない" : "中古買い取り" })]),
+          el("div.shop-main", [el("b", { text: e.name }), el("small", { text: e.kuji_only ? "くじ限定の台なので売れない" : e.unsellable ? "贈り物なので売れない" : "中古買い取り" })]),
           e.unsellable ? el("span.shop-owned", { text: "売却不可", dataset: { test: `sell-locked-${e.id}` } }) : el("button.btn.small", {
             text: `${yen(e.sell_price)}で売る`, dataset: { test: `sell-${e.id}` }, onclick: async () => {
               if (!await confirmSale(e.name, e.sell_price)) return;

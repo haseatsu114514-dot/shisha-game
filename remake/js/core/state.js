@@ -3,7 +3,7 @@
 // 状態の形を変えたら SCHEMA を上げ、migrate() に1段足す（互換コードはここだけに置く）。
 
 import { setPortraitStyleSource } from "./portrait-style.js";
-import { MAX_MONEY, TOURNAMENT_DAY } from "./rules.js";
+import { MAX_MONEY, TOURNAMENT_DAY, KUJI_TICKET_MAX } from "./rules.js";
 import { MASTERY_THRESHOLDS, learnFlavorStory } from "./flavor-mastery.js";
 import { emit } from "./bus.js";
 import { recordGalleryProgress } from "./gallery-progress.js";
@@ -109,6 +109,7 @@ export function newState() {
       settingGuideDone: false, // 設定のシステム説明を見た（新規は初回説明の中、旧セーブは一度だけの通知）
     },
     kuji: {},                  // くじの箱（grade -> {order, drawn, emptyDay}）
+    kujiTickets: 0,            // くじ券（KJ05）。第5章の限定台くじを1枚で1回引ける。周回には持ち越さない
     goods: [],                 // くじ等で得た売れる小物 [{name, sell}]
     // 恋人（master_spec #24）: 好感度MAX→告白→付き合う/友達のまま。恋人の絆はデート等でだけ深まる
     lovers: [],
@@ -492,6 +493,8 @@ function migrate(s) {
     s.cycleStartStats = Object.fromEntries(STAT_KEYS.map((k) => [k, 10]));
   }
   if (s.carryOptions !== null && (typeof s.carryOptions !== "object" || Array.isArray(s.carryOptions))) s.carryOptions = null;
+  // くじ券（KJ05）。無い・壊れた・負の値は0、上限より多い分は捨てる（スキーマは変えない。欠けていれば0から）。
+  s.kujiTickets = Number.isInteger(s.kujiTickets) && s.kujiTickets > 0 ? Math.min(KUJI_TICKET_MAX, s.kujiTickets) : 0;
   // プレイ時間（#2902）。数え始める前の保存は 0 から数え、最初からの時間ではないことを残す。
   if (!Number.isFinite(s.playMs) || s.playMs < 0) s.playMs = 0;
   if (s.playMsFull !== true) s.playMsFull = false;

@@ -1,7 +1,7 @@
 // 周回開始（Issue #1228、NGPLUS-DESIGN.md §2・§3.3〜§3.5・§8）。
 import { state, newState, newCycleId, setState, save, STAT_KEYS } from "./state.js";
 import { readCycleMeta } from "./cycle-meta.js";
-import { MAX_MONEY } from "./rules.js";
+import { MAX_MONEY, KUJI_LIMITED_GRADES, KUJI_ONLY_EQUIPMENT } from "./rules.js";
 import { maxStamina } from "./stats.js";
 import { syncRespecOpportunity } from "./growth-respec.js";
 
@@ -55,6 +55,9 @@ export function startNextCycle(pkg, options = {}) {
   if (groups.money) next.money = Math.min(MAX_MONEY, next.money);
   // flags はパッケージ側で carry 判定済みなので、グループ選択によらず適用する。
   if (Object.hasOwn(pkg, "flags")) next.flags = structuredClone(pkg.flags);
+  // KJ05: くじ限定の台と第5章の限定台くじの箱は、どう作ったパッケージから始めても持ち越さない（くじ券は newState の0のまま）。
+  if (Array.isArray(next.owned)) next.owned = next.owned.filter((id) => !KUJI_ONLY_EQUIPMENT.includes(id));
+  if (next.kuji && typeof next.kuji === "object") for (const grade of KUJI_LIMITED_GRADES) delete next.kuji[grade];
 
   // §3.4-3: 抽出時に落ちた枠も復旧する。既定装備も所持していなければ枠を落とす。
   for (const slot of new Set([...Object.keys(defaultEquip), ...Object.keys(next.equip)])) {
