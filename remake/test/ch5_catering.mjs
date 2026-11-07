@@ -4,6 +4,7 @@
 // 実際の LIME・地図・場面は remake/test/browser/ch5_catering.mjs。
 // node remake/test/ch5_catering.mjs
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 
 globalThis.document ||= { addEventListener() {}, querySelector() { return null; } };
@@ -32,7 +33,9 @@ const grantTo = value => n => grantKujiTickets(n, "delivery", value);
 // ---------------------------------------------------------------- 1. 依頼のデータ
 const flavors = new Set(readJson("data/flavors.json").flavors.map(f => f.id));
 const scenes = new Map(readJson("data/dialogue/ch5_catering.json").dialogues.map(d => [d.dialogue_id, d]));
-const backgrounds = new Set(fs.readdirSync(new URL("assets/backgrounds/", root)));
+// quick CI の sparse checkout では背景画像の実体を取得しない。追跡ファイル名を検証する。
+const backgrounds = new Set(execFileSync("git", ["ls-files", "--cached", "--", "assets/backgrounds/"],
+  { cwd: root, encoding: "utf8" }).trim().split("\n").map(path => path.slice("assets/backgrounds/".length)));
 assert(M.CATERING_REQUESTS.length >= 6 && M.CATERING_REQUESTS.length <= 8, "依頼は6〜8種");
 assert.equal(new Set(M.CATERING_REQUESTS.map(r => r.id)).size, M.CATERING_REQUESTS.length, "ID が重ならない");
 const fullWidth = text => [...text].reduce((n, ch) => n + (ch.codePointAt(0) <= 0xff ? 0.5 : 1), 0);
