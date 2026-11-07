@@ -267,8 +267,32 @@
         },
         {
           "speaker": "da_silva",
-          "face": "normal",
-          "text": "明日、俺も休み。次は大会で会おう。審査席から、見てるぞ"
+          "face": "excited",
+          "text": "大会の日は、俺も店、休み。次は大会で会おうぜ！"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "そのとき、手加減は……しねえからな！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "太陽は親指を立てて、手拍子の中へ戻っていった。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "da_silva"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "……あいつも出るのか。椅子の回し方ひとつで、客を見てるのが分かった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（派手なだけの人じゃない。大会で、あの人とも……）"
         }
       ]
     },
@@ -832,7 +856,32 @@
         {
           "speaker": "pakki",
           "face": "smile",
-          "text": "審査席は伏見会長、トプハーネのエミル、FESTAの太陽！"
+          "text": "審査席は伏見会長、トプハーネのエミル……そして、FESTAの太陽！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "審査席の端で、花柄のシャツが立ち上がった。こちらへ両手を大きく振っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "えっ……太陽さん、審査する側だったんですか！？"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "言った、だろ？　大会で会おうって！"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "審査席から、全部見るぞ。手加減は、しねえ！"
+        },
+        {
+          "speaker": "naru",
+          "face": "surprise",
+          "text": "……手加減しねえって、点のことかよ"
         },
         {
           "speaker": "pakki",
