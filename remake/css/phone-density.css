@@ -28,6 +28,9 @@ html:root[data-density="phone"] body:not(.game-ds) .btn-desc { display: none; }
 html:root[data-density="phone"] body:not(.game-ds) .modal-body { font-size: var(--phone-text); line-height: 1.6; }
 html:root[data-density="phone"] body:not(.game-ds) .modal-actions { gap: var(--phone-gap); }
 html:root[data-density="phone"] body:not(.game-ds) .dmenu .dm-close { min-height: var(--phone-tap); font-size: var(--phone-text); }
+/* 用語集: 閉じるボタンが高くなった分だけ本文の枠が縮むので、固定の高さ（460px）をやめて枠いっぱいに収める（下端が隠れてスクロールできなくなるのを防ぐ）。 */
+html:root[data-density="phone"] body:not(.game-ds) .glossary-modal .modal-body { display: flex; flex-direction: column; overflow: hidden; }
+html:root[data-density="phone"] body:not(.game-ds) .glossary-modal .glossary { flex: 1 1 auto; height: auto; min-height: 0; }
 
 /* ---------------------------------------------------------------- HUD（LIME・MENU・DAY カード） */
 html:root[data-density="phone"] body:not(.game-ds) .hud-right { gap: var(--phone-gap); }
