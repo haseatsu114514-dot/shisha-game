@@ -78,8 +78,8 @@ await suite("debug-tools", async check => {
       }
       await page.locator(t("debug-toggle")).click();
       await page.locator(t("vn-config")).click();
-      assert.equal(await page.locator(t("cfg-portrait-style")).inputValue(), "new");
-      await page.locator(t("cfg-portrait-style")).selectOption("classic");
+      assert.equal(await page.locator(`${t("cfg-portrait-style")} [aria-checked="true"]`).getAttribute("value"), "new");
+      await page.locator(`${t("cfg-portrait-style")} button[value="classic"]`).click();
       await page.locator(t("cfg-close")).click();
       await openPanel(page);
       assert.equal(await select.inputValue(), "classic", "DBG syncs changes from normal CONFIG");
