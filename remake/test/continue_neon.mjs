@@ -45,9 +45,8 @@ try {
     assert.equal(await page.locator(".gameover").getAttribute("data-layout"), "neon");
     assert.equal(await page.locator(".gameover").getAttribute("data-background"), "stage");
     assert.equal(await page.locator(".go-title").getAttribute("aria-label"), "コンティニューする？");
-    assert.equal(await page.locator(".go-retry").textContent(), "もう一台、作る"); // #2524: 心の声への一人称の答え。遷移は従来どおり。
-    assert.equal(await page.locator(".go-quit").textContent(), "今日は、ここまで");
-    assert.equal(await page.locator(".go-retry").getAttribute("aria-label"), "もう一台、作る（最初から再挑戦）");
+    assert.equal(await page.locator(".go-retry").textContent(), "最初から再挑戦");
+    assert.equal(await page.locator(".go-quit").textContent(), "諦める");
     const safe = await page.evaluate(async () => {
       const root = document.querySelector(".gameover"), stage = document.querySelector("#stage").getBoundingClientRect();
       const k = stage.width / 1280, image = root.querySelector(".go-sumi-img");
@@ -216,17 +215,17 @@ try {
   assert(await page.locator("#continue-delayed").isVisible());
   await page.clock.runFor(5200);
   assert.equal(await page.locator("#continue-delayed .go-count").textContent(), "15", "a deferred mount must start its visible countdown");
-  // #590: actual contextual captions and shortened scripts keep the independent 20-second deadline.
+  // #590: shortened scripts keep the independent 20-second deadline. 2026-11-07: captions no longer depend on the loss reason.
   await page.emulateMedia({ reducedMotion: "no-preference" });
   for (const reason of ["burnt", "cold", "leaf", "rank"]) for (const lossOrdinal of [1, 2, 3]) {
     await mount({ variant: 0, context: { reason, rank: 3, parts: { heat: 42, holes: 60 }, completedParts: ["holes", "heat"], lossOrdinal, sameReasonOrdinal: lossOrdinal } });
     const first = await page.locator(".go-speech-text").textContent();
-    assert.match(first, new RegExp({ burnt: "熱", cold: "冷え", leaf: "香り", rank: "3位" }[reason]));
     const script = await page.evaluate(async context => {
       const { prepareContinueScript, normalizeContinueContext } = await import("./js/chapters/continue-context.js");
       const { SUMI_CONTINUE_SCRIPTS } = await import("./js/chapters/gameover.js");
       return prepareContinueScript(SUMI_CONTINUE_SCRIPTS[0], normalizeContinueContext(context));
     }, { reason, rank: 3, parts: { heat: 42, holes: 60 }, completedParts: ["holes", "heat"], lossOrdinal, sameReasonOrdinal: lossOrdinal });
+    assert.equal(first, script.cues[0].text, "the first caption is the script line, whatever the reason");
     await page.clock.runFor(2500);
     assert.equal(await page.locator(".go-speech-text").textContent(), script.cues[1].text);
     assert.notEqual(await page.locator(".gameover").getAttribute("data-quiet"), "true", "the opening keeps its normal sound level");
