@@ -2,7 +2,7 @@
 // node remake/test/ch5_party.mjs
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { partyGuests, partyScenes, SEAT_LABELS } from "../js/chapters/ch5-party-plan.js";
+import { partyBeforeSeat, partyGuests, partyScenes, SEAT_LABELS } from "../js/chapters/ch5-party-plan.js";
 
 const root = new URL("../../", import.meta.url);
 const routes = JSON.parse(fs.readFileSync(new URL("data/story_routes.json", root), "utf8"));
@@ -44,6 +44,14 @@ assert.deepEqual(call.participants, ["noor", "tsumugi"]);
 assert.deepEqual(call.scenes, ["ch5_party_shuraba_open", "shuraba_noor", "shuraba_tsumugi", "shuraba_accountability", "ch5_party_shuraba_close"]);
 assert.match(dialogues.shuraba_noor.lines[0].text + dialogues.shuraba_noor.lines[1].text, /テレビ電話/, "Noor joins by video call");
 assert.match(dialogues.ch5_party_noor_call.lines[0].text, /スマホ/);
+// #2815: 修羅場になる打ち上げでは、ヌールの着信を席を選ぶ前（打ち明けより前）に読む。反応の「つながったまま」「聞こえてた」と合わせる。
+// 修羅場にならない打ち上げ（ヌールだけが恋人）は、従来どおり席の後の途中で着信する。地元の恋人だけの修羅場には着信を挟まない。
+assert.deepEqual(partyBeforeSeat(routes, save(["tsumugi", "noor"], ["noor", "tsumugi"])), ["ch5_party_noor_call"]);
+assert.deepEqual(partyBeforeSeat(routes, save(["tsumugi", "noor"], ["noor"])), [], "a calm call stays after the seat");
+assert.deepEqual(partyBeforeSeat(routes, save(["tsumugi", "minto"], ["tsumugi", "minto"])), [], "no call among local lovers");
+assert.deepEqual(partyBeforeSeat(routes, save(["tsumugi", "minto", "noor"], ["tsumugi", "minto"])), [], "Noor calls in only as a lover");
+assert(!call.scenes.includes("ch5_party_noor_call"), "the call is not read twice");
+assert.match(dialogues.shuraba_noor.lines.map(line => line.text).join(""), /つながったまま[\s\S]*聞こえてた/);
 
 // 台本: 振り分けに出るすべての場面があり、謝罪は未解決の印を立てる。報酬行は置かない。
 const all = new Set([...Object.keys(dialogues).filter(id => id.startsWith("ch5_party_")),

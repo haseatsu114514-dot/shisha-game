@@ -105,7 +105,8 @@ try {
   await page.evaluate(() => T.session.reactAudience(cs,'good',{force:true}));
   assert.equal(await page.locator('.bench-audience').getAttribute('data-speaker'), 'dr_kemuri');
   assert.equal(await page.locator('.audience-person figcaption').textContent(), '？？？');
-  assert.equal(await page.evaluate(() => Object.keys(T.core.state.met).length), 0);
+  // #2750: 開始時から知るのはスミさん（上司）とつむぎ（顔見知り）だけ。審査員の表示・反応で名前を解禁しない。
+  assert.deepEqual(await page.evaluate(() => T.core.state.met), { sumi: true, tsumugi: true });
   await page.evaluate(async () => {
     ['sui','maezono','dr_kemuri'].forEach(T.core.markMet);
     window.cs = T.session.newSession('tournament'); await T.openBench(cs, { steps });

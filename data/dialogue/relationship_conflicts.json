@@ -1,5 +1,5 @@
 {
-  "comment": "第3章はスティーブの茶化しで曖昧に終わる未遂。shuraba_*の本格的な話し合いはエンディング後のみ。実際の交際と所在を確認し、出席者の反応だけを読む。ch3_shuraba_*とtournament_evening_overlapは第3章前夜（ch3.js）に接続済み。shuraba_*の反応とshuraba_accountabilityは第5章の打ち上げ（ch5-party.js）で接続済み。打ち上げで起きていなければ、第5章のスタッフロールの後にshuraba_openから読む（ch5.js・IR32）。shuraba_talk_*はその後、未解決の恋人ごとに一人ずつ読む。",
+  "comment": "第3章はスティーブの茶化しで曖昧に終わる未遂。shuraba_*の本格的な話し合いはエンディング後のみ。実際の交際と所在を確認し、出席者の反応だけを読む。ch3_shuraba_*とtournament_evening_overlapは第3章前夜（ch3.js）に接続済み。shuraba_*の反応とshuraba_accountabilityは第5章の打ち上げ（ch5-party.js）で接続済み。打ち上げで起きていなければ、第5章のスタッフロールの後にshuraba_openから読む（ch5.js・IR32。ヌールが加わる時はその前にshuraba_noor_callでテレビ電話をつなぐ・#2815）。shuraba_talk_*はその後、未解決の恋人ごとに一人ずつ読む。",
   "dialogues": [
     {
       "dialogue_id": "ch3_shuraba_open",
@@ -142,12 +142,53 @@
       "comment": "スティーブが同席しない前夜の重複予定。ここで本格的な修羅場や和解を再生しない。"
     },
     {
+      "dialogue_id": "shuraba_noor_call",
+      "comment": "#2815 スタッフロールの後の修羅場にヌール（ドバイ在住・席には座らない）が加わる時、shuraba_open より前に読むテレビ電話の接続。shuraba_noor の「テレビ電話は、つながったまま」「聞こえてた」を受けるため、はじめの打ち明けより前につなぐ。打ち上げ（ch5-party.js）では、お祝いの着信 ch5_party_noor_call を席を選ぶ前に読むので、この場面は使わない。許し・別れは決めない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "後日。閉店後のtonariに入る前に、ポケットのスマホが震えた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面には、ドバイの夕方と、ヌールさんの顔。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ハジメ、今いい？ ……なんだか、声が聞きたくなって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ヌールさん。これから、店で大事な話をします"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ヌールさんにも、聞いてほしい話です。このまま、つないでいてもらえますか"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "……うん。いいよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店に入って、スマホをカウンターに立てかけた。画面の中で、ヌールさんは黙ってこっちを見ていた。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "shuraba_open",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "後日のtonari。閉店後の店に、彼女たちがそれぞれ来ていた。"
+          "text": "閉店後のtonariで、俺は彼女たちと向き合った。"
         },
         {
           "speaker": "",
