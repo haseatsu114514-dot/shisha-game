@@ -427,3 +427,14 @@
 .reel-note .rn-tile-body { font-size: max(17px, 11.5px / var(--k, 1)); }
 .reel-note .cue-chip { width: max(26px, 14px / var(--k, 1)); height: max(26px, 14px / var(--k, 1)); font-size: max(14px, 11.5px / var(--k, 1)); }
 .ri-panel.sys .ri-text { min-height: 0; }
+
+/* ワイドステージ（#2861）と見やすさ（#2729）:
+   - 説明・ノートの暗幕はステージの左右の余白まで覆う（端に出した MENU・LIME を開いている間に押させない）。
+   - ワイドではノートを横に広げ、記録（データ｜当たり履歴・フリーズ殿堂入り）を2列にして、スクロールなしで一度に見せる。
+     16:9 では #2840 のとおり1列（縦スクロール）のまま。
+   - スマホではマップ左下の筐体を一回り大きく（1.2倍・左下を起点に）。押せるランプと吹き出しも同じ倍率で大きくなる。 */
+.reel-intro { inset: 0 calc(-1 * var(--stage-gutter, 0px)); }
+#stage[data-wide] .reel-note .rn-panel { width: min(1240px, calc(100% - 32px)); }
+#stage[data-wide] .reel-note .rn-cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: 40px; }
+#stage[data-wide] .reel-note .rn-cols > section:first-child { grid-row: 1 / span 2; }
+html:root[data-density="phone"] .reel-widget { scale: 1.2; transform-origin: left bottom; }

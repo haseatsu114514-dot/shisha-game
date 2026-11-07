@@ -266,3 +266,5 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
   .tetsuko-time .tt-help-note { min-height: var(--tk-tap); margin-top: 10px; padding-top: 8px; padding-right: calc(var(--tk-tap) * 1.5 + 20px); }
   .tetsuko-time .tt-help-close { bottom: 14px; }
 }
+/* スマホ規格（#2851・#2729）: 題の札の英字（TETSUKO TIME・実寸 7.6px）は飾りなので出さない（読み上げ・題の文字には残る）。 */
+html:root[data-density="phone"] .tetsuko-time .tt-logo-roman { display: none; }
