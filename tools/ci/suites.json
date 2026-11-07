@@ -2777,11 +2777,14 @@
         "remake/data/manifest.json",
         "assets/ui/**",
         "remake/test/browser/game_layout.mjs",
-        "remake/test/browser/mobile_doubletap.mjs"
+        "remake/test/browser/mobile_doubletap.mjs",
+        "remake/js/core/double-tap-guard.js",
+        "remake/test/browser/form_font_doubletap.mjs"
       ],
       "run": [
         "node remake/test/browser/game_layout.mjs",
-        "node remake/test/browser/mobile_doubletap.mjs"
+        "node remake/test/browser/mobile_doubletap.mjs",
+        "node remake/test/browser/form_font_doubletap.mjs"
       ]
     },
     {

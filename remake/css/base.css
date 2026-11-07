@@ -61,8 +61,15 @@ html, body {
 }
 button { font: inherit; color: inherit; }
 
+/* フォーム部品の文字は実寸 16px 以上（iOS は 16px 未満の select / input に触れると画面を拡大する・#2852）。
+   #stage は --k で縮むので、縮み分を戻した値を下限にする（#stage の外は --k が無く 16px）。 */
+:is(select, textarea, input:not([type="range"], [type="checkbox"], [type="radio"], [type="button"], [type="submit"], [type="file"], [type="color"])) {
+  font-size: max(16px, calc(16px / var(--k, 1))) !important;
+}
+
 /* 連打はゲーム入力として扱う。ピンチとスクロールは保ち、ドラッグ面の none は上書きしない。 */
-:where(#viewport, #viewport *, #rotate-hint, #rotate-hint *) { touch-action: manipulation; }
+/* body 直下に足す要素（タイトルの表示設定ツールバー等）にも明示する（#2852）。 */
+:where(#viewport, #viewport *, #rotate-hint, #rotate-hint *, body > *) { touch-action: manipulation; }
 
 #viewport {
   position: fixed;
