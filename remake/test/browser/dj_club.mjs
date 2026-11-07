@@ -138,9 +138,8 @@ await suite("dj-club", async check => {
     await page.waitForFunction(() => window.__djVisitDone === false);
     value = await get(page);
     for (const key of ["day", "slot", "money", "stamina", "chapter", "phase"]) assert.deepEqual(value[key], before[key], key);
-    // ヨルは好感度の対象外（2026-11-06 の好感度名簿の整理で state.js の AFFINITY_CHARACTERS から外れた。プロフィールも「好感度・恋愛・LIMEの対象にしない」）。
-    // 出会い・クラブの来店・SETのどれも好感度を変えない。
-    assert.deepEqual(value.affinity, before.affinity); assert.equal(value.affinity.yoru, undefined, "no ♥ for the club owner"); assert.deepEqual(value.flags._ch3_intro, before.flags._ch3_intro, "no free time used");
+    // ヨルは店主で好感度の対象外（DJS13・#2750 の名簿）。初めて会っても♥は付かず、クラブの来店・SETも好感度を足さない。
+    assert.deepEqual(value.affinity, before.affinity); assert.deepEqual(value.flags._ch3_intro, before.flags._ch3_intro, "no free time used");
     // 二回目以降は出会いの場面を繰り返さず、すぐメニュー。
     await page.evaluate(async () => { window.__djVisitDone = undefined; const club = await import("./js/daily/dj-club.js"); club.visitDjClub().then(v => { window.__djVisitDone = v; }); });
     await page.locator(t("dj-club-menu")).waitFor();
