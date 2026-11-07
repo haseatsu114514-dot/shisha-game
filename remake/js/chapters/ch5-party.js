@@ -51,7 +51,7 @@ export async function runAfterParty() {
     routes = await loadRoutes();
     await loadScenes(routes);
   } catch {
-    toast("打ち上げの会話を読み込めませんでした。次に地図を開く時に、もう一度");
+    toast("打ち上げの会話を読み込めませんでした。次に地図を開く時に、もう一度お試しください。");
     return false;
   }
   if (state !== owner) return false;
