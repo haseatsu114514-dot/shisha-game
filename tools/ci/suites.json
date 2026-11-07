@@ -300,6 +300,12 @@
       "run": ["node remake/test/kuji_limited.mjs"]
     },
     {
+      "id": "ch5-catering-dlv",
+      "title": "Chapter-5 catering requests: schedule, one at a time, reply/job expiry, fit to tickets, no money, NG+ reset and #2455 (DLV)",
+      "kind": "quick",
+      "run": ["node remake/test/ch5_catering.mjs"]
+    },
+    {
       "id": "growth-levelup-browser-1",
       "title": "Growth HUD gauge, EXP chip, night level-up and hidane badge (?growth=1), part 1/2",
       "kind": "browser",
@@ -1665,6 +1671,26 @@
       ],
       "run": [
         "node remake/test/browser/ch5_home_talks.mjs"
+      ]
+    },
+    {
+      "id": "ch5-catering-browser",
+      "title": "Chapter 5 catering request by Sumi's LIME: accept, next-day map job, pick a blend for kuji tickets (no money), decline and expiry (DLV)",
+      "kind": "browser",
+      "weight": 1.3,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/ch5-catering.js",
+        "remake/js/chapters/ch5-catering-model.js",
+        "remake/js/chapters/ch5-daily.js",
+        "data/dialogue/ch5_catering.json",
+        "remake/js/daily/phone.js",
+        "remake/js/daily/kuji-tickets.js",
+        "remake/js/daily/calendar.js",
+        "remake/test/browser/ch5_catering.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch5_catering.mjs"
       ]
     },
     {
