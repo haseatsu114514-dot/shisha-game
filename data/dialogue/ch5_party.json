@@ -143,10 +143,10 @@
           { "speaker": "", "face": "", "text": "言ってから照れたのか、あげはは俺の肩に額を押しつけて、しばらく顔を上げなかった。" }
         ],
         "met_mashiro": [
-          { "type": "condition", "condition_type": "met", "char_id": "mashiro", "next_true": "check_mashiro", "next_false": "default" }
+          { "type": "condition", "condition_type": "met", "char_id": "mashiro", "next_true": "check_mashiro", "next_false": "met_samechan" }
         ],
         "check_mashiro": [
-          { "type": "condition", "condition_type": "lover", "char_id": "mashiro", "next_true": "mashiro", "next_false": "default" }
+          { "type": "condition", "condition_type": "lover", "char_id": "mashiro", "next_true": "mashiro", "next_false": "met_samechan" }
         ],
         "mashiro": [
           { "speaker": "", "face": "", "text": "ましろは、カウンターの端で頬杖をついていた。東京から、電車で来てくれたらしい。" },
@@ -164,6 +164,31 @@
           { "speaker": "mashiro", "face": "normal", "text": "ん、軽い。……でも、はじめくんの隣だと、ちょうどいいの" },
           { "speaker": "mashiro", "face": "yawn", "text": "……あ、だめ。安心したら、また眠くなってきちゃった" },
           { "speaker": "", "face": "", "text": "肩に、ことんと頭が乗った。紅茶が冷めるまで、そのままにしておいた。" }
+        ],
+        "met_samechan": [
+          { "type": "condition", "condition_type": "met", "char_id": "samechan", "next_true": "check_samechan", "next_false": "default" }
+        ],
+        "check_samechan": [
+          { "type": "condition", "condition_type": "lover", "char_id": "samechan", "next_true": "samechan", "next_false": "default" }
+        ],
+        "samechan": [
+          { "speaker": "", "face": "", "text": "サメちゃんは、カウンターの端で、コロちゃんにグラスを持たせようとしていた。" },
+          { "speaker": "samechan", "face": "ventriloquism", "text": "勇者はじめよ、よくぞ戻った。世界の王の座、大儀であった" },
+          { "speaker": "samechan", "face": "normal", "text": "……コロちゃん。王はお主ではなく、はじめじゃ" },
+          { "speaker": "samechan", "face": "ventriloquism", "text": "余の側近は、朝から祝いの言葉を練習しておったぞ" },
+          { "speaker": "samechan", "face": "surprise", "text": "そ、それは言わぬ約束じゃ！" },
+          { "speaker": "hajime", "face": "smile", "text": "練習したの、聞かせてください" },
+          { "speaker": "samechan", "face": "normal", "text": "……うむ。ならば、コロちゃんは少し休んでおれ" },
+          { "speaker": "", "face": "", "text": "サメちゃんは右手からコロちゃんを外して、膝に座らせた。" },
+          { "speaker": "samechan", "face": "normal", "text": "……世界一、おめでとう。これは、わしの口から言うのじゃ" },
+          { "speaker": "hajime", "face": "normal", "text": "ありがとうございます。……練習した甲斐、ありました？" },
+          { "speaker": "samechan", "face": "surprise", "text": "か、甲斐があったかは、お主が決めることじゃ" },
+          { "speaker": "hajime", "face": "smile", "text": "すごく、うれしかったです" },
+          { "speaker": "samechan", "face": "smile", "text": "……うむ。なら、よい" },
+          { "speaker": "", "face": "", "text": "膝の上のコロちゃんは、こちらを向いたまま、口を閉じていた。" },
+          { "speaker": "samechan", "face": "normal", "text": "次は、シーシャークでも祝うのじゃ。お主の席、空けておく" },
+          { "speaker": "hajime", "face": "smile", "text": "はい。必ず行きます" },
+          { "speaker": "", "face": "", "text": "グラスを置いたサメちゃんの手が、俺の手をきゅっと握った。今度は、自分の手で。" }
         ],
         "default": [
           { "speaker": "", "face": "", "text": "隣に座ると、グラスが小さく触れ合った。" },
