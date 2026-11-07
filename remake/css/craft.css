@@ -1354,3 +1354,8 @@ body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve
 
 /* 明るい会場でも、観客の一言の文字と輪郭が背景へ溶けない。 */
 .nico { background:#160f21b8;border-radius:6px;padding:2px 8px;-webkit-text-stroke:1px #190e21;paint-order:stroke fill; }
+
+/* #2862 「?」の中の補足（詰め方の一覧など。工程が替わると外れる）。 */
+.bench-guide-extra ul { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.bench-guide-extra li { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 15px; line-height: 1.5; color: #c9c2b9; }
+.bench-guide-extra li b { min-width: 6.5em; }
