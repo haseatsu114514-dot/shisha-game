@@ -237,7 +237,7 @@
       "id": "growth-levelup",
       "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
       "kind": "quick",
-      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs", "node --experimental-vm-modules remake/test/growth_board_screen.mjs"]
+      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs", "node --experimental-vm-modules remake/test/growth_board_screen.mjs", "node remake/test/growth_chapter_notice.mjs"]
     },
     {
       "id": "vent-lid",
@@ -403,6 +403,15 @@
       "run": [
         "node remake/test/browser/roamers.mjs"
       ]
+    },
+    {
+      "id": "growth-chapter-notice-browser",
+      "title": "Growth board chapter-start notice: new skills, respec card and map reminder on the first daily morning (#1801 C10)",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 3,
+      "paths": ["remake/js/core/growth-chapter-notice.js", "remake/js/core/growth-respec.js", "remake/js/daily/calendar.js", "remake/js/daily/map.js", "remake/css/daily.css", "remake/test/browser/growth_chapter_notice.mjs", "remake/test/browser/support.mjs"],
+      "run": ["node remake/test/browser/growth_chapter_notice.mjs"]
     },
     {
       "id": "board-tutorial",
