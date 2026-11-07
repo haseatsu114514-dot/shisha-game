@@ -238,13 +238,17 @@ body:is(.reduce-shake, .vn-skip) .tx-shiver { animation: none; }
 .vn-next.show { opacity: 1; animation: bob 1s ease-in-out infinite; }
 @keyframes bob { 50% { transform: translateY(4px); } }
 
+/* 操作は記号の正方形を横に並べる（#2854）。64px角・間隔12px。縮小で実寸が38px未満になるスマホ横持ちでは、
+   実寸39px相当まで広げる（--k は #stage の縮小率）。並びは flex なので、右の黒帯へ縦積みにする時は向きだけ変える。 */
 .vn-controls {
+  --vn-ctl-size: max(64px, calc(39px / var(--k, 1)));
+  --vn-ctl-gap: 12px;
   position: absolute;
   right: 80px;
   bottom: 206px;
   z-index: 6;
   display: flex;
-  gap: 8px;
+  gap: var(--vn-ctl-gap);
 }
 .vn-ctl {
   min-width: 72px;
@@ -263,6 +267,38 @@ body:is(.reduce-shake, .vn-skip) .tx-shiver { animation: none; }
 .vn-ctl:hover, .vn-ctl:focus-visible { color: var(--text); border-color: var(--gold); }
 .vn-ctl:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 .vn-ctl.on { color: #1a1206; background: var(--gold); border-color: var(--gold); }
+body:not(.game-ds) .vn-ctl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--vn-ctl-size);
+  min-width: 0;
+  height: var(--vn-ctl-size);
+  min-height: var(--vn-ctl-size);
+  padding: 0;
+  position: relative;
+}
+/* 2画面表示はタッチバーの高さで並べる。記号だけ札に収まる大きさにする。 */
+body.game-ds .vn-ctl-icon { font-size: 22px; }
+/* 記号は実寸15px以上。元の語は読み上げ・テスト用に残し、画面には出さない。 */
+.vn-ctl-icon {
+  display: inline-block;
+  font-size: max(28px, calc(15px / var(--k, 1)));
+  line-height: 1;
+  letter-spacing: -0.08em;
+  font-family: system-ui, "Segoe UI Symbol", "Noto Sans Symbols 2", var(--font);
+  pointer-events: none;
+}
+/* ≡・⚙ は字面が小さいので、ほかの記号と見た目の大きさをそろえる。 */
+.vn-ctl:is([data-test="vn-log"], [data-test="vn-config"]) .vn-ctl-icon { transform: scale(1.2); }
+.vn-ctl-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 
 /* ---------------------------------------------------------------- 選択肢 */
 .vn-choices {
