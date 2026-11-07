@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { suite } from "./support.mjs";
+import { rotateThroughGuard } from "./rotate_guard.mjs";
 
 const out = path.resolve(process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser");
 fs.mkdirSync(out, { recursive: true });
@@ -56,6 +57,16 @@ async function noHorizontalOverflow(page, selector) {
     `${selector} scrolls horizontally: ${JSON.stringify(size)}`);
 }
 
+// 縦持ちで押してみても変わってはいけない、HUD・LIME・MENUの開閉と既読・返信の状態。
+const overlayState = page => () => page.evaluate(() => ({
+  phone: document.querySelectorAll(".phone-overlay").length,
+  replies: document.querySelectorAll(".lime-actions .lime-reply").length,
+  next: document.querySelectorAll('[data-test="phone-next"]').length,
+  menu: document.querySelectorAll(".dmenu").length, tab: document.querySelector(".dmenu")?.dataset.tab || null,
+  toolbar: document.querySelector(".game-layout-toolbar")?.open ?? null,
+  inbox: JSON.stringify(window.__remake.state.inbox),
+}));
+
 async function reachable(locator) {
   await locator.scrollIntoViewIfNeeded();
   const hit = await locator.evaluate(node => {
@@ -70,13 +81,22 @@ async function reachable(locator) {
 }
 
 await suite("ds-overlay-layers", async check => {
-  for (const [label, width, height] of [
-    ["landscape", 844, 390], ["portrait", 390, 844], ["small", 320, 568],
+  // #2789: スマホの縦持ちはDS風も回転ガードで止める（#2794）。portrait・small は縦持ちで始め、地図のHUD・LIMEの会話・
+  // MENUを開いた状態でガードが入力を止めることを確かめ、横持ち（small は 568×320）へ戻して同じ状態から配置を検査する。
+  for (const [label, width, height, portrait] of [
+    ["landscape", 844, 390], ["portrait", 844, 390, { width: 390, height: 844 }],
+    ["small", 568, 320, { width: 320, height: 568 }],
   ]) {
     await check(label, async page => {
       page.setDefaultTimeout(15000);
       const press = selector => page.locator(selector).tap();
+      const test = id => page.locator(`[data-test="${id}"]`);
+      const guarded = async (name, targets) => {
+        if (portrait) await rotateThroughGuard(page, { portrait, landscape: { width, height }, targets,
+          state: overlayState(page), label: `${label}/${name}` });
+      };
       await setup(page);
+      await guarded("hud", [test("hud-phone"), test("hud-menu"), test("game-layout-settings")]);
 
       if (label === "landscape") {
         await page.evaluate(async () => {
@@ -128,6 +148,7 @@ await suite("ds-overlay-layers", async check => {
       const replies = page.locator(".lime-actions .lime-reply");
       await replies.first().waitFor();
       assert.equal(await replies.count(), 3, "The real day-five thread needs three replies");
+      await guarded("lime-thread", [replies.first(), replies.last(), test("lime-back")]);
       inside(await rect(page, ".phone"), await rect(page, "#stage"), "LIME thread");
       await noHorizontalOverflow(page, ".lime-actions");
       await reachable(replies.first());
@@ -147,6 +168,7 @@ await suite("ds-overlay-layers", async check => {
       await page.locator(".dmenu").waitFor();
       await page.locator(".dmenu .dm-sheet").evaluate(node => Promise.all(
         node.getAnimations().map(animation => animation.finished.catch(() => {}))));
+      await guarded("menu", [test("menu-tab-people"), test("menu-tab-system"), test("menu-close")]);
       const menu = await rect(page, ".dmenu .dm-sheet");
       inside(menu, await rect(page, "#stage"), "MENU sheet");
       const panelHeight = await page.locator(".dmenu .dm-panel").evaluate(node => node.clientHeight);
@@ -213,7 +235,7 @@ await suite("ds-overlay-layers", async check => {
         await page.screenshot({ path: path.join(out, "ds-overlay-landscape-clear.png") });
         assert.equal(await page.evaluate(() => window.dsClearError || null), null);
       }
-    }, { viewport: { width, height }, isMobile: true, hasTouch: true,
+    }, { viewport: portrait || { width, height }, isMobile: true, hasTouch: true,
       reducedMotion: "reduce" });
   }
 }, { initScript: () => localStorage.setItem("suien_title_layout", "ds") });
