@@ -1740,8 +1740,10 @@ body:not(.game-ds) .map .mi-no { padding: 5px; }
 
 /* ---------------------------------------------------------------- 街マップ・HUD のスマホ横持ち（#2853・#2729 優先3）
    ステージ倍率 --k で縮んでも、文字は実寸11px・押す部品は実寸38px を下回らないよう max() で下限を付ける。
-   PC（--k ≥ 1）は左側の設計値のまま。共通規格（#2851）が入ったらそちらの値へ寄せる。2画面表示（game-ds）は対象外。 */
-#hud, .map { --mui-text: calc(11px / var(--k, 1)); --mui-tap: calc(38px / var(--k, 1)); }
+   PC（--k ≥ 1）は左側の設計値のまま。2画面表示（game-ds）は対象外。 */
+/* 下限を --k で割るのは共通のスマホ規格（横長のスマホ・html[data-density="phone"]・#2917）のときだけ。PC・縦長の画面は設計値のまま。 */
+#hud, .map { --mui-text: 11px; --mui-tap: 38px; }
+html:root[data-density="phone"] :is(#hud, .map) { --mui-text: calc(11px / var(--k, 1)); --mui-tap: calc(38px / var(--k, 1)); }
 
 /* HUD: ラベルの文字は読み上げ用に残して隠し、¥・トロフィー・ハートの印＋数値（24px）にする。札の幅・行の高さは変えない。 */
 body:not(.game-ds) #hud .dc-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -1787,7 +1789,11 @@ body:not(.game-ds) .map .spot-pin .pin-people { top: -40px; pointer-events: auto
 body:not(.game-ds) .map .spot-pin .pin-person { flex-basis: 48px; width: 48px; height: 48px; }
 body:not(.game-ds) .map .spot-pin .pin-unknown b { font-size: max(22px, var(--mui-text)); }
 body:not(.game-ds) .map .spot-pin .pin-visual:has(.pin-person:nth-child(3)) .evt-badge { top: 16px; }
-body:not(.game-ds) .map .evt-badge { width: max(21px, calc(13px / var(--k, 1))); height: max(21px, calc(13px / var(--k, 1))); font-size: max(14px, var(--mui-text)); }
+/* 「!」の丸は文字（実寸 11px 以上）に比例させ、もとの比（21px の丸に 14px・字面を上へ 2px）を保つ（字面が丸の中央からずれない）。 */
+body:not(.game-ds) .map .evt-badge {
+  --evt-d: max(21px, calc(var(--mui-text) * 1.5));
+  width: var(--evt-d); height: var(--evt-d); font-size: calc(var(--evt-d) * 14 / 21); padding-bottom: calc(var(--evt-d) * 2 / 21);
+}
 /* 観音堂の火種の数（.hidane-badge）は数字なので、文字は丸の大きさに比例させ（もとの 20px に 12px の比）、
    丸の大きさを下限に横は数字に合わせて伸ばす（「!」の文字の下限で数字が丸からはみ出さない）。 */
 body:not(.game-ds) .map .evt-badge.hidane-badge {
