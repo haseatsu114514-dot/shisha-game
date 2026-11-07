@@ -21,9 +21,12 @@ async function start(page, lines, config = {}) {
     vn.vnTest.turbo = false;
     convfx.controller = new AbortController();
     convfx.result = null;
+    convfx.openedAt = performance.now();
     vn.play({ dialogue_id: `convfx-2828-${Date.now()}`, lines }, { signal: convfx.controller.signal }).then(r => { convfx.result = r; });
   }, { lines, config });
   await page.locator(".vn-next.show").waitFor();
+  // 会話の開始直後0.32秒のクリックは本編が無視する（入力ガード）。速い端末では1行目がその前に出終わる
+  await page.waitForFunction(() => performance.now() - convfx.openedAt > 340);
 }
 const text = page => page.locator(".vn-text").textContent();
 const advance = page => page.locator(".vn-box").click();
