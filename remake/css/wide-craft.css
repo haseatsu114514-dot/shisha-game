@@ -37,10 +37,12 @@ html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] {
 }
 /* 作業台の上の帯・左のカード */
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench :is(
-  .bench-mode, .bench-mode small, .craft-rank-status, .bench-phase-copy b, .bench-phase-copy small,
+  .bench-mode, .bench-mode small, .craft-rank-status, .bench-phase-copy b, .bench-phase:not(.seen) .bench-phase-copy small,
   .worker-scene-tag, .audience-name, .rival-name, .bench-guide summary
 ) { font-size: var(--wide-small); }
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench .audience-note { font-size: var(--wide-text); line-height: 1.45; }
+/* 済んだ工程は番号を消して ✓ だけ（CUI09）。番号は 0 のまま、✓ を同じ大きさにする */
+html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench .bench-phase.seen .bench-phase-copy small::after { font-size: var(--wide-small); }
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench .rig-lamp { width: calc(var(--wide-small) * 1.9); height: calc(var(--wide-small) * 1.9); }
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench .rig-lamp b { font-size: var(--wide-small); }
 /* 上の帯の「PRACTICE｜練習モード」「SMOKE CROWN CUP｜大会」は1行のまま */
