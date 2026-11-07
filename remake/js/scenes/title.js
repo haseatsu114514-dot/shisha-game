@@ -296,55 +296,32 @@ export async function openConfig(opts = {}) {
       dataset: { test },
       oninput: (e) => { config[key] = Number(e.target.value); applyVolumes(); persist(); opts.onChange?.(key, config[key]); },
     });
-  const speed = el("select", {
-    dataset: { test: "cfg-text-speed" },
-    onchange: (e) => { config.textSpeed = Number(e.target.value); persist(); opts.onChange?.("textSpeed", config.textSpeed); },
-  }, [["1", "ゆっくり"], ["2", "ふつう"], ["3", "はやい"], ["4", "瞬間表示"]].map(([v, t]) => {
-    const o = el("option", { value: v, text: t });
-    if (Number(v) === config.textSpeed) o.selected = true;
-    return o;
-  }));
-  const autoSpeed = el("select", {
-    dataset: { test: "cfg-auto-speed" },
-    onchange: (e) => { config.autoSpeed = Number(e.target.value); persist(); opts.onChange?.("autoSpeed", config.autoSpeed); },
-  }, [["1", "ゆっくり"], ["2", "ふつう"], ["3", "はやい"]].map(([v, t]) => {
-    const o = el("option", { value: v, text: t });
-    if (Number(v) === config.autoSpeed) o.selected = true;
-    return o;
-  }));
-  const skipMode = el("select", {
-    dataset: { test: "cfg-skip-mode" },
-    onchange: (e) => { config.skipSeenOnly = e.target.value === "seen"; persist(); opts.onChange?.("skipSeenOnly", config.skipSeenOnly); },
-  }, [["all", "全スキップ"], ["seen", "既読のみスキップ"]].map(([v, t]) => {
-    const o = el("option", { value: v, text: t });
-    if ((v === "seen") === !!config.skipSeenOnly) o.selected = true;
-    return o;
-  }));
-  const portraits = el("select", {
-    dataset: { test: "cfg-portrait-style" },
-    onchange: (e) => { config.portraitStyle = e.target.value; persist(); opts.onChange?.("portraitStyle", config.portraitStyle); },
-  }, [["new", "新バージョン"], ["classic", "現行"]].map(([v, t]) => {
-    const o = el("option", { value: v, text: t });
-    if (v === (config.portraitStyle === "classic" ? "classic" : "new")) o.selected = true;
-    return o;
-  }));
-  const introArt = el("select", {
-    dataset: { test: "cfg-intro-art" },
-    onchange: (e) => { config.introArtStyle = e.target.value; persist(); opts.onChange?.("introArtStyle", config.introArtStyle); },
-  }, [["graphic", "グラフィック（新）"], ["classic", "立ち絵（旧）"]].map(([v, t]) => {
-    const o = el("option", { value: v, text: t });
-    if (v === (config.introArtStyle === "classic" ? "classic" : "graphic")) o.selected = true;
-    return o;
-  }));
+  // 段ボタン（#2857）。押せる部品を大きくするため <select> から置き換えた。保存キーと値は旧 <select> と同じ。
+  // label で包むと文言のタップが先頭の段に当たるので、行は div にして段の組へ名前を付ける。
+  const segRow = (label, test, choices, current, pick) => {
+    const buttons = choices.map(([value, text]) => el("button.cfg-seg-btn", {
+      type: "button", role: "radio", value, text, "aria-checked": String(value === current),
+      onclick: () => {
+        for (const b of buttons) b.setAttribute("aria-checked", String(b.value === value));
+        pick(value);
+      },
+    }));
+    return el("div.cfg-row", [el("span", { text: label }), el("div.cfg-seg", { role: "radiogroup", "aria-label": label, dataset: { test } }, buttons)]);
+  };
+  const setConfig = (key, value) => { config[key] = value; persist(); opts.onChange?.(key, value); };
+  const speed = segRow("文字の速さ", "cfg-text-speed", [["1", "おそい"], ["2", "ふつう"], ["3", "はやい"], ["4", "瞬間"]],
+    String(config.textSpeed), (v) => setConfig("textSpeed", Number(v)));
+  const autoSpeed = segRow("AUTOの速さ", "cfg-auto-speed", [["1", "おそい"], ["2", "ふつう"], ["3", "はやい"]],
+    String(config.autoSpeed), (v) => setConfig("autoSpeed", Number(v)));
+  const skipMode = segRow("SKIPの範囲", "cfg-skip-mode", [["seen", "既読"], ["all", "全部"]],
+    config.skipSeenOnly ? "seen" : "all", (v) => setConfig("skipSeenOnly", v === "seen"));
+  const portraits = segRow("会話の立ち絵", "cfg-portrait-style", [["classic", "旧"], ["new", "新"]],
+    config.portraitStyle === "classic" ? "classic" : "new", (v) => setConfig("portraitStyle", v));
+  const introArt = segRow("登場カットインの絵柄", "cfg-intro-art", [["classic", "旧"], ["graphic", "新"]],
+    config.introArtStyle === "classic" ? "classic" : "graphic", (v) => setConfig("introArtStyle", v));
   // 立ち絵から登場カットインへの「変身」（2026-11-02 オーナー採用。グラフィック絵柄のときだけ効く）
-  const introTransition = el("select", {
-    dataset: { test: "cfg-intro-transition" },
-    onchange: (e) => { config.introTransition = e.target.value; persist(); opts.onChange?.("introTransition", config.introTransition); },
-  }, [["morph", "変身する（新）"], ["none", "なし"]].map(([v, t]) => {
-    const o = el("option", { value: v, text: t });
-    if (v === (config.introTransition === "none" ? "none" : "morph")) o.selected = true;
-    return o;
-  }));
+  const introTransition = segRow("登場カットインへの変身", "cfg-intro-transition", [["none", "なし"], ["morph", "変身"]],
+    config.introTransition === "none" ? "none" : "morph", (v) => setConfig("introTransition", v));
   const reduceShake = el("input", {
     type: "checkbox", dataset: { test: "cfg-reduce-shake" },
     onchange: (e) => { config.reduceShake = e.target.checked; document.body.classList.toggle("reduce-shake", config.reduceShake); persist(); opts.onChange?.("reduceShake", config.reduceShake); },
@@ -367,11 +344,17 @@ export async function openConfig(opts = {}) {
     onchange: (e) => { config.statEffectColors = e.target.checked; persist(); opts.onChange?.("statEffectColors", config.statEffectColors); },
   });
   effectColors.checked = config.statEffectColors !== false;
-  const mute = el("input", {
-    type: "checkbox", dataset: { test: "cfg-mute" },
-    onchange: (e) => { config.mute = e.target.checked; delete config.muted; applyVolumes(); persist(); opts.onChange?.("mute", config.mute); },
+  // ミュートは 🔇 のトグル（#2857）。保存キーは従来どおり config.mute。
+  const mute = el("button.cfg-mute", {
+    type: "button", dataset: { test: "cfg-mute" }, "aria-label": "ミュート", "aria-pressed": String(!!config.mute),
+    text: config.mute ? "🔇" : "🔊",
+    onclick: (e) => {
+      config.mute = !config.mute; delete config.muted; applyVolumes(); persist();
+      e.currentTarget.setAttribute("aria-pressed", String(config.mute));
+      e.currentTarget.textContent = config.mute ? "🔇" : "🔊";
+      opts.onChange?.("mute", config.mute);
+    },
   });
-  mute.checked = !!config.mute;
   // タイトルの見た目（通常版／DS風）。タイトル画面から開いたときだけ出す（#2863: 右上の「表示設定」から移した）。
   const titleLayout = createTitleLayoutSettings();
   return modal({
@@ -382,18 +365,19 @@ export async function openConfig(opts = {}) {
       row("ミュート（すべての音を消す）", mute),
       row("BGM 音量", range("bgmVolume", 0, 1, 0.05, "cfg-bgm-volume")),
       row("効果音 音量", range("seVolume", 0, 1, 0.05, "cfg-se-volume")),
-      row("文字の速さ", speed),
-      row("AUTOの速さ", autoSpeed),
-      row("SKIPの範囲", skipMode),
-      row("会話の立ち絵", portraits),
-      row("登場カットインの絵柄", introArt),
-      row("登場カットインへの変身", introTransition),
+      speed,
+      autoSpeed,
+      skipMode,
+      portraits,
+      introArt,
+      introTransition,
       row("揺れ・閃光を減らす", reduceShake),
       row("文字送りの声", blip),
       row("見た演出を短く", shortSeen),
       row("能力の効き目を色で表示", effectColors),
     ]),
     options: [{ label: "閉じる", value: true, primary: true, test: "cfg-close" }],
+    className: "cfg-modal",
   });
 }
 

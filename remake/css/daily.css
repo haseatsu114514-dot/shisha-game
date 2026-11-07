@@ -512,6 +512,8 @@ body.game-ds .pin-station .pin-symbol { color: #29485d; }
 .mi-area { font-size: 13px; letter-spacing: .02em; color: var(--gold); }
 .mi-desc { margin: 4px 0 8px; font-size: 14px; line-height: 1.6; color: var(--text-dim); }
 .mi-foot { font-size: 14px; letter-spacing: 0.06em; color: var(--text-dim); opacity: 0.8; }
+/* 心得の盤の組み直しの期限など（calendar.js の reminder）。説明と行動の残りのあいだに、金の細い線で添える */
+.mi-reminder { margin: 0 2px 6px; padding-left: 8px; font-size: 13px; line-height: 1.45; color: var(--gold); border-left: 2px solid var(--gold); }
 .mi-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
 .tag { padding: 2px 9px; font-size: 13px; border-radius: 999px; border: 1px solid rgba(244, 210, 122, 0.4); color: var(--gold-hi); }
 .tag.free { border-color: rgba(142, 230, 168, 0.5); color: var(--good); }

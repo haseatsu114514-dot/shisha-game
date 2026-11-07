@@ -71,6 +71,7 @@ await suite("dj-club", async check => {
     assert.equal(choice.length, 1); assert.equal(choice[0].place, "club_unknown"); assert.equal(choice[0].consumes, false); assert.match(choice[0].label, /地下から低い音/);
     await page.evaluate(async () => {
       const club = await import("./js/daily/dj-club.js");
+      (await import("./js/vn/engine.js")).clearLog();
       window.__djVisit = club.visitDjClub().then(value => { window.__djVisitDone = value; });
     });
     // 初回: 階段の上で針間ヨルに会う。名乗るまでは「？？？」、名乗った直後に登場カットイン、その後は名前で話す。
@@ -82,6 +83,9 @@ await suite("dj-club", async check => {
     const names = await readUntil(page, t("dj-club-menu"));
     assert.ok((await page.evaluate(() => window.__cutins)).includes("yoru"), "her intro cut-in was shown");
     assert.ok(names.includes("？？？") && names.includes("針間ヨル") && names.indexOf("？？？") < names.indexOf("針間ヨル"), JSON.stringify(names));
+    const said = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map(row => row.text).join("|"));
+    assert.match(said, /mukaiの新しい子だ/, "Chapter 3 still plays the chapter 3 first meeting");
+    assert.doesNotMatch(said, /屋根裏の子/, "…not the chapter 5 one (ch5_club_first)");
     let value = await get(page);
     assert.equal(value.flags._club_yoru_first_done, true); assert.equal(value.met.yoru, true);
     assert.equal(value.flags._intro_yoru, true);

@@ -171,7 +171,7 @@
     },
     {
       "dialogue_id": "ch5_dubai_camel_again",
-      "comment": "第5章でドバイへ来て、最初にラクダレース場へ行った日だけ、練習レースの前の会話（ch4_camel_replay）の代わりに読む。第4章で一度でも走った人だけ（chapters/ch5-dubai.js）。大会・シェイクの正体には触れない。",
+      "comment": "第5章でドバイへ来て、最初にラクダレース場へ行った日だけ、練習レースの前の会話（ch4_camel_replay）の代わりに読む。第4章で一度でも走った人だけ（第4章で走っていない人は第5章の店先 ch5_dubai_camel_meet で会うので読まない。chapters/ch5-dubai.js）。大会・シェイクの正体には触れない。",
       "lines": [
         { "speaker": "", "face": "", "text": "朝のレース場。ハリールの白い車の横で、見覚えのある顔が両手を大きく振った。" },
         { "speaker": "faris", "face": "excited", "text": "ハジメ！　日本に帰ったんじゃなかったの？" },
@@ -182,7 +182,7 @@
     },
     {
       "dialogue_id": "ch5_dubai_dunes_again",
-      "comment": "第5章でドバイへ来て、最初に「ヌールと砂丘へ」を選んだ日だけ、出かける前（ch4_desert_again の前）に読む。第4章で一度でも砂丘へ出かけた人だけ（chapters/ch5-dubai.js）。恋人なら最初の一言が変わる。第4章の締めくくりで「二人で見たい」と答えたまま砂丘へ行けずに帰国した人（告白を待っている）は、約束の続き（promise。ch5-dubai.js が読む間だけ立てる _noor_ch5_promise）。この日の夕日で confession_noor を読む。大会・王者・味覚には触れない。ツアー代の話はしない（告白を待つ日はツアー代がかからないため）。",
+      "comment": "第5章でドバイへ来て、最初に「ヌールと砂丘へ」を選んだ日だけ、出かける前（ch4_desert_again の前）に読む。第5章でまだヌールに会い直していない人だけ（第5章のカフェ・サーリムで出会った・再会した人は読まない。印は _ch5_dubai_dunes_again を共有。chapters/ch5-dubai.js）。恋人なら最初の一言が変わる。第4章の締めくくりで「二人で見たい」と答えたまま砂丘へ行けずに帰国した人（告白を待っている）は、約束の続き（promise。ch5-dubai.js が読む間だけ立てる _noor_ch5_promise）。この日の夕日で confession_noor を読む。大会・王者・味覚には触れない。ツアー代の話はしない（告白を待つ日はツアー代がかからないため）。",
       "lines": [
         { "speaker": "", "face": "", "text": "カフェ・サーリムの表のデスク。ヌールさんが、地図から顔を上げた。" },
         { "type": "condition", "condition_type": "lover", "char_id": "noor", "next_true": "lover", "next_false": "not_lover" }
@@ -210,6 +210,129 @@
           { "speaker": "noor", "face": "smile", "text": "もちろん！ ハジメの板、ずっと倉庫で待ってたんだから" }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch5_dubai_camel_meet",
+      "comment": "第5章のドバイ（2026-11-07 オーナー決定「第4章のラクダレース／砂丘を飛ばしたプレイヤーも、第5章側で前提を補ってルートに入れる」）。第4章で練習レースを走っていない人が、Dr.fookah ドバイ店の店先で最初に読む（chapters/ch5-dubai.js・時間は使わない）。第4章の段階で分ける（ch5-dubai.js が読む間だけ立てる _ch5_camel_known）: 会っていなければ出会い（first）、知り合った・誘われただけなら再会と叔父さんのレースの思い出させ（again → again_shop）、本番を見た人は再会してすぐレースの話（again → again_track）。どれも翌朝のレースに誘われ、翌日以降の昼にレース場へ（本番を見ていなければ ch4_camel_watch から）。大会・王者・シェイクの正体・宿には触れない。",
+      "lines": [
+        { "type": "condition", "condition_type": "flag_count", "flag": "_ch5_camel_known", "threshold": 1, "next_true": "again", "next_false": "first" },
+        { "speaker": "faris", "face": "smile", "text": "明日の朝、レースがある。一緒に行こう" },
+        { "speaker": "hajime", "face": "smile", "text": "行きます。何時に集まればいいですか" },
+        { "speaker": "faris", "face": "normal", "text": "六時。この店の前で待ってて。車で三十分" },
+        { "speaker": "hajime", "face": "surprise", "text": "六時……。起きられるかな" },
+        { "speaker": "faris", "face": "smile", "text": "寝坊したら、置いていくからね" },
+        { "speaker": "", "face": "", "text": "店の奥から、ダブルアップルの甘い匂いが流れてきた。" },
+        { "speaker": "faris", "face": "smile", "text": "決まり。じゃ、今日は葉、何にする？" }
+      ],
+      "branches": {
+        "first": [
+          { "speaker": "", "face": "", "text": "Dr.fookah ドバイ店の前。扉が開いて、冷気と一緒に声が飛んできた。" },
+          { "speaker": "faris", "face": "smile", "text": "いらっしゃいませー！　……お、日本の人？" },
+          { "speaker": "hajime", "face": "surprise", "text": "え、日本語？" },
+          { "speaker": "faris", "face": "smile", "text": "店長が日本人だから、挨拶だけ百回練習した。あとはアニメ" },
+          { "speaker": "faris", "face": "normal", "text": "ファーリス。ここで葉を量ってる。あなたは？" },
+          { "type": "set_flag", "flag": "_met_faris" },
+          { "speaker": "hajime", "face": "normal", "text": "逢縁はじめです。日本で、シーシャの店で働いてて" },
+          { "speaker": "faris", "face": "excited", "text": "同じ仕事だ！　遊びに来たの？" },
+          { "speaker": "hajime", "face": "smile", "text": "はい。知り合いに招かれて、少しだけ" },
+          { "speaker": "faris", "face": "normal", "text": "じゃ、普通の観光じゃもったいない。俺の叔父さん、ラクダレースの調教師なんだ" },
+          { "speaker": "hajime", "face": "surprise", "text": "ラクダレース？" },
+          { "speaker": "faris", "face": "smile", "text": "今は騎手がロボット。見たら、絶対びっくりする" }
+        ],
+        "again": [
+          { "speaker": "", "face": "", "text": "Dr.fookah ドバイ店の前。葉の缶を抱えた店員が、こちらを見て足を止めた。" },
+          { "speaker": "faris", "face": "excited", "text": "ハジメ！　日本に帰ったんじゃなかったの？" },
+          { "speaker": "hajime", "face": "smile", "text": "帰りました。また、遊びに来たんです" },
+          { "speaker": "faris", "face": "smile", "text": "おかえり。前は、ゆっくり遊ぶ前に帰っちゃったよね" },
+          { "speaker": "hajime", "face": "normal", "text": "そうでした。あの時は、慌ただしくて" },
+          { "type": "condition", "condition_type": "flag_count", "flag": "_ch5_camel_known", "threshold": 2, "next_true": "again_track", "next_false": "again_shop" }
+        ],
+        "again_shop": [
+          { "speaker": "faris", "face": "normal", "text": "前に言ってた、見せたいもの。叔父さんのラクダレースなんだ" },
+          { "speaker": "faris", "face": "smile", "text": "今は騎手がロボット。見たら、絶対びっくりする" }
+        ],
+        "again_track": [
+          { "speaker": "faris", "face": "smile", "text": "叔父さん、ハジメのこと覚えてたよ。『理解の早い子』って" },
+          { "speaker": "faris", "face": "smile", "text": "今度こそ、ハビーバと走ってもらうからね" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch5_noor_meet",
+      "comment": "第5章のドバイ（2026-11-07 オーナー決定）。第4章でヌールに会っていない人が、カフェ・サーリム（ヌールの父の店。表に砂漠ツアーのデスク）に初めて入る。ch4_noor_meet の代わりに読む（段階の数え方・♥1・登場カットインは同じ。chapters/ch5-dubai.js が差し替える）。はじめはシェイクの屋敷に泊まっているので宿には触れない。大会・王者・味覚にも触れない（大会の話は父の噂として ch4_noor_talk2 の大会後の分岐で出る）。語録は初対面の歓迎「アリガトナス！」だけ。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "旧市街の通りに、シーシャカフェがあった。" },
+        { "speaker": "", "face": "", "text": "表の小さなデスクに、砂丘を駆け上がる車の写真が貼ってある。" },
+        { "speaker": "", "face": "", "text": "中で一台頼むと、炭を運んできた女の人が、ぱっと顔を明るくした。" },
+        { "speaker": "noor", "face": "smile", "text": "ねえ、日本の人でしょ？ 表の写真、じっと見てたよね" },
+        { "speaker": "hajime", "face": "surprise", "text": "あ、はい。はじめです。……日本語、話せるんですね" },
+        { "speaker": "noor", "face": "smile", "text": "私の日本語、上手でしょ？ 日本から来てくれてアリガトナス！" },
+        { "speaker": "hajime", "face": "surprise", "text": "（……歓迎してくれてるんだよな。語尾は、ちょっと気になるけど）" },
+        { "speaker": "noor", "face": "smile", "text": "お店に日本のお客さんも来るから、少しずつ覚えたの" },
+        { "speaker": "noor", "face": "smile", "text": "私はヌール。ここは父の店で、昼は表のデスクで砂漠のガイドもしてる" },
+        { "type": "set_flag", "flag": "_met_noor" },
+        { "speaker": "noor", "face": "smile", "text": "写真の車も、私が運転してるの。かっこいいでしょ" },
+        { "speaker": "hajime", "face": "surprise", "text": "え、この坂を？" },
+        { "speaker": "noor", "face": "normal", "text": "砂は、慌てなければ待ってくれる。……で、ハジメは観光？" },
+        { "speaker": "hajime", "face": "normal", "text": "知り合いに招かれて、遊びに来たんです。日本では、シーシャの店で働いてて" },
+        { "speaker": "noor", "face": "surprise", "text": "シーシャのお店の人！ 父が聞いたら喜ぶよ。毎晩、奥の席で吸ってるから" },
+        { "speaker": "noor", "face": "smile", "text": "日本のお店の話、今度聞かせて。息抜きしたくなったら、また吸いに来て" },
+        { "speaker": "hajime", "face": "smile", "text": "はい、また来ます" },
+        { "speaker": "noor", "face": "smile", "text": "約束！ ……あ、今の顔、ちょっとかわいい" },
+        { "speaker": "hajime", "face": "surprise", "text": "（……からかわれてる。たぶん）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_noor_cafe_again",
+      "comment": "第5章のドバイ（2026-11-07 オーナー決定）。第4章でカフェ・サーリムに通っていた（締めくくりはまだ）人の、第5章で最初の来店。この日の来店は再会だけ（雑談と同じく一台・好感度は通いの小会話の値）で、段階の会話は次の来店から（chapters/ch5-dubai.js）。読むと _ch5_dubai_dunes_again も立て、砂丘の前の再会は読まない。挨拶は普通の日本語で、語録は混ぜない。大会・王者・味覚・宿には触れない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "カフェ・サーリムの扉を開けると、ダブルアップルの甘い匂いがした。" },
+        { "speaker": "noor", "face": "surprise", "text": "……ハジメ！ 久しぶり！ またドバイに来てくれたんだ" },
+        { "speaker": "hajime", "face": "smile", "text": "はい。少しだけ、遊びに来ました" },
+        { "speaker": "noor", "face": "normal", "text": "帰る前に、ひとこと言ってくれてもよかったのに" },
+        { "speaker": "hajime", "face": "normal", "text": "すみません。……あの頃は、バタバタしてて" },
+        { "speaker": "noor", "face": "smile", "text": "ふふ、許す。また来てくれたから" },
+        { "speaker": "noor", "face": "smile", "text": "座って座って。父のおまかせでいい？" },
+        { "speaker": "hajime", "face": "smile", "text": "お願いします" },
+        { "speaker": "", "face": "", "text": "奥の席から、ヌールさんのお父さんが、こちらへ軽くカップを上げた。" },
+        { "speaker": "noor", "face": "smile", "text": "話したいこと、たまってるんだから。また明日も来てね" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_noor_cafe_4",
+      "comment": "第5章のドバイで読む ch4_noor_cafe_4（DSR20 の♥4）。流れは第4章と同じで、はじめが遊びに来ている間の言い方だけ替える（「いつか日本に帰っちゃう」→「また日本に帰っちゃう」。chapters/ch5-dubai.js が差し替える。段階の数え方は ch4_noor_cafe_4 のまま）。大会に触れない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "カフェ・サーリムの奥の席。ヌールさんが、スマホの写真を見せてくれた。" },
+        { "speaker": "noor", "face": "smile", "text": "見て。日本のアニメの、舞台になった町。いつか行きたい場所リスト" },
+        { "speaker": "hajime", "face": "smile", "text": "聖地巡礼ですね" },
+        { "speaker": "noor", "face": "surprise", "text": "それ！ そこに行って、写真と同じ景色を見てみたいの" },
+        { "speaker": "noor", "face": "normal", "text": "……ハジメは、また日本に帰っちゃうんだよね" },
+        { "speaker": "hajime", "face": "normal", "text": "……そうですね。向こうに、帰る店があるので" },
+        { "speaker": "noor", "face": "smile", "text": "じゃあ、私が日本に行ったら、今度はハジメがガイドね" },
+        { "speaker": "noor", "face": "smile", "text": "砂の代わりに、ハジメの好きな場所を見せて。約束ね" },
+        { "speaker": "", "face": "", "text": "ヌールさんが差し出した小指に、俺も自分の指を重ねた。" },
+        { "speaker": "hajime", "face": "smile", "text": "はい。今度は俺が、好きな場所を案内します" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_noor_sunset_first",
+      "comment": "第5章のドバイで初めて砂丘へ出かけた日の夕日（ch4_desert_sunset_first の代わり。chapters/ch5-dubai.js が差し替える）。第4章と同じ流れで、大会の前後の言い方の代わりに、遊びに来ている今の言い方にする（目の前にあるのは博士との勝負）。教訓を押しつけず、楽しかったで終える。大会・王者・味覚には触れない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "板を抱えて砂丘を登り切ると、太陽が低くなっていた。砂の影が、長く伸びている。" },
+        { "speaker": "noor", "face": "smile", "text": "お疲れさま！ 座って座って。この時間のために、ここに来てるようなものだから" },
+        { "speaker": "", "face": "", "text": "二人で砂の上に座る。昼の熱が残った砂が、背中に温かい。" },
+        { "speaker": "hajime", "face": "normal", "text": "……砂の上を滑るなんて、思いつきもしなかった" },
+        { "speaker": "noor", "face": "normal", "text": "日本には雪があるものね。こっちには砂しかない。だから滑る" },
+        { "speaker": "hajime", "face": "smile", "text": "単純で、いいな" },
+        { "speaker": "noor", "face": "smile", "text": "単純なのが一番長く続くの。ツアーも、父の店の煙も" },
+        { "speaker": "", "face": "", "text": "ヌールさんが手を伸ばして、俺の髪についた砂を払った。" },
+        { "speaker": "noor", "face": "smile", "text": "砂まみれ。日本まで、持って帰るつもり？" },
+        { "speaker": "hajime", "face": "surprise", "text": "（……心臓に悪い）" },
+        { "speaker": "hajime", "face": "normal", "text": "（……博士との勝負のこと、今日は一度も考えなかった）" },
+        { "speaker": "noor", "face": "smile", "text": "遊びに来てくれて、ありがとう。次に来た時も、ここで夕日を見よう" },
+        { "speaker": "hajime", "face": "smile", "text": "はい。……今度は、一回も転ばずに登ります" },
+        { "speaker": "", "face": "", "text": "太陽が砂丘の向こうへ沈みきるまで、くだらない話をした。砂は、まだ温かかった。" }
+      ]
     }
   ]
 }

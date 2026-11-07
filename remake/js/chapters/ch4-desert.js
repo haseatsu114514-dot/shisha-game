@@ -16,7 +16,7 @@ export * from "./ch4-desert-progress.js";
 import { addMoney, gainAffinity, visitAffinity } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
-import { DESERT_TALKS, DESERT_INVITE_STAGE, NOOR_QUESTION_CHOICE, NOOR_CONFESSION, NOOR_OTHER_LOVER_FLAG, noorConfessionWaiting, DESERT_SCENES, DESERT_CAFE_PRICE, desertCafeVisit, completeDesertCafeVisit, DESERT_RACE_WIN_LINE, DESERT_NARU_LINES, DESERT_DIALOGUE_IDS, desertRivals, markNaruMet, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
+import { DESERT_TALKS, DESERT_INVITE_STAGE, NOOR_QUESTION_CHOICE, NOOR_CONFESSION, NOOR_OTHER_LOVER_FLAG, NOOR_VISIT_CONFESSION_FLAG, noorConfessionWaiting, DESERT_SCENES, DESERT_CAFE_PRICE, desertCafeVisit, completeDesertCafeVisit, DESERT_RACE_WIN_LINE, DESERT_NARU_LINES, DESERT_DIALOGUE_IDS, desertRivals, markNaruMet, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
   desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertProgress } from "./ch4-desert-progress.js";
 
 let dialogueTask = null;
@@ -35,9 +35,10 @@ let active = false;
  * 地図からの入口。kind "desert_talk" はカフェ・サーリムで会話を1つ読んで確定（paid なら一台の代金 3,000円）、
  * kind "desert" は砂丘へ出かけて遊ぶ（2回目からツアー代）。会話のたびにヌールの好感度が上がる（段階 +16・雑談 +8）。
  * 読了・完走の確定と保存はここで行う。中断（signal・LOAD・タイトル）は確定済みの分だけ残す。
+ * scene: 読む台詞 id の差し替え（第5章の書き出し。段階の数え方・報酬は元の id のまま。第4章は渡さない）。
  * 戻り値: 何かを確定したら true。
  */
-export async function visitDesert(destination, { day, isCurrent = () => true, signal = null, host = null, paid = false, naru = true } = {}) {
+export async function visitDesert(destination, { day, isCurrent = () => true, signal = null, host = null, paid = false, naru = true, scene = id => id } = {}) {
   if (active || !state || !destination || destination.ok === false || signal?.aborted || !isCurrent()) return false;
   active = true;
   const owner = state;
@@ -75,7 +76,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
         return changed;
       }
       const id = visit.id;
-      if (!await read(id, bgUrl("bg_dubai_inn_day"))) return false;
+      if (!await read(scene(id), bgUrl("bg_dubai_inn_day"))) return false;
       if (!completeDesertCafeVisit(owner, visit, day, { legacy })) return false;
       if (paid) addMoney(-DESERT_CAFE_PRICE);
       // ♥3の問いに答えた（選択は engine の onChoice → bonds.js の recordRomanceChoice が記録済み）
@@ -97,7 +98,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
       import("../minigames/desert-ride.js"), import("../minigames/desert-ride-art.js")]);
     if (!current()) return false;
     loadDesertArt(); // 到着の会話の間にゲームの絵を読み始める
-    if (!await read(status.first ? DESERT_SCENES.arrive : DESERT_SCENES.again, bgUrl(DESERT_BG))) return false;
+    if (!await read(scene(status.first ? DESERT_SCENES.arrive : DESERT_SCENES.again), bgUrl(DESERT_BG))) return false;
     // ここで昼の行動枠を使う（2回目からはツアー代も）。以降の滑り直しは何度でも、追加の消費なし。
     if (!beginDesertOuting(owner, day)) return false;
     if (status.price) addMoney(-status.price);
@@ -148,14 +149,17 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
       if (current() && romanceRouteOpen(DESERT_GUIDE)) {
         // ほかに恋人がいれば、返事の前に一度だけ立ち止まる（台本の条件で出す一時の印）
         owner.flags[NOOR_OTHER_LOVER_FLAG] = (owner.lovers || []).length > 0;
-        try { await read(NOOR_CONFESSION, bgUrl(DESERT_DUSK_BG)); } finally { delete owner.flags[NOOR_OTHER_LOVER_FLAG]; }
+        // 第5章で締めくくりを迎えた人（遊びに来ている間の告白・2026-11-07 オーナー決定）は「また日本に帰る」の言い方（台本の visiting）
+        owner.flags[NOOR_VISIT_CONFESSION_FLAG] = (owner.finales?.[DESERT_GUIDE]?.chapter || 0) >= 5;
+        try { await read(NOOR_CONFESSION, bgUrl(DESERT_DUSK_BG)); }
+        finally { delete owner.flags[NOOR_OTHER_LOVER_FLAG]; delete owner.flags[NOOR_VISIT_CONFESSION_FLAG]; }
         // 付き合うと LIME を交換する（台本の _lime_contact_noor）。以後、離れていても朝のLIMEが届く（remake/data/lover.json）
         if (owner.flags[`_lime_contact_${DESERT_GUIDE}`] && !(owner.contacts || []).includes(DESERT_GUIDE)) (owner.contacts ||= []).push(DESERT_GUIDE);
         if (state === owner) save();
         return changed;
       }
     }
-    await read(status.first ? DESERT_SCENES.sunsetFirst : DESERT_SCENES.sunsetAgain, bgUrl(DESERT_DUSK_BG));
+    await read(scene(status.first ? DESERT_SCENES.sunsetFirst : DESERT_SCENES.sunsetAgain), bgUrl(DESERT_DUSK_BG));
     return changed;
   } finally { active = false; }
 }
@@ -164,16 +168,16 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
  * 日常ループ（版2）の行き先の処理。戻り値は calendar の performSpot の形 { used, exerted, slotsUsed }。
  * デスクの会話は時間を使わない（used: false）。砂丘は visitDesert の中で昼の行動（slot）を使い済みなので slotsUsed: 0。
  * 体力は使わない（砂丘は気分転換。日常ループが外出のたびに経験値を足さないようにし、育成は初回完走の分だけにする）。
- * naru: false は第5章（なるを砂丘に呼ばない）。
+ * naru: false は第5章（なるを砂丘に呼ばない）。scene は第5章の書き出しの差し替え（visitDesert）。
  */
-export async function performDesertSpot(entry, { day, showHud = null, naru = true } = {}) {
+export async function performDesertSpot(entry, { day, showHud = null, naru = true, scene } = {}) {
   const owner = state;
   const cafe = entry.place === "tour_desk";
   const before = desertProgress(owner);
   const hudRoot = layers.hud.firstElementChild;
   let changed = false;
   try {
-    changed = await visitDesert({ kind: cafe ? "desert_talk" : "desert", ok: true }, { day, paid: cafe, naru });
+    changed = await visitDesert({ kind: cafe ? "desert_talk" : "desert", ok: true }, { day, paid: cafe, naru, scene });
   } finally {
     if (hudRoot && !hudRoot.isConnected) layers.hud.replaceChildren(hudRoot);
     showHud?.(true);
