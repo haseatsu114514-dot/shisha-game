@@ -68,6 +68,15 @@ button { font: inherit; color: inherit; }
   overflow: hidden;
   background: #000;
 }
+/* 左右の黒帯（#2855）: 今の背景を cover＋blur＋暗幕で敷く。静止画1枚・filter 1回。画像の無い画面は黒のまま */
+#viewport::before {
+  content: "";
+  position: absolute;
+  inset: -40px; /* blur の縁が透けないよう外へ広げる */
+  background: var(--lb-bg, none) center / cover no-repeat;
+  filter: blur(18px) brightness(.45) saturate(.85);
+  pointer-events: none;
+}
 /* 画面の真ん中に置いてから縮める（grid/flex の中央寄せは、画面より大きい要素だと
    右下にはみ出す＝スマホで右下に埋まる不具合の原因だった）。倍率は main.js の fitStage() */
 #stage {
