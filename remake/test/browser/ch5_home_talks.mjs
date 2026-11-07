@@ -24,9 +24,9 @@ async function visit(page, pin) {
   await page.locator(dt("map-go")).click();
 }
 
-async function seed(page, { region = "home", met = {}, read = {}, affinity = {}, flags = {} } = {}) {
+async function seed(page, { region = "home", met = {}, read = {}, affinity = {}, flags = {}, romanceChoices = {}, finales = {} } = {}) {
   page.setDefaultTimeout(30000);
-  await page.evaluate(async ({ region, met, read, affinity, flags }) => {
+  await page.evaluate(async ({ region, met, read, affinity, flags, romanceChoices, finales }) => {
     const core = await import("./js/core/state.js");
     const value = core.newGame();
     Object.assign(value, { chapter: 5, day: 51, slot: 0, phase: "daily", money: 50000, stamina: 100,
@@ -39,13 +39,15 @@ async function seed(page, { region = "home", met = {}, read = {}, affinity = {},
       _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true, _ch5_region_started: true, ...flags };
     Object.assign(value.met, met);
     Object.assign(value.affinity, affinity);
+    Object.assign(value.romanceChoices, romanceChoices);
+    Object.assign(value.finales, finales);
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
     // 辻占のオババが地図の演出を挟まないよう、第5章の出現は済んだことにする（ch5_full_flow と同じ）
     const fortunePlan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter: 5 });
     value.flags._fortune_wander = { chapter: 5, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
     core.saveConfig(); core.save();
-  }, { region, met, read, affinity, flags });
+  }, { region, met, read, affinity, flags, romanceChoices, finales });
   await page.reload();
   await page.locator(dt("title-load")).click();
   await page.evaluate(async () => {
@@ -75,6 +77,49 @@ await suite("ch5-home-talks", async check => {
     const state = await get(page);
     assert.deepEqual([state.day, state.slot, state.flags._ch5_tokyo_talks, state.finales?.steve, state.finales?.volk],
       [51, 0, undefined, undefined, undefined], "nothing was done yet");
+  });
+
+  // ヌールに会った保存を LOAD した直後（カフェ・サーリムにも砂丘にもまだ行っていない地図）から、MENU の人間関係が♥5の締めくくり・
+  // 告白を正しく案内する（締めくくり・告白の台詞は ch4_desert.json にあるので、再開の時に読んでおく。地元にいる時も同じ）。
+  const noorSave = {
+    met: { noor: true, sheikh: true },
+    affinity: { noor: 66 },
+    flags: { _ch5_dubai_guest: true, _ch5_dubai_dunes_again: true, _ch5_dubai_camel_again: true, _noor_affinity_question_done: true,
+      _ch4_desert: { v: 2, talks: 6, chats: 1, lastTalkDay: 10, outings: 1, lastOutingDay: 9 } },
+    romanceChoices: { bond_q1_noor: { char: "noor", value: 1, day: 9 } },
+  };
+  const dubaiMapReady = page => page.waitForFunction(() => document.querySelector('.map:not(.done):not([data-revealing="true"])[data-region="dubai"] [data-test=pin-ch5_dubai_sheikh]')
+    && !document.querySelector("#modal.show"), null, { timeout: 60000 });
+  const noorRow = async page => {
+    await page.evaluate(async () => { void (await import("./js/daily/status.js")).openStatus(); });
+    await page.locator('[data-tab="people"]').click();
+    const row = await page.evaluate(() => {
+      const el = document.querySelector('.pp-row[data-person="noor"]');
+      return el && { label: el.querySelector(".pp-relation")?.textContent || "", next: el.querySelector(".pp-next")?.textContent || "" };
+    });
+    await page.locator('[data-test="status-close"]').click();
+    return row;
+  };
+  const untouched = (state, region, finales = {}) => assert.deepEqual(
+    [state.day, state.slot, state.flags._ch2_region, state.finales, state.affinity.noor, state.flags._ch4_desert, state.lovers],
+    [51, 0, region, finales, 66, noorSave.flags._ch4_desert, []], "nothing was done yet");
+  for (const region of ["dubai", "home"]) {
+    await check(`${region}-load-shows-noor-finale-menu-hint-before-any-action`, async page => {
+      await seed(page, { region, ...noorSave });
+      await (region === "dubai" ? dubaiMapReady(page) : mapReady(page, { day: 51, slot: 0 }));
+      assert.deepEqual(await noorRow(page), { label: "恋愛ルート", next: "次にカフェ・サーリムで会うと、特別なイベントへ。" },
+        "the ♥5 finale is announced right after LOAD");
+      untouched(await get(page), region);
+    });
+  }
+  await check("dubai-load-shows-noor-confession-menu-hint-before-any-action", async page => {
+    const finales = { noor: { day: 12, chapter: 4, route: "romance" } };
+    await seed(page, { region: "dubai", ...noorSave, finales,
+      romanceChoices: { ...noorSave.romanceChoices, bond_q2_noor: { char: "noor", value: 1, day: 12 } } });
+    await dubaiMapReady(page);
+    assert.deepEqual(await noorRow(page), { label: "告白を選べる", next: "次の砂丘（ツアー代なし）で、滑ったあとの夕日の時間へ。" },
+      "the waiting confession is announced right after LOAD");
+    untouched(await get(page), "dubai", finales);
   });
 
   await check("yuzugaya-kanzaki-aftermath-and-rei-talk-read-once", async page => {

@@ -24,7 +24,7 @@ import { cityRegularSpots, visitCityRegular } from "./ch2-preparation.js";
 import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNight, tokyoWakeBackground, chapterFiveMukaiShift,
   chapterFiveTokyoPin, tokyoSpotsNow, preloadTokyoScenes } from "./ch5-tokyo.js";
 import { DUBAI, DUBAI_SPOTS, TO_DUBAI_SPOT, performDubaiSpot, inDubai, dubaiNight, dubaiWakeBackground, chapterFiveDubaiPin,
-  chapterFiveDubaiLeisureSpots, chapterFiveDubaiLeisureById } from "./ch5-dubai.js";
+  chapterFiveDubaiLeisureSpots, chapterFiveDubaiLeisureById, preloadNoorScenes } from "./ch5-dubai.js";
 import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop } from "./ch5-shops.js";
 import {
   chapterFiveProgress, chapterFiveFreeRemaining, chapterFiveRead, chapterFiveTimeoutPending,
@@ -126,9 +126,10 @@ export async function runChapterFiveDaily(io) {
     state.flags._ch5_region_started = true;
     save();
   }
-  // 東京にいる保存の再開・LOAD: 最初の地図から、スティーブ・ヴォルクの締めくくりの「!」と MENU の案内を出せるよう台詞を先に読む
+  // 東京にいる保存の再開・LOAD: 最初の地図から、スティーブ・ヴォルクの締めくくりの「!」と MENU の案内を出せるよう台詞を先に読む。
+  // ヌールに会っていれば（地元でもドバイでも）、MENU の締めくくり・告白の案内のためにカフェ・サーリムの台詞も先に読む
   const owner = state;
-  await preloadTokyoScenes();
+  await Promise.all([preloadTokyoScenes(), preloadNoorScenes()]);
   if (state !== owner) return;
   await runDaily(chapterFiveDailyDefinition(io));
 }
