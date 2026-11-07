@@ -1,0 +1,194 @@
+{
+  "対象Issue": 2712,
+  "生成方法": "内蔵 image_gen、1回につき1人1表情。CLI・外部ワーカー不使用",
+  "起点main": "7e5bec45e",
+  "プロンプト正本": "asset_sources/ui/continue-v5-20261106/prompts.md",
+  "使用節": [
+    "A-1",
+    "A-2",
+    "A-4",
+    "A-5",
+    "A-6",
+    "A-7",
+    "A-8",
+    "A-9",
+    "A-10",
+    "B"
+  ],
+  "補足指示": [
+    "人物高1300pxを満たすため上下余白を縮小して生成。後処理での拡大なし。原画のキャンバスは一致しないため本編組込時に通常基準で同比縮小・足元合わせが必要。",
+    "凛想通常は頭が大きい候補を除外し、画像生成による頭部縮小の再生成後に表情差分の参照に使用。",
+    "背景は2560×1440を明記して再生成したが実出力1672×941で未達。"
+  ],
+  "未完": [
+    "A-3: 正本指定の assets/sprites/characters/ageha/chr_ageha_excited.png が起点mainに存在しない。代替参照を独断で作らず未生成。",
+    "B: 背景の最低2048×1152条件が未達。候補は保存するが合格扱いにしない。"
+  ],
+  "画像": [
+    {
+      "保存先": "asset_sources/portraits/ageha-new-expressions-20261106/serious-untouched.png",
+      "sha256": "582e55cf0b3a5c117c8c8f67298e7f054a4a252e11a8c249af3a201014f8da5c",
+      "寸法": [
+        1084,
+        1451
+      ],
+      "形式": "RGBA",
+      "alpha128境界": [
+        314,
+        9,
+        873,
+        1417
+      ],
+      "人物高px": 1408,
+      "目視確認": "顔・衣装・線・段階影・手足・文字なしを確認"
+    },
+    {
+      "保存先": "asset_sources/portraits/ageha-new-expressions-20261106/smile-untouched.png",
+      "sha256": "0f9dff14e71c470709dec71867da8bd4ac63f5bdf53db31a1f1a04149b644c93",
+      "寸法": [
+        1069,
+        1472
+      ],
+      "形式": "RGBA",
+      "alpha128境界": [
+        288,
+        19,
+        860,
+        1459
+      ],
+      "人物高px": 1440,
+      "目視確認": "顔・衣装・線・段階影・手足・文字なしを確認"
+    },
+    {
+      "保存先": "asset_sources/portraits/ageha-new-expressions-20261106/surprise-untouched.png",
+      "sha256": "163246141ec1181563e16e3eb5ef229b37c420bed6b4c5e4354a19d113172363",
+      "寸法": [
+        1069,
+        1472
+      ],
+      "形式": "RGBA",
+      "alpha128境界": [
+        301,
+        7,
+        867,
+        1468
+      ],
+      "人物高px": 1461,
+      "目視確認": "顔・衣装・線・段階影・手足・文字なしを確認"
+    },
+    {
+      "保存先": "asset_sources/portraits/mashiro-new-expressions-20261106/sad-untouched.png",
+      "sha256": "df5074daf6147f6921de6076aa9b7b4d621b2b3fc870c45e3e0b2b780689b8ce",
+      "寸法": [
+        1069,
+        1472
+      ],
+      "形式": "RGBA",
+      "alpha128境界": [
+        271,
+        32,
+        804,
+        1453
+      ],
+      "人物高px": 1421,
+      "目視確認": "顔・衣装・線・段階影・手足・文字なしを確認"
+    },
+    {
+      "保存先": "asset_sources/portraits/mashiro-new-expressions-20261106/sleep-untouched.png",
+      "sha256": "2ca23d393ea1e88a2691578eeed488cd6d992c4cf707c5087927d8b64fc12a80",
+      "寸法": [
+        1054,
+        1493
+      ],
+      "形式": "RGBA",
+      "alpha128境界": [
+        264,
+        31,
+        793,
+        1482
+      ],
+      "人物高px": 1451,
+      "目視確認": "顔・衣装・線・段階影・手足・文字なしを確認"
+    },
+    {
+      "保存先": "asset_sources/portraits/mashiro-new-expressions-20261106/smile-untouched.png",
+      "sha256": "3f7d5ce73cc06eafa2aebc30a35aa6cb26f8f46e6fddfa4e0014e4c677232d74",
+      "寸法": [
+        1069,
+        1472
+      ],
+      "形式": "RGBA",
+      "alpha128境界": [
+        279,
+        31,
+        814,
+        1449
+      ],
+      "人物高px": 1418,
+      "目視確認": "顔・衣装・線・段階影・手足・文字なしを確認"
+    },
+    {
+      "保存先": "asset_sources/portraits/rio-new-expressions-20261106/normal-untouched.png",
+      "sha256": "7c19ccd192cd044af03413248104e954594662f4c41dfda5f365df5f57bf3c25",
+      "寸法": [
+        1054,
+        1493
+      ],
+      "形式": "RGBA",
+      "alpha128境界": [
+        310,
+        39,
+        782,
+        1482
+      ],
+      "人物高px": 1443,
+      "目視確認": "顔・衣装・線・段階影・手足・文字なしを確認"
+    },
+    {
+      "保存先": "asset_sources/portraits/rio-new-expressions-20261106/serious-untouched.png",
+      "sha256": "a963868b7e3fa808014b3e30bfc6b1744d71cd74715e6082605064767336c33c",
+      "寸法": [
+        1054,
+        1493
+      ],
+      "形式": "RGBA",
+      "alpha128境界": [
+        306,
+        31,
+        782,
+        1484
+      ],
+      "人物高px": 1453,
+      "目視確認": "顔・衣装・線・段階影・手足・文字なしを確認"
+    },
+    {
+      "保存先": "asset_sources/portraits/rio-new-expressions-20261106/smile-untouched.png",
+      "sha256": "1d0fa18c2638eea3a3acaba33f08fc43c7ea884a5a6c253fc7d10f3432d07216",
+      "寸法": [
+        1054,
+        1493
+      ],
+      "形式": "RGBA",
+      "alpha128境界": [
+        308,
+        35,
+        786,
+        1482
+      ],
+      "人物高px": 1447,
+      "目視確認": "顔・衣装・線・段階影・手足・文字なしを確認"
+    },
+    {
+      "保存先": "asset_sources/ui/continue-v5-20261106/generated/backdrop-inner.png",
+      "sha256": "74ae44fe24a5befd7fb5df47db2e2330e3daf7d9c692360233bf36b7d726afcb",
+      "寸法": [
+        1672,
+        941
+      ],
+      "形式": "RGB",
+      "alpha128境界": null,
+      "人物高px": null,
+      "目視確認": "人物・家具・機材・文字なし、左上の淡光・右側の暗部・低い煙を確認。解像度未達のため採用保留"
+    }
+  ]
+}
