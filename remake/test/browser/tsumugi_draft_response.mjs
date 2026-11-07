@@ -46,7 +46,7 @@ async function prepare(page) {
 function assertResponse(lines, answer) {
   assert.equal(lines.includes(NEUTRAL), answer === null);
   RESPONSES.forEach((text, i) => assert.equal(lines.includes(text), answer === i));
-  assert.equal(lines.filter(text => text === "「応募完了」。短い文字を、２人で確かめた。").length, 1);
+  assert.equal(lines.filter(text => text === "「応募完了」。短い文字を、2人で確かめた。").length, 1);
 }
 
 function stateDifferences(expected, actual, path = "") {

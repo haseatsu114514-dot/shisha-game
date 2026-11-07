@@ -46,7 +46,7 @@ export function recentMemoryEcho(id) {
 /** 好感度と恋愛の方向、成立済みの関係を分けて案内する（読み取り専用）。 */
 export function relationshipStatus(id) {
   if ((state.lovers || []).includes(id)) {
-    return summary("lover", "恋人", "♥5のまま、恋人としての交流で２人の仲は深まる。");
+    return summary("lover", "恋人", "♥5のまま、恋人としての交流で2人の仲は深まる。");
   }
   if (settledFriend(id)) {
     return summary("friend", "友達", state.chapter === 1
