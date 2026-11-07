@@ -23,11 +23,13 @@ const expectedCSS = fs.readFileSync(report.overrideCSS || "remake/css/game-ds.cs
 report.cssSHA256 = hash(expectedCSS);
 const b = (p, id) => p.locator(`[data-test="${id}"]`);
 async function hit(p, id, touch) {
-  if (["title-layout-normal", "title-layout-ds", "title-layout-recover"].includes(id)
-    && !(await p.locator(".title-layout-toolbar").evaluate(node => node.open)))
-    await hit(p, "title-layout-settings", touch);
+  // タイトルの見た目は CONFIG の中で切り替え、切り替えたら閉じる（#2863）。
+  const titleLayout = ["title-layout-normal", "title-layout-ds", "title-layout-recover"].includes(id);
+  if (titleLayout && !(await p.locator("#modal.show .title-layout-options").count()))
+    await hit(p, "title-config", touch);
   const n = b(p, id); await n.scrollIntoViewIfNeeded();
   if (touch) await n.tap(); else await n.click();
+  if (titleLayout && id !== "title-layout-recover") await hit(p, "cfg-close", touch);
 }
 async function ready(p) {
   await b(p, "title-new").waitFor({ timeout: 40000 });

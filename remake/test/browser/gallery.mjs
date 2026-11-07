@@ -323,8 +323,13 @@ try {
     await page.locator(t("title-gallery")).waitFor({ timeout: 45000 });
     await page.locator("#boot").waitFor({ state: "detached" });
     if (name !== "pc") {
-      await page.locator(t("title-layout-settings")).click();
+      // タイトルの見た目は CONFIG の中（#2863）。縦持ちでは回転の案内が出るので、横にして選んでから戻す。
+      const viewport = page.viewportSize();
+      if (viewport.height > viewport.width) await page.setViewportSize({ width: viewport.height, height: viewport.width });
+      await page.locator(t("title-config")).click();
       await page.locator(t("title-layout-ds")).click();
+      await page.locator(t("cfg-close")).click();
+      await page.setViewportSize(viewport);
     }
     await open(page);
     assert.equal(await page.locator('[role="tab"]').count(), 6);

@@ -14,15 +14,17 @@ const browserOptions = { headless: true, ...(process.env.CHROME_EXECUTABLE_PATH 
 const results = [];
 const button = (p, id) => p.locator(`[data-test="${id}"]`);
 const activate = async (p, id, touch) => {
-  if (["title-layout-normal", "title-layout-ds", "title-layout-recover"].includes(id)
-    && !(await p.locator(".title-layout-toolbar").evaluate(node => node.open)))
-    await activate(p, "title-layout-settings", touch);
+  // タイトルの見た目は CONFIG の中で切り替え、切り替えたら閉じる（#2863）。
+  const titleLayout = ["title-layout-normal", "title-layout-ds", "title-layout-recover"].includes(id);
+  if (titleLayout && !(await p.locator("#modal.show .title-layout-options").count()))
+    await activate(p, "title-config", touch);
   // 本編の表示切替も「表示」を開いてから選ぶ（DS風ではヒンジの小さなボタン）。
   if (["game-layout-normal", "game-layout-ds", "game-layout-recover"].includes(id)
     && !(await p.locator(".game-layout-toolbar").evaluate(node => node.open)))
     await activate(p, "game-layout-settings", touch);
   const target = button(p, id); await target.scrollIntoViewIfNeeded();
   if (touch) await target.tap(); else await target.click();
+  if (titleLayout && id !== "title-layout-recover") await activate(p, "cfg-close", touch);
 };
 const state = p => p.evaluate(() => ({ day:__remake.state.day, slot:__remake.state.slot, money:__remake.state.money,
   marker:__remake.state.flags._qa_ds, lovers:__remake.state.lovers, memory:__remake.state.relationshipMemories,
