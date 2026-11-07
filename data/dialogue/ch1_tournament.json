@@ -188,6 +188,7 @@
     {
       "dialogue_id": "ch1_tournament_opening",
       "metadata": {
+        "forced_event": true,
         "effect": "smoke"
       },
       "lines": [

@@ -116,9 +116,9 @@ await suite("issue439", async (check) => {
       I.map = (await import("./js/daily/map.js")).chooseSpot();
     });
     await page.locator('[data-test="pin-kannon"]').click();
-    // 読み込み中の文言は画面の文字ではなく読み上げ用ラベルに出す（8dbe6947 で写真と名前だけのパネルに変更）。
-    await page.locator(".mi-preview.loading").waitFor();
-    assert.match(await page.locator(".mi-preview").getAttribute("aria-label"), /読み込んでいます/);
+    // #2761 で詳細パネルは写真とスポット名だけになり、読み込み中の案内は画面の文字ではなく読み上げのラベルになった。
+    assert.match(await page.locator(".mi-preview.loading").getAttribute("aria-label"), /写真を読み込んでいます/);
+    assert.equal(await page.locator(".mi-preview").innerText(), "", "The panel shows only the photo and the spot name");
     await page.locator(".mi-preview:not(.loading)").waitFor();
     assert.match(await page.locator(".mi-preview").evaluate(node => getComputedStyle(node).backgroundImage), /bg_kannon/);
   });
