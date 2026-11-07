@@ -116,7 +116,9 @@ await suite("issue439", async (check) => {
       I.map = (await import("./js/daily/map.js")).chooseSpot();
     });
     await page.locator('[data-test="pin-kannon"]').click();
-    assert.match(await page.locator(".mi-preview").innerText(), /読み込んでいます/);
+    // 読み込み中の文言は画面の文字ではなく読み上げ用ラベルに出す（8dbe6947 で写真と名前だけのパネルに変更）。
+    await page.locator(".mi-preview.loading").waitFor();
+    assert.match(await page.locator(".mi-preview").getAttribute("aria-label"), /読み込んでいます/);
     await page.locator(".mi-preview:not(.loading)").waitFor();
     assert.match(await page.locator(".mi-preview").evaluate(node => getComputedStyle(node).backgroundImage), /bg_kannon/);
   });
