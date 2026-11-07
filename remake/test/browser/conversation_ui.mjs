@@ -2,6 +2,88 @@ import assert from "node:assert/strict";
 import { suite, baseURL, storageSnapshot } from "./support.mjs";
 
 await suite("conversation-ui", async check => {
+  await check("money-choice-reason", async page => {
+    const originalMoney = await page.evaluate(async () => (await import("./js/core/state.js")).state.money);
+    const show = async (money, theme, text, hinted = null) => {
+      await page.evaluate(async ({ money, theme, text, hinted }) => {
+        const { state } = await import("./js/core/state.js");
+        const { DB } = await import("./js/core/data.js");
+        const vn = await import("./js/vn/engine.js");
+        state.money = money;
+        document.documentElement.dataset.uiTheme = theme;
+        if (hinted) {
+          const { relationshipElapsedDay } = await import("./js/core/chapter-clock.js");
+          const from = relationshipElapsedDay(state);
+          if (hinted === "fortune") state.flags._fortune_choice_sight = { char: "minto", chapter: state.chapter, from, until: from + 2 };
+          else {
+            delete state.flags._fortune_choice_sight;
+            state.growth ??= { nodes: [], learned: [] };
+            state.growth.nodes.push("K07");
+          }
+          DB.fortuneHints.choices["__money_choice_reason:money_reason"] = {
+            kind: "conversation", target: "minto", options: ["pay", "free"], preferred: "free",
+          };
+        }
+        window.moneyChoicePlay = vn.play({ dialogue_id: "__money_choice_reason", lines: [{ type: "choice", id: "money_reason", choices: [
+          { text, next: "pay", condition_type: "money", threshold: 1000 }, { text: "やめておく", next: "free" },
+        ] }], branches: { pay: [], free: [] } }, { growthScene: hinted === "growth" });
+      }, { money, theme, text, hinted });
+      await page.locator(".vn-choices.show .vn-choice").first().waitFor();
+    };
+    const short = "購入する（1,000円）";
+    const long = "みんとのチェキを一枚買ってみる（1,000円）";
+    for (const theme of ["classic", "paper"]) for (const [money, text] of [[999, short], [999, long], [1000, short], [1001, long]]) {
+      await show(money, theme, text);
+      const paid = page.locator('[data-test="choice-0"]');
+      const reason = paid.locator(".vn-choice-reason");
+      if (money < 1000) {
+        assert.equal(await paid.getAttribute("aria-disabled"), "true");
+        assert.equal(await reason.textContent(), "所持金不足（あと1円）");
+        assert.equal(await paid.getAttribute("aria-describedby"), await reason.getAttribute("id"));
+        const spoken = await paid.ariaSnapshot();
+        assert(spoken.indexOf(text) >= 0 && spoken.indexOf(text) < spoken.indexOf("所持金不足（あと1円）"), "読み上げ情報は本文のあとに不足理由が続く");
+        await paid.focus();
+        assert.equal(await page.evaluate(() => document.activeElement?.dataset.test), "choice-0", "不足理由にキーボードで到達できる");
+        await page.keyboard.press("Enter");
+        assert.equal(await page.locator(".vn-choices.show .vn-choice").count(), 2, "不足項目は実行されない");
+        await page.keyboard.press("1");
+        assert.equal(await page.locator(".vn-choices.show .vn-choice").count(), 2, "数字キーでも購入しない");
+      } else {
+        assert.equal(await paid.getAttribute("aria-disabled"), null);
+        assert.equal(await reason.count(), 0);
+      }
+      const metrics = await paid.evaluate(button => {
+        const text = button.firstChild;
+        const range = document.createRange(); range.selectNodeContents(text);
+        const cs = getComputedStyle(button);
+        const scale = button.getBoundingClientRect().width / button.offsetWidth;
+        return { size: parseFloat(cs.fontSize), reasonSize: button.querySelector(".vn-choice-reason") && parseFloat(getComputedStyle(button.querySelector(".vn-choice-reason")).fontSize),
+          fits: range.getBoundingClientRect().width <= button.getBoundingClientRect().width - (parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight)) * scale + 1 };
+      });
+      assert(metrics.fits && metrics.size >= 18, `本文が収まる: ${JSON.stringify(metrics)}`);
+      if (money < 1000) {
+        assert.equal(metrics.reasonSize, 15, "補足の字は本文の縮小と独立する");
+        assert(await reason.evaluate(el => {
+          const box = el.getBoundingClientRect(), button = el.closest("button").getBoundingClientRect();
+          return box.top >= button.top && box.bottom <= button.bottom;
+        }), "補足が選択肢の枠内に見える");
+      }
+      await page.locator('[data-test="choice-1"]').click();
+      await page.locator(".vn-choices.show").waitFor({ state: "hidden" });
+      assert.equal(await page.evaluate(async () => (await import("./js/core/state.js")).state.money), money, "料金・購入処理を変更しない");
+    }
+    await show(999, "paper", short, "fortune");
+    assert.equal(await page.locator('[data-test="choice-1"]').getAttribute("aria-label"), "やめておく（占いの予感）");
+    assert.equal(await page.locator('[data-test="choice-1"]').evaluate(el => el.classList.contains("fortune-hint")), true, "占いヒントを残す");
+    assert.equal(await page.locator('[data-test="choice-0"] .vn-choice-reason').textContent(), "所持金不足（あと1円）");
+    await page.locator('[data-test="choice-1"]').click();
+    await show(999, "classic", short, "growth");
+    assert.equal(await page.locator('[data-test="choice-1"]').getAttribute("aria-label"), "やめておく（会話の気配）");
+    assert.equal(await page.locator('[data-test="choice-1"]').evaluate(el => el.classList.contains("growth-hint")), true, "成長ヒントを残す");
+    assert.equal(await page.locator('[data-test="choice-0"] .vn-choice-reason').textContent(), "所持金不足（あと1円）");
+    await page.locator('[data-test="choice-1"]').click();
+    await page.evaluate(async money => { (await import("./js/core/state.js")).state.money = money; }, originalMoney);
+  });
   await check("choice-modal-log-keyboard", async page => {
     const saved = await storageSnapshot(page);
     await page.locator('[data-test="vn-log"]').focus();

@@ -25,6 +25,8 @@ export const NOOR_FINALE = "ch4_noor_bond_finale";
 export const NOOR_CONFESSION = "confession_noor";
 /** 告白の場面で「ほかに恋人がいる」ひとことを出す一時の印（再生の直前に立て、終わったら消す）。 */
 export const NOOR_OTHER_LOVER_FLAG = "_noor_confession_other_lover";
+/** 第5章で締めくくりを迎えた人の告白で「また日本に帰る」の言い方を出す一時の印（2026-11-07。再生の前に立て、終わったら消す）。 */
+export const NOOR_VISIT_CONFESSION_FLAG = "_noor_confession_visit";
 /** 段階の会話が無い日の、店での雑談（順に巡回）。 */
 export const DESERT_CAFE_CHATS = Object.freeze(["ch4_noor_cafe_chat_a", "ch4_noor_cafe_chat_b", "ch4_noor_cafe_chat_c"]);
 export const DESERT_CAFE_PRICE = 3000; // ドバイのカフェの一台（ch4-dubai-daily.js の中心地・路地裏のカフェと同じ）
@@ -297,11 +299,28 @@ export function desertDailySpots(value, day) {
 /** 地図で選んだ行き先を、今行ける時だけ返す（行けない行き先は処理しない）。 */
 export const desertDailySpotById = (value, day, id) => desertDailySpots(value, day).find(entry => entry.id === id && !entry.unavailable) || null;
 
-/**
- * 第5章でドバイへ来た日の砂丘（chapters/ch5-dubai.js）。第4章で一度でも砂丘へ出かけた人だけ「ヌールと砂丘へ」を出す。
- * カフェ・サーリムの段階の会話・締めくくりは第4章だけなので、デスクは出さない（初めての砂丘・最初の夕日の場面も第5章では読まない）。
- * day は通算の日。第4章は章内の日（14まで）で記録したが、第5章の通算の日は必ずそれより大きいので、1日1回の判定は崩れない。
- */
-export const desertRevisitSpots = (value, day) => desertProgress(value).outings > 0
-  ? desertDailySpots(value, day).filter(entry => entry.id === DESERT_SPOT_IDS.dunes) : [];
+// ---- 第5章のドバイ（chapters/ch5-dubai.js） -------------------------------------------------------------------------
+// 2026-11-07 オーナー決定「第4章のラクダレース／砂丘を飛ばしたプレイヤーも、第5章側で前提を補ってルートに入れる」「ノールの告白は第5章でも可能にする」:
+// 第5章でも、締めくくりを迎えるまではカフェ・サーリムに通える（会っていなければ第5章の出会いから。段階の会話・♥3の問い・♥5の締めくくりは
+// 第4章と同じ順。好感度は第5章の通いの値）。誘われていれば砂丘へも行ける。締めくくりの後（恋人・友人・告白待ち）は今までどおり砂丘だけ。
+// はじめは宿ではなくシェイクの屋敷に泊まるので「宿の隣」と書かず、第5章の地図（中庭の太陽 34,32・ラクダの店先 48,36）と重ならない所に置く。
+// day は通算の日（第4章は章内の日 ≤14 で記録したので、第5章の通算の日は必ずそれより大きく、1日1回の判定は崩れない）。
+const CH5_CAFE = Object.freeze({ x: 60, y: 28, area: "旧市街の通り" });
+const CH5_CAFE_FIRST = Object.freeze({ label: "砂漠ツアーのカフェ",
+  desc: `表に砂漠ツアーのデスクがあるシーシャカフェ。一台${DESERT_CAFE_PRICE.toLocaleString("ja-JP")}円（約70ディルハム）。` });
+/** 第5章でドバイへ来た日のヌールの行き先（締めくくりまではカフェ・サーリム、誘われていれば砂丘も）。 */
+export function desertChapterFiveSpots(value, day) {
+  const spots = desertDailySpots(value, day);
+  const dunes = spots.filter(entry => entry.id === DESERT_SPOT_IDS.dunes);
+  if (value?.finales?.[DESERT_GUIDE]) return dunes;
+  const cafe = spots.find(entry => entry.id === DESERT_SPOT_IDS.desk);
+  return [Object.freeze({ ...cafe, ...CH5_CAFE, ...(desertProgress(value).talks === 0 ? CH5_CAFE_FIRST : {}) }), ...dunes];
+}
+/** 第5章で、第4章に通っていた人の最初の来店（再会の場面だけ・chapters/ch5-dubai.js）を今日の来店として数える（段階は進めない）。 */
+export function completeDesertReunion(value, day) {
+  const progress = desertProgress(value);
+  if (!value?.flags || progress.talks === 0 || progress.lastTalkDay !== null && progress.lastTalkDay >= day) return false;
+  write(value, { ...progress, lastTalkDay: day });
+  return true;
+}
 

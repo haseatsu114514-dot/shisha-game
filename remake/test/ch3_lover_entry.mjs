@@ -193,6 +193,12 @@ await check('a confession held over the departure prep and Tokyo/Dubai nights re
   f.plays.length = 0;
   assert.equal(await f.romance.maybeConfession(async () => {}), false, 'no night-walk confession for Noor');
   same(f.plays, []);
+  // 第5章のドバイで迎えた締めくくり（告白は第5章でも開く・2026-11-07）でも、夜の帰り道には出さない（予約が残っていても消す）
+  n.finales.noor.chapter = 5;
+  n.flags._confession_due = 'noor';
+  assert.equal(await f.romance.maybeConfession(async () => {}), false, 'no night-walk confession for a chapter 5 Noor finale either');
+  same(f.plays, []);
+  assert.equal(n.flags._confession_due, undefined);
 });
 
 await check('samechan: a confession held from a chapter 3 finale reaches a chapter 5 hometown night; the route still starts only in chapters 2-3 (IR36)', async f => {
@@ -260,6 +266,13 @@ await check('a bond finale first reached in chapter 5 opens no confession (owner
   s.finales.tsumugi = { day: 70, chapter: 5, route: 'romance' };
   assert.equal(f.romance.NO_CONFESSION_FINALE_CHAPTER, 5);
   assert.equal(f.romance.romanceRouteOpen('tsumugi'), false, 'A chapter 5 finale does not open the confession');
+  // ヌールだけ例外（2026-11-07 オーナー決定「ノールの告白は第5章でも可能にする」）: 第5章のドバイの締めくくりでも砂丘の夕日で告白できる
+  f.db.dialogues.confession_noor = { dialogue_id: 'confession_noor', lines: [{ speaker: '', text: '…' }] };
+  s.romanceChoices.bond_q1_noor = { char: 'noor', value: 1 };
+  s.romanceChoices.bond_q2_noor = { char: 'noor', value: 1 };
+  s.finales.noor = { day: 70, chapter: 5, route: 'romance' };
+  assert.equal(f.romance.romanceRouteOpen('noor'), true, 'Noor alone: a chapter 5 finale opens her dunes confession');
+  assert.equal(f.romance.romanceRouteOpen('tsumugi'), false, 'the other heroines keep owner default B');
 });
 
 await check('chapter 3 lover milestones advance lv1 -> lv2 through the shared romance.js ladder', async f => {

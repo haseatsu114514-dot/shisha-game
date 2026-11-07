@@ -39,7 +39,14 @@ const OBJECTS = ["coal", "orb", "orb", "smoke"];
 // SF63: 一度に1回分を持ち、使用後8秒でリチャージ。根性は範囲と回復に効く。
 export const REFRESH_RECHARGE_SECONDS = 8;
 // dodge枠は784×414px。根性1段の半径90pxから10段の画面全体まで広がる。
-export function refreshStock() { return growthSkill(state, "K06") ? 2 : 1; }
+// SB01: 基本1回。根性★4（内部値61〜・7段）と★5（81〜・9段）で1回ずつ増え、盤のK06の1回と合算する。
+// 第1章は根性の上限48なので★では増えない。回数が多すぎればバランス再測定で調整する（オーナー仮判断・合算案）。
+export function refreshStock() {
+  const guts = step("guts"); // 7段＝★4（61〜）、9段＝★5（81〜）
+  return 1 + (guts >= 7 ? 1 : 0) + (guts >= 9 ? 1 : 0) + (growthSkill(state, "K06") ? 1 : 0);
+}
+/** K06で増えた1回は範囲が半分。合算時は最後の1回がその分（根性★で増えた分は全範囲）。 */
+const halfLastRefresh = (stock) => stock > 1 && growthSkill(state, "K06");
 export function refreshEffect(cs = null) {
   const level = step("guts");
   return { radius: REFRESH_RADII[level - 1] + (growthPerks(state)?.breath || 0),
@@ -211,7 +218,7 @@ export async function runSteamDodge(cs) {
     refreshBtn.dataset.remaining = String(refreshes);
     refreshCopy.textContent = stock > 1 ? `リフレッシュ ×${refreshes}` : "リフレッシュ";
     rechargeLabel(refreshBtn, refreshCharge, refreshes > 0 ? 0 : Math.max(0, refreshReadyAt - time), REFRESH_RECHARGE_SECONDS,
-      `リフレッシュ。${effect.label}の雑念を消す${stock > 1 && refreshes === 1 ? "。2回目は半分の範囲" : ""}`);
+      `リフレッシュ。${effect.label}の雑念を消す${halfLastRefresh(stock) && refreshes === 1 ? `。${stock === 2 ? "2回目" : "最後の1回"}は半分の範囲` : ""}`);
   };
   const slashLabel = () => {
     const profile = slashProfile(wordsCut), remaining = Math.max(0, slashReadyAt - time);
@@ -239,7 +246,7 @@ export async function runSteamDodge(cs) {
     refreshes--; refreshesUsed++; refreshReadyAt = time + REFRESH_RECHARGE_SECONDS;
     const festa = growthLesson(state, "M-B6") && !cs.festaRefreshUsed;
     if (festa) cs.festaRefreshUsed = true;
-    const radius = festa ? Infinity : stock > 1 && refreshes === 0
+    const radius = festa ? Infinity : halfLastRefresh(stock) && refreshes === 0
       ? (Number.isFinite(effect.radius) ? effect.radius : Math.hypot(W, H)) / 2 : effect.radius;
     world.dissolve(time, clearBullets(radius));
     if (effect.mentalRecovery) setPlayerMental(cs, mental.recoverStep(time, hits));

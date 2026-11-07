@@ -63,7 +63,9 @@ export const BOND_FINALES = {
   // ヴォルク（#2028）: 綾取・スティーブと同じく第3章の東京で、鉄の煙への来店（ch3-tokyo-daily.js）・旧行程の場面カード
   // （chapters/ch3.js）・大会後の寄り道（ch3-aftermath.js）から。恋愛対象外なので友情の着地だけ。条件は♥5。
   // 鉄の煙は初来店（DAY12夜）から大会まで行動が一つしかないので、実際は大会後の寄り道で読むことが多い。
-  volk: { dialogue: "ch3_volk_bond_finale", gift: "suyaki_volk" },
+  // 第5章の東京の鉄の煙でも届け直せる（2026-11-07 オーナー指示「スティーブと揃える」）。スティーブと同じく第3章で見逃した人用の
+  // 書き出し（tokyoDialogue）で、第3章で見た人は finales.volk があるので二度は出ない。
+  volk: { dialogue: "ch3_volk_bond_finale", tokyoDialogue: "ch5_volk_bond_finale", gift: "suyaki_volk" },
   hiyori: {
     get dialogue() { return hiyoriRoute().finale?.dialogue || ""; },
     get gift() { return hiyoriRoute().finale?.gift || null; },
@@ -258,7 +260,8 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
   : id === "steve" ? (state.chapter || 1) >= 5 || !!state.flags._ch3_read_ch3_steve_lime && !!state.flags._lime_contact_steve
     && (state.flags._ch3_outings?.steve_timer || 0) > 0
   // ヴォルク: 鉄の煙の再訪三つ（味の会話・七年分の記録・頷く順番）と、その後のLIME交換の寄り道。締めくくりは三つすべてを受ける
-  : id === "volk" ? VOLK_VISITS.every((scene) => !!state.flags[`_ch3_read_${scene}`])
+  // 第5章の東京では、第3章の再訪・LIME交換の寄り道はもう読めないので、スティーブと同じく♥5だけで始める（2026-11-07 オーナー指示）
+  : id === "volk" ? (state.chapter || 1) >= 5 || VOLK_VISITS.every((scene) => !!state.flags[`_ch3_read_${scene}`])
     && !!state.flags._ch3_read_ch3_volk_lime && !!state.flags._lime_contact_volk
   : id === "ageha" ? AGEHA_AFFINITY_VISITS.every((scene) => !!state.flags[`_ch2_read_${scene}`]) && questionComplete(state, id)
   : CH2_VISIT_STORIES[id] ? ch2VisitStoriesDone(state.flags, id)
@@ -295,7 +298,7 @@ const inChapterFiveTokyo = () => state.chapter === 5 && state.flags?._ch2_region
 const TOKYO_SHOP_REACH = Object.freeze({
   saku: () => tokyoShopInReach("sakuBond", SAKU_LAST_AFTERMATH_STAGE),
   steve: () => inChapterFiveTokyo() || tokyoShopInReach("steveBond", STEVE_LAST_AFTERMATH_STAGE),
-  volk: () => tokyoShopInReach("volkBond", VOLK_LAST_AFTERMATH_STAGE),
+  volk: () => inChapterFiveTokyo() || tokyoShopInReach("volkBond", VOLK_LAST_AFTERMATH_STAGE),
 });
 /** 締めくくりの相手に、今の章・時点で会いに行けるか（MENU の「次に会うと」を、会えない間に約束しない）。 */
 export const finaleReachable = (id) => !TOKYO_SHOP_REACH[id] || TOKYO_SHOP_REACH[id]();
@@ -307,7 +310,7 @@ export function finaleDue(id) {
   if (id === "ageha" && !chapterFeatureEnabled(state.chapter, "agehaVisit") && !beforeTokyoDeparture()) return false;
   if (id === "mashiro" && !chapterFeatureEnabled(state.chapter, "mashiroBond")) return false;
   if (id === "saku" && !TOKYO_SHOP_REACH.saku()) return false; // 煙幕は第3章の東京にだけある
-  if (id === "noor" && state.chapter !== 4) return false; // カフェ・サーリムは第4章のドバイにだけある
+  if (id === "noor" && ![4, 5].includes(state.chapter)) return false; // カフェ・サーリムは第4章と第5章のドバイ（第5章は 2026-11-07 オーナー決定）
   if (id === "steve" && !TOKYO_SHOP_REACH.steve()) return false;
   if (id === "volk" && !TOKYO_SHOP_REACH.volk()) return false;
   const def = BOND_FINALES[id];
