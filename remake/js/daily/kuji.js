@@ -184,7 +184,11 @@ function revealMany(results, count) {
     const cards = results.map(prize => el(`div.kuji-card.kuji-short.rank-${prize.rank}${instant ? "" : ".kuji-facedown"}`, [
       el("div.kuji-rank", { text: prize.rank === "LAST" ? "ラストワン賞" : `${prize.rank}賞` }),
       el("div.kuji-name", { text: prize.rank === "LAST" ? prize.name.replace(/^ラストワン賞・/, "") : prize.name }),
-      ...(prize.dupCash != null ? [el("div.kuji-dupe", { text: `持っている → ${yen(prize.dupCash)}` })] : []),
+      // 重複は「同」バッジと買い取り額だけにして、2列のカードに文字を詰めない（#2835）
+      ...(prize.dupCash != null ? [el("div.kuji-dupe", { title: `持っている → ${yen(prize.dupCash)}`, "aria-label": `持っている → ${yen(prize.dupCash)}` }, [
+        el("span.kuji-dupe-badge", { text: "同" }),
+        el("span", { text: yen(prize.dupCash) }),
+      ])] : []),
     ]));
     layers.modal.replaceChildren(el("div.kuji-overlay.kuji-multi", { dataset: { test: "kuji-multi-reveal" } }, [
       el("div.kuji-multi-panel", [
@@ -267,7 +271,8 @@ function revealOne(ov, prize, skip) {
         el("div.kuji-name", { text: last ? prize.name.replace(/^ラストワン賞・/, "") : prize.name }),
         el("div.kuji-desc", { text: prize.desc || "" }),
         ...(prize.dupCash != null ? [el("div.kuji-dupe", { text: dupeText(prize) })] : []),
-        el("div.kuji-tap", { text: "タップで閉じる" }),
+        // カード全体のタップで閉じる（ov.onclick）。文の案内は置かず、右上の ✕ だけ見せる（#2835）
+        el("button.kuji-close", { type: "button", text: "✕", "aria-label": "閉じる", dataset: { test: "kuji-close" } }),
       );
       SE.stamp();
       if (prize.rank === "S" || last) SE.fanfare();

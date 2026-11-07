@@ -788,3 +788,101 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 @container (max-height: 500px) {
   .axe-game .axe-header { padding: 3px 6px 3px 10px; }
 }
+
+/* #2834 スマホ横持ちで読める斧投げ（#2729 M-1）。
+   残り回数は青いバッジ1つ（斧のマーク＋数）。宣言の残りの文・各投の番号・「各投」は画面から外し、読み上げとルール（？）に残す。 */
+.axe-score-calls { display: inline-flex; align-items: center; justify-content: center; gap: 3px; min-width: 0; padding: 2px 9px 2px 6px; border: 1px solid #c23b2a; border-radius: 999px;
+  background: #2f7fc1; color: #fff; font-size: 15px; font-weight: 900; line-height: 1.2; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.axe-score-calls .axe-mark { width: 1.05em; height: 1.05em; flex: none; }
+.axe-score-calls[data-remaining="0"] { opacity: .45; }
+.axe-tile:not(.axe-tile-sd) i { display: none; }
+/* 「各投」を読み上げだけにした行は、名前の列を詰めて投ごとの点数を広く取る。 */
+.axe-score-row:has(> .axe-score-name.axe-quiet) { grid-template-columns: minmax(0,1fr) auto auto; }
+.axe-tile:not(.axe-tile-sd) { grid-template-rows: auto; }
+.axe-game .axe-call-status[data-kind="remaining"] { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important;
+  overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
+.axe-steps span b { font-weight: 900; }
+
+/* 本編の #stage（1280×720 を縮めて表示）の中だけ: 文字はステージ上 24px 以上、押す部品は 82px 以上。
+   iPhone 横持ち（0.54倍）でも Safari のバーあり（0.47倍）でも、実寸で文字 11px・押す部品 38px を下回らない。 */
+.axe-in-stage { --axe-tap: 82px; --axe-text: 24px; padding: 18px 22px; gap: 10px; font-size: var(--axe-text); }
+.axe-in-stage .axe-button { min-height: var(--axe-tap); font-size: var(--axe-text); font-weight: 700; }
+.axe-in-stage .axe-header { gap: 14px; min-height: calc(var(--axe-tap) + 10px); }
+.axe-in-stage .axe-header h1 { font-size: 32px; }
+.axe-game.axe-in-stage .axe-header .axe-help { width: var(--axe-tap); min-width: var(--axe-tap); height: var(--axe-tap); font-size: 34px; }
+.axe-in-stage .axe-division { padding: 4px 12px; font-size: var(--axe-text); }
+.axe-in-stage .axe-total { gap: 8px; }
+.axe-in-stage .axe-total small, .axe-in-stage .axe-total > span { font-size: var(--axe-text); }
+.axe-in-stage .axe-total strong { font-size: 48px; line-height: 1.2; }
+.axe-in-stage .axe-round { padding: 8px 14px; font-size: 26px; font-weight: 700; }
+.axe-in-stage .axe-heat { font-size: var(--axe-text); }
+.axe-in-stage .axe-scoreboard { padding: 6px 10px; gap: 4px; }
+.axe-in-stage .axe-score-row { gap: 10px; }
+.axe-in-stage .axe-score-name { font-size: var(--axe-text); }
+.axe-in-stage .axe-score-tiles { gap: 5px; }
+.axe-in-stage .axe-tile { padding: 2px 0; }
+.axe-in-stage .axe-tile strong { font-size: 26px; line-height: 1.25; }
+.axe-in-stage .axe-tile i { font-size: var(--axe-text); }
+.axe-in-stage .axe-tile em { right: 5px; top: 50%; transform: translateY(-50%); font-size: var(--axe-text); }
+.axe-in-stage .axe-score-calls { padding: 3px 12px 3px 9px; gap: 5px; font-size: var(--axe-text); }
+.axe-in-stage .axe-score-total { min-width: 2.2em; font-size: 30px; }
+.axe-in-stage .axe-body, .axe-in-stage.axe-game .axe-body { grid-template-columns: minmax(0,1fr) 430px; gap: 18px; }
+.axe-in-stage .axe-panel, .axe-in-stage.axe-game .axe-panel { padding: 14px 16px; gap: 10px; overflow-y: auto; overscroll-behavior: contain; }
+.axe-in-stage .axe-challenges { gap: 6px; }
+.axe-in-stage .axe-challenges li, .axe-in-stage .axe-challenges small { font-size: var(--axe-text); }
+.axe-in-stage .axe-challenges li { padding: 3px 12px; }
+.axe-in-stage .axe-companion { gap: 12px; padding: 8px 10px; }
+.axe-in-stage .axe-companion strong { font-size: var(--axe-text); }
+.axe-in-stage .axe-panel .axe-comment { margin-top: 2px; font-size: var(--axe-text); line-height: 1.45; }
+.axe-in-stage .axe-panel .axe-portrait-frame { width: 64px; height: 66px; }
+.axe-in-stage .axe-call-status { font-size: var(--axe-text); line-height: 1.4; }
+.axe-in-stage .axe-calls { gap: 8px; }
+.axe-in-stage .axe-calls .axe-button { min-height: var(--axe-tap); padding: 6px; font-size: var(--axe-text); }
+.axe-in-stage .axe-note { font-size: var(--axe-text); }
+.axe-in-stage .axe-live-score { padding-block: 2px 6px; }
+.axe-in-stage .axe-live-label { font-size: var(--axe-text); }
+.axe-in-stage .axe-live-score strong { font-size: 40px; }
+/* 工程チップ ↔ ↕ ↻: 今の工程だけ金色。確定した値はチップの下に出す。 */
+.axe-game.axe-in-stage .axe-steps { position: static !important; width: auto !important; height: auto !important; margin: 0 !important; overflow: visible !important;
+  clip-path: none !important; white-space: normal !important; gap: 8px; }
+.axe-in-stage .axe-steps li { display: grid; justify-items: center; gap: 2px; padding: 4px 4px 6px; text-align: center; }
+.axe-in-stage .axe-steps span { margin: 0; font-size: 36px; line-height: 1.1; }
+.axe-in-stage .axe-steps strong { font-size: var(--axe-text); line-height: 1.3; letter-spacing: 0; }
+.axe-game.axe-in-stage .axe-steps [data-state="live"] { border-color: #ffc46e; background: #ffc46e2e; box-shadow: inset 0 3px #ffc46e; }
+.axe-game.axe-in-stage .axe-steps [data-state="live"] span, .axe-game.axe-in-stage .axe-steps [data-state="live"] strong { color: #ffd58f; }
+/* 回転ゲージ: 見出しの文はチップ ↻ と同じなので読み上げだけ。説明の文（補正・腕の疲れ・キー操作）は「？」へ。 */
+.axe-in-stage .axe-timing { padding: 4px 0; }
+.axe-in-stage :is(.axe-timing .axe-power-label, .axe-feedback, .axe-steadiness) { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important;
+  overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
+.axe-in-stage .axe-keyhint { display: none !important; }
+.axe-in-stage .axe-gauge { height: 46px; }
+.axe-in-stage .axe-sweet::after { font-size: var(--axe-text); }
+.axe-in-stage .axe-stability-meter { height: 5px; }
+.axe-in-stage .axe-primary { font-size: 28px; }
+.axe-in-stage .axe-controls { gap: 8px; }
+.axe-in-stage .axe-controls .axe-button { min-height: var(--axe-tap); padding: 6px 8px; font-size: var(--axe-text); line-height: 1.25; }
+.axe-in-stage .axe-result-card { padding: 8px 14px; }
+.axe-in-stage .axe-result-label, .axe-in-stage .axe-result-tip { font-size: var(--axe-text); line-height: 1.4; }
+.axe-in-stage .axe-result-value small { font-size: max(.25em, 24px); }
+.axe-in-stage .axe-rank small, .axe-in-stage .axe-rank span { font-size: var(--axe-text); }
+.axe-in-stage .axe-match-score, .axe-in-stage .axe-match-records { font-size: var(--axe-text); }
+.axe-in-stage .axe-zoom { width: clamp(150px, 30%, 200px); }
+.axe-in-stage .axe-zoom figcaption strong { font-size: 30px; }
+.axe-in-stage .axe-zoom figcaption span { font-size: var(--axe-text); }
+.axe-in-stage .axe-declare strong { font-size: 32px; }
+.axe-in-stage .axe-declare span { font-size: 26px; }
+/* ルール（？）とマキのレッスンも同じ下限で。 */
+.axe-in-stage .axe-rules-card, .axe-in-stage .axe-coach-card { width: min(980px, 100%); font-size: var(--axe-text); }
+.axe-in-stage .axe-rules h2 { font-size: 30px; }
+.axe-in-stage .axe-rules h3 { font-size: 27px; }
+.axe-in-stage .axe-rules ul { line-height: 1.6; }
+.axe-in-stage :is(.axe-rules, .axe-coach) .axe-button { min-height: var(--axe-tap); padding-inline: 22px; }
+.axe-in-stage :is(.axe-rules, .axe-coach) .axe-coach-diagram :is(strong, p, small) { font-size: var(--axe-text); }
+.axe-in-stage :is(.axe-rules, .axe-coach) .axe-coach-target-icon { flex-basis: 150px; width: 150px; height: 150px; }
+/* 小さな的の絵: リング1〜4の数字は細すぎて読めないので絵だけにし（横の文に書いてある）、青の7・8は大きく。 */
+.axe-in-stage :is(.axe-rules, .axe-coach) .axe-coach-score-normal .axe-coach-target-icon text { display: none; }
+.axe-in-stage :is(.axe-rules, .axe-coach) .axe-coach-score-kill .axe-coach-target-icon text { font-size: 26px; }
+.axe-in-stage .axe-coach-identity small, .axe-in-stage .axe-coach-progress, .axe-in-stage .axe-coach-line { font-size: var(--axe-text); }
+.axe-in-stage .axe-coach-identity strong { font-size: 28px; }
+.axe-in-stage .axe-coach-title { font-size: 30px; }
+.axe-in-stage .axe-coach-actions .axe-coach-skip { font-size: var(--axe-text); }
