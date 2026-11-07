@@ -669,14 +669,6 @@
       "run": ["node remake/test/browser/loading_gate.mjs", "node remake/test/browser/loading_craft.mjs"]
     },
     {
-      "id": "chapter-preview-scripts",
-      "title": "Chapter preview scripts: structure, sources and excerpt fidelity",
-      "kind": "quick",
-      "run": [
-        "node remake/test/chapter_preview_scripts.mjs"
-      ]
-    },
-    {
       "id": "slim-deploy",
       "title": "Pages deploy drops only originals shown as WebP and dev folders",
       "kind": "quick",
@@ -1159,40 +1151,24 @@
     },
     {
       "id": "ch1-preview",
-      "title": "Chapter 1 retro preview",
+      "title": "Chapter ends: clear screen to next chapter title (trailers removed)",
       "kind": "browser",
       "weight": 2.1,
       "timeout": 10,
       "paths": [
-        "data/chapter_previews/**",
         "remake/js/chapters/ch1.js",
-        "remake/js/chapters/ch1-preview.js",
-        "remake/js/chapters/chapter-preview.js",
-        "remake/js/chapters/preview-cue.js",
-        "remake/js/chapters/preview-score.js",
-        "remake/js/chapters/chapter-preview-samples.js",
         "remake/js/core/audio.js",
-        "remake/css/chapter-preview.css",
-        "remake/css/chapter-preview-samples.css",
-        "remake/chapter-preview.html",
-        "remake/chapter-preview-samples.html",
         "remake/js/chapters/ch2-tournament.js",
         "remake/js/chapters/ch3-aftermath.js",
         "remake/js/chapters/ch4.js",
-        "assets/cgs/ch2_preview/**",
-        "assets/cgs/ch3_preview/**",
-        "assets/cgs/ch4_preview/**",
-        "assets/cgs/ch5_preview/**",
         "assets/audio/**",
         "assets/fonts/**",
         "remake/test/browser/ch1_preview.mjs",
-        "remake/test/browser/chapter_preview.mjs",
-        "remake/test/browser/chapter_preview_samples.mjs"
+        "remake/test/browser/chapter_preview.mjs"
       ],
       "run": [
         "node remake/test/browser/ch1_preview.mjs",
-        "node remake/test/browser/chapter_preview.mjs",
-        "node remake/test/browser/chapter_preview_samples.mjs"
+        "node remake/test/browser/chapter_preview.mjs"
       ]
     },
     {
@@ -3212,6 +3188,25 @@
       "env": {
         "SHOTS": ".codex/artifacts/remake-browser/store-logos"
       },
+      "chrome": "playwright"
+    },
+    {
+      "id": "phone-density",
+      "title": "Phone density standard on landscape touch: common parts keep real text >= 11px and taps >= 38px; desktop unchanged (#2851)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 3,
+      "paths": [
+        "remake/css/phone-density.css",
+        "remake/css/vn.css",
+        "remake/css/vn-composition.css",
+        "remake/css/daily.css",
+        "remake/css/ui-paper.css",
+        "remake/js/main.js",
+        "remake/js/daily/hud.js",
+        "remake/test/browser/phone_density.mjs"
+      ],
+      "run": ["node remake/test/browser/phone_density.mjs"],
       "chrome": "playwright"
     },
     {

@@ -1,0 +1,117 @@
+/* スマホ規格（#2851・#2729 優先2）。
+   横持ちスマホ（--k < 0.62）では main.js の fitStage が html[data-density="phone"] を立てる。
+   PC（1280×720 等）と DS風（body.game-ds）には当てない。縦持ち用のレイアウトは持たない（横画面前提）。
+   ここでは共通部品（.btn・会話の操作ボタン／選択肢・HUD の LIME/MENU・閉じる系・確認ダイアログ）だけを規格化する。
+   各画面の個別調整は、その画面の Issue で同じ変数を使って足す。
+   「窮屈にしない」対の規則（各画面の Issue で使う）:
+     (a) 英字の飾りラベルを消す (b) 説明文は「?」に逃がす (c) HUD にある値（所持金・DAY・体力）を画面側で重複表示しない。
+   値はステージ上の px。--k ≒ 0.54（iPhone 横）で 22px→12px・72px→39px。Safari のバーで --k ≒ 0.47 まで縮んでも
+   実寸 11px・38px を割らないよう、--k で割った値を下限に足している。 */
+html:root[data-density="phone"] #stage {
+  --phone-text: max(22px, calc(11.5px / var(--k, 1)));   /* 本文・選択肢・ボタンの文字 */
+  --phone-sub: max(18px, calc(11.5px / var(--k, 1)));    /* 補助文（出すなら）。出さないときは display: none */
+  --phone-tap: max(72px, calc(39px / var(--k, 1)));      /* タップ部品の高さ */
+  --phone-gap: 12px;                                      /* 隣り合うタップ部品の間隔 */
+  --phone-ctl: max(24px, calc(13px / var(--k, 1)));     /* 会話の操作ボタンの文字（オーナー指示 2026-11-08「少し大きく」） */
+}
+
+/* ---------------------------------------------------------------- ボタン（主文だけを大きく・説明は落とす） */
+html:root[data-density="phone"] body:not(.game-ds) .btn,
+html:root[data-density="phone"] body:not(.game-ds) .btn.small {
+  min-height: var(--phone-tap);
+  justify-content: center;
+  padding-block: 8px;
+  font-size: var(--phone-text);
+}
+html:root[data-density="phone"] body:not(.game-ds) .btn-desc { display: none; }
+/* シーシャ作りの「吸う」の横に並ぶ選択肢（ズボー・味の名前を伏せる 等）は列が狭いので、補助文の大きさにして2行まで折り返す */
+html:root[data-density="phone"] body:not(.game-ds) .pull-btns.with-options .btn:not(.primary) {
+  font-size: var(--phone-sub);
+  white-space: normal;
+  line-height: 1.15;
+  padding-inline: 8px;
+  text-align: center;
+  word-break: auto-phrase;
+}
+
+/* ---------------------------------------------------------------- 確認ダイアログ・閉じる系 */
+html:root[data-density="phone"] body:not(.game-ds) .modal-body { font-size: var(--phone-text); line-height: 1.6; }
+html:root[data-density="phone"] body:not(.game-ds) .modal-actions { gap: var(--phone-gap); }
+html:root[data-density="phone"] body:not(.game-ds) .dmenu .dm-close { min-height: var(--phone-tap); font-size: var(--phone-text); }
+/* 用語集: 閉じるボタンが高くなった分だけ本文の枠が縮むので、固定の高さ（460px）をやめて枠いっぱいに収める（下端が隠れてスクロールできなくなるのを防ぐ）。 */
+html:root[data-density="phone"] body:not(.game-ds) .glossary-modal .modal-body { display: flex; flex-direction: column; overflow: hidden; }
+html:root[data-density="phone"] body:not(.game-ds) .glossary-modal .glossary { flex: 1 1 auto; height: auto; min-height: 0; }
+
+/* ---------------------------------------------------------------- HUD（LIME・MENU・DAY カード） */
+html:root[data-density="phone"] body:not(.game-ds) .hud-right { gap: var(--phone-gap); }
+html:root[data-density="phone"] body:not(.game-ds) .hud-menu { height: var(--phone-tap); padding: 0 18px; font-size: var(--phone-text); letter-spacing: .08em; }
+html:root[data-density="phone"] body:not(.game-ds) .hud-lime { width: var(--phone-tap); height: var(--phone-tap); flex-basis: var(--phone-tap); border-radius: 18px; }
+html:root[data-density="phone"] body:not(.game-ds) .hud-lime span { width: 84%; height: 58%; margin-bottom: 6%; font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(.game-ds) .hud-lime span::after { left: 30%; bottom: -6px; width: 14px; height: 12px; }
+/* DAY カード: 英字の地名（飾り）は消し、補助文は読める大きさにする。行の高さと右列の幅は文字に合わせて伸ばす。 */
+html:root[data-density="phone"] body:not(.game-ds) #hud .dc-area { display: none; }
+/* 「次の大会まで あと○日」はスマホでは出さない（オーナー指示 2026-11-08「次の大会までは書かなくていい。わかるし」）。
+   文字を大きくした分だけ札が伸びて街マップのスポットに重なるのを、行を減らして防ぐ。日数は MENU のステータスで見られる。 */
+html:root[data-density="phone"] body:not(.game-ds) #hud .dc-row.goal { display: none; }
+/* 幅は固定する。日数（1〜2桁）や所持金の桁で札の幅が変わると、LIME・MENU まで動いてしまう（ui_skin の検査） */
+html:root[data-density="phone"] body:not(.game-ds) #hud .dc-main { width: 66px; min-width: 0; }
+/* 右列は文字の大きさに比例させる（「Lv.1 ━ 今夜 Lv UP ×2」が収まる幅。Safari のバーで文字が大きくなっても同じ割合） */
+html:root[data-density="phone"] body:not(.game-ds) #hud .dc-meta { width: calc(var(--phone-sub) * 13); }
+html:root[data-density="phone"] body:not(.game-ds) #hud :is(.dc-day small, .dc-slot, .dc-row span, .dc-row:not(.money) b, .dc-row.money b, .hud-card .hud-stamina > span:first-child, .hud-exp, .hud-exp .hx-left, .hud-exp .hx-target) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(.game-ds) #hud :is(.dc-row, .hud-card .hud-stamina, .hud-card .hud-exp) { height: auto; min-height: calc(var(--phone-sub) + 10px); }
+/* 体力と経験値のゲージの始まりをそろえる: 2つのラベルを同じ大きさの文字・同じ幅にする（daily.css の PC 版と同じ考え方） */
+html:root[data-density="phone"] body:not(.game-ds) #hud .hud-card :is(.hud-stamina > span:first-child, .hud-exp .hx-lv) { width: 2.9em; font-size: var(--phone-sub); }
+
+/* ---------------------------------------------------------------- 会話の操作ボタン・選択肢 */
+/* 会話ウインドウの下端: 横持ちの iPhone は下にホームバーの領域があり、端ぎりぎりだと欠けて見える（オーナー指摘 2026-11-08）。
+   safe-area の下端＋少しの余白ぶん持ち上げる。safe-area が無い画面でも実寸 16px 前後は空ける。 */
+html:root[data-density="phone"] body:not(.game-ds) .vn-box { bottom: max(30px, calc((env(safe-area-inset-bottom, 0px) + 8px) / var(--k, 1))); }
+html:root[data-density="phone"] body:not(.game-ds) .vn-controls { gap: var(--phone-gap); }
+html:root[data-density="phone"] body:not(.game-ds) .vn-ctl,
+html:root[data-density="phone"] body:not(.game-ds) .vn-controls .vn-ctl {
+  min-height: var(--phone-tap);
+  height: var(--phone-tap);
+  padding: 0 12px;
+  font-size: var(--phone-ctl);
+}
+/* 画風つきの会話枠: 区切り線つきの横並びは保ち、高さと間隔だけ広げる（下辺の位置は従来どおり・上へ伸びる）。 */
+html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-controls {
+  width: auto;
+  height: calc(var(--phone-tap) + 6px);
+  grid-template-columns: repeat(5, auto);
+}
+html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before { left: calc(var(--phone-gap) / -2); top: 30%; bottom: 30%; }
+/* 名札は補助文の大きさに上げる。名札の幅に収まらない長い名前は name-fit.js の縮小（--vn-name-fit-size）に従う。 */
+html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-name { font-size: var(--vn-name-fit-size, var(--phone-sub)); }
+html:root[data-density="phone"] body:not(.game-ds) .vn-choice { min-height: var(--phone-tap); font-size: max(24px, var(--phone-text)); }
+/* 操作ボタンが上へ伸びた分だけ、選択肢を上げて間隔を保つ。 */
+html:root[data-density="phone"] body:not(.game-ds) .vn-choices { bottom: calc(262px + var(--phone-tap) - 44px); }
+html:root[data-density="phone"] body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: calc(338px + var(--phone-tap) - 44px); }
+html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-choices {
+  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px + var(--phone-tap) - 44px);
+}
+html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
+  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 94px + var(--phone-tap) - 44px);
+}
+/* 選択肢が高くなるので、5択から（従来は6択から）画面上端と操作欄の間でスクロールさせる。 */
+html:root[data-density="phone"] body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(5)) {
+  top: 16px;
+  left: 50%;
+  right: auto;
+  width: 760px;
+  max-width: 100%;
+  transform: translateX(-50%);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  padding: 2px 12px;
+}
+html:root[data-density="phone"] body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(5)) > .vn-choice { flex-shrink: 0; }
+
+/* ---------------------------------------------------------------- 規格より大きく作ってある部品は縮めない */
+/* セーブの引っ越し・全画面の案内（#2856）はもともと 84px／26px。上の .btn の規格（72px）で縮めない。 */
+html:root[data-density="phone"] body:not(.game-ds) :is(.btn.xfer-btn, .xfer-box .modal-actions .btn) {
+  min-height: max(84px, var(--phone-tap));
+  font-size: max(26px, var(--phone-text));
+}
+html:root[data-density="phone"] body:not(.game-ds) .xfer-btns { gap: var(--phone-gap); }

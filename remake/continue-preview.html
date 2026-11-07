@@ -98,9 +98,8 @@ function show() {
  unlockAudio();
  root?.cleanupContinue?.();
  const val = selector.value;
- msg.textContent = Number(document.getElementById("loss").value) === 1
-   ? "声なし・初回は時間制限なし。BGM：BGMer「EMGコール」"
-   : "声なし・20秒でGAME OVER。BGM：BGMer「EMGコール」";
+ // 制作メモ（声なし・時間制限・BGMの出典）は画面に出さず remake/README.md に置く（#2863）。
+ msg.textContent = "";
  retry.disabled = quit.disabled = false;
  root = buildGameOver({
    context: { chapter: Number(document.getElementById("chapter").value), reason: document.getElementById("reason").value,
