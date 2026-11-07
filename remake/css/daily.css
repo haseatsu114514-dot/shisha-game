@@ -1788,8 +1788,12 @@ body:not(.game-ds) .map .spot-pin .pin-person { flex-basis: 48px; width: 48px; h
 body:not(.game-ds) .map .spot-pin .pin-unknown b { font-size: max(22px, var(--mui-text)); }
 body:not(.game-ds) .map .spot-pin .pin-visual:has(.pin-person:nth-child(3)) .evt-badge { top: 16px; }
 body:not(.game-ds) .map .evt-badge { width: max(21px, calc(13px / var(--k, 1))); height: max(21px, calc(13px / var(--k, 1))); font-size: max(14px, var(--mui-text)); }
-/* 観音堂の火種の数（.hidane-badge）は数字なので、丸の大きさを下限にして横は数字に合わせて伸ばす（文字を大きくした分はみ出さない）。 */
-body:not(.game-ds) .map .evt-badge.hidane-badge { width: auto; min-width: max(21px, calc(13px / var(--k, 1))); padding: 0 3px; }
+/* 観音堂の火種の数（.hidane-badge）は数字なので、文字は丸の大きさに比例させ（もとの 20px に 12px の比）、
+   丸の大きさを下限に横は数字に合わせて伸ばす（「!」の文字の下限で数字が丸からはみ出さない）。 */
+body:not(.game-ds) .map .evt-badge.hidane-badge {
+  --hidane-d: max(21px, calc(var(--mui-text) / .6)); /* スマホでも数字が実寸 11px を割らない丸 */
+  width: auto; min-width: var(--hidane-d); height: var(--hidane-d); padding: 0 3px; font-size: calc(var(--hidane-d) * .6);
+}
 body:not(.game-ds) .map .pin-reveal-label { font-size: max(12px, var(--mui-text)); }
 /* 定休日・臨時休業: 看板をグレーにして、右上に「休」の印（札の文字は読み上げ・title 用に残す）。 */
 body:not(.game-ds) .map .spot-pin.closed .shield { filter: grayscale(1) brightness(0.82); }
