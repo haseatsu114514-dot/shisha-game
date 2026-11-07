@@ -1,4 +1,4 @@
-// #2826: 縦画面の廃止（タイトルから回転案内のみ）とダブルタップ拡大の抑止。
+// #2826: 縦画面の廃止（タイトルから回転案内のみ）とダブルタップ拡大の抑止（ピンチ拡大は止めない）。
 // iOS Safari 実機のダブルタップ拡大そのものはここでは再現できない（イベント経路と CSS の確認まで）。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
@@ -31,16 +31,18 @@ await suite("no-zoom-and-landscape-only", async check => {
     assert.deepEqual((await taps(page, [500, 100, 100])).prevented, [false, true, false]);
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
 
-  await check("gesture-events-and-dblclick-are-cancelled", async page => {
+  await check("dblclick-is-cancelled-but-pinch-gestures-pass", async page => {
     const result = await page.evaluate(() => {
       const fire = type => { const e = new Event(type, { bubbles: true, cancelable: true }); document.body.dispatchEvent(e); return e.defaultPrevented; };
       return [fire("gesturestart"), fire("gesturechange"), fire("gestureend"), fire("dblclick")];
     });
-    assert.deepEqual(result, [true, true, true, true]);
+    // ピンチ拡大は禁止しない: gesture 系は止めず、dblclick だけ止める。
+    assert.deepEqual(result, [false, false, false, true]);
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
 
-  await check("css-keeps-scroll-and-viewport-meta", async page => {
-    assert.match(await page.locator('meta[name="viewport"]').getAttribute("content"), /user-scalable=no/);
+  await check("css-keeps-scroll-and-viewport-allows-pinch", async page => {
+    const meta = await page.locator('meta[name="viewport"]').getAttribute("content");
+    assert.doesNotMatch(meta, /user-scalable|maximum-scale/);
     const actions = await page.evaluate(() => ["html", "body", "#viewport", "#stage"].map(s => getComputedStyle(document.querySelector(s)).touchAction));
     assert(actions.every(a => a === "manipulation"), `touch-action: ${actions}`);
     // 全面 none にしていない: 縦スクロールを要るパネルは none/pinch-zoom 無しでパンできる。

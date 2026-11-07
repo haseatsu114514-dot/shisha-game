@@ -1,6 +1,6 @@
-// ダブルタップ／ピンチによるページ拡大を止める（#2826）。
-// iOS Safari は viewport の user-scalable=no を無視し、touch-action だけでも拡大が残ることがある。
-// そこで「連続タップの2回目」と gesture 系イベントだけを JS で止める。縦スクロールと1回のタップは触らない。
+// ダブルタップによるページ拡大だけを止める（#2826）。ピンチ拡大は禁止しない。
+// touch-action だけでは iOS Safari にダブルタップ拡大が残ることがあるため、
+// 「連続タップの2回目」だけを JS で止める。縦スクロール・1回のタップ・ピンチは触らない。
 const DOUBLE_TAP_MS = 350;
 const DOUBLE_TAP_PX = 40;
 const NATIVE_INPUT = "input, textarea, select, [contenteditable=''], [contenteditable='true']";
@@ -25,10 +25,6 @@ export function installNoZoom(doc = document) {
       clientX: touch.clientX, clientY: touch.clientY, screenX: touch.screenX, screenY: touch.screenY,
     }));
   }, { passive: false });
-  // iOS Safari のピンチ・ダブルタップ拡大は gesture 系イベントとして届く。
-  for (const type of ["gesturestart", "gesturechange", "gestureend"]) {
-    doc.addEventListener(type, event => event.preventDefault(), { passive: false });
-  }
   doc.addEventListener("dblclick", event => {
     if (!event.target?.closest?.(NATIVE_INPUT)) event.preventDefault();
   }, { passive: false });
