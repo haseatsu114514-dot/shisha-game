@@ -66,10 +66,10 @@
 
 | ID | 状態 | オーナー要望・対応 |
 |---|---|---|
-| PV06 | ✅ 本PR | **WebP 版で表示している元PNGを公開物から外す**（約0.8GB）。ゲームは `manifest.json` の `webp` に載った画像を `remake/img/` の WebP で表示し、`assets/` の元PNGは読まない。配備の最後に `remake/tools/slim_deploy.py` が外す。公開物の JS・CSS・HTML・JSON が `assets/…` を直接書いている画像は残す（街歩きの地図と舞台、ラクダレースのファーリスの顔、表題CG選別ツールの参考画像など32件）。見込み 約1.49GB → 約0.70GB |
-| PV07 | ✅ 本PR | `remake/test/`・`remake/tools/`（開発用。ゲームからもプレビューからも読まない）を公開物から外す |
-| PV08 | ✅ 本PR | 外しすぎの防止: WebP を見てから `assets/` を読む決まった場所（`data.js` の `img()`・`portrait-resolver.js`・`venue-host.js`）が WebP を見なくなったら、quick `slim-deploy`（`remake/test/slim_deploy.mjs`）が落ちる。迷う書き方は残す側に倒れ、何にでも合う `assets/` の書き方が増えて外せる量が9割を切っても落ちる |
-| PV09 | ⏸ 相談 | さらに減らす案（見た目は同じだが変更が大きい、または中身が変わるため未実施）: ①表題CGの選別ツール（`tools/title-review/media` 約59MB）を公開から外す＝公開URLでは選別ツールが使えなくなる ②WebP 版の無い PNG（約170MB。TRPG・制作画面の素材など）を可逆WebPに変えて公開＝見た目は同じだが画像の参照先を変えるコード変更が広い ③BGM・DJ音源（約87MB）の再圧縮＝音質が変わるため非推奨 |
+| PV06 | ✅ #2904 | **WebP 版で表示している元PNGを公開物から外す**（約0.8GB）。ゲームは `manifest.json` の `webp` に載った画像を `remake/img/` の WebP で表示し、`assets/` の元PNGは読まない。配備の最後に `remake/tools/slim_deploy.py` が外す。公開物の JS・CSS・HTML・JSON が `assets/…` を直接書いている画像は残す（街歩きの地図と舞台、ラクダレースのファーリスの顔、表題CG選別ツールの参考画像など32件）。見込み 約1.49GB → 約0.70GB |
+| PV07 | ✅ #2904 | `remake/test/`・`remake/tools/`（開発用。ゲームからもプレビューからも読まない）を公開物から外す |
+| PV08 | ✅ #2904 | 外しすぎの防止: WebP を見てから `assets/` を読む決まった場所（`data.js` の `img()`・`portrait-resolver.js`・`venue-host.js`）が WebP を見なくなったら、quick `slim-deploy`（`remake/test/slim_deploy.mjs`）が落ちる。迷う書き方は残す側に倒れ、何にでも合う `assets/` の書き方が増えて外せる量が9割を切っても落ちる |
+| PV09 | ⏸ 見送り（司令塔の仮判断・覆し可能） | 2026-11-07 司令塔「追加の削減案1〜3は今は進めない。公開サイズは1.44GB→0.69GBで1GB超えの警告は消えた。①は公開URLで選別ツールが使えなくなり、②は画像を読み込むコードを広く直す必要があり、③は音質が変わる。どれも今の目的には不要」→ 着手しない。再開するときは下の案から選ぶ。さらに減らす案（見た目は同じだが変更が大きい、または中身が変わるため未実施）: ①表題CGの選別ツール（`tools/title-review/media` 約59MB）を公開から外す＝公開URLでは選別ツールが使えなくなる ②WebP 版の無い PNG（約170MB。TRPG・制作画面の素材など）を可逆WebPに変えて公開＝見た目は同じだが画像の参照先を変えるコード変更が広い ③BGM・DJ音源（約87MB）の再圧縮＝音質が変わるため非推奨 |
 
 ## 2026-11-06 公開版が古いまま出る問題（版の名札・タイトルの版表示、PV）
 
