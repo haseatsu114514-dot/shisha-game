@@ -74,11 +74,10 @@ for (const comic of LOADING_COMICS) {
 }
 
 // Cast: every comic names the characters in it (besides hajime) by their data/characters.json id
-// (samechan's profile lives in data/dialogue/samechan.json), so it unlocks only after meeting them all.
+// so it unlocks only after meeting them all.
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const characterIds = new Set([
   ...JSON.parse(readFileSync(root + 'data/characters.json', 'utf8')).map(c => c.id),
-  JSON.parse(readFileSync(root + 'data/dialogue/samechan.json', 'utf8')).profile?.id || 'samechan',
 ]);
 for (const comic of LOADING_COMICS) {
   assert(Array.isArray(comic.cast) && comic.cast.length > 0, `${comic.id}: cast (character ids) is required for the met-based unlock`);

@@ -24,7 +24,7 @@ const characters = JSON.parse(await readFile(new URL("../../data/characters.json
 const catalog = JSON.parse(await readFile(new URL("../../data/trpg_catalog.json", import.meta.url), "utf8"));
 const overlays = await Promise.all(catalog.characterProfiles.map(async file =>
   JSON.parse(await readFile(new URL("../../data/" + file, import.meta.url), "utf8"))));
-characters.push(...overlays.map(o => o.profile));
+characters.push(...overlays.map(o => o.profile).filter(profile => profile?.id));
 
 function complete({ profileId = "quiet", seed = 1, aroma = "tea", seat = "window", approach = "quiet", supports = true } = {}) {
   const session = new TrpgSession(scenario, { profileId, seed });

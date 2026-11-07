@@ -209,37 +209,53 @@ await suite("craft-materials", async check => {
       await capture(page, `${device}-foil-template`);
       await click(page, '[data-test="hole-start"]', touch);
       await page.locator(".countdown").waitFor(); await page.locator(".countdown").waitFor({ state: "detached" });
-      await assertFits(page, ".foil, .foil-legend, .hr-side, .hr-punch, .hr-row");
-      const turnTo = async (ring, k, turn = 0) => {
-        await page.evaluate(async ({ ring, k, turn }) => {
-          const period = F.holes.RINGS.find(r => r.id === ring).period * F.common.skill.slow(F.cs) * 1.3;
-          F.clock = 1000 + period * (turn + k / 12) * 1000;
-          await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-        }, { ring, k, turn });
+      await assertFits(page, ".foil, .hr-side, .hr-punch, .hr-row");
+      // #2937: 凡例・集計・採点の説明は「?」へ。基本画面には置かない。
+      assert.equal(await page.locator(".foil-legend, .hr-score, .hr-combo, .hr-role").count(), 0, "Foil base screen must stay uncluttered");
+      assert.equal(await page.locator('.bench-guide-extra[data-test="hole-guide"] li').count(), 6);
+      // 針は狙う目印の手前の端から 0.4秒×slow で重なる。押して、時計を進めてから離す。
+      const slow = await page.evaluate(() => F.common.skill.slow(F.cs) * 1.3);
+      const advance = ms => page.evaluate(async ms => {
+        F.clock += ms;
+        await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      }, ms);
+      const pressHold = async (selector, ms, key = false) => {
+        if (touch) {
+          await page.locator(selector).dispatchEvent("pointerdown", { pointerType: "touch", isPrimary: true });
+          await advance(ms);
+          await page.locator(selector).dispatchEvent("pointerup", { pointerType: "touch", isPrimary: true });
+        } else if (key) {
+          await page.keyboard.down("Space"); await advance(ms); await page.keyboard.up("Space");
+        } else {
+          const box = await page.locator(selector).boundingBox();
+          await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+          await page.mouse.down(); await advance(ms); await page.mouse.up();
+        }
       };
       for (let k = 0; k < 12; k++) {
-        await turnTo("outer", k);
+        await advance(400 * slow);
         assert.equal(await page.locator(".foil-markers .foil-marker.next").count(), 1);
         const gap = await page.evaluate(() => {
           const a = document.querySelector(".foil-markers .next").getBoundingClientRect(), b = document.querySelector("[data-test=foil] .foil-cursor").getBoundingClientRect();
           return Math.hypot((a.left + a.right - b.left - b.right) / 2, (a.top + a.bottom - b.top - b.bottom) / 2);
         });
         assert(gap < 1, `Next marker disagrees with the scoring target: ${gap}px`);
-        if (touch) await click(page, '[data-test="hole-punch"]', true); else await page.keyboard.press("Space");
+        await pressHold('[data-test="hole-punch"]', 250, true);
       }
       assert.equal(await page.locator(".foil-holes .foil-hole.perfect").count(), 12);
+      assert.equal(await page.locator(".foil-holes .foil-hole.small").count(), 12, "A moderate press must leave the standard small hole");
       assert(await page.locator('[data-test="hole-punch"]').isDisabled());
       assert(await page.locator('[data-test="foil"] .foil-cursor').isHidden());
       const locations = await page.locator(".foil-holes .foil-hole").evaluateAll(ns => ns.map(n => [n.style.left, n.style.top]));
       await capture(page, `${device}-foil-outer-complete`);
       await click(page, '[data-test="hole-next"]', touch);
       assert.deepEqual(await page.locator(".foil-holes .foil-hole").evaluateAll(ns => ns.map(n => [n.style.left, n.style.top])), locations);
-      await turnTo("middle", .48, 2);
-      await click(page, '[data-test="foil"]', touch); // Off-target puncture: its mark must remain too.
+      await advance(900 * slow); // 弧の奥の端で休んでいる針
+      await pressHold('[data-test="foil"]', 250); // Off-target puncture: its mark must remain too.
       assert.equal(await page.locator(".foil-holes .foil-hole.miss").count(), 1);
       for (let k = 1; k <= 12; k++) {
-        await turnTo("middle", k, 2);
-        await click(page, '[data-test="hole-punch"]', touch);
+        await advance(400 * slow);
+        await pressHold('[data-test="hole-punch"]', 250);
         if (k === 3) await capture(page, `${device}-foil-punches`);
       }
       assert.equal(await page.locator(".foil-holes .foil-hole").count(), 25);
@@ -421,13 +437,29 @@ await suite("craft-materials", async check => {
       await page.locator(step === "pack" ? '[data-test="pack-confirm"]' : step === "holes" ? '[data-test="hole-start"]' : '.heat[aria-busy="false"]').waitFor();
       if (step === "pack") {
         const paint = await page.locator('[data-test="pack-confirm"]').evaluate(n => {
-          const s = getComputedStyle(n); return { background: s.backgroundColor, image: s.borderImageSource, width: s.borderTopWidth };
+          const s = getComputedStyle(n); return { background: s.backgroundColor, clip: s.backgroundClip, image: s.borderImageSource, width: s.borderTopWidth };
         });
-        assert.deepEqual(paint, { background: "rgb(227, 189, 110)", image: paint.image, width: "14px" });
+        // 金の地は画像が読めない時の下地。透明な枠の内側だけに塗り、丸い角の外へ四角く出さない（#2359 最終QA）。
+        assert.deepEqual(paint, { background: "rgb(227, 189, 110)", clip: "padding-box", image: paint.image, width: "14px" });
         assert.match(paint.image, /button-gold\.webp/);
+        // 作業台の上の通知は日常の紙の札ではなく夜紫の窓で出す（#2359 最終QA）。
+        const note = await page.evaluate(async () => {
+          const { toast } = await import("./js/core/ui.js");
+          toast("ステムが水に届いていない。煙が冷えないぞ", { ms: 60000, kind: "warn" });
+          const n = document.querySelector("#toasts .toast.warn:last-child"), s = getComputedStyle(n);
+          return { screen: document.body.dataset.screen, image: s.backgroundImage, color: s.color, border: s.borderImageSource };
+        });
+        assert.equal(note.screen, "bench");
+        assert.match(note.image, /craft-night\/window\.webp/);
+        assert.equal(note.border, "none");
+        assert.equal(note.color, "rgb(255, 163, 172)");
       }
       if (step === "holes") {
         assert.equal(await page.locator('.ht-option[aria-pressed="true"]').evaluate(n => getComputedStyle(n).color), "rgb(46, 29, 69)");
+        // 白いボタン（選択中の型・穴あけ開始）も、地の色は透明な枠の内側だけ。
+        for (const selector of ['.ht-option[aria-pressed="true"]', '[data-test="hole-start"]']) {
+          assert.equal(await page.locator(selector).evaluate(n => getComputedStyle(n).backgroundClip), "padding-box", selector);
+        }
       }
       assert.equal(await page.locator('.bench-worker-name').evaluate(n => getComputedStyle(n).backgroundImage), "none");
       // 外部画像が全て実画像としてデコード済みであることを確認する（placeholderは不可）。

@@ -8,7 +8,7 @@
 // 地図と座標は第4章の日常ループ（ch4-dubai-daily.js）と同じ。FESTAは大会の出張ブースだったので出さず、太陽は休暇で
 // シェイクの屋敷に遊びに来ている（2026-11-02 オーナー「任せる」）。心得の盤の授業（シェイク・太陽）は、ここで会った時に相談する（SBD52）。
 // 台詞は data/dialogue/ch5_dubai.json（クリーク沿いは第4章の場面を使う）。現在地は flags._ch2_region = "dubai"。
-// ラクダレース（第4章で走っていなければ店先の出会いから）・カフェ・サーリム（ヌールの締めくくりまで）・「ヌールと砂丘へ」（誘われていれば）にも
+// ラクダレース（第4章で走っていなければ店先の出会いから）・カフェ・オアシス（ヌールの締めくくりまで）・「ヌールと砂丘へ」（誘われていれば）にも
 // 行ける（chapterFiveDubaiLeisureSpots。2026-11-07 オーナー決定「第4章を飛ばしたプレイヤーも、第5章側で前提を補ってルートに入れる」）。
 import { state, save, timeOfDay, markMet } from "../core/state.js";
 import { DB, sceneBg } from "../core/data.js";
@@ -82,20 +82,20 @@ export function chapterFiveDubaiPin(value = state) {
 
 export const inDubai = (value = state) => value?.flags?._ch2_region === DUBAI;
 
-// ---- ラクダレース・カフェ・サーリム・ヌールと砂丘へ ------------------------------------------------
+// ---- ラクダレース・カフェ・オアシス・ヌールと砂丘へ ------------------------------------------------
 // 地図の id・アイコン・押せない理由・記録・報酬は第4章と同じ（ch4-camel-progress.js・ch4-desert-progress.js）。
 // 2026-11-07 オーナー決定（「第4章のラクダレース／砂丘を飛ばしたプレイヤーも、第5章側で前提を補ってルートに入れる（完全な締め出しにはしない）」
 // 「ノールの告白は第5章でも可能にする」）で、#2708 の「第4章で遊んだ人だけ」をやめた。第4章で走っていない人は Dr.fookah の店先で
-// ファーリスと出会い（会い直し）、ヌールに会っていない人はカフェ・サーリムで出会う（どちらも第5章の場面。大会・宿の頃の話はしない）。
+// ファーリスと出会い（会い直し）、ヌールに会っていない人はカフェ・オアシスで出会う（どちらも第5章の場面。大会・宿の頃の話はしない）。
 // 第5章で最初に行った日だけ、再会の場面を読む（新着の印も、その一度だけ出す）。
 const CAMEL_AGAIN = Object.freeze({ scene: "ch5_dubai_camel_again", flag: "_ch5_dubai_camel_again" });
-// DUNES_AGAIN は「第5章でヌールと会い直した」印も兼ねる: 第5章のカフェ・サーリムで出会った・再会した時にも立て、砂丘の前の再会を重ねない。
+// DUNES_AGAIN は「第5章でヌールと会い直した」印も兼ねる: 第5章のカフェ・オアシスで出会った・再会した時にも立て、砂丘の前の再会を重ねない。
 const DUNES_AGAIN = Object.freeze({ scene: "ch5_dubai_dunes_again", flag: "_ch5_dubai_dunes_again" });
 // 再会の場面を読む間だけ立てる印: 第4章の締めくくりのあと砂丘へ行けずに帰国し、ヌールが告白を待っている（台本の promise の分岐）
 const NOOR_PROMISE_FLAG = "_noor_ch5_promise";
 // 店先の場面を読む間だけ立てる印: 第4章のラクダレースの段階（0 会っていない・1 知り合った／誘われた・2 本番を見た。台本の分岐）
 const CH5_CAMEL_KNOWN = "_ch5_camel_known";
-// 第4章でカフェ・サーリムに通っていた（締めくくりはまだ）人の、第5章で最初の来店（再会だけを今日の来店にする）。
+// 第4章でカフェ・オアシスに通っていた（締めくくりはまだ）人の、第5章で最初の来店（再会だけを今日の来店にする）。
 const NOOR_CAFE_AGAIN = "ch5_noor_cafe_again";
 // 第5章で読む書き出しの差し替え（第4章の宿・大会の前を前提にする言い方を使わない）。段階の数え方・報酬は元の id のまま（ch4-desert.js）。
 const CH5_NOOR_SCENES = Object.freeze({ ch4_noor_meet: "ch5_noor_meet", ch4_noor_cafe_4: "ch5_noor_cafe_4", ch4_desert_sunset_first: "ch5_noor_sunset_first" });
@@ -105,7 +105,7 @@ const reunionOf = entry => entry.id === CAMEL_DAILY_SPOT_ID ? CAMEL_AGAIN : DUNE
 // 店先の段階の位置。第5章の地図では Dr.fookah ドバイ店（40,50）の札に重なるので、右上へずらす（画面で確認。第4章の位置は変えない）
 const CH5_CAMEL_SHOP_AT = Object.freeze({ x: 48, y: 36 });
 
-/** 今のドバイの地図に足す行き先（ラクダレース場か店先・カフェ・サーリム・ヌールと砂丘へ）。 */
+/** 今のドバイの地図に足す行き先（ラクダレース場か店先・カフェ・オアシス・ヌールと砂丘へ）。 */
 export function chapterFiveDubaiLeisureSpots(value = state) {
   if (value?.chapter !== 5 || !inDubai(value)) return [];
   const camel = camelDailySpot(value, { region: DUBAI, kind: "ch5_dubai", stamina: 0 });
@@ -131,8 +131,8 @@ async function loadDubaiScenes() {
 }
 
 /**
- * ヌールに会ったことのある保存を再開・LOAD した時は、最初の行動の前にカフェ・サーリムと砂丘の台詞（ch4_desert.json）を読んでおく。
- * MENU の人間関係の「次にカフェ・サーリムで会うと」（daily/bonds.js の finaleDue）と「告白を選べる」（daily/romance.js の romanceRouteOpen）は
+ * ヌールに会ったことのある保存を再開・LOAD した時は、最初の行動の前にカフェ・オアシスと砂丘の台詞（ch4_desert.json）を読んでおく。
+ * MENU の人間関係の「次にカフェ・オアシスで会うと」（daily/bonds.js の finaleDue）と「告白を選べる」（daily/romance.js の romanceRouteOpen）は
  * 締めくくり・告白の台詞が読み込まれているかを見るので、カフェか砂丘へ行くまで出なかった（地元にいても同じなので、ドバイにいる時に限らない）。
  * 読めなくても地図は開く（カフェ・砂丘を選んだ時に読み直し、失敗ならそこで知らせる）。東京の preloadTokyoScenes と同じ（ch5-daily.js）。
  */
@@ -323,7 +323,7 @@ async function readCamelScene(id, owner) {
 
 /**
  * ヌールと砂丘へ（誘われていれば）。外出・ツアー代・1日1回・記録・報酬は第4章と同じ（ch4-desert.js の performDesertSpot）。
- * 第5章でまだヌールに会い直していなければ、カフェ・サーリムの表のデスクで再会の場面を読んでから出かける。なるは地元にいるので砂丘に来ない（naru: false）。
+ * 第5章でまだヌールに会い直していなければ、カフェ・オアシスの表のデスクで再会の場面を読んでから出かける。なるは地元にいるので砂丘に来ない（naru: false）。
  * 初めての砂丘の夕日は第5章の言い方（CH5_NOOR_SCENES）。
  * 第4章の締めくくりで「二人で見たい」と答えたまま砂丘へ行けずに帰国した人は、告白を待たれている（ツアー代なし）。
  * 再会は約束の続きの言い方（台本の条件で出す一時の印 NOOR_PROMISE_FLAG）にし、滑ったあとの夕日で confession_noor を読む
@@ -343,7 +343,7 @@ async function visitDunes(spot, owner) {
   if (!state.flags[DUNES_AGAIN.flag]) {
     owner.flags[NOOR_PROMISE_FLAG] = noorConfessionWaiting(owner) && romance.romanceRouteOpen(DESERT_GUIDE);
     let done = false;
-    try { done = await read(DUNES_AGAIN.scene, "bg_dubai_inn_day", owner); } finally { delete owner.flags[NOOR_PROMISE_FLAG]; }
+    try { done = await read(DUNES_AGAIN.scene, "bg_dubai_cafe_salim_day", owner); } finally { delete owner.flags[NOOR_PROMISE_FLAG]; }
     if (!done) return unused;
     state.flags[DUNES_AGAIN.flag] = true;
     save();
@@ -352,7 +352,7 @@ async function visitDunes(spot, owner) {
 }
 
 /**
- * カフェ・サーリム（第5章・締めくくりを迎えるまで。2026-11-07 オーナー決定）。一台の代金・1日1回・段階の会話・♥3の問い・♥5の締めくくり・
+ * カフェ・オアシス（第5章・締めくくりを迎えるまで。2026-11-07 オーナー決定）。一台の代金・1日1回・段階の会話・♥3の問い・♥5の締めくくり・
  * 好感度（第5章の通いの値）は第4章と同じ（ch4-desert.js の performDesertSpot）。第4章の宿や大会の前を前提にする書き出しだけ第5章の場面に替える。
  * 第4章で通っていた人の、第5章で最初の来店は再会の場面だけを今日の来店にする（雑談と同じ一台・好感度。段階の会話は次の来店から）。
  */
@@ -365,7 +365,7 @@ async function visitNoorCafe(spot, owner) {
   if (state !== owner) return unused;
   if (!owner.flags[DUNES_AGAIN.flag] && desertProgress(owner).talks > 0) {
     if (DESERT_CAFE_PRICE > spendableMoney(owner)) { toast(`お金が足りない（${DESERT_CAFE_PRICE.toLocaleString("ja-JP")}円）`); return unused; }
-    if (!await read(NOOR_CAFE_AGAIN, "bg_dubai_inn_day", owner) || !completeDesertReunion(owner, owner.day)) return unused;
+    if (!await read(NOOR_CAFE_AGAIN, "bg_dubai_cafe_salim_day", owner) || !completeDesertReunion(owner, owner.day)) return unused;
     addMoney(-DESERT_CAFE_PRICE);
     gainAffinity(DESERT_GUIDE, visitAffinity("talk"));
     owner.flags[DUNES_AGAIN.flag] = true;

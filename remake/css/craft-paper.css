@@ -593,3 +593,19 @@ html .bench[data-mode] .bench-worker:is([data-draw], [data-art-fallback="true"])
 html .bench[data-mode] .bench-worker,
 html .bench[data-mode][data-art-skin] .bench-worker,
 html .bench[data-mode].thermal-active .bench-worker { box-shadow: none; }
+
+/* #2359 最終QA（2026-11-07）: 角の丸いボタン画像の外へ地の色を出さない。
+   地の色は画像が読めない時の下地として残し、透明な枠（12〜14px）の内側だけに塗る。
+   各状態のボタンは background の一括指定で塗り範囲を枠まで戻すので、ここだけ !important で固定する。 */
+html .bench[data-mode] :is(.btn, .ht-option[aria-pressed="true"]) { background-clip: padding-box !important; }
+
+/* 作業台の上に出る通知（水入れの警告など）は、日常の紙の札ではなく夜紫の窓で出す。
+   紙テーマ（ui-paper.css）の .toast より強い指定にする。魅力・洞察の札は自分の色を保つ。 */
+html:root body[data-screen="bench"] #toasts .toast {
+  background: #2e1d45 url("../img/ui/craft-night/window.webp") center / 100% 100% no-repeat;
+  border: 1px solid #5a4475; border-image: none; border-radius: 8px;
+  filter: drop-shadow(0 8px 18px #0b061499); text-shadow: none;
+}
+html:root body[data-screen="bench"] #toasts .toast:not(.charm-bonus, .insight-hint) { color: #f6f1fa; }
+html:root body[data-screen="bench"] #toasts .toast.warn { color: var(--bad-ink, #ffa3ac); border-color: #c96a78; }
+html:root body[data-screen="bench"] #toasts .toast.good { color: var(--good-ink, #94deb2); border-color: #6fbf8f; }

@@ -23,7 +23,7 @@
 - `docs/gameplay_agent_reference.md`: **シーシャ屋の文化・共通ルール**（ミントの好み、蒸らし時間、炭の三角配置、お任せ注文、吸い出し、詰める量、ダブルアップルの正史）、**接客・金銭の規範**（チップなし等）、**リーフ（葉）の規範**、**シガー用語の注意**、**ストーリー監査後の固定事項（2026-10-18）**。
 - 年齢確認・来店の流れ・店ごとの個性は `brand/story_and_structure.md`「はじめと店の人たち」、`brand/character_profiles.md`、`docs/asset_ai_guidance.md`「店ごとの個性と照明」。
 - 各キャラの味の話（温度帯でどう味が変わるか、#1108）は `data/dialogue/ch1_naru.json`・`ch1_minto.json`・`ch1_adam.json`・`ch2_kumicho.json`・`ch2_rei.json`・`ch3_rivals.json`・`ch3_mashiro.json`。
-- 好きなフレーバーは `data/characters.json` の `favorite_flavor`（サメちゃんは `data/dialogue/samechan.json` の `profile`）。
+- 好きなフレーバーは `data/characters.json` の `favorite_flavor`。
 
 ## 3. 制作工程と数値（ゲームの実装）
 

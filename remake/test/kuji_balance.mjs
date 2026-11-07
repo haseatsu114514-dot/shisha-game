@@ -27,13 +27,15 @@ const EXPECTED = {
   g3000: { box: 20, total: 63575 },
   g5000: { box: 40, total: 223300 },
   g10000: { box: 40, total: 425150 },
+  // 第5章の限定台くじ（KJ05）: S賞はくじ限定の台3種（非売品なので景品評価＝元の特注台の中古評価150,000円で数える）
+  g20000: { box: 30, total: 630800, s: 3 },
 };
 assert.deepEqual(Object.keys(data.grades), Object.keys(EXPECTED), '500円・1,000円の箱を残し、上位くじを値段の順に並べる');
 for (const [id, g] of Object.entries(data.grades)) {
   const want = EXPECTED[id];
   assert.equal(g.boxSize, want.box, `${id}: 箱の枚数`);
   assert.equal(g.prizes.reduce((n, p) => n + p.count, 0), g.boxSize);
-  assert.equal(g.prizes.filter(p => p.rank === 'S').reduce((n, p) => n + p.count, 0), 1);
+  assert.equal(g.prizes.filter(p => p.rank === 'S').reduce((n, p) => n + p.count, 0), want.s ?? 1);
   assert.equal(g.lastOne.secret, true);
   const cost = g.price * g.boxSize;
   const total = g.prizes.reduce((n, p) => n + valueOf(p) * p.count, 0);
@@ -46,7 +48,7 @@ for (const [id, g] of Object.entries(data.grades)) {
   // S賞が店で買える台なら、箱を引き切るより店で買う方が安い（くじは運試しで、店の値段を下回る確実な買い方にしない）。
   const s = g.prizes.find(p => p.rank === 'S');
   if (s.equipId && !equipment[s.equipId].not_for_sale) assert(equipment[s.equipId].buy_price < cost, `${id}: S賞の店頭価格 < 箱の総額`);
-  console.log(`[kuji balance] ${id}: S=1/${g.boxSize}, value=${total} (${(total / cost * 100).toFixed(2)}%), with last=${((total + valueOf(g.lastOne)) / cost * 100).toFixed(2)}%, resale=${cash}`);
+  console.log(`[kuji balance] ${id}: S=${want.s ?? 1}/${g.boxSize}, value=${total} (${(total / cost * 100).toFixed(2)}%), with last=${((total + valueOf(g.lastOne)) / cost * 100).toFixed(2)}%, resale=${cash}`);
 }
 assert.equal(data.legacyGrades.g500.boxSize, 20);
 assert.equal(data.legacyGrades.g1000.boxSize, 12);

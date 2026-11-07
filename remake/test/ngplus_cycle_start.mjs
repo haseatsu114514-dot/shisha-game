@@ -371,4 +371,31 @@ assert.deepEqual(growth.readyLessons("hiyori"), []);
 assert.deepEqual(core.state.growth.nodes, initialPending.nodes);
 assert.deepEqual(core.state.growth.paid, initialPending.paid);
 growth.setGrowthPreview(false);
+
+// ---------------------------------------------------------------- KJ05: くじ限定の台・限定台くじの箱・くじ券は次の周回へ持ち越さない
+{
+  const { KUJI_ONLY_EQUIPMENT } = await import("../js/core/rules.js");
+  const cur = newState();
+  Object.assign(cur, { chapter: 5, phase: "cleared", kujiTickets: 6 });
+  cur.owned = [...cur.owned, "stand_custom", "stand_custom_melty", "stand_custom_engraved"];
+  cur.kuji = { g10000: { order: [0, 1], drawn: 1, emptyDay: null }, g20000: { order: [0, 1, 2], drawn: 2, emptyDay: null } };
+  setState(cur); save();
+  const kujiPkg = buildCarryPackage(cur);
+  const kujiNext = startNextCycle(kujiPkg, { fromCycle: 1 });
+  assert.equal(kujiNext.kujiTickets, 0, "くじ券は0枚から");
+  assert.ok(kujiNext.owned.includes("stand_custom"), "店で買える特注台は従来どおり持ち越す");
+  for (const id of KUJI_ONLY_EQUIPMENT) assert.ok(!kujiNext.owned.includes(id), `${id} は持ち越さない`);
+  assert.deepEqual(Object.keys(kujiNext.kuji), ["g10000"], "ほかのくじの箱は持ち越し、限定台くじの箱は作り直す");
+  // 手で作った・古い形のパッケージでも持ち越さない
+  const handMade = startNextCycle({ ...kujiPkg, owned: [...kujiPkg.owned, "stand_custom_tosu"],
+    kuji: { ...kujiPkg.kuji, g20000: { order: [0], drawn: 0, emptyDay: null } }, kujiTickets: 9 }, { fromCycle: 1 });
+  assert.ok(!handMade.owned.includes("stand_custom_tosu"));
+  assert.ok(!("g20000" in handMade.kuji));
+  assert.equal(handMade.kujiTickets, 0);
+  const saved = JSON.parse(localStorage.getItem(SAVE_KEY));
+  assert.equal(saved.kujiTickets, 0);
+  assert.ok(!saved.owned.some(id => KUJI_ONLY_EQUIPMENT.includes(id)) && !("g20000" in saved.kuji), "保存にも残らない");
+  // 全グループを持ち越さない選択でも、くじ券は0枚
+  assert.equal(startNextCycle(kujiPkg, { fromCycle: 1, groups: { items: false } }).kujiTickets, 0);
+}
 console.log("pending lessons NG+: PASS (two pending carry boundaries, current hearts at start/commit, cancel/owner/SAVE/LOAD, learned effects retained without repayments)");

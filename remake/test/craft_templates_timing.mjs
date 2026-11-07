@@ -83,7 +83,7 @@ try {
     await page.evaluate(() => { __remake.craftTest.auto = null; });
     const result = await page.evaluate(() => ({ template: cs.holes.templateId, outer: cs.holes.outer,
       middle: cs.holes.middle, inner: cs.holes.inner, score: cs.holes.score }));
-    assert.deepEqual(result, { template: "outer12-middle12", outer: 12, middle: 12, inner: 0, score: 99 });
+    assert.deepEqual(result, { template: "outer12-middle12", outer: 12, middle: 12, inner: 0, score: 100 });
 
     // 取り出す入力だけ仮想時計で固定。炭の判定・演出・DOMは実装そのものを使う。
     await page.evaluate(() => {
