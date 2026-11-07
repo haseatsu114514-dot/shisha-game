@@ -212,7 +212,10 @@ body.game-ds .map-info {
   left: calc(var(--ds-cx) + 8px); top: calc(var(--ds-cy) + var(--ds-ch) - var(--ds-touchbar) - 120px); right: auto; bottom: auto;
   width: calc(var(--ds-cw) - 16px); height: 114px; overflow: auto; touch-action: pan-y; padding: 6px 10px; transform: none;
 }
-body.game-ds .map-info.spot-selected .mi-preview { display: block; aspect-ratio: 16 / 9; }
+/* #2939: 行き先の写真は16:9のまま、名前と横に並べて全体を見せる（パネルを伸ばすと地図のピンに被るため、高さは据え置き）。 */
+body.game-ds .map-info.spot-selected { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 10px; overflow: hidden; }
+body.game-ds .map-info.spot-selected .mi-preview { display: block; grid-column: 1; grid-row: 1; aspect-ratio: 16 / 9; height: 84px; width: auto; margin: 0; }
+body.game-ds .map-info.spot-selected .mi-banner { grid-column: 2; grid-row: 1; margin: 0; white-space: normal; overflow-wrap: anywhere; }
 body.game-ds .mi-banner { font-size: 15px; }
 body.game-ds :is(.mi-desc, .mi-foot) { font-size: 13px; line-height: 1.45; }
 body.game-ds .mi-go { min-height: 44px; font-size: 17px; }
