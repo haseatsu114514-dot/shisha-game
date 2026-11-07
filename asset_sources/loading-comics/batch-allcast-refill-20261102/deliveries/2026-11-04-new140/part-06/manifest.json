@@ -1,0 +1,364 @@
+{
+  "schema": "shisha-composition-independent-zip-v1",
+  "part": 6,
+  "totalParts": 7,
+  "episodeCount": 20,
+  "originalImages": 33,
+  "originalBytesUnmodified": true,
+  "sourceZipSHA256": "8a2b1815e7b8fed73e04f078afcfdfe152f1afb32c3ecff1742dedb89ad49aca",
+  "old45ImageBytesIncluded": false,
+  "formalNormalTemplateBytesIncluded": false,
+  "adopted": false,
+  "gameRegistered": false,
+  "files": [
+    {
+      "path": "images/noor-sand-scarf/panel1.png",
+      "bytes": 2459903,
+      "sha256": "f4dec4be4bc0af229f76f7912047d319ed6d2747999b1b6935970cf9ee78451b",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/noor-sand-scarf/panel2.png",
+      "bytes": 2607464,
+      "sha256": "1d3af4e3d2c9db73299a3040063341a52fac4b4c4c16aa6f3537587ca8aaaec5",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/noor-sand-scarf/comics.json",
+      "bytes": 8767,
+      "sha256": "ef6fcf229a3bcd567dcd0ad9a82ddf65bcc681a328f464ed88436fa9ccbbabf5",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/noor-cargo-pockets/panel1.png",
+      "bytes": 2546756,
+      "sha256": "e448e99b9126b1f1a1387c18a33cd2f1364058080df3ed31ca21e9a296b46106",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/noor-cargo-pockets/panel2.png",
+      "bytes": 2718022,
+      "sha256": "427915457a158537dcd12b91097751c71ff222645c2afc2853e70e441e271379",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/noor-cargo-pockets/comics.json",
+      "bytes": 8520,
+      "sha256": "bc525db52fe8444ee63bd18d1cbb3e79958aa364b615291c76ad95f9fb90ffaf",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/noor-small-dune/panel1.png",
+      "bytes": 2303171,
+      "sha256": "c71d62f530bc8086d3845c12500f1409363b1a82d382c0037792d5caade49e8f",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/noor-small-dune/panel2.png",
+      "bytes": 2962628,
+      "sha256": "39984264a1aad9933fe99e6d8b57325f0532ffdcf0680d8d712390443ea67a62",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/noor-small-dune/comics.json",
+      "bytes": 8375,
+      "sha256": "61ffdbbebf00e946e2e3fcfd963476e18dd6de5a6606cb3cb20381d295f1a617",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/noor-camel-shade/panel1.png",
+      "bytes": 2468508,
+      "sha256": "59b53c47740c9dd734e745f1fcd0524670076cc40a8964bb58b91f97fa8de4e3",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/noor-camel-shade/panel2.png",
+      "bytes": 2472608,
+      "sha256": "a8ca73f99924986bfba6458f65c14967a52a21670203dc237b4acafd3c88f231",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/noor-camel-shade/comics.json",
+      "bytes": 8367,
+      "sha256": "096bc3d230524f0cc25d288e8bd1c299fb196f2db11956fc33bebb90d43df498",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/noor-lost-coin/panel1.png",
+      "bytes": 2451139,
+      "sha256": "887917a30a0e514adf7af17a3bef5c9cc9c345f11c817cc81b7c431042b1a880",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/noor-lost-coin/panel2.png",
+      "bytes": 2771746,
+      "sha256": "5c2f97103b86285bdb54c6f55d565cea4a9cd3eb58dec4407876aca314de2724",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/noor-lost-coin/comics.json",
+      "bytes": 7864,
+      "sha256": "4283e35d0698ae3f13388674608a6d691b5744c05778650c6b3da127b67a51cc",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/noor-japan-study/sheet.png",
+      "bytes": 1827134,
+      "sha256": "37966f6a2eb2894fc0528b45215d06a2017a687ee9d6fc5482323b048ec559fe",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/noor-japan-study/comics.json",
+      "bytes": 6597,
+      "sha256": "f0093735c37f9bc041b05c0d06570cf468325d84910c95574d8ce5ea0694bf5d",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/noor-shoe-sand/sheet.png",
+      "bytes": 2051474,
+      "sha256": "4c3b6b15877714f9837f6bb968c0aadf31e14f4b63bc902bdc0c00eb6f4c3f2c",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/noor-shoe-sand/comics.json",
+      "bytes": 5459,
+      "sha256": "23048dce6f2ebba93b9e4ae50a33f65515dde59eb44f6777d422683094383a07",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/noor-sand-castle/panel1.png",
+      "bytes": 2443915,
+      "sha256": "bc2a5e8b6faa4770b3061d1b3f4d0784a78c35e10d890da04d4ea72483f684f6",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/noor-sand-castle/panel2.png",
+      "bytes": 2604701,
+      "sha256": "8f0e1e9bee9473e711da7f62adbeba3a61a509db75c959a6b16172044b99c280",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/noor-sand-castle/comics.json",
+      "bytes": 8030,
+      "sha256": "94b6b8e43513657e203d5cf2c77da37c62efd72e4bec65fcc5db6a320e03d45a",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/mukai-hat-candy/panel1.png",
+      "bytes": 2414726,
+      "sha256": "ba7f694c2d417c0c20fcd2ce3aae67a02628f52ec8462e7c2e13b04ce94a3ec5",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/mukai-hat-candy/panel2.png",
+      "bytes": 2527038,
+      "sha256": "bbe09cd6362cfea5a0aea90258198cf1845d2dbf3cb1c013976e8ec5288dc0e6",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/mukai-hat-candy/comics.json",
+      "bytes": 8738,
+      "sha256": "e257e4aa82990f9e13b784cfe856350b39abfa02360380f83782a2c26da2a38e",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/mukai-hot-coffee/panel1.png",
+      "bytes": 2262739,
+      "sha256": "186f25aac475ac941a3ed19c1d2f246c831f75e76dd2a2fb15021d74a3535c1a",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/mukai-hot-coffee/panel2.png",
+      "bytes": 2220778,
+      "sha256": "ef32c351e9778ba4abdffbf0d57aa478e46b34cc9acc6ed959190c5d882acebb",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/mukai-hot-coffee/comics.json",
+      "bytes": 9554,
+      "sha256": "f7361a444ee23c3c59bf4c6a67100bc83ef6880f4cbc116c3d607be4e8285596",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/mukai-strawberry-hunt/sheet.png",
+      "bytes": 1847025,
+      "sha256": "1033582c6373088ca8585a27b6c89dd9d0b298b883e5b254cfe26d3a49119386",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/mukai-strawberry-hunt/comics.json",
+      "bytes": 6579,
+      "sha256": "084a3f9f1e68a06033b8a6f7a6c783c34940f3f49d0b3163bfb35d8f68d046e7",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/mukai-frill-apron/panel1.png",
+      "bytes": 2579120,
+      "sha256": "c078563e8e00ffe46c57ba3667ecca09910d9484aafabf64048f24548d6034bc",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/mukai-frill-apron/panel2.png",
+      "bytes": 2527632,
+      "sha256": "79e71d09400900b3e6b894d123f520eb88972c4b99998934474aa863bd83b97b",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/mukai-frill-apron/comics.json",
+      "bytes": 8578,
+      "sha256": "dbf59ff3bb907135c2312e2dff2eb944aebac4f52b9ef4d1f7f7c08eba49cd1e",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/mukai-coffee-feast/panel1.png",
+      "bytes": 2477169,
+      "sha256": "edd9f020ec409482c376dca4481ba0e8e9b78697bcfa400238eb93a755a16915",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/mukai-coffee-feast/panel2.png",
+      "bytes": 2596444,
+      "sha256": "d896ac89c788a3deb98271f08c4bf42222c8367b3171c106c8e293e6f2c0ca4c",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/mukai-coffee-feast/comics.json",
+      "bytes": 8636,
+      "sha256": "80751cb740c598a361539760059e707626f21e093dc707bb3ce88f24356615f9",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/tsumugi-route-map/panel1.png",
+      "bytes": 2578135,
+      "sha256": "d06bd7730aafc84ace22fde3f27ed569a9cc69f711992cb7e9911d1571fd188c",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/tsumugi-route-map/panel2.png",
+      "bytes": 2835971,
+      "sha256": "cf95dcabbfa7af7ff7a31788ca5386e4303057dfa16301ee738bb490fe50ec55",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/tsumugi-route-map/comics.json",
+      "bytes": 8730,
+      "sha256": "464022148622ab00fc36a869dd8b28f917842bfe531b95c78b579621aa173731",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/tsumugi-model-pose/panel1.png",
+      "bytes": 2912221,
+      "sha256": "3997234657d8c6d53b0940e6a070d39b39473fb2ca17f94d5f4d07bba5c69cae",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/tsumugi-model-pose/panel2.png",
+      "bytes": 2798763,
+      "sha256": "cabfee2925ceed2ce921f63135e8d77f7f14a689436b2b6d7d8b30fcc87de3d1",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/tsumugi-model-pose/comics.json",
+      "bytes": 9194,
+      "sha256": "eb200b928d95b2c46ef72cddd2f9212d43841d795450d4703b691d766e576fcb",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/tsumugi-big-canvas/sheet.png",
+      "bytes": 1798722,
+      "sha256": "88573b106c9436dc153ad52d8cca5cfbe7415fbbaa377652d88750a9c223e580",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/tsumugi-big-canvas/comics.json",
+      "bytes": 6052,
+      "sha256": "54b9e559cfa3342859c7b72af0b1396fddd0e2947daa182e4dbb52193fb7542c",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/tsumugi-quiet-brush/sheet.png",
+      "bytes": 1782846,
+      "sha256": "71975b5e83f0e92de4a55572f480674c4d7985ff80069cebef6b6ca36c9eb585",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/tsumugi-quiet-brush/comics.json",
+      "bytes": 6214,
+      "sha256": "f21ad38d003e8fafced014d08fb603a805c2f6ee104909bba3538c5a778094bf",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/tsumugi-window-seat/panel1.png",
+      "bytes": 2596696,
+      "sha256": "8ca35e85ee76cf182a6c935d435234ea871ca2da1f41e1caedf9372e811c8fa0",
+      "kind": "original-image"
+    },
+    {
+      "path": "images/tsumugi-window-seat/panel2.png",
+      "bytes": 2539771,
+      "sha256": "f494479f15a40e1c62c38cebf4adcc817e0c8df01bdc3b6f18723ea015519af1",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/tsumugi-window-seat/comics.json",
+      "bytes": 9017,
+      "sha256": "40c23cc00d33a3dcae66d82e3e80541feb8764d11be320b85026fe9d35c56da6",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/hiyori-ramen-gulp/sheet.png",
+      "bytes": 1807386,
+      "sha256": "251e829e8371cf4186acd09562fc151f224f96a8edd6cdd7e8a940d71fa97edb",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/hiyori-ramen-gulp/comics.json",
+      "bytes": 6616,
+      "sha256": "98d38eb5c095f6941dd0e54427e934fef4fd9f48318c8740bc6653d6eb9bc54b",
+      "kind": "metadata"
+    },
+    {
+      "path": "images/hiyori-handmade-wind/sheet.png",
+      "bytes": 2017025,
+      "sha256": "4b81bf9fe5bab9c271d894b18daac9bcc4ddc2a41db5e5f2493e21218a21769c",
+      "kind": "original-image"
+    },
+    {
+      "path": "episodes/hiyori-handmade-wind/comics.json",
+      "bytes": 6564,
+      "sha256": "01d5f323ed991593cdfcb4295a8edd93e678bfc9719c712b5b7fb22fd3f1703d",
+      "kind": "metadata"
+    },
+    {
+      "path": "selection-data.json",
+      "bytes": 41715,
+      "sha256": "dc17b88d84792fe394dc410a5ce858382f843783ed4de81dd6223fc69ab03a32",
+      "kind": "metadata"
+    },
+    {
+      "path": "PARTS_INDEX.json",
+      "bytes": 7248,
+      "sha256": "a1ed96d99db8b3d4e65a1927eb09782ef3e724906a84b77b2ef169c857af57cc",
+      "kind": "metadata"
+    },
+    {
+      "path": "selection-template.csv",
+      "bytes": 1062,
+      "sha256": "29e3bdf9a93e9cc778424306a08316cd4120cef9b77aa8e1a05396b08614bbc2",
+      "kind": "metadata"
+    },
+    {
+      "path": "README_IMPORT_JA.md",
+      "bytes": 2228,
+      "sha256": "0339ee690885f9ff913473c688d640327c35e3ce6334a1da34c60e4323f4605c",
+      "kind": "metadata"
+    },
+    {
+      "path": "IMPORT_FOR_CLAUDE.txt",
+      "bytes": 2228,
+      "sha256": "0339ee690885f9ff913473c688d640327c35e3ce6334a1da34c60e4323f4605c",
+      "kind": "metadata"
+    }
+  ],
+  "hashCoverage": "SHA256SUMS covers all entries except itself; this manifest lists all entries except itself and SHA256SUMS."
+}

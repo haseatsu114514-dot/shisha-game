@@ -16,9 +16,322 @@
    "zip_sha256": "af28607ec7bad59c30d1bcd37e386fb678402d4c21518962b1f707235bbe7bce",
    "zip_bytes": 54925955,
    "record": "deliveries/2026-11-02-b/"
+  },
+  {
+   "id": "2026-11-04-new140",
+   "episodes": 140,
+   "originals": 210,
+   "source": "Google Drive 7 ZIP（独立展開・同梱SHA256SUMS一致）",
+   "record": "deliveries/2026-11-04-new140/"
+  },
+  {
+   "id": "2026-11-04-added7",
+   "episodes": 7,
+   "originals": 14,
+   "source": "Google Drive ZIP 8（PR #2560 の原画とSHA一致。原画は PR #2560 の branch codex/loading-comics-recent-cast-20261104 にあり、ここには重ねて入れない）"
   }
  ],
  "episodes": [
+  {
+   "id": "rei-cd-choice",
+   "num": 1,
+   "title": "おすすめの一枚",
+   "cast": [
+    "rei"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "おすすめのCDは？",
+    "……一枚、選ぶ。",
+    "選べてない。"
+   ],
+   "caption": "音楽好きのレイは、好きな一枚をひとつに絞れない。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-rei-cd-choice.png",
+   "files": [
+    {
+     "file": "allcast-rei-cd-choice.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "21515c7cd5c009c0653825fb77de1b1083933747dee93b656949789c0b49e022"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格"
+  },
+  {
+   "id": "rei-cheer-goods",
+   "num": 2,
+   "title": "たまたまの客",
+   "cast": [
+    "rei"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "来てくれたんですか？",
+    "……たまたま。",
+    "応援グッズだ。"
+   ],
+   "caption": "人見知りのレイは、応援する気持ちも照れて隠す。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-rei-cheer-goods.png",
+   "files": [
+    {
+     "file": "allcast-rei-cheer-goods.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "81ea3d49bbbf639e21eacbfeaca69dbb1dae55b656fc49a5bb05a3ea69247b4d"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格"
+  },
+  {
+   "id": "rei-castle-cake",
+   "num": 3,
+   "title": "ケーキの飾り",
+   "cast": [
+    "rei"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "飾り、頼めます？",
+    "……任せて。",
+    "城になった。"
+   ],
+   "caption": "黒と赤が好きなレイは、ケーキの飾りでも全力。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-rei-castle-cake.png",
+   "files": [
+    {
+     "file": "allcast-rei-castle-cake.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "8b2e79bb7fe5b714c3a61830107d6f233e0dcdf48b8813637b0ce0460e701ac0"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格"
+  },
+  {
+   "id": "rei-own-night",
+   "num": 4,
+   "title": "晴れの日",
+   "cast": [
+    "rei"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "いい天気ですね！",
+    "……そうだね。",
+    "そこだけ夜だ。"
+   ],
+   "caption": "黒が好きなレイは、晴れた日も自分の色を連れていく。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-rei-own-night.png",
+   "files": [
+    {
+     "file": "allcast-rei-own-night.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "bdca21f851e95dc9e705b78b6dc7a2b814eb98cdc5871f2efa11cdf411fb2d84"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格"
+  },
+  {
+   "id": "rei-mamachari",
+   "num": 5,
+   "title": "迎えの自転車",
+   "cast": [
+    "rei"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "駅まで遠いな…",
+    "……送っていく。",
+    "ママチャリだ。"
+   ],
+   "caption": "見た目は夜の住人。でも移動は、ふつうの自転車。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-rei-mamachari.png",
+   "files": [
+    {
+     "file": "allcast-rei-mamachari.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "43fa9ecaac0a29b6fc666bcb09e223f0dd6b26690fff545affdea101a791d59e"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格"
+  },
+  {
+   "id": "rei-whisk-rhythm",
+   "num": 6,
+   "title": "泡立て係",
+   "cast": [
+    "rei"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "泡立て、お願い。",
+    "……曲、かける。",
+    "ノリが激しい。"
+   ],
+   "caption": "好きな曲がかかると、レイの手は止まらなくなる。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-rei-whisk-rhythm.png",
+   "files": [
+    {
+     "file": "allcast-rei-whisk-rhythm.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "f367cf1cf95a4cce0f486be5f9b6febd603874402cf2e9fb1ea2a1ee37480725"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格"
+  },
+  {
+   "id": "rei-makeover",
+   "num": 7,
+   "title": "おそろいの服",
+   "cast": [
+    "rei"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "その服、いいですね。",
+    "……着てみる？",
+    "盛りすぎです。"
+   ],
+   "caption": "好きな服の話になると、レイは少しだけ前のめり。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-rei-makeover.png",
+   "files": [
+    {
+     "file": "allcast-rei-makeover.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "4bbd5f8a9cb71a6d9d013ad1067b99edcad4f2ad334fb5b1972f62349062fb46"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格"
+  },
+  {
+   "id": "rei-water-care",
+   "num": 8,
+   "title": "水を一杯",
+   "cast": [
+    "rei"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "けほっ。",
+    "……水、いる？",
+    "むせただけです。"
+   ],
+   "caption": "レイは無口だけど、困っている人を放っておけない。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-rei-water-care.png",
+   "files": [
+    {
+     "file": "allcast-rei-water-care.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "b0a213c81e36b991f7146c8f56a5727b8e8d4f97488697a0114cad285324a3e3"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格"
+  },
+  {
+   "id": "rei-phone-seal",
+   "num": 9,
+   "title": "鳴る電話",
+   "cast": [
+    "rei"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "電話、鳴ってます。",
+    "……出られない。",
+    "封印してる。"
+   ],
+   "caption": "人見知りのレイは、知らない人との電話が少し苦手。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-rei-phone-seal.png",
+   "files": [
+    {
+     "file": "allcast-rei-phone-seal.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "959523f8cd548aeddaae4788343b0b8ec879c6e8bce9393c123deae9b9f84aee"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格"
+  },
+  {
+   "id": "rei-game-master",
+   "num": 10,
+   "title": "語り出す人",
+   "cast": [
+    "rei"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "無口なんですね。",
+    "……そう？",
+    "急に語り出した。"
+   ],
+   "caption": "ゲームの語り役になると、レイは別人のように話す。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-rei-game-master.png",
+   "files": [
+    {
+     "file": "allcast-rei-game-master.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "e16f3be25a03f093b6d24d07fb2413d6079278960a087a9178638316a3928a29"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格"
+  },
   {
    "id": "kuze-plush-board",
    "num": 11,
@@ -305,6 +618,1601 @@
    "gameRegistration": ""
   },
   {
+   "id": "steve-timer-count",
+   "num": 21,
+   "title": "タイマーの数",
+   "cast": [
+    "steve"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "タイマー、何個？",
+    "ヘイ、三つだけ。",
+    "三つじゃない！"
+   ],
+   "caption": "スティーブは、急ぎすぎないようにタイマーを使う職人。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-steve-timer-count.png",
+   "files": [
+    {
+     "file": "allcast-steve-timer-count.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "c582cbd9e8ecec52784b65bc4f2a4c200e2156b201aefa099cbf235182a21dc2"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "steve-card-tower",
+   "num": 22,
+   "title": "カードの塔",
+   "cast": [
+    "steve"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "カード、片付けます。",
+    "ノー、ノー。",
+    "手が器用すぎる。"
+   ],
+   "caption": "スティーブは大きな手で、細かい作業がとても得意。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "b79bfbfcdf5e26f6b3afb7f9cb7f5e54b32c45319e056f4a9c65db0512a73106"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "2ec67d37bf939269316ef3e3e366bf2c765673d1750db184acf79c4350d3974b"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "steve-lemon-tree",
+   "num": 23,
+   "title": "レモン一個",
+   "cast": [
+    "steve"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "レモン、一個ください。",
+    "ヘイ、オーケー。",
+    "木ごと来た。"
+   ],
+   "caption": "スティーブの好きな味は、レモンとライムの組み合わせ。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "f423bf3fb1040e2da83ff09ebd5b87cd2e07eb1c6aaa02d14439f37c38d6f6e0"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "01a7433b6aee7e93d12a20c5a1b1d4453040dcb27104c085d4fd4025e1b4986c"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "steve-magnifier",
+   "num": 24,
+   "title": "感想を待つ",
+   "cast": [
+    "steve"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ヘイ、どうだ？",
+    "おいしいです。",
+    "顔が近い。"
+   ],
+   "caption": "スティーブは、お客さんの表情をよく見ている職人。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "db4ea49d294d19dc1124785bd96c5bbed404a68b84f665daec976d2164d0610c"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "6d3f2eb91b20fa497c9767581dc5afd9939bea89e2166b46af812b110c9ddaa4"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "steve-gentle-catch",
+   "num": 25,
+   "title": "そっとパス",
+   "cast": [
+    "steve"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "みかん、投げますよ！",
+    "ノー、そっとだ！",
+    "受け方が大げさ。"
+   ],
+   "caption": "スティーブは、何でも丁寧に扱う慎重な職人。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-steve-gentle-catch.png",
+   "files": [
+    {
+     "file": "allcast-steve-gentle-catch.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "ebded2aeb2f745af94ed229d73f162d3af52ab12696825ce2357b3a0f0036994"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "steve-dont-rush",
+   "num": 26,
+   "title": "焦らない人",
+   "cast": [
+    "steve"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ヘイ、焦るな。",
+    "はい、待ちます。",
+    "本人が焦ってる。"
+   ],
+   "caption": "待つことは、スティーブ本人にも難しい選択。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "c7494e7bc306a023c588db2012d19a615661b65505fe9739c3158673e172a60f"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "f4ad14f194ad531bbea27a451d14dcc6f9342b7041b1b26f7d97ca22b4cdc03a"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "steve-glasses-off",
+   "num": 27,
+   "title": "眼鏡を拭く",
+   "cast": [
+    "steve"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ヘイ、髪切った？",
+    "いいえ？",
+    "それ、パイナップル。"
+   ],
+   "caption": "眼鏡を拭いている間のスティーブは、少しうっかり。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "3818ff7ae80801ae2eb54abadd5c69035a76bf8d61c1db711eddff2ec76b51a4"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "bb68dd2ad39ab8d3806a5c39a1abbcf0211cb21086ae3a7ed0879f6fb8167230"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "steve-second-bite",
+   "num": 28,
+   "title": "二口目の味",
+   "cast": [
+    "steve"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "二口目が本番だ。",
+    "いただきます。",
+    "一口でいった。"
+   ],
+   "caption": "スティーブは、一口目より二口目の味を大事にする。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "1d33bbbc8a6bd14ae955e7fe3eb4a14afac06cc0ff6ae917d8be0142ce550bc0"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "15e090e2a9c38700de0ff7345c6d86ebe63fee08005e9b331e6768292f4142bc"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "steve-guest-today",
+   "num": 29,
+   "title": "今日は客",
+   "cast": [
+    "steve"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ヘイ、今日は客だ。",
+    "ごゆっくりどうぞ。",
+    "俺が客になってる。"
+   ],
+   "caption": "スティーブは客で来ても、つい店の人になる。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "61db893d5e7fb02075c92f9da59f8eab4a47ac5be25f6024bd8be8a2524ff31f"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "e947e36c675491bea93d0977709213a3488c60980f07f6260703a0390cad66f8"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "steve-partner",
+   "num": 30,
+   "title": "相棒の紹介",
+   "cast": [
+    "steve"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ヘイ、俺の相棒だ。",
+    "はじめまして。",
+    "タイマーだ。"
+   ],
+   "caption": "小さなタイマーは、スティーブがいつも持ち歩く相棒。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "d275e1205b494d86a4a2d8f10c53203ed5824bb554ce9161f1a4c7b6371281d7"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "e8bfe0734dde0622bc77896b4a872fa85868d69bafb9d1c7fcf2ab614ffb2651"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "volk-kitten",
+   "num": 31,
+   "title": "子猫と鉄の男",
+   "cast": [
+    "volk"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "抱っこしてみます？",
+    "……不要だ。",
+    "顔が溶けた。"
+   ],
+   "caption": "冷たく見えるヴォルクにも、かなわない相手がいる。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-volk-kitten.png",
+   "files": [
+    {
+     "file": "allcast-volk-kitten.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "5a68dabd62a40b2b4a0bb43fb0affd107c777b8738179a5c4cd5c163fd8b7b1e"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "volk-hammock",
+   "num": 32,
+   "title": "楽な姿勢",
+   "cast": [
+    "volk"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "楽にしてください。",
+    "了解した。",
+    "板みたいだ。"
+   ],
+   "caption": "ヴォルクは、くつろぐときも姿勢がくずれない。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-volk-hammock.png",
+   "files": [
+    {
+     "file": "allcast-volk-hammock.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "71559b0228e042d41f41521069b7c3e8d0864126b190edd5e0a94526d7898986"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "volk-blueprint",
+   "num": 33,
+   "title": "モデル役",
+   "cast": [
+    "volk"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "そこに立て。動くな。",
+    "は、はい…！",
+    "設計図だ。"
+   ],
+   "caption": "ヴォルクは何でも正確に記録する。似顔絵でも。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "8d6a6c0812c67643cef1218c2982dcb4c7fa86f870d4c0fc4bb5c9ef1647ed08"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "ff2574bc26c1663573900b2a157752d9b8b1ce0748b509e97918a4ed5de71e5d"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "volk-cold-stare",
+   "num": 34,
+   "title": "冷たい視線",
+   "cast": [
+    "volk"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ジュース、ぬるい…",
+    "貸せ。",
+    "冷やしすぎ。"
+   ],
+   "caption": "目つきは氷のように鋭いけれど、ヴォルクは親切な人。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-volk-cold-stare.png",
+   "files": [
+    {
+     "file": "allcast-volk-cold-stare.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "1f9872dabe3fdd160421b7fc91f83f398b40c4b11e2dd3cf0298d1bd59925120"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "volk-same-shirts",
+   "num": 35,
+   "title": "毎日の服",
+   "cast": [
+    "volk"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "毎日同じ服ですね。",
+    "毎日違う。",
+    "見分けがつかない。"
+   ],
+   "caption": "ヴォルクの黒い服は、本人にだけ違いが分かる。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-volk-same-shirts.png",
+   "files": [
+    {
+     "file": "allcast-volk-same-shirts.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "fd44a1f813165aba142c33ae4d3ee9ae73497be0e76a8b919aead739ef05ffdc"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "salaryman-shadow-dance",
+   "num": 36,
+   "title": "影の本音",
+   "cast": [
+    "salaryman"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "お味、どうです？",
+    "……普通です。",
+    "影が踊ってる。"
+   ],
+   "caption": "無口な常連さんの本音は、顔ではない所に出ます。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "c040e4f6e559aab2c1090f554aed599d1c4788c9212be1aa56f8bc968b40b23a"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "afa2d9baf6b9ef14935a0c4d3226bbad2a2f1557f4b4cee0510634540d64776a"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "salaryman-rare-smile",
+   "num": 37,
+   "title": "ごちそうさん",
+   "cast": [
+    "salaryman"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "お会計です。",
+    "……ごちそうさん。",
+    "まぶしい！"
+   ],
+   "caption": "めったに笑わない常連さんの笑顔は、威力がすごい。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "14c7d2913300812fcfd85865f83b6a86d6a1e970486bc3afd8fc877b26c85de7"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "f9a4964b172a496c77dcbb65223f7657900773e4f4c2a6b35d87ef31b0e0cc9b"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "内容欠点あり・構成選別可能",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "salaryman-deep-bow",
+   "num": 38,
+   "title": "深いお辞儀",
+   "cast": [
+    "salaryman"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "またどうぞ！",
+    "……どうも。",
+    "深すぎる！"
+   ],
+   "caption": "無口な常連さんは、お礼の角度がとても深い人です。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-salaryman-deep-bow.png",
+   "files": [
+    {
+     "file": "allcast-salaryman-deep-bow.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "b44feb23ad5d63f64a2eb821c3b32d4bbe39524e83ad4343692ccd2d6886c392"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "salaryman-briefcase",
+   "num": 39,
+   "title": "鞄の中身",
+   "cast": [
+    "salaryman"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "傘、貸しましょうか？",
+    "……あります。",
+    "鞄より多い。"
+   ],
+   "caption": "無口な常連さんは、いつでも準備が万全です。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-salaryman-briefcase.png",
+   "files": [
+    {
+     "file": "allcast-salaryman-briefcase.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "de0b3c7c345847b62c0876372883924d40e03387225ea688e4bba96d86d389e1"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "salaryman-fast-fingers",
+   "num": 40,
+   "title": "スマホの指",
+   "cast": [
+    "salaryman"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "スマホで何を？",
+    "……ゲームを。",
+    "手が増えてる。"
+   ],
+   "caption": "無口な常連さんにも、夢中になれる遊びがあります。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "5eb9d86b3d3f9d4562e5a754ce205f52b5ebdd5ddad9e808ec73cc3d4c317d25"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "2e5043cf2e5a8286308dac2fc22aaeb28f7ff902f3f2037d2b36729be0d01df6"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "salaryman-typhoon",
+   "num": 41,
+   "title": "台風の日",
+   "cast": [
+    "salaryman"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "明日は台風ですね。",
+    "……来ます。",
+    "本当に来た。"
+   ],
+   "caption": "tonariの常連さんは、どんな天気でも来てくれます。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-salaryman-typhoon.png",
+   "files": [
+    {
+     "file": "allcast-salaryman-typhoon.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "d01cc91bfd1b6f1f7c5a27931c80795cc4bfa95898aaba9a5885d8427f79617d"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "salaryman-ladybug",
+   "num": 42,
+   "title": "小さな虫",
+   "cast": [
+    "salaryman"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "あ、てんとう虫。",
+    "……虫、ですか。",
+    "天井にいる。"
+   ],
+   "caption": "動じない常連さんにも、苦手なものはあるようです。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "47d783e836d8ff4ccead69d357859d2161c3afae6f6a89a51b5ad00bc308de29"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "7b8f178593a5b49733cb0a9a3740318c22ee615234ab757c3bf70a0ac69a0f14"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格"
+  },
+  {
+   "id": "salaryman-cat-bench",
+   "num": 43,
+   "title": "猫の常連",
+   "cast": [
+    "salaryman"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "野良猫、多いですね。",
+    "……ええ。",
+    "猫まみれだ。"
+   ],
+   "caption": "無口な常連さんは、なぜか猫にとても好かれます。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-salaryman-cat-bench.png",
+   "files": [
+    {
+     "file": "allcast-salaryman-cat-bench.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "65d2e2f0b2b3535ecf9853ba4df0174e83a0235d6ba46689361282d09239b19b"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "salaryman-make-laugh",
+   "num": 44,
+   "title": "笑わせたい",
+   "cast": [
+    "salaryman"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "笑わせてみせます！",
+    "……どうぞ。",
+    "手強い……！"
+   ],
+   "caption": "表情を変えない常連さんは、tonari一の手強い客。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "af5ac9a413c1d44f8bbbec8f319a9dd4ba026e799ec4a2264542deb8fcb3d571"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "4ef5eb3b638c78bc3edb0cecef3c7a65154341979ebb8d944c1ce90daea12fe7"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "salaryman-earl-grey",
+   "num": 45,
+   "title": "紅茶の効き目",
+   "cast": [
+    "salaryman"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "いつもの紅茶です。",
+    "……どうも。",
+    "紳士になった。"
+   ],
+   "caption": "常連さんの好きな飲み物は、紅茶のアールグレイ。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "0e135ef3a3c5564cfbe5ceb9886c339c4f85205154167a073548cecea72f93d3"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "0865538eb48dec88f00f4c7bafd489306b475d43d25ae78d35d5d409825fb144"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "kemuri-jar-machine",
+   "num": 46,
+   "title": "ふたの開け方",
+   "cast": [
+    "dr_kemuri"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ふたが開かない……",
+    "私に任せなさい。",
+    "大がかりすぎる。"
+   ],
+   "caption": "チャコール博士は、ものを作るのが大好きな研究者です。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "115c1af69cbfd19562f85afb31fcfdcdcb78747363690b20a30dce34521843a2"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "f60c424f0507ede5dd07b49414d59f1f640eee66f97637617bd4c8f72afd4edb"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成利用可（旧導入表記不一致を保持）",
+   "codexFinishedQA": "不合格"
+  },
+  {
+   "id": "kemuri-snow-sandals",
+   "num": 47,
+   "title": "雪の日の足元",
+   "cast": [
+    "dr_kemuri"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "外、雪ですよ。",
+    "防寒は完璧だよ。",
+    "足元が夏。"
+   ],
+   "caption": "博士はどんな日も、素足に黒いサンダルです。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "8e7e7dd3757250816cfde4995d8e5a71c69118db7cb755600073f593eeb5fbdc"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "cda0878b899058a8906482ea1ebc8c8876fa814d5dbf6b78744b5d1e4e36bfea"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "kemuri-flatpack",
+   "num": 48,
+   "title": "助手の仕事",
+   "cast": [
+    "dr_kemuri"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "蒸野くん、手を貸して。",
+    "はい、博士！",
+    "棚に負けてる。"
+   ],
+   "caption": "機材を作れる博士も、家具の組み立ては苦手らしい。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "c8ceab1edb97c0047927528a5b84bbeedfe2be240708d54aee055ba2d712832a"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "5c613ce5de71660c287725473b28d95e7353aa4e70da626c6e55c006fe349e1c"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成検討可能・判断留保",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "kemuri-beach-coat",
+   "num": 49,
+   "title": "海の支度",
+   "cast": [
+    "dr_kemuri"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "海、楽しみですね！",
+    "着替え完了だよ。",
+    "白衣のまま。"
+   ],
+   "caption": "博士のいつもの白衣は、どこへ行くにも一緒です。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "33da3c724a7c37c738c252788fd85cbf26e99ba5e58acbabcd02c8088e95d055"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "cc561d9bc00543860fbfea0dd217c1150783c892ce1a02a97b4a1509e3851464"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "kemuri-giant-lemon",
+   "num": 50,
+   "title": "育てたレモン",
+   "cast": [
+    "dr_kemuri"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "レモン、ありますか？",
+    "育てておいたよ。",
+    "大きすぎる。"
+   ],
+   "caption": "博士は、酸っぱい味やシトラス系が得意です。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "dc947cdf7b6f766c78f06d29954db0679fd21f280fdb7462a70cebec16d1ab4e"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "2b37c7ea98d67d8779af0f95c58ef2757ef26c41e75d5267c123767bc8fc5af8"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "kemuri-coat-stains",
+   "num": 51,
+   "title": "白衣のしみ",
+   "cast": [
+    "dr_kemuri"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "そのしみ、薬品ですか？",
+    "研究の跡だよ。",
+    "飲み物だった。"
+   ],
+   "caption": "博士の白衣のしみは、研究の跡……だけではない？",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "ac4681b4bcf5aac6262b3502255d8c0d4b311cb7ae013301c7913d01f021c7cf"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "426ef5775d0713a2a11e3733979ae253e961d232c13f6579e90048a1fffac2ee"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "kemuri-parts-box",
+   "num": 52,
+   "title": "元気の素",
+   "cast": [
+    "dr_kemuri"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "博士、お疲れですか？",
+    "少し、ね……",
+    "一瞬で元気。"
+   ],
+   "caption": "新しい部品を見ると、博士は子どものように輝きます。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "6ca97fcb1997ff7d9fbc18cad2c5bd9894f28dbb4d009c367d907974159357f2"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "0ddfe2208e16b50e7367b42b5e5c33bed0c6c43efddf09b155ff7ce12f7a9245"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "kemuri-heart-chip",
+   "num": 53,
+   "title": "世紀の大発見",
+   "cast": [
+    "dr_kemuri"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "蒸野くん、大発見だ！",
+    "本当ですか！",
+    "ハート形だ。"
+   ],
+   "caption": "博士は、小さな発見でも本気で大喜びする人です。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "89698cab8fa3e0890a3ece3661319d9d5aac95e765f5a3e913a9d412973449f0"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "278c0d922b6b34c3e0ed1f595e78473555b33cb0aad369e0517d569bd03fc0bf"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "kemuri-crayon-plan",
+   "num": 54,
+   "title": "博士の設計図",
+   "cast": [
+    "dr_kemuri"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "設計図、見たいです。",
+    "どうぞ、これだよ。",
+    "クレヨンだ。"
+   ],
+   "caption": "博士の発明は、楽しい落書きから始まる……らしい。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "c3f68506bf652d70ae88c496df00ef1bad9807eb841d267003857ef57f3a7d83"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "df52b89aa82137577f94fb6261f4baac39b01265bef3a39787b47492fdaea3ba"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "kemuri-goldfish",
+   "num": 55,
+   "title": "金魚すくい",
+   "cast": [
+    "dr_kemuri"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "金魚、すくえない……",
+    "角度の問題だよ。",
+    "すくいすぎ。"
+   ],
+   "caption": "データの鬼・博士の計算は、夏祭りでも正確です。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "47cff945c440b9f7dab4145cbebaa1a121c6ac9f8195a56d5e962ecdb07bce49"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "888342a79bcc67f6075c8aaf10e327f0303a82840268aa3a783a389a8666d4aa"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "pakki-library-whisper",
+   "num": 56,
+   "title": "小声でお願い",
+   "cast": [
+    "pakki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ここでは小声でね。",
+    "了解ですッ！",
+    "これで小声？"
+   ],
+   "caption": "大会MCのパッキーは、ささやき声も会場サイズ。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "ea921662ce935442cc07b0f9a9d2f9ad1d962b8f2a8fab39481f3aaac249884b"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "994e62a0044a7570a08e88981b8fc7835ab9f9b31c50032cfeb7c4459a915cd2"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "pakki-no-mic",
+   "num": 57,
+   "title": "マイク預かり",
+   "cast": [
+    "pakki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "マイク、預かるね。",
+    "えッ、それは……",
+    "しぼんだ。"
+   ],
+   "caption": "パッキーは、マイクを握ると元気になるタイプ。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "28c8cf400e91f56fc693a4a53f1d90174077bf31d81448681304dd8d826fab81"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "b5fb0832a705f1fe9080b9c2f43dd6ac95f032472f07f1dd8ca3a4b5440fba02"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "pakki-gum-bubble",
+   "num": 58,
+   "title": "ガムの風船",
+   "cast": [
+    "pakki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ガム、いる？",
+    "大好物ですッ！",
+    "浮いてる！"
+   ],
+   "caption": "パッキーの好きな味は、ガムシナモンです。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "293fefbcac5459f018140c31f23539f2b0c0514fa7b905026065557d22b0a606"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "32ca6a979c49369150dd2b894dd9a597df1bef5aa403a8336d8c799db7e5edf6"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "pakki-trash-entrance",
+   "num": 59,
+   "title": "選手入場",
+   "cast": [
+    "pakki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ゴミ出し、行ってくる。",
+    "選手入場ッ！",
+    "ゴミ出しです。"
+   ],
+   "caption": "パッキーは、どんな場面も大会の入場にします。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "4a7f98313053bdb598ba015751df4154cc7543861c4b76bf47345e53daef8083"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "fbc75314168bfb04af72ec9b1d671abf6bebb20e5f838692d547cbd69bfd5f63"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "pakki-kendama",
+   "num": 60,
+   "title": "けん玉名人",
+   "cast": [
+    "pakki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "けん玉、できる？",
+    "名人ですッ！",
+    "絡まってる。"
+   ],
+   "caption": "パッキーの「名人ですッ！」は、自己申告です。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "5e95d1a16abb9893860fa2331106819d160d9d7f7b35a6d861ba4e5fb79bf09a"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "046c1b5412bc8c5c3c9c0c133d1e9475134acff024bf7ab85ab6e43b62e6d57b"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "pakki-pompadour",
+   "num": 61,
+   "title": "イメチェン",
+   "cast": [
+    "pakki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "その帽子、珍しいね。",
+    "イメチェンですッ！",
+    "盛りすぎ。"
+   ],
+   "caption": "パッキーは、イメチェンも会場サイズで決めます。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "9050a69450548835b58668517838e2c6f4e4077a76598fd1565af3fe6f16c2ef"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "740e86ee5081e62dc732144d9c44c893c774bd3a3c315ea2ed708cf2a642ac8e"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格：導入/オチの吹き出し4%安全余白未達・派生未実施"
+  },
+  {
+   "id": "pakki-sheep-hide",
+   "num": 62,
+   "title": "かくれんぼ",
+   "cast": [
+    "pakki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "かくれんぼしよう。",
+    "見つけられますッ？",
+    "一匹ちがう。"
+   ],
+   "caption": "白くてふわふわのパッキーは、かくれんぼに自信あり。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "993c620e108b87bbf7dc96244e78cc60eab79a13f631df0cb09978661a02eddc"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "74ec6270838baa1570e4e0c551b3b96bec17ed6fb7f7c9760941d9b01d3a885a"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "pakki-cake-gulp",
+   "num": 63,
+   "title": "ケーキ半分こ",
+   "cast": [
+    "pakki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ケーキ、半分こね。",
+    "いただきますッ！",
+    "全部いった。"
+   ],
+   "caption": "パッキーとケーキを分けるときは、先に切っておこう。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "a3edd79d527aaa410e445f9956fd58f991e56443f4edab2a27e6c197253c6464"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "902f9c42c4c5bfe19b8993319e029aa7a2ab93123fdcdd09ed5429809bb39484"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "pakki-evidence",
+   "num": 64,
+   "title": "根拠はこちら",
+   "cast": [
+    "pakki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "勝負は最初が大事ッ！",
+    "根拠は？",
+    "自分の顔だ。"
+   ],
+   "caption": "パッキーの解説は、いつも自信たっぷりです。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "0e4def33fb2bb07003ff050aefa3e60940d5f2f75e11f06a0ee97a7e5fc95a5f"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "6c73f36d7b8fdb28401565daa6bb8ae6780b64f2d427fbbdeb6b6a1bfd60fd68"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "pakki-cushion",
+   "num": 65,
+   "title": "ふわふわ",
+   "cast": [
+    "pakki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "疲れた……",
+    "休むといいですッ！",
+    "沈んでいく……"
+   ],
+   "caption": "パッキーのふわふわは、大会の疲れにも効く……？",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "942ed0eba851dd16cae22ab57cc39d72be939a097545678520caa964de2a78cc"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "f7977bc33256dfb8b4959d27c9fc055f99d9d7f11adb0946ba6899edcc7892f7"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
    "id": "nagumo-long-review",
    "num": 66,
    "title": "一言の講評",
@@ -433,6 +2341,798 @@
    "delivery": "2026-11-02-a",
    "ownerVerdict": "reject",
    "gameRegistration": ""
+  },
+  {
+   "id": "emil-treasure-box",
+   "num": 71,
+   "title": "宝物の箱",
+   "cast": [
+    "emil"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "宝物だ。",
+    "拝見します。",
+    "ピスタチオだ。"
+   ],
+   "caption": "エミルさんの好きな味は、ピスタチオ。宝物級に好き。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "c687988d081dfd6bf7481cb7ff341ddd5792d90f44f6e07e1dda3f5d6e7bcdd3"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "666136e517726894b28c2a61b278d53807f52a9727618e576766143e935870bd"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "emil-mustache-smile",
+   "num": 72,
+   "title": "ひげは正直",
+   "cast": [
+    "emil"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "味、どうです？",
+    "……悪くない。",
+    "ひげが笑ってる。"
+   ],
+   "caption": "無口なエミルさんにも、隠しきれない気持ちがある。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "294aaeeab70296e4b9ae45981505d8387c3e1764af1ddcf9bb4acae85cd83e2c"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "8472c132ca69a8f963fc7c9185e6f4d2cf5aa1565177d9a2ea5f410ddf98afbc"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "emil-stretchy-icecream",
+   "num": 73,
+   "title": "のびるアイス",
+   "cast": [
+    "emil"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "トルコのアイスだ。",
+    "いただきます！",
+    "のびてる！"
+   ],
+   "caption": "エミルさんの故郷トルコのアイスは、よくのびる。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "4ed7c43965a70a2786cb1b23610d232c8f075956ff2e7c5ed93ddf44bff90ea7"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "9265378cf59eb98e8e93529b9cb2f0b5430b5acdb3ed6c6aa20a55a9dcbe3ffd"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "emil-carpets",
+   "num": 74,
+   "title": "敷物さがし",
+   "cast": [
+    "emil"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "敷物がほしいです。",
+    "……見せよう。",
+    "選べない。"
+   ],
+   "caption": "エミルさんは、良い物を見せ始めると止まらない。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "eada25769f26b08b992a40b2a28f749164e63a978813f1fe13e97c3ae0574ea6"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "fa079dd2c9cf2654a28210ffec3e83dfcb1a0f6d173c39d9ff02042fe827282d"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成検討可能・判断留保",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "emil-karaoke",
+   "num": 75,
+   "title": "一曲どうぞ",
+   "cast": [
+    "emil"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "何か歌います？",
+    "……いい。",
+    "マイク離さない。"
+   ],
+   "caption": "無口なエミルさんにも、譲れない一曲がある。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "9c41bec26121e00062cd590eda1c40aa5ace33dc66a5cea9bdd475d1e2d2e523"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "4ff78ab883533ac98495a56495172bf08c177b7682a1fc7bbebfe61a95a970c5"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "emil-mustache-kit",
+   "num": 76,
+   "title": "ひげの手入れ",
+   "cast": [
+    "emil"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ひげ、立派ですね。",
+    "……毎朝だ。",
+    "道具が多い。"
+   ],
+   "caption": "エミルさんの口ひげは、毎朝の職人仕事。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "c64078b843f98b4a21f605da0b6bba2b5e5699726e7a85364a7c3640ce2107c0"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "eded8c4c853cc4c6bd08a391c984b94e509b205395a8d57b74462cf1a5d293f3"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "emil-new-shoes",
+   "num": 77,
+   "title": "足元の新作",
+   "cast": [
+    "emil"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "新作の靴です！",
+    "新しいだけでは。",
+    "そっちが最新。"
+   ],
+   "caption": "エミルさんは、伝統を守りつつ新しい道具も試す。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-emil-new-shoes.png",
+   "files": [
+    {
+     "file": "allcast-emil-new-shoes.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "a532fd6f98042d9e533edaa4f10c221223ea3cb7c8de61a02c7583a668204cba"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "emil-evil-eye",
+   "num": 78,
+   "title": "お守りの数",
+   "cast": [
+    "emil"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "お守りだ。",
+    "うれしいです！",
+    "目が多い。"
+   ],
+   "caption": "トルコでは、青い目のお守りで災いをよける。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-emil-evil-eye.png",
+   "files": [
+    {
+     "file": "allcast-emil-evil-eye.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "76803b2bbe525d3b4af38a9a2fb46549257cde6df7252e019d19eb13609b5e79"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "emil-copy-look",
+   "num": 79,
+   "title": "形から入る",
+   "cast": [
+    "emil"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "コツを教えてください！",
+    "手を見ていなさい。",
+    "形から入りました。"
+   ],
+   "caption": "はじめは、尊敬する人のまねから覚えていく。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-emil-copy-look.png",
+   "files": [
+    {
+     "file": "allcast-emil-copy-look.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "2a4a91da72dd29cd31c58b1cb811bd728a90d149f906a0a9932516fe709cae22"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "emil-chopstick-ship",
+   "num": 80,
+   "title": "余り物の船",
+   "cast": [
+    "emil"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "割りばし、余りました。",
+    "もらおう。",
+    "余り物で大作。"
+   ],
+   "caption": "エミルさんの手は、余り物でも丁寧に組み上げる。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-emil-chopstick-ship.png",
+   "files": [
+    {
+     "file": "allcast-emil-chopstick-ship.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "f9a9ed878e0452d0ef2b89737f6181fefeacff7cf7d10af2d4dd70352edf38c0"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "maezono-plain-water",
+   "num": 81,
+   "title": "ただの水",
+   "cast": [
+    "maezono"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ただの水です。",
+    "おいしいねえ。",
+    "水ですよ？"
+   ],
+   "caption": "上園さんは、何でも本当においしそうに味わう人。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-maezono-plain-water.png",
+   "files": [
+    {
+     "file": "allcast-maezono-plain-water.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "bde0281e46136758ac6a5a52dd986509712c61854d2359a758400ee0ad2cf64c"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "maezono-photo-first",
+   "num": 82,
+   "title": "写真が先",
+   "cast": [
+    "maezono"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "まず写真だねえ。",
+    "どうぞ。",
+    "先に食べてる。"
+   ],
+   "caption": "上園さんは、写真を撮る前に食べてしまいがち。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-maezono-photo-first.png",
+   "files": [
+    {
+     "file": "allcast-maezono-photo-first.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "d4ad23df6ac1efd7008fffadcc8cbc310dc528cdb4239ebe083962aff8bf0095"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "maezono-pen-lining",
+   "num": 83,
+   "title": "内ポケット",
+   "cast": [
+    "maezono"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ペン、借りても？",
+    "どうぞどうぞ。",
+    "文房具屋さんだ。"
+   ],
+   "caption": "編集長の上園さんは、いつもメモ帳を持ち歩く。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-maezono-pen-lining.png",
+   "files": [
+    {
+     "file": "allcast-maezono-pen-lining.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "83c16c3667917a1a27d44258b6e5a50b9c1e598e0cf70cbc27afdb272e9406e2"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "maezono-lemon",
+   "num": 84,
+   "title": "好物のレモン",
+   "cast": [
+    "maezono"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "レモン、好きですよね。",
+    "大好きだねえ。",
+    "好きなのに！"
+   ],
+   "caption": "上園さんの好きな味はレモン。かじるのは別の話。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-maezono-lemon.png",
+   "files": [
+    {
+     "file": "allcast-maezono-lemon.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "a7aea4be141b8d6b5346862cb4211c52c18a6675940bc2307e3a48309cea4c1b"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "maezono-food-sample",
+   "num": 85,
+   "title": "見本の味",
+   "cast": [
+    "maezono"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "見本、買いました。",
+    "おいしそうだねえ。",
+    "それ、見本です！"
+   ],
+   "caption": "食品サンプルは、本物よりおいしそうに見える。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-maezono-food-sample.png",
+   "files": [
+    {
+     "file": "allcast-maezono-food-sample.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "abdef3172169a92df252d4ee855a667ab5e2e981c6f0edd9c11f4fed012ec360"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "maezono-notifications",
+   "num": 86,
+   "title": "通知の嵐",
+   "cast": [
+    "maezono"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "記事に書いたよ。",
+    "ありがとうございます！",
+    "通知が止まらない。"
+   ],
+   "caption": "上園さんの記事は、シーシャ好きへの影響力が絶大。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-maezono-notifications.png",
+   "files": [
+    {
+     "file": "allcast-maezono-notifications.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "71c8c895f851d280af1d30df166443f3d05a267d11f47211b16476c4884724d8"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "maezono-good-smell",
+   "num": 87,
+   "title": "いい匂い",
+   "cast": [
+    "maezono"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "いい匂いだねえ。",
+    "遠いのに？",
+    "もう隣にいる。"
+   ],
+   "caption": "おいしいものの気配に、上園さんはとても敏感。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-maezono-good-smell.png",
+   "files": [
+    {
+     "file": "allcast-maezono-good-smell.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "7868fd2f77335340fe3cf4b09c8ac850f65fe1fd7d934bf91910b9f39fbfc662"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "maezono-big-plate",
+   "num": 88,
+   "title": "味見の皿",
+   "cast": [
+    "maezono"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "味見、ひと口だけ。",
+    "うれしいねえ。",
+    "皿が大きい。"
+   ],
+   "caption": "上園さんは、ひと口の味見にも全力で向き合う。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-maezono-big-plate.png",
+   "files": [
+    {
+     "file": "allcast-maezono-big-plate.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "b761a52ad75e4cf43d67a43e4900aec04e10dfb67e34e2e46d104e6a862039f8"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "maezono-give-all",
+   "num": 89,
+   "title": "全部どうぞ",
+   "cast": [
+    "maezono"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "それ、なにかな？",
+    "メロンパンです。",
+    "全部渡してた。"
+   ],
+   "caption": "上園さんに食べてほしくなるのは、みんな同じ。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-maezono-give-all.png",
+   "files": [
+    {
+     "file": "allcast-maezono-give-all.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "09cf7448c65912a5120ecd60dd7109c777c4bfe90eaf354e2d774c0654b490bb"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "maezono-dream-feast",
+   "num": 90,
+   "title": "夢の中も",
+   "cast": [
+    "maezono"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "寝てる……。",
+    "おいしいねえ……。",
+    "夢でも食べてる。"
+   ],
+   "caption": "上園さんの口ぐせは「おいしいねえ」。寝言でも。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-maezono-dream-feast.png",
+   "files": [
+    {
+     "file": "allcast-maezono-dream-feast.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "50cecfc032a4fb243863f5006d44d9773482f564f0b46a088c3b11a441ac24c3"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "dasilva-blackout-smile",
+   "num": 91,
+   "title": "停電の太陽",
+   "cast": [
+    "da_silva"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "停電だ……。",
+    "任せろ！",
+    "まぶしすぎる。"
+   ],
+   "caption": "名前のとおり、太陽の笑顔はいつもまぶしい。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-dasilva-blackout-smile.png",
+   "files": [
+    {
+     "file": "allcast-dasilva-blackout-smile.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "8828f1b9b461ec920fe4d49689e1f1187056243bb59491a2dcf66271449aaee2"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "dasilva-flashy-tea",
+   "num": 92,
+   "title": "派手なお茶",
+   "cast": [
+    "da_silva"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "お茶です。",
+    "地味だな！",
+    "俺が派手に。"
+   ],
+   "caption": "太陽は、ひと口の前に目で楽しませる見せ方を大事にする。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-dasilva-flashy-tea.png",
+   "files": [
+    {
+     "file": "allcast-dasilva-flashy-tea.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "9afae2e7d407ad3ebc5719e8eb3630fc23a537cca5a0a4830f0d5b0b08c2c93d"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "dasilva-snow-day",
+   "num": 93,
+   "title": "雪と南国",
+   "cast": [
+    "da_silva"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "雪だ！最高！",
+    "寒くないです？",
+    "着こみすぎ。"
+   ],
+   "caption": "ブラジルから来た太陽に、日本の冬は手ごわい。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-dasilva-snow-day.png",
+   "files": [
+    {
+     "file": "allcast-dasilva-snow-day.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "d76d801f3c02f318ee7c244c2eb6d2392e54bae112cd7f59e7d53108545a2f29"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "dasilva-big-present",
+   "num": 94,
+   "title": "大きな贈り物",
+   "cast": [
+    "da_silva"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "プレゼントだ！",
+    "大きい……！",
+    "中身が小さい。"
+   ],
+   "caption": "太陽は、開けるまでのわくわくも贈り物にする。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-dasilva-big-present.png",
+   "files": [
+    {
+     "file": "allcast-dasilva-big-present.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "acdfccba4a7cf371fbb7e1ca04249c1b4ac620a7a76dbb16a7fcaed2afee1a42"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "dasilva-sunscreen",
+   "num": 95,
+   "title": "日焼け止め",
+   "cast": [
+    "da_silva"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "日焼け止めは？",
+    "いらねえ！",
+    "俺だけ真っ赤。"
+   ],
+   "caption": "太陽の肌は、南国の強い日差しにも慣れている。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-dasilva-sunscreen.png",
+   "files": [
+    {
+     "file": "allcast-dasilva-sunscreen.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "beb64877e13a686319684aa88f4c6c9f1a9ffb676e0d99277b1e33f5beda732c"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
   },
   {
    "id": "sheikh-camel-gift",
@@ -980,6 +3680,1688 @@
    "gameRegistration": ""
   },
   {
+   "id": "maki-ring-toss",
+   "num": 116,
+   "title": "輪投げ名人",
+   "cast": [
+    "maki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "輪投げ、やります？",
+    "軽く投げるよ。",
+    "全部入った。"
+   ],
+   "caption": "マキさんの投げる腕は、斧以外でも冴えている。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-maki-ring-toss.png",
+   "files": [
+    {
+     "file": "allcast-maki-ring-toss.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "0d8f259ad81373ad2de7e084282398dfd13df258f52aac97e096f44e8aa98d49"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "maki-carry-all",
+   "num": 117,
+   "title": "荷物の山",
+   "cast": [
+    "maki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "荷物、半分持ちます。",
+    "いいって！",
+    "俺まで運ばれた。"
+   ],
+   "caption": "マキさんは、がっしりした肩の豪快な店主。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-maki-carry-all.png",
+   "files": [
+    {
+     "file": "allcast-maki-carry-all.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "17ffca4f744fcedbc26e0a587e9026066fb29dc9147f00cfc44ce7f25a133c79"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "maki-warm-up",
+   "num": 118,
+   "title": "準備運動",
+   "cast": [
+    "maki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "まずは準備運動！",
+    "はい！",
+    "投げる前に限界。"
+   ],
+   "caption": "斧投げの前は、肩の力を抜いて体をほぐそう。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "7de4a2ebebb86ac50b19eb9d523e75cc834a8b302c824774e628daa4df64a102"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "b33b15297f3e6d9f42c586575195c5ba56c99a3942de904e86f4154a71491448"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "maki-home-target",
+   "num": 119,
+   "title": "家でも練習",
+   "cast": [
+    "maki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "家でも練習したい。",
+    "いいね、任せな！",
+    "部屋が的になった。"
+   ],
+   "caption": "斧投げは、店の決まったレーンで楽しもう。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "2e6e1f6200adddcfe18631a2397660a42341640b282dfd0b23477ac72107c018"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "5f03f535955d34208a1a5fdc4bc96bb4b041f4fba34449a414a1c80f40d7a048"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "maki-tea-ceremony",
+   "num": 120,
+   "title": "お茶の時間",
+   "cast": [
+    "maki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "お茶、いれますね。",
+    "あたしがやるよ！",
+    "急に上品だ。"
+   ],
+   "caption": "マキさんは、豪快だけど手つきは繊細な職人。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "33ca05ea0f2779eacb10fbe933e6f8a7a3db5c1d72bfad84e72a1d4df728c573"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "54fa4b80b7573660bbe411e7781de7f1dbd2bbd1ece7d229f15628271767584b"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "maki-cheer-squad",
+   "num": 121,
+   "title": "全力の応援",
+   "cast": [
+    "maki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "明日、大会です。",
+    "応援行くよ！",
+    "応援団だ。"
+   ],
+   "caption": "マキさんは、応援も斧投げと同じく全力。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-maki-cheer-squad.png",
+   "files": [
+    {
+     "file": "allcast-maki-cheer-squad.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "8639ff9c9e5f80d5a2a7f51b9a37d99eaf48467e6355487242f6f10d4ee6d22f"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "maki-hot-takoyaki",
+   "num": 122,
+   "title": "熱いたこ焼き",
+   "cast": [
+    "maki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "たこ焼き、熱いですよ。",
+    "平気平気！",
+    "平気じゃない。"
+   ],
+   "caption": "大柄で豪快なマキさんにも、意外な弱点がある。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "c53ae77726e76cae789c786955c4d134126c31755c368bcd6bec6e651263a40e"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "1cddcc85a0993948f820248b3cbf56584794762f42b81ccdde59480aabf6935b"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "maki-relax-shoulders",
+   "num": 123,
+   "title": "力の抜き方",
+   "cast": [
+    "maki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "肩の力、抜きな！",
+    "はい……！",
+    "抜きすぎだ！"
+   ],
+   "caption": "マキさんは、力任せの一投に短く助言をくれる。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "f41354e9a7b3f30c807538d0527ca80d217ebdbef5ccd9fe8eaa6a84289435a3"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "6ac4a45ef7e4dafae14619e44182150bcfaa3c37bd8593d9badaa88b74b56364"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "maki-target-pizza",
+   "num": 124,
+   "title": "的のピザ",
+   "cast": [
+    "maki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ピザ、焼きます？",
+    "具はあたしが！",
+    "的になってる。"
+   ],
+   "caption": "マキさんの店の的は、真ん中の赤が高得点。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-maki-target-pizza.png",
+   "files": [
+    {
+     "file": "allcast-maki-target-pizza.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "3e51590a79dd6039c9e1582c479053920dc4b9a0a5cbb6020d19fcd04f110857"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "maki-tuck-targets",
+   "num": 125,
+   "title": "的のおやすみ",
+   "cast": [
+    "maki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "閉店ですね。",
+    "的を寝かせてくる。",
+    "寝かしつけてる。"
+   ],
+   "caption": "マキさんは、店の道具をとても大切にする。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "2588ceaded05cec65cb29c4d783c296c01d8c52aa1947d41f445a36c9e9ecdd7"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "da25678732cdebf6eb6293799916ea1975a13935b690adaa33fc45125216b224"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "yoru-club-mode",
+   "num": 126,
+   "title": "少しだけ音楽",
+   "cast": [
+    "yoru"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "音楽、かけます？",
+    "少しだけね。",
+    "少しじゃない。"
+   ],
+   "caption": "ヨルさんは、音楽で場の空気をがらりと変える。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "8f90e7e3fccdb8e53b3ae1c114aac2e8988e12e5aadeaba41dec106664c4752a"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "4e07d2374e3f1f7e6d10c3a530900be50d1c20c13dcf6fb595fea78b572622ef"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "yoru-record-room",
+   "num": 127,
+   "title": "レコードの数",
+   "cast": [
+    "yoru"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "レコード、何枚？",
+    "数えてないな。",
+    "床が抜けそう。"
+   ],
+   "caption": "ヨルさんの集めたレコードは、数えきれない。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-yoru-record-room.png",
+   "files": [
+    {
+     "file": "allcast-yoru-record-room.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "06e12d521e1c3639e6612b476b9e6a184f94e3ed8b5e7f253a8f7056d168d104"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "yoru-morning-walk",
+   "num": 128,
+   "title": "朝の散歩",
+   "cast": [
+    "yoru"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "朝、散歩しません？",
+    "……いいよ。",
+    "朝に弱い。"
+   ],
+   "caption": "クラブのオーナーのヨルさんは、夜が本番。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-yoru-morning-walk.png",
+   "files": [
+    {
+     "file": "allcast-yoru-morning-walk.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "ede70263e4527aa6d5fec0f505bbb1aef821e6bc0148625bfac9f208c8166dc3"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "yoru-vip-seat",
+   "num": 129,
+   "title": "VIP席",
+   "cast": [
+    "yoru"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "VIP席に案内する。",
+    "VIP……！",
+    "実家みたい。"
+   ],
+   "caption": "ヨルさんは、どんな客でも分けへだてなく迎える。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-yoru-vip-seat.png",
+   "files": [
+    {
+     "file": "allcast-yoru-vip-seat.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "2cfc9fbe7961c5c4cab751bbdabd33f51d71999d4fc25b35acd9ba88bf902f7e"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "yoru-secret-dance",
+   "num": 130,
+   "title": "見る側の人",
+   "cast": [
+    "yoru"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "踊らないんですか？",
+    "あたしは見る側。",
+    "踊ってた。"
+   ],
+   "caption": "ヨルさんは、フロアの様子を見て曲を決める。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "0932fb551d0066cd32f002c3e26d9e98706dbf816cdf1cecd6f47b5a29216a0b"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "a72eb02e1380a0664fca159349c21b5625a2ac679e1003e3b32b81d8aeefc955"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "yoru-tablecloth",
+   "num": 131,
+   "title": "一瞬の交換",
+   "cast": [
+    "yoru"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "クロス、替えます？",
+    "お皿、そのままで。",
+    "一瞬で替わった。"
+   ],
+   "caption": "ヨルさんの手元は、つなぎ目を感じさせない。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "f17b6425a5ffa71de8d48eb14bb024a9d3eb74de7fe424b65b578238c84668ce"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "1fbe1d5be4f69aa3fb900626d1634c50040caafd8f4aa5c45a15ddc93624778a"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "yoru-watermelon",
+   "num": 132,
+   "title": "スイカ選び",
+   "cast": [
+    "yoru"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "スイカ、どれがいい？",
+    "叩いて聴こうか。",
+    "演奏が始まった。"
+   ],
+   "caption": "ヨルさんは、いい音を聴くと体が動きだす。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-yoru-watermelon.png",
+   "files": [
+    {
+     "file": "allcast-yoru-watermelon.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "26be74a2a618f16a7ce30a1c64ebf85bdb6d177f72b0c724078d512c04c99bb2"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "yoru-old-photo",
+   "num": 133,
+   "title": "昔の写真",
+   "cast": [
+    "yoru"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "昔の写真ですか？",
+    "……見ないで。",
+    "髪がすごい。"
+   ],
+   "caption": "ヨルさんは、若い頃に各地のクラブを回っていた。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-yoru-old-photo.png",
+   "files": [
+    {
+     "file": "allcast-yoru-old-photo.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "331fc98c1ed66ed11650820b2e8127ac8008b7372d08fd3bf2ee266416b75857"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "yoru-deep-stairs",
+   "num": 134,
+   "title": "地下の店",
+   "cast": [
+    "yoru"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "お店、地下ですか？",
+    "少し下りるよ。",
+    "深すぎる。"
+   ],
+   "caption": "クラブSEAMは、東京の路地の地下にある。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "0bc1cb53a423f35ef6c2798440c8c40b56b8d3bfffcd4e2392bf6c1f8f3a928d"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "b990d862041c24fef9b285568aa59b6223a1d5db3a336ae20fa8bf5613df7fe2"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "yoru-big-jacket",
+   "num": 135,
+   "title": "借りた上着",
+   "cast": [
+    "yoru"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ちょっと寒い……",
+    "これ、貸すよ。",
+    "大きすぎる。"
+   ],
+   "caption": "ヨルさんは背が高い。厚底ブーツでさらに高い。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-yoru-big-jacket.png",
+   "files": [
+    {
+     "file": "allcast-yoru-big-jacket.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "820130d5853cbbf70ef937aeb3721599c5dda206f7422c6979d6c483ca023339"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "sai-tiny-box",
+   "num": 136,
+   "title": "小さな箱",
+   "cast": [
+    "sai"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "小さい箱ですね。",
+    "ええ、手軽ですよ。",
+    "箱より多い。"
+   ],
+   "caption": "サイさんのボドゲカフェには、遊びが山ほど。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "d82dd11c151ff9e45695578328a1a769f43bac15358677b70aacde230fdece16"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "5fb2b737dd3f698c85ed04d224533c3eed6c63b6ab0d765b15eaae1cd172786b"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "sai-dice-tower",
+   "num": 137,
+   "title": "サイコロの塔",
+   "cast": [
+    "sai"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "サイコロ、振りますね。",
+    "どうぞ。",
+    "積み上がった。"
+   ],
+   "caption": "サイさんは、サイコロの扱いも手慣れている。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "419d06e2a7167695e8c5916ff9f019d910864c2d4abea3008d7112ff0d8fea59"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "4d6063630c141a6e49ce8323f7d6e3ad11d96672aa5d8114b8f2f6ba89e9513e"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "sai-domino",
+   "num": 138,
+   "title": "ドミノの結末",
+   "cast": [
+    "sai"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "あと一枚で完成！",
+    "慎重に、どうぞ。",
+    "笑顔のままだ。"
+   ],
+   "caption": "サイさんは、何が起きても同じ笑顔で見守る。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "8bfe8ee6653f7e1f6f8c60175a37b723d323673ee28581583c8b15464eeb794f"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "81a6f4f0cbb1992fb389830f33d7062c0634fd477de019314880f944a7ee244b"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "sai-cleaning-game",
+   "num": 139,
+   "title": "掃除の盤",
+   "cast": [
+    "sai"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "掃除、手伝います。",
+    "では、ルールを。",
+    "掃除がゲームに。"
+   ],
+   "caption": "サイさんは、ボドゲカフェの穏やかな店長。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "5b1ecf7ff42437d59a35ba8e35df8768b195ff951680902dd3fcba6f0ed7031a"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "86e78d39190d7503aa6fca0e6131896cd19c6c1213bd24ebbbfd7a72b71628bd"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "sai-rules-retell",
+   "num": 140,
+   "title": "ルールの説明",
+   "cast": [
+    "sai"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ルールが難しい……",
+    "言い直しますね。",
+    "人形劇になった。"
+   ],
+   "caption": "困ったら、サイさんがルールを言い直してくれる。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "1ef351420db0813e7b2deebcb87cee6b0a6aa777558b3a6a4c78dbef15e3bd0a"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "d9f3f5ac06753d20f6720a00a465837d0db09fcf7f5d501511db089aa5cb017f"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "nine-thousand-cake-slice",
+   "num": 141,
+   "title": "均等なケーキ",
+   "cast": [
+    "shisha_9000"
+   ],
+   "minChapter": 5,
+   "dialogue": [
+    "ケーキ、分けて。",
+    "均等に分割します。",
+    "細かすぎる。"
+   ],
+   "caption": "SHISHA-9000は、何でも正確に分けられる。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-nine-thousand-cake-slice.png",
+   "files": [
+    {
+     "file": "allcast-nine-thousand-cake-slice.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "9ea0baedef51b043d78e44110b70793b1a7db5a13a3768bd3f1c8aeb5b7b202d"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格・派生/PCスマホ未確認"
+  },
+  {
+   "id": "nine-thousand-copy-outfit",
+   "num": 142,
+   "title": "そっくりさん",
+   "cast": [
+    "shisha_9000"
+   ],
+   "minChapter": 5,
+   "dialogue": [
+    "あなたを再現します。",
+    "え、俺を？",
+    "服まで同じ。"
+   ],
+   "caption": "SHISHA-9000は、はじめの手順も記録している。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-nine-thousand-copy-outfit.png",
+   "files": [
+    {
+     "file": "allcast-nine-thousand-copy-outfit.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "17e40df664201062cbf783f718f424f95d76d167dc06839bde80c234115dfdcc"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格・派生/PCスマホ未確認"
+  },
+  {
+   "id": "nine-thousand-walk-gear",
+   "num": 143,
+   "title": "散歩の準備",
+   "cast": [
+    "shisha_9000"
+   ],
+   "minChapter": 5,
+   "dialogue": [
+    "散歩、行こうか。",
+    "天気に備えます。",
+    "近所だよ。"
+   ],
+   "caption": "SHISHA-9000は、気温や湿度を読んで備える。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-nine-thousand-walk-gear.png",
+   "files": [
+    {
+     "file": "allcast-nine-thousand-walk-gear.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "d0b293f1bf2ff4e5fbc5346e03c65514f04a888a0b9e499550080df9542584f9"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格・派生/PCスマホ未確認"
+  },
+  {
+   "id": "nine-thousand-new-feature",
+   "num": 144,
+   "title": "最新の機能",
+   "cast": [
+    "shisha_9000"
+   ],
+   "minChapter": 5,
+   "dialogue": [
+    "新機能を搭載しました。",
+    "どんな機能？",
+    "トースターだ。"
+   ],
+   "caption": "最新の人型AIロボットに、意外な新機能。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-nine-thousand-new-feature.png",
+   "files": [
+    {
+     "file": "allcast-nine-thousand-new-feature.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "c1c21b5f33412d7942407922debf8bc62da101b5efa160eafdc7ff763c9d06f6"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格・派生/PCスマホ未確認"
+  },
+  {
+   "id": "nine-thousand-lend-hand",
+   "num": 145,
+   "title": "手を貸して",
+   "cast": [
+    "shisha_9000"
+   ],
+   "minChapter": 5,
+   "dialogue": [
+    "ちょっと手を貸して。",
+    "了解しました。",
+    "そうじゃない。"
+   ],
+   "caption": "SHISHA-9000は、言葉をそのまま受け取る。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-nine-thousand-lend-hand.png",
+   "files": [
+    {
+     "file": "allcast-nine-thousand-lend-hand.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "701b33f2ba564672a3e5952a7f1435849ea80f53a021e7ac4e2c13ad81a15e50"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格・派生/PCスマホ未確認"
+  },
+  {
+   "id": "nine-thousand-seesaw",
+   "num": 146,
+   "title": "シーソー",
+   "cast": [
+    "shisha_9000"
+   ],
+   "minChapter": 5,
+   "dialogue": [
+    "シーソー乗ろう。",
+    "搭乗します。",
+    "重すぎる！"
+   ],
+   "caption": "金属の体のロボットと、公園で遊んでみたら。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-nine-thousand-seesaw.png",
+   "files": [
+    {
+     "file": "allcast-nine-thousand-seesaw.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "5fc0066a1575319ac9fd1a5e2e7a175f4135510154af438ddbd0295172b3a349"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格・派生/PCスマホ未確認"
+  },
+  {
+   "id": "nine-thousand-humidity",
+   "num": 147,
+   "title": "湿度の調整",
+   "cast": [
+    "shisha_9000"
+   ],
+   "minChapter": 5,
+   "dialogue": [
+    "ちょっと乾燥するね。",
+    "湿度を調整します。",
+    "部屋で雨だ。"
+   ],
+   "caption": "SHISHA-9000は、部屋の湿度まで読み取る。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-nine-thousand-humidity.png",
+   "files": [
+    {
+     "file": "allcast-nine-thousand-humidity.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "894e01a3de4d8dbe9b7d4dbffc90c432864266fc1691d9503a51354b4459ca52"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格・派生/PCスマホ未確認"
+  },
+  {
+   "id": "nine-thousand-pancake",
+   "num": 148,
+   "title": "ホットケーキ",
+   "cast": [
+    "shisha_9000"
+   ],
+   "minChapter": 5,
+   "dialogue": [
+    "初めてで上手！",
+    "本日の成果です。",
+    "練習してた。"
+   ],
+   "caption": "SHISHA-9000も、失敗から学んで上達する。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-nine-thousand-pancake.png",
+   "files": [
+    {
+     "file": "allcast-nine-thousand-pancake.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "4f0ee7a78a54d945b839e37864c2a89955ffc840791f59422c1b418f907826c1"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格・派生/PCスマホ未確認"
+  },
+  {
+   "id": "nine-thousand-smile-sign",
+   "num": 149,
+   "title": "笑顔の看板",
+   "cast": [
+    "shisha_9000"
+   ],
+   "minChapter": 5,
+   "dialogue": [
+    "今、うれしい？",
+    "表情は出せません。",
+    "看板で笑った。"
+   ],
+   "caption": "顔が変わらないロボットにも、伝え方はある。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-nine-thousand-smile-sign.png",
+   "files": [
+    {
+     "file": "allcast-nine-thousand-smile-sign.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "3adf83063584493a5edfc1a379d8a9a611a9a7aebdd439ef32027ed75f800be6"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格・派生/PCスマホ未確認"
+  },
+  {
+   "id": "nine-thousand-janken",
+   "num": 150,
+   "title": "じゃんけん",
+   "cast": [
+    "shisha_9000"
+   ],
+   "minChapter": 5,
+   "dialogue": [
+    "じゃんけんしよう。",
+    "了解しました。",
+    "後出しが速い。"
+   ],
+   "caption": "SHISHA-9000は、反応速度もとても速い。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-nine-thousand-janken.png",
+   "files": [
+    {
+     "file": "allcast-nine-thousand-janken.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "2d30e961fcfef56e265682f708c5b4c8cc440739f058b48ceb0705550e1bc2fe"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可",
+   "codexFinishedQA": "不合格・派生/PCスマホ未確認"
+  },
+  {
+   "id": "noor-soft-sand",
+   "num": 151,
+   "title": "痛くない砂",
+   "cast": [
+    "noor"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "砂は痛くない！",
+    "本当ですか？",
+    "埋まってる。"
+   ],
+   "caption": "ヌールは、砂丘でサンドボードを教えるガイド。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "f44d0e5d9f6d1a1b0d2d4b14eae8fbdb10010c135b757598dfbc64a1ab53976b"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "e5de9bb8b927d1c249a2996cba955b21f65dec3e613e84f4961c2fd970dfee74"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "noor-slow-drive",
+   "num": 152,
+   "title": "ゆっくり運転",
+   "cast": [
+    "noor"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ゆっくり走るね。",
+    "お願いします。",
+    "飛んでる！"
+   ],
+   "caption": "ヌールの運転する車は、砂丘も斜めに駆け上がる。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-noor-slow-drive.png",
+   "files": [
+    {
+     "file": "allcast-noor-slow-drive.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "441c2286bf47892c5d65400b609cf23941073d073a96d8798af85fb637927926"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "noor-sand-scarf",
+   "num": 153,
+   "title": "砂よけの布",
+   "cast": [
+    "noor"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "砂よけ、巻こうか。",
+    "助かります。",
+    "前が見えない。"
+   ],
+   "caption": "砂漠では、首のスカーフで舞う砂から顔を守る。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "f4dec4be4bc0af229f76f7912047d319ed6d2747999b1b6935970cf9ee78451b"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "1d3af4e3d2c9db73299a3040063341a52fac4b4c4c16aa6f3537587ca8aaaec5"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "noor-cargo-pockets",
+   "num": 154,
+   "title": "ポケットの中",
+   "cast": [
+    "noor"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ポケット多いですね。",
+    "全部、使うよ。",
+    "ピクニックだ。"
+   ],
+   "caption": "ヌールは、砂漠ツアーの準備も手慣れている。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "e448e99b9126b1f1a1387c18a33cd2f1364058080df3ed31ca21e9a296b46106"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "427915457a158537dcd12b91097751c71ff222645c2afc2853e70e441e271379"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "noor-small-dune",
+   "num": 155,
+   "title": "小さな丘",
+   "cast": [
+    "noor"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "あの丘を滑ろう。",
+    "小さいですね。",
+    "でかすぎる！"
+   ],
+   "caption": "砂漠では、遠くの砂丘の大きさが分かりにくい。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "c71d62f530bc8086d3845c12500f1409363b1a82d382c0037792d5caade49e8f"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "39984264a1aad9933fe99e6d8b57325f0532ffdcf0680d8d712390443ea67a62"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "noor-camel-shade",
+   "num": 156,
+   "title": "砂漠の日陰",
+   "cast": [
+    "noor"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "日陰、ありますか？",
+    "あるよ！",
+    "ラクダの影だ。"
+   ],
+   "caption": "砂漠では、日陰も自分で連れてくる。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "59b53c47740c9dd734e745f1fcd0524670076cc40a8964bb58b91f97fa8de4e3"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "a8ca73f99924986bfba6458f65c14967a52a21670203dc237b4acafd3c88f231"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "noor-lost-coin",
+   "num": 157,
+   "title": "落とし物",
+   "cast": [
+    "noor"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "小銭、落としました。",
+    "砂を見れば分かる。",
+    "全部出てきた。"
+   ],
+   "caption": "ヌールは、砂を見てその日の道を決めるガイド。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "887917a30a0e514adf7af17a3bef5c9cc9c345f11c817cc81b7c431042b1a880"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "5c2f97103b86285bdb54c6f55d565cea4a9cd3eb58dec4407876aca314de2724"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "noor-japan-study",
+   "num": 158,
+   "title": "日本の勉強",
+   "cast": [
+    "noor"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "日本の勉強中！",
+    "えらいですね。",
+    "お祭りだ。"
+   ],
+   "caption": "ヌールは、日本のお客さんから日本語を覚えた。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-noor-japan-study.png",
+   "files": [
+    {
+     "file": "allcast-noor-japan-study.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "37966f6a2eb2894fc0528b45215d06a2017a687ee9d6fc5482323b048ec559fe"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "noor-shoe-sand",
+   "num": 159,
+   "title": "靴の中の砂",
+   "cast": [
+    "noor"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ハジメ、靴を脱いで。",
+    "はい……？",
+    "砂丘が出た。"
+   ],
+   "caption": "砂丘を歩くと、靴の中は砂でいっぱいになる。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-noor-shoe-sand.png",
+   "files": [
+    {
+     "file": "allcast-noor-shoe-sand.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "4c3b6b15877714f9837f6bb968c0aadf31e14f4b63bc902bdc0c00eb6f4c3f2c"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "内容欠点あり・構成選別可能",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "noor-sand-castle",
+   "num": 160,
+   "title": "砂のお城",
+   "cast": [
+    "noor"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "お城、作りましょう。",
+    "スゴイの、作るね。",
+    "規模が違う。"
+   ],
+   "caption": "砂漠ガイドのヌールは、砂の扱いならお手のもの。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "bc2a5e8b6faa4770b3061d1b3f4d0784a78c35e10d890da04d4ea72483f684f6"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "8f0e1e9bee9473e711da7f62adbeba3a61a509db75c959a6b16172044b99c280"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "mukai-hat-candy",
+   "num": 161,
+   "title": "帽子の中身",
+   "cast": [
+    "mukai_master"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "帽子、取らないんです？",
+    "……取らない。",
+    "帽子から飴だ。"
+   ],
+   "caption": "ムカイさんの帽子には、渋くない秘密がある。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "ba7f694c2d417c0c20fcd2ce3aae67a02628f52ec8462e7c2e13b04ce94a3ec5"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "bbe09cd6362cfea5a0aea90258198cf1845d2dbf3cb1c013976e8ec5288dc0e6"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "mukai-hot-coffee",
+   "num": 162,
+   "title": "淹れたて",
+   "cast": [
+    "mukai_master"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "熱いうちに飲め。",
+    "いただきます。",
+    "猫舌なんだ。"
+   ],
+   "caption": "ハードボイルドな見た目でも、苦手なものはある。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "186f25aac475ac941a3ed19c1d2f246c831f75e76dd2a2fb15021d74a3535c1a"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "ef32c351e9778ba4abdffbf0d57aa478e46b34cc9acc6ed959190c5d882acebb"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "mukai-strawberry-hunt",
+   "num": 163,
+   "title": "休日の狩り",
+   "cast": [
+    "mukai_master"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "休みの日は何を？",
+    "……狩りだ。",
+    "いちご狩りだ。"
+   ],
+   "caption": "低い声で言われると、何でも物騒に聞こえる。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-mukai-strawberry-hunt.png",
+   "files": [
+    {
+     "file": "allcast-mukai-strawberry-hunt.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "1033582c6373088ca8585a27b6c89dd9d0b298b883e5b254cfe26d3a49119386"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "mukai-frill-apron",
+   "num": 164,
+   "title": "店長の仕事着",
+   "cast": [
+    "mukai_master"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "仕事着に替える。",
+    "渋いんだろうな。",
+    "フリルだ。"
+   ],
+   "caption": "渋いムカイさんの仕事着は、思ったよりかわいい。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "c078563e8e00ffe46c57ba3667ecca09910d9484aafabf64048f24548d6034bc"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "79e71d09400900b3e6b894d123f520eb88972c4b99998934474aa863bd83b97b"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "mukai-coffee-feast",
+   "num": 165,
+   "title": "コーヒーでも",
+   "cast": [
+    "mukai_master"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "コーヒーでも飲んでいけ。",
+    "少しだけなら。",
+    "コーヒーはどこ？"
+   ],
+   "caption": "「コーヒーでも」は、ムカイさんの優しい口ぐせ。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "edd9f020ec409482c376dca4481ba0e8e9b78697bcfa400238eb93a755a16915"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "d896ac89c788a3deb98271f08c4bf42222c8367b3171c106c8e293e6f2c0ca4c"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
    "id": "samechan-watermelon-bite",
    "num": 166,
    "title": "スイカの一口",
@@ -1113,6 +5495,327 @@
    "delivery": "2026-11-02-a",
    "ownerVerdict": "adopt",
    "gameRegistration": "保留（1キャラ2話を超えた採用分。最後にオーナーが入れ替えを判断）"
+  },
+  {
+   "id": "tsumugi-route-map",
+   "num": 171,
+   "title": "道順の地図",
+   "cast": [
+    "tsumugi"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "道順、描いてくれる？",
+    "……はい。",
+    "地図が壮大だ。"
+   ],
+   "caption": "つむぎは、葉っぱの耳の猫を描く芸大生です。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "d06bd7730aafc84ace22fde3f27ed569a9cc69f711992cb7e9911d1571fd188c"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "cf95dcabbfa7af7ff7a31788ca5386e4303057dfa16301ee738bb490fe50ec55"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "tsumugi-model-pose",
+   "num": 172,
+   "title": "モデルの出番",
+   "cast": [
+    "tsumugi"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "モデル、やるよ。",
+    "……助かります。",
+    "主役はプリン。"
+   ],
+   "caption": "つむぎは、店の小さなものをよく見て描きます。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "3997234657d8c6d53b0940e6a070d39b39473fb2ca17f94d5f4d07bba5c69cae"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "cabfee2925ceed2ce921f63135e8d77f7f14a689436b2b6d7d8b30fcc87de3d1"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "従来画像QA通過記録あり・PCスマホ未確認"
+  },
+  {
+   "id": "tsumugi-big-canvas",
+   "num": 173,
+   "title": "新作の大きさ",
+   "cast": [
+    "tsumugi"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "……新作です。",
+    "見たい！",
+    "大きすぎる。"
+   ],
+   "caption": "つむぎは、芸大で絵画を学ぶ小柄な絵描きです。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-tsumugi-big-canvas.png",
+   "files": [
+    {
+     "file": "allcast-tsumugi-big-canvas.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "88573b106c9436dc153ad52d8cca5cfbe7415fbbaa377652d88750a9c223e580"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "tsumugi-quiet-brush",
+   "num": 174,
+   "title": "静かな筆",
+   "cast": [
+    "tsumugi"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "静かに描くんだね。",
+    "……集中します。",
+    "描き方が激しい。"
+   ],
+   "caption": "物静かなつむぎも、描くときは真剣そのもの。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-tsumugi-quiet-brush.png",
+   "files": [
+    {
+     "file": "allcast-tsumugi-quiet-brush.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "71975b5e83f0e92de4a55572f480674c4d7985ff80069cebef6b6ca36c9eb585"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "tsumugi-window-seat",
+   "num": 175,
+   "title": "窓際の常連",
+   "cast": [
+    "tsumugi"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "窓際の席、修理中で。",
+    "……大丈夫です。",
+    "窓ごと持ってきた。"
+   ],
+   "caption": "つむぎのいつもの席は、tonariの窓際です。",
+   "layout": "individual-panel-pair-left-to-right",
+   "current": "panel-2-source.png",
+   "files": [
+    {
+     "file": "panel-1-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 1,
+     "sha256": "8ca35e85ee76cf182a6c935d435234ea871ca2da1f41e1caedf9372e811c8fa0"
+    },
+    {
+     "file": "panel-2-source.png",
+     "status": "candidate",
+     "kind": "panel",
+     "panel": 2,
+     "sha256": "f494479f15a40e1c62c38cebf4adcc817e0c8df01bdc3b6f18723ea015519af1"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "hiyori-ramen-gulp",
+   "num": 176,
+   "title": "食欲がない日",
+   "cast": [
+    "hiyori"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "食欲がないの……",
+    "一口だけでも。",
+    "一口で完食。"
+   ],
+   "caption": "ひよりの好物はラーメン。儚さより食欲が勝つ。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-hiyori-ramen-gulp.png",
+   "files": [
+    {
+     "file": "allcast-hiyori-ramen-gulp.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "251e829e8371cf4186acd09562fc151f224f96a8edd6cdd7e8a940d71fa97edb"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "既存台帳で内容要修正の記録なし（今回再目視判定なし）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "hiyori-handmade-wind",
+   "num": 177,
+   "title": "儚げな風",
+   "cast": [
+    "hiyori"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "私、風に消えそう……",
+    "ここ、室内です。",
+    "風、自前だ。"
+   ],
+   "caption": "ひよりは、儚げなお姉さんでいるのが好きです。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-hiyori-handmade-wind.png",
+   "files": [
+    {
+     "file": "allcast-hiyori-handmade-wind.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "4b81bf9fe5bab9c271d894b18daac9bcc4ddc2a41db5e5f2493e21218a21769c"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成検討可能・判断留保",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "hiyori-rain-puddle",
+   "num": 178,
+   "title": "雨の日の詩",
+   "cast": [
+    "hiyori"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "雨は、空の涙なの……",
+    "詩的ですね。",
+    "満喫してる。"
+   ],
+   "caption": "ひよりは、体を動かすのが好きな元気な人。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-hiyori-rain-puddle.png",
+   "files": [
+    {
+     "file": "allcast-hiyori-rain-puddle.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "dfd50b9c5795f447f221e6438dd57d9e8072a5a9fe7d6d1bf8d3bf3730f029f3"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "hiyori-far-away",
+   "num": 179,
+   "title": "遠くへ行きたい",
+   "cast": [
+    "hiyori"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "遠くへ行きたい……",
+    "疲れてます？",
+    "行く気満々だ。"
+   ],
+   "caption": "ひよりは社会人3年目。仕事は本当に忙しい。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-hiyori-far-away.png",
+   "files": [
+    {
+     "file": "allcast-hiyori-far-away.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "dcbe3e065f736caef4ba3bdd0517b5cf3913bc5b8e0378f5acf2cc8d768319fa"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（不可視衣装部は未検証）",
+   "codexFinishedQA": "未合格または未確認"
+  },
+  {
+   "id": "hiyori-box-tower",
+   "num": 180,
+   "title": "重い荷物",
+   "cast": [
+    "hiyori"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "重い物は持てないの……",
+    "俺が持ちます。",
+    "俺より持ってる。"
+   ],
+   "caption": "ひよりは総務の仕事で、重い荷物も運ぶ人。",
+   "layout": "sheet-left-to-right",
+   "current": "allcast-hiyori-box-tower.png",
+   "files": [
+    {
+     "file": "allcast-hiyori-box-tower.png",
+     "status": "candidate",
+     "kind": "sheet",
+     "panel": null,
+     "sha256": "34fa088c4b15975f95cd5be3ace83f0f83dacb34c77957e7810a2efa473a4d52"
+    }
+   ],
+   "delivery": "2026-11-04-new140",
+   "ownerVerdict": "",
+   "codexComposition": "構成確認可（限定内容修正の既存目視記録）",
+   "codexFinishedQA": "未合格または未確認"
   },
   {
    "id": "ageha-full-coord",
