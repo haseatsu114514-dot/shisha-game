@@ -10,7 +10,8 @@ import { imgFileUrl } from "../core/img-file.js";
 export const ART_READY = Object.freeze({
   background: false,          // bg_mukai_backdoor_day / _night
   poses: Object.freeze([]),   // "loaf","crouch","reach","hug","groom","yawn","belly","rub","walk_a","walk_b","lookback","stretch"
-  props: Object.freeze([]),   // "box","ball","cushion","scratcher","tunnel","bed","plate","teaser","brush","lap"
+  // 小物: #2697（#2691）の原画を採用（2026-11-07・TKT13）。lap（はじめの膝）は B で未生成。
+  props: Object.freeze(["box", "ball", "cushion", "scratcher", "tunnel", "bed", "plate", "teaser", "brush"]),
   ui: Object.freeze([]),      // "icons","notebook","photo_frame","tape","memo","paw_stamp","caption","toolbox","button"
 });
 

@@ -217,3 +217,46 @@ TKT-UI08 ui_button.png and ui_button_pressed.png 384x384 each — A round cream 
 `originals/` に A の小物9グループ（11ファイル）と UI 6グループ（7ファイル）の候補を保存した。箱・トンネル・ベッド・手帳・写真枠・キャプション、皿とアイコンの一部には別候補もある。採用選定と透過・前縁の切り分け・ゲームへの組み込みは Claude 側で行う。
 
 生成時の全プロンプト、参照画像の役割・パス・SHA-256、各PNGのサイズ・SHA-256、視認時の注意点は [原画生成記録](originals/GENERATION.md) を参照。背景のマゼンタは生成後に `#FF00FF` へ色値をそろえた。画像生成時のキャンバス寸法には依頼目安との差があるため、採用時に整える。
+
+## 小物の採用の記録（2026-11-07・TKT13）
+
+司令塔の指示「#2697 の小物の原画を選んで組み込む」。背景（#2695）と猫（#2715）は直し待ちのため触っていない。UI の原画（#2697 の `ui_*`）も今回は組み込んでいない（TKT09 の判断どおり、使うのはアイコン・テープ・肉球の判だけで、色を変えてから）。
+
+**選んだ候補**: すべて正規名（`prop_*.png`）。別候補（`*_candidate*.png`）は採らない。
+
+| 小物 | 採用 | 理由 |
+|---|---|---|
+| 段ボール箱 | `prop_box.png` | 口と手前の壁の境目がはっきりしていて、手前の層を一本の線で切れる。角のへこみも依頼どおり。`prop_box_candidate2.png` も同じくらい良いが、テープと角の描き込みで正規名を採った |
+| 猫ベッド | `prop_bed.png` | 手前の縁が低く、中のクッションに乗った猫が見える。`prop_bed_candidate2.png` は縁が高く均一で、中の猫がほとんど隠れる |
+| トンネル | `prop_tunnel.png` | 手前の口が左、奥の口が右。中の猫を隠して奥（右）からしっぽだけ出す今の動きに合う。`prop_tunnel_candidate2.png` は口の向きが逆 |
+| 小皿 | `prop_plate_full.png` / `prop_plate_empty.png` | 正規名どうしは同じ皿の形（空は満杯から食べ物だけを消した編集）。`prop_plate_empty_candidate1.png` は皿の形が違うので採らない |
+| ボール・座布団・爪とぎ・じゃらしの先と棒・ブラシ | 正規名（候補は1つだけ） | 文字・機材・テカりなし。猫の絵と同じ線と2〜3段の影 |
+
+**切り出し**: `python3 remake/tools/build_tetsuko_art.py`（原画の実体は `git lfs pull --include="asset_sources/tetsuko-care/originals/prop_*"`、約8MB）。
+- マゼンタを透過にする（縁3pxだけ、混ざった分を半透明に戻して色を引き戻す。絵の内側は触らない）。余白を切り、画面の大きさの2倍（@2x）へ LANCZOS で縮小（拡大なし）。
+- 手前の層: 箱は口の手前の縁（余白で切った後の y=445）から下＝前のふたと前の壁。ベッドは内側のクッションの下の線（3点を通る弧）より手前の毛足の縁。トンネルは分けない（中の猫は隠れる）。
+- 皿の満杯と空は同じ切り出し枠にする（おやつの前後で位置が跳ねない）。ブラシは手元のカーソル（48px の PNG）も作る。
+- 画面での大きさ（px）: 箱 330×203・ボール 58×60・座布団 250×135・爪とぎ 230×66・トンネル 300×202・ベッド 290×202・皿 140×88・じゃらしの先 76×102。
+- 猫の位置: ベッドの中は絵の内側のクッションの高さまで（-22%）、座布団の上は面の上まで（-16%）上げる。箱の中は今までどおり（手前の層が下半分を隠す）。
+
+**採用版**（実行時は同じ名前の `remake/img/ui/tetsuko/*.webp`、合計約280KB）:
+
+| ファイル | 画素 | SHA-256 |
+|---|---|---|
+| `assets/ui/tetsuko/prop_box.png` | 660×406 | `17586dba0cf27f537f7d9819bdaec980937e5c909425038dcdb91b16d81ae869` |
+| `assets/ui/tetsuko/prop_box_front.png` | 660×406 | `d3defb9cf18160d9c795fc7b622d10303a918799215637f3ce53d48930e28334` |
+| `assets/ui/tetsuko/prop_ball.png` | 116×119 | `c4e724bedac9356c2413deb2c58ba9dfcdc16f536c08f0db5ae32fc30223a2ec` |
+| `assets/ui/tetsuko/prop_cushion.png` | 500×269 | `1275f9caeffef0c212459cdaf11f2519d5051e4124ffdca24154851fca81fd44` |
+| `assets/ui/tetsuko/prop_scratcher.png` | 460×132 | `3d6187ee8a3e0c344c73263bfd4b9aaa2d02dda10c6dbb5cda7e16436e4a1058` |
+| `assets/ui/tetsuko/prop_tunnel.png` | 600×403 | `62bd8cc1e10e07323f07267ed3b526f7334266fc55a554d6ee5a0d8214419419` |
+| `assets/ui/tetsuko/prop_bed.png` | 580×404 | `a8c31e4252b9b8c3da8a3749987429beeb15e1bc6f0b0a422758afcdd1fd9e11` |
+| `assets/ui/tetsuko/prop_bed_front.png` | 580×404 | `94e5e931ebb2fe1b1b42a6b85ef385dec80bc7ac52de2509b7eeddac0de28068` |
+| `assets/ui/tetsuko/prop_plate_full.png` | 280×175 | `905861f00490c9940b771b3bb989022aebfba02f2f5bc3e250c86a0b9dbbecba` |
+| `assets/ui/tetsuko/prop_plate_empty.png` | 280×175 | `f0cba2815ea510a54b64c0d2a641e914137ecbfbf0fd6df2a3311825538bb080` |
+| `assets/ui/tetsuko/prop_teaser_tip.png` | 152×205 | `be7b904ab768b4c918617f9cbccb9c6adec43e197ecc94294d95f1ae4ce2b94f` |
+| `assets/ui/tetsuko/prop_teaser_stick.png` | 1200×46 | `f143b953b07b5cc95bf831c31d972ee5be1b462f61cbd9374b12df511b320ee1` |
+| `assets/ui/tetsuko/prop_brush.png` | 240×298 | `bc6dff1f84849ebfa343dc0daabbfab84821f1b99fa4eb3e8678ef7f3c2e67d2` |
+
+元の原画の SHA-256 は [原画生成記録](originals/GENERATION.md) の表と同じ（例: `prop_bed.png` `0c036f35…`、`prop_ball.png` `c17b8e7b…`）。
+`remake/js/minigames/tetsuko-art.js` の `ART_READY.props` に box・ball・cushion・scratcher・tunnel・bed・plate・teaser・brush を書いた。lap（はじめの膝・B）は未生成なので CSS のまま。
+

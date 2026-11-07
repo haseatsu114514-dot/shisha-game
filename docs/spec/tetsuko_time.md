@@ -4,7 +4,7 @@ Issue #2454 本文（設計）と、同 Issue の実装計画コメント（2026
 
 - 原則: 点数・ランク・コンボ・時間制限・失敗・世話をしない日の悪化・関係の低下を持ち込まない。見た目は同じ猫のまま（既存の5表情だけ）。育つのは「はじめとの距離」「一緒にできること」「裏口の居場所」「思い出」。
 - 本体: `remake/js/minigames/tetsuko-model.js`（猫の状態・反応・自律行動・小物・図鑑。DOMなし）／`remake/js/minigames/tetsuko-time.js`（画面と確定点 `settleTetsukoTime`）／`remake/js/minigames/tetsuko-art.js`（届いた絵の差し替え表）／`remake/css/tetsuko-time.css`。専用テーマ（§7）は `remake/js/minigames/tetsuko-theme.js`（外枠・題の札・入る演出）／`remake/css/tetsuko-theme.css`（色・面・縁）
-- 素材: Codex への依頼 [asset_sources/tetsuko-care/README.md](../../asset_sources/tetsuko-care/README.md)（TKT01。裏口の背景・しぐさ・小物・UI の部品。届くまでは CSS の絵）
+- 素材: Codex への依頼 [asset_sources/tetsuko-care/README.md](../../asset_sources/tetsuko-care/README.md)（TKT01。裏口の背景・しぐさ・小物・UI の部品。届くまでは CSS の絵）。小物は #2697 の原画を採用済み（TKT13・`remake/tools/build_tetsuko_art.py` で切り出し）。背景（#2695）と猫のしぐさ（#2715）は直し待ち
 - 入口: `remake/js/chapters/ch3-tokyo-daily.js` の `offerTetsuko()`（mukai で行動を使った帰りの裏口だけ。地図のピンは作らない・オーナー判断 2026-11-04）
 - 段階と回復の正本: `remake/js/chapters/ch3-outing-progress.js` の `TOKYO_OUTINGS.tetsuko`（`stamina: 12`・段階会話4本・巡回3本）。台詞は `data/dialogue/ch3_outings.json`（変更なし）
 - 検証: `node remake/test/tetsuko_time.mjs`（モデル・確定点）、`node remake/test/browser/ch3_tokyo_daily.mjs`（実UIの到達・確定。プレビューサーバーが必要）。回帰に `node remake/test/ch3_outings.mjs`・`node remake/test/browser/ch3_outings.mjs`。専用テーマは `node remake/test/browser/tetsuko_theme.mjs`
@@ -77,13 +77,11 @@ Issue #2454 本文（設計）と、同 Issue の実装計画コメント（2026
 - 動きを減らす設定（`prefers-reduced-motion`）では移動・揺れ・浮かぶ演出を止め、自律行動は4秒おき。音は既存の `SE.select/click/cancel` だけ（無音でも反応の文と表情で伝わる）。
 - DS風表示（`body.game-ds`）は対応画面（地図・会話など）だけで有効になる仕組みなので、この画面は通常表示で出る。16:9 のスマホ横でも猫・操作・帰るが見切れない。
 
-## 5. 後回し（入れていない）
+## 5. 入れないと決めたもの（2026-11-07・ミューズの仮判断。オーナーが後から変えられる・TKT14〜16）
 
-- 第5章の東京での「てつこといっしょ」（所在・日程の照合後に別の段階で）
-- 章をまたぐアルバムの閲覧・報酬なしの回想モード
-- #2455 の白火+1（思い出3〜4種で初回だけ）
-- 「少し構っていく（短く）」を外すかどうか（試遊後にオーナーが決める）
-- 裏口の絵が届いた後、裏口が出てくる会話（段階会話・ケースを運ぶ場面・恋人の夜のベンチ・大会前夜の帰り道）の背景も差し替えるか（オーナー判断）
+- 「少し構っていく（短く）」は**残す**。今の内容のまま（台本だけ読む短い経路・巡回3本もここで読める）。
+- 裏口の絵（`bg_mukai_backdoor`）が入っても、裏口が出てくる会話（段階会話・ケースを運ぶ場面・恋人の夜のベンチ・大会前夜の帰り道）の背景は**替えない**。今の背景のまま（作り直しを増やさない）。
+- 第5章の東京での「てつこといっしょ」、章をまたぐアルバムの閲覧・回想モード、#2455 の白火+1 は**付けない**（今の数を保つ）。
 
 ## 6. UI の本格化（v2・2026-11-06・TKT01〜05）
 

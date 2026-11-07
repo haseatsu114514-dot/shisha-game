@@ -408,7 +408,17 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   const { ART_READY, artAttrs } = await import("../js/minigames/tetsuko-art.js");
   const exists = rel => fs.existsSync(new URL(`../img/ui/tetsuko/${rel}`, import.meta.url));
   for (const pose of ART_READY.poses) { assert(POSES.includes(pose)); assert(exists(`cat_${pose}.webp`), `届いたしぐさの絵がある: cat_${pose}.webp`); }
-  for (const prop of ART_READY.props) assert(exists(`prop_${prop === "plate" ? "plate_full" : prop === "teaser" ? "teaser_tip" : prop}.webp`), `届いた小物の絵がある: ${prop}`);
+  // 小物は、CSS が読むファイルが全部そろっていること（箱とベッドは手前の層も・おやつは前後2枚・じゃらしは先と棒・ブラシはカーソルも）。
+  const PROP_FILES = { box: ["prop_box.webp", "prop_box_front.webp"], bed: ["prop_bed.webp", "prop_bed_front.webp"],
+    plate: ["prop_plate_full.webp", "prop_plate_empty.webp"], teaser: ["prop_teaser_tip.webp", "prop_teaser_stick.webp"],
+    brush: ["prop_brush.webp", "prop_brush_cursor.png"], lap: ["prop_lap.webp"] };
+  for (const prop of ART_READY.props) {
+    assert(PROPS.some(item => item.id === prop) || PROP_FILES[prop], `小物の名前は依頼した物: ${prop}`);
+    for (const file of PROP_FILES[prop] || [`prop_${prop}.webp`]) assert(exists(file), `届いた小物の絵がある: ${file}`);
+  }
+  const css = fs.readFileSync(new URL("../css/tetsuko-time.css", import.meta.url), "utf8");
+  for (const prop of ART_READY.props.filter(id => PROPS.some(item => item.id === id)))
+    assert(css.includes(`[data-art-props~="${prop}"] .tt-prop[data-prop="${prop}"] > .tt-prop-back`), `小物の絵を出す CSS がある: ${prop}`);
   for (const part of ART_READY.ui) assert(exists(`ui_${part}.webp`), `届いたUIの絵がある: ui_${part}.webp`);
   if (ART_READY.background) assert(fs.existsSync(new URL("../img/backgrounds/bg_mukai_backdoor_day.webp", import.meta.url)), "裏口の絵がある");
   assert.deepEqual(Object.keys(artAttrs()).sort(), ["artBg", "artProps", "artUi"]);
