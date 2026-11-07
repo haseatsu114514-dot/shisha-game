@@ -74,6 +74,7 @@ export const STATE_KEY_RULES = {
   friendHangouts: { verdict: "reset", note: "§2.4" },
   seed: { verdict: "reset", note: "周回ごとに振り直す抽選種" },
   playMs: { verdict: "reset", note: "周回内のプレイ時間。通算はメタ層の領分" },
+  playMsFull: { verdict: "reset", note: "playMs を周回の最初から数えているか（#2902）。新しい周回は最初から数える" },
   savedAt: { verdict: "reset", note: "保存のたびに付く時刻印（newState には無く save() が付ける）" },
 };
 
