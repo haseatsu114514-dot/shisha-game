@@ -196,7 +196,7 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
     if (fast) next.classList.add("fast");
     if (tint) next.dataset.tint = tint;
     host.append(next);
-    document.getElementById("viewport")?.style.setProperty("--lb-bg", url ? `url("${new URL(url, document.baseURI).href}")` : "none"); // 左右の黒帯のぼかし背景（#2855）
+    document.getElementById?.("viewport")?.style.setProperty("--lb-bg", url ? `url("${new URL(url, document.baseURI).href}")` : "none"); // 左右の黒帯のぼかし背景（#2855）
     curtain?.commitArrival?.(url);
     if (!curtain) sceneArrival.commitArrival(url);
     weatherBg = url || "";
