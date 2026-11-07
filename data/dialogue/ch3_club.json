@@ -15,6 +15,21 @@
       ]
     },
     {
+      "dialogue_id": "ch5_club_first",
+      "comment": "第5章の東京で初めてクラブSEAMに入る夜（第3章でヨルに会っていない人だけ）。第3章を思い出す形にしない（2026-11-07 オーナー判断）。はじめはmukaiの屋根裏に泊まっているので、ヨルは「mukaiの屋根裏の子」と声をかける。名乗りの後は dj-club.js が登場カットインを出し、章を問わない ch3_club_first_after（DJの教え方）へ続く。",
+      "lines": [
+        { "speaker": "", "text": "屋根裏に戻る前に、夜の路地を少し歩いた。足元から、低い音が上がってくる。" },
+        { "speaker": "", "text": "地下へ続く細い階段。小さな看板に、縫い目のような線で「SEAM」とある。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……店の下から、音が出てる？）" },
+        { "speaker": "", "text": "階段の上で、ヘッドフォンを首にかけた女の人が、紙コップを傾けていた。" },
+        { "speaker": "yoru", "face": "normal", "text": "……あ、mukaiの屋根裏の子だ" },
+        { "speaker": "hajime", "face": "surprise", "text": "え、俺のこと、知ってるんですか？" },
+        { "speaker": "yoru", "face": "smile", "text": "開店前に、ムカイと甘いお茶を飲みに行くからね。上に若いのを泊めてるって。窓から、顔も見えてた" },
+        { "speaker": "hajime", "face": "smile", "text": "はい。しばらく、屋根裏でお世話になってます" },
+        { "speaker": "yoru", "face": "normal", "text": "針間ヨル。この下で、SEAMってクラブをやってる。……今夜の選曲は、もう決めてるんだ" }
+      ]
+    },
+    {
       "dialogue_id": "ch3_club_first_after",
       "lines": [
         { "speaker": "hajime", "face": "normal", "text": "逢縁はじめです。えっと……クラブって、踊るところですよね" },
