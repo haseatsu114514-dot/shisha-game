@@ -1727,3 +1727,68 @@ body:not(.game-ds) .map .mi-note { font-size: 12px; font-weight: 700; letter-spa
 body:not(.game-ds) .map .mi-note.warn { color: #b83a3a; opacity: 1; }
 body:not(.game-ds) .map .mi-go:is(:hover, :focus-visible) .mi-note.warn { color: #ffd6d6; }
 body:not(.game-ds) .map .mi-no { padding: 5px; }
+
+/* ---------------------------------------------------------------- 街マップ・HUD のスマホ横持ち（#2853・#2729 優先3）
+   ステージ倍率 --k で縮んでも、文字は実寸11px・押す部品は実寸38px を下回らないよう max() で下限を付ける。
+   PC（--k ≥ 1）は左側の設計値のまま。共通規格（#2851）が入ったらそちらの値へ寄せる。2画面表示（game-ds）は対象外。 */
+#hud, .map { --mui-text: calc(11px / var(--k, 1)); --mui-tap: calc(38px / var(--k, 1)); }
+
+/* HUD: ラベルの文字は読み上げ用に残して隠し、¥・トロフィー・ハートの印＋数値（24px）にする。札の幅・行の高さは変えない。 */
+body:not(.game-ds) #hud .dc-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+body:not(.game-ds) #hud :is(.dc-row, .hud-card .hud-stamina)::before {
+  content: ""; flex: none; width: max(18px, var(--mui-text)); height: max(18px, var(--mui-text));
+  background: currentColor; color: var(--paper-muted, var(--text-dim));
+  -webkit-mask: var(--hud-icon) center / contain no-repeat; mask: var(--hud-icon) center / contain no-repeat;
+}
+body:not(.game-ds) #hud .dc-row.money::before {
+  content: "¥"; background: none; -webkit-mask: none; mask: none; display: grid; place-items: center;
+  font-size: max(18px, var(--mui-text)); font-weight: 900; line-height: 1;
+}
+body:not(.game-ds) #hud .dc-row:not(.money) { --hud-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 2h12v2h4v3a5 5 0 0 1-4.6 5A6 6 0 0 1 13 15.9V19h4v3H7v-3h4v-3.1A6 6 0 0 1 6.6 12 5 5 0 0 1 2 7V4h4V2Zm0 4H4v1a3 3 0 0 0 2.2 2.9A6 6 0 0 1 6 9V6Zm12 0v3a6 6 0 0 1-.2.9A3 3 0 0 0 20 7V6h-2Z'/%3E%3C/svg%3E"); }
+body:not(.game-ds) #hud .hud-card .hud-stamina { --hud-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21.4 10.6 20C5.4 15.4 2 12.3 2 8.5 2 5.4 4.4 3 7.5 3c1.7 0 3.4.8 4.5 2.1A6 6 0 0 1 16.5 3C19.6 3 22 5.4 22 8.5c0 3.8-3.4 6.9-8.6 11.5L12 21.4Z'/%3E%3C/svg%3E"); }
+body:not(.game-ds) #hud .hud-card .hud-stamina::before { color: #d9586a; }
+body:not(.game-ds) #hud :is(.dc-row.money, .dc-row:not(.money)) b { font-size: max(24px, var(--mui-text)); line-height: 1; }
+body:not(.game-ds) #hud .dc-main { width: auto; min-width: 58px; }
+body:not(.game-ds) #hud .dc-area { font-size: max(12px, var(--mui-text)); white-space: nowrap; }
+body:not(.game-ds) #hud .dc-day small { font-size: max(13px, var(--mui-text)); }
+body:not(.game-ds) #hud .dc-slot { font-size: max(14px, var(--mui-text)); }
+
+/* LIME・MENU は 72px 角（位置は今のまま）。LIME は絵だけ、MENU は「≡」だけ（名前は title・読み上げに残す）。 */
+body:not(.game-ds) #hud .hud-lime { width: max(72px, var(--mui-tap)); height: max(72px, var(--mui-tap)); flex-basis: max(72px, var(--mui-tap)); border-radius: 16px; }
+body:not(.game-ds) #hud .hud-lime span { width: 52px; height: 42px; margin-bottom: 5px; font-size: 0; }
+body:not(.game-ds) #hud .hud-lime span::after { left: 15px; bottom: -6px; width: 13px; height: 12px; }
+body:not(.game-ds) #hud .hud-lime .badge { width: max(24px, var(--mui-text)); min-width: max(24px, var(--mui-text)); height: max(24px, var(--mui-text)); font-size: max(14px, var(--mui-text)); }
+body:not(.game-ds) #hud .hud-menu { justify-content: center; width: max(72px, var(--mui-tap)); height: max(72px, var(--mui-tap)); padding: 0; }
+body:not(.game-ds) #hud .hud-menu > span { display: none; }
+body:not(.game-ds) #hud .hud-menu i { width: 32px; height: 24px; border-top-width: 3px; border-bottom-width: 3px; }
+body:not(.game-ds) #hud .hud-menu i::after { top: calc(50% - 1.5px); border-top-width: 3px; }
+body:not(.game-ds) #hud .hud-menu .hidane-badge { min-width: max(20px, var(--mui-text)); height: max(20px, var(--mui-text)); font-size: max(12px, var(--mui-text)); }
+
+/* 地図のピン: 名前・¥・状態の札に下限。顔と「?」は 48px、押すとそのピンを選ぶ（ピンのボタンの中）。 */
+body:not(.game-ds) .map .spot-pin .sub-label { font-size: max(13px, var(--mui-text)); }
+body:not(.game-ds) .map .spot-pin .pin-cost { font-size: max(18px, var(--mui-text)); font-weight: 700; line-height: 1.2; }
+body:not(.game-ds) .map .spot-pin .pin-status { font-size: max(14px, var(--mui-text)); }
+body:not(.game-ds) .map .spot-pin .pin-people { top: -40px; pointer-events: auto; }
+body:not(.game-ds) .map .spot-pin .pin-person { flex-basis: 48px; width: 48px; height: 48px; }
+body:not(.game-ds) .map .spot-pin .pin-unknown b { font-size: max(22px, var(--mui-text)); }
+body:not(.game-ds) .map .spot-pin .pin-visual:has(.pin-person:nth-child(3)) .evt-badge { top: 16px; }
+body:not(.game-ds) .map .evt-badge { width: max(21px, calc(13px / var(--k, 1))); height: max(21px, calc(13px / var(--k, 1))); font-size: max(14px, var(--mui-text)); }
+body:not(.game-ds) .map .pin-reveal-label { font-size: max(12px, var(--mui-text)); }
+/* 定休日・臨時休業: 看板をグレーにして、右上に「休」の印（札の文字は読み上げ・title 用に残す）。 */
+body:not(.game-ds) .map .spot-pin.closed .shield { filter: grayscale(1) brightness(0.82); }
+body:not(.game-ds) .map .spot-pin .pin-status.pin-closed {
+  position: absolute; top: -12px; right: -12px; z-index: 3; display: grid; place-items: center; box-sizing: border-box;
+  width: max(32px, var(--mui-text) * 1.5); height: max(32px, var(--mui-text) * 1.5); margin: 0; padding: 0;
+  font-size: 0; color: #fff; background: #b8323a; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 2px 6px #0008;
+}
+body:not(.game-ds) .map .spot-pin .pin-status.pin-closed::before { content: "休"; font-size: max(16px, var(--mui-text)); font-weight: 900; line-height: 1; }
+
+/* 案内箱・案内の帯・一言: 文字の下限。中身が無い日は箱ごと出さない。 */
+body:not(.game-ds) .map .map-info:empty { display: none; }
+body:not(.game-ds) .map .map-info :is(.mi-banner, .mi-desc, .mi-foot, .mi-area, .mi-no) { font-size: max(14px, var(--mui-text)); }
+body:not(.game-ds) .map .map-info p { font-size: max(14px, var(--mui-text)); }
+body:not(.game-ds) .map .mi-go { min-height: max(36px, var(--mui-tap)); font-size: max(15px, var(--mui-text)); align-items: center; }
+body:not(.game-ds) .map .mi-note { font-size: max(12px, var(--mui-text)); }
+body:not(.game-ds) .map .map-guide { font-size: max(16px, var(--mui-text)); }
+body:not(.game-ds) .map .map-guide b { font-size: max(12px, var(--mui-text)); }
+body:not(.game-ds) .map .map-notice { font-size: max(14px, var(--mui-text)); }

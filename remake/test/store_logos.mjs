@@ -55,7 +55,7 @@ try {
     assert.equal(await page.locator('[data-test="pin-choizap"] .facility-icon[data-facility="choizap"]').count(), 1);
     assert(info.logos.every(n=>n.loaded)); assert.deepEqual(info.collisions, []);
     assert.deepEqual(info.owners.map(n=>n.id).sort(), ["adam","minto","naru","tonari"]);
-    assert(info.owners.every(n=>n.loaded && n.width===30 && n.clear));
+    assert(info.owners.every(n=>n.loaded && n.width===48 && n.clear));
     assert(info.people.every(n=>["owner","guest"].includes(n.role) && n.loaded && n.clear));
     assert(info.people.some(n=>n.role==="guest"));
     assert(info.eventBadges.includes("naru"));

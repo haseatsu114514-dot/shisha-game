@@ -92,9 +92,10 @@ export function initHud(h) {
     slot: el("div.dc-slot"),
     money: el("b"),
     left: el("b"),
-    leftLabel: el("span", { text: "次の大会まで" }),
-    stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b")])])]),
-    phone: el("button.hud-lime", { title: "LIME", dataset: { test: "hud-phone" }, onclick: () => handlers.phone?.() }, [el("span", { text: "LIME" }), el("em.badge")]),
+    // 所持金・大会まで・体力のラベルは文字を残し（読み上げ・説明用）、画面では ¥・🏆・♥ の印に置き換える（CSS・#2853）
+    leftLabel: el("span.dc-label", { text: "次の大会まで" }),
+    stamina: el("div.hud-stamina", [el("span.dc-label", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b")])])]),
+    phone: el("button.hud-lime", { title: "LIME", "aria-label": "LIME", dataset: { test: "hud-phone" }, onclick: () => handlers.phone?.() }, [el("span", { text: "LIME" }), el("em.badge")]),
     // 経験値と次のレベルまで（SPEC 6.1a）。置き場所は情報カードの体力の下（REPORT P4・R5）
     exp: el("div.hud-exp", { hidden: true, dataset: { test: "hud-exp" } }, [
       el("span.hx-lv"), el("i.hud-bar.hx-bar", [el("b.hx-settled"), el("b.hx-today")]), el("small.hx-left"),
@@ -106,7 +107,7 @@ export function initHud(h) {
     menu: el("button.hud-menu", { title: "MENU（M）", "aria-label": "MENU", dataset: { test: "hud-menu" }, onclick: () => handlers.menu?.() }, [el("i"), el("span", { text: "MENU" })]),
   };
   dom.menu.append(dom.hidane);
-  const moneyRow = el("div.dc-row.money", [el("span", { text: "所持金" }), dom.money]);
+  const moneyRow = el("div.dc-row.money", { title: "所持金" }, [el("span.dc-label", { text: "所持金" }), dom.money]);
   const root = el("div.hud", [
     el("div.hud-card", [
       el("div.dc-main", [dom.area, dom.day, dom.slot]),
@@ -217,11 +218,19 @@ export function updateHud() {
   dom.day.replaceChildren(...[el("b", { text: String(chapterDay(state)) }), finalDay === null ? null : el("small", { text: `/${finalDay}` })].filter(Boolean));
   const night = state.slot >= 1;
   const rain = isRainy() ? "・雨" : "";
-  dom.slot.textContent = state.phase === "tournament" ? "大会当日" : state.slot >= 2 ? "帰宅" : night ? `夜${rain}` : `昼${rain}`;
+  // 昼・夜の札に、今日あと何回動けるかを入れる（「☀残り2」。地図の案内箱にあった一言をここへ統合・#2853）
+  const tournament = state.phase === "tournament";
+  const moves = night ? 1 : 2;
+  dom.slot.textContent = tournament ? "大会当日" : state.slot >= 2 ? "帰宅"
+    : `${night ? "☾" : ""}${isRainy() ? "☂" : night ? "" : "☀"}残り${moves}`;
+  const slotName = tournament ? "大会当日" : state.slot >= 2 ? "帰宅" : `${night ? "夜" : "昼"}${rain} ── 今日はあと${moves}回動ける`;
+  dom.slot.title = slotName;
+  dom.slot.setAttribute("aria-label", slotName);
   dom.slot.dataset.slot = night ? "night" : "day";
   dom.money.textContent = yen(state.money);
   const left = daysLeft();
   dom.leftLabel.textContent = chapterGoalLabel(state);
+  dom.leftLabel.parentElement.title = chapterGoalLabel(state);
   dom.left.textContent = left === null ? "未定" : `あと${left}日`;
   const r = staminaRatio();
   const condition = currentCondition();
