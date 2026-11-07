@@ -85,7 +85,7 @@
 .shop-entry > h3 { font-size: 24px; font-weight: 500; letter-spacing: .08em; margin: 18px 0; }
 .shop-floors { display: flex; gap: 22px; flex: 1; min-height: 0; }
 .shop-floor { position: relative; width: 50%; min-width: 0; padding: 0; border: 1px solid #c7b6d1; border-radius: 5px; overflow: hidden; text-align: left; display: flex; flex-direction: column; background: #f3edf4; color: var(--shop-ink); }
-.shop-floor-picture { display: block; position: relative; height: 140px; flex: none; width: 100%; overflow: hidden; }
+.shop-floor-picture { display: block; position: relative; height: 128px; flex: none; width: 100%; overflow: hidden; }
 .shop-floor-picture img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .shop-floor-number { position: absolute; top: 12px; left: 12px; padding: 8px 12px; background: #fbf4f4ec; color: #5a3c6b; border: 1px solid #c6b1d1; border-radius: 3px; font: 28px var(--font); }
 .shop-floor-caption { position: relative; display: flex; flex-direction: column; flex: 1; justify-content: center; gap: 8px; width: 100%; padding: 10px 24px; }
@@ -130,4 +130,6 @@
   .shop-paper .shop-back, .shop-entry .shop-back { min-height: max(72px, calc(40px / var(--k, 1))); font-size: var(--shop-label) !important; }
   .shop-paper .shop-badge { font-size: max(20px, calc(11.5px / var(--k, 1))) !important; }
   .shop-paper .shop-floor-caption b { font-size: var(--shop-label); }
+  .shop-entry > h3 { font-size: max(24px, calc(12px / var(--k, 1))); margin: 10px 0; }
+  .shop-floor-picture { height: 96px; }
 }
