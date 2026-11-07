@@ -266,6 +266,7 @@ await suite("ch5-full-flow", async check => {
     await page.locator(dt("ch5-complete-credits")).click();
     await page.locator(dt("staff-roll")).waitFor();
     assert.equal(await page.locator(dt("staff-roll")).getAttribute("data-skippable"), "no");
+    await page.locator(dt("result-next")).click({ timeout: 30000 }); // スタッフロールの後のリザルト（#2902）からタイトルへ
     await page.locator(dt("title-next-cycle")).waitFor({ timeout: 30000 });
     const trueEnd = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save") || "null"));
     assert.equal(trueEnd.flags._ch5_staff_roll_done, true);

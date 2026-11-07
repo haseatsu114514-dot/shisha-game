@@ -18,6 +18,7 @@ import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { selectStoryEnding } from "../core/story-routes.js";
 import { playStaffRoll } from "../scenes/staff-roll.js";
+import { playResult } from "../scenes/result.js";
 import { chapterGrowthChart } from "../daily/status.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { newSession, openBench, waitBenchReady } from "../craft/session.js";
@@ -552,9 +553,23 @@ function backToTitle() {
 }
 
 /**
- * フィナーレの後のスタッフロール（#517）。初めて流し終えたら記録してタイトルへ戻る。
+ * スタッフロールの後のリザルト（#2902）。初回の締め（そのままか、話し直しを全部読んだ後）はタイトルへ、
+ * 完了カードからの見直しはカードへ戻る。勝負の結果は保存済みの won と挙手だけを読む。
+ */
+async function showResult(owner, { toTitle = true } = {}) {
+  hud();
+  const progress = chapterFiveProgress(state);
+  const tally = chapterFiveVoteTally(state);
+  await playResult(state, { match: { won: progress.won, tally: tally?.total || null }, next: toTitle ? "タイトルへ" : "もどる" });
+  if (!current(owner)) return;
+  if (toTitle) return backToTitle();
+  return renderComplete(owner);
+}
+
+/**
+ * フィナーレの後のスタッフロール（#517）。初めて流し終えたら記録し、リザルト（#2902）を見せてタイトルへ戻る。
  * 途中で閉じたら、次に再開したとき完了カードから流し直す（一度も最後まで見ていない端末では飛ばせない）。
- * 見終えた保存からの見直しはいつでも飛ばせて、終わったら完了カードへ戻る。
+ * 見終えた保存からの見直しはいつでも飛ばせて、リザルトの後に完了カードへ戻る。
  */
 async function renderStaffRoll(owner) {
   const first = chapterFiveCreditsPending(state);
@@ -563,7 +578,7 @@ async function renderStaffRoll(owner) {
   if (first) { await sceneMoment("mixedSmoke", metColors()); if (!current(owner)) return; }
   await playStaffRoll({ ...(first ? {} : { skippable: true }), ...(vnTest.turbo ? { durationMs: 1500 } : {}) });
   if (!current(owner)) return;
-  if (!first) return renderComplete(owner);
+  if (!first) return showResult(owner, { toTitle: false });
   if (!recordChapterFiveCredits(state)) throw new Error("スタッフロールの記録を確定できません");
   noteTrueEnd({ justFinished: true }); // 戻った先のタイトルに NEXT CYCLE が出る
   save();
@@ -571,7 +586,7 @@ async function renderStaffRoll(owner) {
   const due = await preparePostEnding(owner);
   if (!current(owner)) return;
   if (due) return renderPostEnding(owner);
-  backToTitle();
+  await showResult(owner);
 }
 
 /**
@@ -611,7 +626,7 @@ async function renderPostEnding(owner) {
         if (!completeChapterFivePostEnding(state, scene.id)) return;
         save();
         const following = chapterFivePostEndingNext(state);
-        if (!following) return backToTitle();
+        if (!following) return showResult(owner); // 話し直しまで読み終えたら、締めのリザルトからタイトルへ
         if (following.talk) break;
       }
       await renderStage(owner);

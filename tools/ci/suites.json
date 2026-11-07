@@ -1643,13 +1643,15 @@
     },
     {
       "id": "staff-roll",
-      "title": "Chapter 5 end card radar, staff roll, first-time no skip, post-roll shuraba and talks, then title and NEXT CYCLE unlock",
+      "title": "Chapter 5 end card radar, staff roll, first-time no skip, post-roll shuraba and talks, result screen, then title and NEXT CYCLE unlock",
       "kind": "browser",
       "weight": 0.4,
       "timeout": 10,
       "paths": [
         "remake/js/scenes/staff-roll.js",
         "remake/css/staff-roll.css",
+        "remake/js/scenes/result.js",
+        "remake/css/result.css",
         "remake/js/chapters/ch5*.js",
         "remake/js/core/story-routes.js",
         "data/story_routes.json",
