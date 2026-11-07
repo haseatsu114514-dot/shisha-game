@@ -111,7 +111,7 @@ try {
   assert.deepEqual(moneyAndSave.countdowns, Array.from({length: 14}, (_, i) => 13 - i));
   assert.equal(moneyAndSave.onDayText, "次の大会まであと0日");
   assert(moneyAndSave.centered, "LIME label or glyphs were off center");
-  assert.equal(moneyAndSave.readable, "20px");
+  assert.equal(moneyAndSave.readable, "24px"); // #2853: ラベルを ¥ の印にした分、数値を24pxへ
   console.log("[ui skin] PASS: six-digit cap, spending, zero, old DAY15 save, countdown, centered LIME, readable money");
   const stamina = await page.evaluate(() => {
     const out = [];

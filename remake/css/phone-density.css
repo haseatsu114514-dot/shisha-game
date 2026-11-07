@@ -58,8 +58,9 @@ html:root[data-density="phone"] body:not(.game-ds) #hud .dc-area { display: none
    出発前の「出発まで」・第5章の「勝負の日まで」は大会の日程とは別の情報なので出す（ch2_tournament の検査）。
    文字を大きくした分だけ札が伸びて街マップのスポットに重なるのを、行を減らして防ぐ。日数は MENU のステータスで見られる。 */
 html:root[data-density="phone"] body:not(.game-ds) #hud .dc-row.goal[data-goal="tournament"] { display: none; }
-/* 幅は固定する。日数（1〜2桁）や所持金の桁で札の幅が変わると、LIME・MENU まで動いてしまう（ui_skin の検査） */
-html:root[data-density="phone"] body:not(.game-ds) #hud .dc-main { width: 66px; min-width: 0; }
+/* 幅は固定する。日数（1〜2桁）や所持金の桁で札の幅が変わると、LIME・MENU まで動いてしまう（ui_skin の検査）。
+   幅は「☀残り2」（#2853 の昼夜の札・約 3.5 文字）が補助文の大きさで収まる分。文字の大きさに比例させ、中身では変えない。 */
+html:root[data-density="phone"] body:not(.game-ds) #hud .dc-main { width: calc(var(--phone-sub) * 3.7); min-width: 0; }
 /* 右列は文字の大きさに比例させる（「Lv.1 ━ 今夜 Lv UP ×2」が収まる幅。Safari のバーで文字が大きくなっても同じ割合） */
 html:root[data-density="phone"] body:not(.game-ds) #hud .dc-meta { width: calc(var(--phone-sub) * 13); }
 html:root[data-density="phone"] body:not(.game-ds) #hud :is(.dc-day small, .dc-slot, .dc-row span, .dc-row:not(.money) b, .dc-row.money b, .hud-card .hud-stamina > span:first-child, .hud-exp, .hud-exp .hx-left, .hud-exp .hx-target) { font-size: var(--phone-sub); }

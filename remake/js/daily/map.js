@@ -52,11 +52,19 @@ const PIN_SYMBOLS = {
 function pinSymbol(s) {
   return el("span.pin-symbol", { html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PIN_SYMBOLS[s.id] || PIN_SYMBOLS.store}</svg>` });
 }
+// 看板の下の札は名前だけ（「〜へ行く」は出さない。ロゴと札を含むピン全体が押せる・#2853）。読み上げには行き先として伝える。
 function pinCaption(s, locked) {
   if (locked) return "？？？";
   if (!knowsOwner(s) && s.unknownLabel) return s.unknownLabel;
-  return ["tonari", "rival", "shop", "samechan"].includes(s.kind) ? `${s.label}へ行く` : s.label;
+  return s.label;
 }
+const pinSpeech = (s, locked, caption) => !locked && caption === s.label && ["tonari", "rival", "shop", "samechan"].includes(s.kind) ? `${caption}へ行く` : caption;
+/** 地図の利用料は「¥3,000」の短い印（読み上げは「利用料 3,000円」のまま・#2853） */
+const yenMark = (n) => `¥${Math.round(n).toLocaleString("ja-JP")}`;
+/** 定休日・臨時休業は文字の札ではなく、看板をグレーにして「休」の印を付ける（#2853） */
+const CLOSED_TAGS = new Set(["本日定休日", "本日臨時休業"]);
+/** 「今日はどうする？」の操作の説明を出すのは、第1章の最初の自由行動の日（1日目は案内つきの用事だけ）まで。日付を読むだけ（#2853） */
+const firstFreeDay = () => state.chapter === 1 && state.day <= 2;
 
 let interrupt = null;
 /** ピン地図・街歩きに共通する、未決定の行き先選択状態。 */
@@ -145,8 +153,8 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
     const freeGuide = (s) => isFreeGuide(s, guide);
     const availability = (s) => spotAvailability(s, { guide, visitBlock });
 
-    const movesLeft = () => (state.slot >= 1 ? "夜 ── 今日はあと1回動ける" : "昼 ── 今日はあと2回動ける")
-      + (tomorrowForecast() ? ` ／ 明日は${tomorrowForecast()}` : "");
+    // 残りの行動回数は HUD の札（☀残り2）へ移した。ここには明日の天気だけを添える（#2853）。
+    const forecastFoot = () => tomorrowForecast() ? el("div.mi-foot", { text: `明日は${tomorrowForecast()}` }) : null;
     const clearSpotInfo = () => {
       info.classList.remove("spot-selected");
       info.removeAttribute("role");
@@ -159,19 +167,20 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
     const idleInfo = () => {
       clearSpotInfo();
       if (guide) {
-        info.replaceChildren(
+        info.replaceChildren(...[
           el("div.mi-banner", { text: guide.title || "スミさんの頼み" }),
           el("p.mi-desc", { text: guide.text }),
-          el("div.mi-foot", { text: movesLeft() }),
-        );
+          forecastFoot(),
+        ].filter(Boolean));
         return;
       }
-      info.replaceChildren(
-        el("div.mi-banner", { text: "今日はどうする？" }),
-        el("p.mi-desc", [el("span", { text: "気になる場所をタップしよう。" }), el("br"), el("span", { text: "行動・所持金・体力に気をつけて。" })]),
+      // 操作の説明は最初の日だけ。以後は期限の一言や明日の天気がある時だけ出す。
+      info.replaceChildren(...[
+        firstFreeDay() ? el("div.mi-banner", { text: "今日はどうする？" }) : null,
+        firstFreeDay() ? el("p.mi-desc", [el("span", { text: "気になる場所をタップしよう。" }), el("br"), el("span", { text: "行動・所持金・体力に気をつけて。" })]) : null,
         reminder ? el("p.mi-reminder", { text: reminder, dataset: { test: "map-reminder" } }) : null,
-        el("div.mi-foot", { text: movesLeft() }),
-      );
+        forecastFoot(),
+      ].filter(Boolean));
     };
 
     const renderInfo = (s) => {
@@ -339,11 +348,12 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
         : known && av.ok && hasNewEvent(s) ? el("i.evt-badge.story", { text: "!", "aria-label": "新しいイベント" })
         : null;
       const caption = pinCaption(s, locked);
+      const closed = CLOSED_TAGS.has(av.tag);
       const guideCls = guide ? (guide.pin === s.id ? ".guide" : ".guided-off") : "";
-      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) && s.facilityIcon !== false && !logo ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}`, {
+      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) && s.facilityIcon !== false && !logo ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}${closed ? ".closed" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
-        "aria-label": `${caption}${s.cost && !freeGuide(s) ? `・利用料 ${yen(s.cost)}` : ""}${av.tag ? `（${av.tag}）` : ""}${hidane > 0 ? `・火種 ${hidane}・内省で灯せる` : badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
+        "aria-label": `${pinSpeech(s, locked, caption)}${s.cost && !freeGuide(s) ? `・利用料 ${yen(s.cost)}` : ""}${av.tag ? `（${av.tag}）` : ""}${hidane > 0 ? `・火種 ${hidane}・内省で灯せる` : badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
         onclick: () => (selected === s && av.ok ? go(s) : select(s, btn)),
       }, [
         el("div.pin-visual", [
@@ -355,8 +365,9 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
           peopleRow(people),
         ]),
         el("div.sub-label", { text: caption }),
-        s.cost && !freeGuide(s) ? el("small.pin-cost", { text: `利用料 ${yen(s.cost)}` }) : null,
-        av.tag ? el("small.pin-status", { text: av.tag }) : null,
+        s.cost && !freeGuide(s) ? el("small.pin-cost", { text: yenMark(s.cost), title: `利用料 ${yen(s.cost)}` }) : null,
+        // 休みの札は文字を残したまま、PC・スマホとも CSS で看板の角の「休」の印に置き換える（2画面表示は文字のまま）。
+        av.tag ? el(`small.pin-status${closed ? ".pin-closed" : ""}`, { text: av.tag, title: av.tag }) : null,
       ]);
       if (facility) {
         const crop = facility.querySelector('.facility-icon-crop');
