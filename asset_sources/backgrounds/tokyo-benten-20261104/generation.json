@@ -1,0 +1,87 @@
+{
+  "request": "#1801 IR26 / #2301 / tools/bg_prompts.txt PK03-PK04",
+  "tool": "Codex built-in image_gen; model ID undisclosed",
+  "required_native_size": [
+    2048,
+    1152
+  ],
+  "required_runtime_size": [
+    1920,
+    1080
+  ],
+  "upscale_allowed": false,
+  "generated": [
+    {
+      "file": "day-a-trial-below-minimum.png",
+      "source": "/workspace/generated_images/exec-0db8eb10-1485-4445-a89a-ff5e3fdf406b.png",
+      "bytes": 3564555,
+      "sha256": "54ace52ff3c7db6550fda4ae7c6a8963ccaaaf94231908407cd81978b58f6d0b",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "status": "BELOW_MINIMUM_NOT_ADOPTED"
+    },
+    {
+      "file": "day-a-size-retry-below-minimum.png",
+      "source": "/workspace/generated_images/exec-2d93d3c4-6460-4f9a-aa09-1562305e4b3c.png",
+      "bytes": 3248913,
+      "sha256": "091feea45a5df412011fd6db66e5354110fbc21ae82fd3b91eab5ec26d5d0db5",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "status": "BELOW_MINIMUM_NOT_ADOPTED"
+    }
+  ],
+  "references": [
+    {
+      "path": "/workspace/shisha-game/assets/backgrounds/bg_tokyo_park_day.png",
+      "bytes": 3632464,
+      "sha256": "ee0b8aef34d7b995ac6aacbb25f8c7954f395dc7f92637f52259502aeb1f6d2c"
+    },
+    {
+      "path": "/workspace/shisha-game/assets/backgrounds/bg_tokyo_park_night.png",
+      "bytes": 2906963,
+      "sha256": "5dd51ee8c8b7270d3c062ec920ae8a92c423bb49647c98cf6afc834bdaf703c2"
+    },
+    {
+      "path": "/workspace/shisha-game/assets/backgrounds/bg_tokyo_map_day.png",
+      "bytes": 4345023,
+      "sha256": "a3fc5a30223d4aacd2a8a8f5020814433f4a88763010f5623c46994f8f9f4ca7"
+    },
+    {
+      "path": "/workspace/shisha-game/assets/backgrounds/bg_street_night.png",
+      "bytes": 3153555,
+      "sha256": "29424b48c8ba10982a6f5e88024687bab1c0901fbcc935332f407a00beb2cc63"
+    }
+  ],
+  "map_crop": {
+    "source": "bg_tokyo_map_day.png",
+    "box": [
+      1400,
+      580,
+      1645,
+      805
+    ]
+  },
+  "qa": {
+    "viewed_at_native": true,
+    "observed": "Wooden hall, blue-grey roofs, bridge/deck, closed lattice, unlit lantern pair, late-autumn pond, empty foreground. No visible people, animals, hookah, lettering, halo, UI or watermark.",
+    "failure": "Both initial generation and explicit native-size correction returned 1672x941. No resize, upscale or runtime integration performed.",
+    "limitations": "Only daylight A layout attempted; no three complete day/night candidate pairs. Exact same-drawer match and game-size overlay not verified."
+  },
+  "sharing": "No upload, repo image addition, adoption, Issue comment or Claude delivery performed.",
+  "followup_resolution_review": {
+    "available_generator": "image_gen__imagegen",
+    "explicit_size_parameter": false,
+    "alternative_image_generation_tool_found": false,
+    "confirmed_limit": null,
+    "observed_failure": "Both baseline prompt and native-resolution correction returned1672x941 despite2048x1152 minimum. Provider/model resolution limit not disclosed; do not infer a hard cap.",
+    "new_generation_attempt": "Not repeated: no newly available size-control mechanism found.",
+    "required_next_method": "An authorized generator/export mode providing native2048x1152 or larger16:9, or receipt of a compliant source image. No upscaling.",
+    "api_or_network_bypass_attempted": false
+  }
+}

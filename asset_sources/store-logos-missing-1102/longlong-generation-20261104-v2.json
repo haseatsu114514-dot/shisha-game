@@ -1,0 +1,133 @@
+{
+  "status": "UNADOPTED_MARGIN_REVISIONS_REVIEW_ONLY",
+  "previous_record": "longlong-generation-20261104.json",
+  "current_review_candidates": [
+    "longlong-a-v2.png",
+    "longlong-b-v3.png",
+    "longlong-c.png"
+  ],
+  "adopted": false,
+  "tool": "Codex built-in image_gen; model ID undisclosed",
+  "images": [
+    {
+      "file": "longlong-a-v2.png",
+      "bytes": 1751804,
+      "sha256": "99e27a3014cd901d863503652fbe8d6c98506f8b1b8a9ee0c2514cc6e1fffb30",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_bbox": [
+        201,
+        54,
+        1508,
+        984
+      ],
+      "alpha_gt60_bbox": [
+        204,
+        166,
+        1332,
+        825
+      ],
+      "subject_width_ratio": 0.7344,
+      "nonzero_alpha_canvas_edge_pixels": 0,
+      "minimum_fully_transparent_border_px": 28,
+      "status": "UNADOPTED_REVIEW_CANDIDATE"
+    },
+    {
+      "file": "longlong-b-v3.png",
+      "bytes": 1536918,
+      "sha256": "386b2aacda15935bac186670d641728a97d9459deee4822070afdffa721ea3e3",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_bbox": [
+        33,
+        53,
+        1504,
+        982
+      ],
+      "alpha_gt60_bbox": [
+        248,
+        223,
+        1288,
+        753
+      ],
+      "subject_width_ratio": 0.6771,
+      "nonzero_alpha_canvas_edge_pixels": 0,
+      "minimum_fully_transparent_border_px": 32,
+      "status": "UNADOPTED_REVIEW_CANDIDATE"
+    },
+    {
+      "file": "longlong-c.png",
+      "bytes": 2183093,
+      "sha256": "83504bffec092148450adebba9bf5ed66d1145be63426bd3019644e5804b75fd",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_bbox": [
+        203,
+        36,
+        1420,
+        969
+      ],
+      "alpha_gt60_bbox": [
+        310,
+        39,
+        1210,
+        965
+      ],
+      "subject_width_ratio": 0.5859,
+      "nonzero_alpha_canvas_edge_pixels": 0,
+      "minimum_fully_transparent_border_px": 36,
+      "status": "UNADOPTED_REVIEW_CANDIDATE"
+    }
+  ],
+  "edit_lineage": [
+    {
+      "output": "longlong-a-v2.png",
+      "input": "longlong-a.png",
+      "prompt": "prompts/longlong-20261104/longlong-a-v2-prompt.txt",
+      "generator_output": "/workspace/generated_images/exec-dd785f39-5f13-4efb-9ecc-535f77977330.png"
+    },
+    {
+      "output": "history/longlong-20261104/longlong-b-v2.png",
+      "input": "longlong-b.png",
+      "prompt": "prompts/longlong-20261104/longlong-b-v2-prompt.txt",
+      "generator_output": "/workspace/generated_images/exec-c408cc84-e1fc-4d31-95cb-469064d3688c.png",
+      "qa": "Not a current candidate: seven alpha=1 pixels reached the left canvas edge."
+    },
+    {
+      "output": "longlong-b-v3.png",
+      "input": "history/longlong-20261104/longlong-b-v2.png",
+      "prompt": "prompts/longlong-20261104/longlong-b-v3-clean-prompt.txt",
+      "generator_output": "/workspace/generated_images/exec-4180d1c0-04c5-4718-8504-4d32ab4573c6.png"
+    }
+  ],
+  "references": "Original three role references and hashes remain in longlong-references-20261104.json; these edits use only the already-generated candidate as input. No private photo bytes included.",
+  "qa": {
+    "native_revision_pngs_viewed": true,
+    "text": "A preserves visible 龍龍水煙所; B preserves 龍龍 only. One dragon each; no extra lettering, people, smoking equipment or cropped ornament visible. C unchanged.",
+    "transparency": "A-v2 and B-v3 have zero nonzero-alpha pixels on canvas edges. Fully alpha-zero outer border minimum28px and32px respectively. No manual thresholding, resizing, canvas edits or upscaling of candidate PNGs.",
+    "target_color_previews": "RGBA composited onto #fffaf0 at82x46 and #1f1a29 at180x104. No conspicuous outer halo or background panel visible in these previews.",
+    "layout": "Main silhouette width at alpha>60: A73.44%, B67.71%, versus previous99.22% and97.72%. These are smaller than requested approximately80%, not claimed as exact80% compliance.",
+    "remaining_reservations": [
+      "A five-character name remains weak at82x46; B is larger-lettered but still small at that display size.",
+      "Golden highlights remain strong. Exact same-drawer match and actual map/arrival-panel rendering remain unverified.",
+      "These are review candidates only. No selection, adoption, runtime conversion, integration or merge performed."
+    ],
+    "comparison": "qa/longlong-candidates-v2.jpg",
+    "before_after": "qa/longlong-margins-before-after.jpg"
+  },
+  "validation": "PNG verify, dimensions1536x1024 RGBA, alpha geometry and canvas edges, SHA-256, native image view and two UI-size composites; no runtime tests because runtime is unchanged.",
+  "intermediate": {
+    "file": "history/longlong-20261104/longlong-b-v2.png",
+    "sha256": "aa7923c9c387881dc194279cfa1e56d53ae80813ede78d03f41f02febc5bcd56",
+    "bytes": 1557672
+  }
+}

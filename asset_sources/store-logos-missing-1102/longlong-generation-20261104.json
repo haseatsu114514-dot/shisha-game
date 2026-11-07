@@ -1,0 +1,136 @@
+{
+  "request": "DBS08; PR #2409 codex-request.md; #2301",
+  "tool": "OpenAI built-in image_gen; model ID not disclosed",
+  "status": "UNADOPTED_CANDIDATES_WITH_QA_RESERVATIONS",
+  "source_reference_main": "cd86de368de605ead56758e8f565f4d15e82eb9e",
+  "prompt_source": "asset_sources/store-logos-missing-1102/longlong-prompt.txt",
+  "images": [
+    {
+      "candidate": "A",
+      "file": "longlong-a.png",
+      "bytes": 2510182,
+      "sha256": "a034b70bea29f66533de19467eb1d7cf2fcdb65d4a08bd65bb8fbf32b043fd19",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        0,
+        21,
+        1536,
+        1024
+      ],
+      "alpha_gt60_bbox": [
+        6,
+        77,
+        1530,
+        944
+      ],
+      "subject_width_ratio": 0.9922,
+      "adopted": false,
+      "generator_output_path": "/workspace/generated_images/exec-9ac99deb-dad9-4ede-9bde-3ee14d6b7e66.png"
+    },
+    {
+      "candidate": "B",
+      "file": "longlong-b.png",
+      "bytes": 2213950,
+      "sha256": "878b32475eca3bce083ea2728d76dd6979f300074044ff8fe8f6008b49547704",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        11,
+        36,
+        1520,
+        1010
+      ],
+      "alpha_gt60_bbox": [
+        17,
+        129,
+        1518,
+        869
+      ],
+      "subject_width_ratio": 0.9772,
+      "adopted": false,
+      "generator_output_path": "/workspace/generated_images/exec-e1747ede-1c92-4229-828e-55846768c1ed.png"
+    },
+    {
+      "candidate": "C",
+      "file": "longlong-c.png",
+      "bytes": 2183093,
+      "sha256": "83504bffec092148450adebba9bf5ed66d1145be63426bd3019644e5804b75fd",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        203,
+        36,
+        1420,
+        969
+      ],
+      "alpha_gt60_bbox": [
+        310,
+        39,
+        1210,
+        965
+      ],
+      "subject_width_ratio": 0.5859,
+      "adopted": false,
+      "generator_output_path": "/workspace/generated_images/exec-50ded851-d0c2-4a55-88fe-496d7acfa178.png"
+    }
+  ],
+  "qa": {
+    "native_images_viewed": true,
+    "text": "A: visible 龍龍水煙所. B corrected: visible 龍龍 only. C: no visible lettering. Human visual reading; no OCR claim.",
+    "motif": "One cloud-scroll dragon per image, crimson/dark-gold/jade, no people or hookah equipment, no seals, flags or extra writing visible.",
+    "alpha": "RGBA with actual transparent pixels; imagegen alpha max254. No manual alpha removal or canvas changes.",
+    "reservations": [
+      "A/B occupy about98-99% of width instead of requested about80%; solid edges are complete but narrow margins and faint alpha reach canvas edges. Generation correction did not resolve B margin. Not production-ready.",
+      "A five-character lettering is weak at82x46; B two-character wording is more legible. C has no shop name by design. Owner selection is pending.",
+      "Illustrated metal shading may be glossier than desired. Exact same-drawer match and actual map arrival-panel rendering not validated.",
+      "C is circular on3:2 canvas, occupying about59% width; meaningful fit is by height. No upscaling or cropping."
+    ]
+  },
+  "rejected": [
+    {
+      "file": "rejected/longlong-b-wrong-five-characters.png",
+      "reason": "B initial incorrectly included 水煙所, replaced by corrected B; exclude from selection ZIP",
+      "sha256": "9c327d80b6d1b78c843b8596c9c6e69c04988745a2bbf22961c9a1fe7cab78cd",
+      "bytes": 2305561
+    }
+  ],
+  "references_file": "longlong-references-20261104.json",
+  "private_photos_included": false,
+  "runtime_changes": false,
+  "game_adoption": false,
+  "tests": "Pixel dimensions, alpha, hash checks; native image view and two UI-size comparison previews. No game tests: no runtime changes.",
+  "prompts": {
+    "A": [
+      "prompts/longlong-20261104/longlong-a-prompt.txt"
+    ],
+    "B": [
+      "prompts/longlong-20261104/longlong-b-initial-prompt.txt",
+      "prompts/longlong-20261104/longlong-b-correction-prompt.txt"
+    ],
+    "C": [
+      "prompts/longlong-20261104/longlong-c-prompt.txt"
+    ]
+  }
+}
