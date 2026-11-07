@@ -50,10 +50,11 @@
       "dialogue_id": "ch5_c_station_b",
       "lines": [
         { "speaker": "", "face": "", "text": "C.STATIONのカウンター。隣の常連の男性が、こちらに気づいて片手を上げた。" },
-        { "speaker": "old_man", "face": "", "text": "よう。今日は客か。……なるの一台の話、覚えてるか" },
-        { "speaker": "hajime", "face": "normal", "text": "覚えてます。吸い終わっても、ホースを置かなかったって" },
+        { "speaker": "old_man", "face": "", "text": "よう。今日は客か。……ここの客席で、昔から言われてる話があってな" },
+        { "speaker": "old_man", "face": "", "text": "いい一台は、吸い終わってもホースがなかなか置けなくなる。なるの一台がそうだった、ってな" },
+        { "speaker": "hajime", "face": "normal", "text": "ホースを、置けなくなる……" },
         { "speaker": "old_man", "face": "", "text": "今は、お前の一台でも同じ話をしてるよ" },
-        { "speaker": "hajime", "face": "smile", "text": "（……あの時の話が、こっちに回ってきたんだ）" }
+        { "speaker": "hajime", "face": "smile", "text": "（……なるさんの話が、こっちにも回ってきたんだ）" }
       ]
     },
     {
