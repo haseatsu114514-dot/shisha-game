@@ -585,6 +585,8 @@ async function takeAction() {
   });
   if (!used) return;
   state.visitedDay[spot.id] = state.day;
+  // 章が足す、行き先の行動を終えた後の記録（第5章の店めぐり帳の判子など）。保存は下の afterAction が行う
+  chapterDef.afterSpot?.(spot);
   // チョコザップ（地元の店と、spot.gym の付いた東京の店＝第3章・第5章）: その日から数日、風邪をひきにくい
   if ((spot.id === "choizap" || spot.gym) && state.flags._gym_member) {
     state.flags._fit_since = { chapter: state.chapter, day: state.day };

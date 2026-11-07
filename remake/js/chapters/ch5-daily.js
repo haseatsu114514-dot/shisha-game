@@ -8,6 +8,7 @@
 // 恋人とは第1・2章と同じく、LIMEの誘い→デート（絆が深まる）→節目（lover_events）の順に進む（帰郷後なので開ける・IR16・IR17）。
 // デートは地元の店なので、東京・ドバイにいる間は誘いが届かない（daily/romance.js の hometownDateOpen）。
 // 出張シーシャの依頼（DLV）: 数日おきにスミさんのLIMEで届き、引き受けると地元の地図に「出張シーシャ」が出る（chapters/ch5-catering.js）。
+// 各地の店めぐり帳（MGR）: 帳面の店で来店を終えると判子が押され、地域・全部がそろうとくじ券。LIMEの「店めぐり帳」で見る（chapters/ch5-shop-stamps.js）。
 import { state, save, timeOfDay } from "../core/state.js";
 import { bgUrl, displayName } from "../core/data.js";
 import { modal, toast } from "../core/ui.js";
@@ -29,6 +30,7 @@ import { DUBAI, DUBAI_SPOTS, TO_DUBAI_SPOT, performDubaiSpot, inDubai, dubaiNigh
 import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop } from "./ch5-shops.js";
 import { chapterFiveCateringSpot, performCateringSpot, deliverCateringMorning } from "./ch5-catering.js";
 import { CATERING_SPOT_ID } from "./ch5-catering-model.js";
+import { noteShopStamp, shopStampsShortcut } from "./ch5-shop-stamps.js";
 import {
   chapterFiveProgress, chapterFiveFreeRemaining, chapterFiveRead, chapterFiveTimeoutPending,
   chapterFivePreparation, chapterFivePrepPending, recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
@@ -94,6 +96,9 @@ export function chapterFiveDailyDefinition(io) {
     nightEvents: {},
     // 出張シーシャの依頼（スミさんのLIME）と、期限の過ぎた依頼の片付け
     morningLime: () => deliverCateringMorning(),
+    // 店めぐり帳: 行き先の行動を終えたら判子（帳面の店だけ）。帳面は右上の LIME の一番上の行から開く
+    afterSpot: spot => { noteShopStamp(spot); },
+    limeShortcuts: () => [shopStampsShortcut()],
     tournamentName: "博士との勝負",
     undatedNote: "博士との勝負の日は、まだ決まっていない",
     // 夜の帰り道の告白は、第4章までに恋愛ルートに入った相手だけ（第5章で初めて届いた締めくくりでは告白しない・

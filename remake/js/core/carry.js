@@ -261,6 +261,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_party_conflict", "progression"], // 打ち上げの修羅場で反応まで読んだ恋人（chapters/ch5-party.js・#2815）
   ["_ch5_shop_talks", "progression"],
   ["_ch5_catering", "progression"], // 第5章の出張シーシャの依頼（次に届く日・今の依頼・作った回数。chapters/ch5-catering-model.js）。くじ券そのものは kujiTickets（持ち越さない）
+  ["_ch5_shop_stamps", "progression"], // 第5章の店めぐり帳（判子を押した店・受け取ったくじ券・帳面を開いた印。chapters/ch5-shop-stamps-model.js）。周回では白紙から
   ["_mukai_shift_day", "progression"],
   ["_ch5_tokyo_talks", "progression"],
   ["_cheat_go", "progression"],

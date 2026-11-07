@@ -306,6 +306,12 @@
       "run": ["node remake/test/ch5_catering.mjs"]
     },
     {
+      "id": "ch5-shop-stamps-mgr",
+      "title": "Chapter-5 shop stamp book: shops always on the ch5 maps, one stamp per shop, region/full kuji tickets, no money, NG+ reset and #2455 (MGR)",
+      "kind": "quick",
+      "run": ["node remake/test/ch5_shop_stamps.mjs"]
+    },
+    {
       "id": "growth-levelup-browser-1",
       "title": "Growth HUD gauge, EXP chip, night level-up and hidane badge (?growth=1), part 1/2",
       "kind": "browser",
@@ -1691,6 +1697,26 @@
       ],
       "run": [
         "node remake/test/browser/ch5_catering.mjs"
+      ]
+    },
+    {
+      "id": "ch5-shop-stamps-browser",
+      "title": "Chapter 5 shop stamp book: a stamp after a shop visit, no repeat, last stamp grants kuji tickets, LIME book view (MGR)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/ch5-shop-stamps.js",
+        "remake/js/chapters/ch5-shop-stamps-model.js",
+        "remake/js/chapters/ch5-daily.js",
+        "remake/js/chapters/ch5-shops.js",
+        "remake/js/daily/calendar.js",
+        "remake/js/daily/phone.js",
+        "remake/js/daily/kuji-tickets.js",
+        "remake/test/browser/ch5_shop_stamps.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch5_shop_stamps.mjs"
       ]
     },
     {
