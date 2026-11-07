@@ -41,7 +41,7 @@ body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .cfg-mo
 
 /* ---------------------------------------------------------------- セーブ／ロード */
 /* 枠を広げ、文字と顔を一段大きく（スマホでは実寸の下限を保つ） */
-body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal { width: calc(620px + var(--wide-grow)); max-width: calc(1232px + var(--wide-grow)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal { width: calc(760px + var(--wide-grow)); max-width: calc(1232px + var(--wide-grow)); }
 
 /* ---------------------------------------------------------------- 店の入口・1F ショップ（Dr.fookah） */
 /* パネルを左右対称に広げる。広げると右上の LIME・MENU（黒帯側の端・上から 12px）の真下に来るので、
@@ -63,3 +63,89 @@ body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gal-gr
 body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] #fx > .gboard { inset: 0 var(--wide-l); padding-inline: var(--stage-safe-l) var(--stage-safe-r); }
 body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gboard .gb-main { grid-template-columns: calc(760px + var(--wide-grow)) 1fr; }
 body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gboard .gb-board { width: calc(760px + var(--wide-grow)); }
+
+/* =================================================================== 文字・ボタンを一段大きく
+   オーナー指示（2026-11-08）「ボタンや文字を入れるならサイズも気持ち大きく。プレイしやすくして」。広がった横幅の分だけ、
+   ワイドステージの画面でステージ上 +2〜4px（スマホでは実寸の下限も 11.5→12.5px・押す所 40→43px に）上げる。
+   スマホ規格（phone-density.css・#2977）の --phone-tap 等はそのまま使う。PC の 1280×720 は変わらない。 */
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] {
+  --wide-min: calc(12.5px / var(--k, 1));   /* 実寸 12.5px の文字 */
+  --wide-tap: calc(43px / var(--k, 1));     /* 実寸 43px の押す所 */
+}
+
+/* タイトル: 主文 26→28px・副題 15→17px */
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .title:not([data-layout="ds"]) .ti-en { font-size: 28px; }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .title:not([data-layout="ds"]) .ti-ja { font-size: 17px; }
+@media (pointer: coarse) and (hover: none) {
+  body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .title:not([data-layout="ds"]) .ti-ja { font-size: max(17px, calc(12px / var(--k, 1))); }
+}
+
+/* MENU: 文字の下限と押す所の下限を一段上げ、見出し・タブ・帯・ボタンを +2〜4px */
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] #modal > .dmenu { --dm-min: var(--wide-min); --dm-tap: var(--wide-tap); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .dmenu .dm-title { font-size: max(30px, var(--dm-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .dmenu .dm-tab .dm-icon { font-size: max(26px, var(--dm-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .dmenu .dm-tab .dm-label { font-size: max(20px, var(--dm-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .dmenu .dm-sum > b { font-size: max(21px, var(--dm-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .dmenu .dm-sum > small,
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .dmenu .dm-sum > b small { font-size: max(16px, var(--dm-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .dmenu .dm-slot { font-size: max(18px, var(--dm-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .dmenu .dm-heading h3 { font-size: max(26px, var(--dm-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .dmenu :is(.dm-sub, .dm-note, .dm-empty, .dm-tab-help p) { font-size: max(16px, var(--dm-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .dmenu .dm-strong { font-size: max(19px, var(--dm-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .dmenu .dm-chip { font-size: max(16px, var(--dm-min)); min-height: 30px; }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .dmenu .dm-btn { min-height: max(52px, var(--dm-tap)); font-size: max(18px, var(--dm-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .dmenu .dm-close { font-size: max(20px, var(--dm-min)); }
+
+/* 設定: 行の文字 22→24px、段ボタン・閉じるも一段 */
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .cfg-modal h3 { font-size: max(28px, calc(13px / var(--k, 1))); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .cfg-modal .cfg-row { font-size: max(24px, var(--wide-min)); min-height: max(64px, var(--wide-tap)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .cfg-seg-btn { font-size: max(24px, var(--wide-min)); min-height: max(60px, var(--wide-tap)); min-width: max(92px, var(--wide-tap)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .cfg-modal .ui-theme-select { font-size: max(24px, calc(17px / var(--k, 1))); min-height: max(60px, var(--wide-tap)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .cfg-modal .modal-actions .btn { min-height: max(76px, var(--wide-tap)); font-size: max(26px, calc(13px / var(--k, 1))); }
+
+/* セーブ／ロード: 12〜16px だった枠の文字を 16〜24px に（スマホでは実寸 12.5px 以上）、顔は 28→40px */
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal { max-height: 680px; }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal h3 { font-size: max(28px, calc(13px / var(--k, 1))); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal .ss-note { margin-bottom: 10px; font-size: max(18px, var(--wide-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal { padding-block: 22px; }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal h3 { margin-bottom: 8px; }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal .ss-list { gap: 8px; }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal .save-slot { min-height: max(80px, calc(40px / var(--k, 1))); gap: 18px; padding: 8px 18px; font-size: max(18px, var(--wide-min)); }
+/* 「やめる」は枠の右上の端へ（MENU の「閉じる」と同じ位置）。4つの枠が縦に収まり、Safari のバーで低くなっても下が切れない */
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal .modal-actions { position: absolute; top: 14px; right: 24px; margin: 0; }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal .modal-actions .btn { min-width: 160px; }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal .ss-label { width: 176px; font-size: max(22px, var(--wide-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal .ss-label small,
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal :is(.ss-chapter, .ss-phase, .ss-more) { font-size: max(16px, var(--wide-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal .ss-info b { font-size: max(24px, var(--wide-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal .ss-info small { font-size: max(18px, var(--wide-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal .ss-stat small { font-size: max(16px, var(--wide-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal .ss-stat i { height: 6px; border-radius: 3px; }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal .ss-stats { gap: 6px 14px; }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal .ss-faces { width: 188px; gap: 6px; }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .saveload-modal .ss-face { width: 40px; height: 40px; }
+
+/* ギャラリー: 見出し・収集率・種類のタブ・閉じるを一段大きく、タブと閉じるは押しやすい高さに */
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gal-overlay > .gal { max-height: 672px; }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gal-head h2 { font-size: 32px; }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gal :is(.gal-collection, .gal-count) { font-size: max(18px, var(--wide-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gal :is(.gal-photos, .gal-characters, .gal-note, .gal-empty, .gal-caption, .gal-cell.locked small) { font-size: max(15px, var(--wide-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gal .gal-cell.locked span { font-size: 22px; }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gal :is(.gal-tab, .gal-close) { min-height: max(48px, var(--wide-tap)); font-size: max(17px, var(--wide-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gal .gal-tab { flex: 1 0 auto; padding: 0 16px; }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gal .gal-close { padding: 0 28px; }
+
+/* 店（スマホ横持ちの規格 shop.css #2858 を一段上げる。PC の横長は shop.css のまま） */
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .shop-paper {
+  --shop-text: max(19px, var(--wide-min)); --shop-tap: max(68px, var(--wide-tap)); --shop-label: max(24px, calc(13px / var(--k, 1)));
+}
+
+/* 心得の盤: 上の帯・タブ・下の凡例の小さな文字を一段大きく（スマホでは実寸 12.5px 以上） */
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gboard .gb-title { font-size: 28px; }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gboard .gb-level { font-size: max(18px, var(--wide-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gboard :is(.gb-level small, .gb-place, .gb-tab-body, .gb-legend) { font-size: max(16px, var(--wide-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gboard .gb-tab-body b { font-size: max(18px, var(--wide-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gboard .gb-side { font-size: max(17px, var(--wide-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gboard .gb-p-title { font-size: max(22px, var(--wide-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gboard :is(.gb-p-sub, .gb-p-state, .gb-bar) { font-size: max(16px, var(--wide-min)); }
+body:not(.game-ds):not(:has(.title[data-layout="ds"])) #stage[data-wide] .gboard .gb-hidane { font-size: max(17px, var(--wide-min)); }

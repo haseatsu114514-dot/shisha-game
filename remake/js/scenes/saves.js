@@ -107,7 +107,7 @@ function pickSlot(mode) {
     });
     const box = el("div.modal-box.saveload-modal", [
       el("h3", { text: mode === "save" ? "セーブ" : "ロード" }),
-      el("p.ss-note", { text: mode === "save" ? "書き込む枠を選ぶ。オートセーブは行動のたびに自動で更新される。" : "読み込むデータを選ぶ。" }),
+      el("p.ss-note", { text: mode === "save" ? "書き込む枠を選ぶ（オートは行動のたびに自動で更新）" : "読み込むデータを選ぶ" }),
       el("div.ss-list", rows),
       el("div.modal-actions", [el("button.btn", { text: "やめる", dataset: { test: "slot-cancel" }, onclick: () => { SE.cancel(); close(null); } })]),
     ]);
