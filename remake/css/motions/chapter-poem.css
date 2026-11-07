@@ -1,6 +1,7 @@
 /* 巻頭ポエム（序詩と第1〜5章の章頭詩）の読ませる画面。js/scenes/chapter-poem.js が .chapter-poem を fx 層へ出す。
-   暗い面に縦書きの明朝。右の行から1行ずつ、ぼかしが晴れて浮かぶ。連の切れ目（.gap）で一拍あく。
-   タップ／Enter／Space で読み終えていなければ全行を出し、読み終えていれば閉じる。 */
+   詩は連ごとの場面（.cp-page）に分け、1場面ずつ（.now）読ませる。暗い面に縦書きの明朝。右の行から1行ずつ、ぼかしが晴れて浮かぶ。
+   読み終えた場面は消え、次の連が浮かぶ。最後の連（.last）を読み終えたら全体が暗く閉じ、続けて章タイトルが出る。
+   タップ／Enter／Space で、読んでいる途中ならその場面の残りの行を出し、読み終えていれば次の場面へ。 */
 .chapter-poem {
   --cp-accent: 214, 178, 112;
   position: absolute; inset: 0; z-index: 70; overflow: hidden;
@@ -33,8 +34,14 @@
   to { transform: translate3d(2%, -2%, 0); }
 }
 
+/* 場面（連）。いまの1場面だけを中央に置く。消えるときも次が浮かぶときも不透明度だけ */
+.cp-page {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  opacity: 0; visibility: hidden; transition: opacity 650ms ease, visibility 0s linear 650ms;
+}
+.cp-page.now { opacity: 1; visibility: visible; transition: opacity 650ms ease; }
 .cp-body {
-  position: relative; height: 78%;
+  position: relative; max-height: 78%;
   writing-mode: vertical-rl; text-orientation: mixed;
   font-family: "Suien Blue Mincho", "Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif; font-weight: 400;
   font-size: 30px; line-height: 2.25; letter-spacing: .16em;
@@ -45,15 +52,13 @@
   transition: opacity 1300ms ease, filter 1300ms ease, transform 1500ms cubic-bezier(.2, .7, .2, 1), color 1600ms ease, text-shadow 1800ms ease;
 }
 .cp-line.on { opacity: 1; filter: none; transform: none; }
-/* 連の切れ目: 縦書きの行は右から左へ並ぶので、次の行の「右側」に余白をあける */
-.cp-line.gap { margin-block-start: 1.7em; }
-/* 最後の行は少しだけ明るく、差し色の光をまとう */
-.cp-line:last-of-type.on { color: #fff7e4; text-shadow: 0 0 22px rgba(var(--cp-accent), .55); }
+/* 最後の場面の最後の行は少しだけ明るく、差し色の光をまとう */
+.cp-page.last .cp-line:last-child.on { color: #fff7e4; text-shadow: 0 0 22px rgba(var(--cp-accent), .55); }
 .cp-line ruby { ruby-align: center; }
 .cp-line rt { font-family: inherit; font-size: .42em; letter-spacing: .08em; color: rgba(var(--cp-accent), .95); }
 .cp-line rp { display: none; }
 
-/* 読み終えたら、閉じられる合図の小さな▼（会話ウインドウの▼と同じ記号。常時は出さない） */
+/* 場面を読み終えたら、次へ進める合図の小さな▼（会話ウインドウの▼と同じ記号。常時は出さない） */
 .cp-next {
   position: absolute; left: 50%; bottom: 4.5%; transform: translateX(-50%);
   font-size: 16px; color: rgba(var(--cp-accent), .9); opacity: 0;
@@ -61,9 +66,10 @@
 .chapter-poem[data-phase="holding"] .cp-next { animation: cp-next 1900ms ease-in-out infinite; }
 @keyframes cp-next { 0%, 100% { opacity: .18; } 50% { opacity: .65; } }
 
-.chapter-poem.turbo .cp-line { transition: none; }
+.chapter-poem.turbo .cp-line, .chapter-poem.turbo .cp-page { transition: none; }
 @media (prefers-reduced-motion: reduce) {
   .cp-mist { animation: none; }
   .cp-line { filter: none; transform: none; transition: opacity 300ms ease; }
+  .cp-page, .cp-page.now { transition-duration: 300ms; }
   .chapter-poem[data-phase="holding"] .cp-next { animation: none; opacity: .4; }
 }

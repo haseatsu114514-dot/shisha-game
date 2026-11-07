@@ -1,8 +1,9 @@
 // 巻頭ポエム（序詩と第1〜5章の章頭詩）。会話ウインドウではなく、専用の「読ませる」画面で出す。
 // 詩の本文と意図は brand/chant_poems.md、台本は data/dialogue/chapter_poems.json（1行 = 詩の1行。gap:true は連の切れ目）。
 // 置き場所: 序詩＝タイトルから「はじめから」を選んだ直後、各章の詩＝その章の章タイトルの直前。
-// 見せ方: 暗い面に縦書きの明朝。右の行から1行ずつ、ぼかしが晴れて浮かぶ。連の切れ目で一拍おく。
-//        漢字には「漢字《よみ》」のふりがな。タップ／Enter／Space で、読み終えていなければ全行を出し、読み終えていれば閉じる。
+// 見せ方: 詩を連ごとの「場面」に分け、1場面ずつ読ませる。暗い面に縦書きの明朝で、右の行から1行ずつ、ぼかしが晴れて浮かぶ。
+//        読み終えた場面は消え、次の連が浮かぶ。最後の連を読み終えたら全体が暗く閉じ、続けて章タイトルが出る。
+//        漢字には「漢字《よみ》」のふりがな。タップ／Enter／Space で、読んでいる途中なら その場面の残りを出し、読み終えていれば次の場面へ。
 import { DB } from "../core/data.js";
 import { el, nextFrame, sleep } from "../core/util.js";
 import { layers, clearScreen, imageReady } from "../core/ui.js";
@@ -36,20 +37,30 @@ export function poemLineNodes(text = "") {
   return nodes;
 }
 
+/** 詩の行を連（gap:true の行から次の連）ごとの場面に分ける */
+export function poemPages(lines = []) {
+  const pages = [];
+  for (const line of lines) {
+    if (line.gap || !pages.length) pages.push([]);
+    pages.at(-1).push(line);
+  }
+  return pages;
+}
+
 // 時間の決まり（ms）。短い詩を、急かさず・長引かせずに読ませる。
-const FADE_IN = 700;
-const FADE_OUT = 900;
+const FADE_IN = 700;         // 暗い面が現れる
+const FADE_OUT = 900;        // 最後の場面のあと、全体が暗く閉じる（続けて章タイトル）
+const TURN = 650;            // 場面から場面へ（消えて、次が浮かぶ）
 const LINE_BASE = 460;       // 1行ぶんの間（基本）
 const LINE_PER_CHAR = 26;    // 字数に応じた読みの間
-const STANZA_PAUSE = 750;    // 連の切れ目の一拍
-const HOLD_BASE = 2400;      // 読み終えてから自動で閉じるまで
-const HOLD_PER_CHAR = 30;
-const GUARD = 280;           // 段の切り替え直後の誤タップで閉じない
+const HOLD_MID = 1100;       // 読み終えてから次の場面へ進むまで（基本）
+const HOLD_LAST = 2000;      // 最後の場面は長めに余韻を置く
+const HOLD_PER_CHAR = 40;
+const GUARD = 280;           // 段の切り替え直後の誤タップで飛ばさない
 
-const lineDelay = (line) => {
-  const chars = [...plainPoemLine(line.text).replaceAll(" ", "")].length;
-  return Math.min(1200, Math.max(650, LINE_BASE + LINE_PER_CHAR * chars));
-};
+const charsOf = (line) => [...plainPoemLine(line.text).replaceAll(" ", "")].length;
+const lineDelay = (line) => Math.min(1200, Math.max(650, LINE_BASE + LINE_PER_CHAR * charsOf(line)));
+const holdFor = (group, last) => (last ? HOLD_LAST : HOLD_MID) + HOLD_PER_CHAR * group.reduce((sum, line) => sum + charsOf(line), 0);
 
 /**
  * 詩を読ませる。最後まで読ませたら true、章が破棄された・中断された場合は false。
@@ -72,30 +83,36 @@ export async function playChapterPoem(key, { owner = null, current = () => true 
   if (owner) owner.controller = controller;
   const { signal } = controller;
   const lines = poem.lines;
-  const nodes = lines.map((line) => el(`p.cp-line${line.gap ? ".gap" : ""}`, poemLineNodes(line.text)));
+  const groups = poemPages(lines);
+  const pages = groups.map((group, index) => el(`div.cp-page${index === groups.length - 1 ? ".last" : ""}`, [
+    el("div.cp-body", group.map((line) => el("p.cp-line", poemLineNodes(line.text)))),
+  ]));
   const next = el("div.cp-next", { "aria-hidden": "true", text: "▼" });
   const card = el("div.chapter-poem", {
-    dataset: { test: "chapter-poem", poem: id, phase: "revealing" },
+    dataset: { test: "chapter-poem", poem: id, phase: "revealing", page: "0", pages: String(pages.length) },
     role: "document", "aria-label": lines.map((line) => plainPoemLine(line.text)).join(" "),
-  }, [el("div.cp-mist", { "aria-hidden": "true" }), el("div.cp-body", nodes), next]);
-  poemTest.shown.push({ id, lines: lines.map((line) => plainPoemLine(line.text)), at: Date.now() });
+  }, [el("div.cp-mist", { "aria-hidden": "true" }), ...pages, next]);
+  poemTest.shown.push({ id, lines: lines.map((line) => plainPoemLine(line.text)), pages: groups.length, at: Date.now() });
 
   let phaseAt = performance.now();
-  let phase = "revealing"; // revealing → holding → out
+  let phase = "revealing"; // 場面ごとに revealing → holding → turning、最後に out
+  let pageIndex = 0;
   const setPhase = (name) => { phase = name; phaseAt = performance.now(); card.dataset.phase = name; };
-  let skipReveal, closeNow;
-  const revealSkipped = new Promise((resolve) => { skipReveal = resolve; });
-  const closed = new Promise((resolve) => { closeNow = resolve; });
+  let skipReveal = () => {}, turnPage = () => {}, fastNow = () => {};
+  let fast = false;
+  const fastSignal = new Promise((resolve) => { fastNow = resolve; });
   const aborted = new Promise((resolve) => signal.addEventListener("abort", resolve, { once: true }));
-  const showAll = () => nodes.forEach((node) => node.classList.add("on"));
-  // 読み終えていなければ全行を出す。読み終えていれば閉じる（直後の誤タップは無視）。
+  const linesOf = (page) => [...page.querySelectorAll(".cp-line")];
+  const showAllIn = (page) => linesOf(page).forEach((node) => node.classList.add("on"));
+  // 読んでいる途中ならその場面の残りの行を出し、読み終えていれば次の場面へ（直後の誤タップは無視）。
   const advance = () => {
     if (performance.now() - phaseAt < GUARD) return;
-    if (phase === "revealing") { showAll(); skipReveal(); } else if (phase === "holding") closeNow();
+    if (phase === "revealing") { showAllIn(pages[pageIndex]); skipReveal(); } else if (phase === "holding") turnPage();
   };
+  const skipAll = () => { fast = true; showAllIn(pages[pageIndex]); skipReveal(); turnPage(); fastNow(); };
   const onKey = (event) => {
     if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.stopPropagation(); advance(); }
-    else if (event.key === "Control") { event.preventDefault(); event.stopPropagation(); showAll(); skipReveal(); closeNow(); }
+    else if (event.key === "Control") { event.preventDefault(); event.stopPropagation(); skipAll(); }
   };
   const swallow = (event) => { event.preventDefault(); event.stopPropagation(); };
   card.addEventListener("pointerdown", (event) => { swallow(event); advance(); });
@@ -106,38 +123,53 @@ export async function playChapterPoem(key, { owner = null, current = () => true 
   const onKeyUp = (event) => { if (event.key === " " || event.key === "Enter") swallow(event); };
   window.addEventListener("keyup", onKeyUp, true);
 
-  const wait = (ms, ...others) => Promise.race([sleep(ms), aborted, ...others]);
+  const wait = (ms, ...others) => Promise.race([sleep(ms), aborted, fastSignal, ...others]);
   try {
     layers.fx.append(card);
     void card.offsetWidth;
     if (vnTest.turbo) {
-      // テスト・自動送り: 演出を飛ばして全行を出し、すぐ閉じる。
-      showAll(); card.classList.add("show", "turbo");
+      // テスト・自動送り: 演出を飛ばし、最後の場面を全行出してすぐ閉じる。
+      pages.forEach(showAllIn);
+      pageIndex = pages.length - 1; card.dataset.page = String(pageIndex);
+      pages.at(-1).classList.add("now"); card.classList.add("show", "turbo");
       await nextFrame();
     } else {
       await nextFrame();
       card.classList.add("show");
       await wait(FADE_IN);
       const calm = reducedMotion();
-      if (calm) showAll();
-      for (const [index, node] of nodes.entries()) {
-        if (signal.aborted || phase !== "revealing" || calm) break;
-        if (lines[index].gap) await wait(STANZA_PAUSE, revealSkipped);
-        if (signal.aborted || phase !== "revealing") break;
-        node.classList.add("on");
-        await wait(lineDelay(lines[index]), revealSkipped);
-      }
-      showAll();
-      if (!signal.aborted) {
+      for (const [index, page] of pages.entries()) {
+        if (signal.aborted || fast) break;
+        pageIndex = index; card.dataset.page = String(index);
+        const revealed = new Promise((resolve) => { skipReveal = resolve; });
+        const turned = new Promise((resolve) => { turnPage = resolve; });
+        setPhase("revealing");
+        page.classList.add("now");
+        if (calm) showAllIn(page);
+        else {
+          for (const [i, node] of linesOf(page).entries()) {
+            if (signal.aborted || fast) break;
+            node.classList.add("on");
+            await wait(lineDelay(groups[index][i]), revealed);
+          }
+          showAllIn(page);
+        }
+        if (signal.aborted || fast) break;
         setPhase("holding");
-        const chars = lines.reduce((sum, line) => sum + [...plainPoemLine(line.text)].length, 0);
-        await wait(HOLD_BASE + HOLD_PER_CHAR * chars, closed);
+        const last = index === pages.length - 1;
+        await wait(holdFor(groups[index], last), turned);
+        if (signal.aborted || fast) break;
+        if (!last) {
+          setPhase("turning");
+          page.classList.remove("now");
+          await wait(TURN);
+        }
       }
     }
     if (!signal.aborted) {
       setPhase("out");
       card.classList.add("out");
-      await Promise.race([sleep(vnTest.turbo ? 0 : FADE_OUT), aborted]);
+      await Promise.race([sleep(vnTest.turbo || fast ? 0 : FADE_OUT), aborted]);
     }
   } finally {
     window.removeEventListener("keydown", onKey, true);

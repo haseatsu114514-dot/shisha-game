@@ -37,7 +37,8 @@ for (const dialogue of data.dialogues) {
   const id = dialogue.dialogue_id;
   assert.ok(dialogue.lines.length >= 5 && dialogue.lines.length <= 8, `${id}: 行数 ${dialogue.lines.length}（5〜8行。長くしない）`);
   assert.equal(dialogue.lines[0].gap, undefined, `${id}: 最初の行に gap は付けない`);
-  assert.ok(dialogue.lines.some((line) => line.gap === true), `${id}: 連の切れ目が1つ以上ある`);
+  const pageCount = dialogue.lines.filter((line) => line.gap === true).length + 1;
+  assert.ok(pageCount >= 2 && pageCount <= 3, `${id}: 場面（連）は2〜3つ（${pageCount}）。何回かに分けて読ませる`);
   for (const [index, line] of dialogue.lines.entries()) {
     const where = `${id}[${index}]`;
     assert.equal(line.speaker, "", `${where}: 地の文（話者なし）`);
@@ -82,6 +83,8 @@ const module = read("remake/js/scenes/chapter-poem.js");
 for (const [id] of EXPECTED) assert.ok(module.includes(`"${id}"`), `chapter-poem.js に ${id} がない`);
 assert.match(module, /vnTest\.turbo/, "テストの自動送り（vnTest.turbo）に従う");
 assert.match(module, /reducedMotion\(\)/, "動き軽減に従う");
+assert.match(module, /export function poemPages/, "連ごとに場面を分ける");
+assert.match(read("remake/css/motions/chapter-poem.css"), /\.cp-page\.now/, "場面の切り替えのスタイルがある");
 
 function indexesOf(source, needle) {
   const found = [];
