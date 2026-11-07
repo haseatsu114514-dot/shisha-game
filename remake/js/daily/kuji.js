@@ -4,7 +4,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 // 引いた直後に保存するので、結果を見てからのロードでは変わらない。
 import { el, yen, sleep, shuffle } from "../core/util.js";
 import { DB, displayName } from "../core/data.js";
-import { layers, toast } from "../core/ui.js";
+import { layers, toast, modal } from "../core/ui.js";
 import { state, save } from "../core/state.js";
 import { addMoney } from "../core/stats.js";
 import { SE } from "../core/audio.js";
@@ -66,6 +66,7 @@ function grant(prize) {
   return null;
 }
 /** 持っていた機材をお金に替えた時は、結果のカードにその額を出す */
+const yen2 = (n) => `¥${Math.round(n).toLocaleString("ja-JP")}`;
 const withDupe = (prize, cash) => cash == null ? prize : { ...prize, dupCash: cash };
 const dupeText = (prize) => `持っているので、中古買い取りの${yen(prize.dupCash)}を受け取った`;
 
@@ -81,13 +82,16 @@ export function kujiRows(rerender) {
   const list = grades();
   if (!list.length) return [el("p.shop-empty", { text: "くじはまだ入荷していない" })];
   const rows = [];
-  if (!state.flags._kuji_seen) {
-    state.flags._kuji_seen = true;
-    const staffed = state.slot === 1 && state.day % 7 !== RIO_AWAY_DAY && state.met.rio;
-    rows.push(el("p.kuji-note", { text: staffed
-      ? `${displayName("rio", state)}「これ、実は在庫しょぶ……なんでもない。引きは引き。直感で行きなさい」`
-      : "棚の案内には、残り枚数と景品が書かれている。くじは1階で昼夜とも引ける。" }));
-  }
+  const guide = "棚の案内には、残り枚数と景品が書かれている。くじは1階で昼夜とも引ける。";
+  const staffed = state.slot === 1 && state.day % 7 !== RIO_AWAY_DAY && state.met.rio;
+  const firstSeen = !state.flags._kuji_seen;
+  state.flags._kuji_seen = true;
+  // 初回にリオが居る時のひと言は台詞なのでそのまま出し、棚の案内は「?」を押して開く。
+  if (firstSeen && staffed) rows.push(el("p.kuji-note", { text: `${displayName("rio", state)}「これ、実は在庫しょぶ……なんでもない。引きは引き。直感で行きなさい」` }));
+  rows.push(el("div.kuji-help-row", [el("button.kuji-help", {
+    text: "?", "aria-label": "くじの案内", dataset: { test: "kuji-help" },
+    onclick: () => { SE.select(); modal({ title: "くじの案内", className: "shop-dialog", body: guide, options: [{ label: "閉じる", value: null, primary: true, test: "kuji-help-close" }] }); },
+  })]));
   const refill = DB.kuji.meta?.refillDays || 3;
   for (const g of list) {
     const box = boxOf(g);
@@ -123,20 +127,22 @@ export function kujiRows(rerender) {
       buttons.push(button);
       return button;
     };
-    const actions = [buyButton(1, empty ? "売り切れ" : `${yen(g.price)}で引く`, `kuji-${g.id}`)];
+    const actions = [buyButton(1, empty ? "売り切れ" : `×1 ${yen2(g.price)}`, `kuji-${g.id}`)];
     for (const target of [5, 10]) {
       const count = Math.min(target, left);
       if (count < 2 || (target === 10 && count <= 5)) continue;
-      actions.push(buyButton(count, `${count === 10 ? "10連" : `${count}回まとめて`}で引く（${yen(g.price * count)}）`, `kuji-${g.id}-${target}`));
+      actions.push(buyButton(count, `×${count} ${yen2(g.price * count)}`, `kuji-${g.id}-${target}`));
     }
-    rows.push(el("div.shop-row.kuji-row", [
-      el("span.shop-cat.kuji-cat", { text: "くじ" }),
+    const secret = el("small.kuji-secret", { hidden: true, text: left === 1 ? "次が最後の1枚！ ラストワン賞・シークレットつき" : "ラストワン賞・シークレット（中身は獲得してから）" });
+    const openDetail = () => { SE.select(); modal({ title: g.label, className: "shop-dialog", body: secret.textContent, options: [{ label: "閉じる", value: null, primary: true, test: "kuji-detail-close" }] }); };
+    rows.push(el("div.shop-row.kuji-row", { dataset: { test: `kuji-row-${g.id}` }, onclick: (e) => { if (!e.target.closest(".kuji-actions")) openDetail(); } }, [
+      el("span.shop-cat.kuji-cat", { text: "🎫", "aria-label": "くじ" }),
       el("div.shop-main", [
         el("b", { text: g.label }),
         el("small", { text: empty
           ? `売り切れ（あと${Math.max(0, refill - (state.day - box.emptyDay))}日で新しい箱）`
           : `のこり ${left} / ${size} 枚 ・ S賞: ${top}${size !== g.boxSize ? `（旧箱・次回は${g.boxSize}枚）` : ""}` }),
-        el("small", { text: left === 1 ? "次が最後の1枚！ ラストワン賞・シークレットつき" : "ラストワン賞・シークレット（中身は獲得してから）" }),
+        secret,
       ]),
       el("div.kuji-actions", actions),
     ]));
