@@ -153,8 +153,15 @@ try {
         assert(pins.filter(p => p.id !== 'trpg_bar').every(({ target: b }) =>
           a.x+a.width <= b.x || b.x+b.width <= a.x || a.y+a.height <= b.y || b.y+b.height <= a.y), 'board-game cafe overlaps another destination');
       }
-      const rotates = device === 'portrait' && layout === 'normal';
-      if (rotates) assert(await page.locator('#rotate-hint').isVisible());
+      // #2789（#2794）: 縦持ちは通常版・DS風とも回転ガードで画面を覆い、地図のピンは操作させない。
+      const rotates = device === 'portrait';
+      if (rotates) {
+        assert(await page.locator('#rotate-hint').isVisible());
+        assert(await page.evaluate(() => {
+          const guard = document.querySelector('#rotate-hint'), hit = document.elementFromPoint(innerWidth / 2, innerHeight / 2);
+          return hit === guard || guard.contains(hit);
+        }), `${device}/${layout}/${scenario}: rotate guard must intercept map input`);
+      }
       if (scenario === 'day' || device === 'pc' && layout === 'normal') {
         await page.screenshot({ path: path.join(out, `${phase}-${device}-${layout}-${scenario}.jpg`), type: 'jpeg', quality: 80 });
       }
@@ -176,7 +183,7 @@ try {
       }
       cases.push({ scenario, pins, stateUnchanged: true, rotateHint: rotates });
     }
-    if (!(device === 'portrait' && layout === 'normal')) {
+    if (device !== 'portrait') { // 縦持ちは回転ガードの下なので操作しない（上で遮ることを確認済み）
       const restPin = page.locator('[data-test="pin-rest"]'); await restPin.scrollIntoViewIfNeeded();
       await selectVisiblePin(page, restPin, touch);
       assert.equal(await restPin.evaluate(p => p.classList.contains('sel')), true, `${device}/${layout}/rest failed to select via user interaction`);

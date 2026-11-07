@@ -222,6 +222,7 @@ html:root[data-ui-theme="paper"] :is(.kuji-overlay, .gal-overlay) { background-c
 html:root[data-ui-theme="paper"] .kuji-card .kuji-rank { color: var(--lavender); text-shadow: none; background: none; animation: none; }
 html:root[data-ui-theme="paper"] .kuji-card:is(.rank-S, .rank-LAST) { border-color: var(--amber); box-shadow: 0 0 0 2px var(--amber), 0 10px 30px #110a2247; }
 html:root[data-ui-theme="paper"] .kuji-card:is(.rank-S, .rank-LAST) .kuji-rank { color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] .kuji-dupe-badge { color: #fff; background: var(--lavender); }
 html:root[data-ui-theme="paper"] .gal-cell { background-color: var(--paper-card); border-color: var(--paper-line); }
 html:root[data-ui-theme="paper"] .gal-cell.locked { background: repeating-linear-gradient(45deg, #efe7f2 0 10px, #e9dfef 10px 20px); }
 html:root[data-ui-theme="paper"] .gal-cell.locked span { color: var(--lavender); }

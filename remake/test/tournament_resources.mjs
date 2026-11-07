@@ -167,3 +167,12 @@ ownerContext.state = core.newState(); transition();
 assert.equal(resumed, 0, "LOAD during the wipe cannot resume the old tournament");
 console.log("PASS: absolute retry, no private lemon grant, one-time entry, schema15/16/17 migration, re-SAVE/LOAD, illness/progress/#577/Chapter2 preservation, LOAD during preload/wipe");
 
+
+// 大会の紹介場面は強制イベント。好感度（初対面の♥1を含む）を上げない（2026-11-06 オーナー決定）。
+for (const [file, id] of [["ch1_tournament", "ch1_tournament_opening"], ["ch2_tournament", "ch2_tournament_entrance"],
+  ["ch3_main", "ch3_tournament_day"], ["ch4_main", "ch4_tournament_start"]]) {
+  const scene = JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${file}.json`, import.meta.url), "utf8")).dialogues.find(row => row.dialogue_id === id);
+  assert.equal(scene?.metadata?.forced_event, true, `${id} is a forced event (no affection)`);
+  assert.equal(scene.metadata.add_affinity, undefined, `${id} has no affection reward`);
+}
+console.log("PASS tournament introductions are forced events");

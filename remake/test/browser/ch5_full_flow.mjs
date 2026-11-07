@@ -450,15 +450,28 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.money, before.money, "Members pay nothing more");
     if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled()))
       assert.ok((state.growth?.xp || 0) > (before.growth?.xp || 0), "A tiring visit earns EXP");
-    // 夜: 地下の店（クラブSEAM）。初めての夜は針間ヨルに会い、メニューから戻っても時間・お金・体力は変わらない。
+    // 夜: 地下の店（クラブSEAM）。初めての夜は第5章の出会い（第3章の場面は流さない・2026-11-07 オーナー）で針間ヨルに会い、
+    // メニューから戻っても時間・お金・体力は変わらない。
     const club = page.locator(dt("pin-ch5_tokyo_club"));
     assert.match(await club.innerText(), /地下の店/);
     const night = await get(page);
+    await page.evaluate(async () => (await import("./js/vn/engine.js")).clearLog());
     await go(page, "ch5_tokyo_club");
     await page.locator(dt("dj-club-menu")).waitFor({ timeout: 60000 });
     state = await get(page);
     assert.equal(state.met.yoru, true, "Yoru names herself on the first night");
     assert.equal(state.flags._club_yoru_first_done, true);
+    const rows = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map(({ name, text }) => ({ name, text })));
+    const said = text => rows.find(row => row.text.includes(text));
+    assert.ok(said("mukaiの屋根裏の子だ"), "The chapter 5 first meeting plays");
+    assert.equal(said("mukaiの屋根裏の子だ").name, "？？？", "Nobody names her before she does");
+    assert.equal(said("今夜の選曲は")?.name, "？？？", "Her own naming line comes before the cut-in");
+    assert.ok(!said("mukaiの新しい子"), "The chapter 3 first meeting does not play in chapter 5");
+    assert.ok(said("逢縁はじめです"), "After her cut-in, the shared second half (how to DJ) follows");
+    assert.equal(said("踊ってもいいし")?.name, "針間ヨル", "The shared second half comes after the cut-in");
+    assert.equal(state.flags._intro_yoru, true, "Her intro cut-in was shown");
+    // ヨルは好感度の対象外（state.js AFFINITY_CHARACTERS・プロフィール「好感度・恋愛・LIMEの対象にしない」）。第3章と同じく出会いでも変わらない。
+    assert.deepEqual(state.affinity, night.affinity, "Meeting Yoru changes no affinity, as in chapter 3");
     await page.locator(dt("dj-club-back")).click();
     await tokyoMap(51, 1);
     state = await get(page);
