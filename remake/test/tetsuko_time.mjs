@@ -5,10 +5,11 @@
 //   回復 12 を返す（体力の加算は呼び出し側）。それ以外は保存に触らない。能力・お金・好感度・日付・時間帯は書かない。
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { execFileSync } from "node:child_process";
 import { newState } from "../js/core/state.js";
 import { TOKYO_OUTINGS, OUTINGS_FLAG } from "../js/chapters/ch3-outing-progress.js";
 import { classifyFlag } from "../js/core/carry.js";
-import { TETSUKO_TIME, TETSUKO_STAMINA, settleTetsukoTime, tetsukoVisitKey, openTetsukoTime } from "../js/minigames/tetsuko-time.js";
+import { TETSUKO_TIME, TETSUKO_STAMINA, TETSUKO_CAMERA, tetsukoCameraFor, settleTetsukoTime, tetsukoVisitKey, openTetsukoTime } from "../js/minigames/tetsuko-time.js";
 import {
   TETSUKO_TIME_FLAG, MOODS, MOMENTS, PROPS, SLOTS, ALBUM_LIMIT, PET_REST_STREAK, PLAY_AUTO_CATCH, AUTO_DELAY,
   moodOf, moodLabel, relationStage, sessionStage, readTetsukoRecord, createSession, openingReaction, act, canAct,
@@ -406,12 +407,44 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   for (let i = 0; i < 60; i += 1) { const reaction = autonomous(session); if (reaction.art) hints.add(reaction.art); }
   for (const hint of hints) assert(POSES.includes(hint), `しぐさの絵の名前は依頼した12枚のどれか: ${hint}`);
   const { ART_READY, artAttrs } = await import("../js/minigames/tetsuko-art.js");
-  const exists = rel => fs.existsSync(new URL(`../img/ui/tetsuko/${rel}`, import.meta.url));
+  // quick の CI は画像を取らない（sparse checkout）ので、手元のファイルではなく Git に登録済みかで確かめる。
+  const tracked = new Set(execFileSync("git", ["ls-files", "--", "remake/img/ui/tetsuko/", "remake/img/backgrounds/"],
+    { cwd: new URL("../../", import.meta.url), encoding: "utf8" }).split("\n").filter(Boolean));
+  const exists = rel => tracked.has(`remake/img/ui/tetsuko/${rel}`);
   for (const pose of ART_READY.poses) { assert(POSES.includes(pose)); assert(exists(`cat_${pose}.webp`), `届いたしぐさの絵がある: cat_${pose}.webp`); }
-  for (const prop of ART_READY.props) assert(exists(`prop_${prop === "plate" ? "plate_full" : prop === "teaser" ? "teaser_tip" : prop}.webp`), `届いた小物の絵がある: ${prop}`);
+  // 小物は、CSS が読むファイルが全部そろっていること（箱とベッドは手前の層も・おやつは前後2枚・じゃらしは先と棒・ブラシはカーソルも）。
+  const PROP_FILES = { box: ["prop_box.webp", "prop_box_front.webp"], bed: ["prop_bed.webp", "prop_bed_front.webp"],
+    plate: ["prop_plate_full.webp", "prop_plate_empty.webp"], teaser: ["prop_teaser_tip.webp", "prop_teaser_stick.webp"],
+    brush: ["prop_brush.webp", "prop_brush_cursor.png"], lap: ["prop_lap.webp"] };
+  for (const prop of ART_READY.props) {
+    assert(PROPS.some(item => item.id === prop) || PROP_FILES[prop], `小物の名前は依頼した物: ${prop}`);
+    for (const file of PROP_FILES[prop] || [`prop_${prop}.webp`]) assert(exists(file), `届いた小物の絵がある: ${file}`);
+  }
+  const css = fs.readFileSync(new URL("../css/tetsuko-time.css", import.meta.url), "utf8");
+  for (const prop of ART_READY.props.filter(id => PROPS.some(item => item.id === id)))
+    assert(css.includes(`[data-art-props~="${prop}"] .tt-prop[data-prop="${prop}"] > .tt-prop-back`), `小物の絵を出す CSS がある: ${prop}`);
   for (const part of ART_READY.ui) assert(exists(`ui_${part}.webp`), `届いたUIの絵がある: ui_${part}.webp`);
-  if (ART_READY.background) assert(fs.existsSync(new URL("../img/backgrounds/bg_mukai_backdoor_day.webp", import.meta.url)), "裏口の絵がある");
+  if (ART_READY.background) assert(tracked.has("remake/img/backgrounds/bg_mukai_backdoor_day.webp"), "裏口の絵がある");
   assert.deepEqual(Object.keys(artAttrs()).sort(), ["artBg", "artProps", "artUi"]);
+}
+
+// TKT17（てつこを主役に）: カメラは寄せて（1.3倍以上）、どの居場所でも、てつこの枠が段ボールの外枠（20px）の内側に収まる。
+// 居場所と大きさは CSS の .tt-cat[data-at] から読む（JS に写さない）。測れない時は引いた全体（zoom 1）。
+{
+  assert(TETSUKO_CAMERA.zoom >= 1.3, "てつこを大きく映す");
+  assert.deepEqual(tetsukoCameraFor({}), { k: 1, x: 0, y: 0 }, "測れなければ引いた全体");
+  const css = fs.readFileSync(new URL("../css/tetsuko-time.css", import.meta.url), "utf8");
+  const spots = [...css.matchAll(/\.tt-cat\[data-at="([^"]+)"\] \{ --x: (\d+)px; --y: (\d+)px; --s: ([\d.]+); \}/g)]
+    .map(([, at, x, y, s]) => ({ at, x: Number(x), y: Number(y), s: Number(s) }));
+  assert(spots.length >= 8, `居場所を CSS から読めた (${spots.length})`);
+  for (const spot of spots) {
+    const cam = tetsukoCameraFor(spot);
+    assert.equal(cam.k, TETSUKO_CAMERA.zoom, `${spot.at}: 寄せて映す`);
+    assert(cam.x <= 0 && cam.x >= 1280 * (1 - cam.k) && cam.y <= 0 && cam.y >= 720 * (1 - cam.k), `${spot.at}: 舞台の外は映さない`);
+    const w = 270 * spot.s, h = TETSUKO_CAMERA.catHeight * spot.s;
+    const box = { l: cam.x + cam.k * (spot.x - w / 2), r: cam.x + cam.k * (spot.x + w / 2), t: cam.y + cam.k * (spot.y - h), b: cam.y + cam.k * spot.y };
+    assert(box.l >= 20 && box.r <= 1260 && box.t >= 20 && box.b <= 700, `${spot.at}: てつこが画面に収まる ${JSON.stringify(box)}`);
+  }
 }
 
 console.log("tetsuko time model and settle: ok");
