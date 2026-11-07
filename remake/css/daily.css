@@ -835,6 +835,19 @@ p.gear-offer.owned b { color: var(--gold); }
 .lcr-face { position: relative; flex: none; }
 /* 章の入口の行（第3章の東京の「地元との連絡」）。顔の代わりに緑の丸い印。 */
 .lime-shortcut-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: #06c755; color: #fff; font-size: 20px; }
+/* 第5章の店めぐり帳（LIMEの「店めぐり帳」の行から開く。chapters/ch5-shop-stamps.js）。判子は朱の丸、まだの店は点線の丸 */
+.shop-stamps-lead { margin: 0 0 6px; font-size: 0.86em; line-height: 1.6; }
+.shop-stamps-total { margin: 4px 0 8px; font-weight: 700; color: var(--gold-hi); }
+.shop-stamps-region { margin: 0 0 8px; padding: 6px 10px; border: 1px solid color-mix(in srgb, currentColor 22%, transparent); border-radius: 8px; }
+.shop-stamps-region.done { border-color: #c8484a; }
+.shop-stamps-head { display: flex; justify-content: space-between; gap: 12px; font-size: 0.92em; }
+.shop-stamps-shops { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 4px 0 0; padding: 0; list-style: none; font-size: 0.9em; }
+.shop-stamps-shops li { display: inline-flex; align-items: center; gap: 6px; opacity: 0.75; }
+.shop-stamps-shops li.on { opacity: 1; }
+.shop-stamps-shops i { display: grid; place-items: center; width: 1.6em; height: 1.6em; border: 2px dotted color-mix(in srgb, currentColor 45%, transparent); border-radius: 50%; font-style: normal; font-size: 0.8em; font-weight: 900; }
+.shop-stamps-shops li.on i { color: #fff; background: #c8484a; border: 2px solid #f0a0a0; transform: rotate(-12deg); }
+/* スマホ横持ち（phone-density.css の規格）: 説明・地域・店名も補助文の大きさ（実寸11.5px）を下回らない */
+html:root[data-density="phone"] body:not(.game-ds) .shop-stamps :is(.shop-stamps-lead, .shop-stamps-head, .shop-stamps-shops) { font-size: var(--phone-sub); }
 .lime-shortcut { border-bottom: 2px solid #e3e7ec; }
 .lcr-face .lime-face { width: 42px; height: 42px; border-color: #e3e7ec; }
 .lcr-dot {
