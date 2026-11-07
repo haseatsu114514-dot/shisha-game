@@ -18,7 +18,6 @@ const ICONS = {
 };
 /** Placeholder bust for a built character until its portrait exists: tinted silhouette with the name's first letter. */
 const BUST = '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="38" r="20" fill="currentColor"/><path d="M14 98c3-24 17-36 36-36s33 12 36 36z" fill="currentColor"/></svg>';
-const STAT_SHORT = { eye: "観", hand: "手", talk: "話", nerve: "度" };
 
 /** Mounts one isolated session; finished resolves only after the player leaves the table. */
 export function mountTrpg(host, { scenario, characters, manifest, tableTalk = null, tutorialLines = null, tutorial = false, onTutorialDone = () => {},
@@ -97,8 +96,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     toolButton("遊び方", "trpg-help", openHelp, "help"),
     toolButton("本棚へ戻る", "trpg-exit", exit, "exit"),
   ]);
-  // 見出しの小札は、表紙では作品番号、卓が始まったら今の段（#2719: 進行は上のレールだけに出す）。
-  const headingStep = el("small", { dataset: { test: "trpg-heading-step" }, text: "小さな卓の冒険 / " + presentation.number });
+  // 見出しの小札は、表紙では企画名だけ（作品番号は出さない・#2839）、卓が始まったら「1/7 今の工程」。
+  const headingStep = el("small", { dataset: { test: "trpg-heading-step" }, text: "小さな卓の冒険" });
   root.append(el("header.trpg-header", [
     el("div.trpg-heading", [headingStep,
       el("strong", { text: scenario.title }), teamwork, heatMeter]), tools,
@@ -166,18 +165,20 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     }, [el("i", { text: i < current ? "✓" : String(i + 1), "aria-hidden": "true" }),
       el("span", { text: phase === "ending" ? "結末" : presentation.phases[phase].kicker.split(" / ").pop() })]))));
     const before = shownTeamwork ?? state.teamwork;
-    teamwork.replaceChildren(el("span", { text: "連携札 " + state.teamwork + "/2" }),
-      ...[1, 2].map(n => el("i", { "aria-hidden": "true", class: [n > state.teamwork ? "spent" : "",
+    // 連携札は🂠×2の札だけ（文字なし・#2839）。残りは読み上げ用のラベルに持たせる。
+    teamwork.setAttribute("role", "img");
+    teamwork.setAttribute("aria-label", "連携札 " + state.teamwork + "/2");
+    teamwork.replaceChildren(
+      ...[1, 2].map(n => el("i", { "aria-hidden": "true", text: "\u{1F0A0}", class: [n > state.teamwork ? "spent" : "",
         n > state.teamwork && n <= before ? "just-spent" : "", n <= state.teamwork && n > before ? "just-gained" : ""].filter(Boolean).join(" ") })));
     shownTeamwork = state.teamwork;
     table.replaceChildren(...scenario.cast.map(c => {
       const pc = c.part === "GM" ? null : pcOf(c.id);
       return el("span.trpg-table-person", { dataset: { speaker: c.id, part: c.part === "GM" ? "gm" : "pl" } }, [
-        el("span.trpg-seat-head", [seatMark(c.id), el("span.trpg-seat-name", { text: (c.part === "GM" ? "GM " : "PL ") + name(c.id) }),
-          el("small.trpg-seat-speaking")]),
-        pc ? el("span.trpg-seat-pc", { dataset: { test: "trpg-seat-pc-" + c.id } }, [el("strong", { text: pc.name }),
-          el("span.trpg-seat-stats", { "aria-label": STATS.map(k => statLabel(k) + pc.stats[k]).join("、") },
-            STATS.map(k => el("i", { text: STAT_SHORT[k] + pc.stats[k], dataset: { stat: k, peak: String(pc.stats[k] >= 5) } })))]) : null,
+        // 座席は顔＋名前だけ。PL/GMの英字・席番号・能力値はキャラクターシートに任せ、話者だけ光らせる（#2839）。
+        el("span.trpg-seat-face", { "aria-hidden": "true" }, el("img", { src: portrait(c.id), alt: "", style: portraitFrame(c.id, 160, 6) })),
+        el("span.trpg-seat-head", [el("span.trpg-seat-name", { text: name(c.id) }), el("small.trpg-seat-speaking")]),
+        pc ? el("span.trpg-seat-pc", { dataset: { test: "trpg-seat-pc-" + c.id } }, [el("strong", { text: pc.name })]) : null,
         c.part === "GM" && npcSeats.length ? el("span.trpg-seat-pc", { dataset: { test: "trpg-seat-npc" } },
           [el("strong", { text: "兼任 " + npcSeats.map(seat => sheets[seat].name).join("・") })]) : null,
         ...(c.part === "GM" ? [] : [el("small.trpg-seat-ability", { text: state.used[c.id] ? "札 使用済" : "札 未使用",
@@ -209,10 +210,10 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     heatMeter.dataset.tier = String(tier);
     heatMeter.setAttribute("aria-valuenow", String(state.heat));
     heatMeter.setAttribute("aria-label", "卓の盛り上がり " + state.heat + "/" + HEAT.max + " · " + HEAT.names[tier]);
-    heatMeter.replaceChildren(...[el("span.trpg-heat-label", { text: "盛り上がり" }),
+    // 盛り上がりは🔥のメーターだけ（文字なし・#2839）。段の名前は読み上げのラベルに残す。
+    heatMeter.replaceChildren(...[el("span.trpg-heat-label", { text: "\u{1F525}", "aria-hidden": "true" }),
       el("span.trpg-heat-pips", { "aria-hidden": "true" }, Array.from({ length: HEAT.max }, (_, i) =>
         el("i", { class: [i < state.heat ? "lit" : "", HEAT.tiers.includes(i + 1) ? "tier" : ""].filter(Boolean).join(" ") }))),
-      el("small.trpg-heat-name", { text: HEAT.names[tier] }),
       state.momentum && state.phase !== "ending" ? el("b.trpg-heat-momentum", { text: "勢い＋" + state.momentum, dataset: { test: "trpg-momentum" } }) : null].filter(Boolean));
     const fresh = state.heatLog.slice(heatSeen);
     heatSeen = state.heatLog.length;
@@ -238,7 +239,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     syncHeat();
     tableStatus.hidden = session.snapshot().phase === "cover";
     tableStatus.textContent = resourceText();
-    headingStep.textContent = session.snapshot().phase === "cover" ? "小さな卓の冒険 / " + presentation.number : stepText();
+    headingStep.textContent = session.snapshot().phase === "cover" ? "小さな卓の冒険" : stepText();
     root.querySelectorAll(".trpg-roll-context").forEach(node => { node.textContent = resourceText(); });
     table.querySelectorAll("[data-speaker]").forEach(node => {
       const ability = node.querySelector(".trpg-seat-ability");
@@ -271,7 +272,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       style: portraitFrame(frame.speaker, 410, 16) }));
     art.style.backgroundColor = person?.color || "#566053";
     speaker.textContent = name(frame.speaker);
-    role.textContent = pcText(frame.role) || (person?.part === "GM" ? "GM／卓の会話" : "PL／卓の会話");
+    // 台詞の肩書きは場面の種類（「場面」「物語」）だけ。「GM／卓の会話」「PL／卓の会話」は出さない（#2839）。
+    role.textContent = pcText(frame.role).replace(/^(?:GM|PL)／卓の会話$/, "");
     dock.dataset.layer = /場面|物語/.test(role.textContent) ? "fiction" : "table";
     speech.textContent = pcText(frame.text);
     showPanel(frame.panel || null);
@@ -298,7 +300,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     art.replaceChildren(el("img", { src: portrait(gm), alt: name(gm),
       style: portraitFrame(gm, 410, 16) }));
     art.style.backgroundColor = cast[gm].color;
-    speaker.textContent = name(gm); role.textContent = "GM／卓の会話"; speech.textContent = text;
+    speaker.textContent = name(gm); role.textContent = ""; speech.textContent = text;
     dock.dataset.layer = "table";
     syncSpeaker(gm);
     root.classList.add("trpg-idle"); next.hidden = true;
@@ -475,11 +477,10 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         el("div.trpg-cover-actions", [button("物語をはじめる", "trpg-start", start, { class: "primary" }),
           tutorialLines?.length ? button("はじめての人へ", "trpg-tutorial", playTutorial) : null].filter(Boolean)),
         scenario.builder ? pcCard() : null,
-        el("small.trpg-cover-author", { text: "作 · " + scenario.author }),
       ].filter(Boolean)),
       el("div.trpg-cover-party", scenario.cast.map(c => el("div.trpg-cover-person", [
         el("span.trpg-cover-person-art", el("img", { src: portrait(c.id), alt: "", style: portraitFrame(c.id, 150, 6) })),
-        el("strong", { text: name(c.id) }), el("small", { text: c.part === "GM" ? "GM" : (pcOf(c.id) ? "PC " + pcOf(c.id).name : pcText(c.role).split("／")[0]) }),
+        el("strong", { text: name(c.id) }), c.part === "GM" ? null : el("small", { text: pcOf(c.id) ? pcOf(c.id).name : pcText(c.role).split("／")[0] }),
       ]))),
     ]));
   }
@@ -941,10 +942,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     return el("div.trpg-cover-pc", { dataset: { test: "trpg-cover-pc" } }, [
       el("span.trpg-cover-pc-face", { "aria-hidden": "true" }, pcFace(me.seat, PLAYER_SEAT)),
       el("div.trpg-cover-pc-copy", [
-        el("small", { text: "PL " + name(PLAYER_SEAT) + " が演じる" }),
+        el("small", { text: name(PLAYER_SEAT) + " が演じる" }),
         el("strong", { text: me.name, dataset: { test: "trpg-cover-pc-name" } }), el("span", { text: me.title }),
-        el("span.trpg-seat-stats", { "aria-label": STATS.map(k => statLabel(k) + me.stats[k]).join("、") },
-          STATS.map(k => el("i", { text: STAT_SHORT[k] + me.stats[k], dataset: { stat: k, peak: String(me.stats[k] >= 5) } }))),
       ]),
       button("キャラクターを作る", "trpg-build", openBuilder, { class: "small" }),
     ]);
