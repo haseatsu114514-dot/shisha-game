@@ -802,6 +802,7 @@
 .trpg-root.trpg-cinematic :is(.trpg-builder-look, .trpg-builder-origin).selected { border-color: #ffd98f; background: #3a4c3ccc; box-shadow: inset 0 0 0 1px #ffd98f88; }
 .trpg-root.trpg-cinematic .trpg-builder-name { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 700; color: #d6ddcc; }
 .trpg-root.trpg-cinematic .trpg-builder-name input { min-height: 40px; padding: 6px 10px; border: 1px solid #e3d7b66b; border-radius: 6px; background: #f8f3e8; color: #2c2a26; font: inherit; font-size: 18px; }
+.trpg-root.trpg-cinematic .trpg-builder-name input { font-size: max(18px, calc(16px / var(--k, 1))) !important; } /* 実寸 16px 下限（base.css・#2852）を保ち、大きい画面では 18px のまま */
 .trpg-root.trpg-cinematic .trpg-builder-name input:focus-visible { outline: 2px solid #ffe2a4; outline-offset: 2px; }
 .trpg-root.trpg-cinematic .trpg-builder-points { margin: 0; font-size: 13px; color: #d6ddcc; }
 .trpg-root.trpg-cinematic .trpg-builder-points strong { font-size: 16px; color: #ffe6b0; }

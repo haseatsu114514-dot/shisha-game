@@ -1,4 +1,5 @@
 // 起動: ステージの拡縮 → データ読込 → タイトル。
+import { installDoubleTapGuard } from "./core/double-tap-guard.js";
 import { TOURNAMENT_DAY } from "./core/rules.js";
 import { $, sleep } from "./core/util.js";
 import { loadAll, loadDeferredDialogues, loadCinemaDialogue, loadTournamentCraftDialogue, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
@@ -20,6 +21,7 @@ import { isNormalTitleForced } from "./scenes/title-layout.js";
 import { initGameLayout } from "./scenes/game-layout.js";
 import { resumeGame } from "./chapters/ch1.js";
 import { setGrowthPreview, growthEnabled, gainExp, ensureGrowth, openGrowthBoard } from "./core/growth.js";
+installDoubleTapGuard(); // ダブルタップ拡大の保険（#2852）。#2872 の no-zoom.js があればそちらに任せる
 enableSeenLinePersistence(); // 既読SKIPの記録は本編でだけ端末に残す
 // デバッグ用の道具（URL に ?debug=1 で左下に「DBG」・?debug=0 で消す。速さ・シーシャ作りの自動など）。
 // リリース前に、この1行と remake/js/dev/ のフォルダを消す（remake/README.md「デバッグ用の道具」）
