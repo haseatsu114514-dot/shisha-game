@@ -92,10 +92,10 @@
           { "speaker": "", "face": "", "text": "煙の向こうで、誰かが笑った。つままれた指は、グラスが空になっても離れなかった。" }
         ],
         "met_rio": [
-          { "type": "condition", "condition_type": "met", "char_id": "rio", "next_true": "check_rio", "next_false": "default" }
+          { "type": "condition", "condition_type": "met", "char_id": "rio", "next_true": "check_rio", "next_false": "met_ageha" }
         ],
         "check_rio": [
-          { "type": "condition", "condition_type": "lover", "char_id": "rio", "next_true": "rio", "next_false": "default" }
+          { "type": "condition", "condition_type": "lover", "char_id": "rio", "next_true": "rio", "next_false": "met_ageha" }
         ],
         "rio": [
           { "speaker": "", "face": "", "text": "凛想さんは、カウンターの端で一人、グラスを傾けていた。" },
@@ -116,6 +116,31 @@
           { "speaker": "", "face": "", "text": "凛想さんの指が、カウンターの上で俺の指に重なった。冷たかったのは、最初だけだった。" },
           { "speaker": "rio", "face": "normal", "text": "……明日も、用もないのに連絡してね" },
           { "speaker": "hajime", "face": "smile", "text": "はい。今夜の分も、送ります" }
+        ],
+        "met_ageha": [
+          { "type": "condition", "condition_type": "met", "char_id": "ageha", "next_true": "check_ageha", "next_false": "default" }
+        ],
+        "check_ageha": [
+          { "type": "condition", "condition_type": "lover", "char_id": "ageha", "next_true": "ageha", "next_false": "default" }
+        ],
+        "ageha": [
+          { "speaker": "", "face": "", "text": "あげはは、さっきまで向こうのテーブルで一番大きな声を出していた。" },
+          { "speaker": "", "face": "", "text": "隣に座ると、その声がすっと小さくなった。" },
+          { "speaker": "ageha", "face": "surprise", "text": "え、ハジメっち、こっち来んの？ 主役なのに？" },
+          { "speaker": "hajime", "face": "normal", "text": "うん。こっちがいい" },
+          { "speaker": "ageha", "face": "smile", "text": "……やば。それ、うちが言ってほしかったやつ" },
+          { "speaker": "ageha", "face": "normal", "text": "てか聞いて。ハジメっちの動画、もう何回も見返してんの" },
+          { "speaker": "ageha", "face": "normal", "text": "炭置くとこで毎回止めて、毎回ちょっと泣いてる。うけるでしょ" },
+          { "speaker": "hajime", "face": "normal", "text": "うけないよ。うれしい" },
+          { "speaker": "ageha", "face": "smile", "text": "……そうやって、ちゃんと返してくれんの、好き" },
+          { "speaker": "", "face": "", "text": "向こうのテーブルから、あげはを呼ぶ声がした。あげはは手だけ振って、立たなかった。" },
+          { "speaker": "ageha", "face": "normal", "text": "盛り上げ係、今日は向こうに任せた" },
+          { "speaker": "ageha", "face": "normal", "text": "……ね、一個お願いしていい？ 察してじゃなくて、ちゃんと言うから" },
+          { "speaker": "hajime", "face": "smile", "text": "どうぞ" },
+          { "speaker": "ageha", "face": "normal", "text": "乾杯、もっかいしたい。今度は、二人だけで" },
+          { "speaker": "", "face": "", "text": "グラスを寄せると、あげはは少しだけ迷ってから、こつんと当てた。" },
+          { "speaker": "ageha", "face": "smile", "text": "……世界一、おめでと。うちの彼氏、まじで最強" },
+          { "speaker": "", "face": "", "text": "言ってから照れたのか、あげはは俺の肩に額を押しつけて、しばらく顔を上げなかった。" }
         ],
         "default": [
           { "speaker": "", "face": "", "text": "隣に座ると、グラスが小さく触れ合った。" },
