@@ -887,7 +887,10 @@ await suite("growth-levelup", async (runCheck) => {
       await setupDaily(page);
       const exp = page.locator(t("hud-exp"));
       await exp.waitFor();
-      assert.match(await exp.innerText(), /Lv\.1[\s\S]*あと205/);
+      // 「あと○」は文字で出さず（オーナー指示 2026-11-08）、残りは説明（title）で読める
+      assert.match(await exp.innerText(), /Lv\.1/);
+      assert.doesNotMatch(await exp.innerText(), /あと\d/);
+      assert.match(await exp.getAttribute("title"), /次のレベルまで EXP 205/);
 
       // 自由行動1回 → チップ1枚（内訳の数字は出さない）
       await page.evaluate(async () => {
@@ -898,7 +901,7 @@ await suite("growth-levelup", async (runCheck) => {
       const chip = page.locator(t("exp-chip"));
       await chip.waitFor();
       assert.match(await chip.innerText(), /EXP \+70[\s\S]*はじめて/);
-      assert.match(await exp.innerText(), /あと135/);
+      assert.match(await exp.getAttribute("title"), /次のレベルまで EXP 135/);
       await page.waitForTimeout(400);
       await page.screenshot({ path: `${out}/growth-levelup-${label}-chip.png` });
 

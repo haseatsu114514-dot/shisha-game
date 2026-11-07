@@ -3189,6 +3189,25 @@
       "chrome": "playwright"
     },
     {
+      "id": "phone-density",
+      "title": "Phone density standard on landscape touch: common parts keep real text >= 11px and taps >= 38px; desktop unchanged (#2851)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 3,
+      "paths": [
+        "remake/css/phone-density.css",
+        "remake/css/vn.css",
+        "remake/css/vn-composition.css",
+        "remake/css/daily.css",
+        "remake/css/ui-paper.css",
+        "remake/js/main.js",
+        "remake/js/daily/hud.js",
+        "remake/test/browser/phone_density.mjs"
+      ],
+      "run": ["node remake/test/browser/phone_density.mjs"],
+      "chrome": "playwright"
+    },
+    {
       "id": "hud-visibility-2190",
       "title": "Hidden HUD accessibility, focus and LOAD recovery (#2190)",
       "kind": "browser",
