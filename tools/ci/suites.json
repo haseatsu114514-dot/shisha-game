@@ -665,6 +665,12 @@
       ]
     },
     {
+      "id": "slim-deploy",
+      "title": "Pages deploy drops only originals shown as WebP and dev folders",
+      "kind": "quick",
+      "run": ["node remake/test/slim_deploy.mjs"]
+    },
+    {
       "id": "stamp-deploy",
       "title": "Pages deploy version stamp on the real index.html and CSS",
       "kind": "quick",
