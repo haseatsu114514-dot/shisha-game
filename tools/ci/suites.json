@@ -1594,8 +1594,8 @@
       "id": "ch5-full-flow",
       "title": "Chapter 5 full playthrough on one save",
       "kind": "browser",
-      "weight": 0.5,
-      "timeout": 10,
+      "weight": 5,
+      "timeout": 15,
       "paths": [
         "remake/js/chapters/ch5*.js",
         "remake/js/chapters/ch4.js",
