@@ -4,7 +4,7 @@
 
 /* ---- HUD ---- */
 .dr-hud { position: absolute; inset: 14px 22px auto; display: flex; justify-content: space-between; align-items: flex-start; pointer-events: none; }
-.dr-hud small { display: block; font-size: 14px; letter-spacing: .3em; color: rgba(60,40,30,.75); }
+.dr-hud small { display: block; font-size: 18px; letter-spacing: .3em; color: rgba(60,40,30,.75); }
 .dr-hud-left, .dr-hud-right { min-width: 220px; padding: 10px 16px 12px; background: rgba(255,248,236,.72); border: 1px solid rgba(120,80,50,.3); border-radius: 12px; backdrop-filter: blur(4px); }
 .dr-hud-right { text-align: right; }
 .dr-score { display: block; font-size: 40px; line-height: 1; font-weight: 900; letter-spacing: .02em; color: #3a2520; font-variant-numeric: tabular-nums; }
@@ -17,13 +17,14 @@
 .dr-kmh { font-size: 44px; line-height: 1; font-weight: 900; font-variant-numeric: tabular-nums; color: #3a2520; }
 .dr-kmh[data-fast="fast"] { color: #d4521f; }
 .dr-kmh[data-fast="boost"] { color: #ff5a1a; text-shadow: 0 0 12px rgba(255,140,50,.85); }
-.dr-gauge { position: relative; margin-top: 6px; height: 22px; border-radius: 8px; background: rgba(90,60,40,.2); overflow: hidden; }
+/* BOOST は ⚡ とゲージだけ（% の文字は出さない。#2838） */
+.dr-boost-meter { margin-top: 6px; display: flex; align-items: center; gap: 6px; }
+.dr-bolt { font-size: 18px; line-height: 1; color: #d4521f; }
+.desert-ride[data-gauge="full"] .dr-bolt { color: #ff7a2a; text-shadow: 0 0 10px rgba(255,170,60,.9); }
+.dr-gauge { position: relative; flex: 1; height: 22px; border-radius: 8px; background: rgba(90,60,40,.2); overflow: hidden; }
 .dr-gauge i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #f6c453, #f08a2c); transition: width .15s linear; }
-.dr-gauge span { position: absolute; inset: 0; display: grid; place-items: center; font-size: 14px; font-weight: 800; letter-spacing: .12em; color: #3a1a0a; text-shadow: 0 1px rgba(255,248,236,.7); }
 .dr-gauge[data-state="full"] i { background: linear-gradient(90deg, #ffd65a, #ff7a2a, #ffd65a); background-size: 200% 100%; animation: dr-gauge-full .8s linear infinite; }
-.dr-gauge[data-state="full"] span::after { content: " ↓"; }
 .dr-gauge[data-state="boost"] i { background: linear-gradient(90deg, #ff9a3c, #ff3f1a); }
-.dr-gauge[data-state="boost"] span { color: #fff; }
 @keyframes dr-gauge-full { from { background-position: 0 0; } to { background-position: 200% 0; } }
 .dr-clock { margin-top: 6px; display: flex; justify-content: flex-end; align-items: baseline; gap: 8px; }
 .dr-clock small { display: inline; }
@@ -83,7 +84,7 @@
 @media (prefers-reduced-motion: reduce) { .dr-cutin.show .dr-cutin-band, .dr-cutin.show .dr-cutin-rider, .dr-cutin.show .dr-cutin-words { animation: dr-cutin-still .9s linear forwards; } .dr-cutin.show .dr-cutin-lines { animation: none; } }
 
 /* ---- 練習の説明 ---- */
-.dr-caption { position: absolute; left: 50%; top: 80px; transform: translateX(-50%); max-width: 760px; margin: 0; padding: 10px 26px; border-radius: 999px; background: rgba(40,26,30,.78); color: #fff5e6; font-size: 22px; font-weight: 700; letter-spacing: .04em; text-align: center; white-space: nowrap; pointer-events: none; }
+.dr-caption { position: absolute; left: 50%; top: 80px; transform: translateX(-50%); max-width: 760px; margin: 0; padding: 10px 26px; border-radius: 999px; background: rgba(40,26,30,.78); color: #fff5e6; font-size: 26px; font-weight: 700; letter-spacing: .04em; text-align: center; white-space: nowrap; pointer-events: none; }
 .dr-caption:empty { display: none; }
 
 /* ---- 操作ボタン（スマホ）: 下辺の左右に大きく、中央の視界は空ける ---- */
@@ -102,21 +103,29 @@
 .dr-touch.on, .dr-touch:active { background: rgba(255,214,150,.78); color: #3a2520; transform: scale(.97); }
 .dr-touch.dr-jump.on, .dr-touch.dr-jump:active { background: rgba(255,170,90,.92); }
 @media (hover: hover) and (pointer: fine) { .dr-touch { opacity: .55; } .dr-touch:hover { opacity: .9; } .desert-ride:not([data-gauge="full"]) .dr-touch.dr-boost { opacity: .3; } }
-.dr-quit { position: absolute; right: 22px; top: 150px; padding: 6px 14px; border: 1px solid rgba(120,80,50,.4); border-radius: 999px; background: rgba(255,248,236,.72); color: #4a2f28; font: 600 14px var(--font); cursor: pointer; }
+/* やめる: ✕ の丸ボタン（64px）。HUD 右の箱の下に置き、下辺のタッチボタンとは離す */
+.dr-quit { position: absolute; right: 22px; top: 154px; width: 64px; height: 64px; padding: 0; display: grid; place-items: center; border: 2px solid rgba(120,80,50,.45); border-radius: 50%; background: rgba(255,248,236,.82); color: #4a2f28; font: 900 30px/1 var(--font); cursor: pointer; }
 .dr-quit[hidden] { display: none; }
 
 /* ---- カード（メニュー・リザルト） ---- */
 .dr-panel:empty { display: none; }
 .dr-panel { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(ellipse at center, rgba(40,20,20,.1), rgba(40,20,20,.55)); }
-.dr-card { width: 760px; max-width: 94%; max-height: 92%; overflow: auto; padding: 26px 40px 30px; border-radius: 22px; background: linear-gradient(170deg, #fff7ea, #f6dfbf); border: 1px solid rgba(120,80,50,.35); box-shadow: 0 24px 60px rgba(60,30,20,.35); text-align: center; }
+.dr-card { position: relative; width: 760px; max-width: 94%; max-height: 92%; overflow: auto; padding: 26px 40px 30px; border-radius: 22px; background: linear-gradient(170deg, #fff7ea, #f6dfbf); border: 1px solid rgba(120,80,50,.35); box-shadow: 0 24px 60px rgba(60,30,20,.35); text-align: center; }
 .dr-kicker { margin: 0; font-size: 14px; letter-spacing: .4em; color: #b2652f; }
 .dr-title { margin: 4px 0 10px; font-size: 52px; line-height: 1; letter-spacing: .08em; font-weight: 900; color: #3a2520; }
 .dr-lead { margin: 0 0 14px; font-size: 18px; color: #4a3a34; }
-.dr-howto { margin: 0 auto 16px; padding: 0; list-style: none; display: grid; gap: 6px; max-width: 620px; text-align: left; font-size: 16px; color: #4a3a34; }
+/* 遊び方: 右上の「？」を押した時だけ、カードの上に重ねて見せる（常時は出さない） */
+.dr-help-btn { position: absolute; right: 18px; top: 18px; width: 64px; height: 64px; padding: 0; display: grid; place-items: center; border: 2px solid rgba(120,80,50,.45); border-radius: 50%; background: rgba(255,255,255,.7); color: #b2652f; font: 900 34px/1 var(--font); cursor: pointer; }
+.dr-help-btn:is(:hover, :focus-visible) { background: #fff; outline: 3px solid rgba(212,82,31,.5); outline-offset: 2px; }
+.dr-help { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.dr-menu[data-help="open"] > :not(.dr-help) { display: none; }
+.dr-help[hidden] { display: none; }
+.dr-help-title { margin: 0; font-size: 26px; font-weight: 900; letter-spacing: .1em; color: #3a2520; }
+.dr-howto { margin: 0 auto; padding: 0; list-style: none; display: grid; gap: 8px; max-width: 660px; text-align: left; font-size: 20px; line-height: 1.4; color: #4a3a34; }
 .dr-howto li { padding: 8px 14px; border-radius: 10px; background: rgba(255,255,255,.55); }
-.dr-best { margin: 6px 0 14px; font-weight: 700; color: #b2652f; }
+.dr-best { margin: 6px 0 14px; font-size: 18px; font-weight: 700; color: #b2652f; }
 .dr-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
-.dr-button { min-width: 180px; }
+.dr-button { min-width: 180px; min-height: 80px; justify-content: center; align-items: center; font-size: 22px; }
 .dr-rank { display: flex; align-items: baseline; justify-content: center; gap: 18px; margin: 4px 0 2px; }
 .dr-rank b { font-size: 118px; line-height: 1; font-weight: 900; color: #d4521f; text-shadow: 0 6px 0 rgba(120,60,20,.15); }
 .dr-result[data-rank="S"] .dr-rank b { color: #e0a22c; }
@@ -127,7 +136,7 @@
 .dr-total { margin: 0 0 12px; font-size: 18px; }
 .dr-total strong { font-size: 48px; margin: 0 6px; font-variant-numeric: tabular-nums; color: #3a2520; }
 .dr-rows { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 22px; margin: 0 auto 12px; max-width: 600px; }
-.dr-row { display: flex; justify-content: space-between; padding: 6px 12px; border-radius: 8px; background: rgba(255,255,255,.55); font-size: 16px; }
+.dr-row { display: flex; justify-content: space-between; gap: 10px; padding: 6px 12px; border-radius: 8px; background: rgba(255,255,255,.55); font-size: 20px; }
 .dr-row strong { font-variant-numeric: tabular-nums; }
 .dr-race-result { display: flex; justify-content: center; align-items: baseline; gap: 14px; margin: 6px auto 4px; padding: 6px 18px; max-width: 520px; border-radius: 999px; background: rgba(90,100,50,.16); }
 .dr-race-result b { font-size: 24px; color: #4f5a22; }
@@ -143,4 +152,33 @@
 @keyframes dr-pop-still { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1); } }
 
 
-.dr-legacy-best { margin: 4px 0 12px; font-size: 14px; color: #665044; }
+.dr-legacy-best { margin: 4px 0 12px; font-size: 18px; color: #665044; }
+
+/* ---- スマホ横持ち（#2838）: 1280×720 を約0.47〜0.54倍に縮めるので、文字は実寸 11px 以上になる 24px を下限にする。
+   タッチボタンの大きさは変えず、文字だけ上げる。縦持ちのレイアウトは持たない（回転案内のみ）。 ---- */
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .dr-hud small, .dr-bolt, .dr-combo, .dr-race { font-size: 24px; }
+  .dr-hud small { letter-spacing: .16em; }
+  .dr-combo { min-height: 28px; }
+  .dr-gauge { height: 24px; }
+  .dr-time { font-size: 26px; }
+  .dr-quit { top: 172px; width: 84px; height: 84px; font-size: 38px; }
+  .dr-help-btn { width: 84px; height: 84px; font-size: 44px; }
+  .dr-button { min-height: 84px; }
+  .dr-caption { top: 92px; font-size: 28px; }
+  .dr-touch, .dr-touch.dr-boost { font-size: 24px; }
+  .dr-touch.dr-jump { font-size: 24px; }
+  .dr-card { width: 1000px; padding: 22px 40px 24px; }
+  .dr-kicker, .dr-lead, .dr-best, .dr-legacy-best, .dr-total, .dr-row, .dr-race-result span, .dr-howto { font-size: 24px; }
+  .dr-kicker { letter-spacing: .3em; }
+  .dr-button { font-size: 26px; }
+  .dr-rows { max-width: 920px; gap: 6px 18px; }
+  .dr-row { padding: 4px 12px; }
+  .dr-rank b { font-size: 92px; }
+  .dr-rank span { font-size: 26px; }
+  .dr-total strong { font-size: 44px; }
+  .dr-total small { font-size: 1em; }
+  .dr-race-result { max-width: 640px; }
+  .dr-race-result b { font-size: 26px; }
+  .dr-howto { max-width: 880px; }
+}

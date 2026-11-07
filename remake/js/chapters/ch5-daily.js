@@ -22,9 +22,9 @@ import { CITY_SHOP } from "./ch2-outings.js";
 import { returnCityHome } from "./ch2-commute.js";
 import { cityRegularSpots, visitCityRegular } from "./ch2-preparation.js";
 import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNight, tokyoWakeBackground, chapterFiveMukaiShift,
-  chapterFiveTokyoPin, tokyoSpotsNow } from "./ch5-tokyo.js";
+  chapterFiveTokyoPin, tokyoSpotsNow, preloadTokyoScenes } from "./ch5-tokyo.js";
 import { DUBAI, DUBAI_SPOTS, TO_DUBAI_SPOT, performDubaiSpot, inDubai, dubaiNight, dubaiWakeBackground, chapterFiveDubaiPin,
-  chapterFiveDubaiLeisureSpots, chapterFiveDubaiLeisureById } from "./ch5-dubai.js";
+  chapterFiveDubaiLeisureSpots, chapterFiveDubaiLeisureById, preloadNoorScenes } from "./ch5-dubai.js";
 import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop } from "./ch5-shops.js";
 import {
   chapterFiveProgress, chapterFiveFreeRemaining, chapterFiveRead, chapterFiveTimeoutPending,
@@ -90,6 +90,7 @@ export function chapterFiveDailyDefinition(io) {
     // 夜の帰り道の告白は、第4章までに恋愛ルートに入った相手だけ（第5章で初めて届いた締めくくりでは告白しない・
     // romance.js の romanceRouteOpen）。第3・4章の出発前と東京・ドバイで持ち越した告白が、帰郷後の地元の夜に届く
     // （IR33・#2024。東京・ドバイへ出ている夜は romance.js の confessionHeld が持ち越す）。恋人の誘いとデートも開いている（IR16）。
+    // ヌールだけは第5章のドバイで迎えた締めくくりでも、砂丘の夕日で告白できる（夜の帰り道ではない・2026-11-07 オーナー決定）。
     mapOptions: () => ({
       regionId: currentRegion(),
       regions: [
@@ -125,6 +126,11 @@ export async function runChapterFiveDaily(io) {
     state.flags._ch5_region_started = true;
     save();
   }
+  // 東京にいる保存の再開・LOAD: 最初の地図から、スティーブ・ヴォルクの締めくくりの「!」と MENU の案内を出せるよう台詞を先に読む。
+  // ヌールに会っていれば（地元でもドバイでも）、MENU の締めくくり・告白の案内のためにカフェ・サーリムの台詞も先に読む
+  const owner = state;
+  await Promise.all([preloadTokyoScenes(), preloadNoorScenes()]);
+  if (state !== owner) return;
   await runDaily(chapterFiveDailyDefinition(io));
 }
 
@@ -139,7 +145,8 @@ export const chapterFiveTokyoSpots = () => [...tokyoSpotsNow().filter(spot => (!
   && (!spot.gym || !!state.flags._gym_member) && (!spot.night || state.slot >= 1) && reflectable(spot)), fortuneSpot(TOKYO)].filter(Boolean);
 /** ドバイの行き先（モスクは灯せる火種がある時だけ）。 */
 export const chapterFiveDubaiSpots = () => [...DUBAI_SPOTS.filter(reflectable), ...chapterFiveDubaiLeisureSpots()];
-// 第4章で遊んだ人だけ、ラクダレース場と「ヌールと砂丘へ」も出す（chapters/ch5-dubai.js の chapterFiveDubaiLeisureSpots）。
+// ドバイにラクダレース（第4章で走っていなければ店先から）・カフェ・サーリム（締めくくりまで）・「ヌールと砂丘へ」（誘われていれば）も出す
+// （chapters/ch5-dubai.js の chapterFiveDubaiLeisureSpots）。
 // 内省の場所（東京の池の弁天堂・ドバイのモスク）は、心得の盤で灯せる火種がある時だけ地図に出す（第3・4章と同じ）。
 const reflectable = spot => !spot.reflect || canReflect(state);
 

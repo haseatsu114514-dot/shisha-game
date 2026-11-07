@@ -12,7 +12,7 @@ const { hasStoreLogo } = await import("../js/core/store-logos.js");
 const { CH3_TOKYO_SPOTS } = await import("../js/chapters/ch3-tokyo-daily.js");
 const { TOKYO_SPOTS: CH5_TOKYO_SPOTS } = await import("../js/chapters/ch5-tokyo.js");
 const { chapterFiveTokyoSpots } = await import("../js/chapters/ch5-daily.js");
-const { visitDjClub } = await import("../js/daily/dj-club.js");
+const { visitDjClub, clubFirstScene } = await import("../js/daily/dj-club.js");
 let groups = 0; const check = (name, fn) => { fn(); groups++; console.log("PASS " + name); };
 const msg = (set, rank, total, floor = 80) => ({ type: "dj-result", set, rank, total, floor });
 
@@ -126,15 +126,26 @@ for (const chapter of [1, 2, 4]) {
   refused.push(await visitDjClub()); // 入口の章の確認だけで返る（画面には触れない）
 }
 check("visitDjClub still refuses chapters without the club (1, 2 and 4)", () => assert.deepEqual(refused, [false, false, false]));
+check("the first meeting is chapter 3's scene in chapter 3 and a chapter 5 scene in chapter 5 (2026-11-07 owner: not a memory of chapter 3)", () => {
+  assert.equal(clubFirstScene({ chapter: 3 }), "ch3_club_first");
+  assert.equal(clubFirstScene({ chapter: 5 }), "ch5_club_first");
+  assert.equal(clubFirstScene(null), "ch3_club_first", "unknown chapter falls back to chapter 3 (visitDjClub refuses other chapters anyway)");
+});
 check("the club owner is a venue host with an intro cut-in; the club script names her before her cut-in and has a line per rank", () => {
   const fs = globalThis.process.getBuiltinModule("node:fs");
   const yoru = JSON.parse(fs.readFileSync(new URL("../../data/characters.json", import.meta.url), "utf8")).find(c => c.id === "yoru");
   assert.equal(yoru.role, "venue_host"); assert.equal(yoru.display_name, "針間ヨル"); assert.equal(yoru.affiliation, "クラブSEAM"); assert.ok(yoru.intro_cutin?.title && yoru.intro_cutin.line);
   const script = Object.fromEntries(JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_club.json", import.meta.url), "utf8")).dialogues.map(d => [d.dialogue_id, d]));
-  for (const id of ["ch3_club_first", "ch3_club_first_after", "ch3_club_a_talk", "venue_yoru_greet", "venue_yoru_return", ...dj.DJ_RANKS.map(rank => `venue_yoru_set_${rank}`)]) assert.ok(script[id]?.lines?.length, id);
-  const before = script.ch3_club_first.lines;
-  assert.match(before.at(-1).text, /針間ヨル/, "the first part ends with her name; dj-club.js plays her cut-in before the rest");
-  assert.ok(!before.slice(0, -1).some(line => /針間|ヨル/.test(line.text || "")), "nobody says her name before she does");
+  for (const id of ["ch3_club_first", "ch5_club_first", "ch3_club_first_after", "ch3_club_a_talk", "venue_yoru_greet", "venue_yoru_return", ...dj.DJ_RANKS.map(rank => `venue_yoru_set_${rank}`)]) assert.ok(script[id]?.lines?.length, id);
+  for (const id of ["ch3_club_first", "ch5_club_first"]) {
+    const before = script[id].lines;
+    assert.match(before.at(-1).text, /針間ヨル/, `${id}: the first part ends with her name; dj-club.js plays her cut-in before the rest`);
+    assert.ok(!before.slice(0, -1).some(line => /針間|ヨル/.test(line.text || "")), `${id}: nobody says her name before she does`);
+  }
+  for (const chapter of [3, 5]) assert.ok(script[clubFirstScene({ chapter })]?.lines?.length, `chapter ${chapter} first scene exists`);
+  const ch5 = script.ch5_club_first.lines.map(line => line.text || "").join("|");
+  assert.match(ch5, /屋根裏/, "chapter 5: Hajime is staying in the attic above mukai");
+  assert.doesNotMatch(ch5, /新しい子|カウンターの奥|久しぶり|あの頃|前にも|覚えて/, "chapter 5: not the chapter 3 framing and not a memory of chapter 3");
   assert.ok(!JSON.stringify(script).includes("set_flag"), "met and cut-in come from playIntro, not from new literal flags");
   for (const d of Object.values(script)) for (const line of d.lines) if (line.speaker !== undefined) assert.ok(["", "hajime", "yoru"].includes(line.speaker), line.speaker);
   assert.doesNotMatch(JSON.stringify(script), /大会|全国|味覚|恋人/, "no tournament, taste or romance assumptions (no before/after branch needed)");
@@ -163,5 +174,9 @@ check("djUrl passes the set, embed flag and the game's mute / BGM volume", () =>
   assert.ok(url.pathname.endsWith("/remake/previews/dj/index.html"));
   assert.deepEqual([url.searchParams.get("set"), url.searchParams.get("embed"), url.searchParams.get("mute"), url.searchParams.get("vol")], ["2", "1", "1", "1"]);
   assert.equal(new URL(dj.djUrl(1)).searchParams.get("mute"), null);
+});
+check("djUrl passes the phone density only when asked", () => {
+  assert.equal(new URL(dj.djUrl(1)).searchParams.get("phone"), null);
+  assert.equal(new URL(dj.djUrl(1, { phone: true })).searchParams.get("phone"), "1");
 });
 console.log(`DJ club: ${groups} groups PASS`);

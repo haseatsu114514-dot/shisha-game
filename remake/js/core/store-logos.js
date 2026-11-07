@@ -21,6 +21,10 @@ export const STORE_LOGOS = Object.freeze({ ...BASE_LOGOS,
   trpg_bar: { name: "ボドゲカフェ / TRPG BAR", file: "trpg-bar", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch4_festa: { name: "FESTA", file: "ch4-festa", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch4_dubai_longlong: { name: "龍龍水煙所", file: "ch4-longlong", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
+  // 2026-11-07 採用（SLG01〜SLG03。ミューズの仮判断でおすすめ案。オーナーが後から変更できる。原画は asset_sources/store-logos-missing-1102/）
+  shishark: { name: "SHISHARK", file: "shishark", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
+  ch4_dubai_cafe: { name: "中心地のカフェ", file: "ch4-dubai-center-cafe", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
+  ch4_dubai_alley: { name: "路地裏のカフェ", file: "ch4-dubai-alley-cafe", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   // 第3章・東京（#2034）。キーは ch3-map-model.js の地点 id に ch3_ を付けたもの。
   ch3_enmaku: { name: "煙幕", file: "ch3-enmaku", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch3_steve: { name: "Smoke & Glory", file: "ch3-smoke-and-glory", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
@@ -38,6 +42,8 @@ const LOGO_ALIASES = Object.freeze({
   ch5_tokyo_club: "ch3_club", // 第5章の東京の夜のクラブSEAM（第3章と同じ店）
   ch4_dubai_festa: "ch4_festa", ch4_dubai_shop: "shop",
   ch5_dubai_shop: "shop", // 第5章のドバイの Dr.fookah ドバイ店（SLG04）
+  // 中心地のカフェ・路地裏のカフェ（SLG02・SLG03）: 第4章の旧「自由行動」カード（ch4_<場所>）と第5章の路地裏のカフェも同じ絵
+  ch4_center_cafe: "ch4_dubai_cafe", ch4_alley_cafe: "ch4_dubai_alley", ch5_dubai_alley: "ch4_dubai_alley",
 });
 const logoKey = (id) => Object.hasOwn(LOGO_ALIASES, id) ? LOGO_ALIASES[id] : id;
 

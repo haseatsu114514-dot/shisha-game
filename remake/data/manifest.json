@@ -502,6 +502,7 @@
   "bg_dubai_dunes_dusk.png",
   "bg_dubai_festa.png",
   "bg_dubai_grand_smoke_stage.png",
+  "bg_dubai_cafe_salim_day.png",
   "bg_dubai_inn_day.png",
   "bg_dubai_inn_night.png",
   "bg_dubai_map.png",
@@ -2814,6 +2815,13 @@
   "sprites/character_variants/nanami/rei/chr_rei_sad.png",
   "sprites/character_variants/nanami/rei/chr_rei_serious.png",
   "sprites/character_variants/nanami/rei/chr_rei_surprise.png",
+  "sprites/character_variants/nanami/rio/chr_rio_normal.png",
+  "sprites/character_variants/nanami/rio/chr_rio_sad.png",
+  "sprites/character_variants/nanami/rio/chr_rio_serious.png",
+  "sprites/character_variants/nanami/rio/chr_rio_shock.png",
+  "sprites/character_variants/nanami/rio/chr_rio_smile.png",
+  "sprites/character_variants/nanami/rio/chr_rio_smug.png",
+  "sprites/character_variants/nanami/rio/chr_rio_surprise.png",
   "sprites/character_variants/nanami/sai/chr_sai_normal.png",
   "sprites/character_variants/nanami/sai/chr_sai_serious.png",
   "sprites/character_variants/nanami/sai/chr_sai_smile.png",
@@ -2972,6 +2980,13 @@
   "sprites/character_variants/new/rei/chr_rei_serious.png",
   "sprites/character_variants/new/rei/chr_rei_smile.png",
   "sprites/character_variants/new/rei/chr_rei_surprise.png",
+  "sprites/character_variants/new/rio/chr_rio_normal.png",
+  "sprites/character_variants/new/rio/chr_rio_sad.png",
+  "sprites/character_variants/new/rio/chr_rio_serious.png",
+  "sprites/character_variants/new/rio/chr_rio_shock.png",
+  "sprites/character_variants/new/rio/chr_rio_smile.png",
+  "sprites/character_variants/new/rio/chr_rio_smug.png",
+  "sprites/character_variants/new/rio/chr_rio_surprise.png",
   "sprites/character_variants/new/sai/chr_sai_normal.png",
   "sprites/character_variants/new/sai/chr_sai_serious.png",
   "sprites/character_variants/new/sai/chr_sai_smile.png",
@@ -3335,6 +3350,7 @@
   "ui/face_icons/new/face_naru.png",
   "ui/face_icons/new/face_pakki.png",
   "ui/face_icons/new/face_rei.png",
+  "ui/face_icons/new/face_rio.png",
   "ui/face_icons/new/face_sai.png",
   "ui/face_icons/new/face_saku.png",
   "ui/face_icons/new/face_salaryman.png",
@@ -4201,6 +4217,22 @@
     "ax": 0.4741,
     "aspect": 0.7467,
     "anchor": "head"
+   },
+   "rio": {
+    "faces": [
+     "normal",
+     "sad",
+     "serious",
+     "shock",
+     "smile",
+     "smug",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4798,
+    "aspect": 0.7467,
+    "anchor": "head"
    }
   },
   "nanami": {
@@ -4608,6 +4640,22 @@
     "ax": 0.4791,
     "aspect": 0.7467,
     "anchor": "head"
+   },
+   "rio": {
+    "faces": [
+     "normal",
+     "sad",
+     "serious",
+     "shock",
+     "smile",
+     "smug",
+     "surprise"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.4818,
+    "aspect": 0.7467,
+    "anchor": "head"
    }
   }
  },
@@ -4633,6 +4681,7 @@
    "face_naru.png",
    "face_pakki.png",
    "face_rei.png",
+   "face_rio.png",
    "face_sai.png",
    "face_saku.png",
    "face_salaryman.png",
@@ -5458,6 +5507,18 @@
      164
     ],
     "unit": 111.3
+   },
+   "rio": {
+    "box": [
+     315,
+     37,
+     196
+    ],
+    "eye": [
+     412,
+     157
+    ],
+    "unit": 113.7
    }
   }
  },
@@ -5709,6 +5770,43 @@
     "tears": {
      "cx": 0.57254,
      "top": 0.1125,
+     "size": 0.16333
+    }
+   },
+   "rio": {
+    "normal": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "sad": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "serious": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "shock": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "smile": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "smug": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "surprise": {
+     "cx": 0.46094,
+     "top": 0.03083,
      "size": 0.16333
     }
    }

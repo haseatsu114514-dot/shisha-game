@@ -5,7 +5,7 @@
       "dialogue_id": "ch1_reviewer_cameo",
       "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
       "lines": [
-        { "speaker": "", "face": "", "text": "昼下がりのシフト。ハンチング帽を目深にかぶった男の人が、１人で入ってきた。" },
+        { "speaker": "", "face": "", "text": "昼下がりのシフト。ハンチング帽を目深にかぶった男の人が、1人で入ってきた。" },
         { "speaker": "", "face": "", "text": "「おまかせで」とだけ言って窓際へ。鞄から、自分の吸い口を出している。" },
         { "speaker": "hajime", "face": "normal", "text": "（自分の吸い口持ち……かなり通ってる人だ。よし、今日の自信作でいこう）" },
         { "speaker": "", "face": "", "text": "一台を作って運ぶ。男の人は一口吸って、少しだけ眉を動かした。" },

@@ -8,6 +8,13 @@
 <meta name="suien-build" content="dev" data-built="">
 <title>水煙前線 -EN:CODE-</title>
 <link rel="icon" href="../icon.svg">
+<!-- ホーム画面に追加すると全画面で遊べる（iPhone の Safari は Fullscreen API 非対応のため唯一の道）。横画面前提 -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="水煙前線">
 <!-- 文字は同梱フォントのみ（remake/fonts/）。外部フォントは読まない＝端末で見た目が変わらない -->
 <link rel="preload" href="fonts/ZenKakuGothicNew-Medium.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/ZenKakuGothicNew-Bold.woff2" as="font" type="font/woff2" crossorigin>
@@ -59,12 +66,14 @@
 <link rel="stylesheet" href="css/vn/shisha-diagram.css">
 <link rel="stylesheet" href="css/continue.css">
 <link rel="stylesheet" href="css/staff-roll.css">
+<link rel="stylesheet" href="css/result.css">
 <link rel="stylesheet" href="css/game-ds.css">
 <link rel="stylesheet" href="css/facility-icons.css">
 <link rel="stylesheet" href="css/vn-lounge.css">
 <link rel="stylesheet" href="css/ui-themes.css">
 <link rel="stylesheet" href="css/vn-composition.css">
 <link rel="stylesheet" href="css/ui-paper.css">
+<link rel="stylesheet" href="css/settings.css">
 <link rel="stylesheet" href="css/craft-landscape.css">
 <link rel="stylesheet" href="css/flavor-guide.css">
 <link rel="stylesheet" href="css/craft-paper.css">

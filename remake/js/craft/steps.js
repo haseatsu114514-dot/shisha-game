@@ -11,7 +11,7 @@ import { rememberGrowthMix, growthRecallOptions } from "../core/growth-memory.js
 import { effectVisible, effectBadge } from "./effect-visual.js";
 import { canSeeMixHint, canSeeGoldenShort } from "../core/stat-step-tables.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, reactAudience, waitBenchReady, dockBenchLeaf, setBenchLeafVisible } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, waitBenchReady, dockBenchLeaf, setBenchLeafVisible, benchRoot } from "./session.js";
 import { flavorMixLife, LEAF_DAMAGE } from "./flavor-life.js";
 import { autoSkill } from "./common.js";
 import { mixBowlPreview, packingBowlPreview } from "./art.js";
@@ -537,6 +537,11 @@ export async function stepPack(cs) {
       desc: "蒸らしを長めにして厚みを出す。吸い心地は重くなる" },
   ];
   let selected = options.find(o => o.value === cs.pack && !o.locked) || options[1];
+  // 選択肢の副文と下の注記は、スマホでは画面に出さず「?」で読む（#2862・ミニゲーム共通のUI方針）。PCは画面にも残す。
+  benchRoot(cs)?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", [
+    el("ul", options.map(o => el("li", [el("b", { text: o.label }), el("span", { text: o.surface })]))),
+    el("p", { text: "葉の量はそのまま。詰め方を見比べよう" }),
+  ]));
   const vessel = el("div.pack-vessel", { role: "img", dataset: { test: "pack-vessel" } });
   const caption = el("div.pack-caption", { "aria-live": "polite" });
   const confirm = el("button.btn.primary.pack-confirm", { dataset: { test: "pack-confirm" } }, [

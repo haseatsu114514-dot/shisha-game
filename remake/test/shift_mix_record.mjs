@@ -118,7 +118,8 @@ assert.equal(openings.size, 8);
 const tournament = JSON.parse(read("data/dialogue/ch1_tournament.json"));
 const after = tournament.dialogues.find(d => d.dialogue_id === "ch1_tournament_after");
 assert(after);
-const lines = after.lines.map(line => line.text || "");
+// 会話演出の印（[pause] 等。#2828）は表示に出ないので、外して比べる
+const lines = after.lines.map(line => (line.text || "").replace(/\[\/?[a-z]+\]/g, ""));
 assert(lines.includes("……今日の煙、すごかったです。きれいでした、……でも"));
 assert(lines.includes("……最後の方の、はじめさんの顔。少しだけ、浮かれて見えました"));
 assert(lines.includes("ドアベルが鳴って、彼女は夜に消えた。浮かれてた？ 優勝した日の、俺の顔が？"));

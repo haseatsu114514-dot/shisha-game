@@ -33,7 +33,7 @@
       "kind": "browser",
       "weight": 0.5,
       "timeout": 5,
-      "paths": ["remake/js/core/portrait-style.js", "remake/js/core/data.js", "remake/js/core/state.js", "remake/js/scenes/title.js", "remake/js/vn/engine.js", "remake/test/browser/portrait_style.mjs", "remake/test/browser/portrait_framing.mjs", "remake/js/vn/intro.js", "assets/sprites/character_variants/", "remake/img/sprites/character_variants/"],
+      "paths": ["remake/js/core/portrait-style.js", "remake/js/core/data.js", "remake/js/core/state.js", "remake/js/scenes/title.js", "remake/css/settings.css", "remake/js/vn/engine.js", "remake/test/browser/portrait_style.mjs", "remake/test/browser/portrait_framing.mjs", "remake/js/vn/intro.js", "assets/sprites/character_variants/", "remake/img/sprites/character_variants/"],
       "run": ["node remake/test/browser/portrait_style.mjs"]
     },
     {
@@ -237,7 +237,7 @@
       "id": "growth-levelup",
       "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
       "kind": "quick",
-      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs", "node --experimental-vm-modules remake/test/growth_board_screen.mjs"]
+      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs", "node --experimental-vm-modules remake/test/growth_board_screen.mjs", "node remake/test/growth_chapter_notice.mjs"]
     },
     {
       "id": "vent-lid",
@@ -403,6 +403,15 @@
       "run": [
         "node remake/test/browser/roamers.mjs"
       ]
+    },
+    {
+      "id": "growth-chapter-notice-browser",
+      "title": "Growth board chapter-start notice: new skills, respec card and map reminder on the first daily morning (#1801 C10)",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 3,
+      "paths": ["remake/js/core/growth-chapter-notice.js", "remake/js/core/growth-respec.js", "remake/js/daily/calendar.js", "remake/js/daily/map.js", "remake/css/daily.css", "remake/test/browser/growth_chapter_notice.mjs", "remake/test/browser/support.mjs"],
+      "run": ["node remake/test/browser/growth_chapter_notice.mjs"]
     },
     {
       "id": "board-tutorial",
@@ -656,6 +665,12 @@
       ]
     },
     {
+      "id": "slim-deploy",
+      "title": "Pages deploy drops only originals shown as WebP and dev folders",
+      "kind": "quick",
+      "run": ["node remake/test/slim_deploy.mjs"]
+    },
+    {
       "id": "stamp-deploy",
       "title": "Pages deploy version stamp on the real index.html and CSS",
       "kind": "quick",
@@ -830,6 +845,8 @@
         "node remake/test/axe_bar_discovery.mjs",
         "node remake/test/mix_recognition.mjs",
         "node --experimental-vm-modules remake/test/foil_holes.mjs",
+        "node --experimental-vm-modules remake/test/craft_fx.mjs",
+        "node --experimental-vm-modules remake/test/craft_rival_windows.mjs",
         "node remake/test/mix_temperature.mjs",
         "node remake/test/steam_temperature.mjs",
         "node remake/test/flavor_life.mjs",
@@ -908,7 +925,8 @@
         "node --experimental-vm-modules remake/test/lime_save_774.mjs",
         "node --experimental-vm-modules remake/test/purikura_motion.mjs",
         "node remake/test/text_wrap.mjs --fixed-only",
-        "node remake/test/natural_wrap.mjs"
+        "node remake/test/natural_wrap.mjs",
+        "node remake/test/conversation_effects_marks.mjs"
       ]
     },
     {
@@ -1533,6 +1551,8 @@
         "data/dialogue/growth_lessons.json",
         "data/dialogue/ch3_volk.json",
         "data/dialogue/ch3_rivals.json",
+        "data/dialogue/ch5_tokyo.json",
+        "remake/js/daily/bonds.js",
         "remake/test/browser/lesson_consult_coverage.mjs"
       ],
       "run": [
@@ -1594,8 +1614,8 @@
       "id": "ch5-full-flow",
       "title": "Chapter 5 full playthrough on one save",
       "kind": "browser",
-      "weight": 0.5,
-      "timeout": 10,
+      "weight": 5,
+      "timeout": 15,
       "paths": [
         "remake/js/chapters/ch5*.js",
         "remake/js/chapters/ch4.js",
@@ -1623,13 +1643,15 @@
     },
     {
       "id": "staff-roll",
-      "title": "Chapter 5 end card radar, staff roll, first-time no skip, post-roll shuraba and talks, then title and NEXT CYCLE unlock",
+      "title": "Chapter 5 end card radar, staff roll, first-time no skip, post-roll shuraba and talks, result screen, then title and NEXT CYCLE unlock",
       "kind": "browser",
       "weight": 0.4,
       "timeout": 10,
       "paths": [
         "remake/js/scenes/staff-roll.js",
         "remake/css/staff-roll.css",
+        "remake/js/scenes/result.js",
+        "remake/css/result.css",
         "remake/js/chapters/ch5*.js",
         "remake/js/core/story-routes.js",
         "data/story_routes.json",
@@ -1655,6 +1677,8 @@
         "remake/js/chapters/ch2-preparation.js",
         "data/dialogue/ch5_shops.json",
         "data/dialogue/ch2_kumicho.json",
+        "data/dialogue/ch5_tokyo.json",
+        "remake/js/daily/bonds.js",
         "remake/test/browser/ch5_home_talks.mjs"
       ],
       "run": [
@@ -2994,11 +3018,14 @@
         "remake/test/browser/hiyori_axe_natural.mjs",
         "tools/check_legacy_terms.py",
         "remake/test/browser/save_load.mjs",
+        "remake/js/scenes/save-transfer.js",
+        "remake/test/browser/save_transfer.mjs",
         "remake/js/chapters/ch2*.js",
         "remake/js/chapters/ch3*.js"
       ],
       "run": [
-        "node remake/test/browser/save_load.mjs"
+        "node remake/test/browser/save_load.mjs",
+        "node remake/test/browser/save_transfer.mjs"
       ]
     },
     {
@@ -3611,6 +3638,7 @@
       "paths": [
         "remake/css/ui-themes.css",
         "remake/css/ui-paper.css",
+        "remake/css/settings.css",
         "remake/img/ui/paper/**",
         "remake/css/vn-composition.css",
         "remake/img/ui/vn-polish/**",
@@ -3793,6 +3821,15 @@
       "run": [
         "node remake/test/conversation_effects_demo.mjs"
       ]
+    },
+    {
+      "id": "conversation-effects",
+      "title": "Conversation effects in the main VN engine (#2828): beat, BGM duck, [pause], inner voice, [shiver]",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 4,
+      "paths": ["remake/js/vn/engine.js", "remake/js/vn/text.js", "remake/js/core/audio.js", "remake/css/vn.css", "remake/test/browser/conversation_effects_2828.mjs"],
+      "run": ["node remake/test/browser/conversation_effects_2828.mjs"]
     },
     {
       "id": "flavor-expression",

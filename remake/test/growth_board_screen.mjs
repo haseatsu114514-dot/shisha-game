@@ -155,12 +155,13 @@ for (const preference of ["classic", "new"]) {
 }
 assert.notDeepEqual(frames.new.tsumugi.eye, frames.classic.tsumugi.eye, "new artwork uses its own coordinates");
 core.config.portraitStyle = "new";
-assert.equal(data.portraitInfo("rio", "normal").style, "classic", "Rio has no new artwork");
-assert.equal(panelContext.boardFaceUrl("rio"), "img/ui/growth_board/faces/rio.webp", "no new artwork: classic card face");
+assert.equal(data.portraitInfo("rio", "normal").style, "new", "Rio has new artwork");
+assert.equal(panelContext.boardFaceUrl("rio"), "img/ui/growth_board/faces/new/rio.webp", "new artwork: new card face");
 panelGrowth.known = true;
 const rioPanel = panelContext.panelPortrait({ kind: "lesson", id: "M-W1", who: "rio" }, "open");
-assert.match(rioPanel.attrs.src, /sprites\/characters\/rio\//);
-assert.equal(rioPanel.style.top, `${Math.round(64 - frames.classic.rio.eye[1] * 82 / (frames.classic.rio.unit * panelContext.perUnit))}px`);
+assert.match(rioPanel.attrs.src, /sprites\/character_variants\/new\/rio\//);
+assert.equal(rioPanel.style.top, `${Math.round(64 - frames.new.rio.eye[1] * 82 / (frames.new.rio.unit * panelContext.perUnit))}px`);
 assert.equal(panelContext.boardFaceUrl("pakki"), null, "people without a card face use the face icon");
 core.config.portraitStyle = previousStyle;
 console.log("PASS board portraits: lesson cards and the panel use the selected style's art + that style's measured eye coordinates (classic for people without new art)");
+

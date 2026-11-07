@@ -6,7 +6,7 @@ import { nextTokyoFreeTime } from "./tokyo-clock.js";
 
 const COLORS = ["any", ...BOARD_KEYS];
 const copy = value => JSON.parse(JSON.stringify(value));
-const cycleOf = s => s.cycleId || `cycle:${s.cycle || 1}`;
+export const cycleOf = s => s.cycleId || `cycle:${s.cycle || 1}`;
 const allocation = g => JSON.stringify([g.nodes, g.paid, g.hidane, g.litSince]);
 // 第3章の版3（2026-11-02 main: 出発前の地元と東京も日常ループ）はほかの章と同じく日常で開く。
 // 版2の旧セーブは、東京の行程の自由時間の枠で開く

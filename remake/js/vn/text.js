@@ -13,7 +13,8 @@ const CLOSERS = "」』）】〉》";
 const DASHES = "─―—";
 const SPACES = " 　"; // 行頭に来た区切りの空白は表示しない
 const HIRAGANA = /^[\u3041-\u309f]$/;
-const TAG_PATTERN = /^\[\/?(imp|warn|hint|red|blue|sub)\]/;
+// [pause] は閉じタグの無い印（文中で一拍止まる。#2828）。幅0で、ページをまたいで開き直さない。
+const TAG_PATTERN = /^\[(?:\/?(imp|warn|hint|red|blue|sub|shiver)|(pause))\]/;
 const graphemes = typeof Intl?.Segmenter === "function"
   ? new Intl.Segmenter("ja", { granularity: "grapheme" }) : null;
 
@@ -24,7 +25,7 @@ function tokensOf(raw) {
   for (let i = 0; i < raw.length;) {
     const tag = TAG_PATTERN.exec(raw.slice(i));
     const value = tag ? tag[0] : indexed?.get(i) || String.fromCodePoint(raw.codePointAt(i));
-    tokens.push({ value, tag: tag?.[1] || "", width: tag ? 0 : value.codePointAt(0) <= 0xff ? 0.5 : 1 });
+    tokens.push({ value, tag: tag?.[1] || tag?.[2] || "", width: tag ? 0 : value.codePointAt(0) <= 0xff ? 0.5 : 1 });
     i += value.length;
   }
   return tokens;
@@ -294,7 +295,7 @@ function balancePages(pages) {
   return pages.map((page) => {
     const prefix = active.map((tag) => `[${tag}]`).join("");
     for (const token of tokensOf(page)) {
-      if (!token.tag) continue;
+      if (!token.tag || token.tag === "pause") continue;
       if (token.value.startsWith("[/")) {
         const at = active.lastIndexOf(token.tag);
         if (at >= 0) active.splice(at, 1);
@@ -319,13 +320,25 @@ export function paginate(raw, layout = {}) {
 }
 
 const escapeHtml = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-const TAGS = ["imp", "warn", "hint", "red", "blue", "sub"];
+const TAGS = ["imp", "warn", "hint", "red", "blue", "sub", "shiver"];
+// 震え文字は行ごとの箱で揺らす（inline-block）。改行をまたぐ区間は行の境目で閉じて開き直す。
+const shiverRows = (s) => s.replace(/\[shiver\]([\s\S]*?)(\[\/shiver\]|$)/g,
+  (_, body, close) => `[shiver]${body.replaceAll("\n", "[/shiver]\n[shiver]")}${close}`);
 
-/** [imp]…[/imp] 等を span に。改行は <br> */
+/** [imp]…[/imp] 等を span に。改行は <br>。[pause] は文字送りの側で扱い、表示には出さない */
 export function formatHtml(raw) {
-  let t = escapeHtml(String(raw));
+  let t = escapeHtml(shiverRows(String(raw)).replaceAll("[pause]", ""));
   for (const tag of TAGS) t = t.replaceAll(`[${tag}]`, `<span class="tx-${tag}">`).replaceAll(`[/${tag}]`, "</span>");
   return t.replace(/\n/g, "<br>");
+}
+
+/** [pause] の位置（formatHtml 後の見える文字数）。文字送りがここで一拍止まる（#2828） */
+export function pausePoints(raw) {
+  const parts = String(raw).split("[pause]");
+  const points = [];
+  let at = 0;
+  for (const part of parts.slice(0, -1)) points.push(at += visibleLength(formatHtml(part)));
+  return points;
 }
 
 export const stripTags = (raw) => String(raw).replace(/\[\/?[a-z]+\]/g, "");

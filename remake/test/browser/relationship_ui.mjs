@@ -65,7 +65,7 @@ async function choicesFit(page, expected) {
 const questions = {
   tsumugi: ["絵の話がなくても、つむぎちゃんに会いたいよ", "描けない日も、ここでゆっくりしていって"], // #2221 の添削に合わせる
   rio: ["用事がなくても、凛想さんに会いに来ます", "次の試香も、俺に手伝わせてください"],
-  minto: ["栞さんと２人だと、ちょっと緊張する", "また話そう。愚痴でも聞くよ"], // #1730 で栞へはタメ口に統一
+  minto: ["栞さんと2人だと、ちょっと緊張する", "また話そう。愚痴でも聞くよ"], // #1730 で栞へはタメ口に統一
 };
 const reactions = {
   tsumugi: [/絵じゃなくて、私を、ですか/, /この席は、描かなくても/],
@@ -86,6 +86,7 @@ await suite("relationship-ui", async check => {
         Object.assign(R.data.DB.dialogues, await city.readDialogues("ch3_double_apple", ["ch3_mukai_arrival"]));
       });
       // 好感度・連絡先・思い出だけでは、未対面の人物を明かさない。
+      // 開始時から知っているスミさん・つむぎ（#2750）は、新しいゲームの最初から♥1で並ぶ。
       await page.evaluate(() => {
         const s = R.fresh(); s.chapter = 5;
         for (const id of ["kumicho", "rei", "mashiro"]) {
@@ -94,7 +95,11 @@ await suite("relationship-ui", async check => {
         s.relationshipMemories = ["kumicho_hands", "rei_listen", "mashiro_pace"];
       });
       await status(page);
-      assert.deepEqual(await page.locator(".pp-row").evaluateAll(rows => rows.map(r => r.dataset.person)), ["sumi"]);
+      assert.deepEqual(await page.locator(".pp-row").evaluateAll(rows => rows.map(r => r.dataset.person)), ["sumi", "tsumugi"]);
+      for (const id of ["sumi", "tsumugi"]) {
+        assert.deepEqual(await page.locator(`[data-person="${id}"] .ui-heart`).evaluateAll(hearts => hearts.map(h => h.style.getPropertyValue("--fill"))),
+          ["100%", "0%", "0%", "0%", "0%"], `${id}: starts at ♥1`);
+      }
       await closeStatus(page);
 
       // 本編の名乗り・記憶記録を通す。ましろは好感度0でも面識と記憶を表示する。
@@ -120,7 +125,7 @@ await suite("relationship-ui", async check => {
             R.core.save(); R.core.load();
           }, { id, points, phase, laterChapter });
           await status(page);
-          assert.deepEqual(await page.locator(".pp-row").evaluateAll(rows => rows.map(r => r.dataset.person)), ["sumi", id]);
+          assert.deepEqual(await page.locator(".pp-row").evaluateAll(rows => rows.map(r => r.dataset.person)), ["sumi", "tsumugi", id]);
           const row = page.locator(`[data-person="${id}"]`);
           assert.equal(await row.locator(".pp-name").textContent(), await page.evaluate(id => R.data.displayName(id, R.core.state), id));
           assert.equal(await row.locator(".pp-memory").textContent(), await page.evaluate(memoryId => R.data.DB.relationshipMemories[memoryId].echo, memoryId));
