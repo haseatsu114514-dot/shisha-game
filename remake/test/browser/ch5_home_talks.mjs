@@ -24,9 +24,9 @@ async function visit(page, pin) {
   await page.locator(dt("map-go")).click();
 }
 
-async function seed(page, { region = "home", met = {}, read = {}, affinity = {} } = {}) {
+async function seed(page, { region = "home", met = {}, read = {}, affinity = {}, flags = {} } = {}) {
   page.setDefaultTimeout(30000);
-  await page.evaluate(async ({ region, met, read, affinity }) => {
+  await page.evaluate(async ({ region, met, read, affinity, flags }) => {
     const core = await import("./js/core/state.js");
     const value = core.newGame();
     Object.assign(value, { chapter: 5, day: 51, slot: 0, phase: "daily", money: 50000, stamina: 100,
@@ -36,7 +36,7 @@ async function seed(page, { region = "home", met = {}, read = {}, affinity = {} 
       _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
         read: { ch5_bridge_after_return: true, ch5_opening: true, ...read }, scheduleDecision: null, aftermath: 0, finale: 0,
         finaleScenes: null, won: null, secondCup: null },
-      _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true, _ch5_region_started: true };
+      _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true, _ch5_region_started: true, ...flags };
     Object.assign(value.met, met);
     Object.assign(value.affinity, affinity);
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
@@ -45,7 +45,7 @@ async function seed(page, { region = "home", met = {}, read = {}, affinity = {} 
     const fortunePlan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter: 5 });
     value.flags._fortune_wander = { chapter: 5, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
     core.saveConfig(); core.save();
-  }, { region, met, read, affinity });
+  }, { region, met, read, affinity, flags });
   await page.reload();
   await page.locator(dt("title-load")).click();
   await page.evaluate(async () => {
@@ -56,6 +56,27 @@ async function seed(page, { region = "home", met = {}, read = {}, affinity = {} 
 }
 
 await suite("ch5-home-talks", async check => {
+  // 東京にいる保存を LOAD した直後（まだ何もしていない地図）から、♥5のスティーブ・ヴォルクの店に「!」が付き、MENU の人間関係も
+  // 「次に〜で会うと、特別なイベントへ。」と案内する（締めくくりの台詞は第5章の東京の台詞の中にあるので、再開の時に読んでおく）。
+  await check("tokyo-load-shows-rival-finale-badges-and-menu-hints-before-any-action", async page => {
+    await seed(page, { region: "tokyo", met: { steve: true, volk: true, mukai_master: true }, affinity: { steve: 66, volk: 66 },
+      flags: { _ch5_tokyo_van: true, _ch5_tokyo_attic: true } });
+    await page.waitForFunction(() => document.querySelector('.map:not(.done):not([data-revealing="true"])[data-region="tokyo"] [data-test=pin-ch5_tokyo_steve]')
+      && !document.querySelector("#modal.show"), null, { timeout: 60000 });
+    const badges = await page.evaluate(() => Object.fromEntries(["ch5_tokyo_steve", "ch5_tokyo_volk"].map(id =>
+      [id, !!document.querySelector(`[data-test=pin-${id}] .evt-badge.story`)])));
+    assert.deepEqual(badges, { ch5_tokyo_steve: true, ch5_tokyo_volk: true }, "the finale pins show '!' right after LOAD");
+    await page.evaluate(async () => { void (await import("./js/daily/status.js")).openStatus(); });
+    await page.locator('[data-tab="people"]').click();
+    const hints = await page.evaluate(() => Object.fromEntries(["steve", "volk"].map(id =>
+      [id, document.querySelector(`.pp-row[data-person="${id}"] .pp-next`)?.textContent || ""])));
+    assert.deepEqual(hints, { steve: "次にSmoke & Gloryで会うと、特別なイベントへ。", volk: "次に鉄の煙で会うと、特別なイベントへ。" });
+    await page.locator('[data-test="status-close"]').click();
+    const state = await get(page);
+    assert.deepEqual([state.day, state.slot, state.flags._ch5_tokyo_talks, state.finales?.steve, state.finales?.volk],
+      [51, 0, undefined, undefined, undefined], "nothing was done yet");
+  });
+
   await check("yuzugaya-kanzaki-aftermath-and-rei-talk-read-once", async page => {
     await seed(page, { met: { kumicho: true, rei: true }, affinity: { kumicho: 30, rei: 30 } });
     await mapReady(page, { day: 51, slot: 0 });

@@ -872,6 +872,25 @@ await check('Volk and Steve (#2705・2026-11-07): chapter 5 Tokyo finale on ♥5
   assert.equal(await bonds.playFinale('steve'), true);
   assert.equal(f.plays.at(-1)[0], 'ch5_steve_bond_finale');
   assert.equal(s.finales.steve.chapter, 5);
+  // 第5章の締めくくりの文と連絡先をそろえる。第5章は第3章のLIME交換を前提にしないので、スティーブの「顔の知らせをくれ」には、
+  // まだ交換していない人だけがその場で交換してから「送ります」と答える（contact の分岐の中だけで交換を記録する）。
+  const steveScene = f.db.dialogues.ch5_steve_bond_finale;
+  const contactAt = steveScene.lines.findIndex(l => l.type === 'condition' && l.condition_type === 'contact' && l.char_id === 'steve');
+  assert(contactAt >= 0, 'Steve: the finale branches on the LIME contact');
+  assert(contactAt < steveScene.lines.findIndex(l => /送ります/.test(l.text || '')), 'the exchange comes before the promise to send');
+  assert(steveScene.branches[steveScene.lines[contactAt].next_false]?.some(l => l.type === 'set_flag' && l.flag === '_lime_contact_steve'),
+    'no LIME yet: exchange it on the spot');
+  assert.equal(steveScene.lines[contactAt].next_true, undefined, 'already exchanged: straight on');
+  assert(!steveScene.lines.some(l => l.type === 'set_flag'), 'never re-exchanged in the main text');
+  // ヴォルクの第5章の文は連絡を約束しない（また店に来る約束）ので、交換もしない
+  const volkScene = f.db.dialogues.ch5_volk_bond_finale;
+  assert(!volkScene.lines.some(l => ['set_flag', 'condition'].includes(l.type)) && !volkScene.branches);
+  assert.doesNotMatch(volkScene.lines.map(l => l.text || '').join('\n'), /LIME|連絡|送/, 'Volk promises no messages');
+  // 友人のLIMEは交換した後だけ（第5章の朝は雑談だけ）
+  s.day += 10; s.phase = 'daily';
+  assert.deepEqual(clone(bonds.friendMessages()), [], 'no friend LIME from Steve or Volk without a LIME contact');
+  s.flags._lime_contact_steve = true;
+  assert.deepEqual(clone(bonds.friendMessages().map(m => [m.sender, m.type])), [['steve', 'chat']]);
 });
 await check('Ayatori (#2028): the finale and the MENU promise only while 煙幕 can be visited', async f => {
   const rivals = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_rivals.json', import.meta.url))).dialogues;
