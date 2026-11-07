@@ -21,6 +21,13 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-menu")).waitFor();
     assert.match(await page.locator(t("desert-menu")).innerText(), /DESERT RIDE/);
     assert.equal(await page.locator(t("desert-best")).count(), 0, "no best yet");
+    // 遊び方は常時出さず、「？」を開いた時だけ（#2838）
+    assert.equal(await page.locator(t("desert-help-panel")).isVisible(), false, "the how-to is hidden until ? is pressed");
+    await page.locator(t("desert-help")).click();
+    assert.match(await page.locator(t("desert-help-panel")).innerText(), /Space で大ジャンプ/);
+    await page.keyboard.press("Escape");
+    assert.equal(await page.locator(t("desert-help-panel")).isVisible(), false, "Escape closes the how-to");
+    assert.equal(await page.locator(t("desert-start")).isVisible(), true);
     await page.locator(t("desert-start")).click();
     await phase(page, "run");
     // 本番はスタートの合図（3・2・1・GO）から。合図の間は進まず、ヌールが左に並んでいる
@@ -97,7 +104,8 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-page-tutorial")).tap();
     await phase(page, "practice");
     assert.equal(await page.locator(t("desert-ride")).getAttribute("data-reduced-motion"), "true");
-    assert.equal(await page.locator(t("desert-caption")).innerText(), "← → で左右に動こう");
+    // タッチ端末ではキーの名前を出さず、画面のボタンの名前で言う（#2838）
+    assert.equal(await page.locator(t("desert-caption")).innerText(), "「左へ」「右へ」で動こう");
     // ボタンは下辺の左右に分かれ、真ん中の視界を隠さない
     const stage = await page.locator("#stage").boundingBox();
     const left = await page.locator(t("desert-left")).boundingBox(), right = await page.locator(t("desert-right")).boundingBox(), jump = await page.locator(t("desert-jump")).boundingBox();
@@ -107,6 +115,11 @@ await suite("desert-ride", async check => {
       assert(box.y > stage.y + stage.height * 0.7, "buttons sit at the bottom");
     }
     assert(right.x + right.width < stage.x + stage.width * 0.35 && jump.x > stage.x + stage.width * 0.7, "the middle of the view stays clear");
+    // やめるは ✕ の丸ボタン。指で押せる大きさ（実寸 38px 以上）で、HUD・下辺のボタンと重ならない（#2838）
+    const quitBox = await page.locator(t("desert-quit")).boundingBox(), hudRight = await page.locator(".dr-hud-right").boundingBox();
+    assert.equal(await page.locator(t("desert-quit")).innerText(), "✕");
+    assert(quitBox.width >= 38 && quitBox.height >= 38, `quit is big enough (${quitBox.width}x${quitBox.height})`);
+    assert(quitBox.y >= hudRight.y + hudRight.height && quitBox.y + quitBox.height <= jump.y, "quit sits between the HUD and the touch buttons");
     // 右を押している間だけ右へ。離すと入力が消える
     const press = async (box, hold) => {
       await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
@@ -140,8 +153,8 @@ await suite("desert-ride", async check => {
     });
     await phase(page, "practiced");
     const captions = await page.evaluate(() => window.__captions);
-    assert(captions.some(text => /空中で ← か → を押し続けて回ろう/.test(text)), `the lesson teaches the spin (${captions.join(" / ")})`);
-    assert(captions.some(text => /溜まったゲージで↓（BOOST）を押すと超加速/.test(text)), `the lesson explains stocked boost (${captions.join(" / ")})`);
+    assert(captions.some(text => /空中で「左へ」か「右へ」を押し続けて回ろう/.test(text)), `the lesson teaches the spin (${captions.join(" / ")})`);
+    assert(captions.some(text => /溜まったゲージで「BOOST」を押すと超加速/.test(text)), `the lesson explains stocked boost (${captions.join(" / ")})`);
     assert.match(await page.locator(t("desert-practiced")).innerText(), /練習おわり/);
     await page.locator(t("desert-start")).tap();
     await phase(page, "run");
