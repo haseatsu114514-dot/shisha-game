@@ -3798,6 +3798,22 @@
       ]
     },
     {
+      "id": "conversation-cutin-demo",
+      "title": "Conversation cut-in demo (#2903): 12 A/C candidates switched by ?cut=, left side, A stays / C fades",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 5,
+      "paths": [
+        "remake/test/conversation_cutin_demo.mjs",
+        "remake/js/vn/conversation-cutin-demo-data.js",
+        "remake/js/vn/conversation-cutin-demo.js",
+        "remake/conversation-cutin-demo.html"
+      ],
+      "run": [
+        "node remake/test/conversation_cutin_demo.mjs"
+      ]
+    },
+    {
       "id": "conversation-effects",
       "title": "Conversation effects in the main VN engine (#2828): beat, BGM duck, [pause], inner voice, [shiver]",
       "kind": "browser",

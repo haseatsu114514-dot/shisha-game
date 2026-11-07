@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja" data-ui-theme="smoke">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0812">
+<title>水煙前線｜会話カットイン案デモ（#2903）</title>
+<link rel="icon" href="../icon.svg">
+<!-- 文字は同梱フォントのみ（remake/fonts/）。外部フォントは読まない＝端末で見た目が変わらない -->
+<link rel="preload" href="fonts/ZenKakuGothicNew-Medium.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/ZenKakuGothicNew-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<!-- 名前表示の見出し明朝（Zen Old Mincho Bold。"Suien Name" として vn-lounge.css で登録・名前札へ適用）も先読みする -->
+<link rel="preload" href="fonts/ZenOldMincho-Name-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/axe-throw.css">
+<link rel="stylesheet" href="css/trpg.css">
+<link rel="stylesheet" href="css/vn.css">
+<link rel="stylesheet" href="css/intro.css">
+<link rel="stylesheet" href="css/tonari-opening.css">
+<link rel="stylesheet" href="css/daily.css">
+<link rel="stylesheet" href="css/title-ds.css">
+<link rel="stylesheet" href="css/chapter-preview.css">
+<link rel="stylesheet" href="css/ch2-preview.css">
+<link rel="stylesheet" href="css/ch2-tournament.css">
+<link rel="stylesheet" href="css/store-logos.css">
+<link rel="stylesheet" href="css/craft.css">
+<link rel="stylesheet" href="css/reel.css">
+<link rel="stylesheet" href="css/extras.css">
+<link rel="stylesheet" href="css/ui-art.css">
+<link rel="stylesheet" href="css/ui-inner.css">
+<link rel="stylesheet" href="css/shop.css">
+<link rel="stylesheet" href="css/steam.css">
+<link rel="stylesheet" href="css/worker-scenes.css">
+<link rel="stylesheet" href="css/craft-header.css">
+<link rel="stylesheet" href="css/tournament.css">
+<link rel="stylesheet" href="css/motions.css">
+<link rel="stylesheet" href="css/motions/cheki.css">
+<link rel="stylesheet" href="css/motions/tarot.css">
+<link rel="stylesheet" href="css/motions/gift.css">
+<link rel="stylesheet" href="css/motions/shift.css">
+<link rel="stylesheet" href="css/motions/shark.css">
+<link rel="stylesheet" href="css/motions/sketch.css">
+<link rel="stylesheet" href="css/motions/door.css">
+<link rel="stylesheet" href="css/motions/dawn.css">
+<link rel="stylesheet" href="css/motions/garagara.css">
+<link rel="stylesheet" href="css/motions/purikura.css">
+<link rel="stylesheet" href="css/motions/chapter-title.css">
+<link rel="stylesheet" href="css/motions/lime.css">
+<link rel="stylesheet" href="css/vn/shisha-diagram.css">
+<link rel="stylesheet" href="css/continue.css">
+<link rel="stylesheet" href="css/game-ds.css">
+<link rel="stylesheet" href="css/facility-icons.css">
+<link rel="stylesheet" href="css/vn-lounge.css">
+<link rel="stylesheet" href="css/ui-themes.css">
+<link rel="stylesheet" href="css/blue-window-preview.css">
+<link rel="stylesheet" href="css/vn-composition.css">
+<link rel="stylesheet" href="css/ui-paper.css">
+<link rel="stylesheet" href="css/settings.css">
+<style>
+#viewport{top:96px}
+.preview-tools{position:fixed;inset:0 0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:6px 16px;background:#15111b;color:#f4ede0;z-index:1000;font:14px var(--font)}
+.preview-tools button,.preview-tools label.chip{font:inherit;color:inherit;background:#241d2c;border:1px solid #8a7147;padding:6px 10px;border-radius:3px;min-height:34px}
+.preview-tools button:focus-visible,.preview-tools input:focus-visible{outline:2px solid #e8c27a;outline-offset:2px}
+.preview-tools button[aria-pressed=true],.preview-tools button.on{background:#8a7147;color:#1a1206}
+#ct-chips{display:flex;flex-wrap:wrap;gap:6px;flex-basis:100%}
+#ct-chips button{padding:4px 9px;min-height:30px;font-size:13px}
+#ct-chips button .tag{font-size:11px;margin-left:4px;color:#e8c27a}
+#ct-chips button.on .tag{color:#1a1206}
+#ct-chips button[data-cut^=C]{border-style:dashed}
+#ct-desc{flex-basis:100%;font-size:13px;color:#d8cdbb;line-height:1.5}
+#ct-desc b{color:#e8c27a}
+.preview-tools label.chip{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+#preview-status{font-size:12px;color:#c8bdab}
+/* スマホ横など低い画面: 案のボタンは横スクロールの1行、説明は畳む（「たたむ」で操作も隠せる） */
+@media(max-height:520px){
+.preview-tools{gap:4px 6px;padding:4px 8px;font-size:12px}
+.preview-tools button,.preview-tools label.chip{min-height:28px;padding:2px 7px}
+#ct-chips{flex-wrap:nowrap;overflow-x:auto}
+#ct-chips button{flex:none;min-height:26px;padding:2px 7px;font-size:12px}
+#ct-desc,#preview-status{display:none}
+}
+body.ct-folded .preview-tools > :not(b):not(#ct-fold):not(#ct-play){display:none}
+/* --- デモ専用（本編のCSSには入れない）。カットインは左側。相手の立ち絵は中央 --- */
+#stage > #ct-label{position:absolute;inset:14px 18px auto auto;z-index:30;padding:6px 14px;background:#15111bcc;border:1px solid #8a7147;color:#f4ede0;font:600 20px var(--font);letter-spacing:.06em;pointer-events:none}
+#ct-label i{font-style:normal;color:#e8c27a;margin-right:8px}
+#ct-label.off{opacity:.65}
+#ct-label.off::after{content:"（カットインなし）";font-size:15px;margin-left:6px;color:#f09a9a}
+#stage > #ct-end{position:absolute;inset:auto auto 250px 50%;height:auto;transform:translateX(-50%);z-index:30;padding:6px 16px;background:#15111bcc;border:1px solid #8a7147;color:#f4ede0;font:16px var(--font);display:none}
+#stage > #ct-end.show{display:block}
+.vn-text.demo-inner{color:#9aa0b8}
+.vn-box .vn-next{pointer-events:none}
+#ct-layer{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden}
+.ct-cutin{position:absolute;pointer-events:none;animation:.22s ease-out both}
+.ct-cutin svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ct-cutin svg polygon{fill:none;stroke:#c9b491;stroke-width:2.5}
+.ct-clip{position:absolute;inset:0;overflow:hidden;background:repeating-linear-gradient(128deg,transparent 0 23px,#e7d3f21a 23px 24px),linear-gradient(135deg,#685272,#34253f)}
+.ct-art{position:absolute;max-width:none;max-height:none}
+.ct-cutin[data-enter=slide]{animation-name:ct-slide}
+.ct-cutin[data-kind=C][data-enter=slide]{animation-duration:.14s}
+.ct-cutin[data-enter=fade]{animation-name:ct-fade;animation-duration:.3s}
+.ct-cutin[data-enter=rise]{animation-name:ct-rise;animation-duration:.3s}
+.ct-cutin[data-enter=wipe]{animation-name:ct-wipe;animation-duration:.18s;transform-origin:left center}
+.ct-cutin[data-enter=slit]{animation-name:ct-slit;animation-duration:.12s;transform-origin:center}
+.ct-cutin.sink{animation-duration:.4s}
+.ct-cutin.sink .ct-clip{background:repeating-linear-gradient(128deg,transparent 0 23px,#e7d3f212 23px 24px),linear-gradient(135deg,#40334a,#1d1524)}
+.ct-cutin.amber svg polygon{stroke:#e0a85a}
+.ct-cutin.dim{opacity:.88}
+.ct-cutin.dim svg polygon{stroke-width:1.6}
+.ct-cutin.leave{transition:opacity .3s;opacity:0}
+.ct-cutin[data-still=true]{animation:none}
+@keyframes ct-slide{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
+@keyframes ct-fade{from{opacity:0}}
+@keyframes ct-rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes ct-wipe{from{transform:scaleX(0)}to{transform:none}}
+@keyframes ct-slit{from{opacity:0;transform:scaleX(.1)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.ct-cutin{animation:none}}
+</style></head><body data-screen="preview"><nav class="preview-tools" aria-label="会話カットイン案デモ">
+<b>会話カットイン案デモ</b>
+<label class="chip"><input type="checkbox" id="ct-on" checked> カットイン ON</label>
+<button id="ct-play" type="button">▶ 再生</button>
+<button id="ct-fold" type="button" aria-pressed="false">たたむ</button>
+<label class="chip"><input type="checkbox" id="ct-reduce"> 動きを減らす</label>
+<label class="chip"><input type="checkbox" id="ct-hold"> C系を消さずに止める</label>
+<label class="chip"><input type="checkbox" id="ct-auto"> 自動送り</label>
+<span id="preview-status" role="status">読み込み中…</span>
+<div id="ct-chips" role="group" aria-label="案を選ぶ（実線＝A系・残る／点線＝C系・消える）"></div>
+<div id="ct-desc"></div>
+</nav>
+<div id="viewport">
+  <div id="stage">
+    <div id="bg"></div>
+    <div id="screen"></div>
+    <div id="vn"></div>
+    <div id="hud"></div>
+    <div id="fx"></div>
+    <div id="toasts"></div>
+    <div id="banners"></div>
+    <div id="wipe"><i></i><i></i><i></i><i></i><i></i></div>
+    <div id="modal"></div>
+  </div></div><script type="module" src="js/vn/conversation-cutin-demo.js"></script></body></html>
