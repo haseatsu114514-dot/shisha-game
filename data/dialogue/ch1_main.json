@@ -87,7 +87,7 @@
         {
           "speaker": "salaryman",
           "face": "normal",
-          "text": "……今日の、良かったよ",
+          "text": "……今日の、[pause]良かったよ",
           "portrait": false
         },
         {
@@ -829,6 +829,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
+          "beat": 800,
           "text": "……十五年前、世界大会で二位になった"
         },
         {
@@ -858,6 +859,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
+          "duck": true,
           "text": "数字より先に、誰にどう届いたかを見る。そこを外すな"
         },
         {
@@ -1164,7 +1166,7 @@
           {
             "speaker": "sumi",
             "face": "normal",
-            "text": "教わったことも、今日の迷いも持っていけ。勝っても負けても、帰ってこい"
+            "text": "教わったことも、今日の迷いも持っていけ。[pause]勝っても負けても、帰ってこい"
           },
           {
             "speaker": "hajime",
