@@ -64,6 +64,7 @@ async function reachesMix(label, run, touch, manualAuto = false) {
   if (manualAuto) assert.equal(page.auto, null, "existing auto:null must be retained");
   assert.equal(page.mixWaits, 1);
   console.log(`PASS ${label}`); cases++;
+  return page;
 }
 for (const [name, touch] of [["hidden-menu-not-clickable-on-bench", true], ["store-leaves-without-own-stock", false], ["touch-store-leaves-without-own-stock", true], ["reload-mid-bench-keeps-save", false]]) {
   const test = tests.get(name); assert(test, name);
@@ -82,10 +83,18 @@ assert(start >= 0 && end > start && packingText.indexOf(marker, start + 1) < 0, 
 const deviceStart = packingText.indexOf("const devices = ["), deviceEnd = packingText.indexOf("\n];", deviceStart);
 assert(deviceStart >= 0 && deviceEnd > deviceStart);
 const deviceSource = packingText.slice(deviceStart, deviceEnd + 3);
-const packing = new vm.SourceTextModule(`import { confirmAppearanceSetup } from "appearance";\nimport { confirmWaterSetup } from "water";\n${deviceSource}\nexport { devices };\nconst b = (p, id) => p.locator(\x60[data-test="\x24{id}"]\x60);\nasync function hit(p,id,touch) { const n=b(p,id); await n.scrollIntoViewIfNeeded(); if(touch) await n.tap(); else await n.click(); }\nexport async function setup(p,device) {\n${packingText.slice(start, end + 'await b(p,"mix-ok").waitFor();'.length)}\n}`, { context });
+// 縦持ちのスマホ（device.portrait）は、水の確認の前に guarded(...) で実ページを回転ガードに通す（#2789・#2794）。
+// この偽のページは回せないので、ここでは呼ばれた工程だけを記録し、ガードそのものは実ブラウザの ds_packing.mjs が確かめる。
+assert.match(packingText, /^async function guarded\(p, device, step, ids\) \{$/m, "packing keeps the guarded(p, device, step, ids) helper");
+const packing = new vm.SourceTextModule(`import { confirmAppearanceSetup } from "appearance";\nimport { confirmWaterSetup } from "water";\n${deviceSource}\nexport { devices };\nconst b = (p, id) => p.locator(\x60[data-test="\x24{id}"]\x60);\nasync function hit(p,id,touch) { const n=b(p,id); await n.scrollIntoViewIfNeeded(); if(touch) await n.tap(); else await n.click(); }\nasync function guarded(p, device, step) { if (device.portrait) (p.guardedSteps ||= []).push(step); }\nexport async function setup(p,device) {\n${packingText.slice(start, end + 'await b(p,"mix-ok").waitFor();'.length)}\n}`, { context });
 await packing.link(name => exportsModule(name === "appearance" ? { confirmAppearanceSetup } : { confirmWaterSetup }));
 await packing.evaluate();
-for (const device of packing.namespace.devices) await reachesMix(`packing ${device.name}`, p => packing.namespace.setup(p, device), device.touch);
+assert(packing.namespace.devices.some(device => device.portrait), "at least one packing device rotates through the guard");
+for (const device of packing.namespace.devices) {
+  const page = await reachesMix(`packing ${device.name}`, p => packing.namespace.setup(p, device), device.touch);
+  // guardedSteps は VM の中で作った配列なので、こちらの配列へ写してから比べる。
+  assert.deepEqual(Array.from(page.guardedSteps || []), device.portrait ? ["water"] : [], `packing ${device.name}: rotate guard only on upright phones, before water confirmation`);
+}
 
 for (const [name, run] of [["shop", p => tests.get("store-leaves-without-own-stock").fn(p)], ["packing", p => packing.namespace.setup(p, { touch: false })]]) {
   const error = new Error("missing water confirmation"); const page = fakePage({ waterError: error });

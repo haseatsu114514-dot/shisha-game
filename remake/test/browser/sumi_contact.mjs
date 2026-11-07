@@ -41,7 +41,10 @@ await suite('sumi-contact', async check => {
       for (const row of result.saved) {
         const expected = row.original.includes('sumi') ? row.original : [...row.original, 'sumi'];
         assert.deepEqual(row.auto.contacts, expected); assert.deepEqual(row.manual.contacts, expected);
-        assert.deepEqual(row.auto.points, { hiyori: 33, minto: 20 });
+        // schema 27 の移行（#2750）は、旧セーブで開始時から知っているスミさん・つむぎを♥1（9点）へ底上げする。
+        // 現行の保存はそのまま読む。どちらも、スミさんの連絡先の補完では好感度を足さない。
+        assert.deepEqual(row.auto.points, row.schema < 27
+          ? { hiyori: 33, minto: 20, sumi: 9, tsumugi: 9 } : { hiyori: 33, minto: 20 });
         assert.deepEqual(row.manual.points, row.auto.points); assert.deepEqual(row.manual.flags, row.auto.flags);
         assert.equal(row.count, 1); assert.equal(row.story, 0); assert(!row.known);
         assert(row.invite && row.rawPreserved, `No reunion invite for ${JSON.stringify(row)}`);
