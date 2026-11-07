@@ -215,6 +215,8 @@ const chapter = await load(await read("../js/chapters/ch1.js"), {
   state: { flags: {} }, hooks: {}, CRAFT_STEPS: [],
   DB: { dialogues: { ch1_cold_open: { dialogue_id: "ch1_cold_open", metadata: { effect: "smoke" }, lines: [] } } },
   setBg: async () => {},
+  // 序詩（巻頭ポエム。scenes/chapter-poem.js）はコールドオープンの前に別の部品が読む。ここでは読み終えた扱いにする。
+  playChapterPoem: async () => true,
   mountColdOpen: () => { mounted = true; return { ready: new Promise(() => {}), stop() {} }; },
   play: dialogue => { firstDialogue = dialogue; return new Promise(() => {}); },
 });

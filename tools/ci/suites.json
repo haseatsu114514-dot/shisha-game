@@ -264,6 +264,12 @@
       "run": ["node remake/test/ch1_interval_connection.mjs"]
     },
     {
+      "id": "chapter-poems",
+      "title": "Opening poems: dialogue data, document match and chapter-title wiring",
+      "kind": "quick",
+      "run": ["node remake/test/chapter_poems.mjs"]
+    },
+    {
       "id": "load-save-failure",
       "title": "Slot load persistence failure and state rollback",
       "kind": "quick",
@@ -1972,6 +1978,22 @@
         "ARTIFACT_DIR=.codex/artifacts/chapter-titles node remake/test/browser/chapter_titles.mjs",
         "ARTIFACT_DIR=.codex/artifacts/ch1-title-motion node remake/test/browser/ch1_title_motion.mjs"
       ]
+    },
+    {
+      "id": "chapter-poems-browser",
+      "title": "Opening poems play after the title screen and each chapter title, once",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 6,
+      "paths": [
+        "remake/js/scenes/chapter-poem.js",
+        "remake/js/chapters/ch1.js",
+        "remake/js/chapters/ch2.js",
+        "remake/js/core/data.js",
+        "data/dialogue/chapter_poems.json",
+        "remake/test/browser/chapter_poems.mjs"
+      ],
+      "run": ["ARTIFACT_DIR=.codex/artifacts/chapter-poems node remake/test/browser/chapter_poems.mjs"]
     },
     {
       "id": "craft-scenes",

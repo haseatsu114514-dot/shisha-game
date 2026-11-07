@@ -6,7 +6,7 @@
 |---|---|---|
 | [story_and_structure.md](story_and_structure.md) | 作品の主題（空・縁起・分人）、舞台の街、第1〜5章の筋、大会と時系列、七人の関係と後日談 | `data/story_routes.json`（正式ヒロイン名簿・後半台本の再生順） |
 | [character_profiles.md](character_profiles.md) | 人物の補足設定（年齢・外見・口調・呼称・審査員システム・恋愛描写の方針） | `data/characters.json`（基本情報の正本） |
-| [chant_poems.md](chant_poems.md) | 巻頭ポエム集（序詩＋第1〜5章の章頭詩）を主軸に、参考として技型（工程の詠唱「煙道」・人物の起動句）と一行ナレーション。素材集で、ゲーム内への接続は未実装 | `docs/owner_requests.md` OSP01〜04 |
+| [chant_poems.md](chant_poems.md) | 巻頭ポエム集（序詩＋第1〜5章の章頭詩）と一行ナレーション10本。巻頭ポエムはゲーム内に接続済み（`data/dialogue/chapter_poems.json`）、一行ナレーションは素材のみ | `docs/owner_requests.md` OSP01〜05 |
 
 - 正式タイトルは **「水煙前線 -EN:CODE-」**。旧タイトル「煙の向こう側」「ケムリの向こう側」は使わない。
 - 優先順位は、最新のオーナー指示 ＞ `docs/master_spec.md` / `docs/owner_requests.md` ＞ 本フォルダ（人物の基本情報は `data/characters.json` が現行正本）。

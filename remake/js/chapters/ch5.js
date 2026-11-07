@@ -14,6 +14,7 @@ import { layers, showScreen, setBg, enterScene, chapterTitle, modal } from "../c
 import { sceneMoment } from "../core/scene-motions.js";
 import { saveFlow } from "../scenes/saves.js";
 import { play, hooks, vnTest } from "../vn/engine.js";
+import { playChapterPoem } from "../scenes/chapter-poem.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { selectStoryEnding } from "../core/story-routes.js";
@@ -152,6 +153,7 @@ async function openChapter(advance) {
       if (!current(owner)) return;
       await chapterTitle(CHAPTER_TITLE_ART.find(entry => entry.chapter === 5));
       if (!current(owner)) return;
+      if (!await playChapterPoem(5, { owner, current })) return; // 章タイトルの直後の巻頭ポエム
       progress.titleSeen = true;
       save();
     }

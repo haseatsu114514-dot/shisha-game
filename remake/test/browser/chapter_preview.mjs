@@ -87,12 +87,15 @@ await suite("chapter-preview", async check => {
     assert.deepEqual(await storageSnapshot(page),before,'章末の表示で予告既読を保存しない');
     await assertFits(page,'[data-test="ch3-aftermath-chapter-four"]');
     if (seen===false) {
+      // 章タイトルの直後に第4章の巻頭ポエム（poem_ch4）が続くので、会話は自動送りにする。
+      await page.evaluate(async()=>{(await import('./js/vn/engine.js')).vnTest.turbo=true;});
       await page.locator('[data-test="ch3-aftermath-chapter-four"]').click();
       const title=page.locator('.chapter-card.show[data-chapter="第四章"]');
       await title.waitFor({timeout:30000});
       assert.equal(await page.locator(preview).count(),0);
       await page.locator('.chapter-title-shield').waitFor({state:'detached',timeout:12000});
       assert.equal(await page.evaluate(()=>__remake.state.chapter),4);
+      await page.waitForFunction(()=>__remake.state.flags._ch4.titleSeen); // 詩を読み終えてから立つ
       assert(await page.evaluate(()=>__remake.state.flags._ch4.titleSeen));
     }
   });
@@ -135,12 +138,15 @@ await suite("chapter-preview", async check => {
     assert.deepEqual(await storageSnapshot(page),before,'章末の表示で予告既読を保存しない');
     await assertFits(page,'[data-test="ch4-chapter-five"]');
     if (seen===false) {
+      // 章タイトルの直後に第5章の巻頭ポエム（poem_ch5）が続くので、会話は自動送りにする。
+      await page.evaluate(async()=>{(await import('./js/vn/engine.js')).vnTest.turbo=true;});
       await page.locator('[data-test="ch4-chapter-five"]').click();
       const title=page.locator('.chapter-card.show[data-chapter="第五章"]');
       await title.waitFor({timeout:30000});
       assert.equal(await page.locator(preview).count(),0);
       await page.locator('.chapter-title-shield').waitFor({state:'detached',timeout:12000});
       assert.equal(await page.evaluate(()=>__remake.state.chapter),5);
+      await page.waitForFunction(()=>__remake.state.flags._ch5.titleSeen); // 詩を読み終えてから立つ
       assert(await page.evaluate(()=>__remake.state.flags._ch5.titleSeen));
     }
   });

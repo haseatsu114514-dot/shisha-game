@@ -1,0 +1,285 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "poem_prologue",
+      "metadata": {},
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙は 形を 持たぬ　ゆえに 人は 器を 与え"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "器に 水を 与え　水に 名を 与えた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "だが 煙は 知っている"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "己が 誰のものでも ないことを"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "葉のもの　炭のもの　手のもの 風のもの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そして ──　今 それを 吸う者のもの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "熱と 縁の 交わる 一点に　一筋 煙が 立つ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その名を 人は　水煙と 呼ぶ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "poem_ch1",
+      "metadata": {},
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "路地には 音がある　シャッターの 上がる音"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "氷の ほどける音　そして 名もない 靴音"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "靴音は 注文より 先に 語る　疲れた 靴音"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "急ぐ 靴音　誰かを 待つ 靴音"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "憧れは 遠くを 見る　仕事は 足元を 見る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その 二つの 間を　細い 息が 通っていく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙は まだ 誰のものでもない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今夜 最初の 一人に 渡すまで"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "poem_ch2",
+      "metadata": {},
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "壁は 高さで 壁になるのではない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "向こう側を 知りたがる 目が　壁を 壁にする"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "こちらから 見れば　越えられぬ 才能"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あちらから 見れば　越えてこられぬ 才能"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王冠の 内側は いつも 空っぽだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "空っぽの冠を 戴いた者は"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "何を 入れて 歩けばいい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "poem_ch3",
+      "metadata": {},
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙は 嘘が 上手い　輪郭を ぼかし"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "見たいものだけを 見せてくれる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鏡は 嘘が 下手だ　見たくないものまで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そのまま 映してしまう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その二つを 同じ部屋に 置いた夜　嘘つきたちは"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめて 己の 顔を 見る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吐く煙で 隠すか　顔を 上げて 見るか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜は まだ 選ばせてくれる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "poem_ch4",
+      "metadata": {},
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙は 手渡しできない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "渡せるのは 器と 火と 手順だけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それでも 煙は 渡ってきた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "名も知らぬ 誰かの 一服から"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "別の 誰かの 一服へ　年月を 越えて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "渡した者は 渡したことを 忘れ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受け取った者は 受け取ったことに 気づかない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それでいい　継承とは"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "気づかぬうちに 誰かの 手つきで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "己の 手が 動いていること"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "poem_ch5",
+      "metadata": {},
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "同じ葉 同じ器具 同じ十二グラム"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "条件が すべて 揃ったとき"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それでも 残るものが あるとしたら"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "数字に ならなかった もの　あるいは"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "数字に した 誰かの 手"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神は 舞台の 上から 降りてくる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "だが 舞台を 組んだのは　いつも 人間の 手だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "幕が 上がる　同じ葉で 二本"
+        }
+      ]
+    }
+  ]
+}

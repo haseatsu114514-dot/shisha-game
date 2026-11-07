@@ -11,6 +11,7 @@ import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { play, hooks } from "../vn/engine.js";
+import { playChapterPoem } from "../scenes/chapter-poem.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { shinkansenRide, sceneMoment } from "../core/scene-motions.js";
 import { onDialogueEnter } from "../daily/romance.js";
@@ -229,6 +230,7 @@ async function openChapter(advance) {
       if (!current(owner)) return;
       await chapterTitle(chapterTitleEntry(3)); // 登録済みの章題（第4・5章と同じ・#2688 F6）
       if (!current(owner)) return;
+      if (!await playChapterPoem(3, { owner, current })) return; // 章タイトルの直後の巻頭ポエム
       progress.titleSeen = true;
       save();
     }
@@ -274,6 +276,7 @@ async function renderPrologue(owner) {
   if (progress.prologueStep === 2) {
     await chapterTitle(chapterTitleEntry(3)); // 登録済みの章題（第4・5章と同じ・#2688 F6）
     if (!current(owner)) return;
+    if (!await playChapterPoem(3, { owner, current })) return; // 章タイトルの直後の巻頭ポエム
     progress.titleSeen = true;
     progress.prologueStep = 3;
     save();
@@ -314,6 +317,7 @@ async function renderPrep(owner) {
   if (prep.step === 2) {
     await chapterTitle(chapterTitleEntry(3)); // 登録済みの章題（第4・5章と同じ・#2688 F6）
     if (!current(owner)) return;
+    if (!await playChapterPoem(3, { owner, current })) return; // 章タイトルの直後の巻頭ポエム
     progress.titleSeen = true;
     prep.step = 3;
     save();

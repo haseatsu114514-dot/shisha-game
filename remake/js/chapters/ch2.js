@@ -13,6 +13,7 @@ import { showHud } from "../daily/hud.js";
 import { openMenu } from "../daily/menu.js";
 import { openLime, unreadCount } from "../daily/phone.js";
 import { play } from "../vn/engine.js";
+import { playChapterPoem } from "../scenes/chapter-poem.js";
 import { MAP, STATION, STOPS, ROOMS, loadChapterTwoDialogues, loadPreparationDialogues } from "./ch2-city-data.js";
 import { trainRide } from "../core/scene-motions.js";
 import { cueTransition } from "../core/transitions.js";
@@ -147,6 +148,7 @@ async function continueDayOne() {
         await setBg(bgUrl("bg_tonari_inside", "day"), { instant: true });
         await chapterTitle(chapterTitleEntry(2)); // 登録済みの章題（#2688 F6）
         if (!current(owner)) return;
+        if (!await playChapterPoem(2, { owner, current })) return; // 章タイトルの直後の巻頭ポエム
         progress().titleSeen = true;
         save();
       }

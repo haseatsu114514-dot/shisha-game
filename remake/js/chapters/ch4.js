@@ -13,6 +13,7 @@ import { saveFlow } from "../scenes/saves.js";
 import { planeRide } from "../core/scene-motions.js";
 import { defeatFade } from "../core/transitions.js";
 import { play, hooks } from "../vn/engine.js";
+import { playChapterPoem } from "../scenes/chapter-poem.js";
 import { chapterGrowthChart } from "../daily/status.js";
 import { paidAction } from "../core/stats.js";
 import { awardChapterClearExp, awardSceneExp, presentNight, consultLessons } from "../core/growth.js";
@@ -112,6 +113,7 @@ async function openChapter(advance) {
       if (!current(owner)) return;
       await chapterTitle(CHAPTER_TITLE_ART.find(entry => entry.chapter === 4));
       if (!current(owner)) return;
+      if (!await playChapterPoem(4, { owner, current })) return; // 章タイトルの直後の巻頭ポエム
       progress.titleSeen = true;
       save();
     }

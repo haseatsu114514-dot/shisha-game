@@ -6,6 +6,7 @@ import { playEntrance, CH1_EVE_NOTES } from "./tournament-entrance.js";
 import { playTournamentArrival } from "./ch1-arrival.js";
 import { DB, bgUrl, faceIconUrl, realName, displayName, loadTournamentCraftDialogue } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
+import { playChapterPoem } from "../scenes/chapter-poem.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen, loadingNotice } from "../core/ui.js";
 import { sceneMoment } from "../core/scene-motions.js";
@@ -148,6 +149,8 @@ async function openingPart() {
   if (!progress.introDone) {
     stopBgm();
     await setBg(null, { instant: true }); // 先に暗転を置いてから場面を重ねる（後から来た暗転に場面が隠れないように）
+    // 巻頭ポエム: 序詩（タイトルの直後。brand/chant_poems.md）
+    if (!await playChapterPoem("prologue") || state !== owner) return false;
     // コールドオープン: 1年後の世界大会の決勝の一瞬（顔も会場の全景も見せない）。
     // 場面は背景レイヤーに置く＝会話の文字より奥（手前に置くと文字が隠れて真っ暗に見えていた）
     const scene = mountColdOpen();
@@ -159,6 +162,7 @@ async function openingPart() {
     await sleep(600);
     const titleResult = await playCh1Title();
     if (titleResult.cancelled || state !== owner) return false;
+    if (!await playChapterPoem(1) || state !== owner) return false; // 章タイトルの直後の巻頭ポエム
     playBgm("tonari");
     await playTonariOpening();
     progress.introDone = true;
