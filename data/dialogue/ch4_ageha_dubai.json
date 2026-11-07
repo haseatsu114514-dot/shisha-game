@@ -1,5 +1,5 @@
 {
-  "comment": "来訪予定が確定し、実際に到着した恋人用。同行者の決定だけで再生しない。",
+  "comment": "来訪予定が確定し、実際に到着した恋人用。同行者の決定だけで再生しない。前夜祭の日の昼、前夜祭より前に読む。前夜の過ごし方（誘う・ひとりで休む・重なった予定の保留）のどれにもつながるよう、会う約束はしない（頼むのはLIMEの一言だけ）。前夜デート（tournament_date_ageha）の静かなあげはと対になるよう、到着はいつもの明るさから入る。",
   "dialogues": [
     {
       "dialogue_id": "ch4_ageha_dubai_girlfriend",
@@ -11,7 +11,7 @@
         },
         {
           "speaker": "ageha",
-          "face": "normal",
+          "face": "smile",
           "text": "着いたー！ 連絡した便、ちゃんと乗れたし。はい、差し入れ"
         },
         {
@@ -22,12 +22,97 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "今日は休んで、明日は最前で見る。彼女特権ってやつ？ｗ"
+          "text": "でしょ？ 店のシフト、みんなに代わってもらったし"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはが、スマホを高く掲げた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "とりま、着いた記念！ ハジメっち、もっと寄って"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シャッターの音が二回鳴った。一枚目は、俺の目が半分閉じていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "これ、ギャル友に送る用。……二枚目は、うちだけの用"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "一枚目、消してほしいんだけど"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "やだ。半目のハジメっち、レアだしｗ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホを下ろすと、あげはは指を握っては開いた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "飛行機、乾燥やばくて指かぴかぴ。……でも、今日はちゃんと動く"
         },
         {
           "speaker": "hajime",
           "face": "normal",
+          "text": "よかった。無理な日は、無理って言ってね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今夜、大会の前夜祭があるんだ。少し顔を出してくる"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "知ってる、SNSで流れてきた。うちは部屋で、ちょい寝る"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "今日は休んで、明日は最前で見る。彼女特権ってやつ？ｗ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "顔むくんでたら、映えないし"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言ってから、あげはは俺の袖をつまんで、少しだけ下を向いた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……あと、練習。前夜祭が終わったら、LIMEちょうだい"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "『おやすみ』の一言でいいから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
           "text": "うん。……来てくれて、ほんとにうれしい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "エレベーターの中から、あげはが袋を振っていた。"
         }
       ]
     }
