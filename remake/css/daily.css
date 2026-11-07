@@ -1814,11 +1814,13 @@ body:not(.game-ds) .map .spot-pin .pin-person { flex-basis: 48px; width: 48px; h
 body:not(.game-ds) .map .spot-pin .pin-unknown b { font-size: max(22px, var(--mui-text)); }
 body:not(.game-ds) .map .spot-pin .pin-visual:has(.pin-person:nth-child(3)) .evt-badge { top: 16px; }
 /* 顔を 48px にした分、2人並ぶと右の顔が右上の「!」にかかる。2人のときは顔の列を「!」の左で終わらせ、左へ伸ばす。 */
-body:not(.game-ds) .map .spot-pin .pin-visual:has(.pin-person:nth-child(2)):not(:has(.pin-person:nth-child(3))) .pin-people { left: auto; right: calc(var(--evt-d) - 8px + 3px); }
+body:not(.game-ds) .map .spot-pin .pin-visual:has(.pin-person:nth-child(2)):not(:has(.pin-person:nth-child(3))) .pin-people { left: auto; right: 16px; }
 /* 「!」の丸は文字（実寸 11px 以上）に比例させ、もとの比（21px の丸に 14px・字面を上へ 2px）を保つ（字面が丸の中央からずれない）。 */
 body:not(.game-ds) .map { --evt-d: max(21px, calc(var(--mui-text) * 1.5)); }
 body:not(.game-ds) .map .evt-badge {
   width: var(--evt-d); height: var(--evt-d); font-size: calc(var(--evt-d) * 14 / 21); padding-bottom: calc(var(--evt-d) * 2 / 21);
+  /* 丸が大きくなっても、看板にかかる左下の角は 21px の時と同じ所（右上から内へ 13px）に置き、右上の外へ伸ばす（ロゴ・顔に重ならない） */
+  top: calc(13px - var(--evt-d)); right: calc(13px - var(--evt-d));
 }
 /* 観音堂の火種の数（.hidane-badge）は数字なので、文字は丸の大きさに比例させ（もとの 20px に 12px の比）、
    丸の大きさを下限に横は数字に合わせて伸ばす（「!」の文字の下限で数字が丸からはみ出さない）。 */
