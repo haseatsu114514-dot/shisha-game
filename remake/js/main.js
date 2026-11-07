@@ -38,7 +38,8 @@ function fitStage() {
   const k = Math.min(w / 1280, h / 720);
   stage.style.setProperty("--k", String(k));
   // スマホ規格（#2851）: 横持ちスマホ（Plus/Pro Max の 0.60 も含む）で共通部品の文字・タップ部品を大きくする。css/phone-density.css
-  if (k < PHONE_DENSITY_K) document.documentElement.dataset.density = "phone";
+  // 横長の画面だけ（PC の縦長ウィンドウや縦持ちは対象外。縦持ちのスマホは横向きの案内になる）
+  if (k < PHONE_DENSITY_K && w > h) document.documentElement.dataset.density = "phone";
   else delete document.documentElement.dataset.density;
   // ワイドステージ（#2861）: 横長の画面では黒帯ぶんだけステージを広げる（高さは720のまま・最大1600）。
   // 中身の層は中央1280に置いたまま、背景と端へ出す部品だけが広がった幅を使う（base.css）。
