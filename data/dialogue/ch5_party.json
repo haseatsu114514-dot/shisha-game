@@ -31,13 +31,13 @@
     },
     {
       "dialogue_id": "ch5_party_seat_lover",
-      "comment": "その場の恋人がちょうど1人で、その人の隣に座った時（ch5-party-plan.js）。恋人ごとの席は branches に書き、まだ無い人は default。みんと（#2665）: 恋人なら面識・本名・『お姉さん』の正体は確定している（bonds.js の締めくくり条件）。ドバイへ同行したかどうかに触れない。",
+      "comment": "その場の恋人がちょうど1人で、その人の隣に座った時（ch5-party-plan.js）。恋人ごとの席は branches に書き、会ったことがある（met）→恋人（lover）の順に一人ずつ確かめる。まだ席の無い人は default。恋人なら告白は読み終えている。ドバイへ同行したか、恋人の節目を読んだかには触れない（#2665）。みんと: 面識・本名・『お姉さん』の正体は確定している（bonds.js の締めくくり条件）。つむぎ: 第4章ラストの面接の後、tonariで働いている（#2637）。今日は休みで客の側。",
       "lines": [
-        { "type": "condition", "condition_type": "met", "char_id": "minto", "next_true": "check_minto", "next_false": "default" }
+        { "type": "condition", "condition_type": "met", "char_id": "minto", "next_true": "check_minto", "next_false": "met_tsumugi" }
       ],
       "branches": {
         "check_minto": [
-          { "type": "condition", "condition_type": "lover", "char_id": "minto", "next_true": "minto", "next_false": "default" }
+          { "type": "condition", "condition_type": "lover", "char_id": "minto", "next_true": "minto", "next_false": "met_tsumugi" }
         ],
         "minto": [
           { "speaker": "", "face": "", "text": "栞さんが座っていたのは、カウンターのいちばん端の席だった。" },
@@ -62,6 +62,34 @@
           { "speaker": "", "face": "", "text": "一本のホースを、二人で回した。ミントの煙が、カウンターの端でゆっくりほどけていく。" },
           { "speaker": "minto", "face": "ura_smile", "text": "……また、ここで一台作ってね。この席、空けとくから" },
           { "speaker": "hajime", "face": "smile", "text": "うん。いつでも" }
+        ],
+        "met_tsumugi": [
+          { "type": "condition", "condition_type": "met", "char_id": "tsumugi", "next_true": "check_tsumugi", "next_false": "default" }
+        ],
+        "check_tsumugi": [
+          { "type": "condition", "condition_type": "lover", "char_id": "tsumugi", "next_true": "tsumugi", "next_false": "default" }
+        ],
+        "tsumugi": [
+          { "speaker": "", "face": "", "text": "今日のつむぎは、エプロンをしていなかった。いつもの紫のパーカーだ。" },
+          { "speaker": "tsumugi", "face": "normal", "text": "……お疲れさまです、店長" },
+          { "speaker": "hajime", "face": "surprise", "text": "今日は、店長も休み" },
+          { "speaker": "tsumugi", "face": "smile", "text": "……じゃあ、はじめさん。隣、どうぞ" },
+          { "speaker": "", "face": "", "text": "そう言いながら、つむぎの目は三番の席の炭を追っていた。" },
+          { "speaker": "hajime", "face": "normal", "text": "気になる？" },
+          { "speaker": "tsumugi", "face": "normal", "text": "……煙、少し細いです。すみません、つい" },
+          { "speaker": "hajime", "face": "smile", "text": "今日は客でしょ。スミさんが見てるよ" },
+          { "speaker": "", "face": "", "text": "カウンターの向こうで、スミさんが黙って炭を寄せた。つむぎが、小さく息をついた。" },
+          { "speaker": "", "face": "", "text": "膝の上のタブレットは、閉じたままだった。" },
+          { "speaker": "hajime", "face": "normal", "text": "描かないの？ 今日、いい顔の人ばっかりだよ" },
+          { "speaker": "tsumugi", "face": "normal", "text": "……今日は、描かないで覚えておきます" },
+          { "speaker": "tsumugi", "face": "smile", "text": "手が、ふさがってるので" },
+          { "speaker": "", "face": "", "text": "カウンターの下で、つむぎの指が俺の指をつまんだ。誰にも見えない高さだった。" },
+          { "speaker": "hajime", "face": "normal", "text": "それ、前にも聞いた" },
+          { "speaker": "tsumugi", "face": "surprise", "text": "……覚えてたんですね" },
+          { "speaker": "tsumugi", "face": "normal", "text": "世界一の絵は、きっと、みんなが撮ったり描いたりしてくれます" },
+          { "speaker": "tsumugi", "face": "smile", "text": "私は、今日のはじめさんの隣がいいです。特等席なので" },
+          { "speaker": "hajime", "face": "smile", "text": "うん。特等席" },
+          { "speaker": "", "face": "", "text": "煙の向こうで、誰かが笑った。つままれた指は、グラスが空になっても離れなかった。" }
         ],
         "default": [
           { "speaker": "", "face": "", "text": "隣に座ると、グラスが小さく触れ合った。" },
