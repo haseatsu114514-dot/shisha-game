@@ -166,9 +166,13 @@ await suite("lesson-consult-coverage", async (check) => {
       const steve = await visit("ch5_tokyo_steve");
       const volk = await visit("ch5_tokyo_volk");
       const volkAgain = await visit("ch5_tokyo_volk");
-      return { steve, volk, volkAgain, saved: JSON.parse(localStorage.getItem("suien_remake_save")).finales };
+      const saved = JSON.parse(localStorage.getItem("suien_remake_save")).finales;
+      // その場で交換した二人から、日を置いた第5章の朝に友人のLIME（雑談）が届く候補になる
+      s.day += 10;
+      const friendLime = (await import("./js/daily/bonds.js")).friendMessages().map((m) => [m.sender, m.type]).sort();
+      return { steve, volk, volkAgain, saved, friendLime };
     });
-    const { steve, volk, volkAgain, saved } = visits;
+    const { steve, volk, volkAgain, saved, friendLime } = visits;
     assert.deepEqual(steve.result, { used: true, exerted: true });
     assert.equal(steve.spent, 0, "the finale is not a paid cup");
     assert.equal(steve.talks, 0, "the small-talk rotation does not advance");
@@ -187,23 +191,25 @@ await suite("lesson-consult-coverage", async (check) => {
     assert(volk.mint >= 50, `the blast mint leaves come with the hagal (${volk.mint}g)`);
     assert.match(volk.text, /祖母に言われたこと/, "Volk's chapter 5 text");
     assert.doesNotMatch(volk.text, /布の包み/, "not the chapter 3 text");
-    // ヴォルクの第5章の文は連絡を約束しない（また店に来る約束）。LIMEは交換しないまま
-    assert.doesNotMatch(volk.text, /LIME|連絡先/, "Volk's chapter 5 text does not rely on LIME");
-    assert.equal(volk.volkLime, false);
+    // ヴォルクも、第3章でLIMEを交換していない人とは「書いたら、送れ」と頼まれたその場で交換し、「また来い」で着地する
+    // （2026-11-07 オーナー判断「ヴォルクの第5章♥5エンディングでの LIME 即時交換は付与する」）
+    assert.match(volk.text, /書いたら、送れ[\s\S]*LIMEを交換してもらえますか[\s\S]*連絡先を登録し[\s\S]*また来い/, "no LIME yet: Volk exchanges it on the spot");
+    assert.equal(volk.volkLime, true, "the exchange is recorded");
+    assert.deepEqual(friendLime, [["steve", "chat"], ["volk", "chat"]], "friend LIMEs can arrive from both afterwards");
     assert.deepEqual(volkAgain.result, { used: true, exerted: true });
     assert.equal(volkAgain.spent, 4000, "the next visit is an ordinary paid visit");
     assert.equal(volkAgain.talks, 1);
     assert.deepEqual(volkAgain.learned, ["M-W5"], "the lesson comes on the next visit");
-    assert.doesNotMatch(volkAgain.text, /祖母に言われたこと/, "the finale plays once");
+    assert.doesNotMatch(volkAgain.text, /祖母に言われたこと|連絡先を登録し/, "the finale and the exchange play once");
     assert.equal(volkAgain.volkHagal, 1);
     assert.deepEqual([saved.steve?.chapter, saved.volk?.chapter], [5, 5]);
   });
 
   // (b3) 締めくくりの来店は代金を取らないので、所持金が4,000円に足りなくても地図の行き先は選べて（利用料は0円）、締めくくりを迎えられる。
-  // 締めくくりの後のふだんの来店は4,000円で、足りなければ断る。第3章でLIMEを交換済みのスティーブは、締めくくりで交換し直さない。
+  // 締めくくりの後のふだんの来店は4,000円で、足りなければ断る。第3章でLIMEを交換済みのスティーブ・ヴォルクは、締めくくりで交換し直さない。
   await check("ch5-tokyo-rival-finales-are-free-even-short-of-money", async (page) => {
     await chapterFive(page, { region: "tokyo", met: { steve: true, volk: true, mukai_master: true }, affinity: { steve: 66, volk: 66 }, lit: [],
-      money: 3000, flags: { _lime_contact_steve: true } });
+      money: 3000, flags: { _lime_contact_steve: true, _lime_contact_volk: true } });
     const result = await page.evaluate(async () => {
       const tokyo = await import("./js/chapters/ch5-tokyo.js"), access = await import("./js/daily/spot-access.js");
       const vn = await import("./js/vn/engine.js"), s = window.__remake.state;
@@ -234,6 +240,8 @@ await suite("lesson-consult-coverage", async (check) => {
     }
     assert.match(steve.text, /送ります。気づいた日だけ/);
     assert.doesNotMatch(steve.text, /LIMEを交換しておきませんか|連絡先を交換した/, "already on LIME since chapter 3: no second exchange");
+    assert.match(volk.text, /順番は違っても、両方を書くなら構わない[\s\S]*また来い/, "Volk's chapter 5 text");
+    assert.doesNotMatch(volk.text, /書いたら、送れ|LIMEを交換してもらえますか|連絡先を登録し/, "Volk: already on LIME since chapter 3: no second exchange");
     assert.deepEqual(after, { steve: { cost: 4000, ok: false }, volk: { cost: 4000, ok: false } }, "after the finale the usual 4,000 yen fee is back");
     assert.deepEqual(steveAgain.result, { used: false, exerted: false }, "an ordinary visit with 3,000 yen is still refused");
     assert.equal(steveAgain.spent, 0);
