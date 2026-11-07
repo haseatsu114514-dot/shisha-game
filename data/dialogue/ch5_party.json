@@ -166,10 +166,10 @@
           { "speaker": "", "face": "", "text": "肩に、ことんと頭が乗った。紅茶が冷めるまで、そのままにしておいた。" }
         ],
         "met_samechan": [
-          { "type": "condition", "condition_type": "met", "char_id": "samechan", "next_true": "check_samechan", "next_false": "default" }
+          { "type": "condition", "condition_type": "met", "char_id": "samechan", "next_true": "check_samechan", "next_false": "met_hiyori" }
         ],
         "check_samechan": [
-          { "type": "condition", "condition_type": "lover", "char_id": "samechan", "next_true": "samechan", "next_false": "default" }
+          { "type": "condition", "condition_type": "lover", "char_id": "samechan", "next_true": "samechan", "next_false": "met_hiyori" }
         ],
         "samechan": [
           { "speaker": "", "face": "", "text": "サメちゃんは、カウンターの端で、コロちゃんにグラスを持たせようとしていた。" },
@@ -189,6 +189,29 @@
           { "speaker": "samechan", "face": "normal", "text": "次は、シーシャークでも祝うのじゃ。お主の席、空けておく" },
           { "speaker": "hajime", "face": "smile", "text": "はい。必ず行きます" },
           { "speaker": "", "face": "", "text": "グラスを置いたサメちゃんの手が、俺の手をきゅっと握った。今度は、自分の手で。" }
+        ],
+        "met_hiyori": [
+          { "type": "condition", "condition_type": "met", "char_id": "hiyori", "next_true": "check_hiyori", "next_false": "default" }
+        ],
+        "check_hiyori": [
+          { "type": "condition", "condition_type": "lover", "char_id": "hiyori", "next_true": "hiyori", "next_false": "default" }
+        ],
+        "hiyori": [
+          { "speaker": "", "face": "", "text": "ひよりさんは、カウンターの端で、物憂げに窓の外を見ていた。" },
+          { "speaker": "hiyori", "face": "normal", "text": "……世界一の光って、私には少し眩しすぎるね", "inner": "本物来た。近い。世界一が近い" },
+          { "speaker": "hajime", "face": "normal", "text": "窓の外、真っ暗ですよ" },
+          { "speaker": "hiyori", "face": "sad", "text": "……闇に、溶けていたかったの", "inner": "ツッコミが的確すぎる" },
+          { "speaker": "", "face": "", "text": "そう言いながら、ひよりさんは俺の空いたグラスに、さっと氷を足した。" },
+          { "speaker": "hajime", "face": "surprise", "text": "早い" },
+          { "speaker": "hiyori", "face": "smile", "text": "製氷機の場所、変わってないんだもん。元バイトの手は、覚えてるの" },
+          { "speaker": "", "face": "", "text": "奥で、スミさんがこっちを見た。何か言いかけて、やめたらしい。" },
+          { "speaker": "hiyori", "face": "normal", "text": "……私がいた頃のtonariから、世界一が出たんだね", "inner": "スミさん、絶対ちょっと泣いた。私も泣きそう" },
+          { "speaker": "hiyori", "face": "normal", "text": "後輩が世界一なんて、先輩としては、すごく誇らしいです" },
+          { "speaker": "hajime", "face": "normal", "text": "先輩にそう言われると、照れます" },
+          { "speaker": "hiyori", "face": "love_blush", "text": "……彼氏としても、誇らしいよ。儚くないほうの声で、言っとくね" },
+          { "speaker": "hajime", "face": "smile", "text": "俺も、ひよりさんが隣にいてくれて、うれしいです" },
+          { "speaker": "hiyori", "face": "smile", "text": "じゃあ、今夜は消えないでおいてあげる", "inner": "終電まで、絶対ここにいる" },
+          { "speaker": "", "face": "", "text": "ひよりさんが、カウンターの下で俺の袖をつまんだ。捕まえていてほしい時の、つまみ方だった。" }
         ],
         "default": [
           { "speaker": "", "face": "", "text": "隣に座ると、グラスが小さく触れ合った。" },
