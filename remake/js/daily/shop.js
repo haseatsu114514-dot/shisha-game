@@ -436,7 +436,8 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     root.addEventListener("click", (event) => {
       if (!live()) { event.preventDefault(); event.stopImmediatePropagation(); return; }
       // くじの表示・既存担当のdraw処理はそのまま、初回だけ購入入力を手前で断る。
-      if (firstErrand && event.target.closest?.(".kuji-row button")) {
+      // 「?」（案内）は買い物ではないので断らない。
+      if (firstErrand && event.target.closest?.(".kuji-row button:not(.kuji-help)")) {
         event.preventDefault(); event.stopImmediatePropagation(); refuseOtherPurchase();
       }
     }, true);
