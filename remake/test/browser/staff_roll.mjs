@@ -218,6 +218,26 @@ await suite("staff-roll", async check => {
     assert.equal((await get(page)).flags._ch5.read.shuraba_open, undefined, "The party already had the conflict");
   });
 
+  // #2815: ヌール（ドバイ・テレビ電話）が加わるスタッフロールの後の修羅場は、開始より前に着信をつなぐ。
+  // 打ち上げで反応まで読んだ恋人の記録があれば、その後に恋人になった相手（凛想）は話し直しへ送らない。
+  await check("post-roll-shuraba-connects-noor-first-and-skips-a-lover-who-did-not-react", async page => {
+    await seed(page, { done: true, seen: true, lovers: ["noor", "tsumugi"], flags: { _ch5_after_party: true } });
+    await openSlot(page);
+    await page.locator(scene("shuraba_noor_call")).waitFor({ timeout: 60000 });
+    assert.deepEqual((await get(page)).flags._ch5.postEnding.scenes.slice(0, 2), ["shuraba_noor_call", "shuraba_open"]);
+    await page.locator(dt("ch5-continue")).click();
+    await page.locator(scene(talk("noor"))).waitFor({ timeout: 60000 });
+    const read = (await get(page)).flags._ch5.read;
+    for (const id of ["shuraba_noor_call", "shuraba_open", "shuraba_noor", "shuraba_tsumugi"]) assert.equal(read[id], true, id);
+    await seed(page, { done: true, seen: true, lovers: ["tsumugi", "minto", "rio"],
+      flags: { _ch5_after_party: true, _story_shuraba_unresolved: true, _ch5_party_conflict: ["tsumugi", "minto"] } });
+    await openSlot(page);
+    await page.locator(scene("ending_relationship_pending")).waitFor({ timeout: 60000 });
+    const post = (await get(page)).flags._ch5.postEnding;
+    assert.deepEqual(post.unresolved, ["tsumugi", "minto"]);
+    assert(!post.scenes.includes(talk("rio")), "Rio did not react at the party, so her talk is not read");
+  });
+
   await check("first-roll-ignores-keys-and-clicks-until-it-ends", async page => {
     await seed(page);
     const started = await page.evaluate(async () => {

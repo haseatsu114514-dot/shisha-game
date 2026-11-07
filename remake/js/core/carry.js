@@ -254,6 +254,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_dubai_dunes_again", "progression"], // 第5章の砂丘の前の再会を読んだ
   ["_ch5_after_party", "progression"],
   ["_ch5_party_seat", "progression"],
+  ["_ch5_party_conflict", "progression"], // 打ち上げの修羅場で反応まで読んだ恋人（chapters/ch5-party.js・#2815）
   ["_ch5_shop_talks", "progression"],
   ["_mukai_shift_day", "progression"],
   ["_ch5_tokyo_talks", "progression"],
