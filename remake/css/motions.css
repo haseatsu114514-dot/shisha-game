@@ -10,7 +10,3 @@
 .mo-back { position: absolute; inset: 0; }
 .mg-kinetic { display: inline-flex; overflow: hidden; padding-block: 0.08em; }
 .mg-char { display: inline-block; transform: translateY(110%); opacity: 0; }
-
-/* ミニゲームの入口と出口（core/game-seat.js・#2688 F13）。葉の形の窓がすぼまり、ゲーム名の判子 */
-.game-seat { position: absolute; inset: 0; overflow: hidden; z-index: 120; pointer-events: auto; }
-.game-seat-stamp { position: absolute; left: 50%; top: 50%; padding: 10px 34px; border: 5px solid #dcd1f4; border-radius: 10px; color: #fff; font-family: var(--font); font-size: 52px; font-weight: 900; letter-spacing: .16em; padding-left: calc(34px + .16em); background: #34246acc; text-shadow: 0 2px 0 #150f26; white-space: nowrap; }

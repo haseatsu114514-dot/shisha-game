@@ -128,7 +128,7 @@ function makeFixture(opts = {}) {
     "../chapters/ch1.js": { startNewGame: () => { calls.startNewGame++; }, resumeGame() {} },
     "../vn/engine.js": { clearLog() {} },
     "./gallery.js": { openGallery: async () => {} },
-    "./saves.js": { loadFlow: async () => null },
+    "./saves.js": { loadWithRecovery: async () => false },
     "./title-art.js": {
       pickTitleArt: () => ({ character: "sumi", file: "sumi.webp", url: "blob:sumi", ready: true }),
       prepareTitleArt: async (art) => art,

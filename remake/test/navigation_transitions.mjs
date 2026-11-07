@@ -4,12 +4,9 @@ import { suite } from "./browser/support.mjs";
 
 const desktop = { width: 1280, height: 720 }, mobile = { width: 844, height: 390 };
 
-async function prepare(page, { rain = false } = {}) {
-  await page.evaluate(async (rain) => {
+async function prepare(page) {
+  await page.evaluate(async () => {
     const core = await import("./js/core/state.js"); core.newGame(); core.state.day = 4;
-    // 天気は新しいゲームごとに変わる。雨の日の外出は傘の型（#2688 A15）なので、検査する天気をここで決める
-    const weather = await import("./js/daily/weather.js");
-    for (let seed = 1; seed < 5000; seed++) { core.state.weatherSeed = seed; if (weather.isRainy(4) === rain) break; }
     const ui = await import("./js/core/ui.js");
     const data = await import("./js/core/data.js");
     const map = await import("./js/daily/map.js");
@@ -20,7 +17,7 @@ async function prepare(page, { rain = false } = {}) {
     ui.clearScreen();
     await ui.setBg(data.bgUrl("bg_tonari_inside", "day"), { instant: true });
     await Promise.all(["bg_home", "bg_shop", "bg_osu_map_day"].map((id) => ui.imageReady(data.bgUrl(id), 15000)));
-  }, rain);
+  });
 }
 
 async function arm(page, selector) {
@@ -91,13 +88,12 @@ await suite("navigation-transitions", async (check) => {
     }, { reducedMotion: mode === "reduced" ? "reduce" : "no-preference" });
   }
 
-  for (const [label, spot, viewport, rain = false] of [
+  for (const [label, spot, viewport] of [
     ["home-pc", "rest", desktop], ["home-mobile", "rest", mobile],
     ["tonari-pc", "tonari", desktop], ["shop-mobile", "shop", mobile],
-    ["shop-rain-pc", "shop", desktop, true], ["home-rain-pc", "rest", desktop, true],
   ]) {
     await check(label, async (page) => {
-      await prepare(page, { rain });
+      await prepare(page);
       await page.evaluate(() => {
         window.visit = T.map.chooseSpot().then(async (id) => {
           if (id === "rest") return T.spots.restAtHome(T.spots.spotById(id));
@@ -115,8 +111,7 @@ await suite("navigation-transitions", async (check) => {
       await page.locator(".scene-curtain").waitFor();
       await page.keyboard.press("Enter");
       if (spot === "rest") assert.equal(await page.locator(".vn-text").textContent(), "");
-      // 帰宅は雨でも扉。雨の日のほかの外出は傘（#2688 A15）
-      const audit = await verify(page, selector, spot === "rest" ? "move-door" : rain ? "move-umbrella" : "move-pin");
+      const audit = await verify(page, selector, spot === "rest" ? "move-door" : "move-pin");
       if (spot === "rest") {
         assert.ok(audit.ended - audit.started < 1800, "The warmed-up home transition still feels too long");
         await page.waitForFunction(() => document.querySelector(".vn-text").textContent.includes("今日は早めに家へ帰った"));
