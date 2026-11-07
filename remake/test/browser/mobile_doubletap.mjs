@@ -81,7 +81,7 @@ try {
     await recordStable("config input repeated taps", () => repeat(range));
     await boot();
     await page.evaluate(async () => {
-      const s = await import("./js/core/state.js"); s.newGame(); s.state.day = 4; s.save();
+      const s = await import("./js/core/state.js"); s.newGame(); s.state.day = 2; s.save(); // 案内箱（.map-info）は第1章の最初の自由行動の日（2日目）だけ出る（#2853）
       void (await import("./js/daily/map.js")).chooseSpot();
     });
     await page.waitForSelector(".map");
@@ -136,7 +136,7 @@ try {
     assert(await page.locator(".foil-holes .foil-hole, .foil-dents .foil-dent").count() > 0, "real mini-game records punches");
     assert.equal(await page.locator(".foil:not(.ht-preview)").evaluate(el => getComputedStyle(el).touchAction), "none", "mini-game drag policy preserved");
     await boot(); // fresh document stops the mini-game timers, same isolated save
-    assert.equal(await page.evaluate(async () => { const s = await import("./js/core/state.js"); return s.load().day; }), 4, "save survives reload");
+    assert.equal(await page.evaluate(async () => { const s = await import("./js/core/state.js"); return s.load().day; }), 2, "save survives reload");
     await page.evaluate(async () => { void (await import("./js/daily/map.js")).chooseSpot(); });
     await page.waitForSelector(".map");
     await recordStable("map after save restore", () => repeat(page.locator(".map-info")));
