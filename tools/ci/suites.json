@@ -2761,6 +2761,15 @@
       "run": ["node remake/test/browser/portrait_shop_fallback.mjs"]
     },
     {
+      "id": "no-zoom-landscape-only",
+      "title": "縦持ちはタイトルから回転案内のみ・ダブルタップ拡大の抑止",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/core/no-zoom.js", "remake/css/base.css", "remake/test/browser/no_zoom.mjs"],
+      "run": ["node remake/test/browser/no_zoom.mjs"]
+    },
+    {
       "id": "adam-eden",
       "title": "Adam and EDEN adopted art",
       "kind": "browser",

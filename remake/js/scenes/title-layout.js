@@ -55,13 +55,10 @@ export function mountTitleLayout(root, { art, brand, menu, left, background }) {
     maxWidth: "calc(100% - 20px)", backgroundColor: "#1b1023", color: "#f6dfaf" });
   Object.assign(summary.style, { minHeight: "44px", padding: "12px", cursor: "pointer", boxSizing: "border-box" });
   buttons.forEach(b => Object.assign(b.style, { minHeight: "44px", minWidth: "60px" }));
-  const hint = document.querySelector("#rotate-hint");
-  const hintDisplay = hint?.style.display;
   function apply(mode) {
     if (mode === "ds") installDsGeometry(); // 本編と同じ上下2画面の寸法
     root.dataset.layout = mode;
     summary.textContent = `表示設定：${mode === "ds" ? "DS風" : "通常版"}`;
-    if (hint) hint.style.display = mode === "ds" ? "none" : hintDisplay;
     visual.hidden = controls.hidden = mode !== "ds";
     if (mode === "ds") {
       visual.append(art, brand); controls.insertBefore(menu, controls.firstChild);
@@ -79,7 +76,7 @@ export function mountTitleLayout(root, { art, brand, menu, left, background }) {
     seen ||= root.isConnected;
     if (seen && (!root.isConnected || document.body.dataset.screen !== "title" || document.body.classList.contains("vn-open"))) disposePrevious();
   });
-  const dispose = () => { observer.disconnect(); toolbar.remove(); if (hint) hint.style.display = hintDisplay; };
+  const dispose = () => { observer.disconnect(); toolbar.remove(); };
   disposePrevious = dispose;
   observer.observe(document.querySelector("#screen"), { childList: true });
   observer.observe(document.body, { attributes: true, attributeFilter: ["data-screen", "class"] });

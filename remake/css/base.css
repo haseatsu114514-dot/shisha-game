@@ -59,8 +59,8 @@ html, body {
 }
 button { font: inherit; color: inherit; }
 
-/* 連打はゲーム入力として扱う。ピンチとスクロールは保ち、ドラッグ面の none は上書きしない。 */
-:where(#viewport, #viewport *, #rotate-hint, #rotate-hint *) { touch-action: manipulation; }
+/* 連打はゲーム入力として扱い、ダブルタップ拡大は止める（JS 側は core/no-zoom.js）。縦スクロールは保ち、ドラッグ面の none は上書きしない。 */
+:where(html, body, #viewport, #viewport *, #rotate-hint, #rotate-hint *) { touch-action: manipulation; }
 
 #viewport {
   position: fixed;
@@ -713,7 +713,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 #rotate-hint {
   position: fixed;
   inset: 0;
-  z-index: 999;
+  z-index: 2000;
   display: none;
   place-items: center;
   background: #07050c;
@@ -722,7 +722,8 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
   text-align: center;
   padding: 16px;
 }
-@media (orientation: portrait) and (max-width: 760px) and (hover: none) and (pointer: coarse) {
+/* 縦画面は廃止（#2826）。タッチ端末を縦に持ったら、タイトルを含む全画面を回転案内だけで覆う。 */
+@media (orientation: portrait) and (hover: none) and (pointer: coarse) {
   #rotate-hint { display: grid; }
 }
 
