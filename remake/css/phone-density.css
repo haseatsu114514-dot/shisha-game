@@ -53,6 +53,9 @@ html:root[data-density="phone"] body:not(.game-ds) #hud :is(.dc-row, .hud-card .
 html:root[data-density="phone"] body:not(.game-ds) #hud .hud-card :is(.hud-stamina > span:first-child, .hud-exp .hx-lv) { width: 2.9em; font-size: var(--phone-sub); }
 
 /* ---------------------------------------------------------------- 会話の操作ボタン・選択肢 */
+/* 会話ウインドウの下端: 横持ちの iPhone は下にホームバーの領域があり、端ぎりぎりだと欠けて見える（オーナー指摘 2026-11-08）。
+   safe-area の下端＋少しの余白ぶん持ち上げる。safe-area が無い画面でも実寸 16px 前後は空ける。 */
+html:root[data-density="phone"] body:not(.game-ds) .vn-box { bottom: max(30px, calc((env(safe-area-inset-bottom, 0px) + 8px) / var(--k, 1))); }
 html:root[data-density="phone"] body:not(.game-ds) .vn-controls { gap: var(--phone-gap); }
 html:root[data-density="phone"] body:not(.game-ds) .vn-ctl,
 html:root[data-density="phone"] body:not(.game-ds) .vn-controls .vn-ctl {
