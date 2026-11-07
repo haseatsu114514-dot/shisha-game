@@ -7,6 +7,7 @@ import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
 import { loadConfig, state, load, consumeResumeOnBoot, tickPlayTime } from "./core/state.js";
 import { unlockAudio, preloadBgm } from "./core/audio.js";
 import { applyUiTheme } from "./core/ui-theme.js";
+import { installRotateGuard } from "./core/rotate-guard.js";
 import { imgFileUrl } from "./core/img-file.js";
 import { withLoading } from "./core/loading.js";
 import { vnTest, enableSeenLinePersistence } from "./vn/engine.js";
@@ -56,6 +57,7 @@ export async function boot() {
   window.addEventListener("resize", fitStage);
   window.addEventListener("orientationchange", () => setTimeout(fitStage, 200));
   window.visualViewport?.addEventListener("resize", fitStage);
+  installRotateGuard(); // 縦持ちの回転ガード中は、制作の時計と音を止める（#2941）
   initLayers();
   initGameLayout();
   const cfg = loadConfig();
