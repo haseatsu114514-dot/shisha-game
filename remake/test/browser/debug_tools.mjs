@@ -48,6 +48,10 @@ await suite("debug-tools", async check => {
         core.newGame(); core.save(); core.saveToSlot(core.SAVE_SLOTS[1].key);
         core.config.textSpeed = 4;
         for (const id of ["minto", "rio"]) markIntroSeen(id);
+        // 新版が未登録の人物は旧版のまま、を確かめる。凛想は #2714 で新版がそろったので、
+        // このページの中だけ新版の登録を外して「未登録」の人物として使う（本物の素材や保存には触れない）。
+        const { DB } = await import("./js/core/data.js");
+        delete DB.manifest.portraitVariants?.new?.rio;
         clearLog();
         void play({ dialogue_id: "debug-portrait-style-fixture", lines: [
           { speaker: "minto", face: "normal", text: "画風を比べます" },
