@@ -68,26 +68,31 @@ html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-box:is(.narration, .thou
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-box .vn-name {
   font-family: var(--font); font-weight: 900; color: #fff; text-shadow: none;
 }
-/* AUTO・SKIP などは窓の右上（DUI18）。記号の正方形（#2854、64px角・間隔12px）は帯より高いので、
-   下端を本文の上の罫線（窓の上端から44px）に置いたまま上へ伸ばし、紙の札として窓の縁に載せる。
-   本文は罫線より下から始まるので重ならない。AUTO・SKIP中は琥珀色の札にする。 */
+/* AUTO・SKIP などは窓の中へ入れる（DUI18）。窓の上の帯（外枠の内線と、本文の上の罫線のあいだ、約44px）の右側に、
+   名前札と左右で釣り合う位置へ記号だけで並べる（#2854）。場面の上には何も出さない。
+   帯の高さは原画で決まるので、記号の正方形は横幅だけ広げ（64px・スマホ横持ちは実寸39px相当）、高さは帯の44pxに収める。 */
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls {
   bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - 44px);
   right: calc((1280px - var(--vn-dialogue-width)) / 2 + 44px);
-  width: auto; height: var(--vn-ctl-size); padding: 0;
+  width: auto; height: 44px; padding: 0;
   background: none; border: 0; border-radius: 0; box-shadow: none;
 }
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls::before { display: none; }
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl {
-  color: var(--lavender); font-weight: 700; border-radius: 8px;
-  background: var(--paper-card); border: 1px solid var(--paper-line); box-shadow: 0 2px 6px #110a2224;
+  height: 44px; min-height: 44px; color: var(--lavender); font-weight: 700; border-radius: 4px;
+  background: none; border: 0; box-shadow: none;
 }
-html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before { content: none; }
+html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before {
+  content: ""; position: absolute; left: calc(var(--vn-ctl-gap) / -2); top: 14px; bottom: 14px; width: 1px;
+  background: var(--paper-line); opacity: 1;
+}
+/* 押せる範囲は帯の高さいっぱいなので、塗りではなく帯の中の淡い面で示す。AUTO・SKIP中は琥珀色。 */
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl:is(:hover, :focus-visible) {
-  color: var(--paper-ink); background: var(--lavender-soft); border-color: var(--lavender-line); box-shadow: 0 2px 6px #110a2224;
+  color: var(--paper-ink); background: linear-gradient(var(--lavender-soft), var(--lavender-soft)) center / 100% 32px no-repeat;
+  box-shadow: none;
 }
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl.on {
-  color: var(--amber-ink); background: #fbe9cf; border-color: #e4b57a; box-shadow: inset 0 -3px 0 var(--amber);
+  color: var(--amber-ink); background: linear-gradient(#fbe9cf, #fbe9cf) center / 100% 32px no-repeat; box-shadow: none;
 }
 /* 札は窓の内側に収まっているので、選択肢は上げない。 */
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-choices { --vn-ctl-rise: 0px; }

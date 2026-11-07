@@ -5,7 +5,7 @@
 }
 html:root[data-ui-theme] {
   --vn-caption-top:-36px; --vn-body-top:44px; --vn-body-side:96px;
-  --vn-command-width:420px; --vn-command-inset:68px; --vn-name-inset:68px; --vn-command-rise:16px;
+  --vn-ctl-pad-y:4px; --vn-command-width:420px; --vn-command-inset:68px; --vn-name-inset:68px; --vn-command-rise:16px;
   --vn-next-right:64px; --vn-next-bottom:30px;
   --vn-tab-face:linear-gradient(160deg,#17272c,#0c151c 75%);
   --vn-tab-edge:#91bbb5; --vn-tab-inner:#c9f3e526; --vn-tab-text:#e6f6f1;
@@ -18,7 +18,7 @@ html:root[data-ui-theme="smoke-purple"] {
 }
 /* 煙の原画は上辺が低くたわむため、札も16px下げて輪郭へ接続する。 */
 html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) {
-  --vn-caption-top:-20px; --vn-dialogue-width:1240px; --vn-body-side:112px;
+  --vn-ctl-pad-y:0px; --vn-caption-top:-20px; --vn-dialogue-width:1240px; --vn-body-side:112px;
   --vn-command-inset:100px; --vn-command-rise:8px; --vn-next-right:80px; --vn-next-bottom:36px;
 }
 html:root[data-ui-theme="cut-paper"] {
@@ -45,6 +45,11 @@ html:root[data-ui-theme="classic"] {
 html:root[data-ui-theme] body:not(.game-ds) .vn-box {
   width:var(--vn-dialogue-width); height:var(--vn-dialogue-height);
   bottom:var(--vn-dialogue-bottom); padding:var(--vn-body-top) var(--vn-body-side) 16px;
+}
+/* 煙は札が低い位置にあり、上下の余白（4px）をなくしても、縮んだスマホ横持ちでは記号の正方形の下端が本文へ近づく（#2854）。
+   札の下端と本文のあいだを12px（端数の分1px足す）空けるよう、そのときだけ本文を下げる。PC（64px角）では44pxのまま。 */
+html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(.game-ds) .vn-box {
+  padding-top:max(var(--vn-body-top), calc(var(--vn-caption-top) + 25px - var(--vn-command-rise) + (max(64px, 39px / var(--k, 1)) + 2px) / 2 + 13px));
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-text {
   font-size:28px; font-weight:500; line-height:44px; min-height:88px; letter-spacing:.035em;
@@ -77,8 +82,8 @@ html:root[data-ui-theme] body:not(.game-ds) .vn-controls::before {
 /* 記号の正方形（#2854）が大きくなっても、札の中心は名前札の16px上のまま。上下へ同じだけ広げる。 */
 html:root[data-ui-theme] body:not(.game-ds) .vn-controls {
   right:calc((1280px - var(--vn-dialogue-width)) / 2 + var(--vn-command-inset));
-  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - var(--vn-caption-top) - 50px + var(--vn-command-rise) - (var(--vn-ctl-size) - 40px) / 2);
-  width:auto; height:calc(var(--vn-ctl-size) + 10px); padding:4px 6px; gap:var(--vn-ctl-gap);
+  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - var(--vn-caption-top) - 50px + var(--vn-command-rise) - (var(--vn-ctl-size) + 2 * var(--vn-ctl-pad-y) + 2px - 50px) / 2);
+  width:auto; height:calc(var(--vn-ctl-size) + 2 * var(--vn-ctl-pad-y) + 2px); padding:var(--vn-ctl-pad-y) 6px; gap:var(--vn-ctl-gap);
   display:grid; grid-template-columns:repeat(5,var(--vn-ctl-size));
   background:var(--vn-tab-face); border:1px solid var(--vn-tab-edge); box-shadow:var(--vn-tab-shadow);
   border-radius:var(--vn-tab-radius); clip-path:none;

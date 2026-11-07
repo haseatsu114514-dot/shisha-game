@@ -288,6 +288,8 @@ body.game-ds .vn-ctl-icon { font-size: 22px; }
   letter-spacing: -0.08em;
   font-family: system-ui, "Segoe UI Symbol", "Noto Sans Symbols 2", var(--font);
   pointer-events: none;
+  /* 記号の代替書体は字面より下へ余白を持ち、紙の44pxの帯から数pxはみ出す。字面は1em内に収まるので、余白だけ切る。 */
+  overflow: clip;
 }
 /* ≡・⚙ は字面が小さいので、ほかの記号と見た目の大きさをそろえる。 */
 .vn-ctl:is([data-test="vn-log"], [data-test="vn-config"]) .vn-ctl-icon { transform: scale(1.2); }
