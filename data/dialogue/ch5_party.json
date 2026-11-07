@@ -64,10 +64,10 @@
           { "speaker": "hajime", "face": "smile", "text": "うん。いつでも" }
         ],
         "met_tsumugi": [
-          { "type": "condition", "condition_type": "met", "char_id": "tsumugi", "next_true": "check_tsumugi", "next_false": "default" }
+          { "type": "condition", "condition_type": "met", "char_id": "tsumugi", "next_true": "check_tsumugi", "next_false": "met_rio" }
         ],
         "check_tsumugi": [
-          { "type": "condition", "condition_type": "lover", "char_id": "tsumugi", "next_true": "tsumugi", "next_false": "default" }
+          { "type": "condition", "condition_type": "lover", "char_id": "tsumugi", "next_true": "tsumugi", "next_false": "met_rio" }
         ],
         "tsumugi": [
           { "speaker": "", "face": "", "text": "今日のつむぎは、エプロンをしていなかった。いつもの紫のパーカーだ。" },
@@ -90,6 +90,32 @@
           { "speaker": "tsumugi", "face": "smile", "text": "私は、今日のはじめさんの隣がいいです。特等席なので" },
           { "speaker": "hajime", "face": "smile", "text": "うん。特等席" },
           { "speaker": "", "face": "", "text": "煙の向こうで、誰かが笑った。つままれた指は、グラスが空になっても離れなかった。" }
+        ],
+        "met_rio": [
+          { "type": "condition", "condition_type": "met", "char_id": "rio", "next_true": "check_rio", "next_false": "default" }
+        ],
+        "check_rio": [
+          { "type": "condition", "condition_type": "lover", "char_id": "rio", "next_true": "rio", "next_false": "default" }
+        ],
+        "rio": [
+          { "speaker": "", "face": "", "text": "凛想さんは、カウンターの端で一人、グラスを傾けていた。" },
+          { "speaker": "hajime", "face": "normal", "text": "隣、いいですか" },
+          { "speaker": "rio", "face": "smug", "text": "同意書は？" },
+          { "speaker": "hajime", "face": "normal", "text": "……いりますか" },
+          { "speaker": "rio", "face": "smile", "text": "いらない。最初から、空けといた" },
+          { "speaker": "", "face": "", "text": "店の中には、持ち寄られたフレーバーの匂いが混ざっていた。テーブルごとに、全部違う。" },
+          { "speaker": "rio", "face": "normal", "text": "今日は、鼻を休ませに来たの。仕事の匂いは、全部向こうのテーブル" },
+          { "speaker": "hajime", "face": "normal", "text": "凛想さんでも、休むんですね" },
+          { "speaker": "rio", "face": "normal", "text": "休むよ。……君の隣は、知ってる匂いだから" },
+          { "speaker": "", "face": "", "text": "凛想さんの前のボウルからは、ブルーベリーの煙が上がっていた。" },
+          { "speaker": "hajime", "face": "normal", "text": "それ、いつものですね" },
+          { "speaker": "rio", "face": "normal", "text": "世界中の限定品を吸っても、結局これに帰ってくるの" },
+          { "speaker": "rio", "face": "smile", "text": "君も、帰ってきたね。世界一になっても、ちゃんとここに" },
+          { "speaker": "hajime", "face": "normal", "text": "ここが、俺の帰る店なんで" },
+          { "speaker": "rio", "face": "smile", "text": "いい答え。……じゃあ私も、帰る場所を一つ増やそうかな" },
+          { "speaker": "", "face": "", "text": "凛想さんの指が、カウンターの上で俺の指に重なった。冷たかったのは、最初だけだった。" },
+          { "speaker": "rio", "face": "normal", "text": "……明日も、用もないのに連絡してね" },
+          { "speaker": "hajime", "face": "smile", "text": "はい。今夜の分も、送ります" }
         ],
         "default": [
           { "speaker": "", "face": "", "text": "隣に座ると、グラスが小さく触れ合った。" },
