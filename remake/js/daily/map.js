@@ -81,6 +81,7 @@ const backgroundOf = (region) => typeof region?.background === "function" ? regi
 
 /**
  * @param opts.notice   上部に出す一言（「今夜は約束がある」など）
+ * @param opts.reminder 右下の「今日はどうする？」に添える一言（心得の盤の組み直しの期限など。ピンに重ならない所に出す）
  * @param opts.eventPin 今夜イベントがある場所のピン id（! バッジ）
  * @param opts.guide    { pin, title, text, free } 1日目の案内・配達用。その1か所だけ選べるようにして光らせる。
  *                      free（表示する一言）があれば、その行き先は代金がかからない
@@ -121,7 +122,7 @@ function cueMove(shield, spot) {
   });
 }
 
-function openMap({ notice = "", eventPin = null, guide = null, onShown = null, onBeforeGo = null, visitBlock = null, regions = null, regionId = null, onRegionChange = null }) {
+function openMap({ notice = "", reminder = "", eventPin = null, guide = null, onShown = null, onBeforeGo = null, visitBlock = null, regions = null, regionId = null, onRegionChange = null }) {
   return new Promise((resolve) => {
     const night = timeOfDay() === "night";
     const tod = night ? "night" : "day";
@@ -173,10 +174,11 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         ].filter(Boolean));
         return;
       }
-      // 操作の説明は最初の日だけ。以後は明日の天気がある日だけ小さく出し、何も無ければ箱ごと出さない（CSS の :empty）。
+      // 操作の説明は最初の日だけ。以後は期限の一言や明日の天気がある時だけ出す。
       info.replaceChildren(...[
         firstFreeDay() ? el("div.mi-banner", { text: "今日はどうする？" }) : null,
         firstFreeDay() ? el("p.mi-desc", [el("span", { text: "気になる場所をタップしよう。" }), el("br"), el("span", { text: "行動・所持金・体力に気をつけて。" })]) : null,
+        reminder ? el("p.mi-reminder", { text: reminder, dataset: { test: "map-reminder" } }) : null,
         forecastFoot(),
       ].filter(Boolean));
     };

@@ -29,6 +29,7 @@ const noop = () => {}, elem = () => ({ classList: { add: noop, remove: noop, con
 const db = { dialogues: {}, statusTexts: {}, lime: [] };
 const values = {
   "growth-respec.js": { syncRespecOpportunity() {}, closeRespecOpportunity() {} },
+  "growth-chapter-notice.js": { takeChapterBoardNotice: () => null, chapterBoardCards: () => [], respecMapNotice: () => "" }, // 章はじめの盤の知らせ（#1801 C10）。この検査では盤が無効
   "growth-mode.js": { growthEnabled: () => false, GROWTH_BOARD: false, PREVIEW_KEY: "suien_growth_preview" },
   "growth-effects.js": { useGrowthInsurance: () => false, growthCritical: () => false, settleGrowthPhase: (_s,_cs,_key,result) => result?.score, growthPerks: () => null, growthSkill: () => false, growthFeature: () => false, growthLesson: () => false, LESSON_TUNING: {}, growthCraftCondition: (_s,_m,c) => c, SKILL_TUNING: {} },
   "flavor-mastery.js": { masteryHooks: { multiplier: () => 1 } },
@@ -41,7 +42,7 @@ const values = {
     queue: JSON.parse(JSON.stringify(state.deferredNightEvents || [])), appointment: state.pendingInvite ? { ...state.pendingInvite } : null }),
     STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"], STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" },
     markMet: (id) => state.met[id] = true, loadFromSlot: () => false, requestResumeOnBoot: noop },
-  "ui.js": { withScenePreparation: task => task, imageReady: async () => false, layers: { fx: { append: noop }, modal: elem() }, dropRetired: noop, dayCard: async () => {}, modal: async (opts) => { guards.push(state.stamina); guardBodies.push(opts.body); return decisions.length ? decisions.shift() : true; },
+  "ui.js": { withScenePreparation: task => task, imageReady: async () => false, layers: { fx: { append: noop }, modal: elem() }, dropRetired: noop, gainCard: noop, dayCard: async () => {}, modal: async (opts) => { guards.push(state.stamina); guardBodies.push(opts.body); return decisions.length ? decisions.shift() : true; },
     toast: noop, fadeBlack: async (mid) => mid?.(), dayTurn: async (mid) => { const info = await mid?.(); dawns.push({ ...info, absoluteDay: state.day, hudLeft: values["hud.js"].daysLeft() }); }, bannersIdle: async () => {}, setBg: noop, refreshWeather: noop },
   "transitions.js": { refreshPlaceCue: noop },
   "data.js": { sceneBg: () => ({}), DB: db, loadCinemaDialogue: async () => db, bgUrl: (ref) => ref, displayName: id => id }, "saves.js": { saveFlow: async () => {}, loadFlow: async () => {} },

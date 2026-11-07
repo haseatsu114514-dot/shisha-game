@@ -197,3 +197,68 @@ body[data-screen="tetsuko-time"] .hud-right { pointer-events: none; }
 /* 左上の札は、真ん中の題が収まる時に現れる */
 .tetsuko-time[data-intro="1"] > .tt-logo { animation: tt-logo-in .24s ease-out .9s both; }
 @keyframes tt-logo-in { from { opacity: 0; } }
+
+/* ---- スマホ横持ちの下限サイズ（#2842・#2729 優先21）。本編では #stage が --k で縮むので、そのぶんを戻す。
+   文字（本文・選択肢・ボタン）はステージ上 22px 以上かつ実寸 11.5px 以上、補助文は 18px 以上かつ実寸 11.2px 以上、
+   押せる所は 72px 以上かつ実寸 40px 以上、隣り合う部品の間は 12px 以上（実寸 11px・38px の確認に少し余裕を持たせる）。
+   手帳のカードの名前と番号は補助なので出さず（名前は読み上げに残し、選ぶと右のページに大きく出る）、遊び方は「？」の中だけ。縦持ちは扱わない。 */
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .tetsuko-time { --tk-fs: max(22px, calc(11.5px / var(--k, 1))); --tk-fs-sub: max(18px, calc(11.2px / var(--k, 1))); --tk-tap: max(72px, calc(40px / var(--k, 1))); --tk-gap: 12px; }
+  /* 右上の道具: 高さ・幅とも押せる大きさ。「帰る」も同じ高さの札 */
+  .tetsuko-time .tt-tools { gap: var(--tk-gap); }
+  .tetsuko-time .tt-tool { width: auto; min-width: var(--tk-tap); height: var(--tk-tap); padding: 4px 12px 6px; }
+  .tetsuko-time .tt-tool-label { font-size: var(--tk-fs); line-height: 1.1; }
+  .tetsuko-time .tt-help-btn { width: var(--tk-tap); height: var(--tk-tap); padding: 0; }
+  .tetsuko-time .tt-help-q { font-size: calc(var(--tk-fs) * 1.4); }
+  .tetsuko-time .tt-tool.new::after, .tetsuko-time .tt-new { font-size: var(--tk-fs-sub); }
+  .tetsuko-time .tt-mood { font-size: var(--tk-fs); }
+  /* 反応の帯: 手元の道具の分だけ幅を詰める */
+  .tetsuko-time .tt-caption { width: 540px; padding: 10px 20px 10px 32px; }
+  .tetsuko-time .tt-text, .tetsuko-time .tt-line, .tetsuko-time .tt-toast b { font-size: var(--tk-fs); line-height: 1.35; }
+  .tetsuko-time .tt-line-name, .tetsuko-time .tt-toast small { font-size: var(--tk-fs-sub); }
+  .tetsuko-time .tt-toast { max-width: 100%; }
+  .tetsuko-time .tt-toast p { flex-wrap: wrap; gap: 0 10px; }
+  .tetsuko-time .tt-toast p > * { white-space: nowrap; }
+  /* 手元の道具: 丸い札は押せる大きさ、名前は 2 行まで（そっと／見守る） */
+  .tetsuko-time .tt-dock { gap: var(--tk-gap); }
+  .tetsuko-time .tt-act { width: auto; min-width: var(--tk-tap); max-width: calc(var(--tk-fs) * 3 + 20px); }
+  .tetsuko-time .tt-act-token { width: var(--tk-tap); height: var(--tk-tap); }
+  .tetsuko-time .tt-act-token .tt-ico { width: calc(var(--tk-tap) * .55); height: calc(var(--tk-tap) * .55); }
+  .tetsuko-time .tt-act-label { font-size: var(--tk-fs); line-height: 1.15; white-space: normal; text-align: center; }
+  .tetsuko-time .tt-act-sub { font-size: var(--tk-fs-sub); }
+  /* もようがえ: 物の札・おわる */
+  .tetsuko-time .tt-drawer { gap: var(--tk-gap); }
+  .tetsuko-time .tt-drawer-head { width: auto; }
+  .tetsuko-time .tt-drawer-head b { font-size: var(--tk-fs); }
+  .tetsuko-time .tt-drawer-items { gap: var(--tk-gap); }
+  .tetsuko-time .tt-item { flex: 1 1 0; width: auto; min-width: var(--tk-tap); min-height: var(--tk-tap); }
+  .tetsuko-time .tt-item b { font-size: var(--tk-fs); line-height: 1.15; white-space: normal; text-align: center; }
+  .tetsuko-time .tt-item-at, .tetsuko-time .tt-slot-label { font-size: var(--tk-fs-sub); }
+  :root .tetsuko-time .btn.small:is(.tt-drawer-close, .tt-book-close, .tt-help-close) { min-height: var(--tk-tap); min-width: calc(var(--tk-tap) * 1.5); font-size: var(--tk-fs); }
+  /* てつこ手帳: 右上の道具の下から。カードは絵だけ（名前は右のページ） */
+  .tetsuko-time .tt-book { top: calc(34px + var(--tk-tap) + 16px); }
+  .tetsuko-time .tt-page h3 { font-size: var(--tk-fs); }
+  .tetsuko-time .tt-book-count { font-size: var(--tk-fs); }
+  .tetsuko-time .tt-cards { gap: var(--tk-gap); }
+  .tetsuko-time .tt-card { justify-content: center; min-height: var(--tk-tap); }
+  .tetsuko-time .tt-card-no { display: none; }
+  .tetsuko-time .tt-card b { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .tetsuko-time .tt-polaroid { width: 200px; padding-bottom: 38px; }
+  .tetsuko-time .tt-polaroid .tt-thumb { width: 176px; height: 176px; }
+  .tetsuko-time .tt-polaroid small, .tetsuko-time .tt-detail-hint { font-size: var(--tk-fs-sub); }
+  .tetsuko-time .tt-detail h4, .tetsuko-time .tt-detail-memo { font-size: var(--tk-fs); line-height: 1.45; }
+  .tetsuko-time .tt-detail { padding-bottom: calc(var(--tk-tap) + 8px); }
+  /* あそびかた: 名前の下に一文。長い時は中だけ送れる（閉じるは右下に残る） */
+  .tetsuko-time .tt-help { display: flex; align-items: center; justify-content: center; left: 40px; right: 40px; top: calc(34px + var(--tk-tap) + 16px); bottom: 26px; }
+  .tetsuko-time .tt-help[hidden] { display: none; }
+  .tetsuko-time .tt-help-card { display: flex; flex-direction: column; max-height: 100%; padding: 16px 28px 14px; }
+  .tetsuko-time .tt-help-head h3 { font-size: var(--tk-fs); }
+  .tetsuko-time .tt-help-mood, .tetsuko-time .tt-help-group h4 { font-size: var(--tk-fs-sub); }
+  .tetsuko-time .tt-help-groups { min-height: 0; overflow-y: auto; gap: 28px; }
+  .tetsuko-time .tt-help-rows { gap: var(--tk-gap); }
+  .tetsuko-time .tt-help-row { grid-template-columns: 38px 1fr; }
+  .tetsuko-time .tt-help-ico { grid-row: 1 / 3; align-self: start; }
+  .tetsuko-time .tt-help-name, .tetsuko-time .tt-help-text, .tetsuko-time .tt-help-note { font-size: var(--tk-fs); line-height: 1.35; }
+  .tetsuko-time .tt-help-note { min-height: var(--tk-tap); margin-top: 10px; padding-top: 8px; padding-right: calc(var(--tk-tap) * 1.5 + 20px); }
+  .tetsuko-time .tt-help-close { bottom: 14px; }
+}
