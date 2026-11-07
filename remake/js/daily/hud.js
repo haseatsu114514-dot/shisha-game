@@ -9,7 +9,7 @@ import { state } from "../core/state.js";
 import { staminaRatio, currentCondition, maxStamina } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
-import { chapterDay, chapterDaysLeft, chapterFinalDay, chapterGoalLabel } from "../core/chapter-clock.js";
+import { chapterDay, chapterDaysLeft, chapterFinalDay, chapterGoalLabel, departurePrep } from "../core/chapter-clock.js";
 import { travelsBetweenCities } from "../core/travel-budget.js";
 import { growthEnabled, growthView, gaugeInfo, hidaneTotal } from "../core/growth.js";
 import { NODE_BY_ID, pathTo } from "../core/growth-board.js";
@@ -111,7 +111,7 @@ export function initHud(h) {
   const root = el("div.hud", [
     el("div.hud-card", [
       el("div.dc-main", [dom.area, dom.day, dom.slot]),
-      el("div.dc-meta", [moneyRow, el("div.dc-row.goal", { dataset: { test: "hud-goal" } }, [dom.leftLabel, dom.left]), dom.stamina, dom.exp]),
+      el("div.dc-meta", [moneyRow, dom.goalRow = el("div.dc-row.goal", { dataset: { test: "hud-goal" } }, [dom.leftLabel, dom.left]), dom.stamina, dom.exp]),
     ]),
     el("div.hud-right", [dom.phone, dom.menu]),
   ]);
@@ -234,6 +234,8 @@ export function updateHud() {
   const left = daysLeft();
   dom.leftLabel.textContent = chapterGoalLabel(state);
   dom.leftLabel.parentElement.title = chapterGoalLabel(state);
+  // 何までの日数か。スマホでは「次の大会まで」だけ出さない（phone-density.css）。出発前・第5章の日数は出す。
+  if (dom.goalRow) dom.goalRow.dataset.goal = departurePrep(state) ? "departure" : state.chapter === 5 ? "final" : "tournament";
   dom.left.textContent = left === null ? "未定" : `あと${left}日`;
   const r = staminaRatio();
   const condition = currentCondition();

@@ -1,7 +1,7 @@
 /* TRPG専用テーマ「夜の卓」（#2719・2026-11-06 オーナー指示）。
    日常の紙×ラベンダーとは別の遊びだと一目で分かるよう、TRPGの画面一式（本棚・部活・勧誘・卓・判定・記録）を
    ボドゲカフェの卓の素材でそろえる: 深緑のフェルト、ウォルナットの縁、真鍮の札と線、生成りのシナリオ紙、象牙のダイス。
-   UIデザインの設定（data-ui-theme）には依存しない。色・面・縁と開幕の演出だけで、寸法・座標・当たり判定・進行は変えない。
+   UIデザインの設定（data-ui-theme）には依存しない。色・面・縁と開幕の演出が中心。寸法はファイル末尾の「スマホ寸法」（#2839）だけで決める。進行・当たり判定は変えない。
    素材は既存の remake/img/ui/trpg/（deep-teal-felt・walnut-brass-frame）を再利用し、新しい画像は追加しない。
    html:root を前に付け、trpg.css 本体（読み込み順では後）や trpg-stage.css の同じ選択子より確実に勝たせる。 */
 :is(.trpg-screen, #trpg-app, .trpg-root, .trpg-club-dialog, .trpg-entrance, #trpg-rotate) {
@@ -321,3 +321,123 @@ html:root #trpg-rotate { color: var(--tt-brass-hi); background: var(--tt-felt-gr
 @media (prefers-reduced-motion: reduce) {
   .trpg-entrance-felt, .trpg-entrance-seam, .trpg-entrance-plate, .trpg-entrance-die { animation: none; transition: none; }
 }
+
+/* ---------------------------------------------------------------- スマホ寸法（#2839・横画面のみ）
+   舞台は1280×720を --k で縮める。--tt-u は実寸1px、--tt-min は実寸11px。名札・説明は max(舞台上の寸法, --tt-min) にして、
+   844×390でも844×340でも実寸11px未満に落とさない（判定紙の max(16px, …) と同じ書き方）。タップ部品は実寸38px以上（舞台84px）。
+   進行・判定・セーブには触れない。見た目と並びだけ。
+   「見やすく」（2026-11-08 オーナー指示）: iPhone横持ち（×0.54）で本文17px・名前と上部バー13px前後・タップ38px以上を目安に、
+   文字は一段大きく、暗い地には明るい生成り＋影で明暗差をとる。地の色・真鍮の縁など「夜の卓」（#2719）の配色はそのまま。 */
+html:root .trpg-root.trpg-cinematic { --tt-u: calc(1px / var(--k, 1)); --tt-min: calc(11 * var(--tt-u)); }
+
+/* 上部バー: 作品番号・「連携札」「盛り上がり」の文字を外し、進行は「1/7 今の工程」だけ。右上アイコンは64px・間隔12px。
+   文字は進行24px・題名26px（実寸13〜14px）。真鍮のレールを60pxに太くし、文字は生成りの明るい色＋影で地から浮かせる。
+   長い題名（最長18字）は末尾を「…」で畳み、札・メーター・アイコンに重ねない。 */
+html:root .trpg-root.trpg-cinematic .trpg-header { top: 6px; height: 76px; right: 24px; left: 28px; }
+html:root .trpg-root.trpg-cinematic .trpg-header::before { height: 62px; background: linear-gradient(180deg, #3a2414f5, #1d1108f5); }
+html:root .trpg-root.trpg-cinematic .trpg-heading { gap: 18px; min-width: 0; padding-right: 14px; text-shadow: 0 1px 2px #000, 0 0 8px #000c; }
+html:root .trpg-root.trpg-cinematic .trpg-heading > small { flex: 0 0 auto; max-width: none; white-space: nowrap; font-size: max(24px, var(--tt-min)); font-weight: 700; line-height: 1.2; letter-spacing: .02em; color: #ffe7a8; }
+html:root .trpg-root.trpg-cinematic .trpg-heading > strong { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: max(26px, var(--tt-min)); font-weight: 700; line-height: 1.2; white-space: nowrap; color: #fff8e6; }
+html:root .trpg-root.trpg-cinematic .trpg-teamwork { flex: 0 0 auto; gap: 6px; margin-left: 0; }
+html:root .trpg-root.trpg-cinematic .trpg-teamwork i {
+  width: auto; height: auto; border: 0; border-radius: 0; background: none; transform: none; box-shadow: none;
+  font-style: normal; font-size: max(38px, var(--tt-min)); line-height: 1; color: #ffe9b0; text-shadow: 0 0 6px #ffd98a99, 0 1px 3px #000;
+}
+html:root .trpg-root.trpg-cinematic .trpg-teamwork i.spent { opacity: .35; text-shadow: none; }
+html:root .trpg-root.trpg-cinematic .trpg-heat { flex: 0 0 auto; gap: 8px; margin-left: 0; }
+html:root .trpg-root.trpg-cinematic .trpg-heat-label { font-size: max(36px, var(--tt-min)); line-height: 1; }
+html:root .trpg-root.trpg-cinematic .trpg-heat-pips { gap: 4px; }
+/* 消えている目盛も、地の上で形が分かるよう明るい縁を付ける。灯った目盛は既存の橙のまま。 */
+html:root .trpg-root.trpg-cinematic .trpg-heat-pips i { width: 11px; height: 28px; border-radius: 3px; background: #f4dda42e; box-shadow: inset 0 0 0 1.5px #f4dda4a6; }
+html:root .trpg-root.trpg-cinematic .trpg-heat-pips i.lit { background: linear-gradient(#ffd27a, #f0873c); box-shadow: inset 0 0 0 1.5px #ffe6b0, 0 0 8px #f39a4bcc; }
+html:root .trpg-root.trpg-cinematic .trpg-heat-pips i.tier { margin-right: 6px; }
+html:root .trpg-root.trpg-cinematic .trpg-heat-momentum { font-size: max(22px, var(--tt-min)); color: #ffe7a8; }
+html:root .trpg-root.trpg-cinematic .trpg-tools { gap: 12px; }
+/* 枠線(1px×2)を含めて内側が64pxになるよう66px。64pxだと中の64pxアイコンが2pxはみ出す。 */
+html:root .trpg-root.trpg-cinematic .trpg-tools .trpg-button { width: 66px; min-width: 66px; height: 66px; min-height: 66px; }
+html:root .trpg-root.trpg-cinematic .trpg-tool-symbol { width: 64px; height: 64px; color: #fff1c8; }
+/* アイコンの線は太く（舞台約5px＝実寸2.7px）、丸は暗い地＋明るい真鍮の縁で、背景の絵に沈ませない。 */
+html:root .trpg-root.trpg-cinematic .trpg-tool-symbol svg { width: 40px; height: 40px; stroke-width: 2.4; filter: drop-shadow(0 1px 2px #000c); }
+@media not all and (pointer: coarse) {
+  html:root .trpg-root.trpg-cinematic .trpg-tools .trpg-button { border-color: #f4dda4d9; background: #241508e0; box-shadow: 0 2px 8px #0009; }
+}
+html:root .trpg-root.trpg-cinematic .trpg-tools .trpg-button:is(:hover, :focus-visible) .trpg-tool-label { top: 70px; font-size: max(18px, var(--tt-min)); }
+/* タップ画面では、見える丸は64pxのまま、押せる範囲を84px（実寸38px以上）にする。 */
+@media (pointer: coarse) {
+  html:root .trpg-root.trpg-cinematic .trpg-header { height: 84px; top: 4px; }
+  html:root .trpg-root.trpg-cinematic .trpg-tools { gap: 0; }
+  html:root .trpg-root.trpg-cinematic .trpg-tools .trpg-button { width: 84px; min-width: 84px; height: 84px; min-height: 84px; }
+  html:root .trpg-root.trpg-cinematic .trpg-tool-symbol { width: 64px; height: 64px; border-color: #f4dda4d9; background: #241508e0; box-shadow: 0 2px 8px #0009; }
+  html:root .trpg-root.trpg-cinematic .trpg-tools .trpg-button:is(:hover, :focus-visible) .trpg-tool-label { top: 84px; }
+}
+
+/* 台詞欄: 本文32px・話者名28px（実寸17px・15px）。「GM／卓の会話」の肩書きは出さない。最長53字でも2行に収まる。 */
+html:root .trpg-root.trpg-cinematic .trpg-dock { height: 232px; }
+html:root .trpg-root.trpg-cinematic .trpg-speaker-art { height: 232px; }
+html:root .trpg-root.trpg-cinematic .trpg-speech { padding: 16px 23px 14px; }
+html:root .trpg-root.trpg-cinematic .trpg-speaker-label { margin: 0 0 6px; }
+html:root .trpg-root.trpg-cinematic .trpg-speaker-label strong { font-size: max(28px, var(--tt-min)); font-weight: 700; color: #ffe2a0; text-shadow: 0 1px 3px #000; }
+html:root .trpg-root.trpg-cinematic .trpg-speaker-label span { font-size: max(20px, var(--tt-min)); color: #e3ead9; }
+html:root .trpg-root.trpg-cinematic .trpg-speaker-label span:empty { display: none; }
+html:root .trpg-root.trpg-cinematic .trpg-speech p { max-width: 900px; font-size: max(32px, var(--tt-min)); line-height: 1.45; color: #fbf6e8; text-shadow: 0 1px 3px #000c; }
+/* 「次へ」は26px（実寸14px）・太字。明るい真鍮の縁で押せる札だと分かるように。 */
+html:root .trpg-root.trpg-cinematic .trpg-next { font-size: max(26px, var(--tt-min)); font-weight: 700; min-height: 64px; min-width: 112px; margin-bottom: 20px; color: #ffe9b0; border: 2px solid #f4dda4d9; background: #d2ae6629; }
+@media (pointer: coarse) { html:root .trpg-root.trpg-cinematic .trpg-next { min-width: 112px; min-height: 84px; margin-bottom: 16px; } }
+
+/* 座席チップ: 顔＋名前だけ。話者だけ光らせる。PL/GMの英字・能力値・札の残りはキャラクターシートで見る。
+   顔68px・名前24px（実寸37px・13px）。話者でない席も暗くしない（名前は明るい生成りのまま）。話者は真鍮の縁と光で示す。 */
+html:root .trpg-root.trpg-cinematic:not(.trpg-idle) .trpg-table { bottom: 240px; }
+html:root .trpg-root.trpg-cinematic .trpg-table { width: 880px; gap: 8px; padding: 6px 10px; background: linear-gradient(#102a2af5, #081b1cf7); }
+html:root .trpg-root.trpg-cinematic .trpg-table-person,
+html:root .trpg-root.trpg-cinematic .trpg-table-person[data-part="gm"] { flex: 1 1 0; flex-direction: row; align-items: center; gap: 10px; padding: 4px 10px 4px 6px; opacity: 1; border-color: #d2ae664d; background: #00000038; }
+html:root .trpg-root.trpg-cinematic .trpg-table-person.active { opacity: 1; border-color: #fff2bd; background: #f4dda433; box-shadow: 0 0 14px #ffe6a2aa, inset 0 0 0 1px #fff2bd; }
+html:root .trpg-root.trpg-cinematic .trpg-seat-face {
+  position: relative; display: block; flex: 0 0 68px; width: 68px; height: 68px; overflow: hidden; border-radius: 50%;
+  border: 2px solid #ebd9a8b3; background: #2c4a4a;
+}
+html:root .trpg-root.trpg-cinematic .trpg-table-person.active .trpg-seat-face { border-color: #fff2bd; }
+/* 顔の切り抜きは view.js の portraitFrame(id, 160, 6) と同じ幅（手引きの顔 64px／150px と同じ倍率で、頭が丸に収まる）。 */
+html:root .trpg-root.trpg-cinematic .trpg-seat-face img { position: absolute; left: 50%; width: 160px; max-width: none; }
+html:root .trpg-root.trpg-cinematic .trpg-seat-face img.trpg-pc-art { inset: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+html:root .trpg-root.trpg-cinematic .trpg-seat-head { min-width: 0; }
+html:root .trpg-root.trpg-cinematic .trpg-seat-head .trpg-seat-name,
+html:root .trpg-root.trpg-cinematic .trpg-table-person[data-part="gm"] .trpg-seat-name { font-size: max(24px, var(--tt-min)); font-weight: 700; white-space: nowrap; color: #fff4d6; text-shadow: 0 1px 2px #000, 0 0 6px #000a; }
+html:root .trpg-root.trpg-cinematic .trpg-table-person.active .trpg-seat-name { color: #fffbea; }
+html:root .trpg-root.trpg-cinematic .trpg-table :is(.trpg-seat-pc, .trpg-seat-speaking, .trpg-seat-stats, .trpg-seat-ability, .trpg-seat-mark) { display: none; }
+
+/* 表紙: あらすじ22px・3つのボタン72px。「作・〜」と作品番号は出さない。 */
+html:root .trpg-root.trpg-cinematic .trpg-cover-copy { top: 112px; }
+html:root .trpg-root.trpg-cinematic .trpg-cover-copy .trpg-kicker { font-size: max(18px, var(--tt-min)); margin-bottom: 8px; }
+html:root .trpg-root.trpg-cinematic .trpg-cover-copy h1 { font-size: 56px; margin-bottom: 12px; }
+html:root .trpg-root.trpg-cinematic .trpg-cover-copy > p { font-size: max(22px, var(--tt-min)); line-height: 1.7; max-width: 620px; }
+html:root .trpg-root.trpg-cinematic .trpg-cover-copy .trpg-cover-actions { margin-top: 18px; }
+html:root .trpg-root.trpg-cinematic .trpg-cover-copy .trpg-cover-actions .trpg-button,
+html:root .trpg-root.trpg-cinematic .trpg-cover-pc .trpg-button { min-height: 72px; font-size: max(22px, var(--tt-min)); }
+html:root .trpg-root.trpg-cinematic .trpg-cover-pc { margin: 12px 0 0; }
+html:root .trpg-root.trpg-cinematic .trpg-cover-pc-copy small { font-size: max(18px, var(--tt-min)); }
+html:root .trpg-root.trpg-cinematic .trpg-cover-pc-copy strong { font-size: max(24px, var(--tt-min)); }
+html:root .trpg-root.trpg-cinematic .trpg-cover-pc-copy > span { font-size: max(18px, var(--tt-min)); }
+html:root .trpg-root.trpg-cinematic .trpg-cover-party { gap: 10px; bottom: 40px; right: 40px; }
+html:root .trpg-root.trpg-cinematic .trpg-cover-person { width: 104px; gap: 4px; }
+html:root .trpg-root.trpg-cinematic .trpg-cover-person :is(strong, small, span) { font-size: max(18px, var(--tt-min)); }
+@media (pointer: coarse) {
+  html:root .trpg-root.trpg-cinematic .trpg-cover-copy .trpg-cover-actions .trpg-button,
+  html:root .trpg-root.trpg-cinematic .trpg-cover-pc .trpg-button { min-height: 84px; }
+}
+
+/* 判定画面の説明文: 18px以上。判定紙の max(16px, …) と同じく、小さな画面では実寸の下限が勝つ。 */
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > p.trpg-roll-instruction { font-size: max(18px, calc(12 * var(--roll-unit))); }
+/* 周辺文（目標・式・見立て・振り直しの注意など）は、スマホでは実寸11〜12px以上（--roll-unit）、PC（1280×720）では元の12〜13px。
+   PCで一律18pxにすると、出目を振った後の判定紙が伸びて振り直しの札が舞台の下へはみ出す。 */
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage :is(.trpg-roll-context, .trpg-roll-insight, .trpg-roll-consequence, .trpg-roll-trump, .trpg-reroll-warning, .trpg-actor-receipt, .trpg-roll-equation) { font-size: max(13px, calc(11 * var(--roll-unit))); }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage :is(.trpg-forecast-head small, .trpg-odds span, .trpg-odds small, .trpg-forecast > p) { font-size: max(12px, calc(11 * var(--roll-unit))); }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage :is(.trpg-aid small, .trpg-reroll-choice small) { font-size: max(12px, calc(12 * var(--roll-unit))); }
+
+/* 宣言の画面・「？」の中身も、実寸11px未満にしない（カードの並びと数は変えない）。 */
+html:root .trpg-root.trpg-cinematic .trpg-declare-stage :is(.trpg-approach-copy small, .trpg-approach-copy span, .trpg-approach-meta :is(b, small, i)) { font-size: max(18px, var(--tt-min)); line-height: 1.35; }
+html:root .trpg-root.trpg-cinematic .trpg-declare-stage .trpg-approach-copy strong { font-size: max(20px, var(--tt-min)); }
+html:root .trpg-root.trpg-cinematic .trpg-declare-stage .trpg-declare-prompt > strong { font-size: max(22px, var(--tt-min)); }
+html:root .trpg-root .trpg-inline-help-body :is(span, .trpg-declare-rule) { font-size: max(18px, var(--tt-min)); }
+@media (pointer: coarse) { html:root .trpg-root .trpg-inline-help > summary { width: 84px; height: 84px; } }
+html:root .trpg-root .trpg-inline-help > summary { font-size: max(24px, var(--tt-min)); }
+html:root .trpg-root.trpg-cinematic .trpg-declare-stage .trpg-modal-actions .trpg-button { font-size: max(20px, var(--tt-min)); }
