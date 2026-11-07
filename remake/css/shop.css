@@ -74,6 +74,11 @@
 .shop-paper .kuji-row .shop-main { gap: 6px; }
 .shop-paper .kuji-row .btn { flex: none; min-width: 150px; min-height: 64px; font-size: 22px; }
 .shop-paper .kuji-row .shop-main small { font-size: 18px; }
+/* くじ券（KJ05）: 限定台くじの行の下の1行。行そのものは押せない */
+.shop-paper .kuji-ticket-row { padding-top: 10px; padding-bottom: 10px; background: #f1eaf3; }
+.shop-paper .kuji-ticket-row .shop-main { gap: 4px; }
+.shop-paper .kuji-ticket-row .btn { flex: none; min-width: 150px; min-height: 64px; font-size: 22px; }
+.shop-paper .kuji-ticket-row .shop-main small { font-size: 18px; }
 .shop-paper .kuji-actions { display: flex; flex-direction: row; flex: none; gap: 16px; }
 .kuji-help-row { flex: none; display: flex; justify-content: flex-end; padding: 6px 0 2px; }
 .kuji-help { width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 2px solid #9676a8; background: #fffcf8; color: #58386c; font-size: 22px !important; font-weight: 700; }
@@ -114,7 +119,7 @@
   .shop-paper { --shop-text: max(18px, calc(11.5px / var(--k, 1))); --shop-tap: max(64px, calc(40px / var(--k, 1))); --shop-label: max(22px, calc(12px / var(--k, 1))); }
   .shop-paper .shop-head { height: auto; min-height: 70px; }
   .shop-paper .shop-sub, .shop-paper .shop-money small, .shop-paper .shop-stock small, .shop-paper .shop-summary small, .shop-paper .shop-summary span, .shop-paper .shop-owned, .shop-price.expense, .shop-filters > span,
-  .shop-paper .shop-main small, .shop-paper .shop-main .shop-feature-tags.shop-feature-tags, .shop-paper .kuji-row .shop-main small, .shop-paper .shop-stock, .shop-paper .shop-stock span, .shop-type-mark, .shop-quantity output { font-size: var(--shop-text); }
+  .shop-paper .shop-main small, .shop-paper .shop-main .shop-feature-tags.shop-feature-tags, .shop-paper .kuji-row .shop-main small, .shop-paper .kuji-ticket-row .shop-main small, .shop-paper .shop-stock, .shop-paper .shop-stock span, .shop-type-mark, .shop-quantity output { font-size: var(--shop-text); }
   .shop-paper .shop-tabs { height: var(--shop-tap); margin-top: 8px; }
   .shop-paper .shop-tab, .shop-paper .shop-main b { font-size: var(--shop-label); }
   .shop-paper .shop-row { min-height: var(--shop-tap); }
@@ -123,7 +128,7 @@
   .shop-paper .shop-step { flex: none; min-width: max(52px, calc(40px / var(--k, 1))); width: max(52px, calc(40px / var(--k, 1))); height: var(--shop-tap); font-size: var(--shop-label) !important; }
   .shop-paper .shop-row .btn, .shop-paper .shop-checkout { min-height: var(--shop-tap); font-size: var(--shop-label) !important; }
   .shop-paper .kuji-row, .shop-paper .kuji-actions { gap: 16px; }
-  .shop-paper .kuji-row .btn { min-width: 150px; }
+  .shop-paper .kuji-row .btn, .shop-paper .kuji-ticket-row .btn { min-width: 150px; }
   .shop-paper .kuji-help { width: var(--shop-tap); height: var(--shop-tap); font-size: var(--shop-label) !important; }
   .shop-paper .shop-foot { height: auto; min-height: 92px; }
   .shop-paper .shop-summary { min-height: var(--shop-tap); }

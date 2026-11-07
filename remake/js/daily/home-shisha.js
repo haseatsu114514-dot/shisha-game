@@ -202,7 +202,8 @@ export function tasteDistant(s = state) {
 
 /** 場面の台本（地の文＋はじめの心の声）。全角48字以内・手動改行なし */
 export function homeShishaDialogue(result, rig, random = Math.random, { distant = false } = {}) {
-  const intros = INTROS[rig.id] || INTROS.home_rig_set;
+  // くじ限定の台（KJ05）は元の台（base）の地の文を使う
+  const intros = INTROS[rig.id] || INTROS[DB.equipById?.[rig.id]?.base] || INTROS.home_rig_set;
   const impressions = distant ? ["（……香りが遠い。今は味の輪郭をうまく受け取れない）"]
     : Object.entries(result.mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0)
       .map(([id]) => `（${leafName(id)}。${FLAVOR_IMPRESSIONS[id] || "どんな味か、またゆっくり確かめたい"}）`);

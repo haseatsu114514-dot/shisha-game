@@ -278,6 +278,7 @@ export const PLAY_REWARDS = [
   // 第4章ドバイのサンドボード（chapters/ch4-desert.js が state.desert.bestRank を残す）
   { id: "desert-a", game: "desert", rank: "A", label: "サンドボードで Aランク", gift: { body: 1 } },
 ];
-/** くじのラストワン賞（中身はシークレット）。箱を引き切るたびに色つきの火種1つ（いちばん伸びの少ない盤の色） */
+/** くじのラストワン賞（中身はシークレット）。箱を引き切るたびに色つきの火種1つ（いちばん伸びの少ない盤の色）。
+ * 第5章の限定台くじ（core/rules.js の KUJI_LIMITED_GRADES・KJ05）は付けない（#2455） */
 export const KUJI_LAST_ONE_GIFT = 1;
 

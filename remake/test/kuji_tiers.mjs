@@ -10,8 +10,8 @@ const flavors = Object.fromEntries(read("../../data/flavors.json").flavors.map(f
 const equipment = Object.fromEntries(read("../../data/equipment.json").equipment.map(e => [e.id, e]));
 const GEAR_TYPES = ["bowl", "hms", "charcoal"];
 
-// 1. 値段と並ぶ章（500円・1,000円は第1章から、上位は第2章3,000円／第3章5,000円／第4章10,000円）。
-const TIERS = { g500: [500, 1], g1000: [1000, 1], g3000: [3000, 2], g5000: [5000, 3], g10000: [10000, 4] };
+// 1. 値段と並ぶ章（500円・1,000円は第1章から、上位は第2章3,000円／第3章5,000円／第4章10,000円／第5章20,000円の限定台くじ KJ05）。
+const TIERS = { g500: [500, 1], g1000: [1000, 1], g3000: [3000, 2], g5000: [5000, 3], g10000: [10000, 4], g20000: [20000, 5] };
 for (const [id, [price, chapter]] of Object.entries(TIERS)) {
   const g = kuji.grades[id];
   assert(g, `${id} がある`);
@@ -63,20 +63,29 @@ for (const section of ["grades", "legacyGrades"]) {
 }
 
 // 3. 上位くじは台と機材が主役。S賞は台で、上の段ほど家シーシャで伸びる台。S・A賞はすべて台か機材。
+// 第5章の限定台くじ（KJ05）のS賞はくじ限定の台3種で、伸びは店で一番伸びる台と同じ（くじだけ強い台を作らない）。
 const upper = Object.entries(kuji.grades).filter(([, g]) => g.price >= 3000).sort((a, b) => a[1].price - b[1].price);
-assert.deepEqual(upper.map(([id]) => id), ["g3000", "g5000", "g10000"]);
+assert.deepEqual(upper.map(([id]) => id), ["g3000", "g5000", "g10000", "g20000"]);
+const topShopXp = Math.max(...Object.values(equipment).filter(e => e.type === "homeware" && !e.not_for_sale).map(e => e.home_xp || 0));
 let lastXp = 0;
 for (const [id, g] of upper) {
-  const s = g.prizes.find(p => p.rank === "S");
-  assert.equal(equipment[s.equipId]?.type, "homeware", `${id}: S賞は台`);
-  const xp = equipment[s.equipId].home_xp;
-  assert(xp > lastXp, `${id}: S賞の台は下の段より伸びる（${xp}）`);
-  lastXp = xp;
+  const tops = g.prizes.filter(p => p.rank === "S");
+  for (const s of tops) assert.equal(equipment[s.equipId]?.type, "homeware", `${id}: S賞は台`);
+  if (g.limited) {
+    assert.equal(tops.length, 3, `${id}: 限定台くじのS賞は3種`);
+    for (const s of tops) assert.equal(equipment[s.equipId].home_xp, topShopXp, `${id}「${s.name}」: 店で一番伸びる台と同じ伸び`);
+  } else {
+    assert.equal(tops.length, 1, `${id}: S賞は1種`);
+    const xp = equipment[tops[0].equipId].home_xp;
+    assert(xp > lastXp, `${id}: S賞の台は下の段より伸びる（${xp}）`);
+    lastXp = xp;
+  }
   for (const p of g.prizes.filter(p => p.rank === "S" || p.rank === "A")) assert(p.equipId, `${id}「${p.name}」: S・A賞は台か機材`);
   assert(g.lastOne.equipId, `${id}: ラストワン賞も台か機材`);
   assert(g.prizes.filter(p => p.equipId).length >= 4, `${id}: 台・機材が4種以上`);
 }
-assert.equal(lastXp, Math.max(...Object.values(equipment).filter(e => e.type === "homeware").map(e => e.home_xp || 0)), "いちばん上のくじのS賞は一番伸びる台");
+assert.equal(lastXp, topShopXp, "店の台を出すくじのいちばん上のS賞は、店で一番伸びる台");
+assert.equal(Math.max(...Object.values(equipment).filter(e => e.type === "homeware").map(e => e.home_xp || 0)), topShopXp, "くじ・非売品の台も店の一番の台より伸びない");
 
 // 4. 実際の kuji.js の出し分け: 章に達したくじだけ並ぶ。
 const source = readFileSync(new URL("../js/daily/kuji.js", import.meta.url), "utf8");
@@ -90,8 +99,8 @@ const visible = chapter => {
 assert.deepEqual(visible(1), ["g500", "g1000"]);
 assert.deepEqual(visible(2), ["g500", "g1000", "g3000"]);
 assert.deepEqual(visible(3), ["g500", "g1000", "g3000", "g5000"]);
-assert.deepEqual(visible(4), ["g500", "g1000", "g3000", "g5000", "g10000"]);
-assert.deepEqual(visible(5), visible(4), "第5章も全部");
+assert.deepEqual(visible(4), ["g500", "g1000", "g3000", "g5000", "g10000"], "限定台くじは第4章には並ばない");
+assert.deepEqual(visible(5), [...visible(4), "g20000"], "第5章は全部＋限定台くじ");
 
 // 5. 実際の grant(): 持っていない台・機材は持ち物へ。持っている物は中古買い取りの額をお金で（売れない台は景品評価の半額）。
 const grantSource = source.match(/^function grant\(prize\) \{[\s\S]*?^\}\n/m)?.[0];
@@ -137,4 +146,4 @@ for (const [gradeId, g] of Object.entries(kuji.grades)) for (const prize of [...
   for (const id of [prize.flavorId, ...(prize.flavors || []).map(f => f.id)].filter(Boolean))
     assert(!['absal_double_apple', 'absal_mint', 'dobaj_double_apple', 'dobaj_mint'].includes(id), `${gradeId} の ${prize.name} にドバイの葉を入れない`);
 }
-console.log(`[kuji tiers] PASS: ${Object.keys(kuji.grades).length} grades, chapter gates 1-5, gear prizes, duplicate cash`);
+console.log(`[kuji tiers] PASS: ${Object.keys(kuji.grades).length} grades, chapter gates 1-5, gear prizes, duplicate cash, ch5 limited tier`);

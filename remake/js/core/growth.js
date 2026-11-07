@@ -11,6 +11,7 @@ import { GROWTH_BOARD, growthEnabled, PREVIEW_KEY } from "./growth-mode.js";
 import { growthPerks, growthSkill, growthLesson, SKILL_TUNING, LESSON_TUNING } from "./growth-effects.js";
 import { masteryHooks } from "./flavor-mastery.js";
 import { syncRespecOpportunity, closeRespecOpportunity } from "./growth-respec.js";
+import { KUJI_LIMITED_GRADES } from "./rules.js";
 export { GROWTH_BOARD, growthEnabled } from "./growth-mode.js";
 
 export function setGrowthPreview(on) {
@@ -526,6 +527,8 @@ export function claimPlayRewards(g, s = state) {
     out.push({ label: reward.label, parts: giveSet(g, reward.gift) });
   }
   for (const [grade, box] of Object.entries(s.kuji || {})) {
+    // 第5章の限定台くじ（KJ05）は引き切っても火種を付けない。運とお金で盤を伸ばさない（#2455）
+    if (KUJI_LIMITED_GRADES.includes(grade)) continue;
     if (!box || !Array.isArray(box.order) || box.drawn < box.order.length || box.emptyDay == null) continue;
     const key = `kuji:${grade}:${s.chapter}:${box.emptyDay}`;
     if (g.rewards[key]) continue;
