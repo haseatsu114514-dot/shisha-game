@@ -156,6 +156,15 @@ document.addEventListener?.("visibilitychange", () => {
   if (document.hidden) stopRecordedVoices();
   syncRain();
 });
+// 縦持ちの回転ガード中（#2941・core/rotate-guard.js が <html data-rotate-guard> と "rotateguardchange" で知らせる）は、
+// 制作の時計と同じく音も止める。効果音・合成BGM・雨は大元の音量を0に、曲のファイルは一時停止し、横に戻すと同じ所から続ける。
+let rotateHeld = false;
+document.addEventListener?.("rotateguardchange", () => {
+  rotateHeld = document.documentElement?.dataset?.rotateGuard === "true";
+  if (master) master.gain.value = rotateHeld ? 0 : 1;
+  if (rotateHeld) { stopRecordedVoices(); currentEl?.pause(); }
+  else if (currentEl && !bgmPaused) currentEl.play().catch(() => {});
+});
 
 function ensureCtx() {
   if (ctx) return ctx;
@@ -164,6 +173,7 @@ function ensureCtx() {
   ctx = new AC();
   ctx.addEventListener?.("statechange", syncPulls);
   master = ctx.createGain();
+  master.gain.value = rotateHeld ? 0 : 1;
   master.connect(ctx.destination);
   seBus = ctx.createGain();
   seBus.gain.value = config.mute || config.muted ? 0 : config.seVolume;
@@ -560,7 +570,7 @@ export function createContinueAudio({ enabled = true } = {}) {
       paused = false;
       if (!ownsMusic()) return;
       bgmPaused = false;
-      if (currentEl) currentEl.play().catch(() => {});
+      if (currentEl && !rotateHeld) currentEl.play().catch(() => {});
       mix(holdMix);
     },
     cleanup() {
@@ -816,6 +826,7 @@ export function playBgm(key) {
     a.addEventListener("error", fallBackContinue, { once: true });
     const start = () => {
       if (currentEl !== a) return; // 読み込み中に別曲へ移った場合、古い曲を鳴らさない。
+      if (rotateHeld) { a.volume = bgmLevel(key); return; } // 回転ガード中に替わった曲は、横に戻した時に鳴らし始める
       a.play().catch(() => {
         if (!fallBackContinue() && currentEl === a) {
           pendingBgm = key; currentKey = null;
