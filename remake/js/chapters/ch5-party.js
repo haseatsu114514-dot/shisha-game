@@ -12,10 +12,13 @@ import { DB, sceneBg } from "../core/data.js";
 import { modal, setBg, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
-import { partyGuests, partyScenes, SEAT_LABELS } from "./ch5-party-plan.js";
+import { partyBeforeSeat, partyGuests, partyScenes, SEAT_LABELS } from "./ch5-party-plan.js";
 
 export const PARTY_FLAG = "_ch5_after_party"; // 打ち上げを読み終えた
 export const PARTY_SEAT_FLAG = "_ch5_party_seat"; // 隣に座った人（"sumi" かヒロインのID）
+// 打ち上げの修羅場で反応まで読んだ恋人（IDの配列。#2815）。スタッフロールの後（ch5-progress.js）は、この人たちだけを
+// 反応済みとして話し直しへ送り、打ち上げの後に恋人になった相手とは区別する。修羅場にならなかった打ち上げでは立てない。
+export const PARTY_CONFLICT_FLAG = "_ch5_party_conflict";
 const BG = "bg_tonari_inside_night";
 let routesTask = null;
 function loadRoutes() {
@@ -60,6 +63,8 @@ export async function runAfterParty() {
     return state === owner && !!result && !result.cancelled;
   };
   if (!await read("ch5_party_open")) return false;
+  // 修羅場になる打ち上げでは、遠くの恋人のテレビ電話を席の前につなぐ（反応が「聞こえてた」と受ける・#2815）
+  for (const id of partyBeforeSeat(routes, state)) if (!await read(id)) return false;
   const { present } = partyGuests(routes, state);
   const seat = present.length ? await modal({
     title: "誰の隣に座る？", body: "打ち上げの席。空いている席は、いくつかある。",
@@ -71,6 +76,7 @@ export async function runAfterParty() {
   for (const id of plan.scenes) if (!await read(id)) return false;
   state.flags[PARTY_FLAG] = true;
   state.flags[PARTY_SEAT_FLAG] = seat;
+  if (plan.kind === "conflict") state.flags[PARTY_CONFLICT_FLAG] = [...plan.participants];
   save();
   return true;
 }
