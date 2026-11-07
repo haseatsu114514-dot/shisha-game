@@ -57,7 +57,12 @@ async function layout(p, mode) {
   // DS風の縦持ちから通常版へ戻すと、その場で回転の案内が CONFIG ごと覆う。実機と同じく横にしてから閉じる。
   portrait ||= await landscapeIfHinted(p);
   await closeConfig(p);
-  if (portrait) await p.setViewportSize(portrait);
+  if (portrait) {
+    // 縦に戻したあと、画面の resize（DS風の上下2画面の寸法 applyDsGeometry）が処理されるまで待つ。
+    await p.setViewportSize(portrait);
+    await p.waitForFunction(([w, h]) => innerWidth === w && innerHeight === h, [portrait.width, portrait.height]);
+    await p.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+  }
   assert.equal(await p.locator(".title").getAttribute("data-layout"), mode);
 }
 async function stageIsOriginal(p) {
