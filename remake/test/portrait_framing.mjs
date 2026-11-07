@@ -20,8 +20,6 @@ const render = p => {
 };
 const manifest = JSON.parse(read('remake/data/manifest.json'));
 const chars = Object.fromEntries(JSON.parse(read('data/characters.json')).map(c => [c.id, c]));
-const samechan = JSON.parse(read('data/dialogue/samechan.json')).profile;
-if (samechan?.id) chars[samechan.id] = samechan;
 const data = await import('../js/core/data.js');
 data.DB.manifest = manifest;
 data.DB.characters = chars;
