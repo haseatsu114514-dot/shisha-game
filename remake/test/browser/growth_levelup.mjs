@@ -1249,6 +1249,8 @@ await suite("growth-levelup", async (runCheck) => {
       value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
         _ch4_sheikh_revealed: true, _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1, _ch2_region: region, _ch5_region_started: true,
         _ch5_tokyo_attic: true, _ch5_dubai_letter: true, _ch5_dubai_guest: true, _ch5_dubai_flights: 1,
+        // 帰国後の打ち上げ（ch5-party.js）は読み終えた扱い。席選びの窓が地図より先に出て、ピン待ちで止まらないように。
+        _ch5_after_party: true, _ch5_party_seat: "sumi",
         _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true, read: { ch5_bridge_after_return: true, ch5_opening: true },
           scheduleDecision: null, aftermath: 0, finale: 0, finaleScenes: null, won: null, secondCup: null },
         _ch5_match_scheduled: false, _ch5_match_started: false };
@@ -1266,12 +1268,6 @@ await suite("growth-levelup", async (runCheck) => {
       await page.reload(); await page.locator(t("title-load")).click();
       await page.evaluate(async () => { const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0; });
       await page.locator(t("slot-0")).click();
-      // #2750: つむぎは開始時から顔見知りなので、第5章の自由行動の始めの打ち上げ（一度だけ）で席を選ぶ。
-      // 面識のあるヒロインはつむぎだけ。以前（その場に誰もいない時の既定）と同じスミさんの隣に座る。
-      await page.locator(t("party-seat-sumi")).waitFor({ timeout: 60000 });
-      assert.deepEqual(await page.locator('[data-test^="party-seat-"]').evaluateAll(nodes => nodes.map(node => node.dataset.test)),
-        ["party-seat-tsumugi", "party-seat-sumi"]);
-      await page.locator(t("party-seat-sumi")).click();
       await page.locator(`.map:not(.done)[data-region="${region}"] ${t(`pin-${pin}`)}`).waitFor({ timeout: 60000 });
       if (region === "tokyo") {
         // 池の弁天堂は地図の右下の池のお堂に立つ。地図からはみ出さず、ほかの行き先のピンと重ならない（IR26）

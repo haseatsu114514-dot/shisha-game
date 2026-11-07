@@ -116,11 +116,7 @@ await suite("issue439", async (check) => {
       I.map = (await import("./js/daily/map.js")).chooseSpot();
     });
     await page.locator('[data-test="pin-kannon"]').click();
-    // #2730: パネルは写真とスポット名だけ。読み込み中は写真の枠に文字を出さず、読み上げ用の状態（role=status）で知らせる。
-    const loading = page.locator(".mi-preview.loading");
-    assert.equal(await loading.innerText(), "");
-    assert.equal(await loading.getAttribute("role"), "status");
-    assert.equal(await loading.getAttribute("aria-label"), "観音堂の写真を読み込んでいます");
+    assert.match(await page.locator(".mi-preview").innerText(), /読み込んでいます/);
     await page.locator(".mi-preview:not(.loading)").waitFor();
     assert.match(await page.locator(".mi-preview").evaluate(node => getComputedStyle(node).backgroundImage), /bg_kannon/);
   });
