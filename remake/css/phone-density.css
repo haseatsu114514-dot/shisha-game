@@ -48,6 +48,10 @@ html:root[data-density="phone"] body:not(.game-ds) .hud-menu { height: var(--pho
 html:root[data-density="phone"] body:not(.game-ds) .hud-lime { width: var(--phone-tap); height: var(--phone-tap); flex-basis: var(--phone-tap); border-radius: 18px; }
 html:root[data-density="phone"] body:not(.game-ds) .hud-lime span { width: 84%; height: 58%; margin-bottom: 6%; font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(.game-ds) .hud-lime span::after { left: 30%; bottom: -6px; width: 14px; height: 12px; }
+/* 未読の赤丸も LIME の大きさに比例させる（PC の 48px に 20px＝約0.42 の比。数字・見た目の中央の補正も同じ比で。lime_badge の検査） */
+html:root[data-density="phone"] body:not(.game-ds) .hud-lime .badge { --badge-d: calc(var(--phone-tap) * 20 / 48); width: var(--badge-d); min-width: var(--badge-d); height: var(--badge-d); font-size: calc(var(--badge-d) * .6); }
+html:root[data-density="phone"] body:not(.game-ds) .hud-lime .badge.single { font-size: calc(var(--badge-d) * .7); }
+html:root[data-density="phone"] body:not(.game-ds) .hud-lime .badge-number { transform: translateX(calc(var(--badge-d) / 40)); }
 /* DAY カード: 英字の地名（飾り）は消し、補助文は読める大きさにする。行の高さと右列の幅は文字に合わせて伸ばす。 */
 html:root[data-density="phone"] body:not(.game-ds) #hud .dc-area { display: none; }
 /* 「次の大会まで あと○日」はスマホでは出さない（オーナー指示 2026-11-08「次の大会までは書かなくていい。わかるし」）。
