@@ -149,7 +149,7 @@ remake/
 **初登場カットイン**（`vn/intro.js`）: キャラが名乗った直後（または名前を知っていて初めて喋る台詞の前）に一度だけ、
 呼び名・二つ名・一言を全画面で出す。名前は `intro_cutin.display_name`（NAMES-1106「カットインの名前表示ルール」2026-11-06・#2626）。本名タイプはフルネーム（あだ名がある人は「本名（あだ名）」）、通り名タイプは通り名で、漢字には「漢字《よみ》」でふりがなを付ける。みんとは `display_name_after` で本名を聞いた後に木成頼栞。
 表示3.6秒と退場0.28秒はクリック・Enter・SKIPでも短縮しない。
-文言と表情の正本は `data/characters.json` の `intro_cutin`（サメちゃんは `data/dialogue/samechan.json` の `profile`）。
+文言と表情の正本は `data/characters.json` の `intro_cutin`。
 PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn/intro-art.js` と `css/intro.css` へ接続。
 背景は `assets/ui/character_intros/`、配色・現行人物PNGの配置は自動生成の `manifest.introArt`。背景・帯・人物・文字は独立して動かす。
 動きを減らす設定では静止表示。Noto Sans JPは紹介に必要な文字だけを同梱し、実行時の外部ダウンロードは不要。

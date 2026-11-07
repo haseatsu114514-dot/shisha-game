@@ -85,10 +85,6 @@ def load_speaker_whitelist() -> set:
     data = json.loads(CHARS.read_text(encoding="utf-8"))
     chars = data if isinstance(data, list) else data.get("characters", [])
     ids = {c["id"] for c in chars if isinstance(c, dict) and "id" in c}
-    # remake/core/data.js と同じ独立profileのoverlay。告白等の他ファイルでも本人を話者に使う。
-    overlay = json.loads((DLG_DIR / "samechan.json").read_text(encoding="utf-8"))
-    if overlay.get("profile", {}).get("id"):
-        ids.add(overlay["profile"]["id"])
     return ids | MOB_SPEAKERS
 
 
@@ -180,9 +176,7 @@ def main() -> int:
             errors.append(f"{rel}: JSON parse error: {e}")
             continue
 
-        profile = data.get("profile") or {}
-        local_id = profile.get("id") if isinstance(profile, dict) else None
-        file_whitelist = whitelist | ({local_id} if isinstance(local_id, str) and local_id else set())
+        file_whitelist = whitelist
 
         for dlg in data.get("dialogues", []) or []:
             did = dlg.get("dialogue_id", "?")
