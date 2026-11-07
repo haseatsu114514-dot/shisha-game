@@ -9,13 +9,18 @@
   --dm-amber: #d8963f; --dm-amber-ink: #b8651f; --dm-hover: #f4eef6;
   /* 共通部品（ハート・贈り物の札・レシピの詳細）が読む文字色も紙の上の色へ */
   --text: var(--dm-ink); --text-dim: var(--dm-muted); --gold: var(--dm-lav); --gold-hi: var(--dm-lav);
+  /* スマホ横持ち（#2859）: #stage は --k で縮むので、そのぶんを戻して実寸で文字 11px・押せる所 38px を下回らせない（少し余裕を持たせる）。
+     1280×720 の等倍では下限より元の大きさが勝つので、PCの見た目は変わらない */
+  --dm-min: calc(11.5px / var(--k, 1)); --dm-tap: calc(40px / var(--k, 1));
   position: absolute; inset: 0; color: var(--dm-ink); font-family: var(--font); text-shadow: none;
 }
+/* MENU を開いている間は HUD を隠す。日付・残り日数・体力・所持金は MENU 上段の帯で読む（#2859。重複行を一つに） */
+#stage:has(#modal > .dmenu) #hud { visibility: hidden; }
 .dmenu .dm-backdrop { position: absolute; inset: 0; background: #1e1429b8; }
 .dmenu .dm-sheet {
   position: absolute; left: 24px; top: 24px; width: 1232px; height: 672px; box-sizing: border-box;
   padding: 36px 52px 40px 39px;
-  display: grid; grid-template-columns: 194px minmax(0, 1fr); grid-template-rows: 58px minmax(0, 1fr);
+  display: grid; grid-template-columns: 194px minmax(0, 1fr); grid-template-rows: minmax(58px, auto) minmax(0, 1fr);
   grid-template-areas: "side head" "side panel"; column-gap: 24px; row-gap: 12px;
   /* 絵が読めない時も同じ色の紙と帯で開く（DUI12 と同じ考え方） */
   background: url("../img/ui/paper/menu-bg.webp") 0 0 / 100% 100% no-repeat,
@@ -28,42 +33,57 @@
 
 /* ---------------------------------------------------------------- 左の帯：見出しとタブ */
 .dmenu .dm-side { grid-area: side; display: flex; flex-direction: column; min-height: 0; padding: 0 10px; }
-.dmenu .dm-title { display: flex; align-items: baseline; gap: 8px; margin: 2px 4px 14px; font-size: 28px; font-weight: 700; letter-spacing: .04em; line-height: 1.2; color: var(--dm-ink); }
-.dmenu .dm-cycle { padding: 2px 8px; border-radius: 10px; font-size: 13px; font-weight: 700; letter-spacing: 0; color: var(--dm-amber-ink); background: #fbe9cf; border: 1px solid #e4b57a; }
+.dmenu .dm-title { display: flex; align-items: baseline; gap: 8px; margin: 2px 4px 14px; font-size: max(28px, var(--dm-min)); font-weight: 700; letter-spacing: .04em; line-height: 1.2; color: var(--dm-ink); }
+.dmenu .dm-cycle { padding: 2px 8px; border-radius: 10px; font-size: max(13px, var(--dm-min)); font-weight: 700; letter-spacing: 0; color: var(--dm-amber-ink); background: #fbe9cf; border: 1px solid #e4b57a; }
 .dmenu .dm-tabs { display: flex; flex-direction: column; gap: 6px; }
+/* タブはアイコン＋日本語（#2859）。アイコンを上、名前を下に積むので、幅の狭い左の帯でも大きな字が収まる */
 .dmenu .dm-tab {
-  display: flex; flex-direction: column; justify-content: center; gap: 3px; height: 56px; padding: 0 16px; box-sizing: border-box;
+  display: flex; flex-direction: column; justify-content: center; gap: 4px; height: max(80px, var(--dm-tap)); padding: 0 16px; box-sizing: border-box;
   border: 1px solid transparent; border-radius: 4px; background: transparent; color: var(--dm-lav-ink);
   text-align: left; cursor: pointer; font-family: var(--font);
 }
-.dmenu .dm-tab .dm-en { font-size: 12px; font-weight: 700; letter-spacing: .02em; line-height: 1; color: var(--dm-muted); }
-.dmenu .dm-tab .dm-label { font-size: 18px; font-weight: 700; line-height: 1.2; }
+.dmenu .dm-tab .dm-icon { font-size: max(22px, var(--dm-min)); line-height: 1; }
+.dmenu .dm-tab .dm-label { font-size: max(18px, var(--dm-min)); font-weight: 700; line-height: 1.2; white-space: nowrap; }
 .dmenu .dm-tab:hover { background: var(--dm-lav-soft); }
 .dmenu .dm-tab.on {
   color: #fff; border-color: var(--dm-lav);
   background: url("../img/ui/paper/lavender.webp") center / 256px repeat, var(--dm-lav); box-shadow: inset 0 0 0 1px #c3a9d566;
 }
-.dmenu .dm-tab.on .dm-en { color: #e9dcf1; }
-.dmenu :is(.dm-tab, .dm-close, .dm-btn, .dm-row, .dm-person, .dm-chip.recipe, .dm-keepsake):focus-visible { outline: 3px solid var(--dm-amber); outline-offset: 2px; }
+.dmenu :is(.dm-tab, .dm-close, .dm-help, .dm-btn, .dm-row, .dm-person, .dm-chip.recipe, .dm-keepsake):focus-visible { outline: 3px solid var(--dm-amber); outline-offset: 2px; }
 
 /* ---------------------------------------------------------------- 上の帯：要約と閉じる */
-.dmenu .dm-head { grid-area: head; display: flex; align-items: center; gap: 16px; min-width: 0; border-bottom: 1px solid var(--dm-line); }
+.dmenu .dm-head { position: relative; grid-area: head; display: flex; align-items: center; gap: 16px; min-width: 0; padding-bottom: 6px; border-bottom: 1px solid var(--dm-line); }
 .dmenu .dm-summary { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 22px; min-width: 0; }
 .dmenu .dm-sum { display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap; }
-.dmenu .dm-sum > small { font-size: 14px; font-weight: 700; color: var(--dm-muted); }
-.dmenu .dm-sum > b { font-size: 19px; font-weight: 900; color: var(--dm-ink); }
-.dmenu .dm-sum > b small { margin-left: 2px; font-size: 14px; font-weight: 700; color: var(--dm-muted); }
-.dmenu .dm-slot { font-size: 16px; font-weight: 700; color: var(--dm-lav); }
+.dmenu .dm-sum > small { font-size: max(14px, var(--dm-min)); font-weight: 700; color: var(--dm-muted); }
+.dmenu .dm-sum > b { font-size: max(19px, var(--dm-min)); font-weight: 900; color: var(--dm-ink); }
+.dmenu .dm-sum > b small { margin-left: 2px; font-size: max(14px, var(--dm-min)); font-weight: 700; color: var(--dm-muted); }
+.dmenu .dm-slot { font-size: max(16px, var(--dm-min)); font-weight: 700; color: var(--dm-lav); }
 .dmenu .dm-amber, .dmenu .dm-sum > b.dm-amber { color: var(--dm-amber-ink); }
 .dmenu .dm-health.h-green > b { color: #2f6b45; }
 .dmenu .dm-health.h-yellow > b { color: #8a6a13; }
 .dmenu .dm-health.h-red > b { color: #b83a3a; }
-.dmenu .dm-close, .dmenu .dm-btn {
-  display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 20px; box-sizing: border-box;
-  border: 2px solid var(--dm-lav-line); border-radius: 4px; background: var(--dm-card); color: var(--dm-lav-ink);
-  font-family: var(--font); font-size: 16px; font-weight: 700; letter-spacing: .06em; cursor: pointer;
+/* 体力の説明は「?」を押した時だけ、上段の下に重ねて開く（#2859。常に出していた長文をやめた） */
+.dmenu .dm-help {
+  align-self: center; display: inline-grid; place-items: center; width: max(36px, var(--dm-tap)); height: max(36px, var(--dm-tap)); margin-left: 2px;
+  padding: 0; box-sizing: border-box; border: 2px solid var(--dm-lav-line); border-radius: 50%; background: var(--dm-card); color: var(--dm-lav-ink);
+  font-family: var(--font); font-size: max(17px, var(--dm-min)); font-weight: 900; line-height: 1; cursor: pointer;
 }
-.dmenu .dm-close { flex: none; margin-left: auto; }
+.dmenu .dm-help[aria-expanded="true"] { color: #fff; border-color: var(--dm-lav); background: var(--dm-lav); }
+.dmenu .dm-health-tip {
+  position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 2; margin: 0; padding: 12px 16px;
+  font-size: max(15px, var(--dm-min)); font-weight: 500; line-height: 1.6; white-space: normal; color: var(--dm-ink);
+  background: var(--dm-card); border: 2px solid var(--dm-lav-line); border-radius: 4px; box-shadow: 0 6px 18px #38283f2e;
+}
+.dmenu .dm-health-tip[hidden] { display: none; }
+.dmenu .dm-health-tip b { font-weight: 900; }
+.dmenu .dm-close, .dmenu .dm-btn {
+  display: inline-flex; align-items: center; justify-content: center; min-height: max(44px, var(--dm-tap)); padding: 0 20px; box-sizing: border-box;
+  border: 2px solid var(--dm-lav-line); border-radius: 4px; background: var(--dm-card); color: var(--dm-lav-ink);
+  font-family: var(--font); font-size: max(16px, var(--dm-min)); font-weight: 700; letter-spacing: .06em; cursor: pointer;
+}
+/* 「閉じる」は 72px の高さ（#2859）。ワイドステージ（#2861）が入ったら右上の黒帯側へ移す */
+.dmenu .dm-close { flex: none; align-self: flex-start; min-height: max(72px, var(--dm-tap)); margin-left: auto; padding: 0 28px; font-size: max(18px, var(--dm-min)); }
 .dmenu :is(.dm-close, .dm-btn):hover:not(:disabled), .dmenu .dm-btn.primary {
   color: #fff; border-color: var(--dm-lav); background: url("../img/ui/paper/lavender.webp") center / 256px repeat, var(--dm-lav);
 }
@@ -76,12 +96,11 @@
 }
 .dmenu .dm-panel:focus { outline: none; }
 .dmenu .dm-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 14px; }
-.dmenu .dm-heading h3 { margin: 0; font-size: 22px; font-weight: 900; color: var(--dm-ink); }
-.dmenu .dm-sub { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.5; color: var(--dm-muted); }
-.dmenu .dm-note { margin: 0; font-size: 14px; font-weight: 500; line-height: 1.65; color: var(--dm-muted); }
-.dmenu .dm-empty { margin: 0; font-size: 15px; font-weight: 500; color: var(--dm-muted); }
-.dmenu .dm-strong { font-size: 17px; font-weight: 700; color: var(--dm-ink); }
-.dmenu .dm-en { font-size: 13px; font-weight: 700; letter-spacing: .02em; color: var(--dm-muted); }
+.dmenu .dm-heading h3 { margin: 0; font-size: max(22px, var(--dm-min)); font-weight: 900; color: var(--dm-ink); }
+.dmenu .dm-sub { margin: 0; font-size: max(14px, var(--dm-min)); font-weight: 700; line-height: 1.5; color: var(--dm-muted); }
+.dmenu .dm-note { margin: 0; font-size: max(14px, var(--dm-min)); font-weight: 500; line-height: 1.65; color: var(--dm-muted); }
+.dmenu .dm-empty { margin: 0; font-size: max(15px, var(--dm-min)); font-weight: 500; color: var(--dm-muted); }
+.dmenu .dm-strong { font-size: max(17px, var(--dm-min)); font-weight: 700; color: var(--dm-ink); }
 .dmenu .dm-card {
   display: flex; flex-direction: column; gap: 10px; min-width: 0; padding: 14px 16px; box-sizing: border-box;
   background: var(--dm-card); border: 1px solid var(--dm-line); border-radius: 4px;
@@ -91,8 +110,6 @@
 .dmenu .dm-grid-2 { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: stretch; }
 .dmenu .dm-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 .dmenu .dm-actions { display: flex; justify-content: flex-end; }
-.dmenu .dm-condition { margin: 0; font-size: 15px; font-weight: 500; line-height: 1.6; color: var(--dm-ink); }
-.dmenu .dm-condition b { font-weight: 900; }
 
 /* ゲージ（濃い紫＝精算済み・薄い紫＝今日の分） */
 .dmenu .dm-gauge { position: relative; display: block; height: 12px; overflow: hidden; border-radius: 6px; background: #ece5ee; border: 1px solid #c9b8d2; }
@@ -104,10 +121,10 @@
 .dmenu .dm-pips i.on { background: var(--dm-lav); border-color: var(--dm-lav); }
 .dmenu .dm-chip {
   display: inline-flex; align-items: center; gap: 6px; min-height: 26px; padding: 2px 10px; box-sizing: border-box; border-radius: 13px;
-  font-family: var(--font); font-size: 14px; font-weight: 700; line-height: 1.3; white-space: nowrap;
+  font-family: var(--font); font-size: max(14px, var(--dm-min)); font-weight: 700; line-height: 1.3; white-space: nowrap;
   color: var(--dm-lav-ink); background: var(--dm-card); border: 1px solid var(--dm-line);
 }
-.dmenu .dm-chip small { font-size: 13px; font-weight: 700; letter-spacing: 0; color: var(--dm-muted); white-space: normal; }
+.dmenu .dm-chip small { font-size: max(13px, var(--dm-min)); font-weight: 700; letter-spacing: 0; color: var(--dm-muted); white-space: normal; }
 .dmenu .dm-chip.on { color: #fff; background: var(--dm-lav); border-color: var(--dm-lav); }
 .dmenu .dm-chip.gift { border-style: dashed; border-color: var(--dm-lav-line); }
 .dmenu .dm-chip.on.gift { border-color: #fff9; }
@@ -121,7 +138,7 @@
 /* ---------------------------------------------------------------- ステータス */
 .dmenu .dm-row {
   display: grid; align-items: center; width: 100%; box-sizing: border-box; margin: 0; padding: 10px 12px;
-  border: 0; border-bottom: 1px solid var(--dm-line); background: transparent; color: inherit; text-align: left;
+  min-height: var(--dm-tap); border: 0; border-bottom: 1px solid var(--dm-line); background: transparent; color: inherit; text-align: left;
   font-family: var(--font); cursor: pointer;
 }
 .dmenu .dm-row:last-child { border-bottom: 0; }
@@ -136,40 +153,39 @@
 .dmenu .s-insight { --sc: var(--stat-insight); }
 .dmenu .dm-badge {
   display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; box-sizing: border-box;
-  font-size: 16px; font-weight: 700; color: color-mix(in srgb, var(--sc) 55%, var(--dm-ink));
+  font-size: max(16px, var(--dm-min)); font-weight: 700; color: color-mix(in srgb, var(--sc) 55%, var(--dm-ink));
   background: color-mix(in srgb, var(--sc) 22%, #fff); border: 2px solid color-mix(in srgb, var(--sc) 70%, var(--dm-ink));
 }
 .dmenu .dm-stat-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .dmenu .dm-stat-line { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px; }
 .dmenu .dm-stat-line .dm-rank { min-width: 128px; }
-.dmenu .dm-stat-line .dm-strong { width: 56px; font-size: 18px; font-weight: 900; }
+.dmenu .dm-stat-line .dm-strong { width: 56px; font-size: max(18px, var(--dm-min)); font-weight: 900; }
 .dmenu .dm-stat .dm-pips i.on { background: color-mix(in srgb, var(--sc) 70%, var(--dm-ink)); border-color: color-mix(in srgb, var(--sc) 70%, var(--dm-ink)); }
-.dmenu .dm-rank { font-size: 16px; font-weight: 700; color: color-mix(in srgb, var(--sc) 50%, var(--dm-ink)); }
-.dmenu .dm-up { font-size: 16px; font-weight: 700; color: var(--dm-amber-ink); }
-.dmenu .dm-fx { font-size: 14px; font-weight: 500; line-height: 1.5; color: color-mix(in srgb, var(--sc) 25%, var(--dm-muted)); }
+.dmenu .dm-rank { font-size: max(16px, var(--dm-min)); font-weight: 700; color: color-mix(in srgb, var(--sc) 50%, var(--dm-ink)); }
+.dmenu .dm-up { font-size: max(16px, var(--dm-min)); font-weight: 700; color: var(--dm-amber-ink); }
+.dmenu .dm-fx { font-size: max(14px, var(--dm-min)); font-weight: 500; line-height: 1.5; color: color-mix(in srgb, var(--sc) 25%, var(--dm-muted)); }
 .dmenu .dm-next { display: flex; flex-direction: column; gap: 5px; }
-.dmenu .dm-next small { font-size: 13px; font-weight: 700; letter-spacing: 0; color: var(--dm-muted); }
+.dmenu .dm-next small { font-size: max(13px, var(--dm-min)); font-weight: 700; letter-spacing: 0; color: var(--dm-muted); }
 .dmenu .dm-next .dm-gauge { height: 8px; }
 .dmenu .dm-stat .dm-next b.settled { background: color-mix(in srgb, var(--sc) 75%, var(--dm-ink)); }
 .dmenu .dm-next.capped b.settled { background: #b9aebf; }
 
 .dmenu .dm-level-line, .dmenu .dm-hidane-line { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 12px; }
-.dmenu .dm-lv small { font-size: 16px; font-weight: 700; color: var(--dm-muted); }
-.dmenu .dm-lv b, .dmenu .dm-big { font-size: 40px; font-weight: 900; line-height: 1; color: var(--dm-ink); }
+.dmenu .dm-lv small { font-size: max(16px, var(--dm-min)); font-weight: 700; color: var(--dm-muted); }
+.dmenu .dm-lv b, .dmenu .dm-big { font-size: max(40px, var(--dm-min)); font-weight: 900; line-height: 1; color: var(--dm-ink); }
 .dmenu .dm-big.dm-amber { color: var(--dm-amber-ink); }
-.dmenu .dm-level-left { margin-left: auto; font-size: 15px; font-weight: 700; color: var(--dm-muted); }
+.dmenu .dm-level-left { margin-left: auto; font-size: max(15px, var(--dm-min)); font-weight: 700; color: var(--dm-muted); }
 .dmenu .dm-exp { height: 14px; }
 .dmenu .dm-board { gap: 0; }
-.dmenu .dm-board > .dm-en { margin-bottom: 4px; }
 .dmenu .b-body { --bc: #c8603a; }
 .dmenu .b-sense { --bc: #3f79c0; }
 .dmenu .b-wisdom { --bc: #3e8a4a; }
 .dmenu .dm-board-row { grid-template-columns: 30px 52px minmax(0, 1fr) 72px; column-gap: 12px; padding: 8px 6px; }
-.dmenu .dm-board-head { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 6px; font-size: 16px; font-weight: 900; color: #fff; background: var(--bc); }
+.dmenu .dm-board-head { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 6px; font-size: max(16px, var(--dm-min)); font-weight: 900; color: #fff; background: var(--bc); }
 .dmenu .dm-board-bar { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .dmenu .dm-board-row .dm-gauge b.settled { background: color-mix(in srgb, var(--bc) 85%, #fff); }
-.dmenu .dm-board-bar small.dm-sub { font-size: 13px; font-weight: 700; letter-spacing: 0; overflow-wrap: anywhere; }
-.dmenu .dm-count { font-size: 15px; font-weight: 700; text-align: right; color: var(--dm-muted); }
+.dmenu .dm-board-bar small.dm-sub { font-size: max(18px, var(--dm-min)); font-weight: 700; letter-spacing: 0; overflow-wrap: anywhere; }
+.dmenu .dm-count { font-size: max(15px, var(--dm-min)); font-weight: 700; text-align: right; color: var(--dm-muted); }
 .dmenu .dm-board .dm-actions { margin-top: 10px; }
 
 /* ---------------------------------------------------------------- 人間関係 */
@@ -177,13 +193,13 @@
 .dmenu .dm-person-item { border-bottom: 1px solid var(--dm-line); }
 .dmenu .dm-person-item:last-child { border-bottom: 0; }
 .dmenu .dm-person {
-  display: flex; align-items: center; gap: 14px; width: 100%; min-height: 62px; box-sizing: border-box; margin: 0; padding: 7px 12px;
+  display: flex; align-items: center; gap: 14px; width: 100%; min-height: max(62px, var(--dm-tap)); box-sizing: border-box; margin: 0; padding: 7px 12px;
   border: 0; background: transparent; color: inherit; text-align: left; font-family: var(--font); cursor: pointer;
 }
 .dmenu .dm-person:hover { background: var(--dm-hover); }
 .dmenu .dm-person[aria-expanded="true"] { background: var(--dm-lav-soft); }
 .dmenu .dm-face { flex: none; width: 46px; height: 46px; box-sizing: border-box; border-radius: 50%; object-fit: cover; image-rendering: pixelated; background: #211c2b; border: 2px solid #e2d9c7; }
-.dmenu .dm-face.ph { display: grid; place-items: center; font-size: 18px; font-weight: 900; color: #fff; background: var(--dm-lav); }
+.dmenu .dm-face.ph { display: grid; place-items: center; font-size: max(18px, var(--dm-min)); font-weight: 900; color: #fff; background: var(--dm-lav); }
 .dmenu .dm-name { flex: none; width: 132px; overflow-wrap: anywhere; }
 .dmenu .dm-person-status { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; min-width: 0; }
 .dmenu .dm-person .heart-row { display: inline-flex; flex: none; gap: 2px; }
@@ -195,9 +211,9 @@
 .dmenu .dm-chip.rel-choice { color: #8a5413; border-color: #e4b57a; background: #fbe9cf; }
 .dmenu .dm-person-detail { padding: 6px 16px 12px 72px; background: #fbf8fc; }
 .dmenu .dm-person-detail[hidden] { display: none; }
-.dmenu .dm-person-detail p { margin: 4px 0 0; font-size: 15px; font-weight: 500; line-height: 1.6; }
+.dmenu .dm-person-detail p { margin: 4px 0 0; font-size: max(15px, var(--dm-min)); font-weight: 500; line-height: 1.6; }
 .dmenu .dm-memory { color: #5a5068; }
-.dmenu .dm-memory::before { content: "思い出　"; font-size: 13px; font-weight: 700; color: var(--dm-lav); }
+.dmenu .dm-memory::before { content: "思い出　"; font-size: max(13px, var(--dm-min)); font-weight: 700; color: var(--dm-lav); }
 .dmenu .dm-hint { color: var(--dm-muted); }
 .dmenu .dm-gift { color: var(--dm-lav-ink); }
 
@@ -206,35 +222,35 @@
 .dmenu .dm-flavors { display: flex; flex-direction: column; }
 .dmenu .dm-flavor { display: grid; grid-template-columns: minmax(0, 1fr) 56px auto 44px; align-items: center; column-gap: 12px; min-height: 44px; border-bottom: 1px solid var(--dm-line); }
 .dmenu .dm-flavor:last-child { border-bottom: 0; }
-.dmenu .dm-flavor-name { font-size: 16px; word-break: keep-all; overflow-wrap: anywhere; }
-.dmenu .dm-grams, .dmenu .dm-mastery { font-size: 15px; font-weight: 700; color: var(--dm-muted); text-align: right; }
-.dmenu .dm-chip.recipe { cursor: pointer; border-color: var(--dm-lav-line); }
+.dmenu .dm-flavor-name { font-size: max(16px, var(--dm-min)); word-break: keep-all; overflow-wrap: anywhere; }
+.dmenu .dm-grams, .dmenu .dm-mastery { font-size: max(15px, var(--dm-min)); font-weight: 700; color: var(--dm-muted); text-align: right; }
+.dmenu .dm-chip.recipe { min-height: var(--dm-tap); cursor: pointer; border-color: var(--dm-lav-line); }
 .dmenu .dm-chip.recipe:hover { color: #fff; background: var(--dm-lav); border-color: var(--dm-lav); }
 .dmenu .dm-later { display: flex; flex-direction: column; gap: 6px; }
-.dmenu .dm-later .dm-strong { font-size: 15px; }
+.dmenu .dm-later .dm-strong { font-size: max(15px, var(--dm-min)); }
 .dmenu .dm-gifts { display: grid; gap: 4px; }
 .dmenu .gift-note { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; padding: 4px 10px; border-left: 3px solid var(--dm-lav-line); background: #f4eef6; }
-.dmenu .gift-note b { font-size: 14px; color: var(--dm-ink); }
-.dmenu .gift-note small { font-size: 13px; font-weight: 700; color: var(--dm-muted); }
+.dmenu .gift-note b { font-size: max(14px, var(--dm-min)); color: var(--dm-ink); }
+.dmenu .gift-note small { font-size: max(13px, var(--dm-min)); font-weight: 700; color: var(--dm-muted); }
 .dmenu .dm-keepsakes { display: grid; gap: 8px; }
 .dmenu .dm-keepsake {
-  display: flex; align-items: center; gap: 12px; width: 100%; padding: 6px; box-sizing: border-box; text-align: left; cursor: pointer;
+  display: flex; align-items: center; gap: 12px; width: 100%; min-height: var(--dm-tap); padding: 6px; box-sizing: border-box; text-align: left; cursor: pointer;
   font-family: var(--font); color: var(--dm-ink); background: var(--dm-card); border: 1px solid var(--dm-line); border-radius: 4px;
 }
 .dmenu .dm-keepsake:hover { background: var(--dm-hover); }
 .dmenu .dm-keepsake img { flex: none; width: 72px; height: 54px; object-fit: cover; border-radius: 3px; background: #ece5ee; }
 .dmenu .dm-keepsake span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.dmenu .dm-keepsake b { font-size: 15px; }
-.dmenu .dm-keepsake small { font-size: 14px; font-weight: 500; line-height: 1.45; color: var(--dm-muted); }
+.dmenu .dm-keepsake b { font-size: max(15px, var(--dm-min)); }
+.dmenu .dm-keepsake small { font-size: max(14px, var(--dm-min)); font-weight: 500; line-height: 1.45; color: var(--dm-muted); }
 .dmenu .dm-recipe { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
 .dmenu .dm-recipe .recipe-detail { align-self: stretch; padding: 16px 18px; background: var(--dm-card); border: 1px solid var(--dm-line); border-radius: 4px; }
-.dmenu .dm-recipe .recipe-detail h4 { margin: 0 0 8px; font-size: 20px; font-weight: 900; color: var(--dm-lav); }
-.dmenu .dm-recipe .recipe-detail p { margin: 6px 0; font-size: 16px; line-height: 1.6; color: var(--dm-ink); }
-.dmenu .dm-recipe .recipe-detail .st-note { font-size: 14px; color: var(--dm-muted); }
+.dmenu .dm-recipe .recipe-detail h4 { margin: 0 0 8px; font-size: max(20px, var(--dm-min)); font-weight: 900; color: var(--dm-lav); }
+.dmenu .dm-recipe .recipe-detail p { margin: 6px 0; font-size: max(16px, var(--dm-min)); line-height: 1.6; color: var(--dm-ink); }
+.dmenu .dm-recipe .recipe-detail .st-note { font-size: max(14px, var(--dm-min)); color: var(--dm-muted); }
 
 /* ---------------------------------------------------------------- システム */
 .dmenu .dm-system { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-.dmenu .dm-sys { min-height: 72px; font-size: 18px; }
+.dmenu .dm-sys { min-height: max(72px, var(--dm-tap)); font-size: max(18px, var(--dm-min)); }
 /* チェキの拡大は MENU の上に重ねる（daily.css の暗い面のまま） */
 #modal > .keepsake-viewer { z-index: 2; }
 
@@ -250,6 +266,8 @@ body.game-ds #modal:has(> .dmenu) {
   left: var(--ds-vx); top: var(--ds-vy);
   width: calc(var(--ds-cx) + var(--ds-cw) - var(--ds-vx)); height: calc(var(--ds-cy) + var(--ds-ch) - var(--ds-vy));
 }
+/* DS風は #stage を縮めず実寸で描くので、--k の戻し（#2859 の下限）は使わない */
+body.game-ds #modal > .dmenu { --dm-min: 0px; --dm-tap: 0px; }
 body.game-ds .dmenu .dm-backdrop { background: #0b0812e6; }
 body.game-ds .dmenu .dm-sheet {
   inset: 0; width: auto; height: auto; padding: 10px 10px 8px; border-radius: 8px;
