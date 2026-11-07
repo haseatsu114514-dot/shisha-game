@@ -85,6 +85,13 @@
       "speaker": "sai",
       "role": "店長／はじめての人へ",
       "face": "normal",
+      "text": "19〜29ならひと手間、18以下は思わぬ出来事。どれでも物語は続きます",
+      "panel": "roll"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
       "text": "計算は画面がします。数字が苦手でも、大丈夫ですよ",
       "panel": "roll"
     },
