@@ -24,6 +24,15 @@ html:root[data-density="phone"] body:not(.game-ds) .btn.small {
   font-size: var(--phone-text);
 }
 html:root[data-density="phone"] body:not(.game-ds) .btn-desc { display: none; }
+/* シーシャ作りの「吸う」の横に並ぶ選択肢（ズボー・味の名前を伏せる 等）は列が狭いので、補助文の大きさにして2行まで折り返す */
+html:root[data-density="phone"] body:not(.game-ds) .pull-btns.with-options .btn:not(.primary) {
+  font-size: var(--phone-sub);
+  white-space: normal;
+  line-height: 1.15;
+  padding-inline: 8px;
+  text-align: center;
+  word-break: auto-phrase;
+}
 
 /* ---------------------------------------------------------------- 確認ダイアログ・閉じる系 */
 html:root[data-density="phone"] body:not(.game-ds) .modal-body { font-size: var(--phone-text); line-height: 1.6; }
@@ -46,7 +55,8 @@ html:root[data-density="phone"] body:not(.game-ds) #hud .dc-area { display: none
 html:root[data-density="phone"] body:not(.game-ds) #hud .dc-row.goal { display: none; }
 /* 幅は固定する。日数（1〜2桁）や所持金の桁で札の幅が変わると、LIME・MENU まで動いてしまう（ui_skin の検査） */
 html:root[data-density="phone"] body:not(.game-ds) #hud .dc-main { width: 66px; min-width: 0; }
-html:root[data-density="phone"] body:not(.game-ds) #hud .dc-meta { width: 200px; }
+/* 右列は文字の大きさに比例させる（「Lv.1 ━ 今夜 Lv UP ×2」が収まる幅。Safari のバーで文字が大きくなっても同じ割合） */
+html:root[data-density="phone"] body:not(.game-ds) #hud .dc-meta { width: calc(var(--phone-sub) * 13); }
 html:root[data-density="phone"] body:not(.game-ds) #hud :is(.dc-day small, .dc-slot, .dc-row span, .dc-row:not(.money) b, .dc-row.money b, .hud-card .hud-stamina > span:first-child, .hud-exp, .hud-exp .hx-left, .hud-exp .hx-target) { font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(.game-ds) #hud :is(.dc-row, .hud-card .hud-stamina, .hud-card .hud-exp) { height: auto; min-height: calc(var(--phone-sub) + 10px); }
 /* 体力と経験値のゲージの始まりをそろえる: 2つのラベルを同じ大きさの文字・同じ幅にする（daily.css の PC 版と同じ考え方） */
