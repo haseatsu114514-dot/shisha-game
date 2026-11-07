@@ -63,11 +63,18 @@
 .dmenu .dm-health.h-green > b { color: #2f6b45; }
 .dmenu .dm-health.h-yellow > b { color: #8a6a13; }
 .dmenu .dm-health.h-red > b { color: #b83a3a; }
-/* 体力の説明は「?」を押した時だけ、上段の下に重ねて開く（#2859。常に出していた長文をやめた） */
+/* 体力の説明は「?」を押した時だけ、上段の下に重ねて開く（#2859。常に出していた長文をやめた）。
+   見た目の丸は帯の文字に合わせて小さく（舞台上 26〜30px）、「好調」の右で文字の中心線にそろえる。帯の高さは押し広げない。
+   押せる範囲は透明な ::before で広げ、実寸 40px（--dm-tap）を保つ（2026-11-08 オーナー指摘「?が大きすぎ・位置に違和感」） */
 .dmenu .dm-help {
-  align-self: center; display: inline-grid; place-items: center; width: max(36px, var(--dm-tap)); height: max(36px, var(--dm-tap)); margin-left: 2px;
-  padding: 0; box-sizing: border-box; border: 2px solid var(--dm-lav-line); border-radius: 50%; background: var(--dm-card); color: var(--dm-lav-ink);
-  font-family: var(--font); font-size: max(17px, var(--dm-min)); font-weight: 900; line-height: 1; cursor: pointer;
+  position: relative; align-self: center; flex: none; display: inline-grid; place-items: center;
+  width: clamp(26px, calc(var(--dm-min) + 7px), 30px); height: clamp(26px, calc(var(--dm-min) + 7px), 30px); margin: 0 4px 0 2px;
+  padding: 0; box-sizing: border-box; border: 1.5px solid var(--dm-lav-line); border-radius: 50%; background: var(--dm-card); color: var(--dm-lav-ink);
+  font-family: var(--font); font-size: clamp(16px, var(--dm-min), 20px); font-weight: 900; line-height: 1; cursor: pointer;
+}
+.dmenu .dm-help::before {
+  content: ""; position: absolute; left: 50%; top: 50%; width: max(40px, var(--dm-tap)); height: max(40px, var(--dm-tap));
+  border-radius: 50%; transform: translate(-50%, -50%);
 }
 .dmenu .dm-help[aria-expanded="true"] { color: #fff; border-color: var(--dm-lav); background: var(--dm-lav); }
 .dmenu .dm-health-tip {
