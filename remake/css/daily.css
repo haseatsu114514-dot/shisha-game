@@ -1070,6 +1070,13 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
 .next-teaser small { color: var(--neon-pink); letter-spacing: 0.3em; }
 .next-teaser b { font-size: 22px; color: #fff; }
 .end-actions { display: flex; gap: 14px; }
+/* 章クリア画面（旧 chapter-preview.css から移設。予告の廃止後も同じ見た目を保つ）。 */
+.end-screen.clear .end-sub { color: #dfccae; }
+.end-screen.clear .end-actions { display: flex; align-items: center; justify-content: center; gap: 18px; }
+.end-screen.clear .clear-last-line { margin: 0; font-size: 18px; color: #cbc1d6; }
+.end-screen.clear .next-teaser { border-left-color: #e8c272; }
+.end-screen.clear .next-teaser small { color: #e8c272; }
+.end-screen.clear .next-teaser b { font-size: 25px; }
 /* 大会のGAME OVER（TH18）:「再挑戦しますか？」。オーナー制作の背景 bg_game_over があれば後ろに敷く。 */
 .end-question { margin: 6px 0 2px; font-size: 26px; font-weight: 800; letter-spacing: .12em; color: #fff4dd; }
 .map-info.leaving { opacity: 0.4; transition: opacity 0.3s; }

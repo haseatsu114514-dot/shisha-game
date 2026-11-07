@@ -9,7 +9,7 @@
 - 経験値・レベル・火種（心得の盤）: [docs/stat-design/README.md](../docs/stat-design/README.md)
 - タイトルのメディアギャラリー: [docs/spec/title_media_gallery.md](../docs/spec/title_media_gallery.md)
 - 共通ロード画面と２コマ漫画: [docs/spec/loading_screen_and_comics.md](../docs/spec/loading_screen_and_comics.md)
-- 章タイトルコール・章末と次回予告: [docs/spec/chapter_previews.md](../docs/spec/chapter_previews.md)
+- 章末と章タイトルコール（次回予告は廃止・削除済み）: [docs/spec/chapter_previews.md](../docs/spec/chapter_previews.md)
 - 第4章ドバイのラクダレース（CAMEL RACE・任意ミニゲーム）: [docs/spec/camel_race.md](../docs/spec/camel_race.md)
 - CONTINUE演出とプレビュー: [docs/spec/continue_button_reactions_sfx_20261010.md](../docs/spec/continue_button_reactions_sfx_20261010.md)、頭の中の呼びかけ（V5）: [docs/spec/continue_inner_voice_20261106.md](../docs/spec/continue_inner_voice_20261106.md)
 - 作り直しの経緯・2026-10-01 改稿取り込み・2026-10-17 実プレイ修正（履歴）: [docs/archive/remake_history_2026-10.md](../docs/archive/remake_history_2026-10.md)
@@ -124,7 +124,7 @@ remake/
     vn/           会話エンジン（dialogue JSON 互換・autoWrap・立ち絵）
     daily/        日常パート（マップ・スポット・バイト・ショップ・くじ・スロット・恋人・ステータス・LIME）
     craft/        シーシャ作り（工程ミニゲーム・調整2回・採点・結果発表）
-    chapters/     章の台本（ch1.js〜ch5.js と章ごとの進行・地図・予告モジュール）
+    chapters/     章の台本（ch1.js〜ch5.js と章ごとの進行・地図モジュール）
     scenes/       タイトル・ギャラリー（見たCGは端末単位で記録＝はじめからやり直しても消えない）
   data/
     manifest.json    立ち絵の余白計測・アセット一覧（tools/build_manifest.py で生成）
@@ -284,8 +284,8 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
 
 ## テスト
 
-章末の次回予告は廃止しました。第1〜4章の完了画面から「次章へ進む」を選ぶと、既存の章開始時に採用画像1枚だけを表示します（第3章は既存の文字フォールバック）。旧予告の既読に依存せず、クリア済みの旧セーブからも進めます。過去の台本・素材・再生コードは保管しています。
-タイトルコールだけを見る旧確認URLは `/remake/chapter-preview.html?ch=ch2`〜`ch5`。表示は自動で、本編の保存は変えません。仕様と保管物は [章タイトルと廃止済み予告](../docs/spec/chapter_previews.md)。章末導線は `ch1_preview.mjs` / `chapter_preview.mjs`、タイトル描画は `chapter_titles.mjs` で確認します。
+章末の次回予告は廃止し、保管していた台本・予告スチル・再生コードも削除しました（2026-11-08。90年代風の画風は使わない）。第1〜4章の完了画面から「次章へ進む」を選ぶと、既存の章開始時に採用画像1枚だけを表示します。旧予告の既読に依存せず、クリア済みの旧セーブからも進めます。
+章タイトルは `/remake/chapter-titles-preview.html` で確認します（本編の保存は変えません）。仕様は [章末と章タイトルコール](../docs/spec/chapter_previews.md)。章末導線は `ch1_preview.mjs` / `chapter_preview.mjs`、タイトル描画は `chapter_titles.mjs` で確認します。
 
 進行の回復と旧セーブの引き継ぎ:
 
