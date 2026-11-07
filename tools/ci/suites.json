@@ -3812,6 +3812,22 @@
       "run": ["node remake/test/browser/conversation_effects_2828.mjs"]
     },
     {
+      "id": "conversation-cutin5-demo",
+      "title": "Conversation cut-in 5 plans demo (#2924, #2845): existing sprite crops, ?cut= switch, show conditions, fade only for plan 4",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 5,
+      "paths": [
+        "remake/test/conversation_cutin5_demo.mjs",
+        "remake/js/vn/conversation-cutin5-demo-data.js",
+        "remake/js/vn/conversation-cutin5-demo.js",
+        "remake/conversation-cutin5-demo.html"
+      ],
+      "run": [
+        "node remake/test/conversation_cutin5_demo.mjs"
+      ]
+    },
+    {
       "id": "flavor-expression",
       "title": "Compact flavor features, forecasts and actual cup review",
       "kind": "browser",
