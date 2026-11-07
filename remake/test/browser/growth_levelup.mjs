@@ -1249,6 +1249,8 @@ await suite("growth-levelup", async (runCheck) => {
       value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
         _ch4_sheikh_revealed: true, _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1, _ch2_region: region, _ch5_region_started: true,
         _ch5_tokyo_attic: true, _ch5_dubai_letter: true, _ch5_dubai_guest: true, _ch5_dubai_flights: 1,
+        // 帰国後の打ち上げ（ch5-party.js）は読み終えた扱い。席選びの窓が地図より先に出て、ピン待ちで止まらないように。
+        _ch5_after_party: true, _ch5_party_seat: "sumi",
         _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true, read: { ch5_bridge_after_return: true, ch5_opening: true },
           scheduleDecision: null, aftermath: 0, finale: 0, finaleScenes: null, won: null, secondCup: null },
         _ch5_match_scheduled: false, _ch5_match_started: false };
