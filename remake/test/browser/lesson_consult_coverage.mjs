@@ -45,8 +45,8 @@ const unchanged = (page) => page.evaluate(() => {
 });
 
 /** 第5章の自由行動（地元）の保存を作り、HUD つきの日常の画面に置く。 */
-async function chapterFive(page, { region = "home", met = {}, affinity = {}, lit }) {
-  await page.evaluate(async ({ region, met, affinity, lit }) => {
+async function chapterFive(page, { region = "home", met = {}, affinity = {}, lit, finales = {} }) {
+  await page.evaluate(async ({ region, met, affinity, lit, finales }) => {
     const core = await import("./js/core/state.js"), growth = await import("./js/core/growth.js"), vn = await import("./js/vn/engine.js");
     const s = core.newGame();
     Object.assign(s, { chapter: 5, phase: "daily", day: 52, slot: 0, money: 60000, stamina: 100 });
@@ -54,6 +54,7 @@ async function chapterFive(page, { region = "home", met = {}, affinity = {}, lit
       _ch2_region: region, _ch5_tokyo_attic: region === "tokyo" });
     Object.assign(s.met, met);
     Object.assign(s.affinity, affinity);
+    Object.assign(s.finales ||= {}, finales);
     growth.setGrowthPreview(true);
     Object.assign(growth.ensureGrowth(), { nodes: [...lit], learned: [] });
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
@@ -62,7 +63,7 @@ async function chapterFive(page, { region = "home", met = {}, affinity = {}, lit
     const ui = await import("./js/core/ui.js");
     ui.showScreen("map", document.createElement("div"));
     core.save();
-  }, { region, met, affinity, lit });
+  }, { region, met, affinity, lit, finales });
 }
 
 await suite("lesson-consult-coverage", async (check) => {
@@ -125,7 +126,10 @@ await suite("lesson-consult-coverage", async (check) => {
 
   // (b) 第5章の東京: 鉄の煙でヴォルクに相談して習う。スティーブの店では相談しない（ピザの夜は第3章の大会の翌夜だけ）
   await check("ch5-tokyo-volk-teaches-and-steve-does-not", async (page) => {
-    await chapterFive(page, { region: "tokyo", met: { steve: true, volk: true, mukai_master: true }, affinity: { steve: 66, volk: 66 }, lit: ["M-W5", "M-S5"] });
+    // 締めくくりは第3章で見た保存（第5章の東京の締めくくりは次の検査）
+    const seenInChapterThree = { day: 40, chapter: 3, route: "friend" };
+    await chapterFive(page, { region: "tokyo", met: { steve: true, volk: true, mukai_master: true }, affinity: { steve: 66, volk: 66 }, lit: ["M-W5", "M-S5"],
+      finales: { steve: seenInChapterThree, volk: seenInChapterThree } });
     const result = await page.evaluate(async () => {
       const tokyo = await import("./js/chapters/ch5-tokyo.js"), s = window.__remake.state;
       const spot = (id) => tokyo.TOKYO_SPOTS.find((entry) => entry.id === id);
@@ -140,6 +144,53 @@ await suite("lesson-consult-coverage", async (check) => {
     assert.deepEqual(result.volk, { used: true, exerted: true });
     assert.deepEqual(result.learned, ["M-W5"], "Volk teaches after the visit to Iron Smoke");
     assert.deepEqual(result.saved, ["M-W5"]);
+  });
+
+  // (b2) 第5章の東京: 第3章で締めくくりを見ていない♥5のスティーブ・ヴォルクは、来店で締めくくり（#2705・2026-11-07 オーナー指示
+  // 「ヴォルク♥5エンディングも第5章東京『鉄の煙』で出す（スティーブと揃える）」）。締めくくりの来店では小会話の巡回・代金・授業の相談を
+  // 重ねず、ヴォルクの授業は次の来店で相談する。台詞は第5章用（第3章の布の包みではない）で、一度だけ。
+  await check("ch5-tokyo-rival-heart5-finales-first-then-the-lesson", async (page) => {
+    await chapterFive(page, { region: "tokyo", met: { steve: true, volk: true, mukai_master: true }, affinity: { steve: 66, volk: 66 }, lit: ["M-W5"] });
+    const visits = await page.evaluate(async () => {
+      const tokyo = await import("./js/chapters/ch5-tokyo.js"), vn = await import("./js/vn/engine.js"), s = window.__remake.state;
+      const count = (gear) => s.owned.filter((id) => id === gear).length;
+      const visit = async (id) => {
+        vn.clearLog();
+        const money = s.money;
+        const result = await tokyo.performTokyoSpot(tokyo.TOKYO_SPOTS.find((entry) => entry.id === id));
+        return { result, spent: money - s.money, text: vn.backlog().map((row) => row.text).join("\n"),
+          talks: s.flags._ch5_tokyo_talks?.[id] ?? 0, learned: [...s.growth.learned],
+          finales: JSON.parse(JSON.stringify(s.finales || {})), steveHagal: count("suyaki_steve"), volkHagal: count("suyaki_volk"),
+          mint: s.flavorStock?.nightside_blast_mint || 0 };
+      };
+      const steve = await visit("ch5_tokyo_steve");
+      const volk = await visit("ch5_tokyo_volk");
+      const volkAgain = await visit("ch5_tokyo_volk");
+      return { steve, volk, volkAgain, saved: JSON.parse(localStorage.getItem("suien_remake_save")).finales };
+    });
+    const { steve, volk, volkAgain, saved } = visits;
+    assert.deepEqual(steve.result, { used: true, exerted: true });
+    assert.equal(steve.spent, 0, "the finale is not a paid cup");
+    assert.equal(steve.talks, 0, "the small-talk rotation does not advance");
+    assert.deepEqual([steve.finales.steve?.chapter, steve.finales.steve?.route], [5, "friend"]);
+    assert.equal(steve.steveHagal, 1);
+    assert.match(steve.text, /ずっと練習に使ってきた、俺のハガルだ/, "Steve's chapter 5 text");
+    assert.deepEqual(volk.result, { used: true, exerted: true });
+    assert.equal(volk.spent, 0, "the finale is not a paid cup");
+    assert.equal(volk.talks, 0, "the small-talk rotation does not advance");
+    assert.deepEqual(volk.learned, [], "the finale visit does not also hold the lesson");
+    assert.deepEqual([volk.finales.volk?.chapter, volk.finales.volk?.route], [5, "friend"]);
+    assert.equal(volk.volkHagal, 1);
+    assert(volk.mint >= 50, `the blast mint leaves come with the hagal (${volk.mint}g)`);
+    assert.match(volk.text, /祖母に言われたこと/, "Volk's chapter 5 text");
+    assert.doesNotMatch(volk.text, /布の包み/, "not the chapter 3 text");
+    assert.deepEqual(volkAgain.result, { used: true, exerted: true });
+    assert.equal(volkAgain.spent, 4000, "the next visit is an ordinary paid visit");
+    assert.equal(volkAgain.talks, 1);
+    assert.deepEqual(volkAgain.learned, ["M-W5"], "the lesson comes on the next visit");
+    assert.doesNotMatch(volkAgain.text, /祖母に言われたこと/, "the finale plays once");
+    assert.equal(volkAgain.volkHagal, 1);
+    assert.deepEqual([saved.steve?.chapter, saved.volk?.chapter], [5, 5]);
   });
 
   // (c) 第5章の通い店: KEMURIKUSA でなるに、MELTY PUFF であげはさんに相談する。大会後なので、はじめはため口
