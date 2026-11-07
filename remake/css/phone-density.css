@@ -14,6 +14,14 @@ html:root[data-density="phone"] #stage {
   --phone-gap: 12px;                                      /* 隣り合うタップ部品の間隔 */
   --phone-ctl: max(24px, calc(13px / var(--k, 1)));     /* 会話の操作ボタンの文字（オーナー指示 2026-11-08「少し大きく」） */
 }
+/* ワイドステージ（#2861・横に余裕がある画面）では一段大きくする（オーナー指示 2026-11-08「ワイドモードに合わせてボタンとか少し大きくしていい」）。
+   iPhone 横持ち（844×390）で 文字 22→24px（実寸 13px）・補助文 18→19px・押す所 72→80px（実寸 43px）・会話の操作 24→26px。 */
+html:root[data-density="phone"] #stage[data-wide] {
+  --phone-text: max(24px, calc(12.5px / var(--k, 1)));
+  --phone-sub: max(19px, calc(11.5px / var(--k, 1)));
+  --phone-tap: max(80px, calc(43px / var(--k, 1)));
+  --phone-ctl: max(26px, calc(14px / var(--k, 1)));
+}
 
 /* ---------------------------------------------------------------- ボタン（主文だけを大きく・説明は落とす） */
 html:root[data-density="phone"] body:not(.game-ds) .btn,
