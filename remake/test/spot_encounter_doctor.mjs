@@ -27,10 +27,10 @@ check("script exists, branches both ways on the chapter 1 tournament and marks i
   assert.equal(cond.tournament_chapter, 1);
   assert(dlg.branches[cond.next_true]?.length && dlg.branches[cond.next_false]?.length);
   assert.deepEqual(dlg.lines.at(-1), { type: "set_flag", flag: SEEN });
-  // 大会前は名前を呼ばず、大会後だけ「はじめくん」と呼ぶ（cs_kemuri_solo と同じ面識の段階）。
+  // 大会前は名前を呼ばず、大会後だけ「逢縁くん」と呼ぶ（cs_kemuri_solo と同じ面識の段階）。
   const text = (branch) => dlg.branches[branch].map((l) => l.text || "").join("");
-  assert(!text(cond.next_false).includes("はじめくん"));
-  assert(text(cond.next_true).includes("はじめくん"));
+  assert(!text(cond.next_false).includes("逢縁くん"));
+  assert(text(cond.next_true).includes("逢縁くん"));
 });
 
 check("lines use only real speakers and doctor faces, keep text rules, and reveal nothing about chapter 5", () => {
