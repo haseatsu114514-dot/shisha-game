@@ -12,6 +12,7 @@ import { craftCondition } from "../core/condition.js";
 import { state as gameState } from "../core/state.js";
 import { growthSkill, settleGrowthPhase, SKILL_TUNING } from "../core/growth-effects.js";
 import { artImg } from "./art.js";
+import { impact, fxHolding } from "./fx.js";
 
 import { RINGS, circularAngleDistance, templateComplete, evaluateFoil, usesFoil, skippedFoilResult } from "./holes_logic.js";
 import { HOLE_TEMPLATES, DEFAULT_HOLE_TEMPLATE, availableHoleTemplates, ringsForTemplate, templateCountsLabel } from "./holes_templates.js";
@@ -109,7 +110,8 @@ export async function runHoles(cs) {
   const markers = el("div.foil-markers");
   const holesLayer = el("div.foil-holes");
   const cursor = el(`div.foil-cursor${effectVisible("technique") ? ".technique-visible" : ""}`);
-  disc.append(foilSurface(), el("div.foil-target-plane", [...ringEls, markers, holesLayer, cursor]));
+  const plane = el("div.foil-target-plane", [...ringEls, markers, holesLayer, cursor]);
+  disc.append(foilSurface(), plane);
   const ringLabel = el("div.hr-ring");
   const timeBar = el("i.hr-time-bar", [el("b")]);
   const scoreEl = el("div.hr-score");
@@ -273,12 +275,17 @@ export async function runHoles(cs) {
       if (ring.id === "inner") tally.tooMany++;
     }
     addHoleDot(a, ring.r, kind);
+    if (kind === "perfect" || kind === "good") {
+      const [hx, hy] = posOf(a, ring.r);
+      impact(plane, kind, { x: `${50 + hx * 50}%`, y: `${50 + hy * 50}%`, zoomNode: disc });
+    }
     setBenchHoleAction(cs, {
       dots: state.flatMap(rg => rg.holes.map(h => posOf(h.a, rg.r))), target: posOf(a, ring.r),
     });
     if (ring.taken.every(Boolean)) {
       const clean = ring.holes.every((h) => h.d <= perfWin) && ring.extra === 0;
       report(clean ? "BEAUTIFUL RING" : "RING COMPLETE", "just");
+      impact(plane, "big", { color: clean ? "#ffc21a" : undefined, zoomNode: disc });
       SE.perfect();
       tickerSay(clean ? "パッキー「きれいに揃ったーッ！ 見てくださいこの輪！」" : "パッキー「リング完成！ 手が止まりませんね〜♪」");
       // 自動送りはしない。完成したリングは入力を止め、次のリングか仕上げを選んでもらう。
@@ -301,8 +308,8 @@ export async function runHoles(cs) {
     if (finished || complete()) return;
     elapsed = (gameClock.now() - t0) / 1000;
     if (gameClock.paused) { raf = requestAnimationFrame(loop); return; }
-    const a = cursorAngle();
-    place(cursor, a, state[ri].r);
+    // ヒットストップ中はカーソルの絵だけ止める（時間と判定は進む）
+    if (!fxHolding(panel)) place(cursor, cursorAngle(), state[ri].r);
     highlightNext();
     drawTime();
     hud();

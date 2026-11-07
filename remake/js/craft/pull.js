@@ -25,6 +25,7 @@ import { replacementCoals } from "./heat_logic.js";
 import { craftConditions, heatDelta, pullResult, isIdealTemperature, isOptimalTemperature, temperatureBands, visualTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
 import { DRAW_MS, animateDraw } from "./pull-draw.js";
+import { impact } from "./fx.js";
 import { ensureFlavorLife, applyLeafDamage, leafDamagePerPull, leafDamageRatio, leafStopDrift } from "./flavor-life.js";
 import { coalCount } from "./coals.js";
 import { makerMixProfile } from "./temperature-model.js";
@@ -412,6 +413,8 @@ async function pullGame(cs, mode) {
       }
       if (isJust) justs++;
       if (critical) { criticals++; drawStatus.textContent = "会心の一服"; }
+      // 狙いどおりの一吸い（芯）に手応え。会心は大きく
+      if (isJust) impact(play, critical ? "big" : "perfect", { at: dial, color: "#b48cff" });
       if (isJust && mode.store === "pull" && !tutorial && growthSkill(state,"K21")) {
         smokeRings++;
         const ring = el("i", { "aria-hidden": "true", dataset: { test: "pull-smoke-ring" }, style: {
