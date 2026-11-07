@@ -26,7 +26,12 @@ async function prepare(page) {
       return s;
     };
     T.lines = () => T.vn.backlog().map(l => l.text);
-    T.game = () => { const s = structuredClone(T.core.state); delete s.savedAt; return s; };
+    // 保存の記録（保存日時 savedAt と、保存のたびに経過分を足すプレイ時間 playMs・#2902）は物語の効果ではないので外す。
+    T.game = () => {
+      const s = structuredClone(T.core.state);
+      if (!Number.isFinite(s.playMs) || s.playMs < 0) throw Error("play time must stay a valid count");
+      delete s.savedAt; delete s.playMs; return s;
+    };
     T.events = { 2: T.ch1.NIGHT_EVENTS[2], 10: T.ch1.NIGHT_EVENTS[10] };
   });
 }
