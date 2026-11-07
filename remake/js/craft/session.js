@@ -283,6 +283,7 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.title.textContent = titleText;
   b.hint.textContent = lesson?.brief || brief;
   b.guide.root.querySelector(".bench-demo-link")?.remove();
+  b.guide.root.querySelector(".bench-guide-extra")?.remove(); // 前の工程が「?」へ足した補足（詰め方の一覧など）
   if (demoFor(lessonStep)) {
     const link = el("button.bench-demo-link", { type: "button", text: "お手本を見る" });
     link.addEventListener("click", () => {
