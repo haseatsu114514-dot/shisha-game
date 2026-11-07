@@ -225,3 +225,50 @@ input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
 .pick-card:hover,.pick-card:focus-visible{border-color:var(--ok)}
 .rank.pick-great{color:#ffe2a6;text-shadow:0 0 20px #f0a64a}.rank.pick-good{color:#aee7d5}.rank.pick-bad{color:#ff8fc4}
 @media (prefers-reduced-motion:reduce){.drop.big,.drop.small,.drop.miss,.floor.hype:before,.guide.hit,.guide.miss,.deck-play.cue-open:after{animation:none}.guide{transition:none}}
+/* ── phone density (#2841): ?phone=1 → html[data-density=phone]. 表示だけ。文字は16px以上、つまみは大きく、ラベルは絵とランプへ ── */
+html[data-density=phone] small{font-size:16px;letter-spacing:.06em}
+html[data-density=phone] button.small{min-height:64px;padding:4px 14px;font-size:16px}
+html[data-density=phone] .floor-gauge small{font-size:0;letter-spacing:0}
+html[data-density=phone] .floor-gauge small:before{content:"👥";font-size:24px}
+html[data-density=phone] .floor-gauge .gauge{width:110px}
+html[data-density=phone] .set-info{min-width:0;flex:1 1 0;gap:10px;font-size:16px;letter-spacing:.02em;white-space:nowrap;overflow:hidden}
+html[data-density=phone] .set-info b{font-size:18px}
+html[data-density=phone] .set-info span{overflow:hidden;text-overflow:ellipsis}
+html[data-density=phone] .waves b{width:26px;height:26px;font-size:16px}
+html[data-density=phone] .waves .phrase{top:134px}
+html[data-density=phone] .coach{font-size:22px;bottom:2px;letter-spacing:0}
+html[data-density=phone] .credits summary{font-size:16px;min-height:32px;min-width:32px}
+html[data-density=phone] .credits details{font-size:16px}
+html[data-density=phone] .deck.a{grid-template-columns:minmax(0,1fr) 100px}
+html[data-density=phone] .deck.b{grid-template-columns:100px minmax(0,1fr)}
+html[data-density=phone] .deck-head small{font-size:16px}
+html[data-density=phone] .deck-indicator{font-size:0;letter-spacing:0}
+html[data-density=phone] .deck-indicator:before{width:18px;height:18px}
+html[data-density=phone] .deck-display{width:170px;height:170px}
+html[data-density=phone] .track-name{font-size:20px;max-width:160px}
+html[data-density=phone] .bpm:after{font-size:16px}
+html[data-density=phone] .lock{font-size:0;padding:0;border:0;background:none;opacity:.35;filter:grayscale(1);box-shadow:none}
+html[data-density=phone] .lock:before{content:"🔒";font-size:24px;line-height:1}
+html[data-density=phone] .lock.on{opacity:1;filter:none;box-shadow:none;background:none}
+html[data-density=phone] .pitch-col{width:100px}
+html[data-density=phone] .pitch-col small{font-size:16px}
+html[data-density=phone] .pitch-col:before{top:28px;bottom:26px}
+html[data-density=phone] .pitch-value{font-size:16px}
+html[data-density=phone] .vfader{width:90px}
+html[data-density=phone] .vfader::-webkit-slider-thumb{width:90px;height:60px}
+html[data-density=phone] .vfader::-moz-range-thumb{width:90px;height:60px}
+html[data-density=phone] .eqs{display:none}
+html[data-density=phone] .channels{grid-template-columns:1fr 84px 1fr}
+html[data-density=phone] .ch{justify-content:center}
+html[data-density=phone] .leds{flex-direction:row;justify-content:center;gap:10px}
+html[data-density=phone] .led{font-size:0;padding:0;width:18px;height:18px;border-radius:50%}
+html[data-density=phone] .sync{width:76px;font-size:16px;letter-spacing:0}
+html[data-density=phone] .mix-label{font-size:16px}
+html[data-density=phone] .combo{font-size:16px}
+html[data-density=phone] #crossfader::-webkit-slider-thumb{width:80px}
+html[data-density=phone] #crossfader::-moz-range-thumb{width:80px}
+html[data-density=phone] .toast-parts,html[data-density=phone] .pick-meta{font-size:16px}
+html[data-density=phone] .result-card table{font-size:16px}
+html[data-density=phone] .result-card thead th{font-size:16px;letter-spacing:0}
+html[data-density=phone] .energy small{font-size:16px}
+html[data-density=phone] .result-actions button{min-height:64px;font-size:18px}

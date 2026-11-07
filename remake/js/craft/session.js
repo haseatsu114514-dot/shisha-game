@@ -39,7 +39,11 @@ import { mountCraftRank, craftRankProgress } from "./rank-hud.js";
 import { CRAFT_RANK_THRESHOLDS } from "./common.js";
 import { provisionalCraftScore } from "./score.js";
 import { buildRigRecord } from "./rig-record.js";
+import { buildRivalWindows } from "./rival-windows.js";
 import { demoFor, openDemoSheet } from "./demo.js";
+
+// ライバルの顔アイコンを読むまでの間（作業台の準備が済んでから）
+const RIVAL_FACE_DELAY_MS = 1200;
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -183,6 +187,14 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
     bench.record = buildRigRecord();
     worker.root.querySelector(".bench-worker-stage")?.append(bench.record.aura, bench.record.root);
     bench.record.restore(cs);
+    // ライバルの小窓（CFX04）: 大会だけ。隣の台の進み具合を工程ごとの灯で見せる
+    bench.rivals = buildRivalWindows(cs);
+    if (bench.rivals) {
+      worker.root.querySelector(".bench-worker-stage")?.append(bench.rivals.root);
+      bench.rivals.restore(bench.record);
+      const dispose = b.disposeRank;
+      b.disposeRank = () => { dispose(); b.rivals?.dispose(); };
+    }
   }
   attachBenchAppearance(bench, cs);
   const background = bg();
@@ -190,6 +202,11 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   const preparationSteps = [background.assetsReady, warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready, entryAssets];
   const assets = Promise.all(preparationSteps);
   bench.ready = prepareBenchEntry(waitForBenchAssets(bench, Promise.all([background, assets]), assets, false), cs.chapter, preparationSteps);
+  // ライバルの顔は飾り。作業台の準備が済んでから少し間を置いて読む（工程の開始に要る画像と通信を取り合わない）
+  if (bench.rivals) {
+    const rivals = bench.rivals, later = () => setTimeout(() => rivals.showFaces(), RIVAL_FACE_DELAY_MS);
+    bench.ready.then(later, later);
+  }
   renderFatigue();
   return bench;
 }
@@ -283,6 +300,7 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.title.textContent = titleText;
   b.hint.textContent = lesson?.brief || brief;
   b.guide.root.querySelector(".bench-demo-link")?.remove();
+  b.guide.root.querySelector(".bench-guide-extra")?.remove(); // 前の工程が「?」へ足した補足（詰め方の一覧など）
   if (demoFor(lessonStep)) {
     const link = el("button.bench-demo-link", { type: "button", text: "お手本を見る" });
     link.addEventListener("click", () => {
@@ -432,7 +450,10 @@ export function scoreStep(cs, key, score) {
   cs.arcade.total = Object.values(cs.arcade.parts).reduce((a, b) => a + b, 0);
   if (!key.includes(":")) {
     updateBenchRank();
-    if (bench?.cs === cs) bench.record?.mark(step, cleanScore); // care1/care2 は「整」の灯にまとまる
+    if (bench?.cs === cs) {
+      bench.record?.mark(step, cleanScore); // care1/care2 は「整」の灯にまとまる
+      bench.rivals?.mark(step);
+    }
   }
   // 旧保存と記録の互換用。制作中や結果画面には表示しない。
   return cs.arcade.total;

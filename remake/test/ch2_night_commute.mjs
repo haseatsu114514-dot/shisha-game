@@ -86,6 +86,7 @@ for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
     showSumiRigAtHome: async () => { trace.push('rig-homecoming'); return false; },
     runHomeShisha: async () => { trace.push('home-shisha'); return false; },
     presentNight: async () => { trace.push('night-growth'); return null; },
+    takeChapterBoardNotice: () => null, chapterBoardCards: () => [], respecMapNotice: () => "", // 章はじめの盤の知らせ（#1801 C10）。盤が無効な時と同じく何もしない
     conditionForRatio: () => ({ health: 'healthy' }), staminaRatio: () => fixture.stamina / 100,
     addStamina: n => { fixture.stamina += n; trace.push('recovery'); },
     daysLeft: () => 28 - fixture.day, updateHud() {},
@@ -177,6 +178,7 @@ const invitationContext = vm.createContext({
   addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; },
   playHiyoriHangout: async () => { log.push('meeting:' + state.flags._ch2_region); },
   consultLessons: async () => [], // 心得の盤の授業の相談（SBD70）。盤が無効な時と同じく何もしない
+  takeChapterBoardNotice: () => null, chapterBoardCards: () => [], respecMapNotice: () => "", // 章はじめの盤の知らせ（#1801 C10）
   bgRef: id => id, VISIT_BG: { hiyori: 'shop' },
   completeInvitation: inv => { state.pendingInvite = null; rewardTrace.push('complete:' + inv.sender); },
   paidAction: async fn => { rewardTrace.push('paidAction'); const value = await fn(); if (value) rewardTrace.push('reward'); return { value, spent: 1 }; },

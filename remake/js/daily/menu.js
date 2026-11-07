@@ -24,6 +24,7 @@ import { flavorStock, ownedFlavorIds } from "./shop.js";
 import { relationshipStatus, recentMemoryEcho } from "./relationship-status.js";
 import { triedLater, comboName } from "./cafe-ideas.js";
 import { tierFx, STATUS_PEOPLE, giftNote, recipeDetails } from "./status.js";
+import { fullscreenButton } from "../scenes/save-transfer.js";
 
 export const MENU_TABS = Object.freeze([
   { id: "status", en: "STATUS", label: "ステータス" },
@@ -458,7 +459,7 @@ function systemTab(choose, saveOk) {
       type: "button", text: s.label, dataset: { test: `menu-${s.id}` },
       disabled: s.id === "save" && !saveOk,
       onclick: () => choose(s.id),
-    }))),
+    })).concat(fullscreenButton() || [])),
     el("p.dm-note", { dataset: { test: "menu-save-note" } , text: saveOk
       ? `行動のたびに自動でセーブされている。${SAVE_RULE}`
       : `今はセーブできない。${SAVE_RULE}タイトルへ戻ると、行動前のオートセーブから再開する。` }),

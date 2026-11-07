@@ -130,6 +130,17 @@ async function loadDubaiScenes() {
   await loading;
 }
 
+/**
+ * ヌールに会ったことのある保存を再開・LOAD した時は、最初の行動の前にカフェ・サーリムと砂丘の台詞（ch4_desert.json）を読んでおく。
+ * MENU の人間関係の「次にカフェ・サーリムで会うと」（daily/bonds.js の finaleDue）と「告白を選べる」（daily/romance.js の romanceRouteOpen）は
+ * 締めくくり・告白の台詞が読み込まれているかを見るので、カフェか砂丘へ行くまで出なかった（地元にいても同じなので、ドバイにいる時に限らない）。
+ * 読めなくても地図は開く（カフェ・砂丘を選んだ時に読み直し、失敗ならそこで知らせる）。東京の preloadTokyoScenes と同じ（ch5-daily.js）。
+ */
+export async function preloadNoorScenes(value = state) {
+  if (!value?.met?.[DESERT_GUIDE]) return;
+  try { await (await import("./ch4-desert.js")).loadDesertDialogues(); } catch { /* カフェ・砂丘を選んだ時の読み込みで知らせる */ }
+}
+
 const showBg = (ref, tod) => { const { url, tint } = sceneBg(ref, tod); return setBg(url, { tint }); };
 
 /** 読み終えたら true。中断・LOADは false（代金・体力・既読を残さない）。 */
