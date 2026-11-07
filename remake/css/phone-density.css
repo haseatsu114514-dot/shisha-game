@@ -97,9 +97,9 @@ html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-controls {
 html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before { left: calc(var(--phone-gap) / -2); top: 30%; bottom: 30%; }
 /* 会話の本文（オーナー指示 2026-11-08「文字を入れるならサイズも気持ち大きく」）: 28→32px（iPhone 横で実寸 15→17px）。
    1行は全角24字まで（vn/text.js の WRAP_LIMIT）なので、32px でも枠の内幅（約1020px）に収まり、折り返し・改ページは変わらない。
-   2行（46px×2）と、本心つき（1行＋本心2行）が枠の高さ（176px）に収まる行の高さにする。 */
+   2行（46px×2）と、本心つき（1行44px＋本心2行）が枠の高さ（176px・下15px空き）に収まる行の高さにする（notifications_layout の検査）。 */
 html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-text { font-size: 32px; line-height: 46px; min-height: 92px; }
-html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-box.has-inner .vn-text { min-height: 46px; }
+html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-box.has-inner .vn-text { line-height: 44px; min-height: 44px; }
 /* 名札は補助文の大きさに上げる。名札の幅に収まらない長い名前は name-fit.js の縮小（--vn-name-fit-size）に従う。 */
 html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-name { font-size: var(--vn-name-fit-size, var(--phone-sub)); }
 /* 選択肢の文字は本文に合わせて 24→28px（iPhone 横で実寸 13→15px）。全角26字（GUI22 の上限）が縮まずに1行で入るよう、幅を 720→880px に広げる */
