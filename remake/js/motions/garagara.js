@@ -164,25 +164,28 @@ function posterArt(C, defs, last) {
 
 /** 背景: 柔らかい灯りの壁、貼り紙、木のカウンター、ざらつき、弱い周辺減光 */
 function setArt(C, defs, last) {
-  const wall = svg("rect", { width: W, height: 460, fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.wall0], [0.75, mix(C.wall0, C.wallLo, 0.4)], [1, C.wallLo]]) });
+  // ワイドステージ（#2861）: くじの暗幕はステージの左右の余白まで広がるので、壁とカウンターも左右へ M ずつ延ばす。
+  // 光とふちの暗がりは、元の 1280×720 の中の見え方が変わらないよう、同じ楕円を絶対座標で置き直す（外側はそのまま続く）。
+  const M = 200;
+  const wall = svg("rect", { x: -M, width: W + 2 * M, height: 460, fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.wall0], [0.75, mix(C.wall0, C.wallLo, 0.4)], [1, C.wallLo]]) });
   // 左上の窓からのような広い明るみ
-  const light = svg("rect", { width: W, height: 460, fill: grad(defs, "radialGradient", { cx: 0.3, cy: 0.05, r: 0.8 }, [[0, C.wallHi, 0.75], [1, C.wallHi, 0]]) });
+  const light = svg("rect", { x: -M, width: W + 2 * M, height: 460, fill: grad(defs, "radialGradient", { gradientUnits: "userSpaceOnUse", gradientTransform: `scale(${W} 460)`, cx: 0.3, cy: 0.05, r: 0.8 }, [[0, C.wallHi, 0.75], [1, C.wallHi, 0]]) });
   // 台が壁に落とす、ぼんやりした影
   const cast = svg("ellipse", { cx: CX + 90, cy: CY + 60, rx: 300, ry: 230, fill: grad(defs, "radialGradient", {}, [[0, C.shadow, 0.28], [1, C.shadow, 0]]) });
-  const counterTop = svg("polygon", { points: pts([[0, 452], [W, 452], [W, 680], [0, 680]]), fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.counter0], [1, C.counter1]]) });
+  const counterTop = svg("polygon", { points: pts([[-M, 452], [W + M, 452], [W + M, 680], [-M, 680]]), fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.counter0], [1, C.counter1]]) });
   // 壁とカウンターの境の陰
-  const seam = svg("rect", { x: 0, y: 452, width: W, height: 22, fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.shadow, 0.45], [1, C.shadow, 0]]) });
-  const grain = svg("g", { stroke: C.grain, "stroke-width": 1.1, fill: "none", opacity: 0.4 }, [468, 489, 517, 553, 597, 641].map((y, i) => svg("path", { d: `M 0 ${y} C 320 ${y - 4 + i}, 760 ${y + 5}, ${W} ${y - 2}` })));
-  const front = svg("rect", { x: 0, y: 680, width: W, height: 40, fill: mix(C.counter0, C.shadow, 0.4) });
-  const lip = svg("rect", { x: 0, y: 678, width: W, height: 3, fill: C.edge, opacity: 0.45 });
+  const seam = svg("rect", { x: -M, y: 452, width: W + 2 * M, height: 22, fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.shadow, 0.45], [1, C.shadow, 0]]) });
+  const grain = svg("g", { stroke: C.grain, "stroke-width": 1.1, fill: "none", opacity: 0.4 }, [468, 489, 517, 553, 597, 641].map((y, i) => svg("path", { d: `M ${-M} ${y} L 0 ${y} C 320 ${y - 4 + i}, 760 ${y + 5}, ${W} ${y - 2} L ${W + M} ${y - 2}` })));
+  const front = svg("rect", { x: -M, y: 680, width: W + 2 * M, height: 40, fill: mix(C.counter0, C.shadow, 0.4) });
+  const lip = svg("rect", { x: -M, y: 678, width: W + 2 * M, height: 3, fill: C.edge, opacity: 0.45 });
   const kids = [wall, light, cast, posterArt(C, defs, last), counterTop, seam, grain, front, lip];
   const tex = grainTexture();
   if (tex) {
     const patId = `gg-grain-${++serial}`;
     defs.append(svg("pattern", { id: patId, width: 160, height: 160, patternUnits: "userSpaceOnUse" }, [svg("image", { href: tex, width: 160, height: 160 })]));
-    kids.push(svg("rect", { width: W, height: H, fill: `url(#${patId})`, opacity: 0.07, style: "mix-blend-mode: overlay" }));
+    kids.push(svg("rect", { x: -M, width: W + 2 * M, height: H, fill: `url(#${patId})`, opacity: 0.07, style: "mix-blend-mode: overlay" }));
   }
-  const vignette = svg("rect", { width: W, height: H, fill: grad(defs, "radialGradient", { cx: 0.5, cy: 0.45, r: 0.75 }, [[0.6, C.shadow, 0], [1, C.shadow, 0.5]]) });
+  const vignette = svg("rect", { x: -M, width: W + 2 * M, height: H, fill: grad(defs, "radialGradient", { gradientUnits: "userSpaceOnUse", gradientTransform: `scale(${W} ${H})`, cx: 0.5, cy: 0.45, r: 0.75 }, [[0.6, C.shadow, 0], [1, C.shadow, 0.5]]) });
   return { back: svg("g", {}, kids), vignette };
 }
 

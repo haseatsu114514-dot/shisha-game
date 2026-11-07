@@ -228,6 +228,13 @@ await suite("daily-menu", async (check) => {
     await page.locator(t("hud-menu")).tap();
     await page.locator(".dmenu").waitFor();
     await settle(page);
+    // ワイドステージ（#2861・844×390 はステージ 1558）: 紙は中央1280に閉じず、PC と同じくステージの端から 24px まで広がる（css/wide-screens.css）
+    const wide = await page.evaluate(() => {
+      const stage = document.getElementById("stage"), k = parseFloat(getComputedStyle(stage).getPropertyValue("--k")) || 1;
+      const s = document.querySelector(".dmenu .dm-sheet").getBoundingClientRect(), r = stage.getBoundingClientRect();
+      return { wide: stage.hasAttribute("data-wide"), left: Math.round((s.left - r.left) / k), right: Math.round((r.right - s.right) / k) };
+    });
+    assert.deepEqual(wide, { wide: true, left: 24, right: 24 });
     await assertConditionHelp(page, "landscape", (n) => n.tap());
     await visitTabs(page, "landscape", (sel) => page.locator(sel).tap());
     await page.getByRole("button", { name: "閉じる", exact: true }).tap();
