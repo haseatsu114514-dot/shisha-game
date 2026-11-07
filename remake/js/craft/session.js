@@ -39,6 +39,7 @@ import { mountCraftRank, craftRankProgress } from "./rank-hud.js";
 import { CRAFT_RANK_THRESHOLDS } from "./common.js";
 import { provisionalCraftScore } from "./score.js";
 import { buildRigRecord } from "./rig-record.js";
+import { buildRivalWindows } from "./rival-windows.js";
 import { demoFor, openDemoSheet } from "./demo.js";
 
 /**
@@ -183,6 +184,14 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
     bench.record = buildRigRecord();
     worker.root.querySelector(".bench-worker-stage")?.append(bench.record.aura, bench.record.root);
     bench.record.restore(cs);
+    // ライバルの小窓（CFX04）: 大会だけ。隣の台の進み具合を工程ごとの灯で見せる
+    bench.rivals = buildRivalWindows(cs);
+    if (bench.rivals) {
+      worker.root.querySelector(".bench-worker-stage")?.append(bench.rivals.root);
+      bench.rivals.restore(bench.record);
+      const dispose = b.disposeRank;
+      b.disposeRank = () => { dispose(); b.rivals?.dispose(); };
+    }
   }
   attachBenchAppearance(bench, cs);
   const background = bg();
@@ -432,7 +441,10 @@ export function scoreStep(cs, key, score) {
   cs.arcade.total = Object.values(cs.arcade.parts).reduce((a, b) => a + b, 0);
   if (!key.includes(":")) {
     updateBenchRank();
-    if (bench?.cs === cs) bench.record?.mark(step, cleanScore); // care1/care2 は「整」の灯にまとまる
+    if (bench?.cs === cs) {
+      bench.record?.mark(step, cleanScore); // care1/care2 は「整」の灯にまとまる
+      bench.rivals?.mark(step);
+    }
   }
   // 旧保存と記録の互換用。制作中や結果画面には表示しない。
   return cs.arcade.total;
