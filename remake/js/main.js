@@ -25,6 +25,7 @@ enableSeenLinePersistence(); // 既読SKIPの記録は本編でだけ端末に�
 // リリース前に、この1行と remake/js/dev/ のフォルダを消す（remake/README.md「デバッグ用の道具」）
 try { const q = new URLSearchParams(location.search).get("debug"); if (q !== null) localStorage.setItem("suien_debug", q === "1" ? "1" : "0"); if (localStorage.getItem("suien_debug") === "1") import("./dev/debug-panel.js").then(m => m.mountDebugPanel()).catch(e => console.error(e)); } catch {}
 
+const PHONE_DENSITY_K = 0.62;
 function fitStage() {
   const stage = $("#stage");
   const viewport = window.visualViewport;
@@ -34,7 +35,11 @@ function fitStage() {
   const zoom = viewport?.scale || 1;
   const w = viewport ? viewport.width * zoom : window.innerWidth;
   const h = viewport ? viewport.height * zoom : window.innerHeight;
-  stage.style.setProperty("--k", String(Math.min(w / 1280, h / 720)));
+  const k = Math.min(w / 1280, h / 720);
+  stage.style.setProperty("--k", String(k));
+  // スマホ規格（#2851）: 横持ちスマホ（Plus/Pro Max の 0.60 も含む）で共通部品の文字・タップ部品を大きくする。css/phone-density.css
+  if (k < PHONE_DENSITY_K) document.documentElement.dataset.density = "phone";
+  else delete document.documentElement.dataset.density;
 }
 
 export async function boot() {
