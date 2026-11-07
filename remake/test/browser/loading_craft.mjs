@@ -6,13 +6,16 @@ import { LOADING_COMICS } from '../../js/core/loading-comics.js';
 // The bench preview picks one eligible comic at random (see selectLoadingComic
 // in js/core/loading.js), so expectations are derived from whichever registered
 // comic actually appears instead of pinning one episode.
-// The preview starts a fresh game, which has met only sumi (LIME contact from the start), and comics
-// unlock per character (cast), so only comics whose whole cast is sumi may appear here.
+// プレビューは新しいゲームで始まる。#2750（PR #2765）から、新しいゲームは開始時から知っている
+// スミさん（上司・LIMEの連絡先）とつむぎ（顔見知り）に会っている。漫画は登場人物（cast）全員に会うと出るので、
+// ここに出てよいのは cast がこの2人だけの話。
+const MET_AT_START = ['sumi', 'tsumugi'];
+const castIds = [...new Set(LOADING_COMICS.flatMap(comic => comic.cast || []))];
 const eligibleComics = LOADING_COMICS.filter(comic =>
   comic.panels?.length === 2 &&
   Number.isInteger(comic.minChapter) && comic.minChapter <= 1 &&
   (!comic.contexts || comic.contexts.includes('craft')) &&
-  Array.isArray(comic.cast) && comic.cast.every(id => id === 'sumi'));
+  Array.isArray(comic.cast) && comic.cast.every(id => MET_AT_START.includes(id)));
 assert(eligibleComics.length > 0, 'At least one registered comic must be eligible for craft at chapter 1 in a fresh game');
 
 const escapeRegExp = text => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -22,11 +25,17 @@ await suite('loading-craft', async check => {
     await check(label, async page => {
       const storage = await page.evaluate(() => JSON.stringify({ ...localStorage }));
       assert.equal(await page.locator('.bench').count(), 1, 'Use the actual game bench');
+      // 前提そのものを毎回確かめる。出る話は抽選なので、出た話の検査だけでは前提のずれがたまにしか落ちない。
+      const met = await page.evaluate(async ids => {
+        const [{ state }, { hasMetCharacter }] = await Promise.all([import('./js/core/state.js'), import('./js/core/title-art-unlock.js')]);
+        return ids.filter(id => hasMetCharacter(state, id));
+      }, castIds);
+      assert.deepEqual(met.sort(), [...MET_AT_START].sort(), '新しいゲームで会っているのは、開始時から知っている2人だけ');
       await page.locator('.loading-panels img').first().waitFor();
       assert.equal(await page.locator('.loading-panels img').count(), 2);
       const shownTitle = await page.locator('.loading-comic-title').innerText();
       const comic = eligibleComics.find(entry => entry.title === shownTitle);
-      assert(comic, `Shown comic "${shownTitle}" must be a registered comic eligible for craft in a fresh game (met: sumi only)`);
+      assert(comic, `Shown comic "${shownTitle}" must be a registered comic eligible for craft in a fresh game (met: ${MET_AT_START.join(', ')})`);
       assert.match(await page.locator('.loading-comic').getAttribute('aria-label'), new RegExp(escapeRegExp(comic.title)));
       assert.equal(await page.locator('.loading-status').innerText(), 'LOADING…');
       assert.equal(await page.locator('.loading-gate button, .loading-gate progress, .loading-gate figcaption').count(), 0);

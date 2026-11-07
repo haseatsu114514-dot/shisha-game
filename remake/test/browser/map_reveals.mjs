@@ -10,7 +10,8 @@ try {
   for (const [name, viewport, layout, reducedMotion] of [
     ['pc', { width: 1280, height: 900 }, 'normal', 'no-preference'],
     ['landscape', { width: 844, height: 390 }, 'normal', 'no-preference'],
-    ['ds-portrait', { width: 390, height: 844 }, 'ds', 'no-preference'],
+    // #2789（#2794）: 縦持ちは DS風も回転ガードで覆い操作させない。DS風の演出は同じ端末の横持ちで確かめる。
+    ['ds-landscape', { width: 844, height: 390 }, 'ds', 'no-preference'],
     ['ds-reduced', { width: 844, height: 390 }, 'ds', 'reduce'],
   ]) {
     const context = await browser.newContext({ viewport, reducedMotion, hasTouch: name !== 'pc' });
@@ -49,6 +50,10 @@ try {
       void reopen();
     });
     await page.locator('.map:not(.done)').waitFor();
+    if (layout === 'ds') {
+      assert.equal(await page.evaluate(() => document.body.classList.contains('game-ds')), true, `${name}: DS風の地図で確かめる`);
+      assert.equal(await page.locator('#rotate-hint').isVisible(), false, `${name}: 横持ちに回転ガードは出ない`);
+    }
     assert.equal(await page.locator('.newly-revealed').count(), 0, 'first map must not celebrate existing places');
     assert.equal(await page.evaluate(() => R.shown), 1);
     const saved = await page.evaluate(async () => {

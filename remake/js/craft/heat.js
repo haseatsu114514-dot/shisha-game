@@ -11,6 +11,7 @@ import { HEAT_GRADES, HEAT_TUNING, phaseOf, evaluateCoalTiming, formatTimingErro
 export { HEAT_GRADES } from "./heat_logic.js";
 import { coalCount, coalTypes } from "./coals.js";
 import { createCraftClock } from "./clock.js";
+import { impact, fxHolding } from "./fx.js";
 import { state } from "../core/state.js";
 import { growthCritical, settleGrowthPhase, SKILL_TUNING } from "../core/growth-effects.js";
 import { coalJustSeconds } from "./heat_logic.js";
@@ -108,6 +109,10 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
     if (g === "just") { SE.just(); tickerSay("パッキー「出たーッ！ EXCELLENT！ 全面が真っ赤だーッ！」"); }
     else if (g === "pre" || g === "hot") SE.good();
     else SE.miss();
+    if (g === "just" || g === "pre" || g === "hot") {
+      impact(view.root, g === "just" ? (c.timing.critical ? "big" : "perfect") : "good",
+        { at: c.node, zoomNode: view.root.querySelector(".stove") || view.root });
+    }
     SE.coalSnip();
     onPick?.(c.timing, index, coals.length);
     if (coals.every((x) => x.picked)) finish();
@@ -131,7 +136,8 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
       const jw = justSec / c.tj;
       const ph = phaseOf(c.p, jw);
       const n = c.node;
-      paint(c, c.p);
+      // ヒットストップ中は焼け色の絵だけ止める（焼け具合と判定の時間は進む）
+      if (!fxHolding(view.root)) paint(c, c.p);
       n.dataset.phase = ph;
       const secondsLeft = Math.max(0, c.tj - t);
       c.status.textContent = ph === "just" ? "いま取り頃！" : secondsLeft > 0 ? `あと${secondsLeft.toFixed(1)}秒` : "取り頃を過ぎた";

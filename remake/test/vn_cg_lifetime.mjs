@@ -60,18 +60,22 @@ async function publicCallerCase(kind) {
   const nodes = new Map();
   function node(selector = '') {
     const classes = new Set(selector.split('.').slice(1));
-    return { dataset: {}, style: {}, children: [], textContent: '',
+    return { dataset: {}, style: {}, children: [], textContent: '', attributes: {},
       classList: {add: (...xs) => xs.forEach(x=>classes.add(x)), remove: (...xs) => xs.forEach(x=>classes.delete(x)),
         contains: x=>classes.has(x), toggle: (x,on=!classes.has(x)) => {if(on) classes.add(x); else classes.delete(x); return on;}},
       append(...xs) {this.children.push(...xs);}, replaceChildren(...xs) {this.children=xs;},
-      setAttribute() {}, addEventListener() {}, focus() {}, querySelector() {return null;}, querySelectorAll() {return [];},
+      setAttribute(name, value) {this.attributes[name]=String(value);}, getAttribute(name) {return this.attributes[name] ?? null;},
+      addEventListener() {}, focus() {}, querySelector() {return null;}, querySelectorAll() {return [];},
       getAnimations() {return [];}, remove() {},
     };
   }
   function el(selector, attrs = {}, children = []) {
     const n=node(selector);nodes.set(selector,n);
     if(Array.isArray(attrs)) children=attrs;
-    else {Object.assign(n.dataset,attrs.dataset); Object.assign(n.style,attrs.style); n.onclick=attrs.onclick;}
+    else {
+      Object.assign(n.dataset,attrs.dataset); Object.assign(n.style,attrs.style); n.onclick=attrs.onclick;
+      for (const [name, value] of Object.entries(attrs)) if (name.startsWith('aria-') && value != null) n.setAttribute(name, value);
+    }
     n.append(...children); return n;
   }
   const layers={vn:node(), fx:node(), modal:node()};

@@ -450,15 +450,28 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.money, before.money, "Members pay nothing more");
     if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled()))
       assert.ok((state.growth?.xp || 0) > (before.growth?.xp || 0), "A tiring visit earns EXP");
-    // 夜: 地下の店（クラブSEAM）。初めての夜は針間ヨルに会い、メニューから戻っても時間・お金・体力は変わらない。
+    // 夜: 地下の店（クラブSEAM）。初めての夜は第5章の出会い（第3章の場面は流さない・2026-11-07 オーナー）で針間ヨルに会い、
+    // メニューから戻っても時間・お金・体力は変わらない。
     const club = page.locator(dt("pin-ch5_tokyo_club"));
     assert.match(await club.innerText(), /地下の店/);
     const night = await get(page);
+    await page.evaluate(async () => (await import("./js/vn/engine.js")).clearLog());
     await go(page, "ch5_tokyo_club");
     await page.locator(dt("dj-club-menu")).waitFor({ timeout: 60000 });
     state = await get(page);
     assert.equal(state.met.yoru, true, "Yoru names herself on the first night");
     assert.equal(state.flags._club_yoru_first_done, true);
+    const rows = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map(({ name, text }) => ({ name, text })));
+    const said = text => rows.find(row => row.text.includes(text));
+    assert.ok(said("mukaiの屋根裏の子だ"), "The chapter 5 first meeting plays");
+    assert.equal(said("mukaiの屋根裏の子だ").name, "？？？", "Nobody names her before she does");
+    assert.equal(said("今夜の選曲は")?.name, "？？？", "Her own naming line comes before the cut-in");
+    assert.ok(!said("mukaiの新しい子"), "The chapter 3 first meeting does not play in chapter 5");
+    assert.ok(said("逢縁はじめです"), "After her cut-in, the shared second half (how to DJ) follows");
+    assert.equal(said("踊ってもいいし")?.name, "針間ヨル", "The shared second half comes after the cut-in");
+    assert.equal(state.flags._intro_yoru, true, "Her intro cut-in was shown");
+    // ヨルは好感度の対象外（state.js AFFINITY_CHARACTERS・プロフィール「好感度・恋愛・LIMEの対象にしない」）。第3章と同じく出会いでも変わらない。
+    assert.deepEqual(state.affinity, night.affinity, "Meeting Yoru changes no affinity, as in chapter 3");
     await page.locator(dt("dj-club-back")).click();
     await tokyoMap(51, 1);
     state = await get(page);
@@ -607,11 +620,50 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5_after_party, true);
     assert.equal(state.flags._ch5_party_seat, "minto");
     assert.equal(state.flags._story_shuraba_unresolved, true, "Two lovers at the party: the affair comes out and stays unresolved");
+    assert.deepEqual(state.flags._ch5_party_conflict, ["tsumugi", "minto"], "Those who reacted at the party are recorded (#2815)");
     assert.equal(state.slot, 0, "The party does not use a free action");
     // もう一度入っても打ち上げは繰り返さない。
     await loadSlot(page, 0);
     await mapReady(page, { day: 51, slot: 0 });
     assert.equal(await page.locator('[data-test^="party-seat-"]').count(), 0, "The party happens once");
+  });
+
+  // #2815: ドバイのヌール（テレビ電話）と地元の恋人の修羅場。ヌールは席に座らず、席を選ぶ前に着信がつながってから打ち明け→反応。
+  await check("chapter-five-after-party-noor-call-before-shuraba", async page => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 5, day: 51, slot: 0, phase: "daily", money: 30000, stamina: 100,
+        weatherSeed: 5, lovers: ["noor", "tsumugi"], loveLevel: { noor: 1, tsumugi: 1 }, contacts: ["sumi", "tsumugi", "noor"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
+        _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
+        _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
+          read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
+          finaleScenes: null, won: null, secondCup: null },
+        _ch5_match_scheduled: false, _ch5_match_started: false };
+      Object.assign(value.met, { tsumugi: true, noor: true, naru: true });
+      value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      core.saveConfig(); core.save();
+    });
+    await loadSlot(page, 0);
+    const texts = () => page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map(row => row.text));
+    await page.locator(dt("party-seat-tsumugi")).waitFor({ timeout: 60000 });
+    assert.equal(await page.locator('[data-test^="party-seat-"]').count(), 2, "Noor has no seat: Tsumugi and Sumi");
+    let read = await texts();
+    assert(read.some(text => text.includes("ドバイの夕方と、ヌールさんの顔")), "The call connects before the seat");
+    assert(!read.some(text => text.includes("聞こえてた")), "No reaction before the confession");
+    await page.locator(dt("party-seat-tsumugi")).click();
+    await mapReady(page, { day: 51, slot: 0 });
+    const state = await get(page);
+    assert.equal(state.flags._story_shuraba_unresolved, true);
+    assert.deepEqual(state.flags._ch5_party_conflict, ["noor", "tsumugi"]);
+    read = await texts();
+    const at = needle => read.findIndex(text => text.includes(needle));
+    assert(at("ドバイの夕方と、ヌールさんの顔") < at("一人だけじゃ、ありません"), "Call before the confession");
+    assert(at("一人だけじゃ、ありません") < at("聞こえてたよ"), "Noor reacts to what she heard on the call");
+    assert.equal(read.filter(text => text.includes("ドバイの夕方と、ヌールさんの顔")).length, 1, "The call is read once");
   });
 
   // #2033 F: KEMURIKUSA（なる）と C.STATION は第5章の通いの小会話。代金・体力・好感度（なるだけ +5）が付き、会話は巡回する。
@@ -745,9 +797,10 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5_dubai_ticket, false);
   });
 
-  // 第5章のドバイでも、第4章で遊んだ人だけラクダレース場と「ヌールと砂丘へ」に行ける（出会い・誘い・初回の場面は第4章だけ）。
+  // 第5章のドバイで、第4章のラクダレース場・カフェ・サーリム・砂丘の続きに入る（2026-11-07 オーナー決定「第4章を飛ばしたプレイヤーも、
+  // 第5章側で前提を補ってルートに入れる」で、#2708 の「第4章で遊んだ人だけ」をやめた）。第4章で知り合っただけなら、店先とカフェで会い直す。
   // 最初の日だけ再会の場面を読む。記録・1日1回・昼の枠・ツアー代は第4章と同じ。なる（地元にいる）は砂丘に来ない。
-  await check("chapter-five-dubai-camel-track-and-dunes-only-for-chapter-four-players", async page => {
+  await check("chapter-five-dubai-camel-track-and-dunes-reunions-for-chapter-four-players", async page => {
     page.setDefaultTimeout(30000);
     const seedDubai = (camel, desert) => page.evaluate(async ([camel, desert]) => {
       const core = await import("./js/core/state.js");
@@ -790,44 +843,83 @@ await suite("ch5-full-flow", async check => {
     };
     const pins = async () => Object.fromEntries(await Promise.all(["ch4_dubai_camel", "ch4_dubai_dunes", "ch4_dubai_tour_desk"]
       .map(async id => [id, await page.locator(dt(`pin-${id}`)).count()])));
+    // 読んだ会話と、吹き出しに出た言い回しを集める（どの分岐を読んだか）
+    const listen = phrases => page.evaluate(async phrases => {
+      const vn = await import("./js/vn/engine.js");
+      window.__ch5Entered = [];
+      const previous = vn.hooks.onEnter;
+      vn.hooks.onEnter = (id, dlg) => { window.__ch5Entered.push(id); previous?.(id, dlg); };
+      window.__ch5Text = new Set();
+      new MutationObserver(() => {
+        const text = [...document.querySelectorAll(".vn-text")].map(node => node.dataset.raw || node.textContent).join("\n");
+        for (const phrase of phrases) if (text.includes(phrase)) window.__ch5Text.add(phrase);
+      }).observe(document.body, { subtree: true, childList: true, characterData: true });
+      window.__remake.camelTest = { pilot: "perfect", timeScale: 8 };
+    }, phrases);
+    const entered = () => page.evaluate(() => window.__ch5Entered.slice());
+    const said = () => page.evaluate(() => [...window.__ch5Text]);
 
-    // 第4章で誘われただけ（本番を見ただけ・砂丘の約束だけ）: 第5章のドバイには出ない
+    // 第4章で誘われただけ（本番は見た・砂丘は約束だけ・カフェの段階は途中）: 第5章でも続きに入れる。
+    // カフェ・サーリムは再会だけを今日の来店にし、Dr.fookah の店先でファーリスと会い直す（本番を見た人の言い方・時間は使わない）
     await seedDubai({ stage: 2, meetDay: 47, inviteDay: 48, watched: true, plays: 0, lastPlayDay: null, best: null },
       { v: 2, talks: 4, chats: 0, lastTalkDay: 9, outings: 0, lastOutingDay: null });
     await loadSlot(page, 0);
     await dubaiMap(60, 0);
-    assert.deepEqual(await pins(), { ch4_dubai_camel: 0, ch4_dubai_dunes: 0, ch4_dubai_tour_desk: 0 }, "Nothing starts a Chapter 4 chain in Chapter 5");
+    assert.deepEqual(await pins(), { ch4_dubai_camel: 1, ch4_dubai_dunes: 1, ch4_dubai_tour_desk: 1 }, "Chapter 4 acquaintances get a way back in");
+    const camelLabel = await page.evaluate(async () => (await import("./js/chapters/ch5-dubai.js")).chapterFiveDubaiLeisureSpots()
+      .find(spot => spot.id === "ch4_dubai_camel")?.label);
+    assert.equal(camelLabel, "Dr.fookah の店先", "They meet Faris at the shop front again before the track");
+    await listen(["理解の早い子", "見せたいもの", "日本に帰ったんじゃ"]);
+    let before = await get(page);
+    await visit("ch4_dubai_tour_desk");
+    await dubaiMap(60, 1);
+    let state = await get(page);
+    let ids = await entered();
+    assert(ids.includes("ch5_noor_cafe_again"), ids.join(","));
+    assert(!ids.includes("ch4_noor_bond_question"), "The stage talk waits for the next visit");
+    assert.deepEqual([state.flags._ch4_desert.talks, state.flags._ch4_desert.lastTalkDay], [4, 60], "The reunion is today's café visit");
+    assert.equal(state.money, before.money - 3000, "One shisha at the café");
+    assert(state.affinity.noor > before.affinity.noor);
+    assert.equal(state.flags._ch5_dubai_dunes_again, true, "Meeting her at the café replaces the reunion before the dunes");
+    // 夜でも店先には顔を出せる（時間は使わない）。本番を見た記録は残し、誘われ直す
+    await visit("ch4_dubai_camel");
+    await page.waitForFunction(() => window.__remake.state.flags._ch5_dubai_camel_meet === true, null, { timeout: 60000 });
+    await dubaiMap(60, 1);
+    state = await get(page);
+    ids = await entered();
+    assert(ids.includes("ch5_dubai_camel_meet"), ids.join(","));
+    for (const id of ["ch4_camel_meet", "ch4_camel_invite", "ch4_camel_watch"]) assert(!ids.includes(id), `${id} is not read in Chapter 5`);
+    assert.deepEqual([state.flags._ch4_camel.stage, state.flags._ch4_camel.inviteDay, state.flags._ch4_camel.watched], [2, 60, true]);
+    assert.equal(state.flags._ch5_dubai_camel_again, true, "No second reunion at the track");
+    assert.equal(state.flags._ch5_camel_known, undefined, "The stage mark only lives while the scene is read");
+    assert.equal(state.slot, 1, "The shop front uses no time");
+    const shopLines = await said();
+    assert(shopLines.includes("理解の早い子") && shopLines.includes("日本に帰ったんじゃ") && !shopLines.includes("見せたいもの"),
+      `the reunion for players who saw the race: ${shopLines.join(" / ")}`);
 
-    // 第4章で一度走った・砂丘へ一度出かけた: 両方出る（最初の再会まで新着の印）。カフェ・サーリムのデスクは出さない
+    // 第4章で一度走った・砂丘へ一度出かけた: 両方出る（最初の再会まで新着の印）。カフェ・サーリムは締めくくりまで出る
     await seedDubai({ stage: 3, meetDay: 47, inviteDay: 48, watched: true, plays: 1, lastPlayDay: 49,
       best: { total: 61, rank: 3, grade: "B", time: 53.2, chapter: 4, day: 49 } },
     { v: 2, talks: 4, chats: 0, lastTalkDay: 9, outings: 1, lastOutingDay: 5 });
     await loadSlot(page, 0);
     await dubaiMap(60, 0);
-    assert.deepEqual(await pins(), { ch4_dubai_camel: 1, ch4_dubai_dunes: 1, ch4_dubai_tour_desk: 0 });
+    assert.deepEqual(await pins(), { ch4_dubai_camel: 1, ch4_dubai_dunes: 1, ch4_dubai_tour_desk: 1 });
     for (const pin of ["ch4_dubai_camel", "ch4_dubai_dunes"]) assert.equal(await page.locator(`${dt(`pin-${pin}`)} .evt-badge`).count(), 1, `${pin} is new`);
-    await page.evaluate(async () => {
-      const vn = await import("./js/vn/engine.js");
-      window.__ch5Entered = [];
-      const previous = vn.hooks.onEnter;
-      vn.hooks.onEnter = (id, dlg) => { window.__ch5Entered.push(id); previous?.(id, dlg); };
-      window.__remake.camelTest = { pilot: "perfect", timeScale: 8 };
-    });
-    const entered = () => page.evaluate(() => window.__ch5Entered.slice());
-    let before = await get(page);
+    await listen([]);
+    before = await get(page);
     // 昼: ラクダレース場 → 再会の場面 → 練習レース → 結果 → 同じ日の夜（昼の枠を一度だけ使う）
     await visit("ch4_dubai_camel");
     await page.locator(`[data-test="camel-cup"][data-cup="practice"]`).click({ timeout: 60000 });
     await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
     await page.locator(dt("camel-finish")).click();
     await dubaiMap(60, 1);
-    let state = await get(page);
+    state = await get(page);
     assert.equal(state.flags._ch5_dubai_camel_again, true, "The reunion at the track is read once");
     assert.equal(state.flags._ch4_camel.plays, 2);
     assert.equal(state.flags._ch4_camel.lastPlayDay, 60);
     assert.deepEqual([state.money, state.stamina], [before.money, before.stamina], "The race costs no money or stamina");
     assert.equal(state.visitedDay.ch4_dubai_camel, 60);
-    let ids = await entered();
+    ids = await entered();
     assert(ids.includes("ch5_dubai_camel_again"), ids.join(","));
     assert(ids.includes("ch4_camel_replay_best") || ids.includes("ch4_camel_replay_usual"), ids.join(","));
     for (const id of ["ch4_camel_replay", "ch4_camel_meet", "ch4_camel_invite", "ch4_camel_watch", "ch4_camel_result_win", "ch4_camel_result_place", "ch4_camel_result_last"])
@@ -914,7 +1006,7 @@ await suite("ch5-full-flow", async check => {
       const previous = vn.hooks.onEnter;
       vn.hooks.onEnter = (id, dlg) => { window.__ch5Entered.push(id); previous?.(id, dlg); };
       window.__ch5Text = new Set();
-      const phrases = ["予定表につけた丸", "久しぶり", "画面の外", "ハジメが日本に帰ってから", "いつか日本に帰る", "言わないまま見送ったら"];
+      const phrases = ["予定表につけた丸", "久しぶり", "画面の外", "ハジメが日本に帰ってから", "いつか日本に帰る", "言わないまま見送ったら", "また日本に帰る"];
       new MutationObserver(() => {
         const text = [...document.querySelectorAll(".vn-text")].map(node => node.dataset.raw || node.textContent).join("\n");
         for (const phrase of phrases) if (text.includes(phrase)) window.__ch5Text.add(phrase);
@@ -950,6 +1042,195 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5_dubai_dunes_again, true);
     assert.equal(state.flags._noor_ch5_promise, undefined, "The promise mark only lives while the reunion is read");
     assert.equal(state.desert.naruMet, false, "Naru never comes to the Chapter 5 dunes");
+  });
+
+  // 第5章のドバイの屋敷に着いた後（day 60・昼）の保存。flags・met・affinity・romanceChoices は足し、desert は置き換える。
+  // questionDone に挙げた相手は♥3の問いに答えた印を立てる。
+  const seedChapterFiveDubai = (page, extra = {}) => page.evaluate(async extra => {
+    const core = await import("./js/core/state.js");
+    const value = core.newGame();
+    Object.assign(value, { chapter: 5, day: 60, slot: 0, phase: "daily", money: 50000, stamina: 100,
+      weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+    value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
+      _ch4_sheikh_revealed: true, _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
+      _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
+        read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
+        finaleScenes: null, won: null, secondCup: null },
+      _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true,
+      _ch5_region_started: true, _ch2_region: "dubai", _ch5_dubai_guest: true, _ch5_dubai_letter: true, _ch5_dubai_letters: 1,
+      _ch5_dubai_flights: 1, _ch5_dubai_ticket: false, _intro_sheikh: true };
+    Object.assign(value.met, { sheikh: true }, extra.met || {});
+    Object.assign(value.flags, extra.flags || {});
+    for (const key of ["affinity", "romanceChoices"]) if (extra[key]) value[key] = { ...(value[key] || {}), ...extra[key] };
+    if (extra.desert) value.desert = extra.desert;
+    const { questionDoneKey } = await import("./js/core/affinity-stages.js");
+    for (const id of extra.questionDone || []) value.flags[questionDoneKey(id)] = true;
+    value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+    Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+    const fortunePlan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter: 5 });
+    value.flags._fortune_wander = { chapter: 5, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
+    core.saveConfig(); core.save();
+  }, extra);
+  const chapterFiveDubaiMap = (page, day, slot) => page.waitForFunction(([day, slot]) => {
+    const s = window.__remake?.state;
+    return s && s.day === day && s.slot === slot && document.querySelector('.map:not(.done):not([data-revealing="true"])[data-region="dubai"] [data-test=pin-ch5_dubai_sheikh]')
+      && !document.querySelector("#modal.show");
+  }, [day, slot], { timeout: 90000 });
+  // 新しく現れた行き先は地図の登場演出の間は選べないので、「ここへ行く」が出るまで選び直す
+  const visitPin = async (page, pin) => {
+    for (let i = 0; i < 40 && !(await page.locator(dt("map-go")).isVisible().catch(() => false)); i++) {
+      await page.locator(dt(`pin-${pin}`)).click();
+      await page.waitForTimeout(250);
+    }
+    await page.locator(dt("map-go")).click();
+  };
+  // 読んだ会話と、吹き出しに出た言い回しを集める（どの分岐を読んだか）
+  const listenScenes = (page, phrases) => page.evaluate(async phrases => {
+    const vn = await import("./js/vn/engine.js");
+    window.__ch5Entered = [];
+    const previous = vn.hooks.onEnter;
+    vn.hooks.onEnter = (id, dlg) => { window.__ch5Entered.push(id); previous?.(id, dlg); };
+    window.__ch5Text = new Set();
+    new MutationObserver(() => {
+      const text = [...document.querySelectorAll(".vn-text")].map(node => node.dataset.raw || node.textContent).join("\n");
+      for (const phrase of phrases) if (text.includes(phrase)) window.__ch5Text.add(phrase);
+    }).observe(document.body, { subtree: true, childList: true, characterData: true });
+  }, phrases);
+  const heard = page => page.evaluate(() => ({ ids: window.__ch5Entered.slice(), said: [...window.__ch5Text] }));
+
+  // 2026-11-07 オーナー決定「第4章のラクダレース／砂丘を飛ばしたプレイヤーも、第5章側で前提を補ってルートに入れる」:
+  // 第4章でファーリス・ヌールに会っていない人も、第5章のドバイで出会いから入れる。Dr.fookah の店先でファーリスと出会い（時間は使わない）、
+  // 翌日の昼にレース場（本番の見学 → 初めてのレース）。カフェ・サーリムでヌールと出会い（♥1ちょうど）、次の来店で♥1の会話（大会後の分岐）。
+  await check("chapter-five-dubai-first-meetings-with-faris-and-noor-without-chapter-four-history", async page => {
+    page.setDefaultTimeout(30000);
+    await seedChapterFiveDubai(page);
+    await loadSlot(page, 0);
+    await chapterFiveDubaiMap(page, 60, 0);
+    for (const [pin, count] of [["ch4_dubai_camel", 1], ["ch4_dubai_tour_desk", 1], ["ch4_dubai_dunes", 0]]) {
+      assert.equal(await page.locator(dt(`pin-${pin}`)).count(), count, pin);
+      if (count) assert.equal(await page.locator(`${dt(`pin-${pin}`)} .evt-badge`).count(), 1, `${pin} is new`);
+    }
+    const spots = await page.evaluate(async () => (await import("./js/chapters/ch5-dubai.js")).chapterFiveDubaiLeisureSpots()
+      .map(spot => ({ id: spot.id, label: spot.label, area: spot.area, desc: spot.desc })));
+    const desk = spots.find(spot => spot.id === "ch4_dubai_tour_desk");
+    assert.equal(desk.label, "砂漠ツアーのカフェ");
+    assert.doesNotMatch(`${desk.label}${desk.area}${desk.desc}`, /宿/, "Hajime stays at the Sheikh's residence, not the inn");
+    assert.equal(spots.find(spot => spot.id === "ch4_dubai_camel").label, "Dr.fookah の店先");
+    await listenScenes(page, ["いらっしゃいませ", "日本に帰ったんじゃ", "日本の子", "大会の準備"]);
+    await page.evaluate(() => { window.__remake.camelTest = { pilot: "perfect", timeScale: 8 }; });
+    const start = await get(page);
+    // 昼: 店先でファーリスと出会い、翌朝のレースに誘われる（時間・お金は使わない）
+    await visitPin(page, "ch4_dubai_camel");
+    await page.waitForFunction(() => window.__remake.state.flags._ch5_dubai_camel_meet === true, null, { timeout: 60000 });
+    await chapterFiveDubaiMap(page, 60, 0);
+    let state = await get(page);
+    let { ids, said } = await heard(page);
+    assert(ids.includes("ch5_dubai_camel_meet"), ids.join(","));
+    for (const id of ["ch4_camel_meet", "ch4_camel_invite", "ch4_camel_watch"]) assert(!ids.includes(id), `${id} is not read in Chapter 5`);
+    assert.deepEqual([state.flags._ch4_camel.stage, state.flags._ch4_camel.meetDay, state.flags._ch4_camel.inviteDay], [2, 60, 60]);
+    assert.equal(state.flags._ch5_dubai_camel_again, true, "Met in Chapter 5: no reunion at the track");
+    assert.equal(state.met.faris, true);
+    assert.equal(state.money, start.money);
+    assert(said.includes("いらっしゃいませ") && !said.includes("日本に帰ったんじゃ"), `a first meeting, not a reunion: ${said.join(" / ")}`);
+    await page.locator(dt("pin-ch4_dubai_camel")).click();
+    assert.match(await page.locator(".map-info").getAttribute("aria-label"), /六時に店の前で待ち合わせ/);
+    assert.equal(await page.locator(dt("map-go")).count(), 0, "The race is tomorrow morning");
+    // 昼: カフェ・サーリムでヌールと出会う（第5章の書き出し・♥1ちょうど・一台の代金）
+    await visitPin(page, "ch4_dubai_tour_desk");
+    await chapterFiveDubaiMap(page, 60, 1);
+    state = await get(page);
+    ({ ids } = await heard(page));
+    assert(ids.includes("ch5_noor_meet") && !ids.includes("ch4_noor_meet"), ids.join(","));
+    assert.deepEqual([state.flags._ch4_desert.talks, state.flags._ch4_desert.lastTalkDay], [1, 60]);
+    assert.equal(state.affinity.noor, 9, "The first meeting is exactly ♥1");
+    assert.equal(state.met.noor, true);
+    assert.equal(state.money, start.money - 3000);
+    assert.equal(state.flags._ch5_dubai_dunes_again, true, "Met in Chapter 5: no reunion before the dunes");
+    // 夜: 客間で休む → 翌日の昼にレース場（本番の見学 → 初めてのレース → 結果）
+    await visitPin(page, "ch5_dubai_guest");
+    await chapterFiveDubaiMap(page, 61, 0);
+    await visitPin(page, "ch4_dubai_camel");
+    await page.locator(dt("camel-tutorial")).waitFor({ timeout: 90000 });
+    await page.locator(dt("camel-tutorial-skip")).click();
+    await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
+    await page.locator(dt("camel-finish")).click();
+    await chapterFiveDubaiMap(page, 61, 1);
+    state = await get(page);
+    ({ ids } = await heard(page));
+    assert(ids.includes("ch4_camel_watch"), ids.join(","));
+    assert(["ch4_camel_result_win", "ch4_camel_result_place", "ch4_camel_result_last"].some(id => ids.includes(id)), ids.join(","));
+    assert(!ids.includes("ch5_dubai_camel_again"), "No reunion after meeting in Chapter 5");
+    assert.deepEqual([state.flags._ch4_camel.stage, state.flags._ch4_camel.plays, state.flags._ch4_camel.lastPlayDay], [3, 1, 61]);
+    assert.equal(state.met.khalil, true);
+    assert(await page.locator(".hud").isVisible(), "The daily HUD comes back after the race");
+    // 夜: カフェ・サーリムで♥1の会話（第5章は大会の後: 父の噂の分岐。大会前の言い方は読まない）
+    await visitPin(page, "ch4_dubai_tour_desk");
+    await chapterFiveDubaiMap(page, 62, 0);
+    state = await get(page);
+    ({ ids, said } = await heard(page));
+    assert(ids.includes("ch4_noor_talk2"), ids.join(","));
+    assert.equal(state.flags._ch4_desert.talks, 2);
+    assert(state.affinity.noor > 9);
+    assert(said.includes("日本の子") && !said.includes("大会の準備"), `the late-read branch: ${said.join(" / ")}`);
+  });
+
+  // 2026-11-07 オーナー決定「ノールの告白は第5章でも可能にする」: 第5章のカフェ・サーリムで♥5の締めくくりを迎え、「二人で見たい」と答えると、
+  // 次の砂丘（ツアー代なし）の夕日で告白（また日本に帰る前の言い方 visiting）→ 恋人・LIME・ギャラリーの恋人成立。夜の帰り道の予約は入れない。
+  await check("chapter-five-dubai-noor-finale-and-sunset-confession-reached-in-chapter-five", async page => {
+    page.setDefaultTimeout(30000);
+    // 第5章で出会って通い、段階の会話を全部読み、♥3の問いで恋愛を選び、砂丘へ一度出かけた（♥5）。締めくくりはまだ
+    await seedChapterFiveDubai(page, {
+      flags: { _ch4_desert: { v: 2, talks: 6, chats: 0, lastTalkDay: 59, outings: 1, lastOutingDay: 58 }, _ch5_dubai_dunes_again: true, _intro_noor: true },
+      desert: { runs: 1, bestRank: "B", firstClear: { chapter: 5, day: 58 }, rewarded: true, wins: 0, naruMet: false, naruWins: 0 },
+      affinity: { noor: 66 }, romanceChoices: { bond_q1_noor: { char: "noor", value: 1 } }, met: { noor: true }, questionDone: ["noor"],
+    });
+    await loadSlot(page, 0); // 選択肢は先頭（最後の問いは「二人で見たい」、告白には「好きです」と答える）
+    await chapterFiveDubaiMap(page, 60, 0);
+    assert.equal(await page.locator(`${dt("pin-ch4_dubai_tour_desk")} .evt-badge`).count(), 1, "The finale is waiting at the café");
+    await listenScenes(page, ["また日本に帰る", "ハジメが日本に帰ってから", "いつか日本に帰る", "予定表につけた丸", "久しぶり"]);
+    let before = await get(page);
+    await visitPin(page, "ch4_dubai_tour_desk");
+    await chapterFiveDubaiMap(page, 60, 1);
+    let state = await get(page);
+    let { ids } = await heard(page);
+    assert(ids.includes("ch4_noor_bond_finale"), ids.join(","));
+    assert.deepEqual([state.finales?.noor?.chapter, state.finales?.noor?.route, state.finales?.noor?.day], [5, "romance", 60]);
+    assert.equal(state.owned.filter(id => id === "suyaki_noor").length, 1, "Her hagal is given once");
+    assert.equal(state.money, before.money - 3000);
+    assert.equal(state.flags._confession_due, undefined, "Noor's confession is her own sunset scene, never the night walk");
+    const after = await page.evaluate(async () => {
+      const { relationshipStatus } = await import("./js/daily/relationship-status.js");
+      const spots = (await import("./js/chapters/ch5-dubai.js")).chapterFiveDubaiLeisureSpots();
+      return { status: relationshipStatus("noor").label, ids: spots.map(spot => spot.id), dunes: spots.find(spot => spot.id === "ch4_dubai_dunes")?.desc || "" };
+    });
+    assert.equal(after.status, "告白を選べる");
+    assert(!after.ids.includes("ch4_dubai_tour_desk"), "After the finale the café leaves the map (the dunes stay)");
+    assert.match(after.dunes, /ヌールとの約束.*ツアー代はいらない/, after.dunes);
+    // 夜は客間で休み、翌日の昼に砂丘へ（滑ったあとの夕日で告白）
+    await visitPin(page, "ch5_dubai_guest");
+    await chapterFiveDubaiMap(page, 61, 0);
+    before = await get(page);
+    await visitPin(page, "ch4_dubai_dunes");
+    await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === "menu", null, { timeout: 90000 });
+    await page.locator(dt("desert-start")).click();
+    await page.evaluate(() => { window.__desertRide.autoplay("perfect"); window.__desertRide.setSpeedUp(8); });
+    await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === "result", null, { timeout: 90000 });
+    await page.locator(dt("desert-leave")).click();
+    await chapterFiveDubaiMap(page, 61, 1);
+    state = await get(page);
+    let said;
+    ({ ids, said } = await heard(page));
+    for (const id of ["ch4_desert_again", "confession_noor", "confession_noor_accept"]) assert(ids.includes(id), `${id}: ${ids.join(",")}`);
+    for (const id of ["ch5_dubai_dunes_again", "ch4_desert_sunset_again", "ch5_noor_sunset_first"]) assert(!ids.includes(id), `${id}: ${ids.join(",")}`);
+    assert.deepEqual(said, ["また日本に帰る"], `the visiting confession, not the Chapter 4 or the came-back lines: ${said.join(" / ")}`);
+    assert.deepEqual(state.lovers, ["noor"], "Accepting makes Noor a lover");
+    assert(state.contacts.includes("noor"), "They swap LIME at the confession");
+    assert.equal(state.loverSince.noor, 61);
+    assert.equal(state.loveLevel.noor, 1);
+    assert.equal(state.money, before.money, "The promised trip is free");
+    assert.equal(state.flags._noor_confession_visit, undefined, "The confession mark only lives while the scene is read");
+    const gallery = await page.evaluate(async () => (await import("./js/core/gallery-progress.js")).readGalleryProgress().routeRecords.noor?.becameLover);
+    assert.equal(gallery, true, "The gallery records the route as 恋人成立");
   });
 
   await check("chapter-five-weak-second-cup-loses-on-votes-and-continues", async page => {

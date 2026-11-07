@@ -188,6 +188,7 @@
     {
       "dialogue_id": "ch1_tournament_opening",
       "metadata": {
+        "forced_event": true,
         "effect": "smoke"
       },
       "lines": [
@@ -551,6 +552,7 @@
         {
           "speaker": "sui",
           "face": "serious",
+          "beat": 600,
           "text": "……ほう"
         },
         {
@@ -561,6 +563,7 @@
         {
           "speaker": "",
           "face": "",
+          "duck": true,
           "text": "パッキーが、マイクを下ろしたまま黙った。"
         },
         {
@@ -738,6 +741,7 @@
         {
           "speaker": "pakki",
           "face": "smile",
+          "beat": 800,
           "text": "逢縁はじめ選手ッ！！！ 工程ごとの票を積み重ね、優勝ですッ！！"
         },
         {
@@ -961,11 +965,12 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "は、はいっ"
+          "text": "[shiver]は、はいっ[/shiver]"
         },
         {
           "speaker": "sui",
           "face": "normal",
+          "duck": true,
           "text": "……懐かしい店の味だ。人が帰ってくる店の"
         },
         {
@@ -1163,7 +1168,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "その下に、細いペンでもう一行。「店の煙だ。大会の煙ではない」"
+          "text": "その下に、細いペンでもう一行。[pause]「店の煙だ。大会の煙ではない」"
         },
         {
           "speaker": "hajime",
@@ -1202,7 +1207,7 @@
         {
           "speaker": "tsumugi",
           "face": "sad",
-          "text": "……最後の方の、はじめさんの顔。少しだけ、浮かれて見えました"
+          "text": "……最後の方の、はじめさんの顔。[pause]少しだけ、浮かれて見えました"
         },
         {
           "speaker": "hajime",
@@ -1734,6 +1739,7 @@
         {
           "speaker": "",
           "face": "",
+          "beat": 800,
           "text": "読み上げられた名前は、はじめではなかった。"
         },
         {
@@ -1783,6 +1789,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
+          "duck": true,
           "text": "帰って来ていい。勝った日だけじゃねえよ"
         },
         {

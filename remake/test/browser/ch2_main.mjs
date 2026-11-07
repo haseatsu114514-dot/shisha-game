@@ -446,6 +446,10 @@ await suite('ch2-main', async check => {
     await setup(page, { knownTrpg: false });
     await begin(page);
     await page.setViewportSize({ width: 320, height: 568 });
+    // 縦持ちのDS風は回転ガードで覆う（1242d29e）。いちばん小さい横持ちで同じ操作を確かめる。
+    await page.locator('#rotate-hint').waitFor({ state: 'visible' });
+    await page.setViewportSize({ width: 568, height: 320 });
+    await page.locator('#rotate-hint').waitFor({ state: 'hidden' });
     for (const id of ['ageha', 'kumicho', 'rei']) {
       await page.locator(test(`pin-${id}`)).scrollIntoViewIfNeeded();
       await assertFits(page, test(`pin-${id}`));

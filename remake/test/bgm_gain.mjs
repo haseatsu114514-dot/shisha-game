@@ -28,4 +28,13 @@ config.bgmVolume = .2; audio.applyVolumes(); assert(Math.abs(elements[0].volume 
 audio.playBgm("tonari"); step(1500); assert.equal(elements[1].volume, .2); assert.equal(elements[0].volume, 0);
 audio.playBgm("sweets_or_sweets"); config.bgmVolume = .4; audio.applyVolumes(); step(1500);
 assert(Math.abs(elements[2].volume - .22) < 1e-9, "Fade overwrote the new setting or track gain");
-console.log("[BGM gain] PASS: shark track lowered, settings/fades retain gain, other tracks retain their setting");
+// 会話の「BGMの息継ぎ」（#2828）: 曲の補正と音量設定を保ったまま約 −6dB へ寄せ、戻す。曲を替えると寄せは外れる
+audio.duckBgm(.5, 150); step(200);
+assert(Math.abs(elements[2].volume - .11) < 1e-9, "duck keeps the track gain and volume setting");
+assert.equal(audio.bgmDuckLevel(), .5);
+config.bgmVolume = .2; audio.applyVolumes(); assert(Math.abs(elements[2].volume - .055) < 1e-9, "settings change while ducked");
+config.bgmVolume = .4; audio.applyVolumes();
+audio.duckBgm(1, 400); step(450); assert(Math.abs(elements[2].volume - .22) < 1e-9, "duck released");
+audio.duckBgm(.5); audio.playBgm("tonari"); step(1500);
+assert.equal(audio.bgmDuckLevel(), 1); assert.equal(elements[3].volume, .4, "a new track starts unducked");
+console.log("[BGM gain] PASS: shark track lowered, settings/fades retain gain, other tracks retain their setting, dialogue duck keeps both");

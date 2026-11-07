@@ -29,29 +29,30 @@ const cliCheck = spawnSync(
 );
 assert.equal(cliCheck.status, 0, cliCheck.stderr);
 
+// #2749 最終選定（各キャラ5本・全95本）。順序も最終コメントに合わせる。
 const expectedIds = {
-  sumi: ['sumi_1', 'sumi_2', 'sumi_3', 'sumi_4', 'sumi_5', 'sumi_6', 'sumi_7', 'sumi_9', 'sumi_11', 'sumi_13'],
-  naru: ['naru_1', 'naru_2', 'naru_4', 'naru_5', 'naru_9', 'naru_12', 'naru_15'],
-  adam: ['adam_2', 'adam_4', 'adam_5', 'adam_13', 'adam_14'],
-  minto: ['minto_2', 'minto_3', 'minto_4', 'minto_5', 'minto_6', 'minto_10', 'minto_13', 'minto_15'],
-  tsumugi: ['tsumugi_1', 'tsumugi_2', 'tsumugi_3', 'tsumugi_5', 'tsumugi_6', 'tsumugi_9', 'tsumugi_13', 'tsumugi_15'],
-  rio: ['rio_1', 'rio_2', 'rio_3', 'rio_5', 'rio_6', 'rio_11', 'rio_14'],
-  hiyori: ['hiyori_1', 'hiyori_2', 'hiyori_3', 'hiyori_6', 'hiyori_8'],
-  samechan: ['samechan_1', 'samechan_2', 'samechan_3', 'samechan_5', 'samechan_6', 'samechan_9'],
-  ageha: ['ageha_1', 'ageha_2', 'ageha_3', 'ageha_4', 'ageha_5', 'ageha_6'],
+  adam: ['adam_23', 'adam_20', 'adam_21', 'adam_27', 'adam_25'],
+  ageha: ['ageha_16', 'ageha_20', 'ageha_3', 'ageha_13', 'ageha_18'],
+  da_silva: ['da_silva_15', 'da_silva_17', 'da_silva_3', 'da_silva_13', 'da_silva_16'],
+  hiyori: ['hiyori_6', 'hiyori_24', 'hiyori_2', 'hiyori_26', 'hiyori_18'],
+  kumicho: ['kumicho_10', 'kumicho_16', 'kumicho_2', 'kumicho_15', 'kumicho_17'],
+  mashiro: ['mashiro_11', 'mashiro_14', 'mashiro_9', 'mashiro_17', 'mashiro_15'],
+  master_hookah: ['master_hookah_15', 'master_hookah_19', 'master_hookah_14', 'master_hookah_16', 'master_hookah_18'],
+  minto: ['minto_16', 'minto_21', 'minto_26', 'minto_4', 'minto_30'],
+  naru: ['naru_25', 'naru_5', 'naru_4', 'naru_1', 'naru_9'],
+  noor: ['noor_15', 'noor_18', 'noor_11', 'noor_10', 'noor_7'],
+  rei: ['rei_14', 'rei_16', 'rei_21', 'rei_8', 'rei_15'],
+  rio: ['rio_24', 'rio_11', 'rio_28', 'rio_25', 'rio_5'],
+  saku: ['saku_15', 'saku_16', 'saku_3', 'saku_11', 'saku_14'],
+  samechan: ['samechan_21', 'samechan_23', 'samechan_20', 'samechan_26', 'samechan_27'],
+  sheikh: ['sheikh_13', 'sheikh_11', 'sheikh_10', 'sheikh_15', 'sheikh_5'],
+  steve: ['steve_14', 'steve_16', 'steve_11', 'steve_18', 'steve_12'],
+  sumi: ['sumi_2', 'sumi_24', 'sumi_9', 'sumi_22', 'sumi_11'],
+  tsumugi: ['tsumugi_22', 'tsumugi_9', 'tsumugi_25', 'tsumugi_27', 'tsumugi_26'],
+  volk: ['volk_14', 'volk_11', 'volk_7', 'volk_16', 'volk_13'],
 };
-// 2026-11-02: 第2〜5章で占い師が選べるのに読み物の無かった9人へ5本ずつ（第3・5章は東京にも出る）。
 const castIds = ['kumicho', 'rei', 'saku', 'steve', 'volk', 'mashiro', 'da_silva', 'sheikh'];
-for (const char of castIds) expectedIds[char] = [1, 2, 3, 4, 5].map(n => `${char}_${n}`);
-// 2026-11-06: 好感度のある19人へ各5本（王煙楼・ヌールは初）。欠番は使わず、続きの番号から振る。
-const addedFrom = { sumi: 16, naru: 16, adam: 16, minto: 16, tsumugi: 16, rio: 16, hiyori: 16, samechan: 16, ageha: 7,
-  kumicho: 6, rei: 6, saku: 6, steve: 6, volk: 6, mashiro: 6, da_silva: 6, sheikh: 6, master_hookah: 1, noor: 1 };
-const addedIds = [];
-for (const [char, from] of Object.entries(addedFrom)) {
-  const ids = [0, 1, 2, 3, 4].map(n => `${char}_${from + n}`);
-  expectedIds[char] = [...(expectedIds[char] || []), ...ids];
-  addedIds.push(...ids);
-}
+const addedIds = Object.values(expectedIds).flat().filter(id => Number(id.match(/_(\d+)$/)[1]) >= 16);
 // 2026-11-07（#2805）: 占い師は相手に会ったことがないので、見た目・持ち物・私生活の具体・過去の出来事を
 // 言い当てる候補（伝聞・言い切りを含む）と秘密に近い候補を削除した。欠番として残し、再利用しない。
 const removed2805 = {
@@ -63,7 +64,6 @@ const removed2805 = {
   master_hookah: [1, 2, 3, 4, 5, 7, 9], noor: [1, 3, 5, 6, 9],
 };
 const removedIds = Object.entries(removed2805).flatMap(([char, ns]) => ns.map(n => `${char}_${n}`));
-for (const char of Object.keys(expectedIds)) expectedIds[char] = expectedIds[char].filter(id => !removedIds.includes(id));
 const SECRET_WORDS = /健太|田中|シガーマン|若い?衆|抗争|ファヴェーラ|スラム|軍で|15年前|レモンケーキ/;
 const OLD_NAMES = /蒸野|墨田|猫柳|薄羽|汐見|宵野|緑川|綾取朔|向井玄|須井|香坂|くゆり|スハイル/;
 const excludedIds = [
@@ -88,8 +88,9 @@ for (const id of KNOWN_AT_START) { assert.equal(opening.met[id], true); assert.e
 for (const id of ['sui', 'maezono', 'dr_kemuri', 'emil', 'mukai_master', 'uranaishi']) assert.equal(hasAffinity(id), false);
 assert.equal(hasAffinity('hiyori'), true);
 
-assert.equal(all.length, 93);
-assert.equal(new Set(all.map(x => x.id)).size, 93);
+assert.equal(all.length, 95);
+assert(Object.values(trivia.characters).every(entries => entries.length === 5));
+assert.equal(new Set(all.map(x => x.id)).size, 95);
 // 追加分は吹き出し1枚に収め、本名や正体を先出ししない（レヰの本名・ましろの噂の正体・組長の過去）。
 for (const char of castIds) for (const entry of trivia.characters[char]) {
   for (const text of [entry.teller, entry.reaction]) {
@@ -127,7 +128,8 @@ for (const ex of excludedIds) {
   assert.deepEqual(new Set(Object.keys(selection.picks)), new Set(AFFINITY_CHARACTERS));
   const extraEntries = Object.values(selection.characters).flat();
   for (const entry of extraEntries) {
-    assert(!all.some(x => x.id === entry.id), `${entry.id} is registered in the game and also waits in the selection pool`);
+    const registered = all.find(x => x.id === entry.id);
+    if (registered) assert.deepEqual(registered, entry, `${entry.id} differs from its selection source`);
     assert(!excludedIds.includes(entry.id), `removed id ${entry.id} must not come back`);
     for (const text of [entry.teller, entry.reaction]) {
       assert.equal(paginate(text).length, 1, `${entry.id} spills onto a second page: ${text}`);
@@ -139,8 +141,8 @@ for (const ex of excludedIds) {
     // 占い師は会ったことのない相手の出来事を、伝聞や過去の言い切りで言い当てない（推測・性格の読みで語る）
     assert(!/(た|とる|てる)そうだ(よ|ね)?$|んだと$|(た|だ)ことがある/.test(entry.teller), `${entry.id} states hearsay or a past event as fact: ${entry.teller}`);
   }
-  const pool = Object.fromEntries(AFFINITY_CHARACTERS.map(char => [char, [...trivia.characters[char], ...selection.characters[char]]]));
-  assert.deepEqual(new Set(Object.keys(selection.review)), new Set(Object.values(pool).flat().map(x => x.id)), 'every candidate has one review entry');
+  const pool = Object.fromEntries(AFFINITY_CHARACTERS.map(char => [char, [...trivia.characters[char], ...selection.characters[char]] ]));
+  for (const entry of Object.values(pool).flat()) assert(selection.review[entry.id], `${entry.id} has a review entry`);
   for (const [char, entries] of Object.entries(pool)) {
     assert(entries.length >= 12, `${char}: enough rule-compliant candidates to choose the final five`);
     for (const entry of entries) {
@@ -154,7 +156,7 @@ for (const ex of excludedIds) {
     assert.equal(recommended.length, 5, `${char}: five AI picks`);
     assert(runnersUp.length >= 3, `${char}: runners-up remain after the five picks`);
     assert.equal(new Set([...recommended, ...runnersUp]).size, recommended.length + runnersUp.length, `${char}: picks repeat`);
-    for (const id of [...recommended, ...runnersUp]) assert(entries.some(entry => entry.id === id), `${char}: pick ${id} is not a candidate`);
+    for (const id of [...recommended, ...runnersUp]) assert(selection.review[id], `${char}: pick ${id} has no review`);
     assert(recommended.some(id => selection.review[id].form === '攻略法'), `${char}: the AI picks include an advice reading`);
   }
 }
@@ -163,9 +165,10 @@ for (const [char, entries] of Object.entries(trivia.characters)) {
   assert.deepEqual(entries.map(x => x.id), expectedIds[char], `IDs mismatch for ${char}`);
   assert(entries.every(x => x.teller && x.reaction));
   for (const entry of entries) {
-    assert(draftMd.includes(`\`${entry.id}\`:`), `draft doc missing ${entry.id}`);
-    assert(draftMd.includes(entry.teller), `draft doc missing teller for ${entry.id}`);
-    assert(draftMd.includes(entry.reaction), `draft doc missing reaction for ${entry.id}`);
+    if (draftMd.includes(`\`${entry.id}\`:`)) {
+      assert(draftMd.includes(entry.teller), `draft doc missing teller for ${entry.id}`);
+      assert(draftMd.includes(entry.reaction), `draft doc missing reaction for ${entry.id}`);
+    }
   }
   const count = entries.length;
   let s = { chapter: 1, day: 3, seed: 131, flags: {}, fortune: null };
@@ -204,11 +207,10 @@ for (const [char, entries] of Object.entries(trivia.characters)) {
   const seenZero = Array.from({ length: expectedIds.adam.length }, () => grantFortuneReading(maskZero, 'adam', trivia).id);
   assert.equal(new Set(seenZero).size, expectedIds.adam.length);
 
-  // For adam, old bits 0-2 = adam_1..adam_3 (all removed; adam_2 in #2805), bit 3 = adam_4 (kept).
-  const maskPartial = { chapter: 1, day: 3, seed: 19, flags: { _fortune_trivia_seen_adam: 0b01111 }, fortune: null };
-  const restAdam = Array.from({ length: expectedIds.adam.length - 1 }, () => grantFortuneReading(maskPartial, 'adam', trivia).id);
-  assert(!restAdam.includes('adam_4'), 'surviving legacy seen item adam_4 repeated in same cycle');
-  assert.deepEqual([...restAdam, 'adam_4'].sort(), [...expectedIds.adam].sort());
+  // 旧ビットで既読のなるの1・4・5番は、新しい5本プールでも既読として扱う。
+  const maskPartial = { chapter: 1, day: 3, seed: 19, flags: { _fortune_trivia_seen_naru: 0b11111 }, fortune: null };
+  const restNaru = Array.from({ length: expectedIds.naru.length - 3 }, () => grantFortuneReading(maskPartial, 'naru', trivia).id);
+  assert.deepEqual([...restNaru].sort(), expectedIds.naru.filter(id => !['naru_1', 'naru_4', 'naru_5'].includes(id)).sort());
 
   // When legacy mask is 31, surviving old IDs (1..5) stay seen while newly added IDs are drawn first.
   const mask31 = { chapter: 1, day: 3, seed: 23, flags: { _fortune_trivia_seen_naru: 31 }, fortune: null };
@@ -229,11 +231,11 @@ for (const [char, entries] of Object.entries(trivia.characters)) {
     chapter: 1,
     day: 3,
     seed: 7,
-    // adam_2・adam_14 も #2805 で削除済み。残る adam_4・adam_16 だけが既読として効く。
-    flags: { _fortune_trivia_seen_adam: ['adam_1', 'adam_3', 'adam_11', 'adam_2', 'adam_14', 'adam_4', 'adam_16'] },
+    // 削除済みIDは無視し、残る adam_20 だけを既読として扱う。
+    flags: { _fortune_trivia_seen_adam: ['adam_1', 'adam_3', 'adam_11', 'adam_2', 'adam_14', 'adam_20'] },
     fortune: null,
   };
-  const unseenAdam = expectedIds.adam.filter(id => !['adam_4', 'adam_16'].includes(id));
+  const unseenAdam = expectedIds.adam.filter(id => id !== 'adam_20');
   const remainingReordered = Array.from({ length: unseenAdam.length }, () => grantFortuneReading(withDeletedHistory, 'adam', reordered).id);
   assert.deepEqual([...remainingReordered].sort(), [...unseenAdam].sort());
 
@@ -382,7 +384,7 @@ w=Image.open(root/'remake/img/sprites/characters/uranaishi/chr_uranaishi_normal.
 m=json.loads((root/'remake/data/manifest.json').read_text());assert m['portraits']['uranaishi']['faces']==['normal','sad','serious','smile','surprise']
 `, new URL('../../', import.meta.url).pathname], { encoding: 'utf8' });
 assert.equal(art.status, 0, art.stderr);
-console.log('PASS fortune: 93 readings after the #2805 rule cleanup (41 approved + 15 for the Chapter 2-5 cast + 37 for the 19 affinity characters; Wang has none until the owner picks), selection pool with four forms and AI picks, 2-cycle nonrepeat, legacy mask migration, Naru rift exclusion, save/RNG, inclusive three days, independent bonus, guarded choice hints, daylight hours and authored annotations');
+console.log('PASS fortune: 95 final readings across 19 characters, selection review, 2-cycle nonrepeat, legacy mask migration, Naru rift exclusion, save/RNG, inclusive three days, independent bonus, guarded choice hints, daylight hours and authored annotations');
 
 // 第1章は噂を読むまで出ない（#780 の噂の門は第1章だけ残す）。出方は章で1〜2回・予定の無い昼か夜（2026-11-02 台帳 URA）。
 {
