@@ -45,13 +45,13 @@ const unchanged = (page) => page.evaluate(() => {
 });
 
 /** 第5章の自由行動（地元）の保存を作り、HUD つきの日常の画面に置く。 */
-async function chapterFive(page, { region = "home", met = {}, affinity = {}, lit, finales = {} }) {
-  await page.evaluate(async ({ region, met, affinity, lit, finales }) => {
+async function chapterFive(page, { region = "home", met = {}, affinity = {}, lit, finales = {}, money = 60000, flags = {} }) {
+  await page.evaluate(async ({ region, met, affinity, lit, finales, money, flags }) => {
     const core = await import("./js/core/state.js"), growth = await import("./js/core/growth.js"), vn = await import("./js/vn/engine.js");
     const s = core.newGame();
-    Object.assign(s, { chapter: 5, phase: "daily", day: 52, slot: 0, money: 60000, stamina: 100 });
+    Object.assign(s, { chapter: 5, phase: "daily", day: 52, slot: 0, money, stamina: 100 });
     Object.assign(s.flags, { _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true, _ch4_sheikh_revealed: true,
-      _ch2_region: region, _ch5_tokyo_attic: region === "tokyo" });
+      _ch2_region: region, _ch5_tokyo_attic: region === "tokyo", ...flags });
     Object.assign(s.met, met);
     Object.assign(s.affinity, affinity);
     Object.assign(s.finales ||= {}, finales);
@@ -63,7 +63,7 @@ async function chapterFive(page, { region = "home", met = {}, affinity = {}, lit
     const ui = await import("./js/core/ui.js");
     ui.showScreen("map", document.createElement("div"));
     core.save();
-  }, { region, met, affinity, lit, finales });
+  }, { region, met, affinity, lit, finales, money, flags });
 }
 
 await suite("lesson-consult-coverage", async (check) => {
@@ -161,7 +161,7 @@ await suite("lesson-consult-coverage", async (check) => {
         return { result, spent: money - s.money, text: vn.backlog().map((row) => row.text).join("\n"),
           talks: s.flags._ch5_tokyo_talks?.[id] ?? 0, learned: [...s.growth.learned],
           finales: JSON.parse(JSON.stringify(s.finales || {})), steveHagal: count("suyaki_steve"), volkHagal: count("suyaki_volk"),
-          mint: s.flavorStock?.nightside_blast_mint || 0 };
+          mint: s.flavorStock?.nightside_blast_mint || 0, steveLime: !!s.flags._lime_contact_steve, volkLime: !!s.flags._lime_contact_volk };
       };
       const steve = await visit("ch5_tokyo_steve");
       const volk = await visit("ch5_tokyo_volk");
@@ -175,6 +175,9 @@ await suite("lesson-consult-coverage", async (check) => {
     assert.deepEqual([steve.finales.steve?.chapter, steve.finales.steve?.route], [5, "friend"]);
     assert.equal(steve.steveHagal, 1);
     assert.match(steve.text, /ずっと練習に使ってきた、俺のハガルだ/, "Steve's chapter 5 text");
+    // 第3章でLIMEを交換していない人: 「顔の知らせ」を頼まれたその場で交換してから「送ります」と言い、友人のLIMEが届くようになる
+    assert.match(steve.text, /LIMEを交換しておきませんか[\s\S]*連絡先を交換した。[\s\S]*送ります。気づいた日だけ/, "no LIME yet: exchange it before promising to send");
+    assert.equal(steve.steveLime, true, "the exchange is recorded");
     assert.deepEqual(volk.result, { used: true, exerted: true });
     assert.equal(volk.spent, 0, "the finale is not a paid cup");
     assert.equal(volk.talks, 0, "the small-talk rotation does not advance");
@@ -184,6 +187,9 @@ await suite("lesson-consult-coverage", async (check) => {
     assert(volk.mint >= 50, `the blast mint leaves come with the hagal (${volk.mint}g)`);
     assert.match(volk.text, /祖母に言われたこと/, "Volk's chapter 5 text");
     assert.doesNotMatch(volk.text, /布の包み/, "not the chapter 3 text");
+    // ヴォルクの第5章の文は連絡を約束しない（また店に来る約束）。LIMEは交換しないまま
+    assert.doesNotMatch(volk.text, /LIME|連絡先/, "Volk's chapter 5 text does not rely on LIME");
+    assert.equal(volk.volkLime, false);
     assert.deepEqual(volkAgain.result, { used: true, exerted: true });
     assert.equal(volkAgain.spent, 4000, "the next visit is an ordinary paid visit");
     assert.equal(volkAgain.talks, 1);
@@ -191,6 +197,48 @@ await suite("lesson-consult-coverage", async (check) => {
     assert.doesNotMatch(volkAgain.text, /祖母に言われたこと/, "the finale plays once");
     assert.equal(volkAgain.volkHagal, 1);
     assert.deepEqual([saved.steve?.chapter, saved.volk?.chapter], [5, 5]);
+  });
+
+  // (b3) 締めくくりの来店は代金を取らないので、所持金が4,000円に足りなくても地図の行き先は選べて（利用料は0円）、締めくくりを迎えられる。
+  // 締めくくりの後のふだんの来店は4,000円で、足りなければ断る。第3章でLIMEを交換済みのスティーブは、締めくくりで交換し直さない。
+  await check("ch5-tokyo-rival-finales-are-free-even-short-of-money", async (page) => {
+    await chapterFive(page, { region: "tokyo", met: { steve: true, volk: true, mukai_master: true }, affinity: { steve: 66, volk: 66 }, lit: [],
+      money: 3000, flags: { _lime_contact_steve: true } });
+    const result = await page.evaluate(async () => {
+      const tokyo = await import("./js/chapters/ch5-tokyo.js"), access = await import("./js/daily/spot-access.js");
+      const vn = await import("./js/vn/engine.js"), s = window.__remake.state;
+      const spot = (id) => tokyo.TOKYO_SPOTS.find((entry) => entry.id === id);
+      const pin = (id) => ({ cost: spot(id).cost, ok: access.spotAvailability(spot(id)).ok });
+      const visit = async (id) => {
+        vn.clearLog();
+        const money = s.money;
+        const result = await tokyo.performTokyoSpot(spot(id));
+        return { result, spent: money - s.money, text: vn.backlog().map((row) => row.text).join("\n"),
+          talks: s.flags._ch5_tokyo_talks?.[id] ?? 0, finale: s.finales?.[spot(id).charId]?.chapter ?? null };
+      };
+      // 地図を見る時点で第5章の東京の台詞は読み込まれている（再開・LOAD 直後の地図は ch5_home_talks.mjs が実際に確かめる）
+      const { DB } = await import("./js/core/data.js");
+      for (const d of (await (await fetch("../data/dialogue/ch5_tokyo.json")).json()).dialogues) DB.dialogues[d.dialogue_id] ||= d;
+      const before = { steve: pin("ch5_tokyo_steve"), volk: pin("ch5_tokyo_volk") };
+      const steve = await visit("ch5_tokyo_steve"), volk = await visit("ch5_tokyo_volk");
+      const after = { steve: pin("ch5_tokyo_steve"), volk: pin("ch5_tokyo_volk") };
+      const steveAgain = await visit("ch5_tokyo_steve");
+      return { before, steve, volk, after, steveAgain, money: s.money };
+    });
+    const { before, steve, volk, after, steveAgain } = result;
+    assert.deepEqual(before, { steve: { cost: 0, ok: true }, volk: { cost: 0, ok: true } }, "the finale pin has no fee, so 3,000 yen is enough");
+    for (const [name, row] of [["Steve", steve], ["Volk", volk]]) {
+      assert.deepEqual(row.result, { used: true, exerted: true }, `${name}: the finale plays with 3,000 yen`);
+      assert.equal(row.spent, 0, `${name}: the finale is free`);
+      assert.equal(row.finale, 5, `${name}: the chapter 5 finale is recorded`);
+    }
+    assert.match(steve.text, /送ります。気づいた日だけ/);
+    assert.doesNotMatch(steve.text, /LIMEを交換しておきませんか|連絡先を交換した/, "already on LIME since chapter 3: no second exchange");
+    assert.deepEqual(after, { steve: { cost: 4000, ok: false }, volk: { cost: 4000, ok: false } }, "after the finale the usual 4,000 yen fee is back");
+    assert.deepEqual(steveAgain.result, { used: false, exerted: false }, "an ordinary visit with 3,000 yen is still refused");
+    assert.equal(steveAgain.spent, 0);
+    assert.equal(steveAgain.talks, 0);
+    assert.equal(result.money, 3000);
   });
 
   // (c) 第5章の通い店: KEMURIKUSA でなるに、MELTY PUFF であげはさんに相談する。大会後なので、はじめはため口

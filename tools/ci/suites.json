@@ -1534,6 +1534,8 @@
         "data/dialogue/growth_lessons.json",
         "data/dialogue/ch3_volk.json",
         "data/dialogue/ch3_rivals.json",
+        "data/dialogue/ch5_tokyo.json",
+        "remake/js/daily/bonds.js",
         "remake/test/browser/lesson_consult_coverage.mjs"
       ],
       "run": [
@@ -1656,6 +1658,8 @@
         "remake/js/chapters/ch2-preparation.js",
         "data/dialogue/ch5_shops.json",
         "data/dialogue/ch2_kumicho.json",
+        "data/dialogue/ch5_tokyo.json",
+        "remake/js/daily/bonds.js",
         "remake/test/browser/ch5_home_talks.mjs"
       ],
       "run": [

@@ -104,7 +104,7 @@
     },
     {
       "dialogue_id": "ch5_steve_bond_finale",
-      "comment": "#2705 スティーブの好感度の締めくくり（第5章の東京版・友情のみ）。第3章の ch3_steve_bond_finale と同じ節目で、第3章で♥5に届かず見逃した人が Smoke & Glory で受け直す（daily/bonds.js の BOND_FINALES.steve.tokyoDialogue）。第3章で見た人は finales.steve で二度は出ない。第3章の外出・LIMEの記憶を前提にしない（見ていない人も読める）。世界を回って帰ったはじめに、練習に使ってきた素焼きを預ける。報酬（専用ハガル）は playFinale が渡す。昼にも夜にも読めるので時間帯を言わない。",
+      "comment": "#2705 スティーブの好感度の締めくくり（第5章の東京版・友情のみ）。第3章の ch3_steve_bond_finale と同じ節目で、第3章で♥5に届かず見逃した人が Smoke & Glory で受け直す（daily/bonds.js の BOND_FINALES.steve.tokyoDialogue）。第3章で見た人は finales.steve で二度は出ない。第3章の外出・LIMEの記憶を前提にしない（見ていない人も読める）。第5章では第3章のLIME交換の寄り道を前提にしないので、まだ交換していない人は「顔の知らせ」を頼まれたその場で交換する（contact の分岐 lime_exchange。第3章の ch3_steve_lime と同じ set_flag で、交換後は友人のLIME remake/data/friends.json が届く）。交換済みの人は分岐を通らない。世界を回って帰ったはじめに、練習に使ってきた素焼きを預ける。報酬（専用ハガル）は playFinale が渡す。昼にも夜にも読めるので時間帯を言わない。",
       "metadata": { "bond_finale": "steve" },
       "lines": [
         { "speaker": "", "text": "Smoke & Glory。スティーブは棚の一番上から、小さな紙袋を下ろした。" },
@@ -123,13 +123,22 @@
         { "speaker": "steve", "face": "smile", "text": "もう一個、焼いてもらう。新しいのは、客の言葉を聞きながら育てる" },
         { "speaker": "hajime", "face": "smile", "text": "……じゃあ、お借りします" },
         { "speaker": "steve", "face": "normal", "text": "ノー、ノー。借りるじゃない。ハジメのだ。……たまに、顔の知らせをくれ" },
+        { "type": "condition", "condition_type": "contact", "char_id": "steve", "next_false": "lime_exchange" },
         { "speaker": "hajime", "face": "smile", "text": "送ります。気づいた日だけ" },
         { "speaker": "steve", "face": "smile", "text": "オーケー。その一行が、一番の礼だ" },
         { "speaker": "", "text": "スティーブはマウンテンミストの箱を一つ、紙袋に足した。" },
         { "speaker": "steve", "face": "normal", "text": "葉もつけとく。最初は、俺の秒数で一度吸ってみろ。外すのは、それからだ" },
         { "speaker": "hajime", "face": "normal", "text": "（待ち方を教わったんじゃない。外していいって、言われたんだ）" },
         { "type": "apply", "stats": { "technique": 2 } }
-      ]
+      ],
+      "branches": {
+        "lime_exchange": [
+          { "speaker": "hajime", "face": "normal", "text": "知らせるなら、LIMEを交換しておきませんか" },
+          { "speaker": "steve", "face": "smile", "text": "イエス。何分目で、どんな顔だったか。一行でいい" },
+          { "type": "set_flag", "flag": "_lime_contact_steve" },
+          { "speaker": "", "text": "連絡先を交換した。スティーブは画面を確かめて、小さくうなずいた。" }
+        ]
+      }
     },
     {
       "dialogue_id": "ch5_tokyo_volk",
