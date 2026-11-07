@@ -1748,7 +1748,8 @@ body:not(.game-ds) #hud .dc-row:not(.money) { --hud-icon: url("data:image/svg+xm
 body:not(.game-ds) #hud .hud-card .hud-stamina { --hud-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21.4 10.6 20C5.4 15.4 2 12.3 2 8.5 2 5.4 4.4 3 7.5 3c1.7 0 3.4.8 4.5 2.1A6 6 0 0 1 16.5 3C19.6 3 22 5.4 22 8.5c0 3.8-3.4 6.9-8.6 11.5L12 21.4Z'/%3E%3C/svg%3E"); }
 body:not(.game-ds) #hud .hud-card .hud-stamina::before { color: #d9586a; }
 body:not(.game-ds) #hud :is(.dc-row.money, .dc-row:not(.money)) b { font-size: max(24px, var(--mui-text)); line-height: 1; }
-body:not(.game-ds) #hud .dc-main { width: auto; min-width: 58px; }
+/* 日付の列は幅を固定（中身で札が動かない）。スマホは「☀残り2」が下限の文字で収まる幅まで広げる。 */
+body:not(.game-ds) #hud .dc-main { width: max(58px, var(--mui-text) * 4); }
 body:not(.game-ds) #hud .dc-area { font-size: max(12px, var(--mui-text)); white-space: nowrap; }
 body:not(.game-ds) #hud .dc-day small { font-size: max(13px, var(--mui-text)); }
 body:not(.game-ds) #hud .dc-slot { font-size: max(14px, var(--mui-text)); }

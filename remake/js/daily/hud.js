@@ -222,7 +222,7 @@ export function updateHud() {
   const tournament = state.phase === "tournament";
   const moves = night ? 1 : 2;
   dom.slot.textContent = tournament ? "大会当日" : state.slot >= 2 ? "帰宅"
-    : `${night ? "☾" : ""}${isRainy() ? "☂" : night ? "" : "☀"}残り${moves}`;
+    : `${isRainy() ? "☂" : night ? "☾" : "☀"}残り${moves}`; // 雨の夜は ☂（夜は札の色で分かる）
   const slotName = tournament ? "大会当日" : state.slot >= 2 ? "帰宅" : `${night ? "夜" : "昼"}${rain} ── 今日はあと${moves}回動ける`;
   dom.slot.title = slotName;
   dom.slot.setAttribute("aria-label", slotName);
