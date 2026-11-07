@@ -67,8 +67,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
       // ♥5の締めくくり（DSR20）: 再生・ルートの記録・専用ハガルは bonds.js の playFinale。読み終えたら今日の来店として確定する
       if (visit.kind === "finale") {
         const { finaleDue, playFinale } = await import("../daily/bonds.js");
-        if (!current() || !finaleDue(DESERT_GUIDE) || !await prepare(bgUrl("bg_dubai_inn_day"))) return false;
-        if (!await playFinale(DESERT_GUIDE, { bg: bgUrl("bg_dubai_inn_day"), signal, deferSave: true }) || !current()) return false;
+        if (!current() || !finaleDue(DESERT_GUIDE) || !await prepare(bgUrl("bg_dubai_cafe_salim_day"))) return false;
+        if (!await playFinale(DESERT_GUIDE, { bg: bgUrl("bg_dubai_cafe_salim_day"), signal, deferSave: true }) || !current()) return false;
         if (!completeDesertCafeVisit(owner, visit, day, { legacy })) return false;
         if (paid) addMoney(-DESERT_CAFE_PRICE);
         save(); changed = true;
@@ -76,7 +76,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
         return changed;
       }
       const id = visit.id;
-      if (!await read(scene(id), bgUrl("bg_dubai_inn_day"))) return false;
+      if (!await read(scene(id), bgUrl("bg_dubai_cafe_salim_day"))) return false;
       if (!completeDesertCafeVisit(owner, visit, day, { legacy })) return false;
       if (paid) addMoney(-DESERT_CAFE_PRICE);
       // ♥3の問いに答えた（選択は engine の onChoice → bonds.js の recordRomanceChoice が記録済み）
