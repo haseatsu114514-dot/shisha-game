@@ -4,10 +4,8 @@ import { readFileSync } from "node:fs";
 
 const read = (file) => JSON.parse(readFileSync(new URL(file, import.meta.url), "utf8"));
 const characters = read("../../data/characters.json");
-const samechan = read("../../data/dialogue/samechan.json").profile;
-// The independent profile is installed by core/data.js when the game loads.
-assert(!characters.some(c => c.id === samechan.id), "Do not duplicate the independent profile");
-const profiles = [...characters, samechan];
+const profiles = characters;
+assert.equal(profiles.filter(c => c.id === "samechan").length, 1);
 const expected = {
   hajime: "04-08", sumi: "12-22", naru: "01-15", adam: "11-05",
   minto: "03-10", ageha: "08-01", kumicho: "10-02", rei: "05-20",

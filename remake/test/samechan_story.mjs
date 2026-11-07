@@ -4,6 +4,9 @@ import vm from 'node:vm';
 
 const read = path => fs.readFile(new URL('../'+path,import.meta.url),'utf8');
 const story = JSON.parse(await fs.readFile(new URL('../../data/dialogue/samechan.json',import.meta.url),'utf8'));
+const characters = JSON.parse(await fs.readFile(new URL('../../data/characters.json',import.meta.url),'utf8'));
+const samechanProfile = characters.find(c => c.id === 'samechan');
+assert(samechanProfile);
 const lime = JSON.parse(await fs.readFile(new URL('../../data/lime_messages.json',import.meta.url),'utf8'));
 const manifest = JSON.parse(await read('data/manifest.json'));
 const state = {chapter:1,day:8,phase:'daily',slot:2,flags:{},contacts:[],met:{},story:{},limeRead:[]};
@@ -12,7 +15,7 @@ const context=vm.createContext({AbortController,setTimeout,clearTimeout,Promise,
   fetch:async path=>({ok:true,json:async()=>{
     if(path==='data/manifest.json')return manifest;
     if(path.endsWith('/dialogue/samechan.json'))return story;
-    if(path.endsWith('/characters.json'))return [{id:'hajime',display_name:'はじめ'}];
+    if(path.endsWith('/characters.json'))return characters;
     if(path.endsWith('/relationship_memories.json'))return {memories:[]};
     if(path.endsWith('/flavors.json'))return {flavors:[]};
     if(path.endsWith('/equipment.json'))return {equipment:[]};
@@ -128,13 +131,13 @@ for(const id of ['samechan_shop_heart4','samechan_shop_heart5']){const scene=sto
  assert(scene.branches.romance&&scene.branches.friend,id);
  const rows=[...scene.lines,...Object.values(scene.branches).flat()];
  assert(!rows.some(r=>r.type==='choice'&&r.romance_char),`${id}: 隠し恋愛値を増やす新しい問いは置かない`);
- assert(!JSON.stringify(scene).includes(story.profile.full_name)&&!JSON.stringify(scene).includes('なぎさ'),`${id}: 本名は恋人絆Lv4まで伏せる`);}
+ assert(!JSON.stringify(scene).includes(samechanProfile.full_name)&&!JSON.stringify(scene).includes('なぎさ'),`${id}: 本名は恋人絆Lv4まで伏せる`);}
 state.flags._samechan_name_known=true;assert.equal(data.displayName('samechan',state),'暑海なぎさ');
 // 表示名は台詞の正本を参照し、名乗る前に本名を漏らさない。
 const encounter=story.dialogues.find(d=>d.dialogue_id==='samechan_first_encounter');
 const aliasAt=encounter.lines.findIndex(l=>l.text==='強いていうなら、サメちゃんと呼ばれておる');
 assert(aliasAt>=0);assert.equal(encounter.lines[aliasAt+1].flag,'_samechan_nickname_known');
-assert(!JSON.stringify(encounter).includes(story.profile.full_name));
+assert(!JSON.stringify(encounter).includes(samechanProfile.full_name));
 assert(!encounter.lines.some(l=>l.flag==='_samechan_name_known'));
 const privateName=story.dialogues.find(d=>d.dialogue_id==='samechan_future_private_name');
 assert.equal(privateName.metadata.future_only,false,'本名は恋人絆Lv4の正式原稿へ接続済み');
@@ -148,5 +151,5 @@ for(const scene of story.dialogues){
 assert(story.dialogues[0].lines.some(l=>l.text==='お主、サメは好きか？'));
 assert(data.DB.lime.find(m=>m.id==='lime_samechan_preparing_thanks').chapter===1);
 assert(data.DB.lime.find(m=>m.id==='lime_samechan_opening').chapter===2);
-assert.equal(story.profile.romance_available,true);
+assert.equal(samechanProfile.romance_available,true);
 console.log('[SHISHARK] live data load / 4 portraits / construction tint / one-time quiet-night encounter / name knowledge / chapter boundary / visit branches / heart4-5 visits: PASS');

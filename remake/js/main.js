@@ -4,9 +4,10 @@ import { $, sleep } from "./core/util.js";
 import { loadAll, loadDeferredDialogues, loadCinemaDialogue, loadTournamentCraftDialogue, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
 import { loadVnFonts } from "./core/vn-fonts.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
-import { loadConfig, state, load, consumeResumeOnBoot } from "./core/state.js";
+import { loadConfig, state, load, consumeResumeOnBoot, tickPlayTime } from "./core/state.js";
 import { unlockAudio, preloadBgm } from "./core/audio.js";
 import { applyUiTheme } from "./core/ui-theme.js";
+import { installRotateGuard } from "./core/rotate-guard.js";
 import { imgFileUrl } from "./core/img-file.js";
 import { withLoading } from "./core/loading.js";
 import { vnTest, enableSeenLinePersistence } from "./vn/engine.js";
@@ -25,6 +26,7 @@ enableSeenLinePersistence(); // 既読SKIPの記録は本編でだけ端末に�
 // リリース前に、この1行と remake/js/dev/ のフォルダを消す（remake/README.md「デバッグ用の道具」）
 try { const q = new URLSearchParams(location.search).get("debug"); if (q !== null) localStorage.setItem("suien_debug", q === "1" ? "1" : "0"); if (localStorage.getItem("suien_debug") === "1") import("./dev/debug-panel.js").then(m => m.mountDebugPanel()).catch(e => console.error(e)); } catch {}
 
+const PHONE_DENSITY_K = 0.62;
 function fitStage() {
   const stage = $("#stage");
   const viewport = window.visualViewport;
@@ -34,7 +36,25 @@ function fitStage() {
   const zoom = viewport?.scale || 1;
   const w = viewport ? viewport.width * zoom : window.innerWidth;
   const h = viewport ? viewport.height * zoom : window.innerHeight;
-  stage.style.setProperty("--k", String(Math.min(w / 1280, h / 720)));
+  const k = Math.min(w / 1280, h / 720);
+  stage.style.setProperty("--k", String(k));
+  // スマホ規格（#2851）: 横持ちスマホ（Plus/Pro Max の 0.60 も含む）で共通部品の文字・タップ部品を大きくする。css/phone-density.css
+  // 横長の画面だけ（PC の縦長ウィンドウや縦持ちは対象外。縦持ちのスマホは横向きの案内になる）
+  if (k < PHONE_DENSITY_K && w > h) document.documentElement.dataset.density = "phone";
+  else delete document.documentElement.dataset.density;
+  // ワイドステージ（#2861）: 横長の画面では黒帯ぶんだけステージを広げる（高さは720のまま・最大1600）。
+  // 中身の層は中央1280に置いたまま、背景と端へ出す部品だけが広がった幅を使う（base.css）。
+  const stageW = Math.min(1600, Math.max(1280, Math.floor((w / h) * 720)));
+  if (stageW > 1280) {
+    stage.style.setProperty("--stage-w", `${stageW}px`);
+    // 広げてもまだ残る黒帯（画面px）。safe-area のうち黒帯で吸収できない分だけ端の部品を内側へ寄せる
+    stage.style.setProperty("--stage-bar", `${Math.max(0, (w - stageW * k) / 2)}px`);
+    stage.dataset.wide = "";
+  } else {
+    stage.style.removeProperty("--stage-w");
+    stage.style.removeProperty("--stage-bar");
+    delete stage.dataset.wide;
+  }
 }
 
 export async function boot() {
@@ -42,6 +62,7 @@ export async function boot() {
   window.addEventListener("resize", fitStage);
   window.addEventListener("orientationchange", () => setTimeout(fitStage, 200));
   window.visualViewport?.addEventListener("resize", fitStage);
+  installRotateGuard(); // 縦持ちの回転ガード中は、制作の時計と音を止める（#2941）
   initLayers();
   initGameLayout();
   const cfg = loadConfig();
@@ -53,6 +74,7 @@ export async function boot() {
   // 自動再生制限: 最初の操作で音を解禁（以後も操作のたびに保険で呼ぶ・軽い）
   window.addEventListener("pointerdown", unlockAudio);
   window.addEventListener("keydown", unlockAudio);
+  document.addEventListener("visibilitychange", tickPlayTime); // タブが隠れている間はプレイ時間を数えない（#2902）
 
   // 起動の待ち時間も、ゲーム内と同じ共通ロード画面（背景イラスト案B・ロゴ・発光ゲージ）で見せる。
   // 静的な #boot はモジュール読込前と起動失敗時の受け皿として残し、ゲートが閉じた後に役目を終える。

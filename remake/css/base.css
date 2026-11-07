@@ -74,15 +74,26 @@ button { font: inherit; color: inherit; }
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 1280px;
+  width: var(--stage-w, 1280px);
   height: 720px;
   overflow: hidden;
   background: var(--ink);
   transform: translate(-50%, -50%) scale(var(--k, 1));
   transform-origin: center center;
   container-type: size;
+  /* ワイドステージ（#2861）: 横長の画面では main.js の fitStage が --stage-w（1280〜1600）を置く。
+     中身の層は中央1280の「安全域」に置いたまま、左右に --stage-gutter ずつの余白ができる。
+     --stage-safe-l/r は、ステージの端からノッチ等（safe-area）を避けるのに要る幅（ステージ上のpx）。 */
+  --stage-gutter: calc((var(--stage-w, 1280px) - 1280px) / 2);
+  --stage-safe-l: max(0px, calc((env(safe-area-inset-left, 0px) - var(--stage-bar, 0px)) / var(--k, 1)));
+  --stage-safe-r: max(0px, calc((env(safe-area-inset-right, 0px) - var(--stage-bar, 0px)) / var(--k, 1)));
 }
-#stage > div { position: absolute; inset: 0; }
+#stage:not([data-wide]) { --stage-safe-l: 0px; --stage-safe-r: 0px; }
+#stage > div { position: absolute; inset: 0 var(--stage-gutter); }
+/* 背景・雨・場面転換のワイプだけはステージの両端まで広げる（絵は cover なので左右が少し切れるだけ） */
+#stage > :is(#bg, #weather, #wipe) { inset: 0; }
+/* 街マップは施設のピン（#screen・中央1280）が絵の位置に合わせてあるので、絵を広げず中央1280に据え置く（両端は地の色） */
+body[data-screen="map"] #stage[data-wide] #bg .bg-img { left: var(--stage-gutter); right: var(--stage-gutter); }
 #bg { z-index: 0; }
 #screen { z-index: 10; }
 body.vn-open #screen { visibility: hidden; } /* 会話中は前の画面を後ろに残さない */
@@ -454,7 +465,8 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 }
 
 /* ---------------------------------------------------------------- モーダル */
-.modal-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(3px); }
+/* ワイドステージ（#2861）では黒帯側へ出した HUD も覆う（モーダル中に端の MENU を押させない）。広がらない画面では inset: 0 */
+.modal-backdrop { position: absolute; inset: 0 calc(-1 * var(--stage-gutter, 0px)); background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(3px); }
 /* 閉じた画面の写し（MENU の閉じ・#2688 A13）。#modal の一つ下に重ね、操作は受けない */
 .modal-ghost { position: absolute; inset: 0; z-index: 89; pointer-events: none; }
 .modal-ghost-box { position: absolute; box-sizing: border-box; pointer-events: none; }

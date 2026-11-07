@@ -31,6 +31,30 @@ async function setup(page, { restore = false } = {}) {
 }
 
 await suite("samechan-entry", async check => {
+  await check("name-and-portrait", async page => {
+    await setup(page);
+    const profile = await page.evaluate(() => {
+      const s = K.core.state;
+      const alias = K.data.displayName("samechan", s);
+      s.flags._samechan_name_known = true;
+      K.vn.vnTest.turbo = false;
+      K.running = K.vn.play({ dialogue_id: "samechan_profile_display_test", lines: [
+        { speaker: "samechan", face: "normal", text: "お主、サメは好きか？" },
+      ] });
+      return { alias, name: K.data.DB.characters.samechan.full_name };
+    });
+    assert.equal(profile.alias, "サメちゃん");
+    assert.equal(profile.name, "暑海なぎさ");
+    await page.waitForFunction(() => document.querySelector(".vn-name.show")?.textContent === "暑海なぎさ");
+    const portrait = page.locator('.vn-portraits img[data-speaker="samechan"]');
+    await portrait.waitFor({ state: "attached" });
+    await page.waitForFunction(() => {
+      const img = document.querySelector('.vn-portraits img[data-speaker="samechan"]');
+      return img?.complete && img.naturalWidth > 0;
+    });
+    assert.match(await portrait.getAttribute("src"), /samechan\/chr_samechan_normal\.webp$/);
+  });
+
   for (const [mode, options] of [["pc", {}], ["touch", {
     viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true,
   }]]) {

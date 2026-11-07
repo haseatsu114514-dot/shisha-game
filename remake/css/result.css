@@ -1,0 +1,60 @@
+/* リザルト画面（#2902）。スタッフロールと同じ夜の背景に、パネル1枚で数字だけを出す。
+   面の色・枠・文字色は共通の .panel（UIテーマごとの紙・夜の面）に任せ、ここは配置と文字の大きさだけを持つ。
+   1280×720 の固定ステージ前提。プレイ時間を主役に大きく、ほかの項目は2列で間を空けて並べる。 */
+.result-screen {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(ellipse at 50% 120%, #1b1430 0%, var(--ink) 62%);
+  color: var(--text);
+  font-family: var(--font);
+  animation: result-in 0.8s ease both;
+}
+@keyframes result-in { from { opacity: 0; } to { opacity: 1; } }
+.result-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: min(880px, calc(100% - 128px));
+  padding: 24px 48px 22px;
+  text-align: center;
+}
+.result-panel p { margin: 0; }
+.result-title {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  color: var(--gold-hi);
+}
+.result-cycle { margin-top: -12px !important; font-size: 20px; font-weight: 700; color: var(--text-dim); }
+.result-label { font-size: 20px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-dim); }
+.result-hero-value {
+  margin-top: 6px !important;
+  font-size: 56px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+.result-sub { margin-top: 4px !important; font-size: 16px; color: var(--text-dim); }
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 48px;
+  width: 100%;
+  padding-top: 20px;
+  border-top: 1px solid var(--panel-edge);
+}
+.result-value {
+  margin-top: 4px !important;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.result-next { min-width: 220px; align-items: center; font-size: 20px; }
+@media (prefers-reduced-motion: reduce) { .result-screen { animation: none; } }

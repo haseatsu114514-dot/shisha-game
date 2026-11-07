@@ -335,6 +335,20 @@
    "blob": "96f57103a4ea4222b127060ea76b9f02343d1027",
    "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
   },
+  "bg_dubai_cafe_salim_day.png": {
+   "place": "dubai_cafe_salim",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 128,
+   "blob": "f60f60669bd0b31963237e6f09a9dd22fd21ab86",
+   "accepted": "2026-11-07 本件指定により既存ドバイ背景の実寸 1280x720 に合わせた",
+   "prompt": "tools/bg_prompts.txt Issue #2887",
+   "note": "旧市街の通りに面する昼の小さなシーシャカフェ。表に砂漠ツアーのデスク。"
+  },
   "bg_dubai_camel_track_morning.png": {
    "place": "dubai_camel_track",
    "time": "morning",

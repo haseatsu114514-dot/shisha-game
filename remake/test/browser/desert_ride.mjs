@@ -519,6 +519,66 @@ await suite("desert-ride", async check => {
     });
     assert.equal(price, 6000);
   });
+
+  // ドバイの日常の保存を LOAD した直後（カフェ・オアシスにも砂丘にもまだ行っていない地図）から、MENU の人間関係がヌールの♥5の締めくくり・
+  // 告白を正しく案内する（締めくくり・告白の台詞は ch4_desert.json にあるので、日常へ戻る時に読んでおく。ch4-dubai-daily.js）。
+  for (const [variant, expected] of [
+    ["finale", { label: "恋愛ルート", next: "次にカフェ・オアシスで会うと、特別なイベントへ。" }],
+    ["confession", { label: "告白を選べる", next: "次の砂丘（ツアー代なし）で、滑ったあとの夕日の時間へ。" }],
+  ]) await check(`chapter-four-load-shows-noor-${variant}-menu-hint-before-any-action`, async page => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async variant => {
+      const core = await import("./js/core/state.js");
+      const progress = await import("./js/chapters/ch4-progress.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
+        _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
+      value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri", "noor"]) value.flags[`_intro_${who}`] = true;
+      Object.assign(value.met, { naru: true, noor: true, da_silva: true });
+      if (!progress.advanceToChapterFour(value)) throw new Error("Chapter boundary failed");
+      value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
+      value.flags._ch4.titleSeen = true;
+      for (const id of progress.CH4_PREP_SCENES) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);
+      value.day += 3;
+      if (!progress.departChapterFour(value)) throw new Error("Departure failed");
+      // 到着の場面と最初の出会いまでを済ませたドバイ7日目の昼。カフェの段階を全部読み、♥3の問いに恋愛寄りで答えた♥5
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      for (const id of ["ch4_festa", "ch4_dubai_souq", "ch4_stranger_first", "ch4_stranger_second", "ch4_dubai_cafe", "ch4_inn_tool_care"]) p.read[id] = true;
+      p.firstDay = 1; p.secondDay = 3;
+      value.day = p.startDay + 6; value.slot = 0; p.day = 7;
+      value.flags._ch4_desert = { v: 2, talks: 6, chats: 1, lastTalkDay: 5, outings: 1, lastOutingDay: 4 };
+      value.flags._noor_affinity_question_done = true;
+      value.romanceChoices = { bond_q1_noor: { char: "noor", value: 1, day: 3 } };
+      value.affinity = { ...(value.affinity || {}), noor: 66 };
+      if (variant === "confession") { // 締めくくりで「二人で」と答え、約束の砂丘を待っている
+        value.romanceChoices.bond_q2_noor = { char: "noor", value: 1, day: 6 };
+        value.finales = { noor: { day: 6, chapter: 4, route: "romance" } };
+      }
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      core.saveConfig(); Object.assign(core.state, value); core.save();
+    }, variant);
+    const before = await get(page);
+    await page.reload();
+    await page.locator(t("title-load")).click();
+    await page.evaluate(async () => { const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0; });
+    await page.locator(t("slot-0")).click();
+    await page.waitForFunction(() => document.querySelector('.map:not(.done) [data-test="pin-ch4_dubai_inn"]') && !document.querySelector("#modal.show")
+      && !document.querySelector(".map[data-revealing]"), null, { timeout: 60000 });
+    await page.evaluate(async () => { void (await import("./js/daily/status.js")).openStatus(); });
+    await page.locator('[data-tab="people"]').click();
+    const row = await page.evaluate(() => {
+      const el = document.querySelector('.pp-row[data-person="noor"]');
+      return el && { label: el.querySelector(".pp-relation")?.textContent || "", next: el.querySelector(".pp-next")?.textContent || "" };
+    });
+    await page.locator('[data-test="status-close"]').click();
+    assert.deepEqual(row, expected, "Noor's next step is announced right after LOAD");
+    const value = await get(page);
+    assert.deepEqual([value.day, value.slot, value.flags._ch4.day, value.finales, value.affinity.noor, value.flags._ch4_desert, value.lovers],
+      [before.day, 0, 7, before.finales, 66, before.flags._ch4_desert, []], "nothing was done yet");
+  });
 });
 
 

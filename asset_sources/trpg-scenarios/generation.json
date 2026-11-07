@@ -639,8 +639,9 @@
       "pngSizeBytes": 1854200,
       "png_sha256": "9fe365c7885be7bf37c881087456e6dbfb3188dee5fc7772536b22a478bc7e19",
       "webp": "remake/img/ui/trpg/choices-purikura-hero.webp",
-      "webpSizeBytes": 1469628,
-      "webp_sha256": "9c1f94ab56ecec3630e892d67f35f4b247722bc0cac2fada21d0836b3b80c56e",
+      "webpSizeBytes": 1193412,
+      "webp_sha256": "02e757f14e6a742619cc7b7c7afe0be3eddbef685a42f009db635215ad3ba483",
+      "processing": "2026-11-07: 原画PNGは各マスの内側に白いモヤ（不透明度3〜56）が正方形に残り、暗い画面で四角い下地に見えたため、配信WebPだけ不透明度48未満を消し、48〜110をsmoothstepでつなぐ（110以上は原画のまま）。原画PNGは無加工。",
       "size": [
         1020,
         1700

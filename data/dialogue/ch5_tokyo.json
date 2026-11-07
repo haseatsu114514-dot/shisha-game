@@ -171,7 +171,7 @@
     },
     {
       "dialogue_id": "ch5_volk_bond_finale",
-      "comment": "ヴォルクの好感度の締めくくり（第5章の東京版・友情のみ）。2026-11-07 オーナー指示「ヴォルク♥5エンディングも第5章東京『鉄の煙』で出す（スティーブと揃える）」。第3章の ch3_volk_bond_finale と同じ節目で、第3章で見逃した人が鉄の煙で受け取る（daily/bonds.js の BOND_FINALES.volk.tokyoDialogue）。第3章で見た人は finales.volk で二度は出ない。必須の初来店（ch3_volk_first の紅茶とジャム・卸した先を見る仕事）だけを前提にし、第3章の再訪・LIME交換・大会後の寄り道は前提にしない。刻みの「数えるな」は、素焼きを持つと届く友人LIMEの三通目（remake/data/friends.json の「だから、数えるなと言った」）の前提なので外さない。LIMEを交換していない人もいるので連絡は約束せず、店にまた来る約束で着地する。世界大会の後・博士との勝負の前にだけ読む。昼にも夜にも読めるので時間帯を言わない。精度は捨てない（温度の隣に、客が何口目で休んだかを書く。ヴォルク自身の「温度の隣に客の時間」「何口目で休む」の言い方で、スティーブの「顔」とは重ねない）。はじめの「先に頷いて」は、専用ハガルの贈り物の理由「頷く手に」（data/equipment.json）を第3章の任意の場面を読んでいない人にも通じさせるために置く。専用ハガルと葉は playFinale が渡す。",
+      "comment": "ヴォルクの好感度の締めくくり（第5章の東京版・友情のみ）。2026-11-07 オーナー指示「ヴォルク♥5エンディングも第5章東京『鉄の煙』で出す（スティーブと揃える）」。第3章の ch3_volk_bond_finale と同じ節目で、第3章で見逃した人が鉄の煙で受け取る（daily/bonds.js の BOND_FINALES.volk.tokyoDialogue）。第3章で見た人は finales.volk で二度は出ない。必須の初来店（ch3_volk_first の紅茶とジャム・卸した先を見る仕事）だけを前提にし、第3章の再訪・LIME交換・大会後の寄り道は前提にしない。刻みの「数えるな」は、素焼きを持つと届く友人LIMEの三通目（remake/data/friends.json の「だから、数えるなと言った」）の前提なので外さない。第3章でLIMEを交換していない人とは、記録を「書いたら、送れ」と頼まれたその場で交換する（contact の分岐 lime_exchange。2026-11-07 オーナー判断「ヴォルクの第5章♥5エンディングでの LIME 即時交換は付与する」。ch5_steve_bond_finale と同じ形で、第3章の ch3_volk_lime と同じ set_flag。交換後は友人のLIME remake/data/friends.json が届く）。交換済みの人は分岐を通らず、本文は連絡を前提にしないまま店にまた来る約束で着地する。世界大会の後・博士との勝負の前にだけ読む。昼にも夜にも読めるので時間帯を言わない。精度は捨てない（温度の隣に、客が何口目で休んだかを書く。ヴォルク自身の「温度の隣に客の時間」「何口目で休む」の言い方で、スティーブの「顔」とは重ねない）。はじめの「先に頷いて」は、専用ハガルの贈り物の理由「頷く手に」（data/equipment.json）を第3章の任意の場面を読んでいない人にも通じさせるために置く。専用ハガルと葉は playFinale が渡す。",
       "metadata": { "bond_finale": "volk" },
       "lines": [
         { "speaker": "", "text": "鉄の煙。ヴォルクは手帳を閉じると、カウンターの下から木箱を出した。" },
@@ -197,6 +197,7 @@
         { "speaker": "volk", "face": "serious", "text": "強い冷たさは、火の乱れを隠す。客が何口目で休んだかを、温度の隣に書け" },
         { "speaker": "hajime", "face": "smile", "text": "はい。俺は先にお客さんに頷いて、それから書きます" },
         { "speaker": "volk", "face": "normal", "text": "……順番は違っても、両方を書くなら構わない" },
+        { "type": "condition", "condition_type": "contact", "char_id": "volk", "next_false": "lime_exchange" },
         { "speaker": "", "text": "紅茶のカップが二つ、カウンターに並んだ。小皿のジャムは、測らずにすくってある。" },
         { "speaker": "hajime", "face": "normal", "text": "これも、測らないんですよね" },
         { "speaker": "volk", "face": "normal", "text": "祖母に言われたことは、国を出ても、店を開いても変えていない" },
@@ -204,7 +205,15 @@
         { "speaker": "hajime", "face": "smile", "text": "来ます。次は、俺のお客さんの話も持ってきます" },
         { "speaker": "hajime", "face": "normal", "text": "（測り続けてきた人から、続きを刻む役をもらったんだ）" },
         { "type": "apply", "stats": { "technique": 2 } }
-      ]
+      ],
+      "branches": {
+        "lime_exchange": [
+          { "speaker": "volk", "face": "normal", "text": "書いたら、送れ。お前の客の記録は、俺には取れない" },
+          { "speaker": "hajime", "face": "normal", "text": "それなら、LIMEを交換してもらえますか" },
+          { "type": "set_flag", "flag": "_lime_contact_volk" },
+          { "speaker": "", "text": "ヴォルクはその場で連絡先を登録し、店の室温と湿度を一行だけ送ってきた。" }
+        ]
+      }
     },
     {
       "dialogue_id": "ch5_tokyo_park_day",

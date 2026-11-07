@@ -134,10 +134,10 @@ await suite("worker-scenes", async check => {
     await check(`real-hole-punch-${name}`, async page => {
       await init(page); await page.evaluate(async () => T.open()); await orientForTouch(page, options); await startHoles(page);
       assert.equal(await page.locator(".worker-punch-dots ellipse").count(), 0, "Foil already had baked-in holes");
-      // 入力イベント内で接触フレームの針先と、その瞬間の実穴を記録する。
+      // 入力イベント内で接触フレームの針先と、その瞬間の実穴を記録する。#2937 から穴は離した時に開く。
       await page.evaluate(async () => {
         const { FOIL_VIEW: v } = await import("./js/craft/worker-holes.js");
-        document.querySelector('[data-test="hole-punch"]').addEventListener("pointerdown", () => {
+        document.querySelector('[data-test="hole-punch"]').addEventListener("pointerup", () => {
           const punch = document.querySelector(".worker-punch");
           const rect = punch.querySelector('[data-pose="contact"]').getBoundingClientRect();
           const scale = Math.min(rect.width / v.width, rect.height / v.height);
@@ -150,12 +150,19 @@ await suite("worker-scenes", async check => {
         });
       });
       const button = page.locator('[data-test="hole-punch"]');
-      if (options.hasTouch) await button.tap(); else await button.click();
+      // 押し加減が浅すぎると穴が開かないので、少し押し込んでから離す。
+      const pressHold = async () => {
+        if (!options.hasTouch) return button.click({ delay: 250 });
+        await button.dispatchEvent("pointerdown", { pointerType: "touch", isPrimary: true });
+        await page.waitForTimeout(250);
+        await button.dispatchEvent("pointerup", { pointerType: "touch", isPrimary: true });
+      };
+      await pressHold();
       const sample = await page.evaluate(async () => tipSample);
       assert.equal(sample.pose, "contact");
       assert(Math.hypot(sample.tip[0] - sample.hole[0], sample.tip[1] - sample.hole[1]) < 1, "Needle tip missed the new hole");
-      if (options.hasTouch) { await button.tap(); await button.tap(); }
-      else { await page.keyboard.press("Space"); await page.keyboard.press("Space"); }
+      if (options.hasTouch) { await pressHold(); await pressHold(); }
+      else for (let i = 0; i < 2; i++) { await page.keyboard.down("Space"); await page.waitForTimeout(250); await page.keyboard.up("Space"); }
       assert.equal(await page.locator(".foil-holes .foil-hole").count(), 3);
       await assertHolePositions(page);
       await page.waitForFunction(() => document.querySelector(".worker-punch")?.dataset.pose === "hover");
@@ -255,7 +262,7 @@ await suite("worker-scenes", async check => {
     assert.equal(await worker(page).getAttribute("data-art-fallback"), "true");
     assert(await page.locator(".worker-punch").isHidden());
     assert(await page.locator(".worker-actor").isVisible());
-    await page.locator('[data-test="hole-punch"]').click();
+    await page.locator('[data-test="hole-punch"]').click({ delay: 250 }); // 浅すぎると穴が開かない（#2937）
     assert.equal(await page.locator(".foil-holes .foil-hole").count(), 1);
     assert.equal(await page.locator(".worker-punch-dots ellipse").count(), 0);
   });
@@ -329,7 +336,10 @@ await suite("worker-scenes", async check => {
     await page.evaluate(async () => { await T.show("steam", "蒸らし"); });
     assert.equal(await page.locator(".worker-actor").evaluate(n => getComputedStyle(n).animationName), "none");
     await startHoles(page);
-    await page.locator('[data-test="hole-punch"]').tap();
+    const punch = page.locator('[data-test="hole-punch"]'); // 少し押し込んでから離す（#2937）
+    await punch.dispatchEvent("pointerdown", { pointerType: "touch", isPrimary: true });
+    await page.waitForTimeout(250);
+    await punch.dispatchEvent("pointerup", { pointerType: "touch", isPrimary: true });
     await assertHolePositions(page);
     assert.equal(await page.locator(".worker-punch").getAttribute("data-pose"), "hover", "Reduced motion played the flipbook");
     assert.equal(await page.locator(".worker-punch-dots ellipse").count(), 1, "Reduced motion hid the new hole");

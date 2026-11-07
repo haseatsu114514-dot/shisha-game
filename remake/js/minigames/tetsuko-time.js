@@ -93,6 +93,17 @@ const icon = name => `<svg class="tt-ico" viewBox="0 0 24 24" aria-hidden="true"
 // 居場所の x（歩く向きと、じゃらしの先の初めの位置に使う。CSS の --x と同じ値）
 const SPOT_X = Object.freeze({ bench: 292, floor: 548, bed: 1012, front: 668, lap: 640, "slot-bench": 400, "slot-floor": 770, "slot-bed": 1012 });
 const HAND_AT = Object.freeze({ x: 1310, y: 540 }); // じゃらしの棒の根元（はじめの手元＝右の外。下の操作の帯に重ねない）
+// カメラ（TKT17・てつこを主役に）: 舞台（.tt-cam）を寄せて、てつこの体の真ん中を画面の at に映す。舞台の外は映さない。
+// もようがえの間は引いて（zoom 1）置き場所を全部見せる。座標はどれも舞台（1280×720）の px。猫の枠の高さは CSS の .tt-cat と同じ。
+export const TETSUKO_CAMERA = Object.freeze({ zoom: 1.4, at: Object.freeze({ x: 640, y: 330 }), catHeight: 280 });
+/** てつこの居場所（CSS の --x・--y＝足元・--s）に向けたカメラ { k, x, y }（舞台の点 p は画面の x + k*p に映る）。測れなければ引いた全体。 */
+export function tetsukoCameraFor({ x, y, s = 1 } = {}) {
+  const { zoom: k, at, catHeight } = TETSUKO_CAMERA;
+  const fx = x, fy = y - catHeight / 2 * (s || 1);
+  if (!Number.isFinite(fx) || !Number.isFinite(fy)) return { k: 1, x: 0, y: 0 };
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  return { k, x: clamp(at.x - k * fx, 1280 * (1 - k), 0), y: clamp(at.y - k * fy, 720 * (1 - k), 0) };
+}
 const STEP_MS = 1000, STEP_REDUCED_MS = 700, FAREWELL_MS = 1400, FAREWELL_REDUCED_MS = 800, AFTER_ACTION_MS = 1600, WALK_MS = 900;
 const STROKE_PX = 90, STROKE_GAP_MS = 600, BRUSH_PX = 110, BRUSH_GAP_MS = 650;
 const TOY_SWING_PX = 170, TOY_SWING_GAP_MS = 480, TOY_STILL_MS = 750, TOY_CATCH_PX = 300, TOY_HELD_MS = 1600;
@@ -156,14 +167,20 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     const slotHits = Object.fromEntries(SLOTS.map(slot => [slot, el("button.tt-slot-hit", { type: "button", hidden: true,
       dataset: { slot, test: `tetsuko-slot-${slot}` }, "aria-label": `${SLOT_NAMES[slot]}に置く`, onclick: () => pickSlot(slot) },
       [el("span.tt-slot-label", { text: SLOT_NAMES[slot] })])]));
+    // 舞台は2枚の層に分けて同じカメラで寄せる（奥＝裏口の飾り、手前＝小物・猫・じゃらし）。間の .tt-vignette は画面に固定した
+    // 周りの陰で、飾りだけを落として猫・小物は暗くしない。
+    const camPlay = el("div.tt-cam.tt-cam-play", [...Object.values(slots), lap, plate, cat, toy, ...Object.values(slotHits)]);
     const yard = el("div.tt-yard", [
-      el("div.tt-set", { "aria-hidden": "true" }, [
-        el("div.tt-wall", [el("div.tt-door", [el("i.tt-door-window"), el("i.tt-door-knob")]), el("i.tt-lamp")]),
-        el("div.tt-ground"),
-        el("div.tt-bench", [el("i.tt-bench-seat"), el("i.tt-bench-leg.l"), el("i.tt-bench-leg.r")]),
-        el("div.tt-sacks", [el("i"), el("i"), el("i")]),
+      el("div.tt-cam.tt-cam-set", { "aria-hidden": "true" }, [
+        el("div.tt-set", [
+          el("div.tt-wall", [el("div.tt-door", [el("i.tt-door-window"), el("i.tt-door-knob")]), el("i.tt-lamp")]),
+          el("div.tt-ground"),
+          el("div.tt-bench", [el("i.tt-bench-seat"), el("i.tt-bench-leg.l"), el("i.tt-bench-leg.r")]),
+          el("div.tt-sacks", [el("i"), el("i"), el("i")]),
+        ]),
       ]),
-      ...Object.values(slots), lap, plate, cat, toy, ...Object.values(slotHits),
+      el("i.tt-vignette", { "aria-hidden": "true" }),
+      camPlay,
     ]);
 
     // -- 今日のてつこ（右上の札）・反応の帯（左下。見つけた・撮った時の小さな札もここ）
@@ -231,7 +248,28 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       lap.classList.toggle("show", c.pose === "lap");
       renderPose();
       renderProps();
+      aimCamera();
     }
+    // -- カメラ: てつこの居場所（CSS の --x・--y・--s。箱やボールの中の位置の上書きも含む）へ向ける。画面に出る前は測れないので、
+    //    出たフレームで動かさずに合わせる（aimWhenShown）。
+    let cam = { k: 1, x: 0, y: 0 };
+    function aimCamera({ cut = false } = {}) {
+      let next = { k: 1, x: 0, y: 0 };
+      if (panel !== "decor" && host.isConnected) {
+        const css = getComputedStyle(cat);
+        const num = name => parseFloat(css.getPropertyValue(name));
+        next = tetsukoCameraFor({ x: num("--x"), y: num("--y"), s: num("--s") });
+      }
+      if (cut) { yard.dataset.cam = "cut"; }
+      cam = next;
+      yard.style.setProperty("--cam-k", String(next.k));
+      yard.style.setProperty("--cam-x", `${Math.round(next.x)}px`);
+      yard.style.setProperty("--cam-y", `${Math.round(next.y)}px`);
+      if (cut) { void yard.offsetWidth; delete yard.dataset.cam; }
+    }
+    const aimWhenShown = () => { if (done) return; if (host.isConnected) aimCamera({ cut: true }); else requestAnimationFrame(aimWhenShown); };
+    // 舞台の座標 → 画面（1280×720）の座標（手帳へ飛ぶ写真など、舞台の外に出す物の位置）
+    const onScreen = point => ({ x: cam.x + cam.k * point.x, y: cam.y + cam.k * point.y });
     // しぐさの絵（届いた物だけ）。歩いている間は歩きの絵、届いていなければ表情の絵と CSS の姿勢。
     function renderPose() {
       const walking = !!cat.dataset.walk && hasPose(walkFrame);
@@ -334,7 +372,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     // 撮った写真が、猫のところから手帳へ飛んでいく（動きを減らす設定では飛ばさない）。
     function flyToBook(momentId) {
       if (reduced) return;
-      const c = catCenter();
+      const c = onScreen(catCenter());
       const card = el("span.tt-fly", { "aria-hidden": "true", style: { left: `${c.x}px`, top: `${c.y}px` } }, [thumb(momentId)]);
       host.append(card);
       requestAnimationFrame(() => card.classList.add("go"));
@@ -369,8 +407,9 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     }
 
     // -- 猫じゃらし: 先は指・マウスの位置へ動く。動かすと振ったことになり、止めて猫の近くに置いておくと捕まえる。
-    const stagePoint = event => {
-      const rect = host.getBoundingClientRect();
+    // 指・マウスの位置 → 舞台の座標。寄せた・動いている途中のカメラも、手前の層の実際の位置と大きさから戻す。
+    const yardPoint = event => {
+      const rect = camPlay.getBoundingClientRect();
       const k = rect.width / 1280 || 1;
       return { x: (event.clientX - rect.left) / k, y: (event.clientY - rect.top) / k };
     };
@@ -389,7 +428,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     function moveToy(point) {
       if (held) return;
       const next = { x: Math.max(60, Math.min(1220, point.x)), y: Math.max(130, Math.min(600, point.y)) };
-      if (toyTip) toyTravel += Math.hypot(next.x - toyTip.x, next.y - toyTip.y);
+      if (toyTip) toyTravel += Math.hypot(next.x - toyTip.x, next.y - toyTip.y) * cam.k; // 振った長さは画面の上で測る（寄せても手の動きは同じ）
       toyTip = next;
       placeToy();
       if (toyTravel >= TOY_SWING_PX && Date.now() - lastSwingAt >= TOY_SWING_GAP_MS) {
@@ -412,9 +451,9 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     yard.addEventListener("pointermove", event => {
       if (tool !== "toy" || panel || leaving) return;
       if (event.pointerType !== "mouse" && !(event.buttons & 1)) return;
-      moveToy(stagePoint(event));
+      moveToy(yardPoint(event));
     });
-    yard.addEventListener("pointerdown", event => { if (tool === "toy" && !panel && !leaving) moveToy(stagePoint(event)); });
+    yard.addEventListener("pointerdown", event => { if (tool === "toy" && !panel && !leaving) moveToy(yardPoint(event)); });
 
     // -- 猫を直接: なでる手ならタップ／ゆっくりなぞる＝なでる。ブラシなら、なぞる＝ブラシ。じゃらしの時は猫を押しても振らない。
     cat.addEventListener("pointerdown", event => { stroke = { x: event.clientX, y: event.clientY, dist: 0, done: false }; });
@@ -473,6 +512,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       SE.click?.();
       closePanelQuietly();
       panel = "decor"; host.dataset.panel = "decor";
+      aimCamera();
       fresh = [...session.newProps];
       session.newProps = [];
       selected = null;
@@ -567,7 +607,9 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       renderButtons();
     }
     function closePanelQuietly() {
+      const wasDecor = panel === "decor";
       panel = null; host.dataset.panel = ""; selected = null;
+      if (wasDecor) aimCamera();
       drawer.hidden = true; drawer.replaceChildren();
       book.hidden = true; book.replaceChildren();
       help.hidden = true; help.replaceChildren();
@@ -611,6 +653,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     // 開いた時の居場所・表情を先に決めてから出す（ベンチから滑ってこない）。
     show(openingReaction(session));
     showScreen("tetsuko-time", host);
+    aimWhenShown();
     theme.start(host);
     audio.playBgm("bgm_tetsuko_time");
     schedule();

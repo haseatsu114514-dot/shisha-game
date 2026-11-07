@@ -111,7 +111,7 @@ export function initHud(h) {
   const root = el("div.hud", [
     el("div.hud-card", [
       el("div.dc-main", [dom.area, dom.day, dom.slot]),
-      el("div.dc-meta", [moneyRow, el("div.dc-row", [dom.leftLabel, dom.left]), dom.stamina, dom.exp]),
+      el("div.dc-meta", [moneyRow, el("div.dc-row.goal", { dataset: { test: "hud-goal" } }, [dom.leftLabel, dom.left]), dom.stamina, dom.exp]),
     ]),
     el("div.hud-right", [dom.phone, dom.menu]),
   ]);
@@ -160,7 +160,10 @@ function updateGrowth() {
   dom.exp.querySelector(".hx-settled").style.width = `${Math.round(g.settled * 100)}%`;
   dom.exp.querySelector(".hx-today").style.width = `${Math.round(g.now * 100)}%`;
   const left = dom.exp.querySelector(".hx-left");
-  left.textContent = g.max ? "MAX" : g.pending > 0 ? `今夜 Lv UP${g.pending > 1 ? ` ×${g.pending}` : ""}` : `あと${g.left}`;
+  // 「あと○」の数字は出さない（オーナー指示 2026-11-08「ゲージでわかる」）。数字は title / aria-label に残す。
+  // 状態を伝える「今夜 Lv UP」「MAX」だけ文字で出す。
+  left.textContent = g.max ? "MAX" : g.pending > 0 ? `今夜 Lv UP${g.pending > 1 ? ` ×${g.pending}` : ""}` : "";
+  left.hidden = !left.textContent;
   dom.exp.classList.toggle("ready", g.pending > 0);
   dom.exp.dataset.milestone = g.nextMilestone && !g.max ? "true" : "false";
   renderTarget(view);
