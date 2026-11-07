@@ -65,7 +65,7 @@ button { font: inherit; color: inherit; }
 #viewport {
   position: fixed;
   inset: 0;
-  overflow: hidden;
+  overflow: clip;
   background: #000;
 }
 /* 左右の黒帯（#2855）: 今の背景を cover＋blur＋暗幕で敷く。静止画1枚・filter 1回。画像の無い画面は黒のまま */
