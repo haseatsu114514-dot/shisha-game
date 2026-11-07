@@ -1808,14 +1808,15 @@ body:not(.game-ds) .map .spot-pin .pin-cost { font-size: max(18px, var(--mui-tex
 html:root[data-density="phone"] body:not(.game-ds) .map .spot-pin .sub-label { padding: 2px 5px; }
 html:root[data-density="phone"] body:not(.game-ds) .map .spot-pin .pin-cost { margin-top: 1px; padding: 0 5px; line-height: 1.15; }
 body:not(.game-ds) .map .spot-pin .pin-status { font-size: max(14px, var(--mui-text)); }
-body:not(.game-ds) .map .spot-pin .pin-people { top: -40px; pointer-events: auto; }
+body:not(.game-ds) .map .spot-pin .pin-people { top: -42px; pointer-events: auto; } /* 顔の下端は今までと同じ（看板の上端から 6px）。ロゴに重ならない */
 body:not(.game-ds) .map .spot-pin .pin-person { flex-basis: 48px; width: 48px; height: 48px; }
 body:not(.game-ds) .map .spot-pin .pin-unknown b { font-size: max(22px, var(--mui-text)); }
-/* 顔を 48px にした分、2人並ぶと右の顔が右上の「!」にかかる。2人からは「!」を顔の下（看板の右肩）へ下げる（3人の時と同じ位置）。 */
-body:not(.game-ds) .map .spot-pin .pin-visual:has(.pin-person:nth-child(2)) .evt-badge { top: 16px; }
+body:not(.game-ds) .map .spot-pin .pin-visual:has(.pin-person:nth-child(3)) .evt-badge { top: 16px; }
+/* 顔を 48px にした分、2人並ぶと右の顔が右上の「!」にかかる。2人のときは顔の列を「!」の左で終わらせ、左へ伸ばす。 */
+body:not(.game-ds) .map .spot-pin .pin-visual:has(.pin-person:nth-child(2)):not(:has(.pin-person:nth-child(3))) .pin-people { left: auto; right: calc(var(--evt-d) - 8px + 3px); }
 /* 「!」の丸は文字（実寸 11px 以上）に比例させ、もとの比（21px の丸に 14px・字面を上へ 2px）を保つ（字面が丸の中央からずれない）。 */
+body:not(.game-ds) .map { --evt-d: max(21px, calc(var(--mui-text) * 1.5)); }
 body:not(.game-ds) .map .evt-badge {
-  --evt-d: max(21px, calc(var(--mui-text) * 1.5));
   width: var(--evt-d); height: var(--evt-d); font-size: calc(var(--evt-d) * 14 / 21); padding-bottom: calc(var(--evt-d) * 2 / 21);
 }
 /* 観音堂の火種の数（.hidane-badge）は数字なので、文字は丸の大きさに比例させ（もとの 20px に 12px の比）、
