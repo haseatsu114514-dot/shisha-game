@@ -26,10 +26,10 @@ import { triedLater, comboName } from "./cafe-ideas.js";
 import { tierFx, STATUS_PEOPLE, giftNote, recipeDetails } from "./status.js";
 
 export const MENU_TABS = Object.freeze([
-  { id: "status", en: "STATUS", label: "ステータス" },
-  { id: "people", en: "PEOPLE", label: "人間関係" },
-  { id: "items", en: "ITEMS", label: "持ち物" },
-  { id: "system", en: "SYSTEM", label: "システム" },
+  { id: "status", icon: "👤", label: "ステータス" },
+  { id: "people", icon: "💬", label: "人間関係" },
+  { id: "items", icon: "🎒", label: "持ち物" },
+  { id: "system", icon: "⚙", label: "システム" },
 ]);
 
 const SAVE_RULE = "手動セーブは、地図で行き先を選んでいる時にできる。";
@@ -150,7 +150,7 @@ function showMenu(initial, { saveOk }) {
           type: "button", role: "tab", id: `dm-tab-${t.id}`, "aria-controls": "dm-panel",
           title: `${t.label}（${i + 1}）`, dataset: { tab: t.id, test: `menu-tab-${t.id}` },
           onclick: () => { if (active !== t.id) { SE.click(); show(t.id); } },
-        }, [el("span.dm-en", { text: t.en, "aria-hidden": "true" }), el("span.dm-label", { text: t.label })]);
+        }, [el("span.dm-icon", { text: t.icon, "aria-hidden": "true" }), el("span.dm-label", { text: t.label })]);
         tabs.set(t.id, button);
         return button;
       }));
@@ -163,6 +163,8 @@ function showMenu(initial, { saveOk }) {
         e.preventDefault(); e.stopPropagation();
         if (e.repeat) return;
         if (viewer) { viewer.click(); return; }
+        const help = root.querySelector('.dm-help[aria-expanded="true"]');
+        if (help && e.key === "Escape") { help.click(); return; }
         const back = panel.querySelector('[data-test="recipe-back"]');
         if (back && e.key === "Escape") { back.click(); return; }
         close();
@@ -216,6 +218,8 @@ function showMenu(initial, { saveOk }) {
 }
 
 // ---------------------------------------------------------------- 上の帯（HUDと同じ値の要約）
+// MENU を開いている間は HUD を隠し、この帯だけで日付・残り日数・体力・所持金を見せる（#2859。css/daily-menu.css）。
+// 体力の説明は常に出さず、横の「?」を押した時だけ帯の下に開く。
 
 function summary() {
   const finalDay = chapterFinalDay(state);
@@ -223,13 +227,26 @@ function summary() {
   const night = state.slot >= 1;
   const slot = state.phase === "tournament" ? "大会当日" : state.slot >= 2 ? "帰宅" : `${night ? "夜" : "昼"}${isRainy() ? "・雨" : ""}`;
   const condition = conditionForRatio(staminaRatio());
-  const item = (label, value, cls = "") => el(`span.dm-sum${cls}`, [el("small", { text: label }), value]);
+  const now = currentCondition();
+  const item = (label, value, cls = "", extra = null) => el(`span.dm-sum${cls}`, [el("small", { text: label }), value, extra]);
+  const tip = el("p.dm-health-tip", { id: "dm-health-tip", hidden: true, dataset: { test: "menu-condition" } }, [
+    el("b", { text: `体力 ${now.label}` }),
+    ` ── ${now.hint}。眠ると回復し、外出すると行き先に応じて疲れる。`,
+  ]);
+  const help = el("button.dm-help", { type: "button", text: "?", "aria-label": "体力の説明", "aria-expanded": "false", "aria-controls": "dm-health-tip",
+    dataset: { test: "menu-condition-help" }, onclick: () => {
+      const open = tip.hidden;
+      SE.click();
+      tip.hidden = !open;
+      help.setAttribute("aria-expanded", String(open));
+    } });
   return el("div.dm-summary", { dataset: { test: "menu-summary" } }, [
     item("DAY", el("b", [String(chapterDay(state)), finalDay === null ? null : el("small", { text: `/${finalDay}` })])),
     el("span.dm-sum.dm-slot", { text: slot }),
     item(chapterGoalLabel(state), el("b.dm-amber", { text: left === null ? "未定" : `あと${left}日` })),
-    item("体力", el("b", { text: currentCondition().label }), `.dm-health.h-${condition.health}`),
+    item("体力", el("b", { text: now.label }), `.dm-health.h-${condition.health}`, help),
     item("所持金", el("b", { text: yen(state.money) })),
+    tip,
   ]);
 }
 
@@ -241,15 +258,10 @@ function statusTab(choose) {
     row.parentNode.querySelectorAll(".dm-row").forEach((r) => r.classList.toggle("sel", r === row));
     note.textContent = text;
   };
-  const condition = currentCondition();
   return [
     el("div.dm-heading", [el("h3", { text: "ステータス" }),
       el("span.dm-sub", { text: growthEnabled() ? "経験値は寝る前に精算する。レベルが上がると火種が届く" : "↑はこの章のはじめから伸びた能力" })]),
     ...(growthEnabled() ? growthCards(choose, select) : [statRows(select)]),
-    el("p.dm-condition", { dataset: { test: "menu-condition" } }, [
-      el("b", { text: `体力 ${condition.label}` }),
-      ` ── ${condition.hint}。眠ると回復し、外出すると行き先に応じて疲れる。`,
-    ]),
     note,
   ];
 }
@@ -264,20 +276,17 @@ function growthCards(choose, select) {
   return [
     el("div.dm-grid.dm-grid-2", [
       el("section.dm-card.dm-level", { dataset: { test: "menu-level" } }, [
-        el("span.dm-en", { text: "LEVEL" }),
         el("div.dm-level-line", [el("span.dm-lv", [el("small", { text: "Lv." }), el("b", { text: String(gauge.level) })]), el("span.dm-level-left", { text: left })]),
         el("i.dm-gauge.dm-exp", { "aria-hidden": "true" }, [el("b.today", { style: { width: pct(gauge.now) } }), el("b.settled", { style: { width: pct(gauge.settled) } })]),
         el("span.dm-sub", { text: "濃い紫が精算済み、薄い紫が今日の分" }),
       ]),
       el("section.dm-card.dm-hidane", { dataset: { test: "menu-hidane" } }, [
-        el("span.dm-en", { text: "HIDANE" }),
         el("div.dm-hidane-line", [el("b.dm-big.dm-amber", { text: String(hidane) }), el("span.dm-strong", { text: "火種" }),
           hidane > 0 ? el("span.dm-chip.new", { text: "心得の盤に灯せる" }) : null]),
         el("span.dm-sub", { text: hidane > 0 ? "灯すと才能・感覚・理論の盤が広がる" : "レベルが上がると届く" }),
       ]),
     ]),
     el("section.dm-card.dm-board", [
-      el("span.dm-en", { text: "BOARD" }),
       ...BOARD_KEYS.map((k) => {
         const count = statCount(k, lit), total = statTotal(k) || 1;
         const sums = perkTotals(k, lit).filter((p) => p.sum);
@@ -387,12 +396,12 @@ function itemsTab(openRecipe) {
   const recipes = DB.recipes.filter((r) => state.recipes?.[r.id]);
   const later = triedLater(state, DB.recipes);
   const keepsakes = (state.keepsakes || []).filter((id) => KEEPSAKES[id]);
-  const card = (en, title, children, test) => el("section.dm-card", { dataset: test ? { test } : {} }, [
-    el("div.dm-card-head", [el("span.dm-en", { text: en }), el("span.dm-strong", { text: title })]), ...children]);
+  const card = (title, children, test) => el("section.dm-card", { dataset: test ? { test } : {} }, [
+    el("div.dm-card-head", [el("span.dm-strong", { text: title })]), ...children]);
   return [
     el("div.dm-heading", [el("h3", { text: "持ち物" })]),
     el("div.dm-grid.dm-items", [
-      card("FLAVOR", "フレーバー", [
+      card("フレーバー", [
         el("div.dm-flavors", flavors.length ? flavors.map((f) => {
           const level = masteryLevel(state, f.id, DB.flavorById);
           return el("div.dm-flavor", { dataset: { test: `menu-flavor-${f.id}` } }, [
@@ -405,15 +414,15 @@ function itemsTab(openRecipe) {
         el("p.dm-note", { text: "1箱50g。自宅の試作・店への持ち込み・大会の課題以外の葉で消費。大会の課題フレーバーは支給され、本番中は好きなだけ使える（在庫は減らない）。熟練度はLv.5まで。" }),
       ], "menu-flavors"),
       el("div.dm-col", [
-        card("EQUIPMENT", "機材", [
+        card("機材", [
           el("div.dm-chips", equipment.length ? equipment.map((e) => el(`span.dm-chip${inUse.has(e.id) ? ".on" : ""}${e.gift ? ".gift" : ""}`, { text: e.name })) : [el("span.dm-empty", { text: "まだ持っていない" })]),
           el("p.dm-sub", { text: "紫の札が今使っている機材。点線の札は贈り物" }),
           gifts.length ? el("div.dm-gifts", gifts.map(giftNote)) : null,
         ], "menu-equipment"),
-        gear.length ? card("HOBBY", "遊びの道具", [
+        gear.length ? card("遊びの道具", [
           el("div.dm-chips", { dataset: { test: "menu-hobby-gear" } }, gear.map((g) => el("span.dm-chip", [g.short, el("small", { text: g.effect })]))),
         ]) : null,
-        card("RECIPES", "レシピ帳", [
+        card("レシピ帳", [
           el("div.dm-chips", recipes.length ? recipes.map((r) => el("button.dm-chip.recipe", {
             type: "button", text: r.name, dataset: { recipe: r.id, test: `recipe-${r.id}` }, onclick: () => { SE.click(); openRecipe(r.id); },
           })) : [el("span.dm-empty", { text: "まだ白紙" })]),
@@ -421,7 +430,7 @@ function itemsTab(openRecipe) {
           later.length ? el("div.dm-later", [el("span.dm-strong", { text: "試したい配合" }),
             el("div.dm-chips", later.map((r) => el("span.dm-chip", { text: comboName(r, DB.flavors) })))]) : null,
         ], "menu-recipes"),
-        card("KEEPSAKES", "記念品", [
+        card("記念品", [
           el("div.dm-keepsakes", keepsakes.length ? keepsakes.map((id) => {
             const item = KEEPSAKES[id];
             const opener = el("button.dm-keepsake", { type: "button", dataset: { test: `keepsake-${id}` }, onclick: () => {
