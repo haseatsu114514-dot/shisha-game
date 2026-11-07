@@ -50,10 +50,12 @@ async function closeConfig(p) {
   await p.waitForFunction(() => !document.querySelector("#modal.show"));
 }
 async function layout(p, mode) {
-  const portrait = await landscapeIfHinted(p);
+  let portrait = await landscapeIfHinted(p);
   await openLayoutControls(p);
   await button(p, `title-layout-${mode}`).click();
   assert.equal(await p.locator(".title").getAttribute("data-layout"), mode);
+  // DS風の縦持ちから通常版へ戻すと、その場で回転の案内が CONFIG ごと覆う。実機と同じく横にしてから閉じる。
+  portrait ||= await landscapeIfHinted(p);
   await closeConfig(p);
   if (portrait) await p.setViewportSize(portrait);
   assert.equal(await p.locator(".title").getAttribute("data-layout"), mode);
@@ -314,7 +316,8 @@ try {
     assert.deepEqual(await snapshot(p), before, "pinch/rotation changed save data");
   });
   // #2863: スマホ横持ち（Safariのバーあり含む）で、通常版の文字は実寸11px以上・押す所は38px以上。
-  // 副題と下中央の操作ヒント・右上の表示設定は出さず、メニュー行は72px以上・行間16px。
+  // 副題（はじめから等）は残して実寸11px以上（2026-11-08 オーナー指示）。主文より小さく、主文のすぐ右の同じ行に並ぶ。
+  // 下中央の操作ヒント・右上の表示設定は出さず、メニュー行は72px以上・行間16px。
   for (const [w, h] of [[844, 390], [844, 340]]) await check(`phone-landscape-${w}x${h}-sizes`, { viewport: { width: w, height: h }, isMobile: true, hasTouch: true }, async p => {
     for (const cycle of [false, true]) {
       if (cycle) {
@@ -334,15 +337,25 @@ try {
           .map(n => ({ text: n.textContent.trim(), px: parseFloat(getComputedStyle(n).fontSize) * k }));
         return { k, texts, heights: items.map(r => r.height / k), real: items.map(r => r.height),
           gaps: items.slice(1).map((r, i) => (r.top - items[i].bottom) / k), bottom: Math.max(...items.map(r => r.bottom)) <= stage.bottom + 1,
-          subtitles: [...document.querySelectorAll(".ti-ja")].filter(shown).length, foot: document.querySelectorAll(".title-foot").length,
+          subtitles: [...document.querySelectorAll(".title-item")].map(n => {
+            const en = n.querySelector(".ti-en"), ja = n.querySelector(".ti-ja"), a = en.getBoundingClientRect(), b = ja.getBoundingClientRect();
+            return { text: ja.textContent, shown: shown(ja), px: parseFloat(getComputedStyle(ja).fontSize) * k, enPx: parseFloat(getComputedStyle(en).fontSize) * k,
+              rightOfEn: b.left >= a.right - .5 && b.left - a.right <= 16 * k + 1, sameLine: b.top < a.bottom && b.bottom > a.top,
+              inRow: b.right <= n.getBoundingClientRect().right + .5 && b.bottom <= n.getBoundingClientRect().bottom + .5 };
+          }), foot: document.querySelectorAll(".title-foot").length,
           toolbar: document.querySelectorAll(".title-layout-toolbar, .title-layout-options").length };
       });
       assert(m.texts.length > 0 && m.texts.every(t => t.px >= 11 - 1e-6), JSON.stringify(m.texts));
       assert(m.heights.every(v => v >= 72 - .5) && m.real.every(v => v >= 38 - .5), JSON.stringify(m));
       assert(m.gaps.every(v => Math.abs(v - 16) < .5) && m.bottom, JSON.stringify(m));
-      assert.deepEqual([m.subtitles, m.foot, m.toolbar], [0, 0, 0]);
+      assert(m.subtitles.length === m.heights.length && m.subtitles.every(t => t.shown && t.px >= 11 - 1e-6 && t.px < t.enPx && t.rightOfEn && t.sameLine && t.inRow),
+        JSON.stringify(m.subtitles));
+      assert.deepEqual([m.foot, m.toolbar], [0, 0]);
     }
     await openLayoutControls(p);
+    // 開く演出（pop-in: scale 0.96→1）が終わってから寸法を測る（途中だと4%小さく測れてしまう）。
+    await p.locator("#modal.show .modal-box").evaluate(n => Promise.all(n.getAnimations({ subtree: true })
+      .filter(a => a.effect?.getComputedTiming().endTime !== Infinity).map(a => a.finished)));
     const row = await p.locator(".cfg-title-layout").evaluate(n => {
       const k = document.querySelector("#stage").getBoundingClientRect().width / 1280;
       return [...n.querySelectorAll("button,a,span")].filter(e => e.getBoundingClientRect().width > 0)
@@ -351,6 +364,14 @@ try {
     assert(row.every(r => r.px >= 11 - 1e-6 && (r.tag === "SPAN" || r.h >= 38 - .5)), JSON.stringify(row));
     await button(p, "title-layout-ds").tap(); assert.equal(await p.locator(".title").getAttribute("data-layout"), "ds");
     await button(p, "cfg-close").tap(); await layout(p, "normal");
+  });
+  // PC（1280×720・マウス）の副題は従来どおり15pxで、主文のすぐ右に並ぶ（スマホ用の拡大を持ち込まない）。
+  await check("pc-subtitles-unchanged", sizes.pc, async p => {
+    const subs = await p.locator(".title-item").evaluateAll(ns => ns.map(n => {
+      const a = n.querySelector(".ti-en").getBoundingClientRect(), ja = n.querySelector(".ti-ja"), b = ja.getBoundingClientRect();
+      return { px: parseFloat(getComputedStyle(ja).fontSize), gap: Math.round(b.left - a.right), sameLine: b.top < a.bottom && b.bottom > a.top, w: b.width };
+    }));
+    assert(subs.length === 4 && subs.every(t => t.px === 15 && t.gap === 16 && t.sameLine && t.w > 0), JSON.stringify(subs));
   });
   await check("new-game-enters-game-layout", sizes.pc, async p => {
     await layout(p, "ds"); await button(p, "title-new").click();

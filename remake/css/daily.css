@@ -103,15 +103,22 @@
 .title-item:disabled { opacity: 0.35; cursor: default; }
 .ti-en { font-family: var(--font); font-size: 26px; line-height: 1.25; letter-spacing: 0.16em; }
 .ti-ja { font-size: 15px; color: var(--text-dim); letter-spacing: 0.04em; }
-/* 通常版では副題（はじめから等）を見せない。読み上げ用に要素は残す（DS風では主文として見せる）。 */
-.title:not([data-layout="ds"]) .ti-ja { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* 副題（はじめから等）は残す（2026-11-08 オーナー指示）。通常版では主文のすぐ右に、下端（ベースライン）をそろえて並べ、
+   その1行を行の高さの中央に置く（flex-wrap + align-content。折り返さない幅は検査で確かめる）。
+   スマホ横持ちのタッチ端末では副題を実寸11px以上（ステージ上 21〜24px。丸め誤差で11pxを割らないよう11.2pxで割る）に上げ、主文（26px）より一段小さいまま。
+   PC（1280×720・マウス）は15pxのまま。 */
+.title:not([data-layout="ds"]) .title-item { flex-wrap: wrap; align-items: baseline; align-content: center; gap: 0 16px; }
+.title:not([data-layout="ds"]) .ti-ja { white-space: nowrap; }
+@media (pointer: coarse) and (hover: none) {
+  .title:not([data-layout="ds"]) .ti-ja { font-size: max(15px, calc(11.2px / var(--k, 1))); }
+}
 /* NEXT CYCLE が出て5行になるときは、ロゴの上下の余白を詰めて720pxに収める。 */
 .title:not([data-layout="ds"]) .title-left:has(.title-menu > :nth-child(5)) { top: 16px; }
 .title:not([data-layout="ds"]) .title-left:has(.title-menu > :nth-child(5)) .title-brand { height: 200px; }
 .title:not([data-layout="ds"]) .title-left:has(.title-menu > :nth-child(5)) .title-logo { top: 20px; }
 .title-item:hover:not(:disabled), .title-item:focus-visible { color: var(--gold-hi); transform: translateX(10px); outline: none; }
 .title-item:hover:not(:disabled) .ti-en::before { content: "◆ "; font-size: 18px; color: var(--gold); }
-.title-ver { position: absolute; right: 20px; bottom: 20px; z-index: 2; font-size: max(13px, calc(11px / var(--k, 1))); letter-spacing: 0.02em; color: rgba(255, 255, 255, 0.55); text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85); pointer-events: none; }
+.title-ver { position: absolute; right: 20px; bottom: 20px; z-index: 2; font-size: max(13px, calc(11.2px / var(--k, 1))); letter-spacing: 0.02em; color: rgba(255, 255, 255, 0.55); text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85); pointer-events: none; }
 .cfg { display: flex; flex-direction: column; gap: 14px; min-width: 420px; }
 .cfg-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
 .cfg-row input[type="range"] { width: 220px; accent-color: var(--gold); }
