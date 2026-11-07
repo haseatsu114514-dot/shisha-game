@@ -33,7 +33,7 @@
       "kind": "browser",
       "weight": 0.5,
       "timeout": 5,
-      "paths": ["remake/js/core/portrait-style.js", "remake/js/core/data.js", "remake/js/core/state.js", "remake/js/scenes/title.js", "remake/js/vn/engine.js", "remake/test/browser/portrait_style.mjs", "remake/test/browser/portrait_framing.mjs", "remake/js/vn/intro.js", "assets/sprites/character_variants/", "remake/img/sprites/character_variants/"],
+      "paths": ["remake/js/core/portrait-style.js", "remake/js/core/data.js", "remake/js/core/state.js", "remake/js/scenes/title.js", "remake/css/settings.css", "remake/js/vn/engine.js", "remake/test/browser/portrait_style.mjs", "remake/test/browser/portrait_framing.mjs", "remake/js/vn/intro.js", "assets/sprites/character_variants/", "remake/img/sprites/character_variants/"],
       "run": ["node remake/test/browser/portrait_style.mjs"]
     },
     {
@@ -3591,6 +3591,7 @@
       "paths": [
         "remake/css/ui-themes.css",
         "remake/css/ui-paper.css",
+        "remake/css/settings.css",
         "remake/img/ui/paper/**",
         "remake/css/vn-composition.css",
         "remake/img/ui/vn-polish/**",
