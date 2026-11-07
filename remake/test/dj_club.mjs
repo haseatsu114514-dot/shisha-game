@@ -175,4 +175,8 @@ check("djUrl passes the set, embed flag and the game's mute / BGM volume", () =>
   assert.deepEqual([url.searchParams.get("set"), url.searchParams.get("embed"), url.searchParams.get("mute"), url.searchParams.get("vol")], ["2", "1", "1", "1"]);
   assert.equal(new URL(dj.djUrl(1)).searchParams.get("mute"), null);
 });
+check("djUrl passes the phone density only when asked", () => {
+  assert.equal(new URL(dj.djUrl(1)).searchParams.get("phone"), null);
+  assert.equal(new URL(dj.djUrl(1, { phone: true })).searchParams.get("phone"), "1");
+});
 console.log(`DJ club: ${groups} groups PASS`);

@@ -8,6 +8,8 @@ const setParam = Number(params.get('set') || params.get('stage')) - 1;
 const setIndex = SETS[setParam] ? setParam : 0;
 // ?embed=1: opened by the main game (remake/js/minigames/dj.js). Shows ← 戻る and follows the game's mute / BGM volume (?mute=1, ?vol=0..1).
 const embedded = params.get('embed') === '1' && window.parent !== window;
+// ?phone=1: the main game's phone density (html[data-density=phone]). Display only: bigger text / parts, fewer labels (style.css).
+if (params.get('phone') === '1') document.documentElement.dataset.density = 'phone';
 const gameVolume = Number(params.get('vol')), gameMuted = params.get('mute') === '1';
 // ?phones=1: the player's own monitor headphones (main game VOL07). Every ▶ timing window is 10 ms wider; shown in the set info.
 const phones = params.get('phones') === '1', ALLOWANCE_MS = phones ? 10 : 0;
