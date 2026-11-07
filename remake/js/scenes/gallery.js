@@ -190,8 +190,8 @@ export function openGallery() {
       }
       tools.replaceChildren(...controls); back.focus({ preventScroll: true });
     }
-    function thumbnail(url) {
-      return el("img", { src: url, alt: "", loading: "lazy", onerror: e => {
+    function thumbnail(url, eager = false) {
+      return el("img", { src: url, alt: "", loading: eager ? "eager" : "lazy", onerror: e => {
         e.target.replaceWith(el("span.gal-media-symbol", { text: "画像なし", "aria-hidden": "true" }));
       } });
     }
@@ -206,7 +206,8 @@ export function openGallery() {
         ]);
         const button = el("button.gal-cell", { title: entry.title, "aria-label": entry.title,
           dataset: { test: "gal-" + entry.id, cg: entry.cg, kind: entry.kind }, onclick: () => show(entry, button) });
-        if (entry.cg) button.append(thumbnail(cgThumbUrl(entry.cg) || cgUrl(entry.cg)));
+        // 画面外のCGも選択直後に表示できるよう、縮小版は一覧を開いた時点で読み込む。
+        if (entry.cg) button.append(thumbnail(cgThumbUrl(entry.cg) || cgUrl(entry.cg), true));
         else if (entry.kind === "comic") button.append(thumbnail(entry.pages[0]));
         else if (entry.photo) {
           const thumb = stickerPhoto(entry.photo.people, entry.photo.mode, photoName); thumb.classList.add("gal-photo-thumb"); button.append(thumb);
