@@ -176,7 +176,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       const pc = c.part === "GM" ? null : pcOf(c.id);
       return el("span.trpg-table-person", { dataset: { speaker: c.id, part: c.part === "GM" ? "gm" : "pl" } }, [
         // 座席は顔＋名前だけ。PL/GMの英字・席番号・能力値はキャラクターシートに任せ、話者だけ光らせる（#2839）。
-        el("span.trpg-seat-face", { "aria-hidden": "true" }, el("img", { src: portrait(c.id), alt: "", style: portraitFrame(c.id, 76, 4) })),
+        el("span.trpg-seat-face", { "aria-hidden": "true" }, el("img", { src: portrait(c.id), alt: "", style: portraitFrame(c.id, 160, 6) })),
         el("span.trpg-seat-head", [el("span.trpg-seat-name", { text: name(c.id) }), el("small.trpg-seat-speaking")]),
         pc ? el("span.trpg-seat-pc", { dataset: { test: "trpg-seat-pc-" + c.id } }, [el("strong", { text: pc.name })]) : null,
         c.part === "GM" && npcSeats.length ? el("span.trpg-seat-pc", { dataset: { test: "trpg-seat-npc" } },
