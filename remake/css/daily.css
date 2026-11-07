@@ -506,6 +506,8 @@ body.game-ds .pin-station .pin-symbol { color: #29485d; }
 .mi-area { font-size: 13px; letter-spacing: .02em; color: var(--gold); }
 .mi-desc { margin: 4px 0 8px; font-size: 14px; line-height: 1.6; color: var(--text-dim); }
 .mi-foot { font-size: 14px; letter-spacing: 0.06em; color: var(--text-dim); opacity: 0.8; }
+/* 心得の盤の組み直しの期限など（calendar.js の reminder）。説明と行動の残りのあいだに、金の細い線で添える */
+.mi-reminder { margin: 0 2px 6px; padding-left: 8px; font-size: 13px; line-height: 1.45; color: var(--gold); border-left: 2px solid var(--gold); }
 .mi-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
 .tag { padding: 2px 9px; font-size: 13px; border-radius: 999px; border: 1px solid rgba(244, 210, 122, 0.4); color: var(--gold-hi); }
 .tag.free { border-color: rgba(142, 230, 168, 0.5); color: var(--good); }
@@ -1727,3 +1729,17 @@ body:not(.game-ds) .map .mi-note { font-size: 12px; font-weight: 700; letter-spa
 body:not(.game-ds) .map .mi-note.warn { color: #b83a3a; opacity: 1; }
 body:not(.game-ds) .map .mi-go:is(:hover, :focus-visible) .mi-note.warn { color: #ffd6d6; }
 body:not(.game-ds) .map .mi-no { padding: 5px; }
+
+/* ---------------------------------------------------------------- 全画面・セーブの引っ越し（#2856）
+   スマホ横持ち（844×390 で約0.54倍）でも実寸11px・38px以上になるよう、ゲーム内の寸法を大きめに取る。 */
+.xfer-btns { display: inline-flex; gap: 10px; align-items: center; }
+.btn.xfer-btn { min-width: 0; min-height: 84px; padding: 8px 22px; font-size: 26px; align-items: center; justify-content: center; text-align: center; }
+.btn.xfer-btn.xfer-q { width: 84px; padding: 0; border-radius: 50%; }
+.dm-system .btn.xfer-btn { min-height: 84px; font-size: 26px; }
+.xfer-layer { position: absolute; inset: 0; z-index: 5; display: flex; align-items: center; justify-content: center; }
+.xfer-layer .modal-backdrop { position: absolute; inset: 0; }
+.xfer-box { position: relative; max-width: min(92%, 640px); max-height: 92%; overflow: auto; }
+.xfer-box .modal-actions .btn { min-height: 84px; min-width: 170px; font-size: 26px; align-items: center; text-align: center; }
+.xfer-text { width: 100%; box-sizing: border-box; min-height: 120px; padding: 10px; font-size: 20px; line-height: 1.4; word-break: break-all; background: var(--ink-2); color: var(--text); border: 1px solid var(--panel-edge); border-radius: 4px; resize: none; }
+.xfer-help p { margin: 0 0 12px; font-size: 24px; line-height: 1.6; }
+.xfer-slots { margin: 8px 0 0; font-size: 24px; font-family: inherit; white-space: pre-wrap; }
