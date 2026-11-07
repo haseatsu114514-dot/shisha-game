@@ -93,10 +93,14 @@ try {
       await page.locator('[data-test="confirm-load"]').click();
       const same = await page.evaluate(async () => {
         await QA.flow;
-        const actual = { ...QA.core.state, savedAt: QA.saved.savedAt };
-        return JSON.stringify(actual) === JSON.stringify(QA.saved);
+        // 保存のたびに変わる記録は比べない: 保存の日時（savedAt）と、保存の直前に経過分を足し込むプレイ時間（playMs・#2902）。
+        // プレイ時間は、保存した時より減っていないことだけを別に確かめる。
+        const actual = { ...QA.core.state, savedAt: QA.saved.savedAt, playMs: QA.saved.playMs };
+        return { equal: JSON.stringify(actual) === JSON.stringify(QA.saved),
+          playMs: Number.isFinite(QA.core.state.playMs) && QA.core.state.playMs >= QA.saved.playMs };
       });
-      assert(same, label + ': real slot UI must restore the state');
+      assert(same.equal, label + ': real slot UI must restore the state');
+      assert(same.playMs, label + ': play time survives the slot save/load and never goes back');
     }
     await saveLoad();
     await page.evaluate(() => QA.exchange());
