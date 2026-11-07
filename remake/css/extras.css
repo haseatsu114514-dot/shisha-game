@@ -76,6 +76,25 @@
   .kuji-multi-panel .btn { min-height: calc(40px / var(--k, 1)); font-size: max(18px, calc(12px / var(--k, 1))); justify-content: center; }
 }
 
+/* ワイドステージ（#2861）と見やすさ（#2729）:
+   - くじの暗幕（ガラガラ・結果）はステージの左右の余白まで覆う（端に出した MENU・LIME を演出中に押させない。ガラガラの壁も左右へ続く）。
+   - 単発の結果カードは一回り大きく（賞・賞品名・説明の文字 +2〜4px）。
+   - 6枚以上の連続の結果は横5列に並べ、10枚（ラストワン込み11枚）がスクロールなしで一度に見える。 */
+.kuji-overlay { inset: 0 calc(-1 * var(--stage-gutter, 0px)); }
+.kuji-card:not(.kuji-short) { width: 520px; min-height: 270px; padding: 30px 36px; }
+.kuji-card:not(.kuji-short) .kuji-rank { font-size: 76px; }
+.kuji-card:not(.kuji-short) .kuji-name { font-size: 26px; }
+.kuji-card:not(.kuji-short) .kuji-desc { font-size: 22px; }
+.kuji-card:not(.kuji-short) .kuji-dupe { font-size: 20px; }
+.kuji-card:not(.kuji-short) .kuji-close { top: 8px; right: 8px; width: max(56px, calc(40px / var(--k, 1))); height: max(56px, calc(40px / var(--k, 1))); font-size: 26px; }
+.kuji-multi-panel:has(.kuji-card:nth-child(6)) { width: min(1220px, 100%); }
+.kuji-multi-panel:has(.kuji-card:nth-child(6)) .kuji-multi-cards { display: flex; flex-wrap: wrap; justify-content: center; }
+.kuji-multi-panel:has(.kuji-card:nth-child(6)) .kuji-card.kuji-short { flex: 0 1 calc((100% - 40px) / 5); min-height: 120px; padding: 12px 10px; }
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .kuji-card:not(.kuji-short) .kuji-desc, .kuji-card:not(.kuji-short) .kuji-dupe { font-size: max(22px, calc(13px / var(--k, 1))); }
+  .kuji-card:not(.kuji-short) .kuji-name { font-size: max(26px, calc(14px / var(--k, 1))); }
+}
+
 /* ---- ギャラリー ---- */
 .gal-overlay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(5, 4, 10, 0.78); backdrop-filter: blur(3px); }
 .gal {
