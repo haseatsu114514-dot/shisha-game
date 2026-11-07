@@ -118,10 +118,10 @@
           { "speaker": "hajime", "face": "smile", "text": "はい。今夜の分も、送ります" }
         ],
         "met_ageha": [
-          { "type": "condition", "condition_type": "met", "char_id": "ageha", "next_true": "check_ageha", "next_false": "default" }
+          { "type": "condition", "condition_type": "met", "char_id": "ageha", "next_true": "check_ageha", "next_false": "met_mashiro" }
         ],
         "check_ageha": [
-          { "type": "condition", "condition_type": "lover", "char_id": "ageha", "next_true": "ageha", "next_false": "default" }
+          { "type": "condition", "condition_type": "lover", "char_id": "ageha", "next_true": "ageha", "next_false": "met_mashiro" }
         ],
         "ageha": [
           { "speaker": "", "face": "", "text": "あげはは、さっきまで向こうのテーブルで一番大きな声を出していた。" },
@@ -141,6 +141,29 @@
           { "speaker": "", "face": "", "text": "グラスを寄せると、あげはは少しだけ迷ってから、こつんと当てた。" },
           { "speaker": "ageha", "face": "smile", "text": "……世界一、おめでと。うちの彼氏、まじで最強" },
           { "speaker": "", "face": "", "text": "言ってから照れたのか、あげはは俺の肩に額を押しつけて、しばらく顔を上げなかった。" }
+        ],
+        "met_mashiro": [
+          { "type": "condition", "condition_type": "met", "char_id": "mashiro", "next_true": "check_mashiro", "next_false": "default" }
+        ],
+        "check_mashiro": [
+          { "type": "condition", "condition_type": "lover", "char_id": "mashiro", "next_true": "mashiro", "next_false": "default" }
+        ],
+        "mashiro": [
+          { "speaker": "", "face": "", "text": "ましろは、カウンターの端で頬杖をついていた。東京から、電車で来てくれたらしい。" },
+          { "speaker": "mashiro", "face": "yawn", "text": "……ふぁ。はじめくん、おつかれさまぁ" },
+          { "speaker": "hajime", "face": "normal", "text": "遠いのに、来てくれたんだ" },
+          { "speaker": "mashiro", "face": "normal", "text": "ん、世界一のお祝いだもん。……電車で、ちょっと寝てきた" },
+          { "speaker": "mashiro", "face": "normal", "text": "人がいっぱいだと、僕、すぐ眠くなるの。……ここ、座ってていい？" },
+          { "speaker": "hajime", "face": "smile", "text": "もちろん。ましろちゃんの席" },
+          { "speaker": "", "face": "", "text": "ましろは鞄から水筒を出して、紅茶を二つのカップに分けた。" },
+          { "speaker": "mashiro", "face": "normal", "text": "半分こ。……みんな、ジュースとかお酒ばっかりだから" },
+          { "speaker": "hajime", "face": "normal", "text": "ずっと喋ってたから、ちょうど欲しかった" },
+          { "speaker": "mashiro", "face": "smile", "text": "でしょ。お世話係は、ちゃんと見てるんだよぉ" },
+          { "speaker": "", "face": "", "text": "テーブルの煙は、甘くて軽い。ましろの好みより、ずっと薄いはずだ。" },
+          { "speaker": "hajime", "face": "normal", "text": "今日の煙、ましろちゃんには軽すぎない？" },
+          { "speaker": "mashiro", "face": "normal", "text": "ん、軽い。……でも、はじめくんの隣だと、ちょうどいいの" },
+          { "speaker": "mashiro", "face": "yawn", "text": "……あ、だめ。安心したら、また眠くなってきちゃった" },
+          { "speaker": "", "face": "", "text": "肩に、ことんと頭が乗った。紅茶が冷めるまで、そのままにしておいた。" }
         ],
         "default": [
           { "speaker": "", "face": "", "text": "隣に座ると、グラスが小さく触れ合った。" },
