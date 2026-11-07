@@ -66,7 +66,7 @@ await suite("portrait-shop-rotate-guard", async check => {
     await page.waitForFunction(() => document.body.dataset.screen === "shop");
     assert.equal(await page.locator("#rotate-hint").isVisible(), false);
     assert.equal(await page.locator('[data-test="buy-lemon"]').isVisible(), true);
-    assert.equal(await page.locator("#viewport").evaluate(node => getComputedStyle(node).overflowX), "hidden");
+    assert.equal(await page.locator("#viewport").evaluate(node => getComputedStyle(node).overflowX), "clip");
     await page.evaluate(async () => (await import("./js/core/ui.js")).showScreen("map", document.createElement("section")));
     await page.waitForFunction(() => document.body.classList.contains("game-ds"));
     assert.equal(await page.locator("#rotate-hint").isVisible(), false);
