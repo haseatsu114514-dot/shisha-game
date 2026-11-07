@@ -32,6 +32,15 @@ export function fxMode() {
 export const HOT = "#ff8a1f";
 const EDGE = "rgba(70, 24, 0, .55)";
 
+/** "#abc"・"#aabbcc"・"rgb(r,g,b)" を "#rrggbb" にそろえる（末尾に透明度の2桁を足せるように） */
+export function hex6(color) {
+  const c = String(color || "").trim();
+  const rgb = c.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+  if (rgb) return "#" + rgb.slice(1, 4).map((v) => Math.max(0, Math.min(255, +v)).toString(16).padStart(2, "0")).join("");
+  if (/^#[0-9a-f]{3}$/i.test(c)) return "#" + [...c.slice(1)].map((h) => h + h).join("");
+  return /^#[0-9a-f]{6}$/i.test(c) ? c : "#d9d2e6";
+}
+
 const benchOf = (node) => node?.closest?.(".bench") || null;
 
 /** 見た目を止めている最中か（描画ループが動く絵の更新を飛ばすのに使う） */
@@ -143,4 +152,55 @@ export function impact(host, kind, { x = "50%", y = "50%", color, zoomNode = hos
     shockRing(host, { x, y, color, size: kind === "big" ? 240 : 150 });
   }
   sparks(host, { x, y, n: spec.sparks, color, spread: kind === "big" ? 160 : 110 });
+}
+
+/**
+ * 吐いた煙が画面を満たして晴れる（CFX03・吸い出しの山場）。一人称なので、画面の下中央（口元）から
+ * 柔らかい煙の塊が広がって上へ抜ける。grand（最適温・会心）は晴れ際に煙の輪が昇る。
+ * 自動操作・「動きを減らす」では出さずにすぐ返す。戻り値は煙が晴れるまで待つ Promise。
+ */
+export function exhale(host, { color = "#d9d2e6", grand = false } = {}) {
+  color = hex6(color);
+  const mode = fxMode();
+  if (mode === "off" || mode === "still" || !host) return Promise.resolve(false);
+  const layer = layerOf(host);
+  const puffs = [];
+  const COUNT = 10, DURATION = 1600;
+  // 画面ぜんたいに薄くかかる息のもや（下から満ちて引く）
+  const veil = el("i", { style: { position: "absolute", inset: "0",
+    background: `radial-gradient(150% 110% at 50% 105%, ${color}d0, ${color}66 50%, transparent 82%)` } });
+  layer.append(veil);
+  const veilAnim = veil.animate([{ opacity: 0 }, { opacity: .8, offset: .35 }, { opacity: .55, offset: .6 }, { opacity: 0 }],
+    { duration: DURATION, easing: "ease-in-out", fill: "both" });
+  puffs.push(veilAnim.finished.then(() => veil.remove(), () => veil.remove()));
+  for (let i = 0; i < COUNT; i++) {
+    const size = rand(520, 860), dx = (i - (COUNT - 1) / 2) * rand(90, 140), rise = rand(300, 520);
+    const p = el("i", { style: {
+      position: "absolute", left: "50%", top: "100%", width: `${size}px`, height: `${size * .78}px`, borderRadius: "50%",
+      background: `radial-gradient(closest-side, #fffdf8f5, #fffdf8b0 22%, ${color}aa 50%, ${color}44 72%, transparent)`, filter: "blur(18px)",
+    } });
+    layer.append(p);
+    const delay = i * 55;
+    const anim = p.animate([
+      { transform: "translate(-50%,-50%) scale(.25)", opacity: 0 },
+      { transform: `translate(calc(-50% + ${dx * .6}px), calc(-50% - ${rise * .55}px)) scale(1)`, opacity: .95, offset: .4 },
+      { transform: `translate(calc(-50% + ${dx}px), calc(-50% - ${rise}px)) scale(1.45)`, opacity: 0 },
+    ], { duration: DURATION - delay, delay, easing: "cubic-bezier(.2,.65,.35,1)", fill: "both" });
+    puffs.push(anim.finished.then(() => p.remove(), () => p.remove()));
+  }
+  if (grand) {
+    const ring = el("i", { style: {
+      position: "absolute", left: "50%", top: "62%", width: "120px", height: "120px", borderRadius: "50%",
+      border: "14px solid #f4eff9", filter: "blur(3px)", boxShadow: `0 0 18px ${color}`,
+    } });
+    layer.append(ring);
+    const anim = ring.animate([
+      { transform: "translate(-50%,-50%) scale(.4)", opacity: 0 },
+      { transform: "translate(-50%,-50%) scale(.9)", opacity: .9, offset: .3 },
+      { transform: "translate(-50%, calc(-50% - 260px)) scale(1.9)", opacity: 0 },
+    ], { duration: 1300, delay: 700, easing: "ease-out", fill: "both" });
+    puffs.push(anim.finished.then(() => ring.remove(), () => ring.remove()));
+  }
+  // 万一アニメが終わらない環境でも先へ進める
+  return Promise.race([Promise.all(puffs), new Promise((r) => setTimeout(r, DURATION + 1200))]).then(() => true);
 }

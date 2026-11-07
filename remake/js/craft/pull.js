@@ -25,7 +25,8 @@ import { replacementCoals } from "./heat_logic.js";
 import { craftConditions, heatDelta, pullResult, isIdealTemperature, isOptimalTemperature, temperatureBands, visualTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
 import { DRAW_MS, animateDraw } from "./pull-draw.js";
-import { impact } from "./fx.js";
+import { impact, exhale } from "./fx.js";
+import { mixColor } from "./art.js";
 import { ensureFlavorLife, applyLeafDamage, leafDamagePerPull, leafDamageRatio, leafStopDrift } from "./flavor-life.js";
 import { coalCount } from "./coals.js";
 import { makerMixProfile } from "./temperature-model.js";
@@ -625,6 +626,8 @@ async function pullGame(cs, mode) {
     const naruFinished = recordNaruFinish(cs, bands, { automatic: !!autoSkill() });
     refreshBench();
     tickerSay(inZone ? "パッキー「きた〜！ 煙の立ち方が変わりましたよ〜♪」" : "パッキー「おっと、ちょっと温度が怪しいか〜！？」");
+    // 山場（CFX03）: 適温で提供できたら、吐いた煙が画面を満たして晴れる。最適温・会心は煙の輪も昇る
+    if (inZone) await exhale(panel.closest?.(".bench") || panel, { color: mixColor(cs.mix), grand: optimal || criticals > 0 });
     await resultCard(panel, {
       title: context.title,
       summary: [context.summary],
