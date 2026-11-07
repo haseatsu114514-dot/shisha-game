@@ -410,4 +410,13 @@ body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(6)) > .vn-choice {
  .cutin .ci-band {transform:rotate(-7deg)!important;}
  .cutin .ci-left-field {clip-path:polygon(0 0,558px 0,410px 720px,0 720px)!important;}
 }
-.vn-choice:disabled { opacity: .38; cursor: default; }
+.vn-choice[aria-disabled="true"] { opacity: .85; cursor: default; }
+.vn-choice[aria-disabled="true"]:hover { transform: none; }
+.vn-choice-reason {
+  display: block;
+  margin-top: 3px;
+  font-size: 15px;
+  line-height: 1.35;
+  letter-spacing: 0;
+  font-weight: 700;
+}
