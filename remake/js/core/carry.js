@@ -251,9 +251,12 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_dubai_talks", "progression"],
   ["_ch5_dubai_flights", "progression"],
   ["_ch5_dubai_camel_again", "progression"], // 第5章のラクダレース場の再会を読んだ（chapters/ch5-dubai.js）
+  ["_ch5_dubai_camel_meet", "progression"], // 第5章の店先でファーリスに会い（会い直し）、翌朝のレースに誘われた（第4章で走っていない人・2026-11-07）
+  ["_ch5_camel_known", "progression"], // 第5章の店先の場面で第4章の段階を出し分ける一時の印（chapters/ch5-dubai.js。再生の前に立て、後で消す）
   ["_ch5_dubai_dunes_again", "progression"], // 第5章の砂丘の前の再会を読んだ
   ["_ch5_after_party", "progression"],
   ["_ch5_party_seat", "progression"],
+  ["_ch5_party_conflict", "progression"], // 打ち上げの修羅場で反応まで読んだ恋人（chapters/ch5-party.js・#2815）
   ["_ch5_shop_talks", "progression"],
   ["_mukai_shift_day", "progression"],
   ["_ch5_tokyo_talks", "progression"],
@@ -415,6 +418,7 @@ export const FLAG_EXACT_RULES = [
   ["_night_event_day", "progression"],
   ["_noor_ch5_promise", "person"], // 第5章の砂丘の再会で、告白を待つ約束の続きを出す一時の印（chapters/ch5-dubai.js。再生の前に立て、後で消す）
   ["_noor_confession_other_lover", "person"], // DSR20 告白の場面の一時の印（再生の前に立て、後で消す）
+  ["_noor_confession_visit", "person"], // 第5章で締めくくりを迎えた人の告白の言い方を出す一時の印（chapters/ch4-desert.js。再生の前に立て、後で消す）
   ["_oneesan_id_checked", "progression"],
   ["_op_praise_report", "progression"],
   ["_op_praise_talent", "progression"],

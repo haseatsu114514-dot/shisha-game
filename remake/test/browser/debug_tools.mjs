@@ -48,6 +48,10 @@ await suite("debug-tools", async check => {
         core.newGame(); core.save(); core.saveToSlot(core.SAVE_SLOTS[1].key);
         core.config.textSpeed = 4;
         for (const id of ["minto", "rio"]) markIntroSeen(id);
+        // 新版が未登録の人物は旧版のまま、を確かめる。凛想は #2714 で新版がそろったので、
+        // このページの中だけ新版の登録を外して「未登録」の人物として使う（本物の素材や保存には触れない）。
+        const { DB } = await import("./js/core/data.js");
+        delete DB.manifest.portraitVariants?.new?.rio;
         clearLog();
         void play({ dialogue_id: "debug-portrait-style-fixture", lines: [
           { speaker: "minto", face: "normal", text: "画風を比べます" },
@@ -78,8 +82,8 @@ await suite("debug-tools", async check => {
       }
       await page.locator(t("debug-toggle")).click();
       await page.locator(t("vn-config")).click();
-      assert.equal(await page.locator(t("cfg-portrait-style")).inputValue(), "new");
-      await page.locator(t("cfg-portrait-style")).selectOption("classic");
+      assert.equal(await page.locator(`${t("cfg-portrait-style")} [aria-checked="true"]`).getAttribute("value"), "new");
+      await page.locator(`${t("cfg-portrait-style")} button[value="classic"]`).click();
       await page.locator(t("cfg-close")).click();
       await openPanel(page);
       assert.equal(await select.inputValue(), "classic", "DBG syncs changes from normal CONFIG");

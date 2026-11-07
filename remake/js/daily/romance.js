@@ -27,7 +27,7 @@ export const isLover = (id) => (state.lovers || []).includes(id);
 // 告白・デート・恋人の節目は仕事を離れた私的な場面（みんとは本名を聞いた後なら「栞さん」と呼ぶ）
 const privateCall = (id) => callName(id, state, { context: "private" });
 
-/** この章から先に初めて届いた締めくくりでは告白しない（下の romanceRouteOpen）。 */
+/** この章から先に初めて届いた締めくくりでは告白しない（下の romanceRouteOpen。ヌールだけ例外・2026-11-07）。 */
 export const NO_CONFESSION_FINALE_CHAPTER = 5;
 
 /**
@@ -40,7 +40,9 @@ export function romanceRouteOpen(id) {
   // 第5章で初めて届いた締めくくりでは告白しない（オーナー既定 B・2026-11-02。正本は「恋愛ルートは第3章までに着地」）。
   // 第5章は夜の告白を出さない（ch5-daily.js の confessions: false）ので、予約（bonds.js の _confession_due）を入れず、
   // 関係の表示も「告白を選べる」にしない。
-  if ((state.finales?.[id]?.chapter || 0) >= NO_CONFESSION_FINALE_CHAPTER) return false;
+  // ただしヌールは、第5章のドバイで迎えた締めくくりでも砂丘の夕日で告白できる（2026-11-07 オーナー決定「ノールの告白は第5章でも可能にする」。
+  // 台帳 CHB12 の既定 B をヌールだけ外す）。ヌールの告白は自分の場面（OWN_CONFESSION_SCENE）なので、夜の帰り道の予約は今までどおり入らない。
+  if (id !== "noor" && (state.finales?.[id]?.chapter || 0) >= NO_CONFESSION_FINALE_CHAPTER) return false;
   if (id === "hiyori") {
     const route = hiyoriRoute();
     if (!hiyoriFinaleReady() || !state.flags[route.finale?.flag]
@@ -128,7 +130,7 @@ const cheatScene = (id) => ({
 
 // 告白の台本が自分の場面を持つ相手（daily/bonds.js の BOND_FINALES.ownConfession）。夜の帰り道では始めない。
 // ましろは第3章の寄り道（休日の部屋。chapters/ch3-story-wiring.js の confession_mashiro・IR20）だけで告白する。
-// ヌールは第4章ドバイの砂丘の夕日（chapters/ch4-desert.js の confession_noor・DSR20）だけで告白する。
+// ヌールはドバイの砂丘の夕日（chapters/ch4-desert.js の confession_noor・DSR20。第4章と第5章のドバイ）だけで告白する。
 const OWN_CONFESSION_SCENE = Object.freeze(["mashiro", "noor"]);
 const nightWalkConfession = (id) => !OWN_CONFESSION_SCENE.includes(id) && romanceRouteOpen(id);
 
@@ -150,9 +152,6 @@ export const confessionHeld = (value = state) => !!departurePrep(value) || awayF
  * @param opts.companion 今夜会った相手。同じ相手への告白は帰り道に続け、別の相手なら後日に回す
  * @returns 何か起きたか
  */
-// 人に会いに行く夜の入り（#2688 A11）。演出の部品は使うときに読む（読めなければ演出なしで会う）
-const meetOpen = (id, opts) => import("../motions/meet.js").then((m) => m.meetOpen(id, opts), () => {});
-
 export async function maybeConfession(beat, { busyNight = false, companion = null } = {}) {
   if (state.phase !== "daily" || state.slot < 2) return false; // 昼の行動から仕事後の夜へ飛ばない
   if (confessionHeld()) return false; // 出発前・東京・ドバイでは予約を残して、帰ってきてから
@@ -203,8 +202,6 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
     state.flags._minto_name_known = true;
     save();
   }
-  // 告白の場面の入りも、葉の窓がすぼまって相手の名前を読ませてから（#2688 A11）
-  await meetOpen(id, { private: true });
   await play(`confession_${id}`, DB.dialogues[`confession_${id}`]?.metadata?.bg ? {} : { bg: STREET });
   if (id === "samechan" && isLover(id)) await playSamechanMilestone();
   save();

@@ -14,7 +14,7 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_FREE_SC
   chapterFiveLimeDue, CH5_CREDITS_FLAG, chapterFiveCreditsPending, recordChapterFiveCredits,
   chapterFiveTrueEndReached, CH5_POST_ENDING, CH5_CONFLICT_SCENES, CH5_TALK_SCENES, chapterFivePostEndingContext,
   chapterFivePostEndingPlan, chapterFivePostEndingUndecided, beginChapterFivePostEnding, chapterFivePostEndingNext,
-  chapterFivePostEndingUnresolved, completeChapterFivePostEnding, CH5_MASHIRO_LOVER_ECHO, chapterFiveLoverEcho } from "../js/chapters/ch5-progress.js";
+  chapterFivePostEndingUnresolved, completeChapterFivePostEnding, CH5_CALL_SCENES, CH5_MASHIRO_LOVER_ECHO, chapterFiveLoverEcho } from "../js/chapters/ch5-progress.js";
 
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
 const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url)));
@@ -36,8 +36,9 @@ assert.equal(new Set(connected).size, connected.length, "A scene is listed twice
 for (const id of connected) assert(CH5_SCENE_BG[id], `bg missing for ${id}`);
 for (const bg of Object.values(CH5_SCENE_BG))
   assert(manifest.backgrounds.includes(`${bg}.png`), `unknown background ${bg}`);
-// BGM の切替表（#1668 2-7）は接続済みの場面だけを指し、実在の曲だけを使う。
-const hasBgm = key => manifest.bgm.some(file => file.replace(/\.[^.]+$/, "") === key);
+// BGM の切替表（#1668 2-7）は接続済みの場面だけを指し、登録曲か待機用の合成曲を使う。
+const hasBgm = key => key === "bgm_tournament_wait"
+  || manifest.bgm.some(file => file.replace(/\.[^.]+$/, "") === key);
 assert(hasBgm(CH5_DEFAULT_BGM), `unknown bgm ${CH5_DEFAULT_BGM}`);
 for (const [id, key] of Object.entries(CH5_SCENE_BGM)) {
   assert(connected.includes(id), `bgm for unconnected scene ${id}`);
@@ -616,7 +617,8 @@ for (const won of [true, false]) {
     assert.equal(chapterFiveTrueEndReached(save), true);
   }
 
-  // 打ち上げで修羅場が済んでいれば（PTY02）、二度起こさず話し直しの決意→話し直しだけ。恋人全員が未解決。
+  // 打ち上げで修羅場が済んでいれば（PTY02）、二度起こさず話し直しの決意→話し直しだけ。
+  // 旧保存（反応まで読んだ恋人の記録 _ch5_party_conflict が無い）は区別できないので、従来どおり恋人全員が未解決（#2815）。
   {
     const save = credits(toCleared(["tsumugi", "ageha"], { _ch5_after_party: true, _story_shuraba_unresolved: true }));
     assert.equal(save.flags._ch5.finaleScenes[1], "ending_normal");
@@ -632,6 +634,72 @@ for (const won of [true, false]) {
   {
     const save = credits(toCleared(["mashiro", "rio"], { _ch5_after_party: true }));
     assert.equal(chapterFivePostEndingPlan(routes, save).kind, "conflict");
+  }
+  const CONFLICT_CALL_IDS = Object.values(CH5_CALL_SCENES);
+  // #2815: 打ち上げで反応まで読んだ恋人（_ch5_party_conflict）と、その後に恋人になった相手（持ち越しの告白）を区別する。
+  const party = (lovers, reacted) => credits(toCleared(lovers,
+    { _ch5_after_party: true, _story_shuraba_unresolved: true, _ch5_party_conflict: reacted }));
+  // 地元の恋人だけの修羅場の後、何も増えない: 反応済みの2人の話し直しだけ（反応を二度読まない）。
+  {
+    const save = party(["tsumugi", "minto"], ["tsumugi", "minto"]);
+    assert.deepEqual(chapterFivePostEndingContext(routes, save), { present: [], unresolved: ["tsumugi", "minto"] });
+    assert.deepEqual(chapterFivePostEndingPlan(routes, save), { kind: "pending",
+      scenes: [CH5_POST_ENDING.pending, CH5_TALK_SCENES.tsumugi, CH5_TALK_SCENES.minto], unresolved: ["tsumugi", "minto"] });
+  }
+  // ヌール＋地元の恋人の修羅場（ヌールはテレビ電話）の後: 二人とも反応済み。話し直しだけで、着信も反応も読み直さない。
+  {
+    const save = party(["noor", "tsumugi"], ["noor", "tsumugi"]);
+    const plan = chapterFivePostEndingPlan(routes, save);
+    assert.deepEqual(plan.scenes, [CH5_POST_ENDING.pending, CH5_TALK_SCENES.noor, CH5_TALK_SCENES.tsumugi]);
+  }
+  // 修羅場の後に凛想が恋人になった（第4章までの恋愛ルートの持ち越しの告白）: 凛想は反応を読んでいないので話し直しへ送らない。
+  // 「説明して、って言ったよね」（shuraba_rio の発話の引用）を、読んでいない人に読ませない。
+  {
+    const save = party(["tsumugi", "minto", "rio"], ["tsumugi", "minto"]);
+    assert.deepEqual(chapterFivePostEndingContext(routes, save), { present: ["rio"], unresolved: ["tsumugi", "minto"] });
+    const plan = chapterFivePostEndingPlan(routes, save);
+    assert.deepEqual(plan, { kind: "pending",
+      scenes: [CH5_POST_ENDING.pending, CH5_TALK_SCENES.tsumugi, CH5_TALK_SCENES.minto], unresolved: ["tsumugi", "minto"] });
+    assert(!plan.scenes.includes(CH5_TALK_SCENES.rio) && !plan.scenes.includes(CH5_CONFLICT_SCENES.rio));
+    assert.equal(beginChapterFivePostEnding(save, plan), true);
+    assert.deepEqual(readAll(save), plan.scenes);
+    assert.equal(save.flags._story_shuraba_unresolved, undefined, "Released after the talks of those who reacted");
+    assert.deepEqual(save.lovers, ["tsumugi", "minto", "rio"], "Nobody is dumped or forgiven");
+  }
+  // 修羅場の後に2人が恋人になった（凛想とドバイのヌール）: その2人の修羅場を、ヌールの着信から読む。反応済みの2人は反応を読み直さない。
+  {
+    const save = party(["tsumugi", "minto", "rio", "noor"], ["tsumugi", "minto"]);
+    const plan = chapterFivePostEndingPlan(routes, save);
+    assert.deepEqual(plan, { kind: "conflict", scenes: [CH5_CALL_SCENES.noor, CH5_POST_ENDING.open,
+      CH5_CONFLICT_SCENES.rio, CH5_CONFLICT_SCENES.noor, CH5_POST_ENDING.close, CH5_POST_ENDING.pending,
+      CH5_TALK_SCENES.tsumugi, CH5_TALK_SCENES.minto, CH5_TALK_SCENES.rio, CH5_TALK_SCENES.noor],
+      unresolved: ["tsumugi", "minto", "rio", "noor"] });
+    assert.equal(beginChapterFivePostEnding(save, plan), true);
+    assert.deepEqual(chapterFivePostEndingNext(save), { id: CH5_CALL_SCENES.noor, talk: null, index: 0, total: 4 });
+    read(save, CH5_CALL_SCENES.noor);
+    const resumed = JSON.parse(JSON.stringify(save));
+    roundTrip(resumed);
+    assert.equal(chapterFivePostEndingNext(resumed).id, CH5_POST_ENDING.open, "LOAD after the call resumes at the open, not the call");
+    assert.deepEqual(readAll(save), plan.scenes.slice(1));
+  }
+  // 打ち上げでは修羅場にならず（恋人はヌールだけ・お祝いの着信）、その後に地元の恋人が増えた: スタッフロールの後の修羅場で、
+  // 開始（はじめの打ち明け）より前にヌールのテレビ電話をつなぐ。地元の恋人だけなら着信を挟まない。
+  {
+    const save = credits(toCleared(["noor", "tsumugi"], { _ch5_after_party: true }));
+    const plan = chapterFivePostEndingPlan(routes, save);
+    assert.deepEqual(plan.scenes.slice(0, 2), [CH5_CALL_SCENES.noor, CH5_POST_ENDING.open]);
+    assert.equal(beginChapterFivePostEnding(save, plan), true);
+    assert.deepEqual(readAll(save), plan.scenes);
+    assert(!chapterFivePostEndingPlan(routes, credits(toCleared(["minto", "rio"]))).scenes.some(id => CONFLICT_CALL_IDS.includes(id)));
+  }
+  // 着信は修羅場の開始の前だけ。開始の後や、修羅場の無い並びには置けない。
+  for (const scenes of [
+    [CH5_POST_ENDING.open, CH5_CALL_SCENES.noor, CH5_CONFLICT_SCENES.noor, CH5_CONFLICT_SCENES.tsumugi, CH5_POST_ENDING.close,
+      CH5_POST_ENDING.pending, CH5_TALK_SCENES.noor],
+    [CH5_CALL_SCENES.noor, CH5_POST_ENDING.pending, CH5_TALK_SCENES.noor],
+  ]) {
+    const save = credits(toCleared(["noor", "tsumugi"]));
+    assert.equal(beginChapterFivePostEnding(save, { scenes, unresolved: ["noor"] }), false, scenes.join(","));
   }
   // 恋人がいないのに未解決の印だけ残る保存は、話し直す相手がいないので何も足さない。
   {

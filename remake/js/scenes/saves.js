@@ -1,7 +1,7 @@
 // セーブ／ロードの枠選び（オートセーブ＋手動3枠）。タイトルの「ロード」と、日常の MENU から開く。
 import { el, yen } from "../core/util.js";
 import { layers, modal, toast } from "../core/ui.js";
-import { SCHEMA, SAVE_SLOTS, STAT_KEYS, STAT_JA, readSlot, saveToSlot, state } from "../core/state.js";
+import { SCHEMA, SAVE_SLOTS, STAT_KEYS, STAT_JA, readSlot, saveToSlotResult, loadFromSlot, state } from "../core/state.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
 import { cycleBadgeText, overwriteCycleNote } from "../core/cycle-display.js";
 import { chapterDay } from "../core/chapter-clock.js";
@@ -133,8 +133,11 @@ export async function saveFlow() {
       });
       if (!ok) continue;
     }
-    if (saveToSlot(key)) { SE.money(); toast(`${slot.label} にセーブした`, { kind: "good" }); }
-    else toast("セーブできなかった（ブラウザの保存領域がいっぱいかも）", { kind: "warn" });
+    const { autoSaved, manualSaved } = saveToSlotResult(key);
+    if (manualSaved && autoSaved) { SE.money(); toast(`${slot.label} と AUTO に保存した`, { kind: "good", ms: 4000 }); }
+    else if (manualSaved) { SE.money(); toast(`${slot.label} は保存済み。AUTO 更新は失敗`, { kind: "warn", ms: 5000 }); }
+    else if (autoSaved) toast(`${slot.label} は前のまま。AUTO は保存済み`, { kind: "warn", ms: 5000 });
+    else toast(`${slot.label} は前のまま。AUTO も保存できませんでした`, { kind: "warn", ms: 5000 });
     return true;
   }
 }
@@ -155,4 +158,19 @@ export async function loadFlow({ inGame = false } = {}) {
     if (!ok) return null;
   }
   return key;
+}
+
+/** 取消は静かに閉じ、読込失敗時だけ別の枠へ戻れるようにする。 */
+export async function loadWithRecovery({ inGame = false } = {}) {
+  for (;;) {
+    const key = await loadFlow({ inGame });
+    if (!key) return false;
+    if (loadFromSlot(key)) return true;
+    const retry = await modal({
+      title: "ロードできませんでした",
+      body: "この枠を読み込めませんでした。別のセーブ枠を試してください。",
+      options: [{ label: "やめる", value: false }, { label: "別の枠を選ぶ", value: true, primary: true, test: "retry-load" }],
+    });
+    if (!retry) return false;
+  }
 }

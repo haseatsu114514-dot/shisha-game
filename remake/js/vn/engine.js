@@ -16,8 +16,8 @@ import { loadVnFonts } from "../core/vn-fonts.js";
 import { state, markMet, STAT_EN, timeOfDay, config } from "../core/state.js";
 import { applyStats, gainAffinity, addMoney, affinityLevel, earnSceneCompletion } from "../core/stats.js";
 import { setBg, layers, toast, flash, shake, modal, dropRetired, imageReady } from "../core/ui.js";
-import { SE, playSe, playBgm, preloadBgm, currentBgm } from "../core/audio.js";
-import { formatHtml, sliceHtml, visibleLength, stripTags } from "./text.js";
+import { SE, playSe, playBgm, preloadBgm, currentBgm, duckBgm } from "../core/audio.js";
+import { formatHtml, sliceHtml, visibleLength, stripTags, pausePoints } from "./text.js";
 import { playerInner } from "./inner.js";
 import { dialoguePages } from "./layout.js";
 import { glossaryPanel } from "./glossary.js";
@@ -147,14 +147,14 @@ function buildDom() {
     }
     if (e.key === "Control") { setSkip(true); return; }
     if (running.waitingChoice) {
-      const choices = [...dom.choices.querySelectorAll(".vn-choice:not(:disabled)")];
+      const choices = [...dom.choices.querySelectorAll('.vn-choice:not([aria-disabled="true"])')];
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         e.preventDefault();
         const current = choices.indexOf(document.activeElement);
         choices[(current + (e.key === "ArrowDown" ? 1 : choices.length - 1)) % choices.length]?.focus();
       } else if (/^[1-3]$/.test(e.key) && !e.repeat && !e.target?.closest?.("input, select, textarea, [contenteditable]")) {
         const choice = dom.choices.querySelectorAll(".vn-choice")[Number(e.key) - 1];
-        if (choice && !choice.disabled) { e.preventDefault(); choice.click(); }
+        if (choice && choice.getAttribute("aria-disabled") !== "true") { e.preventDefault(); choice.click(); }
       } else if (e.key === "Enter" && !e.target?.closest?.("button, a[href], input, select, textarea, [contenteditable]")) {
         e.preventDefault(); (choices.includes(document.activeElement) ? document.activeElement : choices[0])?.click();
       }
@@ -463,6 +463,7 @@ function finish(cancelled = false) {
   dom.effect.dataset.effect = "";
   layers.vn.classList.remove("sepia", "flashback");
   if (!sequenceDepth) setSkip(false);
+  releaseDuck(r);
   if (r.bgmSwitched) playBgm(r.bgmBefore);
   r.resolve({ id: r.id, visited: r.visited, ...(cancelled ? { cancelled: true } : {}) });
 }
@@ -483,6 +484,8 @@ function next() {
   if (!r) return;
   if (!skipMode && !vnTest.turbo) markSeenLine(r.activeSeenKey);
   r.activeSeenKey = null;
+  // BGMの息継ぎは、その行を読み終えて次へ進むところで戻す。すぐ次の台詞行も duck なら下げたまま渡す（戻して下げ直すと音量が波打つ）。
+  if (!r.queue[0]?.duck || r.queue[0].type) releaseDuck(r);
   // 読み終えた行の合図を、次の行の画像待ち・制御行へ持ち越さない。
   dom.next.classList.remove("show");
   r.pages = null;
@@ -628,6 +631,12 @@ function handleCondition(line) {
     ok = (Number(state.flags[line.flag]) || 0) >= Number(line.threshold === 0 ? 0 : (line.threshold || 1)); // 数値0だけ既定1に化かさない（文字列 "0" と結果をそろえる。#1362）
   } else if (kind === "met") {
     ok = !!state.met[line.char_id];
+  } else if (kind === "contact") {
+    // 連絡先を交換済みか。spots.js の hasContact と同じ判定を、保存値を書き換えずに読むだけ（旧セーブ互換）。
+    // threshold は LIME_EXCHANGE と同じ「固有会話の消化数」。
+    const id = line.char_id;
+    ok = (state.contacts || []).includes(id) || !!state.flags[`_lime_contact_${id}`]
+      || (!!line.threshold && (state.story?.[id] || 0) >= Number(line.threshold));
   } else if (kind === "affinity") {
     ok = affinityLevel(line.char_id) >= Number(line.threshold || 0);
   } else {
@@ -772,6 +781,10 @@ async function showLine(line) {
   // 行付き演出（"fx":"shake" 等）／自動の軽演出（驚き・叫び）
   if (line.fx) runFx({ id: line.fx });
   else autoFx(line);
+  // BGMの息継ぎ（#2828 採用29）: duck の行だけ今の曲を約 −6dB へ落とす。SKIP中・高速送りでは省く。
+  if (line.duck && !skipMode && !vnTest.turbo) { r.ducked = true; duckBgm(DUCK_LEVEL, DUCK_IN_MS); }
+  else releaseDuck(r);
+  r.beat = beatMs(line.beat);
   // シーシャの仕組み解説の図解（#1128）。段階は絶対指定なのでSKIP・連打・LOADでも重ならない。
   if (line.diagram) showShishaDiagram(line.diagram, { still: reducedMotion() || skipMode || vnTest.turbo });
   let text = String(line.text || "");
@@ -810,6 +823,8 @@ async function showLine(line) {
   }
   dom.box.classList.toggle("narration", !speaker);
   dom.box.classList.toggle("thought", speaker === "hajime" && /^（/.test(line.text || ""));
+  // 心の声の薄墨（#2828 採用7）: 「（」で始まる行は誰の行でも薄墨・少し小さく出し、文字送りの音を鳴らさない。
+  r.innerVoice = /^（/.test(stripTags(text));
   dom.box.classList.toggle("has-inner", !!inner);
   r.pages = dialoguePages(text, inner, dom.text, dom.inner);
   r.pageIdx = 0;
@@ -853,15 +868,32 @@ function autoFx(line) {
   else shake(document.getElementById("stage"), 300);
 }
 
+// 会話演出（#2828。#2732 の選別で採用）。どれも台本の印がある行だけで動き、SKIP・高速送り・瞬間表示では省く。
+const PAUSE_MS = 400;                                  // [pause] で止まる長さ
+const DUCK_LEVEL = 0.5, DUCK_IN_MS = 150, DUCK_OUT_MS = 400; // duck: 約 −6dB へ0.15秒で落とし、0.4秒で戻す
+/** beat: true は0.5秒。数値（ms）は0.3〜0.8秒に収める */
+function beatMs(beat) {
+  if (beat === true) return 500;
+  const ms = Number(beat);
+  return Number.isFinite(ms) && ms > 0 ? Math.min(800, Math.max(300, ms)) : 0;
+}
+function releaseDuck(r) {
+  if (!r?.ducked) return;
+  r.ducked = false;
+  duckBgm(1, DUCK_OUT_MS);
+}
+
 function renderPage() {
   const r = running;
   const page = r.pages[r.pageIdx];
   const raw = page.text;
-  r.fullHtml = formatHtml(raw);
+  r.fullHtml = r.innerVoice ? `<span class="tx-voice">${formatHtml(raw)}</span>` : formatHtml(raw);
   r.fullInnerHtml = page.inner ? formatHtml(page.inner) : "";
   r.spokenLength = visibleLength(r.fullHtml);
   const total = r.spokenLength + visibleLength(r.fullInnerHtml);
   r.totalLength = total;
+  // 文中ポーズ（#2828 採用3）: [pause] の位置で文字送りを止める。続きのページは発言を出し終えた所から始まる。
+  r.pauses = page.continuation ? [] : pausePoints(raw).filter((at) => at > 0 && at < r.spokenLength);
   clearInterval(r.typeTimer);
   clearTimeout(r.typeTimer);
   dom.next.classList.remove("show");
@@ -874,8 +906,8 @@ function renderPage() {
     kickAuto();
     return;
   }
-  // 重要行（[imp]）は一拍の「溜め」を置いてから出す
-  const hold = raw.includes("[imp]") && r.pageIdx === 0 ? 380 : 0;
+  // 重要行（[imp]）は一拍の「溜め」を置いてから出す。beat の行（#2828 採用1）は台詞欄を空けたまま長めに溜める。
+  const hold = r.pageIdx === 0 ? Math.max(raw.includes("[imp]") ? 380 : 0, r.beat || 0) : 0;
   r.typing = true;
   r.shown = page.continuation ? r.spokenLength : 0;
   renderTyped(r.shown);
@@ -897,10 +929,17 @@ function startTypingInterval(r = running) {
   const total = r.totalLength ?? (r.spokenLength + visibleLength(r.fullInnerHtml));
   const step = Math.max(1, Math.round(total / 90));
   r.typeTimer = setInterval(() => {
-    r.shown = (r.shown || 0) + step;
+    const from = r.shown || 0;
+    const pause = r.pauses?.find((at) => at > from && at <= from + step);
+    r.shown = pause ?? from + step;
     renderTyped(r.shown);
-    if (r.shown <= r.spokenLength && r.shown % 3 < step) SE.blip(r.speaker);
-    if (r.shown >= total) completeTyping();
+    if (r.shown <= r.spokenLength && r.shown % 3 < step && !r.innerVoice) SE.blip(r.speaker);
+    if (r.shown >= total) return completeTyping();
+    // ▼は出さずに一拍止まり、続きを送る。止まっている間のクリックは本文を最後まで出す（typing のまま）。
+    if (pause !== undefined) {
+      clearInterval(r.typeTimer);
+      r.typeTimer = setTimeout(() => startTypingInterval(r), PAUSE_MS);
+    }
   }, interval);
 }
 
@@ -992,19 +1031,32 @@ function showChoices(line) {
   // 実回答の記録はpickChoiceのフックへ。占いは対象/期限/台詞照合済みの2択だけ示す。
   const fortuneHint = fortuneChoiceIndex(state, r.id, line, DB.fortuneHints);
   const growthHint = growthChoiceIndex(state, r.currentId || r.id, line, DB.fortuneHints, r.growthScene);
-  const buttons = (line.choices || []).map((c, i) => el(`button.vn-choice${i === fortuneHint ? ".fortune-hint" : ""}${i === growthHint ? ".growth-hint" : ""}`, {
-    html: formatHtml(c.text || "……"),
-    "aria-label": i === fortuneHint ? `${c.text}（占いの予感）` : i === growthHint ? `${c.text}（会話の気配）` : null,
-    disabled: c.condition_type === "money" && state.money < Number(c.threshold || 0),
-    style: { animationDelay: `${i * 80}ms` },
-    dataset: { test: `choice-${i}` },
-    onclick: (e) => { e.stopPropagation(); ghostChoice(e.currentTarget); pickChoice(line, c); },
-  }));
+  const reasons = [];
+  const buttons = (line.choices || []).map((c, i) => {
+    const shortfall = c.condition_type === "money" ? Number(c.threshold || 0) - state.money : 0;
+    const hint = i === fortuneHint ? "占いの予感" : i === growthHint ? "会話の気配" : null;
+    const reasonId = `vn-choice-money-reason-${i}`;
+    const button = el(`button.vn-choice${i === fortuneHint ? ".fortune-hint" : ""}${i === growthHint ? ".growth-hint" : ""}`, {
+      html: formatHtml(c.text || "……"),
+      "aria-label": shortfall > 0 ? `${c.text || "……"}${hint ? `（${hint}）` : ""}` : hint ? `${c.text}（${hint}）` : null,
+      "aria-describedby": shortfall > 0 ? reasonId : null,
+      "aria-disabled": shortfall > 0 ? "true" : null,
+      style: { animationDelay: `${i * 80}ms` },
+      dataset: { test: `choice-${i}` },
+      onclick: (e) => { e.stopPropagation(); if (shortfall <= 0) pickChoice(line, c); },
+    });
+    reasons.push(shortfall > 0 ? el("span.vn-choice-reason", { id: reasonId, text: `所持金不足（あと${shortfall.toLocaleString("ja-JP")}円）` }) : null);
+    return button;
+  });
   dom.choices.replaceChildren(...buttons);
   dom.choices.classList.add("show");
-  buttons.find((button) => !button.disabled)?.focus();
+  buttons.find((button) => button.getAttribute("aria-disabled") !== "true")?.focus();
   // 選択肢は1行（GUI22）。文言は全角26字以内で書く。差し込みで長くなったときだけ字を縮める
-  buttons.forEach((b) => fitOneLine(b, 18));
+  buttons.forEach((b, i) => {
+    // 本文だけ従来の下限で測り、補足によって本文の字が縮まないようにする。
+    fitOneLine(b, 18);
+    if (reasons[i]) b.append(reasons[i]);
+  });
   kickAuto();
 }
 
@@ -1014,28 +1066,6 @@ function autoChoose() {
   const btns = [...dom.choices.querySelectorAll(".vn-choice")];
   const idx = vnTest.choose ? vnTest.choose(r.id, btns.map((b) => b.textContent)) : 0;
   btns[Math.max(0, Math.min(btns.length - 1, idx | 0))]?.click();
-}
-
-/**
- * 選んだ選択肢だけを、操作できない写しとして同じ位置に短く残し、右へ流して消す（#2688 F5）。
- * 本物の選択肢はすぐ片付けるので、進行と検査は今までどおり。SKIP・高速送り・動きを減らす設定では出さない。
- */
-function ghostChoice(button) {
-  const host = layers.vn;
-  if (!button?.isConnected || !host?.offsetWidth || skipMode || vnTest.turbo || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const b = button.getBoundingClientRect(), h = host.getBoundingClientRect();
-  const k = h.width / host.offsetWidth;
-  if (!b.width || !k) return;
-  const ghost = button.cloneNode(true);
-  ghost.removeAttribute("data-test");
-  ghost.disabled = true;
-  ghost.tabIndex = -1;
-  ghost.setAttribute("aria-hidden", "true");
-  ghost.classList.add("vn-choice-ghost");
-  Object.assign(ghost.style, { left: `${(b.left - h.left) / k}px`, top: `${(b.top - h.top) / k}px`, width: `${b.width / k}px`, height: `${b.height / k}px`, animation: "none" });
-  host.append(ghost);
-  ghost.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateX(18px)" }], { duration: 280, easing: "cubic-bezier(.55,0,.85,.35)", fill: "forwards" })
-    .finished.catch(() => {}).finally(() => ghost.remove());
 }
 
 function pickChoice(line, c) {

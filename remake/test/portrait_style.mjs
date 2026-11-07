@@ -134,7 +134,7 @@ const titleSource = await read('js/scenes/title.js');
 let modalArgs, saves=0, changed;
 function el(selector,attrs={},children=[]) {
  if(Array.isArray(attrs)){children=attrs;attrs={};}
- return {selector,...attrs,children};
+ return {selector,...attrs,children,setAttribute(k,v){this[k]=v;}};
 }
 const configCtx = vm.createContext({config:state.config,document:{body:{dataset:{screen:'vn'}}},el,
  saveConfig(){saves++;},applyVolumes(){},createUiThemeSelect(){return {};},
@@ -143,9 +143,9 @@ vm.runInContext(titleSource.slice(titleSource.indexOf('export async function ope
 await configCtx.openConfig({onChange:(key,value)=>changed=[key,value]});
 const find = (node,test) => node?.dataset?.test===test ? node : (node?.children||[]).map(n=>find(n,test)).find(Boolean);
 const control=find(modalArgs.body,'cfg-portrait-style');
-test('settings expose independent classic/new control',()=>{assert.ok(control);assert.deepEqual(Array.from(control.children,option=>option.value),['new','classic']);assert.ok(find(modalArgs.body,'cfg-intro-art'));});
-test('changing settings persists and notifies current VN',()=>{control.onchange({target:{value:'new'}});assert.equal(saves,1);assert.deepEqual(changed,['portraitStyle','new']);});
-configCtx.document.body.dataset.screen='preview';control.onchange({target:{value:'classic'}});
+test('settings expose independent classic/new control',()=>{assert.ok(control);assert.deepEqual(Array.from(control.children,option=>option.value),['classic','new']);assert.ok(find(modalArgs.body,'cfg-intro-art'));});
+test('changing settings persists and notifies current VN',()=>{const pick=value=>control.children.find(b=>b.value===value).onclick();pick('new');assert.equal(saves,1);assert.deepEqual(changed,['portraitStyle','new']);assert.deepEqual(Array.from(control.children,b=>b['aria-checked']),['false','true']);});
+configCtx.document.body.dataset.screen='preview';control.children.find(b=>b.value==='classic').onclick();
 test('isolated preview does not write user settings',()=>assert.equal(saves,1));
 const previewSource=await read('js/vn/conversation-preview.js');
 const previewStart=previewSource.indexOf('const portraitStyleSelect=');

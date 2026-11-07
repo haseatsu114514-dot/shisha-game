@@ -64,9 +64,10 @@ const ICONS = Object.freeze({
   camel: '<svg viewBox="0 0 48 32" aria-hidden="true"><path d="M5 30l3-9c-2-1-3-3-3-6 0-4 3-7 7-7 2-4 6-6 10-3 3 2 5 2 7 0l4-6c2-1 5 0 6 2l2 4-4 1-4 7c-1 4-4 7-8 8l1 9h-3l-2-8h-6l-3 8H9l2-8-3-1-1 9z" fill="currentColor"/></svg>',
 });
 const TUTORIAL = [
-  { icon: "camel", title: "ラクダは、自分で走る", body: "自分のラクダは、車のすぐ横（いちばん手前）を走る金のゼッケン（★）のハビーバ。進路は操縦しない。背中の小さなロボット騎手に、リモコンで「声」と「ムチ」を送るだけ。" },
-  { icon: "voice", title: "声をかける ── Space／左のボタン", body: "ハビーバの背のロボット騎手のまわりに金色の輪が出て、縮んでいく。内側の輪と重なった瞬間に押すと PERFECT で、その場でぐっと伸びる。外せば無駄な声でスタミナが減り、連打はもっと減る。" },
-  { icon: "signal", title: "ムチ ── X／右のボタンを押し続ける", body: "押している間だけ騎手の腕が回り、ラクダが伸びる。そのぶんスタミナが減り、空になると戻るまで使えない。離して声を当てれば息が整う。残り250mの LAST SPURT でいちばん効く。" },
+  // 3ページとも短く（#2836）。キーは kbd で添え、タッチ端末では CSS で隠す。結果・大会選びの「？」から読み直せる。
+  { icon: "camel", title: "ラクダは、自分で走る", body: "手前を走る金のゼッケン（★）がハビーバ。操縦はしない。背中のロボット騎手へ「声」と「ムチ」を送るだけ。" },
+  { icon: "voice", title: "声をかける ── 左のボタン", key: "Space", body: "騎手のまわりの金の輪が縮む。内側の輪と重なった瞬間に押すと PERFECT で、ぐっと伸びる。外したり連打したりすると、スタミナが減る。" },
+  { icon: "signal", title: "ムチ ── 右のボタンを押し続ける", key: "X", body: "押している間だけラクダが伸び、スタミナが減る。空になるとしばらく使えない。残り250mの LAST SPURT でいちばん効く。" },
 ];
 const sfx = name => { try { SE[name]?.(); } catch { /* 音は無くても遊べる */ } };
 
@@ -268,12 +269,13 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     el("span.camel-stamina-bar", [staminaFill, el("span.camel-stamina-mark", { style: { "--x": PLAYER.tired / 100 } })]), staminaValue]);
   const hudNode = el("div.camel-hud", { hidden: true }, [progressNode, clockNode, standingsNode]);
   const signalCost = el("small.camel-signal-note", { text: "押している間" });
-  const voiceButton = el("button.camel-control.camel-voice", { type: "button", dataset: { test: "camel-voice", cue: "off" } }, [
+  // スマホ横持ちでは名前の文字を隠してアイコン（🔊・⚡）とゲージだけにするので、読み上げ名は aria-label に持たせる（#2836）。
+  const voiceButton = el("button.camel-control.camel-voice", { type: "button", "aria-label": "声をかける", dataset: { test: "camel-voice", cue: "off" } }, [
     el("span.camel-control-icon", { html: ICONS.voice }),
     el("span.camel-control-text", [el("strong", { text: "声をかける" }),
       el("span.camel-rhythm", { "aria-hidden": "true" }, [el("small", { text: "調子" }), el("span.camel-rhythm-bars", rhythmBars)])]),
     el("kbd", { text: "Space" })]);
-  const signalButton = el("button.camel-control.camel-signal", { type: "button", dataset: { test: "camel-signal", state: "ready" } }, [
+  const signalButton = el("button.camel-control.camel-signal", { type: "button", "aria-label": "ムチ（押している間）", dataset: { test: "camel-signal", state: "ready" } }, [
     el("i.camel-control-cool", { "aria-hidden": "true" }),
     el("span.camel-control-icon", { html: ICONS.signal }),
     el("span.camel-control-text", [el("span.camel-signal-head", [el("strong", { text: "ムチ" }), signalCost]), staminaNode]),
@@ -452,24 +454,30 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   closeButton.addEventListener("click", () => cleanup(runs.length > 0));
 
   // ---- 進行 -----------------------------------------------------------------------------------------
-  function openTutorial(page = 0) {
+  /** 遊び方。back があれば「？」から開いた読み直しで、最後のページと「閉じる」で元のカードへ戻る（レースは始めない）。 */
+  function openTutorial(page = 0, back = null) {
     setPhase("tutorial");
     const step = TUTORIAL[page];
-    const next = el("button.btn.primary", { type: "button", text: page === TUTORIAL.length - 1 ? "スタート" : "次へ", dataset: { test: "camel-tutorial-next" },
-      onclick: () => page === TUTORIAL.length - 1 ? startRace() : openTutorial(page + 1) });
-    const skip = el("button.btn.ghost", { type: "button", text: "とばしてスタート", dataset: { test: "camel-tutorial-skip" }, onclick: () => startRace() });
+    const lastPage = page === TUTORIAL.length - 1;
+    const next = el("button.btn.primary", { type: "button", text: lastPage ? back ? "閉じる" : "スタート" : "次へ", dataset: { test: "camel-tutorial-next" },
+      onclick: () => lastPage ? back ? back() : startRace() : openTutorial(page + 1, back) });
+    const skip = back ? el("button.btn.ghost", { type: "button", text: "閉じる", dataset: { test: "camel-tutorial-close" }, onclick: () => back() })
+      : el("button.btn.ghost", { type: "button", text: "とばしてスタート", dataset: { test: "camel-tutorial-skip" }, onclick: () => startRace() });
     sheet.replaceChildren(el("div.camel-card.camel-tutorial", { dataset: { test: "camel-tutorial", page: String(page) } }, [
       el("div.camel-tutorial-icon", { dataset: { kind: step.icon }, html: ICONS[step.icon] }),
       el("div.camel-tutorial-body", [
         el("p.camel-eyebrow", { text: `HOW TO PLAY  ${page + 1} / ${TUTORIAL.length}` }),
-        el("h2", { text: step.title }), el("p", { text: step.body }),
+        el("h2", [step.title, step.key ? el("kbd.camel-key", { text: step.key }) : null]), el("p", { text: step.body }),
         el("div.camel-steps", { "aria-hidden": "true" }, TUTORIAL.map((_, i) => el("i", { class: i === page ? "on" : null }))),
-        el("div.camel-card-actions", page === TUTORIAL.length - 1 ? [next] : [next, skip]),
+        el("div.camel-card-actions", lastPage ? [next] : [next, skip]),
       ]),
     ]));
     sheet.hidden = false;
     next.focus();
   }
+  /** カードの右上の「？」: 遊び方を読み直し、閉じると back で元のカードへ戻る。 */
+  const helpButton = back => el("button.camel-help", { type: "button", text: "？", "aria-label": "遊び方を見る", dataset: { test: "camel-help" },
+    onclick: () => openTutorial(0, back) });
   function openCups() {
     setPhase("cups");
     hudNode.hidden = true;
@@ -489,9 +497,10 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         ]);
       })),
       el("small", { text: "この訪問中の再挑戦は日付を進めません。完走して戻ると従来どおり昼の1行動を使います。" }),
+      helpButton(openCups),
     ]));
     sheet.hidden = false;
-    sheet.querySelector("button:not(:disabled)")?.focus();
+    sheet.querySelector(".camel-cup:not(:disabled)")?.focus();
   }
   function startRace() {
     playBgm("bgm_ethnic12");
@@ -1235,7 +1244,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       chip.dataset.pos = String(row.position);
       chip.querySelector(".camel-rank-badge").textContent = String(row.position);
       chip.querySelector(".camel-chip-gap").textContent = row.finishedAt !== null ? "GOAL"
-        : row.position === 1 ? "TOP" : `−${Math.max(0, Math.round(leader.distance - row.distance))}m`;
+        : row.position === 1 ? "TOP" : `↓${Math.max(0, Math.round(leader.distance - row.distance))}m`;
       if (before && before !== row.position) {
         chip.dataset.move = row.position < before ? "up" : "down";
         clearTimeout(chip.moveTimer);
@@ -1303,7 +1312,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     const again = el("button.btn.primary", { type: "button", text: "もう一度", dataset: { test: "camel-retry" }, onclick: () => startRace() });
     const choose = el("button.btn", { type: "button", text: "大会を選ぶ", dataset: { test: "camel-choose-cup" }, onclick: openCups });
     const leave = el("button.btn", { type: "button", text: "終える", dataset: { test: "camel-finish" }, onclick: () => cleanup(true) });
-    sheet.replaceChildren(el("div.camel-card.camel-result", { dataset: { test: "camel-result", rank: String(score.rank), grade: score.grade, total: String(score.total) } }, [
+    const card = el("div.camel-card.camel-result", { dataset: { test: "camel-result", rank: String(score.rank), grade: score.grade, total: String(score.total) } }, [
       el("p.camel-eyebrow", { text: `${camelCup(run.cup).name} / RESULT` }),
       el("div.camel-result-head", [
         el("div.camel-medal", { dataset: { rank: String(score.rank) } }, [el("strong", { text: String(score.rank) }), el("span", { text: "位" })]),
@@ -1321,9 +1330,16 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       camelMastered(run) ? el("p.camel-best", { text: "中級認定！ 連打に頼らず、声と息を合わせた走り。追加の火種は初回のみ夜に精算。" })
         : camelExpert(run) ? el("p.camel-best", { text: "称号獲得：砂漠の名調教師" }) : null,
       el("div.camel-card-actions", allowRetry ? [again, choose, leave] : [leave]),
-    ]));
-    sheet.hidden = false;
-    (allowRetry ? again : leave).focus();
+    ]);
+    // 「？」で遊び方を読んだあとは、同じ結果のカードへ戻す（採点・記録はやり直さない）。
+    const showResult = () => {
+      setPhase("result");
+      sheet.replaceChildren(card);
+      sheet.hidden = false;
+      (allowRetry ? again : leave).focus();
+    };
+    card.append(helpButton(() => { totalNode.textContent = String(score.total); showResult(); }));
+    showResult();
   }
 
   // ---- 開始 -----------------------------------------------------------------------------------------

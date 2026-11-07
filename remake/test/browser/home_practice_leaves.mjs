@@ -61,7 +61,10 @@ await suite("shop-practice-stock", async check => {
         const pin = page.locator('[data-test="pin-rest"]');
         if (options.hasTouch) await pin.tap(); else await pin.click();
         assert.equal(await page.locator('[data-test="map-home-practice"]').count(), 0);
-        assert.equal(await page.locator('[data-test="map-go"]').innerText(), "家に帰る");
+        // #2730: 行き先パネル全体が移動ボタン。表示は写真とスポット名「家」だけで、操作名は「家へ行く」。
+        const go = page.locator('[data-test="map-go"]');
+        assert.equal(await go.innerText(), "家");
+        assert.equal(await go.getAttribute("aria-label"), "家へ行く");
       }
     }, options);
   }

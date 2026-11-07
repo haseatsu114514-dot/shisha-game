@@ -726,7 +726,7 @@
         {
           "speaker": "salaryman",
           "face": "normal",
-          "text": "……今日の、良かったよ",
+          "text": "……今日の、[pause]良かったよ",
           "portrait": false
         },
         {
@@ -737,6 +737,7 @@
         {
           "speaker": "salaryman",
           "face": "smile",
+          "duck": true,
           "text": "……表です。表克己。いつも、ありがとうございます"
         },
         {

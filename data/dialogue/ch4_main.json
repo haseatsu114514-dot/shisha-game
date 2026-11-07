@@ -726,6 +726,9 @@
     },
     {
       "dialogue_id": "ch4_tournament_start",
+      "metadata": {
+        "forced_event": true
+      },
       "lines": [
         {
           "speaker": "",

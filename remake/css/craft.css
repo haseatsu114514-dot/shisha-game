@@ -54,6 +54,28 @@
 .worker-equipment > * { position: absolute; left: 50%; transform: translateX(-50%); }
 .worker-vignette { position: absolute; inset: 0; background: linear-gradient(180deg, #05030b33, transparent 30%, transparent 65%, #08060ed9), linear-gradient(90deg, #100c1222, transparent 60%, #100c1255); pointer-events: none; }
 .worker-scene-tag { position: absolute; left: 20px; top: 18px; font-size: 14px; letter-spacing: 0.02em; color: #d8cbbb; }
+/* 一台の記録（CFX03・js/craft/rig-record.js）: 工程を終えるたびに灯が点き、出来が良いほど明るい。数字は出さない */
+.rig-record { position: absolute; left: 16px; top: 44px; display: flex; gap: 6px; z-index: 3; pointer-events: none; }
+.rig-lamp { position: relative; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+  background: #120c18cc; border: 1px solid #6d5d7a; color: #7f6f8b; font-style: normal; transition: background .3s, border-color .3s, color .3s, box-shadow .3s; }
+.rig-lamp b { font-size: 12px; line-height: 1; font-weight: 700; }
+.rig-lamp[data-tier="dim"] { background: #2a2230e6; border-color: #8a7a96; color: #b8aac4; }
+.rig-lamp[data-tier="good"] { background: #5a3a1ee6; border-color: #e0a060; color: #ffe2bd; box-shadow: 0 0 6px #ff9a3a66; }
+.rig-lamp[data-tier="great"] { background: #b8601ce6; border-color: #ffc27a; color: #fff4e0; box-shadow: 0 0 10px #ff9a3acc; }
+.rig-lamp[data-tier="brilliant"] { background: radial-gradient(circle at 40% 35%, #fff6cf, #ffc21a 55%, #c97a00); border-color: #fff1b0; color: #4a2600;
+  box-shadow: 0 0 6px #fff1b0, 0 0 16px #ffc21acc; animation: rig-lamp-glow 2.4s ease-in-out infinite; }
+.rig-lamp.lit { animation: rig-lamp-pop .5s cubic-bezier(.2, 1.6, .4, 1); }
+.rig-lamp[data-tier="brilliant"].lit { animation: rig-lamp-pop .5s cubic-bezier(.2, 1.6, .4, 1), rig-lamp-glow 2.4s ease-in-out .5s infinite; }
+@keyframes rig-lamp-pop { 0% { transform: scale(.4); } 60% { transform: scale(1.35); } 100% { transform: scale(1); } }
+@keyframes rig-lamp-glow { 50% { box-shadow: 0 0 10px #fff1b0, 0 0 26px #ffc21a; } }
+/* 灯った分だけ作業風景に満ちる暖かい気配。全工程が輝くと縁がゆっくり脈打つ */
+.rig-aura { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: var(--rig-aura, 0); transition: opacity 1.2s ease;
+  background: radial-gradient(120% 70% at 62% 78%, #ffb04a38, transparent 62%); box-shadow: inset 0 0 40px #ffb04a55; }
+.rig-aura[data-full="true"] { animation: rig-aura-breathe 3s ease-in-out infinite; }
+@keyframes rig-aura-breathe { 50% { box-shadow: inset 0 0 64px #ffc21a88; } }
+@media (prefers-reduced-motion: reduce) {
+  .rig-lamp.lit, .rig-lamp[data-tier="brilliant"], .rig-lamp[data-tier="brilliant"].lit, .rig-aura[data-full="true"] { animation: none; }
+}
 .bench-worker-name { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 5px 16px; color: #dfd3c2; border-top: 1px solid #ffffff0d; background: #17151b; }
 .bench-worker-name > b { font-size: 14px; letter-spacing: 0.12em; }
 .bench-worker-caption { display: none; }
@@ -632,10 +654,6 @@
 .nc-cut small { font-size: 14px; letter-spacing: 0.2em; }
 .nc-cut b { display: block; font-size: 30px; letter-spacing: 0.1em; }
 .nc-cut-pt { font-size: 18px; font-weight: 700; }
-/* 優勝の煙の輪（craft/result.js smokeRings・#2688 A18）と、第2〜4章の結果の紙吹雪の層（celebrate） */
-.rc-smoke-ring { position: absolute; left: 50%; top: 52%; width: 300px; height: 160px; border-radius: 50%; pointer-events: none; z-index: 6;
-  border: 30px solid #f4eefccc; filter: blur(6px); box-shadow: 0 0 40px #ffffff88, inset 0 0 30px #ffffff66; }
-.rc-celebrate { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 60; }
 .confetti { position: absolute; top: -20px; width: 10px; height: 16px; animation: confetti 2.8s ease-in forwards; }
 @keyframes confetti { to { transform: translate(var(--x), 780px) rotate(var(--r)); } }
 

@@ -33,7 +33,7 @@
       "kind": "browser",
       "weight": 0.5,
       "timeout": 5,
-      "paths": ["remake/js/core/portrait-style.js", "remake/js/core/data.js", "remake/js/core/state.js", "remake/js/scenes/title.js", "remake/js/vn/engine.js", "remake/test/browser/portrait_style.mjs", "remake/test/browser/portrait_framing.mjs", "remake/js/vn/intro.js", "assets/sprites/character_variants/", "remake/img/sprites/character_variants/"],
+      "paths": ["remake/js/core/portrait-style.js", "remake/js/core/data.js", "remake/js/core/state.js", "remake/js/scenes/title.js", "remake/css/settings.css", "remake/js/vn/engine.js", "remake/test/browser/portrait_style.mjs", "remake/test/browser/portrait_framing.mjs", "remake/js/vn/intro.js", "assets/sprites/character_variants/", "remake/img/sprites/character_variants/"],
       "run": ["node remake/test/browser/portrait_style.mjs"]
     },
     {
@@ -830,6 +830,7 @@
         "node remake/test/axe_bar_discovery.mjs",
         "node remake/test/mix_recognition.mjs",
         "node --experimental-vm-modules remake/test/foil_holes.mjs",
+        "node --experimental-vm-modules remake/test/craft_fx.mjs",
         "node remake/test/mix_temperature.mjs",
         "node remake/test/steam_temperature.mjs",
         "node remake/test/flavor_life.mjs",
@@ -900,6 +901,7 @@
         "node --experimental-vm-modules remake/test/continue_context.mjs",
         "node --experimental-vm-modules remake/test/bgm_gain.mjs",
         "node --experimental-vm-modules remake/test/bgm_readiness.mjs",
+        "node --experimental-vm-modules remake/test/bgm_tournament_wait.mjs",
         "node --experimental-vm-modules remake/test/bgm_packaged.mjs",
         "node --experimental-vm-modules remake/test/bgm_packed_cache.mjs",
         "node --experimental-vm-modules remake/test/lime_lifecycle_833.mjs",
@@ -907,7 +909,8 @@
         "node --experimental-vm-modules remake/test/lime_save_774.mjs",
         "node --experimental-vm-modules remake/test/purikura_motion.mjs",
         "node remake/test/text_wrap.mjs --fixed-only",
-        "node remake/test/natural_wrap.mjs"
+        "node remake/test/natural_wrap.mjs",
+        "node remake/test/conversation_effects_marks.mjs"
       ]
     },
     {
@@ -1532,6 +1535,8 @@
         "data/dialogue/growth_lessons.json",
         "data/dialogue/ch3_volk.json",
         "data/dialogue/ch3_rivals.json",
+        "data/dialogue/ch5_tokyo.json",
+        "remake/js/daily/bonds.js",
         "remake/test/browser/lesson_consult_coverage.mjs"
       ],
       "run": [
@@ -1593,8 +1598,8 @@
       "id": "ch5-full-flow",
       "title": "Chapter 5 full playthrough on one save",
       "kind": "browser",
-      "weight": 0.5,
-      "timeout": 10,
+      "weight": 5,
+      "timeout": 15,
       "paths": [
         "remake/js/chapters/ch5*.js",
         "remake/js/chapters/ch4.js",
@@ -1654,6 +1659,8 @@
         "remake/js/chapters/ch2-preparation.js",
         "data/dialogue/ch5_shops.json",
         "data/dialogue/ch2_kumicho.json",
+        "data/dialogue/ch5_tokyo.json",
+        "remake/js/daily/bonds.js",
         "remake/test/browser/ch5_home_talks.mjs"
       ],
       "run": [
@@ -3599,6 +3606,7 @@
       "paths": [
         "remake/css/ui-themes.css",
         "remake/css/ui-paper.css",
+        "remake/css/settings.css",
         "remake/img/ui/paper/**",
         "remake/css/vn-composition.css",
         "remake/img/ui/vn-polish/**",
@@ -3781,6 +3789,15 @@
       "run": [
         "node remake/test/conversation_effects_demo.mjs"
       ]
+    },
+    {
+      "id": "conversation-effects",
+      "title": "Conversation effects in the main VN engine (#2828): beat, BGM duck, [pause], inner voice, [shiver]",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 4,
+      "paths": ["remake/js/vn/engine.js", "remake/js/vn/text.js", "remake/js/core/audio.js", "remake/css/vn.css", "remake/test/browser/conversation_effects_2828.mjs"],
+      "run": ["node remake/test/browser/conversation_effects_2828.mjs"]
     },
     {
       "id": "flavor-expression",

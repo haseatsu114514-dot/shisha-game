@@ -1,4 +1,4 @@
-/** SPEC 8.2: offline Chapter 1 tournament sampler. Run with `node remake/tools/balance/measure.mjs [--calibrate|--board]`.
+/** SPEC 8.2: offline Chapter 1 tournament sampler. Run with `node remake/tools/balance/measure.mjs --board --n 200 --seed 1`.
  * Uses the game's mix, heat, steam, temperature and final scoring. The Gaussian input
  * model is an explicit approximation of human operation, not a frame simulation.
  */
@@ -9,6 +9,14 @@ import { registerHooks } from 'node:module';
 
 const mode = process.argv.includes('--star') ? 'star' : 'step';
 const boardMode = process.argv.includes('--board');
+const option = (name, fallback) => {
+  const index = process.argv.indexOf(name);
+  return index < 0 ? fallback : Number(process.argv[index + 1]);
+};
+const samples = option('--n', 1000);
+const seedStart = option('--seed', 1);
+assert(Number.isSafeInteger(samples) && samples > 0, '--n must be a positive integer');
+assert(Number.isSafeInteger(seedStart) && seedStart > 0, '--seed must be a positive integer');
 assert(!(boardMode && mode === 'star'), '--board uses production ten-step rules');
 // Default uses the production ten-step calculation unchanged. --star is only a legacy
 // comparison of tier01; the loader changes that export in memory, never the game files.
@@ -29,12 +37,12 @@ Math.random = () => { throw Error('unseeded random draw'); };
 const root = new URL('.', import.meta.url);
 const dataRoot = new URL('../../../data/', import.meta.url);
 const plan = JSON.parse(fs.readFileSync(new URL('plan.json', root)));
-const [{DB}, stateModule, score, steps, thermal, conditions, heat, common, statsModule, holes, heart, condition, mastery, leaf, result] = await Promise.all([
+const [{DB}, stateModule, score, steps, thermal, conditions, heat, common, statsModule, holes, heart, condition, mastery, leaf] = await Promise.all([
   '../../js/core/data.js','../../js/core/state.js','../../js/craft/score.js','../../js/craft/steps.js',
   '../../js/craft/temperature-model.js','../../js/craft/conditions.js','../../js/craft/heat_logic.js',
   '../../js/craft/common.js','../../js/core/stats.js','../../js/craft/holes_logic.js',
   '../../js/craft/steam-heart.js','../../js/core/condition.js','../../js/core/flavor-mastery.js',
-  '../../js/craft/flavor-life.js','../../js/craft/result.js',
+  '../../js/craft/flavor-life.js',
 ].map(p => import(p)));
 for (const name of ['flavors','equipment','recipes','ng_mixes']) {
   const data = JSON.parse(fs.readFileSync(new URL(`${name}.json`, dataRoot)));
@@ -42,12 +50,12 @@ for (const name of ['flavors','equipment','recipes','ng_mixes']) {
 }
 DB.flavorById = Object.fromEntries(DB.flavors.map(x => [x.id,x]));
 DB.equipById = Object.fromEntries(DB.equipment.map(x => [x.id,x]));
-assert.equal(score.SUI_BAR, 90.8);
 const keys = ['technique','sense','guts','charm','insight'];
 const profiles = { C1:[1,1,1,1,1], C2:[3,3,2,2,3], C3:[5,5,1,1,4], C4:[5,5,2,1,5], C3cap4:[4,4,1,1,4] };
 const growth = await import('../../js/core/growth.js');
 const board = await import('../../js/core/growth-board.js');
 const steam = await import('../../js/craft/steam.js');
+const ch1Votes = await import('../../js/craft/ch1-votes.js');
 // Central Chapter 1 model before tournament/clear/breadth rewards: about Lv.9, 16 fire.
 // These are deterministic examples of legal allocations, not an optimized build search.
 const boardBuilds = {};
@@ -148,14 +156,18 @@ export function runOne(id, operation, seed, config = plan, skillLookup = hasSkil
   cs.pull=finishThermal(0);
   cs.careHistory=[finishThermal(1),finishThermal(2)];
   score.finalize(cs);
-  const outcome=result.outcomeOf(cs.total);
+  const attempt={};
+  for(let round=0;round<4;round++) assert.equal(ch1Votes.castCh1Votes(attempt,round,cs),true);
+  const outcome=attempt.voteAttempt.result;
   assert.equal(cs.foilSkipped,true);
   assert.equal(typeof skillLookup(scenario,'K11'),'boolean');
   return {id,operation,seed,total:cs.total,rank:outcome.rank,
+    points:outcome.rows.find(row=>row.id==='hajime').points,
+    leaderPoints:outcome.rows[0].points,
     parts:cs.parts,heatPhases:timings.map(t=>t.phase),steamHits:hits,
     playStats:scenario.playStats,tierMode:mode};
 }
-function rowsFor(id,operation,config=plan) { return Array.from({length:1000},(_,i)=>runOne(id,operation,i+1,config)); }
+function rowsFor(id,operation,config=plan) { return Array.from({length:samples},(_,i)=>runOne(id,operation,seedStart+i,config)); }
 if (process.argv.includes('--calibrate-poor')) {
   for(let scale=1;scale<=4.01;scale+=.1) {
     const config=structuredClone(plan);
@@ -178,9 +190,16 @@ if (process.argv.includes('--calibrate-poor')) {
   for(const id of selected) for(const operation of ['poor','mid','perfect']) {
     const rows=rowsFor(id,operation), again=rowsFor(id,operation);
     assert.deepEqual(again,rows,`repeat ${id}/${operation}`);
-    all.push({id,operation,n:rows.length,wins:rows.filter(x=>x.rank===1).length,sha256:sha(rows),repeatSha256:sha(again)});
+    const winners=rows.filter(x=>x.rank===1), losers=rows.filter(x=>x.rank!==1);
+    all.push({id,operation,n:rows.length,wins:winners.length,
+      ranks:Object.fromEntries([1,2,3,4].map(rank=>[rank,rows.filter(x=>x.rank===rank).length])),
+      meanTotal:rows.reduce((sum,row)=>sum+row.total,0)/rows.length,
+      meanPoints:rows.reduce((sum,row)=>sum+row.points,0)/rows.length,
+      winnerTotalMin:winners.length?Math.min(...winners.map(x=>x.total)):null,
+      loserTotalMax:losers.length?Math.max(...losers.map(x=>x.total)):null,
+      sha256:sha(rows),repeatSha256:sha(again)});
   }
-  console.log(JSON.stringify({tierMode:mode,model:boardMode
+  console.log(JSON.stringify({tierMode:mode,seedStart,samples,ranking:'ch1-votes-v2',model:boardMode
     ? 'gaussian-input-approximation; legal Lv9/16-fire examples; excludes manual refresh, replacement coal, fatigue and skill input decisions; not integrated acceptance'
     : 'gaussian-input-approximation; legacy-stats-only; no growth-board acceptance',
     ...(boardMode?{builds:Object.fromEntries(Object.entries(boardBuilds).map(([id,g])=>[id,{nodes:g.nodes,remaining:growth.hidaneTotal(g)}]))}:{}),

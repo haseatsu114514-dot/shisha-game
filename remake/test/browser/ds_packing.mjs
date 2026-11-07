@@ -7,6 +7,7 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { confirmAppearanceSetup, prepareAppearanceCatalog } from "./appearance_setup.mjs";
 import { confirmWaterSetup } from "./water_setup.mjs";
+import { rotateThroughGuard } from "./rotate_guard.mjs";
 prepareAppearanceCatalog();
 const { chromium } = createRequire(import.meta.url)("playwright");
 const base = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
@@ -77,8 +78,22 @@ const devices = [
   { name:"pc-normal", mode:"normal", viewport:{width:1280,height:720}, touch:false },
   { name:"pc-ds", mode:"ds", viewport:{width:1280,height:720}, touch:false },
   { name:"touch-landscape-ds", mode:"ds", viewport:{width:844,height:390}, touch:true },
-  { name:"touch-portrait-ds", mode:"ds", viewport:{width:390,height:844}, touch:true },
+  // #2789: スマホの縦持ちはDS風も回転ガードで止める（#2794）。作業台の水量と詰め方の工程で縦（390×844）へ回し、
+  // ガードが入力を止めることを確かめ、横（844×390）へ戻して同じ工程から続ける。配置の検査は横で行う。
+  { name:"touch-portrait-ds", mode:"ds", viewport:{width:844,height:390}, portrait:{width:390,height:844}, touch:true },
 ];
+const benchState = p => p.evaluate(() => ({
+  step: document.querySelector(".bench")?.dataset.step || null,
+  water: document.querySelector('[data-test="water-meter"]')?.getAttribute("aria-valuenow") ?? null,
+  pressed: [...document.querySelectorAll(".pack-choice")].map(n => n.getAttribute("aria-pressed")),
+  pack: document.querySelector('[data-test="pack-vessel"]')?.dataset.pack ?? null,
+  controls: ["water-confirm", "mix-ok", "pack-confirm", "hole-start"].filter(id => document.querySelector(`[data-test="${id}"]`)),
+}));
+async function guarded(p, device, step, ids) {
+  if (!device.portrait) return;
+  await rotateThroughGuard(p, { portrait:device.portrait, landscape:device.viewport, label:`${device.name}/${step}`,
+    targets:ids.map(id => b(p, id)), state:() => benchState(p), touch:device.touch });
+}
 let browser;
 try {
   browser = await chromium.launch({ headless:true, chromiumSandbox:true,
@@ -131,6 +146,7 @@ try {
       // 作業台の表示検査は店の制作本体を直接呼ぶ（自宅練習は廃止）。
       await p.evaluate(() => { import("./js/craft/practice.js").then(m => m.runFullPractice()); });
       await confirmAppearanceSetup(p, { touch: device.touch });
+      await guarded(p, device, "water", ["water-pour", "water-confirm"]);
       await confirmWaterSetup(p, { touch: device.touch });
       await b(p,"mix-ok").waitFor();
       // DS風の配合は下画面（触る画面）の幅に組み直す。横にはみ出さない。
@@ -146,6 +162,7 @@ try {
         assert(await p.locator(selector).isVisible(), `${selector} must be displayed`);
       }
       assert.equal(await p.locator(".pack-choice:visible").count(), 3);
+      await guarded(p, device, "packing", ["opt-fluffy", "opt-firm", "pack-confirm"]);
       const initial = await snap("initial"); horizontal(initial);
       // Every option must receive actual input and update vessel, caption and pressed state.
       for (const [value,label] of [["fluffy","ふんわり"],["firm","デンスパック"],["normal","ノーマル"]]) {
