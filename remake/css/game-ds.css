@@ -339,6 +339,14 @@ body.game-ds .status-modal .st-line { flex-wrap: wrap; gap: 4px 8px; }
 body.game-ds .status-modal .st-name { flex: none; width: 48px; }
 body.game-ds .status-modal .st-info { flex: 1; }
 body.game-ds .status-modal .st-fx { overflow-wrap: anywhere; }
+/* レシピ帳の詳細（#2938）: 横持ちの下画面は低く、見出し・余白・戻るボタンで本文が約68pxに潰れていた。詳細を開いている間は
+   STATUSの見出しと余白を畳み、本文に96px以上（#1906）を残す。戻る・閉じるは常に見える。 */
+body.game-ds .status-modal:has(.recipe-detail) { padding-block: 10px; }
+body.game-ds .status-modal:has(.recipe-detail) > h3 { display: none; }
+body.game-ds .status-modal:has(.recipe-detail) .recipe-detail h4 { margin-bottom: 4px; }
+body.game-ds .status-modal:has(.recipe-detail) .recipe-detail p { margin: 4px 0; }
+body.game-ds .status-modal:has(.recipe-detail) .recipe-detail + .btn { min-height: 44px; padding-block: 6px; margin-top: 6px; }
+body.game-ds .status-modal:has(.recipe-detail) .modal-actions { margin-top: 8px; }
 /* 通知カード・トーストは上画面に出す */
 body.game-ds :is(#toasts, #banners) { left: var(--ds-vx); top: calc(var(--ds-vy) + 36px); width: var(--ds-vw); height: calc(var(--ds-vh) - 36px); right: auto; bottom: auto; }
 /* 上画面は端末の半分の高さなので、吸い出し以降の機材の絵は常に縮めて収める（旧配置の大画面向け例外を打ち消す）。 */

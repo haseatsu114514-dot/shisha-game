@@ -98,7 +98,8 @@ await suite("home-shisha", async check => {
       // 詳細本文に読める高さ（#1906）。DS風の横持ち（portrait を横へ戻した 844×390）では旧STATUSが右の画面に収まり、本文は
       // 約68pxしか取れない（縦持ちの上下2画面では足りていた。#2789 で縦持ちを封じて表に出た既存の不足）。モーダルの組み方は
       // 判断待ちなので、DS風の横では高さを測らず、下のスクロールで最後まで読めることを確かめる。
-      if (label !== "portrait") assert(await text.evaluate(node => node.clientHeight >= Math.min(96, node.scrollHeight)), "詳細本文に読める高さを確保する");
+      const textBox = await text.evaluate(node => ({ client: node.clientHeight, scroll: node.scrollHeight }));
+      assert(textBox.client >= Math.min(96, textBox.scroll), `詳細本文に読める高さを確保する（${label}: ${textBox.client}px / 内容${textBox.scroll}px）`);
       await assertFits(page, '[data-test="recipe-back"]');
       for (const paragraph of await text.locator('p').all()) {
         await paragraph.scrollIntoViewIfNeeded();
