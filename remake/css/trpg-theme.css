@@ -461,7 +461,6 @@ html:root[data-density="phone"] .trpg-campaign-header .trpg-kicker { display: no
 html:root[data-density="phone"] .trpg-campaign-header h1 { margin: 0; font-size: 34px; }
 html:root[data-density="phone"] .trpg-campaign-meta { gap: 14px; font-size: var(--phone-sub); }
 html:root[data-density="phone"] .trpg-campaign-meta .trpg-button { min-height: var(--phone-tap); padding: 0 20px; font-size: var(--phone-text); }
-html:root[data-density="phone"] .trpg-campaign-meta .trpg-button.trpg-help-button { width: var(--phone-tap); min-width: var(--phone-tap); height: var(--phone-tap); min-height: var(--phone-tap); padding: 0; }
 html:root[data-density="phone"] .trpg-campaign .venue-host-copy small { display: none; }
 html:root[data-density="phone"] .trpg-campaign .venue-host-copy strong { font-size: var(--phone-sub); }
 html:root[data-density="phone"] .trpg-campaign .venue-host-copy p { font-size: var(--phone-text); line-height: 1.45; }
@@ -488,3 +487,50 @@ html:root[data-density="phone"] .trpg-club-proposal h2 { margin: 6px 0 14px; fon
 html:root[data-density="phone"] .trpg-club-proposal p.trpg-club-line { font-size: var(--phone-sub); line-height: 1.45; }
 html:root[data-density="phone"] .trpg-club-proposal p.trpg-club-line small { font-size: var(--phone-sub); }
 html:root[data-density="phone"] .trpg-club-proposal .trpg-button { min-height: var(--phone-tap); font-size: var(--phone-text); }
+
+/* ---------------------------------------------------------------- 「？」の統一と、常に出す文をもう一段減らす（#2729・2026-11-08 オーナー指摘
+   「まだミニゲームを見てると文字が多かったり、？が大きかったり気になる」）。
+   「？」: どのミニゲームも、見た目は舞台上 31〜35px の細い線の丸（中の「？」は実寸 11.5px 以上）。押せる範囲はボタンの箱そのもので、
+   箱は透明のまま実寸 40px 以上（max(44px, 40px ÷ --k)）を保つ。丸は ::before で描く（MENU の .dm-help と同じ考え方）。
+   棚・本棚・宣言・キャラ作りの「？」と、卓の道具の「？」（遊び方）が対象。卓の道具の他の札（音・ログ・シート・戻る）は変えない。 */
+html:root :is(.trpg-root, .trpg-club-dialog) {
+  --q-hit: max(44px, calc(40px / var(--k, 1)));
+  --q-font: max(20px, calc(11.5px / var(--k, 1)));
+  --q-dot: calc(var(--q-font) + 11px);
+}
+html:root .trpg-root :is(.trpg-button.trpg-help-button.trpg-help-button.trpg-help-button, .trpg-button.trpg-button[data-test="trpg-builder-help"]),
+html:root .trpg-root .trpg-inline-help.trpg-inline-help > summary {
+  position: relative; isolation: isolate; display: inline-grid; place-items: center; flex: none;
+  width: var(--q-hit); min-width: var(--q-hit); height: var(--q-hit); min-height: var(--q-hit); padding: 0;
+  border: 0; border-radius: 50%; background: transparent; box-shadow: none; text-shadow: none;
+  color: var(--tt-brass-hi); font-size: var(--q-font); font-weight: 800; line-height: 1;
+}
+html:root .trpg-root :is(.trpg-button.trpg-help-button.trpg-help-button.trpg-help-button, .trpg-button.trpg-button[data-test="trpg-builder-help"])::before,
+html:root .trpg-root .trpg-inline-help.trpg-inline-help > summary::before {
+  content: ""; display: block; position: absolute; inset: auto; left: 50%; top: 50%; z-index: -1; box-sizing: border-box;
+  width: var(--q-dot); height: var(--q-dot); transform: translate(-50%, -50%); pointer-events: none;
+  border: 1.5px solid #d2ae66b3; border-radius: 50%; background: #2f1c10cc;
+}
+html:root .trpg-root :is(.trpg-button.trpg-help-button.trpg-help-button.trpg-help-button, .trpg-button.trpg-button[data-test="trpg-builder-help"]):hover:not(:disabled),
+html:root .trpg-root .trpg-inline-help.trpg-inline-help > summary:hover { color: #fff6df; background: transparent; }
+html:root .trpg-root :is(.trpg-button.trpg-help-button.trpg-help-button.trpg-help-button, .trpg-button.trpg-button[data-test="trpg-builder-help"]):hover:not(:disabled)::before,
+html:root .trpg-root .trpg-inline-help.trpg-inline-help > summary:hover::before { border-color: var(--tt-brass-hi); background: #7a5232cc; }
+html:root .trpg-root :is(.trpg-button.trpg-help-button.trpg-help-button.trpg-help-button, .trpg-button.trpg-button[data-test="trpg-builder-help"])[aria-pressed="true"],
+html:root .trpg-root .trpg-inline-help.trpg-inline-help[open] > summary { color: #2a1b0c; background: transparent; box-shadow: none; }
+html:root .trpg-root :is(.trpg-button.trpg-help-button.trpg-help-button.trpg-help-button, .trpg-button.trpg-button[data-test="trpg-builder-help"])[aria-pressed="true"]::before,
+html:root .trpg-root .trpg-inline-help.trpg-inline-help[open] > summary::before { border-color: #fbecc2; background: var(--tt-brass-plate); }
+/* 卓の道具の「？」: 札の箱（押せる範囲）はほかの道具と同じまま、見た目の丸だけ小さく。 */
+html:root .trpg-root.trpg-cinematic .trpg-tools .trpg-button[data-test="trpg-help"] { border-color: transparent; background: transparent; box-shadow: none; }
+html:root .trpg-root.trpg-cinematic .trpg-tools .trpg-button[data-test="trpg-help"] .trpg-tool-symbol {
+  width: var(--q-dot); height: var(--q-dot); box-sizing: border-box; border: 1.5px solid #d2ae66b3; border-radius: 50%; background: #2f1c10cc; box-shadow: none;
+}
+html:root .trpg-root.trpg-cinematic .trpg-tools .trpg-button[data-test="trpg-help"] .trpg-tool-symbol svg { width: calc(var(--q-dot) * .62); height: calc(var(--q-dot) * .62); stroke-width: 2.2; }
+
+/* スマホで常に出す文をもう一段減らす（情報は「？」・表紙・title に残る）:
+   棚の「今は遊べる本と仲間が揃っていません…」（「？」の「夜の卓」「本を買う」「部活と勧誘」と同じ）、まだ部員でない仲間の興味の一言（札の title へ）、
+   本のキャッチコピーと所要時間（卓の表紙に出る）、卓の上部バーの作品名（表紙の大きな題と同じ）。 */
+html:root[data-density="phone"] .trpg-campaign [data-test="trpg-preparation-notice"] { display: none; }
+html:root[data-density="phone"] .trpg-campaign-person small + small { display: none; }
+html:root[data-density="phone"] .trpg-campaign-book-copy > h2 + p,
+html:root[data-density="phone"] .trpg-campaign-book-copy > small { display: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-heading > strong { display: none; }
