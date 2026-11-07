@@ -145,7 +145,7 @@
         { "speaker": "", "face": "", "text": "屋敷の中庭に、手拍子が響いていた。噴水の前で、太陽が使用人たちに踊りを教えている。" },
         { "speaker": "da_silva", "face": "excited", "text": "来たな、世界一！　見てたぞ、審査席からな" },
         { "speaker": "hajime", "face": "surprise", "text": "太陽さん。どうして、ここに？" },
-        { "speaker": "da_silva", "face": "smile", "text": "休暇だ。シェイクの家は、氷が切れねえからな" },
+        { "speaker": "da_silva", "face": "smile", "text": "休暇。シェイクの家、氷が切れねえからな" },
         { "speaker": "da_silva", "face": "normal", "text": "座れよ。今日は審査じゃねえ。ただのフェスタだ" }
       ]
     },
@@ -153,9 +153,9 @@
       "dialogue_id": "ch5_dubai_taiyo_b",
       "lines": [
         { "speaker": "", "face": "", "text": "中庭の木陰。太陽が、アサイーの一台を詰めていた。" },
-        { "speaker": "da_silva", "face": "smile", "text": "大会の時のお前の一台、手拍子ひとつ無しで見入っちまった" },
+        { "speaker": "da_silva", "face": "smile", "text": "大会のときの、お前の一台。手拍子ひとつ無しで……見入った、ってやつだ" },
         { "speaker": "hajime", "face": "normal", "text": "静かすぎましたか" },
-        { "speaker": "da_silva", "face": "normal", "text": "いいや。静かでも、あれはフェスタだった。客が楽しんでりゃ、それでいい" },
+        { "speaker": "da_silva", "face": "normal", "text": "いいや。静かでも、あれはフェスタ。客が楽しんでる、それでいい" },
         { "speaker": "da_silva", "face": "excited", "text": "でも次は、手拍子も入れてみろよ！" }
       ]
     },
@@ -163,9 +163,9 @@
       "dialogue_id": "ch5_dubai_taiyo_c",
       "lines": [
         { "speaker": "", "face": "", "text": "中庭の噴水の縁に、太陽とシェイクが並んで座っていた。" },
-        { "speaker": "da_silva", "face": "smile", "text": "この王様、俺の店に来ると一番静かに笑うんだ" },
+        { "speaker": "da_silva", "face": "smile", "text": "この王様、俺の店来ると、一番静かに笑うんだ" },
         { "speaker": "sheikh", "face": "smile", "text": "君の店では、王族の顔をしなくていいからな" },
-        { "speaker": "da_silva", "face": "normal", "text": "ハジメ、お前の店もそういう店にしろよ。誰が来ても、ただの客でいられる店" },
+        { "speaker": "da_silva", "face": "normal", "text": "ハジメ、お前の店も、そういう店にしろよ。誰が来ても……ただの客、いられる店" },
         { "speaker": "hajime", "face": "normal", "text": "（ただの客で、いられる店）" }
       ]
     },
