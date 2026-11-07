@@ -443,7 +443,8 @@
         "remake/js/daily/reflection.js",
         "remake/js/core/growth.js",
         "remake/test/browser/board_tutorial.mjs",
-        "remake/test/browser/support.mjs"
+        "remake/test/browser/support.mjs",
+        "remake/css/wide-screens.css"
       ],
       "run": [
         "node remake/test/browser/board_tutorial.mjs"
@@ -3058,7 +3059,8 @@
         "remake/js/scenes/save-transfer.js",
         "remake/test/browser/save_transfer.mjs",
         "remake/js/chapters/ch2*.js",
-        "remake/js/chapters/ch3*.js"
+        "remake/js/chapters/ch3*.js",
+        "remake/css/wide-screens.css"
       ],
       "run": [
         "node remake/test/browser/save_load.mjs",
@@ -3083,7 +3085,8 @@
         "remake/test/browser/home_shisha.mjs",
         "remake/test/browser/home_practice_leaves.mjs",
         "remake/js/daily/practice*.js",
-        "remake/test/ui_polish.mjs"
+        "remake/test/ui_polish.mjs",
+        "remake/css/wide-screens.css"
       ],
       "run": [
         "node remake/test/browser/title_layout.mjs",
@@ -3202,7 +3205,8 @@
         "remake/js/daily/facility-icons.js",
         "remake/css/facility-icons.css",
         "remake/facility-icons-preview.html",
-        "assets/ui/map-facilities-*.webp"
+        "assets/ui/map-facilities-*.webp",
+        "remake/css/wide-screens.css"
       ],
       "run": [
         "node remake/test/store_logos.mjs",
@@ -3233,7 +3237,8 @@
         "remake/css/ui-paper.css",
         "remake/js/main.js",
         "remake/js/daily/hud.js",
-        "remake/test/browser/phone_density.mjs"
+        "remake/test/browser/phone_density.mjs",
+        "remake/css/wide-screens.css"
       ],
       "run": ["node remake/test/browser/phone_density.mjs"],
       "chrome": "playwright"
@@ -3250,7 +3255,8 @@
         "remake/js/scenes/title.js",
         "remake/js/chapters/ch1.js",
         "remake/js/chapters/ch2-tournament.js",
-        "remake/test/browser/hud_visibility_2190.mjs"
+        "remake/test/browser/hud_visibility_2190.mjs",
+        "remake/css/wide-screens.css"
       ],
       "run": ["node remake/test/browser/hud_visibility_2190.mjs"],
       "chrome": "playwright"
@@ -3267,7 +3273,8 @@
         "remake/js/daily/status.js",
         "remake/css/daily-menu.css",
         "remake/img/ui/paper/menu-bg.webp",
-        "remake/test/browser/daily_menu.mjs"
+        "remake/test/browser/daily_menu.mjs",
+        "remake/css/wide-screens.css"
       ],
       "run": ["node remake/test/browser/daily_menu.mjs"],
       "chrome": "playwright"
@@ -3296,7 +3303,8 @@
         "remake/css/ui-art.css",
         "remake/test/browser/fortune_readings.mjs",
         "remake/test/playtest_ui.mjs",
-        "remake/test/ui_skin.mjs"
+        "remake/test/ui_skin.mjs",
+        "remake/css/wide-screens.css"
       ],
       "run": [
         "node remake/test/fortune_readings.mjs",
