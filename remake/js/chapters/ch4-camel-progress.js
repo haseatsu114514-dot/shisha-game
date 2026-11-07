@@ -66,11 +66,17 @@ function ensureRecord(value) {
 }
 
 /**
- * 第5章でドバイにいる日（chapters/ch5-dubai.js）。第4章で一度でも走った人だけ、練習レースへまた通える。
- * 店先の出会い・誘い・本番の見学（「大会の人だ」「宿の前に迎えに行く」）は第4章の話なので、第5章では始めない。
+ * 第5章でドバイにいる日（chapters/ch5-dubai.js）。第4章で一度でも走った人は、今までどおり練習レースへまた通える。
+ * 2026-11-07 オーナー決定「第4章のラクダレース／砂丘を飛ばしたプレイヤーも、第5章側で前提を補ってルートに入れる（完全な締め出しにはしない）」:
+ * 走っていない人は、Dr.fookah ドバイ店の店先で第5章の出会い（第4章で知り合っただけなら再会）と誘いの場面 CH5_CAMEL_MEET を読み
+ * （時間は使わない）、翌日以降の昼にレース場へ（本番を見ていなければ ch4_camel_watch から、練習レース）。第4章の店先の場面
+ * （「大会の人だ」「宿の前に迎えに行く」）は第5章では読まない。
  */
-const chapterFiveCamelOpen = value => value?.chapter === 5 && value.phase === "daily" && value.flags?._ch2_region === "dubai"
-  && camelRaceRecord(value).stage >= CAMEL_STAGES.unlocked;
+const chapterFiveCamelOpen = value => value?.chapter === 5 && value.phase === "daily" && value.flags?._ch2_region === "dubai";
+export const CH5_CAMEL_MEET = Object.freeze({ scene: "ch5_dubai_camel_meet", flag: "_ch5_dubai_camel_meet" });
+/** 第5章で、店先の出会い（再会）と誘いがまだ要るか（第4章で走っていなくて、第5章の店先の場面をまだ読んでいない）。 */
+export const chapterFiveCamelMeetDue = value => chapterFiveCamelOpen(value) && camelRaceRecord(value).stage < CAMEL_STAGES.unlocked
+  && !value.flags?.[CH5_CAMEL_MEET.flag];
 /** 第4章ドバイの自由行動の最中か。14日化後も「ドバイ滞在中の daily」であれば同じ条件で開く。第5章のドバイは上の条件。 */
 export const camelRaceOpen = value => value?.chapter === 4 && value.phase === "daily"
   && (value.flags?._ch4?.part === undefined || value.flags._ch4.part === "free") || chapterFiveCamelOpen(value);
@@ -89,6 +95,11 @@ export function camelRaceDestination(value) {
     return { ...base, label: "Dr.fookah ドバイ店の店先で、店員と話す", description: "店の前で日本語の挨拶をされた。", consumes: false,
       purpose: "日本語で声をかけてきた店員と話してみる。時間は使わない。" };
   }
+  // 第5章で、第4章に知り合った（誘われた・本番を見た）だけの人: 店先でファーリスに会い直して、誘い直してもらう（時間は使わない）
+  if (chapterFiveCamelMeetDue(value)) {
+    return { ...base, label: "Dr.fookah ドバイ店で、ファーリスに顔を出す", description: "前に店先で知り合った店員がいる。", consumes: false,
+      purpose: "前に知り合ったファーリスに顔を出す。時間は使わない。" };
+  }
   if (camel.stage === CAMEL_STAGES.met) {
     const ready = camel.meetDay === null || day > camel.meetDay;
     return { ...base, label: "Dr.fookah ドバイ店で、ファーリスとまた話す", description: "昼に見せたいものがあると言っていた。", consumes: false,
@@ -99,9 +110,11 @@ export function camelRaceDestination(value) {
   if (camel.stage === CAMEL_STAGES.invited) {
     const tomorrow = camel.inviteDay !== null && day <= camel.inviteDay;
     const ok = !tomorrow && isDaytime(value);
+    // 第5章は宿に泊まっていない（シェイクの屋敷）ので、店の前で待ち合わせる（ch5_dubai_camel_meet）
+    const meetUp = value.chapter === 5 ? "六時に店の前で待ち合わせ" : "宿の前で迎えに来てくれる";
     return { ...track, label: "ラクダレース場へ（ファーリスと）", description: "朝のレースを見に行く約束。",
-      ok, why: tomorrow ? "レースは明日の朝。宿の前で迎えに来てくれる" : ok ? "" : "レースは朝。明日の昼に行こう",
-      purpose: ok ? "朝のレースを見てから、練習レースのリモコンを借りる。昼の行動を使う。" : tomorrow ? "レースは明日の朝。宿の前で迎えに来てくれる。" : "レースは朝。明日の昼に行こう。" };
+      ok, why: tomorrow ? `レースは明日の朝。${meetUp}` : ok ? "" : "レースは朝。明日の昼に行こう",
+      purpose: ok ? "朝のレースを見てから、練習レースのリモコンを借りる。昼の行動を使う。" : tomorrow ? `レースは明日の朝。${meetUp}。` : "レースは朝。明日の昼に行こう。" };
   }
   const played = camel.lastPlayDay !== null && camel.lastPlayDay === day;
   const ok = !played && isDaytime(value);
@@ -122,7 +135,8 @@ export function camelDailySpot(value, fields = {}) {
   const destination = camelRaceDestination(value);
   if (!destination) return null;
   const camel = camelRaceRecord(value);
-  const race = camel.stage >= CAMEL_STAGES.invited;
+  // 第4章で誘われたまま第5章の店先の場面がまだの人は、レース場ではなく店先に出す
+  const race = camel.stage >= CAMEL_STAGES.invited && !chapterFiveCamelMeetDue(value);
   const played = camel.lastPlayDay !== null && camel.lastPlayDay === value.day;
   const tag = destination.ok !== false ? ""
     : camel.stage === CAMEL_STAGES.met ? "また明日"
@@ -180,6 +194,20 @@ export function advanceCamelRaceStage(value, sceneId) {
   if (sceneId === CAMEL_SCENES.invite && camel.stage === CAMEL_STAGES.met) { camel.stage = CAMEL_STAGES.invited; camel.inviteDay = value.day; return true; }
   if (sceneId === CAMEL_SCENES.watch && camel.stage === CAMEL_STAGES.invited) { camel.watched = true; return true; }
   return false;
+}
+
+/**
+ * 第5章の店先の場面（CH5_CAMEL_MEET）を読み終えた: 誘われた段階へ（翌日以降の昼にレース場）。一度だけ。戻り値は進んだか。
+ * 第4章で本番を見た人（watched）は、見学を飛ばしてレースから（第4章と同じ）。
+ */
+export function advanceChapterFiveCamelMeet(value) {
+  if (!chapterFiveCamelMeetDue(value)) return false;
+  const camel = ensureRecord(value);
+  if (camel.meetDay === null) camel.meetDay = value.day;
+  camel.stage = CAMEL_STAGES.invited;
+  camel.inviteDay = value.day;
+  value.flags[CH5_CAMEL_MEET.flag] = true;
+  return true;
 }
 
 export const resultSceneFor = rank => rank === 1 ? CAMEL_SCENES.win : rank >= 4 ? CAMEL_SCENES.last : CAMEL_SCENES.place;

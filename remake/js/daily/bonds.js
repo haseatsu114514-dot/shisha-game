@@ -307,7 +307,7 @@ export function finaleDue(id) {
   if (id === "ageha" && !chapterFeatureEnabled(state.chapter, "agehaVisit") && !beforeTokyoDeparture()) return false;
   if (id === "mashiro" && !chapterFeatureEnabled(state.chapter, "mashiroBond")) return false;
   if (id === "saku" && !TOKYO_SHOP_REACH.saku()) return false; // 煙幕は第3章の東京にだけある
-  if (id === "noor" && state.chapter !== 4) return false; // カフェ・サーリムは第4章のドバイにだけある
+  if (id === "noor" && ![4, 5].includes(state.chapter)) return false; // カフェ・サーリムは第4章と第5章のドバイ（第5章は 2026-11-07 オーナー決定）
   if (id === "steve" && !TOKYO_SHOP_REACH.steve()) return false;
   if (id === "volk" && !TOKYO_SHOP_REACH.volk()) return false;
   const def = BOND_FINALES[id];
