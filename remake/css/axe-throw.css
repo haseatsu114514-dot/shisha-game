@@ -822,7 +822,9 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-in-stage .axe-division { padding: 4px 12px; font-size: var(--axe-text); }
 .axe-in-stage .axe-total { gap: 8px; }
 .axe-in-stage .axe-total small, .axe-in-stage .axe-total > span { font-size: var(--axe-text); }
-.axe-in-stage .axe-total strong { font-size: 48px; line-height: 1.2; }
+/* 合計点の数字: 行の高さを 1.2 にすると書体の字の高さ（約1.46）より低く、字が「合計点」の枠の下へ約3px出ていた。
+   行の高さを書体どおり（normal）にして枠の中に収める（枠は12px高くなるが、上の帯（92px）の中に収まる）。 */
+.axe-in-stage .axe-total strong { font-size: 48px; line-height: normal; }
 .axe-in-stage .axe-round { padding: 8px 14px; font-size: 26px; font-weight: 700; }
 .axe-in-stage .axe-heat { font-size: var(--axe-text); }
 .axe-in-stage .axe-scoreboard { padding: 6px 10px; gap: 4px; }
