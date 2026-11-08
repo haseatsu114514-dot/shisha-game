@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { suite, storageSnapshot } from "./support.mjs";
-import { KILLS } from "../../js/minigames/axe-model.js";
+import { KILLS, CLUSTERS } from "../../js/minigames/axe-model.js";
 const shotsPath = process.env.COMPARISON_DIR;
 if (shotsPath) await fs.mkdir(shotsPath, { recursive: true });
 const game = page => page.locator('[data-test="axe-game"]');
@@ -43,8 +43,8 @@ async function shoot(page, { touch = false, x = 0, y = 0, power = .62, keyboard 
   assert.equal(await game(page).getAttribute("data-aim-x"),stoppedX,"Horizontal position remains locked");
   if (precision) {
     const actualY=Number(await game(page).getAttribute("data-aim-y"));
-    // The 4in blade forgives vertical error; horizontal error must stay inside the small blue outer ring (.051).
-    if (Math.abs(Number(stoppedX)-x)>.04 || Math.abs(actualY-y)>.08) {
+    // The 4in blade forgives vertical error; horizontal error must stay inside the small blue outer ring (.75in = .042 of the 1 ring).
+    if (Math.abs(Number(stoppedX)-x)>.025 || Math.abs(actualY-y)>.08) {
       assert(attempt<4,"Physical aiming failed after five visible re-aims");
       // Use the player's real re-aim control before throwing; a slow runner can miss the narrow timing window.
       console.log(`[axe-throw] Re-aim ${attempt+1}: actual ${stoppedX},${actualY}; target ${x},${y}`);
@@ -251,7 +251,7 @@ await suite("axe-throw", async run => {
     assert.match(await page.locator(".axe-call-status").textContent(),/残り0回/);
     for (let n=2;n<10;n++) {
       if(n===5) { assert.match(await page.locator(".axe-note").textContent(),/後半5投/); assert(await page.locator('[data-call="upper-left"]').isDisabled()); }
-      await shoot(page,{x:n%2?6/14.75:0,y:n%2?3.5/14.75:0}); await pressReady(page);
+      const lowerRight=CLUSTERS.find(c=>c.id==="lr"); await shoot(page,{x:n%2?lowerRight.x:0,y:n%2?lowerRight.y:0}); await pressReady(page);
     }
     await phase(page,"summary"); await page.locator('[data-test="axe-action"]:not([disabled])').waitFor();
     await fit(page); assert.match(await page.locator(".axe-note").textContent(),/64点/);
