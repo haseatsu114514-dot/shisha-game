@@ -246,3 +246,19 @@
 
 .result-table .rt-save { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .result-table .rt-save .btn { min-height: 44px; max-width: 100%; }
+
+/* ================================================================ スマホ規格の大会画面（#2851・#2729 B班）
+   ワイドで左右まで広げる・文字の下限を上げるのは wide-craft.css（#2983）。ここは欄の並びと押す所だけを足す。 */
+/* 最終結果: 「あなたの一台」の欄の下の補足（効いたもの・良かった点・次の練習）を規格の文字に。
+   下段の行の高さ（「……結果を受け止める」が --phone-tap になる分）は phone-density.css（#2976）で決める。 */
+html:root[data-density="phone"] body:not(.game-ds) .result-table .rt-detail-scroll > small { font-size: var(--phone-sub); }
+/* 中間投票: 審査員の欄と名前の列を広げる（文字を大きくしても持ち点の行・名前が詰まらないように） */
+html:root[data-density="phone"] body:not(.game-ds) .standings .sd-main { grid-template-columns: 1fr 380px; }
+html:root[data-density="phone"] body:not(.game-ds) .standings .sd-row { grid-template-columns: 40px 48px 150px 1fr 72px; }
+html:root[data-density="phone"] body:not(.game-ds) .standings .sd-recognition { font-size: var(--phone-sub); }
+/* 入場の紹介カード: 少し広げて、スミさんのひと言を文節で2行までにそろえる */
+html:root[data-density="phone"] body:not(.game-ds) .ent-card { width: 960px; }
+html:root[data-density="phone"] body:not(.game-ds) .ent-note { line-height: 1.45; word-break: auto-phrase; text-wrap: balance; }
+/* GAME OVER: ワイドでは左右の余白を地の色で塗る（会場の絵が覗いていた）。「初回は時間制限なし」の注記を規格の文字に */
+body:not(.game-ds) #stage[data-wide] .end-screen.gameover { box-shadow: 0 0 0 var(--stage-gutter) #120a1c; }
+html:root[data-density="phone"] body:not(.game-ds) .gameover .go-limit-note { font-size: var(--phone-sub); }
