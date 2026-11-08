@@ -297,3 +297,23 @@
 .camel-cup:not(:disabled):hover, .camel-cup:focus-visible { outline: 2px solid #ffd77a; outline-offset: 2px; transform: translateY(-2px); }
 @media (max-width: 700px) { .camel-cups { gap: 1cqw; } .camel-cup { padding: 1cqw; } .camel-cup strong { font-size: 2.2cqw; } .camel-cup span { font-size: 1.7cqw; } .camel-cup b { font-size: 1.7cqw; } }
 @media (prefers-reduced-motion: reduce) { .camel-cup:not(:disabled):hover { transform: none; } }
+
+/* ---- 「？」の統一と、常に出す文をもう一段減らす（#2729・2026-11-08 オーナー指摘「文字が多い・？が大きい」） ----
+   「？」: 見た目は舞台上 31〜35px の細い線の丸（::before）。押せる範囲はボタンの箱そのもの（透明）で実寸 40px 以上。カードの右上のまま。
+   スマホでは、時計の上の英字「CAMEL RACE」、遊び方の「HOW TO PLAY n/3」（下の点で分かる）と大会選びの「HABIBA RACING CLUB」、
+   大会選びの前置きの一文と時間の決まり（カードの title へ）、各大会の「CUP 01」の英字を出さない。 */
+.camel-game { --q-hit: max(44px, calc(40px / var(--k, 1))); --q-font: max(20px, calc(11.5px / var(--k, 1))); --q-dot: calc(var(--q-font) + 11px); }
+.camel-game .camel-sheet .camel-card .camel-help.camel-help { right: 4px; top: 4px; isolation: isolate; width: var(--q-hit); height: var(--q-hit);
+  border: 0; background: transparent; color: var(--cr-gold); font-size: var(--q-font); }
+.camel-game .camel-sheet .camel-card .camel-help.camel-help::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box;
+  width: var(--q-dot); height: var(--q-dot); transform: translate(-50%, -50%); border: 1.5px solid rgba(255,215,122,.5); border-radius: 50%; background: rgba(0,0,0,.3); pointer-events: none; }
+.camel-game .camel-sheet .camel-card .camel-help.camel-help:is(:hover, :focus-visible) { background: transparent; }
+.camel-game .camel-sheet .camel-card .camel-help.camel-help:is(:hover, :focus-visible)::before { border-color: var(--cr-gold); background: rgba(255,215,122,.14); }
+html:root[data-density="phone"] .camel-game .camel-title,
+html:root[data-density="phone"] .camel-game :is(.camel-tutorial, .camel-cup-card) > .camel-eyebrow,
+html:root[data-density="phone"] .camel-game .camel-cup-card > p,
+html:root[data-density="phone"] .camel-game .camel-cup-card > .camel-cup-note,
+html:root[data-density="phone"] .camel-game .camel-cup > small:first-child { display: none; }
+/* 大会選びの札の中（距離・ひとこと・出走／未解放）は、スマホでは実寸 11.5px 以上に（これまで 8〜9px）。札の名前は一回り大きく。 */
+html:root[data-density="phone"] .camel-game .camel-cup :is(span, b) { font-size: max(18px, calc(11.5px / var(--k, 1))); line-height: 1.35; }
+html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(26px, calc(14px / var(--k, 1))); }

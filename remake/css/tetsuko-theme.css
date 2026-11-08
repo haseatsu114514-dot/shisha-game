@@ -268,3 +268,12 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
 }
 /* スマホ規格（#2851・#2729）: 題の札の英字（TETSUKO TIME・実寸 7.6px）は飾りなので出さない（読み上げ・題の文字には残る）。 */
 html:root[data-density="phone"] .tetsuko-time .tt-logo-roman { display: none; }
+/* 「？」の統一（#2729・2026-11-08 オーナー指摘「？が大きい」）: 見た目は舞台上 31〜35px の細い線の丸（::before）、中の「？」は実寸 11.5px 以上。
+   押せる範囲はボタンの箱そのもの（透明）で実寸 40px 以上。置き場は右上の道具の列の「帰る」の隣へ（並びだけ。DOM の順は変えない）。 */
+.tetsuko-time { --q-hit: max(44px, calc(40px / var(--k, 1))); --q-font: max(20px, calc(11.5px / var(--k, 1))); --q-dot: calc(var(--q-font) + 11px); }
+.tetsuko-time .tt-tools > .tt-help-btn.tt-help-btn { order: 1; position: relative; isolation: isolate; align-self: center;
+  width: var(--q-hit); min-width: var(--q-hit); height: var(--q-hit); padding: 0; border: 0; border-radius: 50%; background: transparent; box-shadow: none; }
+.tetsuko-time .tt-tools > [data-test="tetsuko-time-back"] { order: 2; }
+.tetsuko-time .tt-tools > .tt-help-btn.tt-help-btn::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box;
+  width: var(--q-dot); height: var(--q-dot); transform: translate(-50%, -50%); border: 2px solid var(--tk-ink); border-radius: 50%; background: var(--tk-cream); pointer-events: none; }
+.tetsuko-time .tt-tools > .tt-help-btn.tt-help-btn .tt-help-q { font-size: var(--q-font); }

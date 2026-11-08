@@ -235,6 +235,14 @@ await suite("daily-menu", async (check) => {
       return { wide: stage.hasAttribute("data-wide"), left: Math.round((s.left - r.left) / k), right: Math.round((r.right - s.right) / k) };
     });
     assert.deepEqual(wide, { wide: true, left: 24, right: 24 });
+    // タブの説明は常に出さず、見出し横の「?」で開く（2026-11-08 オーナー指示「説明の分量を減らす」）。行の効き目は行を押した時だけ出す
+    assert.equal(await page.locator(".dmenu .dm-panel > .dm-note").isVisible(), false);
+    assert(await page.locator(t("menu-help-text-status")).isHidden());
+    await page.locator(t("menu-help-status")).tap();
+    assert.match(await page.locator(t("menu-help-text-status")).innerText(), /項目をタップすると/);
+    assert.equal(await page.locator(t("menu-help-status")).getAttribute("aria-expanded"), "true");
+    await page.locator(t("menu-help-status")).tap();
+    assert(await page.locator(t("menu-help-text-status")).isHidden());
     await assertConditionHelp(page, "landscape", (n) => n.tap());
     await visitTabs(page, "landscape", (sel) => page.locator(sel).tap());
     await page.getByRole("button", { name: "閉じる", exact: true }).tap();
