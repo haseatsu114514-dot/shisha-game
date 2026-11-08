@@ -25,9 +25,17 @@ export const CLUSTERS = [
   ...[-1, 1].flatMap(y => [-1, 1].map(x => ({ id: (y < 0 ? "u" : "l") + (x < 0 ? "l" : "r"), x: x * 6 * INCH, y: y * 3.5 * INCH, ring: 3 }))),
 ];
 export const BULLS = CLUSTERS.slice(1).map(c => ({ x: c.x, y: c.y, outer: RINGS[1].radius, inner: RINGS[0].radius }));
+/** WATL paints the 4 killshots in the middle of the 1 ring (2024 rules "centered in the 1 ring"; the 2024 stencil's kill hole sits
+ *  halfway between its 2 and 1 ring slots), 12 in above/below centre (48/72 in from the ground) and about 10.4 in to the side
+ *  (the stencil's board-alignment arrow on the second board seam), i.e. about 41° from vertical as in WATL's target drawings.
+ *  This board's 1 ring (29.5 in) is smaller than the stencil's, so 12 in up would put the blue on the 1 ring's black line:
+ *  the killshots keep the official place relative to the rings, in the middle of this 1 ring along the official direction. */
+export const KILL_DIRECTION = { x: 10.4, y: 12 };
+export const KILL_RADIUS = (11.625 + 14.75) / 2 * INCH;
+const killUnit = Math.hypot(KILL_DIRECTION.x, KILL_DIRECTION.y);
 export const KILLS = [-1, 1].flatMap(y => [-1, 1].map(x => ({
-  id: (y < 0 ? "upper" : "lower") + (x < 0 ? "-left" : "-right"),
-  row: y < 0 ? "upper" : "lower", x: x * 7 * INCH, y: y * 12 * INCH, outer: .75 * INCH, inner: .375 * INCH,
+  id: (y < 0 ? "upper" : "lower") + (x < 0 ? "-left" : "-right"), row: y < 0 ? "upper" : "lower",
+  x: x * KILL_RADIUS * KILL_DIRECTION.x / killUnit, y: y * KILL_RADIUS * KILL_DIRECTION.y / killUnit, outer: .75 * INCH, inner: .375 * INCH,
 })));
 /** Clockwise sudden-death rotation, starting upper-left. */
 export const KILL_ROTATION = ["upper-left", "upper-right", "lower-right", "lower-left"];
