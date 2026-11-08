@@ -1,7 +1,8 @@
 // 巻頭ポエム（序詩と第1〜5章の章頭詩）。会話ウインドウではなく、専用の「読ませる」画面で出す。
 // 詩の本文と意図は brand/chant_poems.md、台本は data/dialogue/chapter_poems.json（1行 = 詩の1行。gap:true は連の切れ目）。
 // 置き場所: 序詩＝タイトルから「はじめから」を選んだ直後、各章の詩＝その章の章タイトルの直前。
-// 見せ方: 詩を連ごとの「場面」に分け、1場面ずつ読ませる。暗い面に縦書きの明朝で、右の行から1行ずつ、ぼかしが晴れて浮かぶ。
+// 見せ方: 詩の上に、横長の漫画風のコマ絵（metadata.panel。img/ui/poems/）を細い枠つきで出す。絵が無い・読めない詩は、詩だけを全面に出す。
+//        詩を連ごとの「場面」に分け、1場面ずつ読ませる。暗い面に縦書きの明朝で、右の行から1行ずつ、ぼかしが晴れて浮かぶ。
 //        読み終えた場面は消え、次の連が浮かぶ。最後の連を読み終えたら全体が暗く閉じ、続けて章タイトルが出る。
 //        漢字には「漢字《よみ》」のふりがな。タップ／Enter／Space で、読んでいる途中なら その場面の残りを出し、読み終えていれば次の場面へ。
 import { DB } from "../core/data.js";
@@ -19,6 +20,9 @@ export const CHAPTER_POEM_IDS = Object.freeze({
 
 /** テスト用: 出した詩の記録（id・全行・出した時刻） */
 export const poemTest = { shown: [] };
+
+/** 詩の上に出す横長のコマ絵（img/ui/poems/）。本物の絵に差し替えるときは、台本の metadata.panel のファイル名を替える */
+const panelUrl = (name) => new URL(`../../img/ui/poems/${name}`, import.meta.url).href;
 
 const RUBY = /([\p{Script=Han}々]+)《([^》]+)》/gu;
 /** 「漢字《よみ》」を除いた本文（読み上げ・字数・テスト用） */
@@ -50,6 +54,7 @@ export function poemPages(lines = []) {
 // 時間の決まり（ms）。短い詩を、急かさず・長引かせずに読ませる。
 const FADE_IN = 700;         // 暗い面が現れる
 const FADE_OUT = 900;        // 最後の場面のあと、全体が暗く閉じる（続けて章タイトル）
+const PANEL_BEAT = 800;      // コマ絵が浮かんでから、詩の最初の行が出るまで
 const TURN = 650;            // 場面から場面へ（消えて、次が浮かぶ）
 const LINE_BASE = 460;       // 1行ぶんの間（基本）
 const LINE_PER_CHAR = 26;    // 字数に応じた読みの間
@@ -83,16 +88,30 @@ export async function playChapterPoem(key, { owner = null, current = () => true 
   if (owner) owner.controller = controller;
   const { signal } = controller;
   const lines = poem.lines;
+  // コマ絵: 読み込んで・デコードし終えたものだけを出す。読めなければ（失敗・時間切れ）詩だけを全面に出す。
+  let panel = null;
+  if (poem.metadata?.panel) {
+    const url = panelUrl(poem.metadata.panel);
+    if (await imageReady(url, 2500) && !signal.aborted) {
+      panel = el("figure.cp-panel", { "data-test": "chapter-poem-panel" }, [
+        el("img", { src: url, alt: poem.metadata.panel_alt || "", draggable: false }),
+      ]);
+    }
+  }
+  if (signal.aborted || (owner && !current(owner))) {
+    if (owner && owner.controller === controller) owner.controller = null;
+    return false;
+  }
   const groups = poemPages(lines);
   const pages = groups.map((group, index) => el(`div.cp-page${index === groups.length - 1 ? ".last" : ""}`, [
     el("div.cp-body", group.map((line) => el("p.cp-line", poemLineNodes(line.text)))),
   ]));
   const next = el("div.cp-next", { "aria-hidden": "true", text: "▼" });
-  const card = el("div.chapter-poem", {
+  const card = el(`div.chapter-poem${panel ? ".has-panel" : ""}`, {
     dataset: { test: "chapter-poem", poem: id, phase: "revealing", page: "0", pages: String(pages.length) },
     role: "document", "aria-label": lines.map((line) => plainPoemLine(line.text)).join(" "),
-  }, [el("div.cp-mist", { "aria-hidden": "true" }), ...pages, next]);
-  poemTest.shown.push({ id, lines: lines.map((line) => plainPoemLine(line.text)), pages: groups.length, at: Date.now() });
+  }, [el("div.cp-mist", { "aria-hidden": "true" }), panel, el("div.cp-stage", pages), next]);
+  poemTest.shown.push({ id, lines: lines.map((line) => plainPoemLine(line.text)), pages: groups.length, panel: !!panel, at: Date.now() });
 
   let phaseAt = performance.now();
   let phase = "revealing"; // 場面ごとに revealing → holding → turning、最後に out
@@ -132,12 +151,14 @@ export async function playChapterPoem(key, { owner = null, current = () => true 
       pages.forEach(showAllIn);
       pageIndex = pages.length - 1; card.dataset.page = String(pageIndex);
       pages.at(-1).classList.add("now"); card.classList.add("show", "turbo");
+      panel?.classList.add("on");
       await nextFrame();
     } else {
       await nextFrame();
       card.classList.add("show");
       await wait(FADE_IN);
       const calm = reducedMotion();
+      if (panel) { panel.classList.add("on"); await wait(calm ? 0 : PANEL_BEAT); }
       for (const [index, page] of pages.entries()) {
         if (signal.aborted || fast) break;
         pageIndex = index; card.dataset.page = String(index);

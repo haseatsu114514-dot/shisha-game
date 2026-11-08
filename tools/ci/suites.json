@@ -1988,6 +1988,7 @@
       "paths": [
         "remake/js/scenes/chapter-poem.js",
         "remake/css/motions/chapter-poem.css",
+        "remake/img/ui/poems/**",
         "remake/js/chapters/ch1.js",
         "remake/js/chapters/ch2.js",
         "remake/js/core/data.js",

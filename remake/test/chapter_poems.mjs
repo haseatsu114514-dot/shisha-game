@@ -55,6 +55,22 @@ for (const dialogue of data.dialogues) {
   }
 }
 
+// 1b) 詩の上のコマ絵（横長16:3）。絵のファイルがあり、読み上げ用の説明がある。
+for (const dialogue of data.dialogues) {
+  const { panel, panel_alt: alt } = dialogue.metadata || {};
+  assert.ok(panel && /^[\w-]+\.(svg|webp)$/.test(panel), `${dialogue.dialogue_id}: metadata.panel（ファイル名）がない`);
+  assert.ok(alt && alt.length >= 6, `${dialogue.dialogue_id}: metadata.panel_alt（絵の説明）がない`);
+  const file = path.join(root, "remake/img/ui/poems", panel);
+  assert.ok(fs.existsSync(file), `${dialogue.dialogue_id}: 絵のファイルがない: ${panel}`);
+  if (panel.endsWith(".svg")) {
+    const svg = fs.readFileSync(file, "utf8");
+    const box = /viewBox="0 0 (\d+) (\d+)"/.exec(svg);
+    assert.ok(box, `${panel}: viewBox がない`);
+    assert.ok(Math.abs(box[1] / box[2] - 16 / 3) < 0.01, `${panel}: 横長16:3ではない（${box[1]}x${box[2]}）`);
+    assert.ok(!/<text[\s>]/.test(svg), `${panel}: 絵に文字を焼き込まない`);
+  }
+}
+
 // 2) 文書（brand/chant_poems.md）との一致 ----------------------------------
 const doc = read("brand/chant_poems.md");
 for (const [id, heading] of EXPECTED) {
@@ -84,6 +100,8 @@ for (const [id] of EXPECTED) assert.ok(module.includes(`"${id}"`), `chapter-poem
 assert.match(module, /vnTest\.turbo/, "テストの自動送り（vnTest.turbo）に従う");
 assert.match(module, /reducedMotion\(\)/, "動き軽減に従う");
 assert.match(module, /export function poemPages/, "連ごとに場面を分ける");
+assert.match(module, /panelUrl/, "コマ絵の読み込みがある");
+assert.match(read("remake/css/motions/chapter-poem.css"), /\.cp-panel/, "コマ絵のスタイルがある");
 assert.match(read("remake/css/motions/chapter-poem.css"), /\.cp-page\.now/, "場面の切り替えのスタイルがある");
 
 function indexesOf(source, needle) {

@@ -146,6 +146,18 @@ await suite("chapter-poems", async check => {
     assert.equal(await page.locator(`${POEM} .cp-page.now`).count(), 1, "いま見えている場面は1つ");
     assert.equal(await page.locator(`${POEM} .cp-page.now .cp-line`).count(), 2, "1場面目は2行");
     assert.deepEqual(await page.locator(`${POEM} .cp-line rt`).allTextContents(), ["ホロウ"]);
+    // 詩の上に、横長（16:3）のコマ絵。細い枠つきで、詩より上に置く
+    assert.equal(await page.locator(`${POEM}.has-panel`).count(), 1);
+    const panel = page.locator(`${POEM} .cp-panel`);
+    await panel.waitFor();
+    assert.equal(await panel.locator("img").evaluate(img => img.complete && img.naturalWidth > 0), true, "絵が読み込まれている");
+    assert.ok((await panel.locator("img").getAttribute("alt")).length > 5, "絵の説明がある");
+    await page.waitForFunction(() => document.querySelector('[data-test="chapter-poem"] .cp-panel')?.classList.contains("on"), null, { timeout: 4000 });
+    const box = await panel.boundingBox();
+    assert.ok(Math.abs(box.width / box.height - 16 / 3) < 0.15, `コマ絵が横長16:3ではない: ${box.width}x${box.height}`);
+    const stage = await page.locator(`${POEM} .cp-stage`).boundingBox();
+    assert.ok(stage.y >= box.y + box.height - 1, "詩の領域はコマ絵の下");
+    assert.ok(box.width <= 1280 * 0.62 && box.x > 150, "画面いっぱいではなく、余白のある横長の枠");
     assert.ok(await page.locator(`${POEM} .cp-page.now .cp-line.on`).count() < 2, "最初から全行は出ていない（行ごとに浮かぶ）");
     // タップ: まだ読み終えていなければ、その場面の残りの行を出す（次へは進まない）
     await page.waitForTimeout(900);
@@ -212,6 +224,22 @@ await suite("chapter-poems", async check => {
     await page.locator(`${POEM}[data-poem="poem_ch1"]`).waitFor();
     await page.waitForFunction(() => window.RESULT !== undefined, null, { timeout: 30000 });
     assert.equal(await page.evaluate(() => window.RESULT), true);
+  });
+
+  // 絵が読めない（壊れている）ときは、コマ絵なしで、詩だけを全面に出して最後まで読ませる
+  await check("poem-card-without-panel-when-image-is-broken", async page => {
+    page.setDefaultTimeout(30000);
+    await page.route("**/img/ui/poems/poem_ch5.svg", route => route.fulfill({ status: 200, contentType: "image/svg+xml", body: "not an image" }));
+    await watch(page, { turbo: false });
+    await page.evaluate(async () => { window.POEM_MODULE.playChapterPoem(5).then(result => { window.RESULT = result; }); });
+    await page.locator(`${POEM}[data-poem="poem_ch5"]`).waitFor();
+    assert.equal(await page.locator(`${POEM}.has-panel`).count(), 0, "コマ絵の枠を残さない");
+    assert.equal(await page.locator(`${POEM} .cp-panel`).count(), 0);
+    // 詩の領域は全面（コマ絵の分を空けない）
+    const stage = await page.locator(`${POEM} .cp-stage`).boundingBox();
+    assert.ok(stage.y < 5 && stage.height > 700, `詩の領域が全面ではない: ${JSON.stringify(stage)}`);
+    await page.keyboard.press("Control");
+    await page.waitForFunction(() => window.RESULT === true);
   });
 
   await check("poem-card-reduced-motion-shows-each-page-at-once", async page => {

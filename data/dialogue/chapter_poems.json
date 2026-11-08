@@ -3,7 +3,9 @@
     {
       "dialogue_id": "poem_prologue",
       "metadata": {
-        "poem": true
+        "poem": true,
+        "panel": "poem_prologue.svg",
+        "panel_alt": "立ちのぼる一筋の煙（仮絵）"
       },
       "lines": [
         {
@@ -48,7 +50,9 @@
     {
       "dialogue_id": "poem_ch1",
       "metadata": {
-        "poem": true
+        "poem": true,
+        "panel": "poem_ch1.svg",
+        "panel_alt": "路地の屋根と窓の上を渡る一本の糸（仮絵）"
       },
       "lines": [
         {
@@ -87,7 +91,9 @@
     {
       "dialogue_id": "poem_ch2",
       "metadata": {
-        "poem": true
+        "poem": true,
+        "panel": "poem_ch2.svg",
+        "panel_alt": "高い壁と、その向こうに浮かぶ王冠（仮絵）"
       },
       "lines": [
         {
@@ -121,7 +127,9 @@
     {
       "dialogue_id": "poem_ch3",
       "metadata": {
-        "poem": true
+        "poem": true,
+        "panel": "poem_ch3.svg",
+        "panel_alt": "煙と、鏡に映る煙（仮絵）"
       },
       "lines": [
         {
@@ -161,7 +169,9 @@
     {
       "dialogue_id": "poem_ch4",
       "metadata": {
-        "poem": true
+        "poem": true,
+        "panel": "poem_ch4.svg",
+        "panel_alt": "手から手へ渡っていく器（仮絵）"
       },
       "lines": [
         {
@@ -195,7 +205,9 @@
     {
       "dialogue_id": "poem_ch5",
       "metadata": {
-        "poem": true
+        "poem": true,
+        "panel": "poem_ch5.svg",
+        "panel_alt": "数字の格子が、手の線へほどけていく（仮絵）"
       },
       "lines": [
         {
