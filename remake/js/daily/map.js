@@ -128,13 +128,13 @@ function cueMove(shield, spot) {
  *  ノッチ（safe-area）にかかる端のピンは、その分だけ内側へ寄せる（--pin-nudge-x）。PC の 16:9 と 2画面表示（DS）では何もしない。 */
 const MAP_TOP_SAFE = 40, MAP_BOTTOM_SAFE = 8, MAP_SIDE_SAFE = 8;
 function fitMapCrop(pins) {
-  const stage = document.getElementById("stage");
-  if (!stage || !pins?.isConnected || typeof pins.getBoundingClientRect !== "function") return;
+  const stage = document.getElementById?.("stage");
+  if (!stage?.style?.setProperty || !pins?.isConnected || typeof pins.getBoundingClientRect !== "function") return;
   const width = parseFloat(stage.style.getPropertyValue("--stage-w")) || 1280;
   const height = width * 9 / 16, overflow = height - 720;
   const all = [...pins.querySelectorAll(".spot-pin")];
   for (const pin of all) pin.style.removeProperty("--pin-nudge-x");
-  if (overflow <= 0 || document.body.classList.contains("game-ds")) { stage.style.removeProperty("--map-crop"); return; }
+  if (overflow <= 0 || document.body?.classList?.contains("game-ds")) { stage.style.removeProperty("--map-crop"); return; }
   const box = pins.getBoundingClientRect();
   if (!box.height) return;
   const unit = box.height / height; // 画面 px ÷ ステージ px

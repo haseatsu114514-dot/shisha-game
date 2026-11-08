@@ -114,7 +114,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
    *  できるだけ上下均等に決める（シナリオごとに印の高さの範囲が違う。16〜88%）。PC の 16:9 では何もしない。 */
   function fitRoomCrop() {
     if (disposed || typeof document === "undefined" || !root.style?.setProperty) return;
-    const stage = document.getElementById("stage");
+    const stage = document.getElementById?.("stage");
     const width = parseFloat(stage?.style?.getPropertyValue?.("--stage-w")) || 1280;
     const height = width * 9 / 16, overflow = height - 720;
     const ys = (scenario.spots || []).map(spot => Number(spot.y)).filter(Number.isFinite).map(y => y / 100 * height);
