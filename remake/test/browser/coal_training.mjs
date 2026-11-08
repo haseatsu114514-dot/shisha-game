@@ -40,6 +40,8 @@ try {
       return u.origin === origin && (allowed || u.pathname.endsWith("/")) ? route.continue() : route.abort();
     });
     const page = await context.newPage(), errors = [], vnResponses = new Map();
+    // 選ぶ工程の初回説明（#3028）はこの検査の対象外（support.mjs を使わない単独ハーネスのため、ここでも既定オフに合わせる）
+    await page.addInitScript(() => { try { localStorage.setItem("suien_step_intro", "off"); } catch {} });
     page.on("response", response => {
       const pathname = new URL(response.url()).pathname;
       if (vnAssets.includes(pathname)) vnResponses.set(pathname, response.status());

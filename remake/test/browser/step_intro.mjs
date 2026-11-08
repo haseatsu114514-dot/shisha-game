@@ -32,7 +32,8 @@ await suite("step-intro", async check => {
     assert.equal(await page.evaluate(() => document.querySelector(".bench-panel").inert), true);
     assert.match(await page.locator(".bench-guide-tip p").innerText(), /配合/);
     await page.locator('[data-test="bench-guide-close"]').click();
-    assert.equal(await page.evaluate(() => document.querySelector(".bench-panel").inert), false);
+    // toggle イベントはクリックの後で非同期に届くので、inert 解除を待ってから確かめる。
+    await page.waitForFunction(() => !document.querySelector(".bench-panel").inert);
     // 閉じたあとは通常どおり配合を決められる。
     const plus = page.locator('[data-test^="mix-plus-"]').first();
     for (let i = 0; i < 12; i++) await plus.click();
