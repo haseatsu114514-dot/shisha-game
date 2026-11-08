@@ -33,7 +33,8 @@ const OPAQUE = { left: 69 / 1254, right: 1185 / 1254, top: 61 / 1254, bottom: 11
 const PLANK = { left: CX + BOARD.left * R, right: CX + BOARD.right * R, top: CY + BOARD.top * R, bottom: CY + BOARD.bottom * R };
 const cycles = { horizontal: 3600, vertical: 3600, power: 2400 };
 // The camera frames the scoring area (the 1 ring and the gauge sweep) rather than the whole five planks.
-const VIEW = { x: CX - 232, y: CY - 232, size: 464 };
+// #2729 (2026-11-08): framed just outside the gauge sweep (±1.2) so the 1 ring fills about 82% of the view (was 71%).
+const VIEW = { x: CX - 200, y: CY - 200, size: 400 };
 // The judge's close-up after a stuck throw: ±.2 of the 1-ring radius around the blade.
 const ZOOM = .2;
 const SERIES = [1, 3];
@@ -152,7 +153,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   board.append(svg("defs", {}, [svg("radialGradient", { id: vignetteId, cx: CX, cy: CY, r: R * 1.62, gradientUnits: "userSpaceOnUse" }, [
     svg("stop", { offset: "0", "stop-color": "#fff3d6", "stop-opacity": .08 }), svg("stop", { offset: ".55", "stop-color": "#000", "stop-opacity": 0 }),
     svg("stop", { offset: "1", "stop-color": "#000", "stop-opacity": .58 })])]), art);
-  // Painted markings at the official proportions: 20 mm black lines, red bulls, blue killshots with a red outline.
+  // Painted markings at the official proportions: 20 mm black lines, red bulls, blue killshots.
+  // WATL: the inner killshot is outlined in red pen, the outer may be red; the pen lines sit inside each circle so the blue reads at its true size.
   const markings = svg("g", { class: "axe-markings", "aria-hidden": "true" });
   const lineWidth = LINE * 2 * R;
   for (const ring of RINGS.slice(2)) markings.append(svg("circle", { cx: CX, cy: CY, r: ring.radius * R, fill: "none", stroke: "#1c1410", "stroke-width": lineWidth, opacity: .9 }));
@@ -169,8 +171,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const markers = new Map();
   for (const target of KILLS) {
     const marker = svg("g", { "data-killshot": target.id }, [
-      svg("circle", { cx: CX + target.x * R, cy: CY + target.y * R, r: target.outer * R, fill: "#2f7fc1", stroke: "#c23b2a", "stroke-width": 2.2 }),
-      svg("circle", { cx: CX + target.x * R, cy: CY + target.y * R, r: target.inner * R, fill: "#163f78" }),
+      svg("circle", { cx: CX + target.x * R, cy: CY + target.y * R, r: target.outer * R - 1, fill: "#2f7fc1", stroke: "#c23b2a", "stroke-width": 2 }),
+      svg("circle", { cx: CX + target.x * R, cy: CY + target.y * R, r: target.inner * R - .6, fill: "#163f78", stroke: "#e2412c", "stroke-width": 1.2 }),
     ]); markings.append(marker); markers.set(target.id, marker);
   }
   art.append(markings);
@@ -247,7 +249,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     el("span.axe-sweet", { style: { left: POWER.sweetMin * 100 + "%", width: (POWER.sweetMax - POWER.sweetMin) * 100 + "%" } }), powerFill, needle]);
   const timing = el("div.axe-timing", [powerLabel, powerReadout, gauge]);
   const feedback = el("p.axe-feedback", { dataset: { test: "axe-feedback" } });
-  const action = el("button.axe-button.axe-primary", { dataset: { test: "axe-action" }, onclick: act });
+  // #2729 (2026-11-08): the throw button stands on its own below the panel, with an axe on it, so the place to throw reads at a glance.
+  const actionLabel = el("span.axe-action-label");
+  const action = el("button.axe-button.axe-primary.axe-throw-button", { dataset: { test: "axe-action" }, onclick: act }, [el("span.axe-throw-icon", [axeMark()]), actionLabel]);
   const steadiness = el("p.axe-steadiness", { dataset: { test: "axe-steadiness" } });
   const stability = el("div.axe-stability-meter", { role: "meter", "aria-label": "腕の安定", "aria-valuemin": "0", "aria-valuemax": "100" }, [el("i")]);
   const focusButton = el("button.axe-button", { text: "息を整える · 1回", dataset: { test: "axe-focus" }, onclick: focusAim });
@@ -283,9 +287,12 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const zoom = el("figure.axe-zoom", { hidden: true, role: "img", dataset: { test: "axe-zoom" } }, [zoomView, el("figcaption", [zoomScore, zoomZone])]);
   const boardPane = el("div.axe-board-pane", [
     el("p.axe-legend", { text: "赤6 · 5の円 · リング4〜1 · 宣言した青7／8" }), board, zoom]),
-    panel = el("aside.axe-panel", [matchScore, goals, companionCard, matchRecords, status, calls, steps, note, liveScore, resultCard, timing, feedback, steadiness, stability, action, keyhint, controls, retry]);
-  const body = el("div.axe-body", [boardPane, panel]);
-  root.append(heading, scoreboard, body, announcement);
+    panel = el("aside.axe-panel", [matchScore, goals, companionCard, matchRecords, status, calls, steps, note, liveScore, resultCard, timing, feedback, steadiness, stability, keyhint, controls]);
+  const throwZone = el("div.axe-throw", { dataset: { test: "axe-throw" } }, [action, retry]);
+  const body = el("div.axe-body", [boardPane, panel, throwZone]);
+  // #2729 (2026-11-08): the per-throw strip shares the sign's row (between the title and the total), so the board gets that row's height.
+  heading.insertBefore(scoreboard, total);
+  root.append(heading, body, announcement);
   // #2718: 始まった瞬間の切り替えの幕。見た目だけ（文字はCSSで描き、読み上げ・入力・時計・判定には触れない）。動きを減らす設定では出さない。
   if (!reducedMotion) {
     const label = tutorial ? "マキの無料1投レッスン" : versus ? rivalName + "と対戦" : mode === "league" ? "10投ゲーム" : "3投の練習";
@@ -733,7 +740,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const nextAction = { loading: "読み込み中…", failed: "もう一度読み込む", choice: "構える", horizontal: "横を止める", vertical: "縦を止める", power: strength === "適正" ? "いま放す！" : "緑の帯で放す",
       "opponent-ready": rivalName + "が構えています…", flight: "飛んでいく…", result: versus ? turnOf(match) === "opponent" ? rivalName + "の番へ" : turnOf(match) === null ? "結果を見る" : "あなたの番へ" : shots.length === rules.throws ? "結果を見る" : "次の投へ",
       summary: series && !seriesWinner() ? "第" + (gameIndex + 2) + "ゲームへ" : "終了" }[phase] || "";
-    if (action.textContent !== nextAction) action.textContent = nextAction;
+    if (actionLabel.textContent !== nextAction) actionLabel.textContent = nextAction;
     const last = shown;
     resultCard.hidden = !["result", "summary"].includes(phase);
     rankBadge.hidden = phase !== "summary" || tutorial;

@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { suite, storageSnapshot } from "./support.mjs";
+import { KILLS } from "../../js/minigames/axe-model.js";
+import { TARGET } from "../../js/minigames/axe-flight.js";
 
 const root = page => page.locator('[data-test="axe-game"]');
 const phase = (page, expected) => page.waitForFunction(expected =>
@@ -258,13 +260,15 @@ await suite("axe-polish", async check => {
       const [px, py] = await target.evaluate((svg, [x, y]) => { const p = svg.createSVGPoint(); p.x = x; p.y = y; const q = p.matrixTransform(svg.getScreenCTM()); return [q.x, q.y]; }, [x, y]);
       await page.mouse.click(px, py);
     };
-    await at(330 - 7 / 14.75 * 164, 245 - 12 / 14.75 * 164);
+    // Tap the painted blue itself (its centre in board units, from the model the board is drawn from).
+    const blue = id => { const k = KILLS.find(k => k.id === id); return [TARGET.x + k.x * TARGET.radius, TARGET.y + k.y * TARGET.radius]; };
+    await at(...blue("upper-left"));
     assert.equal(await root(page).getAttribute("data-called"), "upper-left");
     assert.match(await page.locator('[data-test="axe-call-status"]').textContent(), /左上の青/);
     assert.equal(await page.locator('[data-call="upper-left"]').getAttribute("aria-pressed"), "true");
-    await page.clock.runFor(300); await at(330, 245);
+    await page.clock.runFor(300); await at(TARGET.x, TARGET.y);
     assert.equal(await root(page).getAttribute("data-called"), "");
-    await page.clock.runFor(300); await at(330 + 7 / 14.75 * 164, 245 + 12 / 14.75 * 164);
+    await page.clock.runFor(300); await at(...blue("lower-right"));
     assert.equal(await root(page).getAttribute("data-called"), "lower-right");
     await throwWithBoard(page, { focus: false });
     assert.match(await page.locator('[data-test="axe-result"]').innerText(), /MISS/);

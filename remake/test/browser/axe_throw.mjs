@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { suite, storageSnapshot } from "./support.mjs";
+import { KILLS } from "../../js/minigames/axe-model.js";
 const shotsPath = process.env.COMPARISON_DIR;
 if (shotsPath) await fs.mkdir(shotsPath, { recursive: true });
 const game = page => page.locator('[data-test="axe-game"]');
@@ -238,7 +239,7 @@ await suite("axe-throw", async run => {
     assert.match(await page.locator(".axe-comment").textContent(),/お主/); assert.equal(await page.locator(".axe-portrait").getAttribute("alt"),"サメちゃん");
     await page.locator('[data-call="upper-left"]').click(); assert.match(await page.locator(".axe-comment").textContent(),/キルショット/);
     // Physical timing stops, not injected model/history. Small marker is intentionally demanding.
-    await shoot(page,{x:-7/14.75,y:-12/14.75,precision:true});
+    const upperLeft=KILLS.find(k=>k.id==="upper-left"); await shoot(page,{x:upperLeft.x,y:upperLeft.y,precision:true});
     assert.match(await page.locator(".axe-note").textContent(),/キルショット！ [78]点/);
     assert.match(await page.locator(".axe-comment").textContent(),/小さい的/);
     assert.match(await page.locator(".axe-portrait").getAttribute("src"),/excited/);

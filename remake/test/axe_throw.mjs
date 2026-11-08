@@ -8,13 +8,21 @@ const shot = (x = 0, y = 0, power = POWER.ideal, called = null, history = [], op
 const league = { throws: 10 };
 const near = (a, b, tolerance = 1e-9) => assert(Math.abs(a - b) <= tolerance, `${a} ≠ ${b}`);
 
-test("target follows the WATL 2026 Hatchet sheet: 1.5in bulls, 3.5in five rings, 20mm lines, 4in blade, outer zones at 56.5/63.5in and killshots at 48/72in", () => {
+test("target follows the WATL 2026 Hatchet sheet: 1.5in bulls, 3.5in five rings, 20mm lines, 4in blade, outer zones at 56.5/63.5in and killshots centred in the 1 ring", () => {
   assert.deepEqual(RINGS.map(r => r.score), [6, 5, 4, 3, 2, 1]);
   near(RINGS[0].radius, .75 * INCH); near(RINGS[1].radius, 1.75 * INCH); near(RINGS[5].radius, 1);
   near(LINE, .3937 * INCH, 1e-6); near(BLADE.halfLength, 2 * INCH);
   assert.equal(CLUSTERS.length, 5); assert.equal(BULLS.length, 4);
   for (const b of BULLS) { near(Math.abs(b.y), 3.5 * INCH); near(b.outer, RINGS[1].radius); near(b.inner, RINGS[0].radius); }
-  for (const k of KILLS) { near(Math.abs(k.y), 12 * INCH); near(k.outer, .75 * INCH); near(k.inner, .375 * INCH); assert(Math.hypot(k.x, k.y) + k.outer < 1, "killshots sit inside the 1 ring"); }
+  assert.deepEqual(KILLS.map(k => k.id), ["upper-left", "upper-right", "lower-left", "lower-right"]);
+  for (const k of KILLS) {
+    near(k.outer, .75 * INCH); near(k.inner, .375 * INCH);
+    assert.equal(Math.sign(k.x), k.id.endsWith("left") ? -1 : 1); assert.equal(Math.sign(k.y), k.row === "upper" ? -1 : 1);
+    // #2729: centred in the 1 ring along the 2024 stencil's direction (10.4in across for 12in up, about 41 degrees), the whole blue clear of both black lines.
+    const r = Math.hypot(k.x, k.y);
+    near(r, (RINGS[4].radius + RINGS[5].radius) / 2); near(Math.abs(k.x) / Math.abs(k.y), 10.4 / 12);
+    assert(r - k.outer > RINGS[4].radius + LINE && r + k.outer < RINGS[5].radius - LINE, "the blue sits between the 2 and 1 ring lines, touching neither");
+  }
   near(BOARD.right - BOARD.left, 46.25 * INCH); near(BOARD.bottom - BOARD.top, 48 * INCH);
   assert.deepEqual(Object.keys(DIVISIONS), ["rec", "am", "pro"]);
 });
