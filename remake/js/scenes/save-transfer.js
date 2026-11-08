@@ -108,9 +108,18 @@ export async function enterFullscreen() {
   try { await screen.orientation?.lock?.("landscape"); } catch { /* 非対応は無視 */ }
 }
 
-/** 全画面のボタンを出す場面か。iPhone でホーム画面版を開いているとき・非対応のときは出さない */
+/** 全画面を解除する。失敗は無視する */
+export async function exitFullscreen() {
+  try { await (document.exitFullscreen || document.webkitExitFullscreen)?.call(document); } catch { /* 既に解除済みでも遊べる */ }
+}
+
+/** 全画面でなければ入り、全画面なら解除する（#3013: 同じボタンで化／解除の両方） */
+export const toggleFullscreen = () => (isFullscreen() ? exitFullscreen() : enterFullscreen());
+
+/** 全画面のボタンを出す場面か。iPhone でホーム画面版を開いているとき・非対応のときは出さない。
+ *  全画面中は display-mode が fullscreen に寄って standalone 判定に触れても、解除ボタンは出し続ける */
 export const fullscreenEntry = () =>
-  isStandalone() ? null : canFullscreen() ? "fullscreen" : isIPhone() ? "a2hs" : null;
+  isFullscreen() ? "fullscreen" : isStandalone() ? null : canFullscreen() ? "fullscreen" : isIPhone() ? "a2hs" : null;
 
 const HOME_HELP = [
   "ホーム画面に追加すると全画面で遊べます。",
@@ -125,8 +134,13 @@ export function fullscreenButton() {
   const kind = fullscreenEntry();
   if (!kind) return null;
   if (kind === "fullscreen") {
-    return el("button.btn.small.xfer-btn", { type: "button", text: "全画面", dataset: { test: "fullscreen" },
-      onclick: () => { enterFullscreen(); } });
+    const btn = el("button.btn.small.xfer-btn", { type: "button", text: isFullscreen() ? "全画面を解除" : "全画面", dataset: { test: "fullscreen" },
+      onclick: async () => { await toggleFullscreen(); sync(); } });
+    // Esc 等でボタン以外から全画面が切り替わっても、表示名を実状態へ追随させる
+    const sync = () => { btn.textContent = isFullscreen() ? "全画面を解除" : "全画面"; };
+    document.addEventListener("fullscreenchange", sync);
+    document.addEventListener("webkitfullscreenchange", sync);
+    return btn;
   }
   return el("button.btn.small.xfer-btn", { type: "button", text: "全画面で遊ぶには", dataset: { test: "a2hs-help" },
     onclick: () => modal({ title: "全画面で遊ぶには", className: "xfer-modal",
