@@ -478,7 +478,7 @@ async function pullGame(cs, mode) {
       ? `${context.waiting}、再び炭が消耗して温度が下がってきた。もう一度整えよう`
       : `${cs.mode==="tournament"?"提供して":"試し吸いから"}約20分。${context.waiting}炭が消耗し、温度が下がってきた。調整しよう`)
       + "。", el("span.care-coals-calm", { text: calm })]);
-    const guideNote = panel.closest(".bench")?.querySelector(".bench-guide-tip > p");
+    const guideNote = panel.closest?.(".bench")?.querySelector?.(".bench-guide-tip > p");
     if (guideNote && !guideNote.parentElement.querySelector(".care-guide-calm")) guideNote.after(el("div.bench-guide-extra.care-guide-calm", [el("p", { text: calm })]));
     // 説明文の代わりに、温度計と同じ印で戻る熱を示す（▲が多いほど戻る。交換しないと ↓ 落ちていく）。
     const options = Array.from({ length: coalCount(cs) + 1 }, (_, i) => i);
