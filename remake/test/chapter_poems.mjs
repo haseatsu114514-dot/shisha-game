@@ -22,11 +22,13 @@ const EXPECTED = [
 ];
 // 縦書きの1列（高さ720pxの画面の78%・30px・字間.16em）に入る字数。空白（拍）は半角で0.5字。
 const MAX_COLUMN = 16;
-// 短さ: 本家の巻頭詩は中央値が空白を除いて約40〜50字・最頻が2〜3行（brand/chant_poems.md §2）。長くしない。
-const MAX_CHARS = 60;
-const LINES = [3, 5];
-// 場面（連）の数。第1章（序詩を兼ねる）は分けずに1場面、第2〜5章は2場面。
-const PAGES = { poem_ch1: 1, poem_ch2: 2, poem_ch3: 2, poem_ch4: 2, poem_ch5: 2 };
+// 長さ: 本家の巻頭詩は1行の言い切りから約200字の独白まで幅がある（中央値は空白を除いて約40〜50字。brand/chant_poems.md §2）。
+// 章ごとに長短を散らすが、読ませる画面で間延びしないよう上限を置く。
+const MAX_CHARS = 110;
+const LINES = [3, 12];
+const MAX_LINES_PER_PAGE = 7; // 縦書きの1場面に並べる列の数
+// 場面（連）の数。第4章だけ短い1場面（brand/chant_poems.md §4）。
+const PAGES = { poem_ch1: 2, poem_ch2: 2, poem_ch3: 2, poem_ch4: 1, poem_ch5: 2 };
 
 // 1) 台本の形 --------------------------------------------------------------
 const data = JSON.parse(read("data/dialogue/chapter_poems.json"));
@@ -45,6 +47,11 @@ for (const dialogue of data.dialogues) {
   assert.equal(dialogue.lines[0].gap, undefined, `${id}: 最初の行に gap は付けない`);
   const pageCount = dialogue.lines.filter((line) => line.gap === true).length + 1;
   assert.equal(pageCount, PAGES[id], `${id}: 場面（連）は${PAGES[id]}つ（${pageCount}）`);
+  let run = 0;
+  for (const line of dialogue.lines) {
+    run = line.gap ? 1 : run + 1;
+    assert.ok(run <= MAX_LINES_PER_PAGE, `${id}: 1場面に${run}列は多い（${MAX_LINES_PER_PAGE}列まで）`);
+  }
   for (const [index, line] of dialogue.lines.entries()) {
     const where = `${id}[${index}]`;
     assert.equal(line.speaker, "", `${where}: 地の文（話者なし）`);
@@ -138,7 +145,7 @@ for (const [file, titleCall, poemCall, count] of WIRING) {
     assert.ok(seen < 0 || poems[i] < seen, `${file}: 詩は titleSeen を立てる前（${i + 1}つ目）`);
   }
 }
-// 第1章: コールドオープン → 第1章の詩（序詩を兼ねる）→ 章タイトル。序詩は独立させない。
+// 第1章: コールドオープン → 第1章の詩（序詩を兼ねる・オーナー確認「統合で合ってる」）→ 章タイトル。序詩は独立させない。
 const ch1 = read("remake/js/chapters/ch1.js");
 assert.ok(!ch1.includes('playChapterPoem("prologue")'), "序詩は第1章の詩に統合した");
 assert.ok(!module.includes("poem_prologue") && !data.dialogues.some((d) => d.dialogue_id === "poem_prologue"), "poem_prologue は無い");
