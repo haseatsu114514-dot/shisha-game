@@ -249,10 +249,8 @@
 
 /* ================================================================ スマホ規格の大会画面（#2851・#2729 B班）
    ワイドで左右まで広げる・文字の下限を上げるのは wide-craft.css（#2983）。ここは欄の並びと押す所だけを足す。 */
-/* 最終結果: 下の「……結果を受け止める」はスマホ規格の押す高さ（--phone-tap）になるので、行の高さもそれに合わせる。
-   54px の行のままだと結果表の下へはみ出して、表の中がスクロールしてしまう（ch1-tournament の results-landscape）。 */
-html:root[data-density="phone"] body:not(.game-ds) .result-table { grid-template-rows: 128px minmax(0, 1fr) var(--phone-tap); }
-html:root[data-density="phone"] body:not(.game-ds) .result-table > .btn { font-size: var(--phone-text); }
+/* 最終結果: 「あなたの一台」の欄の下の補足（効いたもの・良かった点・次の練習）を規格の文字に。
+   下段の行の高さ（「……結果を受け止める」が --phone-tap になる分）は phone-density.css（#2976）で決める。 */
 html:root[data-density="phone"] body:not(.game-ds) .result-table .rt-detail-scroll > small { font-size: var(--phone-sub); }
 /* 中間投票: 審査員の欄と名前の列を広げる（文字を大きくしても持ち点の行・名前が詰まらないように） */
 html:root[data-density="phone"] body:not(.game-ds) .standings .sd-main { grid-template-columns: 1fr 380px; }
