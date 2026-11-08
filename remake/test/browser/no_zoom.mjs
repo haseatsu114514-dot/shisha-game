@@ -22,8 +22,16 @@ const taps = (page, gaps) => page.evaluate(async gaps => {
   return { prevented: out, clicks };
 }, gaps);
 
+// no-zoom は WebKit だけに自動で入るため、Chromium の検査では force で同じモジュールを入れて判定を確かめる
+// （double-tap-guard の検査と同じ形）。
+const armNoZoom = page => page.evaluate(async () => {
+  const m = await import("/remake/js/core/no-zoom.js");
+  m.installNoZoom(document, { force: true });
+});
+
 await suite("no-zoom-and-landscape-only", async check => {
   await check("double-tap-is-stopped-but-single-and-slow-taps-pass", async page => {
+    await armNoZoom(page);
     // 速い2回目だけ止め、click は自前で1回送る。ゆっくりした2回目・1回目は触らない。
     assert.deepEqual(await taps(page, [0, 120]), { prevented: [false, true], clicks: 1 });
     assert.deepEqual(await taps(page, [0, 600]), { prevented: [false, false], clicks: 0 });
@@ -32,6 +40,7 @@ await suite("no-zoom-and-landscape-only", async check => {
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
 
   await check("dblclick-is-cancelled-but-pinch-gestures-pass", async page => {
+    await armNoZoom(page);
     const result = await page.evaluate(() => {
       const fire = type => { const e = new Event(type, { bubbles: true, cancelable: true }); document.body.dispatchEvent(e); return e.defaultPrevented; };
       return [fire("gesturestart"), fire("gesturechange"), fire("gestureend"), fire("dblclick")];
