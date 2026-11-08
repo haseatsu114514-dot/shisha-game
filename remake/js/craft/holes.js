@@ -109,7 +109,7 @@ export async function runHoles(cs) {
     el("ul", [
       ["狙う", "光る目印の近くを針が行き来する。重なったところで押す"],
       ["押し加減", "少し押し込んでから離す。短すぎると開かず、長く押すほど穴が大きくなる"],
-      ["外したとき", "穴は残る。針は同じ目印の手前へ戻るので、すぐ狙い直せる"],
+      ["ズレたとき", "ミスにはならず、ズレた位置のまま穴として残る（点は低くなる）。針は次の目印へ進む"],
       ["採点", "間隔のそろい50・狙いの正確さ30・穴の大きさのそろい15・時間5"],
       ...rings.map(ring => [ring.label, ring.role]),
     ].map(([label, text]) => el("li", [el("b", { text: label }), el("span", { text })]))),
@@ -159,7 +159,7 @@ export async function runHoles(cs) {
   const gameClock = createCraftClock(panel);
   let t0 = null;
   let elapsed = 0;
-  const tally = { perfect: 0, good: 0, miss: 0, tooClose: 0, blank: 0, tooMany: 0, shallow: 0 };
+  const tally = { perfect: 0, good: 0, miss: 0, rough: 0, tooClose: 0, blank: 0, tooMany: 0, shallow: 0 };
   let finished = false;
   let raf = 0;
   // 針: sweepStart から弧を動く。press は押している間、wait は浅すぎた後にその場で待つ間。
@@ -291,7 +291,7 @@ export async function runHoles(cs) {
       place(dent, a, ring.r);
       dentsLayer.append(dent);
       feedback.replaceChildren();
-      popStamp(feedback, "浅い。もう一度", "miss", "50%", "50%");
+      popStamp(feedback, "浅い。もう一度", "rough", "50%", "50%");
       drawNeedle(t);
       return;
     }
@@ -304,21 +304,21 @@ export async function runHoles(cs) {
     if (dRef <= perfWin) kind = "perfect";
     else if (dRef <= goodWin) kind = "good";
     else if (near) kind = "close";
-    else kind = "miss";
+    else kind = "rough";
+    // ズレた一刺しもミス（無効）にはしない。その目印の穴として成立させ、ズレの大きさで減点する（#3023）。
+    ring.taken[k] = true;
+    ring.holes.push({ a, d: dRef, size });
     if (kind === "perfect" || kind === "good") {
-      ring.taken[k] = true;
-      ring.holes.push({ a, d: dRef, size });
       tally[kind]++;
       report(`${kind === "perfect" ? "EXCELLENT" : "GOOD"}${sizeNote}`, kind);
-      ring.aim = nextAim(ring, k + 1);
     } else {
-      ring.holes.push({ a, d: goodWin * 1.5, size });
       ring.extra++;
-      if (kind === "close") { tally.tooClose++; report("TOO CLOSE", "bad"); }
-      else { tally.miss++; report("ズレた…", "miss"); }
+      if (kind === "close") { tally.tooClose++; report(`近すぎたけど開いた${sizeNote}`, "rough"); }
+      else { tally.rough++; report(`ズレたけど開いた${sizeNote}`, "rough"); }
       if (ring.id === "inner") tally.tooMany++;
     }
-    // 成功なら次の目印、外したら同じ目印の、すぐ手前から針が動き出す。
+    ring.aim = nextAim(ring, k + 1);
+    // 成立したら（ズレた場合も）次の目印の、すぐ手前から針が動き出す。
     sweepStart = t; wait = null;
     addHoleDot(a, ring.r, kind, depth);
     if (kind === "perfect" || kind === "good") {
@@ -429,10 +429,10 @@ export async function runHoles(cs) {
     lines: [
       `テンプレート：${template.label}`,
       res.evenness > 0.8 ? "穴の間隔が揃い、熱が回りやすそうだ" : "穴の間隔にばらつきがある。次は目印をよく見よう",
-      `目印の達成：${res.tally.perfect + res.tally.good}/${Object.values(template.counts).reduce((sum, count) => sum + count, 0)}か所（EXCELLENT ${res.tally.perfect}・GOOD ${res.tally.good}）`,
-      `穴あけ入力：${res.total}回 ／ MISS：${res.tally.miss + res.tally.tooClose}回（TOO CLOSEを含む）`,
+      `目印の達成：${res.tally.perfect + res.tally.good + (res.tally.rough || 0) + res.tally.tooClose}/${Object.values(template.counts).reduce((sum, count) => sum + count, 0)}か所（EXCELLENT ${res.tally.perfect}・GOOD ${res.tally.good}）`,
+      `穴あけ入力：${res.total}回 ／ ズレて開いた穴：${(res.tally.rough || 0) + res.tally.tooClose}回（近すぎた穴を含む）`,
       `実際に開いた穴：外周 ${res.outer}・中周 ${res.middle}・内周 ${res.inner}（計 ${res.total} 穴）`,
-      "MISSでも穴は開き、熱の回り方に影響する",
+      "ズレた穴も開いた穴として残り、間隔と熱の回り方に影響する",
       `穴の大きさ：小 ${res.holeSizes.small}・少し大きい ${res.holeSizes.wide}・大きい ${res.holeSizes.large}${res.holeSizes.shallow ? `（浅くて開かなかった ${res.holeSizes.shallow}回）` : ""}`,
       res.innerExcess ? "内周を開けすぎた。焦げやすくなるかもしれない" : res.outerEven > 0.8 ? "外周がきれいに揃った。熱が全体に回りそうだ" : "",
       res.total < 24 ? "穴を控えめに仕上げた。吸い出しでは温度の動きをよく見よう" : "",

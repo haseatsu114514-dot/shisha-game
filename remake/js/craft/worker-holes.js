@@ -62,7 +62,7 @@ export function buildWorkerHoles() {
     punch(event) {
       if (root.hidden || !root.isConnected) return;
       clearTimers(); target = event.target;
-      // MISS/TOO CLOSEも実際に開いた穴。同じ座標・実穴数をそのまま表示する。
+      // ズレた穴・近すぎた穴も実際に開いた穴。同じ座標・実穴数をそのまま表示する。
       // 押し加減で大きくなった穴は、手元のアルミでも同じ比率で大きく見せる（#2937）。
       dots.replaceChildren(...event.dots.map(([x, y], i) => {
         const dot = document.createElementNS(SVG_NS, "ellipse");

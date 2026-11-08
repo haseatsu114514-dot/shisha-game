@@ -557,6 +557,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .stamp.perfect, .stamp.just { color: var(--neon-amber); text-shadow: 0 0 24px rgba(255, 194, 74, 0.95), 0 0 60px rgba(255, 120, 40, 0.6); font-size: 54px; }
 .stamp.good { color: var(--neon-cyan); text-shadow: 0 0 20px rgba(56, 240, 255, 0.8); }
 .stamp.miss { color: #c8c8d0; text-shadow: none; font-size: 38px; }
+.stamp.rough { color: #e8b07d; text-shadow: 0 0 16px rgba(232, 176, 125, .45); font-size: 38px; }
 .stamp.bad { color: var(--danger); text-shadow: 0 0 20px rgba(255, 60, 60, 0.7); }
 @keyframes stamp-in {
   0% { opacity: 0; transform: translate(-50%, -50%) rotate(-6deg) scale(2.2); }
