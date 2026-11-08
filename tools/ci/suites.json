@@ -264,6 +264,12 @@
       "run": ["node remake/test/ch1_interval_connection.mjs"]
     },
     {
+      "id": "poem-panel-cut",
+      "title": "Opening-poem panel template, frame detection, 16:3 fitting and delivery check",
+      "kind": "quick",
+      "run": ["python3 tools/poem_panel_cut.py selftest"]
+    },
+    {
       "id": "chapter-poems",
       "title": "Opening poems: dialogue data, document match and chapter-title wiring",
       "kind": "quick",
