@@ -743,7 +743,10 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 /* 「？」と「✕」は見た目を文字ほどの小さな丸にし、押せる範囲（ボタンの箱）は透明なまま広く取る（#2729 オーナー指摘「？ボタンが大きい」）。
    ほかのミニゲーム（#2991）と同じ大きさ: 丸は「？」の文字（実寸 11.5px 以上）＋11px、押せる箱は実寸 40px 以上（本編の #stage では --k で割り戻す）。
    丸は ::before で描く。箱は上下の負の余白で看板の高さを押し広げない。 */
-.axe-game .axe-header .axe-help { --help-font: max(20px, calc(11.5px / var(--k, 1))); --help-size: calc(var(--help-font) + 11px); --help-hit: max(44px, calc(40px / var(--k, 1))); position: relative; display: grid; place-items: center; width: var(--help-hit); min-width: var(--help-hit); height: var(--help-hit);
+/* 看板は押せる箱が丸ごと収まる高さを保つ（箱が看板の外へはみ出さない）。 */
+.axe-game .axe-header { --help-font: max(20px, calc(11.5px / var(--k, 1))); --help-size: calc(var(--help-font) + 11px); --help-hit: max(44px, calc(40px / var(--k, 1)));
+  min-height: calc(var(--help-hit) + 2px); }
+.axe-game .axe-header .axe-help { position: relative; display: grid; place-items: center; width: var(--help-hit); min-width: var(--help-hit); height: var(--help-hit); min-height: var(--help-hit);
   margin-block: calc((var(--help-size) - var(--help-hit)) / 2); padding: 0; border: 0; border-radius: 50%; background: transparent; box-shadow: none; font-size: var(--help-font); font-weight: 900; line-height: 1; }
 .axe-game .axe-header .axe-help::before { content: ""; position: absolute; left: 50%; top: 50%; width: var(--help-size); height: var(--help-size); transform: translate(-50%, -50%);
   box-sizing: border-box; border: 1.5px solid #f4f0e66b; border-radius: 50%; background: var(--lane-board-2); box-shadow: inset 0 -2px #00000066; pointer-events: none; }
@@ -812,7 +815,7 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
    iPhone 横持ち（0.54倍）でも Safari のバーあり（0.47倍）でも、実寸で文字 11px・押す部品 38px を下回らない。 */
 .axe-in-stage { --axe-tap: 82px; --axe-text: 24px; padding: 18px 22px; gap: 10px; font-size: var(--axe-text); }
 .axe-in-stage .axe-button { min-height: var(--axe-tap); font-size: var(--axe-text); font-weight: 700; }
-.axe-in-stage .axe-header { gap: 14px; min-height: 64px; }
+.axe-in-stage .axe-header { gap: 14px; min-height: max(64px, calc(var(--help-hit) + 2px)); }
 .axe-in-stage .axe-header h1 { font-size: 32px; }
 /* 「？」「✕」の大きさは上の共通の指定（iPhone 横の 0.54倍で丸はステージ上 32px・押せる箱は 74px＝実寸 40px）。押せる箱が広いぶん、2つの丸の間を詰める。 */
 .axe-game.axe-in-stage .axe-header .axe-close { margin-left: -14px; }
@@ -961,8 +964,8 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-in-stage .axe-throw-button, .axe-in-stage .axe-throw .axe-retry { min-height: 100px; border-radius: 20px; font-size: 32px; }
 .axe-in-stage .axe-throw .axe-retry { font-size: var(--axe-text); }
 .axe-in-stage .axe-panel, .axe-in-stage.axe-game .axe-panel { padding: 8px 14px; gap: 6px; }
-/* 対戦: 得点表が2段（あなた／ひより）になるぶん、枠の中の重複を外す。合計は得点表の右端（単体ページも同じ）、チャレンジは対戦の結果にも出していない。 */
-.axe-game[data-mode="versus"]:not([data-phase="summary"]) .axe-match-score, .axe-in-stage.axe-game[data-mode="versus"] .axe-challenges {
+/* 対戦: 得点表が2段（あなた／ひより）になるぶん、枠の中の重複を外す。合計は得点表の右端、チャレンジは対戦の結果にも出していない。 */
+.axe-in-stage.axe-game[data-mode="versus"]:not([data-phase="summary"]) .axe-match-score, .axe-in-stage.axe-game[data-mode="versus"] .axe-challenges {
   position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important;
   overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
 /* 16:9 のステージ（ワイドでない 1280 幅）の対戦は、10投×2段の得点表を看板の2段目に折り返す（1段目に並べると各投の枠が細くなりすぎる）。 */
