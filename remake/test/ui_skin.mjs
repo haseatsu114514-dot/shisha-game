@@ -69,7 +69,7 @@ try {
           const time = document.querySelector(".dc-slot");
           result.push({ money, day, rects: snapshot(), barWidth: parseFloat(document.querySelector(".hud-bar").style.width), visible: amount.scrollWidth <= amount.clientWidth,
             timeFits: time.scrollWidth <= time.clientWidth,
-            countdown: countdown.textContent, countdownFits: countdown.scrollWidth <= countdown.clientWidth });
+            countdown: countdown ? countdown.textContent : null });
         }
       }
       return result;
@@ -80,8 +80,7 @@ try {
       assert.deepEqual([result.rects[0], ...result.rects.slice(2)], [geometry[0].rects[0], ...geometry[0].rects.slice(2)], "Capacity change moved the other HUD controls");
       assert(result.visible, `Money was clipped: ${result.money}`);
       assert(result.timeFits, "Time/weather label overlapped the money column");
-      assert(result.countdownFits, "Next tournament countdown was clipped");
-      assert.equal(result.countdown, `次の大会まであと${14 - result.day}日`);
+      assert.equal(result.countdown, null, "残り日数の行が左上カードに残っている（#3033で削除済みのはず）");
     }
     // 統合HUDではカード幅が固定でバーが列幅いっぱいに広がるため、器の伸びは
     // バーに指定された幅（updateHud が最大体力から決める）で見る。
@@ -115,13 +114,13 @@ try {
     const centered = Math.abs(inner.x + inner.width / 2 - outer.x - outer.width / 2) < .5
       && Math.abs(glyphs.x + glyphs.width / 2 - inner.x - inner.width / 2) < .5;
     const readable = getComputedStyle(document.querySelector(".dc-row.money b")).fontSize;
-    const onDayText = document.querySelector(".dc-meta .dc-row:not(.money)").textContent;
-    return { capped, spent, minimum, migrated, countdowns, centered, readable, onDayText };
+    const goalRow = document.querySelector(".dc-meta .dc-row:not(.money)");
+    return { capped, spent, minimum, migrated, countdowns, centered, readable, onDayText: goalRow ? goalRow.textContent : null };
   });
   assert.deepEqual([moneyAndSave.capped, moneyAndSave.spent, moneyAndSave.minimum], [999999, 999874, 0]);
   assert.deepEqual(moneyAndSave.migrated, { money: 999999, day: 14, phase: "tournament", attempts: 2, lastNight: true });
   assert.deepEqual(moneyAndSave.countdowns, Array.from({length: 14}, (_, i) => 13 - i));
-  assert.equal(moneyAndSave.onDayText, "次の大会まであと0日");
+  assert.equal(moneyAndSave.onDayText, null, "大会当日でも残り日数の行は出さない（#3033）");
   assert(moneyAndSave.centered, "LIME label or glyphs were off center");
   assert.equal(moneyAndSave.readable, "24px"); // #2853: ラベルを ¥ の印にした分、数値を24pxへ
   console.log("[ui skin] PASS: six-digit cap, spending, zero, old DAY15 save, countdown, centered LIME, readable money");

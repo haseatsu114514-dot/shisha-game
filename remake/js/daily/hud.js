@@ -1,5 +1,7 @@
 import { CH2_CITY_EN, CH2_CITY_NAME, HOME_CITY_EN, HOME_CITY_NAME } from "../core/city-locations.js";
-// 日常パートの常時表示（日付・時間帯・大会までの日数・所持金・体力・スマホ・MENU）。
+// 日常パートの常時表示（日付・時間帯・所持金・体力・スマホ・MENU）。
+// 章の残り日数（あと◯日）は左上カードに出さない（#3033・オーナー指示）。残り日数の計算自体は
+// chapter-clock.js に残り、MENU や台詞の {daysLeft} など表示先が別の場所では従来どおり使う。
 // 左上に DAY カード、右上に LIME と MENU。ステータスは全画面MENU（daily/menu.js）のタブへ移し、
 // 五角形のステータスボタンは廃止した（DUI05）。未使用の火種の印は MENU の右上に出す。
 import { el, yen, sleep } from "../core/util.js";
@@ -9,7 +11,7 @@ import { state } from "../core/state.js";
 import { staminaRatio, currentCondition, maxStamina } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
-import { chapterDay, chapterDaysLeft, chapterFinalDay, chapterGoalLabel, departurePrep } from "../core/chapter-clock.js";
+import { chapterDay, chapterDaysLeft, chapterFinalDay } from "../core/chapter-clock.js";
 import { travelsBetweenCities } from "../core/travel-budget.js";
 import { growthEnabled, growthView, gaugeInfo, hidaneTotal } from "../core/growth.js";
 import { NODE_BY_ID, pathTo } from "../core/growth-board.js";
@@ -91,9 +93,7 @@ export function initHud(h) {
     day: el("div.dc-day"),
     slot: el("div.dc-slot"),
     money: el("b"),
-    left: el("b"),
-    // 所持金・大会まで・体力のラベルは文字を残し（読み上げ・説明用）、画面では ¥・🏆・♥ の印に置き換える（CSS・#2853）
-    leftLabel: el("span.dc-label", { text: "次の大会まで" }),
+    // 所持金・体力のラベルは文字を残し（読み上げ・説明用）、画面では ¥・♥ の印に置き換える（CSS・#2853）
     stamina: el("div.hud-stamina", [el("span.dc-label", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b")])])]),
     phone: el("button.hud-lime", { title: "LIME", "aria-label": "LIME", dataset: { test: "hud-phone" }, onclick: () => handlers.phone?.() }, [el("span", { text: "LIME" }), el("em.badge")]),
     // 経験値と次のレベルまで（SPEC 6.1a）。置き場所は情報カードの体力の下（REPORT P4・R5）
@@ -111,7 +111,7 @@ export function initHud(h) {
   const root = el("div.hud", [
     el("div.hud-card", [
       el("div.dc-main", [dom.area, dom.day, dom.slot]),
-      el("div.dc-meta", [moneyRow, dom.goalRow = el("div.dc-row.goal", { dataset: { test: "hud-goal" } }, [dom.leftLabel, dom.left]), dom.stamina, dom.exp]),
+      el("div.dc-meta", [moneyRow, dom.stamina, dom.exp]),
     ]),
     el("div.hud-right", [dom.phone, dom.menu]),
   ]);
@@ -231,12 +231,6 @@ export function updateHud() {
   dom.slot.setAttribute("aria-label", slotName);
   dom.slot.dataset.slot = night ? "night" : "day";
   dom.money.textContent = yen(state.money);
-  const left = daysLeft();
-  dom.leftLabel.textContent = chapterGoalLabel(state);
-  dom.leftLabel.parentElement.title = chapterGoalLabel(state);
-  // 何までの日数か。スマホでは「次の大会まで」だけ出さない（phone-density.css）。出発前・第5章の日数は出す。
-  if (dom.goalRow) dom.goalRow.dataset.goal = departurePrep(state) ? "departure" : state.chapter === 5 ? "final" : "tournament";
-  dom.left.textContent = left === null ? "未定" : `あと${left}日`;
   const r = staminaRatio();
   const condition = currentCondition();
   // ゲージは実残量。発病日の制作コンディションは従来どおり別に保持する。

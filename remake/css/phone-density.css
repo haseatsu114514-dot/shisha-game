@@ -65,10 +65,8 @@ html:root[data-density="phone"] body:not(.game-ds) .hud-lime .badge.single { fon
 html:root[data-density="phone"] body:not(.game-ds) .hud-lime .badge-number { transform: translateX(calc(var(--badge-d) / 40)); }
 /* DAY カード: 英字の地名（飾り）は消し、補助文は読める大きさにする。行の高さと右列の幅は文字に合わせて伸ばす。 */
 html:root[data-density="phone"] body:not(.game-ds) #hud .dc-area { display: none; }
-/* 「次の大会まで あと○日」はスマホでは出さない（オーナー指示 2026-11-08「次の大会までは書かなくていい。わかるし」）。
-   出発前の「出発まで」・第5章の「勝負の日まで」は大会の日程とは別の情報なので出す（ch2_tournament の検査）。
-   文字を大きくした分だけ札が伸びて街マップのスポットに重なるのを、行を減らして防ぐ。日数は MENU のステータスで見られる。 */
-html:root[data-density="phone"] body:not(.game-ds) #hud .dc-row.goal[data-goal="tournament"] { display: none; }
+/* 「◯◯まで あと○日」の行は左上カードから自体を無くした（#3033・オーナー指示 2026-11-09）。
+   残り日数は MENU のステータスで見られる。 */
 /* 幅は固定する。日数（1〜2桁）や所持金の桁で札の幅が変わると、LIME・MENU まで動いてしまう（ui_skin の検査）。
    幅は「☀残り2」（#2853 の昼夜の札・約 3.5 文字）が補助文の大きさで収まる分。文字の大きさに比例させ、中身では変えない。 */
 html:root[data-density="phone"] body:not(.game-ds) #hud .dc-main { width: calc(var(--phone-sub) * 3.7); min-width: 0; }
