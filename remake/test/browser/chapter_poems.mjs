@@ -223,10 +223,10 @@ await suite("chapter-poems", async check => {
     assert.equal(await page.locator(POEM).count(), 0);
     assert.equal(await page.evaluate(() => window.OWNER.controller), null, "controller を残さない");
 
-    // 5) 放置でも詰まらない: 場面ごとに字数に応じた時間で進み、最後の場面のあと閉じる（第4章の詩は短い1場面）
+    // 5) 放置でも詰まらない: 場面ごとに字数に応じた時間で進み、最後の場面のあと閉じる
     await start(4);
     await page.locator(`${POEM}[data-poem="poem_ch4"]`).waitFor();
-    assert.equal(await page.locator(POEM).evaluate(node => node.dataset.pages), "1", "第4章の詩は1場面");
+    assert.equal(await page.locator(POEM).evaluate(node => node.dataset.pages), "2");
     await page.waitForFunction(() => window.RESULT !== undefined, null, { timeout: 30000 });
     assert.equal(await page.evaluate(() => window.RESULT), true);
   });
@@ -254,7 +254,7 @@ await suite("chapter-poems", async check => {
     await page.locator(`${POEM}[data-poem="poem_ch3"]`).waitFor();
     // 動き軽減では行ごとの演出をせず、場面の行を最初から全部出す（フェードだけ）。場面の分け方は同じ。
     assert.equal(await page.locator(POEM).evaluate(node => node.dataset.pages), "2");
-    await page.waitForFunction(() => document.querySelectorAll('[data-test="chapter-poem"] .cp-page.now .cp-line.on').length === 4, null, { timeout: 3000 });
+    await page.waitForFunction(() => document.querySelectorAll('[data-test="chapter-poem"] .cp-page.now .cp-line.on').length === 3, null, { timeout: 3000 });
     await page.keyboard.press("Control");
     await page.waitForFunction(() => window.RESULT === true);
   }, { reducedMotion: "reduce" });

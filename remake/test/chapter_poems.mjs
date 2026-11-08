@@ -27,8 +27,8 @@ const MAX_COLUMN = 16;
 const MAX_CHARS = 110;
 const LINES = [3, 12];
 const MAX_LINES_PER_PAGE = 7; // 縦書きの1場面に並べる列の数
-// 場面（連）の数。第4章だけ短い1場面（brand/chant_poems.md §4）。
-const PAGES = { poem_ch1: 2, poem_ch2: 2, poem_ch3: 2, poem_ch4: 1, poem_ch5: 2 };
+// 場面（連）の数。どの章も2場面（brand/chant_poems.md §4）。
+const PAGES = { poem_ch1: 2, poem_ch2: 2, poem_ch3: 2, poem_ch4: 2, poem_ch5: 2 };
 
 // 1) 台本の形 --------------------------------------------------------------
 const data = JSON.parse(read("data/dialogue/chapter_poems.json"));
