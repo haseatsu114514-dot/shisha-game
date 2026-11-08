@@ -96,7 +96,7 @@ await suite('action-context', async check => {
           const lines = r.first.lines.filter(l => l.id === 'ch1_ageha_encounter');
           assert(lines.every(l => /bg_street/.test(l.bg) && l.slot === r.slot));
           assert(lines.every(l => !/夕暮れ|夕陽/.test(l.text)));
-          assert.match(lines[0].text, /シフトを上がったあと/);
+          assert.match(lines[0].text, /シフトが終わったあと/);
           assert(lines.some(l => /荷物をスミさんに渡した/.test(l.text)));
         }
       }

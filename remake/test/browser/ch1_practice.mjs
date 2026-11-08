@@ -124,8 +124,10 @@ await suite("ch1-practice", async run => {
       await page.reload(); await page.locator('[data-test="title-new"]').waitFor(); await setup(page, { fresh: false });
       await page.evaluate(() => { P.core.loadFromSlot("suien_remake_slot1"); P.run(); }); await finish(page);
       const again = await snapshot(page); assert.equal(again.benches, 0);
-      const { savedAt: _beforeTime, ...beforeState } = r.state;
-      const { savedAt: _afterTime, ...afterState } = again.state;
+      // 保存のたびに経過分を足すプレイ時間（playMs・#2902）も、保存日時と同じく別に確かめる（減らない）。
+      const { savedAt: _beforeTime, playMs: beforePlay, ...beforeState } = r.state;
+      const { savedAt: _afterTime, playMs: afterPlay, ...afterState } = again.state;
+      assert(Number.isFinite(beforePlay) && afterPlay >= beforePlay, "play time survives the save/load and never goes back");
       assert.deepEqual(afterState, beforeState);
     }, options);
     await check(`${device}-early-current-interrupted-save-load`, async page => {
