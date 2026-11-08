@@ -44,7 +44,7 @@ async function shoot(page, { touch = false, x = 0, y = 0, power = .62, keyboard 
   if (precision) {
     const actualY=Number(await game(page).getAttribute("data-aim-y"));
     // The 4in blade forgives vertical error; horizontal error must stay inside the small blue outer ring (.75in = .042 of the 1 ring).
-    if (Math.abs(Number(stoppedX)-x)>.03 || Math.abs(actualY-y)>.08) {
+    if (Math.abs(Number(stoppedX)-x)>.025 || Math.abs(actualY-y)>.08) {
       assert(attempt<4,"Physical aiming failed after five visible re-aims");
       // Use the player's real re-aim control before throwing; a slow runner can miss the narrow timing window.
       console.log(`[axe-throw] Re-aim ${attempt+1}: actual ${stoppedX},${actualY}; target ${x},${y}`);

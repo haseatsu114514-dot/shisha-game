@@ -40,8 +40,8 @@ async function shoot(page, options = {}) {
   await stop(page, .5, options); await phase(page, "power");
   if (options.focus) {
     const [x, y] = await root(page).evaluate(game => [Number(game.dataset.aimX), Number(game.dataset.aimY)]);
-    if (Math.abs(x) > .03 || Math.abs(y) > .15) {
-      // The 1.5in bull (radius .051) forgives vertical error through the 4in blade; horizontal error must leave room for focused sway.
+    if (Math.abs(x) > .025 || Math.abs(y) > .13) {
+      // The 1.5in bull (radius .042 of the 18in 1 ring) forgives vertical error through the 4in blade (.111); horizontal error must leave room for focused sway.
       assert((options.attempt || 0) < 5, `Visible center aiming failed: ${x},${y}`);
       await page.locator('[data-test="axe-reaim"]:not([disabled])').click();
       return shoot(page, { ...options, attempt: (options.attempt || 0) + 1 });
@@ -153,7 +153,8 @@ await suite("axe-versus", async check => {
     await page.goto(new URL("axe-throw.html", page.url()).href);
     await page.evaluate(async () => {
       const mini = await import("./js/minigames/axe.js");
-      window.matchPromise = mini.runAxeThrow({ host: document.getElementById("axe-app"), mode: "versus", difficulty: "hard", seed: 0 });
+      // Seed 11: the hard opponent's ten throws total exactly 60 on the official target (#2729), the same as ten focused bulls.
+      window.matchPromise = mini.runAxeThrow({ host: document.getElementById("axe-app"), mode: "versus", difficulty: "hard", seed: 11 });
     });
     await phase(page, "choice");
     const before = await storageSnapshot(page);
@@ -184,7 +185,7 @@ await suite("axe-versus", async check => {
     assert.match(await page.locator('.axe-call-status').textContent(), /残り2回/);
     await page.keyboard.press("Escape");
     const result = await page.evaluate(() => window.matchPromise);
-    assert.equal(result.match.seed, 0); assert.equal(result.match.winner, null);
+    assert.equal(result.match.seed, 11); assert.equal(result.match.winner, null);
     assert.deepEqual(result.match.player, []); assert.deepEqual(result.match.opponent, []);
     assert.deepEqual(await storageSnapshot(page), before);
   });
