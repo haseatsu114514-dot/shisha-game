@@ -22,6 +22,9 @@ html:root[data-density="phone"] #stage[data-wide] {
   --phone-tap: max(80px, calc(43px / var(--k, 1)));
   --phone-ctl: max(26px, calc(14px / var(--k, 1)));
 }
+/* 大会の結果表: ボタンの段が 54px 固定（tournament.css）なので、スマホ規格の「次へ」（ワイドで 80px）が段からはみ出し、
+   縦の 720 を越えていた（ch1_tournament results-landscape）。ボタンの段をボタンの高さに合わせ、真ん中の表（1fr）が詰める。 */
+html:root[data-density="phone"] body:not(.game-ds) .result-table { grid-template-rows: 128px minmax(0, 1fr) auto; }
 
 /* ---------------------------------------------------------------- ボタン（主文だけを大きく・説明は落とす） */
 html:root[data-density="phone"] body:not(.game-ds) .btn,

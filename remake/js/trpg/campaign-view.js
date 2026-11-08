@@ -130,7 +130,8 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       const status = participantStatus(state, person);
       const member = !!state.trpg?.club?.members?.[person.id];
       const recruitment = recruitmentStatus(state, person, catalog);
-      party.append(el("div.trpg-campaign-person", { dataset: { test: "trpg-person-" + person.id, available: status.ok } }, [
+      // 興味の一言はスマホでは札に出さず、長押し・ポインタの title で読む（#2729）
+      party.append(el("div.trpg-campaign-person", { title: member ? null : person.interestHint, dataset: { test: "trpg-person-" + person.id, available: status.ok } }, [
         el("span.trpg-campaign-face", el("img", { src: portraitUrl(manifest, person.id), alt: "",
           style: { top: portraitTop(manifest, person.id, 180, 4), transform: "translateX(-" + portraitAx(manifest, person.id) * 100 + "%)" } })),
         el("div", [el("strong", { text: name(person.id) + (member ? " · 部員" : "") }),
