@@ -25,13 +25,14 @@ export const CLUSTERS = [
   ...[-1, 1].flatMap(y => [-1, 1].map(x => ({ id: (y < 0 ? "u" : "l") + (x < 0 ? "l" : "r"), x: x * 6 * INCH, y: y * 3.5 * INCH, ring: 3 }))),
 ];
 export const BULLS = CLUSTERS.slice(1).map(c => ({ x: c.x, y: c.y, outer: RINGS[1].radius, inner: RINGS[0].radius }));
-/** WATL paints the 4 killshots in the middle of the 1 ring (2024 rules "centered in the 1 ring"; the 2024 stencil's kill hole sits
- *  halfway between its 2 and 1 ring slots), 12 in above/below centre (48/72 in from the ground) and about 10.4 in to the side
- *  (the stencil's board-alignment arrow on the second board seam), i.e. about 41° from vertical as in WATL's target drawings.
- *  This board's 1 ring (29.5 in) is smaller than the stencil's, so 12 in up would put the blue on the 1 ring's black line:
- *  the killshots keep the official place relative to the rings, in the middle of this 1 ring along the official direction. */
+/** Killshots (#2729, rechecked 2026-11-08 against worldaxethrowingleague.com/axe-throwing-rules and the 2024/2025 rule pages):
+ *  outer 1.5 in / inner 0.75 in, lower 48 in / upper 72 in on centre (target centre 60 in, i.e. 12 in up and down), "centered in the 1 ring".
+ *  The rules give no side offset; the 2024 stencil does: its board-alignment arrow sits on the second board seam, which puts the
+ *  kill hole about 10.4 in to the side, about 41 degrees from vertical ("Blue zones in 1-ring corners" in WATL's glossary).
+ *  The stencil's rings are wider than this board's 29.5 in 1 ring, so the former 12 in up / 7 in across put the blue on the 1 ring's black line.
+ *  The killshots keep the official place relative to the rings: centred in this 1 ring, along the stencil's direction. */
 export const KILL_DIRECTION = { x: 10.4, y: 12 };
-export const KILL_RADIUS = (11.625 + 14.75) / 2 * INCH;
+export const KILL_RADIUS = (RINGS[4].radius + RINGS[5].radius) / 2;
 const killUnit = Math.hypot(KILL_DIRECTION.x, KILL_DIRECTION.y);
 export const KILLS = [-1, 1].flatMap(y => [-1, 1].map(x => ({
   id: (y < 0 ? "upper" : "lower") + (x < 0 ? "-left" : "-right"), row: y < 0 ? "upper" : "lower",

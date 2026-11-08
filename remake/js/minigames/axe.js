@@ -290,7 +290,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     panel = el("aside.axe-panel", [matchScore, goals, companionCard, matchRecords, status, calls, steps, note, liveScore, resultCard, timing, feedback, steadiness, stability, keyhint, controls]);
   const throwZone = el("div.axe-throw", { dataset: { test: "axe-throw" } }, [action, retry]);
   const body = el("div.axe-body", [boardPane, panel, throwZone]);
-  root.append(heading, scoreboard, body, announcement);
+  // #2729 (2026-11-08): the per-throw strip shares the sign's row (between the title and the total), so the board gets that row's height.
+  heading.insertBefore(scoreboard, total);
+  root.append(heading, body, announcement);
   // #2718: 始まった瞬間の切り替えの幕。見た目だけ（文字はCSSで描き、読み上げ・入力・時計・判定には触れない）。動きを減らす設定では出さない。
   if (!reducedMotion) {
     const label = tutorial ? "マキの無料1投レッスン" : versus ? rivalName + "と対戦" : mode === "league" ? "10投ゲーム" : "3投の練習";
