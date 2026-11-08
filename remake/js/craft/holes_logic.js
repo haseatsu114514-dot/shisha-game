@@ -124,7 +124,8 @@ export function evaluateFoil(rings, tally, timeRatio, goodWin) {
       const deviation = Math.sqrt(gaps.reduce((sum, gap) => sum + (gap - ideal) ** 2, 0) / count) / ideal;
       even = clamp(1 - deviation * 1.1, 0, 1);
     }
-    const precision = count ? ring.holes.reduce((sum, hole) => sum + clamp(1 - hole.d / timingWindow, 0, 1), 0) / count : 0;
+    // 精度はズレに対してなだらかに落ちる（#3023: 二値ではなくグラデーション。判定幅の2倍のズレで0）。
+    const precision = count ? ring.holes.reduce((sum, hole) => sum + clamp(1 - hole.d / (timingWindow * 2), 0, 1), 0) / count : 0;
     return { id: ring.id, count, even, precision, taken: ring.taken.filter(Boolean).length, targets: ring.targets, weight: ring.weight };
   });
   // 開けたリングだけで重みを正規化。内側を開けない選択を品質不足にしない。
