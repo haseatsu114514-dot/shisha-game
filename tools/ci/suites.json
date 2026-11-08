@@ -3821,6 +3821,15 @@
       "timeout": 10
     },
     {
+      "id": "intro-wide-3012",
+      "title": "Wide character introduction band coverage",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 2,
+      "paths": ["remake/css/intro.css", "remake/test/browser/intro_wide_3012.mjs"],
+      "run": ["node remake/test/browser/intro_wide_3012.mjs"]
+    },
+    {
       "id": "recent-intros",
       "title": "New cast introduction artwork and first-encounter state",
       "kind": "browser",
