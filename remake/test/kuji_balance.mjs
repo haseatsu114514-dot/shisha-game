@@ -53,3 +53,12 @@ for (const [id, g] of Object.entries(data.grades)) {
 assert.equal(data.legacyGrades.g500.boxSize, 20);
 assert.equal(data.legacyGrades.g1000.boxSize, 12);
 for (const g of Object.values(data.legacyGrades)) assert.equal(g.prizes.reduce((n,p) => n+p.count, 0), g.boxSize);
+// 旧箱の flavor 景品も grant() が実際に付与できる形にする（#2823 C1）。参照を持たない景品は当たっても何も渡らない。
+for (const [id, g] of Object.entries(data.legacyGrades)) {
+  assert(g.prizes.every(p => p.type !== 'flavor' || p.flavorId || (Array.isArray(p.flavors) && p.flavors.length > 0)), `${id}: 旧箱に付与できない flavor 景品がある`);
+}
+// C1 の確定内容: 旧箱 g1000「人気フレーバー詰め合わせ」は現行と同名品に揃え、ぶどう+ローズ各50g。
+const legacySet = data.legacyGrades.g1000.prizes.find(p => p.name === '人気フレーバー詰め合わせ');
+const currentSet = data.grades.g1000.prizes.find(p => p.name === '人気フレーバー詰め合わせ');
+assert.deepEqual(legacySet.flavors, [{ id: 'grape', grams: 50 }, { id: 'rose', grams: 50 }]);
+assert.deepEqual(legacySet.flavors, currentSet.flavors);

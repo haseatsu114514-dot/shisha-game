@@ -782,7 +782,17 @@
           "type": "flavor",
           "sell": 0,
           "count": 2,
-          "desc": "人気どころのフレーバー数種。使用価値の塊。"
+          "desc": "グレープとローズを各50g。両方が手持ちの葉に加わる。",
+          "flavors": [
+            {
+              "id": "grape",
+              "grams": 50
+            },
+            {
+              "id": "rose",
+              "grams": 50
+            }
+          ]
         },
         {
           "rank": "B",

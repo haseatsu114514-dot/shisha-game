@@ -41,7 +41,7 @@ async function openConversation(page) {
     await choice.waitFor({ timeout: 2000 }).catch(() => {});
   }
   await choice.waitFor();
-  await page.waitForFunction(() => document.getAnimations().every(a => a.playState !== "running" || a.effect?.getComputedTiming().iterations === Infinity));
+  await settle(page);
 }
 
 async function openModal(page) {
@@ -50,7 +50,45 @@ async function openModal(page) {
     void modal({ title: "確認", body: "本文の確認。", options: [{ label: "やめる", value: false }, { label: "決める", value: true, primary: true }] });
   });
   await page.locator(".modal-actions .btn").first().waitFor();
-  await page.waitForFunction(() => document.getAnimations().every(a => a.playState !== "running" || a.effect?.getComputedTiming().iterations === Infinity));
+  await settle(page);
+}
+
+// 店・MENU（#3001）: ワイドステージで端へ出した「← 街に戻る」「← 店を出る」「閉じる」（css/wide-screens.css）も規格の対象にする。
+async function openShopEntry(page) {
+  await page.evaluate(async () => {
+    const core = await import("./js/core/state.js"), ui = await import("./js/core/ui.js"), hud = await import("./js/daily/hud.js");
+    Object.assign(core.newGame(), { phase: "daily", day: 5, slot: 0, money: 12800, stamina: 100 });
+    ui.clearScreen(); hud.initHud({ menu: () => {}, phone: () => {} }); hud.showHud(true);
+    window.PD = (await import("./js/daily/shop.js")).openShop({});
+  });
+  await page.locator('[data-test="shop-entry-back"]').waitFor();
+  await settle(page);
+}
+
+async function enterShopFloor(page) {
+  await page.locator('[data-test="shop-enter"]').click();
+  await page.locator('[data-test="shop-leave"]').waitFor();
+  await settle(page);
+}
+
+async function openShopFloor(page) {
+  await openShopEntry(page);
+  await enterShopFloor(page);
+}
+
+async function openMenu(page) {
+  await page.evaluate(async () => {
+    const core = await import("./js/core/state.js");
+    if (core.state?.phase !== "daily") Object.assign(core.newGame(), { phase: "daily", day: 5, slot: 0, money: 12800, stamina: 100 });
+    window.PD = (await import("./js/daily/menu.js")).openMenu({ tab: "system", canSave: () => false });
+  });
+  await page.locator('[data-test="menu-close"]').waitFor();
+  await settle(page);
+}
+
+// 開く・閉じる演出（無限に回る飾りは除く）が終わるまで待つ
+function settle(page) {
+  return page.waitForFunction(() => document.getAnimations().every(a => a.playState !== "running" || a.effect?.getComputedTiming().iterations === Infinity));
 }
 
 // targets: 押す部品（実寸の高さ・文字・隣との間隔を見る）／ texts: 読ませる文字（実寸の文字だけ見る）
@@ -62,7 +100,47 @@ const SCREENS = [
     targets: [".vn-controls > .vn-ctl", ".vn-choices > .vn-choice"],
     texts: [".vn-text", ".vn-name"] },
   { id: "modal", open: openModal, targets: [".modal-actions > .btn"], texts: [".modal-box"] },
+  { id: "shop-entry", open: openShopEntry, targets: ['[data-test="shop-entry-back"]'], texts: [] },
+  { id: "shop-floor", open: openShopFloor, targets: ['[data-test="shop-leave"]'], texts: [] },
+  { id: "menu", open: openMenu, targets: ['[data-test="menu-close"]'], texts: [] },
 ];
+
+// ノッチ（safe-area）の模擬（#3001）。headless では env(safe-area-inset-*) が 0 なので、base.css の --stage-safe-l/r と同じ式で
+// env() の所だけを固定値（実寸 px）に置き換える。iPhone の横持ちは左右とも、機種によりおよそ 47〜59px。
+const NOTCHES = [0, 47, 59];
+const NOTCH_PHONES = [...PHONES, ["iphone-pro-max-landscape", { width: 932, height: 430 }]];
+// 端へ出す部品（#2861）: 左は HUD の札・店の「← 街に戻る」「← 店を出る」、右は LIME・MENU と MENU の「閉じる」
+const EDGE_SCENES = [
+  { id: "map", open: openMap, left: [".hud-card"], right: ['[data-test="hud-phone"]', '[data-test="hud-menu"]'] },
+  { id: "shop-entry", open: openShopEntry, left: ['[data-test="shop-entry-back"]'], right: [] },
+  { id: "shop-floor", open: enterShopFloor, left: ['[data-test="shop-leave"]'], right: [] },
+  { id: "menu", open: openMenu, left: [], right: ['[data-test="menu-close"]'] },
+];
+
+async function setNotch(page, px) {
+  await page.evaluate(px => {
+    const style = document.getElementById("pd-notch") ?? document.head.appendChild(Object.assign(document.createElement("style"), { id: "pd-notch" }));
+    const safe = `max(0px, calc((${px}px - var(--stage-bar, 0px)) / var(--k, 1)))`;
+    style.textContent = px ? `html #stage[data-wide] { --stage-safe-l: ${safe} !important; --stage-safe-r: ${safe} !important; }` : "";
+  }, px);
+  await settle(page); // 位置の切り替えに演出（transition）があっても、終わってから測る
+}
+
+// 端の部品の左右の位置（画面 px）と、中央 1280（#screen）の左右の端
+function edgeBoxes({ left, right }) {
+  const box = selector => {
+    const node = [...document.querySelectorAll(selector)].find(n => n.getClientRects().length > 0);
+    if (!node) return { selector, missing: true };
+    const r = node.getBoundingClientRect();
+    return { selector, left: r.left, right: r.right };
+  };
+  const screen = document.getElementById("screen").getBoundingClientRect();
+  return {
+    wide: document.getElementById("stage").hasAttribute("data-wide"), width: innerWidth,
+    center: { left: screen.left, right: screen.right },
+    left: left.map(box), right: right.map(box),
+  };
+}
 
 // 見えている要素だけ、実寸（getBoundingClientRect は拡縮後）と文字の実寸を集める。
 function measure({ targets, texts }) {
@@ -111,6 +189,34 @@ await suite("phone-density", async check => {
         assert.deepEqual(m.gaps.filter(g => g.stage < MIN_GAP_STAGE - 0.5).map(g => `${g.where} ${g.stage.toFixed(1)}px`), [], `隣のタップ部品との間隔がステージ上 ${MIN_GAP_STAGE}px 未満`);
       }, { viewport, ...touch });
     }
+  }
+
+  // 端の部品は、ノッチが無ければ中央 1280 の外（黒帯だった側）へ出て、ノッチがあればその内側に収まる（#2861・#3001）。
+  // 実機の safe-area の効き方そのものはオーナーの実機確認（#2928）。ここは CSS が --stage-safe-l/r を使っているかを見る。
+  for (const [name, viewport] of NOTCH_PHONES) {
+    await check(`${name}-edge-parts-notch`, async page => {
+      const problems = [];
+      for (const scene of EDGE_SCENES) {
+        await scene.open(page);
+        for (const notch of NOTCHES) {
+          await setNotch(page, notch);
+          const m = await page.evaluate(edgeBoxes, { left: scene.left, right: scene.right });
+          const where = `${scene.id}・ノッチ${notch}px`;
+          if (!m.wide) problems.push(`${where}: ワイドステージになっていない`);
+          for (const part of [...m.left, ...m.right]) if (part.missing) problems.push(`${where}: ${part.selector} が見えていない`);
+          for (const part of m.left.filter(p => !p.missing)) {
+            if (part.left < notch - 0.5) problems.push(`${where}: ${part.selector} の左端 ${part.left.toFixed(1)} がノッチ（${notch}）にかかる`);
+            if (!notch && part.left >= m.center.left) problems.push(`${where}: ${part.selector} が中央1280の中（左端 ${part.left.toFixed(1)}・中央 ${m.center.left.toFixed(1)}〜）`);
+          }
+          for (const part of m.right.filter(p => !p.missing)) {
+            if (part.right > m.width - notch + 0.5) problems.push(`${where}: ${part.selector} の右端 ${part.right.toFixed(1)} がノッチ（${m.width - notch}〜）にかかる`);
+            if (!notch && part.right <= m.center.right) problems.push(`${where}: ${part.selector} が中央1280の中（右端 ${part.right.toFixed(1)}・中央〜${m.center.right.toFixed(1)}）`);
+          }
+        }
+        await setNotch(page, 0);
+      }
+      assert.deepEqual(problems, []);
+    }, { viewport, ...touch });
   }
 
   // HUD の日数の行: スマホでは「次の大会まで」だけ出さない（オーナー指示 2026-11-08）。

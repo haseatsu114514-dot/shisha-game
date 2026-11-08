@@ -130,7 +130,8 @@ async function fullLevelUp(r, signal) {
     })),
     learned ? el("p.lu-learned", { text: `今日学んだこと：${learned}` }) : null,
     ...r.gifts.map((x) => el("p.lu-gift", { dataset: { test: "levelup-gift" }, text: `ご褒美　${giftLine(x)}` })),
-    el("p.lu-note", { text: "火種は観音堂などの静かな場所で振り返ると、心得の盤に灯せる（時間は使わない）。貯めておいてもいい" }),
+    // 注記は一文に（「貯めておける」は心得の盤の説明にある・#2729 の基本画面はスッキリ）
+    el("p.lu-note", { text: "火種は観音堂などで振り返ると、心得の盤に灯せる（時間は使わない）" }),
   ]);
   const ok = el("button.btn.primary.lu-ok", { text: "OK", dataset: { test: "levelup-ok" } });
   const toBoard = el("button.btn.lu-ok.lu-board", { text: "心得の盤を見る", dataset: { test: "levelup-board" } });

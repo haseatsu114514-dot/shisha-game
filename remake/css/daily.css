@@ -1247,6 +1247,13 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .levelup .lu-ok { margin-top: 12px; min-width: 140px; min-height: 44px; opacity: 0; pointer-events: none; transition: opacity .2s; }
 .levelup.lu-settled-state .lu-ok { opacity: 1; pointer-events: auto; }
 @media (prefers-reduced-motion: reduce) { .lu-gauge b, .levelup-band, .levelup-backdrop { transition: none; } .levelup.burst .lu-head { animation: none; } }
+/* スマホ横持ち（#2851 の規格・オーナー指示 2026-11-08「文字は気持ち大きく」）: 結果の行と注記を規格の文字にし、パネルを少し広げる */
+html:root[data-density="phone"] body:not(.game-ds) .levelup { width: 720px; }
+html:root[data-density="phone"] body:not(.game-ds) .lu-details p { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(.game-ds) .lu-details .lu-change { font-size: calc(var(--phone-text) + 4px) !important; }
+html:root[data-density="phone"] body:not(.game-ds) .lu-details .lu-hidane { font-size: var(--phone-text); }
+html:root[data-density="phone"] body:not(.game-ds) .lu-details .lu-note { font-size: var(--phone-sub) !important; }
+html:root[data-density="phone"] body:not(.game-ds) .levelup-band :is(.lb-learned, .lb-gift) { font-size: var(--phone-sub); }
 
 /* ---------------------------------------------------------------- 心得の盤（第2版の試作。図形だけ。画像は #1772 のデザインで後から差し替え） */
 .gboard { --stat-body: #ef8a5e; --stat-sense: #58a6ff; --stat-wisdom: #7bd36d; --board-c: var(--stat-sense); --white-fire: #f3e8cf; position: absolute; inset: 0; display: grid; grid-template-rows: 60px 548px 112px; pointer-events: auto; color: var(--text); font-family: var(--font);

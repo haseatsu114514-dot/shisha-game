@@ -13,6 +13,9 @@ function ensureStyle() {
   document.head.append(link);
 }
 
+// 操作の説明。スマホでは画面に出さず「?」で読む（craft-landscape.css・#2729 の基本画面はスッキリ）。PCは画面にも残す。
+const WATER_HELP = "押している間だけ水量が変わります。離すと止まり、何度でも調整できます。キーボードはボタンに合わせてSpace / Enterを長押し。";
+
 // 入力と波はこの画面だけの寿命。確定時に返すのは実qだけ。
 // 開始時は空（0）。途中再開はcs.waterの実量をそのまま渡すので保たれる。
 export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal } = {}) {
@@ -38,7 +41,7 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
   const confirm = el("button.btn.primary", { type: "button", text: "この水量で進む", dataset: { test: "water-confirm" } });
   const root = el("section.craft-water", { dataset: { test: "water-step" } }, [
     el("div.craft-water-display", [meter, el("div", [status, el("p", { text: "目安：ステムが少し浸かるまで（二本の線のあいだ）" })])]),
-    el("p.craft-water-help", { text: "押している間だけ水量が変わります。離すと止まり、何度でも調整できます。キーボードはボタンに合わせてSpace / Enterを長押し。" }),
+    el("p.craft-water-help", { text: WATER_HELP }),
     el("div.craft-water-actions", [pour, drain, confirm]),
   ]);
   panel.append(root);
@@ -167,6 +170,7 @@ export async function stepWater(cs) {
     ? "スミ「注ぐときは長押し。二本の線を目安に、こぼして戻してもいい」"
     : "長押しで注ぐ・こぼす。水量を決めてから配合へ進む", { brief: STEP_BRIEFS.water, lessonStep: "water" });
   const view = mountWater(panel, { quantity: cs.water, isCurrent: () => state === ownerState && !!benchRoot(cs) });
+  benchRoot(cs)?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", [el("p", { text: WATER_HELP })]));
   if (craftTest.auto) queueMicrotask(view.confirm);
   cs.water = await view.result;
   // 確定した水位を左の作業風景のボトル内部へ描く（本編・練習共通）。
