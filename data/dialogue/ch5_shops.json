@@ -32,7 +32,7 @@
         { "speaker": "naru", "face": "normal", "text": "俺の台は丸見えだ。うまくいかなかった方もな" },
         { "speaker": "hajime", "face": "normal", "text": "前も、そう言ってたよね" },
         { "speaker": "naru", "face": "smile", "text": "言ってた。言った本人が、今やっと分かってきた" },
-        { "speaker": "", "face": "", "text": "うまくいかなかった一台の灰を、なるは捨てずに小皿へ取っておいた。" },
+        { "speaker": "", "face": "", "text": "うまくいかなかった一台の灰を、なるは捨てずに小皿に取っておいた。" },
         { "speaker": "hajime", "face": "normal", "text": "（うまくいかなかった方も、ちゃんと残すんだ）" }
       ]
     },
@@ -184,7 +184,7 @@
       "lines": [
         { "speaker": "", "face": "", "text": "零-ZERO-のカウンターで、レヰが常連の客にCDのジャケットを見せていた。" },
         { "speaker": "rei", "face": "normal", "text": "……この曲、二番のあとで音が全部止まる。そこが、好きで" },
-        { "speaker": "customer", "face": "normal", "text": "分かります、あそこ。息止めて聴いちゃう" },
+        { "speaker": "customer", "face": "normal", "text": "分かります、あそこ。息止めて聴いちゃうんですよね" },
         { "speaker": "rei", "face": "smile", "text": "……うん。俺も" },
         { "speaker": "", "face": "", "text": "客が席へ戻るのを待って、レヰがこちらに気づいた。耳が、少し赤い。" },
         { "speaker": "hajime", "face": "smile", "text": "レヰさん、お客さんと曲の話をしてましたね" },

@@ -17,6 +17,15 @@
 .dr-page p { margin: 0 0 18px; font-size: 18px; }
 .dr-page .row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 .dr-page label { font-size: 15px; display: inline-flex; gap: 6px; align-items: center; }
+/* スマホ横持ち（#2729）: ステージが --k で縮むぶんを戻し、文字は実寸 12px 以上・ボタンは実寸 44px 以上。英字の飾りとキーの説明は出さない */
+@media (orientation: landscape) and (max-height: 520px) and (pointer: coarse) {
+  .dr-page :is(.dr-page-kicker, .dr-page-keys) { display: none; }
+  .dr-page h1 { font-size: 64px; }
+  .dr-page p { font-size: max(18px, calc(13px / var(--k, 1))); }
+  .dr-page label { font-size: max(15px, calc(12px / var(--k, 1))); }
+  .dr-page label input { width: calc(22px / var(--k, 1)); height: calc(22px / var(--k, 1)); }
+  .dr-page .row .btn { min-width: calc(150px / var(--k, 1)); min-height: calc(44px / var(--k, 1)); align-items: center; justify-content: center; text-align: center; font-size: max(18px, calc(13px / var(--k, 1))); }
+}
 </style>
 </head>
 <body>
