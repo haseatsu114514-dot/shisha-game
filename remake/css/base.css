@@ -101,16 +101,20 @@ button { font: inherit; color: inherit; }
 #stage > div { position: absolute; inset: 0 var(--stage-gutter); }
 /* 背景・雨・場面転換のワイプだけはステージの両端まで広げる（絵は cover なので左右が少し切れるだけ） */
 #stage > :is(#bg, #weather, #wipe) { inset: 0; }
-/* 街マップは施設のピン（#screen・中央1280）が絵の位置に合わせてあるので、絵を広げず中央1280に据え置く（両端は地の色） */
-body[data-screen="map"]:not(.vn-open) #stage[data-wide] #bg .bg-img { left: var(--stage-gutter); right: var(--stage-gutter); }
-/* その左右の余白は地の色のままにせず、同じ絵を大きくぼかして暗く敷く（#2855・オーナー採用「黒帯をぼかすのは賛成」2026-11-08）。
-   --bg-art は ui.js の setBg が今の背景の絵で置く。会話中（vn-open）は会話の背景をステージいっぱいに広げるので敷かない。 */
-body[data-screen="map"]:not(.vn-open) #stage[data-wide] #bg::before {
-  content: ""; position: absolute; inset: -40px;
-  background: var(--bg-art, none) center / cover no-repeat;
-  filter: blur(18px) brightness(.5) saturate(.85);
-  pointer-events: none;
+/* 街マップ（#2855 → 2026-11-08 オーナー「マップがワイドになっていない」）: 絵と施設のピンを同じ倍率（ステージ幅 / 1280）で
+   横いっぱいまで拡大する。ピンは絵に対する % で置かれているので、絵と同じ箱（幅 --stage-w・高さ 幅×9/16）に載せればずれない。
+   拡大で上下にはみ出す分（絵の高さの約1割）は、どのピンも画面に入るよう map.js（fitMapCrop）が上から切る量 --map-crop を決める。
+   会話中（vn-open）は会話の背景としてふつうに cover で広げる。2画面表示（DS）は対象外。 */
+body:not(.game-ds)[data-screen="map"]:not(.vn-open) #stage[data-wide] #bg .bg-img {
+  background-position: 50% calc(-1 * var(--map-crop, calc((var(--stage-w) * 9 / 16 - 720px) / 2)));
 }
+body:not(.game-ds) #stage[data-wide] .map-pins {
+  left: calc(-1 * var(--stage-gutter)); right: calc(-1 * var(--stage-gutter)); bottom: auto;
+  top: calc(-1 * var(--map-crop, calc((var(--stage-w) * 9 / 16 - 720px) / 2))); height: calc(var(--stage-w) * 9 / 16);
+}
+body:not(.game-ds) #stage[data-wide] .map-weather { left: calc(-1 * var(--stage-gutter)); right: calc(-1 * var(--stage-gutter)); }
+/* ノッチにかかる端のピンだけ内側へ寄せる（map.js が必要な時だけ置く） */
+.map .spot-pin { translate: var(--pin-nudge-x, 0px) 0; }
 /* 画面全体を覆う暗幕・場面（中央1280の層に置かれる）は、左右の余白まで同じ色で塗り広げる。
    位置や大きさは変えない（中の部品を左からの px で置いているものがあるため）。box-shadow の広がりで外側だけ塗る。 */
 #stage[data-wide] .kuji-overlay { box-shadow: 0 0 0 var(--stage-gutter) rgba(5, 4, 10, .72); }

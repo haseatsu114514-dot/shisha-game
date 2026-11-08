@@ -1,4 +1,4 @@
-/* DJ — fixed 1280×720 stage like the main game (remake/index.html #stage), scaled by controller-fx.mjs.
+/* DJ — 1280×720 stage like the main game (remake/index.html #stage), scaled by controller-fx.mjs (wider up to 1600 on wide screens, like the main game).
    Theme: the game's purple (base.css --ink #0b0812 / --ink-2 #151024, loading gauge #b45cf0 → #3fd0e8). A = violet, B = light blue, crossfader = neutral silver.
    Art: remake/img/ui/dj/*.webp (generated set, Issues #2071/#2073/#2095/#2107/#2114); CSS gradients stay underneath as fallback.
    Layout (top → bottom): floor strip 110px (crowd + FLOOR meter + set + judge/count) / waveforms 172px / controller (rest). */
