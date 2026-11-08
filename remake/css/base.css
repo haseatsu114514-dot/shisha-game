@@ -650,6 +650,9 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 /* 大会前夜の当日版: 地平線を金に寄せ、ゆっくり昇らせる（#2688 F3 の時間経過の型） */
 .tr-dawn-horizon.eve { height: 4px; background: #f6dcaf; box-shadow: 0 0 24px 10px #f5d99d77; }
 .tr-dawn-glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 110%, #fff3d6cc, transparent 60%); pointer-events: none; }
+/* ワイドステージ（#2861）: 画面全体を覆う転換（翌朝・波・敗北）は左右の余白まで覆う。
+   端へ出した HUD（日付の札・LIME・MENU）が紫の面の外に覗かないように。中身は中央寄せなので位置は変わらない。 */
+#stage[data-wide] :is(.tr-dawn, .tr-wave, .tr-defeat) { inset: 0 calc(-1 * var(--stage-gutter)); }
 
 /* マップ→場所の「移動」の型（core/transition-moves.js・CI103） */
 .scene-curtain.move { background: transparent; }
@@ -684,6 +687,8 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
   pointer-events: auto;
 }
 .day-card.show { transform: none; }
+/* ワイドステージ: 帯は左右の余白まで伸ばし、文字の位置（中央1280の左から140px）は保つ */
+#stage[data-wide] .day-card { left: calc(-1 * var(--stage-gutter)); right: calc(-1 * var(--stage-gutter)); padding-left: calc(140px + var(--stage-gutter)); }
 .day-card.out { opacity: 0; transform: translateX(30%); }
 .dc-title { font-family: var(--font); font-size: 76px; font-weight: 800; letter-spacing: 0.12em; color: #fff; }
 .dc-sub { font-size: 20px; color: var(--gold); letter-spacing: 0.2em; margin-top: 4px; }
@@ -705,6 +710,8 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
   transition: transform 0.35s var(--ease-snap), opacity 0.4s;
 }
 .round-cut.show { transform: scaleY(1); }
+/* ワイドステージ: 「ROUND 1」の帯は画面の両端まで（文字は中央のまま） */
+#stage[data-wide] .round-cut { left: calc(-1 * var(--stage-gutter)); right: calc(-1 * var(--stage-gutter)); }
 .round-cut.out { opacity: 0; }
 .round-cut b { font-family: var(--font); font-size: 64px; font-weight: 700; letter-spacing: 0.2em; color: #fff; text-shadow: 0 0 20px var(--neon-pink); }
 .round-cut small { font-size: 18px; letter-spacing: 0.3em; color: var(--neon-cyan); }

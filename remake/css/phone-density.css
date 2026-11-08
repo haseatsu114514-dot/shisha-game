@@ -98,9 +98,15 @@ html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-controls {
   grid-template-columns: repeat(5, auto);
 }
 html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before { left: calc(var(--phone-gap) / -2); top: 30%; bottom: 30%; }
+/* 会話の本文（オーナー指示 2026-11-08「文字を入れるならサイズも気持ち大きく」）: 28→32px（iPhone 横で実寸 15→17px）。
+   1行は全角24字まで（vn/text.js の WRAP_LIMIT）なので、32px でも枠の内幅（約1020px）に収まり、折り返し・改ページは変わらない。
+   2行（46px×2）と、本心つき（1行44px＋本心2行）が枠の高さ（176px・下15px空き）に収まる行の高さにする（notifications_layout の検査）。 */
+html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-text { font-size: 32px; line-height: 46px; min-height: 92px; }
+html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-box.has-inner .vn-text { line-height: 44px; min-height: 44px; }
 /* 名札は補助文の大きさに上げる。名札の幅に収まらない長い名前は name-fit.js の縮小（--vn-name-fit-size）に従う。 */
 html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-name { font-size: var(--vn-name-fit-size, var(--phone-sub)); }
-html:root[data-density="phone"] body:not(.game-ds) .vn-choice { min-height: var(--phone-tap); font-size: max(24px, var(--phone-text)); }
+/* 選択肢の文字は本文に合わせて 24→28px（iPhone 横で実寸 13→15px）。全角26字（GUI22 の上限）が縮まずに1行で入るよう、幅を 720→880px に広げる */
+html:root[data-density="phone"] body:not(.game-ds) .vn-choice { width: 880px; max-width: 100%; min-height: var(--phone-tap); font-size: max(28px, calc(var(--phone-text) + 4px)); }
 /* 操作ボタンが上へ伸びた分だけ、選択肢を上げて間隔を保つ。 */
 html:root[data-density="phone"] body:not(.game-ds) .vn-choices { bottom: calc(262px + var(--phone-tap) - 44px); }
 html:root[data-density="phone"] body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: calc(338px + var(--phone-tap) - 44px); }
@@ -115,7 +121,7 @@ html:root[data-density="phone"] body:not(.game-ds) .vn-choices:has(> .vn-choice:
   top: 16px;
   left: 50%;
   right: auto;
-  width: 760px;
+  width: 920px;
   max-width: 100%;
   transform: translateX(-50%);
   overflow-y: auto;
