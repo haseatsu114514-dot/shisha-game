@@ -8,7 +8,7 @@ import { modal, toast } from "../core/ui.js";
 import { el } from "../core/util.js";
 import { grantKujiTickets } from "../daily/kuji-tickets.js";
 import {
-  REGION_TICKETS, COMPLETE_BONUS_TICKETS, recordShopStamp, shopStampsProgress, markShopStampsOpened,
+  REGION_TICKETS, COMPLETE_BONUS_TICKETS, OPTIONAL_SHOP_TICKETS, recordShopStamp, shopStampsProgress, markShopStampsOpened,
 } from "./ch5-shop-stamps-model.js";
 
 const KUJI_NOTE = "1枚で、限定台くじを1回引ける";
@@ -20,9 +20,12 @@ const KUJI_NOTE = "1枚で、限定台くじを1回引ける";
 export function noteShopStamp(spot, value = state) {
   const result = recordShopStamp(value, spot?.id, n => grantKujiTickets(n, "shop_stamps", value));
   if (!result || value !== state) return result;
-  const first = result.count === 1 ? "。LIMEの「店めぐり帳」で見られる" : "";
-  toast(`店めぐり帳に判子をもらった：${result.shop.label}（${result.count}/${result.total}）${first}`, { kind: "good", ms: 3600 });
-  if (result.regionDone || result.complete) {
+  const first = result.firstStamp ? "。LIMEの「店めぐり帳」で見られる" : "";
+  toast(`店めぐり帳に判子をもらった：${result.shop.label}（${result.shop.optional ? "任意の店" : `${result.count}/${result.total}`}）${first}`, { kind: "good", ms: 3600 });
+  if (result.shop.optional) {
+    toast(result.tickets ? `寄り道の判子。Dr.fookahから、くじ券を${result.tickets}枚もらった（${KUJI_NOTE}）`
+      : "寄り道の判子。くじ券は、もう持ちきれない", { kind: "good", ms: 5200 });
+  } else if (result.regionDone || result.complete) {
     const done = result.complete ? "店めぐり帳が全部そろった" : `店めぐり帳の${result.region.label}がそろった`;
     toast(result.tickets ? `${done}。Dr.fookahから、くじ券を${result.tickets}枚もらった（${KUJI_NOTE}）`
       : `${done}。くじ券は、もう持ちきれない`, { kind: "good", ms: 5200 });
@@ -45,8 +48,9 @@ export function shopStampsShortcut(value = state) {
 function bookBody(progress) {
   return el("div.shop-stamps", { dataset: { test: "shop-stamps" } }, [
     el("p.shop-stamps-lead", { text: "Dr.fookahがLIMEで配っている、各地のシーシャ屋の判子帳。店で一台を吸うと、判子を一つもらえる。" }),
-    el("p.shop-stamps-lead", { text: `地域の判子がそろうとくじ券を${REGION_TICKETS}枚、全部そろうとさらに${COMPLETE_BONUS_TICKETS}枚。博士との勝負の日を決めるまで集められる。` }),
+    el("p.shop-stamps-lead", { text: `地域の判子がそろうとくじ券を${REGION_TICKETS}枚、全部そろうとさらに${COMPLETE_BONUS_TICKETS}枚。任意の店は一店につき${OPTIONAL_SHOP_TICKETS}枚。博士との勝負の日を決めるまで集められる。` }),
     el("p.shop-stamps-total", { dataset: { test: "shop-stamps-total" }, text: `判子 ${progress.count}/${progress.total}` }),
+    el("p.shop-stamps-lead", { text: `任意の店 ${progress.optionalCount}/2。行けない店があっても帳面は完成できる。` }),
     ...progress.regions.map(entry => el(`section.shop-stamps-region${entry.complete ? ".done" : ""}`, { dataset: { test: `shop-stamps-${entry.id}` } }, [
       el("div.shop-stamps-head", [
         el("b", { text: entry.label }),
@@ -54,8 +58,8 @@ function bookBody(progress) {
       ]),
       el("ul.shop-stamps-shops", entry.shops.map(item => el(`li${item.stamped ? ".on" : ""}`, {
         dataset: { test: `shop-stamp-${item.id}`, stamped: item.stamped ? "1" : "0" },
-        "aria-label": `${item.label}（${item.stamped ? "判子あり" : "まだ"}）`,
-      }, [el("i", { text: item.stamped ? "印" : "", "aria-hidden": "true" }), el("span", { text: item.label })]))),
+        "aria-label": `${item.label}（${item.optional ? "任意・" : ""}${item.stamped ? "判子あり" : "まだ"}）`,
+      }, [el("i", { text: item.stamped ? "印" : "", "aria-hidden": "true" }), el("span", { text: `${item.label}${item.optional ? "（任意）" : ""}` })]))),
     ])),
   ]);
 }

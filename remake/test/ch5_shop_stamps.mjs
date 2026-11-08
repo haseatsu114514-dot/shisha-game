@@ -1,5 +1,5 @@
 // 第5章の各地の店めぐり帳（MGR・chapters/ch5-shop-stamps-model.js）の決まりを、ブラウザ無しで確かめる。
-// 載せる店が第5章の地図に運・好感度なしで必ず出ること（必ず会う人の店だけ）・判子は第5章で一店に一つ・
+// 必須の店が第5章の地図に必ず出ること、任意の店が会っている保存で出ること・判子は第5章で一店に一つ・
 // 地域と全部がそろった時のくじ券の枚数（お金は動かさない）・周回で持ち越さないこと・#2455（火種・心得の盤・大会・
 // エンディング・進行の条件につながない）。実際の来店・LIMEの帳面は remake/test/browser/ch5_shop_stamps.mjs。
 // quick CI は画像を取得しないので、画像のファイルは読まない。
@@ -28,7 +28,7 @@ DB.samechan = JSON.parse(readText("data/dialogue/samechan.json"));
 const START = 40;
 const flat = M.SHOP_STAMP_REGIONS.flatMap(region => region.shops.map(shop => ({ ...shop, region: region.id })));
 
-// ---------------------------------------------------------------- 1. 載せる店は、第5章の地図に必ず出るシーシャ屋
+// ---------------------------------------------------------------- 1. 必須店は第5章の地図に必ず出る。任意店は条件が合う保存で出る
 // 「必ず会う人」＝本編の大会で必ず面識が付く人（第1章・第2章・第3章の大会の markMet）。好感度・運の要る出会いは数えない。
 const mandatoryMet = (() => {
   const ch1 = readText("remake/js/chapters/ch1.js").match(/for \(const id of \[([^\]]+)\]\) markMet\(id\)/);
@@ -63,15 +63,16 @@ const regionSpots = (value, region) => {
     dubai: daily.chapterFiveDubaiSpots }[region]();
 };
 assert.deepEqual(M.SHOP_STAMP_REGIONS.map(r => r.id), ["home", "widehanga", "tokyo", "dubai"], "地図の地域と同じ並び");
-assert.equal(M.SHOP_STAMP_TOTAL, flat.length);
+assert.equal(M.SHOP_STAMP_TOTAL, flat.filter(s => !s.optional).length);
 assert.equal(new Set(flat.map(s => s.id)).size, flat.length, "店のIDが重ならない");
-assert.deepEqual(M.SHOP_STAMP_REGIONS.map(r => r.shops.length), [4, 3, 2, 1]);
+assert.deepEqual(M.SHOP_STAMP_REGIONS.map(r => r.shops.length), [5, 3, 2, 2]);
+assert.equal(flat.filter(s => s.optional).length, 2);
 for (const region of M.SHOP_STAMP_REGIONS) {
   // 昼と夜、どの曜日でも地図に出る（定休日は週に一日まで。地図からは消えず、別の日に行ける）
   for (const slot of [0, 1]) for (let dow = 0; dow < 7; dow++) {
     const value = freeSave({ fields: { slot, day: START + 7 + dow } });
     const spots = regionSpots(value, region.id);
-    for (const shop of region.shops) {
+    for (const shop of region.shops.filter(shop => !shop.optional)) {
       const spot = spots.find(s => s.id === shop.id);
       assert(spot, `${shop.label}（${shop.id}）が第5章の${region.label}の地図に出る（slot ${slot}・day ${value.day}）`);
       assert(isUnlocked(spot), `${shop.label}: 地図で「？？？」にならない`);
@@ -88,13 +89,11 @@ for (const region of M.SHOP_STAMP_REGIONS) {
   value.spotVisits = { c_station: 1 };
   assert.equal(isUnlocked(regionSpots(value, "home").find(s => s.id === "c_station")), true, "大会の参加登録の来店でも出る");
 }
-// 地図のシーシャ屋で帳面に無いのは、理由のある店だけ（自分が働く店・任意の出会いが要る店・締めくくりまでの店）
+// 地図のシーシャ屋で帳面に無いのは、自分が働く店だけ
 {
   const EXCLUDED = {
     tonari: "はじめのバイト先",
-    shishark: "サメちゃんに会ったことがある保存にしか出ない",
     ch5_tokyo_mukai: "ムカイさんの店のシフト（働く店）",
-    ch4_dubai_tour_desk: "カフェ・オアシスはヌールの締めくくりまで",
   };
   const shishaShops = (value, region) => regionSpots(value, region).filter(spot => isUnlocked(spot) && (
     /（シーシャ屋）$/.test(spotDetailLabel(spot)) || ["tokyo", "dubai"].includes(region) && ((spot.cost || 0) > 0 || spot.shift)));
@@ -107,11 +106,16 @@ for (const region of M.SHOP_STAMP_REGIONS) {
     for (const id of extra) assert(Object.hasOwn(EXCLUDED, id), `${region.label}の ${id} は帳面に載せるか、載せない理由を書く`);
     seen.push(...extra);
   }
-  assert.deepEqual(seen.sort(), ["ch4_dubai_tour_desk", "ch5_tokyo_mukai", "shishark", "tonari"], "帳面の外のシーシャ屋が、実際に地図に出ている");
-  // 必ず会う人だけの保存では、任意の出会いの店が地図に出ない（だから載せない）
+  assert.deepEqual(seen.sort(), ["ch5_tokyo_mukai", "tonari"], "帳面の外のシーシャ屋が、実際に地図に出ている");
+  for (const [region, id] of [["home", "shishark"], ["dubai", "ch4_dubai_tour_desk"]]) {
+    const spot = regionSpots(rich, region).find(s => s.id === id);
+    assert(spot && !spot.unavailable, `${id} は会っている保存で来店できる`);
+  }
+  // 必ず会う人だけの保存では、SHISHARK は地図に出ない（帳面の完成には不要）
   const plain = freeSave();
   assert(!regionSpots(plain, "home").some(s => s.id === "shishark"), "サメちゃんに会っていなければ SHISHARK は出ない");
   for (const id of Object.keys(EXCLUDED)) assert.equal(M.shopStampEntry(id), null, `${id}（${EXCLUDED[id]}）は載せない`);
+  for (const id of ["shishark", "ch4_dubai_tour_desk"]) assert(M.shopStampEntry(id)?.shop.optional, `${id} は任意の店`);
 }
 // 東京とドバイには第5章でいつでも行ける（東京は配送便・ドバイは最初の手紙）。第5章の遠出の決まりと同じ
 {
@@ -133,12 +137,12 @@ const grantTo = value => n => grantKujiTickets(n, "shop_stamps", value);
     assert(!(M.SHOP_STAMPS_FLAG in value.flags), "記録も作らない");
   }
   const value = freeSave();
-  for (const id of ["tonari", "shishark", "cafe", "kannon", "ch5_tokyo_mukai", "ch5_dubai_sheikh", "ch5_dubai_souq", "", null, undefined]) {
+  for (const id of ["tonari", "cafe", "kannon", "ch5_tokyo_mukai", "ch5_dubai_sheikh", "ch5_dubai_souq", "", null, undefined]) {
     assert.equal(M.recordShopStamp(value, id, grantTo(value)), null, `帳面に無い行き先（${id}）`);
   }
   const first = M.recordShopStamp(value, "adam", grantTo(value));
   assert.deepEqual({ ...first, shop: first.shop.id, region: first.region.id },
-    { shop: "adam", region: "home", count: 1, total: M.SHOP_STAMP_TOTAL, regionDone: false, complete: false, tickets: 0 });
+    { shop: "adam", region: "home", count: 1, total: M.SHOP_STAMP_TOTAL, firstStamp: true, regionDone: false, complete: false, tickets: 0 });
   assert.deepEqual(M.shopStampsState(value), { shops: { adam: START + 3 }, rewards: {}, opened: false }, "押した日を記録する");
   assert.equal(M.recordShopStamp(value, "adam", grantTo(value)), null, "二度目の来店は何も増えない");
   value.day += 1;
@@ -147,7 +151,7 @@ const grantTo = value => n => grantKujiTickets(n, "shop_stamps", value);
   assert.equal(value.money, 50000, "お金は動かない");
   const progress = M.shopStampsProgress(value);
   assert.equal(progress.count, 1);
-  assert.deepEqual(progress.regions[0].shops.map(s => s.stamped), [false, true, false, false]);
+  assert.deepEqual(progress.regions[0].shops.map(s => s.stamped), [false, true, false, false, false]);
   // 壊れた記録は空として読む（知らない店・鍵・日付でない値は数えない）
   for (const broken of [null, 5, "x", [], { shops: [], rewards: "1" }, { shops: { nope: 3, naru: "3" }, rewards: { nowhere: 1, home: -1 } }]) {
     const v = freeSave();
@@ -157,15 +161,16 @@ const grantTo = value => n => grantKujiTickets(n, "shop_stamps", value);
   }
 }
 
-// ---------------------------------------------------------------- 3. そろった時のくじ券（地域ごとに1枚・全部で+2枚）
+// ---------------------------------------------------------------- 3. そろった時のくじ券（地域ごとに1枚・全部で+1枚・任意店は各1枚）
 {
   assert.equal(M.REGION_TICKETS, 1);
-  assert.equal(M.COMPLETE_BONUS_TICKETS, 2);
+  assert.equal(M.COMPLETE_BONUS_TICKETS, 1);
+  assert.equal(M.OPTIONAL_SHOP_TICKETS, 1);
   const value = freeSave();
   let calls = 0;
   const grant = n => { calls += 1; return grantKujiTickets(n, "shop_stamps", value); };
   const order = ["naru", "ch5_tokyo_steve", "adam", "minto", "ch5_dubai_alley", "ch2_ageha", "ch2_kumicho", "ch5_tokyo_volk", "ch2_rei", "c_station"];
-  assert.deepEqual([...order].sort(), flat.map(s => s.id).sort());
+  assert.deepEqual([...order].sort(), flat.filter(s => !s.optional).map(s => s.id).sort());
   const got = order.map(id => {
     const before = value.kujiTickets;
     const result = M.recordShopStamp(value, id, grant);
@@ -177,17 +182,31 @@ const grantTo = value => n => grantKujiTickets(n, "shop_stamps", value);
     ["ch5_dubai_alley", true, false, 1], // ドバイは一店でそろう
     ["ch2_ageha", false, false, 0], ["ch2_kumicho", false, false, 0],
     ["ch5_tokyo_volk", true, false, 1], ["ch2_rei", true, false, 1],
-    ["c_station", true, true, 3], // 地元の1枚＋全部そろった2枚
+    ["c_station", true, true, 2], // 地元の1枚＋全部そろった1枚
   ]);
-  assert.equal(value.kujiTickets, 4 * M.REGION_TICKETS + M.COMPLETE_BONUS_TICKETS, "合わせて6枚");
+  assert.equal(value.kujiTickets, 4 * M.REGION_TICKETS + M.COMPLETE_BONUS_TICKETS, "必須10店で5枚");
   assert.equal(calls, 5, "地域の4回と全部の1回だけ渡す");
   assert.equal(value.money, 50000, "お金は動かない");
-  assert.deepEqual(M.shopStampsState(value).rewards, { dubai: 1, tokyo: 1, widehanga: 1, home: 1, all: 2 });
+  assert.deepEqual(M.shopStampsState(value).rewards, { dubai: 1, tokyo: 1, widehanga: 1, home: 1, all: 1 });
   const progress = M.shopStampsProgress(value);
   assert.equal(progress.complete, true);
   assert(progress.regions.every(r => r.complete && r.rewarded));
   for (const id of order) assert.equal(M.recordShopStamp(value, id, grant), null, "そろった後は何も増えない");
-  assert.equal(value.kujiTickets, 6);
+  assert.equal(value.kujiTickets, 5);
+  for (const id of ["shishark", "ch4_dubai_tour_desk"]) {
+    const extra = M.recordShopStamp(value, id, grant);
+    assert.equal(extra.tickets, 1, `${id}: 任意の店は1枚`);
+    assert.equal(extra.count, 10, "必須の判子数は増えない");
+  }
+  assert.equal(value.kujiTickets, 7, "12店で最大7枚");
+  assert.equal(M.shopStampsProgress(value).optionalCount, 2);
+}
+{
+  const value = freeSave();
+  const extra = M.recordShopStamp(value, "shishark", grantTo(value));
+  assert.deepEqual([extra.count, extra.firstStamp, extra.tickets], [0, true, 1], "任意店が初来店でも案内と券を渡す");
+  assert.equal(M.shopStampsProgress(value).complete, false);
+  assert.equal(M.shopStampsProgress(value).optionalCount, 1);
 }
 {
   // 受け取りの記録がある地域・全部は、二度渡さない（記録だけ先に残った保存）
@@ -259,4 +278,4 @@ const grantTo = value => n => grantKujiTickets(n, "shop_stamps", value);
   assert.equal(calendar.filter(line => !/^\s*\/\//.test(line)).length, 1, "calendar.js は afterSpot を一度だけ呼ぶ");
 }
 
-console.log("[ch5 shop stamps] PASS: shops always on the ch5 maps (mandatory meetings only), one stamp per shop in ch5, region/full tickets (1×4+2, no money), NG+ reset, #2455");
+console.log("[ch5 shop stamps] PASS: required shops on the ch5 maps, optional shops, one stamp per shop, tickets (1×4+1+2 optional, no money), NG+ reset, #2455");
