@@ -188,3 +188,29 @@ test("existing automatic craft driver acknowledges the displayed help", async ()
   h.guide.dispatchEvent(new Event("toggle"));
   assert.equal(await done, true);
 });
+
+test("step intro shows once per save for choice steps in any mode (#3028)", async () => {
+  const h = await harness("drill");
+  const done = h.mod.namespace.explainStepOnce(h.cs, "timer", "steam");
+  // 説明が先に出て、操作は止まる。
+  assert.equal(h.guide.open, true);
+  assert.equal(h.panel.inert, true);
+  assert.match(h.b.guide.note.textContent, /熱の目安|時間を決めろ/);
+  h.close();
+  assert.equal(await done, true);
+  // 既読がセーブへ残り、説明文は元のガイド文へ戻る。
+  assert.equal(h.statePort.state.flags.seenStepIntro.timer, true);
+  assert.equal(h.saved, 1);
+  assert.equal(h.b.guide.note.textContent, "full manual help");
+  // 2回目は直接操作できる（ガイドは開かない）。
+  assert.equal(await h.mod.namespace.explainStepOnce(h.cs, "timer", "steam"), true);
+  assert.equal(h.guide.open, false);
+});
+
+test("step intro is skipped when the save already saw it (#3028)", async () => {
+  const h = await harness("tournament");
+  h.statePort.state.flags.seenStepIntro = { mix: true };
+  assert.equal(await h.mod.namespace.explainStepOnce(h.cs, "mix", "steam"), true);
+  assert.equal(h.guide.open, false);
+  assert.equal(h.saved, 0);
+});
