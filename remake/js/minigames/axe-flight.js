@@ -1,9 +1,11 @@
+import { INCH } from "./axe-model.js";
 // First-person camera, looking along +Z. +Y points down; the board is in the distance.
 // This is presentation only. The saved shot and score still come from axe-model.js.
 export const TARGET = { x: 330, y: 245, radius: 164 };
 export const CAMERA = { focal: 700, boardDepth: 650 };
 // A 16in hatchet against a 48in board: the mesh is drawn at this scale so the axe reads at its real size.
-export const AXE_SCALE = 1.6;
+// The scale is in board inches (1.6 when the 1 ring was 14.75 in), so the hatchet keeps its size when the rings follow the stencil.
+export const AXE_SCALE = 23.6 * INCH;
 export const AXE = { blade: { x: 0, y: -28 * AXE_SCALE, z: 62 * AXE_SCALE }, handleTip: { x: 0, y: 160 * AXE_SCALE, z: -3 * AXE_SCALE } };
 // Shared presentation clock for solo and versus; scoring/rotation stay in the model.
 // slowFrom: a called throw (killshot or sudden death) plays the last part of its flight at half speed.
