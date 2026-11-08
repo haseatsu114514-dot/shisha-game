@@ -8,6 +8,7 @@ const loop = calendarSource.match(/^export async function runDaily\b[\s\S]*?^\}/
 assert.ok(loop, "runDaily を検査できる");
 assert.match(loop, /await morning\(\);\s*save\(\);\s*\}\s*\/\/[^\n]*\n\s*announceChapterBoard\(\);/, "朝の後、その日の行動より前に知らせる");
 assert.match(calendarSource, /reminder:\s*mapOptions\.reminder\s*\|\|\s*respecMapNotice\(state\)/, "章の地図の一言が無い時だけ、組み直しの期限を地図の案内に添える");
+assert.match(calendarSource, /takeRespecCloseWarning\(state\)[\s\S]{0,600}confirmLimeReminder\(destination/, "行動の確認（onBeforeGo）で閉じることを知らせてから LIME の確認へ進む");
 
 globalThis.document ||= { addEventListener() {} };
 globalThis.window ||= {};
@@ -61,7 +62,10 @@ assert.equal(ch2Cards[1].main, "今なら盤を組み直せる");
 noPeriod(ch2Cards);
 assert.equal(take(s), null, "知らせは章ごとに一度");
 assert.equal(band(s), "心得の盤の組み直しは、最初の行動まで", "開いている間は地図の案内に添える");
+assert.equal(notice.takeRespecCloseWarning(s), "この行動をすると、この章の組み直しは閉じます", "開いている間の最初の確認で、閉じることを添える");
+assert.equal(notice.takeRespecCloseWarning(s), "", "確認の一言は一度だけ");
 respec.closeRespecOpportunity(g);
+assert.equal(notice.takeRespecCloseWarning(s), "", "閉じた後は添えない");
 assert.equal(band(s), "", "最初の行動で閉じたら一言も消える");
 
 // 第3章: 組み直しの機会が閉じた後に知らせを取り直しても、組み直しのカードは出さない

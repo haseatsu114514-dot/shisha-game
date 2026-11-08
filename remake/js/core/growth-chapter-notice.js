@@ -51,3 +51,15 @@ export function respecMapNotice(s) {
   if (!growthEnabled() || !s?.growth) return "";
   return respecWorthwhile(ensureGrowth(s), s) ? "心得の盤の組み直しは、最初の行動まで" : "";
 }
+
+/**
+ * 行動の確認ダイアログに添える一言（5.2「閉じる直前に一度だけ」）。開いている間の最初の確認だけ文を返し、返した時に出し済みにする。
+ * 出し済みの記録は g.respec.warned（章・周回が変わって g.respec が作り直されると消える）。出すものが無い時は ""。
+ */
+export function takeRespecCloseWarning(s) {
+  if (!respecMapNotice(s)) return "";
+  const r = ensureGrowth(s).respec;
+  if (r.warned) return "";
+  r.warned = true;
+  return "この行動をすると、この章の組み直しは閉じます";
+}

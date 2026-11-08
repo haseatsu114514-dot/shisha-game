@@ -29,7 +29,7 @@ const noop = () => {}, elem = () => ({ classList: { add: noop, remove: noop, con
 const db = { dialogues: {}, statusTexts: {}, lime: [] };
 const values = {
   "growth-respec.js": { syncRespecOpportunity() {}, closeRespecOpportunity() {} },
-  "growth-chapter-notice.js": { takeChapterBoardNotice: () => null, chapterBoardCards: () => [], respecMapNotice: () => "" }, // 章はじめの盤の知らせ（#1801 C10）。この検査では盤が無効
+  "growth-chapter-notice.js": { takeChapterBoardNotice: () => null, chapterBoardCards: () => [], respecMapNotice: () => "", takeRespecCloseWarning: () => "" }, // 章はじめの盤の知らせ（#1801 C10）。この検査では盤が無効
   "growth-mode.js": { growthEnabled: () => false, GROWTH_BOARD: false, PREVIEW_KEY: "suien_growth_preview" },
   "growth-effects.js": { useGrowthInsurance: () => false, growthCritical: () => false, settleGrowthPhase: (_s,_cs,_key,result) => result?.score, growthPerks: () => null, growthSkill: () => false, growthFeature: () => false, growthLesson: () => false, LESSON_TUNING: {}, growthCraftCondition: (_s,_m,c) => c, SKILL_TUNING: {} },
   "flavor-mastery.js": { masteryHooks: { multiplier: () => 1 } },
