@@ -133,8 +133,8 @@ function fitMapCrop(pins) {
   const width = parseFloat(stage.style.getPropertyValue("--stage-w")) || 1280;
   const height = width * 9 / 16, overflow = height - 720;
   const all = [...pins.querySelectorAll(".spot-pin")];
-  for (const pin of all) pin.style.removeProperty("--pin-nudge-x");
-  if (overflow <= 0 || document.body?.classList?.contains("game-ds")) { stage.style.removeProperty("--map-crop"); return; }
+  for (const pin of all) pin.style.removeProperty?.("--pin-nudge-x");
+  if (overflow <= 0 || document.body?.classList?.contains("game-ds")) { stage.style.removeProperty?.("--map-crop"); return; }
   const box = pins.getBoundingClientRect();
   if (!box.height) return;
   const unit = box.height / height; // 画面 px ÷ ステージ px

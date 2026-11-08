@@ -118,7 +118,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const width = parseFloat(stage?.style?.getPropertyValue?.("--stage-w")) || 1280;
     const height = width * 9 / 16, overflow = height - 720;
     const ys = (scenario.spots || []).map(spot => Number(spot.y)).filter(Number.isFinite).map(y => y / 100 * height);
-    if (overflow <= 0 || !ys.length) { root.style.removeProperty("--room-crop"); return; }
+    if (overflow <= 0 || !ys.length) { root.style.removeProperty?.("--room-crop"); return; }
     const box = root.getBoundingClientRect?.(), header = root.querySelector(".trpg-header")?.getBoundingClientRect?.();
     const unit = box?.height ? box.height / 720 : 1;
     const headerBottom = header?.height ? (header.bottom - box.top) / unit : 64;
