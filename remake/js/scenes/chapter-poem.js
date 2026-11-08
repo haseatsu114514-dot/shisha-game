@@ -22,6 +22,8 @@ export const poemTest = { shown: [] };
 
 /** 詩の上に出す横長のコマ絵（img/ui/poems/）。本物の絵に差し替えるときは、台本の metadata.panel のファイル名を替える */
 const panelUrl = (name) => new URL(`../../img/ui/poems/${name}`, import.meta.url).href;
+/** コマ絵の比率の範囲（横:縦）。範囲の内なら絵の比率のまま、外なら端の比率の枠に収める（tools/poem_panel_cut.py と同じ） */
+export const PANEL_RATIO = Object.freeze({ min: 4, max: 5.6, fallback: 16 / 3 });
 
 const RUBY = /([\p{Script=Han}々]+)《([^》]+)》/gu;
 /** 「漢字《よみ》」を除いた本文（読み上げ・字数・テスト用） */
@@ -92,9 +94,12 @@ export async function playChapterPoem(key, { owner = null, current = () => true 
   if (poem.metadata?.panel) {
     const url = panelUrl(poem.metadata.panel);
     if (await imageReady(url, 2500) && !signal.aborted) {
-      panel = el("figure.cp-panel", { "data-test": "chapter-poem-panel" }, [
-        el("img", { src: url, alt: poem.metadata.panel_alt || "", draggable: false }),
-      ]);
+      const img = el("img", { src: url, alt: poem.metadata.panel_alt || "", draggable: false });
+      await img.decode?.().catch(() => {});
+      // 枠は絵の比率のまま（生成AIの絵は 16:3 から縦に少し伸びることがあり、切ると顔や小物が欠ける）
+      const natural = img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : PANEL_RATIO.fallback;
+      const ratio = Math.min(PANEL_RATIO.max, Math.max(PANEL_RATIO.min, natural));
+      panel = el("figure.cp-panel", { "data-test": "chapter-poem-panel", style: { aspectRatio: String(ratio) } }, [img]);
     }
   }
   if (signal.aborted || (owner && !current(owner))) {

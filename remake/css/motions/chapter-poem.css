@@ -33,7 +33,8 @@
   to { transform: translate3d(2%, -2%, 0); }
 }
 
-/* 横長のコマ絵（16:3）。詩の上に、細い枠つきで置く。ゆるく浮かんで、詩が終わるまで残る。絵が無い詩では出さない */
+/* 横長のコマ絵。詩の上に、細い枠つきで置く。ゆるく浮かんで、詩が終わるまで残る。絵が無い詩では出さない。
+   比率は絵のまま（4:1〜5.6:1。js が style の aspect-ratio を入れる）。下の 16 / 3 は読み込めなかったときの既定 */
 .cp-panel {
   position: relative; flex: none; margin: 5.5% 0 0; width: min(60%, 760px); aspect-ratio: 16 / 3;
   border: 2px solid #efe7d4; background: #efe7d4; overflow: hidden;
@@ -48,7 +49,7 @@
 
 /* 場面（連）。いまの1場面だけを中央に置く。消えるときも次が浮かぶときも不透明度だけ */
 .cp-page {
-  position: absolute; inset: 0; display: grid; place-items: center;
+  position: absolute; inset: 0 0 44px; display: grid; place-items: center; /* 下の 44px は▼のための余白（詩の列と重ねない） */
   opacity: 0; visibility: hidden; transition: opacity 650ms ease, visibility 0s linear 650ms;
 }
 .cp-page.now { opacity: 1; visibility: visible; transition: opacity 650ms ease; }
@@ -65,7 +66,7 @@
 }
 .cp-line.on { opacity: 1; filter: none; transform: none; }
 /* コマ絵があるときは、詩の領域が狭くなるので、字を少し小さく・列の高さを領域いっぱいまで使う */
-.chapter-poem.has-panel .cp-body { font-size: 23px; max-height: 94%; }
+.chapter-poem.has-panel .cp-body { font-size: 22px; max-height: 96%; }
 /* 最後の場面の最後の行は少しだけ明るく、差し色の光をまとう */
 .cp-page.last .cp-line:last-child.on { color: #fff7e4; text-shadow: 0 0 22px rgba(var(--cp-accent), .55); }
 .cp-line ruby { ruby-align: center; }

@@ -149,7 +149,7 @@ await suite("chapter-poems", async check => {
     assert.equal(await page.locator(`${POEM} .cp-page.now`).count(), 1, "いま見えている場面は1つ");
     assert.equal(await page.locator(`${POEM} .cp-page.now .cp-line`).count(), 6, "1場面目は6行");
     assert.equal(await page.locator(`${POEM} .cp-line rt`).count(), 0, "いまの詩にふりがなは無い（本家の巻頭詩もほぼ使わない）");
-    // 詩の上に、横長（16:3）のコマ絵。細い枠つきで、詩より上に置く
+    // 詩の上に、横長のコマ絵（絵の比率のまま。4:1〜5.6:1）。細い枠つきで、詩より上に置く
     assert.equal(await page.locator(`${POEM}.has-panel`).count(), 1);
     const panel = page.locator(`${POEM} .cp-panel`);
     await panel.waitFor();
@@ -157,7 +157,10 @@ await suite("chapter-poems", async check => {
     assert.ok((await panel.locator("img").getAttribute("alt")).length > 5, "絵の説明がある");
     await page.waitForFunction(() => document.querySelector('[data-test="chapter-poem"] .cp-panel')?.classList.contains("on"), null, { timeout: 4000 });
     const box = await panel.boundingBox();
-    assert.ok(Math.abs(box.width / box.height - 16 / 3) < 0.15, `コマ絵が横長16:3ではない: ${box.width}x${box.height}`);
+    const natural = await panel.locator("img").evaluate(img => img.naturalWidth / img.naturalHeight);
+    assert.ok(natural >= 3.99 && natural <= 5.61, `絵が横長の範囲ではない: ${natural}`);
+    assert.ok(Math.abs(box.width / box.height - natural) < 0.12, `枠が絵の比率になっていない: ${box.width}x${box.height} / 絵 ${natural}`);
+    assert.equal(await panel.locator("img").evaluate(img => img.src.endsWith(".webp")), true, "本物の絵（WebP）");
     const stage = await page.locator(`${POEM} .cp-stage`).boundingBox();
     assert.ok(stage.y >= box.y + box.height - 1, "詩の領域はコマ絵の下");
     assert.ok(box.width <= 1280 * 0.62 && box.x > 150, "画面いっぱいではなく、余白のある横長の枠");
@@ -231,7 +234,7 @@ await suite("chapter-poems", async check => {
   // 絵が読めない（壊れている）ときは、コマ絵なしで、詩だけを全面に出して最後まで読ませる
   await check("poem-card-without-panel-when-image-is-broken", async page => {
     page.setDefaultTimeout(30000);
-    await page.route("**/img/ui/poems/poem_ch5.svg", route => route.fulfill({ status: 200, contentType: "image/svg+xml", body: "not an image" }));
+    await page.route("**/img/ui/poems/poem_ch5.webp", route => route.fulfill({ status: 200, contentType: "image/webp", body: "not an image" }));
     await watch(page, { turbo: false });
     await page.evaluate(async () => { window.POEM_MODULE.playChapterPoem(5).then(result => { window.RESULT = result; }); });
     await page.locator(`${POEM}[data-poem="poem_ch5"]`).waitFor();

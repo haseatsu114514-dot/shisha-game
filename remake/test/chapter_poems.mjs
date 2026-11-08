@@ -68,13 +68,40 @@ for (const dialogue of data.dialogues) {
   }
 }
 
-// 1b) 詩の上のコマ絵（横長16:3）。絵のファイルがあり、読み上げ用の説明がある。
+/** WebP の画像の幅・高さ（VP8 / VP8L / VP8X）。読めなければ null */
+function webpSize(buf) {
+  if (buf.toString("latin1", 0, 4) !== "RIFF" || buf.toString("latin1", 8, 12) !== "WEBP") return null;
+  const kind = buf.toString("latin1", 12, 16);
+  if (kind === "VP8X") return { width: 1 + buf.readUIntLE(24, 3), height: 1 + buf.readUIntLE(27, 3) };
+  if (kind === "VP8 ") return { width: buf.readUInt16LE(26) & 0x3fff, height: buf.readUInt16LE(28) & 0x3fff };
+  if (kind === "VP8L") {
+    const bits = buf.readUInt32LE(21);
+    return { width: (bits & 0x3fff) + 1, height: ((bits >> 14) & 0x3fff) + 1 };
+  }
+  return null;
+}
+
+// 1b) 詩の上のコマ絵（横長。4:1〜5.6:1 は絵の比率のまま出す）。絵のファイルがあり、読み上げ用の説明がある。
 for (const dialogue of data.dialogues) {
   const { panel, panel_alt: alt } = dialogue.metadata || {};
   assert.ok(panel && /^[\w-]+\.(svg|webp)$/.test(panel), `${dialogue.dialogue_id}: metadata.panel（ファイル名）がない`);
   assert.ok(alt && alt.length >= 6, `${dialogue.dialogue_id}: metadata.panel_alt（絵の説明）がない`);
+  assert.ok(!alt.includes("仮絵"), `${dialogue.dialogue_id}: 本物の絵に替えたので、説明に「仮絵」を残さない`);
   const file = path.join(root, "remake/img/ui/poems", panel);
   assert.ok(fs.existsSync(file), `${dialogue.dialogue_id}: 絵のファイルがない: ${panel}`);
+  if (panel.endsWith(".webp")) {
+    const buf = fs.readFileSync(file);
+    if (buf.subarray(0, 40).toString("latin1").startsWith("version https://git-lfs")) {
+      console.log(`  (${panel} は Git LFS のポインタのまま。寸法の確認は実体を取った環境で行う)`);
+    } else {
+      const size = webpSize(buf);
+      assert.ok(size, `${panel}: WebP の寸法を読めない`);
+      const ratio = size.width / size.height;
+      assert.ok(ratio >= 3.99 && ratio <= 5.61, `${panel}: 横長の範囲（4:1〜5.6:1）の外（${size.width}x${size.height}）`);
+      assert.ok(size.width >= 960 && size.width <= 1920, `${panel}: 幅 ${size.width}px（960〜1920px）`);
+      assert.ok(buf.length <= 400 * 1024, `${panel}: ${Math.round(buf.length / 1024)} KiB は大きい（400 KiB 以下）`);
+    }
+  }
   if (panel.endsWith(".svg")) {
     const svg = fs.readFileSync(file, "utf8");
     const box = /viewBox="0 0 (\d+) (\d+)"/.exec(svg);

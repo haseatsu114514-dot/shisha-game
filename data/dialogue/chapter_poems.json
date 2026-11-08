@@ -4,8 +4,8 @@
       "dialogue_id": "poem_ch1",
       "metadata": {
         "poem": true,
-        "panel": "poem_ch1.svg",
-        "panel_alt": "カウンターの席に着いた客の背中と、流れてくる一筋の煙（仮絵）"
+        "panel": "poem_ch1.webp",
+        "panel_alt": "夜のtonari。カウンター席に着いた客の背中と、水のグラスを置くスミさん"
       },
       "lines": [
         {
@@ -45,8 +45,8 @@
       "dialogue_id": "poem_ch2",
       "metadata": {
         "poem": true,
-        "panel": "poem_ch2.svg",
-        "panel_alt": "高い壁と、その向こうに浮かぶ王冠（仮絵）"
+        "panel": "poem_ch2.webp",
+        "panel_alt": "明るい店の窓の中で笑うあげはと、外の暗い通りから見つめるはじめの後ろ姿"
       },
       "lines": [
         {
@@ -91,8 +91,8 @@
       "dialogue_id": "poem_ch3",
       "metadata": {
         "poem": true,
-        "panel": "poem_ch3.svg",
-        "panel_alt": "煙と、鏡に映る煙（仮絵）"
+        "panel": "poem_ch3.webp",
+        "panel_alt": "閉店後の路地。綾取・ましろ・はじめが並び、背後のガラス戸に三人の姿が映る"
       },
       "lines": [
         {
@@ -142,8 +142,8 @@
       "dialogue_id": "poem_ch4",
       "metadata": {
         "poem": true,
-        "panel": "poem_ch4.svg",
-        "panel_alt": "手から手へ渡っていく器（仮絵）"
+        "panel": "poem_ch4.webp",
+        "panel_alt": "路地裏のカフェで、年配の手から若い手へ渡る小さなガラスのグラス"
       },
       "lines": [
         {
@@ -172,8 +172,8 @@
       "dialogue_id": "poem_ch5",
       "metadata": {
         "poem": true,
-        "panel": "poem_ch5.svg",
-        "panel_alt": "数字の格子が、手の線へほどけていく（仮絵）"
+        "panel": "poem_ch5.webp",
+        "panel_alt": "光の下、同じ量の葉を盛った二つの皿の上で止まる、人の手と機械の手"
       },
       "lines": [
         {
