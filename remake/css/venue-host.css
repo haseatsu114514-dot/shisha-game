@@ -61,3 +61,12 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-career { color: var(--la
 .axe-bar-menu .axe-bar-records { font-size: 24px; line-height: 1.45; }
 .axe-bar-menu .sub-back { min-height: 82px; padding: 8px 26px; font-size: 24px; }
 .axe-bar-menu .axe-bar-tools p.gear-offer { font-size: 24px; }
+/* 上の大きさにすると中身がステージの高さ（720px）を越え、最後にあった「← マップに戻る」は PC でもスクロールしないと見えなかった。
+   戻るボタンは見出しの行の右に置き（ボドゲカフェの「閉じる」と同じく上の列）、レッスンとマイ斧は最初の意図どおり1行に収める。
+   押す部品はすべて最初の画面に出し、記録・部門の説明の文だけが下へ続く（play_spots・venue_hours の検査）。
+   2画面表示（game-ds）は下画面の幅が狭く、もとから縦に流してスクロールする作りなので対象外。 */
+body:not(.game-ds) .axe-bar-menu .sub-title { display: flex; align-items: center; min-height: 82px; }
+body:not(.game-ds) .axe-bar-menu .sub-back { position: absolute; top: 20px; right: 32px; margin: 0; }
+body:not(.game-ds) .axe-bar-menu .axe-bar-tools { flex-wrap: nowrap; column-gap: 10px; }
+body:not(.game-ds) .axe-bar-menu .axe-bar-tools > .axe-bar-lesson { flex: none; }
+body:not(.game-ds) .axe-bar-menu .axe-bar-tools > .gear-offer { flex: 0 1 auto; min-width: 0; } /* 幅が足りない時はマイ斧の札の中で折り返す */
