@@ -13,7 +13,7 @@ import { refreshBench } from "./session.js";
 import { gradeOf } from "./common.js";
 import { steamSecondsOf, steamOpening, steamBurnRisk } from "./steam-time.js";
 import { foilHeatProfile } from "./holes_logic.js";
-import { temperatureBands, makerMixProfile } from "./temperature-model.js";
+import { temperatureBands, makerMixProfile, equipSpecOf } from "./temperature-model.js";
 import { coalWarmth } from "./coals.js";
 import { waterComfort } from "./water.js";
 
@@ -60,7 +60,8 @@ export function computeShisha(cs) {
   const grams = m.total || 12;
   const packDraw = { fluffy: 12, normal: 0, firm: -12 }[cs.pack] || 0;
   const four = cs.place === "four";
-  const hms = { lotos_hagal: 2, tanukish_lid: 5, winkwink_hagal: 4, amaburst_hms: 0, lotos_plus: 4 }[cs.equip?.hms] || 0;
+  // HMDの熱安定は性能表（equipSpecOf の stabilityBonus）を正とする。表示と採点で値をずらさない。
+  const hms = equipSpecOf(cs.equip?.hms)?.stabilityBonus || 0;
   const steamSeconds = steamSecondsOf(cs);
   const opening = steamOpening(steamSeconds);
 

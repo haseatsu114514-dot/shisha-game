@@ -250,7 +250,7 @@ export const LESSONS = [
     text: "吸い出しをジャストで3回続けると、煙の輪が龍になって昇る。見ている人が静まり、その一台の残りの工程はメンタルが減らない（スモークリングが要る）", scene: "lesson_master_hookah_dragon" },
   { id: "M-W9", cell: "3,-7", board: "wisdom", who: "dr_kemuri", need: 0, ring: 5, reward: "skill", name: "博士の試作HMD",
     hint: "盤の道が届いたら、博士が自慢の機材を見せてくれそう",
-    text: "HMDに「博士の試作HMD」を選べる。熱が均一に回り、熱管理のジャスト帯が広がって、炭を替えても熱がぶれにくい", scene: "lesson_dr_kemuri_hmd" },
+    text: "HMDに「博士の試作HMD」を選べる。熱が均一に回り、熱管理のジャスト帯が広がって、炭を替えても熱がぶれにくい", scene: "lesson_dr_kemuri_hmd", grants: ["dr_kemuri_proto_hmd"] },
 ];
 export const REWARD_JA = { skill: "スキル", special: "特殊な技", stat: "能力が伸びる" };
 
