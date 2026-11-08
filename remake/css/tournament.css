@@ -178,6 +178,10 @@
 .result-table .rt-good-point { color: #e9d6a1; }
 .result-table > .btn { justify-self: end; min-width: 320px; border: 1px solid #f6c95e99; border-radius: 8px; background: linear-gradient(135deg, #6a4e2c, #2f2536); box-shadow: inset 0 1px 0 #ffe8b526, 0 6px 20px #0008; color: #fff1d0; font-size: 18px; font-weight: 800; }
 .result-table > :is(.rt-hero, .rt-layout, .btn) { position: relative; }
+/* スマホ規格（#2851・#2977）では「表彰のあとへ」が規格の高さ（--phone-tap: 72px、ワイドでは 80px）になり、
+   下の段（54px）からはみ出して画面の下で欠けていた。スマホでは下の段をボタンの高さに合わせ、
+   その分だけ順位と評価の段を縮める（評価は今までどおり枠の中でスクロールする）。 */
+html:root[data-density="phone"] body:not(.game-ds) .result-table { grid-template-rows: 128px minmax(0, 1fr) auto; }
 .craft-loading { position: absolute; inset: 64px 0 0; z-index: 30; display: grid; place-content: center; gap: 18px; text-align: center; background: #100c1aee; color: #e4d4b4; font-size: 18px; }
 .craft-loading::before { content: ''; width: 36px; height: 36px; margin: 0 auto; border: 2px solid #a58b522b; border-top-color: #dfc58e; border-radius: 50%; animation: craft-load 1s linear infinite; }
 .bench[data-thermal-band='optimal'] .thermal-label { color: #ebd4ff; }

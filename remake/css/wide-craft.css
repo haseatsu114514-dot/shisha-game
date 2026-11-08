@@ -45,8 +45,10 @@ html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench .aud
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench .bench-phase.seen .bench-phase-copy small::after { font-size: var(--wide-small); }
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench .rig-lamp { width: calc(var(--wide-small) * 1.9); height: calc(var(--wide-small) * 1.9); }
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench .rig-lamp b { font-size: var(--wide-small); }
-/* 上の帯の「PRACTICE｜練習モード」「SMOKE CROWN CUP｜大会」は1行のまま */
-html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench .bench-mode { white-space: nowrap; }
+/* 上の帯の「PRACTICE｜練習モード」「SMOKE CROWN CUP｜大会」は1行のまま。
+   文字を大きくした分、「SMOKE CROWN CUP」「HAZE: OPEN CLOUD」などの大会名は枠（160px）に入らず隣のランクへ重なるので、
+   枠を名前の幅まで広げる（工程の列が少し縮む。名前が枠に入る時は今までどおり） */
+html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench .bench-mode { white-space: nowrap; min-width: max-content; }
 /* 左のカードの台詞: 窓の高さを中身に合わせて伸ばし（上の絵に少し重なる）、心の声の最大幅（232px）も外す。
    それでも長い時は窓の中でスクロールする（craft.css の .audience-note と同じ） */
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench .bench-left .bench-audience { height: auto; min-height: 112px; max-height: 58%; }
