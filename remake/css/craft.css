@@ -442,14 +442,6 @@
 .coal.pikan .c-hot { opacity: 1; filter: brightness(2.2) saturate(.75) drop-shadow(0 0 10px #ffe1a0); }
 .coal.pikan .coal-corners { animation: heat-ready .35s ease-in-out infinite alternate; }
 @keyframes heat-ready { to { opacity: .35; filter: drop-shadow(0 0 12px #ff6b36); } }
-.heat-actions { display: flex; justify-content: center; gap: 6px; margin: 4px auto 0; max-width: 600px; }
-.heat-pick { flex: 1; min-width: 0; min-height: 50px; padding: 5px 3px; border: 2px solid #b98d5d; border-radius: 8px; background: #281923; color: #ffe2b4; cursor: pointer; font: inherit; }
-.heat-pick b, .heat-pick small { display: block; line-height: 1.25; }
-.heat-pick b { font-size: 14px; }
-.heat-pick small { font-size: 12px; font-variant-numeric: tabular-nums; }
-.heat-pick[data-phase="just"] { border-color: #ffe2a0; background: #8b321c; color: #fff7d9; box-shadow: 0 0 12px #ff7935; animation: heat-ready .35s ease-in-out infinite alternate; }
-.heat-pick:focus-visible { outline: 3px solid #fff1bf; outline-offset: 2px; }
-.heat-pick:disabled { opacity: .55; cursor: default; }
 .coal.soon .coal-corners { border-color: #e6a160; }
 .heat.insight-visible .coal.soon .coal-corners { border-color: var(--stat-insight); box-shadow: 0 0 12px var(--stat-insight); animation: insight-soon .5s ease-in-out infinite alternate; }
 .coal .effect-insight { display: none; position: absolute; right: -15px; top: -12px; }
@@ -479,8 +471,6 @@
 .heat-picks { position: absolute; width: 1px; height: 1px; padding: 0; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .heat-compact { grid-template-columns: minmax(0, 1fr) 200px; gap: 12px; height: 355px; }
 .heat-compact .stove { margin-top: 35px; }
-.heat-compact .heat-pick { min-height: 42px; }
-.heat-compact .heat-pick b { font-size: 12px; }
 .heat-compact .coal { width: 84px; height: 72px; }
 .heat-compact .heat-info { padding: 10px 10px 6px; }
 .heat-compact .heat-carrier-head h2 { font-size: 24px; }
@@ -489,7 +479,7 @@
 .heat-compact .heat-feedback { height: 44px; flex-direction: column; gap: 2px; }
 .heat-compact .heat-feedback .stamp { font-size: 14px; }
 .heat-compact .heat-error { font-size: 14px; line-height: 1.2; padding-left: 0; border-left: 0; }
-@media (prefers-reduced-motion: reduce) { .coal, .coal-stored, .coal.pikan .coal-corners, .heat-pick { transition: none; animation: none; } .coal.pikan .c-core { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .coal, .coal-stored, .coal.pikan .coal-corners { transition: none; animation: none; } .coal.pikan .c-core { opacity: 1; } }
 
 /* キッチンタイマー：液晶と四つのボタンだけをコードで重ねる。 */
 .steam-timer { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; height: 100%; padding-bottom: 24px; }

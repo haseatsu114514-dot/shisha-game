@@ -105,8 +105,7 @@ html:root[data-density="phone"] body:not(.game-ds) .bench[data-step="holes"] .be
 html:root[data-density="phone"] body:not(.game-ds) .bench .opt-grid .opt { min-height: var(--phone-tap); }
 html:root[data-density="phone"] body:not(.game-ds) .bench .opt-grid .opt b { font-size: var(--phone-text); }
 
-/* 炭焼き: 取り出すボタンを押せる高さに（従来 50px＝実寸27px）。炭壺の「0 / 3」が右上の「?」に隠れないよう見出しの右を空ける */
-html:root[data-density="phone"] body:not(.game-ds) .bench .heat-pick { min-height: var(--phone-tap); }
+/* 炭焼き: 炭壺の「0 / 3」が右上の「?」に隠れないよう見出しの右を空ける */
 html:root[data-density="phone"] body:not(.game-ds) .bench .heat-carrier-head { padding-right: max(56px, calc(32px / var(--k, 1))); }
 
 /* 蒸らし時間: 雑念回避の長さの案内と温度の目安を規格の文字に（タイマーの絵の中のボタンは絵が固定なので変えない） */
