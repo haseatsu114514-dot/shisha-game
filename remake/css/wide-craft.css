@@ -54,8 +54,15 @@ html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench .ben
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench[data-step="pack"] .packing {
   display: flex; flex-direction: column; gap: 8px; min-height: 0;
 }
+/* #3036: 器の絵は高さ最大300px。残り高さ（約150px）の欄へそのまま中央に置くと、
+   上の香り文と下の詰め方の見出し・説明へはみ出して文字が隠れる。
+   絵を欄に収まる大きさへ縮め（配合画面の .45 と同じ考え方）、欄の高さは固定で確保する。
+   香り文が2行になる等で収まらない時は、板のスクロールで読める（重なりは作らない）。 */
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench[data-step="pack"] .pack-vessel {
-  flex: 1 1 0; min-height: 0;
+  flex: none; height: 142px; min-height: 0;
+}
+html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench[data-step="pack"] .pack-vessel-art {
+  transform: scale(.45);
 }
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench[data-step="pack"] .pack-caption {
   flex: none; min-height: 0;
