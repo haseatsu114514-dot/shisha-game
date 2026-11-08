@@ -907,3 +907,13 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-in-stage.axe-game[data-mode="versus"][data-phase="summary"] :is(.axe-match-records, .axe-challenges) { display: none; }
 /* ワイドでは「？」の遊び方を横に広げ、スクロールを減らす。 */
 #stage[data-wide] .axe-in-stage .axe-rules-card { width: min(1240px, 100%); }
+/* 単独ページ（axe-throw.html・練習用）の結果も本編と同じ詰め方にする。右パネルが下寄せの間は溢れた分が上へ隠れて見えず、
+   safe flex-end（上の規則）にしてからは「終了」「もう一度」が画面の下へはみ出していた（1280×720 の対戦の結果・axe_versus の検査）。
+   単独ページにも上の得点表と成績の行があるので、対戦の結果の投ごとの一覧とチャレンジの札は本編と同じく畳む。 */
+.axe-game:not(.axe-in-stage)[data-phase="summary"] .axe-panel { display: grid; grid-template-columns: 1fr 1fr; align-content: safe end; gap: 6px 8px; padding-block: 10px; }
+.axe-game:not(.axe-in-stage)[data-phase="summary"] .axe-panel > * { grid-column: 1 / -1; }
+.axe-game:not(.axe-in-stage)[data-phase="summary"] .axe-panel:has(> .axe-retry:not([hidden])) > :is(.axe-primary, .axe-retry) { grid-column: auto; grid-row: auto; }
+.axe-game:not(.axe-in-stage)[data-phase="summary"] .axe-result-card { display: grid; grid-template-columns: auto minmax(0,1fr); align-items: center; column-gap: 16px; padding-block: 2px; }
+.axe-game:not(.axe-in-stage)[data-phase="summary"] .axe-result-card > :not(.axe-result-value, .axe-rank) { grid-column: 1 / -1; }
+.axe-game:not(.axe-in-stage)[data-phase="summary"] .axe-rank { flex-wrap: wrap; justify-content: flex-start; align-items: baseline; column-gap: 8px; row-gap: 0; margin: 0; }
+.axe-game:not(.axe-in-stage)[data-mode="versus"][data-phase="summary"] :is(.axe-match-records, .axe-challenges) { display: none; }
