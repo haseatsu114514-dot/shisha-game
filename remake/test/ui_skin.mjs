@@ -1,4 +1,4 @@
-// 簡潔な能力通知と5色・所持金の桁・体力に応じて伸びるHUDを実ブラウザで確認。
+// 簡潔な能力通知と5色・所持金の桁・経験値と共通の固定長の体力ゲージを持つHUDを実ブラウザで確認。
 // サーバーを8123で起動後: node remake/test/ui_skin.mjs（SHOTSで確認画像の保存先）
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -82,12 +82,12 @@ try {
       assert(result.timeFits, "Time/weather label overlapped the money column");
       assert.equal(result.countdown, null, "残り日数の行が左上カードに残っている（#3033で削除済みのはず）");
     }
-    // 統合HUDではカード幅が固定でバーが列幅いっぱいに広がるため、器の伸びは
-    // バーに指定された幅（updateHud が最大体力から決める）で見る。
-    assert(geometry[1].barWidth > geometry[0].barWidth, "Stamina window did not grow with maximum capacity");
+    // バーの長さは最大体力によらず経験値ゲージと共通の固定長（#3034）。指定幅が最大体力で変わらないことを見る。
+    assert.equal(geometry[1].barWidth, geometry[0].barWidth, "Stamina window length changed with maximum capacity");
+    assert.equal(geometry[0].barWidth, 120, "Stamina window is not the shared gauge length");
     if (shots) await page.screenshot({ path: `${shots}/fixed-hud-${viewport.width}.png` });
   }
-  console.log("[ui skin] PASS: 7 generated images, stable money/controls and growing stamina window at desktop and mobile sizes");
+  console.log("[ui skin] PASS: 7 generated images, stable money/controls and fixed stamina window at desktop and mobile sizes");
   await setViewportAndFit(page, { width: 1280, height: 720 });
   const moneyAndSave = await page.evaluate(() => {
     T.core.state.money = 999990;
@@ -137,7 +137,7 @@ try {
         out.push({ ratio: T.core.state.stamina / maximum, maximum, // 丸めた実際の体力で境界を判定する（最大154は割り切れない）
            health: holder.dataset.health, color: getComputedStyle(holder.querySelector("b")).backgroundColor,
           width: holder.querySelector("b").style.width, windowWidth: holder.clientWidth, barWidth: bar.clientWidth, barSpecifiedWidth: parseFloat(bar.style.width),
-          // 育成で最大体力が伸びるとバーが長くなる。右の余白は伸びる先（DUI13）で、最大でも行からはみ出さない。
+          // バーの長さは最大体力によらず経験値ゲージと共通の固定長（#3034）。行からはみ出さない。
           inside: bar.getBoundingClientRect().right <= holder.getBoundingClientRect().right + .5 });
       }
     }
@@ -152,9 +152,9 @@ try {
   for (const maximum of [100, 154]) {
     assert.equal(new Set(stamina.filter((value) => value.maximum === maximum).map((value) => value.windowWidth)).size, 1, "Losing stamina changed the capacity window");
   }
-  assert.equal(stamina[0].barSpecifiedWidth, 92);
-  assert.equal(stamina[7].barSpecifiedWidth, 142); // 92px × 154/100
-  console.log("[ui skin] PASS: green/yellow/red, exact boundaries, zero/full, expanded stamina capacity");
+  assert.equal(stamina[0].barSpecifiedWidth, 120);
+  assert.equal(stamina[7].barSpecifiedWidth, 120); // 最大体力154でも長さは経験値ゲージと同じ固定長（#3034）
+  console.log("[ui skin] PASS: green/yellow/red, exact boundaries, zero/full, fixed gauge length shared with exp");
   const sessions = await page.evaluate(async () => {
     const { newSession } = await import("./js/craft/session.js"), { skill } = await import("./js/craft/common.js");
     const out = [];

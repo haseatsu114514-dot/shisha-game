@@ -1737,7 +1737,7 @@ body:not(.game-ds) #hud .dc-row span,
 body:not(.game-ds) #hud .hud-card .hud-stamina > span:first-child { flex: none; width: auto; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 body:not(.game-ds) #hud .dc-row.money b { font-size: 20px; line-height: 1; }
 body:not(.game-ds) #hud .dc-row:not(.money) b { font-size: 15px; line-height: 1; }
-/* 体力: 育成で最大体力が伸びるとバーが長くなる（92px×最大体力/100、最大160で147px）。上乗せ分の色・印・点線は出さない。 */
+/* 体力: バーの長さは経験値ゲージと共通の固定長（#3034）。最大体力が伸びてもバーは伸ばさない（長さは hud.js の HUD_GAUGE_WIDTH が決める）。 */
 body:not(.game-ds) #hud .hud-card .hud-stamina { position: relative; }
 body:not(.game-ds) #hud .hud-card .hud-stamina > span:first-child { width: 28px; }
 body:not(.game-ds) #hud .hud-card .hud-stamina .hud-bar { position: relative; flex: none; box-sizing: border-box; height: 12px; min-width: 0; max-width: none; margin: 0; border-radius: 6px; }
@@ -1749,7 +1749,8 @@ body:not(.game-ds) #hud .hud-card .hud-exp { height: 25px; padding: 0; }
 body:not(.game-ds) #hud .hud-card :is(.hud-stamina > span:first-child, .hud-exp .hx-lv) { flex: none; width: 40px; min-width: 0; }
 body:not(.game-ds) #hud .hud-card :is(.hud-stamina, .hud-exp) { gap: 8px; }
 /* 経験値のゲージも体力と同じ太さ・同じ角の丸み・同じ内側の余白にする（オーナー指示 2026-11-08「太さ同じにしたい」） */
-body:not(.game-ds) #hud .hud-card .hud-exp .hx-bar { box-sizing: border-box; height: 12px; border-radius: 6px; }
+/* 長さも体力と共通の 120px にそろえて少し短くする（#3034・オーナー指示 2026-11-09）。「今夜 Lv UP」等の文字が出る時は、その分だけ縮んでよい（潰れすぎない範囲で）。 */
+body:not(.game-ds) #hud .hud-card .hud-exp .hx-bar { box-sizing: border-box; height: 12px; border-radius: 6px; flex: 0 1 120px; }
 body:not(.game-ds) #hud .hud-card .hud-exp .hx-bar b { top: 1px; bottom: 1px; left: 1px; max-width: calc(100% - 2px); border-radius: 4px; }
 body:not(.game-ds) #hud .hud-card .hud-exp[data-milestone="true"] .hx-bar::after { top: 4px; }
 
