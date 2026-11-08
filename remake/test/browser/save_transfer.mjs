@@ -110,6 +110,25 @@ await suite("save-transfer", async check => {
     assert.equal(await page.locator('[data-test="a2hs-help"]').count(), 0);
   });
 
+  // #3013: 同じボタンで全画面化／解除の両方ができ、表示名が実状態へ追随すること（Fullscreen API はスタブで切り替える）
+  await check("fullscreen-button-toggles", async page => {
+    await page.evaluate(() => {
+      let fs = null;
+      Object.defineProperty(document, "fullscreenElement", { get: () => fs, configurable: true });
+      document.documentElement.requestFullscreen = async () => { fs = document.documentElement; document.dispatchEvent(new Event("fullscreenchange")); };
+      document.exitFullscreen = async () => { fs = null; document.dispatchEvent(new Event("fullscreenchange")); };
+    });
+    await openConfig(page);
+    const btn = page.locator('[data-test="fullscreen"]');
+    assert.equal(await btn.textContent(), "全画面");
+    await btn.click();
+    await page.waitForFunction(() => document.querySelector('[data-test="fullscreen"]')?.textContent === "全画面を解除");
+    assert.equal(await page.evaluate(() => !!document.fullscreenElement), true);
+    await btn.click();
+    await page.waitForFunction(() => document.querySelector('[data-test="fullscreen"]')?.textContent === "全画面");
+    assert.equal(await page.evaluate(() => !!document.fullscreenElement), false);
+  });
+
   await check("manifest-is-linked-and-landscape", async page => {
     const href = await page.locator('link[rel="manifest"]').getAttribute("href");
     const m = await page.evaluate(async (h) => (await fetch(h)).json(), href);
