@@ -21,6 +21,8 @@ export async function suite(name, run, {
   // 心得の盤のはじめての案内と最初の火種（growth-board-tutorial.js）。他の検査の火種の数を変えないよう既定は出さない
   boardTutorial = false,
   roamers = false,
+  // 選ぶ工程の初回説明（#3028 説明→ボタンの段階表示）。専用スイートだけ出す
+  stepIntro = false,
 } = {}) {
   fs.mkdirSync(artifacts, { recursive: true });
   const timeoutMs = Number(process.env.BROWSER_TIMEOUT_MS || 10000);
@@ -38,6 +40,7 @@ export async function suite(name, run, {
     if (!boardTutorial) await page.addInitScript(() => { try { localStorage.setItem("suien_board_tutorial", "off"); } catch {} });
     // よその店に居合わせる人（daily/roamers.js）。店を訪ねる検査の流れを変えないよう、既定で切る（roamers.mjs だけ外す）
     if (!roamers) await page.addInitScript(() => { try { localStorage.setItem("suien_roamers", "off"); } catch {} });
+    if (!stepIntro) await page.addInitScript(() => { try { localStorage.setItem("suien_step_intro", "off"); } catch {} });
     if (initScript) await page.addInitScript(initScript);
     const errors = [];
     const failedResources = [];

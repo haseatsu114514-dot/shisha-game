@@ -304,11 +304,14 @@ export async function explainTutorialStep(cs, id) {
  * 読み返しは従来どおり「?」ガイドからできる。panelId はパネルの工程IDが
  * 説明のキーと違う場合（蒸らし時間はパネルが steam でキーが timer）に渡す。
  */
+// ブラウザテストの既定は、よその店の人（suien_roamers）と同じ流儀で案内を止める。
+const stepIntroOff = () => { try { return globalThis.localStorage?.getItem("suien_step_intro") === "off"; } catch { return false; } };
+
 export async function explainStepOnce(cs, id, panelId = id) {
   const b = bench, owner = state;
   const current = () => bench === b && state === owner && benchRoot(cs) === b?.root && b.panel.dataset.step === panelId;
   if (!current()) return false;
-  if (craftTest.auto || cs.preview) return true;
+  if (craftTest.auto || cs.preview || stepIntroOff()) return true;
   const seen = state.flags.seenStepIntro ||= {};
   if (seen[id]) return true;
   if (b.pendingIntro?.id === id) return (await b.pendingIntro.promise) && current();
