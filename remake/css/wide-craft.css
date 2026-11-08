@@ -60,7 +60,7 @@ html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench :is(
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench .ht-description { font-size: var(--wide-text); line-height: 1.45; }
 /* 炭焼き */
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench :is(
-  .heat-pick b, .heat-pick small, .heat-carrier-head small, .heat-picks b, .heat-picks span
+  .heat-carrier-head small, .heat-picks b, .heat-picks span
 ) { font-size: var(--wide-small); }
 /* 蒸らし（飛んでくる言葉は当たり判定があるので変えない） */
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .bench :is(
