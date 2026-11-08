@@ -18,8 +18,9 @@ import { travelsBetweenCities } from "../core/travel-budget.js";
 import { growthEnabled, growthView, gaugeInfo, hidaneTotal } from "../core/growth.js";
 import { NODE_BY_ID, pathTo } from "../core/growth-board.js";
 
-// 体力バーの長さ（最大体力100のとき）。根性で最大体力が伸びるとバーも同じ割合で伸びる（GUI26）。
-const STAMINA_BAR_BASE = 92;
+// 体力バーと経験値バーの共通の長さ（px）。経験値を少し短くし、体力も同じ長さにそろえる（#3034・オーナー指示 2026-11-09）。
+// 最大体力が育成で伸びてもバー自体の長さは変えない（減り方は中身の割合で読む）。経験値側は daily.css の .hx-bar が同じ値を保つ。
+const HUD_GAUGE_WIDTH = 120;
 
 /** 章の最終日（大会・勝負の日）まであと何日か。決まっていなければ null。台詞の {daysLeft} もこれに一本化する */
 export const daysLeft = () => chapterDaysLeft(state);
@@ -257,8 +258,8 @@ export function updateHud() {
   dom.stamina.querySelector("b").style.width = `${Math.round(r * 100)}%`;
   scheduleRecovery();
   dom.stamina.classList.toggle("low", health === "red");
-  // 育成（根性）で最大体力が増えると、バー自体が伸びる。上乗せ分の色分け・印・点線の枠は出さない（DUI13・2026-10-31 オーナー指示）。
-  dom.stamina.querySelector(".hud-bar").style.width = `${Math.round(STAMINA_BAR_BASE * (maxStamina() / 100))}px`;
+  // バーの長さは経験値ゲージと共通の固定長（#3034）。最大体力が伸びても長さは変えず、減りは割合で表す。
+  dom.stamina.querySelector(".hud-bar").style.width = `${HUD_GAUGE_WIDTH}px`;
   updateGrowth();
 }
 
