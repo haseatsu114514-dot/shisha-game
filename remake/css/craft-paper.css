@@ -524,6 +524,13 @@ html .bench[data-mode] .btn:hover:not(:disabled):not(.primary) {
   color: #221534; background-color: #f6f1fa; border: 12px solid transparent;
   border-image: var(--cp-button-primary) 28 fill / 12px / 0 stretch;
 }
+/* 蒸らしの「リフレッシュ」は、隣のアタック・精密と同じ夜紫の面に明るい名前で出す。
+   白い面に暗い名前だと読みにくかったため（2026-11-08 ミューズの仮判断。オーナーが後から変えられる）。 */
+html .bench[data-mode][data-art-skin] .btn.primary.dodge-refresh,
+html .bench[data-mode][data-art-skin] .btn.primary.dodge-refresh:hover:not(:disabled) {
+  color: #f6f1fa; background-color: #2e1d45; border: 1px solid var(--lavender-line); border-image: none; border-radius: 8px;
+}
+html .bench[data-mode][data-art-skin] .btn.primary.dodge-refresh:hover:not(:disabled) { border-color: var(--lavender); }
 html .bench[data-mode] .btn.primary .btn-desc { color: #5a4475; }
 html .bench[data-mode] .btn.primary:is(.hr-punch, .pack-confirm),
 html .bench[data-mode] .pull-btns .btn.primary { color: #221534; border: 14px solid transparent; border-image: var(--cp-button-amber) 36 fill / 14px / 0 stretch; }
