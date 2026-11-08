@@ -519,12 +519,13 @@ html:root .trpg-root :is(.trpg-button.trpg-help-button.trpg-help-button.trpg-hel
 html:root .trpg-root .trpg-inline-help.trpg-inline-help[open] > summary { color: #2a1b0c; background: transparent; box-shadow: none; }
 html:root .trpg-root :is(.trpg-button.trpg-help-button.trpg-help-button.trpg-help-button, .trpg-button.trpg-button[data-test="trpg-builder-help"])[aria-pressed="true"]::before,
 html:root .trpg-root .trpg-inline-help.trpg-inline-help[open] > summary::before { border-color: #fbecc2; background: var(--tt-brass-plate); }
-/* 卓の道具の「？」: 札の箱（押せる範囲）はほかの道具と同じまま、見た目の丸だけ小さく。 */
+/* 卓の道具の「？」: 札の箱（押せる範囲）はほかの道具と同じまま。丸の中に ? の線画を、ほかの「？」と同じ小さな丸で見せる（線画の丸は外す）。 */
 html:root .trpg-root.trpg-cinematic .trpg-tools .trpg-button[data-test="trpg-help"] { border-color: transparent; background: transparent; box-shadow: none; }
 html:root .trpg-root.trpg-cinematic .trpg-tools .trpg-button[data-test="trpg-help"] .trpg-tool-symbol {
   width: var(--q-dot); height: var(--q-dot); box-sizing: border-box; border: 1.5px solid #d2ae66b3; border-radius: 50%; background: #2f1c10cc; box-shadow: none;
 }
-html:root .trpg-root.trpg-cinematic .trpg-tools .trpg-button[data-test="trpg-help"] .trpg-tool-symbol svg { width: calc(var(--q-dot) * .62); height: calc(var(--q-dot) * .62); stroke-width: 2.2; }
+html:root .trpg-root.trpg-cinematic .trpg-tools .trpg-button[data-test="trpg-help"] .trpg-tool-symbol svg { width: calc(var(--q-dot) * .9); height: calc(var(--q-dot) * .9); stroke-width: 2.6; }
+html:root .trpg-root.trpg-cinematic .trpg-tools .trpg-button[data-test="trpg-help"] .trpg-tool-symbol svg circle { display: none; }
 
 /* スマホで常に出す文をもう一段減らす（情報は「？」・表紙・title に残る）:
    棚の「今は遊べる本と仲間が揃っていません…」（「？」の「夜の卓」「本を買う」「部活と勧誘」と同じ）、まだ部員でない仲間の興味の一言（札の title へ）、
@@ -534,3 +535,15 @@ html:root[data-density="phone"] .trpg-campaign-person small + small { display: n
 html:root[data-density="phone"] .trpg-campaign-book-copy > h2 + p,
 html:root[data-density="phone"] .trpg-campaign-book-copy > small { display: none; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-heading > strong { display: none; }
+/* キャラクター作り（表紙の「キャラクターを作る」）: スマホでは前置きの一文と、見た目・出自の説明の行（実寸 6.5px）を出さず、
+   名前・得意・点の残り・ボタンを実寸 11.5〜12.5px 以上にする。説明は選んだ後の卓のシートと「？」にある。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-stage { --b-text: max(20px, calc(11.5px / var(--k, 1))); --b-name: max(22px, calc(12.5px / var(--k, 1))); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-stage > h2 { font-size: max(28px, calc(14px / var(--k, 1))); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-stage .trpg-modal-intro,
+html:root[data-density="phone"] .trpg-root.trpg-cinematic :is(.trpg-builder-look, .trpg-builder-origin) small { display: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder :is(h3, .trpg-builder-origin > span, .trpg-builder-recommend, .trpg-builder-name, .trpg-builder-points, .trpg-builder-stat-rows dt, .trpg-builder-stat-rows dd > span, .trpg-builder-hint, .trpg-builder-easy, .trpg-builder-stat-help) { font-size: var(--b-text); line-height: 1.35; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder :is(.trpg-builder-look strong, .trpg-builder-origin strong, .trpg-builder-points strong) { font-size: var(--b-name); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder .trpg-builder-mode { min-height: var(--q-hit); font-size: var(--b-text); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-stat-rows dd .trpg-button { min-width: var(--q-hit); min-height: var(--q-hit); font-size: var(--b-name); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-stage .trpg-modal-actions .trpg-button { font-size: var(--b-text); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-stats .trpg-builder-name input { min-height: var(--q-hit); }

@@ -314,3 +314,6 @@ html:root[data-density="phone"] .camel-game :is(.camel-tutorial, .camel-cup-card
 html:root[data-density="phone"] .camel-game .camel-cup-card > p,
 html:root[data-density="phone"] .camel-game .camel-cup-card > .camel-cup-note,
 html:root[data-density="phone"] .camel-game .camel-cup > small:first-child { display: none; }
+/* 大会選びの札の中（距離・ひとこと・出走／未解放）は、スマホでは実寸 11.5px 以上に（これまで 8〜9px）。札の名前は一回り大きく。 */
+html:root[data-density="phone"] .camel-game .camel-cup :is(span, b) { font-size: max(18px, calc(11.5px / var(--k, 1))); line-height: 1.35; }
+html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(26px, calc(14px / var(--k, 1))); }
