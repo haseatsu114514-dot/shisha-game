@@ -5,6 +5,8 @@ import { createTrpgAudio } from "./audio.js";
 import { checkForecast, rerollOdds } from "./feedback.js";
 import { playTrpgEntrance } from "./entrance.js";
 
+// 調べる場所の印の半径（見える輪。スマホでは押せる範囲が広いが、輪は同じ大きさ）。ワイドでの上下の切り方に使う
+const ROOM_SPOT_REACH = 28;
 const LABELS = { success: "うまくいった", mixed: "ひと手間かかる", trouble: "思わぬ出来事" };
 const SPECIALS = { critical: "クリティカル！", fumble: "ファンブル……", double: "ゾロ目！" };
 const STAR_MARKS = [["insight", "見立てが的中", ""], ["plan", "提案が届いた", "物語の本来の結末にたどり着いた"], ["dice", "サイコロが味方", "判定で2回以上うまくいった"]];
@@ -103,9 +105,27 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("strong", { text: scenario.title }), teamwork, heatMeter]), tools,
   ]), progress, table, content, dock, tableStatus);
   host.replaceChildren(root);
+  fitRoomCrop();
   // 卓を始めた瞬間に、フェルトの幕が短く上下に開く（#2719・見た目だけ）。本棚の開幕が出ている間は重ねない。
   const entrance = playTrpgEntrance(host, { variant: "open" });
 
+  /** ワイドステージ（#2861）では部屋の絵と調べる場所の印を同じ倍率で横いっぱいに拡大する（trpg-theme.css）。
+   *  上下にはみ出す分のうち上から切る量 --room-crop を、どの印も上の帯の下から画面の下端までに入る範囲で、
+   *  できるだけ上下均等に決める（シナリオごとに印の高さの範囲が違う。16〜88%）。PC の 16:9 では何もしない。 */
+  function fitRoomCrop() {
+    if (disposed || typeof document === "undefined" || !root.style?.setProperty) return;
+    const stage = document.getElementById?.("stage");
+    const width = parseFloat(stage?.style?.getPropertyValue?.("--stage-w")) || 1280;
+    const height = width * 9 / 16, overflow = height - 720;
+    const ys = (scenario.spots || []).map(spot => Number(spot.y)).filter(Number.isFinite).map(y => y / 100 * height);
+    if (overflow <= 0 || !ys.length) { root.style.removeProperty?.("--room-crop"); return; }
+    const box = root.getBoundingClientRect?.(), header = root.querySelector(".trpg-header")?.getBoundingClientRect?.();
+    const unit = box?.height ? box.height / 720 : 1;
+    const headerBottom = header?.height ? (header.bottom - box.top) / unit : 64;
+    const hi = Math.min(...ys) - ROOM_SPOT_REACH - headerBottom - 8, lo = Math.max(...ys) + ROOM_SPOT_REACH - 712;
+    const crop = lo > hi ? Math.min(overflow, Math.max(0, (lo + hi) / 2)) : Math.min(Math.max(overflow / 2, lo), hi);
+    root.style.setProperty("--room-crop", Math.round(crop) + "px");
+  }
   function button(label, test, action, attrs = {}) {
     return el("button.trpg-button", { type: "button", text: label, dataset: { test },
       onclick: () => { if (!disposed) { audio.play("tap"); action(); } }, ...attrs });
@@ -1132,6 +1152,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (providedAudio) audio.silence(); else audio.destroy();
     document.removeEventListener("visibilitychange", visibility);
     root.removeEventListener("keydown", keys);
+    if (typeof window !== "undefined") window.removeEventListener?.("resize", fitRoomCrop);
     root.remove();
   }
   function keys(event) {
@@ -1163,6 +1184,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   root.addEventListener("keydown", keys);
   function visibility() { root.dataset.paused = String(document.hidden); }
   document.addEventListener("visibilitychange", visibility);
+  if (typeof window !== "undefined") window.addEventListener?.("resize", fitRoomCrop);
   visibility();
   renderBody(); root.focus({ preventScroll: true });
   if (tutorial) playTutorial();

@@ -96,8 +96,9 @@ export function runDjSet({ host, set = 1, signal = null, muted = false, volume =
     frame.title = `DJ ${DJ_SETS[set - 1].name}`;
     frame.dataset.test = "dj-frame";
     frame.setAttribute("allow", "autoplay");
-    // ステージいっぱいに重ねる（ワイドステージでは 1280 より広い）。DJ の画面は中で中央に置いて縮むので、左右は DJ 側の地の色になる
-    Object.assign(frame.style, { position: "absolute", left: "0", top: "0", width: "100%", height: "100%", border: "0", zIndex: "60", background: "#0b0812" });
+    // ステージいっぱいに重ねる（ワイドステージでは 1280 より広い）。DJ の板は中で枠の横幅に合わせて最大1600まで広がる（controller-fx.mjs）。
+    // iframe の中には safe-area（iPhone 横持ちのノッチ）が届かないので、ノッチの分だけ枠を内側に寄せ、端のデッキが欠けないようにする（base.css の --stage-safe-l/r）
+    Object.assign(frame.style, { position: "absolute", left: "var(--stage-safe-l, 0px)", top: "0", width: "calc(100% - var(--stage-safe-l, 0px) - var(--stage-safe-r, 0px))", height: "100%", border: "0", zIndex: "60", background: "#0b0812" });
     let done = false;
     const finish = () => {
       if (done) return;

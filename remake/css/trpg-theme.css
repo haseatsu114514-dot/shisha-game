@@ -450,6 +450,17 @@ html:root .trpg-root.trpg-cinematic .trpg-declare-stage .trpg-modal-actions .trp
    本文・名前・札の文字を --phone-text / --phone-sub、押す所を --phone-tap にする。中身が増えた分は棚全体を縦スクロールにする。 */
 #stage[data-wide] .trpg-screen { inset: 0 calc(-1 * var(--stage-gutter, 0px)); }
 #stage[data-wide] .trpg-screen > .trpg-root:not(.trpg-campaign) { inset: 0 var(--stage-gutter, 0px); }
+/* 卓（物語の場面）も横いっぱいに（2026-11-08 オーナー「TRPG がワイドになっていない」）。部屋の絵と調べる場所の印は同じ箱
+   （幅 --stage-w・高さ 幅×9/16）に載せて同じ倍率で拡大するので、印は絵からずれない。上下にはみ出す分は、view.js が場面ごとに
+   上から切る量 --room-crop を決める（どの印も上の帯と画面の下端にかからない範囲で、できるだけ上下均等）。 */
+#stage[data-wide] .trpg-screen > .trpg-root.trpg-cinematic { inset: 0; }
+#stage[data-wide] .trpg-root.trpg-cinematic .trpg-room {
+  bottom: auto; height: calc(var(--stage-w) * 9 / 16);
+  top: calc(-1 * var(--room-crop, calc((var(--stage-w) * 9 / 16 - 720px) / 2)));
+}
+#stage[data-wide] .trpg-root.trpg-cinematic .trpg-header {
+  left: max(34px, calc(var(--stage-safe-l, 0px) + 16px)); right: max(34px, calc(var(--stage-safe-r, 0px) + 16px));
+}
 #stage[data-wide] .trpg-root.trpg-campaign { padding-left: max(48px, calc(var(--stage-safe-l, 0px) + 24px)); padding-right: max(48px, calc(var(--stage-safe-r, 0px) + 24px)); }
 #stage[data-wide] .trpg-campaign-books[data-many="true"] { gap: 20px; }
 

@@ -122,6 +122,44 @@ function cueMove(shield, spot) {
   });
 }
 
+/** ワイドステージ（#2861）: 街の絵と施設のピンを同じ倍率（ステージ幅 / 1280）で横いっぱいに拡大する（base.css）。
+ *  拡大した絵は上下に1割ほどはみ出すので、上から切る量 --map-crop を「どのピンも頭（看板・顔）から先まで画面に入る」範囲で、
+ *  できるだけ上下均等に決める（地図ごとにピンの高さの範囲が違う。第4章の砂漠の「砂丘」は y=92%）。
+ *  ノッチ（safe-area）にかかる端のピンは、その分だけ内側へ寄せる（--pin-nudge-x）。PC の 16:9 と 2画面表示（DS）では何もしない。 */
+const MAP_TOP_SAFE = 40, MAP_BOTTOM_SAFE = 8, MAP_SIDE_SAFE = 8;
+function fitMapCrop(pins) {
+  const stage = document.getElementById?.("stage");
+  if (!stage?.style?.setProperty || !pins?.isConnected || typeof pins.getBoundingClientRect !== "function") return;
+  const width = parseFloat(stage.style.getPropertyValue("--stage-w")) || 1280;
+  const height = width * 9 / 16, overflow = height - 720;
+  const all = [...pins.querySelectorAll(".spot-pin")];
+  for (const pin of all) pin.style.removeProperty?.("--pin-nudge-x");
+  if (overflow <= 0 || document.body?.classList?.contains("game-ds")) { stage.style.removeProperty?.("--map-crop"); return; }
+  const box = pins.getBoundingClientRect();
+  if (!box.height) return;
+  const unit = box.height / height; // 画面 px ÷ ステージ px
+  const probe = el("div", { style: { position: "absolute", left: "0", top: "0", height: "0", width: "var(--stage-safe-l, 0px)", visibility: "hidden" } });
+  stage.append(probe);
+  const safeL = probe.getBoundingClientRect().width / unit;
+  probe.style.width = "var(--stage-safe-r, 0px)";
+  const safeR = probe.getBoundingClientRect().width / unit;
+  probe.remove();
+  let lo = 0, hi = overflow;
+  for (const pin of all) {
+    const r = pin.getBoundingClientRect();
+    if (!r.height) continue;
+    const y = parseFloat(pin.style.top) / 100;
+    const anchor = box.top + y * box.height;
+    hi = Math.min(hi, y * height - (anchor - r.top) / unit - MAP_TOP_SAFE);
+    lo = Math.max(lo, y * height + (r.bottom - anchor) / unit - (720 - MAP_BOTTOM_SAFE));
+    const left = (r.left - box.left) / unit, right = (r.right - box.left) / unit;
+    const nudge = Math.max(0, safeL + MAP_SIDE_SAFE - left) || Math.min(0, width - safeR - MAP_SIDE_SAFE - right);
+    if (nudge) pin.style.setProperty("--pin-nudge-x", `${Math.round(nudge)}px`);
+  }
+  const crop = lo > hi ? Math.min(overflow, Math.max(0, (lo + hi) / 2)) : Math.min(Math.max(overflow / 2, lo), hi);
+  stage.style.setProperty("--map-crop", `${Math.round(crop)}px`);
+}
+
 function openMap({ notice = "", reminder = "", eventPin = null, guide = null, onShown = null, onBeforeGo = null, visitBlock = null, regions = null, regionId = null, onRegionChange = null }) {
   return new Promise((resolve) => {
     const night = timeOfDay() === "night";
@@ -396,6 +434,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
         markers.append(el("i.ds-map-marker", { dataset: { marker: "station", label: "駅" },
           style: { left: `${station.x}%`, top: `${station.y}%` } }));
       }
+      if (typeof requestAnimationFrame === "function") requestAnimationFrame(() => fitMapCrop(pins));
       if (freshPins.length) {
         revealing = true;
         root.dataset.revealing = "true";
@@ -448,6 +487,9 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
     if (region) root.dataset.region = region.id;
     renderPins();
     showScreen("map", root);
+    // ワイドステージでは絵とピンを横いっぱいに拡大し、上下の切り方をピンの位置から決める（画面の向き・大きさが変わったら決め直す）
+    const refit = () => { if (!root.isConnected) { globalThis.removeEventListener?.("resize", refit); return; } fitMapCrop(pins); };
+    globalThis.addEventListener?.("resize", refit);
     interrupt = (v) => { stationTrip?.cancel(); stationTrip = null; interrupt = null; stopReveal(); retire(root); resolve(v); };
     mapShown = true;
     showPrompts();
