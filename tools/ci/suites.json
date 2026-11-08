@@ -237,7 +237,7 @@
       "id": "growth-levelup",
       "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
       "kind": "quick",
-      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs", "node --experimental-vm-modules remake/test/growth_board_screen.mjs", "node remake/test/growth_chapter_notice.mjs"]
+      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs", "node --experimental-vm-modules remake/test/growth_board_screen.mjs", "node remake/test/growth_chapter_notice.mjs", "node remake/test/proto_hmd_mw9.mjs"]
     },
     {
       "id": "vent-lid",
@@ -298,6 +298,18 @@
       "title": "Chapter-5 limited kuji tier, kuji-only stands, tickets and no hidane (KJ05, #2455)",
       "kind": "quick",
       "run": ["node remake/test/kuji_limited.mjs"]
+    },
+    {
+      "id": "ch5-catering-dlv",
+      "title": "Chapter-5 catering requests: schedule, one at a time, reply/job expiry, fit to tickets, no money, NG+ reset and #2455 (DLV)",
+      "kind": "quick",
+      "run": ["node remake/test/ch5_catering.mjs"]
+    },
+    {
+      "id": "ch5-shop-stamps-mgr",
+      "title": "Chapter-5 shop stamp book: shops always on the ch5 maps, one stamp per shop, region/full kuji tickets, no money, NG+ reset and #2455 (MGR)",
+      "kind": "quick",
+      "run": ["node remake/test/ch5_shop_stamps.mjs"]
     },
     {
       "id": "growth-levelup-browser-1",
@@ -431,7 +443,8 @@
         "remake/js/daily/reflection.js",
         "remake/js/core/growth.js",
         "remake/test/browser/board_tutorial.mjs",
-        "remake/test/browser/support.mjs"
+        "remake/test/browser/support.mjs",
+        "remake/css/wide-screens.css"
       ],
       "run": [
         "node remake/test/browser/board_tutorial.mjs"
@@ -661,14 +674,6 @@
         "remake/img/loading/*"
       ],
       "run": ["node remake/test/browser/loading_gate.mjs", "node remake/test/browser/loading_craft.mjs"]
-    },
-    {
-      "id": "chapter-preview-scripts",
-      "title": "Chapter preview scripts: structure, sources and excerpt fidelity",
-      "kind": "quick",
-      "run": [
-        "node remake/test/chapter_preview_scripts.mjs"
-      ]
     },
     {
       "id": "slim-deploy",
@@ -1153,40 +1158,24 @@
     },
     {
       "id": "ch1-preview",
-      "title": "Chapter 1 retro preview",
+      "title": "Chapter ends: clear screen to next chapter title (trailers removed)",
       "kind": "browser",
       "weight": 2.1,
       "timeout": 10,
       "paths": [
-        "data/chapter_previews/**",
         "remake/js/chapters/ch1.js",
-        "remake/js/chapters/ch1-preview.js",
-        "remake/js/chapters/chapter-preview.js",
-        "remake/js/chapters/preview-cue.js",
-        "remake/js/chapters/preview-score.js",
-        "remake/js/chapters/chapter-preview-samples.js",
         "remake/js/core/audio.js",
-        "remake/css/chapter-preview.css",
-        "remake/css/chapter-preview-samples.css",
-        "remake/chapter-preview.html",
-        "remake/chapter-preview-samples.html",
         "remake/js/chapters/ch2-tournament.js",
         "remake/js/chapters/ch3-aftermath.js",
         "remake/js/chapters/ch4.js",
-        "assets/cgs/ch2_preview/**",
-        "assets/cgs/ch3_preview/**",
-        "assets/cgs/ch4_preview/**",
-        "assets/cgs/ch5_preview/**",
         "assets/audio/**",
         "assets/fonts/**",
         "remake/test/browser/ch1_preview.mjs",
-        "remake/test/browser/chapter_preview.mjs",
-        "remake/test/browser/chapter_preview_samples.mjs"
+        "remake/test/browser/chapter_preview.mjs"
       ],
       "run": [
         "node remake/test/browser/ch1_preview.mjs",
-        "node remake/test/browser/chapter_preview.mjs",
-        "node remake/test/browser/chapter_preview_samples.mjs"
+        "node remake/test/browser/chapter_preview.mjs"
       ]
     },
     {
@@ -1689,6 +1678,46 @@
       ],
       "run": [
         "node remake/test/browser/ch5_home_talks.mjs"
+      ]
+    },
+    {
+      "id": "ch5-catering-browser",
+      "title": "Chapter 5 catering request by Sumi's LIME: accept, next-day map job, pick a blend for kuji tickets (no money), decline and expiry (DLV)",
+      "kind": "browser",
+      "weight": 1.3,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/ch5-catering.js",
+        "remake/js/chapters/ch5-catering-model.js",
+        "remake/js/chapters/ch5-daily.js",
+        "data/dialogue/ch5_catering.json",
+        "remake/js/daily/phone.js",
+        "remake/js/daily/kuji-tickets.js",
+        "remake/js/daily/calendar.js",
+        "remake/test/browser/ch5_catering.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch5_catering.mjs"
+      ]
+    },
+    {
+      "id": "ch5-shop-stamps-browser",
+      "title": "Chapter 5 shop stamp book: a stamp after a shop visit, no repeat, last stamp grants kuji tickets, LIME book view (MGR)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/ch5-shop-stamps.js",
+        "remake/js/chapters/ch5-shop-stamps-model.js",
+        "remake/js/chapters/ch5-daily.js",
+        "remake/js/chapters/ch5-shops.js",
+        "remake/js/daily/calendar.js",
+        "remake/js/daily/phone.js",
+        "remake/js/daily/kuji-tickets.js",
+        "remake/test/browser/ch5_shop_stamps.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch5_shop_stamps.mjs"
       ]
     },
     {
@@ -2775,11 +2804,14 @@
         "remake/data/manifest.json",
         "assets/ui/**",
         "remake/test/browser/game_layout.mjs",
-        "remake/test/browser/mobile_doubletap.mjs"
+        "remake/test/browser/mobile_doubletap.mjs",
+        "remake/js/core/double-tap-guard.js",
+        "remake/test/browser/form_font_doubletap.mjs"
       ],
       "run": [
         "node remake/test/browser/game_layout.mjs",
-        "node remake/test/browser/mobile_doubletap.mjs"
+        "node remake/test/browser/mobile_doubletap.mjs",
+        "node remake/test/browser/form_font_doubletap.mjs"
       ]
     },
     {
@@ -3036,7 +3068,8 @@
         "remake/js/scenes/save-transfer.js",
         "remake/test/browser/save_transfer.mjs",
         "remake/js/chapters/ch2*.js",
-        "remake/js/chapters/ch3*.js"
+        "remake/js/chapters/ch3*.js",
+        "remake/css/wide-screens.css"
       ],
       "run": [
         "node remake/test/browser/save_load.mjs",
@@ -3061,7 +3094,8 @@
         "remake/test/browser/home_shisha.mjs",
         "remake/test/browser/home_practice_leaves.mjs",
         "remake/js/daily/practice*.js",
-        "remake/test/ui_polish.mjs"
+        "remake/test/ui_polish.mjs",
+        "remake/css/wide-screens.css"
       ],
       "run": [
         "node remake/test/browser/title_layout.mjs",
@@ -3180,7 +3214,8 @@
         "remake/js/daily/facility-icons.js",
         "remake/css/facility-icons.css",
         "remake/facility-icons-preview.html",
-        "assets/ui/map-facilities-*.webp"
+        "assets/ui/map-facilities-*.webp",
+        "remake/css/wide-screens.css"
       ],
       "run": [
         "node remake/test/store_logos.mjs",
@@ -3198,6 +3233,29 @@
       "chrome": "playwright"
     },
     {
+      "id": "phone-density",
+      "title": "Phone density standard on landscape touch: common parts keep real text >= 11px and taps >= 38px; edge parts stay outside a simulated notch; desktop unchanged (#2851, #3001)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 3,
+      "paths": [
+        "remake/css/phone-density.css",
+        "remake/css/vn.css",
+        "remake/css/vn-composition.css",
+        "remake/css/daily.css",
+        "remake/css/ui-paper.css",
+        "remake/js/main.js",
+        "remake/js/daily/hud.js",
+        "remake/test/browser/phone_density.mjs",
+        "remake/css/wide-screens.css",
+        "remake/css/base.css",
+        "remake/css/shop.css",
+        "remake/css/daily-menu.css"
+      ],
+      "run": ["node remake/test/browser/phone_density.mjs"],
+      "chrome": "playwright"
+    },
+    {
       "id": "hud-visibility-2190",
       "title": "Hidden HUD accessibility, focus and LOAD recovery (#2190)",
       "kind": "browser",
@@ -3209,7 +3267,8 @@
         "remake/js/scenes/title.js",
         "remake/js/chapters/ch1.js",
         "remake/js/chapters/ch2-tournament.js",
-        "remake/test/browser/hud_visibility_2190.mjs"
+        "remake/test/browser/hud_visibility_2190.mjs",
+        "remake/css/wide-screens.css"
       ],
       "run": ["node remake/test/browser/hud_visibility_2190.mjs"],
       "chrome": "playwright"
@@ -3226,7 +3285,8 @@
         "remake/js/daily/status.js",
         "remake/css/daily-menu.css",
         "remake/img/ui/paper/menu-bg.webp",
-        "remake/test/browser/daily_menu.mjs"
+        "remake/test/browser/daily_menu.mjs",
+        "remake/css/wide-screens.css"
       ],
       "run": ["node remake/test/browser/daily_menu.mjs"],
       "chrome": "playwright"
@@ -3255,7 +3315,8 @@
         "remake/css/ui-art.css",
         "remake/test/browser/fortune_readings.mjs",
         "remake/test/playtest_ui.mjs",
-        "remake/test/ui_skin.mjs"
+        "remake/test/ui_skin.mjs",
+        "remake/css/wide-screens.css"
       ],
       "run": [
         "node remake/test/fortune_readings.mjs",

@@ -16,32 +16,17 @@ spec.loader.exec_module(manifest)
 
 
 class CharacterResolutionTests(unittest.TestCase):
-    def test_repository_characters_include_samechan_profile(self):
+    def test_repository_characters_include_samechan(self):
         base = json.loads((manifest.ROOT / "data/characters.json").read_text(encoding="utf-8"))
-        profile = json.loads((manifest.ROOT / "data/dialogue/samechan.json").read_text(
-            encoding="utf-8"))["profile"]
         characters = manifest.load_characters()
-        self.assertEqual(profile["id"], "samechan")
-        self.assertEqual(characters["samechan"], profile)
+        self.assertEqual(sum(character["id"] == "samechan" for character in base), 1)
         for character in base:
-            if character["id"] != profile["id"]:
-                self.assertEqual(characters[character["id"]], character)
+            self.assertEqual(characters[character["id"]], character)
 
-    def test_profile_uses_its_id_and_replaces_existing_definition(self):
+    def test_load_characters_uses_registry_only(self):
         base = [{"id": "other", "name": "base", "spriteScale": 1}]
-        profile = {"id": "other", "spriteAnchor": "head"}
-        with patch.object(Path, "read_text", side_effect=[
-            json.dumps(base), json.dumps({"profile": profile})
-        ]):
-            self.assertEqual(manifest.load_characters(), {"other": profile})
-
-    def test_profile_without_id_is_not_registered(self):
-        base = [{"id": "existing"}]
-        for overlay in ({}, {"profile": None}, {"profile": {}}, {"profile": {"id": ""}}):
-            with self.subTest(overlay=overlay), patch.object(Path, "read_text", side_effect=[
-                json.dumps(base), json.dumps(overlay)
-            ]):
-                self.assertEqual(manifest.load_characters(), {"existing": base[0]})
+        with patch.object(Path, "read_text", return_value=json.dumps(base)):
+            self.assertEqual(manifest.load_characters(), {"other": base[0]})
 
     def test_portraits_only_registration_before_any_generation(self):
         for cid, expected, accepted in (

@@ -182,3 +182,29 @@
   .dr-race-result b { font-size: 26px; }
   .dr-howto { max-width: 880px; }
 }
+
+/* ---- ワイドステージ（#2861）と見やすさ（#2729）:
+   左右の端に置く HUD・✕・タッチボタンは、ノッチ（safe-area）にかからないよう内側へ寄せる。
+   スマホのワイドでは横に余裕があるので、タッチボタンと文字を一回り大きくする（中央の視界は空けたまま）。
+   メニューの英字の飾り（DUBAI · SAND DUNES）はスマホでは出さない。 ---- */
+#stage[data-wide] .dr-hud { left: max(22px, calc(var(--stage-safe-l, 0px) + 10px)); right: max(22px, calc(var(--stage-safe-r, 0px) + 10px)); }
+#stage[data-wide] .dr-controls { padding-left: max(18px, calc(var(--stage-safe-l, 0px) + 8px)); padding-right: max(18px, calc(var(--stage-safe-r, 0px) + 8px)); }
+#stage[data-wide] .dr-quit { right: max(22px, calc(var(--stage-safe-r, 0px) + 10px)); }
+html:root[data-density="phone"] .dr-menu .dr-kicker { display: none; }
+html:root[data-density="phone"] #stage[data-wide] .dr-touch { width: 168px; height: 130px; font-size: 26px; }
+html:root[data-density="phone"] #stage[data-wide] .dr-touch.dr-jump { width: 236px; height: 140px; font-size: 26px; }
+html:root[data-density="phone"] #stage[data-wide] .dr-touch.dr-boost { width: 144px; height: 116px; font-size: 26px; }
+html:root[data-density="phone"] #stage[data-wide] .dr-button { min-height: var(--phone-tap); font-size: 28px; }
+
+/* ---- 「？」の統一と、常に出す文をもう一段減らす（#2729・2026-11-08 オーナー指摘「文字が多い・？が大きい」）:
+   「？」は見た目を舞台上 31〜35px の細い線の丸（::before）にし、押せる範囲はボタンの箱そのもの（透明）で実寸 40px 以上。カードの右上のまま。
+   スマホでは、メニューの前置きの一文（相手は滑走中の「VS ヌール」で分かる）と、結果・練習のおわりの英字の見出しを出さない。 ---- */
+.desert-ride { --q-hit: max(44px, calc(40px / var(--k, 1))); --q-font: max(20px, calc(11.5px / var(--k, 1))); --q-dot: calc(var(--q-font) + 11px); }
+.desert-ride .dr-help-btn.dr-help-btn { right: 8px; top: 8px; isolation: isolate; width: var(--q-hit); height: var(--q-hit);
+  border: 0; background: transparent; color: #b2652f; font-size: var(--q-font); }
+.desert-ride .dr-help-btn.dr-help-btn::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box;
+  width: var(--q-dot); height: var(--q-dot); transform: translate(-50%, -50%); border: 1.5px solid rgba(120,80,50,.45); border-radius: 50%; background: rgba(255,255,255,.7); pointer-events: none; }
+.desert-ride .dr-help-btn.dr-help-btn:is(:hover, :focus-visible) { background: transparent; }
+.desert-ride .dr-help-btn.dr-help-btn:is(:hover, :focus-visible)::before { background: #fff; border-color: #b2652f; }
+html:root[data-density="phone"] .desert-ride .dr-menu .dr-lead,
+html:root[data-density="phone"] .desert-ride .dr-card .dr-kicker { display: none; }

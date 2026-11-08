@@ -245,7 +245,10 @@ assert(files.length > 100, "走査が働いている");
 const RULES = [
   [new RegExp(`\\b(${[...onlyIds, "g20000"].join("|")})\\b`), ["data/equipment.json", "data/kuji.json", "remake/js/core/rules.js"]],
   [/\b(KUJI_LIMITED_GRADES|KUJI_ONLY_EQUIPMENT)\b/, ["remake/js/core/rules.js", "remake/js/core/carry.js", "remake/js/core/cycle-start.js", "remake/js/core/growth.js", "remake/js/core/growth-board-data.js"]],
-  [/\b(kujiTickets|grantKujiTickets|spendKujiTicket|KUJI_TICKET_MAX)\b|kuji-tickets\.js/, ["remake/js/core/rules.js", "remake/js/core/state.js", "remake/js/core/carry.js", "remake/js/core/cycle-start.js", "remake/js/daily/kuji-tickets.js", "remake/js/daily/kuji.js"]],
+  // くじ券を渡してよい寄り道: 第5章の出張シーシャの依頼（DLV・chapters/ch5-catering.js）と各地の店めぐり帳（MGR・chapters/ch5-shop-stamps.js）。
+  // どちらもお金・火種は動かさない
+  [/\b(kujiTickets|grantKujiTickets|spendKujiTicket|KUJI_TICKET_MAX)\b|kuji-tickets\.js/, ["remake/js/core/rules.js", "remake/js/core/state.js", "remake/js/core/carry.js", "remake/js/core/cycle-start.js", "remake/js/daily/kuji-tickets.js", "remake/js/daily/kuji.js",
+    "remake/js/chapters/ch5-catering.js", "remake/js/chapters/ch5-shop-stamps.js"]],
   [/\bkuji_only\b/, ["data/equipment.json", "remake/js/daily/kuji.js", "remake/js/daily/shop.js"]],
 ];
 for (const [re, allowed] of RULES) {

@@ -1,7 +1,13 @@
 // Tactile feedback for the DJ controller. Visual/haptic only: never calls audio, model or scoring.
-const STAGE_W = 1280, STAGE_H = 720;
+const STAGE_W = 1280, STAGE_MAX_W = 1600, STAGE_H = 720;
 const stage = document.getElementById('dj-stage');
-function fit() { stage.style.setProperty('--s', String(Math.min(innerWidth / STAGE_W, innerHeight / STAGE_H))); }
+// 本編のワイドステージ（#2861・remake/js/main.js の fitStage）と同じく、横長の画面では板を最大1600まで横に広げる（高さは720のまま）。
+// 左右のデッキの列は幅に追従し（.console の minmax(0,1fr)）、ミキサーは中央の幅のまま。iPhone 横持ちで左右が黒い帯にならない。
+function fit() {
+  const width = Math.min(STAGE_MAX_W, Math.max(STAGE_W, Math.floor(innerWidth / innerHeight * STAGE_H)));
+  stage.style.width = `${width}px`;
+  stage.style.setProperty('--s', String(Math.min(innerWidth / width, innerHeight / STAGE_H)));
+}
 fit(); addEventListener('resize', fit);
 const coarse = matchMedia('(pointer: coarse)');
 const buzz = ms => { if (coarse.matches && navigator.vibrate) try { navigator.vibrate(ms); } catch { /* unsupported */ } };

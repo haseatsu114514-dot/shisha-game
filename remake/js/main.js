@@ -1,5 +1,6 @@
 // 起動: ステージの拡縮 → データ読込 → タイトル。
 import { installNoZoom } from "./core/no-zoom.js";
+import { installDoubleTapGuard } from "./core/double-tap-guard.js";
 import { TOURNAMENT_DAY } from "./core/rules.js";
 import { $, sleep } from "./core/util.js";
 import { loadAll, loadDeferredDialogues, loadCinemaDialogue, loadTournamentCraftDialogue, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
@@ -22,12 +23,14 @@ import { isNormalTitleForced } from "./scenes/title-layout.js";
 import { initGameLayout } from "./scenes/game-layout.js";
 import { resumeGame } from "./chapters/ch1.js";
 import { setGrowthPreview, growthEnabled, gainExp, ensureGrowth, openGrowthBoard } from "./core/growth.js";
-installNoZoom(); // ダブルタップ・ピンチによる拡大を止める（#2826）
+installNoZoom(); // ダブルタップによる拡大を止める（#2826。ピンチは禁止しない）
+installDoubleTapGuard(); // ダブルタップ拡大の保険（#2852）。no-zoom が入っていれば __suienNoZoom を見て自動で何もしない
 enableSeenLinePersistence(); // 既読SKIPの記録は本編でだけ端末に残す
 // デバッグ用の道具（URL に ?debug=1 で左下に「DBG」・?debug=0 で消す。速さ・シーシャ作りの自動など）。
 // リリース前に、この1行と remake/js/dev/ のフォルダを消す（remake/README.md「デバッグ用の道具」）
 try { const q = new URLSearchParams(location.search).get("debug"); if (q !== null) localStorage.setItem("suien_debug", q === "1" ? "1" : "0"); if (localStorage.getItem("suien_debug") === "1") import("./dev/debug-panel.js").then(m => m.mountDebugPanel()).catch(e => console.error(e)); } catch {}
 
+const PHONE_DENSITY_K = 0.62;
 function fitStage() {
   const stage = $("#stage");
   const viewport = window.visualViewport;
@@ -39,6 +42,10 @@ function fitStage() {
   const h = viewport ? viewport.height * zoom : window.innerHeight;
   const k = Math.min(w / 1280, h / 720);
   stage.style.setProperty("--k", String(k));
+  // スマホ規格（#2851）: 横持ちスマホ（Plus/Pro Max の 0.60 も含む）で共通部品の文字・タップ部品を大きくする。css/phone-density.css
+  // 横長の画面だけ（PC の縦長ウィンドウや縦持ちは対象外。縦持ちのスマホは横向きの案内になる）
+  if (k < PHONE_DENSITY_K && w > h) document.documentElement.dataset.density = "phone";
+  else delete document.documentElement.dataset.density;
   // ワイドステージ（#2861）: 横長の画面では黒帯ぶんだけステージを広げる（高さは720のまま・最大1600）。
   // 中身の層は中央1280に置いたまま、背景と端へ出す部品だけが広がった幅を使う（base.css）。
   const stageW = Math.min(1600, Math.max(1280, Math.floor((w / h) * 720)));

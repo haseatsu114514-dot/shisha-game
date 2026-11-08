@@ -9,7 +9,7 @@ import { state } from "../core/state.js";
 import { staminaRatio, currentCondition, maxStamina } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
-import { chapterDay, chapterDaysLeft, chapterFinalDay, chapterGoalLabel } from "../core/chapter-clock.js";
+import { chapterDay, chapterDaysLeft, chapterFinalDay, chapterGoalLabel, departurePrep } from "../core/chapter-clock.js";
 import { travelsBetweenCities } from "../core/travel-budget.js";
 import { growthEnabled, growthView, gaugeInfo, hidaneTotal } from "../core/growth.js";
 import { NODE_BY_ID, pathTo } from "../core/growth-board.js";
@@ -92,9 +92,10 @@ export function initHud(h) {
     slot: el("div.dc-slot"),
     money: el("b"),
     left: el("b"),
-    leftLabel: el("span", { text: "次の大会まで" }),
-    stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b")])])]),
-    phone: el("button.hud-lime", { title: "LIME", dataset: { test: "hud-phone" }, onclick: () => handlers.phone?.() }, [el("span", { text: "LIME" }), el("em.badge")]),
+    // 所持金・大会まで・体力のラベルは文字を残し（読み上げ・説明用）、画面では ¥・🏆・♥ の印に置き換える（CSS・#2853）
+    leftLabel: el("span.dc-label", { text: "次の大会まで" }),
+    stamina: el("div.hud-stamina", [el("span.dc-label", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b")])])]),
+    phone: el("button.hud-lime", { title: "LIME", "aria-label": "LIME", dataset: { test: "hud-phone" }, onclick: () => handlers.phone?.() }, [el("span", { text: "LIME" }), el("em.badge")]),
     // 経験値と次のレベルまで（SPEC 6.1a）。置き場所は情報カードの体力の下（REPORT P4・R5）
     exp: el("div.hud-exp", { hidden: true, dataset: { test: "hud-exp" } }, [
       el("span.hx-lv"), el("i.hud-bar.hx-bar", [el("b.hx-settled"), el("b.hx-today")]), el("small.hx-left"),
@@ -106,11 +107,11 @@ export function initHud(h) {
     menu: el("button.hud-menu", { title: "MENU（M）", "aria-label": "MENU", dataset: { test: "hud-menu" }, onclick: () => handlers.menu?.() }, [el("i"), el("span", { text: "MENU" })]),
   };
   dom.menu.append(dom.hidane);
-  const moneyRow = el("div.dc-row.money", [el("span", { text: "所持金" }), dom.money]);
+  const moneyRow = el("div.dc-row.money", { title: "所持金" }, [el("span.dc-label", { text: "所持金" }), dom.money]);
   const root = el("div.hud", [
     el("div.hud-card", [
       el("div.dc-main", [dom.area, dom.day, dom.slot]),
-      el("div.dc-meta", [moneyRow, el("div.dc-row", [dom.leftLabel, dom.left]), dom.stamina, dom.exp]),
+      el("div.dc-meta", [moneyRow, dom.goalRow = el("div.dc-row.goal", { dataset: { test: "hud-goal" } }, [dom.leftLabel, dom.left]), dom.stamina, dom.exp]),
     ]),
     el("div.hud-right", [dom.phone, dom.menu]),
   ]);
@@ -159,7 +160,10 @@ function updateGrowth() {
   dom.exp.querySelector(".hx-settled").style.width = `${Math.round(g.settled * 100)}%`;
   dom.exp.querySelector(".hx-today").style.width = `${Math.round(g.now * 100)}%`;
   const left = dom.exp.querySelector(".hx-left");
-  left.textContent = g.max ? "MAX" : g.pending > 0 ? `今夜 Lv UP${g.pending > 1 ? ` ×${g.pending}` : ""}` : `あと${g.left}`;
+  // 「あと○」の数字は出さない（オーナー指示 2026-11-08「ゲージでわかる」）。数字は title / aria-label に残す。
+  // 状態を伝える「今夜 Lv UP」「MAX」だけ文字で出す。
+  left.textContent = g.max ? "MAX" : g.pending > 0 ? `今夜 Lv UP${g.pending > 1 ? ` ×${g.pending}` : ""}` : "";
+  left.hidden = !left.textContent;
   dom.exp.classList.toggle("ready", g.pending > 0);
   dom.exp.dataset.milestone = g.nextMilestone && !g.max ? "true" : "false";
   renderTarget(view);
@@ -217,11 +221,21 @@ export function updateHud() {
   dom.day.replaceChildren(...[el("b", { text: String(chapterDay(state)) }), finalDay === null ? null : el("small", { text: `/${finalDay}` })].filter(Boolean));
   const night = state.slot >= 1;
   const rain = isRainy() ? "・雨" : "";
-  dom.slot.textContent = state.phase === "tournament" ? "大会当日" : state.slot >= 2 ? "帰宅" : night ? `夜${rain}` : `昼${rain}`;
+  // 昼・夜の札に、今日あと何回動けるかを入れる（「☀残り2」。地図の案内箱にあった一言をここへ統合・#2853）
+  const tournament = state.phase === "tournament";
+  const moves = night ? 1 : 2;
+  dom.slot.textContent = tournament ? "大会当日" : state.slot >= 2 ? "帰宅"
+    : `${isRainy() ? "☂" : night ? "☾" : "☀"}残り${moves}`; // 雨の夜は ☂（夜は札の色で分かる）
+  const slotName = tournament ? "大会当日" : state.slot >= 2 ? "帰宅" : `${night ? "夜" : "昼"}${rain} ── 今日はあと${moves}回動ける`;
+  dom.slot.title = slotName;
+  dom.slot.setAttribute("aria-label", slotName);
   dom.slot.dataset.slot = night ? "night" : "day";
   dom.money.textContent = yen(state.money);
   const left = daysLeft();
   dom.leftLabel.textContent = chapterGoalLabel(state);
+  dom.leftLabel.parentElement.title = chapterGoalLabel(state);
+  // 何までの日数か。スマホでは「次の大会まで」だけ出さない（phone-density.css）。出発前・第5章の日数は出す。
+  if (dom.goalRow) dom.goalRow.dataset.goal = departurePrep(state) ? "departure" : state.chapter === 5 ? "final" : "tournament";
   dom.left.textContent = left === null ? "未定" : `あと${left}日`;
   const r = staminaRatio();
   const condition = currentCondition();

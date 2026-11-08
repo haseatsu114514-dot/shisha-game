@@ -17,7 +17,7 @@ export function setBackgroundWeatherSource(source) { backgroundWeather = source;
 /** 読み込んだ全データ。起動時に loadAll()、タイトル後に後段ローダが埋める */
 export const DB = {
   characters: {},     // id -> キャラ定義（characters.json）
-  samechan: {},         // シーシャークのprofile・会話・店（独立overlay）
+  samechan: {},         // シーシャークの会話・店
   fortuneTrivia: {},
   fortuneHints: {},
   hiyori: {},         // 登場方法が決まるまで無効のルート定義と、表示確認用台本
@@ -162,7 +162,6 @@ export async function loadAll(onProgress = () => {}) {
   for (const c of raw.characters) DB.characters[c.id] = c;
   DB.samechan = raw["dlg:samechan"] || {};
   DB.hiyori = raw["dlg:hiyori"] || {};
-  if (DB.samechan.profile?.id) DB.characters[DB.samechan.profile.id] = DB.samechan.profile;
   DB.relationshipMemories = Object.fromEntries(raw.relationshipMemories.memories.map((m) => [m.id, m]));
   DB.flavors = raw.flavors.flavors.filter((f) => (f.leaf || "blond") === "blond"); // はじめはブロンドのみ（正史）
   DB.flavorById = Object.fromEntries(raw.flavors.flavors.map((f) => [f.id, f]));

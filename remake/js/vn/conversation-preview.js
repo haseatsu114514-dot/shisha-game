@@ -10,20 +10,16 @@ const selector = document.querySelector("#preview-scene");
 const status = document.querySelector("#preview-status");
 const stage = document.querySelector("#stage");
 const previewQuery = new URL(location.href).searchParams;
-function applyPreviewTheme(value) {
-  if(value === "heisei-blue") { document.documentElement.dataset.uiTheme=value; return value; }
-  return applyUiTheme(value);
-}
-const theme = applyPreviewTheme(previewQuery.get("theme"));
+const theme = applyUiTheme(previewQuery.get("theme"));
 const themeSelect=document.createElement("select");
 themeSelect.className="ui-theme-select";
 themeSelect.setAttribute("aria-label","UIデザイン");
-for(const {id,label} of [...UI_THEMES,{id:"heisei-blue",label:"R2 平成の青いADV（比較用）"}]) {
+for(const {id,label} of UI_THEMES) {
   const option=document.createElement("option"); option.value=id; option.textContent=label; themeSelect.append(option);
 }
 themeSelect.value=theme;
 themeSelect.disabled=true;
-themeSelect.addEventListener("change",()=>{applyPreviewTheme(themeSelect.value);start();});
+themeSelect.addEventListener("change",()=>{applyUiTheme(themeSelect.value);start();});
 themeSelect.id = "preview-theme";
 document.querySelector("#preview-restart").before(themeSelect);
 const characterSelect=document.createElement("select");
@@ -195,7 +191,6 @@ try {
   characterSelect.disabled = false;
   themeSelect.disabled = false;
   backgroundSelect.disabled = false;
-  if(theme==="heisei-blue") await document.fonts.load('400 32px "Suien Blue Mincho"',"みんとあげはつむぎ時間帯");
   document.querySelector("#preview-restart").disabled = false;
   await start();
 } catch (error) {

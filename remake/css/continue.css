@@ -39,15 +39,12 @@
 .gameover .go-title-art { display: block; width: 920px; height: 100%; object-fit: contain; margin: auto; }
 .gameover .go-title-art[hidden] { display: none; }
 .gameover .go-left { position: absolute; left: 170px; top: 94px; width: 940px; height: 626px; z-index: 2; }
-/* #2524: 人物は会場に来た実体ではなく、はじめの頭の中に浮かぶ像。入場は靄の中から浮かび上がる（位置・大きさは変えない）。 */
 .gameover .go-portrait { position: absolute; inset: 0; overflow: hidden;
-  mask-image: linear-gradient(#000 0%, #000 98%, transparent 100%);
-  animation: go-portrait-surface .55s .25s var(--ease-out) both; }
+  mask-image: linear-gradient(#000 0%, #000 98%, transparent 100%); }
 .gameover .go-sumi-img {
   position: absolute; left: 50%; translate: -50% 0; object-fit: contain;
-  filter: drop-shadow(5px 4px 0 #050a1f99);
+  filter: drop-shadow(5px 4px 0 #050a1f99); animation: go-portrait-enter .55s .25s var(--ease-out) both;
 }
-
 .gameover .go-sumi-fallback { margin: 70px 40px; font-size: 50px; text-align: center; }
 .gameover .go-right { position: absolute; left: 80px; right: 80px; top: 560px; bottom: 0; z-index: 3; }
 .gameover .go-dialogue { position: absolute; left: 0; right: 0; top: 0; height: 54px;
@@ -183,7 +180,6 @@
 
 @keyframes go-title-enter { from { opacity: 0; transform: scale(1.18) translateY(-12px); } }
 @keyframes go-portrait-enter { from { opacity: 0; transform: scale(.94) translateY(10px); } }
-@keyframes go-portrait-surface { from { opacity: 0; filter: blur(14px); } 60% { filter: blur(3px); } to { opacity: 1; filter: none; } }
 @keyframes go-portrait-beat { 0% { transform: translateY(10px); } 45% { transform: translateY(-3px); } 100% { transform: none; } }
 @keyframes go-stamp { from { opacity: 0; scale: 1.7; } }
 @keyframes go-pencil { from { opacity: 0; clip-path: inset(0 100% 0 0); } to { opacity: .55; clip-path: inset(0); } }
@@ -239,7 +235,7 @@
 }
 .gameover[data-layout="inner"] .go-title { display: block; height: auto; }
 .gameover[data-layout="inner"] .go-inner-sub {
-  display: block; margin-bottom: 8px; font: 500 13px / 1 var(--font); letter-spacing: .42em; color: #9fa7c4;
+  display: block; margin-bottom: 8px; font: 500 max(13px, calc(11px / var(--k, 1))) / 1 var(--font); letter-spacing: .42em; color: #9fa7c4;
 }
 .gameover[data-layout="inner"] .go-title-label {
   display: inline-block; padding-bottom: 10px; border-bottom: 1px solid #8e93b566;
@@ -256,7 +252,7 @@
 .gameover[data-layout="inner"].go-urgent .go-clock { color: #ffb3d8; }
 .gameover[data-layout="inner"] .go-limit-note {
   top: 118px; right: 64px; width: auto; padding: 0; border: 0; background: none;
-  font-size: 18px; line-height: 1.5; color: #9fa7c4; text-align: right;
+  font-size: max(18px, calc(12px / var(--k, 1))); line-height: 1.5; color: #9fa7c4; text-align: right;
 }
 /* 人物: 顔中心X=400（.go-left の中央）。縁を暗がりへ溶かす。 */
 .gameover[data-layout="inner"] .go-left { left: -70px; top: 0; width: 940px; height: 720px; }
@@ -267,7 +263,8 @@
 /* 文字列: 左寄せ・左端に差し色の縦線。1行のまま。 */
 .gameover[data-layout="inner"] .go-right { left: 0; right: 0; top: 0; bottom: 0; }
 .gameover[data-layout="inner"] .go-dialogue {
-  left: 64px; right: 430px; top: 556px; height: 64px; justify-content: flex-start; padding-left: 22px;
+  /* 台詞を送るボタンも兼ねるので、スマホ横持ちの実寸38px以上を保つ（下端620pxは据え置き、上へ伸ばす）。 */
+  left: 64px; right: 430px; top: auto; bottom: 100px; height: max(64px, calc(38px / var(--k, 1))); justify-content: flex-start; padding-left: 22px;
   border-left: 4px solid var(--go-accent); text-align: left;
 }
 .gameover[data-layout="inner"] .go-speech-text {
@@ -275,10 +272,11 @@
   -webkit-text-stroke: 0; text-shadow: 0 2px 10px #000d, 0 0 20px #05060c;
 }
 .gameover[data-layout="inner"] mark.go-letter { font-size: 1.08em; color: #fff3d6; }
-/* 2択: 右に縦積みの文字だけ。選ぶと差し色の下線と▸。 */
-.gameover[data-layout="inner"] .end-actions { top: 388px; left: 820px; right: 64px; flex-direction: column; gap: 16px; }
+/* 2択: 右に縦積みの文字だけ。選ぶと差し色の下線と▸。
+   #2863: 行の高さ84px・間隔20px（スマホ横持ちの実寸でも38px以上）。台詞の行（top 556px）に掛からないよう上へ寄せる。 */
+.gameover[data-layout="inner"] .end-actions { top: 348px; left: 820px; right: 64px; flex-direction: column; gap: 20px; }
 .gameover[data-layout="inner"] .go-choice {
-  justify-content: flex-start; min-height: 66px; padding: 10px 0 10px 30px; border: 0; border-bottom: 1px solid #7e84a455; border-radius: 0;
+  justify-content: flex-start; min-height: max(84px, calc(38px / var(--k, 1))); padding: 10px 0 10px 30px; border: 0; border-bottom: 1px solid #7e84a455; border-radius: 0;
   background: none; box-shadow: none; font-size: 32px; font-weight: 700; color: #c9cde0; text-shadow: 0 2px 8px #000c;
   transition: color .16s, border-color .16s;
 }
@@ -302,7 +300,7 @@
 .gameover[data-layout="inner"] .go-caption-controls { justify-content: flex-start; }
 .gameover[data-layout="inner"] .go-next { display: none; }
 .gameover[data-layout="inner"] .go-proceed {
-  position: relative; width: 100%; min-height: 66px; padding: 10px 0 10px 30px; border: 0; border-bottom: 1px solid var(--go-accent);
+  position: relative; width: 100%; min-height: max(84px, calc(38px / var(--k, 1))); padding: 10px 0 10px 30px; border: 0; border-bottom: 1px solid var(--go-accent);
   border-radius: 0; background: none; color: #fff; font-size: 32px; font-weight: 700; text-align: left;
 }
 .gameover[data-layout="inner"] .go-proceed::before {

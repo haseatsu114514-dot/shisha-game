@@ -137,13 +137,14 @@ function el(selector,attrs={},children=[]) {
  return {selector,...attrs,children,setAttribute(k,v){this[k]=v;}};
 }
 const configCtx = vm.createContext({config:state.config,document:{body:{dataset:{screen:'vn'}}},el,
- saveConfig(){saves++;},applyVolumes(){},createUiThemeSelect(){return {};},fullscreenButton(){return null;},saveTransferRow(){return {};},
+ saveConfig(){saves++;},applyVolumes(){},createUiThemeSelect(){return {};},
+ createTitleLayoutSettings(){return null;},fullscreenButton(){return null;},saveTransferRow(){return {};},
  modal(args){modalArgs=args;return Promise.resolve(true);}});
 vm.runInContext(titleSource.slice(titleSource.indexOf('export async function openConfig')).replace('export async function','async function')+';globalThis.openConfig=openConfig;',configCtx);
 await configCtx.openConfig({onChange:(key,value)=>changed=[key,value]});
 const find = (node,test) => node?.dataset?.test===test ? node : (node?.children||[]).map(n=>find(n,test)).find(Boolean);
 const control=find(modalArgs.body,'cfg-portrait-style');
-test('settings expose independent classic/new control',()=>{assert.ok(control);assert.deepEqual(Array.from(control.children,option=>option.value),['classic','new']);assert.ok(find(modalArgs.body,'cfg-intro-art'));});
+test('settings expose independent classic/new control',()=>{assert.ok(control);assert.deepEqual(Array.from(control.children,option=>option.value),['classic','new']);assert.ok(find(modalArgs.body,'cfg-intro-art'));assert.equal(find(modalArgs.body,'title-layout-settings'),undefined);});
 test('changing settings persists and notifies current VN',()=>{const pick=value=>control.children.find(b=>b.value===value).onclick();pick('new');assert.equal(saves,1);assert.deepEqual(changed,['portraitStyle','new']);assert.deepEqual(Array.from(control.children,b=>b['aria-checked']),['false','true']);});
 configCtx.document.body.dataset.screen='preview';control.children.find(b=>b.value==='classic').onclick();
 test('isolated preview does not write user settings',()=>assert.equal(saves,1));

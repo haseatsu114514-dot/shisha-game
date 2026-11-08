@@ -596,6 +596,19 @@
       "description": "ロートスHMDの上位モデル。ボウルに直接のせて使い、アルミは張らない。厚い蓋で熱がぶれにくい。"
     },
     {
+      "id": "dr_kemuri_proto_hmd",
+      "type": "hms",
+      "name": "博士の試作HMD",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "dr_kemuri_proto_hmd",
+      "not_for_sale": true,
+      "unsellable": true,
+      "description": "チャコール博士が直し続けている試作の銀の蓋。熱を蓋全体に回して均一に落とし、適温帯がやや広い。炭を替えても適温帯が狭まりにくい。全ボウル対応。"
+    },
+    {
       "id": "dense_flat_charcoal",
       "type": "charcoal",
       "name": "高密度フラット炭",

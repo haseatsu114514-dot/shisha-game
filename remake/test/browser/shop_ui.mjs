@@ -248,7 +248,11 @@ await suite("shop-ui", async check => {
       await page.evaluate(() => S.open());
       await page.locator('.shop-floor img').first().waitFor();
       await page.waitForFunction(() => [...document.querySelectorAll('.shop-floor img')].every(n => n.complete && n.naturalWidth > 0));
-      await assertFits(page, '.shop-floor, .shop-back');
+      await assertFits(page, '.shop-floor, .shop-back, .shop-entry .shop-money');
+      // 店の入口では左上の HUD の札を隠し、所持金は店のヘッダーに出す。右上の LIME・MENU は残す（#2958）。
+      assert.equal(await page.locator('.hud-card').evaluate(n => getComputedStyle(n).visibility), 'hidden');
+      assert.equal(await page.locator('[data-test="hud-menu"]').isVisible(), true);
+      assert.match(await page.locator('.shop-entry .shop-money').innerText(), /所持金\s*¥12,800/);
       if (platform === 'touch') {
         // スマホ横持ちでは写真がカードの縦いっぱいに出て、細い帯にならない（#2858 の追加・オーナー指示）。
         const cards = await page.locator('.shop-floor').evaluateAll(nodes => nodes.map(n => ({
@@ -259,6 +263,8 @@ await suite("shop-ui", async check => {
       await tap(page, 'shop-entry-back');
       assert.equal(await page.evaluate(() => S.result), null);
       assert.deepEqual(await snapshot(page), before);
+      await page.evaluate(() => S.ui.showScreen("map"));
+      assert.equal(await page.locator('.hud-card').evaluate(n => getComputedStyle(n).visibility), 'visible', 'HUD の札は店を出ると戻る');
       await page.evaluate(() => S.open());
     }, options);
     await run(`${platform}-batch`, async page => {
@@ -462,6 +468,20 @@ await suite("shop-ui", async check => {
       await page.locator('[data-tab="kuji"]').click();
       assert.deepEqual(await labels(), ["シーシャくじ（1回500円）", "プレミアムくじ（1回1,000円）", "機材くじ（1回3,000円）"]);
       assert.match(await page.locator('.kuji-row').nth(2).innerText(), /のこり 20 \/ 20 枚 ・ S賞: ステンレス削り出しの台/);
+      // 「?」は専用の行を作らず最初のくじの見出しの横に小さく置き、押せる範囲は透明な余白で広げる（#2958）。
+      assert.equal(await page.locator('.kuji-help-row').count(), 0);
+      assert.equal(await page.locator('.kuji-row').first().locator('[data-test="kuji-help"]').count(), 1);
+      assert.equal(await page.locator('.hud-card').evaluate(n => getComputedStyle(n).visibility), 'hidden');
+      const help = await page.locator('[data-test="kuji-help"]').evaluate(button => {
+        const r = button.getBoundingClientRect(), x = r.x + r.width / 2, y = r.y + r.height / 2;
+        const span = (dx, dy) => Array.from({ length: 121 }, (_, i) => i - 60).filter(d => document.elementFromPoint(x + d * dx, y + d * dy) === button).length;
+        return { width: r.width, stage: button.offsetWidth, across: span(1, 0), down: span(0, 1) };
+      });
+      assert(help.stage <= 34 && help.width < 40, `「?」の見た目は文字ほどの小さな丸: ${JSON.stringify(help)}`);
+      const reach = platform === 'touch' ? 38 : 44;
+      assert(help.across >= reach && help.down >= reach, `「?」の押せる範囲は見た目より広い（${reach}px 以上）: ${JSON.stringify(help)}`);
+      await tap(page, 'kuji-help'); await page.locator('[data-test="kuji-help-close"]').click();
+      assert.equal(await page.locator('.modal-box').filter({ hasText: 'シーシャくじ（1回500円）' }).count(), 0, '「?」で行の詳細は開かない');
       await page.locator('[data-test="shop-leave"]').click();
       // 第4章のドバイ店: 5段すべて。10,000円のくじのS賞（特注台）を引くと持ち物に入る。
       await page.evaluate(() => { Object.assign(S.core.state, { chapter: 4, money: 500000 }); S.open({ branch: "dubai" }); });

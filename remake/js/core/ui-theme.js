@@ -16,7 +16,6 @@ const FRAME_ART = Object.freeze({
   smoke: imgFileUrl("ui/vn-faithful/smoke.webp"), "smoke-purple": imgFileUrl("ui/vn-faithful/smoke-purple.webp"),
   "cut-paper": imgFileUrl("ui/vn-calm/paper.webp"), amber: imgFileUrl("ui/vn-lounge/amber.svg"),
   tissue: imgFileUrl("ui/vn-faithful/tissue.webp"), classic: imgFileUrl("ui/vn-lounge/narration.svg"),
-  "heisei-blue": imgFileUrl("ui/blue-preview/panel.webp"),
 });
 export function uiThemeFrame(value) { return FRAME_ART[value] || FRAME_ART[DEFAULT_UI_THEME]; }
 export function normalizeUiTheme(value) {

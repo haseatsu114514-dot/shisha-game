@@ -3,6 +3,18 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { createRequire } from "node:module";
+// 画面の大きさを変えたら、main.js の fitStage（resize で動く）がステージの倍率とスマホ規格（data-density）を
+// 置き直すまで待ってから測る。待たないと、前の大きさのスマホ規格のまま文字の大きさを読むことがある（CI で 21.23px になった）。
+async function setViewportAndFit(page, viewport) {
+  await page.setViewportSize(viewport);
+  await page.waitForFunction(({ width, height }) => {
+    const k = Math.min(width / 1280, height / 720);
+    const now = parseFloat(getComputedStyle(document.getElementById("stage")).getPropertyValue("--k"));
+    const phone = document.documentElement.dataset.density === "phone";
+    return Math.abs(now - k) < 1e-6 && phone === (k < 0.62 && width > height);
+  }, viewport);
+}
+
 const { chromium } = createRequire(import.meta.url)("playwright");
 const shots = process.env.SHOTS;
 if (shots) fs.mkdirSync(shots, { recursive: true });
@@ -39,7 +51,7 @@ try {
   await page.waitForFunction(() => document.body.dataset.screen === "map"
     && document.querySelector(".hud-stamina")?.getBoundingClientRect().width > 0, null, { timeout: 30000 });
   for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }]) {
-    await page.setViewportSize(viewport);
+    await setViewportAndFit(page, viewport);
     const geometry = await page.evaluate(() => {
       document.querySelector(".hud-bar").style.transition = "none";
       const snapshot = () => [".hud-card", ".hud-stamina", ".hud-lime", ".hud-menu"].map((selector) => {
@@ -77,7 +89,7 @@ try {
     if (shots) await page.screenshot({ path: `${shots}/fixed-hud-${viewport.width}.png` });
   }
   console.log("[ui skin] PASS: 7 generated images, stable money/controls and growing stamina window at desktop and mobile sizes");
-  await page.setViewportSize({ width: 1280, height: 720 });
+  await setViewportAndFit(page, { width: 1280, height: 720 });
   const moneyAndSave = await page.evaluate(() => {
     T.core.state.money = 999990;
     T.stats.addMoney(20);
@@ -111,7 +123,7 @@ try {
   assert.deepEqual(moneyAndSave.countdowns, Array.from({length: 14}, (_, i) => 13 - i));
   assert.equal(moneyAndSave.onDayText, "次の大会まであと0日");
   assert(moneyAndSave.centered, "LIME label or glyphs were off center");
-  assert.equal(moneyAndSave.readable, "20px");
+  assert.equal(moneyAndSave.readable, "24px"); // #2853: ラベルを ¥ の印にした分、数値を24pxへ
   console.log("[ui skin] PASS: six-digit cap, spending, zero, old DAY15 save, countdown, centered LIME, readable money");
   const stamina = await page.evaluate(() => {
     const out = [];

@@ -188,7 +188,8 @@ function chooseShopFloor() {
       el("span.shop-floor-caption", [el("b", { text: title }), el("small.shop-badge", { text: desc }), el("span.shop-floor-arrow", { text: "↗", "aria-hidden": "true" })]),
     ]);
     const root = showScreen("shop-entry", el("section.shop-paper.shop-entry", { "aria-label": "Dr.fookahの行き先" }, [
-      shopHeader("卸直営店", null),
+      // 入口では HUD の札を隠すので、所持金はヘッダーに出す（#2958）。
+      shopHeader("卸直営店", el("div.shop-money", [el("small", { text: "所持金" }), el("span", { text: priceText(state.money) })])),
       el("h3", { text: "今日は、どちらへ？" }),
       el("div.shop-floors", [
         card("1F", "買い物", "⏱ 0", "bg_shop", "shop", false, "時間消費なし"),
@@ -435,7 +436,8 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     root.addEventListener("click", (event) => {
       if (!live()) { event.preventDefault(); event.stopImmediatePropagation(); return; }
       // くじの表示・既存担当のdraw処理はそのまま、初回だけ購入入力を手前で断る。
-      if (firstErrand && event.target.closest?.(".kuji-row button")) {
+      // 「?」（案内）は買い物ではないので断らない。
+      if (firstErrand && event.target.closest?.(".kuji-row button:not(.kuji-help)")) {
         event.preventDefault(); event.stopImmediatePropagation(); refuseOtherPurchase();
       }
     }, true);

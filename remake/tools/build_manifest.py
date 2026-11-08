@@ -46,13 +46,9 @@ OUT = ROOT / "remake" / "data" / "manifest.json"
 
 
 def load_characters():
-    """ゲームの DB.characters と同じ順序で人物定義と独立 profile を合成する。"""
+    """ゲームの DB.characters と同じ人物定義を読み込む。"""
     characters = {c["id"]: c for c in json.loads(
         (ROOT / "data/characters.json").read_text(encoding="utf-8"))}
-    samechan = json.loads((ROOT / "data/dialogue/samechan.json").read_text(encoding="utf-8"))
-    profile = samechan.get("profile")
-    if profile and profile.get("id"):
-        characters[profile["id"]] = profile
     return characters
 
 

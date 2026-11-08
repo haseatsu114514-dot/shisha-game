@@ -17,6 +17,9 @@
   --vn-lounge-narration: url("../img/ui/vn-lounge/narration.svg");
   --vn-lounge-name: #edca82;
 }
+#stage[data-wide] {
+  --vn-dialogue-width: clamp(1240px, calc(var(--stage-w) * 0.88), 1360px);
+}
 .vn-box {
   --vn-frame-overhang: 41px;
   background: none;

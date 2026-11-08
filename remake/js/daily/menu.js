@@ -36,6 +36,21 @@ export const MENU_TABS = Object.freeze([
 const SAVE_RULE = "手動セーブは、地図で行き先を選んでいる時にできる。";
 let busy = false;
 
+/** タブの見出し。常に出していた説明・注意書きは見出し横の「?」に寄せ、押した時だけ見出しの下に開く（#2717〜#2719 の方針・2026-11-08 オーナー指示「説明の分量を減らす」）。
+ *  lines が空なら「?」は出さない。開閉は体力の「?」と同じ（Esc でも閉じる）。 */
+function tabHeading(title, lines, id) {
+  const shown = lines.filter(Boolean);
+  if (!shown.length) return [el("div.dm-heading", [el("h3", { text: title })])];
+  const tip = el("div.dm-tab-help", { id: `dm-help-${id}`, hidden: true, dataset: { test: `menu-help-text-${id}` } }, shown.map((text) => el("p", { text })));
+  const help = el("button.dm-help", { type: "button", text: "?", "aria-label": `${title}の説明`, "aria-expanded": "false", "aria-controls": `dm-help-${id}`,
+    dataset: { test: `menu-help-${id}` }, onclick: () => {
+      const open = tip.hidden;
+      SE.click();
+      tip.hidden = !open;
+      help.setAttribute("aria-expanded", String(open));
+    } });
+  return [el("div.dm-heading", [el("h3", { text: title }), help]), tip];
+}
 const pct = (v) => `${Math.round(Math.max(0, Math.min(1, v)) * 1000) / 10}%`;
 const pips = (n, total, label) => el("span.dm-pips", { role: "img", "aria-label": label },
   Array.from({ length: total }, (_, i) => el(`i${i < n ? ".on" : ""}`, { "aria-hidden": "true" })));
@@ -119,7 +134,7 @@ function showMenu(initial, { saveOk }) {
         button.tabIndex = on ? 0 : -1;
       }
       panel.setAttribute("aria-labelledby", `dm-tab-${id}`);
-      panel.replaceChildren(...render(id));
+      panel.replaceChildren(...render(id).filter(Boolean));
       panel.scrollTop = 0;
       if (focus) tabs.get(id)?.focus({ preventScroll: true });
     };
@@ -254,14 +269,17 @@ function summary() {
 // ---------------------------------------------------------------- ステータス
 
 function statusTab(choose) {
-  const note = el("p.dm-note", { text: "項目をタップすると、何に効くかが分かる。" });
+  // 行をタップした時だけ、何に効くかをここに出す（タップの案内は「?」へ）
+  const note = el("p.dm-note", { hidden: true });
   const select = (row, text) => {
     row.parentNode.querySelectorAll(".dm-row").forEach((r) => r.classList.toggle("sel", r === row));
     note.textContent = text;
+    note.hidden = false;
   };
   return [
-    el("div.dm-heading", [el("h3", { text: "ステータス" }),
-      el("span.dm-sub", { text: growthEnabled() ? "経験値は寝る前に精算する。レベルが上がると火種が届く" : "↑はこの章のはじめから伸びた能力" })]),
+    ...tabHeading("ステータス", growthEnabled()
+      ? ["経験値は寝る前に精算する。ゲージの濃い紫が精算済み、薄い紫が今日の分。", "レベルが上がると火種が届く。灯すと才能・感覚・理論の盤が広がる。", "項目をタップすると、何に効くかが分かる。"]
+      : ["↑はこの章のはじめから伸びた能力。", "項目をタップすると、何に効くかが分かる。"], "status"),
     ...(growthEnabled() ? growthCards(choose, select) : [statRows(select)]),
     note,
   ];
@@ -279,12 +297,10 @@ function growthCards(choose, select) {
       el("section.dm-card.dm-level", { dataset: { test: "menu-level" } }, [
         el("div.dm-level-line", [el("span.dm-lv", [el("small", { text: "Lv." }), el("b", { text: String(gauge.level) })]), el("span.dm-level-left", { text: left })]),
         el("i.dm-gauge.dm-exp", { "aria-hidden": "true" }, [el("b.today", { style: { width: pct(gauge.now) } }), el("b.settled", { style: { width: pct(gauge.settled) } })]),
-        el("span.dm-sub", { text: "濃い紫が精算済み、薄い紫が今日の分" }),
       ]),
       el("section.dm-card.dm-hidane", { dataset: { test: "menu-hidane" } }, [
         el("div.dm-hidane-line", [el("b.dm-big.dm-amber", { text: String(hidane) }), el("span.dm-strong", { text: "火種" }),
           hidane > 0 ? el("span.dm-chip.new", { text: "心得の盤に灯せる" }) : null]),
-        el("span.dm-sub", { text: hidane > 0 ? "灯すと才能・感覚・理論の盤が広がる" : "レベルが上がると届く" }),
       ]),
     ]),
     el("section.dm-card.dm-board", [
@@ -379,10 +395,13 @@ function peopleTab() {
     return el("div.dm-person-item", { role: "listitem" }, [row, detail]);
   });
   return [
-    el("div.dm-heading", [el("h3", { text: "人間関係" }), el("span.dm-sub", { text: "行をタップすると、直近の思い出と贈り物が分かる" })]),
+    ...tabHeading("人間関係", [
+      "行をタップすると、直近の思い出と贈り物が分かる。",
+      "♥は親しさ。交流の進み方は相手によって異なる。恋愛・友情の分岐がある相手は♥3で方向を選ぶ。特別なイベントと贈り物がある相手は♥5でその節目へ（恋愛・友情のどちらでも受け取れる）。",
+      "恋愛ルートはまだ交際前で、付き合うと「恋人」に変わる。LIMEの連絡先があれば、友達・恋人になった後も交流は続く。",
+    ], "people"),
     el("section.dm-card.dm-people", { role: "list", dataset: { test: "menu-people" } },
       rows.length ? rows : [el("p.dm-empty", { text: "まだ誰とも親しくなっていない。" })]),
-    el("p.dm-note", { text: "♥は親しさ。交流の進み方は相手によって異なる。恋愛・友情の分岐がある相手は♥3で方向を選ぶ。特別なイベントと贈り物がある相手は♥5でその節目へ（恋愛・友情のどちらでも受け取れる）。恋愛ルートはまだ交際前で、付き合うと「恋人」に変わる。LIMEの連絡先があれば、友達・恋人になった後も交流は続く。" }),
   ];
 }
 
@@ -400,7 +419,11 @@ function itemsTab(openRecipe) {
   const card = (title, children, test) => el("section.dm-card", { dataset: test ? { test } : {} }, [
     el("div.dm-card-head", [el("span.dm-strong", { text: title })]), ...children]);
   return [
-    el("div.dm-heading", [el("h3", { text: "持ち物" })]),
+    ...tabHeading("持ち物", [
+      "フレーバーは1箱50g。自宅の試作・店への持ち込み・大会の課題以外の葉で消費。大会の課題フレーバーは支給され、本番中は好きなだけ使える（在庫は減らない）。熟練度はLv.5まで。",
+      "機材は紫の札が今使っているもの。点線の札は贈り物。",
+      recipes.length ? "レシピ帳は名前をタップすると、材料・黄金比・発見日を確認できる。" : null,
+    ], "items"),
     el("div.dm-grid.dm-items", [
       card("フレーバー", [
         el("div.dm-flavors", flavors.length ? flavors.map((f) => {
@@ -412,12 +435,10 @@ function itemsTab(openRecipe) {
             el("span.dm-mastery", { text: level >= 5 ? "MAX" : `Lv.${level}` }),
           ]);
         }) : [el("p.dm-empty", { text: "まだ持っていない" })]),
-        el("p.dm-note", { text: "1箱50g。自宅の試作・店への持ち込み・大会の課題以外の葉で消費。大会の課題フレーバーは支給され、本番中は好きなだけ使える（在庫は減らない）。熟練度はLv.5まで。" }),
       ], "menu-flavors"),
       el("div.dm-col", [
         card("機材", [
           el("div.dm-chips", equipment.length ? equipment.map((e) => el(`span.dm-chip${inUse.has(e.id) ? ".on" : ""}${e.gift ? ".gift" : ""}`, { text: e.name })) : [el("span.dm-empty", { text: "まだ持っていない" })]),
-          el("p.dm-sub", { text: "紫の札が今使っている機材。点線の札は贈り物" }),
           gifts.length ? el("div.dm-gifts", gifts.map(giftNote)) : null,
         ], "menu-equipment"),
         gear.length ? card("遊びの道具", [
@@ -427,7 +448,6 @@ function itemsTab(openRecipe) {
           el("div.dm-chips", recipes.length ? recipes.map((r) => el("button.dm-chip.recipe", {
             type: "button", text: r.name, dataset: { recipe: r.id, test: `recipe-${r.id}` }, onclick: () => { SE.click(); openRecipe(r.id); },
           })) : [el("span.dm-empty", { text: "まだ白紙" })]),
-          recipes.length ? el("p.dm-sub", { text: "名前をタップすると、材料・黄金比・発見日を確認できる" }) : null,
           later.length ? el("div.dm-later", [el("span.dm-strong", { text: "試したい配合" }),
             el("div.dm-chips", later.map((r) => el("span.dm-chip", { text: comboName(r, DB.flavors) })))]) : null,
         ], "menu-recipes"),
@@ -463,14 +483,13 @@ const SYSTEM = [
 
 function systemTab(choose, saveOk) {
   return [
-    el("div.dm-heading", [el("h3", { text: "システム" })]),
+    ...tabHeading("システム", ["行動のたびに自動でセーブされている。", SAVE_RULE, "タイトルへ戻ると、行動前のオートセーブから再開する。"], "system"),
     el("div.dm-system", SYSTEM.map((s) => el(`button.dm-btn.dm-sys${s.primary ? ".primary" : ""}`, {
       type: "button", text: s.label, dataset: { test: `menu-${s.id}` },
       disabled: s.id === "save" && !saveOk,
       onclick: () => choose(s.id),
     })).concat(fullscreenButton() || [])),
-    el("p.dm-note", { dataset: { test: "menu-save-note" } , text: saveOk
-      ? `行動のたびに自動でセーブされている。${SAVE_RULE}`
-      : `今はセーブできない。${SAVE_RULE}タイトルへ戻ると、行動前のオートセーブから再開する。` }),
+    // セーブできない時だけ理由を出す（いつも自動で保存されている説明は「?」へ）
+    saveOk ? null : el("p.dm-note", { dataset: { test: "menu-save-note" }, text: `今はセーブできない。${SAVE_RULE}` }),
   ];
 }

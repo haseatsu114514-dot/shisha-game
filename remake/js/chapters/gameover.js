@@ -1,6 +1,7 @@
-// 大会コンティニュー: 敗北の瞬間、はじめの頭の中に出会ってきた人の声が浮かぶ（#2524・2026-11-06）。
-// 人物は会場に来ているのではなく、はじめの想像。7行すべてが相手の声で、はじめの自問は置かない（オーナー指示）。
-// 出演者はスミさんか、そのセーブで成立済みの恋人（continue-lovers.js）。タイムラインと音声を分離し、後から録音音声・口パク素材に差し替えられる。
+// 大会コンティニュー: スミさん（または成立済みの恋人）がプレイヤーに直接語りかける。
+// 2026-11-07 オーナー決定（#2524）: 見た目と台本は前バージョン（筆文字・円形HUDの neon 配置）に戻し、立ち絵だけ新バージョンにする。
+// 台詞は敗因・順位・弱点で差し替えない（どの負け方でも同じ台本）。出演者はスミさんか成立済みの恋人（continue-lovers.js）。
+// タイムラインと音声を分離し、後から録音音声・口パク素材に差し替えられる。
 import { prepareContinueScript, normalizeContinueContext } from "./continue-context.js";
 import { state } from "../core/state.js";
 import { on } from "../core/bus.js";
@@ -12,37 +13,36 @@ import { createContinueView, continuePortraitStyle } from "./continue-view.js";
 
 
 // at = 開始からの秒数。全体の台詞表示は約20秒。テロップは1キュー1行（全角22字以内）に小分けする。
-// cues[0]・cues[1] は敗因・順位・弱点で差し替わる（continue-context.js）。連敗の短縮は [0,1,5,6]。
-// reactions の text も1行ずつの配列で、順に表示する（頭の中のスミさんの返事）。
-// 「俺もまだ帰らねえぞ」「ここにある」など本人がその場にいる前提の文は置かない。
+// short: 2敗目以降の短縮で残す4行（continue-context.js）。各台本の掛け合いの芯を残す。
+// reactions の text も1行ずつの配列で、順に表示する。
 // audio: 完成した合成音声を置く場合だけ ../assets/audio/voice/continue/... を指定。
 // cues のタイミングは完成音声の実測に合わせて調整可能。
 export const SUMI_CONTINUE_SCRIPTS = [
   {
-    id: "together", title: "共同責任", duration: 20, audio: null,
+    id: "together", title: "共同責任", duration: 20, audio: null, short: [2, 3, 5, 6],
     reactions: {
-      retry: { text: ["よし。トング持て。次の一台だ"], faces: ["surprise", "smile"], effect: "rally", word: "次の一台" },
+      retry: { text: ["よし。トング持て。一緒に戻るぞ！"], faces: ["surprise", "smile"], effect: "rally", word: "最後まで付き合うぞ！" },
       quit: { text: ["……おう。今日はここまでだ。お疲れ"], faces: ["surprise", "normal"], effect: "farewell", word: "お疲れ" },
     },
     cues: [
-      {"at": 0, "face": "serious", "text": "……届かなかったか"},
-      {"at": 1.8, "face": "serious", "text": "なら、次は一つだけ変えてみよう"},
-      {"at": 4.2, "face": "surprise", "text": "おい。一人で背負う顔すんな"},
+      {"at": 0, "face": "serious", "text": "……悔しいな、はじめ"},
+      {"at": 1.8, "face": "serious", "text": "おい、もう片付ける気か？"},
+      {"at": 4.2, "face": "surprise", "text": "ちょっと待て！ 俺もまだ帰らねえぞ！"},
       {"at": 7.0, "face": "serious", "text": "お前だけの負けにすんな"},
       {"at": 10.3, "face": "normal", "text": "俺は、お前と勝ちてえんだよ"},
-      {"at": 13.6, "face": "normal", "text": "トングは、まだ握れるだろ"},
+      {"at": 13.6, "face": "normal", "text": "トングはまだ、ここにある"},
       {"at": 16.5, "face": "normal", "text": "……どうする、はじめ？"},
     ],
   },
   {
-    id: "disaster", title: "世界の終わり", duration: 20, audio: null,
+    id: "disaster", title: "世界の終わり", duration: 20, audio: null, short: [2, 3, 5, 6],
     reactions: {
       retry: { text: ["よし、カルダモン絶滅回避だ！"], faces: ["surprise", "smile"], effect: "rally", word: "カルダモン絶滅回避！" },
-      quit: { text: ["……新聞は休刊だ。よくやったな"], faces: ["surprise", "normal"], effect: "farewell", word: "よくやったな" },
+      quit: { text: ["……新聞は休刊だ。よくやったな"], faces: ["surprise", "normal"], effect: "farewell", word: "よく頑張ったな" },
     },
     cues: [
-      {"at": 0, "face": "serious", "text": "……届かなかったか"},
-      {"at": 1.8, "face": "serious", "text": "なら、次は一つだけ変えてみよう"},
+      {"at": 0, "face": "serious", "text": "……おい、はじめ。聞いてくれ"},
+      {"at": 1.8, "face": "serious", "text": "とんでもねえことに気づいちまった"},
       {"at": 4.2, "face": "surprise", "text": "このままじゃ、カルダモンが絶滅だ！"},
       {"at": 7.0, "face": "normal", "text": "……するわけねえだろ"},
       {"at": 10.3, "face": "normal", "text": "だが、悔しいのは本当だ"},
@@ -51,14 +51,14 @@ export const SUMI_CONTINUE_SCRIPTS = [
     ],
   },
   {
-    id: "meeting", title: "反対多数", duration: 20, audio: null,
+    id: "meeting", title: "反対多数", duration: 20, audio: null, short: [2, 3, 5, 6],
     reactions: {
-      retry: { text: ["可決ッ！ 次の一台、作ってこい！"], faces: ["surprise", "smile"], effect: "vote", word: "可決ッ！" },
+      retry: { text: ["可決ッ！ では、俺たちの大会へ！"], faces: ["surprise", "smile"], effect: "vote", word: "全会一致ッ！！" },
       quit: { text: ["……本日は閉会。お疲れ、はじめ"], faces: ["surprise", "normal"], effect: "farewell", word: "お疲れ、はじめ" },
     },
     cues: [
-      {"at": 0, "face": "serious", "text": "……届かなかったか"},
-      {"at": 1.8, "face": "serious", "text": "なら、次は一つだけ変えてみよう"},
+      {"at": 0, "face": "serious", "text": "……よし、全員集合だ"},
+      {"at": 1.8, "face": "normal", "text": "まあ、俺とお前の二人だけどな"},
       {"at": 4.2, "face": "surprise", "text": "では、緊急会議を始める！"},
       {"at": 7.0, "face": "serious", "text": "議題は『俺たちは、まだやれるか』"},
       {"at": 10.3, "face": "normal", "text": "俺は賛成だ。お前はどうだ？"},
@@ -97,7 +97,7 @@ let nextScript = 0;
 let previousContinueSpeaker = null;
 // 初回はカウント演出だけを見せ、選択期限を設けない。再挑戦以降は20秒で終了する。
 export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRetry, onTitle,
-  soundEffects = true, reducedMotion = false, layout = "inner", background = "stage", context = null } = {}) {
+  soundEffects = true, reducedMotion = false, layout = "neon", background = "stage", context = null } = {}) {
   // variant: 整数=スミさんの台本番号、"lover:<id>"=その恋人、null=通常（スミさんか恋人を同じ確率で選ぶ）。
   const forced = typeof variant === "string" && variant.startsWith("lover:") ? LOVER_CONTINUE_SCRIPTS[variant.slice(6)] : null;
   const chosen = !forced && variant == null

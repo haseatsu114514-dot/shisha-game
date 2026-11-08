@@ -17,6 +17,12 @@ function weightedMix(cs) {
   return entries.map(([id, g]) => [id, g / largest / weight]);
 }
 
+/** 博士の試作HMD（授業 M-W9 で渡される機材）: 葉の傷みによる適温帯の縮み方を半分にする係数。
+ * 「炭を替えても適温帯が狭まりにくい」（data/equipment.json の説明・SBD92）の最小接続。
+ * 数値は仮置きで、オーナーが実プレイで調整する前提（判断点は PR 本文に明記）。 */
+export const PROTO_HMD_ID = "dr_kemuri_proto_hmd";
+export const PROTO_HMD_DAMAGE_RESIST = 0.5;
+
 /** 未知の葉・不正な耐熱性は倍率1。空配合は互換用の標準帯と未選択フラグを返す。 */
 export function temperatureBands(cs, flavorById = DB.flavorById) {
   const entries = weightedMix(cs);
@@ -35,7 +41,9 @@ export function temperatureBands(cs, flavorById = DB.flavorById) {
   const totalWidthScale = makerWidth * equipWidth;
   const center = .54 * t;
   // #1106: 葉が傷むほど適温帯を段階的に細くする。中心は動かさず、幅だけを縮める（温度計・ダイヤルで見て分かる）。
-  const damageScale = 1 - LEAF_DAMAGE.bandNarrow * leafDamageRatio(cs?.leaf);
+  // 試作HMD装備中は、熱が蓋全体に回る分だけこの縮みが半分になる（M-W9）。
+  const damageResist = cs?.equip?.hms === PROTO_HMD_ID ? PROTO_HMD_DAMAGE_RESIST : 1;
+  const damageScale = 1 - LEAF_DAMAGE.bandNarrow * leafDamageRatio(cs?.leaf) * damageResist;
   const halfIdeal = .12 * totalWidthScale * damageScale, halfOptimal = .05 * totalWidthScale * damageScale;
   // 表情対応の葉だけをグラム比で反映。少量を足して全配合の中央狙いを消せない。
   const expressionWeight = entries.reduce((sum, [id, w]) =>
@@ -125,6 +133,7 @@ export const EQUIP_WIDTH_FACTORS = Object.freeze({
   }),
   hms: Object.freeze({
     lotos_hagal: 1.00, tanukish_lid: 1.08, winkwink_hagal: 1.05, amaburst_hms: 0.88, lotos_plus: 1.04,
+    dr_kemuri_proto_hmd: 1.06,
   }),
   charcoal: Object.freeze({
     flat_charcoal: 1.04, cube_charcoal: 0.94, dense_flat_charcoal: 1.06,
@@ -245,6 +254,11 @@ export const EQUIP_THERMAL_SPECS = Object.freeze({
     id: "amaburst_hms", type: "hms", widthFactor: 0.88, stabilityBonus: 0,
     warmup: "非常に早い（高火力）", response: "鋭い（1口で強く上がる）", fitNote: "素焼き20g含む全ボウル対応",
     summary: "直炭に近い高火力HMD。適温帯は-12%狭まるが、温まりにくい素焼き20gや高耐熱ミックスを一気に立ち上げられる。",
+  }),
+  dr_kemuri_proto_hmd: Object.freeze({
+    id: "dr_kemuri_proto_hmd", type: "hms", widthFactor: 1.06, stabilityBonus: 4,
+    warmup: "じんわり（標準）", response: "素直（熱が均一に回る）", fitNote: "全ボウル対応",
+    summary: "チャコール博士の試作の銀の蓋。熱を蓋全体に回して均一に落とし、適温帯が+6%広がる。葉が傷んでも適温帯が狭まりにくい。",
   }),
   flat_charcoal: Object.freeze({
     id: "flat_charcoal", type: "charcoal", widthFactor: 1.04, power: 1.00, response: 1.00, burnRisk: 0, smokeBonus: 0,

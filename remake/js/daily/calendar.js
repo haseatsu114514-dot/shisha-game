@@ -38,7 +38,7 @@ import { roamerAt, meetRoamer } from "./roamers.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
 import { presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
-import { takeChapterBoardNotice, chapterBoardCards, respecMapNotice } from "../core/growth-chapter-notice.js";
+import { takeChapterBoardNotice, chapterBoardCards, respecMapNotice, takeRespecCloseWarning } from "../core/growth-chapter-notice.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -567,9 +567,15 @@ async function takeAction() {
       if (queuedLimeSender) { const sender = queuedLimeSender; queuedLimeSender = null; phoneButton({ sender }); }
       else limeCoach(phoneButton);
     }, // 通知を先にタップした場合は、マップが開いたところで目的のトークへ
-    onBeforeGo: (destination) => confirmLimeReminder(destination, {
-      spendsAction: !["shop", "fortune"].includes(destination.kind),
-    }),
+    onBeforeGo: async (destination) => {
+      const spendsAction = !["shop", "fortune"].includes(destination.kind);
+      // 組み直しが開いている間の最初の行動は、確定する前に閉じることを一度だけ知らせる（SPEC 5.2）
+      const closing = spendsAction ? takeRespecCloseWarning(state) : "";
+      if (closing && await modal({ title: "心得の盤の組み直し", body: `${closing}。<br>このまま向かいますか？`,
+        options: [{ label: "このまま向かう", value: "go", primary: true, test: "respec-close-go" },
+          { label: "戻る", value: null, test: "respec-close-back" }] }) !== "go") { save(); return false; }
+      return confirmLimeReminder(destination, { spendsAction });
+    },
   });
   if (spotId === "__lime__") return; // LIME で誘いに乗った → 次の takeAction で約束へ
   // 廃止前の rest:practice も通常の帰宅として扱う（#783）。
@@ -585,6 +591,8 @@ async function takeAction() {
   });
   if (!used) return;
   state.visitedDay[spot.id] = state.day;
+  // 章が足す、行き先の行動を終えた後の記録（第5章の店めぐり帳の判子など）。保存は下の afterAction が行う
+  chapterDef.afterSpot?.(spot);
   // チョコザップ（地元の店と、spot.gym の付いた東京の店＝第3章・第5章）: その日から数日、風邪をひきにくい
   if ((spot.id === "choizap" || spot.gym) && state.flags._gym_member) {
     state.flags._fit_since = { chapter: state.chapter, day: state.day };

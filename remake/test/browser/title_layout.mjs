@@ -31,13 +31,38 @@ async function seed(p) {
   });
   await p.reload(); await ready(p);
 }
+// #2863: タイトルの見た目（通常版／DS風）は右上ではなく CONFIG の中で切り替える。
+// 縦持ちの通常版は回転の案内（#rotate-hint）が全面を覆うので、横にしてから CONFIG を開く（実機と同じ手順）。
+async function landscapeIfHinted(p) {
+  if (!(await p.locator("#rotate-hint").isVisible())) return null;
+  const viewport = p.viewportSize();
+  await p.setViewportSize({ width: viewport.height, height: viewport.width });
+  return viewport;
+}
 async function openLayoutControls(p) {
-  if (!(await p.locator(".title-layout-toolbar").evaluate(n => n.open)))
-    await button(p, "title-layout-settings").click();
+  await landscapeIfHinted(p);
+  if (!(await p.locator("#modal.show .title-layout-options").count())) {
+    await button(p, "title-config").click(); await p.locator("#modal.show .cfg").waitFor();
+  }
+}
+async function closeConfig(p) {
+  await button(p, "cfg-close").click(); await p.locator("#modal.show").waitFor({ state: "detached" }).catch(() => {});
+  await p.waitForFunction(() => !document.querySelector("#modal.show"));
 }
 async function layout(p, mode) {
+  let portrait = await landscapeIfHinted(p);
   await openLayoutControls(p);
   await button(p, `title-layout-${mode}`).click();
+  assert.equal(await p.locator(".title").getAttribute("data-layout"), mode);
+  // DS風の縦持ちから通常版へ戻すと、その場で回転の案内が CONFIG ごと覆う。実機と同じく横にしてから閉じる。
+  portrait ||= await landscapeIfHinted(p);
+  await closeConfig(p);
+  if (portrait) {
+    // 縦に戻したあと、画面の resize（DS風の上下2画面の寸法 applyDsGeometry）が処理されるまで待つ。
+    await p.setViewportSize(portrait);
+    await p.waitForFunction(([w, h]) => innerWidth === w && innerHeight === h, [portrait.width, portrait.height]);
+    await p.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+  }
   assert.equal(await p.locator(".title").getAttribute("data-layout"), mode);
 }
 async function stageIsOriginal(p) {
@@ -69,6 +94,8 @@ async function gameIsDS(p) {
   assert.equal(await button(p, "game-layout-normal").isVisible(), true);
 }
 async function check(name, options, run, setup = null) {
+  // 重い端末では CASE_FILTER=<名前の一部> で1ケースずつ流せる（CIは全件）。
+  if (process.env.CASE_FILTER && !name.includes(process.env.CASE_FILTER)) return;
   const context = await browser.newContext(options); const p = await context.newPage();
   const errors = []; p.on("pageerror", e => errors.push(e.message));
   try {
@@ -89,9 +116,9 @@ try {
       await check(`${device}-${mode}-menus-and-reload`, options, async p => {
         assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal", "fresh default must remain normal");
         await seed(p); const before = await snapshot(p);
-        assert.equal(await button(p, "title-layout-normal").isVisible(), false, "Display choices start folded");
-        await button(p, "title-layout-settings").focus(); await p.keyboard.press("Enter");
-        assert.equal(await button(p, "title-layout-normal").isVisible(), true, "Keyboard opens display settings");
+        assert.equal(await button(p, "title-layout-normal").count(), 0, "Display choices live inside CONFIG, not on the title");
+        await button(p, "title-config").focus(); await p.keyboard.press("Enter");
+        assert.equal(await button(p, "title-layout-normal").isVisible(), true, "Keyboard opens display settings in CONFIG");
         const artBefore = await p.locator(".title-art").getAttribute("data-art");
         if (mode === "ds") await p.screenshot({ path: path.join(dir, `${device}-same-art-normal.png`) });
         await layout(p, mode);
@@ -130,9 +157,9 @@ try {
               return node.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
             };
             return { close: hit(document.querySelector(".gal-close")),
-              settingsHidden: getComputedStyle(document.querySelector(".title-layout-toolbar")).visibility === "hidden" };
+              noTitleSettings: !document.querySelector(".title-layout-toolbar, .title-layout-options") };
           });
-          assert.deepEqual(reachable, { close: true, settingsHidden: true }, "Gallery close must remain reachable without display settings overlapping");
+          assert.deepEqual(reachable, { close: true, noTitleSettings: true }, "Gallery close must remain reachable without display settings overlapping");
           await p.screenshot({ path: path.join(dir, "normal-gallery-landscape-open.png") });
         }
         await button(p, "gallery-close").click();
@@ -157,7 +184,7 @@ try {
           return { money:state.money, lovers:state.lovers, memory:state.relationshipMemories, marker:state.flags._qa_preserved };
         });
         assert.deepEqual(saved, { money:45678, lovers:["hiyori"], memory:["actually-read"], marker:"keep" });
-        assert.equal(await p.locator(".title-layout-toolbar").count(), 0);
+        assert.equal(await p.locator(".title-layout-options").count(), 0);
       });
     }
   }
@@ -205,6 +232,8 @@ try {
       assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
       await openLayoutControls(p); await button(p, "title-layout-ds").click();
       assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
+      assert.match(await p.locator(".title-layout-note").textContent(), /通常版です/);
+      await closeConfig(p);
       await p.setViewportSize({ width: 844, height: 390 });
       await button(p, "title-config").click(); await p.locator("#modal.show .cfg").waitFor();
       await p.locator("#modal.show .modal-actions button").click();
@@ -293,10 +322,69 @@ try {
     assert.equal((await geometry()).layout, "stacked");
     assert.deepEqual(await snapshot(p), before, "pinch/rotation changed save data");
   });
+  // #2863: スマホ横持ち（Safariのバーあり含む）で、通常版の文字は実寸11px以上・押す所は38px以上。
+  // 副題（はじめから等）は残して実寸11px以上（2026-11-08 オーナー指示）。主文より小さく、主文のすぐ右の同じ行に並ぶ。
+  // 下中央の操作ヒント・右上の表示設定は出さず、メニュー行は72px以上・行間16px。
+  for (const [w, h] of [[844, 390], [844, 340]]) await check(`phone-landscape-${w}x${h}-sizes`, { viewport: { width: w, height: h }, isMobile: true, hasTouch: true }, async p => {
+    for (const cycle of [false, true]) {
+      if (cycle) {
+        // NEXT CYCLE が出る5行でもステージ内に収まる（導線の表示だけを確かめる。開始はしない）
+        await p.evaluate(async () => {
+          const meta = await import("./js/core/cycle-meta.js");
+          meta.saveCycleMeta({ ...meta.emptyCycleMeta(), unlocked: true });
+        });
+        await p.reload(); await ready(p); await button(p, "title-next-cycle").waitFor();
+        assert.equal(await p.locator(".title-item").count(), 5);
+      }
+      const m = await p.evaluate(() => {
+        // 縮み率は高さで測る（ワイドステージ #2861 では幅が1280より広がるが、高さは720のまま）
+        const stage = document.querySelector("#stage").getBoundingClientRect(), k = stage.height / 720;
+        const items = [...document.querySelectorAll(".title-item")].map(n => n.getBoundingClientRect());
+        const shown = n => { const r = n.getBoundingClientRect(), s = getComputedStyle(n); return r.width > 2 && r.height > 2 && s.visibility !== "hidden" && !s.clipPath.includes("inset(50%)"); };
+        const texts = [...document.querySelectorAll(".title *")].filter(n => [...n.childNodes].some(c => c.nodeType === 3 && c.textContent.trim()) && shown(n))
+          .map(n => ({ text: n.textContent.trim(), px: parseFloat(getComputedStyle(n).fontSize) * k }));
+        return { k, texts, heights: items.map(r => r.height / k), real: items.map(r => r.height),
+          gaps: items.slice(1).map((r, i) => (r.top - items[i].bottom) / k), bottom: Math.max(...items.map(r => r.bottom)) <= stage.bottom + 1,
+          subtitles: [...document.querySelectorAll(".title-item")].map(n => {
+            const en = n.querySelector(".ti-en"), ja = n.querySelector(".ti-ja"), a = en.getBoundingClientRect(), b = ja.getBoundingClientRect();
+            return { text: ja.textContent, shown: shown(ja), px: parseFloat(getComputedStyle(ja).fontSize) * k, enPx: parseFloat(getComputedStyle(en).fontSize) * k,
+              rightOfEn: b.left >= a.right - .5 && b.left - a.right <= 16 * k + 1, sameLine: b.top < a.bottom && b.bottom > a.top,
+              inRow: b.right <= n.getBoundingClientRect().right + .5 && b.bottom <= n.getBoundingClientRect().bottom + .5 };
+          }), foot: document.querySelectorAll(".title-foot").length,
+          toolbar: document.querySelectorAll(".title-layout-toolbar, .title-layout-options").length };
+      });
+      assert(m.texts.length > 0 && m.texts.every(t => t.px >= 11 - 1e-6), JSON.stringify(m.texts));
+      assert(m.heights.every(v => v >= 72 - .5) && m.real.every(v => v >= 38 - .5), JSON.stringify(m));
+      assert(m.gaps.every(v => Math.abs(v - 16) < .5) && m.bottom, JSON.stringify(m));
+      assert(m.subtitles.length === m.heights.length && m.subtitles.every(t => t.shown && t.px >= 11 - 1e-6 && t.px < t.enPx && t.rightOfEn && t.sameLine && t.inRow),
+        JSON.stringify(m.subtitles));
+      assert.deepEqual([m.foot, m.toolbar], [0, 0]);
+    }
+    await openLayoutControls(p);
+    // 開く演出（pop-in: scale 0.96→1）が終わってから寸法を測る（途中だと4%小さく測れてしまう）。
+    await p.locator("#modal.show .modal-box").evaluate(n => Promise.all(n.getAnimations({ subtree: true })
+      .filter(a => a.effect?.getComputedTiming().endTime !== Infinity).map(a => a.finished)));
+    const row = await p.locator(".cfg-title-layout").evaluate(n => {
+      const k = document.querySelector("#stage").getBoundingClientRect().height / 720;
+      return [...n.querySelectorAll("button,a,span")].filter(e => e.getBoundingClientRect().width > 0)
+        .map(e => ({ tag: e.tagName, h: e.getBoundingClientRect().height, px: parseFloat(getComputedStyle(e).fontSize) * k }));
+    });
+    assert(row.every(r => r.px >= 11 - 1e-6 && (r.tag === "SPAN" || r.h >= 38 - .5)), JSON.stringify(row));
+    await button(p, "title-layout-ds").tap(); assert.equal(await p.locator(".title").getAttribute("data-layout"), "ds");
+    await button(p, "cfg-close").tap(); await layout(p, "normal");
+  });
+  // PC（1280×720・マウス）の副題は従来どおり15pxで、主文のすぐ右に並ぶ（スマホ用の拡大を持ち込まない）。
+  await check("pc-subtitles-unchanged", sizes.pc, async p => {
+    const subs = await p.locator(".title-item").evaluateAll(ns => ns.map(n => {
+      const a = n.querySelector(".ti-en").getBoundingClientRect(), ja = n.querySelector(".ti-ja"), b = ja.getBoundingClientRect();
+      return { px: parseFloat(getComputedStyle(ja).fontSize), gap: Math.round(b.left - a.right), sameLine: b.top < a.bottom && b.bottom > a.top, w: b.width };
+    }));
+    assert(subs.length === 4 && subs.every(t => t.px === 15 && t.gap === 16 && t.sameLine && t.w > 0), JSON.stringify(subs));
+  });
   await check("new-game-enters-game-layout", sizes.pc, async p => {
     await layout(p, "ds"); await button(p, "title-new").click();
     await p.locator("body.vn-open").waitFor(); await gameIsDS(p);
-    assert.equal(await p.locator(".title-layout-toolbar").count(), 0);
+    assert.equal(await p.locator(".title-layout-options").count(), 0);
   });
   await check("real-map-and-craft-enter-game-layout-and-return", sizes.pc, async p => {
     await layout(p, "ds");
@@ -307,7 +395,7 @@ try {
       window.titleScopeQA = { map, pending: map.chooseSpot() };
     });
     await p.locator('#screen[data-screen="map"]').waitFor(); await gameIsDS(p);
-    assert.equal(await p.locator(".title-layout-toolbar").count(), 0);
+    assert.equal(await p.locator(".title-layout-options").count(), 0);
     await p.evaluate(async () => {
       titleScopeQA.map.interruptMap(null); await titleScopeQA.pending;
       const { showTitle } = await import("./js/scenes/title.js"); showTitle();
@@ -318,7 +406,7 @@ try {
       window.titleScopeQA.bench = craft.openBench(craft.newSession("rehearsal"));
     });
     await p.locator('#screen[data-screen="bench"]').waitFor(); await gameIsDS(p);
-    assert.equal(await p.locator(".title-layout-toolbar").count(), 0);
+    assert.equal(await p.locator(".title-layout-options").count(), 0);
     assert.equal(await p.locator(".title-ds-panel").count(), 0);
     const before = await p.evaluate(() => JSON.stringify(window.__remake.state));
     await button(p, "game-layout-normal").click();

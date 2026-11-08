@@ -16,6 +16,7 @@ import { RACE, CUE, PLAYER, WHIP, CAMEL_CUPS, camelCup, camelCupQualified, camel
   POLICIES, PLAYER_CAMEL, RIVAL_PROFILES } from "./camel-race-model.js";
 
 export const CAMEL_RACE_TITLE = "CAMEL RACE";
+const CUP_TIME_NOTE = "この訪問中の再挑戦は日付を進めません。完走して戻ると従来どおり昼の1行動を使います。";
 const W = 1280, H = 720;
 const PX_PER_M = 18;              // 1m＝18px（画面に約70mが入る）
 const PLAYER_SCREEN_X = 420;      // 自分のラクダの基本の位置。速くなると前へ、遅くなると後ろへ少しずれる（カメラが遅れて追う）
@@ -481,7 +482,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   function openCups() {
     setPhase("cups");
     hudNode.hidden = true;
-    sheet.replaceChildren(el("div.camel-card.camel-cup-card", { dataset: { test: "camel-cups" } }, [
+    // 時間の決まり（下の小さな文）は、スマホでは札に出さず title で読む（#2729）
+    sheet.replaceChildren(el("div.camel-card.camel-cup-card", { title: CUP_TIME_NOTE, dataset: { test: "camel-cups" } }, [
       el("p.camel-eyebrow", { text: "HABIBA RACING CLUB" }),
       el("h2", { text: "ハビーバと、次の大会へ" }),
       el("p", { text: "大会は入門から。中級認定の追加火種は一度だけ、上級は称号への挑戦。" }),
@@ -496,7 +498,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
           el("b", { text: mastered ? cup.id === "expert" ? "砂漠の名調教師" : "中級認定済み" : enabled ? "出走する →" : "未解放" }),
         ]);
       })),
-      el("small", { text: "この訪問中の再挑戦は日付を進めません。完走して戻ると従来どおり昼の1行動を使います。" }),
+      el("small.camel-cup-note", { text: CUP_TIME_NOTE }),
       helpButton(openCups),
     ]));
     sheet.hidden = false;

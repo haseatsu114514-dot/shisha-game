@@ -39,3 +39,6 @@ body.game-ds .map .spot-pin .pin-person { flex: none; }
 body.game-ds .map .spot-pin { flex-direction: row; }
 body.game-ds .map .spot-pin .pin-people { order: 1; }
 body.game-ds .map .spot-pin .pin-status { order: 2; }
+/* 駅のピンは札（「駅・一律200円」）の幅まで広げる。スマホ規格（#2917）では札の文字が下限（実寸11px・#2853）まで大きくなり、
+   daily.css の固定幅 112px から札がはみ出していた（play_spots の第2章の街の検査）。PC は札が 112px に収まるので今までどおり。 */
+body:not(.game-ds) .map .spot-pin.pin-station { width: auto; min-width: 112px; }

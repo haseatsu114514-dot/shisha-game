@@ -9,7 +9,7 @@
 - 経験値・レベル・火種（心得の盤）: [docs/stat-design/README.md](../docs/stat-design/README.md)
 - タイトルのメディアギャラリー: [docs/spec/title_media_gallery.md](../docs/spec/title_media_gallery.md)
 - 共通ロード画面と２コマ漫画: [docs/spec/loading_screen_and_comics.md](../docs/spec/loading_screen_and_comics.md)
-- 章タイトルコール・章末と次回予告: [docs/spec/chapter_previews.md](../docs/spec/chapter_previews.md)
+- 章末と章タイトルコール（次回予告は廃止・削除済み）: [docs/spec/chapter_previews.md](../docs/spec/chapter_previews.md)
 - 第4章ドバイのラクダレース（CAMEL RACE・任意ミニゲーム）: [docs/spec/camel_race.md](../docs/spec/camel_race.md)
 - CONTINUE演出とプレビュー: [docs/spec/continue_button_reactions_sfx_20261010.md](../docs/spec/continue_button_reactions_sfx_20261010.md)、頭の中の呼びかけ（V5）: [docs/spec/continue_inner_voice_20261106.md](../docs/spec/continue_inner_voice_20261106.md)
 - 作り直しの経緯・2026-10-01 改稿取り込み・2026-10-17 実プレイ修正（履歴）: [docs/archive/remake_history_2026-10.md](../docs/archive/remake_history_2026-10.md)
@@ -72,6 +72,7 @@ python3 remake/tools/serve_preview.py --port 8123
 ```
 
 大会のコンティニューだけを確認する場合は `http://127.0.0.1:8123/remake/continue-preview.html`。
+コンティニューは声なし。初回（その大会で1回目の敗北）は時間制限なしでカウントは演出だけ、2回目以降は20秒でGAME OVER。BGMは BGMer「EMGコール」（以前はプレビュー画面の最下段に出していた制作メモ。#2863 でここへ移した）。
 
 大会前夜から当日への日付切り替えは `http://127.0.0.1:8123/remake/tournament-day-transition-preview.html` で比較できる。案1（カウントダウン反転）、案2（煙の先に会場）、案3（開幕のスポットライト）と通常の日替わりを、同じ自宅の前夜・朝で切り替え、リプレイできる。音のON/OFFも選べる。保存データは変更しない。
 スミさん3パターンと恋人6人の20秒演出・戻る／諦めるの反応を、本編と同じ立ち絵・描画で確認できる。
@@ -80,7 +81,7 @@ python3 remake/tools/serve_preview.py --port 8123
 台詞をタップすると全文表示、もう一度タップすると次へ。円形HUDの数字とリングは20秒の期限に連動。残り5秒はピンクの光を強め、GAME OVER時はHUD・背面数字・2択を消して青紫の筆文字ロゴだけを中央へ表示する。
 20秒でGAME OVERを表示してタイトルへ戻り、期限内の「大会に戻る」は反応後に大会冒頭へ戻る。字幕送りは期限に影響しない。
 プレビューはセーブに書き込まない。[V4仕様と検証](../docs/spec/continue_button_reactions_sfx_20261010.md)。
-2026-11-06（#2524）: 人物は会場に来た実体ではなく、はじめの頭の中に浮かぶ像として描く（像が靄から浮かび、顔の中心から薄い輪が広がる。7行とも相手の声で、はじめの自問は置かない）。出演者はスミさんか、そのセーブで成立済みの恋人を同じ確率で選ぶ（恋人の「プレミア20%」は廃止）。台本の全表情が新版にそろう人物（スミさん・つむぎ・栞・サメちゃん・ひより）は新版立ち絵。2択の見える文言は「もう一台、作る」「今日は、ここまで」で、遷移・20秒は従来どおり。新案「記憶の暗室」（inner）は2026-11-06オーナー決定で本編の既定（#2713・#2722）。旧既定の neon は `continue-preview.html?layout=neon` で比較できる。[V5仕様](../docs/spec/continue_inner_voice_20261106.md)・[制作記録とCodexプロンプト](../asset_sources/ui/continue-v5-20261106/README.md)。
+2026-11-07（#2524・オーナー決定）: 本編の既定は前バージョンの neon（筆文字・円形HUD・金と紫のボタン「最初から再挑戦／諦める」）と前バージョンの台本に戻した。立ち絵だけ新バージョン（台本の全表情が新版にそろう人物）。台詞は敗因・順位・弱点で差し替えず、どの負け方でも同じ台本（2敗目以降は4行に短縮）。出演者はスミさんか成立済みの恋人を同じ確率で選ぶ（恋人の「プレミア20%」は廃止のまま）。2026-11-06 に一度既定にした「記憶の暗室」（inner）は `continue-preview.html?layout=inner` で比較できる。[V5仕様](../docs/spec/continue_inner_voice_20261106.md)・[制作記録とCodexプロンプト](../asset_sources/ui/continue-v5-20261106/README.md)。
 
 プレビューの既定は「筆文字・円形HUD（採用中）」と「暗いステージ（採用中）」。過去の王道／王道＋迫る数字／上段ボタン／上段ボタン＋背面カウントも比較用に保持する。
 実験版は「コンティニュー？ 15 ［する］［諦める］」を上部へ集め、下のセリフを大きくする。背面カウント版は人物の後ろの薄い数字が残り時間に沿って拡大する。動き軽減ではサイズを固定。「背景」で紫の煙と、添付画像を参考に生成した暗いステージを切り替えられる。
@@ -124,7 +125,7 @@ remake/
     vn/           会話エンジン（dialogue JSON 互換・autoWrap・立ち絵）
     daily/        日常パート（マップ・スポット・バイト・ショップ・くじ・スロット・恋人・ステータス・LIME）
     craft/        シーシャ作り（工程ミニゲーム・調整2回・採点・結果発表）
-    chapters/     章の台本（ch1.js〜ch5.js と章ごとの進行・地図・予告モジュール）
+    chapters/     章の台本（ch1.js〜ch5.js と章ごとの進行・地図モジュール）
     scenes/       タイトル・ギャラリー（見たCGは端末単位で記録＝はじめからやり直しても消えない）
   data/
     manifest.json    立ち絵の余白計測・アセット一覧（tools/build_manifest.py で生成）
@@ -149,7 +150,7 @@ remake/
 **初登場カットイン**（`vn/intro.js`）: キャラが名乗った直後（または名前を知っていて初めて喋る台詞の前）に一度だけ、
 呼び名・二つ名・一言を全画面で出す。名前は `intro_cutin.display_name`（NAMES-1106「カットインの名前表示ルール」2026-11-06・#2626）。本名タイプはフルネーム（あだ名がある人は「本名（あだ名）」）、通り名タイプは通り名で、漢字には「漢字《よみ》」でふりがなを付ける。みんとは `display_name_after` で本名を聞いた後に木成頼栞。
 表示3.6秒と退場0.28秒はクリック・Enter・SKIPでも短縮しない。
-文言と表情の正本は `data/characters.json` の `intro_cutin`（サメちゃんは `data/dialogue/samechan.json` の `profile`）。
+文言と表情の正本は `data/characters.json` の `intro_cutin`。
 PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn/intro-art.js` と `css/intro.css` へ接続。
 背景は `assets/ui/character_intros/`、配色・現行人物PNGの配置は自動生成の `manifest.introArt`。背景・帯・人物・文字は独立して動かす。
 動きを減らす設定では静止表示。Noto Sans JPは紹介に必要な文字だけを同梱し、実行時の外部ダウンロードは不要。
@@ -213,6 +214,10 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
      持っている台・機材が当たったら中古買い取りの額を受け取る（`remake/test/kuji_tiers.mjs`）。
      第5章から20,000円の限定台くじ（S賞はくじ限定の台3種・性能は店の特注台と同じ）。持っている限定の台はくじ券1枚に替わり、くじ券1枚で1回引ける。
      限定の台・箱・くじ券は周回に持ち越さず、火種も付かない（KJ05〜KJ09・`daily/kuji-tickets.js`・`remake/test/kuji_limited.mjs`）
+   - **出張シーシャの依頼**（第5章・DLV・`chapters/ch5-catering.js`）: 勝負の日が決まる前の自由行動で、数日おきにスミさんのLIMEで店への出張の頼みが届く（一度に一つ）。
+     引き受けると翌日から3日のうち、昼の会か夜の会の時間帯に地元の地図の「出張シーシャ」から向かい、客の様子を見て葉の組み合わせを三つから選ぶ。
+     ぴったり＝くじ券2枚・合う＝1枚・外した＝0枚（お金は動かない・行動1回・体力は mukai のシフトと同じ・経験値は普通の行動と同じ）。
+     火種は付かず、依頼の記録は周回に持ち越さない（`remake/test/ch5_catering.mjs`・`browser/ch5_catering.mjs`）
    - **交友の締めくくり**（`daily/bonds.js`・HF04〜HF06）: 固有会話を読み終えて好感度MAXになった相手と、一度だけ物語に区切りをつける
      （スミさん＝閉店後に一台を作る／なる＝互いの煙を確かめる友へ／アダム＝継承の言葉と手入れ大全／つむぎ＝完成した絵を最初に／
      みんと＝私服の約束（LIMEの誘い・定休日の午後か仕事後）／凛想＝試験品ではない私物）。最後に「〇〇が育てた〇〇専用ハガル」を受け取る
@@ -284,8 +289,8 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
 
 ## テスト
 
-章末の次回予告は廃止しました。第1〜4章の完了画面から「次章へ進む」を選ぶと、既存の章開始時に採用画像1枚だけを表示します（第3章は既存の文字フォールバック）。旧予告の既読に依存せず、クリア済みの旧セーブからも進めます。過去の台本・素材・再生コードは保管しています。
-タイトルコールだけを見る旧確認URLは `/remake/chapter-preview.html?ch=ch2`〜`ch5`。表示は自動で、本編の保存は変えません。仕様と保管物は [章タイトルと廃止済み予告](../docs/spec/chapter_previews.md)。章末導線は `ch1_preview.mjs` / `chapter_preview.mjs`、タイトル描画は `chapter_titles.mjs` で確認します。
+章末の次回予告は廃止し、保管していた台本・予告スチル・再生コードも削除しました（2026-11-08。90年代風の画風は使わない）。第1〜4章の完了画面から「次章へ進む」を選ぶと、既存の章開始時に採用画像1枚だけを表示します。旧予告の既読に依存せず、クリア済みの旧セーブからも進めます。
+章タイトルは `/remake/chapter-titles-preview.html` で確認します（本編の保存は変えません）。仕様は [章末と章タイトルコール](../docs/spec/chapter_previews.md)。章末導線は `ch1_preview.mjs` / `chapter_preview.mjs`、タイトル描画は `chapter_titles.mjs` で確認します。
 
 進行の回復と旧セーブの引き継ぎ:
 

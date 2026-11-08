@@ -511,6 +511,21 @@ await suite("growth-levelup", async (runCheck) => {
     assert.equal(rings.justs,3);assert.equal(rings.bonus,1);
   });
 
+  await check("lesson-ms7-dragon-calm",async(page)=>{
+    await setupDaily(page);
+    const run=async(nodes,learned)=>page.evaluate(async({nodes,learned})=>{
+      const growth=await import("./js/core/growth.js");growth.setGrowthPreview(true);const g=growth.ensureGrowth();g.nodes=nodes;g.learned=learned;
+      const session=await import("./js/craft/session.js");session.craftTest.auto="good";
+      const cs=session.newSession("tournament");cs.steam={score:100,temp:(await import("./js/craft/temperature-model.js")).temperatureBands(cs).center};session.openBench(cs);
+      await (await import("./js/craft/pull.js")).runPull(cs);
+      return {calm:cs.dragonCalm===true,streak:cs.dragonStreak,justs:cs.pull.justs};
+    },{nodes,learned});
+    const on=await run(["K15","K21","M-S7"],["M-S7"]);
+    assert.equal(on.calm,true);assert.ok(on.streak>=3);
+    assert.equal((await run(["K15","K21","M-S7"],[])).calm,false,"相談前は発動しない");
+    assert.equal((await run(["K15","M-S7"],["M-S7"])).calm,false,"スモークリング(K21)が要る");
+  });
+
   await check("dense-pack-new-and-legacy",async(page)=>{
     await setupDaily(page);
     for(const kind of ["new","learned","legacy","old-mode"]) {
@@ -887,7 +902,10 @@ await suite("growth-levelup", async (runCheck) => {
       await setupDaily(page);
       const exp = page.locator(t("hud-exp"));
       await exp.waitFor();
-      assert.match(await exp.innerText(), /Lv\.1[\s\S]*あと205/);
+      // 「あと○」は文字で出さず（オーナー指示 2026-11-08）、残りは説明（title）で読める
+      assert.match(await exp.innerText(), /Lv\.1/);
+      assert.doesNotMatch(await exp.innerText(), /あと\d/);
+      assert.match(await exp.getAttribute("title"), /次のレベルまで EXP 205/);
 
       // 自由行動1回 → チップ1枚（内訳の数字は出さない）
       await page.evaluate(async () => {
@@ -898,7 +916,7 @@ await suite("growth-levelup", async (runCheck) => {
       const chip = page.locator(t("exp-chip"));
       await chip.waitFor();
       assert.match(await chip.innerText(), /EXP \+70[\s\S]*はじめて/);
-      assert.match(await exp.innerText(), /あと135/);
+      assert.match(await exp.getAttribute("title"), /次のレベルまで EXP 135/);
       await page.waitForTimeout(400);
       await page.screenshot({ path: `${out}/growth-levelup-${label}-chip.png` });
 

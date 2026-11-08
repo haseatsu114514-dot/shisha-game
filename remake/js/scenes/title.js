@@ -13,7 +13,7 @@ import { clearLog } from "../vn/engine.js";
 import { openGallery } from "./gallery.js";
 import { loadWithRecovery } from "./saves.js";
 import { pickTitleArt, prepareTitleArt } from "./title-art.js";
-import { mountTitleLayout } from "./title-layout.js";
+import { mountTitleLayout, createTitleLayoutSettings } from "./title-layout.js";
 import { createUiThemeSelect } from "../core/ui-theme.js";
 import { fullscreenButton, saveTransferRow } from "./save-transfer.js";
 
@@ -249,7 +249,6 @@ export function showTitle(preparedArt = null) {
       ]),
       menu,
     ]),
-    el("div.title-foot", { text: "TAP / CLICK / ENTER ── CH.01 SMOKE CROWN CUP" }),
     el("div.title-ver", { text: buildLabel() }),
   ]);
   showScreen("title", root);
@@ -357,10 +356,13 @@ export async function openConfig(opts = {}) {
       opts.onChange?.("mute", config.mute);
     },
   });
+  // タイトルの見た目（通常版／DS風）。タイトル画面から開いたときだけ出す（#2863: 右上の「表示設定」から移した）。
+  const titleLayout = createTitleLayoutSettings();
   const fullscreen = fullscreenButton();
   return modal({
     title: "設定",
     body: el("div.cfg", [
+      ...(titleLayout ? [el("div.cfg-row.cfg-title-layout", [el("span", { text: "表示設定（タイトル）" }), titleLayout])] : []),
       row("UIデザイン", createUiThemeSelect(config.uiTheme, value => { config.uiTheme = value; persist(); opts.onChange?.("uiTheme", value); })),
       row("ミュート（すべての音を消す）", mute),
       row("BGM 音量", range("bgmVolume", 0, 1, 0.05, "cfg-bgm-volume")),
