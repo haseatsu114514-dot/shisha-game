@@ -937,7 +937,8 @@
         "node --experimental-vm-modules remake/test/purikura_motion.mjs",
         "node remake/test/text_wrap.mjs --fixed-only",
         "node remake/test/natural_wrap.mjs",
-        "node remake/test/conversation_effects_marks.mjs"
+        "node remake/test/conversation_effects_marks.mjs",
+        "node remake/test/conversation_cutin.mjs"
       ]
     },
     {
@@ -3875,6 +3876,15 @@
       "timeout": 4,
       "paths": ["remake/js/vn/engine.js", "remake/js/vn/text.js", "remake/js/core/audio.js", "remake/css/vn.css", "remake/test/browser/conversation_effects_2828.mjs"],
       "run": ["node remake/test/browser/conversation_effects_2828.mjs"]
+    },
+    {
+      "id": "conversation-cutin",
+      "title": "Conversation cut-ins in the main VN engine (#2990): adopted placements, enter/leave, SKIP/LOG",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 4,
+      "paths": ["remake/js/vn/engine.js", "remake/js/vn/conversation-cutin.js", "remake/css/vn/conversation-cutin.css", "remake/test/browser/conversation_cutin_2990.mjs"],
+      "run": ["node remake/test/browser/conversation_cutin_2990.mjs"]
     },
     {
       "id": "flavor-expression",

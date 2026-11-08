@@ -8,6 +8,7 @@ import { basicsExperienced } from "../craft/practice-history.js";
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
 import { createNameFit } from "./name-fit.js";
+import { conversationCutinCue, conversationCutinAllowed, createConversationCutin } from "./conversation-cutin.js";
 import { uiThemeFrame } from "../core/ui-theme.js";
 import { fortuneChoiceIndex } from "../core/fortune-effects.js";
 import { el, sleep, fitOneLine, nextFrame } from "../core/util.js";
@@ -63,6 +64,7 @@ function warnVn(kind, detail) {
 const log = [];
 let dom = null;
 let nameFit = null;
+let cutin = null; // 会話カットイン（立ち絵版・#2990）
 let settingsReady = null;
 let openVnConfig = null;
 let running = null;     // 再生中の会話の状態
@@ -115,6 +117,7 @@ function buildDom() {
     effect: el("div.vn-effect"),
     cg: el("div.vn-cg"),
     portraits: el("div.vn-portraits"),
+    cutin: el("div.vn-cutin-layer", { "aria-hidden": "true" }),
     name: el("div.vn-name"),
     text: el("div.vn-text", { "aria-live": "polite" }),
     inner: el("div.vn-inner", { hidden: true, "aria-live": "polite", "aria-label": "ひよりの本心（はじめには聞こえない）" }),
@@ -130,7 +133,8 @@ function buildDom() {
   dom.autoBtn.setAttribute("aria-pressed", "false");
   dom.skipBtn.setAttribute("aria-pressed", "false");
   dom.controls.append(dom.autoBtn, dom.skipBtn, ctl("LOG", openLog, "vn-log"), ctl("用語", openGlossary, "vn-glossary"), ctl("設定", openSettings, "vn-config"));
-  host.replaceChildren(dom.effect, dom.cg, dom.portraits, dom.box, dom.choices, dom.controls, dom.log);
+  host.replaceChildren(dom.effect, dom.cg, dom.portraits, dom.cutin, dom.box, dom.choices, dom.controls, dom.log);
+  cutin = createConversationCutin(dom.cutin);
   nameFit = createNameFit(dom.name);
   host.addEventListener("pointerup", (e) => {
     if (!running || e.target.closest(".vn-ctl, .vn-choices, .vn-log")) return;
@@ -181,7 +185,7 @@ function setAuto(v) {
 function setSkip(v) {
   if (v && running?.cancelOnSkip) return finish(true);
   if (v && config.skipSeenOnly && running?.activeSeenKey && !readSeenLines().has(running.activeSeenKey)) return;
-  if (v) setAuto(false);
+  if (v) { cutin?.clear(); setAuto(false); }
   skipMode = v;
   document.body.classList.toggle("vn-skip", v);
   dom?.skipBtn.classList.toggle("on", v);
@@ -298,6 +302,7 @@ export function play(idOrDlg, opts = {}) {
       spoken: new Set(),
     };
     autoFxGap = 0;
+    cutin?.clear();
     dom.portraits.replaceChildren();
     dom.choices.replaceChildren();
     dom.text.innerHTML = "";
@@ -459,6 +464,7 @@ function finish(cancelled = false) {
   document.body.classList.remove("in-vn", "vn-open", "vn-lift-props");
   dom.cg.classList.remove("show");
   dom.portraits.replaceChildren();
+  cutin?.clear();
   hideShishaDiagram(); // 会話終了（SKIP/キャンセル含む）で図解を片付ける（#1128）
   dom.effect.dataset.effect = "";
   layers.vn.classList.remove("sepia", "flashback");
@@ -484,6 +490,7 @@ function next() {
   if (!r) return;
   if (!skipMode && !vnTest.turbo) markSeenLine(r.activeSeenKey);
   r.activeSeenKey = null;
+  cutin?.leave({ still: reducedMotion() });
   // BGMの息継ぎは、その行を読み終えて次へ進むところで戻す。すぐ次の台詞行も duck なら下げたまま渡す（戻して下げ直すと音量が波打つ）。
   if (!r.queue[0]?.duck || r.queue[0].type) releaseDuck(r);
   // 読み終えた行の合図を、次の行の画像待ち・制御行へ持ち越さない。
@@ -751,6 +758,9 @@ async function showLine(line) {
   r.ready = false;
   clearTimeout(autoTimer);
   const images = linePortraits(line);
+  const cutinCue = conversationCutinCue(r.currentId || r.id, line);
+  const cutinSrc = cutinCue ? portraitInfo("hajime", cutinCue.face, "new")?.src : null;
+  if (cutinSrc) images.push(cutinSrc);
   // 選択したUIの書体で折り返す。初回だけ代替フォントでページを決めない。
   const fontReady = Promise.all([dom.text, dom.name].map(node => {
     const type = getComputedStyle(node);
@@ -832,7 +842,23 @@ async function showLine(line) {
     r.spoken.add(speaker);
     if (needsIntro(speaker)) queueIntro({ id: speaker });
   }
+  if (cutinSrc) showCutin(r, cutinCue, cutinSrc);
   renderPage();
+}
+
+/** 会話カットイン（#2990）。台本で決めた行だけ、出せる条件（1会話1回・相手の立ち絵の枚数）を満たす時に出す */
+function showCutin(r, cue, src) {
+  const shown = [...dom.portraits.querySelectorAll("img")];
+  const ok = conversationCutinAllowed(cue, {
+    shown: r.cutinShown, skip: skipMode, turbo: vnTest.turbo,
+    cg: dom.cg.classList.contains("show"), log: dom.log.classList.contains("show"), choices: !!r.waitingChoice,
+    intro: r.pendingIntros.some(({ id, variant }) => r.spoken.has(id) && !state.flags[introSeenKey(id, variant || "")]),
+    protagonistVisible: shown.some((img) => img.dataset.speaker === "hajime"),
+    portraits: shown.length, portraitSpeakers: shown.map((img) => img.dataset.speaker),
+  });
+  if (!ok) return;
+  r.cutinShown = true;
+  cutin?.show(cue, src, { still: reducedMotion() });
 }
 
 // 報酬キュー: 「……【技術】と【センス】が少し上がった。」の規定フレーズを読んで加算する
@@ -1093,6 +1119,7 @@ function closeLog() {
 }
 
 function openLog() {
+  cutin?.clear();
   SE.select();
   clearTimeout(autoTimer);
   const list = el("div.log-list", log.slice(-120).map((l) => el("div.log-row", [
