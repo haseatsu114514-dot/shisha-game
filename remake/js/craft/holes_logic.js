@@ -58,11 +58,11 @@ export function needleOffset(seconds, halfArc, slow = 1) {
 export const referenceDegrees = (offset, halfArc) => Math.abs(offset) / DEG * (NEEDLE.maxHalfArc / halfArc);
 
 /**
- * 押し加減（#2937 案5）。押していた秒数で刺し加減が決まる。浅すぎは穴が開かない。
+ * 押し加減（#2937 案5、#3026）。押していた秒数で刺し加減が決まる。浅い穴も低評価で成立する。
  * 上限側だけ slow 倍で伸ばす。large に達したら離さなくても刺し抜ける。
  */
 export const PRESS = Object.freeze({ shallow: 0.12, small: 0.5, large: 0.85 });
-export const HOLE_SIZES = Object.freeze({ small: 1, wide: 1.35, large: 1.7 });
+export const HOLE_SIZES = Object.freeze({ shallow: 0.2, small: 1, wide: 1.35, large: 1.7 });
 export const pressLimit = (slow = 1) => PRESS.large * slow;
 export function pressDepth(seconds, slow = 1) {
   if (seconds < PRESS.shallow) return "shallow";
@@ -77,7 +77,7 @@ export function holeSizeStability(rings) {
   const sd = Math.sqrt(sizes.reduce((sum, size) => sum + (size - mean) ** 2, 0) / sizes.length);
   const uniform = clamp(1 - (sd / mean) / 0.25, 0, 1);
   const span = HOLE_SIZES.large - HOLE_SIZES.small;
-  const standard = sizes.reduce((sum, size) => sum + clamp((HOLE_SIZES.large - size) / span, 0, 1), 0) / sizes.length;
+  const standard = sizes.reduce((sum, size) => sum + (size === HOLE_SIZES.shallow ? 0 : clamp((HOLE_SIZES.large - size) / span, 0, 1)), 0) / sizes.length;
   return uniform * 0.5 + standard * 0.5;
 }
 const sizeName = (size) => Object.entries(HOLE_SIZES).find(([, value]) => value === size)?.[0] || "small";
@@ -125,7 +125,7 @@ export function evaluateFoil(rings, tally, timeRatio, goodWin) {
       even = clamp(1 - deviation * 1.1, 0, 1);
     }
     // 精度はズレに対してなだらかに落ちる（#3023: 二値ではなくグラデーション。判定幅の2倍のズレで0）。
-    const precision = count ? ring.holes.reduce((sum, hole) => sum + clamp(1 - hole.d / (timingWindow * 2), 0, 1), 0) / count : 0;
+    const precision = count ? ring.holes.reduce((sum, hole) => sum + (hole.size === HOLE_SIZES.shallow ? 0 : clamp(1 - hole.d / (timingWindow * 2), 0, 1)), 0) / count : 0;
     return { id: ring.id, count, even, precision, taken: ring.taken.filter(Boolean).length, targets: ring.targets, weight: ring.weight };
   });
   // 開けたリングだけで重みを正規化。内側を開けない選択を品質不足にしない。
@@ -136,9 +136,11 @@ export function evaluateFoil(rings, tally, timeRatio, goodWin) {
   const completion = targets ? per.reduce((sum, ring) => sum + ring.taken, 0) / targets : 0;
   // 実際に開いた穴の大きさで評価する（旧式のミス回数からの推定は使わない）。
   const sizeStab = holeSizeStability(rings);
-  const holeSizes = { small: 0, wide: 0, large: 0, shallow: tally.shallow || 0 };
+  const holeSizes = { small: 0, wide: 0, large: 0, shallow: 0 };
   rings.forEach((ring) => ring.holes.forEach((hole) => { holeSizes[sizeName(Number.isFinite(hole.size) ? hole.size : HOLE_SIZES.small)]++; }));
-  const score = profile.count ? Math.round(100 * (evenness * 0.5 + precision * 0.3 + sizeStab * 0.15 + clamp(timeRatio * 2.5, 0, 1) * 0.05)) : 0;
+  // 浅い穴は配置として残すが、針が通りにくい分を1穴ごとに大きく減点する。
+  const shallowPenalty = holeSizes.shallow * 8;
+  const score = profile.count ? Math.max(0, Math.round(100 * (evenness * 0.5 + precision * 0.3 + sizeStab * 0.15 + clamp(timeRatio * 2.5, 0, 1) * 0.05) - shallowPenalty)) : 0;
   const ringOf = (id) => per.find((ring) => ring.id === id);
   const dots = rings.flatMap((ring) => ring.holes.map((hole) => [Math.cos(hole.a) * ring.r, Math.sin(hole.a) * ring.r * 0.34]));
   return {
