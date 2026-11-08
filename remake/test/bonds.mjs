@@ -17,6 +17,8 @@ const browser = await chromium.launch({
 });
 try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+  // 選ぶ工程の初回説明（#3028）はこの検査の対象外（support.mjs を使わない単独ハーネスのため、ここでも既定オフに合わせる）
+  await page.addInitScript(() => { try { localStorage.setItem("suien_step_intro", "off"); } catch {} });
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/", { waitUntil: "load" });

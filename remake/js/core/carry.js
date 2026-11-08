@@ -569,6 +569,7 @@ export const FLAG_EXACT_RULES = [
   ["romance_ageha", "person"],
   ["romance_minto", "person"],
   ["seenDemo", "ui"],
+  ["seenStepIntro", "ui"],
   ["_kannon_growth_intro_done", "ui"],
   ["spot_cafe_naru_done", "person"],
   ["spot_choizap_minto_done", "person"],

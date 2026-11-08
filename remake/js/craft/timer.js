@@ -1,7 +1,7 @@
 // 生成した小物の液晶・物理ボタンに、実際の表示と操作を重ねる。
 import { el } from "../core/util.js";
 import { SE } from "../core/audio.js";
-import { stepPanel } from "./session.js";
+import { stepPanel, explainStepOnce } from "./session.js";
 import { autoSkill } from "./common.js";
 import { artImg } from "./art.js";
 import { buildDigitalClock } from "./digital-clock.js";
@@ -11,8 +11,9 @@ import { state } from "../core/state.js";
 import { growthLesson } from "../core/growth-effects.js";
 import { basicsExperienced } from "./practice-history.js";
 
-export function runSteamTimer(cs) {
+export async function runSteamTimer(cs) {
   const panel = stepPanel("steam", "蒸らし", "分・秒ボタンで蒸らし時間を設定し、スタートで開始する", { brief: "", lessonStep: "timer" });
+  if (!await explainStepOnce(cs, "timer", "steam")) return;
   let seconds = normalizeSteamSeconds(cs.steamSeconds ?? 0);
   const canZero = cs.mode !== "tutorial" && growthLesson(state,"M-W4");
   const minimumSeconds = cs.mode === "tutorial" ? 180 : canZero ? 0 : 10;

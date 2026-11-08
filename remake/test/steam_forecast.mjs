@@ -10,6 +10,8 @@ const errors = [], shots = process.env.SHOTS;
 if (shots) fs.mkdirSync(shots, { recursive: true });
 const open = async (viewport, mobile, insight = 10, ds = false) => {
   const page = await browser.newPage({ viewport, isMobile: mobile, hasTouch: mobile });
+  // 選ぶ工程の初回説明（#3028）はこの検査の対象外（support.mjs を使わない単独ハーネスのため、ここでも既定オフに合わせる）
+  await page.addInitScript(() => { try { localStorage.setItem("suien_step_intro", "off"); } catch {} });
   await installLoadingComicReader(page);
   page.on('pageerror', e => errors.push(e.message));
   await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');

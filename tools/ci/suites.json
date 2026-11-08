@@ -2156,6 +2156,28 @@
       ]
     },
     {
+      "id": "step-intro",
+      "title": "Step intro (choice steps explain first, #3028)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/craft/session.js",
+        "remake/js/craft/steps.js",
+        "remake/js/craft/timer.js",
+        "remake/js/craft/bench-ui.js",
+        "remake/test/browser/step_intro.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/step_intro.mjs"
+      ],
+      "env": {
+        "ARTIFACT_DIR": ".codex/artifacts/remake-browser/step-intro"
+      },
+      "chrome": "playwright"
+    },
+    {
       "id": "steam-forecast",
       "title": "Steam forecast",
       "kind": "browser",
