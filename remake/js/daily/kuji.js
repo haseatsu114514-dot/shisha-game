@@ -308,6 +308,7 @@ function revealOne(ov, prize, skip) {
       card.style.visibility = "";
       const last = prize.rank === "LAST";
       card.className = `kuji-card reveal rank-${prize.rank}`;
+      card.title = prize.desc || ""; // スマホでは説明を札に出さず、長押し・ポインタの title で読む（#2729）
       card.replaceChildren(
         el("div.kuji-rank", { text: last ? "ラストワン賞" : `${prize.rank}賞` }),
         el("div.kuji-name", { text: last ? prize.name.replace(/^ラストワン賞・/, "") : prize.name }),
