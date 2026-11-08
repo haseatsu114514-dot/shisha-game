@@ -120,5 +120,5 @@ export function createConversationCutin(layer, { document = globalThis.document,
       schedule(() => drop(n), 300);
     } else drop(n);
   };
-  return { show, leave, clear, get current() { return node; } };
+  return { show, leave, clear };
 }
