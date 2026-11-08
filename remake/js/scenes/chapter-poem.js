@@ -1,6 +1,6 @@
 // 巻頭ポエム（序詩と第1〜5章の章頭詩）。会話ウインドウではなく、専用の「読ませる」画面で出す。
 // 詩の本文と意図は brand/chant_poems.md、台本は data/dialogue/chapter_poems.json（1行 = 詩の1行。gap:true は連の切れ目）。
-// 置き場所: 序詩＝タイトルから「はじめから」を選んだ直後、各章の詩＝その章の章タイトルの直前。
+// 置き場所: 各章の詩＝その章の章タイトルの直前（第1章の詩は序詩を兼ねる。コールドオープンの後）。
 // 見せ方: 詩の上に、横長の漫画風のコマ絵（metadata.panel。img/ui/poems/）を細い枠つきで出す。絵が無い・読めない詩は、詩だけを全面に出す。
 //        詩を連ごとの「場面」に分け、1場面ずつ読ませる。暗い面に縦書きの明朝で、右の行から1行ずつ、ぼかしが晴れて浮かぶ。
 //        読み終えた場面は消え、次の連が浮かぶ。最後の連を読み終えたら全体が暗く閉じ、続けて章タイトルが出る。
@@ -12,9 +12,8 @@ import { reducedMotion } from "../core/transition-kit.js";
 import { chapterTitleEntry } from "../core/chapter-title-art.js";
 import { vnTest } from "../vn/engine.js";
 
-/** 詩の指定 → 台詞ID。章は番号（1〜5）、序詩は "prologue" */
+/** 詩の指定（章の番号 1〜5）→ 台詞ID。序詩は第1章の詩に統合した */
 export const CHAPTER_POEM_IDS = Object.freeze({
-  prologue: "poem_prologue",
   1: "poem_ch1", 2: "poem_ch2", 3: "poem_ch3", 4: "poem_ch4", 5: "poem_ch5",
 });
 

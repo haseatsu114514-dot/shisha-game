@@ -1,5 +1,5 @@
 // 巻頭ポエム（序詩＋第1〜5章）の台本と接続点の検査。ブラウザ不要。
-//  1) data/dialogue/chapter_poems.json の形（1行 = 詩の1行・連の切れ目 gap）・縦書きの1列に収まる長さ・ふりがな記法・使ってはいけない語
+//  1) data/dialogue/chapter_poems.json の形（1行 = 詩の1行・連の切れ目 gap）・短さ（本家の巻頭詩の中央値に合わせる）・縦書きの1列に収まる長さ・ふりがな記法・使ってはいけない語
 //  2) brand/chant_poems.md の詩と台本が（空白を除いて）一致している＝文書と本編がずれない
 //  3) 各章の章タイトルの直前に詩が置かれ、データローダ・スタイルシートに登録されている
 import assert from "node:assert/strict";
@@ -14,8 +14,7 @@ const RUBY = /([\p{Script=Han}々]+)《([^》]+)》/gu;
 const plain = (text) => text.replace(RUBY, "$1");
 
 const EXPECTED = [
-  ["poem_prologue", "### 序詩「煙前口上」"],
-  ["poem_ch1", "### 第1章「煙がつなぐ街」"],
+  ["poem_ch1", "### 序詩・第1章「煙がつなぐ街」"],
   ["poem_ch2", "### 第2章「才能の壁」"],
   ["poem_ch3", "### 第3章「嘘つきたちの夜」"],
   ["poem_ch4", "### 第4章「継承の煙」"],
@@ -23,6 +22,11 @@ const EXPECTED = [
 ];
 // 縦書きの1列（高さ720pxの画面の78%・30px・字間.16em）に入る字数。空白（拍）は半角で0.5字。
 const MAX_COLUMN = 16;
+// 短さ: 本家の巻頭詩は中央値が空白を除いて約40〜50字・最頻が2〜3行（brand/chant_poems.md §2）。長くしない。
+const MAX_CHARS = 60;
+const LINES = [3, 5];
+// 場面（連）の数。第1章（序詩を兼ねる）は分けずに1場面、第2〜5章は2場面。
+const PAGES = { poem_ch1: 1, poem_ch2: 2, poem_ch3: 2, poem_ch4: 2, poem_ch5: 2 };
 
 // 1) 台本の形 --------------------------------------------------------------
 const data = JSON.parse(read("data/dialogue/chapter_poems.json"));
@@ -35,10 +39,12 @@ const RESERVED = ["混ざったままで", "EN:CODE", "ENCODE"];
 
 for (const dialogue of data.dialogues) {
   const id = dialogue.dialogue_id;
-  assert.ok(dialogue.lines.length >= 5 && dialogue.lines.length <= 8, `${id}: 行数 ${dialogue.lines.length}（5〜8行。長くしない）`);
+  assert.ok(dialogue.lines.length >= LINES[0] && dialogue.lines.length <= LINES[1], `${id}: 行数 ${dialogue.lines.length}（${LINES[0]}〜${LINES[1]}行。長くしない）`);
+  const chars = dialogue.lines.reduce((n, line) => n + [...plain(line.text).replaceAll(" ", "")].length, 0);
+  assert.ok(chars <= MAX_CHARS, `${id}: ${chars}字は長い（空白を除いて${MAX_CHARS}字以内）`);
   assert.equal(dialogue.lines[0].gap, undefined, `${id}: 最初の行に gap は付けない`);
   const pageCount = dialogue.lines.filter((line) => line.gap === true).length + 1;
-  assert.ok(pageCount >= 2 && pageCount <= 3, `${id}: 場面（連）は2〜3つ（${pageCount}）。何回かに分けて読ませる`);
+  assert.equal(pageCount, PAGES[id], `${id}: 場面（連）は${PAGES[id]}つ（${pageCount}）`);
   for (const [index, line] of dialogue.lines.entries()) {
     const where = `${id}[${index}]`;
     assert.equal(line.speaker, "", `${where}: 地の文（話者なし）`);
@@ -132,9 +138,11 @@ for (const [file, titleCall, poemCall, count] of WIRING) {
     assert.ok(seen < 0 || poems[i] < seen, `${file}: 詩は titleSeen を立てる前（${i + 1}つ目）`);
   }
 }
-// 第1章: 序詩 → コールドオープン → 第1章の詩 → 章タイトル
+// 第1章: コールドオープン → 第1章の詩（序詩を兼ねる）→ 章タイトル。序詩は独立させない。
 const ch1 = read("remake/js/chapters/ch1.js");
-const order = ['playChapterPoem("prologue")', "mountColdOpen()", "playChapterPoem(1)", "playCh1Title()"].map((needle) => ch1.indexOf(needle));
+assert.ok(!ch1.includes('playChapterPoem("prologue")'), "序詩は第1章の詩に統合した");
+assert.ok(!module.includes("poem_prologue") && !data.dialogues.some((d) => d.dialogue_id === "poem_prologue"), "poem_prologue は無い");
+const order = ["mountColdOpen()", "playChapterPoem(1)", "playCh1Title()"].map((needle) => ch1.indexOf(needle));
 assert.ok(order.every((at) => at > 0) && order.every((at, i) => i === 0 || at > order[i - 1]), `第1章の順序が違う: ${order}`);
 
-console.log("chapter_poems OK: 6本 / %d 行", data.dialogues.reduce((n, d) => n + d.lines.length, 0));
+console.log("chapter_poems OK: %d本 / %d 行", data.dialogues.length, data.dialogues.reduce((n, d) => n + d.lines.length, 0));

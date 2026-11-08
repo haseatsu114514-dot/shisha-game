@@ -14,7 +14,6 @@
 .chapter-poem.out { opacity: 0; transition-duration: 900ms; }
 .chapter-poem.turbo, .chapter-poem.turbo.out { transition: none; }
 /* 詩ごとの差し色（ふりがなと最後の行の光）。章の絵の色に寄せた控えめな値 */
-.chapter-poem[data-poem="poem_prologue"] { --cp-accent: 196, 176, 232; }
 .chapter-poem[data-poem="poem_ch1"] { --cp-accent: 234, 172, 98; }
 .chapter-poem[data-poem="poem_ch2"] { --cp-accent: 226, 192, 112; }
 .chapter-poem[data-poem="poem_ch3"] { --cp-accent: 132, 198, 216; }

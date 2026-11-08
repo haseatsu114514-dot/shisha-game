@@ -149,8 +149,6 @@ async function openingPart() {
   if (!progress.introDone) {
     stopBgm();
     await setBg(null, { instant: true }); // 先に暗転を置いてから場面を重ねる（後から来た暗転に場面が隠れないように）
-    // 巻頭ポエム: 序詩（タイトルの直後。brand/chant_poems.md）
-    if (!await playChapterPoem("prologue") || state !== owner) return false;
     // コールドオープン: 1年後の世界大会の決勝の一瞬（顔も会場の全景も見せない）。
     // 場面は背景レイヤーに置く＝会話の文字より奥（手前に置くと文字が隠れて真っ暗に見えていた）
     const scene = mountColdOpen();
@@ -160,7 +158,7 @@ async function openingPart() {
     await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
     scene.stop();
     await sleep(600);
-    if (!await playChapterPoem(1) || state !== owner) return false; // 章タイトルの前の巻頭ポエム
+    if (!await playChapterPoem(1) || state !== owner) return false; // 章タイトルの前の巻頭ポエム（序詩を兼ねる。brand/chant_poems.md）
     const titleResult = await playCh1Title();
     if (titleResult.cancelled || state !== owner) return false;
     playBgm("tonari");

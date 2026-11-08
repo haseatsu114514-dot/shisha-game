@@ -1,90 +1,32 @@
 {
   "dialogues": [
     {
-      "dialogue_id": "poem_prologue",
-      "metadata": {
-        "poem": true,
-        "panel": "poem_prologue.svg",
-        "panel_alt": "立ちのぼる一筋の煙（仮絵）"
-      },
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "煙《スモーク》に 核は ない"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ゆえに 誰の 肺にも 入れる"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "葉と 炭と 水と 手と",
-          "gap": true
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "今日の 縁《えん》が 交わる 一点に"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "一筋の 煙が 立つ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "その名を 人は",
-          "gap": true
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "水煙《すいえん》と 呼ぶ"
-        }
-      ]
-    },
-    {
       "dialogue_id": "poem_ch1",
       "metadata": {
         "poem": true,
         "panel": "poem_ch1.svg",
-        "panel_alt": "路地の屋根と窓の上を渡る一本の糸（仮絵）"
+        "panel_alt": "カウンターの席に着いた客の背中と、流れてくる一筋の煙（仮絵）"
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "煙は 糸に 似ている"
+          "text": "煙は 葉のものでも"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "見えぬ 者同士を 音もなく 結ぶ"
+          "text": "炭のものでも"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "憧れは 遠くを 見る",
-          "gap": true
+          "text": "作り手のものでも ない"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "仕事は 足元を 見る"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "糸は その間を 通って"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "今夜 最初の 一人へ 届く"
+          "text": "今 席に着いた 一人のものだ"
         }
       ]
     },
@@ -99,28 +41,23 @@
         {
           "speaker": "",
           "face": "",
-          "text": "壁の 向こうで 誰かが"
+          "text": "才に 憧れる者は 手順を 持ち"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "こちらを 天才と 呼んでいる"
+          "text": "手順に 憧れる者は 才を 持つ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "王冠は いつも 向こう側に 見える",
+          "text": "王冠は いつも",
           "gap": true
         },
         {
           "speaker": "",
           "face": "",
-          "text": "かぶった者に 見えるのは"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "空洞《ホロウ》だけだ"
+          "text": "向こう側に ある"
         }
       ]
     },
@@ -135,28 +72,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "煙《スモーク》は 嘘が 上手い"
+          "text": "煙は 嘘が 上手い"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "見たいものだけを 見せる"
+          "text": "鏡は 嘘が 下手だ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "鏡《ミラー》は 嘘が 下手だ",
-          "gap": true
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "見たくないものまで 映す"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "その二つを 同じ部屋に 置いた夜",
+          "text": "同じ部屋に 置かれた夜",
           "gap": true
         },
         {
@@ -193,12 +119,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "名も知らぬ 誰かの 手つきで"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "今 己の 手が 動いている"
+          "text": "名も知らぬ 手の 一服から"
         }
       ]
     },
@@ -218,28 +139,18 @@
         {
           "speaker": "",
           "face": "",
-          "text": "全ての 条件が 揃ってなお"
+          "text": "同じ手順 同じ温度 同じ時間"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "残るものが あるとしたら"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "数字に ならなかった もの",
+          "text": "ただ 一つ",
           "gap": true
         },
         {
           "speaker": "",
           "face": "",
-          "text": "あるいは"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "数字《データ》に した 誰かの 手"
+          "text": "同じに できなかった もの"
         }
       ]
     }
