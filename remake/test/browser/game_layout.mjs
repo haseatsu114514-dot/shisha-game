@@ -93,6 +93,7 @@ async function check(name, options, run, setup) {
   const browser=await chromium.launch(browserOptions);
   const context=await browser.newContext(options), p=await context.newPage(); const errors=[];
   await p.addInitScript(()=>{
+    try { localStorage.setItem("suien_step_intro", "off"); } catch {} // 選ぶ工程の初回説明（#3028）はレイアウト検査の対象外
     window.__layoutInputs=[];
     document.addEventListener("click",e=>{
       const test=e.target.closest("[data-test]")?.dataset.test;
