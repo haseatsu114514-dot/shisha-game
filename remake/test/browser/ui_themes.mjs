@@ -39,6 +39,35 @@ async function paintedAttachment(page) {
 
 const themes = ["smoke", "smoke-purple", "cut-paper", "amber", "tissue", "classic", "paper"];
 await suite("ui-themes-preview", async check => {
+  await check("wide-two-choices-clear-face-3011", async page => {
+    await page.selectOption("#preview-scene", "choices");
+    await page.locator(".vn-next.show").waitFor();
+    await page.waitForTimeout(350);
+    await page.locator(".vn-text").click();
+    await page.locator('[data-test="choice-0"]').waitFor();
+    // 会話プレビューは fitStage を使わないため、ゲーム本編のワイドステージ幅を与える。
+    await page.evaluate(() => {
+      const stage = document.querySelector("#stage");
+      stage.dataset.wide = "";
+      stage.style.setProperty("--stage-w", "1600px");
+    });
+    await page.waitForTimeout(400);
+    const geometry = await page.evaluate(() => {
+      const box = selector => document.querySelector(selector)?.getBoundingClientRect();
+      const stage = box("#stage"), vn = box("#vn"), choice = box(".vn-choice"), controls = box(".vn-controls");
+      const choices = document.querySelector(".vn-choices");
+      return { wide: document.querySelector("#stage").hasAttribute("data-wide"), shown: choices.classList.contains("show"),
+        visibility: getComputedStyle(choices).visibility, opacity: getComputedStyle(choices).opacity,
+        portraitCenter: (vn.left + vn.right) / 2,
+        choiceLeft: choice?.left, choiceRight: choice?.right, choiceBottom: choice?.bottom,
+        controlsTop: controls?.top, stageRight: stage?.right };
+    });
+    assert(geometry.wide, JSON.stringify(geometry));
+    assert(geometry.shown && geometry.visibility === "visible" && geometry.opacity === "1", JSON.stringify(geometry));
+    assert(geometry.choiceLeft > geometry.portraitCenter + 50, JSON.stringify(geometry));
+    assert(geometry.choiceRight <= geometry.stageRight + 1, JSON.stringify(geometry));
+    assert(geometry.choiceBottom <= geometry.controlsTop - 4, JSON.stringify(geometry));
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
   for (const viewport of [{ width:1280, height:768 }, { width:844, height:438 }]) {
     await check(`${viewport.width}`, async page => {
       await page.locator(".vn-next.show").waitFor();
