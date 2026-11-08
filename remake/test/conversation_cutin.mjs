@@ -30,7 +30,9 @@ for (const cue of CUES) {
   const kind = KINDS[cue.kind];
   assert.equal(cue.speaker === "hajime", kind.on === "line", `${cue.id}: 相手の行に出す案は相手の行・はじめの行に出す案ははじめの行`);
   assert(manifest.portraitVariants.new.hajime.faces.includes(cue.face), `${cue.id}: 既存の new の表情 ${cue.face}`);
-  assert(fs.existsSync(path.join(root, `remake/img/sprites/character_variants/new/hajime/chr_hajime_${cue.face}.webp`)), `${cue.face} の立ち絵がある`);
+  // 立ち絵ファイルの実在は、スプライトツリーが展開されている時だけ確かめる（quick CI は sprites を含まない sparse checkout のため。ch3_outings.mjs と同じ扱い）
+  const spriteDir = path.join(root, "remake/img/sprites/character_variants/new/hajime");
+  if (fs.existsSync(spriteDir)) assert(fs.existsSync(path.join(spriteDir, `chr_hajime_${cue.face}.webp`)), `${cue.face} の立ち絵がある`);
   assert(FOCUS[kind.pose.focus || "face"][cue.face], `${cue.id}: 顔の位置 ${cue.face}`);
   // 3) 実際の再生で条件を満たす（engine.js の立ち絵の枠: 2枚まで・古い方から入れ替え・hide_portrait で外す）
   const slots = [];
