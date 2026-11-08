@@ -6,6 +6,13 @@
 .art-intro .ci-ribbon { position:absolute; left:-120px; top:275px; width:1520px; height:190px; background:#f6f3e9; transform:rotate(4deg); transform-origin:70% 50%; z-index:2; }
 .art-intro .ci-accent-line { position:absolute; left:-120px; top:477px; width:1520px; height:10px; background:var(--accent); transform:rotate(4deg); transform-origin:70% 50%; z-index:2; }
 .art-intro .ci-accent-line::after { content:""; position:absolute; top:17px; left:0; right:0; height:3px; background:var(--secondary); }
+/* #3012: 中央1280pxの人物・文字の座標は維持し、背景と帯だけワイドステージの端まで延ばす。 */
+#stage[data-wide] .cutin.art-intro { overflow:visible; box-shadow:0 0 0 var(--stage-gutter) #101820; }
+#stage[data-wide] .art-intro .ci-art-background { left:calc(-1 * var(--stage-gutter)); width:var(--stage-w); }
+#stage[data-wide] .art-intro .ci-art-veil { left:calc(-1 * var(--stage-gutter)); right:calc(-1 * var(--stage-gutter)); }
+#stage[data-wide] .art-intro :is(.ci-ribbon,.ci-accent-line) {
+  left:calc(-120px - var(--stage-gutter)); width:calc(1520px + var(--stage-gutter) + var(--stage-gutter));
+}
 .art-intro .ci-art-meta { position:absolute; left:744px; top:0; width:606px; height:190px; }
 .cutin.art-intro .ci-title { all:unset; position:absolute; left:-9px; top:-62px; white-space:nowrap; font-size:28px; font-weight:700; letter-spacing:-.03em; color:#f8f6ee; background:#101820ed; padding:3px 12px 5px; border-left:3px solid var(--accent); }
 .art-intro .ci-name-line { position:absolute; top:18px; left:0; width:606px; height:148px; display:flex; align-items:center; }
