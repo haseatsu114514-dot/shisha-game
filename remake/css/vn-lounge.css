@@ -20,17 +20,7 @@
 #stage[data-wide] {
   --vn-dialogue-width: clamp(1240px, calc(var(--stage-w) * 0.88), 1360px);
 }
-/* #3011: 2択を広がったステージの右側へ寄せ、中央の立ち絵の顔を空ける。
-   上下位置と操作欄との間隔は従来の選択肢ルールに任せる。 */
-html:root[data-ui-theme] body:not(.game-ds) #stage[data-wide] #vn .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
-  left: auto;
-  right: calc(12px + var(--stage-safe-r) - var(--stage-gutter));
-  width: min(600px, calc(var(--stage-w) / 2 - 36px));
-  align-items: stretch;
-}
-html:root[data-ui-theme] body:not(.game-ds) #stage[data-wide] #vn .vn-choices:has(> .vn-choice:nth-child(2):last-child) > .vn-choice {
-  width: 100%;
-}
+/* 2択の配置はワイド時も従来どおり中央（オーナー決定 2026-11-09: 基準は従来＋スマホ想定、ワイドは崩れない程度に留める）。#3011 の右寄せは廃止。 */
 .vn-box {
   --vn-frame-overhang: 41px;
   background: none;
