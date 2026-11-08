@@ -39,7 +39,7 @@ async function paintedAttachment(page) {
 
 const themes = ["smoke", "smoke-purple", "cut-paper", "amber", "tissue", "classic", "paper"];
 await suite("ui-themes-preview", async check => {
-  await check("wide-two-choices-clear-face-3011", async page => {
+  await check("wide-two-choices-conventional-center", async page => {
     await page.selectOption("#preview-scene", "choices");
     await page.locator(".vn-next.show").waitFor();
     await page.waitForTimeout(350);
@@ -60,11 +60,14 @@ await suite("ui-themes-preview", async check => {
         visibility: getComputedStyle(choices).visibility, opacity: getComputedStyle(choices).opacity,
         portraitCenter: (vn.left + vn.right) / 2,
         choiceLeft: choice?.left, choiceRight: choice?.right, choiceBottom: choice?.bottom,
+        choiceCenter: choice ? (choice.left + choice.right) / 2 : null,
+        stageCenter: stage ? (stage.left + stage.right) / 2 : null,
         controlsTop: controls?.top, stageRight: stage?.right };
     });
     assert(geometry.wide, JSON.stringify(geometry));
     assert(geometry.shown && geometry.visibility === "visible" && geometry.opacity === "1", JSON.stringify(geometry));
-    assert(geometry.choiceLeft > geometry.portraitCenter + 50, JSON.stringify(geometry));
+    // ワイド時も2択は従来どおり中央（オーナー決定 2026-11-09）。右寄せにしない。
+    assert(Math.abs(geometry.choiceCenter - geometry.stageCenter) <= 2, JSON.stringify(geometry));
     assert(geometry.choiceRight <= geometry.stageRight + 1, JSON.stringify(geometry));
     assert(geometry.choiceBottom <= geometry.controlsTop - 4, JSON.stringify(geometry));
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
