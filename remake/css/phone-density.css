@@ -65,8 +65,10 @@ html:root[data-density="phone"] body:not(.game-ds) .hud-lime .badge.single { fon
 html:root[data-density="phone"] body:not(.game-ds) .hud-lime .badge-number { transform: translateX(calc(var(--badge-d) / 40)); }
 /* DAY カード: 英字の地名（飾り）は消し、補助文は読める大きさにする。行の高さと右列の幅は文字に合わせて伸ばす。 */
 html:root[data-density="phone"] body:not(.game-ds) #hud .dc-area { display: none; }
-/* 「◯◯まで あと○日」の行は左上カードから自体を無くした（#3033・オーナー指示 2026-11-09）。
-   残り日数は MENU のステータスで見られる。 */
+/* 「次の大会まで あと○日」の行は、スマホ・PC とも左上カードに出さない（#3033・オーナー指示
+   2026-11-09。hud.js が大会のとき行自体を外す）。出発前の「出発まで」・第5章の「勝負の日まで」は
+   大会の日程とは別の情報なので出す（オーナー指示 2026-11-08）。大会までの日数は MENU で見られる。
+   ※旧ルール（[data-goal] 指定）は JS の data-dual と食い違って効いていなかったため #3033 で除去。 */
 /* 幅は固定する。日数（1〜2桁）や所持金の桁で札の幅が変わると、LIME・MENU まで動いてしまう（ui_skin の検査）。
    幅は「☀残り2」（#2853 の昼夜の札・約 3.5 文字）が補助文の大きさで収まる分。文字の大きさに比例させ、中身では変えない。 */
 html:root[data-density="phone"] body:not(.game-ds) #hud .dc-main { width: calc(var(--phone-sub) * 3.7); min-width: 0; }
