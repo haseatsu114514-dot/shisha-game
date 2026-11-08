@@ -425,6 +425,24 @@ await suite("craft-materials", async check => {
     await page.evaluate(async () => { F.session.craftTest.auto = "good"; await F.steps.stepPack(F.cs); F.session.craftTest.auto = null; });
     assert.equal(await page.evaluate(() => F.cs.pack), "normal");
   });
+  await check("wide-packing-rows-3010", async page => {
+    await setup(page);
+    await page.evaluate(() => { F.running = F.steps.stepPack(F.cs); });
+    await page.locator('[data-test="pack-confirm"]').waitFor();
+    const layout = await page.evaluate(() => {
+      const rect = selector => {
+        const r = document.querySelector(selector).getBoundingClientRect();
+        return { top: r.top, bottom: r.bottom, width: r.width, right: r.right };
+      };
+      return { wide: document.querySelector("#stage").hasAttribute("data-wide"),
+        choice: rect(".pack-choices"), confirm: rect(".pack-confirm"),
+        description: rect(".pack-choice small"), pane: rect(".bench-right") };
+    });
+    assert(layout.wide, "phone landscape must use the wide stage");
+    assert(layout.choice.bottom <= layout.confirm.top + 1, JSON.stringify(layout));
+    assert(layout.description.width >= 65, JSON.stringify(layout));
+    assert(layout.confirm.right <= layout.pane.right + 1, JSON.stringify(layout));
+  }, { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
   // #2359: 実際の制作処理と素材で3サイズを撮影。縦長はデスクトップ窓で確認し、回転案内は改変しない。
   for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }, { width: 390, height: 844 }]) {
     for (const step of ["pack", "holes", "heat"]) await check(`night-${step}-${viewport.width}x${viewport.height}`, async page => {
