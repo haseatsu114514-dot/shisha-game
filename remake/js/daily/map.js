@@ -488,8 +488,8 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
     renderPins();
     showScreen("map", root);
     // ワイドステージでは絵とピンを横いっぱいに拡大し、上下の切り方をピンの位置から決める（画面の向き・大きさが変わったら決め直す）
-    const refit = () => { if (!root.isConnected) { window.removeEventListener("resize", refit); return; } fitMapCrop(pins); };
-    window.addEventListener("resize", refit);
+    const refit = () => { if (!root.isConnected) { globalThis.removeEventListener?.("resize", refit); return; } fitMapCrop(pins); };
+    globalThis.addEventListener?.("resize", refit);
     interrupt = (v) => { stationTrip?.cancel(); stationTrip = null; interrupt = null; stopReveal(); retire(root); resolve(v); };
     mapShown = true;
     showPrompts();
