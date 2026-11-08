@@ -717,6 +717,10 @@
 .bc-lane { position: absolute; left: 0; right: 0; top: 76px; bottom: 145px; z-index: 6; overflow: hidden; pointer-events: none; user-select: none; container-type: inline-size;
   mask-image: linear-gradient(90deg, #000 0 36%, #000b 46% 96%, #000d 100%);
   clip-path: polygon(0 0, calc(100% - 180px) 0, calc(100% - 180px) 80px, 100% 80px, 100% 100%, 0 100%); }
+/* ワイド時（#3007 の会話幅拡張に合わせる）: 弾幕の帯も横を少し使う。鮮明に見える範囲を右へ伸ばし、右上の切り欠きを少し狭める。通常時は上の形のまま */
+#stage[data-wide] .bc-lane {
+  mask-image: linear-gradient(90deg, #000 0 48%, #000b 60% 96%, #000d 100%);
+  clip-path: polygon(0 0, calc(100% - 120px) 0, calc(100% - 120px) 80px, 100% 80px, 100% 100%, 0 100%); }
 .nico {
   position: absolute;
   left: 0;
