@@ -202,7 +202,7 @@ await suite('ch2-daily',async check=>{
   await check('next-day-region-switch-and-autosave',async page=>{
     await setup(page,{reel:true}); await begin(page);
     let v=await value(page); assert.equal(v.day,16); assert.equal(v.slot,0); assert.equal(v.stamina,114); // 根性31＝4段（10段表 GUTS_STAMINA_BONUS）
-    assert.match(await page.locator('.dc-day').textContent(),/^2\/14$/); assert.match(await page.locator('.dc-row').allTextContents().then(a=>a.join(' ')),/あと12日/);
+    assert.match(await page.locator('.dc-day').textContent(),/^2\/14$/); assert.doesNotMatch(await page.locator('.dc-row').allTextContents().then(a=>a.join(' ')),/あと\d+日/, '大会までの残り日数は左上カードに出さない（#3033）');
     await capture(page,'day2-home.png'); await wide(page);
     await assertFits(page,'.spot-pin');
     const overlaps=await page.evaluate(()=>{

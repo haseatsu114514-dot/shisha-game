@@ -1,5 +1,9 @@
 import { CH2_CITY_EN, CH2_CITY_NAME, HOME_CITY_EN, HOME_CITY_NAME } from "../core/city-locations.js";
-// 日常パートの常時表示（日付・時間帯・大会までの日数・所持金・体力・スマホ・MENU）。
+// 日常パートの常時表示（日付・時間帯・所持金・体力・スマホ・MENU）。
+// 「次の大会まで あと◯日」は左上カードに出さない（#3033・オーナー指示 2026-11-09。ラベルが印に
+// 置き換わって何の日数か分からない、とのプレイテスト指摘）。出発前の「出発まで」・第5章の
+// 「勝負の日まで」は大会の日程とは別の情報なので従来どおり出す（オーナー指示 2026-11-08）。
+// 残り日数の計算自体は chapter-clock.js に残り、MENU や台詞の {daysLeft} でも従来どおり使う。
 // 左上に DAY カード、右上に LIME と MENU。ステータスは全画面MENU（daily/menu.js）のタブへ移し、
 // 五角形のステータスボタンは廃止した（DUI05）。未使用の火種の印は MENU の右上に出す。
 import { el, yen, sleep } from "../core/util.js";
@@ -231,12 +235,18 @@ export function updateHud() {
   dom.slot.setAttribute("aria-label", slotName);
   dom.slot.dataset.slot = night ? "night" : "day";
   dom.money.textContent = yen(state.money);
-  const left = daysLeft();
-  dom.leftLabel.textContent = chapterGoalLabel(state);
-  dom.leftLabel.parentElement.title = chapterGoalLabel(state);
-  // 何までの日数か。スマホでは「次の大会まで」だけ出さない（phone-density.css）。出発前・第5章の日数は出す。
-  if (dom.goalRow) dom.goalRow.dataset.goal = departurePrep(state) ? "departure" : state.chapter === 5 ? "final" : "tournament";
-  dom.left.textContent = left === null ? "未定" : `あと${left}日`;
+  // 残り日数の行: 大会まで（tournament）は出さない（#3033）。出発まで・勝負の日までは出す。
+  const goal = departurePrep(state) ? "departure" : state.chapter === 5 ? "final" : "tournament";
+  if (goal === "tournament") {
+    dom.goalRow?.remove();
+  } else {
+    if (dom.goalRow && !dom.goalRow.isConnected) dom.stamina.before(dom.goalRow);
+    dom.goalRow.dataset.goal = goal;
+    dom.leftLabel.textContent = chapterGoalLabel(state);
+    dom.goalRow.title = chapterGoalLabel(state);
+    const left = daysLeft();
+    dom.left.textContent = left === null ? "未定" : `あと${left}日`;
+  }
   const r = staminaRatio();
   const condition = currentCondition();
   // ゲージは実残量。発病日の制作コンディションは従来どおり別に保持する。

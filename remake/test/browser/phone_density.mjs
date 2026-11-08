@@ -219,11 +219,11 @@ await suite("phone-density", async check => {
     }, { viewport, ...touch });
   }
 
-  // HUD の日数の行: スマホでは「次の大会まで」だけ出さない（オーナー指示 2026-11-08）。
-  // 出発前の「出発まで」・第5章の「勝負の日まで」は出す（ch2_tournament の第3章の準備期間の検査と同じ前提）。PC は3つとも出す。
+  // HUD の日数の行: 「次の大会まで」はスマホ・PC とも出さない（#3033・オーナー指示 2026-11-09、行自体が無い）。
+  // 出発前の「出発まで」・第5章の「勝負の日まで」は出す（オーナー指示 2026-11-08、大会の日程とは別の情報）。
   const goalRows = page => page.evaluate(async () => {
     const core = await import("./js/core/state.js"), hud = await import("./js/daily/hud.js"), s = core.state;
-    const read = () => { const row = document.querySelector('[data-test="hud-goal"]'); return `${row.dataset.goal}:${row.getClientRects().length > 0 ? "shown" : "hidden"}`; };
+    const read = () => { const row = document.querySelector('[data-test="hud-goal"]'); return row ? `${row.dataset.goal}:${row.getClientRects().length > 0 ? "shown" : "hidden"}` : "tournament:absent"; };
     const out = [];
     s.chapter = 1; hud.updateHud(); out.push(read());
     s.chapter = 3; s.day = 30; s.flags._ch3_prep = { startDay: 29, days: 3 }; hud.updateHud(); out.push(read());
@@ -232,11 +232,11 @@ await suite("phone-density", async check => {
   });
   await check("goal-row-phone", async page => {
     await openMap(page);
-    assert.deepEqual(await goalRows(page), ["tournament:hidden", "departure:shown", "final:shown"]);
+    assert.deepEqual(await goalRows(page), ["tournament:absent", "departure:shown", "final:shown"]);
   }, { viewport: PHONES[0][1], ...touch });
   await check("goal-row-desktop", async page => {
     await openMap(page);
-    assert.deepEqual(await goalRows(page), ["tournament:shown", "departure:shown", "final:shown"]);
+    assert.deepEqual(await goalRows(page), ["tournament:absent", "departure:shown", "final:shown"]);
   }, { viewport: { width: 1280, height: 720 } });
 
   // PC（1280×720）では規格が立たず、共通部品の寸法は従来どおり。
