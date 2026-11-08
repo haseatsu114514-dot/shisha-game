@@ -760,7 +760,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 #rotate-hint {
   position: fixed;
   inset: 0;
-  z-index: 999;
+  z-index: 2000;
   display: none;
   place-items: center;
   background: #07050c;
@@ -769,7 +769,8 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
   text-align: center;
   padding: 16px;
 }
-@media (orientation: portrait) and (max-width: 760px) and (hover: none) and (pointer: coarse) {
+/* 縦画面は廃止（#2826）。タッチ端末を縦に持ったら、タイトルを含む全画面を回転案内だけで覆う。 */
+@media (orientation: portrait) and (hover: none) and (pointer: coarse) {
   #rotate-hint { display: grid; }
 }
 
