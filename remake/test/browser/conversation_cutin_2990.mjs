@@ -61,7 +61,7 @@ const nowShown = (page) => page.evaluate(() => {
 
 await suite("conversation-cutin-2990", async (check) => {
   for (const id of ["2a", "5", "5b", "4m", "3"]) {
-    await check(`${id}: 置いた行で出て、次の行で消える`, async (page) => {
+    await check(`${id}：置いた行で出て、次の行で消える`, async (page) => {
       await start(page, id);
       await reachCue(page);
       await page.waitForFunction(() => document.querySelector(".vn-cutin img")?.complete);
@@ -83,7 +83,7 @@ await suite("conversation-cutin-2990", async (check) => {
     });
   }
 
-  await check("4: 次の行で0.3秒かけて薄れて消える", async (page) => {
+  await check("4：次の行で0.3秒かけて薄れて消える", async (page) => {
     await start(page, "4");
     await reachCue(page);
     if (SHOTS) { await page.waitForFunction(() => document.querySelector(".vn-cutin img")?.complete); await page.screenshot({ path: path.join(SHOTS, "cutin-4.png") }); }
@@ -96,7 +96,7 @@ await suite("conversation-cutin-2990", async (check) => {
     await page.evaluate(() => cutinQA.controller.abort());
   });
 
-  await check("2c: 送らなくても0.9秒で消え、台詞はそのまま", async (page) => {
+  await check("2c：送らなくても0.9秒で消え、台詞はそのまま", async (page) => {
     await start(page, "2c");
     await reachCue(page);
     const text = await page.locator(".vn-text").textContent();
