@@ -993,3 +993,7 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-in-stage.axe-game[data-phase="result"] .axe-result-value { grid-column: 1; grid-row: 1; margin: 0; font-size: 56px; line-height: 1.15; }
 .axe-in-stage.axe-game[data-phase="result"] .axe-result-label { grid-column: 2; grid-row: 1; }
 .axe-in-stage.axe-game[data-phase="result"] .axe-result-tip { grid-column: 1 / -1; }
+
+/* 投げる前（狙いを選ぶ場面）は右パネルの中身が少なく、下寄せにすると上に約140pxの空きが残っていた（2026-11-08 撮影で確認）。
+   狙いの札（通常・左上の青…）の段をその高さまで伸ばし、札を大きく押しやすくする。中身が多い場面では伸びる余地がないので変わらない。 */
+.axe-game .axe-panel > .axe-calls { flex: 1 1 auto; max-height: 300px; }
