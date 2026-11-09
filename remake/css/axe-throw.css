@@ -1,6 +1,6 @@
 @import url("venue-host.css");
 
-#axe-app { position: fixed; inset: 0; container-type: size; }
+#axe-app { position: absolute; inset: 0; container-type: size; } /* 試遊ページでは #stage（1280×720）の中に置く（#3076） */
 
 /* Practice entrance. Its dedicated stylesheet can refine these shared defaults. */
 .axe-intro { --axe-bg: url("../img/backgrounds/bg_axe_lounge_night.webp"); min-height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: clamp(20px,7vw,100px); gap: 16px; background: linear-gradient(90deg,rgba(10,7,13,.92),rgba(10,7,13,.54)),var(--axe-bg) center/cover; }

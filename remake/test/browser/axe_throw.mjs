@@ -106,7 +106,6 @@ await suite("axe-throw", async run => {
   });
   for(const [label,options,touch] of [
     ['flight-ui-pc',{viewport:{width:1280,height:800}},false],
-    ['flight-ui-touch-portrait',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},true],
     ['flight-ui-touch-landscape',{viewport:{width:844,height:390},isMobile:true,hasTouch:true},true],
   ]) await check(label,async page=>{
     await standalone(page,{touch});const before=await storageSnapshot(page);
@@ -159,7 +158,6 @@ await suite("axe-throw", async run => {
   },options);
   for(const [label,options,touch] of [
     ['rules-pc',{viewport:{width:1280,height:720}},false],
-    ['rules-touch-portrait',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},true],
     ['rules-touch-landscape',{viewport:{width:844,height:390},isMobile:true,hasTouch:true},true],
   ]) await check(label,async page=>{
     await page.goto(new URL('axe-throw.html',page.url()).href);
@@ -212,7 +210,6 @@ await suite("axe-throw", async run => {
   for (const [label, options, touch] of [
     ["pc",{viewport:{width:1280,height:800}},false],
     ["touch-landscape",{viewport:{width:844,height:390},isMobile:true,hasTouch:true},true],
-    ["touch-portrait",{viewport:{width:390,height:844},isMobile:true,hasTouch:true},true],
     ["keyboard-reduced",{viewport:{width:1280,height:720},reducedMotion:"reduce"},false],
   ]) await check(label,async page => {
     const keyboard=label==="keyboard-reduced";
@@ -361,4 +358,10 @@ await suite("axe-throw", async run => {
     assert.equal(complete.total, complete.throws.reduce((sum, shot) => sum + shot.score, 0));
     assert(await page.evaluate(() => JSON.stringify(A.core.state) === A.before));
   });
+await check("touch-portrait-rotate-hint", async page => {
+    // 縦持ちスマホは本編と同じく横向き案内で止める（2026-11-09 オーナー決定・#3035／試遊ページ共通化 #3076）
+    await page.goto(new URL("axe-throw.html", page.url()).href);
+    await page.locator(".axe-menu").waitFor();
+    assert.equal(await page.locator("#rotate-hint").isVisible(), true);
+  }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 });
