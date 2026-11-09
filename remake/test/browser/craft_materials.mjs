@@ -425,7 +425,7 @@ await suite("craft-materials", async check => {
     await page.evaluate(async () => { F.session.craftTest.auto = "good"; await F.steps.stepPack(F.cs); F.session.craftTest.auto = null; });
     assert.equal(await page.evaluate(() => F.cs.pack), "normal");
   });
-  await check("wide-packing-rows-3010", async page => {
+  await check("fixed-stage-packing-rows-3035", async page => {
     await setup(page);
     await page.evaluate(() => { F.running = F.steps.stepPack(F.cs); });
     await page.locator('[data-test="pack-confirm"]').waitFor();
@@ -436,9 +436,11 @@ await suite("craft-materials", async check => {
       };
       return { wide: document.querySelector("#stage").hasAttribute("data-wide"),
         choice: rect(".pack-choices"), confirm: rect(".pack-confirm"),
-        description: rect(".pack-choice small"), pane: rect(".bench-right") };
+        description: rect(".pack-caption p"), pane: rect(".bench-right") };
     });
-    assert(layout.wide, "phone landscape must use the wide stage");
+    // 固定ステージ（2026-11-09 オーナー決定・#3035）: スマホ横持ちでもワイド拡張せず 1280×720 の構図で収まる。
+    // 選択肢の説明文はボタン内ではなく、選んだ詰め方の説明としてキャプションに出る（craft-landscape.css）。
+    assert(!layout.wide, "phone landscape must use the fixed 1280 stage");
     assert(layout.choice.bottom <= layout.confirm.top + 1, JSON.stringify(layout));
     assert(layout.description.width >= 65, JSON.stringify(layout));
     assert(layout.confirm.right <= layout.pane.right + 1, JSON.stringify(layout));

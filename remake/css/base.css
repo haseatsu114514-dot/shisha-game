@@ -77,6 +77,20 @@ button { font: inherit; color: inherit; }
   overflow: hidden;
   background: #000;
 }
+/* 余白のぼかし（2026-11-09 オーナー決定・#3035）: ステージ（固定1280×720）の外に余った画面は、
+   その場面の背景をぼかして埋める（ブラウザアドベンチャー式）。絵は core/ui.js の setBg が
+   背景の差し替えと一緒に差し替える。ぼかしの縁が透けないよう少しだけ拡大しておく。 */
+#backdrop {
+  position: fixed; /* #viewport のスクロール領域に含めない（変換で広がった分が scrollTop をずらすため） */
+  inset: 0;
+  background: #000 center / cover no-repeat;
+  filter: blur(24px) brightness(0.72) saturate(1.15);
+  transform: scale(1.15);
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+#backdrop[data-tint="night"] { filter: blur(24px) brightness(0.5) saturate(0.85); }
+#backdrop[data-tint="dim"] { filter: blur(28px) brightness(0.4); }
 /* 画面の真ん中に置いてから縮める（grid/flex の中央寄せは、画面より大きい要素だと
    右下にはみ出す＝スマホで右下に埋まる不具合の原因だった）。倍率は main.js の fitStage() */
 #stage {

@@ -46,19 +46,13 @@ function fitStage() {
   // 横長の画面だけ（PC の縦長ウィンドウや縦持ちは対象外。縦持ちのスマホは横向きの案内になる）
   if (k < PHONE_DENSITY_K && w > h) document.documentElement.dataset.density = "phone";
   else delete document.documentElement.dataset.density;
-  // ワイドステージ（#2861）: 横長の画面では黒帯ぶんだけステージを広げる（高さは720のまま・最大1600）。
-  // 中身の層は中央1280に置いたまま、背景と端へ出す部品だけが広がった幅を使う（base.css）。
-  const stageW = Math.min(1600, Math.max(1280, Math.floor((w / h) * 720)));
-  if (stageW > 1280) {
-    stage.style.setProperty("--stage-w", `${stageW}px`);
-    // 広げてもまだ残る黒帯（画面px）。safe-area のうち黒帯で吸収できない分だけ端の部品を内側へ寄せる
-    stage.style.setProperty("--stage-bar", `${Math.max(0, (w - stageW * k) / 2)}px`);
-    stage.dataset.wide = "";
-  } else {
-    stage.style.removeProperty("--stage-w");
-    stage.style.removeProperty("--stage-bar");
-    delete stage.dataset.wide;
-  }
+  // 画面方針（2026-11-09 オーナー決定・#3035）: ブラウザアドベンチャー式。ステージは常に
+  // 1280×720 の固定構図をそのまま拡大縮小し、画面に余った分は余白として扱う。
+  // 余白は場面の背景をぼかして埋める（#backdrop・base.css／差し替えは core/ui.js の setBg）。
+  // ワイド拡張（#2861: ステージを最大1600まで広げる方式）は廃止した。
+  stage.style.removeProperty("--stage-w");
+  stage.style.removeProperty("--stage-bar");
+  delete stage.dataset.wide;
 }
 
 export async function boot() {
