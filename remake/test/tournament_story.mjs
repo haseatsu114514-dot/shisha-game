@@ -230,9 +230,7 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
  const cast={1:['naru','adam','minto','maezono','sui','dr_kemuri'],2:['ageha','kumicho','rei','sui','maezono','dr_kemuri'],
   3:['saku','steve','volk','sui','emil','dr_kemuri'],4:['naru','master_hookah','sheikh','sui','emil','da_silva']};
  const banter={1:['prestart','serve','preresult'],2:['preresult'],3:['serve','preresult'],4:['serve','preresult']};
- // 改名中の姓（会長・あげは）は新しい台詞に書かない。退場キャラは check_legacy_terms が見る。
- const retired=/伏見|千須|宵永|夜長/;
- for (const chapter of [1,2,3,4]) {
+  for (const chapter of [1,2,3,4]) {
   const c={...base,chapter},before=JSON.stringify(c);
   for (const event of TOURNAMENT_BANTER_EVENTS) {
    const scene=DB.dialogues[`tournament_craft_${event}_${chapter}`];
@@ -242,9 +240,8 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
    assert(d.lines.length>=4&&d.lines.length<=10,`chapter${chapter} ${event} line count`);
    assert(d.lines.every(l=>['','pakki','hajime',...cast[chapter]].includes(l.speaker)),`chapter${chapter} ${event} used another chapter's cast`);
    assert(d.lines.some(l=>cast[chapter].slice(0,3).includes(l.speaker)),`chapter${chapter} ${event} has a rival`);
-   // 結果・順位・点数を先に言わない。改名中の姓や退場したキャラは書かない。
+   // 結果・順位・点数を先に言わない（旧名・退場キャラは check_legacy_terms が見る）。
    assert.doesNotMatch(text,/優勝|代表に|\d|(?<!持ち)点|一位|二位|先頭|震えの|勝った|負けた/,`chapter${chapter} ${event} must not reveal results`);
-   assert.doesNotMatch(text,retired,`chapter${chapter} ${event} names`);
    // 台詞の行末に句点を付けない（地の文は付ける）。
    for (const l of d.lines) assert.equal(l.speaker===''?l.text.endsWith('。'):!l.text.endsWith('。'),true,`${event}_${chapter}: ${l.text}`);
    if (chapter===2) assert.doesNotMatch(text,/震え|指先を/,'chapter2 must not show the secret');
