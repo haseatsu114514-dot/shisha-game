@@ -881,6 +881,7 @@
         "node --experimental-vm-modules remake/test/craft_fx.mjs",
         "node --experimental-vm-modules remake/test/craft_rival_windows.mjs",
         "node remake/test/mix_temperature.mjs",
+        "node remake/test/packing_temperature.mjs",
         "node remake/test/steam_temperature.mjs",
         "node remake/test/flavor_life.mjs",
         "node remake/test/leaf_carry.mjs",
@@ -2602,9 +2603,13 @@
         "remake/test/thermal_background.mjs",
         "remake/test/pull_draw.mjs",
         "remake/test/craft_focus.mjs",
-        "remake/test/browser/mix_temperature.mjs"
+        "remake/test/browser/mix_temperature.mjs",
+        "remake/css/craft-landscape.css",
+        "remake/test/packing_temperature.mjs",
+        "remake/test/browser/packing_temperature.mjs"
       ],
       "run": [
+        "node remake/test/browser/packing_temperature.mjs",
         "node remake/test/browser/mix_temperature.mjs",
         "SHOTS=.codex/artifacts/remake-browser/temperature-regressions node remake/test/thermal_background.mjs",
         "SHOTS=.codex/artifacts/remake-browser/temperature-regressions node remake/test/pull_draw.mjs",

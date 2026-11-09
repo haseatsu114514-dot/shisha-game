@@ -1334,6 +1334,15 @@ body.game-ds .bench[data-step] .mix-temperature-preview { position: fixed; left:
 
 .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { right: 104px; bottom: 140px; width: 102px; height: 260px; }
 .mix-temperature-preview:has([data-selected="false"]) > small { display: none; }
+/* パッキングでも配合と同じ左の温度帯ゲージを出す（横画面）。実温度針はまだ無いので帯のみ。
+   DSは landscape-only で別途撤去中のため、ここでは非DSだけを触る。 */
+body:not(.game-ds) .bench[data-step="pack"] .packing { position: relative; }
+body:not(.game-ds) .bench[data-step="pack"] .bench-panel { overflow: visible; }
+body:not(.game-ds) .bench[data-step="pack"] .mix-temperature-preview {
+  left: -140px; height: 480px; padding-bottom: 78px; overflow: hidden;
+}
+body.game-ds .bench[data-step="pack"] .mix-temperature-preview { display: none; }
+
 
 body.game-ds .mix-temperature-legend { top: calc(100% - 15px); }
 body.game-ds .mix-temperature-preview > small { display: none; }
