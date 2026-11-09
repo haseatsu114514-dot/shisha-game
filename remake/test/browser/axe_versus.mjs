@@ -10,7 +10,8 @@ async function capture(page, name) {
 async function fit(page) {
   const checks = await page.locator('.axe-header, .axe-panel, .axe-button, .axe-comment, .axe-note, .axe-match-score, .axe-match-records').evaluateAll(nodes => nodes.map(n => {
     const r = n.getBoundingClientRect();
-    return { text: n.textContent, visible: r.width > 0 && r.height > 0,
+    // ステージ内の対戦では得点表示を看板と重複させないため 1px に隠す（axe-throw.css・本編と同じ）。隠れた要素は「見えている」扱いにしない
+    return { text: n.textContent, visible: r.width > 1 && r.height > 1,
       fits: r.left >= -1 && r.right <= innerWidth + 1 && r.top >= -1 && r.bottom <= innerHeight + 1
         && n.scrollWidth <= n.clientWidth + 1 && n.scrollHeight <= n.clientHeight + 1 };
   }));
@@ -96,7 +97,6 @@ await suite("axe-versus", async check => {
   for (const [label, options, context, difficulty] of [
     ["pc", {}, {}, "normal"],
     ["touch-landscape", { touch: true }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, "easy"],
-    ["touch-portrait", { touch: true }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }, "normal"],
     ["keyboard-reduced", { keyboard: true }, { reducedMotion: "reduce" }, "hard"],
   ]) await check(label + "-twenty-throws", async page => {
     await start(page, difficulty, options); const before = await storageSnapshot(page);
@@ -296,4 +296,10 @@ await suite("axe-versus", async check => {
     assert.doesNotMatch(await page.locator('.axe-menu-message').textContent(), /undefined/);
     assert.equal(await page.evaluate(() => localStorage.getItem("shisha_axe_adam_unlocked")), "1");
   });
+await check("touch-portrait-rotate-hint", async page => {
+    // 縦持ちスマホは本編と同じく横向き案内で止める（2026-11-09 オーナー決定・#3035／試遊ページ共通化 #3076）
+    await page.goto(new URL("axe-throw.html", page.url()).href);
+    await page.locator(".axe-menu").waitFor();
+    assert.equal(await page.locator("#rotate-hint").isVisible(), true);
+  }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 });

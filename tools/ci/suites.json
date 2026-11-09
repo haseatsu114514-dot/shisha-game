@@ -560,6 +560,7 @@
       "weight": 1.5,
       "timeout": 5,
       "paths": [
+        "remake/js/core/stage-fit.js",
         "remake/js/minigames/desert-ride.js",
         "remake/js/minigames/desert-ride-model.js",
         "remake/js/minigames/desert-ride-art.js",
@@ -1017,6 +1018,7 @@
       "weight": 10.5,
       "timeout": 15,
       "paths": [
+        "remake/js/core/stage-fit.js",
         "remake/js/minigames/**",
         "remake/js/axe-throw-page.js",
         "remake/axe-throw.html",
@@ -1160,6 +1162,7 @@
       "weight": 1,
       "timeout": 15,
       "paths": [
+        "remake/js/core/stage-fit.js",
         "remake/js/craft/water-pour*.js",
         "remake/css/craft-water-pour.css",
         "remake/js/craft/preview.js",
@@ -1519,6 +1522,7 @@
       "weight": 2,
       "timeout": 8,
       "paths": [
+        "remake/js/core/stage-fit.js",
         "remake/js/minigames/camel-race.js",
         "remake/js/minigames/camel-race-model.js",
         "remake/js/chapters/ch4-camel-race.js",
@@ -3884,8 +3888,17 @@
       "kind": "browser",
       "weight": 0.5,
       "timeout": 3,
-      "paths": ["remake/js/main.js", "remake/js/core/ui.js", "remake/css/base.css", "remake/test/browser/stage_fit.mjs"],
+      "paths": ["remake/js/core/stage-fit.js", "remake/js/main.js", "remake/js/core/ui.js", "remake/css/base.css", "remake/test/browser/stage_fit.mjs"],
       "run": ["node remake/test/browser/stage_fit.mjs"]
+    },
+    {
+      "id": "trial-stage-fit-3076",
+      "title": "Trial pages (camel race, axe throw, desert ride, craft preview) use the fixed 1280x720 stage fit with blurred backdrop",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/core/stage-fit.js", "remake/js/main.js", "remake/js/core/ui.js", "remake/camel-race.html", "remake/js/camel-race-page.js", "remake/css/camel-race.css", "remake/axe-throw.html", "remake/js/axe-throw-page.js", "remake/css/axe-throw.css", "remake/js/minigames/axe.js", "remake/desert-ride.html", "remake/js/desert-ride-page.js", "remake/craft-preview.html", "remake/js/craft/preview.js", "remake/test/browser/trial_stage_fit.mjs"],
+      "run": ["node remake/test/browser/trial_stage_fit.mjs"]
     },
     {
       "id": "recent-intros",

@@ -1,4 +1,6 @@
 import { el } from "./core/util.js";
+import { initStageFit } from "./core/stage-fit.js";
+initStageFit(document.getElementById("stage")); // 画面の当て方は本編と同じ共通部品（#3076）
 import { runAxeThrow } from "./minigames/axe.js";
 import { DIFFICULTIES } from "./minigames/axe-match.js";
 import { DIVISIONS } from "./minigames/axe-model.js";

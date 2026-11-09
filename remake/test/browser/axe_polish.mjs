@@ -85,7 +85,6 @@ async function cancel(page, before) {
 await suite("axe-polish", async check => {
   for (const [label, context, touch, minimum] of [
     ["pc", { viewport: { width: 1280, height: 800 } }, false, 300],
-    ["touch-portrait", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }, true, 180],
     ["touch-landscape", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true, 145],
   ]) await check(`${label}-board-input-results-and-total`, async page => {
     const before = await start(page);
@@ -317,6 +316,12 @@ await suite("axe-polish", async check => {
     assert.deepEqual(result.series.wins, { player: 0, opponent: 1 }); assert.equal(result.series.winner, null);
     assert.equal(result.series.games[0].winner, "opponent");
   });
+await check("touch-portrait-rotate-hint", async page => {
+    // 縦持ちスマホは本編と同じく横向き案内で止める（2026-11-09 オーナー決定・#3035／試遊ページ共通化 #3076）
+    await page.goto(new URL("axe-throw.html", page.url()).href);
+    await page.locator(".axe-menu").waitFor();
+    assert.equal(await page.locator("#rotate-hint").isVisible(), true);
+  }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 });
 
 if (output && sizes.length) await fs.writeFile(`${output}/polish-target-sizes.json`, JSON.stringify(sizes, null, 2) + "\n");

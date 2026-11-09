@@ -1,5 +1,6 @@
 // 画面の土台: 背景・画面切替・煙ワイプ・トースト・ステ通知・モーダル・カウントダウン・スタンプ。
 import { $, el, sleep, nextFrame } from "./util.js";
+import { syncBackdrop } from "./stage-fit.js";
 import { on } from "./bus.js";
 import { SE, setRainAmbience } from "./audio.js";
 import { state, STAT_KEYS, config } from "./state.js";
@@ -165,21 +166,7 @@ export function uiArtReady(ms = 2000) {
   return Promise.race([warmCoreArt(), sleep(ms)]);
 }
 
-// 余白のぼかし（2026-11-09 オーナー決定・#3035）: ステージ外の余白には、その場面の背景を
-// ぼかして敷く（#backdrop・base.css）。背景の差し替えが確定した所で同じ絵へ替える。
-// ぼかし＋減光なので、ステージ側のクロスフェードと厳密に同期しなくても境目は見えない。
-let backdropUrl = null;
-function syncBackdrop(url, tint, instant) {
-  const bd = typeof document !== "undefined" && typeof document.getElementById === "function" ? document.getElementById("backdrop") : null;
-  if (!bd) return;
-  bd.dataset.tint = tint || "";
-  if (backdropUrl === (url || "")) return;
-  backdropUrl = url || "";
-  const image = url ? `url("${url}")` : "none";
-  if (instant) { bd.style.backgroundImage = image; return; }
-  bd.style.opacity = "0";
-  setTimeout(() => { bd.style.backgroundImage = image; bd.style.opacity = ""; }, 260);
-}
+// 余白のぼかし（#backdrop）の差し替えは共通部品 core/stage-fit.js の syncBackdrop（#3076 で共通化）。
 
 /**
  * 背景を差し替える。新しい絵が読み込めてからクロスフェードする（読み込み中に黒や前の絵のまま

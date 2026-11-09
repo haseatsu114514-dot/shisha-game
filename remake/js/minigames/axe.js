@@ -104,7 +104,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   root.dataset.mode = mode; root.dataset.division = division;
   root.dataset.tutorial = String(tutorial);
   root.dataset.reducedMotion = String(reducedMotion);
-  if (host.id === "stage") root.classList.add("axe-in-stage");
+  if (host.id === "stage" || host.closest("#stage")) root.classList.add("axe-in-stage"); // 試遊ページも #stage の中（#3076）なら本編と同じ大きさ規格
   const round = el("span.axe-round", { dataset: { test: "axe-round" } });
   // 遊び方・操作は常に出さず「？」から開く（#2718 のUI方針）。名前は読み上げ用の文字で付ける。
   const rulesButton = el("button.axe-button.axe-rules-button.axe-help", { type: "button", title: "遊び方・ルール", dataset: { test: "axe-rules" }, onclick: openRules },

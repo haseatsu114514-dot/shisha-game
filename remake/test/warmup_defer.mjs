@@ -81,6 +81,7 @@ async function loadUi() {
     "chapter-title-art.js": { chapterTitleArt: () => "img/ui/chapter_title_ch1.webp" },
     "ui-theme.js": { uiThemeFrame: () => "img/ui/frame.webp" },
     "module-loading.js": { withLoadingNotice: (p) => p },
+    "stage-fit.js": { syncBackdrop: () => {} },
     "loading-prefetch.js": {
       prepareImage: (url) => new Promise((resolve) => {
         const image = new Image();

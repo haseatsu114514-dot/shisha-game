@@ -107,7 +107,6 @@ async function previewMatchesModel(page) {
 await suite("axe-lesson", async check => {
   for (const [label, options, touch] of [
     ["pc", { viewport: { width: 1280, height: 800 } }, false],
-    ["touch-portrait", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }, true],
     ["touch-landscape", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true],
   ]) await check(`${label}-guided-one-throw-and-no-save`, async page => {
     const before = await start(page, { tutorial: true });
@@ -236,4 +235,10 @@ await suite("axe-lesson", async check => {
       assert.equal(await page.evaluate(() => JSON.stringify(lessonCore.state)), JSON.stringify(taught));
     }
   });
+await check("touch-portrait-rotate-hint", async page => {
+    // 縦持ちスマホは本編と同じく横向き案内で止める（2026-11-09 オーナー決定・#3035／試遊ページ共通化 #3076）
+    await page.goto(new URL("axe-throw.html", page.url()).href);
+    await page.locator(".axe-menu").waitFor();
+    assert.equal(await page.locator("#rotate-hint").isVisible(), true);
+  }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 });
