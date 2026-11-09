@@ -128,7 +128,7 @@
       "title": "ダブルアップルの伝道師",
       "display_name": "アダム",
       "line": "煙は二種類。／ダブルアップルと、それ以外だ",
-      "face": "intense",
+      "face": "smile",
       "color": "#c9463a",
       "motion": "sharp"
     }
@@ -407,7 +407,7 @@
       "title": "マスターフーカー",
       "display_name": "王煙楼《ワン・イェンロウ》",
       "line": "観客が息を止めると、／煙がよく見える",
-      "face": "normal",
+      "face": "smile",
       "color": "#3fbf7f",
       "motion": "still"
     },
@@ -773,7 +773,7 @@
       "title": "砂漠の現王者",
       "display_name": "シェイク・ナジュム",
       "line": "全部、受け止めよう",
-      "face": "normal",
+      "face": "smile",
       "color": "#f5c542",
       "motion": "still"
     }
@@ -836,7 +836,7 @@
       "title": "mukaiの眠たげな店員",
       "display_name": "黒葉《くろは》 ましろ",
       "line": "僕も、ここで働いてるの。／よろしくねぇ",
-      "face": "normal",
+      "face": "smile",
       "color": "#e8eef6",
       "motion": "soft"
     },
