@@ -154,7 +154,9 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   const told = trace => trace.filter(item => String(item).startsWith("story:")).map(item => item.split(":")[1]);
   const t = success.trace;
   assert.equal(t[0], "craft-dialogue", "The craft banter loads before any save or step");
-  assert.deepEqual(told(t), ["opening", "packed", "waiting", "serve", "interlude1", "interlude2", "preresult"]);
+  assert.deepEqual(told(t), ["prestart", "opening", "packed", "waiting", "serve", "interlude1", "interlude2", "preresult"]);
+  // #3060: 開始前の掛け合いは制作の最初の工程・opening の前。
+  assert(story(t, "prestart") < story(t, "opening"));
   // #3060: 提供開始の掛け合いは吸い出しの前、結果発表前の掛け合いは二度目の調整の後・結果の前。
   assert(at(t, "standings:1") < story(t, "serve") && story(t, "serve") < at(t, "pull"));
   assert(story(t, "preresult") > at(t, "care2") && story(t, "preresult") < at(t, "retire"));
@@ -166,12 +168,12 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   assert(at(t, "standings:3") < story(t, "interlude2") && story(t, "interlude2") < at(t, "ch4_customer_2"));
   // 提供後の掛け合いには実際の順位を渡す。版2は炭/調整96だけでは中盤のなるに並ばれる。
   assert(t.includes("story:interlude1:2"));
-  assert.deepEqual(success.value.flags._ch4.match.craft.tournamentStory.seen, ["opening", "packed", "waiting", "serve", "interlude1", "interlude2", "preresult"]);
+  assert.deepEqual(success.value.flags._ch4.match.craft.tournamentStory.seen, ["prestart", "opening", "packed", "waiting", "serve", "interlude1", "interlude2", "preresult"]);
   // 保存から再開しても、読んだ掛け合いは繰り返さない。提供で失敗した一台に調整前の掛け合いは出ない。
   assert.deepEqual(told(resumed.trace), ["interlude1", "interlude2", "preresult"]);
   const burnt = await run({ failure: "pull" });
   assert(!told(burnt.trace).some(event => event.startsWith("interlude") || event === "preresult"));
-  assert.deepEqual(told((await run({ failure: "care1" })).trace), ["opening", "packed", "waiting", "serve", "interlude1"]);
+  assert.deepEqual(told((await run({ failure: "care1" })).trace), ["prestart", "opening", "packed", "waiting", "serve", "interlude1"]);
   // 台本が読めなければ、保存と大会の開始地点に触れない（第3章と同じ）。
   const offline = await run({ loadFails: true });
   assert.equal(offline.error?.message, "offline");

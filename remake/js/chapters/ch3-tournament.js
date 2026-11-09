@@ -435,8 +435,8 @@ async function drive(owner) {
       const cs = owner.cs;
       playBgm("bgm_tournament_craft");
       // 投票の後、調整に入る合間の掛け合い（#1290）。見た目は commentary と同じ経路で一度だけ。
-      // 吸い出しの前は、審査員への提供開始の掛け合い（#3060）。開始前は ch3_tournament_day が受け持つ。
-      const interlude = p.step === 8 ? "serve" : p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
+      // 作り始める直前（開始前）と吸い出しの前（審査員への提供開始）の掛け合い（#3060）。
+      const interlude = p.step === 0 ? "prestart" : p.step === 8 ? "serve" : p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
       if (interlude && !await commentary(owner, interlude)) return;
       const event = TOURNAMENT_STORY_STEPS.get(p.step);
       if (event && !await commentary(owner, event)) return;

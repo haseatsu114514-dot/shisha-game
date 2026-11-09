@@ -1590,6 +1590,201 @@
           "text": "運命の最終投票、スクリーンへッ！ ……今日ばかりは、パッキーも笑えませんッ！"
         }
       ]
+    },
+    {
+      "dialogue_id": "tournament_craft_preresult_1_win",
+      "comment": "第1章・優勝の流れ。ch1_tournament_judging（会長の二口・選手席の待ち時間）の後、結果のカウントの前（#3060 結果発表前・オーナー 2026-11-10 04:48『全部推奨で』）。みんととアダムの待ち時間。結果・勝ちは言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "選手席の端で、みんとが両手を膝の上で握りしめていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……ねえ、さっきパッキーさん黙ったよね？ みんと、あんなの初めて見たかも"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "見ていない。俺は自分の林檎の残り香だけを追っていた"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "それ、ちゃんと見てたってことじゃん〜"
+        },
+        {
+          "speaker": "adam",
+          "face": "intense",
+          "text": "……静かにしろ。集計の音が聞こえなくなる"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "集計に音なんてないよ？ ……でも分かる。みんとも、心臓がずっとうるさいもん"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "はじめよ。どんな札が出ても、顔は上げていろ。俺もそうする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（もう台には触れないのに、手だけがトングの形のままだ）"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "お待たせしましたッ！ 運命のカウント、いきますよ〜ッ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_serve_2",
+      "comment": "第2章・吸い出しの前、interlude_pull_2（4人の心の声）の直後（#3060 審査員への提供開始・オーナー 2026-11-10 04:48『全部推奨で』）。声に出す掛け合い。票・点数・手の震えの秘密は言わない。",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "審査席、準備完了ッ！ 吸い出した台から、順に提供をお願いしますッ！"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "上園さーん、うちの苺、ちゃんと笑ってるから。一口目からよろしくね〜"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "姉貴、審査席に手ぇ振っても、煙は待っちゃくれやせんぜ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "振ってないし！ ……ちょっとしか"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……一口目は、イントロ。そこで耳をつかめないと、サビまで聴いてもらえない"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あんちゃん、差し出す手が固えや。客は手元の顔から味わうもんでさ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "……はい。ホースは、両手で渡します"
+        },
+        {
+          "speaker": "",
+          "text": "審査席の上園が、受け取る手をひらりと上げてみせた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_prestart_3",
+      "comment": "第3章・制作開始の直前、opening_3 の前（#3060 開始前・オーナー 2026-11-10 04:48『全部推奨で』）。ch3_tournament_day・入場の後、作り始める直前。綾取の仕掛けは ch3_national_adjustment まで見せない。結果は言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "四人が作業台の前に立った。開始の合図まで、時計の秒針があと半周。"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "全国の一台を決める勝負、まもなく制作開始ッ！ 選手の皆さん、準備はいいかッ！？"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、深呼吸だ。吸って、吐いて……炭と同じテンポで"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "室温も湿度も、記録は済んだ。始まる前に、数字はもう揃っている"
+        },
+        {
+          "speaker": "saku",
+          "face": "nervous",
+          "text": "ぼ、僕だけ何も揃ってない気がする……。トングって、どっちの手で持つんだっけ"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "ノー、ノー。右手だ。さっきからずっと、右手で握ってる"
+        },
+        {
+          "speaker": "saku",
+          "face": "nervous",
+          "text": "……あ、ほんとだ。ありがとう。君たちも、頑張って"
+        },
+        {
+          "speaker": "emil",
+          "face": "normal",
+          "text": "準備のできた手は、始まる前から静かだ。さあ、見せてくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（台の高さは、橙須のカウンターと同じだ。いつもの手順で始めよう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_prestart_4",
+      "comment": "第4章・制作開始の直前、opening_4 の前（#3060 開始前・オーナー 2026-11-10 04:48『全部推奨で』）。ch4_tournament_start・再挑戦の補助の後、作り始める直前。順位・点数は言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "四人がそれぞれの台の前に立つ。客席のざわめきが、波のように引いていった。"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "GRAND SMOKE、制作開始まであとわずかッ！ 四人とも、最後のひと言をどうぞッ！"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "はじめ、さっき言ったよな。全員に勝ちたいって。……その全員に、俺も入ってんだろうな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "入ってる。なるにも、勝ちたい"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "上等だ。借りた台で練習してた頃から、ずっとこの日を待ってたんだよ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "客の前に立つのに、勝ち負けの前置きは要らないよ。……二人とも、息を整えなさい"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smile",
+          "text": "先生はいつもそうだ。……始まったら、私はもう話さない。煙で返事をしよう"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "いい顔だ、四人とも！ 楽しめよ、フェスタの始まりだぜ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（路地裏で一緒に吸った人と、同じ列に並んでる。……俺の一台を、始めよう）"
+        }
+      ]
     }
   ]
 }

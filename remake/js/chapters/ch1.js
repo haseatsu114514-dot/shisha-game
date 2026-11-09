@@ -768,6 +768,8 @@ async function tournamentDay() {
     const judgingLines = judging.lines.map(line =>
       line.cue === "naru_tasting" ? { ...line, text: naruTastingLine(cs) } : line);
     await play({ ...judging, lines: judgingLines }, { bg: STAGE });
+    // 結果発表前の掛け合い（#3060）。会長の二口と選手席の待ち時間の後、みんととアダムが集計を待つ。
+    await playTournamentEvent(cs, "preresult", { bg: STAGE, context: { win: true } });
     await resultCountdown(cs, out.kind, state.tournament);
     retireScreen(); // カウント画面は次の場面で片付く
     playBgm("bgm_aftermath");
@@ -778,7 +780,7 @@ async function tournamentDay() {
     save();
     await victory(cs);
   } else {
-    // 結果発表前の掛け合い（#3060）。優勝の流れは ch1_tournament_judging の選手席の待ち時間が受け持つ。
+    // 結果発表前の掛け合い（#3060）。届かなかった流れは講評の直後、選手席で集計を待つ。
     await playTournamentEvent(cs, "preresult", { bg: STAGE });
     await resultCountdown(cs, out.kind, state.tournament);
     retireScreen();
