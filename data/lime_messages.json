@@ -2357,6 +2357,47 @@
       ]
     },
     {
+      "id": "lime_samechan_after_seat",
+      "sender": "samechan",
+      "trigger_condition": "flag",
+      "trigger_flag": "_samechan_look_away_done",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "samechan",
+          "text": "昨夜は、隣に座ってくれてありがとうなのじゃ"
+        },
+        {
+          "sender": "samechan",
+          "text": "水が空くまで、わしは立たなかった。久しぶりに、店の音がよく聞こえたのじゃ"
+        },
+        {
+          "sender": "samechan",
+          "text": "サメの話は、次にお主が来たときの続きじゃ。歯の場面は、まだ飛ばすのじゃぞ"
+        },
+        {
+          "sender": "samechan",
+          "text": "通り道は、お主の肩が通れた幅のまま残しておく。また、その席で待つぞ"
+        },
+        {
+          "sender": "samechan",
+          "text": "次も、隣の席を空けて待っておくのじゃ。コロちゃんが何度もしつこく申しておるのじゃ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "また隣に座ります",
+          "response": "うむ。その席は、空けておくのじゃ",
+          "affinity": 2
+        },
+        {
+          "text": "続き、聞きに行きます",
+          "response": "歯のところは、まだ飛ばすぞ",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_naru_samechan_nickname",
       "sender": "naru",
       "trigger_condition": "flag",

@@ -26,6 +26,11 @@ const cinemaImpressionDue = () => (state.spotVisits?.rojiura_cinema || 0) >= 1 &
 // 体力が少ない日の来店で一度だけ、腹話術をしまって本人の声で叱る。ほかの来店イベントは押しのけない。
 const unwellVisit = { dialogue: "samechan_shop_unwell", flag: "_samechan_unwell_done" };
 const unwellVisitDue = () => state.stamina < STAMINA_LOW && !state.flags[unwellVisit.flag];
+// 片付けの夜のあと、問いかけ・♥4・♥5・締めくくり・感想・不調が無い来店で一度ずつ。
+const laterVisits = [
+  { dialogue: "samechan_shop_own_seat", flag: "_samechan_own_seat_done" },
+  { dialogue: "samechan_shop_look_away", flag: "_samechan_look_away_done" },
+];
 // 東京・ドバイへ発つ前の地元の準備3日（chapters/departure-prep.js）だけ、その章の送り出しの会話を一度（N3a。daily/spots.js の
 // CHAPTER_TALKS の prep と同じ扱い。来店の処理が別なのでここに持つ）。初来店の後の来店で、ほかの来店イベントより先に読む。
 // 台本は data/dialogue/ch3_ch4_home.json を準備期間に読み込むので、未読込なら出さない。既読は `_talk_seen_<scene>`。
@@ -71,6 +76,12 @@ export function samechanVisitDialogue() {
   if (finaleAtVisit("samechan")) return BOND_FINALES.samechan.dialogue;
   if (count >= 1 && cinemaImpressionDue()) return cinemaImpression.dialogue;
   if (count >= 1 && unwellVisitDue()) return unwellVisit.dialogue;
+  if (state.flags._samechan_closing_check_done) {
+    for (const event of laterVisits) {
+      if (state.flags[event.flag]) continue;
+      if (DB.dialogues[event.dialogue]?.lines?.length) return event.dialogue;
+    }
+  }
   return `samechan_shop_repeat_${(count - 1) % 2}`;
 }
 
@@ -186,7 +197,7 @@ export async function visitSamechan(spot, { signal = null } = {}) {
     // 読了時に一度だけ確定。中断のセーブは未払いなので、残金が訪問料だけでも再開できる。
     addMoney(-(spot.cost || 0));
     addStamina(spot.stamina || 0);
-    const event = [...entryEvents, ...SAMECHAN_HEART_EVENTS, cinemaImpression, unwellVisit].find(e => e.dialogue === dialogue);
+    const event = [...entryEvents, ...SAMECHAN_HEART_EVENTS, cinemaImpression, unwellVisit, ...laterVisits].find(e => e.dialogue === dialogue);
     if (event) state.flags[event.flag] = true;
     if (isPrepTalk(dialogue)) state.flags[`_talk_seen_${dialogue}`] = true;
     if (dialogue === "samechan_shop_bond_question") {

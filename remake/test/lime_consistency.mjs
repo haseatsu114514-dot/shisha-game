@@ -579,6 +579,26 @@ for (const [id, sender, chapter, flag] of [
   assert.equal(state.inbox[0].read, true);
 }
 
+// #3081: 目をそらす話を読んだあと、章を問わず一度だけ届く。
+{
+  const id = "lime_samechan_after_seat";
+  const message = allMessages.find(m => m.id === id);
+  assert(message, id);
+  const setup = (overrides = {}) => {
+    reset({ chapter: 2, day: 9, contacts: ["samechan"], flags: { _samechan_look_away_done: true }, ...overrides });
+    db.lime = [message];
+  };
+  setup({ flags: {} });
+  assert.equal(phone.deliverMorning(), 0, `${id}: flag required`);
+  setup({ contacts: [] });
+  assert.equal(phone.deliverMorning(), 0, `${id}: contact required`);
+  setup();
+  assert.equal(phone.deliverMorning(), 1, `${id}: deliver when eligible`);
+  assert.equal(state.inbox[0].id, id);
+  setup({ chapter: 4 });
+  assert.equal(phone.deliverMorning(), 1, `${id}: later chapters still deliver`);
+}
+
 // #1178 CH2-TF-02/03: 実データの日数指定LIMEを章内日で配信する。
 for (const [id, sender, due] of [
   ["lime_ageha_day3", "ageha", 3],
