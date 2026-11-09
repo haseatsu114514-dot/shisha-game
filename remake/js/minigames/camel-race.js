@@ -66,9 +66,9 @@ const ICONS = Object.freeze({
 });
 const TUTORIAL = [
   // 3ページとも短く（#2836）。キーは kbd で添え、タッチ端末では CSS で隠す。結果・大会選びの「？」から読み直せる。
-  { icon: "camel", title: "ラクダは、自分で走る", body: "手前を走る金のゼッケン（★）がハビーバ。操縦はしない。背中のロボット騎手へ「声」と「ムチ」を送るだけ。" },
-  { icon: "voice", title: "声をかける ── 左のボタン", key: "Space", body: "騎手のまわりの金の輪が縮む。内側の輪と重なった瞬間に押すと PERFECT で、ぐっと伸びる。外したり連打したりすると、スタミナが減る。" },
-  { icon: "signal", title: "ムチ ── 右のボタンを押し続ける", key: "X", body: "押している間だけラクダが伸び、スタミナが減る。空になるとしばらく使えない。残り250mの LAST SPURT でいちばん効く。" },
+  { icon: "camel", art: "howto-camel", title: "ラクダは、自分で走る", body: "手前を走る金のゼッケン（★）がハビーバ。操縦はしない。背中のロボット騎手へ「声」と「ムチ」を送るだけ。" },
+  { icon: "voice", art: "howto-voice", title: "声をかける ── 左のボタン", key: "Space", body: "騎手のまわりの金の輪が縮む。内側の輪と重なった瞬間に押すと PERFECT で、ぐっと伸びる。外したり連打したりすると、スタミナが減る。" },
+  { icon: "signal", art: "howto-whip", title: "ムチ ── 右のボタンを押し続ける", key: "X", body: "押している間だけラクダが伸び、スタミナが減る。空になるとしばらく使えない。残り250mの LAST SPURT でいちばん効く。" },
 ];
 const sfx = name => { try { SE[name]?.(); } catch { /* 音は無くても遊べる */ } };
 
@@ -80,6 +80,7 @@ const ART_FILES = Object.freeze({
   camel: [1, 2, 3, 4].map(i => `ui/camel_race/camel_${i}.webp`),
   jockey: "ui/camel_race/jockey.webp", suv: "ui/camel_race/suv.webp", wheel: "ui/camel_race/wheel.webp",
   track: "backgrounds/bg_dubai_camel_track_morning.webp",
+  balloon: "ui/camel_race/ui/balloon.webp",
 });
 // 奥の景色（レース場の朝の絵・1280×720）。1.25倍にして、絵の y=395（奥の柵の根元）を走路の奥の柵（y=398）にそろえ、
 // レースの進み具合で 0→320px だけ横へ流す（遠景のゆっくりした流れ）。走路から手前はコードで描く砂地。
@@ -108,8 +109,10 @@ export function loadCamelArt() {
           metrics: portraits[0] } : null);
     }).catch(() => null);
   const loadPortrait = url => { const image = new Image(); image.decoding = "async"; image.src = url; return image.decode().then(() => image); };
-  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), hajime])
-    .then(([camel, jockey, suv, wheel, track, portrait]) => ({ camel, jockey, suv, wheel, track,
+  // 吹き出しの絵（CR-UI13）は読めなくても他の絵は使う（吹き出しは従来の描画に戻す）。
+  const balloon = load(ART_FILES.balloon).catch(() => null);
+  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), hajime, balloon])
+    .then(([camel, jockey, suv, wheel, track, portrait, balloonImage]) => ({ camel, jockey, suv, wheel, track, balloon: balloonImage,
       hajime: portrait?.faces, hajimeMetrics: portrait?.metrics, ground: groundTiles(), skins: camelSkins(camel) }))
     .catch(() => null);
   return artTask;
@@ -293,6 +296,12 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   const root = el("section.camel-game", { role: "dialog", "aria-modal": "true", "aria-label": CAMEL_RACE_TITLE, tabindex: "-1",
     dataset: { test: "camel-game", phase: "loading", reducedMotion: String(reducedMotion) } }, [stageNode, live, sheet]);
   host.append(root);
+  // CR08 のカード・主ボタンの絵（#3046）。読めた時だけ見た目を切り替える。読めなければ従来の CSS のまま。
+  for (const [cls, rel] of [["cr-card", "ui/camel_race/ui/program-card.webp"], ["cr-btn", "ui/camel_race/ui/button-primary.webp"]]) {
+    const probe = new Image();
+    probe.onload = () => root.classList.add(cls);
+    probe.src = imgFileUrl(rel);
+  }
 
   let art = null;
   void loadCamelArt().then(value => {
@@ -465,7 +474,12 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     const skip = back ? el("button.btn.ghost", { type: "button", text: "閉じる", dataset: { test: "camel-tutorial-close" }, onclick: () => back() })
       : el("button.btn.ghost", { type: "button", text: "とばしてスタート", dataset: { test: "camel-tutorial-skip" }, onclick: () => startRace() });
     sheet.replaceChildren(el("div.camel-card.camel-tutorial", { dataset: { test: "camel-tutorial", page: String(page) } }, [
-      el("div.camel-tutorial-icon", { dataset: { kind: step.icon }, html: ICONS[step.icon] }),
+      // 遊び方の絵（CR-UI11・#3046）。読めなければアイコンに戻す。
+      el("div.camel-tutorial-visual", [
+        el("div.camel-tutorial-icon", { dataset: { kind: step.icon }, html: ICONS[step.icon] }),
+        el("img.camel-tutorial-art", { src: imgFileUrl(`ui/camel_race/ui/${step.art}.webp`), alt: "", dataset: { test: "camel-tutorial-art" },
+          onerror: event => { event.currentTarget.remove(); } }),
+      ]),
       el("div.camel-tutorial-body", [
         el("p.camel-eyebrow", { text: `HOW TO PLAY  ${page + 1} / ${TUTORIAL.length}` }),
         el("h2", [step.title, step.key ? el("kbd.camel-key", { text: step.key }) : null]), el("p", { text: step.body }),
@@ -1066,18 +1080,36 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     ctx.fillStyle = whipping ? (Math.sin(t * 30) > 0 ? "#ff5a4a" : "#7a1a12") : voiced ? "#8ee6a8" : "#3a5a40";
     ctx.beginPath(); ctx.arc(px + 6, py - 25, 2.4, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
-    // 吹き出し（声・ムチを入れた時の掛け声）。
+    // 吹き出し（声・ムチを入れた時の掛け声）。絵（CR-UI13）があれば九分割で描き、無ければ従来の図形。
     if (hajimeTextTimer > 0 && hajimeText) {
       const alpha = Math.min(1, hajimeTextTimer / 0.2);
       ctx.save(); ctx.globalAlpha = alpha;
       ctx.translate(hx + w / 2, hy + 6); ctx.scale(textScale, textScale);
       ctx.font = "900 17px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-      const bw = ctx.measureText(hajimeText).width + 24, bh = 30, by = -bh - 10;
-      ctx.fillStyle = "#fffaf0"; ctx.strokeStyle = "#2a1a0e"; ctx.lineWidth = 2.5;
-      ctx.beginPath(); ctx.roundRect(-bw / 2, by, bw, bh, 15); ctx.fill(); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(-6, by + bh - 1); ctx.lineTo(4, by + bh + 9); ctx.lineTo(8, by + bh - 1); ctx.closePath(); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(-6, by + bh); ctx.lineTo(4, by + bh + 9); ctx.lineTo(8, by + bh); ctx.stroke();
-      ctx.fillStyle = "#2a1a0e"; ctx.fillText(hajimeText, 0, by + bh / 2 + 1);
+      const balloonImage = art?.balloon;
+      if (balloonImage) {
+        const bw = Math.max(ctx.measureText(hajimeText).width + 34, 104), bh = 42, by = -bh - 10;
+        // 九分割: 原画 384×192・帯48px。尻尾は左下の角の中にある。
+        const S = 48, iw = balloonImage.width, ih = balloonImage.height, cs = 21;
+        const x0 = -bw / 2, y0 = by, x1 = x0 + cs, x2 = x0 + bw - cs, y1 = y0 + cs, y2 = y0 + bh - cs;
+        ctx.drawImage(balloonImage, 0, 0, S, S, x0, y0, cs, cs);
+        ctx.drawImage(balloonImage, iw - S, 0, S, S, x2, y0, cs, cs);
+        ctx.drawImage(balloonImage, 0, ih - S, S, S, x0, y2, cs, cs);
+        ctx.drawImage(balloonImage, iw - S, ih - S, S, S, x2, y2, cs, cs);
+        ctx.drawImage(balloonImage, S, 0, iw - 2 * S, S, x1, y0, bw - 2 * cs, cs);
+        ctx.drawImage(balloonImage, S, ih - S, iw - 2 * S, S, x1, y2, bw - 2 * cs, cs);
+        ctx.drawImage(balloonImage, 0, S, S, ih - 2 * S, x0, y1, cs, bh - 2 * cs);
+        ctx.drawImage(balloonImage, iw - S, S, S, ih - 2 * S, x2, y1, cs, bh - 2 * cs);
+        ctx.drawImage(balloonImage, S, S, iw - 2 * S, ih - 2 * S, x1, y1, bw - 2 * cs, bh - 2 * cs);
+        ctx.fillStyle = "#2a1a0e"; ctx.fillText(hajimeText, 0, by + bh / 2);
+      } else {
+        const bw = ctx.measureText(hajimeText).width + 24, bh = 30, by = -bh - 10;
+        ctx.fillStyle = "#fffaf0"; ctx.strokeStyle = "#2a1a0e"; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.roundRect(-bw / 2, by, bw, bh, 15); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(-6, by + bh - 1); ctx.lineTo(4, by + bh + 9); ctx.lineTo(8, by + bh - 1); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(-6, by + bh); ctx.lineTo(4, by + bh + 9); ctx.lineTo(8, by + bh); ctx.stroke();
+        ctx.fillStyle = "#2a1a0e"; ctx.fillText(hajimeText, 0, by + bh / 2 + 1);
+      }
       ctx.restore();
     }
   }

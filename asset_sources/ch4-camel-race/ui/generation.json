@@ -1,0 +1,93 @@
+{
+  "title": "CR08 ラクダレースUI素材（軽量引継ぎ6候補）の生成・選別記録",
+  "received": "2026-11-09、オーナーから軽量引継ぎZIP（cr08-light-handoff-20261109.zip）で受領。全47候補のうち6枚のみの抜粋で、残り41候補は未受領。",
+  "handoff_records": "生成の詳細記録は引継ぎZIP同梱の generation-records/（パッケージ別 generation.json / technical-qa.json）を正とし、SHA256SUMS は全件照合済み（2026-11-09 ミューズ確認）。",
+  "selection_record": "work/cr08-handoff-1109/SELECTION.md（ミューズの目視検品と選別理由）。組み込みは Issue #3046。",
+  "derivative_rule": "正本 asset_sources/ch4-camel-race/ui-request.md の許容は縮小のみ。切り抜き・変形・色補正はしていない。program-card は 1586×992 → 1280×801（均等縮小、幅1280基準）。button-primary は 2172×724 → 600×200（均等縮小、原画比3:1を維持）。",
+  "files": [
+    {
+      "original": "howto-camel-B.png",
+      "spec": "CR-UI11",
+      "sha256": "6fa29cd643da02a40b38cede5b40cf1b11b5b55178bad3cdde49b091c7e1c1b0",
+      "bytes": 1345307,
+      "size": [
+        1448,
+        1086
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui11-camel-candidates-20261108",
+      "derivative": "assets/ui/camel_race/ui/howto-camel.png + remake/img/ui/camel_race/ui/howto-camel.webp",
+      "selection": "採用（ミューズ選別 2026-11-09）"
+    },
+    {
+      "original": "howto-voice-B.png",
+      "spec": "CR-UI11",
+      "sha256": "1b253ba2e7deb9223e4d535991dd4c3e9cdf941bb533512308f459c32a3edb22",
+      "bytes": 1315882,
+      "size": [
+        1448,
+        1086
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui11-voice-whip-candidates-20261108",
+      "derivative": "assets/ui/camel_race/ui/howto-voice.png + remake/img/ui/camel_race/ui/howto-voice.webp",
+      "selection": "採用（ミューズ選別 2026-11-09）"
+    },
+    {
+      "original": "howto-whip-C.png",
+      "spec": "CR-UI11",
+      "sha256": "9157e9b6c3391f9ad7a43da7b03fdbc573e2d43df252f5e8a110294b40153ded",
+      "bytes": 789401,
+      "size": [
+        1448,
+        1086
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui11-voice-whip-candidates-20261108",
+      "derivative": "assets/ui/camel_race/ui/howto-whip.png + remake/img/ui/camel_race/ui/howto-whip.webp",
+      "selection": "採用（ミューズ選別 2026-11-09）"
+    },
+    {
+      "original": "program-card-B.png",
+      "spec": "CR-UI08",
+      "sha256": "0cf8d907aeed4a36fa1af7d4add2041655e227cab6e64032931cc228bba1a169",
+      "bytes": 2322530,
+      "size": [
+        1586,
+        992
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui08-candidates-20261108",
+      "derivative": "assets/ui/camel_race/ui/program-card.png + remake/img/ui/camel_race/ui/program-card.webp",
+      "selection": "採用（ミューズ選別 2026-11-09）"
+    },
+    {
+      "original": "balloon-C.png",
+      "spec": "CR-UI13",
+      "sha256": "eaabdf143b3e1a95accf35a64d7320b88b2a314705dc37468412cb7fe74870d9",
+      "bytes": 2014635,
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-art-candidates-20261108",
+      "derivative": "assets/ui/camel_race/ui/balloon.png + remake/img/ui/camel_race/ui/balloon.webp",
+      "selection": "採用（ミューズ選別 2026-11-09）"
+    },
+    {
+      "original": "button-primary-B.png",
+      "spec": "CR-UI09",
+      "sha256": "bd6523d8e9841e7cbc7c7e62cfcac1a66b94c65b7ffffc7a9b641e9790502e9f",
+      "bytes": 1945330,
+      "size": [
+        2172,
+        724
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui09-candidates-20261108",
+      "derivative": "assets/ui/camel_race/ui/button-primary.png + remake/img/ui/camel_race/ui/button-primary.webp",
+      "selection": "条件付き採用（ミューズ選別 2026-11-09）: 原画比3:1のため派生は600×200で均等縮小のみ。実画面プレビューで角を確認して採否を決める"
+    }
+  ]
+}
