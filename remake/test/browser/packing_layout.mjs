@@ -106,6 +106,7 @@ try {
         gitBlobSHA1:createHash("sha1").update(`blob ${body.length}\0`).update(body).digest("hex") })).catch(e => errors.push(e.message)));
     });
     await p.addInitScript(() => {
+      try { localStorage.setItem("suien_step_intro", "off"); } catch {} // 選ぶ工程の初回説明（#3028）は配置検査の対象外（step_intro.mjs が検査）
       window.__packingInputs = [];
       for (const type of ["click", "pointerdown", "keydown"]) document.addEventListener(type, e => {
         window.__packingInputs.push({type, test:e.target.closest?.("[data-test]")?.dataset.test || null, key:e.key, pointerType:e.pointerType});
