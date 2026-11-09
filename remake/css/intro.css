@@ -13,6 +13,10 @@
 #stage[data-wide] .art-intro :is(.ci-ribbon,.ci-accent-line) {
   left:calc(-120px - var(--stage-gutter)); width:calc(1520px + var(--stage-gutter) + var(--stage-gutter));
 }
+/* #3035: 帯の左端をガター分ずらしたことで、帯の中の名前欄まで左へ寄って人物に重なっていた。
+   名前欄は中央1280の組版位置へ戻す（帯そのものの延長はそのまま）。 */
+#stage[data-wide] .art-intro .ci-art-meta { left:calc(744px + var(--stage-gutter)); }
+#stage[data-wide] .art-intro[data-art="graphic"] .ci-art-meta { left:calc(800px + var(--stage-gutter)); }
 .art-intro .ci-art-meta { position:absolute; left:744px; top:0; width:606px; height:190px; }
 .cutin.art-intro .ci-title { all:unset; position:absolute; left:-9px; top:-62px; white-space:nowrap; font-size:28px; font-weight:700; letter-spacing:-.03em; color:#f8f6ee; background:#101820ed; padding:3px 12px 5px; border-left:3px solid var(--accent); }
 .art-intro .ci-name-line { position:absolute; top:18px; left:0; width:606px; height:148px; display:flex; align-items:center; }
