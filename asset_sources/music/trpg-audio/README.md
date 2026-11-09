@@ -49,7 +49,7 @@ BGM は CC0 なので、`.bgm`（単体再配布を避けるゲーム専用形�
 | 盛れない勇者と、プリ帳の魔王（purikura-hero） | sparkle | `bgm_purikura` | 既存のプリクラ曲 | [README.md](../README.md) |
 | 人形館のレクイエム（doll-requiem） | mansion | `bgm_trpg_mansion` | musicbox1_spooky_waltz（4 Music Box Tracks）/ Aureolus_Omicron | [OGA](https://opengameart.org/content/4-music-box-tracks) |
 
-作者名は OpenGameArt の投稿者名。
+作者名は OpenGameArt の投稿者名。オーナー判断（2026-11-10）で、CC0 だがスタッフロール（`remake/js/scenes/staff-roll.js`）に曲名・作者と Kenney の効果音を載せる。
 
 ## 変換と音量
 
@@ -70,4 +70,3 @@ BGM を足し替えたら `remake/data/manifest.json` の `bgm` 一覧も更新�
 - 耳での試聴（曲調・音色・ジングルの明暗）。特にファンブル・失敗のジングルの暗さ、宇宙テーマ曲（元が −26.6 LUFS と小さく +6.8 dB 上げた）。
 - 曲のループのつなぎ目（元がループ用に作られていない曲もある）。
 - 実機スマホ/Safari での再生。
-- エンディングのスタッフロールへの記載（CC0 なので必須ではない。仮の採用が決まってから）。

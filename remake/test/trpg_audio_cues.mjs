@@ -62,3 +62,13 @@ const used = new Set([...seFiles.map(n => "assets/audio/se/trpg/" + n),
   ...Object.values(TRPG_THEME_BGM).filter(k => k.startsWith("bgm_trpg_")).map(k => "assets/audio/bgm/" + k + ".mp3")]);
 assert.deepEqual([...recorded.keys()].sort(), [...used].sort(), "game_files.json と割り当てが一致しない");
 console.log("trpg audio cues ok:", seFiles.length, "SE,", new Set(Object.values(TRPG_THEME_BGM)).size, "BGM");
+
+// 4) オーナー判断（2026-11-10「クレジットは載せる」）: 新しいBGMの曲名・作者と Kenney の効果音をスタッフロールに載せる。
+const staffRoll = await readFile(new URL("remake/js/scenes/staff-roll.js", root), "utf8");
+for (const original of sources.originals.filter(o => o.kind === "bgm")) {
+  const title = original.title.replace(/^4 Music Box Tracks: /, "");
+  assert.ok(staffRoll.includes(`{ title: ${JSON.stringify(title)}, composer: ${JSON.stringify(original.author)}, source: "OpenGameArt・CC0" }`),
+    original.id + " がスタッフロールに無い");
+}
+assert.match(staffRoll, /効果音（TRPG）：Kenney – Casino Audio \/ RPG Audio \/ Music Jingles（CC0）/);
+console.log("trpg audio credits ok");
