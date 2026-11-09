@@ -171,7 +171,7 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
 
 ## 第1章の流れ（実装済み）
 
-1. タイトル → コールドオープン（`ch1_cold_open`・`scenes/coldopen.js`: 背景レイヤーにスポットライトの中の一台と一筋の煙・客席のシルエット。台詞に合わせて煙が満ち「1年前」で暗転）→ 章タイトル → `ch1_opening`
+1. タイトル → コールドオープン（`ch1_cold_open`・`scenes/coldopen.js`: 背景レイヤーにスポットライトの中の一台と一筋の煙・客席のシルエット。台詞に合わせて煙が満ち「1年前」で暗転）→ **第1章の詩**（`poem_ch1`・序詩を兼ねる巻頭ポエム。会話ウインドウでなく専用の縦書きの読ませる画面で、詩の上に横長のコマ絵を出す。連ごとの場面に分けて1場面ずつ。`scenes/chapter-poem.js`・`css/motions/chapter-poem.css`・`data/dialogue/chapter_poems.json`・`brand/chant_poems.md`）→ 章タイトル → `ch1_opening`
 2. スミさんの練習の誘い（任意）: 練習するなら手本つきで一台を通しで作る。どちらの選択でも → `ch1_tutorial_oneesan`
 3. DAY1 の昼はスミさんのおつかい（案内つき・旧版 N18/N19）: Dr.fookah で大会の課題フレーバーのレモンを仕入れる（`remake_day1_errand_shop`・店の経費・買うまで店を出られない・時間は使わない）
    → スミさんから稽古用にレモンを受け取る（`remake_lemon_gift`）→ KEMURIKUSA を客として偵察（`remake_day1_errand_scout`・行動1回＋交通費。偵察でDAY1は終了）。案内中のマップは行き先の1か所だけが光って選べる

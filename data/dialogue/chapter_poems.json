@@ -1,0 +1,164 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "poem_ch1",
+      "metadata": {
+        "poem": true,
+        "panel": "poem_ch1.webp",
+        "panel_alt": "夜のtonari。カウンター席に着いた客の背中と、水のグラスを置くスミさん"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の 台は 丸見えだった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手順も 葉も 隠さなかった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隠すものが ない 強さを",
+          "gap": true
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は まだ 持っていない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "poem_ch2",
+      "metadata": {
+        "poem": true,
+        "panel": "poem_ch2.webp",
+        "panel_alt": "明るい店の窓の中で笑うあげはと、外の暗い通りから見つめるはじめの後ろ姿"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "勝って かぶった 王冠は"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "中から 見ると"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ただの 輪だった",
+          "gap": true
+        }
+      ]
+    },
+    {
+      "dialogue_id": "poem_ch3",
+      "metadata": {
+        "poem": true,
+        "panel": "poem_ch3.webp",
+        "panel_alt": "閉店後の路地。綾取・ましろ・はじめが並び、背後のガラス戸に三人の姿が映る"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "分かったふりを した"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "知らない 味の 名前を"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "知っている 声で 言った"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "渡された 一台は",
+          "gap": true
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "何も 言わずに"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺の 嘘を 煙にして 返した"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "poem_ch4",
+      "metadata": {
+        "poem": true,
+        "panel": "poem_ch4.webp",
+        "panel_alt": "路地裏のカフェで、年配の手から若い手へ渡る小さなガラスのグラス"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "古い 器には"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "知らない 誰かの 指の 跡がある"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺の 指も いつか",
+          "gap": true
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "知らない 誰かの 器に 残る"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "poem_ch5",
+      "metadata": {
+        "poem": true,
+        "panel": "poem_ch5.webp",
+        "panel_alt": "光の下、同じ量の葉を盛った二つの皿の上で止まる、人の手と機械の手"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "同じ葉 同じ器具 同じ十二グラム"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "同じ手順 同じ温度 同じ時間"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ただ 一つ",
+          "gap": true
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "同じに できなかった もの"
+        }
+      ]
+    }
+  ]
+}
