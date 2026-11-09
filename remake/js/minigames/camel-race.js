@@ -280,8 +280,19 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   const root = el("section.camel-game", { role: "dialog", "aria-modal": "true", "aria-label": CAMEL_RACE_TITLE, tabindex: "-1",
     dataset: { test: "camel-game", phase: "loading", reducedMotion: String(reducedMotion) } }, [stageNode, live, sheet]);
   host.append(root);
-  // CR08 のカード・主ボタンの絵（#3046）。読めた時だけ見た目を切り替える。読めなければ従来の CSS のまま。
-  for (const [cls, rel] of [["cr-card", "ui/camel_race/ui/program-card.webp"], ["cr-btn", "ui/camel_race/ui/button-primary.webp"]]) {
+  // 部品ごとに読込成否を判定し、欠けた画像だけ CSS 表示へ戻す。
+  for (const [cls, rel] of [
+    ["cr-card", "ui/camel_race/ui/program-card.webp"],
+    ["cr-btn", "ui/camel_race/ui/button-primary.webp"],
+    ["cr-btn-secondary", "ui/camel_race/ui/button-secondary.webp"],
+    ["cr-dash", "ui/camel_race/ui/dash-panel.webp"],
+    ["cr-finish", "ui/camel_race/ui/finish-post.webp"],
+    ["cr-stamp-s", "ui/camel_race/ui/stamp-s.webp"],
+    ["cr-stamp-a", "ui/camel_race/ui/stamp-a.webp"],
+    ["cr-stamp-b", "ui/camel_race/ui/stamp-b.webp"],
+    ["cr-stamp-c", "ui/camel_race/ui/stamp-c.webp"],
+    ["cr-word-perfect", "ui/camel_race/ui/word-perfect.webp"],
+  ]) {
     const probe = new Image();
     probe.onload = () => root.classList.add(cls);
     probe.src = imgFileUrl(rel);

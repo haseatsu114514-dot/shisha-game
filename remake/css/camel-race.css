@@ -367,3 +367,27 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
   background: none; color: #241304; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
 .camel-game.cr-btn .camel-sheet .camel-card .camel-card-actions .btn.primary:hover,
 .camel-game.cr-btn .camel-sheet .camel-card .camel-card-actions .btn.primary:focus-visible { filter: brightness(1.07); color: #241304; }
+
+/* CR08 #3053: 各画像が読めたときだけ適用。数字と評価文字は DOM のまま。 */
+.camel-game.cr-dash .camel-clock { border: 12px solid transparent; border-radius: 0;
+  border-image: url("../img/ui/camel_race/ui/dash-panel.webp") 56 fill / 12px / 0 stretch;
+  background: none; padding: .4em .7em .45em; }
+.camel-game.cr-finish .camel-progress-flag { right: -2.5em; top: -1.7em; width: 3em; height: 3.75em;
+  transform: none; border-radius: 0; box-shadow: none;
+  background: url("../img/ui/camel_race/ui/finish-post.webp") center / contain no-repeat; }
+.camel-game.cr-btn-secondary .camel-sheet .camel-card .camel-card-actions .btn:not(.primary) { border: 12px solid transparent; border-radius: 10px;
+  border-image: url("../img/ui/camel_race/ui/button-secondary.webp") 60 64 fill / 12px 16px / 0 stretch;
+  background: none; color: #31210f; box-shadow: 0 6px 18px rgba(0,0,0,.3); }
+.camel-game.cr-btn-secondary .camel-sheet .camel-card .camel-card-actions .btn:not(.primary):is(:hover, :focus-visible) { filter: brightness(1.06); color: #241304; }
+.camel-game.cr-stamp-s .camel-grade-letter[data-grade="S"],
+.camel-game.cr-stamp-a .camel-grade-letter[data-grade="A"],
+.camel-game.cr-stamp-b .camel-grade-letter[data-grade="B"],
+.camel-game.cr-stamp-c .camel-grade-letter[data-grade="C"] { border: 0; border-radius: 0; box-shadow: none;
+  background-color: transparent; background-position: center; background-size: contain; background-repeat: no-repeat; }
+.camel-game.cr-stamp-s .camel-grade-letter[data-grade="S"] { background-image: url("../img/ui/camel_race/ui/stamp-s.webp"); color: #8f2b1c; }
+.camel-game.cr-stamp-a .camel-grade-letter[data-grade="A"] { background-image: url("../img/ui/camel_race/ui/stamp-a.webp"); color: #9a4f12; }
+.camel-game.cr-stamp-b .camel-grade-letter[data-grade="B"] { background-image: url("../img/ui/camel_race/ui/stamp-b.webp"); color: #182b54; }
+.camel-game.cr-stamp-c .camel-grade-letter[data-grade="C"] { background-image: url("../img/ui/camel_race/ui/stamp-c.webp"); color: #454545; }
+.camel-game.cr-word-perfect .camel-feedback[data-kind="perfect"] b { display: block; width: 5em; height: 1.1em;
+  color: transparent; -webkit-text-stroke-color: transparent; text-shadow: none;
+  background: url("../img/ui/camel_race/ui/word-perfect.webp") center / contain no-repeat; }
