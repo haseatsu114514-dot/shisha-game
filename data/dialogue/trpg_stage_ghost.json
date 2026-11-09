@@ -89,8 +89,7 @@
           "nerve": 1
         },
         "trait": "光に透けそうな衣装係。針と糸で、何でも直せる",
-        "likes": "ゆるいキャラの刺繍ワッペン",
-        "portrait": "../../img/ui/trpg/pc-mirei.webp"
+        "likes": "ゆるいキャラの刺繍ワッペン"
       }
     },
     {
@@ -111,8 +110,7 @@
           "nerve": 2
         },
         "trait": "相棒の人形と二人で一座。幽霊は、ほんの少しだけ苦手",
-        "likes": "海の見える芝居小屋と、サメ映画",
-        "portrait": "../../img/ui/trpg/pc-minamo.webp"
+        "likes": "海の見える芝居小屋と、サメ映画"
       }
     }
   ],
@@ -2800,40 +2798,6 @@
     "nameMax": 6,
     "title": "あなたのキャラクターを作る",
     "intro": "この芝居で演じる座員を決めよう。出自・能力値は、卓のあいだずっと使う",
-    "looks": [
-      {
-        "id": "ink",
-        "label": "黒髪の座員",
-        "detail": "短い黒髪に、作業用の前掛け",
-        "color": "#2f2a33",
-        "accent": "#e2b85a",
-        "portrait": "../../img/ui/trpg/look-stage-ghost-ink.webp"
-      },
-      {
-        "id": "rust",
-        "label": "赤毛の座員",
-        "detail": "赤毛を手ぬぐいでまとめる",
-        "color": "#7b3f33",
-        "accent": "#f0b27a",
-        "portrait": "../../img/ui/trpg/look-stage-ghost-rust.webp"
-      },
-      {
-        "id": "silver",
-        "label": "銀髪の座員",
-        "detail": "月明かりのような銀の髪と、紺の上着",
-        "color": "#4a4f63",
-        "accent": "#d9dbe8",
-        "portrait": "../../img/ui/trpg/look-stage-ghost-silver.webp"
-      },
-      {
-        "id": "long",
-        "label": "長髪の座員",
-        "detail": "長い髪を一つに結び、黒い稽古着",
-        "color": "#2d2440",
-        "accent": "#c9a7e0",
-        "portrait": "../../img/ui/trpg/look-stage-ghost-long.webp"
-      }
-    ],
     "archetypes": [
       {
         "id": "stagehand",
@@ -2895,8 +2859,7 @@
             "talk": 2,
             "nerve": 1
           },
-          "making": "trpg_stage_ghost_make_hiyori_hiyori_mirei",
-          "portrait": "../../img/ui/trpg/pc-mirei.webp"
+          "making": "trpg_stage_ghost_make_hiyori_hiyori_mirei"
         },
         {
           "id": "serena",
@@ -2910,8 +2873,7 @@
             "talk": 3,
             "nerve": 2
           },
-          "making": "trpg_stage_ghost_make_hiyori_hiyori_serena",
-          "portrait": "../../img/ui/trpg/pc-serena.webp"
+          "making": "trpg_stage_ghost_make_hiyori_hiyori_serena"
         }
       ]
     },
@@ -2929,8 +2891,7 @@
             "talk": 5,
             "nerve": 2
           },
-          "making": "trpg_stage_ghost_make_samechan_samechan_minamo",
-          "portrait": "../../img/ui/trpg/pc-minamo.webp"
+          "making": "trpg_stage_ghost_make_samechan_samechan_minamo"
         },
         {
           "id": "hiremaru",
@@ -2944,8 +2905,7 @@
             "talk": 3,
             "nerve": 3
           },
-          "making": "trpg_stage_ghost_make_samechan_samechan_hiremaru",
-          "portrait": "../../img/ui/trpg/pc-hiremaru.webp"
+          "making": "trpg_stage_ghost_make_samechan_samechan_hiremaru"
         }
       ]
     }

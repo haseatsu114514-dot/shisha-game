@@ -147,8 +147,8 @@ for (const scenario of scenarios) {
     assert.equal(q('trpg-cover-pc-name').textContent, builder.archetypes[0].name);
     q('trpg-build').click();
     // The look is not chosen (#3050): no look buttons; the PC wears the player's own face.
-    for (const look of builder.looks || []) assert(!root.querySelector('[data-test="trpg-look-' + look.id + '"]'), 'no look choice in the builder: ' + look.id);
-    assert(!root.querySelector('.trpg-builder-looks'), 'no look section in the builder');
+    // Only two parts remain: the origin and the name/stats (#3050).
+    assert.deepEqual([...q('trpg-builder').children].map(n => String(n.className).trim()), ['trpg-builder-origins', 'trpg-builder-stats'], 'no look choice in the builder');
     q('trpg-archetype-' + origin.id).click();
     // Beginners never see +/- unless they ask; every stat carries a plain explanation.
     assert(!root.querySelector('[data-test="trpg-stat-eye-up"]'), 'easy mode hides the point-buy');
@@ -167,7 +167,7 @@ for (const scenario of scenarios) {
     assert.equal(q('trpg-cover-pc-name').textContent, origin.name);
     const coverFace = root.querySelector('.trpg-cover-pc-face img');
     assert(coverFace, 'the cover shows a face');
-    assert(!coverFace.classList?.contains('trpg-pc-art') && !String(coverFace.src || '').includes('/ui/trpg/look-'), 'the cover shows the player\'s own portrait, not a look');
+    assert(!String(coverFace.src || '').includes('/ui/trpg/'), 'the cover shows the player\'s own portrait, not a look');
     q('trpg-start').click();
     assert(q('trpg-seat-pc-hajime').textContent.includes(origin.name), 'the seat shows the built character');
     assert(!root.textContent.includes('{pc}'), 'the name token never leaks to the screen');

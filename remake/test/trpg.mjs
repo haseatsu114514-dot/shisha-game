@@ -345,7 +345,8 @@ test("character creation: origin presets, a point-buy and a name replace the pla
   const { buildPc, randomPc } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
   for (const s of catalogScenarios) {
     const b = s.builder;
-    assert(b && b.looks.length >= 4 && b.archetypes.length >= 3);
+    assert(b && b.archetypes.length >= 3);
+    assert.equal(b.looks, undefined, "the look choice is gone (#3050)");
     for (const a of b.archetypes) assert.equal(Object.values(a.stats).reduce((n, v) => n + v, 0), b.points, a.id + " presets spend every point");
     // The authored default on the player's seat equals the first origin, so the untouched table plays as before.
     const seat = s.cast.find(c => c.id === b.seat);
@@ -358,10 +359,9 @@ test("character creation: origin presets, a point-buy and a name replace the pla
     assert.equal(pc.name, "ソラ"); assert.equal(pc.title, b.archetypes[1].title);
     assert.deepEqual(pc.stats, b.archetypes[1].stats);
     // No look is chosen (#3050): the built sheet carries no portrait or tint, so the seat shows the player's own face.
-    assert(!("look" in pc), "the built character has no look");
-    assert.equal(pc.portrait, null); assert.equal(pc.color, null); assert.equal(pc.accent, null);
+    for (const key of ["look", "portrait", "color", "accent"]) assert(!(key in pc), "the built character has no " + key);
     // An older save may still pass a look: it is ignored, never an error, and changes nothing.
-    assert.deepEqual(buildPc(s, { look: b.looks?.[2]?.id || "rust", archetype: b.archetypes[1].id, name: "ソラ" }), pc);
+    assert.deepEqual(buildPc(s, { look: "rust", archetype: b.archetypes[1].id, name: "ソラ" }), pc);
     assert.deepEqual(buildPc(s, { look: "nope" }), buildPc(s, {}));
     assert.throws(() => buildPc(s, { archetype: "nope" }));
     assert.throws(() => buildPc(s, { name: "" })); assert.throws(() => buildPc(s, { name: "あいうえおかき" }));
@@ -373,13 +373,28 @@ test("character creation: origin presets, a point-buy and a name replace the pla
     assert.equal(buildPc(s, { stats: spare }).points, b.points - 1, "leaving a point unspent is allowed");
     const a = randomPc(s, 42), c = randomPc(s, 42);
     assert.deepEqual(a, c, "a seeded random character is reproducible");
-    assert(!("look" in a) && a.portrait === null, "おまかせ never picks a look");
+    assert(!("look" in a) && !("portrait" in a), "おまかせ never picks a look");
+    // Companions follow the same rule: every seat, built or authored, shows whoever plays it.
+    const table = new TrpgSession(s, { seed: 42 });
+    for (const [seat, sheet] of Object.entries(table.sheets)) {
+      for (const key of ["look", "portrait", "color", "accent"]) assert(!(key in sheet), s.id + " " + seat + " sheet has no " + key);
+    }
     assert(a.points <= b.points);
   }
   const moved = { eye: 2, hand: 3, talk: 3, nerve: 3 };
   const session = new TrpgSession(scenario, { profileId: "quiet", seed: 7, pc: { look: "rust", archetype: "sailor", name: "ソラ", stats: moved } });
   // The look from an older save is dropped; the player's seat shows the player's own portrait (no sheet portrait or tint).
-  assert.equal(session.sheets.hajime.portrait, null); assert.equal(session.sheets.hajime.color, null);
+  assert(!("portrait" in session.sheets.hajime) && !("color" in session.sheets.hajime) && !("look" in session.sheets.hajime));
+  // Older data that still carries role pictures for companions (or the authored sheets) is ignored the same way.
+  const legacy = JSON.parse(JSON.stringify(scenario));
+  for (const by of Object.values(legacy.companionBuilds)) for (const options of Object.values(by)) for (const o of options) o.portrait = "../../img/ui/trpg/pc-" + o.id + ".webp";
+  for (const c of legacy.cast) if (c.sheet) Object.assign(c.sheet, { portrait: "../../img/ui/trpg/pc-old.webp", color: "#123456" });
+  legacy.builder.looks = [{ id: "rust", label: "赤茶", detail: "", color: "#884422", portrait: "../../img/ui/trpg/look-old.webp" }];
+  const old = new TrpgSession(legacy, { profileId: "quiet", seed: 7, pc: { look: "rust", archetype: "sailor", name: "ソラ", stats: moved } });
+  for (const [seat, sheet] of Object.entries(old.sheets)) {
+    for (const key of ["look", "portrait", "color", "accent"]) assert(!(key in sheet), "legacy " + seat + " sheet drops " + key);
+  }
+  assert.deepEqual(old.snapshot().pc, session.snapshot().pc, "legacy role pictures change nothing else");
   assert.equal(session.sheets.hajime.name, "ソラ"); assert.deepEqual(session.sheets.hajime.stats, moved);
   assert(scenario.companionBuilds.adam.adam.some(o => o.name === session.sheets.adam.name), "companions bring a character they made");
   assert.deepEqual(session.snapshot().pc, { name: "ソラ", title: "船乗り帰りの手伝い", archetype: "sailor", stats: moved });

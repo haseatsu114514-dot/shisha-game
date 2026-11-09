@@ -21,7 +21,7 @@ export function approachBase(scenario, kind, approachId = null, sheets = null) {
 /**
  * Build the player's own character from the scenario's builder: an archetype preset, edited stats and a name.
  * The look is not chosen (#3050, owner 2026-11-09): the player's own face plays the role, so the built sheet
- * carries no portrait or tint and the seat shows the player's portrait. Old saves may still pass a look; it is ignored.
+ * carries no portrait and the seat shows the player's portrait. Old saves may still pass a look; it is ignored.
  */
 export function buildPc(scenario, choices = {}) {
   const builder = scenario.builder;
@@ -37,7 +37,7 @@ export function buildPc(scenario, choices = {}) {
   const name = String(choices.name ?? archetype.name).trim();
   if (!name || [...name].length > (builder.nameMax || 6)) throw new Error("Invalid character name");
   return { seat: builder.seat || PLAYER_SEAT, name, title: archetype.title, trait: archetype.trait, stats, points,
-    archetype: archetype.id, portrait: null, color: null, accent: null };
+    archetype: archetype.id };
 }
 /**
  * Companions make their own characters: each seat's player picks one authored option (likes, a joke, a parody),
@@ -98,9 +98,14 @@ export class TrpgSession {
     this.companions = pickCompanions(scenario, seed, companions);
     for (const [seat, option] of Object.entries(this.companions)) {
       this.sheets[seat] = { ...(this.sheets[seat] || {}), name: option.name, title: option.title, trait: option.trait, likes: option.likes,
-        stats: { ...option.stats }, portrait: option.portrait || this.sheets[seat]?.portrait || null, option: option.id };
+        stats: { ...option.stats }, option: option.id };
     }
     if (this.pc) this.sheets[this.pc.seat] = { ...(this.sheets[this.pc.seat] || {}), ...this.pc };
+    // Every seat shows the face of whoever plays it (#3050): role art, looks and tints from older data are dropped.
+    for (const seat of Object.keys(this.sheets)) {
+      const { portrait, color, accent, look, ...sheet } = this.sheets[seat];
+      this.sheets[seat] = sheet;
+    }
     this.rng = Number(seed) >>> 0 || 1;
     const profile = profileId ? scenario.profiles.find(p => p.id === profileId)
       : scenario.profiles[this.next() % scenario.profiles.length];

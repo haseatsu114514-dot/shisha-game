@@ -18,8 +18,6 @@ const ICONS = {
   notes: '<path d="M6 3h13v18H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm2 0v18m3-13h5m-5 4h5"/>',
   sheet: '<path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5"/><circle cx="16.5" cy="16.5" r="1.5"/>',
 };
-/** Placeholder bust for a built character until its portrait exists: tinted silhouette with the name's first letter. */
-const BUST = '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="38" r="20" fill="currentColor"/><path d="M14 98c3-24 17-36 36-36s33 12 36 36z" fill="currentColor"/></svg>';
 
 /** Mounts one isolated session; finished resolves only after the player leaves the table. */
 export function mountTrpg(host, { scenario, characters, manifest, tableTalk = null, tutorialLines = null, tutorial = false, onTutorialDone = () => {},
@@ -37,15 +35,9 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   const statLabel = key => presentation.stats?.[key] || key;
   // Seats nobody filled tonight: the GM voices those PCs.
   const npcSeats = Object.keys(sheets).filter(seat => !scenario.cast.some(c => seatOf(c.id) === seat));
-  // The PC's own likeness when the sheet has one; otherwise the player's portrait stands in.
+  // A PC always wears the face of whoever plays it (#3050): the player's own portrait, never a role or look picture.
   function pcFace(seat, playerId) {
-    const sheet = sheets[seat];
-    if (sheet?.portrait) return el("img.trpg-pc-art", { src: new URL(sheet.portrait, import.meta.url).href, alt: "" });
-    if (sheet?.color) return bust(sheet);
     return el("img", { src: portrait(playerId), alt: "", style: portraitFrame(playerId, 150, 6) });
-  }
-  function bust({ color, accent, name }) {
-    return el("span.trpg-pc-bust", { style: { "--bust": color, "--bust-accent": accent || "#e9d9b5" }, html: BUST, title: name || "" });
   }
   /** Authored text names the player's character with {pc}; the built name fills it in. */
   // {pc} is the player's character, {pc:seat} a companion's, {pcTitle} the player's origin and {gm} tonight's GM.

@@ -58,7 +58,8 @@ function validate(rel) {
   // Builder and companions.
   const b = s.builder;
   need(b.seat === "hajime" && b.points === 11 && b.min === 1 && b.max === 5, "builder: seat hajime / points 11 / min 1 / max 5");
-  need(b.looks?.length === 4 && b.looks.every(l => l.id && l.label && l.detail && l.color), "builder.looks は4つ（id/label/detail/color）");
+  // #3050: the look is not chosen. The player's character wears the player's own face.
+  need(b.looks === undefined, "builder.looks は廃止（#3050）。見た目は選ばず、本人の立ち絵を使う");
   need(b.archetypes?.length === 3 && b.archetypes[0].recommended === true, "builder.archetypes は3つ、1つ目に recommended:true");
   for (const a of b.archetypes || []) need(Object.values(a.stats).reduce((n, v) => n + v, 0) === 11 && a.name && a.title && a.trait, "出自 " + a.id + " は合計11点・name/title/trait");
   need(JSON.stringify(b.archetypes?.[0]?.stats) === JSON.stringify(player?.sheet?.stats) && b.archetypes?.[0]?.name === player?.sheet?.name, "はじめの sheet は出自1つ目と同じ");
@@ -146,9 +147,10 @@ function validate(rel) {
     for (const [field, row] of Object.entries(pr.choiceArt.rows || {})) need(Number.isInteger(row) && row < pr.choiceArt.rowCount, "choiceArt.rows." + field);
   }
   for (const phase of phasesOf(s)) need(pr.phases?.[phase]?.kicker && pr.phases[phase].title, "presentation.phases." + phase);
-  const faces = [...(s.builder?.looks || []), ...Object.values(s.companionBuilds || {}).flatMap(seat => Object.values(seat).flat()),
-    ...s.cast.map(c => c.sheet).filter(Boolean)].map(x => x.portrait).filter(Boolean);
-  for (const url of new Set(faces)) need(shipped(url), "人物シートの顔 " + url + " が存在しない");
+  // #3050: every seat shows whoever plays it, so no sheet or companion build carries its own role picture.
+  const sheetsWithArt = [...Object.values(s.companionBuilds || {}).flatMap(seat => Object.values(seat).flat()),
+    ...s.cast.map(c => c.sheet).filter(Boolean)].filter(x => x.portrait !== undefined || x.color !== undefined);
+  for (const x of sheetsWithArt) need(false, "人物シート " + (x.id || x.name) + " に portrait/color がある（#3050: 顔は演じる本人の立ち絵）");
   // Lines: speakers, faces, width, punctuation, tokens.
   const seatsAll = new Set(s.cast.map(c => c.id));
   for (const d of s.dialogues) {

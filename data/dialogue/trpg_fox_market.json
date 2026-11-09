@@ -58,8 +58,7 @@
           "nerve": 2
         },
         "trait": "夜風にも消えそうな灯り番……のはず。ラーメンの匂いには負けない",
-        "likes": "屋台のラーメン。湯気の向こうの提灯",
-        "portrait": "../../img/ui/trpg/pc-kasumi.webp"
+        "likes": "屋台のラーメン。湯気の向こうの提灯"
       }
     },
     {
@@ -80,8 +79,7 @@
           "nerve": 4
         },
         "trait": "腕っぷしと度胸は一人前。暗いところは、ちと苦手",
-        "likes": "サメ柄の手ぬぐい。夜の海のサメ映画",
-        "portrait": "../../img/ui/trpg/pc-namimaru.webp"
+        "likes": "サメ柄の手ぬぐい。夜の海のサメ映画"
       }
     }
   ],
@@ -3100,40 +3098,6 @@
     "nameMax": 6,
     "title": "あなたのキャラクターを作る",
     "intro": "この物語で演じる灯り番を決めよう。出自・能力値は、卓のあいだずっと使う",
-    "looks": [
-      {
-        "id": "indigo",
-        "label": "紺の法被の灯り番",
-        "detail": "短い黒髪に、紺の法被",
-        "color": "#2c3566",
-        "accent": "#e0913a",
-        "portrait": "../../img/ui/trpg/look-fox-market-indigo.webp"
-      },
-      {
-        "id": "ash",
-        "label": "灰色の髪の灯り番",
-        "detail": "伸びた灰色の髪を、手ぬぐいでまとめる",
-        "color": "#6b6a72",
-        "accent": "#d9cdb6",
-        "portrait": "../../img/ui/trpg/look-fox-market-ash.webp"
-      },
-      {
-        "id": "rust",
-        "label": "赤茶の髪の灯り番",
-        "detail": "日に焼けた肌と、赤茶の癖毛に鉢巻き",
-        "color": "#7a4a37",
-        "accent": "#e3b27a",
-        "portrait": "../../img/ui/trpg/look-fox-market-rust.webp"
-      },
-      {
-        "id": "moss",
-        "label": "眼鏡の灯り番",
-        "detail": "丸眼鏡と、苔色の浴衣",
-        "color": "#4c5f49",
-        "accent": "#bcd3a8",
-        "portrait": "../../img/ui/trpg/look-fox-market-moss.webp"
-      }
-    ],
     "archetypes": [
       {
         "id": "apprentice",
@@ -3195,8 +3159,7 @@
             "talk": 2,
             "nerve": 2
           },
-          "making": "trpg_fox_market_make_hiyori_hiyori_kasumi",
-          "portrait": "../../img/ui/trpg/pc-kasumi.webp"
+          "making": "trpg_fox_market_make_hiyori_hiyori_kasumi"
         },
         {
           "id": "shizuku",
@@ -3210,8 +3173,7 @@
             "talk": 1,
             "nerve": 2
           },
-          "making": "trpg_fox_market_make_hiyori_hiyori_shizuku",
-          "portrait": "../../img/ui/trpg/pc-shizuku.webp"
+          "making": "trpg_fox_market_make_hiyori_hiyori_shizuku"
         }
       ]
     },
@@ -3229,8 +3191,7 @@
             "talk": 3,
             "nerve": 4
           },
-          "making": "trpg_fox_market_make_samechan_samechan_namimaru",
-          "portrait": "../../img/ui/trpg/pc-namimaru.webp"
+          "making": "trpg_fox_market_make_samechan_samechan_namimaru"
         },
         {
           "id": "fukajiro",
@@ -3244,8 +3205,7 @@
             "talk": 2,
             "nerve": 3
           },
-          "making": "trpg_fox_market_make_samechan_samechan_fukajiro",
-          "portrait": "../../img/ui/trpg/pc-fukajiro.webp"
+          "making": "trpg_fox_market_make_samechan_samechan_fukajiro"
         }
       ]
     }

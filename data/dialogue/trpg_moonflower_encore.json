@@ -89,8 +89,7 @@
           "nerve": 2
         },
         "trait": "ノクターンを追って、城まで来たファン。うちわもペンライトも自作",
-        "likes": "プリクラと、白と赤のグミベア",
-        "portrait": "../../img/ui/trpg/pc-moonflower-encore-kirara.webp"
+        "likes": "プリクラと、白と赤のグミベア"
       }
     },
     {
@@ -111,8 +110,7 @@
           "nerve": 2
         },
         "trait": "吸血鬼を狩りに来た……が、実は平和主義。武器は林檎と名言",
-        "likes": "ダブルアップルと、舞台の仕掛け",
-        "portrait": "../../img/ui/trpg/pc-moonflower-encore-leon.webp"
+        "likes": "ダブルアップルと、舞台の仕掛け"
       }
     }
   ],
@@ -2926,40 +2924,6 @@
     "nameMax": 6,
     "title": "あなたのキャラクターを作る",
     "intro": "今夜の古城ライブで働く裏方を決めよう。出自・能力値は、卓のあいだずっと使う",
-    "looks": [
-      {
-        "id": "apron",
-        "label": "黒髪の裏方",
-        "detail": "短い黒髪に、黒いエプロンと工具袋",
-        "color": "#2a2430",
-        "accent": "#9b1b3f",
-        "portrait": "../../img/ui/trpg/look-moonflower-encore-apron.webp"
-      },
-      {
-        "id": "tailcoat",
-        "label": "銀髪の燕尾服",
-        "detail": "銀色の髪に、ワイン色の燕尾服",
-        "color": "#c9c4d6",
-        "accent": "#6e1a3c",
-        "portrait": "../../img/ui/trpg/look-moonflower-encore-tailcoat.webp"
-      },
-      {
-        "id": "glasses",
-        "label": "眼鏡の譜めくり",
-        "detail": "丸い眼鏡に、楽譜を抱えた黒いベスト",
-        "color": "#3a3045",
-        "accent": "#e6d7b8",
-        "portrait": "../../img/ui/trpg/look-moonflower-encore-glasses.webp"
-      },
-      {
-        "id": "cloak",
-        "label": "マントの新人",
-        "detail": "長い黒マントに、月光花のブローチ",
-        "color": "#1f1a2e",
-        "accent": "#e9e4f5",
-        "portrait": "../../img/ui/trpg/look-moonflower-encore-cloak.webp"
-      }
-    ],
     "archetypes": [
       {
         "id": "stagehand",
@@ -3021,8 +2985,7 @@
             "talk": 3,
             "nerve": 2
           },
-          "making": "trpg_moonflower_encore_make_ageha_ageha_kirara",
-          "portrait": "../../img/ui/trpg/pc-moonflower-encore-kirara.webp"
+          "making": "trpg_moonflower_encore_make_ageha_ageha_kirara"
         },
         {
           "id": "moka",
@@ -3036,8 +2999,7 @@
             "talk": 3,
             "nerve": 1
           },
-          "making": "trpg_moonflower_encore_make_ageha_ageha_moka",
-          "portrait": "../../img/ui/trpg/pc-moka.webp"
+          "making": "trpg_moonflower_encore_make_ageha_ageha_moka"
         }
       ]
     },
@@ -3055,8 +3017,7 @@
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_moonflower_encore_make_adam_adam_leon",
-          "portrait": "../../img/ui/trpg/pc-moonflower-encore-leon.webp"
+          "making": "trpg_moonflower_encore_make_adam_adam_leon"
         },
         {
           "id": "ziek",
@@ -3070,8 +3031,7 @@
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_moonflower_encore_make_adam_adam_ziek",
-          "portrait": "../../img/ui/trpg/pc-ziek.webp"
+          "making": "trpg_moonflower_encore_make_adam_adam_ziek"
         }
       ]
     }

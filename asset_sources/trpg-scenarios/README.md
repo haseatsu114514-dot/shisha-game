@@ -8,7 +8,7 @@
 2. 選択肢: 原画 `assets/ui/trpg/choices-<id>.png`（透過・3列×5行・**1マスは正方形＝全体ぴったり3:5**。ゲームは1マスを正方形で切り出すので、2:3などで作ると絵が伸びる。3:5で作れない生成ツールでは、1〜3行目を正方形1枚・4〜5行目を3:2の1枚で作り、同じ幅にそろえて縦に重ねる）→ 配信 `remake/img/ui/trpg/choices-<id>.webp`（lossless）。JSONの `presentation.choiceArt` に `{"src": "../../img/ui/trpg/choices-<id>.webp", "rowCount": 5, "rows": {...}}`（下の行番号のとおり）。
 3. 新規画像は Git LFS（`git lfs ls-files` で確認）。`node tools/validate_trpg_scenario.mjs` で画像の存在を検査し、`remake/trpg-preview.html?scenario=<id>` で輪と物の位置を目視する。
 4. 生成日・SHA-256・目視QAを `asset_sources/trpg-scenarios/generation.json` に残す。
-5. 人物シート（上段=はじめの見た目4種、下段=仲間の役4人）: 原画を `asset_sources/trpg-sheets/<id>/` に置き、`python3 tools/trpg_crop_portraits.py scenario <sheet.png> <id>` で切り出す。512px原寸は `assets/ui/trpg/`、256px WebP は `remake/img/ui/trpg/` に書かれ、JSONの `portrait` も埋まる。丸窓で目視してから commit。
+5. 人物: 役ごとの似顔絵・見た目の絵は使わない（#3050）。卓の顔は、その役を演じる本人の立ち絵。本人の顔＋役のコスプレ差分は別途試作中で、採用が決まるまで組み込み先は作らない。
 
 ## 01 世界一普通の一台（`ordinary-cup`）
 

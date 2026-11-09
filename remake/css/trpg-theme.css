@@ -398,7 +398,6 @@ html:root .trpg-root.trpg-cinematic .trpg-seat-face {
 html:root .trpg-root.trpg-cinematic .trpg-table-person.active .trpg-seat-face { border-color: #fff2bd; }
 /* 顔の切り抜きは view.js の portraitFrame(id, 160, 6) と同じ幅（手引きの顔 64px／150px と同じ倍率で、頭が丸に収まる）。 */
 html:root .trpg-root.trpg-cinematic .trpg-seat-face img { position: absolute; left: 50%; width: 160px; max-width: none; }
-html:root .trpg-root.trpg-cinematic .trpg-seat-face img.trpg-pc-art { inset: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
 html:root .trpg-root.trpg-cinematic .trpg-seat-head { min-width: 0; }
 html:root .trpg-root.trpg-cinematic .trpg-seat-head .trpg-seat-name,
 html:root .trpg-root.trpg-cinematic .trpg-table-person[data-part="gm"] .trpg-seat-name { font-size: max(24px, var(--tt-min)); font-weight: 700; white-space: nowrap; color: #fff4d6; text-shadow: 0 1px 2px #000, 0 0 6px #000a; }
@@ -551,9 +550,9 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-heading > strong
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-stage { --b-text: max(20px, calc(11.5px / var(--k, 1))); --b-name: max(22px, calc(12.5px / var(--k, 1))); }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-stage > h2 { font-size: max(28px, calc(14px / var(--k, 1))); }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-stage .trpg-modal-intro,
-html:root[data-density="phone"] .trpg-root.trpg-cinematic :is(.trpg-builder-look, .trpg-builder-origin) small { display: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-origin small { display: none; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder :is(h3, .trpg-builder-origin > span, .trpg-builder-recommend, .trpg-builder-name, .trpg-builder-points, .trpg-builder-stat-rows dt, .trpg-builder-stat-rows dd > span, .trpg-builder-hint, .trpg-builder-easy, .trpg-builder-stat-help) { font-size: var(--b-text); line-height: 1.35; }
-html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder :is(.trpg-builder-look strong, .trpg-builder-origin strong, .trpg-builder-points strong) { font-size: var(--b-name); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder :is(.trpg-builder-origin strong, .trpg-builder-points strong) { font-size: var(--b-name); }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder .trpg-builder-mode { min-height: var(--q-hit); font-size: var(--b-text); }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-stat-rows dd .trpg-button { min-width: var(--q-hit); min-height: var(--q-hit); font-size: var(--b-name); }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-stage .trpg-modal-actions .trpg-button { font-size: var(--b-text); }

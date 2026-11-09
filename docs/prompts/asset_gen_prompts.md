@@ -24,7 +24,7 @@
 
 > 2026-11-02 CR06: 第4章ドバイのラクダレース（CAMEL RACE）の[Codex用指示書（背景・ファーリス／ハリールの立ち絵・ラクダとロボット騎手・SUV・砂煙とゲート）](../../asset_sources/ch4-camel-race/README.md)。背景の英文は `tools/bg_prompts.txt` の CR01。未生成。届くまで Canvas 描写で代用中。
 
-> 2026-11-01 TRB05・TRB08・TRB12: TRPGの「キャラクターを作る」の見た目8点（通常編4・サメ編4）と仲間のPC似顔絵9点（各仲間の2案）の[Codex用指示書（保存先・サイズ・プロンプト・組み込み手順）](../../asset_sources/trpg-sheets/README.md)。未生成。シルエットと本人の立ち絵で代用中。
+> 2026-11-01 TRB05・TRB08・TRB12: TRPGの「キャラクターを作る」の見た目と仲間のPC似顔絵の指示書は、2026-11-10 に廃止（#3050。卓の顔は演じる本人の立ち絵。見た目・似顔絵の画像と `asset_sources/trpg-sheets/` は削除済み）。
 
 > 2026-10-30 GB02: 心得の盤の画面デザイン案5パターン（漆と金／炭火の焼き網／煙の星図／店の木の盤／ネオンのラウンジ）の[Codex用プロンプト](../../asset_sources/ui/growth-board-20261030/concepts/prompts.txt)。正本 `docs/stat-design/ADDENDUM-BOARD-LAYOUT.md`（3能力・能力ごとの盤・枝分かれの道）に合わせた方向決め用の見本で、文字は焼き込まない。選ばれた案でGB01の素材を作り直す。
 

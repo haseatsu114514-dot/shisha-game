@@ -59,8 +59,7 @@
           "nerve": 2
         },
         "trait": "伝説の勇者の子孫。魔王に撮られてから、何を撮っても盛れない",
-        "likes": "白と赤のグミベア。プリ帳をデコる夜",
-        "portrait": "../../img/ui/trpg/pc-lovely.webp"
+        "likes": "白と赤のグミベア。プリ帳をデコる夜"
       }
     },
     {
@@ -81,8 +80,7 @@
           "nerve": 4
         },
         "trait": "薔薇を一輪携えた、夜の歌い手。人前だと声が小さい",
-        "likes": "薔薇の香り。夜に開く花の歌",
-        "portrait": "../../img/ui/trpg/pc-nocturne.webp"
+        "likes": "薔薇の香り。夜に開く花の歌"
       }
     }
   ],
@@ -3290,40 +3288,6 @@
     "nameMax": 6,
     "title": "あなたのキャラクターを作る",
     "intro": "この物語で演じる勇者を決めよう。出自・能力値は、卓のあいだずっと使う",
-    "looks": [
-      {
-        "id": "gold",
-        "label": "金髪の勇者",
-        "detail": "跳ねた金髪に、青いマント",
-        "color": "#3a4f8c",
-        "accent": "#f4d36b",
-        "portrait": "../../img/ui/trpg/look-purikura-hero-gold.webp"
-      },
-      {
-        "id": "night",
-        "label": "黒髪の勇者",
-        "detail": "短い黒髪に、銀の胸当て",
-        "color": "#2c2f45",
-        "accent": "#c9d2e8",
-        "portrait": "../../img/ui/trpg/look-purikura-hero-night.webp"
-      },
-      {
-        "id": "berry",
-        "label": "桃色髪の勇者",
-        "detail": "ふわっとした桃色の髪に、ハートの盾",
-        "color": "#8a4a6e",
-        "accent": "#ffb3d1",
-        "portrait": "../../img/ui/trpg/look-purikura-hero-berry.webp"
-      },
-      {
-        "id": "chestnut",
-        "label": "栗毛の勇者",
-        "detail": "栗色の髪に、旅の地図とカメラ",
-        "color": "#6b4a32",
-        "accent": "#e8c99a",
-        "portrait": "../../img/ui/trpg/look-purikura-hero-chestnut.webp"
-      }
-    ],
     "archetypes": [
       {
         "id": "squire",
@@ -3385,8 +3349,7 @@
             "talk": 3,
             "nerve": 2
           },
-          "making": "trpg_purikura_hero_make_ageha_ageha_lovely",
-          "portrait": "../../img/ui/trpg/pc-lovely.webp"
+          "making": "trpg_purikura_hero_make_ageha_ageha_lovely"
         },
         {
           "id": "beatrice",
@@ -3400,8 +3363,7 @@
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_purikura_hero_make_ageha_ageha_beatrice",
-          "portrait": "../../img/ui/trpg/pc-beatrice.webp"
+          "making": "trpg_purikura_hero_make_ageha_ageha_beatrice"
         }
       ]
     },
@@ -3419,8 +3381,7 @@
             "talk": 2,
             "nerve": 4
           },
-          "making": "trpg_purikura_hero_make_rei_rei_nocturne",
-          "portrait": "../../img/ui/trpg/pc-nocturne.webp"
+          "making": "trpg_purikura_hero_make_rei_rei_nocturne"
         },
         {
           "id": "shion",
@@ -3434,8 +3395,7 @@
             "talk": 1,
             "nerve": 3
           },
-          "making": "trpg_purikura_hero_make_rei_rei_shion",
-          "portrait": "../../img/ui/trpg/pc-purikura-hero-shion.webp"
+          "making": "trpg_purikura_hero_make_rei_rei_shion"
         }
       ]
     }

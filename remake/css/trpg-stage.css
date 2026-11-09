@@ -750,7 +750,6 @@
   .trpg-root.trpg-cinematic .trpg-approach-face { width: 48px; height: 48px; }
   .trpg-root.trpg-cinematic .trpg-sheet { padding: 12px; gap: 6px; }
 }
-.trpg-root.trpg-cinematic :is(.trpg-approach-face, .trpg-sheet-face, .trpg-roll-actor-face) img.trpg-pc-art { position: absolute; inset: 0; left: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; transform: none; }
 /* The roll's extra lines (declared character, momentum) must never squeeze the reroll choices below their content. */
 .trpg-root.trpg-cinematic .trpg-roll-stage :is(.trpg-rerolls, .trpg-reroll-choice, .trpg-roll-trump, .trpg-ability-receipt, .trpg-dice-total, .trpg-roll-special) { flex-shrink: 0; }
 .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice { height: auto; }
@@ -766,13 +765,9 @@
 }
 
 /* ===== Character creation (2026-11-01): the player's own PC on the cover and in the builder. ===== */
-.trpg-root.trpg-cinematic .trpg-pc-bust { position: absolute; inset: 0; display: block; overflow: hidden; border-radius: 50%; color: var(--bust-accent, #e9d9b5); background: radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--bust, #3b4a5a) 55%, #fff 0%), var(--bust, #3b4a5a) 75%); }
-.trpg-root.trpg-cinematic .trpg-pc-bust svg { position: absolute; inset: 6% 0 -4%; width: 100%; height: 100%; opacity: .92; }
-.trpg-root.trpg-cinematic .trpg-pc-bust b { position: absolute; left: 50%; top: 74%; transform: translate(-50%, -50%); font-size: .95em; font-weight: 700; line-height: 1; color: var(--bust, #3b4a5a); text-shadow: 0 1px 0 #fff8; }
 .trpg-root.trpg-cinematic .trpg-cover-pc { display: flex; align-items: center; gap: 14px; width: max-content; max-width: 560px; margin: 14px 0 8px; padding: 10px 14px; border: 1px solid #e8dcbb55; border-radius: 10px; background: #0b222766; backdrop-filter: blur(4px); }
 .trpg-root.trpg-cinematic .trpg-cover-pc-face { position: relative; display: block; flex: 0 0 60px; width: 60px; height: 60px; overflow: hidden; border-radius: 50%; border: 1px solid #ebd9a8a6; background: #253c3d9c; }
 .trpg-root.trpg-cinematic .trpg-cover-pc-face img { position: absolute; left: 50%; width: 150px; max-width: none; transform: translateX(-50%); }
-.trpg-root.trpg-cinematic .trpg-cover-pc-face img.trpg-pc-art { inset: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transform: none; }
 .trpg-root.trpg-cinematic .trpg-cover-pc-copy { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .trpg-root.trpg-cinematic .trpg-cover-pc-copy small { font-size: 12px; font-weight: 700; color: #cfd8c9; }
 .trpg-root.trpg-cinematic .trpg-cover-pc-copy strong { font-size: 20px; font-weight: 500; letter-spacing: .05em; color: #fff1cf; }
