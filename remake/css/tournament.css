@@ -9,8 +9,8 @@
 .tournament-face.loaded img { opacity: 1; }
 .face-fallback { position: absolute; font-size: 22px; font-weight: 700; color: #dfcfaf; }
 .tournament-face.loaded .face-fallback { visibility: hidden; }
-/* ===== 大会の中継グラフィック（中間投票・伏見の一括投入・結果発表）=====
-   ゲーム内1280×720基準。色: 金=主役/はじめ、審査員は --c（上園=桃・博士=青緑・伏見=金）。 */
+/* ===== 大会の中継グラフィック（中間投票・千須の一括投入・結果発表）=====
+   ゲーム内1280×720基準。色: 金=主役/はじめ、審査員は --c（上園=桃・博士=青緑・千須=金）。 */
 .tournament-live { display: inline-block; margin-right: 10px; padding: 2px 8px 2px 18px; position: relative; border-radius: 3px; background: #d8304f; color: #fff; font-size: 12px; font-weight: 700; font-style: normal; letter-spacing: .02em; vertical-align: 2px; }
 .tournament-live::before { content: ""; position: absolute; left: 7px; top: 50%; width: 6px; height: 6px; margin-top: -3px; border-radius: 50%; background: #fff; animation: live-blink 1.2s steps(2) infinite; }
 @keyframes live-blink { 50% { opacity: .2; } }
@@ -96,7 +96,7 @@
 .count-screen .rc-cut { padding: 8px 16px; background: #1c142de8; border-left: 3px solid #f6c95e; font-size: 19px; color: #e7dcf0; box-shadow: 0 6px 18px #0009; }
 .count-screen .rc-crt { opacity: .3; }
 
-/* ---- 伏見の一括投入 */
+/* ---- 千須の一括投入 */
 .sui-cut { align-items: stretch; justify-content: flex-start; padding: 40px 470px 40px 60px; gap: 18px; overflow: hidden; }
 .nc-rays { position: absolute; inset: 0; background: repeating-conic-gradient(from 0deg at 72% 60%, #f6c95e14 0 4deg, transparent 4deg 12deg); opacity: 0; transition: opacity .3s; pointer-events: none; }
 .sui-cut.cutting .nc-rays { opacity: 1; animation: rays-flicker .18s steps(2) infinite; }

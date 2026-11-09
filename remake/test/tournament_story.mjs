@@ -141,7 +141,7 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
   assert.equal(tournamentStoryLeadIn({...base,chapter},event),null,`chapter${chapter} keeps its own round-end scenes`);
  assert.equal(JSON.stringify(c2),before,'Round-end call must not alter craft/results');
 }
-// #2031: 第4章（世界大会）の制作中の掛け合い。審査員は伏見・エミル・太陽、対戦相手はなる・王煙楼・シェイク。
+// #2031: 第4章（世界大会）の制作中の掛け合い。審査員は千須・エミル・太陽、対戦相手はなる・王煙楼・シェイク。
 {
  const c4={...cs,chapter:4},before=JSON.stringify(c4);
  const say=(event,context,c=c4)=>tournamentStoryDialogue(c,event,()=>0,context);

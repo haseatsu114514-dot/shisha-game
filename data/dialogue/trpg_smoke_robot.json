@@ -89,8 +89,7 @@
           "nerve": 1
         },
         "trait": "香りの配合なら駅一番。名言の前に、少し間を取る",
-        "likes": "林檎の香り。宇宙の始まりの味",
-        "portrait": "../../img/ui/trpg/pc-nova.webp"
+        "likes": "林檎の香り。宇宙の始まりの味"
       }
     },
     {
@@ -111,8 +110,7 @@
           "nerve": 3
         },
         "trait": "よく見て、よく描く。宇宙でも口数は少ない",
-        "likes": "ラベンダー色の星雲と、描きかけのスケッチ",
-        "portrait": "../../img/ui/trpg/pc-luna.webp"
+        "likes": "ラベンダー色の星雲と、描きかけのスケッチ"
       }
     }
   ],
@@ -2911,41 +2909,7 @@
     "max": 5,
     "nameMax": 6,
     "title": "あなたのキャラクターを作る",
-    "intro": "この物語で演じる夜番を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
-    "looks": [
-      {
-        "id": "ink",
-        "label": "黒髪の夜番",
-        "detail": "短い黒髪に、紺の作業着",
-        "color": "#27304f",
-        "accent": "#89bbc4",
-        "portrait": "../../img/ui/trpg/look-smoke-robot-ink.webp"
-      },
-      {
-        "id": "silver",
-        "label": "銀髪の夜番",
-        "detail": "ふわりと跳ねた銀髪と、反射板つきの上着",
-        "color": "#5b6378",
-        "accent": "#d8dcef",
-        "portrait": "../../img/ui/trpg/look-smoke-robot-silver.webp"
-      },
-      {
-        "id": "rust",
-        "label": "赤毛の夜番",
-        "detail": "赤毛をゴーグルで押さえる",
-        "color": "#6e3a35",
-        "accent": "#f0b27a",
-        "portrait": "../../img/ui/trpg/look-smoke-robot-rust.webp"
-      },
-      {
-        "id": "helmet",
-        "label": "ヘルメットの夜番",
-        "detail": "いつも外さない、丸いヘルメット",
-        "color": "#3a3f66",
-        "accent": "#b9b2f0",
-        "portrait": "../../img/ui/trpg/look-smoke-robot-helmet.webp"
-      }
-    ],
+    "intro": "この物語で演じる夜番を決めよう。出自・能力値は、卓のあいだずっと使う",
     "archetypes": [
       {
         "id": "rookie",
@@ -3007,8 +2971,7 @@
             "talk": 3,
             "nerve": 1
           },
-          "making": "trpg_smoke_robot_make_adam_adam_nova",
-          "portrait": "../../img/ui/trpg/pc-nova.webp"
+          "making": "trpg_smoke_robot_make_adam_adam_nova"
         },
         {
           "id": "cosmo",
@@ -3022,8 +2985,7 @@
             "talk": 4,
             "nerve": 1
           },
-          "making": "trpg_smoke_robot_make_adam_adam_cosmo",
-          "portrait": "../../img/ui/trpg/pc-cosmo.webp"
+          "making": "trpg_smoke_robot_make_adam_adam_cosmo"
         }
       ]
     },
@@ -3041,8 +3003,7 @@
             "talk": 1,
             "nerve": 3
           },
-          "making": "trpg_smoke_robot_make_tsumugi_tsumugi_luna",
-          "portrait": "../../img/ui/trpg/pc-luna.webp"
+          "making": "trpg_smoke_robot_make_tsumugi_tsumugi_luna"
         },
         {
           "id": "konoha",
@@ -3056,8 +3017,7 @@
             "talk": 1,
             "nerve": 4
           },
-          "making": "trpg_smoke_robot_make_tsumugi_tsumugi_konoha",
-          "portrait": "../../img/ui/trpg/pc-konoha.webp"
+          "making": "trpg_smoke_robot_make_tsumugi_tsumugi_konoha"
         }
       ]
     }
