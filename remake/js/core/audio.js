@@ -149,6 +149,37 @@ export function createDesertRideSe() {
   return { ready, play, motion, stop, dispose };
 }
 
+// ---------------------------------------------------------------- ミニゲームの仮SE
+// 2026-11-10 オーナー依頼「ミニゲーム全般に合う効果音を探して一旦入れて」の仮置き（grok/minigame-audio）。
+// 出典・ライセンス（すべてCC0）・加工は asset_sources/music/minigame-se/。差し替えはこの表のファイル名だけ変える。
+// 共通のSE音量・ミュート・非表示停止（recordedVoice）に乗せ、未読込・取得失敗の間は既存の合成SE（fallback）で鳴らす。
+// TRPGの音（grok/trpg-audio）とは別の表にしてある。
+export const MINIGAME_SE = Object.freeze({
+  axeThrow: { files: ["minigame/axe_throw.wav"], gain: .7, fallback: "whoosh" },
+  axeThunk: { files: ["minigame/axe_thunk_01.wav", "minigame/axe_thunk_02.wav", "minigame/axe_thunk_03.wav"], gain: .85, fallback: "hit" },
+  axeDrop: { files: ["minigame/axe_drop.wav"], gain: .75, fallback: null }, // 失敗音は呼び出し側が別に鳴らす
+  axeCheer: { files: ["minigame/axe_cheer.wav"], gain: .8, fallback: "perfect" },
+  axeWin: { files: ["minigame/axe_win.wav"], gain: .7, fallback: "fanfare" },
+  axeLose: { files: ["minigame/axe_lose.wav"], gain: .7, fallback: "miss" },
+});
+/** あるミニゲームの仮SEを先に読み込む（prefix は "axe" など）。初回操作の後に呼ぶ。 */
+export function preloadMinigameSe(prefix = "") {
+  if (!audioUnlocked) return Promise.resolve(false);
+  const files = Object.entries(MINIGAME_SE).filter(([id]) => id.startsWith(prefix)).flatMap(([, cue]) => cue.files);
+  return Promise.all(files.map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
+}
+/** ミニゲームの仮SEを1回鳴らす。録音が未読込なら読み込みを始め、今回は合成の代用音を鳴らす。 */
+export function playMinigameSe(id) {
+  const cue = MINIGAME_SE[id];
+  if (!cue || !seEnabled()) return;
+  const ready = cue.files.filter(file => seBuffers.has(file));
+  if (!ready.length) { cue.files.forEach(loadSeBuffer); if (cue.fallback) SE[cue.fallback]?.(); return; }
+  const choices = ready.filter(file => file !== lastVariant.get(id));
+  const file = (choices.length ? choices : ready)[Math.floor(Math.random() * (choices.length || ready.length))];
+  lastVariant.set(id, file);
+  recordedVoice(file, { gain: cue.gain });
+}
+
 function syncPulls() { activePulls.forEach(pull => pull.sync()); }
 function stopRecordedVoices() { seVoices.forEach(voice => voice.stop()); }
 document.addEventListener?.("visibilitychange", () => {

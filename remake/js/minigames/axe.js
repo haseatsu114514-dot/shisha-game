@@ -4,7 +4,7 @@ import { imgFileUrl } from "../core/img-file.js";
 import { portraitStyle } from "../core/portrait-style.js";
 import { portraitAsset } from "../core/portrait-resolver.js";
 import { svg } from "../core/transition-kit.js";
-import { SE, unlockAudio } from "../core/audio.js";
+import { SE, unlockAudio, playMinigameSe, preloadMinigameSe } from "../core/audio.js";
 import { RINGS, KILLS, CLUSTERS, LINE, BLADE, POWER, SWAY, MODES, DIVISIONS, BOARD, RULESET, gaugeAt, axisAt, releaseAimAt, resolveThrow, totalOf, gradeOf, killState, canCall, closuresOf, halfOf } from "./axe-model.js";
 import { createMatch, takeTurn, turnOf, planOpponent, matchResult, resolveTurn, inSuddenDeath, suddenDeathTarget, DIFFICULTIES } from "./axe-match.js";
 import { COMPANIONS, reaction, matchReaction, portraitFocus } from "./axe-companions.js";
@@ -439,11 +439,18 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     series.games.push({ game: gameIndex + 1, playerTotal: game.playerTotal, opponentTotal: game.opponentTotal, winner: game.winner, suddenDeath: game.suddenDeath });
     if (game.winner === "player" || game.winner === "opponent") series.wins[game.winner]++;
   }
+  // 仮SE（grok/minigame-audio）: 結果画面のジングル。勝ち・好記録＝ファンファーレ、負け＝下がるジングル、引き分け・練習の低得点＝短い合成音。
+  function summaryJingle() {
+    const outcome = versus ? matchResult(match).winner : tutorial || gradeOf(totalOf(shots), rules.max) !== "again" ? "player" : "draw";
+    if (outcome === "player") playMinigameSe("axeWin");
+    else if (outcome === "opponent") playMinigameSe("axeLose");
+    else SE.jingle();
+  }
   function setPhase(next) {
     clearDeclareCue();
     phase = next; elapsed = 0; stamp = null;
     if (next === "choice" && actor === "player" && suddenDeath()) called = suddenDeathTarget(match.suddenDeath.length);
-    if (next === "summary") recordGame();
+    if (next === "summary") { recordGame(); summaryJingle(); }
     phaseCue(next);
     if (next === "flight") {
       root.dataset.slowMotion = String(Boolean(pending.called) && !reducedMotion);
@@ -459,7 +466,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   function act() {
     if (isPaused() || !["choice", "horizontal", "vertical", "power", "result", "summary", "failed"].includes(phase)
       || cycles[phase] && elapsed < 250 || performance.now() - lastAction < 250) return;
-    lastAction = performance.now(); unlockAudio();
+    lastAction = performance.now(); unlockAudio(); preloadMinigameSe("axe");
     if (phase === "failed") loadArt();
     else if (phase === "choice") { held = 0; SE.select(); setPhase("horizontal"); }
     else if (phase === "horizontal") { aim.x = axisAt(gaugeAt(elapsed, cycles.horizontal)); SE.select(); setPhase("vertical"); }
@@ -468,7 +475,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       power = gaugeAt(elapsed, cycles.power);
       const release = releaseAimAt(aim, held, power, shots.length, held < focusUntil, steady);
       pending = { ...preview({ x: release.x, y: release.y, power, called }), baseAim: { ...aim }, sway: release.sway };
-      SE.whoosh(); setPhase("flight");
+      playMinigameSe("axeThrow"); setPhase("flight");
     }
     else if (phase === "result") {
       if (versus && actor === "player" && turnOf(match) === "opponent") {
@@ -821,7 +828,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const delta = stamp === null ? 0 : Math.min(50, Math.max(0, now - stamp)); stamp = now;
     if (!isPaused()) { elapsed += delta; if (cycles[phase]) held += delta; }
     if (phase === "opponent-ready" && !isPaused() && elapsed >= 1000) {
-      SE.whoosh(); setPhase("flight");
+      playMinigameSe("axeThrow"); setPhase("flight");
     }
     if (phase === "flight" && !isPaused()) {
       // A called throw (killshot or sudden death) slows down for its final approach.
@@ -852,7 +859,10 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
           shots = match.player; shot = latest(actor);
         } else shots.push(shot);
         pending = null;
-        if (shot.score > 0) { SE.hit(); if (shot.score >= 6) SE.perfect(); } else SE.miss();
+        // 仮SE（grok/minigame-audio）: 得点＝木に刺さる音、ブル・キルショット＝店の歓声、落下＝板に当たって床へ落ちる音。
+        // 0点で刺さった時は今まで通り失敗音だけ（喜ばせない）。録音が未読込の間は前と同じ合成音（hit/perfect）になる。
+        if (shot.score > 0) { playMinigameSe("axeThunk"); if (shot.score >= 6) playMinigameSe("axeCheer"); }
+        else { if (!shot.stuck) playMinigameSe("axeDrop"); SE.miss(); }
         if (shot.stuck) {
           const embedded = createAxe(); renderAxe(embedded, impactPose(shot)); embedded.dataset.scored = String(shot.score > 0);
           // The handle quivers around the cutting edge for a moment after the thunk; the edge itself never moves.
