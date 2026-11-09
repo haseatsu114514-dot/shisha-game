@@ -10,8 +10,6 @@ import { el } from "../core/util.js";
 import { SE, currentBgm, playBgm } from "../core/audio.js";
 import { imgFileUrl } from "../core/img-file.js";
 import { faceIconUrl } from "../core/data.js";
-import { portraitStyle } from "../core/portrait-style.js";
-import { portraitAsset } from "../core/portrait-resolver.js";
 import { RACE, CUE, PLAYER, WHIP, CAMEL_CUPS, camelCup, camelCupQualified, camelMastered, camelExpert, rng, createRace, stepRace, pressVoice, setWhip, whipReady, activeCue, inSpurt, standings, scoreRace,
   POLICIES, PLAYER_CAMEL, RIVAL_PROFILES } from "./camel-race-model.js";
 
@@ -34,11 +32,9 @@ const LANES = [
 // 上の辺はラクダの輪郭の外まで取り、絵の不透明な所にだけ塗る（source-atop）ので、背の線に沿って切れる。色は順位の札と同じ。
 const BLANKET = Object.freeze({ corners: [[126, 136], [298, 64], [314, 222], [144, 234]], disc: [214, 172], radius: 30, trim: 18 });
 const SKIN_SCALE = 0.5;           // 幕を塗ったラクダの絵を半分の大きさで作り置く（描く大きさは 0.23〜0.32 倍）
-// SUV の後ろの窓から身を乗り出すはじめ（立ち絵の頭と肩を切り抜く）。立ち絵の座標は data/portrait_metrics.json の hajime。
-const HAJIME_FACES = Object.freeze(["normal", "smile", "excited", "surprise", "serious", "sad"]);
-const HAJIME_CROP = Object.freeze({ x: 362, y: 133, w: 366, h: 339 });
-// SUV の絵の中での置き場所（絵の画素）: 後ろのドアの窓（x 214〜352、窓の下の縁 y=136）。頭は屋根の上へ出る。
-const HAJIME_AT = Object.freeze({ cx: 284, bottom: 150, height: 165, clip: [206, 360, 136], remote: [344, 112] });
+// SUV の車体絵（v6・#3044）にはじめと運転手は焼き込み済み。コードで重ねるのは
+// リモコンの状態ランプと吹き出しだけ。位置は絵の画素: アンテナ先端と、吹き出しの付け根（頭の上）。
+const HAJIME_AT = Object.freeze({ antenna: [308, 90], balloon: [250, 72] });
 // 声かけの輪は自分のラクダの背のロボット騎手（声はその小さなスピーカーへ届く）を囲む。
 // 奥の列のラクダと重なっても、どのラクダの輪か迷わない位置（列の y からの差）。
 const CUE_AT = Object.freeze({ dx: -22, dy: -64 });
@@ -89,7 +85,7 @@ const TRACK_TOP = 386, TRACK_BOTTOM = 612, ROAD_BOTTOM = 688, TILE_W = 640;
 const CAMEL_ART = Object.freeze({ scale: 0.3, width: 512, height: 384, centerX: 256, ground: 342, seatX: 215, seatY: 131, stride: 4.5 });
 const JOCKEY_ART = Object.freeze({ cx: 94, bottom: 133, scale: 0.9 });
 // SUV は手前（カメラ寄り）を走るので、ラクダより大きく描く（0.3→0.4。はじめが窓に見える大きさ）。
-const SUV_ART = Object.freeze({ scale: 0.4, centerX: 360, ground: 331, wheels: [[167, 259], [581, 259]], wheel: 137 / 160, radius: 60 });
+const SUV_ART = Object.freeze({ scale: 0.4, centerX: 359, ground: 346, wheels: [[153, 282], [583, 282]], wheel: 130 / 160, radius: 65 });
 // AI のラクダの毛色の違い（ctx.filter が無い端末では同じ色のまま。名札の色で見分ける）。
 const RIVAL_TINT = Object.freeze({ front: "sepia(0.25) saturate(1.25) brightness(0.95)", closer: "brightness(1.12) saturate(0.85)", steady: "brightness(0.82) saturate(1.05)" });
 let artTask = null;
@@ -97,23 +93,11 @@ let artTask = null;
 export function loadCamelArt() {
   if (typeof Image === "undefined") return Promise.resolve(null);
   const load = rel => { const image = new Image(); image.decoding = "async"; image.src = imgFileUrl(rel); return image.decode().then(() => image); };
-  // はじめの立ち絵は読めなくてもレースの絵は使う（窓に人を描かないだけ）。
-  // 表情は1枚ずつ読み、読めなかった表情は通常の顔で代わりにする（通常も読めなければ窓に人を描かない）。
-  const hajime = fetch(new URL("../../data/manifest.json", import.meta.url), { cache: "no-cache" })
-    .then(response => response.ok ? response.json() : null)
-    .then(manifest => {
-      if (!manifest) return null;
-      const portraits = HAJIME_FACES.map(face => portraitAsset(manifest, "hajime", face, portraitStyle()));
-      return Promise.all(portraits.map(portrait => portrait ? loadPortrait(portrait.src).catch(() => null) : null))
-        .then(images => images[0] ? { faces: Object.fromEntries(HAJIME_FACES.map((face, i) => [face, images[i] || images[0]])),
-          metrics: portraits[0] } : null);
-    }).catch(() => null);
-  const loadPortrait = url => { const image = new Image(); image.decoding = "async"; image.src = url; return image.decode().then(() => image); };
   // 吹き出しの絵（CR-UI13）は読めなくても他の絵は使う（吹き出しは従来の描画に戻す）。
   const balloon = load(ART_FILES.balloon).catch(() => null);
-  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), hajime, balloon])
-    .then(([camel, jockey, suv, wheel, track, portrait, balloonImage]) => ({ camel, jockey, suv, wheel, track, balloon: balloonImage,
-      hajime: portrait?.faces, hajimeMetrics: portrait?.metrics, ground: groundTiles(), skins: camelSkins(camel) }))
+  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), balloon])
+    .then(([camel, jockey, suv, wheel, track, balloonImage]) => ({ camel, jockey, suv, wheel, track, balloon: balloonImage,
+      ground: groundTiles(), skins: camelSkins(camel) }))
     .catch(() => null);
   return artTask;
 }
@@ -316,11 +300,10 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   let shake = 0, slow = 0, goTime = -1, combo = 0, callTimer = 0, lastCallAt = -9, spurtTint = 0;
   // カメラは自分のラクダを少し遅れて追う: 伸びた瞬間はラクダが画面の前へ出て、カメラが追いつく（camShift px）。
   let camShift = 0, camAt = 0, lastStride = -1;
-  // SUV の後ろの窓から身を乗り出すはじめ（表情と吹き出し）。
-  let hajimeFace = "serious", hajimeFaceTimer = 0, hajimeText = "", hajimeTextTimer = 0;
+  // 車体絵に焼き込みのはじめの吹き出し（表情は絵の一部で切り替わらない。face 引数は呼び出し互換のため受けるだけ）。
+  let hajimeText = "", hajimeTextTimer = 0;
   const hajime = (text, face, seconds = 0.9) => {
     if (text) { hajimeText = text; hajimeTextTimer = seconds; }
-    if (face) { hajimeFace = face; hajimeFaceTimer = seconds; }
   };
   const playerX = () => PLAYER_SCREEN_X + camShift;
   let lastPosition = 0, leaderId = null, marks = new Set();
@@ -526,7 +509,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     dust.length = 0; confetti.length = 0; sparks.length = 0; waves.length = 0; floaters.length = 0;
     whip = 0; spurtShown = false; goalAt = 0; settleTimer = 0;
     shake = 0; slow = 0; goTime = -1; combo = 0; spurtTint = 0; lastCallAt = -9; lastPosition = 0; leaderId = null; marks = new Set();
-    camShift = 0; lastStride = -1; hajimeFace = "serious"; hajimeFaceTimer = 0; hajimeTextTimer = 0;
+    camShift = 0; lastStride = -1; hajimeTextTimer = 0;
     signalButton.classList.remove("held");
     countdownLeft = RACE.countdown; countdownShown = -1; last = null;
     setPhase("countdown");
@@ -646,10 +629,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     if (bannerTimer > 0 && (bannerTimer -= dt) <= 0) banner.classList.remove("show");
     whip = race?.player.whipping && phase === "race" ? 1 : Math.max(0, whip - dt * 2.4);
     shake = Math.max(0, shake - dt * 1.6);
-    if (hajimeFaceTimer > 0 && (hajimeFaceTimer -= dt) <= 0) hajimeFace = race?.player.whipping ? "excited" : "normal";
     if (hajimeTextTimer > 0) hajimeTextTimer -= dt;
     if (race && phase === "race") {
-      if (race.player.whipping && hajimeFaceTimer <= 0) hajimeFace = "excited";
       // 速いほど前へ（最大120px）、遅いと後ろへ。カメラはゆっくり追いつく。
       const target = reducedMotion ? 0 : clamp((race.player.speed - PLAYER.base) * 22, -40, 120);
       camShift += (target - camShift) * Math.min(1, dt * 2.2);
@@ -1048,43 +1029,21 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     }
     ctx.restore();
   }
-  /** 後ろの窓から身を乗り出すはじめと、手のリモコン・吹き出し。窓の下の縁より下は車体に隠れる。 */
+  /** 車体絵に焼き込みのはじめへ重ねる、リモコンの状態ランプと吹き出し。人物とリモコン本体は車体絵の一部。 */
   function drawHajime(dx, dy, k) {
-    const image = art?.hajime?.[hajimeFace] || art?.hajime?.normal;
-    if (!image) return;
-    const metrics = art.hajimeMetrics;
-    const crop = metrics?.style === "new" ? {
-      x: Math.max(0, Math.min(image.width - HAJIME_CROP.w, metrics.ax * image.width - HAJIME_CROP.w / 2)),
-      y: Math.max(0, Math.min(image.height - HAJIME_CROP.h, (1 - metrics.h - metrics.b) * image.height - 21)),
-      w: HAJIME_CROP.w, h: HAJIME_CROP.h,
-    } : HAJIME_CROP;
     const t = (race?.t || 0) + afterGoal();
-    const f = (HAJIME_AT.height * k) / crop.h;
-    const w = crop.w * f, h = crop.h * f;
-    // 押している間は前へ乗り出す。走る揺れで少し上下する。
-    const lean = race?.player.whipping ? 6 * k : 0;
-    const bob = reducedMotion ? 0 : Math.sin(t * 9) * 1.2;
-    const hx = dx + HAJIME_AT.cx * k - w / 2 + lean, hy = dy + HAJIME_AT.bottom * k - h + bob - lean * 0.6;
-    const [left, right, sill] = HAJIME_AT.clip;
-    ctx.save();
-    ctx.beginPath(); ctx.rect(dx + left * k, dy - 200, (right - left) * k, sill * k + 200); ctx.clip();
-    ctx.drawImage(image, crop.x, crop.y, crop.w, crop.h, hx, hy, w, h);
-    ctx.restore();
-    // 窓枠に掛けた手のリモコン（アンテナの灯: 声で緑、ムチの間は赤く点滅）。
-    const [rx, ry] = HAJIME_AT.remote;
-    const px = dx + rx * k + lean, py = dy + ry * k;
-    ctx.save();
-    ctx.fillStyle = "#1a1612"; ctx.beginPath(); ctx.roundRect(px - 5, py - 9, 10, 17, 3); ctx.fill();
-    ctx.strokeStyle = "#1a1612"; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(px + 2, py - 9); ctx.lineTo(px + 6, py - 24); ctx.stroke();
+    // リモコンのアンテナ先端の状態ランプ（声で緑、ムチの間は赤く点滅）。
+    const px = dx + HAJIME_AT.antenna[0] * k, py = dy + HAJIME_AT.antenna[1] * k;
     const whipping = race?.player.whipping, voiced = hajimeTextTimer > 0 && !whipping;
+    ctx.save();
     ctx.fillStyle = whipping ? (Math.sin(t * 30) > 0 ? "#ff5a4a" : "#7a1a12") : voiced ? "#8ee6a8" : "#3a5a40";
-    ctx.beginPath(); ctx.arc(px + 6, py - 25, 2.4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(px, py, 2.4, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
     // 吹き出し（声・ムチを入れた時の掛け声）。絵（CR-UI13）があれば九分割で描き、無ければ従来の図形。
     if (hajimeTextTimer > 0 && hajimeText) {
       const alpha = Math.min(1, hajimeTextTimer / 0.2);
       ctx.save(); ctx.globalAlpha = alpha;
-      ctx.translate(hx + w / 2, hy + 6); ctx.scale(textScale, textScale);
+      ctx.translate(dx + HAJIME_AT.balloon[0] * k, dy + HAJIME_AT.balloon[1] * k); ctx.scale(textScale, textScale);
       ctx.font = "900 17px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
       const balloonImage = art?.balloon;
       if (balloonImage) {
