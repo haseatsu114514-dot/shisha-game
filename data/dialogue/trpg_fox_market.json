@@ -218,7 +218,7 @@
           "sheet": "hiyori",
           "stat": "hand",
           "label": "手早く、火打ち道具を使う",
-          "detail": "{pc:hiyori}が袖から火打ち道具を出し、手近な提灯から",
+          "detail": "{pc:hiyori}が袖から火打ち道具を出し、手近な提灯から火を入れる",
           "declare": "trpg_fox_market_declare_twist_flint"
         },
         {
