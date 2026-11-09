@@ -419,6 +419,8 @@ export const FLAG_EXACT_RULES = [
   ["_minto_name_known", "person"],
   ["_minto_phantom_shared", "person"],
   ["_minto_private_done", "person"],
+  ["_minto_quiet_hello_done", "person"],
+  ["_minto_side_seat_done", "person"],
   ["_minto_store_lime_reminder", "person"],
   ["_motion_seen_", "progression"],
   ["_naru_venue_invited", "person"],
