@@ -303,6 +303,12 @@ await check('ageha lover content reaches chapter 4 at home, and a companion abro
   same(f.entry.loverMilestonesDue(), ['ageha']);
   assert.equal(await f.entry.readLoverMilestone('ageha'), true);
   same(f.plays, ['lover_ageha_lv1']);
+  s.loveLevel.ageha = 2;
+  s.loverEventsSeen.push('lover_ageha_lv2');
+  assert.equal(f.romance.loverMilestoneDue('ageha'), 'lover_ageha_lv2_b');
+  assert.equal(await f.entry.readLoverMilestone('ageha'), true);
+  same(f.plays, ['lover_ageha_lv1', 'lover_ageha_lv2_b']);
+  assert.equal(f.romance.loverMilestoneDue('ageha'), null, 'lv3 waits for the next bond level');
 });
 
 await check('chapter 3 tournament morning: one cheer per lover, from far away or from Tokyo, read once (IR19)', async f => {

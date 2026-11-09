@@ -640,6 +640,27 @@ console.log("[1178 CH2-TF-02/03] PASS actual messages/local days/contacts/chapte
 }
 console.log("[1210] PASS ageha after-visit precedes day3; day3 arrives the next morning");
 
+// #3081: 白いクマの席を読み終えた旗の朝。連絡先があるときだけ、章を問わず一度
+{
+  const seat = allMessages.find(m => m.id === "lime_ageha_bear_seat");
+  assert(seat && seat.trigger_flag === "_ageha_bear_seat_done");
+  const deliver = (overrides) => {
+    reset({ contacts: ["ageha"], flags: { _ageha_bear_seat_done: true }, ...overrides });
+    db.lime = [seat];
+    return phone.deliverMorning();
+  };
+  assert.equal(deliver({ chapter: 2, day: 20, flags: { _ch2_day1: { startDay: 15 }, _ageha_bear_seat_done: true } }), 1);
+  assert.equal(state.inbox[0].msg.sender, "ageha");
+  assert.equal(phone.deliverMorning(), 0, "unread buffer does not duplicate the seat message");
+  assert.equal(deliver({ chapter: 2, day: 20, contacts: [], flags: { _ch2_day1: { startDay: 15 }, _ageha_bear_seat_done: true } }), 0);
+  assert.equal(deliver({ chapter: 2, day: 20, flags: { _ch2_day1: { startDay: 15 } } }), 0);
+  assert.equal(deliver({ chapter: 1, day: 6, flags: { _ageha_bear_seat_done: true } }), 0);
+  assert.equal(deliver({ chapter: 4, day: 40, flags: { _ageha_bear_seat_done: true } }), 1);
+  state.inbox[0].read = true; state.inbox[0].done = true; state.limeRead.push(seat.id);
+  assert.equal(phone.deliverMorning(), 0, "the seat message is once");
+}
+console.log("[3081] PASS ageha bear-seat LIME");
+
 // #782: 追加候補も本番の連絡先/未読/1話題/一度きり/最大3通の制御を通す。
 db.friends = JSON.parse(await fs.readFile(new URL("data/friends.json", root), "utf8"));
 for (const day of [5, 10]) {

@@ -2161,6 +2161,39 @@
       ]
     },
     {
+      "id": "lime_ageha_bear_seat",
+      "sender": "ageha",
+      "type": "chat",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ageha_bear_seat_done",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "ハジメっち、白いクマの隣、今日も空けておいたよ"
+        },
+        {
+          "sender": "ageha",
+          "text": "朝に指を確かめたあと、その席だと落ち着くよ"
+        },
+        {
+          "sender": "ageha",
+          "text": "次もそこに、座ってほしいな"
+        }
+      ],
+      "replies": [
+        {
+          "text": "またその席に座ります",
+          "response": "おっけー、ある日の煙、用意しとく",
+          "affinity": 1
+        },
+        {
+          "text": "ある日も、ない日も行きます",
+          "response": "……ない日は、席だけ空けとくね",
+          "affinity": 2
+        }
+      ]
+    },
+    {
       "id": "lime_ageha_ch2_goodday",
       "sender": "ageha",
       "chapter": 2,
