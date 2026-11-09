@@ -1,7 +1,7 @@
 /* ワイドステージ（#2861）でのシーシャ作りと大会の画面（オーナー指示 2026-11-08
    「シーシャ作りパートとかその他のパートもワイドモードに合わせて。文字のサイズとかUIも調整して」）。
 
-   1) 作業台と大会の演出（カウントダウン・伏見のカットイン・結果表・入場）を、中央1280の層から
+   1) 作業台と大会の演出（カウントダウン・千須のカットイン・結果表・入場）を、中央1280の層から
       左右の余白（--stage-gutter）まで広げる。ノッチを避ける幅（--stage-safe-l/r）は外枠の透明な縁で空ける。
       絶対配置の子の基準は縁の内側（padding box）なので、中の板の座標指定は 1280 のときのまま使える。
    2) 広がった幅の一部（60px）を左のカード（絵と台詞）へ回す。右の作業域はそれでも広くなる。
@@ -120,7 +120,7 @@ html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .standings 
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .standings .sd-name { font-size: var(--wide-text); }
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .standings :is(.sd-status > span, .sd-feed-tag) { font-size: var(--wide-small); }
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .standings .sd-feed-lines > div { font-size: var(--wide-text); }
-/* 大会: カウントダウン・伏見のカットイン */
+/* 大会: カウントダウン・千須のカットイン */
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .count-screen :is(.rc-cut, .rc-card span) { font-size: var(--wide-small); }
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .sui-cut :is(.nc-rank, .nc-cut-text small, .nc-cut-pt span) { font-size: var(--wide-small); }
 html:root[data-density="phone"] body:not(.game-ds) #stage[data-wide] .sui-cut .nc-name { font-size: var(--wide-text); }
