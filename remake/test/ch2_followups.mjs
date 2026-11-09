@@ -11,7 +11,8 @@ const all = Object.fromEntries([...preparation.dialogues, ...stories].map(d => [
 const stagesSource = fs.readFileSync(new URL("remake/js/core/affinity-stages.js", root), "utf8");
 const { CH2_VISIT_STORIES, ch2VisitDone } = await import(new URL("remake/js/core/affinity-stages.js", root));
 const context = vm.createContext({ console, AbortController, setTimeout, clearTimeout });
-let state, options, played, saves, mode, resolvePlay, heartLevel = 1, finaleOpen = new Set(), finaleCalls = [], agehaStory = null;
+let state, options, played, saves, mode, resolvePlay, heartLevel = 1, finaleOpen = new Set(), finaleCalls = [], agehaStory = null, agehaLater = null;
+const AGEHA_LATER_SCENES = [{ id: "ch1_ageha_gummy_share", flag: "_ageha_gummy_share_done" }];
 const isRepeat = (id, scene) => id === "ageha" ? scene === "remake_ch2_ageha_repeat" : /^remake_ch2_(kumicho|rei)_repeat(_[bcd])?$/.test(scene) && scene.includes(id);
 const ids = ["ageha", "kumicho", "rei"];
 const DB = { dialogues: { ...all } };
@@ -70,7 +71,7 @@ const mocks = {
   // tonariの大会準備（VOL13）は ch2_craft_prep.mjs で確認する
   "./ch2-craft-prep.js": { craftPrepDue: () => null, offerCraftPrep: async () => null },
   // あげはの店に通う回は ch2_ageha_story.mjs で確認する。ここでは従来の chat/followup/repeat だけを見る
-  "./ch2-story-data.js": { agehaStoryScene: () => agehaStory, syncAgehaVibes: () => 0 },
+  "./ch2-story-data.js": { agehaStoryScene: () => agehaStory, agehaLaterScene: () => agehaLater, AGEHA_LATER_SCENES, syncAgehaVibes: () => 0 },
   // 心得の盤の授業の相談（SBD70）。盤が無効な時と同じく何もしない
   "../core/growth.js": { consultLessons: async () => [] },
   // 第5章の柚ヶ谷の通い訪問（#2033）が小会話を読み込む。ここでは第2章の訪問だけを見る
@@ -93,7 +94,7 @@ function fresh(count) {
 }
 async function setup(count) {
   if (!arguments.length) count = 1;
-  heartLevel = 1; finaleOpen = new Set(); finaleCalls = [];
+  heartLevel = 1; finaleOpen = new Set(); finaleCalls = []; agehaLater = null;
   state = fresh(count); states.setExport("state", state); played = []; saves = 0; mode = "ok";
   DB.dialogues = { ...all }; resolvePlay = null;
   await module.namespace.runChapterTwoPreparation();
@@ -208,6 +209,27 @@ for (const id of ids) {
   await visit("ageha");
   assert(isRepeat("ageha", played.at(-1)));
   assert.deepEqual(state.affinity, [["ageha", 16], ["ageha", 8]], "The usual chat stays +8");
+}
+
+// 通う回のあと、グミを一度だけ。中断では旗が残らず、次は小品に戻る（#3081）
+{
+  await setup(1); state.flags._ch2_followup_done = { ageha: true };
+  agehaLater = "ch1_ageha_gummy_share";
+  DB.dialogues.ch1_ageha_gummy_share = { dialogue_id: agehaLater, lines: [{ speaker: "ageha", face: "smile", text: "一個" }] };
+  assert.equal((await visit("ageha")).used, true);
+  assert.equal(played.at(-1), agehaLater);
+  assert.equal(state.flags._ageha_gummy_share_done, true);
+  assert.deepEqual(state.affinity, [["ageha", 16]], "The one-time gummy visit is a story visit, not chatter");
+  agehaLater = null;
+  await visit("ageha");
+  assert(isRepeat("ageha", played.at(-1)));
+  assert.deepEqual(state.affinity.at(-1), ["ageha", 8]);
+  await setup(1); state.flags._ch2_followup_done = { ageha: true };
+  agehaLater = "ch1_ageha_gummy_share";
+  DB.dialogues.ch1_ageha_gummy_share = { dialogue_id: agehaLater, lines: [{ speaker: "ageha", face: "smile", text: "一個" }] };
+  mode = "cancel";
+  assert.equal((await visit("ageha")).used, false);
+  assert.equal(state.flags._ageha_gummy_share_done, undefined);
 }
 
 // The actual required-ID loader is atomic on missing/malformed new scenes.
