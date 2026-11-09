@@ -57,8 +57,7 @@
           "nerve": 2
         },
         "trait": "か細い声の灯りともし。梯子をのぼるのは町一番速い",
-        "likes": "屋台の夜鳴きラーメン",
-        "portrait": "../../img/ui/trpg/pc-yura.webp"
+        "likes": "屋台の夜鳴きラーメン"
       }
     },
     {
@@ -79,8 +78,7 @@
           "nerve": 3
         },
         "trait": "時計塔の鐘をつく。鐘の音と同じくらい、言葉も大きい",
-        "likes": "林檎の砂糖煮。甘さの原点",
-        "portrait": "../../img/ui/trpg/pc-leaf-mail-leon.webp"
+        "likes": "林檎の砂糖煮。甘さの原点"
       }
     }
   ],
@@ -3059,41 +3057,7 @@
     "max": 5,
     "nameMax": 6,
     "title": "あなたのキャラクターを作る",
-    "intro": "この物語で演じる夜番を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
-    "looks": [
-      {
-        "id": "lantern",
-        "label": "ランタンの夜番",
-        "detail": "短い黒髪に、紺の外套とランタン",
-        "color": "#2c3a5a",
-        "accent": "#e8c56a",
-        "portrait": "../../img/ui/trpg/look-leaf-mail-lantern.webp"
-      },
-      {
-        "id": "scarf",
-        "label": "マフラーの夜番",
-        "detail": "長いマフラーと、星柄の手袋",
-        "color": "#5a3c4a",
-        "accent": "#d9a7b8",
-        "portrait": "../../img/ui/trpg/look-leaf-mail-scarf.webp"
-      },
-      {
-        "id": "cap",
-        "label": "帽子の夜番",
-        "detail": "つばの広い帽子に、月の徽章",
-        "color": "#3e4b3a",
-        "accent": "#c9d6a3",
-        "portrait": "../../img/ui/trpg/look-leaf-mail-cap.webp"
-      },
-      {
-        "id": "glasses",
-        "label": "眼鏡の夜番",
-        "detail": "丸眼鏡と、地図の入った肩かけ鞄",
-        "color": "#4a4038",
-        "accent": "#e3c9a0",
-        "portrait": "../../img/ui/trpg/look-leaf-mail-glasses.webp"
-      }
-    ],
+    "intro": "この物語で演じる夜番を決めよう。出自・能力値は、卓のあいだずっと使う",
     "archetypes": [
       {
         "id": "watch",
@@ -3155,8 +3119,7 @@
             "talk": 2,
             "nerve": 2
           },
-          "making": "trpg_leaf_mail_make_hiyori_hiyori_yura",
-          "portrait": "../../img/ui/trpg/pc-yura.webp"
+          "making": "trpg_leaf_mail_make_hiyori_hiyori_yura"
         },
         {
           "id": "neri",
@@ -3170,8 +3133,7 @@
             "talk": 1,
             "nerve": 4
           },
-          "making": "trpg_leaf_mail_make_hiyori_hiyori_neri",
-          "portrait": "../../img/ui/trpg/pc-neri.webp"
+          "making": "trpg_leaf_mail_make_hiyori_hiyori_neri"
         }
       ]
     },
@@ -3189,8 +3151,7 @@
             "talk": 4,
             "nerve": 3
           },
-          "making": "trpg_leaf_mail_make_adam_adam_leon",
-          "portrait": "../../img/ui/trpg/pc-leaf-mail-leon.webp"
+          "making": "trpg_leaf_mail_make_adam_adam_leon"
         },
         {
           "id": "gran",
@@ -3204,8 +3165,7 @@
             "talk": 3,
             "nerve": 2
           },
-          "making": "trpg_leaf_mail_make_adam_adam_gran",
-          "portrait": "../../img/ui/trpg/pc-gran.webp"
+          "making": "trpg_leaf_mail_make_adam_adam_gran"
         }
       ]
     }

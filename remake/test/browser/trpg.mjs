@@ -254,7 +254,8 @@ try {
     await hit(page, '[data-test="trpg-build"]');
     await page.locator('[data-test="trpg-builder"]').waitFor();
     await fits(page);
-    await hit(page, '[data-test="trpg-look-rust"]'); await hit(page, '[data-test="trpg-archetype-sailor"]');
+    assert.equal(await page.locator('[data-test^="trpg-look-"]').count(), 0, "no look choice (#3050)");
+    await hit(page, '[data-test="trpg-archetype-sailor"]');
     assert.equal(await page.locator('[data-test="trpg-stat-nerve-down"]').count(), 0, "easy mode hides the point-buy");
     await hit(page, '[data-test="trpg-builder-advanced"]');
     await hit(page, '[data-test="trpg-stat-nerve-down"]'); await hit(page, '[data-test="trpg-stat-talk-up"]');
@@ -264,7 +265,7 @@ try {
     await hit(page, '[data-test="trpg-build-confirm"]');
     assert.equal(await page.locator('[data-test="trpg-cover-pc-name"]').textContent(), "ソラ");
     const pc = (await page.evaluate(() => __trpg.snapshot())).pc;
-    assert.deepEqual(pc, { name: "ソラ", title: "船乗り帰りの手伝い", look: "rust", archetype: "sailor", stats: { eye: 2, hand: 3, talk: 3, nerve: 3 } });
+    assert.deepEqual(pc, { name: "ソラ", title: "船乗り帰りの手伝い", archetype: "sailor", stats: { eye: 2, hand: 3, talk: 3, nerve: 3 } });
     // "Leave it to the dice" is reproducible from the model, and cancelling keeps the confirmed character.
     await hit(page, '[data-test="trpg-build"]'); await hit(page, '[data-test="trpg-build-random"]'); await hit(page, '[data-test="trpg-build-back"]');
     assert.deepEqual((await page.evaluate(() => __trpg.snapshot())).pc, pc);
