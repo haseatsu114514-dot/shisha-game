@@ -434,6 +434,15 @@ export const SE = {
   reelWin: () => { tone({ freq: 1175, type: "triangle", dur: 0.08, vol: 0.12 }); tone({ freq: 1568, type: "triangle", dur: 0.12, vol: 0.1, delay: 0.07 }); },
   // 能力ボーナスの通知に合わせた短い上昇音。通常の通知音より控えめにする。
   slotBonus: () => [784, 1175, 1568].forEach((freq, i) => tone({ freq, type: "triangle", dur: i === 2 ? 0.18 : 0.1, vol: 0.08, delay: i * 0.07 })),
+  // 心得の盤: 仮置きは短い火の音、確定は柔らかい和音。いずれもオリジナル合成音。
+  boardLight: () => {
+    if (!seEnabled()) return;
+    [659, 988].forEach((freq, i) => tone({ freq, type: "sine", dur: .18, vol: .09, delay: i * .045 }));
+  },
+  boardCommit: () => {
+    if (!seEnabled()) return;
+    [523, 659, 784, 1047].forEach((freq, i) => tone({ freq, type: "sine", dur: .32, vol: .07, delay: i * .065 }));
+  },
   puka: () => { tone({ freq: 880, to: 1760, type: "sine", dur: 0.16, vol: 0.2 }); tone({ freq: 1760, type: "sine", dur: 0.28, vol: 0.12, delay: 0.14 }); },
   pugo: () => { tone({ freq: 140, to: 70, type: "sine", dur: 0.22, vol: 0.3 }); noise({ dur: 0.08, vol: 0.12, filter: 500 }); },
   glitch: () => { for (let i = 0; i < 8; i++) tone({ freq: 200 + Math.random() * 2400, type: "square", dur: 0.03, vol: 0.05, delay: i * 0.05 }); },
@@ -592,6 +601,7 @@ let pendingBgm = null;
 
 // 実ファイルが無い曲の代用: key → 合成パターン
 const SYNTH_FALLBACK = {
+  bgm_growth_board: "board", // 静かな内省用。新しい音源の取得なしで鳴る専用ループ。
   bgm_tournament_edm: "battle",
   bgm_tournament_craft: "battle",
   bgm_tournament_wait: "tension",
@@ -603,6 +613,23 @@ const SYNTH_FALLBACK = {
 
 /** 今鳴っている曲のキー（自動再生待ちの間は null） */
 export const currentBgm = () => currentKey;
+
+/** 盤の間だけ曲を借りる。LOADや別場面の新しい曲を、閉じる処理で上書きしない。 */
+export function createGrowthBoardAudio() {
+  const previous = currentKey || pendingBgm;
+  const previousDuck = bgmDuck;
+  let alive = true;
+  playBgm("bgm_growth_board");
+  return (restore = true) => {
+    if (!alive) return;
+    alive = false;
+    if ((currentKey || pendingBgm) !== "bgm_growth_board") return;
+    if (restore && previous) {
+      playBgm(previous);
+      duckBgm(previousDuck, 0);
+    } else stopBgm(.25);
+  };
+}
 /** 今のBGMの寄せ（1＝そのまま。会話の duck 中は0.5）。テスト・診断用 */
 export const bgmDuckLevel = () => bgmDuck;
 
@@ -998,6 +1025,12 @@ function startSynth(kind) {
         const n = [40,0,40,0,43,0,40,0,38,0,38,0,35,0,38,0][s];
         if (n) voice(mtof(n), next, stepDur * 1.6, "triangle", 0.042);
         if (s === 0 && step % 32 === 0) voice(mtof(52), next, stepDur * 26, "sine", 0.023);
+      } else if (kind === "board") {
+        // 4小節で戻る暖かなパッドと、火種を思わせる疎らな高音。打楽器は置かない。
+        const chords = [[48, 55, 62, 64], [45, 52, 59, 60], [41, 48, 55, 57], [43, 50, 57, 59]];
+        const chord = chords[Math.floor(step / 16) % chords.length];
+        if (s === 0) chord.forEach(m => voice(mtof(m), next, stepDur * 18, "sine", .018));
+        if (s === 4 || s === 12) voice(mtof(chord[s === 4 ? 2 : 3] + 12), next, stepDur * 5, "sine", .022);
       } else if (kind === "tension") {
         if (s === 0 || s === 3) kick(next, s === 0 ? 0.35 : 0.22);
         if (s === 0 && step % 32 === 0) [57, 60, 64].forEach((m) => voice(mtof(m), next, stepDur * 30, "sine", 0.025));
@@ -1021,4 +1054,5 @@ function startSynth(kind) {
     setTimeout(() => out.disconnect(), fadeSec * 1000 + 200);
   };
 }
+
 

@@ -38,3 +38,15 @@ audio.duckBgm(1, 400); step(450); assert(Math.abs(elements[2].volume - .22) < 1e
 audio.duckBgm(.5); audio.playBgm("tonari"); step(1500);
 assert.equal(audio.bgmDuckLevel(), 1); assert.equal(elements[3].volume, .4, "a new track starts unducked");
 console.log("[BGM gain] PASS: shark track lowered, settings/fades retain gain, other tracks retain their setting, dialogue duck keeps both");
+
+// The board borrows a real media-backed track without losing its gain/duck or reviving retiring media.
+audio.playBgm("sweets_or_sweets"); step(1500); audio.duckBgm(.5, 0);
+const releaseBoard = audio.createGrowthBoardAudio(); step(1500);
+assert.equal(audio.currentBgm(), "bgm_growth_board");
+releaseBoard(); step(1500);
+assert.equal(audio.currentBgm(), "sweets_or_sweets");
+assert.equal(audio.bgmDuckLevel(), .5);
+assert(Math.abs(elements.at(-1).volume - .11) < 1e-9, "media restore retains track gain, current setting and prior duck");
+assert(elements.slice(0, -1).every(a => a.volume === 0), "retiring board/previous media stay silent");
+console.log("[BGM gain] PASS: media-backed board music restoration and retiring media");
+
