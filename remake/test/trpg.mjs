@@ -341,7 +341,7 @@ test("declared approaches roll with the PC's sheet stat; a companion's first tur
   assert.deepEqual(session.result().acted, { tsumugi: 2, hajime: 2 });
 });
 
-test("character creation: looks, origin presets, a point-buy and a name replace the player's seat; dialogue names the built character", async () => {
+test("character creation: origin presets, a point-buy and a name replace the player's seat; the look is the player's own (#3050); dialogue names the built character", async () => {
   const { buildPc, randomPc } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
   for (const s of catalogScenarios) {
     const b = s.builder;
@@ -354,10 +354,16 @@ test("character creation: looks, origin presets, a point-buy and a name replace 
     assert(!s.dialogues.some(d => d.lines.some(l => l.text.includes(b.archetypes[0].name))), "no raw default name in dialogue");
     assert(s.dialogues.some(d => d.lines.some(l => l.text.includes("{pc}"))));
     for (const check of Object.values(s.checks)) assert(check.approaches.some(a => a.detail.includes("{pc}")));
-    const pc = buildPc(s, { look: b.looks[2].id, archetype: b.archetypes[1].id, name: "ソラ" });
-    assert.equal(pc.name, "ソラ"); assert.equal(pc.title, b.archetypes[1].title); assert.equal(pc.look, b.looks[2].id);
+    const pc = buildPc(s, { archetype: b.archetypes[1].id, name: "ソラ" });
+    assert.equal(pc.name, "ソラ"); assert.equal(pc.title, b.archetypes[1].title);
     assert.deepEqual(pc.stats, b.archetypes[1].stats);
-    assert.throws(() => buildPc(s, { look: "nope" })); assert.throws(() => buildPc(s, { archetype: "nope" }));
+    // No look is chosen (#3050): the built sheet carries no portrait or tint, so the seat shows the player's own face.
+    assert(!("look" in pc), "the built character has no look");
+    assert.equal(pc.portrait, null); assert.equal(pc.color, null); assert.equal(pc.accent, null);
+    // An older save may still pass a look: it is ignored, never an error, and changes nothing.
+    assert.deepEqual(buildPc(s, { look: b.looks?.[2]?.id || "rust", archetype: b.archetypes[1].id, name: "ソラ" }), pc);
+    assert.deepEqual(buildPc(s, { look: "nope" }), buildPc(s, {}));
+    assert.throws(() => buildPc(s, { archetype: "nope" }));
     assert.throws(() => buildPc(s, { name: "" })); assert.throws(() => buildPc(s, { name: "あいうえおかき" }));
     assert.throws(() => buildPc(s, { stats: { ...b.archetypes[0].stats, eye: b.max + 1 } }));
     assert.throws(() => buildPc(s, { stats: { ...b.archetypes[0].stats, nerve: b.min - 1 } }));
@@ -367,13 +373,16 @@ test("character creation: looks, origin presets, a point-buy and a name replace 
     assert.equal(buildPc(s, { stats: spare }).points, b.points - 1, "leaving a point unspent is allowed");
     const a = randomPc(s, 42), c = randomPc(s, 42);
     assert.deepEqual(a, c, "a seeded random character is reproducible");
+    assert(!("look" in a) && a.portrait === null, "おまかせ never picks a look");
     assert(a.points <= b.points);
   }
   const moved = { eye: 2, hand: 3, talk: 3, nerve: 3 };
   const session = new TrpgSession(scenario, { profileId: "quiet", seed: 7, pc: { look: "rust", archetype: "sailor", name: "ソラ", stats: moved } });
+  // The look from an older save is dropped; the player's seat shows the player's own portrait (no sheet portrait or tint).
+  assert.equal(session.sheets.hajime.portrait, null); assert.equal(session.sheets.hajime.color, null);
   assert.equal(session.sheets.hajime.name, "ソラ"); assert.deepEqual(session.sheets.hajime.stats, moved);
   assert(scenario.companionBuilds.adam.adam.some(o => o.name === session.sheets.adam.name), "companions bring a character they made");
-  assert.deepEqual(session.snapshot().pc, { name: "ソラ", title: "船乗り帰りの手伝い", look: "rust", archetype: "sailor", stats: moved });
+  assert.deepEqual(session.snapshot().pc, { name: "ソラ", title: "船乗り帰りの手伝い", archetype: "sailor", stats: moved });
   session.start();
   const roll = session.beginCheck("listen", { approach: "listen_talk" });
   assert.equal(roll.base, 3, "the player's own stat drives the roll");

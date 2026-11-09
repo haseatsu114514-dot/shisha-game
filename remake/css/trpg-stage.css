@@ -784,22 +784,16 @@
 .trpg-root.trpg-cinematic .trpg-builder-stage > h2 { margin: 0 0 4px; text-align: center; color: #f0dfba; font-size: 25px; font-weight: 500; letter-spacing: .07em; }
 .trpg-root.trpg-cinematic .trpg-builder-stage .trpg-modal-intro { margin: 0 0 10px; text-align: center; font-size: 13px; color: #c3cfc2; }
 .trpg-root.trpg-cinematic .trpg-builder-stage .trpg-modal-body { scrollbar-color: #e0d2ab4d transparent; }
-.trpg-root.trpg-cinematic .trpg-builder { display: grid; grid-template-columns: 1.05fr 1fr 1.1fr; gap: 14px; }
+.trpg-root.trpg-cinematic .trpg-builder { display: grid; grid-template-columns: 1fr 1.1fr; gap: 14px; }
 .trpg-root.trpg-cinematic .trpg-builder section { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 8px; background: #0e232899; border: 1px solid #e3d7b62e; }
 .trpg-root.trpg-cinematic .trpg-builder h3 { margin: 0; font-size: 14px; font-weight: 700; letter-spacing: .08em; color: #e9d9b5; }
-.trpg-root.trpg-cinematic .trpg-builder-look-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.trpg-root.trpg-cinematic .trpg-builder-look { display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 0; padding: 10px 6px 8px; border: 1px solid #e3d7b63d; border-radius: 8px; background: #12272b66; color: #f1ead4; text-align: center; white-space: normal; box-shadow: none; }
-.trpg-root.trpg-cinematic .trpg-builder-look-face { position: relative; display: block; width: 58px; height: 58px; overflow: hidden; border-radius: 50%; border: 1px solid #ebd9a8a6; }
-.trpg-root.trpg-cinematic .trpg-builder-look-face img.trpg-pc-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.trpg-root.trpg-cinematic .trpg-builder-look strong { font-size: 14px; font-weight: 500; }
-.trpg-root.trpg-cinematic .trpg-builder-look small { font-size: 12px; color: #c9d4c4; line-height: 1.45; }
 .trpg-root.trpg-cinematic .trpg-builder-origin-list { display: flex; flex-direction: column; gap: 8px; }
 .trpg-root.trpg-cinematic .trpg-builder-origin { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 9px 12px; border: 1px solid #e3d7b63d; border-radius: 8px; background: #12272b66; color: #f1ead4; text-align: left; white-space: normal; box-shadow: none; }
 .trpg-root.trpg-cinematic .trpg-builder-origin strong { font-size: 15px; font-weight: 500; color: #fff1cf; }
 .trpg-root.trpg-cinematic .trpg-builder-origin > span { font-size: 12px; font-weight: 700; color: #d6ddcc; }
 .trpg-root.trpg-cinematic .trpg-builder-origin small { font-size: 12px; color: #c9d4c4; line-height: 1.45; }
-.trpg-root.trpg-cinematic :is(.trpg-builder-look, .trpg-builder-origin):hover:not(:disabled) { border-color: #ffe6b0; background: #22454ccc; transform: none; }
-.trpg-root.trpg-cinematic :is(.trpg-builder-look, .trpg-builder-origin).selected { border-color: #ffd98f; background: #3a4c3ccc; box-shadow: inset 0 0 0 1px #ffd98f88; }
+.trpg-root.trpg-cinematic .trpg-builder-origin:hover:not(:disabled) { border-color: #ffe6b0; background: #22454ccc; transform: none; }
+.trpg-root.trpg-cinematic .trpg-builder-origin.selected { border-color: #ffd98f; background: #3a4c3ccc; box-shadow: inset 0 0 0 1px #ffd98f88; }
 .trpg-root.trpg-cinematic .trpg-builder-name { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 700; color: #d6ddcc; }
 .trpg-root.trpg-cinematic .trpg-builder-name input { min-height: 40px; padding: 6px 10px; border: 1px solid #e3d7b66b; border-radius: 6px; background: #f8f3e8; color: #2c2a26; font: inherit; font-size: 18px; }
 .trpg-root.trpg-cinematic .trpg-builder-name input { font-size: max(18px, calc(16px / var(--k, 1))) !important; } /* 実寸 16px 下限（base.css・#2852）を保ち、大きい画面では 18px のまま */
@@ -821,7 +815,6 @@
 .trpg-root.trpg-cinematic .trpg-builder-stage .trpg-modal-actions .trpg-button.primary { min-width: 240px; background: linear-gradient(135deg, #f1e5c8, #d7c69d); color: #243d3c; border-color: #fff0c1a6; font-weight: 500; }
 @media (max-width: 1000px), (max-height: 600px) {
   .trpg-root.trpg-cinematic .trpg-builder { grid-template-columns: 1fr 1fr; }
-  .trpg-root.trpg-cinematic .trpg-builder-stats { grid-column: 1 / -1; }
   .trpg-root.trpg-cinematic .trpg-cover-pc { max-width: 520px; padding: 8px 12px; gap: 10px; }
 }
 
