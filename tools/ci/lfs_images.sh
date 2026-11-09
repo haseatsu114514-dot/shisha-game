@@ -20,6 +20,15 @@ if [ -f remake/js/daily/shop-art-new-flavors.js ] \
   GIT_LFS_SKIP_SMUDGE=1 git sparse-checkout add '/remake/img/shop/new-flavors/'
 fi
 
+# Same situation for the chapter-poem panels: the chapter-poems quick test
+# checks the panel images, but the quick job's sparse checkout predates this
+# image directory.
+if [ -f remake/test/chapter_poems.mjs ] \
+  && [ ! -f remake/img/ui/poems/poem_ch1.webp ] \
+  && [ "$(git config --bool core.sparseCheckout || true)" = true ]; then
+  GIT_LFS_SKIP_SMUDGE=1 git sparse-checkout add '/remake/img/ui/poems/'
+fi
+
 pointers() {
   find "${dirs[@]}" -type f -size -2k \
     \( -iname '*.png' -o -iname '*.webp' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.gif' -o -path 'assets/audio/dj/*.mp3' \) \

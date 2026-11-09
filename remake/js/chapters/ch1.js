@@ -6,6 +6,7 @@ import { playEntrance, CH1_EVE_NOTES } from "./tournament-entrance.js";
 import { playTournamentArrival } from "./ch1-arrival.js";
 import { DB, bgUrl, faceIconUrl, realName, displayName, loadTournamentCraftDialogue } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
+import { playChapterPoem } from "../scenes/chapter-poem.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen, loadingNotice } from "../core/ui.js";
 import { sceneMoment } from "../core/scene-motions.js";
@@ -157,6 +158,7 @@ async function openingPart() {
     await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
     scene.stop();
     await sleep(600);
+    if (!await playChapterPoem(1) || state !== owner) return false; // 章タイトルの前の巻頭ポエム（序詩を兼ねる。brand/chant_poems.md）
     const titleResult = await playCh1Title();
     if (titleResult.cancelled || state !== owner) return false;
     playBgm("tonari");

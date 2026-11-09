@@ -10,6 +10,28 @@
   ],
   "suites": [
     {
+      "id": "chapter-poems",
+      "title": "巻頭ポエムの台本・仕様・章タイトル直前の接続",
+      "kind": "quick",
+      "run": ["node remake/test/chapter_poems.mjs"]
+    },
+    {
+      "id": "chapter-poems-browser",
+      "title": "巻頭ポエムの表示順・操作・再開",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 10,
+      "paths": [
+        "brand/chant_poems.md",
+        "data/dialogue/chapter_poems.json",
+        "remake/css/motions/chapter-poem.css",
+        "remake/img/ui/poems/",
+        "remake/js/scenes/chapter-poem.js",
+        "remake/test/browser/chapter_poems.mjs"
+      ],
+      "run": ["node remake/test/browser/chapter_poems.mjs"]
+    },
+    {
       "id": "bgm-readiness-browser",
       "title": "BGM waits for real media readiness and reuses the prepared player",
       "kind": "browser",
