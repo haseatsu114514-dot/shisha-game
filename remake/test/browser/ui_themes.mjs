@@ -71,6 +71,32 @@ await suite("ui-themes-preview", async check => {
     assert(geometry.choiceRight <= geometry.stageRight + 1, JSON.stringify(geometry));
     assert(geometry.choiceBottom <= geometry.controlsTop - 4, JSON.stringify(geometry));
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+  await check("wide-dialogue-frame-conventional-width", async page => {
+    await page.selectOption("#preview-scene", "hiyori");
+    await page.locator(".vn-next.show").waitFor();
+    await page.waitForTimeout(350);
+    const measure = () => page.evaluate(() => {
+      const stage = document.querySelector("#stage").getBoundingClientRect();
+      const box = document.querySelector(".vn-box").getBoundingClientRect();
+      const controls = document.querySelector(".vn-controls").getBoundingClientRect();
+      const units = stage.width / (document.querySelector("#stage").hasAttribute("data-wide") ? 1600 : 1280);
+      return { width: box.width / units, center: (box.left + box.right) / 2, stageCenter: (stage.left + stage.right) / 2,
+        controlsRight: controls.right, stageRight: stage.right };
+    });
+    const normal = await measure();
+    // 会話プレビューは fitStage を使わないため、ゲーム本編のワイドステージ幅を与える。
+    await page.evaluate(() => {
+      const stage = document.querySelector("#stage");
+      stage.dataset.wide = "";
+      stage.style.setProperty("--stage-w", "1600px");
+    });
+    await page.waitForTimeout(400);
+    const wide = await measure();
+    // #3035・案1: ワイド時も会話枠は従来幅のまま（#3007 のワイド専用拡大は廃止）。操作札の位置も従来どおり。
+    assert(Math.abs(wide.width - normal.width) <= 2, JSON.stringify({ normal, wide }));
+    assert(Math.abs(wide.center - wide.stageCenter) <= 2, JSON.stringify({ normal, wide }));
+    assert(Math.abs(wide.controlsRight - normal.controlsRight) <= 2, JSON.stringify({ normal, wide }));
+  });
   for (const viewport of [{ width:1280, height:768 }, { width:844, height:438 }]) {
     await check(`${viewport.width}`, async page => {
       await page.locator(".vn-next.show").waitFor();
