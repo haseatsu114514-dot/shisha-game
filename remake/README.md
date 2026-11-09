@@ -4,7 +4,7 @@
 
 このREADMEは起動・テスト・フォルダ構成・第1章の流れだけ。機能ごとの仕様は `docs/spec/` に移した。
 
-- UIテーマ（紙とラベンダー・制作の紫×白＋金・DS風レイアウト）: [docs/spec/ui_paper_lavender.md](../docs/spec/ui_paper_lavender.md)
+- UIテーマ（紙とラベンダー・制作の紫×白＋金。DS風レイアウトは 2026-11-10 に廃止し横画面一本）: [docs/spec/ui_paper_lavender.md](../docs/spec/ui_paper_lavender.md)
 - フレーバー熟練度・レモン課題・日々の体力収支: [docs/spec/flavor_mastery_and_stamina.md](../docs/spec/flavor_mastery_and_stamina.md)
 - 経験値・レベル・火種（心得の盤）: [docs/stat-design/README.md](../docs/stat-design/README.md)
 - タイトルのメディアギャラリー: [docs/spec/title_media_gallery.md](../docs/spec/title_media_gallery.md)

@@ -1,3 +1,4 @@
+/* body:not(:root)／.title:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds)／:not([data-layout="ds"]) と同じ詳細度を保つための置き換え。 */
 /* 制作画面と表示確認ページで共有するランク表示。 */
 .bench-top > .craft-rank {
   position: relative; flex: 0 0 220px; width: 220px; height: 56px; min-width: 0;
@@ -32,30 +33,17 @@
 .bench:is([data-help-paused="true"], [data-demo-paused]) .craft-rank * { animation-play-state: paused; }
 /* 通常横持ちは固定舞台の倍率を維持し、読めない全文だけ略形に切替える。 */
 @media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
-  body:not(.game-ds) .craft-rank-caption, body:not(.game-ds) .craft-rank-wide { display: none; }
-  body:not(.game-ds) .craft-rank-compact { display: block; inset: 0 0 5px; }
-  body:not(.game-ds) .craft-rank-compact .craft-rank-grade { font-size: min(56px, calc(28px / var(--k, 1))); }
+  body:not(:root) .craft-rank-caption, body:not(:root) .craft-rank-wide { display: none; }
+  body:not(:root) .craft-rank-compact { display: block; inset: 0 0 5px; }
+  body:not(:root) .craft-rank-compact .craft-rank-grade { font-size: min(56px, calc(28px / var(--k, 1))); }
 }
-/* DSでは非表示の旧モード名と同じclassを使わず、上画面の工程帯内に残す。 */
-body.game-ds .bench-top > .craft-rank { flex-basis: 72px; width: 72px; height: 32px; }
-body.game-ds .craft-rank-caption, body.game-ds .craft-rank-wide { display: none; }
-body.game-ds .craft-rank-compact { display: block; inset: 0 0 4px; }
-body.game-ds .craft-rank-compact .craft-rank-grade { font-size: 26px; }
-body.game-ds .craft-rank-meter { right: 4px; height: 3px; }
 /* 先の番号と済み✓は残す。補助の工程絵だけ省き、現在工程名を守る。 */
-body.game-ds .bench-top:has(> .craft-rank) .bench-phase:not(.now) .bench-phase-icon { display: none; }
-body.game-ds .bench-top:has(> .craft-rank) .bench-progress-track { gap: 2px; }
-body.game-ds .bench-top:has(> .craft-rank) .bench-phase { padding: 2px; gap: 2px; }
-body.game-ds .bench-top:has(> .craft-rank) .bench-phase.now { max-width: none; padding: 2px 4px; }
-/* DSの詰めた行高（1.1/1）では字の高さが枠を越えるため、ランク表示中は標準に戻す。 */
-body.game-ds .bench-top:has(> .craft-rank) .bench-phase-copy :is(b, small) { line-height: normal; }
-@media (max-width: 359px) { body.game-ds .bench-top > .craft-rank { flex-basis: 64px; width: 64px; } }
 @media (prefers-reduced-motion: reduce) { .craft-rank *, .craft-rank[data-change] * { animation: none !important; transition: none !important; } }
 
-/* 本編ではモードと案内を二行で残し、ランクを隣へ併設する。DSの非表示規則は維持する。 */
-body:not(.game-ds) .bench-top:has(> .craft-rank):has(> .bench-mode) { gap: 12px; }
-body:not(.game-ds) .bench-top:has(> .craft-rank) > .bench-mode { width: 160px; letter-spacing: .02em; }
-body:not(.game-ds) .bench-top:has(> .craft-rank) > .bench-mode small {
+/* 本編ではモードと案内を二行で残し、ランクを隣へ併設する。 */
+body:not(:root) .bench-top:has(> .craft-rank):has(> .bench-mode) { gap: 12px; }
+body:not(:root) .bench-top:has(> .craft-rank) > .bench-mode { width: 160px; letter-spacing: .02em; }
+body:not(:root) .bench-top:has(> .craft-rank) > .bench-mode small {
   display: block; margin: 4px 0 0; padding: 0; border: 0; line-height: normal;
 }
-body:not(.game-ds) .bench-top:has(> .bench-mode) > .craft-rank { flex-basis: 100px; width: 100px; }
+body:not(:root) .bench-top:has(> .bench-mode) > .craft-rank { flex-basis: 100px; width: 100px; }

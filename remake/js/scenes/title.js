@@ -13,7 +13,6 @@ import { clearLog } from "../vn/engine.js";
 import { openGallery } from "./gallery.js";
 import { loadWithRecovery } from "./saves.js";
 import { pickTitleArt, prepareTitleArt } from "./title-art.js";
-import { mountTitleLayout, createTitleLayoutSettings } from "./title-layout.js";
 import { createUiThemeSelect } from "../core/ui-theme.js";
 import { fullscreenButton, saveTransferRow } from "./save-transfer.js";
 
@@ -259,7 +258,6 @@ export function showTitle(preparedArt = null) {
   const fallbackLogo = () => { logo.hidden = true; fallback.hidden = false; };
   logo.addEventListener("error", fallbackLogo);
   if (logo.complete && !logo.naturalWidth) fallbackLogo();
-  mountTitleLayout(root, { art: artNode, brand, menu, left: root.querySelector(".title-left"), background: bgUrl("bg_title") });
   const requested = performance.now();
   const place = (loaded) => {
     // 幕の終了待ちでrootが未接続のときも、そのrootへ絵を準備する。
@@ -356,13 +354,10 @@ export async function openConfig(opts = {}) {
       opts.onChange?.("mute", config.mute);
     },
   });
-  // タイトルの見た目（通常版／DS風）。タイトル画面から開いたときだけ出す（#2863: 右上の「表示設定」から移した）。
-  const titleLayout = createTitleLayoutSettings();
   const fullscreen = fullscreenButton();
   return modal({
     title: "設定",
     body: el("div.cfg", [
-      ...(titleLayout ? [el("div.cfg-row.cfg-title-layout", [el("span", { text: "表示設定（タイトル）" }), titleLayout])] : []),
       row("UIデザイン", createUiThemeSelect(config.uiTheme, value => { config.uiTheme = value; persist(); opts.onChange?.("uiTheme", value); })),
       row("ミュート（すべての音を消す）", mute),
       row("BGM 音量", range("bgmVolume", 0, 1, 0.05, "cfg-bgm-volume")),

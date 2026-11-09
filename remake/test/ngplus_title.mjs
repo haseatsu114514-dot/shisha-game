@@ -134,7 +134,6 @@ function makeFixture(opts = {}) {
       pickTitleArt: () => ({ character: "sumi", file: "sumi.webp", url: "blob:sumi", ready: true }),
       prepareTitleArt: async (art) => art,
     },
-    "./title-layout.js": { mountTitleLayout() {}, createTitleLayoutSettings: () => null },
     "../core/cycle-meta.js": {
       readCycleMeta: () => (typeof opts.meta === "function" ? opts.meta() : opts.meta ?? null),
       recordCycleStarted: () => {},

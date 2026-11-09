@@ -1,3 +1,4 @@
+/* body:not(:root)／.title:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds)／:not([data-layout="ds"]) と同じ詳細度を保つための置き換え。 */
 /* 制作画面と同じ暗い紫・真鍮・銀の面で、大会の記録を一つの放送画面に揃える。 */
 .tournament-heading { position: relative; width: 100%; color: #f4efe5; }
 .tournament-eyebrow { display: block; color: #c9b78e; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; }
@@ -181,7 +182,7 @@
 /* スマホ規格（#2851・#2977）では「表彰のあとへ」が規格の高さ（--phone-tap: 72px、ワイドでは 80px）になり、
    下の段（54px）からはみ出して画面の下で欠けていた。スマホでは下の段をボタンの高さに合わせ、
    その分だけ順位と評価の段を縮める（評価は今までどおり枠の中でスクロールする）。 */
-html:root[data-density="phone"] body:not(.game-ds) .result-table { grid-template-rows: 128px minmax(0, 1fr) auto; }
+html:root[data-density="phone"] body:not(:root) .result-table { grid-template-rows: 128px minmax(0, 1fr) auto; }
 .craft-loading { position: absolute; inset: 64px 0 0; z-index: 30; display: grid; place-content: center; gap: 18px; text-align: center; background: #100c1aee; color: #e4d4b4; font-size: 18px; }
 .craft-loading::before { content: ''; width: 36px; height: 36px; margin: 0 auto; border: 2px solid #a58b522b; border-top-color: #dfc58e; border-radius: 50%; animation: craft-load 1s linear infinite; }
 .bench[data-thermal-band='optimal'] .thermal-label { color: #ebd4ff; }
@@ -196,7 +197,6 @@ html:root[data-density="phone"] body:not(.game-ds) .result-table { grid-template
   .rc-ring-progress { transition: none; }
   .nico { animation: none; left: 25%; transform: none; font-size: 19px; opacity: .6; }
 }
-
 
 /* #2359 CUI08: 大会の中継面を制作と同じ夜紫へ。配置・得点表示は維持。 */
 .tournament-heading { color: #f6f1fa; }
@@ -255,14 +255,15 @@ html:root[data-density="phone"] body:not(.game-ds) .result-table { grid-template
    ワイドで左右まで広げる・文字の下限を上げるのは wide-craft.css（#2983）。ここは欄の並びと押す所だけを足す。 */
 /* 最終結果: 「あなたの一台」の欄の下の補足（効いたもの・良かった点・次の練習）を規格の文字に。
    下段の行の高さ（「……結果を受け止める」が --phone-tap になる分）は phone-density.css（#2976）で決める。 */
-html:root[data-density="phone"] body:not(.game-ds) .result-table .rt-detail-scroll > small { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .result-table .rt-detail-scroll > small { font-size: var(--phone-sub); }
 /* 中間投票: 審査員の欄と名前の列を広げる（文字を大きくしても持ち点の行・名前が詰まらないように） */
-html:root[data-density="phone"] body:not(.game-ds) .standings .sd-main { grid-template-columns: 1fr 380px; }
-html:root[data-density="phone"] body:not(.game-ds) .standings .sd-row { grid-template-columns: 40px 48px 150px 1fr 72px; }
-html:root[data-density="phone"] body:not(.game-ds) .standings .sd-recognition { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .standings .sd-main { grid-template-columns: 1fr 380px; }
+html:root[data-density="phone"] body:not(:root) .standings .sd-row { grid-template-columns: 40px 48px 150px 1fr 72px; }
+html:root[data-density="phone"] body:not(:root) .standings .sd-recognition { font-size: var(--phone-sub); }
 /* 入場の紹介カード: 少し広げて、スミさんのひと言を文節で2行までにそろえる */
-html:root[data-density="phone"] body:not(.game-ds) .ent-card { width: 960px; }
-html:root[data-density="phone"] body:not(.game-ds) .ent-note { line-height: 1.45; word-break: auto-phrase; text-wrap: balance; }
+html:root[data-density="phone"] body:not(:root) .ent-card { width: 960px; }
+html:root[data-density="phone"] body:not(:root) .ent-note { line-height: 1.45; word-break: auto-phrase; text-wrap: balance; }
 /* GAME OVER: ワイドでは左右の余白を地の色で塗る（会場の絵が覗いていた）。「初回は時間制限なし」の注記を規格の文字に */
-body:not(.game-ds) #stage[data-wide] .end-screen.gameover { box-shadow: 0 0 0 var(--stage-gutter) #120a1c; }
-html:root[data-density="phone"] body:not(.game-ds) .gameover .go-limit-note { font-size: var(--phone-sub); }
+body:not(:root) #stage[data-wide] .end-screen.gameover { box-shadow: 0 0 0 var(--stage-gutter) #120a1c; }
+/* 注記は横持ちスマホでも実寸12px以上（#2190 P24 の下限）。補助文の規格（実寸11.5px）だけだと下回るため、大きい方を取る */
+html:root[data-density="phone"] body:not(:root) .gameover .go-limit-note { font-size: max(var(--phone-sub), calc(12.5px / var(--k, 1))); }

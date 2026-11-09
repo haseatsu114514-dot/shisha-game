@@ -63,7 +63,7 @@ export function flavorFeatureCard(flavor, { description = "", makerLabel = "" } 
   ]);
 }
 
-export function mixForecastCard(cs, { precision = 0, mastery, aroma, compact = false } = {}) {
+export function mixForecastCard(cs, { precision = 0, mastery, aroma } = {}) {
   const forecast = forecastExpression(cs, { precision });
   // 配合の加重平均は表示時だけ切り捨て、次の段階やMAXを先取りしない。
   // 全葉MAXの平均が5未満になるような、整数境界の浮動小数誤差だけを補う。
@@ -90,9 +90,8 @@ export function mixForecastCard(cs, { precision = 0, mastery, aroma, compact = f
       mastery ? el("p", { text: "熟練は使った量の比率で、香りの再現・予測・大会点に効きます。葉の基本情報は最初から見られます。" }) : null,
     ]),
   ];
-  return el(`div.flavor-forecast${compact ? ".is-compact" : ""}`, { dataset: { test: "mix-forecast", precision: format(precision), expressive: String(forecast.expressive) } },
-    compact ? [el("details.flavor-forecast-compact", [el("summary", { text: `仕上がりの目安 · ${aroma?.headline || "予想を見る"}` }), ...content])]
-      : [title, ...content]);
+  return el("div.flavor-forecast", { dataset: { test: "mix-forecast", precision: format(precision), expressive: String(forecast.expressive) } },
+    [title, ...content]);
 }
 
 // 文言は現行の計算に効く性能に限る。HMDの未接続の温まり方・蓄熱は説明しない。

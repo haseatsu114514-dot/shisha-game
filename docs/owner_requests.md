@@ -8,6 +8,17 @@
 > - 必要な節だけ検索して読む（例: `grep -n "^## " docs/owner_requests.md`）。丸ごと読み込まない。
 > - 2026-09-28 以前の節（旧 `web/` 時代）は [archive/owner_requests_2026-06_09.md](archive/owner_requests_2026-06_09.md) へ移した（2026-11-02）。そこで使った接頭辞（A・AA・AXT・B・ER・F・G・GG・H・J・K・KZ・N・O・P・Q・R・RM・T・TM・V・W・X・Y・Z）は新しい節で再利用しない。
 
+## 2026-11-10 DS風・スマホ縦画面モードを廃止し横画面一本に（LS）
+
+オーナー（2026-11-04）「DSモードとスマホモードを消して　横画面一本にして」、（2026-11-10）「DSモードは開発中止して」。
+
+| ID | 状態 | オーナー要望・対応 |
+|---|---|---|
+| LS01 | ✅ 本PR | **DS風（上下／左右2画面）を廃止**: タイトルの CONFIG「表示設定（タイトル）」の行、本編の「表示」切替、`?titleLayout=normal` の復旧導線、`js/scenes/game-layout.js`・`title-layout.js`・`ds-geometry.js`、`css/game-ds.css`・`css/title-ds.css`、各CSSの DS 専用規則（`body.game-ds`・`.title[data-layout="ds"]`・`data-ds-*`）、制作の DS 用の小さい味見（`.mix-taste-compact`・`flavor-forecast-compact`）を削除。PC・スマホ横の見た目は変えない（`:not(.game-ds)` は同じ詳細度の `:not(:root)` に置き換え） |
+| LS02 | ✅ 本PR | **以前の設定の移行**: 起動時に端末の `suien_title_layout`（通常版／DS風の選択）を読まずに消すだけ。セーブ・設定・他のキーは触らない。DS風を選んでいた端末も、自動ロード・LOAD とも通常の横画面で再開する。古い `?titleLayout=normal` のリンクはそのままタイトルが開く |
+| LS03 | ✅ 本PR | **スマホは横持ち一本**: 縦持ちは従来どおり回転ガード（`#rotate-hint`）で覆う。横持ちのタッチ操作・スマホ規格（`phone-density.css`）はそのまま |
+| LS04 | 📝 判断待ち | DS風でしか使っていなかった画像・比較資料の削除、ロード画面・TRPG の縦向き専用レイアウトの扱い（PR本文に一覧） |
+
 ## 2026-11-08 斧投げの的のリングを WATL 公式の寸法へ（AXR、#2729）
 
 オーナー「公式に合わせて」（#2999 の報告の「リングがステンシルよりひと回り小さい」への回答）。

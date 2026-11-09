@@ -19,8 +19,6 @@ import { createIsolatedEventPlayer } from "./core/dev-isolated-player.js";
 import { craftTest } from "./craft/session.js";
 import { showTitle } from "./scenes/title.js";
 import { prepareTitleArt } from "./scenes/title-art.js";
-import { isNormalTitleForced } from "./scenes/title-layout.js";
-import { initGameLayout } from "./scenes/game-layout.js";
 import { resumeGame } from "./chapters/ch1.js";
 import { setGrowthPreview, growthEnabled, gainExp, ensureGrowth, openGrowthBoard } from "./core/growth.js";
 installNoZoom(); // ダブルタップによる拡大を止める（#2826。ピンチは禁止しない）
@@ -55,6 +53,9 @@ function fitStage() {
   delete stage.dataset.wide;
 }
 
+/** 廃止したDS風表示の選択（"normal"/"ds"）を保存していたキー。起動時に消す。 */
+export const LEGACY_TITLE_LAYOUT_KEY = "suien_title_layout";
+
 export async function boot() {
   fitStage();
   window.addEventListener("resize", fitStage);
@@ -62,7 +63,9 @@ export async function boot() {
   window.visualViewport?.addEventListener("resize", fitStage);
   installRotateGuard(); // 縦持ちの回転ガード中は、制作の時計と音を止める（#2941）
   initLayers();
-  initGameLayout();
+  // DS風表示（上下2画面）は廃止して横画面一本にした（オーナー決定 2026-11-04／11-10）。
+  // 以前に「DS風」を選んだ端末に残る表示設定は読まずに消すだけ（セーブ・設定には触れない）。
+  try { localStorage.removeItem(LEGACY_TITLE_LAYOUT_KEY); } catch { /* 保存できない環境は何もしない */ }
   const cfg = loadConfig();
   applyUiTheme(cfg.uiTheme);
   // 設定「揺れ・閃光を減らす」を CSS からも見えるようにする（場面の演出の閃光を省く・#2688 F11）
@@ -96,8 +99,7 @@ export async function boot() {
   }, { label: "ゲームを準備しています…", context: "boot", chapter: 1 });
   // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する
   const resumeRequested = consumeResumeOnBoot();
-  // 復旧URLは通常タイトルを開く。セーブの読込・書換えは行わない。
-  if (!isNormalTitleForced() && resumeRequested && load()) resumeGame();
+  if (resumeRequested && load()) resumeGame();
   else showTitle(titleArt);
   // タイトルを描けたことを確認してから、読み込み画面を閉じる。
   $("#boot").classList.add("done");

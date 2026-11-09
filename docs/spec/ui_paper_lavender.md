@@ -1,4 +1,6 @@
-# UIテーマ: 紙とラベンダー（既定）と DS風レイアウト
+# UIテーマ: 紙とラベンダー（既定）
+
+> 2026-11-10: DS風レイアウト（上下／左右2画面）は廃止し、横画面一本にした（オーナー 2026-11-04「DSモードとスマホモードを消して　横画面一本にして」・2026-11-10「DSモードは開発中止して」）。下の DS風の記述は当時の記録。スマホの縦持ちは回転ガード（`#rotate-hint`）で覆う。
 
 > 2026-11-02 に `remake/README.md` から移した。新しい節が上。実装は `remake/css/`・`remake/js/`、採用記録は `docs/owner_requests.md`（CUI・DUI・GUI）。
 
@@ -25,9 +27,8 @@
 - タブ: ステータス（盤を使う時は Lv・EXP・火種・3盤の横ゲージ、盤の公開前は旧5能力の段と呼称。グラフは出さない）／人間関係（1人1行、タップで思い出・次の進め方・贈り物）／持ち物（フレーバー・機材・遊びの道具・レシピ帳・試したい配合・記念品）／システム。人の並びと贈り物の札・レシピの詳細は `daily/status.js` と共有する。
 - 保存データは読むだけ。HUD の五角形のステータスボタンは廃止し、火種の印は MENU の右上（`hud.js`）。能力アップの通知の光（`core/ui.js` の `flyStatGain`）と寝る前の火種の粒（`levelup.js`）も MENU へ飛ぶ。旧STATUS画面 `openStatus` は第2章の配達地図のMENUが使うので残している。
 - 見た目は `css/daily-menu.css`。どのUIテーマでも紙×ラベンダー＋琥珀。紙は生成画像 `assets/ui/paper/menu-bg.png` を `remake/tools/build_ui_skin.py`（`build_menu_bg`）で 1536×838 の `img/ui/paper/menu-bg.webp` にしたもの（上の枠線と左下のシーシャ台の絵はそのまま、無地の中ほどだけ縦に詰める）。1280×720 の舞台に 1232×672 で置き、タブの帯と枠線の位置を絵に合わせる。絵が読めない時も同じ色の紙と帯で開く。
-- DS風は絵を引き伸ばさず、上下2画面ぶん（横持ちは左右2画面ぶん）の紙と線で描く。縦持ちはタブを下の帯に4つ、横持ちは左の帯。MENU を開いている間はヒンジの「表示」を隠す。
 - キー: 地図で行き先を選んでいる間は M で開く。MENU の中は M・Esc で閉じる（レシピの詳細・チェキの拡大を開いている時は Esc でそれだけ閉じる）、1〜4・Q/E・タブ上の矢印でタブを移る。
-- 検証: `node remake/test/browser/daily_menu.mjs`（4タブ・読むだけ・キー・レシピとチェキの戻り方・盤の入口・手動セーブの可否・1280×720／横持ちタッチ／DS縦 390×844・320×568）。MENUを経由する既存の回帰（`save_load`・`ds_overlay_layers`・`growth_levelup`・`lime_badge`・`game_layout` など）はシステムタブを選んでから押す。
+- 検証: `node remake/test/browser/daily_menu.mjs`（4タブ・読むだけ・キー・レシピとチェキの戻り方・盤の入口・手動セーブの可否・1280×720／横持ちタッチ／縦持ちは回転ガード）。MENUを経由する既存の回帰（`save_load`・`growth_levelup`・`lime_badge`・`game_layout` など）はシステムタブを選んでから押す。
 
 ## 第1〜2章の斧投げ・TRPG・くじ・ギャラリーも紙とラベンダーへ
 
@@ -49,7 +50,7 @@
 - 制作と大会は日常の紙UIを反転し、地 `#150d22`、板 `#221534`、札 `#2e1d45`、線 `#5a4475`、ラベンダー光 `#c9a7e6`、白 `#f6f1fa`、金 `#e3bd6e` を使う。金は特別な一手と細い縁、順位の強調へ絞る。審査員の桃・青緑・金、LIVE の赤、温度と成否の意味色は保つ。
 - 原画と共通・個別プロンプトは `asset_sources/ui/craft-night-20261102/`、採用PNGは `assets/ui/craft-night/`、実行時WebPは `remake/img/ui/craft-night/`。`python3 remake/tools/build_ui_skin.py` の `CRAFT_NIGHT_PARTS` が固定寸法で変換する。
 - 板・窓・ボタン・額縁は織り目や繊維、片方向の光、二重罫、内影を持つ。板と舞台の中心は無地。板に `filter` を掛けず、縁は1px。温度計の透明窓に合わせ `--thermo-inset: 8.2%`、管は左右35%/36%に置く。
-- 工程バーは今の工程だけ名前、済みは✓、先は番号。大会の順位行・メダル・伏見カットイン帯・入場札も夜紫のパーツへ。工程・操作・判定・得点・台詞・保存・DS二画面の配置は変えない。
+- 工程バーは今の工程だけ名前、済みは✓、先は番号。大会の順位行・メダル・伏見カットイン帯・入場札も夜紫のパーツへ。工程・操作・判定・得点・台詞・保存は変えない。
 
 ## 2026-11-01 制作（シーシャ作り）の紫×白＋金
 
@@ -57,24 +58,24 @@
 
 - `css/craft-paper.css` を `craft.css`・`steam.css`・`craft-header.css`・`craft-landscape.css` の後に読み、色・面・縁だけを上書きする（寸法・座標・操作判定は変えない）。練習・レッスン・大会のどのモードでも同じ面。`data-ui-theme` には依存しない（制作画面は常にこの配色）。
 - 既存素材 `img/ui/craft-paper/`（原画 `assets/ui/craft-paper/`、生成記録 `asset_sources/ui/craft-paper-20261031/`、ビルド `python3 remake/tools/build_ui_skin.py`）を再利用。左右の板・結果カードは紫のグラデーション、壁紙・天板は既存素材に紫を重ねる。通常ボタンと温度計の白、決定操作の金を残す。紫の面では白い本文・薄いラベンダーの補足、白いボタンでは暗い紫の文字を使う。温度の青・橙、体調や成否の緑・赤は意味を維持し、暗い面で読める明るさに調整する。旧素材（`img/ui/making/ui_*`）と `skin.js` の読み込みは維持。新規画像は追加しない。
-- 板に `filter` を付けない（DSで `position: fixed` にしている温度計の台座・外観ボタンが板の中へ閉じ込められる）。影は `box-shadow`。板の縁は1pxのままで、絵は余白と外側に描く（中身の寸法を変えない）。
+- 板に `filter` を付けない（`position: fixed` の子が板の中へ閉じ込められる）。影は `box-shadow`。板の縁は1pxのままで、絵は余白と外側に描く（中身の寸法を変えない）。
 - 工程ごとの舞台（CUI05・通常表示のみ）: 炭焼き・調整は石の天板、穴あけ・蒸らし時間はリネンマット、配合と詰め方はボウルの窓だけマット。素材に紫を重ね、文字は紫のカードや札に載せる。調整の炭の交換は炭の絵のカード（既存の `img/ui/making/coal_*.webp`）。
 - 温度計の管は `--thermo-inset`（上下対称）で置く。`thermometer.js` が矢印・目印を同じ変数で置くため、ずらすと矢印が判定とずれる。
 - ボタンの主・ホバー・選択中にも縁の太さを明示する（`craft.css` の縁1pxが勝つとホバーで高さが変わり、ボタンが揺れる）。
 - 大会の演出レイヤー（入場・中間発表・伏見カットイン・最終順位表・RESULT 10 COUNT・実況コメント）は大会リメイク側で決めるため未変更。
-- 検証: `node tools/ci/run.mjs --kind browser --suites craft-materials,ds-packing,heat-feedback,mix-temperature,steam-attack,steam-forecast,craft-scenes,flavor-expression,loading-gate,ch1-tournament,game-layout,water-pour`、`craft-preview.html` と本編の配合→調整までの各工程を 1280×720・844×390・390×844（DS）で撮影して確認。
+- 検証: `node tools/ci/run.mjs --kind browser --suites craft-materials,packing-layout,heat-feedback,mix-temperature,steam-attack,steam-forecast,craft-scenes,flavor-expression,loading-gate,ch1-tournament,game-layout,water-pour`、`craft-preview.html` と本編の配合→調整までの各工程を 1280×720・844×390 で撮影して確認。
 
 ## 2026-10-31 紙とラベンダーのUI（既定のUIテーマ）
 
 日常パートのUIを Dr.fookah の紙×ラベンダー＋琥珀へ統一する方針（`docs/owner_requests.md` DUI01〜11、[設計](../design/daily-ui-menu-design.md)）の第一段。
 
 - 生成した紙の板・会話窓・ラベンダーの面を UIテーマ `paper` として追加し、既定にした（`core/ui-theme.js`・`core/state.js`）。既存の6テーマは設定から選べる。端末に保存済みの選択はそのまま。
-- `css/ui-paper.css`: 紙の面（モーダル・HUD・地図の案内・tonariの選択・ログ・トースト）の中だけ文字色の変数を墨へ切り替える。場面の上に直接書く文字の色は変えない。会話窓は共通の組版（名前札・操作札・本文2行・左右96px）を保ち、絵だけを差し替える。2画面表示は窓の大きさが違うので、原画を引き伸ばさず紙の面と線で描く。
+- `css/ui-paper.css`: 紙の面（モーダル・HUD・地図の案内・tonariの選択・ログ・トースト）の中だけ文字色の変数を墨へ切り替える。場面の上に直接書く文字の色は変えない。会話窓は共通の組版（名前札・操作札・本文2行・左右96px）を保ち、絵だけを差し替える。
 - 素材: 原画 `asset_sources/ui/paper-20261031/`、採用 `assets/ui/paper/`、実行時 `img/ui/paper/`（`python3 remake/tools/build_ui_skin.py`）。
 - 次の段階: 全画面4タブのMENU、HUDの板（行動回数なし・五角形ボタン廃止）、地図の看板A、STATUS UP の通知を使わない成長表示。大会パートは別途リメイク中のため対象外。
-- 検証: `node remake/test/browser/ui_themes.mjs`（paper を含む7テーマ）、`conversation_ui.mjs`、`game_layout.mjs`、`hud_fortune.mjs`、`ds_overlay_layers.mjs`、`node remake/test/typography_css.mjs`。
+- 検証: `node remake/test/browser/ui_themes.mjs`（paper を含む7テーマ）、`conversation_ui.mjs`、`game_layout.mjs`、`hud_fortune.mjs`、`node remake/test/typography_css.mjs`。
 
-## 2026-10-30 DS風（縦持ち・上下2画面）の見直し
+## 2026-10-30 DS風（縦持ち・上下2画面）の見直し（2026-11-10 DS風ごと廃止。以下は当時の記録）
 
 スマホ縦 390×844・320×568 の実画面で見つかった切れ・重なり・極小文字を、DS専用CSS（`css/game-ds.css`・`css/title-ds.css`・`css/vn-lounge.css` のDS節）だけで直した。通常版・ゲーム進行・保存は変えていない。
 

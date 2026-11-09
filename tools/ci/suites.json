@@ -122,7 +122,7 @@
     },
     {
       "id": "craft-rank-hud-browser",
-      "title": "Isolated craft rank header on PC, landscape touch and DS",
+      "title": "Isolated craft rank header on PC and landscape touch",
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
@@ -134,7 +134,6 @@
         "remake/css/craft.css",
         "remake/css/craft-header.css",
         "remake/css/craft-paper.css",
-        "remake/css/game-ds.css",
         "remake/craft-rank-preview.html",
         "remake/test/browser/craft_rank_hud.mjs"
       ],
@@ -2028,28 +2027,25 @@
       }
     },
     {
-      "id": "ds-packing",
-      "title": "DS packing and craft layout",
+      "id": "packing-layout",
+      "title": "Packing and craft layout on PC, landscape touch and the portrait rotate guard (#703)",
       "kind": "browser",
-      "weight": 5.1,
+      "weight": 4,
       "timeout": 12,
       "paths": [
-        "remake/css/game-ds.css",
         "remake/css/craft.css",
         "remake/css/worker-scenes.css",
         "remake/js/craft/**",
-        "remake/test/browser/ds_packing.mjs",
+        "remake/test/browser/packing_layout.mjs",
         "remake/test/browser/craft_layout_703.mjs",
-        "remake/test/browser/package*.json",
-        "remake/test/browser/ds_overlay_layers.mjs"
+        "remake/test/browser/package*.json"
       ],
       "run": [
-        "node remake/test/browser/ds_packing.mjs",
-        "node remake/test/browser/craft_layout_703.mjs",
-        "node remake/test/browser/ds_overlay_layers.mjs"
+        "node remake/test/browser/packing_layout.mjs",
+        "node remake/test/browser/craft_layout_703.mjs"
       ],
       "env": {
-        "ARTIFACT_DIR": ".codex/artifacts/ds-packing"
+        "ARTIFACT_DIR": ".codex/artifacts/packing-layout"
       },
       "chrome": "system"
     },
@@ -2839,7 +2835,7 @@
     },
     {
       "id": "game-layout",
-      "title": "Reversible game display on PC and touch",
+      "title": "Landscape-only game display on PC and touch, legacy DS preference migration",
       "kind": "browser",
       "weight": 4.8,
       "timeout": 20,
@@ -2861,11 +2857,11 @@
     },
     {
       "id": "portrait-shop-rotate-guard",
-      "title": "縦持ちDS風の章カード・ショップ・ショップ入口の回転ガード",
+      "title": "縦持ちスマホのショップ・ショップ入口・地図の回転ガード（横画面一本）",
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
-      "paths": ["remake/js/scenes/game-layout.js", "remake/css/game-ds.css", "remake/test/browser/portrait_shop_fallback.mjs"],
+      "paths": ["remake/js/core/rotate-guard.js", "remake/css/base.css", "remake/js/daily/shop.js", "remake/test/browser/portrait_shop_fallback.mjs"],
       "run": ["node remake/test/browser/portrait_shop_fallback.mjs"]
     },
     {
@@ -3320,7 +3316,7 @@
     },
     {
       "id": "daily-menu",
-      "title": "Full-screen daily MENU: four read-only tabs, keys, save guard and DS layout (#2097)",
+      "title": "Full-screen daily MENU: four read-only tabs, keys, save guard and landscape layout (#2097)",
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
