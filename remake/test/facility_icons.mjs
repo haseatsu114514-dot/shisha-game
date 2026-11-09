@@ -23,16 +23,18 @@ assert.deepEqual(Object.entries(FACILITY_ICONS).map(([id, { label }]) => [id, la
     ['shinkansen_station', '新幹線の駅'], ['dubai_souq', 'スーク'], ['dubai_creek', 'クリーク沿い'], ['dubai_mosque', '風の回廊モスク'],
     ['dubai_inn', '旧市街の宿'], ['dubai_inn_lobby', '宿のロビー'], ['dubai_practice_hall', '公式練習会場'],
     // MPI07: 後から入ったドバイの行き先
-    ['desert_tour_desk', '砂漠ツアーのデスク'], ['desert_dunes', '砂丘'], ['camel_race_track', 'ラクダレース場']]);
+    ['desert_tour_desk', '砂漠ツアーのデスク'], ['desert_dunes', '砂丘'], ['camel_race_track', 'ラクダレース場'],
+    // #3022: 配送便のトラック（2026-11-10 オーナー採用）
+    ['delivery_truck', '配送便']]);
 for (const id of ['kannon', 'rest', 'cafe', 'rojiura_cinema', 'axe_bar', 'choizap', 'fortune', 'trpg_bar', 'ch3_tokyo_gym', 'ch5_tokyo_gym',
   'ch3_tokyo_park', 'ch5_tokyo_park', 'ch3_tokyo_room', 'ch5_tokyo_attic', 'ch5_call',
   'ch4_dubai_souq', 'ch4_dubai_creek', 'ch4_dubai_mosque', 'ch4_dubai_inn', 'ch4_dubai_naru', 'ch4_dubai_practice', 'ch4_dubai_tour_desk', 'ch4_dubai_dunes', 'ch4_dubai_camel',
-  'ch5_dubai_souq', 'ch5_dubai_creek', 'ch5_dubai_mosque']) assert(hasFacilityIcon(id), id);
+  'ch5_dubai_souq', 'ch5_dubai_creek', 'ch5_dubai_mosque',
+  'ch5_to_tokyo', 'ch5_tokyo_home']) assert(hasFacilityIcon(id), id);
 for (const id of ['tonari', 'naru', 'adam', 'minto', 'shop', 'c_station', '__proto__']) assert(!hasFacilityIcon(id), 'Store logos must keep their own role');
 // 池の弁天堂（IR26。id は ch3_tokyo_shrine のまま）のアイコンはまだ無い。シーシャの店（ドバイのカフェ）はロゴの担当。
 for (const id of ['ch3_tokyo_shrine', 'ch4_dubai_cafe', 'ch4_dubai_alley', 'ch4_dubai_festa']) assert(!hasFacilityIcon(id), id);
-// 第5章の東京の行き来は Dr.fookah の配送便（FIN13）。新幹線の駅の絵は使わず、文字の盾にする。
-for (const id of ['ch5_to_tokyo', 'ch5_tokyo_home']) assert(!hasFacilityIcon(id), id);
+// 第5章の東京の行き来は Dr.fookah の配送便（FIN13）。新幹線の駅の絵は使わない。ピンの絵は #3022 の配送便アイコン（上の hasFacilityIcon で確認）。
 // Inspect source alpha independently of layout math; a mistaken equal-third crop fails here.
 const analysis = spawnSync('python3', ['-c', `
 from PIL import Image
@@ -100,7 +102,7 @@ JSON.stringify(Object.fromEntries(Object.entries(FACILITY_ICONS).map(([id, e]) =
 assert.equal(anchors.status, 0, anchors.stderr);
 // 単独画像（路地裏シネマ・MPI の12枚）: 画像の大きさが定義と同じで、外周1pxは完全に透明（生成時の極薄のalphaを残さない）。
 const singles = Object.entries(FACILITY_ICONS).filter(([, e]) => e.src && e.src !== new URL('../../assets/ui/map-rojiura-cinema.webp', import.meta.url).href);
-assert.equal(singles.length, 15);
+assert.equal(singles.length, 16);
 const singleCheck = spawnSync('python3', ['-c', `
 from PIL import Image
 import json,sys
