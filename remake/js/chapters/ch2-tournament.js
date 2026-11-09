@@ -366,6 +366,8 @@ async function drive(owner) {
       // 講評の前に、手を離した4人の待ち時間（第1章の interlude3 に対応）。
       if (!await commentary(owner, "interlude3")) return;
       if (!await commentary(owner, "tasting")) return;
+      // 結果発表前の掛け合い（#3060）。開始前は stations、提供開始は interlude_pull が受け持つ。
+      if (!await commentary(owner, "preresult")) return;
       // 優勝のときだけ、結果カードの前に決着の間を置く。歓声より先に、口の中の空白を見せる。
       if (p.result?.rank === 1 && !await read(owner, "verdict")) return;
       checkpoint("result");

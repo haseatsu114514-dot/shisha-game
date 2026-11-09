@@ -1229,6 +1229,367 @@
           "text": "（綾取さんの問い、スティーブさんの待ち方、ヴォルクさんの数字。全部、この手にある）"
         }
       ]
+    },
+    {
+      "dialogue_id": "tournament_craft_prestart_1",
+      "comment": "第1章・入場の後、ROUND 1の前（#3060 開始前）。4台の前で合図を待つ。結果・点数は言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "四人が、それぞれの台の前に立った。スポットライトの熱が、首筋にじわりと降りてくる。"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "選手の皆さん、位置につきましたッ！ 開始の合図の前に、ひと言ずつどうぞッ！"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "客席のみんな〜、今日のみんとも最後まで見ててねっ♡ 応援、ちゃんと届いてるよ〜"
+        },
+        {
+          "speaker": "adam",
+          "face": "intense",
+          "text": "ふっ……合図など待つまでもない。俺の手は、もうダブルアップルと話している"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "俺の台は丸見えだ。手元でも何でも、好きなだけ見ていってくれ"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "そして初出場、tonariの逢縁はじめ選手ッ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……よろしくお願いします。最後の一口まで、tonariの一台を届けます"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "いい返事だ、はじめ。台の上じゃ、手加減しないからな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（膝が笑いそうだ。……でも、手はいつもの重さを覚えてる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_serve_1",
+      "comment": "第1章・提供（ch1_tournament_served）の直後、ROUND 2の締めの前（#3060 審査員への提供開始）。審査員の一口目を待つ間。票・点数は言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "四人は審査席から一歩下がった。ホースを手にした審査員が、そろって一口目を吸い込む。"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "……し〜っ。審査員、一斉に一口目ですッ。会場の皆さん、ここは息をひそめて……！"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "ねえねえはじめくん、上園さん今ちょっと頷いた。……誰の台で頷いたかは、分かんないけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "見る余裕なんてないって。自分の台の煙しか見えてない"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "見るな。待て。一口目で決まる勝負なら、俺はもう勝っている"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "その台詞、審査席まで聞こえてるからな"
+        },
+        {
+          "speaker": "",
+          "text": "上園が肩を揺らして笑った。会長は目を閉じたまま、二口目を吸っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……笑ってる場合じゃないのに。少しだけ、肩の力が抜けた）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_preresult_1",
+      "comment": "第1章・講評の後、結果のカウントの前（#3060 結果発表前）。優勝の流れは ch1_tournament_judging の選手席の待ち時間が受け持つため、届かなかった流れだけで読む。結果は言わない。",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "講評、すべて終了ッ！ 審査員の最後の票が、いま投じられていきますッ！"
+        },
+        {
+          "speaker": "",
+          "text": "四人は選手席に並んで座った。誰も、スクリーンから目を離さない。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……ねえ。みんと、この待ち時間がいちばん苦手かも。笑顔って、何秒もつと思う？"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "何秒でも持たせろよ。結果が出るまでが、大会だ"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "林檎は焦らん。俺も……焦らん"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "膝、ずっと揺れてるよ〜？"
+        },
+        {
+          "speaker": "adam",
+          "face": "intense",
+          "text": "……武者震いだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（みんな本気だった。だから、こんなに静かなんだ）"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "集計、まもなくッ！ 瞬きしちゃダメですよ〜ッ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_preresult_2",
+      "comment": "第2章・講評の後、決着の間（ch2_tournament_verdict）と結果の前（#3060 結果発表前）。開始前は ch2_tournament_stations、提供開始は interlude_pull_2 が受け持つ。結果・手の震えの秘密は言わない。",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "講評、ここまでッ！ 審査員の最後の持ち点が入れば、いよいよ結果発表ですッ！"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "……ねえ、うち今どんな顔してる？ 配信、まだ映ってるよね？"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "勝負師の顔でさ。……ただ、口が半開きなんですわ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "ちょっ、それ今言う！？"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……静かに。結果の前の、この無音も、一曲のうちだ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あんちゃん、トングはもう置いときなせえ。握ってても、炭は戻りやせん"
+        },
+        {
+          "speaker": "",
+          "text": "指をほどくと、トングの跡が手のひらに赤く残っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（苺の味は、最後まで遠かった。それでも、手順は一つも飛ばしてない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_serve_3",
+      "comment": "第3章・最初の票の後、吸い出しの前（#3060 審査員への提供開始）。開始前は ch3_tournament_day が受け持つ。綾取の仕掛けは ch3_national_adjustment まで見せない。",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "蒸らし、全台そろったッ！ ここから吸い出し、そして審査員への提供だッ！"
+        },
+        {
+          "speaker": "saku",
+          "face": "nervous",
+          "text": "……審査員、あんなに近いんだ。台を差し出す手まで、見られちゃうね"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、手が震えてても、炭の置き方はずっと正確だった。隣で見てたから分かる"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "震えは記録しない。測るのは、煙の温度だけだ"
+        },
+        {
+          "speaker": "saku",
+          "face": "surprise",
+          "text": "……それ、二人とも励ましてくれてる？"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "事実だ"
+        },
+        {
+          "speaker": "emil",
+          "face": "normal",
+          "text": "四台とも、持ってきてくれ。最初の一息から、受け取ろう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（一口目は入口だ。そこから先まで、吸ってもらう一台にする）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_preresult_3",
+      "comment": "第3章・講評の後、結果の前（#3060 結果発表前）。綾取は仕掛けの後の勝負の顔のまま。結果は言わない。",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "講評、全員分そろったッ！ 最後の持ち点が入れば、日本の第一代表が決まるッ！"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "……ノー、ノー。タイマーはもう要らないのに、ボタンから指が離れない"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "結果までの時間は、測らないことにした。測ると、長くなる"
+        },
+        {
+          "speaker": "saku",
+          "face": "smug",
+          "text": "あはっ、二人とも可愛いとこあるじゃん。で、僕？ 僕は全然平気"
+        },
+        {
+          "speaker": "",
+          "text": "綾取の指が、閉じたノートの角を何度もなぞっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（平気な人の手じゃない。……俺の手も、まだ炭の熱を覚えてる）"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "運命の最終集計ッ！ スクリーンにご注目ォッ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_serve_4",
+      "comment": "第4章・最初の票の後、吸い出しの前（#3060 審査員への提供開始）。開始前は ch4_tournament_start が受け持つ。順位・点数は言わない。",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "蒸らし完了ッ！ GRAND SMOKE、ここから吸い出し、そして審査席への提供ですッ！"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "よし来た！ 四台とも、一番いい顔で持ってこい！"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "はじめ、手ぇ止まってんぞ。……俺は先に出す。甘さが一番ふくらんだとこでな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "止まってない。一口目の温度を、確かめてただけだ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "急ぐ若者と、確かめる若者か。どちらの客も、幸せだね"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smile",
+          "text": "先生、私は急ぎませんよ。……ハジメ。君の一台が審査席に届くところ、私も見ている"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（一口目は始まりにすぎない。ここから先の煙まで、背負って出す）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_preresult_4",
+      "comment": "第4章・二度目の調整の後、最終票の画面の前（#3060 結果発表前）。なるの敗北受容は最終集計の後だけ。結果は言わない。",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "全台、手を離してッ！ GRAND SMOKE、残るは審査席の最終投票だけですッ！"
+        },
+        {
+          "speaker": "",
+          "text": "四人がトングを置いた。満員の会場から、音がすっと引いていく。"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "……まだ終わってねえからな。結果が出るまで、俺は下を向かねえ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "待つのは慣れているつもりだったが……自分の番になると、長いものだね"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smile",
+          "text": "先生でも、ですか。……実は私もです。王者の席は、案外落ち着かない"
+        },
+        {
+          "speaker": "emil",
+          "face": "thinking",
+          "text": "どの台にも、教えた誰かの顔が見えた。……票を投じるのが、惜しいね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（あのシェイクでも……。四人とも、同じ一台の結末を待ってる）"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "運命の最終投票、スクリーンへッ！ ……今日ばかりは、パッキーも笑えませんッ！"
+        }
+      ]
     }
   ]
 }
