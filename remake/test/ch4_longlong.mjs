@@ -110,9 +110,9 @@ assert.equal(tournamentFinished({ chapter: 4, phase: "aftermath" }, 4), true);
 assert.equal(tournamentFinished({ chapter: 5, phase: "daily" }, 4), true);
 assert.deepEqual(Object.keys(first.metadata.flavor_lesson), ["jasmine"]);
 for (const id of Object.keys(first.metadata.flavor_lesson)) assert(flavors.has(id));
-// 中国の水煙の話（水烟袋）。水の役割は「煙を冷やす」だけ（濾過・除去と言わない）。
+// 中国の水煙の話（水煙袋）。水の役割は「煙を冷やす」だけ（濾過・除去と言わない）。
 const pipe = shop.ch4_longlong_second.lines.map(line => line.text).join("");
-assert(pipe.includes("水烟袋") && pipe.includes("冷やす") && !/濾過|有害|除去/.test(pipe));
+assert(pipe.includes("水煙袋") && pipe.includes("冷やす") && !/濾過|有害|除去/.test(pipe));
 
 // ---- 前夜祭の面識の分岐（交流の時系列ルール）----------------------------------------------------
 const reception = main.ch4_wang_reception;
