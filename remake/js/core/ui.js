@@ -165,6 +165,22 @@ export function uiArtReady(ms = 2000) {
   return Promise.race([warmCoreArt(), sleep(ms)]);
 }
 
+// 余白のぼかし（2026-11-09 オーナー決定・#3035）: ステージ外の余白には、その場面の背景を
+// ぼかして敷く（#backdrop・base.css）。背景の差し替えが確定した所で同じ絵へ替える。
+// ぼかし＋減光なので、ステージ側のクロスフェードと厳密に同期しなくても境目は見えない。
+let backdropUrl = null;
+function syncBackdrop(url, tint, instant) {
+  const bd = typeof document !== "undefined" && typeof document.getElementById === "function" ? document.getElementById("backdrop") : null;
+  if (!bd) return;
+  bd.dataset.tint = tint || "";
+  if (backdropUrl === (url || "")) return;
+  backdropUrl = url || "";
+  const image = url ? `url("${url}")` : "none";
+  if (instant) { bd.style.backgroundImage = image; return; }
+  bd.style.opacity = "0";
+  setTimeout(() => { bd.style.backgroundImage = image; bd.style.opacity = ""; }, 260);
+}
+
 /**
  * 背景を差し替える。新しい絵が読み込めてからクロスフェードする（読み込み中に黒や前の絵のまま
  * 新しい場面が始まって見えるのを防ぐ）。戻り値は画像の用意と幕が開き終わるまで待つ。
@@ -196,6 +212,7 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
     if (fast) next.classList.add("fast");
     if (tint) next.dataset.tint = tint;
     host.append(next);
+    syncBackdrop(url, tint, instant);
     curtain?.commitArrival?.(url);
     if (!curtain) sceneArrival.commitArrival(url);
     weatherBg = url || "";

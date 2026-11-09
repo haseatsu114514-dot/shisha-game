@@ -81,10 +81,9 @@ async function dsGeometry(p) {
 }
 async function normalGeometry(p) {
   assert.equal(await p.locator("body.game-ds").count(),0);
-  // 通常表示は高さ720のまま。横長の画面だけワイドステージ（#2861）で幅が clamp(1280, 画面比×720, 1600) に広がる
-  const [size,wide]=await p.locator("#stage").evaluate(n=>[[n.offsetWidth,n.offsetHeight],
-    Math.min(1600,Math.max(1280,Math.floor(innerWidth/innerHeight*720)))]);
-  assert.deepEqual(size,[wide,720]);
+  // 通常表示は常に 1280×720 の固定ステージ（2026-11-09 オーナー決定・#3035。ワイド拡張 #2861 は廃止）
+  const [size]=await p.locator("#stage").evaluate(n=>[[n.offsetWidth,n.offsetHeight]]);
+  assert.deepEqual(size,[1280,720]);
   assert.deepEqual(await p.locator("#viewport").evaluate(n=>[n.getBoundingClientRect().top,n.scrollLeft,n.scrollTop]),[0,0,0]);
 }
 async function check(name, options, run, setup) {

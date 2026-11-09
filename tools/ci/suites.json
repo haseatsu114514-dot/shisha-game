@@ -3852,6 +3852,15 @@
       "run": ["node remake/test/browser/intro_wide_3012.mjs"]
     },
     {
+      "id": "stage-fit-3035",
+      "title": "Fixed 1280x720 stage fit with blurred backdrop margins",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 3,
+      "paths": ["remake/js/main.js", "remake/js/core/ui.js", "remake/css/base.css", "remake/test/browser/stage_fit.mjs"],
+      "run": ["node remake/test/browser/stage_fit.mjs"]
+    },
+    {
       "id": "recent-intros",
       "title": "New cast introduction artwork and first-encounter state",
       "kind": "browser",

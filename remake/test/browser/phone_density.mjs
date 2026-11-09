@@ -53,7 +53,7 @@ async function openModal(page) {
   await settle(page);
 }
 
-// 店・MENU（#3001）: ワイドステージで端へ出した「← 街に戻る」「← 店を出る」「閉じる」（css/wide-screens.css）も規格の対象にする。
+// 店・MENU: ステージ端の「← 街に戻る」「← 店を出る」「閉じる」も規格の対象にする。
 async function openShopEntry(page) {
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js"), ui = await import("./js/core/ui.js"), hud = await import("./js/daily/hud.js");
@@ -109,7 +109,7 @@ const SCREENS = [
 // env() の所だけを固定値（実寸 px）に置き換える。iPhone の横持ちは左右とも、機種によりおよそ 47〜59px。
 const NOTCHES = [0, 47, 59];
 const NOTCH_PHONES = [...PHONES, ["iphone-pro-max-landscape", { width: 932, height: 430 }]];
-// 端へ出す部品（#2861）: 左は HUD の札・店の「← 街に戻る」「← 店を出る」、右は LIME・MENU と MENU の「閉じる」
+// ステージ端の部品: 左は HUD の札・店の「← 街に戻る」「← 店を出る」、右は LIME・MENU と MENU の「閉じる」
 const EDGE_SCENES = [
   { id: "map", open: openMap, left: [".hud-card"], right: ['[data-test="hud-phone"]', '[data-test="hud-menu"]'] },
   { id: "shop-entry", open: openShopEntry, left: ['[data-test="shop-entry-back"]'], right: [] },
@@ -191,8 +191,9 @@ await suite("phone-density", async check => {
     }
   }
 
-  // 端の部品は、ノッチが無ければ中央 1280 の外（黒帯だった側）へ出て、ノッチがあればその内側に収まる（#2861・#3001）。
-  // 実機の safe-area の効き方そのものはオーナーの実機確認（#2928）。ここは CSS が --stage-safe-l/r を使っているかを見る。
+  // 端の部品は固定ステージ（1280×720）の内側に収まり、ノッチにも掛からない（2026-11-09 オーナー決定・#3035）。
+  // 横長画面ではステージの左右に余白（ぼかし）ができ、その幅がノッチより広いので端の部品は自然に内側へ寄る。
+  // ワイド拡張（#2861・#3001: 部品を余白へ出す方式）は廃止した。
   for (const [name, viewport] of NOTCH_PHONES) {
     await check(`${name}-edge-parts-notch`, async page => {
       const problems = [];
@@ -202,15 +203,15 @@ await suite("phone-density", async check => {
           await setNotch(page, notch);
           const m = await page.evaluate(edgeBoxes, { left: scene.left, right: scene.right });
           const where = `${scene.id}・ノッチ${notch}px`;
-          if (!m.wide) problems.push(`${where}: ワイドステージになっていない`);
+          if (m.wide) problems.push(`${where}: ワイドステージになっている（固定ステージ方針・#3035）`);
           for (const part of [...m.left, ...m.right]) if (part.missing) problems.push(`${where}: ${part.selector} が見えていない`);
           for (const part of m.left.filter(p => !p.missing)) {
             if (part.left < notch - 0.5) problems.push(`${where}: ${part.selector} の左端 ${part.left.toFixed(1)} がノッチ（${notch}）にかかる`);
-            if (!notch && part.left >= m.center.left) problems.push(`${where}: ${part.selector} が中央1280の中（左端 ${part.left.toFixed(1)}・中央 ${m.center.left.toFixed(1)}〜）`);
+            if (part.left < m.center.left - 0.5) problems.push(`${where}: ${part.selector} がステージの外（左端 ${part.left.toFixed(1)}・ステージ ${m.center.left.toFixed(1)}〜）`);
           }
           for (const part of m.right.filter(p => !p.missing)) {
             if (part.right > m.width - notch + 0.5) problems.push(`${where}: ${part.selector} の右端 ${part.right.toFixed(1)} がノッチ（${m.width - notch}〜）にかかる`);
-            if (!notch && part.right <= m.center.right) problems.push(`${where}: ${part.selector} が中央1280の中（右端 ${part.right.toFixed(1)}・中央〜${m.center.right.toFixed(1)}）`);
+            if (part.right > m.center.right + 0.5) problems.push(`${where}: ${part.selector} がステージの外（右端 ${part.right.toFixed(1)}・ステージ〜${m.center.right.toFixed(1)}）`);
           }
         }
         await setNotch(page, 0);

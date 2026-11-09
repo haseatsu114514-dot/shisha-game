@@ -228,13 +228,14 @@ await suite("daily-menu", async (check) => {
     await page.locator(t("hud-menu")).tap();
     await page.locator(".dmenu").waitFor();
     await settle(page);
-    // ワイドステージ（#2861・844×390 はステージ 1558）: 紙は中央1280に閉じず、PC と同じくステージの端から 24px まで広がる（css/wide-screens.css）
+    // 固定ステージ（2026-11-09 オーナー決定・#3035）: 844×390 でもステージは 1280×720 の固定構図で、
+    // 紙は PC と同じくステージの端から 24px まで広がる。ワイド拡張（#2861）は廃止した。
     const wide = await page.evaluate(() => {
       const stage = document.getElementById("stage"), k = parseFloat(getComputedStyle(stage).getPropertyValue("--k")) || 1;
       const s = document.querySelector(".dmenu .dm-sheet").getBoundingClientRect(), r = stage.getBoundingClientRect();
       return { wide: stage.hasAttribute("data-wide"), left: Math.round((s.left - r.left) / k), right: Math.round((r.right - s.right) / k) };
     });
-    assert.deepEqual(wide, { wide: true, left: 24, right: 24 });
+    assert.deepEqual(wide, { wide: false, left: 24, right: 24 });
     // タブの説明は常に出さず、見出し横の「?」で開く（2026-11-08 オーナー指示「説明の分量を減らす」）。行の効き目は行を押した時だけ出す
     assert.equal(await page.locator(".dmenu .dm-panel > .dm-note").isVisible(), false);
     assert(await page.locator(t("menu-help-text-status")).isHidden());
