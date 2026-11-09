@@ -492,6 +492,10 @@ reset({ chapter: 1, day: 5, contacts: ["hiyori"], affinity: { hiyori: 33 }, flag
 reset({ chapter: 2, day: 5, contacts: ["hiyori"], affinity: { hiyori: 33 }, flags: { ...hiyoriReturned } }); assert(!hiyoriOuting(), "第2章では誘わない");
 reset({ chapter: 1, day: 5, contacts: ["hiyori"], affinity: { hiyori: 33 }, flags: { ...hiyoriReturned, _invited_lime_outing_hiyori_1: true, _outing_done_hiyori: true } });
 assert(!hiyoriOuting()); assert(phone.morningMessages().some((m) => m.id === "lime_after_outing_hiyori"), "ひよりの外出の後日談も『この前』で届く");
+reset({ chapter: 1, day: 6, contacts: ["hiyori"], flags: { _lime_contact_hiyori: true, _hiyori_charm_done: true } });
+assert(phone.morningMessages().some((m) => m.id === "lime_hiyori_charm"), "相席のあと、席の話が届く");
+reset({ chapter: 1, day: 6, contacts: ["hiyori"], flags: { _lime_contact_hiyori: true, _hiyori_peach_talk_done: true } });
+assert(phone.morningMessages().some((m) => m.id === "lime_hiyori_peach"), "桃の話のあと、本音のひとことが届く");
 reset({ day: 3, contacts: ["naru"] }); const naruDayOff = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert(naruDayOff); assert(naruDayOff.messages.some((line) => /休み/.test(typeof line === "string" ? line : line.text)));
 state.day = 4; const naruTemporary = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert.equal(naruTemporary.time_slot, "noon"); assert(naruTemporary.temporary_closed);
 // 次の私服の約束を定休日だけに縛らない。配信した時点で本文と予約時刻を一緒に確定。

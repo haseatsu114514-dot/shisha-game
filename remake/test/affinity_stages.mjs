@@ -402,7 +402,12 @@ await check('hiyori lover Lv1-5 use the common ladder; the preview is not a stag
   f.stats.bond.private=true;f.stats.gainAffinity('hiyori',30);f.stats.bond.private=false;
   assert.equal(s.loveLevel.hiyori,1,'unread Lv1 must hold the bond');
   f.setPlay(async()=>done);assert.equal(await f.romance.playLoverMilestone('hiyori'),true);
-  assert.equal(s.loverEventsSeen.join(),'lover_hiyori_lv1');assert.equal(s.loveLevel.hiyori,2);
+  assert.equal(s.loverEventsSeen.join(),'lover_hiyori_lv1');
+  assert.equal(s.loveLevel.hiyori,1,'unread lv1_b holds the bond');
+  assert.equal(f.romance.loverMilestoneDue('hiyori'),'lover_hiyori_lv1_b');
+  assert.equal(await f.romance.playLoverMilestone('hiyori'),true);
+  assert.equal(s.loverEventsSeen.join(),'lover_hiyori_lv1,lover_hiyori_lv1_b');
+  assert.equal(s.loveLevel.hiyori,2);
   assert.ok(f.plays.every(([scene])=>!/preview/.test(typeof scene==='string'?scene:scene?.dialogue_id)));
 });
 await check('LOAD during old private scope cannot leak into new public gain or close new private scope',async f=>{
