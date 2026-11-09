@@ -82,7 +82,7 @@ async function playAttempt(page,touch=false,reloadCare=false) {
   assert.equal(p.craft.careHistory.length,2);assert.equal(p.result.careHistory.length,2);assert.equal(p.history.length,1);
   for(const row of Object.values(p.votes))assert.equal(Object.values(row).reduce((a,b)=>a+b,0),10);
   assert.equal(p.craft.chapter,2);
-  assert.deepEqual(p.craft.tournamentStory.seen,['opening','packed','waiting','interlude_pull','interlude1','interlude2','interlude3','tasting']);
+  assert.deepEqual(p.craft.tournamentStory.seen,['opening','packed','waiting','interlude_pull','serve','interlude1','interlude2','interlude3','tasting','preresult']);
   assert(Number.isFinite(p.craft.tournamentStory.servedAroma));
   assert(await page.locator('.ch2-contest-rival img').evaluateAll(async imgs=>{await Promise.all(imgs.map(i=>i.decode()));return imgs.every(i=>i.naturalWidth>0);}));assert.deepEqual(p.craft.audienceIds.slice().sort(),['dr_kemuri','maezono','sui']);
   // 同じ配分で計算された総合値がそのまま章2の記録に残る。
@@ -406,7 +406,7 @@ await suite('ch2-tournament',async check=>{
     assert.equal(after.slot,before.slot);
     assert.deepEqual(p.votes,before.flags._ch2_tournament.votes);
     // 吸い出しの前に読んだ提供前の掛け合いだけは既読として残る（読み直させない）。工程・在庫・票は戻る。
-    const expectedCraft=structuredClone(before.flags._ch2_tournament.craft);expectedCraft.tournamentStory.seen.push('interlude_pull');
+    const expectedCraft=structuredClone(before.flags._ch2_tournament.craft);expectedCraft.tournamentStory.seen.push('interlude_pull','serve');
     assert.deepEqual(p.craft,expectedCraft);
     assert.equal(p.rollback,null);
     assert.equal(after.stamina,before.stamina);
@@ -457,14 +457,14 @@ await suite('ch2-tournament',async check=>{
     // 最終票を確定した直後、講評の途中で離脱した保存を再現する。
     await page.evaluate(async()=>{
       const core=await import('./js/core/state.js'),p=core.state.flags._ch2_tournament;
-      p.stage='tasting';p.craft.tournamentStory.seen=p.craft.tournamentStory.seen.filter(id=>id!=='tasting');core.save();
+      p.stage='tasting';p.craft.tournamentStory.seen=p.craft.tournamentStory.seen.filter(id=>id!=='tasting'&&id!=='preresult');core.save();
     });
     await reload(page);await page.locator(t('result')).waitFor();
     const resumed=await get(page);
     assert.equal(resumed.flags._ch2_tournament.history.length,1);
     assert.deepEqual(resumed.flags._ch2_tournament.votes,result.flags._ch2_tournament.votes);
     assert.equal(resumed.flags._ch2_tournament.result.total,result.flags._ch2_tournament.result.total);
-    assert.deepEqual(resumed.flags._ch2_tournament.craft.tournamentStory.seen,['opening','packed','waiting','interlude_pull','interlude1','interlude2','interlude3','tasting']);
+    assert.deepEqual(resumed.flags._ch2_tournament.craft.tournamentStory.seen,['opening','packed','waiting','interlude_pull','serve','interlude1','interlude2','interlude3','tasting','preresult']);
     await page.locator(t('continue')).click();await phone(page);await page.locator(t('complete')).waitFor();
     let s=await get(page);assert(s.flags._ch2_tokyo_invitation);assert(s.flags._ch2_taste_distant);assert(!s.flags.ch2_taste_recovered);assert.equal(s.phase,'cleared');assert.equal(s.day,28);assert.equal(s.slot,1);
     // 初期所持金23,456円 + 第2章優勝賞金50,000円。

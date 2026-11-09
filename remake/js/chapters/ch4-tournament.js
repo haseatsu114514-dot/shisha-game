@@ -56,8 +56,10 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
   while (live() && !p.result) {
     playBgm("bgm_tournament_craft");
     // 制作中の掛け合い（#2031）。工程の前に一度だけ読み、既読は制作保存に残す（再挑戦では最初から）。
-    const event = p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : TOURNAMENT_STORY_STEPS.get(p.step);
-    if (event && !p.craft.tournamentStory?.seen?.includes(event)) {
+    // 作り始める直前（開始前）と吸い出しの前（審査員への提供開始）の掛け合い（#3060）。
+    const stepEvent = p.step === 8 ? "serve" : p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : TOURNAMENT_STORY_STEPS.get(p.step);
+    for (const event of p.step === 0 ? ["prestart", stepEvent] : [stepEvent]) {
+      if (!event || p.craft.tournamentStory?.seen?.includes(event)) continue;
       // 台本は直前に見せた途中順位と同じ並び（はじめの順位・先頭・先頭と同じ持ち点か）だけを語る。
       const rows = chapterFourStandings(p);
       const me = rows.find(row => row.id === "hajime"), top = rows[0];
@@ -118,6 +120,13 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
     if (p.voted > votedBefore && !p.result) { await showChapterFourStandings(p); requireCurrent(); }
   }
   requireCurrent();
+  // 結果発表前の掛け合い（#3060）。最後の票の画面の前に一度だけ読み、既読は制作保存に残す。
+  if (p.result && !p.result.failure && p.craft && !p.craft.tournamentStory?.seen?.includes("preresult")) {
+    const told = await playTournamentEvent(p.craft, "preresult");
+    requireCurrent();
+    if (!told) return false;
+    save();
+  }
   clearComments();
   retireScreen();
   return chapterFourMatch(state).result;
