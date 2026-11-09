@@ -3857,7 +3857,7 @@
       "kind": "browser",
       "weight": 0.5,
       "timeout": 3,
-      "paths": ["remake/js/main.js", "remake/js/core/ui.js", "remake/css/base.css", "remake/index.html", "remake/test/browser/stage_fit.mjs"],
+      "paths": ["remake/js/main.js", "remake/js/core/ui.js", "remake/css/base.css", "remake/test/browser/stage_fit.mjs"],
       "run": ["node remake/test/browser/stage_fit.mjs"]
     },
     {

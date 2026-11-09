@@ -170,7 +170,7 @@ export function uiArtReady(ms = 2000) {
 // ぼかし＋減光なので、ステージ側のクロスフェードと厳密に同期しなくても境目は見えない。
 let backdropUrl = null;
 function syncBackdrop(url, tint, instant) {
-  const bd = document.getElementById("backdrop");
+  const bd = typeof document !== "undefined" && typeof document.getElementById === "function" ? document.getElementById("backdrop") : null;
   if (!bd) return;
   bd.dataset.tint = tint || "";
   if (backdropUrl === (url || "")) return;
