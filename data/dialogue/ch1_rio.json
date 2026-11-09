@@ -1542,6 +1542,399 @@
           "text": "でしょ。……また店で誰かがいい顔してたら、ついででいいから聞かせてよ、モルモットくん"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch1_rio_lot_return",
+      "comment": "#3081 物語系の一度きり。試作回で見送った名前の無い試作品が戻る。場所は夜の2階。固有会話6本・試作回・ブルーベリーの土産話のあと、spots.js が一度だけ再生する。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
+        "topic": "見送った煙"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の2階。デスクの端に、番号だけの白い袋が戻っていた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "報告書の欄には、この前の字が残っている。「見送り」"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "ん、モルモットくん。袋の字、読んでた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "三口目で、喉に引っかかった葉です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "名前は、まだ無かった"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "そう。同じ袋が、もう一度だけ戻ってきた"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "名前はまだ無い。先に私が吸うから、三口、待ってて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんはホースを自分の側へ寄せた。一口、二口と、間を置いて吸う"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（吐いてから、だ。口を開かない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "三口目でも、眉は寄らなかった"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "……低い熱のままなら、引っかからない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この前は、そこで眉が寄ったままでした"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "うん。ここだけの熱なら、ね"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "でも、店の炭がいつもこの低さだとは限らない"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "三口目で嫌われる葉を、一口目の良さで通したくないの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、見送りのままですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "欄は「条件つき」に書き換える"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "出すのは、熱を守れると分かってから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "分からないうちは、棚には上げない"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "そういうこと。線の内側に、戻ってきただけだよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは短く書いて、袋の口を閉じた。棚ではなく、デスクの端へ戻す"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……今夜は、ここまで"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "君は待ってくれたから、報告は短くていい"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 1
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_rio_name_blank",
+      "comment": "#3081 物語系の一度きり。本国のレポートが吸った人の名前を求めても、欄は空白のまま返す。場所は夜の2階。見送った煙の次の来店で一度だけ。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
+        "topic": "名前の欄"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは返ってきたレポートを開いたまま、ペンを欄の上で止めていた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "名前を書く場所だけ、空白だ。ほかの行は、もう埋まっている"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……モルモットくん。本国から、問いが来てる"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "誰が吸ったのか、名前を書け、だって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺の、名前ですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "君の言葉は、もう訳して載せてる"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "喉の引っかかりも、熱の話も"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "名前の欄だけ、私が空白のまま返したの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "書いた方が、レポートとしては正しいんじゃないですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "正しくても、書かない"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "名前を足した瞬間、君は、書類の一人になる"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "ここにある顔は、書類にしない。それが、私のルール"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（最初に、名前は伏せるって言ってた）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ペン先が、その約束の上で止まってる）"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "自分の名前、載ってほしい？ 正直に"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いらないです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "言葉が向こうに届いていれば、俺はそれでいい"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……そう。じゃあ、この欄は空白のまま返す"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "空白の欄に、値段はつけない。それだけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは欄を一度なぞって、ペンに蓋をした"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "名前は、この2階に置いておく"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "それ以上は、売らないよ"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 1
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_rio_unsigned",
+      "comment": "#3081 物語系の一度きり。吸う前の署名はしない。場所は夜の2階。名前の欄の次の来店で一度だけ。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
+        "topic": "吸う前の署名"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "作業台に、署名を求める紙が積んであった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の袋は封のままで、ペンだけが蓋を外されている"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "ん、悪いところに来たね"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "今日は、ペンが先に走りたがってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "先に吸うんじゃないんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "そう。なのに、署名だけ先にくれって紙が来てるの"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "ロットを動かすには、私の名前が要るらしい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんはペンを置き、封を切って、自分から吸った"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口目は甘い。二口目で、香りの角が立った"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "……二口目で、甘いところが荒れてる。これ、通さない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "サインは、しないんですね"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "しない。吸ってないものに、私の名前は乗せない"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "一口で決めた書類は、あとから喉が覚えてるよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、味を見る前には出したくないです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "tonariでも、同じです"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "ふうん。机が違うだけで、線は同じね"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "じゃあ今日の契約は、それ。線の手前で、止める"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙の束は、署名のないまま封筒へ戻った"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……待たせてごめんね"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "魔女は、先に肺で確かめる人なの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "待っててよかったです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その順番だから、信用できます"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "……今の順番は、二人だけの話にしておく"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "レポートは、荒れてる、で足りる"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 1
+          }
+        }
+      ]
     }
   ]
 }

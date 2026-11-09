@@ -1084,6 +1084,39 @@ await check('Rio #2025: heart4/5 branch on the ♥3 answer and carry no new roma
   }
 });
 
+await check('Rio #3081: three story scenes follow the blueberry report, once each, at the showroom', async f => {
+  const scenes = f.spots.RIO_STORY_EXTRAS;
+  assert.deepEqual([...scenes], ['ch1_rio_lot_return', 'ch1_rio_name_blank', 'ch1_rio_unsigned']);
+  const early = rioAt(f, 6);
+  assert.equal(f.spots.rioStoryExtraDue(), null, 'the blueberry report stays ahead of the new scenes');
+  assert.equal(f.spots.rioBlueberryDue(), true);
+  early.flags._spot_seen_ch1_rio_blueberry_report = true;
+  early.finales.rio = { day: 9, chapter: 1, route: 'friend' };
+  early.flags._friend_rio = true;
+  assert.equal(f.spots.rioStoryExtraDue(), scenes[0]);
+  assert.equal(f.spots.hasNewStory('rio'), true);
+  for (const id of scenes) {
+    f.plays.length = 0;
+    assert.equal(await f.spots.visitChar('rio'), true);
+    assert.deepEqual(sceneIds(f), [id]);
+    assert.equal(f.db.dialogues[id].metadata.bg.includes('bg_fookah_showroom'), true);
+    assert.equal(early.flags[`_spot_seen_${id}`], true);
+  }
+  f.plays.length = 0;
+  assert.equal(f.spots.rioStoryExtraDue(), null);
+  assert.equal(f.spots.hasNewStory('rio'), false);
+  assert.equal(await f.spots.visitChar('rio'), true);
+  assert.equal(sceneIds(f)[0], 'ch1_rio_repeat');
+  const cancelled = rioAt(f, 6);
+  cancelled.flags._spot_seen_ch1_rio_blueberry_report = true;
+  cancelled.finales.rio = { day: 9, chapter: 1, route: 'friend' };
+  f.plays.length = 0;
+  f.setPlay(async () => ({ cancelled: true }));
+  assert.equal(await f.spots.visitChar('rio'), false);
+  assert.equal(cancelled.flags._spot_seen_ch1_rio_lot_return, undefined);
+  assert.equal(f.spots.rioStoryExtraDue(), scenes[0]);
+});
+
 
 await check('Issue #2750: known characters begin at ♥1 and excluded characters never earn hearts', async f => {
   const s = f.core.newGame();
