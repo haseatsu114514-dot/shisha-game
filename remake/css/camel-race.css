@@ -322,3 +322,48 @@ html:root[data-density="phone"] .camel-game .camel-cup > small:first-child { dis
 /* 大会選びの札の中（距離・ひとこと・出走／未解放）は、スマホでは実寸 11.5px 以上に（これまで 8〜9px）。札の名前は一回り大きく。 */
 html:root[data-density="phone"] .camel-game .camel-cup :is(span, b) { font-size: max(18px, calc(11.5px / var(--k, 1))); line-height: 1.35; }
 html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(26px, calc(14px / var(--k, 1))); }
+
+/* ---- CR08 素材（#3046）: 遊び方の絵・カードの紙（CR-UI08）・主ボタンの真鍮札（CR-UI09）。
+   カードと主ボタンは、絵が読めた時だけ JS が .camel-game へ cr-card / cr-btn を付けて有効になる。
+   読めなければ従来の見た目のまま（フォールバック）。 ---- */
+.camel-tutorial-visual { position: relative; width: 208px; aspect-ratio: 4 / 3; flex: none; }
+.camel-tutorial-visual .camel-tutorial-icon { width: 100%; height: 100%; border-radius: 18px; }
+.camel-tutorial-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 18px;
+  background: linear-gradient(180deg, #cfe0e8, #e9dab0); box-shadow: 0 10px 24px rgba(0,0,0,.35); }
+@media (max-height: 480px) { .camel-tutorial-visual { width: 128px; } .camel-tutorial-visual .camel-tutorial-icon { border-radius: 14px; } }
+
+.camel-game.cr-card .camel-sheet .camel-card { border: 30px solid transparent; border-radius: 6px; padding: 12px 16px;
+  border-image: url("../img/ui/camel_race/ui/program-card.webp") 96 fill / 30px / 0 stretch;
+  background: none; color: #43301c; box-shadow: 0 22px 60px rgba(0,0,0,.5); }
+.camel-game.cr-card .camel-card h2 { color: #4a2a0e; }
+.camel-game.cr-card .camel-eyebrow { color: #96690f; }
+.camel-game.cr-card .camel-key { background: rgba(74,42,14,.1); border-color: rgba(74,42,14,.4); color: #43301c; }
+.camel-game.cr-card .camel-steps i { background: rgba(74,42,14,.25); }
+.camel-game.cr-card .camel-steps i.on { background: #c08a1e; }
+.camel-game.cr-card .camel-sheet .camel-card .camel-card-actions .btn { background: rgba(255,252,244,.5); border-color: rgba(74,42,14,.45); color: #43301c; box-shadow: none; }
+.camel-game.cr-card .camel-sheet .camel-card .camel-card-actions .btn:hover,
+.camel-game.cr-card .camel-sheet .camel-card .camel-card-actions .btn:focus-visible { background: rgba(255,255,255,.8); border-color: #96690f; color: #2a1a0e; }
+.camel-game.cr-card .camel-sheet .camel-card .camel-help.camel-help { color: #96690f; }
+.camel-game.cr-card .camel-sheet .camel-card .camel-help.camel-help::before { background: rgba(255,252,244,.55); border-color: rgba(74,42,14,.4); }
+.camel-game.cr-card .camel-cup { background: linear-gradient(150deg, rgba(255,252,244,.88), rgba(240,226,196,.88)); border-color: #b27f36; color: #43301c; box-shadow: inset 0 0 0 3px rgba(74,42,14,.05); }
+.camel-game.cr-card .camel-cup small { color: #96690f; }
+.camel-game.cr-card .camel-cup b { color: #7a4d12; }
+.camel-game.cr-card .camel-cup-note { color: #6d5136; }
+.camel-game.cr-card .camel-time { color: #6d5136; }
+.camel-game.cr-card .camel-total small { color: #6d5136; }
+.camel-game.cr-card .camel-total strong { color: #2a1a0e; }
+.camel-game.cr-card .camel-score-bar { background: rgba(74,42,14,.18); box-shadow: inset 0 1px 2px rgba(74,42,14,.25); }
+.camel-game.cr-card .camel-stats li { background: rgba(74,42,14,.08); }
+.camel-game.cr-card .camel-stats small { color: #6d5136; }
+.camel-game.cr-card .camel-stats b { color: #2a1a0e; }
+.camel-game.cr-card .camel-best { color: #96690f; }
+.camel-game.cr-card .camel-grade-letter { background: rgba(255,252,244,.5); }
+@media (max-height: 480px) {
+  .camel-game.cr-card .camel-sheet .camel-card { border-width: 22px; border-image-width: 22px; padding: 6px 10px; }
+}
+
+.camel-game.cr-btn .camel-sheet .camel-card .camel-card-actions .btn.primary { border: 12px solid transparent; border-radius: 10px;
+  border-image: url("../img/ui/camel_race/ui/button-primary.webp") 60 64 fill / 12px 16px / 0 stretch;
+  background: none; color: #241304; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+.camel-game.cr-btn .camel-sheet .camel-card .camel-card-actions .btn.primary:hover,
+.camel-game.cr-btn .camel-sheet .camel-card .camel-card-actions .btn.primary:focus-visible { filter: brightness(1.07); color: #241304; }
