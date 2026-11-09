@@ -289,6 +289,9 @@ await suite("staff-roll", async check => {
       ["作曲 秋山裕和（H/MIX GALLERY）", "作曲 shimtone（OpenTracks）", "作曲 Napi（M-ART）",
         "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 甘茶（甘茶の音楽工房）"]);
     assert.equal(await page.locator(".staff-roll-sound").textContent(), "効果音：ポケットサウンド – https://pocket-se.info/");
+    assert.deepEqual((await page.locator(".staff-roll-sound-axe p").allTextContents()).map(t => t.split("：")[1].split(" – ")[0]),
+      ["Kenney", "Freesound"]);
+    for (const name of ["Jofae", "craigsmith", "qubodup", "plasterbrain", "IndyArts"]) assert(text.includes(name), name + " is credited");
     assert(!text.includes("間接照明とブラックコーヒー"), "A song without a recorded source is not credited yet");
     for (const key of ["Escape", "Enter", " "]) await page.keyboard.press(key);
     await page.locator(dt("staff-roll")).click({ position: { x: 640, y: 360 } });
