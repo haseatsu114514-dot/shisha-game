@@ -422,10 +422,10 @@ await suite("ch1-tournament", async check => {
     const finalVotes = await page.locator('.rt-row').evaluateAll(rows => Object.fromEntries(rows.map(row =>
       [row.dataset.id,{points:parseInt(row.querySelector('.rt-pt').textContent,10),votes:row.querySelector('.rt-votes').textContent}])));
     assert.deepEqual(finalVotes,{
-      naru:{points:5,votes:'上園 2 · 博士 3 · 伏見 0'},
-      adam:{points:5,votes:'上園 2 · 博士 3 · 伏見 0'},
-      minto:{points:3,votes:'上園 2 · 博士 1 · 伏見 0'},
-      hajime:{points:17,votes:'上園 4 · 博士 3 · 伏見 10'},
+      naru:{points:5,votes:'上園 2 · 博士 3 · 千須 0'},
+      adam:{points:5,votes:'上園 2 · 博士 3 · 千須 0'},
+      minto:{points:3,votes:'上園 2 · 博士 1 · 千須 0'},
+      hajime:{points:17,votes:'上園 4 · 博士 3 · 千須 10'},
     });
     for(const [id,points] of Object.entries(interim.points))assert(finalVotes[id].points>=points,`${id}: displayed allocated points returned`);
     await assertFits(page,'.rt-name, .rt-votes, .rt-pt');

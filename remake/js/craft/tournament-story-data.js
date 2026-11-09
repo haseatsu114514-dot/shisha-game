@@ -13,7 +13,7 @@ function leafName(id) {
   return sp > 0 && MAKER_TOKENS.has(name.slice(0, sp)) ? name.slice(sp + 1) : name;
 }
 const NATIONAL_JUDGE_SCENES = new Set(["mix_single", "mix_blend", "crowd_2", "aroma_good", "aroma_work", "aroma_unknown"]);
-// 第4章（世界大会）の審査員は伏見・エミル・太陽。博士の行は太陽へ、上園の行は第3章と同じエミルの行へ切り替える。
+// 第4章（世界大会）の審査員は千須・エミル・太陽。博士の行は太陽へ、上園の行は第3章と同じエミルの行へ切り替える。
 const WORLD_JUDGE_SCENES = new Set(["packed_intro", "pack_fluffy", "pack_normal", "pack_firm"]);
 function sceneIdFor(chapter, id) {
   if (chapter === 4 && WORLD_JUDGE_SCENES.has(id)) return `${id}_4`;

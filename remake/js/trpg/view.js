@@ -18,8 +18,6 @@ const ICONS = {
   notes: '<path d="M6 3h13v18H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm2 0v18m3-13h5m-5 4h5"/>',
   sheet: '<path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5"/><circle cx="16.5" cy="16.5" r="1.5"/>',
 };
-/** Placeholder bust for a built character until its portrait exists: tinted silhouette with the name's first letter. */
-const BUST = '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="38" r="20" fill="currentColor"/><path d="M14 98c3-24 17-36 36-36s33 12 36 36z" fill="currentColor"/></svg>';
 
 /** Mounts one isolated session; finished resolves only after the player leaves the table. */
 export function mountTrpg(host, { scenario, characters, manifest, tableTalk = null, tutorialLines = null, tutorial = false, onTutorialDone = () => {},
@@ -37,15 +35,9 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   const statLabel = key => presentation.stats?.[key] || key;
   // Seats nobody filled tonight: the GM voices those PCs.
   const npcSeats = Object.keys(sheets).filter(seat => !scenario.cast.some(c => seatOf(c.id) === seat));
-  // The PC's own likeness when the sheet has one; otherwise the player's portrait stands in.
+  // A PC always wears the face of whoever plays it (#3050): the player's own portrait, never a role or look picture.
   function pcFace(seat, playerId) {
-    const sheet = sheets[seat];
-    if (sheet?.portrait) return el("img.trpg-pc-art", { src: new URL(sheet.portrait, import.meta.url).href, alt: "" });
-    if (sheet?.color) return bust(sheet);
     return el("img", { src: portrait(playerId), alt: "", style: portraitFrame(playerId, 150, 6) });
-  }
-  function bust({ color, accent, name }) {
-    return el("span.trpg-pc-bust", { style: { "--bust": color, "--bust-accent": accent || "#e9d9b5" }, html: BUST, title: name || "" });
   }
   /** Authored text names the player's character with {pc}; the built name fills it in. */
   // {pc} is the player's character, {pc:seat} a companion's, {pcTitle} the player's origin and {gm} tonight's GM.
@@ -954,7 +946,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("span", { text: "＋ 能力 4 ＝" }), el("strong", { text: "30" })]), el("p", { text: "30以上で成功 · 19〜29でひと手間 · 18以下は思わぬ出来事" })],
     fail: () => [el("div.trpg-tutorial-row", [el("i", { text: "うまくいった" }), el("i", { text: "ひと手間かかる" }), el("i", { text: "思わぬ出来事" })]),
       el("p", { text: "どれでも物語は続く。失敗も、卓の楽しみ" })],
-    build: () => [el("strong", { text: "あなたの役を作ろう" }), el("p", { text: "表紙の「キャラクターを作る」で、見た目・役どころ・名前を選ぶ。迷ったら、おすすめのままでOK" })],
+    build: () => [el("strong", { text: "あなたの役を作ろう" }), el("p", { text: "表紙の「キャラクターを作る」で、役どころと名前を選ぶ。迷ったら、おすすめのままでOK" })],
   };
   /** The player's character on the cover: who you will play tonight, and the door to remake them. */
   function pcCard() {
@@ -968,14 +960,14 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       button("キャラクターを作る", "trpg-build", openBuilder, { class: "small" }),
     ]);
   }
-  /** Character creation: a look, an origin preset, a name and a point-buy of the four stats. */
+  /** Character creation: an origin preset, a name and a point-buy of the four stats. The look is the player's own (#3050). */
   function openBuilder() {
     if (busy || overlay || session.snapshot().phase !== "cover") return;
     const builder = scenario.builder;
     if (!builder) return;
     const me = session.pc;
-    const draft = { look: me.look, archetype: me.archetype, name: me.name, stats: { ...me.stats } };
-    // Beginners pick a look, a role and a name; free point-buy waits behind "自分で振る".
+    const draft = { archetype: me.archetype, name: me.name, stats: { ...me.stats } };
+    // Beginners pick a role and a name; free point-buy waits behind "自分で振る".
     let advanced = false, explain = false;
     const usedIn = key => [...new Set(Object.values(scenario.checks).filter(check => (check.approaches || [])
       .some(a => (a.sheet || a.actor) === PLAYER_SEAT && a.stat === key)).map(check => check.title))];
@@ -990,15 +982,6 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       // 能力の説明・計算の一言は「？」を押した時だけ（#2719）。数字と点の残りはいつも見える。
       board.dataset.help = explain ? "open" : "closed";
       board.replaceChildren(
-        el("section.trpg-builder-looks", [el("h3", { text: "見た目" }),
-          el("div.trpg-builder-look-grid", builder.looks.map(look => el("button.trpg-button.trpg-builder-look", { type: "button",
-            class: draft.look === look.id ? "selected" : "", "aria-pressed": String(draft.look === look.id),
-            "aria-label": look.label + "。" + (look.detail || ""), dataset: { test: "trpg-look-" + look.id },
-            onclick: () => { draft.look = look.id; audio.play("tap"); render("trpg-look-" + look.id); },
-          }, [el("span.trpg-builder-look-face", { "aria-hidden": "true" }, look.portrait
-              ? el("img.trpg-pc-art", { src: new URL(look.portrait, import.meta.url).href, alt: "" })
-              : bust({ color: look.color, accent: look.accent, name: draft.name })),
-            el("strong", { text: look.label }), el("small", { text: look.detail || "" })])))]),
         el("section.trpg-builder-origins", [el("h3", { text: "出自" }),
           el("div.trpg-builder-origin-list", builder.archetypes.map(a => el("button.trpg-button.trpg-builder-origin", { type: "button",
             class: draft.archetype === a.id ? "selected" : "", "aria-pressed": String(draft.archetype === a.id),
@@ -1046,7 +1029,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const confirm = button("この役で卓につく", "trpg-build-confirm", () => {
       let built;
       try { built = buildPc(scenario, draft); } catch { syncConfirm(); return; }
-      build = { look: built.look, archetype: built.archetype, name: built.name, stats: built.stats };
+      build = { archetype: built.archetype, name: built.name, stats: built.stats };
       session = new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart });
       sheets = session.sheets;
       pop.close(); renderBody();
@@ -1060,7 +1043,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     pop = modal(builder.title || "キャラクターを作る", [el("p.trpg-modal-intro", { text: builder.intro || "" }), board], [
       button("おまかせ", "trpg-build-random", () => {
         const rolled = randomPc(scenario, (seed ^ Date.now()) >>> 0);
-        Object.assign(draft, { look: rolled.look, archetype: rolled.archetype, name: rolled.name, stats: { ...rolled.stats } });
+        Object.assign(draft, { archetype: rolled.archetype, name: rolled.name, stats: { ...rolled.stats } });
         audio.play("clue"); render("trpg-build-random");
       }),
       button("やめる", "trpg-build-back", () => pop.close()), confirm,
@@ -1119,7 +1102,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         ? "場面ごとに、誰が・どの能力で動くかを宣言します。判定は20面ダイス二つの合計に、そのキャラクターの能力値を足します。30以上は成功、19〜29はひと手間、18以下は思わぬ出来事。どの結果でも物語は続きます。"
         : "判定は20面ダイス二つの合計に＋3。30以上は成功、19〜29はひと手間、18以下は思わぬ出来事。どの結果でも物語は続きます。" }),
       ...(Object.keys(sheets).length ? [el("p", { text: "仲間のキャラクターが初めて前に出ると、卓の盛り上がりが1上がります。能力値はキャラクターシートで確認できます。" })] : []),
-      ...(scenario.builder ? [el("p", { text: "表紙の「キャラクターを作る」で、自分が演じる役の見た目・出自・名前と能力値（合計" + scenario.builder.points + "点）を決められます。" })] : []),
+      ...(scenario.builder ? [el("p", { text: "表紙の「キャラクターを作る」で、自分が演じる役の出自・名前と能力値（合計" + scenario.builder.points + "点）を決められます。" })] : []),
       head("札と盛り上がり"),
       el("p", { text: "共有する連携札は2枚。切り札を使うたび1枚使います。20のゾロ目（クリティカル）が出ると、1枚戻ります。" }),
       el("p", { text: "卓の盛り上がりは、うまくいった判定・思わぬ出来事・ゾロ目・仲間の見せ場・初めての相談・見立ての話し合いで上がります。3・6・8に届くたび、次の判定に勢い1つ（補正＋4、最大2つ）。" }),
