@@ -94,10 +94,10 @@
     top: 84px !important;
   }
 
-  /* 共通ヘルプを右の作業域内へ戻す。蒸らしの温度計も同じ域へ置き、
-     人物絵を覆わない。 */
+  /* 蒸らしのヘルプは人物欄の上端へ置き、弾幕へのタップを遮らない。
+     左端にそろえた説明も画面内に収まる。温度計は右の作業域へ。 */
   html[data-density="phone"] body:not(:root) .bench[data-step="steam"] .bench-right .bench-head {
-    position: absolute !important; left: auto !important; right: 8px !important; top: 8px !important;
+    position: absolute !important; left: -238px !important; right: auto !important; top: 8px !important;
     min-height: 0; margin: 0; padding: 0; border: 0;
   }
   html[data-density="phone"] body:not(:root) .bench[data-step="steam"] .bench-head::after { display: none; }

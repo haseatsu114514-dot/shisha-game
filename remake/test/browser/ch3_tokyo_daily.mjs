@@ -471,6 +471,8 @@ await suite("ch3-tokyo-daily", async check => {
       Object.assign(value.met, { mashiro: true, mukai_master: true, naru: true, uranaishi: true });
       value.affinity.naru = 20; value.flags._fortune_met = true;
       value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
+      // この検査は1回の出現と退場。2回分の未消化予定が同時に来る種は別の条件なので除く。
+      while (fortune.fortunePlan(value).length !== 1) value.seed++;
       delete value.flags._fortune_wander;
       if (!fortune.placeFortuneNow(value, "tokyo")) throw new Error("Fortune teller placement failed");
       core.save();

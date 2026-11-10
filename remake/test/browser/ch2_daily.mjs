@@ -111,6 +111,8 @@ await suite('ch2-daily',async check=>{
       Object.assign(s, { chapter: 2, phase: 'daily', day: 22, slot: 0, money: 30000 });
       Object.assign(s.flags, { _rei_trpg_introduced: true, _intro_sai: true,
         _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true } });
+      // 地図の写真と入店が対象。部活結成会話は専用テストに任せ、棚まで進める既知状態にする。
+      (await import("./js/trpg/campaign.js")).foundTrpgClub(s, { unlockChapter: 2 });
       hud.initHud({}); hud.showHud(true); await ui.warmUiArt();
       const destination = trpg.trpgSpot();
       window.__b02 = { selected: null, before: JSON.stringify(s) };
