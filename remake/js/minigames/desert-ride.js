@@ -478,9 +478,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         } else if (event.kind === "fall") {
           rideSe.play("fall", 0.7); showPop(event.reason === "spin" ? "回り切れず…" : "転倒…", "fall"); burst(34, 1.6);
           if (!reducedMotion) { shakeT = 0.45; flashT = 0.18; }
-        } else if (event.kind === "near") { SE.tick(); floater(`かすめ +${event.points}`, "near"); if (game.combo >= 2) showPop(`${game.combo} COMBO`, "combo"); }
-        else if (event.kind === "smash") { SE.crack(); floater(`粉砕 +${event.points}`, "smash"); chips(event.size); if (!reducedMotion) shakeT = Math.max(shakeT, 0.22); }
-        else if (event.kind === "gaugeFull") { SE.slotBonus(); floater(touchUi() ? "BOOST OK" : "BOOST OK ↓", "gauge"); }
+        } else if (event.kind === "near") { rideSe.play("near", 0.45); floater(`かすめ +${event.points}`, "near"); if (game.combo >= 2) showPop(`${game.combo} COMBO`, "combo"); }
+        else if (event.kind === "smash") { rideSe.play("smash", 0.6); floater(`粉砕 +${event.points}`, "smash"); chips(event.size); if (!reducedMotion) shakeT = Math.max(shakeT, 0.22); }
+        else if (event.kind === "gaugeFull") { rideSe.play("gaugeFull", 0.55); floater(touchUi() ? "BOOST OK" : "BOOST OK ↓", "gauge"); }
         else if (event.kind === "boost") {
           rideSe.play("boost", 0.6); showPop("BOOST!!", "boost"); burst(24, 1.6);
           if (!reducedMotion) { shakeT = 0.3; flashT = 0.1; view.kick = 1.4; }
@@ -490,7 +490,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       }
       // 回転中は半回転ごとに角度を見せる（180 → 360 → …）
       const half = game.spinDir !== 0 ? Math.floor(Math.abs(game.rot) * 2 + 1e-6) : 0;
-      if (half > halfShown && half > 0) { SE.tick(); showPop(`${half * 180}°`, "spin"); }
+      if (half > halfShown && half > 0) { rideSe.play("near", 0.35); showPop(`${half * 180}°`, "spin"); }
       halfShown = half;
     }
     function onFinished() {

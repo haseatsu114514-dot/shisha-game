@@ -7,7 +7,7 @@
 // ラクダ・ロボット騎手・SUV・車輪は Codex の絵（assets/ui/camel_race・2026-11-02 採用。原画は asset_sources/ch4-camel-race）。
 // 絵が読めない環境では Canvas の描画に戻す。砂漠・柵・砂煙・合図の輪・HUD は Canvas で描く。
 import { el } from "../core/util.js";
-import { SE, currentBgm, playBgm, unlockAudio } from "../core/audio.js";
+import { SE, currentBgm, playBgm, unlockAudio, playCamelRaceSe, preloadCamelRaceSe } from "../core/audio.js";
 import { imgFileUrl } from "../core/img-file.js";
 import { faceIconUrl } from "../core/data.js";
 import { RACE, CUE, PLAYER, WHIP, CAMEL_CUPS, camelCup, camelCupQualified, camelMastered, camelExpert, rng, createRace, stepRace, pressVoice, setWhip, whipReady, activeCue, inSpurt, standings, scoreRace,
@@ -66,7 +66,9 @@ const TUTORIAL = [
   { icon: "voice", art: "howto-voice", title: "声をかける ── 左のボタン", key: "Space", body: "騎手のまわりの金の輪が縮む。内側の輪と重なった瞬間に押すと PERFECT で、ぐっと伸びる。輪の縮む速さは毎回ちがうので、よく見て押す。外したり連打したりすると、スタミナが減る。" },
   { icon: "signal", art: "howto-whip", title: "ムチ ── 右のボタンを押し続ける", key: "X", body: "押している間だけラクダが伸び、スタミナが減る。離している間は息が戻る（調子が良いほど早く戻る）ので、途中で小刻みに使うと無駄がない。空になるとしばらく使えない。残り250mの LAST SPURT でいちばん効くので、少しは残しておく。" },
 ];
-const sfx = name => { try { SE[name]?.(); } catch { /* 音は無くても遊べる */ } };
+// レース中の SE ID は従来どおり（sfx("hoof") など）。録音はラクダ専用で、他ミニゲームの合成SEは置き換えない。
+const sfx = name => { try { if (name === "select" || name === "click" || name === "cancel") SE[name]?.(); else playCamelRaceSe(name); } catch { /* 音は無くても遊べる */ } };
+const armCamelAudio = () => { unlockAudio(); preloadCamelRaceSe(); };
 
 // ---- 絵（Codex・2026-11-02 採用）。寸法は絵の画素で、asset_sources/ch4-camel-race/README.md で測った値。
 // ラクダは4コマ（512×384・右向き）。背の線は4コマとも1px以内で、ground の線に足元をそろえる。
@@ -282,8 +284,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   host.append(root);
   // 音の解禁はユーザー操作が起点（自動再生制限）。本編は main.js が全体で受けているが、
   // 試遊ページ等の単独表示でも BGM・SE が鳴るよう、レース画面自身の操作でも解禁する（#3065）。
-  root.addEventListener("pointerdown", unlockAudio);
-  root.addEventListener("keydown", unlockAudio);
+  root.addEventListener("pointerdown", armCamelAudio);
+  root.addEventListener("keydown", armCamelAudio);
   // 部品ごとに読込成否を判定し、欠けた画像だけ CSS 表示へ戻す。
   for (const [cls, rel] of [
     ["cr-card", "ui/camel_race/ui/program-card.webp"],
@@ -526,6 +528,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   }
   function startRace() {
     playBgm("bgm_ethnic12");
+    preloadCamelRaceSe();
     sheet.hidden = true; sheet.replaceChildren();
     race = createRace({ seed: rivalSeed(), cup: selectedCup });
     clockNode.querySelector(".camel-clock-sub").textContent = `${camelCup(selectedCup).name} ${race.length.toLocaleString("ja-JP")}m・4頭`;
@@ -616,7 +619,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       if (event.kind === "voice" && event.type === "lost") { combo = 0; sfx("miss"); showFeedback("見送った……", "lost"); }
       else if (event.kind === "spurt" && !spurtShown) {
         spurtShown = true; showBanner("LAST SPURT", "spurt"); announce("ラストスパート。ムチを押し続けるなら今。");
-        say(CALLS.spurt, true); sfx("slotBonus");
+        say(CALLS.spurt, true); sfx("slotBonus"); if (Math.random() < 0.3) playCamelRaceSe("grunt");
         if (!reducedMotion) { spurtTint = 1; shake = Math.max(shake, 0.25); }
       }
       else if (event.kind === "stamina" && event.type === "exhausted") { showBanner("息が切れた", "tired", 1.2); say(CALLS.tired, true); }
