@@ -1,0 +1,2420 @@
+[
+  {
+    "scenario": "apple-thief",
+    "character": "hajime",
+    "role_id": "bellboy",
+    "file": "costumes/apple-thief/hajime_bellboy.webp",
+    "box": [
+      315,
+      31,
+      615,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 465.0,
+      "cy": 195.0,
+      "w": 130.0,
+      "h": 190.0,
+      "top": 100,
+      "chin": 290,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "apple-thief",
+    "character": "hajime",
+    "role_id": "doorman",
+    "file": "costumes/apple-thief/hajime_doorman.webp",
+    "box": [
+      314,
+      31,
+      614,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 464.0,
+      "cy": 194.0,
+      "w": 147.86,
+      "h": 186.0,
+      "top": 101,
+      "chin": 287,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "apple-thief",
+    "character": "hajime",
+    "role_id": "steward",
+    "file": "costumes/apple-thief/hajime_steward.webp",
+    "box": [
+      282,
+      23,
+      650,
+      390
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 466.0,
+      "cy": 255.0,
+      "w": 199.0,
+      "h": 212.0,
+      "top": 149,
+      "chin": 361,
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "apple-thief",
+    "character": "hiyori",
+    "role_id": "rosa",
+    "file": "costumes/apple-thief/hiyori_rosa.webp",
+    "box": [
+      340,
+      106,
+      686,
+      452
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 513.0,
+      "cy": 266.5,
+      "w": 200.0,
+      "h": 221.0,
+      "top": 156,
+      "chin": 377,
+      "figtop": 141,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "apple-thief",
+    "character": "hiyori",
+    "role_id": "marta",
+    "file": "costumes/apple-thief/hiyori_marta.webp",
+    "box": [
+      359,
+      107,
+      693,
+      441
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 526.0,
+      "cy": 267.0,
+      "w": 189.0,
+      "h": 214.0,
+      "top": 160,
+      "chin": 374,
+      "figtop": 140,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "apple-thief",
+    "character": "tsumugi",
+    "role_id": "shion",
+    "file": "costumes/apple-thief/tsumugi_shion.webp",
+    "box": [
+      290,
+      249,
+      594,
+      552
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 442.0,
+      "cy": 438.0,
+      "w": 171.0,
+      "h": 180.0,
+      "top": 348,
+      "chin": 528,
+      "figtop": 279,
+      "figbot": 1174
+    }
+  },
+  {
+    "scenario": "apple-thief",
+    "character": "tsumugi",
+    "role_id": "nocto",
+    "file": "costumes/apple-thief/tsumugi_nocto.webp",
+    "box": [
+      272,
+      272,
+      598,
+      598
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 435.0,
+      "cy": 431.0,
+      "w": 110.0,
+      "h": 208.0,
+      "top": 327,
+      "chin": 535,
+      "figtop": 305,
+      "figbot": 1173
+    }
+  },
+  {
+    "scenario": "doll-requiem",
+    "character": "hajime",
+    "role_id": "nightwatch",
+    "file": "costumes/doll-requiem/hajime_nightwatch.webp",
+    "box": [
+      321,
+      31,
+      621,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 471.0,
+      "cy": 185.5,
+      "w": 157.0,
+      "h": 179.0,
+      "top": 96,
+      "chin": 275,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "doll-requiem",
+    "character": "hajime",
+    "role_id": "restorer",
+    "file": "costumes/doll-requiem/hajime_restorer.webp",
+    "box": [
+      269,
+      24,
+      635,
+      390
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 452.0,
+      "cy": 260.0,
+      "w": 212.0,
+      "h": 202.0,
+      "top": 159,
+      "chin": 361,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "doll-requiem",
+    "character": "hajime",
+    "role_id": "courier",
+    "file": "costumes/doll-requiem/hajime_courier.webp",
+    "box": [
+      279,
+      23,
+      645,
+      389
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 462.0,
+      "cy": 252.0,
+      "w": 223.0,
+      "h": 216.0,
+      "top": 144,
+      "chin": 360,
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "doll-requiem",
+    "character": "ageha",
+    "role_id": "kirara",
+    "file": "costumes/doll-requiem/ageha_kirara.webp",
+    "box": [
+      311,
+      168,
+      669,
+      526
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 490.0,
+      "cy": 359.5,
+      "w": 192.0,
+      "h": 229.0,
+      "top": 245,
+      "chin": 474,
+      "figtop": 204,
+      "figbot": 1175
+    }
+  },
+  {
+    "scenario": "doll-requiem",
+    "character": "ageha",
+    "role_id": "marie",
+    "file": "costumes/doll-requiem/ageha_marie.webp",
+    "box": [
+      336,
+      174,
+      636,
+      474
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 486.0,
+      "cy": 288.0,
+      "w": 157.60000000000002,
+      "h": 74.0,
+      "top": 251,
+      "chin": 325,
+      "figtop": 204,
+      "figbot": 1174
+    }
+  },
+  {
+    "scenario": "doll-requiem",
+    "character": "hiyori",
+    "role_id": "cecilia",
+    "file": "costumes/doll-requiem/hiyori_cecilia.webp",
+    "box": [
+      364,
+      110,
+      664,
+      410
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 514.0,
+      "cy": 216.5,
+      "w": 175.0,
+      "h": 81.0,
+      "top": 176,
+      "chin": 257,
+      "figtop": 140,
+      "figbot": 1141
+    }
+  },
+  {
+    "scenario": "doll-requiem",
+    "character": "hiyori",
+    "role_id": "chloe",
+    "file": "costumes/doll-requiem/hiyori_chloe.webp",
+    "box": [
+      373,
+      110,
+      673,
+      410
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 523.0,
+      "cy": 255.5,
+      "w": 172.0,
+      "h": 191.0,
+      "top": 160,
+      "chin": 351,
+      "figtop": 140,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "fading-familiar",
+    "character": "hajime",
+    "role_id": "patrol",
+    "file": "costumes/fading-familiar/hajime_patrol.webp",
+    "box": [
+      319,
+      31,
+      619,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 469.0,
+      "cy": 192.5,
+      "w": 105.0,
+      "h": 159.0,
+      "top": 113,
+      "chin": 272,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "fading-familiar",
+    "character": "hajime",
+    "role_id": "runner",
+    "file": "costumes/fading-familiar/hajime_runner.webp",
+    "box": [
+      313,
+      31,
+      613,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 463.0,
+      "cy": 202.5,
+      "w": 157.0,
+      "h": 69.0,
+      "top": 168,
+      "chin": 237,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "fading-familiar",
+    "character": "hajime",
+    "role_id": "bookish",
+    "file": "costumes/fading-familiar/hajime_bookish.webp",
+    "box": [
+      314,
+      31,
+      614,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 464.0,
+      "cy": 207.06,
+      "w": 118.8799999999992,
+      "h": 139.88,
+      "top": 137,
+      "chin": 277,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "fading-familiar",
+    "character": "samechan",
+    "role_id": "hirena",
+    "file": "costumes/fading-familiar/samechan_hirena.webp",
+    "box": [
+      300,
+      27,
+      632,
+      358
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 466.0,
+      "cy": 200.0,
+      "w": 212.0,
+      "h": 106.0,
+      "top": 147,
+      "chin": 253,
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "fading-familiar",
+    "character": "samechan",
+    "role_id": "fukami",
+    "file": "costumes/fading-familiar/samechan_fukami.webp",
+    "box": [
+      320,
+      28,
+      636,
+      344
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 478.0,
+      "cy": 236.5,
+      "w": 156.0,
+      "h": 165.0,
+      "top": 154,
+      "chin": 319,
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "fading-familiar",
+    "character": "adam",
+    "role_id": "mars",
+    "file": "costumes/fading-familiar/adam_mars.webp",
+    "box": [
+      256,
+      24,
+      622,
+      390
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 439.0,
+      "cy": 249.5,
+      "w": 225.0,
+      "h": 223.0,
+      "top": 138,
+      "chin": 361,
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "fading-familiar",
+    "character": "adam",
+    "role_id": "nox",
+    "file": "costumes/fading-familiar/adam_nox.webp",
+    "box": [
+      272,
+      31,
+      572,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 422.0,
+      "cy": 127.29499999999999,
+      "w": 123.0,
+      "h": 55.41000000000001,
+      "top": 99,
+      "chin": 155,
+      "figtop": 61,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "fox-market",
+    "character": "hajime",
+    "role_id": "apprentice",
+    "file": "costumes/fox-market/hajime_apprentice.webp",
+    "box": [
+      324,
+      30,
+      624,
+      330
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 474.0,
+      "cy": 181.5,
+      "w": 110.0,
+      "h": 53.0,
+      "top": 155,
+      "chin": 208,
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "fox-market",
+    "character": "hajime",
+    "role_id": "firewatch",
+    "file": "costumes/fox-market/hajime_firewatch.webp",
+    "box": [
+      306,
+      30,
+      606,
+      330
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 456.0,
+      "cy": 224.07,
+      "w": 162.0,
+      "h": 155.86,
+      "top": 146,
+      "chin": 302,
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "fox-market",
+    "character": "hajime",
+    "role_id": "scholar",
+    "file": "costumes/fox-market/hajime_scholar.webp",
+    "box": [
+      313,
+      31,
+      613,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 463.0,
+      "cy": 174.0,
+      "w": 104.0,
+      "h": 12.0,
+      "top": 168,
+      "chin": 180,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "fox-market",
+    "character": "hiyori",
+    "role_id": "kasumi",
+    "file": "costumes/fox-market/hiyori_kasumi.webp",
+    "box": [
+      356,
+      108,
+      674,
+      427
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 515.0,
+      "cy": 259.0,
+      "w": 191.0,
+      "h": 204.0,
+      "top": 157,
+      "chin": 361,
+      "figtop": 140,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "fox-market",
+    "character": "hiyori",
+    "role_id": "shizuku",
+    "file": "costumes/fox-market/hiyori_shizuku.webp",
+    "box": [
+      354,
+      107,
+      694,
+      446
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 524.0,
+      "cy": 312.5,
+      "w": 198.0,
+      "h": 213.0,
+      "top": 206,
+      "chin": 419,
+      "figtop": 141,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "fox-market",
+    "character": "samechan",
+    "role_id": "namimaru",
+    "file": "costumes/fox-market/samechan_namimaru.webp",
+    "box": [
+      303,
+      27,
+      645,
+      369
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 474.0,
+      "cy": 197.5,
+      "w": 219.0,
+      "h": 95.0,
+      "top": 150,
+      "chin": 245,
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "fox-market",
+    "character": "samechan",
+    "role_id": "fukajiro",
+    "file": "costumes/fox-market/samechan_fukajiro.webp",
+    "box": [
+      281,
+      25,
+      627,
+      372
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 454.0,
+      "cy": 206.0,
+      "w": 195.0,
+      "h": 222.0,
+      "top": 95,
+      "chin": 317,
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "leaf-mail",
+    "character": "hajime",
+    "role_id": "watch",
+    "file": "costumes/leaf-mail/hajime_watch.webp",
+    "box": [
+      322,
+      31,
+      622,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 472.0,
+      "cy": 222.0,
+      "w": 115.69999999999982,
+      "h": 114.0,
+      "top": 165,
+      "chin": 279,
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "leaf-mail",
+    "character": "hajime",
+    "role_id": "sweep",
+    "file": "costumes/leaf-mail/hajime_sweep.webp",
+    "box": [
+      277,
+      23,
+      643,
+      389
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 460.0,
+      "cy": 265.5,
+      "w": 210.0,
+      "h": 189.0,
+      "top": 171,
+      "chin": 360,
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "leaf-mail",
+    "character": "hajime",
+    "role_id": "books",
+    "file": "costumes/leaf-mail/hajime_books.webp",
+    "box": [
+      316,
+      30,
+      616,
+      330
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 466.0,
+      "cy": 224.4,
+      "w": 106.19999999999999,
+      "h": 137.2,
+      "top": 155,
+      "chin": 293,
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "leaf-mail",
+    "character": "hiyori",
+    "role_id": "yura",
+    "file": "costumes/leaf-mail/hiyori_yura.webp",
+    "box": [
+      389,
+      111,
+      689,
+      411
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 539.0,
+      "cy": 225.5,
+      "w": 142.75,
+      "h": 117.0,
+      "top": 167,
+      "chin": 284,
+      "figtop": 141,
+      "figbot": 1141
+    }
+  },
+  {
+    "scenario": "leaf-mail",
+    "character": "hiyori",
+    "role_id": "neri",
+    "file": "costumes/leaf-mail/hiyori_neri.webp",
+    "box": [
+      368,
+      110,
+      682,
+      424
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 525.0,
+      "cy": 259.5,
+      "w": 200.0,
+      "h": 201.0,
+      "top": 159,
+      "chin": 360,
+      "figtop": 141,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "leaf-mail",
+    "character": "adam",
+    "role_id": "leon",
+    "file": "costumes/leaf-mail/adam_leon.webp",
+    "box": [
+      288,
+      30,
+      588,
+      330
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 438.0,
+      "cy": 170.5,
+      "w": 161.0,
+      "h": 191.0,
+      "top": 75,
+      "chin": 266,
+      "figtop": 60,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "leaf-mail",
+    "character": "adam",
+    "role_id": "gran",
+    "file": "costumes/leaf-mail/adam_gran.webp",
+    "box": [
+      249,
+      24,
+      611,
+      387
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 430.0,
+      "cy": 224.885,
+      "w": 180.0,
+      "h": 232.23000000000002,
+      "top": 108,
+      "chin": 341,
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "mist-kingdom",
+    "character": "hajime",
+    "role_id": "rookie",
+    "file": "costumes/mist-kingdom/hajime_rookie.webp",
+    "box": [
+      312,
+      31,
+      612,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 462.0,
+      "cy": 205.5,
+      "w": 115.11999999999989,
+      "h": 139.0,
+      "top": 136,
+      "chin": 275,
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "mist-kingdom",
+    "character": "hajime",
+    "role_id": "wanderer",
+    "file": "costumes/mist-kingdom/hajime_wanderer.webp",
+    "box": [
+      334,
+      31,
+      634,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 484.0,
+      "cy": 169.005,
+      "w": 164.0,
+      "h": 183.99,
+      "top": 77,
+      "chin": 261,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "mist-kingdom",
+    "character": "hajime",
+    "role_id": "shepherd",
+    "file": "costumes/mist-kingdom/hajime_shepherd.webp",
+    "box": [
+      235,
+      15,
+      681,
+      462
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 458.0,
+      "cy": 217.0,
+      "w": 200.0,
+      "h": 286.0,
+      "top": 74,
+      "chin": 360,
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "mist-kingdom",
+    "character": "adam",
+    "role_id": "orchard",
+    "file": "costumes/mist-kingdom/adam_orchard.webp",
+    "box": [
+      248,
+      24,
+      616,
+      391
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 432.0,
+      "cy": 252.5,
+      "w": 213.48000000000002,
+      "h": 219.0,
+      "top": 143,
+      "chin": 362,
+      "figtop": 61,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "mist-kingdom",
+    "character": "adam",
+    "role_id": "grants",
+    "file": "costumes/mist-kingdom/adam_grants.webp",
+    "box": [
+      259,
+      31,
+      559,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 409.0,
+      "cy": 194.0,
+      "w": 161.0,
+      "h": 150.0,
+      "top": 119,
+      "chin": 269,
+      "figtop": 61,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "mist-kingdom",
+    "character": "samechan",
+    "role_id": "koban",
+    "file": "costumes/mist-kingdom/samechan_koban.webp",
+    "box": [
+      323,
+      31,
+      629,
+      337
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 476.0,
+      "cy": 180.0,
+      "w": 195.34000000000003,
+      "h": 68.0,
+      "top": 146,
+      "chin": 214,
+      "figtop": 62,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "mist-kingdom",
+    "character": "samechan",
+    "role_id": "sharuku",
+    "file": "costumes/mist-kingdom/samechan_sharuku.webp",
+    "box": [
+      309,
+      25,
+      661,
+      376
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 485.0,
+      "cy": 195.0,
+      "w": 225.0,
+      "h": 94.0,
+      "top": 148,
+      "chin": 242,
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "moonflower-encore",
+    "character": "hajime",
+    "role_id": "stagehand",
+    "file": "costumes/moonflower-encore/hajime_stagehand.webp",
+    "box": [
+      312,
+      30,
+      612,
+      330
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 462.0,
+      "cy": 140.255,
+      "w": 96.0,
+      "h": 15.490000000000009,
+      "top": 132,
+      "chin": 148,
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "moonflower-encore",
+    "character": "hajime",
+    "role_id": "usher",
+    "file": "costumes/moonflower-encore/hajime_usher.webp",
+    "box": [
+      322,
+      31,
+      622,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 472.0,
+      "cy": 214.5,
+      "w": 153.0,
+      "h": 177.0,
+      "top": 126,
+      "chin": 303,
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "moonflower-encore",
+    "character": "hajime",
+    "role_id": "pageturner",
+    "file": "costumes/moonflower-encore/hajime_pageturner.webp",
+    "box": [
+      280,
+      23,
+      648,
+      390
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 464.0,
+      "cy": 254.93,
+      "w": 192.0,
+      "h": 212.14000000000001,
+      "top": 148,
+      "chin": 361,
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "moonflower-encore",
+    "character": "ageha",
+    "role_id": "kirara",
+    "file": "costumes/moonflower-encore/ageha_kirara.webp",
+    "box": [
+      343,
+      173,
+      655,
+      485
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 499.0,
+      "cy": 259.5,
+      "w": 200.0,
+      "h": 59.0,
+      "top": 230,
+      "chin": 289,
+      "figtop": 204,
+      "figbot": 1175
+    }
+  },
+  {
+    "scenario": "moonflower-encore",
+    "character": "ageha",
+    "role_id": "moka",
+    "file": "costumes/moonflower-encore/ageha_moka.webp",
+    "box": [
+      337,
+      174,
+      637,
+      474
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 487.0,
+      "cy": 258.0,
+      "w": 144.19999999999982,
+      "h": 46.0,
+      "top": 235,
+      "chin": 281,
+      "figtop": 204,
+      "figbot": 1175
+    }
+  },
+  {
+    "scenario": "moonflower-encore",
+    "character": "adam",
+    "role_id": "leon",
+    "file": "costumes/moonflower-encore/adam_leon.webp",
+    "box": [
+      277,
+      31,
+      577,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 427.0,
+      "cy": 196.125,
+      "w": 157.75,
+      "h": 141.75,
+      "top": 125,
+      "chin": 267,
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "moonflower-encore",
+    "character": "adam",
+    "role_id": "ziek",
+    "file": "costumes/moonflower-encore/adam_ziek.webp",
+    "box": [
+      298,
+      31,
+      600,
+      332
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 449.0,
+      "cy": 196.67000000000002,
+      "w": 162.65999999999985,
+      "h": 192.66,
+      "top": 100,
+      "chin": 293,
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "ordinary-cup",
+    "character": "hajime",
+    "role_id": "apprentice",
+    "file": "costumes/ordinary-cup/hajime_apprentice.webp",
+    "box": [
+      268,
+      23,
+      634,
+      389
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 451.0,
+      "cy": 268.5,
+      "w": 203.0,
+      "h": 183.0,
+      "top": 177,
+      "chin": 360,
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "ordinary-cup",
+    "character": "hajime",
+    "role_id": "sailor",
+    "file": "costumes/ordinary-cup/hajime_sailor.webp",
+    "box": [
+      257,
+      20,
+      667,
+      431
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 462.0,
+      "cy": 219.5,
+      "w": 162.0,
+      "h": 263.0,
+      "top": 88,
+      "chin": 351,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "ordinary-cup",
+    "character": "hajime",
+    "role_id": "regular",
+    "file": "costumes/ordinary-cup/hajime_regular.webp",
+    "box": [
+      277,
+      23,
+      643,
+      389
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 460.0,
+      "cy": 265.5,
+      "w": 198.0,
+      "h": 189.0,
+      "top": 171,
+      "chin": 360,
+      "figtop": 60,
+      "figbot": 1137
+    }
+  },
+  {
+    "scenario": "ordinary-cup",
+    "character": "adam",
+    "role_id": "nico",
+    "file": "costumes/ordinary-cup/adam_nico.webp",
+    "box": [
+      259,
+      23,
+      627,
+      390
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 443.0,
+      "cy": 251.0,
+      "w": 231.0,
+      "h": 220.0,
+      "top": 141,
+      "chin": 361,
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "ordinary-cup",
+    "character": "adam",
+    "role_id": "pippin",
+    "file": "costumes/ordinary-cup/adam_pippin.webp",
+    "box": [
+      268,
+      31,
+      568,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 418.0,
+      "cy": 175.0,
+      "w": 159.0,
+      "h": 150.0,
+      "top": 100,
+      "chin": 250,
+      "figtop": 61,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "ordinary-cup",
+    "character": "tsumugi",
+    "role_id": "luca",
+    "file": "costumes/ordinary-cup/tsumugi_luca.webp",
+    "box": [
+      297,
+      249,
+      601,
+      552
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 449.0,
+      "cy": 441.5,
+      "w": 164.0,
+      "h": 173.0,
+      "top": 355,
+      "chin": 528,
+      "figtop": 279,
+      "figbot": 1174
+    }
+  },
+  {
+    "scenario": "ordinary-cup",
+    "character": "tsumugi",
+    "role_id": "leaf",
+    "file": "costumes/ordinary-cup/tsumugi_leaf.webp",
+    "box": [
+      249,
+      226,
+      601,
+      577
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 425.0,
+      "cy": 402.5,
+      "w": 172.0,
+      "h": 225.0,
+      "top": 290,
+      "chin": 515,
+      "figtop": 261,
+      "figbot": 1173
+    }
+  },
+  {
+    "scenario": "purikura-hero",
+    "character": "hajime",
+    "role_id": "squire",
+    "file": "costumes/purikura-hero/hajime_squire.webp",
+    "box": [
+      331,
+      31,
+      631,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 481.0,
+      "cy": 177.5,
+      "w": 135.52999999999997,
+      "h": 165.0,
+      "top": 95,
+      "chin": 260,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "purikura-hero",
+    "character": "hajime",
+    "role_id": "photographer",
+    "file": "costumes/purikura-hero/hajime_photographer.webp",
+    "box": [
+      278,
+      24,
+      644,
+      390
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 461.0,
+      "cy": 262.5,
+      "w": 217.0,
+      "h": 197.0,
+      "top": 164,
+      "chin": 361,
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "purikura-hero",
+    "character": "hajime",
+    "role_id": "shield",
+    "file": "costumes/purikura-hero/hajime_shield.webp",
+    "box": [
+      339,
+      31,
+      639,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 489.0,
+      "cy": 228.0,
+      "w": 184.0,
+      "h": 158.0,
+      "top": 149,
+      "chin": 307,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "purikura-hero",
+    "character": "ageha",
+    "role_id": "lovely",
+    "file": "costumes/purikura-hero/ageha_lovely.webp",
+    "box": [
+      328,
+      153,
+      638,
+      462
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 483.0,
+      "cy": 302.0,
+      "w": 198.0,
+      "h": 184.0,
+      "top": 210,
+      "chin": 394,
+      "figtop": 184,
+      "figbot": 1176
+    }
+  },
+  {
+    "scenario": "purikura-hero",
+    "character": "ageha",
+    "role_id": "beatrice",
+    "file": "costumes/purikura-hero/ageha_beatrice.webp",
+    "box": [
+      319,
+      140,
+      659,
+      480
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 489.0,
+      "cy": 346.0,
+      "w": 204.0,
+      "h": 214.0,
+      "top": 239,
+      "chin": 453,
+      "figtop": 174,
+      "figbot": 1175
+    }
+  },
+  {
+    "scenario": "purikura-hero",
+    "character": "rei",
+    "role_id": "nocturne",
+    "file": "costumes/purikura-hero/rei_nocturne.webp",
+    "box": [
+      289,
+      29,
+      601,
+      341
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 445.0,
+      "cy": 208.0,
+      "w": 154.57999999999993,
+      "h": 200.0,
+      "top": 108,
+      "chin": 308,
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "purikura-hero",
+    "character": "rei",
+    "role_id": "shion",
+    "file": "costumes/purikura-hero/rei_shion.webp",
+    "box": [
+      251,
+      0,
+      641,
+      391
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 446.0,
+      "cy": 197.0,
+      "w": 175.76999999999953,
+      "h": 250.0,
+      "top": 72,
+      "chin": 322,
+      "figtop": 7,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "hajime",
+    "role_id": "rookie",
+    "file": "costumes/shark-last-order/hajime_rookie.webp",
+    "box": [
+      315,
+      31,
+      615,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 465.0,
+      "cy": 138.5,
+      "w": 151.97999999999956,
+      "h": 43.0,
+      "top": 117,
+      "chin": 160,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "hajime",
+    "role_id": "lifeguard",
+    "file": "costumes/shark-last-order/hajime_lifeguard.webp",
+    "box": [
+      256,
+      19,
+      666,
+      428
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 461.0,
+      "cy": 229.0,
+      "w": 154.07999999999998,
+      "h": 262.0,
+      "top": 98,
+      "chin": 360,
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "hajime",
+    "role_id": "radio",
+    "file": "costumes/shark-last-order/hajime_radio.webp",
+    "box": [
+      331,
+      31,
+      631,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 481.0,
+      "cy": 163.5,
+      "w": 95.0,
+      "h": 7.0,
+      "top": 160,
+      "chin": 167,
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "hiyori",
+    "role_id": "otto",
+    "file": "costumes/shark-last-order/hiyori_otto.webp",
+    "box": [
+      325,
+      103,
+      707,
+      486
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 516.0,
+      "cy": 289.5,
+      "w": 193.0,
+      "h": 245.0,
+      "top": 167,
+      "chin": 412,
+      "figtop": 141,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "hiyori",
+    "role_id": "midori",
+    "file": "costumes/shark-last-order/hiyori_midori.webp",
+    "box": [
+      369,
+      111,
+      669,
+      411
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 519.0,
+      "cy": 227.5,
+      "w": 179.0,
+      "h": 137.0,
+      "top": 159,
+      "chin": 296,
+      "figtop": 141,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "adam",
+    "role_id": "otto",
+    "file": "costumes/shark-last-order/adam_otto.webp",
+    "box": [
+      238,
+      23,
+      606,
+      390
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 422.0,
+      "cy": 253.295,
+      "w": 213.0,
+      "h": 215.41000000000003,
+      "top": 145,
+      "chin": 361,
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "adam",
+    "role_id": "mackin",
+    "file": "costumes/shark-last-order/adam_mackin.webp",
+    "box": [
+      280,
+      0,
+      596,
+      316
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 438.0,
+      "cy": 117.0,
+      "w": 202.0,
+      "h": 198.0,
+      "top": 18,
+      "chin": 216,
+      "figtop": 7,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "tsumugi",
+    "role_id": "sera",
+    "file": "costumes/shark-last-order/tsumugi_sera.webp",
+    "box": [
+      294,
+      275,
+      594,
+      575
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 444.0,
+      "cy": 416.16499999999996,
+      "w": 164.0,
+      "h": 173.67000000000002,
+      "top": 329,
+      "chin": 503,
+      "figtop": 305,
+      "figbot": 1174
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "tsumugi",
+    "role_id": "noa",
+    "file": "costumes/shark-last-order/tsumugi_noa.webp",
+    "box": [
+      287,
+      223,
+      587,
+      523
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 437.0,
+      "cy": 409.5,
+      "w": 137.0,
+      "h": 149.0,
+      "top": 335,
+      "chin": 484,
+      "figtop": 253,
+      "figbot": 1173
+    }
+  },
+  {
+    "scenario": "shark-island",
+    "character": "hajime",
+    "role_id": "deckhand",
+    "file": "costumes/shark-island/hajime_deckhand.webp",
+    "box": [
+      290,
+      26,
+      640,
+      376
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 465.0,
+      "cy": 254.5,
+      "w": 188.0,
+      "h": 187.0,
+      "top": 161,
+      "chin": 348,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "shark-island",
+    "character": "hajime",
+    "role_id": "navigator",
+    "file": "costumes/shark-island/hajime_navigator.webp",
+    "box": [
+      328,
+      31,
+      628,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 478.0,
+      "cy": 223.0,
+      "w": 139.0,
+      "h": 134.0,
+      "top": 156,
+      "chin": 290,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "shark-island",
+    "character": "hajime",
+    "role_id": "cook",
+    "file": "costumes/shark-island/hajime_cook.webp",
+    "box": [
+      275,
+      0,
+      647,
+      372
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 461.0,
+      "cy": 225.5,
+      "w": 115.92000000000007,
+      "h": 171.0,
+      "top": 140,
+      "chin": 311,
+      "figtop": 6,
+      "figbot": 1137
+    }
+  },
+  {
+    "scenario": "shark-island",
+    "character": "hiyori",
+    "role_id": "ruri",
+    "file": "costumes/shark-island/hiyori_ruri.webp",
+    "box": [
+      379,
+      110,
+      679,
+      410
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 529.0,
+      "cy": 248.5,
+      "w": 191.0,
+      "h": 171.0,
+      "top": 163,
+      "chin": 334,
+      "figtop": 140,
+      "figbot": 1141
+    }
+  },
+  {
+    "scenario": "shark-island",
+    "character": "hiyori",
+    "role_id": "nerine",
+    "file": "costumes/shark-island/hiyori_nerine.webp",
+    "box": [
+      360,
+      111,
+      660,
+      411
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 510.0,
+      "cy": 258.0,
+      "w": 186.0,
+      "h": 104.0,
+      "top": 206,
+      "chin": 310,
+      "figtop": 141,
+      "figbot": 1141
+    }
+  },
+  {
+    "scenario": "shark-island",
+    "character": "adam",
+    "role_id": "doran",
+    "file": "costumes/shark-island/adam_doran.webp",
+    "box": [
+      267,
+      0,
+      567,
+      300
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 417.0,
+      "cy": 48.0,
+      "w": 174.0,
+      "h": 52.0,
+      "top": 22,
+      "chin": 74,
+      "figtop": 8,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "shark-island",
+    "character": "adam",
+    "role_id": "jiruba",
+    "file": "costumes/shark-island/adam_jiruba.webp",
+    "box": [
+      251,
+      0,
+      635,
+      384
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 443.0,
+      "cy": 206.5,
+      "w": 212.0,
+      "h": 231.0,
+      "top": 91,
+      "chin": 322,
+      "figtop": 7,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "smoke-robot",
+    "character": "hajime",
+    "role_id": "rookie",
+    "file": "costumes/smoke-robot/hajime_rookie.webp",
+    "box": [
+      316,
+      31,
+      616,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 466.0,
+      "cy": 209.875,
+      "w": 135.0,
+      "h": 174.25,
+      "top": 122,
+      "chin": 297,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "smoke-robot",
+    "character": "hajime",
+    "role_id": "pilot",
+    "file": "costumes/smoke-robot/hajime_pilot.webp",
+    "box": [
+      329,
+      31,
+      629,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 479.0,
+      "cy": 211.825,
+      "w": 120.0,
+      "h": 170.35000000000002,
+      "top": 126,
+      "chin": 297,
+      "figtop": 61,
+      "figbot": 1137
+    }
+  },
+  {
+    "scenario": "smoke-robot",
+    "character": "hajime",
+    "role_id": "mechanic",
+    "file": "costumes/smoke-robot/hajime_mechanic.webp",
+    "box": [
+      331,
+      31,
+      631,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 481.0,
+      "cy": 155.0,
+      "w": 114.0,
+      "h": 96.0,
+      "top": 107,
+      "chin": 203,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "smoke-robot",
+    "character": "adam",
+    "role_id": "nova",
+    "file": "costumes/smoke-robot/adam_nova.webp",
+    "box": [
+      260,
+      23,
+      626,
+      389
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 443.0,
+      "cy": 252.5,
+      "w": 217.0,
+      "h": 215.0,
+      "top": 145,
+      "chin": 360,
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "smoke-robot",
+    "character": "adam",
+    "role_id": "cosmo",
+    "file": "costumes/smoke-robot/adam_cosmo.webp",
+    "box": [
+      252,
+      23,
+      618,
+      389
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 435.0,
+      "cy": 251.0,
+      "w": 213.0,
+      "h": 218.0,
+      "top": 142,
+      "chin": 360,
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "smoke-robot",
+    "character": "tsumugi",
+    "role_id": "luna",
+    "file": "costumes/smoke-robot/tsumugi_luna.webp",
+    "box": [
+      273,
+      272,
+      591,
+      589
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 432.0,
+      "cy": 437.5,
+      "w": 169.0,
+      "h": 203.0,
+      "top": 336,
+      "chin": 539,
+      "figtop": 304,
+      "figbot": 1172
+    }
+  },
+  {
+    "scenario": "smoke-robot",
+    "character": "tsumugi",
+    "role_id": "konoha",
+    "file": "costumes/smoke-robot/tsumugi_konoha.webp",
+    "box": [
+      270,
+      270,
+      606,
+      606
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 438.0,
+      "cy": 438.5,
+      "w": 160.0,
+      "h": 215.0,
+      "top": 331,
+      "chin": 546,
+      "figtop": 304,
+      "figbot": 1172
+    }
+  },
+  {
+    "scenario": "stage-ghost",
+    "character": "hajime",
+    "role_id": "stagehand",
+    "file": "costumes/stage-ghost/hajime_stagehand.webp",
+    "box": [
+      319,
+      30,
+      619,
+      330
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 469.0,
+      "cy": 157.5,
+      "w": 143.0,
+      "h": 1,
+      "top": 159,
+      "chin": 156,
+      "figtop": 60,
+      "figbot": 1137
+    }
+  },
+  {
+    "scenario": "stage-ghost",
+    "character": "hajime",
+    "role_id": "childstar",
+    "file": "costumes/stage-ghost/hajime_childstar.webp",
+    "box": [
+      320,
+      31,
+      620,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 470.0,
+      "cy": 212.5,
+      "w": 134.0,
+      "h": 155.0,
+      "top": 135,
+      "chin": 290,
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "stage-ghost",
+    "character": "hajime",
+    "role_id": "lightboy",
+    "file": "costumes/stage-ghost/hajime_lightboy.webp",
+    "box": [
+      311,
+      31,
+      611,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 461.0,
+      "cy": 190.73,
+      "w": 154.0,
+      "h": 178.54000000000002,
+      "top": 101,
+      "chin": 280,
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "stage-ghost",
+    "character": "hiyori",
+    "role_id": "mirei",
+    "file": "costumes/stage-ghost/hiyori_mirei.webp",
+    "box": [
+      384,
+      111,
+      684,
+      411
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 534.0,
+      "cy": 259.5,
+      "w": 185.0,
+      "h": 173.0,
+      "top": 173,
+      "chin": 346,
+      "figtop": 141,
+      "figbot": 1141
+    }
+  },
+  {
+    "scenario": "stage-ghost",
+    "character": "hiyori",
+    "role_id": "serena",
+    "file": "costumes/stage-ghost/hiyori_serena.webp",
+    "box": [
+      350,
+      106,
+      704,
+      459
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 527.0,
+      "cy": 306.0,
+      "w": 182.0,
+      "h": 226.0,
+      "top": 193,
+      "chin": 419,
+      "figtop": 141,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "stage-ghost",
+    "character": "samechan",
+    "role_id": "minamo",
+    "file": "costumes/stage-ghost/samechan_minamo.webp",
+    "box": [
+      282,
+      24,
+      658,
+      398
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 470.0,
+      "cy": 241.0,
+      "w": 194.0,
+      "h": 240.0,
+      "top": 121,
+      "chin": 361,
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "stage-ghost",
+    "character": "samechan",
+    "role_id": "hiremaru",
+    "file": "costumes/stage-ghost/samechan_hiremaru.webp",
+    "box": [
+      290,
+      31,
+      590,
+      331
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 440.0,
+      "cy": 193.0,
+      "w": 144.0,
+      "h": 140.0,
+      "top": 123,
+      "chin": 263,
+      "figtop": 61,
+      "figbot": 1140
+    }
+  }
+]
