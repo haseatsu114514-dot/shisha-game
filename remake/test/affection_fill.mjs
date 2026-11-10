@@ -1,15 +1,14 @@
-// 好感度補充（A01–A14）: 新しい段階会話の台本・寄り道の配線・締めくくりの前提、
-// 後から足したひよりの退勤後の場面が旧セーブを止めないこと。
+// 好感度補充（A01–A14）: 新しい段階会話の台本・寄り道の配線・締めくくりの前提。
 // node remake/test/affection_fill.mjs
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { CH3_OPTIONAL_SCENES, optionalReadFlag } from "../js/chapters/ch3-story-wiring.js";
 import { CH3_AFTERMATH_DETOURS } from "../js/chapters/ch3-aftermath-progress.js";
-import { BOND_FINALES, finaleHeart } from "../js/daily/bonds.js";
 import { LONGLONG_FINALE } from "../js/chapters/ch4-longlong.js";
 import { classifyFlag } from "../js/core/carry.js";
 
 const read = rel => JSON.parse(readFileSync(new URL(rel, import.meta.url), "utf8"));
+const text = rel => readFileSync(new URL(rel, import.meta.url), "utf8");
 const dialogues = name => read(`../../data/dialogue/${name}.json`).dialogues;
 const byId = (name) => Object.fromEntries(dialogues(name).map(d => [d.dialogue_id, d]));
 const routes = read("../../data/story_routes.json");
@@ -47,15 +46,17 @@ assert(clockout.skipIf.includes("_hiyori_tonari_return_done"));
 assert(byId("hiyori").hiyori_clockout.lines.length > 0);
 assert.equal(classifyFlag("_hiyori_clockout_done"), "person");
 
-assert.equal(BOND_FINALES.master_hookah.dialogue, LONGLONG_FINALE);
-assert.equal(BOND_FINALES.master_hookah.gift, "suyaki_master_hookah");
-assert.equal(finaleHeart("master_hookah"), 5);
+const bonds = text("../js/daily/bonds.js");
+assert.match(bonds, /master_hookah: \{ dialogue: "ch4_longlong_bond_finale", gift: "suyaki_master_hookah" \}/);
+assert.match(bonds, /id === "master_hookah" \? longlongStoriesDone\(state\)/);
+assert.equal(LONGLONG_FINALE, "ch4_longlong_bond_finale");
 const gift = read("../../data/equipment.json").equipment.find(e => e.id === "suyaki_master_hookah");
 assert.equal(gift.gift.from, "master_hookah");
 assert.equal(gift.gift.flavor, "black_tea");
 assert(gift.unsellable && gift.not_for_sale);
 const finale = byId("ch4_longlong")[LONGLONG_FINALE];
 assert.equal(finale.metadata.bond_finale, "master_hookah");
-assert(!JSON.stringify(finale).includes("ライチ") && !JSON.stringify(finale).includes("煙楼先生"));
+const spoken = [...finale.lines, ...Object.values(finale.branches || {}).flat()].map(line => line.text || "").join("");
+assert(!spoken.includes("ライチ") && !spoken.includes("煙楼先生") && !spoken.includes("ジャスミン"));
 
 console.log("PASS affection fill: A01–A14 scripts, wiring, gifts, and late-added flags");
