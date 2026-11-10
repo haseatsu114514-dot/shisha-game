@@ -14,9 +14,32 @@ const autoplayToResult = async (page, skill = "expert") => {
 };
 const resultText = async page => (await page.locator(t("desert-result")).innerText()).replace(/\s+/g, " ");
 
+
+// 文字盤の背景と弧・数字は同じ中心を使う。右寄せのままだと枠内で約50pxずれる。
+const assertSpeedoAligned = async page => {
+  const boxes = await page.locator(t("desert-speedo")).evaluate(node => {
+    const box = node.getBoundingClientRect();
+    const arc = node.querySelector(".dr-speedo-arc").getBoundingClientRect();
+    const read = node.querySelector(".dr-speedo-read").getBoundingClientRect();
+    const path = node.querySelector(".dr-speedo-fill");
+    return {
+      center: box.left + box.width / 2,
+      arc: arc.left + arc.width / 2,
+      read: read.left + read.width / 2,
+      length: path.getTotalLength(),
+      dash: Number(path.getAttribute("stroke-dasharray")),
+    };
+  });
+  assert(Math.abs(boxes.arc - boxes.center) < 1, "arc is centered on the dial background");
+  assert(Math.abs(boxes.read - boxes.center) < 1, "speed readout is centered on the dial background");
+  assert(Math.abs(boxes.length - boxes.dash) < 0.2, "full gauge uses the actual semicircle length");
+  const flameLoads = await page.evaluate(() => performance.getEntriesByType("resource").filter(entry => /boost-(aura|burst|spark)\\.webp/.test(entry.name)).length);
+  assert.equal(flameLoads, 0, "boost does not load the screen-obscuring flame effects");
+};
+
 await suite("desert-ride", async check => {
   await check("practice-captions-fit-between-hud-and-idle-finish-is-neutral", async page => {
-    await page.goto(new URL("desert-ride.html", page.url()).href);
+    await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
     await page.locator(t("desert-page-tutorial")).click();
     await phase(page, "practice");
     // 長いキーボード・タッチ用の案内も、左右の HUD と重ならず帯の中で折り返す。
@@ -46,7 +69,7 @@ await suite("desert-ride", async check => {
   });
 
   await check("standalone-page-keyboard-run-result-best-and-quit", async page => {
-    await page.goto(new URL("desert-ride.html", page.url()).href);
+    await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
     await page.locator(t("desert-page-start")).click();
     await page.locator(t("desert-menu")).waitFor();
     assert.match(await page.locator(t("desert-menu")).innerText(), /DESERT RIDE/);
@@ -62,6 +85,7 @@ await suite("desert-ride", async check => {
     await phase(page, "run");
     // 本番はスタートの合図（3・2・1・GO）から。合図の間は進まず、ヌールが左に並んでいる
     assert(await page.evaluate(() => window.__desertRide.countdown > 0), "the run starts with a countdown");
+    await assertSpeedoAligned(page);
     assert.equal(await page.locator(t("desert-race-gap")).innerText(), "VS ヌール");
     assert(await page.evaluate(() => window.__desertRide.rival.finishTime > 45), "Noor races the same course");
     // PC: → を押し続けると慣性で右へ、Space はホップ（起伏が無い所）
@@ -129,11 +153,12 @@ await suite("desert-ride", async check => {
   });
 
   await check("phone-touch-buttons-reduced-motion-and-tutorial", async page => {
-    await page.goto(new URL("desert-ride.html", page.url()).href);
+    await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
     await page.locator(t("desert-page-reduce")).check();
     await page.locator(t("desert-page-tutorial")).tap();
     await phase(page, "practice");
     assert.equal(await page.locator(t("desert-ride")).getAttribute("data-reduced-motion"), "true");
+    await assertSpeedoAligned(page);
     // タッチ端末ではキーの名前を出さず、画面のボタンの名前で言う（#2838）
     assert.equal(await page.locator(t("desert-caption")).innerText(), "「左へ」「右へ」で動こう");
     // ボタンは下辺の左右に分かれ、真ん中の視界を隠さない
@@ -419,7 +444,7 @@ await suite("desert-ride", async check => {
   });
   await check("legacy-preview-best-is-separate-from-the-new-landing-rules", async page => {
     await page.evaluate(() => localStorage.setItem("suien_desert_ride_preview", JSON.stringify({ score: 99999, rank: "S", beatNoor: true })));
-    await page.goto(new URL("desert-ride.html", page.url()).href);
+    await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
     assert.match(await page.locator(t("desert-page-legacy-best")).innerText(), /旧ルール.*99,999/);
     assert.equal(await page.locator(t("desert-page-best")).count(), 0);
     await page.locator(t("desert-page-start")).click();
