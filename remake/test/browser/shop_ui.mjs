@@ -666,4 +666,18 @@ await suite("shop-ui", async check => {
     assert.equal(await page.evaluate(() => S.core.state.visitedDay.rio), 5);
     await go(); assert(await page.locator('[data-test="shop-upstairs"]').isDisabled());
   });
+  await run('ch5-counter-direct-leave', async page => {
+    // 第5章の本店スポットは階を選ばず1階へ直行する（ch5-daily.js の呼び方）。
+    // errand: true の誤用で退出が永久に塞がれた事故の回帰（詳細を閉じた後に店を出られない）。
+    await setup(page, { chapter: 5 });
+    await page.evaluate(() => S.open({ direct: true }));
+    await page.locator('.shop-tabs').waitFor();
+    assert.equal(await page.locator('[data-test="shop-enter"]').count(), 0, '階の選択を出さず1階へ直行する');
+    assert.equal(await page.locator('.shop-errand').count(), 0, '買い出しでない来店に案内は出ない');
+    await tap(page, 'detail-mint');
+    await tap(page, 'shop-detail-close');
+    await tap(page, 'shop-leave');
+    await page.waitForFunction(() => S.result !== "pending");
+    assert.equal(await page.evaluate(() => S.result), null, '詳細を閉じた後も店を出られる');
+  });
 });
