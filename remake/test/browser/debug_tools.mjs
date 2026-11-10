@@ -9,6 +9,39 @@ const openPanel = async page => {
 };
 
 await suite("debug-tools", async check => {
+  await check("minigames-start-directly-without-writing-normal-save", async page => {
+    const games = [
+      ["axe", "axe-game"], ["camel", "camel-game"], ["desert", "desert-ride"],
+      ["dj-1", "dj-frame"], ["dj-2", "dj-frame"], ["dj-3", "dj-frame"],
+      ["tetsuko", "tetsuko-cat"], ["trpg", "trpg-day-trial"],
+    ];
+    await page.evaluate(() => localStorage.setItem("suien_remake_save", '{"debugSentinel":true}'));
+    for (const [id, screen] of games) {
+      await openPanel(page);
+      await page.locator(t(`debug-minigame-${id}`)).click();
+      await page.locator(t(screen)).waitFor({ timeout: 30000 });
+      assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), '{"debugSentinel":true}', id);
+      await page.locator(t("debug-minigame-close")).click();
+      await page.locator(t("title-new")).waitFor({ timeout: 30000 });
+      assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), '{"debugSentinel":true}', `${id} close`);
+    }
+  });
+
+  await check("normal-minigame-gates-remain-active", async page => {
+    await page.goto(`${baseURL}?debug=0`, { waitUntil: "load" });
+    await page.locator(t("title-new")).waitFor({ timeout: 30000 });
+    assert.equal(await page.locator(t("debug-toggle")).count(), 0);
+    const gates = await page.evaluate(async () => {
+      const [{ newState }, { djSetOpen }, { camelRaceDestination }, { desertOutingStatus }, { knowsTrpgBar }] = await Promise.all([
+        import("./js/core/state.js"), import("./js/minigames/dj.js"), import("./js/chapters/ch4-camel-progress.js"),
+        import("./js/chapters/ch4-desert-progress.js"), import("./js/core/trpg-discovery.js"),
+      ]);
+      const fresh = newState();
+      return [djSetOpen(fresh, 2), camelRaceDestination(fresh), desertOutingStatus(fresh, fresh.day).ok, knowsTrpgBar(fresh)];
+    });
+    assert.deepEqual(gates, [false, null, false, false]);
+  });
+
   await check("background-preview-switches-variants-without-saving", async page => {
     await page.locator(t("title-new")).waitFor();
     const before = await page.evaluate(async () => {
