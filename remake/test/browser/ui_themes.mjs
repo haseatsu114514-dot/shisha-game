@@ -150,6 +150,7 @@ await suite("ui-themes-preview", async check => {
             rightGap:(controls.right-box.right)/scale,
             sceneOpen:box.height/scale<=192 && (box.top-document.querySelector("#stage").getBoundingClientRect().top)/scale>=500,
             headerOffset:((name.top+name.height/2)-(controls.top+controls.height/2))/scale,
+            typeSizes:[parseFloat(getComputedStyle(el).fontSize),...Array.from(document.querySelectorAll(".vn-ctl"),button=>parseFloat(getComputedStyle(button).fontSize))],
             typeRatios:[parseFloat(getComputedStyle(nameEl).fontSize)/parseFloat(getComputedStyle(el).fontSize),parseFloat(getComputedStyle(document.querySelector(".vn-ctl")).fontSize)/parseFloat(getComputedStyle(el).fontSize)],
             margins:[(text.left-box.left)/scale,(box.right-text.right)/scale],
             overlap:rows.some(r=>r.right>controls.left && r.left<controls.right && r.bottom>controls.top && r.top<controls.bottom) };
@@ -171,7 +172,8 @@ await suite("ui-themes-preview", async check => {
           assert(twoLines.rightGap<=-32,"toolbar stays inside the frame header");
         }
         assert(twoLines.typeRatios[0]>=.7 && twoLines.typeRatios[0]<=.9,"name text stays subordinate to the dialogue");
-        assert(twoLines.typeRatios[1]>=.45 && twoLines.typeRatios[1]<=.65,"command text is a quieter third level");
+        // #3100 / #3103: 本文28px、紙の操作文字22px、他テーマ19px（比率の緩和でなく承認寸法を固定）。
+        assert.deepEqual(twoLines.typeSizes,[28,...Array(5).fill(id==="paper"?22:19)],"dialogue and every command retain the approved font sizes");
         assert(twoLines.margins[0]>=95.9 && twoLines.margins[1]>=95.9,"reserve space for visible folds and smoke, beyond glyph bounds");
         await page.selectOption("#preview-scene","narration");
         await page.locator(".vn-box.narration").waitFor();
