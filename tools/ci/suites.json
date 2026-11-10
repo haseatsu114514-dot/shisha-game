@@ -850,6 +850,12 @@
       ]
     },
     {
+      "id": "minto-story-visits",
+      "title": "Minto side seat and quiet hello, once each after her visit sequence (#3081)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/minto_story_visits.mjs"]
+    },
+    {
       "id": "game-logic",
       "title": "Game logic without a browser",
       "kind": "quick",
