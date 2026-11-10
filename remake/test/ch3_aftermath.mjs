@@ -120,7 +120,10 @@ const VOLK_VISITS = ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth"];
 const MASHIRO_EXTRAS = ["ch3_mashiro_timer_side", "ch3_mashiro_cup_warm", "ch3_mashiro_glass_cloth",
   "ch3_mashiro_leaf_rest", "ch3_mashiro_bench_tea"];
 const detourIds = ["ch3_mukai_after_tournament", "ch3_cigarman_trace", "ch3_emil_workshop", ...VOLK_VISITS, "ch3_volk_after_ch3",
-  "ch3_volk_lime", ...MASHIRO_EXTRAS];
+  "ch3_volk_lime", "ch3_volk_fifth",
+  "ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar",
+  "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs",
+  ...MASHIRO_EXTRAS];
 const openFirst = ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_second", "ch3_volk_after_ch3"];
 assert.deepEqual(CH3_AFTERMATH_DETOURS.map(scene => scene.id), detourIds);
 for (const scene of CH3_AFTERMATH_DETOURS) {
@@ -394,9 +397,12 @@ console.log("PASS: Chapter 3 aftermath offers Volk's LIME (after the fourth visi
   completeChapterThreeAftermathScene(lessonSave, "ch3_naru_reconcile");
   assert.deepEqual(who(lessonSave), ["volk"], "the cleanup morning: Ayatori is packing the shop, only Volk is left");
   // 寄り道を全部読んでも、授業だけで寄り道の入口が開く（ch3-aftermath.js は寄り道と授業の合計で入口を出す）
-  lessonSave.met = { ...lessonSave.met, emil: true, volk: true };
+  lessonSave.met = { ...lessonSave.met, emil: true, volk: true, steve: true };
   lessonSave.flags._ch3_read_ch3_cigarman_rumor = true;
-  lessonSave.affinity.volk = AFFINITY_RANK_PTS[2]; // ヴォルクのLIME交換は♥2から
+  lessonSave.flags._ch3_read_ch3_saku_lime = true;
+  lessonSave.affinity.volk = AFFINITY_RANK_PTS[4]; // 五度目は♥4、LIME交換は♥2から
+  lessonSave.affinity.saku = AFFINITY_RANK_PTS[4];
+  lessonSave.affinity.steve = AFFINITY_RANK_PTS[4];
   for (const id of ["ch3_mashiro_play_3", "ch3_mashiro_practice", "ch3_mashiro_black_tea"]) lessonSave.flags[`_ch3_read_${id}`] = true;
   for (const id of detourIds) assert.equal(completeAftermathDetour(lessonSave, id), true, id);
   assert.deepEqual(availableAftermathDetours(lessonSave), []);

@@ -1321,6 +1321,668 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch3_saku_missed",
+      "comment": "候補A02。好感度♥2の段階会話（未採用）。LIME交換（ch3_saku_lime）の後、煙幕への再訪。恋愛対象外（bonds.js）なので共有1本。♥3の恋愛／友情の質問は置かない。客の『外れた答え』を喜ぶ流儀を、返事の欄の最初の一行として見せる。幼い頃の『嘘つき』の話と、ハガルを渡す締めくくりは先取りしない。大会の前後を前提にせず、時間帯も言わない。煙幕専用の背景は未収録のため bg は指定しない（既存の ch3_saku_lime に合わせる）。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "煙幕。綾取はノートを開いたまま、入口の方を見ていた。"
+        },
+        {
+          "speaker": "saku",
+          "text": "来たね。ちょうどいい。今日の議題は、外れた答え",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "また、俺ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "君だけじゃないよ。今、常連さんが戻ってきたところ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "カウンターの端で、先日カードを裏返していた客が、遠慮がちに手を上げた。"
+        },
+        {
+          "speaker": "customer",
+          "text": "この前、レモンケーキって言ったけど……今日、同じ葉でも違った。雨の日の廊下、って感じで"
+        },
+        {
+          "speaker": "saku",
+          "text": "雨の日の廊下！　いいな。書いていい？",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "客がうなずくと、綾取はノートの最後のページ——返事の欄——へ、急いで一行を足した。"
+        },
+        {
+          "speaker": "",
+          "text": "字が、少し乱れている。"
+        },
+        {
+          "speaker": "saku",
+          "text": "当たった予想は、ここで終わるんだ。外れた予想は、続きが聞ける",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "だから僕、外れた方が好き。店ではね",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "LIMEでも、そう言ってました",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "うん。だから今日は、君の分も外してみた",
+          "face": "smug"
+        },
+        {
+          "speaker": "saku",
+          "text": "飲み物だけ、の日だろうと思って。水と、温かいの、どっちか当てる",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "カウンターには、水のグラスが一つ、先に置いてあった。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "今日は、温かい方がよかったです",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "やった、外した",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "綾取は、本当に嬉しそうに、水を下げて湯気の立つ杯を出した。"
+        },
+        {
+          "speaker": "",
+          "text": "ノートの返事の欄に、はじめの名前と『温かい』と書かれる。"
+        },
+        {
+          "speaker": "saku",
+          "text": "君が来ると、僕の予想、よく外れるんだ。悪い気は、しないけど",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺、当ててほしいんですか。外してほしいんですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "外して、戻ってきてほしい。返事の欄は、まだ空が多いから",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "当たった予想は、ここで終わる。外れた予想は、君がまた来てくれる",
+          "face": "smile"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "saku": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_saku_cleanup",
+      "comment": "候補A03。好感度♥3の段階会話（未採用）。煙幕の閉店後。ヒロインではない（story_routes の heroine_ids 外。bonds.js も『恋愛対象外・友情の着地だけ』）。♥3の恋愛／友情の質問は置かず、神崎・レヰ・なる・スティーブと同じく通常の段階会話1本。初来店で断った片付けを、ここでは一つだけ受け取る。幼い頃の話と締めくくりのハガルは先取りしない。時間帯は閉店後のみ。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "閉店のあと、煙幕の明かりは客席だけ落ちていた。綾取が一人で、ホースを洗っている。"
+        },
+        {
+          "speaker": "saku",
+          "text": "あ、ごめん。もう閉めたって、書いてなかったね",
+          "face": "nervous"
+        },
+        {
+          "speaker": "hajime",
+          "text": "店の前を通ったら、中の電気が一つだけ残ってて。手伝いましょうか",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "東京を裏で動かす組織なのに、片付け係が僕しかいないのは、前にも言ったっけ",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "……今日は、グラスだけ、お願いしてもいい？　一人だと、手が足りなくて",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "はじめがグラスを拭く。綾取は、借り物の棚を元の位置へ戻していた。"
+        },
+        {
+          "speaker": "saku",
+          "text": "ここの棚、借りる前の印が鉛筆で残ってるんだ。閉める日に、全部戻さないと",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "数週間だけの間借り、ですもんね",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "うん。だから噂は、自分で少し大きくした。人が来ないと、試せないから",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "でも、残る人は、噂じゃなくて答えの人なんだよね",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "レモンケーキじゃなかった、って戻ってくれる人",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "最後のホースを掛ける手が、一度止まった。"
+        },
+        {
+          "speaker": "saku",
+          "text": "……今、ちょっと読もうとした。君が次に何を言うか",
+          "face": "serious"
+        },
+        {
+          "speaker": "saku",
+          "text": "やめた。店では、当てにいかないって決めてる。君の答えは、君が持って帰っていい",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺、当てられるの、嫌いじゃないですよ。外したときの綾取さんの顔も、好きですし",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "……それ、読めなかった",
+          "face": "surprise"
+        },
+        {
+          "speaker": "saku",
+          "text": "ありがとう。片付け、もういいよ。最後の電気は、僕が消す",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "出口まで送られて、振り返ると、綾取はまだカウンターの内側に立っていた。"
+        },
+        {
+          "speaker": "saku",
+          "text": "君が来る日は、一つだけ、消すのを遅くする。組織の秘密、ってことで",
+          "face": "smile"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "saku": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_saku_liar",
+      "comment": "候補A04。好感度♥4の段階会話（未採用）。煙幕。幼い頃に『お茶に菓子の味がする』と言って笑われた話を、ここではじめて打ち明け、外れた答えを大切にする理由へつなげる。ましろの『お茶。でも好き』は本人の記憶として短く触れる（勝負や恋の返事には使わない）。締めくくりのハガルと『友達の欄』は先取りしない。恋愛対象外なので共有1本。大会の前後を前提にせず、時間帯も言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "煙幕の客が一段落した頃、綾取はノートではなく、白紙の味カードを指で揃えていた。"
+        },
+        {
+          "speaker": "saku",
+          "text": "今日は、先に材料を見せる日にしよう。伏せると、昔のことを思い出すから",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "昔のこと、ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "小さい頃、体調を崩しやすくて。お茶を飲んで、『絵に描いた菓子の味がする』って言ったんだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "そしたら、嘘つきって笑われた。同じ湯なのに、僕だけ違うことを言うから",
+          "face": "sad"
+        },
+        {
+          "speaker": "",
+          "text": "カードの端が、少し曲がる。綾取は、それに気づいて手を止めた。"
+        },
+        {
+          "speaker": "saku",
+          "text": "ましろだけは、味を合わせなかった。『お茶。でも好き』って、隣にいてくれた",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "あの一言のおかげで、今も外れた答えを書ける",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "……彼女に勝ちを贈る話じゃないよ。これは、僕の話",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺も、外れた答えの方が、続きが欲しくなります",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "……うん。だから店では、客を同じ答えへ誘導しない。材料は見せる。嘘の助言もしない",
+          "face": "serious"
+        },
+        {
+          "speaker": "saku",
+          "text": "でもね。勝負になると、同じ答えへ導きたくなる自分がいる。信じてもらいたくて",
+          "face": "nervous"
+        },
+        {
+          "speaker": "saku",
+          "text": "その手が、店のノートに混ざらないか、ちょっと怖い",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "綾取は、揃えていたカードを、客の側へ並べ直した。名前は、まだ書いていない。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺は、自分の台で確かめます。綾取さんがそう言ってくれたから",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "だよね。君は、そっちを選ぶ",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "嘘つきって呼ばれても、君が『違う』って返してくれるなら、僕は書けばいい",
+          "face": "smile"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "saku": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_steve_two_timers",
+      "comment": "候補A05。好感度♥1の段階会話（未採用）。Smoke & Glory。本編の低温の話（ch3_steve_low_heat）とLIME交換の前後どちらでも成立するよう、焦ってライムを飛ばした過去には触れない（本編の開示を先取りしない）。タイマーを二つ並べる——ボウル用とピザの箱用——ことで、待つ仕事と待てない食欲の矛盾を見せる。本編でピザが届いたときに先にホースを見る拍子とは別の、夕食の箱を閉じたまま待つ話。予備のタイマーを渡す外出と、ハガルを渡す締めくくりは先取りしない。面識の有無で入りだけ分岐。昼にも夜にも読めるので時間帯を言わない。恋愛対象外なので共有1本。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_steve_shop.png"
+      },
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_steve",
+          "next_true": "met",
+          "next_false": "new"
+        },
+        {
+          "speaker": "",
+          "text": "カウンターの端に、キッチンタイマーが二つ並んでいた。"
+        },
+        {
+          "speaker": "",
+          "text": "一つは炭の近く。もう一つは、閉じたピザの箱の上だ。"
+        },
+        {
+          "speaker": "steve",
+          "text": "見たか。左がボウル。右が、俺の夕食",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "タイマー、二つも使うんだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "イエス。人は矛盾してる。ライムは待たないと出てこない。ピザは、待つのが苦手だ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "箱の上のタイマーが先に鳴る。スティーブの大きな手が、箱へ伸びた。"
+        },
+        {
+          "speaker": "steve",
+          "text": "ノー、ノー。……まだ、こっちだ",
+          "face": "serious"
+        },
+        {
+          "speaker": "",
+          "text": "手は箱を開けず、隣の客のホースを見た。客は、まだ一口目の途中だった。"
+        },
+        {
+          "speaker": "steve",
+          "text": "客の二口目の前に、俺が食べ始めたら、順番が逆だ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "お腹、鳴ってますよ",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "聞こえてたか。ヘイ、恥ずかしいな",
+          "face": "surprise"
+        },
+        {
+          "speaker": "",
+          "text": "ボウルのタイマーが鳴る。スティーブは炭を数ミリ動かし、客の顔を見てから、小さくうなずいた。"
+        },
+        {
+          "speaker": "steve",
+          "text": "オーケー。ライム、残ってる。今からだ",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "閉じたまま待たせた箱を開ける。ピザは少し蒸れている。スティーブは一切れ、はじめの前にも置いた。"
+        },
+        {
+          "speaker": "steve",
+          "text": "冷めても、ピザはピザだ。ハジメ、食べる？",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "いただきます。……蒸れてても、おいしいです",
+          "face": "smile"
+        },
+        {
+          "speaker": "steve",
+          "text": "だろ。箱の中で待たせたピザは、まだピザだ",
+          "face": "smile"
+        },
+        {
+          "speaker": "steve",
+          "text": "ボウルの中で急いだライムは、ライムじゃない。そこだけは、譲れない",
+          "face": "serious"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "steve": 2
+          }
+        }
+      ],
+      "branches": {
+        "met": [
+          {
+            "speaker": "",
+            "text": "Smoke & Glory。柄シャツのスティーブが、タイマーを二つ、並ぶように置いていた。"
+          },
+          {
+            "speaker": "steve",
+            "text": "ヘイ、ハジメ。来たか。今日は客でいい。偵察は、後でいい",
+            "face": "smile"
+          }
+        ],
+        "new": [
+          {
+            "speaker": "",
+            "text": "Smoke & Glory。柄シャツの男が、タイマーを二つ、並ぶように置いていた。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_met_steve"
+          },
+          {
+            "speaker": "steve",
+            "text": "ヘイ。ハジメだろ。顔は見てある。スティーブだ。座ってくれ",
+            "face": "smile"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch3_steve_empty_seat",
+      "comment": "候補A06。好感度♥3の段階会話（未採用）。Smoke & Glory。LIME交換の後を想定。常連の空席に合わせてタイマーを回し続けてしまう話。予備タイマーを渡す外出（置き場所の講義）や、ハガルを渡す締めくくり、焦ってライムを飛ばした本編の告白は繰り返さない。恋愛対象外なので♥3の恋愛／友情の質問は置かず、通常の段階会話1本。大会の前後を前提にせず、時間帯も言わない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_steve_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "Smoke & Gloryの奥の席が、一つ空いていた。その前だけ、タイマーが回っている。"
+        },
+        {
+          "speaker": "steve",
+          "text": "ヘイ、ハジメ。来たか。……今、ちょっと間抜けなところを見られた",
+          "face": "serious"
+        },
+        {
+          "speaker": "hajime",
+          "text": "その席、誰もいないですけど",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "イエス。毎週この時間に来る常連の席だ。レモンのあとにライムを待つ人",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "今日は来ない。カードには、来る前提の秒数だけが残ってる",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "レシピカードの余白に、いつもの秒数が並んでいる。名前は書いてない。席の位置だけだ。"
+        },
+        {
+          "speaker": "steve",
+          "text": "知らせる手段は、俺にはない。来る前提で、熱だけ残してた",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブはトングを持ちかけ、空のホースを見て、手を戻した。"
+        },
+        {
+          "speaker": "steve",
+          "text": "熱だけ残しておくと、誰も吸わない一台になる。分かってる",
+          "face": "serious"
+        },
+        {
+          "speaker": "steve",
+          "text": "でも、止めるのが遅れた。数字を見てると、人が来る気がするんだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "止めましょう。俺も、手伝います",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "二人で炭を下ろす。箱の秒数だけが、空の席で小さく鳴った。"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブはカードの秒数の列を、斜線で消した。初めて消すみたいに、手が遅い。"
+        },
+        {
+          "speaker": "steve",
+          "text": "……サンキュー。ハジメが来なかったら、もっと待ってた",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "待つ相手が、今日は俺でよかったです",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "ノー、ノー。待たせたのは、俺の方だ",
+          "face": "smile"
+        },
+        {
+          "speaker": "steve",
+          "text": "タイマーは、いない人までは止められない。ハジメが一言言ってくれたから、止まれた",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "次から、空の席の秒数は回さない。人が座ってから、置く",
+          "face": "serious"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "steve": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_steve_tongs",
+      "comment": "候補A07。好感度♥4の段階会話（未採用）。Smoke & Gloryの混んだ時間。隣の派手な一口に釣られてトングへ手が伸び、客の顔を見て置き直す。締めくくりのハガルは渡さない。LIMEの『顔の知らせ』が、数字以外の支えになっていることを着地にする。恋愛対象外なので共有1本。大会の前後を前提にせず、時間帯も言わない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_steve_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "混み合うSmoke & Glory。隣の席で、最初の一口に短い歓声がした。"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブの大きな手が、トングへ伸びる。炭は、まだ動かす時間ではなかった。"
+        },
+        {
+          "speaker": "steve",
+          "text": "ノー、ノー",
+          "face": "serious"
+        },
+        {
+          "speaker": "",
+          "text": "手は、トングの途中で止まる。スティーブはタイマーではなく、自分の客の顔を見た。"
+        },
+        {
+          "speaker": "",
+          "text": "客は、ゆっくり二口目を楽しんでいる。"
+        },
+        {
+          "speaker": "steve",
+          "text": "……今の、癖だ。隣が盛り上がると、足したくなる",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "置きましたね。トング",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "イエス。ハジメが店にいると、手が止まる。LIMEの一行を待ってるのと同じだ",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "自分の客のタイマーが鳴る。スティーブは炭を数ミリだけ外へずらした。"
+        },
+        {
+          "speaker": "",
+          "text": "二口目のあとの顔を見てから、カードの余白へ鉛筆を走らせる。"
+        },
+        {
+          "speaker": "customer",
+          "text": "今日の二口目、焦らなくてよかった。隣が盛り上がっても、ここは急がないんだね"
+        },
+        {
+          "speaker": "steve",
+          "text": "……今の、一番ほしかった一行だ",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブは、その一言をカードの余白へ書き足した。秒数の列の、隣だ。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "今の、俺が送る一行と同じですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "イエス。店の中で聞けたのが、一番いい",
+          "face": "smile"
+        },
+        {
+          "speaker": "steve",
+          "text": "秒数は合ってた。顔も、合ってた",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ラッキー、ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "ノー。ハジメが、先に顔を見るからだ。俺は、まだ先に数字を見ちゃう",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "だから、知らせは続けてくれ。気づいた日だけでいい",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "送ります。一行で",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "オーケー。タイマーは俺を止める。ハジメの一行は、俺を店に残す",
+          "face": "smile"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "steve": 2
+          }
+        }
+      ]
     }
   ]
 }

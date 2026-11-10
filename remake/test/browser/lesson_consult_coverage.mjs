@@ -22,10 +22,10 @@ async function openAftermath(page, { stage, lit, extra = "" }) {
     for (const scene of p.CH3_AFTERMATH_SCENES.slice(0, stage)) if (!p.completeChapterThreeAftermathScene(s, scene.id)) throw new Error(scene.id);
     if (extra === "all-detours-read") for (const scene of p.CH3_AFTERMATH_DETOURS) s.flags[`_ch3_read_${scene.id}`] = true;
     // 綾取の締めくくりの前提（LIME交換の寄り道・答えを返しに行く外出）を大会前に済ませた保存（IR22）
-    if (extra === "saku-finale") Object.assign(s.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_outings: { enmaku_answer: 1 } });
+    if (extra === "saku-finale") Object.assign(s.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_read_ch3_saku_missed: true, _ch3_read_ch3_saku_cleanup: true, _ch3_read_ch3_saku_liar: true, _ch3_outings: { enmaku_answer: 1 } });
     if (extra === "volk-low") s.affinity.volk = 0;
     // ヴォルクの締めくくりの前提（鉄の煙の再訪三つとLIME交換の寄り道）と、大会後に初めて鉄の煙へ寄る場面を済ませた保存（#2028）
-    if (extra === "volk-finale") for (const id of ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_lime", "ch3_volk_after_ch3"]) {
+    if (extra === "volk-finale") for (const id of ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_lime", "ch3_volk_fifth", "ch3_volk_after_ch3"]) {
       s.flags[`_ch3_read_${id}`] = true; s.flags._lime_contact_volk = true;
     }
     growth.setGrowthPreview(true);

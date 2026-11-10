@@ -479,6 +479,143 @@
           "text": "（tonariの閉店後の片づけと、同じ順番だ）"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch4_longlong_bond_finale",
+      "comment": "候補A09。好感度♥5の締めくくり（未採用・友情のみ）。王煙楼はヒロインではない（story_routes の heroine_ids 外）。恋愛／友情の質問は置かず、神崎・レヰ・綾取・スティーブ・ヴォルクと同じく友情の着地。fifth（段階4）を読み終えたあと、龍龍水煙所で一度だけ、という想定。ライチの話は前夜祭の味の会話のため出さない。シェイクの師であることは出さない。スミさんの弟子・旧友にしない。呼び名は王煙楼（『煙楼先生』とは呼ばない）。一人称は私。老人語にしない。専用ハガル suyaki_master_hookah は採用時に equipment.json と bonds.js へ。大会前後で入りの一言だけ分ける（既存の fifth に合わせる）。昼にも夜にも読めるよう、入り以外では時間帯を言わない。",
+      "metadata": {
+        "bond_finale": "master_hookah"
+      },
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 4,
+          "next_true": "after_tournament",
+          "next_false": "before_tournament"
+        },
+        {
+          "speaker": "",
+          "text": "王煙楼は、布に包んだ小さなボウルをカウンターへ置いた。その前に、茶が一杯だけある。"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "今日は、残りの時間を聞こう。顔だけは、見ない",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……今日は、帰れと言われても残るくらい、います",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "そうか。それなら、私の聞きたかった答えだ",
+          "face": "smile"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "今までは、聞かずに見た。客の息は、それで足りる",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "今日は友達の席だ。言葉で聞きたい日もある",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "布の中は、縁の滑らかな素焼きだった。鼻を近づけると、木の香りと、薄い茶葉の匂いが残っている。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "これ、王煙楼さんの……",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "旅のあいだ、日本の店で使っていた一つだ。龍の煙は、見せ物",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "残るのは、相手の息に合わせた、静かな一台だよ",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "その土を、預ける。tonariで使っていい",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "そんな大事なものを。……はい。預かります",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "素焼きは、思ったより軽い。縁だけが、何度も火を入れたように滑らかだ。"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "軽いだろう。見せるための器じゃないからね",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "手入れは水だけ。急いで乾かさないことだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "いつか日本へ寄ったら、そのハガルで、君の一台を吸わせてもらう",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "そのときは、龍の煙も、また見たいです",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "見世物は、そのときでいい。先に、静かな一台を渡しなさい",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "はい。そのときは、俺の息も、見てもらいます",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "龍は見せ物だ。残るのは、息だよ",
+          "face": "smile"
+        }
+      ],
+      "branches": {
+        "before_tournament": [
+          {
+            "speaker": "",
+            "text": "龍龍水煙所。王煙楼は、はじめの分の席だけを空けて待っていた。"
+          },
+          {
+            "speaker": "master_hookah",
+            "text": "来たね。今日は、勝負の話はしない。客としても、見ない",
+            "face": "smile"
+          }
+        ],
+        "after_tournament": [
+          {
+            "speaker": "",
+            "text": "龍龍水煙所。王煙楼は、はじめの分の席だけを空けて待っていた。"
+          },
+          {
+            "speaker": "master_hookah",
+            "text": "来たね。大会は済んだ。今日は、友達の席に座りなさい",
+            "face": "smile"
+          }
+        ]
+      }
     }
   ]
 }

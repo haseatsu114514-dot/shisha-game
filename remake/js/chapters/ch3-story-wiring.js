@@ -97,6 +97,23 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   // 版3の日常ループでは大会までに読む枠が無いので、実際は大会後の寄り道（ch3-aftermath-progress.js）から読む。
   ch3_volk_lime: { file: "ch3_volk", label: "持ってきたメモ", location: "鉄の煙", bg: "bg_volk_shop",
     met: ["volk"], heart: { volk: 2 } },
+  // 好感度補充（A02–A04）。LIME交換のあと、煙幕への再訪で♥2〜4を順に読む。締めくくりの条件。
+  ch3_saku_missed: { file: "ch3_rivals", label: "外れた予想", location: "煙幕",
+    after: ["ch3_saku_lime"], heart: { saku: 2 } },
+  ch3_saku_cleanup: { file: "ch3_rivals", label: "消すのを遅くする", location: "煙幕",
+    after: ["ch3_saku_missed"], heart: { saku: 3 } },
+  ch3_saku_liar: { file: "ch3_rivals", label: "嘘つきの欄", location: "煙幕",
+    after: ["ch3_saku_cleanup"], heart: { saku: 4 } },
+  // 好感度補充（A05–A07）。低温の話のあと Smoke & Glory で♥1・♥3・♥4。締めくくりの条件。
+  ch3_steve_two_timers: { file: "ch3_rivals", label: "二つのタイマー", location: "Smoke & Glory", bg: "bg_steve_shop",
+    met: ["steve"], heart: { steve: 1 }, after: ["ch3_steve_low_heat"], host: "steve" },
+  ch3_steve_empty_seat: { file: "ch3_rivals", label: "空の席の秒数", location: "Smoke & Glory", bg: "bg_steve_shop",
+    met: ["steve"], heart: { steve: 3 }, after: ["ch3_steve_two_timers"], host: "steve" },
+  ch3_steve_tongs: { file: "ch3_rivals", label: "トングの手前", location: "Smoke & Glory", bg: "bg_steve_shop",
+    met: ["steve"], heart: { steve: 4 }, after: ["ch3_steve_empty_seat"], host: "steve" },
+  // 好感度補充（A08）。LIME交換のあと、締めくくりの前の五度目（♥4）。
+  ch3_volk_fifth: { file: "ch3_volk", label: "残る理由", location: "鉄の煙", bg: "bg_volk_shop",
+    met: ["volk"], heart: { volk: 4 }, after: ["ch3_volk_lime"] },
 });
 
 // loadIntroDialogues が読む追加分（ファイル→場面ID）。routes の全任意場面・前夜場面と一致させる（story_routes.mjs で照合）。
@@ -105,7 +122,7 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_trace"],
   // 綾取・スティーブの締めくくり（#2028）は寄り道ではなく、煙幕・Smoke & Glory を訪ねた時の「〜に呼ばれる」から
   // （daily/bonds.js の条件。版3は ch3-tokyo-daily.js、優勝の翌日は ch3-aftermath.js、旧行程は ch3.js の場面カード）。
-  ch3_rivals: ["ch3_emil_workshop", "ch3_saku_lime", "ch3_saku_bond_finale", "ch3_steve_lime", "ch3_steve_bond_finale"],
+  ch3_rivals: ["ch3_emil_workshop", "ch3_saku_lime", "ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar", "ch3_saku_bond_finale", "ch3_steve_lime", "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_bond_finale"],
   // ♥3の質問と締めくくりは寄り道ではなく、場面カードの「ましろちゃんと話す」から（daily/bonds.js の条件）。
   ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice",
     "ch3_mashiro_black_tea", "ch3_mashiro_timer_side", "ch3_mashiro_cup_warm", "ch3_mashiro_glass_cloth",
@@ -115,7 +132,7 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   hiyori: ["hiyori_tokyo_contact"],
   ch3_tsumugi: ["ch3_tsumugi_slump"],
   // ヴォルクの締めくくり（#2028）も寄り道ではなく、鉄の煙を訪ねた時の「ヴォルクに呼ばれる」から（綾取・スティーブと同じ）。
-  ch3_volk: ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_lime", "ch3_volk_bond_finale"],
+  ch3_volk: ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_lime", "ch3_volk_fifth", "ch3_volk_bond_finale"],
   // 返事の場面は告白の選択肢の next_id で入る（ch3_read_confession_mashiro は返事まで読んだ時だけ立つ）。
   confession: ["confession_mashiro", "confession_mashiro_accept", "confession_mashiro_reject"],
   // 第3章で再生しうるのは date_min_chapter が3以下の恋人だけ（あげはは第4章から）。

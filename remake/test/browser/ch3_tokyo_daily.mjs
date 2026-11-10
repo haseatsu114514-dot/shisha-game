@@ -324,7 +324,7 @@ await suite("ch3-tokyo-daily", async check => {
       value.day = intro.startDay + 12; value.slot = 0; value.phase = "daily";
       Object.assign(value.met, { saku: true, steve: true, volk: true, mashiro: true, mukai_master: true });
       value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
-      Object.assign(value.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_outings: { enmaku_answer: 1, enmaku_visit: 3 } });
+      Object.assign(value.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_read_ch3_saku_missed: true, _ch3_read_ch3_saku_cleanup: true, _ch3_read_ch3_saku_liar: true, _ch3_outings: { enmaku_answer: 1, enmaku_visit: 3 } });
       value.affinity.saku = 66; value.money = 10000;
       core.save();
     });
@@ -360,6 +360,7 @@ await suite("ch3-tokyo-daily", async check => {
       Object.assign(value.met, { saku: true, steve: true, volk: true, mashiro: true, mukai_master: true });
       value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
       Object.assign(value.flags, { _lime_contact_steve: true, _ch3_read_ch3_steve_lime: true,
+        _ch3_read_ch3_steve_two_timers: true, _ch3_read_ch3_steve_empty_seat: true, _ch3_read_ch3_steve_tongs: true,
         _ch3_outings: { mukai_steve: 2, steve_timer: 1, steve_visit: 2 } });
       value.affinity.steve = 66; value.money = 10000;
       core.save();
@@ -403,7 +404,7 @@ await suite("ch3-tokyo-daily", async check => {
       value.day = intro.startDay + 12; value.slot = 0; value.phase = "daily";
       Object.assign(value.met, { saku: true, steve: true, volk: true, mashiro: true, mukai_master: true });
       value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
-      for (const id of ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_lime"]) value.flags[`_ch3_read_${id}`] = true;
+      for (const id of ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_lime", "ch3_volk_fifth"]) value.flags[`_ch3_read_${id}`] = true;
       value.flags._lime_contact_volk = true;
       value.affinity.volk = 66; value.money = 1000;
       core.save();

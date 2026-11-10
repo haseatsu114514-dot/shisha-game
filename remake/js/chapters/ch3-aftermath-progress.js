@@ -32,6 +32,21 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
   // ヴォルクとLIMEを交換する（#2028）。大会前の寄り道と同じく、四度目の来店の後・♥2で（ヴォルクの締めくくりの条件）。
   { id: "ch3_volk_lime", file: "ch3_volk", label: "持ってきたメモ", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"],
     after: ["ch3_volk_fourth"], heart: { volk: 2 } },
+  { id: "ch3_volk_fifth", file: "ch3_volk", label: "残る理由", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"],
+    after: ["ch3_volk_lime"], heart: { volk: 4 } },
+  // 好感度補充。大会前に読めなかった煙幕・Smoke & Glory の段階を、帰郷前に順に読める。
+  { id: "ch3_saku_missed", file: "ch3_rivals", label: "外れた予想", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_saku_lime"], heart: { saku: 2 } },
+  { id: "ch3_saku_cleanup", file: "ch3_rivals", label: "消すのを遅くする", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_saku_missed"], heart: { saku: 3 } },
+  { id: "ch3_saku_liar", file: "ch3_rivals", label: "嘘つきの欄", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_saku_cleanup"], heart: { saku: 4 } },
+  { id: "ch3_steve_two_timers", file: "ch3_rivals", label: "二つのタイマー", location: "Smoke & Glory", bg: "bg_steve_shop",
+    met: ["steve"], heart: { steve: 1 } },
+  { id: "ch3_steve_empty_seat", file: "ch3_rivals", label: "空の席の秒数", location: "Smoke & Glory", bg: "bg_steve_shop",
+    met: ["steve"], after: ["ch3_steve_two_timers"], heart: { steve: 3 } },
+  { id: "ch3_steve_tongs", file: "ch3_rivals", label: "トングの手前", location: "Smoke & Glory", bg: "bg_steve_shop",
+    met: ["steve"], after: ["ch3_steve_empty_seat"], heart: { steve: 4 } },
   // #3081。大会前に読めなかったましろの段階の続き。台本は大会に触れないので、前後どちらの読了でも同じ。
   // 既読は大会前の寄り道と同じ _ch3_read_<id>。続く2本は glass_cloth の次へつなぐ。
   { id: "ch3_mashiro_timer_side", file: "ch3_mashiro", label: "タイマーの隣", location: "mukai", bg: "bg_mukai_shop",

@@ -657,6 +657,8 @@ await check('Ayatori (#2028): chapter 3 finale after the LIME detour and the ans
   s.flags._lime_contact_saku = true; s.flags._ch3_read_ch3_saku_lime = true;
   assert.equal(f.bonds.finaleDue('saku'), false, 'the answer outing comes first');
   s.flags._ch3_outings = { enmaku_answer: 1 };
+  assert.equal(f.bonds.finaleDue('saku'), false, 'the later Enmaku visits come first');
+  for (const scene of ['ch3_saku_missed', 'ch3_saku_cleanup', 'ch3_saku_liar']) s.flags[`_ch3_read_${scene}`] = true;
   for (const pts of [9, 33, 48, 65]) {
     s.affinity.saku = pts;
     assert.equal(f.bonds.finaleDue('saku'), false, `${pts}pt (below ♥5) keeps the finale closed`);
@@ -696,6 +698,8 @@ await check('Steve (#2028): ♥5 finale after the LIME detour and the timer outi
   s.flags._lime_contact_steve = true; s.flags._ch3_read_ch3_steve_lime = true;
   assert.equal(f.bonds.finaleDue('steve'), false, 'the timer outing comes first');
   s.flags._ch3_outings = { steve_timer: 1 };
+  assert.equal(f.bonds.finaleDue('steve'), false, 'the later Smoke & Glory visits come first');
+  for (const scene of ['ch3_steve_two_timers', 'ch3_steve_empty_seat', 'ch3_steve_tongs']) s.flags[`_ch3_read_${scene}`] = true;
   for (const pts of [9, 33, 48, 65]) {
     s.affinity.steve = pts;
     assert.equal(f.bonds.finaleDue('steve'), false, `${pts}pt (below ♥5) keeps the finale closed`);
@@ -758,7 +762,7 @@ await check('Volk (#2028): ♥5 finale after the three Iron Smoke visits and the
   const s = f.core.state; s.chapter = 3; s.met.volk = true; s.affinity.volk = 66;
   assert.equal(f.bonds.finaleDue('volk'), false, 'affinity alone does not open the finale');
   s.flags._lime_contact_volk = true; s.flags._ch3_read_ch3_volk_lime = true;
-  for (const scene of ['ch3_volk_second', 'ch3_volk_third', 'ch3_volk_fourth']) {
+  for (const scene of ['ch3_volk_second', 'ch3_volk_third', 'ch3_volk_fourth', 'ch3_volk_fifth']) {
     assert.equal(f.bonds.finaleDue('volk'), false, `${scene} comes first`);
     s.flags[`_ch3_read_${scene}`] = true;
   }
@@ -901,7 +905,7 @@ await check('Ayatori (#2028): the finale and the MENU promise only while 煙幕 
   const rivals = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_rivals.json', import.meta.url))).dialogues;
   for (const d of rivals) f.db.dialogues[d.dialogue_id] = d;
   const s = f.core.state; s.chapter = 3; s.met.saku = true; s.affinity.saku = 66;
-  Object.assign(s.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_outings: { enmaku_answer: 1 } });
+  Object.assign(s.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_read_ch3_saku_missed: true, _ch3_read_ch3_saku_cleanup: true, _ch3_read_ch3_saku_liar: true, _ch3_outings: { enmaku_answer: 1 } });
   assert.equal(f.bonds.finaleDue('saku'), true);
   assert.equal(f.bonds.finaleReachable('saku'), true);
   s.flags._ch3_prep = { departed: false };

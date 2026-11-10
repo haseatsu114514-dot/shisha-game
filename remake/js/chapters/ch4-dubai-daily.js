@@ -37,7 +37,8 @@ import { visitCamelRace } from "./ch4-camel-race.js";
 import { desertDailySpots, desertDailySpotById } from "./ch4-desert-progress.js";
 import { CAFE_MENU, CAFE_PLACES, CAFE_TASTE_IDS, OMAKASE, OMAKASE_LINE, SMOKED_IN_SCENE, TALKS_AFTER_ORDER,
   resolveCafeOrder, tasteScene, recordCafeOrder } from "./ch4-dubai-cafe.js";
-import { LONGLONG_BG, LONGLONG_CHAR, LONGLONG_IDS, nextLonglongVisit, longlongHasNew, recordLonglongVisit } from "./ch4-longlong.js";
+import { LONGLONG_BG, LONGLONG_CHAR, LONGLONG_IDS, LONGLONG_LOAD_IDS, nextLonglongVisit, longlongHasNew, recordLonglongVisit } from "./ch4-longlong.js";
+import { finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { NIGHT_SCENE_IDS, STALL_NONE, STALL_PLACE, STALL_SCENE_IDS, dubaiSpotAt, nightVisit, recordNightVisit, priceText,
   stallChoices, stallItem, stallLabel, stallSceneId } from "./ch4-dubai-local.js";
 import { runFullPractice } from "../craft/practice.js";
@@ -111,7 +112,7 @@ function spotHasNew(entry) {
     return firstScenes(entry.place).length > 0 || nextTalk(entry.place, { once: true }) !== null;
   if (entry.place === "naru") return nextTalk("naru", { once: true }) !== null;
   if (entry.place === "practice") return nextTalk("practice", { once: true }) !== null;
-  if (entry.place === "longlong") return longlongHasNew(state, affinityLevel(LONGLONG_CHAR));
+  if (entry.place === "longlong") return longlongHasNew(state, affinityLevel(LONGLONG_CHAR)) || finaleAtVisit(LONGLONG_CHAR);
   if (entry.place === "inn") return (dubaiDay() >= 2 && !read("ch4_inn_tool_care")) || innTrialDue(state) || rehearsalDue(state);
   return false;
 }
@@ -210,7 +211,7 @@ export function chapterFourDubaiDefinition(io) {
 /** ドバイの日常（DAY1〜12）を回す。前夜祭の日（DAY13）の朝か LOAD で戻る。 */
 export async function runChapterFourDubai(io) {
   const owner = state;
-  Object.assign(DB.dialogues, await readDialogues("ch4_dubai_daily", DUBAI_DAILY_IDS), await readDialogues("ch4_longlong", LONGLONG_IDS));
+  Object.assign(DB.dialogues, await readDialogues("ch4_dubai_daily", DUBAI_DAILY_IDS), await readDialogues("ch4_longlong", LONGLONG_LOAD_IDS));
   // LOAD・再開でも最初の地図から、ヌールの MENU の案内（♥5の締めくくり・告白を選べる）を合わせる。どちらも台詞が読み込まれているかを見る
   // （daily/bonds.js の finaleDue・daily/romance.js の romanceRouteOpen。第5章は ch5-dubai.js の preloadNoorScenes）。読めなくても地図は開く
   if (owner.met?.noor) await import("./ch4-desert.js").then(desert => desert.loadDesertDialogues()).catch(() => {});
@@ -281,6 +282,16 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   }
   else if (entry.place === "creek") done = await readPlain(state.slot ? "ch4_creek_walk_night" : "ch4_creek_walk_day", "bg_dubai_street_night", owner);
   else if (entry.place === "longlong") {
+    // ♥5の締めくくりが来ていれば、段階や小会話より先に一度だけ読む（客の一台ではないので代金は取らない）。
+    if (finaleAtVisit(LONGLONG_CHAR)) {
+      await setBg(bgUrl(LONGLONG_BG));
+      if (state !== owner) return unused;
+      done = !!(await playFinale(LONGLONG_CHAR, { bg: bgUrl(LONGLONG_BG) }));
+      if (!done || state !== owner) return unused;
+      addStamina(entry.stamina || 0);
+      if (entry.stat) earnStat(entry.stat, 4);
+      return { used: true, exerted: (entry.stamina || 0) < 0, exp: { key: LONGLONG_CHAR, person: LONGLONG_CHAR } };
+    }
     // 必要ハートに届いた最古の未読の段階、無ければ小会話（ch4-longlong.js）。読み終えた時だけ記録する。
     longlong = nextLonglongVisit(state, affinityLevel(LONGLONG_CHAR));
     done = await readPlain(longlong.id, LONGLONG_BG, owner);

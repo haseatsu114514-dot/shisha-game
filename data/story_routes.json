@@ -130,7 +130,13 @@
         "ch3_saku_mashiro_tea_tin",
         "ch3_saku_mashiro_soon_back",
         "ch3_saku_lime",
+        "ch3_saku_missed",
+        "ch3_saku_cleanup",
+        "ch3_saku_liar",
         "ch3_steve_lime",
+        "ch3_steve_two_timers",
+        "ch3_steve_empty_seat",
+        "ch3_steve_tongs",
         "confession_mashiro",
         "hiyori_tokyo_contact",
         "ch3_tsumugi_slump",
@@ -138,6 +144,7 @@
         "ch3_volk_third",
         "ch3_volk_fourth",
         "ch3_volk_lime",
+        "ch3_volk_fifth",
         "ch3_mashiro_timer_side",
         "ch3_mashiro_cup_warm",
         "ch3_mashiro_glass_cloth",
@@ -486,6 +493,48 @@
         "ch4_noor_cafe_4"
       ],
       "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch3_saku_missed": {
+      "seen": [
+        "ch3_saku_lime"
+      ],
+      "comment": "好感度補充: LIME交換の後の煙幕再訪（♥2）。"
+    },
+    "ch3_saku_cleanup": {
+      "seen": [
+        "ch3_saku_missed"
+      ],
+      "comment": "好感度補充: 外れた予想の次の閉店後（♥3）。"
+    },
+    "ch3_saku_liar": {
+      "seen": [
+        "ch3_saku_cleanup"
+      ],
+      "comment": "好感度補充: 閉店後の次の来店（♥4）。"
+    },
+    "ch3_steve_two_timers": {
+      "seen": [
+        "ch3_steve_low_heat"
+      ],
+      "comment": "好感度補充: 低温の話のあと、Smoke & Glory の初来店（♥1）。面識と♥の条件は場面カードの置き方。"
+    },
+    "ch3_steve_empty_seat": {
+      "seen": [
+        "ch3_steve_two_timers"
+      ],
+      "comment": "好感度補充: 二つのタイマーの次（♥3）。"
+    },
+    "ch3_steve_tongs": {
+      "seen": [
+        "ch3_steve_empty_seat"
+      ],
+      "comment": "好感度補充: 空の席の次（♥4）。"
+    },
+    "ch3_volk_fifth": {
+      "seen": [
+        "ch3_volk_lime"
+      ],
+      "comment": "好感度補充: LIME交換の後の五度目（♥4）。締めくくりの前。"
     }
   },
   "near_conflict": {
