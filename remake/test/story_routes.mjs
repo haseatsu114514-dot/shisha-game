@@ -89,6 +89,18 @@ assert(!canReadOptionalStory(routes, {}, mintoCall, heard));
 assert(canReadOptionalStory(routes, {contacts: ['minto']}, mintoCall, heard));
 assert(!canReadOptionalStory(routes, {}, 'ch3_cigarman_trace', {completedScenes: ['ch3_cigarman_rumor']}));
 assert(!canReadOptionalStory(routes, {}, 'unknown'));
+// #3081: 第4章のヌールの物語は既存カフェに登録し、該当する段階を読む前に公開しない。
+{
+  const ids = routes.chapters['4'].optional.filter(id => id.startsWith('ch4_noor_story_'));
+  assert.equal(ids.length, 16);
+  for (const id of ids) {
+    assert(scenes.has(id), id);
+    const [stage] = routes.optional_requirements[id]?.seen || [];
+    assert(stage?.startsWith('ch4_noor_'), id);
+    assert(!canReadOptionalStory(routes, {}, id));
+    assert(canReadOptionalStory(routes, {}, id, {completedScenes: [stage]}));
+  }
+}
 
 // --- #1176 GAP 3-B: 第3章の任意場面・前夜の配線（ch3-story-wiring.js）。ブラウザ不要の純粋ロジック。
 const wiring = await import(new URL('remake/js/chapters/ch3-story-wiring.js', root));

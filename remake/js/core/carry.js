@@ -619,6 +619,7 @@ export const FLAG_FAMILY_RULES = [
   ["_lover_*", "person"],
   ["_mastery_practice_*", "progression"],
   ["_met_*", "person"],
+  ["_noor_story_*", "person"], // #3081 カフェ・オアシスの物語。未読を周回へ持ち越さない
   ["_morning_*", "progression"],
   ["_note_*", "progression"],
   ["_outing_done_*", "person"],
