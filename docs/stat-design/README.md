@@ -15,3 +15,10 @@
 - 1マスの恩恵の単位を SPEC 3.2〜3.4 の上限（ジャスト帯 ×1.35・ゲージ ×1.30・最大体力 ＋60）に合わせて直した（SPEC 3.7「単位の補正」）。第1章の大会での勝率は `node remake/tools/balance/measure.mjs --board` で測る（基準74.2%: 感覚盤に寄せると＋2.5pt、理論盤＋1.6pt、才能盤は日常の体力で得をし大会は第2章以降の「華」から）。
 - 盤の右のパネルに「恩恵の合計：いま → 灯すと」、決定後のカードに増えた恩恵（「最大体力 ＋8・寝た時の回復 ＋4%」）、HUDの経験値の行に「◎目標まで 火種N」。検査は `remake/test/browser/growth_levelup.mjs` の perk-totals-and-target。
 - 注意: `tools/ci/run.mjs` は実行中に変わった追跡ファイルを実行後に元へ戻す。検査の実行中にファイルを編集しない。
+
+## 心得の盤の音
+
+- 盤の閲覧・内省・組み直し中は、専用の静かな合成BGM（`bgm_growth_board`）を流す。柔らかな和音と疎らな高音のオリジナルループで、追加の音源取得はない。
+- 仮置きが増えた時に短い火種の音、実際にマスを確定した時に上昇する和音を鳴らす。取り消し・目標設定などの操作音は従来のまま。閲覧だけで習得音は鳴らさない。
+- 閉じると直前の曲へ戻す。LOAD・成長モード解除では古い曲を復活させず、別の場面がすでに選んだ曲も上書きしない。BGM/SEの音量とミュートは共通設定に従う。
+- 確認: `node --experimental-vm-modules remake/test/growth_board_audio.mjs`、`node --experimental-vm-modules remake/test/growth_board_screen.mjs`。

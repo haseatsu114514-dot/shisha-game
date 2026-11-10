@@ -48,10 +48,14 @@ const util = await import("../js/core/util.js");
 const s = core.newGame(); Object.assign(s, { phase: "daily", chapter: 1, day: 3, slot: 1 });
 const g = growth.ensureGrowth(); g.seenRing = 1; g.hidane.any = 30;
 const fx = new Element(); fx.host = true;
+const sounds = [], releases = [];
+let musicStarts = 0, ownerChanged = () => {}, stateModule;
 const modules = {
   "../core/util.js": { ...util, sleep: async () => {} },
   "../core/ui.js": { layers: { fx }, modal: async () => null, gainCard() {} },
-  "../core/audio.js": { SE: {} }, "../core/bus.js": { emit() {}, on: () => () => {} },
+  "../core/audio.js": { SE: { boardLight: () => sounds.push("light"), boardCommit: () => sounds.push("commit") },
+    createGrowthBoardAudio: () => { musicStarts++; return restore => releases.push(restore); } },
+  "../core/bus.js": { emit() {}, on: (_event, fn) => { ownerChanged = fn; return () => {}; } },
   "../core/state.js": { state: s, save() {} },
   "../core/growth-respec.js": { canRespec: () => false, prepareRespec: () => null, commitRespec: () => false },
   "../core/growth-mode.js": { growthEnabled: () => true },
@@ -69,10 +73,14 @@ const screen = new vm.SourceTextModule(source, { context });
 await screen.link(async name => {
   assert(modules[name], `Unexpected import ${name}`);
   const exports = modules[name];
-  return new vm.SyntheticModule(Object.keys(exports), function () { for (const [k, v] of Object.entries(exports)) this.setExport(k, v); }, { context });
+  const mod = new vm.SyntheticModule(Object.keys(exports), function () { for (const [k, v] of Object.entries(exports)) this.setExport(k, v); }, { context });
+  if (name === "../core/state.js") stateModule = mod;
+  return mod;
 });
 await screen.evaluate();
 const done = screen.namespace.openBoard({ place: "kannon" });
+assert.equal(screen.namespace.openBoard(), done, "Repeated open shares one board and music session");
+assert.equal(musicStarts, 1);
 await new Promise(r => setImmediate(r));
 let root = fx.children[0];
 const nodes = root.querySelector(".gb-nodes"), svg = root.querySelector(".gb-svg");
@@ -92,6 +100,7 @@ const available = nodes.children.find(n => n.dataset.status === "available");
 assert(available, "Fixture has an affordable node");
 const id = available.dataset.test.replace("board-node-", "");
 available.click(); root.querySelector('[data-test="board-light"]').click();
+assert.deepEqual(sounds, ["light"], "Inspecting nodes is silent; only accepted placement uses its cue");
 assert.equal(button(id).dataset.status, "pending");
 assert.equal(button(id).querySelector(".gb-node-state").textContent, "+");
 assert(button(id).classList.contains("lit-now"), "Auto-selection must not erase the light animation");
@@ -110,6 +119,13 @@ assert.equal(button(id).dataset.status, "unlocked");
 assert.equal(button(id).querySelector(".gb-node-state").textContent, "✓");
 fx.children[0].querySelector('[data-test="board-close"]').click();
 await committedDone;
+assert.deepEqual(sounds, ["light", "light", "commit"], "Undo/reopen do not replay the commit cue");
+assert.deepEqual(releases, [true, true], "Commit and ordinary close both restore music once");
+// Replacing the save closes the old board without restoring its previous scene's music.
+const interrupted = screen.namespace.openBoard({ place: "kannon" });
+stateModule.setExport("state", { ...s }); ownerChanged(); await interrupted;
+assert.deepEqual(releases, [true, true, false]);
+stateModule.setExport("state", s);
 console.log(`PASS board screen: ${originalNodes.length} selections preserve DOM; pending/undo/commit/check badge; no full-board filters`);
 
 // #3119: the detail and target use the same reservation, pending, chapter and cap rules as paymentFor.
@@ -242,4 +258,5 @@ assert.equal(rioPanel.style.top, `${Math.round(64 - frames.new.rio.eye[1] * 82 /
 assert.equal(panelContext.boardFaceUrl("pakki"), null, "people without a card face use the face icon");
 core.config.portraitStyle = previousStyle;
 console.log("PASS board portraits: lesson cards and the panel use the selected style's art + that style's measured eye coordinates (classic for people without new art)");
+
 

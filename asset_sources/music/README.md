@@ -5,6 +5,8 @@
 制作・吸引・UIのCC0録音SEは [shisha-se/README.md](shisha-se/README.md) に出典・加工・原音と代用の区別を記録する。
 TRPGの効果音・シナリオ別BGM（CC0・2026-11-10の仮採用）は [trpg-audio/README.md](trpg-audio/README.md)。
 
+ミニゲーム（斧投げ）の仮SE（CC0・2026-11-10・オーナー試聴待ち）は [minigame-se/README.md](minigame-se/README.md)。
+
 | ファイル | 曲名 | 出典 | 使用先 |
 |---|---|---|---|
 | `kansetsu_shomei_to_black_coffee.mp3` | 間接照明とブラックコーヒー | フリーBGM（配布元・作曲者は未記入） | 日常パート（`assets/audio/bgm/kansetsu_shomei_to_black_coffee.mp3`） |

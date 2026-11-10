@@ -3213,6 +3213,59 @@
       ]
     },
     {
+      "id": "lime_noor_after_sunset",
+      "sender": "noor",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_noor",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "noor",
+          "text": "砂丘の帰り道、車の窓に映った顔を思い出してた。夕日の前と後で、私、全然違う顔をしてたよね"
+        },
+        {
+          "sender": "noor",
+          "text": "行きはガイドの顔をしてたのに、帰りはハジメのほうばかり見てた気がする"
+        },
+        {
+          "sender": "noor",
+          "text": "あの時、言わずに帰したら後悔するって思った。言えてよかった。本当に、よかった"
+        },
+        {
+          "sender": "noor",
+          "text": "店の地図には、戻る場所に小さな丸を書いてる。出る道は風で変わっても、そこだけは消さない"
+        },
+        {
+          "sender": "noor",
+          "text": "ハジメと話す時間も、そんな丸みたいになってきたよ。離れている日も、声を聞けたら戻ってこられる"
+        },
+        {
+          "sender": "noor",
+          "text": "連絡する時、元気な話を用意しなくていいからね。今日は何もなかった、でも私は聞きたい"
+        },
+        {
+          "sender": "noor",
+          "text": "次に会う日を急いで決めなくても、会いたいって言うのはやめない。ハジメも、遠慮しないで"
+        },
+        {
+          "sender": "noor",
+          "text": "いつか二人で写真を撮ろう。ガイドの顔じゃなくて、今の私で。変な顔になっても、きっと笑えるから"
+        }
+      ],
+      "replies": [
+        {
+          "text": "俺も、会いたい時は言います",
+          "response": "うん。私も、その言葉を待ってる",
+          "affinity": 2
+        },
+        {
+          "text": "次は一緒に写真を撮りましょう",
+          "response": "約束。もし変な顔になっても、二人なら笑えるね",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_mashiro_glass_cloth",
       "sender": "mashiro",
       "trigger_condition": "flag",

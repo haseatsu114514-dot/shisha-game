@@ -55,6 +55,11 @@ export const STAFF_MUSIC = Object.freeze([
 export const STAFF_SOUND_TRPG = Object.freeze(["効果音（TRPG）：Kenney – Casino Audio / RPG Audio / Music Jingles（CC0） – https://kenney.nl/"]);
 export const STAFF_SOUND_CREDIT = "効果音：ポケットサウンド – https://pocket-se.info/";
 export const STAFF_ROLL_CLOSING = "Thank you for playing";
+// 斧投げの効果音（CC0・asset_sources/music/minigame-se/）。オーナー「クレジットは載せる」2026-11-10。
+export const STAFF_SOUND_AXE = Object.freeze([
+  "効果音（斧投げ）：Kenney – Impact Sounds（CC0） – https://kenney.nl/",
+  "効果音（斧投げ）：Freesound – Jofae「Swing Woosh」/ craigsmith「R15-11-Axe Thuds」/ qubodup「Short Crowd Cheer」/ plasterbrain「Tada Fanfare A」/ IndyArts「Sad, Downwards Jingle (Tremolo Version)」（CC0）",
+]);
 
 const reducedMotion = () => !!window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 
@@ -80,6 +85,7 @@ function sections() {
     ]) : null,
     el("section.staff-roll-sound-trpg", STAFF_SOUND_TRPG.map(text => el("p", { text }))),
     el("section.staff-roll-sound", [el("p", { text: STAFF_SOUND_CREDIT })]),
+    el("section.staff-roll-sound-axe", STAFF_SOUND_AXE.map(text => el("p", { text }))),
     el("section.staff-roll-closing", [el("p", { text: STAFF_ROLL_CLOSING })]),
   ].filter(Boolean);
 }
