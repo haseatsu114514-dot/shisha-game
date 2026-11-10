@@ -2406,6 +2406,267 @@
           "text": "みんとはカウンターの端に、水の入ったコップを、もう一つ置いた"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch1_minto_timer_hand",
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼のPEPPERMINT"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターのキッチンタイマーが、小さく動いていた"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくんっ♡ ちょっと、これ預かって！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "タイマー？"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "蒸らしの時間"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "みんとが、自分で見てるやつ"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "鳴ったら呼んで"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "それまで、触らないでね♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺は触らない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "鳴ったら呼ぶ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席から声がして、みんとはタイマーを手のひらに残していった"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "すぐ戻るね♡ 席、動かさないで！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鳴ったときには、みんとはもうカウンターへ戻っていた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今、鳴った"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……触ってない"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "時間だけ、見てたんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "足しても、止めてもいない"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "このタイマー、お客さんには渡さないの"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "店はみんとひとりだから"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "数えるのも、自分の仕事"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "……今日は、渡した"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくんなら、足さないでいてくれる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "足さないよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "鳴るまで、ここにいる"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "数は、みんとが決める"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "預けるのは、見るところだけ"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "次も、鳴る前に呼んでね♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとはタイマーを、自分の手元へ戻した"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_minto_cheki_keep",
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客の少ないPEPPERMINT"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとが、チェキを二山に分けていた"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "こっちは、お客さんに渡す分♡"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "#みんと総選挙 用で、自撮りもエントリーだよ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "もう一山は？"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "これは、上げない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手元の一台が写った一枚を、みんとはトレイの下へ滑らせた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺、写ってないな"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "写すなら、お店の顔にしなきゃいけないもん♡"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "手元のままだと、角度も笑顔も入ってない"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "それ、計算が崩れちゃうの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "崩れたままで、いいんじゃないか"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "……っ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一度、渡す山へ乗せかけて、みんとは指を止めた"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……やっぱ、だめ"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "これ、お店の顔じゃない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "しまっておくなら、俺は見なくていい"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "見せない"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "でも、捨てもしない"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "お店の山には、戻さないよ♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "トレイの下の一枚は、渡す山へ戻らなかった"
+        }
+      ]
     }
   ]
 }
