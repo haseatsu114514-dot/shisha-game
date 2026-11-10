@@ -167,6 +167,7 @@ export function createSession(value, { visitKey = null } = {}) {
     last: null, lastAuto: null, autoTicks: 0,
     petStreak: 0, swings: 0, watches: 0, brushes: 0,
     mashiroPassed: false, said: [],
+    curiousProp: null,
   };
 }
 
@@ -178,11 +179,18 @@ const has = (session, id) => !!slotOf(session, id);
 /** 小物を置く／片付ける（id=null）。同じ物は一か所だけ（別の枠へ置けば移る）。置けたら true。 */
 export function placeProp(session, slot, id) {
   if (!SLOTS.includes(slot)) return false;
-  if (id === null) { session.props[slot] = null; return true; }
+  if (id === null) {
+    const removed = session.props[slot];
+    session.props[slot] = null;
+    if (session.curiousProp === removed) session.curiousProp = null;
+    if (session.cat.inside === removed && removed) session.cat = { ...session.cat, inside: null, pose: "sit", spot: "floor", art: null };
+    return true;
+  }
   const item = prop(id);
   if (!item || !item.slots.includes(slot) || !propUnlocked(item, session.stage, session.metMashiro)) return false;
   for (const other of SLOTS) if (session.props[other] === id) session.props[other] = null;
   session.props[slot] = id;
+  session.curiousProp = id;
   // 中に入っていた物が片付いたら、てつこは外へ出てくる。
   if (session.cat.inside && !has(session, session.cat.inside)) session.cat = { ...session.cat, inside: null, pose: "sit", spot: "floor", art: null };
   return true;
@@ -350,11 +358,15 @@ export const AUTO_IDS = Object.freeze(AUTO.map(item => item.id));
  */
 export function autonomous(session, { force = false } = {}) {
   session.autoTicks += 1;
-  if (!force && session.autoTicks % 2 === 0) return { kind: "auto", id: "settle", quiet: true };
+  if (!force && !session.curiousProp && session.autoTicks % 2 === 0) return { kind: "auto", id: "settle", quiet: true };
   const pool = AUTO.filter(item => item.id !== session.lastAuto && item.when(session));
   const fresh = pool.filter(item => item.moment && !session.found.includes(item.moment));
   const from = fresh.length && session.random() < DISCOVERY_BIAS ? fresh : pool;
-  const item = weighted(from, session);
+  // 置いた物にはまず気づく。ランダム待ちだけでなく、模様替えが遊びにつながる。
+  const curious = { box: "box_peek", ball: "ball_watch", cushion: "cushion", scratcher: "scratch", tunnel: "tunnel", bed: has(session, "box") ? "box_over_bed" : "bed_sleep" };
+  const invited = session.curiousProp && AUTO.find(item => item.id === curious[session.curiousProp] && item.when(session));
+  session.curiousProp = null;
+  const item = invited || weighted(from, session);
   session.lastAuto = item.id;
   const shape = item.react(session);
   const reaction = react(session, "auto", { spot: shape.spot || restingSpot(session), ...shape, moment: item.moment || null });
@@ -415,3 +427,23 @@ export const momentHint = id => MOMENTS.find(moment => moment.id === id)?.hint |
 export const propById = id => PROP[id] || null;
 export const momentById = id => MOMENTS.find(moment => moment.id === id) || null;
 export { OUTINGS_FLAG };
+
+
+/** 今できる小さな発見。能力・得点を増やさず「試す→反応→写真」の手がかりだけを返す。 */
+export function discoveryGuide(session, preferred = null) {
+  const guides = [
+    { id: "first_paw", kind: "play", text: session.swings < 2 ? "じゃらしを振ると、目で追って……" : "狙っている。もうひと振り。" },
+    { id: "hug_toy", when: session.stage >= 1, kind: toyOut(session) ? "catch" : "play", text: toyOut(session) ? "じゃらしを止めて、捕まえさせてみよう。" : "じゃらしを振ってから、止めてみよう。" },
+    { id: "brush_bliss", when: canBrush(session), kind: "brush", text: "ブラシで、背中をゆっくり。" },
+    { id: "paws_together", kind: "watch", text: "そっと見守ると、どんな顔をするかな。" },
+    { id: "box_peek", kind: has(session, "box") ? "watch" : "decor", prop: "box", text: has(session, "box") ? "箱のそばで、そっと見守ろう。" : "もようがえで箱を置いてみよう。" },
+    { id: "ball_watch", kind: has(session, "ball") ? "watch" : "decor", prop: "ball", text: has(session, "ball") ? "ボールをどうするか、見守ってみよう。" : "もようがえで床にボールを置こう。" },
+    { id: "first_rub", when: session.stage >= 3, kind: "pet", text: "近くに来たら、そっとなでてみよう。" },
+    { id: "lap_nap", when: session.stage >= 3, kind: "watch", text: "隣に座って、もう少し見守ろう。" },
+    { id: "odd_sleep", when: session.stage >= 1, kind: session.mood === "sleepy" || has(session, "cushion") || has(session, "bed") ? "watch" : "decor", prop: "cushion", text: session.mood === "sleepy" || has(session, "cushion") || has(session, "bed") ? "眠れる場所で、ゆっくり待ってみよう。" : "座布団を置いて、くつろげる場所に。" },
+    { id: "box_over_bed", when: session.stage >= 3, kind: has(session, "box") && has(session, "bed") ? "watch" : "decor", text: has(session, "box") && has(session, "bed") ? "箱とベッド、どちらが好きかな。" : "箱と猫ベッドを、両方置いてみよう。" },
+  ].filter(item => item.when !== false && !session.found.includes(item.id));
+  const pick = guides.find(item => item.id === preferred) || guides[0];
+  if (!pick) return { id: null, kind: "watch", text: "今日は一緒に、のんびり。手帳はいつでも読める。" };
+  return { ...pick, name: momentById(pick.id).name };
+}

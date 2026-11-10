@@ -18,7 +18,7 @@ import { TOKYO_OUTINGS } from "../chapters/ch3-outing-progress.js";
 import {
   OUTINGS_FLAG, TETSUKO_TIME_FLAG, readTetsukoRecord, tetsukoVisits, createSession, openingReaction, act, canAct, toyOut,
   autonomous, autoDelay, placeProp, takePhoto, farewell, sessionResult, moodOf, moodLabel, propById, momentById, propUnlocked,
-  MOMENTS, PROPS, SLOTS, SLOT_NAMES,
+  MOMENTS, PROPS, SLOTS, SLOT_NAMES, discoveryGuide,
 } from "./tetsuko-model.js";
 import { ART_READY, hasPose, poseUrl, artAttrs } from "./tetsuko-art.js";
 import { tetsukoTheme } from "./tetsuko-theme.js";
@@ -104,7 +104,7 @@ export function tetsukoCameraFor({ x, y, s = 1 } = {}) {
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   return { k, x: clamp(at.x - k * fx, 1280 * (1 - k), 0), y: clamp(at.y - k * fy, 720 * (1 - k), 0) };
 }
-const STEP_MS = 1000, STEP_REDUCED_MS = 700, FAREWELL_MS = 1400, FAREWELL_REDUCED_MS = 800, AFTER_ACTION_MS = 1600, WALK_MS = 900;
+const STEP_MS = 1000, STEP_REDUCED_MS = 700, FAREWELL_MS = 1400, FAREWELL_REDUCED_MS = 800, AFTER_ACTION_MS = 1600;
 const STROKE_PX = 90, STROKE_GAP_MS = 600, BRUSH_PX = 110, BRUSH_GAP_MS = 650;
 const TOY_SWING_PX = 170, TOY_SWING_GAP_MS = 480, TOY_STILL_MS = 750, TOY_CATCH_PX = 300, TOY_HELD_MS = 1600;
 const TOAST_MS = 3200;
@@ -151,6 +151,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     let timer = 0, stepTimer = 0, fxTimer = 0, purrTimer = 0, walkTimer = 0, stillTimer = 0, heldTimer = 0, flashTimer = 0, quietUntil = 0;
     let tool = "hand", stroke = null, lastPetAt = 0, lastBrushAt = 0, lastSwingAt = 0, toyTravel = 0, held = false;
     let toyTip = null, selected = null, fresh = [], bookSel = null, lastAt = null, stepFrames = 0, walkFrame = "walk_a";
+    let focusMoment = null, photoUntil = 0, toyFrame = 0;
 
     // -- 猫（5表情を重ねて置き、表情は data-face で切り替える。しぐさの絵が届いていれば .tt-cat-pose に出す）
     const imgs = FACES.map(face => el("img.tt-cat-img", { src: faceSrc(face), alt: "", draggable: "false", dataset: { face }, decoding: "async" }));
@@ -189,7 +190,8 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     const text = el("p.tt-text", { dataset: { test: "tetsuko-caption" } });
     const line = el("p.tt-line", { hidden: true }, [el("b.tt-line-name"), el("span.tt-line-text")]);
     const chips = el("div.tt-chips");
-    const caption = el("div.tt-caption", { role: "status", "aria-live": "polite" }, [text, line, chips]);
+    const trail = el("p.tt-trail", { dataset: { test: "tetsuko-trail" } });
+    const caption = el("div.tt-caption", { role: "status", "aria-live": "polite" }, [text, line, chips, trail]);
 
     // -- 手元の道具（右下）と、上の道具（右上）
     const dockButtons = Object.fromEntries(DOCK.map(item => [item.kind,
@@ -240,8 +242,11 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       if (lastAt && at !== lastAt && !reduced) {
         cat.dataset.walk = (SPOT_X[at] ?? 0) >= (SPOT_X[lastAt] ?? 0) ? "right" : "left";
         clearTimeout(walkTimer); clearInterval(stepFrames);
+        const travel = Math.max(420, Math.min(1600, Math.abs((SPOT_X[at] ?? 548) - (SPOT_X[lastAt] ?? 548)) * 2.1));
+        cat.style.setProperty("--travel-ms", `${travel}ms`);
+        yard.style.setProperty("--travel-ms", `${travel}ms`);
         if (hasPose("walk_a") && hasPose("walk_b")) stepFrames = setInterval(() => { walkFrame = walkFrame === "walk_a" ? "walk_b" : "walk_a"; renderPose(); }, 220);
-        walkTimer = setTimeout(() => { delete cat.dataset.walk; clearInterval(stepFrames); walkFrame = "walk_a"; renderPose(); }, WALK_MS);
+        walkTimer = setTimeout(() => { delete cat.dataset.walk; clearInterval(stepFrames); walkFrame = "walk_a"; renderPose(); }, travel);
       }
       lastAt = at;
       Object.assign(cat.dataset, { at, spot: c.spot, pose: c.pose, face: c.face, flip: String(!!c.flip), inside: c.inside || "" });
@@ -284,12 +289,19 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
         const button = dockButtons[item.kind];
         const ok = canAct(session, item.kind);
         button.hidden = item.kind === "catch" && !toyOut(session);
-        button.disabled = !ok || leaving || panel === "decor";
+        button.disabled = !ok || leaving || !!panel;
         button.classList.toggle("active", !!item.tool && item.tool === tool);
         button.querySelector(".tt-act-label").textContent = item.kind === "play" && tool === "toy" && toyOut(session) ? item.again : item.label;
         button.title = !ok && item.locked ? item.locked : "";
       }
-      photoButton.disabled = !session.moment || leaving;
+      photoButton.disabled = !session.moment || leaving || !!panel;
+      photoButton.classList.toggle("ready", !!session.moment && !session.album.some(entry => entry.moment === session.moment));
+      const guide = discoveryGuide(session, focusMoment);
+      for (const [kind, button] of Object.entries(dockButtons)) button.classList.toggle("suggested", kind === guide.kind);
+      decorButton.classList.toggle("suggested", guide.kind === "decor");
+      trail.textContent = session.moment && !session.album.some(entry => entry.moment === session.moment)
+        ? "今のしぐさを、写真に残せる。" : guide.text;
+      trail.dataset.photo = String(!!session.moment && !session.album.some(entry => entry.moment === session.moment));
       photoButton.title = session.moment ? `今のしぐさ（${momentById(session.moment)?.name}）を写真に残す` : "しぐさが見えたら撮れる";
       decorButton.classList.toggle("new", session.newProps.length > 0);
       for (const button of [decorButton, bookButton, helpButton]) button.disabled = leaving;
@@ -319,7 +331,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
         line.firstElementChild.textContent = name(reaction.line.speaker);
         line.lastElementChild.textContent = `「${reaction.line.text}」`;
       } else line.hidden = true;
-      if (reaction.found) toast("found", reaction.found);
+      if (reaction.found) { toast("found", reaction.found); photoUntil = Date.now() + 6500; }
       fx(reaction.fx);
       if ((reaction.kind === "pet" && session.stage >= 2 && reaction.fx === "heart") || reaction.pose === "lap") purrNow();
       renderButtons();
@@ -335,6 +347,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       let index = 0;
       const next = () => {
         if (done) return;
+        if (panel || document.hidden) { stepTimer = setTimeout(next, 250); return; }
         if (index < steps.length) {
           const step = steps[index++];
           session.cat = { spot: step.spot, pose: step.pose, face: step.face, inside: null, flip: false, art: step.art || null };
@@ -381,7 +394,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
 
     // -- 操作
     function doAct(kind) {
-      if (done || leaving) return null;
+      if (done || leaving || panel) return null;
       const reaction = act(session, kind);
       if (!reaction) return null;
       SE.select?.();
@@ -393,7 +406,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       return reaction;
     }
     function press(item) {
-      if (done || leaving || panel === "decor") return;
+      if (done || leaving || panel) return;
       if (item.tool) setTool(item.tool);
       if (item.kind === "play" && !toyTip) toyTip = toyHome();
       doAct(item.kind);
@@ -413,7 +426,11 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       const k = rect.width / 1280 || 1;
       return { x: (event.clientX - rect.left) / k, y: (event.clientY - rect.top) / k };
     };
-    const catCenter = () => ({ x: SPOT_X[cat.dataset.at] ?? 548, y: cat.dataset.at === "bench" || cat.dataset.at === "slot-bench" ? 330 : 440 });
+    // 移動途中の実際の位置を使う。行き先へじゃらしだけが先に飛ばない。
+    const catCenter = () => {
+      const rect = cat.getBoundingClientRect();
+      return yardPoint({ clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height * .62 });
+    };
     const toyHome = () => { const c = catCenter(); return { x: Math.min(1100, c.x + 150), y: c.y - 30 }; };
     function placeToy() {
       if (tool !== "toy") { toy.hidden = true; return; }
@@ -426,7 +443,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       toyStick.style.transform = `rotate(${Math.atan2(dy, dx)}rad)`;
     }
     function moveToy(point) {
-      if (held) return;
+      if (done || held || panel || leaving) return;
       const next = { x: Math.max(60, Math.min(1220, point.x)), y: Math.max(130, Math.min(600, point.y)) };
       if (toyTip) toyTravel += Math.hypot(next.x - toyTip.x, next.y - toyTip.y) * cam.k; // 振った長さは画面の上で測る（寄せても手の動きは同じ）
       toyTip = next;
@@ -438,7 +455,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       clearTimeout(stillTimer);
       stillTimer = setTimeout(() => {
         const c = catCenter();
-        if (tool === "toy" && !held && toyOut(session) && toyTip && Math.hypot(toyTip.x - c.x, toyTip.y - c.y) <= TOY_CATCH_PX) doAct("catch");
+        if (!done && !panel && !leaving && !document.hidden && tool === "toy" && !held && toyOut(session) && toyTip && Math.hypot(toyTip.x - c.x, toyTip.y - c.y) <= TOY_CATCH_PX) doAct("catch");
       }, TOY_STILL_MS);
     }
     function holdToy() {
@@ -446,6 +463,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       toyTravel = 0;
       clearTimeout(stillTimer); clearTimeout(heldTimer);
       renderButtons(); placeToy();
+      if (!toyFrame) toyFrame = requestAnimationFrame(followHeldToy);
       heldTimer = setTimeout(() => { held = false; toyTip = toyHome(); renderButtons(); placeToy(); }, TOY_HELD_MS);
     }
     yard.addEventListener("pointermove", event => {
@@ -453,14 +471,30 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       if (event.pointerType !== "mouse" && !(event.buttons & 1)) return;
       moveToy(yardPoint(event));
     });
-    yard.addEventListener("pointerdown", event => { if (tool === "toy" && !panel && !leaving) moveToy(yardPoint(event)); });
+    yard.addEventListener("pointerdown", event => {
+      if (tool !== "toy" || panel || leaving || done) return;
+      yard.setPointerCapture?.(event.pointerId);
+      moveToy(yardPoint(event));
+    });
+    yard.addEventListener("pointercancel", () => { clearTimeout(stillTimer); toyTravel = 0; });
+    // 捕まえた先は猫と一緒に運ぶ。操作も移動もない時はフレームを回さない。
+    function followHeldToy() {
+      if (done || !held || !cat.dataset.walk) { toyFrame = 0; return; }
+      placeToy(); toyFrame = requestAnimationFrame(followHeldToy);
+    }
 
     // -- 猫を直接: なでる手ならタップ／ゆっくりなぞる＝なでる。ブラシなら、なぞる＝ブラシ。じゃらしの時は猫を押しても振らない。
-    cat.addEventListener("pointerdown", event => { stroke = { x: event.clientX, y: event.clientY, dist: 0, done: false }; });
+    cat.addEventListener("pointerdown", event => {
+      if (done || leaving || panel || tool === "toy") return;
+      cat.setPointerCapture?.(event.pointerId);
+      const point = yardPoint(event);
+      stroke = { ...point, dist: 0, done: false, id: event.pointerId };
+    });
     cat.addEventListener("pointermove", event => {
-      if (!stroke || !(event.buttons & 1) || panel) return;
-      stroke.dist += Math.hypot(event.clientX - stroke.x, event.clientY - stroke.y);
-      stroke.x = event.clientX; stroke.y = event.clientY;
+      if (!stroke || event.pointerId !== stroke.id || !(event.buttons & 1) || panel || done || leaving) return;
+      const point = yardPoint(event);
+      stroke.dist += Math.hypot(point.x - stroke.x, point.y - stroke.y);
+      stroke.x = point.x; stroke.y = point.y;
       if (tool === "hand" && stroke.dist >= STROKE_PX && Date.now() - lastPetAt >= STROKE_GAP_MS) { stroke.dist = 0; stroke.done = true; lastPetAt = Date.now(); doAct("pet"); }
       if (tool === "brush" && stroke.dist >= BRUSH_PX && Date.now() - lastBrushAt >= BRUSH_GAP_MS) { stroke.dist = 0; stroke.done = true; lastBrushAt = Date.now(); doAct("brush"); }
     });
@@ -468,7 +502,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     cat.addEventListener("click", () => {
       const stroked = stroke?.done;
       stroke = null;
-      if (stroked || panel === "decor" || tool === "toy") return;
+      if (stroked || panel || done || leaving || tool === "toy") return;
       if (tool === "brush") { lastBrushAt = Date.now(); doAct("brush"); return; }
       lastPetAt = Date.now();
       doAct("pet");
@@ -485,7 +519,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       // LOAD などで画面が差し替わったら、ここで閉じる（確定しない）。
       if (host.isConnected) mounted = true;
       if (!isCurrent() || (mounted && !host.isConnected)) { finish(true); return; }
-      if (leaving || panel === "book" || panel === "help" || held || Date.now() < quietUntil || document.hidden) { schedule(); return; }
+      if (leaving || panel || held || Date.now() < Math.max(quietUntil, photoUntil) || document.hidden) { schedule(); return; }
       const reaction = autonomous(session);
       if (!reaction.quiet) show(reaction);
       schedule();
@@ -493,7 +527,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
 
     // -- 写真（今見えているしぐさだけ。シャッターの光と、手帳へ飛ぶ小さな写真）
     function snap() {
-      if (done || leaving || !session.moment) return;
+      if (done || leaving || panel || !session.moment) return;
       const id = session.moment;
       if (!takePhoto(session)) return;
       (SE.shutter || SE.click)?.();
@@ -504,6 +538,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       flashTimer = setTimeout(() => { host.dataset.flash = ""; }, 700);
       toast("photo", id);
       flyToBook(id);
+      photoUntil = 0; renderButtons();
     }
 
     // -- もようがえ: 道具箱から物を選び、光った場所をタップして置く。置いた物をタップすると片付ける。
@@ -512,6 +547,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       SE.click?.();
       closePanelQuietly();
       panel = "decor"; host.dataset.panel = "decor";
+      clearTimeout(stillTimer); stroke = null;
       aimCamera();
       fresh = [...session.newProps];
       session.newProps = [];
@@ -553,7 +589,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       if (!ok) return;
       SE.click?.();
       selected = null;
-      renderCat(); renderDrawer(); renderSlots();
+      renderCat(); renderDrawer(); renderSlots(); renderButtons();
     }
 
     // -- てつこ手帳: 左に12のしぐさ、右に選んだしぐさ（写真・てつこメモ）。
@@ -562,6 +598,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       SE.click?.();
       closePanelQuietly();
       panel = "book"; host.dataset.panel = "book";
+      clearTimeout(stillTimer); stroke = null;
       bookSel = focus || session.newFound.at(-1) || session.found.at(-1) || MOMENTS[0].id;
       renderBook(); renderButtons();
     }
@@ -588,6 +625,8 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
         ]),
         el("h4", { text: known ? pick.name : "まだ見つけていない" }),
         el("p.tt-detail-memo", { text: known ? pick.memo : pick.hint }),
+        !known && discoveryGuide(session, pick.id).id === pick.id
+          ? el("button.btn.small.tt-seek", { type: "button", text: "このしぐさを探す", dataset: { test: "tetsuko-seek" }, onclick: () => { focusMoment = pick.id; closePanel(); } }) : null,
       ]);
       book.hidden = false;
       book.replaceChildren(el("div.tt-book-spread", [
@@ -602,6 +641,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       SE.click?.();
       closePanelQuietly();
       panel = "help"; host.dataset.panel = "help";
+      clearTimeout(stillTimer); stroke = null;
       help.hidden = false;
       help.replaceChildren(helpCard({ el, icon, mood: moodLabel(moodOf(session.day), session.stage), onClose: () => { SE.cancel?.(); closePanel(); } }));
       renderButtons();
@@ -637,6 +677,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       done = true;
       for (const t of [timer, stepTimer, fxTimer, purrTimer, walkTimer, stillTimer, heldTimer, flashTimer]) clearTimeout(t);
       clearInterval(stepFrames);
+      cancelAnimationFrame(toyFrame);
       theme.stop();
       window.removeEventListener("pagehide", abort);
       window.removeEventListener("keydown", onKey);
@@ -659,3 +700,4 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     schedule();
   });
 }
+

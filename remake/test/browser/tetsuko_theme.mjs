@@ -238,4 +238,55 @@ await suite("tetsuko-theme", async check => {
     await page.locator(dt("tetsuko-time-back")).click();
     await page.waitForFunction(() => !document.querySelector('[data-test="tetsuko-time-screen"]'), null, { timeout: 30000 });
   }, { reducedMotion: "reduce" });
+  for (const phone of [false, true]) await check(`tetsuko-discover-choose-place-photograph-${phone ? "phone" : "desktop"}`, async page => {
+    await seed(page);
+    await openTetsuko(page);
+    const get = id => page.locator(dt(`tetsuko-${id}`));
+    // 一つの短い遊び: 振る→狙う→前足→写真。連打の点数にはしない。
+    await get("play").click();
+    await get("play").click();
+    await get("play").click();
+    assert.match(await get("trail").textContent(), /写真/);
+    assert(await get("photo").evaluate(node => node.classList.contains("ready")));
+    await get("photo").click();
+    assert(!await get("photo").evaluate(node => node.classList.contains("ready")));
+    // 手帳から次の遊びを選び、小物を置いた結果を見届ける。
+    await get("book").click();
+    await get("book-box_peek").click();
+    await get("seek").click();
+    assert.match(await get("trail").textContent(), /箱/);
+    await get("decor").click();
+    await get("item-box").click();
+    await get("slot-floor").click();
+    const before = await get("cat").getAttribute("data-inside");
+    await page.waitForTimeout(4500);
+    assert.equal(await get("cat").getAttribute("data-inside"), before, "猫は配置中に勝手に箱へ入らない");
+    await get("panel-close").click();
+    await page.waitForFunction(() => document.querySelector('[data-test="tetsuko-cat"]')?.dataset.inside === "box", null, { timeout: 14000 });
+    assert.match(await get("caption").textContent(), /顔だけ/);
+    await get("photo").click();
+    // 説明中・手帳中の遅延した捕獲や自律行動が、写真や状態をすり替えない。
+    await get("help").click();
+    const caption = await get("caption").textContent();
+    await page.waitForTimeout(4200);
+    assert.equal(await get("caption").textContent(), caption);
+    await page.keyboard.press("Escape");
+    // 反応の帯と猫が画面内。横持ちの表示下限は既存の phoneSizes でも確認する。
+    const bounds = await get("trail").boundingBox();
+    const viewport = page.viewportSize();
+    assert(bounds.x >= 0 && bounds.y >= 0 && bounds.x + bounds.width <= viewport.width + 1 && bounds.y + bounds.height <= viewport.height + 1);
+    if (phone) {
+      const sizes = await page.evaluate(phoneSizes);
+      for (const text of sizes.texts) assert(text.px >= 11, `${text.text}: ${text.px}px`);
+    }
+    await get("time-back").click();
+    await page.waitForFunction(() => !document.querySelector('[data-test="tetsuko-time-screen"]'), null, { timeout: 30000 });
+    const record = await page.evaluate(() => window.__remake.state.flags._tetsuko_time);
+    assert(record.found.includes("first_paw") && record.found.includes("box_peek"));
+    assert(record.album.some(entry => entry.moment === "first_paw"));
+    assert(record.album.some(entry => entry.moment === "box_peek"));
+    assert.equal(record.props.floor, "box");
+  }, phone ? { viewport: { width: 844, height: 340 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" } : {});
+
 });
+
