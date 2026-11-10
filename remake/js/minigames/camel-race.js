@@ -34,7 +34,7 @@ const BLANKET = Object.freeze({ corners: [[126, 136], [298, 64], [314, 222], [14
 const SKIN_SCALE = 0.5;           // 幕を塗ったラクダの絵を半分の大きさで作り置く（描く大きさは 0.23〜0.32 倍）
 // SUV の車体絵（v6・#3044）にはじめと運転手は焼き込み済み。コードで重ねるのは
 // リモコンの状態ランプと吹き出しだけ。位置は絵の画素: アンテナ先端と、吹き出しの付け根（頭の上）。
-const HAJIME_AT = Object.freeze({ antenna: [308, 90], balloon: [250, 72] });
+const HAJIME_AT = Object.freeze({ antenna: [308, 90], balloon: [200, 96] });
 // 声かけの輪は自分のラクダの背のロボット騎手（声はその小さなスピーカーへ届く）を囲む。
 // 奥の列のラクダと重なっても、どのラクダの輪か迷わない位置（列の y からの差）。
 const CUE_AT = Object.freeze({ dx: -22, dy: -64 });
@@ -63,8 +63,8 @@ const ICONS = Object.freeze({
 const TUTORIAL = [
   // 3ページとも短く（#2836）。キーは kbd で添え、タッチ端末では CSS で隠す。結果・大会選びの「？」から読み直せる。
   { icon: "camel", art: "howto-camel", title: "ラクダは、自分で走る", body: "手前を走る金のゼッケン（★）がハビーバ。操縦はしない。背中のロボット騎手へ「声」と「ムチ」を送るだけ。" },
-  { icon: "voice", art: "howto-voice", title: "声をかける ── 左のボタン", key: "Space", body: "騎手のまわりの金の輪が縮む。内側の輪と重なった瞬間に押すと PERFECT で、ぐっと伸びる。外したり連打したりすると、スタミナが減る。" },
-  { icon: "signal", art: "howto-whip", title: "ムチ ── 右のボタンを押し続ける", key: "X", body: "押している間だけラクダが伸び、スタミナが減る。空になるとしばらく使えない。残り250mの LAST SPURT でいちばん効く。" },
+  { icon: "voice", art: "howto-voice", title: "声をかける ── 左のボタン", key: "Space", body: "騎手のまわりの金の輪が縮む。内側の輪と重なった瞬間に押すと PERFECT で、ぐっと伸びる。輪の縮む速さは毎回ちがうので、よく見て押す。外したり連打したりすると、スタミナが減る。" },
+  { icon: "signal", art: "howto-whip", title: "ムチ ── 右のボタンを押し続ける", key: "X", body: "押している間だけラクダが伸び、スタミナが減る。離している間は息が戻る（調子が良いほど早く戻る）ので、途中で小刻みに使うと無駄がない。空になるとしばらく使えない。残り250mの LAST SPURT でいちばん効くので、少しは残しておく。" },
 ];
 const sfx = name => { try { SE[name]?.(); } catch { /* 音は無くても遊べる */ } };
 
@@ -924,7 +924,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     // 騎手: 鞍の底を背に合わせ、ムチの間は腕を回して前後に揺らす（自分のラクダ）。
     const jk = k * JOCKEY_ART.scale;
     const sx = dx + CAMEL_ART.seatX * k, sy = dy + CAMEL_ART.seatY * k;
-    const swing = me ? (race?.player.whipping ? Math.sin(t * 22) * 0.3 : Math.sin(whip * Math.PI * 3) * whip * 0.28) : Math.sin(t * 6 + x) * 0.04;
+    const swing = me ? (race?.player.whipping ? Math.sin(t * 22) * 0.3 : Math.sin(whip * Math.PI * 3) * whip * 0.28) : (camel.whipping ? Math.sin(t * 22) * 0.3 : Math.sin(t * 6 + x) * 0.04);
     ctx.translate(sx, sy); ctx.rotate(-swing);
     ctx.drawImage(art.jockey, -JOCKEY_ART.cx * jk, -JOCKEY_ART.bottom * jk, art.jockey.width * jk, art.jockey.height * jk);
     ctx.restore();
@@ -1011,8 +1011,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     ctx.fillStyle = "#c9d2da"; ctx.beginPath(); ctx.arc(-21, -42, 5, Math.PI, 0); ctx.fill(); // 丸い頭
     ctx.strokeStyle = "#34404a"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-17, -42); ctx.lineTo(-15, -58); ctx.stroke();
     ctx.fillStyle = Math.sin(t * 8 + x) > 0 ? "#ff5a5a" : "#5a1a1a"; ctx.beginPath(); ctx.arc(-15, -59, 2.4, 0, Math.PI * 2); ctx.fill();
-    // 腕（ムチで振る）。自分のラクダだけ whip が動く。
-    const swing = camel.id === "player" ? (race?.player.whipping ? Math.sin(t * 22) : Math.sin(whip * Math.PI * 3) * whip) : Math.sin(t * 3 + x) * 0.1;
+    // 腕（ムチで振る）。ムチを振っている間は、ライバルの騎手も大きく回す。
+    const swing = camel.id === "player" ? (race?.player.whipping ? Math.sin(t * 22) : Math.sin(whip * Math.PI * 3) * whip) : (camel.whipping ? Math.sin(t * 22) : Math.sin(t * 3 + x) * 0.1);
     ctx.save(); ctx.translate(-30, -32); ctx.rotate(-0.6 - swing * 1.4);
     ctx.strokeStyle = "#34404a"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-18, 0); ctx.stroke();
     ctx.strokeStyle = "#f0c060"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-18, 0); ctx.lineTo(-30, 2); ctx.stroke();
@@ -1065,11 +1065,13 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       ctx.translate(dx + HAJIME_AT.balloon[0] * k, dy + HAJIME_AT.balloon[1] * k); ctx.scale(textScale, textScale);
       ctx.font = "900 17px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
       const balloonImage = art?.balloon;
+      // 箱は尻尾（左下）基準で置く: 原点＝はじめの頭の真上。尻尾の先が原点に来て、箱は右上へ伸びる。
+      // （中央基準だと長い掛け声ほど尻尾が車の後ろへ流れてしまう。）
       if (balloonImage) {
-        const bw = Math.max(ctx.measureText(hajimeText).width + 34, 104), bh = 42, by = -bh - 10;
+        const bw = Math.max(ctx.measureText(hajimeText).width + 34, 104), bh = 42;
         // 九分割: 原画 384×192・帯48px。尻尾は左下の角の中にある。
         const S = 48, iw = balloonImage.width, ih = balloonImage.height, cs = 21;
-        const x0 = -bw / 2, y0 = by, x1 = x0 + cs, x2 = x0 + bw - cs, y1 = y0 + cs, y2 = y0 + bh - cs;
+        const x0 = -14, y0 = -bh - 6, x1 = x0 + cs, x2 = x0 + bw - cs, y1 = y0 + cs, y2 = y0 + bh - cs;
         ctx.drawImage(balloonImage, 0, 0, S, S, x0, y0, cs, cs);
         ctx.drawImage(balloonImage, iw - S, 0, S, S, x2, y0, cs, cs);
         ctx.drawImage(balloonImage, 0, ih - S, S, S, x0, y2, cs, cs);
@@ -1079,14 +1081,14 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         ctx.drawImage(balloonImage, 0, S, S, ih - 2 * S, x0, y1, cs, bh - 2 * cs);
         ctx.drawImage(balloonImage, iw - S, S, S, ih - 2 * S, x2, y1, cs, bh - 2 * cs);
         ctx.drawImage(balloonImage, S, S, iw - 2 * S, ih - 2 * S, x1, y1, bw - 2 * cs, bh - 2 * cs);
-        ctx.fillStyle = "#2a1a0e"; ctx.fillText(hajimeText, 0, by + bh / 2);
+        ctx.fillStyle = "#2a1a0e"; ctx.fillText(hajimeText, x0 + bw / 2, y0 + bh / 2);
       } else {
-        const bw = ctx.measureText(hajimeText).width + 24, bh = 30, by = -bh - 10;
+        const bw = ctx.measureText(hajimeText).width + 24, bh = 30;
+        const x0 = -18, y0 = -bh - 12;
         ctx.fillStyle = "#fffaf0"; ctx.strokeStyle = "#2a1a0e"; ctx.lineWidth = 2.5;
-        ctx.beginPath(); ctx.roundRect(-bw / 2, by, bw, bh, 15); ctx.fill(); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(-6, by + bh - 1); ctx.lineTo(4, by + bh + 9); ctx.lineTo(8, by + bh - 1); ctx.closePath(); ctx.fill();
-        ctx.beginPath(); ctx.moveTo(-6, by + bh); ctx.lineTo(4, by + bh + 9); ctx.lineTo(8, by + bh); ctx.stroke();
-        ctx.fillStyle = "#2a1a0e"; ctx.fillText(hajimeText, 0, by + bh / 2 + 1);
+        ctx.beginPath(); ctx.roundRect(x0, y0, bw, bh, 15); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x0 + 8, y0 + bh - 1); ctx.lineTo(x0 + 16, y0 + bh + 10); ctx.lineTo(x0 + 24, y0 + bh - 1); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = "#2a1a0e"; ctx.fillText(hajimeText, x0 + bw / 2, y0 + bh / 2 + 1);
       }
       ctx.restore();
     }
@@ -1348,7 +1350,9 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       setPhase("result");
       sheet.replaceChildren(card);
       sheet.hidden = false;
-      (allowRetry ? again : leave).focus();
+      // 低い画面ではカードが内側スクロールになる。素の focus() だとボタンへ勝手にスクロールして
+      // メダルや見出しが上に切れるので、スクロールさせずに頭から見せる。
+      (allowRetry ? again : leave).focus({ preventScroll: true });
     };
     card.append(helpButton(() => { totalNode.textContent = String(score.total); showResult(); }));
     showResult();

@@ -163,7 +163,7 @@
 .camel-card h2 { margin: 2px 0 10px; font-size: 24px; color: #ffe9b8; }
 .camel-card p { margin: 0 0 8px; line-height: 1.75; }
 .camel-eyebrow { color: var(--cr-gold); font-size: 14px; font-weight: 800; letter-spacing: .16em; }
-.camel-card-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.camel-card-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; justify-content: center; }
 .camel-game .camel-sheet .camel-card .camel-card-actions .btn { min-height: 48px; padding-inline: 24px; border-radius: 12px; border: 1px solid rgba(255,215,122,.5); background: rgba(0,0,0,.3); color: var(--cr-sand); font-weight: 800; letter-spacing: .06em; box-shadow: none; }
 .camel-game .camel-sheet .camel-card .camel-card-actions .btn:hover, .camel-game .camel-sheet .camel-card .camel-card-actions .btn:focus-visible { background: rgba(255,215,122,.14); border-color: var(--cr-gold); color: #fff; }
 .camel-game .camel-sheet .camel-card .camel-card-actions .btn.primary { border-color: transparent; color: var(--cr-ink); background: linear-gradient(180deg, #fff1b8, var(--cr-gold) 45%, var(--cr-gold-deep)); box-shadow: inset 0 -3px 0 rgba(0,0,0,.2), 0 6px 18px rgba(224,164,60,.35); }
@@ -190,7 +190,7 @@
 @keyframes camel-stamp { from { opacity: 0; transform: scale(2.6) rotate(-14deg); } to { opacity: 1; transform: scale(1) rotate(-4deg); } }
 @keyframes camel-bar { from { width: 0; } }
 .camel-medal span { font-size: 18px; font-weight: 900; }
-.camel-result-score { display: grid; gap: 4px; }
+.camel-result-score { display: grid; gap: 4px; justify-items: center; text-align: center; }
 .camel-time { margin: 0; color: var(--cr-dim); font-size: 14px; font-weight: 800; letter-spacing: .08em; font-variant-numeric: tabular-nums; }
 .camel-total { display: flex; align-items: baseline; gap: 8px; margin: 0; }
 .camel-total small { font-size: 13px; font-weight: 800; color: var(--cr-dim); letter-spacing: .02em; }
@@ -208,8 +208,8 @@
 .camel-score-bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--cr-gold-deep), var(--cr-gold), #fff1b8); }
 .camel-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 14px 0 0; padding: 0; list-style: none; }
 .camel-stats li { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding: 6px 10px; border-radius: 10px; background: rgba(0,0,0,.25); }
-.camel-stats small { font-size: 12px; font-weight: 800; color: var(--cr-dim); }
-.camel-stats b { font-size: 15px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.camel-stats small { font-size: 12px; font-weight: 800; color: var(--cr-dim); white-space: nowrap; flex: none; }
+.camel-stats b { font-size: 15px; font-weight: 900; font-variant-numeric: tabular-nums; text-align: right; }
 .camel-best { margin-top: 10px; color: #ffe27a; font-weight: 900; letter-spacing: .1em; }
 /* 結果・大会選びの右上の「？」: 遊び方を読み直す（#2836） */
 .camel-game .camel-sheet .camel-card .camel-help { position: absolute; right: 14px; top: 14px; display: grid; place-items: center; width: 40px; height: 40px; padding: 0;
