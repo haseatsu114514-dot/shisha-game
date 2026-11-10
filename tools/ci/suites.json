@@ -925,6 +925,8 @@
         "node --test remake/test/trpg_feedback.mjs",
         "node --test remake/test/trpg_d20.mjs",
         "node --experimental-vm-modules --test remake/test/trpg_table_view.mjs",
+        "node remake/test/trpg_audio_cues.mjs",
+        "node --experimental-vm-modules remake/test/trpg_audio_bgm.mjs",
         "node --test remake/test/trpg_campaign.mjs",
         "node --experimental-vm-modules remake/test/trpg_campaign_save.mjs",
         "node tools/validate_trpg_scenario.mjs",

@@ -1,0 +1,293 @@
+[
+  {
+    "file": "assets/audio/se/trpg/book_open.wav",
+    "bytes": 10210,
+    "duration_seconds": 0.115,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "7d005fc60a002ed152e23bc9cbf22681f462882a014d9c2b14a263842e4efb6c",
+    "source": "kenney_rpg:OGG/bookOpen.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/card_place_01.wav",
+    "bytes": 51746,
+    "duration_seconds": 0.586,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "936463c11580468014e9d3f3f3f10d7e648a6d800649f5fe6fce3ce0dcfd6810",
+    "source": "kenney_casino:Audio/card-place-1.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/card_place_02.wav",
+    "bytes": 22114,
+    "duration_seconds": 0.25,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "a2a64b0970a44c576a1e261877c150722d9579f866b0ed661f9d80a8512ab8a0",
+    "source": "kenney_casino:Audio/card-place-2.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/card_slide_01.wav",
+    "bytes": 41486,
+    "duration_seconds": 0.469,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "fb2d64b9f2367bc5ebc268920b3c3c6227510d47c27f85489f78744d77c727dc",
+    "source": "kenney_casino:Audio/card-slide-1.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/card_slide_02.wav",
+    "bytes": 51594,
+    "duration_seconds": 0.584,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "524d375d7feb572c8c4ed293f730b527fa0932d9824d0f03cceb1da7ac3803ec",
+    "source": "kenney_casino:Audio/card-slide-2.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/dice_shake.wav",
+    "bytes": 47366,
+    "duration_seconds": 0.536,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "39deee5d7e55ca246a44ca3c3041b89a46d184100f0397298e47585b8c9b7e36",
+    "source": "kenney_casino:Audio/dice-shake-1.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/dice_throw_01.wav",
+    "bytes": 52862,
+    "duration_seconds": 0.598,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "55b1e4215a2789ae110e3901fd08d011934f15cbd412fe49a476abe86df000bc",
+    "source": "kenney_casino:Audio/dice-throw-1.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/dice_throw_02.wav",
+    "bytes": 33774,
+    "duration_seconds": 0.382,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "1ed9bd416ee23899b1d52cbc8d89adcd8be2fb093751a66765f72a4fb0800fdf",
+    "source": "kenney_casino:Audio/dice-throw-2.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/dice_throw_03.wav",
+    "bytes": 45774,
+    "duration_seconds": 0.518,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "c560da896ac55214ce80eaf301b5e870e890e17bdf6d59fc648aa0c69d6ab9f4",
+    "source": "kenney_casino:Audio/dice-throw-3.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/die_throw_01.wav",
+    "bytes": 50204,
+    "duration_seconds": 0.568,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "8a6bf5d32f8e1598042bf02fd1f1143660860169fcc7ccfe10a2c4e84699a0c9",
+    "source": "kenney_casino:Audio/die-throw-2.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/die_throw_02.wav",
+    "bytes": 30756,
+    "duration_seconds": 0.348,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "b62cf2df97cd091c97166f9c8862e6e149a624994149c76dab7aa8ff688cc2a9",
+    "source": "kenney_casino:Audio/die-throw-4.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/jingle_critical.wav",
+    "bytes": 83418,
+    "duration_seconds": 0.945,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "b1ac98053359e197d25fd048d38e34b4ab888eafc8bfcddbdd2e912660b8679c",
+    "source": "kenney_jingles:OGG/jingles_PIZZA/jingles_PIZZA02.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/jingle_ending.wav",
+    "bytes": 70264,
+    "duration_seconds": 0.796,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "a124caa89bf73e549b1ccc0d7764081af4dde9562a1f4adcafb79f2f3a3bd8d5",
+    "source": "kenney_jingles:OGG/jingles_PIZZA/jingles_PIZZA15.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/jingle_fumble.wav",
+    "bytes": 80916,
+    "duration_seconds": 0.917,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "bdaddb37088632ff25a1837864d1e787ba99c8003b045031b3563c36144dbbba",
+    "source": "kenney_jingles:OGG/jingles_PIZZA/jingles_PIZZA14.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/jingle_mixed.wav",
+    "bytes": 49424,
+    "duration_seconds": 0.559,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "2594f59f205bef462d15b18b543f6d83ac8ff286e11c37e67b7b5b7d2f3af645",
+    "source": "kenney_jingles:OGG/jingles_PIZZA/jingles_PIZZA08.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/jingle_success.wav",
+    "bytes": 68592,
+    "duration_seconds": 0.777,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "c2028ade96143f1eb210ba40a89f9446b1b7a8c67fac1bb605c5ca6884cfc345",
+    "source": "kenney_jingles:OGG/jingles_PIZZA/jingles_PIZZA10.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/jingle_trouble.wav",
+    "bytes": 49298,
+    "duration_seconds": 0.558,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "e40d896b6a3106af4f8f359822e8b85f55a018d7f7b21fd3c102a9b34ae58b76",
+    "source": "kenney_jingles:OGG/jingles_PIZZA/jingles_PIZZA09.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/page_flip_01.wav",
+    "bytes": 33034,
+    "duration_seconds": 0.374,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "1789590e1a5b4967999938ff22b6b9d42c4a6cf156b954f1f21fefa535f8fd83",
+    "source": "kenney_rpg:OGG/bookFlip2.ogg"
+  },
+  {
+    "file": "assets/audio/se/trpg/page_flip_02.wav",
+    "bytes": 16520,
+    "duration_seconds": 0.186,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "fd64d0860fb7b192afd29751e608e4777505b38f8eedfb4107c4b149ee1437b6",
+    "source": "kenney_rpg:OGG/bookFlip3.ogg"
+  },
+  {
+    "file": "assets/audio/bgm/bgm_trpg_heist.mp3",
+    "bytes": 1549322,
+    "duration_seconds": 154.906,
+    "channels": 2,
+    "sample_rate_hz": 44100,
+    "sha256": "d362830c6e19705f478a8f5491a2e9c61114162e043576ff4121ab7821a57d3b",
+    "source": "covert_action",
+    "input_lufs": -16.89,
+    "input_true_peak_db": -0.99,
+    "gain_db": -0.51
+  },
+  {
+    "file": "assets/audio/bgm/bgm_trpg_shark.mp3",
+    "bytes": 1068669,
+    "duration_seconds": 106.841,
+    "channels": 2,
+    "sample_rate_hz": 44100,
+    "sha256": "ed54dbaa148d5101c781175a2bf97f0ebabb87636dc7a012b7a8af6248b7ae0b",
+    "source": "chest_of_adventure",
+    "input_lufs": -11.49,
+    "input_true_peak_db": 0.64,
+    "gain_db": -4.51
+  },
+  {
+    "file": "assets/audio/bgm/bgm_trpg_island.mp3",
+    "bytes": 651233,
+    "duration_seconds": 65.097,
+    "channels": 2,
+    "sample_rate_hz": 44100,
+    "sha256": "f0b086b5736920a3608ba5f5a40cc058aa208499f4d141bbb007a3181664ae75",
+    "source": "treasure_hunter",
+    "input_lufs": -12.01,
+    "input_true_peak_db": -0.08,
+    "gain_db": -3.99
+  },
+  {
+    "file": "assets/audio/bgm/bgm_trpg_leaf.mp3",
+    "bytes": 1372212,
+    "duration_seconds": 137.195,
+    "channels": 2,
+    "sample_rate_hz": 44100,
+    "sha256": "bbf898e2c5b7cb0f9d22f2be7ada7bc46315fd055d63008765f0b63106a960e4",
+    "source": "musicbox_cute",
+    "input_lufs": -15.05,
+    "input_true_peak_db": -1.53,
+    "gain_db": -0.95
+  },
+  {
+    "file": "assets/audio/bgm/bgm_trpg_mansion.mp3",
+    "bytes": 1067363,
+    "duration_seconds": 106.71,
+    "channels": 2,
+    "sample_rate_hz": 44100,
+    "sha256": "93b9269ca928e8d4a11425fa77f00e4596b97a8afcd4b811e16542a962e4dea2",
+    "source": "musicbox_spooky",
+    "input_lufs": -18.96,
+    "input_true_peak_db": -0.94,
+    "gain_db": -0.56
+  },
+  {
+    "file": "assets/audio/bgm/bgm_trpg_stage.mp3",
+    "bytes": 1181518,
+    "duration_seconds": 118.126,
+    "channels": 2,
+    "sample_rate_hz": 44100,
+    "sha256": "37d6728ddc470c49e4c3835a244d75e4d4f6e66bdd2ec6cf81359c4ce9c94acf",
+    "source": "death_waltz",
+    "input_lufs": -12.11,
+    "input_true_peak_db": -0.02,
+    "gain_db": -3.89
+  },
+  {
+    "file": "assets/audio/bgm/bgm_trpg_castle.mp3",
+    "bytes": 380082,
+    "duration_seconds": 37.982,
+    "channels": 2,
+    "sample_rate_hz": 44100,
+    "sha256": "70e4f7eaf56a2e5aec338974db0eab73d5e3673290770d9b041e52fb2d1c400c",
+    "source": "apparitions_ball",
+    "input_lufs": -11.63,
+    "input_true_peak_db": 0.44,
+    "gain_db": -4.37
+  },
+  {
+    "file": "assets/audio/bgm/bgm_trpg_magic.mp3",
+    "bytes": 557453,
+    "duration_seconds": 55.719,
+    "channels": 2,
+    "sample_rate_hz": 44100,
+    "sha256": "adb4f6fe083660f3262371539ae6dac8c30fc8576689ab2fcc713604da83d32e",
+    "source": "magic_town",
+    "input_lufs": -10.89,
+    "input_true_peak_db": 0.26,
+    "gain_db": -5.11
+  },
+  {
+    "file": "assets/audio/bgm/bgm_trpg_fox.mp3",
+    "bytes": 1600522,
+    "duration_seconds": 160.026,
+    "channels": 2,
+    "sample_rate_hz": 44100,
+    "sha256": "2d95096e429e8d5fa28673459e7d7ad8382fff64b01e1dfe3203e891f3aca3ec",
+    "source": "hot_spring_town",
+    "input_lufs": -15.96,
+    "input_true_peak_db": -1.95,
+    "gain_db": -0.04
+  },
+  {
+    "file": "assets/audio/bgm/bgm_trpg_space.mp3",
+    "bytes": 2420767,
+    "duration_seconds": 242.051,
+    "channels": 2,
+    "sample_rate_hz": 44100,
+    "sha256": "e1bef1d6073505fc184daacb38a8da89de0f1ebae1d975c59a2b89989b493a08",
+    "source": "out_there",
+    "input_lufs": -26.59,
+    "input_true_peak_db": -8.29,
+    "gain_db": 6.79
+  }
+]
