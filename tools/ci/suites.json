@@ -3961,6 +3961,7 @@
       "timeout": 6,
       "paths": [
         "remake/test/browser/recent_intros.mjs",
+        "remake/test/browser/salaryman_intro.mjs",
         "remake/js/vn/intro*.js",
         "remake/css/intro.css",
         "remake/data/manifest.json",
@@ -3972,6 +3973,7 @@
       ],
       "run": [
         "node remake/test/browser/recent_intros.mjs",
+        "node remake/test/browser/salaryman_intro.mjs",
         "node remake/test/intro_art.mjs",
         "node remake/test/intro_cutin.mjs"
       ],

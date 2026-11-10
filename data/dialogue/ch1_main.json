@@ -480,6 +480,7 @@
           "face": "",
           "text": "いつもの鉄仮面さんが、いつもの席に座る。襟元に指を入れて、無言でメニューを指差した。",
           "portrait": "salaryman",
+          "intro_on_portrait": true,
           "portrait_face": "normal"
         },
         {
