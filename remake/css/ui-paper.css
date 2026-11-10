@@ -32,6 +32,15 @@ html:root[data-ui-theme="paper"] :is(.panel, .modal-box, .ink-panel, .vn-log, .m
 html:root[data-ui-theme="paper"] :is(.map-notice, .map-time, .toast) { border-width: 12px; border-image-width: 12px; }
 html:root[data-ui-theme="paper"] .modal-backdrop { background: #1e14298c; }
 html:root[data-ui-theme="paper"] .modal-box h3 { color: var(--paper-ink); font-weight: 900; letter-spacing: .02em; }
+html:root[data-ui-theme="paper"] .saveload-modal .save-slot {
+  color: var(--paper-ink); background: var(--paper-card); border-color: var(--paper-line);
+  border-left: 5px solid var(--lavender); box-shadow: 0 3px 10px #39264a1c;
+}
+html:root[data-ui-theme="paper"] .saveload-modal .save-slot.auto { border-left-color: var(--amber); background: #fff8ef; }
+html:root[data-ui-theme="paper"] .saveload-modal .save-slot.blank { border-style: dashed; border-left-style: solid; }
+html:root[data-ui-theme="paper"] .saveload-modal .save-slot.auto .ss-label,
+html:root[data-ui-theme="paper"] .saveload-modal .save-slot.auto .ss-label small { color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] .saveload-modal .save-slot.auto .ss-stat i::after { background: var(--amber); }
 
 /* 紙の上の小さな面（入れ子の豪華な枠を作らない。GUI31） */
 html:root[data-ui-theme="paper"] :is(.st-row, .shop-item, .dc-row, .hud-level, .hud-menu, .hud-stamina) {

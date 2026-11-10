@@ -602,13 +602,11 @@ export function load() {
   return migrated ? setState(migrated) : null;
 }
 
-// ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に3枠）
+// ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に1枠）
 
 export const SAVE_SLOTS = [
   { key: SAVE_KEY, label: "オートセーブ", auto: true },
   { key: "suien_remake_slot1", label: "スロット 1" },
-  { key: "suien_remake_slot2", label: "スロット 2" },
-  { key: "suien_remake_slot3", label: "スロット 3" },
 ];
 const BOOT_LOAD_KEY = "suien_remake_boot_load";
 
