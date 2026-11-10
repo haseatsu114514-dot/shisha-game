@@ -17,10 +17,13 @@ const NEW = {
   ch3_saku_missed: { file: "ch3_rivals", who: "saku", heart: 2 },
   ch3_saku_cleanup: { file: "ch3_rivals", who: "saku", heart: 3 },
   ch3_saku_liar: { file: "ch3_rivals", who: "saku", heart: 4 },
+  ch3_saku_first_reply: { file: "ch3_rivals", who: "saku", heart: 4 },
   ch3_steve_two_timers: { file: "ch3_rivals", who: "steve", heart: 1 },
   ch3_steve_empty_seat: { file: "ch3_rivals", who: "steve", heart: 3 },
   ch3_steve_tongs: { file: "ch3_rivals", who: "steve", heart: 4 },
+  ch3_steve_watch: { file: "ch3_rivals", who: "steve", heart: 4 },
   ch3_volk_fifth: { file: "ch3_volk", who: "volk", heart: 4 },
+  ch3_volk_revisit: { file: "ch3_volk", who: "volk", heart: 4 },
 };
 
 for (const [id, info] of Object.entries(NEW)) {
@@ -59,4 +62,4 @@ assert.equal(finale.metadata.bond_finale, "master_hookah");
 const spoken = [...finale.lines, ...Object.values(finale.branches || {}).flat()].map(line => line.text || "").join("");
 assert(!spoken.includes("ライチ") && !spoken.includes("煙楼先生") && !spoken.includes("ジャスミン"));
 
-console.log("PASS affection fill: A01–A14 scripts, wiring, gifts, and late-added flags");
+console.log("PASS affection fill: A01–A14 and stage-2 scripts, wiring, gifts, and late-added flags");

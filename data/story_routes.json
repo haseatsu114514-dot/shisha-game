@@ -133,10 +133,12 @@
         "ch3_saku_missed",
         "ch3_saku_cleanup",
         "ch3_saku_liar",
+        "ch3_saku_first_reply",
         "ch3_steve_lime",
         "ch3_steve_two_timers",
         "ch3_steve_empty_seat",
         "ch3_steve_tongs",
+        "ch3_steve_watch",
         "confession_mashiro",
         "hiyori_tokyo_contact",
         "ch3_tsumugi_slump",
@@ -145,6 +147,7 @@
         "ch3_volk_fourth",
         "ch3_volk_lime",
         "ch3_volk_fifth",
+        "ch3_volk_revisit",
         "ch3_mashiro_timer_side",
         "ch3_mashiro_cup_warm",
         "ch3_mashiro_glass_cloth",
@@ -512,6 +515,12 @@
       ],
       "comment": "好感度補充: 閉店後の次の来店（♥4）。"
     },
+    "ch3_saku_first_reply": {
+      "seen": [
+        "ch3_saku_liar"
+      ],
+      "comment": "好感度補充（A27）: 嘘つきの欄のあと、最初の返事（♥4）。"
+    },
     "ch3_steve_two_timers": {
       "seen": [
         "ch3_steve_low_heat"
@@ -530,11 +539,23 @@
       ],
       "comment": "好感度補充: 空の席の次（♥4）。"
     },
+    "ch3_steve_watch": {
+      "seen": [
+        "ch3_steve_tongs"
+      ],
+      "comment": "好感度補充（A32）: トングの手前のあと、伏せたタイマー（♥4）。"
+    },
     "ch3_volk_fifth": {
       "seen": [
         "ch3_volk_lime"
       ],
       "comment": "好感度補充: LIME交換の後の五度目（♥4）。締めくくりの前。"
+    },
+    "ch3_volk_revisit": {
+      "seen": [
+        "ch3_volk_fifth"
+      ],
+      "comment": "好感度補充（A28）: 五度目のあと、残した一項の短い再訪（♥4）。"
     }
   },
   "near_conflict": {

@@ -120,9 +120,9 @@ const VOLK_VISITS = ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth"];
 const MASHIRO_EXTRAS = ["ch3_mashiro_timer_side", "ch3_mashiro_cup_warm", "ch3_mashiro_glass_cloth",
   "ch3_mashiro_leaf_rest", "ch3_mashiro_bench_tea"];
 const detourIds = ["ch3_mukai_after_tournament", "ch3_cigarman_trace", "ch3_emil_workshop", ...VOLK_VISITS, "ch3_volk_after_ch3",
-  "ch3_volk_lime", "ch3_volk_fifth",
-  "ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar",
-  "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs",
+  "ch3_volk_lime", "ch3_volk_fifth", "ch3_volk_revisit",
+  "ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar", "ch3_saku_first_reply",
+  "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch",
   ...MASHIRO_EXTRAS];
 const openFirst = ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_second", "ch3_volk_after_ch3"];
 assert.deepEqual(CH3_AFTERMATH_DETOURS.map(scene => scene.id), detourIds);

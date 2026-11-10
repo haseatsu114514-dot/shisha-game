@@ -246,7 +246,7 @@ const finaleDialogue = (id) => BOND_FINALES[id]?.tokyoDialogue && (state.chapter
 /** 締めくくりに要る好感度の段階（既定は♥5＝MAX。heart を持つ相手だけ別） */
 export const finaleHeart = (id) => BOND_FINALES[id]?.heart || 5;
 /** 鉄の煙の再訪三つ（chapters/ch3-story-wiring.js の任意場面。既読は _ch3_read_<id>）。 */
-const VOLK_VISITS = Object.freeze(["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_fifth"]);
+const VOLK_VISITS = Object.freeze(["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_fifth", "ch3_volk_revisit"]);
 const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
   : id === "mashiro" ? mashiroScenesRead(state.flags) && questionComplete(state, id)
   : id === "samechan"
@@ -257,14 +257,14 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
   // 綾取: LIME交換の寄り道と、助言の後の「答えを返しに行く」外出の両方（ch3-story-wiring.js / ch3-outing-progress.js の保存キーの写し）
   : id === "saku" ? !!state.flags._ch3_read_ch3_saku_lime && !!state.flags._lime_contact_saku
     && (state.flags._ch3_outings?.enmaku_answer || 0) > 0
-    && (["ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar"].every((scene) => !!state.flags[`_ch3_read_${scene}`])
+    && (["ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar", "ch3_saku_first_reply"].every((scene) => !!state.flags[`_ch3_read_${scene}`])
       || !!state.finales?.saku)
   : id === "noor" ? noorStoriesDone(state) && questionComplete(state, id)
   // スティーブ: LIME交換の寄り道と、味の会話（予備のタイマーを借りる外出）の両方。締めくくりはそのタイマーを受ける
   // 第5章の東京では、第3章の寄り道（LIME交換・予備のタイマー）はもう受けられないので、♥5だけで始める（#2705）
   : id === "steve" ? (state.chapter || 1) >= 5 || !!state.flags._ch3_read_ch3_steve_lime && !!state.flags._lime_contact_steve
     && (state.flags._ch3_outings?.steve_timer || 0) > 0
-    && (["ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs"].every((scene) => !!state.flags[`_ch3_read_${scene}`])
+    && (["ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch"].every((scene) => !!state.flags[`_ch3_read_${scene}`])
       || !!state.finales?.steve)
   // ヴォルク: 鉄の煙の再訪三つ（味の会話・七年分の記録・頷く順番）と、その後のLIME交換の寄り道。締めくくりは三つすべてを受ける
   // 第5章の東京では、第3章の再訪・LIME交換の寄り道はもう読めないので、スティーブと同じく♥5だけで始める（2026-11-07 オーナー指示）

@@ -266,160 +266,305 @@
     },
     {
       "dialogue_id": "ch4_noor_cafe_3",
-      "comment": "♥2で読む（DSR21）。カフェ・オアシスで。昼はガイド、夜は父の店。砂丘の客とカフェでの再会を楽しむ、面倒見のよいお姉さん。大会の話はしない。",
+      "comment": "♥2で読む（DSR21）。カフェ・オアシスで。昼はガイド、夜は父の店。砂丘の客とカフェでの再会を楽しむ、面倒見のよいお姉さん。大会の話はしない。段階2で増補。",
       "lines": [
         {
           "speaker": "",
-          "face": "",
-          "text": "カフェ・オアシスは、今日も常連でにぎわっていた。ヌールさんは炭を運びながら、こちらへ手を振った。"
-        },
-        {
-          "speaker": "noor",
-          "face": "smile",
-          "text": "ハジメ、来た！ ちょっと待って、……はい、父のおまかせのダブルアップル"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "ありがとうございます。忙しそうですね"
-        },
-        {
-          "speaker": "noor",
-          "face": "normal",
-          "text": "昼はガイド、夜は店。父がね、「客の顔を見ない日はない方がいい」って"
-        },
-        {
-          "speaker": "noor",
-          "face": "smile",
-          "text": "でも二つあると、二倍楽しい。毎日、違う顔に会えるから"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "ガイドのお客さんも、この店に来るんですか？"
-        },
-        {
-          "speaker": "noor",
-          "face": "smile",
-          "text": "うん！ 砂丘で撮った写真を見せながら、ここで一台吸ってくの"
-        },
-        {
-          "speaker": "noor",
-          "face": "surprise",
-          "text": "昨日の人は、転んだ写真ばっかり見せてた。滑ってるところも撮ったのに！"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "転んだところも、いい思い出になったんですね"
-        },
-        {
-          "speaker": "noor",
-          "face": "surprise",
-          "text": "そうみたい。帰る時には、次は友だちも連れてくるって"
+          "text": "カフェ・オアシスは、今日も常連でにぎわっていた。",
+          "face": ""
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "ヌールさんが手を振ると、奥の常連が空のグラスを掲げた。"
+          "text": "ヌールさんは炭を運びながら、こちらへ手を振った。",
+          "face": ""
         },
         {
           "speaker": "noor",
-          "face": "smile",
-          "text": "はいはい、お水ね！ ハジメも、おかわりいる？"
+          "text": "ハジメ、来た！ ちょっと待って、……はい、父のおまかせのダブルアップル",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "smile",
-          "text": "あ、お願いします"
+          "text": "ありがとうございます。忙しそうですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "昼はガイド、夜は店。父がね、「客の顔を見ない日はない方がいい」って",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "でも二つあると、二倍楽しい。毎日、違う顔に会えるから",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ガイドのお客さんも、この店に来るんですか？",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "うん！ 砂丘で撮った写真を見せながら、ここで一台吸ってくの",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "ヌールさんは、カウンターの下から小さな封筒を出して、写真を一枚、こちらへ向けた。",
+          "face": ""
+        },
+        {
+          "speaker": "noor",
+          "text": "昨日の人。転んだ写真ばっかり見せてた。滑ってるところも撮ったのに！",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "転んだところも、いい思い出になったんですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "そうみたい。帰る時には、次は友だちも連れてくるって",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "写真の人は、砂だらけの笑顔だった。板は横に倒れて、空だけが明るい。",
+          "face": ""
+        },
+        {
+          "speaker": "noor",
+          "text": "転んだ瞬間に、一緒にいた人が撮ったらしいの。本人は、最初ちょっと恥ずかしがってた",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "でも、ここで吸ってたら、「これも旅行だ」って自分で言い出した。私も、それが好き",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "案内したあとも、店で顔を見るんですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "見る。昼間の砂と、夜の煙は、別の顔になるから。どっちも見たいの",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "ヌールさんが手を振ると、奥の常連が空のグラスを掲げた。",
+          "face": ""
+        },
+        {
+          "speaker": "noor",
+          "text": "はいはい、お水ね！ ハジメも、おかわりいる？",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "あ、お願いします",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "水を置いたあと、ヌールさんは自分の分のグラスも持って、こちらの席の端に腰を下ろした。",
+          "face": ""
+        },
+        {
+          "speaker": "noor",
+          "text": "一分だけ。父には、水を運んでるって言っとく",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "常連さん、みんな顔を覚えられてますね",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "名前より先に、いつもの一杯。それを間違えると、ガイドより先に怒られる",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "でもね、間違えた日の方が、次の会話が長くなることもある。昨日の転んだ人も、そう",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "失敗も、案内のうちなんですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "失敗を隠さない案内が、いちばん安心するって、砂丘で教えてもらったの",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "ハジメも、転んでもいいから。ここは、転んだ写真を笑って見られる店だから",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……じゃあ、今日は転ばずに、一台いただきます",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "うん。水、まだあるから。喉が乾いたら、また手を上げて",
+          "face": "normal"
         }
       ]
     },
     {
       "dialogue_id": "ch4_noor_invite",
+      "comment": "♥3で読む誘い（DSR21）。ガイドの仕事のサンドボードへ。初回は無料、2回目からツアー代 6,000円（オーナー指定）。読了で地図に「ヌールと砂丘へ」。段階2で増補。",
       "lines": [
         {
           "speaker": "",
-          "face": "",
-          "text": "カフェ・オアシスに寄ると、表のデスクに見慣れない大きな板が立てかけてあった。"
+          "text": "カフェ・オアシスに寄ると、表のデスクに見慣れない大きな板が立てかけてあった。",
+          "face": ""
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "ヌールさん、これ……スノーボード？"
+          "text": "ヌールさん、これ……スノーボード？",
+          "face": "normal"
         },
         {
           "speaker": "noor",
-          "face": "smile",
-          "text": "惜しい！ サンドボード。ガイドの仕事で教えてるの。砂丘を滑る板"
+          "text": "惜しい！ サンドボード。ガイドの仕事で教えてるの。砂丘を滑る板",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "surprise",
-          "text": "砂の上を、滑る？"
+          "text": "砂の上を、滑る？",
+          "face": "normal"
         },
         {
           "speaker": "noor",
-          "face": "normal",
-          "text": "そう。雪と同じで、斜面があれば滑れる。砂の方が、転んでも痛くない"
-        },
-        {
-          "speaker": "noor",
-          "face": "smile",
-          "text": "せっかくドバイに来たなら、砂漠へ行こう！ これ、すっごく楽しいよ"
-        },
-        {
-          "speaker": "noor",
-          "face": "smile",
-          "text": "最初の一回は、サービス。いつもお店に来てくれるお礼"
-        },
-        {
-          "speaker": "noor",
-          "face": "normal",
-          "text": "次からはツアー代ね、6,000円。友だち価格だよ。父には内緒"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "……商売上手ですね"
-        },
-        {
-          "speaker": "noor",
-          "face": "smile",
-          "text": "もちろん。私が一緒に行くんだから"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "……それ、答えになってます？"
-        },
-        {
-          "speaker": "noor",
-          "face": "smile",
-          "text": "あはは。じゃあ、約束ね"
+          "text": "そう。雪と同じで、斜面があれば滑れる。砂の方が、転んでも痛くない",
+          "face": "normal"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "ヌールさんが、小指を差し出してきた。どこで覚えたのか、指切りだ。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "……約束です。ちょっと、気分転換もしたかったので"
+          "text": "ヌールさんは板を横に倒し、足元の止め方を、靴のまま実演してみせた。",
+          "face": ""
         },
         {
           "speaker": "noor",
-          "face": "smile",
-          "text": "よし！ 頭ばっかり使ってると、砂に負けるよ"
+          "text": "最初は立てなくてもいい。座ったまま、少しずつ下りる人もいるよ",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "転ぶときは、後ろに座り込む。手が砂に埋もれるくらいが、ちょうどいい",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……俺、滑ったこと、ほとんどないです",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "だから行くの。せっかくドバイに来たなら、砂漠へ行こう！ これ、すっごく楽しいよ",
+          "face": "smile"
+        },
+        {
+          "speaker": "noor",
+          "text": "最初の一回は、サービス。いつもお店に来てくれるお礼",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "次からはツアー代ね、6,000円。友だち価格だよ。父には内緒",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……商売上手ですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "もちろん。私が一緒に行くんだから",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……それ、答えになってます？",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "あはは。ガイドが一緒なら、転ぶ位置も教えられる。それが答え",
+          "face": "smile"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "昼の暇な日に、ヌールさんと砂丘へ出かけられるようになった。"
+          "text": "ヌールさんが、小指を差し出してきた。どこで覚えたのか、指切りだ。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "……約束です。ちょっと、気分転換もしたかったので",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "よし！ 頭ばっかり使ってると、砂に負けるよ",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "負けるのは、恥じゃない。砂の上では、みんな一度は負けるから",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "負けた写真、撮られないようにします",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "撮るよ？ でも、見せるかどうかはハジメが決めて。店に飾ったりしないから",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "デスクの板には、小さな傷がいくつも付いていた。ヌールさんは、それを指でなぞる。",
+          "face": ""
+        },
+        {
+          "speaker": "noor",
+          "text": "これ、全部お客さん。転んだ跡じゃなくて、最初の一歩の跡",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ヌールさんの、最初の一歩もありますか",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "あるよ。いちばん深いの。父に見られないよう、裏に付けた",
+          "face": "smile"
+        },
+        {
+          "speaker": "noor",
+          "text": "ハジメの分は、表でいい。隠さなくて大丈夫な傷だから",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "昼の暇な日に、ヌールさんと砂丘へ出かけられるようになった。",
+          "face": ""
         }
-      ],
-      "comment": "♥3で読む誘い（DSR21）。ガイドの仕事のサンドボードへ。初回は無料、2回目からツアー代 6,000円（オーナー指定）。読了で地図に「ヌールと砂丘へ」。"
+      ]
     },
     {
       "dialogue_id": "ch4_noor_bond_question",
@@ -532,57 +677,162 @@
     },
     {
       "dialogue_id": "ch4_noor_cafe_4",
-      "comment": "DSR20（ヒロイン化）の♥4。♥3の問いの後。アニメの舞台の町（聖地巡礼）と、日本へ行ったらはじめがガイドをする約束。大会に触れない。",
+      "comment": "DSR20（ヒロイン化）の♥4。♥3の問いの後。アニメの舞台の町（聖地巡礼）と、日本へ行ったらはじめがガイドをする約束。大会に触れない。段階2で増補。案内の約束は、♥3の答えが恋愛でも友情でも同じ場所の話として成り立つ。",
       "lines": [
         {
           "speaker": "",
-          "face": "",
-          "text": "カフェ・オアシスの奥の席。ヌールさんが、スマホの写真を見せてくれた。"
+          "text": "カフェ・オアシスの奥の席。ヌールさんが、スマホの写真を見せてくれた。",
+          "face": ""
         },
         {
           "speaker": "noor",
-          "face": "smile",
-          "text": "見て。日本のアニメの、舞台になった町。いつか行きたい場所リスト"
+          "text": "見て。日本のアニメの、舞台になった町。いつか行きたい場所リスト",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "smile",
-          "text": "聖地巡礼ですね"
+          "text": "聖地巡礼ですね",
+          "face": "normal"
         },
         {
           "speaker": "noor",
-          "face": "surprise",
-          "text": "それ！ そこに行って、写真と同じ景色を見てみたいの"
-        },
-        {
-          "speaker": "noor",
-          "face": "normal",
-          "text": "……ハジメは、いつか日本に帰っちゃうんだよね"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……そうですね"
-        },
-        {
-          "speaker": "noor",
-          "face": "smile",
-          "text": "じゃあ、私が日本に行ったら、今度はハジメがガイドね"
-        },
-        {
-          "speaker": "noor",
-          "face": "smile",
-          "text": "砂の代わりに、ハジメの好きな場所を見せて。約束ね"
+          "text": "それ！ そこに行って、写真と同じ景色を見てみたいの",
+          "face": "smile"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "ヌールさんが差し出した小指に、俺も自分の指を重ねた。"
+          "text": "画面には、駅前の坂と、赤い看板の並ぶ通りが、何枚も保存されていた。",
+          "face": ""
         },
         {
           "speaker": "hajime",
-          "face": "smile",
-          "text": "はい。今度は俺が、好きな場所を案内します"
+          "text": "ここ、行きたい場所のいちばん上ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "いちばん上は、まだ決められてない。写真が似てる場所が、多すぎて",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "砂丘は、どこも似てるのに、案内すると道が分かる。日本は、逆で迷うと思う",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "……ハジメは、いつか日本に帰っちゃうんだよね",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……そうですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "じゃあ、私が日本に行ったら、今度はハジメがガイドね",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "砂の代わりに、ハジメの好きな場所を見せて。約束ね",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "好きな場所、ですか。観光の名所、じゃなくて？",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "名所でもいい。でも、ハジメが「ここ」って指す場所がいい。砂丘でも、私はそうしてる",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "俺は、朝のまだ客の少ない通りと、使い込んだ店の暖簾を思い浮かべた。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "なら、俺の店の近くの通りから案内します。朝は、静かで、煙の匂いが少し残ってます",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "それ、聞きたい。写真にない方の日本",
+          "face": "smile"
+        },
+        {
+          "speaker": "noor",
+          "text": "リストの町も連れてって。そのあとで、ハジメの通り。順番は、当日決めでいい",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "ヌールさんが差し出した小指に、俺も自分の指を重ねた。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "はい。今度は俺が、好きな場所を案内します",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "ガイド料は、あとで考える。最初の一回は、お礼のつもりでいいから",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……今度は、俺が商売上手にならないようにします",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "ならないで。ハジメの案内は、商売じゃなくていい",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "画面のリストは閉じられた。約束の方が、写真より先に残った。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "リストの町は、駅の名前、覚えておきます。帰ってから、道を確認するので",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "覚えてくれるの？ ……ありがとう。写真だけだと、実際の曲がり角が分からなくて",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "ハジメが先に歩いて、私が写真を見る。ガイドって、そういうのでしょ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "そうです。迷ったら、俺が先に迷います",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "先に迷うガイド、いいね。砂丘でも、私、ときどきやる",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "小指を離したあと、ヌールさんはリストの一番上に、小さな星を一つ付けた。",
+          "face": ""
+        },
+        {
+          "speaker": "noor",
+          "text": "これは、ハジメの通り。名前は、まだ空欄。当日、教えて",
+          "face": "normal"
         }
       ]
     },
