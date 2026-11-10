@@ -364,6 +364,11 @@ export async function playFinale(id, { bg = null, deferSave = false, signal = nu
   state.finales ||= {};
   state.finales[id] = { day: state.day, chapter: state.chapter, route };
   if (def.flag) state.flags[def.flag] = true;
+  // ヌールの友情着地でも LIME を交換する（台本の _lime_contact_noor。告白承諾時と同じ入口）
+  if (id === "noor" && route === "friend") {
+    state.flags._friend_noor = true;
+    if (state.flags._lime_contact_noor && !(state.contacts || []).includes("noor")) (state.contacts ||= []).push("noor");
+  }
   grantGift(def.gift);
   // 恋愛ルート: 告白を予約（一日の終わりに、再生前にもう一度ルートを確かめる）
   if (route === "romance" && !def.laterConfession && !def.ownConfession && romanceRouteOpen(id) && !state.flags._confession_due) state.flags._confession_due = id;

@@ -174,7 +174,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
         let completed = false;
         try { completed = await read(NOOR_CONFESSION, bgUrl(DESERT_DUSK_BG)); }
         finally { delete owner.flags[NOOR_OTHER_LOVER_FLAG]; delete owner.flags[NOOR_VISIT_CONFESSION_FLAG]; }
-        // 付き合うと LIME を交換する（台本の _lime_contact_noor）。以後、離れていても朝のLIMEが届く（remake/data/lover.json）
+        // 付き合うか、友だちで着地すると LIME を交換する（台本の _lime_contact_noor）。以後、離れていても朝のLIMEが届く
         if (owner.flags[`_lime_contact_${DESERT_GUIDE}`] && !(owner.contacts || []).includes(DESERT_GUIDE)) (owner.contacts ||= []).push(DESERT_GUIDE);
         if (state === owner) save();
         if (completed && current() && (owner.lovers || []).includes(DESERT_GUIDE)) {

@@ -225,6 +225,12 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (!hasContact(m.sender)) return false;
   if (m.type === "invitation" && state.flags[`_invited_${m.id}`]) return false;
   if (m.exclude_flag && state.flags[m.exclude_flag]) return false;
+  // ヒロインの恋愛／友情で稿を分ける（LIME増量。ヌールの友情着地でも交換する）
+  if (m.route === "friend" || m.route === "romance") {
+    const friend = !!state.flags[`_friend_${m.sender}`] || state.finales?.[m.sender]?.route === "friend";
+    if (m.route === "friend" && (!friend || isLover(m.sender))) return false;
+    if (m.route === "romance" && friend) return false;
+  }
   // みんとの最初の私的な買い出しは、♥3到達だけで正体判明より先行させない。
   if (m.id === "lime_outing_minto_1" && !state.flags._minto_identity_revealed) return false;
   // サメちゃんの♥3の外出（#2025）は、本人から路地裏シネマを紹介された後（cinemaDiscovered と同じ条件）にだけ届く。

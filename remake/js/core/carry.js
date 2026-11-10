@@ -336,6 +336,7 @@ export const FLAG_EXACT_RULES = [
   ["_fortune_met", "progression"],
   ["_friend_hiyori", "person"],
   ["_friend_minto", "person"],
+  ["_friend_noor", "person"],
   ["_friend_samechan", "person"],
   ["_gym_member", "unlock"],
   ["_hiyori_bond_finale_done", "person"],
