@@ -133,13 +133,28 @@ try {
   await page.locator('.map:not(.done) [data-test="pin-shop"]').waitFor();
   assert.equal(await page.evaluate(() => T.spots.rioPrototypeDue()), true);
   assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge.story').count(),1);
-  // 試作品も読了した状態では、全店舗の新規印が消える。
+  // 試作品の次はブルーベリーの土産話、その次は物語系の一度きり。全部読むまで印は残る（#3081）。
   await page.evaluate(async () => {
     T.core.state.flags._spot_seen_ch1_rio_prototype_night=true;
     await T.openMap();
   });
   await page.locator('.map:not(.done) [data-test="pin-shop"]').waitFor();
   assert.equal(await page.evaluate(() => T.spots.rioPrototypeDue()), false);
+  assert.equal(await page.evaluate(() => T.spots.rioBlueberryDue()), true);
+  assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge.story').count(),1);
+  await page.evaluate(async () => {
+    T.core.state.flags._spot_seen_ch1_rio_blueberry_report=true;
+    await T.openMap();
+  });
+  await page.locator('.map:not(.done) [data-test="pin-shop"]').waitFor();
+  assert.equal(await page.evaluate(() => T.spots.rioStoryExtraDue()), "ch1_rio_lot_return");
+  assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge.story').count(),1);
+  await page.evaluate(async () => {
+    for (const id of T.spots.RIO_STORY_EXTRAS) T.core.state.flags[`_spot_seen_${id}`] = true;
+    await T.openMap();
+  });
+  await page.locator('.map:not(.done) [data-test="pin-shop"]').waitFor();
+  assert.equal(await page.evaluate(() => T.spots.rioStoryExtraDue()), null);
   assert.equal(await page.locator(".evt-badge.story").count(),0);
 
   // 店名は閉店日も残す。臨時休暇は別の札で伝え、訪問できない理由も一致する。
