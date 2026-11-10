@@ -4,6 +4,7 @@ import { installDoubleTapGuard } from "./core/double-tap-guard.js";
 import { TOURNAMENT_DAY } from "./core/rules.js";
 import { $, sleep } from "./core/util.js";
 import { initStageFit } from "./core/stage-fit.js";
+import { initCraftStage } from "./craft/stage-layout.js";
 import { loadAll, loadDeferredDialogues, loadCinemaDialogue, loadTournamentCraftDialogue, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
 import { loadVnFonts } from "./core/vn-fonts.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
@@ -36,6 +37,7 @@ export async function boot() {
   installRotateGuard(); // 縦持ちの回転ガード中は、制作の時計と音を止める（#2941）
   initLayers();
   initGameLayout();
+  initCraftStage(); // シーシャ作りの新しい配置（?craftStage=1 で入・CSL）
   const cfg = loadConfig();
   applyUiTheme(cfg.uiTheme);
   // 設定「揺れ・閃光を減らす」を CSS からも見えるようにする（場面の演出の閃光を省く・#2688 F11）
