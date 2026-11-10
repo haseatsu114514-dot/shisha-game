@@ -19,6 +19,22 @@
   border-radius: 50%; animation: vn-loading-turn 1s linear infinite; }
 @keyframes vn-loading-turn { to { transform: rotate(1turn); } }
 @media (prefers-reduced-motion: reduce) { .vn-loading::before { animation: none; } }
+.vn-loading.has-comic { top: 50%; width: min(92%, 720px); max-height: 92%; box-sizing: border-box;
+  flex-direction: column; gap: 8px; padding: 12px 16px; overflow: hidden; }
+.vn-loading.has-comic::before { position: absolute; top: 15px; left: 16px; width: 16px; height: 16px; }
+.vn-loading-comic { width: 100%; min-height: 0; text-align: center; }
+.vn-loading-comic h2 { margin: 0 0 6px; font-size: 18px; font-weight: 700; }
+.vn-loading-comic-panels { display: flex; gap: 8px; justify-content: center; }
+.vn-loading-comic-panels figure { flex: 1; min-width: 0; margin: 0; }
+.vn-loading-comic-art { position: relative; width: 100%; aspect-ratio: 3 / 2; overflow: hidden; container-type: inline-size; background: #eee7d7; }
+.vn-loading-comic-art img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.vn-loading-comic-bubble { position: absolute; margin: 0; color: #201919; line-height: 1.2; font-weight: 700; }
+.vn-loading-comic-caption { margin: 6px 0 0; font-size: 13px; }
+@media (max-aspect-ratio: 3/4) {
+  .vn-loading.has-comic { width: min(94%, 420px); max-height: 96%; }
+  .vn-loading-comic-panels { flex-direction: column; align-items: center; gap: 4px; }
+  .vn-loading-comic-panels figure { flex: none; width: min(100%, 270px); }
+}
 
 .vn-cg {
   position: absolute;
