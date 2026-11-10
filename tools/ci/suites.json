@@ -789,6 +789,7 @@
         "node remake/test/ch4_dubai_local.mjs",
         "node remake/test/ch4_inn_trial.mjs",
         "node remake/test/ch4_longlong.mjs",
+        "node remake/test/affection_fill.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node remake/test/ch5_party.mjs",
         "node remake/test/ch5_travel.mjs",
