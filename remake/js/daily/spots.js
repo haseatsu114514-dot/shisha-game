@@ -173,6 +173,10 @@ export const RIO_STORY_EXTRAS = Object.freeze([
   "ch1_rio_lot_return",
   "ch1_rio_name_blank",
   "ch1_rio_unsigned",
+  "ch1_rio_practice_note",
+  "ch1_rio_strip_spill",
+  "ch1_rio_tired_nose",
+  "ch1_rio_recheck",
 ]);
 export const rioStoryExtraDue = () => {
   if (storyCount("rio") < 6 || !state.flags[RIO_PROTOTYPE_SEEN] || !state.flags[RIO_BLUEBERRY_SEEN]) return null;
