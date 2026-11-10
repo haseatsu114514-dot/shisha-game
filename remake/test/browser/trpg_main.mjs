@@ -56,7 +56,9 @@ async function prepare(page, options = {}) {
     const core = await import("./js/core/state.js"), s = core.newGame();
     const { club = true, ...settings } = options;
     Object.assign(s, { chapter: 2, phase: "daily", day: 3, slot: 1, money: 3000, stamina: 52 }, settings);
-    for (const id of ["hiyori", "samechan", "tsumugi", "adam"]) { s.met[id] = true; s.affinity[id] = 66; }
+    for (const id of ["hiyori", "samechan", "tsumugi", "adam"]) {
+      s.met[id] = true; s.affinity[id] = 66; s.flags[`_trpg_topic_${id}`] = true;
+    }
     if (club) s.trpg.club = { founded: { chapter: 2, day: 1 }, members: Object.fromEntries(
       ["hiyori", "samechan", "tsumugi", "adam"].map(id => [id, { chapter: 2, day: 2 }])) };
     s.flags._rei_trpg_introduced = true; s.flags._qa_preserved = true; s.flavorStock.double_apple = 37; s.reel.count = 3;
@@ -105,6 +107,39 @@ async function play(page, id, { expectTutorial = false } = {}) {
   await button(page, "trpg-ending-title").waitFor();
 }
 await suite("trpg-main", async check => {
+  await check("low-affinity-topic-before-invite", async page => {
+    await prepare(page);
+    await page.evaluate(async () => {
+      const { state } = await import("./js/core/state.js");
+      delete state.flags._trpg_topic_hiyori; state.affinity.hiyori = 0;
+      delete state.trpg.club.members.hiyori;
+      const { maybeRecruitTrpgMember } = await import("./js/daily/trpg.js");
+      window.__topicRecruit = null;
+      maybeRecruitTrpgMember("hiyori").then(result => { window.__topicRecruit = result; });
+    });
+    await button(page, "trpg-topic-hear").waitFor();
+    assert.equal(await button(page, "trpg-recruit-invite").count(), 0);
+    await hit(page, "trpg-topic-hear");
+    assert((await snapshot(page)).flags._trpg_topic_hiyori);
+    await hit(page, "trpg-recruit-invite");
+    await hit(page, "trpg-recruit-next"); await hit(page, "trpg-recruit-next");
+    await page.waitForFunction(() => window.__topicRecruit === true);
+    assert((await snapshot(page)).trpg.club.members.hiyori);
+  });
+  await check("zero-members-regular-table", async page => {
+    await prepare(page);
+    await page.evaluate(() => { __remake.state.trpg.club.members = {}; });
+    await open(page);
+    assert.deepEqual((await snapshot(page)).trpg.club.members, {});
+    assert.equal(await button(page, "trpg-book-regular-harbor").getAttribute("data-locked"), "false");
+    await hit(page, "trpg-buy-regular-harbor");
+    assert(await button(page, "trpg-play-regular-harbor").isEnabled());
+    await play(page, "regular-harbor", { expectTutorial: true });
+    const done = await snapshot(page);
+    assert(done.trpg.cleared["regular-harbor"]);
+    assert.deepEqual(new Set(done.trpg.cleared["regular-harbor"].participants), new Set(["sumi", "hajime", "tsumugi", "salaryman"]));
+    assert.deepEqual(done.trpg.club.members, {});
+  });
   for (const [label, options] of [
     ["club-recruit-pc", { viewport: { width: 1280, height: 720 } }],
     ["club-recruit-touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
@@ -119,6 +154,11 @@ await suite("trpg-main", async check => {
     await hit(page, label === "club-recruit-pc" ? "trpg-club-choice-time" : "trpg-club-choice-people");
     assert((await button(page, "trpg-club-founded").textContent()).includes(label === "club-recruit-pc" ? "営業が終わるまで" : "声をかけるところから"));
     assert.equal(await button(page, "trpg-buy-shark-last-order").count(), 0, "MAX alone must not stock a book");
+    const locked = button(page, "trpg-book-shark-last-order");
+    assert.equal(await locked.getAttribute("data-locked"), "true");
+    assert.equal(await locked.locator("h2").textContent(), "？？？？？");
+    assert.equal(await button(page, "trpg-play-shark-last-order").count(), 0);
+    await page.screenshot({ path: (process.env.ARTIFACT_DIR || ".codex/artifacts/trpg") + "/trpg-locked-" + label + ".png" });
     await hit(page, "trpg-demo-meet-samechan"); await assertFits(page, ".trpg-club-dialog button");
     await hit(page, "trpg-recruit-later");
     assert.deepEqual(await page.evaluate(() => __trpgCampaignPreview.snapshot().trpg.club.members), {});
@@ -127,6 +167,8 @@ await suite("trpg-main", async check => {
     await hit(page, "trpg-recruit-next");
     assert.deepEqual(await page.evaluate(() => __trpgCampaignPreview.snapshot().trpg.club.members), {}, "Read the whole acceptance first");
     await hit(page, "trpg-recruit-next"); await button(page, "trpg-buy-shark-last-order").waitFor();
+    assert.equal(await locked.getAttribute("data-locked"), "false");
+    assert.notEqual(await locked.locator("h2").textContent(), "？？？？？");
     assert.equal(await button(page, "trpg-demo-meet-samechan").count(), 0);
     for (const id of ["hiyori", "adam", "tsumugi"]) {
       await hit(page, "trpg-demo-meet-" + id); await hit(page, "trpg-recruit-invite");

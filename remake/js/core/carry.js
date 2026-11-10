@@ -173,6 +173,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_read_ch2_rei_sixth", "person"],
   ["_ch2_read_ch2_slump_taste", "progression"],
   ["_ch2_read_ch2_sofa_burn", "progression"],
+  ["_ch2_read_ch2_strawberry_sample", "progression"],
   ["_ch2_read_ch2_tournament_ageha_heart", "person"],
   ["_ch2_read_ch2_tsumugi_color", "person"],
   ["_ch2_read_remake_ch2_ageha_tasting", "progression"],
@@ -606,6 +607,7 @@ export const FLAG_FAMILY_RULES = [
   ["_cafe_recall_*", "progression"],
   ["_city_guest_seen_*", "progression"],
   ["_roam_seen_*", "person"],
+  ["_trpg_topic_*", "person"], // 部活の話は周回ごとに対面し直す
   ["_date_inv_*", "person"],
   ["_delivery_*", "progression"],
   ["_fortune_*", "progression"],

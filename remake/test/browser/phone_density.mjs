@@ -262,6 +262,7 @@ await suite("phone-density", async check => {
       const s = getComputedStyle(document.querySelector(".vn-ctl")), c = getComputedStyle(document.querySelector(".vn-choices"));
       return `${s.minHeight} ${s.fontSize} ${c.bottom}`;
     });
-    assert.equal(vn, "44px 16px 254px");
+    // #3100 / #3103: 紙テーマの操作文字はPCでも22px。タップ領域と選択肢位置は維持。
+    assert.equal(vn, "44px 22px 254px");
   }, { viewport: { width: 1280, height: 720 } });
 });
